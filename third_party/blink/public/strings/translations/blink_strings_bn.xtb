@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
-<translation id="1088086359088493902">সেকেন্ড</translation>
-<translation id="1142001580032786438">সপ্তাহ বাছাইকারী দেখুন</translation>
+<translation id="1012241361789814178">অন্য একটি ট্যাবে ডিবাগার পজ হয়ে গেছে, ওই ট্যাবে যেতে করতে ক্লিক করুন।</translation>
 <translation id="1171774979989969504">অনুগ্রহ করে কোন ইমেল আইডি লিখুন:</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1306460908038601864">বন্ধ করা আছে</translation>
 <translation id="1311894908970423688">তারিখ অবশ্যই <ph name="VALUE_DATE_OR_TIME" /> হতে হবে।</translation>
-<translation id="1480676835519562650">অনেক বিকল্প বেছে নেওয়ার সুবিধা, <ph name="COUNT" />টির মধ্যে <ph name="SELECTED" />টি বেছে নেওয়া হয়েছে।</translation>
 <translation id="1588438908519853928">সাধারণ</translation>
 <translation id="1591562245178063882">এই মাস</translation>
 <translation id="1637811476055996098">ফাইল বেছে নিন</translation>
-<translation id="1681022320378710418">বর্তমান সময়</translation>
-<translation id="1727839386348365796">আইড্রপার</translation>
+<translation id="1680090928918677457">ক্যামেরা ব্যবহার করুন</translation>
 <translation id="1729654308190250600">অনুগ্রহ করে একটি খালি না থাকা ইমেল আইডি লিখুন৷</translation>
 <translation id="1758486001363313524">অন্যান্য...</translation>
-<translation id="1787192514241997742">মোট সময়: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">ক্যামেরা অ্যাক্সেস করার অনুমতি দিন</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">রিমোট ডিভাইসে প্লে করুন</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">মানকে অবশ্যই <ph name="MAXIMUM_DATE_OR_TIME" /> বা আগের হতে হবে৷</translation>
-<translation id="1946271899482435442">তারিখ বেছে নেওয়ার বিকল্পটি দেখান</translation>
 <translation id="1993104285338243655">মিররিং এ পরিবর্তন করা হয়েছে</translation>
-<translation id="2031987842108996681">রেড চ্যানেল</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' এ একটি ভুল অবস্থানে '<ph name="DOT" />' ব্যবহৃত হয়েছে৷</translation>
 <translation id="2068711044993563745">ন্যূনতম ভ্যালু (<ph name="MINIMUM" />) অবশ্যই সর্বাধিক ভ্যালুর (<ph name="MAXIMUM" />) চেয়ে কম হতে হবে।</translation>
 <translation id="2148716181193084225">আজ</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> সপ্তাহ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্র্যাক <ph name="NUMBER" /></translation>
 <translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
-<translation id="2393030564806080191">রঙের হেক্সাডেসিমেল মান</translation>
-<translation id="2398813069815436052">ডায়ালগ খোলা হয়েছে।</translation>
-<translation id="245932805758469625">ভিডিও শেষ হতে এখনও যত সেকেন্ড বাকি আছে</translation>
-<translation id="248395913932153421">দিন</translation>
 <translation id="2507943997699731163">দয়া করে এই ক্ষেত্রটি পূরণ করুন৷</translation>
-<translation id="2530182415807757784">অনেক বিকল্প বেছে নেওয়ার সুবিধা, কিন্তু কিছুই বাছা হয়নি।</translation>
-<translation id="2561842179657104141">আরও মিডিয়া নিয়ন্ত্রণ দেখান</translation>
-<translation id="2572483411312390101">চালনা করুন</translation>
 <translation id="2613802280814924224">দয়া করে একটি বৈধ মান লিখুন৷ কাছাকাছির বৈধ মান হল <ph name="VALID_VALUE" />৷</translation>
-<translation id="2634240155926812724">গ্রিন চ্যানেল</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
-<translation id="2723001399770238859">অডিও</translation>
 <translation id="2746543609216772311">মানকে অবশ্যই <ph name="MINIMUM_DATE_OR_TIME" /> বা পরবর্তী হতে হবে৷</translation>
 <translation id="2761667185364618470">আপনি এগিয়ে যেতে চাইলে এই বাক্সটি পরীক্ষা করুন৷</translation>
 <translation id="2908441821576996758">অনুগ্রহ করে কমা দিয়ে আলাদা করা ইমেল আইডির তালিকা লিখুন৷</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এমবি</translation>
-<translation id="3053226512517284904">অডিওর বিবরণ সংক্রান্ত মেনু দেখুন</translation>
 <translation id="3075154866155599887">অনুগ্রহ করে একটি সঠিক মান লিখুন৷ ফিল্ডটি অসম্পূর্ণ অথবা একটি ভুল তারিখ আছে৷</translation>
 <translation id="310520048233152454">দয়া করে একটি বৈধ URL প্রবেশ করুন৷</translation>
-<translation id="3220661731597678625">বর্তমান ধাপ</translation>
 <translation id="3321030238473337787">প্লেব্যাক স্পিড</translation>
-<translation id="3329013043687509092">পরিপৃক্তি</translation>
-<translation id="3377518164566272702">মাইক্রোফোন ও ক্যামেরা অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="3450233048674729344">মানটি অবশ্যই <ph name="MAXIMUM" />এর চেয়ে কম বা সমান হবে৷</translation>
 <translation id="3732799496749320381">মিমি</translation>
 <translation id="3754210790023674521">ছবির-মধ্যে-ছবি মোড থেকে বেরিয়ে আসুন</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
-<translation id="4103419683916926126">মিলিসেকেন্ড</translation>
-<translation id="4201051445878709314">পূর্ববর্তী মাস দেখান</translation>
 <translation id="4360991593054037559">দয়া করে একটি বৈধ মান লিখুন৷ দুটি কাছাকাছির বৈধ মান হল <ph name="VALID_VALUE_LOW" /> এবং <ph name="VALID_VALUE_HIGHER" />৷</translation>
 <translation id="4522570452068850558">বিবরণগুলি</translation>
 <translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="4718048029184481307">ছবির-মধ্যে-ছবি মোডে চলছে</translation>
-<translation id="4748357248530471599">ডিসপ্লে কাট-আউট ফুল-স্ক্রিনে টগল করুন</translation>
-<translation id="4763480195061959176">ভিডিও</translation>
 <translation id="4792862212177489858">লোকেশন শেয়ার করুন</translation>
 <translation id="4812940957355064477">দয়া করে একটি সংখ্যা লিখুন৷</translation>
-<translation id="4912200001568447310">বর্তমান আইটেম</translation>
-<translation id="4915360478455618802">সময় বাছাইকারী দেখুন</translation>
-<translation id="4924138096460353083">অনির্দিষ্ট</translation>
-<translation id="4950364064308314478">স্থানীয় তারিখ ও সময় বাছাইকারী দেখুন</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" />টি বেছে নেওয়া হয়েছে</translation>
+<translation id="49269513399674318">মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" />টি নির্বাচিত</translation>
 <translation id="4992066212339426712">সশব্দ করুন</translation>
 <translation id="49969490063480558">দয়া করে '<ph name="ATSIGN" />' অনুসরণ করে একটি অংশ লিখুন৷ '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ৷</translation>
-<translation id="5037575921016181960">শক্তিশালী পাসওয়ার্ড</translation>
-<translation id="5090250355906949916">ভিডিওর সময় স্ক্রাবার</translation>
-<translation id="509897012892853729">ব্লু চ্যানেল</translation>
-<translation id="5117590920725113268">পরবর্তী মাস দেখান</translation>
 <translation id="5164977714490026579">মানটি অবশ্যই <ph name="MINIMUM" />এর চেয়ে বেশি বা সমান হবে৷</translation>
 <translation id="5196716972587102051">২</translation>
-<translation id="5199514351668672591">বিকল্পে ফিরে যান</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5272594226096532950">টিক চিহ্ন দেওয়া নেই। গ্রুপে, <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর বিকল্প</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' অনুসরণ করে একটি অংশ লিখুন৷ '<ph name="INVALIDADDRESS" />' অসম্পূর্ণ৷</translation>
 <translation id="5334352251556557839">মিডিয়া চালানো যাচ্ছে না।</translation>
 <translation id="537648784377940524">আগের তারিখ (<ph name="MIN_DATE_OR_TIME" />) অবশ্যই পরের তারিখের (<ph name="MAX_DATE_OR_TIME" />) আগে লিখতে হবে।</translation>
-<translation id="5378437566635403538">বড় করা হয়েছে, ডায়ালগ খোলা হয়েছে।</translation>
-<translation id="5425179576310518467">বর্তমান তারিখ</translation>
 <translation id="5466621249238537318">অনুগ্রহ করে এক বা একাধিক ফাইল নির্বাচন করুন৷</translation>
-<translation id="5468998798572797635">পূর্ণ স্ক্রিন বন্ধ করুন</translation>
 <translation id="5514612371225420585">আপনার ডিভাইসের ফাইল</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
-<translation id="5546461542133609677">সশব্দ</translation>
 <translation id="5630795885300617244">১০ সেকেন্ড আগে পরে করার জন্য বাঁ অথবা ডান দিকে ডবল ট্যাপ করুন</translation>
-<translation id="5677946354068040947">আরও বিকল্প</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
-<translation id="5786442179789148008">প্লেব্যাক স্পিডের মেনু দেখুন</translation>
-<translation id="5787939484346677755">বড় করা হয়েছে, অটোমেটিক সম্পূর্ণ করার বিকল্প উপলভ্য আছে।</translation>
-<translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> এ কাস্ট করা হচ্ছে</translation>
-<translation id="5916664084637901428">চালু</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="5966707198760109579">সপ্তাহ</translation>
 <translation id="5985507339671257014">০.৫</translation>
-<translation id="6011459053400940133">ভলিউম স্লাইডার</translation>
-<translation id="6015796118275082299">বছর</translation>
-<translation id="6165053282446038410">বড় করা হয়েছে, <ph name="COUNT" />টি অটোমেটিক সম্পূর্ণ করার বিকল্প উপলভ্য আছে।</translation>
-<translation id="6212595056017402527">বর্তমান পৃষ্ঠা</translation>
-<translation id="6281588256137006900">হালকা রঙ</translation>
 <translation id="6310801910862476708">ছবির-মধ্যে-ছবি মোড থেকে বেরিয়ে আসুন</translation>
-<translation id="6398862346408813489">মাস নির্বাচনের প্যানেল দেখান</translation>
-<translation id="6404546809543547843">অডিও সময় স্ক্রাবার</translation>
-<translation id="6443871981718447451">ক্লোজড ক্যাপশনের মেনু দেখান</translation>
 <translation id="6484738902856791350">সুন্দর প্রিন্ট</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
-<translation id="6572309429103589720">ভুল ব্যাকরণ</translation>
-<translation id="658823671542763450">পূর্ণ স্ক্রীনে প্রবেশ করুন</translation>
-<translation id="6606094904835912297">সিস্টেমের রং</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="668171684555832681">অন্যান্য...</translation>
 <translation id="6709093583001123835">মান অবশ্যই <ph name="VALUE" /> হতে হবে।</translation>
 <translation id="6709570249143506788">প্লেব্যাকের গুণমান খারাপ</translation>
-<translation id="6719914554879143100">টিক চিহ্ন দেওয়া হয়েছে। গ্রুপে, <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর বিকল্প</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6820355525329141109">প্লাগ-ইন লোড করা যায়নি।</translation>
-<translation id="6831465880655513317">কালার ওয়েলে দুই ডাইমেনশনের স্লাইডার আছে যেটি দিয়ে রঙ গাঢ় ও হালকা করা যায়</translation>
-<translation id="6843725295806269523">মিউট</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6941933287844615239">মিডিয়া ডাউনলোড করুন</translation>
-<translation id="698788488269350478">বড় করা হয়েছে।</translation>
 <translation id="6989848892321993519">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি দৈর্ঘ্যের করুন (আপনি বর্তমানে ১টি অক্ষর ব্যবহার করেছেন)।</translation>
 <translation id="7080893216867146095">লোকেশন শেয়ার করা অনুমোদিত</translation>
 <translation id="709897737746224366">দয়া করে অনুরোধ হওয়া বিন্যাসটি মেলান৷</translation>
-<translation id="7102274145889307184">বর্তমান লোকেশন</translation>
+<translation id="7134810312945846184">মাইক্রোফোন ও ক্যামেরা ব্যবহার করুন</translation>
 <translation id="7263440858009898357">তালিকা থেকে একটি আইটেম নির্বাচন করুন৷ </translation>
-<translation id="7320576522385648310">বাফার হচ্ছে</translation>
-<translation id="7341556277900466204">কালার ওয়েল</translation>
 <translation id="7364796246159120393">ফাইল বেছে নিন</translation>
 <translation id="739024184232394898">অন্যান্য...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
-<translation id="7673697353781729403">ঘণ্টা</translation>
 <translation id="7750228210027921155">ছবির-মধ্যে-ছবি</translation>
-<translation id="775297008183122718">নির্ভুল নয়</translation>
 <translation id="7782515065589691344">১.২৫</translation>
-<translation id="7789962463072032349">বিরাম</translation>
-<translation id="7852167693871241274">হিউ স্লাইডার</translation>
 <translation id="7888071071722539607">ইমেল আইডিতে অনুগ্রহ করে একটি '<ph name="ATSIGN" />' অন্তর্ভুক্ত করুন৷ '<ph name="INVALIDADDRESS" />'-তে একটি '<ph name="ATSIGN" />' অনুপস্থিত৷</translation>
 <translation id="795667975304826397">কোনও ফাইল চয়ন করা হয় নি</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> বেছে নেওয়া হয়নি</translation>
 <translation id="8117451130807776954">এই সপ্তাহ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
-<translation id="8261464734335370856">ভুল বানান</translation>
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="835897206747267392">ভুল মান৷</translation>
 <translation id="839593075537728968">সময়ের মান অবশ্যই <ph name="MINIMUM_TIME" /> থেকে <ph name="MAXIMUM_TIME" />-এর মধ্যে হতে হবে।</translation>
-<translation id="8403857369060869934">অতিবাহিত সময়: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> টি ফাইল</translation>
 <translation id="8451268428117625855">দয়া করে একটি ফাইল নির্বাচন করুন৷</translation>
-<translation id="8534579021159131403">মিনিট</translation>
-<translation id="8541249477527128034">মিডিয়া নিয়ন্ত্রণ</translation>
-<translation id="8613126697340063924">রিমোট প্লেব্যাক নিয়ন্ত্রণ করুন</translation>
-<translation id="8634971699417195529">মাস বাছাইকারী দেখুন</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">লাইন র‍্যাপ করা</translation>
 <translation id="8750798805984357768">দয়া করে বিকল্পগুলির একটি নির্বাচন করুন৷</translation>
 <translation id="8845239796550121995">এখন আপনার TV তে কাস্ট করা হচ্ছে</translation>
 <translation id="8875657656876809964">ভিডিও প্লেব্যাকে সমস্যা</translation>
-<translation id="8889402386540077796">রঙ বিন্যাস</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> কেবি</translation>
-<translation id="894736920926684893">টগলার ফর্ম্যাট করুন</translation>
-<translation id="8987927404178983737">মাস</translation>
-<translation id="901493112792887934">সেকেন্ডে বর্তমান সময়</translation>
-<translation id="9093215626363556771">ছবির-মধ্যে-ছবি মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="9132465097189459683">অন্যান্য...</translation>
-<translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> এ শুরু</translation>
 <translation id="916607977885256133">ছবির-মধ্যে-ছবি</translation>
-<translation id="918430632320614861">মাইক্রোফোন অ্যাক্সেস করার অনুমতি দিন</translation>
-<translation id="945780513535800434">আংশিকভাবে টিকচিহ্ন দেওয়া হয়েছে</translation>
-<translation id="954003015749068518">ছবির-মধ্যে-ছবি মোডে যান</translation>
 </translationbundle>

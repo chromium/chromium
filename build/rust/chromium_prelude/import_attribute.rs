@@ -47,7 +47,7 @@ impl GnTarget {
         let mut path: Vec<&str> = s[2..].split('/').collect();
 
         let gn_name = {
-            if path[0..2] == ["third_party", "rust"] {
+            if path.starts_with(&["third_party", "rust"]) {
                 return Err(String::from(
                     "import! macro should not be used for third_party crates",
                 ));

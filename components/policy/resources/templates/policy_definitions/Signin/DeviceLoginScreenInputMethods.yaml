@@ -11,7 +11,6 @@ features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   items:
     type: string
@@ -20,3 +19,4 @@ supported_on:
 - chrome_os:58-
 tags: []
 type: list
+generate_device_proto: False

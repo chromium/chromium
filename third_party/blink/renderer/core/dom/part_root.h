@@ -20,6 +20,11 @@ class Document;
 
 using PartRootUnion = V8UnionChildNodePartOrDocumentPartRoot;
 
+// These should be the data (text content) of the start and end comment nodes
+// that represent the endpoints of a ChildNodePart range.
+#define kChildNodePartStartCommentData "#"
+#define kChildNodePartEndCommentData "/"
+
 // Implementation of the PartRoot class, which is part of the DOM Parts API.
 // PartRoot is the base of the class hierarchy.
 class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
@@ -36,7 +41,10 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   static void CloneParts(const Node& source_node,
                          Node& destination_node,
                          NodeCloningData& data);
-  void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+  void MarkPartsDirty() {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    cached_parts_list_dirty_ = true;
+  }
   void SwapPartsList(PartRoot& other);
 
   virtual Document& GetDocument() const = 0;
@@ -52,8 +60,11 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   }
 
   // PartRoot API
-  const HeapVector<Member<Part>>& getParts();
-  Node* getPartNode(unsigned index);
+  typedef HeapVector<Member<Node>, 20> PartNodeList;
+  typedef HeapVector<Member<Part>, 20> PartList;
+  const PartList& getParts();
+  const PartNodeList& getNodePartNodes();
+  const PartNodeList& getChildNodePartNodes();
   virtual ContainerNode* rootContainer() const = 0;
 
  protected:
@@ -62,7 +73,7 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
 
  private:
   void RebuildPartsList();
-  HeapVector<Member<Part>> cached_ordered_parts_;
+  PartList cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
 

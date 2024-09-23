@@ -1,6 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
 #include "base/command_line.h"
@@ -34,37 +39,49 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
                               bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
+                              std::optional<base::TimeTicks> capture_begin_time,
                               int frame_feedback_id = 0) override {}
 
-  void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
-                                   const VideoCaptureFormat& frame_format,
-                                   int clockwise_rotation,
-                                   base::TimeTicks reference_time,
-                                   base::TimeDelta timestamp,
-                                   int frame_feedback_id = 0) override {}
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
+      const VideoCaptureFormat& frame_format,
+      int clockwise_rotation,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
+      int frame_feedback_id = 0) override {}
 
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect) override {}
 
   void OnCaptureConfigurationChanged() override {}
 
-  MOCK_METHOD4(ReserveOutputBuffer,
-               ReserveResult(const gfx::Size&, VideoPixelFormat, int, Buffer*));
+  MOCK_METHOD6(ReserveOutputBuffer,
+               ReserveResult(const gfx::Size&,
+                             VideoPixelFormat,
+                             int,
+                             Buffer*,
+                             int*,
+                             int*));
 
-  void OnIncomingCapturedBuffer(Buffer buffer,
-                                const VideoCaptureFormat& format,
-                                base::TimeTicks reference_,
-                                base::TimeDelta timestamp) override {}
+  void OnIncomingCapturedBuffer(
+      Buffer buffer,
+      const VideoCaptureFormat& format,
+      base::TimeTicks reference_,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) override {}
 
-  MOCK_METHOD7(OnIncomingCapturedBufferExt,
+  MOCK_METHOD8(OnIncomingCapturedBufferExt,
                void(Buffer,
                     const VideoCaptureFormat&,
                     const gfx::ColorSpace&,
                     base::TimeTicks,
                     base::TimeDelta,
+                    std::optional<base::TimeTicks> capture_begin_time,
                     gfx::Rect,
                     const VideoFrameMetadata&));
 
@@ -210,11 +227,12 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
     }
   }
 
-  EXPECT_CALL(client, ReserveOutputBuffer(_, _, _, _))
+  EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
           Invoke([](const gfx::Size& size, VideoPixelFormat pixel_format,
                     int feedback_id,
-                    VideoCaptureDevice::Client::Buffer* capture_buffer) {
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(pixel_format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(
@@ -242,11 +260,12 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, FailureAsReserveOutputBufferErr) {
   std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
-  EXPECT_CALL(client, ReserveOutputBuffer(_, _, _, _))
+  EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
           Invoke([](const gfx::Size& size, VideoPixelFormat pixel_format,
                     int feedback_id,
-                    VideoCaptureDevice::Client::Buffer* capture_buffer) {
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
           }));
   EXPECT_CALL(client, OnFrameDropped(_))
@@ -273,11 +292,12 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
   std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
-  EXPECT_CALL(client, ReserveOutputBuffer(_, _, _, _))
+  EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
           Invoke([](const gfx::Size& size, VideoPixelFormat pixel_format,
                     int feedback_id,
-                    VideoCaptureDevice::Client::Buffer* capture_buffer) {
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(pixel_format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(
@@ -307,18 +327,19 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
   std::unique_ptr<std::vector<uint8_t>> sample = ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
-  EXPECT_CALL(client, ReserveOutputBuffer(_, _, _, _))
+  EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
           Invoke([](const gfx::Size& size, VideoPixelFormat pixel_format,
                     int feedback_id,
-                    VideoCaptureDevice::Client::Buffer* capture_buffer) {
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(pixel_format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(
                     size, gfx::BufferFormat::YUV_420_BIPLANAR);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           }));
-  EXPECT_CALL(client, OnIncomingCapturedBufferExt(_, _, _, _, _, _, _))
+  EXPECT_CALL(client, OnIncomingCapturedBufferExt)
       .WillRepeatedly(InvokeWithoutArgs([]() {}));
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
@@ -338,18 +359,19 @@ TEST_P(V4l2CaptureDelegateGpuHelperTest, SuccessConvertWithCaptureParam) {
       ReadSampleData(capture_format);
   MockV4l2GpuClient client;
 
-  EXPECT_CALL(client, ReserveOutputBuffer(_, _, _, _))
+  EXPECT_CALL(client, ReserveOutputBuffer)
       .WillRepeatedly(
           Invoke([](const gfx::Size& size, VideoPixelFormat pixel_format,
                     int feedback_id,
-                    VideoCaptureDevice::Client::Buffer* capture_buffer) {
+                    VideoCaptureDevice::Client::Buffer* capture_buffer,
+                    int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(pixel_format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(
                     size, gfx::BufferFormat::YUV_420_BIPLANAR);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           }));
-  EXPECT_CALL(client, OnIncomingCapturedBufferExt(_, _, _, _, _, _, _))
+  EXPECT_CALL(client, OnIncomingCapturedBufferExt)
       .WillRepeatedly(InvokeWithoutArgs([]() {}));
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(

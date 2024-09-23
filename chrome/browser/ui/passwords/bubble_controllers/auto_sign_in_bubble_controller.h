@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_AUTO_SIGN_IN_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_AUTO_SIGN_IN_BUBBLE_CONTROLLER_H_
 
-#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
-
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 class PasswordsModelDelegate;

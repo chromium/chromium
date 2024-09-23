@@ -95,8 +95,9 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
   // Typically the first update of the slider value is conducted by the
   // caller function to reflect the current value.
   slider_->SetEnableAccessibilityEvents(false);
-  slider_->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringUTF16(accessible_name_id));
+  slider_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(accessible_name_id),
+      ax::mojom::NameFrom::kAttribute);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kQsSliderRowPadding,
@@ -142,13 +143,17 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
     return;
   }
 
+  if (slider_ && !slider_->GetEnableAccessibilityEvents()) {
+    slider_->SetEnableAccessibilityEvents(true);
+  }
+
   auto* key_event = event->AsKeyEvent();
   auto key_code = key_event->key_code();
 
   // Only handles press event to avoid handling the event again when the key is
   // released.
   if (key_code == ui::VKEY_RETURN &&
-      key_event->type() == ui::EventType::ET_KEY_PRESSED) {
+      key_event->type() == ui::EventType::kKeyPressed) {
     slider_button_->NotifyClick(*event);
     return;
   }

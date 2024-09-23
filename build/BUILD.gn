@@ -94,6 +94,11 @@ buildflag_header("ios_buildflags") {
   flags = [ "IS_IOS_APP_EXTENSION=$_is_ios_app_extension" ]
 }
 
+buildflag_header("android_buildflags") {
+  header = "android_buildflags.h"
+  flags = [ "IS_DESKTOP_ANDROID=$is_desktop_android" ]
+}
+
 if (build_with_chromium) {
   group("gold_common_pytype") {
     testonly = true

@@ -17,8 +17,8 @@ void Unpack::Unpack29(bool Solid)
 {
   static unsigned char LDecode[]={0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,40,48,56,64,80,96,112,128,160,192,224};
   static unsigned char LBits[]=  {0,0,0,0,0,0,0,0,1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4,  4,  5,  5,  5,  5};
-  static int DDecode[DC];
-  static byte DBits[DC];
+  static int DDecode[DC30];
+  static byte DBits[DC30];
   static int DBitLengthCounts[]= {4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,14,0,12};
   static unsigned char SDDecode[]={0,4,8,16,32,64,128,192};
   static unsigned char SDBits[]=  {2,2,3, 4, 5, 6,  6,  6};
@@ -50,12 +50,15 @@ void Unpack::Unpack29(bool Solid)
   {
     UnpPtr&=MaxWinMask;
 
+    FirstWinDone|=(PrevPtr>UnpPtr);
+    PrevPtr=UnpPtr;
+
     if (Inp.InAddr>ReadBorder)
     {
       if (!UnpReadBuf30())
         break;
     }
-    if (((WrPtr-UnpPtr) & MaxWinMask)<260 && WrPtr!=UnpPtr)
+    if (((WrPtr-UnpPtr) & MaxWinMask)<=MAX3_INC_LZ_MATCH && WrPtr!=UnpPtr)
     {
       UnpWriteBuf30();
       if (WrittenFileSize>DestUnpSize)
@@ -219,7 +222,7 @@ void Unpack::Unpack29(bool Solid)
     if (Number<263)
     {
       uint DistNum=Number-259;
-      uint Distance=OldDist[DistNum];
+      uint Distance=(uint)OldDist[DistNum];
       for (uint I=DistNum;I>0;I--)
         OldDist[I]=OldDist[I-1];
       OldDist[0]=Distance;
@@ -306,7 +309,7 @@ bool Unpack::ReadVMCode()
     }
   if (Length==0)
     return false;
-  Array<byte> VMCode(Length);
+  std::vector<byte> VMCode(Length);
   for (uint I=0;I<Length;I++)
   {
     // Try to read the new buffer if only one byte is left.
@@ -316,7 +319,7 @@ bool Unpack::ReadVMCode()
     VMCode[I]=Inp.getbits()>>8;
     Inp.addbits(8);
   }
-  return AddVMCode(FirstByte,&VMCode[0],Length);
+  return AddVMCode(FirstByte,VMCode.data(),Length);
 }
 
 
@@ -346,7 +349,7 @@ bool Unpack::ReadVMCodePPM()
     }
   if (Length==0)
     return false;
-  Array<byte> VMCode(Length);
+  std::vector<byte> VMCode(Length);
   for (uint I=0;I<Length;I++)
   {
     int Ch=SafePPMDecodeChar();
@@ -354,7 +357,7 @@ bool Unpack::ReadVMCodePPM()
       return false;
     VMCode[I]=Ch;
   }
-  return AddVMCode(FirstByte,&VMCode[0],Length);
+  return AddVMCode(FirstByte,VMCode.data(),Length);
 }
 
 
@@ -376,10 +379,10 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
   else
     FiltPos=LastFilter; // Use the same filter as last time.
 
-  if (FiltPos>Filters30.Size() || FiltPos>OldFilterLengths.Size())
+  if (FiltPos>Filters30.size() || FiltPos>OldFilterLengths.size())
     return false;
   LastFilter=FiltPos;
-  bool NewFilter=(FiltPos==Filters30.Size());
+  bool NewFilter=(FiltPos==Filters30.size());
 
   UnpackFilter30 *StackFilter=new UnpackFilter30; // New filter for PrgStack.
 
@@ -393,15 +396,15 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
       return false;
     }
 
-    Filters30.Add(1);
-    Filters30[Filters30.Size()-1]=Filter=new UnpackFilter30;
-    StackFilter->ParentFilter=(uint)(Filters30.Size()-1);
+    StackFilter->ParentFilter=(uint)Filters30.size();
+    Filter=new UnpackFilter30;
+    Filters30.push_back(Filter);
 
     // Reserve one item to store the data block length of our new filter 
     // entry. We'll set it to real block length below, after reading it.
     // But we need to initialize it now, because when processing corrupt
     // data, we can access this item even before we set it to real value.
-    OldFilterLengths.Push(0);
+    OldFilterLengths.push_back(0);
   }
   else  // Filter was used in the past.
   {
@@ -410,7 +413,7 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
   }
 
   uint EmptyCount=0;
-  for (uint I=0;I<PrgStack.Size();I++)
+  for (uint I=0;I<PrgStack.size();I++)
   {
     PrgStack[I-EmptyCount]=PrgStack[I];
     if (PrgStack[I]==NULL)
@@ -420,15 +423,15 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
   }
   if (EmptyCount==0)
   {
-    if (PrgStack.Size()>MAX3_UNPACK_FILTERS)
+    if (PrgStack.size()>MAX3_UNPACK_FILTERS)
     {
       delete StackFilter;
       return false;
     }
-    PrgStack.Add(1);
+    PrgStack.resize(PrgStack.size()+1);
     EmptyCount=1;
   }
-  size_t StackPos=PrgStack.Size()-EmptyCount;
+  size_t StackPos=PrgStack.size()-EmptyCount;
   PrgStack[StackPos]=StackFilter;
  
   uint BlockStart=RarVM::ReadData(VMCodeInp);
@@ -448,7 +451,7 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
     // for same filter. It is possible for corrupt data to access a new 
     // and not filled yet item of OldFilterLengths array here. This is why
     // we set new OldFilterLengths items to zero above.
-    StackFilter->BlockLength=FiltPos<OldFilterLengths.Size() ? OldFilterLengths[FiltPos]:0;
+    StackFilter->BlockLength=FiltPos<OldFilterLengths.size() ? OldFilterLengths[FiltPos]:0;
   }
 
   StackFilter->NextWindow=WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<=BlockStart;
@@ -472,7 +475,7 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
     uint VMCodeSize=RarVM::ReadData(VMCodeInp);
     if (VMCodeSize>=0x10000 || VMCodeSize==0 || VMCodeInp.InAddr+VMCodeSize>CodeSize)
       return false;
-    Array<byte> VMCode(VMCodeSize);
+    std::vector<byte> VMCode(VMCodeSize);
     for (uint I=0;I<VMCodeSize;I++)
     {
       if (VMCodeInp.Overflow(3))
@@ -480,7 +483,7 @@ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
       VMCode[I]=VMCodeInp.fgetbits()>>8;
       VMCodeInp.faddbits(8);
     }
-    VM.Prepare(&VMCode[0],VMCodeSize,&Filter->Prg);
+    VM.Prepare(VMCode.data(),VMCodeSize,&Filter->Prg);
   }
   StackFilter->Prg.Type=Filter->Prg.Type;
 
@@ -520,7 +523,7 @@ void Unpack::UnpWriteBuf30()
 {
   uint WrittenBorder=(uint)WrPtr;
   uint WriteSize=(uint)((UnpPtr-WrittenBorder)&MaxWinMask);
-  for (size_t I=0;I<PrgStack.Size();I++)
+  for (size_t I=0;I<PrgStack.size();I++)
   {
     // Here we apply filters to data which we need to write.
     // We always copy data to virtual machine memory before processing.
@@ -567,8 +570,8 @@ void Unpack::UnpWriteBuf30()
         unsigned int FilteredDataSize=Prg->FilteredDataSize;
 
         delete PrgStack[I];
-        PrgStack[I]=NULL;
-        while (I+1<PrgStack.Size())
+        PrgStack[I]=nullptr;
+        while (I+1<PrgStack.size())
         {
           UnpackFilter30 *NextFilter=PrgStack[I+1];
           // It is required to check NextWindow here.
@@ -589,7 +592,7 @@ void Unpack::UnpWriteBuf30()
           FilteredDataSize=NextPrg->FilteredDataSize;
           I++;
           delete PrgStack[I];
-          PrgStack[I]=NULL;
+          PrgStack[I]=nullptr;
         }
         UnpIO->UnpWrite(FilteredData,FilteredDataSize);
         UnpSomeRead=true;
@@ -601,10 +604,10 @@ void Unpack::UnpWriteBuf30()
       {
         // Current filter intersects the window write border, so we adjust
         // the window border to process this filter next time, not now.
-        for (size_t J=I;J<PrgStack.Size();J++)
+        for (size_t J=I;J<PrgStack.size();J++)
         {
           UnpackFilter30 *flt=PrgStack[J];
-          if (flt!=NULL && flt->NextWindow)
+          if (flt!=nullptr && flt->NextWindow)
             flt->NextWindow=false;
         }
         WrPtr=WrittenBorder;
@@ -752,14 +755,14 @@ void Unpack::InitFilters30(bool Solid)
 {
   if (!Solid)
   {
-    OldFilterLengths.SoftReset();
+    OldFilterLengths.clear();
     LastFilter=0;
 
-    for (size_t I=0;I<Filters30.Size();I++)
+    for (size_t I=0;I<Filters30.size();I++)
       delete Filters30[I];
-    Filters30.SoftReset();
+    Filters30.clear();
   }
-  for (size_t I=0;I<PrgStack.Size();I++)
+  for (size_t I=0;I<PrgStack.size();I++)
     delete PrgStack[I];
-  PrgStack.SoftReset();
+  PrgStack.clear();
 }

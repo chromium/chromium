@@ -46,8 +46,8 @@ component("skia") {
   output_name = "vulkan_init_skia"
 
   sources = [
-    "gr_vk_memory_allocator_impl.cc",
-    "gr_vk_memory_allocator_impl.h",
+    "skia_vk_memory_allocator_impl.cc",
+    "skia_vk_memory_allocator_impl.h",
   ]
 
   defines = [ "IS_VULKAN_INIT_IMPL" ]

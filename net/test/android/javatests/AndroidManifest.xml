@@ -14,8 +14,6 @@
     <application android:label="ChromiumNetTestSupport"
              android:name="androidx.multidex.MultiDexApplication">
 
-        <uses-library android:name="android.test.runner" />
-
         <!-- The android:requestLegacyExternalStorage setting is necessary to
              work on Q+. If the target SDK version of this APK is ever updated
              to 30 or higher, that workaround will stop working and the more

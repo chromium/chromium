@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] resample2d(upsample) float32 4D tensor options.axes=[1, 2]
+  assert_true: assert_array_approx_equals_ulp: test resample2d float32 actual 59.90625 should be close enough to expected 59.92947006225586 by the acceptable 0 ULP distance, but they have 6087 ULP distance expected true got false
+[FAIL] resample2d(upsample) float32 4D tensor options.scales options.mode='linear'
+  assert_true: assert_array_approx_equals_ulp: test resample2d float32 actual 59.90625 should be close enough to expected 59.92947006225586 by the acceptable 84 ULP distance, but they have 6087 ULP distance expected true got false
+[FAIL] resample2d(upsample) float32 4D tensor options.sizes options.mode='linear'
+  assert_true: assert_array_approx_equals_ulp: test resample2d float32 actual 59.90625 should be close enough to expected 59.92947006225586 by the acceptable 84 ULP distance, but they have 6087 ULP distance expected true got false
+[FAIL] resample2d(upsample) float32 4D tensor options.axes=[1, 2] options.mode='linear'
+  assert_true: assert_array_approx_equals_ulp: test resample2d float32 actual 59.90625 should be close enough to expected 59.92947006225586 by the acceptable 84 ULP distance, but they have 6087 ULP distance expected true got false
+Harness: the test ran to completion.
+

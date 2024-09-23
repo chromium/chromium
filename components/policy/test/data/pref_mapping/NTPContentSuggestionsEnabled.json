@@ -9,7 +9,9 @@
           "NTPContentSuggestionsEnabled": false
         },
         "prefs": {
-          "ntp_snippets.enable": {}
+          "ntp_snippets.enable": {
+            "value": false
+          }
         }
       }
     ]

@@ -7,6 +7,6 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="TextAppearance.DividerText" parent="TextAppearance.TextLarge.Secondary">
-        <item name="android:textColor">@color/modern_grey_300</item>
+        <item name="android:textColor">@color/baseline_neutral_70</item>
     </style>
 </resources>

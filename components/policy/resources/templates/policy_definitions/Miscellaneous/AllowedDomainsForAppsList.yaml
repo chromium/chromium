@@ -22,11 +22,10 @@ schema:
   items:
     type: string
   type: array
-supported_on:
-- chrome.*:123-
-- chrome_os:123-
-- android:123-
 future_on:
+- chrome.*
+- chrome_os
+- android
 - fuchsia
 tags:
 - filtering

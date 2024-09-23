@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -120,13 +121,13 @@ class ChromeStructuredMetricsRecorderTest : public testing::Test {
   }
 
   void CreateAndEnableRecorder() {
-    recorder_ = std::make_unique<ChromeStructuredMetricsRecorder>(&prefs_);
+    recorder_ = base::MakeRefCounted<ChromeStructuredMetricsRecorder>(&prefs_);
     RecordingEnabled();
     ExpectNoErrors();
   }
 
  protected:
-  std::unique_ptr<ChromeStructuredMetricsRecorder> recorder_;
+  scoped_refptr<ChromeStructuredMetricsRecorder> recorder_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,

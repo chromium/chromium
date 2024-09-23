@@ -14,15 +14,15 @@
   [NewObject] CSSUnitValue em(double value);
   [NewObject] CSSUnitValue rem(double value);
   [NewObject] CSSUnitValue ex(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rex(double value);
+  [NewObject] CSSUnitValue rex(double value);
   [NewObject] CSSUnitValue ch(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rch(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue ic(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue ric(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue lh(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue rlh(double value);
-  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue cap(double value);
-  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue rcap(double value);
+  [NewObject] CSSUnitValue rch(double value);
+  [NewObject] CSSUnitValue ic(double value);
+  [NewObject] CSSUnitValue ric(double value);
+  [NewObject] CSSUnitValue lh(double value);
+  [NewObject] CSSUnitValue rlh(double value);
+  [NewObject] CSSUnitValue cap(double value);
+  [NewObject] CSSUnitValue rcap(double value);
   [NewObject] CSSUnitValue vw(double value);
   [NewObject] CSSUnitValue vh(double value);
   [NewObject] CSSUnitValue vi(double value);
@@ -84,7 +84,7 @@
   [NewObject] CSSUnitValue dpi(double value);
   [NewObject] CSSUnitValue dpcm(double value);
   [NewObject] CSSUnitValue dppx(double value);
-  [NewObject, RuntimeEnabled=CSSNumericFactoryCompleteness] CSSUnitValue x(double value);
+  [NewObject] CSSUnitValue x(double value);
 
   // <flex>
   [NewObject] CSSUnitValue fr(double value);

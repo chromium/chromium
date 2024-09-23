@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+<body>
+<script>
+const select = document.createElement('select');
+for (let i = 0; i < 10000; i++) {
+  const option = document.createElement('option');
+  option.textContent = i;
+  select.appendChild(option);
+}
+document.body.appendChild(select);
+
+// This test passes if it doesn't hang or time out.
+
+promise_test(async () => {
+  assert_equals(select.value, '0', 'Initial select.value.');
+  await openPicker(select);
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('Enter');
+  assert_equals(select.value, '1', 'select.value after ArrowDown.');
+}, 'Selects with 10000+ options should be usable.');
+</script>

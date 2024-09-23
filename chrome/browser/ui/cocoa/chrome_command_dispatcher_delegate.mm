@@ -8,9 +8,9 @@
 #include "base/check.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/content_accelerators/accelerator_util.h"
@@ -44,7 +44,7 @@
   // when the focused view is not a RenderWidgetHostView, which is why this
   // logic is necessary. Duplicating the logic adds a bit of redundant work,
   // but doesn't cause problems.
-  content::NativeWebKeyboardEvent keyboard_event(
+  input::NativeWebKeyboardEvent keyboard_event(
       (base::apple::OwnedNSEvent(event)));
   ui::Accelerator accelerator =
       ui::GetAcceleratorFromNativeWebKeyboardEvent(keyboard_event);

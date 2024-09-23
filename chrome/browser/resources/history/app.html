@@ -7,6 +7,11 @@
         overflow: hidden;
       }
 
+      :host([enable-history-embeddings_]) {
+        --first-card-padding-top: 0;
+        --first-cluster-padding-top: 0;
+      }
+
       #main-container {
         display: flex;
         height: calc(100% - var(--toolbar-height));
@@ -23,7 +28,34 @@
         height: 100%;
       }
 
+      #historyEmbeddingsDisclaimer {
+        box-sizing: border-box;
+        width: 100%;
+        margin: 0 auto;
+        padding: 6px 10px 8px;
+        color: var(--cr-secondary-text-color);
+        font-size: 11px;
+        font-weight: 400;
+      }
+
+      #historyEmbeddingsDisclaimer[narrow] {
+        padding-inline: 24px;
+        max-width: none;
+      }
+
+      cr-history-embeddings-filter-chips {
+        margin: 0 auto;
+        padding: 16px 8px;
+      }
+
+      cr-history-embeddings-filter-chips ~ #tabs-content {
+        --first-card-padding-top: 8px;
+        --first-cluster-padding-top: 8px;
+      }
+
       #tabs-container {
+        display: flex;
+        flex-direction: column;
         --cr-tabs-height: 48px;
         --tabs-margin-top: 16px;
       }
@@ -37,19 +69,52 @@
         justify-content: start;
         margin: 0 auto;
         max-width: var(--cluster-max-width);
+        width: 100%;
       }
 
-      #tabs-content,
-      #tabs-content > * {
+      /**
+       * If history embeddings is enabled, all tabbed content shares the same
+       * parent scroll container #tabsScrollContainer. Otherwise, tabbed
+       * content are their own individual scroll containers.
+       */
+      #tabsScrollContainer {
+        overflow: hidden;
         height: 100%;
       }
 
-      :host([show-history-clusters_]) #tabs-content {
-        height: calc(100% - var(--cr-tabs-height));
+      :host([enable-history-embeddings_]) #tabsScrollContainer {
+        overflow: auto;
+        scrollbar-gutter: stable;
+      }
+
+      :host(:not([enable-history-embeddings_])) #tabs-content {
+        height: 100%;
+      }
+
+      :host(:not([enable-history-embeddings_])) #tabs-content > * {
+        height: 100%;
+        overflow: auto;
+      }
+
+      :host([show-history-clusters_]) #tabsScrollContainer {
+        flex: 1;
       }
 
       :host([toolbar-shadow_]) #drop-shadow {
         opacity: var(--cr-container-shadow-max-opacity);
+      }
+
+      /* Both history-list and history-clusters have their own empty states
+       * that show a text message indicating there are no results. Hide the
+       * entire components to hide these messages if there are history
+       * embeddings results. */
+      :host([has-history-embeddings-results_]) history-list[is-empty],
+      :host([has-history-embeddings-results_]) history-clusters[is-empty] {
+        display: none;
+      }
+
+      cr-history-embeddings {
+        margin-block-end: var(--card-padding-between);
       }
     </style>
     <history-query-manager query-state="{{queryState_}}"
@@ -59,7 +124,8 @@
     </history-query-manager>
     <history-router id="router"
         selected-page="{{selectedPage_}}"
-        query-state="[[queryState_]]">
+        query-state="[[queryState_]]"
+        last-selected-tab="[[lastSelectedTab_]]">
     </history-router>
     <history-toolbar id="toolbar"
         has-drawer="[[hasDrawer_]]"
@@ -70,7 +136,11 @@
         search-term="[[queryState_.searchTerm]]"
         spinner-active="[[shouldShowSpinner_(queryState_.querying,
                                              queryState_.incremental,
-                                             queryState_.searchTerm)]]">
+                                             queryState_.searchTerm)]]"
+        selected-page="[[selectedPage_]]"
+        on-search-term-native-before-input="onToolbarSearchInputNativeBeforeInput_"
+        on-search-term-native-input="onToolbarSearchInputNativeInput_"
+        on-search-term-cleared="onToolbarSearchCleared_">
     </history-toolbar>
     <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="main-container">
@@ -81,13 +151,23 @@
           history-clusters-visible="{{historyClustersVisible_}}"
           hidden$="[[hasDrawer_]]">
       </history-side-bar>
-      <iron-pages id="content" attr-for-selected="path"
-          fallback-selection="history"
-          selected="[[getSelectedPage_(selectedPage_, items)]]"
-          on-selected-item-changed="updateScrollTarget_"
-          items="{{items}}">
+      <cr-page-selector id="content" attr-for-selected="path"
+          selected="[[contentPage_]]"
+          on-iron-select="updateScrollTarget_">
         <div id="tabs-container" path="history">
-          <template is="dom-if" if="[[showHistoryClusters_]]">
+          <div id="historyEmbeddingsDisclaimer" class="history-cards"
+              hidden$="[[!enableHistoryEmbeddings_]]"
+              narrow$="[[hasDrawer_]]">
+            $i18n{historyEmbeddingsDisclaimer}
+            <a id="historyEmbeddingsDisclaimerLink"
+                href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
+                aria-describedby="historyEmbeddingsDisclaimer"
+                on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
+                on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
+              $i18n{learnMore}
+            </a>
+          </div>
+          <template is="dom-if" if="[[showTabs_]]">
             <div id="tabs">
               <cr-tabs tab-names="[[tabsNames_]]"
                   tab-icons="[[tabsIcons_]]"
@@ -95,25 +175,56 @@
               </cr-tabs>
             </div>
           </template>
-          <iron-pages id="tabs-content" attr-for-selected="path"
-              fallback-selection="history"
-              selected="[[getSelectedPage_(selectedPage_, items)]]"
-              on-selected-item-changed="updateScrollTarget_"
-              items="{{items}}">
-            <history-list id="history" query-state="[[queryState_]]"
-                searched-term="[[queryResult_.info.term]]"
-                pending-delete="{{pendingDelete_}}"
-                query-result="[[queryResult_]]"
-                path="history">
-            </history-list>
-            <template is="dom-if"
-                if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
-              <history-clusters id="history-clusters"
-                  query="[[queryState_.searchTerm]]"
-                  path="[[historyClustersPath_]]">
-              </history-clusters>
+          <div id="tabsScrollContainer">
+            <template is="dom-if" if="[[enableHistoryEmbeddings_]]"
+                on-dom-change="onHistoryEmbeddingsContainerShown_">
+              <div id="historyEmbeddingsContainer" class="history-cards">
+                <history-embeddings-promo></history-embeddings-promo>
+                <cr-history-embeddings-filter-chips
+                    time-range-start="[[queryStateAfterDate_]]"
+                    enable-show-results-by-group-option="[[showHistoryClusters_]]"
+                    show-results-by-group="[[
+                        getShowResultsByGroup_(selectedPage_)]]"
+                    on-show-results-by-group-changed="onShowResultsByGroupChanged_"
+                    on-selected-suggestion-changed="onSelectedSuggestionChanged_">
+                </cr-history-embeddings-filter-chips>
+                <template is="dom-if" restamp
+                    if="[[shouldShowHistoryEmbeddings_(queryState_.searchTerm)]]">
+                  <cr-history-embeddings
+                      search-query="[[queryState_.searchTerm]]"
+                      time-range-start="[[queryStateAfterDate_]]"
+                      num-chars-for-query="[[numCharsTypedInSearch_]]"
+                      on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
+                      on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
+                      on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_"
+                      force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]">
+                  </cr-history-embeddings>
+                </template>
+              </div>
             </template>
-          </iron-pages>
+            <cr-page-selector id="tabs-content" attr-for-selected="path"
+                selected="[[tabsContentPage_]]"
+                on-iron-select="updateScrollTarget_">
+              <history-list id="history" query-state="[[queryState_]]"
+                  searched-term="[[queryResult_.info.term]]"
+                  pending-delete="{{pendingDelete_}}"
+                  query-result="[[queryResult_]]"
+                  path="history"
+                  scroll-target="[[scrollTarget]]"
+                  scroll-offset="[[tabContentScrollOffset_]]">
+              </history-list>
+              <template is="dom-if"
+                  if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
+                <history-clusters id="history-clusters"
+                    query="[[queryState_.searchTerm]]"
+                    time-range-start="[[queryStateAfterDate_]]"
+                    path="grouped"
+                    scroll-target="[[scrollTarget]]"
+                    scroll-offset="[[tabContentScrollOffset_]]">
+                </history-clusters>
+              </template>
+            </cr-page-selector>
+          </div>
         </div>
         <template is="dom-if" if="[[syncedTabsSelected_(selectedPage_)]]">
           <history-synced-device-manager id="synced-devices"
@@ -123,7 +234,14 @@
               path="syncedTabs">
           </history-synced-device-manager>
         </template>
-      </iron-pages>
+        <template is="dom-if"
+            if="[[comparisonTablesSelected_(selectedPage_)]]">
+          <product-specifications-lists id="productSpecificationsLists"
+              path="comparisonTables"
+              search-term="[[queryState_.searchTerm]]">
+          </product-specifications-lists>
+        </template>
+      </cr-page-selector>
     </div>
 
     <cr-lazy-render id="drawer">

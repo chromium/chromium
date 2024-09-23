@@ -10,43 +10,35 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
+#include "components/media_effects/test/fake_video_source.h"
 #include "media/capture/video_capture_types.h"
-#include "services/video_capture/public/cpp/mock_push_subscription.h"
-#include "services/video_capture/public/cpp/mock_video_frame_handler.h"
-#include "services/video_capture/public/cpp/mock_video_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/canvas.h"
 
 using testing::_;
 using testing::Mock;
 using testing::Sequence;
 
-namespace {
-
-media::mojom::VideoBufferHandlePtr GetBufferHandler(
-    const gfx::Size& frame_size) {
-  return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
-      base::UnsafeSharedMemoryRegion::Create(media::VideoFrame::AllocationSize(
-          media::PIXEL_FORMAT_I420, frame_size)));
-}
-
-}  // namespace
-
 class VideoStreamCoordinatorTest : public TestWithBrowserView {
  protected:
   VideoStreamCoordinatorTest()
-      : video_source_receiver_(&mock_video_source_),
-        subscription_(&mock_subscription_),
-        video_frame_access_handler_receiver_(
-            &fake_video_frame_access_handler_) {}
+      : TestWithBrowserView(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        video_source_receiver_(&fake_video_source_) {}
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
     parent_view_ = std::make_unique<views::View>();
-    coordinator_ = std::make_unique<VideoStreamCoordinator>(*parent_view_);
+    coordinator_ = std::make_unique<VideoStreamCoordinator>(
+        *parent_view_, media_preview_metrics::Context(
+                           media_preview_metrics::UiLocation::kPermissionPrompt,
+                           media_preview_metrics::PreviewType::kCamera));
   }
 
   void TearDown() override {
@@ -55,129 +47,133 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
     TestWithBrowserView::TearDown();
   }
 
-  static std::vector<media::VideoCaptureFormat> GetFormats() {
-    return {{{160, 120}, 15.0, media::PIXEL_FORMAT_I420},
-            {{160, 120}, 30.0, media::PIXEL_FORMAT_NV12},
-            {{640, 480}, 30.0, media::PIXEL_FORMAT_NV12},
-            {{640, 480}, 30.0, media::PIXEL_FORMAT_I420},
-            {{3840, 2160}, 30.0, media::PIXEL_FORMAT_Y16},
-            {{844, 400}, 30.0, media::PIXEL_FORMAT_NV12},
-            {{1280, 720}, 30.0, media::PIXEL_FORMAT_I420}};
+  static media::VideoCaptureDeviceInfo GetVideoCaptureDeviceInfo() {
+    media::VideoCaptureDeviceDescriptor descriptor;
+    descriptor.device_id = "device_id";
+
+    media::VideoCaptureDeviceInfo device_info(descriptor);
+    device_info.supported_formats = {
+        {{160, 120}, 15.0, media::PIXEL_FORMAT_I420},
+        {{160, 120}, 30.0, media::PIXEL_FORMAT_NV12},
+        {{640, 480}, 30.0, media::PIXEL_FORMAT_NV12},
+        {{640, 480}, 30.0, media::PIXEL_FORMAT_I420},
+        {{3840, 2160}, 30.0, media::PIXEL_FORMAT_Y16},
+        {{844, 400}, 30.0, media::PIXEL_FORMAT_NV12},
+        {{1280, 720}, 30.0, media::PIXEL_FORMAT_I420}};
+    return device_info;
   }
 
-  void ExpectCreatePushSubscriptionCall(Sequence sequence) {
-    EXPECT_CALL(mock_video_source_, DoCreatePushSubscription(_, _, _, _, _))
-        .InSequence(sequence)
-        .WillOnce([&](auto subscriber, const auto& requested_settings,
-                      bool force_reopen_with_new_settings, auto subscription,
-                      auto& callback) {
-          subscriber_.reset();
-          subscriber_.Bind(std::move(subscriber));
-          subscription_.reset();
-          subscription_.Bind(std::move(subscription));
-          current_settings_ = requested_settings;
-
-          std::move(callback).Run(
-              video_capture::mojom::CreatePushSubscriptionResultCode::
-                  NewSuccessCode(
-                      video_capture::mojom::CreatePushSubscriptionSuccessCode::
-                          kCreatedWithRequestedSettings),
-              requested_settings);
-        });
-  }
-
-  void ExpectActivateCall(Sequence sequence) {
-    EXPECT_CALL(mock_subscription_, Activate())
-        .InSequence(sequence)
-        .WillOnce([&]() {
-          subscriber_->OnFrameAccessHandlerReady(
-              video_frame_access_handler_receiver_.BindNewPipeAndPassRemote());
-
-          start_time_ = base::Time::Now();
-          const auto frame_duration =
-              base::Hertz(current_settings_.requested_format.frame_rate);
-          frame_timer_.Start(FROM_HERE, frame_duration, this,
-                             &VideoStreamCoordinatorTest::OnNextFrame);
-        });
-  }
-
-  void OnNextFrame() {
-    const int buffer_id = next_buffer_id_++;
-    subscriber_->OnNewBuffer(
-        buffer_id,
-        GetBufferHandler(current_settings_.requested_format.frame_size));
-
-    media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New();
-    info->timestamp = base::Time::Now() - start_time_;
-    info->pixel_format = media::PIXEL_FORMAT_I420;
-    info->coded_size = current_settings_.requested_format.frame_size;
-    info->visible_rect = gfx::Rect(info->coded_size);
-    info->is_premapped = false;
-    subscriber_->OnFrameReadyInBuffer(
-        video_capture::mojom::ReadyFrameInBuffer::New(buffer_id,
-                                                      /*frame_feedback_id=*/0,
-                                                      std::move(info)));
-  }
-
-  void ExpectCloseCall(Sequence sequence, base::RunLoop& run_loop) {
-    EXPECT_CALL(mock_subscription_, DoClose(_))
-        .InSequence(sequence)
-        .WillOnce(
-            [&](video_capture::MockPushSubcription::CloseCallback& callback) {
-              std::move(callback).Run();
-              video_frame_access_handler_receiver_.reset();
-              video_source_receiver_.reset();
-              run_loop.Quit();
-            });
+  void TriggerPaint() {
+    CHECK(parent_view_->children().size() == 1);
+    auto* video_stream_view = coordinator_->GetVideoStreamView();
+    gfx::Canvas canvas;
+    video_stream_view->OnPaint(&canvas);
   }
 
   std::unique_ptr<views::View> parent_view_;
   std::unique_ptr<VideoStreamCoordinator> coordinator_;
 
-  video_capture::MockVideoSource mock_video_source_;
+  FakeVideoSource fake_video_source_;
   mojo::Receiver<video_capture::mojom::VideoSource> video_source_receiver_;
 
-  media::VideoCaptureParams current_settings_;
-
-  video_capture::MockPushSubcription mock_subscription_;
-  mojo::Receiver<video_capture::mojom::PushVideoStreamSubscription>
-      subscription_;
-
-  mojo::Remote<video_capture::mojom::VideoFrameHandler> subscriber_;
-
-  video_capture::FakeVideoFrameAccessHandler fake_video_frame_access_handler_;
-  mojo::Receiver<video_capture::mojom::VideoFrameAccessHandler>
-      video_frame_access_handler_receiver_;
-
-  // The next ID to be used for a newly created buffer.
-  int next_buffer_id_ = 0;
-
-  // The time at which this device started producing video frames.
-  base::Time start_time_;
-
-  // The timer that invokes `OnNextFrame()` repeatedly depending on the frame
-  // rate requested.
-  base::RepeatingTimer frame_timer_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
-  Sequence sequence;
-  ExpectCreatePushSubscriptionCall(sequence);
-  ExpectActivateCall(sequence);
-
-  base::MockCallback<base::RepeatingClosure> callback;
-  EXPECT_CALL(callback, Run()).Times(9).InSequence(sequence);
-  EXPECT_CALL(callback, Run()).InSequence(sequence).WillOnce([this]() {
-    coordinator_->Stop();
-  });
-
-  base::RunLoop run_loop;
-  ExpectCloseCall(sequence, run_loop);
-
-  coordinator_->SetFrameReceivedCallbackForTest(callback.Get());
-
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
   video_source_receiver_.Bind(video_source.BindNewPipeAndPassReceiver());
-  coordinator_->ConnectToDevice(std::move(video_source), GetFormats());
-  run_loop.Run();
+  coordinator_->ConnectToDevice(GetVideoCaptureDeviceInfo(),
+                                std::move(video_source));
+
+  coordinator_->GetVideoStreamView()->SetPreferredSize(gfx::Size{250, 180});
+  coordinator_->GetVideoStreamView()->SizeToPreferredSize();
+
+  EXPECT_TRUE(fake_video_source_.WaitForCreatePushSubscription());
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionActivated());
+
+  base::test::TestFuture<void> got_frame;
+  coordinator_->SetFrameReceivedCallbackForTest(
+      got_frame.GetRepeatingCallback());
+  // Send 18 frames over a simulated second
+  for (size_t i = 0; i < 18; ++i) {
+    fake_video_source_.SendFrame();
+    task_environment()->AdvanceClock(base::Milliseconds(55.8));
+    EXPECT_TRUE(got_frame.WaitAndClear());
+    // Paint every other frame.
+    if (i % 2) {
+      TriggerPaint();
+    }
+  }
+
+  coordinator_->Stop();
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
+
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.Delay",
+      /*bucket_min_value=*/50, 1);
+
+  // The selected pixel height is 720, so it will be logged in the 675 bucket.
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Permissions.Camera.PixelHeight",
+      /*bucket_min_value=*/675, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
+      /*bucket_min_value=*/30, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS",
+      /*bucket_min_value=*/18, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent",
+      /*bucket_min_value=*/50, 1);
+
+  coordinator_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
+      /*bucket_min_value=*/750, 1);
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
+      0);
+}
+
+TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
+  mojo::Remote<video_capture::mojom::VideoSource> video_source;
+  video_source_receiver_.Bind(video_source.BindNewPipeAndPassReceiver());
+  coordinator_->ConnectToDevice(GetVideoCaptureDeviceInfo(),
+                                std::move(video_source));
+
+  coordinator_->GetVideoStreamView()->SetPreferredSize(gfx::Size{250, 180});
+  coordinator_->GetVideoStreamView()->SizeToPreferredSize();
+
+  EXPECT_TRUE(fake_video_source_.WaitForCreatePushSubscription());
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionActivated());
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->AdvanceClock(base::Milliseconds(130));
+
+  coordinator_->Stop();
+  EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
+
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.Delay", 0);
+
+  // The selected pixel height is 720, so it will be logged in the 675 bucket.
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Permissions.Camera.PixelHeight",
+      /*bucket_min_value=*/675, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
+      /*bucket_min_value=*/30, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS", 0);
+  histogram_tester_.ExpectTotalCount(
+      "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent", 0);
+
+  coordinator_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
+      /*bucket_min_value=*/0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
+      /*bucket_min_value=*/125, 1);
 }

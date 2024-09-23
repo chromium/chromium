@@ -65,6 +65,8 @@ class DeviceAuthenticatorAndroid : public DeviceAuthenticatorCommon {
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
+  device_reauth::BiometricStatus GetBiometricAvailabilityStatus() override;
+
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.

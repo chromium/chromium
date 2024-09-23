@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/strings/escape.h"
@@ -44,6 +45,12 @@ std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
       std::make_unique<internal::SystemMediaControlsLinux>(product_name);
   service->StartService();
   return std::move(service);
+}
+
+// static
+void SystemMediaControls::SetVisibilityChangedCallbackForTesting(
+    base::RepeatingCallback<void(bool)>*) {
+  NOTIMPLEMENTED();
 }
 
 namespace internal {
@@ -238,6 +245,11 @@ void SystemMediaControlsLinux::ClearMetadata() {
   SetThumbnail(SkBitmap());
   ClearTrackId();
   ClearPosition();
+}
+
+bool SystemMediaControlsLinux::GetVisibilityForTesting() const {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 std::string SystemMediaControlsLinux::GetServiceName() const {

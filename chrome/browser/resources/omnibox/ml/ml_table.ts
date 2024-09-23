@@ -5,14 +5,15 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import type {AutocompleteMatch} from '../omnibox.mojom-webui.js';
-import {AutocompleteControllerType} from '../omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from '../omnibox_internals.mojom-webui.js';
+import {AutocompleteControllerType} from '../omnibox_internals.mojom-webui.js';
 import {clearChildren, createEl, setFormattedClipboardForMl, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
 import {ResponseFilter} from './ml_browser_proxy.js';
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
-import sheet from './ml_table.css' assert {type : 'css'};
+import sheet from './ml_table.css' with {type : 'css'};
 import {getTemplate} from './ml_table.html.js';
 
 export class MlTableElement extends CustomElement {
@@ -34,7 +35,7 @@ export class MlTableElement extends CustomElement {
           signalName.replaceAll(/[A-Z]/g, ' $&').toLowerCase());
     });
 
-    this.$all<HTMLDivElement>('.thead .th')
+    this.$all<HTMLElement>('.thead .th')
         .forEach(th => th.title = th.textContent!);
 
     Object.values(ResponseFilter).forEach(responseFilter => {
@@ -128,6 +129,12 @@ export class MlTableElement extends CustomElement {
           tr.childElementCount ===
           this.getRequiredElement('.thead .tr').childElementCount);
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ml-table': MlTableElement;
   }
 }
 

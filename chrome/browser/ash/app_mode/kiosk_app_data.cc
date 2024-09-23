@@ -5,37 +5,54 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 
 #include <memory>
-#include <vector>
+#include <optional>
+#include <string>
+#include <utility>
 
-#include "base/files/file_util.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted_memory.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/verifier_formats.h"
+#include "kiosk_app_data_base.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -101,8 +118,7 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
                        std::unique_ptr<base::Value::Dict> original_manifest,
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
-                       extensions::declarative_net_request::RulesetInstallPrefs
-                           ruleset_install_prefs) override {
+                       base::Value::Dict ruleset_install_prefs) override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     const extensions::KioskModeInfo* info =
@@ -293,7 +309,7 @@ void KioskAppData::LoadFromInstalledApp(Profile* profile,
 
   const int kIconSize = extension_misc::EXTENSION_ICON_LARGE;
   extensions::ExtensionResource image = extensions::IconsInfo::GetIconResource(
-      app, kIconSize, ExtensionIconSet::MATCH_BIGGER);
+      app, kIconSize, ExtensionIconSet::Match::kBigger);
   extensions::ImageLoader::Get(profile)->LoadImageAsync(
       app, image, gfx::Size(kIconSize, kIconSize),
       base::BindOnce(&KioskAppData::OnExtensionIconLoaded,
@@ -472,7 +488,7 @@ void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
   SetStatus(Status::kError);
 }
 
-void KioskAppData::OnWebstoreResponseParseSuccess(
+void KioskAppData::OnWebstoreItemJSONAPIResponseParseSuccess(
     const std::string& extension_id,
     const base::Value::Dict& webstore_data) {
   const std::string* id = webstore_data.FindString(kIdKey);
@@ -519,6 +535,37 @@ void KioskAppData::OnWebstoreResponseParseSuccess(
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), manifest, icon_url, GetURLLoaderFactory());
+}
+
+void KioskAppData::OnFetchItemSnippetParseSuccess(
+    const std::string& extension_id,
+    extensions::FetchItemSnippetResponse item_snippet) {
+  if (extension_id != item_snippet.item_id()) {
+    LOG(ERROR) << "Webstore response error (itemId):"
+               << " received extension id " << item_snippet.item_id()
+               << " does not equal expected extension id " << extension_id;
+    OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
+    return;
+  }
+
+  webstore_fetcher_.reset();
+
+  GURL icon_url =
+      extension_urls::GetWebstoreLaunchURL().Resolve(item_snippet.logo_uri());
+  if (!icon_url.is_valid()) {
+    LOG(ERROR) << "Webstore response error (iconUri):"
+               << " the provided icon url " << item_snippet.logo_uri()
+               << " is not valid.";
+    OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
+    return;
+  }
+
+  name_ = item_snippet.title();
+
+  // WebstoreDataParser deletes itself when done.
+  (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
+      ->Start(app_id(), item_snippet.manifest(), icon_url,
+              GetURLLoaderFactory());
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(

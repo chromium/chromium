@@ -70,6 +70,9 @@ extern const char kOutputSwitchName[];
 // processes.
 extern const char kMojoPipeToken[];
 
+// A server pipe handle used by the child process to initialize crash reporting.
+extern const char kCrashServerPipeHandle[];
+
 #if BUILDFLAG(IS_APPLE)
 // NativeMessagingHost switch to check for required OS permissions and request
 // them if necessary.

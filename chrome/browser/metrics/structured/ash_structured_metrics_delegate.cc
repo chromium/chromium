@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"
+
 #include <memory>
 
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -33,13 +34,9 @@ void AshStructuredMetricsDelegate::Initialize() {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
         remote_.BindNewPipeAndPassReceiver());
 
-    if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
-      key_events_observer_ =
-          std::make_unique<StructuredMetricsKeyEventsObserver>(
-              user_manager::UserManager::Get(),
-              ash::SessionTerminationManager::Get(),
-              chromeos::PowerManagerClient::Get());
-    }
+    key_events_observer_ = std::make_unique<StructuredMetricsKeyEventsObserver>(
+        user_manager::UserManager::Get(), ash::SessionTerminationManager::Get(),
+        chromeos::PowerManagerClient::Get());
     is_initialized_ = true;
   } else {
     VLOG(2) << "Initialize() called before CrosApi is initialized.";

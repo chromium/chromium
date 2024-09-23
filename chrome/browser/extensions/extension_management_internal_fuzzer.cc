@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "third_party/icu/fuzzers/fuzzer_utils.h"
 
@@ -38,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size > 100 * 1024)
     return 0;
 
-  base::StringPiece json(reinterpret_cast<const char*>(data), size);
+  std::string_view json(reinterpret_cast<const char*>(data), size);
   std::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value || !value->is_dict())
     return 0;

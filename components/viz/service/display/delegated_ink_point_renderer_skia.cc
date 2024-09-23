@@ -17,8 +17,10 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
   TRACE_EVENT1("viz", "DelegatedInkPointRendererSkia::DrawDelegatedInkTrail",
                "points", path_.countPoints());
 
-  if (!metadata_)
+  if (!metadata_) {
+    ResetPoints();
     return;
+  }
 
   if (!path_.isEmpty() && canvas) {
     canvas->save();
@@ -42,7 +44,7 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(SkCanvas* canvas) {
     path_.rewind();
   }
 
-  // Always reset |metadata_| regardless of if the draw occurred or not so that
+  // Always reset `metadata_` regardless of if the draw occurred or not so that
   // the trail is never incorrectly drawn if the aggregated frame did not
   // contain delegated ink metadata.
   metadata_.reset();

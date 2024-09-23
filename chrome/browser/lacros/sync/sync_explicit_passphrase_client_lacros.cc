@@ -30,8 +30,8 @@ bool IsPassphraseAvailable(const syncer::SyncService& sync_service) {
 
 }  // namespace
 
-// TODO(crbug.com/1233545): Consider sharing sync service observer logic between
-// Ash and Lacros.
+// TODO(crbug.com/40191593): Consider sharing sync service observer logic
+// between Ash and Lacros.
 SyncExplicitPassphraseClientLacros::LacrosSyncServiceObserver::
     LacrosSyncServiceObserver(
         syncer::SyncService* sync_service,

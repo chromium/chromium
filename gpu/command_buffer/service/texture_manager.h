@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef GPU_COMMAND_BUFFER_SERVICE_TEXTURE_MANAGER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_TEXTURE_MANAGER_H_
 
@@ -331,8 +336,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Marks a particular level as cleared or uncleared.
   void SetLevelCleared(GLenum target, GLint level, bool cleared);
 
-  void ApplyClampedBaseLevelAndMaxLevelToDriver();
-
   MemoryTypeTracker* GetMemTracker();
 
   // Returns GL_NONE on error.
@@ -378,7 +381,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   }
 
  private:
-  friend class MailboxManagerTest;
   friend class TextureManager;
   friend class TextureRef;
   friend class TextureTestHelper;
@@ -550,7 +552,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   std::vector<FaceInfo> face_infos_;
 
   // The texture refs that point to this Texture.
-  typedef base::flat_set<TextureRef*> RefSet;
+  typedef base::flat_set<raw_ptr<TextureRef, CtnExperimental>> RefSet;
   RefSet refs_;
   bool has_lightweight_ref_ = false;
 
@@ -941,7 +943,7 @@ class GPU_GLES2_EXPORT TextureManager
       case GL_TEXTURE_RECTANGLE_ARB:
         return default_textures_[kRectangleARB].get();
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
   }
@@ -1002,7 +1004,7 @@ class GPU_GLES2_EXPORT TextureManager
         return;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   struct DoTexImageArguments {

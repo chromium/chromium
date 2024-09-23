@@ -30,7 +30,8 @@ interface LCPCriticalPathPredictorHost {
   // - the `kLCPPFontURLPredictor` feature is enabled,
   // - and the `font_url` scheme is HTTP or HTTPS,
   // Otherwise, the renderer will be killed.
-  NotifyFetchedFont(url.mojom.Url font_url);
+  // `hit` is true if `font_url` is within the list of predicted font URLs.
+  NotifyFetchedFont(url.mojom.Url font_url, bool hit);
 
   // This method is for letting the LCPP know the subresource URL.  This
   // method should be called under the following conditions:
@@ -39,10 +40,12 @@ interface LCPCriticalPathPredictorHost {
   // Otherwise, the renderer will be killed.
   // 'subresource_load_start' is the duration from navigation start to resource loading start time.
   NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
+
+  // Let the LCPP know the list of resource URLs which are preloaded but actually never used.
+  SetUnusedPreloads(array<url.mojom.Url> unused_preloads);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.
-// TODO(crbug.com/1419756): Populate actual hint data.
 struct LCPCriticalPathPredictorNavigationTimeHint {
   // ElementLocators of LCP elements encountered in the past loads.
   // Each ElementLocator is serialized in proto3 binary format.
@@ -57,4 +60,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
 
   // Preconnectable origins that affected the LCP element.
   array<url.mojom.Url> preconnect_origins;
+
+  // Unused preloaded URLs in the past loads.
+  array<url.mojom.Url> unused_preloads;
 };

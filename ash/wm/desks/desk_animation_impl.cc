@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/root_window_controller.h"
+#include "ash/app_menu/menu_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
@@ -296,9 +296,13 @@ DeskActivationAnimation::GetSmoothnessReportCallback() const {
   }));
 }
 
+void DeskActivationAnimation::AddOnAnimationFinishedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_animation_finished_callback_for_testing_ = std::move(callback);
+}
+
 void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
-  for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
-    root_window_controller->HideContextMenuNoAnimation();
+  HideActiveContextMenu();
 
   // Check that ending_desk_index_ is in range.
   // See crbug.com/1346900.
@@ -357,8 +361,7 @@ void DeskRemovalAnimation::OnStartingDeskScreenshotTakenInternal(
   split_view_controller->EndSplitView(
       SplitViewController::EndReason::kDesksChange);
 
-  for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
-    root_window_controller->HideContextMenuNoAnimation();
+  HideActiveContextMenu();
 
   // At the end of phase (1), we activate the target desk (i.e. the desk that
   // will be activated after the active desk `desk_to_remove_index_` is

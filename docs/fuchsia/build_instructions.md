@@ -10,7 +10,7 @@ There are instructions for other platforms linked from the
 
 ## System requirements
 
-*   A 64-bit Intel machine with at least 8GB of RAM. More than 16GB is highly
+*   An x86-64 machine with at least 8GB of RAM. More than 16GB is highly
     recommended.
 *   At least 100GB of free disk space.
 *   You must have Git and Python installed already.
@@ -50,7 +50,7 @@ need to update it to install Fuchsia-specific dependencies.
    $ gn gen out/fuchsia --args="is_debug=false dcheck_always_on=true is_component_build=false target_os=\"fuchsia\""
    ```
 
-   You can add many of the usual GN arguments like `use_goma = true`. In
+   You can add many of the usual GN arguments like `use_remoteexec = true`. In
    particular, when working with devices, consider using `is_debug = false` and
    `is_component_build = false` since debug and component builds can drastically
    increase run time and used space.
@@ -223,7 +223,7 @@ $ gn gen out/fuchsia --args="is_debug=false dcheck_always_on=true is_component_b
 You can also build for Debug, with `is_debug=true`, but since we don't currently
 have any Debug build-bots, it may be more broken than Release.
 
-`use_goma=true` is fine to use also if you're a Googler.
+`use_remoteexec=true` is fine to use also if you're a Googler.
 
 Architecture options are x64 (default) and arm64. This can be set with
 `target_cpu=\"arm64\"`.

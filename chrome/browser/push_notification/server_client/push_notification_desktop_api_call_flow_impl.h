@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PUSH_NOTIFICATION_SERVER_CLIENT_PUSH_NOTIFICATION_DESKTOP_API_CALL_FLOW_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace push_notification {
 
@@ -89,12 +89,12 @@ class PushNotificationDesktopApiCallFlowImpl
 
   // Serialized request message proto that will be sent in the request body.
   // Null if request is GET.
-  absl::optional<std::string> serialized_request_;
+  std::optional<std::string> serialized_request_;
 
   // The request message proto represented as key-value pairs that will be sent
   // as query parameters in the API GET request. Note: A key can have multiple
   // values. Null if HTTP method is not GET.
-  absl::optional<QueryParameters> request_as_query_parameters_;
+  std::optional<QueryParameters> request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow
   // completes successfully.

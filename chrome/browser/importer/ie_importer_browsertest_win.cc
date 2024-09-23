@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The order of these includes is important.
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include <objbase.h>
+
 #include <unknwn.h>
 #include <windows.h>
 
 #include <intshcut.h>
-#include <objbase.h>
 #include <shlguid.h>
 #include <shlobj.h>
 #include <stddef.h>
@@ -16,6 +21,7 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -92,16 +98,17 @@ const char16_t kIECacheItemUrl[] =
 const char16_t kIECacheItemTitle[] = u"Unittest Cache Item GUID";
 
 const wchar_t kFaviconStreamSuffix[] = L"url:favicon:$DATA";
-const char kDummyFaviconImageData[] =
-    "\x42\x4D"          // Magic signature 'BM'
-    "\x1E\x00\x00\x00"  // File size
-    "\x00\x00\x00\x00"  // Reserved
-    "\x1A\x00\x00\x00"  // Offset of the pixel data
-    "\x0C\x00\x00\x00"  // Header Size
-    "\x01\x00\x01\x00"  // Size: 1x1
-    "\x01\x00"          // Reserved
-    "\x18\x00"          // 24-bits
-    "\x00\xFF\x00\x00"; // The pixel
+constexpr std::array<uint8_t, 30> kDummyFaviconImageData = {
+    0x42, 0x4D,              // Magic signature 'BM'
+    0x1E, 0x00, 0x00, 0x00,  // File size
+    0x00, 0x00, 0x00, 0x00,  // Reserved
+    0x1A, 0x00, 0x00, 0x00,  // Offset of the pixel data
+    0x0C, 0x00, 0x00, 0x00,  // Header Size
+    0x01, 0x00, 0x01, 0x00,  // Size: 1x1
+    0x01, 0x00,              // Planes
+    0x18, 0x00,              // 24-bits
+    0x00, 0xFF, 0x00, 0x00   // The pixel
+};
 
 struct FaviconGroup {
   const char16_t* favicon_url;
@@ -207,8 +214,7 @@ bool CreateUrlFileWithFavicon(const base::FilePath& file,
   // Write dummy favicon image data in NTFS alternate data stream.
   return favicon_url.empty() ||
          base::WriteFile(file.ReplaceExtension(kFaviconStreamSuffix),
-                         base::StringPiece(kDummyFaviconImageData,
-                                           sizeof kDummyFaviconImageData));
+                         kDummyFaviconImageData);
 }
 
 bool CreateUrlFile(const base::FilePath& file, const std::wstring& url) {

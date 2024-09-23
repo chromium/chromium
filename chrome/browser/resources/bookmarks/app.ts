@@ -17,7 +17,7 @@ import './command_manager.js';
 import './toolbar.js';
 
 import type {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
-import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import type {FindShortcutListener} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -45,7 +45,7 @@ const BookmarksAppElementBase =
         StoreClientMixin(MouseFocusMixin(FindShortcutMixin(PolymerElement)))) as
     {
       new (): PolymerElement & StoreClientMixinInterface &
-          FindShortcutMixinInterface & IronScrollTargetBehavior &
+          FindShortcutListener & IronScrollTargetBehavior &
           MouseFocusMixinInterface,
     };
 

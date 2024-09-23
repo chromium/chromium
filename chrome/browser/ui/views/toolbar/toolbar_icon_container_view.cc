@@ -109,7 +109,9 @@ class ToolbarIconContainerView::WidgetRestoreObserver
       this};
 };
 
-ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
+ToolbarIconContainerView::ToolbarIconContainerView(
+    bool uses_highlight,
+    bool use_default_target_layout)
     : uses_highlight_(uses_highlight) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -122,13 +124,15 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
       views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);
   animating_layout->SetDefaultFadeMode(
       views::AnimatingLayoutManager::FadeInOutMode::kSlideFromTrailingEdge);
-  auto* flex_layout = animating_layout->SetTargetLayoutManager(
-      std::make_unique<views::FlexLayout>());
-  flex_layout->SetCollapseMargins(true)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+  if (use_default_target_layout) {
+    auto* flex_layout = animating_layout->SetTargetLayoutManager(
+        std::make_unique<views::FlexLayout>());
+    flex_layout->SetCollapseMargins(true)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+  }
 }
 
 ToolbarIconContainerView::~ToolbarIconContainerView() {
@@ -248,7 +252,7 @@ void ToolbarIconContainerView::AddedToWidget() {
 
 void ToolbarIconContainerView::UpdateHighlight() {
   // New feature doesn't have a border around the toolbar icons.
-  // TODO(crbug.com/1279986): Remove ToolbarIconContainerView once feature is
+  // TODO(crbug.com/40811196): Remove ToolbarIconContainerView once feature is
   // rolled out.
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -260,8 +264,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
   if (showing_before == (border_.layer()->GetTargetOpacity() == 1))
     return;
-  for (Observer& observer : observers_)
-    observer.OnHighlightChanged();
+  observers_.Notify(&Observer::OnHighlightChanged);
 }
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(

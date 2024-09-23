@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Size;
@@ -16,18 +17,17 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.LocalizationUtils;
@@ -36,14 +36,13 @@ public class StripTabHoverCardView extends FrameLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
     static final int INVALID_TAB_ID = -1;
-    private static final String PARAM_SHOW_THUMBNAIL = "show_thumbnail";
 
     private ViewGroup mContentView;
     private TextView mTitleView;
     private TextView mUrlView;
     private TabThumbnailView mThumbnailView;
     private TabModelSelector mTabModelSelector;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private Callback<TabModel> mCurrentTabModelObserver;
     private TabContentManager mTabContentManager;
 
     private int mLastHoveredTabId = INVALID_TAB_ID;
@@ -108,7 +107,8 @@ public class StripTabHoverCardView extends FrameLayout {
 
     /**
      * Perform tasks after the view is inflated: update the hover card colors, and add a {@link
-     * TabModelSelectorObserver} to update the view when a tab model is selected.
+     * Callback<TabModel>} to tab model supplier to update the view when a tab model is selected.
+     *
      * @param tabModelSelector The {@link TabModelSelector} to observe.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
@@ -117,28 +117,21 @@ public class StripTabHoverCardView extends FrameLayout {
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManagerSupplier.get();
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        updateHoverCardColors(newModel.isIncognito());
-                    }
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    updateHoverCardColors(tabModel.isIncognitoBranded());
                 };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
         updateHoverCardColors(mTabModelSelector.isIncognitoSelected());
     }
 
     /**
      * Update the hover card background and text colors based on the theme and incognito mode.
+     *
      * @param incognito Whether the incognito mode is selected, {@code true} for incognito, {@link
-     *         false} otherwise.
+     *     false} otherwise.
      */
     public void updateHoverCardColors(boolean incognito) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
-            return;
-        }
-
         mTitleView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorPrimary(getContext(), incognito));
         mUrlView.setTextColor(
@@ -151,7 +144,7 @@ public class StripTabHoverCardView extends FrameLayout {
 
     public void destroy() {
         if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelector = null;
         }
     }
@@ -247,12 +240,6 @@ public class StripTabHoverCardView extends FrameLayout {
     }
 
     private void updateThumbnail(Tab hoveredTab) {
-        boolean showThumbnail =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-                        PARAM_SHOW_THUMBNAIL,
-                        true);
-        if (!showThumbnail) return;
         var thumbnailSize =
                 new Size(
                         Math.round(
@@ -272,21 +259,19 @@ public class StripTabHoverCardView extends FrameLayout {
                     // View is not visible any more.
                     if (!mIsShowing) return;
                     if (thumbnail != null) {
-                        TabUtils.setBitmapAndUpdateImageMatrix(
-                                mThumbnailView, thumbnail, thumbnailSize);
+                        TabUtils.setDrawableAndUpdateImageMatrix(
+                                mThumbnailView, new BitmapDrawable(thumbnail), thumbnailSize);
                     } else {
                         // Always use the unselected tab version of the thumbnail placeholder.
                         mThumbnailView.updateThumbnailPlaceholder(
                                 hoveredTab.isIncognito(), /* isSelected= */ false);
                     }
                     mThumbnailView.setVisibility(VISIBLE);
-                },
-                false,
-                false);
+                });
     }
 
-    TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
-        return mTabModelSelectorObserver;
+    Callback<TabModel> getCurrentTabModelObserverForTesting() {
+        return mCurrentTabModelObserver;
     }
 
     int getLastHoveredTabIdForTesting() {

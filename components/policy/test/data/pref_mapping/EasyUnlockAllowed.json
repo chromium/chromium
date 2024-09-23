@@ -9,7 +9,9 @@
           "EasyUnlockAllowed": false
         },
         "prefs": {
-          "easy_unlock.allowed": {}
+          "easy_unlock.allowed": {
+            "value": false
+          }
         }
       }
     ]

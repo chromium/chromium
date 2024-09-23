@@ -185,6 +185,12 @@ source_set("native_handle_type_converters") {
   ]
 }
 
+mojom("test_mojom") {
+  testonly = true
+  sources = [ "ipc_channel_mojo_unittest.test-mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
 mojom_component("mojom") {
   output_prefix = "ipc_mojom"
   macro_prefix = "IPC_MOJOM"
@@ -225,7 +231,6 @@ mojom("mojom_constants") {
 mojom("test_interfaces") {
   testonly = true
   sources = [ "ipc_test.mojom" ]
-  support_lazy_serialization = true
 }
 
 # This is provided as a separate target so other targets can provide param
@@ -308,6 +313,7 @@ if (use_blink) {
       ":protobuf_support",
       ":run_all_unittests",
       ":test_interfaces",
+      ":test_mojom",
       ":test_proto",
       ":test_support",
       "//base",

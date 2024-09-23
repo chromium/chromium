@@ -97,6 +97,8 @@ class CC_EXPORT Tile {
 
   int source_frame_number() const { return source_frame_number_; }
 
+  bool IsReadyToDraw() const { return draw_info().IsReadyToDraw(); }
+
   size_t GPUMemoryUsageInBytes() const;
 
   const gfx::Size& desired_texture_size() const { return content_rect_.size(); }

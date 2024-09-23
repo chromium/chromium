@@ -86,7 +86,7 @@ bool IsConnectionEffectively2G(WebEffectiveConnectionType effective_type) {
     case WebEffectiveConnectionType::kTypeOffline:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -218,9 +218,11 @@ void PossiblyFetchBlockedDocWriteScript(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
+  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
                         context->GetIsolate(), ScriptResource::kNoStreaming,
-                        kNoCompileHintsProducer, kNoCompileHintsConsumer);
+                        kNoCompileHintsProducer, kNoCompileHintsConsumer,
+                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
 }
 
 }  // namespace blink

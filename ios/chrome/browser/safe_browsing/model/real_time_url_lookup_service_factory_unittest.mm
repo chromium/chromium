@@ -4,28 +4,27 @@
 
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class RealTimeUrlLookupServiceFactoryTest : public PlatformTest {
  protected:
   RealTimeUrlLookupServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Checks that RealTimeUrlLookupServiceFactory returns a null for an
-// off-the-record browser state, but returns a non-null instance for a regular
-// browser state.
+// off-the-record profile, but returns a non-null instance for a regular
+// profile.
 TEST_F(RealTimeUrlLookupServiceFactoryTest, OffTheRecordReturnsNull) {
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(RealTimeUrlLookupServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(RealTimeUrlLookupServiceFactory::GetForProfile(
+      profile_->GetOffTheRecordProfile()));
 
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(RealTimeUrlLookupServiceFactory::GetForBrowserState(
-      browser_state_.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_TRUE(RealTimeUrlLookupServiceFactory::GetForProfile(profile_.get()));
 }

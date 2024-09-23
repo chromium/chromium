@@ -35,8 +35,8 @@ loadScript.then(() => {chrome.test.runTests([
   function captureVisibleFile() {
     createWindow([fail_url], kWindowRect, pass(function(winId, tabIds) {
       waitForAllTabs(pass(function() {
-        chrome.tabs.getSelected(winId, pass(function(tab) {
-          assertEq('complete', tab.status);
+        chrome.tabs.query({active: true, windowId: winId}, pass(function(tabs) {
+          assertEq('complete', tabs[0].status);
           chrome.tabs.captureVisibleTab(winId, pass(function(imgDataUrl) {
             // The URL should be a data URL with has a JPEG mime type.
             assertEq('string', typeof(imgDataUrl));

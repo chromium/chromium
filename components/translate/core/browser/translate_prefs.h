@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -49,9 +49,9 @@ BASE_DECLARE_FEATURE(kTranslate);
 // language values from the obsolete pref without conflicting with any values in
 // the new pref that may have been added.
 //
-// TODO(crbug/1303963): This base::Feature only exists to allow a less risky
-// merge into iOS M98. This base::Feature should be removed once it's no longer
-// relevant and the enabled behavior should become the only behavior.
+// TODO(crbug.com/40826252): This base::Feature only exists to allow a less
+// risky merge into iOS M98. This base::Feature should be removed once it's no
+// longer relevant and the enabled behavior should become the only behavior.
 BASE_DECLARE_FEATURE(kMigrateAlwaysTranslateLanguagesFix);
 
 // Minimum number of times the user must accept a translation before we show
@@ -105,7 +105,7 @@ class TranslatePrefs {
  public:
   static constexpr char kPrefForceTriggerTranslateCount[] =
       "translate_force_trigger_on_english_count_for_backoff_1";
-  // TODO(crbug.com/524927): Remove kPrefNeverPromptSites after
+  // TODO(crbug.com/40433029): Remove kPrefNeverPromptSites after
   // 3 milestones (M74).
   static constexpr char kPrefNeverPromptSitesDeprecated[] =
       "translate_site_blacklist";
@@ -116,7 +116,7 @@ class TranslatePrefs {
   static constexpr char kPrefTranslateAcceptedCount[] =
       "translate_accepted_count";
 
-  // TODO(crbug/1303963): Deprecated 10/2021. Check status of bug before
+  // TODO(crbug.com/40826252): Deprecated 10/2021. Check status of bug before
   // removing.
   static constexpr char kPrefAlwaysTranslateListDeprecated[] =
       "translate_whitelists";
@@ -174,9 +174,9 @@ class TranslatePrefs {
   // language is converted to its translate synonym.
   // A blocked language will not be offered to be translated. All blocked
   // languages form the "Never translate" list.
-  bool IsBlockedLanguage(base::StringPiece source_language) const;
-  void BlockLanguage(base::StringPiece source_language);
-  void UnblockLanguage(base::StringPiece source_language);
+  bool IsBlockedLanguage(std::string_view source_language) const;
+  void BlockLanguage(std::string_view source_language);
+  void UnblockLanguage(std::string_view source_language);
   // Returns the languages that should be blocked by default as a
   // base::Value::List.
   static base::Value::List GetDefaultBlockedLanguages();
@@ -194,9 +194,9 @@ class TranslatePrefs {
   // If force_blocked is set to false, the language is added to the blocked list
   // if the language list does not already contain another language with the
   // same base language.
-  void AddToLanguageList(base::StringPiece language, bool force_blocked);
+  void AddToLanguageList(std::string_view language, bool force_blocked);
   // Removes the language from the language list at chrome://settings/languages.
-  void RemoveFromLanguageList(base::StringPiece language);
+  void RemoveFromLanguageList(std::string_view language);
 
   // Rearranges the given language inside the language list.
   // The direction of the move is specified as a RearrangeSpecifier.
@@ -206,7 +206,7 @@ class TranslatePrefs {
   // the current UI. This is required because the full language list contains
   // some languages that might not be enabled in the current UI and we need to
   // skip those languages while rearranging the list.
-  void RearrangeLanguage(base::StringPiece language,
+  void RearrangeLanguage(std::string_view language,
                          RearrangeSpecifier where,
                          int offset,
                          const std::vector<std::string>& enabled_languages);
@@ -237,9 +237,9 @@ class TranslatePrefs {
   void GetTranslatableContentLanguages(const std::string& app_locale,
                                        std::vector<std::string>* codes);
 
-  bool IsSiteOnNeverPromptList(base::StringPiece site) const;
-  void AddSiteToNeverPromptList(base::StringPiece site);
-  void RemoveSiteFromNeverPromptList(base::StringPiece site);
+  bool IsSiteOnNeverPromptList(std::string_view site) const;
+  void AddSiteToNeverPromptList(std::string_view site);
+  void RemoveSiteFromNeverPromptList(std::string_view site);
 
   std::vector<std::string> GetNeverPromptSitesBetween(base::Time begin,
                                                       base::Time end) const;
@@ -247,24 +247,16 @@ class TranslatePrefs {
 
   bool HasLanguagePairsToAlwaysTranslate() const;
 
-  bool IsLanguagePairOnAlwaysTranslateList(base::StringPiece source_language,
-                                           base::StringPiece target_language);
+  bool IsLanguagePairOnAlwaysTranslateList(std::string_view source_language,
+                                           std::string_view target_language);
   // Converts the source and target language to their translate synonym and
   // adds the pair to the always translate dict.
-  void AddLanguagePairToAlwaysTranslateList(base::StringPiece source_language,
-                                            base::StringPiece target_language);
+  void AddLanguagePairToAlwaysTranslateList(std::string_view source_language,
+                                            std::string_view target_language);
   // Removes the translate synonym of source_language from the always
   // translate dict.
   void RemoveLanguagePairFromAlwaysTranslateList(
-      base::StringPiece source_language,
-      base::StringPiece target_language);
-
-  // Sets the always translate state for a language.
-  // The always translate language list is actually a dict mapping
-  // source_language -> target_language.  We use the current target language
-  // when adding |language| to the dict.
-  void SetLanguageAlwaysTranslateState(base::StringPiece source_language,
-                                       bool always_translate);
+      std::string_view source_language);
 
   // Gets the languages that are set to always translate formatted as Chrome
   // language codes.
@@ -273,35 +265,35 @@ class TranslatePrefs {
   // These methods are used to track how many times the user has denied the
   // translation for a specific language. (So we can present a UI to blocklist
   // that language if the user keeps denying translations).
-  int GetTranslationDeniedCount(base::StringPiece language) const;
-  void IncrementTranslationDeniedCount(base::StringPiece language);
-  void ResetTranslationDeniedCount(base::StringPiece language);
+  int GetTranslationDeniedCount(std::string_view language) const;
+  void IncrementTranslationDeniedCount(std::string_view language);
+  void ResetTranslationDeniedCount(std::string_view language);
 
   // These methods are used to track how many times the user has ignored the
   // translation bubble for a specific language.
-  int GetTranslationIgnoredCount(base::StringPiece language) const;
-  void IncrementTranslationIgnoredCount(base::StringPiece language);
-  void ResetTranslationIgnoredCount(base::StringPiece language);
+  int GetTranslationIgnoredCount(std::string_view language) const;
+  void IncrementTranslationIgnoredCount(std::string_view language);
+  void ResetTranslationIgnoredCount(std::string_view language);
 
   // These methods are used to track how many times the user has accepted the
   // translation for a specific language. (So we can present a UI to allowlist
   // that language if the user keeps accepting translations).
-  int GetTranslationAcceptedCount(base::StringPiece language) const;
-  void IncrementTranslationAcceptedCount(base::StringPiece language);
-  void ResetTranslationAcceptedCount(base::StringPiece language);
+  int GetTranslationAcceptedCount(std::string_view language) const;
+  void IncrementTranslationAcceptedCount(std::string_view language);
+  void ResetTranslationAcceptedCount(std::string_view language);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // These methods are used to track how many times the auto-always translation
   // has been triggered for a specific language.
-  int GetTranslationAutoAlwaysCount(base::StringPiece language) const;
-  void IncrementTranslationAutoAlwaysCount(base::StringPiece language);
-  void ResetTranslationAutoAlwaysCount(base::StringPiece language);
+  int GetTranslationAutoAlwaysCount(std::string_view language) const;
+  void IncrementTranslationAutoAlwaysCount(std::string_view language);
+  void ResetTranslationAutoAlwaysCount(std::string_view language);
 
   // These methods are used to track how many times the auto-never translation
   // has been triggered for a specific language.
-  int GetTranslationAutoNeverCount(base::StringPiece language) const;
-  void IncrementTranslationAutoNeverCount(base::StringPiece language);
-  void ResetTranslationAutoNeverCount(base::StringPiece language);
+  int GetTranslationAutoNeverCount(std::string_view language) const;
+  void IncrementTranslationAutoNeverCount(std::string_view language);
+  void ResetTranslationAutoNeverCount(std::string_view language);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -324,8 +316,8 @@ class TranslatePrefs {
   bool ShouldForceTriggerTranslateOnEnglishPages();
   static void SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
 
-  bool CanTranslateLanguage(base::StringPiece language);
-  bool ShouldAutoTranslate(base::StringPiece source_language,
+  bool CanTranslateLanguage(std::string_view language);
+  bool ShouldAutoTranslate(std::string_view source_language,
                            std::string* target_language);
   // True if the detailed language settings are enabled for this user.
   static bool IsDetailedLanguageSettingsEnabled();
@@ -387,12 +379,12 @@ class TranslatePrefs {
 
   // |pref_id| is the name of a list pref.
   bool IsValueOnNeverPromptList(const char* pref_id,
-                                base::StringPiece value) const;
-  void AddValueToNeverPromptList(const char* pref_id, base::StringPiece value);
+                                std::string_view value) const;
+  void AddValueToNeverPromptList(const char* pref_id, std::string_view value);
   // Used for testing. The public version passes in base::Time::Now()
-  void AddSiteToNeverPromptList(base::StringPiece site, base::Time time);
+  void AddSiteToNeverPromptList(std::string_view site, base::Time time);
   void RemoveValueFromNeverPromptList(const char* pref_id,
-                                      base::StringPiece value);
+                                      std::string_view value);
   size_t GetListSize(const char* pref_id) const;
 
   bool IsDictionaryEmpty(const char* pref_id) const;

@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "plus_address_metrics.cc",
+    "plus_address_metrics.h",
+  ]
+  deps = [ "//google_apis" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/plus_addresses:types",
+  ]
+}
+
+source_set("submission_logger") {
+  sources = [
+    "plus_address_submission_logger.cc",
+    "plus_address_submission_logger.h",
+  ]
+  deps = [ "//components/signin/public/identity_manager" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/commerce/core:heuristics_provider",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_submission_logger_unittest.cc" ]
+  deps = [
+    ":submission_logger",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/ukm:test_support",
+    "//testing/gtest",
+  ]
+}

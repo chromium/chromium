@@ -6,27 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 source_set("structured") {
-  if (is_chromeos_ash) {
-    sources = [
-      "ash_event_storage.cc",
-      "ash_event_storage.h",
-      "ash_structured_metrics_recorder.cc",
-      "ash_structured_metrics_recorder.h",
-      "key_data_provider_ash.cc",
-      "key_data_provider_ash.h",
-    ]
-  } else if (is_win || is_linux || is_mac || is_chromeos_lacros) {
-    sources = [
-      "chrome_event_storage.cc",
-      "chrome_event_storage.h",
-      "chrome_structured_metrics_recorder.cc",
-      "chrome_structured_metrics_recorder.h",
-      "key_data_provider_chrome.cc",
-      "key_data_provider_chrome.h",
-    ]
-  } else {
-    sources = []
-  }
+  sources = []
 
   deps = [
     "//components/metrics",
@@ -38,6 +18,15 @@ source_set("structured") {
   if (is_chromeos_ash) {
     deps += [ "//components/metrics/structured:external_metrics" ]
   } else if (is_win || is_linux || is_mac || is_chromeos_lacros) {
+    sources += [
+      "chrome_event_storage.cc",
+      "chrome_event_storage.h",
+      "chrome_structured_metrics_recorder.cc",
+      "chrome_structured_metrics_recorder.h",
+      "key_data_provider_chrome.cc",
+      "key_data_provider_chrome.h",
+    ]
+
     deps += [ "//components/prefs" ]
   }
 }
@@ -59,8 +48,6 @@ static_library("test_support") {
   sources = [
     "test/structured_metrics_mixin.cc",
     "test/structured_metrics_mixin.h",
-    "test/test_structured_metrics_recorder.cc",
-    "test/test_structured_metrics_recorder.h",
   ]
   deps = [
     "//chrome/test:test_support",

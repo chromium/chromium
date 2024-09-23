@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/editor_feedback.h"
-#include "content/public/test/test_browser_context.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/gtest_util.h"
@@ -21,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,25 +88,8 @@ std::unique_ptr<TestingProfile> CreateTestingProfile(
   return profile;
 }
 
-TEST(EditorFeedback, DoesNotSendFeedbackWhenFlagIsOff) {
-  content::BrowserTaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{features::kOrcaFeedback});
-  base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
-  std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
-      "test@email.com", on_report_sent_future.GetRepeatingCallback());
-
-  EXPECT_FALSE(SendEditorFeedback(profile.get(), "test description"));
-
-  task_environment.FastForwardBy(base::Milliseconds(100));
-  EXPECT_FALSE(on_report_sent_future.IsReady());
-}
-
 TEST(EditorFeedback, SendFeedbackDoesNotSendEmail) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
@@ -120,7 +103,6 @@ TEST(EditorFeedback, SendFeedbackDoesNotSendEmail) {
 
 TEST(EditorFeedback, SendFeedbackRedactsDescription) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
@@ -138,7 +120,6 @@ TEST(EditorFeedback, SendFeedbackRedactsDescription) {
 // information.
 TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::ScopedChromeOSVersionInfo scoped_version_info(
       "CHROMEOS_RELEASE_VERSION=42", base::Time::Now());
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;

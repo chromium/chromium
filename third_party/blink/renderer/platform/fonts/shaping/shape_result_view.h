@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 
@@ -10,6 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -110,7 +116,10 @@ class PLATFORM_EXPORT ShapeResultView final
   ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView() = default;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(parts_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(parts_);
+    visitor->Trace(primary_font_);
+  }
 
   ShapeResult* CreateShapeResult() const;
 
@@ -126,7 +135,7 @@ class PLATFORM_EXPORT ShapeResultView final
   bool IsLtr() const { return blink::IsLtr(Direction()); }
   bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
-  void FallbackFonts(HashSet<const SimpleFontData*>* fallback) const;
+  HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
 
   unsigned PreviousSafeToBreakOffset(unsigned index) const;
 
@@ -151,10 +160,8 @@ class PLATFORM_EXPORT ShapeResultView final
   // bounds.
   gfx::RectF ComputeInkBounds() const;
 
-  scoped_refptr<const SimpleFontData> PrimaryFont() const {
-    return primary_font_;
-  }
-  void GetRunFontData(Vector<ShapeResult::RunFontData>*) const;
+  const SimpleFontData* PrimaryFont() const { return primary_font_.Get(); }
+  void GetRunFontData(HeapVector<ShapeResult::RunFontData>*) const;
 
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
 
@@ -286,7 +293,8 @@ class PLATFORM_EXPORT ShapeResultView final
 
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
-  scoped_refptr<const SimpleFontData> const primary_font_;
+  HeapVector<RunInfoPart, 1> parts_;
+  Member<const SimpleFontData> const primary_font_;
 
   const unsigned start_index_;
 
@@ -307,8 +315,6 @@ class PLATFORM_EXPORT ShapeResultView final
   // Offset of the first component added to the view. Used for compatibility
   // with ShapeResult::SubRange
   const unsigned char_index_offset_;
-
-  HeapVector<RunInfoPart, 1> parts_;
 
  private:
   friend class ShapeResult;

@@ -1,0 +1,32 @@
+caption: Enable keyboard focusable scrollers
+default: true
+desc: |-
+  This policy provides a temporary opt-out for the new keyboard focusable scrollers behavior.
+
+  When this policy is Enabled or unset, scrollers without focusable children are keyboard-focusable by default.
+
+  When this policy is Disabled, scrollers will not be keyboard-focusable by default.
+
+  This policy is a temporary workaround, and will be removed in M135.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+  - fuchsia
+items:
+  - caption: "Enabled: Scrollers are focusable by default."
+    value: true
+  - caption: "Disabled: Scrollers are not focusable by default."
+    value: false
+owners:
+  - dizhangg@chromium.org
+schema:
+  type: boolean
+supported_on:
+  - chrome.*:127-
+  - chrome_os:127-
+  - android:127-
+  - webview_android:127-
+tags: []
+type: main

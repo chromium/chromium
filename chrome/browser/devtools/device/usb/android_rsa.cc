@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-#include <numeric>
 
 #include <limits>
 #include <memory>
+#include <numeric>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -223,7 +229,7 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   key->ExportPublicKey(&public_key);
   std::string asn1(public_key.begin(), public_key.end());
 
-  base::StringPiece pk;
+  std::string_view pk;
   if (!net::asn1::ExtractSubjectPublicKeyFromSPKI(asn1, &pk))
     return kDummyRSAPublicKey;
 

@@ -20,8 +20,6 @@ source_set("model") {
     "crash_upload_list.h",
     "features.cc",
     "features.h",
-    "main_thread_freeze_detector.h",
-    "main_thread_freeze_detector.mm",
   ]
 
   deps = [
@@ -36,7 +34,6 @@ source_set("model") {
     "//components/upload_list",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
@@ -67,7 +64,6 @@ source_set("model_internal") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
@@ -85,7 +81,6 @@ source_set("unit_tests") {
     "crash_loop_detection_util_unittest.mm",
     "crash_reporter_breadcrumb_observer_unittest.mm",
     "crash_reporter_url_observer_unittest.mm",
-    "main_thread_freeze_detector_unittest.mm",
   ]
   deps = [
     ":model",
@@ -97,8 +92,7 @@ source_set("unit_tests") {
     "//components/previous_session_info",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/common/crash_report",

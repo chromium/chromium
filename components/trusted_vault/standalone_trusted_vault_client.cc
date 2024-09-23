@@ -22,6 +22,8 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/recovery_key_store_connection_impl.h"
+#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
@@ -66,7 +68,9 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
       const GoogleServiceAuthError& error) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnRefreshTokensLoaded() override;
 
  private:
@@ -113,7 +117,7 @@ void IdentityManagerObserver::OnPrimaryAccountChanged(
 }
 
 void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
-  // TODO(crbug.com/1148328): remove this handler once tests can mimic
+  // TODO(crbug.com/40156992): remove this handler once tests can mimic
   // OnAccountInCookieUpdated() properly.
   UpdateAccountsInCookieJarInfoIfNeeded(
       signin::AccountsInCookieJarInfo(/*accounts_are_fresh_param=*/true,
@@ -131,7 +135,8 @@ void IdentityManagerObserver::OnAccountsInCookieUpdated(
 
 void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (primary_account_.IsEmpty() ||
       account_info.account_id != primary_account_.account_id) {
     return;
@@ -149,10 +154,15 @@ void IdentityManagerObserver::OnRefreshTokensLoaded() {
     // OnErrorStateOfRefreshTokenUpdatedForAccount() can be called before
     // refresh tokens are marked as loaded, in this case error state can not be
     // identified reliably. To mitigate this, call it again here.
+    // It is safe to use the default value for the source of the refresh token
+    // operation
+    // (`signin_metrics::SourceForRefreshTokenOperation::kUnknown`) as it is not
+    // currently used.
     OnErrorStateOfRefreshTokenUpdatedForAccount(
         primary_account_,
         identity_manager_->GetErrorStateOfRefreshTokenForAccount(
-            primary_account_.account_id));
+            primary_account_.account_id),
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   }
   UpdateAccountsInCookieJarInfoIfNeeded(
       identity_manager_->GetAccountsInCookieJar());
@@ -248,7 +258,7 @@ base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
     case SecurityDomainId::kPasskeys:
       return base_dir.Append(kPasskeysTrustedVaultFilename);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -257,7 +267,9 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     SecurityDomainId security_domain,
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<RecoveryKeyStoreController::RecoveryKeyProvider>
+        recovery_key_provider)
     : backend_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
       access_token_fetcher_frontend_(identity_manager) {
@@ -272,6 +284,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }
 
+  std::unique_ptr<RecoveryKeyStoreConnection> recovery_key_store_connection;
+  if (recovery_key_provider) {
+    recovery_key_store_connection =
+        std::make_unique<RecoveryKeyStoreConnectionImpl>(
+            url_loader_factory->Clone(),
+            std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
+                access_token_fetcher_frontend_.GetWeakPtr()));
+  }
+
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
       GetBackendFilePath(base_dir, security_domain),
       std::make_unique<BackendDelegate>(
@@ -282,7 +303,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &StandaloneTrustedVaultClient::NotifyBackendStateChanged,
               weak_ptr_factory_.GetWeakPtr()))),
-      std::move(connection));
+      std::move(connection), std::move(recovery_key_provider),
+      std::move(recovery_key_store_connection));
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,
@@ -296,6 +318,17 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           base::Unretained(this)),
       identity_manager);
 }
+
+StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
+    SecurityDomainId security_domain,
+    const base::FilePath& base_dir,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : StandaloneTrustedVaultClient(security_domain,
+                                   base_dir,
+                                   identity_manager,
+                                   url_loader_factory,
+                                   /*recovery_key_provider=*/nullptr) {}
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
   // |backend_| needs to be destroyed inside backend sequence, not the current

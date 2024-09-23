@@ -76,8 +76,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // guarantees provided by MediaLog, since SendQueuedMediaEvents must also
   // be synchronized with respect to AddEvent.
   mutable base::Lock lock_;
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_
-      GUARDED_BY(lock_);
+  raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
   base::TimeTicks last_ipc_send_time_ GUARDED_BY(lock_);
   std::vector<media::MediaLogRecord> queued_media_events_ GUARDED_BY(lock_);
 
@@ -95,6 +94,8 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
       GUARDED_BY(lock_);
   std::optional<media::MediaLogRecord> last_buffering_state_event_
       GUARDED_BY(lock_);
+  std::optional<media::MediaLogRecord> last_play_event_;
+  std::optional<media::MediaLogRecord> last_pause_event_;
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
   // most likely to contain the most specific information available describing

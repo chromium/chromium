@@ -12,16 +12,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -33,7 +33,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -42,17 +41,19 @@ namespace autofill {
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ButtonBehavior = PopupRowWithButtonView::ButtonBehavior;
+using ButtonVisibility = PopupRowWithButtonView::ButtonVisibility;
+using ButtonSelectBehavior = PopupRowWithButtonView::ButtonSelectBehavior;
 
 class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
  public:
   // views::ViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    controller_.set_suggestions({PopupItemId::kAddressEntry});
+    controller_.set_suggestions({SuggestionType::kAddressEntry});
   }
 
   void ShowView(std::unique_ptr<PopupRowWithButtonView> view) {
@@ -68,7 +69,7 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
   }
 
   void SimulateKeyPress(int windows_key_code) {
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
@@ -77,17 +78,17 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
 
   views::ImageButton* CreateRowAndGetButton(
       base::RepeatingClosure button_callback = base::DoNothing(),
-      ButtonBehavior button_behavior =
-          ButtonBehavior::kShowOnHoverOrSelect) {
+      ButtonVisibility button_visibility =
+          ButtonVisibility::kShowOnHoverOrSelect,
+      ButtonSelectBehavior select_behavior =
+          ButtonSelectBehavior::kUnselectSuggestion) {
     auto content_view = std::make_unique<PopupRowContentView>();
-    content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
     content_view->AddChildView(std::make_unique<views::Label>(u"Some label"));
     auto row = std::make_unique<PopupRowWithButtonView>(
         a11y_selection_delegate(), selection_delegate(),
         controller_.GetWeakPtr(), 0, std::move(content_view),
         std::make_unique<views::ImageButton>(std::move(button_callback)),
-        button_behavior);
+        button_visibility, select_behavior);
     views::ImageButton* button = row->GetButtonForTest();
     ShowView(std::move(row));
     return button;
@@ -128,10 +129,10 @@ TEST_F(PopupRowWithButtonViewTest, ShowsOrHideButtonOnSelected) {
 }
 
 // Tests that the cell button is always visible for
-// `ButtonBehavior::kShowAlways`.
+// `ButtonVisibility::kShowAlways`.
 TEST_F(PopupRowWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
   views::ImageButton* button = CreateRowAndGetButton(
-      /*button_callback=*/base::DoNothing(), ButtonBehavior::kShowAlways);
+      /*button_callback=*/base::DoNothing(), ButtonVisibility::kShowAlways);
 
   EXPECT_TRUE(button->GetVisible());
   view().SetSelectedCell(PopupRowView::CellType::kContent);
@@ -139,6 +140,22 @@ TEST_F(PopupRowWithButtonViewTest, DoNotHideButtonForShowAlwaysBehavior) {
 
   view().SetSelectedCell(std::nullopt);
   EXPECT_TRUE(button->GetVisible());
+}
+
+// Tests that when the select behavior is kSelectSuggestion, hovering the button
+// does not unselect the suggestion.
+TEST_F(PopupRowWithButtonViewTest, HoverWithSelectBehaviorSelectSuggestion) {
+  views::ImageButton* button =
+      CreateRowAndGetButton(/*button_callback=*/base::DoNothing(),
+                            ButtonVisibility::kShowOnHoverOrSelect,
+                            ButtonSelectBehavior::kSelectSuggestion);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  EXPECT_EQ(view().GetSelectedCell(), PopupRowView::CellType::kContent);
+  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
+
+  EXPECT_CALL(controller(), UnselectSuggestion).Times(0);
+  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(view().GetButtonFocusedForTest());
 }
 
 TEST_F(PopupRowWithButtonViewTest,

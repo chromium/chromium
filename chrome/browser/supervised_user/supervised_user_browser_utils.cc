@@ -3,20 +3,34 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+
 #include <string>
 
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -28,6 +42,9 @@
 #include "components/user_manager/user_type.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #endif
 
 namespace supervised_user {
@@ -72,6 +89,31 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
+bool SupervisedUserCanSkipExtensionParentApprovals(const Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return profile->IsChild() &&
+         IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
+         profile->GetPrefs()->GetBoolean(
+             prefs::kSkipParentApprovalToInstallExtensions);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+bool AreExtensionsPermissionsEnabled(Profile* profile) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
+  return profile->IsChild();
+#else
+  return profile->IsChild() &&
+         base::FeatureList::IsEnabled(
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
 bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents) {
   // Note that |contents| can be an inner WebContents. Get the outer most
   // WebContents and check if it belongs to the EDUCoexistence login flow.
@@ -87,6 +129,8 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOriginalOnly)
       .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      // TODO(crbug.com/41488885): Check if this is needed for Ash Internals.
+      .WithAshInternals(ProfileSelection::kOriginalOnly)
       .Build();
 }
 
@@ -120,5 +164,39 @@ void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
   }
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+std::string CreateReauthenticationInterstitial(
+    content::NavigationHandle& navigation_handle,
+    SupervisedUserVerificationPage::VerificationPurpose verification_purpose) {
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  bool has_second_custodian =
+      !supervised_user_service->GetSecondCustodianName().empty();
+  supervised_user::ChildAccountService* child_account_service =
+      ChildAccountServiceFactory::GetForProfile(profile);
+  GURL request_url = navigation_handle.GetURL();
+  bool is_main_frame = navigation_handle.GetNavigatingFrameType() ==
+                       content::FrameType::kPrimaryMainFrame;
+  std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
+      std::make_unique<SupervisedUserVerificationPage>(
+          web_contents, profile->GetProfileUserName(), request_url,
+          verification_purpose, child_account_service,
+          navigation_handle.GetNextPageUkmSourceId(),
+          std::make_unique<SupervisedUserVerificationControllerClient>(
+              web_contents, profile->GetPrefs(),
+              g_browser_process->GetApplicationLocale(),
+              GURL(chrome::kChromeUINewTabURL), request_url),
+          is_main_frame, has_second_custodian);
+
+  std::string interstitial_html = blocking_page->GetHTMLContents();
+  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
+      &navigation_handle, std::move(blocking_page));
+  return interstitial_html;
+}
+#endif
 
 }  // namespace supervised_user

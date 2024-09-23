@@ -8,15 +8,16 @@ import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
+
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 static_library("utility") {
   sources = [
-    "browser_exposed_utility_interfaces.cc",
-    "browser_exposed_utility_interfaces.h",
     "chrome_content_utility_client.cc",
     "chrome_content_utility_client.h",
     "services.cc",
@@ -37,7 +38,6 @@ static_library("utility") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
-    "//chrome/services/qrcode_generator",
     "//chrome/services/speech/buildflags",
     "//components/heap_profiling/in_process",
     "//components/metrics:child_call_stack_profile_builder",
@@ -47,9 +47,9 @@ static_library("utility") {
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
     "//components/services/language_detection",
+    "//components/services/on_device_translation:on_device_translation_service",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
-    "//components/services/screen_ai/buildflags",
     "//components/services/unzip:lib",
     "//components/strings",
     "//components/url_formatter",
@@ -61,9 +61,13 @@ static_library("utility") {
     "//ipc",
     "//media",
     "//net",
+    "//pdf:buildflags",
     "//printing/buildflags",
     "//services/data_decoder:lib",
     "//services/network:network_service",
+    "//services/passage_embeddings:passage_embeddings",
+    "//services/passage_embeddings/public/mojom",
+    "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//skia",
     "//sql",
@@ -112,7 +116,7 @@ static_library("utility") {
         "importer/safari_importer.mm",
       ]
     }
-    if (!is_mac && !is_fuchsia && !is_chromeos) {
+    if (!is_mac && !is_chromeos) {
       # NSS decryptor is not needed on ChromeOS. Additionally, it depends on
       # system NSS that is unavailable on MacOS/Fuchsia.
       sources += [
@@ -141,11 +145,8 @@ static_library("utility") {
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
+      "//services/screen_ai",
     ]
-  }
-
-  if (enable_screen_ai_service) {
-    deps += [ "//components/services/screen_ai" ]
   }
 
   if (enable_extensions) {
@@ -210,10 +211,15 @@ static_library("utility") {
         "//chromeos/ash/services/libassistant/public/mojom",
       ]
     }
+
+    assert(enable_pdf)
+    deps += [ "//chrome/services/pdf:lib" ]
   }
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/components/mahi:content_extraction",
+      "//chromeos/components/mahi/public/mojom",
       "//chromeos/components/quick_answers/public/cpp",
       "//chromeos/components/quick_answers/public/mojom",
     ]

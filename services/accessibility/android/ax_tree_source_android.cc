@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
@@ -17,6 +18,8 @@
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/auto_complete_handler.h"
 #include "services/accessibility/android/drawer_layout_handler.h"
+#include "services/accessibility/android/pane_title_handler.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/gfx/geometry/rect.h"
@@ -103,6 +106,21 @@ bool AXTreeSourceAndroid::IsRootOfNodeTree(int32_t id) const {
   const auto& parent_tree_it = tree_map_.find(parent_it->second);
   CHECK(parent_tree_it != tree_map_.end());
   return !parent_tree_it->second->IsNode();
+}
+
+void AXTreeSourceAndroid::SetVirtualNode(
+    int32_t parent_id,
+    std::unique_ptr<AccessibilityInfoDataWrapper> child) {
+  auto* parent_node = GetFromId(parent_id);
+  // TODO support any node as a parent, not limiting to a window.
+  CHECK(parent_node);
+  CHECK(parent_node->GetWindow());
+
+  int32_t node_id = child->GetId();
+  tree_map_[node_id] = std::move(child);
+  parent_map_[node_id] = parent_node->GetId();
+  static_cast<AccessibilityWindowInfoDataWrapper*>(parent_node)
+      ->AddVirtualChild(node_id);
 }
 
 AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetFirstImportantAncestor(
@@ -294,11 +312,18 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     current_tree_serializer_->MarkSubtreeDirty(update_id);
   }
 
+  // Serialize updates in the reverse order of |update_ids|.
+  // Updates from Android event first as this contains the entire tree
+  // information, including focus.
   std::vector<ui::AXTreeUpdate> updates;
-  for (const int32_t update_id : update_ids) {
+  for (const int32_t update_id : base::Reversed(update_ids)) {
+    AccessibilityInfoDataWrapper* update_root = GetFromId(update_id);
+    if (!update_root) {
+      LOG(ERROR) << "Update root node doesn't exist, id=" << update_id;
+      continue;
+    }
     ui::AXTreeUpdate update;
-    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_id),
-                                                    &update)) {
+    if (!current_tree_serializer_->SerializeChanges(update_root, &update)) {
       std::string error_string;
       ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
       checker.CheckAndGetErrorString(&error_string);
@@ -502,12 +527,15 @@ bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
                                       : nullptr;
 
   // Ensure that the focused node correctly gets focus.
-  while (focused_node && !focused_node->IsImportantInAndroid()) {
+  while (focused_node && focused_node->IsIgnored()) {
     AccessibilityInfoDataWrapper* parent = GetParent(focused_node);
     if (parent) {
       android_focused_id_ = parent->GetId();
       focused_node = parent;
     } else {
+      // Unable to find the appropriate focus. Removing the focused node.
+      android_focused_id_.reset();
+      focused_node = nullptr;
       break;
     }
   }
@@ -518,7 +546,7 @@ bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
 std::vector<int32_t> AXTreeSourceAndroid::ProcessHooksOnEvent(
     const AXEventData& event_data) {
   base::EraseIf(hooks_, [this](const auto& it) {
-    return this->GetFromId(it.first) == nullptr;
+    return it.second->ShouldDestroy(this);
   });
 
   std::vector<int32_t> serialization_needed_ids;
@@ -541,6 +569,11 @@ std::vector<int32_t> AXTreeSourceAndroid::ProcessHooksOnEvent(
     if (hooks_.count(modifier.first) == 0) {
       hooks_.insert(std::move(modifier));
     }
+  }
+
+  auto pane_title_hook = PaneTitleHandler::CreateIfNecessary(this, event_data);
+  if (pane_title_hook) {
+    hooks_.insert(std::move(*pane_title_hook));
   }
 
   return serialization_needed_ids;

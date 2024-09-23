@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -81,7 +82,7 @@ class RemoteSupportHostAsh {
   void OnSessionRetrieved(SessionId session_id,
                           const std::string& access_token,
                           StartSessionCallback callback,
-                          absl::optional<base::Value::Dict> session);
+                          std::optional<base::Value::Dict> session);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

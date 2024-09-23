@@ -1,0 +1,28 @@
+caption: Set a custom enterprise label
+default: null
+desc: |-
+  This policy controls a custom label used to identify who managed a profile or browser.
+
+  This label will be shown in the toolbar.
+
+  If this policy is set at the browser level, all profiles will have this label in the toolbar.
+
+  If this policy is set at the profile level, only that profile will have this label.
+
+  Unlike other policies, this policy set at the profile level takes precedence over a policy set at the browser level.
+
+  The custom label will not be translated.
+example_value: Chromium
+features:
+  dynamic_refresh: true
+  per_profile: true
+  user_only: true
+supported_on:
+- chrome.*:128-
+owners:
+- file://components/enterprise/OWNERS
+- ydago@chromium.org
+schema:
+  type: string
+tags: []
+type: string

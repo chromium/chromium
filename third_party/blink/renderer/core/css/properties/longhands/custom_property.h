@@ -40,7 +40,7 @@ class CORE_EXPORT CustomProperty : public Variable {
                   ValueMode) const override;
 
   // Never used.
-  const CSSValue* ParseSingleValue(CSSParserTokenRange&,
+  const CSSValue* ParseSingleValue(CSSParserTokenStream&,
                                    const CSSParserContext&,
                                    const CSSParserLocalContext&) const override;
 
@@ -48,15 +48,16 @@ class CORE_EXPORT CustomProperty : public Variable {
   // available).
   //
   // NOTE: This is distinct from ParseSingleValue() because it takes in
-  // original_text, not just a token range.
-  const CSSValue* Parse(const CSSTokenizedValue,
+  // original_text, not a token stream.
+  const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         const CSSParserLocalContext&) const;
 
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
       const LayoutObject*,
-      bool allow_visited_style) const override;
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const override;
 
   bool IsRegistered() const { return registration_ != nullptr; }
 
@@ -75,7 +76,7 @@ class CORE_EXPORT CustomProperty : public Variable {
                  const PropertyRegistration* registration);
   explicit CustomProperty(const PropertyRegistration* registration);
 
-  const CSSValue* ParseUntyped(const CSSTokenizedValue&,
+  const CSSValue* ParseUntyped(StringView,
                                const CSSParserContext&,
                                const CSSParserLocalContext&) const;
 

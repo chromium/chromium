@@ -8,10 +8,10 @@
 #include <fidl/fuchsia.io/cpp/fidl.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace sys {
 class ComponentContext;
@@ -94,8 +94,8 @@ class BASE_EXPORT TestComponentContextForProcess {
 
   // Allows the specified service(s) from the original ComponentContext to be
   // exposed via the test default ComponentContext.
-  void AddService(const base::StringPiece service);
-  void AddServices(base::span<const base::StringPiece> services);
+  void AddService(const std::string_view service);
+  void AddServices(base::span<const std::string_view> services);
 
   // Returns the directory of services that the code under test has published
   // to its outgoing service directory.

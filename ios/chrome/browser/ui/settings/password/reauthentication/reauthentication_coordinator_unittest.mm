@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
+
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -22,6 +21,9 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface FakeReauthenticationCoordinatorDelegate
     : NSObject <ReauthenticationCoordinatorDelegate>
@@ -61,9 +63,6 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
@@ -102,7 +101,10 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   // navigation controller.
   void CheckReauthenticationViewControllerIsPresented() {
     // Check that reauth vc was pushed to navigation vc.
-    ASSERT_EQ(base_navigation_controller_.viewControllers.count, 2LU);
+    ASSERT_TRUE(
+        WaitUntilConditionOrTimeout(kWaitForActionTimeout, true, ^bool() {
+          return base_navigation_controller_.viewControllers.count == 2LU;
+        }));
     ASSERT_TRUE([base_navigation_controller_.topViewController
         isKindOfClass:[ReauthenticationViewController class]]);
     EXPECT_TRUE(delegate_.willPushReauthVCCalled);
@@ -111,25 +113,33 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   void CheckReauthenticationViewControllerNotPresented() {
     // Check that reauth vc is not in the navigation vc, only the root vc is
     // there.
-    ASSERT_EQ(base_navigation_controller_.viewControllers.count, 1LU);
+    ASSERT_TRUE(
+        WaitUntilConditionOrTimeout(kWaitForActionTimeout, true, ^bool() {
+          return base_navigation_controller_.viewControllers.count == 1LU;
+        }));
     ASSERT_FALSE([base_navigation_controller_.topViewController
         isKindOfClass:[ReauthenticationViewController class]]);
   }
 
   // Tests the auth flow works correctly when backgrounding/foregrounding the
   // scene.
-  void CheckReauthFlowAfterGoingToBackground() {
+  // - simulate_foreground_inactive: When false the test changes the scene state
+  // to the background state without going through foreground inactive.
+  void CheckReauthFlowAfterGoingToBackground(
+      bool simulate_foreground_inactive) {
     CheckReauthenticationViewControllerNotPresented();
 
-    // Simulate start of transition to background state.
-    scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-
-    CheckReauthenticationViewControllerIsPresented();
+    if (simulate_foreground_inactive) {
+      // Simulate transition to inactive state before background state.
+      scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+      CheckReauthenticationViewControllerIsPresented();
+    }
 
     // Simulate transition to background.
     scene_state_.activationLevel = SceneActivationLevelBackground;
 
-    // Reauth vc should still be there.
+    // Reauth vc should have been presented either in the inactive or background
+    // state.
     CheckReauthenticationViewControllerIsPresented();
     ASSERT_FALSE(delegate_.successfulReauth);
 
@@ -152,14 +162,20 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   FakeReauthenticationCoordinatorDelegate* delegate_ = nil;
   id mocked_application_commands_handler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ReauthenticationCoordinator* coordinator_ = nil;
 };
 
 // Tests the auth flow works correctly when backgrounding/foregrounding the
 // scene.
 TEST_F(ReauthenticationCoordinatorTest, RequestAuthAfterSceneGoesToBackground) {
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
+}
+
+// Tests the auth flow works correctly when backgrounding/foregrounding the
+// scene but skipping the foreground inactive state.
+TEST_F(ReauthenticationCoordinatorTest,
+       RequestAuthAfterSceneGoesToBackgroundSkippingInactive) {
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/false);
 }
 
 // Tests the auth flow works correctly when backgrounding/foregrounding the
@@ -167,12 +183,12 @@ TEST_F(ReauthenticationCoordinatorTest, RequestAuthAfterSceneGoesToBackground) {
 // auth flow due to scene state changes.
 TEST_F(ReauthenticationCoordinatorTest,
        RequestAuthAfterSceneGoesToBackgroundRepeated) {
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
 
   delegate_.successfulReauth = NO;
   delegate_.willPushReauthVCCalled = NO;
 
-  CheckReauthFlowAfterGoingToBackground();
+  CheckReauthFlowAfterGoingToBackground(/*simulate_foreground_inactive=*/true);
 }
 
 // Tests that auth is not requested with scene goes to the foreground inactive
@@ -191,45 +207,6 @@ TEST_F(ReauthenticationCoordinatorTest,
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   CheckReauthenticationViewControllerNotPresented();
-  ASSERT_FALSE(delegate_.successfulReauth);
-}
-
-// Tests that the set passcode alert is presented after
-// backgrounding/foregrounding the scene without a passcode.
-TEST_F(ReauthenticationCoordinatorTest,
-       SetPasscodeRequestedAfterSceneGoesToBackground) {
-  CheckReauthenticationViewControllerNotPresented();
-
-  // Simulate start of transition to background state.
-  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-
-  // Wait for presentation of ReauthenticationViewController to finish.
-  // Otherwise its view will not get loaded and the AlertCoordinator will not
-  // present its alert. See AlertCoordinator start.
-  base::test::ios::SpinRunLoopWithMaxDelay(
-      base::test::ios::kWaitForUIElementTimeout);
-
-  CheckReauthenticationViewControllerIsPresented();
-
-  // Simulate transition to background.
-  scene_state_.activationLevel = SceneActivationLevelBackground;
-
-  // Reauth vc should still be there.
-  CheckReauthenticationViewControllerIsPresented();
-  ASSERT_FALSE(delegate_.successfulReauth);
-
-  // Mock no local authentication available.
-  mock_reauth_module_.canAttempt = NO;
-
-  // Back to foreground active should present an alert.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  CheckReauthenticationViewControllerIsPresented();
-
-  ASSERT_TRUE(
-      [base_navigation_controller_.topViewController.presentedViewController
-          isKindOfClass:[UIAlertController class]]);
-
   ASSERT_FALSE(delegate_.successfulReauth);
 }
 
@@ -259,8 +236,50 @@ TEST_F(ReauthenticationCoordinatorTest,
   // Reauth vc shouldn't be removed.
   CheckReauthenticationViewControllerIsPresented();
 
+  // Cancelling reauth should close settings.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, true, ^bool() {
+    return delegate_.dismissUICalled;
+  }));
+
+  ASSERT_FALSE(delegate_.successfulReauth);
+}
+
+// Tests that ReauthenticationCoordinator dismissed its view controller after a
+// successful reauthentication before the scene is foregrounded.
+TEST_F(ReauthenticationCoordinatorTest,
+       ReauthViewControllerDismissedBeforeTheSceneIsForegrounded) {
+  CheckReauthenticationViewControllerNotPresented();
+  mock_reauth_module_.shouldSkipReAuth = NO;
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+
+  // Simulate transition to inactive state before background state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Simulate transition to background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  CheckReauthenticationViewControllerIsPresented();
   ASSERT_FALSE(delegate_.successfulReauth);
 
-  // Cancelling reauth should close settings.
-  ASSERT_TRUE(delegate_.dismissUICalled);
+  // Simulate transition to foreground. This will trigger a reauthentication
+  // request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  CheckReauthenticationViewControllerIsPresented();
+  ASSERT_FALSE(delegate_.successfulReauth);
+
+  // Transition back to background.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Then back to foreground, delivering the reauthentication result before
+  // reaching the foreground state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+  ASSERT_TRUE(delegate_.successfulReauth);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Reauth view controller should be gone.
+  CheckReauthenticationViewControllerNotPresented();
 }

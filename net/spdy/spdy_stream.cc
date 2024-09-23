@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -36,7 +37,7 @@ namespace {
 
 base::Value::Dict NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
                                               int net_error,
-                                              base::StringPiece description) {
+                                              std::string_view description) {
   return base::Value::Dict()
       .Set("stream_id", static_cast<int>(stream_id))
       .Set("net_error", ErrorToShortString(net_error))
@@ -76,7 +77,7 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
 
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override {
     if (!stream_.get()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
     DCHECK_GT(stream_->stream_id(), 0u);
@@ -327,7 +328,7 @@ void SpdyStream::SetRequestTime(base::Time t) {
 }
 
 void SpdyStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     base::Time response_time,
     base::TimeTicks recv_first_byte_time) {
   switch (response_state_) {
@@ -335,7 +336,7 @@ void SpdyStream::OnHeadersReceived(
       // No header block has been received yet.
       DCHECK(response_headers_.empty());
 
-      spdy::Http2HeaderBlock::const_iterator it =
+      quiche::HttpHeaderBlock::const_iterator it =
           response_headers.find(spdy::kHttp2StatusHeader);
       if (it == response_headers.end()) {
         const std::string error("Response headers do not include :status.");
@@ -456,7 +457,7 @@ void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
       // Deletes |this|.
       session_->CloseActiveStream(stream_id_, OK);
     } else {
-      NOTREACHED() << io_state_;
+      NOTREACHED_IN_MIGRATION() << io_state_;
     }
     return;
   }
@@ -509,7 +510,7 @@ void SpdyStream::OnFrameWriteComplete(spdy::SpdyFrameType frame_type,
     } else if (io_state_ == STATE_HALF_CLOSED_REMOTE) {
       io_state_ = STATE_CLOSED;
     } else {
-      NOTREACHED() << io_state_;
+      NOTREACHED_IN_MIGRATION() << io_state_;
     }
   }
   // Notify delegate of write completion. Must not destroy |this|.
@@ -561,7 +562,7 @@ int SpdyStream::OnDataSent(size_t frame_size) {
   }
 }
 
-void SpdyStream::LogStreamError(int error, base::StringPiece description) {
+void SpdyStream::LogStreamError(int error, std::string_view description) {
   net_log_.AddEvent(NetLogEventType::HTTP2_STREAM_ERROR, [&] {
     return NetLogSpdyStreamErrorParams(stream_id_, error, description);
   });
@@ -616,12 +617,12 @@ base::WeakPtr<SpdyStream> SpdyStream::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
+int SpdyStream::SendRequestHeaders(quiche::HttpHeaderBlock request_headers,
                                    SpdySendStatus send_status) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
       [&](NetLogCaptureMode capture_mode) {
-        return Http2HeaderBlockNetLogParams(&request_headers, capture_mode);
+        return HttpHeaderBlockNetLogParams(&request_headers, capture_mode);
       });
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
   CHECK(!request_headers_valid_);
@@ -771,7 +772,7 @@ void SpdyStream::QueueNextDataFrame() {
 }
 
 void SpdyStream::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     base::TimeTicks recv_first_byte_time) {
   // Record the timing of the 103 Early Hints response for the experiment
   // (https://crbug.com/1093693).
@@ -800,7 +801,7 @@ void SpdyStream::OnEarlyHintsReceived(
 }
 
 void SpdyStream::SaveResponseHeaders(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     int status) {
   if (response_headers.contains("transfer-encoding")) {
     session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR,

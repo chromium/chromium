@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/update_client/update_client.h"
 
@@ -19,7 +20,6 @@ class GURL;
 
 namespace update_client {
 
-class Component;
 struct CrxComponent;
 
 extern const char kArchAmd64[];
@@ -30,9 +30,6 @@ extern const char kArchArm64[];
 // Installer attributes are component-specific metadata, which may be serialized
 // in an update check request.
 using InstallerAttribute = std::pair<std::string, std::string>;
-
-// Returns true if the |component| contains a valid differential update url.
-bool HasDiffUpdate(const Component& component);
 
 // Returns true if the |status_code| represents a server error 5xx.
 bool IsHttpServerError(int status_code);
@@ -84,18 +81,6 @@ CrxInstaller::Result InstallFunctionWrapper(
 std::optional<base::Value::Dict> ReadManifest(
     const base::FilePath& unpack_path);
 
-// Converts a custom, specific installer error (and optionally extended error)
-// to an installer result.
-template <typename T>
-CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
-  static_assert(std::is_enum<T>::value,
-                "Use an enum class to define custom installer errors");
-  return CrxInstaller::Result(
-      static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE) +
-          static_cast<int>(error),
-      extended_error);
-}
-
 // Returns a string representation of the processor architecture. Uses
 // `base::win::OSInfo::IsWowX86OnARM64` and
 // `base::win::OSInfo::IsWowAMD64OnARM64` if available on Windows (more
@@ -103,6 +88,20 @@ CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
 // If not, or not Windows, falls back to
 // `base::SysInfo().OperatingSystemArchitecture`.
 std::string GetArchitecture();
+
+// Retries recursively deleting the given path five times using
+// `base::DeletePathRecursively`, sleeping for a second between successive
+// tries. Returns true if successful, false otherwise. This function is used
+// when there is a likelihood that the files in `path` can be locked
+// temporarily, such as by antivirus software.
+bool RetryDeletePathRecursively(const base::FilePath& path);
+
+// Similar to `RetryDeletePathRecursively`above, but allows specifying the
+// number of `tries` and the `seconds_between_tries`.
+bool RetryDeletePathRecursivelyCustom(
+    const base::FilePath& path,
+    size_t tries,
+    const base::TimeDelta& seconds_between_tries);
 
 }  // namespace update_client
 

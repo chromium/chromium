@@ -10,23 +10,27 @@ import android.widget.ListView;
 
 import androidx.fragment.app.ListFragment;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
- * A preference fragment for selecting a default search engine.
- * ATTENTION: User can't change search engine if it is controlled by an enterprise policy. Check
+ * A preference fragment for selecting a default search engine. ATTENTION: User can't change search
+ * engine if it is controlled by an enterprise policy. Check
  * TemplateUrlServiceFactory.get().isDefaultSearchManaged() before launching this fragment.
  *
- * TODO(crbug.com/988877): Add on scroll shadow to action bar.
+ * <p>TODO(crbug.com/41473490): Add on scroll shadow to action bar.
  */
-public class SearchEngineSettings extends ListFragment implements ProfileDependentSetting {
+public class SearchEngineSettings extends ListFragment
+        implements SettingsPage, ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;
     private Profile mProfile;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     String getValueForTesting() {
         return mSearchEngineAdapter.getValueForTesting();
@@ -43,9 +47,14 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.search_engine_settings);
+        mPageTitle.set(getString(R.string.search_engine_settings));
         createAdapterIfNecessary();
         setListAdapter(mSearchEngineAdapter);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -56,8 +65,7 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
         listView.setItemsCanFocus(true);
 
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        if (templateUrlService.shouldShowUpdatedSettings()
-                && templateUrlService.isEeaChoiceCountry()) {
+        if (templateUrlService.isEeaChoiceCountry()) {
             View headerView =
                     getLayoutInflater()
                             .inflate(R.layout.search_engine_choice_header, listView, false);
@@ -84,16 +92,6 @@ public class SearchEngineSettings extends ListFragment implements ProfileDepende
     public void setDisableAutoSwitchRunnable(Runnable runnable) {
         createAdapterIfNecessary();
         mSearchEngineAdapter.setDisableAutoSwitchRunnable(runnable);
-    }
-
-    /**
-     * Sets an instance of SettingsLauncher in a fragment.
-     *
-     * @param settingsLauncher The SettingsLauncher that is injected.
-     */
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        createAdapterIfNecessary();
-        mSearchEngineAdapter.setSettingsLauncher(settingsLauncher);
     }
 
     private void createAdapterIfNecessary() {

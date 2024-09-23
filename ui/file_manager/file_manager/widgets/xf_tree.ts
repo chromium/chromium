@@ -5,7 +5,8 @@
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {css, customElement, html, query, state, XfBase} from './xf_base.js';
-import {type TreeItemCollapsedEvent, XfTreeItem} from './xf_tree_item.js';
+import type {XfTreeItem} from './xf_tree_item.js';
+import {type TreeItemCollapsedEvent} from './xf_tree_item.js';
 import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
 
 /**
@@ -23,8 +24,6 @@ import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
  * this is because we need to make sure only one item is being selected or
  * focused.
  *
- * TODO(b/285977941): Remove the closure annotation here.
- * @constructor
  */
 @customElement('xf-tree')
 export class XfTree extends XfBase {
@@ -260,7 +259,14 @@ export class XfTree extends XfBase {
    * navigation and the selection with the keyboard.
    */
   private onHostKeyDown_(e: KeyboardEvent) {
-    if (e.ctrlKey || e.repeat) {
+    if (e.ctrlKey) {
+      return;
+    }
+    // We allow repeated keydown (e.g. hold the key without releasing to trigger
+    // event multiple times) only for ArrowUp/ArrowDown, so users can use hold
+    // arrow up/down to quickly navigate to the tree items far away.
+    const allowRepeat = e.key === 'ArrowUp' || e.key === 'ArrowDown';
+    if (e.repeat && !allowRepeat) {
       return;
     }
 

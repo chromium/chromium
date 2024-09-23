@@ -55,7 +55,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 
 // Extension installations are skipped here as excluding these in the overlay
 // is a bit complicated.
-// TODO(crbug.com/1023268) This is a temporary measure and should be replaced.
+// TODO(crbug.com/40658053) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::switches::IsTabletFormFactor())
@@ -91,7 +91,7 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       base::FileEnumerator::FILES);
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType extension = base::UTF8ToWide(".json");
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType extension(".json");
 #endif
   do {
@@ -334,7 +334,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     // The only platform that uses this check is Mac OS.  If you add one,
     // you need to implement base::VerifyPathControlledByAdmin() for
     // that platform.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_MAC)
   }
 
@@ -353,7 +353,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     return;
   }
 
-  // TODO(crbug.com/1407498): Remove this once migration is completed.
+  // TODO(crbug.com/40887866): Remove this once migration is completed.
   std::unique_ptr<base::Value::List> default_user_types;
   if (options_ & USE_USER_TYPE_PROFILE_FILTER) {
     default_user_types = std::make_unique<base::Value::List>();
@@ -369,7 +369,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 #if BUILDFLAG(IS_WIN)
         base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
         extension_candidate_path.RemoveExtension().BaseName().value();
 #endif
 

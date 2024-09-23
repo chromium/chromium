@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
@@ -224,6 +226,11 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       float max_page_scale_factor) override;
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override;
   void DeliverInputForHighLatencyMode() override;
+  void DeliverInputForDeadline() override;
+  void DidFinishImplFrame() override;
+  bool HasQueuedInput() const override;
+  void SetScrollEventDispatchMode(
+      cc::InputHandlerClient::ScrollEventDispatchMode mode) override;
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -235,9 +242,12 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   void ScrollEndForSnapFling(bool did_finish) override;
   void RequestAnimationForSnapFling() override;
 
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate);
+  void UpdateBrowserControlsState(
+      cc::BrowserControlsState constraints,
+      cc::BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const cc::BrowserControlsOffsetTagsInfo>
+          offset_tags_info);
 
   bool gesture_scroll_on_impl_thread_for_testing() const {
     return handling_gesture_on_impl_thread_;
@@ -258,8 +268,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   friend class test::InputHandlerProxyMomentumScrollJankTest;
   friend class test::InputHandlerProxyForceHandlingOnMainThread;
 
-  void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>,
-                                const base::TimeTicks);
+  void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>);
   void DispatchQueuedInputEvents(bool frame_aligned);
   void UpdateElasticOverscroll();
 
@@ -328,17 +337,23 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                          uint32_t main_thread_hit_tested_reasons,
                          uint32_t main_thread_repaint_reasons);
 
-  bool HasQueuedEventsReadyForDispatch(bool frame_aligned);
+  bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
 
-  raw_ptr<InputHandlerProxyClient, ExperimentalRenderer> client_;
+  // If `scroll_predictor_` can generate a new prediction, this will generate
+  // a synthetic GestureScrollUpdate using previous input events. This will then
+  // be dispatched. We only do this while scrolling and after main-thread hit
+  // testing has completed.
+  void GenerateAndDispatchSytheticScrollPrediction(
+      const viz::BeginFrameArgs& args);
+
+  raw_ptr<InputHandlerProxyClient> client_;
 
   // The input handler object is owned by the compositor delegate. The input
   // handler must call WillShutdown() on this class before it is deleted at
   // which point this pointer will be cleared.
-  raw_ptr<cc::InputHandler, ExperimentalRenderer> input_handler_;
+  raw_ptr<cc::InputHandler> input_handler_;
 
-  raw_ptr<SynchronousInputHandler, ExperimentalRenderer>
-      synchronous_input_handler_;
+  raw_ptr<SynchronousInputHandler> synchronous_input_handler_;
 
   // This should be true when a pinch is in progress. The sequence of events is
   // as follows: GSB GPB GSU GPU ... GPE GSE.
@@ -373,6 +388,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Set only when the compositor input handler is handling a gesture. Tells
   // which source device is currently performing a gesture based scroll.
   std::optional<blink::WebGestureDevice> currently_active_gesture_device_;
+  // Set only when the compositor input handler is handling a gesture. Denotes
+  // which modifiers were present on the `WebInputEvent` so they can be applied
+  // in GenerateAndDispatchSytheticScrollPrediction.
+  std::optional<int> current_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
 
@@ -389,7 +408,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // latency component should be added for injected GestureScrollUpdates.
   bool last_injected_gesture_was_begin_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 
@@ -419,6 +438,38 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Swipe to move cursor feature.
   std::unique_ptr<CursorControlHandler> cursor_control_handler_;
+
+  // The most recent viz::BeginFrameArgs that was received in
+  // DeliverInputForBeginFrame. Which will be the active frame for all
+  // subsequent events arriving in HandleInputEventWithLatencyInfo. If frame
+  // production stops this will be outdated.
+  viz::BeginFrameArgs current_begin_frame_args_;
+
+  // When true, scroll events arriving in HandleInputEventWithLatencyInfo
+  // will be enqueued to be dispatched during the next
+  // DeliverInputForBeginFrame. When false, the scroll events will be dispatched
+  // immediately. This will occur if DeliverInputForBeginFrame was called while
+  // scrolling, with an empty `compositor_event_queue_`, until frame production
+  // has started, or completed.
+  bool enqueue_scroll_events_ = true;
+
+  // `cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents`:
+  // Scroll events arriving in `HandleInputEventWithLatencyInfo` will be
+  // enqueued to be dispatched during the next `DeliverInputForBeginFrame`.
+  //
+  // `cc::InputHandlerClient::ScrollEventDispatchMode::kDispatchScrollEventsImmediately`:
+  // Scroll events arriving in HandleInputEventWithLatencyInfo will be
+  // dispatched immediately, if `DeliverInputForBeginFrame` was called while
+  // scrolling, with no input events in the queue. This will occur until frame
+  // production has started, or completed.
+  //
+  // `cc::InputHandlerClient::ScrollEventDispatchMode::kUseScrollPredictorForEmptyQueue`:
+  // If `compositor_event_queue_` is empty when `DeliverInputForBeginFrame` is
+  // called, while we are scrolling. We will use `scroll_predictor_` to
+  // generate a new prediction. We will then dispatch a synthetic
+  // `GestureScrollUpdate` using the prediction.
+  cc::InputHandlerClient::ScrollEventDispatchMode scroll_event_dispatch_mode_ =
+      cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
 };
 
 }  // namespace blink

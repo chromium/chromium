@@ -310,7 +310,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
     return true;
   }
 
-  if (key_event->type() == ui::ET_KEY_PRESSED) {
+  if (key_event->type() == ui::EventType::kKeyPressed) {
     DCHECK_LT(current_position_idx_, touch_down_positions_.size());
     // TODO(b/308486017): "Modifier key + regular key" support is TBD. Currently
     // it is not supported.
@@ -357,9 +357,9 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
     return false;
   }
 
-  if (type == ui::ET_MOUSE_PRESSED) {
+  if (type == ui::EventType::kMousePressed) {
     DCHECK(!touch_id_);
-  } else if (type == ui::ET_MOUSE_RELEASED) {
+  } else if (type == ui::EventType::kMouseReleased) {
     DCHECK(touch_id_);
   }
 

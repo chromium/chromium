@@ -25,6 +25,11 @@ class UnderlyingImageListChecker final
       : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingImageListChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
+
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
@@ -33,14 +38,14 @@ class UnderlyingImageListChecker final
         CSSImageInterpolationType::EqualNonInterpolableValues);
   }
 
-  const Persistent<InterpolationValueGCed> underlying_;
+  const Member<InterpolationValueGCed> underlying_;
 };
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingImageListChecker>(underlying));
+      MakeGarbageCollected<UnderlyingImageListChecker>(underlying));
   return underlying.Clone();
 }
 
@@ -74,6 +79,11 @@ class InheritedImageListChecker final
 
   ~InheritedImageListChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_image_list_);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -85,7 +95,7 @@ class InheritedImageListChecker final
   }
 
   const CSSProperty& property_;
-  Persistent<const StyleImageList> inherited_image_list_;
+  Member<const StyleImageList> inherited_image_list_;
 };
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
@@ -97,7 +107,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
   StyleImageList* inherited_image_list = MakeGarbageCollected<StyleImageList>();
   ImageListPropertyFunctions::GetImageList(CssProperty(), *state.ParentStyle(),
                                            inherited_image_list);
-  conversion_checkers.push_back(std::make_unique<InheritedImageListChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedImageListChecker>(
       CssProperty(), inherited_image_list));
   return MaybeConvertStyleImageList(inherited_image_list);
 }
@@ -141,8 +151,7 @@ PairwiseInterpolationValue CSSImageListInterpolationType::MaybeMergeSingles(
   return ListInterpolationFunctions::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
-      WTF::BindRepeating(
-          CSSImageInterpolationType::StaticMergeSingleConversions));
+      CSSImageInterpolationType::StaticMergeSingleConversions);
 }
 
 InterpolationValue

@@ -218,17 +218,7 @@ class HistoryURLProvider : public HistoryProvider {
   size_t EstimateMemoryUsage() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, HUPScoringExperiment);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, DoTrimHttpScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
-                           DontTrimHttpSchemeIfInputHasScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
-                           DontTrimHttpSchemeIfInputMatchesInScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
-                           DontTrimHttpsSchemeIfInputMatchesInScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest, DoTrimHttpsScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryURLProviderTest,
-                           HistoryMatchToACMatchWithScoringSignals);
+  friend class HistoryURLProviderPublic;
 
   enum MatchType {
     NORMAL,

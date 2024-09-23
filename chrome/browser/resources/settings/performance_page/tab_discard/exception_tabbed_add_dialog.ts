@@ -4,18 +4,20 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './exception_add_input.js';
 import './exception_current_sites_list.js';
 
-import type {PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {NONE_SELECTED} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
 
 import type {ExceptionAddInputElement} from './exception_add_input.js';
 import type {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
@@ -56,7 +58,7 @@ export class ExceptionTabbedAddDialogElement extends
     return {
       selectedTab_: {
         type: Number,
-        value: ExceptionAddDialogTabs.MANUAL,
+        value: NONE_SELECTED,
       },
 
       tabNames_: {
@@ -77,9 +79,19 @@ export class ExceptionTabbedAddDialogElement extends
   private submitDisabledList_: boolean;
   private submitDisabledManual_: boolean;
 
+  private onSelectedTabChanged_() {
+    // Asynchronously notify the list that its visibility has changed. This is
+    // necessary because the list has an iron-list child that needs to be
+    // manually notified of visibility changes that are triggered by any element
+    // that does not implement iron-resizable-behavior.
+    setTimeout(() => this.$.list.notifyResize(), 0);
+  }
+
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
       this.selectedTab_ = ExceptionAddDialogTabs.CURRENT_SITES;
+    } else if (this.selectedTab_ === NONE_SELECTED) {
+      this.selectedTab_ = ExceptionAddDialogTabs.MANUAL;
     }
     this.$.dialog.showModal();
   }

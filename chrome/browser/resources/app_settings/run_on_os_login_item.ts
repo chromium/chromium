@@ -10,10 +10,12 @@ import type {App} from 'chrome://resources/cr_components/app_management/app_mana
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction, RunOnOsLoginMode} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './run_on_os_login_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import {getCss} from './app_management_shared_style.css.js';
+import {getHtml} from './run_on_os_login_item.html.js';
+import type {ToggleRowElement} from './toggle_row.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
 function convertModeToBoolean(runOnOsLoginMode: RunOnOsLoginMode): boolean {
   switch (runOnOsLoginMode) {
@@ -34,33 +36,35 @@ function getRunOnOsLoginModeBoolean(runOnOsLoginMode: RunOnOsLoginMode):
   return convertModeToBoolean(runOnOsLoginMode);
 }
 
-export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
+export class RunOnOsLoginItemElement extends CrLitElement {
   static get is() {
     return 'app-management-run-on-os-login-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      loginModeLabel: String,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      app: Object,
+  static override get properties() {
+    return {
+      app: {type: Object},
+      loginModeLabel: {type: String},
     };
   }
 
-  loginModeLabel: string;
-  app: App;
+  loginModeLabel: string = '';
+  app: App = createDummyApp();
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleOsLoginMode_);
   }
 
-  private isManaged_(): boolean {
+  protected isManaged_(): boolean {
     const loginData = this.app.runOnOsLogin;
     if (loginData) {
       return loginData.isManaged;
@@ -68,7 +72,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
     return false;
   }
 
-  private getValue_(): boolean {
+  protected getValue_(): boolean {
     const loginMode = this.getRunOnOsLoginMode();
     assert(loginMode);
 
@@ -79,8 +83,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleOsLoginMode_() {
@@ -119,10 +122,8 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-run-on-os-login-item': AppManagementRunOnOsLoginItemElement;
+    'app-management-run-on-os-login-item': RunOnOsLoginItemElement;
   }
 }
 
-customElements.define(
-    AppManagementRunOnOsLoginItemElement.is,
-    AppManagementRunOnOsLoginItemElement);
+customElements.define(RunOnOsLoginItemElement.is, RunOnOsLoginItemElement);

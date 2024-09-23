@@ -63,22 +63,22 @@ bool PaginationController::OnGestureEvent(const ui::GestureEvent& event,
                                           const gfx::Rect& bounds) {
   const ui::GestureEventDetails& details = event.details();
   switch (event.type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN: {
+    case ui::EventType::kGestureScrollBegin: {
       float scroll = scroll_axis_ == SCROLL_AXIS_HORIZONTAL
                          ? details.scroll_x_hint()
                          : details.scroll_y_hint();
       return StartDrag(scroll);
     }
-    case ui::ET_GESTURE_SCROLL_UPDATE: {
+    case ui::EventType::kGestureScrollUpdate: {
       float scroll = scroll_axis_ == SCROLL_AXIS_HORIZONTAL
                          ? details.scroll_x()
                          : details.scroll_y();
       return UpdateDrag(scroll, bounds);
     }
-    case ui::ET_GESTURE_SCROLL_END: {
+    case ui::EventType::kGestureScrollEnd: {
       return EndDrag(event);
     }
-    case ui::ET_SCROLL_FLING_START: {
+    case ui::EventType::kScrollFlingStart: {
       float velocity = scroll_axis_ == SCROLL_AXIS_HORIZONTAL
                            ? details.velocity_x()
                            : details.velocity_y();

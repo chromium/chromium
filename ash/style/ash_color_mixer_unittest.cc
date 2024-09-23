@@ -37,9 +37,6 @@ void InitializeColorProvider(const ui::ColorProviderKey& key,
   // Roughly mimics the ColorMixer configuration for Ash.
   ash::AddCrosStylesColorMixer(&color_provider, key);
   ash::AddAshColorMixer(&color_provider, key);
-
-  // Populates the color map with computed color values.
-  color_provider.GenerateColorMap();
 }
 
 // Initializes the `color_provider` with `seed_color` and the relevant

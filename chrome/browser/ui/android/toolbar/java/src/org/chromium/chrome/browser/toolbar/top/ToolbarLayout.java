@@ -56,11 +56,13 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -97,6 +99,8 @@ public abstract class ToolbarLayout extends FrameLayout
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
+    private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
+
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
@@ -106,6 +110,14 @@ public abstract class ToolbarLayout extends FrameLayout
     private int mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
 
     protected final DestroyChecker mDestroyChecker;
+
+    /** Set if the progress bar is being drawn by WebContents for back forward transition. */
+    private boolean mShowingProgressBarForBackForwardTransition;
+
+    /** Caches the color for the toolbar hairline. */
+    private @ColorInt int mToolbarHairlineColor;
+
+    private ImageView mToolbarShadow;
 
     /** Basic constructor for {@link ToolbarLayout}. */
     public ToolbarLayout(Context context, AttributeSet attrs) {
@@ -138,25 +150,32 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Initialize the external dependencies required for view interaction.
+     *
      * @param toolbarDataProvider The provider for toolbar data.
-     * @param tabController       The controller that handles interactions with the tab.
+     * @param tabController The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
-     *        homepage is enabled.
+     *     homepage is enabled.
      * @param offlineDownloader Triggers downloading an offline page.
+     * @param userEducationHelper Helper for user education flows.
+     * @param trackerSupplier Provides a {@link Tracker} when available.
      */
     @CallSuper
     public void initialize(
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
+            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
-            OfflineDownloader offlineDownloader) {
+            OfflineDownloader offlineDownloader,
+            UserEducationHelper userEducationHelper,
+            ObservableSupplier<Tracker> trackerSupplier) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
         mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
         mProgressBar = createProgressBar();
     }
@@ -240,14 +259,54 @@ public abstract class ToolbarLayout extends FrameLayout
         return mThemeColorProvider == null ? mDefaultTint : mThemeColorProvider.getTint();
     }
 
+    protected ImageView getToolbarShadow() {
+        return mToolbarShadow;
+    }
+
+    /**
+     * Notifies whether the progress bar is being drawn by WebContents for back forward transition
+     * UI.
+     */
+    public final void setShowingProgressBarForBackForwardTransition(
+            boolean showingProgressBarForBackForwardTransition) {
+        if (mShowingProgressBarForBackForwardTransition
+                == showingProgressBarForBackForwardTransition) return;
+
+        mShowingProgressBarForBackForwardTransition = showingProgressBarForBackForwardTransition;
+        mProgressBar.setVisibility(
+                mShowingProgressBarForBackForwardTransition ? View.GONE : View.VISIBLE);
+        updateShadowVisibility();
+    }
+
+    /** Update the visibility of the toolbar shadow. */
+    protected void updateShadowVisibility() {
+        boolean shouldDrawShadow = shouldDrawShadow();
+        int shadowVisibility = shouldDrawShadow ? View.VISIBLE : View.INVISIBLE;
+
+        if (mToolbarShadow != null && mToolbarShadow.getVisibility() != shadowVisibility) {
+            mToolbarShadow.setVisibility(shadowVisibility);
+        }
+    }
+
+    /**
+     * @return Whether the toolbar shadow should be drawn.
+     */
+    protected boolean shouldDrawShadow() {
+        return !mShowingProgressBarForBackForwardTransition;
+    }
+
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {}
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {}
 
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {}
 
     /**
      * Set the height that the progress bar should be.
+     *
      * @return The progress bar height in px.
      */
     int getProgressBarHeight() {
@@ -267,19 +326,14 @@ public abstract class ToolbarLayout extends FrameLayout
 
     // Set hover tooltip text for buttons shared between phones and tablets.
     public void setTooltipTextForToolbarButtons() {
-        // Set hover tooltip text for home and tab switcher buttons.
+        // Set hover tooltip text for home.
         setTooltipText(
-                ((View) getHomeButton()),
-                getContext().getString(R.string.accessibility_toolbar_btn_home));
-        setTooltipText(
-                ((View) getTabSwitcherButton()),
-                getContext()
-                        .getString(R.string.accessibility_toolbar_btn_tabswitcher_toggle_default));
+                getHomeButton(), getContext().getString(R.string.accessibility_toolbar_btn_home));
     }
 
     /**
-     * Set hover tooltip text for buttons shared between phones and tablets.
-     * @TODO: Remove and use the method in UiUtils.java instead once JaCoCo issue is resolved.
+     * Set hover tooltip text for buttons shared between phones and tablets. @TODO: Remove and use
+     * the method in UiUtils.java instead once JaCoCo issue is resolved.
      */
     protected void setTooltipText(View button, String text) {
         if (button != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -300,12 +354,12 @@ public abstract class ToolbarLayout extends FrameLayout
                     }
 
                     @Override
-                    public boolean isInOverviewAndShowingOmnibox() {
+                    public boolean isIncognitoBranded() {
                         return false;
                     }
 
                     @Override
-                    public boolean shouldShowLocationBarInOverviewMode() {
+                    public boolean isOffTheRecord() {
                         return false;
                     }
 
@@ -358,6 +412,14 @@ public abstract class ToolbarLayout extends FrameLayout
                     public boolean isPaintPreview() {
                         return false;
                     }
+
+                    @Override
+                    public void addToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
+
+                    @Override
+                    public void removeToolbarDataProviderObserver(
+                            ToolbarDataProvider.Observer observer) {}
                 };
     }
 
@@ -400,7 +462,11 @@ public abstract class ToolbarLayout extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        // TODO(crbug.com/1021877): lazy initialize progress bar.
+
+        mToolbarShadow = getRootView().findViewById(R.id.toolbar_hairline);
+        updateShadowVisibility();
+
+        // TODO(crbug.com/40657306): lazy initialize progress bar.
         // Posting adding progress bar can prevent parent view group from using a stale children
         // count, which can cause a crash in rare cases.
         post(this::addProgressBarToHierarchy);
@@ -413,8 +479,17 @@ public abstract class ToolbarLayout extends FrameLayout
         return mMenuButtonCoordinator;
     }
 
+    ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinator() {
+        return mTabSwitcherButtonCoordinator;
+    }
+
     void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator menuButtonCoordinator) {
         mMenuButtonCoordinator = menuButtonCoordinator;
+    }
+
+    void setTabSwitcherButtonCoordinatorForTesting(
+            ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator) {
+        mTabSwitcherButtonCoordinator = toggleTabStackButtonCoordinator;
     }
 
     /**
@@ -461,21 +536,8 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * Sets the OnClickListener that will be notified when the TabSwitcher button is pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is pressed.
-     */
-    void setOnTabSwitcherClickHandler(OnClickListener listener) {}
-
-    /**
-     * Sets the OnLongClickListener that will be notified when the TabSwitcher button is long
-     *         pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is long
-     *         pressed.
-     */
-    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {}
-
-    /**
      * Sets the OnClickListener that will be notified when the bookmark button is pressed.
+     *
      * @param listener The callback that will be notified when the bookmark button is pressed.
      */
     void setBookmarkClickHandler(OnClickListener listener) {}
@@ -514,22 +576,17 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateReloadButtonVisibility(boolean isReloading) {}
 
     /**
-     * Gives inheriting classes the chance to update the visual status of the
-     * bookmark button.
+     * Gives inheriting classes the chance to update the visual status of the bookmark button.
+     *
      * @param isBookmarked Whether or not the current tab is already bookmarked.
      * @param editingAllowed Whether or not bookmarks can be modified (added, edited, or removed).
      */
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {}
 
     /**
-     * Gives inheriting classes the chance to do the necessary UI operations after Chrome is
-     * restored to a previously saved state.
-     */
-    void onStateRestored() {}
-
-    /**
      * Gives inheriting classes the chance to update home button UI if home button preference is
      * changed.
+     *
      * @param homeButtonEnabled Whether or not home button is enabled in preference.
      */
     void onHomeButtonUpdate(boolean homeButtonEnabled) {}
@@ -550,13 +607,14 @@ public abstract class ToolbarLayout extends FrameLayout
     public void onPrimaryColorChanged(boolean shouldAnimate) {}
 
     /**
-     * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides
-     * it if {@code drawable} is {@code null}.
+     * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides it
+     * if {@code drawable} is {@code null}.
      */
     protected void setCloseButtonImageResource(@Nullable Drawable drawable) {}
 
     /**
      * Adds a custom action button to the toolbar layout, if it is supported.
+     *
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
@@ -590,6 +648,9 @@ public abstract class ToolbarLayout extends FrameLayout
     /** Triggered when the content view for the specified tab has changed. */
     void onTabContentViewChanged() {}
 
+    /** Triggered when the page of the specified tab had painted something non-empty. */
+    public void onDidFirstVisuallyNonEmptyPaint() {}
+
     protected abstract CaptureReadinessResult isReadyForTextureCapture();
 
     boolean setForceTextureCapture(boolean forceTextureCapture) {
@@ -618,19 +679,6 @@ public abstract class ToolbarLayout extends FrameLayout
      * finished.
      */
     void onTabSwitcherTransitionFinished() {}
-
-    /**
-     * Called when start surface state is changed.
-     *
-     * @param shouldBeVisible Whether toolbar layout should be visible.
-     * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
-     * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
-     *     showing.
-     */
-    void onStartSurfaceStateChanged(
-            boolean shouldBeVisible,
-            boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher) {}
 
     /**
      * Gives inheriting classes the chance to observe tab count changes.
@@ -711,10 +759,30 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
      * @return Whether or not the toolbar is incognito.
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
+    @Deprecated
     protected boolean isIncognito() {
         return mToolbarDataProvider.isIncognito();
+    }
+
+    /**
+     * @return Whether or not the toolbar is incognito branded.
+     * @see {@link ToolbarDataProvider#isIncognitoBranded()}
+     */
+    protected boolean isIncognitoBranded() {
+        return mToolbarDataProvider.isIncognitoBranded();
+    }
+
+    /**
+     * @return Whether or not the toolbar is off the record.
+     * @see {@link ToolbarDataProvider#isOffTheRecord()}
+     */
+    protected boolean isOffTheRecord() {
+        return mToolbarDataProvider.isOffTheRecord();
     }
 
     /**
@@ -742,14 +810,18 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * If the page is currently loading, this will trigger the tab to stop.  If the page is fully
+     * If the page is currently loading, this will trigger the tab to stop. If the page is fully
      * loaded, this will trigger a refresh.
      *
      * <p>The buttons of the toolbar will be updated as a result of making this call.
+     *
+     * @param ignoreCache Whether a reload should ignore the cache (hard-reload).
      */
-    void stopOrReloadCurrentTab() {
+    void stopOrReloadCurrentTab(boolean ignoreCache) {
         maybeUnfocusUrlBar();
-        if (mToolbarTabController != null) mToolbarTabController.stopOrReloadCurrentTab();
+        if (mToolbarTabController != null) {
+            mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
+        }
     }
 
     /** Opens hompage in the current tab. */
@@ -803,22 +875,31 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Sets the toolbar hairline color, if the toolbar has a hairline below it.
+     *
      * @param toolbarColor The toolbar color to base the hairline color on.
      */
     protected void setToolbarHairlineColor(@ColorInt int toolbarColor) {
         final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
-        // Tests don't always set this up. TODO(https://crbug.com/1365954): Refactor this dep.
+        // Tests don't always set this up. TODO(crbug.com/40866629): Refactor this dep.
         if (shadow != null) {
-            shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
+            mToolbarHairlineColor = computeToolbarHairlineColor(toolbarColor);
+            shadow.setImageTintList(ColorStateList.valueOf(mToolbarHairlineColor));
         }
+    }
+
+    /** Returns the color of the hairline drawn underneath the toolbar. */
+    public @ColorInt int getToolbarHairlineColor() {
+        return mToolbarHairlineColor;
     }
 
     /**
      * Returns the border color between the toolbar and WebContents area.
+     *
      * @param toolbarColor Toolbar color
      */
-    public @ColorInt int getToolbarHairlineColor(@ColorInt int toolbarColor) {
-        return ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
+    private @ColorInt int computeToolbarHairlineColor(@ColorInt int toolbarColor) {
+        return ThemeUtils.getToolbarHairlineColor(
+                getContext(), toolbarColor, mToolbarDataProvider.isIncognitoBranded());
     }
 
     /**
@@ -831,7 +912,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
     }
 
-    // TODO(crbug.com/1512232): Rework the API if this method is called by multiple clients.
+    // TODO(crbug.com/41484813): Rework the API if this method is called by multiple clients.
     protected void keepControlsShownForAnimation() {
         // isShown() being false implies that the toolbar isn't visible. We don't want to force it
         // back into visibility just so that we can show an animation.
@@ -906,8 +987,7 @@ public abstract class ToolbarLayout extends FrameLayout
     protected void recordHomeModuleClickedIfNTPVisible() {
         if (getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) {
             // Record the clicking action on the home button.
-            BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
+            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.HOME_BUTTON);
         }
     }
 }

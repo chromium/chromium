@@ -20,13 +20,13 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   NSString* formName = @"TestFormName";
   NSString* fieldIdentifier = @"TestFieldIdentifier";
   NSString* frameID = @"TestFrameID";
-  FormSuggestion* formSuggestion =
-      [FormSuggestion suggestionWithValue:@"TestValue"
-                       displayDescription:@"TestDisplayDescription"
-                                     icon:nil
-                              popupItemId:autofill::PopupItemId::kAddressEntry
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* formSuggestion = [FormSuggestion
+      suggestionWithValue:@"TestValue"
+       displayDescription:@"TestDisplayDescription"
+                     icon:nil
+                     type:autofill::SuggestionType::kAddressEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion
                                                    formName:formName
@@ -39,6 +39,7 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   EXPECT_NSEQ(formSuggestion.displayDescription, suggestion.displayDescription);
   EXPECT_NSEQ(formSuggestion.value, suggestion.value);
   EXPECT_EQ(formSuggestion, suggestion.formSuggestion);
+  EXPECT_EQ(CWVSuggestionTypeAddressEntry, suggestion.suggestionType);
   EXPECT_FALSE([suggestion isPasswordSuggestion]);
 }
 

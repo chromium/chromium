@@ -19,7 +19,7 @@
 namespace policy {
 
 // An implementation of the |DeviceCommandScreenshotJob::Delegate| that uses
-// aura's GrabWindowSnapshotAsyncPNG() to acquire the window snapshot.
+// aura's GrabWindowSnapshotAsPNG() to acquire the window snapshot.
 class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
  public:
   ScreenshotDelegate();

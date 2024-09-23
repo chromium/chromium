@@ -1,0 +1,195 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash)
+
+static_library("constants") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ash/smb_client/discovery:*",
+  ]
+
+  sources = [
+    "smb_constants.cc",
+    "smb_constants.h",
+  ]
+}
+
+static_library("smb_client") {
+  sources = [
+    "smb_errors.cc",
+    "smb_errors.h",
+    "smb_file_system.cc",
+    "smb_file_system.h",
+    "smb_file_system_id.cc",
+    "smb_file_system_id.h",
+    "smb_kerberos_credentials_updater.cc",
+    "smb_kerberos_credentials_updater.h",
+    "smb_persisted_share_registry.cc",
+    "smb_persisted_share_registry.h",
+    "smb_provider.cc",
+    "smb_provider.h",
+    "smb_service.cc",
+    "smb_service.h",
+    "smb_service_factory.cc",
+    "smb_service_factory.h",
+    "smb_service_helper.cc",
+    "smb_service_helper.h",
+    "smb_share_finder.cc",
+    "smb_share_finder.h",
+    "smb_share_info.cc",
+    "smb_share_info.h",
+    "smb_url.cc",
+    "smb_url.h",
+    "smbfs_share.cc",
+    "smbfs_share.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client/discovery",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/smbprovider",
+    "//chromeos/ash/components/smbfs",
+    "//chromeos/components/firewall_hole",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/filesystem/public/mojom",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//crypto",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/mojom",
+    "//storage/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "smb_service_test_base.cc",
+    "smb_service_test_base.h",
+  ]
+
+  public_deps = [ "//chrome/browser/ash/login/users:test_support" ]
+
+  deps = [
+    ":smb_client",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/smbfs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "smb_errors_unittest.cc",
+    "smb_file_system_id_test.cc",
+    "smb_kerberos_credentials_updater_unittest.cc",
+    "smb_persisted_share_registry_unittest.cc",
+    "smb_service_helper_unittest.cc",
+    "smb_service_unittest.cc",
+    "smb_share_finder_unittest.cc",
+    "smb_url_unittest.cc",
+    "smbfs_share_unittest.cc",
+  ]
+
+  deps = [
+    ":constants",
+    ":smb_client",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client/discovery",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/kerberos",
+    "//chromeos/ash/components/dbus/smbprovider",
+    "//chromeos/ash/components/dbus/smbprovider:proto",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/smbfs",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "smb_service_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//content/test:test_support",
+  ]
+}
+
+fuzzer_test("smb_url_fuzzer") {
+  sources = [
+    "smb_constants.cc",
+    "smb_constants.h",
+    "smb_url.cc",
+    "smb_url.h",
+    "smb_url_fuzzer.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//url",
+  ]
+
+  dict = "fuzzer_data/smb_url_fuzzer.dict"
+
+  seed_corpus = "fuzzer_data/smb_url_corpus"
+}

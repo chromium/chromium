@@ -14,8 +14,12 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
     'needsRestart': false,
     'showBetaChannelPromotion': false,
     'showDevChannelPromotion': false,
+    // <if expr="chromeos_ash">
     'showOwnerWarning': false,
+    // </if>
+    // <if expr="chromeos_lacros or chromeos_ash">
     'showSystemFlagsLink': true,
+    // </if>
   };
 
   constructor() {
@@ -25,6 +29,7 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
       'crosUrlFlagsRedirect',
       // </if>
       'resetAllFlags',
+      'requestDeprecatedFeatures',
       'requestExperimentalFeatures',
       'enableExperimentalFeature',
       'selectExperimentalFeature',
@@ -49,6 +54,11 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
 
   resetAllFlags() {
     this.methodCalled('resetAllFlags');
+  }
+
+  requestDeprecatedFeatures() {
+    this.methodCalled('requestDeprecatedFeatures');
+    return Promise.resolve(structuredClone(this.featureData));
   }
 
   requestExperimentalFeatures() {

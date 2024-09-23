@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "arc_app_performance_tracing_test_helper.cc",
+    "arc_app_performance_tracing_test_helper.h",
+    "overview_tracing_test_base.cc",
+    "overview_tracing_test_base.h",
+    "overview_tracing_test_handler.cc",
+    "overview_tracing_test_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser/ash/app_list/arc:test_support" ]
+
+  deps = [
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/tracing",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//components/exo",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//content/test:test_support",
+    "//ui/views",
+  ]
+}

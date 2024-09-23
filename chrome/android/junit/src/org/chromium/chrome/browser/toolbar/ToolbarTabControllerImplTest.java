@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -15,9 +14,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -27,7 +24,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
@@ -38,7 +34,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -65,7 +60,6 @@ public class ToolbarTabControllerImplTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
-    @Mock private Supplier<Boolean> mOverrideHomePageSupplier;
     @Mock private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     @Mock private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock private Tracker mTracker;
@@ -75,8 +69,6 @@ public class ToolbarTabControllerImplTest {
     @Mock private NativePage mNativePage;
     @Mock private Supplier<Tab> mActivityTabProvider;
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     private ToolbarTabControllerImpl mToolbarTabController;
 
     @Before
@@ -84,7 +76,6 @@ public class ToolbarTabControllerImplTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mTab).when(mTabSupplier).get();
         doReturn(mTab).when(mActivityTabProvider).get();
-        doReturn(false).when(mOverrideHomePageSupplier).get();
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mNativePage).when(mTab).getNativePage();
         TrackerFactory.setTrackerForTests(mTracker);
@@ -136,43 +127,31 @@ public class ToolbarTabControllerImplTest {
     @Test
     public void stopOrReloadCurrentTab() {
         doReturn(false).when(mTab).isLoading();
-        mToolbarTabController.stopOrReloadCurrentTab();
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ false);
 
         verify(mTab).reload();
         verify(mRunnable).run();
 
         doReturn(true).when(mTab).isLoading();
-        mToolbarTabController.stopOrReloadCurrentTab();
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ false);
 
         verify(mTab).stopLoading();
         verify(mRunnable, times(2)).run();
     }
 
     @Test
-    public void openHomepage_handledByStartSurfaceNoProfile() {
-        doReturn(true).when(mOverrideHomePageSupplier).get();
+    public void stopOrReloadCurrentTab_ignoreCache() {
+        doReturn(false).when(mTab).isLoading();
 
-        mToolbarTabController.openHomepage();
+        mToolbarTabController.stopOrReloadCurrentTab(/* ignoreCache= */ true);
 
-        verify(mTab, never()).loadUrl(any());
-        verify(mTracker, never()).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
-    }
-
-    @Test
-    public void openHomepage_handledByStartSurfaceWithProfile() {
-        doReturn(true).when(mOverrideHomePageSupplier).get();
-        doReturn(mTracker).when(mTrackerSupplier).get();
-
-        mToolbarTabController.openHomepage();
-
-        verify(mTab, never()).loadUrl(any());
-        verify(mTracker, times(1)).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
+        verify(mTab).reloadIgnoringCache();
     }
 
     @Test
     public void openHomepage_loadsHomePage() {
         mToolbarTabController.openHomepage();
-        GURL homePageGurl = HomepageManager.getHomepageGurl();
+        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl();
         if (homePageGurl.isEmpty()) {
             homePageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
@@ -238,7 +217,6 @@ public class ToolbarTabControllerImplTest {
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
                         mTabSupplier,
-                        mOverrideHomePageSupplier,
                         mTrackerSupplier,
                         mBottomControlsCoordinatorSupplier,
                         ToolbarManager::homepageUrl,

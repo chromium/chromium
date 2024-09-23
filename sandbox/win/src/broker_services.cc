@@ -207,7 +207,7 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
         }
 
         default: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         }
       }
@@ -239,11 +239,11 @@ DWORD WINAPI TargetEventsThread(PVOID param) {
       return 0;
     } else {
       // We have not implemented more commands.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -327,7 +327,7 @@ BrokerServicesBase::~BrokerServicesBase() {
   if (job_thread_.is_valid() &&
       WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.get(), 5000)) {
     // Cannot clean broker services.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 }
@@ -452,9 +452,13 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   for (HANDLE handle : policy_handle_list)
     startup_info->AddInheritedHandle(handle);
 
-  scoped_refptr<AppContainer> container = config_base->GetAppContainer();
-  if (container)
+  AppContainer* container = config_base->GetAppContainer();
+  if (container) {
+    CHECK(config_base->is_csrss_connected() ||
+          config_base->GetLockdownTokenLevel() == USER_LOCKDOWN)
+        << "CSRSS must be connected to use a privileged AppContainer sandbox.";
     startup_info->SetAppContainer(container);
+  }
 
   startup_info->AddJobToAssociate(policy_base->GetJobHandle());
 

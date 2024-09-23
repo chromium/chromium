@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -363,10 +364,10 @@ void CertificateStoreImpl::CreatePrivateKeyInner(
   }
 
   const auto& local_proto_identity = proto_identity.value();
-  if (local_proto_identity && (local_proto_identity->has_private_key() ||
-                               local_proto_identity->has_certificate())) {
+  if (local_proto_identity && local_proto_identity->has_private_key()) {
     // An identity already exists, this request is therefore treated as a
-    // conflict.
+    // conflict. Only check for the private key, as certificates can be replaced
+    // as long as the trusted private key is not lost.
     std::move(callback).Run(base::unexpected(StoreError::kConflictingIdentity));
     return;
   }
@@ -521,8 +522,8 @@ void CertificateStoreImpl::GetIdentityInner(
 
   scoped_refptr<net::X509Certificate> certificate = nullptr;
   if (local_proto_identity->has_certificate()) {
-    base::Pickle pickle(local_proto_identity->certificate().data(),
-                        local_proto_identity->certificate().length());
+    base::Pickle pickle = base::Pickle::WithUnownedBuffer(
+        base::as_byte_span(local_proto_identity->certificate()));
     base::PickleIterator iter(pickle);
     certificate = net::X509Certificate::CreateFromPickle(&iter);
   }

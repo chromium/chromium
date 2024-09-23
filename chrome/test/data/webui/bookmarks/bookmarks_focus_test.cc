@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DISABLED_DialogFocusManager) {
   RunTest("bookmarks/dialog_focus_manager_test.js", "mocha.run()");
 }
 
-// TODO(https://crbug.com/1409439): Test is flaky.
+// TODO(crbug.com/40889088): Test is flaky.
 IN_PROC_BROWSER_TEST_F(BookmarksFocusTest, DNDManager) {
   RunTest("bookmarks/dnd_manager_test.js", "mocha.run()");
 }

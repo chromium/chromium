@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -31,16 +32,21 @@
 #include "base/win/scoped_handle.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/binder.h"
+#endif
+
 namespace mojo {
 
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 // Leave room for any other descriptors defined in content for example.
-// TODO(https://crbug.com/676442): Consider changing base::GlobalDescriptors to
+// TODO(crbug.com/40499227): Consider changing base::GlobalDescriptors to
 // generate a key when setting the file descriptor.
 constexpr int kAndroidClientHandleDescriptor =
     base::GlobalDescriptors::kBaseDescriptor + 10000;
+constexpr std::string_view kBinderValuePrefix = "binder:";
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
                             int target_fd) {
@@ -131,17 +137,35 @@ void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
 
 void PlatformChannelEndpoint::PrepareToPass(base::LaunchOptions& options,
                                             base::CommandLine& command_line) {
+  const std::string value = PrepareToPass(options);
+  if (!value.empty()) {
+    command_line.AppendSwitchASCII(PlatformChannel::kHandleSwitch, value);
+  }
+}
+
+std::string PlatformChannelEndpoint::PrepareToPass(
+    base::LaunchOptions& options) {
+  std::string value;
 #if BUILDFLAG(IS_WIN)
-  PrepareToPass(options.handles_to_inherit, command_line);
+  PrepareToPass(options.handles_to_inherit, value);
 #elif BUILDFLAG(IS_FUCHSIA)
-  PrepareToPass(options.handles_to_transfer, command_line);
+  PrepareToPass(options.handles_to_transfer, value);
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  PrepareToPass(options.mach_ports_for_rendezvous, command_line);
+  PrepareToPass(options.mach_ports_for_rendezvous, value);
 #elif BUILDFLAG(IS_POSIX)
-  PrepareToPass(options.fds_to_remap, command_line);
+#if BUILDFLAG(IS_ANDROID)
+  if (platform_handle().is_valid_binder()) {
+    value = base::StrCat(
+        {kBinderValuePrefix, base::NumberToString(options.binders.size())});
+    options.binders.push_back(platform_handle().GetBinder());
+    return value;
+  }
+#endif
+  PrepareToPass(options.fds_to_remap, value);
 #else
 #error "Platform not supported."
 #endif
+  return value;
 }
 
 void PlatformChannelEndpoint::ProcessLaunchAttempted() {
@@ -176,6 +200,20 @@ PlatformChannelEndpoint PlatformChannelEndpoint::RecoverFromString(
   return PlatformChannelEndpoint(PlatformHandle(zx::handle(
       zx_take_startup_handle(base::checked_cast<uint32_t>(handle_value)))));
 #elif BUILDFLAG(IS_ANDROID)
+  if (value.starts_with(kBinderValuePrefix)) {
+    size_t index;
+    if (!base::StringToSizeT(value.substr(kBinderValuePrefix.size()), &index)) {
+      DLOG(ERROR) << "Invalid binder endpoint string";
+      return PlatformChannelEndpoint();
+    }
+    base::android::BinderRef binder =
+        base::android::TakeBinderFromParent(index);
+    if (!binder) {
+      DLOG(ERROR) << "Missing binder endpoint " << index;
+      return PlatformChannelEndpoint();
+    }
+    return PlatformChannelEndpoint(PlatformHandle(std::move(binder)));
+  }
   base::GlobalDescriptors::Key key = -1;
   if (value.empty() || !base::StringToUint(value, &key)) {
     DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";

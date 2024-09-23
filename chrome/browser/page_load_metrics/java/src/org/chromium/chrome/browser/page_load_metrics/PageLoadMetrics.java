@@ -215,10 +215,8 @@ public class PageLoadMetrics {
     }
 
     /**
-     * Adds an observer.
-     * supportPrerendering flag is introduced for incremental migration and new code should support
-     * prerendering.
-     * TODO(https://crbug.com/1363952): Deprecate supportPrerendering.
+     * Adds an observer. supportPrerendering flag is introduced for incremental migration and new
+     * code should support prerendering. TODO(crbug.com/40238907): Deprecate supportPrerendering.
      *
      * @param observer the Observer instance to be added.
      * @param supportPrerendering specifis if the observer recognizes prerendering navigations.

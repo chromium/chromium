@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
   void PrepareToPass(base::LaunchOptions& options,
                      base::CommandLine& command_line);
 
+  // Like above but returns an appropriate switch value as a string.
+  std::string PrepareToPass(base::LaunchOptions& options);
+
   // Must be called after the corresponding process launch attempt if
   // PrepareToPass() was called.
   void ProcessLaunchAttempted();

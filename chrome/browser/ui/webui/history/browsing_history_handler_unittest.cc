@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -26,7 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
@@ -39,8 +40,7 @@ namespace history {
 
 class MockBrowsingHistoryService : public BrowsingHistoryService {
  public:
-  MOCK_METHOD(void,
-              QueryHistory,
+  MOCK_METHOD(void, QueryHistory,
               (const std::u16string& search_text, const QueryOptions& options),
               (override));
 };
@@ -81,11 +81,12 @@ class BrowsingHistoryHandlerWithWebUIForTesting
   BrowsingHistoryHandlerWithWebUIForTesting& operator=(
       const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
 
-  void SendHistoryQuery(int count, const std::u16string& query) override {
+  void SendHistoryQuery(int count, const std::u16string& query,
+                        std::optional<double> begin_timestamp) override {
     if (postpone_query_results_) {
       return;
     }
-    BrowsingHistoryHandler::SendHistoryQuery(count, query);
+    BrowsingHistoryHandler::SendHistoryQuery(count, query, begin_timestamp);
   }
 
   void PostponeResults() { postpone_query_results_ = true; }
@@ -123,12 +124,15 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {SyncServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildTestSyncService)},
-        {WebHistoryServiceFactory::GetInstance(),
-         base::BindRepeating(&BuildFakeWebHistoryService)},
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            SyncServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildTestSyncService)},
+        TestingProfile::TestingFactory{
+            WebHistoryServiceFactory::GetInstance(),
+            base::BindRepeating(&BuildFakeWebHistoryService)},
+        TestingProfile::TestingFactory{
+            BookmarkModelFactory::GetInstance(),
+            BookmarkModelFactory::GetDefaultFactory()},
     };
   }
 
@@ -181,8 +185,8 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   // BrowsingHistoryHandler is informed about WebHistoryService history
   // deletions.
   {
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
+    ASSERT_EQ(sync_service()->GetTransportState(),
+              syncer::SyncService::TransportState::ACTIVE);
     BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
     handler.RegisterMessages();
     handler.StartQueryHistory();
@@ -205,12 +209,12 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   // BrowsingHistoryHandler will be informed about WebHistoryService deletions
   // even if history sync is activated later.
   {
-    sync_service()->SetTransportState(
+    sync_service()->SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
     BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
     handler.RegisterMessages();
     handler.StartQueryHistory();
-    sync_service()->SetTransportState(
+    sync_service()->SetMaxTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service()->FireStateChanged();
 
@@ -236,8 +240,8 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   // BrowsingHistoryHandler does not fire historyDeleted while a web history
   // delete request is happening.
   {
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
+    ASSERT_EQ(sync_service()->GetTransportState(),
+              syncer::SyncService::TransportState::ACTIVE);
     BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
     handler.RegisterMessages();
     handler.StartQueryHistory();
@@ -274,7 +278,7 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   // deletions. The WebHistoryService object still exists (because it's a
   // BrowserContextKeyedService), but is not visible to BrowsingHistoryHandler.
   {
-    sync_service()->SetTransportState(
+    sync_service()->SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
     BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
     handler.RegisterMessages();
@@ -337,6 +341,42 @@ TEST_F(BrowsingHistoryHandlerTest, MisplacedHostPrefixParameter) {
     init_args.Append("query-history-callback-id");
     init_args.Append("whost:ww.chromium.org");
     init_args.Append(150);
+    handler.HandleQueryHistory(init_args);
+  }
+
+  {
+    std::u16string query = u"www.chromium.orghost:";
+    EXPECT_CALL(
+        *handler.mock_service(),
+        QueryHistory(
+            query, ::testing::Field(&history::QueryOptions::host_only, false)));
+
+    base::Value::List init_args;
+    init_args.Append("query-history-callback-id");
+    init_args.Append("www.chromium.orghost:");
+    init_args.Append(150);
+    handler.HandleQueryHistory(init_args);
+  }
+}
+
+TEST_F(BrowsingHistoryHandlerTest, BeginTimestamp) {
+  BrowsingHistoryHandlerWithWebUIForTesting handler(web_ui());
+  ASSERT_TRUE(web_ui()->call_data().empty());
+  {
+    std::u16string query = u"query";
+    double timestamp = 1713546406359L;
+    EXPECT_CALL(
+        *handler.mock_service(),
+        QueryHistory(
+            query, ::testing::Field(
+                       &history::QueryOptions::begin_time,
+                       base::Time::FromMillisecondsSinceUnixEpoch(timestamp))));
+
+    base::Value::List init_args;
+    init_args.Append("query-history-callback-id");
+    init_args.Append(query);
+    init_args.Append(150);
+    init_args.Append(timestamp);
     handler.HandleQueryHistory(init_args);
   }
 

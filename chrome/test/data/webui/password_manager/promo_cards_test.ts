@@ -141,7 +141,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [createPasswordEntry({
@@ -168,7 +168,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.data.isAccountStorageEnabled = false;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [createPasswordEntry(
@@ -191,7 +191,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [createPasswordEntry(
@@ -214,7 +214,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     const password = createPasswordEntry({
       id: 1234,
@@ -247,5 +247,31 @@ suite('PasswordsSectionTest', function() {
         section.shadowRoot!.querySelector('move-passwords-dialog');
     assertTrue(!!moveDialog);
     assertTrue(isVisible(moveDialog.$.move));
+  });
+
+  test('screenlock promo', async function() {
+    promoCardsProxy.promo = {
+      id: 'screenlock_reauth_promo',
+      title: 'Screenlock reauth promo',
+      description: 'Screenlock reauth promo description.',
+      actionButtonText: 'Enable screenlock reauth',
+    };
+    passwordManager.setSwitchBiometricAuthBeforeFillingStateResponse(true);
+
+    const section = await createPasswordsSection();
+    let promoCardElement = section.shadowRoot!.querySelector('promo-card');
+
+    // Verify promo card is shown.
+    assertTrue(!!promoCardElement);
+    assertTrue(isVisible(promoCardElement.$.actionButton));
+
+    // Click action button button and verify that authentication started.
+    promoCardElement.$.actionButton.click();
+    await passwordManager.whenCalled('switchBiometricAuthBeforeFillingState');
+    await flushTasks();
+
+    // Verify that the promo card is hidden.
+    promoCardElement = section.shadowRoot!.querySelector('promo-card');
+    assertFalse(isVisible(promoCardElement));
   });
 });

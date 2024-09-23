@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
                                        constraints + ");");
 }
 
-// TODO(crbug.com/988432): This test is a temporary replacement for:
+// TODO(crbug.com/40637961): This test is a temporary replacement for:
 // external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html
 IN_PROC_BROWSER_TEST_F(
     WebRtcAudioBrowserTest,

@@ -16,7 +16,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.base.ThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 
@@ -53,7 +53,7 @@ public class DeveloperUiTestUtils {
 
     public static String getClipBoardTextOnUiThread(Context context) throws ExecutionException {
         // ClipManager service has to be called on the UI main thread.
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipboardManager =
                             (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -64,7 +64,7 @@ public class DeveloperUiTestUtils {
     public static void setClipBoardTextOnUiThread(Context context, String key, String value)
             throws ExecutionException {
         // ClipManager service has to be called on the UI main thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipboardManager =
                             (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);

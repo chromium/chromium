@@ -89,7 +89,9 @@
 //media/test/data/bear-1280x720-hevc-12bit-420.mp4
 //media/test/data/bear-1280x720-hevc-12bit-422.mp4
 //media/test/data/bear-1280x720-hevc-12bit-444.mp4
+//media/test/data/bear-1280x720-hevc-8bit-422-no-audio.mp4
 //media/test/data/bear-1280x720-hevc-8bit-422.mp4
+//media/test/data/bear-1280x720-hevc-8bit-444-no-audio.mp4
 //media/test/data/bear-1280x720-hevc-no-audio.mp4
 //media/test/data/bear-1280x720-hevc.mp4
 //media/test/data/bear-1280x720-hls-clear-mpl.m3u8
@@ -288,15 +290,10 @@
 //media/test/data/bear_audio_longer_than_video_vp8.ogv
 //media/test/data/bear_audio_shorter_than_video.ogv
 //media/test/data/bear_audio_shorter_than_video_vp8.ogv
-//media/test/data/bear_divx_mp3.avi
 //media/test/data/bear_dtsc.mp4
 //media/test/data/bear_dtse.mp4
 //media/test/data/bear_dtsx.mp4
-//media/test/data/bear_gsm_ms.wav
 //media/test/data/bear_h264_aac.3gp
-//media/test/data/bear_mpeg4_amrnb.3gp
-//media/test/data/bear_mpeg4_mp3.avi
-//media/test/data/bear_mpeg4asp_mp3.avi
 //media/test/data/bear_mulaw.wav
 //media/test/data/bear_pcm.wav
 //media/test/data/bear_pcm_s16be.mov
@@ -310,7 +307,6 @@
 //media/test/data/bear_silent.webm
 //media/test/data/blackwhite.html
 //media/test/data/blackwhite.png
-//media/test/data/blackwhite_yuv420p.avi
 //media/test/data/blackwhite_yuv420p.mp4
 //media/test/data/blackwhite_yuv420p.ogv
 //media/test/data/blackwhite_yuv420p.webm
@@ -342,6 +338,7 @@
 //media/test/data/double-sfx.ogg
 //media/test/data/dts.bin
 //media/test/data/dtsx.bin
+//media/test/data/ebu-3213-e-vp9.mp4
 //media/test/data/eme_and_get_display_media.html
 //media/test/data/eme_load_session_after_close_test.html
 //media/test/data/eme_player.html
@@ -372,6 +369,12 @@
 //media/test/data/four-colors.png
 //media/test/data/four-colors.y4m
 //media/test/data/frame_size_change-av_enc-v.webm
+//media/test/data/gbrp-av1.mp4
+//media/test/data/gbrp-h264.mp4
+//media/test/data/gbrp-h265.mp4
+//media/test/data/gbrp-vp9.mp4
+//media/test/data/gbrp.html
+//media/test/data/gbrp.png
 //media/test/data/glass-blowing2-dolby-vision-profile-5-frag.mp4
 //media/test/data/glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 //media/test/data/green-a300hz.webm
@@ -382,6 +385,8 @@
 //media/test/data/hls/README
 //media/test/data/hls/bear0.mp4
 //media/test/data/hls/bear0.ts
+//media/test/data/hls/generate_hls.py
+//media/test/data/hls/hls_support_matrix.html
 //media/test/data/hls/init_0.mp4
 //media/test/data/hls/mp_mp4_avc1.m3u8
 //media/test/data/hls/mp_ts_avc1.m3u8
@@ -409,7 +414,6 @@
 //media/test/data/multiple_cdm_types.html
 //media/test/data/multitrack-3video-2audio.webm
 //media/test/data/multitrack-disabled.mp4
-//media/test/data/negative-audio-timestamps.avi
 //media/test/data/negative_ts.flac
 //media/test/data/no_audio_video.webm
 //media/test/data/no_streams.webm
@@ -443,6 +447,7 @@
 //media/test/data/red-a500hz.webm
 //media/test/data/red-green.h264
 //media/test/data/red_green_gradient_lossy.webp
+//media/test/data/reference-frame-scaling-test.ivf
 //media/test/data/sfx-flac.mp4
 //media/test/data/sfx-flac_frag.mp4
 //media/test/data/sfx-opus-441.webm

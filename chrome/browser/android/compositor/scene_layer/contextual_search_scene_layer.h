@@ -15,6 +15,8 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
+class Profile;
+
 namespace cc::slim {
 class Layer;
 class SolidColorLayer;
@@ -86,6 +88,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat search_panel_height,
       jfloat search_bar_margin_side,
       jfloat search_bar_margin_top,
+      jfloat search_bar_margin_bottom,
       jfloat search_bar_height,
       jfloat search_context_opacity,
       jfloat search_text_layer_min_height,
@@ -110,7 +113,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jboolean touch_highlight_visible,
       jfloat touch_highlight_x_offset,
       jfloat touch_highlight_width,
-      const base::android::JavaRef<jobject>& j_profile,
+      Profile* profile,
       jint bar_background_resource_id,
       jint separator_line_color);
 
@@ -129,7 +132,7 @@ class ContextualSearchSceneLayer : public SceneLayer,
       const base::android::JavaParamRef<jobject>& jobj);
 
  private:
-  void FetchThumbnail(const base::android::JavaRef<jobject>& j_profile);
+  void FetchThumbnail(Profile* profile);
 
   raw_ptr<JNIEnv> env_;
   base::android::ScopedJavaGlobalRef<jobject> object_;

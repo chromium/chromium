@@ -4,13 +4,16 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [
+    "debug_types.mojom",
+    "os_registration_error.mojom",
     "registration_eligibility.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
-    "summary_window_operator.mojom",
+    "summary_operator.mojom",
     "trigger_data_matching.mojom",
     "trigger_registration_error.mojom",
   ]
@@ -38,19 +41,33 @@ component("features") {
 
 component("attribution_reporting") {
   sources = [
+    "aggregatable_debug_reporting_config.cc",
+    "aggregatable_debug_reporting_config.h",
     "aggregatable_dedup_key.cc",
     "aggregatable_dedup_key.h",
+    "aggregatable_filtering_id_max_bytes.cc",
+    "aggregatable_filtering_id_max_bytes.h",
     "aggregatable_trigger_config.cc",
     "aggregatable_trigger_config.h",
     "aggregatable_trigger_data.cc",
     "aggregatable_trigger_data.h",
+    "aggregatable_utils.cc",
+    "aggregatable_utils.h",
     "aggregatable_values.cc",
     "aggregatable_values.h",
     "aggregation_keys.cc",
     "aggregation_keys.h",
+    "attribution_scopes_data.cc",
+    "attribution_scopes_data.h",
+    "attribution_scopes_set.cc",
+    "attribution_scopes_set.h",
     "constants.h",
+    "debug_types.cc",
+    "debug_types.h",
     "destination_set.cc",
     "destination_set.h",
+    "eligibility.cc",
+    "eligibility.h",
     "event_level_epsilon.cc",
     "event_level_epsilon.h",
     "event_report_windows.cc",
@@ -65,6 +82,15 @@ component("attribution_reporting") {
     "os_registration.h",
     "parsing_utils.cc",
     "parsing_utils.h",
+    "privacy_math.cc",
+    "privacy_math.h",
+    "registrar.h",
+    "registrar_info.cc",
+    "registrar_info.h",
+    "registration_header_error.cc",
+    "registration_header_error.h",
+    "registration_info.cc",
+    "registration_info.h",
     "source_registration.cc",
     "source_registration.h",
     "source_type.cc",
@@ -91,7 +117,11 @@ component("attribution_reporting") {
     "//url",
   ]
 
-  deps = [ ":is_origin_suitable" ]
+  deps = [
+    ":is_origin_suitable",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:mojom_headers",
+  ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_IMPL" ]
 }
@@ -116,12 +146,18 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregatable_debug_reporting_config_unittest.cc",
     "aggregatable_dedup_key_unittest.cc",
+    "aggregatable_filtering_id_max_bytes_unittest.cc",
     "aggregatable_trigger_config_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",
+    "aggregatable_utils_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
+    "attribution_scopes_data_unittest.cc",
+    "attribution_scopes_set_unittest.cc",
     "destination_set_unittest.cc",
+    "eligibility_unittest.cc",
     "event_level_epsilon_unittest.cc",
     "event_report_windows_unittest.cc",
     "event_trigger_data_unittest.cc",
@@ -129,6 +165,10 @@ source_set("unit_tests") {
     "max_event_level_reports_unittest.cc",
     "os_registration_unittest.cc",
     "parsing_utils_unittest.cc",
+    "privacy_math_unittest.cc",
+    "registrar_info_unittest.cc",
+    "registration_header_error_unittest.cc",
+    "registration_info_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
     "summary_buckets_unittest.cc",
@@ -141,6 +181,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//services/network/public/mojom:mojom_headers",
     "//testing/gtest",
   ]
 }
@@ -159,6 +200,18 @@ source_set("test_support") {
   ]
 
   deps = [ "//base" ]
+}
+
+fuzzer_test("parse_info_header_fuzzer") {
+  sources = [ "parse_info_header_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+    "//base:i18n",
+  ]
+
+  seed_corpus =
+      "//components/attribution_reporting/parse_info_header_fuzzer_corpus/"
 }
 
 fuzzer_test("parse_os_header_fuzzer") {
@@ -227,6 +280,11 @@ mojom("registration_mojom") {
     {
       types = [
         {
+          mojom = "attribution_reporting.mojom.AggregatableValuesValue"
+          cpp = "::attribution_reporting::AggregatableValuesValue"
+          forward_declaration = "namespace attribution_reporting { class AggregatableValuesValue; }"
+        },
+        {
           mojom = "attribution_reporting.mojom.SuitableOrigin"
           cpp = "::attribution_reporting::SuitableOrigin"
           forward_declaration =
@@ -286,6 +344,12 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { struct AggregatableDedupKey; }"
         },
         {
+          mojom = "attribution_reporting.mojom.AggregatableValues"
+          cpp = "::attribution_reporting::AggregatableValues"
+          forward_declaration =
+              "namespace attribution_reporting { class AggregatableValues; }"
+        },
+        {
           mojom = "attribution_reporting.mojom.TriggerRegistration"
           cpp = "::attribution_reporting::TriggerRegistration"
           forward_declaration =
@@ -310,6 +374,8 @@ mojom("registration_mojom") {
         {
           mojom = "attribution_reporting.mojom.OsRegistrationItem"
           cpp = "::attribution_reporting::OsRegistrationItem"
+          forward_declaration =
+              "namespace attribution_reporting { struct OsRegistrationItem; }"
         },
         {
           mojom = "attribution_reporting.mojom.EventReportWindows"
@@ -328,6 +394,36 @@ mojom("registration_mojom") {
           cpp = "::attribution_reporting::TriggerSpecs"
           forward_declaration =
               "namespace attribution_reporting { class TriggerSpecs; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.SourceAggregatableDebugReportingConfig"
+          cpp =
+              "::attribution_reporting::SourceAggregatableDebugReportingConfig"
+          forward_declaration = "namespace attribution_reporting { class SourceAggregatableDebugReportingConfig; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableDebugReportingConfig"
+          cpp = "::attribution_reporting::AggregatableDebugReportingConfig"
+          forward_declaration = "namespace attribution_reporting { struct AggregatableDebugReportingConfig; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableDebugReportingContribution"
+          cpp =
+              "::attribution_reporting::AggregatableDebugReportingContribution"
+          forward_declaration = "namespace attribution_reporting { class AggregatableDebugReportingContribution; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AttributionScopesSet"
+          cpp = "::attribution_reporting::AttributionScopesSet"
+          forward_declaration =
+              "namespace attribution_reporting { class AttributionScopesSet; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AttributionScopesData"
+          cpp = "::attribution_reporting::AttributionScopesData"
+          default_constructible = false
+          forward_declaration =
+              "namespace attribution_reporting { class AttributionScopesData; }"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
@@ -360,9 +456,118 @@ component("registration_mojom_traits") {
   ]
 }
 
+mojom("registration_header_error_mojom") {
+  sources = [ "registration_header_error.mojom" ]
+
+  generate_java = true
+
+  deps = [ ":mojom" ]
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "attribution_reporting.mojom.RegistrationHeaderError"
+          cpp = "::attribution_reporting::RegistrationHeaderError"
+          forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.RegistrationHeaderErrorDetails"
+          cpp = "::attribution_reporting::RegistrationHeaderErrorDetails"
+        },
+      ]
+      traits_headers = [ "registration_header_error_mojom_traits.h" ]
+      traits_public_deps = [ ":registration_header_error_mojom_traits" ]
+    },
+  ]
+
+  blink_cpp_typemaps = cpp_typemaps
+}
+
+component("registration_header_error_mojom_traits") {
+  sources = [
+    "registration_header_error_mojom_traits.cc",
+    "registration_header_error_mojom_traits.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines =
+      [ "IS_ATTRIBUTION_REPORTING_REGISTRATION_HEADER_ERROR_MOJOM_TRAITS_IMPL" ]
+
+  public_deps = [
+    ":attribution_reporting",
+    ":registration_header_error_mojom_shared",
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
   webui_module_path = "/"
   disallow_interfaces = true
   generate_java = false
+}
+
+source_set("fuzzer_support") {
+  testonly = true
+
+  sources = [
+    "fuzz_utils.cc",
+    "fuzz_utils.h",
+  ]
+
+  public_deps = [
+    ":attribution_reporting",
+    "//third_party/fuzztest",
+  ]
+}
+
+mojom("data_host_mojom") {
+  sources = [ "data_host.mojom" ]
+
+  generate_java = true
+
+  deps = [
+    ":registration_header_error_mojom",
+    ":registration_mojom",
+  ]
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+}
+
+test("privacy_math_fuzztest") {
+  sources = [ "privacy_math_fuzztest.cc" ]
+
+  fuzztests = [
+    "PrivacyMathTest.GetKCombinationAtIndex",
+    "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive",
+  ]
+
+  deps = [
+    ":attribution_reporting",
+    ":fuzzer_support",
+    ":test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+test("filters_fuzztest") {
+  sources = [ "filters_fuzztest.cc" ]
+
+  fuzztests = [ "FilterDataTest.Matches" ]
+
+  deps = [
+    ":attribution_reporting",
+    ":fuzzer_support",
+    ":test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

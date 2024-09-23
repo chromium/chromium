@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+source_set("webdata") {
+  sources = [
+    "plus_address_sync_bridge.cc",
+    "plus_address_sync_bridge.h",
+    "plus_address_sync_util.cc",
+    "plus_address_sync_util.h",
+    "plus_address_table.cc",
+    "plus_address_table.h",
+    "plus_address_webdata_service.cc",
+    "plus_address_webdata_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/plus_addresses:types",
+    "//components/sync",
+    "//components/webdata/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "plus_address_sync_bridge_unittest.cc",
+    "plus_address_sync_util_unittest.cc",
+    "plus_address_table_unittest.cc",
+  ]
+  deps = [
+    ":webdata",
+    "//base/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/plus_addresses:test_support",
+    "//components/sync:test_support",
+  ]
+}

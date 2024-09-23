@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Permissions-Policy allow="geolocation" allows same-origin redirection
+  assert_true: Geolocation API expected true got false
+[FAIL] Permissions-Policy allow="geolocation" allows cross-origin redirection
+  assert_true: Geolocation API expected true got false
+Harness: the test ran to completion.
+

@@ -9,6 +9,7 @@ import win32con
 import win32gui
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 
 def _window_enum_handler(hwnd, window_list):
@@ -83,6 +84,7 @@ def create_chrome_webdriver(chrome_options=None, incognito=False, prefs=None):
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
 
   return webdriver.Chrome(
-      executable_path=r"C:\temp\chromedriver.exe",
-      service_args=["--verbose", r"--log-path=c:\temp\chromedriver.log"],
-      chrome_options=chrome_options)
+      service=Service(
+          executable_path=r"C:\temp\chromedriver.exe",
+          service_args=["--verbose", r"--log-path=c:\temp\chromedriver.log"]),
+      options=chrome_options)

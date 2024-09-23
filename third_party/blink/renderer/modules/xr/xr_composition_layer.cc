@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
+
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
 namespace blink {
 
-XRCompositionLayer::XRCompositionLayer(XRSession* session) : XRLayer(session) {}
+XRCompositionLayer::XRCompositionLayer(XRGraphicsBinding* binding)
+    : XRLayer(binding->session()), binding_(binding) {}
 
 const String& XRCompositionLayer::layout() const {
   return layout_;
@@ -59,6 +62,7 @@ void XRCompositionLayer::destroy() const {
 }
 
 void XRCompositionLayer::Trace(Visitor* visitor) const {
+  visitor->Trace(binding_);
   XRLayer::Trace(visitor);
 }
 

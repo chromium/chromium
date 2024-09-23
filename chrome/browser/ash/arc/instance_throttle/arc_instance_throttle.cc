@@ -13,10 +13,10 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_active_audio_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
-#include "chrome/browser/ash/arc/instance_throttle/arc_kiosk_mode_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_pip_window_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_provisioning_throttle_observer.h"
@@ -293,7 +293,6 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcActiveWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcAppLaunchThrottleObserver>());
   AddObserver(std::make_unique<ArcBootPhaseThrottleObserver>());
-  AddObserver(std::make_unique<ArcKioskModeThrottleObserver>());
   AddObserver(std::make_unique<ArcPipWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcPowerThrottleObserver>());
   AddObserver(std::make_unique<ArcProvisioningThrottleObserver>());
@@ -301,6 +300,9 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   // This one is controlled by ash::ArcPowerControlHandler.
   AddObserver(std::make_unique<ash::ThrottleObserver>(
       kChromeArcPowerControlPageObserver));
+  if (base::FeatureList::IsEnabled(arc::kUnthrottleOnActiveAudio)) {
+    AddObserver(std::make_unique<ArcActiveAudioThrottleObserver>());
+  }
 
   StartObservers();
   DCHECK(bridge_);
@@ -340,7 +342,7 @@ void ArcInstanceThrottle::OnBootTypeRetrieved(mojom::BootType boot_type) {
       never_enforce_quota_ = true;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
@@ -376,10 +378,6 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
     // * ArcSwitchThrottleObserver:
     //   This is for disabling throttling for testing. If the observer gets
     //   activated, the quota shouldn't be applied either.
-    //
-    // * ArcKioskModeThrottleObserver:
-    //   If this gets activated, ARC will be used for Kiosk. There's no point in
-    //   applying quota since ARC will always be foreground.
     //
     // * ArcProvisioningThrottleObserver:
     //   If this gets activated, the provisioning is ongoing. The quota

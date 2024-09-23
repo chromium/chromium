@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/win/scoped_safearray.h"
 
 #include <stddef.h>
 
 #include <array>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -22,7 +27,7 @@ namespace {
 static constexpr std::array<int, 5> kInputValues = {0, 1, 2, 1, 0};
 
 static void PopulateScopedSafearrayOfInts(ScopedSafearray& scoped_safe_array) {
-  // TODO(crbug.com/1082005): Create a safer alternative to SAFEARRAY methods.
+  // TODO(crbug.com/40691652): Create a safer alternative to SAFEARRAY methods.
   scoped_safe_array.Reset(SafeArrayCreateVector(
       /*vartype=*/VT_I4, /*lower_bound=*/2,
       /*element_count=*/kInputValues.size()));
@@ -149,7 +154,7 @@ TEST(ScopedSafearrayTest, InitiallyEmpty) {
 }
 
 TEST(ScopedSafearrayTest, ScopedSafearrayGetCount) {
-  // TODO(crbug.com/1082005): Create a safer alternative to SAFEARRAY methods.
+  // TODO(crbug.com/40691652): Create a safer alternative to SAFEARRAY methods.
   ScopedSafearray scoped_safe_array(SafeArrayCreateVector(
       /*vartype=*/VT_I4, /*lower_bound=*/2, /*element_count=*/5));
   ASSERT_NE(scoped_safe_array.Get(), nullptr);
@@ -170,7 +175,7 @@ TEST(ScopedSafearrayTest, ScopedSafearrayGetCount) {
 
 TEST(ScopedSafearrayTest, ScopedSafearrayInitialLockScope) {
   ScopedSafearray scoped_safe_array;
-  absl::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
+  std::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
       scoped_safe_array.CreateLockScope<VT_I4>();
   EXPECT_FALSE(lock_scope.has_value());
 }
@@ -179,7 +184,7 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeMoveConstructor) {
   ScopedSafearray scoped_safe_array;
   PopulateScopedSafearrayOfInts(scoped_safe_array);
 
-  absl::optional<ScopedSafearray::LockScope<VT_I4>> first =
+  std::optional<ScopedSafearray::LockScope<VT_I4>> first =
       scoped_safe_array.CreateLockScope<VT_I4>();
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(first->Type(), VT_I4);
@@ -196,7 +201,7 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeMoveAssignOperator) {
   ScopedSafearray scoped_safe_array;
   PopulateScopedSafearrayOfInts(scoped_safe_array);
 
-  absl::optional<ScopedSafearray::LockScope<VT_I4>> first =
+  std::optional<ScopedSafearray::LockScope<VT_I4>> first =
       scoped_safe_array.CreateLockScope<VT_I4>();
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(first->Type(), VT_I4);
@@ -219,13 +224,13 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeTypeMismatch) {
   PopulateScopedSafearrayOfInts(scoped_safe_array);
 
   {
-    absl::optional<ScopedSafearray::LockScope<VT_BSTR>> invalid_lock_scope =
+    std::optional<ScopedSafearray::LockScope<VT_BSTR>> invalid_lock_scope =
         scoped_safe_array.CreateLockScope<VT_BSTR>();
     EXPECT_FALSE(invalid_lock_scope.has_value());
   }
 
   {
-    absl::optional<ScopedSafearray::LockScope<VT_UI4>> invalid_lock_scope =
+    std::optional<ScopedSafearray::LockScope<VT_UI4>> invalid_lock_scope =
         scoped_safe_array.CreateLockScope<VT_UI4>();
     EXPECT_FALSE(invalid_lock_scope.has_value());
   }
@@ -235,7 +240,7 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeRandomAccess) {
   ScopedSafearray scoped_safe_array;
   PopulateScopedSafearrayOfInts(scoped_safe_array);
 
-  absl::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
+  std::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
       scoped_safe_array.CreateLockScope<VT_I4>();
   ASSERT_TRUE(lock_scope.has_value());
   EXPECT_EQ(lock_scope->Type(), VT_I4);
@@ -250,7 +255,7 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeIterator) {
   ScopedSafearray scoped_safe_array;
   PopulateScopedSafearrayOfInts(scoped_safe_array);
 
-  absl::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
+  std::optional<ScopedSafearray::LockScope<VT_I4>> lock_scope =
       scoped_safe_array.CreateLockScope<VT_I4>();
 
   std::vector<int> unpacked_vector(lock_scope->begin(), lock_scope->end());

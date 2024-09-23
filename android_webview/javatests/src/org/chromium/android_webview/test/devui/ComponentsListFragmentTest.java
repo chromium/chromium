@@ -35,11 +35,11 @@ import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -69,7 +69,7 @@ public class ComponentsListFragmentTest {
     }
 
     private CallbackHelper getComponentInfoLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final CallbackHelper helper = new CallbackHelper();
                     ComponentsListFragment.setComponentInfoLoadedListenerForTesting(

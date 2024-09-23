@@ -8,10 +8,10 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 
@@ -272,7 +272,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
           v4l2_frame_params.alt_frame_ts = ref_surface->GetReferenceID();
           break;
         default:
-          NOTREACHED() << "Invalid reference frame index";
+          NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
       }
     }
   }

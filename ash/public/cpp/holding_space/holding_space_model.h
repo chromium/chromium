@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_colors.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -80,10 +81,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetSecondaryText(
         const std::optional<std::u16string>& secondary_text);
 
-    // Sets the color id for the secondary text that should be shown for the
-    // item and returns a reference to `this`.
-    ScopedItemUpdate& SetSecondaryTextColorId(
-        const std::optional<ui::ColorId>& secondary_text_color);
+    // Sets the color variant for the secondary text that should be shown for
+    // the item and returns a reference to `this`.
+    ScopedItemUpdate& SetSecondaryTextColorVariant(
+        const std::optional<HoldingSpaceColorVariant>&
+            secondary_text_color_variant);
 
     // Sets the text that should be shown for the item and returns a reference
     // to `this`. If absent, the lossy display name of the backing file will be
@@ -103,7 +105,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
         in_progress_commands_;
     std::optional<HoldingSpaceProgress> progress_;
     std::optional<std::optional<std::u16string>> secondary_text_;
-    std::optional<std::optional<ui::ColorId>> secondary_text_color_id_;
+    std::optional<std::optional<HoldingSpaceColorVariant>>
+        secondary_text_color_variant_;
     std::optional<std::optional<std::u16string>> text_;
     bool invalidate_image_ = false;
   };

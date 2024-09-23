@@ -33,9 +33,6 @@ AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
           "AboutThisSiteServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
@@ -53,10 +50,21 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
+  auto* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide) {
+    return nullptr;
+  }
+
+  auto* template_service = TemplateURLServiceFactory::GetForProfile(profile);
+  // TemplateURLService may be null during testing.
+  if (!template_service) {
+    return nullptr;
+  }
+
   return std::make_unique<page_info::AboutThisSiteService>(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      profile->IsOffTheRecord(), profile->GetPrefs(),
-      TemplateURLServiceFactory::GetForProfile(profile));
+      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
+      template_service);
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {

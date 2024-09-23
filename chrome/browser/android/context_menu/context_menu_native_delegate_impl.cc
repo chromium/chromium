@@ -9,15 +9,18 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
+#include "components/embedder_support/android/contextmenu/context_menu_image_format.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -67,7 +70,7 @@ chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {
       return chrome::mojom::ImageFormat::ORIGINAL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chrome::mojom::ImageFormat::JPEG;
 }
 

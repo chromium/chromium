@@ -7,7 +7,9 @@ desc: |-
 
         Until <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> M106, this policy would only lock the device when it suspends.  From M106 onwards, this policy will lock the device when it suspends or the lid is closed.
 
-        By setting this policy to true, and <ph name="LID_CLOSE_ACTION_POLICY_NAME">LidCloseAction</ph> to <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING">LidCloseActionDoNothing</ph>, a device will lock when the lid is closed, but will only suspend if and when configured to do so in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph>.
+        By setting this policy to Enabled, and <ph name="LID_CLOSE_ACTION_POLICY_NAME">LidCloseAction</ph> to <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING">LidCloseActionDoNothing</ph>, a device will lock when the lid is closed, but will only suspend if and when configured to do so in <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph>.
+
+        Note that if this policy is set to Enabled and <ph name="ALLOW_SCREEN_LOCK_POLICY_NAME">AllowScreenLock</ph> is set to Disabled, the device cannot be locked and the user will be logged out instead.
 
         Setting the policy to Disabled means users are not asked for a password to unlock the device.
 
@@ -27,7 +29,6 @@ items:
   value: null
 owners:
 - xiyuan@chromium.org
-- ultrotter@chromium.org
 - chromeos-power@google.com
 schema:
   type: boolean

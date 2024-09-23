@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "base/time/time.h"
+
 #include <windows.h>
 
 #include <mmsystem.h>
@@ -14,9 +21,7 @@
 #include <limits>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

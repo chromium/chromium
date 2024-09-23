@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/features.h"
@@ -28,7 +29,7 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   explicit ArCoreHostDisplayClient(ui::WindowAndroid* root_window)
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
         root_window_(root_window) {
-    // TODO(https://crbug.com/1194775): Ideally, we'd DCHECK here, but the UTs
+    // TODO(crbug.com/40758616): Ideally, we'd DCHECK here, but the UTs
     // don't create a root_window.
   }
 
@@ -253,7 +254,7 @@ void ArCompositorFrameSink::ReclaimResources(
       continue;
 
     auto it = id_to_frame_map_.find(resource.id);
-    DCHECK(it != id_to_frame_map_.end());
+    CHECK(it != id_to_frame_map_.end(), base::NotFatalUntil::M130);
     auto* rendering_frame = it->second;
 
     // While we now know that this resource is associated with this frame, we
@@ -297,7 +298,7 @@ void ArCompositorFrameSink::OnBeginFrame(
     const viz::FrameTimingDetailsMap& timing_details,
     bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
-  // TODO(crbug.com/1401032): Determine why the timing of this Ack leads to
+  // TODO(crbug.com/40250552): Determine why the timing of this Ack leads to
   // frame production stopping in tests.
   if (features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {
@@ -435,7 +436,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
     auto renderer_resource = viz::TransferableResource::MakeGpu(
-        renderer_buffer->shared_image, renderer_buffer->texture_target(),
+        renderer_buffer->shared_image,
+        renderer_buffer->shared_image->GetTextureTarget(),
         renderer_buffer->sync_token, renderer_buffer->size,
         viz::SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false,
@@ -478,7 +480,8 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
 
   // Additionally append to the resource_list
   auto camera_resource = viz::TransferableResource::MakeGpu(
-      camera_buffer->shared_image, camera_buffer->texture_target(),
+      camera_buffer->shared_image,
+      camera_buffer->shared_image->GetTextureTarget(),
       camera_buffer->sync_token, camera_buffer->size,
       viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/false,

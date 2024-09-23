@@ -32,7 +32,6 @@ component("common") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//net",
     "//url",
   ]

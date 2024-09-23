@@ -68,6 +68,21 @@ void AuthenticatorImpl::GetAssertion(
                                            std::move(callback));
 }
 
+// mojom::Authenticator
+void AuthenticatorImpl::Report(
+    blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+    ReportCallback callback) {
+  authenticator_common_impl_->Report(origin(), std::move(options),
+                                     std::move(callback));
+}
+
+// mojom::Authenticator
+void AuthenticatorImpl::GetClientCapabilities(
+    GetClientCapabilitiesCallback callback) {
+  authenticator_common_impl_->GetClientCapabilities(origin(),
+                                                    std::move(callback));
+}
+
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
     IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
   authenticator_common_impl_->IsUserVerifyingPlatformAuthenticatorAvailable(

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -35,16 +36,9 @@ const char kSourceUkmMetric[] = "Source";
 
 class TextFragmentAnchorMetricsTest : public TextFragmentAnchorTestBase {
  public:
-// TODO(crbug.com/1315595): Only have one constructor that initializes the
-// MOCK_TIME for blink::test::TaskEnvironment once migration to
-// blink_unittests_v2 completes.
-#if defined(HAS_BLINK_TASK_ENVIRONMENT)
   TextFragmentAnchorMetricsTest()
       : TextFragmentAnchorTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-#else
-  TextFragmentAnchorMetricsTest() = default;
-#endif
   void SimulateClick(int x, int y) {
     WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(x, y),
                         gfx::PointF(x, y), WebPointerProperties::Button::kLeft,

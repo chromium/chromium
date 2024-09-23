@@ -276,6 +276,16 @@ MULTINODE_TEST_NODE(ConnectTestNode, FailedNonBrokerReferralClient) {
 }
 
 MULTINODE_TEST(ConnectTest, FailedNonBrokerReferral) {
+#if BUILDFLAG(IS_ANDROID)
+  // Client nodes launching other client nodes doesn't work for Chromium's
+  // custom test driver on Android. Limit this test to the reference test
+  // drivers there.
+  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
+      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+    return;
+  }
+#endif
+
   IpczHandle c = SpawnTestNode<FailedNonBrokerReferralClient>();
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
   Close(c);
@@ -331,6 +341,16 @@ MULTINODE_TEST_BROKER_NODE(ConnectTestNode, BrokerWithClientNode) {
 }
 
 MULTINODE_TEST(ConnectTest, MultiBrokerIntroductions) {
+#if BUILDFLAG(IS_ANDROID)
+  // Client nodes launching other client nodes doesn't work reliably for
+  // Chromium's multiprocess test driver on Android. Limit this test to a few
+  // reference drivers there.
+  if (&GetDriver() != &reference_drivers::kSyncReferenceDriver &&
+      &GetDriver() != &reference_drivers::kAsyncReferenceDriver) {
+    return;
+  }
+#endif
+
   // This test covers introductions in a multi-broker network. There are four
   // test nodes involved here: the main node (this one, call it A), a secondary
   // broker B launched with the BrokerWithClientNode body defined above; and

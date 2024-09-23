@@ -110,6 +110,10 @@ void IsolatedWebAppInstallerShelfItemController::AddWindow(
   UpdateShelfItem();
 }
 
+std::u16string IsolatedWebAppInstallerShelfItemController::GetTitle() {
+  return l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_SHELF_ITEM_TITLE);
+}
+
 void IsolatedWebAppInstallerShelfItemController::OnWindowDestroying(
     aura::Window* window) {
   CHECK(window_);
@@ -125,8 +129,7 @@ void IsolatedWebAppInstallerShelfItemController::UpdateShelfItem() {
   CHECK(index != -1);
 
   ash::ShelfItem updated_item = *current_item;
-  updated_item.title =
-      l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_SHELF_ITEM_TITLE);
+  updated_item.title = GetTitle();
   updated_item.type = ash::TYPE_DIALOG;
   if (updated_item.image.isNull()) {
     updated_item.image = GetDefaultInstallerShelfIcon();

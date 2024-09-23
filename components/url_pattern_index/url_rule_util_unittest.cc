@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_pattern_index.h"

@@ -13,6 +13,11 @@
 #include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace gpu {
+class SharedImageInterface;
+class GpuChannelHost;
+}
+
 namespace media {
 
 using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
@@ -38,6 +43,20 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
 
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
+
+  static void SetGpuChannelHost(
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+  static scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost();
+
+  static gpu::SharedImageInterface* GetSharedImageInterface();
+  static void SetSharedImageInterface(
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
+
+  // This is only for vcd unittests to make sure CameraHalDelegate get the
+  // camera module. It should not be invoked in the production code.
+  // It will return true immediately when CameraModule is ready for
+  // CameraHalDelegate or return false after 10 seconds.
+  bool WaitForCameraServiceReadyForTesting();
 
  private:
   // Initializes the factory. The factory is functional only after this call

@@ -60,8 +60,6 @@ CC_BASE_EXPORT extern const char kCompositedRenderPassBorders[];
 CC_BASE_EXPORT extern const char kCompositedSurfaceBorders[];
 CC_BASE_EXPORT extern const char kCompositedLayerBorders[];
 
-CC_BASE_EXPORT extern const char kUIEnableLayerLists[];
-
 CC_BASE_EXPORT extern const char kEnableClippedImageScaling[];
 
 CC_BASE_EXPORT extern const char kAnimatedImageResume[];

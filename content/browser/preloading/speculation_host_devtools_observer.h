@@ -12,10 +12,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
-namespace Network::mojom {
-class DevToolsObserver;
-}  // namespace Network::mojom
-
 namespace content {
 class CONTENT_EXPORT SpeculationHostDevToolsObserver {
  public:

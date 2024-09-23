@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
@@ -52,7 +52,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   const url::Origin& main_frame_origin() const { return main_frame_origin_; }
 
-  std::string main_frame_id() const { return main_frame_id_; }
+  FrameTreeNodeId main_frame_id() const { return main_frame_id_; }
 
   void Bind(mojo::PendingAssociatedReceiver<
             blink::mojom::SharedStorageDocumentService> receiver);
@@ -60,12 +60,15 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   // blink::mojom::SharedStorageDocumentService.
   void CreateWorklet(
       const GURL& script_source_url,
+      const url::Origin& data_origin,
       network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
           worklet_host,
       CreateWorkletCallback callback) override;
+  void SharedStorageGet(const std::u16string& key,
+                        SharedStorageGetCallback callback) override;
   void SharedStorageSet(const std::u16string& key,
                         const std::u16string& value,
                         bool ignore_if_present,
@@ -84,16 +87,31 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   explicit SharedStorageDocumentServiceImpl(RenderFrameHost*);
 
+  void OnCreateWorkletResponseIntercepted(
+      bool is_same_origin,
+      bool prefs_success,
+      bool prefs_failure_is_site_specific,
+      CreateWorkletCallback original_callback,
+      bool post_prefs_success,
+      const std::string& error_message);
+
   SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
 
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
-  bool IsSharedStorageAllowed(std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowed(std::string* out_debug_message,
+                              bool* out_block_is_site_specific = nullptr);
 
-  bool IsSharedStorageAddModuleAllowed(
-      std::string* out_debug_message = nullptr);
+  bool IsSharedStorageAllowedForOrigin(const url::Origin& accessing_origin,
+                                       std::string* out_debug_message,
+                                       bool* out_block_is_site_specific);
+
+  bool IsSharedStorageAddModuleAllowedForOrigin(
+      const url::Origin& accessing_origin,
+      std::string* out_debug_message,
+      bool* out_block_is_site_specific);
 
   std::string SerializeLastCommittedOrigin() const;
 
@@ -106,9 +124,9 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   // save the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
 
-  // The DevTools frame token for the main frame, to be used by notifications
-  // to DevTools.
-  const std::string main_frame_id_;
+  // The FrameTreeNodeId for the main frame, to be used by notifications
+  // to DevTools. (DevTools will convert this to a DevTools frame token.)
+  const FrameTreeNodeId main_frame_id_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

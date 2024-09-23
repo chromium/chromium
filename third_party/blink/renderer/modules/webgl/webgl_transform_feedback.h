@@ -44,6 +44,9 @@ class WebGLTransformFeedback : public WebGLContextObject {
   bool SetBoundIndexedTransformFeedbackBuffer(GLuint index, WebGLBuffer*);
   bool GetBoundIndexedTransformFeedbackBuffer(GLuint index,
                                               WebGLBuffer** outBuffer) const;
+  bool HasBoundIndexedTransformFeedbackBuffer(const WebGLBuffer* buffer) {
+    return bound_indexed_transform_feedback_buffers_.Contains(buffer);
+  }
   bool HasEnoughBuffers(GLuint num_required) const;
 
   bool UsesBuffer(WebGLBuffer*);

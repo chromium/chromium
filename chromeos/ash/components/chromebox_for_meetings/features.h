@@ -13,7 +13,7 @@ namespace ash::cfm::features {
 // IMPORTANT: Please keep this file in alphabetical order.
 
 // Enables or disables the ability to enqueue cloud telemetry information using
-// Chrome Encrypted Reporting Pipeline API.
+// Artemis. Note that Artemis != the cloud logger that is running in hotrod.
 // Note: Functionality depends on Feature {MeetDevicesMojoServices}
 // Note: Enqueue functionality depends on Feature {EncryptedReportingPipeline}
 COMPONENT_EXPORT(CFM_FEATURES) BASE_DECLARE_FEATURE(kCloudLogger);

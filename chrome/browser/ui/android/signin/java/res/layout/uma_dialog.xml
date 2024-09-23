@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:requiresFadingEdge="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/signin_fre_uma_dialog_padding"
+            android:paddingStart="@dimen/signin_fre_uma_dialog_padding"
+            android:paddingEnd="@dimen/signin_fre_uma_dialog_padding"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/signin_fre_uma_dialog_title"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+                android:id="@+id/fre_uma_dialog_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:checked="true"
+                android:gravity="start|center"
+                android:lineSpacingMultiplier="1.2"
+                android:text="@string/usage_and_crash_reports_title"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/signin_fre_uma_dialog_first_section_header"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:leading="@dimen/text_size_medium_leading"
+                android:text="@string/signin_fre_uma_dialog_first_section_body"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/signin_fre_uma_dialog_second_section_header"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/fre_uma_dialog_second_section_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:leading="@dimen/text_size_medium_leading"
+                android:text="@string/signin_fre_uma_dialog_second_section_body_with_history_sync"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        </LinearLayout>
+    </ScrollView>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/fre_uma_dialog_dismiss_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/signin_fre_uma_dialog_button_padding"
+        android:layout_marginBottom="@dimen/signin_fre_uma_dialog_button_padding"
+        android:layout_marginEnd="@dimen/signin_fre_uma_dialog_padding"
+        android:layout_gravity="end"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/done"
+        style="@style/FilledButton" />
+</LinearLayout>

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,11 +15,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -63,7 +63,7 @@ const double kPowerLevelHigh = 50;
 const double kPowerLevelLow = 2;
 
 bool GetString(const base::Value::Dict& dict,
-               base::StringPiece key,
+               std::string_view key,
                std::string* result) {
   CHECK(result);
   const std::string* value = dict.FindString(key);

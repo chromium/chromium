@@ -193,19 +193,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                     dismissReason == DismissReason.GESTURE,
                     MessagesMetrics.now() - mMessageShownTime);
         }
-        if (mAreExtraHistogramsEnabled) {
-            if (dismissReason == DismissReason.PRIMARY_ACTION
-                    || dismissReason == DismissReason.SECONDARY_ACTION
-                    || dismissReason == DismissReason.GESTURE
-                    || dismissReason == DismissReason.TIMER) {
-                if (getOnFullyVisibleCallback() != null && !mFullyVisibleCallbackInvoked) {
-                    MessagesMetrics.recordErrorFullyVisibleNotInformed(getMessageIdentifier());
-                }
-            }
-
-            if (!mFullyVisibleBefore) {
-                MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());
-            }
+        if (mAreExtraHistogramsEnabled && !mFullyVisibleBefore) {
+            MessagesMetrics.recordDismissedWithoutFullyVisible(getMessageIdentifier());
         }
     }
 

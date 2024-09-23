@@ -46,7 +46,8 @@ const char kTestOrigin[] = "http://www.test.com";
 
 // Helper functions to manipulate RenderFrameHosts.
 
-void SimulateNavigation(raw_ptr<RenderFrameHost>* rfh, const GURL& url) {
+void SimulateNavigation(raw_ptr<RenderFrameHost, DanglingUntriaged>* rfh,
+                        const GURL& url) {
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(url, *rfh);
   navigation_simulator->Commit();
@@ -167,14 +168,14 @@ class CdmStorageTest
   }
 
   CdmStorageManager* cdm_storage_manager() const {
-    auto* cdm_storage_manager =
+    auto* cdm_storage_manager = static_cast<CdmStorageManager*>(
         static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
-            ->GetCdmStorageManager();
+            ->GetCdmStorageDataModel());
     DCHECK(cdm_storage_manager);
     return cdm_storage_manager;
   }
 
-  raw_ptr<RenderFrameHost> rfh_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> rfh_ = nullptr;
   mojo::Remote<CdmStorage> cdm_storage_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -372,7 +373,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
     EXPECT_EQ(read_future.Get(), kTestData);
   } else {
     EXPECT_THAT(static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
-                    ->GetCdmStorageManager(),
+                    ->GetCdmStorageDataModel(),
                 testing::IsNull());
   }
 
@@ -392,7 +393,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
     EXPECT_THAT(read_empty_file_future.Get().value(), testing::IsEmpty());
   } else {
     EXPECT_THAT(static_cast<StoragePartitionImpl*>(rfh_->GetStoragePartition())
-                    ->GetCdmStorageManager(),
+                    ->GetCdmStorageDataModel(),
                 testing::IsNull());
   }
 }

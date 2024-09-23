@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <deque>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <set>
 #include <utility>
@@ -39,6 +40,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -58,12 +60,16 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/system/core_scheduling.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -88,6 +94,11 @@ constexpr base::TimeDelta kConnectSleepDurationInitial =
     base::Milliseconds(100);
 
 constexpr const char kEmptyDiskPath[] = "/dev/null";
+
+// Value of vm_tools::GetEncodedName("arcvm").
+constexpr const char kArcvmEncodedName[] = "YXJjdm0=";
+
+constexpr const char kVmConciergeServiceName[] = "vm_5fconcierge";
 
 std::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 std::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
@@ -175,12 +186,6 @@ std::vector<std::string> GenerateUpgradeProps(
   if (upgrade_params.enable_lmk_perceptible_min_state_update) {
     result.push_back(base::StringPrintf(
         "%s.arc.lmk.perceptible_min_state_update=1", prefix.c_str()));
-  }
-
-  if (GetArcAndroidSdkVersionAsInt() >= kArcVersionT &&
-      upgrade_params.force_post_boot_dex_opt) {
-    result.push_back(
-        base::StringPrintf("%s.force_post_boot_dexopt=1", prefix.c_str()));
   }
 
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT &&
@@ -358,6 +363,24 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_writable(false);
   }
 
+  // For U+, add the metadata disk path as /dev/block/vdf for mounting Android
+  // /metadata. If the disk doesn't exist, concierge::StartArcVm will create
+  // an empty one at this path. (go/arcvm-metadata).
+  const bool add_metadata_disk = GetArcAndroidSdkVersionAsInt() > kArcVersionT;
+  const std::string metadata_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/%s.metadata.img",
+                         user_id_hash.c_str(), kArcvmEncodedName);
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  disk_image->set_do_mount(true);
+  if (add_metadata_disk) {
+    disk_image->set_path(metadata_disk_path);
+    disk_image->set_writable(true);
+  } else {
+    disk_image->set_path(kEmptyDiskPath);
+    disk_image->set_writable(false);
+  }
+
   // Add cpus.
   request.set_cpus(cpus);
 
@@ -427,24 +450,43 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub));
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT) {
     mini_instance_request->set_arc_switch_to_keymint(ShouldUseArcKeyMint());
+    mini_instance_request->set_enable_arc_attestation(
+        ShouldUseArcAttestation());
   }
 
   request.set_enable_broadcast_anr_prenotify(
       base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
+
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);
 
-  if (base::FeatureList::IsEnabled(kGuestZram)) {
+  // Enable block IO scheduler for virtio-blk /data devices.
+  // LVM-backed devices are excluded to mitigate boot time regression.
+  // (See go/arcvm-data-block-io-scheduler)
+  request.set_enable_data_block_io_scheduler(
+      start_params.use_virtio_blk_data &&
+      !ShouldUseLvmApplicationContainerForVirtioBlkData() &&
+      base::FeatureList::IsEnabled(kBlockIoScheduler) &&
+      kEnableDataBlockIoScheduler.Get());
+
+  if (base::FeatureList::IsEnabled(kGuestSwap)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
+    int guestSwapSizeMiB = kGuestSwapSize.Get() / (1024 * 1024);
     if (kGuestZramSizePercentage.Get() != 0) {
       // If there's no custom memory_mib set, try to get the default value to
       // determine the ZRAM size.
       if (request.memory_mib() == 0) {
         request.set_memory_mib(GetDefaultVmMemoryMiB(delegate));
       }
-      request.set_guest_zram_mib(request.memory_mib() *
-                                 kGuestZramSizePercentage.Get() / 100);
+      guestSwapSizeMiB =
+          request.memory_mib() * kGuestZramSizePercentage.Get() / 100;
+    }
+
+    if (kVirtualSwapEnabled.Get()) {
+      auto* virtual_swap_config = request.mutable_virtual_swap_config();
+      virtual_swap_config->set_swap_interval_ms(kVirtualSwapIntervalMs.Get());
+      virtual_swap_config->set_size_mib(guestSwapSizeMiB);
     } else {
-      request.set_guest_zram_mib(kGuestZramSize.Get() / (1024 * 1024));
+      request.set_guest_zram_mib(guestSwapSizeMiB);
     }
   }
 
@@ -470,6 +512,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     request.set_enable_s2idle(true);
   }
 #endif  // defined(ARCH_CPU_X86_64)
+
+  if (base::FeatureList::IsEnabled(kArcVmPvclock)) {
+    request.set_enable_pvclock(true);
+  }
 
   auto orientation = display::PanelOrientation::kNormal;
   if (auto* screen = display::Screen::GetScreen()) {
@@ -509,8 +555,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_DISABLED);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
+
+  request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));
   return request;
 }
 
@@ -837,9 +885,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     std::vector<std::string> environment;
-    if (start_params_.disable_ureadahead) {
-      environment.emplace_back("DISABLE_UREADAHEAD=1");
-    }
     std::deque<JobDesc> jobs{
         // Note: the first Upstart job is a task, and the callback for the start
         // request won't be called until the task finishes. When the callback is
@@ -941,12 +986,13 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(2) << "Using virtio-blk with the concierge-provided disk for /data";
 
     // If request.disk_size is not set, concierge calculates the desired size
-    // (90% of the available space) and creates a sparse disk image.
+    // (95% of the total space) and creates a sparse disk image.
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(user_id_hash_);
     request.set_vm_name(kArcVmName);
     request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
     request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+    request.set_storage_ballooning(true);
 
     GetConciergeClient()->CreateDiskImage(
         std::move(request),
@@ -1013,6 +1059,86 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         file_system_status, use_per_vm_core_scheduling, start_params_,
         delegate_.get());
 
+    // vm_concierge service needs to be running to start ARCVM but it may not be
+    // started. Explicitly start the service to make sure it's running. We don't
+    // have to stop it since it stops on "stopping ui".
+    std::vector<std::string> env;
+    ash::UpstartClient::Get()->StartJobWithErrorDetails(
+        kVmConciergeServiceName, env,
+        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceStarted,
+                       weak_factory_.GetWeakPtr(), std::move(start_request),
+                       std::move(callback)));
+  }
+
+  void OnVmConciergeServiceStarted(
+      vm_tools::concierge::StartArcVmRequest start_request,
+      chromeos::VoidDBusMethodCallback callback,
+      bool result,
+      std::optional<std::string> error_name,
+      std::optional<std::string> error_message) {
+    if (!result) {
+      // vm_concierge may be already started by "started-user-session" upstart
+      // signal.
+      if (error_name.has_value() &&
+          error_name.value() == ash::UpstartClient::kAlreadyStartedError) {
+        DVLOG(1) << "vm_concierge is already running";
+      } else {
+        LOG(ERROR)
+            << "Failed to start arcvm. vm_concierge service cannot be started: "
+            << (error_name.has_value() ? error_name.value() : "unknown error")
+            << ": " << (error_message.has_value() ? error_message.value() : "");
+        std::move(callback).Run(false);
+        return;
+      }
+    }
+
+    // Wait until vm_concierge is ready to serve D-Bus requests.
+    ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(
+        base::BindOnce(&ArcVmClientAdapter::OnVmConciergeServiceAvailable,
+                       weak_factory_.GetWeakPtr(), std::move(start_request),
+                       std::move(callback)));
+  }
+
+  void OnVmConciergeServiceAvailable(
+      vm_tools::concierge::StartArcVmRequest start_request,
+      chromeos::VoidDBusMethodCallback callback,
+      bool service_is_available) {
+    if (!service_is_available) {
+      LOG(ERROR)
+          << "Failed to start arcvm. vm_concierge service is not available.";
+      std::move(callback).Run(false);
+      return;
+    }
+    // ARCVM startup will fail if patchpanel DBus service is not available. The
+    // startup of patchpanel is slow on some low-end devices. According to
+    // b/325850116 the interval between ARCVM startup and patchpanel getting
+    // ready was 2s in that case. So let's wait 5s here before suspecting the
+    // startup to be blocked by patchpanel and printing the log.
+    patchpanel_timer_ = std::make_unique<base::OneShotTimer>();
+    patchpanel_timer_->Start(
+        FROM_HERE, base::Seconds(5), base::BindOnce([]() {
+          LOG(WARNING) << "Still waiting for patchpanel before starting ARCVM.";
+        }));
+    ash::PatchPanelClient::Get()->WaitForServiceToBeAvailable(
+        base::BindOnce(&ArcVmClientAdapter::OnPatchPanelServiceAvailable,
+                       weak_factory_.GetWeakPtr(), std::move(start_request),
+                       std::move(callback)));
+  }
+
+  void OnPatchPanelServiceAvailable(
+      vm_tools::concierge::StartArcVmRequest start_request,
+      chromeos::VoidDBusMethodCallback callback,
+      bool service_is_available) {
+    patchpanel_timer_->Stop();
+    patchpanel_timer_.reset();
+
+    if (!service_is_available) {
+      LOG(ERROR)
+          << "Failed to start arcvm. Patchpanel service is not available.";
+      std::move(callback).Run(false);
+      return;
+    }
+
     VLOG(1) << "Sending request to start ARCVM";
     GetConciergeClient()->StartArcVm(
         start_request,
@@ -1064,11 +1190,22 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         break;
     }
 
+    std::string arcvm_data_type;
+    if (start_params_.use_virtio_blk_data) {
+      arcvm_data_type = ShouldUseLvmApplicationContainerForVirtioBlkData()
+                            ? "lvm_volume"
+                            : "concierge_disk";
+    } else {
+      arcvm_data_type = "virtiofs";
+    }
+
     VLOG(2) << "Starting upstart jobs for UpgradeArc()";
     std::vector<std::string> environment{
         "CHROMEOS_USER=" +
-        cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
-            .account_id()};
+            cryptohome::CreateAccountIdentifierFromIdentification(
+                cryptohome_id_)
+                .account_id(),
+        "ARCVM_DATA_TYPE=" + arcvm_data_type};
     std::deque<JobDesc> jobs{
         JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_START,
                 std::move(environment)},
@@ -1207,6 +1344,10 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   StartParams start_params_;
   bool should_notify_observers_ = false;
   int64_t current_cid_ = kInvalidCid;
+
+  // A timer that fires after ARCVM startup is suspected to be blocked by
+  // patchpanel service startup.
+  std::unique_ptr<base::OneShotTimer> patchpanel_timer_;
 
   FileSystemStatusRewriter file_system_status_rewriter_for_testing_;
 

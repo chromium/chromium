@@ -221,7 +221,8 @@ void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {
       // Commands are for testing.
       break;
     default:
-      NOTREACHED() << "Command " << cmd
-                   << " isn't handled by the captive portal interstitial.";
+      NOTREACHED_IN_MIGRATION()
+          << "Command " << cmd
+          << " isn't handled by the captive portal interstitial.";
   }
 }

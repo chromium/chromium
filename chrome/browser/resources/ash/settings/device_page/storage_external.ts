@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import './storage_external_entry.js';
 import '../settings_shared.css.js';
 

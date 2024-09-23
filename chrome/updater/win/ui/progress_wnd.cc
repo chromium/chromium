@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/win/ui/progress_wnd.h"
 
 #include <memory>
@@ -69,7 +74,7 @@ int GetPriority(CompletionCodes code) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 
@@ -162,7 +167,6 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
                                   WPARAM w_param,
                                   LPARAM l_param,
                                   BOOL& handled) {
-  // TODO(crbug.com/1010653): remove this when the bug is fixed.
   HideWindowChildren(*this);
 
   InitializeDialog();
@@ -243,7 +247,7 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
           events_sink_->DoReboot();
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       break;
     case IDC_BUTTON2:
@@ -253,7 +257,7 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         case States::STATE_COMPLETE_REBOOT:
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       break;
     case IDC_CLOSE:
@@ -263,11 +267,11 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
                                               handled);
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   handled = true;
@@ -291,7 +295,7 @@ LRESULT ProgressWnd::OnInstallStopped(UINT msg,
       HandleCancelRequest();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -338,21 +342,17 @@ void ProgressWnd::OnWaitingToDownload(const std::string& app_id,
   if (!IsWindow()) {
     return;
   }
-
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
-
-  // TODO(crbug.com/1314812) Waiting to download is not utilized. Adding a
-  // placeholder for IDS_WAITING_TO_DOWNLOAD.
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
-
   ChangeControlState();
 }
 
 // May be called repeatedly during download.
-void ProgressWnd::OnDownloading(const std::string& app_id,
-                                const std::u16string& app_name,
-                                int time_remaining_ms,
-                                int pos) {
+void ProgressWnd::OnDownloading(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const std::optional<base::TimeDelta> time_remaining,
+    int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
@@ -364,28 +364,23 @@ void ProgressWnd::OnDownloading(const std::string& app_id,
 
   std::wstring s;
 
-  // TODO(crbug.com/1016921): use base::TimeDelta.
-  int time_remaining_sec = CeilingDivide(time_remaining_ms, kMsPerSec);
   if (is_canceled_) {
     s = GetLocalizedString(IDS_CANCELING_BASE);
-  } else if (time_remaining_ms < 0) {
+  } else if (!time_remaining) {
     s = GetLocalizedString(IDS_DOWNLOADING_BASE);
-  } else if (time_remaining_ms == 0) {
+  } else if (!time_remaining->InSeconds()) {
     s = GetLocalizedString(IDS_DOWNLOADING_COMPLETED_BASE);
-  } else if (time_remaining_sec < kSecPerMin) {
+  } else if (!time_remaining->InMinutes()) {
     // Less than one minute remaining.
     s = GetLocalizedStringF(IDS_DOWNLOADING_SHORT_BASE,
-                            base::NumberToWString(time_remaining_sec));
-  } else if (time_remaining_sec < kSecondsPerHour) {
+                            base::NumberToWString(time_remaining->InSeconds()));
+  } else if (!time_remaining->InHours()) {
     // Less than one hour remaining.
-    int time_remaining_minute = CeilingDivide(time_remaining_sec, kSecPerMin);
     s = GetLocalizedStringF(IDS_DOWNLOADING_LONG_BASE,
-                            base::NumberToWString(time_remaining_minute));
+                            base::NumberToWString(time_remaining->InMinutes()));
   } else {
-    int time_remaining_hour =
-        CeilingDivide(time_remaining_sec, kSecondsPerHour);
     s = GetLocalizedStringF(IDS_DOWNLOADING_VERY_LONG_BASE,
-                            base::NumberToWString(time_remaining_hour));
+                            base::NumberToWString(time_remaining->InHours()));
   }
 
   // Reduces flicker by only updating the control if the text has changed.
@@ -412,23 +407,12 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
   }
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
-
-  // Display the next retry time interval if |next_retry_time| is in the future.
-  const auto retry_time_in_sec =
-      (next_retry_time - base::Time::NowFromSystemTime()).InSeconds();
-  if (retry_time_in_sec > 0) {
-    // TODO(crbug.com/1314812) Retry download is not utilized. Adding a
-    // placeholder for IDS_DOWNLOAD_RETRY_BASE.
-    std::wstring s;
-    SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
-    ChangeControlState();
-  }
+  SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
+  ChangeControlState();
 }
 
-// TODO(crbug.com/1290331): handle the install cancellation.
 void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
-                                     const std::u16string& app_name,
-                                     bool* /*can_start_install*/) {
+                                     const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
@@ -443,10 +427,11 @@ void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
 }
 
 // May be called repeatedly during install.
-void ProgressWnd::OnInstalling(const std::string& app_id,
-                               const std::u16string& app_name,
-                               int time_remaining_ms,
-                               int pos) {
+void ProgressWnd::OnInstalling(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const std::optional<base::TimeDelta> time_remaining,
+    int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;

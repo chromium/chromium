@@ -30,8 +30,10 @@ class MockInfobarModalCompletionNotifierObserver
 // Test fixture for InfobarModalCompletionNotifier.
 class InfobarModalCompletionNotifierTest : public PlatformTest {
  public:
-  InfobarModalCompletionNotifierTest() : notifier_(&web_state_) {
-    scoped_observation_.Observe(&notifier_);
+  InfobarModalCompletionNotifierTest() {
+    OverlayRequestQueue::CreateForWebState(&web_state_);
+    notifier_ = std::make_unique<InfobarModalCompletionNotifier>(&web_state_);
+    scoped_observation_.Observe(notifier_.get());
   }
 
   OverlayRequestQueue* queue() {
@@ -42,7 +44,7 @@ class InfobarModalCompletionNotifierTest : public PlatformTest {
  protected:
   web::FakeWebState web_state_;
   FakeInfobarIOS infobar_;
-  InfobarModalCompletionNotifier notifier_;
+  std::unique_ptr<InfobarModalCompletionNotifier> notifier_;
   MockInfobarModalCompletionNotifierObserver observer_;
   base::ScopedObservation<InfobarModalCompletionNotifier,
                           InfobarModalCompletionNotifier::Observer>
@@ -66,6 +68,6 @@ TEST_F(InfobarModalCompletionNotifierTest, ModalCompletion) {
 
   // Cancel the modal request, expecting that InfobarModalsCompleted() is
   // called.
-  EXPECT_CALL(observer_, InfobarModalsCompleted(&notifier_, &infobar_));
+  EXPECT_CALL(observer_, InfobarModalsCompleted(notifier_.get(), &infobar_));
   modal_cancel_handler->TriggerCancellation();
 }

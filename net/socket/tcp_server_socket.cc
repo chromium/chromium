@@ -19,9 +19,9 @@ namespace net {
 
 TCPServerSocket::TCPServerSocket(NetLog* net_log, const NetLogSource& source)
     : TCPServerSocket(
-          std::make_unique<TCPSocket>(nullptr /* socket_performance_watcher */,
-                                      net_log,
-                                      source)) {}
+          TCPSocket::Create(nullptr /* socket_performance_watcher */,
+                            net_log,
+                            source)) {}
 
 TCPServerSocket::TCPServerSocket(std::unique_ptr<TCPSocket> socket)
     : socket_(std::move(socket)) {}
@@ -90,7 +90,7 @@ int TCPServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
   DCHECK(!callback.is_null());
 
   if (pending_accept_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERR_UNEXPECTED;
   }
 

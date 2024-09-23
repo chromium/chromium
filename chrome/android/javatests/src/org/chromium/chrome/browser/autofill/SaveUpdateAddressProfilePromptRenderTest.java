@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
 
@@ -18,7 +18,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -28,11 +27,8 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -52,7 +48,6 @@ import java.util.List;
  */
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT})
 public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivityTestCase {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
 
@@ -66,8 +61,6 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                     .setRevision(0)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -93,7 +86,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         MockitoAnnotations.initMocks(this);
         runOnUiThreadBlocking(
                 () -> {
-                    PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+                    PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
                     when(mPersonalDataManager.getDefaultCountryCodeForNewAddress())
                             .thenReturn("US");
                     SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -178,11 +171,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* address= */ "321 Spear Street",
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                                            .autofill_address_will_be_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
@@ -214,11 +207,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* address= */ "321 Spear Street",
                                     /* email= */ "example@example.com",
                                     /* phone= */ "+0000000000000");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                                            .autofill_address_will_be_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
@@ -280,11 +273,11 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                                     /* subtitle= */ "Update your address",
                                     /* oldDetails= */ "321 Spear Street",
                                     /* newDetails= */ "123 Lake Street");
-                            mPrompt.setSourceNotice(
+                            mPrompt.setRecordTypeNotice(
                                     getActivity()
                                             .getString(
                                                     R.string
-                                                            .autofill_address_already_saved_in_account_source_notice)
+                                                            .autofill_address_already_saved_in_account_record_type_notice)
                                             .replace("$1", "example@gmail.com"));
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();

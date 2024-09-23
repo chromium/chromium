@@ -36,7 +36,7 @@
   margin-inline-start: 1em;
 }
 
-iron-icon {
+cr-icon {
   --icon-margin: calc((var(--search-icon-size) - var(--iron-icon-width))/2);
   fill: var(--google-grey-600);
   flex: 0;
@@ -48,7 +48,7 @@ iron-icon {
 }
 
 @media (prefers-color-scheme: dark) {
-  iron-icon {
+  cr-icon {
     fill: var(--google-grey-500);
   }
 }

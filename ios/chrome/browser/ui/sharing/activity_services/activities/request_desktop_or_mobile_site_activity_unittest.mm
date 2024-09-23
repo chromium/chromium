@@ -7,14 +7,15 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -42,8 +43,7 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    mocked_handler_ =
-        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+    mocked_handler_ = OCMStrictProtocolMock(@protocol(HelpCommands));
   }
 
   // Creates a RequestDesktopOrMobileSiteActivity instance.
@@ -51,7 +51,7 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
       web::UserAgentType user_agent) {
     return [[RequestDesktopOrMobileSiteActivity alloc]
         initWithUserAgent:user_agent
-                  handler:mocked_handler_
+              helpHandler:mocked_handler_
           navigationAgent:agent_];
   }
 
@@ -85,7 +85,7 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentDesktop) {
 
   NSString* requestMobileString =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_REQUEST_MOBILE_SITE);
-  EXPECT_TRUE([requestMobileString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(requestMobileString, activity.activityTitle);
 
   [activity performActivity];
 
@@ -97,7 +97,8 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentDesktop) {
 // Tests that the activity is enabled, has the right title and triggers the
 // right action when the user agent is Mobile.
 TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentMobile) {
-  [[mocked_handler_ expect] showDefaultSiteViewIPH];
+  [[mocked_handler_ expect]
+      presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
 
   RequestDesktopOrMobileSiteActivity* activity =
       CreateActivity(web::UserAgentType::MOBILE);
@@ -109,7 +110,7 @@ TEST_F(RequestDesktopOrMobileSiteActivityTest, UserAgentMobile) {
 
   NSString* requestDesktopString =
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_REQUEST_DESKTOP_SITE);
-  EXPECT_TRUE([requestDesktopString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(requestDesktopString, activity.activityTitle);
 
   [activity performActivity];
 

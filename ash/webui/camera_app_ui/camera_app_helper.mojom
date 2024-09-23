@@ -5,7 +5,12 @@
 module ash.camera_app.mojom;
 
 import "ash/components/arc/mojom/camera_intent.mojom";
+import "ash/webui/camera_app_ui/events_sender.mojom";
+import "ash/webui/camera_app_ui/ocr.mojom";
+import "ash/webui/camera_app_ui/pdf_builder.mojom";
+import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -25,32 +30,20 @@ enum ScreenState {
   kOffAuto,
 };
 
-// Wi-Fi security type.
-enum WifiSecurityType {
-  kNone,
-  kEap,
-  kWep,
-  kWpa,
+// Lid state.
+// Reference from media/capture/video/chromeos/mojom/system_event_monitor.mojom
+// Dulplication has the following advantages.
+//   1. 'cca.py dev' doesn't need to parse system_event_monitor.mojom.
+//   2. Make CameraAppHelper independent of system_event_monitor.mojom.
+//   3. No need to generate js mojo files for system_event_monitor.mojom.
+//
+// LINT.IfChange(LidState)
+enum LidState {
+  kOpen,                   // Lid is open.
+  kClosed,                 // Lid is closed.
+  kNotPresent,             // No lid is present
 };
-
-// EAP methods.
-enum WifiEapMethod {
-  kEapTls,
-  kEapTtls,
-  kLeap,
-  kPeap,
-};
-
-// EAP phase2 methods.
-enum WifiEapPhase2Method {
-  kAutomatic,
-  kChap,
-  kGtc,
-  kMd5,
-  kMschap,
-  kMschapv2,
-  kPap,
-};
+// LINT.ThenChange(//media/capture/video/chromeos/mojom/system_event_monitor.mojom:LidState)
 
 // Configurations which can be provided by Wi-Fi QR Code.
 struct WifiConfig {
@@ -74,6 +67,14 @@ interface ScreenStateMonitor {
   Update(ScreenState state);
 };
 
+// Interface for monitoring lock state of screen. The state is detected from
+// Chrome browser process and is notified to Chrome Camera App in renderer
+// process.
+interface ScreenLockedMonitor {
+  // Updates when the lock state of screen got changed.
+  Update(bool is_screen_locked);
+};
+
 // Interface for monitoring the existence of external screen. The state is
 // detected from Chrome browser process and is notified to Chrome Camera App in
 // renderer process.
@@ -86,6 +87,22 @@ interface ExternalScreenMonitor {
 interface CameraUsageOwnershipMonitor {
   // Updates when the camera usage ownership is changed.
   OnCameraUsageOwnershipChanged(bool has_usage) => ();
+};
+
+// Interface to monitor lid state changes.
+interface LidStateMonitor {
+  // Updates when the lid state is changed.
+  Update(LidState lid_status);
+};
+
+// Interface for monitoring state of software privacy switch. The sw privacy
+// switch is available on th Privacy Hub of OS settings page. It allows users
+// to disable cameras at OS level for privacy concern. The state is detected
+// from Chrome browser process and is notified to Chrome Camera App in renderer
+// process.
+interface SWPrivacySwitchMonitor {
+  // Updates when the state of sw privacy switch got changed.
+  Update(bool is_sw_privacy_switch_on);
 };
 
 // The window states that we care about.
@@ -166,19 +183,6 @@ interface WindowStateController {
   Focus() => ();
 };
 
-enum ToteMetricFormat {
-  kPhoto = 0,
-  kScanJpg = 1,
-  kScanPdf = 2,
-  kVideoGif = 3,
-  kVideoMp4 = 4,
-};
-
-enum DocumentOutputFormat {
-  kJpeg = 0,
-  kPdf = 1,
-};
-
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -242,9 +246,6 @@ interface CameraAppHelper {
   // will be used to generate the URI for the broadcast.
   SendNewCaptureBroadcast(bool is_video, string name);
 
-  // Notifies Tote client when a photo/pdf/video/gif is captured.
-  NotifyTote(ToteMetricFormat format, string name);
-
   // Monitors the deletion for given file |name| in the camera folder. The
   // function will return when the deletion happens, or when another monitor
   // request is raised, or when the error occurs. We can determine the cases
@@ -270,19 +271,14 @@ interface CameraAppHelper {
       => (array<gfx.mojom.PointF> corners);
 
   // Does the post processing for document given by its |jpeg_data|, document
-  // |corners|, clockwise rotate in |rotation| degrees and convert the result
-  // to the desired |output_format|. The input |corners| should be the ones
-  // based on the image with corrected orientation.  And it is guaranteed that
-  // the output |doc_data| will have none or corrected
+  // |corners|, clockwise rotate in |rotation| degrees. The input |corners|
+  // should be the ones based on the image with corrected orientation. And it is
+  // guaranteed that the output |doc_data| will have none or corrected
   // orientation.
   ConvertToDocument(array<uint8> jpeg_data,
                     array<gfx.mojom.PointF, 4> corners,
-                    chromeos.machine_learning.mojom.Rotation rotation,
-                    DocumentOutputFormat output_format)
+                    chromeos.machine_learning.mojom.Rotation rotation)
       => (array<uint8> doc_data);
-
-  // Converts the given |jpegs_data| to PDF format.
-  ConvertToPdf(array<array<uint8>> jpegs_data) => (array<uint8> pdf_data);
 
   // Triggers HaTS survey for the camera app if all the conditions match:
   // 1. The camera app session is longer than 15 seconds
@@ -307,4 +303,35 @@ interface CameraAppHelper {
   // connection directly, no error message will be returned when the config is
   // incorrect.
   OpenWifiDialog(WifiConfig config);
+
+  // Registers a LidStateMonitor instance and returns the initial status.
+  // Calling the Update() whenever the lid state changes.
+  SetLidStateMonitor(pending_remote<LidStateMonitor> monitor)
+      => (LidState lid_status);
+
+  // Registers a SWPrivacySwitchMonitor instance and returns the initial status.
+  // Calling the Update() whenever the sw privacy switch state changes.
+  SetSWPrivacySwitchMonitor(pending_remote<SWPrivacySwitchMonitor> monitor)
+      => (bool is_sw_privacy_switch_on);
+
+  // Gets an event sender which can be used to send events to CrOS Events.
+  GetEventsSender() => (pending_remote<EventsSender> events_sender);
+
+  // Registers a ScreenLockedMonitor instance and returns the initial lock
+  // state of screen.
+  // Calling the Update() whenever the screen is locked/unlocked.
+  SetScreenLockedMonitor(pending_remote<ScreenLockedMonitor> monitor)
+      => (bool is_screen_locked);
+
+  // Returns the first page of a PDF as a JPEG.
+  RenderPdfAsJpeg(array<uint8> pdf_data) => (array<uint8> jpeg_data);
+
+  // Performs OCR on the image and returns the OCR result.
+  PerformOcr(mojo_base.mojom.BigBuffer jpeg_data) => (OcrResult ocr_result);
+
+  // Same as `PerformOcr`, but using `array<uint8>`.
+  PerformOcrInline(array<uint8> jpeg_data) => (OcrResult ocr_result);
+
+  // Creates a PDF builder.
+  CreatePdfBuilder(pending_receiver<PdfBuilder> builder);
 };

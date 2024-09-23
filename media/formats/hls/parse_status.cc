@@ -4,8 +4,9 @@
 
 #include "media/formats/hls/parse_status.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace media::hls {
 
@@ -13,7 +14,7 @@ namespace media::hls {
   case ParseStatusCode::x:        \
     return #x
 
-base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
+std::string_view ParseStatusCodeToString(ParseStatusCode code) {
   switch (code) {
     PARSE_STATUS_CODE_CASE(kReachedEOF);
     PARSE_STATUS_CODE_CASE(kInvalidEOL);
@@ -27,6 +28,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kFailedToParseStableId);
     PARSE_STATUS_CODE_CASE(kFailedToParseInstreamId);
     PARSE_STATUS_CODE_CASE(kFailedToParseAudioChannels);
+    PARSE_STATUS_CODE_CASE(kFailedToParseHexadecimalString);
     PARSE_STATUS_CODE_CASE(kInvalidPlaylistVersion);
     PARSE_STATUS_CODE_CASE(kUnknownPlaylistType);
     PARSE_STATUS_CODE_CASE(kMalformedAttributeList);
@@ -65,9 +67,10 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kRenditionGroupHasMultipleDefaultRenditions);
     PARSE_STATUS_CODE_CASE(kRenditionGroupHasDuplicateRenditionNames);
     PARSE_STATUS_CODE_CASE(kRenditionGroupDoesNotExist);
+    PARSE_STATUS_CODE_CASE(kUnsupportedEncryptionMethod);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #undef PARSE_STATUS_CODE_CASE

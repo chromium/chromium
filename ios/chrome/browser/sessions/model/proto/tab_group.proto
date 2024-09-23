@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package ios.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents the color of a tab group.
+//
+// It maps to colors in a specific color map.
+enum TabGroupColorId {
+  GREY = 0;
+  BLUE = 1;
+  RED = 2;
+  YELLOW = 3;
+  GREEN = 4;
+  PINK = 5;
+  PURPLE = 6;
+  CYAN = 7;
+  ORANGE = 8;
+}
+
+// Represents the range index of a tab group stored in a WebStateList.
+//
+// All fields are required.
+message RangeIndex {
+  int32 start = 1;
+  int32 count = 2;
+}
+
+// Represents the unique identifier of a tab group.
+//
+// All fields are required.
+message TabGroupId {
+  uint64 low = 1;
+  uint64 high = 2;
+}
+
+// Represents the information about a tab group stored in a WebStateList.
+//
+// The tab group information is stored inline.
+message TabGroupStorage {
+  RangeIndex range = 1;
+  string title = 2;
+  TabGroupColorId color = 3;
+  bool collapsed = 4;
+  TabGroupId tab_group_id = 5;
+}

@@ -6,11 +6,11 @@
 #define NET_TEST_CERT_TEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
@@ -38,7 +38,7 @@ class EVRootCAMetadata;
 // must contain a PKCS#8 PrivateKeyInfo in DER encoding. Returns true on success
 // and false on failure.
 bool ImportSensitiveKeyFromFile(const base::FilePath& dir,
-                                base::StringPiece key_filename,
+                                std::string_view key_filename,
                                 PK11SlotInfo* slot);
 
 bool ImportClientCertToSlot(CERTCertificate* cert, PK11SlotInfo* slot);
@@ -49,23 +49,23 @@ ScopedCERTCertificate ImportClientCertToSlot(
 
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    base::StringPiece cert_filename,
-    base::StringPiece key_filename,
+    std::string_view cert_filename,
+    std::string_view key_filename,
     PK11SlotInfo* slot,
     ScopedCERTCertificate* nss_cert);
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    base::StringPiece cert_filename,
-    base::StringPiece key_filename,
+    std::string_view cert_filename,
+    std::string_view key_filename,
     PK11SlotInfo* slot);
 
 ScopedCERTCertificate ImportCERTCertificateFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file);
+    std::string_view cert_file);
 
 ScopedCERTCertificateList CreateCERTCertificateListFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file,
+    std::string_view cert_file,
     int format);
 
 // Returns an NSS built-in root certificate which is trusted for issuing TLS
@@ -77,7 +77,7 @@ ScopedCERTCertificate GetAnNssBuiltinSslTrustedRoot();
 // Imports all of the certificates in |cert_file|, a file in |certs_dir|, into a
 // CertificateList.
 CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
-                                              base::StringPiece cert_file,
+                                              std::string_view cert_file,
                                               int format);
 
 // Imports all the certificates given a list of filenames, and assigns the
@@ -93,7 +93,7 @@ CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
 // intermediate certificates.
 scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file,
+    std::string_view cert_file,
     int format);
 
 // Imports a single certificate from |cert_path|.
@@ -108,7 +108,7 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
 // the first certificate found will be returned.
 scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file);
+    std::string_view cert_file);
 
 // ScopedTestEVPolicy causes certificates marked with |policy|, issued from a
 // root with the given fingerprint, to be treated as EV. |policy| is expressed

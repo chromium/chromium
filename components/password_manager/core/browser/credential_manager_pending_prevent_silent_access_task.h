@@ -44,14 +44,14 @@ class CredentialManagerPendingPreventSilentAccessTask
   // Adds an origin to require user mediation.
   void AddOrigin(const PasswordFormDigest& form_digest);
 
-  // PasswordStoreConsumer implementation.
+ private:
+  // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
- private:
   const raw_ptr<CredentialManagerPendingPreventSilentAccessTaskDelegate>
       delegate_;  // Weak.
 

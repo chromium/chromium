@@ -39,8 +39,17 @@ class ExclusiveAccessControllerBase {
 
   // Functions implemented by derived classes:
 
-  // Control behavior when escape is pressed returning true if it was handled.
+  // Called when Esc is pressed. Returns true if the event is handled.
   virtual bool HandleUserPressedEscape() = 0;
+
+  // Called when Esc is held for longer than the press-and-hold duration.
+  virtual void HandleUserHeldEscape() = 0;
+
+  // Called when Esc is released before reaching the press-and-hold duration.
+  virtual void HandleUserReleasedEscapeEarly() = 0;
+
+  // Returns true if the controller requires press-and-hold to exit.
+  virtual bool RequiresPressAndHoldEscToExit() const = 0;
 
   // Called by Browser in response to call from ExclusiveAccessBubble.
   virtual void ExitExclusiveAccessToPreviousState() = 0;

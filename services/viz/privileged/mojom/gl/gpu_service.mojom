@@ -19,7 +19,6 @@ import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
-import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
@@ -32,6 +31,8 @@ import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
+import "services/webnn/public/mojom/features.mojom";
+import "services/webnn/public/mojom/webnn_context_provider.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
@@ -41,10 +42,6 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
-[EnableIfNot=is_chromeos]
-import "components/ml/webnn/features.mojom";
-[EnableIfNot=is_chromeos]
-import "services/webnn/public/mojom/webnn_context_provider.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -141,8 +138,7 @@ interface GpuService {
 
   // Binds the pending receiver used to access the hardware accelerated OS
   // machine learning APIs.
-  [EnableIfNot=is_chromeos,
-   RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+  [RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
   BindWebNNContextProvider(
       pending_receiver<webnn.mojom.WebNNContextProvider>? receiver, int32
           client_id);
@@ -189,7 +185,7 @@ interface GpuService {
   // host since multiple clients may be using the same physical disk path. Note
   // that this method is used only from a trusted process.
   LoadedBlob(gpu.mojom.GpuDiskCacheHandle cache_handle,
-             string key,
+             mojo_base.mojom.ByteString key,
              mojo_base.mojom.ByteString data);
 
   // Tells GPU to wake up the GPU because we're about to draw.

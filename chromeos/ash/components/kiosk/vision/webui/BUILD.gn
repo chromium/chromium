@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash)
+
+static_library("webui") {
+  sources = [
+    "constants.h",
+    "ui_controller.cc",
+    "ui_controller.h",
+  ]
+
+  public_deps = [ ":mojo_bindings" ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/kiosk/vision",
+    "//chromeos/ash/components/kiosk/vision/webui:resources",
+    "//content/public/browser",
+    "//ui/webui:webui",
+  ]
+}
+
+build_webui("build") {
+  grd_prefix = "kiosk_vision_internals"
+
+  static_files = [ "kiosk_vision_internals.html" ]
+
+  web_component_files = [ "app.ts" ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  grit_output_dir = "$root_gen_dir/chromeos/ash/components"
+}
+
+mojom("mojo_bindings") {
+  sources = [ "kiosk_vision_internals.mojom" ]
+
+  webui_module_path = "/"
+}

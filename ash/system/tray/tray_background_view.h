@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
@@ -40,7 +39,6 @@ class TrayContainer;
 // the `TrayBackgroundView`'s hide animation is running.
 class ASH_EXPORT TrayBackgroundView : public views::Button,
                                       public views::ContextMenuController,
-                                      public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
                                       public VirtualKeyboardModel::Observer {
   METADATA_HEADER(TrayBackgroundView, views::Button)
@@ -118,7 +116,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // Closes the associated tray bubble view if it exists and is currently
   // showing.
-  virtual void CloseBubble() {}
+  virtual void CloseBubbleInternal() {}
 
   // Shows the associated tray bubble if one exists.
   virtual void ShowBubble();
@@ -157,7 +155,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // Called by the bubble wrapper when a click event occurs outside the bubble.
   // May close the bubble.
-  virtual void ClickedOutsideBubble() = 0;
+  virtual void ClickedOutsideBubble(const ui::LocatedEvent& event) = 0;
 
   // Returns true if tray bubble view is cached when hidden
   virtual bool CacheBubbleViewForHide() const;
@@ -168,6 +166,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // For Jelly: updates the color of either the icon or the label of this view
   // based on the active state specified by `is_active`.
   virtual void UpdateTrayItemColor(bool is_active) = 0;
+
+  // Calls `CloseBubbleInternal` which is implemented by each child tray view.
+  // The focusing behavior is handled in this method.
+  void CloseBubble();
 
   // Gets the anchor for bubbles, which is tray_container().
   views::View* GetBubbleAnchor() const;
@@ -217,9 +219,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   bool IsShowAnimationEnabled();
 
   // Callbacks for Animations
+  void OnHideAnimationStarted();
   void OnAnimationAborted();
   virtual void OnAnimationEnded();
-  void OnHideAnimationStarted();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }
@@ -266,6 +268,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   void StartPulseAnimation();
   void StopPulseAnimation();
 
+  // Used to bounce in animation on tray button.
+  void BounceInAnimation(bool scale_animation = true);
+
   void SetContextMenuEnabled(bool should_enable_menu) {
     set_context_menu_controller(should_enable_menu ? this : nullptr);
   }
@@ -309,11 +314,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // child layers will still be there until all the animation finished.
   std::unique_ptr<ui::Layer> RecreateLayer() override;
 
-  // Applies transformations to the |layer()| to animate the view when
-  // SetVisible(false) is called.
-  void HideAnimation();
+  // Applies transformations to the `layer()` to animate the view when
+  // `SetVisible(false)` is called.
   void FadeInAnimation();
-  void BounceInAnimation();
+  void HideAnimation();
 
   // Helper function that calculates background insets relative to local bounds.
   gfx::Insets GetBackgroundInsets() const;

@@ -5,7 +5,8 @@
 #import "ios/chrome/browser/ui/infobars/test_infobar_badge_tab_helper_delegate.h"
 
 #import <map>
-#import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
+
+#import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
 
 @interface TestInfobarTabHelperDelegate () {
   std::map<InfobarType, id<BadgeItem>> _badgeItems;

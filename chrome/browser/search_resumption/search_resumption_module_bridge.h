@@ -22,23 +22,25 @@ namespace search_resumption_module {
 // resumption module on NTP.
 class SearchResumptionModuleBridge {
  public:
-  SearchResumptionModuleBridge(JNIEnv* env, jobject obj, Profile* profile);
+  SearchResumptionModuleBridge(JNIEnv* env,
+                               const jni_zero::JavaRef<jobject>& obj,
+                               Profile* profile);
   SearchResumptionModuleBridge(const SearchResumptionModuleBridge&) = delete;
   SearchResumptionModuleBridge& operator=(const SearchResumptionModuleBridge&) =
       delete;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& obj);
 
   void FetchSuggestions(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj,
-                        const base::android::JavaParamRef<jstring>& j_page_url);
+                        const jni_zero::JavaParamRef<jobject>& obj,
+                        const jni_zero::JavaParamRef<jstring>& j_page_url);
 
  private:
   ~SearchResumptionModuleBridge();
   void OnSuggestionsReceived(std::vector<QuerySuggestion> suggestions);
 
   raw_ptr<StartSuggestService> start_suggest_service_;
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 
   const base::WeakPtrFactory<SearchResumptionModuleBridge> weak_ptr_factory_{
       this};

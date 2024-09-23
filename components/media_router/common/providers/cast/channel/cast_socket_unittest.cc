@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
@@ -67,7 +67,7 @@ using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 namespace cast_channel {
 namespace {
@@ -248,7 +248,7 @@ class MockTestCastSocket : public TestCastSocketBase {
       nullptr;
 };
 
-// TODO(https://crbug.com/928467):  Remove this class.
+// TODO(crbug.com/41439190):  Remove this class.
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(net::IPEndPoint ip) : ip_(ip) {}
@@ -537,7 +537,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   void TcpConnectCallback(int result) { connect_result_ = result; }
 
   std::unique_ptr<crypto::RSAPrivateKey> ReadTestKeyFromPEM(
-      const base::StringPiece& name) {
+      std::string_view name) {
     base::FilePath key_path = GetTestCertsDirectory().AppendASCII(name);
     std::string pem_data;
     if (!base::ReadFileToString(key_path, &pem_data)) {
@@ -600,14 +600,17 @@ class SslCastSocketTest : public CastSocketTestBase {
 
   std::unique_ptr<TestCastSocketBase> socket_;
 
-  // |server_socket_| is used for the *RealSSL tests in order to test the
+  // `server_socket_` is used for the *RealSSL tests in order to test the
   // CastSocket over a real SSL socket.  The other members below are used to
-  // initialize |server_socket_|.
-  std::unique_ptr<net::SSLServerSocket> server_socket_;
+  // initialize `server_socket_`.
   std::unique_ptr<net::SSLServerContext> server_context_;
   std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
+
+  // `server_socket_` must be declared below objects that are passed to it as
+  // raw pointers, to avoid dangling pointer warnings.
+  std::unique_ptr<net::SSLServerSocket> server_socket_;
 };
 
 }  // namespace

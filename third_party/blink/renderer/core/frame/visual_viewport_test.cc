@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 
 #include <memory>
+#include <string>
 
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/scrollbar_layer_base.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -60,8 +62,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-
-#include <string>
 
 using testing::_;
 using testing::PrintToString;
@@ -2389,9 +2389,16 @@ TEST_F(VisualViewportSimTest, ScrollingContentsSmallerThanContainer) {
             visual_viewport.GetScrollNode()->ContentsRect());
 }
 
-class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
+class VisualViewportScrollIntoViewTest
+    : public VisualViewportSimTest,
+      public ::testing::WithParamInterface<
+          std::vector<base::test::FeatureRef>> {
  public:
-  VisualViewportScrollIntoViewTest() {}
+  VisualViewportScrollIntoViewTest() {
+    feature_list_.InitWithFeatures(
+        GetParam(),
+        /*disabled_features=*/std::vector<base::test::FeatureRef>());
+  }
 
   void SetUp() override {
     VisualViewportSimTest::SetUp();
@@ -2422,41 +2429,41 @@ class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
     WebView().ResizeVisualViewport(gfx::Size(400, 600 - 100));
   }
 
-  // Scrolls an element by the given name into view in the |visual_viewport|
-  // using params that optionally apply to a scroll sequence.
-  void ScrollIntoView(const WebString& element_name,
-                      bool is_for_scroll_sequence) {
-    WebDocument web_doc = WebView().MainFrameImpl()->GetDocument();
-    Element* bottom_element = web_doc.GetElementById(element_name);
-    auto scroll_params = ScrollAlignment::CreateScrollIntoViewParams(
-        ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
-        mojom::blink::ScrollType::kProgrammatic,
-        /*make_visible_in_visual_viewport=*/true,
-        mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
-    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
-    WebView().GetPage()->GetVisualViewport().ScrollIntoView(
-        bottom_element->BoundingBox(), scroll_params);
-  }
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(VisualViewportScrollIntoViewTest,
-       ScrollingToFixedWithScrollSequenceAnimationShort) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VisualViewportScrollIntoViewTest,
+    testing::Values(std::vector<base::test::FeatureRef>{},
+                    std::vector<base::test::FeatureRef>{
+                        features::kMultiSmoothScrollIntoView}));
+
+TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  ScrollIntoView("bottom", true);
-  visual_viewport.GetSmoothScrollSequencer()->RunQueuedAnimations();
+  WebDocument web_doc = WebView().MainFrameImpl()->GetDocument();
+  Element* bottom_element = web_doc.GetElementById("bottom");
+  bool is_for_scroll_sequence =
+      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled();
+  auto scroll_params = scroll_into_view_util::CreateScrollIntoViewParams(
+      ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
+      mojom::blink::ScrollType::kProgrammatic,
+      /*make_visible_in_visual_viewport=*/true,
+      mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
+  if (is_for_scroll_sequence) {
+    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
+  }
+  WebView().GetPage()->GetVisualViewport().ScrollIntoView(
+      bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
+  if (is_for_scroll_sequence) {
+    visual_viewport.GetSmoothScrollSequencer()->RunQueuedAnimations();
+  }
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 
-TEST_F(VisualViewportScrollIntoViewTest,
-       ScrollingToFixedWithoutScrollSequenceAnimationShort) {
-  VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
-  EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  ScrollIntoView("bottom", false);
-  EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
-}
-
-TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
+TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
   GetDocument().getElementById(AtomicString("bottom"))->scrollIntoView();
@@ -2788,14 +2795,14 @@ TEST_F(VisualViewportSimTest, PreferredOverlayScrollbarColorTheme) {
 
   const VisualViewport& visual_viewport =
       WebView().GetPage()->GetVisualViewport();
-  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeLight,
-            visual_viewport.GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            visual_viewport.GetOverlayScrollbarColorScheme());
 
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kLight);
   Compositor().BeginFrame();
-  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeDark,
-            visual_viewport.GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            visual_viewport.GetOverlayScrollbarColorScheme());
 }
 
 }  // namespace

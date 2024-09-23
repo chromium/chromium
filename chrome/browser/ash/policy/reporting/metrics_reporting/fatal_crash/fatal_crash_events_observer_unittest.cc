@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 #include <atomic>
 #include <memory>
@@ -29,19 +32,21 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
-
-using std::literals::string_view_literals::operator""sv;
 
 using ::ash::cros_healthd::FakeCrosHealthd;
 using ::ash::cros_healthd::mojom::CrashEventInfo;
@@ -140,9 +145,13 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   // optionally sets the OnEventObserved callback if test_event is provided.
   std::unique_ptr<FatalCrashEventsObserver>
   CreateAndEnableFatalCrashEventsObserver(
-      base::test::TestFuture<MetricData>* test_event = nullptr) const {
+      base::test::TestFuture<MetricData>* test_event = nullptr,
+      CrashEventInfo::CrashType crash_type =
+          CrashEventInfo::CrashType::kDefaultValue) const {
     auto observer =
-        fatal_crash_test_environment_.CreateFatalCrashEventsObserver();
+        fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
+            /*reported_local_id_io_task_runner=*/nullptr,
+            /*uploaded_crash_info_io_task_runner=*/nullptr, crash_type);
     observer->SetReportingEnabled(true);
     if (test_event) {
       observer->SetOnEventObservedCallback(test_event->GetRepeatingCallback());
@@ -282,9 +291,13 @@ class FatalCrashEventsObserverTypeFieldTest
 TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
   auto crash_event_info = NewCrashEventInfo(is_uploaded());
   crash_event_info->crash_type = type();
+  auto observer = CreateAndEnableFatalCrashEventsObserver(
+      /*test_event=*/nullptr, crash_event_info->crash_type);
 
   const auto fatal_crash_telemetry =
-      WaitForFatalCrashTelemetry(std::move(crash_event_info));
+      WaitForFatalCrashTelemetry(std::move(crash_event_info), observer.get(),
+                                 /*result_metric_data=*/nullptr);
+
   ASSERT_TRUE(fatal_crash_telemetry.has_type());
   FatalCrashTelemetry::CrashType expected_crash_type;
   switch (type()) {
@@ -294,8 +307,11 @@ TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
     case CrashEventInfo::CrashType::kEmbeddedController:
       expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER;
       break;
+    case CrashEventInfo::CrashType::kChrome:
+      expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_CHROME;
+      break;
     default:  // Crash types that are not tested but should be tested.
-      NOTREACHED_NORETURN() << "Encountered untested crash type " << type();
+      NOTREACHED() << "Encountered untested crash type " << type();
   }
   EXPECT_EQ(fatal_crash_telemetry.type(), expected_crash_type);
 }
@@ -714,8 +730,7 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
 
   // Gets the path to the save file.
   base::FilePath GetSaveFilePath() const {
-    return fatal_crash_test_environment_.GetSaveFilePathsProvider()
-        .GetReportedLocalIdSaveFilePath();
+    return fatal_crash_test_environment_.GetReportedLocalIdSaveFilePath();
   }
 
   // Generates an uninteresting fatal crash event to alter the observer's state
@@ -1378,8 +1393,7 @@ class FatalCrashEventsObserverUploadedCrashTestBase
 
   // Gets the path to the save file.
   base::FilePath GetSaveFilePath() const {
-    return fatal_crash_test_environment_.GetSaveFilePathsProvider()
-        .GetUploadedCrashInfoSaveFilePath();
+    return fatal_crash_test_environment_.GetUploadedCrashInfoSaveFilePath();
   }
 
   // Generates an uninteresting fatal crash event to alter the observer's state
@@ -1468,23 +1482,23 @@ class FatalCrashEventsObserverUploadedCrashTest
       base::Time creation_time) {
     if (creation_time >
         FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-      return "later_time"sv;
+      return "later_time";
     } else if (creation_time <
                FatalCrashEventsObserverUploadedCrashTest::kCreationTime) {
-      return "earlier_time"sv;
+      return "earlier_time";
     } else {
-      return "same_time"sv;
+      return "same_time";
     }
   }
 
   // Gets the name as used in the test name given a offset.
   static constexpr std::string_view GetTestNameForOffset(uint64_t offset) {
     if (offset > FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-      return "larger_offset"sv;
+      return "larger_offset";
     } else if (offset < FatalCrashEventsObserverUploadedCrashTest::kOffset) {
-      return "smaller_offset"sv;
+      return "smaller_offset";
     } else {
-      return "same_offset"sv;
+      return "same_offset";
     }
   }
 
@@ -1686,10 +1700,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_"sv, std::get<1>(info.param) ? "reload"sv : "same_session"sv});
+           "_", std::get<1>(info.param) ? "reload" : "same_session"});
     });
 
 // Even if the save file can't be created, the unreloaded result should be the
@@ -1720,10 +1734,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_uncreatable_file"sv});
+           "_uncreatable_file"});
     });
 
 // Tests that if the thread is interrupted right after the on event callback
@@ -1747,10 +1761,10 @@ INSTANTIATE_TEST_SUITE_P(
           {FatalCrashEventsObserverUploadedCrashTest::
                GetTestNameForCreationTime(
                    std::get<0>(info.param).creation_time),
-           "_"sv,
+           "_",
            FatalCrashEventsObserverUploadedCrashTest::GetTestNameForOffset(
                std::get<0>(info.param).offset),
-           "_interrupted"sv});
+           "_interrupted"});
     });
 
 struct FatalCrashEventsObserverUploadedCrashCorruptSaveFileCase {

@@ -1,0 +1,147 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "context_menu_configuration_provider+Testing.h",
+    "context_menu_configuration_provider.h",
+    "context_menu_configuration_provider.mm",
+    "context_menu_configuration_provider_delegate.h",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/photos/model:metrics",
+    "//ios/chrome/browser/photos/model:photos_availability",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/shared/ui/util/image:web",
+    "//ios/chrome/browser/ui/lens:lens_availability",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model/image_fetch",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/common",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "context_menu_utils.h",
+    "context_menu_utils.mm",
+    "image_preview_view_controller.h",
+    "image_preview_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/url_formatter",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/web/model/image_fetch",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/common:features",
+    "//ios/web/public",
+    "//ios/web/public/ui",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "context_menu_configuration_provider_unittest.mm",
+    "context_menu_utils_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/url_formatter",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/test/fakes",
+    "//net",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "context_menu_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/common:features",
+    "//ios/web/public/test:element_selector",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -71,6 +72,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // To avoid conflicts with the CreateWindow macro from the Windows SDK...
@@ -78,6 +80,7 @@
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Not;
 
 namespace blink {
 
@@ -380,8 +383,6 @@ TEST_F(FileChooserQueueTest, DerefQueuedChooser) {
 class AutofillChromeClientTest : public PageTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableSelectList);
     chrome_client_ = MakeGarbageCollected<FakeChromeClientForAutofill>();
     SetupPageWithClients(chrome_client_);
     GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -393,7 +394,6 @@ class AutofillChromeClientTest : public PageTestBase {
   }
 
   Persistent<FakeChromeClientForAutofill> chrome_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Validates the JavaScriptChangedValue notification if JavaScript
@@ -526,36 +526,43 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
   EXPECT_THAT(text_element->Value(), Eq("overridden"));
   // Note that we expect WebAutofillState::kAutofilled. This is a product
   // decision: Even if the website messes with the content of the field after
-  // an autofill, we show is as autofilled. This applies only if the change
-  // via JavaScript happens instantaenously during the fill operation, not if
+  // an autofill, we show it as autofilled. This applies only if the change
+  // via JavaScript happens instantaneously during the fill operation, not if
   // JavaScript edits the value later. A common usecase is that we fill a
   // credit card as a sequence of digits and the website inserts spaces to
   // group the digits into blocks of four.
-  EXPECT_THAT(text_element->GetAutofillState(),
-              Eq(WebAutofillState::kAutofilled));
+  // When the feature AllowJavaScriptToResetAutofillState is enabled, we expect
+  // the opposite since this feature experiments with changing the product
+  // decision.
+  EXPECT_EQ(
+      text_element->GetAutofillState() == WebAutofillState::kAutofilled,
+      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("text", "autofilled_text"));
 
   textarea_element->SetAutofillValue("autofilled_textarea");
   EXPECT_THAT(textarea_element->Value(), Eq("overridden"));
-  EXPECT_THAT(textarea_element->GetAutofillState(),
-              Eq(WebAutofillState::kAutofilled));
+  EXPECT_EQ(
+      textarea_element->GetAutofillState() == WebAutofillState::kAutofilled,
+      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("textarea", "autofilled_textarea"));
 
   select_element->SetAutofillValue("autofilled_select",
                                    WebAutofillState::kAutofilled);
   EXPECT_THAT(select_element->Value(), Eq("overridden"));
-  EXPECT_THAT(select_element->GetAutofillState(),
-              Eq(WebAutofillState::kAutofilled));
+  EXPECT_EQ(
+      select_element->GetAutofillState() == WebAutofillState::kAutofilled,
+      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("select", "autofilled_select"));
 
   selectlist_element->SetAutofillValue("autofilled_selectlist",
                                        WebAutofillState::kAutofilled);
   EXPECT_THAT(selectlist_element->value(), Eq("overridden"));
-  EXPECT_THAT(selectlist_element->GetAutofillState(),
-              Eq(WebAutofillState::kAutofilled));
+  EXPECT_EQ(
+      selectlist_element->GetAutofillState() == WebAutofillState::kAutofilled,
+      !RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled());
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("selectlist", "autofilled_selectlist"));
 }

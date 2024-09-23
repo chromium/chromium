@@ -30,7 +30,7 @@ class MediaControlTimeDisplayElement : public MediaControlDivElement {
  private:
   void SetAriaLabel();
 
-  double current_value_ = 0;
+  std::optional<double> current_value_;
 };
 
 }  // namespace blink

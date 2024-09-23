@@ -4,7 +4,7 @@ desc: |-
 
         Leaving the policy unset means <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME">DefaultPopupsSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
 
-        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'

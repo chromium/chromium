@@ -186,6 +186,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   // Observes property changes to |target_widget_|'s window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
+
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace chromeos

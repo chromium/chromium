@@ -195,7 +195,7 @@ class AmpPageLoadMetricsFencedFrameBrowserTest
 };
 
 // Currently, prerendering doesn't support FencedFrames.
-// TODO(crbug.com/1335481): Add a test with prerendering.
+// TODO(crbug.com/40228553): Add a test with prerendering.
 IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsFencedFrameBrowserTest,
                        AmpFencedFrame) {
   GURL url = https_test_server()->GetURL("/english_page.html");

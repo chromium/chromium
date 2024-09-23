@@ -1,0 +1,56 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  sources = [
+    "password_infobar_modal_overlay_coordinator.h",
+    "password_infobar_modal_overlay_coordinator.mm",
+    "password_infobar_modal_overlay_mediator.h",
+    "password_infobar_modal_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
+    "//ios/chrome/browser/passwords/model:infobar_delegates",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":passwords",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/passwords/model/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/infobars/modals/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

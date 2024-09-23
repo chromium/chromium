@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
-#include "cc/layers/surface_layer.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -20,36 +20,14 @@ namespace cc::slim {
 
 // static
 scoped_refptr<SurfaceLayer> SurfaceLayer::Create() {
-  scoped_refptr<cc::SurfaceLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::SurfaceLayer::Create();
-  }
-  return base::AdoptRef(new SurfaceLayer(std::move(cc_layer)));
+  return base::AdoptRef(new SurfaceLayer());
 }
 
-SurfaceLayer::SurfaceLayer(scoped_refptr<cc::SurfaceLayer> cc_layer)
-    : Layer(std::move(cc_layer)) {
-  if (this->cc_layer()) {
-    this->cc_layer()->SetSurfaceHitTestable(true);
-  }
-}
-
+SurfaceLayer::SurfaceLayer() = default;
 SurfaceLayer::~SurfaceLayer() = default;
-
-cc::SurfaceLayer* SurfaceLayer::cc_layer() const {
-  return static_cast<cc::SurfaceLayer*>(cc_layer_.get());
-}
-
-const viz::SurfaceId& SurfaceLayer::surface_id() const {
-  return cc_layer() ? cc_layer()->surface_id() : surface_range_.end();
-}
 
 void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
                                 const cc::DeadlinePolicy& deadline_policy) {
-  if (cc_layer()) {
-    cc_layer()->SetSurfaceId(surface_id, deadline_policy);
-    return;
-  }
   if (surface_range_.end() == surface_id &&
       deadline_policy.use_existing_deadline()) {
     return;
@@ -65,10 +43,6 @@ void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
 
 void SurfaceLayer::SetStretchContentToFillBounds(
     bool stretch_content_to_fill_bounds) {
-  if (cc_layer()) {
-    cc_layer()->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-    return;
-  }
   if (stretch_content_to_fill_bounds_ == stretch_content_to_fill_bounds) {
     return;
   }
@@ -76,26 +50,8 @@ void SurfaceLayer::SetStretchContentToFillBounds(
   NotifyPropertyChanged();
 }
 
-bool SurfaceLayer::stretch_content_to_fill_bounds() const {
-  return cc_layer() ? cc_layer()->stretch_content_to_fill_bounds()
-                    : stretch_content_to_fill_bounds_;
-}
-
-void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
-  if (cc_layer()) {
-    cc_layer()->SetMayContainVideo(may_contain_video);
-    return;
-  }
-  // No slim implementation. This method probably should not exist.
-  // crbug.com/1410291
-}
-
 void SurfaceLayer::SetOldestAcceptableFallback(
     const viz::SurfaceId& surface_id) {
-  if (cc_layer()) {
-    cc_layer()->SetOldestAcceptableFallback(surface_id);
-    return;
-  }
   // The fallback should never move backwards.
   DCHECK(!surface_range_.start() ||
          !surface_range_.start()->IsNewerThan(surface_id));
@@ -109,34 +65,59 @@ void SurfaceLayer::SetOldestAcceptableFallback(
       surface_range_.end()));
 }
 
-const std::optional<viz::SurfaceId>& SurfaceLayer::oldest_acceptable_fallback()
-    const {
-  return cc_layer() ? cc_layer()->oldest_acceptable_fallback()
-                    : surface_range_.start();
+void SurfaceLayer::RegisterOffsetTag(
+    const viz::OffsetTag& tag,
+    const viz::OffsetTagConstraints& constraints) {
+  CHECK(tag);
+  CHECK(constraints.IsValid());
+
+  bool inserted = offset_tags_.insert_or_assign(tag, constraints).second;
+
+  if (inserted && layer_tree()) {
+    static_cast<LayerTreeImpl*>(layer_tree())->RegisterOffsetTag(tag, this);
+  }
+}
+
+void SurfaceLayer::UnregisterOffsetTag(const viz::OffsetTag& tag) {
+  CHECK(tag);
+
+  size_t count = offset_tags_.erase(tag);
+  CHECK_EQ(count, 1u);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    layer_tree_impl->UnregisterOffsetTag(tag, this);
+  }
+}
+
+viz::OffsetTagDefinition SurfaceLayer::GetOffsetTagDefinition(
+    const viz::OffsetTag& tag) {
+  return viz::OffsetTagDefinition(tag, surface_range_, offset_tags_.at(tag));
 }
 
 void SurfaceLayer::SetLayerTree(LayerTree* tree) {
-  if (cc_layer()) {
-    Layer::SetLayerTree(tree);
-    return;
-  }
-
   if (layer_tree() == tree) {
     return;
   }
 
-  if (layer_tree() && surface_range_.IsValid()) {
-    static_cast<LayerTreeImpl*>(layer_tree())
-        ->RemoveSurfaceRange(surface_range_);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    if (surface_range_.IsValid()) {
+      layer_tree_impl->RemoveSurfaceRange(surface_range_);
+    }
+    for (auto& [tag, constraints] : offset_tags_) {
+      layer_tree_impl->UnregisterOffsetTag(tag, this);
+    }
   }
   Layer::SetLayerTree(tree);
-  if (layer_tree() && surface_range_.IsValid()) {
-    static_cast<LayerTreeImpl*>(layer_tree())->AddSurfaceRange(surface_range_);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    if (surface_range_.IsValid()) {
+      layer_tree_impl->AddSurfaceRange(surface_range_);
+    }
+    for (auto& [tag, constraints] : offset_tags_) {
+      layer_tree_impl->RegisterOffsetTag(tag, this);
+    }
   }
 }
 
 void SurfaceLayer::SetSurfaceRange(const viz::SurfaceRange& surface_range) {
-  DCHECK(!cc_layer());
   if (surface_range_ == surface_range) {
     return;
   }

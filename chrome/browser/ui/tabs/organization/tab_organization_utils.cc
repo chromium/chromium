@@ -29,7 +29,6 @@ bool TabOrganizationUtils::IsEnabled(Profile* profile) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return opt_guide_keyed_service != nullptr &&
          opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
-             optimization_guide::proto::ModelExecutionFeature::
-                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION) &&
+             optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
          feature_is_enabled;
 }

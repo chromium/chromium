@@ -11,7 +11,7 @@
  *    <settings-ui prefs="{{prefs}}"></settings-ui>
  */
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
@@ -19,11 +19,11 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
-import '../os_toolbar/os_toolbar.js';
+import '../toolbar/toolbar.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/ash/common/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
@@ -36,11 +36,12 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
+import type {UserActionSettingPrefChangeEvent} from '../common/types.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange, recordSettingChangeForUnmappedPref} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
-import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {Route, Router} from '../router.js';
+import {SettingsToolbarElement} from '../toolbar/toolbar.js';
 
 import {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_hats_browser_proxy.js';
 import {getTemplate} from './os_settings_ui.html.js';
@@ -58,6 +59,7 @@ declare global {
     'scroll-to-top': CustomEvent<{top: number, callback: () => void}>;
     'user-action-setting-change':
         CustomEvent<{prefKey: string, prefValue: any}>;
+    'user-action-setting-pref-change': UserActionSettingPrefChangeEvent;
   }
 }
 
@@ -119,7 +121,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       /**
        * Whether settings is in the narrow state (side nav hidden). Controlled
-       * by a binding in the os-toolbar element.
+       * by a binding in the `settings-toolbar` element.
        */
       isNarrow: {
         type: Boolean,
@@ -229,7 +231,10 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     });
 
     this.addEventListener('refresh-pref', this.onRefreshPref_);
-    this.addEventListener('user-action-setting-change', this.onSettingChange_);
+
+    this.addEventListener('user-action-setting-pref-change', this.syncPrefChange_.bind(this));
+
+    this.addEventListener('user-action-setting-change', this.recordChangedSetting_.bind(this));
 
     this.addEventListener(
         'search-changed',
@@ -387,28 +392,43 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     return castExists(this.shadowRoot!.querySelector('cr-drawer'));
   }
 
-  private getToolbar_(): OsToolbarElement {
-    return castExists(this.shadowRoot!.querySelector('os-toolbar'));
+  private getToolbar_(): SettingsToolbarElement {
+    return castExists(this.shadowRoot!.querySelector('settings-toolbar'));
   }
 
   private onRefreshPref_(e: CustomEvent<string>): void {
     this.$.prefs.refresh(e.detail);
   }
 
-  private onSettingChange_(e: CustomEvent<{prefKey: string, prefValue: any}>):
+  /**
+   * Callback for the `user-action-setting-change` event which is emitted by
+   * the `settings-prefs` singleton after a pref-based setting is updated via
+   * some user action. Records the changed setting to relevant metrics.
+   */
+  private recordChangedSetting_(e: CustomEvent<{prefKey: string, prefValue: any}>):
       void {
     const {prefKey, prefValue} = e.detail;
     const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
 
     // New metrics for this setting pref have not yet been implemented.
-    // TODO(b/324480501) Remove this zero-arg usage once all pref-based settings
-    // are handled.
     if (!settingMetric) {
-      recordSettingChange();
+      recordSettingChangeForUnmappedPref();
       return;
     }
 
     recordSettingChange(settingMetric.setting, settingMetric.value);
+  }
+
+  /**
+   * Callback for the `user-action-setting-pref-change` event which is emitted
+   * by settings pref control components when the prefs state should be synced
+   * after some user action (e.g. a toggle was turned on). Updates the prefs
+   * state and syncs it with the `settings-prefs` singleton, which applies the
+   * update at the OS level.
+   */
+  private syncPrefChange_(event: UserActionSettingPrefChangeEvent): void {
+    const {prefKey, value} = event.detail;
+    this.set(`prefs.${prefKey}.value`, value);
   }
 
   /**

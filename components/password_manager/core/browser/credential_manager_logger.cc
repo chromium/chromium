@@ -38,8 +38,9 @@ void CredentialManagerLogger::LogRequestCredential(
       break;
   }
   s += ", federations=";
-  for (const GURL& federation_provider : federations)
+  for (const GURL& federation_provider : federations) {
     s += SavePasswordProgressLogger::ScrubURL(federation_provider) + ", ";
+  }
 
   LOG_AF(*log_manager_) << s;
 }

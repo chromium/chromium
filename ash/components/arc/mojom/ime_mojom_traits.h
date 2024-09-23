@@ -64,7 +64,6 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         return MojoType::NONE;
     }
     NOTREACHED();
-    return MojoType::TEXT;
   }
 
   static bool FromMojom(MojoType input, ui::TextInputType* out) {
@@ -107,7 +106,6 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         return true;
     }
     NOTREACHED();
-    return false;
   }
 };
 
@@ -115,7 +113,7 @@ using KeyEventUniquePtr = std::unique_ptr<ui::KeyEvent>;
 template <>
 struct StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr> {
   static bool pressed(const KeyEventUniquePtr& key_event) {
-    return key_event->type() == ui::ET_KEY_PRESSED;
+    return key_event->type() == ui::EventType::kKeyPressed;
   }
   static int32_t key_code(const KeyEventUniquePtr& key_event) {
     return key_event->key_code();

@@ -118,6 +118,15 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
     // for at least 300ms.
     this.scrollTimerId = window.setTimeout(() => this.scrollingClass = '', 300);
   }
+
+  getScrollingClassForTesting(): string {
+    return this.scrollingClass;
+  }
+
+  getScrollTimerIdForTesting(): number {
+    return this.scrollTimerId;
+  }
+
 }
 
 declare global {

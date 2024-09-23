@@ -20,7 +20,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_request_headers.h"
-#include "net/http/http_request_info.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
@@ -42,17 +41,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::FuzzedSocket fuzzed_socket(&data_provider, net::NetLog::Get());
   CHECK_EQ(net::OK, fuzzed_socket.Connect(callback.callback()));
 
-  net::HttpRequestInfo request_info;
-  request_info.method = "GET";
-  request_info.url = GURL("http://localhost/");
-
   scoped_refptr<net::GrowableIOBuffer> read_buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
   // Use a NetLog that listens to events, to get coverage of logging
   // callbacks.
-  net::HttpStreamParser parser(&fuzzed_socket, false /* is_reused */,
-                               &request_info, read_buffer.get(),
-                               net_log_with_source);
+  net::HttpStreamParser parser(
+      &fuzzed_socket, false /* is_reused */, GURL("http://localhost/"), "GET",
+      /*upload_data_stream=*/nullptr, read_buffer.get(), net_log_with_source);
 
   net::HttpResponseInfo response_info;
   int result = parser.SendRequest(

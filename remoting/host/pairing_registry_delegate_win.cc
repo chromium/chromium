@@ -4,16 +4,16 @@
 
 #include "remoting/host/pairing_registry_delegate_win.h"
 
-#include <utility>
+#include <windows.h>
 
 #include <optional>
+#include <utility>
+
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-
-#include <windows.h>
 
 namespace remoting {
 

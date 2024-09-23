@@ -50,7 +50,7 @@ public class GoogleApiClientHelperTest {
     /** Tests that connection attempts are delayed. */
     @Test
     @Feature({"GCore"})
-    // TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
+    // TODO(crbug.com/40182398): Change to use paused loop. See crbug for details.
     @LooperMode(LooperMode.Mode.LEGACY)
     public void connectionAttemptDelayTest() {
         GoogleApiClientHelper helper = new GoogleApiClientHelper(mMockClient);

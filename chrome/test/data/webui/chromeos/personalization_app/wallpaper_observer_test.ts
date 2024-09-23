@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, SeaPenActionName, SetSelectedImageAction, SetSelectedRecentSeaPenImageAction, WallpaperActionName, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, FullscreenPreviewState, setFullscreenStateAction, setSelectedImageAction, SetSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup} from './personalization_app_test_utils.js';
@@ -53,40 +53,6 @@ suite('WallpaperObserverTest', function() {
     assertDeepEquals(wallpaperProvider.currentWallpaper, image);
   });
 
-  test('sets selected sea pen wallpaper data in store on changed', async () => {
-    // Make sure state starts as expected.
-    assertDeepEquals(emptyState(), personalizationStore.data);
-
-    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    personalizationStore.expectAction(
-        SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE);
-
-    const selectedSeaPenWallpaper = {
-      descriptionContent: 'test content',
-      descriptionTitle: 'test title',
-      key: '/test/seapen/111.jpg',
-      layout: WallpaperLayout.kCenter,
-      type: WallpaperType.kSeaPen,
-    };
-
-    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
-        selectedSeaPenWallpaper);
-
-    const {image} =
-        await personalizationStore.waitForAction(
-            WallpaperActionName.SET_SELECTED_IMAGE) as SetSelectedImageAction;
-
-    assertDeepEquals(
-        selectedSeaPenWallpaper, image,
-        'selected image should be a Sea Pen image');
-
-    const {key} = await personalizationStore.waitForAction(
-                      SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE) as
-        SetSelectedRecentSeaPenImageAction;
-
-    assertEquals(selectedSeaPenWallpaper.key, key, 'selected key should match');
-  });
-
   test('sets selected wallpaper if null', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
@@ -100,17 +66,22 @@ suite('WallpaperObserverTest', function() {
     assertEquals(null, image);
   });
 
-  test('skips updating OnWallpaperChange while in fullscreen', async () => {
-    personalizationStore.data.wallpaper.fullscreen = true;
+  test('OnWallpaperChange updates fullscreen state from loading', async () => {
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
 
-    personalizationStore.resetLastAction();
+    personalizationStore.expectAction(WallpaperActionName.SET_FULLSCREEN_STATE);
 
     wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
-    assertEquals(null, personalizationStore.lastAction);
+    assertDeepEquals(
+        setFullscreenStateAction(FullscreenPreviewState.VISIBLE),
+        await personalizationStore.waitForAction(
+            WallpaperActionName.SET_FULLSCREEN_STATE),
+        'full screen set to visible');
 
-    personalizationStore.data.wallpaper.fullscreen = false;
+    personalizationStore.data.wallpaper.fullscreen = FullscreenPreviewState.OFF;
     personalizationStore.notifyObservers();
 
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
@@ -118,14 +89,11 @@ suite('WallpaperObserverTest', function() {
     wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
-    const action = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
 
     assertDeepEquals(
-        {
-          name: WallpaperActionName.SET_SELECTED_IMAGE,
-          image: wallpaperProvider.currentWallpaper,
-        },
-        action);
+        setSelectedImageAction(wallpaperProvider.currentWallpaper),
+        await personalizationStore.waitForAction(
+            WallpaperActionName.SET_SELECTED_IMAGE),
+        `${WallpaperActionName.SET_SELECTED_IMAGE} action sent`);
   });
 });

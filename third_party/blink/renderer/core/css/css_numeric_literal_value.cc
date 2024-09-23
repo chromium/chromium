@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -89,7 +88,7 @@ double CSSNumericLiteralValue::ComputeSeconds() const {
   if (current_type == UnitType::kMilliseconds) {
     return num_ / 1000;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -106,7 +105,7 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kTurns:
       return Turn2deg(num_);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -117,6 +116,15 @@ double CSSNumericLiteralValue::ComputeDotsPerPixel() const {
 }
 
 double CSSNumericLiteralValue::ComputeInCanonicalUnit() const {
+  return DoubleValue() *
+         CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(GetType());
+}
+
+double CSSNumericLiteralValue::ComputeInCanonicalUnit(
+    const CSSLengthResolver& length_resolver) const {
+  if (IsLength()) {
+    return ComputeLengthPx(length_resolver);
+  }
   return DoubleValue() *
          CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(GetType());
 }
@@ -215,7 +223,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // FIXME
       break;
     case UnitType::kInteger:
-      text = String::Number(GetIntValue());
+      text = String::Number(ComputeInteger());
       break;
     case UnitType::kNumber:
     case UnitType::kPercentage:
@@ -287,7 +295,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;
       constexpr int kMaxInteger = 999999;
-      double value = To<CSSNumericLiteralValue>(this)->DoubleValue();
+      double value = DoubleValue();
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
@@ -306,7 +314,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       }
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return text;

@@ -81,9 +81,4 @@ void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
                                         Profile* profile,
                                         ash::ShelfLaunchSource source);
 
-// Displays a nudge notifying users of affected web apps now opening in
-// standalone windows by default, which previously opened in tabs.
-void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
-                                       Profile* profile);
-
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_

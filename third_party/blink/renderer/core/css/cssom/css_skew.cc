@@ -62,7 +62,7 @@ CSSSkew* CSSSkew::FromCSSValue(const CSSFunctionValue& value) {
     return CSSSkew::Create(CSSNumericValue::FromCSSValue(x_value),
                            CSSNumericValue::FromCSSValue(y_value));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

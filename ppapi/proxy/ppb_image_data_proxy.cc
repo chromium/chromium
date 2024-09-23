@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ppapi/proxy/ppb_image_data_proxy.h"
 
 #include <string.h>  // For memcpy
@@ -505,11 +510,11 @@ PP_Resource PPB_ImageData_Proxy::CreateProxyResource(
               ->GetReference();
         }
       }
+      break;
 #else
       // PlatformImageData shouldn't be created in untrusted code.
       NOTREACHED();
 #endif
-      break;
     }
   }
 

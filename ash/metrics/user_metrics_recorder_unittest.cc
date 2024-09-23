@@ -79,13 +79,6 @@ TEST_F(UserMetricsRecorderTest, VerifyIsUserInActiveDesktopEnvironmentValues) {
                          user_manager::UserType::kKioskApp);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(test_api().IsUserInActiveDesktopEnvironment());
-
-  // Arc kiosk logins are not considered active.
-  client->Reset();
-  client->AddUserSession("app@arc-kiosk-apps.device-local.localhost",
-                         user_manager::UserType::kArcKioskApp);
-  client->SetSessionState(session_manager::SessionState::ACTIVE);
-  EXPECT_FALSE(test_api().IsUserInActiveDesktopEnvironment());
 }
 
 // Verifies that the IsUserInActiveDesktopEnvironment() dependent stats are not

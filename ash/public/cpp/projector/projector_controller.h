@@ -56,21 +56,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   // Returns true if we can start a new Projector session.
   virtual NewScreencastPrecondition GetNewScreencastPrecondition() const = 0;
-
-  // The following functions are callbacks from the annotator back to the
-  // ProjectorController.
-
-  // Callback indicating availability of undo and redo functionalities.
-  virtual void OnUndoRedoAvailabilityChanged(bool undo_available,
-                                             bool redo_available) = 0;
-  // Called when the ink canvas has either succeeded or failed in initializing.
-  virtual void OnCanvasInitialized(bool success) = 0;
-
-  // Returns if the annotatotion canvas is available.
-  virtual bool GetAnnotatorAvailability() = 0;
-
-  // Toggles the Projector annotation tray UI and marker enabled state.
-  virtual void ToggleAnnotationTray() = 0;
 };
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -52,14 +53,80 @@ base::expected<std::string, net::Error> ReadFromReader(
   return result;
 }
 
+// A simple list of 0 or 1 FileSystemURLs that CHECK-fails when CheckAllowed is
+// passed that FileSystemURL.
+class DenyList {
+ public:
+  void CheckAllowed(const storage::FileSystemURL& fs_url) const {
+    if (!disabled_ && fs_url_.is_valid()) {
+      CHECK(fs_url_ != fs_url);
+    }
+  }
+
+  void Deny(const storage::FileSystemURL& fs_url) {
+    CHECK(fs_url.is_valid());
+    CHECK(!fs_url_.is_valid());
+    fs_url_ = fs_url;
+  }
+
+  void set_disabled(bool disabled) { disabled_ = disabled; }
+
+ private:
+  bool disabled_ = false;
+  storage::FileSystemURL fs_url_;
+};
+
+// Wraps a LocalFileUtil (which implements the FileSystemFileUtil interface)
+// with a DenyList. Unless disabled, it checks that various FileSystemFileUtil
+// methods are not passed any FileSystemURLs on the deny list.
+class DeniableFileUtil : public storage::LocalFileUtil {
+ public:
+  explicit DeniableFileUtil(const DenyList& deny_list)
+      : deny_list_(deny_list) {}
+
+  base::File::Error EnsureFileExists(
+      storage::FileSystemOperationContext* context,
+      const storage::FileSystemURL& url,
+      bool* created) override {
+    deny_list_->CheckAllowed(url);
+    return storage::LocalFileUtil::EnsureFileExists(context, url, created);
+  }
+
+  base::File::Error GetFileInfo(storage::FileSystemOperationContext* context,
+                                const storage::FileSystemURL& url,
+                                base::File::Info* file_info,
+                                base::FilePath* platform_file) override {
+    deny_list_->CheckAllowed(url);
+    return storage::LocalFileUtil::GetFileInfo(context, url, file_info,
+                                               platform_file);
+  }
+
+  base::File::Error Truncate(storage::FileSystemOperationContext* context,
+                             const storage::FileSystemURL& url,
+                             int64_t length) override {
+    deny_list_->CheckAllowed(url);
+    return storage::LocalFileUtil::Truncate(context, url, length);
+  }
+
+  base::File::Error DeleteFile(storage::FileSystemOperationContext* context,
+                               const storage::FileSystemURL& url) override {
+    deny_list_->CheckAllowed(url);
+    return storage::LocalFileUtil::DeleteFile(context, url);
+  }
+
+ private:
+  raw_ref<const DenyList> deny_list_;
+};
+
 static int fake_fsb_delegate_create_file_stream_writer_count = 0;
 
 class FakeFSBDelegate : public FileSystemBackendDelegate {
  public:
   explicit FakeFSBDelegate(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const DenyList& deny_list)
       : task_runner_(std::move(task_runner)),
-        adapter_(std::make_unique<storage::LocalFileUtil>()) {}
+        adapter_(std::make_unique<DeniableFileUtil>(deny_list)) {}
 
   FakeFSBDelegate(const FakeFSBDelegate&) = delete;
   FakeFSBDelegate& operator=(const FakeFSBDelegate&) = delete;
@@ -94,12 +161,7 @@ class FakeFSBDelegate : public FileSystemBackendDelegate {
 
   storage::WatcherManager* GetWatcherManager(
       storage::FileSystemType type) override {
-    NOTREACHED_NORETURN();
-  }
-
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:
@@ -117,18 +179,16 @@ class DiversionBackendDelegateTest : public testing::Test,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // The int returned by GetParam() ranges from 0 to (1 << kNumParamBits).
-  static constexpr int kNumParamBits = 3;
+  static constexpr int kNumParamBits = 2;
   bool ShouldCopy() const { return (1 << 0) & GetParam(); }
   bool ShouldDestExists() const { return (1 << 1) & GetParam(); }
-  bool ShouldDivert() const { return (1 << 2) & GetParam(); }
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return base::StrCat({
         "Should",
         (((1 << 0) & info.param) ? "CopyAnd" : "MoveAnd"),
-        (((1 << 1) & info.param) ? "DestExistsAnd" : "NotDestExistsAnd"),
-        (((1 << 2) & info.param) ? "Divert" : "NotDivert"),
+        (((1 << 1) & info.param) ? "DestExists" : "NotDestExists"),
     });
   }
 
@@ -178,6 +238,42 @@ class DiversionBackendDelegateTest : public testing::Test,
         "fake_filesystem_id", storage::FileSystemMountOption());
   }
 
+  void AssertEnsureFileExistsReturns(storage::AsyncFileUtil* async_file_util,
+                                     const storage::FileSystemURL& fs_url,
+                                     base::File::Error expected_error) {
+    async_file_util->EnsureFileExists(
+        CreateFSOContext(), fs_url,
+        base::BindOnce(
+            [](base::File::Error expected_error,
+               base::RepeatingClosure quit_closure, base::File::Error error,
+               bool created) {
+              ASSERT_EQ(expected_error, error);
+              ASSERT_TRUE(created);
+              quit_closure.Run();
+            },
+            expected_error, task_environment_.QuitClosure()));
+    task_environment_.RunUntilQuit();
+  }
+
+  void AssertGetFileInfoReturns(storage::AsyncFileUtil* async_file_util,
+                                const storage::FileSystemURL& fs_url,
+                                base::File::Error expected_error) {
+    async_file_util->GetFileInfo(
+        CreateFSOContext(), fs_url,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
+        base::BindOnce(
+            [](base::File::Error expected_error,
+               base::RepeatingClosure quit_closure, base::File::Error error,
+               const base::File::Info& file_info) {
+              ASSERT_EQ(expected_error, error);
+              quit_closure.Run();
+            },
+            expected_error, task_environment_.QuitClosure()));
+    task_environment_.RunUntilQuit();
+  }
+
+  void RunBasic(DiversionBackendDelegate::Policy policy);
+
   static const char* kExpectedContents;
   static const char* kFragments[];
 
@@ -196,13 +292,38 @@ const char* DiversionBackendDelegateTest::kFragments[] = {
     "Amet.",
 };
 
-TEST_P(DiversionBackendDelegateTest, Basic) {
+void DiversionBackendDelegateTest::RunBasic(
+    DiversionBackendDelegate::Policy policy) {
   ASSERT_TRUE(
       ::content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
+  const bool should_divert =
+      policy != DiversionBackendDelegate::Policy::kDoNotDivert;
+  const bool should_isolate =
+      policy == DiversionBackendDelegate::Policy::kDivertIsolated;
+
+  const char* basename = "";
+  switch (policy) {
+    case DiversionBackendDelegate::Policy::kDoNotDivert:
+      basename = "diversion.dat.some_other_extension";
+      break;
+    case DiversionBackendDelegate::Policy::kDivertIsolated:
+      basename = "diversion.dat.crdownload";
+      break;
+    case DiversionBackendDelegate::Policy::kDivertMingled:
+      basename = "diversion.dat.cros_divert_mingled_test";
+      break;
+  }
+  storage::FileSystemURL fs_url0 = CreateFSURL(basename);
+
+  DenyList deny_list;
+  if (should_isolate) {
+    deny_list.Deny(fs_url0);
+  }
+
   fake_fsb_delegate_create_file_stream_writer_count = 0;
   DiversionBackendDelegate delegate(std::make_unique<FakeFSBDelegate>(
-      task_environment_.GetMainThreadTaskRunner()));
+      task_environment_.GetMainThreadTaskRunner(), deny_list));
 
   base::FilePath temp_dir;
   ASSERT_TRUE(base::GetTempDir(&temp_dir));
@@ -211,19 +332,16 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // Simulate the "download a file" workflow that first writes to a temporary
   // file (fs_url0) before moving that over the ulimate destination (fs_url1).
   //
-  // The final state should be the same, regardless of ShouldDivert(), in that
+  // The final state should be the same, regardless of should_divert, in that
   // the fs_url0 file does not exist but the fs_url1 file does exist (and its
   // contents match the kExpectedContents).
   //
-  // We also test copying (instead of moving) fs_url0 to fsurl1, depending on
+  // We also test copying (instead of moving) fs_url0 to fs_url1, depending on
   // ShouldCopy(). The "download a file" workflow always moves, but copying
   // should work too (where the final state is that both fs_url0 and fs_url1
   // files exist and have the kExpectedContents).
-  storage::FileSystemURL fs_url0 =
-      CreateFSURL(ShouldDivert() ? "diversion.dat.crdownload"
-                                 : "diversion.dat.some_other_extension");
   storage::FileSystemURL fs_url1 = CreateFSURL("diversion.dat");
-  ASSERT_EQ(ShouldDivert(), delegate.ShouldDivertForTesting(fs_url0));
+  ASSERT_EQ(policy, delegate.ShouldDivertForTesting(fs_url0));
 
   // The final state should be indifferent to whether or not fs_url1 already
   // exists and, if it does, whether it's longer than kExpectedContents.
@@ -241,17 +359,11 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   storage::AsyncFileUtil* async_file_util =
       delegate.GetAsyncFileUtil(fs_url0.type());
   {
-    async_file_util->EnsureFileExists(
-        CreateFSOContext(), fs_url0,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure, base::File::Error error,
-               bool created) {
-              ASSERT_EQ(base::File::FILE_OK, error);
-              ASSERT_TRUE(created);
-              quit_closure.Run();
-            },
-            task_environment_.QuitClosure()));
-    task_environment_.RunUntilQuit();
+    AssertGetFileInfoReturns(async_file_util, fs_url0,
+                             base::File::FILE_ERROR_NOT_FOUND);
+    AssertEnsureFileExistsReturns(async_file_util, fs_url0,
+                                  base::File::FILE_OK);
+    AssertGetFileInfoReturns(async_file_util, fs_url0, base::File::FILE_OK);
   }
 
   // Make multiple incremental writes, from multiple FileStreamWriter objects,
@@ -266,7 +378,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // The whole point of a DiversionBackendDelegate is to buffer FSA's multiple
   // FileStreamWriters so that ODFS only sees a single FileStreamWriter. The
   // number of FakeFSBDelegate FileStreamWriter's created should be 0 or 3
-  // depending on ShouldDivert().
+  // depending on should_divert;
   {
     int64_t offset = 0;
     for (const char* fragment : kFragments) {
@@ -275,7 +387,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
       SynchronousWrite(*writer, fragment);
       offset += strlen(fragment);
     }
-    EXPECT_EQ(ShouldDivert() ? 0 : 3,
+    EXPECT_EQ(should_divert ? 0 : 3,
               fake_fsb_delegate_create_file_stream_writer_count);
   }
 
@@ -298,13 +410,18 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   // file system depends on whether the DiversionBackendDelegate diverted
   // (instead of passing through) that FileSystemURL.
   {
-    EXPECT_NE(ShouldDivert(), base::PathExists(fs_url0.path()));
+    EXPECT_NE(should_divert, base::PathExists(fs_url0.path()));
     EXPECT_EQ(ShouldDestExists(), base::PathExists(fs_url1.path()));
   }
 
   // Copying or moving that fs_url0 file to fs_url1 should materialize it (if
   // diverted) on the DiversionBackendDelegate's wrappee backend.
+  //
+  // Moving materializes fs_url1. Copying materializes both fs_url0 and fs_url1
+  // and materializing fs_url0 (which is on the deny_list, if should_isolate)
+  // requires temporarily disabling that deny_list.
   if (ShouldCopy()) {
+    deny_list.set_disabled(true);
     async_file_util->CopyFileLocal(
         CreateFSOContext(), fs_url0, fs_url1, {},
         base::BindRepeating(
@@ -318,6 +435,7 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
             },
             task_environment_.QuitClosure()));
     task_environment_.RunUntilQuit();
+    deny_list.set_disabled(false);
   } else {
     async_file_util->MoveFileLocal(
         CreateFSOContext(), fs_url0, fs_url1, {},
@@ -347,6 +465,18 @@ TEST_P(DiversionBackendDelegateTest, Basic) {
   }
 }
 
+TEST_P(DiversionBackendDelegateTest, BasicDoNotDivert) {
+  RunBasic(DiversionBackendDelegate::Policy::kDoNotDivert);
+}
+
+TEST_P(DiversionBackendDelegateTest, BasicDivertIsolated) {
+  RunBasic(DiversionBackendDelegate::Policy::kDivertIsolated);
+}
+
+TEST_P(DiversionBackendDelegateTest, BasicDivertMingled) {
+  RunBasic(DiversionBackendDelegate::Policy::kDivertMingled);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     DiversionBackendDelegateTest,
@@ -357,31 +487,27 @@ TEST_F(DiversionBackendDelegateTest, Timeout) {
   ASSERT_TRUE(
       ::content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
+  DenyList deny_list;
   fake_fsb_delegate_create_file_stream_writer_count = 0;
   DiversionBackendDelegate delegate(std::make_unique<FakeFSBDelegate>(
-      task_environment_.GetMainThreadTaskRunner()));
+      task_environment_.GetMainThreadTaskRunner(), deny_list));
 
   base::FilePath temp_dir;
   ASSERT_TRUE(base::GetTempDir(&temp_dir));
   delegate.OverrideTmpfileDirForTesting(temp_dir);
 
   storage::FileSystemURL fs_url0 = CreateFSURL("diversion.dat.crdownload");
-  ASSERT_TRUE(delegate.ShouldDivertForTesting(fs_url0));
+  ASSERT_EQ(DiversionBackendDelegate::Policy::kDivertIsolated,
+            delegate.ShouldDivertForTesting(fs_url0));
 
   storage::AsyncFileUtil* async_file_util =
       delegate.GetAsyncFileUtil(fs_url0.type());
   {
-    async_file_util->EnsureFileExists(
-        CreateFSOContext(), fs_url0,
-        base::BindOnce(
-            [](base::RepeatingClosure quit_closure, base::File::Error error,
-               bool created) {
-              ASSERT_EQ(base::File::FILE_OK, error);
-              ASSERT_TRUE(created);
-              quit_closure.Run();
-            },
-            task_environment_.QuitClosure()));
-    task_environment_.RunUntilQuit();
+    AssertGetFileInfoReturns(async_file_util, fs_url0,
+                             base::File::FILE_ERROR_NOT_FOUND);
+    AssertEnsureFileExistsReturns(async_file_util, fs_url0,
+                                  base::File::FILE_OK);
+    AssertGetFileInfoReturns(async_file_util, fs_url0, base::File::FILE_OK);
   }
 
   {

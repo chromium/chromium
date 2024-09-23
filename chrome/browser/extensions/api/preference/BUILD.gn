@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("preference") {
+  sources = [
+    "preference_api.cc",
+    "preference_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//components/autofill/core/common",
+    "//components/prefs",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//extensions/browser",
+    "//extensions/browser/api/content_settings",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//skia",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/extensions:constants",
+      "//chromeos/startup:startup",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+}

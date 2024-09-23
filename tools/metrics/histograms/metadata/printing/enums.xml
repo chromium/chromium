@@ -26,14 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="IppVersion">
-  <int value="0" label="Error">Failed to parse version</int>
-  <int value="1" label="Unknown">Version value not recognized</int>
-  <int value="2" label="IPP 1.0">IPP 1.0</int>
-  <int value="3" label="IPP 1.1">IPP 1.1</int>
-  <int value="4" label="IPP 2.0">IPP 2.0</int>
-  <int value="5" label="IPP 2.1">IPP 2.1</int>
-  <int value="6" label="IPP 2.2">IPP 2.2</int>
+<enum name="ExtensionPrintJobStatus">
+  <int value="0" label="UNKNOWN_FAILURE">Other failures</int>
+  <int value="1" label="OK">The job completed successfully</int>
+  <int value="2" label="FAILED">A general failure</int>
+  <int value="3" label="INVALID_TICKET">The print ticket is invalid</int>
+  <int value="4" label="INVALID_DATA">The document is invalid</int>
 </enum>
 
 <enum name="PrintAttemptOutcome">
@@ -79,7 +77,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Fatal Error"/>
   <int value="1" label="Success"/>
   <int value="2" label="Printer Unreachable"/>
-  <int value="3" label="Could not contact debugd over dbus"/>
+  <int value="3" label="Could not contact printscanmgr over dbus"/>
   <int value="4" label="Can't configure native printers due to policy"/>
   <int value="5" label="Invalid values are used to update printer"/>
   <int value="6" label="Could not install component"/>
@@ -94,7 +92,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Memory allocation error in Cups"/>
   <int value="16" label="Printer's URI is incorrect"/>
   <int value="17" label="Manual setup required"/>
-  <int value="64" label="No reply from debugd over D-Bus"/>
+  <int value="64" label="No reply from printscanmgr over D-Bus"/>
   <int value="65" label="Generic D-Bus timeout"/>
   <int value="66" label="Printer removed during setup"/>
 </enum>

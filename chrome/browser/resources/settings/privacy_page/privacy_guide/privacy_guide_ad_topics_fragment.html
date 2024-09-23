@@ -1,0 +1,47 @@
+<style include="privacy-guide-fragment-shared"></style>
+<div class="header-phase2" focus-element tabindex="-1">
+  <picture>
+    <source
+        srcset="./images/privacy_guide/ad_topics_graphic_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_guide/ad_topics_graphic.svg">
+  </picture>
+  <h2 class="header-label-phase2">$i18n{privacyGuideAdTopicsHeading}</h2>
+</div>
+<div class="fragment-content">
+  <div class="embedded-setting-wrapper">
+    <settings-toggle-button id="adTopicsToggle"
+        pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
+        on-settings-boolean-control-change="onToggleChange_"
+        label="$i18n{privacyGuideAdTopicsToggleLabel}">
+    </settings-toggle-button>
+  </div>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+      <div role="list">
+        <privacy-guide-description-item role="listitem"
+            icon="settings20:history"
+            label="$i18n{privacyGuideAdTopicsWhenOnBullet1}">
+        </privacy-guide-description-item>
+        <privacy-guide-description-item role="listitem"
+            icon="settings20:security"
+            label="$i18n{privacyGuideAdTopicsWhenOnBullet2}">
+        </privacy-guide-description-item>
+      </div>
+    </div>
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+      <div role="list">
+        <privacy-guide-description-item role="listitem"
+            icon="settings20:auto-delete"
+            label="$i18n{privacyGuideAdTopicsThingsToConsiderBullet1}">
+        </privacy-guide-description-item>
+        <privacy-guide-description-item role="listitem"
+            icon="settings20:rule-folder"
+            label="$i18n{privacyGuideAdTopicsThingsToConsiderBullet2}">
+        </privacy-guide-description-item>
+      </div>
+    </div>
+  </div>
+</div>

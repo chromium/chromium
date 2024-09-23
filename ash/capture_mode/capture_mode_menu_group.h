@@ -104,7 +104,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // will open a folder window for user to select a new folder to save the
   // captured filed on click/press.
   void AddMenuItem(views::Button::PressedCallback callback,
-                   std::u16string item_label);
+                   std::u16string item_label,
+                   bool enabled);
 
   // Returns true if the option with the given `option_id` is checked, if such
   // option exists.
@@ -124,9 +125,11 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   views::View* GetOptionForTesting(int option_id);
   views::View* GetSelectFolderMenuItemForTesting();
   std::u16string GetOptionLabelForTesting(int option_id) const;
+  views::View* SetOptionCheckedForTesting(int option_id, bool checked) const;
 
  private:
   friend class CaptureModeSettingsTestApi;
+  FRIEND_TEST_ALL_PREFIXES(CaptureModeSettingsTest, AccessibleName);
 
   // Acts as a common constructor that's called by the above public
   // constructors.
@@ -141,6 +144,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // This is the callback function on option click. It will select the
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
+
+  views::View* menu_header() const;
 
   // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.

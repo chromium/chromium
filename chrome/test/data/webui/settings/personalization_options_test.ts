@@ -8,11 +8,13 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {ChromeSigninUserChoice} from 'chrome://settings/settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 // </if>
 
@@ -30,7 +32,7 @@ suite('AllBuilds', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      // TODO(crbug.com/1459031): Remove the tests for "driveSuggest" when
+      // TODO(crbug.com/40274151): Remove the tests for "driveSuggest" when
       // the setting is completely removed.
       driveSuggestAvailable: true,
       driveSuggestNoSetting: false,
@@ -68,14 +70,14 @@ suite('AllBuilds', function() {
     assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -84,7 +86,7 @@ suite('AllBuilds', function() {
 
   test('DriveSearchSuggestControlDeprecated', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -98,7 +100,7 @@ suite('AllBuilds', function() {
 
   test('DriveSearchSuggestControlNoSyncRequirement', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -107,7 +109,7 @@ suite('AllBuilds', function() {
     loadTimeData.overrideValues({'driveSuggestNoSyncRequirement': true});
     buildTestElement();
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -116,12 +118,85 @@ suite('AllBuilds', function() {
   });
 
   // <if expr="not is_chromeos">
+  test('chromeSigninUserChoiceAvailableInitialization', async function() {
+    assertFalse(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+    const descriptionText =
+        testElement.shadowRoot!.querySelector(
+                                   '#chromeSigninChoiceDescription')!.innerHTML;
+    assertTrue(descriptionText.includes(infoResponse.signedInEmail));
+  });
+
+  test('chromeSigninUserChoiceAvailabilityUpdate', async function() {
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+    // New response to return should not show.
+    const infoResponse_hide = {
+      shouldShowSettings: false,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: '',
+    };
+
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse_hide);
+    assertFalse(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+    // Original response to return should show again.
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse);
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+  });
+
+  test('chromeSigninUserChoiceUpdatedExternally', async function() {
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceSelection));
+
+    // `ChromeSigninUserChoice.NO_CHOICE` leads to no value set.
+    assertEquals(
+        Number(testElement.$.chromeSigninUserChoiceSelection.value),
+        ChromeSigninUserChoice.NO_CHOICE);
+
+    infoResponse.choice = ChromeSigninUserChoice.SIGNIN;
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse);
+    assertEquals(
+        Number(testElement.$.chromeSigninUserChoiceSelection.value),
+        ChromeSigninUserChoice.SIGNIN);
+  });
+
   test('signinAllowedToggle', function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
     };
     // Check initial setup.
@@ -156,7 +231,7 @@ suite('AllBuilds', function() {
     assertTrue(toggle.checked);
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     // When the user is signed in, clicking the toggle should open the
@@ -268,7 +343,7 @@ suite('AllBuilds', function() {
         '#priceEmailNotificationsToggle'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -280,7 +355,8 @@ suite('AllBuilds', function() {
     const pageContentRow =
         testElement.shadowRoot!.querySelector<HTMLElement>('#pageContentRow')!;
 
-    // TODO(crbug/1476887): Remove visibility check once crbug/1476887 launched.
+    // TODO(crbug.com/40070860): Remove visibility check once crbug/1476887
+    // launched.
     assertTrue(isVisible(pageContentRow));
 
     // The sublabel is dynamic based on the setting state.
@@ -297,9 +373,27 @@ suite('AllBuilds', function() {
     pageContentRow.click();
     assertEquals(routes.PAGE_CONTENT, Router.getInstance().getCurrentRoute());
   });
+
+  test('historySearchRow', () => {
+    loadTimeData.overrideValues({showHistorySearchControl: true});
+    resetRouterForTesting();
+    buildTestElement();
+
+    const historySearchRow =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#historySearchRow');
+    assertTrue(!!historySearchRow);
+    assertTrue(isVisible(historySearchRow));
+    historySearchRow.click();
+    assertEquals(routes.HISTORY_SEARCH, Router.getInstance().getCurrentRoute());
+
+    loadTimeData.overrideValues({showHistorySearchControl: false});
+    buildTestElement();
+    assertFalse(!!testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#historySearchRow'));
+  });
 });
 
-// TODO(crbug/1476887): Remove once crbug/1476887 launched.
+// TODO(crbug.com/40070860): Remove once crbug/1476887 launched.
 suite('PageContentSettingOff', function() {
   let testElement: SettingsPersonalizationOptionsElement;
 
@@ -418,43 +512,17 @@ suite('OfficialBuild', function() {
   // </if>
 
   // <if expr="chromeos_ash">
-  test(
-      'Metrics toggle links to OS sync page with deprecate sync metrics off',
-      function() {
-        let targetUrl: string = '';
-        testElement['navigateTo_'] = (url: string) => {
-          targetUrl = url;
-        };
+  test('Metrics row links to OS Settings Privacy Hub subpage', function() {
+    let targetUrl: string = '';
+    testElement['navigateTo_'] = (url: string) => {
+      targetUrl = url;
+    };
 
-        loadTimeData.overrideValues({
-          osDeprecateSyncMetricsToggle: false,
-        });
-
-        const syncSetupUrl = loadTimeData.getString('osSyncSetupSettingsUrl');
-
-        testElement.$.metricsReportingLink.click();
-
-        assertEquals(syncSetupUrl, targetUrl);
-      });
-
-  test(
-      'Metrics toggle links to OS privacy page with deprecate sync metrics on',
-      function() {
-        let targetUrl: string = '';
-        testElement['navigateTo_'] = (url: string) => {
-          targetUrl = url;
-        };
-
-        loadTimeData.overrideValues({
-          osDeprecateSyncMetricsToggle: true,
-        });
-
-        const privacyUrl = loadTimeData.getString('osPrivacySettingsUrl');
-
-        testElement.$.metricsReportingLink.click();
-
-        assertEquals(privacyUrl, targetUrl);
-      });
+    testElement.$.metricsReportingLink.click();
+    const expectedUrl =
+        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
+    assertEquals(expectedUrl, targetUrl);
+  });
   // </if>
 });
 // </if>

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "components/payments/content/android/jni_headers/PaymentRequestWebContentsData_jni.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/PaymentRequestWebContentsData_jni.h"
 
 namespace payments {
 namespace android {

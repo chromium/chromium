@@ -24,8 +24,8 @@ found in the LICENSE file.
     <color name="default_icon_color_inverse_baseline" tools:ignore="UnusedResources">@color/default_icon_color_inverse_light</color>
     <color name="default_icon_color_accent1_baseline" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
     <color name="default_icon_color_on_accent1_baseline">@color/default_icon_color_on_accent1_light</color>
+    <color name="default_icon_color_on_accent1_container_baseline">@color/default_icon_color_on_accent1_container_light</color>
     <color name="default_icon_color_secondary_baseline" tools:ignore="UnusedResources">@color/default_icon_color_secondary_dark</color>
-
     <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_dark</color>
     <color name="default_icon_color_disabled_baseline">@color/default_icon_color_disabled_dark</color>
     <color name="default_icon_color_disabled_inverse_baseline" tools:ignore="UnusedResources">@color/default_icon_color_disabled_light</color>
@@ -36,7 +36,7 @@ found in the LICENSE file.
 
     <color name="default_bg_color_blue" tools:ignore="UnusedResources">@color/default_bg_color_blue_dark</color>
 
-    <!-- TODO(https://crbug.com/1210689): These all need to ultimately be
+    <!-- TODO(crbug.com/40767256): These all need to ultimately be
          removed because they do not work with dynamic colors. -->
     <color name="default_bg_color_elev_1_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_1_baseline</color>
     <color name="default_bg_color_elev_2_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_2_baseline</color>
@@ -73,7 +73,7 @@ found in the LICENSE file.
 
     <!-- IncognitoHistoryPlaceholderView  colors -->
     <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_500</color>
-    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_300</color>
+    <color name="incognito_history_placeholder_bottom_circle_color">@color/baseline_neutral_70</color>
 
     <!-- Colors of adaptive toolbar -->
     <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_light</color>
@@ -82,7 +82,7 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_omnibox">@color/adaptive_toolbar_preference_header_omnibox_light</color>
 
     <!-- Menu colors -->
-    <!-- TODO(https://crbug.com/1232518): Move light/dark colors to non-adaptive
+    <!-- TODO(crbug.com/40780301): Move light/dark colors to non-adaptive
          file. These reference non-color palette colors which is currently
          blocked by PRESUBMIT scripts. -->
     <color name="menu_action_bar_bg_color_baseline">@color/menu_action_bar_bg_color_light_baseline</color>
@@ -112,9 +112,6 @@ found in the LICENSE file.
     <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_dark</color>
     <color name="iph_highlight_blue">@color/iph_highlight_blue_dark</color>
     <color name="rating_star_yellow">@color/rating_star_yellow_dark</color>
-    <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>
-    <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_light</color>
-    <color name="signed_out_avatar_color">@color/signed_out_avatar_color_light</color>
     <color name="drag_shadow_outline_color">@color/baseline_neutral_variant_90_alpha_20</color>
     <color name="gm3_baseline_surface_container">@color/gm3_baseline_surface_container_light</color>
     <color name="gm3_baseline_surface">@color/gm3_baseline_surface_light</color>
@@ -126,4 +123,8 @@ found in the LICENSE file.
     <color name="menu_list_item_text_color">@color/baseline_neutral_10</color>
     <color name="menu_list_item_text_color_disabled">@color/baseline_neutral_10</color>
     <color name="menu_list_item_divider_color">@color/baseline_neutral_variant_90</color>
+
+    <!-- Commerce colors -->
+    <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>
+    <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_light</color>
 </resources>

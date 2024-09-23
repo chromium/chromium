@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/transport_connect_job.h"
 
 #include <memory>
@@ -31,6 +36,7 @@
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -61,7 +67,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*quic_supported_versions=*/nullptr,
             /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
-            /*http_user_agent_settings=*/nullptr,
+            &http_user_agent_settings_,
             &ssl_client_context_,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
@@ -98,6 +104,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
+  const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
+                                                                 "test-ua"};
   SSLClientContext ssl_client_context_{&ssl_config_service_, &cert_verifier_,
                                        &transport_security_state_,
                                        /*ssl_client_session_cache=*/nullptr,
@@ -256,7 +264,7 @@ TEST_F(TransportConnectJobTest, LoadState) {
   EXPECT_EQ(transport_connect_job.GetLoadState(), LOAD_STATE_CONNECTING);
 }
 
-// TODO(crbug.com/1206799): Set up `host_resolver_` to require the expected
+// TODO(crbug.com/40181080): Set up `host_resolver_` to require the expected
 // scheme.
 TEST_F(TransportConnectJobTest, HandlesHttpsEndpoint) {
   TestConnectJobDelegate test_delegate;
@@ -272,7 +280,7 @@ TEST_F(TransportConnectJobTest, HandlesHttpsEndpoint) {
                                         false /* expect_sync_result */);
 }
 
-// TODO(crbug.com/1206799): Set up `host_resolver_` to require the expected
+// TODO(crbug.com/40181080): Set up `host_resolver_` to require the expected
 // lack of scheme.
 TEST_F(TransportConnectJobTest, HandlesNonStandardEndpoint) {
   TestConnectJobDelegate test_delegate;
@@ -503,7 +511,7 @@ TEST_F(TransportConnectJobTest, EndpointResult) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
       std::vector{IPEndPoint(ParseIP("1::"), 8443)});
-  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
+  client_socket_factory_.SetRules(base::span_from_ref(rule));
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -658,7 +666,7 @@ TEST_F(TransportConnectJobTest, MultipleRoutesSuspended) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kFailing,
       endpoints[0].ip_endpoints, ERR_NETWORK_IO_SUSPENDED);
-  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
+  client_socket_factory_.SetRules(base::span_from_ref(rule));
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -695,7 +703,7 @@ TEST_F(TransportConnectJobTest, NoAlpnProtocols) {
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
       std::vector{endpoints[2].ip_endpoints[0]});
-  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
+  client_socket_factory_.SetRules(base::span_from_ref(rule));
 
   // Use `DefaultParams()`, an http scheme. That it is http is not very
   // important, but `url::SchemeHostPort` is difficult to use with unknown

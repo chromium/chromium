@@ -1,0 +1,28 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../demo.css.js
+ * #scheme=relative
+ * #include=demo
+ * #css_wrapper_metadata_end */
+
+cr-input:first-of-type {
+  margin-block-start: 16px;
+}
+
+[slot='header'] {
+  padding: 0 20px 16px;
+}
+
+cr-dialog::part(body-container) {
+  max-height: 300px;
+}
+
+#tallBlock {
+  background: var(--google-grey-200);
+  height: 800px;
+  margin: 16px 0;
+}

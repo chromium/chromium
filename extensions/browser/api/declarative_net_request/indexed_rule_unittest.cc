@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -15,12 +21,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "components/version_info/channel.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,8 +92,9 @@ TEST_F(IndexedRuleTest, IDParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(base::checked_cast<uint32_t>(cases[i].id), indexed_rule.id);
+    }
   }
 }
 
@@ -130,10 +139,11 @@ TEST_F(IndexedRuleTest, PriorityParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(ComputeIndexedRulePriority(cases[i].expected_priority,
                                            cases[i].action_type),
                 indexed_rule.priority);
+    }
   }
 }
 
@@ -232,8 +242,9 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_element_types, indexed_rule.element_types);
+    }
   }
 }
 
@@ -300,8 +311,9 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_EQ(cases[i].expected_result, result);
     EXPECT_EQ(cases[i].expected_url_pattern_type,
@@ -505,8 +517,9 @@ TEST_F(IndexedRuleTest, RedirectUrlParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_redirect_url, indexed_rule.redirect_url);
+    }
   }
 }
 
@@ -646,8 +659,9 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result) << static_cast<int>(result);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_TRUE(indexed_rule.url_transform || indexed_rule.redirect_url);
     EXPECT_FALSE(indexed_rule.url_transform && indexed_rule.redirect_url);
@@ -829,8 +843,9 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_element_types, indexed_rule.element_types);
+    }
   }
 }
 
@@ -839,6 +854,9 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     dnr_api::HeaderOperation operation;
     std::string header;
     std::optional<std::string> value;
+
+    std::optional<std::string> regex_filter;
+    std::optional<std::string> regex_substitution;
   };
 
   using RawHeaderInfoList = std::vector<RawHeaderInfo>;
@@ -929,10 +947,12 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
       rule.action.request_headers.emplace();
       for (auto header : *cases[i].request_headers) {
         rule.action.request_headers->push_back(CreateModifyHeaderInfo(
-            header.operation, header.header, header.value));
+            header.operation, header.header, header.value, header.regex_filter,
+            header.regex_substitution));
 
         expected_request_headers.push_back(CreateModifyHeaderInfo(
-            header.operation, header.header, header.value));
+            header.operation, header.header, header.value, header.regex_filter,
+            header.regex_substitution));
       }
     }
 
@@ -941,10 +961,12 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
       rule.action.response_headers.emplace();
       for (auto header : *cases[i].response_headers) {
         rule.action.response_headers->push_back(CreateModifyHeaderInfo(
-            header.operation, header.header, header.value));
+            header.operation, header.header, header.value, header.regex_filter,
+            header.regex_substitution));
 
         expected_response_headers.push_back(CreateModifyHeaderInfo(
-            header.operation, header.header, header.value));
+            header.operation, header.header, header.value, header.regex_filter,
+            header.regex_substitution));
       }
     }
 
@@ -952,8 +974,9 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     ParseResult result = IndexedRule::CreateIndexedRule(
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result != ParseResult::SUCCESS)
+    if (result != ParseResult::SUCCESS) {
       continue;
+    }
 
     EXPECT_EQ(dnr_api::RuleActionType::kModifyHeaders,
               indexed_rule.action_type);
@@ -1013,9 +1036,10 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
         std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
 
     EXPECT_EQ(cases[i].expected_result, result);
-    if (result == ParseResult::SUCCESS)
+    if (result == ParseResult::SUCCESS) {
       EXPECT_EQ(cases[i].expected_request_methods_mask,
                 indexed_rule.request_methods);
+    }
   }
 }
 
@@ -1085,7 +1109,11 @@ class IndexedResponseHeaderRuleTest : public IndexedRuleTest {
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test the validation of rules that specify response header matching
@@ -1128,6 +1156,10 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
        HeaderInfoList({RawHeaderInfo("excluded-header")}),
        ParseResult::SUCCESS},
 
+      // An empty response header value should parse successfully.
+      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
+       std::nullopt, ParseResult::SUCCESS},
+
       // An empty matching response header list should trigger an error.
       {HeaderInfoList(), std::nullopt,
        ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST},
@@ -1139,18 +1171,13 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
 
       // Test that a rule with an empty or invalid response header name will
       // return an error.
-      {HeaderInfoList({{"", std::nullopt, std::nullopt}}), std::nullopt,
+      {HeaderInfoList({RawHeaderInfo("")}), std::nullopt,
        ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME},
 
       {std::nullopt, HeaderInfoList({RawHeaderInfo("<<invalid_header>>")}),
        ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME},
 
-      // Test that a rule with an empty or invalid response header value will
-      // return an error.
-      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
-       std::nullopt, ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
-
-      // Test that a rule with an empty response header value will return an
+      // Test that a rule with an invalid response header value will return an
       // error.
       {std::nullopt,
        HeaderInfoList({{"invalid-header-value",
@@ -1282,6 +1309,71 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders_ModifyHeaders) {
             header.operation, header.header, header.value));
       }
     }
+
+    IndexedRule indexed_rule;
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+    EXPECT_EQ(cases[i].expected_result, result);
+  }
+}
+
+class IndexedHeaderSubstitutionRuleTest : public IndexedRuleTest {
+ public:
+  IndexedHeaderSubstitutionRuleTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestHeaderSubstitution);
+  }
+
+ private:
+  // TODO(crbug.com/352093575): Once feature is launched and feature flag can be
+  // removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test parsing for regex filters and substitutions inside ModifyHeaderInfo.
+TEST_F(IndexedHeaderSubstitutionRuleTest,
+       ModifyHeaderInfoRegexFilterAndSubstitutionParsing) {
+  struct {
+    std::optional<std::string> regex_filter;
+    std::optional<std::string> regex_substitution;
+    ParseResult expected_result;
+  } cases[] = {
+      // Test valid cases:
+      {"bad-cookie", std::nullopt, ParseResult::SUCCESS},
+      {"bad-cookie", "good-cookie=phew", ParseResult::SUCCESS},
+
+      // TODO(crbug.com/352093575): When the feature is about to launch, add a
+      // case which requires a regex substitution if the operation is not
+      // specified.
+
+      // Test some invalid regex filter cases.
+      {"", "new-cookie=coconut", ParseResult::ERROR_EMPTY_REGEX_FILTER},
+      {"αcd", "new-cookie=coconut", ParseResult::ERROR_NON_ASCII_REGEX_FILTER},
+      // Invalid regex: Incomplete capturing group.
+      {"x(", "new-cookie=coconut", ParseResult::ERROR_INVALID_REGEX_FILTER},
+
+      // Test an invalid regex substitution case, where the substitution
+      // references more capture groups than what the filter captures.
+      {R"(^http://google\.com?q1=(.*)&q2=(.*))",
+       R"(https://redirect.com?&q1=\1&q2=\3)",
+       ParseResult::ERROR_INVALID_REGEX_SUBSTITUTION},
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule rule = CreateGenericParsedRule();
+    rule.action.type = dnr_api::RuleActionType::kModifyHeaders;
+
+    rule.action.request_headers.emplace();
+    rule.action.request_headers->push_back(CreateModifyHeaderInfo(
+        dnr_api::HeaderOperation::kRemove, "cookie", std::nullopt,
+        cases[i].regex_filter, cases[i].regex_substitution));
+
+    dnr_api::ModifyHeaderInfo expected_request_header;
+    expected_request_header = CreateModifyHeaderInfo(
+        dnr_api::HeaderOperation::kRemove, "cookie", std::nullopt,
+        cases[i].regex_filter, cases[i].regex_substitution);
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(

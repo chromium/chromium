@@ -13,13 +13,24 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
-    <style name="TabThumbnailPlaceholderStyle">
-        <item name="colorTileBase">?attr/colorSurface</item>
-        <item name="elevationTileBase">@dimen/default_elevation_1</item>
+    <style name="TabStripGroupContextMenuTitleTheme">
+        <item name="colorControlNormal">@macro/default_icon_color</item>
+        <item name="colorControlActivated">@macro/default_control_color_active</item>
+        <item name="colorControlHighlight">@macro/default_control_color_active</item>
     </style>
 
-    <style name="TabThumbnailPlaceholderStyle.Selected">
-        <item name="colorTileBase">?attr/colorOnPrimary</item>
-        <item name="elevationTileBase">@dimen/default_elevation_0</item>
+    <style name="DialogShareButton">
+        <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
+        <item name="android:drawableTint">@macro/default_icon_color_accent1</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="buttonTextColor">@macro/default_text_color_accent1</item>
+        <item name="buttonColor">@color/color_primary_with_alpha_10</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="verticalInset">0dp</item>
+        <item name="rippleCornerRadiusTopStart">@dimen/share_button_corner_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/share_button_corner_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/share_button_corner_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/share_button_corner_radius</item>
     </style>
 </resources>

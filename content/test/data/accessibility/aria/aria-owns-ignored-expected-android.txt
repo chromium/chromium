@@ -1,0 +1,14 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='splitter' name='Ordinary presentation element with id'
+++android.view.View role_description='splitter' name='An aria-owned element is never ignored'
+++android.view.View
+++++android.widget.Button role_description='button' clickable focusable name='button-in-owned-tree'
+++android.view.View role_description='splitter' name='Element with aria-owns is never ignored'
+++android.view.View
+++++android.widget.EditText clickable editable_text focusable input_type=1
+++android.view.View role_description='splitter' name='Owning an element with an ignored parent serializes cleanly'
+++android.view.View
+++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable
+++android.view.View role_description='splitter' name='All the above in one'
+++android.view.View
+++++android.widget.SeekBar role_description='slider' clickable focusable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50

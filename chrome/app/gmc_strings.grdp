@@ -59,6 +59,6 @@
    Report an issue with Google Cast
   </message>
   <message name="IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS" desc="Title of a menu item which, on click, toggles (shows or hides) Cast sessions started by other devices on the same network.">
-   Show other Cast sessions
+   Show other cast sessions
   </message>
 </grit-part>

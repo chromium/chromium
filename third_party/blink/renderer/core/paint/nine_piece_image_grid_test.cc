@@ -250,7 +250,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
     LengthBox image_slices;
     ENinePieceImageRule horizontal_rule;
     ENinePieceImageRule vertical_rule;
-    struct {
+    struct Piece {
       bool is_drawable;
       bool is_corner_piece;
       gfx::RectF destination;
@@ -259,7 +259,8 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
       float tile_scale_vertical;
       ENinePieceImageRule horizontal_rule;
       ENinePieceImageRule vertical_rule;
-    } pieces[9];
+    };
+    std::array<Piece, 9> pieces;
   } test_cases[] = {
       {// Empty border and slices but with fill
        gfx::SizeF(100, 100),
@@ -270,7 +271,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
                  Length::Fixed(0)),
        kStretchImageRule,
        kStretchImageRule,
-       {
+       {{
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
             kStretchImageRule, kStretchImageRule},
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
@@ -289,7 +290,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             kStretchImageRule, kStretchImageRule},
            {true, false, gfx::RectF(0, 0, 100, 100), gfx::RectF(0, 0, 100, 100),
             1, 1, kStretchImageRule, kStretchImageRule},
-       }},
+       }}},
       {// Single border and fill
        gfx::SizeF(100, 100),
        gfx::Rect(0, 0, 100, 100),
@@ -299,7 +300,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
                  Length::Percent(20)),
        kStretchImageRule,
        kStretchImageRule,
-       {
+       {{
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
             kStretchImageRule, kStretchImageRule},
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
@@ -318,7 +319,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             0.5, 0.5, kStretchImageRule, kStretchImageRule},
            {true, false, gfx::RectF(0, 0, 100, 90), gfx::RectF(20, 20, 60, 60),
             1.666667, 1.5, kStretchImageRule, kStretchImageRule},
-       }},
+       }}},
       {// All borders, no fill
        gfx::SizeF(100, 100),
        gfx::Rect(0, 0, 100, 100),
@@ -328,7 +329,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
                  Length::Percent(20)),
        kStretchImageRule,
        kStretchImageRule,
-       {
+       {{
            {true, true, gfx::RectF(0, 0, 10, 10), gfx::RectF(0, 0, 20, 20), 1,
             1, kStretchImageRule, kStretchImageRule},
            {true, true, gfx::RectF(0, 90, 10, 10), gfx::RectF(0, 80, 20, 20), 1,
@@ -347,7 +348,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             0.5, 0.5, kStretchImageRule, kStretchImageRule},
            {false, false, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 0, 0,
             kStretchImageRule, kStretchImageRule},
-       }},
+       }}},
       {// Single border, no fill
        gfx::SizeF(100, 100),
        gfx::Rect(0, 0, 100, 100),
@@ -357,7 +358,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
                  Length::Percent(20)),
        kStretchImageRule,
        kRoundImageRule,
-       {
+       {{
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
             kStretchImageRule, kStretchImageRule},
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
@@ -376,7 +377,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             kStretchImageRule, kRoundImageRule},
            {false, false, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 0, 0,
             kStretchImageRule, kRoundImageRule},
-       }},
+       }}},
       {// All borders but no slices, with fill (stretch horizontally, space
        // vertically)
        gfx::SizeF(100, 100),
@@ -387,7 +388,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
                  Length::Fixed(0)),
        kStretchImageRule,
        kSpaceImageRule,
-       {
+       {{
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
             kStretchImageRule, kStretchImageRule},
            {false, true, gfx::RectF(0, 0, 0, 0), gfx::RectF(0, 0, 0, 0), 1, 1,
@@ -406,7 +407,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             kStretchImageRule, kSpaceImageRule},
            {true, false, gfx::RectF(10, 10, 80, 80), gfx::RectF(0, 0, 100, 100),
             0.800000, 1, kStretchImageRule, kSpaceImageRule},
-       }},
+       }}},
   };
 
   for (auto& test_case : test_cases) {
@@ -471,7 +472,8 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
 
   NinePieceImageGrid grid(nine_piece, image_size, gfx::Vector2dF(2, 2), 2,
                           border_image_area, border_widths);
-  struct {
+
+  struct ExpectedPiece {
     bool is_drawable;
     bool is_corner_piece;
     gfx::RectF destination;
@@ -480,7 +482,8 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
     float tile_scale_vertical;
     ENinePieceImageRule horizontal_rule;
     ENinePieceImageRule vertical_rule;
-  } expected_pieces[kMaxPiece] = {
+  };
+  std::array<ExpectedPiece, kMaxPiece> expected_pieces = {{
       {true, true, gfx::RectF(0, 0, 20, 20), gfx::RectF(0, 0, 20, 20), 0, 0,
        kStretchImageRule, kStretchImageRule},
       {true, true, gfx::RectF(0, 180, 20, 20), gfx::RectF(0, 30, 20, 20), 0, 0,
@@ -499,7 +502,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
        1, kStretchImageRule, kStretchImageRule},
       {true, false, gfx::RectF(20, 20, 160, 160), gfx::RectF(20, 20, 10, 10),
        16, 16, kStretchImageRule, kStretchImageRule},
-  };
+  }};
 
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
@@ -550,7 +553,8 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
 
   NinePieceImageGrid grid(nine_piece, image_size, gfx::Vector2dF(zoom, zoom),
                           zoom, border_image_area, border_widths);
-  struct {
+
+  struct ExpectedPiece {
     bool is_drawable;
     bool is_corner_piece;
     gfx::RectF destination;
@@ -559,7 +563,8 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
     float tile_scale_vertical;
     ENinePieceImageRule horizontal_rule;
     ENinePieceImageRule vertical_rule;
-  } expected_pieces[kMaxPiece] = {
+  };
+  std::array<ExpectedPiece, kMaxPiece> expected_pieces = {{
       {true, true, gfx::RectF(0, 0, 33, 33),
        gfx::RectF(0, 0, kSliceWidth, kSliceWidth), 0, 0, kStretchImageRule,
        kStretchImageRule},
@@ -588,7 +593,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
        gfx::RectF(kSliceLeft, kSliceTop, kSliceMiddleWidth, kSliceMiddleWidth),
        kTileMiddleScale, kTileMiddleScale, kStretchImageRule,
        kStretchImageRule},
-  };
+  }};
 
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =

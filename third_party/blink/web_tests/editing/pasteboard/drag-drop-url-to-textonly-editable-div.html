@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<textarea id="drag">https://example.com/index.html</textarea>
+<div id="drop" contenteditable="plaintext-only" style="border: 1px solid"></div>
+<script>
+  test(function () {
+    const source = document.getElementById("drag");
+    source.focus();
+    source.setSelectionRange(0, source.value.length);
+
+    // Note drag-and-drop doesn't work well with pointerActionSequence, so using
+    // eventSender.
+    eventSender.mouseMoveTo(source.offsetLeft + 10, source.offsetHeight / 2);
+    eventSender.mouseDown();
+
+    // Drop to the destination field.
+    const destination = document.getElementById("drop");
+    eventSender.leapForward(500);
+    eventSender.mouseMoveTo(destination.offsetLeft + 10,
+      destination.offsetTop + destination.offsetHeight / 2);
+    eventSender.mouseUp();
+    const result = destination.innerText;
+    assert_equals(result, 'https://example.com/index.html');
+  }, 'Dragging a URL from a textarea and dropping to plaintext-only editable div should populate the entire URL as plain text.');
+</script>

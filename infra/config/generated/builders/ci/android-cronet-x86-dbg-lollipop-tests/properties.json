@@ -81,10 +81,15 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-cronet-x86-dbg-lollipop-fyi-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-cronet-x86-dbg-lollipop-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x86-dbg-lollipop-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

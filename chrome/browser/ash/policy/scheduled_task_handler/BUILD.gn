@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("scheduled_task_handler") {
+  sources = [
+    "device_scheduled_reboot_handler.cc",
+    "device_scheduled_reboot_handler.h",
+    "device_scheduled_update_checker.cc",
+    "device_scheduled_update_checker.h",
+    "os_and_policies_update_checker.cc",
+    "os_and_policies_update_checker.h",
+    "reboot_notifications_scheduler.cc",
+    "reboot_notifications_scheduler.h",
+    "scheduled_task_executor.cc",
+    "scheduled_task_executor.h",
+    "scheduled_task_executor_impl.cc",
+    "scheduled_task_executor_impl.h",
+    "scheduled_task_util.cc",
+    "scheduled_task_util.h",
+    "scoped_wake_lock.cc",
+    "scoped_wake_lock.h",
+    "task_executor_with_retries.cc",
+    "task_executor_with_retries.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/device_scheduled_reboot",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//components/device_event_log",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/icu:icui18n",
+  ]
+}

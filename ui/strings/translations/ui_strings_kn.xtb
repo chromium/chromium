@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="111910763555783249">ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="111910763555783249">ನೋಟಿಫಿಕೇಶನ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ದಿನದ ಹಿಂದೆ}one{# ದಿನಗಳ ಹಿಂದೆ}other{# ದಿನಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1ಮೀ}one{#ಮೀ}other{#ಮೀ}}</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">ಸಮೀಕ್ಷೆ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2388990488038464401">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಈ ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಬೇಕೇ?</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="24452542372838207">ವಿಸ್ತರಿಸುವ ನೋಟಿಫಿಕೇಶನ್</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ಹೊಸತು</translation>
 <translation id="2666092431469916601">ಮೇಲೆ</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ನಿಂದ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
-<translation id="271033894570825754">ಹೊಸತು</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ವರ್ಷದ ಹಿಂದೆ}one{# ವರ್ಷಗಳ ಹಿಂದೆ}other{# ವರ್ಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="2878511608894704031">ಎಲ್ಲವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1ದಿ. ದಲ್ಲಿ}one{#ದಿ. ಗಳಲ್ಲಿ}other{#ದಿ. ಗಳಲ್ಲಿ}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ಸಿಸ್ಟಂ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ಎಡ ಬಾಣದ ಗುರುತು</translation>
+<translation id="5633029987065897167">ಖಾಲಿ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ನಿಮಿ}one{# ನಿಮಿಷಗಳು}other{# ನಿಮಿಷಗಳು}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ಇಂದು ಸಕ್ರಿಯ}=1{1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ}one{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}other{# ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ದಿನ ಮತ್ತು }one{# ದಿನಗಳು ಮತ್ತು }other{# ದಿನಗಳು ಮತ್ತು }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF ಕಂಟೆಂಟ್‍</translation>
 <translation id="6539092367496845964">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="654149438358937226">ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
-<translation id="6612467943526193239">ಮಾಪನಾಂಕದಿಂದ ನಿರ್ಗಮಿಸಲು Esc ಒತ್ತಿರಿ.</translation>
 <translation id="6620110761915583480">ಫೈಲ್ ಉಳಿಸು</translation>
 <translation id="6699343763173986273">ಮೀಡಿಯಾದ ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="6808150112686056157">ಮೀಡಿಯಾ ನಿಲುಗಡೆ</translation>

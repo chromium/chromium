@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash)
+
+source_set("structured_metrics_service_wrapper") {
+  sources = [
+    "structured_metrics_service_wrapper.cc",
+    "structured_metrics_service_wrapper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//components/metrics/structured:events",
+    "//components/metrics/structured:structured",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "structured_metrics_service_wrapper_unittest.cc" ]
+  deps = [
+    ":structured_metrics_service_wrapper",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
+    "//testing/gtest",
+  ]
+}

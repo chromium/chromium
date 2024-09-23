@@ -6,11 +6,16 @@ import("//build/config/chromeos/ui_mode.gni")
 
 static_library("access_code_cast_integration_base") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "access_code_cast_integration_browsertest.cc",
     "access_code_cast_integration_browsertest.h",
   ]
+
+  public_deps = [ "//chrome/browser/ui:ui_features" ]
+
   deps = [
     "//base/test:test_support",
     "//chrome/browser:browser",
@@ -20,6 +25,7 @@ static_library("access_code_cast_integration_base") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
     "//chrome/common",
@@ -38,5 +44,9 @@ static_library("access_code_cast_integration_base") {
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:lacros" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ui/ash/cast_config" ]
   }
 }

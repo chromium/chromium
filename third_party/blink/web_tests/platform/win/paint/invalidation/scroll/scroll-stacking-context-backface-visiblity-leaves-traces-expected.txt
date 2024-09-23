@@ -8,14 +8,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, children-inline) HEADER",
+      "name": "LayoutBlockFlow (relative positioned, children-inline) HEADER",
       "bounds": [769, 20],
       "drawsContent": false,
       "backfaceVisibility": "hidden",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='searchbar'",
+      "name": "LayoutBlockFlow (positioned) DIV id='searchbar'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#800080",

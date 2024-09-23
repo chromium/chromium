@@ -1,4 +1,18 @@
 include_rules = [
+  "+chromeos/constants/chromeos_features.h",
+  "+components/history",
   "+components/keyed_service/core",
+  "+components/os_crypt/async",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+components/page_content_annotations/core",
+  "+content/public/browser",
+  "+mojo/public/cpp/bindings",
+  "+services/service_manager/public/cpp",
+  "+services/passage_embeddings",
+  "+sql",
+  "+third_party/blink/public",
+  "+third_party/farmhash",
+  "+third_party/zlib",
   "+url",
 ]

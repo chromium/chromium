@@ -35,6 +35,7 @@ component("aura") {
     "host_frame_rate_throttler.h",
     "input_state_lookup.h",
     "layout_manager.h",
+    "native_window_occlusion_tracker.h",
     "null_window_targeter.h",
     "scoped_enable_unadjusted_mouse_events.h",
     "scoped_keyboard_hook.h",
@@ -80,7 +81,6 @@ component("aura") {
     "input_state_lookup.cc",
     "layout_manager.cc",
     "native_window_occlusion_tracker.cc",
-    "native_window_occlusion_tracker.h",
     "null_window_targeter.cc",
     "scoped_keyboard_hook.cc",
     "scoped_simple_keyboard_hook.cc",
@@ -106,7 +106,6 @@ component("aura") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc",
     "//cc/mojo_embedder",
@@ -143,6 +142,8 @@ component("aura") {
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
     "//ui/base/metadata",
+    "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
   ]
 
@@ -351,7 +352,7 @@ test("aura_unittests") {
     ]
   }
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API multi IDP origin trial.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script type="module">
+import {fedcm_test,
+        request_options_with_two_idps} from '/fedcm/support/fedcm-helper.sub.js';
+
+async function assert_rejects(promise) {
+  return promise.then((response) => {
+      assert_unreached("Should not succeed");
+    },
+    (error) => {
+      assert_equals(error.message,
+        "Failed to execute 'get' on 'CredentialsContainer': Multiple providers" +
+        " specified but FedCmMultipleIdentityProviders flag is disabled.");
+    });
+}
+
+fedcm_test(async t => {
+  await assert_rejects(navigator.credentials.get(request_options_with_two_idps()));
+}, "Multi IDP FedCM call fails when invoked without origin trial.");
+</script>
+

@@ -1,0 +1,35 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Supported filter types.
+enum LensOverlayFilterType {
+  UNKNOWN_FILTER_TYPE = 0;
+  TRANSLATE = 2;
+  AUTO_FILTER = 7;
+}
+
+// Supported filter types.
+message AppliedFilter {
+  LensOverlayFilterType filter_type = 1;
+
+  message Translate {
+    string target_language = 1;
+    string source_language = 2;
+  }
+
+  oneof filter_payload {
+    Translate translate = 3;
+  }
+}
+
+// Supported filter types.
+message AppliedFilters {
+  repeated AppliedFilter filter = 1;
+}

@@ -4,27 +4,33 @@
 
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 
+#include <cstdint>
+#include <initializer_list>
 #include <optional>
 #include <string>
 #include <utility>
 
-#include "base/json/values_util.h"
+#include "base/check.h"
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/test_support/policy_test_server_constants.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/attestation/fake_attestation_flow.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
-#include "components/policy/proto/chrome_extension_policy.pb.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -63,7 +69,9 @@ void EmbeddedPolicyTestServerMixin::SetUp() {
   policy_test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
   policy_test_server_->policy_storage()->set_robot_api_auth_code(
       FakeGaiaMixin::kFakeAuthCode);
-  policy_test_server_->policy_storage()->add_managed_user("*");
+  if (!capabilities_.contains(PER_USER_MANAGEMENT_STATUS)) {
+    policy_test_server_->policy_storage()->add_managed_user("*");
+  }
 
   if (!capabilities_.contains(ENABLE_CANNED_SIGNING_KEYS)) {
     // Create universal signing keys that can sign any domain.
@@ -100,6 +108,13 @@ void EmbeddedPolicyTestServerMixin::SetUpCommandLine(
   // Specify device management server URL.
   command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                   policy_test_server_->GetServiceURL().spec());
+
+  // This will change the verification key to be used by the
+  // CloudPolicyValidator. It will allow for the policy provided by the
+  // PolicyBuilder to pass the signature validation.
+  command_line->AppendSwitchASCII(
+      policy::switches::kPolicyVerificationKey,
+      policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
 }
 
 void EmbeddedPolicyTestServerMixin::UpdateDevicePolicy(
@@ -184,6 +199,16 @@ void EmbeddedPolicyTestServerMixin::SetAvailableLicenses(
       has_kiosk_license);
 }
 
+void EmbeddedPolicyTestServerMixin::SetMarketSegment(
+    enterprise_management::PolicyData::MarketSegment segment) {
+  policy_test_server_->policy_storage()->set_market_segment(segment);
+}
+
+void EmbeddedPolicyTestServerMixin::SetMetricsLogSegment(
+    enterprise_management::PolicyData::MetricsLogSegment segment) {
+  policy_test_server_->policy_storage()->set_metrics_log_segment(segment);
+}
+
 void EmbeddedPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
     const std::string& device_brand_code,
     const std::string& device_serial_number,
@@ -260,11 +285,27 @@ void EmbeddedPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(
     system::ScopedFakeStatisticsProvider* provider) {
   provider->SetMachineStatistic(system::kRlzBrandCodeKey,
                                 test::kTestRlzBrandCodeKey);
-  provider->SetMachineStatistic(system::kSerialNumberKeyForTest,
+  provider->SetMachineStatistic(system::kSerialNumberKey,
                                 test::kTestSerialNumber);
   provider->SetMachineStatistic(system::kHardwareClassKey,
                                 test::kTestHardwareClass);
   provider->SetVpdStatus(system::StatisticsProvider::VpdStatus::kValid);
+}
+
+void EmbeddedPolicyTestServerMixin::MarkUserAsManaged(
+    const AccountId& account_id) {
+  CHECK(capabilities_.contains(PER_USER_MANAGEMENT_STATUS))
+      << "Without PER_USER_MANAGEMENT_STATUS capability all users are "
+         "considered managed";
+  policy_test_server_->policy_storage()->add_managed_user(
+      account_id.GetUserEmail());
+}
+
+void EmbeddedPolicyTestServerMixin::MarkAllUsersAsManaged() {
+  CHECK(capabilities_.contains(PER_USER_MANAGEMENT_STATUS))
+      << "Without PER_USER_MANAGEMENT_STATUS capability all users are "
+         "considered managed";
+  policy_test_server_->policy_storage()->add_managed_user("*");
 }
 
 }  // namespace ash

@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;
 
 import java.util.List;
@@ -49,21 +50,28 @@ public class CronetLoggerImpl extends CronetLogger {
                 info.cronetInitializationRef,
                 convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
                 info.engineBuilderCreatedLatencyMillis,
-                convertToProtoCronetSource(info.source),
+                convertToProtoCronetEngineBuilderInitializedSource(info.source),
                 OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
                 info.apiVersion.getMajorVersion(),
                 info.apiVersion.getMinorVersion(),
                 info.apiVersion.getBuildVersion(),
                 info.apiVersion.getPatchVersion(),
-                info.implVersion.getMajorVersion(),
-                info.implVersion.getMinorVersion(),
-                info.implVersion.getBuildVersion(),
-                info.implVersion.getPatchVersion(),
+                // These null checks actually matter. See b/329601514.
+                info.implVersion == null ? -1 : info.implVersion.getMajorVersion(),
+                info.implVersion == null ? -1 : info.implVersion.getMinorVersion(),
+                info.implVersion == null ? -1 : info.implVersion.getBuildVersion(),
+                info.implVersion == null ? -1 : info.implVersion.getPatchVersion(),
                 info.uid);
     }
 
     @Override
     public void logCronetInitializedInfo(CronetInitializedInfo info) {
+        // This atom uses arrays, which are only supported by StatsLog starting from Android T. If
+        // we are running Android <T we simply drop the atom, which is fine-ish because it doesn't
+        // carry critical information, nor does it carry information that other atoms may want to
+        // join against.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
+
         CronetStatsLog.write(
                 CronetStatsLog.CRONET_INITIALIZED,
                 info.cronetInitializationRef,
@@ -120,7 +128,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     version.getMinorVersion(),
                     version.getBuildVersion(),
                     version.getPatchVersion(),
-                    convertToProtoCronetSource(source),
+                    convertToProtoCronetEngineCreatedSource(source),
                     builder.isBrotliEnabled(),
                     builder.isHttp2Enabled(),
                     convertToProtoHttpCacheMode(builder.getHttpCacheMode()),
@@ -155,11 +163,13 @@ public class CronetLoggerImpl extends CronetLogger {
                     experimentalOptions.getDisableIpv6OnWifiOption().getValue(),
                     builder.getCronetInitializationRef());
         } catch (Exception e) { // catching all exceptions since we don't want to crash the client
-            Log.d(
-                    TAG,
-                    String.format(
-                            "Failed to log CronetEngine:%s creation: %s",
-                            cronetEngineId, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                        TAG,
+                        String.format(
+                                "Failed to log CronetEngine:%s creation: %s",
+                                cronetEngineId, e.getMessage()));
+            }
         }
     }
 
@@ -185,24 +195,58 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.wasConnectionMigrationAttempted(),
                     trafficInfo.didConnectionMigrationSucceed(),
                     samplesRateLimitedCount,
-                    /* terminal_state= */ CronetStatsLog
-                            .CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_UNKNOWN,
-                    /* user_callback_exception_count= */ -1,
+                    convertToProtoCronetRequestTerminalState(trafficInfo.getTerminalState()),
+                    trafficInfo.getNonfinalUserCallbackExceptionCount(),
                     /* total_idle_time_millis= */ -1,
                     /* total_user_executor_execute_latency_millis= */ -1,
-                    /* read_count= */ -1,
-                    /* on_upload_read_count= */ -1,
-                    /* is_bidi_stream= */ CronetStatsLog
-                            .CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_UNSET);
+                    trafficInfo.getReadCount(),
+                    trafficInfo.getOnUploadReadCount(),
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue(),
+                    OptionalBoolean.fromBoolean(trafficInfo.getFinalUserCallbackThrew()).getValue(),
+                    trafficInfo.getUid(),
+                    trafficInfo.getNetworkInternalErrorCode(),
+                    trafficInfo.getQuicErrorCode(),
+                    convertToProtoConnectionCloseSource(trafficInfo.getConnectionCloseSource()),
+                    convertToProtoFailureReason(trafficInfo.getFailureReason()),
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);
-            Log.d(
-                    TAG,
-                    String.format(
-                            "Failed to log cronet traffic sample for CronetEngine %s: %s",
-                            cronetEngineId, e.getMessage()));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                        TAG,
+                        String.format(
+                                "Failed to log cronet traffic sample for CronetEngine %s: %s",
+                                cronetEngineId, e.getMessage()));
+            }
         }
+    }
+
+    private static int convertToProtoFailureReason(
+            CronetTrafficInfo.RequestFailureReason failureReason) {
+        switch (failureReason) {
+            case NETWORK:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_NETWORK;
+            case OTHER:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_OTHER;
+            default:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__FAILURE_REASON__FAILURE_REASON_UNKNOWN;
+        }
+    }
+
+    private static int convertToProtoConnectionCloseSource(@ConnectionCloseSource int source) {
+        switch (source) {
+            case ConnectionCloseSource.SELF:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_SELF;
+            case ConnectionCloseSource.PEER:
+                return CronetStatsLog
+                        .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_PEER;
+        }
+        return CronetStatsLog
+                .CRONET_TRAFFIC_REPORTED__QUIC_CONNECTION_CLOSE_SOURCE__CONNECTION_CLOSE_UNKNOWN;
     }
 
     private static int convertToProtoCronetEngineBuilderInitializedAuthor(
@@ -216,7 +260,41 @@ public class CronetLoggerImpl extends CronetLogger {
         return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED;
     }
 
-    private static int convertToProtoCronetSource(CronetSource source) {
+    private static int convertToProtoCronetRequestTerminalState(
+            CronetTrafficInfo.RequestTerminalState requestTerminalState) {
+        switch (requestTerminalState) {
+            case SUCCEEDED:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_SUCCEEDED;
+            case ERROR:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_ERROR;
+            case CANCELLED:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_CANCELLED;
+            default:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_UNKNOWN;
+        }
+    }
+
+    private static int convertToProtoCronetEngineBuilderInitializedSource(CronetSource source) {
+        switch (source) {
+            case CRONET_SOURCE_STATICALLY_LINKED:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_EMBEDDED_NATIVE;
+            case CRONET_SOURCE_PLAY_SERVICES:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_GMSCORE_NATIVE;
+            case CRONET_SOURCE_FALLBACK:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA;
+            case CRONET_SOURCE_PLATFORM:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE;
+            default:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_UNSPECIFIED;
+        }
+    }
+
+    private static int convertToProtoCronetEngineCreatedSource(CronetSource source) {
         switch (source) {
             case CRONET_SOURCE_STATICALLY_LINKED:
                 return CronetStatsLog

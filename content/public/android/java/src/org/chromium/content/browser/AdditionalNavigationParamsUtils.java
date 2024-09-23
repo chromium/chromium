@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.UnguessableToken;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
@@ -19,19 +20,17 @@ public class AdditionalNavigationParamsUtils {
 
     @CalledByNative
     private static AdditionalNavigationParams create(
-            UnguessableToken initiatorFrameToken,
+            @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
             int initiatorProcessId,
-            @Nullable UnguessableToken attributionSrcToken,
-            long attributionRuntimeFeatures) {
+            @Nullable @JniType("std::optional<base::UnguessableToken>")
+                    UnguessableToken attributionSrcToken) {
         return new AdditionalNavigationParams(
-                initiatorFrameToken,
-                initiatorProcessId,
-                attributionSrcToken,
-                attributionRuntimeFeatures);
+                initiatorFrameToken, initiatorProcessId, attributionSrcToken);
     }
 
     @CalledByNative
-    private static UnguessableToken getInitiatorFrameToken(AdditionalNavigationParams params) {
+    private static @JniType("std::optional<base::UnguessableToken>") UnguessableToken
+            getInitiatorFrameToken(AdditionalNavigationParams params) {
         return params.getInitiatorFrameToken();
     }
 
@@ -41,12 +40,8 @@ public class AdditionalNavigationParamsUtils {
     }
 
     @CalledByNative
-    private static UnguessableToken getAttributionSrcToken(AdditionalNavigationParams params) {
+    private static @JniType("std::optional<base::UnguessableToken>") UnguessableToken
+            getAttributionSrcToken(AdditionalNavigationParams params) {
         return params.getAttributionSrcToken();
-    }
-
-    @CalledByNative
-    private static long getAttributionRuntimeFeatures(AdditionalNavigationParams params) {
-        return params.getAttributionRuntimeFeatures();
     }
 }

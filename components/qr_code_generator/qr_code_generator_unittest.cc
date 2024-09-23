@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/qr_code_generator/qr_code_generator.h"
 
 #include <limits>
 #include <optional>
 
 #include "base/containers/span.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace qr_code_generator {
 
@@ -34,9 +37,9 @@ TEST(QRCodeGeneratorTest, Generate) {
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      std::optional<GeneratedCode> qr_code =
-          Generate(base::span<const uint8_t>(input, input_len));
-      ASSERT_NE(qr_code, std::nullopt);
+      base::expected<GeneratedCode, Error> qr_code =
+          GenerateCode(base::span<const uint8_t>(input, input_len));
+      ASSERT_TRUE(qr_code.has_value());
       auto& qr_data = qr_code->data;
 
       if (!smallest_size || qr_code->qr_size < *smallest_size) {
@@ -76,8 +79,9 @@ TEST(QRCodeGeneratorTest, ManySizes) {
       break;
     }
 
-    std::optional<GeneratedCode> code = Generate(base::as_byte_span(input));
-    ASSERT_TRUE(code);
+    base::expected<GeneratedCode, Error> code =
+        GenerateCode(base::as_byte_span(input));
+    ASSERT_TRUE(code.has_value());
     max_input_length_for_qr_size[code->qr_size] = input.size();
   }
 
@@ -99,7 +103,8 @@ TEST(QRCodeGeneratorTest, ManySizes) {
 int GenerateAndGetQrCodeSize(size_t input_size) {
   std::string input(input_size, '!');
 
-  std::optional<GeneratedCode> code = Generate(base::as_byte_span(input));
+  base::expected<GeneratedCode, Error> code =
+      GenerateCode(base::as_byte_span(input));
   return code.has_value() ? code->qr_size : -1;
 }
 
@@ -137,24 +142,47 @@ TEST(QRCodeGeneratorTest, HugeInput) {
 
 
   // The Rust implementation can generate QR codes up to version 40.
-  ASSERT_TRUE(Generate(huge_numeric_input));
-  ASSERT_TRUE(Generate(huge_binary_input));
+  ASSERT_TRUE(GenerateCode(huge_numeric_input).has_value());
+  ASSERT_TRUE(GenerateCode(huge_binary_input).has_value());
 
   // Adding another character means that the inputs will no longer fit into QR
   // code version 40 (as of year 2023 there are no further versions defined by
   // the spec).
-  huge_numeric_input.push_back('0');
-  huge_binary_input.push_back('\0');
-  ASSERT_FALSE(Generate(huge_numeric_input));
-  ASSERT_FALSE(Generate(huge_binary_input));
+  {
+    huge_numeric_input.push_back('0');
+    auto failure = GenerateCode(huge_numeric_input);
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kInputTooLong);
+  }
+  {
+    huge_binary_input.push_back('\0');
+    auto failure = GenerateCode(huge_binary_input);
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kInputTooLong);
+  }
 }
 
 TEST(QRCodeGeneratorTest, InvalidMinVersion) {
   std::vector<uint8_t> input(123);  // Arbitrary valid input.
-  ASSERT_FALSE(Generate(input, std::make_optional(41)));
-  ASSERT_FALSE(
-      Generate(input, std::make_optional(std::numeric_limits<int>::max())));
-  ASSERT_FALSE(Generate(input, std::make_optional(-1)));
+
+  {
+    auto failure = GenerateCode(input, std::make_optional(41));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
+
+  {
+    auto failure = GenerateCode(
+        input, std::make_optional(std::numeric_limits<int>::max()));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
+
+  {
+    auto failure = GenerateCode(input, std::make_optional(-1));
+    ASSERT_FALSE(failure.has_value());
+    EXPECT_EQ(failure.error(), Error::kUnknownError);
+  }
 }
 
 }  // namespace qr_code_generator

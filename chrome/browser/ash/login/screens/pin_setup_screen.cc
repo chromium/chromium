@@ -66,23 +66,25 @@ void RecordUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED() << "Unexpected action id: " << action_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
 }  // namespace
 
 // static
 std::string PinSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
-    case Result::DONE:
+    case Result::kDone:
       return "Done";
-    case Result::USER_SKIP:
+    case Result::kUserSkip:
       return "Skipped";
-    case Result::TIMED_OUT:
+    case Result::kTimedOut:
       return "TimedOut";
-    case Result::NOT_APPLICABLE:
+    case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
@@ -138,7 +140,7 @@ bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
   if (ShouldBeSkipped(context)) {
     ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
   return false;
@@ -159,11 +161,10 @@ void PinSetupScreen::ShowImpl() {
   bool is_child_account =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  if (view_)
-    view_->Show(token, is_child_account);
-
-  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
-      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
+  if (view_) {
+    view_->Show(token, is_child_account, has_login_support_.value_or(false),
+                using_pin_as_main_factor_.value_or(false));
+  }
 }
 
 void PinSetupScreen::HideImpl() {
@@ -176,14 +177,14 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::DONE);
+    exit_callback_.Run(Result::kDone);
     return;
   }
   if (action_id == kUserActionSkipButtonClickedOnStart ||
       action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::USER_SKIP);
+    exit_callback_.Run(Result::kUserSkip);
     return;
   }
   BaseScreen::OnUserAction(args);
@@ -198,14 +199,24 @@ void PinSetupScreen::ClearAuthData(WizardContext& context) {
 }
 
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
-  if (view_)
-    view_->SetLoginSupportAvailable(login_available);
   has_login_support_ = login_available;
+  if (!is_hidden() && view_) {
+    view_->SetLoginSupportAvailable(has_login_support_.value());
+  }
+
+  // When hardware support is available, PIN will be offered as a main factor.
+  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    // The first value is only set once, based on hardware capability.
+    if (using_pin_as_main_factor_.has_value()) {
+      return;
+    }
+    using_pin_as_main_factor_ = login_available;
+  }
 }
 
 void PinSetupScreen::OnTokenTimedOut() {
   ClearAuthData(*context());
-  exit_callback_.Run(Result::TIMED_OUT);
+  exit_callback_.Run(Result::kTimedOut);
 }
 
 }  // namespace ash

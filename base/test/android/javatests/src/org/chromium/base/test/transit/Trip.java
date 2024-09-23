@@ -4,163 +4,53 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.Log;
-import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
-import org.chromium.base.test.transit.Elements.ViewElementInState;
+import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
- * A {@link Transition} into a {@link TransitStation}, either from another TransitStation or as an
- * entry point.
+ * A {@link Transition} into a {@link Station}, either from another {@link Station} or as an entry
+ * point.
  */
-public class Trip extends Transition {
-    private static final String TAG = "Transit";
-    private final int mId;
-
-    @Nullable private final TransitStation mOrigin;
-    private final TransitStation mDestination;
-
-    private List<ConditionWaitStatus> mWaitStatuses;
-
-    private static int sLastTripId;
-
-    private Trip(@Nullable TransitStation origin, TransitStation destination, Trigger trigger) {
-        super(trigger);
-        mOrigin = origin;
-        mDestination = destination;
-        mId = ++sLastTripId;
-    }
+class Trip extends Transition {
+    private final Station mOrigin;
+    private final Station mDestination;
 
     /**
-     * Starts a transition from a TransitStation to another (or from no TransitStation if at an
-     * entry point). Runs the transition |trigger|, and blocks until the destination TransitStation
-     * is considered ACTIVE (enter Conditions are fulfilled), the origin TransitStation is
-     * considered FINISHED (exit Conditions are fulfilled), and the Transition's conditions are
-     * fulfilled.
+     * Constructor. Trip is instantiated to move from one {@link Station} into another.
      *
-     * @param origin the StationFacility to depart from, null if at an entry point.
-     * @param destination the StationFacility to arrive at.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the TransitStation entered.
-     * @param <T> the type of TransitStation entered.
+     * @param origin the {@link Station} to depart from.
+     * @param destination the {@link Station} to travel to.
+     * @param options the {@link TransitionOptions}.
+     * @param trigger the action that triggers the transition. e.g. clicking a View.
      */
-    public static <T extends TransitStation> T travelSync(
-            @Nullable TransitStation origin, T destination, Trigger trigger) {
-        Trip trip = new Trip(origin, destination, trigger);
-        trip.travelSyncInternal();
-        return destination;
+    Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
+        super(
+                options,
+                getStationPlusFacilitiesWithPhase(origin, Phase.ACTIVE),
+                getStationPlusFacilitiesWithPhase(destination, Phase.NEW),
+                trigger);
+        mOrigin = origin;
+        mDestination = destination;
     }
 
-    private void travelSyncInternal() {
-        embark();
-        if (mOrigin != null) {
-            Log.i(TAG, "Trip %d: Embarked at %s towards %s", mId, mOrigin, mDestination);
-        } else {
-            Log.i(TAG, "Trip %d: Starting at entry point %s", mId, mDestination);
-        }
-
-        triggerTransition();
-        Log.i(TAG, "Trip %d: Triggered transition, waiting to arrive at %s", mId, mDestination);
-
-        waitUntilArrival();
-        Log.i(TAG, "Trip %d: Arrived at %s", mId, mDestination);
-
-        PublicTransitConfig.maybePauseAfterTransition(mDestination);
+    private static List<? extends ConditionalState> getStationPlusFacilitiesWithPhase(
+            Station station, @Phase int phase) {
+        List<ConditionalState> allConditionalStates = new ArrayList<>();
+        allConditionalStates.add(station);
+        allConditionalStates.addAll(station.getFacilitiesWithPhase(phase));
+        return allConditionalStates;
     }
 
-    private void embark() {
-        if (mOrigin != null) {
-            mOrigin.setStateTransitioningFrom();
-        }
-        mDestination.setStateTransitioningTo();
-
-        mWaitStatuses =
-                calculateConditionWaitStatuses(mOrigin, mDestination, getTransitionConditions());
-        for (ConditionWaitStatus waitStatus : mWaitStatuses) {
-            waitStatus.getCondition().onStartMonitoring();
-        }
-    }
-
-    private void waitUntilArrival() {
-        // Throws CriteriaNotSatisfiedException if any conditions aren't met within the timeout and
-        // prints the state of all conditions. The timeout can be reduced when explicitly looking
-        // for flakiness due to tight timeouts.
-        try {
-            ConditionWaiter.waitFor(mWaitStatuses);
-        } catch (AssertionError e) {
-            throw TravelException.newTripException(mOrigin, mDestination, e);
-        }
-
-        if (mOrigin != null) {
-            mOrigin.setStateFinished();
-        }
-        mDestination.setStateActive();
+    @Override
+    protected void onAfterTransition() {
+        super.onAfterTransition();
         TrafficControl.notifyActiveStationChanged(mDestination);
     }
 
-    private static ArrayList<ConditionWaitStatus> calculateConditionWaitStatuses(
-            @Nullable TransitStation origin,
-            TransitStation destination,
-            List<Condition> transitionConditions) {
-        ArrayList<ConditionWaitStatus> waitStatuses = new ArrayList<>();
-
-        Elements originElements =
-                origin != null ? origin.getElementsIncludingFacilities() : Elements.EMPTY;
-        Elements destinationElements = destination.getElementsIncludingFacilities();
-
-        Set<String> destinationViewElementDescriptions = new HashSet<>();
-        for (ViewElementInState element : destinationElements.getViewElements()) {
-            destinationViewElementDescriptions.add(
-                    element.getViewElement().getViewMatcherDescription());
-        }
-
-        // Create exit Conditions for Views that should disappear
-        for (ViewElementInState element : originElements.getViewElements()) {
-            Condition exitCondition = element.getExitCondition();
-            if (exitCondition != null) {
-                boolean isInBothOriginAndDestination =
-                        destinationViewElementDescriptions.contains(
-                                element.getViewElement().getViewMatcherDescription());
-                if (!isInBothOriginAndDestination) {
-                    waitStatuses.add(
-                            new ConditionWaitStatus(
-                                    exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-                }
-            }
-        }
-
-        // Create enter Conditions for Views that should appear
-        for (ViewElementInState element : destinationElements.getViewElements()) {
-            Condition enterCondition = element.getEnterCondition();
-            if (enterCondition != null) {
-                waitStatuses.add(
-                        new ConditionWaitStatus(
-                                enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
-            }
-        }
-
-        // TOOD(crbug.com/1521928): Match non-visual Elements
-        for (Condition exitCondition : originElements.getOtherExitConditions()) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
-        }
-        for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
-        }
-
-        // Add transition conditions
-        for (Condition condition : transitionConditions) {
-            waitStatuses.add(
-                    new ConditionWaitStatus(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
-        }
-
-        return waitStatuses;
+    @Override
+    public String toDebugString() {
+        return String.format("Trip %d (%s to %s)", mId, mOrigin, mDestination);
     }
 }

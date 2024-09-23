@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,7 +27,10 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   TestDevToolsProtocolClient();
   ~TestDevToolsProtocolClient() override;
 
- protected:
+  void AttachToWebContents(WebContents* web_contents);
+  void AttachToTabTarget(WebContents* web_contents);
+  void AttachToBrowserTarget();
+
   const base::Value::Dict* SendCommand(std::string method,
                                        base::Value::Dict params,
                                        bool wait = true) {
@@ -53,10 +57,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
                                               const std::string session_id,
                                               bool wait);
 
-  void AttachToWebContents(WebContents* web_contents);
-  void AttachToTabTarget(WebContents* web_contents);
-  void AttachToBrowserTarget();
-
   void DetachProtocolClient() {
     if (agent_host_) {
       agent_host_->DetachClient(this);
@@ -64,6 +64,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     }
   }
 
+ protected:
   bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
   bool HasExistingNotificationMatching(
@@ -103,6 +104,11 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     may_write_local_files_ = may_write_local_files;
   }
 
+  void SetNotAttachableHosts(
+      const std::set<std::string>& not_attachable_hosts) {
+    not_attachable_hosts_ = not_attachable_hosts;
+  }
+
   const base::Value::Dict* result() const;
   const base::Value::Dict* error() const;
   int received_responses_count() const { return received_responses_count_; }
@@ -123,6 +129,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   bool IsTrusted() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
+  bool MayAttachToURL(const GURL& url, bool is_webui) override;
 
   int last_sent_id_ = 0;
   int waiting_for_command_result_id_ = 0;
@@ -143,6 +150,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   std::optional<url::Origin> navigation_initiator_origin_;
   bool may_read_local_files_ = true;
   bool may_write_local_files_ = true;
+  std::set<std::string> not_attachable_hosts_;
 };
 
 }  // namespace content

@@ -1,0 +1,40 @@
+<!--
+@DEFAULT-ACTION-ON:Fruit
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:class*
+@MAC-ALLOW:AXRoleDescription=*
+@WIN-ALLOW:HASPOPUP
+@WIN-ALLOW:haspopup*
+@WIN-ALLOW:ispopup*
+@WIN-ALLOW:readonly*
+@WIN-ALLOW:MULTISELECTABLE
+@WIN-ALLOW:EXTSELECTABLE
+@WIN-ALLOW:SELECT*
+@AURALINUX-ALLOW:haspopup*
+@AURALINUX-ALLOW:isspopup*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:expand*
+@AURALINUX-ALLOW:required
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  select, select::picker(select) { appearance: base-select; }
+</style>
+</head>
+
+<body>
+<select aria-label="Fruit" autofocus>
+  <option selected>Apple</option>
+  <option>Orange</option>
+  <option>Banana</option>
+</select>
+</body>
+</html>

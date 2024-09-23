@@ -37,15 +37,9 @@ constexpr int kTitleLineHeight = 20;
 }  // namespace
 
 KioskAppDefaultMessage::KioskAppDefaultMessage()
-    : LoginBaseBubbleView(/*anchor_view=*/nullptr),
-      background_animator_(
-          /* Don't pass the Shelf so the translucent color is always used. */
-          nullptr,
-          Shell::Get()->wallpaper_controller()) {
+    : LoginBaseBubbleView(/*anchor_view=*/nullptr) {
   auto* layout_provider = views::LayoutProvider::Get();
   set_persistent(true);
-  background_animator_.Init(ShelfBackgroundType::kDefaultBg);
-  background_animator_observation_.Observe(&background_animator_);
 
   views::FlexLayout* layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -75,17 +69,20 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
 
 KioskAppDefaultMessage::~KioskAppDefaultMessage() = default;
 
-gfx::Size KioskAppDefaultMessage::CalculatePreferredSize() const {
+gfx::Size KioskAppDefaultMessage::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto* layout_provider = views::LayoutProvider::Get();
 
   // width = left_margin + icon_width + component_distance + title_width +
   // right_margin
-  int width = icon_->CalculatePreferredSize().width() +
-              layout_provider->GetDistanceMetric(
-                  views::DISTANCE_RELATED_CONTROL_HORIZONTAL) +
-              title_->CalculatePreferredSize().width() +
-              2 * layout_provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+  int width =
+      icon_->CalculatePreferredSize({}).width() +
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL) +
+      title_->CalculatePreferredSize(views::SizeBounds(title_->width(), {}))
+          .width() +
+      2 * layout_provider->GetDistanceMetric(
+              views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   // height = upper_margin + icon_height + lower_margin
   int height =
       kIconSize + 2 * layout_provider->GetDistanceMetric(

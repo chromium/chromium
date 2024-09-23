@@ -1,0 +1,196 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+To change the number of videos, use rows and columns.
+Usage: test_video_call_fps.html?rows=2&columns=7
+
+With 1 video, the frame rate should be kept at the monitor refresh rate.
+With 4 videos which is assumed to be the video conference mode, the frame rate
+should drop and stay at 30 FPS after a short period of time.
+However, when we run the default test with 4 videos, We see the frame rate jumps
+after it drops to 30 FPS. The reasons for the frame rate to go up to the
+monitor refresh rate: (1) user interactions (mouse/keyboard inputs). (2) The
+restart of a video. The teddy bear videos used in the test are quite short, so
+it restarts quite often in the looping mode.
+-->
+<html>
+
+<head>
+  <style>
+    button {
+      position: absolute;
+      padding: 5px;
+      left: 850px;
+      top: 2px;
+      width: 100px;
+    }
+
+  </style>
+
+  <title>Test video call frame rate</title>
+
+  <header style="display: inline">
+    <pre id="fps"> Current: -- FPS, 60-Frame-Average: -- FPS, Average Frame Rate: -- FPS, Harmonic Frame Rate: -- FPS </pre>
+  </header>
+
+  <script>
+    const _defaultRows = 2;
+    const _defaultColumns = 2;
+    const _totalVideoWidth = 1280;
+    const _totalVideoHeight = 720;
+
+    const parsedString = (function (names) {
+      const pairs = {};
+      for (let i = 0; i < names.length; ++i) {
+        const keyValue = names[i].split('=', 2);
+        if (keyValue.length === 1) {
+          pairs[keyValue[0]] = '';
+        } else {
+          pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+        }
+      }
+      return pairs;
+    })(window.location.search.substr(1).split('&'));
+
+    function GetVideoSource(index) {
+        let i = index % 3;
+
+        if (i == 0) {
+            return './teddy3_vp9_320x180_30fps.webm';
+        } else if (i == 1) {
+            return './teddy2_vp9_320x180_15fps.webm';
+        } else {
+           return './teddy1_vp9_320x180_7fps.webm';
+        }
+    }
+
+    // To restart the calculation for the average FPS and the harmonic FPS on click.
+    let restartFPS = 0;
+    function handleClick() {
+      restartFPS = 1;
+    }
+
+    function startVideos() {
+      const container = document.getElementById('container');
+
+      // Get the video row count and the column count from the string.
+      // Example: videos_mxn.html?rows=9&columns=9
+      let videoRows = parsedString['rows'];
+      let videoColumns = parsedString['columns'];
+      if (videoRows === undefined) {
+        videoRows = _defaultRows;
+      }
+      if (videoColumns === undefined) {
+        videoColumns = _defaultColumns;
+      }
+
+      const maxColRow = Math.max(videoRows, videoColumns);
+
+      // Calculate the video onscreen size
+      const videoWidth = _totalVideoWidth / maxColRow;
+      const videoHeight = _totalVideoHeight / maxColRow;
+
+      // Create MxN videos.
+      const videoCount = videoRows * videoColumns;
+      for (let row = 0; row < videoRows; row++) {
+        for (let column = 0; column < videoColumns; column++) {
+          // Onscreen position.
+          const videoTop = row * videoHeight + 100;
+          const videoLeft = column * videoWidth;
+
+          // Video source.
+          const i = row * videoColumns + column;
+          const videoSrc = GetVideoSource(i);
+
+          createOneVideo(videoTop, videoLeft, videoWidth, videoHeight,
+            videoSrc);
+        }
+      }
+
+    function createOneVideo(top, left, width, height, videoSrc) {
+      const video = document.createElement('video');
+      video.loop = true;
+      video.autoplay = true;
+      video.muted = true;
+      video.src = videoSrc;
+      video.width = width;
+      video.height = height;
+      video.style.position = "absolute";
+      video.style.top = top;
+      video.style.left = left;
+
+      video.play();
+
+      container.appendChild(video);
+    }
+
+    // Display and update the FPSs on screen every 200 milliseconds.
+    const displayInterval = 200;
+    let fps = 0;
+    let averageFpsOver60Frames = 0;
+    let averageFps = 0;
+    let harmonicFps = 0;
+    const fpsDisplay = document.getElementById('fps').firstChild;
+
+    setInterval(() => {
+      fpsDisplay.nodeValue = ` Current: ${fps | 0} FPS, 60-Frame-Average: ${averageFpsOver60Frames | 0} FPS, Average Frame Rate: ${averageFps | 0} FPS, Harmonic Frame Rate: ${harmonicFps | 0} FPS`;
+    }, displayInterval);
+
+
+    // For the FPS calculation.
+    let lastTimestamp = performance.now();
+    let delaySunOver60Frames = 0;
+    let delaySum = 0;
+    let delaySquaredSum = 0;
+    let frames = 0;
+
+    function animation() {
+      // Restart the calculation on click.
+      if (restartFPS) {
+        delaySunOver60Frames = 0;
+        delaySum = 0;
+        delaySquaredSum = 0;
+        frames = 0;
+        restartFPS = 0;
+      }
+
+      frames++;
+      let now = performance.now();
+      let delay = now - lastTimestamp; // In milliseconds.
+      delaySum += delay;
+
+      // Current FPS
+      fps = 1 / delay * 1000;
+
+      // Average FPS over the period of 1 second.
+      delaySunOver60Frames += delay;
+      if (frames % 30 == 0) {
+        averageFpsOver60Frames = 30 / delaySunOver60Frames * 1000;
+        delaySunOver60Frames = 0;
+      }
+
+      // Average FPS since start.
+      averageFps = frames / delaySum * 1000;
+
+      // Harmonic FPS since start.
+      delaySquaredSum += delay * delay;
+      harmonicFps = delaySum / delaySquaredSum * 1000;
+
+      lastTimestamp = now;
+      requestAnimationFrame(animation);
+    }
+
+    requestAnimationFrame(animation);
+   }
+
+  </script>
+</head>
+
+<body onload = startVideos()>
+  <div id="container" style="position:absolute; top:0px; left:0px"></div>
+  <button onclick="handleClick()">Restart FPS</button>
+</body>
+
+</html>

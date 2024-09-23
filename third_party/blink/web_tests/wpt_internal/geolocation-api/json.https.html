@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+async_test((t) => {
+  const mockCoords = {accuracy: 100,
+                      latitude: 51.478,
+                      longitude: -0.166,
+                      altitude: null,
+                      altitudeAccuracy: null,
+                      heading: null,
+                      speed: null};
+
+  const mock = new GeolocationMock();
+  mock.setGeolocationPermission(true);
+  mock.setGeolocationPosition(mockCoords.latitude,
+                              mockCoords.longitude,
+                              mockCoords.accuracy);
+
+  navigator.geolocation.getCurrentPosition(t.step_func_done((position) => {
+    assert_object_equals(position.coords.toJSON(), mockCoords);
+
+    const timestamp = position.timestamp;
+    const expectedPosition = {timestamp, coords: mockCoords};
+    assert_object_equals(position.toJSON(), expectedPosition);
+  }), t.step_func_done((e) => {
+    assert_unreached('Error callback invoked unexpectedly');
+  }));
+}, "Tests toJSON() on GeolocationPosition and GeolocationCoordinates.");
+</script>
+</body>
+</html>

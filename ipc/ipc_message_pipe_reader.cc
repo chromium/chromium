@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ipc/ipc_message_pipe_reader.h"
 
 #include <stdint.h>
@@ -48,7 +53,7 @@ class ThreadSafeProxy : public mojo::ThreadSafeProxy {
       mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiver> responder) override {
     // We don't bother supporting this because it's not used in practice.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

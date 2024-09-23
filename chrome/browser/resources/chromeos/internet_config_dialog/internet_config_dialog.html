@@ -36,8 +36,9 @@
     </network-config>
   </div>
   <div class="layout horizontal center" slot="button-container">
-    <template is="dom-if" if="[[error_]]" restamp>
-      <div class="flex error">[[getError_(error_)]]</div>
+    <template is="dom-if" if="[[shouldShowError_(firstConnect_, error_)]]"
+        restamp>
+      <div id="errorDiv" class="flex error">[[getError_(error_)]]</div>
     </template>
     <cr-button class="cancel-button" on-click="onCancelClick_">
       $i18n{cancel}

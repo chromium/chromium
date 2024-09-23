@@ -1,0 +1,24 @@
+{
+  "name": "reactive prefetch",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Checks that prefetches triggered by loading predictor can be blocked by extensions",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "ruleset",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  }
+}

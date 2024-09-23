@@ -1,3 +1,7 @@
+include_rules = [
+  "+ui/strings/grit/auto_image_annotation_strings.h",
+  "+ui/accelerated_widget_mac",
+]
 specific_include_rules = {
   "atk_util_auralinux_x11\.cc": [
     "+ui/events/x",
@@ -7,5 +11,8 @@ specific_include_rules = {
   ],
   "ax_platform_node_win\.cc": [
     "+skia/ext",
+  ],
+  "browser_accessibility_manager\.h": [
+    "+cc/base/rtree.h",
   ],
 }

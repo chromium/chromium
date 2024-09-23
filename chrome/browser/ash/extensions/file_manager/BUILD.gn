@@ -1,0 +1,269 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash)
+
+static_library("file_manager") {
+  sources = [
+    "device_event_router.cc",
+    "device_event_router.h",
+    "drivefs_event_router.cc",
+    "drivefs_event_router.h",
+    "event_router.cc",
+    "event_router.h",
+    "event_router_factory.cc",
+    "event_router_factory.h",
+    "file_manager_private_api_functions.h",
+    "file_stream_md5_digester.cc",
+    "file_stream_md5_digester.h",
+    "file_system_provider_metrics_util.cc",
+    "file_system_provider_metrics_util.h",
+    "fmpi_get_volume_root_function.cc",
+    "fmpi_get_volume_root_function.h",
+    "image_loader_private_api.cc",
+    "image_loader_private_api.h",
+    "logged_extension_function.cc",
+    "logged_extension_function.h",
+    "office_tasks.cc",
+    "office_tasks.h",
+    "private_api_dialog.cc",
+    "private_api_dialog.h",
+    "private_api_drive.cc",
+    "private_api_drive.h",
+    "private_api_file_system.cc",
+    "private_api_file_system.h",
+    "private_api_guest_os.cc",
+    "private_api_guest_os.h",
+    "private_api_holding_space.cc",
+    "private_api_holding_space.h",
+    "private_api_materialized_views.cc",
+    "private_api_materialized_views.h",
+    "private_api_media_parser.cc",
+    "private_api_media_parser.h",
+    "private_api_media_parser_util.cc",
+    "private_api_media_parser_util.h",
+    "private_api_misc.cc",
+    "private_api_misc.h",
+    "private_api_mount.cc",
+    "private_api_mount.h",
+    "private_api_sharesheet.cc",
+    "private_api_sharesheet.h",
+    "private_api_strings.cc",
+    "private_api_strings.h",
+    "private_api_tasks.cc",
+    "private_api_tasks.h",
+    "private_api_util.cc",
+    "private_api_util.h",
+    "scoped_suppress_drive_notifications_for_path.cc",
+    "scoped_suppress_drive_notifications_for_path.h",
+    "search_by_pattern.cc",
+    "search_by_pattern.h",
+    "select_file_dialog_extension_user_data.cc",
+    "select_file_dialog_extension_user_data.h",
+    "system_notification_manager.cc",
+    "system_notification_manager.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//third_party/ced",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/local_image_search",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/chromeos/drivefs",
+    "//chrome/browser/chromeos/drivefs:native_message_host_origins",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/devtools",
+    "//chrome/browser/feedback",
+    "//chrome/browser/pdf",
+    "//chrome/browser/pdf:pdf_pref_names",
+    "//chrome/browser/pdf:pdf_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/webui/ash/manage_mirrorsync",
+    "//chrome/common",
+    "//chrome/services/media_gallery_util/public/cpp",
+    "//chrome/services/media_gallery_util/public/mojom",
+    "//chrome/services/pdf/public/mojom",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/file_manager",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/disks:prefs",
+    "//chromeos/components/sharesheet:constants",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/arc",
+    "//components/drive",
+    "//components/drive:drive_chromeos",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/prefs",
+    "//components/services/unzip/content",
+    "//components/services/unzip/public/cpp",
+    "//components/storage_monitor",
+    "//components/user_manager",
+    "//components/zoom",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser",
+    "//google_apis/drive",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//storage/browser",
+    "//storage/common",
+    "//third_party/nearby:presence_types",
+    "//third_party/private_membership",
+    "//ui/chromeos/strings",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/message_center/public/cpp",
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/system_web_apps/apps",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_event_router_unittest.cc",
+    "drivefs_event_router_unittest.cc",
+    "event_router_unittest.cc",
+    "search_by_pattern_unittest.cc",
+    "system_notification_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":file_manager",
+    "//ash/components/arc",
+    "//ash/webui/file_manager:constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//components/services/unzip/content",
+    "//components/services/unzip/public/cpp",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/chromeos/strings",
+    "//ui/display:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "file_manager_private_apitest.cc" ]
+
+  deps = [
+    ":file_manager",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/dbus/dlp",
+    "//components/drive",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//google_apis/common:test_support",
+    "//storage/browser",
+  ]
+}
+
+fuzzer_test("create_fnmatch_query_fuzzer") {
+  sources = [ "create_fnmatch_query_fuzzer.cc" ]
+  deps = [
+    ":file_manager",
+    "//base",
+    "//chrome/browser",
+    "//components/exo/wayland:test_controller",
+    "//components/exo/wayland:ui_controls_protocol",
+  ]
+}
+
+fuzzer_test("search_by_pattern_fuzzer") {
+  sources = [ "search_by_pattern_fuzzer.cc" ]
+  deps = [
+    ":file_manager",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/fileapi",
+    "//components/exo/wayland:test_controller",
+    "//components/exo/wayland:ui_controls_protocol",
+  ]
+}

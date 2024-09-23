@@ -1,0 +1,41 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/capture_mode",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/drive",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/policy/dlp",
+  "+chrome/browser/ash/policy/skyvault",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/ash/video_conference",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/chromeos/policy/dlp",
+  "+chrome/browser/download",
+  "+chrome/browser/enterprise/data_controls",
+  "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/policy",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/screenshot_area.h",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/ash/web_view",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/webui/ash/cloud_upload",
+  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/common",
+  "+chrome/test",
+]

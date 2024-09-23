@@ -9,7 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_message.h"
@@ -105,16 +105,16 @@ class JavaScriptConsoleFeatureTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
 
     JavaScriptConsoleFeature* feature =
-        JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get());
+        JavaScriptConsoleFeatureFactory::GetInstance()->GetForProfile(
+            profile_.get());
     feature->SetDelegate(&delegate_);
     GetWebClient()->SetJavaScriptFeatures({feature});
   }
@@ -149,7 +149,7 @@ class JavaScriptConsoleFeatureTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
   FakeJavaScriptConsoleFeatureDelegate delegate_;

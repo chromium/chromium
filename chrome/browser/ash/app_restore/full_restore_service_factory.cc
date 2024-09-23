@@ -20,8 +20,9 @@ namespace ash::full_restore {
 // static
 bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
     const Profile* profile) {
-  if (chrome::IsRunningInForcedAppMode() || DemoSession::IsDeviceInDemoMode())
+  if (IsRunningInForcedAppMode() || DemoSession::IsDeviceInDemoMode()) {
     return false;
+  }
 
   // No service for non-regular user profile, or ephemeral user profile, system
   // profile.

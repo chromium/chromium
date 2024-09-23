@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -108,14 +108,14 @@ public final class SharingNotificationUtil {
         }
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        new NotificationManagerProxyImpl(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create(context).notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
 
     public static void dismissNotification(String tag, int notificationId) {
         Context context = ContextUtils.getApplicationContext();
-        new NotificationManagerProxyImpl(context).cancel(tag, notificationId);
+        BaseNotificationManagerProxyFactory.create(context).cancel(tag, notificationId);
     }
 
     /**
@@ -146,7 +146,7 @@ public final class SharingNotificationUtil {
                         .setDefaults(Notification.DEFAULT_ALL);
         NotificationWrapper notification = builder.buildNotificationWrapper();
 
-        new NotificationManagerProxyImpl(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create(context).notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
@@ -194,7 +194,7 @@ public final class SharingNotificationUtil {
 
         NotificationWrapper notification = builder.buildWithBigTextStyle(contentText);
 
-        new NotificationManagerProxyImpl(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create(context).notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }

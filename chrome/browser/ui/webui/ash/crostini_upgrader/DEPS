@@ -1,0 +1,22 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/crostini_upgrader",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/guest_os",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/views/crostini",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
+  "+chrome/browser/ui/webui/webui_util.h",
+  "+chrome/common",
+  "+chrome/grit",
+]

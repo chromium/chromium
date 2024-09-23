@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
 namespace base {
@@ -51,7 +53,7 @@ enum class ParcelState {
 @property(nonatomic, assign) ParcelType parcelType;
 
 // Estimated delivery time of the parcel.
-@property(nonatomic, assign) base::Time estimatedDeliveryTime;
+@property(nonatomic, assign) std::optional<base::Time> estimatedDeliveryTime;
 
 // The id of the tracked parcel.
 @property(nonatomic, copy) NSString* parcelID;

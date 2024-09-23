@@ -15,8 +15,6 @@ import("//tools/typescript/ts_library.gni")
 
 group("build") {
   deps = [
-    ":chromevox_background_script",
-    ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
     ":copied_files",
     "//third_party/chromevox:chromevox_third_party_resources",
@@ -43,136 +41,136 @@ common_tsc_dir =
 #
 # TS files to compile.
 ts_modules = [
+  "background/abstract_tts.ts",
+  "background/auto_scroll_handler.ts",
+  "background/background.ts",
+  "background/braille/braille_background.ts",
+  "background/braille/braille_captions_background.ts",
+  "background/braille/braille_command_handler.ts",
+  "background/braille/braille_display_manager.ts",
+  "background/braille/braille_interface.ts",
+  "background/braille/braille_key_event_rewriter.ts",
+  "background/braille/cursor_dots.ts",
+  "background/braille/expanding_braille_translator.ts",
+  "background/braille/liblouis.ts",
+  "background/braille/pan_strategy.ts",
+  "background/chromevox_range.ts",
   "background/chromevox_state.ts",
+  "background/earcon_engine.ts",
+  "background/editing/editable_line.ts",
+  "background/editing/editable_text.ts",
   "background/editing/editable_text_base.ts",
-  "background/editing/editing.ts",
+  "background/editing/editing_range_observer.ts",
+  "background/editing/intent_handler.ts",
   "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
+  "background/event/base_automation_handler.ts",
   "background/event/desktop_automation_interface.ts",
-  "background/input/background_keyboard_handler.ts",
-  "background/input/smart_sticky_mode.ts",
-  "background/logging/log_manager.ts",
+  "background/event/focus_automation_handler.ts",
+  "background/event/page_load_sound_handler.ts",
   "background/event/pointer_handler.ts",
+  "background/event/range_automation_handler.ts",
+  "background/forced_action_path.ts",
+  "background/injected_script_loader.ts",
+  "background/input/background_keyboard_handler.ts",
+  "background/input/clipboard_handler.ts",
+  "background/input/command_handler_interface.ts",
+  "background/input/command_handler.ts",
+  "background/input/gesture_command_handler.ts",
+  "background/input/gesture_interface.ts",
+  "background/input/smart_sticky_mode.ts",
+  "background/logging/event_stream_logger.ts",
+  "background/logging/log_manager.ts",
+  "background/logging/log_url_watcher.ts",
+  "background/logging/log_store.ts",
+  "background/output/braille_output.ts",
+  "background/output/output.ts",
+  "background/output/output_ancestry_info.ts",
+  "background/output/output_format_parser.ts",
+  "background/output/output_format_tree.ts",
+  "background/output/output_formatter.ts",
+  "background/output/output_role_info.ts",
+  "background/output/output_interface.ts",
+  "background/output/output_logger.ts",
+  "background/output/output_types.ts",
+  "background/panel/i_search.ts",
+  "background/panel/i_search_handler.ts",
+  "background/panel/panel_background.ts",
+  "background/panel/panel_node_menu_background.ts",
+  "background/prefs.ts",
+  "background/tts_background.ts",
+  "background/tts_interface.ts",
+  "chromevox_loader.ts",
+  "common/background_bridge.ts",
+  "common/braille/braille_command_data.ts",
+  "common/braille/braille_key_types.ts",
+  "common/braille/braille_table.ts",
+  "common/braille/nav_braille.ts",
+  "common/bridge_constants.ts",
+  "common/command.ts",
+  "common/command_store.ts",
+  "common/earcon_id.ts",
+  "common/event_source_type.ts",
+  "common/gesture.ts",
+  "common/gesture_command_data.ts",
+  "common/keyboard_handler.ts",
+  "common/key_map.ts",
+  "common/key_sequence.ts",
+  "common/key_util.ts",
+  "common/learn_mode_bridge.ts",
+  "common/locale_output_helper.ts",
+  "common/log_types.ts",
   "common/msgs.ts",
+  "common/panel_bridge.ts",
+  "common/panel_command.ts",
+  "common/panel_menu_data.ts",
+  "common/permission_checker.ts",
+  "common/spannable.ts",
+  "common/tree_dumper.ts",
   "common/tts_types.ts",
+  "learn_mode/learn_mode.ts",
+  "log_page/log.ts",
+  "log_page/log_loader.ts",
   "panel/i_search_ui.ts",
+  "panel/menu_manager.ts",
   "panel/panel.ts",
   "panel/panel_captions.ts",
+  "panel/panel_interface.ts",
+  "panel/panel_menu.ts",
   "panel/panel_menu_item.ts",
-  "chromevox_loader.ts",
+  "panel/panel_mode.ts",
+  "third_party/tamachiyomi/ja_phonetic_data.ts",
+  "third_party/tamachiyomi/ja_phonetic_map.ts",
 ]
 
 # ES6 modules.
 js_modules = [
   "background/abstract_earcons.js",
-  "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
-  "background/auto_scroll_handler.js",
-  "background/background.js",
-  "background/braille/braille_background.js",
-  "background/braille/braille_captions_background.js",
-  "background/braille/braille_command_handler.js",
-  "background/braille/braille_display_manager.js",
   "background/braille/braille_input_handler.js",
-  "background/braille/braille_interface.js",
-  "background/braille/braille_key_event_rewriter.js",
   "background/braille/braille_translator_manager.js",
-  "background/braille/cursor_dots.js",
-  "background/braille/expanding_braille_translator.js",
-  "background/braille/liblouis.js",
-  "background/braille/pan_strategy.js",
   "background/braille/spans.js",
-  "background/chromevox_range.js",
   "background/chromevox.js",
-  "background/clipboard_handler.js",
   "background/color.js",
   "background/composite_tts.js",
   "background/console_tts.js",
   "background/download_handler.js",
-  "background/earcon_engine.js",
   "background/earcons.js",
-  "background/editing/editable_line.js",
-  "background/editing/editable_text.js",
-  "background/editing/intent_handler.js",
   "background/editing/typing_echo.js",
   "background/es6_loader.js",
-  "background/event/base_automation_handler.js",
   "background/event/desktop_automation_handler.js",
-  "background/event/focus_automation_handler.js",
   "background/event/media_automation_handler.js",
-  "background/event/page_load_sound_handler.js",
-  "background/event/range_automation_handler.js",
   "background/event_source.js",
   "background/find_handler.js",
   "background/focus_bounds.js",
-  "background/injected_script_loader.js",
-  "background/input/command_handler.js",
-  "background/input/command_handler_interface.js",
-  "background/input/gesture_command_handler.js",
-  "background/input/gesture_interface.js",
   "background/live_regions.js",
-  "background/logging/event_stream_logger.js",
-  "background/logging/log_store.js",
-  "background/logging/log_url_watcher.js",
   "background/math_handler.js",
-  "background/output/output.js",
-  "background/output/output_ancestry_info.js",
-  "background/output/output_format_parser.js",
-  "background/output/output_format_tree.js",
-  "background/output/output_formatter.js",
-  "background/output/output_interface.js",
-  "background/output/output_logger.js",
-  "background/output/output_role_info.js",
   "background/output/output_rules.js",
-  "background/output/output_types.js",
-  "background/panel/i_search.js",
-  "background/panel/i_search_handler.js",
-  "background/panel/panel_background.js",
-  "background/panel/panel_node_menu_background.js",
   "background/phonetic_data.js",
-  "background/prefs.js",
   "background/primary_tts.js",
-  "background/tts_background.js",
-  "background/tts_interface.js",
-  "background/forced_action_path.js",
-  "common/background_bridge.js",
-  "common/braille/braille_command_data.js",
-  "common/braille/braille_key_types.js",
-  "common/braille/braille_table.js",
-  "common/braille/nav_braille.js",
-  "common/bridge_callback_manager.js",
-  "common/bridge_constants.js",
-  "common/bridge_helper.js",
-  "common/command.js",
-  "common/command_store.js",
   "common/custom_automation_event.js",
-  "common/earcon_id.js",
-  "common/event_source_type.js",
-  "common/gesture_command_data.js",
-  "common/key_map.js",
-  "common/key_sequence.js",
-  "common/key_util.js",
-  "common/keyboard_handler.js",
-  "common/learn_mode_bridge.js",
-  "common/locale_output_helper.js",
-  "common/log_types.js",
-  "common/panel_bridge.js",
-  "common/panel_command.js",
-  "common/panel_menu_data.js",
-  "common/permission_checker.js",
   "common/role_type.js",
-  "common/spannable.js",
   "common/settings_manager.js",
-  "common/tree_dumper.js",
-  "learn_mode/learn_mode.js",
-  "log_page/log.js",
-  "log_page/log_loader.js",
-  "panel/menu_manager.js",
-  "panel/panel_interface.js",
-  "panel/panel_menu.js",
-  "panel/panel_mode.js",
-  "third_party/tamachiyomi/ja_phonetic_data.js",
-  "third_party/tamachiyomi/ja_phonetic_map.js",
 ]
 
 # Closure library modules needed by chromevox.
@@ -204,11 +202,13 @@ ts_library("ts_build") {
   ]
 
   definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
+    "../definitions/windows.d.ts",
     "../definitions/accessibility_private_mv2.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/braille_display_private_mv2.d.ts",
     "../definitions/chromeos_info_private.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
@@ -230,9 +230,6 @@ ts_library("ts_build") {
 
   tsconfig_base = "../tsconfig.base.json"
 }
-
-chromevox_background_script_loader_file = "background/loader.js"
-chromevox_panel_script_loader_file = "panel/panel_loader.js"
 
 generate_message_formatting_data("i18n_data") {
   inputs = [ "//third_party/cldr/src/common/supplemental/plurals.xml" ]
@@ -264,6 +261,7 @@ run_jsbundler("copied_files") {
 
   sources = [
     "background/background.html",
+    "common/closure_loader.js",
     "earcons/chromevox_loaded.ogg",
     "earcons/chromevox_loading.ogg",
     "earcons/control.wav",
@@ -289,6 +287,7 @@ run_jsbundler("copied_files") {
     "tutorial/practice_areas/selects.html",
   ]
   sources += js_modules
+  sources += closure_library_modules
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
@@ -349,28 +348,6 @@ action("chromevox_phonetic_dictionaries_js") {
            "-o",
            rebase_path(output_file, root_build_dir),
          ] + rebase_path(src_dir, root_build_dir)
-}
-
-template("compress_js") {
-  run_jsbundler(target_name) {
-    assert(defined(invoker.output_file))
-    mode = "compressed_bundle"
-    modules = closure_library_modules
-    sources = invoker.sources
-    output_file = invoker.output_file
-  }
-}
-
-# TODO once these loaders are all empty, we will need to re-work the entry points.
-
-compress_js("chromevox_background_script") {
-  sources = [ chromevox_background_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
-}
-
-compress_js("chromevox_panel_script") {
-  sources = [ chromevox_panel_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
 }
 
 if (is_chromeos_ash) {
@@ -467,7 +444,7 @@ if (is_chromeos_ash) {
     sources += [
       "background/braille/expanding_braille_translator_test.js",
       "background/braille/pan_strategy_test.js",
-      "background/editing/editable_text_base_test.js",
+      "background/editing/editable_text_test.js",
       "background/phonetic_data_test.js",
       "common/key_sequence_test.js",
       "common/spannable_test.js",
@@ -488,8 +465,9 @@ if (is_chromeos_ash) {
     deps = [
       "//ash",
       "//base",
-      "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps",
       "//chrome/common",
     ]
     test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")

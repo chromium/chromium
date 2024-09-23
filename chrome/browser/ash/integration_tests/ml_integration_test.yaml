@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "MLIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "brettw@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: True
+criteria: |
+  Test that the ml-service daemon can be started and an ML model can be loaded
+cases:
+  - id: "Bootstrap"
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic", "informational"]
+...

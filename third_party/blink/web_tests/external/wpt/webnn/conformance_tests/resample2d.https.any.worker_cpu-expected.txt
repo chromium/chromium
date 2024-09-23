@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] resample2d float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor options.scales
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor options.sizes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor options.sizes ignored options.scales
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor options.axes=[1, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor explicit options.axes=[2, 3]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor explicit options.mode='nearest-neighbor'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports Linear mode."
+[FAIL] resample2d(upsample) float32 4D tensor options.scales options.mode='linear'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports axes = {1, 2}."
+[FAIL] resample2d(upsample) float32 4D tensor options.sizes options.mode='linear'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Resample2d only supports axes = {1, 2}."
+Harness: the test ran to completion.
+

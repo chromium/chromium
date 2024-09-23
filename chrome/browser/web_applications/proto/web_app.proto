@@ -8,6 +8,8 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "chrome/browser/ash/system_web_apps/types/proto/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
+import "chrome/browser/web_applications/proto/web_app_install_state.proto";
+import "chrome/browser/web_applications/proto/web_app_isolation_data.proto";
 import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
@@ -71,10 +73,13 @@ message SourcesProto {
   optional bool default = 5;
   optional bool sub_app = 6;
   optional bool kiosk = 7;
-  optional bool command_line = 8;
+  reserved 8;
   optional bool oem = 9;
   optional bool one_drive_integration = 10;
   optional bool aps_default = 11;
+  optional bool iwa_shimless_rma = 12;
+  optional bool iwa_policy = 13;
+  optional bool iwa_user_installed = 14;
 }
 
 // Properties for integrating with Chrome OS.
@@ -127,10 +132,13 @@ enum WebAppManagementProto {
   SYNC = 5;
   DEFAULT = 6;
   KIOSK = 7;
-  COMMAND_LINE = 8;
+  reserved 8;
   OEM = 9;
   ONEDRIVEINTEGRATION = 10;
   APS_DEFAULT = 11;
+  IWA_SHIMLESS_RMA = 12;
+  IWA_POLICY = 13;
+  IWA_USER_INSTALLED = 14;
 }
 
 // This stores data per-external-WebAppManagement::Type, as each installation
@@ -147,57 +155,6 @@ message ManagementToExternalConfigInfo {
   // Note that list is not meant to be an exhaustive enumeration of all possible
   // policy_ids but rather just a supplement for tricky cases.
   repeated string additional_policy_ids = 4;
-}
-
-// Contains information specific to Isolated Web Apps.
-//
-// File paths are (de)serialized using Pickle to and from `base::FilePath` via
-// its (de)serialization methods `base::FilePath::WriteToPickle` and
-// `base::FilePath::ReadFromPickle`. Depending on the OS, file paths may either
-// use `std::string` or `std::wstring` internally, and are not guaranteed to be
-// safely convertible to UTF-8. The Pickle format includes a header representing
-// the original data type of the file path, which means that it is impossible to
-// ever accidentally deserialize a `std::wstring` into a `std::string` and vice
-// versa. The (de)serialization code is also easier to read than manually
-// written code that converts bytes to and from `std::wstring` / `std::string`.
-message IsolationDataProto {
-  // Information needed to load data from an installed web bundle.
-  message InstalledBundle {
-    optional bytes path = 1;
-  }
-  // Information needed to load data from an installed dev mode web bundle.
-  message DevModeBundle {
-    optional bytes path = 1;
-  }
-  // Information needed to load data for an app using a dev mode proxy.
-  message DevModeProxy {
-    optional string proxy_url = 1;
-  }
-
-  oneof location {
-    InstalledBundle installed_bundle = 1;
-    DevModeBundle dev_mode_bundle = 2;
-    DevModeProxy dev_mode_proxy = 3;
-  }
-
-  // The partition_name of every <controlledframe> StoragePartition managed by
-  // this Isolated Web App.
-  repeated string controlled_frame_partitions = 4;
-
-  // The version of the IWA - required.
-  optional string version = 5;
-
-  message PendingUpdateInfo {
-    oneof location {
-      InstalledBundle installed_bundle = 1;
-      DevModeBundle dev_mode_bundle = 2;
-      DevModeProxy dev_mode_proxy = 3;
-    }
-    // The version of the pending update - required.
-    optional string version = 4;
-  }
-
-  optional PendingUpdateInfo pending_update_info = 6;
 }
 
 // The initiator of a sync generated icon fix time window.
@@ -223,10 +180,12 @@ message GeneratedIconFix {
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
-// app_id is the storage key in ModelTypeStore.
+// app_id is the storage key in DataTypeStore.
 message WebAppProto {
-  reserved "handle_links", "is_in_sync_install", "is_placeholder";
-  // Synced data. It is replicated across all devices with WEB_APPS.
+  reserved "handle_links", "is_in_sync_install", "is_placeholder",
+      "file_handler_os_integration_state",
+      "run_on_os_login_os_integration_state";
+  // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
   // generate a placeholder icon. Any device may write new values to synced
@@ -255,7 +214,8 @@ message WebAppProto {
   optional DisplayMode display_mode = 5;
   optional string scope = 6;
   optional SourcesProto sources = 7;       // Required.
-  optional bool is_locally_installed = 8;  // Required.
+  // This used to be `bool is_locally_installed`.
+  required proto.InstallState install_state = 8;  // Required.
 
   // Installation state:
   // Specifies if this web app is from sync and has not completed installation.
@@ -401,15 +361,7 @@ message WebAppProto {
   // uninstallation, and the uninstallation will be tried again.
   optional bool is_uninstalling = 45;
 
-  // Should be kept in sync with `OsIntegrationState` in web_app_constants.h.
-  enum OsIntegrationState {
-    ENABLED = 0;
-    DISABLED = 1;
-  }
-
-  // Whether the file handling abilities of the app should be registered with
-  // the OS.
-  optional OsIntegrationState file_handler_os_integration_state = 46;
+  reserved 46;
 
   // Whether the app should show up in file-open intent and picking surfaces.
   optional bool handles_file_open_intents = 47;
@@ -423,8 +375,7 @@ message WebAppProto {
   // `webapps::WebappInstallSource` encoded as an integer.
   optional uint32 latest_install_source = 50;
 
-  // Whether the app should be registered to run during OS Login time.
-  optional RunOnOsLoginMode run_on_os_login_os_integration_state = 51;
+  reserved 51;
 
   // Map of WebAppManagement enum to placeholder info and install_urls.
   // There should be only one entry per WebAppManagement source.
@@ -455,7 +406,7 @@ message WebAppProto {
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
-  optional IsolationDataProto isolation_data = 60;
+  optional proto.IsolationData isolation_data = 60;
 
   // Contains web origins that are part of the app's extended scope.
   repeated WebAppScopeExtensionProto scope_extensions = 61;
@@ -486,4 +437,9 @@ message WebAppProto {
   // specifically from the `EnableLinkCapturingInfoBarDelegate`.
   optional int32 supported_links_offer_ignore_count = 66;
   optional int32 supported_links_offer_dismiss_count = 67;
+
+  // Set to true if the app was installed via the DIY app install path by the
+  // user (3-dot menu, Install page as App...). DIY apps aren't promotable or
+  // installable, and the user can customize its name.
+  optional bool is_diy_app = 68;
 }

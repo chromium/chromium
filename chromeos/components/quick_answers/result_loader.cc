@@ -86,9 +86,9 @@ void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
   DCHECK(url_loader_factory_);
   DCHECK(!preprocessed_output.query.empty());
 
-  // Fail-safe for a fetch request if `consent_status` is not `kAccepted`.
-  CHECK(QuickAnswersState::Get()->consent_status() ==
-        quick_answers::prefs::ConsentStatus::kAccepted);
+  CHECK_EQ(QuickAnswersState::GetConsentStatus(),
+           quick_answers::prefs::ConsentStatus::kAccepted)
+      << "Consent status must be kAccepted for making a request";
 
   // Load the resource.
   BuildRequest(preprocessed_output,

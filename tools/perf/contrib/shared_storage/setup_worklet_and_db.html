@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shared Storage Test</title>
+  <script>
+    const url = new URL(location.href);
+    const size = url.searchParams.get('size', 0);
+
+    window.sharedStorage.worklet.addModule('worklet.js');
+    window.sharedStorage.clear();
+    for (let i = 0; i < size; i++) {
+      sharedStorage.set(i.toString(), 'x');
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>

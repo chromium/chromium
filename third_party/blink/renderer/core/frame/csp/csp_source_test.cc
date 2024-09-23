@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
+#include "base/test/with_feature_override.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "url/url_features.h"
 
 namespace blink {
 
@@ -148,7 +150,17 @@ TEST(CSPSourceTest, InsecureHostSchemeMatchesSecureScheme) {
                                 KURL(base, "https://not-example.com:8000/")));
 }
 
-TEST(CSPSourceTest, SchemeIsEmpty) {
+class CSPSourceParamTest : public base::test::WithFeatureOverride,
+                           public ::testing::Test {
+ public:
+  CSPSourceParamTest()
+      : WithFeatureOverride(url::kStandardCompliantNonSpecialSchemeURLParsing) {
+  }
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CSPSourceParamTest);
+
+TEST_P(CSPSourceParamTest, SchemeIsEmpty) {
   KURL base;
 
   // Self scheme is http.
@@ -322,29 +334,9 @@ TEST(CSPSourceTest, HostMatches) {
     EXPECT_FALSE(
         CSPSourceMatches(*source, "http", KURL(base, "http://.foo.bar")));
   }
-
-  // Host matching is case-insensitive.
-  {
-    auto source = network::mojom::blink::CSPSource::New(
-        "", "FoO.BaR", url::PORT_UNSPECIFIED, "", false, false);
-    EXPECT_TRUE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://foo.bar")));
-    EXPECT_FALSE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://sub.foo.bar")));
-  }
-
-  // Wildcarded host matching is case-insensitive.
-  {
-    auto source = network::mojom::blink::CSPSource::New(
-        "", "FoO.BaR", url::PORT_UNSPECIFIED, "", true, false);
-    EXPECT_TRUE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://sub.foo.bar")));
-    EXPECT_FALSE(
-        CSPSourceMatches(*source, "http", KURL(base, "http://foo.bar")));
-  }
 }
 
-TEST(CSPSourceTest, MatchingAsSelf) {
+TEST_P(CSPSourceParamTest, MatchingAsSelf) {
   // Testing Step 4 of
   // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression
   struct Source {

@@ -1,0 +1,117 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chrome_build.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(toolkit_views)
+
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "lens_untrusted_icons"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [
+      "copy.svg",
+      "download.svg",
+      "lens.svg",
+      "search.svg",
+      "stars.svg",
+      "text.svg",
+      "translate.svg",
+    ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/lens/", "//")
+  }
+}
+
+build_webui("build_overlay") {
+  grd_prefix = "lens_untrusted"
+
+  static_files = [
+    "feedback.svg",
+    "icon_clear.svg",
+    "info.svg",
+    "bidirectional_arrow.svg",
+    "learn_more.svg",
+    "lens_overlay.html",
+    "side_panel/side_panel.html",
+    "sparkles.svg",
+    "side_panel/generic-error-icon.png",
+    "side_panel/generic-error-icon-dark.png",
+  ]
+
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
+
+  web_component_files = [
+    "cursor_tooltip.ts",
+    "initial_gradient.ts",
+    "lens_overlay_app.ts",
+    "object_layer.ts",
+    "overlay_shimmer.ts",
+    "overlay_shimmer_canvas.ts",
+    "post_selection_renderer.ts",
+    "region_selection.ts",
+    "selection_overlay.ts",
+    "shimmer_circle.ts",
+    "side_panel/side_panel_app.ts",
+    "side_panel/side_panel_ghost_loader.ts",
+    "text_layer.ts",
+    "translate_button.ts",
+  ]
+
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "color_utils.ts",
+    "cubic_bezier.ts",
+    "find_words_in_region.ts",
+    "hit.ts",
+    "language_browser_proxy.ts",
+    "metrics_utils.ts",
+    "post_selection_paint_worklet.ts",
+    "screenshot_bitmap_browser_proxy.ts",
+    "screenshot_utils.ts",
+    "selection_utils.ts",
+    "shimmer_circle_paint_worklet.ts",
+    "side_panel/side_panel_browser_proxy.ts",
+    "values_converter.ts",
+    "wiggle.ts",
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/lens/shared:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_definitions = [
+    "paint_api.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+  ]
+
+  ts_composite = true
+  mojo_files_deps =
+      [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/overlay_object.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",
+  ]
+
+  ts_path_mappings =
+      [ "/lens/shared/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/shared/tsc/*",
+                    target_gen_dir) ]
+
+  webui_context_type = "untrusted"
+}

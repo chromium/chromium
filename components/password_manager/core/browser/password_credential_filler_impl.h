@@ -6,19 +6,20 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CREDENTIAL_FILLER_IMPL_H_
 
 #include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
 
-struct SubmissionReadinessParams;
+struct PasswordFillingParams;
 
 class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
  public:
   PasswordCredentialFillerImpl(
       base::WeakPtr<PasswordManagerDriver> driver,
-      const SubmissionReadinessParams& submission_readiness);
+      const PasswordFillingParams& password_filling_params);
   PasswordCredentialFillerImpl(const PasswordCredentialFillerImpl&) = delete;
   PasswordCredentialFillerImpl& operator=(const PasswordCredentialFillerImpl&) =
       delete;

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/cbor",
+  "+components/facilitated_payments/core",
   "+components/web_package",
   "+device/bluetooth/public",
   "+gin",

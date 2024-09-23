@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -39,6 +40,22 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   // This should be invoked during overlay processing to indicate if there are
   // any candidates for this processor that have an overlay requirement.
   virtual void RegisterOverlayRequirement(bool requires_overlay) {}
+
+  // Invoked on each swap completion. |swap_result| is the result of the last
+  // swap.
+  virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
+
+  // Invoked once the overlay processor receives hardware capabilities. This
+  // allows to set supported buffer formats in the overlay manager, which can
+  // make a decision whether an overlay candidate is overlay-capable as early as
+  // possible.
+  virtual void SetSupportedBufferFormats(
+      base::flat_set<gfx::BufferFormat> supported_buffer_formats) {}
+
+  // Notifies what overlay candidates were actually promoted as overlays.
+  // Can be empty.
+  virtual void NotifyOverlayPromotion(
+      std::vector<gfx::OverlayType> promoted_overlay_types) {}
 
   virtual ~OverlayCandidatesOzone();
 };

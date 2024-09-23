@@ -9,8 +9,8 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
-// WARNING: *WebViewInternal could be loaded in an unblessed context, thus any
-// new APIs must extend WebViewInternalExtensionFunction or
+// WARNING: *WebViewInternal could be loaded in an unprivileged context, thus
+// any new APIs must extend WebViewInternalExtensionFunction or
 // WebViewInternalExecuteCodeFunction which do a process ID check to prevent
 // abuse by normal renderer processes.
 namespace extensions {

@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kiosk_heartbeat") {
+  sources = [
+    "kiosk_heartbeat_telemetry_sampler.cc",
+    "kiosk_heartbeat_telemetry_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "kiosk_heartbeat_telemetry_sampler_unittest.cc" ]
+
+  deps = [
+    ":kiosk_heartbeat",
+    "//base/test:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kiosk_heartbeat_telemetry_events_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//chromeos/constants",
+    "//chromeos/dbus/missive:test_support",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -11,6 +11,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import android.content.Intent;
 import android.speech.RecognizerResultsIntent;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -19,10 +20,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,5 +75,38 @@ public class IntentHandlerBrowserTest {
                         "Expected qualified URL: %s, to start " + "with http://www.google.com",
                         query),
                 query.indexOf("http://www.google.com") == 0);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testGetURLFromShareIntent_validURL() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, JUnitTestGURLs.EXAMPLE_URL.getSpec());
+        intent.setType("text/plain");
+        String url = IntentHandler.getUrlFromShareIntent(intent);
+        Assert.assertEquals(url, JUnitTestGURLs.EXAMPLE_URL.getSpec());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testGetURLFromShareIntent_Url() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, "www.google.com");
+        intent.setType("text/plain");
+        String url = IntentHandler.getUrlFromShareIntent(intent);
+        Assert.assertEquals(url, JUnitTestGURLs.GOOGLE_URL.getSpec());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testGetURLFromShareIntent_plainText() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, "test");
+        intent.setType("text/plain");
+        String url = IntentHandler.getUrlFromShareIntent(intent);
+        assertThat(url, startsWith(JUnitTestGURLs.SEARCH_URL.getSpec()));
     }
 }

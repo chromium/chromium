@@ -4,10 +4,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,6 +44,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -52,7 +52,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/feature_switch.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -118,8 +117,9 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
  protected:
   ExtensionActionTestHelper* GetBrowserActionsBar() {
-    if (!browser_action_test_util_)
+    if (!browser_action_test_util_) {
       browser_action_test_util_ = ExtensionActionTestHelper::Create(browser());
+    }
     return browser_action_test_util_.get();
   }
 
@@ -128,7 +128,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
     ExtensionAction* extension_action =
         ExtensionActionManager::Get(browser->profile())
             ->GetExtensionAction(extension);
-    return extension_action->action_type() == ActionInfo::TYPE_BROWSER
+    return extension_action->action_type() == ActionInfo::Type::kBrowser
                ? extension_action
                : nullptr;
   }
@@ -139,7 +139,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
-// TODO(https://crbug.com/1093066): Investigate to see if these tests can be
+// TODO(crbug.com/40698663): Investigate to see if these tests can be
 // enabled for Service Worker-based extensions.
 class BrowserActionApiCanvasTest : public BrowserActionApiTest {
  public:
@@ -161,7 +161,7 @@ class BrowserActionApiTestWithContextType
       const BrowserActionApiTestWithContextType&) = delete;
 
  protected:
-  void RunUpdateTest(base::StringPiece path, bool expect_failure) {
+  void RunUpdateTest(std::string_view path, bool expect_failure) {
     ExtensionTestMessageListener ready_listener("ready",
                                                 ReplyBehavior::kWillReply);
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -201,7 +201,7 @@ class BrowserActionApiTestWithContextType
               action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
   }
 
-  void RunEnableTest(base::StringPiece path, bool start_enabled) {
+  void RunEnableTest(std::string_view path, bool start_enabled) {
     ExtensionTestMessageListener ready_listener("ready",
                                                 ReplyBehavior::kWillReply);
     const Extension* extension =
@@ -229,9 +229,6 @@ class BrowserActionApiTestWithContextType
     EXPECT_EQ(!start_enabled,
               action->GetIsVisible(ExtensionAction::kDefaultTabId));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
@@ -271,9 +268,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
-  // TODO(crbug.com/1064671): Service Workers currently don't support loading
+  // TODO(crbug.com/40123818): Service Workers currently don't support loading
   // SVG images.
-  const bool expect_failure = GetParam() == ContextType::kServiceWorker;
+  const bool expect_failure = IsContextTypeForServiceWorker();
   ASSERT_NO_FATAL_FAILURE(
       RunUpdateTest("browser_action/update_svg", expect_failure));
 }
@@ -283,7 +280,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          BrowserActionApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;
@@ -299,10 +296,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   // We should not be creating icons asynchronously, so we don't need an
   // observer.
   ExtensionActionIconFactory icon_factory(
-      profile(), extension, GetBrowserAction(browser(), *extension), nullptr);
+      extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -478,7 +474,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   // Test there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
   gfx::Image initial_bar_icon =
       GetBrowserActionsBar()->GetIcon(extension->id());
 
@@ -514,31 +509,34 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  // Test that there is a browser action in the toolbar and that it has an icon.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
+  ExtensionAction* extension_action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(extension_action);
 
   // Execute the action, its title should change.
   ResultCatcher catcher;
   GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
-  EXPECT_EQ("Showing icon 2",
-            GetBrowserActionsBar()->GetTooltip(extension->id()));
+  int first_tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Open a new tab, the title should go back.
   chrome::NewTab(browser());
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
+  int second_tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ("hi!", extension_action->GetTitle(second_tab_id));
 
   // Go back to first tab, changed title should reappear.
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_EQ("Showing icon 2",
-            GetBrowserActionsBar()->GetTooltip(extension->id()));
+  EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Reload that tab, default title should come back.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
+  EXPECT_EQ("hi!", extension_action->GetTitle(first_tab_id));
 }
 
 // Test that calling chrome.browserAction.setIcon() can set the icon for
@@ -712,7 +710,14 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
+// TODO(crbug.com/338638098): leaks flakily on LSAN bots.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_IncognitoUpdate DISABLED_IncognitoUpdate
+#else
+#define MAYBE_IncognitoUpdate IncognitoUpdate
+#endif
+IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
+                       MAYBE_IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
       "incognito not allowed");

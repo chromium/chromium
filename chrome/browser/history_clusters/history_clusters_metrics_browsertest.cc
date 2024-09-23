@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
-// TODO(crbug.com/1282087): Flaky on Linux, Windows and Mac.
+// TODO(crbug.com/40812616): Flaky on Linux, Windows and Mac.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_DirectNavigationWithQuery DISABLED_DirectNavigationWithQuery
@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
           ->template GetAs<HistoryUI>()
           ->GetHistoryClustersHandlerForTesting();
 
-  page_handler->StartQueryClusters("cat", false);
-  page_handler->StartQueryClusters("dog", false);
+  page_handler->StartQueryClusters("cat", std::nullopt, false);
+  page_handler->StartQueryClusters("dog", std::nullopt, false);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =

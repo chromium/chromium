@@ -8,12 +8,13 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include <cstdint>
 #include <cstring>
 #include <variant>
 #include <vector>
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
@@ -27,6 +28,13 @@ using fuzztest::Just;
 using fuzztest::StructOf;
 using fuzztest::VariantOf;
 using fuzztest::VectorOf;
+
+auto AnyBitDepth() {
+  vpx_codec_iface_t* const iface = vpx_codec_vp9_cx();
+  return (vpx_codec_get_caps(iface) & VPX_CODEC_CAP_HIGHBITDEPTH)
+             ? ElementOf({VPX_BITS_8, VPX_BITS_10, VPX_BITS_12})
+             : Just(VPX_BITS_8);
+}
 
 // Represents a VideoEncoder::configure() method call.
 // Parameters:
@@ -102,15 +110,74 @@ auto AnyCallSequence() {
                  /*max_height=*/InRange(1u, 1080u));
 }
 
+void* Memset16(void* dest, int val, size_t length) {
+  uint16_t* dest16 = reinterpret_cast<uint16_t*>(dest);
+  for (size_t i = 0; i < length; i++) {
+    *dest16++ = val;
+  }
+  return dest;
+}
+
+vpx_image_t* CreateGrayImage(vpx_bit_depth_t bit_depth,
+                             vpx_img_fmt_t fmt,
+                             unsigned int width,
+                             unsigned int height) {
+  if (bit_depth > VPX_BITS_8) {
+    fmt = static_cast<vpx_img_fmt_t>(fmt | VPX_IMG_FMT_HIGHBITDEPTH);
+  }
+  vpx_image_t* image = vpx_img_alloc(nullptr, fmt, width, height, 1);
+  if (!image) {
+    return image;
+  }
+
+  const int val = 1 << (bit_depth - 1);
+  const unsigned int uv_h =
+      (image->d_h + image->y_chroma_shift) >> image->y_chroma_shift;
+  const unsigned int uv_w =
+      (image->d_w + image->x_chroma_shift) >> image->x_chroma_shift;
+  if (bit_depth > VPX_BITS_8) {
+    for (unsigned int i = 0; i < image->d_h; ++i) {
+      Memset16(image->planes[0] + i * image->stride[0], val, image->d_w);
+    }
+    for (unsigned int i = 0; i < uv_h; ++i) {
+      Memset16(image->planes[1] + i * image->stride[1], val, uv_w);
+      Memset16(image->planes[2] + i * image->stride[2], val, uv_w);
+    }
+  } else {
+    for (unsigned int i = 0; i < image->d_h; ++i) {
+      memset(image->planes[0] + i * image->stride[0], val, image->d_w);
+    }
+    for (unsigned int i = 0; i < uv_h; ++i) {
+      memset(image->planes[1] + i * image->stride[1], val, uv_w);
+      memset(image->planes[2] + i * image->stride[2], val, uv_w);
+    }
+  }
+
+  return image;
+}
+
 void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
+                                            unsigned int row_mt,
+                                            vpx_bit_depth_t bit_depth,
+                                            vpx_img_fmt_t fmt,
                                             const CallSequence& call_sequence) {
+  ASSERT_EQ(fmt & VPX_IMG_FMT_HIGHBITDEPTH, 0);
+  const bool high_bit_depth = bit_depth > VPX_BITS_8;
+  const bool is_420 = fmt == VPX_IMG_FMT_I420;
   vpx_codec_iface_t* const iface = vpx_codec_vp9_cx();
   vpx_codec_enc_cfg_t cfg;
   ASSERT_EQ(vpx_codec_enc_config_default(iface, &cfg, /*usage=*/0),
             VPX_CODEC_OK);
   cfg.g_threads = call_sequence.initialize.threads;
+  // In profiles 0 and 2, only 4:2:0 format is allowed. In profiles 1 and 3,
+  // all other subsampling formats are allowed. In profiles 0 and 1, only bit
+  // depth 8 is allowed. In profiles 2 and 3, only bit depths 10 and 12 are
+  // allowed.
+  cfg.g_profile = 2 * high_bit_depth + !is_420;
   cfg.g_w = call_sequence.initialize.width;
   cfg.g_h = call_sequence.initialize.height;
+  cfg.g_bit_depth = bit_depth;
+  cfg.g_input_bit_depth = bit_depth;
   cfg.g_timebase.num = 1;
   cfg.g_timebase.den = 1000 * 1000;  // microseconds
   cfg.g_pass = VPX_RC_ONE_PASS;
@@ -120,9 +187,12 @@ void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
   cfg.rc_max_quantizer = 58;
 
   vpx_codec_ctx_t enc;
-  ASSERT_EQ(vpx_codec_enc_init(&enc, iface, &cfg, 0), VPX_CODEC_OK);
+  ASSERT_EQ(vpx_codec_enc_init(&enc, iface, &cfg,
+                               high_bit_depth ? VPX_CODEC_USE_HIGHBITDEPTH : 0),
+            VPX_CODEC_OK);
 
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
+  ASSERT_EQ(vpx_codec_control(&enc, VP9E_SET_ROW_MT, row_mt), VPX_CODEC_OK);
 
   vpx_enc_deadline_t deadline = call_sequence.initialize.deadline;
   const vpx_codec_cx_pkt_t* pkt;
@@ -141,20 +211,9 @@ void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
     } else {
       // Encode a frame.
       const Encode& encode = std::get<Encode>(call);
-      // TODO(wtc): Support high bit depths and other YUV formats.
       vpx_image_t* const image =
-          vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
+          CreateGrayImage(bit_depth, fmt, cfg.g_w, cfg.g_h);
       ASSERT_NE(image, nullptr);
-
-      for (unsigned int i = 0; i < image->d_h; ++i) {
-        memset(image->planes[0] + i * image->stride[0], 128, image->d_w);
-      }
-      const unsigned int uv_h = (image->d_h + 1) / 2;
-      const unsigned int uv_w = (image->d_w + 1) / 2;
-      for (unsigned int i = 0; i < uv_h; ++i) {
-        memset(image->planes[1] + i * image->stride[1], 128, uv_w);
-        memset(image->planes[2] + i * image->stride[2], 128, uv_w);
-      }
 
       const vpx_enc_frame_flags_t flags =
           encode.key_frame ? VPX_EFLAG_FORCE_KF : 0;
@@ -188,8 +247,19 @@ void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
 }
 
 FUZZ_TEST(VP9EncodeFuzzTest, VP9EncodeArbitraryCallSequenceSucceeds)
-    .WithDomains(/*speed=*/InRange(-9, 9),
-                 /*call_sequence=*/AnyCallSequence());
+    .WithDomains(
+        /*speed=*/InRange(-9, 9),
+        /*row_mt=*/InRange(0u, 1u),
+        /*bit_depth=*/AnyBitDepth(),
+        // Only generate image formats that don't have the
+        // VPX_IMG_FMT_HIGHBITDEPTH bit set. If bit_depth > 8, we will set the
+        // VPX_IMG_FMT_HIGHBITDEPTH bit before passing the image format to
+        // vpx_img_alloc(). To reduce the search space, don't generate
+        // VPX_IMG_FMT_I440 (not used) and VPX_IMG_FMT_NV12 (which is converted
+        // to I420 in vp9_copy_and_extend_frame()).
+        /*fmt=*/
+        ElementOf({VPX_IMG_FMT_I420, VPX_IMG_FMT_I422, VPX_IMG_FMT_I444}),
+        /*call_sequence=*/AnyCallSequence());
 
 // speed: range -9..9
 // end_usage: Rate control mode
@@ -219,20 +289,9 @@ void VP9EncodeSucceeds(unsigned int threads,
 
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
 
-  // TODO(wtc): Support high bit depths and other YUV formats.
   vpx_image_t* const image =
-      vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
+      CreateGrayImage(VPX_BITS_8, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h);
   ASSERT_NE(image, nullptr);
-
-  for (unsigned int i = 0; i < image->d_h; ++i) {
-    memset(image->planes[0] + i * image->stride[0], 128, image->d_w);
-  }
-  const unsigned int uv_h = (image->d_h + 1) / 2;
-  const unsigned int uv_w = (image->d_w + 1) / 2;
-  for (unsigned int i = 0; i < uv_h; ++i) {
-    memset(image->planes[1] + i * image->stride[1], 128, uv_w);
-    memset(image->planes[2] + i * image->stride[2], 128, uv_w);
-  }
 
   // Encode frames.
   const vpx_enc_deadline_t deadline = VPX_DL_REALTIME;

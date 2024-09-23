@@ -58,11 +58,13 @@ GeneratedPasswordLeakDetectionPref::GeneratedPasswordLeakDetectionPref(
           &GeneratedPasswordLeakDetectionPref::OnSourcePreferencesChanged,
           base::Unretained(this)));
 
-  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile))
+  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
     identity_manager_observer_.Observe(identity_manager);
+  }
 
-  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile))
+  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile)) {
     sync_service_observer_.Observe(sync_service);
+  }
 }
 
 GeneratedPasswordLeakDetectionPref::~GeneratedPasswordLeakDetectionPref() =
@@ -70,12 +72,14 @@ GeneratedPasswordLeakDetectionPref::~GeneratedPasswordLeakDetectionPref() =
 
 extensions::settings_private::SetPrefResult
 GeneratedPasswordLeakDetectionPref::SetPref(const base::Value* value) {
-  if (!value->is_bool())
+  if (!value->is_bool()) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   if (!IsSafeBrowsingStandard(profile_) ||
-      !IsUserAllowedToUseLeakDetection(profile_))
+      !IsUserAllowedToUseLeakDetection(profile_)) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+  }
 
   if (!profile_->GetPrefs()
            ->FindPreference(
@@ -127,7 +131,7 @@ void GeneratedPasswordLeakDetectionPref::OnIdentityManagerShutdown(
 
 void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       NotifyObservers(kGeneratedPasswordLeakDetectionPref);

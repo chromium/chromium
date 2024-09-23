@@ -43,4 +43,10 @@ const base::TimeDelta InactiveTabsTimeThreshold();
 // Returns true if a user disabled the feature manually.
 bool IsInactiveTabsExplictlyDisabledByUser();
 
+// Feature flag for replacing the Inactive Tabs header by a button.
+BASE_DECLARE_FEATURE(kInactiveTabButtonRefactoring);
+
+// Whether the inactive tab entry point should be a button.
+bool IsInactiveTabButtonRefactoringEnabled();
+
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_INACTIVE_TABS_FEATURES_H_

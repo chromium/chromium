@@ -34,11 +34,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceWin
   void SetPreferredInterval(base::TimeDelta interval) override;
   void SetVSyncDisplayID(int64_t display_id) override;
 
-  // BeginFrameSource implementation.
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
-
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
@@ -46,6 +41,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceWin
   void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
 
  private:
+  void OnVSyncOnSequence(base::TimeTicks vsync_time, base::TimeDelta interval);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;

@@ -144,12 +144,14 @@ void BluetoothGattApplicationServiceProvider::CreateAttributeServiceProviders(
                   characteristic.second->GetProperties(),
                   characteristic.second->GetPermissions()),
               service.second->object_path())));
-      for (const auto& descriptor : characteristic.second->GetDescriptors()) {
+      for (auto desc : characteristic.second->GetDescriptors()) {
+        auto* descriptor =
+            static_cast<BluetoothLocalGattDescriptorBlueZ*>(desc);
         descriptor_providers_.push_back(
             base::WrapUnique(BluetoothGattDescriptorServiceProvider::Create(
                 bus, descriptor->object_path(),
                 std::make_unique<BluetoothGattDescriptorDelegateWrapper>(
-                    service.second, descriptor.get()),
+                    service.second, descriptor),
                 descriptor->GetUUID().value(),
                 FlagsFromPermissions(descriptor->GetPermissions()),
                 characteristic.second->object_path())));

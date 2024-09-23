@@ -86,6 +86,7 @@ template("android_size_bot_config") {
                              "archive_files",
                              "mapping_files",
                              "to_resource_sizes_py",
+                             "to_resource_sizes_py_64",
                              "supersize_input_file",
                            ])
   }

@@ -27,24 +27,32 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
+      if (invalidation_set->InvalidatesNth()) {
+        PossiblyScheduleNthPseudoInvalidations(node);
+      }
+
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
+        if (subtree_root->IsElementNode()) {
+          TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+              To<Element>(*subtree_root), kInvalidationSetInvalidatesSubtree,
+              *invalidation_set);
+        }
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
+                                     style_change_reason::kRelatedStyleRule));
         requires_descendant_invalidation = false;
         break;
       }
 
       if (invalidation_set->InvalidatesSelf() && node.IsElementNode()) {
+        TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+            To<Element>(node), kInvalidationSetInvalidatesSelf,
+            *invalidation_set);
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
-      }
-
-      if (invalidation_set->InvalidatesNth()) {
-        PossiblyScheduleNthPseudoInvalidations(node);
+                                     style_change_reason::kRelatedStyleRule));
       }
 
       if (!invalidation_set->IsEmpty()) {
@@ -126,11 +134,20 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
   for (auto& invalidation_set : invalidation_lists.siblings) {
     DescendantInvalidationSet* descendants =
         To<SiblingInvalidationSet>(*invalidation_set).SiblingDescendants();
-    if (invalidation_set->WholeSubtreeInvalid() ||
-        (descendants && descendants->WholeSubtreeInvalid())) {
+    bool whole_subtree_invalid = false;
+    if (invalidation_set->WholeSubtreeInvalid()) {
+      TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+          *subtree_root, kInvalidationSetInvalidatesSubtree, *invalidation_set);
+      whole_subtree_invalid = true;
+    } else if (descendants && descendants->WholeSubtreeInvalid()) {
+      TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+          *subtree_root, kInvalidationSetInvalidatesSubtree, *descendants);
+      whole_subtree_invalid = true;
+    }
+    if (whole_subtree_invalid) {
       subtree_root->SetNeedsStyleRecalc(
           kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kStyleInvalidator));
+                                   style_change_reason::kRelatedStyleRule));
       return;
     }
 

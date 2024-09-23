@@ -45,7 +45,7 @@ source_set("common") {
     "//ui/gl:buildflags",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 
   visibility = [
     ":*",

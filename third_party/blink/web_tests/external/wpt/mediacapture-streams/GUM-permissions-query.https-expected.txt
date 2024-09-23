@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] camera is granted after getUserMedia, according to permissions.query()
+  assert_equals: initial camera state is prompt expected "prompt" but got "denied"
+[FAIL] microphone is granted after getUserMedia, according to permissions.query()
+  assert_equals: initial microphone state is prompt expected "prompt" but got "denied"
+Harness: the test ran to completion.
+

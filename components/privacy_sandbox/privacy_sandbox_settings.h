@@ -30,15 +30,16 @@ class CanonicalTopic;
 // 1. Update kMaxValue to match it.
 // 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
 //    `privacy_sandbox_attestations.proto`.
-// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
+// 3. Update `InsertAPI` in `privacy_sandbox_attestations_parser.cc`.
 enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
   kPrivateAggregation,
   kAttributionReporting,
   kSharedStorage,
+  kLocalUnpartitionedDataAccess,
 
-  kMaxValue = kSharedStorage,
+  kMaxValue = kLocalUnpartitionedDataAccess,
 };
 
 // A service which acts as a intermediary between Privacy Sandbox APIs and the
@@ -86,6 +87,10 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the profile is subject to being given notice of restrictions to
     // the standard set of Privacy Sandbox APIs.
     virtual bool IsSubjectToM1NoticeRestricted() const = 0;
+
+    // Whether the Privacy Sandbox is partially enabled based on
+    // restrictions.
+    virtual bool IsRestrictedNoticeEnabled() const = 0;
 
     // Whether the profile is eligible for 3PCD experiment. The eligibility
     // applies for both mode A and mode B experiments.
@@ -183,7 +188,7 @@ class PrivacySandboxSettings : public KeyedService {
   // |can_bypass| indicates whether the result can be bypassed which is set to
   // true when it's disallowed due to the cookie deprecation experiment.
   //
-  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
   // deprecation experiment.
   virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
@@ -233,11 +238,18 @@ class PrivacySandboxSettings : public KeyedService {
   //
   // If provided, `console_frame` is used to log errors to the console upon
   // attestation failure.
+  //
+  // The out parameter `out_block_is_site_setting_specific` will be set to true
+  // in the case that the return value is false and the failure to be allowed is
+  // due to site-settings. Otherwise the parameter will be set to false (because
+  // either the return value is true, or the failure is due to a
+  // non-site-setting-specific reason).
   virtual bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr,
-      content::RenderFrameHost* console_frame = nullptr) const = 0;
+      std::string* out_debug_message,
+      content::RenderFrameHost* console_frame,
+      bool* out_block_is_site_setting_specific) const = 0;
 
   // Controls whether Shared Storage SelectURL is allowable for
   // `accessing_origin` in the context of `top_frame_origin`. Does not override
@@ -246,20 +258,40 @@ class PrivacySandboxSettings : public KeyedService {
   // If non-null, `out_debug_message` is updated in this call to relay details
   // back to the caller about how the returned boolean result was obtained.
   //
-  // TODO(crbug.com/1378703): This just redirects to the general
-  // IsSharedStorageAllowed(). The implementation needs to be updated to reflect
-  // the M1 preferences when release 4 is enabled.
+  // The out parameter `out_block_is_site_setting_specific` will be set to true
+  // in the case that the return value is false and the failure to be allowed is
+  // due to site-settings. Otherwise the parameter will be set to false (because
+  // either the return value is true, or the failure is due to a
+  // non-site-setting-specific reason).
   virtual bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) const = 0;
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) const = 0;
+
+  // Controls whether shared storage access from fenced frame is allowable for
+  // `accessing_origin` in the context of `top_frame_origin`.
+  //
+  // If provided, `console_frame` is used to log errors to the console upon
+  // attestation failure.
+  virtual bool IsLocalUnpartitionedDataAccessAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      content::RenderFrameHost* console_frame) const = 0;
 
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the
   // calling context. Applicable to all uses of Private Aggregation.
+  //
+  // The out parameter `out_block_is_site_setting_specific` will be set to true
+  // in the case that the return value is false and the failure to be allowed is
+  // due to site-settings. Otherwise the parameter will be set to false (because
+  // either the return value is true, or the failure is due to a
+  // non-site-setting-specific reason).
   virtual bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const = 0;
+      const url::Origin& reporting_origin,
+      bool* out_block_is_site_setting_specific) const = 0;
 
   // Determines whether the Private Aggregation API's debug mode is allowable in
   // a particular context. Note that if IsPrivateAggregationAllowed() is false,
@@ -314,7 +346,8 @@ class PrivacySandboxSettings : public KeyedService {
   virtual bool IsSubjectToM1NoticeRestricted() const = 0;
 
   // Returns whether the Privacy Sandbox is partially enabled based on
-  // restrictions.
+  // restrictions. Forwards to the delegate. Virtual for
+  // mocking in tests.
   virtual bool IsRestrictedNoticeEnabled() const = 0;
 
   // Called when there's a broad cookies clearing action. For example, this

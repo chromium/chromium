@@ -28,4 +28,8 @@ public interface FeedSurfaceScope extends SurfaceScope {
     default FeedUserInteractionReliabilityLogger getUserInteractionReliabilityLogger() {
         return new FeedUserInteractionReliabilityLogger() {};
     }
+
+    default FeedCardOpeningReliabilityLogger getCardOpeningReliabilityLogger() {
+        return new FeedCardOpeningReliabilityLogger() {};
+    }
 }

@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class SetUpListItemViewData;
-@protocol SetUpListViewDelegate;
+@protocol SetUpListTapDelegate;
 
 // A view to display an individual Set Up List item in the Magic Stack.
 @interface SetUpListShowMoreItemView : UIView
@@ -17,7 +17,7 @@
 - (instancetype)initWithData:(SetUpListItemViewData*)data;
 
 // The object that should receive a message when this view is tapped.
-@property(nonatomic, weak) id<SetUpListViewDelegate> tapDelegate;
+@property(nonatomic, weak) id<SetUpListTapDelegate> tapDelegate;
 
 @end
 

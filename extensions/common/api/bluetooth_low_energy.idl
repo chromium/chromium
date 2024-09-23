@@ -226,7 +226,7 @@ namespace bluetoothLowEnergy {
     // GATT connection should be opened.
     // |properties|: Connection properties (optional).
     // |callback|: Called when the connect request has completed.
-    [supportsPromises] static void connect(
+    static void connect(
         DOMString deviceAddress,
         optional ConnectProperties properties,
         ResultCallback callback);
@@ -236,14 +236,16 @@ namespace bluetoothLowEnergy {
     // may be other apps with open connections.
     // |deviceAddress|: The Bluetooth address of the remote device.
     // |callback|: Called when the disconnect request has completed.
-    [supportsPromises] static void disconnect(DOMString deviceAddress,
-                                              optional ResultCallback callback);
+    static void disconnect(
+        DOMString deviceAddress,
+        optional ResultCallback callback);
 
     // Get the GATT service with the given instance ID.
     // |serviceId|: The instance ID of the requested GATT service.
     // |callback|: Called with the requested Service object.
-    [supportsPromises] static void getService(DOMString serviceId,
-                                              ServiceCallback callback);
+    static void getService(
+        DOMString serviceId,
+        ServiceCallback callback);
 
     // Create a locally hosted GATT service. This service can be registered
     // to be available on a local GATT server.
@@ -252,7 +254,7 @@ namespace bluetoothLowEnergy {
     // true. The peripheral permission may not be available to all apps.
     // |service|: The service to create.
     // |callback|: Called with the created services's unique ID.
-    [supportsPromises] static void createService(
+    static void createService(
         Service service,
         CreateServiceCallback callback);
 
@@ -267,15 +269,16 @@ namespace bluetoothLowEnergy {
     // |deviceAddress|: The Bluetooth address of the remote device whose GATT
     // services should be returned.
     // |callback|: Called with the list of requested Service objects.
-    [supportsPromises] static void getServices(DOMString deviceAddress,
-                                               ServicesCallback callback);
+    static void getServices(
+        DOMString deviceAddress,
+        ServicesCallback callback);
 
     // Get the GATT characteristic with the given instance ID that belongs to
     // the given GATT service, if the characteristic exists.
     // |characteristicId|: The instance ID of the requested GATT
     // characteristic.
     // |callback|: Called with the requested Characteristic object.
-    [supportsPromises] static void getCharacteristic(
+    static void getCharacteristic(
         DOMString characteristicId,
         CharacteristicCallback callback);
 
@@ -288,7 +291,7 @@ namespace bluetoothLowEnergy {
     // |characteristic|: The characteristic to create.
     // |serviceId|: ID of the service to create this characteristic for.
     // |callback|: Called with the created characteristic's unique ID.
-    [supportsPromises] static void createCharacteristic(
+    static void createCharacteristic(
         Characteristic characteristic,
         DOMString serviceId,
         CreateCharacteristicCallback callback);
@@ -299,7 +302,7 @@ namespace bluetoothLowEnergy {
     // should be returned.
     // |callback|: Called with the list of characteristics that belong to the
     // given service.
-    [supportsPromises] static void getCharacteristics(
+    static void getCharacteristics(
         DOMString serviceId,
         CharacteristicsCallback callback);
 
@@ -308,7 +311,7 @@ namespace bluetoothLowEnergy {
     // services should be returned.
     // |callback|: Called with the list of GATT services included from the
     // given service.
-    [supportsPromises] static void getIncludedServices(
+    static void getIncludedServices(
         DOMString serviceId,
         ServicesCallback callback);
 
@@ -316,8 +319,9 @@ namespace bluetoothLowEnergy {
     // |descriptorId|: The instance ID of the requested GATT characteristic
     // descriptor.
     // |callback|: Called with the requested Descriptor object.
-    [supportsPromises] static void getDescriptor(DOMString descriptorId,
-                                                 DescriptorCallback callback);
+    static void getDescriptor(
+        DOMString descriptorId,
+        DescriptorCallback callback);
 
     // Create a locally hosted GATT descriptor. This descriptor must
     // be hosted under a valid characteristic. If the characteristic ID is not
@@ -329,7 +333,7 @@ namespace bluetoothLowEnergy {
     // |characteristicId|: ID of the characteristic to create this descriptor
     // for.
     // |callback|: Called with the created descriptor's unique ID.
-    [supportsPromises] static void createDescriptor(
+    static void createDescriptor(
         Descriptor descriptor,
         DOMString characteristicId,
         CreateDescriptorCallback callback);
@@ -340,8 +344,9 @@ namespace bluetoothLowEnergy {
     // descriptors should be returned.
     // |callback|: Called with the list of descriptors that belong to the given
     // characteristic.
-    [supportsPromises] static void getDescriptors(DOMString characteristicId,
-                                                  DescriptorsCallback callback);
+    static void getDescriptors(
+        DOMString characteristicId,
+        DescriptorsCallback callback);
 
     // Retrieve the value of a specified characteristic from a remote
     // peripheral.
@@ -350,7 +355,7 @@ namespace bluetoothLowEnergy {
     // |callback|: Called with the Characteristic object whose value was
     // requested. The <code>value</code> field of the returned Characteristic
     // object contains the result of the read request.
-    [supportsPromises] static void readCharacteristicValue(
+    static void readCharacteristicValue(
         DOMString characteristicId,
         CharacteristicCallback callback);
 
@@ -360,7 +365,7 @@ namespace bluetoothLowEnergy {
     // |value|: The value that should be sent to the remote characteristic as
     // part of the write request.
     // |callback|: Called when the write request has completed.
-    [supportsPromises] static void writeCharacteristicValue(
+    static void writeCharacteristicValue(
         DOMString characteristicId,
         ArrayBuffer value,
         ResultCallback callback);
@@ -372,7 +377,7 @@ namespace bluetoothLowEnergy {
     // notifications should be enabled on.
     // |properties|: Notification session properties (optional).
     // |callback|: Called when the request has completed.
-    [supportsPromises] static void startCharacteristicNotifications(
+    static void startCharacteristicNotifications(
         DOMString characteristicId,
         optional NotificationProperties properties,
         ResultCallback callback);
@@ -383,7 +388,7 @@ namespace bluetoothLowEnergy {
     // |characteristicId|: The instance ID of the GATT characteristic on which
     // this app's notification session should be stopped.
     // |callback|: Called when the request has completed (optional).
-    [supportsPromises] static void stopCharacteristicNotifications(
+    static void stopCharacteristicNotifications(
         DOMString characteristicId,
         optional ResultCallback callback);
 
@@ -399,7 +404,7 @@ namespace bluetoothLowEnergy {
     // |notifcation|: The notification to send.
     // |callback|: Callback called once the notification or indication has
     // been sent successfully.
-    [supportsPromises] static void notifyCharacteristicValueChanged(
+    static void notifyCharacteristicValueChanged(
         DOMString characteristicId,
         Notification notification,
         ResultCallback callback);
@@ -411,7 +416,7 @@ namespace bluetoothLowEnergy {
     // |callback|: Called with the Descriptor object whose value was requested.
     // The <code>value</code> field of the returned Descriptor object contains
     // the result of the read request.
-    [supportsPromises] static void readDescriptorValue(
+    static void readDescriptorValue(
         DOMString descriptorId,
         DescriptorCallback callback);
 
@@ -422,7 +427,7 @@ namespace bluetoothLowEnergy {
     // |value|: The value that should be sent to the remote descriptor as part
     // of the write request.
     // |callback|: Called when the write request has completed.
-    [supportsPromises] static void writeDescriptorValue(
+    static void writeDescriptorValue(
         DOMString descriptorId,
         ArrayBuffer value,
         ResultCallback callback);
@@ -434,8 +439,9 @@ namespace bluetoothLowEnergy {
     // true. The peripheral permission may not be available to all apps.
     // |serviceId|: Unique ID of a created service.
     // |callback|: Callback with the result of the register operation.
-    [supportsPromises] static void registerService(DOMString serviceId,
-                                                   ResultCallback callback);
+    static void registerService(
+        DOMString serviceId,
+        ResultCallback callback);
 
     // Unregister the given service with the local GATT server. If the service
     // ID is invalid, the lastError will be set.
@@ -444,8 +450,9 @@ namespace bluetoothLowEnergy {
     // true. The peripheral permission may not be available to all apps.
     // |serviceId|: Unique ID of a current registered service.
     // |callback|: Callback with the result of the register operation.
-    [supportsPromises] static void unregisterService(DOMString serviceId,
-                                                     ResultCallback callback);
+    static void unregisterService(
+        DOMString serviceId,
+        ResultCallback callback);
 
     // Remove the specified service, unregistering it if it was registered.
     // If the service ID is invalid, the lastError will be set.
@@ -454,7 +461,7 @@ namespace bluetoothLowEnergy {
     // true. The peripheral permission may not be available to all apps.
     // |serviceId|: Unique ID of a current registered service.
     // |callback|: Callback called once the service is removed.
-    [supportsPromises] static void removeService(
+    static void removeService(
         DOMString serviceId,
         optional ResultCallback callback);
 
@@ -474,7 +481,7 @@ namespace bluetoothLowEnergy {
     // |advertisement|: The advertisement to advertise.
     // |callback|: Called once the registeration is done and we've started
     // advertising. Returns the id of the created advertisement.
-    [supportsPromises] static void registerAdvertisement(
+    static void registerAdvertisement(
         Advertisement advertisement,
         RegisterAdvertisementCallback callback);
 
@@ -484,14 +491,14 @@ namespace bluetoothLowEnergy {
     // |advertisementId|: Id of the advertisement to unregister.
     // |callback|: Called once the advertisement is unregistered and is no
     // longer being advertised.
-    [supportsPromises] static void unregisterAdvertisement(
+    static void unregisterAdvertisement(
         long advertisementId,
         ResultCallback callback);
 
     // Resets advertising on the current device. It will unregister and
     // stop all existing advertisements.
     // |callback|: Called once the advertisements are reset.
-    [supportsPromises] static void resetAdvertising(ResultCallback callback);
+    static void resetAdvertising(ResultCallback callback);
 
     // Set's the interval betweeen two consecutive advertisements. Note:
     // This is a best effort. The actual interval may vary non-trivially
@@ -503,7 +510,7 @@ namespace bluetoothLowEnergy {
     // |maxInterval|: Maximum interval between advertisments (in
     // milliseconds). This cannot be more than 10240ms (as per the spec).
     // |callback|: Called once the interval has been set.
-    [supportsPromises] static void setAdvertisingInterval(
+    static void setAdvertisingInterval(
         long minInterval,
         long maxInterval,
         ResultCallback callback);

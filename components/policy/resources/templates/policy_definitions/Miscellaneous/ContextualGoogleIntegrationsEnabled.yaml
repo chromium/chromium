@@ -1,0 +1,26 @@
+caption: Contextual integrations of Google services on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
+default: true
+desc: |-
+  Improve productivity by allowing information from Google apps and services to appear on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> system surfaces.
+
+  If this policy is Enabled or left unset, the integrations selected in <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION">ContextualGoogleIntegrationsConfiguration</ph> are enabled.
+
+  If this policy is Disabled, all integrations are disabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow integrations
+  value: true
+- caption: Disable integrations
+  value: false
+owners:
+- amitrokhin@google.com
+- file://ash/glanceables/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:125-
+tags: []
+type: main

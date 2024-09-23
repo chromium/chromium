@@ -111,10 +111,6 @@ source_set("ipc_common_sources") {
     ]
   }
   if (is_android) {
-    sources += [
-      "gpu_memory_buffer_impl_android_hardware_buffer.cc",
-      "gpu_memory_buffer_impl_android_hardware_buffer.h",
-    ]
     visibility += [ "//media/gpu:gpu" ]
   }
 
@@ -203,7 +199,7 @@ source_set("vulkan_types") {
   sources = [ "vulkan_types.h" ]
   public_deps = [ "//ui/gfx" ]
   all_dependent_configs =
-      [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
+      [ "//third_party/vulkan-headers/src:vulkan_headers_config" ]
   configs += [ "//gpu:gpu_implementation" ]
 }
 
@@ -333,7 +329,7 @@ mojom("interfaces") {
     "capabilities.mojom",
     "context_result.mojom",
     "device_perf_info.mojom",
-    "dx_diag_node.mojom",
+    "exported_shared_image.mojom",
     "gpu_disk_cache_type.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
@@ -342,6 +338,7 @@ mojom("interfaces") {
     "mailbox_holder.mojom",
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
+    "shared_image_metadata.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -354,6 +351,8 @@ mojom("interfaces") {
     ":gpu_preferences_interface",
     ":surface_handle",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom:shared_image_format",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gl/mojom",
@@ -419,12 +418,12 @@ mojom("interfaces") {
     {
       types = [
         {
-          mojom = "gpu.mojom.DxDiagNode"
-          cpp = "::gpu::DxDiagNode"
+          mojom = "gpu.mojom.ExportedSharedImage"
+          cpp = "::gpu::ExportedSharedImage"
         },
       ]
-      traits_sources = [ "dx_diag_node_mojom_traits.cc" ]
-      traits_headers = [ "dx_diag_node_mojom_traits.h" ]
+      traits_headers = [ "exported_shared_image_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
     {
       types = [
@@ -534,6 +533,16 @@ mojom("interfaces") {
     {
       types = [
         {
+          mojom = "gpu.mojom.SharedImageMetadata"
+          cpp = "::gpu::SharedImageMetadata"
+        },
+      ]
+      traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "gpu.mojom.SyncToken"
           cpp = "::gpu::SyncToken"
         },
@@ -577,6 +586,11 @@ mojom("interfaces") {
           cpp = "::gpu::GpuDiskCacheDawnWebGPUHandle"
           nullable_is_same_type = true
         },
+        {
+          mojom = "gpu.mojom.GpuDiskCacheDawnGraphiteHandle"
+          cpp = "::gpu::GpuDiskCacheDawnGraphiteHandle"
+          nullable_is_same_type = true
+        },
 
         # General types that are the ones generally exposed in interfaces.
         {
@@ -614,6 +628,26 @@ mojom("interfaces") {
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
       traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.ExportedSharedImage"
+          cpp = "::gpu::ExportedSharedImage"
+        },
+      ]
+      traits_headers = [ "exported_shared_image_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImageMetadata"
+          cpp = "::gpu::SharedImageMetadata"
+        },
+      ]
+      traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//services/viz/public/mojom:shared_image_format" ]
     },
     {
       types = [
@@ -714,7 +748,7 @@ mojom("vulkan_interface") {
   webui_module_path = "/"
   generate_legacy_js_bindings = true
 
-  # TODO(crbug.com/1062364): This interface code is used by some javascript
+  # TODO(crbug.com/40122851): This interface code is used by some javascript
   # targets even when vulkan isn't enabled, but the C++ fuzzer code will fail
   # to compile if the headers aren't available.
   if (!enable_vulkan) {

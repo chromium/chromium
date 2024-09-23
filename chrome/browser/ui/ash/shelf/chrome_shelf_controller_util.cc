@@ -7,13 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/window_properties.h"
-#include "ash/root_window_controller.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_app_button.h"
-#include "ash/shelf/shelf_view.h"
-#include "ash/shelf/shelf_widget.h"
-#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,21 +21,19 @@
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/browser/ui/ash/shelf/standalone_window_migration_nudge_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
@@ -67,6 +58,9 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // item that does nothing.
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
+      // The Mall web app is force pinned to the shelf and cannot be removed.
+      // This app is only installed as part of a Finch experiment.
+      web_app::kMallAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
@@ -80,8 +74,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 
   if (ash::DemoSession::Get() &&
       base::ranges::none_of(*policy_ids, [](const auto& policy_id) {
-        return ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
-            policy_id);
+        return ash::DemoSession::Get()->ShouldShowAppInShelf(policy_id);
       })) {
     return AppListControllerDelegate::PIN_EDITABLE;
   }
@@ -145,10 +138,6 @@ bool IsAppPinEditable(apps::AppType app_type,
     return true;
   }
 
-  if (ShelfControllerHelper::IsAppServiceShortcut(profile, app_id)) {
-    return true;
-  }
-
   if (IsAppHiddenFromShelf(profile, app_id)) {
     return false;
   }
@@ -196,8 +185,8 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED() << "Type " << (int)app_type
-                   << " should not appear in shelf.";
+      NOTREACHED_IN_MIGRATION()
+          << "Type " << (int)app_type << " should not appear in shelf.";
       return false;
     case apps::AppType::kBruschetta:
       return true;
@@ -295,51 +284,4 @@ void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
   }
 
   scalable_iph->MaybeRecordShelfItemActivationById(app_id);
-}
-
-void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
-                                       Profile* profile) {
-  CHECK(ash::Shell::GetPrimaryRootWindowController());
-  ash::ShelfView* shelf_view = ash::Shell::GetPrimaryRootWindowController()
-                                   ->shelf()
-                                   ->hotseat_widget()
-                                   ->GetShelfView();
-
-  CHECK(profile);
-  CHECK(shelf_view);
-
-  ash::ShelfAppButton* anchor_view =
-      shelf_view->GetShelfAppButton(ash::ShelfID(app_id));
-
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
-  CHECK(app_service_proxy);
-
-  std::string app_name;
-  apps::WindowMode window_mode;
-
-  // Retrieving an app's window mode, set prior to the default window mode
-  // change, allows us to verify whether the nudge should be shown on opening
-  // this app. The nudge is to only be shown for apps previously displayed
-  // within the browser by default.
-  app_service_proxy->AppRegistryCache().ForOneApp(
-      app_id, [&app_name, &window_mode](const apps::AppUpdate& update) {
-        app_name = update.Name();
-        window_mode = update.WindowMode();
-      });
-
-  if (window_mode != apps::WindowMode::kBrowser) {
-    return;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-
-  if (prefs->GetBoolean(prefs::kStandaloneWindowMigrationNudgeShown)) {
-    return;
-  }
-
-  prefs->SetBoolean(prefs::kStandaloneWindowMigrationNudgeShown, true);
-
-  ash::CreateAndShowNudge(anchor_view, base::UTF8ToUTF16(app_name));
 }

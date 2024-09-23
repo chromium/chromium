@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 
@@ -20,8 +25,10 @@
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/edid_parser.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 
 typedef struct _drmModeModeInfo drmModeModeInfo;
 
@@ -30,6 +37,8 @@ class DisplayMode;
 }  // namespace display
 
 namespace ui {
+class HardwareDisplayControllerInfo;
+
 // TODO(b/193019614): clean |kMaxDrmCount|'s and |kMaxDrmConnectors|'s
 // assignment up once EDID-based ID migration is complete and the flag is
 // removed.
@@ -40,6 +49,9 @@ const size_t kMaxDrmCount =
 // It is safe to assume there will be no more than 256 connectors per DRM.
 const size_t kMaxDrmConnectors =
     display::features::IsEdidBasedDisplayIdsEnabled() ? 256u : 16u;
+
+// Using a moderate size e.g. 256 for the cursor is enough in most cases.
+const int kMaxCursorBufferSize = 256;
 
 // DRM property names.
 const char kContentProtectionKey[] = "Content Protection Key";
@@ -86,51 +98,41 @@ constexpr std::
                               {"Disabled-locked", display::kDisabledLocked},
                               {"Enabled-locked", display::kEnabledLocked}}};
 
-// Representation of the information required to initialize and configure a
-// native display. |index| is the position of the connection and will be
-// used to generate a unique identifier for the display.
-class HardwareDisplayControllerInfo {
- public:
-  HardwareDisplayControllerInfo(ScopedDrmConnectorPtr connector,
-                                ScopedDrmCrtcPtr crtc,
-                                uint8_t index);
-
-  HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
-  HardwareDisplayControllerInfo& operator=(
-      const HardwareDisplayControllerInfo&) = delete;
-
-  ~HardwareDisplayControllerInfo();
-
-  drmModeConnector* connector() const { return connector_.get(); }
-  drmModeCrtc* crtc() const { return crtc_.get(); }
-  uint8_t index() const { return index_; }
-
-  ScopedDrmConnectorPtr ReleaseConnector() { return std::move(connector_); }
-
- private:
-  ScopedDrmConnectorPtr connector_;
-  ScopedDrmCrtcPtr crtc_;
-  uint8_t index_;
-};
-
-using HardwareDisplayControllerInfoList =
-    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>;
-
 // Looks-up and parses the native display configurations returning all available
 // displays and CRTCs that weren't picked as best CRTC for each connector.
 // TODO(markyacoub): Create unit tests that tests the different bits and pieces
 // that this function goes through.
-std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
+std::pair<std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>,
+          std::vector<uint32_t>>
 GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm);
 
 // Returns the display infos parsed in |GetDisplayInfosAndInvalidCrtcs|
-HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(
-    const DrmWrapper& drm);
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetAvailableDisplayControllerInfos(const DrmWrapper& drm);
+
+// Returns a bitmask of possible CRTCs for at least one encoder in
+// |encoder_ids|. The index in the bitmask corresponds to drm_crtc_index().
+uint32_t GetPossibleCrtcsBitmaskFromEncoders(
+    const DrmWrapper& drm,
+    const std::vector<uint32_t>& encoder_ids);
+
+// Returns a list of all possible CRTCs for encoders with IDs in |encoder_ids|.
+std::vector<uint32_t> GetPossibleCrtcIdsFromBitmask(
+    const DrmWrapper& drm,
+    const uint32_t possible_crtcs_bitmask);
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
 std::unique_ptr<display::DisplayMode> CreateDisplayMode(
-    const drmModeModeInfo& mode);
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid);
+
+// Returns a virtual mode based on |base_mode| with its vtotal altered to
+// achieve the specified |virtual_refresh_rate|, or nullptr if it could not be
+// created.
+std::unique_ptr<drmModeModeInfo> CreateVirtualMode(
+    const drmModeModeInfo& base_mode,
+    float virtual_refresh_rate);
 
 // Extracts the display modes list from |info| as well as the current and native
 // display modes given the |active_pixel_size| which is retrieved from the first
@@ -167,6 +169,13 @@ float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
 
+// Computes the precise minimum vsync rate using the mode's timing details.
+// The value obtained from the EDID has a loss of precision due to being an
+// integer. The precise rate must correspond to an integer valued vtotal.
+const std::optional<float> ModeVSyncRateMin(
+    const drmModeModeInfo& mode,
+    const std::optional<uint16_t>& vsync_rate_min_from_edid);
+
 bool IsVrrCapable(const DrmWrapper& drm, drmModeConnector* connector);
 
 bool IsVrrEnabled(const DrmWrapper& drm, drmModeCrtc* crtc);
@@ -180,7 +189,17 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str);
 
+// Checks if |mode_size| corresponds to a tile mode size according to
+// |tile_property|. Note that this method does not return true for
+// tile-composited mode.
+bool IsTileMode(const gfx::Size mode_size, const TileProperty& tile_property);
+
+const gfx::Point GetTileCrtcOffset(const TileProperty& tiled_property);
+
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
+
+std::optional<TileProperty> ParseTileBlob(
+    const drmModePropertyBlobRes& tile_blob);
 
 // Whether or not |drm| supports supplying modifiers for AddFramebuffer2.
 bool IsAddfb2ModifierCapable(const DrmWrapper& drm);
@@ -214,8 +233,9 @@ uint64_t GetDrmValueForInternalType(const InternalType& internal_state,
       return property.enums[i].value;
   }
 
-  NOTREACHED() << "Failed to extract DRM value for property '" << property.name
-               << "' and enum '" << drm_enum << "'";
+  NOTREACHED_IN_MIGRATION()
+      << "Failed to extract DRM value for property '" << property.name
+      << "' and enum '" << drm_enum << "'";
   return std::numeric_limits<uint64_t>::max();
 }
 
@@ -243,8 +263,9 @@ const InternalType* GetDrmPropertyCurrentValueAsInternalType(
     }
   }
 
-  NOTREACHED() << "Failed to extract internal value for DRM property '"
-               << property.name << "'";
+  NOTREACHED_IN_MIGRATION()
+      << "Failed to extract internal value for DRM property '" << property.name
+      << "'";
   return nullptr;
 }
 
@@ -282,6 +303,30 @@ std::optional<std::string> GetDrmDriverNameFromPath(
 // system. Uses DMI information to determine what the system is.
 std::vector<const char*> GetPreferredDrmDrivers();
 
+// Given |display_infos|, where each HardwareDisplayControllerInfo can represent
+// a regular display or a tile, consolidate all tiles belonging to the same
+// display into one HardwareDisplayControllerInfo. All non-tile
+// HardwareDisplayControllerInfo will not be altered.
+void ConsolidateTiledDisplayInfo(
+    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>& display_infos);
+
+// Get the total tile-composited size of a tiled display.
+gfx::Size GetTotalTileDisplaySize(const TileProperty& tile_property);
+
+// A custom comparator of gfx::Size used to sort cursor sizes.
+struct CursorSizeComparator {
+  bool operator()(const gfx::Size& a, const gfx::Size& b) const {
+    if (a.GetArea() == b.GetArea()) {
+      if (a.width() == b.width()) {
+        return a.height() < b.height();
+      } else {
+        return a.width() < b.width();
+      }
+    } else {
+      return a.GetArea() < b.GetArea();
+    }
+  }
+};
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_

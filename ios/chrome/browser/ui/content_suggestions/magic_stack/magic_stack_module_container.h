@@ -19,14 +19,14 @@ enum class ContentSuggestionsModuleType;
 // Configures this container with `config`.
 - (void)configureWithConfig:(MagicStackModule*)config;
 
+// Reset the main configurations of the view.
+- (void)resetView;
+
 // Delegate for this container.
 @property(nonatomic, weak) id<MagicStackModuleContainerDelegate> delegate;
 
 // Returns the title string for the module `type`.
 + (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type;
-
-// The type of this container.
-@property(nonatomic, assign, readonly) ContentSuggestionsModuleType type;
 
 @end
 

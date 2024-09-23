@@ -11,7 +11,10 @@ static_library("test_support") {
     "content_settings_test_utils.h",
   ]
 
-  public_deps = [ "//components/content_settings/core/browser" ]
+  public_deps = [
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+  ]
   deps = [
     "//base",
     "//components/content_settings/core/common",

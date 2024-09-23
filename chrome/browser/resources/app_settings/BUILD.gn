@@ -5,44 +5,72 @@
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_win || is_mac || is_linux || is_fuchsia)
+assert(is_win || is_mac || is_linux)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 build_webui("build") {
   grd_prefix = "app_settings"
 
   static_files = [ "web_app_settings.html" ]
 
-  web_component_files = [
+  non_web_component_files = [
+    "app.html.ts",
     "app.ts",
+    "app_content_dialog.html.ts",
     "app_content_dialog.ts",
+    "app_content_item.html.ts",
     "app_content_item.ts",
+    "file_handling_item.html.ts",
     "file_handling_item.ts",
+    "more_permissions_item.html.ts",
     "more_permissions_item.ts",
+    "permission_item.html.ts",
     "permission_item.ts",
+    "run_on_os_login_item.html.ts",
     "run_on_os_login_item.ts",
+    "supported_links_dialog.html.ts",
     "supported_links_dialog.ts",
+    "supported_links_item.html.ts",
     "supported_links_item.ts",
+    "supported_links_overlapping_apps_dialog.html.ts",
     "supported_links_overlapping_apps_dialog.ts",
+    "toggle_row.html.ts",
     "toggle_row.ts",
+    "uninstall_button.html.ts",
     "uninstall_button.ts",
+    "web_app_settings.ts",
+    "web_app_settings_utils.ts",
+    "window_mode_item.html.ts",
     "window_mode_item.ts",
   ]
 
-  non_web_component_files = [ "web_app_settings.ts" ]
-
   css_files = [
+    "app.css",
+    "app_content_dialog.css",
+    "app_content_item.css",
     "app_management_shared_style.css",
+    "file_handling_item.css",
+    "more_permissions_item.css",
+    "permission_item.css",
     "shared_vars.css",
+    "supported_links_dialog.css",
+    "supported_links_item.css",
+    "toggle_row.css",
+    "uninstall_button.css",
   ]
 
   icons_html_files = [ "icons.html" ]
 
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

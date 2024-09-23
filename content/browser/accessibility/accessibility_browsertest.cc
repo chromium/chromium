@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_browsertest.h"
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 namespace content {
 
@@ -31,7 +33,7 @@ gfx::NativeViewAccessible AccessibilityBrowserTest::GetRendererAccessible() {
 
 void AccessibilityBrowserTest::ExecuteScript(const std::u16string& script) {
   shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      script, base::NullCallback());
+      script, base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void AccessibilityBrowserTest::LoadInitialAccessibilityTreeFromHtml(

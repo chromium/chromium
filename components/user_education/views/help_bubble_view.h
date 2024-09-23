@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_event_relay.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,8 +34,6 @@ namespace user_education {
 class HelpBubbleDelegate;
 
 namespace internal {
-
-class MenuEventMonitor;
 
 // Describes how a help bubble should be anchored to a Views element, beyond
 // what is specified by the HelpBubbleParams. Should only be instantiated by
@@ -57,8 +56,9 @@ struct HelpBubbleAnchorParams {
 // in-product help which educates users about certain Chrome features in
 // a deferred context.
 class HelpBubbleView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(HelpBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(HelpBubbleView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpBubbleElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
@@ -66,9 +66,16 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleTextIdForTesting);
 
+  // Minimum width of the bubble.
+  static constexpr int kMinWidthDip = 200;
+
+  // Maximum width of the bubble. Longer strings will cause wrapping.
+  static constexpr int kMaxWidthDip = 340;
+
   HelpBubbleView(const HelpBubbleDelegate* delegate,
                  const internal::HelpBubbleAnchorParams& anchor,
-                 HelpBubbleParams params);
+                 HelpBubbleParams params,
+                 std::unique_ptr<HelpBubbleEventRelay> event_relay = nullptr);
   HelpBubbleView(const HelpBubbleView&) = delete;
   HelpBubbleView& operator=(const HelpBubbleView&) = delete;
   ~HelpBubbleView() override;
@@ -88,7 +95,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   std::u16string GetAccessibleWindowTitle() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorRect() const override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
@@ -97,7 +105,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
                            RespectsProvidedTimeoutAfterActivate);
   friend class HelpBubbleViewsTest;
-  friend class internal::MenuEventMonitor;
+  friend class HelpBubbleEventRelay;
 
   class AnchorViewObserver;
 
@@ -106,6 +114,13 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   void OnTimeout();
 
   const raw_ptr<const HelpBubbleDelegate> delegate_;
+
+  // In some (mostly South Asian) languages, a button could be wider than the
+  // normal max width *for the bubble*, after taking margins into account (see
+  // crbug.com/329216536). So if the minimum width of the bubble - even after
+  // buttons have gone to a vertical stack - is greater than the normal max
+  // width, allow the bubble to grow slightly.
+  int max_bubble_width_ = kMaxWidthDip;
 
   // If set, overrides the anchor bounds within the anchor view.
   std::optional<gfx::Rect> local_anchor_bounds_;
@@ -133,9 +148,9 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // focus, even if it's marked as close_on_deactivate.
   std::unique_ptr<CloseOnDeactivatePin> anchor_pin_;
 
-  // Sniffs events intended for a menu to ensure that for bubbles anchored to
-  // menus, hover, click, and tap events are still registered.
-  std::unique_ptr<internal::MenuEventMonitor> menu_event_monitor_;
+  // Sniffs events intended for a menu or dialog to ensure that hover, click,
+  // and tap events are still registered.
+  std::unique_ptr<HelpBubbleEventRelay> event_relay_;
 
   // Observes the anchor view. Dismisses the help bubble if it loses visibility.
   // Useful when our anchor element is not the anchor view.

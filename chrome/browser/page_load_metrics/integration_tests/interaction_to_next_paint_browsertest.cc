@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include <string_view>
 
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/common/content_navigation_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using base::Bucket;
@@ -22,11 +31,17 @@ using trace_analyzer::TraceEventVector;
 using ukm::builders::PageLoad;
 
 class InteractionToNextPaintTest : public MetricIntegrationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ReportEventTimingAtVisibilityChange");
+  }
+
  protected:
   // This function will extract the target UKM value from ukm_recorder
   // by the given metric_name in PageLoad.
   bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
-                                base::StringPiece metric_name,
+                                std::string_view metric_name,
                                 int64_t* extracted_value);
 
   // This function extract the maximum duration for EventTiming from
@@ -48,7 +63,7 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
 
 bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
     const ukm::TestUkmRecorder& ukm_recorder,
-    base::StringPiece metric_name,
+    std::string_view metric_name,
     int64_t* extracted_value) {
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
@@ -294,6 +309,242 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickWithPresentation) {
   // browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+// Timeout of the PageLoadMetricsTestWaiter can happen though rarely, due to
+// fast shutdown process. For example, the browser side observer could be
+// destroyed before the UKM IPC is received.
+// TODO(crbug.com/353730407): investigate and re-enable the test.
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
+                       DISABLED_INP_ReportBeforeNavigatingAway) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  waiter->AddOnCompleteCalledExpectation();
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+
+  Start();
+
+  Load("/inp_report_before_navigating_away.html");
+
+  WaitForFrameReady();
+
+  // Simulate a click on the link that would navigatie away from the document.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "link");
+
+  waiter->Wait();
+
+  // Verify trace and UKM data are recorded.
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+// Timeout of the PageLoadMetricsTestWaiter can happen though rarely, due to
+// fast shutdown process. For example, the browser side observer could be
+// destroyed before the UKM IPC is received.
+// TODO(crbug.com/353730407): investigate and re-enable the test.
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
+                       DISABLED_INP_ReportBeforeNavigatingAwayToCrossOrigin) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  waiter->AddOnCompleteCalledExpectation();
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+
+  Start();
+
+  Load("/inp_report_before_navigating_away.html");
+
+  WaitForFrameReady();
+  auto cross_origin_url = "http://www.b.com:" +
+                          base::NumberToString(embedded_test_server()->port()) +
+                          "/resources/empty.html";
+
+  auto* script =
+      R"(
+        let link = document.getElementById("link");
+        link.setAttribute("href", $1);
+        )";
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), content::JsReplace(script, cross_origin_url)));
+
+  // Simulate a click on the link that would navigatie away from the document.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "link");
+
+  waiter->Wait();
+
+  // Verify trace and UKM data are recorded.
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
+                       INP_ReportBeforeSwitchingTabAndNavigatingAway) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  waiter->AddOnCompleteCalledExpectation();
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+  Start();
+  Load("/inp_report_click_button.html");
+
+  WaitForFrameReady();
+
+  auto* initial_web_contents = web_contents();
+  // Simulate a click on button which has default browser-driven
+  // presentation.
+  content::SimulateMouseClickOrTapElementWithId(initial_web_contents, "button");
+
+  // Add a new tab and switch to it.
+  std::unique_ptr<content::WebContents> web_contents_to_add =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  web_contents_to_add->GetController().LoadURL(
+      embedded_test_server()->GetURL("/resources/empty.html"),
+      content::Referrer(), ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+
+  tab_strip_model->AddWebContents(std::move(web_contents_to_add), -1,
+                                  ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                  AddTabTypes::ADD_ACTIVE);
+
+  // Verify the initial tab is backgrounded.
+  EXPECT_NE(initial_web_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Switch back to the previous tab and navigate away to let the UKM entries be
+  // recorded.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  waiter->Wait();
+
+  // Verify trace and UKM data are recorded.
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
+                       INP_ReportBeforeSwitchingTabAndCloseBackgroundedTab) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+
+  Start();
+
+  Load("/inp_report_click_button.html");
+
+  WaitForFrameReady();
+
+  auto* initial_web_contents = web_contents();
+
+  // Simulate a click on button.
+  content::SimulateMouseClickOrTapElementWithId(initial_web_contents, "button");
+
+  // Add a new tab and switch to it.
+  std::unique_ptr<content::WebContents> web_contents_to_add =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  web_contents_to_add->GetController().LoadURL(
+      embedded_test_server()->GetURL("/resources/empty.html"),
+      content::Referrer(), ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+
+  // Add the tab and foreground it. Effectively this is switching tab.
+  tab_strip_model->AddWebContents(std::move(web_contents_to_add), -1,
+                                  ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                  AddTabTypes::ADD_ACTIVE);
+
+  // Verify the initial tab is backgrounded.
+  EXPECT_NE(initial_web_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+
+  waiter->Wait();
+
+  // Close the initial tab.
+  waiter->AddOnCompleteCalledExpectation();
+
+  // Get the tab index of the given WebContents.
+  int tab_index = tab_strip_model->GetIndexOfWebContents(initial_web_contents);
+
+  // Expect the tab index of the given WebContents is found.
+  EXPECT_NE(tab_index, TabStripModel::kNoTab);
+
+  // Close the tab.
+  tab_strip_model->CloseWebContentsAt(tab_index,
+                                      TabCloseTypes::CLOSE_USER_GESTURE);
+
+  waiter->Wait();
+
+  // Verify trace and UKM data are recorded.
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+// Timeout of the PageLoadMetricsTestWaiter can happen though rarely.
+// TODO(crbug.com/353730407): investigate and re-enable the test.
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
+                       DISABLED_INP_ReportBeforeEnteringBFCache) {
+  if (!content::IsBackForwardCacheEnabled()) {
+    return;
+  }
+
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+
+  Start();
+
+  Load("/inp_report_click_button.html");
+
+  WaitForFrameReady();
+
+  // Simulate a click on button.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "button");
+
+  // Navigate away and enter back/forward cache.
+  content::RenderFrameHostImplWrapper rfh(
+      web_contents()->GetPrimaryMainFrame());
+
+  auto url = embedded_test_server()->GetURL("/resources/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Verify `rfh` is stored in back/forward cache.
+  ASSERT_TRUE(rfh->IsInBackForwardCache());
+
+  waiter->Wait();
+
+  // Verify trace and UKM data are recorded.
   auto analyzer = StopTracingAndAnalyze();
   ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
 }

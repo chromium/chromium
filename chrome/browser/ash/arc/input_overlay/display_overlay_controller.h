@@ -6,18 +6,21 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -63,8 +66,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // Get the bounds of `menu_entry_` in screen coordinates.
   std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
-  void AddEditMessage(const base::StringPiece& message,
-                      MessageType message_type);
+  void AddEditMessage(std::string_view message, MessageType message_type);
   void RemoveEditMessage();
 
   void OnInputBindingChange(Action* action,
@@ -97,9 +99,13 @@ class DisplayOverlayController : public ui::EventHandler,
 
   // Returns the size of active actions which include the deleted default
   // actions.
-  size_t GetActiveActionsSize();
+  size_t GetActiveActionsSize() const;
+  // Returns true if there is only one user added action.
+  bool HasSingleUserAddedAction() const;
   // Return true if action is not deleted.
-  bool IsActiveAction(Action* action);
+  bool IsActiveAction(Action* action) const;
+
+  MappingSource GetMappingSource() const;
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
@@ -124,13 +130,17 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddActionHighlightWidget(Action* action);
   void RemoveActionHighlightWidget();
   void HideActionHighlightWidget();
+  // Hides the action highlight if the action highlight is anchored to
+  // `action`'s view.
+  void HideActionHighlightWidgetForAction(Action* action);
 
-  // Update widget bounds if the view content is changed or the app window
-  // bounds are changed.
-  void UpdateButtonOptionsMenuWidgetBounds();
-  void UpdateInputMappingWidgetBounds();
-  void UpdateEditingListWidgetBounds();
-  void UpdateTargetWidgetBounds();
+  // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
+  // window bounds in associated game window's root window. Convert
+  // `bounds_in_root_window` in screen coordinates to set `widget` bounds.
+  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
+                                      const gfx::Rect& bounds_in_root_window);
+
+  ActionViewListItem* GetEditingListItemForAction(Action* action);
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -215,18 +225,13 @@ class DisplayOverlayController : public ui::EventHandler,
   views::Widget* GetOverlayWidget();
   views::View* GetOverlayWidgetContentsView();
   bool HasMenuView() const;
-  // Used for edit mode, in which the input mapping must be temporarily visible
-  // regardless of user setting, until it is overridden when the user presses
-  // save or cancel.
-  void SetInputMappingVisibleTemporary();
-  // Used for the mapping hint toggle, to save user settings regarding
-  // mapping hint visibility.
-  void SetInputMappingVisible(bool visible);
+  // Sets input mapping visibility according to `visible` and stores the setting
+  // if `store_visible_state` is true.
+  void SetInputMappingVisible(bool visible, bool store_visible_state = false);
   bool GetInputMappingViewVisible() const;
 
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
-  // Used for the magnetic function of the editing list.
 
   // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.
@@ -245,6 +250,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddInputMappingWidget();
   void RemoveInputMappingWidget();
   InputMappingView* GetInputMapping();
+
+  // Stacks input mapping at the bottom and under the game dashboard UIs.
+  void StackInputMappingAtBottomForViewMode();
 
   void AddEditingListWidget();
   void RemoveEditingListWidget();
@@ -268,11 +276,12 @@ class DisplayOverlayController : public ui::EventHandler,
 
   DeleteEditShortcut* GetDeleteEditShortcut() const;
 
-  // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
-  // window bounds in root window. Convert `bounds_in_root_window` in screen
-  // coordinates to set `widget` bounds.
-  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
-                                      const gfx::Rect& bounds_in_root_window);
+  // Update widget bounds if the view content is changed or the app window
+  // bounds are changed.
+  void UpdateButtonOptionsMenuWidgetBounds();
+  void UpdateInputMappingWidgetBounds();
+  void UpdateEditingListWidgetBounds();
+  void UpdateTargetWidgetBounds();
 
   // `TouchInjector` only rewrite events in `kView` mode. When changing between
   // edit mode and view mode or the feature is disabled from menu or if the game
@@ -308,8 +317,8 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> target_widget_;
   std::unique_ptr<views::Widget> action_highlight_widget_;
-  raw_ptr<views::Widget> delete_edit_shortcut_widget_;
-  raw_ptr<views::Widget> rich_nudge_widget_;
+  views::UniqueWidgetPtr delete_edit_shortcut_widget_;
+  views::UniqueWidgetPtr rich_nudge_widget_;
 
   std::unique_ptr<FocusCycler> focus_cycler_;
 };

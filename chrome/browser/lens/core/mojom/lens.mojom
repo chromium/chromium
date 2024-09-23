@@ -1,0 +1,260 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/geometry.mojom";
+import "chrome/browser/lens/core/mojom/overlay_object.mojom";
+import "chrome/browser/lens/core/mojom/text.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// Enumerates the user interactions with the Lens Overlay.
+//
+// This enum must match the numbering for LensOverlayUserAction in enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UserAction)
+enum UserAction {
+  kRegionSelection = 0,
+  kRegionSelectionChange = 1,
+  kTextSelection = 2,
+  kObjectClick = 3,
+  kTranslateText = 4,
+  kCopyText = 5,
+  kMyActivity = 6,
+  kLearnMore = 7,
+  kSendFeedback = 8,
+  kTapRegionSelection = 9,
+  kTranslateButtonEnableAction = 10,
+  kTranslateButtonDisableAction = 11,
+  kTranslateSourceLanguageChanged = 12,
+  kTranslateTargetLanguageChanged = 13,
+  kTranslateTextSelection = 14,
+  kCopyAsImage = 15,
+  kSaveAsImage = 16,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
+
+// TODO(crbug.com/365448173): Split into separate mojom files for overlay
+// and side panel.
+// Factory method for creating a new WebUI page handler for lens overlay.
+interface LensPageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<LensPageHandler> handler,
+                    pending_remote<LensPage> page);
+};
+
+// Factory method for creating a new WebUI page handler for lens side panel.
+interface LensSidePanelPageHandlerFactory {
+  // The side panel WebUI calls this method when the page is first initialized.
+  CreateSidePanelPageHandler(
+      pending_receiver<LensSidePanelPageHandler> handler,
+      pending_remote<LensSidePanelPage> page);
+};
+
+// Dynamic theme colors.
+struct OverlayTheme {
+  skia.mojom.SkColor primary;
+  skia.mojom.SkColor shader_layer_1;
+  skia.mojom.SkColor shader_layer_2;
+  skia.mojom.SkColor shader_layer_3;
+  skia.mojom.SkColor shader_layer_4;
+  skia.mojom.SkColor shader_layer_5;
+  skia.mojom.SkColor scrim;
+  skia.mojom.SkColor surface_container_highest_light;
+  skia.mojom.SkColor surface_container_highest_dark;
+  skia.mojom.SkColor selection_element;
+};
+
+// Browser-side handler for requests from WebUI page. (TypeScript -> C++)
+interface LensPageHandler {
+  // When this method is called, the C++ coordinator will open the link to the
+  // My Activity page in a new tab.
+  ActivityRequestedByOverlay(ui.mojom.ClickModifiers click_modifiers);
+
+  // WebUI calls this when the user wants to dismiss the lens overlay using
+  // the close button.
+  CloseRequestedByOverlayCloseButton();
+
+  // Like above, but when dismissed by clicking on the overlay background.
+  CloseRequestedByOverlayBackgroundClick();
+
+  // This method is called to notify the C++ coordinator that the overlay has
+  // content that will fill the viewport.
+  NotifyOverlayInitialized();
+
+  // When this method is called, the C++ coordinator will add a blur to the
+  // tab contents.
+  AddBackgroundBlur();
+
+  // When this method is called, the C++ coordinator will show the feedback
+  // dialog.
+  FeedbackRequestedByOverlay();
+
+  // Returns the Lens Overlay entry point, used in the WebUI for metrics
+  // sliced by entry point. Requested by WebUI to eliminate need to wait
+  // for page to be bound on browser side.
+  GetOverlayInvocationSource() => (string invocation_source);
+
+  // When this method is called, the C++ coordinator will open the link to the
+  // Help Center article in a new tab.
+  InfoRequestedByOverlay(ui.mojom.ClickModifiers click_modifiers);
+
+  // When this method is called, the C++ coordinator sends a Lens request with
+  // the given bounding region to the Lens servers and display results in the
+  // Chrome side panel. The region should be normalized between 0 and 1.
+  // The click flag should be set if the region was created using a click
+  // (i.e. not a dragged-out region) and is used for logging only.
+  // TODO(b/329262670): Verify normalization does not cause off-by-1 pixel
+  // errors.
+  IssueLensRegionRequest(CenterRotatedBox region, bool is_click);
+
+  // When this method is called, the C++ coordinator sends a Lens request with
+  // the given bounding region to the Lens servers and display results in the
+  // Chrome side panel. The region should be normalized between 0 and 1.
+  // The mask click flag is used for logging only.
+  // TODO(b/329262670): Verify normalization does not cause off-by-1 pixel
+  // errors.
+  IssueLensObjectRequest(CenterRotatedBox region, bool is_mask_click);
+
+  // When this method is called, the C++ coordinator issues a SRP request with
+  // given text string in the side panel. This function also passes selection
+  // indices into a list of words maintained in the WebUI and are passed to the
+  // browser-side UI solely for the purposes of maintaining a history stack.
+  // They do not and will not be used to be indexed into anything in the
+  // browser; when the user traverses history, the indices may be passed back to
+  // the WebUI.
+  IssueTextSelectionRequest(
+      string query, int32 selection_start_index, int32 selection_end_index);
+
+  // Similar to IssueTextSelectionRequest(), but requests that the selected
+  // text be translated.
+  IssueTranslateSelectionRequest(string query,
+                                 string content_language,
+                                 int32 selection_start_index,
+                                 int32 selection_end_index);
+
+  // When this method is called, the C++ coordinator issues another full image
+  // request with appropriate parameters to return a response with text on the
+  // screenshot translated from `source_language` to `target_language`. This
+  // differs from IssueTranslateSelectionRequest() as this is a request to
+  // translate the entire screenshot, rather than a translation of selected
+  // text.
+  IssueTranslateFullPageRequest(
+      string source_language, string target_language);
+
+  // When this method is called, the C++ coordinator issues another full image
+  // request with the auto filter, which is necessary to update the overlay
+  // state to the default non-translate mode.
+  IssueEndTranslateModeRequest();
+
+  // When called, the C++ coordinator closes the lens search bubble. When the
+  // user selects text or thumbnail on the WebUI overlay, the search bubble
+  // must close.
+  CloseSearchBubble();
+
+  // Copies the given text to the users clipboard using the browser process.
+  // This is different than using navigator.clipboard.writeText since
+  // navigator.clipboard.writeText requires explicet user activation on the web
+  // contents to work. Since the focus leaves the overlay web contents when the
+  // user opens side panel, we cannot guarantee the overlay webcontents will
+  // still have explicit user activation. Therefore, we use this method instead.
+  CopyText(string text);
+
+  // Copies the given region of the current screenshot to the user's clipboard
+  // using the browser process. Rationale for using this method is the same as
+  // for CopyText.
+  CopyImage(CenterRotatedBox region);
+
+  // Crops the current screenshot to the given region and downloads it as a PNG
+  // file.
+  SaveAsImage(CenterRotatedBox region);
+
+  // When called, the C++ coordinator closes the preselection toast bubble.
+  ClosePreselectionBubble();
+
+  // Records UKM metrics and task completion for lens overlay interactions.
+  RecordUkmAndTaskCompletionForLensOverlayInteraction(
+      UserAction user_action);
+};
+
+// WebUI page handler for request from Browser side. (C++ -> TypeScript)
+interface LensPage {
+  // Pass screenshot data to WebUI.
+  ScreenshotDataReceived(
+      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
+
+  // Notifies the WebUI that our results panel is currently opening.
+  NotifyResultsPanelOpened();
+
+  // Notifies the WebUI that a close has been triggered and the overlay will
+  // soon be hidden.
+  NotifyOverlayClosing();
+
+  // Passes objects received from Lens to WebUI for rendering.
+  ObjectsReceived(array<OverlayObject> objects);
+
+  // Passes Text received from Lens to WebUI for rendering.
+  TextReceived(Text text);
+
+  // Passes the dynamic theme to WebUI.
+  ThemeReceived(OverlayTheme theme);
+
+  // Sets a post selection region to be rendered as selected on the page.
+  SetPostRegionSelection(CenterRotatedBox region);
+
+  // Sets text to be rendered as selected on the page.
+  SetTextSelection(int32 selection_start_index, int32 selection_end_index);
+
+  // Clears any post region selection on the page. No-op if none selected.
+  ClearRegionSelection();
+
+  // Clears any text selection on the page. No-op if none selected.
+  ClearTextSelection();
+
+  // Clears any text or post region selection on the page. No-op if none
+  // selected.
+  ClearAllSelections();
+
+  // Copies the currently selected text to the users clipboard and displays the
+  // text copied chip.
+  TriggerCopyText();
+};
+
+// Browser-side handler for requests from Side PanelWebUI page.
+// (TypeScript -> C++)
+interface LensSidePanelPageHandler {
+  // Pops the most recent search query from the history stack to load in the
+  // side panel.
+  PopAndLoadQueryFromHistory();
+};
+
+// Side Panel WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensSidePanelPage {
+  // Load a provided URL into the side panel results iframe.
+  LoadResultsInFrame(url.mojom.Url results_url);
+
+  // Sets whether the results frame is currently loading. This cannot be done
+  // from the renderer because the results iframe is cross-origin. This prevents
+  // load events on the iframe from triggering reliably on every navigation.
+  // Instead, we listen for the start of the navigations in the browser and set
+  // the loading state appropriately.
+  SetIsLoadingResults(bool is_loading);
+
+  // Sets visibility for back arrow next to the searchbox.
+  SetBackArrowVisible(bool visible);
+
+  // Sets whether to show a full error page in the side panel WebUI. This is
+  // used when the user opens the side panel in an offline state or the full
+  // image request times out.
+  SetShowErrorPage(bool should_show_error_page);
+};

@@ -415,9 +415,9 @@ void XRWebGLLayer::OnFrameEnd() {
         }
       }
 
-      // Always call submit, but notify if the contents were changed or not.
-      session()->xr()->frameProvider()->SubmitWebGLLayer(this,
-                                                         framebuffer_dirty);
+      // Need to stop accessing the camera image texture before calling
+      // `SubmitWebGLLayer` so that we stop using it before the sync token
+      // that `SubmitWebGLLayer` will generate.
       if (camera_image_texture_id_) {
         // We shouldn't ever have a camera texture if the holder wasn't present:
         DCHECK(camera_image_mailbox_holder_);
@@ -442,6 +442,10 @@ void XRWebGLLayer::OnFrameEnd() {
         camera_image_texture_id_ = 0;
         camera_image_mailbox_holder_ = std::nullopt;
       }
+
+      // Always call submit, but notify if the contents were changed or not.
+      session()->xr()->frameProvider()->SubmitWebGLLayer(this,
+                                                         framebuffer_dirty);
     }
   }
 }

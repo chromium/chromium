@@ -37,6 +37,7 @@
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -50,7 +51,7 @@ using testing::NiceMock;
 namespace {
 
 // TODO(kalman): test both EXTENSION_SETTINGS and APP_SETTINGS.
-const syncer::ModelType kModelType = syncer::EXTENSION_SETTINGS;
+const syncer::DataType kDataType = syncer::EXTENSION_SETTINGS;
 
 // The managed_storage extension has a key defined in its manifest, so that
 // its extension ID is well-known and the policy system can push policies for
@@ -137,7 +138,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
     EXPECT_FALSE(
         syncable_service
             ->MergeDataAndStartSyncing(
-                kModelType, syncer::SyncDataList(),
+                kDataType, syncer::SyncDataList(),
                 std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
                     sync_processor))
             .has_value());
@@ -151,7 +152,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
         FROM_HERE,
         base::BindOnce(&InitSyncOnBackgroundSequence,
                        settings_sync_util::GetSyncableServiceProvider(
-                           profile(), kModelType),
+                           profile(), kDataType),
                        sync_processor),
         loop.QuitClosure());
     loop.Run();
@@ -178,7 +179,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
         FROM_HERE,
         base::BindOnce(&SendChangesOnBackgroundSequence,
                        settings_sync_util::GetSyncableServiceProvider(
-                           profile(), kModelType),
+                           profile(), kDataType),
                        change_list),
         loop.QuitClosure());
     loop.Run();
@@ -318,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, SplitModeIncognito) {
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// TODO(crbug.com/40189896): Service worker extension listener should receive an
 // event before the callback is made. Current workaround: wait for the event to
 // be received by the extension before checking for it. Potential solution: once
 // browser-side observation of SW lifetime work is finished, check if it fixes
@@ -479,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/1229351): Service worker extension listener should receive an
+// TODO(crbug.com/40189896): Service worker extension listener should receive an
 // event before the callback is made. Current workaround: wait for the event to
 // be received by the extension before checking for it. Potential solution: once
 // browser-side observation of SW lifetime work is finished, check if it fixes
@@ -496,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   const Extension* extension = LoadAndReplyWhenSatisfied(
       StorageAreaNamespace::kSync, "assertNoNotifications",
       "assertNoNotifications", "split_incognito");
-  const std::string& extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   syncer::FakeSyncChangeProcessor sync_processor;
   InitSync(&sync_processor);
@@ -504,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // Set "foo" to "bar" via sync.
   syncer::SyncChangeList sync_changes;
   base::Value bar("bar");
-  sync_changes.push_back(settings_sync_util::CreateAdd(
-      extension_id, "foo", bar, kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateAdd(extension_id, "foo", bar, kDataType));
   SendChanges(sync_changes);
 
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertAddFooNotification",
@@ -515,8 +516,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
 
   // Remove "foo" via sync.
   sync_changes.clear();
-  sync_changes.push_back(settings_sync_util::CreateDelete(
-      extension_id, "foo", kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateDelete(extension_id, "foo", kDataType));
   SendChanges(sync_changes);
 
   FinalReplyWhenSatisfied(StorageAreaNamespace::kSync,
@@ -541,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   const Extension* extension = LoadAndReplyWhenSatisfied(
       StorageAreaNamespace::kLocal, "assertNoNotifications",
       "assertNoNotifications", "split_incognito");
-  const std::string& extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   syncer::FakeSyncChangeProcessor sync_processor;
   InitSync(&sync_processor);
@@ -549,8 +550,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // Set "foo" to "bar" via sync.
   syncer::SyncChangeList sync_changes;
   base::Value bar("bar");
-  sync_changes.push_back(settings_sync_util::CreateAdd(
-      extension_id, "foo", bar, kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateAdd(extension_id, "foo", bar, kDataType));
   SendChanges(sync_changes);
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
@@ -558,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
 
   // Remove "foo" via sync.
   sync_changes.clear();
-  sync_changes.push_back(settings_sync_util::CreateDelete(
-      extension_id, "foo", kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateDelete(extension_id, "foo", kDataType));
   SendChanges(sync_changes);
 
   FinalReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
@@ -591,7 +592,7 @@ class ExtensionSettingsManagedStorageApiTest
   ExtensionSettingsManagedStorageApiTest& operator=(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
 
-  // TODO(crbug.com/1247323): Remove this.
+  // TODO(crbug.com/40789870): Remove this.
   // The ManagedStorageEvents test has a PRE_ step loads an extension which
   // then runs in the main step. Since the extension immediately starts
   // running the tests, constructing a ResultCatcher in the body of the
@@ -694,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }
 
-// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
@@ -720,7 +721,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
-// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
                        PRE_ManagedStorageEvents) {

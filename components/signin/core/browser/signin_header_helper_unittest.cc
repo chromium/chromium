@@ -77,7 +77,7 @@ class SigninHeaderHelperTest : public testing::Test {
     privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1198528): remove this after the rollout.
+    // TODO(crbug.com/40760763): remove this after the rollout.
     if (!chromeos::LacrosService::Get()) {
       scoped_lacros_test_helper_ =
           std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
@@ -89,7 +89,9 @@ class SigninHeaderHelperTest : public testing::Test {
         false /* restore_session */, false /* should_record_metrics */);
     cookie_settings_ = new content_settings::CookieSettings(
         settings_map_.get(), &prefs_, /*tracking_protection_settings_=*/nullptr,
-        false, "");
+        false,
+        content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+        /*tpcd_metadata_manager=*/nullptr, "");
   }
 
   void TearDown() override { settings_map_->ShutdownOnUIThread(); }
@@ -123,12 +125,10 @@ class SigninHeaderHelperTest : public testing::Test {
       const char* header_name,
       const std::string& expected_request) {
     bool expected_result = !expected_request.empty();
-    std::string request;
-    EXPECT_EQ(headers.GetHeader(header_name, &request), expected_result)
-        << header_name << ": " << request;
-    if (expected_result) {
-      EXPECT_EQ(expected_request, request);
-    }
+    EXPECT_THAT(headers.GetHeader(header_name),
+                testing::Conditional(expected_result,
+                                     testing::Optional(expected_request),
+                                     std::nullopt));
   }
 
   void CheckMirrorHeaderRequest(const GURL& url,
@@ -548,6 +548,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   const char kAuthorizationCode[] = "authorization_code";
   const char kEmail[] = "foo@example.com";
   const char kGaiaID[] = "gaia_id";
+  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
   const int kSessionIndex = 42;
 
   {
@@ -555,14 +556,18 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     base::HistogramTester histogram_tester;
     DiceResponseParams params =
         BuildDiceSigninResponseParams(base::StringPrintf(
-            "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s",
-            kGaiaID, kEmail, kSessionIndex, kAuthorizationCode));
+            "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s,"
+            "eligible_for_token_binding=%s",
+            kGaiaID, kEmail, kSessionIndex, kAuthorizationCode,
+            kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
     EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
     EXPECT_EQ(kEmail, params.signin_info->account_info.email);
     EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
     EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+    EXPECT_EQ(kSupportedTokenBindingAlgorithms,
+              params.signin_info->supported_algorithms_for_token_binding);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
                                         1);
   }
@@ -667,6 +672,47 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   }
 }
 
+TEST_F(SigninHeaderHelperTest,
+       BuildDiceSigninResponseParamsNotEligibleForTokenBinding) {
+  const char kAuthorizationCode[] = "authorization_code";
+  const char kEmail[] = "foo@example.com";
+  const char kGaiaID[] = "gaia_id";
+  const int kSessionIndex = 42;
+
+  // "eligible_for_token_binding" is missing.
+  DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
+      "action=SIGNIN,id=%s,email=%s,authuser=%i,authorization_code=%s", kGaiaID,
+      kEmail, kSessionIndex, kAuthorizationCode));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+  ASSERT_TRUE(params.signin_info);
+  EXPECT_TRUE(
+      params.signin_info->supported_algorithms_for_token_binding.empty());
+}
+
+// Mainly tests that whitespace characters in the middle of a header don't break
+// parsing.
+TEST_F(SigninHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
+  const char kAuthorizationCode[] = "authorization_code";
+  const char kEmail[] = "foo@example.com";
+  const char kGaiaID[] = "gaia_id";
+  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
+  const int kSessionIndex = 42;
+
+  DiceResponseParams params = BuildDiceSigninResponseParams(base::StringPrintf(
+      "id=%s,action=SIGNIN,authuser=%i,eligible_for_token_binding=%s,email=%s,"
+      "authorization_code=%s",
+      kGaiaID, kSessionIndex, kSupportedTokenBindingAlgorithms, kEmail,
+      kAuthorizationCode));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+  ASSERT_TRUE(params.signin_info);
+  EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
+  EXPECT_EQ(kEmail, params.signin_info->account_info.email);
+  EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
+  EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+  EXPECT_EQ(kSupportedTokenBindingAlgorithms,
+            params.signin_info->supported_algorithms_for_token_binding);
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests that the Mirror header request is returned normally when the redirect
@@ -722,10 +768,9 @@ TEST_F(SigninHeaderHelperTest, TestIgnoreMirrorHeaderNonEligibleURLs) {
       /*is_child_account=*/Tribool::kUnknown, account_consistency_,
       cookie_settings_.get(), PROFILE_MODE_DEFAULT, kTestSource,
       false /* force_account_consistency */);
-  std::string header;
-  EXPECT_TRUE(request_adapter.GetFinalHeaders().GetHeader(
-      kChromeConnectedHeader, &header));
-  EXPECT_EQ(fake_header, header);
+  EXPECT_THAT(
+      request_adapter.GetFinalHeaders().GetHeader(kChromeConnectedHeader),
+      testing::Optional(fake_header));
 }
 
 TEST_F(SigninHeaderHelperTest, TestInvalidManageAccountsParams) {

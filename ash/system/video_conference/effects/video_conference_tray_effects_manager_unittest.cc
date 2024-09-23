@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -47,11 +48,11 @@ class TestEffectDelegate : public VcEffectsDelegate {
   ~TestEffectDelegate() override = default;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override {
+  std::optional<int> GetEffectState(VcEffectId effect_id) override {
     return std::nullopt;
   }
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override {}
+                                std::optional<int> state) override {}
 };
 
 class VideoConferenceTrayEffectsManagerTest
@@ -69,8 +70,7 @@ class VideoConferenceTrayEffectsManagerTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {};
     if (IsVcDlcUiEnabled()) {
-      enabled_features.push_back(features::kVideoConference);
-      enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
+      enabled_features.push_back(features::kFeatureManagementVideoConference);
       enabled_features.push_back(features::kVcDlcUi);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features,
@@ -83,6 +83,7 @@ class VideoConferenceTrayEffectsManagerTest
       // VC tray controller being available).
       tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
       effect_delegate_ = std::make_unique<TestEffectDelegate>();
+      DlcserviceClient::InitializeFake();
     }
     AshTestBase::SetUp();
   }
@@ -90,6 +91,7 @@ class VideoConferenceTrayEffectsManagerTest
   void TearDown() override {
     AshTestBase::TearDown();
     if (IsVcDlcUiEnabled()) {
+      DlcserviceClient::Shutdown();
       effect_delegate_.reset();
       tray_controller_.reset();
     }

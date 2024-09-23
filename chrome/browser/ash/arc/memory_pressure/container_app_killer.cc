@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 
 #include <algorithm>  // For sort.
+#include <vector>
 
 #include "ash/components/arc/arc_util.h"             // For IsArcVmEnabled.
 #include "ash/components/arc/mojom/process.mojom.h"  // For arc::mojom::ProcessInstance.
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/containers/cxx20_erase.h"  // For EraseIf.
 #include "base/logging.h"                 // For LOG.
 #include "base/process/process_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
@@ -60,7 +60,7 @@ void ContainerAppKiller::LowMemoryKill(
   }
 
   // Don't kill persistent and focused ARC processes.
-  base::EraseIf(*arc_processes, [](auto& proc) {
+  std::erase_if(*arc_processes, [](auto& proc) {
     return proc.IsPersistent() || proc.is_focused();
   });
 
@@ -70,7 +70,7 @@ void ContainerAppKiller::LowMemoryKill(
 
   // Don't kill background protected ARC processes on non-critical level.
   if (!is_critical_level) {
-    base::EraseIf(*arc_processes,
+    std::erase_if(*arc_processes,
                   [](auto& proc) { return proc.IsBackgroundProtected(); });
   }
 

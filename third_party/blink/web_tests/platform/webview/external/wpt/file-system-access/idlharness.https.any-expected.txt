@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+[FAIL] DataTransferItem interface: operation getAsFileSystemHandle()
+  assert_own_property: interface prototype object missing non-static operation expected property "getAsFileSystemHandle" missing
+[FAIL] Window interface: operation showOpenFilePicker(optional OpenFilePickerOptions)
+  assert_own_property: global object missing non-static operation expected property "showOpenFilePicker" missing
+[FAIL] Window interface: operation showSaveFilePicker(optional SaveFilePickerOptions)
+  assert_own_property: global object missing non-static operation expected property "showSaveFilePicker" missing
+[FAIL] Window interface: operation showDirectoryPicker(optional DirectoryPickerOptions)
+  assert_own_property: global object missing non-static operation expected property "showDirectoryPicker" missing
+[FAIL] Window interface: window must inherit property "showOpenFilePicker(optional OpenFilePickerOptions)" with the proper type
+  assert_own_property: expected property "showOpenFilePicker" missing
+[FAIL] Window interface: calling showOpenFilePicker(optional OpenFilePickerOptions) on window with too few arguments must throw TypeError
+  assert_own_property: expected property "showOpenFilePicker" missing
+[FAIL] Window interface: window must inherit property "showSaveFilePicker(optional SaveFilePickerOptions)" with the proper type
+  assert_own_property: expected property "showSaveFilePicker" missing
+[FAIL] Window interface: calling showSaveFilePicker(optional SaveFilePickerOptions) on window with too few arguments must throw TypeError
+  assert_own_property: expected property "showSaveFilePicker" missing
+[FAIL] Window interface: window must inherit property "showDirectoryPicker(optional DirectoryPickerOptions)" with the proper type
+  assert_own_property: expected property "showDirectoryPicker" missing
+[FAIL] Window interface: calling showDirectoryPicker(optional DirectoryPickerOptions) on window with too few arguments must throw TypeError
+  assert_own_property: expected property "showDirectoryPicker" missing
+Harness: the test ran to completion.

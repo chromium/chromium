@@ -45,7 +45,7 @@ namespace {
 constexpr char kItemId[] = "item_id";
 constexpr char kSinkFriendlyName[] = "Nest Hub";
 
-ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED,
+ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
                              gfx::Point(),
                              gfx::Point(),
                              ui::EventTimeForNow(),

@@ -33,17 +33,11 @@ class BottomStatusIndicator final : public views::LabelButton {
                ui::ColorId color_id,
                int icon_size = 0);
 
-  void set_role_for_accessibility(ax::mojom::Role role) { role_ = role; }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   base::WeakPtr<BottomStatusIndicator> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  ax::mojom::Role role_ = ax::mojom::Role::kStaticText;
   base::WeakPtrFactory<BottomStatusIndicator> weak_ptr_factory_{this};
 };
 

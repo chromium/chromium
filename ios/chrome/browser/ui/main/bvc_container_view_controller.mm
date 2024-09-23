@@ -7,7 +7,7 @@
 #import <ostream>
 
 #import "base/check_op.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
+#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface BVCContainerViewController ()

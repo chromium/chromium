@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -238,10 +239,12 @@ void RecentAppsInteractionHandlerImpl::SetStreamableApps(
 
 void RecentAppsInteractionHandlerImpl::RemoveStreamableApp(
     const proto::App app_to_remove) {
-  base::EraseIf(recent_app_metadata_list_, [&app_to_remove](
-              const std::pair<Notification::AppMetadata, base::Time>& app) {
-    return app.first.package_name == app_to_remove.package_name();
-  });
+  std::erase_if(
+      recent_app_metadata_list_,
+      [&app_to_remove](
+          const std::pair<Notification::AppMetadata, base::Time>& app) {
+        return app.first.package_name == app_to_remove.package_name();
+      });
 
   SaveRecentAppMetadataListToPref();
   ComputeAndUpdateUiState();

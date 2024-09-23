@@ -2,6 +2,7 @@
 
 import json
 import select
+import socket
 
 from http.client import HTTPConnection
 from typing import Dict, List, Mapping, Sequence, Tuple
@@ -92,7 +93,7 @@ class Response:
             headers = ResponseHeaders(http_response.getheaders())
         except ValueError:
             raise ValueError("Failed to decode response body as JSON:\n" +
-                             http_response.read())
+                             repr(http_response.read()))
 
         return cls(http_response.status, body, headers)
 
@@ -204,6 +205,8 @@ class HTTPWireProtocol:
             ``json.JSONEncoder`` unless specified.
         :param decoder: JSON decoder class, which defaults to
             ``json.JSONDecoder`` unless specified.
+        :param timeout: Optional timeout for the underlying socket. `None` will
+            retain the existing timeout.
         :param codec_kwargs: Surplus arguments passed on to `encoder`
             and `decoder` on construction.
 
@@ -224,15 +227,7 @@ class HTTPWireProtocol:
                 raise ValueError("Failed to encode request body as JSON:\n"
                                  "%s" % json.dumps(body, indent=2))
 
-        # When the timeout triggers, the TestRunnerManager thread will reuse
-        # this connection to check if the WebDriver its alive and we may end
-        # raising an httplib.CannotSendRequest exception if the WebDriver is
-        # not responding and this httplib.request() call is blocked on the
-        # runner thread. We use the boolean below to check for that and restart
-        # the connection in that case.
-        self._last_request_is_blocked = True
-        response = self._request(method, uri, payload, headers, timeout=None)
-        self._last_request_is_blocked = False
+        response = self._request(method, uri, payload, headers, timeout=timeout)
         return Response.from_http(response, decoder=decoder, **codec_kwargs)
 
     def _request(self, method, uri, payload, headers=None, timeout=None):
@@ -248,19 +243,31 @@ class HTTPWireProtocol:
         if self._last_request_is_blocked or self._has_unread_data():
             self.close()
 
+        # When the timeout triggers, the TestRunnerManager thread will reuse
+        # this connection to check if the WebDriver its alive and we may end
+        # raising an httplib.CannotSendRequest exception if the WebDriver is
+        # not responding and this httplib.request() call is blocked on the
+        # runner thread. We use the boolean below to check for that and restart
+        # the connection in that case.
+        self._last_request_is_blocked = True
         self.connection.request(method, url, payload, headers)
 
-        # timeout for request has to be set just before calling httplib.getresponse()
-        # and the previous value restored just after that, even on exception raised
+        # `timeout` for this request has to be set just before calling
+        # `getresponse()` and the previous value restored just after that,
+        # even on exception raised. Initialize `previous_timeout` to the global
+        # default socket timeout in case the lazily created socket doesn't exist
+        # before `getresponse()`.
+        previous_timeout = socket.getdefaulttimeout()
         try:
-            if timeout:
-                previous_timeout = self._conn.gettimeout()
-                self._conn.settimeout(timeout)
+            if timeout and self.connection.sock:
+                previous_timeout = self.connection.sock.gettimeout()
+                self.connection.sock.settimeout(timeout)
             response = self.connection.getresponse()
         finally:
-            if timeout:
-                self._conn.settimeout(previous_timeout)
+            if timeout and self.connection.sock:
+                self.connection.sock.settimeout(previous_timeout)
 
+        self._last_request_is_blocked = False
         return response
 
     def _has_unread_data(self):

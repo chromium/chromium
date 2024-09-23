@@ -42,7 +42,7 @@ class StyleRuleImport : public StyleRuleBase {
   StyleRuleImport(const String& href,
                   LayerName&& layer,
                   bool supported,
-                  String&& supports,
+                  String supports,
                   const MediaQuerySet*,
                   OriginClean origin_clean);
   ~StyleRuleImport();

@@ -15,32 +15,17 @@
 namespace payments {
 
 class CanMakePaymentEventFieldsTest
-    : public PaymentRequestPlatformBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public PaymentRequestPlatformBrowserTestBase {
  public:
-  CanMakePaymentEventFieldsTest() {
-    if (ClearFieldsInCanMakePaymentEvent()) {
-      features_.InitAndDisableFeature(
-          blink::features::kAddIdentityInCanMakePaymentEvent);
-    } else {
-      features_.InitAndEnableFeature(
-          blink::features::kAddIdentityInCanMakePaymentEvent);
-    }
-  }
-
+  CanMakePaymentEventFieldsTest() = default;
   ~CanMakePaymentEventFieldsTest() override = default;
-
-  bool ClearFieldsInCanMakePaymentEvent() { return GetParam(); }
 
   bool GetValueOf(const std::string& js) {
     return content::EvalJs(GetActiveWebContents(), js).ExtractBool();
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(CanMakePaymentEventFieldsTest, VerifyFields) {
+IN_PROC_BROWSER_TEST_F(CanMakePaymentEventFieldsTest, VerifyFields) {
   std::string path = "/can_make_payment_event_fields";
   NavigateTo("a.com", path + "/test.html");
 
@@ -56,49 +41,25 @@ IN_PROC_BROWSER_TEST_P(CanMakePaymentEventFieldsTest, VerifyFields) {
   // invoked.
   EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), invoke));
 
-  if (ClearFieldsInCanMakePaymentEvent()) {
-    EXPECT_FALSE(GetValueOf("details.ifTopOrigin"));
-    EXPECT_FALSE(GetValueOf("details.ifPaymentRequestOrigin"));
-    EXPECT_FALSE(GetValueOf("details.ifMethodData"));
-    EXPECT_FALSE(GetValueOf("details.ifModifiers"));
+  EXPECT_FALSE(GetValueOf("details.ifTopOrigin"));
+  EXPECT_FALSE(GetValueOf("details.ifPaymentRequestOrigin"));
+  EXPECT_FALSE(GetValueOf("details.ifMethodData"));
+  EXPECT_FALSE(GetValueOf("details.ifModifiers"));
 
-    EXPECT_TRUE(GetValueOf("details.emptyTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.emptyPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.emptyMethodData"));
-    EXPECT_TRUE(GetValueOf("details.emptyModifiers"));
+  EXPECT_TRUE(GetValueOf("details.emptyTopOrigin"));
+  EXPECT_TRUE(GetValueOf("details.emptyPaymentRequestOrigin"));
+  EXPECT_TRUE(GetValueOf("details.emptyMethodData"));
+  EXPECT_TRUE(GetValueOf("details.emptyModifiers"));
 
-    EXPECT_FALSE(GetValueOf("details.definedTopOrigin"));
-    EXPECT_FALSE(GetValueOf("details.definedPaymentRequestOrigin"));
-    EXPECT_FALSE(GetValueOf("details.definedMethodData"));
-    EXPECT_FALSE(GetValueOf("details.definedModifiers"));
+  EXPECT_FALSE(GetValueOf("details.definedTopOrigin"));
+  EXPECT_FALSE(GetValueOf("details.definedPaymentRequestOrigin"));
+  EXPECT_FALSE(GetValueOf("details.definedMethodData"));
+  EXPECT_FALSE(GetValueOf("details.definedModifiers"));
 
-    EXPECT_FALSE(GetValueOf("details.inTopOrigin"));
-    EXPECT_FALSE(GetValueOf("details.inPaymentRequestOrigin"));
-    EXPECT_FALSE(GetValueOf("details.inMethodData"));
-    EXPECT_FALSE(GetValueOf("details.inModifiers"));
-  } else {
-    EXPECT_TRUE(GetValueOf("details.ifTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.ifPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.ifMethodData"));
-    EXPECT_TRUE(GetValueOf("details.ifModifiers"));
-
-    EXPECT_FALSE(GetValueOf("details.emptyTopOrigin"));
-    EXPECT_FALSE(GetValueOf("details.emptyPaymentRequestOrigin"));
-    EXPECT_FALSE(GetValueOf("details.emptyMethodData"));
-    EXPECT_FALSE(GetValueOf("details.emptyModifiers"));
-
-    EXPECT_TRUE(GetValueOf("details.definedTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.definedPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.definedMethodData"));
-    EXPECT_TRUE(GetValueOf("details.definedModifiers"));
-
-    EXPECT_TRUE(GetValueOf("details.inTopOrigin"));
-    EXPECT_TRUE(GetValueOf("details.inPaymentRequestOrigin"));
-    EXPECT_TRUE(GetValueOf("details.inMethodData"));
-    EXPECT_TRUE(GetValueOf("details.inModifiers"));
-  }
+  EXPECT_FALSE(GetValueOf("details.inTopOrigin"));
+  EXPECT_FALSE(GetValueOf("details.inPaymentRequestOrigin"));
+  EXPECT_FALSE(GetValueOf("details.inMethodData"));
+  EXPECT_FALSE(GetValueOf("details.inModifiers"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All, CanMakePaymentEventFieldsTest, testing::Bool());
 
 }  // namespace payments

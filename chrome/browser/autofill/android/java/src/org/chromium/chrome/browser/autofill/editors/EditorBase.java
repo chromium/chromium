@@ -41,16 +41,15 @@ public abstract class EditorBase<T extends EditableOption> {
     /**
      * Shows the user interface for editing the given information.
      *
-     * @param toEdit   The information to edit. Can be null if the user is adding new information
-     *                 instead of editing an existing one.
+     * @param toEdit The information to edit. Can be null if the user is adding new information
+     *     instead of editing an existing one.
      * @param doneCallback The callback to invoke when confirming the edit dialog, with the complete
-     *                     and valid information.
+     *     and valid information.
      * @param cancelCallback The callback to invoke when cancelling the edit dialog. Can be called
-     *         with null (|toEdit| was null), incomplete information (|toEdit| was incomplete),
-     *         invalid information (|toEdit| was invalid), or even with complete and valid
-     *         information (|toEdit| was both complete and valid to begin with).
-     *
-     * TODO(crbug.com/1421056) Rename this method to showEditPrompt.
+     *     with null (|toEdit| was null), incomplete information (|toEdit| was incomplete), invalid
+     *     information (|toEdit| was invalid), or even with complete and valid information (|toEdit|
+     *     was both complete and valid to begin with).
+     *     <p>TODO(crbug.com/40259080) Rename this method to showEditPrompt.
      */
     protected void edit(@Nullable T toEdit, Callback<T> doneCallback, Callback<T> cancelCallback) {
         assert doneCallback != null;

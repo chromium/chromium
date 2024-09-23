@@ -26,6 +26,10 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CORE_EXPORT CSSQuadValue : public CSSValue {
@@ -59,7 +63,7 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
 
   TypeForSerialization SerializationType() { return serialization_type_; }
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSQuadValue& other) const {
     return base::ValuesEquivalent(top_, other.top_) &&

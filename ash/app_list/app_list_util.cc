@@ -32,8 +32,9 @@ constexpr float kAppsGridCardifiedScale = 0.9f;
 }  // namespace
 
 bool IsUnhandledUnmodifiedEvent(const ui::KeyEvent& event) {
-  if (event.handled() || event.type() != ui::ET_KEY_PRESSED)
+  if (event.handled() || event.type() != ui::EventType::kKeyPressed) {
     return false;
+  }
 
   if (event.IsShiftDown() || event.IsControlDown() || event.IsAltDown())
     return false;
@@ -160,9 +161,8 @@ void PaintFocusBar(gfx::Canvas* canvas,
 
 void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
   auto& view_accessibility = view->GetViewAccessibility();
-  view_accessibility.OverrideIsLeaf(ignored);
-  view_accessibility.OverrideIsIgnored(ignored);
-  view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  view_accessibility.SetIsLeaf(ignored);
+  view_accessibility.SetIsIgnored(ignored);
 }
 
 float GetAppsGridCardifiedScale() {

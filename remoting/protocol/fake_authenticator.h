@@ -5,10 +5,13 @@
 #ifndef REMOTING_PROTOCOL_FAKE_AUTHENTICATOR_H_
 #define REMOTING_PROTOCOL_FAKE_AUTHENTICATOR_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/credentials_type.h"
 
 namespace remoting::protocol {
 
@@ -60,6 +63,8 @@ class FakeAuthenticator : public Authenticator {
     int round_trips = 1;
     Action action = Action::ACCEPT;
     bool async = true;
+    raw_ptr<base::RepeatingClosureList> reject_after_accepted;
+    CredentialsType credentials_type = CredentialsType::SHARED_SECRET;
   };
 
   FakeAuthenticator(Type type,
@@ -93,6 +98,8 @@ class FakeAuthenticator : public Authenticator {
   void Resume();
 
   // Authenticator interface.
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
@@ -100,12 +107,15 @@ class FakeAuthenticator : public Authenticator {
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
  protected:
+  void SubscribeRejectedAfterAcceptedIfNecessary();
+
   const Type type_;
-  const Config config_;
+  Config config_;
   const std::string local_id_;
   const std::string remote_id_;
 
@@ -119,6 +129,7 @@ class FakeAuthenticator : public Authenticator {
   base::OnceClosure resume_closure_;
 
   std::string auth_key_;
+  base::CallbackListSubscription reject_after_accepted_subscription_;
 };
 
 class FakeHostAuthenticatorFactory : public AuthenticatorFactory {

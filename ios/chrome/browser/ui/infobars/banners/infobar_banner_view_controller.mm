@@ -46,8 +46,12 @@ const CGFloat kContainerStackSpacing = 10.0;
 const CGFloat kContainerStackVerticalPadding = 18.0;
 const CGFloat kContainerStackHorizontalPadding = 15.0;
 
+// Labels stack constants.
+const CGFloat kLabelsStackViewVerticalSpacing = 2.0;
+
 // Icon constants.
 const CGFloat kIconCornerRadius = 5.0;
+const CGFloat kCustomSpacingAfterIcon = 14.0;
 
 // Favicon constants.
 const CGFloat kFaviconShadowRadius = 3.0;
@@ -191,6 +195,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   labelsStackView.layoutMarginsRelativeArrangement = YES;
   labelsStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       kContainerStackVerticalPadding, 0, kContainerStackVerticalPadding, 0);
+  labelsStackView.spacing = kLabelsStackViewVerticalSpacing;
   labelsStackView.accessibilityIdentifier =
       kInfobarBannerLabelsStackViewIdentifier;
   labelsStackView.isAccessibilityElement = YES;
@@ -233,6 +238,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   // Check if it should have an icon.
   if (iconContainerView) {
     [containerStack addArrangedSubview:iconContainerView];
+    [containerStack setCustomSpacing:kCustomSpacingAfterIcon
+                           afterView:iconContainerView];
   }
   // Add labels.
   [containerStack addArrangedSubview:labelsStackView];
@@ -390,7 +397,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 }
 
 - (void)setPresentsModal:(BOOL)presentsModal {
-  // TODO(crbug.com/961343): Write a test for setting this to NO;
+  // TODO(crbug.com/40626691): Write a test for setting this to NO;
   if (_presentsModal == presentsModal)
     return;
   _presentsModal = presentsModal;
@@ -606,7 +613,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)animateBannerTappedAndPresentModal {
   DCHECK(self.presentsModal);
   [self.interactionDelegate infobarBannerStartedInteraction];
-  // TODO(crbug.com/961343): Interrupt this animation in case the Banner needs
+  // TODO(crbug.com/40626691): Interrupt this animation in case the Banner needs
   // to be dismissed mid tap (Currently it will be dismmissed after the
   // animation).
   [UIView animateWithDuration:kTappedBannerAnimationDuration.InSecondsF()

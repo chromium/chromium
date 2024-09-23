@@ -34,9 +34,11 @@ ManagementBubble::ManagementBubble(const std::u16string& message,
   set_positioning_strategy(PositioningStrategy::kShowAbove);
 }
 
-gfx::Size ManagementBubble::CalculatePreferredSize() const {
+gfx::Size ManagementBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kManagementBubbleWidth,
-                   GetHeightForWidth(kManagementBubbleWidth));
+                   GetLayoutManager()->GetPreferredHeightForWidth(
+                       this, kManagementBubbleWidth));
 }
 
 BEGIN_METADATA(ManagementBubble)

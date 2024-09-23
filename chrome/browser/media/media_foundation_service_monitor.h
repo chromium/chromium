@@ -53,7 +53,7 @@ class MediaFoundationServiceMonitor final
 
   // display::DisplayObserver implementation.
   void OnDisplayAdded(const display::Display& new_display) final;
-  void OnDidRemoveDisplays() final;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) final;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) final;
 

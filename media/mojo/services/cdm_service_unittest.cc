@@ -158,15 +158,15 @@ class CdmServiceTest : public testing::Test {
   void OnCdmCreated(bool expected_result,
                     mojo::PendingRemote<mojom::ContentDecryptionModule> remote,
                     mojom::CdmContextPtr cdm_context,
-                    const std::string& error_message) {
+                    CreateCdmStatus status) {
     if (!expected_result) {
       EXPECT_FALSE(remote);
       EXPECT_FALSE(cdm_context);
-      EXPECT_TRUE(!error_message.empty());
+      EXPECT_NE(status, CreateCdmStatus::kSuccess);
       return;
     }
     EXPECT_TRUE(remote);
-    EXPECT_TRUE(error_message.empty());
+    EXPECT_EQ(status, CreateCdmStatus::kSuccess);
     cdm_remote_.Bind(std::move(remote));
     cdm_remote_.set_disconnect_handler(base::BindOnce(
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));

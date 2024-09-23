@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 
 #include <algorithm>
@@ -142,7 +147,7 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
   // TL0 then gets an allocation of 7.5/30 = 1/4. TL1 adds another 7.5fps to end
   // up at (7.5 + 7.5)/30 = 15/30 = 1/2 of the total allocation. TL2 adds the
   // final 15fps to end up at (15 + 15)/30, which is the full allocation.
-  // Therefor, fps_allocation values are as follows,
+  // Therefore, fps_allocation values are as follows,
   // fps_allocation[0][0] = kFullAllocation / 4;
   // fps_allocation[0][1] = kFullAllocation / 2;
   // fps_allocation[0][2] = kFullAllocation;
@@ -156,7 +161,7 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
     case 3:
       return {kFullAllocation / 4, kFullAllocation / 2, kFullAllocation};
     default:
-      NOTREACHED() << "Unsupported temporal layers";
+      NOTREACHED_IN_MIGRATION() << "Unsupported temporal layers";
       return {};
   }
 }

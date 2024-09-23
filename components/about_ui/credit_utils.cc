@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"

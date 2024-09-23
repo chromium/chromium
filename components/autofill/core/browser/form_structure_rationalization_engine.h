@@ -136,6 +136,10 @@ struct RationalizationRule {
   // the trigger field.
   std::vector<FieldCondition> other_field_conditions;
 
+  // This specifies conditions on the fields following or preceding the
+  // the trigger field that should not be met.
+  std::vector<FieldCondition> fields_with_conditions_do_not_exist;
+
   // What rationaliation to apply.
   std::vector<SetTypeAction> actions;
 };
@@ -163,6 +167,11 @@ class RationalizationRuleBuilder {
       std::vector<FieldCondition> other_field_conditions) &;
   RationalizationRuleBuilder&& SetOtherFieldConditions(
       std::vector<FieldCondition> other_field_conditions) &&;
+
+  RationalizationRuleBuilder& SetFieldsWithConditionsDoNotExist(
+      std::vector<FieldCondition> fields_with_conditions_do_not_exist) &;
+  RationalizationRuleBuilder&& SetFieldsWithConditionsDoNotExist(
+      std::vector<FieldCondition> fields_with_conditions_do_not_exist) &&;
 
   RationalizationRuleBuilder& SetActions(std::vector<SetTypeAction> actions) &;
   RationalizationRuleBuilder&& SetActions(

@@ -82,6 +82,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
   test('setting custom style updates src', () => {
     // Act.
     backgroundManager.setBackgroundImage({
+      attributionUrl: null,
       url: {url: 'https://example.com'},
       url2x: {url: 'https://example2x.com'},
       size: 'cover',

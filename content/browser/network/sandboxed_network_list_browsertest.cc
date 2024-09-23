@@ -4,12 +4,14 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -54,7 +56,7 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
         lpac_enabled = true;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     std::vector<base::test::FeatureRef> enabled_features;
@@ -128,15 +130,15 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
     return (contents1 == contents2);
   }
 
-  base::FilePath GetPersistentPathLocation(base::StringPiece name) {
+  base::FilePath GetPersistentPathLocation(std::string_view name) {
     return shell()->web_contents()->GetBrowserContext()->GetPath().AppendASCII(
         name);
   }
 
  private:
   size_t GetTestPreCount() {
-    constexpr base::StringPiece kPreTestPrefix = "PRE_";
-    base::StringPiece test_name =
+    constexpr std::string_view kPreTestPrefix = "PRE_";
+    std::string_view test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     size_t count = 0;
     while (base::StartsWith(test_name, kPreTestPrefix)) {

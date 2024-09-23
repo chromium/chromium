@@ -6,6 +6,7 @@
 #define REMOTING_PROTOCOL_CLIPBOARD_FILTER_H_
 
 #include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"

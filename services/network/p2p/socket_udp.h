@@ -25,6 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/p2p/socket.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
+#include "services/network/throttling/scoped_throttling_token.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
 namespace net {
@@ -34,9 +35,26 @@ class NetLog;
 namespace network {
 
 class P2PMessageThrottler;
+class ThrottlingP2PNetworkInterceptor;
+
+struct P2PPendingPacket {
+  P2PPendingPacket(const net::IPEndPoint& to,
+                   base::span<const uint8_t> content,
+                   const rtc::PacketOptions& options,
+                   uint64_t id);
+  P2PPendingPacket(const P2PPendingPacket& other);
+  ~P2PPendingPacket();
+  net::IPEndPoint to;
+  scoped_refptr<net::IOBuffer> data;
+  size_t size;
+  rtc::PacketOptions packet_options;
+  uint64_t id;
+};
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
  public:
+  friend class ThrottlingP2PNetworkInterceptor;
+
   // Limit the maximum number of batching received packets.
   static constexpr size_t kUdpMaxBatchingRecvPackets = 64;
   // Limit the maximum buffering time of batching received packets.
@@ -53,14 +71,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                net::NetLog* net_log,
                const DatagramServerSocketFactory& socket_factory,
-               absl::optional<base::UnguessableToken> devtools_token);
+               std::optional<base::UnguessableToken> devtools_token);
   P2PSocketUdp(Delegate* delegate,
                mojo::PendingRemote<mojom::P2PSocketClient> client,
                mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                net::NetLog* net_log,
-               absl::optional<base::UnguessableToken> devtools_token);
+               std::optional<base::UnguessableToken> devtools_token);
 
   P2PSocketUdp(const P2PSocketUdp&) = delete;
   P2PSocketUdp& operator=(const P2PSocketUdp&) = delete;
@@ -86,20 +104,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   typedef std::set<net::IPEndPoint> ConnectedPeerSet;
 
-  struct PendingPacket {
-    PendingPacket(const net::IPEndPoint& to,
-                  base::span<const uint8_t> content,
-                  const rtc::PacketOptions& options,
-                  uint64_t id);
-    PendingPacket(const PendingPacket& other);
-    ~PendingPacket();
-    net::IPEndPoint to;
-    scoped_refptr<net::IOBuffer> data;
-    size_t size;
-    rtc::PacketOptions packet_options;
-    uint64_t id;
-  };
-
   bool SendPacket(base::span<const uint8_t> data,
                   const P2PPacketInfo& packet_info);
   void DoRead();
@@ -113,7 +117,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                                       int32_t transport_sequence_number,
                                       int64_t send_time_ms,
                                       int result);
-  [[nodiscard]] bool DoSend(const PendingPacket& packet);
+  [[nodiscard]] bool DoSend(const P2PPendingPacket& packet);
 
   void OnSend(uint64_t packet_id,
               int32_t transport_sequence_number,
@@ -126,6 +130,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // Called at the end of sends to send out SendComplete to the |client_|.
   void ProcessSendCompletions();
 
+  void ReceiveFromInterceptor(mojom::P2PReceivedPacketPtr packet,
+                              scoped_refptr<net::IOBuffer> buffer);
+  void SendFromInterceptor(const P2PPendingPacket& packet);
+  void SendCompletionFromInterceptor(P2PSendPacketMetrics metrics);
+  void DisconnectInterceptor();
+
   std::unique_ptr<net::DatagramServerSocket> socket_;
   scoped_refptr<net::IOBuffer> recv_buffer_;
   net::IPEndPoint recv_address_;
@@ -135,7 +145,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   std::vector<mojom::P2PReceivedPacketPtr> pending_received_packets_;
   std::vector<scoped_refptr<net::IOBuffer>> pending_received_buffers_;
 
-  base::circular_deque<PendingPacket> send_queue_;
+  base::circular_deque<P2PPendingPacket> send_queue_;
   bool send_pending_ = false;
   net::DiffServCodePoint last_dscp_ = net::DSCP_CS0;
 
@@ -146,9 +156,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
   net::NetLogWithSource net_log_with_source_;
+  const std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;
+
+  raw_ptr<ThrottlingP2PNetworkInterceptor> interceptor_;
 
   // Container for batching send completions.
   std::vector<::network::P2PSendPacketMetrics> send_completions_;

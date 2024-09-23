@@ -117,7 +117,7 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     const scoped_refptr<RenderViewHostImpl>& rvh,
     FrameTreeNode* frame_tree_node,
     ProxyAccessMode proxy_access_mode,
@@ -125,7 +125,7 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   TRACE_EVENT_BEGIN(
       "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
       ChromeTrackEvent::kBrowsingContextState, this,
-      ChromeTrackEvent::kSiteInstanceGroup, site_instance->group(),
+      ChromeTrackEvent::kSiteInstanceGroup, site_instance_group,
       ChromeTrackEvent::kRenderViewHost, rvh ? rvh.get() : nullptr,
       ChromeTrackEvent::kFrameTreeNodeInfo, frame_tree_node);
 
@@ -142,16 +142,16 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
       proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
     CHECK_EQ(coop_related_group_token_.value(),
-             site_instance->coop_related_group_token());
+             site_instance_group->coop_related_group_token());
   }
 
-  auto site_instance_group_id = site_instance->group()->GetId();
+  auto site_instance_group_id = site_instance_group->GetId();
   CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
       << "A proxy already existed for this SiteInstanceGroup.";
   RenderFrameProxyHost* proxy_host = new RenderFrameProxyHost(
-      site_instance, std::move(rvh), frame_tree_node, frame_token);
+      site_instance_group, std::move(rvh), frame_tree_node, frame_token);
   proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
-  site_instance->group()->AddObserver(this);
+  site_instance_group->AddObserver(this);
 
   TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost,
                   proxy_host);
@@ -159,21 +159,14 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateOuterDelegateProxy(
-    SiteInstanceImpl* outer_contents_site_instance,
+    SiteInstanceGroup* outer_contents_site_instance_group,
     FrameTreeNode* frame_tree_node,
     const blink::RemoteFrameToken& frame_token) {
   // We only get here when Delegate for this manager is an inner delegate.
-  return CreateRenderFrameProxyHost(outer_contents_site_instance,
+  return CreateRenderFrameProxyHost(outer_contents_site_instance_group,
                                     /*rvh=*/nullptr, frame_tree_node,
                                     ProxyAccessMode::kAllowOuterDelegate,
                                     frame_token);
-}
-
-void BrowsingContextState::DeleteOuterDelegateProxy(
-    SiteInstanceGroup* outer_contents_site_instance_group) {
-  DeleteRenderFrameProxyHost(
-      outer_contents_site_instance_group,
-      BrowsingContextState::ProxyAccessMode::kAllowOuterDelegate);
 }
 
 size_t BrowsingContextState::GetProxyCount() {
@@ -217,7 +210,7 @@ bool BrowsingContextState::CommitFramePolicy(
   // Documents create iframes, iframes host new documents. Both are associated
   // with sandbox flags. They are required to be stricter or equal to their
   // owner when they change, as we go down.
-  // TODO(https://crbug.com/1262061). Enforce the invariant mentioned above,
+  // TODO(crbug.com/40202483). Enforce the invariant mentioned above,
   // once the interactions with fenced frame has been tested and clarified.
 
   bool did_change_flags = new_frame_policy.sandbox_flags !=
@@ -368,15 +361,40 @@ void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
 
 void BrowsingContextState::ActiveFrameCountIsZero(
     SiteInstanceGroup* site_instance_group) {
-  // |site_instance_group| no longer contains any active RenderFrameHosts, so we
-  // don't need to maintain a proxy there anymore.
+  CheckIfSiteInstanceGroupIsUnused(site_instance_group, kActiveFrameCount);
+}
+
+void BrowsingContextState::KeepAliveCountIsZero(
+    SiteInstanceGroup* site_instance_group) {
+  CheckIfSiteInstanceGroupIsUnused(site_instance_group, kKeepAliveCount);
+}
+
+void BrowsingContextState::CheckIfSiteInstanceGroupIsUnused(
+    SiteInstanceGroup* site_instance_group,
+    RefCountType ref_count_type) {
+  // Only delete the proxy if both counts are zero.
+  if (site_instance_group->keep_alive_count() > 0 ||
+      site_instance_group->active_frame_count() > 0) {
+    return;
+  }
+
+  // |site_instance_group| no longer contains any active RenderFrameHosts or
+  // NavigationStateKeepAlive objects, so we don't need to maintain a proxy
+  // there anymore.
   RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance_group);
   CHECK(proxy);
 
-  TRACE_EVENT_INSTANT("navigation",
-                      "BrowsingContextState::ActiveFrameCountIsZero",
-                      ChromeTrackEvent::kBrowsingContextState, this,
-                      ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  if (kActiveFrameCount) {
+    TRACE_EVENT_INSTANT("navigation",
+                        "BrowsingContextState::ActiveFrameCountIsZero",
+                        ChromeTrackEvent::kBrowsingContextState, this,
+                        ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  } else if (kKeepAliveCount) {
+    TRACE_EVENT_INSTANT("navigation",
+                        "BrowsingContextState::KeepAliveCountIsZero",
+                        ChromeTrackEvent::kBrowsingContextState, this,
+                        ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  }
 
   DeleteRenderFrameProxyHost(site_instance_group);
 }

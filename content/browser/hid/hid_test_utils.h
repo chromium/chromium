@@ -10,6 +10,7 @@
 
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,12 +56,14 @@ class MockHidDelegate : public HidDelegate {
   MOCK_METHOD2(CanRequestDevicePermission,
                bool(BrowserContext* browser_context,
                     const url::Origin& origin));
-  MOCK_METHOD3(HasDevicePermission,
+  MOCK_METHOD4(HasDevicePermission,
                bool(BrowserContext* browser_context,
+                    RenderFrameHost* render_frame_host,
                     const url::Origin& origin,
                     const device::mojom::HidDeviceInfo& device));
-  MOCK_METHOD3(RevokeDevicePermission,
+  MOCK_METHOD4(RevokeDevicePermission,
                void(BrowserContext* browser_context,
+                    RenderFrameHost* render_frame_host,
                     const url::Origin& origin,
                     const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,

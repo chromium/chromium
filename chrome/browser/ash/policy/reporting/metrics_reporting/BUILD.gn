@@ -1,0 +1,159 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("metrics_reporting") {
+  sources = [
+    "cros_healthd_metric_sampler.cc",
+    "cros_healthd_metric_sampler.h",
+    "cros_reporting_settings.cc",
+    "cros_reporting_settings.h",
+    "metric_reporting_manager.cc",
+    "metric_reporting_manager.h",
+    "metric_reporting_prefs.cc",
+    "metric_reporting_prefs.h",
+    "mojo_service_events_observer_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/apps",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/audio",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/device_activity",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_vision",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/network",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/usb",
+    "//chrome/browser/ash/policy/status_collector",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/chromeos/reporting/network",
+    "//chrome/browser/chromeos/reporting/websites",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/kiosk/vision:vision_prefs",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/constants",
+    "//components/pref_registry",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:rate_limiter_slide_window",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/user_manager",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/apps",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/audio",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/network",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/usb",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cros_healthd_info_metric_sampler_test_utils.cc",
+    "cros_healthd_info_metric_sampler_test_utils.h",
+  ]
+
+  deps = [
+    ":metrics_reporting",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cros_healthd_metric_sampler_unittest.cc",
+    "cros_reporting_settings_unittest.cc",
+    "metric_reporting_manager_unittest.cc",
+    "mojo_service_events_observer_base_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/kiosk/vision:vision_prefs",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/constants",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/metrics/fakes:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:rate_limiter_interface",
+    "//components/reporting/util:rate_limiter_slide_window",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "cros_healthd_info_metric_sampler_browsertest.cc" ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}

@@ -60,12 +60,4 @@ storage::WatcherManager* ArcDocumentsProviderBackendDelegate::GetWatcherManager(
   return &watcher_manager_;
 }
 
-void ArcDocumentsProviderBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  NOTREACHED();  // Never called by ash::FileSystemBackend.
-  std::move(callback).Run(GURL());
-}
-
 }  // namespace arc

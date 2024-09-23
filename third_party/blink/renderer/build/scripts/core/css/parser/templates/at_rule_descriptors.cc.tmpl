@@ -88,7 +88,7 @@ CSSPropertyID AtRuleDescriptorIDAsCSSPropertyID(AtRuleDescriptorID id) {
     return CSSPropertyID::{{descriptor.name.to_enum_value()}};
 {% endfor %}
   default:
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CSSPropertyID::kInvalid;
   }
 }

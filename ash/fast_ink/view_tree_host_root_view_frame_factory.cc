@@ -16,7 +16,6 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
@@ -32,7 +31,6 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -69,13 +67,9 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
   DCHECK(ui_source_id > 0);
 
   auto resource = std::make_unique<ViewTreeHostUiResource>();
-
-  auto buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-
   resource->context_provider = aura::Env::GetInstance()
                                    ->context_factory()
                                    ->SharedMainThreadRasterContextProvider();
-
   if (!resource->context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
@@ -84,16 +78,14 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
   gpu::SharedImageInterface* sii =
       resource->context_provider->SharedImageInterface();
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  CHECK(!resource->gpu_memory_buffer);
   auto client_shared_image = sii->CreateSharedImage(
-      format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage, "FastInkRootViewFrame",
-      gpu::kNullSurfaceHandle, buffer_usage);
+      {format, size, gfx::ColorSpace(), usage, "FastInkRootViewFrame"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
@@ -185,7 +177,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   frame->metadata.begin_frame_ack.has_damage = true;
   frame->metadata.device_scale_factor = device_scale_factor;
 
-  // TODO(crbug.com/1131623): Should this be ceil? Why do we choose floor?
+  // TODO(crbug.com/40150287): Should this be ceil? Why do we choose floor?
   gfx::Size size_in_pixel = gfx::ToFlooredSize(
       gfx::ConvertSizeToPixels(content_rect.size(), device_scale_factor));
 
@@ -224,8 +216,6 @@ void ViewTreeHostRootViewFrameFactory::Paint(
     const gfx::Rect& invalidation_rect,
     const gfx::Transform& rotate_transform,
     ViewTreeHostUiResource* resource) {
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();
 
@@ -235,30 +225,25 @@ void ViewTreeHostRootViewFrameFactory::Paint(
   widget_->OnNativeWidgetPaint(context);
   display_item_list->Finalize();
 
-  std::unique_ptr<SkCanvas> canvas;
   CHECK(resource->client_shared_image());
-  mapping = resource->client_shared_image()->Map();
+  auto mapping = resource->client_shared_image()->Map();
   if (!mapping) {
     TRACE_EVENT0("ui", "ViewTreeHostRootView::Paint::Map");
     LOG(ERROR) << "MapSharedImage Failed.";
     return;
   }
+
   SkImageInfo info = SkImageInfo::MakeN32Premul(mapping->Size().width(),
                                                 mapping->Size().height());
-
   uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
   int stride = mapping->Stride(0);
 
-  canvas = SkCanvas::MakeRasterDirect(info, data, stride);
-
+  auto canvas = SkCanvas::MakeRasterDirect(info, data, stride);
   canvas->setMatrix(gfx::TransformToFlattenedSkMatrix(rotate_transform));
 
   display_item_list->Raster(canvas.get());
 
   TRACE_EVENT0("ui", "ViewTreeHostRootView::Paint::Unmap");
-
-  // Unmap to flush writes to buffer.
-  mapping.reset();
 }
 
 void ViewTreeHostRootViewFrameFactory::AppendQuad(

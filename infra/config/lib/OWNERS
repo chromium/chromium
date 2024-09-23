@@ -1,0 +1,5 @@
+# Anyone that deletes a builder listed in an exemption should also be able to
+# delete its entry in the exemption. NOTE: Do *not* add new builders to the
+# exemptions. We give everyone ownership only to reduce review toil of deleting
+# builders/entries.
+per-file builder_exemptions.star=*

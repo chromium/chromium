@@ -75,9 +75,9 @@ float CSSColorValue::ComponentToColorInput(CSSNumericValue* input) {
   return input->to(CSSPrimitiveValue::UnitType::kNumber)->value();
 }
 
-static CSSColorType DetermineColorType(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() == kFunctionToken) {
-    switch (range.Peek().FunctionId()) {
+static CSSColorType DetermineColorType(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kFunctionToken) {
+    switch (stream.Peek().FunctionId()) {
       case CSSValueID::kRgb:
       case CSSValueID::kRgba:
         return CSSColorType::kRGB;
@@ -89,7 +89,7 @@ static CSSColorType DetermineColorType(CSSParserTokenRange& range) {
       default:
         return CSSColorType::kInvalid;
     }
-  } else if (range.Peek().GetType() == kHashToken) {
+  } else if (stream.Peek().GetType() == kHashToken) {
     return CSSColorType::kRGB;
   }
   return CSSColorType::kInvalidOrNamedColor;
@@ -110,13 +110,10 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
     const ExecutionContext* execution_context,
     const String& css_text,
     ExceptionState& exception_state) {
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
-  stream.ConsumeWhitespace();
-  auto range = stream.ConsumeUntilPeekedTypeIs<>();
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
-  const CSSColorType color_type = DetermineColorType(range);
+  const CSSColorType color_type = DetermineColorType(stream);
 
   // Validate it is not color function before parsing execution
   if (color_type == CSSColorType::kInvalid) {
@@ -126,7 +123,8 @@ V8UnionCSSColorValueOrCSSStyleValue* CSSColorValue::parse(
   }
 
   const CSSValue* parsed_value = css_parsing_utils::ConsumeColor(
-      range, *MakeGarbageCollected<CSSParserContext>(*execution_context));
+      stream, *MakeGarbageCollected<CSSParserContext>(*execution_context));
+  stream.ConsumeWhitespace();
 
   if (!parsed_value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,

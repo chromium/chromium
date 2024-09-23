@@ -1,5 +1,3 @@
 ci/chromeos-amd64-generic-rel-tast
+ci/chromeos-jacuzzi-rel
 ci/chromeos-octopus-rel
-ci/lacros-amd64-generic-rel-non-skylab
-ci/lacros-amd64-generic-rel-tast
-ci/lacros-arm64-generic-rel-skylab

@@ -29,7 +29,6 @@ features:
   per_profile: false
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   properties:
     allow-user-initiated-powerwash:
@@ -48,3 +47,4 @@ supported_on:
 - chrome_os:63-
 tags: []
 type: dict
+generate_device_proto: False

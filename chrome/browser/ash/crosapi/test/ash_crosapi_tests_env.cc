@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -95,22 +96,19 @@ void AshCrosapiTestEnv::Initialize() {
                                  socket_path);
 
   // Waits for socket connection to establish.
-  // TODO(crbug.com/1368029): Separate logs generated during setup from those
+  // TODO(crbug.com/40240169): Separate logs generated during setup from those
   // generated during test.
   base::FilePathWatcher watcher;
-  base::RunLoop run_loop;
-  // TODO(crbug.com/1371015): Terminate runloop if the passed chrome couldn't be
-  // exec.
+  // TODO(crbug.com/40241195): Terminate runloop if the passed chrome couldn't
+  // be exec.
+  base::test::TestFuture<const base::FilePath&, bool> future;
   CHECK(watcher.Watch(base::FilePath(socket_path),
                       base::FilePathWatcher::Type::kNonRecursive,
-                      base::BindLambdaForTesting(
-                          [&](const base::FilePath& filepath, bool error) {
-                            CHECK(!error);
-                            run_loop.Quit();
-                          })));
+                      future.GetRepeatingCallback()));
   process_ = base::LaunchProcess(command_line, {});
   CHECK(process_.IsValid());
-  run_loop.Run();
+  bool error = future.Get<1>();
+  CHECK(!error);
 
   // Sets up to use Mojo interface.
   auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);

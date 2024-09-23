@@ -151,8 +151,8 @@ class SiteDataRecorder::Data {
 
   virtual void SetDataCacheForTesting(SiteDataCache* cache) = 0;
 
-  static const Data* FromPageNode(const PageNode* page_node);
-  static Data* GetForTesting(const PageNode* page_node);
+  static const Data& FromPageNode(const PageNode* page_node);
+  static Data& GetForTesting(const PageNode* page_node);
 
   // Convenience accessor.
   static SiteDataReader* GetReaderForPageNode(const PageNode* page_node);

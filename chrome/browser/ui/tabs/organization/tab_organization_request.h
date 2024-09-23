@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -12,8 +13,20 @@
 #include "base/token.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
+#include "components/tab_groups/tab_group_id.h"
 
 class TabOrganizationSession;
+
+struct GroupData {
+  explicit GroupData(tab_groups::TabGroupId id_,
+                     std::u16string label_,
+                     std::vector<std::unique_ptr<TabData>> tabs_);
+  ~GroupData();
+
+  const tab_groups::TabGroupId id;
+  const std::u16string label;
+  const std::vector<std::unique_ptr<TabData>> tabs;
+};
 
 struct TabOrganizationResponse {
   using LogResultsCallback =
@@ -23,6 +36,7 @@ struct TabOrganizationResponse {
     explicit Organization(
         std::u16string label_,
         std::vector<TabData::TabID> tab_ids_,
+        std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt,
         std::optional<TabOrganization::ID> organization_id_ = std::nullopt);
     Organization(const Organization& organization);
     Organization(Organization&& organization);
@@ -30,6 +44,7 @@ struct TabOrganizationResponse {
 
     const std::u16string label;
     const std::vector<TabData::TabID> tab_ids;
+    std::optional<tab_groups::TabGroupId> group_id;
     std::optional<TabOrganization::ID> organization_id;
   };
 
@@ -64,6 +79,7 @@ class TabOrganizationRequest {
       base::OnceCallback<void(const TabOrganizationRequest* request)>;
 
   using TabDatas = std::vector<std::unique_ptr<TabData>>;
+  using GroupDatas = std::vector<std::unique_ptr<GroupData>>;
 
   explicit TabOrganizationRequest(
       BackendStartRequest backend_start_request_lambda = base::DoNothing(),
@@ -72,6 +88,7 @@ class TabOrganizationRequest {
 
   State state() const { return state_; }
   const TabDatas& tab_datas() const { return tab_datas_; }
+  const GroupDatas& group_datas() const { return group_datas_; }
   const std::optional<TabData::TabID> base_tab_id() const {
     return base_tab_id_;
   }
@@ -83,6 +100,9 @@ class TabOrganizationRequest {
 
   void SetResponseCallback(OnResponseCallback callback);
   TabData* AddTabData(std::unique_ptr<TabData> tab_data);
+  void AddGroupData(tab_groups::TabGroupId id,
+                    std::u16string label,
+                    std::vector<std::unique_ptr<TabData>> tabs);
 
   void StartRequest();
   void FailRequest();
@@ -98,6 +118,7 @@ class TabOrganizationRequest {
 
   State state_ = State::NOT_STARTED;
   TabDatas tab_datas_;
+  GroupDatas group_datas_;
   std::optional<TabData::TabID> base_tab_id_ = std::nullopt;
 
   // Time measurements for the request, used to log latency metrics.
@@ -109,6 +130,8 @@ class TabOrganizationRequest {
 
   BackendStartRequest backend_start_request_lambda_;
   BackendCancelRequest backend_cancel_request_lambda_;
+
+  base::WeakPtrFactory<TabOrganizationRequest> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_REQUEST_H_

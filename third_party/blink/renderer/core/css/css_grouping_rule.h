@@ -63,9 +63,13 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
 
   // For CSSRuleList
   unsigned length() const;
-  CSSRule* Item(unsigned index) const;
+  CSSRule* Item(unsigned index, bool trigger_use_counters = true) const;
 
-  void UseCountForSignalAffected() override;
+  // Get an item, but signal that it's been requested internally from the
+  // engine, and not directly from a script.
+  CSSRule* ItemInternal(unsigned index) const {
+    return Item(index, /*trigger_use_counters=*/false);
+  }
 
   void Trace(Visitor*) const override;
 

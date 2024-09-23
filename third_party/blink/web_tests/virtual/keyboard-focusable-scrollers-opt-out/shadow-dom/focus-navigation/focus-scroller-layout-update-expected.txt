@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] When checking that element is a scroller, layout information should be up to date.
+  assert_equals: expected Element node <div id="scroller" style="overflow:scroll; width:50px; he... but got Element node <body><button id="button">Button</button>\n<div id="scroll...
+Harness: the test ran to completion.
+

@@ -55,7 +55,7 @@ TEST_F(VulkanImageTest, Create) {
 
 TEST_F(VulkanImageTest, CreateWithExternalMemory) {
   {
-    // TODO(crbug.com/1069516) : Fails on current driver version on this bot.
+    // TODO(crbug.com/40125946) : Fails on current driver version on this bot.
     if (GPUTestBotConfig::CurrentConfigMatches("Win10"))
       return;
   }

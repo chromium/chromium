@@ -1,6 +1,9 @@
 <style>
   :host {
     --key-alpha-numeric-selected-bg-color: var(--cros-bg-color-dropped-elevation-1);
+    --key-container-height: 32px;
+    --key-container-padding-bottom: 6px;
+    --key-container-padding-top: 6px;
     --key-modifier-selected-bg-color: var(--cros-highlight-color);
     --key-modifier-selected-shadow-color: var(--cros-highlight-color);
   }
@@ -17,13 +20,13 @@
     box-sizing: border-box;
     display: inline-flex;
     font-weight: 500;
-    height: 32px;
+    height: var(--key-container-height);
     justify-content: center;
     margin-bottom: 2px;
     margin-inline-end: 8px;
     min-width: 32px;
-    padding-bottom: 6px;
-    padding-top: 6px;
+    padding-bottom: var(--key-container-padding-bottom);
+    padding-top: var(--key-container-padding-top);
     vertical-align: middle;
   }
 

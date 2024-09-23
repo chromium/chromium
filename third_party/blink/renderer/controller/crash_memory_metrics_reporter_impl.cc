@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom_callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
+#include "partition_alloc/oom_callback.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"

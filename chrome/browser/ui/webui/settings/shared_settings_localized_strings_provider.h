@@ -14,6 +14,9 @@ class WebUIDataSource;
 
 namespace settings {
 
+// Adds strings used by the <settings-ax-annotations-section> element.
+void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source);
+
 // Adds strings used by the <settings-captions> element.
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source);
 

@@ -43,52 +43,39 @@ class EmptyTrashIOTask : public IOTask {
 
   ~EmptyTrashIOTask() override;
 
-  // Starts empty trash trask.
+  // Starts emptying the trash bin.
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
+
+  // Marks the whole operation as cancelled. Under the hood, the actual ongoing
+  // deletion operations cannot be cancelled, and will continue until they
+  // finish.
   void Cancel() override;
 
  private:
-  // Removes the entire trash subdirectory (e.g. .Trash/files) recursively. It
-  // only iterates over the enabled trash locations.
-  void RemoveTrashSubDirectory(
-      trash::TrashPathsMap::const_iterator& trash_location,
-      const std::string& folder_name_to_remove);
+  // Called when a trash subdir has been removed.
+  void OnRemoved(size_t i, bool ok);
 
-  // After removing the trash directory, continue iterating until there are no
-  // more enabled trash directories left.
-  void OnRemoveTrashSubDirectory(trash::TrashPathsMap::const_iterator& it,
-                                 const std::string& removed_folder_name,
-                                 base::File::Error status);
+  // Finish up and invoke the completion callback.
+  void Complete();
 
-  // Finish up and invoke the `complete_callback_`.
-  void Complete(State state);
-
-  void SetCurrentOperationID(
-      storage::FileSystemOperationRunner::OperationID id);
-
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  const scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Storage key used to construct the storage::FileSystemURLs that represent
   // the various trash locations when recursively removing the trash contents.
   const blink::StorageKey storage_key_;
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
-  // A map containing paths which are enabled for trashing.
-  trash::TrashPathsMap enabled_trash_locations_;
+  // Parent path that all the source URLs descend from.
+  const base::FilePath base_path_;
 
-  // Stores the id of the restore operation if one is in progress. Used to stop
-  // the empty trash operation.
-  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
-
-  ProgressCallback progress_callback_;
+  // Completion callback.
   CompleteCallback complete_callback_;
 
-  // Represents the parent path that all the source URLs descend from. Used to
-  // work around the fact `FileSystemOperationRunner` requires relative paths
-  // only in testing.
-  const base::FilePath base_path_;
+  // Number of concurrent deletion operations that have been started but that
+  // haven't finished yet.
+  int in_flight_ = 0;
 
   base::WeakPtrFactory<EmptyTrashIOTask> weak_ptr_factory_{this};
 };

@@ -225,26 +225,20 @@
         <div id="autofillCheckboxLabel">
           $i18n{autofillCheckboxLabel}
         </div>
-        <!-- Autofill has a special on-change handler to deal with
-             Payments integration. -->
         <cr-policy-indicator indicator-type="userPolicy"
              hidden="[[!syncPrefs.autofillManaged]]">
          </cr-policy-indicator>
         <cr-toggle id="autofillCheckbox"
             checked="{{syncPrefs.autofillSynced}}"
-            on-change="onAutofillDataTypeChanged_"
+            on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(
               syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged)]]"
             aria-labelledby="autofillCheckboxLabel">
         </cr-toggle>
       </div>
+
       <div class="list-item"
-           hidden="[[shouldPaymentsCheckboxBeHidden_(
-               syncPrefs.paymentsRegistered,
-               syncPrefs.autofillRegistered)]]">
-        <!-- The Payments integration checkbox is coupled with the autofill
-             checkbox: it gets disabled and unchecked if autofill is
-             unchecked.-->
+           hidden="[[!syncPrefs.paymentsRegistered]]">
         <div>
           $i18n{paymentsCheckboxLabel}
         </div>
@@ -254,14 +248,46 @@
         <cr-toggle id="paymentsCheckbox"
             checked="{{syncPrefs.paymentsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[disablePaymentsCheckbox_(
-                syncPrefs.syncAllDataTypes, syncPrefs.autofillSynced,
-                syncPrefs.autofillManaged, syncPrefs.paymentsManaged)]]"
+            disabled="[[disableTypeCheckBox_(
+                syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged)]]"
             aria-label="$i18n{paymentsCheckboxLabel}">
         </cr-toggle>
       </div>
 
+      <div class="list-item"
+           hidden="[[!syncPrefs.productComparisonRegistered]]">
+        <div id="productComparisonsCheckboxLabel">
+          $i18n{productComparisonsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!syncPrefs.productComparisonManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.productComparisonSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged)]]"
+            aria-labelledby="productComparisonsCheckboxLabel">
+        </cr-toggle>
+      </div>
+
 <if expr="chromeos_ash">
+      <div class="list-item" id="cookiesSyncItem" hidden="[[hideCookieItem_(
+        syncStatus.syncCookiesSupported, syncPrefs.cookiesRegistered)]]">
+        <div>
+          $i18n{cookiesCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!syncPrefs.cookiesManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle id="cookiesCheckbox"
+            checked="{{syncPrefs.cookiesSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged)]]"
+            aria-label="$i18n{cookiesCheckboxLabel}">
+        </cr-toggle>
+      </div>
+
       <div class="list-item"
            hidden="[[!syncPrefs.wifiConfigurationsRegistered]]">
         <div id="wifiConfigurationsCheckboxLabel">

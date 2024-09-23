@@ -138,6 +138,7 @@ TEST_F(NetworkInterfaceCacheTest, ChangeInterface) {
   EXPECT_EQ(cache.GetConnectionType(), NetworkChangeNotifier::CONNECTION_NONE);
 }
 
-// TODO(crbug.com/1131238): Add more tests that exercise different error states.
+// TODO(crbug.com/40721278): Add more tests that exercise different error
+// states.
 
 }  // namespace net::internal

@@ -45,6 +45,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/direct_layer_tree_frame_sink.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -61,6 +62,61 @@ namespace {
 
 // This should not conflict with ids from RenderWidgetHostImpl or WindowService.
 constexpr uint32_t kDefaultClientId = std::numeric_limits<uint32_t>::max() / 2;
+
+class StandaloneBeginFrameObserver : public viz::BeginFrameObserverBase {
+ public:
+  StandaloneBeginFrameObserver() = default;
+  StandaloneBeginFrameObserver(const StandaloneBeginFrameObserver&) = delete;
+  StandaloneBeginFrameObserver& operator=(const StandaloneBeginFrameObserver&) =
+      delete;
+  ~StandaloneBeginFrameObserver() override { SetBeginFrameSource(nullptr); }
+
+  // BeginFrameObserverBase:
+  bool OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) override {
+    if (remote_observer_.is_bound()) {
+      remote_observer_->OnStandaloneBeginFrame(args);
+    }
+    return true;
+  }
+  void OnBeginFrameSourcePausedChanged(bool paused) override {}
+  bool IsRoot() const override { return true; }
+
+  void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
+    TearDownObservation();
+    begin_frame_source_ = begin_frame_source;
+    SetUpObservation();
+  }
+
+  void SetStandaloneObserver(
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) {
+    TearDownObservation();
+    remote_observer_.reset();
+    remote_observer_.Bind(std::move(observer));
+    SetUpObservation();
+  }
+
+ private:
+  void SetUpObservation() {
+    if (begin_frame_source_ && remote_observer_.is_bound() &&
+        !is_observing_begin_frame_source_) {
+      is_observing_begin_frame_source_ = true;
+      begin_frame_source_->AddObserver(this);
+    }
+  }
+
+  void TearDownObservation() {
+    if (!is_observing_begin_frame_source_) {
+      return;
+    }
+    begin_frame_source_->RemoveObserver(this);
+    begin_frame_source_ = nullptr;
+    is_observing_begin_frame_source_ = false;
+  }
+
+  mojo::Remote<viz::mojom::BeginFrameObserver> remote_observer_;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
+  bool is_observing_begin_frame_source_ = false;
+};
 
 }  // namespace
 
@@ -107,16 +163,20 @@ class InProcessContextFactory::PerCompositorData
 #if BUILDFLAG(IS_ANDROID)
   void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
-  void SetSupportedRefreshRates(
-      const std::vector<float>& refresh_rates) override {}
   void PreserveChildSurfaceControls() override {}
   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetSupportedRefreshRates(
+      const std::vector<float>& refresh_rates) override {}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   void SetDelegatedInkPointRenderer(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
   void SetStandaloneBeginFrameObserver(
-      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {
+    standalone_begin_frame_observer_.SetStandaloneObserver(std::move(observer));
+  }
 
   void SetSurfaceHandle(gpu::SurfaceHandle surface_handle) {
     surface_handle_ = surface_handle;
@@ -124,13 +184,16 @@ class InProcessContextFactory::PerCompositorData
   void SetBeginFrameSource(
       std::unique_ptr<viz::BeginFrameSource> begin_frame_source) {
     begin_frame_source_ = std::move(begin_frame_source);
+    standalone_begin_frame_observer_.SetBeginFrameSource(
+        begin_frame_source_.get());
   }
   void SetDisplay(std::unique_ptr<viz::Display> display) {
     display_ = std::move(display);
   }
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override {
-    max_vrr_interval_ = max_vrr_interval;
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override {
+    max_vsync_interval_ = max_vsync_interval;
+    vrr_state_ = vrr_state;
   }
 
   void ResetDisplayOutputParameters() {
@@ -138,7 +201,8 @@ class InProcessContextFactory::PerCompositorData
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
-    max_vrr_interval_ = std::nullopt;
+    max_vsync_interval_ = std::nullopt;
+    vrr_state_ = display::VariableRefreshRateState::kVrrNotCapable;
   }
 
   void Bind(
@@ -159,20 +223,24 @@ class InProcessContextFactory::PerCompositorData
   }
   base::TimeTicks vsync_timebase() { return vsync_timebase_; }
   base::TimeDelta vsync_interval() { return vsync_interval_; }
-  std::optional<base::TimeDelta> max_vrr_interval() {
-    return max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vsync_interval() const {
+    return max_vsync_interval_;
   }
+  display::VariableRefreshRateState vrr_state() const { return vrr_state_; }
 
  private:
   gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
+  StandaloneBeginFrameObserver standalone_begin_frame_observer_;
 
   SkM44 output_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
-  std::optional<base::TimeDelta> max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vsync_interval_;
+  display::VariableRefreshRateState vrr_state_ =
+      display::VariableRefreshRateState::kVrrNotCapable;
 
   mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
@@ -276,10 +344,10 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   data->SetDisplay(std::make_unique<viz::Display>(
       &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
-      std::move(display_dependency), std::move(output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      compositor->task_runner()));
+      &gpu_scheduler_, renderer_settings_, &debug_settings_,
+      compositor->frame_sink_id(), std::move(display_dependency),
+      std::move(output_surface), std::move(overlay_processor),
+      std::move(scheduler), compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|
@@ -295,11 +363,6 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
                                     std::move(display_private));
 
   data->Resize(compositor->size());
-}
-
-scoped_refptr<viz::ContextProvider>
-InProcessContextFactory::SharedMainThreadContextProvider() {
-  return nullptr;
 }
 
 scoped_refptr<viz::RasterContextProvider>
@@ -386,13 +449,22 @@ base::TimeDelta InProcessContextFactory::GetDisplayVSyncTimeInterval(
   return iter->second->vsync_interval();
 }
 
-std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
+std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVSyncInterval(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end()) {
     return std::nullopt;
   }
-  return iter->second->max_vrr_interval();
+  return iter->second->max_vsync_interval();
+}
+
+display::VariableRefreshRateState InProcessContextFactory::GetVrrState(
+    Compositor* compositor) const {
+  auto iter = per_compositor_data_.find(compositor);
+  if (iter == per_compositor_data_.end()) {
+    return display::VariableRefreshRateState::kVrrNotCapable;
+  }
+  return iter->second->vrr_state();
 }
 
 void InProcessContextFactory::ResetDisplayOutputParameters(

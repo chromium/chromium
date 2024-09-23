@@ -5,6 +5,7 @@
 #ifndef MEDIA_FILTERS_PASSTHROUGH_DTS_AUDIO_DECODER_H_
 #define MEDIA_FILTERS_PASSTHROUGH_DTS_AUDIO_DECODER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_log.h"
@@ -60,7 +61,7 @@ class MEDIA_EXPORT PassthroughDTSAudioDecoder : public AudioDecoder {
 
   AudioDecoderConfig config_;
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 };

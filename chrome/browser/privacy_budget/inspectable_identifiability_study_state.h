@@ -36,6 +36,7 @@ class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
   const IdentifiabilityStudyGroupSettings& group_settings() const {
     return settings_;
   }
+  bool meta_experiment_active() const { return meta_experiment_active_; }
 
   void SelectAllOffsetsForTesting();
 
@@ -43,8 +44,6 @@ class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
   using IdentifiabilityStudyState::AdjustForDroppedOffsets;
   using IdentifiabilityStudyState::kMaxSelectedSurfaceOffset;
   using IdentifiabilityStudyState::StripDisallowedSurfaces;
-
-  using IdentifiabilityStudyState::InitializeGlobalStudySettings;
 };
 
 }  // namespace test_utils

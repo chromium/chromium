@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
-import {createForUrl, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import type {LoadImageResponse} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {createForUrl, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
@@ -14,25 +15,27 @@ import {getType} from '../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {DialogType} from '../../state/state.js';
-import {FilesQuickView} from '../elements/files_quick_view.js';
+import type {DialogType} from '../../state/state.js';
+import type {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {CommandHandler, type CommandHandlerDeps} from './command_handler.js';
-import {EventType, FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
-import {MetadataItem} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {MetadataBoxController} from './metadata_box_controller.js';
-import {QuickViewModel} from './quick_view_model.js';
-import {QuickViewUma, WayToOpen} from './quick_view_uma.js';
-import {TaskController} from './task_controller.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import {EventType} from './file_selection.js';
+import type {FileTasks} from './file_tasks.js';
+import type {MetadataItem} from './metadata/metadata_item.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {MetadataBoxController} from './metadata_box_controller.js';
+import type {QuickViewModel} from './quick_view_model.js';
+import type {QuickViewUma} from './quick_view_uma.js';
+import {WayToOpen} from './quick_view_uma.js';
+import type {TaskController} from './task_controller.js';
 import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from './thumbnail_loader.js';
 import type {CommandEvent} from './ui/command.js';
-import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
+import type {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-import {ListContainer} from './ui/list_container.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
+import type {ListContainer} from './ui/list_container.js';
+import type {MultiMenuButton} from './ui/multi_menu_button.js';
 
 /**
  * Controller for QuickView.

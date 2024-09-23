@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -51,6 +52,7 @@ class ASH_EXPORT BluetoothDetailedViewController
   // DetailedViewController:
   std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
+  void ShutDown() override;
 
   // bluetooth_config::mojom::SystemPropertiesObserver:
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
@@ -77,6 +79,9 @@ class ASH_EXPORT BluetoothDetailedViewController
       remote_cros_bluetooth_config_;
   mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
+
+  mojo::Remote<mojom::HidPreservingBluetoothStateController>
+      remote_hid_preserving_bluetooth_;
 
   bluetooth_config::mojom::BluetoothSystemState system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;

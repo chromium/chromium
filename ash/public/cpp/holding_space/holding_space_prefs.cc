@@ -44,8 +44,7 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Boolean prefs.
-  registry->RegisterBooleanPref(
-      kPreviewsEnabled, !features::IsHoldingSpacePredictabilityEnabled());
+  registry->RegisterBooleanPref(kPreviewsEnabled, true);
   registry->RegisterBooleanPref(kSuggestionsExpanded, true);
 
   // Time prefs.
@@ -79,6 +78,11 @@ void AddSuggestionsExpandedChangedCallback(PrefChangeRegistrar* registrar,
 void AddTimeOfFirstAddChangedCallback(PrefChangeRegistrar* registrar,
                                       base::RepeatingClosure callback) {
   registrar->Add(kTimeOfFirstAdd, std::move(callback));
+}
+
+void AddTimeOfFirstPinChangedCallback(PrefChangeRegistrar* registrar,
+                                      base::RepeatingClosure callback) {
+  registrar->Add(kTimeOfFirstPin, std::move(callback));
 }
 
 bool IsPreviewsEnabled(PrefService* prefs) {

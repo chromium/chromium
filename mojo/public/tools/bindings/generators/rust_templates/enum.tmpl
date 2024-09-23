@@ -1,0 +1,34 @@
+{% macro declare_enum(name, enum) -%}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(transparent)]
+pub struct {{name}}(pub i32);
+
+// Alias for consistent naming, and in case the wrapper binding changes.
+pub type {{name}}_Data = {{name}};
+
+impl {{name}} {
+{%- for field in enum.fields %}
+    #[allow(non_upper_case_globals)]
+    pub const r#{{field.name}}: Self = Self({{field.numeric_value}});
+{%- endfor %}
+
+    pub fn validate(
+        &self,
+    ) -> bindings::Result<()> {
+{%- if enum.extensible %}
+        Ok(())
+{%- else %}
+        match *self {
+{%-   for field in enum.fields %}
+            #[allow(unreachable_patterns)]
+            Self::r#{{field.name}} => Ok(()),
+{%-   endfor %}
+            _ => Err(bindings::ValidationError::new(
+                bindings::ValidationErrorKind::UnknownEnumValue)),
+        }
+{%- endif %}
+    }
+}
+
+{%- endmacro -%}

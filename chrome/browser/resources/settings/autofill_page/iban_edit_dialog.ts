@@ -20,11 +20,24 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './iban_edit_dialog.html.js';
 import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
+
+/**
+ * Enum of possible states for the iban. An iban is valid if it has the correct
+ * structure, matches the length for its country code, and passes a checksum.
+ * Otherwise, it is invalid and we may show an error to the user in cases where
+ * we are certain they have entered an invalid iban (i.e. vs still typing).
+ */
+enum IbanValidationState {
+  VALID = 'valid',
+  INVALID_NO_ERROR = 'invalid-no-error',
+  INVALID_WITH_ERROR = 'invalid-with-error',
+}
 
 declare global {
   interface HTMLElementEventMap {
@@ -72,15 +85,39 @@ export class SettingsIbanEditDialogElement extends
        */
       title_: String,
 
+      /**
+       * Backing data for inputs in the dialog, each bound to the corresponding
+       * HTML elements.
+       *
+       * Note that value_ is unsanitized; code should instead use
+       * `sanitizedIban_`.
+       */
       value_: String,
       nickname_: String,
+
+      /**
+       * A sanitized version of `value_` with whitespace trimmed.
+       */
+      sanitizedIban_: {
+        type: String,
+        computed: 'sanitizeIban_(value_)',
+        observer: 'onSanitizedIbanChanged_',
+      },
+
+      /** Whether the current iban field is invalid. */
+      ibanValidationState_: {
+        type: IbanValidationState,
+        value: false,
+      },
     };
   }
 
   iban: chrome.autofillPrivate.IbanEntry|null;
+  private title_: string;
   private value_?: string;
   private nickname_?: string;
-  private title_: string;
+  private sanitizedIban_: string;
+  private ibanValidationState_: IbanValidationState;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
 
@@ -119,7 +156,7 @@ export class SettingsIbanEditDialogElement extends
   private onIbanSaveButtonClick_() {
     const iban = {
       guid: this.iban?.guid,
-      value: this.value_!.trim(),
+      value: this.sanitizedIban_,
       nickname: this.nickname_ ? this.nickname_.trim() : '',
     };
     this.dispatchEvent(new CustomEvent(
@@ -127,23 +164,54 @@ export class SettingsIbanEditDialogElement extends
     this.close();
   }
 
-  private updateSaveIbanButtonEnablement_() {
-    this.isValidIban().then(isValid => {
-      this.$.saveButton.disabled = !isValid;
-    });
+  private async onSanitizedIbanChanged_() {
+    this.ibanValidationState_ =
+        await this.computeIbanValidationState_(/*isBlur=*/ false);
+    this.$.saveButton.disabled =
+        this.ibanValidationState_ !== IbanValidationState.VALID;
+  }
+
+  private async onIbanInputBlurred_(event: Event) {
+    assert(event.type === 'blur');
+    this.ibanValidationState_ =
+        await this.computeIbanValidationState_(/*isBlur=*/ true);
+  }
+
+  private showErrorForIban_(ibanValidationState: IbanValidationState) {
+    return ibanValidationState === IbanValidationState.INVALID_WITH_ERROR;
+  }
+
+  private sanitizeIban_(value: string): string {
+    return value ? value.replace(/\s/g, '') : '';
+  }
+
+  private async computeIbanValidationState_(isBlur: boolean) {
+    const isValid = await this.isValidIban();
+
+    if (isValid) {
+      return IbanValidationState.VALID;
+    }
+
+    // We do not want to show an 'invalid iban' error to users if they have not
+    // yet finished typing the iban, but unfortunately different countries can
+    // have different iban lengths so we do not know when the user might be
+    // finished.
+    //
+    // In order to minimize false-positive errors, we only show an error if the
+    // user has entered at least 24 characters (the average IBAN length), or if
+    // they unfocus the IBAN input (which implies they are finished entering
+    // their IBAN).
+    return (this.sanitizedIban_.length >= 24 || isBlur) ?
+        IbanValidationState.INVALID_WITH_ERROR :
+        IbanValidationState.INVALID_NO_ERROR;
   }
 
   private async isValidIban(): Promise<boolean> {
-    if (!this.value_) {
-      return Promise.resolve(false);
+    if (!this.sanitizedIban_) {
+      return false;
     }
-    // The save button is enabled if the value of the IBAN is invalid (after
-    // removing all whitespace from it).
-    const isValid = await this.paymentsManager_.isValidIban(
-        this.value_!.replace(/\s/g, ''));
-    return isValid;
+    return this.paymentsManager_.isValidIban(this.sanitizedIban_);
   }
-
 
   /**
    * @param  nickname of the IBAN, undefined when not set.

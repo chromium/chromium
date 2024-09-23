@@ -19,7 +19,7 @@ using password_manager::PasswordManagerSurface;
 
 - (instancetype)initWithPasswordManagerSurface:
     (password_manager::PasswordManagerSurface)surface {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _surface = surface;
   }
   return self;

@@ -22,10 +22,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.concurrent.CountDownLatch;
@@ -53,7 +53,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
     }
 
     void setBackgroundColorOnUiThread(final int c) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.setBackgroundColor(c));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.setBackgroundColor(c));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testPictureListener() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.enableOnNewPicture(true, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.enableOnNewPicture(true, true));
 
         int pictureCount = mContentsClient.getPictureListenerHelper().getCallCount();
         mActivityTestRule.loadUrlSync(
@@ -151,10 +151,8 @@ public class AwContentsRenderTest extends AwParameterizedTest {
         Assert.assertTrue(
                 latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
-        final int width =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getWidth());
-        final int height =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getHeight());
+        final int width = ThreadUtils.runOnUiThreadBlocking(() -> mContainerView.getWidth());
+        final int height = ThreadUtils.runOnUiThreadBlocking(() -> mContainerView.getHeight());
         visibleBitmap = GraphicsTestUtils.drawAwContentsOnUiThread(mAwContents, width, height);
 
         // Things that affect DOM page visibility:
@@ -192,7 +190,8 @@ public class AwContentsRenderTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSoftwareCanvas() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        mAwContents.getSettings().setAllowFileAccess(true);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.setLayerType(View.LAYER_TYPE_SOFTWARE, null));
 
         String testFile = "android_webview/test/data/green_canvas.html";

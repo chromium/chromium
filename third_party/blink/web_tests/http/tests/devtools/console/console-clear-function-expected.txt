@@ -7,18 +7,18 @@ console-clear-function.js:18 one
 console-clear-function.js:19 two
 console-clear-function.js:20 three
 === After clear ===
-console-clear-function.js:25 Console was cleared
+Console was cleared
 
 Running: shouldNotClearWithPreserveLog
 === Before clear ===
-console-clear-function.js:25 Console was cleared
+Console was cleared
 console-clear-function.js:18 one
 console-clear-function.js:19 two
 console-clear-function.js:20 three
 === After clear ===
-console-clear-function.js:25 Console was cleared
+Console was cleared
 console-clear-function.js:18 one
 console-clear-function.js:19 two
 console-clear-function.js:20 three
-console-clear-function.js:25 console.clear() was prevented due to 'Preserve log'
+console.clear() was prevented due to 'Preserve log'
 

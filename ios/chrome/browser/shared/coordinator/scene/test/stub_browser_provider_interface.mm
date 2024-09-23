@@ -9,7 +9,7 @@
 @implementation StubBrowserProviderInterface
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _mainBrowserProvider = [[StubBrowserProvider alloc] init];
     _incognitoBrowserProvider = [[StubBrowserProvider alloc] init];
     _currentBrowserProvider = _mainBrowserProvider;

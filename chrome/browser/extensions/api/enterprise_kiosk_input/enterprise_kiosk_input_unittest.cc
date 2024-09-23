@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
+#include "chrome/common/extensions/api/enterprise_kiosk_input.h"
 
 #include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/common/extensions/api/enterprise_kiosk_input.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
+#include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
@@ -121,6 +123,17 @@ class TestInputMethodManager : public im::MockInputMethodManager {
 }  // namespace
 
 class EnterpriseKioskInputTest : public extensions::ApiUnitTest {
+ public:
+  void SetUp() override {
+    ApiUnitTest::SetUp();
+    crosapi_environment_.SetUp();
+  }
+
+  void TearDown() override {
+    crosapi_environment_.TearDown();
+    ApiUnitTest::TearDown();
+  }
+
  protected:
   base::Value::List CreateArgs(const std::string& input_method_id) {
     api::enterprise_kiosk_input::SetCurrentInputMethodOptions options;
@@ -129,6 +142,7 @@ class EnterpriseKioskInputTest : public extensions::ApiUnitTest {
     args.Append(options.ToValue());
     return args;
   }
+  crosapi::TestCrosapiEnvironment crosapi_environment_;
 };
 
 // Test for API enterprise.kioskInput.setCurrentInputMethod

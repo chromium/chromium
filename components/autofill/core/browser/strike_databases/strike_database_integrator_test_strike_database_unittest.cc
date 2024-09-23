@@ -12,10 +12,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +54,8 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
  protected:
   base::HistogramTester* GetHistogramTester() { return &histogram_tester_; }
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<StrikeDatabase> strike_database_service_;
   std::unique_ptr<StrikeDatabaseIntegratorTestStrikeDatabase> strike_database_;
@@ -124,13 +124,11 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        NonExpiringStrikesDoNotExpire) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(AutofillClock::Now());
   no_expiry_strike_database_->AddStrikes(1);
   EXPECT_EQ(1, no_expiry_strike_database_->GetStrikes());
 
   // Advance clock very far into the future.
-  test_clock.Advance(base::TimeDelta::Max());
+  task_environment_.FastForwardBy(base::Days(365) * 30);
 
   no_expiry_strike_database_->RemoveExpiredStrikes();
 
@@ -140,14 +138,12 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        RemoveExpiredStrikesTest) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(AutofillClock::Now());
   strike_database_->AddStrikes(2);
   EXPECT_EQ(2, strike_database_->GetStrikes());
 
   // Advance clock to past expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   // One strike should be removed.
   strike_database_->RemoveExpiredStrikes();
@@ -158,8 +154,8 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_EQ(11, strike_database_->GetStrikes());
 
   // Advance clock to past expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   // Strike count should be one less than the max limit.
   strike_database_->RemoveExpiredStrikes();
@@ -168,14 +164,12 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        RemoveExpiredStrikesTestLogsUMA) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(AutofillClock::Now());
   strike_database_->AddStrikes(2);
   EXPECT_EQ(2, strike_database_->GetStrikes());
 
   // Advance clock to past expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   // One strike should be removed.
   strike_database_->RemoveExpiredStrikes();
@@ -186,8 +180,8 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_EQ(11, strike_database_->GetStrikes());
 
   // Advance clock to past expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   // Strike count should be one less than the max limit.
   strike_database_->RemoveExpiredStrikes();
@@ -213,8 +207,6 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 // This test verifies correctness of http://crbug/1206176.
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        RemoveExpiredStrikesOnlyConsidersCurrentIntegrator) {
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(AutofillClock::Now());
   // Create a second test integrator, but with a different project prefix name,
   // and whose strikes explicitly do not expire.
   std::string other_project_prefix = "DifferentProjectPrefix";
@@ -231,8 +223,8 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_EQ(1, other_strike_database->GetStrikes());
 
   // Advance clock to past expiry time for |strike_database_|.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   // Attempt to expire strikes. Only |strike_database_|'s keys should be
   // affected.
@@ -336,15 +328,13 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        RemoveExpiredStrikesUniqueIdTest) {
   strike_database_->SetUniqueIdsRequired(true);
-  autofill::TestAutofillClock test_clock;
-  test_clock.SetNow(AutofillClock::Now());
   const std::string unique_id_1 = "1234";
   const std::string unique_id_2 = "9876";
   strike_database_->AddStrike(unique_id_1);
 
   // Advance clock to past the entry for |unique_id_1|'s expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   strike_database_->AddStrike(unique_id_2);
   strike_database_->RemoveExpiredStrikes();
@@ -355,8 +345,8 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_EQ(1, strike_database_->GetStrikes(unique_id_2));
 
   // Advance clock to past |unique_id_2|'s expiry time.
-  test_clock.Advance(strike_database_->GetExpiryTimeDelta().value() +
-                     base::Microseconds(1));
+  task_environment_.FastForwardBy(
+      strike_database_->GetExpiryTimeDelta().value() + base::Microseconds(1));
 
   strike_database_->RemoveExpiredStrikes();
 
@@ -418,6 +408,7 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   strike_database_->SetUniqueIdsRequired(true);
   for (size_t i = 1; i <= 10; i++) {
     strike_database_->AddStrike(base::NumberToString(i));
+    task_environment_.FastForwardBy(base::Microseconds(1));
     EXPECT_EQ(i, strike_database_->CountEntries());
   }
   // Once the 11th element is added the cleanup should reduce the number of
@@ -438,7 +429,6 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
 // the required latency since last strike requirement.
 TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
        HasRequiredDelayPassedSinceLastStrike) {
-  autofill::TestAutofillClock test_clock{AutofillClock::Now()};
   strike_database_->SetUniqueIdsRequired(true);
   strike_database_->SetRequiredDelaySinceLastStrike(base::Days(7));
 
@@ -448,11 +438,11 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_EQ(StrikeDatabaseIntegratorBase::kRequiredDelayNotPassed,
             strike_database_->GetStrikeDatabaseDecision("fake key"));
 
-  test_clock.Advance(base::Days(1));
+  task_environment_.FastForwardBy(base::Days(1));
   EXPECT_EQ(StrikeDatabaseIntegratorBase::kRequiredDelayNotPassed,
             strike_database_->GetStrikeDatabaseDecision("fake key"));
 
-  test_clock.Advance(base::Days(7));
+  task_environment_.FastForwardBy(base::Days(7));
   EXPECT_EQ(StrikeDatabaseIntegratorBase::kDoNotBlock,
             strike_database_->GetStrikeDatabaseDecision("fake key"));
 

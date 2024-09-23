@@ -5,6 +5,7 @@
 #include "ash/wm/window_state.h"
 
 #include <absl/cleanup/cleanup.h>
+
 #include <optional>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/float/float_controller.h"
@@ -43,6 +43,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -53,6 +54,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -190,48 +192,67 @@ class BoundsSetter : public aura::LayoutManager {
   }
 };
 
-WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
+WMEventType WMEventTypeFromShowState(
+    ui::mojom::WindowShowState requested_show_state) {
   switch (requested_show_state) {
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kNormal:
       return WM_EVENT_NORMAL;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return WM_EVENT_MINIMIZE;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return WM_EVENT_MAXIMIZE;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return WM_EVENT_FULLSCREEN;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       return WM_EVENT_SHOW_INACTIVE;
 
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kEnd:
       NOTREACHED() << "No WMEvent defined for the show state:"
                    << requested_show_state;
   }
   return WM_EVENT_NORMAL;
 }
 
-// Returns true if the split view divider exits which should be taken into
-// consideration when calculating the snap ratio.
-bool ShouldConsiderDivider(aura::Window* window) {
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(window->GetRootWindow());
-  return split_view_controller->InSplitViewMode() &&
-         split_view_controller->split_view_divider()->divider_widget();
+// Returns the snap ratio for the given `window` and `snap_event`.
+// - In tablet mode, window will snap to the prefixed snap ratios and some
+// adjustments will be made to account for window minimum size if needed. See
+// `SplitViewController::FindClosestPositionRatio()` for more details;
+// - In clamshell mode, window can be snapped with an arbitrary snap ratio and
+// we need to consider the window minimum size and adjust the window snap ratio
+// before committing the snap event if needed.
+float GetTargetSnapRatio(aura::Window* window,
+                         const WindowSnapWMEvent* snap_event) {
+  if (Shell::Get()->IsInTabletMode()) {
+    return snap_event->snap_ratio();
+  }
+
+  const gfx::Rect work_area(
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window->GetRootWindow()));
+  const bool is_horizontal = IsLayoutHorizontal(window);
+  const float window_minimum_length =
+      GetMinimumWindowLength(window, is_horizontal);
+  const float snap_ratio = snap_event->snap_ratio();
+  return std::max(window_minimum_length /
+                      (is_horizontal ? work_area.width() : work_area.height()),
+                  snap_ratio);
 }
 
-float GetCurrentSnapRatio(aura::Window* window,
-                          const gfx::Rect& target_bounds) {
+// This applies after the wm event has been applied and window bounds have been
+// modified.
+float AdjustCurrentSnapRatio(aura::Window* window,
+                             const gfx::Rect& target_bounds) {
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window);
   const int divider_delta =
       ShouldConsiderDivider(window) ? kSplitviewDividerShortSideLength / 2 : 0;
   if (IsLayoutHorizontal(window)) {
     return static_cast<float>(target_bounds.width() + divider_delta) /
-           static_cast<float>(maximized_bounds.width());
+           maximized_bounds.width();
   }
   return static_cast<float>(target_bounds.height() + divider_delta) /
-         static_cast<float>(maximized_bounds.height());
+         maximized_bounds.height();
 }
 
 // Move all transient children to |dst_root|, including the ones in the child
@@ -466,11 +487,11 @@ bool WindowState::HasRestoreBounds() const {
 }
 
 void WindowState::Maximize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MAXIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMaximized);
 }
 
 void WindowState::Minimize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MINIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMinimized);
 }
 
 void WindowState::Unminimize() {
@@ -532,11 +553,12 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     return;
   }
 
-  const WindowSnapWMEvent* snap_event = event->AsSnapEvent();
-
-  if (snap_event) {
+  std::unique_ptr<base::AutoReset<bool>> snap_event_lock;
+  if (const WindowSnapWMEvent* snap_event = event->AsSnapEvent()) {
+    snap_event_lock =
+        std::make_unique<base::AutoReset<bool>>(&is_handling_snap_event_, true);
     // Save `event` requested snap ratio.
-    const float target_snap_ratio = snap_event->snap_ratio();
+    const float target_snap_ratio = GetTargetSnapRatio(window_, snap_event);
     snap_ratio_ = std::make_optional(target_snap_ratio);
     snap_action_source_ = std::make_optional(snap_event->snap_action_source());
     if (IsPartial(target_snap_ratio)) {
@@ -547,19 +569,33 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     }
   }
 
-  std::unique_ptr<base::AutoReset<bool>> auto_reset;
   if (event->type() == WM_EVENT_FLOAT ||
       (current_state_->GetType() == chromeos::WindowStateType::kFloated &&
        event->IsTransitionEvent())) {
-    auto_reset = std::make_unique<base::AutoReset<bool>>(
-        &is_handling_float_event_, true);
+    {
+      // Block nested events caused by float/unfloat events to ensure the float
+      // animation is completed.
+      base::AutoReset<bool> float_lock(&is_handling_float_event_, true);
+      current_state_->OnWMEvent(this, event);
+    }
+    // Certain events need to be processed only after `is_handling_float_event_`
+    // is reset. See `SnapGroupController::OnFloatUnfloatCompleted()`.
+    if (auto* snap_group_controller = SnapGroupController::Get()) {
+      snap_group_controller->OnFloatUnfloatCompleted(window_);
+    }
+  } else {
+    current_state_->OnWMEvent(this, event);
   }
-
-  current_state_->OnWMEvent(this, event);
 
   // The current snap ratio may be different from the requested snap ratio, if
   // the window has a minimum size requirement.
-  if (event->IsBoundsEvent()) {
+  // Update snap ratio except for the following cases:
+  // 1. We are currently handling a top-level snap event, during which we should
+  // respect the snap event ratio;
+  // 2. The workspace window resizer is about to start a drag to unsnap, but the
+  // state type has not been updated yet; see `WorkspaceWindowResizer::Drag()`.
+  if (!is_handling_snap_event_ && can_update_snap_ratio_ &&
+      event->IsBoundsEvent()) {
     UpdateSnapRatio();
   }
 }
@@ -663,7 +699,8 @@ void WindowState::UpdateSnapRatio() {
 }
 
 void WindowState::ForceUpdateSnapRatio(const gfx::Rect& target_bounds) {
-  snap_ratio_ = std::make_optional(GetCurrentSnapRatio(window_, target_bounds));
+  snap_ratio_ =
+      std::make_optional(AdjustCurrentSnapRatio(window_, target_bounds));
   // If the snap ratio was adjusted, partial may have ended.
   MaybeRecordPartialDuration();
 }
@@ -713,24 +750,11 @@ void WindowState::SetBoundsChangedByUser(bool bounds_changed_by_user) {
     persistent_window_info_of_display_removal_.reset();
     persistent_window_info_of_screen_rotation_.reset();
   }
-
-  if (auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker()) {
-    window_bounds_tracker->SetWindowBoundsChangedByUser(window_,
-                                                        bounds_changed_by_user);
-  }
 }
 
 std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
     int window_component) {
   DCHECK(drag_details_);
-
-  SplitViewController* split_view_controller(
-      SplitViewController::Get(Shell::GetPrimaryRootWindow()));
-  DCHECK(split_view_controller);
-
-  if (split_view_controller->IsWindowInSplitView(window_)) {
-    split_view_controller->MaybeDetachWindow(window_);
-  }
 
   if (delegate_) {
     return delegate_->OnDragStarted(window_component);
@@ -858,7 +882,7 @@ ui::ZOrderLevel WindowState::GetZOrdering() const {
   return window_->GetProperty(aura::client::kZOrderingKey);
 }
 
-ui::WindowShowState WindowState::GetShowState() const {
+ui::mojom::WindowShowState WindowState::GetShowState() const {
   return window_->GetProperty(aura::client::kShowStateKey);
 }
 
@@ -887,7 +911,7 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
 
   // For snapped window, `GetSnappedWindowBounds` computes bounds position
   // from snap type and size from |snap_ratio|.
-  gfx::Rect snapped_bounds =
+  const gfx::Rect snapped_bounds =
       snap_ratio_ ? GetSnappedWindowBounds(
                         maximized_bounds, display, window_,
                         GetStateType() == WindowStateType::kPrimarySnapped
@@ -910,7 +934,7 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
 }
 
 void WindowState::UpdateWindowPropertiesFromStateType() {
-  ui::WindowShowState new_window_state =
+  ui::mojom::WindowShowState new_window_state =
       ToWindowShowState(current_state_->GetType());
   if (new_window_state != GetShowState()) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
@@ -967,8 +991,8 @@ void WindowState::SetBoundsDirectForTesting(const gfx::Rect& bounds) {
   SetBoundsDirect(bounds);
 }
 
-void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
-  gfx::Rect actual_new_bounds(bounds);
+void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
+  gfx::Rect actual_new_bounds(bounds_in_parent);
   // Ensure we don't go smaller than our minimum bounds in "normal" window
   // modes
   if (window_->delegate() && !IsMaximized() && !IsFullscreen()) {
@@ -1011,30 +1035,29 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
   BoundsSetter().SetBounds(window_, actual_new_bounds);
 }
 
-void WindowState::SetBoundsConstrained(const gfx::Rect& bounds) {
-  gfx::Rect work_area_in_parent =
+void WindowState::SetBoundsConstrained(const gfx::Rect& bounds_in_parent) {
+  const gfx::Rect work_area_in_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_);
-  gfx::Rect child_bounds(bounds);
+  gfx::Rect child_bounds_in_parent(bounds_in_parent);
 
-  if (window_->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
-    // Normal windows should have the top of the bounds visible.
-    AdjustBoundsToEnsureWindowVisibility(work_area_in_parent, 0, 0,
-                                         &child_bounds);
-  } else {
-    // Other types of window can have the top of the bounds outside
-    // of the screen, but we still require their size to be smaller
-    // than the screen.
-    AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds);
+  // The window's size should be smaller than the work area.
+  AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds_in_parent);
+  // Normal windows should have the top of the bounds visible.
+  // TODO(minch): Adjust the x position as well to match the functionality of
+  // this function.
+  if (window_->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
+      child_bounds_in_parent.y() < work_area_in_parent.y()) {
+    child_bounds_in_parent.set_y(work_area_in_parent.y());
   }
 
-  SetBoundsDirect(child_bounds);
+  SetBoundsDirect(child_bounds_in_parent);
 }
 
-void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
+void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds_in_parent,
                                           base::TimeDelta duration,
                                           gfx::Tween::Type tween_type) {
   if (wm::WindowAnimationsDisabled(window_)) {
-    SetBoundsDirect(bounds);
+    SetBoundsDirect(bounds_in_parent);
     return;
   }
   ui::Layer* layer = window_->layer();
@@ -1043,16 +1066,16 @@ void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   slide_settings.SetTweenType(tween_type);
   slide_settings.SetTransitionDuration(duration);
-  SetBoundsDirect(bounds);
+  SetBoundsDirect(bounds_in_parent);
 }
 
-void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
+void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
                                            std::optional<bool> float_state) {
   // Some test results in invoking CrossFadeToBounds when window is not visible.
   // No animation is necessary in that case, thus just change the bounds and
   // quit.
   if (!window_->TargetVisibility()) {
-    SetBoundsConstrained(new_bounds);
+    SetBoundsConstrained(bounds_in_parent);
     return;
   }
 
@@ -1060,7 +1083,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
   // animation, set the bounds directly instead, or animation is disabled.
   if (!window_->layer()->GetTargetTransform().IsIdentity() ||
       wm::WindowAnimationsDisabled(window_)) {
-    SetBoundsDirect(new_bounds);
+    SetBoundsDirect(bounds_in_parent);
     return;
   }
 
@@ -1073,13 +1096,16 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
       wm::RecreateLayers(window_);
 
   // Resize the window to the new size, which will force a layout and paint.
-  SetBoundsDirect(new_bounds);
+  SetBoundsDirect(bounds_in_parent);
 
   if (float_state) {
     CrossFadeAnimationForFloatUnfloat(window_, std::move(old_layer_owner),
                                       *float_state);
     return;
   }
+
+  SCOPED_CRASH_KEY_NUMBER("333095196", "state_type",
+                          base::to_underlying(GetStateType()));
 
   CrossFadeAnimation(window_, std::move(old_layer_owner));
 }

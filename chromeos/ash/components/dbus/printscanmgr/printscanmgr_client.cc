@@ -227,7 +227,8 @@ class PrintscanmgrClientImpl : public PrintscanmgrClient {
     std::move(callback).Run(response);
   }
 
-  raw_ptr<dbus::ObjectProxy> printscanmgr_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> printscanmgr_proxy_ =
+      nullptr;
   base::WeakPtrFactory<PrintscanmgrClientImpl> weak_ptr_factory_{this};
 };
 
@@ -249,6 +250,12 @@ void PrintscanmgrClient::Initialize(dbus::Bus* bus) {
 // static
 void PrintscanmgrClient::InitializeFake() {
   CHECK(!g_instance);
+  g_instance = new FakePrintscanmgrClient();
+  g_instance->Init(nullptr);
+}
+
+// static
+void PrintscanmgrClient::InitializeFakeForTest() {
   g_instance = new FakePrintscanmgrClient();
   g_instance->Init(nullptr);
 }

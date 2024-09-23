@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -14,6 +19,7 @@ void ExclusionShapeData::Trace(Visitor* visitor) const {
 
 bool ExclusionArea::operator==(const ExclusionArea& other) const {
   return type == other.type && kind == other.kind && rect == other.rect &&
+         is_hidden_for_paint == other.is_hidden_for_paint &&
          shape_data == other.shape_data;
 }
 

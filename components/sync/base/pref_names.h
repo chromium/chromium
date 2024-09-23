@@ -21,7 +21,7 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
 // NOTE: All the "internal" prefs should not be used directly by non-sync code,
 // but should rather always be accessed via SyncUserSettings.
-// TODO(crbug.com/1435427): Clean up/replace any existing references to these
+// TODO(crbug.com/40265119): Clean up/replace any existing references to these
 // prefs from outside components/sync/.
 namespace internal {
 
@@ -37,15 +37,6 @@ inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
 // (kSyncBookmarks, kSyncPasswords, etc.) can all be ignored.
 inline constexpr char kSyncKeepEverythingSynced[] =
     "sync.keep_everything_synced";
-
-#if BUILDFLAG(IS_IOS)
-// Boolean specifying whether the user has opted in account storage for
-// bookmarks and reading list or not. This pref and the following preferences
-// (kSyncBookmarks, kSyncReadingList) should be both true to enable bookmarks
-// and reading lists for signed-in, non-syncing users only.
-inline constexpr char kBookmarksAndReadingListAccountStorageOptIn[] =
-    "sync.bookmarks_and_reading_list_account_storage_opt_in";
-#endif  // BUILDFLAG(IS_IOS)
 
 // Dict specifying the selected types per account for signed-in, non-syncing
 // users only.
@@ -81,6 +72,7 @@ inline constexpr char kSyncAppsEnabledByOs[] = "sync.apps_enabled_by_os";
 inline constexpr char kSyncApps[] = "sync.apps";
 inline constexpr char kSyncAutofill[] = "sync.autofill";
 inline constexpr char kSyncBookmarks[] = "sync.bookmarks";
+inline constexpr char kSyncCookies[] = "sync.cookies";
 inline constexpr char kSyncExtensions[] = "sync.extensions";
 // Note: The pref for history is called "typed_urls" for historic reasons - not
 // worth the hassle of renaming.
@@ -88,6 +80,7 @@ inline constexpr char kSyncHistory[] = "sync.typed_urls";
 inline constexpr char kSyncPasswords[] = "sync.passwords";
 inline constexpr char kSyncPayments[] = "sync.payments";
 inline constexpr char kSyncPreferences[] = "sync.preferences";
+inline constexpr char kSyncProductComparison[] = "sync.product_comparison";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 inline constexpr char kSyncSharedTabGroupData[] = "sync.shared_tab_group_data";
@@ -104,6 +97,11 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 // PassphraseType, see ProtoPassphraseInt32ToEnum() etc.
 inline constexpr char kSyncCachedPassphraseType[] =
     "sync.cached_passphrase_type";
+
+// The user's TrustedVaultAutoUpgradeExperimentGroup, determined the first time
+// the engine is successfully initialized.
+inline constexpr char kSyncCachedTrustedVaultAutoUpgradeExperimentGroup[] =
+    "sync.cached_trusted_vault_auto_upgrade_experiment_group";
 
 // A string that can be used to restore sync encryption infrastructure on
 // startup so that the user doesn't need to provide credentials on each start.
@@ -127,12 +125,34 @@ inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
 inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
     "sync.feature_status_for_sync_to_signin";
 // Prefix for boolean per-data-type statuses, to be suffixed with "." plus
-// GetModelTypeLowerCaseRootTag().
+// DataTypeToStableLowerCaseString().
 inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
     "sync.data_type_status_for_sync_to_signin";
 
 inline constexpr char kMigrateReadingListFromLocalToAccount[] =
     "sync.migrate_reading_list_from_local_to_account";
+
+// State of SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1() and
+// MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up after those
+// migration methods are gone.
+inline constexpr char kSyncToSigninMigrationState[] =
+    "sync.sync_to_signin_migration_state";
+
+// Set only if the kMigrateSyncingUserToSignedIn flag is enabled, reset if the
+// flag is disabled.
+// If the user has sync-the-feature enabled but TransportState::PAUSED, this
+// records the first time MaybeMigrateSyncingUserToSignedIn() is called.
+// This is not written for users who are in TransportState::PAUSED with
+// sync-the-feature disabled.
+inline constexpr char kFirstTimeTriedToMigrateSyncFeaturePausedToSignin[] =
+    "sync.first_time_tried_to_migrate_sync_feature_paused_to_signin";
+
+#if BUILDFLAG(IS_ANDROID)
+// Name of a boolean pref recording whether the WEB_APK data went through a
+// one-off wipe to fix crbug.com/361771496.
+inline constexpr char kWipedWebAPkDataForMigration[] =
+    "sync.wiped_web_apk_data_for_migration";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace internal
 }  // namespace syncer::prefs

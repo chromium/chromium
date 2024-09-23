@@ -57,7 +57,7 @@ class MirroringActivity : public CastActivity,
                     const std::string& app_id,
                     cast_channel::CastMessageHandler* message_handler,
                     CastSessionTracker* session_tracker,
-                    int frame_tree_node_id,
+                    content::FrameTreeNodeId frame_tree_node_id,
                     const CastSinkExtraData& cast_data,
                     OnStopCallback callback,
                     OnSourceChangedCallback source_changed_callback);
@@ -83,7 +83,8 @@ class MirroringActivity : public CastActivity,
   void OnMessage(mirroring::mojom::CastMessagePtr message) override;
 
   // CastActivity implementation
-  void OnAppMessage(const cast::channel::CastMessage& message) override;
+  void OnAppMessage(
+      const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
 
   // mojom::MediaController implementation
@@ -219,7 +220,7 @@ class MirroringActivity : public CastActivity,
   std::optional<base::TimeDelta> target_playout_delay_;
 
   // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   OnSourceChangedCallback source_changed_callback_;

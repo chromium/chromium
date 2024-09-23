@@ -67,6 +67,7 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   void InvokeOpenEvent();
   void InvokeClosedEvent();
   void InvokeMessageEvent(std::unique_ptr<CompoundBuffer> buffer);
+  void HandleIncomingMessages();
 
   rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
 
@@ -74,8 +75,11 @@ class WebrtcDataStreamAdapter : public MessagePipe,
 
   State state_ = State::CONNECTING;
 
+  // Queue for unhandled incoming messages.
+  base::queue<std::unique_ptr<CompoundBuffer>> pending_incoming_messages_;
+
   // The data and done callbacks for queued but not yet sent messages.
-  base::queue<PendingMessage> pending_messages_;
+  base::queue<PendingMessage> pending_outgoing_messages_;
 
   base::OnceClosure pending_open_callback_;
 

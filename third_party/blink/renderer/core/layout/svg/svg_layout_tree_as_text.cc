@@ -235,7 +235,7 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
       ts << "[type=RADIAL-GRADIENT]";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
@@ -262,6 +262,16 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
     Color color = style.VisitedDependentColor(property);
     ts << " [" << paint_name << "={" << s;
     ts << "[type=SOLID] [color=" << color << "]";
+    return true;
+  }
+  if (paint.type == SVGPaintType::kContextFill) {
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=CONTEXT-FILL]";
+    return true;
+  }
+  if (paint.type == SVGPaintType::kContextStroke) {
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=CONTEXT-STROKE]";
     return true;
   }
   return false;
@@ -342,11 +352,11 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        ValueForLength(style.Y(), viewport_resolver, style,
                                       SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
-                       ValueForLength(style.UsedWidth(), viewport_resolver,
-                                      style, SVGLengthMode::kWidth));
+                       ValueForLength(style.Width(), viewport_resolver, style,
+                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "height",
-                       ValueForLength(style.UsedHeight(), viewport_resolver,
-                                      style, SVGLengthMode::kHeight));
+                       ValueForLength(style.Height(), viewport_resolver, style,
+                                      SVGLengthMode::kHeight));
   } else if (auto* element = DynamicTo<SVGLineElement>(*svg_element)) {
     const SVGLengthContext length_context(svg_element);
     WriteNameValuePair(ts, "x1",
@@ -390,7 +400,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return ts;
 }
@@ -635,13 +645,6 @@ void WriteResources(WTF::TextStream& ts,
   SVGResourceClient* client = SVGResources::GetClient(object);
   if (!client)
     return;
-  if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.MaskerResource())) {
-    WriteSVGResourceReferencePrefix(ts, "masker", masker,
-                                    style.MaskerResource()->Url(), tree_scope,
-                                    indent);
-    ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
-  }
   if (const ClipPathOperation* clip_path = style.ClipPath()) {
     if (LayoutSVGResourceClipper* clipper =
             GetSVGResourceAsType(*client, clip_path)) {

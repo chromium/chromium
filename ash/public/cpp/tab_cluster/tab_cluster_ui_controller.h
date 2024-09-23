@@ -43,6 +43,8 @@ class ASH_PUBLIC_EXPORT TabClusterUIController {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  const TabItems& tab_items() const { return tab_items_; }
+
  private:
   Clusterer clusterer_;
   // List of tab items.

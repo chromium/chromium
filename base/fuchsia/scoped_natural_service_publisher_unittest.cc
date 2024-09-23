@@ -50,10 +50,10 @@ TEST_F(ScopedNaturalServicePublisherTest, OutgoingDirectory) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connections attempts will be dropped.
+  // New connection attempts should fail immediately.
   auto client_b = base::CreateTestInterfaceClient(
       test_context_.published_services_natural());
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 TEST_F(ScopedNaturalServicePublisherTest, PseudoDir) {
@@ -80,10 +80,10 @@ TEST_F(ScopedNaturalServicePublisherTest, PseudoDir) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connection attempts will be dropped.
+  // New connection attempts should fail immediately.
   auto client_b =
       base::CreateTestInterfaceClient(pseudodir_endpoints->client.borrow());
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 }  // namespace base

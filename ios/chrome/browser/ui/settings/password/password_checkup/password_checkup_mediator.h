@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller_delegate.h"
 
 @protocol PasswordCheckupConsumer;
@@ -26,8 +27,15 @@
 // Consumer of this mediator.
 @property(nonatomic, weak) id<PasswordCheckupConsumer> consumer;
 
+// Delegate used to communicate events back to the owner of this class.
+@property(nonatomic, weak) id<PasswordCheckupMediatorDelegate> delegate;
+
 // Disconnect the observers.
 - (void)disconnect;
+
+// Updates the display of the notifications opt-in section based on whether push
+// notifications are `enabled`.
+- (void)reconfigureNotificationsSection:(BOOL)enabled;
 
 @end
 

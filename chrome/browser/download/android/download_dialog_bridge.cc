@@ -11,7 +11,6 @@
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/jni_headers/DownloadDialogBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_features.h"
@@ -60,7 +59,7 @@ void DownloadDialogBridge::ShowDialog(
 
   // This shouldn't happen, but if it does, cancel download.
   if (dialog_type == DownloadLocationDialogType::NO_DIALOG) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     DownloadDialogResult dialog_result;
     dialog_result.location_result = DownloadLocationDialogResult::USER_CANCELED;
     CompleteSelection(std::move(dialog_result));
@@ -86,7 +85,7 @@ void DownloadDialogBridge::ShowDialog(
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      profile->GetJavaObject());
 }
 
 void DownloadDialogBridge::OnComplete(

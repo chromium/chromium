@@ -4,6 +4,7 @@
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -12,7 +13,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/media_router/common/media_source.h"
@@ -158,8 +158,7 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
 
 // Converts a string containing a comma-separated list of capabilities into an
 // EnumSet of CastDeviceCapability values.
-CastDeviceCapabilitySet CastDeviceCapabilitiesFromString(
-    const base::StringPiece& s) {
+CastDeviceCapabilitySet CastDeviceCapabilitiesFromString(std::string_view s) {
   CastDeviceCapabilitySet result;
   for (const auto& capability_str : base::SplitStringPiece(
            s, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
@@ -174,8 +173,7 @@ CastDeviceCapabilitySet CastDeviceCapabilitiesFromString(
   return result;
 }
 
-std::vector<ReceiverAppType> SupportedAppTypesFromString(
-    const base::StringPiece& s) {
+std::vector<ReceiverAppType> SupportedAppTypesFromString(std::string_view s) {
   std::vector<ReceiverAppType> result;
   for (const auto& type_str : base::SplitStringPiece(
            s, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {

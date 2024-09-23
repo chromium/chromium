@@ -67,7 +67,7 @@ class VideoFrameHandleReleaserImpl final
 
   ~VideoFrameHandleReleaserImpl() final { DVLOG(3) << __func__; }
 
-  // Register a VideoFrame to recieve release callbacks. A reference to |frame|
+  // Register a VideoFrame to receive release callbacks. A reference to |frame|
   // will be held until the remote client calls ReleaseVideoFrame() or is
   // disconnected.
   //
@@ -252,7 +252,7 @@ void MojoVideoDecoderService::Initialize(
           mojo_cdm_service_context_->GetCdmContextRef(cdm_id.value());
     } else if (cdm_id != cdm_id_) {
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
-      NOTREACHED() << "The caller should not switch CDM";
+      NOTREACHED_IN_MIGRATION() << "The caller should not switch CDM";
       OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
@@ -327,7 +327,8 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
   mojo_decoder_buffer_reader_->ReadDecoderBuffer(
       std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnReaderRead, weak_this_,
-                     std::move(callback), std::move(trace_event)));
+                     mojo::GetBadMessageCallback(), std::move(callback),
+                     std::move(trace_event)));
 }
 
 void MojoVideoDecoderService::Reset(ResetCallback callback) {
@@ -367,6 +368,7 @@ void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
 }
 
 void MojoVideoDecoderService::OnReaderRead(
+    mojo::ReportBadMessageCallback bad_message_callback,
     DecodeCallback callback,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
     scoped_refptr<DecoderBuffer> buffer) {
@@ -383,8 +385,15 @@ void MojoVideoDecoderService::OnReaderRead(
     return;
   }
 
+  if (buffer->end_of_stream() && buffer->next_config() &&
+      !absl::holds_alternative<VideoDecoderConfig>(*buffer->next_config())) {
+    std::move(bad_message_callback)
+        .Run("Invalid DecoderBuffer::next_config() for video.");
+    return;
+  }
+
   decoder_->Decode(
-      buffer,
+      std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnDecoderDecoded, weak_this_,
                      std::move(callback), std::move(trace_event)));
 }
@@ -423,7 +432,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
                "video_frame", frame->AsHumanReadableString());
 
   // All MojoVideoDecoder-based decoders are hardware decoders. If you're the
-  // first to implement an out-of-process decoder that is not power efficent,
+  // first to implement an out-of-process decoder that is not power efficient,
   // you can remove this DCHECK.
   DCHECK(frame->metadata().power_efficient);
 

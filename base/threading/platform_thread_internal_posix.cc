@@ -24,7 +24,6 @@ BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
       return pair.nice_value;
   }
   NOTREACHED() << "Unknown ThreadType";
-  return 0;
 }
 
 ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value) {

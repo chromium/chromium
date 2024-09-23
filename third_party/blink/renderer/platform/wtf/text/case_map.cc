@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 #include <unicode/casemap.h>
@@ -85,7 +90,7 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
       continue;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return source;
   }
 }
@@ -107,15 +112,16 @@ CaseMap::Locale::Locale(const AtomicString& locale) {
   //
   // Only Turkic (tr and az) languages, Greek and Lithuanian require
   // locale-specific uppercasing rules.
-  if (UNLIKELY(LocaleIdMatchesLang(locale, "tr") ||
-               LocaleIdMatchesLang(locale, "az")))
+  if (LocaleIdMatchesLang(locale, "tr") || LocaleIdMatchesLang(locale, "az"))
+      [[unlikely]] {
     case_map_locale_ = turkic_or_azeri_;
-  else if (UNLIKELY(LocaleIdMatchesLang(locale, "el")))
+  } else if (LocaleIdMatchesLang(locale, "el")) [[unlikely]] {
     case_map_locale_ = greek_;
-  else if (UNLIKELY(LocaleIdMatchesLang(locale, "lt")))
+  } else if (LocaleIdMatchesLang(locale, "lt")) [[unlikely]] {
     case_map_locale_ = lithuanian_;
-  else
+  } else {
     case_map_locale_ = nullptr;
+  }
 }
 
 scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
@@ -129,7 +135,7 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
     wtf_size_t first_index_to_be_lowered = source->length();
     for (wtf_size_t i = 0; i < source->length(); ++i) {
       LChar ch = source->Characters8()[i];
-      if (UNLIKELY(IsASCIIUpper(ch) || ch & ~0x7F)) {
+      if (IsASCIIUpper(ch) || ch & ~0x7F) [[unlikely]] {
         first_index_to_be_lowered = i;
         break;
       }
@@ -146,8 +152,11 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
 
     for (wtf_size_t i = first_index_to_be_lowered; i < source->length(); ++i) {
       LChar ch = source->Characters8()[i];
-      data8[i] = UNLIKELY(ch & ~0x7F) ? static_cast<LChar>(unicode::ToLower(ch))
-                                      : ToASCIILower(ch);
+      if (ch & ~0x7F) [[unlikely]] {
+        data8[i] = static_cast<LChar>(unicode::ToLower(ch));
+      } else {
+        data8[i] = ToASCIILower(ch);
+      }
     }
 
     return new_impl;
@@ -158,8 +167,9 @@ scoped_refptr<StringImpl> CaseMap::TryFastToLowerInvariant(StringImpl* source) {
 
   const UChar* end = source->Characters16() + source->length();
   for (const UChar* chp = source->Characters16(); chp != end; ++chp) {
-    if (UNLIKELY(IsASCIIUpper(*chp)))
+    if (IsASCIIUpper(*chp)) [[unlikely]] {
       no_upper = false;
+    }
     ored |= *chp;
   }
   // Nothing to do if the string is all ASCII with no uppercase.
@@ -243,10 +253,11 @@ scoped_refptr<StringImpl> CaseMap::ToUpperInvariant(StringImpl* source,
     //  2. Lower case sharp-S converts to "SS" (two characters)
     for (int32_t i = 0; i < length; ++i) {
       LChar c = source->Characters8()[i];
-      if (UNLIKELY(c == kSmallLetterSharpSCharacter))
+      if (c == kSmallLetterSharpSCharacter) [[unlikely]] {
         ++number_sharp_s_characters;
+      }
       UChar upper = static_cast<UChar>(unicode::ToUpper(c));
-      if (UNLIKELY(upper > 0xff)) {
+      if (upper > 0xff) [[unlikely]] {
         // Since this upper-cased character does not fit in an 8-bit string, we
         // need to take the 16-bit path.
         goto upconvert;

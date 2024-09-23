@@ -20,10 +20,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.ToastManager;
 
@@ -50,7 +50,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByAdministratorToast() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByAdministratorToast(mActivity);
                 });
@@ -65,7 +65,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastNullDelegate() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(mActivity, null);
                 });
@@ -80,7 +80,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastSingleCustodian() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(
                             mActivity, ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
@@ -96,7 +96,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastMultipleCustodians() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(
                             mActivity, ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
@@ -112,7 +112,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedSettingsCannotBeResetToast() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(mActivity);
                 });

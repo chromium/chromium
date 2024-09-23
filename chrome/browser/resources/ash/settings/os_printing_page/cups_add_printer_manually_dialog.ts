@@ -109,6 +109,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
   }
 
   private onAddPrinterSucceeded_(result: PrinterSetupResult): void {
+    this.recordAddPrinterResult(/*success=*/ true);
     const showCupsPrinterToastEvent =
         new CustomEvent('show-cups-printer-toast', {
           bubbles: true,
@@ -123,6 +124,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
   }
 
   private onAddPrinterFailed_(result: PrinterSetupResult): void {
+    this.recordAddPrinterResult(/*success=*/ false);
     this.errorText_ = getErrorText(result);
   }
 
@@ -160,6 +162,7 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
   }
 
   private infoFailed_(result: PrinterSetupResult): void {
+    this.recordAddPrinterResult(/*success=*/ false);
     this.addPrinterInProgress_ = false;
     if (result === PrinterSetupResult.PRINTER_UNREACHABLE) {
       this.$.printerAddressInput.invalid = true;
@@ -218,6 +221,11 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
     if (this.canAddPrinter_()) {
       this.addPressed_();
     }
+  }
+
+  private recordAddPrinterResult(success: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'Printing.CUPS.AddPrinterManuallyResult', success);
   }
 }
 

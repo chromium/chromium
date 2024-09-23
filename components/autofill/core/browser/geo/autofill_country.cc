@@ -45,40 +45,6 @@ constexpr auto kRequiredFieldMapping =
          {FieldType::ADDRESS_HOME_ZIP,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
 
-// Autofill is experimenting with a looser set of requirements based on a newer
-// version of libaddressinput. If the experiment is successful, those
-// requirements will become the default ones. For now the differences are
-// hardcoded using that map.
-// Set of countries where the current autofill country-specific address import
-// requirements differ from the updated ones.
-constexpr auto kAddressRequirementExceptionCountries =
-    base::MakeFixedFlatSet<std::string_view>(
-        {"AF", "AI", "AL", "AM", "AR", "AZ", "BA", "BB", "BD", "BG", "BH", "BM",
-         "BN", "BS", "BT", "CC", "CL", "CO", "CR", "CV", "CX", "CY", "DO", "DZ",
-         "EC", "EH", "ET", "FO", "GE", "GN", "GT", "GW", "HM", "HR", "HT", "ID",
-         "IE", "IL", "IR", "IS", "JO", "KE", "KG", "KH", "KI", "KP", "KW", "KZ",
-         "LA", "LB", "LK", "LR", "LS", "MA", "MC", "MD", "ME", "MG", "MK", "MM",
-         "MN", "MT", "MU", "MV", "MZ", "NA", "NE", "NF", "NG", "NI", "NP", "OM",
-         "PA", "PE", "PK", "PY", "RS", "SA", "SC", "SI", "SN", "SR", "SZ", "TH",
-         "TJ", "TM", "TN", "TV", "TZ", "UY", "UZ", "VA", "VC"});
-
-// Gets the country-specific field requirements for address import.
-RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
-    const std::string& country_code) {
-  if (kAddressRequirementExceptionCountries.contains(country_code) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseUpdatedRequiredFieldsForAddressImport)) {
-    if (country_code == "CO" || country_code == "ID" || country_code == "CR") {
-      return ADDRESS_REQUIRES_LINE1_STATE;
-    } else {
-      return ADDRESS_REQUIRES_LINE1_CITY;
-    }
-  } else {
-    return CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
-        country_code);
-  }
-}
-
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
@@ -92,7 +58,8 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                       : country_code;
 
   required_fields_for_address_import_ =
-      GetRequiredFieldsForAddressImport(country_code_);
+      CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
+          country_code_);
 
   // Translate the country name by the supplied local.
   if (locale)
@@ -148,7 +115,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
 
 base::span<const AutofillCountry::AddressFormatExtension>
 AutofillCountry::address_format_extensions() const {
-  // TODO(crbug.com/1300548): Extend more countries. FR and GB already have
+  // TODO(crbug.com/40216312): Extend more countries. FR and GB already have
   // overwrites, because libaddressinput already provides string literals.
   static constexpr std::array<AddressFormatExtension, 1> fr_extensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,
@@ -168,13 +135,27 @@ AutofillCountry::address_format_extensions() const {
         .placed_after = FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
         .separator_before_label = "\n",
         .large_sized = true}}};
+  static constexpr std::array<AddressFormatExtension, 1> de_extensions{
+      {{.type = FieldType::ADDRESS_HOME_STATE,
+        .label_id = IDS_LIBADDRESSINPUT_STATE,
+        .placed_after = FieldType::ADDRESS_HOME_CITY,
+        .separator_before_label = " "}}};
+  static constexpr std::array<AddressFormatExtension, 1> pl_extensions{
+      {{.type = FieldType::ADDRESS_HOME_STATE,
+        .label_id = IDS_LIBADDRESSINPUT_STATE,
+        .placed_after = FieldType::ADDRESS_HOME_CITY,
+        .separator_before_label = " "}}};
 
   std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
       overrides = {{"FR", fr_extensions}, {"GB", gb_extensions}};
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForAdminLevel2)) {
-    overrides.emplace_back("MX", mx_extensions);
+  overrides.emplace_back("MX", mx_extensions);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
+    overrides.emplace_back("DE", de_extensions);
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
+    overrides.emplace_back("PL", pl_extensions);
   }
 
   auto extensions =
@@ -201,7 +182,7 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
 }
 
 bool AutofillCountry::IsAddressFieldRequired(FieldType field_type) const {
-  auto* mapping_it = kRequiredFieldMapping.find(field_type);
+  auto mapping_it = kRequiredFieldMapping.find(field_type);
   return mapping_it != kRequiredFieldMapping.end() &&
          (required_fields_for_address_import_ & mapping_it->second);
 }

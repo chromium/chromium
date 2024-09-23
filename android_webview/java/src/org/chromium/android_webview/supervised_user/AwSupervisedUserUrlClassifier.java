@@ -15,22 +15,21 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.url.GURL;
 
 /**
- * This class is used for determining if the current android user
- * can access a given url. It provides the link between native code and
- * GMS Core where the actual url check takes place. Note that the the user
- * may change whether they are supervised or not between calls, but this
- * is handled on the GMS side.
+ * This class is used for determining if the current android user can access a given url. It
+ * provides the link between native code and GMS Core where the actual url check takes place. Note
+ * that the the user may change whether they are supervised or not between calls, but this is
+ * handled on the GMS side.
  *
- * Additionally supervised status is per Android Profile, so will be shared
- * by all WebView Profiles. There is currently no WebView/WebView Profile specific
- * customisation allowed.
+ * <p>Additionally supervised status is per Android Profile, so will be shared by all WebView
+ * Profiles. There is currently no WebView/WebView Profile specific customisation allowed.
  *
- * All of these methods can be called on any thread.
+ * <p>All of these methods can be called on any thread.
  *
- * Lifetime: Singleton
+ * <p>Lifetime: Singleton
  */
 @JNINamespace("android_webview")
 public class AwSupervisedUserUrlClassifier {
@@ -66,6 +65,24 @@ public class AwSupervisedUserUrlClassifier {
         }
     }
 
+    public static void resetInstanceForTesting() {
+        synchronized (sInstanceLock) {
+            sInstance = null;
+            sInitialized = false;
+        }
+    }
+
+    public void checkIfNeedRestrictedContentBlocking() {
+        mDelegate.needsRestrictedContentBlocking(
+                result -> {
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                AwSupervisedUserUrlClassifierJni.get()
+                                        .setUserRequiresUrlChecks(result);
+                            });
+                });
+    }
+
     @CalledByNative
     public static boolean shouldCreateThrottle() {
         return (getInstance() != null);
@@ -78,13 +95,19 @@ public class AwSupervisedUserUrlClassifier {
                 .shouldBlockUrl(
                         requestUrl,
                         shouldBlockUrl -> {
-                            AwSupervisedUserUrlClassifierJni.get()
-                                    .onShouldBlockUrlResult(nativeCallbackPtr, shouldBlockUrl);
+                            ThreadUtils.postOnUiThread(
+                                    () -> {
+                                        AwSupervisedUserUrlClassifierJni.get()
+                                                .onShouldBlockUrlResult(
+                                                        nativeCallbackPtr, shouldBlockUrl);
+                                    });
                         });
     }
 
     @NativeMethods
     interface Natives {
         void onShouldBlockUrlResult(long callbackPtr, boolean shouldBlock);
+
+        void setUserRequiresUrlChecks(boolean userRequiresUrlChecks);
     }
 }

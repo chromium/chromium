@@ -11,9 +11,12 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
+namespace ui {
+class BrowserAccessibility;
+}
+
 namespace content {
 
-class BrowserAccessibility;
 
 class CONTENT_EXPORT AccessibilityTreeFormatterBlink
     : public ui::AXTreeFormatterBase {
@@ -34,7 +37,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  void RecursiveBuildTree(const BrowserAccessibility& node,
+  void RecursiveBuildTree(const ui::BrowserAccessibility& node,
                           base::Value::Dict* dict) const;
 
   void RecursiveBuildTree(const ui::AXNode& node,
@@ -42,7 +45,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
 
   base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
-  void AddProperties(const BrowserAccessibility& node,
+  void AddProperties(const ui::BrowserAccessibility& node,
                      base::Value::Dict* dict) const;
 
   void AddProperties(const ui::AXNode& node, base::Value::Dict* dict) const;

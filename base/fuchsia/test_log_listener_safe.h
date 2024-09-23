@@ -6,19 +6,18 @@
 #define BASE_FUCHSIA_TEST_LOG_LISTENER_SAFE_H_
 
 #include <fidl/fuchsia.logger/cpp/fidl.h>
-
 #include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/zx/time.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -70,10 +69,10 @@ class SimpleTestLogListener {
                    std::unique_ptr<fuchsia_logger::LogFilterOptions> options);
 
   // Runs the message loop until a log message containing `expected_string` is
-  // received, and returns it. Returns `absl::nullopt` if `binding_` disconnects
+  // received, and returns it. Returns `std::nullopt` if `binding_` disconnects
   // without the `expected_string` having been logged.
-  absl::optional<fuchsia_logger::LogMessage> RunUntilMessageReceived(
-      base::StringPiece expected_string);
+  std::optional<fuchsia_logger::LogMessage> RunUntilMessageReceived(
+      std::string_view expected_string);
 
  private:
   // Pushes `message` to the `logged_messages_` queue, or to `on_log_message_`.
@@ -83,7 +82,7 @@ class SimpleTestLogListener {
   zx::time ignore_before_;
 
   TestLogListenerSafe listener_;
-  absl::optional<fidl::ServerBinding<fuchsia_logger::LogListenerSafe>> binding_;
+  std::optional<fidl::ServerBinding<fuchsia_logger::LogListenerSafe>> binding_;
 
   base::circular_deque<fuchsia_logger::LogMessage> logged_messages_;
   TestLogListenerSafe::OnLogMessageCallback on_log_message_;

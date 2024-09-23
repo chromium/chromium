@@ -212,8 +212,11 @@ to send commands to Chromium.
 `${prefix}.chrome.ios.dev` and
 `${prefix}.chrome.ios.dev.CredentialProviderExtension` need the AutoFill
 Credential Provider Entitlement, which corresponds to the key
-`com.apple.developer.authentication-services.autofill-credential-provider`
-Please refer to Apple's documentation on how to set this up.
+`com.apple.developer.authentication-services.autofill-credential-provider`.
+
+`${prefix}.chrome.ios.dev` additionally needs the
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement when
+running on a real device.
 
 ### Mobile provisioning profiles for tests
 
@@ -234,13 +237,6 @@ In addition to that, then you'll need one additional provisioning profile for
 the XCTest module too. It must match the pattern:
 `${prefix}.gtest.${test-suite-name}-module`.
 
-
-### Entitlements
-
-PartitionAlloc-Everywhere is now enabled by default on iOS builds. When running
-on a real device you will need to set the
-`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
-
 ### Other applications
 
 Other applications like `ios_web_shell` usually will require mobile provisioning
@@ -255,7 +251,7 @@ be signed on the command line, e.g.:
 $ autoninja -C out/Debug-iphoneos ios_web_shell
 ninja: Entering directory `out/Debug-iphoneos'
 FAILED: ios_web_shell.app/ios_web_shell ios_web_shell.app/_CodeSignature/CodeResources ios_web_shell.app/embedded.mobileprovision
-python ../../build/config/ios/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
+python ../../build/config/apple/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
 Error: no mobile provisioning profile found for "org.chromium.ios-web-shell".
 ninja: build stopped: subcommand failed.
 ```
@@ -421,7 +417,7 @@ is open before checking out. This will increase your chances of success.
 
 ### Debugging
 
-To help with deterministic builds, and to work with Goma, the path to source
+To help with deterministic builds, and to work with reclient, the path to source
 files in debugging symbols are relative to source directory. To allow Xcode
 to find the source files, you need to ensure to have an `~/.lldbinit-Xcode`
 file with the following lines into it (substitute {SRC} for your actual path

@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/video_plane.h"
@@ -101,6 +102,10 @@ class VideoPlaneController {
   Size screen_res_;
   const Size graphics_plane_res_;
 
+  // Which coordinates to use for transforms (e.g. graphics coordinates or
+  // screen coordinates).
+  const VideoPlane::Coordinates coordinates_;
+
   // Saved video plane parameters (in graphics plane coordinates)
   // for use when screen resolution changes.
   bool have_video_plane_geometry_;
@@ -111,6 +116,7 @@ class VideoPlaneController {
   scoped_refptr<RateLimitedSetVideoPlaneGeometry> video_plane_wrapper_;
 
   base::ThreadChecker thread_checker_;
+  base::WeakPtrFactory<VideoPlaneController> weak_factory_{this};
 };
 
 }  // namespace media

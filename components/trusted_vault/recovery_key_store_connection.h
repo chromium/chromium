@@ -42,7 +42,7 @@ class RecoveryKeyStoreConnection {
   // contains an identifier for the particular recovery key store to update.
   virtual std::unique_ptr<Request> UpdateRecoveryKeyStore(
       const CoreAccountInfo& account_info,
-      const trusted_vault_pb::UpdateVaultRequest& request,
+      const trusted_vault_pb::Vault& request,
       UpdateRecoveryKeyStoreCallback callback) = 0;
 };
 

@@ -24,9 +24,12 @@
 
 namespace skgpu::graphite {
 class TextureInfo;
+struct DawnTextureInfo;
 }
 
 namespace gpu {
+
+struct VulkanYCbCrInfo;
 
 namespace gles2 {
 class FeatureInfo;
@@ -137,6 +140,8 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
 // Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
 // that this returns a single plane Dawn format i.e the TextureView format and
 // not a multi-planar format.
+// NOTE: This should not be used on Android when using YCbCr sampling, as in
+// that case wgpu::TextureFormat::EXTERNAL must be used.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
     viz::SharedImageFormat format,
     int plane_index);
@@ -147,10 +152,11 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
 // `supports_multiplanar_rendering` indicates if the dawn texture supports
 // drawing to multiplanar render targets.
 wgpu::TextureUsage SupportedDawnTextureUsage(
-    bool is_yuv_plane = false,
-    bool is_dcomp_surface = false,
-    bool supports_multiplanar_rendering = false,
-    bool supports_multiplanar_copy = false);
+    viz::SharedImageFormat format,
+    bool is_yuv_plane,
+    bool is_dcomp_surface,
+    bool supports_multiplanar_rendering,
+    bool supports_multiplanar_copy);
 
 // Returns wgpu::TextureAspect corresponding to `plane_index`. `is_yuv_plane`
 // indicates if the aspect corresponds to a plane of a multi-planar
@@ -163,6 +169,11 @@ wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
 // Returns MtlPixelFormat format for given `format`.
 GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
                                                int plane_index = 0);
+// Return the expected four character code pixel format for an IOSurface with
+// the specified format.
+GPU_GLES2_EXPORT uint32_t
+SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
+                                        bool override_rgba_to_bgra);
 #endif
 
 // Returns the graphite::TextureInfo for a given `format` and `plane_index`.
@@ -187,6 +198,7 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
+    std::optional<VulkanYCbCrInfo> ycbcr_info,
     int plane_index = 0,
     bool mipmapped = false);
 
@@ -196,6 +208,7 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool readonly,
     bool is_yuv_plane,
     int plane_index,
+    int array_slice,
     bool mipmapped,
     bool scanout_dcomp_surface,
     bool supports_multiplanar_rendering,
@@ -203,12 +216,16 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
-GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GraphiteMetalTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool is_yuv_plane = false,
     bool mipmapped = false);
 #endif
+
+GPU_GLES2_EXPORT
+skgpu::graphite::TextureInfo FallbackGraphiteBackendTextureInfo(
+    const skgpu::graphite::TextureInfo& texture_info);
 
 }  // namespace gpu
 

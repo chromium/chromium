@@ -5,12 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 
+#include <optional>
+
+#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace autofill {
 
 class AutofillDriver;
-struct FormFieldData;
+class FormFieldData;
 
 // The interface for communication from //components/autofill to
 // //components/compose.
@@ -30,13 +39,6 @@ class AutofillComposeDelegate {
     kAutofillPopup,
     kContextMenu,
   };
-  // Returns whether the compose popup is available for this `trigger_field`.
-  virtual bool ShouldOfferComposePopup(const FormFieldData& trigger_field) = 0;
-
-  // Returns whether the `trigger_field_id` has an existing state saved for
-  // `trigger_field_id`. Saved state allows the user to return to a field and
-  // resume where they left off.
-  virtual bool HasSavedState(const FieldGlobalId& trigger_field_id) = 0;
 
   // Opens the Compose UI from the `ui_entry_point` given the 'driver',
   // 'form_id', and 'field_id'.
@@ -44,6 +46,26 @@ class AutofillComposeDelegate {
                            FormGlobalId form_id,
                            FieldGlobalId field_id,
                            UiEntryPoint ui_entry_point) = 0;
+
+  // Disables the compose feature for `origin`.
+  virtual void NeverShowComposeForOrigin(const url::Origin& origin) = 0;
+
+  // Disables the compose feature everywhere.
+  virtual void DisableCompose() = 0;
+
+  // Navigates the user to the compose settings page.
+  virtual void GoToSettings() = 0;
+
+  // Returns a suggestion if the compose service is available for
+  // `field`.
+  virtual std::optional<autofill::Suggestion> GetSuggestion(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) = 0;
+
+  // Whether the Autofill nudge should be anchored on the caret or on the
+  // triggering field.
+  virtual bool ShouldAnchorNudgeOnCaret() = 0;
 };
 
 }  // namespace autofill

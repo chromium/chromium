@@ -94,10 +94,6 @@ const char kReadAloudEnabled[] = "policy.read_aloud_enabled";
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
-// Boolean policy to allow isolated apps developer mode.
-const char kIsolatedAppsDeveloperModeAllowed[] =
-    "policy.isolated_apps_developer_mode_allowed";
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Last time that a check for cloud policy management was done. This time is
 // recorded on Android and iOS so that retries aren't attempted on every
@@ -135,6 +131,15 @@ const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 
+// A boolean indicating whether scrollers should be focusable. If true, then
+// scrollers without focusable children are keyboard-focusable by default.
+const char kKeyboardFocusableScrollersEnabled[] =
+    "policy.keyboard_focusable_scrollers_enabled";
+
+// Enables the newly-specified behavior of the CSS "zoom" property.
+const char kStandardizedBrowserZoomEnabled[] =
+    "policy.standardized_browser_zoom_enabled";
+
 // Boolean indicating whether Policy Test Page is Enabled.
 // The value is controlled by the PolicyTestPageEnabled policy.
 // If this is set to True, the page will be accessible.
@@ -148,6 +153,16 @@ const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
 const char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
+// A boolean pref indicating whether to fire deprecated/removed mutation events.
+// If false, mutation events might not be fired.
+const char kMutationEventsEnabled[] =
+    "policy.deprecated_mutation_events_enabled";
+
+// Enables the deprecated :--foo syntax of CSS custom state. The :--foo syntax
+// was deprecated and replaced by :state(foo).
+const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
+    "policy.css_custom_state_deprecated_syntax_enabled";
+
 // A boolean pref indicating whether to allow deprecation of the "unload"
 // event.
 // If false, the deprecation rollout will be ignored.
@@ -159,6 +174,9 @@ const char kForcePermissionPolicyUnloadDefaultEnabled[] =
 // applied when a AlwaysOn VPN is active but not connected.
 const char kAlwaysOnVpnPreConnectUrlAllowlist[] =
     "policy.alwayson_vpn_pre_connect_url_allowlist";
+
+// Boolean value for the FloatingWorkspaceEnabled policy
+const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 #endif
 }  // namespace policy_prefs
 }  // namespace policy

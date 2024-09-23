@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/config/gpu_test_expectations_parser.h"
 
 #include <stddef.h>
@@ -32,7 +37,6 @@ enum Token {
   // os
   kConfigWin10 = 0,
   kConfigWin,
-  kConfigMacLeopard,
   kConfigMacSnowLeopard,
   kConfigMacLion,
   kConfigMacMountainLion,
@@ -47,6 +51,7 @@ enum Token {
   kConfigMacMonterey,
   kConfigMacVentura,
   kConfigMacSonoma,
+  kConfigMacSequoia,
   kConfigMac,
   kConfigLinux,
   kConfigChromeOS,
@@ -95,7 +100,6 @@ struct TokenInfo {
 const TokenInfo kTokenData[] = {
     {"win10", GPUTestConfig::kOsWin10},
     {"win", GPUTestConfig::kOsWin},
-    {"leopard", GPUTestConfig::kOsMacLeopard},
     {"snowleopard", GPUTestConfig::kOsMacSnowLeopard},
     {"lion", GPUTestConfig::kOsMacLion},
     {"mountainlion", GPUTestConfig::kOsMacMountainLion},
@@ -110,6 +114,7 @@ const TokenInfo kTokenData[] = {
     {"monterey", GPUTestConfig::kOsMacMonterey},
     {"ventura", GPUTestConfig::kOsMacVentura},
     {"sonoma", GPUTestConfig::kOsMacSonoma},
+    {"sequoia", GPUTestConfig::kOsMacSequoia},
     {"mac", GPUTestConfig::kOsMac},
     {"linux", GPUTestConfig::kOsLinux},
     {"chromeos", GPUTestConfig::kOsChromeOS},
@@ -266,7 +271,6 @@ bool GPUTestExpectationsParser::ParseConfig(
     switch (token) {
       case kConfigWin10:
       case kConfigWin:
-      case kConfigMacLeopard:
       case kConfigMacSnowLeopard:
       case kConfigMacLion:
       case kConfigMacMountainLion:
@@ -281,6 +285,7 @@ bool GPUTestExpectationsParser::ParseConfig(
       case kConfigMacMonterey:
       case kConfigMacVentura:
       case kConfigMacSonoma:
+      case kConfigMacSequoia:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -333,7 +338,6 @@ bool GPUTestExpectationsParser::ParseLine(
         break;
       case kConfigWin10:
       case kConfigWin:
-      case kConfigMacLeopard:
       case kConfigMacSnowLeopard:
       case kConfigMacLion:
       case kConfigMacMountainLion:
@@ -348,6 +352,7 @@ bool GPUTestExpectationsParser::ParseLine(
       case kConfigMacMonterey:
       case kConfigMacVentura:
       case kConfigMacSonoma:
+      case kConfigMacSequoia:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -463,7 +468,6 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
   switch (token) {
     case kConfigWin10:
     case kConfigWin:
-    case kConfigMacLeopard:
     case kConfigMacSnowLeopard:
     case kConfigMacLion:
     case kConfigMacMountainLion:
@@ -478,6 +482,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
     case kConfigMacMonterey:
     case kConfigMacVentura:
     case kConfigMacSonoma:
+    case kConfigMacSequoia:
     case kConfigMac:
     case kConfigLinux:
     case kConfigChromeOS:

@@ -3,54 +3,60 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
+
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 namespace ash {
 
-namespace {
-
-constexpr char kUserActionBack[] = "back";
-constexpr char kUserActionManual[] = "manual";
-constexpr char kUserActionEnterQuickStart[] = "quickstart";
-
-}  // namespace
 
 // static
 std::string GaiaInfoScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kManual:
       return "Manual";
     case Result::kEnterQuickStart:
-      return "Enter Quick Start";
+      return "EnterQuickStart";
     case Result::kQuickStartOngoing:
-      return "Quick Start ongoing";
+      return BaseScreen::kNotApplicable;
     case Result::kBack:
       return "Back";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GaiaInfoScreen::GaiaInfoScreen(base::WeakPtr<GaiaInfoScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaInfoScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
 GaiaInfoScreen::~GaiaInfoScreen() = default;
 
 bool GaiaInfoScreen::MaybeSkip(WizardContext& context) {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged() ||
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
       context.is_add_person_flow || context.skip_to_login_for_tests) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
+
+  // Continue QuickStart flow if there is an ongoing setup. This is checked in
+  // the GaiaScreen as well in case the GaiaInfoScreen is not shown to a Quick
+  // Start user.
+  if (context.quick_start_setup_ongoing) {
+    exit_callback_.Run(Result::kQuickStartOngoing);
+    return true;
+  }
+
   return false;
 }
 
@@ -59,42 +65,41 @@ void GaiaInfoScreen::ShowImpl() {
     return;
   }
 
-  // Continue QuickStart flow if there is an ongoing setup. This is checked in
-  // the GaiaScreen as well in case the GaiaInfoScreen is not shown to a Quick
-  // Start user.
-  if (context()->quick_start_setup_ongoing) {
-    exit_callback_.Run(Result::kQuickStartOngoing);
-    return;
-  }
-
   // Determine the QuickStart entrypoint button visibility
   WizardController::default_controller()
       ->quick_start_controller()
       ->DetermineEntryPointVisibility(
-          base::BindOnce(&GaiaInfoScreen::SetQuickStartButtonVisibility,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&GaiaInfoScreen::SetQuickStartButtonVisibility,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   view_->Show();
 }
 
 void GaiaInfoScreen::HideImpl() {}
 
-void GaiaInfoScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionBack) {
-    exit_callback_.Run(Result::kBack);
-  } else if (action_id == kUserActionManual) {
+void GaiaInfoScreen::OnBackClicked() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run(Result::kBack);
+}
+
+void GaiaInfoScreen::OnNextClicked(UserCreationFlowType user_flow) {
+  if (is_hidden()) {
+    return;
+  }
+  if (user_flow == UserCreationFlowType::kManual) {
     exit_callback_.Run(Result::kManual);
-  } else if (action_id == kUserActionEnterQuickStart) {
-    exit_callback_.Run(Result::kEnterQuickStart);
   } else {
-    BaseScreen::OnUserAction(args);
+    CHECK(context()->quick_start_enabled);
+    CHECK(!context()->quick_start_setup_ongoing);
+    exit_callback_.Run(Result::kEnterQuickStart);
   }
 }
 
 void GaiaInfoScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && view_) {
-    view_->SetQuickStartVisible();
+  if (visible && GetRemote()->is_bound()) {
+    (*GetRemote())->SetQuickStartVisible();
   }
 }
 

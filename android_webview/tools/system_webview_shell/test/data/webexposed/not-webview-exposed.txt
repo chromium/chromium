@@ -1,3 +1,7 @@
+# compute pressure api not enabled in webview, crbug.com/341537009
+interface PressureObserver
+interface PressureRecord
+
 # speech synthesis api not enabled in webview
 # but speech recognition is enabled, crbug.com/487255
 interface SpeechSynthesis : EventTarget
@@ -5,10 +9,6 @@ interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent
 interface SpeechSynthesisEvent : Event
 interface SpeechSynthesisUtterance : EventTarget
 interface SpeechSynthesisVoice
-
-# permissions api not enabled in webview, crbug.com/490120
-interface PermissionStatus : EventTarget
-interface Permissions
 
 # notifications api not enabled in webview, crbug.com/434712
 interface Notification : EventTarget
@@ -63,18 +63,16 @@ interface HTMLMediaElement : HTMLElement
     getter disableRemotePlayback       # crbug.com/521319
     getter remote                      # crbug.com/521319
 
-# permissions API (crbug.com/490120), presentation API (crbug.com/521319),
+# presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
 # WebXr API (crbug.com/1012899), WebHID API (crbug.com/1164125), Web
 # Bluetooth API (crbug.com/1100993), WebUSB API (crbug.com/933055) and
 # the Login Status API (crbug.com/1340252) are not supported in webview.
 interface Navigator
-    getter bluetooth                   # crbug.com/1100993
     getter hid                         # crbug.com/1164125
     getter login                       # crbug.com/1340252
     getter mediaSession                # crbug.com/925997
-    getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
     getter serial                      # crbug.com/1164036
     getter usb                         # crbug.com/1012899
@@ -206,16 +204,6 @@ interface WindowControlsOverlayGeometryChangeEvent : Event
 interface Navigator
     getter windowControlsOverlay
 
-# Web Bluetooth is not implemented on WebView. crbug.com/1100993
-interface Bluetooth : EventTarget
-interface BluetoothCharacteristicProperties
-interface BluetoothDevice : EventTarget
-interface BluetoothRemoteGATTCharacteristic : EventTarget
-interface BluetoothRemoteGATTDescriptor
-interface BluetoothRemoteGATTServer
-interface BluetoothRemoteGATTService
-interface BluetoothUUID
-
 # WebUSB is not implemented on WebView. crbug.com/933055
 interface USB : EventTarget
 interface USBConnectionEvent : Event
@@ -270,6 +258,43 @@ interface DocumentPictureInPictureEvent : Event
     method showSaveFilePicker                # File System Access API, crbug.com/1011535
     method showDirectoryPicker               # File System Access API, crbug.com/1011535
     method queryLocalFonts                   # Local Font Access API, crbug.com/1326898
+    getter sharedStorage                     # Shared storage API
+    getter fence                             # Fenced frames API
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers
+
+# Shared storage API is not implemented in WebView
+interface HTMLIFrameElement : HTMLElement
+    getter sharedStorageWritable
+    setter sharedStorageWritable
+interface HTMLImageElement : HTMLElement
+    getter sharedStorageWritable
+    setter sharedStorageWritable
+interface Image
+    getter sharedStorageWritable
+    setter sharedStorageWritable
+interface SharedStorageWorklet
+interface SharedStorage
+
+# Fenced frames API is not implemented in WebView
+interface FencedFrameConfig
+interface HTMLFencedFrameElement : HTMLElement
+interface Fence
+interface Navigator
+    method canLoadAdAuctionFencedFrame
+
+# Protected Audiences (formerly FLEDGE) is not implemented in WebView
+interface Navigator
+    getter deprecatedRunAdAuctionEnforcesKAnonymity
+    getter protectedAudience
+    method adAuctionComponents
+    method canLoadAdAuctionFencedFrame
+    method clearOriginJoinedAdInterestGroups
+    method createAuctionNonce
+    method deprecatedReplaceInURN
+    method deprecatedURNToURL
+    method joinAdInterestGroup
+    method leaveAdInterestGroup
+    method runAdAuction
+    method updateAdInterestGroups

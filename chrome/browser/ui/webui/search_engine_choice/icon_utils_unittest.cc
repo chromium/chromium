@@ -8,39 +8,26 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/eea_countries_ids.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class IconUtilsTest : public ::testing::Test {
  public:
-  IconUtilsTest() {
-    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
-    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
-    search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(
-            pref_service_);
-  }
-
   ~IconUtilsTest() override = default;
-  PrefService* pref_service() { return &pref_service_; }
+  PrefService* pref_service() {
+    return &search_engines_test_environment_.pref_service();
+  }
   search_engines::SearchEngineChoiceService* search_engine_choice_service() {
-    return search_engine_choice_service_.get();
+    return &search_engines_test_environment_.search_engine_choice_service();
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 TEST_F(IconUtilsTest, GetSearchEngineGeneratedIconPath) {
@@ -49,10 +36,11 @@ TEST_F(IconUtilsTest, GetSearchEngineGeneratedIconPath) {
       switches::kSearchEngineChoiceCountry));
 
   for (int country_id : search_engines::kEeaChoiceCountriesIds) {
+    search_engine_choice_service()->ClearCountryIdCacheForTesting();
     pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            pref_service(), search_engine_choice_service(), nullptr);
+            pref_service(), search_engine_choice_service());
     for (const std::unique_ptr<TemplateURLData>& url : urls) {
       EXPECT_FALSE(GetSearchEngineGeneratedIconPath(url->keyword()).empty())
           << "Missing icon for " << url->keyword() << ". Try re-running "

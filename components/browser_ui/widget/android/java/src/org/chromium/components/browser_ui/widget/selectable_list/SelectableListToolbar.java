@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.selectable_list;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -26,13 +27,15 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.MenuRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -85,12 +88,18 @@ public class SelectableListToolbar<E> extends Toolbar
         int SEARCH_VIEW = 2;
     }
 
-    @IntDef({NavigationButton.NONE, NavigationButton.BACK, NavigationButton.SELECTION_BACK})
+    @IntDef({
+        NavigationButton.NONE,
+        NavigationButton.SEARCH_BACK,
+        NavigationButton.SELECTION_BACK,
+        NavigationButton.NORMAL_VIEW_BACK
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NavigationButton {
         int NONE = 0;
-        int BACK = 1;
+        int SEARCH_BACK = 1;
         int SELECTION_BACK = 2;
+        int NORMAL_VIEW_BACK = 3;
     }
 
     protected boolean mIsSelectionEnabled;
@@ -105,20 +114,21 @@ public class SelectableListToolbar<E> extends Toolbar
     private SearchDelegate mSearchDelegate;
     private boolean mSearchEnabled;
     private boolean mUpdateStatusBarColor;
+    private boolean mShowBackInNormalView;
 
     protected NumberRollView mNumberRollView;
     private Drawable mMenuButton;
     private Drawable mNavigationIconDrawable;
 
     private @NavigationButton int mNavigationButton;
-    private int mTitleResId;
-    private int mSearchMenuItemId;
-    private int mInfoMenuItemId;
-    private int mNormalGroupResId;
-    private int mSelectedGroupResId;
+    private @StringRes int mTitleResId;
+    private @IdRes int mSearchMenuItemId;
+    private @IdRes int mInfoMenuItemId;
+    private @IdRes int mNormalGroupResId;
+    private @IdRes int mSelectedGroupResId;
 
-    private int mNormalBackgroundColor;
-    private int mSearchBackgroundColor;
+    private @ColorInt int mNormalBackgroundColor;
+    private @ColorInt int mSearchBackgroundColor;
     private ColorStateList mIconColorList;
 
     private UiConfig mUiConfig;
@@ -128,8 +138,6 @@ public class SelectableListToolbar<E> extends Toolbar
     private int mModernToolbarSearchIconOffsetPx;
 
     private boolean mIsDestroyed;
-    private boolean mShowInfoItem;
-    private boolean mInfoShowing;
 
     private boolean mShowInfoIcon;
     private int mShowInfoStringId;
@@ -153,18 +161,7 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     /**
-     * Initializes the SelectionToolbar.
-     *
-     * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
-     * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
-     *                   set a title when the selection is cleared.
-     * @param normalGroupResId The resource id of the menu group to show when a selection isn't
-     *                         established.
-     * @param selectedGroupResId The resource id of the menu item to show when a selection is
-     *                           established.
-     * @param updateStatusBarColor Whether the status bar color should be updated to match the
-     *                             toolbar color. If true, the status bar will only be updated if
-     *                             the current device fully supports theming and is on Android M+.
+     * @see {@link #initialize(SelectionDelegate, int, int, int, boolean, int, boolean)}.
      */
     public void initialize(
             SelectionDelegate<E> delegate,
@@ -172,7 +169,42 @@ public class SelectableListToolbar<E> extends Toolbar
             int normalGroupResId,
             int selectedGroupResId,
             boolean updateStatusBarColor) {
+        initialize(
+                delegate,
+                titleResId,
+                normalGroupResId,
+                selectedGroupResId,
+                updateStatusBarColor,
+                /* menuResId= */ 0,
+                /* showBackInNormalView= */ false);
+    }
+
+    /**
+     * Initializes the SelectionToolbar.
+     *
+     * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
+     * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
+     *     set a title when the selection is cleared.
+     * @param normalGroupResId The resource id of the menu group to show when a selection isn't
+     *     established.
+     * @param selectedGroupResId The resource id of the menu item to show when a selection is
+     *     established.
+     * @param updateStatusBarColor Whether the status bar color should be updated to match the
+     *     toolbar color. If true, the status bar will only be updated if the current device fully
+     *     supports theming and is on Android M+.
+     * @param menuResId The resource id of the menu. {@code 0} if not required.
+     * @param showBackInNormalView Whether the back button should be shown in normal view.
+     */
+    public void initialize(
+            SelectionDelegate<E> delegate,
+            @StringRes int titleResId,
+            @IdRes int normalGroupResId,
+            @IdRes int selectedGroupResId,
+            boolean updateStatusBarColor,
+            @MenuRes int menuResId,
+            boolean showBackInNormalView) {
         mTitleResId = titleResId;
+        if (menuResId != Resources.ID_NULL) inflateMenu(menuResId);
         mNormalGroupResId = normalGroupResId;
         mSelectedGroupResId = selectedGroupResId;
         // TODO(twellington): Setting the status bar color crashes on Nokia devices. Re-enable
@@ -219,18 +251,26 @@ public class SelectableListToolbar<E> extends Toolbar
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
         mHideInfoStringId = R.string.hide_info;
+
+        if (showBackInNormalView) {
+            mShowBackInNormalView = true;
+            setNavigationButton(NavigationButton.NORMAL_VIEW_BACK);
+        }
     }
 
     /**
      * Inflates and initializes the search view.
+     *
      * @param searchDelegate The delegate that will handle performing searches.
      * @param hintStringResId The hint text to show in the search view's EditText box.
      * @param searchMenuItemId The menu item used to activate the search view. This item will be
-     *                         hidden when selection is enabled or if the list of selectable items
-     *                         associated with this toolbar is empty.
+     *     hidden when selection is enabled or if the list of selectable items associated with this
+     *     toolbar is empty.
      */
     public void initializeSearchView(
-            SearchDelegate searchDelegate, int hintStringResId, int searchMenuItemId) {
+            SearchDelegate searchDelegate,
+            @StringRes int hintStringResId,
+            @IdRes int searchMenuItemId) {
         mHasSearchView = true;
         mSearchDelegate = searchDelegate;
         mSearchMenuItemId = searchMenuItemId;
@@ -304,11 +344,14 @@ public class SelectableListToolbar<E> extends Toolbar
         switch (mNavigationButton) {
             case NavigationButton.NONE:
                 break;
-            case NavigationButton.BACK:
-                onNavigationBack();
+            case NavigationButton.SEARCH_BACK:
+                onSearchNavigationBack();
                 break;
             case NavigationButton.SELECTION_BACK:
                 mSelectionDelegate.clearSelection();
+                break;
+            case NavigationButton.NORMAL_VIEW_BACK:
+                onNavigationBack();
                 break;
             default:
                 assert false : "Incorrect navigation button state";
@@ -316,22 +359,28 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     /**
-     * Handle a click on the navigation back button. If this toolbar has a search view, the search
-     * view will be hidden. Subclasses should override this method if navigation back is also a
-     * valid toolbar action when not searching.
+     * Handle a click on the search navigation back button. If this toolbar has a search view, the
+     * search view will be hidden.
      */
-    public void onNavigationBack() {
+    public void onSearchNavigationBack() {
         if (!mHasSearchView || !isSearching()) return;
 
         hideSearchView();
     }
 
     /**
+     * Handle a click on the normal view back button. Can be overridden to give behavior to the back
+     * button on the normal view.
+     */
+    protected void onNavigationBack() {}
+
+    /**
      * Update the current navigation button (the top-left icon on LTR)
+     *
      * @param navigationButton one of NAVIGATION_BUTTON_* constants.
      */
     protected void setNavigationButton(@NavigationButton int navigationButton) {
-        int contentDescriptionId = 0;
+        @StringRes int contentDescriptionId = Resources.ID_NULL;
 
         mNavigationButton = navigationButton;
         setNavigationOnClickListener(this);
@@ -339,7 +388,7 @@ public class SelectableListToolbar<E> extends Toolbar
         switch (mNavigationButton) {
             case NavigationButton.NONE:
                 break;
-            case NavigationButton.BACK:
+            case NavigationButton.SEARCH_BACK:
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
@@ -347,11 +396,19 @@ public class SelectableListToolbar<E> extends Toolbar
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_cancel_selection;
                 break;
+            case NavigationButton.NORMAL_VIEW_BACK:
+                DrawableCompat.setTintList(
+                        mNavigationIconDrawable,
+                        AppCompatResources.getColorStateList(
+                                getContext(), R.color.default_icon_color_secondary_tint_list));
+                contentDescriptionId = R.string.accessibility_toolbar_btn_back;
+                break;
             default:
                 assert false : "Incorrect navigationButton argument";
         }
 
-        setNavigationIcon(contentDescriptionId == 0 ? null : mNavigationIconDrawable);
+        setNavigationIcon(
+                contentDescriptionId == Resources.ID_NULL ? null : mNavigationIconDrawable);
         setNavigationContentDescription(contentDescriptionId);
 
         updateDisplayStyleIfNecessary();
@@ -477,8 +534,7 @@ public class SelectableListToolbar<E> extends Toolbar
                         ? mModernToolbarActionMenuEndOffsetPx
                         : mModernToolbarSearchIconOffsetPx;
 
-        ViewCompat.setPaddingRelative(
-                this,
+        this.setPaddingRelative(
                 padding + paddingStartOffset + navigationButtonStartOffsetPx,
                 this.getPaddingTop(),
                 padding + actionMenuBarEndOffsetPx,
@@ -514,8 +570,11 @@ public class SelectableListToolbar<E> extends Toolbar
             mSearchView.setVisibility(View.GONE);
             updateSearchMenuItem();
         }
-
-        setNavigationButton(NavigationButton.NONE);
+        if (mShowBackInNormalView) {
+            setNavigationButton(NavigationButton.NORMAL_VIEW_BACK);
+        } else {
+            setNavigationButton(NavigationButton.NONE);
+        }
         setBackgroundColor(mNormalBackgroundColor);
         if (mTitleResId != 0) setTitle(mTitleResId);
 
@@ -551,7 +610,7 @@ public class SelectableListToolbar<E> extends Toolbar
         mNumberRollView.setVisibility(View.GONE);
         mSearchView.setVisibility(View.VISIBLE);
 
-        setNavigationButton(NavigationButton.BACK);
+        setNavigationButton(NavigationButton.SEARCH_BACK);
         setBackgroundResource(R.drawable.search_toolbar_modern_bg);
         updateStatusBarColor(mSearchBackgroundColor);
 
@@ -579,21 +638,20 @@ public class SelectableListToolbar<E> extends Toolbar
 
     /**
      * Set info menu item used to toggle info header.
+     *
      * @param infoMenuItemId The menu item to show or hide information.
      */
-    public void setInfoMenuItem(int infoMenuItemId) {
+    public void setInfoMenuItem(@IdRes int infoMenuItemId) {
         mInfoMenuItemId = infoMenuItemId;
     }
 
     /**
      * Update icon, title, and visibility of info menu item.
-     * @param showItem          Whether or not info menu item should show.
-     * @param infoShowing       Whether or not info header is currently showing.
+     *
+     * @param showItem Whether or not info menu item should show.
+     * @param infoShowing Whether or not info header is currently showing.
      */
     public void updateInfoMenuItem(boolean showItem, boolean infoShowing) {
-        mShowInfoItem = showItem;
-        mInfoShowing = infoShowing;
-
         MenuItem infoMenuItem = getMenu().findItem(mInfoMenuItemId);
         if (infoMenuItem != null) {
             if (mShowInfoIcon) {
@@ -628,13 +686,13 @@ public class SelectableListToolbar<E> extends Toolbar
     }
 
     @Override
-    public void setBackgroundColor(int color) {
+    public void setBackgroundColor(@ColorInt int color) {
         super.setBackgroundColor(color);
 
         updateStatusBarColor(color);
     }
 
-    private void updateStatusBarColor(int color) {
+    private void updateStatusBarColor(@ColorInt int color) {
         if (!mUpdateStatusBarColor) return;
 
         Context context = getContext();
@@ -651,7 +709,7 @@ public class SelectableListToolbar<E> extends Toolbar
         return mSearchView;
     }
 
-    public int getNavigationButtonForTests() {
+    public @NavigationButton int getNavigationButtonForTests() {
         return mNavigationButton;
     }
 

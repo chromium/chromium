@@ -21,15 +21,6 @@ using ui::AXTreeFormatter;
 
 class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // kDisableAXMenuList is true on Chrome OS by default. This can cause the
-    // calculation of text alternatives from content to fail in blink tests
-    // which include a select element descendant.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDisableAXMenuList, "false");
-    DumpAccessibilityTestBase::SetUpCommandLine(command_line);
-  }
-
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
     if (GetParam() == ui::AXApiType::kMac) {
@@ -60,9 +51,11 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     formatter->SetPropertyFilters(scenario_.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
-    BrowserAccessibility* test_node = FindNodeByHTMLAttribute("id", "test");
+    ui::BrowserAccessibility* test_node =
+        FindNodeByStringAttribute(ax::mojom::StringAttribute::kHtmlId, "test");
     if (!test_node)
-      test_node = FindNodeByHTMLAttribute("class", "test");
+      test_node = FindNodeByStringAttribute(
+          ax::mojom::StringAttribute::kClassName, "test");
 
     std::string contents =
         test_node ? formatter->FormatNode(test_node) : "Test node not found.";
@@ -528,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameComboboxFocusable) {
   RunAccNameTest(FILE_PATH_LITERAL("name-combobox-focusable.html"));
 }
 
-// TODO(crbug.com/1329523): disabled on UIA
+// TODO(crbug.com/40842662): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTestExceptUIA,
                        NameDivContentOnly) {
   RunAccNameTest(FILE_PATH_LITERAL("name-div-content-only.html"));
@@ -983,8 +976,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
   RunAccNameTest(FILE_PATH_LITERAL("name-text-dynamic-labelledby.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextInputLabelledbyDiv) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-input-labelledby-div.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextInputInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-input-in-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextInputInOwnLabel) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-input-in-own-label.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,

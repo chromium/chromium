@@ -12,7 +12,8 @@ namespace blink {
 enum class AuctionServerRequestFlagsEnum : uint32_t {
   kOmitAds,
   kIncludeFullAds,
-  kMaxValue = kIncludeFullAds
+  kOmitUserBiddingSignals,
+  kMaxValue = kOmitUserBiddingSignals
 };
 
 using AuctionServerRequestFlags =

@@ -1,0 +1,26 @@
+This is a wdspec test.
+[FAIL] test_cookie_before_request_sent
+  StopIteration
+[FAIL] test_cookie_attributes_before_request_sent[no domain]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[default domain]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[alt domain]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[custom path]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[http only]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[secure]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[expiry]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[max age]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[same site none]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[same site lax]
+  assert 0 == 1
+[FAIL] test_cookie_attributes_before_request_sent[same site strict]
+  assert 0 == 1
+Harness: the test ran to completion.

@@ -1,0 +1,144 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #import=../cr_hidden_style_lit.css.js
+ * #import=../cr_shared_style_lit.css.js
+ * #import=./cr_input_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-input-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+/*
+  A 'suffix' element will be outside the underlined space, while a
+  'inline-prefix' and 'inline-suffix' elements will be inside the
+  underlined space by default.
+
+  Regarding cr-input's width:
+  When there's no element in the 'inline-prefix', 'inline-suffix' or
+  'suffix' slot, setting the width of cr-input as follows will work as
+  expected:
+
+    cr-input {
+      width: 200px;
+    }
+
+  However, when there's an element in the 'suffix', 'inline-suffix' and/or
+  'inline-prefix' slot, setting the 'width' will dictate the total width
+  of the input field *plus* the 'inline-prefix', 'inline-suffix' and
+  'suffix' elements. To set the width of the input field +
+  'inline-prefix' + 'inline-suffix' when a 'suffix' is present,
+  use --cr-input-width.
+
+    cr-input {
+      --cr-input-width: 200px;
+    }
+*/
+
+/* Disabled status should not impact suffix slot. */
+:host([disabled]) :-webkit-any(#label, #error, #input-container) {
+  opacity: var(--cr-disabled-opacity);
+  pointer-events: none;
+}
+
+:host([disabled]) :is(#label, #error, #input-container) {
+  opacity: 1;
+}
+
+/* Margin between <input> and <cr-button> in the 'suffix' slot */
+:host ::slotted(cr-button[slot=suffix]) {
+  margin-inline-start: var(--cr-button-edge-spacing) !important;
+}
+
+:host([invalid]) #label {
+  color: var(--cr-input-error-color);
+}
+
+#input {
+  border-bottom: none;
+  letter-spacing: var(--cr-input-letter-spacing);
+}
+
+#input-container {
+  border: var(--cr-input-border, none);
+}
+
+#input::placeholder {
+  color: var(--cr-input-placeholder-color, var(--cr-secondary-text-color));
+  letter-spacing: var(--cr-input-placeholder-letter-spacing);
+}
+
+:host([invalid]) #input {
+  caret-color: var(--cr-input-error-color);
+}
+
+:host([readonly]) #input {
+  opacity: var(--cr-input-readonly-opacity, 0.6);
+}
+
+:host([invalid]) #underline {
+  border-color: var(--cr-input-error-color);
+}
+
+/* Error styling below. */
+#error {
+  /* Defaults to "display: block" and "visibility:hidden" to allocate
+     space for error message, such that the page does not shift when
+     error appears. For cr-inputs that can't be invalid, but are in a
+     form with cr-inputs that can be invalid, this space is also desired
+     in order to have consistent spacing.
+
+     If spacing is not needed, apply "--cr-input-error-display: none".
+
+     When grouping cr-inputs horizontally, it might be helpful to set
+     --cr-input-error-white-space to "nowrap" and set a fixed width for
+     each cr-input so that a long error label does not shift the inputs
+     forward. */
+  color: var(--cr-input-error-color);
+  display: var(--cr-input-error-display, block);
+  font-size: 11px;
+  min-height: var(--cr-form-field-label-height);
+  line-height: 16px;
+  margin: 4px 10px;
+  visibility: hidden;
+  white-space: var(--cr-input-error-white-space);
+  height: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host([invalid]) #error {
+  visibility: visible;
+}
+
+#row-container,
+#inner-input-content {
+  align-items: center;
+  display: flex;
+  /* This will spread the input field and the suffix apart only if the
+     host element width is intentionally set to something large. */
+  justify-content: space-between;
+  position: relative;
+}
+
+#inner-input-content {
+  gap: 4px;
+  height: 16px;
+  /* Ensures content sits above the hover layer */
+  z-index: 1;
+}
+
+#input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
+:host-context([dir=rtl]) #input[type=url] {
+  text-align: right;  /* csschecker-disable-line left-right */
+}
+
+#input[type=url] {
+  direction: ltr;
+}

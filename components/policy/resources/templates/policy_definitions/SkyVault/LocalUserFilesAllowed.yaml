@@ -1,0 +1,26 @@
+caption: Enable local user files
+default: true
+desc: |-
+  This policy controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> users can store data locally or not.
+        Setting this policy to False blocks local storage on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> - users cannot store any data locally, and cannot access any local directories.
+        Setting this policy to True or leaving it unset allows local storage on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> - there are no restrictions on where users can store data, or which directories they can access.
+example_value: true
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable storing user files locally
+  value: true
+- caption: Disable storing user files locally
+  value: false
+owners:
+- aidazolic@google.com
+- ayaelattar@google.com
+- poromov@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:126-
+tags: []
+type: main

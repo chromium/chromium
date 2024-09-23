@@ -14,8 +14,16 @@ mojom("mojom") {
     "input_engine.mojom",
     "input_method.mojom",
     "input_method_host.mojom",
+    "input_method_user_data.mojom",
     "japanese_settings.mojom",
+    "user_data_japanese_dictionary.mojom",
+    "user_data_japanese_legacy_config.mojom",
   ]
+
+  webui_module_path = "/"
+
+  # Also used by targets that rely on legacy JavaScript bindings
+  generate_legacy_js_bindings = true
 
   public_deps = [
     "//mojo/public/mojom/base",

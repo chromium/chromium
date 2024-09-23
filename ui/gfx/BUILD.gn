@@ -323,7 +323,6 @@ component("gfx") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
     "//build:chromeos_buildflags",
     "//device/vr/buildflags",
@@ -615,6 +614,7 @@ source_set("memory_buffer_sources") {
     "gpu_fence_handle.h",
     "overlay_priority_hint.h",
     "overlay_transform.h",
+    "overlay_type.h",
     "surface_origin.h",
   ]
 
@@ -689,8 +689,7 @@ source_set("memory_buffer_sources") {
   }
 
   if (enable_vulkan) {
-    public_deps +=
-        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+    public_deps += [ "//third_party/vulkan-headers/src:vulkan_headers" ]
   }
 }
 
@@ -726,6 +725,7 @@ static_library("test_support") {
     "test/scoped_default_font_description.h",
     "test/sk_color_eq.cc",
     "test/sk_color_eq.h",
+    "test/sk_gmock_support.h",
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
@@ -857,6 +857,7 @@ test("gfx_unittests") {
       "geometry/size_f_unittest.cc",
       "geometry/size_unittest.cc",
       "geometry/skia_conversions_unittest.cc",
+      "geometry/three_point_cubic_bezier_unittest.cc",
       "geometry/transform_util_unittest.cc",
       "geometry/triangle_unittest.cc",
       "geometry/vector2d_f_unittest.cc",
@@ -897,6 +898,7 @@ test("gfx_unittests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//skia",
+    "//skia:rusty_png_feature_detection",
     "//skia:skcms",
     "//testing/gtest",
     "//third_party/icu:icuuc",
@@ -1053,5 +1055,20 @@ if (is_ios) {
   bundle_data_from_filelist("compositor_tests_bundle_data") {
     testonly = true
     filelist_name = "test/data/compositor/unit_tests_bundle_data.filelist"
+  }
+}
+
+if (is_android) {
+  java_cpp_features("ui_gfx_switches_srcjar") {
+    # External code should depend on ":ui_gfx_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "switches.cc" ]
+    template = "android/java/src/org/chromium/ui/gfx/GfxSwitches.java.tmpl"
+  }
+
+  android_library("ui_gfx_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":ui_gfx_switches_srcjar" ]
   }
 }

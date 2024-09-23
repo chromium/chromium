@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_VIEW_ELEMENT_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_VIEW_ELEMENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/ui_element_with_metadata.h"
@@ -55,7 +56,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   // inconsistency is detected between the current tree and the tree of the
   // backing view.
   void RebuildTree();
-  views::View* view_;
+  raw_ptr<views::View> view_;
   base::ScopedObservation<views::View, views::ViewObserver> observer_{this};
 };
 

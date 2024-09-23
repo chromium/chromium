@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MutationEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface object length
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface object name
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant MODIFICATION on interface object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant MODIFICATION on interface prototype object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant ADDITION on interface object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant ADDITION on interface prototype object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant REMOVAL on interface object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: constant REMOVAL on interface prototype object
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: attribute relatedNode
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: attribute prevValue
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: attribute newValue
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: attribute attrName
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: attribute attrChange
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+[FAIL] MutationEvent interface: operation initMutationEvent(DOMString, optional boolean, optional boolean, optional Node?, optional DOMString, optional DOMString, optional DOMString, optional unsigned short)
+  assert_own_property: self does not have own property "MutationEvent" expected property "MutationEvent" missing
+Harness: the test ran to completion.
+

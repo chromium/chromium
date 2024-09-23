@@ -88,8 +88,10 @@ export class NavigationSelectorElement extends PolymerElement {
     for (const item of items) {
       if (item.textContent.trim() === this.selectedItem.name) {
         item.classList.add('selected');
+        item.setAttribute('aria-current', 'true');
       } else {
         item.classList.remove('selected');
+        item.removeAttribute('aria-current');
       }
     }
   }

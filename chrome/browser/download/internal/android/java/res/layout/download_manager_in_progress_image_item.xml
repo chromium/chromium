@@ -33,7 +33,7 @@ found in the LICENSE file.
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
-        app:tint="@color/modern_blue_600" />
+        app:tint="@color/baseline_primary_40" />
 
     <LinearLayout
         android:layout_width="match_parent"

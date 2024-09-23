@@ -4,10 +4,10 @@
 
 #include "ui/views/controls/native/native_view_host.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/check.h"
+#include "build/buildflag.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -73,11 +73,6 @@ bool NativeViewHost::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
   return native_wrapper_->SetCornerRadii(corner_radii);
 }
 
-bool NativeViewHost::SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) {
-  DCHECK(native_wrapper_);
-  return native_wrapper_->SetCustomMask(std::move(mask));
-}
-
 void NativeViewHost::SetHitTestTopInset(int top_inset) {
   native_wrapper_->SetHitTestTopInset(top_inset);
 }
@@ -108,6 +103,10 @@ void NativeViewHost::SetBackgroundColorWhenClipped(
   background_color_when_clipped_ = color;
 }
 
+ui::Layer* NativeViewHost::GetUILayer() {
+  return native_wrapper_->GetUILayer();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
@@ -118,6 +117,7 @@ void NativeViewHost::Layout(PassKey) {
   gfx::Rect vis_bounds = GetVisibleBounds();
   bool visible = !vis_bounds.IsEmpty();
 
+#if !BUILDFLAG(IS_MAC)
   if (visible && !fast_resize_) {
     if (vis_bounds.size() != size()) {
       // Only a portion of the Widget is really visible.
@@ -131,7 +131,7 @@ void NativeViewHost::Layout(PassKey) {
       native_wrapper_->UninstallClip();
     }
   }
-
+#endif
   if (visible) {
     // Since widgets know nothing about the View hierarchy (they are direct
     // children of the Widget that hosts our View hierarchy) they need to be

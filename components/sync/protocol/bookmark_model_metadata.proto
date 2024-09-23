@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "components/sync/protocol/model_type_state.proto";
+import "components/sync/protocol/data_type_state.proto";
 import "components/sync/protocol/entity_metadata.proto";
 
 // Corresponds to a single bookmark id/metadata pair.
@@ -27,7 +27,7 @@ message BookmarkMetadata {
 // persisting and loading sync metadata from disk.
 message BookmarkModelMetadata {
   // Bookmark global metadata.
-  optional ModelTypeState model_type_state = 1;
+  optional DataTypeState data_type_state = 1;
 
   // A set of all bookmarks metadata.
   repeated BookmarkMetadata bookmarks_metadata = 2;
@@ -42,7 +42,7 @@ message BookmarkModelMetadata {
   // they include fields like |type|, |unique_position| and |parent_guid|, which
   // means that their sequence number has been increased (independently of
   // whether the commit has succeeded or even started).
-  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // TODO(crbug.com/40780588): remove this code when most of bookmarks are
   // reuploaded.
   optional bool bookmarks_hierarchy_fields_reuploaded = 6;
 

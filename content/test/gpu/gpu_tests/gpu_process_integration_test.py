@@ -14,6 +14,7 @@ from devil.android.sdk import version_codes
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -119,6 +120,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         ('GpuProcess_mac_webgl_terminated_high_performance',
          'gpu/functional_blank.html'),
         ('GpuProcess_swiftshader_for_webgl', 'gpu/functional_webgl.html'),
+        ('GpuProcess_no_swiftshader_for_webgl_without_flags',
+         'gpu/functional_webgl.html'),
         ('GpuProcess_webgl_disabled_extension',
          'gpu/functional_webgl_disabled_extension.html'),
         ('GpuProcess_webgpu_iframe_removed', 'gpu/webgpu-iframe-removed.html'),
@@ -272,7 +275,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Browser must support GPU aux attributes')
     if not 'gl_renderer' in system_info.gpu.aux_attributes:
       self.fail('Browser must have gl_renderer in aux attribs')
-    if (sys.platform != 'darwin'
+    if (not host_information.IsMac()
         and len(system_info.gpu.aux_attributes['gl_renderer']) <= 0):
       # On MacOSX we don't create a context to collect GL strings.1
       self.fail('Must have a non-empty gl_renderer string')
@@ -310,7 +313,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuProcess_feature_status_under_swiftshader(self,
                                                    test_path: str) -> None:
     # Hit test group 2 with entry 153 from kSoftwareRenderingListEntries.
-    self.RestartBrowserIfNecessaryWithArgs(['--gpu-blocklist-test-group=2'])
+    self.RestartBrowserIfNecessaryWithArgs(
+        ['--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader'])
     self._Navigate(test_path)
     feature_status_list = _GetBrowserBridgeProperty(
         self.tab, 'gpuInfo.featureStatus.featureStatus')
@@ -323,7 +327,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # On Linux we relaunch GPU process to fallback to SwiftShader, therefore
     # featureStatusForHardwareGpu isn't available. So finish early if we're on
     # Linux.
-    if sys.platform.startswith('linux'):
+    if host_information.IsLinux():
       return
 
     feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
@@ -471,9 +475,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # attempt to use an API which would start the GPU process.
     args_list = (
         # Triggering test_group 2 where WebGL is blocklisted.
-        ['--gpu-blocklist-test-group=2'],
+        ['--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader'],
         # Explicitly disable GPU access.
-        [cba.DISABLE_GPU])
+        [cba.DISABLE_GPU, '--enable-unsafe-swiftshader'])
     for args in args_list:
       self.RestartBrowserIfNecessaryWithArgs(args)
       self._NavigateAndWait(test_path)
@@ -521,6 +525,48 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       for ext in ext_list:
         if tab.EvaluateJavaScript('!gl_context.getExtension("' + ext + '")'):
           self.fail('Expected %s support' % ext)
+
+  def _GpuProcess_no_swiftshader_for_webgl_without_flags(
+      self, test_path: str) -> None:
+    # This test loads functional_webgl.html with GPU disabled and verifies that
+    # SwiftShader is not available without the --enable-unsafe-swiftshader flag
+    # or AllowSwiftShaderFallback killswitch.
+    # Because AllowSwiftShaderFallback is currently enabled by default, disable
+    # it to test the upcoming default behavior
+    disable_hardware_webgl_args_list = [
+        # Triggering test_group 2 where WebGL is blocklisted.
+        ['--gpu-blocklist-test-group=2'],
+        # Explicitly disable GPU access.
+        [cba.DISABLE_GPU],
+    ]
+    disable_swiftshader_fallback_feature = [
+        '--disable-features=AllowSwiftShaderFallback'
+    ]
+    allow_swiftshader_args_list = [
+        ['--enable-unsafe-swiftshader'],
+        ['--use-gl=angle', '--use-angle=swiftshader'],
+        ['--enable-features=AllowSwiftShaderFallback']
+    ]
+    for disable_hardware_webgl_args in disable_hardware_webgl_args_list:
+      self.RestartBrowserIfNecessaryWithArgs(
+          disable_hardware_webgl_args + disable_swiftshader_fallback_feature)
+      self._NavigateAndWait(test_path)
+
+      renderer = self.tab.EvaluateJavaScript('gl_renderer')
+      if renderer:
+        self.fail('Expected no WebGL renderer; instead got ' + renderer)
+
+      for allow_swiftshader_args in allow_swiftshader_args_list:
+        self.RestartBrowserIfNecessaryWithArgs(disable_hardware_webgl_args +
+                                               allow_swiftshader_args)
+        self._NavigateAndWait(test_path)
+
+        # Validate the WebGL unmasked renderer string.
+        renderer = self.tab.EvaluateJavaScript('gl_renderer')
+        if not renderer:
+          self.fail('getParameter(UNMASKED_RENDERER_WEBGL) was null')
+        if 'SwiftShader' not in renderer:
+          self.fail('Expected SwiftShader renderer; instead got ' + renderer)
 
   def _GpuProcess_webgl_disabled_extension(self, test_path: str) -> None:
     # Hit exception from id 257 from kGpuDriverBugListEntries.

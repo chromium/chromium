@@ -50,6 +50,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   bool has_played_media() const { return has_played_media_; }
 
   // blink::WebMediaPlayerDelegate implementation.
+  bool IsPageHidden() override;
   bool IsFrameHidden() override;
   int AddObserver(Observer* observer) override;
   void RemoveObserver(int player_id) override;
@@ -67,6 +68,8 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // content::RenderFrameObserver overrides.
   void OnDestruct() override;
+  void OnFrameVisibilityChanged(
+      blink::mojom::FrameVisibility render_status) override;
 
   // blink::WebViewObserver overrides.
   void OnPageVisibilityChanged(
@@ -86,7 +89,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   bool IsIdleCleanupTimerRunningForTesting() const;
 
   // Note: Does not call OnFrameHidden()/OnFrameShown().
-  void SetFrameHiddenForTesting(bool is_hidden);
+  void SetFrameHiddenForTesting(bool is_frame_hidden);
 
   friend class RendererWebMediaPlayerDelegateTest;
 
@@ -104,8 +107,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   // True if any media has ever been played in this render frame. Affects
   // autoplay logic in RenderFrameImpl.
   bool has_played_media_ = false;
-
-  bool is_frame_hidden_for_testing_ = false;
 
   // State related to scheduling UpdateTask(). These are cleared each time
   // UpdateTask() runs.
@@ -134,7 +135,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // Clock used for calculating when players have become stale. May be
   // overridden for testing.
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;
@@ -151,6 +152,9 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   // Last page shown/hidden state sent to the player.  Unset if we have not sent
   // any message.  Used to elide duplicates.
   std::optional<bool> is_shown_;
+
+  // Last rendered status sent to the player from the containing frame.
+  bool is_frame_hidden_ = false;
 
   base::WeakPtrFactory<RendererWebMediaPlayerDelegate> weak_ptr_factory_{this};
 };

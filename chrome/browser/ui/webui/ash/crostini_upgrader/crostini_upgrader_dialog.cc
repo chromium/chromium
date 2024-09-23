@@ -147,6 +147,9 @@ void RunLaunchClosure(base::WeakPtr<crostini::CrostiniManager> crostini_manager,
                   << static_cast<int>(result);
               return;
             }
+            if (launch_closure.is_null() || launch_closure.IsCancelled()) {
+              return;
+            }
             std::move(launch_closure).Run();
           },
           std::move(launch_closure)));

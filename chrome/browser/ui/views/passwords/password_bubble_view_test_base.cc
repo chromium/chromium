@@ -73,7 +73,9 @@ PasswordBubbleViewTestBase::PasswordBubbleViewTestBase()
 PasswordBubbleViewTestBase::~PasswordBubbleViewTestBase() = default;
 
 void PasswordBubbleViewTestBase::CreateAnchorViewAndShow() {
-  anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  anchor_widget_ =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_WINDOW);
   anchor_widget_->Show();
 }
 

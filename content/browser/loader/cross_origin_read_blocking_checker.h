@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
@@ -25,8 +25,8 @@ class BlobDataHandle;
 
 namespace content {
 
-// This class checks whether we should block the response or not using
-// CrossOriginReadBlocking::ResponseAnalyzer.
+// This class checks whether we should block the response or not using ORB
+// (Opaque Response Blocking).
 class CrossOriginReadBlockingChecker {
  public:
   enum class Result {
@@ -35,11 +35,14 @@ class CrossOriginReadBlockingChecker {
     kBlocked_ShouldNotReport,
     kNetError
   };
+  // The caller needs to guarantee that `orb_state`'s lifetime is at least as
+  // long as the lifetime of `CrossOriginReadBlockingChecker`.  `orb_state`
+  // needs to be non-null.
   CrossOriginReadBlockingChecker(
       const network::ResourceRequest& request,
       const network::mojom::URLResponseHead& response,
       const storage::BlobDataHandle& blob_data_handle,
-      network::corb::PerFactoryState& corb_state,
+      network::orb::PerFactoryState* orb_state,
       base::OnceCallback<void(Result)> callback);
 
   CrossOriginReadBlockingChecker(const CrossOriginReadBlockingChecker&) =
@@ -63,7 +66,7 @@ class CrossOriginReadBlockingChecker {
                       int net_error);
 
   base::OnceCallback<void(Result)> callback_;
-  std::unique_ptr<network::corb::ResponseAnalyzer> corb_analyzer_;
+  std::unique_ptr<network::orb::ResponseAnalyzer> orb_analyzer_;
   std::unique_ptr<BlobIOState> blob_io_state_;
   int net_error_ = net::OK;
 

@@ -4,18 +4,22 @@
 
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
 
-#include <linux/limits.h>
+#include <limits.h>
 
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace ash::trash_service {
@@ -23,14 +27,14 @@ namespace ash::trash_service {
 namespace {
 
 // Represents the expected token on the first line of the .trashinfo file.
-constexpr char kTrashInfoHeaderToken[] = "[Trash Info]";
+constexpr std::string_view kTrashInfoHeaderToken = "[Trash Info]";
 
 // Represents the expected token starting the second line of the .trashinfo
 // file.
-constexpr char kPathToken[] = "Path=";
+constexpr std::string_view kPathToken = "Path=";
 
 // Represents the expected token starting the third line of the .trashinfo file.
-constexpr char kDeletionDateToken[] = "DeletionDate=";
+constexpr std::string_view kDeletionDateToken = "DeletionDate=";
 
 // The "DeletionDate=" line contains 24 bytes representing a well formed
 // ISO-8601 date string, e.g. "2022-07-18T10:13:00.000Z".
@@ -51,56 +55,88 @@ void InvokeCallbackWithFailed(
   InvokeCallbackWithError(base::File::FILE_ERROR_FAILED, std::move(callback));
 }
 
-// Validates the supplied path and on success updates the `restore_path`
-// parameter. On failure function returns false.
-base::FilePath ValidateAndCreateRestorePath(std::string_view piece) {
-  if (!base::StartsWith(piece, kPathToken)) {
+// Extracts and validates the path from a line coming from the `.trashinfo`
+// file. Returns an empty path on error.
+base::FilePath ValidateAndCreateRestorePath(std::string_view line) {
+  // The final newline character should already have been stripped.
+  DCHECK(!line.ends_with('\n'));
+
+  if (!line.starts_with(kPathToken)) {
+    LOG(ERROR) << "Line does not start with '" << kPathToken << "'";
     return base::FilePath();
   }
 
-  auto path_without_token =
-      base::CollapseWhitespaceASCII(piece.substr(sizeof(kPathToken) - 1),
-                                    /*trim_sequences_with_line_breaks=*/true);
-  if (path_without_token.size() > PATH_MAX) {
+  line.remove_prefix(kPathToken.size());
+
+  const std::string unescaped = base::UnescapeBinaryURLComponent(line);
+  if (unescaped.size() >= PATH_MAX) {
+    LOG(ERROR) << "Extracted path is too long";
     return base::FilePath();
   }
 
-  base::FilePath restore_path(path_without_token);
-  if (restore_path.empty() || !restore_path.IsAbsolute() ||
-      restore_path.ReferencesParent()) {
+  if (unescaped.find('\0') != std::string::npos) {
+    LOG(ERROR) << "Extracted path contains a NUL byte";
     return base::FilePath();
   }
 
-  return restore_path;
+  if (!base::IsStringUTF8(unescaped)) {
+    LOG(ERROR) << "Extracted path is not a valid UTF-8 string";
+    return base::FilePath();
+  }
+
+  const base::FilePath path(std::move(unescaped));
+
+  const std::vector<std::string> components = path.GetComponents();
+  base::span<const std::string> parts = components;
+
+  // The first part should be "/".
+  if (parts.empty() || parts.front() != "/") {
+    LOG(ERROR) << "Extracted path is not absolute";
+    return base::FilePath();
+  }
+
+  // Pop the first part.
+  parts = parts.subspan(1);
+  if (parts.empty()) {
+    LOG(ERROR) << "Extracted path is just the root path";
+    return base::FilePath();
+  }
+
+  // Validate each remaining part.
+  for (const std::string& part : parts) {
+    if (part == "." || part == ".." || part.size() > NAME_MAX) {
+      LOG(ERROR) << "Extracted path contains an invalid component";
+      return base::FilePath();
+    }
+  }
+
+  return path;
 }
 
-// Validates the supplied deletion date and on success updates the
-// `deletion_date` parameter. On failure function returns false.
-base::Time ValidateAndCreateDeletionDate(std::string_view piece) {
-  if (!base::StartsWith(piece, kDeletionDateToken)) {
+// Extracts and validates the deletion date from a line coming from the
+// `.trashinfo` file. Returns a default-created `Time` on error.
+base::Time ValidateAndCreateDeletionDate(std::string_view line) {
+  // The final newline character should already have been stripped.
+  DCHECK(!line.ends_with('\n'));
+
+  if (!line.starts_with(kDeletionDateToken)) {
+    LOG(ERROR) << "Line does not start with '" << kDeletionDateToken << "'";
     return base::Time();
   }
 
-  auto date_without_token = base::CollapseWhitespaceASCII(
-      piece.substr(sizeof(kDeletionDateToken) - 1),
-      /*trim_sequences_with_line_breaks=*/true);
-  if (date_without_token.size() != kISO8601Size) {
+  line.remove_prefix(kDeletionDateToken.size());
+
+  base::Time date;
+  if (line.size() != kISO8601Size ||
+      !base::Time::FromUTCString(std::string(line).c_str(), &date)) {
+    LOG(ERROR) << "Cannot parse date";
     return base::Time();
   }
 
-  base::Time deletion_date;
-  if (!base::Time::FromUTCString(date_without_token.data(), &deletion_date)) {
-    return base::Time();
-  }
-
-  return deletion_date;
+  return date;
 }
 
 }  // namespace
-
-constexpr size_t kMaxReadBufferInBytes =
-    sizeof(kTrashInfoHeaderToken) + sizeof(kPathToken) + PATH_MAX +
-    sizeof(kDeletionDateToken) + kISO8601Size + /*new line characters*/ 2;
 
 TrashServiceImpl::TrashServiceImpl(
     mojo::PendingReceiver<mojom::TrashService> receiver) {
@@ -124,10 +160,15 @@ void TrashServiceImpl::ParseTrashInfoFile(base::File trash_info_file,
   std::string file_contents;
   base::ScopedFILE read_only_stream(
       base::FileToFILE(std::move(trash_info_file), "r"));
-  bool successful_read = base::ReadStreamToStringWithMaxSize(
-      read_only_stream.get(), kMaxReadBufferInBytes, &file_contents);
-  if (!successful_read && file_contents.size() < kMaxReadBufferInBytes) {
-    LOG(ERROR) << "Error reading contents of trash info file";
+
+  constexpr size_t kMaxSize = kTrashInfoHeaderToken.size() + kPathToken.size() +
+                              PATH_MAX * 3 /* URL-escaping */ +
+                              kDeletionDateToken.size() + kISO8601Size +
+                              3 /* newline characters */;
+  const bool ok = base::ReadStreamToStringWithMaxSize(read_only_stream.get(),
+                                                      kMaxSize, &file_contents);
+  if (!ok && file_contents.size() < kMaxSize) {
+    LOG(ERROR) << "Cannot read trash info file";
     InvokeCallbackWithFailed(std::move(callback));
     return;
   }
@@ -137,6 +178,7 @@ void TrashServiceImpl::ParseTrashInfoFile(base::File trash_info_file,
   std::vector<std::string_view> lines = base::SplitStringPiece(
       file_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (lines.size() < 3) {
+    LOG(ERROR) << "Trash info file only contains " << lines.size() << " lines";
     InvokeCallbackWithFailed(std::move(callback));
     return;
   }
@@ -146,21 +188,19 @@ void TrashServiceImpl::ParseTrashInfoFile(base::File trash_info_file,
   // key/value pairs". Therefore we only iterate over the first 3 lines ignoring
   // the remaining.
   if (lines[0] != kTrashInfoHeaderToken) {
-    LOG(ERROR) << "Trash info header invalid";
+    LOG(ERROR) << "Invalid trash info header: " << lines[0];
     InvokeCallbackWithFailed(std::move(callback));
     return;
   }
 
   base::FilePath restore_path = ValidateAndCreateRestorePath(lines[1]);
   if (restore_path.empty()) {
-    LOG(ERROR) << "Path key is invalid";
     InvokeCallbackWithFailed(std::move(callback));
     return;
   }
 
   base::Time deletion_date = ValidateAndCreateDeletionDate(lines[2]);
   if (deletion_date.is_null()) {
-    LOG(ERROR) << "Deletion date key is invalid";
     InvokeCallbackWithFailed(std::move(callback));
     return;
   }

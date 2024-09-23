@@ -4,8 +4,6 @@
 
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 
-#include "base/strings/string_piece.h"
-
 namespace cups_proxy {
 
 // Defaults for IppRequest.

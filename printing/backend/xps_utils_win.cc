@@ -44,7 +44,7 @@ base::expected<PageOutputQuality, mojom::ResultCode> LoadPageOutputQuality(
     int property_count =
         data_decoder::GetXmlElementChildrenCount(*option, kProperty);
 
-    // TODO(crbug.com/1291257): Each formatted option is expected to have zero
+    // TODO(crbug.com/40212677): Each formatted option is expected to have zero
     // or one property. Each property inside an option is expected to
     // have one value.
     // Source:
@@ -104,7 +104,7 @@ ParseValueForXpsPrinterCapabilities(const base::Value& capabilities) {
                        LoadPageOutputQuality(*feature));
     }
 
-    // TODO(crbug.com/1291257): Each feature needs to be parsed. More work is
+    // TODO(crbug.com/40212677): Each feature needs to be parsed. More work is
     // expected here.
   }
   return xps_capabilities;

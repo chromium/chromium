@@ -5,6 +5,7 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,6 +31,7 @@
 #include "content/browser/webui/url_data_source_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -77,11 +78,10 @@ void ReadData(
     return;
   }
 
-  if (replacements) {
+  if (replacements && !replacements->empty()) {
     // We won't know the the final output size ahead of time, so we have to
     // use an intermediate string.
-    base::StringPiece input(reinterpret_cast<const char*>(bytes->front()),
-                            bytes->size());
+    auto input = base::as_string_view(*bytes);
     std::string temp_str;
     if (replace_in_js) {
       CHECK(
@@ -100,7 +100,7 @@ void ReadData(
   }
 
   uint32_t output_offset = 0;
-  uint32_t output_size = base::checked_cast<uint32_t>(bytes->size());
+  size_t output_size = bytes->size();
   if (requested_range) {
     if (!requested_range->ComputeBounds(output_size)) {
       CallOnError(std::move(client_remote),
@@ -126,16 +126,15 @@ void ReadData(
       &options, pipe_producer_handle, pipe_consumer_handle);
   CHECK_EQ(create_result, MOJO_RESULT_OK);
 
-  void* buffer = nullptr;
-  uint32_t num_bytes = output_size;
+  base::span<uint8_t> buffer;
   MojoResult result = pipe_producer_handle->BeginWriteData(
-      &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      output_size, MOJO_WRITE_DATA_FLAG_NONE, buffer);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GE(num_bytes, output_size);
+  CHECK_GE(buffer.size(), output_size);
   CHECK_LE(output_offset + output_size, bytes->size());
 
-  base::ranges::copy(base::span(*bytes).subspan(output_offset, output_size),
-                     static_cast<char*>(buffer));
+  buffer.copy_prefix_from(
+      base::span(*bytes).subspan(output_offset, output_size));
   result = pipe_producer_handle->EndWriteData(output_size);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
@@ -186,7 +185,7 @@ void DataAvailable(
 
 void StartURLLoader(
     const network::ResourceRequest& request,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     BrowserContext* browser_context) {
   base::ElapsedTimer url_request_elapsed_timer;
@@ -213,13 +212,13 @@ void StartURLLoader(
 
   // Load everything by default, but respect the Range header if present.
   std::optional<net::HttpByteRange> range;
-  std::string range_header;
-  if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                &range_header)) {
+  if (std::optional<std::string> range_header =
+          request.headers.GetHeader(net::HttpRequestHeaders::kRange);
+      range_header) {
     std::vector<net::HttpByteRange> ranges;
     // For simplicity, only allow a single range. This is expected to be
     // sufficient for WebUI content.
-    if (!net::HttpUtil::ParseRangeHeader(range_header, &ranges) ||
+    if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
         ranges.size() > 1u || !ranges[0].IsValid()) {
       CallOnError(std::move(client_remote),
                   net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
@@ -229,8 +228,9 @@ void StartURLLoader(
   }
 
   std::string path = URLDataSource::URLToRequestPath(request.url);
-  std::string origin_header;
-  request.headers.GetHeader(net::HttpRequestHeaders::kOrigin, &origin_header);
+  std::string origin_header =
+      request.headers.GetHeader(net::HttpRequestHeaders::kOrigin)
+          .value_or(std::string());
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       URLDataManagerBackend::GetHeaders(source, request.url, origin_header);
@@ -249,7 +249,7 @@ void StartURLLoader(
   WebContents::Getter wc_getter;
 
   // Service Workers factories have no associated frame.
-  if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id.is_null()) {
     wc_getter = base::BindRepeating([]() -> WebContents* { return nullptr; });
   } else {
     wc_getter = base::BindRepeating(WebContents::FromFrameTreeNodeId,
@@ -311,8 +311,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // The WebUIURLLoaderFactory will delete itself when there are no more
     // receivers - see the
     // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
-    new WebUIURLLoaderFactory(browser_context,
-                              RenderFrameHost::kNoFrameTreeNodeId, scheme,
+    new WebUIURLLoaderFactory(browser_context, FrameTreeNodeId(), scheme,
                               std::move(allowed_hosts),
                               pending_remote.InitWithNewPipeAndPassReceiver());
     return pending_remote;
@@ -341,7 +340,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       return;
     }
 
-    if (frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId &&
+    if (frame_tree_node_id_ &&
         !FrameTreeNode::GloballyFindByID(frame_tree_node_id_)) {
       CallOnError(std::move(client), net::ERR_FAILED);
       return;
@@ -351,24 +350,17 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       DVLOG(1) << "Bad scheme: " << request.url.scheme();
       SCOPED_CRASH_KEY_STRING32("WebUI", "actual_scheme", request.url.scheme());
       SCOPED_CRASH_KEY_STRING32("WebUI", "expected_scheme", scheme_);
+      SCOPED_CRASH_KEY_STRING64("WebUI", "requested_url", request.url.spec());
       mojo::ReportBadMessage("Incorrect scheme");
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
     }
 
-    if (!allowed_hosts_.empty() &&
-        (!request.url.has_host() ||
-         allowed_hosts_.find(request.url.host()) == allowed_hosts_.end())) {
-      // Temporary reporting the bad WebUI host for for http://crbug.com/837328.
-      SCOPED_CRASH_KEY_STRING64("WebUIURLLoader", "url", request.url.spec());
-
-      DVLOG(1) << "Bad host: \"" << request.url.host() << '"';
-      mojo::ReportBadMessage("Incorrect host");
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      return;
-    }
+    CHECK(allowed_hosts_.empty() ||
+          (request.url.has_host() &&
+           allowed_hosts_.find(request.url.host()) != allowed_hosts_.end()))
+        << "Incorrect host: " << request.url.host();
 
     if (request.url.host_piece() == kChromeUIBlobInternalsHost) {
       GetIOThreadTaskRunner({})->PostTask(
@@ -398,7 +390,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
   WebUIURLLoaderFactory(
       BrowserContext* browser_context,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const std::string& scheme,
       base::flat_set<std::string> allowed_hosts,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
@@ -409,7 +401,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         allowed_hosts_(std::move(allowed_hosts)) {}
 
   base::WeakPtr<BrowserContext> browser_context_;
-  int const frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.
 };

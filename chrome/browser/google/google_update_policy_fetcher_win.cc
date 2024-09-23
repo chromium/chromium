@@ -29,7 +29,7 @@
 
 namespace {
 
-// TODO(crbug.com/1453285): Add unit tests for these GoogleUpdate policies.
+// TODO(crbug.com/40271852): Add unit tests for these GoogleUpdate policies.
 constexpr char kAutoUpdateCheckPeriodMinutes[] = "AutoUpdateCheckPeriodMinutes";
 constexpr char kDownloadPreference[] = "DownloadPreference";
 constexpr char kForceInstallApps[] = "ForceInstallApps";
@@ -44,6 +44,8 @@ constexpr char kUpdatePolicy[] = "UpdatePolicy";
 constexpr char kUpdatesSuppressedDurationMin[] = "UpdatesSuppressedDurationMin";
 constexpr char kUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
 constexpr char kUpdatesSuppressedStartMinute[] = "UpdatesSuppressedStartMinute";
+constexpr char kCloudPolicyOverridesPlatformPolicy[] =
+    "CloudPolicyOverridesPlatformPolicy";
 
 // Adds the policy |policy_name| extracted from |policy| into |policies|.
 // |value_override_function| is an optional function that modifies and overrides
@@ -93,6 +95,18 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
     if (SUCCEEDED(policy_status->get_downloadPreferenceGroupPolicy(&policy)))
       AddPolicy(kDownloadPreference, policy.Get(), *policies);
+  }
+  {
+    Microsoft::WRL::ComPtr<IPolicyStatus4> policy_status4;
+    Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+    if (SUCCEEDED(policy_status->QueryInterface(
+            install_static::IsSystemInstall() ? __uuidof(IPolicyStatus4System)
+                                              : __uuidof(IPolicyStatus4User),
+            IID_PPV_ARGS_Helper(&policy_status4))) &&
+        SUCCEEDED(
+            policy_status4->get_cloudPolicyOverridesPlatformPolicy(&policy))) {
+      AddPolicy(kCloudPolicyOverridesPlatformPolicy, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
@@ -215,7 +229,7 @@ base::Value GetGoogleUpdatePolicyNames() {
 }
 
 policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
-  // TODO(crbug/1133309): Use actual schemas.
+  // TODO(crbug.com/40722467): Use actual schemas.
   return policy::PolicyConversions::PolicyToSchemaMap{{
       {kAutoUpdateCheckPeriodMinutes, policy::Schema()},
       {kDownloadPreference, policy::Schema()},
@@ -231,6 +245,7 @@ policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
       {kUpdatesSuppressedDurationMin, policy::Schema()},
       {kUpdatesSuppressedStartHour, policy::Schema()},
       {kUpdatesSuppressedStartMinute, policy::Schema()},
+      {kCloudPolicyOverridesPlatformPolicy, policy::Schema()},
   }};
 }
 

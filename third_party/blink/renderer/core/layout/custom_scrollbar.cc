@@ -188,7 +188,7 @@ void CustomScrollbar::UpdateScrollbarParts() {
     SetFrameRect(gfx::Rect(
         Location(), gfx::Size(is_horizontal ? Width() : new_thickness,
                               is_horizontal ? new_thickness : Height())));
-    if (LayoutBox* box = GetScrollableArea()->GetLayoutBox()) {
+    if (LayoutBox* box = GetLayoutBox()) {
       box->SetChildNeedsLayout();
       // LayoutNG may attempt to reuse line-box fragments. It will do this even
       // if the |LayoutObject::ChildNeedsLayout| is true (set above).
@@ -204,7 +204,7 @@ void CustomScrollbar::UpdateScrollbarParts() {
   // If we didn't return above, it means that there is no change or the change
   // doesn't affect layout of the box. Update position to reflect the change if
   // any.
-  if (LayoutBox* box = GetScrollableArea()->GetLayoutBox()) {
+  if (LayoutBox* box = GetLayoutBox()) {
     // It's not ready to position scrollbar parts if the containing box has not
     // been inserted into the layout tree.
     if (box->IsLayoutView() || box->Parent())
@@ -232,7 +232,7 @@ static PseudoId PseudoForScrollbarPart(ScrollbarPart part) {
     case kAllParts:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kPseudoIdScrollbar;
 }
 
@@ -318,7 +318,7 @@ gfx::Rect CustomScrollbar::ButtonRect(ScrollbarPart part_type) const {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return button_rect;
 }
@@ -411,7 +411,7 @@ void CustomScrollbar::PositionScrollbarParts() {
         part_rect = FrameRect();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     part.value->ClearNeedsLayoutWithoutPaintInvalidation();
     // The part's paint offset is relative to the box.
@@ -458,6 +458,18 @@ void CustomScrollbar::InvalidateDisplayItemClientsOfScrollbarParts() {
 void CustomScrollbar::ClearPaintFlags() {
   for (auto& part : parts_)
     part.value->ClearPaintFlags();
+}
+
+void CustomScrollbar::Paint(GraphicsContext& context,
+                            const PhysicalOffset& paint_offset) const {
+  auto& theme = GetTheme();
+  // TODO(crbug.com/40105990): We should not round paint_offset but should
+  // consider subpixel accumulation when painting scrollbars.
+  gfx::Vector2d offset = ToRoundedVector2d(paint_offset);
+  theme.PaintTrackAndButtons(context, *this, FrameRect() + offset);
+  if (theme.HasThumb(*this)) {
+    theme.PaintThumb(context, *this, theme.ThumbRect(*this) + offset);
+  }
 }
 
 }  // namespace blink

@@ -5,8 +5,11 @@
 #include "chrome/browser/first_run/first_run_internal.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 #include <stdint.h>
+
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -100,7 +103,7 @@ bool CreateEULASentinel() {
   base::FilePath eula_sentinel;
   return InstallUtil::GetEulaSentinelFilePath(&eula_sentinel) &&
          base::CreateDirectory(eula_sentinel.DirName()) &&
-         base::WriteFile(eula_sentinel, base::StringPiece());
+         base::WriteFile(eula_sentinel, std::string_view());
 }
 
 }  // namespace

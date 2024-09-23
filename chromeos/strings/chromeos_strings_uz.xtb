@@ -8,29 +8,42 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> ekskluziv resurslari chiqdi</translation>
 <translation id="1022628058306505708">Yer</translation>
 <translation id="1026212596705997935">“<ph name="CONFLICT_ACCEL_NAME" />” tezkor tugmasi band. Yangi tezkor tugmalarni bosing. Mavjud tezkor tugmani almashtirish uchun bu tezkor tugmani qayta bosing.</translation>
+<translation id="1030856839388844477">Trafik sarfini tiklash</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1047773237499189053">Yangi funksiya chiqdi, batafsil axborot uchun tepaga strelkani bosing</translation>
 <translation id="1049663189809099096">pastel sariq</translation>
+<translation id="1053371972724535586">Ovozli yozuvlarim</translation>
+<translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
+<translation id="1061864016440983342">Joylashuvsiz foydalanish</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
 <translation id="1082009148392559545">Ekran lavhasi yuklab olinmoqda</translation>
 <translation id="1094693127011229778">IP manzil mavjud emas</translation>
+<translation id="1100902271996134409">Rasmlar yaratilmoqda...</translation>
 <translation id="1116694919640316211">Brauzer haqida</translation>
 <translation id="1118572504348554005">Bizga xabar berilgan xatolar va boshqa muammolarni yechish uchun bu shakl orqali yuborilgan fikr-mulohazalarni hamkorlarga berishimiz mumkin. Parol kabi maxfiy axborotlarni kiritmang.</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Boshqaruv paneli</translation>
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
 <translation id="1145516343487477149">Yordam maqolalari va umumiy Chromebook savollariga javoblar toping</translation>
 <translation id="1154390310959620237">5 tagacha tezkor tugmani moslash mumkin. Yangi tezkor tugma kiritish uchun boshqa birini oʻchiring.</translation>
+<translation id="1155154308031262006">Soʻrov kiriting</translation>
+<translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Shom manzaralari ekran lavhasi</translation>
+<translation id="1166688493741195933">Yozuv nomlari yaratilmadi</translation>
 <translation id="1167755866710282443">Tugmalarni moslash uchun menyuni oching. Menyuni surish uchun torting.</translation>
+<translation id="1171349345463658120">qumli laguna</translation>
+<translation id="1173894706177603556">Qayta nomlash</translation>
 <translation id="1174073918202301297">Yorliq yaratildi</translation>
+<translation id="11743817593307477">Bu boshqaruvni oʻyin amaliga joylashda strelka tugmalaridan foydalaning. Boshqaruvni joylash uchun Enter tugmasini bosing. Bekor qilish uchun Escape tugmasini bosing.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1175951029573070619">Oʻrtacha (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">shinam</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1191518099344003522">APN yoniq.</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
@@ -40,13 +53,20 @@
 <translation id="1204296502688602597">DNS kechikishi</translation>
 <translation id="1207734034680156868">Tavsiyalar tavsiflarga asoslangan</translation>
 <translation id="121090498480012229">ijroni boshlash yoki toʻxtatish</translation>
+<translation id="1216675364136048456">Yopish</translation>
+<translation id="1223498995510244364">Xulosalash</translation>
 <translation id="123124571410524056">Portal muzlatildi</translation>
+<translation id="1232610416724362657">sharshara</translation>
 <translation id="1238612778414822719">HTTPS kechikishi</translation>
-<translation id="1264369926465113395">Chromebook qurilmasining ijodkorlar uchun yangi raqamli jurnali bilan tanishing</translation>
+<translation id="1252766349417594414">Joystik</translation>
 <translation id="1270369111467284986">Kirish portali muzlatildi</translation>
+<translation id="1274654146705270731">apelsinlar</translation>
+<translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1300115153046603471">APN turi: standart va <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Oʻgirish</translation>
+<translation id="1304014921944666344">Yaratilgan sana</translation>
 <translation id="1308754910631152188">Yangilanmoqda (<ph name="PERCENTAGE_VALUE" />% yakunlandi)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> nomli tarmoq topilmadi</translation>
@@ -57,9 +77,14 @@
 <translation id="1328223165223065150">Fon rasmi rangi</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanerlash sohasiga moslash</translation>
+<translation id="1343442362630695901">mineral koʻllar</translation>
+<translation id="1348657754632799065">Yozuv paneli</translation>
 <translation id="1367951781824006909">Fayl tanlang</translation>
 <translation id="1371650399987522809">Google AI yordamida yaratilgan fon rasmi yuzasidan fikr-mulohaza</translation>
+<translation id="1374385338586507108">Izohini olish</translation>
+<translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1387854245479784695">Bu barcha yadrolarning faoliyati</translation>
+<translation id="1393206549145430405">qasr</translation>
 <translation id="1394661041439318933">Qurilma gʻilofining batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
 <translation id="1398634363027580500">HTTPS kechikishi juda yuqori</translation>
@@ -67,100 +92,141 @@
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orxideya</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Kalitlar juftligim bor</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> tugmasi bosilmadi</translation>
+<translation id="1432110487435300883">Yaqin natijalarni olish uchun <ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
 <translation id="1435763214710588005">Har oy belgilangan kunda trafik sarfi avtomatik asliga qaytariladi</translation>
 <translation id="1442433966118452622">Rasm manbasi</translation>
+<translation id="1446954767133808402">sapfir</translation>
 <translation id="1449035143498573192">Google Qidiruvida ochish</translation>
 <translation id="1451536289672181509">Qurilma — klaviatura.</translation>
+<translation id="1452939186874918380">soyabonlar</translation>
+<translation id="145402479967797468">Ijro tugmalari</translation>
 <translation id="1459693405370120464">Ob-havo</translation>
+<translation id="1463084054301832672">kottej</translation>
 <translation id="1468664791493211953">Takliflar</translation>
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Yuborish</translation>
 <translation id="1488850966314959671">Yoqilgan shaxsiy APNlar orqali bu tarmoqqa ulanmadi. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
-<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> mikrodasturi yangilanmoqda</translation>
 <translation id="1499041187027566160">ovozni ko‘tarish</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
+<translation id="1514446283880973949">Kontentni xulosalash, aniqlashtirish va boshqalar bilan dadilroq yozing</translation>
 <translation id="1515129336378114413">brauzer bosh sahifasi</translation>
 <translation id="1526389707933164996">Ekran lavhasi animatsiyasi</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
-<translation id="1531886272553347340">ayiqtovonlar</translation>
+<translation id="1539864135338521185">lazurit</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1561927818299383735">orqa chiroq rangi</translation>
+<translation id="1564356849266217610">organza</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> yangilanmadi</translation>
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
+<translation id="1587031308639983732">Vaqt asosidagi oʻzgarishlar aniq boʻlmasligi mumkin. Bu sozlama administrator tomonidan boshqariladi.</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Bu oy</translation>
+<translation id="1593528591614229756">Faqat mobil operator yoki administrator taklif qilgan APN tanlang. APN tanlanganda boshqalarini tanlash imkoni yopiladi. Yaroqsiz APN mobil internet ishlashiga xalaqit qilishi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Transkripsiyani berkitish</translation>
 <translation id="160633243685262989">Rasmga razm solish</translation>
 <translation id="1611649489706141841">oldinga</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sanasidan keyingi trafik sarfi</translation>
-<translation id="1615576200479539465">Rasmlar yaratilmoqda...</translation>
+<translation id="1618566998877964907">Mavzu ishlatish</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
+<translation id="1622402072367425417">yorqin pufaklar</translation>
 <translation id="1626590945318984973">Tezkor tugma ishlamayapti. Funksiya va <ph name="META_KEY" /> tugmachalarini bosmasdan qayta urinib koʻring.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641857168437328880">Hujjat tasmasi (bir tomonlama)</translation>
+<translation id="1642396894598555413">velosipedlar</translation>
 <translation id="1643449475550628585">Fon rasmi har kuni almashtirilsin</translation>
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="1651925268237749928">Umumiy albomni tanladingiz. Boshqalar rasm kiritishi yoki yangilashi mumkin. Fon rasmi bu albomdan tashqari rasmlarni ishlatishi mumkin.</translation>
+<translation id="1661512400125589646">Pauza</translation>
 <translation id="1661865805917886535">Hisob va tizimga oid ayrim axborotlar Google kompaniyasiga yuborilishi mumkin. Biz ushbu maʼlumotlardan Maxfiylik siyosati (<ph name="PRIVACYPOLICYURL" />) va Xizmat shartlariga (<ph name="TERMSOFSERVICEURL" />) muvofiq texnik muammolarni hal qilish va xizmatlarimizni yaxshilash uchun foydalanamiz. Kontent oʻzgarishi talabini yuborish uchun Huquqiy yordam (<ph name="LEGALHELPPAGEURL" />) sahifasini oching.</translation>
+<translation id="1662699081856352167">Xulosa yaratildi</translation>
 <translation id="1662989795263954667">Toʻxtatildi – Siyoh tugadi</translation>
 <translation id="1664796644829245314">Razm solish: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ichki oʻrnatilgan VPN</translation>
 <translation id="1669047024429367828">Ochiqligi</translation>
+<translation id="1670478569471758522">Tanlagan matningizga aloqador qoʻshimcha maʼlumotlar</translation>
 <translation id="1672499492233627739">Veb kamera video tasmasi</translation>
 <translation id="1676557873873341166">Video yozib olinmoqda</translation>
 <translation id="1684279041537802716">Aksent rangi</translation>
+<translation id="1697278726914783200">Yozuv</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS vositasi mavjud</translation>
 <translation id="1708602061922134366">Koʻk (Google)</translation>
 <translation id="1710499924611012470">Moslik navigatsiyasi</translation>
 <translation id="1715359911173058521">Skaner bilan aloqada muammo bor. Tarmoq yoki USB aloqasini tekshirib, qaytadan urining.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> va <ph name="SECOND_MANAGER" /> tomonidan boshqariladi</translation>
+<translation id="1718553040985966377">koʻl</translation>
+<translation id="1720424726586960395">yaltiroq qoʻngʻizlar oʻrmoni</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
 <translation id="1731082422893354635">Bluetooth sensorli panel</translation>
 <translation id="1738949837603788263">Hudud <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Rasmlar yuklanmadi. Tarmoq aloqasini tekshiring yoki rasmlarni qaytadan yuklang.</translation>
 <translation id="1751249301761991853">Shaxsiy</translation>
+<translation id="1751335846119670066">Oʻqishda yordam</translation>
 <translation id="1753496554272155572">Fon rasmiga razm solishdan chiqish</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> tugmasini tahrirlash.</translation>
 <translation id="1755556344721611131">Diagnostika ilovasi</translation>
+<translation id="1756681705074952506">Kiritish usuli</translation>
 <translation id="175763766237925754">Yaxshi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" />, <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transkripsiya</translation>
+<translation id="1765169783255151332">Tezkor kalit tugmalar</translation>
 <translation id="1768959921651994223">Tekshiruv turi</translation>
 <translation id="1776228893584526149">Fon rasmi tusi</translation>
+<translation id="1777913922912475695">koʻprik</translation>
 <translation id="1782199038061388045">tarjima</translation>
 <translation id="1788485524395674731">Bu ilova administrator tomonidan boshqariladi</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
+<translation id="1808803439260407870">Klassik sanʼat</translation>
+<translation id="1815850098929213707">Tugma tanlandi: <ph name="KEYS" />. Boshqaruvni tahrirlash uchun tugmani bosing</translation>
+<translation id="1823120442877418684">Qahramonlar</translation>
 <translation id="1827738518074806965">Fotogalereya</translation>
 <translation id="1836553715834333258">Tizim rangi</translation>
+<translation id="183675228220305365">realizm</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1840474674287087346">Ish stoli rangi</translation>
+<translation id="184095011128924488">ijodiy</translation>
+<translation id="1846318329111865304">Tush manzaralari</translation>
 <translation id="1851218745569890714">Videokonferensiya</translation>
 <translation id="1852934301711881861">ChromeOS Flex tizimini oʻrnatish</translation>
+<translation id="1854156910036166007">yalqovlar</translation>
 <translation id="1856388568474281774">Pastga strelka</translation>
 <translation id="1858620243986915808">Skrinshot biriktirish</translation>
 <translation id="1871413952174074704">APN nomi <ph name="CHAR_LIMIT" /> ta belgidan oshmasin</translation>
 <translation id="1871569928317311284">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="1876997008435570708">kapalaklar</translation>
 <translation id="188114911237521550">Tungi rejimdan chiqish</translation>
+<translation id="1884794756658039602">Gapiruvchi nomlari haqida batafsil.</translation>
 <translation id="1885577615937958993">oldinga oʻtkazish</translation>
 <translation id="1887850431809612466">Qurilma versiyasi</translation>
+<translation id="189221451253258459">neonli yashil</translation>
 <translation id="1904932688895783618">Quyidagi manbalar foydali boʻlishi mumkin:</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
 <translation id="1908394185991500139">chap mil</translation>
 <translation id="1923388006036088459">Aksent ranglari</translation>
+<translation id="1945403655450283000">Diktofon</translation>
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954818433534793392">bino</translation>
 <translation id="1962550982027027473">Standart APN talab qilinadi</translation>
+<translation id="1967860190218310525">Yangi APN yaratish</translation>
+<translation id="1967917622327567355">Transkripsiyani chiqarish</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">anʼanaviy</translation>
 <translation id="1977994649430373166">Google profil surati</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1999615961760456652">Kirish portali</translation>
@@ -171,17 +237,27 @@
 <translation id="2011174342667534258">SDK versiyasi:</translation>
 <translation id="2016697457005847575">Muammoni hal qilishga urining</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2045814230297767491">pichoqchilik</translation>
 <translation id="2047316797244836561">Ekran lavhasini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2073232437457681324">ulkan okean</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
+<translation id="2082932131694554252">Tayinlangan tugma</translation>
 <translation id="2085089206770112532">Displey yorlinligini pasaytirish</translation>
+<translation id="2085876078937250610">Saqlash…</translation>
+<translation id="2086091080968010660">Vaqt asosidagi oʻzgarishlar aniq boʻlmasligi mumkin. Sozlamalar orqali tizim darajasidagi joylashuv ruxsatini yoqing.</translation>
 <translation id="2102231663024125441">Matn tahrirlash</translation>
+<translation id="2102648867808308635">Bu sahifani oʻqishda yordam</translation>
 <translation id="2105810540595158374">Qurilma — geympad</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Hozirda faqat Ingliz tilida (AQSH) ishlaydi.</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB joy bor</translation>
+<translation id="2135668738111962377">Tahrirlash: <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Ustma-ust chiqadigan</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Bugun</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ta rasm</translation>
+<translation id="2154460308960858308">Qidiruv qatorini tozalash</translation>
 <translation id="2157660087437850958">emoji tanlash oynasi</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
@@ -191,10 +267,17 @@
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
 <translation id="2180197493692062006">Xatolik yuz berdi. Ilovani qayta ochishga urining.</translation>
 <translation id="2189104374785738357">APN maʼlumotlarini tahrirlash</translation>
+<translation id="2195732836444333448">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
+<translation id="2197185031095816179">Xavfsiz sozlamalarni tiklash orqali keraksiz qalqib chiquvchi oynalarni olib tashlash, tarmoq muammolarini tuzatish hamda boshqa nosozliklarni hal qilish mumkin.</translation>
+<translation id="2201758491318984023">velosiped</translation>
+<translation id="2203272733515928691">issiq buloq</translation>
+<translation id="2203642483788377106">qoyatosh</translation>
+<translation id="2208388655216963643">impressionizm</translation>
 <translation id="2209788852729124853">Traffik hisoblagichlarini tiklash</translation>
 <translation id="2212733584906323460">NS parametrlari</translation>
 <translation id="2215920961700443347">Internet yoʻq. Internetga ulanib, qaytadan urining.</translation>
 <translation id="2217935453350629363">Joriy tezlik</translation>
+<translation id="221994303562837085">Yozuvni toʻxtatish</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
 <translation id="2230005943220647148">Selsiy</translation>
@@ -202,19 +285,25 @@
 <translation id="2230624078793142213">Yana yaratish</translation>
 <translation id="2236746079896696523">Klaviatura orqa chirogʻini yoqish/oʻchirish</translation>
 <translation id="2240366984605217732">Sxemani almashtirish</translation>
+<translation id="2244834438220057800">yashil</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
 <translation id="2267285889943769271">Skrinshot kiritish</translation>
 <translation id="2271469253353559191">Tungi rejim rejasi</translation>
 <translation id="2276999893457278469">Eng sara yordam kontenti</translation>
+<translation id="2277631741861284101">Audioni oson yozib olish va ulashish</translation>
 <translation id="2279051792571591988">Andozalarni tiklash</translation>
+<translation id="2286454467119466181">Oddiy interfeys</translation>
 <translation id="2287186687001756809">Hech qanday rasm topilmadi. Suratlar kiritish uchun <ph name="LINK" /> sahifasini oching.</translation>
+<translation id="2294577623958216786">Jadval bunday sozlangan: <ph name="SUNRISE" />-<ph name="SUNSET" />. Quyosh chiqishi va botishi rejasini avtomatik yangilash uchun tizim darajasidagi joylashuv axborotiga ruxsatni yoqing.</translation>
+<translation id="2305172810646967500">qora</translation>
 <translation id="2307344026739914387">Joriy kalitlar juftligidan foydalanish</translation>
+<translation id="2308243864813041101">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini uzing</translation>
 <translation id="2320295602967756579">Kunduzgi mavzuni yoqish</translation>
 <translation id="2323506179655536734">TASHLAB KETILDI</translation>
 <translation id="2324354238778375592">Pufakli</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
-<translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">kursi</translation>
 <translation id="2358070305000735383"><ph name="DESCRIPTION" /> uchun tahrirlash oynasi ochiq.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2364498172489649528">Tugadi</translation>
@@ -227,79 +316,126 @@
 <translation id="2414886740292270097">Qorong‘i</translation>
 <translation id="2418150275289244458">Sozlamalar orqali ochish</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /> ta rasm</translation>
+<translation id="242825218556404975">Nutq aniqlanmadi</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
 <translation id="2448312741937722512">Turi</translation>
-<translation id="2465272316171730950">Imkoniyat doirasidan tashqaridamiz. Keyinroq qayta tekshiring.</translation>
+<translation id="2472215337771558851">Matn yordamchisi qoralama yaratish yoki mavjud matnni yaxshilashga yordam beradi, Google AI asosida ishlaydi</translation>
+<translation id="2480572840229215612">qisqichbaqalar</translation>
 <translation id="248546197012830854">Qurilma internetga ulanmagan. Yordam sahifasini ochish uchun Wi-Fi tarmoqqa ulaning.</translation>
+<translation id="2486301288428798846">yogʻoch</translation>
 <translation id="2491955442992294626">Tugmalar sinovi boshqa oynalarda bajarilmaydi</translation>
 <translation id="2493126929778606526">Avtomatik tanlangan eng yaxshi rasmlaringiz</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">opal</translation>
 <translation id="2505327257735685095">Joriy fon rasmini yangilash</translation>
+<translation id="2507491234071975894">Karnay</translation>
 <translation id="2512979179176933762">oynalarni koʻrsatish</translation>
 <translation id="2513396635448525189">Kirish ekranidagi rasm</translation>
-<translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2521835766824839541">avvalgi trek</translation>
 <translation id="2526590354069164005">Ish soli</translation>
+<translation id="2529641961800709867">Tugma parametrlari</translation>
 <translation id="253029298928638905">Oʻchib yonadi…</translation>
 <translation id="2531772459602846206">gortenziya</translation>
 <translation id="2533048460510040082">Tavsiya etilgan yordam kontenti</translation>
 <translation id="2536159006530886390">Internetga ulana olmadi.</translation>
+<translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> ta</translation>
+<translation id="2560876255701405320">Audio yozuvlar roʻyxati</translation>
+<translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
+<translation id="2573178735329662769">Chromebookdagi barcha tovushlarni yozib olish</translation>
+<translation id="2575552334616524665">Buni istalgan vaqt Sozlamalar yoki <ph name="THREE_DOTS_MENU_ICON" /> menyusi orqali faolsizlantirish mumkin.</translation>
+<translation id="2576253868710695442">Bu xotiradan 2GB gacha joy oladi</translation>
+<translation id="2584547424703650812">Yorqin manzara</translation>
 <translation id="2584559707064218956">Sozlash uchun Sozlamalarni oching</translation>
+<translation id="2586146417912237930">koʻk va indigo</translation>
+<translation id="2589921777872778654">Menyuni tahrirlash va oʻchirish</translation>
 <translation id="2597774443162333062">Fayllar batafsil koʻrib chiqilishi uchun Google serverlariga yuboriladi</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
+<translation id="2617397783536231890">paxta</translation>
+<translation id="2618015542787108131">qumtepa</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620436844016719705">Tizim</translation>
+<translation id="2637303424821734920">OʻCHIQ - Mahalliy ob-havo axborotini chiqarish uchun <ph name="BEGIN_LINK" />tizim joylashuv ruxsatini yoqing<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
+<translation id="2645380101799517405">Boshqaruv</translation>
 <translation id="2652403576514495859">ovoz bilan yozishni yoqish yoki almashtirish</translation>
+<translation id="2653659639078652383">Yuborish</translation>
+<translation id="2654647726140493436">Yangilash vaqtida <ph name="DEVICE_TYPE" /> oʻchirilmasligi va <ph name="DEVICE_TYPE" /> quvvat kabeli uzilmasligi zarur</translation>
 <translation id="2656001153562991489">Chromebook Plus uchun ekskluziv</translation>
+<translation id="2665671725390405060">Talaffuzini eshitish</translation>
 <translation id="267442004702508783">yangilash</translation>
+<translation id="2675392311492541028">Transkripsiya va xulosa</translation>
 <translation id="268270014981824665">klaviatura xiraligi</translation>
 <translation id="2712812801627182647">TLS autentifikatsiya kaliti</translation>
 <translation id="2713444072780614174">Oq</translation>
+<translation id="2715723665057727940">daryo</translation>
 <translation id="2717139507051041123">Toʻq rangli rejimni yoqish</translation>
 <translation id="2728460467788544679">Barcha chop etish tarixini tozalash</translation>
+<translation id="2731700343119398978">Iltimos, kuting...</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Ulashilgan</translation>
 <translation id="2751739896257479635">EAP autentifikatsiya 2-bosqichi</translation>
+<translation id="2754757901767760034">shamchiroq</translation>
+<translation id="2780756493585863768">Google AI yaratgan oxirgin fon rasmlari</translation>
 <translation id="2783010256799387990">TUGADI</translation>
+<translation id="2786429550992142861">zigʻir</translation>
+<translation id="2787237339470862294">Bu til hozirda dastaklanmaydi</translation>
 <translation id="2787435249130282949">yorqinroq klaviatura</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="28232023175184696">Internetga ulana olmadi. Qayta urinish uchun bosing.</translation>
+<translation id="2855718259207180827">jun</translation>
 <translation id="2859243502336719778">Muhim yangilanish</translation>
 <translation id="2860473693272905224">Skanerga boshqa sahifani joylang</translation>
+<translation id="286265581261662583">Tavsiflar, tarjimalarni olish yoki birliklarni oʻgirish uchun oʻng klikni bosing yoki ustiga bosib turing</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2873483161362553159">Brauzer navigatsiyasi</translation>
 <translation id="2874939134665556319">Avvalgi musiqa</translation>
 <translation id="2875812231449496375">Bu fon rasmi uchun eng yaxshi natija olish uchun shu sozlamani yoqing. Istalgan vaqt bu sozlamani faolsizlantirishingiz mumkin.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="2880569433548999039">Bulut manzaralari ekran lavhasi</translation>
+<translation id="2882230315487799269">AI soʻrovini moslash</translation>
+<translation id="2888298276507578975">Soʻrov kiriting: "rahmatnoma qayd yozish" kabi</translation>
+<translation id="2890557891229184386">tropik orol</translation>
+<translation id="2895772081848316509">tungi</translation>
 <translation id="2926057806159140518">Login va parolingizni kiriting yoki QR kodni skanerlang</translation>
 <translation id="2940811910881150316">Qurilmani sinash imkonsiz. Sinash uchun qurlimani yopib, keyin qayta oching</translation>
 <translation id="2941112035454246133">Past</translation>
+<translation id="2956070106555335453">Xulosa</translation>
+<translation id="299385721391037602">pushti va sariq</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3017079585324758401">Orqa fon</translation>
 <translation id="3027578600144895987">Kamerani yopish</translation>
 <translation id="3031560714565892478">Qurilma — video kamera.</translation>
+<translation id="3042927241478734594">Yozuvdan chiqilsinmi?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Oxirgi nuqta</translation>
+<translation id="3060579846059757016">Konturlar</translation>
+<translation id="3061850252076394168">teginib tinglashni yoqish</translation>
 <translation id="3069085583900247081">Tekshiruv bajarilmadi</translation>
+<translation id="3078740164268491126">jadval</translation>
+<translation id="3081652522083185657">kunduzgi</translation>
 <translation id="3083667275341675831">Aloqa diagnostikasi</translation>
 <translation id="3084958266922136097">Ekran lavhasini faolsizlantirish</translation>
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3102119246920354026">Kesh</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3122614491980756867">hovuzlar</translation>
+<translation id="3122883569442693641">Batafsil</translation>
 <translation id="3124039320086536031">Qurilma ulandi.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sahifa olib tashlansinmi?}=1{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}other{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}}</translation>
+<translation id="3140130301071865159">qor</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> uchun ekskluziv</translation>
 <translation id="315116470104423982">Mobil internet</translation>
+<translation id="3156511682997763015">10 soniya oldinga</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi...</translation>
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Tizim va ilova axboroti<ph name="END_LINK1" /> hamda <ph name="BEGIN_LINK2" />statistikasini<ph name="END_LINK2" /> yuborish</translation>
 <translation id="3170673040743561620">Hujjatni skanerga joylang</translation>
 <translation id="3174321110679064523">Shom manzaralari fon rasmi</translation>
+<translation id="3178532070248519384">avangard</translation>
+<translation id="3182676044300231689">“Matn ohangini yanada ishonchli qilish” kabi soʻrov kiriting</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="319101249942218879">Avatar rasmi oʻzgardi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
@@ -308,8 +444,11 @@
 <translation id="3211671540163313381">Tugma tayinlash: Strelkali tugmalar</translation>
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
+<translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
+<translation id="3237710083340813756">Qayta yozish</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="324961752321393509">Administrator bu ilovani yopishni taqiqlagan</translation>
+<translation id="3263941347294171263">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> kabelini uzib, qayta ulang</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3275729367986477355">Avatar rasmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylni tahrirlash}other{Fayllarni tahrirlash}}</translation>
@@ -319,18 +458,24 @@
 <translation id="3303855915957856445">Qidiruv hech qanday natija bermadi</translation>
 <translation id="3305294846493618482">yana</translation>
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
+<translation id="3321030238473337787">Ijro tezligi</translation>
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3340011300870565703">Qurilmaning oʻng quloqlik batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">sozlamalar</translation>
+<translation id="3347558044552027859">zamonaviy</translation>
 <translation id="3359218928534347896">mikrofonni ovozsiz qilish</translation>
 <translation id="3360306038446926262">Oynalar</translation>
+<translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369013195428705271">Chop etish tarixi tozalansinmi? Joriy chop etish vazifalari oʻchirib tashlanmaydi.</translation>
 <translation id="3373141842870501561">Yer manzaralari fon rasmi</translation>
-<translation id="337375748120863155">Tanlovga aloqador axborot. Boshqaruvga kirish uchun chap yoki oʻng strelkalardan foydalaning.</translation>
+<translation id="33736539805963175"><ph name="LETTERS_LETTER" /> harfli <ph name="LETTERS_COLOR" /> fon</translation>
 <translation id="3383623117265110236">Ekskluziv</translation>
 <translation id="3404249063913988450">Ekran lavhasini faollashtirish</translation>
+<translation id="3410165745972100556">Transkripsiya oʻchiq</translation>
 <translation id="3413935475507503304">Yangilashda davom etish uchun Keyingisi tugmasini bosing</translation>
+<translation id="3428551088151258685">tashqarida</translation>
+<translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3435896845095436175">Yoqish</translation>
@@ -338,25 +483,35 @@
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ta sahifa skanerlandi. <ph name="PERCENTAGE_VALUE" />% tugallandi.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
+<translation id="3462187165860821523"><ph name="DEVICE_NAME" /> yangilanmoqda</translation>
 <translation id="346423161771747987">Ayni vaqtda</translation>
 <translation id="346539236881580388">Qaytadan</translation>
 <translation id="3484914941826596830">Mikrodastur yangilanayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu yangilanish bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
+<translation id="3487866404496702283">Mahi funksiyasi yuzasidan fikr-mulohaza</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
+<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tusdagi <ph name="OFFICE_STYLE" /> ofis</translation>
+<translation id="3493187369049186498">Trafik sarfi Chromebook tomonidan hisoblanadi. Bu hisob provayder trafigi bilan farq qilishi mumkin.</translation>
 <translation id="3502426834823382181">barcha ilovalarni koʻrish</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Unumdorlik kuzatuvi maʼlumotlarini<ph name="END_LINK1" /> joʻnatish</translation>
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
+<translation id="3522508178835057262">Hozircha transkripsiya maksimum <ph name="MAX_WORD_LENGTH" /> ta soʻzdan yaratiladi</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
+<translation id="353214771040290298">Tahrirlashni tugatish</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
+<translation id="3533790840489634638">hovuz</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Qurilmadagi hisob (ixtiyoriy)</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
 <translation id="3569407787324516067">Ekran lavhasi</translation>
+<translation id="3571184524500629183">Qidiruvni yopish</translation>
 <translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="3583278742022654445">Signal darajasi zaif. Wi-Fi signal manbasiga yaqinlashtiring.</translation>
+<translation id="3588034708467091142">Internetga ulanganingizni tekshiring va qayta urining.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> <ph name="APN_NAME" /> uchun qulay nom.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
+<translation id="3600063043775287169">Chromebook audio parametri yoqilsa, Diktofon qurilmada ijro etilayotgan barcha tovushlarni yozib oladi. Hammasi yozilishiga diqqat qiling.</translation>
 <translation id="3600339377155080675">Ekran aksi</translation>
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -364,24 +519,39 @@
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
 <translation id="361575905210396100">Fikr-mulohazangiz uchun rahmat</translation>
+<translation id="3621072146987826699">fillar</translation>
+<translation id="3632040286124154621">Yaxshi taklif</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
+<translation id="3639873154908477486">Nomi asosida (A — Z)</translation>
+<translation id="3644695927181369554">Noloyiq taklif</translation>
 <translation id="3651050199673793219">Harorat birligini tanlang</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> gullashi</translation>
+<translation id="3661106764436337772">Tezroq va dadilroq yozing</translation>
+<translation id="3662461537616691585">bordo va qirmizi</translation>
 <translation id="3668449597372804501">Bulut manzaralari fon rasmi</translation>
+<translation id="3668570675727296296">Til sozlamalari</translation>
+<translation id="3675132884790542448">choʻchqalar</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> sinovi</translation>
 <translation id="370665806235115550">Yuklanmoqda…</translation>
 <translation id="3708186454126126312">Avval ulangan qurilmalar</translation>
 <translation id="3715651196924935218">Suzuvchi rejimdan chiqish</translation>
+<translation id="3716250181321371108">Boshqaruv elementini yaratish</translation>
+<translation id="3716830479327464973">Ruxsat berilsa, Diktofon ovozli yozuvlarni buning uchun tahlil qiladi:</translation>
+<translation id="3719826155360621982">Bosh sahifa</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
+<translation id="3767737419527918477">Yozuv fayllari qidiruvi</translation>
 <translation id="3771294271822695279">Video fayllar</translation>
+<translation id="3780740315729837296">Klaviatura tugmasini tayinlash</translation>
 <translation id="3784455785234192852">Qulflash</translation>
+<translation id="3785643128701396311">piksel grafikasi</translation>
+<translation id="3799381533888781854">OʻCHIQ — Bu sozlama administrator tomonidan boshqariladi.</translation>
 <translation id="380097101658023925">rgb boshqaruvi</translation>
 <translation id="38114475217616659">Tarixni tozalash</translation>
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="382043424867370667">Oqshom fon rasmi</translation>
 <translation id="3824259034819781947">Fayl biriktirish</translation>
+<translation id="3836587210832263413">Faqat ishonchli kengaytmalarni yoqing</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
 <translation id="3845880861638660475">Muloqot oynasini yopish uchun <ph name="ALT_SHORTCUT_START" />esc<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />alt<ph name="ESC_SHORTCUT_END" /> tugmalarini bosing.</translation>
 <translation id="3848280697030027394">klaviaturani xiralashtirish</translation>
@@ -389,16 +559,22 @@
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3862598938296403232">Tavsif kiritish shart</translation>
 <translation id="386280020966669610">Menga ilhom ber</translation>
+<translation id="3864554910039562428">marjon qoyasi</translation>
 <translation id="3865289341173661845">Yordam kontenti mavjud emas.</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
+<translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
+<translation id="3877066159641251281">Tarjimani tinglash</translation>
+<translation id="3880601782712134623">Ovozlarni avtomatik aniqlash va har bir maʼruzachiga tegishli umumiy nom berish, masalan, Gapiruvchi 1 va Gapiruvchi 2 kabi.</translation>
 <translation id="3885327323343477505">Ekran lavhasini oʻzgartirish</translation>
-<translation id="3892148308691398805">Matnni nusxalash</translation>
+<translation id="3889914174935857450">Sanani tiklash</translation>
+<translation id="3897092660631435901">Menyu</translation>
 <translation id="391412459402535266">Qurilmani sinash imkonsiz. Sinash uchun laptop rejimiga oʻting</translation>
 <translation id="3916998944874125962">skrinshot olish</translation>
 <translation id="3923184630988645767">Trafik sarfi</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
+<translation id="3934185438132762746">Tayinlanmagan: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Qurilma — noaniq.</translation>
@@ -412,14 +588,22 @@
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> hozir yangi</translation>
 <translation id="3998976413398910035">Printerlarni boshqarish</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
+<translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Sinash uchun laptop rejimiga oʻting</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4035877632587724847">Rad etish</translation>
+<translation id="4042658354407913408">Xulosa oʻchiq</translation>
 <translation id="4044093238444069296">Shlyuz bilan ulanish imkonsiz</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
 <translation id="404928562651467259">Diqqat!</translation>
+<translation id="4050208988451295487">Bir nechta variant:</translation>
+<translation id="405181879009056822">ChromeOS sozlamalari</translation>
 <translation id="4054683689023980771">Rasm yuklab olinmoqda</translation>
-<translation id="4060260348856573701">Yangi APN</translation>
+<translation id="4059839844193047929">Bu sahifa tark etilsa, joriy ovoz yozuvi tugatiladi</translation>
 <translation id="4063039537646912479">havorang</translation>
+<translation id="4070799384363688067">anime</translation>
+<translation id="4086271957099059213">Yana yaratish</translation>
+<translation id="4091002263446255071">romantika</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
 <translation id="409469431304488632">Tajriba</translation>
@@ -428,9 +612,11 @@
 <translation id="4111761024568264522">USB sensorli panel</translation>
 <translation id="4113067922640381334">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlarini<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="4117637339509843559">Tungi rejim</translation>
+<translation id="4126551873361000548">10 soniya orqaga</translation>
 <translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
 <translation id="4130750466177569591">Men roziman</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
+<translation id="4143226836069425823">Almashtirish uchun boshqa klaviatura tugmasini bosing</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -442,26 +628,38 @@
 <translation id="4171077696775491955">yorqinlikni pasaytirish</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
 <translation id="4176659219503619100">Boshqaruv paneli</translation>
+<translation id="4193496492959950834">Diktofon sozlamalari</translation>
+<translation id="4198398257084619072">pandalar</translation>
 <translation id="420283545744377356">Ekran lavhasini faolsizlantirish</translation>
+<translation id="4210636113897977670">Saqlash va chiqish</translation>
+<translation id="4210659479607886331">muzli daryo</translation>
+<translation id="42126664696688958">Eksport</translation>
 <translation id="4213104098953699324">USB klaviatura</translation>
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Joy ochish uchun Sozlamalar &gt; Xotira boshqaruvi sahifasini oching.</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
+<translation id="4251839292699800785">Shinam ofis</translation>
 <translation id="4258281355379922695">HTTP kechikishi</translation>
+<translation id="4266143281602681663">kalava</translation>
+<translation id="4269815121975886860">Ishga tushirish parametrlari</translation>
 <translation id="4271957103967917607">Toʻliq ekranli rejimda koʻrish</translation>
 <translation id="4275663329226226506">Kamera va mikrofon</translation>
 <translation id="4278766082079064416">Tezkor tugma “<ph name="CONFLICT_ACCEL_NAME" />” uchun ishlatilmoqda. Muammoni hal qilish uchun uni tahrirlang yoki olib tashlang.</translation>
+<translation id="4285999655021474887">siyohrang</translation>
 <translation id="4289540628985791613">Umumiy</translation>
 <translation id="4289849978083912975">Slayd-shou</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
+<translation id="430786093962686457">shifon</translation>
 <translation id="4310735698903592804">Google AI yaratgan oxirgi fon rasmlari</translation>
+<translation id="4320904097188876154">neonli pushti</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tugmasi bosildi</translation>
+<translation id="4334293042716981313">Shuningdek, <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />mustaqil soʻrov kiritish<ph name="END_LINK_FREEFORM_SUBPAGE" /> mumkin.</translation>
 <translation id="4354430579665871434">tugma</translation>
 <translation id="4361257691546579041">APN standart tur.</translation>
 <translation id="437294888293595148">Barcha yorliqlarni tiklash</translation>
+<translation id="437477383107495720">quyonlar</translation>
 <translation id="4376423484621194274">Administrator <ph name="APP_NAME" />ni yopishga ruxsat bermaydi</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4378551569595875038">Ulanmoqda...</translation>
@@ -469,25 +667,34 @@
 <translation id="4394049700291259645">Faolsizlantirish</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> qayta ishga tushirilmoqda</translation>
 <translation id="4395835743215824109">klaviaturani moslash</translation>
+<translation id="439946595190720558">Bu fon rasmi quyidagi matndan foydalanib AI yordamida yaratildi: “<ph name="PROMPT" />.”</translation>
 <translation id="4415951057168511744">Joriy avatar</translation>
 <translation id="4417830657741848074">Administrator ilovalarni avtomatik ishga tushadigan qilib sozlagan. Bu ilovalarning ayrimlari yopilmasligi mumkin.</translation>
 <translation id="4422041425070339732">pastga mil</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> yoqilmagan</translation>
+<translation id="4428840632568803690">Gapiruvchi <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos chiptasi amal qilish muddati tezda tugaydi</translation>
 <translation id="4431821876790500265">Hisobotni ochish</translation>
+<translation id="4443192710976771874">qizil</translation>
+<translation id="4447592701292766824">Mazkur kontent uchun xulosa yaratish imkonsiz</translation>
+<translation id="4448096106102522892">orol</translation>
 <translation id="445059817448385655">Eski parol</translation>
 <translation id="4453205916657964690">Quyi tarmoq niqobi</translation>
 <translation id="4454245904991689773">Saqlash joyi</translation>
 <translation id="4456812688969919973">APN saqlash tugmasi faolsizlantirildi</translation>
 <translation id="4469288414739283461">Yer manzaralari ekran lavhasi</translation>
+<translation id="4474142134969976028">Hech narsa topilmadi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="4500722292849917410">Tezkor tugma ishlamayapti. Yangi tezkor tugmani oʻzgartirish tugmasi (ctrl, alt, shift yoki <ph name="META_KEY" />) bilan bosing.</translation>
 <translation id="4500966230243561393">Interfeys rangi</translation>
 <translation id="4503223151711056411">Chapga strelka</translation>
+<translation id="4503441351962730761">zamonaviy sanʼat</translation>
 <translation id="4507392511610824664">yorqinlikni koʻtarish</translation>
 <translation id="4511264077854731334">Portal</translation>
+<translation id="4513946894732546136">Fikr-mulohaza</translation>
+<translation id="4516323842122524821">Tovush balandligi</translation>
 <translation id="4521826082652183069">Subyektning muqobil nomi topildi</translation>
 <translation id="4522570452068850558">Tafsilotlar</translation>
 <translation id="4536864596629708641">IP konfiguratsiyasi</translation>
@@ -495,26 +702,41 @@
 <translation id="4548483925627140043">Signal topilmadi</translation>
 <translation id="4556753742174065117">Barcha mikrodastur yangi</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
+<translation id="456077979087158257">shahar manzarasi</translation>
 <translation id="4561801978359312462">Qulflanmagan SIM</translation>
 <translation id="4562494484721939086">Tarmoq topilmadi</translation>
+<translation id="4570558255126759859">Yozuvlarni xulosalash uchun Gemini yuklab olinsinmi?</translation>
 <translation id="4573777384450697571">Amalga oshmadi – Sertifikati muddati tugagan</translation>
+<translation id="4575450106703099687">qulaylik parametrlari</translation>
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
+<translation id="4594021849294327751">Transkripsiya yaratish</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
+<translation id="4607282946861182308">Buning rasmlarini yaratish imkonsiz. Boshqa soʻrov yuboring.</translation>
 <translation id="4609350030397390689">Klaviatura yorqinligi pasaytirish</translation>
+<translation id="4623061655523261501">Yozuv nomlari yaratildi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="463791356324567266">Skanerlash bekor qilinmoqda...</translation>
+<translation id="4644611440022666152">Yoqish va yuklab olish</translation>
 <translation id="4646949265910132906">Xavfsiz WiFi aloqasi</translation>
 <translation id="4650608062294027130">Oʻng shift</translation>
 <translation id="4654549501020883054">Kundalik oʻzgarsin</translation>
+<translation id="4655868084888499342">Fon rasmi tanlandi</translation>
+<translation id="4661249927038176904">Syurreal</translation>
+<translation id="4664651912255946953">moʻyna</translation>
 <translation id="4665014895760275686">Ishlab chiqaruvchi</translation>
 <translation id="467510802200863975">Parollaringiz mos kelmadi</translation>
 <translation id="467715984478005772">Himoya devori aniqlandi</translation>
+<translation id="4683762547447150570">Tugma belgilashni fokuslash uchun tugmani bosing</translation>
 <translation id="4691278870498629773">Toʻxtatildi - Tarnov joyida emas</translation>
 <translation id="469379815867856270">Signal darajasi</translation>
+<translation id="4697260493945012995">Boshqaruv turini tanlang</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="473775607612524610">Yangilash</translation>
+<translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
 <translation id="4771607256327216405">klaviatura yorqinligi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
+<translation id="4778082030331381943">safsar</translation>
 <translation id="4782311465517282004">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ta rasm</translation>
 <translation id="4793710386569335688">Yana yordam olish uchun <ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /> sahifasini oching.</translation>
@@ -528,9 +750,11 @@
 <translation id="4809927044794281115">Kunduzgi mavzu</translation>
 <translation id="4813136279048157860">Rasmlarim</translation>
 <translation id="4813345808229079766">Ulanish</translation>
+<translation id="4824527342590024245">Hozircha transkripsiya minimum <ph name="MIN_WORD_LENGTH" /> ta soʻzdan yaratiladi</translation>
+<translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
-<translation id="4839698083503556542">Oʻz filmingizni yarating</translation>
+<translation id="4838825304062068169">muzlik</translation>
 <translation id="48409034532829769">Administrator <ph name="APP_NAME" /> ilovasini avtomatik ishga tushadigan qilib sozlagan. Bu ilova yopilmasligi mumkin.</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> tanlangan, <ph name="TOPIC_SOURCE" /> albomini tanlash uchun Enter tugmasini bosing</translation>
@@ -539,6 +763,7 @@
 <translation id="4854586501323951986">Ichki sensorli ekran</translation>
 <translation id="4855250849489639581">Boshqa dizayn variantlari uchun pastga suring</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
+<translation id="4868181314237714900">flis</translation>
 <translation id="4873827928179867585">Autentifikatsiya algoritmi</translation>
 <translation id="4880328057631981605">Internetga ulanish nuqtasi (APN)</translation>
 <translation id="488307179443832524">“<ph name="CONFLICT_ACCEL_NAME" />” tezkor tugmasi band. Yangi tezkor tugmalarni bosing.</translation>
@@ -554,14 +779,21 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat oldi.</translation>
 <translation id="4930320165497208503">Aloqani sozlash yoki yangilash uchun <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="4932733599132424254">Sana</translation>
+<translation id="4946927805998996217">Xulosa yaratilmoqda</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> mikrodasturi <ph name="VERSION" />-versiyaga yangilandi</translation>
+<translation id="4950893758552030541">daraxtlar tunneli</translation>
+<translation id="4965661459364092269">Xavfsiz sozlamalar tiklandi</translation>
+<translation id="4965703485264574128">Yaqin natijalarni olish uchun <ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga koʻpaytiring</translation>
 <translation id="4969079779290789265">Ajratish</translation>
 <translation id="4972592110715526173">usulni oʻzgartirish</translation>
+<translation id="4981003703840817201">koʻk va pushti</translation>
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
 <translation id="4982627662315910959">Tezkor tugma ishlamayapti. Yangi tezkor tugmani shift va yana 1 ta oʻzgartirish tugmasi (ctrl, alt yoki <ph name="META_KEY" />) bilan bosing.</translation>
+<translation id="4983216687482551672">Chromebook audio</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="4987769320337599931">Himoya devori</translation>
 <translation id="4988526792673242964">Sahifalar</translation>
+<translation id="4989542687859782284">Mavjud emas</translation>
 <translation id="4999333166442584738">Hisobotni yopish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -571,31 +803,50 @@
 <translation id="5049856988445523908">Qulflangan SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Guruh nomi</translation>
 <translation id="5051044138948155788">Faqat shu sahifa bor. Skanerlash boshlanadigan ekran ochiladi.</translation>
+<translation id="5053233795640754917">Pauza</translation>
+<translation id="5078711626843651677">Ovozli modellari gapiruvchini belgilash tugaguniga qadar qurilmada vaqtincha saqlanadi. Buni istalgan vaqtda Sozlamalarda faolsizlantirish mumkin.</translation>
+<translation id="5078983345702708852">futuristik</translation>
 <translation id="5087864757604726239">ortga</translation>
 <translation id="5088172560898466307">Server hosti nomi</translation>
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini uzib, qayta ulang</translation>
+<translation id="5095864667399748231">Ovozli/ovozsiz qilish</translation>
+<translation id="5099354524039520280">yuqoriga</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tugmasisiz tezkor tugma ayrim ilova tugmasiga ziddiyat chiqarishi mumkin. Foydalanishda davom etish uchun tezkor tugmani qayta bosing yoki yangisini <ph name="KEY" /> tugmasi bilan bosing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Oʻxshash:</translation>
+<translation id="5130848777448318809">ponilar</translation>
 <translation id="5137451382116112100">Toʻliq</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
+<translation id="5144311987923128508">Tasdiqlash tugmasi faolsizlantirildi</translation>
+<translation id="5144887194300568405">Tarjimadan nusxa olish</translation>
 <translation id="5145081769226915336">Tungi mavzu avtomatik yoqilsinmi?</translation>
+<translation id="5145331109270917438">O‘zgartirilgan sanasi</translation>
 <translation id="5154917547274118687">Operativ xotira</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> hisobingizga kiring</translation>
-<translation id="5166918508782100047">Tezkor javoblar sozlamalari</translation>
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
+<translation id="517075088756846356">Yangilashda davom etish <ph name="DEVICE_NAME" /> quvvat kabelini uzib, qayta ulang</translation>
+<translation id="5180108905184566358">baobablar</translation>
 <translation id="5180712487038406644">Ifodali</translation>
 <translation id="5190187232518914472">Sevimli xotiralaringizga qayting. Albom kiritish yoki tahrirlash uchun <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> xizmatini oching.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
+<translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% yuklab olindi</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="522307662484862935">Email manzil biriktirilmasin</translation>
+<translation id="5223226274641517059">Jonli transkripsiyalar yozib olish vaqtida chiqadi. Buni istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin.</translation>
+<translation id="5226879510707344687">Transkripsiyani eksport qilish</translation>
 <translation id="5227902338748591677">Tungi mavzu rejasi</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" oʻgirish</translation>
 <translation id="5229344016299762883">Butun ekran rejimidan chiqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5236119614998611749">Xulosa yaratilmadi</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Administratoringiz “<ph name="APP_NAME" />” ilovasini har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}=2{Administratoringiz “<ph name="APP_NAME" />” va yana 1 ta ilovani har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}other{Administratoringiz “<ph name="APP_NAME" />” va yana # ta ilovani har safar tizimga kirganingizda avtomatik ishga tushadigan qilib sozladi.}}</translation>
+<translation id="5248419081947706722">koʻk</translation>
 <translation id="5252456968953390977">Rouming</translation>
+<translation id="5254600740122644523"><ph name="SIMPLE_TONE" /> xonadagu <ph name="SIMPLE_STYLE" /> kitob javoni</translation>
 <translation id="5257811368506016604">Och rangli rejimni yoqish</translation>
+<translation id="5261479807286543505">Ishga tushirish sozlamalari</translation>
 <translation id="5264277876637023664">Protsessor tezligini tekshirish</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN faolsizlantirildi.</translation>
@@ -605,15 +856,19 @@
 <translation id="5292579816060236070">Tonggi fon rasmi</translation>
 <translation id="5294769550414936029">versiya: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Oynani ish stoliga koʻchirish</translation>
+<translation id="5302048478445481009">Til</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ekskluziv fon rasmi</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Alohida belgilari</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318334351163689047">Bajarilmagan TCP soʻrovlari</translation>
+<translation id="53196409393069519">Transkripsiya yoqilsinmi?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nomi</translation>
 <translation id="5332948983412042822">Hoziroq yangi parol tanlang</translation>
 <translation id="5333530671332546086">Portal holati noaniq</translation>
 <translation id="5335373365677455232">pushti</translation>
+<translation id="5344619683981067131">Belgilangan matnni tavsiya etilganiga almashtirish</translation>
 <translation id="5346687412805619883">Mahalliy tarmoq</translation>
 <translation id="5358174242040570474">Xatolik yuz berdi. Fon rasmini qayta tanlang yoki ilovani qaytadan oching.</translation>
 <translation id="5372659122375744710">WiFi tarmoq xavfsiz emas</translation>
@@ -621,32 +876,43 @@
 <translation id="5378184552853359930">IP turi</translation>
 <translation id="5389159777326897627">Fon rasmi va uslubi</translation>
 <translation id="5389224261615877010">Kamalak</translation>
-<translation id="5396811372860835203">arum nilufar</translation>
 <translation id="5400907029458559844">Qurilma ulanmoqda.</translation>
 <translation id="5401938042319910061">Barcha dasturlarni ishga tushirish</translation>
+<translation id="5410755018770633464">hotdoglar</translation>
 <translation id="5423849171846380976">Faol</translation>
 <translation id="5430931332414098647">Tezkor modem rejimi</translation>
 <translation id="5431318178759467895">Rang</translation>
 <translation id="5457599981699367932">Mehmon sifatida kezish</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
+<translation id="5470776029649730099">kanop</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ta urinish qoldi}other{{0} ta urinish qoldi}}</translation>
+<translation id="5488280942828718790">qirmizi</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanerlash tugallanmadi</translation>
 <translation id="5499762266711462226">Klaviatura rangi fon rasmiga moslashadi</translation>
 <translation id="5502931783115429516">Android orqali bajarilmadi</translation>
+<translation id="550600468576850160">maysazor</translation>
 <translation id="551689408806449779">Qurilma uzilgan. Sinash uchun qayta urining</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5534900277405737921">Relyef</translation>
+<translation id="554067135846762198">marjonrang va tan</translation>
 <translation id="5543701552415191873">qulflandi</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Bu yangilanish tashqi qurilma ishlab chiqaruvchisi tomonidan taqdim etilgan va Google tomonidan tasdiqlanmagan.</translation>
 <translation id="5559898619118303662">Quyosh botganida tungi mavzuga avtomatik almashish</translation>
+<translation id="556042886152191864">Tugma</translation>
+<translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> soyadagi <ph name="TERRAIN_FEATURE" /></translation>
+<translation id="5572169899491758844">Skanerlash</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Qayta skanerlash</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5588233547254916455">Xatlar</translation>
+<translation id="5595623927872580850">kulrang</translation>
+<translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tugmasi sinaldi</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
+<translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">annotatsiya</translation>
-<translation id="5649768706273821470">Tinglash</translation>
-<translation id="5654356773042347102">vodiy nilufari</translation>
 <translation id="5655283760733841251">Klaviatura yorqinligini oshirish</translation>
 <translation id="5655296450510165335">Qurilmani roʻyxatdan oʻtkazish</translation>
 <translation id="5655776422854483175">Hech qanday vazifa topilmadi</translation>
@@ -654,20 +920,29 @@
 <translation id="5662240986744577912">maxfiylik ekranini ochish/yopish</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Yaratiladigan fon rasmini tasvirlang</translation>
+<translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> bilan syurreal<ph name="SURREAL_LANDSCAPE" /></translation>
+<translation id="5685478548317291523">gilos</translation>
 <translation id="5691511426247308406">Oilaviy</translation>
+<translation id="5692395212036914927">Yozuvni xulosalash va nomlash</translation>
 <translation id="5695599963893094957">Klaviaturada istalgan tugmani bosing. Birdaniga 4 tagacha tugmani bosish mumkin.</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
 <translation id="5703716265115423771">ovozni pasaytirish</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> tugmasini tahrirlash.</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ilovasini yangilang</translation>
+<translation id="5736820754189340309">Trafik sarfi tozalandi</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" tarjimasi</translation>
 <translation id="5757187557809630523">keyingi trek</translation>
 <translation id="5760715441271661976">Portal holati</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> qayta ishga tushirilmoqda va yangilanmoqda</translation>
 <translation id="576835345334454681">Displey yorqinligini oshirish</translation>
+<translation id="5779818640587041940">Ovoz yozib olishda ekran yoniq tursin</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
 <translation id="5784136236926853061">HTTP kechikishi yuqori</translation>
+<translation id="5790391387506209808">lazurit</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Tezkor tugma belgilanmagan</translation>
 <translation id="5826644637650799838">Asar haqida</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
@@ -681,23 +956,36 @@
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5876385649737594562">Variantlarni tanlash uchun yoqing</translation>
+<translation id="5877503382465267833">Pauza: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Butun ekran</translation>
+<translation id="5893975327266416093">Belgilash uchun klaviatura tugmasini bosing</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
+<translation id="5896602941605730551">Ijro</translation>
 <translation id="5901630391730855834">Sariq</translation>
 <translation id="5903200662178656908">Qurilma klaviatura va sichqonchaning kombinatsiyasi.</translation>
 <translation id="5904994456462260490">Yangi APN kiriting</translation>
+<translation id="590746845088109442">mushuklar</translation>
 <translation id="5907649332524363701">tugma rangi</translation>
 <translation id="5916084858004523819">Taqiqlangan</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fayl skanerlandi va <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> jildiga saqlandi.}other{Fayllar skanerlandi va <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> jildiga saqlandi.}}</translation>
 <translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> tugmasini oʻchirish.</translation>
+<translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">Fayl topilmadi</translation>
+<translation id="5938286923316838007">Mazkur kontent uchun yozuv nomlarini yaratish imkonsiz</translation>
 <translation id="5939518447894949180">Asliga qaytarish</translation>
 <translation id="594552776027197022">Tasodifiy kalitlar juftligini yaratish</translation>
 <translation id="5946538341867151940">Hali ulanmadi. Agar mobil aloqa operatoringiz boshqa APNni tavsiya qilsa, “+ Yangi APN” bandini tanlash orqali APN maʼlumotlarini kiriting.</translation>
+<translation id="5947266287934282605">Oyning oxirgi kuni tanlangan sanadan avval boʻlsa, trafik oyning oxirgi kunida nollanadi.</translation>
+<translation id="5948460390109837040">itlar</translation>
+<translation id="594989847980441553">AI yordamida rasm yaratish uchun "Yaratish" bandini tanlang
+        Yaratilgan barcha rasmlar shu yerda avtomatik chiqadi.</translation>
 <translation id="5972388717451707488">Tizimni yangilash</translation>
+<translation id="5972801171078377748">Boshqa koʻrsatilmasin</translation>
 <translation id="5975130252842127517">marjon</translation>
+<translation id="5982621672636444458">Saralash</translation>
 <translation id="5984145644188835034">Standart fon rasmi</translation>
+<translation id="5996832681196460718">ipak</translation>
 <translation id="6017514345406065928">Yashil</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Har oyda avtomatik asliga qaytarishni yoqish</translation>
@@ -705,46 +993,62 @@
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6040852767465482106">Anonim:</translation>
 <translation id="604124094241169006">Avtomatik</translation>
+<translation id="6042308850641462728">Yana</translation>
 <translation id="6048107060512778456">Bajarilmadi - Qogʻoz tiqilib qoldi</translation>
 <translation id="6050189528197190982">Kulrang tuslari</translation>
+<translation id="6054711098834486579">ekspressionizm</translation>
 <translation id="6058625436358447366">Yakunlash uchun eski va yangi parollarni kiriting</translation>
 <translation id="6061772781719867950">HTTP soʻrovlari yuborilmadi</translation>
 <translation id="6073292342939316679">klaviatura yorqinligi pasaytirish</translation>
 <translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
+<translation id="6091080061796993741">sariq</translation>
 <translation id="6104112872696127344">Skanlash amali bekor qilindi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
 <translation id="6108952804512516814">AI bilan yaratish</translation>
 <translation id="6112878310391905610">Bu sozlama administratorlar tomonidan boshqariladi.</translation>
 <translation id="6113701710518389813">Tepaga strelka</translation>
+<translation id="6116005346231504406">Birinchi boshqaruv elementini yaratish</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> va yana <ph name="NUMBER" /> ta albom</translation>
+<translation id="6120815036186828722">Nutq tinglanmoqda…</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122277663991249694">ChromeOS matn kiritish xizmati</translation>
 <translation id="6127426868813166163">oq</translation>
 <translation id="6136285399872347291">backspace</translation>
+<translation id="6137614725462089991">kiberpank</translation>
 <translation id="6137767437444130246">Foydalanuvchi sertifikati</translation>
 <translation id="6146993107019042706">Yakunlash uchun yangi parolni kiriting</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6156030503438652198">toʻq qizil va pushti</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6184793017104303157">B4</translation>
-<translation id="6188737759358894319">Yaratildi: <ph name="DATE" /></translation>
+<translation id="6188737759358894319">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
+<translation id="6189987971574353264">Ijro</translation>
 <translation id="6191293864534840972">Nom serverlarida xato</translation>
 <translation id="6196607555925437199">Qayta yaratish</translation>
 <translation id="6205145102504628069">Bulutlar</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hech qanday skaner mavjud emas</translation>
+<translation id="6231648282154119906">Kuchaytirilgan himoya tanlangani sababli Google Saytlarni xavfsiz kezish tizimi shubhali fayllarni avtomatik tekshiradi</translation>
 <translation id="6232017090690406397">Batareya</translation>
-<translation id="6235460611964961764">Trafik sarfini oddiy usulda asliga qaytarish</translation>
+<translation id="6234024205316847054">Konturlarni chiqarish</translation>
 <translation id="6243280677745499710">Hozirda tanlangan</translation>
+<translation id="6250316632541035980">choʻchqa goʻshti va tuxumlar</translation>
+<translation id="6265268291107409527">Tugma tanlandi: <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Oʻngga strelka</translation>
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" tavsifi</translation>
+<translation id="6283581480003247988">koʻk va siyohrang</translation>
 <translation id="6284632978374966585">Tungi mavzuni yoqish</translation>
+<translation id="6285260286443238386">Yozuvni eksport qilish</translation>
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
 <translation id="6292095526077353682">Quvvatlashda ekran lavhasi vaqti</translation>
 <translation id="629550705077076970">klaviatura xiraligi</translation>
+<translation id="6301193653204230066">Chrome brauzeri kengaytmalari faolsizlantiriladi, tarmoq va boshqa sozlamalar (birlamchi qidiruv tizimi kabi) tiklanadi.
+          Varaqlar, fayllar, cookie fayllar va tarix oʻzgarmaydi.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
 <translation id="631063167932043783">Ilovani varaqlash</translation>
 <translation id="6318437367327684789">har doim</translation>
@@ -754,31 +1058,44 @@
 <translation id="6325525973963619867">Amalga oshmadi</translation>
 <translation id="6327262166342360252">Bu fon rasmi quyidagi matndan foydalanib AI yordamida yaratildi: “<ph name="PROMPT" />.”</translation>
 <translation id="6331191339300272798">Avtomatik tungi mavzu</translation>
+<translation id="6335228876613776082">Model yuklab olindi</translation>
 <translation id="6340526405444716530">Personalizatsiya</translation>
+<translation id="6348252528297699679">Joylashuv ruxsatini faolsizlantirish uchun Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Daxlsizlik nazorati&gt; Joylashuv axborotiga ruxsat sahifasini oching. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Foydalanuvchi nomi va parol</translation>
+<translation id="6352210854422428614">oʻzga sayyora</translation>
 <translation id="6359706544163531585">Kunduzgi mavzuni faolsizlantirish</translation>
+<translation id="6359919876285606596">Bu amalni bekor qilish imkonsiz</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
+<translation id="6373461326814131011">hovuz</translation>
 <translation id="6379086450106841622">Sensorli ekran</translation>
 <translation id="6381741036071372448">Klaviaturangizni sinang</translation>
 <translation id="6382182670717268353">Ekran lavhasi koʻrinishi</translation>
 <translation id="6388847657025262518">Skanerga joylanadigan qogʻozlar tiqilib qoldi. Hujjat joylash panelini tekshirib, qaytadan urining.</translation>
 <translation id="6394634179843537518">Fayl qoʻshish</translation>
+<translation id="6396719002784938593">quruq chalov</translation>
+<translation id="639964859328803943">yuqori choy</translation>
+<translation id="6400680457268373900">Syurealistik tasvir: <ph name="DREAMSCAPES_OBJECT" />, material: <ph name="DREAMSCAPES_MATERIAL" />, rangi: <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">brauzerda qidiruv</translation>
 <translation id="6410257289063177456">Tasvir fayllar</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
 <translation id="6411934471898487866">klaviatura yorqinligi</translation>
 <translation id="6412715219990689313">Ichki klaviatura</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="6419454453018688975">Tizim darajasidagi joylashuvga ruxsatni yoqish</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Zaif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hisob sozlamalarini ochish</translation>
 <translation id="6462978824459367242">APN kiritish tugmasi yoqildi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sahifa qayta skanerlansinmi?}=1{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}other{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}}</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
+<translation id="6472979596862005515">yaxtalar</translation>
 <translation id="64778964625672495">toʻq qizil</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> ekskluziv ekran lavhasi</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
+<translation id="6490861263572002431">Avtomatik varaqlash</translation>
+<translation id="6492891353338939218">bechora</translation>
 <translation id="6494974875566443634">Moslashtirish</translation>
 <translation id="6500818810472529210">Google Qidiruv natijalarini oching</translation>
 <translation id="650266656685499220">Albomlar yaratish uchun Google Photos sahifasini oching</translation>
@@ -788,6 +1105,9 @@
 <translation id="6526200165918397681">Mos fon rasmi</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
 <translation id="6535178685492749208">Siz internetga ulanmagansiz. Fikr-mulohaza keyinroq yuboriladi.</translation>
+<translation id="6543412779435705598">tako</translation>
+<translation id="6551839203326557324">olmalar</translation>
+<translation id="65526652485742171">Tasdiqlash tugmasi yoqildi</translation>
 <translation id="6557784757915238407">APN turi: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Planshetli</translation>
 <translation id="6560196641871357166">Yorqin</translation>
@@ -797,55 +1117,90 @@
 <translation id="6575134580692778371">Sozlanmagan</translation>
 <translation id="6576005492601044801">chap</translation>
 <translation id="6579509898032828423">Bu rasmdan foydalanish</translation>
+<translation id="6587870930887634392">sukkulent</translation>
+<translation id="6595046262780525922">Transkripsiya yoqilib, transkripsiya modeli yuklab olinsinmi?</translation>
 <translation id="6596816719288285829">IP manzil</translation>
 <translation id="6599673642868607614">Fikr-mulohazangiz uchun rahmat! Fikr-mulohazalaringiz Chromebook xizmatini yaxshilashga yordam beradi va jamoamiz tomonidan tekshiriladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
+<translation id="660846213831377756">Sinchqoncha tugmalari</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6624819909909965616">10MBdan katta hajmli fayllar yuklanmaydi</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6647510110698214773">Shifrlash algoritmi</translation>
+<translation id="6648412990074186169">minimal</translation>
 <translation id="6650062777702288430">Kana/alfaraqamni almashtirish</translation>
+<translation id="6657240842932274095">Tizim xizmatlariga joylashuvingizdan foydalanish uchun ruxsat berilsinmi?</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Varaq</translation>
+<translation id="66621959568103627">marjon pushti</translation>
 <translation id="6673898378497337661">klaviatura yorqinligini oshirish</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6694534975463174713">qulf</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
+<translation id="6712933881624804031">vodiy</translation>
+<translation id="6716013206176357696">qulupnaylar</translation>
+<translation id="671733080802536771">modern sanʼati</translation>
+<translation id="6721525125027474520">botqoq</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="6723847290197874913">Klaviatura orqa chirogʻi</translation>
 <translation id="672609503628871915">Nimalar yangiligini ko‘ring</translation>
+<translation id="6738867403308150051">Yuklab olinmoqda...</translation>
+<translation id="6740695858234317715">krem va apelsin</translation>
+<translation id="6741823073189174383">qayiq</translation>
+<translation id="6744441848304920043">changalzor</translation>
+<translation id="6747035363363040417">neytral</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="6749473226660745022">Suratlar</translation>
 <translation id="6753452347192452143">Qurilma — kompyuter.</translation>
 <translation id="6756731097889387912">Skanerlash bekor qilinmadi</translation>
 <translation id="6760706756348334449">Ovozni pasaytirish</translation>
+<translation id="6761537227090937007">Yuqori tiniqlikdagi rasm yaratilmoqda…</translation>
 <translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
 <translation id="6768237774506518020">DNS manzil ajratilmasligi juda yuqori</translation>
+<translation id="6786747875388722282">Kengaytmalar</translation>
 <translation id="6791471867139427246">klaviatura chirogʻi rangi</translation>
 <translation id="6796229976413584781">Tezkor tugma oʻchirildi</translation>
 <translation id="6798678288485555829">Matn navigatsiyasi</translation>
 <translation id="680983167891198932">Kalit</translation>
 <translation id="6816797338148849397">Tanlovga aloqador axborot mavjud. Uni ochish uchun tepaga strelkani bosing.</translation>
+<translation id="6831043979455480757">Tarjima</translation>
+<translation id="6846843854964504403">Xavfsiz sozlamalarni tiklash</translation>
 <translation id="6853312040151791195">Quvvat sarflanishi tezligi</translation>
+<translation id="6862228900689076919">Bu funksiya administrator tomonidan boshqariladi</translation>
+<translation id="6862416241246624313">Fikr-mulohaza yuborildi</translation>
 <translation id="6866732840889595464">dastorgul</translation>
 <translation id="6871256179359663621">och siyohrang</translation>
 <translation id="6889786074662672253">Oʻchib yonayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="6900701049656042631">Bu albomda hech qanday rasm mavjud emas. Suratlar kiritish uchun <ph name="LINK" /> sahifasini oching.</translation>
+<translation id="6902359863093437070">AI yordamida fon rasmi yaratish</translation>
+<translation id="6905163627763043954">Sinab ko‘rish</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> sahifasiga qaytish</translation>
 <translation id="6910312834584889076">Skaner qopqogʻi yopilmagan. Qopqogʻini toping va qaytadan urining.</translation>
+<translation id="6910845598686542904">Yozuvda aniqlangan ovozlarning modellarini tahlil qilish</translation>
 <translation id="6911383237894364323">Media serverlarga ulana olmadi</translation>
+<translation id="6927968682840110570">Yozuv nomi</translation>
+<translation id="6930242544192836755">Davomiyligi</translation>
+<translation id="6930597342185648547">Orqa fon haqida</translation>
+<translation id="6939667434404433010">Yozuv nomini qidirish</translation>
+<translation id="6939766318048400022">Kafe</translation>
 <translation id="6943893908656559156">Masofaviy hisob (ixtiyoriy)</translation>
+<translation id="6953137545147683679">oltin</translation>
 <translation id="6957231940976260713">Xizmat nomi</translation>
 <translation id="695776212669661671">oʻng mil</translation>
+<translation id="6957792699151067488">gul</translation>
 <translation id="6961170852793647506">Boshlash uchun hujjatni skanerga joylang</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Qurilma</translation>
+<translation id="6975620886940770104">Yorqin <ph name="GLOWSCAPES_FEATURE" /> bilan <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
+<translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
-<translation id="6988803763488977828">qargʻatuyoq</translation>
+<translation id="6982462588253070448">qum tepalik</translation>
 <translation id="7005833343836210400">Qurilma ulanmagan</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
+<translation id="7035168792582749309">kartoshkalar</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7040729769968826896">Nutq egalarini aniqlashga ruxsat</translation>
 <translation id="7041549558901442110">Qurilma ulanmagan.</translation>
 <translation id="7046522406494308071">Barcha yorliqlar tozalansinmi?</translation>
 <translation id="7058278511608979688">Tugatish va saqlash</translation>
@@ -854,17 +1209,25 @@
 <translation id="7068619307603204412">Qurilma tayyorlanmoqda</translation>
 <translation id="7076851914315147928">Fon rasmini tanlang</translation>
 <translation id="708426984172631313">TOʻXTATILDI</translation>
+<translation id="7086168019478250425">biolyuminetsent sohil</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Yozuv nomlari yaratilmoqda</translation>
+<translation id="7097908713073775559">rangdor</translation>
 <translation id="710028965487274708">Bajarilmadi — Hisob tekshiruvi bajarilmadi</translation>
+<translation id="7101959270679078188">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> qurilmasini qulfdan chiqaring</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> nomli qurilma (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ekskluziv tasvirlarini tanlang</translation>
 <translation id="7108668606237948702">enter</translation>
+<translation id="7118522231018231199">Faqat mobil operator yoki administrator taklif qilgan APN tanlang. APN tanlanganda boshqalarini tanlash imkoni yopiladi. Yaroqsiz APN mobil internet ishlashiga xalaqit qilishi mumkin.</translation>
 <translation id="7119389851461848805">quvvat tugmasi</translation>
+<translation id="7129287270910503851">Trafik sarfi har oyning shu kunida nolga qaytariladi</translation>
 <translation id="7130438335435247835">Ulanish nuqtasi nomi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
+<translation id="7144954474087165241">pagoda</translation>
+<translation id="7147557737960578492">Yangi tugma tanlab, qayta tayinlang</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7154020516215182599">Fikr-mulohazangizni yuboring yoki muammoni tavsiflang. Iloji boʻlsa, muammoni takrorlash uchun qadamlarni kiriting.</translation>
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
@@ -875,13 +1238,18 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7180865173735832675">Sozlash</translation>
+<translation id="7182063559013288142">Tezkor hotspot</translation>
 <translation id="7184043045742675738">Tugmani sozlash uchun istalgan klaviatura tugmasini bosing. Sichqoncha yoki strelka tugmalari bilan tugma joylashuvini oʻzgartiring</translation>
 <translation id="7206979415662233817">Xizmat shartlari</translation>
+<translation id="7210635925306941239">havorang</translation>
 <translation id="7212547870105584639">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Tashqi qurilmalar uchun mikrodastur yangilanishi</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
+<translation id="7223952304612664117">Bunda joylashuvingizni aniqlash uchun tizim xizmatlari Joylashuv aniqligidan foydalanishga ruxsat oladi. Joylashuv aniqligi qurilma joylashuvini taxmin qilishida simsiz signallar va sensorlar haqidagi axborotlardan foydalanadi.</translation>
 <translation id="7233782086689993269">Tezkor tugma tiklandi</translation>
 <translation id="725133483556299729">Emailni tanlang</translation>
+<translation id="7255187042098209569">pushti va binafsharang</translation>
+<translation id="7271000785316964275">klassisizm</translation>
 <translation id="7271040990581020067">Skaner hozir band. Keyinroq urining.</translation>
 <translation id="7271932918253517778">Yuqori qator tugmalari mavjud tezkor tugmada <ph name="META_KEY" /> tugmasi ishlatilishi kerak.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -896,6 +1264,7 @@
 <translation id="7311368985037279727">klaviatura rangi</translation>
 <translation id="7317831949569936035">Maktab uchun yozilish</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">yashil va moviy</translation>
 <translation id="7328475450575141167">strelitsiya</translation>
 <translation id="7331297744262591636">AI fon rasmidan foydalanish uchun kamida 18 yoshga kirgan boʻlishingiz kerak. Bu funksiya ishlashida <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google xizmat shartlari<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> va <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ AI qoʻshimcha xizmat shartlari<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> amal qiladi.
           <ph name="LINE_BREAK" />
@@ -903,15 +1272,23 @@
           AI yordamida fon rasmlarini faqat shaxsiy yoki notijoriy maqsadlar uchun yaratish mumkin. Fon rasmini yaratishda yordam olishda siz kiritgan matn Google AI serverlariga yuboriladi va fon rasmlarini yaratib taklif qiladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
+<translation id="7344788170842919262">yersimon</translation>
+<translation id="7346768383111016081">Klaviaturada oʻynash uchun oʻyin amali uchun tugma tanlang</translation>
+<translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> ta natija: <ph name="SEARCH_RESULT_TEXT" />. Tezkor tugmani ochish uchun Enter tugmasini bosing.</translation>
 <translation id="7359657277149375382">Fayl turi</translation>
 <translation id="73631062356239394">Diagnostika axborotini ulashish</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">Diktofon ovozli yozuvlar uchun transkripsiya yaratishi mumkin.
+Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</translation>
+<translation id="7384004438856720753">saroy</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" /> uchun boshqa amal</translation>
 <translation id="7388959671917308825">Ichki sensorli panel</translation>
 <translation id="7397270852490618635">Kunduzgi mavzuni faolsizlantirish</translation>
 <translation id="7401543881546089382">Yorliqni o‘chirish</translation>
 <translation id="741244894080940828">konversiya</translation>
 <translation id="7415801143053185905">HTTP kechikishi juda yuqori</translation>
+<translation id="7425037327577270384">Yozishda yordam ber</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN faolsizlantirilmadi yoki olib tashlanmadi. <ph name="ATTACH" /> APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
 <translation id="7458970041932198923">Avatarlarni koʻrish va sozlash uchun tarmoqqa ulaning va sahifani yangilang.</translation>
@@ -920,26 +1297,35 @@
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC manzil</translation>
 <translation id="7497215489070763236">Server CA sertifikati</translation>
+<translation id="7500205272584643581">Diktofon gapiruvchilarni aniqlashi va ularni nomlashiga ruxsat berilsinmi?</translation>
 <translation id="7501957181231305652">yoki</translation>
 <translation id="7502658306369382406">IPv6 manzil</translation>
+<translation id="7507061649493508884">Yorqin <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">pastiga</translation>
+<translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Ijro: <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Yaratish</translation>
 <translation id="7528507600602050979">Yordam kontenti mavjud emas</translation>
-<translation id="753556296624075801">Google texnologiyalarida ishlaydi</translation>
 <translation id="7535791657097741517">Kunduzgi mavzuni yoqish</translation>
+<translation id="7544126681856613971">tumanli oʻrmon</translation>
+<translation id="7544853251252956727">Tasodifiy</translation>
 <translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7551123448725492271">Qurilma — audio qurilma.</translation>
 <translation id="7559239713112547082">Skrinshotga razm solish</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB sensorli ekran</translation>
+<translation id="757747079855995705">tosh</translation>
+<translation id="7590883480672980941">Kiritish sozlamalari</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qoldi</translation>
 <translation id="7613724632293948900">Sichqoncha yoki strelka tugmalari bilan joylashuvni oʻzgartiring</translation>
 <translation id="7618774594543487847">Neytral</translation>
 <translation id="7620771111601174153">Yordam markazi orqali batafsil</translation>
+<translation id="7625095758347640998">AI fon rasmlari</translation>
 <translation id="763165478673169849">Oxirgi tiklangan vaqti</translation>
 <translation id="7633068090678117093">Fon rasmi</translation>
+<translation id="763873111564339966">indigo</translation>
 <translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
 <translation id="7656388927906093505">Qurilma — sichqoncha.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
@@ -948,6 +1334,7 @@
 <translation id="7673177760638264939">atirgul</translation>
 <translation id="7683228889864052081">klaviatura tusi</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
+<translation id="7696506367342213250">loy tepalik</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
@@ -957,33 +1344,50 @@
 <translation id="7746357909584236306">tahrirlash mumkin</translation>
 <translation id="7747039790905080783">Umumiy kalit</translation>
 <translation id="7752963721013053477">Tongdan tungacha - ekskluziv</translation>
+<translation id="7760571082554155847">Bosh sahifa sozlamalari</translation>
 <translation id="7762130827864645708">Parolingiz oʻzgartirildi. Endi yangi paroldan foydalaning.</translation>
 <translation id="7763470514545477072">Domen kengaytmasi topildi</translation>
 <translation id="7769672763586021400">Model identifikatori</translation>
-<translation id="7770834998503326261">Tenlovga tegishli qoʻshimcha axborot</translation>
+<translation id="7774759755755950354">Orqaga</translation>
 <translation id="7778717409420828014">Fikr-mulohazalaringiz Chromebook xizmatini yaxshilashga yordam beradi va jamoamiz tomonidan tekshiriladi. Murojaatlar soni juda koʻpligi uchun har biriga javob qaytara olmaymiz.</translation>
+<translation id="7781829728241885113">Kecha</translation>
 <translation id="7784116172884276937">DNS serverlar sozlanmagan</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="779591286616261875">Yangi hisobot yuborish</translation>
 <translation id="7799817062559422778">Kunduzgi rejim</translation>
+<translation id="7802764839223122985">Tugma topilmadi. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7805768142964895445">Holat</translation>
-<translation id="7819831665603418705">Andoza ishlatish</translation>
+<translation id="7811024689617730980">Trafik har oyning qaysi kunida tiklanishini tanlang</translation>
+<translation id="7813073042185856802">togʻ</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
+<translation id="7824219488248240180">postimpressionizm</translation>
+<translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> kafe</translation>
 <translation id="7841134249932030522">Tungi rejimni yoqish</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
+<translation id="7849030488395653706">shimol yogʻdusi</translation>
+<translation id="7849737607196682401">toʻr</translation>
+<translation id="7850320739366109486">Bezovta qilinmasin</translation>
 <translation id="7850847810298646851">Google AI yaratgan fon rasmi</translation>
 <translation id="785170686607360576">lola</translation>
 <translation id="7856267634822906833">Bluetooth sensorli ekran</translation>
+<translation id="7859006200041800233">kaktus guli</translation>
 <translation id="7869143217755017858">Tungi rejimdan chiqish</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Ta’minot turi</translation>
 <translation id="7882501334836096755">Ochiq kalit</translation>
+<translation id="7889966925761734854">Slayder</translation>
+<translation id="78957024357676568">chapga</translation>
+<translation id="7897043345768902965">yoʻlak</translation>
+<translation id="7902285181767404769">Ovoz yozuvida bildirishnomalarni sukut qilish</translation>
 <translation id="7903695460270716054">Tanlangan tasvirlar va rasmlarni tanlang</translation>
+<translation id="7912005977894000746">Asosiy sahifaga qaytish</translation>
 <translation id="7915220255123750251">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi.</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7943235353293548836">Aloqani muntazam ushlab turish intervali</translation>
+<translation id="7943516765291457328">Atrofdagi hotspotlarni qidirish uchun Bluetooth aloqasini yoqing</translation>
+<translation id="7944482598620888754">Sayt kontenti</translation>
 <translation id="7944562637040950644">klaviatura yorqinligini yoqish yoki oʻchirish</translation>
 <translation id="7953669802889559161">Manbalar</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
@@ -991,80 +1395,119 @@
 <translation id="7971535376154084247">Umumiy boshqaruv tugmalari</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> nomli tarmoqqa ulanish uchun Sozlamalarni oching</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
+<translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />” avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8017679124341497925">Yorliq tahrirlandi</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
+<translation id="8028993641010258682">Hajm</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rangli rejimni yoqish</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8045012663542226664">Mikrofon oʻchiq</translation>
+<translation id="8054112564438735763">sargʻish</translation>
+<translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> fonida <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8067126283828232460">APN ulandi.</translation>
+<translation id="8067208048261192356">jigarrang</translation>
+<translation id="8067224607978179455">Oʻchirish: <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Batareya quvvati</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
+<translation id="8079860070590459552">gulzor</translation>
 <translation id="8082366717211101304">Android ilovalardan DNS manzil olish imkonsiz</translation>
 <translation id="8082644724189923105">klaviatura zonasi</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
+<translation id="8088963492174775412">Yozib olish uchun bosing</translation>
 <translation id="8094062939584182041">Bu muammo yuzasidan Google email qaytarishiga ruxsat</translation>
 <translation id="8104083085214006426">Siz ochiq va himoyalanmagan tarmoqdan foydalanyapsiz</translation>
 <translation id="811820734797650957">(Android) Shlyuzni tekshirish mumkin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8132480444149501833">Traffik hisoblagichlarini chaqirish</translation>
+<translation id="8135609423982943441">Chromebook qurilmasida xavfsiz sozlamalar tiklandi. Ularni istalganda sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Tanlash: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Dasturchi vositalari</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">sehrli</translation>
+<translation id="8162776280680283326">tulkilar</translation>
+<translation id="8167413449582155132">Google AI yaratgan fon rasmi</translation>
+<translation id="8171020708598805594">Transkripsiyalarni avtomatik yaratish, Google AI yordamida yozuv xulosalarini olish va audio ichidan qidirish. Ovozli yozuvlarni hatto internetga ulanmagan holda yarating.</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8183975772394450380">sohil</translation>
+<translation id="819278132617411009">Google AI yordamida unundorlikni oshiring</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
+<translation id="8236972776513018241">Transkripsiya</translation>
+<translation id="8238771987802558562">APN tanlash</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
+<translation id="8250926778281121244">zang</translation>
+<translation id="8257572018929862473">Tezkor javoblar sozlamalarini ochish</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8262870577632766028">1 soat</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>
+<translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>
 <translation id="8294431847097064396">Manba</translation>
 <translation id="8302368968391049045">HTTPS Fayrvol</translation>
+<translation id="8308787307410010965">Sayt kontenti sozlamalari</translation>
 <translation id="8312330582793120272">media ijrosi</translation>
 <translation id="8318753676953949627">Rasmlarsiz</translation>
+<translation id="8320910311642849813">oʻrmon</translation>
 <translation id="8329018942023753850">kalkulyator ilovasi</translation>
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
 <translation id="8339024191194156249">Avtomatik ishga tushirish haqida batafsil</translation>
+<translation id="8346937114125330423">klassik</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> yoki <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
+<translation id="8349758651405877930">asboblar</translation>
 <translation id="8349826889576450703">launcher</translation>
+<translation id="8351482263741655895"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga koʻpaytiring</translation>
 <translation id="8351855506390808906">Tugma tayinlash: teginish nuqtasi</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
 <translation id="8372477600026034341">Qoʻshimcha hostlar</translation>
+<translation id="8372667721254470022">zaytun</translation>
 <translation id="8373046809163484087">Fonga mos ranglar majmuasidan foydalaning</translation>
 <translation id="8380114448424469341">Oynani yarim ekran <ph name="DIRECTION" /> mahkamlash</translation>
+<translation id="8391349326751432483">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Xotiradan joy ochish uchun varaqlar va ilovalarni yoping.</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
+<translation id="8403988360557588704">Tasvir – <ph name="ART_FEATURE" />, uslub – <ph name="ART_MOVEMENT" /></translation>
 <translation id="8410244574650205435">Avtomatik aniqlandi</translation>
 <translation id="8420955526972171689">Apparatli muammolarni aniqlaydigan testlarni ishga tushirish</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8424039430705546751">pastga</translation>
+<translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8431300646573772016">Yangilangan ChromeOS</translation>
+<translation id="8433186206711564395">Tarmoq sozlamalari</translation>
 <translation id="843568408673868420">Internet aloqasi</translation>
 <translation id="844521431886043384">DNS sozlanmagan</translation>
+<translation id="8456200178779628126">Google AI yordamida oʻqing va yozing</translation>
 <translation id="8456761643544401578">Avtomatik tungi rejim</translation>
 <translation id="8461329675984532579">Mahalliy ta’minotchi nomi</translation>
 <translation id="8475690821716466388">WiFi tarmoq zaif WEP PSK protokoli bilan himoyalangan</translation>
 <translation id="8476242415522716722">klaviatura ostidagi nur</translation>
 <translation id="8476942730579767658">Oynalar va ish stollari</translation>
+<translation id="8477536061607044749">grafik dizayn</translation>
 <translation id="8477551185774834963">DNS kutish vaqti ruxsat etilgan chegaradan biroz baland</translation>
 <translation id="8483248364096924578">IP manzil</translation>
 <translation id="8491311378305535241">Android ilovalardan HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>
+<translation id="8495070016475833911">kigiz</translation>
 <translation id="8498220429738806196">Traffik hisoblagichlari</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
+<translation id="8505011850330200833">Gemini modeli transkripsiya tuzish va xulosa yaratish uchun xotiradan 2GB joy oladi</translation>
 <translation id="8508640263392900755">APN tafsiloti</translation>
 <translation id="8522687886059337719">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> va <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran lavhasini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">choyxona</translation>
+<translation id="8538236298648811558">Google AI asosida ishlaydi.</translation>
+<translation id="8550364285433943656">Klavuaturada oʻynash uchun amallar tugmalarini tanlang</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
@@ -1072,34 +1515,49 @@
 <translation id="8620617069779373398">Rouming holati</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> uchun boshqa amallar</translation>
 <translation id="86356131183441916">Och siyohrang</translation>
+<translation id="8647595191512746911">Audio transkripsiya</translation>
 <translation id="8651481478098336970">ovozni o‘chirib qo‘yish</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL havolasi:</translation>
 <translation id="8660881923941176839">funt</translation>
+<translation id="8670057600920888023">Generativ AI tajribaviy, shuning uchun xato, befoyda va haqoratomuz kontent chiqishi mumkin.</translation>
 <translation id="8670574982334489519">oʻng</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
 <translation id="8677859815076891398">Albomlar mavjud emas. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> orqali albom yarating.</translation>
+<translation id="8682949824227998083">ramyon</translation>
+<translation id="8689520252402395106">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini qayta ulang</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiya chapga va oʻngga strelkalar orqali boshqariladi.</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
+<translation id="8721554916373590179">Namunaviy soʻrovlar</translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8726019395068607495">Toʻxtatildi – Eshikchasi ochiq</translation>
 <translation id="8730621377337864115">Tayyor</translation>
+<translation id="8739555075907731077">Pauzada (<ph name="PERCENTAGE_VALUE" />% bajarildi)</translation>
 <translation id="8747900814994928677">Almashtiruvni tasdiqlang</translation>
+<translation id="8749478549112817787">Kamera uchun fon</translation>
+<translation id="8755946156089753497">minora</translation>
+<translation id="8756235582947991808">AI bilan kontent yaratish tartibi va diqqat qilish lozim narsalar</translation>
+<translation id="8760616037557661287">Avvalgi soʻrovlar</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos albomi</translation>
 <translation id="8775713578693478175">Modem APN</translation>
+<translation id="877735394245039557">Model yuklab olinmoqda</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu tarmoqda autentifikatsiya portali boʻlishi mumkin</translation>
+<translation id="8797082062139985406">Google AI yordamida nomlash</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8798441408945964110">Ta’minotchi nomi</translation>
+<translation id="8808828119384186784">Chrome sozlamalari</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>
 <translation id="8820457400746201697">Harakatni bajarish uchun koʻk teginish nuqtasini harakatlantiring. Sozlash uchun tegishli tugmani tanlang.</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
+<translation id="8833620912470026819">kaktus oʻrmoni</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8845001906332463065">Yordam</translation>
+<translation id="8849799913685544685">mayoq</translation>
 <translation id="8851859208664803097">Toʻxtadi - Printer ulanmagan</translation>
 <translation id="8855781559874488009">HTTP saytlarga himoya devori orqali ulanish imkonsiz</translation>
 <translation id="885701979325669005">Ombor</translation>
@@ -1109,35 +1567,50 @@
 <translation id="8864415976656252616">Tavsiya etilgan kontent topilmadi. Eng sara yordam kontenti bilan tanishing.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Qurilma — planshet</translation>
+<translation id="8878117140814294155">Mikrofonni yoqish yoki oʻchirish</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
+<translation id="8882789155418924367">boyqushlar</translation>
 <translation id="8892443466059986410">Tahrirlashni bekor qilish</translation>
 <translation id="8898840733695078011">Signal darajasi</translation>
 <translation id="8909114361904403025">tepaga mil</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>
 <translation id="8912306040879976619">Klaviatura hududlari</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
+<translation id="8918813738569491921">tuzli qoya</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
-<translation id="8923267550422472772">Asliga qaytarilish kuni</translation>
+<translation id="8924154518905976972">Audioni eksport qilish</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>
 <translation id="8930521118335213258">Pir</translation>
 <translation id="8930622219860340959">Simsiz</translation>
+<translation id="8933650076320258356"><ph name="DIRECTION" /> tugmasi tanlandi: <ph name="KEYS" /> <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Mijoz IP manzili</translation>
 <translation id="8944651180182756621">Launcher rangi</translation>
+<translation id="8945308580158685341">asalarilar</translation>
 <translation id="894617464444543719">Qurilma — telefon.</translation>
 <translation id="8950424402482976779">tepasiga</translation>
+<translation id="8954341524817067858">togʻlar</translation>
+<translation id="8957423540740801332">o‘ngga</translation>
+<translation id="8960969673307890087">tarvuzlar</translation>
+<translation id="8961025972867871808">pingvinlar</translation>
 <translation id="8968751544471797276">Quvvatlash tezligi</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanerlash}=1{{NUMBER_OF_PAGES} sahifani skanerlash}other{{NUMBER_OF_PAGES} sahifani skanerlash}}</translation>
+<translation id="89945434909472341">qishloq</translation>
 <translation id="8997710128084572139">Qurilma batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
+<translation id="9003499805101629690">pitsa</translation>
 <translation id="9003704114456258138">Chastotasi</translation>
 <translation id="901834265349196618">e-pochta</translation>
+<translation id="9022897536196898720">gullar</translation>
 <translation id="9024331582947483881">butun ekran</translation>
 <translation id="9025198690966128418">Shaxsiy qurilma sifatida foydalaning</translation>
 <translation id="902638246363752736">Klaviatura sozlamalari</translation>
 <translation id="9028832514430399253">Tugmani bosib, ekran lavhasi parametrlarini tanlang</translation>
+<translation id="9030883440316693822">Yozuv oʻchirilsinmi?</translation>
+<translation id="9036971622563146214">Natijalar</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9045842401566197375">kitoblar</translation>
 <translation id="9049868303458988905">APN saqlash tugmasi yoqildi.</translation>
 <translation id="9058932992221914855">IPV6</translation>
 <translation id="9062831201344759865">DNS parametrlari koʻp vaqt olmoqda</translation>
@@ -1149,33 +1622,46 @@
 <translation id="9087578468327036362">Bu soʻrov haqida xabar berish</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Tiklash sanasi haqida batafsil</translation>
 <translation id="9100765901046053179">Kengaytirilgan sozlamalar</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
+<translation id="9122492456897874028">Kontentni xulosalash, aniqlashtirish va boshqalar</translation>
 <translation id="9122602430962285795">Qayta ulanish uchun Sozlamalarni oching</translation>
+<translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Bir nechta sahifani bitta PDFga saqlash</translation>
 <translation id="9133772297793293778">Klaviaturada 1-4 ta modifikator va yana 1 ta boshqa tugmani bosing. Tahrirlash rejimidan chiqish u chun Alt + Esc tugmalarini bosing.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9138630967333032450">Chap shift</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
+<translation id="9159524746324788320">gamburgerlar</translation>
 <translation id="9161276708550942948">probel</translation>
+<translation id="9169345239923038539">Hali ulanmadi. Agar mobil aloqa operatoringiz boshqa APN tavsiya qilsa, <ph name="BEGIN_LINK" />APN axborotini kiriting.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="9174334653006917325">UI rangi</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviatura ranglari fon rasmiga avtomatik moslanishi mumkin</translation>
 <translation id="9189000703457422362">Avtomatik topilgan APN orqali bu tarmoqqa ulanish imkonsiz. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">Joystik tugmalari tanlandi: <ph name="KEYS" />. Boshqaruvni tahrirlash uchun tugmani bosing</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
+<translation id="921080052717160800">Kamera uchun fon rasmi tanlandi</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
+<translation id="9218016617214286986">Mavjud APNlarni chiqarish</translation>
 <translation id="932327136139879170">Bosh sahifa</translation>
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
+<translation id="950520315903467048"><ph name="DIRECTION" /> tugmasi topilmadi. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Yozuv davomida ovozlarni solishtiring, shunda transkripsiya har bir maʼruzachi nima va qachon aytganini aks ettiradi</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
+<translation id="95718197892796296">loy</translation>
 <translation id="960719561871045870">Operator kodi</translation>
+<translation id="965918541715156800">sariq va moviy</translation>
 <translation id="966787709310836684">menyu</translation>
 <translation id="979450713603643090">Och pushti</translation>
 <translation id="982713511914535780">Quvvatsizlanishini tekshirish</translation>
+<translation id="98515147261107953">Manzara</translation>
 <translation id="987264212798334818">Umumiy</translation>
 <translation id="995062385528875723">Lotin alifbosidan tashqari harflar, aksent harflar va maxsus belgilar ishlamaydi</translation>
 </translationbundle>

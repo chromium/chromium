@@ -63,13 +63,18 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual void SetPickledData(const ClipboardFormatType& format,
                               const base::Pickle& data) = 0;
 
-  virtual bool GetString(std::u16string* data) const = 0;
-  virtual bool GetURLAndTitle(FilenameToURLPolicy policy,
-                              GURL* url,
-                              std::u16string* title) const = 0;
-  virtual bool GetFilenames(std::vector<FileInfo>* file_names) const = 0;
-  virtual bool GetPickledData(const ClipboardFormatType& format,
-                              base::Pickle* data) const = 0;
+  virtual std::optional<std::u16string> GetString() const = 0;
+  struct UrlInfo {
+    GURL url;
+    std::u16string title;
+  };
+  virtual std::optional<UrlInfo> GetURLAndTitle(
+      FilenameToURLPolicy policy) const = 0;
+  virtual std::optional<std::vector<GURL>> GetURLs(
+      FilenameToURLPolicy policy) const = 0;
+  virtual std::optional<std::vector<FileInfo>> GetFilenames() const = 0;
+  virtual std::optional<base::Pickle> GetPickledData(
+      const ClipboardFormatType& format) const = 0;
 
   virtual bool HasString() const = 0;
   virtual bool HasURL(FilenameToURLPolicy policy) const = 0;
@@ -78,12 +83,15 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
   virtual void SetFileContents(const base::FilePath& filename,
                                const std::string& file_contents) = 0;
-  virtual bool GetFileContents(base::FilePath* filename,
-                               std::string* file_contents) const = 0;
+  struct FileContentsInfo {
+    base::FilePath filename;
+    std::string file_contents;
+  };
+  virtual std::optional<FileContentsInfo> GetFileContents() const = 0;
   virtual bool HasFileContents() const = 0;
 #if BUILDFLAG(IS_WIN)
   virtual bool HasVirtualFilenames() const = 0;
-  virtual bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const = 0;
+  virtual std::optional<std::vector<FileInfo>> GetVirtualFilenames() const = 0;
   virtual void GetVirtualFilesAsTempFiles(
       base::OnceCallback<
           void(const std::vector<std::pair</*temp path*/ base::FilePath,
@@ -98,7 +106,11 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
 #if defined(USE_AURA)
   virtual void SetHtml(const std::u16string& html, const GURL& base_url) = 0;
-  virtual bool GetHtml(std::u16string* html, GURL* base_url) const = 0;
+  struct HtmlInfo {
+    std::u16string html;
+    GURL base_url;
+  };
+  virtual std::optional<HtmlInfo> GetHtml() const = 0;
   virtual bool HasHtml() const = 0;
 #endif
 

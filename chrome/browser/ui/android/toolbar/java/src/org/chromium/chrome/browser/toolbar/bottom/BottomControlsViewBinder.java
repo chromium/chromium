@@ -9,6 +9,7 @@ import android.view.View;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 
 class BottomControlsViewBinder {
     /**
@@ -34,10 +35,20 @@ class BottomControlsViewBinder {
     }
 
     static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
-        if (BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX == propertyKey) {
-            View bottomControlsWrapper = view.root.findViewById(R.id.bottom_controls_wrapper);
-            bottomControlsWrapper.getLayoutParams().height =
-                    model.get(BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX);
+        if (BottomControlsProperties.ANDROID_VIEW_HEIGHT == propertyKey) {
+            View bottomControlsView = view.root.findViewById(R.id.bottom_container_slot);
+            bottomControlsView.getLayoutParams().height =
+                    model.get(BottomControlsProperties.ANDROID_VIEW_HEIGHT);
+            // Temporarily hide the composited view until a new snapshot is captured to avoid
+            // an incorrectly sized cc-layer displaying, particularly when view height is
+            // decreasing.
+            // TODO(twellington): Move logic to Coordinator/Mediator.
+            view.sceneLayer.setIsVisible(false);
+            DynamicResourceReadyOnceCallback.onNext(
+                    view.root.getResourceAdapter(),
+                    (resource) ->
+                            view.sceneLayer.setIsVisible(
+                                    model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE)));
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {
             view.sceneLayer.setYOffset(model.get(BottomControlsProperties.Y_OFFSET));
         } else if (BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y == propertyKey) {

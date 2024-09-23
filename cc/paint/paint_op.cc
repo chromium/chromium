@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -12,24 +18,32 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_serialization_history.h"
+#include "cc/paint/tone_map_util.h"
+#include "skia/ext/draw_gainmap_image.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -37,10 +51,16 @@
 #include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
+#include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
+
+BASE_FEATURE(kUseLitePaintOps,
+             "UseLitePaintOps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // In a future CL, convert DrawImage to explicitly take sampling instead of
 // quality
 PaintFlags::FilterQuality sampling_to_quality(
@@ -113,37 +133,42 @@ void DrawImageRect(SkCanvas* canvas,
                                    constraint);
 }
 
-#define TYPES(M)      \
-  M(AnnotateOp)       \
-  M(ClipPathOp)       \
-  M(ClipRectOp)       \
-  M(ClipRRectOp)      \
-  M(ConcatOp)         \
-  M(CustomDataOp)     \
-  M(DrawColorOp)      \
-  M(DrawDRRectOp)     \
-  M(DrawImageOp)      \
-  M(DrawImageRectOp)  \
-  M(DrawIRectOp)      \
-  M(DrawLineOp)       \
-  M(DrawOvalOp)       \
-  M(DrawPathOp)       \
-  M(DrawRecordOp)     \
-  M(DrawRectOp)       \
-  M(DrawRRectOp)      \
-  M(DrawSkottieOp)    \
-  M(DrawSlugOp)       \
-  M(DrawTextBlobOp)   \
-  M(DrawVerticesOp)   \
-  M(NoopOp)           \
-  M(RestoreOp)        \
-  M(RotateOp)         \
-  M(SaveOp)           \
-  M(SaveLayerOp)      \
-  M(SaveLayerAlphaOp) \
-  M(ScaleOp)          \
-  M(SetMatrixOp)      \
-  M(SetNodeIdOp)      \
+#define TYPES(M)             \
+  M(AnnotateOp)              \
+  M(ClipPathOp)              \
+  M(ClipRectOp)              \
+  M(ClipRRectOp)             \
+  M(ConcatOp)                \
+  M(CustomDataOp)            \
+  M(DrawArcOp)               \
+  M(DrawArcLiteOp)           \
+  M(DrawColorOp)             \
+  M(DrawDRRectOp)            \
+  M(DrawImageOp)             \
+  M(DrawImageRectOp)         \
+  M(DrawIRectOp)             \
+  M(DrawLineOp)              \
+  M(DrawLineLiteOp)          \
+  M(DrawOvalOp)              \
+  M(DrawPathOp)              \
+  M(DrawRecordOp)            \
+  M(DrawRectOp)              \
+  M(DrawRRectOp)             \
+  M(DrawScrollingContentsOp) \
+  M(DrawSkottieOp)           \
+  M(DrawSlugOp)              \
+  M(DrawTextBlobOp)          \
+  M(DrawVerticesOp)          \
+  M(NoopOp)                  \
+  M(RestoreOp)               \
+  M(RotateOp)                \
+  M(SaveOp)                  \
+  M(SaveLayerOp)             \
+  M(SaveLayerAlphaOp)        \
+  M(SaveLayerFiltersOp)      \
+  M(ScaleOp)                 \
+  M(SetMatrixOp)             \
+  M(SetNodeIdOp)             \
   M(TranslateOp)
 
 static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
@@ -151,10 +176,6 @@ static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
 // Verify that every op is in the TYPES macro.
 #define M(T) +1
 static_assert(kNumOpTypes == TYPES(M), "Missing op in list");
-#undef M
-
-#define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
-static constexpr uint16_t g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
 #undef M
 
 template <typename T, bool HasFlags>
@@ -167,7 +188,7 @@ struct Rasterizer {
         !T::kHasPaintFlags,
         "This function should not be used for a PaintOp that has PaintFlags");
     DCHECK(op->IsValid());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   static void Raster(const T* op,
                      SkCanvas* canvas,
@@ -264,7 +285,6 @@ PaintOp* Deserialize(PaintOpReader& reader, void* output, size_t output_size) {
     op->~T();
     return nullptr;
   }
-  op->aligned_size = PaintOpBuffer::ComputeOpAlignedSize<T>();
   return op;
 }
 #define M(T) &Deserialize<T>,
@@ -316,6 +336,10 @@ static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 
 }  // namespace
 
+#define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
+uint16_t PaintOp::g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
+#undef M
+
 #define M(T) T::kIsDrawOp,
 bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};
 #undef M
@@ -335,7 +359,37 @@ std::string PaintOpTypeToString(PaintOpType type) {
   TYPES(M)
 #undef M
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+bool IsDiscardableImage(const PaintImage& image,
+                        gfx::ContentColorUsage* content_color_usage) {
+  if (!image || image.IsTextureBacked()) {
+    return false;
+  }
+  if (content_color_usage) {
+    *content_color_usage =
+        std::max(*content_color_usage, image.GetContentColorUsage());
+  }
+  return true;
+}
+
+bool OpHasDiscardableImagesImpl(const PaintOp& op) {
+  gfx::ContentColorUsage* const unused_content_color_usage = nullptr;
+  if (op.IsPaintOpWithFlags() &&
+      static_cast<const PaintOpWithFlags&>(op).HasDiscardableImagesFromFlags(
+          unused_content_color_usage)) {
+    return true;
+  }
+  switch (op.GetType()) {
+#define M(T)                                               \
+  case T::kType:                                           \
+    return static_cast<const T&>(op).HasDiscardableImages( \
+        unused_content_color_usage);
+
+    TYPES(M)
+#undef M
+  }
 }
 
 #undef TYPES
@@ -467,6 +521,31 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
   writer.WriteSimpleMultiple(x0, y0, x1, y1, draw_as_path);
 }
 
+void DrawLineLiteOp::Serialize(PaintOpWriter& writer,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm) const {
+  writer.WriteSimpleMultiple(x0, y0, x1, y1, core_paint_flags);
+}
+
+void DrawArcOp::Serialize(PaintOpWriter& writer,
+                          const PaintFlags* flags_to_serialize,
+                          const SkM44& current_ctm,
+                          const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+  writer.Write(oval);
+  writer.Write(start_angle_degrees);
+  writer.Write(sweep_angle_degrees);
+}
+
+void DrawArcLiteOp::Serialize(PaintOpWriter& writer,
+                              const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
+                              const SkM44& original_ctm) const {
+  writer.WriteSimpleMultiple(oval, start_angle_degrees, sweep_angle_degrees,
+                             core_paint_flags);
+}
+
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
                            const PaintFlags* flags_to_serialize,
                            const SkM44& current_ctm,
@@ -489,7 +568,7 @@ void DrawRecordOp::Serialize(PaintOpWriter& writer,
                              const SkM44& current_ctm,
                              const SkM44& original_ctm) const {
   // These are flattened in PaintOpBufferSerializer.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrawRectOp::Serialize(PaintOpWriter& writer,
@@ -506,6 +585,14 @@ void DrawRRectOp::Serialize(PaintOpWriter& writer,
                             const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
   writer.Write(rrect);
+}
+
+void DrawScrollingContentsOp::Serialize(PaintOpWriter& writer,
+                                        const PaintFlags* flags_to_serialize,
+                                        const SkM44& current_ctm,
+                                        const SkM44& original_ctm) const {
+  // These are flattened in PaintOpBufferSerializer.
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrawVerticesOp::Serialize(PaintOpWriter& writer,
@@ -662,6 +749,14 @@ void SaveLayerAlphaOp::Serialize(PaintOpWriter& writer,
   writer.Write(alpha);
 }
 
+void SaveLayerFiltersOp::Serialize(PaintOpWriter& writer,
+                                   const PaintFlags* flags_to_serialize,
+                                   const SkM44& current_ctm,
+                                   const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+  writer.Write(filters, current_ctm);
+}
+
 void ScaleOp::Serialize(PaintOpWriter& writer,
                         const PaintFlags* flags_to_serialize,
                         const SkM44& current_ctm,
@@ -801,6 +896,34 @@ PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
   return op;
 }
 
+PaintOp* DrawLineLiteOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawLineLiteOp* op = new (output) DrawLineLiteOp;
+  reader.Read(&op->x0);
+  reader.Read(&op->y0);
+  reader.Read(&op->x1);
+  reader.Read(&op->y1);
+  reader.Read(&op->core_paint_flags);
+  return op;
+}
+
+PaintOp* DrawArcOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawArcOp* op = new (output) DrawArcOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->oval);
+  reader.Read(&op->start_angle_degrees);
+  reader.Read(&op->sweep_angle_degrees);
+  return op;
+}
+
+PaintOp* DrawArcLiteOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawArcLiteOp* op = new (output) DrawArcLiteOp;
+  reader.Read(&op->oval);
+  reader.Read(&op->start_angle_degrees);
+  reader.Read(&op->sweep_angle_degrees);
+  reader.Read(&op->core_paint_flags);
+  return op;
+}
+
 PaintOp* DrawOvalOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawOvalOp* op = new (output) DrawOvalOp;
   reader.Read(&op->flags);
@@ -834,6 +957,12 @@ PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   reader.Read(&op->rrect);
   return op;
+}
+
+PaintOp* DrawScrollingContentsOp::Deserialize(PaintOpReader& reader,
+                                              void* output) {
+  // These are flattened during serialization.
+  return nullptr;
 }
 
 PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
@@ -911,7 +1040,7 @@ SkottieTextPropertyValue DeserializeSkottieTextPropertyValue(
   size_t text_size = 0u;
   reader.ReadSize(&text_size);
   std::string text(text_size, char());
-  reader.ReadData(text_size, const_cast<char*>(text.c_str()));
+  reader.ReadData(base::as_writable_byte_span(text));
   SkRect box;
   reader.Read(&box);
   return SkottieTextPropertyValue(std::move(text), gfx::SkRectToRectF(box));
@@ -959,8 +1088,12 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&count);
   if (count > 0) {
     reader.Read(&op->slug);
-    op->extra_slugs.resize(
-        std::min<size_t>(op->extra_slugs.max_size(), count - 1));
+    const size_t remaining_slug_count =
+        std::min<size_t>(op->extra_slugs.max_size(), count - 1);
+    if (!reader.CanReadVector(remaining_slug_count, op->extra_slugs)) {
+      return op;
+    }
+    op->extra_slugs.resize(remaining_slug_count);
     for (auto& extra_slug : op->extra_slugs) {
       reader.Read(&extra_slug);
     }
@@ -969,7 +1102,7 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1002,6 +1135,13 @@ PaintOp* SaveLayerAlphaOp::Deserialize(PaintOpReader& reader, void* output) {
   SaveLayerAlphaOp* op = new (output) SaveLayerAlphaOp;
   reader.Read(&op->bounds);
   reader.Read(&op->alpha);
+  return op;
+}
+
+PaintOp* SaveLayerFiltersOp::Deserialize(PaintOpReader& reader, void* output) {
+  SaveLayerFiltersOp* op = new (output) SaveLayerFiltersOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->filters);
   return op;
 }
 
@@ -1076,8 +1216,9 @@ void ConcatOp::Raster(const ConcatOp* op,
 void CustomDataOp::Raster(const CustomDataOp* op,
                           SkCanvas* canvas,
                           const PlaybackParams& params) {
-  if (params.custom_callback)
-    params.custom_callback.Run(canvas, op->id);
+  if (params.callbacks.custom_callback) {
+    params.callbacks.custom_callback.Run(canvas, op->id);
+  }
 }
 
 void DrawColorOp::Raster(const DrawColorOp* op,
@@ -1116,6 +1257,26 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     }
     if (!sk_image)
       sk_image = op->image.GetSwSkImage();
+    if (!sk_image) {
+      return;
+    }
+
+    // If this uses a gainmap shader, then replace DrawImage with a shader.
+    if (ToneMapUtil::UseGainmapShader(op->image)) {
+      skia::DrawGainmapImage(
+          canvas, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
+          op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
+          op->left, op->top, op->sampling, paint);
+      return;
+    }
+
+    // Add a tone mapping filter to `paint` if needed.
+    if (ToneMapUtil::UseGlobalToneMapFilter(op->image)) {
+      auto dst_color_space = canvas->imageInfo().refColorSpace();
+      ToneMapUtil::AddGlobalToneMapFilterToPaint(paint, op->image,
+                                                 dst_color_space);
+      sk_image = sk_image->reinterpretColorSpace(dst_color_space);
+    }
 
     SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
                                  op->sampling, &paint);
@@ -1156,7 +1317,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                                       const PaintFlags* flags,
                                       SkCanvas* canvas,
                                       const PlaybackParams& params) {
-  // TODO(crbug.com/931704): make sure to support the case where paint worklet
+  // TODO(crbug.com/40613771): make sure to support the case where paint worklet
   // generated images are used in other raster work such as canvas2d.
   if (op->image.IsPaintWorklet()) {
     // When rasterizing on the main thread (e.g. paint invalidation checking,
@@ -1176,7 +1337,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     SkAutoCanvasRestore save_restore(canvas, true);
     canvas->concat(SkMatrix::RectToRect(op->src, op->dst));
     canvas->clipRect(op->src);
-    canvas->saveLayer(&op->src, &paint);
+    if (op->image.NeedsLayer()) {
+      // TODO(crbug.com/343439032): See if we can be less aggressive about use
+      // of a save layer operation for CSS paint worklets since expensive.
+      canvas->saveLayer(&op->src, &paint);
+    }
+
     // Compositor thread animations can cause PaintWorklet jobs to be dispatched
     // to the worklet thread even after main has torn down the worklet (e.g.
     // because a navigation is happening). In that case the PaintWorklet jobs
@@ -1198,6 +1364,33 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       }
       if (!sk_image)
         sk_image = op->image.GetSwSkImage();
+      if (!sk_image) {
+        return;
+      }
+
+      // If the PaintImage uses a gainmap shader, then replace DrawImage with a
+      // shader.
+      if (ToneMapUtil::UseGainmapShader(op->image)) {
+        skia::DrawGainmapImageRect(
+            c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
+            op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
+            adjusted_src, op->dst, op->sampling, p);
+        return;
+      }
+
+      // If this uses a global tone map filter, then incorporate that filter
+      // into the paint.
+      if (ToneMapUtil::UseGlobalToneMapFilter(op->image)) {
+        SkPaint tonemap_paint = p;
+        ToneMapUtil::AddGlobalToneMapFilterToPaint(
+            tonemap_paint, op->image, c->imageInfo().refColorSpace());
+        sk_image =
+            sk_image->reinterpretColorSpace(c->imageInfo().refColorSpace());
+        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling,
+                      &tonemap_paint, op->constraint);
+        return;
+      }
+
       DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
                     op->constraint);
     });
@@ -1262,6 +1455,58 @@ void DrawLineOp::RasterWithFlags(const DrawLineOp* op,
   });
 }
 
+void DrawLineLiteOp::Raster(const DrawLineLiteOp* op,
+                            SkCanvas* canvas,
+                            const PlaybackParams& params) {
+  PaintFlags flags(op->core_paint_flags);
+  flags.DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
+    c->drawLine(op->x0, op->y0, op->x1, op->y1, p);
+  });
+}
+
+void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
+                                const PaintFlags* flags,
+                                SkCanvas* canvas,
+                                const PlaybackParams& params) {
+  op->RasterWithFlagsImpl(flags, canvas);
+}
+
+void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
+                                    SkCanvas* canvas) const {
+  flags->DrawToSk(canvas, [this, flags](SkCanvas* c, const SkPaint& p) {
+    if (flags->isArcClosed() &&
+        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360)) &&
+        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
+      SkPath path;
+      path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
+      path.close();
+      c->drawPath(path, p);
+      return;
+    }
+    c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+  });
+}
+
+void DrawArcLiteOp::Raster(const DrawArcLiteOp* op,
+                           SkCanvas* canvas,
+                           const PlaybackParams& params) {
+  PaintFlags flags(op->core_paint_flags);
+  flags.DrawToSk(canvas, [op, &flags](SkCanvas* c, const SkPaint& p) {
+    if (flags.isArcClosed() &&
+        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(360)) &&
+        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(-360))) {
+      SkPath path;
+      path.arcTo(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+                 false);
+      path.close();
+      c->drawPath(path, p);
+      return;
+    }
+    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+               false, p);
+  });
+}
+
 void DrawOvalOp::RasterWithFlags(const DrawOvalOp* op,
                                  const PaintFlags* flags,
                                  SkCanvas* canvas,
@@ -1284,7 +1529,7 @@ void DrawRecordOp::Raster(const DrawRecordOp* op,
                           SkCanvas* canvas,
                           const PlaybackParams& params) {
   // Don't use drawPicture here, as it adds an implicit clip.
-  op->record.Playback(canvas, params);
+  op->record.Playback(canvas, params, op->local_ctm);
 }
 
 void DrawRectOp::RasterWithFlags(const DrawRectOp* op,
@@ -1303,6 +1548,18 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
   flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
     c->drawRRect(op->rrect, p);
   });
+}
+
+void DrawScrollingContentsOp::Raster(const DrawScrollingContentsOp* op,
+                                     SkCanvas* canvas,
+                                     const PlaybackParams& params) {
+  canvas->save();
+  CHECK(params.raster_inducing_scroll_offsets);
+  gfx::PointF scroll_offset =
+      params.raster_inducing_scroll_offsets->at(op->scroll_element_id);
+  canvas->translate(-scroll_offset.x(), -scroll_offset.y());
+  op->display_item_list->Raster(canvas, params);
+  canvas->restore();
 }
 
 void DrawVerticesOp::RasterWithFlags(const DrawVerticesOp* op,
@@ -1399,7 +1656,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
     op->extra_slugs.clear();
   }
 
-  // flags may contain SkDrawLooper for shadow effect, so we need to convert
+  // flags may contain DrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
   size_t i = 0;
   flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
@@ -1431,7 +1688,7 @@ void DrawSlugOp::RasterWithFlags(const DrawSlugOp* op,
       DCHECK(!params.is_analyzing);
       const auto& draw_slug = i == 0 ? op->slug : op->extra_slugs[i - 1];
       if (draw_slug) {
-        draw_slug->draw(c);
+        draw_slug->draw(c, p);
       }
     }
     ++i;
@@ -1484,6 +1741,16 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
                           SkCanvas::kInitWithPrevious_SaveLayerFlag;
   }
   canvas->saveLayer(rec);
+}
+
+void SaveLayerFiltersOp::RasterWithFlags(const SaveLayerFiltersOp* op,
+                                         const PaintFlags* flags,
+                                         SkCanvas* canvas,
+                                         const PlaybackParams& params) {
+  SkPaint paint = flags->ToSkPaint();
+  canvas->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
+      /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,
+      /*saveLayerFlags=*/0, PaintFilter::ToSkImageFilters(op->filters)));
 }
 
 void ScaleOp::Raster(const ScaleOp* op,
@@ -1569,6 +1836,25 @@ bool DrawLineOp::EqualsForTesting(const DrawLineOp& other) const {
          x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1;
 }
 
+bool DrawLineLiteOp::EqualsForTesting(const DrawLineLiteOp& other) const {
+  return x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1 &&
+         core_paint_flags == other.core_paint_flags;
+}
+
+bool DrawArcOp::EqualsForTesting(const DrawArcOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         oval == other.oval &&
+         start_angle_degrees == other.start_angle_degrees &&
+         sweep_angle_degrees == other.sweep_angle_degrees;
+}
+
+bool DrawArcLiteOp::EqualsForTesting(const DrawArcLiteOp& other) const {
+  return oval == other.oval &&
+         start_angle_degrees == other.start_angle_degrees &&
+         sweep_angle_degrees == other.sweep_angle_degrees &&
+         core_paint_flags == other.core_paint_flags;
+}
+
 bool DrawOvalOp::EqualsForTesting(const DrawOvalOp& other) const {
   return flags.EqualsForTesting(other.flags) && oval == other.oval;  // IN-TEST
 }
@@ -1588,6 +1874,12 @@ bool DrawRectOp::EqualsForTesting(const DrawRectOp& other) const {
 bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
          rrect == other.rrect;
+}
+
+bool DrawScrollingContentsOp::EqualsForTesting(
+    const DrawScrollingContentsOp& other) const {
+  return scroll_element_id == other.scroll_element_id &&
+         display_item_list == other.display_item_list;
 }
 
 bool DrawVerticesOp::EqualsForTesting(const DrawVerticesOp& other) const {
@@ -1652,6 +1944,19 @@ bool SaveLayerOp::EqualsForTesting(const SaveLayerOp& other) const {
 
 bool SaveLayerAlphaOp::EqualsForTesting(const SaveLayerAlphaOp& other) const {
   return bounds == other.bounds && alpha == other.alpha;
+}
+
+bool SaveLayerFiltersOp::EqualsForTesting(
+    const SaveLayerFiltersOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         base::ranges::equal(
+             filters, other.filters,
+             [](const sk_sp<PaintFilter>& lhs, const sk_sp<PaintFilter>& rhs) {
+               return base::ValuesEquivalent(
+                   lhs, rhs, [](const PaintFilter& x, const PaintFilter& y) {
+                     return x.EqualsForTesting(y);  // IN-TEST
+                   });
+             });
 }
 
 bool ScaleOp::EqualsForTesting(const ScaleOp& other) const {
@@ -1753,9 +2058,19 @@ PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
 
 // static
 bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
-  DCHECK(op.IsDrawOp());
-
   switch (op.GetType()) {
+    case PaintOpType::kAnnotate:
+      return false;
+    case PaintOpType::kClipPath:
+      return false;
+    case PaintOpType::kClipRect:
+      return false;
+    case PaintOpType::kClipRRect:
+      return false;
+    case PaintOpType::kConcat:
+      return false;
+    case PaintOpType::kCustomData:
+      return false;
     case PaintOpType::kDrawColor:
       return false;
     case PaintOpType::kDrawDRRect: {
@@ -1789,6 +2104,24 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       rect->sort();
       return true;
     }
+    case PaintOpType::kDrawLineLite: {
+      const auto& line_op = static_cast<const DrawLineLiteOp&>(op);
+      rect->setLTRB(line_op.x0, line_op.y0, line_op.x1, line_op.y1);
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawArc: {
+      const auto& arc_op = static_cast<const DrawArcOp&>(op);
+      *rect = arc_op.oval;
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawArcLite: {
+      const auto& arc_op = static_cast<const DrawArcLiteOp&>(op);
+      *rect = arc_op.oval;
+      rect->sort();
+      return true;
+    }
     case PaintOpType::kDrawOval: {
       const auto& oval_op = static_cast<const DrawOvalOp&>(op);
       *rect = oval_op.oval;
@@ -1801,6 +2134,8 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       rect->sort();
       return true;
     }
+    case PaintOpType::kDrawRecord:
+      return false;
     case PaintOpType::kDrawRect: {
       const auto& rect_op = static_cast<const DrawRectOp&>(op);
       *rect = rect_op.rect;
@@ -1813,7 +2148,7 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawRecord:
+    case PaintOpType::kDrawScrollingContents:
       return false;
     case PaintOpType::kDrawSkottie: {
       const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
@@ -1840,8 +2175,28 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
           base::checked_cast<int>(vertices_op.vertices->data().size()));
       return true;
     }
-    default:
-      NOTREACHED();
+    case PaintOpType::kNoop:
+      return false;
+    case PaintOpType::kRestore:
+      return false;
+    case PaintOpType::kRotate:
+      return false;
+    case PaintOpType::kSave:
+      return false;
+    case PaintOpType::kSaveLayer:
+      return false;
+    case PaintOpType::kSaveLayerAlpha:
+      return false;
+    case PaintOpType::kSaveLayerFilters:
+      return false;
+    case PaintOpType::kScale:
+      return false;
+    case PaintOpType::kSetMatrix:
+      return false;
+    case PaintOpType::kSetNodeId:
+      return false;
+    case PaintOpType::kTranslate:
+      return false;
   }
   return false;
 }
@@ -1852,7 +2207,7 @@ gfx::Rect PaintOp::ComputePaintRect(const PaintOp& op,
                                     const SkMatrix& ctm) {
   gfx::Rect transformed_rect;
   SkRect op_rect;
-  if (!op.IsDrawOp() || !PaintOp::GetBounds(op, &op_rect)) {
+  if (!PaintOp::GetBounds(op, &op_rect)) {
     // If we can't provide a conservative bounding rect for the op, assume it
     // covers the complete current clip.
     // TODO(khushalsagar): See if we can do something better for non-draw ops.
@@ -1886,7 +2241,7 @@ gfx::Rect PaintOp::ComputePaintRect(const PaintOp& op,
   // raster time, since we might be sending a larger-than-one-item display
   // item to skia, which means that skia will internally determine whether to
   // raster the picture (using device clip bounds that are outset).
-  transformed_rect.Inset(-1);
+  transformed_rect.Outset(1);
   return transformed_rect;
 }
 
@@ -1921,26 +2276,7 @@ bool PaintOp::QuickRejectDraw(const PaintOp& op, const SkCanvas* canvas) {
 
 // static
 bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
-  if (op.IsPaintOpWithFlags() && static_cast<const PaintOpWithFlags&>(op)
-                                     .HasDiscardableImagesFromFlags()) {
-    return true;
-  }
-
-  if (op.GetType() == PaintOpType::kDrawImage &&
-      static_cast<const DrawImageOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawImageRect &&
-             static_cast<const DrawImageRectOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawRecord &&
-             static_cast<const DrawRecordOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawSkottie &&
-             static_cast<const DrawSkottieOp&>(op).HasDiscardableImages()) {
-    return true;
-  }
-
-  return false;
+  return OpHasDiscardableImagesImpl(op);
 }
 
 void PaintOp::DestroyThis() {
@@ -1949,8 +2285,9 @@ void PaintOp::DestroyThis() {
     func(this);
 }
 
-bool PaintOpWithFlags::HasDiscardableImagesFromFlags() const {
-  return flags.HasDiscardableImages();
+bool PaintOpWithFlags::HasDiscardableImagesFromFlags(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return flags.HasDiscardableImages(content_color_usage);
 }
 
 void PaintOpWithFlags::RasterWithFlags(SkCanvas* canvas,
@@ -1964,11 +2301,9 @@ int ClipPathOp::CountSlowPaths() const {
 }
 
 int DrawLineOp::CountSlowPaths() const {
-  if (const SkPathEffect* effect = flags.getPathEffect().get()) {
-    SkPathEffect::DashInfo info;
-    SkPathEffect::DashType dashType = effect->asADash(&info);
+  if (const PathEffect* effect = flags.getPathEffect().get()) {
     if (flags.getStrokeCap() != PaintFlags::kRound_Cap &&
-        dashType == SkPathEffect::kDash_DashType && info.fCount == 2) {
+        effect->dash_interval_count() == 2) {
       // The PaintFlags will count this as 1, so uncount that here as
       // this kind of line is special cased and not slow.
       return -1;
@@ -2003,7 +2338,7 @@ int DrawRecordOp::CountSlowPaths() const {
 }
 
 bool DrawRecordOp::HasNonAAPaint() const {
-  return record.HasNonAAPaint();
+  return record.has_non_aa_paint();
 }
 
 bool DrawRecordOp::HasDrawTextOps() const {
@@ -2020,6 +2355,52 @@ bool DrawRecordOp::HasSaveLayerAlphaOps() const {
 
 bool DrawRecordOp::HasEffectsPreventingLCDTextForSaveLayerAlpha() const {
   return record.has_effects_preventing_lcd_text_for_save_layer_alpha();
+}
+
+bool DrawRecordOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = record.has_discardable_images();
+  if (has_discardable_images && content_color_usage) {
+    *content_color_usage =
+        std::max(*content_color_usage, record.content_color_usage());
+  }
+  return has_discardable_images;
+}
+
+int DrawScrollingContentsOp::CountSlowPaths() const {
+  return display_item_list->num_slow_paths_up_to_min_for_MSAA();
+}
+
+bool DrawScrollingContentsOp::HasNonAAPaint() const {
+  return display_item_list->has_non_aa_paint();
+}
+
+bool DrawScrollingContentsOp::HasDrawTextOps() const {
+  return display_item_list->has_draw_text_ops();
+}
+
+bool DrawScrollingContentsOp::HasSaveLayerOps() const {
+  return display_item_list->has_save_layer_ops();
+}
+
+bool DrawScrollingContentsOp::HasSaveLayerAlphaOps() const {
+  return display_item_list->has_save_layer_alpha_ops();
+}
+
+bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
+    const {
+  return display_item_list
+      ->has_effects_preventing_lcd_text_for_save_layer_alpha();
+}
+
+bool DrawScrollingContentsOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = display_item_list->has_discardable_images();
+  if (has_discardable_images && content_color_usage) {
+    *content_color_usage = std::max(*content_color_usage,
+                                    display_item_list->content_color_usage());
+  }
+  return has_discardable_images;
 }
 
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}
@@ -2053,8 +2434,9 @@ DrawImageOp::DrawImageOp(const PaintImage& image,
       top(top),
       sampling(sampling) {}
 
-bool DrawImageOp::HasDiscardableImages() const {
-  return image && !image.IsTextureBacked();
+bool DrawImageOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return IsDiscardableImage(image, content_color_usage);
 }
 
 DrawImageOp::~DrawImageOp() = default;
@@ -2084,14 +2466,15 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
       sampling(sampling),
       constraint(constraint) {}
 
-bool DrawImageRectOp::HasDiscardableImages() const {
-  return image && !image.IsTextureBacked();
+bool DrawImageRectOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return IsDiscardableImage(image, content_color_usage);
 }
 
 DrawImageRectOp::~DrawImageRectOp() = default;
 
-DrawRecordOp::DrawRecordOp(PaintRecord record)
-    : PaintOp(kType), record(std::move(record)) {}
+DrawRecordOp::DrawRecordOp(PaintRecord record, bool local_ctm)
+    : PaintOp(kType), record(std::move(record)), local_ctm(local_ctm) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
 
@@ -2101,6 +2484,23 @@ size_t DrawRecordOp::AdditionalBytesUsed() const {
 
 size_t DrawRecordOp::AdditionalOpCount() const {
   return record.total_op_count();
+}
+
+DrawScrollingContentsOp::DrawScrollingContentsOp(
+    ElementId scroll_element_id,
+    scoped_refptr<DisplayItemList> display_item_list)
+    : PaintOp(kType),
+      scroll_element_id(scroll_element_id),
+      display_item_list(std::move(display_item_list)) {}
+
+DrawScrollingContentsOp::~DrawScrollingContentsOp() = default;
+
+size_t DrawScrollingContentsOp::AdditionalBytesUsed() const {
+  return display_item_list->BytesUsed();
+}
+
+size_t DrawScrollingContentsOp::AdditionalOpCount() const {
+  return display_item_list->TotalOpCount();
 }
 
 DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlags(kType) {}
@@ -2135,12 +2535,18 @@ DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
 
-bool DrawSkottieOp::HasDiscardableImages() const {
-  return !images.empty();
-}
-
-bool DrawRecordOp::HasDiscardableImages() const {
-  return record.HasDiscardableImages();
+bool DrawSkottieOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  if (images.empty()) {
+    return false;
+  }
+  if (content_color_usage) {
+    for (auto& [_, frame_data] : images) {
+      *content_color_usage = std::max(*content_color_usage,
+                                      frame_data.image.GetContentColorUsage());
+    }
+  }
+  return true;
 }
 
 DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlags(kType) {}
@@ -2170,5 +2576,20 @@ DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
     : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;
+
+SaveLayerFiltersOp::SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
+                                       const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags),
+      filters(std::make_move_iterator(filters.begin()),
+              std::make_move_iterator(filters.end())) {}
+
+SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
+
+SaveLayerFiltersOp::~SaveLayerFiltersOp() = default;
+
+bool AreLiteOpsEnabled() {
+  static const bool enabled = base::FeatureList::IsEnabled(kUseLitePaintOps);
+  return enabled;
+}
 
 }  // namespace cc

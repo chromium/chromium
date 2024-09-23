@@ -10,7 +10,8 @@
         },
         "prefs": {
           "kerberos.add_accounts_allowed": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

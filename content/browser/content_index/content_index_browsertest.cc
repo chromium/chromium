@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -193,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(ContentIndexOfflineCapabilityTest,
   std::string result = RunScriptWithResult(
       "addContent('id2', [{src: '/single_face.jpg'}], 'forcefail')");
   EXPECT_EQ(result,
-            "TypeError - The provided launch URL is not offline-capable.");
+            "TypeError - Failed to execute 'add' on 'ContentIndex': The "
+            "provided launch URL is not offline-capable.");
 }
 
 }  // namespace

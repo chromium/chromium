@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include <stddef.h>
@@ -60,8 +65,9 @@ SkRect RectFToSkRect(const RectF& rect) {
 }
 
 RectF SkRectToRectF(const SkRect& rect) {
-  return RectF(SkScalarToFloat(rect.x()), SkScalarToFloat(rect.y()),
-               SkScalarToFloat(rect.width()), SkScalarToFloat(rect.height()));
+  return BoundingRect(
+      PointF(SkScalarToFloat(rect.left()), SkScalarToFloat(rect.top())),
+      PointF(SkScalarToFloat(rect.right()), SkScalarToFloat(rect.bottom())));
 }
 
 SkSize SizeFToSkSize(const SizeF& size) {
@@ -112,7 +118,7 @@ Transform SkM44ToTransform(const SkM44& matrix) {
       matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
 }
 
-// TODO(crbug.com/1359528): Remove this function in favor of the other form.
+// TODO(crbug.com/40237414): Remove this function in favor of the other form.
 void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
                                   SkMatrix* flattened) {
   *flattened = TransformToFlattenedSkMatrix(transform);

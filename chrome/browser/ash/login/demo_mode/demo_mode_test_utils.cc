@@ -36,12 +36,12 @@ MATCHER(ConfigIsAttestation, "") {
 namespace test {
 
 void SetupDemoModeNoEnrollment(MockEnrollmentLauncher* mock) {
-  EXPECT_CALL(*mock, Setup(_, _, _)).Times(0);
+  EXPECT_CALL(*mock, Setup(_, _)).Times(0);
 }
 
 void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
                                    DemoModeSetupResult result) {
-  EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _, _));
+  EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
       .WillRepeatedly(testing::Invoke([mock, result]() {
@@ -61,7 +61,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }));
 }

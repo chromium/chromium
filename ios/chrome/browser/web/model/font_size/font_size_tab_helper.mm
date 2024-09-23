@@ -18,8 +18,8 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
@@ -304,9 +304,9 @@ void FontSizeTabHelper::NewPageZoom() {
 }
 
 PrefService* FontSizeTabHelper::GetPrefService() const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return chrome_browser_state->GetPrefs();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return profile->GetPrefs();
 }
 
 std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {

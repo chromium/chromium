@@ -17,7 +17,8 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
   // Caller needs to set them with set_username() and set_access_token().
   PassthroughOAuthTokenGetter();
   PassthroughOAuthTokenGetter(const std::string& username,
-                              const std::string& access_token);
+                              const std::string& access_token,
+                              const std::string& scopes);
   ~PassthroughOAuthTokenGetter() override;
 
   // OAuthTokenGetter overrides.
@@ -33,6 +34,7 @@ class PassthroughOAuthTokenGetter : public OAuthTokenGetter {
  private:
   std::string username_;
   std::string access_token_;
+  std::string scopes_;
 };
 
 }  // namespace remoting

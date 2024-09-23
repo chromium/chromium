@@ -9,7 +9,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 ################################################################################
 # Public Targets
@@ -52,7 +52,7 @@ generated_json_strings("generated_api_json_strings") {
 }
 
 generated_types("generated_api_types") {
-  sources = extensions_api_schema_files + extensions_manifest_only_schema_files
+  sources = extensions_api_schema_files + extensions_types_only_schema_files
   root_namespace = extensions_api_root_namespace
   deps = [
     "//base",

@@ -19,4 +19,6 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

@@ -83,7 +83,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         boolean useLightColor =
                 !isTablet
-                        && !mLocationBarDataProvider.isIncognito()
+                        && !mLocationBarDataProvider.isIncognitoBranded()
                         && !ColorUtils.inNightMode(mContext);
         mScrimModel.set(
                 ScrimProperties.BACKGROUND_COLOR,

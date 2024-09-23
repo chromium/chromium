@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 
@@ -35,7 +36,8 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
 
     PRODUCTIVITY_LAUNCHER_RECENT_APP = 6,
     PRODUCTIVITY_LAUNCHER_APP_GRID = 7,
-    APP_LIST_APP_TYPE_LAST = 8
+    PRODUCTIVITY_LAUNCHER_APPS_COLLECTIONS = 8,
+    APP_LIST_APP_TYPE_LAST = 9
   };
 
   AppListMenuModelAdapter(const std::string& app_id,
@@ -45,7 +47,8 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
                           const AppLaunchedMetricParams& metric_params,
                           AppListViewAppType type,
                           base::OnceClosure on_menu_closed_callback,
-                          bool is_tablet_mode);
+                          bool is_tablet_mode,
+                          AppCollection collection);
 
   AppListMenuModelAdapter(const AppListMenuModelAdapter&) = delete;
   AppListMenuModelAdapter& operator=(const AppListMenuModelAdapter&) = delete;
@@ -68,6 +71,8 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
 
   // The type of app which is using this object to show a menu.
   const AppListViewAppType type_;
+
+  const AppCollection collection_;
 };
 
 }  // namespace ash

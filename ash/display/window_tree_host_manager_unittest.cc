@@ -25,7 +25,6 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +45,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -97,13 +97,13 @@ display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
   return info;
 }
 
-class TestObserver : public WindowTreeHostManager::Observer,
+class TestObserver : public display::DisplayManagerObserver,
                      public display::DisplayObserver,
                      public aura::client::FocusChangeObserver,
                      public ::wm::ActivationChangeObserver {
  public:
   TestObserver() {
-    Shell::Get()->window_tree_host_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->AddObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())->AddObserver(this);
@@ -113,7 +113,7 @@ class TestObserver : public WindowTreeHostManager::Observer,
   TestObserver& operator=(const TestObserver&) = delete;
 
   ~TestObserver() override {
-    Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+    Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->RemoveObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())
@@ -121,8 +121,8 @@ class TestObserver : public WindowTreeHostManager::Observer,
   }
 
   // Overridden from WindowTreeHostManager::Observer
-  void OnDisplayConfigurationChanging() override { ++changing_count_; }
-  void OnDisplayConfigurationChanged() override { ++changed_count_; }
+  void OnWillApplyDisplayChanges() override { ++changing_count_; }
+  void OnDidApplyDisplayChanges() override { ++changed_count_; }
 
   // Overrideen from display::DisplayObserver
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -309,8 +309,8 @@ class TestEventHandler : public ui::EventHandler {
 
   void OnMouseEvent(ui::MouseEvent* event) override {
     if (event->flags() & ui::EF_IS_SYNTHESIZED &&
-        event->type() != ui::ET_MOUSE_EXITED &&
-        event->type() != ui::ET_MOUSE_ENTERED) {
+        event->type() != ui::EventType::kMouseExited &&
+        event->type() != ui::EventType::kMouseEntered) {
       return;
     }
     aura::Window* target = static_cast<aura::Window*>(event->target());
@@ -337,7 +337,7 @@ class TestEventHandler : public ui::EventHandler {
     if (target->GetName() != kWallpaperView)
       return;
 
-    if (event->type() == ui::ET_SCROLL) {
+    if (event->type() == ui::EventType::kScroll) {
       scroll_x_offset_ = event->x_offset();
       scroll_y_offset_ = event->y_offset();
       scroll_x_offset_ordinal_ = event->x_offset_ordinal();
@@ -486,8 +486,11 @@ TEST_F(WindowTreeHostManagerHistogramTest,
   const int kRepeatingDelay = 30;
   base::HistogramTester tester;
 
+  const int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
   display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfo(123, gfx::Rect(0, 0, 800, 600));
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 800, 600));
   display::ManagedDisplayInfo external_display_info =
       CreateDisplayInfo(456, gfx::Rect(100, 200, 1024, 768));
   internal_display_info.set_device_dpi(kDefaultDeviceDPI);
@@ -500,30 +503,38 @@ TEST_F(WindowTreeHostManagerHistogramTest,
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
 
+  // The expected external display effective dpi bucket is calculated by
+  // applying the recommended default scaling factor to the initial device DPI.
+  const int expected_external_display_effective_dpi_bucket = 94;
+
   // Do not emit right after initialization.
   VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
                                   /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
-  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
-                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
+  VerifyActiveEffectiveDPIEmitted(
+      tester, /*is_internal_display=*/false,
+      /*bucket=*/expected_external_display_effective_dpi_bucket, /*count=*/0);
 
   // Firstly emitted after half of delayed time.
   FastForwardBy(base::Minutes(kRepeatingDelay / 2 + 1));
   VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
                                   /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
-  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
-                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(
+      tester, /*is_internal_display=*/false,
+      /*bucket=*/expected_external_display_effective_dpi_bucket, /*count=*/1);
 
   // Emitted repeatedly after delayed time.
   FastForwardBy(base::Minutes(kRepeatingDelay - 2));
   VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
                                   /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
-  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
-                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(
+      tester, /*is_internal_display=*/false,
+      /*bucket=*/expected_external_display_effective_dpi_bucket, /*count=*/1);
   FastForwardBy(base::Minutes(2));
   VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
                                   /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
-  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
-                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
+  VerifyActiveEffectiveDPIEmitted(
+      tester, /*is_internal_display=*/false,
+      /*bucket=*/expected_external_display_effective_dpi_bucket, /*count=*/2);
 
   // Changing zoom factor will emit to a different bucket.
   internal_display_info.set_zoom_factor(kZoomFactor1);
@@ -548,9 +559,10 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
 
   TestObserver observer;
   UpdateDisplay("600x500,500x400");
-  EXPECT_EQ(1, observer.CountAndReset());  // resize and add
+  // only 1st display gets resized.
+  EXPECT_EQ(1, observer.CountAndReset());
   EXPECT_EQ(1, observer.GetBoundsChangedCountAndReset());
-  EXPECT_EQ(2, observer.GetWorkareaChangedCountAndReset());
+  EXPECT_EQ(1, observer.GetWorkareaChangedCountAndReset());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
   gfx::Insets insets(5);
@@ -1897,6 +1909,23 @@ TEST_F(WindowTreeHostManagerTest, ReplacePrimary) {
   primary_root->RemoveObserver(&test_observer);
 }
 
+TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange_Noop) {
+  UpdateDisplay("1600x1000*.9");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  aura::Env* env = aura::Env::GetInstance();
+
+  ui::test::EventGenerator generator(root_windows[0]);
+
+  // Set the initial position.
+  generator.MoveMouseToInHost(627, 446);
+  EXPECT_EQ(gfx::Point(696, 495), env->last_mouse_location());
+
+  // A mouse pointer will stay at the same position.
+  UpdateDisplay("1600x1000*.9");
+  EXPECT_EQ(gfx::Point(696, 495), env->last_mouse_location());
+}
+
 TEST_F(WindowTreeHostManagerTest, UpdateMouseLocationAfterDisplayChange) {
   UpdateDisplay("300x200,400x300");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -2139,17 +2168,17 @@ TEST_F(WindowTreeHostManagerTest,
   widget->Show();
 
   TestMouseWatcherListener listener;
-  views::MouseWatcher watcher(
+  auto watcher = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(view, gfx::Insets()),
       &listener);
-  watcher.Start(root2);
+  watcher->Start(root2);
 
   ui::test::EventGenerator event_generator(
       widget->GetNativeWindow()->GetRootWindow());
   event_generator.MoveMouseToCenterOf(widget->GetNativeWindow());
 
   UpdateDisplay("400x300");
-  watcher.Stop();
+  watcher.reset();
 
   widget->CloseNow();
 }
@@ -2215,7 +2244,7 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
 
 TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {
   UpdateDisplay("400x300,300x200");
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0);
   ui::Event::DispatcherApi dispatcher_api(&key_event);
   // Set the target to the second display. WindowTreeHostManager will end up
   // targeting the primary display.

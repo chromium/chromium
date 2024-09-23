@@ -8,7 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
 
-    <!--  TODO(crbug.com/775198): move all hex color values to color_palette.xml  -->
+    <!--  TODO(crbug.com/40545033): move all hex color values to color_palette.xml  -->
     <!-- Other colors -->
     <color name="dark_action_bar_color">@color/google_blue_grey_900</color>
     <color name="dark_status_bar_color">#161E21</color>
@@ -27,7 +27,7 @@ found in the LICENSE file.
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
     <macro name="signin_head_background">@macro/default_bg_color</macro>
     <macro name="signin_body_background">@macro/default_bg_color</macro>
-    <color name="signin_header_animation_background">@color/modern_grey_50</color>
+    <color name="signin_header_animation_background">@color/baseline_neutral_95</color>
     <color name="signin_header_animation_line_light">#E8E9EB</color>
     <color name="signin_header_animation_line_dark">#BDC0C5</color>
     <color name="signin_header_animation_laptop_screen">#F4F4F4</color>

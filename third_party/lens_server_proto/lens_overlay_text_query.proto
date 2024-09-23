@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Contains an unstructured text query to add to an image query.
+message TextQuery {
+  // The unstructured text query, such as "blue" or "blouse".
+  string query = 1;
+
+  bool is_primary = 2;
+}

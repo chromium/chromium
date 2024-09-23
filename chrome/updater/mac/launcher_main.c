@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // launcher_main.c implements a main method that launches
 // `updater --server --service=update [--system] [logging flags]`.
 // Because the launcher is sometimes used in a root setuid context, it has
@@ -530,8 +535,6 @@ static void Launch(
       (char*)kExecutableName,  // posix_spawn will not overwrite the argv.
       is_qualifying ? "--test" : "--server",
       is_internal ? "--service=update-internal" : "--service=update",
-      "--enable-logging",
-      "--vmodule=*/components/update_client/*=2,*/chrome/updater/*=2",
       is_system ? "--system" : NULL,
       NULL};
   static char* const env[] = {"PWD=/", "PATH=/usr/bin:/bin:/usr/sbin:/sbin",

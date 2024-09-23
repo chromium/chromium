@@ -18,15 +18,6 @@ struct CookieManagerParams {
   // Whether or not third party cookies should be blocked.
   bool block_third_party_cookies = false;
 
-  // Whether or not truncated cookies should be ignored. Defaults to true but
-  // can be overridden in cases such as when the feature has been disabled via
-  // Enterprise Policy. Regardless of whether this value is true, the blocking
-  // of truncated cookies will not occur if the kBlockTruncatedCookies feature
-  // is disabled (thus, this default value is acceptable for WebView and other
-  // non-Chrome platforms where the feature flag is the primary means to control
-  // the value).
-  bool block_truncated_cookies = true;
-
   // Whether tracking protection for 3PCD (prefs + UX) is enabled.
   bool tracking_protection_enabled_for_3pcd = false;
 
@@ -100,6 +91,20 @@ enum CookieEffectiveSameSite {
   kUndefined = 4,
 };
 
+// Defined in net::CookieInclusionStatus::ExemptionReason.
+enum CookieExemptionReason {
+    kNone = 0,
+    kUserSetting = 1,
+    k3PCDMetadata = 2,
+    k3PCDDeprecationTrial = 3,
+    kTopLevel3PCDDeprecationTrial = 4,
+    k3PCDHeuristics = 5,
+    kEnterprisePolicy = 6,
+    kStorageAccess = 7,
+    kTopLevelStorageAccess = 8,
+    kScheme = 9,
+};
+
 enum ContextType {
   CROSS_SITE,
   SAME_SITE_LAX_METHOD_UNSAFE,
@@ -112,6 +117,13 @@ enum CookieSameSiteContextMetadataDowngradeType {
   kStrictToLax,
   kStrictToCross,
   kLaxToCross,
+};
+
+enum CookieSourceType {
+  kUnknown,
+  kHTTP,
+  kScript,
+  kOther,
 };
 
 enum ContextRedirectTypeBug1221316 {
@@ -188,11 +200,12 @@ struct CanonicalCookie {
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;
+  CookieSourceType source_type = kUnknown;
 };
 
 // Indicates reasons why a cookie may be excluded in a get or set
 // operation and if it should be warned about.
-// TODO(crbug.com/1310444): Improve serialization validation comments.
+// TODO(crbug.com/40219875): Improve serialization validation comments.
 struct CookieInclusionStatus {
   // Bitfield. Is defined in
   // net::CookieInclusionStatus::ExclusionReason.
@@ -200,6 +213,8 @@ struct CookieInclusionStatus {
   // Bitfield. Is defined in
   // net::CookieInclusionStatus::WarningReason.
   uint32 warning_reasons;
+
+  CookieExemptionReason exemption_reason;
 };
 
 struct CookieAndLineWithAccessResult {
@@ -409,6 +424,16 @@ interface CookieManager {
   // Returns the number of cookies deleted.
   DeleteSessionOnlyCookies() => (uint32 num_deleted);
 
+  // Delete cookies marked as session-only in cookie settings that are stale
+  // (haven't been accessed or updated in 7 days).
+  // Returns the number of cookies deleted.
+  // See crbug.com/40285083 for more info.
+  //
+  // If there is a more general use case for filtering cookie deletion on
+  // the last access time, consider replacing this with a call to DeleteCookies
+  // by adding a last_accessed time range to CookieDeletionFilter.
+  DeleteStaleSessionOnlyCookies() => (uint32 num_deleted);
+
   // Subscribes the given listener to changes to a cookie.
   //
   // The subscription is canceled by closing the CookieChangeListener's pipe.
@@ -466,11 +491,6 @@ interface CookieManager {
 
   // Enables/Disables blocking of third-party cookies.
   BlockThirdPartyCookies(bool block);
-
-  // Enables/Disables blocking of truncated cookies. This provides a way to
-  // change the setting at runtime, which allows the corresponding enterprise
-  // policy to not require a restart to take affect.
-  BlockTruncatedCookies(bool block);
 
   // Enables/Disables mitigations for third-party cookies deprecation.
   SetMitigationsEnabledFor3pcd(bool enable);

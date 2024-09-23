@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -17,6 +19,8 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -69,6 +73,25 @@ bool HasErrorPageSiteInfo(SiteInstance* site_instance) {
   return site_instance_impl->GetSiteInfo().is_error_page();
 }
 
+class BrowsingContextGroupSwapObserver : public WebContentsObserver {
+ public:
+  explicit BrowsingContextGroupSwapObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    latest_swap_ = NavigationRequest::From(navigation_handle)
+                       ->browsing_context_group_swap();
+  }
+
+  BrowsingContextGroupSwap GetLatestBrowsingContextGroupSwap() const {
+    EXPECT_TRUE(latest_swap_.has_value());
+    return latest_swap_.value();
+  }
+
+ private:
+  std::optional<BrowsingContextGroupSwap> latest_swap_;
+};
+
 }  // namespace
 
 class ProactivelySwapBrowsingInstancesTest : public RenderFrameHostManagerTest {
@@ -82,14 +105,14 @@ class ProactivelySwapBrowsingInstancesTest : public RenderFrameHostManagerTest {
 
   ~ProactivelySwapBrowsingInstancesTest() override = default;
 
-  void ExpectTotalCount(base::StringPiece name,
+  void ExpectTotalCount(std::string_view name,
                         base::HistogramBase::Count count) {
     FetchHistogramsFromChildProcesses();
     histogram_tester_.ExpectTotalCount(name, count);
   }
 
   template <typename T>
-  void ExpectBucketCount(base::StringPiece name,
+  void ExpectBucketCount(std::string_view name,
                          T sample,
                          base::HistogramBase::Count expected_count) {
     FetchHistogramsFromChildProcesses();
@@ -617,7 +640,10 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // 2) Start same-site navigation to A2 without committing.
   TestNavigationManager navigation_a2(shell()->web_contents(), a2_url);
   shell()->LoadURL(a2_url);
-  EXPECT_TRUE(navigation_a2.WaitForRequestStart());
+  // Chrome in Android will use unisolated site instance, we have to
+  // use `WaitForResponse` since the speculative RFH won't be necessariliy
+  // created.
+  EXPECT_TRUE(navigation_a2.WaitForResponse());
   // Verify that we're now navigating to |a2_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), a2_url);
   // We should have a speculative RFH for this navigation.
@@ -634,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // 3) Start cross-site navigation to B1 without committing.
   TestNavigationManager navigation_b1(shell()->web_contents(), b1_url);
   shell()->LoadURL(b1_url);
-  EXPECT_TRUE(navigation_b1.WaitForRequestStart());
+  EXPECT_TRUE(navigation_b1.WaitForResponse());
   // Verify that we're now navigating to |b1_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), b1_url);
   // We should have a speculative RFH for this navigation.
@@ -650,10 +676,11 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
 
   // 4) Start same-site navigation to B2 without committing.
   TestNavigationManager navigation_b2(shell()->web_contents(), b2_url);
+  // B2 shall reuse the speculative RFH. No RFH creation.
   shell()->LoadURL(b2_url);
-  EXPECT_TRUE(navigation_b2.WaitForRequestStart());
   // Verify that we're now navigating to |b2_url|.
   EXPECT_EQ(node->navigation_request()->GetURL(), b2_url);
+  EXPECT_TRUE(navigation_b2.WaitForResponse());
   // We should have a speculative RFH for this navigation.
   RenderFrameHostImpl* b2_speculative_rfh =
       node->render_manager()->speculative_frame_host();
@@ -1174,8 +1201,59 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   EXPECT_EQ(site_instance_5, site_instance_6);
 }
 
+// Regression test for crbug.com/340606786. This test ensures that the browser
+// doesn't crash if a reload happens on a post-commit error page.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
-                       SwapOnNavigationToPageThatRedirects) {
+                       ReloadPostCommitErrorPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1) Navigate to title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 2) Load post commit error page.
+  RenderFrameHost* root = shell()->web_contents()->GetPrimaryMainFrame();
+  std::string error_html = "Error page";
+  TestNavigationObserver error_observer(shell()->web_contents());
+  controller.LoadPostCommitErrorPage(root, url, error_html);
+  error_observer.Wait();
+
+  // 3) Request a reload to happen when the controller becomes active (e.g.
+  // after the renderer gets killed in background on Android).
+  ASSERT_FALSE(controller.NeedsReload());
+  controller.SetNeedsReload();
+  // Set the restore type to `kRestored`, since `SetNeedsReload()` should only
+  // be used for session restore.
+  controller.GetLastCommittedEntry()->set_restore_type(RestoreType::kRestored);
+  ASSERT_TRUE(controller.NeedsReload());
+
+  // Set the controller as active, triggering the requested reload.
+  controller.SetActive(true);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  // The reload should not crash.
+  ASSERT_FALSE(controller.NeedsReload());
+}
+
+class ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay
+    : public ProactivelySwapBrowsingInstancesTest {
+ public:
+  ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay() {
+    feature_list_for_defer_speculative_rfh_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation,
+        {{"create_speculative_rfh_delay_ms", "0"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_defer_speculative_rfh_;
+};
+
+// The test disables delaying the speculative RFH creation when navigation
+// starts since it checks the behavior of speculative RFH during redirection.
+IN_PROC_BROWSER_TEST_P(
+    ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay,
+    SwapOnNavigationToPageThatRedirects) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
@@ -1211,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // Note that we're using a renderer-initiated navigation here. If we do a
   // browser-initiated navigation, it will hit the case at crbug.com/1094147
   // where we can't reuse |url_2|'s process even though |url_3| is same-site.
-  // TODO(crbug.com/1094147): Test with browser-initiated navigation too once
+  // TODO(crbug.com/40135315): Test with browser-initiated navigation too once
   // the issue is fixed.
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), cross_site_redirector_url,
                                         url_3 /* expected_commit_url */));
@@ -1497,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
 // Tests that unload handlers of the old RFH are run during commit of the new
 // RFH when swapping RFH for same-site navigations due to proactive
 // BrowsingInstance swap.
-// TODO(crbug.com/1110744): support this.
+// TODO(crbug.com/40142288): support this.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
                        DISABLED_UnloadRunsDuringCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1555,7 +1633,7 @@ IN_PROC_BROWSER_TEST_P(
   if (IsBackForwardCacheEnabled()) {
     // bfcached subframes with unload/pagehide/visibilitychange handlers will
     // crash on a failed DCHECK due to crbug.com/1109742.
-    // TODO(crbug.com/1109742): don't skip this test when bfcache is enabled.
+    // TODO(crbug.com/40141877): don't skip this test when bfcache is enabled.
     return;
   }
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1725,6 +1803,357 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
       "not_dispatched",
       EvalJs(main_frame_2, "localStorage.getItem('visibilitychange_storage')"));
 }
+
+// To address breakage of named window reuse across a back navigation
+// when a proactive BrowsingInstance swap has happened, we offer the
+// option to use an explicit opener relation for same-window navigations
+// as an opt-out from proactive swaps. These tests cover cases that should (and
+// should not) have the opt-out mechanism take effect.
+class ProactivelySwapBrowsingInstancesOptOutTest
+    : public ProactivelySwapBrowsingInstancesTest {
+ public:
+  ProactivelySwapBrowsingInstancesOptOutTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kRelOpenerBcgDependencyHint);
+  }
+
+  ~ProactivelySwapBrowsingInstancesOptOutTest() override = default;
+
+ protected:
+  void RunOptOutTest(base::FunctionRef<void()> perform_navigation,
+                     bool expect_opt_out_applies = true) {
+    ASSERT_TRUE(CanSameSiteMainFrameNavigationsChangeSiteInstances());
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+    const GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(shell()->web_contents());
+
+    EXPECT_TRUE(NavigateToURL(shell(), url_1));
+    scoped_refptr<SiteInstanceImpl> site_instance_1 =
+        static_cast<SiteInstanceImpl*>(
+            web_contents->GetPrimaryMainFrame()->GetSiteInstance());
+
+    BrowsingContextGroupSwapObserver swap_observer(web_contents);
+
+    perform_navigation();
+    EXPECT_NE(url_1,
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+    BrowsingContextGroupSwap bcg_swap =
+        swap_observer.GetLatestBrowsingContextGroupSwap();
+
+    EXPECT_NE(expect_opt_out_applies, bcg_swap.ShouldSwap());
+
+    scoped_refptr<SiteInstanceImpl> site_instance_2 =
+        static_cast<SiteInstanceImpl*>(
+            web_contents->GetPrimaryMainFrame()->GetSiteInstance());
+    if (expect_opt_out_applies) {
+      EXPECT_TRUE(
+          site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
+      EXPECT_EQ(
+          bcg_swap.reason(),
+          ShouldSwapBrowsingInstance::kNo_InitiatorRequestedNoProactiveSwap);
+    } else {
+      EXPECT_FALSE(
+          site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
+    }
+  }
+
+  void CreateAnchorAndNavigate(RenderFrameHost* rfh,
+                               const GURL& url,
+                               const std::string& target_name,
+                               const std::string& rel) {
+    TestNavigationObserver nav_observer(WebContents::FromRenderFrameHost(rfh));
+    ExecuteScriptAsync(rfh, JsReplace(R"(
+      let anchor = document.createElement('a');
+      anchor.href = $1;
+      anchor.target = $2;
+      anchor.rel = $3;
+      anchor.text = 'Link';
+      document.body.appendChild(anchor);
+      anchor.click();
+    )",
+                                      url, target_name, rel));
+    nav_observer.Wait();
+  }
+
+  void WindowOpenNavigate(RenderFrameHost* rfh,
+                          const GURL& url,
+                          const std::string& target_name,
+                          const std::string& window_features) {
+    TestNavigationObserver nav_observer(WebContents::FromRenderFrameHost(rfh));
+    ExecuteScriptAsync(rfh, JsReplace("window.open($1, $2, $3);", url,
+                                      target_name, window_features));
+    nav_observer.Wait();
+  }
+
+  void CreateFormAndSubmit(RenderFrameHost* rfh,
+                           const GURL& action,
+                           const std::string& target_name,
+                           const std::string& rel) {
+    TestNavigationObserver nav_observer(WebContents::FromRenderFrameHost(rfh));
+    ExecuteScriptAsync(rfh, JsReplace(R"(
+      let form = document.createElement('form');
+      form.action = $1;
+      form.target = $2;
+      form.rel = $3;
+      form.method = 'POST';
+      document.body.appendChild(form);
+      form.submit();
+    )",
+                                      action, target_name, rel));
+    nav_observer.Wait();
+  }
+
+  FrameTreeNode* CreateIframe(RenderFrameHost* parent, const GURL& url) {
+    RenderFrameHostImpl* parent_impl =
+        static_cast<RenderFrameHostImpl*>(parent);
+    EXPECT_TRUE(ExecJs(parent_impl,
+                       "var child = document.createElement('iframe');"
+                       "document.body.appendChild(child);"));
+
+    FrameTreeNode* child =
+        parent_impl->child_at(parent_impl->child_count() - 1);
+    EXPECT_TRUE(child);
+
+    TestFrameNavigationObserver observer(child);
+    EXPECT_TRUE(ExecJs(parent_impl, JsReplace("child.src = $1;", url)));
+    observer.Wait();
+
+    return child;
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithAnchorRelOpener) {
+  RunOptOutTest([this]() {
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                            next_url,
+                            /*target_name=*/"", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithWindowOpener) {
+  RunOptOutTest([this]() {
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    WindowOpenNavigate(shell()->web_contents()->GetPrimaryMainFrame(), next_url,
+                       /*target_name=*/"_self", /*window_features=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithFormRelOpener) {
+  RunOptOutTest([this]() {
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    CreateFormAndSubmit(shell()->web_contents()->GetPrimaryMainFrame(),
+                        /*action=*/next_url,
+                        /*target_name=*/"", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       PreventingSwapAllowsFutureScripting) {
+  RunOptOutTest([this]() {
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                            next_url,
+                            /*target_name=*/"", /*rel=*/"opener");
+  });
+
+  // Beyond confirming the BrowsingInstance didn't change, we'll explicitly
+  // check the behaviour seen in crbug.com/40281878 to ensure that named windows
+  // can be reused across back navigations.
+  const GURL popup_url(embedded_test_server()->GetURL("/title3.html"));
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("var w = window.open($1, 'namedWindow');"
+                                "w.previouslyOpened = true;",
+                                popup_url)));
+  Shell* popup = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  NavigationController& opener_controller =
+      shell()->web_contents()->GetController();
+  ASSERT_TRUE(opener_controller.CanGoBack());
+  TestNavigationObserver back_observer(shell()->web_contents());
+  opener_controller.GoBack();
+  back_observer.Wait();
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "!!window.open('', 'namedWindow').previouslyOpened;"));
+  // The window opened previously should be reused here, so the navigation
+  // should be in the same WebContents.
+  const GURL next_popup_url(embedded_test_server()->GetURL("/title4.html"));
+  TestNavigationObserver popup_nav_observer(popup->web_contents());
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1, 'namedWindow');", next_popup_url)));
+  popup_nav_observer.Wait();
+  EXPECT_EQ(popup_nav_observer.last_navigation_url(), next_popup_url);
+}
+
+// Like PreventingSwapAllowsFutureScripting, but performs another navigation
+// after the back navigation, to confirm that the next page can also reuse the
+// opened window.
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       PreventingSwapAllowsFutureScriptingAfterAdditionalNav) {
+  RunOptOutTest([this]() {
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                            next_url,
+                            /*target_name=*/"", /*rel=*/"opener");
+  });
+
+  // Beyond confirming the BrowsingInstance didn't change, we'll explicitly
+  // check the behaviour seen in crbug.com/40281878 to ensure that named windows
+  // can be reused across back navigations.
+  const GURL popup_url(embedded_test_server()->GetURL("/title3.html"));
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("var w = window.open($1, 'namedWindow');"
+                                "w.previouslyOpened = true;",
+                                popup_url)));
+  Shell* popup = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup->web_contents()));
+
+  NavigationController& opener_controller =
+      shell()->web_contents()->GetController();
+  ASSERT_TRUE(opener_controller.CanGoBack());
+  TestNavigationObserver back_observer(shell()->web_contents());
+  opener_controller.GoBack();
+  back_observer.Wait();
+
+  // Navigate to another page. That page should also be able to reuse the opened
+  // window.
+  const GURL next_url2(
+      embedded_test_server()->GetURL("/title2.html?additionalnav"));
+  // We intentionally don't use rel=opener here as the usage in the original nav
+  // to title2.html is sufficient.
+  CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                          next_url2,
+                          /*target_name=*/"", /*rel=*/"");
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "!!window.open('', 'namedWindow').previouslyOpened;"));
+  // The window opened previously should be reused here, so the navigation
+  // should be in the same WebContents.
+  const GURL next_popup_url(embedded_test_server()->GetURL("/title4.html"));
+  TestNavigationObserver popup_nav_observer(popup->web_contents());
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1, 'namedWindow');", next_popup_url)));
+  popup_nav_observer.Wait();
+  EXPECT_EQ(popup_nav_observer.last_navigation_url(), next_popup_url);
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithAnchorRelOpenerCrossSite) {
+  RunOptOutTest([this]() {
+    const GURL cross_site_next_url(
+        embedded_test_server()->GetURL("b.com", "/title2.html"));
+    CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                            cross_site_next_url,
+                            /*target_name=*/"", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithAnchorRelOpenerWithParent) {
+  RunOptOutTest([this]() {
+    const GURL iframe_url(embedded_test_server()->GetURL("/title2.html"));
+    const GURL next_url(embedded_test_server()->GetURL("/title3.html"));
+    FrameTreeNode* child = CreateIframe(
+        shell()->web_contents()->GetPrimaryMainFrame(), iframe_url);
+    CreateAnchorAndNavigate(child->current_frame_host(), next_url,
+                            /*target_name=*/"_top", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithAnchorRelOpenerInOopif) {
+  RunOptOutTest([this]() {
+    const GURL cross_site_iframe_url(
+        embedded_test_server()->GetURL("b.com", "/title2.html"));
+    const GURL next_url(embedded_test_server()->GetURL("/title3.html"));
+    FrameTreeNode* child = CreateIframe(
+        shell()->web_contents()->GetPrimaryMainFrame(), cross_site_iframe_url);
+    CreateAnchorAndNavigate(child->current_frame_host(), next_url,
+                            /*target_name=*/"_top", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       DoNotSwapWithAnchorRelOpenerOpenURL) {
+  RunOptOutTest([this]() {
+    // This has the renderer navigate though the OpenURL method.
+    shell()
+        ->web_contents()
+        ->GetMutableRendererPrefs()
+        ->browser_handles_all_top_level_requests = true;
+    shell()->web_contents()->SyncRendererPrefs();
+    const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+    CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                            next_url,
+                            /*target_name=*/"", /*rel=*/"opener");
+  });
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       CannotOptOutOfCoop) {
+  // Browsing instance swaps required by COOP cannot be bypassed by the opt out.
+  RunOptOutTest(
+      [this]() {
+        const GURL next_url(
+            embedded_test_server()->GetURL("/cross-origin-isolated.html"));
+        CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                                next_url,
+                                /*target_name=*/"", /*rel=*/"opener");
+      },
+      /*expect_opt_out_applies=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       CannotOptOutFromFencedFrame) {
+  // _unfencedTop navigations force a browsing instance swap, which should take
+  // priority over the requested opt out.
+  RunOptOutTest(
+      [this]() {
+        const GURL fenced_frame_url(
+            embedded_test_server()->GetURL("/fenced_frames/title0.html"));
+        const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+        RenderFrameHost* ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
+            shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
+            net::OK, blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+        CreateAnchorAndNavigate(ff_rfh, next_url,
+                                /*target_name=*/"_unfencedTop",
+                                /*rel=*/"opener");
+      },
+      /*expect_opt_out_applies=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
+                       RelOpenerAndNoopener) {
+  // Contradicting rel types of both opener and noopener should be treated as
+  // noopener.
+  RunOptOutTest(
+      [this]() {
+        const GURL next_url(embedded_test_server()->GetURL("/title2.html"));
+        CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
+                                next_url,
+                                /*target_name=*/"", /*rel=*/"noopener opener");
+      },
+      /*expect_opt_out_applies=*/false);
+}
+
 class ProactivelySwapBrowsingInstancesSameSiteCoopTest
     : public ProactivelySwapBrowsingInstancesTest {
  public:
@@ -1932,6 +2361,9 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(All,
                          ProactivelySwapBrowsingInstancesTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProactivelySwapBrowsingInstancesOptOutTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProactivelySwapBrowsingInstancesCrossSiteDoesNotReuseProcessTest,
@@ -1942,5 +2374,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProactivelySwapBrowsingInstancesTestWithoutSpeculativeRFHDelay,
     testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content

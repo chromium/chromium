@@ -3,16 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/concurrent_links.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 
 declare_args() {
-  # Pool for non goma tasks.
+  # Pool for non remote tasks.
   action_pool_depth = -1
 }
 
 if (current_toolchain == default_toolchain) {
-  if (action_pool_depth == -1 || (use_goma || use_remoteexec)) {
+  if (action_pool_depth == -1 || use_remoteexec) {
     action_pool_depth = exec_script("get_cpu_count.py", [], "value")
   }
 

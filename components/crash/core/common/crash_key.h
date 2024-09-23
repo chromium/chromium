@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
 #include "components/crash/core/common/crash_export.h"
@@ -95,7 +95,7 @@ class CRASH_KEY_EXPORT CrashKeyStringImpl {
   CrashKeyStringImpl(const CrashKeyStringImpl&) = delete;
   CrashKeyStringImpl& operator=(const CrashKeyStringImpl&) = delete;
 
-  void Set(base::StringPiece value);
+  void Set(std::string_view value);
   void Clear();
 
   bool is_set() const;
@@ -196,7 +196,7 @@ class [[nodiscard]] ScopedCrashKeyString {
 #endif
 
   template <class T>
-  ScopedCrashKeyString(T* crash_key, base::StringPiece value)
+  ScopedCrashKeyString(T* crash_key, std::string_view value)
       : crash_key_(crash_key) {
     crash_key->Set(value);
   }

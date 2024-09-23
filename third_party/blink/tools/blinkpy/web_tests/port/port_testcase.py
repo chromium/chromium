@@ -426,4 +426,4 @@ class PortTestCase(LoggingTestCase):
         port = self.make_port(host=SystemHost(), port_name=self.full_port_name)
         port.operating_system = lambda: 'linux'
         self.assertTrue(
-            isinstance(port.virtual_test_suites(), collections.Iterable))
+            isinstance(port.virtual_test_suites(), collections.abc.Iterable))

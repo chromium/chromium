@@ -7,4 +7,5 @@
 ] partial interface Internals {
     unsigned long audioHandlerCount();
     unsigned long audioWorkletProcessorCount();
+    void emulateDeviceFailureOnAudioContext(AudioContext context);
 };

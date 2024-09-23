@@ -3,6 +3,18 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
     aggregatable : noMatchingSources
     eventLevel : noMatchingSources
     registration : {
+        aggregatableDebugReportingConfig : {
+            debugData : [
+                [0] : {
+                    keyPiece : 0x10
+                    types : [
+                        [0] : trigger-no-matching-source
+                    ]
+                    value : 12
+                }
+            ]
+            keyPiece : 0x1
+        }
         aggregatableDedupKeys : [
             [0] : {
                 dedupKey : 1
@@ -14,6 +26,7 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
             }
         ]
+        aggregatableFilteringIdMaxBytes : 1
         aggregatableTriggerData : [
             [0] : {
                 filters : {
@@ -29,8 +42,19 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
         ]
         aggregatableValues : [
             [0] : {
-                key : a
-                value : 2
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+                values : [
+                    [0] : {
+                        filteringId : 0
+                        key : a
+                        value : 2
+                    }
+                ]
             }
         ]
         debugReporting : true
@@ -71,6 +95,9 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
             ]
         }
+        scopes : [
+            [0] : a
+        ]
         sourceRegistrationTimeConfig : exclude
         triggerContextId : 123
     }

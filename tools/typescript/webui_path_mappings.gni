@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/node/node.gni")
+
+template("webui_path_mappings") {
+  node(target_name) {
+    script = "//tools/typescript/path_mappings.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "webui_context_type",
+                             "ts_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    inputs = [
+      "//tools/typescript/path_mappings.py",
+      "//tools/typescript/path_utils.py",
+    ]
+    outputs = [ "${target_gen_dir}/path_mappings_${target_name}.json" ]
+
+    args = [
+      "--root_gen_dir",
+      rebase_path(root_gen_dir, target_gen_dir),
+      "--root_src_dir",
+      rebase_path("//", target_gen_dir),
+      "--gen_dir",
+      rebase_path(target_gen_dir, root_build_dir),
+      "--output_suffix",
+      target_name,
+    ]
+
+    if (defined(ts_deps)) {
+      args += [ "--raw_deps" ]
+      foreach(_dep, ts_deps) {
+        # Pass all dependency names to the script, because they are needed to
+        # automatically infer path mappings. Normalize their form, because
+        # |ts_deps| can hold relative paths.
+        args +=
+            [ get_label_info(_dep, "dir") + ":" + get_label_info(_dep, "name") ]
+      }
+    }
+
+    # The |platform| flag is used to limit some logic to certain platforms, like
+    # preventing special iOS exceptions being abused on other platforms.
+    if (is_ios) {
+      platform = "ios"
+      args += [
+        "--platform",
+        platform,
+      ]
+    } else if (is_chromeos_ash) {
+      platform = "chromeos_ash"
+      args += [
+        "--platform",
+        platform,
+      ]
+    }
+
+    if (defined(webui_context_type)) {
+      args += [
+        "--webui_context_type",
+        webui_context_type,
+      ]
+    }
+  }
+}

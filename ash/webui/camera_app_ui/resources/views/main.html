@@ -63,6 +63,12 @@
               <div id="preview-wb-gain-blue" class="metadata value"></div>
               <div id="preview-awb-state" class="metadata value"></div>
             </div>
+            <div id="preview-ptz" class="expert-control-row metadata-row">
+              <span class="title">PTZ</span>
+              <div id="preview-ptz-pan" class="metadata value"></div>
+              <div id="preview-ptz-tilt" class="metadata value"></div>
+              <div id="preview-ptz-zoom" class="metadata value"></div>
+            </div>
             <div class="video-option-row expert-control-row">
               <span class="title">Profile</span>
               <select id="video-profile" tabindex="0">
@@ -92,7 +98,6 @@
             <div class="corner-container"></div>
           </div>
           <div class="barcode-scan-box centered-overlay"></div>
-          <div class="snackbar" aria-live="polite"></div>
           <div id="camera-mode" class="centered-overlay">
             <svg-wrapper name="camera_mode_photo.svg" class="photo">
             </svg-wrapper>
@@ -107,7 +112,7 @@
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             i18n-label="label_barcode_url">
+             i18n-aria="label_barcode_url">
           <button id="barcode-chip-url"
                   class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
@@ -116,17 +121,21 @@
           </button>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              data-svg="barcode_copy.svg"></button>
+              data-svg="barcode_copy.svg"
+              i18n-aria="barcode_copy_link_button"></button>
           </div>
         </div>
         <div id="barcode-chip-text-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             i18n-label="label_barcode_text">
+             aria-describedby="barcode-chip-text-description"
+             i18n-aria="label_barcode_text">
           <div class="barcode-chip-text">
             <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"
-                    aria-expanded="false">
+                    aria-expanded="false"
+                    i18n-aria="label_expand_detected_content_button"
+                    tabindex="0">
               <svg-wrapper name="barcode_chevron_up.svg" class="up-icon">
               </svg-wrapper>
               <svg-wrapper name="barcode_chevron_down.svg" class="down-icon">
@@ -135,13 +144,15 @@
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              data-svg="barcode_copy.svg"></button>
+            data-svg="barcode_copy.svg"
+            i18n-aria="barcode_copy_text_button"></button>
           </div>
+          <div id="barcode-chip-text-description" hidden></div>
         </div>
         <div id="barcode-chip-wifi-container"
             class="invisible barcode-chip-container"
             role="dialog"
-            i18n-label="label_barcode_wifi">
+            i18n-aria="label_barcode_wifi">
           <button id="barcode-chip-wifi"
                   class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="wifi.svg"></svg-wrapper>
@@ -195,7 +206,9 @@
         </button>
         <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
                 i18n-label="open_ptz_panel_button"
-                data-svg="camera_button_ptz_panel.svg"></button>
+                data-svg="camera_button_ptz_panel.svg">
+          <div id="notify-super-res-indicator"></div>
+        </button>
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
            i18n-aria="aria_scan_type_group">
@@ -276,7 +289,9 @@
       </div>
       <switch-device-button tabindex="0" class="bottom-stripe left-stripe">
       </switch-device-button>
-      <mode-selector class="bottom-stripe" tabindex="0"></mode-selector>
+      <mode-selector i18n-new-feature="new_preview_ocr_toast"
+                     class="bottom-stripe"
+                     tabindex="0"></mode-selector>
       <div id="document-page-count" class="bottom-stripe"></div>
       <gallery-button class="bottom-stripe right-stripe" tabindex="0">
       </gallery-button>
@@ -337,6 +352,19 @@
           </div>
           <div class="expand" data-svg="settings_button_expand.svg"></div>
         </button>
+        <label class="menu-item inkdrop" id="settings-preview-ocr">
+          <div class="icon" data-svg="preview_ocr_icon.svg"></div>
+          <div>
+            <div i18n-text="preview_ocr_option"></div>
+            <div class="description"
+                 i18n-text="preview_ocr_option_description"></div>
+          </div>
+          <div id="settings-preview-ocr-option">
+            <input class="icon" type="checkbox" tabindex="0"
+                   data-state="enable-preview-ocr" data-key="enablePreviewOcr">
+            <svg-wrapper class="icon" name="check_mark.svg"></svg-wrapper>
+          </div>
+        </label>
         <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
           <div class="icon" data-svg="settings_feedback.svg"></div>
           <div i18n-text="feedback_button"></div>
@@ -406,29 +434,6 @@
                  data-key="customVideoParameters">
           <span i18n-text="expert_custom_video_parameters"></span>
         </label>
-        <div id="multistream-group" role="radiogroup">
-          <label class="menu-item inkdrop require-chromeos-vcd"
-                 i18n-text="expert_multistream_recording"></label>
-          <label class="menu-item inkdrop require-chromeos-vcd">
-            <input class="icon" type="radio" tabindex="0" name="multistream"
-                   checked>
-            <span i18n-text="expert_multistream_recording_disabled"></span>
-          </label>
-          <label class="menu-item inkdrop require-chromeos-vcd">
-            <input class="icon" id="expert-enable-multistream-recording"
-                   type="radio" tabindex="0" name="multistream"
-                   data-state="enable-multistream-recording"
-                   data-key="enableMultistreamRecording">
-            <span i18n-text="expert_multistream_recording_hal"></span>
-          </label>
-          <label class="menu-item inkdrop require-chromeos-vcd">
-            <input class="icon" id="expert-enable-multistream-recording-chrome"
-                   type="radio" tabindex="0" name="multistream"
-                   data-state="enable-multistream-recording-chrome"
-                   data-key="enableMultistreamRecordingChrome">
-            <span i18n-text="expert_multistream_recording_chrome"></span>
-          </label>
-        </div>
         <label class="menu-item inkdrop">
           <input id="expert-enable-full-sized-video-snapshot" class="icon"
                  type="checkbox" tabindex="0"
@@ -542,6 +547,32 @@
         <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
       </div>
     </div>
+    <div id="view-super-res-intro-dialog" class="dialog">
+      <div class="dialog-container" role="dialog"
+           aria-labelledby="super-res-dialog-title"
+           aria-describedby="super-res-dialog-description">
+        <div id="super-res-dialog-illustration">
+          <svg-wrapper name="super_res_intro_dialog.svg"></svg-wrapper>
+        </div>
+        <div id="super-res-dialog-content">
+          <div class="dialog-title dialog-msg-holder"
+               id="super-res-dialog-title"
+               i18n-text="super_res_intro_dialog_title">
+          </div>
+          <div class="dialog-description"
+               id="super-res-dialog-description"></div>
+          <div class="dialog-buttons">
+            <button class="dialog-negative-button text-button pill dark
+                    secondary" tabindex="0"
+                    i18n-text="super_res_intro_dialog_learn_more_button">
+            </button>
+            <button class="dialog-positive-button text-button pill primary dark
+                    inkdrop" tabindex="0"
+                    i18n-text="super_res_intro_dialog_got_it_button"></button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>
     </div>
@@ -551,6 +582,7 @@
     <div id="toast" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
     <text-tooltip></text-tooltip>
+    <div class="snackbar" aria-live="polite"></div>
     <template id="preview-video-template">
       <video id="preview-video" class="preview-content" aria-hidden="true"
         muted></video>

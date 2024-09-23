@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@EXECUTE-AND-WAIT-FOR:setTabIndex0()
+@EXECUTE-AND-WAIT-FOR:setTabIndexMinus1()
+@EXECUTE-AND-WAIT-FOR:setFocus()
+@EXECUTE-AND-WAIT-FOR:removeTabIndex()
+-->
+<div>
+  <p>Cats
+  <p>Dogs
+</p>
+
+<script>
+const div = document.querySelector('div');
+document.title = 'not-focusable-no-name';
+
+function setTabIndex0() {
+  div.tabIndex = '0';
+  document.title = 'tabindex-0-has-name';
+  return 'tabindex-0-has-name';
+}
+
+function setTabIndexMinus1() {
+  div.tabIndex = '-1';
+  document.title = 'tabindex-minus-1-no-name';
+  return 'tabindex-minus-1-no-name';
+}
+
+function setFocus() {
+  div.focus();
+  document.title = 'focus-has-name';
+  return 'focus-has-name';
+}
+
+function removeTabIndex() {
+  div.removeAttribute('tabindex');  // This should also blur the element.
+  document.title = 'remove-tabindex-no-name';
+  return 'remove-tabindex-no-name';
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

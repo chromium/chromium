@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
 
 #include "ash/webui/common/trusted_types_util.h"
@@ -53,11 +58,10 @@ class TestWebUIProvider
     files_swa_source->AddResourcePaths(base::make_span(
         kFileManagerSwaResources, kFileManagerSwaResourcesSize));
 
-    ash::file_manager::AddFilesAppResources(
-        files_swa_source, kFileManagerResources, kFileManagerResourcesSize);
     ash::file_manager::AddFilesAppResources(files_swa_source,
-                                            kFileManagerGenResources,
-                                            kFileManagerGenResourcesSize);
+                                            kFileManagerResources);
+    ash::file_manager::AddFilesAppResources(files_swa_source,
+                                            kFileManagerGenResources);
 
     dict_ = GetFileManagerStrings();
     AddFileManagerFeatureStrings("en-US", Profile::FromWebUI(web_ui), &dict_);

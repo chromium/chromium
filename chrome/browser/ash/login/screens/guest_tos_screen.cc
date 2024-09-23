@@ -47,6 +47,7 @@ std::string GetCrosEulaOnlineUrl() {
 
 // static
 std::string GuestTosScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::ACCEPT:
       return "Accept";
@@ -55,6 +56,7 @@ std::string GuestTosScreen::GetResultString(Result result) {
     case Result::CANCEL:
       return "Cancel";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GuestTosScreen::GuestTosScreen(base::WeakPtr<GuestTosScreenView> view,
@@ -98,7 +100,6 @@ void GuestTosScreen::OnAccept(bool enable_usage_stats) {
   // Store guest consent to local state so that correct metrics consent can be
   // loaded after browser restart.
   local_state->SetBoolean(prefs::kOobeGuestMetricsEnabled, enable_usage_stats);
-  local_state->SetBoolean(prefs::kOobeGuestAcceptedTos, true);
   local_state->CommitPendingWrite(
       base::BindOnce(&GuestTosScreen::OnOobeGuestPrefWriteDone,
                      weak_ptr_factory_.GetWeakPtr()));

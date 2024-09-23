@@ -137,6 +137,12 @@ interface SynchronousCompositorHost {
 
   // Notifies the that a begin frame is needed or not.
   SetNeedsBeginFrames(bool needs_begin_frames);
+
+  // Passes IDs of threads involved in frame production to the compositor.
+  // The IDs are then passed through HWUI to the Android PerformanceHint API
+  // to dynamically adjust performance.
+  // This is similar to CompositorFrameSink.SetThreadIds, but for WebView.
+  SetThreadIds(array<int32> thread_ids);
 };
 
 // Interface that runs on the IO thread of the browser. To be used for responses

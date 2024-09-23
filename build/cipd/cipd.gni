@@ -6,7 +6,7 @@
 #
 # Prepares a CIPD archive and generates a manifest file.
 #
-# TODO(crbug.com/1042819): Add support for including directories.
+# TODO(crbug.com/40115002): Add support for including directories.
 #
 # Parameters:
 #   package_definition_yaml: CIPD package definition filename. "cipd.yaml"

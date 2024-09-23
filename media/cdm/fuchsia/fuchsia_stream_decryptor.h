@@ -69,7 +69,7 @@ class MEDIA_EXPORT FuchsiaStreamDecryptor
 
   void OnInputBuffersAcquired(
       std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+      const fuchsia::sysmem2::SingleBufferSettings& buffer_settings);
   void SendInputPacket(const DecoderBuffer* buffer,
                        StreamProcessorHelper::IoPacket packet);
   void ProcessEndOfStream();

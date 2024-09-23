@@ -50,14 +50,12 @@ public abstract class SignInPromo {
 
     protected SignInPromo(SigninManager signinManager, SyncPromoController syncPromoController) {
         Context context = ContextUtils.getApplicationContext();
-
         mSigninManager = signinManager;
-        updateVisibility();
-
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSyncPromoController = syncPromoController;
-
         mSigninObserver = new SigninObserver();
+
+        updateVisibility();
     }
 
     /** Clear any dependencies. */
@@ -113,11 +111,13 @@ public abstract class SignInPromo {
                 AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().isFulfilled();
         boolean canShowPersonalizedSigninPromo =
                 mSigninManager.isSigninAllowed()
+                        && mSyncPromoController.canShowSyncPromo()
                         && mCanShowPersonalizedSuggestions
                         && isAccountsCachePopulated
                         && mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true);
         boolean canShowPersonalizedSyncPromo =
                 mSigninManager.isSyncOptInAllowed()
+                        && mSyncPromoController.canShowSyncPromo()
                         && isUserSignedInButNotSyncing()
                         && mCanShowPersonalizedSuggestions
                         && isAccountsCachePopulated;

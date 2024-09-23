@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="2dp"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/bank_account_icon"
+        android:importantForAccessibility="no"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bank_account_icon_background"
+        android:paddingHorizontal="@dimen/facilitated_payments_bank_account_icon_padding_horizontal"
+        android:paddingVertical="@dimen/facilitated_payments_bank_account_icon_padding_vertical"
+        android:scaleType="centerInside" />
+
+    <!-- TODO(b/340328974): Only the first and end suggestions should have curved background. -->
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/bank_name"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+
+        <TextView
+            android:id="@+id/bank_account_summary"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    </LinearLayout>
+</LinearLayout>

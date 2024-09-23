@@ -15,7 +15,7 @@ DropTargetEvent::DropTargetEvent(const OSExchangeData& data,
                                  const gfx::PointF& location,
                                  const gfx::PointF& root_location,
                                  int source_operations)
-    : LocatedEvent(ET_DROP_TARGET_EVENT,
+    : LocatedEvent(EventType::kDropTargetEvent,
                    location,
                    root_location,
                    EventTimeForNow(),

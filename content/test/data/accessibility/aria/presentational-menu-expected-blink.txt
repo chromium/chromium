@@ -1,11 +1,11 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++section
+++++++sectionWithoutName
 ++++++++list
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
-++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++staticText ignored
 ++++++++++++staticText name='Menu item'
 ++++++++++++++inlineTextBox name='Menu item'
 ++++++++none ignored

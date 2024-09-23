@@ -1,0 +1,172 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <algorithm>
+#include <limits>
+#include <string>
+
+#include "{{basename}}.h"
+#include "{{basename}}.pb.h"
+
+#include "base/strings/string_number_conversions.h"
+
+namespace {
+{% for func in functions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+{% for func in oneoffunctions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+{% for func in stfunctions %}
+std::string {{func['name']}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func['proto_type']}});
+{% endfor %}
+
+template <typename From, typename To>
+[[maybe_unused]] std::string handle_int_conversion(domatolpm::Context* ctx [[maybe_unused]],
+                                                   const From& arg,
+                                                   const To& min = std::numeric_limits<To>::min(),
+                                                   const To& max = std::numeric_limits<To>::max()) {
+    To conv = arg;
+    return std::to_string(std::clamp(conv, min, max));
+}
+
+[[maybe_unused]] std::string handle_float(domatolpm::Context* ctx [[maybe_unused]], const float& arg) {
+    return base::NumberToString(arg);
+}
+
+[[maybe_unused]] std::string handle_double(domatolpm::Context* ctx [[maybe_unused]], const double& arg) {
+    return base::NumberToString(arg);
+}
+
+[[maybe_unused]] std::string handle_char(domatolpm::Context* ctx [[maybe_unused]], const int32_t& arg) {
+    char conv = arg;
+    return std::string(1, conv);
+}
+
+[[maybe_unused]] std::string handle_string(domatolpm::Context* ctx [[maybe_unused]], const std::string& arg) {
+    return arg;
+}
+
+[[maybe_unused]] std::string handle_hex(domatolpm::Context* ctx [[maybe_unused]], const int32_t& arg) {
+    return handle_int_conversion<int32_t, int32_t>(ctx, arg);
+}
+
+{% if generate_one_line_handler -%}
+std::string handle_one_line(domatolpm::Context* ctx, const {{proto_ns}}::line& arg) {
+    ctx->GetBuilder()->append("{{line_prefix}}");
+    ctx->GetBuilder()->append(handle_line(ctx, arg));
+    ctx->GetBuilder()->append("{{line_suffix}}\n");
+    return "";
+}
+{% endif -%}
+
+{% for func in functions %}
+{% if not func.creates_new() and func.exprs|length == 1 %}
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
+    return {{func.exprs[0].repr()}};
+}
+{% else %}
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
+    std::string buf;
+{% if func.creates_new() %}
+    std::string varname = std::string("{{func.creator['var_prefix']}}") + ctx->GetNewID();
+    buf += std::string("var ") + varname;
+    if (arg.has_old()) {
+      if (ctx->HasVar("{{func.creator['var_type']}}")) {
+        buf += " = ";
+        buf += ctx->GetVar("{{func.creator['var_type']}}", arg.old());
+        buf += ";";
+        ctx->GetBuilder()->append(buf);
+        return varname;
+      }
+    }
+{% endif %}
+{% for expr in func.exprs %}
+    buf += {{expr.repr()}};
+{% endfor %}
+{% if func.creates_new() %}
+    ctx->GetBuilder()->append(buf);
+    {% if func.creator['var_type'] == 'line' %}
+    return std::string();
+    {% else %}
+    ctx->SetVar("{{func.creator['var_type']}}", varname);
+    return varname;
+    {% endif %}
+{% else %}
+    return buf;
+{% endif %}
+}
+{% endif %}
+{% endfor %}
+
+{% for func in stfunctions %}
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
+    static const char *possibilities[] = {
+        {% for string in func.strings %}
+        {{string.repr()}},
+        {% endfor %}
+    };
+    return possibilities[arg.{{func.var_name}}() % {{func.strings|length}}];
+}
+{% endfor %}
+
+{% for func in oneoffunctions %}
+[[maybe_unused]] std::string {{func.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{func.proto_type}}) {
+    {% for k, v in func.all_except_last().items() %}
+    if (arg.has_{{k}}()) {
+        {% if v|length == 1 %}
+        return {{v[0].repr()}};
+        {% else %}
+            {% for expr in v %}
+                {% if loop.index == 1 %}
+        std::string buf = {{expr.repr()}};
+                {% else %}
+        buf += {{expr.repr()}};
+                {% endif %}
+            {% endfor %}
+        return buf;
+        {% endif %}
+    }
+    {% endfor %}
+    else {
+        {% if func.last()|length == 1 %}
+        return {{func.last()[0].repr()}};
+        {% else %}
+            {% for expr in func.last() %}
+                {% if loop.index == 1 %}
+        std::string buf = {{expr.repr()}};
+                {% else %}
+        buf += {{expr.repr()}};
+                {% endif %}
+            {% endfor %}
+        return buf;
+        {% endif %}
+    }
+}
+{% endfor %}
+
+{% if generate_repeated_lines %}
+std::string handle_lines(domatolpm::Context* ctx, const {{proto_ns}}::lines& arg) {
+    for (const auto& line: arg.lines_v()) {
+        handle_one_line(ctx, line);
+    }
+    return "";
+}
+{% endif %}
+
+}
+
+namespace {{cpp_ns}} {
+
+bool {{root.name}}(domatolpm::Context* ctx, const {{proto_ns}}::{{root.proto_type}}) {
+    std::string buf;
+    buf.reserve(1024 * 128);
+{% for expr in root.exprs %}
+    buf += {{expr.repr()}};
+{% endfor %}
+    ctx->GetBuilder()->append(buf);
+    return true;
+}
+
+} // {{cpp_ns}}

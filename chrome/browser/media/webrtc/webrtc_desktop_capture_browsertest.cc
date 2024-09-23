@@ -23,13 +23,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,7 +50,7 @@ content::WebContents* GetWebContents(Browser* browser, int tab) {
 
 content::DesktopMediaID GetDesktopMediaIDForScreen() {
   return content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
-                                 content::DesktopMediaID::kNullId);
+                                 content::DesktopMediaID::kFakeId);
 }
 
 content::DesktopMediaID GetDesktopMediaIDForTab(Browser* browser, int tab) {
@@ -73,8 +73,8 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(contents);
 }
 
-ConfirmInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
-  return static_cast<ConfirmInfoBarDelegate*>(
+TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
+  return static_cast<TabSharingInfoBarDelegate*>(
       GetInfoBarManager(browser, tab)->infobars()[0]->delegate());
 }
 
@@ -185,7 +185,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
 
     void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                            infobars::InfoBar* new_infobar) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {
@@ -232,11 +232,12 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
     command_line->AppendSwitch(switches::kEnableUserMediaScreenCapturing);
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // MSan and GL do not get along so avoid using the GPU with MSan.
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-      command_line->AppendSwitch(switches::kUseGpuInTests);
-    }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
   }
 
  protected:
@@ -307,8 +308,12 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
   FakeDesktopMediaPickerFactory picker_factory_;
 };
 
-// TODO(crbug.com/1449889): Fails on MAC.
+// TODO(crbug.com/40915051): Fails on MAC.
+// TODO(crbug.com/40915051): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not.
 #if BUILDFLAG(IS_MAC)
+#define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
+#elif defined(MEMORY_SANITIZER)
 #define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
 #else
 #define MAYBE_TabCaptureProvidesMinFps TabCaptureProvidesMinFps
@@ -316,7 +321,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
                        MAYBE_TabCaptureProvidesMinFps) {
   constexpr int kFps = 30;
-  constexpr const char* const kFpsString = "30";
+  constexpr const char* kFpsString = "30";
   constexpr int kTestTimeSeconds = 2;
   // We wait with measuring frame rate until a few frames has passed. This is
   // because the frame rate frame dropper in VideoTrackAdapter is pretty
@@ -362,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   ASSERT_GE(average_fps, kFps / 3);
 }
 
-// TODO(crbug.com/1449889): Fails on Linux ASan, LSan and MSan builders.
+// TODO(crbug.com/40915051): Fails on Linux ASan, LSan and MSan builders.
 #if BUILDFLAG(IS_LINUX) &&                                      \
     ((defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || \
      defined(MEMORY_SANITIZER))
@@ -396,17 +401,21 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_LE(frame_counter, 3);
 }
 
-// TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.
-// TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-// TODO(crbug.com/1225911): Test is flaky on Linux.
+// Flaky on ASan bots. See https://crbug.com/40270173.
+// Crashes on some Macs. See https://crbug.com/351095634.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_RunP2PScreenshareWhileSharingScreen \
+  DISABLED_RunP2PScreenshareWhileSharingScreen
+#else
+#define MAYBE_RunP2PScreenshareWhileSharingScreen \
+  RunP2PScreenshareWhileSharingScreen
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
-                       DISABLED_RunP2PScreenshareWhileSharingScreen) {
+                       MAYBE_RunP2PScreenshareWhileSharingScreen) {
   RunP2PScreenshareWhileSharing(base::BindOnce(GetDesktopMediaIDForScreen));
 }
 
-// TODO(crbug.com/1450456) flaky on ASan bots
+// Flaky on ASan bots. See https://crbug.com/40270173.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RunP2PScreenshareWhileSharingTab \
   DISABLED_RunP2PScreenshareWhileSharingTab
@@ -430,13 +439,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 2 to 0.
-  GetDelegate(browser(), 0)->Cancel();
+  GetDelegate(browser(), 0)->ShareThisTabInstead();
   observer.Wait();
 
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 0 to 2.
-  GetDelegate(browser(), 2)->Cancel();
+  GetDelegate(browser(), 2)->ShareThisTabInstead();
   observer.Wait();
 }
 

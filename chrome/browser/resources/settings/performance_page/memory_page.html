@@ -1,0 +1,47 @@
+<style include="cr-shared-style settings-shared">
+  .memory-saver-radio-group {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+</style>
+<settings-toggle-button id="toggleButton" on-change="onMemorySaverModeChange_"
+    pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
+    label="$i18n{memorySaverModeLabel}"
+    sub-label="$i18n{memorySaverModeDescription}"
+    learn-more-url="$i18n{memorySaverLearnMoreUrl}"
+    numeric-unchecked-values="[[numericUncheckedValues_]]"
+    numeric-checked-value="[[numericCheckedValue_]]">
+</settings-toggle-button>
+<cr-collapse id="radioGroupCollapse" opened="[[isMemorySaverModeEnabled_(
+        prefs.performance_tuning.high_efficiency_mode.state.value)]]">
+  <div class="cr-row continuation memory-saver-radio-group">
+    <settings-radio-group id="radioGroup"
+      on-change="onMemorySaverModeAggressivenessChange_" pref="{{
+            prefs.performance_tuning.high_efficiency_mode.aggressiveness}}"
+      group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
+      <controlled-radio-button id="conservativeButton"
+        label="$i18n{memorySaverModeConservativeLabel}"
+        name$="[[memorySaverModeAggressivenessEnum_.CONSERVATIVE]]" pref="[[
+              prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+        <div class="cr-secondary-text">
+          $i18n{memorySaverModeConservativeDescription}
+        </div>
+      </controlled-radio-button>
+      <controlled-radio-button id="mediumButton"
+        label="$i18n{memorySaverModeMediumLabel}"
+        name$="[[memorySaverModeAggressivenessEnum_.MEDIUM]]" pref="[[
+              prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+        <div class="cr-secondary-text">
+          $i18n{memorySaverModeMediumDescription}
+        </div>
+      </controlled-radio-button>
+      <controlled-radio-button id="aggressiveButton"
+        label="$i18n{memorySaverModeAggressiveLabel}"
+        name$="[[memorySaverModeAggressivenessEnum_.AGGRESSIVE]]" pref="[[
+              prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+        <div class="cr-secondary-text">
+          $i18n{memorySaverModeAggressiveDescription}
+        </div>
+      </controlled-radio-button>
+    </settings-radio-group>
+  </div>
+</cr-collapse>

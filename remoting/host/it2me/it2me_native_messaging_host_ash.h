@@ -5,9 +5,9 @@
 #define REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_ASH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"

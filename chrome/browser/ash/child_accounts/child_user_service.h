@@ -38,7 +38,7 @@ class AppTimeController;
 }  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
-// TODO(crbug.com/1022231): Migrate ConsumerStatusReportingService,
+// TODO(crbug.com/40106527): Migrate ConsumerStatusReportingService,
 // EventBasedStatusReporting and ScreenTimeController to ChildUserService.
 class ChildUserService : public KeyedService,
                          public app_time::AppTimeLimitInterface,
@@ -67,7 +67,7 @@ class ChildUserService : public KeyedService,
     kOverrideTimeLimit = 1,
     kBedTimeLimit = 2,
     kScreenTimeLimit = 3,
-    // TODO(crbug.com/1218630) deprecate this enum
+    // TODO(crbug.com/40771730) deprecate this enum
     kWebTimeLimit = 4,
     kAppTimeLimit = 5,  // Does not cover blocked apps.
 

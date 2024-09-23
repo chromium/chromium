@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -33,6 +34,7 @@ constexpr char kReadinessKey[] = "readiness";
 constexpr char kNameKey[] = "name";
 constexpr char kShortNameKey[] = "short_name";
 constexpr char kPublisherIdKey[] = "publisher_id";
+constexpr char kInstallerPackageIdKey[] = "installer_package_id";
 constexpr char kDescriptionKey[] = "description";
 constexpr char kVersionKey[] = "version";
 constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
@@ -151,6 +153,11 @@ base::Value GetValue(const AppPtr& app, std::optional<uint64_t> App::*field) {
   return base::Value(base::NumberToString((app.get()->*field).value()));
 }
 
+template <>
+base::Value GetValue(const AppPtr& app, std::optional<PackageId> App::*field) {
+  return base::Value((app.get()->*field)->ToString());
+}
+
 template <typename T>
 void SetKey(const AppPtr& app,
             T App::*field,
@@ -266,6 +273,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::name, kNameKey, dict);
     SetKey(app, &App::short_name, kShortNameKey, dict);
     SetKey(app, &App::publisher_id, kPublisherIdKey, dict);
+    SetKey(app, &App::installer_package_id, kInstallerPackageIdKey, dict);
     SetKey(app, &App::description, kDescriptionKey, dict);
     SetKey(app, &App::version, kVersionKey, dict);
     SetKey(app, &App::additional_search_terms, kAdditionalSearchTermsKey, dict);
@@ -306,7 +314,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     SetKey(app, &App::selected_locale, kSelectedLocaleKey, dict);
     SetKey(app, &App::extra, kExtraKey, dict);
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
+    // TODO(crbug.com/40247021): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(dict));
   }
 
@@ -350,6 +358,13 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->name = GetStringValueFromDict(*value, kNameKey);
     app->short_name = GetStringValueFromDict(*value, kShortNameKey);
     app->publisher_id = GetStringValueFromDict(*value, kPublisherIdKey);
+
+    const std::string* package_id_string =
+        value->FindString(kInstallerPackageIdKey);
+    app->installer_package_id = package_id_string
+                                    ? PackageId::FromString(*package_id_string)
+                                    : std::nullopt;
+
     app->description = GetStringValueFromDict(*value, kDescriptionKey);
     app->version = GetStringValueFromDict(*value, kVersionKey);
 
@@ -430,7 +445,7 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
       app->extra = std::move(*extra);
     }
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
+    // TODO(crbug.com/40247021): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));
     app_info->app_types.insert(static_cast<AppType>(app_type.value()));
   }

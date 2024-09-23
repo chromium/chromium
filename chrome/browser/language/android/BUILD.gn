@@ -15,6 +15,7 @@ android_library("base_module_java") {
   deps = [
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/preferences:java",
     "//components/language/android:java",
     "//components/language/android:ulp_delegate_java",
@@ -188,6 +189,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

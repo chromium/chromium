@@ -11,20 +11,23 @@
 
 namespace blink {
 
-class HTMLElement;
 class Element;
 class IdTargetObserver;
 
-// Tracks the value of HTMLElement::anchorElement() to help other elements know
+// Tracks the value of Element::anchorElement() to help other elements know
 // whether they are used as implicit anchor elements.
 // NOTE: this class is unrelated to the <a> element.
 class AnchorElementObserver : public GarbageCollected<AnchorElementObserver>,
                               public ElementRareDataField {
  public:
-  explicit AnchorElementObserver(HTMLElement* element) : element_(element) {
-    DCHECK(element_);
+  // This observer is placed on an element (the "source" element) that wears
+  // the anchor attribute. The observer maintains the
+  // "ImplicitlyAnchoredElementCount" on the target element.
+  explicit AnchorElementObserver(Element* source_element)
+      : source_element_(source_element) {
+    DCHECK(source_element_);
   }
-  const HTMLElement& GetElement() const { return *element_; }
+  const Element& GetSourceElement() const { return *source_element_; }
 
   void Notify();
 
@@ -33,8 +36,8 @@ class AnchorElementObserver : public GarbageCollected<AnchorElementObserver>,
  private:
   void ResetIdTargetObserverIfNeeded();
 
-  Member<HTMLElement> element_;
-  Member<Element> anchor_;
+  Member<Element> source_element_;
+  Member<Element> current_anchor_;
   Member<IdTargetObserver> id_target_observer_;
 };
 

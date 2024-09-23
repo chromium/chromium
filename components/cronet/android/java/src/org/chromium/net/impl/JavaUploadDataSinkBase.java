@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
+import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -51,6 +52,8 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
     /** This holds the bytes written so far */
     private long mWrittenBytes;
 
+    private int mReadCount;
+
     public JavaUploadDataSinkBase(
             final Executor userExecutor, Executor executor, UploadDataProvider provider) {
         mUserUploadExecutor =
@@ -91,15 +94,26 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                         return;
                     }
 
+                    if (mBuffer.remaining() == 0 && !finalChunk) {
+                        // Sending an empty buffer through the fallback implementation
+                        // leads to successful requests but in order to consolidate the fallback
+                        // implementation with the native implementation, it was decided
+                        // to make uploading an empty buffer an illegal operation that leads
+                        // to a failed request with upload error.
+                        //
+                        // See b/332860415 for more details.
+                        processUploadError(
+                                new IllegalStateException(
+                                        "Bytes read can't be zero except for last chunk!"));
+                        return;
+                    }
+
                     mWrittenBytes += processSuccessfulRead(mBuffer);
 
                     if (mWrittenBytes < mTotalBytes || (mTotalBytes == -1 && !finalChunk)) {
                         mBuffer.clear();
                         mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                        executeOnUploadExecutor(
-                                () -> {
-                                    mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
-                                });
+                        readFromProvider();
                     } else if (mTotalBytes == -1) {
                         finish();
                     } else if (mTotalBytes == mWrittenBytes) {
@@ -145,11 +159,21 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                         () -> {
                             initializeRead();
                             mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                            executeOnUploadExecutor(
-                                    () -> {
-                                        mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
-                                    });
+                            readFromProvider();
                         }));
+    }
+
+    private void readFromProvider() {
+        executeOnUploadExecutor(
+                () -> {
+                    mUploadProvider.read(JavaUploadDataSinkBase.this, mBuffer);
+                    // Increment the read count on the internal executor, which is serialized, to
+                    // prevent potential races with reader code.
+                    mExecutor.execute(
+                            () -> {
+                                mReadCount++;
+                            });
+                });
     }
 
     /**
@@ -200,6 +224,15 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                         }
                     }
                 });
+    }
+
+    /**
+     * Returns the number of times {@link UploadDataProvider#read} returned successfully.
+     *
+     * <p>Thread safety: only safe to call from the internal executor.
+     */
+    int getReadCount() {
+        return mReadCount;
     }
 
     /**

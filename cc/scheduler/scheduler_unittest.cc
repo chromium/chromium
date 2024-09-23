@@ -19,10 +19,12 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
@@ -154,6 +156,8 @@ class FakeSchedulerClient : public SchedulerClient,
     frame_interval_ = interval;
   }
 
+  void OnBeginImplFrameDeadline() override {}
+
   const viz::BeginFrameArgs& last_begin_main_frame_args() {
     return last_begin_main_frame_args_;
   }
@@ -176,9 +180,8 @@ class FakeSchedulerClient : public SchedulerClient,
 
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
-      scheduler_->DidSubmitCompositorFrame(0, base::TimeTicks::Now(),
-                                           EventMetricsSet(),
-                                           /*has_missing_content=*/false);
+      SubmitInfo submit_info;
+      scheduler_->DidSubmitCompositorFrame(submit_info);
 
       if (automatic_ack_)
         scheduler_->DidReceiveCompositorFrameAck();
@@ -192,6 +195,7 @@ class FakeSchedulerClient : public SchedulerClient,
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
     return DrawResult::kSuccess;
   }
+  void ScheduledActionUpdateDisplayTree() override { NOTIMPLEMENTED(); }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
@@ -216,7 +220,6 @@ class FakeSchedulerClient : public SchedulerClient,
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
     PushAction("ScheduledActionPrepareTiles");
-    scheduler_->WillPrepareTiles();
     scheduler_->DidPrepareTiles();
   }
   void ScheduledActionInvalidateLayerTreeFrameSink(bool needs_redraw) override {
@@ -857,7 +860,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
   }
 
   DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DrawResult::kSuccess;
   }
 
@@ -964,7 +967,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
   }
 
   DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DrawResult::kSuccess;
   }
 
@@ -1211,7 +1214,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
   EXPECT_TRUE(client_->IsInsideBeginImplFrame());
 
   EXPECT_TRUE(scheduler_->PrepareTilesPending());
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   EXPECT_FALSE(scheduler_->PrepareTilesPending());
 
@@ -1245,7 +1247,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
 
   // If we get another DidPrepareTiles within the same frame, we should
   // not PrepareTiles on the next frame.
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   scheduler_->SetNeedsPrepareTiles();
   scheduler_->SetNeedsRedraw();
@@ -1268,7 +1269,6 @@ TEST_F(SchedulerTest, PrepareTilesOncePerFrame) {
   // frame. This verifies we don't alternate calling PrepareTiles once and
   // twice.
   EXPECT_TRUE(scheduler_->PrepareTilesPending());
-  scheduler_->WillPrepareTiles();
   scheduler_->DidPrepareTiles();  // An explicit PrepareTiles.
   EXPECT_FALSE(scheduler_->PrepareTilesPending());
   scheduler_->SetNeedsPrepareTiles();
@@ -1331,7 +1331,6 @@ TEST_F(SchedulerTest, DidPrepareTilesPreventsPrepareTilesForOneFrame) {
   // We don't want to hinder scheduled prepare tiles for more than one frame
   // even if we call unscheduled prepare tiles many times.
   for (int i = 0; i < 10; i++) {
-    scheduler_->WillPrepareTiles();
     scheduler_->DidPrepareTiles();
   }
 
@@ -4037,6 +4036,30 @@ TEST_F(SchedulerTest,
   // No invalidation should be performed since we are waiting for the main
   // thread to respond and merge with the commit.
   EXPECT_ACTIONS("WillBeginImplFrame");
+}
+
+class WarmUpCompositorSchedulerTest : public SchedulerTest {
+ public:
+  WarmUpCompositorSchedulerTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kWarmUpCompositor);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that `SetShouldWarmUp()` will start initial `LayerTreeFrameSink`
+// creation even if invisible.
+TEST_F(WarmUpCompositorSchedulerTest,
+       SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
+  SetUpSchedulerWithNoLayerTreeFrameSink(EXTERNAL_BFS);
+  scheduler_->SetVisible(false);
+
+  scheduler_->SetShouldWarmUp();
+  EXPECT_ACTIONS("ScheduledActionBeginLayerTreeFrameSinkCreation");
+  client_->Reset();
+  scheduler_->DidCreateAndInitializeLayerTreeFrameSink();
+  EXPECT_NO_ACTION();
 }
 
 }  // namespace

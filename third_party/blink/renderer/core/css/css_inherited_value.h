@@ -26,6 +26,10 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CORE_EXPORT CSSInheritedValue : public CSSValue {
@@ -36,7 +40,7 @@ class CORE_EXPORT CSSInheritedValue : public CSSValue {
   // Create() to get the pooled value.
   CSSInheritedValue() : CSSValue(kInheritedClass) {}
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSInheritedValue&) const { return true; }
 

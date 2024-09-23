@@ -85,6 +85,8 @@ proto_library("risk_proto") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "autofill_test_utils.cc",
+    "autofill_test_utils.h",
     "content_autofill_driver_factory_test_api.cc",
     "content_autofill_driver_factory_test_api.h",
     "content_autofill_driver_test_api.h",
@@ -146,6 +148,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//components/autofill/content/common:features",
     "//content/public/browser",
     "//content/test:browsertest_support",
     "//content/test:test_support",

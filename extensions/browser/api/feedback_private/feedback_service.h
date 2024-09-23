@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_SERVICE_H_
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_SERVICE_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +17,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/dbus/debug_daemon/binary_log_files_reader.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace feedback {
 class FeedbackData;
@@ -94,27 +100,37 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       std::unique_ptr<system_logs::SystemLogsResponse> sys_info);
+  void OnAllLogsFetched(const FeedbackParams& params,
+                        scoped_refptr<feedback::FeedbackData> feedback_data);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets logs that aren't covered by FetchSystemInformation, but should be
   // included in the feedback report. These currently consist of the Intel Wi-Fi
   // debug logs (if they exist).
   void FetchExtraLogs(const FeedbackParams& params,
                       scoped_refptr<feedback::FeedbackData> feedback_data);
+  // Receive binary log files fetched from debugd.
+  void OnBinaryLogFilesFetched(
+      const FeedbackParams& params,
+      scoped_refptr<feedback::FeedbackData> feedback_data,
+      base::RepeatingClosure barrier_closure_callback,
+      feedback::BinaryLogFilesReader::BinaryLogsResponse binary_logs);
   void OnExtraLogsFetched(const FeedbackParams& params,
                           scoped_refptr<feedback::FeedbackData> feedback_data);
   void OnLacrosHistogramsFetched(
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       const std::string& compressed_histograms);
-  // Root file path for log files. It can be overwritten for testing purpose.
-  base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnAllLogsFetched(const FeedbackParams& params,
-                        scoped_refptr<feedback::FeedbackData> feedback_data);
 
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged>
       browser_context_;
   raw_ptr<FeedbackPrivateDelegate, AcrossTasksDanglingUntriaged> delegate_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Root file path for log files. It can be overwritten for testing purpose.
+  base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
+  feedback::BinaryLogFilesReader binary_log_files_reader_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace extensions

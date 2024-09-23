@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 
 namespace autofill {
 
@@ -19,24 +19,18 @@ struct AutofillProfileSaveStrikeDatabaseTraits {
   static constexpr size_t kMaxStrikeLimit = 3;
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
   static constexpr bool kUniqueIdRequired = true;
+
+  static std::string OriginFromId(const std::string& id) {
+    // In AutofillProfileSaveStrikeDatabase, strikes are keyed only by origin,
+    // therefore this function is the identity.
+    return id;
+  }
 };
 
 // Records the number of times a user declines saving their Autofill profile and
 // stops prompting the user to do so after reaching a strike limit.
-class AutofillProfileSaveStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<
-          AutofillProfileSaveStrikeDatabaseTraits> {
- public:
-  using SimpleAutofillStrikeDatabase<
-      AutofillProfileSaveStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
-
-  void ClearStrikesByOriginAndTimeInternal(
-      const std::set<std::string>& hosts_to_delete,
-      base::Time delete_begin,
-      base::Time delete_end);
-
-  void ClearStrikesByOrigin(const std::set<std::string>& hosts_to_delete);
-};
+using AutofillProfileSaveStrikeDatabase =
+    HistoryClearableStrikeDatabase<AutofillProfileSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

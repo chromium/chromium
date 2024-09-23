@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] cos float32 1D constant tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+[FAIL] cos float32 1D tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+[FAIL] cos float32 2D tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+[FAIL] cos float32 3D tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+[FAIL] cos float32 4D tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+[FAIL] cos float32 5D tensor
+  assert_array_approx_equals: test cos float32 property 1, expected 0.43789437413215637 +/- 0.0009765625, expected 0.43789437413215637 but got 0.443359375
+Harness: the test ran to completion.
+

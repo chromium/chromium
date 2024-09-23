@@ -11,6 +11,7 @@
     "proprietary_codecs": true,
     "symbol_level": 0,
     "target_cpu": "arm64",
+    "target_os": "win",
     "use_clang_coverage": true,
     "use_remoteexec": true,
     "use_siso": true

@@ -13,12 +13,9 @@
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "components/webapps/common/web_app_id.h"
 
-namespace content {
-struct PartitionedLockHolder;
-}
-
 namespace web_app {
 
+struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This locks the given app ID(s) in the WebAppProvider system.
@@ -53,7 +50,7 @@ class AppLock : public Lock, public WithAppResources {
  private:
   friend class WebAppLockManager;
   AppLock(base::WeakPtr<WebAppLockManager> lock_manager,
-          std::unique_ptr<content::PartitionedLockHolder> holder);
+          std::unique_ptr<PartitionedLockHolder> holder);
 
   base::WeakPtrFactory<AppLock> weak_factory_{this};
 };

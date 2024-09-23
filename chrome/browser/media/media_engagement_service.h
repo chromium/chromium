@@ -75,8 +75,8 @@ class MediaEngagementService : public KeyedService,
       const;
 
   // Overridden from history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // KeyedService support:
   void Shutdown() override;
@@ -114,7 +114,7 @@ class MediaEngagementService : public KeyedService,
   base::flat_map<content::WebContents*, MediaEngagementContentsObserver*>
       contents_observers_;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Clear any data for a specific origin.
   void Clear(const url::Origin& origin);

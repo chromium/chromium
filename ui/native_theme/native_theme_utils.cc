@@ -4,9 +4,11 @@
 
 #include "ui/native_theme/native_theme_utils.h"
 
+#include <string_view>
+
 namespace ui {
 
-base::StringPiece NativeThemeColorSchemeName(
+std::string_view NativeThemeColorSchemeName(
     NativeTheme::ColorScheme color_scheme) {
   switch (color_scheme) {
     case NativeTheme::ColorScheme::kDefault:
@@ -18,7 +20,7 @@ base::StringPiece NativeThemeColorSchemeName(
     case NativeTheme::ColorScheme::kPlatformHighContrast:
       return "kPlatformHighContrast";
     default:
-      NOTREACHED() << "Invalid NativeTheme::ColorScheme";
+      NOTREACHED_IN_MIGRATION() << "Invalid NativeTheme::ColorScheme";
       return "<invalid>";
   }
 }

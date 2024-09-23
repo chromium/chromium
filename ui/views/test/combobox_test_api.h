@@ -39,6 +39,8 @@ class ComboboxTestApi {
   // Accessors for private data members of Combobox.
   gfx::Size content_size();
   ui::MenuModel* menu_model();
+  // Closes the menu of the combobox by calling private data members.
+  void CloseMenu();
 
  private:
   const raw_ptr<Combobox> combobox_;

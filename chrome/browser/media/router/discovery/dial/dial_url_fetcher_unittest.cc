@@ -70,9 +70,8 @@ TEST_F(DialURLFetcherTest, FetchSuccessful) {
   // Verify the request parameters.
   EXPECT_EQ(request_.url, url_);
   EXPECT_EQ(request_.method, "GET");
-  std::string origin_header;
-  EXPECT_TRUE(request_.headers.GetHeader("Origin", &origin_header));
-  EXPECT_TRUE(base::StartsWith(origin_header, "package:"));
+  EXPECT_THAT(request_.headers.GetHeader("Origin"),
+              testing::Optional(testing::StartsWith("package:")));
   EXPECT_TRUE(request_.load_flags & net::LOAD_BYPASS_PROXY);
   EXPECT_TRUE(request_.load_flags & net::LOAD_DISABLE_CACHE);
   EXPECT_EQ(request_.credentials_mode, network::mojom::CredentialsMode::kOmit);

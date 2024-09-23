@@ -3,13 +3,20 @@
 # found in the LICENSE file.
 """Unittests for overlay_support.py"""
 
+import json
+import os
+from typing import Union
 import unittest
 from unittest import mock
 
-from gpu_tests import gpu_helper
+from gpu_tests import constants
 from gpu_tests import overlay_support
 
+from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+
 rotation = overlay_support.VideoRotation
+
+# pylint: disable=too-many-public-methods
 
 
 class PresentationModeEventToStrUnittest(unittest.TestCase):
@@ -513,24 +520,161 @@ class GpuOverlayConfigUnittest(unittest.TestCase):
     with self.assertRaises(KeyError):
       config.GetExpectedPresentationMode('NotReal', rotation.UNROTATED)
 
+  def testEqualityDifferentClass(self):
+    """Tests __eq__ behavior between GpuOverlayConfig and other types."""
+    config = overlay_support.GpuOverlayConfig()
+
+    self.assertNotEqual(config, 'NotAnOverlayConfig')
+
+  def testEqualityBase(self):
+    """Tests __eq__ behavior between GpuOverlayConfigs without arguments."""
+    config = overlay_support.GpuOverlayConfig()
+    other = overlay_support.GpuOverlayConfig()
+    self.assertEqual(config, other)
+
+    other.WithDirectComposition()
+    self.assertNotEqual(config, other)
+    config.WithDirectComposition()
+    self.assertEqual(config, other)
+
+    other.WithHardwareNV12Support()
+    self.assertNotEqual(config, other)
+    config.WithHardwareNV12Support()
+    self.assertEqual(config, other)
+
+    other.WithHardwareYUY2Support()
+    self.assertNotEqual(config, other)
+    config.WithHardwareYUY2Support()
+    self.assertEqual(config, other)
+
+    other.WithHardwareBGRA8Support()
+    self.assertNotEqual(config, other)
+    config.WithHardwareBGRA8Support()
+    self.assertEqual(config, other)
+
+  def testEqualityDriverConditionals(self):
+    """Tests __eq__ behavior between GpuOverlayConfigs w/ DriverConditionals."""
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    self.assertNotEqual(config, other)
+    config.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    config.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('le', '1.0.0')])
+    self.assertNotEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    config.WithHardwareNV12Support(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '2.0.0')])
+    self.assertNotEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithForceComposedBGRA8(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    self.assertNotEqual(config, other)
+    config.WithForceComposedBGRA8(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithForceComposedBGRA8(
+        driver_conditionals=[overlay_support.DriverConditional('ge', '1.0.0')])
+    config.WithForceComposedBGRA8(
+        driver_conditionals=[overlay_support.DriverConditional('le', '1.0.0')])
+    self.assertNotEqual(config, other)
+
+  def testEqualitySupportedRotations(self):
+    """Tests __eq__ behavior between GpuOverlayConfigs w/ supported rotations"""
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithHardwareNV12Support(supported_rotations=[rotation.ROT180])
+    self.assertNotEqual(config, other)
+    config.WithHardwareNV12Support(supported_rotations=[rotation.ROT180])
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithHardwareNV12Support(supported_rotations=[rotation.ROT180])
+    config.WithHardwareNV12Support(supported_rotations=[rotation.ROT90])
+    self.assertNotEqual(config, other)
+
+  def testEqualityZeroCopy(self):
+    """Tests __eq__ behavior between GpuOverlayConfigs w/ zero copy configs."""
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithZeroCopyConfig(overlay_support.ZeroCopyConfig())
+    config.WithZeroCopyConfig(overlay_support.ZeroCopyConfig())
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithZeroCopyConfig(
+        overlay_support.ZeroCopyConfig(supports_scaled_video=True))
+    self.assertNotEqual(config, other)
+    config.WithZeroCopyConfig(
+        overlay_support.ZeroCopyConfig(supports_scaled_video=True))
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.WithZeroCopyConfig(
+        overlay_support.ZeroCopyConfig(
+            supported_codecs=[overlay_support.ZeroCopyCodec.H264]))
+    self.assertNotEqual(config, other)
+    config.WithZeroCopyConfig(
+        overlay_support.ZeroCopyConfig(
+            supported_codecs=[overlay_support.ZeroCopyCodec.H264]))
+    self.assertEqual(config, other)
+
+  def testEqualityDriverVersion(self):
+    """Tests __eq__ behavior between GpuOverlayConfigs w/ driver version."""
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.OnDriverVersion('1')
+    self.assertNotEqual(config, other)
+    config.OnDriverVersion('1')
+    self.assertEqual(config, other)
+
+    config = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other = overlay_support.GpuOverlayConfig().WithDirectComposition()
+    other.OnDriverVersion('1')
+    config.OnDriverVersion('2')
+    self.assertNotEqual(config, other)
+
+
+def _createMockGpu(vendor: Union[constants.GpuVendor, int],
+                   device: int) -> mock.Mock:
+  gpu = mock.Mock()
+  gpu.vendor_id = vendor
+  gpu.device_id = device
+  gpu.driver_version = '1.0.0'
+  return gpu
+
 
 class GetOverlayConfigForGpuUnittest(unittest.TestCase):
 
   def testKnownGpu(self):  # pylint: disable=no-self-use
     """Tests behavior when a known GPU is provided."""
-    gpu = mock.Mock()
-    gpu.vendor_id = gpu_helper.GpuVendors.INTEL
-    gpu.device_id = 0x3e92
-    gpu.driver_version = '1'
+    gpu = _createMockGpu(constants.GpuVendor.INTEL, 0x3e92)
 
     overlay_support.GetOverlayConfigForGpu(gpu)
 
   def testUnknownVendor(self):
     """Tests behavior when an unknown GPU vendor is provided."""
-    gpu = mock.Mock()
-    gpu.vendor_id = 0x1234
-    gpu.device_id = 0x3e92
-    gpu.driver_version = '1'
+    gpu = _createMockGpu(0x1234, 0x3e92)
 
     with self.assertRaisesRegex(
         RuntimeError,
@@ -540,16 +684,294 @@ class GetOverlayConfigForGpuUnittest(unittest.TestCase):
 
   def testUnknownDevice(self):
     """Tests behavior when an unknown GPU devices is provided."""
-    gpu = mock.Mock()
-    gpu.vendor_id = gpu_helper.GpuVendors.INTEL
-    gpu.device_id = 0x1234
-    gpu.driver_version = '1'
+    gpu = _createMockGpu(constants.GpuVendor.INTEL, 0x1234)
 
     with self.assertRaisesRegex(
         RuntimeError,
         'GPU with vendor ID 0x8086 and device ID 0x1234 does not have an '
         'overlay config specified'):
       overlay_support.GetOverlayConfigForGpu(gpu)
+
+
+# mock.patch.dict is used for all tests here to ensure that any OVERLAY_CONFIGS
+# changes do not persist across tests.
+class ParseOverlayJsonFileUnittest(fake_filesystem_unittest.TestCase):
+
+  def setUp(self):
+    self.setUpPyfakefs()
+    os.makedirs('tmp')
+    self.filepath = os.path.join('tmp', 'input.json')
+
+  def setJson(self, json_content: dict) -> None:
+    with open(self.filepath, 'w', encoding='utf-8') as outfile:
+      json.dump(json_content, outfile)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS,
+                   overlay_support.OVERLAY_CONFIGS,
+                   clear=True)
+  def testDuplicateConfig(self):
+    """Tests behavior when a duplicate config is provided."""
+    json_content = {
+        '0x8086': {
+            '0x3e92': [],
+        }
+    }
+    self.setJson(json_content)
+    gpu = _createMockGpu(vendor=constants.GpuVendor.INTEL, device=0x3e92)
+    original_config = overlay_support.GetOverlayConfigForGpu(gpu)
+    overlay_support.ParseOverlayJsonFile(self.filepath)
+    updated_config = overlay_support.GetOverlayConfigForGpu(gpu)
+    self.assertEqual(updated_config, original_config)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS,
+                   overlay_support.OVERLAY_CONFIGS,
+                   clear=True)
+  def testUnknownVendor(self):
+    """Tests behavior when an unknown vendor is provided."""
+    json_content = {
+        '0x1234': {
+            '0x3e92': [],
+        },
+    }
+    self.setJson(json_content)
+    with self.assertRaises(ValueError):
+      overlay_support.ParseOverlayJsonFile(self.filepath)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS,
+                   overlay_support.OVERLAY_CONFIGS,
+                   clear=True)
+  def testNonHexVendor(self):
+    """Tests behavior when a non-hexadecimal vendor ID is provided."""
+    json_content = {
+        '8086': {
+            '0x3e92': [],
+        },
+    }
+    self.setJson(json_content)
+    with self.assertRaises(AssertionError):
+      overlay_support.ParseOverlayJsonFile(self.filepath)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS,
+                   overlay_support.OVERLAY_CONFIGS,
+                   clear=True)
+  def testNonHexDevice(self):
+    """Tests behavior when a non-hexadecimal device ID is provided."""
+    json_content = {
+        '0x8086': {
+            '3e92': [],
+        },
+    }
+    self.setJson(json_content)
+    with self.assertRaises(AssertionError):
+      overlay_support.ParseOverlayJsonFile(self.filepath)
+
+  def _parseTestHelper(self, json_content, expected):
+    self.setJson(json_content)
+    overlay_support.ParseOverlayJsonFile(self.filepath)
+    actual = overlay_support.GetOverlayConfigForGpu(
+        _createMockGpu(constants.GpuVendor.INTEL, 0x1234))
+    self.assertEqual(actual, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testBaseConfig(self):
+    """Tests behavior when no additional functions are specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig().OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithDirectComposition(self):
+    """Tests behavior when direct composition is specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithHardwareNV12Support(self):
+    """Tests behavior when NV12 support is specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithHardwareNV12Support',
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithHardwareNV12Support()\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithHardwareYUY2Support(self):
+    """Tests behavior when YUY2 support is specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithHardwareYUY2Support',
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithHardwareYUY2Support()\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithHardwareBGRA8Support(self):
+    """Tests behavior when BGRA8 support is specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithHardwareBGRA8Support',
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithHardwareBGRA8Support()\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithHardwareSupportWithDriverConditional(self):
+    """Tests behavior when support is specified with driver conditionals"""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithHardwareNV12Support',
+                    'args': {
+                        'driver_conditionals': [
+                            ['ge', '2.0.0'],
+                        ],
+                    },
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithHardwareNV12Support(
+                    driver_conditionals=[
+                        overlay_support.DriverConditional('ge', '2.0.0')])\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithHardwareSupportWithSupportedRotation(self):
+    """Tests behavior when support is specified with supported rotations."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithHardwareNV12Support',
+                    'args': {
+                        'supported_rotations': [
+                            180,
+                        ],
+                    },
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithHardwareNV12Support(supported_rotations=[rotation.ROT180])\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithForceComposedBGRA8(self):
+    """Tests behavior when composed BGRA8 is forced."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithForceComposedBGRA8',
+                    'args': {
+                        'driver_conditionals': [
+                            ['ge', '2.0.0'],
+                        ],
+                    },
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithForceComposedBGRA8(driver_conditionals=[
+                    overlay_support.DriverConditional('ge', '2.0.0')])\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
+
+  @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)
+  def testWithZeroCopyConfig(self):
+    """Tests behavior when a zero copy config is specified."""
+    json_content = {
+        '0x8086': {
+            '0x1234': [
+                {
+                    'function': 'WithDirectComposition',
+                },
+                {
+                    'function': 'WithZeroCopyConfig',
+                    'args': {
+                        'supports_scaled_video': True,
+                        'supported_codecs': [
+                            'H264',
+                        ],
+                    },
+                },
+            ],
+        },
+    }
+    expected = overlay_support.GpuOverlayConfig()\
+               .WithDirectComposition()\
+               .WithZeroCopyConfig(overlay_support.ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[overlay_support.ZeroCopyCodec.H264]))\
+               .OnDriverVersion('1.0.0')
+    self._parseTestHelper(json_content, expected)
 
 
 if __name__ == '__main__':

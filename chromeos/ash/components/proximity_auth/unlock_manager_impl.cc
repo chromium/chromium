@@ -141,7 +141,7 @@ metrics::RemoteSecuritySettingsState GetRemoteSecuritySettingsState(
       }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::RemoteSecuritySettingsState::UNKNOWN;
 }
 
@@ -751,7 +751,7 @@ UnlockManagerImpl::GetScreenlockStateFromRemoteUpdate(
       return RemoteScreenlockState::UNKNOWN;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RemoteScreenlockState::UNKNOWN;
 }
 
@@ -774,7 +774,7 @@ void UnlockManagerImpl::RecordFirstRemoteStatusReceived(bool unlockable) {
       attempt_get_remote_status_start_time_.is_null()) {
     PA_LOG(WARNING) << "Attempted to RecordFirstRemoteStatusReceived() "
                        "without initial timestamps recorded.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -824,7 +824,7 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
   if (show_lock_screen_time_.is_null()) {
     PA_LOG(WARNING) << "Attempted to RecordFirstStatusShownToUser() "
                        "without initial timestamp recorded.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

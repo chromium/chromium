@@ -41,7 +41,7 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1463887): Migrate away from `ConsentLevel::kSync` on
+  // TODO(crbug.com/40067189): Migrate away from `ConsentLevel::kSync` on
   // Ash.
   return ConsentLevel::kSync;
 #else

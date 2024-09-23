@@ -123,6 +123,9 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
  private:
   gfx::Range last_composition_range_;
   std::vector<gfx::Rect> last_composition_bounds_;
+
+  mojo::Remote<blink::mojom::RenderInputRouterClient> client_remote_;
+
   mojo::AssociatedReceiver<blink::mojom::FrameWidgetHost>
       frame_widget_host_receiver_{this};
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote_;

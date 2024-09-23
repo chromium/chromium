@@ -174,8 +174,7 @@ export class ModeSelector extends LitElement {
   }
 
   private scrollToMode(mode: Mode): void {
-    this.getModeItem(mode)?.scrollIntoView(
-        {inline: 'center', behavior: 'smooth'});
+    this.getModeItem(mode)?.scrollIntoView({behavior: 'smooth'});
   }
 
   private handleClick(e: Event) {

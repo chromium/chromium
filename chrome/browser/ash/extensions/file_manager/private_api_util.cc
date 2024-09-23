@@ -10,12 +10,15 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
@@ -32,6 +35,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
@@ -48,7 +52,9 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_info.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "url/gurl.h"
 
 namespace file_manager::util {
 namespace {
@@ -80,7 +86,7 @@ void GetFileNativeLocalPathForSaving(Profile* profile,
                                      const base::FilePath& path,
                                      LocalPathCallback callback) {
   // TODO(kinaba): For now, there are no writable non-local volumes.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(base::FilePath());
 }
 
@@ -235,10 +241,13 @@ fmp::VmType VmTypeToJs(guest_os::VmType vm_type) {
       return fmp::VmType::kBruschetta;
     case guest_os::VmType::ARCVM:
       return fmp::VmType::kArcvm;
+    case guest_os::VmType::BAGUETTE:
+      // Baguette currently isn't hooked up to file manager
+      return fmp::VmType::kNone;
     case guest_os::VmType::UNKNOWN:
     case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::VmType::kNone;
   }
 }
@@ -270,7 +279,7 @@ fmp::BulkPinStage DrivefsPinStageToJs(drivefs::pinning::Stage stage) {
       return fmp::BulkPinStage::kCannotEnableDocsOffline;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return fmp::BulkPinStage::kNone;
 }
 
@@ -299,6 +308,39 @@ bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
   return base::FilePath("/")
       .Append(drive::util::kDriveMyDriveRootDirName)
       .IsParent(relative_path);
+}
+
+// Part of GURLToEntryData().
+void GURLToEntryDataOnResolve(
+    std::string entry_name,
+    const GURL& url,
+    base::OnceCallback<void(base::FileErrorOr<fmp::EntryData>)> callback,
+    base::File::Error result,
+    const storage::FileSystemInfo& file_system_info,
+    const base::FilePath& file_path,
+    storage::FileSystemContext::ResolvedEntryType type) {
+  if (result != base::File::FILE_OK) {
+    std::move(callback).Run(base::unexpected(result));
+    return;
+  }
+  fmp::EntryData entry_data;
+  switch (type) {
+    case storage::FileSystemContext::RESOLVED_ENTRY_FILE:
+      entry_data.is_directory = false;
+      break;
+    case storage::FileSystemContext::RESOLVED_ENTRY_DIRECTORY:
+      entry_data.is_directory = true;
+      break;
+    case storage::FileSystemContext::RESOLVED_ENTRY_NOT_FOUND:
+      std::move(callback).Run(
+          base::unexpected(base::File::FILE_ERROR_NOT_FOUND));
+      return;
+  }
+  entry_data.name = std::move(entry_name);
+  entry_data.entry_url = url.spec();
+  entry_data.filesystem.name = file_system_info.name;
+  entry_data.filesystem.root_url = file_system_info.root_url.spec();
+  std::move(callback).Run(std::move(entry_data));
 }
 
 }  // namespace
@@ -630,7 +672,7 @@ void VolumeToVolumeMetadata(Profile* profile,
       volume_metadata->volume_type = fmp::VolumeType::kGuestOs;
       break;
     case NUM_VOLUME_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -697,15 +739,9 @@ void VolumeToVolumeMetadata(Profile* profile,
   }
 }
 
-base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
-                                   Profile* profile,
-                                   const GURL& url) {
-  DCHECK(render_frame_host);
-  DCHECK(profile);
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
-
+base::FilePath GetLocalPathFromURL(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const GURL& url) {
   const storage::FileSystemURL filesystem_url(
       file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
@@ -745,11 +781,18 @@ std::vector<fmp::MountableGuest> CreateMountableGuestList(Profile* profile) {
     return {};
   }
 
+  bool local_user_files_allowed =
+      policy::local_user_files::LocalUserFilesAllowed();
+
   auto* registry = service->MountProviderRegistry();
   std::vector<fmp::MountableGuest> guests;
   for (const auto id : registry->List()) {
     fmp::MountableGuest guest;
     auto* provider = registry->Get(id);
+    if (!local_user_files_allowed &&
+        provider->vm_type() == guest_os::VmType::ARCVM) {
+      continue;
+    }
     guest.id = id;
     guest.display_name = provider->DisplayName();
     guest.vm_type = VmTypeToJs(provider->vm_type());
@@ -783,7 +826,7 @@ bool ToRecentSourceFileType(fmp::FileCategory input_category,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -803,6 +846,23 @@ fmp::BulkPinProgress BulkPinProgressToJs(
   result.should_pin = progress.should_pin;
   result.emptied_queue = progress.emptied_queue;
   return result;
+}
+
+void GURLToEntryData(
+    Profile* profile,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const GURL& url,
+    base::OnceCallback<void(base::FileErrorOr<fmp::EntryData>)> callback) {
+  storage::FileSystemURL file_system_url =
+      file_system_context->CrackURLInFirstPartyContext(url);
+  std::string entry_name = GetDisplayablePath(profile, file_system_url)
+                               .value_or(base::FilePath())
+                               .BaseName()
+                               .value();
+  file_system_context->ResolveURL(
+      file_system_url,
+      base::BindOnce(GURLToEntryDataOnResolve, std::move(entry_name), url,
+                     std::move(callback)));
 }
 
 }  // namespace file_manager::util

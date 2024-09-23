@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gl/gl_export.h"
@@ -44,7 +45,7 @@ class GL_EXPORT SurfaceTexture
 
   // Retrieve the 4x4 texture coordinate transform matrix associated with the
   // texture image set by the most recent call to updateTexImage.
-  void GetTransformMatrix(float mtx[16]);
+  void GetTransformMatrix(base::span<float, 16> mtx);
 
   // Attach the SurfaceTexture to the texture currently bound to
   // GL_TEXTURE_EXTERNAL_OES.

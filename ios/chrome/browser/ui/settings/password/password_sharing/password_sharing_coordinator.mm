@@ -13,8 +13,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
@@ -27,8 +26,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
@@ -44,7 +41,6 @@ using password_manager::FetchFamilyMembersRequestStatus;
     FamilyPromoCoordinatorDelegate,
     PasswordPickerCoordinatorDelegate,
     PasswordSharingMediatorDelegate,
-    PasswordSharingViewControllerPresentationDelegate,
     SharingStatusCoordinatorDelegate> {
   // The credentials for the password group from which the sharing originated.
   std::vector<password_manager::CredentialUIEntry> _credentials;
@@ -52,13 +48,6 @@ using password_manager::FetchFamilyMembersRequestStatus;
   // Service providing a view on user's saved passwords.
   raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 }
-
-// The navigation controller displaying the view controller.
-@property(nonatomic, strong)
-    TableViewNavigationController* navigationController;
-
-// Main view controller for this coordinator.
-@property(nonatomic, strong) PasswordSharingViewController* viewController;
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) PasswordSharingMediator* mediator;
@@ -69,8 +58,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
 // Coordinator for family promo view.
 @property(nonatomic, strong) FamilyPromoCoordinator* familyPromoCoordinator;
 
-// Coordinator to display modal alerts to the user.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+// Coordinator for displaying fetching recipients error.
+@property(nonatomic, strong)
+    AlertCoordinator* fetchingRecipientsErrorCoordinator;
 
 // Coordinator for password picker.
 @property(nonatomic, strong)
@@ -84,7 +74,10 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 @end
 
-@implementation PasswordSharingCoordinator
+@implementation PasswordSharingCoordinator {
+  // Contains status of fetching family members for the user.
+  FetchFamilyMembersRequestStatus _fetchFamilyMembersRequestStatus;
+}
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
@@ -105,27 +98,11 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)start {
   [super start];
 
-  self.viewController = [[PasswordSharingViewController alloc] init];
-  self.viewController.delegate = self;
-  self.navigationController =
-      [[TableViewNavigationController alloc] initWithTable:self.viewController];
-  [self.navigationController
-      setModalPresentationStyle:UIModalPresentationFormSheet];
-  self.navigationController.navigationBar.prefersLargeTitles = NO;
-  self.navigationController.sheetPresentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
-
-  [self.baseViewController presentViewController:self.navigationController
-                                        animated:YES
-                                      completion:nil];
-
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordSharingMediator alloc]
              initWithDelegate:self
        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
-              identityManager:IdentityManagerFactory::GetForBrowserState(
+              identityManager:IdentityManagerFactory::GetForProfile(
                                   browserState)
       savedPasswordsPresenter:_savedPasswordsPresenter
         passwordSenderService:IOSChromePasswordSenderServiceFactory::
@@ -139,18 +116,42 @@ using password_manager::FetchFamilyMembersRequestStatus;
 }
 
 - (void)stop {
-  [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  self.viewController = nil;
-  self.navigationController = nil;
   self.mediator = nil;
 
   [self stopFamilyPickerCoordinator];
   [self stopFamilyPromoCoordinator];
-  [self stopAlertCoordinator];
+  [self stopFetchingRecipientsErrorCoordinator];
   [self stopPasswordPickerCoordinator];
   [self stopSharingStatusCoordinator];
+}
+
+#pragma mark - Public
+
+- (void)showFirstStep {
+  switch (_fetchFamilyMembersRequestStatus) {
+    case FetchFamilyMembersRequestStatus::kSuccess: {
+      if (_credentials.size() == 1) {
+        [self startFamilyPickerCoordinator];
+      } else {
+        [self startPasswordPickerCoordinator];
+      }
+      break;
+    }
+    case FetchFamilyMembersRequestStatus::kNoFamily: {
+      [self startFamilyPromoCoordinatorWithType:FamilyPromoType::
+                                                    kUserNotInFamilyGroup];
+      break;
+    }
+    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers: {
+      [self startFamilyPromoCoordinatorWithType:
+                FamilyPromoType::kUserWithNoOtherFamilyMembers];
+      break;
+    }
+    default: {
+      [self startFetchingRecipientsErrorCoordinator];
+      break;
+    }
+  }
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
@@ -197,11 +198,14 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
-- (void)passwordPickerCoordinator:(PasswordPickerCoordinator*)coordinator
-              didSelectCredential:
-                  (const password_manager::CredentialUIEntry&)credential {
+- (void)passwordPickerWithNavigationController:
+            (UINavigationController*)navigationController
+                           didSelectCredential:
+                               (const password_manager::CredentialUIEntry&)
+                                   credential {
   self.mediator.selectedCredential = credential;
-  [self startFamilyPickerCoordinator];
+  [self startFamilyPickerCoordinatorWithNavigationController:
+            navigationController];
 }
 
 #pragma mark - PasswordSharingMediatorDelegate
@@ -210,53 +214,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
             (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
   self.recipients = familyMembers;
-
-  __weak __typeof(self) weakSelf = self;
-  switch (status) {
-    case FetchFamilyMembersRequestStatus::kSuccess: {
-      if (_credentials.size() == 1) {
-        [self startFamilyPickerCoordinator];
-      } else {
-        [self startPasswordPickerCoordinator];
-      }
-      break;
-    }
-    case FetchFamilyMembersRequestStatus::kNoFamily: {
-      [self.viewController.presentingViewController
-          dismissViewControllerAnimated:YES
-                             completion:^() {
-                               [weakSelf
-                                   startFamilyPromoCoordinatorWithType:
-                                       FamilyPromoType::kUserNotInFamilyGroup];
-                             }];
-      break;
-    }
-    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers: {
-      [self.viewController.presentingViewController
-          dismissViewControllerAnimated:YES
-                             completion:^() {
-                               [weakSelf startFamilyPromoCoordinatorWithType:
-                                             FamilyPromoType::
-                                                 kUserWithNoOtherFamilyMembers];
-                             }];
-      break;
-    }
-    default: {
-      [self.viewController.presentingViewController
-          dismissViewControllerAnimated:YES
-                             completion:^() {
-                               [weakSelf startAlertCoordinator];
-                             }];
-      break;
-    }
-  }
-}
-
-#pragma mark - PasswordSharingViewControllerPresentationDelegate
-
-- (void)sharingSpinnerViewWasDismissed:
-    (PasswordSharingViewController*)controller {
-  [self.delegate passwordSharingCoordinatorDidRemove:self];
+  _fetchFamilyMembersRequestStatus = status;
+  [self.delegate shareDataFetched];
 }
 
 #pragma mark - SharingStatusCoordinatorDelegate
@@ -275,20 +234,30 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)startFamilyPickerCoordinator {
   [self.familyPickerCoordinator stop];
   self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
-      initWithBaseNavigationController:self.navigationController
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      recipients:self.recipients];
+  self.familyPickerCoordinator.delegate = self;
+  [self.familyPickerCoordinator start];
+}
+
+- (void)startFamilyPickerCoordinatorWithNavigationController:
+    (UINavigationController*)navigationController {
+  [self.familyPickerCoordinator stop];
+  self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
+      initWithBaseNavigationController:navigationController
                                browser:self.browser
                             recipients:self.recipients];
   self.familyPickerCoordinator.delegate = self;
-  self.familyPickerCoordinator.shouldNavigateBack = _credentials.size() > 1;
   [self.familyPickerCoordinator start];
 }
 
 - (void)startPasswordPickerCoordinator {
   [self.passwordPickerCoordinator stop];
   self.passwordPickerCoordinator = [[PasswordPickerCoordinator alloc]
-      initWithBaseNavigationController:self.navigationController
-                               browser:self.browser
-                           credentials:_credentials];
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                     credentials:_credentials];
   self.passwordPickerCoordinator.delegate = self;
   [self.passwordPickerCoordinator start];
 }
@@ -320,27 +289,27 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.sharingStatusCoordinator start];
 }
 
-- (void)startAlertCoordinator {
+- (void)startFetchingRecipientsErrorCoordinator {
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR_TITLE);
   NSString* message = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR);
-  [self.alertCoordinator stop];
-  self.alertCoordinator = [[AlertCoordinator alloc]
+  [self.fetchingRecipientsErrorCoordinator stop];
+  self.fetchingRecipientsErrorCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                            title:title
                          message:message];
   __weak __typeof(self) weakSelf = self;
-  [self.alertCoordinator
+  [self.fetchingRecipientsErrorCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^() {
-                  [weakSelf stopAlertCoordinator];
+                  [weakSelf stopFetchingRecipientsErrorCoordinator];
                   [weakSelf.delegate
                       passwordSharingCoordinatorDidRemove:weakSelf];
                 }
                  style:UIAlertActionStyleCancel];
-  [self.alertCoordinator start];
+  [self.fetchingRecipientsErrorCoordinator start];
 }
 
 - (void)stopFamilyPickerCoordinator {
@@ -361,9 +330,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.familyPromoCoordinator = nil;
 }
 
-- (void)stopAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+- (void)stopFetchingRecipientsErrorCoordinator {
+  [self.fetchingRecipientsErrorCoordinator stop];
+  self.fetchingRecipientsErrorCoordinator = nil;
 }
 
 - (void)stopSharingStatusCoordinator {

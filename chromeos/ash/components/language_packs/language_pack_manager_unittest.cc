@@ -4,25 +4,38 @@
 
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 using ::dlcservice::DlcState;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Each;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::Invoke;
+using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::Return;
+using ::testing::StartsWith;
 using ::testing::WithArg;
 
 namespace ash::language_packs {
@@ -79,6 +92,14 @@ DlcState CreateInstalledState() {
   DlcState output;
   output.set_state(dlcservice::DlcState_State_INSTALLED);
   output.set_id("handwriting-de");
+  output.set_root_path("/path");
+  return output;
+}
+
+DlcState CreateTtsInstalledState(const std::string& locale) {
+  DlcState output;
+  output.set_state(dlcservice::DlcState_State_INSTALLED);
+  output.set_id(base::StrCat({"tts-", locale, "-c"}));
   output.set_root_path("/path");
   return output;
 }
@@ -211,12 +232,17 @@ TEST_F(LanguagePackManagerTest, InstallCallbackTest) {
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_get_dlc_state_error(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlcservice::kErrorNone);
+
   dlcservice::DlcState dlc_state;
   dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
   dlc_state.set_is_verified(true);
   dlc_state.set_root_path("/path");
-  dlcservice_client_.set_dlc_state(dlc_state);
+  dlcservice_client_.set_dlc_state(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlc_state);
 
   // Test UMA metrics: pre-condition.
   base::HistogramTester histogram_tester;
@@ -241,8 +267,43 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
                                      FeatureIdsEnum::kHandwriting, 1);
 }
 
+TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
+  std::string dlc_id =
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value();
+  dlcservice_client_.set_get_dlc_state_error(dlc_id, dlcservice::kErrorNone);
+  dlcservice::DlcState dlc_state;
+  dlc_state.set_id(dlc_id);
+  dlc_state.set_state(dlcservice::DlcState_State_NOT_INSTALLED);
+  dlc_state.set_is_verified(true);
+  dlcservice_client_.set_install_root_path("/path");
+  dlcservice_client_.set_dlc_state(dlc_id, dlc_state);
+
+  LanguagePackManager::GetPackState(
+      kHandwritingFeatureId, kSupportedLocale,
+      base::BindOnce(&LanguagePackManagerTest::GetPackStateTestCallback,
+                     base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.feature_id, kHandwritingFeatureId);
+  EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
+      future;
+  dlcservice_client_.GetExistingDlcs(future.GetCallback());
+  const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
+  EXPECT_THAT(
+      dlcs.dlc_infos(),
+      ElementsAre(Property(
+          "id", &dlcservice::DlcsWithContent::DlcInfo::id,
+          *GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale))));
+}
+
 TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorInternal);
+  dlcservice_client_.set_get_dlc_state_error(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlcservice::kErrorInternal);
 
   // Test UMA metrics: pre-condition.
   base::HistogramTester histogram_tester;
@@ -280,7 +341,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateWrongIdTest) {
 
 // Check that the callback is actually called.
 TEST_F(LanguagePackManagerTest, GetPackStateCallbackTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_get_dlc_state_error(kFakeDlcId,
+                                             dlcservice::kErrorNone);
 
   testing::StrictMock<CallbackForTesting> callback;
   EXPECT_CALL(callback, Callback(_));
@@ -391,8 +453,6 @@ TEST_F(LanguagePackManagerTest, InstallObserverTest) {
                           Field(&PackResult::language_code, "de"))))
       .Times(1);
   dlcservice_client_.NotifyObserversForTest(dlc_state);
-
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
@@ -424,12 +484,12 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
 TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   // Handwriting Recognition.
   const std::vector<std::string> handwriting({
-      "am", "ar", "be", "bg",  "bn", "ca", "cs", "da", "de", "el",    "es",
-      "et", "fa", "fi", "fil", "fr", "ga", "gu", "hi", "hr", "hu",    "hy",
-      "id", "is", "it", "iw",  "ja", "ka", "kk", "km", "kn", "ko",    "lo",
-      "lt", "lv", "ml", "mn",  "mr", "ms", "mt", "my", "ne", "nl",    "no",
-      "or", "pa", "pl", "pt",  "ro", "ru", "si", "sk", "sl", "sr",    "sv",
-      "ta", "te", "th", "ti",  "tr", "uk", "ur", "vi", "zh", "zh-HK",
+      "am", "ar", "be", "bg", "bn",  "ca", "cs", "da", "de", "el", "en",
+      "es", "et", "fa", "fi", "fil", "fr", "ga", "gu", "hi", "hr", "hu",
+      "hy", "id", "is", "it", "iw",  "ja", "ka", "kk", "km", "kn", "ko",
+      "lo", "lt", "lv", "ml", "mn",  "mr", "ms", "mt", "my", "ne", "nl",
+      "no", "or", "pa", "pl", "pt",  "ro", "ru", "si", "sk", "sl", "sr",
+      "sv", "ta", "te", "th", "ti",  "tr", "uk", "ur", "vi", "zh", "zh-HK",
   });
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(
@@ -447,6 +507,15 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   for (const auto& locale : tts) {
     EXPECT_TRUE(LanguagePackManager::IsPackAvailable(kTtsFeatureId, locale));
   }
+
+  const std::vector<std::string> fonts = {"ja", "ko"};
+  EXPECT_THAT(fonts, Each(ResultOf(
+                         "Font pack availability",
+                         [](const std::string& locale) {
+                           return LanguagePackManager::IsPackAvailable(
+                               kFontsFeatureId, locale);
+                         },
+                         true)));
 }
 
 TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
@@ -626,6 +695,41 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {
 
   EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
   EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
+}
+
+struct TestCase {
+  std::string dlc_locale;
+  std::string language_pack_locale;
+};
+
+class LanguagePackManagerTtsTest
+    : public LanguagePackManagerTest,
+      public testing::WithParamInterface<TestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LanguagePackManagerTtsTest,
+                         ::testing::Values(TestCase("en-us", "en-us"),
+                                           TestCase("yue-hk", "yue"),
+                                           TestCase("bn-bd", "bn")));
+
+TEST_P(LanguagePackManagerTtsTest, InstallTtsObserverTest) {
+  LanguagePackManager manager;
+  MockObserver observer;
+  manager.AddObserver(&observer);
+  dlcservice_client_.set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_install_root_path("/path");
+
+  std::string dlc_locale = GetParam().dlc_locale;
+  std::string language_pack_locale = GetParam().language_pack_locale;
+  const DlcState dlc_state = CreateTtsInstalledState(dlc_locale);
+  EXPECT_CALL(observer,
+              OnPackStateChanged(AllOf(
+                  Field(&PackResult::feature_id, kTtsFeatureId),
+                  Field(&PackResult::language_code, language_pack_locale))))
+      .Times(1);
+  dlcservice_client_.NotifyObserversForTest(dlc_state);
+
+  manager.RemoveObserver(&observer);
 }
 
 }  // namespace ash::language_packs

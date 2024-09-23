@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
@@ -68,6 +67,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace credential_provider {
@@ -628,15 +628,15 @@ HRESULT WaitForLoginUIAndGetResult(
   DCHECK(status_text);
 
   // Buffer used to accumulate output from UI.
-  const int kBufferSize = 4096;
-  std::vector<char> output_buffer(kBufferSize, '\0');
-  base::ScopedClosureRunner zero_buffer_on_exit(
-      base::BindOnce(base::IgnoreResult(&SecurelyClearBuffer),
-                     &output_buffer[0], kBufferSize));
+  constexpr int kBufferSize = 4096;
+  std::array<char, kBufferSize> output_buffer = {};
+  absl::Cleanup zero_buffer_on_exit = [&output_buffer] {
+    SecurelyClearBuffer(output_buffer.data(), output_buffer.size());
+  };
 
   HRESULT hr = WaitForProcess(uiprocinfo->procinfo.process_handle(),
                               uiprocinfo->parent_handles, exit_code,
-                              &output_buffer[0], kBufferSize);
+                              output_buffer.data(), output_buffer.size());
   // output_buffer contains sensitive information like the password. Don't log
   // it.
   LOGFN(VERBOSE) << "exit_code=" << *exit_code;
@@ -653,7 +653,7 @@ HRESULT WaitForLoginUIAndGetResult(
     return E_FAIL;
   }
 
-  *json_result = std::string(&output_buffer[0]);
+  *json_result = std::string(output_buffer.data());
   return S_OK;
 }
 
@@ -672,7 +672,7 @@ HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
         return E_ABORT;
       case kUiecTimeout:
       case kUiecKilled:
-        NOTREACHED() << "Internal codes, not returned by GLS";
+        NOTREACHED_IN_MIGRATION() << "Internal codes, not returned by GLS";
         break;
       case kUiecEMailMissmatch:
         *status_text =
@@ -1993,7 +1993,7 @@ HRESULT CGaiaCredentialBase::PerformActions(
   if (FAILED(hr))
     LOGFN(ERROR) << "profile.SaveAccountInfo failed (cont) hr=" << putHR(hr);
 
-  // TODO(crbug.com/976744): Use the down scoped kKeyMdmAccessToken instead
+  // TODO(crbug.com/41466886): Use the down scoped kKeyMdmAccessToken instead
   // of login scoped token.
   std::string access_token = GetDictStringUTF8(properties, kKeyAccessToken);
   if (access_token.empty()) {
@@ -2060,7 +2060,7 @@ HRESULT CGaiaCredentialBase::PerformPostSigninActions(
     DevicePoliciesManager::Get()->EnforceGcpwUpdatePolicy();
   }
 
-  // TODO(crbug.com/976744): Use the down scoped kKeyMdmAccessToken instead
+  // TODO(crbug.com/41466886): Use the down scoped kKeyMdmAccessToken instead
   // of login scoped token.
   std::string access_token = GetDictStringUTF8(properties, kKeyAccessToken);
 
@@ -2459,7 +2459,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   }
 
   std::wstring gaia_id = GetDictString(*authentication_results_, kKeyId);
-  // TODO(crbug.com/976744) Use downscoped token here.
+  // TODO(crbug.com/41466886) Use downscoped token here.
   std::wstring access_token =
       GetDictString(*authentication_results_, kKeyAccessToken);
   GetUserConfigsIfStale(OLE2CW(user_sid_), gaia_id, access_token);

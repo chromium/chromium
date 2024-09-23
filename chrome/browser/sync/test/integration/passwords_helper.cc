@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -70,7 +71,7 @@ class PasswordStoreConsumerHelper
  private:
   // This RunLoop uses kNestableTasksAllowed because it runs nested within
   // another RunLoop.
-  // TODO(crbug.com/1514434): consider changing this to PasswordStoreInterface
+  // TODO(crbug.com/41486990): consider changing this to PasswordStoreInterface
   // observer to avoid nested run loops.
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   std::vector<std::unique_ptr<PasswordForm>> result_;
@@ -125,7 +126,8 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
 
 void RemoveLogins(PasswordStoreInterface* store) {
   // Null Time values enforce unbounded deletion in both direction
-  store->RemoveLoginsCreatedBetween(/*delete_begin=*/base::Time(),
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    /*delete_begin=*/base::Time(),
                                     /*delete_end=*/base::Time::Max());
 }
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
@@ -151,7 +153,7 @@ password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
     PasswordForm::Store store) {
   switch (store) {
     case PasswordForm::Store::kNotSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PasswordForm::Store::kProfileStore:
       return GetProfilePasswordStoreInterface(index);
     case PasswordForm::Store::kAccountStore:
@@ -453,7 +455,7 @@ bool ServerPasswordsEqualityChecker::IsExitConditionSatisfied(
   *os << "Waiting for server passwords to match the expected value.";
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+      fake_server()->GetSyncEntitiesByDataType(syncer::PASSWORDS);
   if (expected_forms_.size() != entities.size()) {
     *os << "Server doesn't not contain same amount of passwords ("
         << entities.size() << ") as expected (" << expected_forms_.size()

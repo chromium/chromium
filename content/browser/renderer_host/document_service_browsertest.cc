@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 

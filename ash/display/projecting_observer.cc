@@ -28,7 +28,7 @@ ProjectingObserver::~ProjectingObserver() {
     display_configurator_->RemoveObserver(this);
 }
 
-void ProjectingObserver::OnDisplayModeChanged(
+void ProjectingObserver::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   has_internal_output_ = false;
   output_count_ = display_states.size();

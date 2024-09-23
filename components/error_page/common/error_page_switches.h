@@ -11,6 +11,7 @@ namespace error_page {
 namespace switches {
 
 extern const char kDisableDinosaurEasterEgg[];
+extern const char kEnableDinosaurEasterEggAltGameImages[];
 
 }  // namespace switches
 }  // namespace error_page

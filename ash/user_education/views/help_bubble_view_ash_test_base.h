@@ -18,11 +18,14 @@ struct HelpBubbleParams;
 namespace ash {
 
 class HelpBubbleViewAsh;
-enum class HelpBubbleStyle;
 
 // Base class for tests of `HelpBubbleViewAsh`.
 class HelpBubbleViewAshTestBase : public AshTestBase {
  public:
+  // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance.
+  // Note that the returned help bubble view is owned by its widget.
+  HelpBubbleViewAsh* CreateHelpBubbleView();
+
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
   // the specified attributes. Note that the returned help bubble view is owned
   // by its widget.
@@ -37,12 +40,6 @@ class HelpBubbleViewAshTestBase : public AshTestBase {
   // by its widget.
   HelpBubbleViewAsh* CreateHelpBubbleView(
       user_education::HelpBubbleParams params);
-
-  // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
-  // the specified `style`. Note that the returned help bubble view is owned
-  // by its widget.
-  HelpBubbleViewAsh* CreateHelpBubbleView(
-      const std::optional<HelpBubbleStyle>& style);
 
  private:
   // AshTestBase:

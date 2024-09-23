@@ -7,10 +7,12 @@
 #include "base/android/jni_array.h"
 #include "base/task/thread_pool.h"
 #include "components/embedder_support/android/metrics/features.h"
-#include "components/embedder_support/android/metrics/jni/AndroidMetricsLogUploader_jni.h"
 #include "components/metrics/log_decoder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/metrics/jni/AndroidMetricsLogUploader_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;

@@ -228,6 +228,9 @@ void KioskBrowserSession::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
   registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled,
                                 false);
+  registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
+                             PrefRegistrySimple::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(prefs::kKioskWebAppOfflineEnabled, true);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
@@ -298,18 +301,18 @@ void KioskBrowserSession::OnAppWindowAdded(AppWindow* app_window) {
 
 void KioskBrowserSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
+  CHECK(extensions::WebViewGuest::FromWebContents(guest_web_contents));
+
   // Bail if the session is shutting down.
   if (is_shutting_down()) {
     return;
   }
 
-  // Bail if the guest is not a WebViewGuest.
-  if (!extensions::WebViewGuest::FromWebContents(guest_web_contents)) {
-    return;
-  }
-
 #if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_handler_->Observe(guest_web_contents);
+  // Plugin handler is initialized only for Chrome app Kiosks.
+  if (plugin_handler_) {
+    plugin_handler_->Observe(guest_web_contents);
+  }
 #endif
 }
 

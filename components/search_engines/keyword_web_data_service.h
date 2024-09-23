@@ -39,10 +39,6 @@ struct WDKeywordsResult {
     // into the current keyword data.
     int builtin_keyword_data_version = 0;
 
-    // Version number of Chrome milestone when the keyword data has been last
-    // merged into the database.
-    int builtin_keyword_milestone = 0;
-
     // Country associated with the keywords data, stored as a country ID,
     // see `country_codes::CountryStringToCountryID()`.
     int builtin_keyword_country = 0;
@@ -53,8 +49,7 @@ struct WDKeywordsResult {
 
     // Whether any metadata associated with the keywords bundle is set.
     bool HasBuiltinKeywordData() const {
-      return builtin_keyword_data_version != 0 ||
-             builtin_keyword_milestone != 0 || builtin_keyword_country != 0;
+      return builtin_keyword_data_version != 0 || builtin_keyword_country != 0;
     }
 
     // Whether any metadata associated with the starter pack bundle is set.
@@ -118,8 +113,9 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Sets the version of the builtin keyword data.
   void SetBuiltinKeywordDataVersion(int version);
 
-  // Sets the Chrome milestone associated with the builtin keyword data.
-  void SetBuiltinKeywordMilestone(int milestone_version);
+  // Clears the Chrome milestone associated with the builtin keyword data. Used
+  // for cleanup.
+  void ClearBuiltinKeywordMilestone();
 
   // Sets the country ID associated with the builtin keyword data.
   void SetBuiltinKeywordCountry(int country_id);

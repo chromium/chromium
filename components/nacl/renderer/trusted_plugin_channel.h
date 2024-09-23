@@ -6,6 +6,7 @@
 #define COMPONENTS_NACL_RENDERER_TRUSTED_PLUGIN_CHANNEL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/nacl/common/nacl.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,7 +42,7 @@ class TrustedPluginChannel : public mojom::NaClRendererHost {
 
   // Non-owning pointer. This is safe because the TrustedPluginChannel is owned
   // by the NexeLoadManager pointed to here.
-  NexeLoadManager* nexe_load_manager_;
+  raw_ptr<NexeLoadManager> nexe_load_manager_;
   mojo::Receiver<mojom::NaClRendererHost> receiver_;
   mojo::Remote<mojom::NaClExitControl> exit_control_;
   const bool is_helper_nexe_;

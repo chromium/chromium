@@ -8,16 +8,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to
- * draw itself onto the GL canvas at the desired Y Offset.
+ * {@link LayoutTab} is used to keep track of a thumbnail's bitmap and position and to draw itself
+ * onto the GL canvas at the desired Y Offset.
  */
 public class LayoutTab extends PropertyModel {
-    // TODO(crbug.com/1070284): Make the following properties be part of the PropertyModel.
+    // TODO(crbug.com/40126260): Make the following properties be part of the PropertyModel.
     // Begin section --------------
     // Public Layout constants.
     public static final float SHADOW_ALPHA_ON_LIGHT_BG = 0.8f;
@@ -36,10 +37,10 @@ public class LayoutTab extends PropertyModel {
         public boolean isActiveLayout();
     }
 
-    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
-    // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
+    // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     // Fields initialized in init()
@@ -116,6 +117,10 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableObjectPropertyKey<IsActiveLayoutSupplier>
             IS_ACTIVE_LAYOUT_SUPPLIER = new WritableObjectPropertyKey<>();
 
+    /** The tag indicating that this layer should be moved by viz. */
+    public static final PropertyModel.WritableObjectPropertyKey<OffsetTag> CONTENT_OFFSET_TAG =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TAB_ID,
@@ -146,15 +151,16 @@ public class LayoutTab extends PropertyModel {
                 TOOLBAR_BACKGROUND_COLOR,
                 TEXT_BOX_BACKGROUND_COLOR,
                 CONTENT_OFFSET,
-                IS_ACTIVE_LAYOUT_SUPPLIER
+                IS_ACTIVE_LAYOUT_SUPPLIER,
+                CONTENT_OFFSET_TAG
             };
 
     /**
      * Default constructor for a {@link LayoutTab}.
      *
-     * @param tabId                   The id of the source {@link Tab}.
-     * @param isIncognito             Whether the tab in the in the incognito stack.
-     * @param maxContentTextureWidth  The maximum width for drawing the content in px.
+     * @param tabId The id of the source {@link Tab}.
+     * @param isIncognito Whether the tab in the in the incognito stack.
+     * @param maxContentTextureWidth The maximum width for drawing the content in px.
      * @param maxContentTextureHeight The maximum height for drawing the content in px.
      */
     public LayoutTab(

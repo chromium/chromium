@@ -5,10 +5,12 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/PolicyAuditorBridge_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PolicyAuditorBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaGlobalRef;

@@ -32,6 +32,7 @@ using OverlayRequestQueueUtilTest = PlatformTest;
 TEST_F(OverlayRequestQueueUtilTest, MatchingConfigs) {
   // Add requests to `web_state`'s queue.
   web::FakeWebState web_state;
+  OverlayRequestQueue::CreateForWebState(&web_state);
   OverlayRequestQueue* queue =
       OverlayRequestQueue::FromWebState(&web_state, OverlayModality::kTesting);
   queue->AddRequest(OverlayRequest::CreateWithConfig<FirstConfig>());

@@ -28,13 +28,15 @@ struct IwaVersionTestParam {
 using IwaVersionTest = testing::TestWithParam<IwaVersionTestParam>;
 
 TEST_P(IwaVersionTest, ParsesSuccessfully) {
-  base::expected<std::vector<uint32_t>, IwaVersionParseError> components =
-      ParseIwaVersionIntoComponents(GetParam().version_string);
+  base::expected<base::Version, IwaVersionParseError> version =
+      ParseIwaVersion(GetParam().version_string);
 
-  ASSERT_THAT(components, Eq(GetParam().expected_components));
-  if (components.has_value()) {
-    base::Version version(*components);
-    EXPECT_THAT(version.IsValid(), IsTrue());
+  ASSERT_EQ(GetParam().expected_components,
+            version.transform([](const base::Version& version) {
+              return version.components();
+            }));
+  if (version.has_value()) {
+    EXPECT_THAT(version->IsValid(), IsTrue());
   }
 }
 

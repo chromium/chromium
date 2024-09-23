@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
 #include <string>
@@ -24,10 +29,15 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -221,7 +231,8 @@ bool DisplayLockContext::NeedsLifecycleNotifications() const {
          render_affecting_state_[static_cast<int>(
              RenderAffectingState::kAutoStateUnlockedUntilLifecycle)] ||
          has_pending_subtree_checks_ || has_pending_clear_has_top_layer_ ||
-         has_pending_top_layer_check_;
+         has_pending_top_layer_check_ ||
+         anchor_positioning_render_state_may_have_changed_;
 }
 
 void DisplayLockContext::UpdateLifecycleNotificationRegistration() {
@@ -578,10 +589,10 @@ void DisplayLockContext::Unlock() {
         blocked_child_recalc_change_.ForceRecalcDescendants();
   }
 
-  // We also need to notify the AX cache (if it exists) to update the childrens
+  // We also need to notify the AX cache (if it exists) to update the children
   // of |element_| in the AX cache.
   if (auto* ax_cache = element_->GetDocument().ExistingAXObjectCache()) {
-    ax_cache->RemoveSubtreeWhenSafe(element_);
+    ax_cache->RemoveSubtree(element_);
   }
 
   // Schedule ContentVisibilityAutoStateChange event if needed.
@@ -893,6 +904,27 @@ void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
     UpdateLifecycleNotificationRegistration();
 }
 
+void DisplayLockContext::DidFinishLayout() {
+  if (!anchor_positioning_render_state_may_have_changed_) {
+    return;
+  }
+  anchor_positioning_render_state_may_have_changed_ = false;
+  UpdateLifecycleNotificationRegistration();
+  if (DescendantIsAnchorTargetFromOutsideDisplayLock()) {
+    SetAffectedByAnchorPositioning(true);
+  } else {
+    SetAffectedByAnchorPositioning(false);
+  }
+}
+
+void DisplayLockContext::SetAnchorPositioningRenderStateMayHaveChanged() {
+  if (anchor_positioning_render_state_may_have_changed_) {
+    return;
+  }
+  anchor_positioning_render_state_may_have_changed_ = true;
+  UpdateLifecycleNotificationRegistration();
+}
+
 void DisplayLockContext::NotifyWillDisconnect() {
   if (!IsLocked() || !element_ || !element_->GetLayoutObject())
     return;
@@ -1202,6 +1234,12 @@ void DisplayLockContext::SetRenderAffectingState(RenderAffectingState state,
           .ActivatableDisplayLocksForced()) {
     SetKeepUnlockedUntilLifecycleCount(1);
   }
+  // If we are changing state due to disappeared anchors, we're in a post-layout
+  // state and therefore can't dirty style. Wait until the next lifecycle
+  // starts.
+  if (state == RenderAffectingState::kDescendantIsAnchorTarget && !new_flag) {
+    SetKeepUnlockedUntilLifecycleCount(1);
+  }
 
   render_affecting_state_[static_cast<int>(state)] = new_flag;
   NotifyRenderAffectingStateChanged();
@@ -1232,12 +1270,48 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
         !state(RenderAffectingState::kAutoStateUnlockedUntilLifecycle) &&
         !state(RenderAffectingState::kAutoUnlockedForPrint) &&
         !state(RenderAffectingState::kSubtreeHasTopLayerElement) &&
-        !state(RenderAffectingState::kDescendantIsViewTransitionElement)));
+        !state(RenderAffectingState::kDescendantIsViewTransitionElement) &&
+        !state(RenderAffectingState::kDescendantIsAnchorTarget)));
 
   if (should_be_locked && !IsLocked())
     Lock();
   else if (!should_be_locked && IsLocked())
     Unlock();
+}
+
+bool DisplayLockContext::DescendantIsAnchorTargetFromOutsideDisplayLock() {
+  for (auto* obj = element_->GetLayoutObject(); obj; obj = obj->Container()) {
+    if (const auto* ancestor_box = DynamicTo<LayoutBox>(obj)) {
+      // Return true if any out-of-flow positioned elements below this
+      // ancestor are anchored to elements below the display lock.
+      for (const PhysicalBoxFragment& fragment :
+           ancestor_box->PhysicalFragments()) {
+        // Early out if there are no anchor targets in the subtree.
+        if (!fragment.HasAnchorQuery()) {
+          return false;
+        }
+        // Early out if there are not OOF children.
+        if (!fragment.HasOutOfFlowFragmentChild()) {
+          continue;
+        }
+        for (const PhysicalFragmentLink& fragment_child : fragment.Children()) {
+          // Skip non-OOF children.
+          if (!fragment_child->IsOutOfFlowPositioned()) {
+            continue;
+          }
+          if (auto* box = DynamicTo<LayoutBox>(
+                  fragment_child->GetMutableLayoutObject())) {
+            if (auto* display_locks = box->DisplayLocksAffectedByAnchors()) {
+              if (display_locks->find(element_) != display_locks->end()) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
 }
 
 void DisplayLockContext::Trace(Visitor* visitor) const {
@@ -1268,6 +1342,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "SubtreeHasTopLayerElement";
     case RenderAffectingState::kDescendantIsViewTransitionElement:
       return "DescendantIsViewTransitionElement";
+    case RenderAffectingState::kDescendantIsAnchorTarget:
+      return "kDescendantIsAnchorTarget";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }
@@ -1293,14 +1369,16 @@ void DisplayLockContext::StashScrollOffsetIfAvailable() {
     // Only store the offset if it's non-zero. This is because scroll
     // restoration has a small performance implication and restoring to a zero
     // offset is the same as not restoring it.
-    if (!offset.IsZero())
+    if (!offset.IsZero()) {
       stashed_scroll_offset_.emplace(offset);
+    }
   }
 }
 
 void DisplayLockContext::RestoreScrollOffsetIfStashed() {
-  if (!stashed_scroll_offset_.has_value())
+  if (!stashed_scroll_offset_.has_value()) {
     return;
+  }
 
   // Restore the offset and reset the value.
   if (auto* area = GetScrollableArea(element_)) {
@@ -1317,6 +1395,10 @@ bool DisplayLockContext::HasStashedScrollOffset() const {
 bool DisplayLockContext::ActivatableDisplayLocksForced() const {
   return document_->GetDisplayLockDocumentState()
       .ActivatableDisplayLocksForced();
+}
+
+void DisplayLockContext::SetAffectedByAnchorPositioning(bool val) {
+  SetRenderAffectingState(RenderAffectingState::kDescendantIsAnchorTarget, val);
 }
 
 }  // namespace blink

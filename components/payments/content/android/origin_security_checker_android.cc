@@ -4,10 +4,12 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/payments/content/android/jni_headers/OriginSecurityChecker_jni.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/OriginSecurityChecker_jni.h"
 
 namespace payments {
 namespace {
@@ -21,16 +23,16 @@ using ::base::android::JavaParamRef;
 jboolean JNI_OriginSecurityChecker_IsOriginSecure(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return url->is_valid() && network::IsUrlPotentiallyTrustworthy(*url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return url.is_valid() && network::IsUrlPotentiallyTrustworthy(url);
 }
 
 // static
 jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return url->is_valid() && url->SchemeIsCryptographic();
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return url.is_valid() && url.SchemeIsCryptographic();
 }
 
 }  // namespace payments

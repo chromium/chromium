@@ -22,7 +22,6 @@ class Widget;
 }  // namespace views
 
 namespace gfx {
-class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
@@ -38,8 +37,6 @@ class ViewTreeHostUiResource : public UiResource {
   ViewTreeHostUiResource& operator=(const ViewTreeHostUiResource&) = delete;
 
   ~ViewTreeHostUiResource() override;
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
 };
 
 class ASH_EXPORT ViewTreeHostRootViewFrameFactory {

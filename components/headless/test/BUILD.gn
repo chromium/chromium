@@ -39,3 +39,16 @@ source_set("test") {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bitmap_utils_unittest.cc" ]
+
+  deps = [
+    ":test",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
+
 #include <iostream>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
@@ -145,6 +146,31 @@ TEST_F(AnnotationStorageTest, FindImagePath) {
   auto expect_foo =
       storage_->FindImagePath(test_directory_.AppendASCII("foo.png"));
   EXPECT_THAT(expect_foo, testing::ElementsAreArray({foo_image}));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, GetLastModifiedTime) {
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo bar_image({"test"}, test_directory_.AppendASCII("bar.jpg"),
+                      base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
+                      base::Time::Now(), /*file_size=*/2);
+  // Ensures they are not both the default time.
+  EXPECT_NE(foo_image.last_modified, bar_image.last_modified);
+
+  storage_->Insert(bar_image);
+  storage_->Insert(foo_image);
+
+  auto expect_bar =
+      storage_->GetLastModifiedTime(test_directory_.AppendASCII("bar.jpg"));
+  EXPECT_THAT(expect_bar, bar_image.last_modified);
+
+  auto expect_foo =
+      storage_->GetLastModifiedTime(test_directory_.AppendASCII("foo.png"));
+  EXPECT_THAT(expect_foo, foo_image.last_modified);
 
   task_environment_.RunUntilIdle();
 }

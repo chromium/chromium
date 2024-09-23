@@ -643,26 +643,26 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   scoped_refptr<const extensions::Extension> component_extension =
       extensions::ExtensionBuilder("Component Extension")
           .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> component_extension_with_options =
       extensions::ExtensionBuilder("Component Extension with Options")
           .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension =
       extensions::ExtensionBuilder("Regular Extension")
           .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension_with_options =
       extensions::ExtensionBuilder("Regular Extension with Options")
           .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
 
@@ -707,26 +707,26 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   auto build_component_extension = []() {
     return extensions::ExtensionBuilder("Component Extension")
         .SetLocation(ManifestLocation::kComponent)
-        .AddPermission("background")
+        .AddAPIPermission("background")
         .Build();
   };
   auto build_component_extension_with_options = []() {
     return extensions::ExtensionBuilder("Component Extension with Options")
         .SetLocation(ManifestLocation::kComponent)
-        .AddPermission("background")
+        .AddAPIPermission("background")
         .SetManifestKey("options_page", "test.html")
         .Build();
   };
   auto build_regular_extension = []() {
     return extensions::ExtensionBuilder("Regular Extension")
         .SetLocation(ManifestLocation::kCommandLine)
-        .AddPermission("background")
+        .AddAPIPermission("background")
         .Build();
   };
   auto build_regular_extension_with_options = []() {
     return extensions::ExtensionBuilder("Regular Extension with Options")
         .SetLocation(ManifestLocation::kCommandLine)
-        .AddPermission("background")
+        .AddAPIPermission("background")
         .SetManifestKey("options_page", "test.html")
         .Build();
   };
@@ -847,14 +847,14 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
       extensions::ExtensionBuilder("Background Extension")
           .SetVersion("1.0")
           .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> upgraded_bg_ext =
       extensions::ExtensionBuilder("Background Extension")
           .SetVersion("2.0")
           .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> no_bg_ext =
@@ -867,7 +867,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
       extensions::ExtensionBuilder("Regular Extension")
           .SetVersion("1.0")
           .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
+          .AddAPIPermission("background")
           .Build();
 
   static_cast<extensions::TestExtensionSystem*>(
@@ -902,7 +902,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   // Upgrading an extension that has background should not reshow the balloon.
   {
-    // TODO(crbug.com/438376): Fix crbug.com/438376 and remove these checks.
+    // TODO(crbug.com/41145854): Fix crbug.com/438376 and remove these checks.
     InSequence expected_call_sequence;
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(false)).Times(Exactly(1));
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));
@@ -1080,6 +1080,40 @@ TEST_F(BackgroundModeManagerTest, ForceInstalledExtensionsKeepAlive) {
   }));
 
   manager.GetBackgroundModeData(profile_)->OnForceInstalledExtensionsReady();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
+}
+
+TEST_F(BackgroundModeManagerTest,
+       ForceInstalledExtensionsKeepAliveReleasedOnAppTerminating) {
+  const auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kNoStartupWindow);
+  TestBackgroundModeManager manager(
+      command_line, profile_manager_->profile_attributes_storage());
+
+  manager.RegisterProfile(profile_);
+  EXPECT_TRUE(keep_alive_registry->IsKeepingAlive());
+  EXPECT_TRUE(keep_alive_registry->WouldRestartWithout({
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
+  }));
+
+  static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile_))
+      ->CreateExtensionService(&command_line, base::FilePath(), false);
+  static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile_))
+      ->SetReady();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(keep_alive_registry->IsKeepingAlive());
+  EXPECT_TRUE(keep_alive_registry->WouldRestartWithout({
+      KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
+  }));
+
+  manager.OnAppTerminating();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
 }

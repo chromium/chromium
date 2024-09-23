@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h",
+  "+ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h",
+  "+ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
+]

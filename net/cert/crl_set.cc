@@ -429,8 +429,8 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
     crl_set->not_after_ = 1;
 
   if (issuer_spki) {
-    const std::string spki(reinterpret_cast<const char*>(issuer_spki->data),
-                           sizeof(issuer_spki->data));
+    std::string spki(reinterpret_cast<const char*>(issuer_spki->data),
+                     sizeof(issuer_spki->data));
     std::vector<std::string> serials;
     if (!serial_number.empty()) {
       serials.push_back(std::string(serial_number));

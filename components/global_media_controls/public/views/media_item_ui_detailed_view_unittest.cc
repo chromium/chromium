@@ -4,15 +4,21 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
-#include "components/media_message_center/media_squiggly_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
+#include "components/strings/grit/components_strings.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -62,10 +68,9 @@ class MockMediaNotificationContainer
 class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
  public:
   MediaItemUIDetailedViewTest() = default;
-  MediaItemUIDetailedViewTest(const MediaItemUIDetailedViewTest&) =
+  MediaItemUIDetailedViewTest(const MediaItemUIDetailedViewTest&) = delete;
+  MediaItemUIDetailedViewTest& operator=(const MediaItemUIDetailedViewTest&) =
       delete;
-  MediaItemUIDetailedViewTest& operator=(
-      const MediaItemUIDetailedViewTest&) = delete;
   ~MediaItemUIDetailedViewTest() override = default;
 
   void SetUp() override {
@@ -81,20 +86,19 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
 
     // Create a widget and add the view to show on the screen for testing screen
     // coordinates and focus.
-    widget_ = CreateTestWidget();
-    view_ =
-        widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
-            container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
-            std::move(device_selector), /*dismiss_button=*/nullptr,
-            media_message_center::MediaColorTheme(),
-            MediaDisplayPage::kQuickSettingsMediaDetailedView));
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    view_ = widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
+        container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
+        std::move(device_selector), /*dismiss_button=*/nullptr,
+        media_message_center::MediaColorTheme(),
+        MediaDisplayPage::kQuickSettingsMediaDetailedView));
     widget_->Show();
   }
 
   void TearDown() override {
     view_ = nullptr;
     device_selector_ = nullptr;
-    widget_.reset();
+    widget_->Close();
     actions_.clear();
 
     views::ViewsTestBase::TearDown();
@@ -102,10 +106,13 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
 
   std::unique_ptr<MediaItemUIDetailedView> CreateView(
       MediaDisplayPage media_display_page) {
+    auto device_selector =
+        std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     return std::make_unique<MediaItemUIDetailedView>(
         container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
-        /*device_selector_view=*/nullptr, /*dismiss_button=*/nullptr,
-        media_message_center::MediaColorTheme(), media_display_page);
+        /*device_selector_view=*/std::move(device_selector),
+        /*dismiss_button=*/nullptr, media_message_center::MediaColorTheme(),
+        media_display_page);
   }
 
   std::unique_ptr<MediaItemUIDetailedView> CreateViewWithFooter(
@@ -136,6 +143,11 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     actions_.insert(MediaSessionAction::kStop);
     actions_.insert(MediaSessionAction::kEnterPictureInPicture);
     actions_.insert(MediaSessionAction::kExitPictureInPicture);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    actions_.insert(MediaSessionAction::kSeekForward);
+    actions_.insert(MediaSessionAction::kSeekBackward);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     NotifyUpdatedActions();
   }
@@ -173,7 +185,7 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
     EXPECT_TRUE(button && button->GetVisible());
 
     views::test::ButtonTestApi(button).NotifyClick(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0));
   }
 
@@ -202,6 +214,15 @@ TEST_F(MediaItemUIDetailedViewTest, ChevronIconVisibilityCheck) {
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
 }
 
+TEST_F(MediaItemUIDetailedViewTest, AccessibleProperties) {
+  auto view = CreateView(MediaDisplayPage::kQuickSettingsMediaView);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kListItem);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+}
+
 TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
   EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
   EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
@@ -224,7 +245,7 @@ TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(false))
       .WillOnce(Return(true));
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_TRUE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
@@ -234,7 +255,7 @@ TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {
       .WillOnce(Return(true))
       .WillOnce(Return(false));
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 }
@@ -435,11 +456,242 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
               0.5, 0.001);
 
   // Check that key event on the view can seek the progress.
-  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
-                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
-                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  ui::KeyEvent key_event{ui::EventType::kKeyPressed, ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT,   ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,    ui::EventTimeForNow()};
   EXPECT_CALL(item(), SeekTo(testing::_));
   view->OnKeyPressed(key_event);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+
+  // Chapter list is not created yet.
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(), u"");
+  EXPECT_FALSE(!!view->GetChapterListViewForTesting());
+  EXPECT_EQ(view->GetChaptersForTesting().find(0),
+            view->GetChaptersForTesting().end());
+  EXPECT_FALSE(view->GetChapterListButtonForTesting()->GetVisible());
+
+  std::vector<media_session::ChapterInformation> expected_chapters;
+  media_session::MediaImage test_image_1;
+  test_image_1.src = GURL("https://www.google.com");
+  media_session::MediaImage test_image_2;
+  test_image_2.src = GURL("https://www.example.org");
+  media_session::ChapterInformation test_chapter_1(
+      /*title=*/u"chapter1", /*startTime=*/base::Seconds(10),
+      /*artwork=*/{test_image_1});
+  media_session::ChapterInformation test_chapter_2(
+      /*title=*/u"chapter2", /*startTime=*/base::Seconds(20),
+      /*artwork=*/{test_image_2});
+  expected_chapters.push_back(test_chapter_1);
+  expected_chapters.push_back(test_chapter_2);
+
+  media_session::MediaMetadata metadata;
+  metadata.source_title = u"source title";
+  metadata.title = u"title";
+  metadata.artist = u"artist";
+  metadata.chapters = expected_chapters;
+
+  EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
+  view->UpdateWithMediaMetadata(metadata);
+
+  // Before clicking on the chapter list button, the list is not visible.
+  EXPECT_TRUE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+
+  // Click the start chapter list button to show the chapters.
+  views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(), metadata.title);
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 2u);
+  EXPECT_EQ(view->GetChaptersForTesting().find(0)->second->chapter().title(),
+            u"chapter1");
+  EXPECT_EQ(view->GetChaptersForTesting().find(1)->second->chapter().title(),
+            u"chapter2");
+  EXPECT_EQ(view->GetChaptersForTesting()
+                .find(0)
+                ->second->chapter()
+                .startTime()
+                .InSeconds(),
+            10);
+  EXPECT_EQ(view->GetChaptersForTesting()
+                .find(1)
+                ->second->chapter()
+                .startTime()
+                .InSeconds(),
+            20);
+
+  // Clicking on a chapter item should seek to the start time of that chapter.
+  EXPECT_CALL(item(), SeekTo(base::Seconds(10)));
+  views::test::ButtonTestApi(view->GetChaptersForTesting().find(0)->second)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(item(), SeekTo(base::Seconds(20)));
+  views::test::ButtonTestApi(view->GetChaptersForTesting().find(1)->second)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Showing cast view should hide the chapter list view.
+  view->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  EXPECT_TRUE(view->GetStartCastingButtonForTesting()->GetVisible());
+  views::test::ButtonTestApi(view->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_TRUE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+
+  // Showing the chapter list view should also hide the cast view.
+  views::test::ButtonTestApi(view->GetChapterListButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(view->GetDeviceSelectorForTesting()->IsDeviceSelectorExpanded());
+  EXPECT_TRUE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 2u);
+
+  // Should not show chapter list button when there's no chapters.
+  media_session::MediaMetadata metadata_with_0_chpaters;
+  metadata_with_0_chpaters.source_title = u"source title 0";
+  metadata_with_0_chpaters.title = u"title 0";
+  metadata_with_0_chpaters.artist = u"artist 0";
+
+  EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
+  view->UpdateWithMediaMetadata(metadata_with_0_chpaters);
+  EXPECT_FALSE(view->GetChapterListButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view->GetChapterListViewForTesting()->GetVisible());
+  EXPECT_EQ(view->GetTitleLabelForTesting()->GetText(),
+            metadata_with_0_chpaters.title);
+  EXPECT_EQ(view->GetChapterListViewForTesting()->children().size(), 0u);
+}
+
+TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto* start_casting_button = view()->GetStartCastingButtonForTesting();
+  auto* separator = view()->GetDeviceSelectorSeparatorForTesting();
+  auto* device_selector_view = view()->GetDeviceSelectorForTesting();
+
+  ASSERT_TRUE(start_casting_button);
+  EXPECT_FALSE(start_casting_button->GetVisible());
+  EXPECT_EQ(device_selector_view, device_selector());
+  EXPECT_FALSE(device_selector_view->GetVisible());
+  ASSERT_TRUE(separator);
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Add devices to the list to show the start casting button.
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false));
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  EXPECT_TRUE(start_casting_button->GetVisible());
+  EXPECT_TRUE(device_selector_view->GetVisible());
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Click the start casting button to show devices.
+  EXPECT_CALL(*device_selector(), ShowDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+  views::test::ButtonTestApi(start_casting_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(separator->GetVisible());
+
+  // Click the start casting button to hide devices.
+  EXPECT_CALL(*device_selector(), HideDevices());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  views::test::ButtonTestApi(start_casting_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(separator->GetVisible());
+}
+
+TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+  view->UpdateWithMediaActions({MediaSessionAction::kSeekForward});
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekForward))
+      .Times(0);
+  EXPECT_CALL(item(),
+              SeekTo(::testing::AllOf(::testing::Ge(base::Seconds(15)),
+                                      ::testing::Le(base::Seconds(16)))));
+  views::Button* button =
+      view->GetActionButtonForTesting(MediaSessionAction::kSeekForward);
+  EXPECT_TRUE(button && button->GetVisible());
+  views::test::ButtonTestApi(button).NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0));
+}
+
+TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* view = widget->SetContentsView(
+      CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
+  view->UpdateWithMediaActions({MediaSessionAction::kSeekBackward});
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(38), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSeekBackward))
+      .Times(0);
+  EXPECT_CALL(item(),
+              SeekTo(::testing::AllOf(::testing::Ge(base::Seconds(28)),
+                                      ::testing::Le(base::Seconds(29)))));
+  views::Button* button =
+      view->GetActionButtonForTesting(MediaSessionAction::kSeekBackward);
+  EXPECT_TRUE(button && button->GetVisible());
+  views::test::ButtonTestApi(button).NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0));
+  testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(MediaItemUIDetailedViewTest, TimestampView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
+  auto view = CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView);
+  EXPECT_NE(view->GetProgressViewForTesting(), nullptr);
+
+  // Check that the timestamp gets updated when the progress position is
+  // updated.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(58),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position);
+  EXPECT_EQ(view->GetCurrentTimestampViewForTesting()->GetText(), u"0:05");
+  EXPECT_EQ(view->GetTotalDurationViewForTesting()->GetText(), u" / 0:58");
+
+  media_session::MediaPosition media_position2(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(108),
+      /*position=*/base::Seconds(66), /*end_of_media=*/false);
+  view->UpdateWithMediaPosition(media_position2);
+  EXPECT_EQ(view->GetCurrentTimestampViewForTesting()->GetText(), u"1:06");
+  EXPECT_EQ(view->GetTotalDurationViewForTesting()->GetText(), u" / 1:48");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace global_media_controls

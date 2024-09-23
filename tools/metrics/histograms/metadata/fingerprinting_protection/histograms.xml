@@ -1,0 +1,324 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Fingerprinting Protection
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.NameAlias.{Result}"
+    units="microseconds" expires_after="2025-08-29">
+  <owner>thesalsa@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>johnykim@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed due to alias
+    checking, whether the check was triggered, and calculating whether it should
+    be disallowed. Logged for all navigations that were marked {Result}.
+
+    A {Result} marked as Checked indicates that the alias check was triggered,
+    while Disallowed and WouldDisallow are LoadPolicy decisions determined by
+    alias checking. Because alias checks are counted with
+    FingerprintingProtection.DocumentLoad.SubframeFilteringDelay, alias allowed
+    decisions can be derived.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Checked"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
+    units="microseconds" expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations that were marked {Result}.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Allowed"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.CPUDuration" units="ms"
+    expires_after="2025-06-28">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Measures the CPU time it takes for the ruleset to get indexed by the
+    RulesetService using thread ticks. Recorded every time the RulesetService
+    kicks off a ruleset indexing process for Fingerprinting Protection.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.NumUnsupportedRules"
+    units="rules" expires_after="2025-04-30">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    The number of rules that could be not be successfully indexed and therefore
+    have been ignored. Recorded every time the RulesetService kicks off a
+    ruleset indexing process and it reaches the point where rules are getting
+    indexed. This is logged when a new ruleset is indexed for the first time on
+    Chrome start for Fingerprinting Protection.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.Verify.Status"
+    enum="SubresourceFilterVerifyStatus" expires_after="2025-07-26">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    The result of the IndexRulesetMatcher Verify method. Either pass if both the
+    checksum and verifier succeeded, or a value indicating which combination of
+    them failed. Note that a zero checksum indicates that the checksum has not
+    yet been stored during indexing (for rulesets indexed prior to the
+    checksumming code). This is logged when the indexed ruleset is loaded on
+    Chrome start.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.Verify2.WallDuration"
+    units="ms" expires_after="2025-07-26">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Measures total time it took to verify the indexed ruleset in the browser
+    process. Logged every time verification occurs, which usually occurs when
+    the first page with activation is navigated to. This is logged when the
+    indexed ruleset is loaded on Chrome start.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.IndexRuleset.WallDuration" units="ms"
+    expires_after="2025-06-28">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Measures the time it takes for the ruleset to get indexed by the
+    RulesetService. Recorded every time the RulesetService kicks off a ruleset
+    indexing process for Fingerprinting Protection.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
+    enum="FingerprintingProtectionActivationDecision"
+    expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Records the ActivationDecision computed by the
+    FingerprintingProtectionPageActivationThrottle, considering the tracking
+    protection content setting values, on the navigation. Computed once in
+    WillProcessResponse, before committing the navigation.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.PageLoad.ActivationLevel"
+    enum="FingerprintingProtectionActivationLevel" expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Records the ActivationLevel computed by the
+    FingerprintingProtectionPageActivationThrottle, considering the tracking
+    protection content setting values, on the navigation. Computed once in
+    WillProcessResponse, before committing the navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been disallowed.
+    This only differs from `MatchedRules` when filtering is performed in dry-run
+    mode.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been evaluated. This
+    only differs from 'Total' when some of subdocuments is subject to a
+    deactivating rule with DOCUMENT activation type.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have matched filtering
+    rules. This only differs from `Disallowed` when filtering is performed in
+    dry-run mode.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total"
+    units="resource loads" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have gone through the
+    subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame, records whether
+    fingerprinting protection filtering should be activated for that load. Also
+    records the same for the initial document load, even if it was not
+    committed.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState.DidInherit"
+    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame that inherits from its
+    same-origin opener, records whether fingerprinting protection filtering
+    should be activated for that load. Also records the same for the initial
+    document load (if it inherits its activation) even if it was not committed.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalCPUDuration"
+    units="microseconds" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total CPU time in thread ticks spent on evaluating subresource
+    requests, aggregated across all frames.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalWallDuration"
+    units="microseconds" expires_after="2025-08-05">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total time spent on evaluating subresource requests, aggregated
+    across all frames.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.WebContentsObserver.RefreshCount"
+    units="refresh counts" expires_after="2025-08-20">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    The count of refreshes on the first document after a Fingerprinting
+    Protection throttling completes. This metric is experimental and for
+    data-gathering.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.WriteRuleset.Result"
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-04-30">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whether indexing a version of the ruleset and writing it to disk succeeded,
+    or failed at a particular step. Recorded every time the RulesetService kicks
+    off a ruleset indexing process for Fingerprinting Protection.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

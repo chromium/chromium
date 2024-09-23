@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,6 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -80,7 +78,6 @@ public class NotificationIntentInterceptorTest {
     @Before
     public void setUp() throws Exception {
         ShadowLog.stream = System.out;
-        UmaRecorderHolder.resetForTesting();
         mContext = RuntimeEnvironment.application;
         mShadowNotificationManager =
                 shadowOf(
@@ -90,11 +87,6 @@ public class NotificationIntentInterceptorTest {
                 new NotificationIntentInterceptor.Receiver(), new IntentFilter(INTENT_ACTION));
         mReceiver = new TestReceiver();
         mContext.registerReceiver(mReceiver, new IntentFilter(TestReceiver.TEST_ACTION));
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     // Builds a simple notification used in tests.

@@ -8,6 +8,7 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {QueueMode, TtsCategory} from '../common/tts_types.js';
 
@@ -319,3 +320,5 @@ LiveRegions.instance;
  * @const {number}
  */
 const DESKTOP_CHANGE_DELAY_MS = 100;
+
+TestImportManager.exportForTesting(LiveRegions);

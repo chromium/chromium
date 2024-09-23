@@ -19,11 +19,11 @@ function loadAndCheckCacheUsed(
     client: ImageLoaderClient, url: string, cache: boolean): Promise<boolean> {
   let cacheUsed = true;
 
-  chrome.runtime.sendMessage = (_id, request, callback) => {
+  chrome.runtime.sendMessage = (_id, request, _options, callback) => {
     cacheUsed = false;
     callback?.(new LoadImageResponse(
         LoadImageResponseStatus.SUCCESS, request.taskId || -1,
-        {width: 100, height: 100, ifd: null, data: 'ImageData'}));
+        {width: 100, height: 100, ifd: undefined, data: 'ImageData'}));
   };
 
   const request = createForUrl(url);

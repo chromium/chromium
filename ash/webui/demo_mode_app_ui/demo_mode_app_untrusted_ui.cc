@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 
 #include <memory>
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/shell.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_untrusted_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
@@ -34,27 +41,13 @@ DemoModeAppUntrustedUIConfig::DemoModeAppUntrustedUIConfig(
 
 DemoModeAppUntrustedUIConfig::~DemoModeAppUntrustedUIConfig() = default;
 
-// This is a paired down version of DemoSession::IsDeviceInDemoMode that doesn't
-// rely on DemoSession::DemoModeConfig, reimplemented to temporarily avoid the
-// dependency issues of migrating DemoModeConfig to //ash.
-//
-// TODO(b/260117078): After DemoModeConfig is deleted, move this method to
-// //ash/cpp/public and replace all references to
-// DemoSession::IsDeviceInDemoMode with this now-public //ash method.
-bool IsDeviceInDemoMode() {
-  bool is_demo_device_mode = InstallAttributes::Get()->GetMode() ==
-                             policy::DeviceMode::DEVICE_MODE_DEMO;
-  bool is_demo_device_domain =
-      InstallAttributes::Get()->GetDomain() == policy::kDemoModeDomain;
-  // We check device mode and domain to allow for dev/test
-  // setup that is done by manual enrollment into demo domain. Device mode is
-  // not set to DeviceMode::DEVICE_MODE_DEMO then.
-  return is_demo_device_mode || is_demo_device_domain;
-}
-
 bool DemoModeAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return IsDeviceInDemoMode();
+  if (!InstallAttributes::IsInitialized()) {
+    return false;
+  }
+
+  return InstallAttributes::Get()->IsDeviceInDemoMode();
 }
 
 scoped_refptr<base::RefCountedMemory> ReadFile(
@@ -140,10 +133,24 @@ void DemoModeAppUntrustedUI::BindInterface(
 
 void DemoModeAppUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::demo_mode::UntrustedPageHandler> handler) {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  auto top_level_native_window =
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow();
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
       std::move(handler), widget, this);
+
+  if (ash::features::IsDemoModeAppLandscapeLockedEnabled()) {
+    // kLandscapePrimary is 0 degree, and kLandscapeSecondary is 180 degrees
+    // (upside down). kLandscape includes both. When the demo mode app is
+    // closed, UnlockOrientationForWindow() will be called before the window is
+    // destroyed. The lock_info_map_ will not keep the demo mode app window
+    // info.
+    ash::Shell::Get()
+        ->screen_orientation_controller()
+        ->LockOrientationForWindow(top_level_native_window,
+                                   chromeos::OrientationType::kLandscape);
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUntrustedUI)

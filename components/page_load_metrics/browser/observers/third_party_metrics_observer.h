@@ -16,9 +16,9 @@
 class ThirdPartyMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  // TODO(crbug.com/1115657): kUnknown is mostly unused except for passing it as
-  // a "dummy" type to RecordUseCounters.  After we factor out AccessType from
-  // that method (see other TODOs), we should be able to remove it.
+  // TODO(crbug.com/40144431): kUnknown is mostly unused except for passing it
+  // as a "dummy" type to RecordUseCounters.  After we factor out AccessType
+  // from that method (see other TODOs), we should be able to remove it.
   enum class AccessType {
     kCookieRead,
     kCookieWrite,

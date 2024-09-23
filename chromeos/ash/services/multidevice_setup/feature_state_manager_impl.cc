@@ -398,7 +398,7 @@ bool FeatureStateManagerImpl::IsAllowedByPolicy(mojom::Feature feature) {
 }
 
 bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
-  if (!base::FeatureList::IsEnabled(features::kAllowCrossDeviceFeatureSuite)) {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     return false;
   }
 
@@ -447,7 +447,7 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeatureState::kNotSupported;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -547,7 +547,7 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
             feature_state == multidevice::SoftwareFeatureState::kSupported);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -562,7 +562,7 @@ mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
   if (!base::Contains(feature_to_enabled_pref_name_map_, feature)) {
     PA_LOG(ERROR) << "FeatureStateManagerImpl::GetEnabledOrDisabledState(): "
                   << "Feature not present in \"enabled pref\" map: " << feature;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return pref_service_->GetBoolean(feature_to_enabled_pref_name_map_[feature])

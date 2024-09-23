@@ -171,6 +171,9 @@ class FilesPolicyNotificationManager
     // requires a user justification that should be used when displaying the
     // dialog.
     FilesPolicyDialog::Info dialog_info;
+
+    // A potentially saved justification for bypassing a warning.
+    std::optional<std::u16string> user_justification;
   };
 
   // Holds needed information for each tracked file task.

@@ -77,13 +77,11 @@ CsvExporter::CsvExporter(base::TimeTicks time_base, base::File file)
 }
 
 bool CsvExporter::Append(const std::string& text) {
-  int result = file_.WriteAtCurrentPos(text.data(), text.size());
-  if (result == base::checked_cast<int>(text.size()))
-    return true;
-
-  LOG(ERROR) << "WriteAtCurrentPos failed";
-
-  return false;
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(text))) {
+    LOG(ERROR) << "WriteAtCurrentPos failed";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace power_sampler

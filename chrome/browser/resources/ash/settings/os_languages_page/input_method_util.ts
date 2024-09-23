@@ -71,6 +71,7 @@ export enum OptionType {
       'virtualKeyboardEnableCapitalization',
   XKB_LAYOUT = 'xkbLayout',
   // Options for Japanese input method.
+  // LINT.IfChange(JpOptionCategories)
   JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH = 'AutomaticallySwitchToHalfwidth',
   JAPANESE_SHIFT_KEY_MODE_STYLE = 'ShiftKeyModeStyle',
   JAPANESE_USE_INPUT_HISTORY = 'UseInputHistory',
@@ -87,6 +88,7 @@ export enum OptionType {
   JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
   JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE =
       'AutomaticallySendStatisticsToGoogle',
+  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionCategories)
   // Options for Korean input method.
   KOREAN_ENABLE_SYLLABLE_INPUT = 'koreanEnableSyllableInput',
   KOREAN_KEYBOARD_LAYOUT = 'koreanKeyboardLayout',
@@ -142,11 +144,6 @@ export const OPTION_DEFAULT = {
   [OptionType.ENABLE_GESTURE_TYPING]: true,
   [OptionType.ENABLE_PREDICTION]: false,
   [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
-  [OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH]: true,
-  [OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE]:
-      JapaneseShiftKeyModeStyle.ALPHANUMERIC,
-  [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
-  [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
   [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
@@ -155,6 +152,12 @@ export const OPTION_DEFAULT = {
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
   // Options for Japanese input methods.
+  // LINT.IfChange(JpPrefDefaults)
+  [OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH]: true,
+  [OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE]:
+      JapaneseShiftKeyModeStyle.ALPHANUMERIC,
+  [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
+  [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
   [OptionType.JAPANESE_INPUT_MODE]: JapaneseInputMode.ROMAJI,
   [OptionType.JAPANESE_PUNCTUATION_STYLE]:
       JapanesePunctuationStyle.KUTEN_TOUTEN,
@@ -166,6 +169,7 @@ export const OPTION_DEFAULT = {
   [OptionType.JAPANESE_KEYMAP_STYLE]: JapaneseKeymapStyle.CUSTOM,
   [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: true,
   [OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE]: true,
+  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:JpPrefDefaults)
 
   // Options for Korean input method.
   [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,

@@ -8,8 +8,6 @@ blink_modules_sources("crypto") {
   sources = [
     "crypto.cc",
     "crypto.h",
-    "crypto_histograms.cc",
-    "crypto_histograms.h",
     "crypto_key.cc",
     "crypto_key.h",
     "crypto_result_impl.cc",

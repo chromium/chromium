@@ -88,10 +88,6 @@ void InitNetwork() {
 
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());
 
-  portal_detector->SetDetectionResultsForTesting(
-      default_network->guid(),
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
-
   // Takes ownership.
   ash::network_portal_detector::InitializeForTesting(portal_detector);
 }
@@ -116,9 +112,30 @@ AccountInfo SignInUnconsentedAccount(
   return account_info;
 }
 
-void SignOutAccount(Profile* profile,
-                    network::TestURLLoaderFactory* test_url_loader_factory,
-                    const CoreAccountId& account_id) {
+AccountInfo ImplicitSignInUnconsentedAccount(
+    Profile* profile,
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const std::string& email) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  signin::AccountAvailabilityOptionsBuilder builder;
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      builder
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+          .AsPrimary(signin::ConsentLevel::kSignin)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+        // `ACCESS_POINT_WEB_SIGNIN` is not explicit signin.
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build(email));
+  SetCookieForGaiaId(account_info.gaia, account_info.email,
+                     /*signed_out=*/false, identity_manager,
+                     test_url_loader_factory);
+  return account_info;
+}
+
+void SignOut(Profile* profile,
+             network::TestURLLoaderFactory* test_url_loader_factory) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo account =
@@ -127,7 +144,8 @@ void SignOutAccount(Profile* profile,
   SetCookieForGaiaId(account.gaia, account.email,
                      /*signed_out=*/true, identity_manager,
                      test_url_loader_factory);
-  signin::RemoveRefreshTokenForAccount(identity_manager, account_id);
+  signin::ClearPrimaryAccount(identity_manager);
+  signin::RemoveRefreshTokenForPrimaryAccount(identity_manager);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

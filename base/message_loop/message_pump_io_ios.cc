@@ -96,7 +96,6 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
                                &source_context));
     if (scoped_fdref == NULL) {
       NOTREACHED() << "CFFileDescriptorCreate failed";
-      return false;
     }
 
     CFFileDescriptorEnableCallBacks(scoped_fdref, callback_types);
@@ -107,7 +106,6 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
                                             0));
     if (scoped_fd_source == NULL) {
       NOTREACHED() << "CFFileDescriptorCreateRunLoopSource failed";
-      return false;
     }
     CFRunLoopAddSource(run_loop(), scoped_fd_source, kCFRunLoopCommonModes);
 
@@ -121,11 +119,9 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
       NOTREACHED() << "FDs don't match: "
                    << CFFileDescriptorGetNativeDescriptor(fdref)
                    << " != " << fd;
-      return false;
     }
     if (persistent != controller->is_persistent_) {
       NOTREACHED() << "persistent doesn't match";
-      return false;
     }
 
     // Combine old/new event masks.

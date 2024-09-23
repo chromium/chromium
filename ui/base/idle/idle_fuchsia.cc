@@ -9,13 +9,13 @@
 namespace ui {
 
 int CalculateIdleTime() {
-  // TODO(crbug.com/1133867): Implement this.
+  // TODO(crbug.com/40151210): Implement this.
   NOTIMPLEMENTED();
   return 0;
 }
 
 bool CheckIdleStateIsLocked() {
-  // TODO(crbug.com/1133867): Implement this.
+  // TODO(crbug.com/40151210): Implement this.
   NOTIMPLEMENTED();
   return false;
 }

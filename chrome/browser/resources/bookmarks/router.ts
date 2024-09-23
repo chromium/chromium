@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
-import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
-
+import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
 import {BOOKMARKS_BAR_ID} from './constants.js';
-import {getTemplate} from './router.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 
 const BookmarksRouterElementBase = StoreClientMixin(PolymerElement);
@@ -25,23 +22,11 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
   }
 
   static get template() {
-    return getTemplate();
+    return null;
   }
 
   static get properties() {
     return {
-      queryParams_: Object,
-
-      query_: {
-        type: String,
-        observer: 'onQueryChanged_',
-      },
-
-      urlQuery_: {
-        type: String,
-        observer: 'onUrlQueryChanged_',
-      },
-
       searchTerm_: {
         type: String,
         value: '',
@@ -51,16 +36,13 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     };
   }
 
-  private query_: string;
-  private queryParams_: {q?: string, id?: string};
   private searchTerm_: string = '';
   private selectedId_: string;
-  private urlQuery_: string;
   private debounceJob_: Debouncer;
+  private queryListener_: EventListener|null = null;
 
   static get observers() {
     return [
-      'onQueryParamsChanged_(queryParams_)',
       'onStateChanged_(searchTerm_, selectedId_)',
     ];
   }
@@ -70,11 +52,26 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     this.watch('selectedId_', state => state.selectedFolder);
     this.watch('searchTerm_', state => state.search.term);
     this.updateFromStore();
+
+    const router = CrRouter.getInstance();
+    router.setDwellTime(200);
+    this.onQueryParamsChanged_(router.getQueryParams());
+    this.queryListener_ = (e: Event) =>
+        this.onQueryParamsChanged_((e as CustomEvent<URLSearchParams>).detail);
+    router.addEventListener(
+        'cr-router-query-params-changed', this.queryListener_);
   }
 
-  private onQueryParamsChanged_() {
-    const searchTerm = this.queryParams_.q || '';
-    let selectedId = this.queryParams_.id;
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    CrRouter.getInstance().removeEventListener(
+        'cr-router-query-params-changed', this.queryListener_);
+    this.queryListener_ = null;
+  }
+
+  private onQueryParamsChanged_(newParams: URLSearchParams) {
+    const searchTerm = newParams.get('q') || '';
+    let selectedId = newParams.get('id');
     if (!selectedId && !searchTerm) {
       selectedId = BOOKMARKS_BAR_ID;
     }
@@ -94,29 +91,19 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     }
   }
 
-  private onQueryChanged_(_current: (string|null), previous: (string|null)) {
-    if (previous !== undefined) {
-      this.urlQuery_ = this.query_;
-    }
-  }
-
-  private onUrlQueryChanged_() {
-    this.query_ = this.urlQuery_;
-  }
-
   private onStateChanged_() {
     this.debounceJob_ = Debouncer.debounce(
         this.debounceJob_, microTask, () => this.updateQueryParams_());
   }
 
   private updateQueryParams_() {
+    const queryParams = new URLSearchParams();
     if (this.searchTerm_) {
-      this.queryParams_ = {q: this.searchTerm_};
+      queryParams.set('q', this.searchTerm_);
     } else if (this.selectedId_ !== BOOKMARKS_BAR_ID) {
-      this.queryParams_ = {id: this.selectedId_};
-    } else {
-      this.queryParams_ = {};
+      queryParams.set('id', this.selectedId_);
     }
+    CrRouter.getInstance().setQueryParams(queryParams);
   }
 }
 

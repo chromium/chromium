@@ -27,7 +27,7 @@
 // Initializes `self` with a `feedType` and a `sortType`.
 - (instancetype)initWithFeedType:(FeedType)feedType
            followingFeedSortType:(FollowingFeedSortType)sortType {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _feedType = feedType;
     _followingFeedSortType = sortType;
   }

@@ -72,7 +72,7 @@ SourceId ConvertToSourceId(int64_t other_id, SourceIdType id_type) {
   // DCHECK is to restrict the usage of WEBAPK_ID, PAYMENT_APP_ID, and
   // WEB_IDENTITY_ID. These should use the specific
   // |UkmRecorder::GetSourceIdFor*() methods instead.
-  // TODO(crbug.com/1046964): Ideally we should restrict
+  // TODO(crbug.com/40671101): Ideally we should restrict
   // SourceIdObj::FromOtherId() as well.
   DCHECK(id_type != SourceIdType::WEBAPK_ID);
   DCHECK(id_type != SourceIdType::PAYMENT_APP_ID);

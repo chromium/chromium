@@ -8,11 +8,7 @@ import os
 import subprocess
 import sys
 
-
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
+import common
 
 
 def ParseTestList(test_list_contents):
@@ -59,7 +55,7 @@ def FilterMatchesTest(filter_string, test_string):
 def main_run(args):
   binary_name = args.args[0]
   test_filter_file = args.args[1]
-  base_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
+  base_path = args.build_dir
   list_tests_output = subprocess.check_output(
       [os.path.join(base_path, binary_name), '--gtest_list_tests'])
   tests = ParseTestList(list_tests_output)
@@ -86,7 +82,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-    'run': main_run,
-    'compile_targets': main_compile_targets,
+      'run': main_run,
+      'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

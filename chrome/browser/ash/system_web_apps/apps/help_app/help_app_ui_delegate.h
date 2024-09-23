@@ -15,10 +15,6 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace apps {
-class DeviceInfoManager;
-}  // namespace apps
-
 namespace ash {
 
 /**
@@ -35,21 +31,21 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
 
   // HelpAppUIDelegate:
   std::optional<std::string> OpenFeedbackDialog() override;
+  void ShowOnDeviceAppControls() override;
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;
   PrefService* GetLocalState() override;
   void LaunchMicrosoft365Setup() override;
-  void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
                          callback) override;
   std::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
       const GURL& url) override;
+  void OpenSettings(help_app::mojom::SettingsComponent component) override;
 
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
-  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 
 }  // namespace ash

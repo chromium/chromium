@@ -33,7 +33,7 @@ constexpr std::string FormatTypeLower(ui::InputDeviceType value) {
     case ui::INPUT_DEVICE_UNKNOWN:
       return "unknown";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 constexpr ui::InputDeviceType kDeviceTypeList[] = {
@@ -67,7 +67,7 @@ std::ostream& operator<<(std::ostream& os, DeviceCategory value) {
     case kUncategorizedDevices:
       return os << "uncategorized";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string DescribeDisplayCalibrationPoint(

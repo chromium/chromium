@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/bluetooth/bluetooth_device.h"
 
 #include <stddef.h>
@@ -606,7 +611,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
   InitWithFakeAdapter();
 
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/706043): Remove #if once StartLowEnergyDiscoverySession is
+  // TODO(crbug.com/41309944): Remove #if once StartLowEnergyDiscoverySession is
   // implemented for bluez.
   StartLowEnergyDiscoverySession();
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
@@ -636,7 +641,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
   // Receive Advertisement with no flags and no service and manufacturer data.
   SimulateLowEnergyDevice(3);
 
-// TODO(crbug.com/707039): Remove #if once the BlueZ caching behavior is
+// TODO(crbug.com/41310506): Remove #if once the BlueZ caching behavior is
 // changed.
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
     !defined(USE_CAST_BLUETOOTH_ADAPTER)
@@ -681,7 +686,7 @@ TEST_F(BluetoothTest, MAYBE_GetServiceDataUUIDs_GetServiceDataForUUID) {
       *device2->GetServiceDataForUUID(BluetoothUUID(kTestUUIDImmediateAlert)));
 
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/706043): Remove #if once StartLowEnergyDiscoverySession is
+  // TODO(crbug.com/41309944): Remove #if once StartLowEnergyDiscoverySession is
   // implemented for bluez.
   // Stop discovery.
   discovery_sessions_[0]->Stop(GetCallback(Call::EXPECTED),
@@ -872,7 +877,7 @@ TEST_F(BluetoothTest, MAYBE_DeviceAdvertisementReceived) {
             observer.last_tx_power().value_or(-1));
 
   // BluetoothDevice::GetAppearance() is not implemented on all platforms.
-  // TODO(crbug.com/588083): Check this property when it is implemented.
+  // TODO(crbug.com/41240161): Check this property when it is implemented.
 
   const device::BluetoothDevice::UUIDList kTestAdvertisedUUIDs = {
       BluetoothUUID(kTestUUIDGenericAccess),
@@ -1406,7 +1411,7 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
 
   // The check below is not currently working on Android and Mac because the
   // GetAppearance() method is not implemented on those platforms.
-  // TODO(https://crbug.com/588083): Enable the check below when GetAppearance()
+  // TODO(crbug.com/41240161): Enable the check below when GetAppearance()
   // is implemented for Android and Mac.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
   EXPECT_EQ(device->GetNameForDisplay(),
@@ -1844,7 +1849,7 @@ TEST_F(BluetoothTest,
   EXPECT_EQ(
 #if BUILDFLAG(IS_ANDROID)
       // Closing a GATT connection also disconnects on Android.
-      // TODO(crbug.com/1045648): this value probably shouldn't be different on
+      // TODO(crbug.com/40670359): this value probably shouldn't be different on
       // Android.
       2,
 #else
@@ -1946,8 +1951,8 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
 
   EXPECT_EQ(1, gatt_connection_attempts_);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/578191): Change to ERROR_AUTH_FAILED. We should be getting a
-  // callback only with the first error, but our android framework doesn't yet
+  // TODO(crbug.com/40452547): Change to ERROR_AUTH_FAILED. We should be getting
+  // a callback only with the first error, but our android framework doesn't yet
   // support sending different errors.
   // On Windows, any GattConnectionError will result in ERROR_FAILED.
   EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_code_);

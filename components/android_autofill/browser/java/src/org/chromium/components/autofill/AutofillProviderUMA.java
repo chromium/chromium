@@ -85,16 +85,11 @@ public class AutofillProviderUMA {
     // public static final int DEPRECATED_DOM_MUTATION_AFTER_XHR = 3;
     public static final int PROBABLY_FORM_SUBMITTED = 4;
     public static final int FORM_SUBMISSION = 5;
-    // This bucket is not recorded at the moment because it can only be recorded in relation with
-    // password manager (which doesn't exist in web view).
     public static final int DOM_MUTATION_AFTER_AUTOFILL = 6;
     public static final int SUBMISSION_SOURCE_HISTOGRAM_COUNT = 7;
 
     // The million seconds from the autofill session starting to the suggestion being displayed.
     public static final String UMA_AUTOFILL_SUGGESTION_TIME = "Autofill.WebView.SuggestionTime";
-
-    // A bitmask of observed Autofill events per session.
-    public static final String UMA_AUTOFILL_EVENTS = "Autofill.WebView.Events";
 
     // The expected time range of time is from 10ms to 2 seconds, and 50 buckets is sufficient.
     private static final long MIN_TIME_MILLIS = 10;
@@ -185,7 +180,6 @@ public class AutofillProviderUMA {
                         sessionValue,
                         AUTOFILL_SESSION_HISTOGRAM_COUNT);
             }
-            RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_EVENTS, mState, EVENT_MAX);
             if (mSuggestionTimeMillis != null) {
                 recordTimesHistogram(UMA_AUTOFILL_SUGGESTION_TIME, mSuggestionTimeMillis);
             }
@@ -361,7 +355,7 @@ public class AutofillProviderUMA {
     public void onFormSubmitted(int submissionSource) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
         recordSession();
-        // TODO(crbug.com/1484985): Consider moving the call to the ServerPredictionRecorder
+        // TODO(crbug.com/40933028): Consider moving the call to the ServerPredictionRecorder
         // into recordSession. Is it unclear why this is only recorded on form submission.
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
         // We record this no matter autofill service is disabled or not.

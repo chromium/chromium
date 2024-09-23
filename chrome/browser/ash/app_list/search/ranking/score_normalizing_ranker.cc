@@ -23,6 +23,8 @@ bool ShouldIgnoreProvider(ProviderType provider) {
     case ProviderType::kAnswerCard:
       // Types that only ever create one result:
     case ProviderType::kPlayStoreReinstallApp:
+    case ProviderType::kZeroStateHelpApp:
+    case ProviderType::kDesksAdminTemplate:
       // Internal types:
     case ProviderType::kUnknown:
     case ProviderType::kInternalPrivacyInfo:
@@ -40,18 +42,33 @@ std::string ProviderToString(ProviderType provider) {
 
 ScoreNormalizingRanker::ScoreNormalizingRanker(
     ScoreNormalizer::Params params,
-    PersistentProto<ScoreNormalizerProto> proto)
+    ash::PersistentProto<ScoreNormalizerProto> proto)
     : normalizer_(std::move(proto), params) {}
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
 void ScoreNormalizingRanker::UpdateResultRanks(ResultsMap& results,
                                                ProviderType provider) {
-  if (ShouldIgnoreProvider(provider))
+  if (ShouldIgnoreProvider(provider)) {
     return;
+  }
 
   auto it = results.find(provider);
   DCHECK(it != results.end());
+
+  // Skip normalization for continue section files - in continue section, files
+  // are either
+  // *   scored consistently based on the file timestamps (for
+  //     `ash::features::UseMixedFileLauncherContinueSection()`), or
+  // *   results from one provider are always preferred over the other, so
+  //     keeping existing scoring within the provider is sufficient.
+  if (provider == ProviderType::kZeroStateDrive ||
+      provider == ProviderType::kZeroStateFile) {
+    for (auto& result : it->second) {
+      result->scoring().set_normalized_relevance(result->relevance());
+    }
+    return;
+  }
 
   std::string provider_string = ProviderToString(provider);
   for (auto& result : it->second) {

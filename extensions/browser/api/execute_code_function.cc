@@ -9,7 +9,9 @@
 
 #include <optional>
 #include <utility>
+
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -133,6 +135,7 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     // scripting.executeScript does).
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
         std::move(sources), mojom::ExecutionWorld::kIsolated,
+        /*world_id=*/std::nullopt,
         wants_result ? blink::mojom::WantResultOption::kWantResult
                      : blink::mojom::WantResultOption::kNoResult,
         user_gesture() ? blink::mojom::UserActivationOption::kActivate
@@ -218,7 +221,7 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(
   auto root_frame_result = base::ranges::find(
       results, root_frame_id_, &ScriptExecutor::FrameResult::frame_id);
 
-  DCHECK(root_frame_result != results.end());
+  CHECK(root_frame_result != results.end(), base::NotFatalUntil::M130);
 
   // We just error out if we never injected in the root frame.
   // TODO(devlin): That's a bit odd, because other injections may have

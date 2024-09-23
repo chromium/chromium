@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,6 +37,7 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
   // Make sure this process terminates on OOM in the same mode as other Chrome
   // processes.
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
 
   base::PlatformThread::SetName("CrashpadMainThread");
 
@@ -61,7 +63,7 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
       L"--" + base::UTF8ToWide(process_type_switch) + L"=";
   const std::wstring user_data_dir_arg_prefix =
       L"--" + base::UTF8ToWide(user_data_dir_switch) + L"=";
-  base::EraseIf(argv, [&process_type_arg_prefix,
+  std::erase_if(argv, [&process_type_arg_prefix,
                        &user_data_dir_arg_prefix](const std::wstring& str) {
     return base::StartsWith(str, process_type_arg_prefix,
                             base::CompareCase::SENSITIVE) ||
@@ -70,7 +72,8 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
            (!str.empty() && str[0] == L'/');
   });
 
-  std::unique_ptr<char* []> argv_as_utf8(new char*[argv.size() + 1]);
+  base::HeapArray<char*> argv_as_utf8 =
+      base::HeapArray<char*>::Uninit(argv.size() + 1);
   std::vector<std::string> storage;
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
@@ -91,7 +94,7 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
 #endif
 
   return crashpad::HandlerMain(static_cast<int>(storage.size()),
-                               argv_as_utf8.get(), &user_stream_data_sources);
+                               argv_as_utf8.data(), &user_stream_data_sources);
 }
 
 }  // namespace crash_reporter

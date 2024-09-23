@@ -15,6 +15,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +56,10 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   const std::string kGroup_ = "group";
   const std::string kType_ = "default";
   const ReportingEndpointGroupKey kGroupKey_ =
-      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_);
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                kOrigin_,
+                                kGroup_,
+                                ReportingTargetType::kDeveloper);
 };
 
 TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
@@ -66,7 +70,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0);
+                     0, ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -85,7 +89,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReports) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0);
+                     0, ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -104,7 +108,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearClients) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0);
+                     0, ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());
@@ -123,7 +127,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReportsAndClients) {
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
                      kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
-                     0);
+                     0, ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
   ASSERT_EQ(1u, cache()->GetEndpointCount());

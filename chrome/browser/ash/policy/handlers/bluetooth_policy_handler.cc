@@ -28,11 +28,39 @@ BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
       base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&BluetoothPolicyHandler::InitializeOnAdapterReady,
+                     weak_factory_.GetWeakPtr()));
+
   // Fire it once so we're sure we get an invocation on startup.
   OnBluetoothPolicyChanged();
 }
 
-BluetoothPolicyHandler::~BluetoothPolicyHandler() {}
+BluetoothPolicyHandler::~BluetoothPolicyHandler() {
+  if (adapter_) {
+    adapter_->RemoveObserver(this);
+  }
+}
+
+void BluetoothPolicyHandler::AdapterPresentChanged(
+    device::BluetoothAdapter* adapter,
+    bool present) {
+  SetBluetoothPolicy();
+}
+
+void BluetoothPolicyHandler::AdapterPoweredChanged(
+    device::BluetoothAdapter* adapter,
+    bool powered) {
+  SetBluetoothPolicy();
+}
+
+void BluetoothPolicyHandler::InitializeOnAdapterReady(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  adapter_ = std::move(adapter);
+  adapter_->AddObserver(this);
+
+  SetBluetoothPolicy();
+}
 
 void BluetoothPolicyHandler::OnBluetoothPolicyChanged() {
   ash::CrosSettingsProvider::TrustedStatus status =
@@ -42,8 +70,8 @@ void BluetoothPolicyHandler::OnBluetoothPolicyChanged() {
   if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
-  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &BluetoothPolicyHandler::SetBluetoothPolicy, weak_factory_.GetWeakPtr()));
+  new_policy_update_pending_ = true;
+  SetBluetoothPolicy();
 }
 
 void SetServiceAllowListSuccess() {
@@ -54,16 +82,19 @@ void SetServiceAllowListFailed() {
   SYSLOG(ERROR) << "Set ServiceAllowList Failed";
 }
 
-void BluetoothPolicyHandler::SetBluetoothPolicy(
-    scoped_refptr<device::BluetoothAdapter> adapter) {
+void BluetoothPolicyHandler::SetBluetoothPolicy() {
   // Get the updated policy.
   bool allow_bluetooth = true;
   const base::Value::List* allowed_services_list = nullptr;
   std::vector<device::BluetoothUUID> allowed_services;
 
+  if (!adapter_ || !adapter_->IsInitialized() || !adapter_->IsPresent() ||
+      !adapter_->IsPowered() || !new_policy_update_pending_) {
+    return;
+  }
+
   cros_settings_->GetBoolean(ash::kAllowBluetooth, &allow_bluetooth);
   if (!allow_bluetooth) {
-    adapter_ = adapter;
     adapter_->SetPowered(false, base::DoNothing(), base::DoNothing());
     adapter_->Shutdown();
   }
@@ -98,10 +129,14 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
     }
     SYSLOG(INFO) << info_stream.str();
 
-    adapter->SetServiceAllowList(allowed_services,
-                                 base::BindOnce(SetServiceAllowListSuccess),
-                                 base::BindOnce(SetServiceAllowListFailed));
+    adapter_->SetServiceAllowList(allowed_services,
+                                  base::BindOnce(SetServiceAllowListSuccess),
+                                  base::BindOnce(SetServiceAllowListFailed));
   }
+
+  // Reset the indicator to false to make sure we don't bother setting the same
+  // policy to the daemon, although it is harmless.
+  new_policy_update_pending_ = false;
 }
 
 }  // namespace policy

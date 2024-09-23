@@ -5,6 +5,11 @@ rootWebArea
 ++++++++button name='Button'
 ++++++++++staticText name='Button'
 ++++++++++++inlineTextBox name='Button'
+++++++paragraph
+++++++++button name='Button'
+++++++++++mark
+++++++++++++staticText name='Button'
+++++++++++++++inlineTextBox name='Button'
 ++++++paragraph ignored
 ++++++listBox
 ++++++++staticText name='Listbox'

@@ -29,12 +29,14 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -50,8 +52,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private static Callback<Fragment> sObserverForTest;
     private static final String EXPIRATION_DATE_SEPARATOR = "/";
     private static final String EXPIRATION_DATE_REGEX = "^(0[1-9]|1[0-2])\\/(\\d{2})$";
-    // TODO(crbug.com/1504662): Leverage the value from C++ code to have a single source of truth.
+    // TODO(crbug.com/40945216): Leverage the value from C++ code to have a single source of truth.
     private static final String AMEX_NETWORK_NAME = "amex";
+    static final String CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM =
+            "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
 
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
@@ -87,13 +91,13 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
-        mDoneButton = (Button) v.findViewById(R.id.button_primary);
-        mNameLabel = (TextInputLayout) v.findViewById(R.id.credit_card_name_label);
-        mNameText = (EditText) v.findViewById(R.id.credit_card_name_edit);
-        mNicknameLabel = (TextInputLayout) v.findViewById(R.id.credit_card_nickname_label);
-        mNicknameText = (EditText) v.findViewById(R.id.credit_card_nickname_edit);
-        mNumberLabel = (TextInputLayout) v.findViewById(R.id.credit_card_number_label);
-        mNumberText = (EditText) v.findViewById(R.id.credit_card_number_edit);
+        mDoneButton = v.findViewById(R.id.button_primary);
+        mNameLabel = v.findViewById(R.id.credit_card_name_label);
+        mNameText = v.findViewById(R.id.credit_card_name_edit);
+        mNicknameLabel = v.findViewById(R.id.credit_card_nickname_label);
+        mNicknameText = v.findViewById(R.id.credit_card_nickname_edit);
+        mNumberLabel = v.findViewById(R.id.credit_card_number_label);
+        mNumberText = v.findViewById(R.id.credit_card_number_edit);
 
         mNicknameText.addTextChangedListener(nicknameTextWatcher());
         mNicknameText.setOnFocusChangeListener(
@@ -106,27 +110,24 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         if (mIsCvcStorageEnabled) {
             LinearLayout creditCardExpirationSpinnerContainer =
-                    (LinearLayout) v.findViewById(R.id.credit_card_expiration_spinner_container);
-            TextView creditCardExpirationLabel =
-                    (TextView) v.findViewById(R.id.credit_card_expiration_label);
+                    v.findViewById(R.id.credit_card_expiration_spinner_container);
+            TextView creditCardExpirationLabel = v.findViewById(R.id.credit_card_expiration_label);
             creditCardExpirationSpinnerContainer.setVisibility(View.GONE);
             creditCardExpirationLabel.setVisibility(View.GONE);
 
-            mExpirationDate = (EditText) v.findViewById(R.id.expiration_month_and_year);
+            mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
             mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
 
-            mCvc = (EditText) v.findViewById(R.id.cvc);
-            mCvcHintImage = (ImageView) v.findViewById(R.id.cvc_hint_image);
+            mCvc = v.findViewById(R.id.cvc);
+            mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
             mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
             RelativeLayout creditCardExpirationAndCvcLayout =
-                    (RelativeLayout) v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
+                    v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
             creditCardExpirationAndCvcLayout.setVisibility(View.GONE);
 
-            mExpirationMonth =
-                    (Spinner) v.findViewById(R.id.autofill_credit_card_editor_month_spinner);
-            mExpirationYear =
-                    (Spinner) v.findViewById(R.id.autofill_credit_card_editor_year_spinner);
+            mExpirationMonth = v.findViewById(R.id.autofill_credit_card_editor_month_spinner);
+            mExpirationYear = v.findViewById(R.id.autofill_credit_card_editor_year_spinner);
 
             addSpinnerAdapters();
         }
@@ -179,6 +180,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
+    @SuppressWarnings("DuplicateDateFormatField") // There's probably a bug here...
     void addSpinnerAdapters() {
         ArrayAdapter<CharSequence> adapter =
                 new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);
@@ -269,15 +271,17 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     protected boolean saveEntry() {
         // Remove all spaces in editText.
         String cardNumber = mNumberText.getText().toString().replaceAll("\\s+", "");
-        PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
         // Issuer network will be empty if credit card number is not valid.
         if (TextUtils.isEmpty(
-                personalDataManager.getBasicCardIssuerNetwork(
+                PersonalDataManager.getBasicCardIssuerNetwork(
                         cardNumber, /* emptyIfInvalid= */ true))) {
             mNumberLabel.setError(
                     mContext.getString(R.string.payments_card_number_invalid_validation_message));
             return false;
         }
+
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(getProfile());
         CreditCard card = personalDataManager.getCreditCardForNumber(cardNumber);
         card.setGUID(mGUID);
         card.setOrigin(SETTINGS_ORIGIN);
@@ -296,7 +300,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             card.setMonth(AutofillLocalCardEditor.getExpirationMonth(expirationDate));
             card.setYear(AutofillLocalCardEditor.getExpirationYear(expirationDate));
             card.setCvc(mCvc.getText().toString().trim());
-            // TODO(crbug.com/1511305): Move metric logging to a separate class.
+            // TODO(crbug.com/41483891): Move metric logging to a separate class.
             if (mIsNewEntry) {
                 if (!card.getCvc().isEmpty()) {
                     RecordUserAction.record("AutofillCreditCardsAddedWithCvc");
@@ -335,6 +339,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         card.setBillingAddressId(((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
         card.setNickname(mNicknameText.getText().toString().trim());
+
+        // Get the current card count before setting the new card.
+        int currentCardCount = personalDataManager.getCreditCardCountForSettings();
+
         // Set GUID for adding a new card.
         card.setGUID(personalDataManager.setCreditCard(card));
         if (mIsNewEntry) {
@@ -342,6 +350,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             if (!card.getNickname().isEmpty()) {
                 RecordUserAction.record("AutofillCreditCardsAddedWithNickname");
             }
+            RecordHistogram.recordCount100Histogram(
+                    CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM, currentCardCount);
         }
         return true;
     }
@@ -349,7 +359,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     @Override
     protected void deleteEntry() {
         if (mGUID != null) {
-            PersonalDataManager.getInstance().deleteCreditCard(mGUID);
+            PersonalDataManagerFactory.getForProfile(getProfile()).deleteCreditCard(mGUID);
         }
     }
 
@@ -498,8 +508,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     }
 
     public static boolean isAmExCard(String cardNumber) {
-        return PersonalDataManager.getInstance()
-                .getBasicCardIssuerNetwork(cardNumber, /* emptyIfInvalid= */ false)
+        return PersonalDataManager.getBasicCardIssuerNetwork(
+                        cardNumber, /* emptyIfInvalid= */ false)
                 .equals(AMEX_NETWORK_NAME);
     }
 }

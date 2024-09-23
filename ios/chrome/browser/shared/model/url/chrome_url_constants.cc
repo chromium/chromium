@@ -24,6 +24,8 @@ const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUINTPTilesInternalsURL[] = "chrome://ntp-tiles-internals/";
 const char kChromeUIOfflineURL[] = "chrome://offline/";
+const char kChromeUIOnDeviceLlmInternalsURL[] =
+    "chrome://on-device-llm-internals/";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
 const char kChromeUISettingsURL[] = "chrome://settings/";
 const char kChromeUITermsURL[] = "chrome://terms/";
@@ -51,6 +53,7 @@ const char kChromeUINewTabHost[] = "newtab";
 const char kChromeUINTPTilesInternalsHost[] = "ntp-tiles-internals";
 const char kChromeUIOfflineHost[] = "offline";
 const char kChromeUIOmahaHost[] = "omaha";
+const char kChromeUIOnDeviceLlmInternalsHost[] = "on-device-llm-internals";
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPolicyHost[] = "policy";
@@ -62,6 +65,7 @@ const char kChromeUIURLKeyedMetricsHost[] = "ukm";
 const char kChromeUIUserActionsHost[] = "user-actions";
 const char kChromeUIUserDefaultsInternalsHost[] = "userdefaults-internals";
 const char kChromeUIVersionHost[] = "version";
+const char kChromeUIDownloadsHost[] = "downloads";
 
 // Add hosts here to be included in chrome://chrome-urls (about:about).
 // These hosts will also be suggested by BuiltinProvider.
@@ -148,3 +152,8 @@ const char kManagementLearnMoreURL[] =
 
 const char kEnhancedSafeBrowsingLearnMoreURL[] =
     "https://support.google.com/chrome?p=safe_browsing_preferences";
+
+const char kMyActivityURL[] = "https://myactivity.google.com/myactivity";
+
+const char kLearnMoreLensURL[] =
+    "https://support.google.com/chrome/?p=google_lens_ios";

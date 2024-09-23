@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -41,7 +42,14 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
    public:
     // Called when an affect has change its support state.
     virtual void OnEffectSupportStateChanged(VcEffectId effect_id,
-                                             bool is_supported) = 0;
+                                             bool is_supported) {}
+
+    // Called when an effect changes. Currently, only observes
+    // `kStudioLook` effect.
+    virtual void OnEffectChanged(VcEffectId effect_id, bool is_on) {}
+
+    // Called when the video conference bubble is opened.
+    virtual void OnVideoConferenceBubbleOpened() {}
   };
 
   // Adds/removes `VideoConferenceTrayEffectsManager::Observer`.
@@ -91,6 +99,12 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // Notifies all observers about effect support state changed.
   void NotifyEffectSupportStateChanged(VcEffectId effect_id, bool is_supported);
 
+  // Notifies all observers about effect state changed.
+  void NotifyEffectChanged(VcEffectId effect_id, bool is_on);
+
+  // Notifies all observers about the video conference bubble opened.
+  void NotifyVideoConferenceBubbleOpened();
+
   // Records the current state of all effects to metrics.
   void RecordInitialStates();
 
@@ -102,6 +116,13 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // `FakeVideoConferenceTrayEffectsManager`.
   virtual video_conference::VcTileUiController* GetUiControllerForEffectId(
       VcEffectId effect_id);
+
+  // Returns the DLC ids associated with `effect_id`. A VC effect may be
+  // associated with zero, one, or multiple DLCs; the length of the returned
+  // vector corresponds to how many DLCs are associated with the effect.
+  // Note: This should only be overridden for testing purposes, and only by
+  // `FakeVideoConferenceTrayEffectsManager`.
+  virtual std::vector<std::string> GetDlcIdsForEffectId(VcEffectId effect_id);
 
  private:
   // Returns a vector of `VcHostedEffect` objects of type
@@ -125,6 +146,8 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   std::vector<raw_ptr<VcEffectsDelegate, VectorExperimental>> effect_delegates_;
 
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<VideoConferenceTrayEffectsManager> weak_factory_{this};
 };
 
 }  // namespace ash

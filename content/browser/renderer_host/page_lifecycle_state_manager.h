@@ -100,8 +100,8 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // This represents the frozen state set by |SetIsFrozen|, which corresponds to
   // WebContents::SetPageFrozen.  Effective frozen state, i.e. per-page frozen
   // state is computed based on |is_in_back_forward_cache_| and
-  // |is_set_frozen_called_|.
-  bool is_set_frozen_called_ = false;
+  // |frozen_explicitly_|.
+  bool frozen_explicitly_ = false;
 
   bool is_in_back_forward_cache_ = false;
   bool eviction_enabled_ = false;
@@ -121,7 +121,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   const raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 
   // This is the per-page state computed based on web contents / tab lifecycle
-  // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
+  // states, i.e. |frozen_explicitly_|, |is_in_back_forward_cache_| and
   // |frame_tree_visibility_|.
   blink::mojom::PageLifecycleStatePtr last_acknowledged_state_;
 

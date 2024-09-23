@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_GPU_BROWSER_CHILD_PROCESS_BACKGROUNDED_BRIDGE_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/port_provider_mac.h"

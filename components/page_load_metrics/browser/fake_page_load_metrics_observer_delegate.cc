@@ -45,7 +45,7 @@ std::optional<base::TimeDelta> TimeDiff(
 
 std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstForeground() const {
-  return std::optional<base::TimeDelta>();
+  return std::nullopt;
 }
 
 std::optional<base::TimeDelta>
@@ -111,7 +111,7 @@ FakePageLoadMetricsObserverDelegate::GetPageEndUserInitiatedInfo() const {
 
 std::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToPageEnd() const {
-  return std::optional<base::TimeDelta>();
+  return std::nullopt;
 }
 
 const base::TimeTicks& FakePageLoadMetricsObserverDelegate::GetPageEndTime()

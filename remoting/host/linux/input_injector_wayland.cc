@@ -7,11 +7,12 @@
 #include <gtk/gtk.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -382,7 +383,7 @@ void InputInjectorWayland::Core::InjectMouseEventHelper(
     webrtc::DesktopVector new_mouse_position(event.x(), event.y());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Interim hack to handle display rotation on Chrome OS.
-    // TODO(crbug.com/439287): Remove this when Chrome OS has completely
+    // TODO(crbug.com/40396937): Remove this when Chrome OS has completely
     // migrated to Ozone.
     gfx::PointF screen_location = point_transformer_.ToScreenCoordinates(
         gfx::PointF(event.x(), event.y()));

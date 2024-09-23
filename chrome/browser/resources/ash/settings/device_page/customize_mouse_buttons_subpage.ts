@@ -12,6 +12,7 @@ import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,7 +23,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, InputDeviceSettingsProviderInterface, Mouse, MousePolicies} from './input_device_settings_types.js';
+import {ActionChoice, InputDeviceSettingsProviderInterface, MetaKey, Mouse, MouseButtonConfig, MousePolicies} from './input_device_settings_types.js';
 import {getPrefPolicyFields} from './input_device_settings_utils.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =
@@ -68,11 +69,9 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       },
 
       /**
-       * Use hasLauncherButton to decide which meta key icon to display.
+       * Use metaKey to decide which meta key icon to display.
        */
-      hasLauncherButton_: {
-        type: Boolean,
-      },
+      metaKey_: Object,
     };
   }
 
@@ -93,15 +92,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   private previousRoute_: Route|null = null;
   private primaryRightPref_: chrome.settingsPrivate.PrefObject;
   private isInitialized_: boolean = false;
-  private hasLauncherButton_: boolean;
+  private metaKey_: MetaKey = MetaKey.kSearch;
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
     this.addEventListener('button-remapping-changed', this.onSettingsChanged);
-    this.hasLauncherButton_ =
-        (await this.inputDeviceSettingsProvider_.hasLauncherButton())
-            ?.hasLauncherButton;
+    this.metaKey_ =
+        (await this.inputDeviceSettingsProvider_.getMetaKeyToDisplay())
+            ?.metaKey;
   }
 
   override disconnectedCallback(): void {
@@ -131,6 +130,9 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       await this.initializeMouse();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
+    getAnnouncerInstance().announce(
+        this.getcustomizeMouseButtonsNudgeHeader_() + ' ' +
+        this.getDescription_());
   }
 
   /**
@@ -204,6 +206,14 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     }
     return this.i18n(
         'customizeButtonSubpageDescription', this.selectedMouse!.name);
+  }
+
+  private getcustomizeMouseButtonsNudgeHeader_(): string {
+    if (this.selectedMouse?.mouseButtonConfig !== MouseButtonConfig.kNoConfig) {
+      return this.i18n('customizeMouseButtonsNudgeHeaderWithMetadata');
+    } else {
+      return this.i18n('customizeMouseButtonsNudgeHeaderWithoutMetadata');
+    }
   }
 }
 

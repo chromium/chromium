@@ -66,14 +66,11 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
 
-  bool fallback_to_software_gl = false;
   bool disable_gl_drawing = true;
 
-  CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-      impl, fallback_to_software_gl));
+  CHECK(gl::init::InitializeStaticGLBindingsImplementation(impl));
   GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*gpu_preference=*/gl::GpuPreference::kDefault);
+      disable_gl_drawing, init_extensions, gl::GpuPreference::kDefault);
   CHECK(display);
   return display;
 }
@@ -91,19 +88,16 @@ GLDisplay* GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
 
 // static
 GLDisplay* GLSurfaceTestSupport::InitializeOneOffImplementation(
-    GLImplementationParts impl,
-    bool fallback_to_software_gl) {
+    GLImplementationParts impl) {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
 
   bool disable_gl_drawing = false;
   bool init_extensions = true;
 
-  CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-      impl, fallback_to_software_gl));
+  CHECK(gl::init::InitializeStaticGLBindingsImplementation(impl));
   GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*gpu_preference=*/gl::GpuPreference::kDefault);
+      disable_gl_drawing, init_extensions, gl::GpuPreference::kDefault);
   CHECK(display);
   return display;
 }
@@ -117,7 +111,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
 #endif
 
   return InitializeOneOffImplementation(
-      GLImplementationParts(kGLImplementationMockGL), false);
+      GLImplementationParts(kGLImplementationMockGL));
 }
 
 // static
@@ -128,7 +122,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
   return InitializeOneOffImplementation(
-      GLImplementationParts(kGLImplementationStubGL), false);
+      GLImplementationParts(kGLImplementationStubGL));
 }
 
 // static
@@ -139,7 +133,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithNullAngleBindings() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
   auto* display = InitializeOneOffImplementation(
-      GLImplementationParts(gl::ANGLEImplementation::kNull), false);
+      GLImplementationParts(gl::ANGLEImplementation::kNull));
 
   DCHECK_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
   return display;

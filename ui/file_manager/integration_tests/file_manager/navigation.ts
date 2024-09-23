@@ -4,13 +4,14 @@
 
 import {ENTRIES, RootPath} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
+
 
 /** Tests that the Backspace key navigates to parent directory.  */
 export async function navigateToParent() {
   // Open Files app on local Downloads.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // It should start in Downloads.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(

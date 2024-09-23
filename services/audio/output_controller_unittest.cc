@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -101,6 +102,15 @@ class MockOutputControllerSyncReader : public OutputController::SyncReader {
                     const media::AudioGlitchInfo& glitch_info));
   MOCK_METHOD2(Read, bool(AudioBus* dest, bool is_mixing));
   MOCK_METHOD0(Close, void());
+};
+
+class MockStreamFactory {
+ public:
+  MOCK_METHOD(media::AudioOutputStream*,
+              CreateStream,
+              (const std::string&,
+               const media::AudioParameters&,
+               base::OnceClosure on_device_change_callback));
 };
 
 // Wraps an AudioOutputStream instance, calling DidXYZ() mock methods for test
@@ -218,7 +228,7 @@ class MockAudioOutputStream : public AudioOutputStream,
 
   void OnError(ErrorType type) override {
     // Fake stream doesn't send errors.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   raw_ptr<AudioOutputStream, DanglingUntriaged> impl_;
@@ -420,6 +430,24 @@ class OutputControllerTest : public ::testing::Test {
     Mock::VerifyAndClearExpectations(&mock_event_handler_);
   }
 
+  void SwitchDeviceId(bool expect_play_event = true,
+                      const std::string& device_id = "deviceId_1") {
+    if (expect_play_event) {
+      EXPECT_CALL(mock_event_handler_, OnControllerPlaying());
+    } else {
+      EXPECT_CALL(mock_event_handler_, OnControllerPlaying()).Times(0);
+    }
+
+    EXPECT_CALL(mock_event_handler_, OnControllerPaused()).Times(0);
+
+    // Never expect a OnControllerError() call.
+    EXPECT_CALL(mock_event_handler_, OnControllerError()).Times(0);
+
+    controller_->SwitchAudioOutputDeviceId(device_id);
+
+    Mock::VerifyAndClearExpectations(&mock_event_handler_);
+  }
+
   void StartMutingBeforePlaying() { controller_->StartMuting(); }
 
   void StartMutingWhilePlaying() {
@@ -529,6 +557,56 @@ TEST_F(OutputControllerTest, PlayPauseDeviceChangeClose) {
 TEST_F(OutputControllerTest, CreateDeviceChangeClose) {
   Create();
   ChangeDevice(/*expect_play_event=*/false);
+  Close();
+}
+
+TEST_F(OutputControllerTest, SwitchDeviceClose) {
+  Create();
+  SwitchDeviceId(/*expect_play_event=*/false);
+  Close();
+}
+
+TEST_F(OutputControllerTest, SwitchDevicePlayClose) {
+  Create();
+  SwitchDeviceId(/*expect_play_event=*/false);
+  Play();
+  Close();
+}
+
+TEST_F(OutputControllerTest, PlayPauseSwitchDevicePlayClose) {
+  Create();
+  Play();
+  Pause();
+  SwitchDeviceId(/*expect_play_event=*/false);
+  Play();
+  Close();
+}
+
+TEST_F(OutputControllerTest, PlaySwitchDeviceSwitchDevice2Close) {
+  Create();
+  Play();
+  SwitchDeviceId();
+  SwitchDeviceId(/*expect_play_event=*/true, /*device_id*/ "deviceId_2");
+  Close();
+}
+
+TEST_F(OutputControllerTest, PlaySwitchDevicePausePlayPauseClose) {
+  Create();
+  Play();
+  SwitchDeviceId();
+  Pause();
+  Play();
+  Pause();
+  Close();
+}
+
+TEST_F(OutputControllerTest, PlaySwitchDeviceSwitchDeviceClose) {
+  Create();
+  Play();
+  SwitchDeviceId();
+  // It does not expect Play event because the device is switched because
+  // the new device is the same as the current device.
+  SwitchDeviceId(/*expect_play_event=*/false);
   Close();
 }
 
@@ -930,6 +1008,69 @@ TEST(OutputControllerMixingTest,
 
   Mock::VerifyAndClearExpectations(&mock_sync_reader);
 
+  controller.Close();
+  audio_manager.Shutdown();
+}
+
+TEST(OutputControllerMixingTest,
+     SwitchDeviceIdManagedDeviceOutputStreamCreateCallbackCorrectly) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  // Controller creation parameters.
+  AudioManagerForControllerTest audio_manager;
+  NiceMock<MockOutputControllerEventHandler> mock_event_handler;
+  NiceMock<MockOutputControllerSyncReader> mock_sync_reader;
+  const std::string controller_device_id("deviceId_1");
+  const std::string switched_device_id("deviceId_2");
+  const AudioParameters controller_params(GetTestParams());
+
+  // Mock outputstream which will be returned to the OutputController when it
+  // calls ManagedDeviceOutputStreamCreateCallback.
+  StrictMock<MockAudioOutputStreamForMixing> mock_output_stream;
+
+  MockStreamFactory mock_stream_factory;
+
+  // Validates the called CreateStream has expected device id.
+  EXPECT_CALL(mock_stream_factory, CreateStream(controller_device_id, _, _))
+      .Times(1);
+  EXPECT_CALL(mock_stream_factory, CreateStream(switched_device_id, _, _))
+      .Times(1);
+  ON_CALL(mock_stream_factory, CreateStream(_, _, _))
+      .WillByDefault(Return(&mock_output_stream));
+
+  ON_CALL(mock_output_stream, Open()).WillByDefault(Return(true));
+  OutputController::ManagedDeviceOutputStreamCreateCallback
+      mock_create_stream_cb =
+          base::BindRepeating(&MockStreamFactory::CreateStream,
+                              base::Unretained(&mock_stream_factory));
+
+  // Check that controller called |mock_create_stream_cb| on its CreateStream(),
+  // and uses the result AudioOutputStream.
+  EXPECT_CALL(mock_output_stream, Open()).Times(1);
+
+  OutputController controller(&audio_manager, &mock_event_handler,
+                              controller_params, controller_device_id,
+                              &mock_sync_reader,
+                              std::move(mock_create_stream_cb));
+
+  controller.CreateStream();
+
+  Mock::VerifyAndClearExpectations(&mock_output_stream);
+
+  {
+    // When `SwitchAudioOutputDeviceId()` is called, it will call
+    // `ManagedDeviceOutputStreamCreateCallback` callback, which make
+    // OutputController to synchronously close the output stream, and then
+    // it will call `mock_create_stream_cb` to create a new one.
+    testing::InSequence s;
+    EXPECT_CALL(mock_output_stream, Close()).Times(1);
+    EXPECT_CALL(mock_output_stream, Open()).Times(1);
+
+    controller.SwitchAudioOutputDeviceId(switched_device_id);
+    Mock::VerifyAndClearExpectations(&mock_output_stream);
+  }
+
+  EXPECT_CALL(mock_output_stream, Close()).Times(1);
   controller.Close();
   audio_manager.Shutdown();
 }

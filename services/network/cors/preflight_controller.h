@@ -45,7 +45,7 @@ extern const char kPreflightWarningHistogramName[];
 
 // Dictates how the PreflightController should treat PNA preflights.
 //
-// TODO(https://crbug.com/1268378): Remove this once enforcement is always on.
+// TODO(crbug.com/40204695): Remove this once enforcement is always on.
 enum class PrivateNetworkAccessPreflightBehavior {
   // Enforce the presence of PNA headers for PNA preflights.
   kEnforce,
@@ -85,13 +85,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // `net::ERR_FAILED` nor `net::OK`.
   // If `net_error` is `net::OK`, then `cors_error_status` may be non-nullopt to
   // indicate a warning-only error arose due to Private Network Access.
-  // TODO(https://crbug.com/1268378): Once PNA preflights are always enforced,
+  // TODO(crbug.com/40204695): Once PNA preflights are always enforced,
   // stop populating `cors_error_status` when `net_error` is `net::OK`.
   //
   // `has_autorization_covered_by_wildcard` is true iff the request carries an
   // "authorization" header and that header is covered by the wildcard in the
   // preflight response.
-  // TODO(https://crbug.com/1176753): Remove
+  // TODO(crbug.com/40168475): Remove
   // `has_authorization_covered_by_wildcard` once the investigation is done.
   using CompletionCallback =
       base::OnceCallback<void(int net_error,
@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
 
-  // TODO(https://crbug.com/1268378): Remove this once enforcement is always on.
+  // TODO(crbug.com/40204695): Remove this once enforcement is always on.
   using EnforcePrivateNetworkAccessHeader =
       base::StrongAlias<class EnforcePrivateNetworkAccessHeaderTag, bool>;
 

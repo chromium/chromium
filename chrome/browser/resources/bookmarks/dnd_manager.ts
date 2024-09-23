@@ -346,7 +346,7 @@ export class DndManager {
 
     if (isBookmarkItem(dragElement)) {
       const displayingItems = getDisplayedList(state);
-      // TODO(crbug.com/980427): Make this search more time efficient to avoid
+      // TODO(crbug.com/41468833): Make this search more time efficient to avoid
       // delay on large amount of bookmark dragging.
       for (const itemId of displayingItems) {
         for (const element of dragData.elements) {

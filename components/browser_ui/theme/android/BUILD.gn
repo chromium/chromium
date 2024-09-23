@@ -8,6 +8,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/values-night/colors.xml",
     "java/res/values-night/themes.xml",
+    "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/themes.xml",
   ]

@@ -96,6 +96,7 @@ export interface QueryState {
   incremental: boolean;
   querying: boolean;
   searchTerm: string;
+  after?: string;
 }
 
 export interface QueryResult {

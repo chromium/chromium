@@ -4,11 +4,7 @@
 
 #include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
 
-#include <lib/fdio/spawn.h>
-#include <stdio.h>
-#include <zircon/processargs.h>
-#include <zircon/syscalls/policy.h>
-
+#include <fidl/fuchsia.scheduler/cpp/fidl.h>
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
@@ -24,8 +20,12 @@
 #include <fuchsia/tracing/perfetto/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <lib/fdio/spawn.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
+#include <stdio.h>
+#include <zircon/processargs.h>
+#include <zircon/syscalls/policy.h>
 
 #include <memory>
 #include <utility>
@@ -72,7 +72,7 @@ struct SandboxConfig {
 // Prevent incorrect indentation due to the preprocessor lines within `({...})`:
 // clang-format off
 constexpr auto kMinimalServices = base::make_span((const char* const[]){
-    // TODO(crbug.com/1286960): Remove this and/or intl below if an alternative
+    // TODO(crbug.com/40815933): Remove this and/or intl below if an alternative
     // solution does not require access to the service in all processes. For now
     // these services are made available everywhere because they are required by
     // base::SysInfo.
@@ -98,10 +98,12 @@ constexpr SandboxConfig kMinimalConfig = {
 
 constexpr SandboxConfig kGpuConfig = {
     base::make_span((const char* const[]){
-        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::mediacodec::CodecFactory::Name_,
+        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
         fuchsia::sysmem::Allocator::Name_,
+        fuchsia::sysmem2::Allocator::Name_,
         "fuchsia.vulkan.loader.Loader",
         fuchsia::tracing::provider::Registry::Name_,
         fuchsia::ui::composition::Allocator::Name_,
@@ -124,10 +126,12 @@ constexpr SandboxConfig kRendererConfig = {
     base::make_span((const char* const[]){
         fuchsia::fonts::Provider::Name_,
         fuchsia::kernel::VmexResource::Name_,
-        // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
+        // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::memorypressure::Provider::Name_,
+        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
         fuchsia::sysmem::Allocator::Name_,
+        fuchsia::sysmem2::Allocator::Name_,
         fuchsia::ui::composition::Allocator::Name_,
     }),
     0,
@@ -137,6 +141,7 @@ constexpr SandboxConfig kVideoCaptureConfig = {
     base::make_span((const char* const[]){
         fuchsia::camera3::DeviceWatcher::Name_,
         fuchsia::sysmem::Allocator::Name_,
+        fuchsia::sysmem2::Allocator::Name_,
     }),
     0,
 };

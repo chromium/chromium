@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -59,6 +60,8 @@ class DictationBubbleControllerTest : public AshTestBase {
     DictationBubbleView* view = GetView();
     return view->hint_view_;
   }
+
+  views::View* GetTopRowView() { return GetView()->GetTopRowView(); }
 
   bool IsBubbleVisible() { return GetController()->widget_->IsVisible(); }
 
@@ -238,6 +241,27 @@ TEST_F(DictationBubbleControllerTest, DictationHintViewClassHasTheRightName) {
   EXPECT_STREQ(GetHintView()->GetClassName(), "DictationHintView");
 
   HideAndCheckExpectations();
+}
+
+TEST_F(DictationBubbleControllerTest, AccessibleProperties) {
+  Show(DictationBubbleIconType::kMacroSuccess, std::optional<std::u16string>(),
+       std::optional<std::vector<DictationBubbleHintType>>());
+  ui::AXNodeData data;
+
+  // Test accessible role for  DictationBubbleView
+  GetView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+
+  // Test accessible role for DictationHintView
+  data = ui::AXNodeData();
+  GetHintView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+
+  // Test accessible role for TopRowView
+  data = ui::AXNodeData();
+  ASSERT_TRUE(GetTopRowView());
+  GetTopRowView()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
 }
 
 }  // namespace ash

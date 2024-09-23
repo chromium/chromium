@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -27,7 +29,12 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
     "https://www.office.com/",
 };
 
-const char kOneDriveBusinessDomain[] = "sharepoint.com";
+constexpr const char* kMicrosoftOfficeWebAppExperimentDomainScopeExtensions[] =
+    {
+        // The OneDrive Business domain (for the extension to match
+        // https://<customer>-my.sharepoint.com).
+        "https://sharepoint.com",
+};
 
 bool g_always_enabled_for_testing = false;
 
@@ -35,47 +42,64 @@ bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
 }
 
-std::optional<std::vector<const char* const>>&
+std::optional<std::vector<const char*>>&
 GetScopeExtensionsOverrideForTesting() {
-  static base::NoDestructor<std::optional<std::vector<const char* const>>>
+  static base::NoDestructor<std::optional<std::vector<const char*>>>
       scope_extensions;
   return *scope_extensions;
 }
 
 }  // namespace
 
-base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
+ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
     const webapps::AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
+  ScopeExtensions extensions;
   if (!IsExperimentEnabled(app_id))
-    return {};
+    return extensions;
 
-  if (GetScopeExtensionsOverrideForTesting())
-    return *GetScopeExtensionsOverrideForTesting();
-
-  return kMicrosoftOfficeWebAppExperimentScopeExtensions;
-}
-
-size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
-    const webapps::AppId& app_id,
-    base::StringPiece url_spec) {
-  DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
-
-  size_t best_score = 0;
-  for (const char* scope : GetScopeExtensions(app_id)) {
-    size_t score =
-        base::StartsWith(url_spec, scope, base::CompareCase::SENSITIVE)
-            ? strlen(scope)
-            : 0;
-    best_score = std::max(best_score, score);
+  if (GetScopeExtensionsOverrideForTesting()) {
+    for (const auto* origin : *GetScopeExtensionsOverrideForTesting()) {
+      extensions.insert(
+          ScopeExtensionInfo{.origin = url::Origin::Create(GURL(origin))});
+    }
+    return extensions;
   }
 
-  // Check the OneDrive Business domain separately as this has a different URL
-  // format.
-  GURL url = GURL(url_spec);
-  if (url.DomainIs(kOneDriveBusinessDomain)) {
-    best_score = std::max(best_score, strlen(kOneDriveBusinessDomain));
+  for (const auto* url : kMicrosoftOfficeWebAppExperimentScopeExtensions) {
+    extensions.insert(
+        ScopeExtensionInfo{.origin = url::Origin::Create(GURL(url))});
+  }
+  for (const auto* url :
+       kMicrosoftOfficeWebAppExperimentDomainScopeExtensions) {
+    extensions.insert(ScopeExtensionInfo{
+        .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
+  }
+  return extensions;
+}
+
+int ChromeOsWebAppExperiments::GetExtendedScopeScore(
+    const webapps::AppId& app_id,
+    std::string_view url_spec) {
+  DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
+
+  const GURL url = GURL(url_spec);
+  const auto extensions = GetScopeExtensions(app_id);
+  int best_score = 0;
+  for (const ScopeExtensionInfo& scope : extensions) {
+    const GURL scope_origin = scope.origin.GetURL();
+    int score;
+    if (scope.has_origin_wildcard) {
+      score =
+          url.DomainIs(scope_origin.host()) ? scope_origin.spec().length() : 0;
+    } else {
+      score = base::StartsWith(url_spec, scope_origin.spec(),
+                               base::CompareCase::SENSITIVE)
+                  ? scope_origin.spec().length()
+                  : 0;
+    }
+    best_score = std::max(best_score, score);
   }
   return best_score;
 }
@@ -91,7 +115,7 @@ void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {
 }
 
 void ChromeOsWebAppExperiments::SetScopeExtensionsForTesting(
-    std::vector<const char* const> scope_extensions_override) {
+    std::vector<const char*> scope_extensions_override) {
   GetScopeExtensionsOverrideForTesting() = std::move(scope_extensions_override);
 }
 

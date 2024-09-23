@@ -14,8 +14,9 @@
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
-@class SnapshotStorage;
+@class LegacySnapshotManager;
 @class SnapshotManager;
+@class SnapshotStorageWrapper;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -37,7 +38,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Sets the snapshot storage to be used to store and retrieve snapshots. This
   // is not owned by the tab helper.
-  void SetSnapshotStorage(SnapshotStorage* snapshot_storage);
+  void SetSnapshotStorage(SnapshotStorageWrapper* wrapper);
 
   // Retrieves a color snapshot for the current page, invoking `callback` with
   // the image. The callback may be called synchronously if there is a cached
@@ -69,15 +70,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();
 
-  // Hint that the snapshot will likely be saved to disk when the application is
-  // backgrounded.  The snapshot is then saved in memory, so it does not need to
-  // be read off disk.
-  void WillBeSavedGreyWhenBackgrounding();
-
-  // Write a grey copy of the snapshot to disk, but if and only if a color
-  // version of the snapshot already exists in memory or on disk.
-  void SaveGreyInBackground();
-
   // Returns the ID to use for the snapshot.
   SnapshotID GetSnapshotID() const;
 
@@ -94,6 +86,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   SnapshotManager* snapshot_manager_ = nil;
+  LegacySnapshotManager* legacy_snapshot_manager_ = nil;
 
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>

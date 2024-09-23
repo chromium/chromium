@@ -110,7 +110,7 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
       account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
 }
 
-// TODO(crbug.com/1447913): Replace TableLayout with BoxLayout or FlexLayout,
+// TODO(crbug.com/40914008): Replace TableLayout with BoxLayout or FlexLayout,
 // since this view is not tabular data.
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
     const std::u16string& window_title,
@@ -140,10 +140,13 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   // Add vertical padding to the icon and the separator so they are aligned with
   // the first line of title label. This needs to be done after we create the
   // title label, so that we can use its preferred size.
-  const int title_label_height = title_label->GetPreferredSize().height();
+  const int title_label_height =
+      title_label->GetPreferredSize(views::SizeBounds(title_label->width(), {}))
+          .height();
   icon_view_ptr->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
-  // TODO(crbug.com/873140): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the right
+  // TODO(crbug.com/41407386): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the
+  // right
   //                         choice here, but INSETS_DIALOG_TITLE gives too much
   //                         padding. Create a new Harmony DistanceMetric?
   const int separator_horizontal_padding =
@@ -160,7 +163,7 @@ gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
   // Default View::GetMinimumSize() will make dialogs wider than it should.
   // To avoid that, just return 0x0.
   //
-  // TODO(crbug.com/1447933): Replace GetMinimumSize() may generate views
+  // TODO(crbug.com/40914021): Replace GetMinimumSize() may generate views
   // narrower than expected. The ideal solution should be limit the width of
   // multi-line text views.
   return gfx::Size(0, 0);
@@ -187,7 +190,9 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred
   // size.
-  const int title_label_height = title_label->GetPreferredSize().height();
+  const int title_label_height =
+      title_label->GetPreferredSize(views::SizeBounds(title_label->width(), {}))
+          .height();
   icon_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
 
@@ -197,7 +202,7 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
 
 TitleWithIconAfterLabelView::~TitleWithIconAfterLabelView() = default;
 
-// TODO(crbug.com/1447933): Replace GetMinimumSize() may generate views
+// TODO(crbug.com/40914021): Replace GetMinimumSize() may generate views
 // narrower than expected. The ideal solution should be limit the width of
 // multi-line text views.
 gfx::Size TitleWithIconAfterLabelView::GetMinimumSize() const {

@@ -20,7 +20,7 @@ chrome.test.runTests([
   },
 
   function attach() {
-    var extensionId = chrome.extension.getURL('').split('/')[2];
+    var extensionId = chrome.runtime.getURL('').split('/')[2];
     debuggee = {extensionId: extensionId};
     chrome.debugger.attach(debuggee, protocolVersion, pass());
   },

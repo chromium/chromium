@@ -298,7 +298,7 @@ class AudioParamTimeline {
     const double time2;
 
     // The current event, and its index in the event vector.
-    raw_ptr<const ParamEvent, ExperimentalRenderer> event;
+    raw_ptr<const ParamEvent> event;
     const int event_index;
   };
 

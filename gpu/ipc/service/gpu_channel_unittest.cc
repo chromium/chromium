@@ -26,7 +26,7 @@ class GpuChannelTest : public GpuChannelTestCommon {
 const SurfaceHandle kFakeSurfaceHandle = 1;
 
 TEST_F(GpuChannelTest, CreateViewCommandBufferAllowed) {
-  // TODO(https://crbug.com/1406585): Currently it's not possible to create
+  // TODO(crbug.com/40062603): Currently it's not possible to create
   // onscreen GLSurface with Null binding with angle.
   if (channel_manager()->use_passthrough_cmd_decoder()) {
     GTEST_SKIP();

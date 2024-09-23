@@ -57,7 +57,7 @@ struct CONTENT_EXPORT BaseTraceReport {
   std::string upload_rule_name;
 
   // The total size in bytes taken by the report.
-  uint64_t total_size;
+  uint64_t total_size = 0;
 
   // The reason for which a report was not uploaded even if the upload rules
   // were met.
@@ -92,12 +92,16 @@ struct CONTENT_EXPORT NewTraceReport : BaseTraceReport {
 struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
   ClientTraceReport();
   ~ClientTraceReport();
+
   // The current upload state for this report represented by
   // ReportUploadState.
-  ReportUploadState upload_state;
+  ReportUploadState upload_state = ReportUploadState::kNotUploaded;
 
   // The time at which the report was successfully uploaded to a server.
   base::Time upload_time;
+
+  // Whether the report has content (payload) attached to it.
+  bool has_trace_content = false;
 };
 
 class CONTENT_EXPORT TraceReportDatabase {
@@ -131,8 +135,10 @@ class CONTENT_EXPORT TraceReportDatabase {
   // Delete traces between the |start| and |end| dates inclusively.
   bool DeleteTracesInDateRange(const base::Time start, const base::Time end);
 
-  // Delete all traces older than |age| from today.
-  bool DeleteTracesOlderThan(const base::TimeDelta age);
+  // Delete all reports older than |age| from today.
+  bool DeleteTraceReportsOlderThan(const base::TimeDelta age);
+  // Delete old trace content, keeping up to `max_traces`.
+  bool DeleteOldTraceContent(size_t max_traces);
 
   // Mark all reports that are pending upload as skipped with `skip_reason`.
   bool AllPendingUploadSkipped(SkipUploadReason skip_reason);
@@ -151,8 +157,8 @@ class CONTENT_EXPORT TraceReportDatabase {
   std::optional<size_t> UploadCountSince(std::string scenario_name,
                                          base::Time since);
 
-  // Returns the saved count per scenario.
-  base::flat_map<std::string, size_t> GetScenarioCounts();
+  // Returns the saved count per scenario since `since`.
+  base::flat_map<std::string, size_t> GetScenarioCountsSince(base::Time since);
 
   // Returns all the reports currently stored in the database.
   std::vector<ClientTraceReport> GetAllReports();

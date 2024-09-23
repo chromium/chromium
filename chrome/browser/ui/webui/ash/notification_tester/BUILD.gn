@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("notification_tester") {
+  sources = [
+    "notification_tester_handler.cc",
+    "notification_tester_handler.h",
+    "notification_tester_ui.cc",
+    "notification_tester_ui.h",
+  ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/notification_tester:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chromeos/constants",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+  ]
+}

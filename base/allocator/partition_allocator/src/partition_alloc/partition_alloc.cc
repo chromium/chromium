@@ -9,20 +9,15 @@
 #include <memory>
 
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/partition_address_space.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_hooks.h"
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
-
-#if BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
 
 namespace partition_alloc {
 
@@ -51,7 +46,12 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       (internal::PartitionPageSize() & internal::SystemPageOffsetMask()) == 0,
       "ok partition page multiple");
   static_assert(
-      sizeof(internal::PartitionPageMetadata) <= internal::kPageMetadataSize,
+      sizeof(
+          internal::PartitionPageMetadata<internal::MetadataKind::kReadOnly>) <=
+              internal::kPageMetadataSize &&
+          sizeof(internal::PartitionPageMetadata<
+                 internal::MetadataKind::kWritable>) <=
+              internal::kPageMetadataSize,
       "PartitionPage should not be too big");
   STATIC_ASSERT_OR_PA_CHECK(
       internal::kPageMetadataSize * internal::NumPartitionPagesPerSuperPage() <=
@@ -72,35 +72,35 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
       internal::MaxSystemPagesPerRegularSlotSpan() <= 16,
       "System pages per slot span must be no greater than 16.");
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   STATIC_ASSERT_OR_PA_CHECK(
-      internal::GetPartitionRefCountIndexMultiplierShift() <
+      internal::GetInSlotMetadataIndexMultiplierShift() <
           std::numeric_limits<size_t>::max() / 2,
-      "Calculation in GetPartitionRefCountIndexMultiplierShift() must not "
+      "Calculation in GetInSlotMetadataIndexMultiplierShift() must not "
       "underflow.");
-  // Check that the GetPartitionRefCountIndexMultiplierShift() calculation is
+  // Check that the GetInSlotMetadataIndexMultiplierShift() calculation is
   // correct.
   STATIC_ASSERT_OR_PA_CHECK(
-      (1 << internal::GetPartitionRefCountIndexMultiplierShift()) ==
+      (1 << internal::GetInSlotMetadataIndexMultiplierShift()) ==
           (internal::SystemPageSize() /
-           (sizeof(internal::PartitionRefCount) *
+           (sizeof(internal::InSlotMetadata) *
             (internal::kSuperPageSize / internal::SystemPageSize()))),
       "Bitshift must match the intended multiplication.");
   STATIC_ASSERT_OR_PA_CHECK(
-      ((sizeof(internal::PartitionRefCount) *
+      ((sizeof(internal::InSlotMetadata) *
         (internal::kSuperPageSize / internal::SystemPageSize()))
-       << internal::GetPartitionRefCountIndexMultiplierShift()) <=
+       << internal::GetInSlotMetadataIndexMultiplierShift()) <=
           internal::SystemPageSize(),
-      "PartitionRefCount table size must be smaller than or equal to "
+      "InSlotMetadata table size must be smaller than or equal to "
       "<= SystemPageSize().");
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   internal::PartitionAddressSpace::UninitThreadIsolatedPoolForTesting();
 #endif
   internal::g_oom_handling_function = nullptr;
@@ -113,12 +113,12 @@ PartitionAllocator::~PartitionAllocator() {
 }
 
 void PartitionAllocator::init(PartitionOptions opts) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PA_CHECK(opts.thread_cache == PartitionOptions::kDisabled)
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // The MemoryReclaimer won't have write access to the partition, so skip
   // registration.
   const bool use_memory_reclaimer = !opts.thread_isolation.enabled;

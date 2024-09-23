@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include <utility>
@@ -120,27 +125,47 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
-  DCHECK_LE(input->NumTextures(), mailbox_holder.size());
-  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailboxes,
-  // we should only access them when there are textures.
-  for (size_t i = 0; i < input->NumTextures(); i++)
-    mailbox_holder[i] = input->mailbox_holder(i);
-
-  if (input->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    if (input->HasGpuMemoryBuffer())
-      gpu_memory_buffer_handle = input->GetGpuMemoryBuffer()->CloneHandle();
-    return media::mojom::VideoFrameData::NewGpuMemoryBufferData(
-        media::mojom::GpuMemoryBufferVideoFrameData::New(
-            std::move(gpu_memory_buffer_handle), std::move(mailbox_holder)));
-  } else if (input->HasTextures()) {
-    return media::mojom::VideoFrameData::NewMailboxData(
-        media::mojom::MailboxVideoFrameData::New(
-            std::move(mailbox_holder), std::move(input->ycbcr_info())));
+  DCHECK_LE(input->NumTextures(), 1u);
+  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailbox,
+  // we should only access it when there are textures.
+  gpu::MailboxHolder mailbox_holder;
+  if (input->HasTextures()) {
+    mailbox_holder = input->mailbox_holder(/*texture_index=*/0);
   }
 
-  NOTREACHED() << "Unsupported VideoFrame conversion";
+  if (input->HasMappableGpuBuffer()) {
+    auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
+
+    std::optional<gpu::ExportedSharedImage> shared_image;
+    if (input->HasSharedImage()) {
+      // `input` is either empty or of size 1 with
+      // GpuMemoryBufferSharedImageVideoFrameData.
+      CHECK_EQ(input->NumTextures(), 1u);
+      shared_image = input->shared_image()->Export();
+    }
+
+    CHECK(input->HasSharedImage() || mailbox_holder.mailbox.IsZero());
+    return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
+        media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
+            std::move(gpu_memory_buffer_handle), std::move(shared_image),
+            std::move(mailbox_holder.sync_token),
+            mailbox_holder.texture_target));
+  } else if (input->HasTextures()) {
+    if (input->HasSharedImage()) {
+      gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
+      return media::mojom::VideoFrameData::NewSharedImageData(
+          media::mojom::SharedImageVideoFrameData::New(
+              std::move(shared_image), std::move(mailbox_holder.sync_token),
+              std::move(mailbox_holder.texture_target),
+              std::move(input->ycbcr_info())));
+    } else {
+      return media::mojom::VideoFrameData::NewMailboxData(
+          media::mojom::MailboxVideoFrameData::New(
+              std::move(mailbox_holder), std::move(input->ycbcr_info())));
+    }
+  }
+
+  NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";
   return nullptr;
 }
 
@@ -224,6 +249,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   if (!input.ReadTimestamp(&timestamp))
     return false;
 
+  media::VideoFrameMetadata metadata;
+  if (!input.ReadMetadata(&metadata)) {
+    return false;
+  }
+
   scoped_refptr<media::VideoFrame> frame;
   if (data.is_shared_memory_data()) {
     media::mojom::SharedMemoryVideoFrameDataDataView shared_memory_data;
@@ -276,9 +306,10 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
-  } else if (data.is_gpu_memory_buffer_data()) {
-    media::mojom::GpuMemoryBufferVideoFrameDataDataView gpu_memory_buffer_data;
-    data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);
+  } else if (data.is_gpu_memory_buffer_shared_image_data()) {
+    media::mojom::GpuMemoryBufferSharedImageVideoFrameDataDataView
+        gpu_memory_buffer_data;
+    data.GetGpuMemoryBufferSharedImageDataDataView(&gpu_memory_buffer_data);
 
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
     if (!gpu_memory_buffer_data.ReadGpuMemoryBufferHandle(
@@ -287,75 +318,103 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    std::vector<gpu::MailboxHolder> mailbox_holder;
-    if (!gpu_memory_buffer_data.ReadMailboxHolder(&mailbox_holder)) {
-      DLOG(WARNING) << "Failed to get mailbox holder";
-    }
-    if (mailbox_holder.size() > media::VideoFrame::kMaxPlanes) {
-      DLOG(ERROR) << "The size of mailbox holder is too large: "
-                  << mailbox_holder.size();
+    std::optional<gpu::ExportedSharedImage> exported_shared_image;
+    if (!gpu_memory_buffer_data.ReadSharedImage(&exported_shared_image)) {
+      DLOG(ERROR) << "Failed to get shared image";
       return false;
     }
 
-    gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
-    for (size_t i = 0; i < mailbox_holder.size(); i++)
-      mailbox_holder_array[i] = mailbox_holder[i];
+    gpu::SyncToken sync_token;
+    if (!gpu_memory_buffer_data.ReadSyncToken(&sync_token)) {
+      return false;
+    }
 
     std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
-    if (!buffer_format)
+    if (!buffer_format) {
       return false;
+    }
 
     // Shared memory GMBs do not support VEA/CAMERA usage.
-    const gfx::BufferUsage buffer_usage =
-        (gpu_memory_buffer_handle.type ==
-         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
-            ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
-            : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+    gfx::BufferUsage buffer_usage;
+    if (metadata.protected_video) {
+      buffer_usage = gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
+    } else if (gpu_memory_buffer_handle.type ==
+               gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+      buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+    } else {
+      buffer_usage = gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+    }
 
     gpu::GpuMemoryBufferSupport support;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
         support.CreateGpuMemoryBufferImplFromHandle(
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
             buffer_usage, base::NullCallback());
-    if (!gpu_memory_buffer)
+    if (!gpu_memory_buffer) {
       return false;
+    }
 
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    if (exported_shared_image) {
+      shared_image =
+          gpu::ClientSharedImage::ImportUnowned(*exported_shared_image);
+    }
+
+    uint32_t texture_target = gpu_memory_buffer_data.texture_target();
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect, natural_size, std::move(gpu_memory_buffer),
-        mailbox_holder_array, base::NullCallback(), timestamp);
+        visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
+        sync_token, texture_target, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
 
-    std::vector<gpu::MailboxHolder> mailbox_holder;
+    gpu::MailboxHolder mailbox_holder;
     if (!mailbox_data.ReadMailboxHolder(&mailbox_holder))
       return false;
-
-    gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
-    for (size_t i = 0; i < media::VideoFrame::kMaxPlanes; i++)
-      mailbox_holder_array[i] = mailbox_holder[i];
 
     std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
     if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
       return false;
 
-    frame = media::VideoFrame::WrapNativeTextures(
-        format, mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(),
+    frame = media::VideoFrame::WrapNativeTexture(
+        format, mailbox_holder, media::VideoFrame::ReleaseMailboxCB(),
         coded_size, visible_rect, natural_size, timestamp);
+    frame->set_ycbcr_info(ycbcr_info);
+  } else if (data.is_shared_image_data()) {
+    media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
+    data.GetSharedImageDataDataView(&shared_image_data);
+
+    gpu::ExportedSharedImage exported_shared_image;
+    if (!shared_image_data.ReadSharedImage(&exported_shared_image)) {
+      return false;
+    }
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::ImportUnowned(exported_shared_image);
+
+    gpu::SyncToken sync_token;
+    if (!shared_image_data.ReadSyncToken(&sync_token)) {
+      return false;
+    }
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    if (!shared_image_data.ReadYcbcrData(&ycbcr_info)) {
+      return false;
+    }
+
+    frame = media::VideoFrame::WrapSharedImage(
+        format, shared_image, sync_token, shared_image_data.texture_target(),
+        media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
+        natural_size, timestamp);
+
     frame->set_ycbcr_info(ycbcr_info);
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   if (!frame) {
     return false;
   }
-
-  media::VideoFrameMetadata metadata;
-  if (!input.ReadMetadata(&metadata))
-    return false;
 
   frame->set_metadata(metadata);
 

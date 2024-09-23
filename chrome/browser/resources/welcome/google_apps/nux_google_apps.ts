@@ -3,21 +3,19 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../shared/animations.css.js';
-import '../shared/chooser_shared.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isRTL} from 'chrome://resources/js/util.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
+import {NavigationMixin} from '../navigation_mixin.js';
+import {navigateToNextStep} from '../router.js';
 import type {BookmarkProxy} from '../shared/bookmark_proxy.js';
 import {BookmarkBarManager, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
@@ -26,7 +24,8 @@ import type {StepIndicatorModel} from '../shared/nux_types.js';
 import type {GoogleAppProxy} from './google_app_proxy.js';
 import {GoogleAppProxyImpl} from './google_app_proxy.js';
 import {GoogleAppsMetricsProxyImpl} from './google_apps_metrics_proxy.js';
-import {getTemplate} from './nux_google_apps.html.js';
+import {getCss} from './nux_google_apps.css.js';
+import {getHtml} from './nux_google_apps.html.js';
 
 interface AppItem {
   id: number;
@@ -37,11 +36,6 @@ interface AppItem {
   selected: boolean;
 }
 
-interface AppItemModel {
-  item: AppItem;
-  set: (p1: string, p2: boolean) => void;
-}
-
 const KEYBOARD_FOCUSED = 'keyboard-focused';
 
 export interface NuxGoogleAppsElement {
@@ -50,33 +44,26 @@ export interface NuxGoogleAppsElement {
   };
 }
 
-const NuxGoogleAppsElementBase = I18nMixin(NavigationMixin(PolymerElement));
+const NuxGoogleAppsElementBase = I18nMixinLit(NavigationMixin(CrLitElement));
 
-/** @polymer */
 export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   static get is() {
     return 'nux-google-apps';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      indicatorModel: Object,
-
-      appList_: Array,
-
-      hasAppsSelected_: {
-        type: Boolean,
-        notify: true,
-      },
-
-      subtitle: {
-        type: String,
-        value: loadTimeData.getString('googleAppsDescription'),
-      },
+      indicatorModel: {type: Object},
+      appList_: {type: Array},
+      hasAppsSelected_: {type: Boolean},
     };
   }
 
@@ -86,23 +73,19 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   private bookmarkProxy_: BookmarkProxy;
   private bookmarkBarManager_: BookmarkBarManager;
   private wasBookmarkBarShownOnInit_: boolean = false;
-  private appList_: AppItem[]|null = null;
-  private hasAppsSelected_: boolean = true;
+  protected appList_: AppItem[] = [];
+  protected hasAppsSelected_: boolean = true;
   indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();
 
+    this.subtitle = loadTimeData.getString('googleAppsDescription');
     this.appProxy_ = GoogleAppProxyImpl.getInstance();
     this.metricsManager_ =
         new ModuleMetricsManager(GoogleAppsMetricsProxyImpl.getInstance());
     this.bookmarkProxy_ = BookmarkProxyImpl.getInstance();
     this.bookmarkBarManager_ = BookmarkBarManager.getInstance();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    afterNextRender(this, () => IronA11yAnnouncer.requestAvailability());
   }
 
   override onRouteEnter() {
@@ -153,8 +136,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   }
 
   private announceA11y_(text: string) {
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+    getAnnouncerInstance().announce(text);
   }
 
   /**
@@ -163,7 +145,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   private cleanUp_() {
     this.finalized_ = true;
 
-    if (!this.appList_) {
+    if (this.appList_.length === 0) {
       return;
     }  // No apps to remove.
 
@@ -187,10 +169,12 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   /**
    * Handle toggling the apps selected.
    */
-  private onAppClick_(e: {model: AppItemModel}) {
-    const item = e.model.item;
+  protected onAppClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const item = this.appList_[index]!;
 
-    e.model.set('item.selected', !item.selected);
+    item.selected = !item.selected;
+    this.requestUpdate();
 
     this.updateBookmark_(item);
     this.updateHasAppsSelected_();
@@ -203,7 +187,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     this.announceA11y_(this.i18n(i18nKey));
   }
 
-  private onAppKeyUp_(e: KeyboardEvent) {
+  protected onAppKeyUp_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight') {
       this.changeFocus_(e.currentTarget!, 1);
     } else if (e.key === 'ArrowLeft') {
@@ -213,13 +197,13 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     }
   }
 
-  private onAppPointerDown_(e: Event) {
+  protected onAppPointerDown_(e: Event) {
     (e.currentTarget as HTMLElement).classList.remove(KEYBOARD_FOCUSED);
   }
 
-  private onNextClicked_() {
+  protected onNextClicked_() {
     this.finalized_ = true;
-    this.appList_!.forEach(app => {
+    this.appList_.forEach(app => {
       if (app.selected) {
         this.appProxy_.recordProviderSelected(app.id);
       }
@@ -228,7 +212,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
     navigateToNextStep();
   }
 
-  private onNoThanksClicked_() {
+  protected onNoThanksClicked_() {
     this.cleanUp_();
     this.metricsManager_.recordNoThanks();
     navigateToNextStep();
@@ -240,7 +224,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   private populateAllBookmarks_() {
     this.wasBookmarkBarShownOnInit_ = this.bookmarkBarManager_.getShown();
 
-    if (this.appList_) {
+    if (this.appList_.length > 0) {
       this.appList_.forEach(app => this.updateBookmark_(app));
     } else {
       this.appProxy_.getAppList().then(list => {
@@ -280,18 +264,10 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
    * Updates the value of hasAppsSelected_.
    */
   private updateHasAppsSelected_() {
-    this.hasAppsSelected_ =
-        !!this.appList_ && this.appList_.some(a => a.selected);
+    this.hasAppsSelected_ = this.appList_.some(a => a.selected);
     if (!this.hasAppsSelected_) {
       this.bookmarkBarManager_.setShown(this.wasBookmarkBarShownOnInit_);
     }
-  }
-
-  /**
-   * Converts a boolean to a string because aria-pressed needs a string value.
-   */
-  private getAriaPressed_(value: boolean): string {
-    return value ? 'true' : 'false';
   }
 }
 

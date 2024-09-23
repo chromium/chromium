@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 #include "url/gurl.h"

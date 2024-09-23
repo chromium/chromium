@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ash/login/osauth/auth_factor_migrator.h"
 #include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
@@ -33,6 +34,7 @@ void AuthFactorUpdater::Run(std::unique_ptr<UserContext> context,
 
   auth_factor_migrator_ = std::make_unique<AuthFactorMigrator>(
       AuthFactorMigrator::GetMigrationsList(user_data_auth_));
+  AuthEventsRecorder::Get()->OnFactorUpdateStarted();
   auth_factor_migrator_->Run(
       std::move(context),
       base::BindOnce(&AuthFactorUpdater::OnMigratorRun,
@@ -47,7 +49,7 @@ void AuthFactorUpdater::OnMigratorRun(
     LOG(ERROR) << "Failed to run migrations " << error->ToDebugString();
     // Proceed to enforce policies anyways.
   }
-
+  AuthEventsRecorder::Get()->OnMigrationsCompleted();
   auth_policy_enforcer_ = std::make_unique<AuthPolicyEnforcer>(
       connector_, user_data_auth_, local_state_);
   auth_policy_enforcer_->CheckAndEnforcePolicies(std::move(context),

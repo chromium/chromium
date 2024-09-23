@@ -16,11 +16,16 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 class ImageResourceContent;
 class PropertyTreeStateOrAlias;
 class StyleFetchedImage;
+class StyleImage;
 
 // ImageElementTiming is responsible for tracking the paint timings for <img>
 // elements for a given window.
@@ -44,7 +49,7 @@ class CORE_EXPORT ImageElementTiming final
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
 
   void NotifyBackgroundImageFinished(const StyleFetchedImage*);
-  base::TimeTicks GetBackgroundImageLoadTime(const StyleFetchedImage*);
+  base::TimeTicks GetBackgroundImageLoadTime(const StyleImage*);
 
   // Called when the LayoutObject has been painted. This method might queue a
   // presentation promise to compute and report paint timestamps.
@@ -56,7 +61,7 @@ class CORE_EXPORT ImageElementTiming final
 
   void NotifyBackgroundImagePainted(
       Node&,
-      const StyleFetchedImage& background_image,
+      const StyleImage& background_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
 
@@ -77,7 +82,8 @@ class CORE_EXPORT ImageElementTiming final
       const gfx::Rect& image_border);
 
   // Callback for the presentation promise. Reports paint timestamps.
-  void ReportImagePaintPresentationTime(base::TimeTicks timestamp);
+  void ReportImagePaintPresentationTime(
+      const viz::FrameTimingDetails& presentation_details);
 
   // Class containing information about image element timing.
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
@@ -131,7 +137,7 @@ class CORE_EXPORT ImageElementTiming final
 
   // Hashmap of background images which contain information about the load time
   // of the background image.
-  HeapHashMap<WeakMember<const StyleFetchedImage>, base::TimeTicks>
+  HeapHashMap<WeakMember<const StyleImage>, base::TimeTicks>
       background_image_timestamps_;
 };
 

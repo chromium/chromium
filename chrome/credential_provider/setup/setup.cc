@@ -7,11 +7,10 @@
 
 #include <Windows.h>
 #include <shlobj.h>  // Needed for IsUserAnAdmin()
-
 #include <stdlib.h>
-#include <string>
 
 #include <algorithm>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -20,7 +19,6 @@
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/process_startup_helper.h"
@@ -117,6 +115,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
 

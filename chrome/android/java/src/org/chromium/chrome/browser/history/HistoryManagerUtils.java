@@ -43,7 +43,8 @@ public class HistoryManagerUtils {
     }
 
     /**
-     * Opens the history manager via startActivityForResult
+     * Opens the app specific history manager. For launching history for CCTs, using
+     * startActivityForResult to ensure identity sharing.
      *
      * @param activity The {@link Activity} that owns the {@link HistoryManager}.
      * @param isIncognitoSelected Whether the incognito {@TabModelSelector} is selected.
@@ -51,12 +52,12 @@ public class HistoryManagerUtils {
      *     launched.
      */
     // TODO(katzz): Convert to ActivityResult API
-    public static void showHistoryManagerForResult(
+    public static void showAppSpecificHistoryManager(
             Activity activity, boolean isIncognitoSelected, String clientPackageName) {
         Intent intent = new Intent();
         intent.setClass(activity, HistoryActivity.class);
         intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isIncognitoSelected);
-        intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+        intent.putExtra(IntentHandler.EXTRA_APP_SPECIFIC_HISTORY, true);
         intent.putExtra(Intent.EXTRA_PACKAGE_NAME, clientPackageName);
         activity.startActivityForResult(intent, HISTORY_REQUEST_CODE);
     }

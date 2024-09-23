@@ -24,7 +24,7 @@ class MockEnableDebuggingScreen : public EnableDebuggingScreen {
   void ExitScreen();
 };
 
-class MockEnableDebuggingScreenView : public EnableDebuggingScreenView {
+class MockEnableDebuggingScreenView final : public EnableDebuggingScreenView {
  public:
   MockEnableDebuggingScreenView();
   ~MockEnableDebuggingScreenView() override;
@@ -32,6 +32,13 @@ class MockEnableDebuggingScreenView : public EnableDebuggingScreenView {
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, UpdateUIState, (UIState state));
+
+  base::WeakPtr<EnableDebuggingScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<EnableDebuggingScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -11,12 +11,14 @@
     RuntimeEnabled=DirectSockets,
     IsolatedContext
 ] interface TCPSocket {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=TCPSocketConstructor]
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});
 
-  [CallWith=ScriptState] readonly attribute Promise<TCPSocketOpenInfo> opened;
-  [CallWith=ScriptState] readonly attribute Promise<void> closed;
+  [CallWith=ScriptState, MeasureAs=TCPSocketOpenedAttribute]
+  readonly attribute Promise<TCPSocketOpenInfo> opened;
+  [CallWith=ScriptState, MeasureAs=TCPSocketClosedAttribute]
+  readonly attribute Promise<undefined> closed;
 
-  [CallWith=ScriptState, RaisesException, Measure]
-  Promise<void> close();
+  [CallWith=ScriptState, RaisesException, MeasureAs=TCPSocketCloseFunction]
+  Promise<undefined> close();
 };

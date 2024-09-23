@@ -7,5 +7,5 @@
     Exposed=Window,
     RuntimeEnabled=TextFragmentAPI
 ] interface SelectorDirective : Directive {
-  [CallWith=ScriptState, NewObject] Promise<Range> getMatchingRange();
+  [CallWith=ScriptState, NewObject, RaisesException] Promise<Range> getMatchingRange();
 };

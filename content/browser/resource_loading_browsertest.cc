@@ -19,7 +19,7 @@ class ResourceLoadingBrowserTest : public ContentBrowserTest  {
 const char kResourceLoadingNonMobilePage[] =
     "/resource_loading/resource_loading_non_mobile.html";
 
-// TODO(https://crbug.com/1340721): Flaky on Android.
+// TODO(crbug.com/40850567): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ResourceLoadingAvoidDoubleDownloads \
   DISABLED_ResourceLoadingAvoidDoubleDownloads

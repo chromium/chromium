@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -19,14 +20,13 @@
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/gfx/font_util.h"
@@ -89,8 +89,6 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
     if (parameters.command_line->HasSwitch(switches::kBrowserStartupDialog)) {
       WaitForDebugger("Browser");
     }
-
-    notification_service_ = std::make_unique<NotificationServiceImpl>();
 
 #if BUILDFLAG(IS_WIN)
     base::win::EnableHighDPISupport();
@@ -163,7 +161,21 @@ void BrowserMainRunnerImpl::Shutdown() {
   DCHECK(initialization_started_);
   DCHECK(!is_shutdown_);
 
+  // Here and thereafter, `MakeFreeNoOp()` will make `free()` a no-op if
+  // 1. The pertinent experiment is enabled and
+  // 2. The feature param's value equals the arg fed to
+  //    `MakeFreeNoOp()`.
+  //
+  // For example, clients with the feature param set to
+  // `before-preshutdown`, which maps to `kBeforePreShutdown`, will
+  // have `free()` become a no-op after this call.
+  base::features::MakeFreeNoOp(
+      base::features::WhenFreeBecomesNoOp::kBeforePreShutdown);
+
   main_loop_->PreShutdown();
+
+  base::features::MakeFreeNoOp(base::features::WhenFreeBecomesNoOp::
+                                   kBeforeHaltingStartupTracingController);
 
   // Finalize the startup tracing session if it is still active.
   StartupTracingController::GetInstance().ShutdownAndWaitForStopIfNeeded();
@@ -173,15 +185,19 @@ void BrowserMainRunnerImpl::Shutdown() {
     TRACE_EVENT0("shutdown", "BrowserMainRunner");
     GetExitedMainMessageLoopFlag().Set();
 
+    base::features::MakeFreeNoOp(
+        base::features::WhenFreeBecomesNoOp::kBeforeShutDownThreads);
+
     main_loop_->ShutdownThreadsAndCleanUp();
+
+    base::features::MakeFreeNoOp(
+        base::features::WhenFreeBecomesNoOp::kAfterShutDownThreads);
 
     ui::ShutdownInputMethod();
 #if BUILDFLAG(IS_WIN)
     ole_initializer_.reset(NULL);
 #endif
     main_loop_.reset(nullptr);
-
-    notification_service_.reset(nullptr);
 
     is_shutdown_ = true;
   }

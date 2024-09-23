@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("translate_kit_api_proto") {
+  sources = [ "proto/translate_kit_api.proto" ]
+}
+
+source_set("on_device_translation_service") {
+  sources = [
+    "mock_translator.cc",
+    "mock_translator.h",
+    "on_device_translation_service.cc",
+    "on_device_translation_service.h",
+    "translate_kit_client.cc",
+    "translate_kit_client.h",
+    "translate_kit_structs.h",
+  ]
+  deps = [ ":translate_kit_api_proto" ]
+  public_deps = [
+    "//base",
+    "//components/services/on_device_translation/public/cpp",
+    "//components/services/on_device_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "on_device_translation_service_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/services/on_device_translation:on_device_translation_service",
+    "//components/services/on_device_translation/public/cpp",
+    "//components/services/on_device_translation/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

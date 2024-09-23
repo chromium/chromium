@@ -5,21 +5,23 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -28,12 +30,14 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +50,7 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::ValueIs;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
@@ -54,7 +59,7 @@ using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::Return;
 
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon.png";
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
                                                 const base::Version version) {
@@ -113,7 +118,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     isolated_web_app->SetName("installed app");
     isolated_web_app->SetScope(isolated_web_app->start_url());
     isolated_web_app->SetIsolationData(
-        WebApp::IsolationData(installed_location_, installed_version_));
+        IsolationData::Builder(installed_location_, installed_version_)
+            .Build());
 
     ScopedRegistryUpdate update = provider->sync_bridge_unsafe().BeginUpdate();
     update->CreateApp(std::move(isolated_web_app));
@@ -125,7 +131,10 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
         future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            InstalledBundle({.path = update_bundle_path_}), expected_version),
+            IwaSourceBundleWithModeAndFileOp(
+                update_bundle_path_,
+                IwaSourceBundleModeAndFileOp::kProdModeMove),
+            expected_version),
         url_info_, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
@@ -144,16 +153,16 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   FakeWebContentsManager::FakePageState& CreateDefaultPageState() {
     GURL url(
         base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      kTestEd25519WebBundleId,
+                      test::GetDefaultEd25519WebBundleId().id(),
                       "/.well-known/_generated_install_page.html"}));
     auto& page_state = fake_web_contents_manager().GetOrCreatePageState(url);
 
-    page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url =
         url_info_.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         CreateDefaultManifest(url_info_.origin().GetURL(), update_version_);
 
     return page_state;
@@ -189,15 +198,15 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 
-  web_package::WebBundleSigner::KeyPair key_pair_ =
-      web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey);
+  web_package::test::Ed25519KeyPair key_pair_ =
+      test::GetDefaultEd25519KeyPair();
   web_package::SignedWebBundleId web_bundle_id_ =
-      *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId);
+      test::GetDefaultEd25519WebBundleId();
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
 
-  IsolatedWebAppLocation installed_location_ =
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("a"))};
+  IsolatedWebAppStorageLocation installed_location_ =
+      IwaStorageOwnedBundle{"a", /*dev_mode=*/false};
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;
@@ -219,18 +228,19 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
       Field("update_version",
             &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
             Eq(update_version_)));
-
-  IsolatedWebAppLocation pending_location = result.location;
+  IsolatedWebAppStorageLocation pending_location = result.location;
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
               test::IwaIs(Eq("installed app"),
-                          Eq(WebApp::IsolationData(
-                              installed_location_, installed_version_,
-                              /*controlled_frame_partitions=*/{},
-                              WebApp::IsolationData::PendingUpdateInfo(
-                                  pending_location, update_version_)))));
+                          test::IsolationDataIs(
+                              Eq(installed_location_), Eq(installed_version_),
+                              /*controlled_frame_partitions=*/_,
+                              test::PendingUpdateInfoIs(
+                                  Eq(pending_location), Eq(update_version_),
+                                  /*integrity_block_data=*/_),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -255,11 +265,13 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   EXPECT_THAT(web_app,
               test::IwaIs(Eq("installed app"),
-                          Eq(WebApp::IsolationData(
-                              installed_location_, installed_version_,
-                              /*controlled_frame_partitions=*/{},
-                              WebApp::IsolationData::PendingUpdateInfo(
-                                  result.location, update_version_)))));
+                          test::IsolationDataIs(
+                              Eq(installed_location_), Eq(installed_version_),
+                              /*controlled_frame_partitions=*/_,
+                              test::PendingUpdateInfoIs(
+                                  Eq(result.location), Eq(update_version_),
+                                  /*integrity_block_data=*/_),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsWhenShuttingDown) {
@@ -317,10 +329,9 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+                                   IsolationData::Builder(installed_location_,
+                                                          installed_version_)
+                                       .Build()));
   CheckCleanup(existing_dirs);
 }
 
@@ -340,18 +351,18 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
   CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
        FailsIfInstalledAppHasOtherIwaLocationType) {
-  installed_location_ = DevModeProxy{
-      .proxy_url = url::Origin::Create(GURL("https://example.com"))};
+  installed_location_ =
+      IwaStorageProxy{url::Origin::Create(GURL("https://example.com"))};
   InstallIwa();
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 
@@ -359,17 +370,17 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   CreateDefaultPageState();
 
   auto result = PrepareAndStoreUpdateInfo(update_version_);
-  EXPECT_THAT(result,
-              IsErrorWithMessage(HasSubstr("Unable to update between different "
-                                           "IsolatedWebAppLocation types")));
+  EXPECT_THAT(result, IsErrorWithMessage(
+                          HasSubstr("Unable to update between dev-mode and "
+                                    "non-dev-mode storage location types")));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }
@@ -388,11 +399,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }
@@ -403,18 +414,19 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfUrlLoadingFails) {
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
   WriteUpdateBundleToDisk();
   auto& page_state = CreateDefaultPageState();
-  page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
+  page_state.url_load_result =
+      webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
   auto result = PrepareAndStoreUpdateInfo(update_version_);
   EXPECT_THAT(result, IsErrorWithMessage(HasSubstr("FailedErrorPageLoaded")));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }
@@ -437,11 +449,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }
@@ -453,7 +465,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   WriteUpdateBundleToDisk();
   auto& page_state = CreateDefaultPageState();
-  page_state.opt_manifest->scope = GURL("https://example.com/foo");
+  page_state.manifest_before_default_processing->scope =
+      GURL("https://example.com/foo/");
 
   auto result = PrepareAndStoreUpdateInfo(update_version_);
   EXPECT_THAT(result, IsErrorWithMessage(
@@ -461,11 +474,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }
@@ -484,11 +497,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
-                                   Eq(WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/std::nullopt))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(IsolationData::Builder(installed_location_,
+                                                    installed_version_)
+                                 .Build())));
 
   CheckCleanup(existing_dirs);
 }

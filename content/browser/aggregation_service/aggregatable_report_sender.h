@@ -7,10 +7,12 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -54,10 +56,13 @@ class CONTENT_EXPORT AggregatableReportSender {
   using ReportSentCallback = base::OnceCallback<void(RequestStatus)>;
 
   // Sends an aggregatable report to the reporting endpoint `url`. This should
-  // generate a secure POST request with no-credentials.
-  virtual void SendReport(const GURL& url,
-                          const base::Value& contents,
-                          ReportSentCallback callback);
+  // generate a secure POST request with no-credentials. The `delay_type`
+  // parameter is only used to select histogram names.
+  virtual void SendReport(
+      const GURL& url,
+      const base::Value& contents,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
+      ReportSentCallback callback);
 
   // Used by tests to inject a TestURLLoaderFactory so they can mock the
   // network response. Also used by the aggregation service tool to inject a
@@ -77,9 +82,11 @@ class CONTENT_EXPORT AggregatableReportSender {
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   // Called when headers are available for a sent report.
-  void OnReportSent(UrlLoaderList::iterator it,
-                    ReportSentCallback callback,
-                    scoped_refptr<net::HttpResponseHeaders> headers);
+  void OnReportSent(
+      UrlLoaderList::iterator it,
+      ReportSentCallback callback,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Reports that are actively being sent.
   UrlLoaderList loaders_in_progress_;

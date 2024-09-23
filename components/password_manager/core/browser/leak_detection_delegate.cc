@@ -17,8 +17,8 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -48,17 +48,20 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
 void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
-                                           const PasswordForm& credentials) {
-  if (client_->IsOffTheRecord())
+                                           const PasswordForm& credentials,
+                                           const GURL& form_url) {
+  if (client_->IsOffTheRecord()) {
     return;
+  }
 
-  if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(),
+  if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(), form_url,
                                              GetLogger(client_))) {
     return;
   }
 
-  if (credentials.username_value.empty())
+  if (credentials.username_value.empty()) {
     return;
+  }
 
   DCHECK(!credentials.password_value.empty());
 

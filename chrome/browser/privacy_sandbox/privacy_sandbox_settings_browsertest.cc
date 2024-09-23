@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -23,7 +25,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_switches.h"
@@ -154,7 +155,7 @@ class PrivacySandboxSettingsBrowserTest
     FinishSetUp();
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -273,7 +274,7 @@ std::string ConvertAttestedApiStatusToString(
     case AttestedApiStatus::kNone:
       return "None";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -308,7 +309,7 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
       case AttestedApiStatus::kNone:
         return {};
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -354,7 +355,11 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
         "fenced_frame");
     observer.Wait();
 
-    return fenced_frame_rfh;
+    // Embedder-initiated fenced frame navigation uses a new browsing instance.
+    // Fenced frame RenderFrameHost is a new one after navigation, so we need
+    // to retrieve it.
+    return fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+        web_contents()->GetPrimaryMainFrame());
   }
 
   content::RenderFrameHost*
@@ -662,8 +667,15 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
+
+    // Embedder-initiated fenced frame navigation uses a new browsing instance.
+    // Fenced frame RenderFrameHost is a new one after navigation, so we need
+    // to retrieve it.
+    fenced_frame_rfh =
+        fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+            web_contents()->GetPrimaryMainFrame());
     ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
 
     // Send the beacon.
     EXPECT_TRUE(ExecJs(fenced_frame_rfh, content::JsReplace(R"(
@@ -757,8 +769,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
-    ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
 
     // Verify the `reportWin()` beacon was sent.
     response.WaitForRequest();
@@ -853,8 +864,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
-    ASSERT_NE(fenced_frame_rfh, nullptr);
-    ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+    ASSERT_EQ(observer.last_committed_url(), fenced_frame_url);
 
     // Verify the `reportResult()` beacon was sent.
     response.WaitForRequest();
@@ -926,7 +936,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
     // .well-known requests should advertise they accept JSON responses.
     const auto accept_header =
         request.headers.find(net::HttpRequestHeaders::kAccept);
-    DCHECK(accept_header != request.headers.end());
+    CHECK(accept_header != request.headers.end());
     EXPECT_EQ(accept_header->second, "application/json");
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

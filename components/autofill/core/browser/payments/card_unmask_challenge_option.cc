@@ -6,6 +6,22 @@
 
 namespace autofill {
 
+Vcn3dsChallengeOptionMetadata::Vcn3dsChallengeOptionMetadata() = default;
+
+Vcn3dsChallengeOptionMetadata::Vcn3dsChallengeOptionMetadata(
+    const Vcn3dsChallengeOptionMetadata&) = default;
+
+Vcn3dsChallengeOptionMetadata::Vcn3dsChallengeOptionMetadata(
+    Vcn3dsChallengeOptionMetadata&&) = default;
+
+Vcn3dsChallengeOptionMetadata& Vcn3dsChallengeOptionMetadata::operator=(
+    const Vcn3dsChallengeOptionMetadata&) = default;
+
+Vcn3dsChallengeOptionMetadata& Vcn3dsChallengeOptionMetadata::operator=(
+    Vcn3dsChallengeOptionMetadata&&) = default;
+
+Vcn3dsChallengeOptionMetadata::~Vcn3dsChallengeOptionMetadata() = default;
+
 CardUnmaskChallengeOption::CardUnmaskChallengeOption(
     ChallengeOptionId id,
     CardUnmaskChallengeOptionType type,

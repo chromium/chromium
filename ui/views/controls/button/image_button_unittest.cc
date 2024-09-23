@@ -48,12 +48,12 @@ TEST_F(ImageButtonTest, Basics) {
   EXPECT_TRUE(button.GetImageToPaint().isNull());
 
   // Without an image, buttons are 16x14 by default.
-  EXPECT_EQ(gfx::Size(16, 14), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(16, 14), button.GetPreferredSize({}));
 
   // The minimum image size should be applied even when there is no image.
   button.SetMinimumImageSize(gfx::Size(5, 15));
   EXPECT_EQ(gfx::Size(5, 15), button.GetMinimumImageSize());
-  EXPECT_EQ(gfx::Size(16, 15), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(16, 15), button.GetPreferredSize({}));
 
   // Set a normal image.
   gfx::ImageSkia normal_image = gfx::test::CreateImageSkia(10, 20);
@@ -66,7 +66,7 @@ TEST_F(ImageButtonTest, Basics) {
   EXPECT_EQ(20, button.GetImageToPaint().height());
 
   // Preferred size is the normal button size.
-  EXPECT_EQ(gfx::Size(10, 20), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(10, 20), button.GetPreferredSize({}));
 
   // Set a pushed image.
   gfx::ImageSkia pushed_image = gfx::test::CreateImageSkia(11, 21);
@@ -75,7 +75,7 @@ TEST_F(ImageButtonTest, Basics) {
 
   // By convention, preferred size doesn't change, even though pushed image
   // is bigger.
-  EXPECT_EQ(gfx::Size(10, 20), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(10, 20), button.GetPreferredSize({}));
 
   // We're still painting the normal image.
   EXPECT_FALSE(button.GetImageToPaint().isNull());
@@ -85,10 +85,10 @@ TEST_F(ImageButtonTest, Basics) {
   // The minimum image size should make the preferred size bigger.
   button.SetMinimumImageSize(gfx::Size(15, 5));
   EXPECT_EQ(gfx::Size(15, 5), button.GetMinimumImageSize());
-  EXPECT_EQ(gfx::Size(15, 20), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(15, 20), button.GetPreferredSize({}));
   button.SetMinimumImageSize(gfx::Size(15, 25));
   EXPECT_EQ(gfx::Size(15, 25), button.GetMinimumImageSize());
-  EXPECT_EQ(gfx::Size(15, 25), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(15, 25), button.GetPreferredSize({}));
 }
 
 TEST_F(ImageButtonTest, SetAndGetImage) {
@@ -142,11 +142,11 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   EXPECT_EQ(gfx::Point(20, 15), button.ComputeImagePaintPosition(image));
 
   // The entire button's size should take the border into account.
-  EXPECT_EQ(gfx::Size(30, 40), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(30, 40), button.GetPreferredSize({}));
 
   // The border should be added on top of the minimum image size.
   button.SetMinimumImageSize(gfx::Size(30, 5));
-  EXPECT_EQ(gfx::Size(40, 40), button.GetPreferredSize());
+  EXPECT_EQ(gfx::Size(40, 40), button.GetPreferredSize({}));
 }
 
 TEST_F(ImageButtonTest, LeftAlignedMirrored) {

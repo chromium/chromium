@@ -30,7 +30,7 @@ constexpr char kWakeLockReason[] = "Assistant";
 base::TimeDelta ClockNow(clockid_t clk_id) {
   struct timespec ts;
   if (clock_gettime(clk_id, &ts) != 0) {
-    NOTREACHED() << "clock_gettime(" << clk_id << ") failed.";
+    NOTREACHED_IN_MIGRATION() << "clock_gettime(" << clk_id << ") failed.";
     return base::TimeDelta();
   }
   return base::TimeDelta::FromTimeSpec(ts);
@@ -173,7 +173,7 @@ void PowerManagerProviderImpl::OnStartTimerCallback(AlarmId id, bool result) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
   if (!result) {
-    // TODO(crbug.com/919984): Notify Assistant of error so that it can do
+    // TODO(crbug.com/40608625): Notify Assistant of error so that it can do
     // something meaningful in the UI.
     LOG(ERROR) << "Failed to start timer on alarm ID " << id;
     // Remove any metadata and resources associated with timers mapped to |id|.

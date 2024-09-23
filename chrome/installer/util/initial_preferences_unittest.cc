@@ -4,6 +4,11 @@
 //
 // Unit tests for initial preferences related methods.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/initial_preferences.h"
 
 #include <stddef.h>

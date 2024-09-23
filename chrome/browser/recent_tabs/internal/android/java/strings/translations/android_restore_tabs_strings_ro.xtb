@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Dispozitivele sincronizate pentru restabilirea filelor sunt disponibile pentru modificare la atingere. Navighează pentru a examina sau a restabili filele selectate pentru dispozitivul actual la atingere. Tastatura este ascunsă.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Deschide <ph name="TABS_COUNT_ONE" /> filă}few{Deschide <ph name="TABS_COUNT_MANY" /> file}other{Deschide <ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="4509609396389120020">Accesează file de pe alte dispozitive</translation>
+<translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4811934403802581334">Toate filele selectate de pe dispozitivul selectat momentan se vor restabili.</translation>
 <translation id="5336031759968328813">Examinează toate filele</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>

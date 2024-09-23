@@ -28,7 +28,6 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
 SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     content::WebContents* web_contents,
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager)
     : content::WebContentsUserData<SafeBrowsingUserInteractionObserver>(
           *web_contents),
@@ -82,16 +81,14 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
 void SafeBrowsingUserInteractionObserver::CreateForWebContents(
     content::WebContents* web_contents,
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   // This method is called for all unsafe resources on |web_contents|. Only
   // create an observer if there isn't one.
-  // TODO(crbug.com/1057157): The observer should observe all unsafe resources
+  // TODO(crbug.com/40677238): The observer should observe all unsafe resources
   // instead of the first one only.
   content::WebContentsUserData<
       SafeBrowsingUserInteractionObserver>::CreateForWebContents(web_contents,
                                                                  resource,
-                                                                 is_main_frame,
                                                                  ui_manager);
 }
 
@@ -233,7 +230,7 @@ base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
   return creation_time_;
 }
 
-bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
+bool IsAllowedModifier(const input::NativeWebKeyboardEvent& event) {
   const int key_modifiers =
       event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
   // If the only modifier is shift, the user may be typing uppercase
@@ -251,7 +248,7 @@ bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
 }
 
 bool SafeBrowsingUserInteractionObserver::HandleKeyPress(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // Allow non-character keys such as ESC. These can be used to exit fullscreen,
   // for example.
   if (!event.IsCharacterKey() || event.is_browser_shortcut ||

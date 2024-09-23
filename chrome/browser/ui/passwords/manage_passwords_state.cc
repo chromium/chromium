@@ -16,6 +16,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
@@ -24,23 +26,22 @@ using password_manager_util::GetMatchType;
 namespace {
 
 std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        password_forms) {
+    base::span<const PasswordForm> password_forms) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.reserve(password_forms.size());
-  for (const PasswordForm* form : password_forms) {
-    if (GetMatchType(*form) != password_manager_util::GetLoginMatchType::kPSL)
-      result.push_back(std::make_unique<PasswordForm>(*form));
+  for (const PasswordForm& form : password_forms) {
+    if (GetMatchType(form) != password_manager_util::GetLoginMatchType::kPSL) {
+      result.push_back(std::make_unique<PasswordForm>(form));
+    }
   }
   return result;
 }
 
-void AppendDeepCopyVector(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms,
-    std::vector<std::unique_ptr<PasswordForm>>* result) {
+void AppendDeepCopyVector(base::span<const PasswordForm> forms,
+                          std::vector<std::unique_ptr<PasswordForm>>* result) {
   result->reserve(result->size() + forms.size());
-  for (const password_manager::PasswordForm* form : forms) {
-    result->push_back(std::make_unique<PasswordForm>(*form));
+  for (const password_manager::PasswordForm& form : forms) {
+    result->push_back(std::make_unique<PasswordForm>(form));
   }
 }
 
@@ -136,11 +137,12 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   ClearData();
   form_manager_ = std::move(form_manager);
-  for (const password_manager::PasswordForm* form :
+  for (const password_manager::PasswordForm& form :
        form_manager_->GetBestMatches()) {
-    if (GetMatchType(*form) == password_manager_util::GetLoginMatchType::kPSL)
+    if (GetMatchType(form) == password_manager_util::GetLoginMatchType::kPSL) {
       continue;
-    local_credentials_forms_.push_back(std::make_unique<PasswordForm>(*form));
+    }
+    local_credentials_forms_.push_back(std::make_unique<PasswordForm>(form));
   }
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
@@ -150,7 +152,8 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
 
 void ManagePasswordsState::OnSubmittedGeneratedPassword(
     password_manager::ui::State state,
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
+    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
+    password_manager::PasswordForm form_to_update) {
   CHECK(state == password_manager::ui::SAVE_CONFIRMATION_STATE ||
         state == password_manager::ui::UPDATE_CONFIRMATION_STATE ||
         state == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
@@ -163,6 +166,15 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
       DeepCopyNonPSLVector(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
+
+  // When confirmation bubble for the added username is shown, the old
+  // credential(without the added username) can be still present in
+  // best_matches, if FormFetcher didn't finish fetching passwords yet. It needs
+  // to be removed before showing the confirmation bubble.
+  std::erase_if(local_credentials_forms_,
+                [form_to_update](const std::unique_ptr<PasswordForm>& form) {
+                  return ArePasswordFormUniqueKeysEqual(form_to_update, *form);
+                });
 
   // In the confirmation state, a list of saved passwords is displayed, and that
   // list should contain the just added one. This step should be skipped when
@@ -185,16 +197,12 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
 }
 
 void ManagePasswordsState::OnPasswordAutofilled(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        password_forms,
+    base::span<const PasswordForm> password_forms,
     url::Origin origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-        federated_matches) {
-  DCHECK(!password_forms.empty() ||
-         (federated_matches && !federated_matches->empty()));
+    base::span<const PasswordForm> federated_matches) {
+  CHECK(!password_forms.empty() || !federated_matches.empty());
   auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
-  if (federated_matches)
-    AppendDeepCopyVector(*federated_matches, &local_credentials_forms);
+  AppendDeepCopyVector(federated_matches, &local_credentials_forms);
 
   // Delete |form_manager_| only when the parameters are processed. They may be
   // coming from |form_manager_|.
@@ -234,6 +242,27 @@ void ManagePasswordsState::OnKeychainError() {
   SetState(password_manager::ui::KEYCHAIN_ERROR_STATE);
 }
 
+void ManagePasswordsState::OnPasskeySaved(bool gpm_pin_created) {
+  ClearData();
+  gpm_pin_created_during_recent_passkey_creation_ = gpm_pin_created;
+  SetState(password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+}
+
+void ManagePasswordsState::OnPasskeyDeleted() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE);
+}
+
+void ManagePasswordsState::OnPasskeyUpdated() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
+}
+
+void ManagePasswordsState::OnPasskeyNotAccepted() {
+  ClearData();
+  SetState(password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
@@ -260,20 +289,24 @@ void ManagePasswordsState::TransitionToState(
 
 void ManagePasswordsState::ProcessLoginsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
-  if (state() == password_manager::ui::INACTIVE_STATE)
+  if (state() == password_manager::ui::INACTIVE_STATE) {
     return;
+  }
 
   bool applied_delete = false;
   bool all_changes_are_deletion = true;
   for (const password_manager::PasswordStoreChange& change : changes) {
-    if (change.type() != password_manager::PasswordStoreChange::REMOVE)
+    if (change.type() != password_manager::PasswordStoreChange::REMOVE) {
       all_changes_are_deletion = false;
+    }
     const PasswordForm& changed_form = change.form();
-    if (changed_form.blocked_by_user)
+    if (changed_form.blocked_by_user) {
       continue;
+    }
     if (change.type() == password_manager::PasswordStoreChange::REMOVE) {
-      if (RemoveFormFromVector(changed_form, &local_credentials_forms_))
+      if (RemoveFormFromVector(changed_form, &local_credentials_forms_)) {
         applied_delete = true;
+      }
     } else if (change.type() == password_manager::PasswordStoreChange::UPDATE) {
       UpdateFormInVector(changed_form, &local_credentials_forms_);
     } else {
@@ -286,8 +319,9 @@ void ManagePasswordsState::ProcessLoginsChanged(
   // itself adds a credential, they should not be refetched. The password
   // generation can be confused as the generated password will be refetched and
   // autofilled immediately.
-  if (applied_delete && all_changes_are_deletion)
+  if (applied_delete && all_changes_are_deletion) {
     client_->UpdateFormManagers();
+  }
 }
 
 void ManagePasswordsState::ProcessUnsyncedCredentialsWillBeDeleted(
@@ -303,18 +337,28 @@ void ManagePasswordsState::ChooseCredential(const PasswordForm* form) {
   std::move(credentials_callback_).Run(form);
 }
 
+void ManagePasswordsState::OpenPasswordDetailsBubble(
+    const password_manager::PasswordForm& form) {
+  single_credential_mode_credential_ = form;
+  SetState(password_manager::ui::State::MANAGE_STATE);
+}
+
 void ManagePasswordsState::ClearData() {
   form_manager_.reset();
+  clear_selected_password();
   local_credentials_forms_.clear();
   credentials_callback_.Reset();
   unsynced_credentials_.clear();
+  single_credential_mode_credential_.reset();
 }
 
 bool ManagePasswordsState::AddForm(const PasswordForm& form) {
-  if (url::Origin::Create(form.url) != origin_)
+  if (url::Origin::Create(form.url) != origin_) {
     return false;
-  if (UpdateFormInVector(form, &local_credentials_forms_))
+  }
+  if (UpdateFormInVector(form, &local_credentials_forms_)) {
     return true;
+  }
   local_credentials_forms_.push_back(std::make_unique<PasswordForm>(form));
   return true;
 }

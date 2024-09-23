@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -171,7 +172,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(render_frame);
     const Extension* extension = script_context->extension();
 
-    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // TODO(crbug.com/40263335): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
         channel_type == mojom::ChannelType::kConnect ? channel_name
@@ -201,8 +202,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
             case mojom::ContextType::kPrivilegedWebPage:
             case mojom::ContextType::kWebUi:
             case mojom::ContextType::kUntrustedWebUi:
-              NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
-                                    << script_context->GetDebugString();
+              NOTREACHED() << "Unexpected Context Encountered: "
+                           << script_context->GetDebugString();
           }
         } else {
           info->source_endpoint = MessagingEndpoint::ForWebPage();
@@ -267,7 +268,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                   const std::string& error,
                   mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
-        ->GetDispatcher()
+        ->dispatcher()
         ->bindings_system()
         ->HandleResponse(request_id, success, std::move(response), error,
                          std::move(response_data));
@@ -481,7 +482,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     DCHECK(script_context->IsForServiceWorker());
     const Extension* extension = script_context->extension();
 
-    // TODO(https://crbug.com/1430999): We should just avoid passing a
+    // TODO(crbug.com/40263335): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
         channel_type == mojom::ChannelType::kConnect ? channel_name
@@ -560,7 +561,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     return WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
   }
 
-  const raw_ptr<WorkerThreadDispatcher, ExperimentalRenderer> dispatcher_;
+  const raw_ptr<WorkerThreadDispatcher> dispatcher_;
   const int64_t service_worker_version_id_;
   std::optional<ExtensionId> extension_id_;
 };

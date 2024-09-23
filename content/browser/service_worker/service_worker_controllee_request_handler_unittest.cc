@@ -17,7 +17,7 @@
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
@@ -84,10 +84,10 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               TRAFFIC_ANNOTATION_FOR_TESTS)),
           handler_(std::make_unique<ServiceWorkerControlleeRequestHandler>(
               test->context()->AsWeakPtr(),
-              test->container_host_,
+              test->service_worker_client_,
               destination,
               /*skip_service_worker=*/false,
-              /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+              FrameTreeNodeId(),
               base::DoNothing())) {}
 
     void MaybeCreateLoader() {
@@ -183,7 +183,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     script_url_ = GURL("https://host/script.js");
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
-    registration_ = new ServiceWorkerRegistration(
+    registration_ = ServiceWorkerRegistration::Create(
         options,
         blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_)), 1L,
         context()->AsWeakPtr(), blink::mojom::AncestorFrameType::kNormalFrame);
@@ -203,12 +203,13 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
         EmbeddedWorkerTestHelper::CreateMainScriptResponse());
 
     // An empty host.
-    remote_endpoints_.emplace_back();
-    container_host_ = CreateContainerHostForWindow(
-        GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                /*mock frame_routing_id=*/1),
-        is_parent_frame_secure, helper_->context()->AsWeakPtr(),
-        &remote_endpoints_.back());
+    ScopedServiceWorkerClient service_worker_client =
+        helper_->context()
+            ->service_worker_client_owner()
+            .CreateServiceWorkerClientForWindow(is_parent_frame_secure,
+                                                FrameTreeNodeId(1));
+    service_worker_client_ = service_worker_client.AsWeakPtr();
+    service_worker_clients_.push_back(std::move(service_worker_client));
   }
 
   void TearDown() override {
@@ -219,22 +220,19 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
 
   ServiceWorkerContextCore* context() const { return helper_->context(); }
 
-  void CloseRemotes() {
-    for (auto& remote_endpoint : remote_endpoints_)
-      remote_endpoint.host_remote()->reset();
-  }
+  void CloseRemotes() { service_worker_clients_.clear(); }
 
  protected:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   net::TestDelegate url_request_delegate_;
   GURL scope_;
   GURL script_url_;
-  std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints_;
+  std::vector<ScopedServiceWorkerClient> service_worker_clients_;
 };
 
 class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
@@ -436,8 +434,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, InstallingRegistration) {
   // claim().
   EXPECT_FALSE(test_resources.loader());
   EXPECT_FALSE(version_->HasControllee());
-  EXPECT_FALSE(container_host_->controller());
-  EXPECT_EQ(registration_.get(), container_host_->MatchRegistration());
+  EXPECT_FALSE(service_worker_client_->controller());
+  EXPECT_EQ(registration_.get(), service_worker_client_->MatchRegistration());
 }
 
 // Test to not regress crbug/414118.
@@ -468,7 +466,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DeletedContainerHost) {
   // the database lookup.
   CloseRemotes();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(container_host_);
+  EXPECT_FALSE(service_worker_client_);
   EXPECT_FALSE(test_resources.loader());
 }
 
@@ -491,11 +489,9 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), container_host_,
+          context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/true,
-          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-          base::DoNothing()));
+          /*skip_service_worker=*/true, FrameTreeNodeId(), base::DoNothing()));
 
   // Conduct a main resource load.
   test_resources.MaybeCreateLoader();
@@ -508,12 +504,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
   EXPECT_FALSE(version_->HasControllee());
 
   // The host should still have the correct URL.
-  EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
+  EXPECT_EQ(GURL("https://host/scope/doc"), service_worker_client_->url());
 }
 
 // Tests interception after the context core has been destroyed and the provider
 // host is transferred to a new context.
-// TODO(crbug.com/877356): Remove this test when transferring contexts is
+// TODO(crbug.com/41409843): Remove this test when transferring contexts is
 // removed.
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   // Store an activated worker.
@@ -534,11 +530,9 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       network::mojom::RequestDestination::kDocument);
   test_resources.SetHandler(
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
-          context()->AsWeakPtr(), container_host_,
+          context()->AsWeakPtr(), service_worker_client_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/false,
-          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-          base::DoNothing()));
+          /*skip_service_worker=*/false, FrameTreeNodeId(), base::DoNothing()));
 
   // Destroy the context and make a new one.
   DeleteAndStartOverWaiter delete_and_start_over_waiter(
@@ -560,7 +554,7 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   EXPECT_FALSE(version_->HasControllee());
 
   // The host should still have the correct URL.
-  EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
+  EXPECT_EQ(GURL("https://host/scope/doc"), service_worker_client_->url());
 }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)

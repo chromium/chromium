@@ -10,7 +10,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
@@ -53,7 +55,7 @@ class WindowManagementTest : public InProcessBrowserTest {
 #endif
 };
 
-// TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
+// TODO(crbug.com/40115071): Windows crashes static casting to ScreenWin.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NoCrashOnEventsDuringHandlerPrint \
   DISABLED_NoCrashOnEventsDuringHandlerPrint

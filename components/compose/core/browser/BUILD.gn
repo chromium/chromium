@@ -13,6 +13,12 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("hats_utils") {
+  sources = [ "compose_hats_utils.h" ]
+
+  deps = [ "//base" ]
+}
+
 static_library("browser") {
   sources = [
     "compose_client.h",
@@ -22,11 +28,16 @@ static_library("browser") {
     "compose_manager_impl.h",
     "compose_metrics.cc",
     "compose_metrics.h",
+    "compose_utils.cc",
+    "compose_utils.h",
     "config.cc",
     "config.h",
   ]
 
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    ":hats_utils",
+  ]
 
   deps = [
     ":mojo_bindings",
@@ -34,6 +45,8 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
+    "//components/segmentation_platform/public:public",
+    "//components/strings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
@@ -46,7 +59,11 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "compose_manager_impl_unittest.cc" ]
+  sources = [
+    "compose_manager_impl_unittest.cc",
+    "compose_prompt_trimming_unittest.cc",
+    "config_unittest.cc",
+  ]
 
   deps = [
     ":browser",
@@ -55,6 +72,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:test_support",
+    "//components/strings",
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",

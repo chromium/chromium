@@ -42,10 +42,11 @@ suite('LacrosAppTest', function() {
     assertEquals(expectedUrl, img.src);
   }
 
-  test('proceed button clicked', async function() {
+  test('proceed button clicked', function() {
+    assertFalse(app.$.proceedButton.disabled);
     app.$.proceedButton.click();
     assertTrue(app.$.proceedButton.disabled);
-    await browserProxy.whenCalled('continueWithAccount');
+    return browserProxy.whenCalled('continueWithAccount');
   });
 
   test('on-profile-info-changed event', function() {

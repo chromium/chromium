@@ -50,7 +50,7 @@ class CONTROLLER_EXPORT HighestPmfReporter
   virtual void ReportMetrics();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   bool first_navigation_detected_ = false;
   double current_highest_pmf_ = 0.0;

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
@@ -31,6 +32,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -105,7 +108,9 @@ bool PaymentRequestDialogView::ShouldShowCloseButton() const {
 }
 
 void PaymentRequestDialogView::ShowDialog() {
-  constrained_window::ShowWebModalDialogViews(this, request_->web_contents());
+  views::Widget* widget = constrained_window::ShowWebModalDialogViews(
+      this, request_->web_contents());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 }
 
 void PaymentRequestDialogView::CloseDialog() {
@@ -133,8 +138,8 @@ void PaymentRequestDialogView::ShowErrorMessage() {
 void PaymentRequestDialogView::ShowProcessingSpinner() {
   throbber_->Start();
   throbber_overlay_->SetVisible(true);
-  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(false);
-  throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(false);
+  throbber_overlay_->GetViewAccessibility().SetIsIgnored(false);
+  throbber_overlay_->GetViewAccessibility().SetIsLeaf(false);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerShown();
 }
@@ -415,14 +420,14 @@ void PaymentRequestDialogView::EditorViewUpdated() {
 
 void PaymentRequestDialogView::HideProcessingSpinner() {
   throbber_->Stop();
-  // TODO(crbug.com/1418659): Instead of setting the throbber to invisible, can
+  // TODO(crbug.com/40894873): Instead of setting the throbber to invisible, can
   // we destroy and remove it from the view when it's not being used?
   throbber_overlay_->SetVisible(false);
   // Screen readers do not ignore invisible elements, so force the screen
   // reader to skip the invisible throbber by making it an ignored leaf node in
   // the accessibility tree.
-  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(true);
-  throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(true);
+  throbber_overlay_->GetViewAccessibility().SetIsIgnored(true);
+  throbber_overlay_->GetViewAccessibility().SetIsLeaf(true);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerHidden();
 }
@@ -440,8 +445,8 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   DCHECK(request);
   DCHECK(request->spec());
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetModalType(ui::mojom::ModalType::kChild);
 
   SetCloseCallback(base::BindOnce(&PaymentRequestDialogView::OnDialogClosed,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -531,7 +536,8 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
       l10n_util::GetStringUTF16(IDS_PAYMENTS_PROCESSING_MESSAGE)));
 }
 
-gfx::Size PaymentRequestDialogView::CalculatePreferredSize() const {
+gfx::Size PaymentRequestDialogView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   if (is_showing_large_payment_handler_window_) {
     return gfx::Size(GetActualDialogWidth(),
                      GetActualPaymentHandlerDialogHeight());

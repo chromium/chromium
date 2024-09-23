@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -407,6 +408,23 @@
   if (view.window.firstResponder == view) {
     [self makeAnyDialogKey];
   }
+}
+
+- (AcceptMouseEventsOption)acceptsMouseEventsOption {
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
+    return kAcceptMouseEventsInActiveWindow;
+  }
+
+  // For Top Chrome WebUIs, allows inactive windows to accept
+  // mouse events as long as the application is active. This
+  // mimics the behavior of views UI.
+  if (IsTopChromeWebUIURL(webContents->GetVisibleURL()) ||
+      IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
+    return kAcceptMouseEventsInActiveApp;
+  }
+
+  return kAcceptMouseEventsInActiveWindow;
 }
 
 @end

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_EXTENDED_API_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_EXTENDED_API_H_
+#ifndef PARTITION_ALLOC_EXTENDED_API_H_
+#define PARTITION_ALLOC_EXTENDED_API_H_
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/thread_cache.h"
@@ -32,11 +32,11 @@ class ThreadCacheProcessScopeForTesting {
 
  private:
   PartitionRoot* root_ = nullptr;
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   bool regular_was_enabled_ = false;
 #endif
 };
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_EXTENDED_API_H_
+#endif  // PARTITION_ALLOC_EXTENDED_API_H_

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -87,7 +88,7 @@ bool VerifyUsingCertVerifyProc(
     const std::vector<CertInput>& intermediate_der_certs,
     const std::vector<CertInputWithTrustSetting>& der_certs_with_trust_settings,
     const base::FilePath& dump_path) {
-  std::vector<base::StringPiece> der_cert_chain;
+  std::vector<std::string_view> der_cert_chain;
   der_cert_chain.push_back(target_der_cert.der_cert);
   for (const auto& cert : intermediate_der_certs)
     der_cert_chain.push_back(cert.der_cert);
@@ -124,7 +125,7 @@ bool VerifyUsingCertVerifyProc(
   // TODO(mattm): add command line flags to configure VerifyFlags.
   int flags = 0;
 
-  // TODO(crbug.com/634484): use a real netlog and print the results?
+  // TODO(crbug.com/40479281): use a real netlog and print the results?
   net::CertVerifyResult result;
   int rv = cert_verify_proc->Verify(
       x509_target_and_intermediates.get(), hostname,

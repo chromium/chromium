@@ -50,7 +50,7 @@ class CONTENT_EXPORT FederatedProviderFetcher {
 
   using RequesterCallback = base::OnceCallback<void(std::vector<FetchResult>)>;
 
-  // TODO(crbug.com/1487668): Remove |render_frame_host| when the IDP signin
+  // TODO(crbug.com/40283354): Remove |render_frame_host| when the IDP signin
   // status API is enabled by default.
   FederatedProviderFetcher(RenderFrameHost& render_frame_host,
                            IdpNetworkRequestManager* network_manager);

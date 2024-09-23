@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/app_types.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_arc_mixin.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
@@ -51,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(ArcIntegrationTest, CreateWindow) {
       arc_mixin().LaunchAndWaitForWindow(kPackage, kActivity);
   ASSERT_NE(window, nullptr);
 
-  int window_app_type = window->GetProperty(aura::client::kAppType);
-  EXPECT_EQ(window_app_type, static_cast<int>(ash::AppType::ARC_APP));
+  chromeos::AppType window_app_type =
+      window->GetProperty(chromeos::kAppTypeKey);
+  EXPECT_EQ(window_app_type, chromeos::AppType::ARC_APP);
 }

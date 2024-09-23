@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -19,7 +20,8 @@ class ExtensionManagement;
 // extension block/allowlists and admin block/allowlists.
 class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
  public:
-  explicit StandardManagementPolicyProvider(ExtensionManagement* settings);
+  explicit StandardManagementPolicyProvider(ExtensionManagement* settings,
+                                            Profile* profile);
 
   ~StandardManagementPolicyProvider() override;
 
@@ -45,6 +47,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                             std::u16string* error) const override;
 
  private:
+  raw_ptr<Profile> profile_;
   raw_ptr<ExtensionManagement> settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
                        std::u16string* error) const;

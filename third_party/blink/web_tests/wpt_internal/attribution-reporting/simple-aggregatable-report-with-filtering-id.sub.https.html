@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?with-filtering-id=true&with-max-bytes=false">
+<meta name=variant content="?with-filtering-id=false&with-max-bytes=false">
+<meta name=variant content="?with-filtering-id=true&with-max-bytes=true">
+<meta name=variant content="?with-filtering-id=false&with-max-bytes=true">
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
+<script>
+
+attribution_reporting_promise_test(async t => {
+  const searchParams = new URLSearchParams(location.search);
+  const withFilteringId = searchParams.get('with-filtering-id') == 'true';
+  const withMaxBytes = searchParams.get('with-max-bytes') == 'true';
+
+  const expectedSourceDebugKey = '246';
+  const expectedTriggerDebugKey = '357';
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: attributionDebugCookie,
+      source: {
+        aggregation_keys: {
+          geoValue: '0x5',
+        },
+        destination: 'https://{{host}}',
+        debug_key: expectedSourceDebugKey,
+      },
+    },
+    {
+      trigger: {
+        aggregatable_trigger_data: [
+          {
+            key_piece: '0xA80',
+            source_keys: ['geoValue'],
+          }
+        ],
+        aggregatable_values: {
+          geoValue: {
+            value: 1664,
+            ...(withFilteringId ? { filtering_id: '125' } : {})
+          },
+        },
+        debug_key: expectedTriggerDebugKey,
+        ...(withMaxBytes ? { aggregatable_filtering_id_max_bytes : 2 } : {} ),
+      },
+    },
+  ]));
+
+  const expectedAggServicePayload = buildExpectedPayload(
+    /*contributions=*/ [{
+      bucket: encodeBigInt(0xa85n, 16),
+      value: encodeBigInt(1664n, 4),
+      id: encodeBigInt(
+          /*num=*/ withFilteringId ? 125n : 0n,
+          /*size=*/ withMaxBytes ? 2 : 1),
+    }],
+    /*padToNumContributions=*/ 20,
+    /*nullContribution=*/ {
+      bucket: encodeBigInt(0n, 16),
+      value: encodeBigInt(0n, 4),
+      id: encodeBigInt(0n, withMaxBytes ? 2 : 1),
+    },
+  );
+
+  const payload = await pollAggregatableReports();
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.source_debug_key, expectedSourceDebugKey);
+  assert_equals(report.trigger_debug_key, expectedTriggerDebugKey);
+  const shared_info = JSON.parse(report.shared_info);
+  assert_own_property(shared_info, 'version');
+  assert_equals(shared_info.version, '1.0');
+  assert_own_property(shared_info, 'debug_mode');
+  assert_equals(shared_info.debug_mode, 'enabled');
+  const agg_service_payload = report.aggregation_service_payloads[0];
+  assert_own_property(agg_service_payload, 'debug_cleartext_payload');
+  assert_payload_equals(
+    CborParser.parse(agg_service_payload.debug_cleartext_payload),
+    expectedAggServicePayload
+  );
+
+  const debugPayload = await pollAttributionSuccessDebugAggregatableReports();
+  assert_equals(debugPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugPayload.reports[0].body);
+  assert_equals(debugReport.source_debug_key, expectedSourceDebugKey);
+  assert_equals(debugReport.trigger_debug_key, expectedTriggerDebugKey);
+  const debug_shared_info = JSON.parse(debugReport.shared_info);
+  assert_own_property(debug_shared_info, 'version');
+  assert_equals(debug_shared_info.version, '1.0');
+  assert_own_property(debug_shared_info, 'debug_mode');
+  assert_equals(debug_shared_info.debug_mode, 'enabled');
+  const debug_agg_service_payload = debugReport.aggregation_service_payloads[0];
+  assert_own_property(debug_agg_service_payload, 'debug_cleartext_payload');
+  assert_payload_equals(
+    CborParser.parse(debug_agg_service_payload.debug_cleartext_payload),
+    expectedAggServicePayload
+  );
+
+}, 'Ensure the aggregation service payload include the provided filtering id.');
+
+</script>

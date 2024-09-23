@@ -13,12 +13,7 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/profiles/profile.h"
-
-namespace ash::string_matching {
-class TokenizedString;
-}
 
 namespace app_list {
 
@@ -28,9 +23,6 @@ class KeyboardShortcutResultTest;
 
 class KeyboardShortcutResult : public ChromeSearchResult {
  public:
-  explicit KeyboardShortcutResult(Profile* profile,
-                                  const KeyboardShortcutData& data,
-                                  double relevance);
   KeyboardShortcutResult(
       Profile* profile,
       const ash::shortcut_customization::mojom::SearchResultPtr& search_result);
@@ -41,12 +33,6 @@ class KeyboardShortcutResult : public ChromeSearchResult {
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-
-  // Calculates the shortcut's relevance score. Will return a default score if
-  // the query is missing or the target is empty.
-  static double CalculateRelevance(
-      const ash::string_matching::TokenizedString& query_tokenized,
-      const std::u16string& target);
 
  private:
   // ui::KeyboardCode represents icon codes in the backend.
@@ -61,19 +47,6 @@ class KeyboardShortcutResult : public ChromeSearchResult {
   // backend icon codes. Returns nullopt for unsupported codes.
   static std::optional<ash::SearchResultTextItem::IconCode>
   GetIconCodeByKeyString(std::u16string_view key_string);
-
-  // Parse a |template_string| (containing placeholders of the form $i). The
-  // output is a TextVector where the TextItem elements can be of three
-  // different types:
-  //   1. kString: For plain-text portions of the template string.
-  //   2. kIconCode: For where a placeholder is replaced with an icon.
-  //   3. kIconifiedText: For where a placeholder is replaced with a string
-  //      representation of a shortcut key, where an icon for that key is not
-  //      supported.
-  static ChromeSearchResult::TextVector CreateTextVectorFromTemplateString(
-      const std::u16string& template_string,
-      const std::vector<std::u16string>& replacement_strings,
-      const std::vector<ui::KeyboardCode>& shortcut_key_codes);
 
   // Add the `accelerator` to the `text_vector` and populate
   // `accessible_strings`.

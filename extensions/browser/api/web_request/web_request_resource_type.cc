@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 
 #include <string_view>
@@ -10,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "url/gurl.h"
 
 namespace extensions {
 
@@ -48,10 +52,12 @@ static_assert(kResourceTypesLength ==
 WebRequestResourceType ToWebRequestResourceType(
     const network::ResourceRequest& request,
     bool is_download) {
-  if (request.url.SchemeIsWSOrWSS())
+  if (request.url.SchemeIsWSOrWSS()) {
     return WebRequestResourceType::WEB_SOCKET;
-  if (is_download)
+  }
+  if (is_download) {
     return WebRequestResourceType::OTHER;
+  }
   if (request.is_fetch_like_api) {
     // This must be checked before `request.keepalive` check below, because
     // currently Fetch keepAlive is not reported as ping.
@@ -70,7 +76,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kXslt:
       return WebRequestResourceType::STYLESHEET;
     case network::mojom::RequestDestination::kScript:
-    // TODO(crbug.com/1511722): Consider adding a new
+    // TODO(crbug.com/41484304): Consider adding a new
     // webRequest.ResourceType for JSON requests modules.
     case network::mojom::RequestDestination::kJson:
       return WebRequestResourceType::SCRIPT;
@@ -88,13 +94,15 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kWorker:
     case network::mojom::RequestDestination::kSharedWorker:
     case network::mojom::RequestDestination::kServiceWorker:
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return WebRequestResourceType::SCRIPT;
     case network::mojom::RequestDestination::kReport:
       return WebRequestResourceType::CSP_REPORT;
     case network::mojom::RequestDestination::kEmpty:
       // https://fetch.spec.whatwg.org/#concept-request-destination
-      if (request.keepalive)
+      if (request.keepalive) {
         return WebRequestResourceType::PING;
+      }
       return WebRequestResourceType::OTHER;
     case network::mojom::RequestDestination::kWebBundle:
       return WebRequestResourceType::WEBBUNDLE;
@@ -108,7 +116,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kSpeculationRules:
       return WebRequestResourceType::OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebRequestResourceType::OTHER;
 }
 

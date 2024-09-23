@@ -29,9 +29,9 @@ enum class SelectedLinuxBackend {
 // Decide which backend to target. |type| is checked first. If it does not
 // match a supported backend and |use_backend| is true, |desktop_env| will be
 // used to decide.
-// TODO(crbug/571003): This is exposed as a utility only for password manager to
-// use. It should be merged into key_storage_linux, once no longer needed in
-// password manager.
+// TODO(crbug.com/40449930): This is exposed as a utility only for password
+// manager to use. It should be merged into key_storage_linux, once no longer
+// needed in password manager.
 SelectedLinuxBackend COMPONENT_EXPORT(OS_CRYPT)
     SelectBackend(const std::string& type,
                   bool use_backend,

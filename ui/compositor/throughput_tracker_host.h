@@ -27,10 +27,10 @@ class COMPOSITOR_EXPORT ThroughputTrackerHost {
 
   // Stops the tracking for the given tracker id. Returns true if tracking
   // is stopped successfully. Otherwise, returns false.
-  virtual bool StopThroughtputTracker(TrackerId tracker_id) = 0;
+  virtual bool StopThroughputTracker(TrackerId tracker_id) = 0;
 
   // Cancels the tracking for the given tracker id.
-  virtual void CancelThroughtputTracker(TrackerId tracker_id) = 0;
+  virtual void CancelThroughputTracker(TrackerId tracker_id) = 0;
 };
 
 }  // namespace ui

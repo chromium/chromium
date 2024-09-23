@@ -32,7 +32,7 @@ void ActiveConnectionManager::AddActiveConnection(
                   << "add new active channel, but the connection state was "
                   << connection_state
                   << ". Connection details: " << connection_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -49,7 +49,7 @@ void ActiveConnectionManager::AddClientToChannel(
                   << "add new client to active channel, but the connection "
                   << "state was " << connection_state << ". "
                   << "Connection details: " << connection_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

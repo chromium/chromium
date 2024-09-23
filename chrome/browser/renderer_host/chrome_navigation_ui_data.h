@@ -49,7 +49,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
       content::WebContents* web_contents,
       WindowOpenDisposition disposition,
       bool is_using_https_as_default_scheme,
-      bool url_is_typed_with_http_scheme);
+      bool force_no_https_upgrade);
 
   // Creates a new ChromeNavigationUIData that is a deep copy of the original.
   // Any changes to the original after the clone is created will not be
@@ -77,15 +77,10 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 #endif
   WindowOpenDisposition window_open_disposition() const { return disposition_; }
   bool is_no_state_prefetching() const { return is_no_state_prefetching_; }
-  const std::string& prerender_histogram_prefix() {
-    return prerender_histogram_prefix_;
-  }
   bool is_using_https_as_default_scheme() const {
     return is_using_https_as_default_scheme_;
   }
-  bool url_is_typed_with_http_scheme() const {
-    return url_is_typed_with_http_scheme_;
-  }
+  bool force_no_https_upgrade() const { return force_no_https_upgrade_; }
 
   std::optional<int64_t> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(std::optional<int64_t> id) { bookmark_id_ = id; }
@@ -104,7 +99,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 
   WindowOpenDisposition disposition_;
   bool is_no_state_prefetching_ = false;
-  std::string prerender_histogram_prefix_;
+
   // True if the navigation was initiated by typing in the omnibox but the typed
   // text didn't have a scheme such as http or https (e.g. google.com), and
   // https was used as the default scheme for the navigation. This is used by
@@ -112,10 +107,12 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme_ = false;
 
-  // True if the navigation was initiated by typing in the omnibox, and the
-  // typed text had an explicit http scheme. This is used to opt-out of https
-  // upgrades.
-  bool url_is_typed_with_http_scheme_ = false;
+  // True if the navigation should be excluded from HTTPS upgrades.
+  // This can happen in the following cases:
+  // - the navigatioon was initiated by typing in the omnibox, and the
+  // typed text had an explicit http scheme.
+  // - the navigation was initiated as a captive portal login.
+  bool force_no_https_upgrade_ = false;
 
   // Id of the bookmark which started this navigation.
   std::optional<int64_t> bookmark_id_ = std::nullopt;

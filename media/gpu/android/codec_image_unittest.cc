@@ -50,14 +50,14 @@ class CodecImageTest : public testing::Test {
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
         base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
-        kFrameSize, std::nullopt);
+        kFrameSize, gfx::ColorSpace::CreateREC709(), std::nullopt,
+        /*use_block_model=*/false);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
 
     gl::init::InitializeStaticGLBindingsImplementation(
-        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     display_ = gl::init::InitializeGLOneOffPlatformImplementation(
-        /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
         /*gpu_preference=*/gl::GpuPreference::kDefault);

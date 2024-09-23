@@ -5,6 +5,7 @@
 #include "components/sync/model/string_ordinal.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -39,12 +40,8 @@ bool operator==(const StringOrdinal& lhs, const StringOrdinal& rhs) {
   return lhs.EqualsOrBothInvalid(rhs);
 }
 
-bool operator!=(const StringOrdinal& lhs, const StringOrdinal& rhs) {
-  return !(lhs == rhs);
-}
-
-StringOrdinal::StringOrdinal(const std::string& bytes)
-    : bytes_(bytes), is_valid_(IsValidOrdinalBytes(bytes_)) {}
+StringOrdinal::StringOrdinal(std::string bytes)
+    : bytes_(std::move(bytes)), is_valid_(IsValidOrdinalBytes(bytes_)) {}
 
 StringOrdinal::StringOrdinal() : is_valid_(false) {}
 
@@ -60,11 +57,13 @@ bool StringOrdinal::IsValid() const {
 }
 
 bool StringOrdinal::EqualsOrBothInvalid(const StringOrdinal& other) const {
-  if (!IsValid() && !other.IsValid())
+  if (!IsValid() && !other.IsValid()) {
     return true;
+  }
 
-  if (!IsValid() || !other.IsValid())
+  if (!IsValid() || !other.IsValid()) {
     return false;
+  }
 
   return Equals(other);
 }
@@ -131,8 +130,9 @@ StringOrdinal StringOrdinal::CreateAfter() const {
   // Create the largest valid StringOrdinal of the appropriate length to be
   // the maximum boundary.
   std::string end(bytes_.length(), kMaxDigit);
-  if (end == bytes_)
+  if (end == bytes_) {
     end += kMaxDigit;
+  }
 
   // Even though |end| is already a valid StringOrdinal that is greater than
   // |*this|, we don't return it because we wouldn't have much space after
@@ -147,24 +147,29 @@ std::string StringOrdinal::ToInternalValue() const {
 
 bool StringOrdinal::IsValidOrdinalBytes(const std::string& bytes) {
   const size_t length = bytes.length();
-  if (length < kMinLength)
+  if (length < kMinLength) {
     return false;
+  }
 
   bool found_non_zero = false;
   for (size_t i = 0; i < length; ++i) {
     const uint8_t byte = bytes[i];
-    if (byte < kZeroDigit || byte > kMaxDigit)
+    if (byte < kZeroDigit || byte > kMaxDigit) {
       return false;
-    if (byte > kZeroDigit)
+    }
+    if (byte > kZeroDigit) {
       found_non_zero = true;
+    }
   }
-  if (!found_non_zero)
+  if (!found_non_zero) {
     return false;
+  }
 
   if (length > kMinLength) {
     const uint8_t last_byte = bytes[length - 1];
-    if (last_byte == kZeroDigit)
+    if (last_byte == kZeroDigit) {
       return false;
+    }
   }
 
   return true;
@@ -181,8 +186,9 @@ size_t StringOrdinal::GetLengthWithoutTrailingZeroDigits(
 
   // If no non kZeroDigit is found then the string is a string of all zeros
   // digits so we return 0 as the correct length.
-  if (end_position == std::string::npos)
+  if (end_position == std::string::npos) {
     return 0;
+  }
 
   return end_position + 1;
 }
@@ -223,8 +229,9 @@ size_t StringOrdinal::GetProperLength(const std::string& lower_bound,
         GetLengthWithoutTrailingZeroDigits(bytes, drop_length - 1);
 
     if (truncated_length > 0 &&
-        bytes.compare(0, truncated_length, lower_bound) > 0)
+        bytes.compare(0, truncated_length, lower_bound) > 0) {
       drop_length = truncated_length;
+    }
   }
   return std::max(drop_length, kMinLength);
 }

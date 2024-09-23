@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/snapshot/snapshot.h"
 
 #include <stddef.h>
@@ -151,7 +156,7 @@ class SnapshotAuraTest : public testing::Test {
         test_window(), root_window(), &source_rect);
 
     scoped_refptr<SnapshotHolder> holder(new SnapshotHolder);
-    ui::GrabWindowSnapshotAsync(
+    ui::GrabWindowSnapshot(
         root_window(), source_rect,
         base::BindOnce(&SnapshotHolder::SnapshotCallback, holder));
 
@@ -204,7 +209,7 @@ class SnapshotAuraTest : public testing::Test {
 #endif
 TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/1143031): Fix this test to run in < action_timeout()
+  // TODO(crbug.com/40154923): Fix this test to run in < action_timeout()
   // on the Linux Debug & TSAN bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
@@ -212,7 +217,7 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -228,7 +233,7 @@ TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 
 TEST_F(SnapshotAuraTest, PartialBounds) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -244,7 +249,7 @@ TEST_F(SnapshotAuraTest, PartialBounds) {
 
 TEST_F(SnapshotAuraTest, Rotated) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -262,7 +267,7 @@ TEST_F(SnapshotAuraTest, Rotated) {
 
 TEST_F(SnapshotAuraTest, UIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -286,7 +291,7 @@ TEST_F(SnapshotAuraTest, UIScale) {
 
 TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -309,7 +314,7 @@ TEST_F(SnapshotAuraTest, DeviceScaleFactor) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }
@@ -334,7 +339,7 @@ TEST_F(SnapshotAuraTest, RotateAndUIScale) {
 
 TEST_F(SnapshotAuraTest, RotateAndUIScaleAndScaleFactor) {
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/850556): Make work on Windows.
+  // TODO(crbug.com/41393300): Make work on Windows.
   if (::testing::internal::AlwaysTrue()) {
     GTEST_SKIP();
   }

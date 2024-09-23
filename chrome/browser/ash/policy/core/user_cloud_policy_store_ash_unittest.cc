@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -137,6 +139,13 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault(), account_id_,
         user_policy_dir());
     store_->AddObserver(&observer_);
+
+    // Set the verification key to be used for testing by the
+    // CloudPolicyValidator.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(
+        switches::kPolicyVerificationKey,
+        PolicyBuilder::GetEncodedPolicyVerificationKey());
 
     // Install the initial public key, so that by default the validation of
     // the stored/loaded policy blob succeeds.

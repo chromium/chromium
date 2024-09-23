@@ -58,8 +58,6 @@ public class CredentialEditMediator implements UiActionHandler {
             "PasswordManager.CredentialEntryActions.FederatedCredential";
     static final String BLOCKED_CREDENTIAL_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.BlockedCredential";
-    static final String EDIT_ERROR_HISTOGRAM = "PasswordManager.CredentialEditError";
-
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final ConfirmationDialogHelper mDeleteDialogHelper;
     private final CredentialActionDelegate mCredentialActionDelegate;
@@ -205,20 +203,12 @@ public class CredentialEditMediator implements UiActionHandler {
         boolean hasError =
                 !mOriginalUsername.equals(username) && mExistingUsernames.contains(username);
         mModel.set(DUPLICATE_USERNAME_ERROR, hasError);
-        if (hasError) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    EDIT_ERROR_HISTOGRAM, DUPLICATE_USERNAME, ERROR_COUNT);
-        }
     }
 
     @Override
     public void onPasswordTextChanged(String password) {
         mModel.set(PASSWORD, password);
         mModel.set(EMPTY_PASSWORD_ERROR, password.isEmpty());
-        if (password.isEmpty()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    EDIT_ERROR_HISTOGRAM, EMPTY_PASSWORD, ERROR_COUNT);
-        }
     }
 
     @Override

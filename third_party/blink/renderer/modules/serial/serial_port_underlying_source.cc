@@ -36,7 +36,7 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
                                     WrapWeakPersistent(this)));
 }
 
-ScriptPromise SerialPortUnderlyingSource::Pull(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
     ReadableByteStreamController* controller,
     ExceptionState&) {
   DCHECK(controller_ == nullptr || controller_ == controller);
@@ -49,10 +49,10 @@ ScriptPromise SerialPortUnderlyingSource::Pull(
   // we allow the stream to be canceled before that data is received. pull()
   // will not be called again until a chunk is enqueued or if an error has been
   // signaled to the controller.
-  return ScriptPromise::CastUndefined(script_state_.Get());
+  return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromise SerialPortUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
     ExceptionState& exception_state) {
   DCHECK(data_pipe_);
 
@@ -62,10 +62,11 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
   // don't need to do it here.
   if (serial_port_->IsClosing()) {
     serial_port_->UnderlyingSourceClosed();
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
   serial_port_->Flush(
       device::mojom::blink::SerialPortFlushMode::kReceive,
       WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
@@ -73,7 +74,7 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
   return resolver->Promise();
 }
 
-ScriptPromise SerialPortUnderlyingSource::Cancel(
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
     v8::Local<v8::Value> reason,
     ExceptionState& exception_state) {
   return Cancel(exception_state);
@@ -94,7 +95,7 @@ void SerialPortUnderlyingSource::SignalErrorOnClose(SerialReceiveError error) {
   v8::Local<v8::Value> exception;
   switch (error) {
     case SerialReceiveError::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case SerialReceiveError::DISCONNECTED:
       [[fallthrough]];
@@ -148,10 +149,9 @@ void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
 }
 
 void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
-  const void* buffer = nullptr;
-  uint32_t length = 0;
+  base::span<const uint8_t> buffer;
   MojoResult result =
-      data_pipe_->BeginReadData(&buffer, &length, MOJO_READ_DATA_FLAG_NONE);
+      data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   switch (result) {
     case MOJO_RESULT_OK: {
       // respond() or enqueue() will only throw if their arguments are invalid
@@ -162,16 +162,14 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
 
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
-        length =
-            std::min(base::saturated_cast<uint32_t>(view.ByteLength()), length);
-        memcpy(view.Data(), buffer, length);
-        request->respond(script_state_, length, exception_state);
+        buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
+        view.ByteSpan().copy_prefix_from(buffer);
+        request->respond(script_state_, buffer.size(), exception_state);
       } else {
-        auto chunk = NotShared(DOMUint8Array::Create(
-            static_cast<const unsigned char*>(buffer), length));
+        auto chunk = NotShared(DOMUint8Array::Create(buffer));
         controller_->enqueue(script_state_, chunk, exception_state);
       }
-      result = data_pipe_->EndReadData(length);
+      result = data_pipe_->EndReadData(buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
       break;
     }
@@ -183,7 +181,7 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       break;
     default:
       invalid_data_pipe_read_result_ = result;
-      NOTREACHED() << "Invalid data pipe read result: " << result;
+      DUMP_WILL_BE_NOTREACHED() << "Invalid data pipe read result: " << result;
       break;
   }
 }
@@ -206,7 +204,8 @@ void SerialPortUnderlyingSource::OnHandleReady(
   }
 }
 
-void SerialPortUnderlyingSource::OnFlush(ScriptPromiseResolver* resolver) {
+void SerialPortUnderlyingSource::OnFlush(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   serial_port_->UnderlyingSourceClosed();
   resolver->Resolve();
 }

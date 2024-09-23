@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '../../testing/test_import_manager.js';
 import {Context, ContextChecker} from '../context_checker.js';
 
 import {MacroName} from './macro_names.js';
@@ -77,6 +78,15 @@ export class Macro {
   }
 
   /**
+   * Whether this macro should trigger when the action starts and when it ends.
+   * For example, a mouse click would trigger a press when a user's action
+   * begins and then a release when the action ends.
+   */
+  triggersAtActionStartAndEnd(): boolean {
+    return false;
+  }
+
+  /**
    * Checks whether a macro can attempt to run in the current context.
    * If this macro has several steps, just checks the first step.
    */
@@ -105,7 +115,7 @@ export class Macro {
 
   /** Protected helper method to create a CheckContextResult with an error. */
   protected createFailureCheckContextResult_(
-      error: MacroError, failedContext: Context): CheckContextResult {
+      error: MacroError, failedContext?: Context): CheckContextResult {
     return {canTryAction: false, error, failedContext};
   }
 
@@ -127,3 +137,6 @@ export class Macro {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(
+    ['MacroError', MacroError], ['MacroName', MacroName]);

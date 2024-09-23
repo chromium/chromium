@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/system/network/network_list_mobile_header_view.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 
+#include "ash/ash_element_identifiers.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -17,7 +19,10 @@ NetworkListMobileHeaderView::NetworkListMobileHeaderView(
     NetworkListNetworkHeaderView::Delegate* delegate)
     : NetworkListNetworkHeaderView(delegate,
                                    IDS_ASH_STATUS_TRAY_NETWORK_MOBILE,
-                                   kUnifiedMenuSignalCellular0Icon) {}
+                                   kUnifiedMenuSignalCellular0Icon) {
+  toggle()->SetProperty(views::kElementIdentifierKey,
+                        kNetworkDetailedViewMobileDataToggleElementId);
+}
 
 NetworkListMobileHeaderView::~NetworkListMobileHeaderView() = default;
 

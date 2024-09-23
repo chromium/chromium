@@ -8,8 +8,8 @@ EMAIL_ADDRESS | payment-credit-user-address-emailAddress | Email Address |  | pa
 COMPANY_NAME | payment-credit-user-address-companyName | Company Name (optional) |  | payment-credit-user-address-firstName_1
 ADDRESS_HOME_LINE1 | payment-credit-user-address-street | Street Address |  | payment-credit-user-address-firstName_1
 ADDRESS_HOME_LINE2 | payment-credit-user-address-street2 | Apt. or Suite (optional) |  | payment-credit-user-address-firstName_1
-ADDRESS_HOME_CITY | payment-credit-user-address-city | City |  | payment-credit-user-address-firstName_1
-ADDRESS_HOME_STATE | payment-credit-user-address-state | State |  | payment-credit-user-address-firstName_1
+ADDRESS_HOME_CITY | payment-credit-user-address-city | City |  | -default
+ADDRESS_HOME_STATE | payment-credit-user-address-state | State |  | -default
 ADDRESS_HOME_ZIP | payment-credit-user-address-postalCode | ZIP Code |  | payment-credit-user-address-firstName_1
 ADDRESS_HOME_CITY | payment-credit-user-address-lookup-options | City / State: |  | payment-credit-user-address-firstName_1
 CREDIT_CARD_NUMBER | payment-credit-method-cc0-cardNumber | Card Number |  | payment-credit-method-cc0-cardNumber_2

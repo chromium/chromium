@@ -116,6 +116,11 @@ class AppShimController
   // Called when the app is about to terminate.
   void ApplicationWillTerminate();
 
+  // Returns the current MacNotificationService instances as a
+  // MacNotificationServiceUN, or nullptr if no notification service has been
+  // created yet, or if it is of the wrong type.
+  mac_notifications::MacNotificationServiceUN* notification_service_un();
+
  private:
   friend class TestShimClient;
   friend class apps::MachBootstrapAcceptorTest;
@@ -180,6 +185,9 @@ class AppShimController
           provider) override;
   void RequestNotificationPermission(
       RequestNotificationPermissionCallback callback) override;
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+          receiver) override;
 
   // mac_notifications::mojom::MacNotificationProvider implementation.
   void BindNotificationService(
@@ -189,10 +197,12 @@ class AppShimController
           mac_notifications::mojom::MacNotificationActionHandler> handler)
       override;
 
-  // Returns the current MacNotificationService instances as a
-  // MacNotificationServiceUN, or nullptr if no notification service has been
-  // created yet, or if it is of the wrong type.
-  mac_notifications::MacNotificationServiceUN* notification_service_un();
+  // Called when a change in the system notification permission status has been
+  // detected.
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status);
+
+  bool WebAppIsAdHocSigned() const;
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.

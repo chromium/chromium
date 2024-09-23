@@ -11,19 +11,20 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/payments/content/can_make_payment_query_factory.h"
 #include "components/payments/content/content_payment_request_delegate.h"
+#include "components/payments/content/has_enrolled_instrument_query_factory.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
-#include "components/payments/core/can_make_payment_query.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/has_enrolled_instrument_query.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payment_details.h"
@@ -82,8 +83,7 @@ PaymentRequest::PaymentRequest(
           PaymentRequestWebContentsManager::GetOrCreateForWebContents(
               *web_contents())
               ->transaction_mode()),
-      journey_logger_(delegate_->IsOffTheRecord(),
-                      delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
+      journey_logger_(delegate_->GetRenderFrameHost()->GetPageUkmSourceId()) {
   CHECK(!delegate_->GetRenderFrameHost()->IsInLifecycleState(
       content::RenderFrameHost::LifecycleState::kPrerendering));
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
@@ -490,7 +490,7 @@ void PaymentRequest::Abort() {
   // the destruction of this object.
   // Otherwise, the abort promise is rejected and the pipe is not closed.
   // The abort is only successful if the payment app wasn't yet invoked.
-  // TODO(crbug.com/716546): Add a merchant abort metric
+  // TODO(crbug.com/40518000): Add a merchant abort metric
 
   if (observer_for_testing_)
     observer_for_testing_->OnAbortCalled();
@@ -551,7 +551,18 @@ void PaymentRequest::CanMakePayment() {
   if (observer_for_testing_)
     observer_for_testing_->OnCanMakePaymentCalled();
 
-  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled)) {
+  // The kCanMakePaymentEnabled pref does not apply to SPC, where
+  // canMakePayment() is only used for feature detection and does not
+  // communicate with any applications.
+  bool can_make_payment_allowed_by_pref = true;
+  if (!spec_->IsSecurePaymentConfirmationRequested()) {
+    can_make_payment_allowed_by_pref =
+        delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
+    base::UmaHistogramBoolean("PaymentRequest.CanMakePayment.CallAllowedByPref",
+                              can_make_payment_allowed_by_pref);
+  }
+
+  if (!can_make_payment_allowed_by_pref) {
     CanMakePaymentCallback(/*can_make_payment=*/false);
   } else {
     state_->CanMakePayment(
@@ -572,7 +583,19 @@ void PaymentRequest::HasEnrolledInstrument() {
   if (observer_for_testing_)
     observer_for_testing_->OnHasEnrolledInstrumentCalled();
 
-  if (!delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled)) {
+  // The kCanMakePaymentEnabled pref does not apply to SPC, where
+  // hasEnrolledInstrument() is only used for feature detection and does not
+  // communicate with any applications.
+  bool has_enrolled_instrument_allowed_by_pref = true;
+  if (!spec_->IsSecurePaymentConfirmationRequested()) {
+    has_enrolled_instrument_allowed_by_pref =
+        delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
+    base::UmaHistogramBoolean(
+        "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+        has_enrolled_instrument_allowed_by_pref);
+  }
+
+  if (!has_enrolled_instrument_allowed_by_pref) {
     HasEnrolledInstrumentCallback(/*has_enrolled_instrument=*/false);
   } else {
     state_->HasEnrolledInstrument(
@@ -789,8 +812,6 @@ void PaymentRequest::OnPaymentResponseAvailable(
   DCHECK(!response->method_name.empty());
   DCHECK(!response->stringified_details.empty());
 
-  journey_logger_.SetReceivedInstrumentDetails();
-
   // If currently interactive, show the processing spinner. Autofill payment
   // apps request a CVC, so they are always interactive at this point. A payment
   // handler may elect to be non-interactive by not showing a confirmation page
@@ -802,7 +823,6 @@ void PaymentRequest::OnPaymentResponseAvailable(
 }
 
 void PaymentRequest::OnPaymentResponseError(const std::string& error_message) {
-  journey_logger_.SetReceivedInstrumentDetails();
   RecordFirstAbortReason(JourneyLogger::ABORT_REASON_INSTRUMENT_DETAILS_ERROR);
 
   reject_show_error_message_ = error_message;
@@ -976,7 +996,7 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
       break;
     }
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return JourneyLogger::PaymentMethodCategory::kOther;
@@ -1009,8 +1029,6 @@ void PaymentRequest::CanMakePaymentCallback(bool can_make_payment) {
       can_make_payment ? mojom::CanMakePaymentQueryResult::CAN_MAKE_PAYMENT
                        : mojom::CanMakePaymentQueryResult::CANNOT_MAKE_PAYMENT);
 
-  journey_logger_.SetCanMakePaymentValue(can_make_payment);
-
   if (observer_for_testing_)
     observer_for_testing_->OnCanMakePaymentReturned();
 }
@@ -1020,7 +1038,7 @@ void PaymentRequest::HasEnrolledInstrumentCallback(
   VLOG(2) << "PaymentRequest (" << *spec_->details().id
           << "): hasEnrolledInstrument = " << has_enrolled_instrument;
 
-  if (!spec_ || CanMakePaymentQueryFactory::GetInstance()
+  if (!spec_ || HasEnrolledInstrumentQueryFactory::GetInstance()
                     ->GetForContext(render_frame_host().GetBrowserContext())
                     ->CanQuery(top_level_origin_, frame_origin_,
                                spec_->query_for_quota())) {
@@ -1052,7 +1070,6 @@ void PaymentRequest::RespondToHasEnrolledInstrumentQuery(
 
   client_->OnHasEnrolledInstrument(has_enrolled_instrument ? positive
                                                            : negative);
-  journey_logger_.SetHasEnrolledInstrumentValue(has_enrolled_instrument);
 }
 
 void PaymentRequest::OnAbortResult(bool aborted) {

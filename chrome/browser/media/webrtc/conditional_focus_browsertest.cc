@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gl/gl_switches.h"
 
@@ -52,7 +53,7 @@ const char* ToString(FocusEnumValue focus_enum_value) {
     case FocusEnumValue::kNoFocusChange:
       return "no-focus-change";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class Tab { kUnknownTab, kCapturingTab, kCapturedTab };
@@ -76,11 +77,12 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedPageTitle);
     command_line->AppendSwitchASCII(blink::switches::kConditionalFocusWindowMs,
                                     "5000");
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // MSan and GL do not get along so avoid using the GPU with MSan.
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-      command_line->AppendSwitch(switches::kUseGpuInTests);
-    }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
   }
 
   WebContents* OpenTestPageInNewTab(const std::string& test_url) {
@@ -231,7 +233,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(FocusEnumValue::kFocusCapturingApplication,
                     FocusEnumValue::kNoFocusChange));
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus \
   DISABLED_CapturedTabNotFocusedIfExplicitlyCallingNoFocus
@@ -250,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
   DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
@@ -319,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusBeforeCapture) {
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_NoFocusBeforeCapture DISABLED_NoFocusBeforeCapture
 #else
@@ -337,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
   DISABLED_NoFocusAfterCaptureOverrideFocusBeforeCapture
@@ -358,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-// TODO(crbug.com/1446884): Flaky on a TSan bot.
+// TODO(crbug.com/40913269): Flaky on a TSan bot.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture \
   DISABLED_FocusAfterCaptureOverrideNoFocusBeforeCapture

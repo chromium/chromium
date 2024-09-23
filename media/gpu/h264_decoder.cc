@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/h264_decoder.h"
 
 #include <limits>
@@ -15,7 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
-#include "media/video/h264_level_limits.h"
+#include "media/parsers/h264_level_limits.h"
 
 namespace media {
 namespace {
@@ -75,7 +80,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       // Spec H.10.1.1 and H.10.1.2.
       return bit_depth == 8u;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -317,11 +322,10 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (pic->nal_ref_idc == 0 && abs_frame_num > 0)
         --abs_frame_num;
 
-      int expected_pic_order_cnt = 0;
+      base::CheckedNumeric<int> expected_pic_order_cnt = 0;
       if (abs_frame_num > 0) {
         if (sps->num_ref_frames_in_pic_order_cnt_cycle == 0) {
-          DVLOG(1) << "Invalid num_ref_frames_in_pic_order_cnt_cycle "
-                   << "in stream";
+          DVLOG(1) << "Invalid num_ref_frames_in_pic_order_cnt_cycle.";
           return false;
         }
 
@@ -330,8 +334,10 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
         int frame_num_in_pic_order_cnt_cycle =
             (abs_frame_num - 1) % sps->num_ref_frames_in_pic_order_cnt_cycle;
 
-        expected_pic_order_cnt = pic_order_cnt_cycle_cnt *
-                                 sps->expected_delta_per_pic_order_cnt_cycle;
+        expected_pic_order_cnt =
+            base::CheckedNumeric<int>(pic_order_cnt_cycle_cnt) *
+            sps->expected_delta_per_pic_order_cnt_cycle;
+
         // frame_num_in_pic_order_cnt_cycle is verified < 255 in parser
         for (int i = 0; i <= frame_num_in_pic_order_cnt_cycle; ++i)
           expected_pic_order_cnt += sps->offset_for_ref_frame[i];
@@ -340,12 +346,24 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (!pic->nal_ref_idc)
         expected_pic_order_cnt += sps->offset_for_non_ref_pic;
 
-      pic->top_field_order_cnt =
+      base::CheckedNumeric<int> top_field_order_cnt =
           expected_pic_order_cnt + pic->delta_pic_order_cnt0;
-      pic->bottom_field_order_cnt = pic->top_field_order_cnt +
-                                    sps->offset_for_top_to_bottom_field +
-                                    pic->delta_pic_order_cnt1;
+      base::CheckedNumeric<int> bottom_field_order_cnt =
+          top_field_order_cnt + sps->offset_for_top_to_bottom_field +
+          pic->delta_pic_order_cnt1;
 
+      if (!top_field_order_cnt.IsValid()) {
+        DVLOG(1) << "Invalid top_field_order_cnt.";
+        return false;
+      }
+
+      if (!bottom_field_order_cnt.IsValid()) {
+        DVLOG(1) << "Invalid bottom_field_order_cnt.";
+        return false;
+      }
+
+      pic->top_field_order_cnt = top_field_order_cnt.ValueOrDie();
+      pic->bottom_field_order_cnt = bottom_field_order_cnt.ValueOrDie();
       break;
     }
 
@@ -777,13 +795,6 @@ H264Decoder::H264Accelerator::Status H264Decoder::StartNewFrame(
       return H264Accelerator::Status::kFail;
   }
 
-  if (recovery_frame_cnt_ && *recovery_frame_cnt_ >= max_frame_num_) {
-    DVLOG(1) << "Invalid recovery_frame_cnt=" << *recovery_frame_cnt_
-             << " (it must be less or equal to max_frame_num-1=" << max_frame_num_ - 1
-             << ")";
-    return H264Accelerator::Status::kFail;
-  }
-
   if (!InitCurrPicture(slice_hdr))
     return H264Accelerator::Status::kFail;
 
@@ -841,7 +852,7 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         if (to_mark) {
           to_mark->ref = false;
         } else {
-          // TODO(crbug.com/1402627): consider doing the same for mmco 2 when
+          // TODO(crbug.com/40251206): consider doing the same for mmco 2 when
           // we can have testing for it, as how we handle missing |to_mark| for
           // mmco 1.
           DVLOG(1) << "Invalid long term ref pic num to unmark";
@@ -919,7 +930,7 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
 
       default:
         // Would indicate a bug in parser.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1007,11 +1018,19 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
   DVLOG(4) << "Finishing picture frame_num: " << pic->frame_num
            << ", entries in DPB: " << dpb_.size();
   if (recovery_frame_cnt_) {
-    // This is the first picture after the recovery point SEI message. Computes
-    // the frame_num of the frame that should be output from (Spec D.2.8).
+    // This is the first picture after the recovery point SEI message. Validate
+    // `recovery_frame_cnt_` now that we are certain to have max_frame_num_.
+    if (*recovery_frame_cnt_ >= max_frame_num_) {
+      DVLOG(1) << "Invalid recovery_frame_cnt=" << *recovery_frame_cnt_
+               << " (must be less than or equal to max_frame_num-1="
+               << (max_frame_num_ - 1) << ")";
+      return false;
+    }
+
+    // Compute the frame_num of the first frame that should be output (D.2.8).
     recovery_frame_num_ =
         (*recovery_frame_cnt_ + pic->frame_num) % max_frame_num_;
-    DVLOG(3) << "recovery_frame_num_" << *recovery_frame_num_;
+    DVLOG(3) << "recovery_frame_num_=" << *recovery_frame_num_;
     recovery_frame_cnt_.reset();
   }
 
@@ -1220,6 +1239,15 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     new_color_space = container_color_space_;
   }
 
+  if (new_color_space.matrix == VideoColorSpace::MatrixID::RGB) {
+    // Some H.264 videos contain a VUI that specifies a color matrix of GBR,
+    // when they are actually ordinary YUV. H264 only supports 4:2:0 subsampling
+    // and BGR should only be used with 4:4:4, hence default to Rec709. See
+    // crbug.com/341266991.
+    CHECK_NE(chroma_sampling_, VideoChromaSampling::k444);
+    new_color_space = VideoColorSpace::REC709();
+  }
+
   bool is_color_space_change = false;
   if (base::FeatureList::IsEnabled(kAVDColorSpaceChanges)) {
     is_color_space_change = new_color_space.IsSpecified() &&
@@ -1318,7 +1346,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
   DCHECK(curr_slice_hdr_);
   std::vector<base::span<const uint8_t>> spans(prior_cencv1_nalus_.begin(),
                                                prior_cencv1_nalus_.end());
-  spans.emplace_back(curr_nalu_->data,
+  spans.emplace_back(curr_nalu_->data.get(),
                      base::checked_cast<size_t>(curr_nalu_->size));
   std::vector<SubsampleEntry> all_subsamples(prior_cencv1_subsamples_.begin(),
                                              prior_cencv1_subsamples_.end());
@@ -1335,7 +1363,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
   // Insert this encrypted slice data as well in case this is a multi-slice
   // picture.
   prior_cencv1_nalus_.emplace_back(
-      curr_nalu_->data, base::checked_cast<size_t>(curr_nalu_->size));
+      curr_nalu_->data.get(), base::checked_cast<size_t>(curr_nalu_->size));
   prior_cencv1_subsamples_.insert(prior_cencv1_subsamples_.end(),
                                   subsamples.begin(), subsamples.end());
   return rv;
@@ -1430,7 +1458,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
 
 void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   const uint8_t* ptr = decoder_buffer.data();
-  const size_t size = decoder_buffer.data_size();
+  const size_t size = decoder_buffer.size();
   const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
 
   DCHECK(ptr);
@@ -1468,7 +1496,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
     // Calling H264Accelerator::SetStream() here instead of when the stream is
     // originally set in case the accelerator needs to return kTryAgain.
     H264Accelerator::Status result = accelerator_->SetStream(
-        base::span<const uint8_t>(current_stream_, current_stream_size_),
+        base::span<const uint8_t>(current_stream_.get(), current_stream_size_),
         current_decrypt_config_.get());
     switch (result) {
       case H264Accelerator::Status::kOk:
@@ -1612,7 +1640,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         accelerator_->ProcessSPS(
             parser_.GetSPS(sps_id),
             base::span<const uint8_t>(
-                curr_nalu_->data,
+                curr_nalu_->data.get(),
                 base::checked_cast<size_t>(curr_nalu_->size)));
 
         if (state_ == State::kNeedStreamMetadata)
@@ -1625,7 +1653,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           ref_pic_list_b0_.clear();
           ref_pic_list_b1_.clear();
         }
-        // Perfer config changes over color space changes.
+        // Prefer config changes over color space changes.
         if (need_new_buffers) {
           return kConfigChange;
         }
@@ -1640,7 +1668,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         accelerator_->ProcessPPS(
             parser_.GetPPS(last_parsed_pps_id_),
             base::span<const uint8_t>(
-                curr_nalu_->data,
+                curr_nalu_->data.get(),
                 base::checked_cast<size_t>(curr_nalu_->size)));
         break;
       }
@@ -1664,7 +1692,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               parser_.GetCurrentSubsamples();
           if (!subsamples.empty()) {
             prior_cencv1_nalus_.emplace_back(
-                curr_nalu_->data, base::checked_cast<size_t>(curr_nalu_->size));
+                curr_nalu_->data.get(),
+                base::checked_cast<size_t>(curr_nalu_->size));
             DCHECK_EQ(1u, subsamples.size());
             prior_cencv1_subsamples_.push_back(subsamples[0]);
             // Since the SEI is encrypted, do not try to parse it below as it
@@ -1815,7 +1844,7 @@ bool H264Decoder::FillH264PictureFromSliceHeader(
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return true;
 }

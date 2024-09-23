@@ -5,6 +5,7 @@
 #include "components/permissions/permission_hats_trigger_helper.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/messages/android/message_enums.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
@@ -41,7 +43,7 @@ std::vector<std::string> SplitCsvString(const std::string& csv_string) {
 bool StringMatchesFilter(const std::string& string, const std::string& filter) {
   return filter.empty() ||
          base::ranges::any_of(SplitCsvString(filter),
-                              [string](base::StringPiece current_filter) {
+                              [string](std::string_view current_filter) {
                                 return base::EqualsCaseInsensitiveASCII(
                                     string, current_filter);
                               });
@@ -86,7 +88,18 @@ GetKeyToValueFilterPairMap(
             prompt_parameters.one_time_prompts_decided_bucket),
         feature_params::kPermissionPromptSurveyOneTimePromptsDecidedBucket
             .Get()}},
-      {kPermissionPromptSurveyUrlKey, {prompt_parameters.url, ""}}};
+      {kPermissionPromptSurveyUrlKey, {prompt_parameters.url, ""}},
+      {kPermissionPromptSurveyPepcPromptPositionKey,
+       {prompt_parameters.pepc_prompt_position.has_value()
+            ? feature_params::kPermissionElementPromptPositioningParam.GetName(
+                  prompt_parameters.pepc_prompt_position.value())
+            : "",
+        feature_params::kPermissionPromptSurveyPepcPromptPositionFilter.Get()}},
+      {kPermissionPromptSurveyInitialPermissionStatusKey,
+       {content_settings::ContentSettingToString(
+            prompt_parameters.initial_permission_status),
+        feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
+            .Get()}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -171,7 +184,10 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     const std::string& survey_display_time,
     std::optional<base::TimeDelta> prompt_display_duration,
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-    std::optional<GURL> gurl)
+    std::optional<GURL> gurl,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -181,7 +197,9 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
       survey_display_time(survey_display_time),
       prompt_display_duration(prompt_display_duration),
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
-      url(gurl.has_value() ? gurl->spec() : "") {}
+      url(gurl.has_value() ? gurl->spec() : ""),
+      pepc_prompt_position(pepc_prompt_position),
+      initial_permission_status(initial_permission_status) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     double trigger_probability,
@@ -226,6 +244,8 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionsPromptSurveyReleaseChannelKey,
       kPermissionsPromptSurveyDisplayTimeKey,
       kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+      kPermissionPromptSurveyPepcPromptPositionKey,
+      kPermissionPromptSurveyInitialPermissionStatusKey,
       kPermissionPromptSurveyUrlKey};
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);
@@ -297,7 +317,7 @@ void PermissionHatsTriggerHelper::
         ContentSettingsType type,
         PrefService* pref_service) {
   if (base::FeatureList::IsEnabled(features::kOneTimePermission) &&
-      PermissionUtil::CanPermissionBeAllowedOnce(type)) {
+      PermissionUtil::DoesSupportTemporaryGrants(type)) {
     pref_service->SetInteger(
         prefs::kOneTimePermissionPromptsDecidedCount,
         pref_service->GetInteger(prefs::kOneTimePermissionPromptsDecidedCount) +
@@ -343,7 +363,7 @@ std::string PermissionHatsTriggerHelper::GetOneTimePromptsDecidedBucketString(
     case BUCKET_GT20:
       return "GT20";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

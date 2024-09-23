@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "gardener_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -16,15 +16,16 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.gpu",
     pool = ci.gpu.POOL,
-    sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
+    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     tree_closing = True,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
     tree_closing_notifiers = ci.gpu.TREE_CLOSING_NOTIFIERS,
 )
@@ -42,7 +43,6 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -71,7 +71,7 @@ ci.gpu.linux_builder(
             "android_builder",
             "release_builder",
             "try_builder",
-            "reclient",
+            "remoteexec",
             "arm64",
             "static_angle",
             "android_fastbuild",
@@ -79,6 +79,52 @@ ci.gpu.linux_builder(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android",
+        short_name = "N5X",
+    ),
+    cq_mirrors_console_view = "mirrors",
+)
+
+ci.gpu.linux_builder(
+    name = "Android Release (Pixel 2)",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Runs GPU tests on Pixel 2 phones",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "try_builder",
+            "remoteexec",
+            "arm64",
+            "static_angle",
+            "android_fastbuild",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android",
+        short_name = "P2",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -91,6 +137,10 @@ ci.gpu.linux_builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Linux Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -109,7 +159,9 @@ ci.gpu.linux_builder(
             "gpu_tests",
             "release_builder",
             "try_builder",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -139,10 +191,12 @@ ci.gpu.linux_builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -156,6 +210,10 @@ ci.gpu.mac_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Mac Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
                 "use_clang_coverage",
             ],
         ),
@@ -176,8 +234,9 @@ ci.gpu.mac_builder(
             "gpu_tests",
             "release_builder",
             "try_builder",
-            "reclient",
+            "remoteexec",
             "x64",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -207,11 +266,12 @@ ci.gpu.mac_builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
             "x64",
+            "mac",
         ],
     ),
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
@@ -225,6 +285,10 @@ ci.gpu.windows_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Mac Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
                 "use_clang_coverage",
             ],
         ),
@@ -244,15 +308,17 @@ ci.gpu.windows_builder(
             "gpu_tests",
             "release_builder",
             "try_builder",
-            "reclient",
+            "remoteexec",
             "resource_allowlisting",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -276,15 +342,17 @@ ci.gpu.windows_builder(
         configs = [
             "gpu_tests",
             "debug_builder",
-            "reclient",
+            "remoteexec",
+            "win",
+            "x64",
         ],
     ),
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -306,7 +374,7 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -361,7 +429,7 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "Mac",

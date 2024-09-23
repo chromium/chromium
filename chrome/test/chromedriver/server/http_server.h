@@ -75,6 +75,8 @@ class HttpServer : public net::HttpServer::Delegate,
       const net::HttpServerResponseInfo& response,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
+  const net::IPEndPoint& LocalAddress() const;
+
  private:
   void OnResponse(int connection_id,
                   bool keep_alive,
@@ -88,6 +90,7 @@ class HttpServer : public net::HttpServer::Delegate,
   const std::vector<std::string> allowed_origins_;
   base::WeakPtr<HttpHandler> handler_;
   scoped_refptr<base::SingleThreadTaskRunner> cmd_runner_;
+  net::IPEndPoint local_address_;
   base::WeakPtrFactory<HttpServer> weak_factory_{this};  // Should be last.
 };
 

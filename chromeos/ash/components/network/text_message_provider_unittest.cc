@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -156,7 +155,6 @@ class TextMessageProviderTest : public testing::Test {
 
   base::ScopedObservation<TextMessageProvider, TextMessageProvider::Observer>
       observation{&test_observer_};
-  base::test::ScopedFeatureList features_{features::kSuppressTextMessages};
 };
 
 TEST_F(TextMessageProviderTest, MessageReceivedPolicyAllowUserSuppressTest) {

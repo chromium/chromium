@@ -24,7 +24,8 @@ class Section {
  public:
   explicit Section(size_t limit,
                    Groups groups,
-                   omnibox::GroupConfigMap& group_configs);
+                   omnibox::GroupConfigMap& group_configs,
+                   omnibox::GroupConfig_SideType side_type);
   virtual ~Section();
   // Returns `matches` ranked and culled according to `sections`. All `matches`
   // should have `suggestion_group_id` set and be sorted by relevance.
@@ -47,6 +48,10 @@ class Section {
   size_t count_{0};
   // The `Group`s this `Section` contains.
   Groups groups_{};
+  // This `Section`s map of group IDs to group information.
+  omnibox::GroupConfigMap group_configs_;
+  // This `Section`s side type.
+  omnibox::GroupConfig_SideType side_type_;
 };
 
 // Base section for ZPS limits and grouping. Ensures that matches with higher
@@ -56,7 +61,9 @@ class ZpsSection : public Section {
  public:
   ZpsSection(size_t limit,
              Groups groups,
-             omnibox::GroupConfigMap& group_configs);
+             omnibox::GroupConfigMap& group_configs,
+             omnibox::GroupConfig_SideType side_type =
+                 omnibox::GroupConfig_SideType_DEFAULT_PRIMARY);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
 };
@@ -70,6 +77,29 @@ class ZpsSectionWithMVTiles : public ZpsSection {
                                  omnibox::GroupConfigMap& group_configs);
   // Section:
   void InitFromMatches(ACMatches& matches) override;
+};
+
+// Android prefixed section for Adaptive Suggestions grouping.
+class AndroidNonZPSSection : public Section {
+ public:
+  // Construct a new instance of the grouping class used in non-zero-prefix
+  // context.
+  // When `show_only_search_suggestions` is set to `true`, URLs will not be
+  // offered at any position other than position 0 (the Default Match).
+  explicit AndroidNonZPSSection(bool show_only_search_suggestions,
+                                omnibox::GroupConfigMap& group_configs);
+
+  // Section:
+  void InitFromMatches(ACMatches& matches) override;
+
+  // Specify number of matches that are at least 50% exposed while the
+  // software keyboard is visible.
+  static void set_num_visible_matches(size_t num_visible_matches) {
+    num_visible_matches_ = num_visible_matches;
+  }
+
+ private:
+  static size_t num_visible_matches_;
 };
 
 // Section expressing the Android ZPS limits and grouping for the NTP.
@@ -108,17 +138,29 @@ class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the NTP.
-// - up to 8 suggestions total.
+// - up to 8 suggestions total or 7 total if the ZPS IPH is enabled (the 8th
+// suggestion being the IPH).
 //  - up to 8 personalized suggestions.
 //  - up to 8 trending search suggestions.
 class DesktopNTPZpsSection : public ZpsSection {
  public:
-  explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
+                                size_t limit);
+};
+
+// Section expressing the Desktop ZPS limits and grouping for the IPH suggestion
+// on the NTP.
+// - Up to 1 IPH suggestion total
+class DesktopNTPZpsIPHSection : public ZpsSection {
+ public:
+  explicit DesktopNTPZpsIPHSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop secondary ZPS limits and grouping for the NTP.
-// - up to 3 suggestions total.
+// - up to 4 suggestions total.
 //  - up to 3 previous search related suggestion chips.
+// - up to 4 previous search related text suggestions.
+// - up to 4 trending suggestions.
 class DesktopSecondaryNTPZpsSection : public ZpsSection {
  public:
   explicit DesktopSecondaryNTPZpsSection(
@@ -141,6 +183,26 @@ class DesktopSRPZpsSection : public ZpsSection {
 class DesktopWebZpsSection : public ZpsSection {
  public:
   explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the Desktop ZPS limits and grouping for the Lens
+// contextual searchbox.
+// - up to 8 suggestions total.
+//  - up to 8 page related suggestions.
+class DesktopLensContextualZpsSection : public ZpsSection {
+ public:
+  explicit DesktopLensContextualZpsSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the Desktop ZPS limits and grouping for the Lens
+// multimodal searchbox.
+// - up to 8 suggestions total.
+//  - up to 8 multimodal suggestions.
+class DesktopLensMultimodalZpsSection : public ZpsSection {
+ public:
+  explicit DesktopLensMultimodalZpsSection(
+      omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop, non-ZPS limits and grouping.
@@ -166,9 +228,7 @@ class DesktopNonZpsSection : public Section {
 //  - up to `max_trending_queries` trending suggestions.
 class IOSNTPZpsSection : public ZpsSection {
  public:
-  explicit IOSNTPZpsSection(size_t max_trending_queries,
-                            size_t max_psuggest_queries,
-                            omnibox::GroupConfigMap& group_configs);
+  explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the SRP.

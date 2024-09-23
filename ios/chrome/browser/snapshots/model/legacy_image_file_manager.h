@@ -20,7 +20,7 @@ class Time;
 using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 
 // A class to manage images stored in disk.
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacyImageFileManager : NSObject
 
@@ -33,7 +33,7 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // possible to pass a non-empty path via `legacyPath`. If present, then it
 // will be moved to `storagePath`.
 //
-// TODO(crbug.com/1501850): Remove `legacyPath` when the storage for all users
+// TODO(crbug.com/40942167): Remove `legacyPath` when the storage for all users
 // has been migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
                          legacyPath:(const base::FilePath&)legacyPath
@@ -43,10 +43,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // Reads a color image from disk.
 - (void)readImageWithSnapshotID:(SnapshotID)snapshotID
                      completion:(ImageReadCompletionBlock)completion;
-
-// Reads a grey image from disk.
-- (void)readGreyImageWithSnapshotID:(SnapshotID)snapshotID
-                         completion:(ImageReadCompletionBlock)completion;
 
 // Writes an image to disk.
 - (void)writeImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID;
@@ -72,19 +68,13 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 - (void)copyImage:(const base::FilePath&)oldPath
         toNewPath:(const base::FilePath&)newPath;
 
-// Converts a color image into a grey image and saves it to disk.
-- (void)convertAndSaveGreyImage:(SnapshotID)snapshotID;
-
 // Returns the file path of the image for `snapshotID`.
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 
 // Returns the file path of the image for `snapshotID`.
-// TODO(crbug.com/1501850): Remove this when the storage for all users has been
+// TODO(crbug.com/40942167): Remove this when the storage for all users has been
 // migrated.
 - (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
-
-// Returns the file path of the grey image for `snapshotID`.
-- (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID;
 
 // Must be invoked before the instance is deallocated. It is needed to release
 // all references to C++ objects. The receiver will likely soon be deallocated.

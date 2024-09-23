@@ -133,8 +133,8 @@ void XMLParserScriptRunner::ProcessScriptElement(
     case ScriptSchedulingType::kForceInOrder:
     case ScriptSchedulingType::kImmediate:
     case ScriptSchedulingType::kNotSet:
-    case ScriptSchedulingType::kForceDefer:
-      NOTREACHED();
+    case ScriptSchedulingType::kDeprecatedForceDefer:
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

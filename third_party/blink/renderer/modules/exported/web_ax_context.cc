@@ -50,26 +50,6 @@ void WebAXContext::ResetSerializer() {
   private_->GetAXObjectCache().ResetSerializer();
 }
 
-int WebAXContext::GenerateAXID() const {
-  DCHECK(HasActiveDocument());
-  return private_->GetAXObjectCache().GenerateAXID();
-}
-
-void WebAXContext::SerializeLocationChanges(uint32_t reset_token) const {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
-  private_->GetAXObjectCache().SerializeLocationChanges(reset_token);
-}
-
-WebAXObject WebAXContext::GetPluginRoot() {
-  if (!HasActiveDocument()) {
-    return WebAXObject();
-  }
-  return WebAXObject(private_->GetAXObjectCache().GetPluginRoot());
-}
-
 bool WebAXContext::SerializeEntireTree(
     size_t max_node_count,
     base::TimeDelta timeout,
@@ -86,31 +66,9 @@ bool WebAXContext::SerializeEntireTree(
       max_node_count, timeout, response, out_error);
 }
 
-void WebAXContext::SerializeDirtyObjectsAndEvents(
-    bool has_plugin_tree_source,
-    std::vector<ui::AXTreeUpdate>& updates,
-    std::vector<ui::AXEvent>& events,
-    bool& had_end_of_test_event,
-    bool& had_load_complete_messages,
-    bool& need_to_send_location_changes) {
-  CHECK(HasActiveDocument());
-
-  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
-  private_->GetAXObjectCache().SerializeDirtyObjectsAndEvents(
-      has_plugin_tree_source, updates, events, had_end_of_test_event,
-      had_load_complete_messages, need_to_send_location_changes);
-}
-
 void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,
                                        std::vector<ui::AXNodeData*>& nodes) {
   private_->GetAXObjectCache().GetImagesToAnnotate(updates, nodes);
-}
-
-bool WebAXContext::HasDirtyObjects() {
-  if (!HasActiveDocument()) {
-    return false;
-  }
-  return private_->GetAXObjectCache().HasDirtyObjects();
 }
 
 void WebAXContext::UpdateAXForAllDocuments() {
@@ -177,5 +135,9 @@ void WebAXContext::FireLoadCompleteIfLoaded() {
   if (!private_->HasActiveDocument())
     return;
   return private_->GetDocument()->DispatchHandleLoadComplete();
+}
+
+void WebAXContext::SetSerializationResetToken(uint32_t reset_token) const {
+  private_->GetAXObjectCache().SetSerializationResetToken(reset_token);
 }
 }  // namespace blink

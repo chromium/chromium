@@ -19,8 +19,7 @@ const NSTimeInterval kOverlayViewAnimationDuration = 0.3;
 }  // namespace
 
 @interface ShareDownloadOverlayCoordinator () {
-  // Web state that will recieve the overlay view.
-  raw_ptr<web::WebState> _webState;
+  UIView* _webView;
 }
 
 // Download overlay view controller.
@@ -32,19 +31,20 @@ const NSTimeInterval kOverlayViewAnimationDuration = 0.3;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState {
-  DCHECK(webState);
+                                   webView:(UIView*)webView {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _webState = webState;
+    DCHECK(webView);
+    _webView = webView;
   }
   return self;
 }
 - (void)start {
   id<ShareDownloadOverlayCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ShareDownloadOverlayCommands);
+
   self.viewController = [[ShareDownloadOverlayViewController alloc]
-      initWithBaseView:_webState->GetView()
+      initWithBaseView:std::exchange(_webView, nil)
                handler:handler];
 
   UIView* overlayedView = self.viewController.view;

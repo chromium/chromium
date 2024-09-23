@@ -34,7 +34,6 @@ int SysInfo::NumberOfProcessors() {
   size_t size = sizeof(ncpu);
   if (sysctl(mib, std::size(mib), &ncpu, &size, NULL, 0) < 0) {
     NOTREACHED();
-    return 1;
   }
   return ncpu;
 }
@@ -58,7 +57,6 @@ uint64_t SysInfo::MaxSharedMemorySize() {
   size_t size = sizeof(limit);
   if (sysctl(mib, std::size(mib), &limit, &size, NULL, 0) < 0) {
     NOTREACHED();
-    return 0;
   }
   return static_cast<uint64_t>(limit);
 }

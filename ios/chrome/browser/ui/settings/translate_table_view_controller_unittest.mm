@@ -32,8 +32,8 @@ using user_prefs::PrefRegistrySyncable;
 namespace {
 
 const char kBlockedSite[] = "http://blockedsite.com";
-const char kLanguage1[] = "klingon";
-const char kLanguage2[] = "pirate";
+const char kLanguage1[] = "af";
+const char kLanguage2[] = "fr";
 
 class TranslateTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {

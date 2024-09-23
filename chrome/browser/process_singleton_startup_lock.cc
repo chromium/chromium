@@ -42,7 +42,7 @@ void ProcessSingletonStartupLock::Unlock() {
 }
 
 bool ProcessSingletonStartupLock::NotificationCallbackImpl(
-    const base::CommandLine& command_line,
+    base::CommandLine command_line,
     const base::FilePath& current_directory) {
   if (locked_) {
     // If locked, it means we are not ready to process this message because
@@ -51,6 +51,6 @@ bool ProcessSingletonStartupLock::NotificationCallbackImpl(
         std::make_pair(command_line.argv(), current_directory));
     return true;
   } else {
-    return original_callback_.Run(command_line, current_directory);
+    return original_callback_.Run(std::move(command_line), current_directory);
   }
 }

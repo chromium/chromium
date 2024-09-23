@@ -13,9 +13,15 @@
 
 namespace blink {
 
-CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
-    : document_(document) {
+CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(
+    Document* document,
+    bool within_selector_checking)
+    : document_(document), within_selector_checking_(within_selector_checking) {
   DCHECK(document_);
+
+  if (within_selector_checking) {
+    document_->EnterPseudoHasChecking();
+  }
 
   if (document_->GetCheckPseudoHasCacheScope()) {
     return;
@@ -25,6 +31,9 @@ CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
 }
 
 CheckPseudoHasCacheScope::~CheckPseudoHasCacheScope() {
+  if (within_selector_checking_) {
+    document_->LeavePseudoHasChecking();
+  }
   if (document_->GetCheckPseudoHasCacheScope() != this) {
     return;
   }
@@ -39,7 +48,7 @@ ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
   // To increase the cache hit ratio, we need to have a same cache key
   // for multiple selector instances those are actually has a same selector.
   // TODO(blee@igalia.com) Find a way to get hash key without serialization.
-  String selector_text = selector->SelectorText();
+  String selector_text = selector->SelectorTextExpandingPseudoParent();
 
   DCHECK(document);
   DCHECK(document->GetCheckPseudoHasCacheScope());
@@ -345,7 +354,7 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

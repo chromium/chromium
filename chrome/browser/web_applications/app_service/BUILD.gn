@@ -19,12 +19,18 @@ source_set("app_service") {
     ]
   }
 
-  # TODO(crbug.com/1402145): Remove circular dependencies.
+  # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
+  ]
 
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common",
@@ -36,35 +42,33 @@ source_set("app_service") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/apps/browser_instance" ]
+    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
+  }
+
   if (is_chromeos_ash) {
-    assert(enable_system_notifications)
-    sources += [
-      "browser_shortcuts.cc",
-      "browser_shortcuts.h",
-    ]
     deps += [
       "//ash/components/arc:arc_base",
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
-      "//chrome/browser/chromeos",
-      "//components/app_constants",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/app_service/public/cpp/shortcut",
       "//extensions/browser/api/file_handlers",
     ]
   }
 
   if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
     sources += [
-      "lacros_browser_shortcuts_controller.cc",
-      "lacros_browser_shortcuts_controller.h",
       "lacros_web_apps_controller.cc",
       "lacros_web_apps_controller.h",
     ]
@@ -74,7 +78,6 @@ source_set("app_service") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/startup",
-      "//components/app_constants",
     ]
   }
 }
@@ -83,11 +86,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "publisher_helper_unittest.cc",
     "web_app_publisher_helper_unittest.cc",
     "web_app_publisher_unittest.cc",
-    "web_apps_with_shortcuts_test.cc",
-    "web_apps_with_shortcuts_test.h",
   ]
 
   deps = [
@@ -95,6 +95,8 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/apps/app_service/app_icon:test_support",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
@@ -106,29 +108,14 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "browser_shortcuts_unittest.cc" ]
-    deps += [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//chrome/test:test_support",
-      "//components/app_constants",
-      "//components/services/app_service/public/cpp/shortcut",
-      "//content/test:test_support",
-    ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
 
   if (is_chromeos_lacros) {
-    sources += [ "lacros_browser_shortcuts_controller_unittest.cc" ]
     deps += [
       ":test_support",
       "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
       "//chromeos/startup",
-      "//components/app_constants",
     ]
   }
 }

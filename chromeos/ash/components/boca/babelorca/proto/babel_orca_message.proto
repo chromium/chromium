@@ -1,0 +1,39 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.babelorca;
+
+// Transcription part.
+message TranscriptPart {
+  // Id to identify which transcript the part belongs to.
+  int64 transcript_id = 1;
+  // Index of the text in the transcript.
+  int64 text_index = 2;
+  // Transcription part text.
+  string text = 3;
+  // Whether this is the final part of the transcript.
+  bool is_final = 4;
+  // Transcript language.
+  string language = 5;
+}
+
+// Message from sender to receiver.
+message BabelOrcaMessage {
+  // BOCA session id.
+  string session_id = 1;
+  // Sender initialization timestamp.
+  int64 init_timestamp_ms = 2;
+  // Order of the message with respect to the previously sent messages with the
+  // same `init_timestamp_ms` and `session_id`.
+  int64 order = 3;
+  // Transcription part of the previous transcript. Will not be set if there is
+  // no previous transcript or if the max allowed overall text size is reached.
+  TranscriptPart previous_transcript = 4;
+  // Transcription part of the current transcript.
+  TranscriptPart current_transcript = 5;
+}

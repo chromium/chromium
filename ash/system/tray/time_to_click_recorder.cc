@@ -17,8 +17,8 @@ TimeToClickRecorder::TimeToClickRecorder(Delegate* delegate,
 
 void TimeToClickRecorder::OnEvent(ui::Event* event) {
   // Ignore if the event is neither click nor tap.
-  if (event->type() != ui::ET_MOUSE_PRESSED &&
-      event->type() != ui::ET_GESTURE_TAP) {
+  if (event->type() != ui::EventType::kMousePressed &&
+      event->type() != ui::EventType::kGestureTap) {
     return;
   }
 

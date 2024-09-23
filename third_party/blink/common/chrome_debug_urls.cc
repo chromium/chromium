@@ -28,67 +28,6 @@
 
 namespace blink {
 
-// See the comment in chrome_debug_urls.h about why these exist here.
-// https://crbug.com/1197375.
-const char kChromeUIBadCastCrashURL[] = "chrome://badcastcrash/";
-const char kChromeUICheckCrashURL[] = "chrome://checkcrash/";
-const char kChromeUIBrowserCrashURL[] = "chrome://inducebrowsercrashforrealz/";
-const char kChromeUIBrowserDcheckURL[] =
-    "chrome://inducebrowserdcheckforrealz/";
-const char kChromeUIBrowserUIHang[] = "chrome://uithreadhang/";
-const char kChromeUICrashURL[] = "chrome://crash/";
-const char kChromeUIDelayedBrowserUIHang[] = "chrome://delayeduithreadhang/";
-const char kChromeUIDumpURL[] = "chrome://crashdump/";
-const char kChromeUIGpuCleanURL[] = "chrome://gpuclean/";
-const char kChromeUIGpuCrashURL[] = "chrome://gpucrash/";
-const char kChromeUIGpuHangURL[] = "chrome://gpuhang/";
-const char kChromeUIHangURL[] = "chrome://hang/";
-const char kChromeUIKillURL[] = "chrome://kill/";
-const char kChromeUIMemoryExhaustURL[] = "chrome://memory-exhaust/";
-const char kChromeUIMemoryPressureCriticalURL[] =
-    "chrome://memory-pressure-critical/";
-const char kChromeUIMemoryPressureModerateURL[] =
-    "chrome://memory-pressure-moderate/";
-const char kChromeUINetworkErrorURL[] = "chrome://network-error/";
-const char kChromeUINetworkErrorsListingURL[] = "chrome://network-errors/";
-const char kChromeUIProcessInternalsURL[] = "chrome://process-internals";
-#if BUILDFLAG(IS_ANDROID)
-const char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";
-#endif
-#if BUILDFLAG(IS_WIN)
-const char kChromeUIBrowserHeapCorruptionURL[] =
-    "chrome://inducebrowserheapcorruption/";
-const char kChromeUICfgViolationCrashURL[] = "chrome://crash/cfg";
-const char kChromeUIHeapCorruptionCrashURL[] = "chrome://heapcorruptioncrash/";
-#endif
-#if BUILDFLAG(ENABLE_RUST_CRASH)
-const char kChromeUICrashRustURL[] = "chrome://crash/rust";
-#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
-
-#if defined(ADDRESS_SANITIZER)
-const char kChromeUICrashHeapOverflowURL[] = "chrome://crash/heap-overflow";
-const char kChromeUICrashHeapUnderflowURL[] = "chrome://crash/heap-underflow";
-const char kChromeUICrashUseAfterFreeURL[] = "chrome://crash/use-after-free";
-
-#if BUILDFLAG(IS_WIN)
-const char kChromeUICrashCorruptHeapBlockURL[] =
-    "chrome://crash/corrupt-heap-block";
-const char kChromeUICrashCorruptHeapURL[] = "chrome://crash/corrupt-heap";
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_RUST_CRASH)
-const char kChromeUICrashRustOverflowURL[] = "chrome://crash/rust-overflow";
-#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
-
-#endif  // ADDRESS_SANITIZER
-
-#if DCHECK_IS_ON()
-const char kChromeUICrashDcheckURL[] = "chrome://crash/dcheck";
-#endif
-
-const char kChromeUIResourcesURL[] = "chrome://resources/";
-const char kChromeUIShorthangURL[] = "chrome://shorthang/";
-
 bool IsRendererDebugURL(const GURL& url) {
   if (!url.is_valid())
     return false;

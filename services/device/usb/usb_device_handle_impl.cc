@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/usb/usb_device_handle_impl.h"
 
 #include <algorithm>
@@ -49,7 +54,7 @@ uint8_t ConvertTransferDirection(UsbTransferDirection direction) {
     case UsbTransferDirection::OUTBOUND:
       return LIBUSB_ENDPOINT_OUT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -109,7 +114,7 @@ static UsbTransferStatus ConvertTransferStatus(
     case LIBUSB_TRANSFER_CANCELLED:
       return UsbTransferStatus::CANCELLED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UsbTransferStatus::TRANSFER_ERROR;
 }
 
@@ -273,10 +278,11 @@ UsbDeviceHandleImpl::Transfer::CreateControlTransfer(
     return nullptr;
   }
 
-  libusb_fill_control_setup(buffer->front(), type, request, value, index,
-                            length);
+  libusb_fill_control_setup(buffer->as_vector().data(), type, request, value,
+                            index, length);
   libusb_fill_control_transfer(transfer->platform_transfer_,
-                               device_handle->handle(), buffer->front(),
+                               device_handle->handle(),
+                               buffer->as_vector().data(),
                                &UsbDeviceHandleImpl::Transfer::PlatformCallback,
                                transfer.get(), timeout);
 
@@ -303,10 +309,11 @@ UsbDeviceHandleImpl::Transfer::CreateBulkTransfer(
     return nullptr;
   }
 
-  libusb_fill_bulk_transfer(
-      transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), length, &UsbDeviceHandleImpl::Transfer::PlatformCallback,
-      transfer.get(), timeout);
+  libusb_fill_bulk_transfer(transfer->platform_transfer_,
+                            device_handle->handle(), endpoint,
+                            buffer->as_vector().data(), length,
+                            &UsbDeviceHandleImpl::Transfer::PlatformCallback,
+                            transfer.get(), timeout);
 
   return transfer;
 }
@@ -333,8 +340,9 @@ UsbDeviceHandleImpl::Transfer::CreateInterruptTransfer(
 
   libusb_fill_interrupt_transfer(
       transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), length, &UsbDeviceHandleImpl::Transfer::PlatformCallback,
-      transfer.get(), timeout);
+      buffer->as_vector().data(), length,
+      &UsbDeviceHandleImpl::Transfer::PlatformCallback, transfer.get(),
+      timeout);
 
   return transfer;
 }
@@ -363,7 +371,7 @@ UsbDeviceHandleImpl::Transfer::CreateIsochronousTransfer(
 
   libusb_fill_iso_transfer(
       transfer->platform_transfer_, device_handle->handle(), endpoint,
-      buffer->front(), static_cast<int>(length), num_packets,
+      buffer->as_vector().data(), static_cast<int>(length), num_packets,
       &Transfer::PlatformCallback, transfer.get(), timeout);
 
   for (size_t i = 0; i < packet_lengths.size(); ++i)
@@ -445,8 +453,9 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
         if (length_ >= (LIBUSB_CONTROL_SETUP_SIZE + actual_length)) {
           auto resized_buffer =
               base::MakeRefCounted<base::RefCountedBytes>(actual_length);
-          memcpy(resized_buffer->front(),
-                 buffer_->front() + LIBUSB_CONTROL_SETUP_SIZE, actual_length);
+          base::span(resized_buffer->as_vector())
+              .copy_from(base::span(*buffer_).subspan(LIBUSB_CONTROL_SETUP_SIZE,
+                                                      actual_length));
           buffer_ = resized_buffer;
         }
       }
@@ -463,7 +472,7 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
       break;
 
     default:
-      NOTREACHED() << "Invalid usb transfer type";
+      NOTREACHED_IN_MIGRATION() << "Invalid usb transfer type";
       break;
   }
 }
@@ -701,8 +710,9 @@ void UsbDeviceHandleImpl::ControlTransfer(
   const size_t resized_length = LIBUSB_CONTROL_SETUP_SIZE + buffer->size();
   auto resized_buffer =
       base::MakeRefCounted<base::RefCountedBytes>(resized_length);
-  memcpy(resized_buffer->front() + LIBUSB_CONTROL_SETUP_SIZE, buffer->front(),
-         buffer->size());
+  base::span(resized_buffer->as_vector())
+      .subspan(LIBUSB_CONTROL_SETUP_SIZE)
+      .copy_from(base::span(*buffer));
 
   std::unique_ptr<Transfer> transfer = Transfer::CreateControlTransfer(
       this, CreateRequestType(direction, request_type, recipient), request,
@@ -859,12 +869,8 @@ UsbDeviceHandleImpl::~UsbDeviceHandleImpl() {
   // This class is RefCountedThreadSafe and so the destructor may be called on
   // any thread. libusb is not safe to reentrancy so be sure not to try to close
   // the device from inside a transfer completion callback.
-  if (blocking_task_runner_->RunsTasksInCurrentSequence()) {
-    handle_.Reset();
-  } else {
-    blocking_task_runner_->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(handle_)));
-  }
+  blocking_task_runner_->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(handle_)));
 }
 
 void UsbDeviceHandleImpl::SetConfigurationBlocking(int configuration_value,

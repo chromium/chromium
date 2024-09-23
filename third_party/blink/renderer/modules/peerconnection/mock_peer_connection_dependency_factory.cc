@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
@@ -133,7 +134,7 @@ void MockMediaStream::RegisterObserver(ObserverInterface* observer) {
 
 void MockMediaStream::UnregisterObserver(ObserverInterface* observer) {
   auto it = observers_.find(observer);
-  DCHECK(it != observers_.end());
+  CHECK(it != observers_.end(), base::NotFatalUntil::M130);
   observers_.erase(it);
 }
 
@@ -367,7 +368,8 @@ MockPeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* frame,
     webrtc::PeerConnectionObserver* observer,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    RTCRtpTransport*) {
   return rtc::make_ref_counted<MockPeerConnectionImpl>(this, observer);
 }
 

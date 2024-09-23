@@ -5,13 +5,13 @@
 #include "ui/base/ime/utf_offset.h"
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ui {
 
-std::optional<size_t> Utf16OffsetFromUtf8Offset(base::StringPiece text,
+std::optional<size_t> Utf16OffsetFromUtf8Offset(std::string_view text,
                                                 size_t utf8_offset) {
   if (utf8_offset > text.length())
     return std::nullopt;
@@ -24,7 +24,7 @@ std::optional<size_t> Utf16OffsetFromUtf8Offset(base::StringPiece text,
   return converted.length();
 }
 
-std::optional<size_t> Utf8OffsetFromUtf16Offset(base::StringPiece16 text,
+std::optional<size_t> Utf8OffsetFromUtf16Offset(std::u16string_view text,
                                                 size_t utf16_offset) {
   if (utf16_offset > text.length())
     return std::nullopt;

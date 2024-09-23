@@ -23,7 +23,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -40,6 +40,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -155,9 +156,10 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> CreateLockSystemModalWindow(
       const gfx::Rect& bounds) {
     auto* widget_delegate_view = new views::WidgetDelegateView();
-    widget_delegate_view->SetModalType(ui::MODAL_TYPE_SYSTEM);
-    return CreateTestWidget(widget_delegate_view,
-                            kShellWindowId_LockSystemModalContainer, bounds);
+    widget_delegate_view->SetModalType(ui::mojom::ModalType::kSystem);
+    return CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        widget_delegate_view, kShellWindowId_LockSystemModalContainer, bounds);
   }
 
   // Test that display work area and a modal window is adjusted correctly
@@ -509,42 +511,6 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasOverviewMode) {
   EXPECT_EQ(workarea, display.work_area());
   EXPECT_EQ(workarea, window->bounds());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
-}
-
-TEST_F(DockedMagnifierTest, OverviewTabbing) {
-  auto window = CreateTestWindow();
-  controller()->SetEnabled(true);
-
-  EnterOverview();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  auto* root_window = Shell::GetPrimaryRootWindow();
-  const auto* desk_bar_view = GetOverviewSession()
-                                  ->GetGridWithRootWindow(root_window)
-                                  ->desks_bar_view();
-
-  auto* default_desk_button = desk_bar_view->default_desk_button();
-  auto* new_desk_button = desk_bar_view->new_desk_button();
-
-  // Tab once. The viewport should be centered on the beginning of the overview
-  // item's title.
-  SendKey(ui::VKEY_TAB);
-  auto* item = GetOverviewItemForWindow(window.get());
-  ASSERT_TRUE(item);
-  TestMagnifierLayerTransform(item->GetMagnifierFocusPointInScreen(),
-                              root_window);
-
-  // Tab one more time. The viewport should be centered on the center of the
-  // default desk button in the zero state desks bar.
-  SendKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(
-      default_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
-
-  // Tab one more time. The viewport should be centered on the center of the
-  // new desk button in the zero state desks bar.
-  SendKey(ui::VKEY_TAB);
-  TestMagnifierLayerTransform(
-      new_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
 }
 
 // Test that we exist split view and over view modes when a single window is

@@ -32,22 +32,27 @@ if (ios_enable_credential_provider_extension) {
     public_deps = [ "//base" ]
     deps = [
       ":buildflags",
+      ":features",
       "//base",
+      "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/keyed_service/ios",
       "//components/password_manager/core/browser",
-      "//components/password_manager/core/browser/affiliation",
+      "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
       "//components/password_manager/core/common",
       "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
+      "//components/webauthn/core/browser:passkey_model",
+      "//ios/chrome/browser/affiliations/model",
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/passwords/model",
-      "//ios/chrome/browser/shared/model/browser_state",
+      "//ios/chrome/browser/shared/model/profile",
       "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:system_identity",
       "//ios/chrome/browser/sync/model",
+      "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
@@ -70,8 +75,10 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util_unittest.mm",
     ]
     deps = [
+      ":features",
       ":model",
       "//base/test:test_support",
+      "//components/affiliations/core/browser:test_support",
       "//components/autofill/core/common",
       "//components/favicon/core",
       "//components/password_manager/core/browser:test_support",
@@ -79,10 +86,11 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/variations:test_support",
+      "//components/webauthn/core/browser:test_support",
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/history/model",
       "//ios/chrome/browser/shared/model/application_context",
-      "//ios/chrome/browser/shared/model/browser_state:test_support",
+      "//ios/chrome/browser/shared/model/profile/test",
       "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:fake_system_identity",
       "//ios/chrome/browser/signin/model:fake_system_identity_manager",
@@ -96,4 +104,12 @@ if (ios_enable_credential_provider_extension) {
       "//url",
     ]
   }
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

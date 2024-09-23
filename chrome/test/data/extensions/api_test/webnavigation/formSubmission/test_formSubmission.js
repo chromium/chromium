@@ -6,7 +6,7 @@ const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
-  let getURL = chrome.extension.getURL;
+  let getURL = chrome.runtime.getURL;
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
   chrome.test.runTests([
     // Navigates to a.html that redirects to b.html (using javascript).

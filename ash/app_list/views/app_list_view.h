@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -38,7 +39,6 @@ class ImplicitAnimationObserver;
 namespace ash {
 class AppListA11yAnnouncer;
 class AppsContainerView;
-class ApplicationDragAndDropHost;
 class AppListMainView;
 class AppsGridView;
 class PagedAppsGridView;
@@ -54,6 +54,7 @@ FORWARD_DECLARE_TEST(AppListControllerImplTest,
 // definitions in this header.
 class ASH_EXPORT AppListView : public views::WidgetDelegateView,
                                public aura::WindowObserver {
+  METADATA_HEADER(AppListView, views::WidgetDelegateView)
  public:
   class TestApi {
    public:
@@ -126,13 +127,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // |preferred_state| - The initial app list view state.
   void Show(AppListViewState preferred_state);
 
-  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
-  // operations outside the application list. This has to be called after
-  // Initialize was called since the app list object needs to exist so that
-  // it can set the host.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
-
   // Resets the child views before showing the AppListView.
   void ResetForShow();
 
@@ -151,7 +145,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout(PassKey) override;
 

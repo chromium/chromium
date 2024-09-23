@@ -1,0 +1,55 @@
+<style>
+  /* Invert cr-button colors. These are normally dark mode colors. */
+  cr-button {
+    --ink-color: var(--cros-color-primary-inverted);
+    --text-color: var(--cros-color-primary-inverted);
+  }
+
+  /* Override some cr-button variables. */
+  cr-button {
+    --active-shadow-rgb: transparent;
+    --border-color: transparent;
+    --hover-border-color: transparent;
+    --hover-bg-color: transparent;
+    --hover-bg-action: transparent;
+    --cr-button-height: 36px;
+    border: 0;
+    margin: 0;
+    padding: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    /* Invert cr-button colors. These are normally light mode colors. */
+    cr-button {
+    --ink-color: var(--cros-color-primary-inverted);
+    --text-color: var(--cros-color-primary-inverted);
+    }
+  }
+
+  #container {
+    align-items: center;
+    background-color: var(--cros-bg-color-elevation-2-inverted);
+    border-radius: 4px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    color: var(--cros-text-color-primary-inverted);
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding: 16px;
+  }
+
+  p {
+    margin: 0;
+    margin-inline-end: 16px;
+  }
+
+</style>
+<template is="dom-if" if="[[showError_]]">
+  <div id="container" aria-description$="[[error_]]">
+    <p>[[error_]]</p>
+    <cr-button on-click="onDismissed_">
+      [[i18n('seaPenDismissError')]]
+    </cr-button>
+  </div>
+</template>

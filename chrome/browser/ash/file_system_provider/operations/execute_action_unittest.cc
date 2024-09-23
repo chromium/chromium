@@ -41,12 +41,12 @@ class FileSystemProviderOperationsExecuteActionTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
     entry_paths_.clear();
-    entry_paths_.push_back(base::FilePath(kDirectoryPath));
-    entry_paths_.push_back(base::FilePath(kFilePath));
+    entry_paths_.emplace_back(kDirectoryPath);
+    entry_paths_.emplace_back(kFilePath);
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -56,7 +56,7 @@ class FileSystemProviderOperationsExecuteActionTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
   using extensions::api::file_system_provider::ExecuteActionRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
@@ -88,7 +88,7 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
@@ -99,7 +99,7 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsExecuteActionTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(
@@ -108,13 +108,13 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, OnSuccess) {
 
   EXPECT_TRUE(execute_action.Execute(kRequestId));
 
-  execute_action.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  execute_action.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsExecuteActionTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   ExecuteAction execute_action(

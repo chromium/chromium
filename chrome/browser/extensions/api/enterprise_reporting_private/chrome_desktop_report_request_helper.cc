@@ -45,7 +45,7 @@ const wchar_t kValueName[] = L"Safe Storage";
 
 LONG ReadEncryptedSecret(std::string* encrypted_secret) {
   base::win::RegKey key;
-  DWORD kMaxRawSize = 1024;
+  constexpr DWORD kMaxRawSize = 1024;
   char raw_data[kMaxRawSize];
   DWORD raw_data_size = kMaxRawSize;
   DWORD raw_type;

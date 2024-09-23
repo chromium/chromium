@@ -49,10 +49,6 @@ void ManagedDeviceTrayItemView::OnDeviceEnterpriseInfoChanged() {
 
 void ManagedDeviceTrayItemView::OnEnterpriseAccountDomainChanged() {}
 
-const char* ManagedDeviceTrayItemView::GetClassName() const {
-  return "ManagedDeviceTrayItemView";
-}
-
 void ManagedDeviceTrayItemView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
   UpdateIcon();
@@ -63,9 +59,6 @@ void ManagedDeviceTrayItemView::HandleLocaleChange() {
 }
 
 void ManagedDeviceTrayItemView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   auto* icon = GetIcon();
@@ -103,11 +96,6 @@ void ManagedDeviceTrayItemView::UpdateIcon() {
   auto* icon = GetIcon();
 
   if (icon) {
-    if (!chromeos::features::IsJellyEnabled()) {
-      image_view()->SetImage(
-          ui::ImageModel::FromVectorIcon(*icon, kColorAshIconColorPrimary));
-      return;
-    }
     UpdateLabelOrImageViewColor(is_active());
   }
 }

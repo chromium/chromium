@@ -135,7 +135,7 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
   NewBufferCb new_buffer_callback_;
   std::unique_ptr<media::cast::DecoderBufferReader> buffer_reader_;
   DeletionCb deletion_callback_;
-  raw_ptr<Client, ExperimentalRenderer> client_;
+  raw_ptr<Client> client_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/strings/safe_sprintf.h"
 
 #include <stddef.h>
@@ -12,9 +17,10 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check_op.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Death tests on Android are currently very flaky. No need to add more flaky
@@ -205,13 +211,14 @@ TEST(SafeSPrintfTest, ASANFriendlyBufferTest) {
   // There is a more complicated test in PrintLongString() that covers a lot
   // more edge case, but it is also harder to debug in case of a failure.
   const char kTestString[] = "This is a test";
-  std::unique_ptr<char[]> buf(new char[sizeof(kTestString)]);
+  base::FixedArray<char> buf(sizeof(kTestString));
+  memcpy(buf.data(), kTestString, sizeof(kTestString));
   EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
-  EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), "%s", kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
+            SafeSNPrintf(buf.data(), buf.size(), kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
+  EXPECT_EQ(static_cast<ssize_t>(buf.size() - 1),
+            SafeSNPrintf(buf.data(), buf.size(), "%s", kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
 }
 
 TEST(SafeSPrintfTest, NArgs) {
@@ -370,8 +377,8 @@ void PrintLongString(char* buf, size_t sz) {
 
   // Allocate slightly more space, so that we can verify that SafeSPrintf()
   // never writes past the end of the buffer.
-  std::unique_ptr<char[]> tmp(new char[sz + 2]);
-  memset(tmp.get(), 'X', sz+2);
+  base::FixedArray<char> tmp(sz + 2);
+  tmp.fill('X');
 
   // Use SafeSPrintf() to output a complex list of arguments:
   // - test padding and truncating %c single characters.
@@ -381,7 +388,7 @@ void PrintLongString(char* buf, size_t sz) {
   // - test outputting and truncating %d MININT.
   // - test outputting and truncating %p arbitrary pointer values.
   // - test outputting, padding and truncating NULL-pointer %s strings.
-  char* out = tmp.get();
+  char* out = tmp.data();
   size_t out_sz = sz;
   size_t len;
   for (std::unique_ptr<char[]> perfect_buf;;) {
@@ -399,7 +406,7 @@ void PrintLongString(char* buf, size_t sz) {
     // Various sanity checks:
     // The numbered of characters needed to print the full string should always
     // be bigger or equal to the bytes that have actually been output.
-    len = strlen(tmp.get());
+    len = strlen(tmp.data());
     CHECK_GE(needed, len+1);
 
     // The number of characters output should always fit into the buffer that
@@ -451,12 +458,12 @@ void PrintLongString(char* buf, size_t sz) {
 #endif
 
   // Compare the output from SafeSPrintf() to the one from snprintf().
-  EXPECT_EQ(std::string(ref).substr(0, kSSizeMax-1), std::string(tmp.get()));
+  EXPECT_EQ(std::string(ref).substr(0, kSSizeMax - 1), std::string(tmp.data()));
 
   // We allocated a slightly larger buffer, so that we could perform some
   // extra sanity checks. Now that the tests have all passed, we copy the
   // data to the output buffer that the caller provided.
-  memcpy(buf, tmp.get(), len+1);
+  memcpy(buf, tmp.data(), len + 1);
 }
 
 #if !defined(NDEBUG)

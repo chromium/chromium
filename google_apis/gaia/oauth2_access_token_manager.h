@@ -9,11 +9,13 @@
 #include <set>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -51,10 +53,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
     // Returns |true| if a refresh token is available for |account_id|, and
     // |false| otherwise.
     virtual bool HasRefreshToken(const CoreAccountId& account_id) const = 0;
-
-    // Attempts to fix the error if possible.  Returns true if the error was
-    // fixed and false otherwise. Default implementation returns false.
-    virtual bool FixRequestErrorIfPossible();
 
     // Returns a SharedURLLoaderFactory object that will be used as part of
     // fetching access tokens. Default implementation returns nullptr.
@@ -118,9 +116,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
   // Implements a cancelable |OAuth2AccessTokenManager::Request|, which should
   // be operated on the UI thread.
   // TODO(davidroche): move this out of header file.
-  class COMPONENT_EXPORT(GOOGLE_APIS) RequestImpl
-      : public base::SupportsWeakPtr<RequestImpl>,
-        public Request {
+  class COMPONENT_EXPORT(GOOGLE_APIS) RequestImpl final : public Request {
    public:
     // |consumer| is required to outlive this.
     RequestImpl(const CoreAccountId& account_id, Consumer* consumer);
@@ -136,12 +132,18 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
         const GoogleServiceAuthError& error,
         const OAuth2AccessTokenConsumer::TokenResponse& token_response);
 
+    base::WeakPtr<RequestImpl> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     const CoreAccountId account_id_;
     // |consumer_| to call back when this request completes.
     const raw_ptr<Consumer, DanglingUntriaged> consumer_;
 
     SEQUENCE_CHECKER(sequence_checker_);
+
+    base::WeakPtrFactory<RequestImpl> weak_ptr_factory_{this};
   };
 
   // Classes that want to monitor status of access token and access token
@@ -160,7 +162,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
     virtual void OnFetchAccessTokenComplete(const CoreAccountId& account_id,
                                             const std::string& consumer_id,
                                             const ScopeSet& scopes,
-                                            GoogleServiceAuthError error,
+                                            const GoogleServiceAuthError& error,
                                             base::Time expiration_time) {}
 
     // Called when an access token was removed.
@@ -250,21 +252,15 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
   const OAuth2AccessTokenConsumer::TokenResponse* GetCachedTokenResponse(
       const RequestParameters& client_scopes);
 
-  // Clears the internal token cache.
-  void ClearCache();
-
   // Clears all of the tokens belonging to |account_id| from the internal token
   // cache. It does not matter what other parameters, like |client_id| were
   // used to request the tokens.
   void ClearCacheForAccount(const CoreAccountId& account_id);
 
-  // Cancels all requests that are currently in progress. Virtual so it can be
-  // overridden for tests.
-  virtual void CancelAllRequests();
-
   // Cancels all requests related to a given |account_id|. Virtual so it can be
   // overridden for tests.
-  virtual void CancelRequestsForAccount(const CoreAccountId& account_id);
+  virtual void CancelRequestsForAccount(const CoreAccountId& account_id,
+                                        const GoogleServiceAuthError& error);
 
   // Mark an OAuth2 |access_token| issued for |account_id| and |scopes| as
   // invalid. This should be done if the token was received from this class,
@@ -324,23 +320,29 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
       RequestImpl* request,
       const RequestParameters& client_scopes);
 
-  // Add a new entry to the cache.
-  void RegisterTokenResponse(
-      const std::string& client_id,
-      const CoreAccountId& account_id,
-      const ScopeSet& scopes,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response);
-
   // Removes an access token for the given set of scopes from the cache.
   // Returns true if the entry was removed, otherwise false.
   bool RemoveCachedTokenResponse(const RequestParameters& client_scopes,
                                  const std::string& token_to_remove);
 
   // Called when |fetcher| finishes fetching.
-  void OnFetchComplete(Fetcher* fetcher);
+  void OnFetchComplete(const std::string& client_id,
+                       const CoreAccountId& account_id,
+                       const ScopeSet& scopes,
+                       base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                                      GoogleServiceAuthError> response);
+  void ProcessOnFetchComplete(
+      const RequestParameters& request_parameters,
+      base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                     GoogleServiceAuthError> response,
+      const std::vector<base::WeakPtr<OAuth2AccessTokenManager::RequestImpl>>&
+          waiting_requests);
 
-  // Called when a number of fetchers need to be canceled.
-  void CancelFetchers(std::vector<Fetcher*> fetchers_to_cancel);
+  // Cancels all requests that are currently in progress.
+  void CancelAllRequests(const GoogleServiceAuthError& error);
+  void CancelRequestIfMatch(
+      const GoogleServiceAuthError& error,
+      base::RepeatingCallback<bool(const RequestParameters&)> match_request);
 
   // The cache of currently valid tokens.
   TokenCache token_cache_;

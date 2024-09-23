@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -14,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
@@ -148,7 +150,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
-  NOTREACHED() << "Unknown Termination Status.";
+  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
   return "unknown";
 }
 
@@ -178,7 +180,7 @@ class BrowserToPageConnector {
     }
 
    private:
-    BrowserToPageConnector* connector_;
+    raw_ptr<BrowserToPageConnector> connector_;
   };
 
   BrowserToPageConnector(const std::string& binding_name,
@@ -239,8 +241,8 @@ class BrowserToPageConnector {
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) {
-    base::StringPiece message_sp(reinterpret_cast<const char*>(message.data()),
-                                 message.size());
+    std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
+                                message.size());
     if (agent_host == page_host_.get()) {
       std::optional<base::Value> value = base::JSONReader::Read(message_sp);
       if (!value || !value->is_dict()) {
@@ -338,7 +340,7 @@ class TargetHandler::Throttle : public content::NavigationThrottle {
 
  private:
   void CleanupPointers();
-  TargetAutoAttacher* auto_attacher_;
+  raw_ptr<TargetAutoAttacher> auto_attacher_;
 };
 
 class TargetHandler::ResponseThrottle : public TargetHandler::Throttle {
@@ -493,7 +495,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
 
     if (throttle_ || worker_throttle_) {
       std::optional<base::Value> value =
-          base::JSONReader::Read(base::StringPiece(
+          base::JSONReader::Read(std::string_view(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
       if (value.has_value() && value->is_dict() &&
@@ -543,7 +545,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     // TODO(johannes): For now, We need to copy here because
     // ReceivedMessageFromTarget is generated code and we're using const
     // std::string& for such parameters. Perhaps we should switch this to
-    // base::StringPiece?
+    // std::string_view?
     std::string message_copy(message.begin(), message.end());
     handler_->frontend_->ReceivedMessageFromTarget(id_, message_copy,
                                                    agent_host_->GetId());
@@ -576,12 +578,12 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     return handler_->root_session_->GetClient();
   }
 
-  TargetHandler* handler_;
+  raw_ptr<TargetHandler> handler_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   std::string id_;
   bool flatten_protocol_;
-  DevToolsSession* devtools_session_ = nullptr;
-  Throttle* throttle_ = nullptr;
+  raw_ptr<DevToolsSession, DanglingUntriaged> devtools_session_ = nullptr;
+  raw_ptr<Throttle> throttle_ = nullptr;
   scoped_refptr<DevToolsThrottleHandle> worker_throttle_;
   // This is needed to identify sessions associated with given
   // AutoAttacher to properly support SetAttachedTargetsOfType()
@@ -657,7 +659,7 @@ class TargetHandler::TargetFilter {
 
   bool Match(DevToolsAgentHost& host) const { return Match(host.GetType()); }
 
-  bool Match(base::StringPiece type) const {
+  bool Match(std::string_view type) const {
     for (const auto& entry : entries_) {
       if (!entry->HasType() || entry->GetType("") == type) {
         return !entry->GetExclude(false);
@@ -790,7 +792,7 @@ TargetHandler::Session* TargetHandler::FindWaitingSession(
 }
 
 void TargetHandler::ClearThrottles() {
-  base::flat_set<Throttle*> copy(throttles_);
+  base::flat_set<raw_ptr<Throttle, CtnExperimental>> copy(throttles_);
   for (Throttle* throttle : copy)
     throttle->Clear();
   throttles_.clear();
@@ -865,13 +867,6 @@ void TargetHandler::SetAttachedTargetsOfType(
     const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
     const std::string& type) {
   DCHECK(!type.empty());
-  // Ignore page targets coming from frame auto-attachers when client has
-  // opted into supporting the tab targets. These are portals and are now
-  // reported via the tab target.
-  if (!auto_attach_portals_ && type == DevToolsAgentHost::kTypePage) {
-    DCHECK(source == auto_attacher_);
-    return;
-  }
   auto old_sessions = auto_attached_sessions_;
   for (auto& entry : old_sessions) {
     scoped_refptr<DevToolsAgentHost> host(entry.first);
@@ -900,7 +895,7 @@ void TargetHandler::TargetInfoChanged(DevToolsAgentHost* host) {
 
 void TargetHandler::AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) {
   auto throttles = throttles_;
-  for (auto* throttle : throttles_) {
+  for (Throttle* throttle : throttles_) {
     if (throttle->auto_attacher() == auto_attacher)
       throttle->Clear();
   }
@@ -932,11 +927,6 @@ bool TargetHandler::ShouldThrottlePopups() const {
 
 void TargetHandler::DisableAutoAttachOfServiceWorkers() {
   auto_attach_service_workers_ = false;
-}
-
-void TargetHandler::DisableAutoAttachOfPortals() {
-  DCHECK(access_mode_ != AccessMode::kBrowser);
-  auto_attach_portals_ = false;
 }
 
 Response TargetHandler::FindSession(Maybe<std::string> session_id,
@@ -1007,7 +997,7 @@ void TargetHandler::SetAutoAttach(
   }
   if (!auto_attach && filter && !filter->empty()) {
     callback->sendFailure(Response::InvalidParams(
-        "Target filter should be empty whien disabling auto-attach"));
+        "Target filter should be empty when disabling auto-attach"));
     return;
   }
   auto_attach_target_filter_ =
@@ -1440,12 +1430,21 @@ void TargetHandler::DisposeBrowserContext(
 void TargetHandler::ApplyNetworkContextParamsOverrides(
     BrowserContext* browser_context,
     network::mojom::NetworkContextParams* context_params) {
-  // Under certain conditions, storage partition is created synchronously for
+  //   Note #1: below we clear the proxy config client receiver,
+  // and effectively disable proxy updates based on the OS settings.
+  // This way our "initial proxy config" is not overridden by any
+  // OS settings and stays the same.
+  //   This relies on ApplyNetworkContextParamsOverrides() being called
+  // after the client receiver was setup for the network context.
+  //
+  //   Note #2: Under certain conditions, storage partition is created
+  // synchronously for
   // the browser context. Account for this use case.
   if (pending_proxy_config_) {
     context_params->initial_proxy_config =
         net::ProxyConfigWithAnnotation(std::move(*pending_proxy_config_),
                                        kSettingsProxyConfigTrafficAnnotation);
+    context_params->proxy_config_client_receiver = mojo::NullReceiver();
     pending_proxy_config_.reset();
     return;
   }
@@ -1453,6 +1452,7 @@ void TargetHandler::ApplyNetworkContextParamsOverrides(
   if (it != contexts_with_overridden_proxy_.end()) {
     context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
         std::move(it->second), kSettingsProxyConfigTrafficAnnotation);
+    context_params->proxy_config_client_receiver = mojo::NullReceiver();
     contexts_with_overridden_proxy_.erase(browser_context->UniqueId());
   }
 }

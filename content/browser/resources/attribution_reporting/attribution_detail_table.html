@@ -1,0 +1,91 @@
+<style>
+#wrapper, td, th, caption {
+  border-color: var(--border-color);
+  border-style: solid;
+}
+
+#wrapper {
+  border-width: 1px;
+  max-height: 100%;
+  overflow: auto;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+caption {
+  background: var(--header-background);
+  border-width: 0 0 1px 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  div {
+    column-gap: 1rem;
+    display: inline-flex;
+  }
+}
+
+caption, td, th {
+  font-weight: normal;
+  text-align: left;
+  vertical-align: top;
+}
+
+td {
+  border-width: 0 0 1px 0;
+}
+
+th {
+  background: var(--header-background);
+  left: 0;
+  position: sticky;
+  text-wrap: nowrap;
+  z-index: 1;
+}
+
+th[scope="row"] {
+  border-width: 0 1px 1px 0;
+}
+
+tbody.sectioned th[scope="row"] {
+  padding-inline-start: calc(1.5 * var(--cell-padding));
+}
+
+th[scope="col"] {
+  border-width: 0 0 1px 0;
+  padding-inline-start: 0;
+}
+
+caption div,
+th[scope="col"] span {
+  left: var(--cell-padding);
+  position: sticky;
+}
+
+td, th {
+  padding-inline: var(--cell-padding);
+  text-wrap: nowrap;
+}
+
+pre {
+  margin: 0;
+}
+</style>
+<div id=wrapper>
+  <table>
+    <caption>
+      <div>
+        Details for Selected Row
+        <nav>
+          <slot name=button></slot>
+          <button>Close</button>
+        </nav>
+      </div>
+    </caption>
+    <tbody></tbody>
+  </table>
+</div>

@@ -4,22 +4,32 @@
 
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 
-#include "ash/constants/ash_features.h"
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
+#include "password_selection_screen.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -52,11 +62,11 @@ AuthFactorsConfiguration GetFakeAuthFactorConfiguration(
 class PasswordSelectionScreenTest : public OobeBaseTest {
  public:
   PasswordSelectionScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kLocalPasswordForConsumers);
   }
   ~PasswordSelectionScreenTest() override = default;
 
   void SetUpOnMainThread() override {
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
     recovery_original_callback_ =
         GetRecoveryScreen()->get_exit_callback_for_testing();
     GetRecoveryScreen()->set_exit_callback_for_testing(base::BindRepeating(
@@ -159,7 +169,6 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
     }
   }
 
-  base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   PasswordSelectionScreen::ScreenExitCallback original_callback_;
@@ -250,6 +259,42 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
   WaitForScreenExit();
   EXPECT_EQ(result_.value(),
             PasswordSelectionScreen::Result::GAIA_PASSWORD_FALLBACK);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       RecoveryWithNoPasswordGAIAChoice) {
+  StartLogin();
+  auto user_context = BorrowUserContext();
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
+  StoreUserContext(std::move(user_context));
+  WaitForScreen();
+  test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kGaiaPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::GAIA_PASSWORD_CHOICE);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       RecoveryWithNoPasswordLocalChoice) {
+  StartLogin();
+  auto user_context = BorrowUserContext();
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
+  StoreUserContext(std::move(user_context));
+  WaitForScreen();
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kLocalPasswordButton);
+  test::OobeJS().ClickOnPath(kNextButton);
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::LOCAL_PASSWORD_CHOICE);
 }
 
 }  // namespace ash

@@ -27,7 +27,7 @@ ScopedRestoreTexture::ScopedRestoreTexture(
       get_target = GL_TEXTURE_BINDING_EXTERNAL_OES;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   GLint binding = 0;
   api->glGetIntegervFn(get_target, &binding);

@@ -69,6 +69,3 @@
 
 # crbug.com/1096612
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/*
-
-# crbug.com/1270151
--FontUniqueNameBrowserTest.ContentLocalFontsMatching

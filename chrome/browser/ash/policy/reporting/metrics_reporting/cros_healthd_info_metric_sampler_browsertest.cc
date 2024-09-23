@@ -19,6 +19,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/mock_clock.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace reporting {
 namespace {

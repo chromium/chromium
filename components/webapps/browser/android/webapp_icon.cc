@@ -18,8 +18,6 @@ WebappIcon::WebappIcon(const GURL& icon_url,
   AddUsage(usage);
 }
 
-WebappIcon::WebappIcon(const WebappIcon&) = default;
-WebappIcon& WebappIcon::operator=(const WebappIcon&) = default;
 WebappIcon::~WebappIcon() = default;
 
 void WebappIcon::AddUsage(webapk::Image::Usage usage) {
@@ -35,6 +33,15 @@ int WebappIcon::GetIdealSizeInPx() const {
         WebappsIconUtils::GetIdealIconSizeForIconType(usage, purpose_));
   }
   return ideal_size;
+}
+
+void WebappIcon::SetData(std::string&& data) {
+  unsafe_data_ = std::move(data);
+  has_unsafe_data_ = true;
+}
+
+std::string&& WebappIcon::ExtractData() {
+  return std::move(unsafe_data_);
 }
 
 }  // namespace webapps

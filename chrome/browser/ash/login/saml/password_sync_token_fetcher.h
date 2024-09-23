@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -40,7 +41,7 @@ class PasswordSyncTokenFetcher final {
   enum class RequestType { kNone, kCreateToken, kGetToken, kVerifyToken };
 
   // Error types will be tracked by UMA histograms.
-  // TODO(crbug.com/1112896)
+  // TODO(crbug.com/40143230)
   enum class ErrorType {
     kMissingAccessToken,
     kRequestBodyNotSerialized,

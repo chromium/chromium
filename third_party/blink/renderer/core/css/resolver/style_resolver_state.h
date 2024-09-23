@@ -40,6 +40,7 @@
 
 namespace blink {
 
+class AnchorEvaluator;
 class ComputedStyle;
 class FontDescription;
 class PseudoElement;
@@ -100,6 +101,10 @@ class CORE_EXPORT StyleResolverState {
     style_builder_.emplace(style);
     UpdateLengthConversionData();
   }
+
+  // Initialize the style builder. source_for_noninherited holds initial values
+  // to use for non-inherited properties. inherit_parent is simply the style to
+  // inherit from (either implicitly or explicitly).
   void CreateNewStyle(
       const ComputedStyle& source_for_noninherited,
       const ComputedStyle& inherit_parent,
@@ -181,7 +186,13 @@ class CORE_EXPORT StyleResolverState {
   void SetZoom(float);
   void SetEffectiveZoom(float);
   void SetWritingMode(WritingMode);
+  void SetTextSizeAdjust(TextSizeAdjust);
   void SetTextOrientation(ETextOrientation);
+  void SetPositionAnchor(ScopedCSSName*);
+  void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
+
+  void SetHasAttrFunction() { has_attr_function_ = true; }
+  bool HasAttrFunction() const { return has_attr_function_; }
 
   CSSParserMode GetParserMode() const;
 
@@ -237,13 +248,6 @@ class CORE_EXPORT StyleResolverState {
 
   void UpdateLengthConversionData();
 
-  void SetIsResolvingPositionFallbackStyle(bool is_resolving = true) {
-    is_resolving_position_fallback_style_ = is_resolving;
-  }
-  bool IsResolvingPositionFallbackStyle() const {
-    return is_resolving_position_fallback_style_;
-  }
-
   float TextAutosizingMultiplier() const {
     const ComputedStyle* old_style = GetElement().GetComputedStyle();
     if (element_type_ != ElementType::kPseudoElement && old_style) {
@@ -294,6 +298,9 @@ class CORE_EXPORT StyleResolverState {
   ElementType element_type_;
   Element* container_unit_context_;
 
+  // See StyleRecalcContext::anchor_evaluator_.
+  AnchorEvaluator* anchor_evaluator_ = nullptr;
+
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside
   // one. It may also be overridden from non-visited to visited by devtools.
@@ -338,12 +345,10 @@ class CORE_EXPORT StyleResolverState {
   // flag.
   bool rejected_legacy_overlapping_ = false;
 
-  // True if we are currently resolving a position fallback style by applying
-  // rules in a `@try` block.
-  bool is_resolving_position_fallback_style_ = false;
-
   // True if the resolved ComputedStyle depends on tree-scoped references.
   bool has_tree_scoped_reference_ = false;
+
+  bool has_attr_function_ = false;
 };
 
 }  // namespace blink

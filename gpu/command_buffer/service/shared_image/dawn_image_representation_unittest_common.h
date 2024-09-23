@@ -9,6 +9,7 @@
 
 namespace gpu {
 void RunDawnVideoSamplingTest(
+    wgpu::Instance instance,
     wgpu::Device device,
     const std::unique_ptr<DawnImageRepresentation>& shared_image,
     uint8_t expected_y_value,
@@ -37,4 +38,4 @@ wgpu::Texture CreateTexture(const wgpu::Device& device,
 wgpu::TextureView CreateTextureView(const wgpu::Texture& texture,
                                     wgpu::TextureAspect aspect);
 }  // namespace gpu
-#endif
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_IMAGE_REPRESENTATION_UNITTEST_COMMON_H_

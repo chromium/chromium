@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 
@@ -17,14 +18,14 @@ namespace net {
 
 // Helpers to construct dictionaries with a single key and value. Useful for
 // building parameters to include in a NetLog.
-NET_EXPORT base::Value::Dict NetLogParamsWithInt(base::StringPiece name,
+NET_EXPORT base::Value::Dict NetLogParamsWithInt(std::string_view name,
                                                  int value);
-NET_EXPORT base::Value::Dict NetLogParamsWithInt64(base::StringPiece name,
+NET_EXPORT base::Value::Dict NetLogParamsWithInt64(std::string_view name,
                                                    int64_t value);
-NET_EXPORT base::Value::Dict NetLogParamsWithBool(base::StringPiece name,
+NET_EXPORT base::Value::Dict NetLogParamsWithBool(std::string_view name,
                                                   bool value);
-NET_EXPORT base::Value::Dict NetLogParamsWithString(base::StringPiece name,
-                                                    base::StringPiece value);
+NET_EXPORT base::Value::Dict NetLogParamsWithString(std::string_view name,
+                                                    std::string_view value);
 
 // Creates a base::Value() to represent the byte string |raw| when adding it to
 // the NetLog.
@@ -36,7 +37,7 @@ NET_EXPORT base::Value::Dict NetLogParamsWithString(base::StringPiece name,
 // This wrapper exists because base::Value strings are required to be UTF-8.
 // Often times NetLog consumers just want to log a std::string, and that string
 // may not be UTF-8.
-NET_EXPORT base::Value NetLogStringValue(base::StringPiece raw);
+NET_EXPORT base::Value NetLogStringValue(std::string_view raw);
 
 // Creates a base::Value() to represent the octets |bytes|. This should be
 // used when adding binary data (i.e. not an ASCII or UTF-8 string) to the

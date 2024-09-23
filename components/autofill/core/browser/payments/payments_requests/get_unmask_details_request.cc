@@ -16,7 +16,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 }  // namespace
 
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale,
     const bool full_sync_enabled)
@@ -56,10 +56,10 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
   if (method) {
     if (*method == "CVC") {
       unmask_details_.unmask_auth_method =
-          AutofillClient::UnmaskAuthMethod::kCvc;
+          PaymentsAutofillClient::UnmaskAuthMethod::kCvc;
     } else if (*method == "FIDO") {
       unmask_details_.unmask_auth_method =
-          AutofillClient::UnmaskAuthMethod::kFido;
+          PaymentsAutofillClient::UnmaskAuthMethod::kFido;
     }
   }
 
@@ -83,11 +83,11 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
 
 bool GetUnmaskDetailsRequest::IsResponseComplete() {
   return unmask_details_.unmask_auth_method !=
-         AutofillClient::UnmaskAuthMethod::kUnknown;
+         PaymentsAutofillClient::UnmaskAuthMethod::kUnknown;
 }
 
 void GetUnmaskDetailsRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, unmask_details_);
 }
 

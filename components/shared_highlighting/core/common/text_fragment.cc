@@ -25,9 +25,14 @@ std::string Escape(const std::string& str) {
 }
 
 // Unescapes any special character from a fragment which may be coming from a
-// URL.
-std::string Unescape(const std::string& str) {
-  return base::UnescapeBinaryURLComponent(str);
+// URL. Returns nullopt if the fragment can't be safely escaped (e.g., contains
+// non-UTF8 characters).
+std::optional<std::string> Unescape(const std::string& str) {
+  std::string unescaped = base::UnescapeBinaryURLComponent(str);
+  if (!base::IsStringUTF8(unescaped)) {
+    return std::nullopt;
+  }
+  return unescaped;
 }
 
 bool HasValue(const std::string* str) {
@@ -108,8 +113,18 @@ std::optional<TextFragment> TextFragment::FromEscapedString(
     return std::nullopt;
   }
 
-  return TextFragment(Unescape(text_start), Unescape(text_end),
-                      Unescape(prefix), Unescape(suffix));
+  std::optional<std::string> unescaped_text_start = Unescape(text_start),
+                             unescaped_text_end = Unescape(text_end),
+                             unescaped_prefix = Unescape(prefix),
+                             unescaped_suffix = Unescape(suffix);
+
+  if (!unescaped_text_start || !unescaped_text_end || !unescaped_prefix ||
+      !unescaped_suffix) {
+    return std::nullopt;
+  }
+
+  return TextFragment(*unescaped_text_start, *unescaped_text_end,
+                      *unescaped_prefix, *unescaped_suffix);
 }
 
 // static

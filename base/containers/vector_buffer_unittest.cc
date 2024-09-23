@@ -6,8 +6,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/copy_only_int.h"
 #include "base/test/move_only_int.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::internal {
@@ -50,26 +52,32 @@ TEST(VectorBuffer, DeletePOD) {
   constexpr int size = 10;
   VectorBuffer<int> buffer(size);
   for (int i = 0; i < size; i++)
-    buffer.begin()[i] = i + 1;
+    buffer[i] = i + 1;
 
-  buffer.DestructRange(buffer.begin(), buffer.end());
+  VectorBuffer<int>::DestructRange(buffer.as_span());
 
   // Delete should do nothing.
   for (int i = 0; i < size; i++)
-    EXPECT_EQ(i + 1, buffer.begin()[i]);
+    EXPECT_EQ(i + 1, buffer[i]);
 }
 
 TEST(VectorBuffer, DeleteMoveOnly) {
   constexpr int size = 10;
   VectorBuffer<MoveOnlyInt> buffer(size);
-  for (int i = 0; i < size; i++)
-    new (buffer.begin() + i) MoveOnlyInt(i + 1);
+  for (int i = 0; i < size; i++) {
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(buffer.begin() + i)) MoveOnlyInt(i + 1);
+  }
 
-  buffer.DestructRange(buffer.begin(), buffer.end());
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      MoveOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
+  VectorBuffer<MoveOnlyInt>::DestructRange(buffer.as_span());
 
-  // Delete should have reset all of the values to 0.
-  for (int i = 0; i < size; i++)
-    EXPECT_EQ(0, buffer.begin()[i].data());
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 }
 
 TEST(VectorBuffer, PODMove) {
@@ -78,11 +86,11 @@ TEST(VectorBuffer, PODMove) {
 
   VectorBuffer<int> original(size);
   for (int i = 0; i < size; i++)
-    original.begin()[i] = i + 1;
+    original[i] = i + 1;
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<int>::MoveConstructRange(original.as_span(), dest.as_span());
   for (int i = 0; i < size; i++)
-    EXPECT_EQ(i + 1, dest.begin()[i]);
+    EXPECT_EQ(i + 1, dest[i]);
 }
 
 TEST(VectorBuffer, MovableMove) {
@@ -90,16 +98,26 @@ TEST(VectorBuffer, MovableMove) {
   VectorBuffer<MoveOnlyInt> dest(size);
 
   VectorBuffer<MoveOnlyInt> original(size);
-  for (int i = 0; i < size; i++)
-    new (original.begin() + i) MoveOnlyInt(i + 1);
-
-  original.MoveRange(original.begin(), original.end(), dest.begin());
-
-  // Moving from a MoveOnlyInt resets to 0.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original.begin()[i].data());
-    EXPECT_EQ(i + 1, dest.begin()[i].data());
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i)) MoveOnlyInt(i + 1);
   }
+
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      MoveOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
+  VectorBuffer<MoveOnlyInt>::MoveConstructRange(original.as_span(),
+                                                dest.as_span());
+
+  for (int i = 0; i < size; i++) {
+    EXPECT_EQ(i + 1, dest[i].data());
+  }
+  // The original values were consumed, so when the original elements are
+  // destroyed, the destruction callback should report 0.
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 }
 
 TEST(VectorBuffer, CopyToMove) {
@@ -107,17 +125,25 @@ TEST(VectorBuffer, CopyToMove) {
   VectorBuffer<CopyOnlyInt> dest(size);
 
   VectorBuffer<CopyOnlyInt> original(size);
-  for (int i = 0; i < size; i++)
-    new (original.begin() + i) CopyOnlyInt(i + 1);
-
-  original.MoveRange(original.begin(), original.end(), dest.begin());
-
-  // The original should have been destructed, which should reset the value to
-  // 0. Technically this dereferences the destructed object.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original.begin()[i].data());
-    EXPECT_EQ(i + 1, dest.begin()[i].data());
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i)) CopyOnlyInt(i + 1);
   }
+
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      CopyOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
+  VectorBuffer<CopyOnlyInt>::MoveConstructRange(original.as_span(),
+                                                dest.as_span());
+
+  for (int i = 0; i < size; i++) {
+    EXPECT_EQ(i + 1, dest[i].data());
+  }
+
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 }
 
 TEST(VectorBuffer, TrivialAbiMove) {
@@ -132,18 +158,21 @@ TEST(VectorBuffer, TrivialAbiMove) {
   int move_count = 0;
   VectorBuffer<TrivialAbiWithCountingOperations> original(size);
   for (int i = 0; i < size; i++) {
-    new (original.begin() + i)
+    // SAFETY: `i < size`, and `size` is the buffer's allocation size, so
+    // `begin() + i` is inside the buffer.
+    new (UNSAFE_BUFFERS(original.begin() + i))
         TrivialAbiWithCountingOperations(&destruction_count, &move_count);
   }
 
-  original.MoveRange(original.begin(), original.end(), dest.begin());
+  VectorBuffer<TrivialAbiWithCountingOperations>::MoveConstructRange(
+      original.as_span(), dest.as_span());
 
   // We expect the move to have been performed via memcpy, without calling move
   // constructors or destructors.
   EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? 0 : size);
   EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
 
-  dest.DestructRange(dest.begin(), dest.end());
+  dest.DestructRange(dest.as_span());
   EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? size : size * 2);
   EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
 }

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/keyboard_layout_monitor.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -54,7 +60,7 @@ class Core : private ash::input_method::ImeKeyboard::Observer {
   LayoutKeyFunction GetFunctionFromKeyboardCode(
       ui::KeyboardCode key_code) const;
 
-  const base::span<const ui::DomCode> supported_keys_;
+  const base::raw_span<const ui::DomCode> supported_keys_;
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback_;
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>

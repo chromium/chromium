@@ -1,7 +1,9 @@
 include_rules = [
+  "+components/language_detection/ios/browser",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/language/model",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/language_detection/model",
 ]
 
 specific_include_rules = {

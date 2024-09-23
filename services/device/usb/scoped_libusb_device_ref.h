@@ -19,12 +19,14 @@ class UsbContext;
 // instances created from it.
 class ScopedLibusbDeviceRef {
  public:
+  ScopedLibusbDeviceRef();
   ScopedLibusbDeviceRef(libusb_device* device,
                         scoped_refptr<UsbContext> context);
   ScopedLibusbDeviceRef(ScopedLibusbDeviceRef&& other);
+  ScopedLibusbDeviceRef& operator=(ScopedLibusbDeviceRef&& other);
 
-  ScopedLibusbDeviceRef(const ScopedLibusbDeviceRef&) = delete;
-  ScopedLibusbDeviceRef& operator=(const ScopedLibusbDeviceRef&) = delete;
+  ScopedLibusbDeviceRef(const ScopedLibusbDeviceRef& other);
+  ScopedLibusbDeviceRef& operator=(const ScopedLibusbDeviceRef& other);
 
   ~ScopedLibusbDeviceRef();
 

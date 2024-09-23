@@ -2,7 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
 import("linux/buildflags/buildflags.gni")
+
+if (is_mac) {
+  mojom("mojo") {
+    sources = [ "mac/remote_cocoa/system_media_controls.mojom" ]
+
+    public_deps = [
+      "//mojo/public/mojom/base",
+      "//services/media_session/public/mojom",
+    ]
+  }
+}
 
 component("system_media_controls") {
   friend = [ ":unit_tests" ]
@@ -11,6 +23,10 @@ component("system_media_controls") {
     "system_media_controls.h",
     "system_media_controls_observer.h",
   ]
+
+  if (is_mac) {
+    public += [ "mac/remote_cocoa/system_media_controls_bridge.h" ]
+  }
 
   defines = [ "IS_SYSTEM_MEDIA_CONTROLS_IMPL" ]
 
@@ -44,6 +60,8 @@ component("system_media_controls") {
       "mac/now_playing_info_center_delegate.mm",
       "mac/now_playing_info_center_delegate_cocoa.h",
       "mac/now_playing_info_center_delegate_cocoa.mm",
+      "mac/remote_cocoa/system_media_controls_bridge.h",
+      "mac/remote_cocoa/system_media_controls_bridge.mm",
       "mac/remote_command_center_delegate.h",
       "mac/remote_command_center_delegate.mm",
       "mac/remote_command_center_delegate_cocoa.h",
@@ -51,10 +69,16 @@ component("system_media_controls") {
       "mac/system_media_controls_mac.h",
       "mac/system_media_controls_mac.mm",
     ]
-    deps += [ "//build:branding_buildflags" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//components/remote_cocoa/browser",
+      "//components/remote_cocoa/common:mojo",
+    ]
 
-    frameworks = [ "Foundation.framework" ]
-    weak_frameworks = [ "MediaPlayer.framework" ]
+    frameworks = [
+      "Foundation.framework",
+      "MediaPlayer.framework",
+    ]
   } else {
     sources = [ "system_media_controls_stub.cc" ]
   }

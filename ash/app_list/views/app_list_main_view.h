@@ -18,7 +18,6 @@ namespace ash {
 
 class AppListView;
 class AppListViewDelegate;
-class ApplicationDragAndDropHost;
 class ContentsView;
 class PaginationModel;
 class SearchBoxView;
@@ -44,11 +43,6 @@ class ASH_EXPORT AppListMainView : public views::View,
 
   SearchBoxView* search_box_view() const { return search_box_view_; }
 
-  // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop
-  // operations outside the application list.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
-
   ContentsView* contents_view() const { return contents_view_; }
   AppListViewDelegate* view_delegate() { return delegate_; }
 
@@ -67,8 +61,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   void ActiveChanged(SearchBoxViewBase* sender) override;
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
-  bool HandleFocusMoveAboveSearchResults(
-      const ui::KeyEvent& key_event) override;
   raw_ptr<AppListViewDelegate>
       delegate_;  // Owned by parent view (AppListView).
 

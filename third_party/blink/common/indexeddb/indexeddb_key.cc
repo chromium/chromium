@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 
 #include <sstream>
@@ -210,7 +215,7 @@ int IndexedDBKey::CompareTo(const IndexedDBKey& other) const {
     case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

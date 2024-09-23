@@ -5,7 +5,6 @@
 #include "content/browser/payments/payment_app_database.h"
 
 #include <map>
-#include <optional>
 #include <utility>
 
 #include "base/base64.h"
@@ -171,7 +170,7 @@ void PaymentAppDatabase::DeletePaymentInstrument(
     DeletePaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -186,7 +185,7 @@ void PaymentAppDatabase::ReadPaymentInstrument(
     ReadPaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -200,7 +199,7 @@ void PaymentAppDatabase::KeysOfPaymentInstruments(
     KeysOfPaymentInstrumentsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -214,7 +213,7 @@ void PaymentAppDatabase::HasPaymentInstrument(
     HasPaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -230,7 +229,7 @@ void PaymentAppDatabase::WritePaymentInstrument(
     WritePaymentInstrumentCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   if (instrument->icons.size() > 0) {
     std::vector<blink::Manifest::ImageResource> icons(instrument->icons);
@@ -265,7 +264,7 @@ void PaymentAppDatabase::DidFetchedPaymentInstrumentIcon(
     return;
   }
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -294,7 +293,7 @@ void PaymentAppDatabase::FetchPaymentAppInfoCallback(
     std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -392,7 +391,7 @@ void PaymentAppDatabase::ClearPaymentInstruments(
     ClearPaymentInstrumentsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -405,7 +404,7 @@ void PaymentAppDatabase::SetPaymentAppUserHint(const GURL& scope,
                                                const std::string& user_hint) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
@@ -420,7 +419,7 @@ void PaymentAppDatabase::EnablePaymentAppDelegations(
     EnableDelegationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1199077): Update this when PaymentManager
+  // TODO(crbug.com/40177656): Update this when PaymentManager
   // implements StorageKey.
   service_worker_context_->FindReadyRegistrationForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),

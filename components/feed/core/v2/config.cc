@@ -5,7 +5,6 @@
 #include "components/feed/core/v2/config.h"
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
@@ -45,16 +44,6 @@ void OverrideWithFinch(Config& config) {
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_action_upload_requests_per_day",
           config.max_action_upload_requests_per_day);
-
-  config.max_list_recommended_web_feeds_requests_per_day =
-      base::GetFieldTrialParamByFeatureAsInt(
-          kWebFeed, "max_list_recommended_web_feeds_requests_per_day",
-          config.max_list_recommended_web_feeds_requests_per_day);
-
-  config.max_list_web_feeds_requests_per_day =
-      base::GetFieldTrialParamByFeatureAsInt(
-          kWebFeed, "max_list_web_feeds_requests_per_day",
-          config.max_list_web_feeds_requests_per_day);
 
   config.stale_content_threshold =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
@@ -128,26 +117,6 @@ void OverrideWithFinch(Config& config) {
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_prefetch_image_requests_per_refresh",
           config.max_prefetch_image_requests_per_refresh);
-
-  config.webfeed_accelerator_recent_visit_history_days =
-      base::GetFieldTrialParamByFeatureAsInt(
-          kWebFeed, "webfeed_accelerator_recent_visit_history_days",
-          config.webfeed_accelerator_recent_visit_history_days);
-
-  config.recommended_feeds_staleness_threshold =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          kWebFeed, "recommended_feeds_staleness_threshold_days",
-          config.recommended_feeds_staleness_threshold.InDays()));
-
-  config.subscribed_feeds_staleness_threshold =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          kWebFeed, "subscribed_feeds_staleness_threshold_days",
-          config.subscribed_feeds_staleness_threshold.InDays()));
-
-  config.web_feed_stale_content_threshold =
-      base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
-          kWebFeed, "web_feed_stale_content_threshold_seconds",
-          config.web_feed_stale_content_threshold.InSecondsF()));
 
   if (base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
     config.subscriptionless_web_feed_stale_content_threshold =

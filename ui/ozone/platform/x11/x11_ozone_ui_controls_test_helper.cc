@@ -37,7 +37,7 @@ void X11OzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
     base::OnceClosure closure) {
   auto* host = aura::WindowTreeHost::GetForAcceleratedWidget(widget);
   gfx::Point mouse_loc_in_screen_px = mouse_loc_in_screen;
-  // TODO(crbug.com/1430805): fix this conversion.
+  // TODO(crbug.com/40263239): fix this conversion.
   host->ConvertDIPToPixels(&mouse_loc_in_screen_px);
 
   x11_ui_controls_test_helper_.SendMouseMotionNotifyEvent(
@@ -54,7 +54,7 @@ void X11OzoneUIControlsTestHelper::SendMouseEvent(
     base::OnceClosure closure) {
   auto* host = aura::WindowTreeHost::GetForAcceleratedWidget(widget);
   gfx::Point mouse_loc_in_screen_px = mouse_loc_in_screen;
-  // TODO(crbug.com/1430805): fix this conversion.
+  // TODO(crbug.com/40263239): fix this conversion.
   host->ConvertDIPToPixels(&mouse_loc_in_screen_px);
 
   x11_ui_controls_test_helper_.SendMouseEvent(

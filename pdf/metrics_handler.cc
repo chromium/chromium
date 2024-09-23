@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "pdf/document_metadata.h"
-#include "pdf/file_extension.h"
 
 namespace chrome_pdf {
 
@@ -28,14 +27,6 @@ MetricsHandler::MetricsHandler() = default;
 
 MetricsHandler::~MetricsHandler() = default;
 
-void MetricsHandler::RecordAttachmentTypes(
-    const std::vector<DocumentAttachmentInfo>& attachments) {
-  for (const auto& info : attachments) {
-    base::UmaHistogramEnumeration("PDF.AttachmentType",
-                                  FileNameToExtensionIndex(info.name));
-  }
-}
-
 void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
   base::UmaHistogramEnumeration("PDF.Version", metadata.version);
   base::UmaHistogramCustomCounts("PDF.PageCount", metadata.page_count, 1,
@@ -44,6 +35,10 @@ void MetricsHandler::RecordDocumentMetrics(const DocumentMetadata& metadata) {
       "PDF.HasAttachment", metadata.has_attachments ? PdfHasAttachment::kYes
                                                     : PdfHasAttachment::kNo);
   base::UmaHistogramEnumeration("PDF.FormType", metadata.form_type);
+}
+
+void MetricsHandler::RecordAccessibilityIsDocTagged(bool is_tagged) {
+  base::UmaHistogramBoolean("Accessibility.PDF.IsPDFTagged", is_tagged);
 }
 
 }  // namespace chrome_pdf

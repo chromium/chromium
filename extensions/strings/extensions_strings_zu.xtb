@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Yehlulekile ukufaka esikhundleni sefayela le-crx. Hlola ukuze ubone uma ngabe ifayela lisetshenziswa.</translation>
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile isandiso, kumele kube nendlela eya kumkhombandlela wephrofayela yakho oqala ngohlamvu lwedrayivu futhi ingafaki indawo, iphoyinti lokukhweza, noma i-symlink. Ayikho indlela enjalo ekhona kuphrofayela yakho.</translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Umlawuli walo mshini udnga i--<ph name="EXTENSION_NAME" /> ukuthi ifakwe. Ayikwazi ukukhishwa.</translation>
 <translation id="6027032947578871493">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela ku-<ph name="VENDOR_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile, kuzomele kube nendlela eya kunkombandlela yephrofayela lakho engaqukethe i-symlink. Ayikho indlela enjalo ekhona kuphrofayela lakho.</translation>
 <translation id="6322279351188361895">Yehlulekile ukufunda ukhiye oyimfihlo.</translation>
 <translation id="6391538222494443604">Kumele kube khona umkhombandlela wokokufaka.</translation>
 <translation id="641087317769093025">Ayikwazanga ukususa ukuzipha kusandiso</translation>

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
@@ -51,7 +52,7 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('disabled'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-disabled'));
     assertStyle(radioButton, 'pointer-events', 'none');
-    assertNotStyle(radioButton, 'opacity', '1');
+    assertStyle(radioButton, 'opacity', '1');
   }
 
   function assertNotDisabled() {
@@ -63,41 +64,47 @@ suite('cr-radio-button', function() {
   // Setting selection by mouse/keyboard is cr-radio-group's job, so
   // these tests simply set states programatically and make sure the element
   // is visually correct.
-  test('Checked', function() {
+  test('Checked', async () => {
     assertNotChecked();
     radioButton.checked = true;
+    await microtasksFinished();
     assertChecked();
     radioButton.checked = false;
+    await microtasksFinished();
     assertNotChecked();
   });
 
-  test('Disabled', function() {
+  test('Disabled', async () => {
     assertNotDisabled();
     radioButton.disabled = true;
+    await microtasksFinished();
     assertDisabled();
     radioButton.disabled = false;
+    await microtasksFinished();
     assertNotChecked();
   });
 
   test('Ripple', function() {
-    assertFalse(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
-    radioButton.dispatchEvent(
-        new CustomEvent('focus', {bubbles: true, composed: true}));
-    assertTrue(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
-    assertTrue(radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+    function getRipple() {
+      return radioButton.shadowRoot!.querySelector('cr-ripple');
+    }
+
+    assertFalse(!!getRipple());
     radioButton.dispatchEvent(
         new CustomEvent('up', {bubbles: true, composed: true}));
-    assertFalse(
-        radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+    const ripple = getRipple();
+    assertTrue(!!ripple);
+    assertFalse(ripple.holdDown);
   });
 
-  test('Label Hidden', function() {
+  test('Label Hidden', async () => {
     // Having no label set hides label.
     assertStyle(
         radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
 
     // Setting label shows label.
     radioButton.label = 'foo';
+    await microtasksFinished();
     assertNotStyle(
         radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
     assertNotStyle(
@@ -110,6 +117,7 @@ suite('cr-radio-button', function() {
 
     // Setting hideLabelText true clips label from screen reader.
     radioButton.hideLabelText = true;
+    await microtasksFinished();
     assertStyle(
         radioButton.shadowRoot!.querySelector('#label')!, 'clip',
         'rect(0px, 0px, 0px, 0px)');

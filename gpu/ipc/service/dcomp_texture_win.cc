@@ -12,7 +12,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/win/windows_types.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -128,7 +127,7 @@ DCOMPTexture::DCOMPTexture(
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
   receiver_.Bind(std::move(receiver), runner);
   context_state_->AddContextLostObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   channel_->AddRoute(route_id, sequence_);
 }
 
@@ -139,7 +138,7 @@ DCOMPTexture::~DCOMPTexture() {
   DCHECK(!channel_);
 
   context_state_->RemoveContextLostObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 
   if (window_pos_timer_.IsRunning()) {
     window_pos_timer_.Stop();
@@ -239,7 +238,7 @@ void DCOMPTexture::SetDCOMPSurfaceHandle(
 gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   DCHECK(channel_);
 
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   // Use DCOMPTextureBacking as the backing to hold DCOMPSurfaceProxy i.e. this,
   // and be able to retrieve it later via ProduceOverlay.

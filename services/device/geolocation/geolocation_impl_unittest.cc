@@ -13,6 +13,7 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/geolocation/geolocation_provider.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -66,7 +67,8 @@ class GeolocationImplTest : public testing::Test {
   void SetUp() override {
     GeolocationProvider::SetInstanceForTesting(&geolocation_provider_);
     geolocation_context_.BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL());
+        geolocation_.BindNewPipeAndPassReceiver(), GURL(),
+        mojom::GeolocationClientId::kForTesting);
   }
 
   void TearDown() override {

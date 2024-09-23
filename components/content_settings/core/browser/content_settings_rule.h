@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -21,20 +20,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace content_settings {
-
-class SCOPED_LOCKABLE RefCountedAutoLock
-    : public base::RefCounted<RefCountedAutoLock> {
- public:
-  explicit RefCountedAutoLock(base::Lock& lock);
-
- protected:
-  virtual ~RefCountedAutoLock();
-
- private:
-  friend class base::RefCounted<RefCountedAutoLock>;
-
-  base::AutoLock auto_lock_;
-};
 
 // Note that Rules and their iterators must be destroyed before modifying the
 // map that their values come from, as some types of rules hold locks on the map

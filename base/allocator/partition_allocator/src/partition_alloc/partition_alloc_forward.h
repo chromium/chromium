@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_config.h"
 
@@ -35,7 +35,6 @@ static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
 
-struct SlotSpanMetadata;
 class PA_LOCKABLE Lock;
 
 // This type trait verifies a type can be used as a pointer offset.
@@ -45,6 +44,19 @@ class PA_LOCKABLE Lock;
 template <typename Z>
 static constexpr bool is_offset_type =
     std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
+
+enum class MetadataKind { kWritable, kReadOnly };
+
+template <const MetadataKind kind, typename T>
+struct MaybeConst {
+  using Type = std::conditional_t<kind == MetadataKind::kReadOnly, T const, T>;
+};
+
+template <const MetadataKind kind, typename T>
+using MaybeConstT = typename MaybeConst<kind, T>::Type;
+
+template <MetadataKind>
+struct SlotSpanMetadata;
 
 }  // namespace internal
 
@@ -73,14 +85,6 @@ Lock& PartitionRootLock(PartitionRoot*);
 #define PA_MALLOC_FN __attribute__((malloc))
 #endif
 
-// Allows the compiler to assume that the return value is aligned on a
-// kAlignment boundary. This is useful for e.g. using aligned vector
-// instructions in the constructor for zeroing.
-#if PA_HAS_ATTRIBUTE(assume_aligned)
-#define PA_MALLOC_ALIGNED \
-  __attribute__((assume_aligned(::partition_alloc::internal::kAlignment)))
-#endif
-
 #if !defined(PA_MALLOC_FN)
 #define PA_MALLOC_FN
 #endif
@@ -89,4 +93,4 @@ Lock& PartitionRootLock(PartitionRoot*);
 #define PA_MALLOC_ALIGNED
 #endif
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_

@@ -26,10 +26,7 @@ struct InProcessFuzzerOptions {
   RunLoopTimeoutBehavior run_loop_timeout_behavior =
       RunLoopTimeoutBehavior::kDefault;
 
-  // Overrides the default 60s run loop timeout set by `BrowserTestBase`. See
-  // https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_base.cc?q=ScopedRunLoopTimeout.
-  // Mind that it doesn't guarantee that this will be the maximum time a fuzzing
-  // loop will take since ScopedRunLoopTimeout can be nested.
+  // Sets the timeout for the "Fuzz" method to complete.
   std::optional<base::TimeDelta> run_loop_timeout = std::nullopt;
 };
 

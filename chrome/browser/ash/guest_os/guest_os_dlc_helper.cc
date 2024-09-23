@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
+#include <string_view>
+
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -105,7 +105,7 @@ void GuestOsDlcInstallation::CheckState() {
 }
 
 void GuestOsDlcInstallation::OnGetDlcStateCompleted(
-    const std::string& err,
+    std::string_view err,
     const dlcservice::DlcState& dlc_state) {
   ash::DlcserviceClient::InstallResult result;
   switch (dlc_state.state()) {
@@ -126,7 +126,7 @@ void GuestOsDlcInstallation::OnGetDlcStateCompleted(
           kBetweenRetryDelay);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -138,10 +138,6 @@ void GuestOsDlcInstallation::StartInstall() {
   }
   dlcservice::InstallRequest install_request;
   install_request.set_id(dlc_id_);
-  if (base::FeatureList::IsEnabled(
-          ash::features::kCrostiniTerminaDlcForceOta)) {
-    install_request.set_force_ota(true);
-  }
   ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&GuestOsDlcInstallation::OnDlcInstallCompleted,

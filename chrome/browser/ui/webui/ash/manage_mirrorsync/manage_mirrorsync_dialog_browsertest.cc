@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_dialog.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
@@ -184,6 +186,15 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_dir_);
 
+    // Turning on MirrorSync requires MyFiles to exist first.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::CreateDirectory(my_files_dir_);
+    }
+
+    drivefs::FakeDriveFs& fake_drivefs =
+        fake_drivefs_helpers_[browser()->profile()]->fake_drivefs();
+
     // Toggle the MirrorSync preference to enable / disable the feature.
     {
       DriveMirrorSyncStatusObserver observer(enabled);
@@ -191,6 +202,13 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
           drive::DriveIntegrationServiceFactory::FindForProfile(
               browser()->profile());
       observer.Observe(service);
+      // Turning on the sync will add ~/MyFiles as the sync path, which will
+      // call GetSyncingPaths internally.
+      if (enabled) {
+        EXPECT_CALL(fake_drivefs, GetSyncingPaths(_))
+            .WillOnce(RunOnceCallback<0>(drive::FileError::FILE_ERROR_OK,
+                                         std::vector<base::FilePath>()));
+      }
       browser()->profile()->GetPrefs()->SetBoolean(
           drive::prefs::kDriveFsEnableMirrorSync, enabled);
       observer.WaitForStatusChange();
@@ -198,7 +216,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
 
     ShowDialog();
 
-    return fake_drivefs_helpers_[browser()->profile()]->fake_drivefs();
+    return fake_drivefs;
   }
 
   // Returns a pair of std::vector where the first element contains a list of

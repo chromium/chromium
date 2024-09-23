@@ -65,7 +65,7 @@ class WebSchedulingTestHelper {
                      const Vector<TestTaskSpecEntry>& test_spec);
 
  private:
-  const raw_ref<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ref<Delegate> delegate_;
   Vector<std::unique_ptr<WebSchedulingTaskQueue>> task_queues_;
   Vector<std::unique_ptr<WebSchedulingTaskQueue>> continuation_task_queues_;
 };

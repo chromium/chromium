@@ -6,6 +6,7 @@
 
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_constants.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -129,10 +130,7 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
   } else {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    const ui::ColorId background_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-            : kColorAshShieldAndBase80;
+    const ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
     SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id, login::kNonBlurredWallpaperBackgroundRadiusDp, 0));
   }

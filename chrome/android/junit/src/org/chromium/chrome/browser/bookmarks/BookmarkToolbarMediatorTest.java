@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -24,10 +26,11 @@ import android.view.ContextThemeWrapper;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -40,19 +43,14 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -60,22 +58,21 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link BookmarkToolbarMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
-@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
@@ -83,23 +80,24 @@ public class BookmarkToolbarMediatorTest {
 
     @Mock private BookmarkDelegate mBookmarkDelegate;
     @Mock private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
-    @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private SelectionDelegate mSelectionDelegate;
     @Mock private Runnable mNavigateBackRunnable;
-    @Mock private BookmarkId mBookmarkId;
-    @Mock private BookmarkItem mBookmarkItem;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private Runnable mEndSearchRunnable;
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
+    @Mock private Profile mProfile;
 
     @Spy private Context mContext;
 
+    FakeBookmarkModel mBookmarkModel;
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
     OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
+    BooleanSupplier mIncognitoEnabledSupplier;
+    boolean mIncognitoEnabled = true;
 
     @Before
     public void setUp() {
@@ -112,8 +110,9 @@ public class BookmarkToolbarMediatorTest {
         doNothing().when(mContext).startActivity(any());
 
         // Setup the bookmark model ids/items.
-        doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(any());
-        doReturn(mBookmarkId).when(mBookmarkItem).getId();
+        mBookmarkModel = FakeBookmarkModel.createModel();
+
+        mIncognitoEnabledSupplier = () -> mIncognitoEnabled;
 
         initModelAndMediator();
     }
@@ -121,7 +120,6 @@ public class BookmarkToolbarMediatorTest {
     private void initModelAndMediator() {
         mModel =
                 new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
-                        .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
                         .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
                         .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
                         .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
@@ -144,7 +142,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mIncognitoEnabledSupplier);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -183,7 +182,8 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager);
+                        mBookmarkMoveSnackbarManager,
+                        mIncognitoEnabledSupplier);
     }
 
     @Test
@@ -221,18 +221,7 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void selectionStateChangeHidesKeyboard() {
-        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
-        assertEquals(true, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
-
-        mMediator.onSelectionStateChange(null);
-        assertEquals(false, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    public void selectionStateChangeHidesKeyboard_improvedBookmarks() {
         mModel.addObserver(mPropertyObserver);
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
@@ -248,70 +237,39 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void onFolderStateSet_CurrentFolderIsRoot() {
-        doReturn(mBookmarkId).when(mBookmarkModel).getRootFolderId();
-        doReturn(false).when(mBookmarkItem).isEditable();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(mBookmarkModel.getRootFolderId());
 
-        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
         assertTrue(navigationButtonMatchesModel(NavigationButton.NONE));
     }
 
     @Test
-    public void onFolderStateSet_CurrentFolderIsShopping() {
-        doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(BookmarkId.SHOPPING_FOLDER);
-        doReturn(false).when(mBookmarkItem).isEditable();
-        mMediator.onFolderStateSet(BookmarkId.SHOPPING_FOLDER);
-
-        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
-        assertFalse(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
-        assertEquals("Tracked products", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
-    }
-
-    @Test
     public void onFolderStateSet_EmptyTitleWhenChildOfRoot() {
-        ArrayList<BookmarkId> topLevelFolders = new ArrayList<>();
-        topLevelFolders.add(mBookmarkId);
-        doReturn(topLevelFolders).when(mBookmarkModel).getTopLevelFolderIds();
-        doReturn(mBookmarkId).when(mBookmarkItem).getParentId();
-        doReturn(true).when(mBookmarkItem).isEditable();
-        doReturn("").when(mBookmarkItem).getTitle();
-        mMediator.onFolderStateSet(mBookmarkId);
+        BookmarkId emptyTitleFolderId =
+                mBookmarkModel.addFolder(mBookmarkModel.getTopLevelFolderIds().get(0), 0, "");
+        mMediator.onFolderStateSet(emptyTitleFolderId);
 
-        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
     public void onFolderStateSet_RegularFolder() {
-        doReturn(true).when(mBookmarkItem).isEditable();
-        doReturn("test folder").when(mBookmarkItem).getTitle();
-        mMediator.onFolderStateSet(mBookmarkId);
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, "test folder");
+        mMediator.onFolderStateSet(folderId);
 
-        assertTrue(mModel.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("test folder", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu() {
-        mMediator.onFolderStateSet(mBookmarkId);
-        assertTrue(
-                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                        .apply(R.id.edit_menu_id));
-        verifyActivityLaunched(BookmarkAddEditFolderActivity.class);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    public void testOnMenuItemClick_editMenu_improvedBookmarks() {
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, ""));
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.edit_menu_id));
@@ -327,17 +285,13 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    public void testOnMenuItemClick_searchMenu() {
-        assertTrue(
-                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                        .apply(R.id.search_menu_id));
-        verify(mBookmarkDelegate).openSearchUi();
-    }
-
-    @Test
     public void testOnMenuItemClick_selectionModeEditMenu() {
-        setCurrentSelection(mBookmarkId);
-        doReturn(false).when(mBookmarkItem).isFolder();
+        setCurrentSelection(
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(7, BookmarkType.NORMAL),
+                        0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL));
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_edit_menu_id));
@@ -346,8 +300,8 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void testOnMenuItemClick_selectionModeEditMenuFolder() {
-        setCurrentSelection(mBookmarkId);
-        doReturn(true).when(mBookmarkItem).isFolder();
+        setCurrentSelection(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, ""));
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_edit_menu_id));
@@ -355,43 +309,42 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testOnMenuItemClick_selectionModeMoveMenu() {
-        setCurrentSelection(mBookmarkId);
+        BookmarkId bookmarkId = new BookmarkId(7, BookmarkType.NORMAL);
+        setCurrentSelection(bookmarkId);
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_move_menu_id));
-        verifyActivityLaunched(BookmarkFolderSelectActivity.class);
-    }
-
-    @Test
-    public void testOnMenuItemClick_selectionModeMoveMenu_improvedBookmarksEnabled() {
-        setCurrentSelection(mBookmarkId);
-        assertTrue(
-                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                        .apply(R.id.selection_mode_move_menu_id));
-        verify(mBookmarkMoveSnackbarManager).startFolderPickerAndObserveResult(mBookmarkId);
+        verify(mBookmarkMoveSnackbarManager).startFolderPickerAndObserveResult(bookmarkId);
     }
 
     @Test
     public void testOnMenuItemClick_selectionModeDeleteMenu() {
-        setCurrentSelection(mBookmarkId);
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(7, BookmarkType.NORMAL),
+                        0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        setCurrentSelection(bookmarkId);
+
+        assertNotNull(mBookmarkModel.getBookmarkById(bookmarkId));
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_delete_menu_id));
-        verify(mBookmarkModel).deleteBookmarks(any());
+        assertNull(mBookmarkModel.getBookmarkById(bookmarkId));
     }
 
     @Test
     public void testOnMenuItemClick_selectionOpenInNewTab() {
-        setCurrentSelection(mBookmarkId);
+        setCurrentSelection(new BookmarkId(7, BookmarkType.NORMAL));
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_new_tab_id));
         verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(false));
     }
 
     @Test
     public void testOnMenuItemClick_selectionOpenInIncognitoTab() {
-        setCurrentSelection(mBookmarkId);
+        setCurrentSelection(new BookmarkId(7, BookmarkType.NORMAL));
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
         verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(true));
     }
@@ -404,22 +357,22 @@ public class BookmarkToolbarMediatorTest {
 
     @Test
     public void testAddNewFolder() {
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, ""));
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
         assertTrue(mMediator.onMenuIdClick(R.id.create_new_folder_menu_id));
         verify(mBookmarkAddNewFolderCoordinator).show(any());
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
-        doReturn(mBookmarkId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(mBookmarkModel.getLocalOrSyncableReadingListFolder());
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
-        doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
-        doReturn(mBookmarkId).when(mBookmarkModel).getPartnerFolderId();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(mBookmarkModel.getAccountReadingListFolder());
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
+
+        mMediator.onFolderStateSet(mBookmarkModel.getPartnerFolderId());
         assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
         assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_ENABLED));
     }
@@ -542,36 +495,41 @@ public class BookmarkToolbarMediatorTest {
     @Test
     public void testTitleAndNavWhenSearching() {
         String folderName = "test folder";
-        doReturn(folderName).when(mBookmarkItem).getTitle();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, folderName));
         assertEquals(folderName, mModel.get(BookmarkToolbarProperties.TITLE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
         assertEquals(
-                NavigationButton.BACK,
+                NavigationButton.NORMAL_VIEW_BACK,
                 (long) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
     }
 
     @Test
     public void testDisableSortOptionsInReadingList() {
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
-        mMediator.onFolderStateSet(mBookmarkId);
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, "");
+        mMediator.onFolderStateSet(folderId);
         assertEquals(
                 R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
 
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
-        doReturn(mBookmarkId).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(mBookmarkModel.getLocalOrSyncableReadingListFolder());
+        assertFalse(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
+        assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs, times(0)).setBookmarkRowSortOrder(anyInt());
+
+        mMediator.onFolderStateSet(mBookmarkModel.getAccountReadingListFolder());
         assertFalse(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         assertEquals(
                 R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         verify(mBookmarkUiPrefs, times(0)).setBookmarkRowSortOrder(anyInt());
 
         // Verify  we go back to manual sort order and don't actually update the sorting prefs.
-        doReturn(null).when(mBookmarkModel).getLocalOrSyncableReadingListFolder();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(folderId);
         assertTrue(mModel.get(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED));
         assertEquals(
                 R.id.sort_by_manual, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
@@ -579,11 +537,10 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testNavigateBackWhileSearching() {
         String folderName = "test folder";
-        doReturn(folderName).when(mBookmarkItem).getTitle();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, folderName));
         assertEquals(folderName, mModel.get(BookmarkToolbarProperties.TITLE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
@@ -596,11 +553,10 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testSelectionWhileSorting() {
         String folderName = "test folder";
-        doReturn(folderName).when(mBookmarkItem).getTitle();
-        mMediator.onFolderStateSet(mBookmarkId);
+        mMediator.onFolderStateSet(
+                mBookmarkModel.addFolder(new BookmarkId(7, BookmarkType.NORMAL), 0, folderName));
         assertEquals(folderName, mModel.get(BookmarkToolbarProperties.TITLE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
@@ -610,5 +566,379 @@ public class BookmarkToolbarMediatorTest {
         mModel.set(BookmarkToolbarProperties.TITLE, "test");
         mMediator.onSelectionStateChange(Collections.emptyList());
         assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
+    }
+
+    @Test
+    public void testSelection_EmptyList() {
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(Collections.emptyList());
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_SingleBookmark() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Collections.singletonList(
+                        mBookmarkModel.addBookmark(
+                                new BookmarkId(7, BookmarkType.NORMAL),
+                                0,
+                                "Test",
+                                JUnitTestGURLs.EXAMPLE_URL)));
+
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_SingleFolder() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Collections.singletonList(
+                        mBookmarkModel.addFolder(
+                                new BookmarkId(7, BookmarkType.NORMAL), 0, "Test")));
+
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_MultipleBookmark() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(
+                        mBookmarkModel.addBookmark(
+                                new BookmarkId(7, BookmarkType.NORMAL),
+                                0,
+                                "Test",
+                                JUnitTestGURLs.EXAMPLE_URL),
+                        mBookmarkModel.addBookmark(
+                                new BookmarkId(7, BookmarkType.NORMAL),
+                                1,
+                                "Test2",
+                                JUnitTestGURLs.EXAMPLE_URL),
+                        mBookmarkModel.addBookmark(
+                                new BookmarkId(7, BookmarkType.NORMAL),
+                                2,
+                                "Test3",
+                                JUnitTestGURLs.EXAMPLE_URL)));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_MultipleFolder() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(
+                        mBookmarkModel.addFolder(
+                                new BookmarkId(7, BookmarkType.NORMAL), 0, "Test1"),
+                        mBookmarkModel.addFolder(
+                                new BookmarkId(7, BookmarkType.NORMAL), 1, "Test2"),
+                        mBookmarkModel.addFolder(
+                                new BookmarkId(7, BookmarkType.NORMAL), 2, "Test3")));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_MixedBookmarkAndFolders() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(
+                        mBookmarkModel.addBookmark(
+                                new BookmarkId(7, BookmarkType.NORMAL),
+                                0,
+                                "Test",
+                                JUnitTestGURLs.EXAMPLE_URL),
+                        mBookmarkModel.addFolder(
+                                new BookmarkId(7, BookmarkType.NORMAL), 1, "Test2")));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_PartnerBookmark() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        mMediator.onSelectionStateChange(
+                Collections.singletonList(
+                        mBookmarkModel.addPartnerBookmarkItem("Test", JUnitTestGURLs.EXAMPLE_URL)));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_ReadingList_AllReadItems() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        BookmarkId readingListItem1 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test1",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem2 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem3 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+
+        mBookmarkModel.setReadStatusForReadingList(readingListItem1, true);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem2, true);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem3, true);
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(readingListItem1, readingListItem2, readingListItem3));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_ReadingList_AllUnreadItems() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        BookmarkId readingListItem1 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test1",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem2 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem3 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+
+        mBookmarkModel.setReadStatusForReadingList(readingListItem1, false);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem2, false);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem3, false);
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(readingListItem1, readingListItem2, readingListItem3));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_ReadingList_MixedReadAndUnreadItems() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        BookmarkId readingListItem1 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test1",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem2 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+        BookmarkId readingListItem3 =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getDefaultReadingListFolder(),
+                        "Test2",
+                        JUnitTestGURLs.EXAMPLE_URL);
+
+        mBookmarkModel.setReadStatusForReadingList(readingListItem1, false);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem2, true);
+        mBookmarkModel.setReadStatusForReadingList(readingListItem3, false);
+
+        mMediator.onSelectionStateChange(
+                Arrays.asList(readingListItem1, readingListItem2, readingListItem3));
+
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
+    }
+
+    @Test
+    public void testSelection_IncognitoEnabledMode() {
+        doReturn(true).when(mSelectionDelegate).isSelectionEnabled();
+        MatcherAssert.assertThat(
+                mModel.getAllSetProperties(),
+                Matchers.not(
+                        Matchers.contains(
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ,
+                                BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD)));
+
+        BookmarkId bookmark =
+                mBookmarkModel.addBookmark(
+                        new BookmarkId(7, BookmarkType.NORMAL),
+                        0,
+                        "Test",
+                        JUnitTestGURLs.EXAMPLE_URL);
+
+        mIncognitoEnabled = true;
+        mMediator.onSelectionStateChange(Collections.singletonList(bookmark));
+        assertTrue(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+
+        mIncognitoEnabled = false;
+        mMediator.onSelectionStateChange(Collections.singletonList(bookmark));
+        assertFalse(mModel.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
     }
 }

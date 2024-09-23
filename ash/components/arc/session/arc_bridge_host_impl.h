@@ -13,8 +13,11 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
@@ -23,6 +26,7 @@ class ArcBridgeService;
 class MojoChannelBase;
 
 // Implementation of the ArcBridgeHost.
+// The ArcBridgeHost also registers in Mojo Service Manager by default.
 // The lifetime of ArcBridgeHost mojo channel is tied to this instance.
 // Also, any ARC related Mojo channel will be closed if ArcBridgeHost Mojo
 // channel is closed on error.
@@ -31,16 +35,19 @@ class MojoChannelBase;
 // the raw pointer to the ArcBridgeService so that other services can access
 // to the pointer, and resets it on channel closing.
 // Note that ArcBridgeService must be alive while ArcBridgeHostImpl is alive.
-class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
+class ArcBridgeHostImpl
+    : public mojom::ArcBridgeHost,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
-  ArcBridgeHostImpl(
-      ArcBridgeService* arc_bridge_service,
-      mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
+  explicit ArcBridgeHostImpl(ArcBridgeService* arc_bridge_service);
 
   ArcBridgeHostImpl(const ArcBridgeHostImpl&) = delete;
   ArcBridgeHostImpl& operator=(const ArcBridgeHostImpl&) = delete;
 
   ~ArcBridgeHostImpl() override;
+
+  void AddReceiver(
+      mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
 
   // ArcBridgeHost overrides.
   void OnAccessibilityHelperInstanceReady(
@@ -56,6 +63,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       override;
   void OnAppfuseInstanceReady(
       mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) override;
+  void OnArcWifiInstanceReady(
+      mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) override;
   void OnAudioInstanceReady(
       mojo::PendingRemote<mojom::AudioInstance> audio_remote) override;
   void OnAuthInstanceReady(
@@ -73,8 +82,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnChromeFeatureFlagsInstanceReady(
       mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
           chrome_feature_flags_remote) override;
-  void OnClipboardInstanceReady(
-      mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) override;
   void OnCompatibilityModeInstanceReady(
       mojo::PendingRemote<mojom::CompatibilityModeInstance>
           compatibility_mode_remote) override;
@@ -84,11 +91,14 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnDigitalGoodsInstanceReady(
       mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote)
       override;
-  void OnDiskQuotaInstanceReady(
-      mojo::PendingRemote<mojom::DiskQuotaInstance> disk_quota_remote) override;
+  void OnDiskSpaceInstanceReady(
+      mojo::PendingRemote<mojom::DiskSpaceInstance> disk_space_remote) override;
   void OnEnterpriseReportingInstanceReady(
       mojo::PendingRemote<mojom::EnterpriseReportingInstance>
           enterprise_reporting_remote) override;
+  void OnErrorNotificationInstanceReady(
+      mojo::PendingRemote<mojom::ErrorNotificationInstance> error_dialog_remote)
+      override;
   void OnFileSystemInstanceReady(mojo::PendingRemote<mojom::FileSystemInstance>
                                      file_system_remote) override;
   void OnIioSensorInstanceReady(
@@ -109,8 +119,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnKeyMintInstanceReady(
       mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote)
       override;
-  void OnKioskInstanceReady(
-      mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;
@@ -149,16 +157,11 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
       override;
   void OnProcessInstanceReady(
       mojo::PendingRemote<mojom::ProcessInstance> process_remote) override;
-  void OnPropertyInstanceReady(
-      mojo::PendingRemote<mojom::PropertyInstance> property_remote) override;
   void OnScreenCaptureInstanceReady(
       mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote)
       override;
   void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
                                      sharesheet_remote) override;
-  void OnStorageManagerInstanceReady(
-      mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
-      override;
   void OnSystemStateInstanceReady(
       mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote)
       override;
@@ -187,6 +190,11 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   size_t GetNumMojoChannelsForTesting() const;
 
  private:
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
+
   // Called when the bridge channel is closed. This typically only happens when
   // the ARC instance crashes.
   void OnClosed();
@@ -205,11 +213,16 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   // Owned by ArcServiceManager.
   const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
-  mojo::Receiver<mojom::ArcBridgeHost> receiver_;
+  // The mojo receiver of service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
+  // The mojo receiver set of ArcBridgeHost.
+  mojo::ReceiverSet<mojom::ArcBridgeHost> receivers_;
 
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
-  std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_;
+  std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_
+      GUARDED_BY_CONTEXT(thread_checker_);
 };
 
 }  // namespace arc

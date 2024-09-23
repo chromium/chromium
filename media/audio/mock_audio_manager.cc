@@ -79,11 +79,6 @@ void MockAudioManager::RemoveOutputDeviceChangeListener(
     AudioDeviceListener* listener) {
 }
 
-AudioParameters MockAudioManager::GetDefaultOutputStreamParameters() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  return default_output_params_;
-}
-
 AudioParameters MockAudioManager::GetOutputStreamParameters(
       const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());

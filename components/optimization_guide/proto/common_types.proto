@@ -35,6 +35,10 @@ enum RequestContext {
   // Requesting metadata for a user when visiting the Page Insights feature;
   // Gaia cannot be attached to request.
   CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB = 12;
+  // Requesting metadata for shopping features. This is used for relevant URLs
+  // (open tabs, bookmarks, etc.) if information is determined to be stale or
+  // has otherwise been flushed from the cache.
+  CONTEXT_SHOPPING = 13;
 }
 
 message FieldTrial {
@@ -94,6 +98,8 @@ message OriginInfo {
 
 // The platform for the user's Chrome on which the request was made.
 enum Platform {
+  reserved 7;
+
   // Undefined is used when the user's platform cannot be resolved.
   PLATFORM_UNDEFINED = 0;
   // Android based platforms.

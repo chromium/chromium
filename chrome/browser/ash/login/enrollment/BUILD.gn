@@ -1,0 +1,168 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("enrollment") {
+  sources = [
+    "auto_enrollment_check_screen.cc",
+    "auto_enrollment_check_screen.h",
+    "auto_enrollment_check_screen_view.h",
+    "enrollment_launcher.cc",
+    "enrollment_launcher.h",
+    "enrollment_screen.cc",
+    "enrollment_screen.h",
+    "enrollment_screen_view.h",
+    "enrollment_uma.cc",
+    "enrollment_uma.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/",
+    "//chrome/browser/ash/login/screens",
+    "//chromeos/ash/components/network",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//net",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ui/ash/login",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/system",
+    "//chromeos/dbus/common",
+    "//components/user_manager",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//third_party/abseil-cpp:absl",
+    "//ui/chromeos",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/",
+    "//chrome/browser/ash/login/demo_mode",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_auto_enrollment_check_screen.cc",
+    "mock_auto_enrollment_check_screen.h",
+    "mock_enrollment_launcher.cc",
+    "mock_enrollment_launcher.h",
+    "mock_enrollment_screen.cc",
+    "mock_enrollment_screen.h",
+  ]
+
+  public_deps = [
+    ":enrollment",
+    "//base",
+    "//google_apis",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/policy/enrollment",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "enrollment_embedded_policy_server_browsertest.cc",
+    "enrollment_screen_browsertest.cc",
+  ]
+
+  deps = [
+    ":enrollment",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/app_mode/test:browser_tests",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos:test_utils",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/system",
+    "//chromeos/dbus/tpm_manager",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
+    "//google_apis",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "enrollment_screen_unittest.cc",
+    "enrollment_uma_unittest.cc",
+  ]
+
+  deps = [
+    ":enrollment",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/screens:test_support",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/policy/enrollment:test_support",
+    "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/network/portal_detector:test_support",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

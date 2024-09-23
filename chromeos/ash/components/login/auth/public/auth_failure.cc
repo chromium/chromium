@@ -72,7 +72,7 @@ const std::string AuthFailure::GetErrorString() const {
       return "Failed to fetch OAuth2 token for recovery service";
     case NONE:
     case NUM_FAILURE_REASONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

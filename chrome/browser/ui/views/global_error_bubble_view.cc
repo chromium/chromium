@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -57,7 +58,10 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
     views::BubbleBorder::Arrow arrow,
     Browser* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error)
-    : BubbleDialogDelegateView(anchor_view, arrow),
+    : BubbleDialogDelegateView(anchor_view,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               /*autosize=*/true),
       error_(error) {
   // error_ is a WeakPtr, but it's always non-null during construction.
   DCHECK(error_);
@@ -67,13 +71,14 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   WidgetDelegate::RegisterWindowClosingCallback(base::BindOnce(
       &GlobalErrorWithStandardBubble::BubbleViewDidClose, error_, browser));
 
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtons(!error_->GetBubbleViewCancelButtonLabel().empty()
-                 ? (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL)
-                 : ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 ? static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                       static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  error_->GetBubbleViewAcceptButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  error_->GetBubbleViewCancelButtonLabel());
 
   // Note that error is already a WeakPtr, so these callbacks will simply do
@@ -121,9 +126,7 @@ void GlobalErrorBubbleView::Init() {
 void GlobalErrorBubbleView::OnWidgetInitialized() {
   views::LabelButton* ok_button = GetOkButton();
   if (ok_button && error_ && error_->ShouldAddElevationIconToAcceptButton()) {
-    elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
-        ok_button, base::BindOnce(&GlobalErrorBubbleView::SizeToContents,
-                                  base::Unretained(this)));
+    elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(ok_button);
   }
 }
 

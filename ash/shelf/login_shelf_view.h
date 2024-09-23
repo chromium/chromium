@@ -136,16 +136,12 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-  const char* GetClassName() const override;
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout(PassKey) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
-
-  gfx::Rect get_button_union_bounds() const { return button_union_bounds_; }
 
   // Test API. Returns true if request was successful (i.e. button was
   // clickable).
@@ -162,6 +158,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Returns scoped object to temporarily block Browse as Guest login button.
   std::unique_ptr<ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker();
+
+  // Returns the button container.
+  views::View* GetButtonContainerByID(ButtonId button_id);
 
   // TrayActionObserver:
   void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;
@@ -238,6 +237,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   bool ShouldShowOsInstallButton() const;
 
+  void SetButtonVisible(ButtonId id, bool visible);
+
   // Helper function which calls `closure` when device display is on. Or if the
   // number of dropped calls exceeds 'kMaxDroppedCallsWhenDisplaysOff'
   void CallIfDisplayIsOn(const base::RepeatingClosure& closure);
@@ -245,6 +246,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // Helper function which calls on_kiosk_menu_shown when kiosk menu is shown.
   void OnKioskMenuShown(const base::RepeatingClosure& on_kiosk_menu_shown);
   void OnKioskMenuclosed();
+
+  void OnAddUserButtonClicked();
 
   OobeDialogState dialog_state_ = OobeDialogState::HIDDEN;
   bool allow_guest_ = true;
@@ -292,11 +295,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // This is used in tests to wait until UI is updated.
   std::unique_ptr<TestUiUpdateDelegate> test_ui_update_delegate_;
-
-  // The bounds of all the buttons that this view is showing. Useful for
-  // letting events that target the "empty space" pass through. These
-  // coordinates are local to the view.
-  gfx::Rect button_union_bounds_;
 
   // Maintains a list of LoginShelfButton children of LoginShelfView.
   std::vector<raw_ptr<LoginShelfButton, VectorExperimental>>

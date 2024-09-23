@@ -13,7 +13,7 @@ namespace autofill {
 ManageMigrationUiController::ManageMigrationUiController(
     content::WebContents* web_contents)
     : content::WebContentsUserData<ManageMigrationUiController>(*web_contents) {
-  // TODO(crbug.com/1419786): Use `ScopedObservation` once the observer has a
+  // TODO(crbug.com/40258491): Use `ScopedObservation` once the observer has a
   // `OnDestroying` method to avoid that the source has dangling references to
   // `this`.
   LocalCardMigrationBubbleControllerImpl::CreateForWebContents(web_contents);

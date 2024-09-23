@@ -41,9 +41,8 @@ export class FilesAlertDialog extends AlertDialog {
   }
 
   override hide(onHide?: VoidCallback) {
-    this.parentNode.close();
-
     super.hide(onHide);
+    this.parentNode.close();
   }
 
   override showWithTitle(

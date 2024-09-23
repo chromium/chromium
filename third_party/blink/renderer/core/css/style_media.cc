@@ -57,8 +57,9 @@ bool StyleMedia::matchMedium(const String& query) const {
   const MediaQuerySet* media = MediaQuerySet::Create(query, DomWindow());
   DCHECK(media);
 
-  MediaQueryEvaluator screen_eval(DomWindow()->GetFrame());
-  return screen_eval.Eval(*media);
+  MediaQueryEvaluator* screen_eval =
+      MakeGarbageCollected<MediaQueryEvaluator>(DomWindow()->GetFrame());
+  return screen_eval->Eval(*media);
 }
 
 void StyleMedia::Trace(Visitor* visitor) const {

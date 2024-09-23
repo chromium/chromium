@@ -13,11 +13,11 @@ class TabStrip;
 //
 // TabStripObserver
 //
-//  Objects implement this interface when they wish to be notified of changes
+//  An object implements this interface when it wishes to be notified of changes
 //  to the TabStrip.
 //
-//  Register your TabStripObserver with the TabStrip using its
-//  Add/RemoveObserver methods.
+//  Register a TabStripObserver with the TabStrip using its SetTabStripObserver
+//  method.
 //
 ////////////////////////////////////////////////////////////////////////////////
 class CHROME_VIEWS_EXPORT TabStripObserver {

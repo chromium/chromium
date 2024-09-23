@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/live_caption/pref_names.h"
@@ -59,12 +58,6 @@ LiveTranslateController::LiveTranslateController(
       profile_prefs_(profile_prefs),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(profile_prefs_);
-  pref_change_registrar_->Add(
-      prefs::kLiveCaptionEnabled,
-      base::BindRepeating(
-          &LiveTranslateController::OnLiveCaptionEnabledChanged,
-          // Unretained is safe because |this| owns |pref_change_registrar_|.
-          base::Unretained(this)));
   pref_change_registrar_->Add(
       prefs::kLiveTranslateEnabled,
       base::BindRepeating(
@@ -214,11 +207,6 @@ void LiveTranslateController::OnResponseJsonParsed(
   if (!error.empty()) {
     LOG(ERROR) << std::move(error);
   }
-}
-
-void LiveTranslateController::OnLiveCaptionEnabledChanged() {
-  if (!profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled))
-    profile_prefs_->SetBoolean(prefs::kLiveTranslateEnabled, false);
 }
 
 void LiveTranslateController::OnLiveTranslateEnabledChanged() {

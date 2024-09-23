@@ -5,7 +5,9 @@
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 
 #include <objbase.h>
+
 #include <shobjidl.h>
+
 #include <wrl/client.h>
 
 #include <memory>

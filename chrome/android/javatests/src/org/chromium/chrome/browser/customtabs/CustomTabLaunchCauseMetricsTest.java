@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -19,7 +20,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -75,8 +75,9 @@ public final class CustomTabLaunchCauseMetricsTest {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.CUSTOM_TAB);
         CustomTabLaunchCauseMetrics metrics = makeLaunchCauseMetrics(false);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         count++;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.CUSTOM_TAB, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
     }
@@ -88,8 +89,9 @@ public final class CustomTabLaunchCauseMetricsTest {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.TWA);
         CustomTabLaunchCauseMetrics metrics = makeLaunchCauseMetrics(true);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         count++;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.TWA, launchCause);
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.TWA));
     }
 
@@ -99,8 +101,9 @@ public final class CustomTabLaunchCauseMetricsTest {
     public void testNoIntent() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
         CustomTabLaunchCauseMetrics metrics = makeLaunchCauseMetrics(true);
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         count++;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.RECENTS, launchCause);
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
     }
 }

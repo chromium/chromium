@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -41,7 +42,11 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
     // was successful.
     virtual void OnPolicyRefreshed(bool success) {}
 
-    virtual ~Observer() {}
+    // Name of the observer for logging purposes.
+    // TODO(b/40915114): Remove once solved.
+    virtual std::string_view name() const = 0;
+
+    virtual ~Observer() = default;
   };
 
   // |client| and |store| must remain valid for the object life time.
@@ -74,7 +79,7 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   void OnStoreLoaded(CloudPolicyStore* store) override;
   void OnStoreError(CloudPolicyStore* store) override;
 
-  void ReportValidationResult(CloudPolicyStore* store);
+  void ReportValidationResult(CloudPolicyStore* store, ValidationAction action);
 
   bool IsInitializationComplete() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

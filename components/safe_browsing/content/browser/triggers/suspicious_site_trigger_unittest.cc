@@ -192,13 +192,7 @@ TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {
   ExpectNoReportRejection();
 }
 
-// crbug.com/1010037: fails on win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SuspiciousHitDuringLoad DISABLED_SuspiciousHitDuringLoad
-#else
-#define MAYBE_SuspiciousHitDuringLoad SuspiciousHitDuringLoad
-#endif
-TEST_F(SuspiciousSiteTriggerTest, MAYBE_SuspiciousHitDuringLoad) {
+TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitDuringLoad) {
   // When a suspicious site is detected in the middle of a page load, a report
   // is created after the page load has finished.
   CreateTrigger(/*monitor_mode=*/false);

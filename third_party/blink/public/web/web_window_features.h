@@ -50,10 +50,9 @@ struct WebWindowFeatures {
 
   bool is_popup = false;
 
-  // True if the new window was requested to be shown fullscreen.
-  // Window management permission must be granted on the opener.
-  // See: https://chromestatus.com/feature/6002307972464640
-  bool is_fullscreen = false;
+  // Whether the created window is a partitioned popin. If true, `is_popup` must
+  // be true. See: https://explainers-by-googlers.github.io/partitioned-popins/
+  bool is_partitioned_popin = false;
 
   // The members above this line are transferred through mojo
   // in the form of |struct WindowFeatures| defined in window_features.mojom,
@@ -62,6 +61,7 @@ struct WebWindowFeatures {
   bool resizable = true;
 
   bool noopener = false;
+  bool explicit_opener = false;
   bool noreferrer = false;
   bool background = false;
   bool persistent = false;

@@ -18,7 +18,6 @@
 
 class Browser;
 class GURL;
-class OldLaunchModeRecorder;
 class PrefRegistrySimple;
 class Profile;
 
@@ -91,7 +90,7 @@ enum class StartupProfileModeReason {
 // - regular profile path for `kBrowserWindow`; if the guest mode is requested,
 //   may contain either the default profile path or the guest profile path
 // - empty profile path for `kProfilePicker` and `kError`
-// TODO(https://crbug.com/1150326): return a guest profile path for the Guest
+// TODO(crbug.com/40157821): return a guest profile path for the Guest
 // mode.
 struct StartupProfilePathInfo {
   base::FilePath path;
@@ -103,9 +102,9 @@ struct StartupProfilePathInfo {
 // - regular profile for `kBrowserWindow`; if the Guest mode is requested,
 //   may contain either the default profile path or the guest profile path
 // - nullptr for `kProfilePicker` and `kError`
-// TODO(https://crbug.com/1150326): return a guest profile for the Guest mode.
+// TODO(crbug.com/40157821): return a guest profile for the Guest mode.
 struct StartupProfileInfo {
-  raw_ptr<Profile> profile;
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile;
   StartupProfileMode mode;
 };
 
@@ -160,20 +159,17 @@ class StartupBrowserCreator {
   // Launches a browser window associated with |profile|. |command_line| should
   // be the command line passed to this process. |cur_dir| can be empty, which
   // implies that the directory of the executable should be used.
-  // |process_startup| indicates whether this is the first browser.
-  // |is_first_run| indicates that this is a new profile.
-  // If |launch_mode_recorder| is non null, and a browser is launched, a launch
-  // mode histogram will be recorded. `restore_tabbed_browser` should only
-  // be flipped false by Ash full restore code path, suppressing restoring a
-  // normal browser when there were only PWAs open in previous session. See
-  // crbug.com/1463906.
+  // `process_startup` indicates whether this is the first browser.
+  // `is_first_run` indicates that this is a new profile.
+  // `restore_tabbed_browser` should only be flipped false by Ash full restore
+  // code path, suppressing restoring a normal browser when there were only PWAs
+  // open in previous session. See crbug.com/1463906.
   void LaunchBrowser(
       const base::CommandLine& command_line,
       Profile* profile,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
       chrome::startup::IsFirstRun is_first_run,
-      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
       bool restore_tabbed_browser);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
@@ -217,7 +213,7 @@ class StartupBrowserCreator {
   friend class StartupBrowserCreatorImpl;
   friend class StartupBrowserCreatorInfobarsTest;
   friend class StartupBrowserCreatorInfobarsWithoutStartupWindowTest;
-  // TODO(crbug.com/642442): Remove this when first_run_tabs gets refactored.
+  // TODO(crbug.com/40482804): Remove this when first_run_tabs gets refactored.
   friend class StartupTabProviderImpl;
   friend class web_app::integration_tests::WebAppIntegrationTestDriver;
   FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);
@@ -324,11 +320,13 @@ bool HasPendingUncleanExit(Profile* profile);
 void AddLaunchedProfile(Profile* profile);
 
 // Returns the path that contains the profile that should be loaded on process
-// startup.
+// startup. This can do blocking operations to check if the profile exists in
+// the case of using --profile-directory and
+// --ignore-profile-directory-if-not-exists together.
 // When the profile picker is shown on startup, this returns the Guest profile
 // path. On Mac, the startup profile path is also used to open URLs at startup,
 // bypassing the profile picker, because the profile picker does not support it.
-// TODO(https://crbug.com/1155158): Remove this parameter once the picker
+// TODO(crbug.com/40159795): Remove this parameter once the picker
 // supports opening URLs.
 StartupProfilePathInfo GetStartupProfilePath(
     const base::FilePath& cur_dir,

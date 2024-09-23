@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.instrumentation">
+    <!-- To write post-test screenshots, coverage data, profiling data. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- To read side-loaded test data (test runtime deps). -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- For @Restriction(RESTRICTION_TYPE_INTERNET). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- For TestAnimations (disabling Android window animations). -->
+    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" tools:ignore="ProtectedPermissions" />
+    <!-- Needed to run tests. -->
+    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+
+    <!-- To avoid scoped storage in Android 10:
+         https://developer.android.com/training/data-storage#scoped-storage
+         https://developer.android.com/training/data-storage/compatibility -->
+    <application android:requestLegacyExternalStorage="true"></application>
+</manifest>

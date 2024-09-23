@@ -10,11 +10,15 @@ assert(is_chrome_branded)
 build_webui("build") {
   grd_prefix = "media_router_feedback"
   static_files = [ "feedback.html" ]
-  web_component_files = [ "cast_feedback_ui.ts" ]
+  non_web_component_files = [
+    "cast_feedback_ui.html.ts",
+    "cast_feedback_ui.ts",
+  ]
+  css_files = [ "cast_feedback_ui.css" ]
 
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
@@ -22,4 +26,5 @@ build_webui("build") {
     "//tools/typescript/definitions/feedback_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
   ]
+  webui_context_type = "trusted"
 }

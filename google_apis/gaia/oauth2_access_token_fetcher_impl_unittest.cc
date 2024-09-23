@@ -385,7 +385,6 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       case GoogleServiceAuthError::NUM_STATES:
         NOTREACHED();
-        return GoogleServiceAuthError::AuthErrorNone();
     }
   }
 };

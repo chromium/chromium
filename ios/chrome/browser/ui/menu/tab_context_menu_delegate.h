@@ -7,9 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
 
 class GURL;
+class TabGroup;
 
 namespace synced_sessions {
 struct DistantSession;
@@ -24,7 +26,7 @@ class WebStateID;
 
 // Tells the delegate to trigger the URL sharing flow for the given `URL` and
 // `title`, with the origin `view` representing the UI component for that URL.
-// TODO(crbug.com/1196956): Investigate removing `view` as a parameter.
+// TODO(crbug.com/40759896): Investigate removing `view` as a parameter.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         scenario:(SharingScenario)scenario
@@ -63,10 +65,34 @@ class WebStateID;
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
                               incognito:(BOOL)incognito;
 
+// Tells the delegate to display the group edition view of the group of the
+// given identifier.
+- (void)editTabGroup:(base::WeakPtr<const TabGroup>)group
+           incognito:(BOOL)incognito;
+
 // Tells the delegate to close the tab with the item identifier `identifier`.
-// `incognito`tracks the incognito state of the tab.
+// `incognito` tracks the incognito state of the tab.
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito;
+
+// Tells the delegate to delete the group. `incognito` tracks the incognito
+// state of the group. `sourceView` is the view that the delete action
+// originated from.
+- (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
+             incognito:(BOOL)incognito
+            sourceView:(UIView*)sourceView;
+
+// Tells the delegate to close the group. `incognito` tracks the incognito state
+// of the group.
+- (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
+            incognito:(BOOL)incognito;
+
+// Tells the delegate to ungroup the `group`. `incognito` tracks the incognito
+// state of the group. `sourceView` is the view that the delete action
+// originated from.
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
+              incognito:(BOOL)incognito
+             sourceView:(UIView*)sourceView;
 
 @end
 

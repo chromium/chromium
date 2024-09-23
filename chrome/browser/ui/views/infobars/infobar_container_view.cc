@@ -22,6 +22,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"
@@ -36,7 +37,8 @@ class ContentShadow : public views::View {
 
  protected:
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 };
 
@@ -45,7 +47,8 @@ ContentShadow::ContentShadow() {
   layer()->SetFillsBoundsOpaquely(false);
 }
 
-gfx::Size ContentShadow::CalculatePreferredSize() const {
+gfx::Size ContentShadow::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(0, views::BubbleBorder::GetBorderAndShadowInsets().height());
 }
 
@@ -76,6 +79,10 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
                                         kColorToolbar);
   SetBackground(
       views::CreateThemedSolidBackground(kColorInfoBarContentAreaSeparator));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 InfoBarContainerView::~InfoBarContainerView() {
@@ -109,13 +116,8 @@ void InfoBarContainerView::Layout(PassKey) {
                              content_shadow_->GetPreferredSize().height());
 }
 
-void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
-}
-
-gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
+gfx::Size InfoBarContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const auto enlarge_size = [this](const gfx::Size& size, const View* child) {
     const gfx::Size child_size = child->GetPreferredSize();
     int add_separator_height =
@@ -148,25 +150,6 @@ void InfoBarContainerView::PlatformSpecificAddInfoBar(
 void InfoBarContainerView::PlatformSpecificRemoveInfoBar(
     infobars::InfoBar* infobar) {
   RemoveChildView(static_cast<InfoBarView*>(infobar));
-}
-
-void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
-    bool is_animating) {
-  // If we just finished animating the removal of the previous top infobar, the
-  // new top infobar should now stop drawing a top separator.  In this case the
-  // previous top infobar is zero-sized but has not yet been removed from the
-  // container, so we'll have at least three children (two infobars and a
-  // shadow), and the new top infobar is child 1.  The conditional below
-  // won't exclude cases where we're adding rather than removing an infobar, but
-  // doing unnecessary work on the second infobar in those cases is harmless.
-  if (!is_animating && children().size() > 2) {
-    // Dropping the separator may change the height.
-    auto* infobar = static_cast<InfoBarView*>(children()[1]);
-    infobar->RecalculateHeight();
-
-    // We need to force a paint whether or not the height actually changed.
-    infobar->SchedulePaint();
-  }
 }
 
 BEGIN_METADATA(InfoBarContainerView)

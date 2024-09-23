@@ -28,7 +28,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="2329392777730037872">Yenqabile ukuvula i-<ph name="URL" /> kwiklayenti.</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2366718077645204424">Ayikwazi ukufinyelela kumsingathi. Lokhu kungenzeka kubangelwe ukulungiselelwa kwenethiwekhi oyisebenzisayo.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Ugcine ukubonwa ku-inthanethi ngo-<ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Nikeza imvume 'yokufinyeleleka' ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ixhumeke ku-<ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Ungathanda ukwabelana ngale khompyutha komunye umsebenzisi ukuthi abone futhi alawule?</translation>
@@ -53,7 +52,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="3423542133075182604">Inqubo yesilawulikude sokhiye wokuphepha</translation>
 <translation id="3581045510967524389">Ayikwazanga ukuxhumeka kunethiwekhi. Sicela uhlole ukuthi idivayisi yakho iku-inthanethi.</translation>
 <translation id="3596628256176442606">Le sevisi inika amandla ukuxhumeka okuzayo kusuka kumaklayenti we-Chromoting.</translation>
-<translation id="369442766917958684">Okungaxhunyiwe kwi-inthanethi.</translation>
 <translation id="3695446226812920698">Funda ukuthi kanjani</translation>
 <translation id="3776024066357219166">Iseshini yakho yedeskithophu ye-Chrome ekude iphelile.</translation>
 <translation id="3858860766373142691">Igama</translation>
@@ -105,7 +103,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="5601503069213153581">Iphinikhodi</translation>
 <translation id="5690427481109656848">I-Google LLC</translation>
 <translation id="5708869785009007625">Ideskithophu yakho okwamanje yabiwa no-<ph name="USER" />.</translation>
-<translation id="5750083143895808682">Ingene ngemvume njengo-<ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Phinda uxhumeke</translation>
 <translation id="5810269635982033450">Isikrini sisebenza nge-trackpad</translation>
 <translation id="5823554426827907568">U-<ph name="CLIENT_USERNAME" /> ucele ukufinyelela ukuze abone isikrini sakho futhi alawule ikhobhodi negundane lakho. Cindezela u-''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' uma ungalindele lesi sicelo. Kungenjalo khetha u-''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ukuvumela uxhumano uma usukulungele.</translation>

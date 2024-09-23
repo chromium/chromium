@@ -8,22 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 
-namespace base {
-
-namespace miracle_parameter {
-
-namespace {
-
-std::string GetFieldTrialParamByFeatureAsString(
-    const base::Feature& feature,
-    const std::string& param_name,
-    const std::string& default_value) {
-  const std::string value =
-      base::GetFieldTrialParamValueByFeature(feature, param_name);
-  return value.empty() ? default_value : value;
-}
-
-}  // namespace
+namespace base::miracle_parameter {
 
 std::string GetParamNameWithSuffix(const std::string& param_name) {
   // `base::SysInfo::AmountOfPhysicalMemoryMB()` refers to CommandLine
@@ -88,6 +73,4 @@ base::TimeDelta GetMiracleParameterAsTimeDelta(const base::Feature& feature,
                                                    default_value));
 }
 
-}  // namespace miracle_parameter
-
-}  // namespace base
+}  // namespace base::miracle_parameter

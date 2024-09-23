@@ -51,15 +51,14 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                                           public display::DisplayObserver {
  public:
   enum GpuInfoRequest {
-    kGpuInfoRequestDxDiag = 1 << 0,
-    kGpuInfoRequestDx12 = 1 << 1,
-    kGpuInfoRequestVulkan = 1 << 2,
-    kGpuInfoRequestDawnInfo = 1 << 3,
-    kGpuInfoRequestDx12Vulkan = kGpuInfoRequestVulkan | kGpuInfoRequestDx12,
-    kGpuInfoRequestVideo = 1 << 4,
-    kGpuInfoRequestAll = kGpuInfoRequestDxDiag | kGpuInfoRequestDx12 |
-                         kGpuInfoRequestVulkan | kGpuInfoRequestDawnInfo |
-                         kGpuInfoRequestVideo,
+    kGpuInfoRequestDirectX = 1 << 0,
+    kGpuInfoRequestVulkan = 1 << 1,
+    kGpuInfoRequestDawnInfo = 1 << 2,
+    kGpuInfoRequestDirectXVulkan =
+        kGpuInfoRequestVulkan | kGpuInfoRequestDirectX,
+    kGpuInfoRequestVideo = 1 << 3,
+    kGpuInfoRequestAll = kGpuInfoRequestDirectX | kGpuInfoRequestVulkan |
+                         kGpuInfoRequestDawnInfo | kGpuInfoRequestVideo,
   };
 
   // Getter for the singleton. This will return NULL on failure.
@@ -72,7 +71,6 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   static bool Initialized();
 
   // GpuDataManager implementation.
-  void BlocklistWebGLForTesting() override;
   gpu::GPUInfo GetGPUInfo() override;
   gpu::GpuFeatureStatus GetFeatureStatus(gpu::GpuFeatureType feature) override;
   bool GpuAccessAllowed(std::string* reason) override;
@@ -90,6 +88,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   bool HardwareAccelerationEnabled() override;
   void AppendGpuCommandLine(base::CommandLine* command_line,
                             GpuProcessKind kind) override;
+  void BlocklistWebGLForTesting() override;
+  void SetSkiaGraphiteEnabledForTesting(bool enabled) override;
 
   // Start a timer that occasionally reports UMA metrics. This is explicitly
   // started because unit tests may create and use a GpuDataManager but they do
@@ -98,7 +98,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void StartUmaTimer();
 
   // Requests complete GPU info if it has not already been requested
-  void RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+  void RequestDx12VulkanVideoGpuInfoIfNeeded(
       GpuDataManagerImpl::GpuInfoRequest request,
       bool delayed);
 
@@ -109,16 +109,15 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
       const gpu::GPUInfo& gpu_info,
       const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
-  void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
-  void UpdateDx12Info(uint32_t d3d12_feature_level);
+  void UpdateDirectXInfo(uint32_t d3d12_feature_level,
+                         uint32_t directml_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);
   void UpdateDevicePerfInfo(const gpu::DevicePerfInfo& device_perf_info);
   void UpdateOverlayInfo(const gpu::OverlayInfo& overlay_info);
   void UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
-  void UpdateDxDiagNodeRequestStatus(bool request_continues);
-  void UpdateDx12RequestStatus(bool request_continues);
+  void UpdateDirectXRequestStatus(bool request_continues);
   void UpdateVulkanRequestStatus(bool request_continues);
-  bool Dx12Requested() const;
+  bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
 #endif
@@ -217,7 +216,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
 
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 

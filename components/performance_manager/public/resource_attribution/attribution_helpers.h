@@ -92,22 +92,18 @@ void SplitResourceAmongFramesAndWorkers(
   }
 
   std::set<const FrameNode*> frame_nodes;
-  process_node->VisitFrameNodes(
-      [&frame_nodes, &nodes_to_skip](const FrameNode* f) {
-        if (!base::Contains(nodes_to_skip, f)) {
-          frame_nodes.insert(f);
-        }
-        return true;
-      });
+  for (const FrameNode* f : process_node->GetFrameNodes()) {
+    if (!base::Contains(nodes_to_skip, f)) {
+      frame_nodes.insert(f);
+    }
+  }
 
   std::set<const WorkerNode*> worker_nodes;
-  process_node->VisitWorkerNodes(
-      [&worker_nodes, &nodes_to_skip](const WorkerNode* w) {
-        if (!base::Contains(nodes_to_skip, w)) {
-          worker_nodes.insert(w);
-        }
-        return true;
-      });
+  for (const WorkerNode* w : process_node->GetWorkerNodes()) {
+    if (!base::Contains(nodes_to_skip, w)) {
+      worker_nodes.insert(w);
+    }
+  }
 
   for (const auto& frame_or_worker : extra_nodes) {
     CHECK(!base::Contains(nodes_to_skip, frame_or_worker));

@@ -30,7 +30,7 @@ bool IsOopifEnabled() {
 
 void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
                                    const std::string& user_agent) {
-  // TODO(crbug.com/1022917): Once ShouldPdfCompositorBeEnabledForOopifs()
+  // TODO(crbug.com/40657857): Once ShouldPdfCompositorBeEnabledForOopifs()
   // always returns true, just remove the check altogether.
   if (site_isolation::SiteIsolationPolicy::
           ShouldPdfCompositorBeEnabledForOopifs()) {

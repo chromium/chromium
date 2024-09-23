@@ -5,17 +5,12 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 #include "components/send_tab_to_self/metrics_util.h"
 
-namespace send_tab_to_self {
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 
-// Static free function declared and called directly from Java.
-static void JNI_MetricsRecorder_RecordSendingEvent(JNIEnv* env,
-                                                   int sending_event) {
-  RecordSendingEvent(ShareEntryPoint::kShareSheet,
-                     static_cast<SendingEvent>(sending_event));
-}
+namespace send_tab_to_self {
 
 // Static free function declared and called directly from Java.
 static void JNI_MetricsRecorder_RecordNotificationShown(JNIEnv* env) {

@@ -101,15 +101,12 @@ void DocumentScannerServiceClient::DetectCornersFromNV12Image(
     std::move(callback).Run(false, {});
     return;
   }
+  auto* callback_id = AddDetectCornersCallback(std::move(callback));
   document_scanner_->DetectCornersFromNV12Image(
       std::move(nv12_image),
       base::BindOnce(
-          [](DetectCornersCallback callback, DetectCornersResultPtr result) {
-            std::move(callback).Run(
-                result->status == DocumentScannerResultStatus::OK,
-                result->corners);
-          },
-          std::move(callback)));
+          &DocumentScannerServiceClient::ConsumeDetectCornersCallback,
+          weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
@@ -121,15 +118,32 @@ void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
     std::move(callback).Run(false, {});
     return;
   }
+  auto* callback_id = AddDetectCornersCallback(std::move(callback));
   document_scanner_->DetectCornersFromJPEGImage(
       std::move(jpeg_image),
       base::BindOnce(
-          [](DetectCornersCallback callback, DetectCornersResultPtr result) {
-            std::move(callback).Run(
-                result->status == DocumentScannerResultStatus::OK,
-                result->corners);
-          },
-          std::move(callback)));
+          &DocumentScannerServiceClient::ConsumeDetectCornersCallback,
+          weak_ptr_factory_.GetWeakPtr(), callback_id));
+}
+
+DocumentScannerServiceClient::DetectCornersCallback*
+DocumentScannerServiceClient::AddDetectCornersCallback(
+    DetectCornersCallback callback) {
+  std::unique_ptr<DetectCornersCallback> detect_callback =
+      std::make_unique<DetectCornersCallback>(std::move(callback));
+  DetectCornersCallback* callback_id = detect_callback.get();
+  detect_corners_callbacks_[callback_id] = std::move(detect_callback);
+  return callback_id;
+}
+
+void DocumentScannerServiceClient::ConsumeDetectCornersCallback(
+    DetectCornersCallback* callback_id,
+    DetectCornersResultPtr result) {
+  std::unique_ptr<DetectCornersCallback> detect_callback =
+      std::move(detect_corners_callbacks_[callback_id]);
+  detect_corners_callbacks_.erase(callback_id);
+  std::move(*detect_callback)
+      .Run(result->status == DocumentScannerResultStatus::OK, result->corners);
 }
 
 void DocumentScannerServiceClient::DoPostProcessing(
@@ -143,16 +157,34 @@ void DocumentScannerServiceClient::DoPostProcessing(
     std::move(callback).Run(false, {});
     return;
   }
+  auto* callback_id = AddDoPostProcessingCallback(std::move(callback));
   document_scanner_->DoPostProcessing(
       std::move(jpeg_image), corners, rotation,
       base::BindOnce(
-          [](DoPostProcessingCallback callback,
-             DoPostProcessingResultPtr result) {
-            std::move(callback).Run(
-                result->status == DocumentScannerResultStatus::OK,
-                result->processed_jpeg_image);
-          },
-          std::move(callback)));
+          &DocumentScannerServiceClient::ConsumeDoPostProcessingCallback,
+          weak_ptr_factory_.GetWeakPtr(), callback_id));
+}
+
+DocumentScannerServiceClient::DoPostProcessingCallback*
+DocumentScannerServiceClient::AddDoPostProcessingCallback(
+    DoPostProcessingCallback callback) {
+  std::unique_ptr<DoPostProcessingCallback> do_post_processing_callback =
+      std::make_unique<DoPostProcessingCallback>(std::move(callback));
+  DoPostProcessingCallback* callback_id = do_post_processing_callback.get();
+  do_post_processing_callbacks_[callback_id] =
+      std::move(do_post_processing_callback);
+  return callback_id;
+}
+
+void DocumentScannerServiceClient::ConsumeDoPostProcessingCallback(
+    DoPostProcessingCallback* callback_id,
+    DoPostProcessingResultPtr result) {
+  std::unique_ptr<DoPostProcessingCallback> do_post_processing_callback =
+      std::move(do_post_processing_callbacks_[callback_id]);
+  do_post_processing_callbacks_.erase(callback_id);
+  std::move(*do_post_processing_callback)
+      .Run(result->status == DocumentScannerResultStatus::OK,
+           result->processed_jpeg_image);
 }
 
 DocumentScannerServiceClient::DocumentScannerServiceClient() {
@@ -164,12 +196,26 @@ void DocumentScannerServiceClient::OnMojoDisconnected() {
 
   ml_service_.reset();
   document_scanner_.reset();
+  CleanupCallbacks();
 
   if (document_scanner_loaded_ == LoadStatus::LOAD_FAILED) {
     return;
   }
   document_scanner_loaded_ = LoadStatus::NOT_LOADED;
   LoadDocumentScanner();
+}
+
+void DocumentScannerServiceClient::CleanupCallbacks() {
+  for (const auto& [_, detect_corners_callback] : detect_corners_callbacks_) {
+    std::move(*detect_corners_callback).Run(false, {});
+  }
+  detect_corners_callbacks_.clear();
+
+  for (const auto& [_, do_post_processing_callback] :
+       do_post_processing_callbacks_) {
+    std::move(*do_post_processing_callback).Run(false, {});
+  }
+  do_post_processing_callbacks_.clear();
 }
 
 void DocumentScannerServiceClient::LoadDocumentScanner() {

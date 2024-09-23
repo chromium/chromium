@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertDeepEquals, assertEquals, assertGE, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {assertFilenamesToBe, assertFilesLoaded, assertFilesToBe, assertMatch, assertSingleFileLaunch, createMockTestDirectory, FakeFileSystemFileHandle, fileToFileHandle, getFileErrors, getLoadedFiles, GuestDriver, launchWithFiles, launchWithFocusFile, launchWithHandles, loadFilesWithoutSendingToGuest, runTestInGuest, sendTestMessage, simulateLosingAccessToDirectory} from './driver.js';
 import {FileSnapshot} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';

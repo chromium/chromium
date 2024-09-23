@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -286,7 +287,7 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
   // Valid device description ptr and skip cache.
   size_t cache_num = 256;
   for (size_t i = 0; i < cache_num; i++) {
-    AddToCache(std::to_string(i), ParsedDialDeviceDescription(),
+    AddToCache(base::NumberToString(i), ParsedDialDeviceDescription(),
                false /* expired */);
   }
 

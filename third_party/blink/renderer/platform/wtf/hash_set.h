@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -71,12 +72,7 @@ class HashSet {
       const_iterator;
   typedef typename HashTableType::AddResult AddResult;
 
-  HashSet() {
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<ValueArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
-  }
+  HashSet() = default;
   HashSet(const HashSet&) = default;
   HashSet& operator=(const HashSet&) = default;
   HashSet(HashSet&&) = default;
@@ -155,6 +151,17 @@ class HashSet {
 
  private:
   HashTableType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<ValueArg>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<ValueArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 struct IdentityExtractor {

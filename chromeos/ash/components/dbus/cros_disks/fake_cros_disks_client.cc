@@ -104,7 +104,7 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
       }
       break;
     case MountType::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   mounted_paths_.insert(mounted_path);

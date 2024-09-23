@@ -29,6 +29,7 @@ CreateSystemTextfieldInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView> CreatePaginationInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView> CreateTypographyInstancesGridView();
 std::unique_ptr<SystemUIComponentsGridView> CreateComboboxInstancesGridView();
+std::unique_ptr<SystemUIComponentsGridView> CreateCutoutsGridView();
 
 }  // namespace ash
 

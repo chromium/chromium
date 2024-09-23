@@ -7,12 +7,14 @@
 #include <jni.h>
 #include <sstream>
 
-#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolateCallback_jni.h"
-#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolateFdCallback_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolateCallback_jni.h"
+#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolateFdCallback_jni.h"
 
 namespace android_webview {
 

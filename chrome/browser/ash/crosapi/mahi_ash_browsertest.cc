@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -55,7 +55,7 @@ class FakeMahiBrowserCppClient : public mojom::MahiBrowserClient {
 
 // Calls all crosapi::mojom::Mahi methods over mojo.
 void CallMahiBrowserDelegateMethods(FakeMahiBrowserMojoClient& client) {
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future1;
   crosapi::mojom::MahiPageInfoPtr page_info =
       crosapi::mojom::MahiPageInfo::New();
   page_info->client_id = base::UnguessableToken::Create();
@@ -63,51 +63,39 @@ void CallMahiBrowserDelegateMethods(FakeMahiBrowserMojoClient& client) {
   page_info->url = GURL();
   page_info->title = u"";
 
-  client.remote_->OnFocusedPageChanged(
-      std::move(page_info), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+  client.remote_->OnFocusedPageChanged(std::move(page_info),
+                                       future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
 
-  base::RunLoop run_loop2;
+  base::test::TestFuture<bool> future2;
   crosapi::mojom::MahiContextMenuRequestPtr request =
       crosapi::mojom::MahiContextMenuRequest::New();
-  client.remote_->OnContextMenuClicked(
-      std::move(request), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop2.Quit();
-      }));
-  run_loop2.Run();
+  client.remote_->OnContextMenuClicked(std::move(request),
+                                       future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 }
 
 // Calls all crosapi::mojom::Mahi methods directly.
 void CallMahiBrowserDelegateMethods(
     FakeMahiBrowserCppClient& client,
     ash::MahiBrowserDelegateAsh* mahi_browser_delegate) {
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future1;
   auto page_info = crosapi::mojom::MahiPageInfo::New();
   page_info->client_id = base::UnguessableToken::Create();
   page_info->page_id = base::UnguessableToken::Create();
   page_info->url = GURL();
   page_info->title = u"";
 
-  mahi_browser_delegate->OnFocusedPageChanged(
-      std::move(page_info), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+  mahi_browser_delegate->OnFocusedPageChanged(std::move(page_info),
+                                              future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
 
-  base::RunLoop run_loop2;
+  base::test::TestFuture<bool> future2;
   crosapi::mojom::MahiContextMenuRequestPtr request =
       crosapi::mojom::MahiContextMenuRequest::New();
-  mahi_browser_delegate->OnContextMenuClicked(
-      std::move(request), base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop2.Quit();
-      }));
-  run_loop2.Run();
+  mahi_browser_delegate->OnContextMenuClicked(std::move(request),
+                                              future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 }
 
 class MahiAshBrowserTest : public InProcessBrowserTest {
@@ -135,14 +123,11 @@ IN_PROC_BROWSER_TEST_F(MahiAshBrowserTest, Basics) {
     mahi_browser_delegate->BindReceiver(
         mojo_client1.remote_.BindNewPipeAndPassReceiver());
 
-    base::RunLoop run_loop1;
+    base::test::TestFuture<bool> future1;
     mojo_client1.remote_->RegisterMojoClient(
         mojo_client1.receiver_.BindNewPipeAndPassRemote(), mojo_client1.id_,
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop1.Quit();
-        }));
-    run_loop1.Run();
+        future1.GetCallback());
+    EXPECT_TRUE(future1.Take());
 
     FakeMahiBrowserCppClient cpp_client1;
     mahi_browser_delegate->RegisterCppClient(&cpp_client1, mojo_client1.id_);
@@ -157,14 +142,11 @@ IN_PROC_BROWSER_TEST_F(MahiAshBrowserTest, Basics) {
   mahi_browser_delegate->BindReceiver(
       mojo_client2.remote_.BindNewPipeAndPassReceiver());
 
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future2;
   mojo_client2.remote_->RegisterMojoClient(
       mojo_client2.receiver_.BindNewPipeAndPassRemote(), mojo_client2.id_,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+      future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 
   FakeMahiBrowserCppClient cpp_client2;
   mahi_browser_delegate->RegisterCppClient(&cpp_client2, mojo_client2.id_);

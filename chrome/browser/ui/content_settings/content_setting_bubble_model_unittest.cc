@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -13,16 +15,18 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
-#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -34,9 +38,11 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -50,26 +56,25 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
 using custom_handlers::ProtocolHandler;
 using testing::Pair;
+using testing::Return;
 using testing::UnorderedElementsAre;
 using ContentSettingBubbleAction =
     ContentSettingBubbleModel::ContentSettingBubbleAction;
@@ -81,8 +86,7 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
@@ -90,8 +94,9 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
   }
 };
 
@@ -115,49 +120,93 @@ TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
   EXPECT_FALSE(bubble_content.manage_text.empty());
 }
 
-TEST_F(ContentSettingBubbleModelTest, Cookies) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
-
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
-  std::u16string title = bubble_content.title;
-  EXPECT_FALSE(title.empty());
-  ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
+void VerifyBubbleContent(
+    ContentSetting site_setting,
+    const ContentSettingBubbleModel::BubbleContent& bubble_content) {
+  EXPECT_FALSE(bubble_content.title.empty());
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2u);
+  if (site_setting == CONTENT_SETTING_BLOCK) {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_UNBLOCK));
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[1],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_TITLE));
+  } else {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+              l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
+    EXPECT_EQ(
+        bubble_content.title,
+        l10n_util::GetStringUTF16(IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE));
+  }
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-
-  WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-  content_settings = PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
-  content_setting_bubble_model =
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES);
-  const ContentSettingBubbleModel::BubbleContent& bubble_content_2 =
-      content_setting_bubble_model->bubble_content();
-
-  EXPECT_FALSE(bubble_content_2.title.empty());
-  EXPECT_NE(title, bubble_content_2.title);
-  ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_EQ(
-      bubble_content_2.radio_group.radio_items[0],
-      l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
-  EXPECT_EQ(bubble_content_2.radio_group.radio_items[1],
-            l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
-  EXPECT_TRUE(bubble_content_2.custom_link.empty());
-  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
-  EXPECT_FALSE(bubble_content_2.manage_text.empty());
 }
+
+TEST_F(ContentSettingBubbleModelTest,
+       CookiesContentSettingReflectedWhenCookiesBlocked) {
+  const std::string url = "https://www.example.com";
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      CONTENT_SETTING_BLOCK,
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::COOKIES)
+          ->bubble_content());
+}
+
+class CookiesContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest,
+      public testing::WithParamInterface<
+          std::tuple<ContentSetting, ContentSetting>> {};
+
+TEST_P(CookiesContentSettingBubbleModelTest,
+       BubbleShowsSiteSettingWhenDifferentFromDefaultSetting) {
+  const std::string url = "https://www.example.com";
+  ContentSetting site_setting = std::get<1>(GetParam());
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(std::get<0>(GetParam()));
+  cookie_settings->SetCookieSetting(GURL(url), site_setting);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Even if cookies are blocked on the 1P site, it's still possible for
+  // OnContentAllowed() to be called due to 3PC being allowed by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+
+  // Even if cookies are allowed on the 1P site, it's still possible for
+  // OnContentBlocked() to be called due to 3PC being blocked by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CookiesContentSettingBubbleModelTests,
+    CookiesContentSettingBubbleModelTest,
+    testing::Values(
+        std::make_tuple(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
+        std::make_tuple(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW)));
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
@@ -340,6 +389,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -403,6 +458,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -467,6 +528,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -527,14 +594,44 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(0, new_bubble_content.radio_group.default_item);
 }
 
-TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  auto fake_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  device::FakeGeolocationManager* geolocation_manager =
-      fake_geolocation_manager.get();
-  device::GeolocationManager::SetInstance(std::move(fake_geolocation_manager));
-#endif  // BUILDFLAG(IS_MAC)
+// Enable geolocation bubble tests to be run with OS-level permission
+// integration enabled or disabled on platforms where support is toggleable.
+class ContentSettingGeolocationBubbleModelTest
+    : public ContentSettingBubbleModelTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    ContentSettingBubbleModelTest::SetUp();
+#if BUILDFLAG(IS_WIN)
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kWinSystemLocationPermission}, {});
+    }
+#endif  // BUILDFLAG(IS_WIN)
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+
+  // This parameter is meaningful only on Windows, where geolocation permissions
+  // are controlled by the 'features::kWinSystemLocationPermission' feature.
+  // If the feature is disabled (GetParam() returns false), the location system
+  // permission is expected to be always allowed.
+  const bool is_os_level_geolocation_permission_support_enabled = GetParam();
+  if (is_os_level_geolocation_permission_support_enabled) {
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(false));
+  } else {
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(true));
+  }
 
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
@@ -549,9 +646,9 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   // System-level geolocation permission is blocked.
-  {
+  if (is_os_level_geolocation_permission_support_enabled) {
     auto content_setting_bubble_model =
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
                                                                web_contents());
@@ -559,12 +656,9 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#else
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+              u"Location is turned off in system settings");
 #endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
@@ -575,7 +669,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
 
   // System-level geolocation permission is blocked, but allowed while the
   // bubble is visible. The displayed message should not change.
-  {
+  if (is_os_level_geolocation_permission_support_enabled) {
     auto content_setting_bubble_model =
         std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
                                                                web_contents());
@@ -583,15 +677,13 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-    geolocation_manager->SetSystemPermission(
-        device::LocationSystemPermissionStatus::kAllowed);
+    EXPECT_CALL(mock_platform_handle,
+                IsAllowed(ContentSettingsType::GEOLOCATION))
+        .WillRepeatedly(Return(true));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#else
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+              u"Location is turned off in system settings");
 #endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
@@ -599,7 +691,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     // This should be a no-op.
     content_setting_bubble_model->CommitChanges();
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
   // Go from allow by default to block by default to allow by default.
   {
@@ -817,6 +909,15 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(ContentSettingGeolocationBubbleModelTests,
+                         ContentSettingGeolocationBubbleModelTest,
+#if BUILDFLAG(IS_WIN)
+                         testing::Values(false, true)
+#else
+                         testing::Values(true)
+#endif
+);
+
 TEST_F(ContentSettingBubbleModelTest, FileURL) {
   std::string file_url("file:///tmp/test.html");
   NavigateAndCommit(GURL(file_url));
@@ -834,25 +935,33 @@ TEST_F(ContentSettingBubbleModelTest, FileURL) {
 #if !BUILDFLAG(IS_ANDROID)
 class ContentSettingBubbleModelIsolatedWebAppTest
     : public ContentSettingBubbleModelTest {
- protected:
-  void InstallIsolatedWebApp(const std::string& app_name, const GURL& url) {
+ public:
+  void SetUp() override {
+    ContentSettingBubbleModelTest::SetUp();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    web_app::AddDummyIsolatedAppToRegistry(profile(), url, app_name);
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-#include "chrome/browser/web_applications/web_app_provider.h"
 TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
   const std::string app_name("Test IWA Name");
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> iwa =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().SetName(app_name))
+          .BuildBundle();
+  iwa->TrustSigningKey();
+  iwa->FakeInstallPageState(profile());
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       iwa->Install(profile()));
+  web_app::SimulateIsolatedWebAppNavigation(web_contents(),
+                                            url_info.origin().GetURL());
 
-  InstallIsolatedWebApp(app_name, app_url);
-  NavigateAndCommit(app_url);
   PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame())
       ->OnContentBlocked(ContentSettingsType::IMAGES);
+
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           nullptr, web_contents(), ContentSettingsType::IMAGES));
@@ -865,7 +974,7 @@ TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
           "mailto", GURL("https://www.toplevel.example/")));
 
@@ -892,8 +1001,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
@@ -960,8 +1068,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);

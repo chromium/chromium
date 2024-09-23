@@ -28,11 +28,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_MIME_MIME_TYPE_FROM_URL_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
-PLATFORM_EXPORT String MimeTypeFromDataURL(const String& url);
+PLATFORM_EXPORT WTF::String MimeTypeFromDataURL(const WTF::String& url);
 
 }  // namespace blink
 

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/dns/host_resolver_cache.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <optional>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "net/dns/host_resolver_cache.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"

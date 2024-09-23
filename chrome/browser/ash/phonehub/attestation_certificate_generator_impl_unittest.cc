@@ -190,4 +190,17 @@ TEST_F(AttestationCertificateGeneratorImplTest, RetryInvalidCerts) {
   EXPECT_EQ(*certs_, second_valid_certs_);
 }
 
+TEST_F(AttestationCertificateGeneratorImplTest, RegenerateAfterExpiration) {
+  Initialize(invalid_certs_);
+
+  mock_attestation_flow_->SetCertificates(second_valid_certs_);
+  attestation_certificate_generator_impl_->last_attestation_completed_time_ =
+      base::Time::NowFromSystemTime() - base::Hours(25);
+  wait_loop_ = std::make_unique<base::RunLoop>();
+  attestation_certificate_generator_impl_->RetrieveCertificate();
+  wait_loop_->Run();
+  EXPECT_TRUE(is_valid_);
+  EXPECT_EQ(*certs_, second_valid_certs_);
+}
+
 }  // namespace ash::phonehub

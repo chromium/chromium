@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/host/ash_window_tree_host_unified.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <tuple>
@@ -13,8 +12,10 @@
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -44,8 +45,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED() << "event type:" << event->type();
-      return aura::WindowTargeter::FindTargetForEvent(root, event);
+      NOTREACHED() << "event type:" << base::to_underlying(event->type());
     }
   }
   ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,
@@ -79,6 +79,8 @@ AshWindowTreeHostUnified::AshWindowTreeHostUnified(
           compositor_memory_limit_mb) {
   ui::StubWindow* stub_window = static_cast<ui::StubWindow*>(platform_window());
   stub_window->InitDelegate(this, true);
+  // TODO(b/356098565): Remove the log once the issue is fixed.
+  LOG(ERROR) << "Creating Unified Desktop bounds=" << initial_bounds.ToString();
 }
 
 AshWindowTreeHostUnified::~AshWindowTreeHostUnified() {

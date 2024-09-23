@@ -1,0 +1,4 @@
+simple-std-insert.cpp:26:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;
+   ^
+1 error generated.

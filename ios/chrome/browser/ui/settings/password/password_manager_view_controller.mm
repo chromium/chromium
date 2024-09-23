@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 
 #import <UIKit/UIKit.h>
 
@@ -35,8 +34,9 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -59,9 +59,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
@@ -139,7 +138,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-// TODO(crbug.com/1426463): Remove when CredentialUIEntry operator== is fixed.
+// TODO(crbug.com/40261300): Remove when CredentialUIEntry operator== is fixed.
 template <typename T>
 bool AreNotesEqual(const T& lhs, const T& rhs) {
   return base::ranges::equal(lhs, rhs, {},
@@ -254,6 +253,14 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // The item used to present the Password Manager widget promo.
 @property(nonatomic, readonly) InlinePromoItem* widgetPromoItem;
 
+// Deleting passwords updates the SavedPasswordsPresenter, resulting in an
+// observer callback, which handles general data updates with a `reloadData`.
+// Visually, it is better to handle user-initiated changes with more specific
+// actions such as inserting or removing items/sections, instead of waiting on a
+// data reload. This boolean is used to stop the observer callback from acting
+// on user-initiated changes.
+@property(nonatomic, readwrite, assign) BOOL deletionInProgress;
+
 @end
 
 @implementation PasswordManagerViewController {
@@ -270,6 +277,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Boolean indicating if password forms have been received for the first time.
   // Used to show a loading indicator while waiting for the store response.
   BOOL _didReceivePasswords;
+  // Whether -viewDidAppear was called.
+  BOOL _hasViewAppeared;
   // Whether the table view is in search mode. That is, it only has the search
   // bar potentially saved passwords and blocked sites.
   BOOL _tableIsInSearchMode;
@@ -320,9 +329,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_accountManagerServiceObserver.get());
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!_accountManagerServiceObserver.get());
 }
 
 - (void)setReauthenticationModule:
@@ -397,18 +406,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  if (_shouldOpenInSearchMode) {
-    // Queue search bar focus so the keyboard animation doesn't collide with
-    // other animations.
-    __weak __typeof(self.searchController.searchBar) weakSearchBar =
-        self.searchController.searchBar;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSearchBar becomeFirstResponder];
-        }));
-
-    _shouldOpenInSearchMode = NO;
-  }
+  _hasViewAppeared = YES;
+  [self maybeFocusSearchBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -443,20 +442,27 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+  BOOL viewWasInEditMode = self.editing;
   [super setEditing:editing animated:animated];
+
+  // The UI needs to be updated only when we are switching between editing
+  // states (i.e. no-edit -> edit and edit -> no-edit). Updating the UI using
+  // batchUpdate (or equivalent) when the view is already in edit mode, causes
+  // the view to forcibly exit edit mode.
+  if (viewWasInEditMode == editing) {
+    return;
+  }
+
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self setWidgetPromoItemEnabled:!editing];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
-  [self reconfigurePasswordCheckSectionCellsWithState:self.passwordCheckState];
   [self setAddPasswordButtonEnabled:!editing];
-
-  //  We want to update the toolbar only if the current view is the Password
-  //  Manager.
   if ([self.navigationController.topViewController
           isKindOfClass:[PasswordManagerViewController class]]) {
     [self updateUIForEditState];
   }
+  [self reconfigurePasswordCheckSectionCellsWithState:self.passwordCheckState];
 }
 
 - (BOOL)hasPasswords {
@@ -684,7 +690,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 
   _widgetPromoItem = [[InlinePromoItem alloc] initWithType:ItemTypeWidgetPromo];
-  _widgetPromoItem.promoImage = [UIImage imageNamed:kWidgetPromoImageName];
+  _widgetPromoItem.promoImage = [UIImage imageNamed:WidgetPromoImageName()];
   _widgetPromoItem.promoText =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT);
   _widgetPromoItem.moreInfoButtonTitle = l10n_util::GetNSString(
@@ -858,6 +864,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                blockedSites:
                    (const std::vector<password_manager::CredentialUIEntry>&)
                        blockedSites {
+  if (self.deletionInProgress) {
+    return;
+  }
+
   if (!_didReceivePasswords) {
     _blockedSites = blockedSites;
     _affiliatedGroups = affiliatedGroups;
@@ -884,6 +894,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)updatePasswordManagerUI {
   if ([self shouldShowEmptyStateView]) {
+    // Force UI update, as setting table view's editing state to disabled might
+    // not update the UI.
+    [self updateUIForEditState];
     [self setEditing:NO animated:YES];
     [self reloadData];
     return;
@@ -1404,6 +1417,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self focusAccessibilityOnPasswordCheckStatus];
     self.checkWasTriggeredManually = NO;
   }
+
+  // Apply the changes to the "Password Check" cell.
+  [self reconfigureCellsForItems:@[ self.passwordProblemsItem ]];
 }
 
 // Enables or disables the `widgetPromoItem`.
@@ -1414,8 +1430,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
   self.widgetPromoItem.enabled = enabled;
   self.widgetPromoItem.promoImage =
-      [UIImage imageNamed:enabled ? kWidgetPromoImageName
-                                  : kWidgetPromoDisabledImageName];
+      [UIImage imageNamed:enabled ? WidgetPromoImageName()
+                                  : WidgetPromoDisabledImageName()];
   [self reconfigureCellsForItems:@[ self.widgetPromoItem ]];
 }
 
@@ -1458,6 +1474,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  self.deletionInProgress = YES;
+
   std::vector<password_manager::CredentialUIEntry> credentialsToDelete;
   for (NSIndexPath* indexPath in indexPaths) {
     // Only form items are editable.
@@ -1534,8 +1552,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           [strongSelf reloadData];
         }
         [strongSelf updateUIForEditState];
+        strongSelf.deletionInProgress = NO;
       }];
-
   [self.delegate deleteCredentials:credentialsToDelete];
 }
 
@@ -1683,6 +1701,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (bool)allowsAddPassword {
+  if (!self.prefService) {
+    return NO;
+  }
   // If the settings are managed by enterprise policy and the password manager
   // is not enabled, there won't be any add functionality.
   const char* prefName = password_manager::prefs::kCredentialsEnableService;
@@ -1698,10 +1719,36 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       password_manager::CreatePasswordManagerTitleView(/*title=*/self.title);
 }
 
+// Don't focus the searchBar before the view has loaded or if the empty state
+// view is displayed. It's possible for the view to load before the model or
+// vice versa.
+- (void)maybeFocusSearchBar {
+  if ([self shouldShowEmptyStateView]) {
+    return;
+  }
+
+  if (!_hasViewAppeared) {
+    return;
+  }
+
+  if (_shouldOpenInSearchMode) {
+    // Queue search bar focus so the keyboard animation doesn't collide with
+    // other animations.
+    __weak __typeof(self.searchController.searchBar) weakSearchBar =
+        self.searchController.searchBar;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSearchBar becomeFirstResponder];
+        }));
+
+    _shouldOpenInSearchMode = NO;
+  }
+}
+
 // Shows the empty state view when there is no content to display in the
 // tableView, otherwise hides the empty state view if one is being displayed.
 - (void)showOrHideEmptyView {
-  if (![self hasPasswords] && _blockedSites.empty()) {
+  if ([self shouldShowEmptyStateView]) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE);
 
@@ -1728,6 +1775,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self removeEmptyTableView];
     self.navigationItem.searchController = self.searchController;
     self.tableView.alwaysBounceVertical = YES;
+    [self maybeFocusSearchBar];
   }
 }
 
@@ -1779,41 +1827,45 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
   [self.tableView
       performBatchUpdates:^{
-        if (self.passwordProblemsItem) {
-          [self reconfigureCellsForItems:@[ self.passwordProblemsItem ]];
+        if (weakSelf.passwordProblemsItem) {
+          [weakSelf
+              reconfigureCellsForItems:@[ weakSelf.passwordProblemsItem ]];
           // When in safe state, a custom accessibility label needs to be set
           // for the Password Checkup cell.
           if (state == PasswordCheckStateSafe) {
-            [self setPasswordProblemsItemAccessibilityLabelForSafeState];
+            [weakSelf setPasswordProblemsItemAccessibilityLabelForSafeState];
           }
         }
-        if (self.checkForProblemsItem) {
-          BOOL checkForProblemsItemIsInModel = [self.tableViewModel
+        if (weakSelf.checkForProblemsItem) {
+          BOOL checkForProblemsItemIsInModel = [weakSelf.tableViewModel
               hasItemForItemType:ItemTypeCheckForProblemsButton
                sectionIdentifier:SectionIdentifierPasswordCheck];
           // Check if the check button should be removed from the table view.
-          if (!self.shouldShowCheckButton && checkForProblemsItemIsInModel) {
-            [self.tableView
-                deleteRowsAtIndexPaths:@[ [self checkButtonIndexPath] ]
+          if (!weakSelf.shouldShowCheckButton &&
+              checkForProblemsItemIsInModel) {
+            NSIndexPath* checkButtonIndexPath = [weakSelf checkButtonIndexPath];
+            [weakSelf
+                removeFromModelItemAtIndexPaths:@[ checkButtonIndexPath ]];
+            [weakSelf.tableView
+                deleteRowsAtIndexPaths:@[ checkButtonIndexPath ]
                       withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self.tableViewModel
-                       removeItemWithType:ItemTypeCheckForProblemsButton
-                fromSectionWithIdentifier:SectionIdentifierPasswordCheck];
-          } else if (self.shouldShowCheckButton) {
-            [self reconfigureCellsForItems:@[ self.checkForProblemsItem ]];
+          } else if (weakSelf.shouldShowCheckButton) {
+            [weakSelf
+                reconfigureCellsForItems:@[ weakSelf.checkForProblemsItem ]];
             // Check if the check button should be added to the table view.
             if (!checkForProblemsItemIsInModel) {
-              [self.tableViewModel addItem:self.checkForProblemsItem
-                   toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-              [self.tableView
-                  insertRowsAtIndexPaths:@[ [self checkButtonIndexPath] ]
+              [weakSelf.tableViewModel addItem:weakSelf.checkForProblemsItem
+                       toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+              [weakSelf.tableView
+                  insertRowsAtIndexPaths:@[ [weakSelf checkButtonIndexPath] ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
             }
           }
         }
-        [self.tableView layoutIfNeeded];
+        [weakSelf.tableView layoutIfNeeded];
       }
                completion:nil];
 }
@@ -1881,31 +1933,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
-      TableViewItem* item = [model itemAtIndexPath:indexPath];
-
-      if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-        [self showDetailedViewPageForItem:item];
-      } else if ([self.reauthenticationModule canAttemptReauth]) {
-        void (^showPasswordDetailsHandler)(ReauthenticationResult) =
-            ^(ReauthenticationResult result) {
-              if (result == ReauthenticationResult::kFailure) {
-                return;
-              }
-
-              [self showDetailedViewPageForItem:item];
-            };
-
-        [self.reauthenticationModule
-            attemptReauthWithLocalizedReason:
-                l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_SHOW)
-                        canReusePreviousAuth:YES
-                                     handler:showPasswordDetailsHandler];
-      } else {
-        DCHECK(self.handler);
-        [self.handler showSetupPasscodeDialog];
-      }
-
+      [self showDetailedViewPageForItem:[model itemAtIndexPath:indexPath]];
       break;
     }
     case ItemTypeBlocked: {
@@ -1935,7 +1963,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeLinkHeader:
     case ItemTypeHeader:
     case ItemTypeWidgetPromo:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -2013,7 +2041,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self deleteItemAtIndexPaths:@[ indexPath ]];
 }
 
-// TODO(crbug.com/1486507): Stop downcasting cells to configure them.
+// TODO(crbug.com/40282917): Stop downcasting cells to configure them.
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView

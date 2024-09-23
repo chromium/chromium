@@ -103,7 +103,8 @@ TEST_F(DisplayPortObserverTest, OnNoDisplayConnected) {
   auto display_state = CreateDisplaySnapshot(236, temp_dir_);
   display_states.push_back(display_state.get());
 
-  display_port_observer_->OnDisplayModeChanged(std::move(display_states));
+  display_port_observer_->OnDisplayConfigurationChanged(
+      std::move(display_states));
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(cached_port_nums_.empty());
@@ -127,7 +128,8 @@ TEST_F(DisplayPortObserverTest, OnMultipleDisplaysConnected) {
   auto display_state3 = CreateDisplaySnapshot(275, temp_dir_);
   display_states.push_back(display_state3.get());
 
-  display_port_observer_->OnDisplayModeChanged(std::move(display_states));
+  display_port_observer_->OnDisplayConfigurationChanged(
+      std::move(display_states));
   task_environment_.RunUntilIdle();
 
   const std::vector<uint32_t> kExpectedPortNums{0, 0, 2};

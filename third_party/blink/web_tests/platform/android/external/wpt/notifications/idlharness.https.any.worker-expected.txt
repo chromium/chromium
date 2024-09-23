@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'Notification': Illegal constructor. Use ServiceWorkerRegistration.showNotification() instead."
+[FAIL] Notification must be primary interface of notification
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Stringification of notification
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "permission" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must not have property "requestPermission"
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "maxActions" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onclick" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onshow" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onerror" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "onclose" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "title" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "dir" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "lang" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "body" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "tag" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "image" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "icon" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "badge" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "vibrate" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "timestamp" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "renotify" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "silent" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "requireInteraction" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "data" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "actions" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+[FAIL] Notification interface: notification must inherit property "close()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: notification is not defined"
+Harness: the test ran to completion.

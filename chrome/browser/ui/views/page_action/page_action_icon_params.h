@@ -30,7 +30,7 @@ struct PageActionIconParams {
   std::vector<PageActionIconType> types_enabled;
 
   // Leaving these params unset will leave the icon default values untouched.
-  // TODO(crbug.com/1061634): Make these fields non-optional.
+  // TODO(crbug.com/40679715): Make these fields non-optional.
   std::optional<SkColor> icon_color;
   raw_ptr<const gfx::FontList> font_list = nullptr;
 

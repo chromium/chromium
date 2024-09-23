@@ -48,7 +48,7 @@ gfx::NativeViewId ScreenCaptureNotificationUILacros::OnStarted(
                 if (*button_index == 0) {
                   controller->ProcessStopRequestFromNotification();
                 } else {
-                  NOTREACHED();
+                  NOTREACHED_IN_MIGRATION();
                 }
               },
               weak_ptr_factory_.GetWeakPtr()));

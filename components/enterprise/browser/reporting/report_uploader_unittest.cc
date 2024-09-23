@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/enterprise/browser/reporting/report_uploader.h"
 
 #include <utility>
@@ -144,7 +149,7 @@ class ReportUploaderTestWithReportType
   ReportType GetReportType() override { return GetParam(); }
 };
 
-// TODO(crbug/643760) This death test does not work on Android.
+// TODO(crbug.com/40483507) This death test does not work on Android.
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
   CreateUploader(/* retry_count = */ 1);

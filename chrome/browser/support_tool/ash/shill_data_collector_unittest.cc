@@ -130,12 +130,13 @@ const PIIMap kPIIInTestData = {
      {"100.0.0.1", "100.0.0.2", "0:0:0:0:100:0:0:1"}},
     {redaction::PIIType::kURL, {"http://wpad.com/wpad.dat"}},
     {redaction::PIIType::kSSID,
-     {"\"7769666931\"\n", "stub_wifi_device1", "wifi1"}}};
+     {"\"7769666931\"\n", "stub_wifi_device1", "wifi1"}},
+    {redaction::PIIType::kMACAddress, {"0123456789ab", "23456789abcd"}}};
 
 // Types of all PII data contained in the test data
 const std::set<redaction::PIIType> kAllPIITypesInData = {
     redaction::PIIType::kIPAddress, redaction::PIIType::kURL,
-    redaction::PIIType::kSSID};
+    redaction::PIIType::kSSID, redaction::PIIType::kMACAddress};
 
 class ShillDataCollectorTest : public ::testing::Test {
  public:

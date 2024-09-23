@@ -47,7 +47,7 @@ else:
 
 
 def MultiFileFindReplace(original, replacement, file_globs):
-  """Implements fast multi-file find and replace.
+  r"""Implements fast multi-file find and replace.
 
   Given an |original| string and a |replacement| string, find matching
   files by running git grep on |original| in files matching any

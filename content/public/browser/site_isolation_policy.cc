@@ -101,16 +101,10 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 // static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
   // This feature is controlled by kIsolateSandboxedIframes, and depends on
-  // partial Site Isolation being enabled. It also requires new base URL
-  // behavior, so it implicitly causes
-  // blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() to return true,
-  // and can't be enabled if the new base URL behavior has been disabled by
-  // enterprise policy.
+  // partial Site Isolation being enabled.
   return base::FeatureList::IsEnabled(
              blink::features::kIsolateSandboxedIframes) &&
-         !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             blink::switches::kDisableNewBaseUrlInheritanceBehavior);
+         !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation);
 }
 
 // static
@@ -204,6 +198,15 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() {
+  // Note: this is expected to be the only place
+  // features::kOriginKeyedProcessesByDefault is checked outside of tests.
+  return base::FeatureList::IsEnabled(
+             features::kOriginKeyedProcessesByDefault) &&
+         UseDedicatedProcessesForAllSites();
+}
+
+// static
 bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
     BrowserContext* browser_context) {
   // OriginAgentClusters are enabled by default if OriginAgentCluster and
@@ -216,8 +219,7 @@ bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
   return IsOriginAgentClusterEnabled() &&
          (base::FeatureList::IsEnabled(
               blink::features::kOriginAgentClusterDefaultEnabled) ||
-          base::FeatureList::IsEnabled(
-              features::kOriginKeyedProcessesByDefault)) &&
+          AreOriginKeyedProcessesEnabledByDefault()) &&
          !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
              browser_context);
 }

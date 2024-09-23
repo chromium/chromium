@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -15,8 +16,12 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
@@ -168,6 +173,27 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 };
 
 void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
+  const bool local_files_allowed =
+      policy::local_user_files::LocalUserFilesAllowed();
+
+  // If SkyVaultV2 is enabled (GA version), block all VMs regardless of the
+  // type.
+  if (!local_files_allowed &&
+      base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+    LOG(ERROR) << "Error mounting Guest OS container with guest id="
+               << this->GuestId() << ": local user files are disabled";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // If SkyVaultV2 is disabled (TT version), only block ARC.
+  if (!local_files_allowed && vm_type() == VmType::ARCVM) {
+    LOG(ERROR) << "Error mounting Guest OS container with guest id="
+               << this->GuestId() << ": local user files are disabled";
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (!callback_) {
     callback_ = std::make_unique<GuestOsMountProviderInner>(
         profile(), DisplayName(), GuestId(), vm_type(),

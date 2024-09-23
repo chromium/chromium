@@ -10,37 +10,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultGeolocationSetting": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.geolocation": {
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultGeolocationSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.geolocation": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultGeolocationSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.geolocation": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.geolocation",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2,
+        3
+      ]
+    }
   }
 ]

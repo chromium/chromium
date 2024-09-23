@@ -105,6 +105,11 @@ TEST(TextFragmentTest, FragmentToValueFromEncodedString) {
   fragment = "-suffix";
   result_val = TextFragmentToValue(fragment);
   EXPECT_EQ(base::Value::Type::NONE, result_val.type());
+
+  // Invalid characters
+  fragment = "\xFF\xFF";
+  result_val = TextFragmentToValue(fragment);
+  EXPECT_EQ(base::Value::Type::NONE, result_val.type());
 }
 
 TEST(TextFragmentTest, FragmentToEscapedStringEmpty) {

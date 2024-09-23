@@ -245,8 +245,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void DidNotProduceVizFrame(int16_t frame_index);
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap&);
-  void OnReclaimedGpuFenceAvailable(WebXrFrame* frame,
-                                    std::unique_ptr<gfx::GpuFence> gpu_fence);
+  void OnReclaimedGpuFenceAvailable(
+      WebXrFrame* frame,
+      std::vector<std::unique_ptr<gfx::GpuFence>> gpu_fences);
   void ClearRenderingFrame(WebXrFrame* frame);
   void RecalculateUvsAndProjection();
 

@@ -27,7 +27,9 @@ class ScopedObjCClassSwizzler;
 
 namespace gfx {
 class Point;
+#if BUILDFLAG(IS_MAC)
 class Range;
+#endif
 class Rect;
 }  // namespace gfx
 

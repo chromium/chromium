@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
@@ -30,6 +35,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,7 +94,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   }
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     CHECK(!on_failed_called_);
     CHECK(!not_expect_callback_);
     response_headers_ = response_headers.Clone();
@@ -113,7 +119,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     on_data_sent_count_++;
   }
 
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     CHECK(!on_failed_called_);
     trailers_ = trailers.Clone();
     if (run_until_completion_)
@@ -199,10 +205,10 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   const std::string& data_received() const { return data_received_; }
   int bytes_read() const { return bytes_read_; }
   int error() const { return error_; }
-  const spdy::Http2HeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() const {
     return response_headers_;
   }
-  const spdy::Http2HeaderBlock& trailers() const { return trailers_; }
+  const quiche::HttpHeaderBlock& trailers() const { return trailers_; }
   int on_data_read_count() const { return on_data_read_count_; }
   int on_data_sent_count() const { return on_data_sent_count_; }
   bool on_failed_called() const { return on_failed_called_; }
@@ -218,8 +224,8 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   int read_buf_len_;
   std::string data_received_;
   std::unique_ptr<base::RunLoop> loop_;
-  spdy::Http2HeaderBlock response_headers_;
-  spdy::Http2HeaderBlock trailers_;
+  quiche::HttpHeaderBlock response_headers_;
+  quiche::HttpHeaderBlock trailers_;
   int error_ = OK;
   int bytes_read_ = 0;
   int on_data_read_count_ = 0;
@@ -299,7 +305,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SimplePostRequest) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kBodyDataSize, LOW, nullptr, 0));
   spdy::SpdySerializedFrame data_frame(spdy_util_.ConstructSpdyDataFrame(
-      1, base::StringPiece(kBodyData, kBodyDataSize), /*fin=*/true));
+      1, std::string_view(kBodyData, kBodyDataSize), /*fin=*/true));
   MockWrite writes[] = {
       CreateMockWrite(req, 0), CreateMockWrite(data_frame, 3),
   };
@@ -537,7 +543,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, RequestDetectBrokenConnection) {
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
       kDefaultUrl, 1, kBodyDataSize, LOW, nullptr, 0));
   spdy::SpdySerializedFrame data_frame(spdy_util_.ConstructSpdyDataFrame(
-      1, base::StringPiece(kBodyData, kBodyDataSize), /*fin=*/true));
+      1, std::string_view(kBodyData, kBodyDataSize), /*fin=*/true));
   MockWrite writes[] = {
       CreateMockWrite(req, 0),
       CreateMockWrite(data_frame, 3),

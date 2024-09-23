@@ -34,6 +34,11 @@ struct PredictionRequestFeatures {
 
   // The origin of the website requesting the permission.
   GURL url;
+
+  // The id of a currently conducted Finch experiment.
+  // 0 = default, client is in Finch experiment control group,
+  // Different than 0 = client is in Finch enabled group.
+  size_t experiment_id = 0;
 };
 
 }  // namespace permissions

@@ -6,9 +6,23 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace features {
+
+BASE_FEATURE(kIdentifiabilityStudyMetaExperiment,
+             "IdentifiabilityStudyMetaExperiment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<double>
+    kIdentifiabilityStudyMetaExperimentActivationProbability = {
+        // The value -1, being outside the interval [0, 1], will be interpreted
+        // as the default probability, which depends on the channel and is
+        // encoded in
+        // chrome/browser/privacy_budget/identifiability_study_state.cc.
+        &kIdentifiabilityStudyMetaExperiment, "ActivationProbability",
+        kIdentifiabilityStudyMetaExperimentDefaultActivationProbability};
 
 BASE_FEATURE(kIdentifiabilityStudy,
              "IdentifiabilityStudy",

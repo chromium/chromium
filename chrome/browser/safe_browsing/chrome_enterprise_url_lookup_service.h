@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -59,6 +60,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanCheckSafeBrowsingDb() const override;
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
   bool CanSendRTSampleRequest() const override;
+  std::string GetUserEmail() const override;
+  std::string GetBrowserDMTokenString() const override;
+  std::string GetProfileDMTokenString() const override;
+  std::unique_ptr<enterprise_connectors::ClientMetadata> GetClientMetadata()
+      const override;
   std::string GetMetricSuffix() const override;
   void Shutdown() override;
 
@@ -72,7 +78,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
   void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override;
 
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
@@ -80,6 +87,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
+      SessionID tab_id,
       const std::string& access_token);
 
   std::optional<std::string> GetDMTokenString() const override;

@@ -92,7 +92,7 @@ void CSSImageGeneratorValue::AddClient(const ImageResourceObserver* client) {
 void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
   DCHECK(client);
   ClientSizeCountMap::iterator it = clients_.find(client);
-  SECURITY_DCHECK(it != clients_.end());
+  SECURITY_CHECK(it != clients_.end());
 
   SizeAndCount& size_count = it->value;
   if (!size_count.size.IsEmpty()) {
@@ -164,7 +164,7 @@ scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
       return To<CSSConstantGradientValue>(this)->GetImage(
           client, document, style, container_sizes, target_size);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -222,7 +222,7 @@ bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
       return To<CSSConstantGradientValue>(this)->KnownToBeOpaque(document,
                                                                  style);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

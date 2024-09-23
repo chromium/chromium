@@ -40,10 +40,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
-  friend class DiceWebSigninInterceptHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptHandlerTest,
-                           GetInterceptionParametersValue);
-
+  friend class DiceWebSigninInterceptHandlerTestBase;
   const AccountInfo& primary_account();
   const AccountInfo& intercepted_account();
 
@@ -63,6 +60,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   bool ShouldShowManagedDeviceVersion();
 
   std::string GetHeaderText();
+  std::string GetChromeSigninTitle();
+  std::string GetChromeSigninSubtitle();
   std::string GetBodyTitle();
   std::string GetBodyText();
   std::string GetConfirmButtonLabel();

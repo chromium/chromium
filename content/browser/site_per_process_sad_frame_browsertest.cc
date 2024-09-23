@@ -69,7 +69,7 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
 };
 
 // This test is flaky on all platforms.
-// TODO(crbug.com/1179074): Deflake it and enable this test back.
+// TODO(crbug.com/40749527): Deflake it and enable this test back.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTestWithoutSadFrameTabReload,
     DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 // kShownAfterCrashing. See https://crbug.com/1132938.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTestWithSadFrameTabReload,
-    // TODO(crbug.com/1325478): Re-enable this test
+    // TODO(crbug.com/40839850): Re-enable this test
     DISABLED_CrashedFencedframeVisibilityMetricsDuringParentLoad) {
   GURL primary_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL child_url(
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(
 // shown. Similar to the test above, except that the crashed subframe is
 // scrolled out of view.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       // TODO(crbug.com/1370766): Re-enable this test
+                       // TODO(crbug.com/40870019): Re-enable this test
                        DISABLED_ReloadHiddenTabWithCrashedSubframeOutOfView) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       // TODO(crbug.com/1370766): Re-enable this test
+                       // TODO(crbug.com/40870019): Re-enable this test
                        DISABLED_ChildFrameCrashMetrics_KilledWhileVisible) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or

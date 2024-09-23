@@ -41,86 +41,70 @@ DOMException* ToException(WebSetSinkIdError error) {
     case WebSetSinkIdError::kNotSupported:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Operation not supported");
-    default:
-      NOTREACHED();
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                                "Invalid error code");
   }
 }
 
-class SetSinkIdResolver : public ScriptPromiseResolver {
+class SetSinkIdResolver : public GarbageCollected<SetSinkIdResolver> {
  public:
-  static SetSinkIdResolver* Create(ScriptState*,
-                                   HTMLMediaElement&,
-                                   const String& sink_id);
-  SetSinkIdResolver(ScriptState*, HTMLMediaElement&, const String& sink_id);
+  SetSinkIdResolver(ScriptPromiseResolver<IDLUndefined>*,
+                    HTMLMediaElement&,
+                    const String& sink_id);
 
   SetSinkIdResolver(const SetSinkIdResolver&) = delete;
   SetSinkIdResolver& operator=(const SetSinkIdResolver&) = delete;
+  ~SetSinkIdResolver() = default;
 
-  ~SetSinkIdResolver() override = default;
   void StartAsync();
-
   void Start();
-
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   void DoSetSinkId();
 
   void OnSetSinkIdComplete(std::optional<WebSetSinkIdError> error);
 
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Member<HTMLMediaElement> element_;
   String sink_id_;
 };
 
-SetSinkIdResolver* SetSinkIdResolver::Create(ScriptState* script_state,
-                                             HTMLMediaElement& element,
-                                             const String& sink_id) {
-  SetSinkIdResolver* resolver =
-      MakeGarbageCollected<SetSinkIdResolver>(script_state, element, sink_id);
-  resolver->KeepAliveWhilePending();
-  return resolver;
-}
-
-SetSinkIdResolver::SetSinkIdResolver(ScriptState* script_state,
-                                     HTMLMediaElement& element,
-                                     const String& sink_id)
-    : ScriptPromiseResolver(script_state),
-      element_(element),
-      sink_id_(sink_id) {}
+SetSinkIdResolver::SetSinkIdResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    HTMLMediaElement& element,
+    const String& sink_id)
+    : resolver_(resolver), element_(element), sink_id_(sink_id) {}
 
 void SetSinkIdResolver::StartAsync() {
-  ExecutionContext* context = GetExecutionContext();
+  ExecutionContext* context = element_->GetExecutionContext();
   if (!context)
     return;
   context->GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE, WTF::BindOnce(&SetSinkIdResolver::DoSetSinkId,
-                                          WrapWeakPersistent(this)));
+                                          WrapPersistent(this)));
 }
 
 void SetSinkIdResolver::Start() {
-  auto* context = GetExecutionContext();
+  auto* context = element_->GetExecutionContext();
   if (!context || context->IsContextDestroyed())
     return;
 
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     if (window->document()->IsPrerendering()) {
       window->document()->AddPostPrerenderingActivationStep(
-          WTF::BindOnce(&SetSinkIdResolver::Start, WrapWeakPersistent(this)));
+          WTF::BindOnce(&SetSinkIdResolver::Start, WrapPersistent(this)));
       return;
     }
   }
 
   // Validate that sink_id_ is a valid UTF8 - see https://crbug.com/1420170.
   if (sink_id_.Utf8(WTF::kStrictUTF8Conversion).empty() != sink_id_.empty()) {
-    Reject(MakeGarbageCollected<DOMException>(
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidCharacterError, "Invalid sink id."));
     return;
   }
 
   if (sink_id_ == HTMLMediaElementAudioOutputDevice::sinkId(*element_))
-    Resolve();
+    resolver_->Resolve();
   else
     StartAsync();
 }
@@ -137,14 +121,8 @@ void SetSinkIdResolver::DoSetSinkId() {
     return;
   }
 
-  ExecutionContext* context = GetExecutionContext();
+  ExecutionContext* context = element_->GetExecutionContext();
   if (!context) {
-    // Detached contexts shouldn't be playing audio. Note that despite this
-    // explicit Reject(), any associated JS callbacks will never be called
-    // because the context is already detached...
-    Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSecurityError,
-        "Impossible to authorize device for detached context"));
     return;
   }
 
@@ -154,32 +132,33 @@ void SetSinkIdResolver::DoSetSinkId() {
     web_frame->Client()->CheckIfAudioSinkExistsAndIsAuthorized(
         sink_id_, std::move(set_sink_id_completion_callback));
   } else {
-    Reject(MakeGarbageCollected<DOMException>(
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
         "Impossible to authorize device if there is no frame"));
-    return;
   }
 }
 
 void SetSinkIdResolver::OnSetSinkIdComplete(
     std::optional<WebSetSinkIdError> error) {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
+  ExecutionContext* context = element_->GetExecutionContext();
+  if (!context || context->IsContextDestroyed()) {
     return;
+  }
 
   if (error) {
-    Reject(ToException(*error));
+    resolver_->Reject(ToException(*error));
     return;
   }
 
   HTMLMediaElementAudioOutputDevice& aod_element =
       HTMLMediaElementAudioOutputDevice::From(*element_);
   aod_element.setSinkId(sink_id_);
-  Resolve();
+  resolver_->Resolve();
 }
 
 void SetSinkIdResolver::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
-  ScriptPromiseResolver::Trace(visitor);
+  visitor->Trace(resolver_);
 }
 
 }  // namespace
@@ -211,14 +190,14 @@ void HTMLMediaElementAudioOutputDevice::setSinkId(const String& sink_id) {
   sink_id_ = sink_id;
 }
 
-ScriptPromise HTMLMediaElementAudioOutputDevice::setSinkId(
+ScriptPromise<IDLUndefined> HTMLMediaElementAudioOutputDevice::setSinkId(
     ScriptState* script_state,
     HTMLMediaElement& element,
     const String& sink_id) {
-  SetSinkIdResolver* resolver =
-      SetSinkIdResolver::Create(script_state, element, sink_id);
-  ScriptPromise promise = resolver->Promise();
-  resolver->Start();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+  MakeGarbageCollected<SetSinkIdResolver>(resolver, element, sink_id)->Start();
   return promise;
 }
 

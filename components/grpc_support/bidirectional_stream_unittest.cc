@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
+
 #include <list>
 #include <map>
-#include <string>
-
 #include <memory>
+#include <string>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -40,28 +45,28 @@ class BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
   BidirectionalStreamTest& operator=(const BidirectionalStreamTest&) = delete;
 
  protected:
+  BidirectionalStreamTest() = default;
+
   void SetUp() override {
     net::QuicSimpleTestServer::Start();
-    StartTestStreamEngine(net::QuicSimpleTestServer::GetPort());
+    test_stream_engine_getter_ =
+        TestStreamEngineGetter::Create(net::QuicSimpleTestServer::GetPort());
     quic_server_hello_url_ = net::QuicSimpleTestServer::GetHelloURL().spec();
   }
 
   void TearDown() override {
-    ShutdownTestStreamEngine();
+    test_stream_engine_getter_.reset();
     net::QuicSimpleTestServer::Shutdown();
   }
 
-  BidirectionalStreamTest() {}
-  ~BidirectionalStreamTest() override {}
-
-  stream_engine* engine() {
-    return GetTestStreamEngine(net::QuicSimpleTestServer::GetPort());
-  }
+  stream_engine* engine() { return test_stream_engine_getter_->Get(); }
 
   const char* test_hello_url() const { return quic_server_hello_url_.c_str(); }
 
  private:
   std::string quic_server_hello_url_;
+
+  std::unique_ptr<TestStreamEngineGetter> test_stream_engine_getter_;
 };
 
 class TestBidirectionalStreamCallback {
@@ -79,12 +84,15 @@ class TestBidirectionalStreamCallback {
   };
 
   struct WriteData {
-    std::string buffer;
+    // Data must be hard-coded constants, as the raw pointers will be used on
+    // the network thread, possibly after the `this` is destroyed.
+    std::string_view buffer;
+
     // If |flush| is true, then bidirectional_stream_flush() will be
     // called after writing of the |buffer|.
     bool flush;
 
-    WriteData(const std::string& buffer, bool flush);
+    WriteData(std::string_view buffer, bool flush);
 
     WriteData(const WriteData&) = delete;
     WriteData& operator=(const WriteData&) = delete;
@@ -92,34 +100,27 @@ class TestBidirectionalStreamCallback {
     ~WriteData();
   };
 
-  raw_ptr<bidirectional_stream, AcrossTasksDanglingUntriaged> stream;
+  raw_ptr<bidirectional_stream, AcrossTasksDanglingUntriaged> stream = nullptr;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
-  std::map<std::string, std::string> request_headers;
   std::list<std::unique_ptr<WriteData>> write_data;
   std::string expected_negotiated_protocol;
-  ResponseStep cancel_from_step;
-  size_t read_buffer_size;
+  ResponseStep cancel_from_step = NOTHING;
+  size_t read_buffer_size = 32768;
 
   // Test results.
-  ResponseStep response_step;
-  raw_ptr<char, AcrossTasksDanglingUntriaged> read_buffer;
+  ResponseStep response_step = NOTHING;
+  raw_ptr<char, AcrossTasksDanglingUntriaged> read_buffer = nullptr;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;
-  int net_error;
+  int net_error = 0;
 
   TestBidirectionalStreamCallback()
-      : stream(nullptr),
-        stream_done_event(base::WaitableEvent::ResetPolicy::MANUAL,
+      : stream_done_event(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED),
-        expected_negotiated_protocol("quic/1+spdy/3"),
-        cancel_from_step(NOTHING),
-        read_buffer_size(32768),
-        response_step(NOTHING),
-        read_buffer(nullptr),
-        net_error(0) {}
+        expected_negotiated_protocol("quic/1+spdy/3") {}
 
   ~TestBidirectionalStreamCallback() { delete[] read_buffer; }
 
@@ -149,8 +150,8 @@ class TestBidirectionalStreamCallback {
 
   void BlockForDone() { stream_done_event.Wait(); }
 
-  void AddWriteData(const std::string& data) { AddWriteData(data, true); }
-  void AddWriteData(const std::string& data, bool flush) {
+  void AddWriteData(std::string_view data) { AddWriteData(data, true); }
+  void AddWriteData(std::string_view data, bool flush) {
     write_data.push_back(std::make_unique<WriteData>(data, flush));
   }
 
@@ -159,7 +160,7 @@ class TestBidirectionalStreamCallback {
     if (write_data.empty())
       return;
     for (const auto& data : write_data) {
-      bidirectional_stream_write(stream, data->buffer.c_str(),
+      bidirectional_stream_write(stream, data->buffer.data(),
                                  data->buffer.size(),
                                  data == write_data.back());
       if (data->flush) {
@@ -234,7 +235,7 @@ class TestBidirectionalStreamCallback {
   static void on_write_completed_callback(bidirectional_stream* stream,
                                           const char* data) {
     TestBidirectionalStreamCallback* test = FromStream(stream);
-    ASSERT_EQ(test->write_data.front()->buffer.c_str(), data);
+    ASSERT_EQ(test->write_data.front()->buffer, data);
     if (test->MaybeCancel(stream, ON_WRITE_COMPLETED))
       return;
     bool continue_writing = test->write_data.front()->flush;
@@ -277,7 +278,7 @@ class TestBidirectionalStreamCallback {
   }
 };
 
-TestBidirectionalStreamCallback::WriteData::WriteData(const std::string& data,
+TestBidirectionalStreamCallback::WriteData::WriteData(std::string_view data,
                                                       bool flush_after)
     : buffer(data), flush(flush_after) {}
 
@@ -521,7 +522,7 @@ TEST_P(BidirectionalStreamTest, TestDelayedFlush) {
       // EndOfStream is set with "6" but not flushed, so it is not sent.
       if (write_data.front()->buffer == "1") {
         for (const auto& data : write_data) {
-          bidirectional_stream_write(stream, data->buffer.c_str(),
+          bidirectional_stream_write(stream, data->buffer.data(),
                                      data->buffer.size(),
                                      data == write_data.back());
           if (data->flush) {
@@ -628,16 +629,13 @@ TEST_P(BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(https://crbug.com/880474): This test is flaky on fuchsia-x64 builder.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
-  DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
-#else
-#define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
-  StreamFailBeforeReadIsExecutedOnNetworkThread
-#endif
+// TODO(crbug.com/345248264): deflake this test. The issue is likely that
+// CustomTestBidirectionalStreamCallback owns the memory for a read buffer
+// passed to the BidirectionalStream, and the task posted to tear down the
+// BidirectionalStream on the network thread races with destroying the
+// CustomTestBidirectionalStreamCallback on the main thread.
 TEST_P(BidirectionalStreamTest,
-       MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread) {
+       DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread) {
   class CustomTestBidirectionalStreamCallback
       : public TestBidirectionalStreamCallback {
     bool MaybeCancel(bidirectional_stream* stream, ResponseStep step) override {
@@ -710,7 +708,7 @@ TEST_P(BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(crbug.com/1457033): deflake this test.
+// TODO(crbug.com/345248264): deflake this test.
 TEST_P(BidirectionalStreamTest,
        DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread) {
   class CustomTestBidirectionalStreamCallback

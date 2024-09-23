@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/audio/input_controller.h"
 
 #include <inttypes.h>
@@ -81,7 +86,7 @@ const char* SilenceStateToString(InputController::SilenceState state) {
     case InputController::SILENCE_STATE_AUDIO_AND_SILENCE:
       return "SILENCE_STATE_AUDIO_AND_SILENCE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -161,9 +166,6 @@ class AudioCallback : public media::AudioInputStream::AudioInputCallback {
               base::TimeTicks capture_time,
               double volume,
               const media::AudioGlitchInfo& glitch_info) override {
-    TRACE_EVENT1("audio", "InputController::OnData", "capture time (ms)",
-                 (capture_time - base::TimeTicks()).InMillisecondsF());
-
     if (on_first_data_callback_) {
       // Mark the stream as alive at first audio callback. Currently only used
       // for logging purposes.
@@ -736,6 +738,11 @@ void InputController::OnData(const media::AudioBus* source,
                              base::TimeTicks capture_time,
                              double volume,
                              const media::AudioGlitchInfo& glitch_info) {
+  TRACE_EVENT("audio", "InputController::OnData", "this",
+              static_cast<void*>(this), "timestamp (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF());
   const bool key_pressed = CheckForKeyboardInput();
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (processing_fifo_) {

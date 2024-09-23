@@ -1,0 +1,1120 @@
+This is a testharness.js-based test.
+Found 558 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (-0.3) should be [7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (0) should be [10px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (0.3) should be [13px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (0.6) should be [16px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (1) should be [20px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (1.5) should be [25px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (5) should be [60px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from neutral to [20px] at (10) should be [110px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (-0.3) should be [7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (0) should be [10px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (0.3) should be [13px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (0.6) should be [16px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (1) should be [20px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (1.5) should be [25px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (5) should be [60px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from neutral to [20px] at (10) should be [110px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (-0.3) should be [7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (0) should be [10px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (0.3) should be [13px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (0.6) should be [16px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (1) should be [20px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (1.5) should be [25px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (5) should be [60px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from neutral to [20px] at (10) should be [110px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (-0.3) should be [7px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (0) should be [10px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (0.3) should be [13px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (0.6) should be [16px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (1) should be [20px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (1.5) should be [25px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (5) should be [60px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from neutral to [20px] at (10) should be [110px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (-0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (0) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (0.3) should be [initial]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [initial] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (-0.3) should be [124px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (0) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (0.3) should be [76px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (0.6) should be [52px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [inherit] to [20px] at (10) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (-0.3) should be [124px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (0) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (0.3) should be [76px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (0.6) should be [52px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [inherit] to [20px] at (10) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (-0.3) should be [124px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (0) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (0.3) should be [76px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (0.6) should be [52px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [inherit] to [20px] at (10) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (-0.3) should be [124px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (0) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (0.3) should be [76px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (0.6) should be [52px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (1.5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (5) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [inherit] to [20px] at (10) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (-0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (0) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (0.3) should be [unset]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [unset] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (0.3) should be [6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (0.6) should be [12px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (1.5) should be [30px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (5) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0px] to [20px] at (10) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (0.3) should be [6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (0.6) should be [12px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (1.5) should be [30px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (5) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0px] to [20px] at (10) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (0.3) should be [6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (0.6) should be [12px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (1.5) should be [30px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (5) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0px] to [20px] at (10) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (-0.3) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (0) should be [0px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (0.3) should be [6px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (0.6) should be [12px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (1.5) should be [30px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (5) should be [100px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0px] to [20px] at (10) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (-0.3) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (0) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (0.3) should be [6%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (0.6) should be [12%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (1.5) should be [30%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (5) should be [100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0%] to [20%] at (10) should be [200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (-0.3) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (0) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (0.3) should be [6%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (0.6) should be [12%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (1.5) should be [30%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (5) should be [100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0%] to [20%] at (10) should be [200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (-0.3) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (0) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (0.3) should be [6%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (0.6) should be [12%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (1.5) should be [30%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (5) should be [100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0%] to [20%] at (10) should be [200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (-0.3) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (0) should be [0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (0.3) should be [6%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (0.6) should be [12%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (1.5) should be [30%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (5) should be [100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0%] to [20%] at (10) should be [200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (0.3) should be [6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (0.6) should be [12]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (1.5) should be [30]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (5) should be [100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [0] to [20] at (10) should be [200]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (0.3) should be [6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (0.6) should be [12]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (1.5) should be [30]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (5) should be [100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [0] to [20] at (10) should be [200]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (0.3) should be [6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (0.6) should be [12]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (1.5) should be [30]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (5) should be [100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [0] to [20] at (10) should be [200]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (-0.3) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (0) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (0.3) should be [6]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (0.6) should be [12]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (1.5) should be [30]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (5) should be [100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [0] to [20] at (10) should be [200]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (-0.3) should be [0px   5%  21  37px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0) should be [10px  20%  30  40px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.3) should be [31px  35%  39  43px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.6) should be [52px  50%  48  46px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1) should be [80px  70%  60  50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1.5) should be [115px  95%  75  55px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (5) should be [360px 270% 180  90px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (10) should be [710px 520% 330 140px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (-0.3) should be [0px   5%  21  37px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0) should be [10px  20%  30  40px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.3) should be [31px  35%  39  43px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.6) should be [52px  50%  48  46px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1) should be [80px  70%  60  50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1.5) should be [115px  95%  75  55px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (5) should be [360px 270% 180  90px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (10) should be [710px 520% 330 140px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (-0.3) should be [0px   5%  21  37px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0) should be [10px  20%  30  40px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.3) should be [31px  35%  39  43px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.6) should be [52px  50%  48  46px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1) should be [80px  70%  60  50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1.5) should be [115px  95%  75  55px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (5) should be [360px 270% 180  90px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (10) should be [710px 520% 330 140px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (-0.3) should be [0px   5%  21  37px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0) should be [10px  20%  30  40px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.3) should be [31px  35%  39  43px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (0.6) should be [52px  50%  48  46px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1) should be [80px  70%  60  50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (1.5) should be [115px  95%  75  55px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (5) should be [360px 270% 180  90px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px 20% 30 40px] to [80px 70% 60 50px] at (10) should be [710px 520% 330 140px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (-0.3) should be [calc(13% + -6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (0.3) should be [calc(7% + 6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (0.6) should be [calc(4% + 12px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (1) should be [calc(0% + 20px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20px] at (1.5) should be [calc(-5% + 30px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (-0.3) should be [calc(13% + -6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (0.3) should be [calc(7% + 6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (0.6) should be [calc(4% + 12px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (1) should be [calc(0% + 20px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20px] at (1.5) should be [calc(-5% + 30px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (-0.3) should be [calc(13% + -6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (0.3) should be [calc(7% + 6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (0.6) should be [calc(4% + 12px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (1) should be [calc(0% + 20px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20px] at (1.5) should be [calc(-5% + 30px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (-0.3) should be [calc(13% + -6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (0.3) should be [calc(7% + 6px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (0.6) should be [calc(4% + 12px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (1) should be [calc(0% + 20px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20px] at (1.5) should be [calc(-5% + 30px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (-0.3) should be [calc(13px + -6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (0) should be [calc(0% + 10px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (0.3) should be [calc(7px + 6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (0.6) should be [calc(4px + 12%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20%] at (1.5) should be [calc(-5px + 30%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (-0.3) should be [calc(13px + -6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (0) should be [calc(0% + 10px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (0.3) should be [calc(7px + 6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (0.6) should be [calc(4px + 12%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20%] at (1.5) should be [calc(-5px + 30%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (-0.3) should be [calc(13px + -6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (0) should be [calc(0% + 10px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (0.3) should be [calc(7px + 6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (0.6) should be [calc(4px + 12%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20%] at (1.5) should be [calc(-5px + 30%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (-0.3) should be [calc(13px + -6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (0) should be [calc(0% + 10px)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (0.3) should be [calc(7px + 6%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (0.6) should be [calc(4px + 12%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20%] at (1.5) should be [calc(-5px + 30%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (-0.3) should be [  0px auto auto   0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0) should be [ 10px auto auto  20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.3) should be [ 40px auto auto  50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.6) should be [ 70px auto auto  80]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1) should be [110px auto auto 120]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1.5) should be [160px auto auto 170]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (-0.3) should be [  0px auto auto   0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0) should be [ 10px auto auto  20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.3) should be [ 40px auto auto  50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.6) should be [ 70px auto auto  80]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1) should be [110px auto auto 120]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1.5) should be [160px auto auto 170]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (-0.3) should be [  0px auto auto   0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0) should be [ 10px auto auto  20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.3) should be [ 40px auto auto  50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.6) should be [ 70px auto auto  80]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1) should be [110px auto auto 120]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1.5) should be [160px auto auto 170]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (-0.3) should be [  0px auto auto   0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0) should be [ 10px auto auto  20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.3) should be [ 40px auto auto  50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (0.6) should be [ 70px auto auto  80]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1) should be [110px auto auto 120]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto auto 120] at (1.5) should be [160px auto auto 170]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (-0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.3) should be [10px auto auto 20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (0.6) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px auto auto 20] to [110px auto 120 auto] at (1.5) should be [110px auto 120 auto]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (-0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (-0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (-0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (0) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (-0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (0) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (-0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (-0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (0) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (0.3) should be [10px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10px] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (-0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (0) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (0.3) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (0.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (0.6) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (1) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20px] at (1.5) should be [20px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (-0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (-0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (-0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (0) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (-0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (0) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (0.3) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (-0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (-0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (0) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (0.3) should be [10%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (0.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (0.6) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (1) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10%] to [20] at (1.5) should be [20]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (-0.3) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (0) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (0.3) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (-0.3) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (0) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (0.3) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (-0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (0) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (0.3) should be [10]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (0.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (0.6) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (1) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <mask-border-width> from [10] to [20%] at (1.5) should be [20%]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

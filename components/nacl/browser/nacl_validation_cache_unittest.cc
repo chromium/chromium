@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/pickle.h"
 #include "components/nacl/browser/nacl_validation_cache.h"
+
+#include "base/containers/span.h"
+#include "base/pickle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace nacl {
@@ -38,7 +40,7 @@ class NaClValidationCacheTest : public ::testing::Test {
 };
 
 TEST_F(NaClValidationCacheTest, Sanity) {
-  ASSERT_EQ(0, (int) cache1.size());
+  ASSERT_EQ(0u, cache1.size());
   ASSERT_FALSE(cache1.QueryKnownToValidate(sig1, true));
   ASSERT_FALSE(cache1.QueryKnownToValidate(sig2, true));
 }
@@ -159,9 +161,12 @@ TEST_F(NaClValidationCacheTest, SerializeDeserializeTruncated) {
 
   base::Pickle pickle;
   cache1.Serialize(&pickle);
-  base::Pickle truncated(pickle.data_as_char(), pickle.size() - 20);
+  base::span<const uint8_t> full_payload = base::make_span(pickle);
+  base::span<const uint8_t> truncated_payload =
+      full_payload.subspan(0, full_payload.size() - 20);
+  base::Pickle truncated = base::Pickle::WithUnownedBuffer(truncated_payload);
   ASSERT_FALSE(cache2.Deserialize(&truncated));
-  ASSERT_EQ(0, (int) cache2.size());
+  ASSERT_EQ(0u, cache2.size());
 }
 
 TEST_F(NaClValidationCacheTest, DeserializeBadKey) {
@@ -173,21 +178,23 @@ TEST_F(NaClValidationCacheTest, DeserializeBadKey) {
   base::Pickle pickle;
   cache1.Serialize(&pickle);
   ASSERT_FALSE(cache2.Deserialize(&pickle));
-  ASSERT_EQ(0, (int) cache2.size());
+  ASSERT_EQ(0u, cache2.size());
 }
 
 TEST_F(NaClValidationCacheTest, DeserializeNothing) {
   cache1.SetKnownToValidate(sig1);
-  base::Pickle pickle("", 0);
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(std::string()));
   ASSERT_FALSE(cache1.Deserialize(&pickle));
-  ASSERT_EQ(0, (int) cache1.size());
+  ASSERT_EQ(0u, cache1.size());
 }
 
 TEST_F(NaClValidationCacheTest, DeserializeJunk) {
   cache1.SetKnownToValidate(sig1);
-  base::Pickle pickle(key1, strlen(key1));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(key1));
   ASSERT_FALSE(cache1.Deserialize(&pickle));
-  ASSERT_EQ(0, (int) cache1.size());
+  ASSERT_EQ(0u, cache1.size());
 }
 
 }

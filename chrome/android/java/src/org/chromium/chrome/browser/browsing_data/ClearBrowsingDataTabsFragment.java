@@ -53,6 +53,12 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
                             ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER);
         }
 
+        Bundle fragmentArgs = getArguments();
+        assert fragmentArgs != null : "A valid fragment argument is required.";
+        String referrer =
+                fragmentArgs.getString(
+                        ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
+
         // Inflate the layout for this fragment.
         View view = inflater.inflate(R.layout.clear_browsing_data_tabs, container, false);
 
@@ -60,7 +66,10 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
         viewPager.setAdapter(
                 new ClearBrowsingDataPagerAdapter(
-                        mFetcher, getFragmentManager(), (FragmentActivity) getActivity()));
+                        mFetcher,
+                        getFragmentManager(),
+                        (FragmentActivity) getActivity(),
+                        referrer));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
@@ -85,6 +94,17 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         appBarLayout.setOutlineProvider(null);
 
         return view;
+    }
+
+    /**
+     * A method to create the {@link ClearBrowsingDataTabsFragment} arguments.
+     *
+     * @param referrer The name of the referrer activity.
+     */
+    public static Bundle createFragmentArgs(String referrer) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, referrer);
+        return bundle;
     }
 
     private String getTabTitle(int position) {
@@ -114,11 +134,16 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
 
     private static class ClearBrowsingDataPagerAdapter extends FragmentStateAdapter {
         private final ClearBrowsingDataFetcher mFetcher;
+        private final String mReferrer;
 
         ClearBrowsingDataPagerAdapter(
-                ClearBrowsingDataFetcher fetcher, FragmentManager fm, FragmentActivity activity) {
+                ClearBrowsingDataFetcher fetcher,
+                FragmentManager fm,
+                FragmentActivity activity,
+                String referrer) {
             super(activity);
             mFetcher = fetcher;
+            mReferrer = referrer;
         }
 
         @Override
@@ -142,7 +167,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
             // We supply the fetcher in the next line.
             fragment.setArguments(
                     ClearBrowsingDataFragment.createFragmentArgs(
-                            /* isFetcherSuppliedFromOutside= */ true));
+                            mReferrer, /* isFetcherSuppliedFromOutside= */ true));
             fragment.setClearBrowsingDataFetcher(mFetcher);
             return fragment;
         }

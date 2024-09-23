@@ -27,7 +27,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -137,7 +136,6 @@ bool ShouldShowEmailMenuItem() {
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return false;
   }
@@ -201,18 +199,18 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       case VIEW_ID_QS_POWER_OFF_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerOffMenuButton);
-        Shell::Get()->lock_state_controller()->StartShutdownAnimation(
+        Shell::Get()->lock_state_controller()->RequestShutdown(
             ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
         break;
       case VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerSignoutMenuButton);
-        Shell::Get()->session_controller()->RequestSignOut();
+        Shell::Get()->lock_state_controller()->RequestSignOut();
         break;
       case VIEW_ID_QS_POWER_RESTART_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerRestartMenuButton);
-        chromeos::PowerManagerClient::Get()->RequestRestart(
+        Shell::Get()->lock_state_controller()->RequestRestart(
             power_manager::REQUEST_RESTART_FOR_USER, "Reboot by user");
         break;
       case VIEW_ID_QS_POWER_LOCK_MENU_BUTTON:
@@ -361,7 +359,8 @@ PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
 }
 

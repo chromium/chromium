@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_util.h"
@@ -23,7 +23,7 @@ class BrowserReport;
 
 namespace policy {
 class PolicyConversionsClient;
-class MachineLevelUserCloudPolicyManager;
+class CloudPolicyManager;
 }  // namespace policy
 
 namespace enterprise_reporting::test {
@@ -34,7 +34,11 @@ FakeProfileReportGeneratorDelegate::~FakeProfileReportGeneratorDelegate() =
 bool FakeProfileReportGeneratorDelegate::Init(const base::FilePath& path) {
   return true;
 }
+
 void FakeProfileReportGeneratorDelegate::GetSigninUserInfo(
+    enterprise_management::ChromeUserProfileInfo* report) {}
+
+void FakeProfileReportGeneratorDelegate::GetAffiliationInfo(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 void FakeProfileReportGeneratorDelegate::GetExtensionInfo(
@@ -44,17 +48,19 @@ void FakeProfileReportGeneratorDelegate::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {}
 
 std::unique_ptr<policy::PolicyConversionsClient>
-FakeProfileReportGeneratorDelegate::MakePolicyConversionsClient() {
+FakeProfileReportGeneratorDelegate::MakePolicyConversionsClient(
+    bool is_machine_scope) {
   return nullptr;
 }
 
-policy::MachineLevelUserCloudPolicyManager*
-FakeProfileReportGeneratorDelegate::GetCloudPolicyManager() {
+policy::CloudPolicyManager*
+FakeProfileReportGeneratorDelegate::GetCloudPolicyManager(
+    bool is_machine_scope) {
   return nullptr;
 }
 
 FakeBrowserReportGeneratorDelegate::FakeBrowserReportGeneratorDelegate(
-    base::StringPiece executable_path)
+    std::string_view executable_path)
     : executable_path_(executable_path) {}
 
 FakeBrowserReportGeneratorDelegate::~FakeBrowserReportGeneratorDelegate() =
@@ -83,7 +89,7 @@ void FakeBrowserReportGeneratorDelegate::GenerateBuildStateInfo(
 }
 
 FakeReportingDelegateFactory::FakeReportingDelegateFactory(
-    base::StringPiece executable_path)
+    std::string_view executable_path)
     : executable_path_(executable_path) {}
 
 FakeReportingDelegateFactory::~FakeReportingDelegateFactory() = default;

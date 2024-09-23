@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -24,26 +25,15 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
 class EditLabelTest : public OverlayViewTestBase {
  public:
   EditLabelTest() = default;
-
-  EditLabel* GetEditLabel(const ActionViewListItem* list_item,
-                          size_t index) const {
-    auto& labels = list_item->labels_view_->labels_;
-    DCHECK_LT(index, labels.size());
-    return labels[index];
-  }
-
-  EditLabel* GetEditLabel(const ButtonOptionsMenu* menu, size_t index) const {
-    auto& labels = menu->action_edit_->labels_view_->labels_;
-    DCHECK_LT(index, labels.size());
-    return labels[index];
-  }
 
   ActionLabel* GetLabel(const ActionView* action_view, size_t index) const {
     auto& labels = action_view->labels();
@@ -52,8 +42,10 @@ class EditLabelTest : public OverlayViewTestBase {
   }
 
   void TapKeyboardKeyOnEditLabel(EditLabel* label, ui::KeyboardCode code) {
-    label->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE));
-    label->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE));
+    label->OnKeyPressed(
+        ui::KeyEvent(ui::EventType::kKeyPressed, code, ui::EF_NONE));
+    label->OnKeyReleased(
+        ui::KeyEvent(ui::EventType::kKeyReleased, code, ui::EF_NONE));
   }
 
   void FocusOnLabel(EditLabel* label) {
@@ -110,7 +102,7 @@ class EditLabelTest : public OverlayViewTestBase {
       return nullptr;
     }
     for (views::View* child : scroll_content->children()) {
-      if (auto* list_item = static_cast<ActionViewListItem*>(child);
+      if (auto* list_item = views::AsViewClass<ActionViewListItem>(child);
           list_item->action() == action) {
         return list_item;
       }
@@ -318,6 +310,67 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::NONE,
                ui::DomCode::NONE},
               {u"", u"a", u"", u""}, GetControlName(ActionType::MOVE, u"a"));
+}
+
+TEST_F(EditLabelTest, TestHistograms) {
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 10, 300, 500));
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Check histograms for editing list.
+  const std::string editing_list_histogram_name =
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
+  std::map<EditingListFunction, int> expected_editing_list_histogram_values;
+  LeftClickOn(GetEditLabel(tap_action_list_item_, /*index=*/0));
+  MapIncreaseValueByOne(expected_editing_list_histogram_values,
+                        EditingListFunction::kEditLabelFocused);
+  VerifyHistogramValues(histograms, editing_list_histogram_name,
+                        expected_editing_list_histogram_values);
+  // There is a hover event recorded before this.
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u,
+      static_cast<int64_t>(EditingListFunction::kEditLabelFocused));
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_M, ui::EF_NONE);
+  MapIncreaseValueByOne(expected_editing_list_histogram_values,
+                        EditingListFunction::kKeyAssigned);
+  VerifyHistogramValues(histograms, editing_list_histogram_name,
+                        expected_editing_list_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u,
+      static_cast<int64_t>(EditingListFunction::kKeyAssigned));
+
+  // Check histograms for button options menu.
+  const std::string button_options_histogram_name =
+      BuildGameControlsHistogramName(
+          kButtonOptionsMenuFunctionTriggeredHistogram);
+  std::map<ButtonOptionsMenuFunction, int>
+      expected_button_options_histogram_values;
+  auto* menu = ShowButtonOptionsMenu(move_action_);
+  LeftClickOn(GetEditLabel(menu, /*index=*/1));
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kEditLabelFocused);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u, /*index=*/0u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kEditLabelFocused));
+
+  event_generator->PressAndReleaseKey(ui::VKEY_N, ui::EF_NONE);
+  // After assign a key, the focus is automatically moved to the next one.
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kEditLabelFocused);
+  MapIncreaseValueByOne(expected_button_options_histogram_values,
+                        ButtonOptionsMenuFunction::kKeyAssigned);
+  VerifyHistogramValues(histograms, button_options_histogram_name,
+                        expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u, /*index=*/1u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kKeyAssigned));
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u, /*index=*/2u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kEditLabelFocused));
 }
 
 }  // namespace arc::input_overlay

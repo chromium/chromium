@@ -47,4 +47,9 @@ void AppDownloadingScreenHandler::Show() {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<AppDownloadingScreenView>
+AppDownloadingScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

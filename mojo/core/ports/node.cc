@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/ports/node.h"
 
 #include <string.h>
@@ -16,7 +21,9 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -24,12 +31,6 @@
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/ports/port_locker.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-
-#if !BUILDFLAG(IS_NACL)
-#include "crypto/random.h"
-#else
-#include "base/rand_util.h"
-#endif
 
 namespace mojo {
 namespace core {
@@ -58,11 +59,7 @@ class RandomNameGenerator {
   PortName GenerateRandomPortName() {
     base::AutoLock lock(lock_);
     if (cache_index_ == kRandomNameCacheSize) {
-#if BUILDFLAG(IS_NACL)
-      base::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
-#else
-      crypto::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
-#endif
+      base::RandBytes(base::as_writable_byte_span(cache_));
       cache_index_ = 0;
     }
     return cache_[cache_index_++];
@@ -79,7 +76,6 @@ base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =
 
 int DebugError(const char* message, int error_code) {
   NOTREACHED() << "Oops: " << message;
-  return error_code;
 }
 
 #define OOPS(x) DebugError(#x, x)
@@ -1551,7 +1547,7 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
     for (size_t i = 0; i < message->num_ports(); ++i) {
       const PortName& attached_port_name = message->ports()[i];
       auto iter = ports_.find(attached_port_name);
-      DCHECK(iter != ports_.end());
+      CHECK(iter != ports_.end(), base::NotFatalUntil::M130);
       attached_port_refs[i] = PortRef(attached_port_name, iter->second);
       ports_to_lock[i + 1] = &attached_port_refs[i];
     }

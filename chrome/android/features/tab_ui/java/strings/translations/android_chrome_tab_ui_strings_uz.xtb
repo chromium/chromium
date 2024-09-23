@@ -1,116 +1,197 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta oldin yaratilgan}other{<ph name="NUM_WEEKS_MANY" /> hafta oldin yaratilgan}}</translation>
+<translation id="1063300264396686489">Boshqa qurilmalardagi varaqlar guruhini avtomatik ochish</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
-<translation id="1155815720264022949">Eski varaqlar yopilsinmi?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yil oldin yaratilgan}other{<ph name="NUM_YEARS_MANY" /> yil oldin yaratilgan}}</translation>
+<translation id="1173894706177603556">Qayta nomlash</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
-<translation id="1215127405478249895">Varaqlarni koʻrish</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
-<translation id="1326271443836399892">Joriy sozlamalar tartiblanishini tekshirish.</translation>
+<translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> varaqlar guruhi sozlamalari</translation>
+<translation id="1340839264183302272">Guruhni tark etish</translation>
+<translation id="1419023007528516122">Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.</translation>
+<translation id="1486715732399361704">Barcha varaqlar guruhi shu yerda chiqadi</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> daqiqa oldin yaratilgan}other{<ph name="NUM_MINS_MANY" /> daqiqa oldin yaratilgan}}</translation>
 <translation id="1499635324672558517">Barcha Inkognito varaqlar yopilsinmi?</translation>
+<translation id="1501480321619201731">Ha</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="161042844686301425">Havorang</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ta varaq guruhlandi</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
+<translation id="1713541401465507417">Barcha varaq va guruhlarni yopish</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Batafsil<ph name="END_LINK1" /></translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ta varaq guruhlandi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni bukmarklash}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni bukmarklash}}</translation>
 <translation id="2118649612461486615">Doʻkon haqida</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. Inkognito varaqlar tiklanmaydi.}other{Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi. # ta inkognito varaq tiklanmaydi.}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlar guruhini yechish}}</translation>
+<translation id="2271452184061378400">Varaqlar guruhi shu yerda saqlanadi</translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Varaqni bukmarklash}other{Varaqlarni bukmarklash}}</translation>
+<translation id="2359808026110333948">Davom etish</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}other{<ph name="TABS_COUNT_MANY" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}}</translation>
+<translation id="2498435670446402865">Varaqlar guruhini qayta nomlash</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli guruhni yigʻish.}}</translation>
 <translation id="2569352796411618312">Bildirgi: <ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
-<translation id="2613747923081026172">Guruh yaratish</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho</translation>
 <translation id="266935134738038806">Saytni ochish</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.</translation>
+<translation id="2677748264148917807">Tark etish</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}}</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> soat oldin yaratilgan}other{<ph name="NUM_HOURS_MANY" /> soat oldin yaratilgan}}</translation>
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ta varaq yopildi}other{<ph name="MANY_CLOSED" /> ta varaq yopildi}}</translation>
+<translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
+<translation id="29919168204617356">Nofaol varaqlar avtomatik yopiladi. Istalgan vaqt ularni Tarixdan topishingiz mumkin.</translation>
 <translation id="3008554597174452548">Mahsulot kuzatuvini toʻxtatish</translation>
+<translation id="3026391124054406831">Varaqlarni tartiblash uchun guruhlar yaratish.</translation>
+<translation id="3051031624272448591">Ularni istalgan vaqt tarix sahifasidan olish mumkin</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq arxivlangan}other{<ph name="TABS_COUNT_MANY" /> ta varaq arxivlangan}}</translation>
+<translation id="3078350928901129212"><ph name="COLOR_NAME" /> rangli varaqlar guruhi belgisi</translation>
 <translation id="3194464645767632461">reyting</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi, <ph name="ANY_CHANGED" /> tasi oʻzgardi}}</translation>
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
+<translation id="3547352561153509682">Bunda guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalarda oʻchiriladi</translation>
+<translation id="3613492231657284463">Nofaol varaqlar oynasini berkitish</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Ulashiladigan varaq eskizi</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
+<translation id="381219490185664296">Varaqlar guruhi bekor qilinsinmi?</translation>
 <translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Varaqni guruhlash}other{Varaqlarni guruhlash}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta nofaol varaq}other{<ph name="TABS_COUNT_MANY" /> ta nofaol varaq}}</translation>
+<translation id="3969565576924904454">Ochish: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">Xabardor qolish</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> kun oldin yaratilgan}other{<ph name="NUM_DAYS_MANY" /> kun oldin yaratilgan}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
+<translation id="4139634748112164403">Varaqlar bu qurilmada ochiq qoladi, ammo guruh butunlay oʻchirib tashlanadi</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yopish, guruh varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yopish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
-<translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.}other{<ph name="TABS_COUNT_MANY" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.}}</translation>
 <translation id="427987768447457592">Yangi varaqlar guruhi</translation>
-<translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ta varaq oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}other{<ph name="MANY_CHANGED" /> ta varaq oʻzgardi, <ph name="ANY_CLOSED" /> tasi yopildi}}</translation>
+<translation id="4371591986692297148">Nofaol</translation>
+<translation id="4460014764210899310">Guruhni bekor qilish</translation>
+<translation id="4590027107044272416">Endi yangi varaq ochish mumkin</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ta nofaol varaq yopilsinmi?}other{<ph name="TAB_COUNT_MANY" /> ta nofaol varaq yopilsinmi?}}</translation>
+<translation id="4686942373615810936">Hozirgina yaratildi</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 kundan keyin yopilsin}other{<ph name="DAY_COUNT_MANY" /> kundan keyin yopilsin}}</translation>
+<translation id="4777866634702576038">Varaqlar guruhi oʻchirilsinmi?</translation>
+<translation id="4783638485675352219">Bu qurilmada ochilgan varaqlar sarlavha va URL manzillarini operatsion tizimga ulashish</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ta sharh)}other{(<ph name="REVIEWS_COUNT_MANY" /> ta sharh)}}</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="4870911314065352661">Barcha varaqlar yopilsinmi?</translation>
+<translation id="4871719318659334896">Guruhni yopish</translation>
+<translation id="4881695831933465202">Ochish</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
+<translation id="4908147833782857886"><ph name="USER_EMAIL" /> guruhlari saqlanib qoladi (varaqlar yopiladi va guruhlar oʻchiriladi)</translation>
 <translation id="492284538114688557">Narx pasayishi aniqlandi</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
+<translation id="5094423602314093681">Varaq(lar) olib tashlanib, guruh oʻchirilsinmi?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi}}</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_ONE" /> ta varaq bor}other{Sizda yaqinda ishlatilmagan <ph name="TABS_COUNT_MANY" /> ta varaq bor}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli guruhni yopish}other{<ph name="TABS_COUNT_MANY" /> ta varaqli guruhni yopish}}</translation>
 <translation id="5339733443032484186">Oxirgi varaq</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
-<translation id="5545379293264651575">Tekshirmasdan yopish</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Varaqlar guruhini yopish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Varaqlar guruhini yopish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
-<translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
+<translation id="5627941783489838464">Varaqlar oʻzgamagan</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Varaqni tiklash}other{Varaqlarni tiklash}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome brauzeridan <ph name="TABS_COUNT_ONE" /> ta havola}other{Chrome brauzeridan <ph name="TABS_COUNT_MANY" /> ta havola}}</translation>
 <translation id="575494663145460764">Narxlar tushganda xabar qilinsinmi?</translation>
 <translation id="58326064309361797">Varaqlarni guruhlash uchun bir-birining ustiga torting</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish</translation>
 <translation id="5901630391730855834">Sariq</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
 <translation id="6017514345406065928">Yashil</translation>
+<translation id="6040143037577758943">Yopish</translation>
+<translation id="6051432659151380973">Varaqlar guruhi avtomatik saqlanadi</translation>
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
+<translation id="6082313992897617440"><ph name="GROUP_NAME" /> varaqlar guruhiga ruxsat yopiladi</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
+<translation id="6271513594716432922">Barcha nofaol varaqlarni yopish</translation>
 <translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
+<translation id="6381032505162537930">Varaqlar guruhini shu yerdan topasiz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. Inkognito varagʻi chiqmaydi.}other{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. # ta inkognito varagʻi chiqmaydi.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
+<translation id="6527303717912515753">Ulashish</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 kundan keyin}other{<ph name="DAY_COUNT_MANY" /> kundan keyin}}</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
-<translation id="661742612106409204">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi.</translation>
-<translation id="6840760312327750441">Varaqlarni guruhlash uchun: bitta varaqni bosib ushlang, keyin uni boshqa varaqning ustiga tortib tashlang.</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ta varaq oʻzgardi}other{<ph name="MANY_CHANGED" /> ta varaq oʻzgardi}}</translation>
+<translation id="6694634756612002311">Ulashuvni boshqarish</translation>
+<translation id="6744956528665271406">Guruh rangini tahrirlash</translation>
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{<ph name="TITLE_OF_GROUP" /> umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Varaqni ulashish}other{Varaqlarni ulashish}}</translation>
 <translation id="7129458170538955174">Bu doʻkon haqidagi axborot yarim hajmda ochildi</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish}other{<ph name="TABS_COUNT_MANY" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish}}</translation>
 <translation id="7204204600596740190">Bir nechta elementni tanlash rejimi</translation>
+<translation id="7211038039686180558">Varaqlar guruhi hisobga kirilgan barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi</translation>
+<translation id="731648547091221002"><ph name="COLOR_NAME" /> tanlangan</translation>
 <translation id="7326879924029668159">Qaytarish siyosati va boshqalar</translation>
 <translation id="7352298686197644113">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>
+<translation id="7421293530411019405">Varaqlar guruhi tark etilsinmi?</translation>
+<translation id="7452985128687107478">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi</translation>
+<translation id="747459581954555080">Barchasini qayta tiklash</translation>
 <translation id="753732157349120914">Varaq almashtirgich</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ta sharh Googledan}other{<ph name="REVIEWS_COUNT_MANY" /> ta sharh Googledan}}</translation>
 <translation id="7559245342362162951">Guruh varaqlarini butun ekranga jadval shaklida chiqarish</translation>
+<translation id="7658239707568436148">Bekor qilish</translation>
+<translation id="7688386659311034820">Nofaol varaqlar oynasi</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni ulashish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni ulashish}}</translation>
+<translation id="7773714564112603605">Varaqni olib tashlash va guruhni oʻchirish</translation>
 <translation id="7792771145871471484">Batafsil.</translation>
+<translation id="7825973332242257878">Varaqlar guruhi</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Belgilangan <ph name="TABS_COUNT_ONE" /> ta varaqni guruhlash}other{Belgilangan <ph name="TABS_COUNT_MANY" /> ta varaqni guruhlash}}</translation>
+<translation id="7853202427316060426">Harakat</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_ONE" /> ta sharh}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_MANY" /> ta sharh}}</translation>
 <translation id="7885132941432959125">Varaqni oʻngga siljitish</translation>
+<translation id="7939917283308035850"><ph name="COLOR_NAME" /> tanlanmagan</translation>
 <translation id="7942349550061667556">Qizil</translation>
+<translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
+<translation id="799469866974412355">Boshqa qurilmadagi yangi guruh</translation>
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
+<translation id="8076492880354921740">Varaqlar</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, guruh varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
+<translation id="8261506727792406068">O‘chirish</translation>
+<translation id="8338427544764842461">Varaqlar guruhi shu yerda saqlanadi va hisobga kirilgan barcha qurilmalarda yangilanib turadi</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8398929769197326728">Yangi jild - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yoyish.</translation>
+<translation id="8428213095426709021">Sozlamalar</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ta varaq kiritildi, <ph name="ANY_CLOSED" /> tasi yopildi}other{<ph name="MANY_ADDED" /> ta varaq kiritildi, <ph name="ANY_CLOSED" /> tasi yopildi}}</translation>
+<translation id="8631711675211020168"><ph name="GROUP_NAME" /> varaqlar guruhi hammada ishlamay qoladi va barcha qurilmalardan oʻchiriladi</translation>
+<translation id="8633025649649592204">Oxirgi faollik</translation>
+<translation id="870736955561925754">Varaq yopilib, guruh oʻchirilsinmi?</translation>
 <translation id="8714939927607906138">Past narxda</translation>
+<translation id="8730621377337864115">Tayyor</translation>
 <translation id="8730999928494395583">Bu inkognito varaqlardagi harakatlar tarixi ushbu qurilmadan olib tashlanadi</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> oy oldin yaratilgan}other{<ph name="NUM_MONTHS_MANY" /> oy oldin yaratilgan}}</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>
+<translation id="8887921976452567404">Oxirgi varaqlar va Varaqlar guruhi panellaridagi yopilgan varaq va guruhlar qayta ochiladi.</translation>
+<translation id="8915916167043355778">Hammasini yopish</translation>
+<translation id="8926389886865778422">Qayta so‘ralmasin</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli guruhni yoyish.}other{<ph name="TABS_COUNT_MANY" /> ta varaqli guruhni yoyish.}}</translation>
 <translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
+<translation id="9111228330448174435">Yangi varaqlar guruhini yaratishda bildirgi chiqarish</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
-<translation id="955558140275419384">Barcha arxivlangan varaqlar tartiblanishini mazkur muharrir orqali tekshirish mumkin.</translation>
-<translation id="959682366969460160">Ishni tashkillash</translation>
+<translation id="9216898458513705996">Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="992256792861109788">Pushti</translation>
 </translationbundle>

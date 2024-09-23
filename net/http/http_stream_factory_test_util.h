@@ -90,6 +90,15 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   MOCK_METHOD1(OnNeedsClientAuth, void(SSLCertRequestInfo* cert_info));
 
   MOCK_METHOD0(OnQuicBroken, void());
+
+  // `switching_info` is not copyable and therefore cannot be mocked.
+  MOCK_METHOD1(OnSwitchesToHttpStreamPoolImpl,
+               void(HttpStreamPoolSwitchingInfo& switching_info));
+
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamPoolSwitchingInfo switching_info) override {
+    OnSwitchesToHttpStreamPoolImpl(switching_info);
+  }
 };
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
@@ -98,7 +107,7 @@ class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
       HttpStreamFactory::Job::Delegate* delegate,
       HttpStreamFactory::JobType job_type,
       HttpNetworkSession* session,
-      const HttpRequestInfo& request_info,
+      const HttpStreamFactory::StreamRequestInfo& request_info,
       RequestPriority priority,
       ProxyInfo proxy_info,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
@@ -129,7 +138,7 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       HttpStreamFactory::Job::Delegate* delegate,
       HttpStreamFactory::JobType job_type,
       HttpNetworkSession* session,
-      const HttpRequestInfo& request_info,
+      const HttpStreamFactory::StreamRequestInfo& request_info,
       RequestPriority priority,
       const ProxyInfo& proxy_info,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,

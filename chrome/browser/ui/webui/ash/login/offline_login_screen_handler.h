@@ -11,7 +11,7 @@ namespace ash {
 
 class OfflineLoginScreen;
 
-class OfflineLoginView : public base::SupportsWeakPtr<OfflineLoginView> {
+class OfflineLoginView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"offline-login",
                                                        "OfflineLoginScreen"};
@@ -36,10 +36,13 @@ class OfflineLoginView : public base::SupportsWeakPtr<OfflineLoginView> {
 
   // Shows error message for not matching email/password pair.
   virtual void ShowPasswordMismatchMessage() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<OfflineLoginView> AsWeakPtr() = 0;
 };
 
-class OfflineLoginScreenHandler : public BaseScreenHandler,
-                                  public OfflineLoginView {
+class OfflineLoginScreenHandler final : public BaseScreenHandler,
+                                        public OfflineLoginView {
  public:
   using TView = OfflineLoginView;
   OfflineLoginScreenHandler();
@@ -60,10 +63,14 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
   void ShowPasswordPage() override;
   void ShowOnlineRequiredDialog() override;
   void ShowPasswordMismatchMessage() override;
+  base::WeakPtr<OfflineLoginView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<OfflineLoginView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

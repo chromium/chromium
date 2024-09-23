@@ -18,9 +18,6 @@ BASE_FEATURE(kKidFriendlyContentFeed,
              "KidFriendlyContentFeed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint{
-    &kKidFriendlyContentFeed, "supervised_feed_endpoint", ""};
-
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -32,11 +29,6 @@ BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// Request priority experiment for ClassifyUrl (for critical path of rendering).
-BASE_FEATURE(kHighestRequestPriorityForClassifyUrl,
-             "HighestRequestPriorityForClassifyUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -59,39 +51,19 @@ bool IsLocalWebApprovalsEnabled() {
 #endif
 }
 
-// The following flags control whether supervision features are enabled on
-// desktop and iOS. There are granular sub-feature flags, which control
-// particular aspects. If one or more of these sub-feature flags are enabled,
-// then child account detection logic is implicitly enabled.
-BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-             "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
-             "SupervisedPrefsControlledBySupervisedStore",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-// Whether to display a "Managed by your parent" or similar text for supervised
-// users in various UI surfaces.
-BASE_FEATURE(kEnableManagedByParentUi,
-             "EnableManagedByParentUi",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kEnableSupervisedUserSkipParentApprovalToInstallExtensions,
              "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
+#if BUILDFLAG(IS_CHROMEOS)
+             // TODO(b/344580484): Cleanup the feature after at least 2
+             // milestones from full release, i.e. on M131.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings,
+             "UpdatedSupervisedUserExtensionApprovalStrings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -100,67 +72,117 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Runs a shadow no-op safe-sites call alongside kids-api call, to compare
-// latencies.
-BASE_FEATURE(kShadowKidsApiWithSafeSites,
-             "ShadowKidsApiWithSafeSites",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+BASE_FEATURE(kExposedParentalControlNeededForExtensionInstallation,
+             "ExposedParentalControlNeededForExtensionInstallation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool CanDisplayFirstTimeInterstitialBanner() {
+bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-}
-
-BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
-             "ForceGoogleSafeSearchForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The URL which the "Managed by your parent" UI links to. This is defined as a
-// FeatureParam (but with the currently correct default) because:
-// * We expect to change this URL in the near-term, this allows us to gradually
-//   roll out that change
-// * If the exact URL needs changing this can be done without requiring a binary
-//   rollout
-constexpr base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl{
-    &kEnableManagedByParentUi, "more_info_url",
-    "https://familylink.google.com/setting/resource/94"};
-
-BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
-             "CustomWebSignInInterceptForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
-             "MigrateAccountManagementSettingsToCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-bool IsChildAccountSupervisionEnabled() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  // Supervision features are fully supported on Android and ChromeOS.
-  return true;
+      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  bool skipParentApprovalEnabled = base::FeatureList::IsEnabled(
+      kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+  bool permissionExtensionsForSupervisedUsersEnabled =
+      base::FeatureList::IsEnabled(
+          kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  if (skipParentApprovalEnabled) {
+    DCHECK(permissionExtensionsForSupervisedUsersEnabled);
+  }
+  return skipParentApprovalEnabled &&
+         permissionExtensionsForSupervisedUsersEnabled;
 #else
-  return base::FeatureList::IsEnabled(
-             supervised_user::
-                 kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) ||
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-         base::FeatureList::IsEnabled(
-             supervised_user::
-                 kEnableExtensionsPermissionsForSupervisedUsersOnDesktop) ||
-#endif
-         base::FeatureList::IsEnabled(
-             supervised_user::kSupervisedPrefsControlledBySupervisedStore) ||
-         base::FeatureList::IsEnabled(
-             supervised_user::kEnableManagedByParentUi);
-#endif
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi,
+             "CustomWebSignInInterceptForSupervisedUsersUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSupervisedUserProfileSigninIPH,
+             "SupervisedUserProfileSigninIPH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kShowKiteForSupervisedUsers,
+             "ShowKiteForSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kHideGuestModeForSupervisedUsers,
+             "HideGuestModeForSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
+             "ForceSafeSearchForUnauthenticatedSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
+             "ForceSupervisedUserReauthenticationForYouTube",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kForceSupervisedUserReauthenticationForBlockedSites,
+             "ForceSupervisedUserReauthenticationForBlockedSites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
+             "CloseSignTabsFromReauthenticationInterstitial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
+             "EnableSupervisedUserReauthenticationForSubframes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
+             "UncredentialedFilteringFallbackForSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
+             "WaitUntilAccessTokenAvailableForClassifyUrl",
+#if BUILDFLAG(IS_ANDROID)
+             // Android enforces at the OS level that supervised users must have
+             // valid sign in credentials (and triggers a reauth if not). We can
+             // therefore wait for a valid access token to be available before
+             // calling ClassifyUrl, to avoid window conditions where the access
+             // token is not yet available (eg. during startup).
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // Other platforms don't enforce this, and we therefore cannot
+             // wait for access tokens in Chrome.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
+             "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
+             "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kFetchListFamilyMembersWithCapability,
+             "FetchListFamilyMembersWithCapability",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
+             "UseFamilyMemberRolePrefsForFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
+             "ClassifyUrlOnProcessResponseEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
-}
-
-bool IsShadowKidsApiWithSafeSitesEnabled() {
-  return base::FeatureList::IsEnabled(kShadowKidsApiWithSafeSites);
 }
 
 }  // namespace supervised_user

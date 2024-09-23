@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -142,7 +143,7 @@ void BoundsAnimator::SetAnimationDelegate(
     View* view,
     std::unique_ptr<AnimationDelegate> delegate) {
   const auto i = data_.find(view);
-  DCHECK(i != data_.end());
+  CHECK(i != data_.end(), base::NotFatalUntil::M130);
 
   i->second.delegate = std::move(delegate);
 }
@@ -210,7 +211,7 @@ BoundsAnimator::Data::~Data() = default;
 
 BoundsAnimator::Data BoundsAnimator::RemoveFromMaps(View* view) {
   const auto i = data_.find(view);
-  DCHECK(i != data_.end());
+  CHECK(i != data_.end(), base::NotFatalUntil::M130);
   DCHECK_GT(animation_to_view_.count(i->second.animation.get()), 0u);
 
   Data old_data = std::move(i->second);
@@ -340,14 +341,12 @@ void BoundsAnimator::AnimationContainerProgressed(
     repaint_bounds_.SetRect(0, 0, 0, 0);
   }
 
-  for (BoundsAnimatorObserver& observer : observers_)
-    observer.OnBoundsAnimatorProgressed(this);
+  observers_.Notify(&BoundsAnimatorObserver::OnBoundsAnimatorProgressed, this);
 
   if (!IsAnimating()) {
     // Notify here rather than from AnimationXXX to avoid deleting the animation
     // while the animation is calling us.
-    for (BoundsAnimatorObserver& observer : observers_)
-      observer.OnBoundsAnimatorDone(this);
+    observers_.Notify(&BoundsAnimatorObserver::OnBoundsAnimatorDone, this);
   }
 }
 

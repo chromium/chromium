@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/model_execution/ModelExecutionManager.java" ]
+
+  deps = [ "//base:base_java" ]
+
+  public_deps = [ ":delegate_java" ]
+}
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/model_execution/ExecutionResult.java",
+    "java/src/org/chromium/chrome/browser/model_execution/ModelExecutionFeature.java",
+    "java/src/org/chromium/chrome/browser/model_execution/ModelExecutionSession.java",
+    "java/src/org/chromium/chrome/browser/model_execution/ModelExecutionSessionImpl.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/ModelExecutionSessionImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/model_execution/ModelExecutionSessionImpl.java" ]
+
+  deps = [
+    ":delegate_java",
+    "//base:base_java",
+  ]
+}

@@ -31,6 +31,52 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Warned"/>
 </enum>
 
+<enum name="CertificatePrivateKeySource">
+  <int value="0" label="Unexportable"/>
+  <int value="1" label="Software"/>
+</enum>
+
+<enum name="CertificateProvisioningError">
+  <int value="0" label="Identity Loading Failed"/>
+  <int value="1" label="Temporary Identity Loading Failed"/>
+  <int value="2" label="Missing Private Key"/>
+  <int value="3" label="Missing Temporary Private Key"/>
+  <int value="4" label="Private Key Creation Failed"/>
+  <int value="5" label="Certificate Creation Failed"/>
+  <int value="6" label="Certificate Commit Failed"/>
+</enum>
+
+<enum name="CertificateStoreError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid Identity Name"/>
+  <int value="2" label="Invalid Database State"/>
+  <int value="3" label="Get Database Entry Failed"/>
+  <int value="4" label="Conflicting Identity"/>
+  <int value="5" label="Create Key Failed"/>
+  <int value="6" label="Save Key Failed"/>
+  <int value="7" label="Invalid Certificate Input"/>
+  <int value="8" label="Certificate Commit Failed"/>
+  <int value="9" label="Load Key Failed"/>
+  <int value="10" label="Invalid Final Identity Name"/>
+  <int value="11" label="Identity Not Found"/>
+</enum>
+
+<enum name="CertificateUploadClientError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid Key Parameter"/>
+  <int value="2" label="Signature Creation Failed"/>
+  <int value="3" label="Missing DM Token"/>
+  <int value="4" label="Missing Upload URL"/>
+  <int value="5" label="Invalid Upload URL"/>
+</enum>
+
+<enum name="DataProtectionURLVerdictSource">
+  <int value="0" label="Page UserData"/>
+  <int value="1" label="Cached lookup result"/>
+  <int value="2" label="Post navigation lookup"/>
+  <int value="3" label="WebContents UserData"/>
+</enum>
+
 <enum name="DeviceIdentifierStatus">
   <int value="0" label="all device identifiers are present"/>
   <int value="1" label="serial number is missing"/>
@@ -402,6 +448,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Other error"/>
 </enum>
 
+<enum name="EnterpriseCloudUserAffiliationStatus">
+  <summary>Cloud user affiliation status.</summary>
+  <int value="0" label="Only user managed"/>
+  <int value="1" label="Device and user managed and unaffiliated"/>
+  <int value="2" label="Device and user managed and affiliated"/>
+</enum>
+
 <enum name="EnterpriseCrdSessionResultCode">
   <summary>Types of CRD sessions connection request result code.</summary>
   <int value="0" label="SUCCESS"/>
@@ -434,6 +487,8 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="FAILURE_HOST_INVALID_DOMAIN_ERROR"/>
   <int value="28" label="HOST_SESSION_DISCONNECTED"/>
   <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
+  <int value="30" label="FAILURE_REAUTHZ_POLICY_CHECK_FAILED"/>
+  <int value="31" label="FAILURE_NO_COMMON_AUTH_METHOD"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">
@@ -551,15 +606,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kMove"/>
   <int value="6" label="kOpen"/>
   <int value="7" label="kShare"/>
-</enum>
-
-<enum name="EnterpriseDlpPolicyLevel">
-  <summary>Restriction level enforced by Data Leak Prevention policy.</summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Report"/>
-  <int value="2" label="Warn"/>
-  <int value="3" label="Block"/>
-  <int value="4" label="Allow"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyRestriction">
@@ -812,6 +858,24 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kFailedOnEnqueueingEvent"/>
 </enum>
 
+<enum name="EnterpriseKeySignatureVerification">
+  <summary>
+    Defined as MetricKeySignatureVerification in
+    components/policy/core/common/cloud/cloud_policy_validator.cc.
+  </summary>
+  <int value="0" label="Key signature validation succeeded with new data">
+    The new_public_key_verification_data field worked.
+  </int>
+  <int value="1"
+      label="Key signature validation succeeded with deprecated data">
+    The new_public_key_verification_data field failed but the backup in
+    new_public_key_verification_signature_deprecated worked.
+  </int>
+  <int value="2" label="Key signature validation failed">
+    Both signatures for the key failed to validate.
+  </int>
+</enum>
+
 <enum name="EnterpriseMacMDMStatusNew">
   <summary>
     The Mac MDM enrollment status (new API). See
@@ -826,14 +890,6 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="DEP Enrollment (automatically grants UAMDM status / full
              management capabilities)"/>
-</enum>
-
-<enum name="EnterpriseMacMDMStatusOld">
-  <summary>The Mac MDM enrollment status (old API).</summary>
-  <int value="0" label="API unavailable"/>
-  <int value="1" label="Unable to parse result"/>
-  <int value="2" label="No enrollment"/>
-  <int value="3" label="MDM enrollment"/>
 </enum>
 
 <enum name="EnterprisePolicies">
@@ -1773,7 +1829,6 @@ chromium-metrics-reviews@google.com.
   <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
   <int value="956" label="SecondaryGoogleAccountUsage"/>
   <int value="957" label="DeviceEncryptedReportingPipelineEnabled"/>
-  <int value="958" label="IsolatedAppsDeveloperModeAllowed"/>
   <int value="959" label="FloatingWorkspaceEnabled"/>
   <int value="960" label="WindowPlacementAllowedForUrls"/>
   <int value="961" label="WindowPlacementBlockedForUrls"/>
@@ -2025,11 +2080,88 @@ chromium-metrics-reviews@google.com.
   <int value="1209" label="DeviceWeeklyScheduledSuspend"/>
   <int value="1210" label="RemoteAccessHostAllowUrlForwarding"/>
   <int value="1211" label="ScreenCaptureLocation"/>
-  <int value="1212" label="AllowDomainsForAppsList"/>
+  <int value="1212" label="AllowedDomainsForAppsList"/>
   <int value="1213" label="ChromeForTestingAllowed"/>
   <int value="1214" label="GoogleLocationServicesEnabled"/>
   <int value="1215" label="ProvisionManagedClientCertificateForUser"/>
   <int value="1216" label="LocalUserFilesAllowed"/>
+  <int value="1218"
+      label="SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins"/>
+  <int value="1219" label="DefaultWebPrintingSetting"/>
+  <int value="1220" label="WebPrintingAllowedForUrls"/>
+  <int value="1221" label="WebPrintingBlockedForUrls"/>
+  <int value="1222" label="DocumentScanAPITrustedExtensions"/>
+  <int value="1223" label="RemoteAccessHostAllowPinAuthentication"/>
+  <int value="1224" label="DownloadManagerSaveToDriveSettings"/>
+  <int value="1225" label="AutomaticFullscreenAllowedForUrls"/>
+  <int value="1226" label="AutomaticFullscreenBlockedForUrls"/>
+  <int value="1227" label="MutationEventsEnabled"/>
+  <int value="1228" label="DevToolsGenAiSettings"/>
+  <int value="1229" label="CACertificatesWithConstraints"/>
+  <int value="1230" label="DefaultDirectSocketsSetting"/>
+  <int value="1231" label="DirectSocketsAllowedForUrls"/>
+  <int value="1232" label="DirectSocketsBlockedForUrls"/>
+  <int value="1234" label="PrefixedVideoFullscreenApiAvailability"/>
+  <int value="1235" label="PrivacySandboxIpProtectionEnabled"/>
+  <int value="1236" label="OrcaEnabled"/>
+  <int value="1237" label="EnterpriseLogoUrl"/>
+  <int value="1238" label="EnterpriseCustomLabel"/>
+  <int value="1239" label="ProfileLabel"/>
+  <int value="1240" label="PrivacySandboxFingerprintingProtectionEnabled"/>
+  <int value="1241" label="MultiScreenCaptureAllowedForUrls"/>
+  <int value="1244" label="BoundSessionCredentialsEnabled"/>
+  <int value="1245" label="UiAutomationProviderEnabled"/>
+  <int value="1246" label="ApplicationBoundEncryptionEnabled"/>
+  <int value="1247" label="DeviceAuthenticationFlowAutoReloadInterval"/>
+  <int value="1248" label="ShowAiIntroScreenEnabled"/>
+  <int value="1250" label="EnterpriseBadgingTemporarySetting"/>
+  <int value="1251" label="GenAILocalFoundationalModelSettings"/>
+  <int value="1252" label="DeviceExtensionsSystemLogEnabled"/>
+  <int value="1253" label="ChromeDataRegionSetting"/>
+  <int value="1254" label="ContextualGoogleIntegrationsEnabled"/>
+  <int value="1255" label="ContextualGoogleIntegrationsConfiguration"/>
+  <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
+  <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
+  <int value="1258" label="KeyboardFocusableScrollersEnabled"/>
+  <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
+  <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
+  <int value="1261" label="MemorySaverModeSavings"/>
+  <int value="1262" label="KioskVisionTelemetryEnabled"/>
+  <int value="1263" label="GenAIWallpaperSettings"/>
+  <int value="1264" label="GenAIVcBackgroundSettings"/>
+  <int value="1265" label="DynamicCodeSettings"/>
+  <int value="1266" label="LensOverlaySettings"/>
+  <int value="1267" label="ThirdPartyPasswordManagersAllowed"/>
+  <int value="1268" label="DeviceAllowEnterpriseRemoteAccessConnections"/>
+  <int value="1270" label="FocusModeSoundsEnabled"/>
+  <int value="1271" label="ExtensionDeveloperModeSettings"/>
+  <int value="1272" label="LocalUserFilesMigrationDestination"/>
+  <int value="1273" label="KioskBrowserPermissionsAllowedForOrigins"/>
+  <int value="1274" label="LensOnGalleryEnabled"/>
+  <int value="1275" label="HistorySearchSettings"/>
+  <int value="1276" label="DevicePostQuantumKeyAgreementEnabled"/>
+  <int value="1277" label="DefaultJavaScriptOptimizerSetting"/>
+  <int value="1278" label="JavaScriptOptimizerAllowedForSites"/>
+  <int value="1279" label="JavaScriptOptimizerBlockedForSites"/>
+  <int value="1280" label="PromotionsEnabled"/>
+  <int value="1281" label="QRCodeGeneratorEnabled"/>
+  <int value="1282" label="DnsOverHttpsExcludedDomains"/>
+  <int value="1283" label="DnsOverHttpsIncludedDomains"/>
+  <int value="1284" label="SystemShortcutBehavior"/>
+  <int value="1285" label="DeletingUndecryptablePasswordsEnabled"/>
+  <int value="1286" label="StandardizedBrowserZoomEnabled"/>
+  <int value="1287" label="ReportingEndpoints"/>
+  <int value="1288" label="PrintingLPACSandboxEnabled"/>
+  <int value="1289" label="ShowGeminiIntroScreenEnabled"/>
+  <int value="1290" label="DeviceRestrictionSchedule"/>
+  <int value="1291" label="TabCompareSettings"/>
+  <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
+  <int value="1293" label="KioskWebAppOfflineEnabled"/>
+  <int value="1294" label="GraduationEnablementStatus"/>
+  <int value="1295" label="HelpMeReadSettings"/>
+  <int value="1296" label="GenAiDefaultSettings"/>
+  <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
+  <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2047,6 +2179,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="EnrollmentOnly">
     There is no policy except CBCM enrollment token and option.
   </int>
+</enum>
+
+<enum name="EnterprisePolicyDeviceIdValidity">
+  <summary>
+    Defined as PolicyDeviceIdValidity in
+    components/policy/core/common/cloud/enterprise_metrics.h.
+  </summary>
+  <int value="0" label="Valid"/>
+  <int value="1" label="Actual device ID is unknown"/>
+  <int value="2" label="Missing"/>
+  <int value="3" label="Invalid"/>
 </enum>
 
 <enum name="EnterprisePolicyInvalidations">
@@ -2135,6 +2278,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure encoding the profile id."/>
 </enum>
 
+<enum name="EnterpriseProfileUnaffiliatedReason">
+  <summary>Profile management status.</summary>
+  <int value="0" label="User unmanaged"/>
+  <int value="1" label="User managed by cloud and device unmanaged"/>
+  <int value="2" label="User managed by cloud and device managed by platform"/>
+  <int value="3" label="User and device managed by cloud and unaffiliated"/>
+</enum>
+
 <enum name="EnterpriseReportingEventType">
   <int value="0" label="Unknown event"/>
   <int value="1" label="Password reuse event"/>
@@ -2148,6 +2299,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="URL filtering interstitial event"/>
   <int value="10" label="Extension install event"/>
   <int value="11" label="Browser crash event"/>
+  <int value="12" label="Extension telemetry event"/>
+</enum>
+
+<enum name="EnterpriseUserInfoFetchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed with a network error"/>
+  <int value="2" label="Can't parse JSON in response"/>
+  <int value="3" label="Response is not a dictionary"/>
 </enum>
 
 <enum name="EnterpriseUserPolicyChromeOSReregistrationResult">
@@ -2217,11 +2376,47 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ManagedScreensaverImageDownloadResult">
+<!-- Keep this in sync with ScreensaverImageDownloadResult in
+  //ash/ambient/managed/screensaver_image_downloader.h -->
+
   <int value="0" label="Image downloaded successfully"/>
   <int value="1" label="Network error"/>
   <int value="2" label="File save error"/>
   <int value="3" label="Write to filesystem error"/>
   <int value="4" label="Image download cancelled"/>
+</enum>
+
+<enum name="OidcInterceptionFunnelStep">
+  <int value="0" label="Created throttle for valid redirection"/>
+  <int value="1" label="Successfuly parsed out required info for registration"/>
+  <int value="2" label="Enrollment attempt started"/>
+  <int value="3" label="Showed unified consent dialog"/>
+  <int value="4" label="Started OIDC profile registration"/>
+</enum>
+
+<enum name="OidcInterceptionResult">
+  <int value="0" label="Other interception in progress"/>
+  <int value="1" label="Interception is for the current profile"/>
+  <int value="2" label="Can't retrieve info from URL"/>
+  <int value="3" label="Unified consent dialog rejected"/>
+  <int value="4" label="OIDC profile registration failure"/>
+  <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
+</enum>
+
+<enum name="OidcProfileCreationFunnelStep">
+  <int value="0" label="OIDC-managed profile created"/>
+  <int value="1" label="Started policy fetch"/>
+  <int value="2" label="Adding GAIA user as primary account"/>
+</enum>
+
+<enum name="OidcProfileCreationResult">
+  <int value="0" label="OIDC profile flow succeeds"/>
+  <int value="1" label="Profile Switch"/>
+  <int value="2" label="OIDC-managed profile creation failure"/>
+  <int value="3" label="OIDC profile policy fetch failure"/>
+  <int value="4"
+      label="Dasher-based OIDC profile can't add/set primary account"/>
+  <int value="5" label="Profile ID mismatch with registration request"/>
 </enum>
 
 <enum name="OsSuite">
@@ -2298,7 +2493,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Clear the cache and cookies command"/>
   <int value="19" label="Resets the cellular EUICC command"/>
   <int value="20" label="Rotate attestation credentials command"/>
-  <int value="21" label="Fetch support packet command"/>
+  <int value="21" label="Fetch CRD availability info command"/>
+  <int value="22" label="Fetch support packet command"/>
 </enum>
 
 <enum name="ReportSchedulerReportTrigger">
@@ -2328,6 +2524,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GetUserInfoError"/>
 </enum>
 
+<enum name="StateDeterminationStatus">
+  <int value="0" label="Disabled via never switch"/>
+  <int value="1" label="Disabled via kill switch"/>
+  <int value="2" label="Disabled on unbranded build"/>
+  <int value="3" label="Disabled on non-Chrome device"/>
+  <int value="4" label="Enabled on official Google Chrome"/>
+  <int value="5" label="Enabled on official Google Flex"/>
+  <int value="6" label="Enabled via always switch"/>
+</enum>
+
 <enum name="StateKeysRetrievalErrorType">
   <int value="0" label="No error"/>
   <int value="1" label="Invalid response"/>
@@ -2348,10 +2554,26 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Explore"/>
 </enum>
 
-<enum name="VPDCacheReadResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="File missing"/>
-  <int value="2" label="Parsing failed"/>
+<enum name="WindowsProfileType">
+  <int value="0" label="API Failed">The API call to GetProfileType failed.</int>
+  <int value="1" label="Invalid">
+    GetProfileType returned an invalid profile type.
+  </int>
+  <int value="2" label="None">
+    GetProfileType returned no profile type. This usually implies a local
+    (non-roaming) profile.
+  </int>
+  <int value="3" label="PT_MANDATORY">
+    The user has a Mandatory User Profiles.
+  </int>
+  <int value="4" label="PT_ROAMING">The user has a Roaming User Profiles.</int>
+  <int value="5" label="PT_ROAMING_PREEXISTING">
+    The user has a Roaming User Profile that was created on another PC and is
+    being downloaded. This profile type implies PT_ROAMING.
+  </int>
+  <int value="6" label="PT_TEMPORARY">
+    The user has a Temporary User Profiles; it will be deleted at logoff.
+  </int>
 </enum>
 
 <enum name="WmiQueryError">

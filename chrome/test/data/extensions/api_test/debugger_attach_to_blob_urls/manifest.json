@@ -1,0 +1,11 @@
+{
+  "name": "Debugger BLOB Access Test",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": ["debugger", "tabs", "scripting"],
+  "host_permissions": ["*://a.com/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}

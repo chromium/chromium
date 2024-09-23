@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "Vulkan/ScreenshotIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "jamescook@chromium.org"
+  - email: "chromeos-gfx@google.com"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: False
+criteria: |
+  Takes a screenshot and validates its average color
+cases:
+  - id: "DISABLED_AverageColor/0"
+    tags: []
+  - id: "DISABLED_AverageColor/1"
+    tags: []
+...

@@ -4,20 +4,23 @@
 
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace password_manager {
 
-CSVFieldParser::CSVFieldParser(base::StringPiece row) : row_(row) {}
+CSVFieldParser::CSVFieldParser(std::string_view row) : row_(row) {}
 
 CSVFieldParser::~CSVFieldParser() = default;
 
-bool CSVFieldParser::NextField(base::StringPiece* field_contents) {
+bool CSVFieldParser::NextField(std::string_view* field_contents) {
   DCHECK(HasMoreFields());
-  if (fields_returned_ >= kMaxFields)
+  if (fields_returned_ >= kMaxFields) {
     return false;
+  }
 
   if (state_ != State::kInit) {
     state_ = State::kError;
@@ -31,8 +34,7 @@ bool CSVFieldParser::NextField(base::StringPiece* field_contents) {
 
   if (state_ != State::kError) {
     DCHECK_GT(position_, start);  // There must have been at least the ','.
-    *field_contents =
-        base::StringPiece(row_.data() + start, position_ - start - 1);
+    *field_contents = row_.substr(start, position_ - start - 1);
 
     if (base::StartsWith(*field_contents, "\"")) {
       DCHECK(base::EndsWith(*field_contents, "\"")) << *field_contents;
@@ -51,8 +53,9 @@ char CSVFieldParser::ConsumeChar() {
   // The default character to return once all from |row_| are consumed and
   // |position_| == |row_.size()|.
   char ret = ',';
-  if (position_ < row_.size())
+  if (position_ < row_.size()) {
     ret = row_[position_];
+  }
   ++position_;
   return ret;
 }
@@ -112,7 +115,7 @@ void CSVFieldParser::UpdateState() {
       }
       break;
     case State::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

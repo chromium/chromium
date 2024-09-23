@@ -1,0 +1,66 @@
+<style include="cros-color-overrides cr-hidden-style">
+  :host {
+    display: inline-flex;
+  }
+
+  cr-policy-pref-indicator {
+    align-self: center;
+    margin-inline-start: var(--cr-controlled-by-spacing);
+  }
+
+  #labels[disabled] {
+    color: var(--cros-sys-disabled);
+  }
+
+  div.outer {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+    min-width: 200px;
+  }
+
+  #labels {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: -4px 16px 0 16px;
+  }
+
+  #minLabel, #maxLabel {
+    font: var(--cros-annotation-1-font);
+  }
+
+  #minLabel {
+    margin-inline-end: 4px;
+  }
+
+  #maxLabel {
+    margin-inline-start: 4px;
+  }
+</style>
+
+<template is="dom-if" if="[[isPrefEnforced]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+<div class="outer">
+  <cr-slider id="slider"
+      ticks="[[ticks]]"
+      min="[[min]]"
+      max="[[max]]"
+      disabled$="[[disabled]]"
+      on-cr-slider-value-changed="onSliderChanged_"
+      on-dragging-changed="onSliderChanged_"
+      on-updating-from-key="onSliderChanged_"
+      aria-roledescription$="[[getRoleDescription_(minLabel, maxLabel)]]"
+      aria-label="[[ariaLabel]]"
+      aria-description="[[ariaDescription]]"
+      aria-disabled$="[[getAriaDisabled_(disabled)]]">
+  </cr-slider>
+  <!-- aria-hidden because role description on #slider contains min/max. -->
+  <div id="labels" hidden="[[hideLabel]]" disabled$="[[disabled]]"
+      aria-hidden="true">
+    <div id="minLabel">[[minLabel]]</div>
+    <div id="maxLabel">[[maxLabel]]</div>
+  </div>
+</div>

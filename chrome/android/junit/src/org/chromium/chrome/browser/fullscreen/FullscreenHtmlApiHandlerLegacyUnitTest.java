@@ -16,9 +16,7 @@ import android.view.View.OnLayoutChangeListener;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -30,7 +28,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,8 +42,6 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     private static final int DEVICE_WIDTH = 900;
     private static final int DEVICE_HEIGHT = 1600;
     private static final int SYSTEM_UI_HEIGHT = 100;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Activity mActivity;
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;

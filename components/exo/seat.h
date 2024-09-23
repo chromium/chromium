@@ -8,6 +8,7 @@
 #include <array>
 
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -44,7 +45,7 @@ class Seat : public aura::client::FocusChangeObserver,
              public ui::PlatformEventObserver,
              public ui::EventHandler,
              public ui::ClipboardObserver,
-             public ash::ImeControllerImpl::Observer,
+             public ash::ImeController::Observer,
              public DataSourceObserver {
  public:
   explicit Seat(std::unique_ptr<DataExchangeDelegate> delegate);
@@ -89,7 +90,8 @@ class Seat : public aura::client::FocusChangeObserver,
   virtual Surface* GetFocusedSurface();
 
   // Returns currently pressed keys.
-  const base::flat_map<ui::DomCode, KeyState>& pressed_keys() const {
+  const base::flat_map<PhysicalCode, base::flat_set<KeyState>>& pressed_keys()
+      const {
     return pressed_keys_;
   }
 
@@ -100,7 +102,7 @@ class Seat : public aura::client::FocusChangeObserver,
   }
 
   // Returns physical code for the currently processing event.
-  ui::DomCode physical_code_for_currently_processing_event() const {
+  const PhysicalCode& physical_code_for_currently_processing_event() const {
     return physical_code_for_currently_processing_event_;
   }
 
@@ -138,14 +140,14 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-  // Overridden from ash::ImeControllerImpl::Observer:
+  // Overridden from ash::ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 
   UILockController* GetUILockControllerForTesting();
 
   void set_physical_code_for_currently_processing_event_for_testing(
-      ui::DomCode physical_code_for_currently_processing_event) {
+      PhysicalCode physical_code_for_currently_processing_event) {
     physical_code_for_currently_processing_event_ =
         physical_code_for_currently_processing_event;
   }
@@ -214,10 +216,11 @@ class Seat : public aura::client::FocusChangeObserver,
       priority_observer_list_;
 
   // The platform code is the key in this map as it represents the physical
-  // key that was pressed. The value is a potentially rewritten code that the
-  // physical key press generated.
-  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
-  ui::DomCode physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
+  // key that was pressed. The value is a set of potentially rewritten key codes
+  // that the physical key press generated.
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys_;
+  PhysicalCode physical_code_for_currently_processing_event_ =
+      ui::DomCode::NONE;
 
   // Data source being used as a clipboard content.
   std::unique_ptr<ScopedDataSource> selection_source_;

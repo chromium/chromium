@@ -13,13 +13,12 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
 #include "url/gurl.h"
@@ -267,7 +266,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       id = IDC_NAV_STOP;
       break;
     default:
-      NOTREACHED() << "Unknown UI control";
+      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
       return;
   }
   [[shell_data.delegate.window.contentView viewWithTag:id]
@@ -331,7 +330,7 @@ void ShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(
 bool ShellPlatformDelegate::HandleKeyboardEvent(
     Shell* shell,
     WebContents* source,
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (event.skip_if_unhandled || Shell::ShouldHideToolbar()) {
     return false;
   }

@@ -327,8 +327,9 @@ function expectMockedTabNavigationEvents(url) {
 var requestsIntercepted = [];
 var onBeforeRequest = function(details) {
   // Ignore favicon requests.
-  if (details.url.match(/\/favicon.ico$/))
+  if (details.url.match(/\/favicon.ico$/)) {
     return;
+  }
 
   requestsIntercepted.push(details.url);
 };

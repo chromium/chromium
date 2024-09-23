@@ -14,7 +14,8 @@ def assert_browsing_context(
     info,
     context,
     children=None,
-    is_root=True,
+    original_opener=None,
+    parent_expected=True,
     parent=None,
     url=None,
     user_context="default",
@@ -34,7 +35,7 @@ def assert_browsing_context(
     if context is not None:
         assert info["context"] == context
 
-    if is_root:
+    if parent_expected:
         if parent is None:
             # For a top-level browsing context there is no parent
             assert info["parent"] is None
@@ -51,6 +52,14 @@ def assert_browsing_context(
     assert isinstance(info["url"], str)
     assert info["url"] == url
     assert info["userContext"] == user_context
+    assert info["originalOpener"] == original_opener
+
+
+async def assert_document_status(bidi_session, context, visible, focused):
+    state = "visible" if visible else "hidden"
+
+    assert await get_visibility_state(bidi_session, context) == state
+    assert await get_document_focus(bidi_session, context) is focused
 
 
 def assert_navigation_info(event, expected_navigation_info):

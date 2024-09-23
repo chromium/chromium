@@ -14,6 +14,7 @@
 @protocol BrowserCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol FindInPageCommands;
+@protocol HelpCommands;
 @protocol LoadQueryCommands;
 @protocol PageInfoCommands;
 @protocol PopupMenuActionHandlerDelegate;
@@ -48,6 +49,7 @@ class WebNavigationBrowserAgent;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 @property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
 
 @end

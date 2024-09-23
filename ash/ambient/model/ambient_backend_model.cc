@@ -9,9 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -114,6 +116,13 @@ void AmbientBackendModel::AddNextImage(
   bool new_images_ready = ImagesReady();
   if (!old_images_ready && new_images_ready) {
     NotifyImagesReady();
+    if (photo_with_details.topic_type == ::ambient::TopicType::kPersonal) {
+      ambient::RecordAmbientModeTopicSource(
+          personalization_app::mojom::TopicSource::kGooglePhotos);
+    } else {
+      ambient::RecordAmbientModeTopicSource(
+          personalization_app::mojom::TopicSource::kArtGallery);
+    }
   } else if (!new_images_ready &&
              all_decoded_topics_.size() >=
                  photo_config_.min_total_topics_required &&

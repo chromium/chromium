@@ -9,23 +9,22 @@
 #include <lib/fidl/cpp/binding_set.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 
 // Constructs an Annotation with the specified `value` set, either directly
 // as `text`, or in a VMO `buffer`, depending on its size.
-fuchsia::element::Annotation MakeAnnotation(base::StringPiece key,
-                                            base::StringPiece value);
+fuchsia::element::Annotation MakeAnnotation(std::string_view key,
+                                            std::string_view value);
 
 // Helper functions for constructing numeric and boolean annotations.
-fuchsia::element::Annotation MakeBoolAnnotation(base::StringPiece key,
+fuchsia::element::Annotation MakeBoolAnnotation(std::string_view key,
                                                 bool value);
-fuchsia::element::Annotation MakeIntAnnotation(base::StringPiece key,
-                                               int value);
+fuchsia::element::Annotation MakeIntAnnotation(std::string_view key, int value);
 
 struct AnnotationKeyCompare {
   bool operator()(const fuchsia::element::AnnotationKey& key1,

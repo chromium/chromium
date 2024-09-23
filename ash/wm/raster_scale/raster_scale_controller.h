@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -132,7 +133,7 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
 
   // Holds a set of windows that have had their raster scales change while
   // RasterScaleController is paused.
-  base::flat_set<aura::Window*> pending_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> pending_windows_;
 
   // Raster scale won't be updated for a window unless the currently requested
   // raster scale is more than `raster_scale_slop_proportion_` different by

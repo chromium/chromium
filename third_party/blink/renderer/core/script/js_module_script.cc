@@ -43,14 +43,14 @@ JSModuleScript* JSModuleScript::Create(
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate,
-                                 ExceptionContextType::kOperationInvoke,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
                                  "JSModuleScript", "Create");
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result = ModuleRecord::Compile(
-      script_state, params, options, start_position, exception_state,
+      script_state, params, options, start_position, rethrow_scope,
       modulator->GetV8CacheOptions(), &produce_cache_data);
 
   // CreateInternal processes Steps 4 and 8-10.
@@ -64,12 +64,12 @@ JSModuleScript* JSModuleScript::Create(
       params.BaseURL(), options, start_position, produce_cache_data);
 
   // <spec step="8">If result is a list of errors, then:</spec>
-  if (exception_state.HadException()) {
+  if (rethrow_scope.HasCaught()) {
     DCHECK(result.IsEmpty());
 
     // <spec step="8.1">Set script's parse error to result[0].</spec>
-    v8::Local<v8::Value> error = exception_state.GetException();
-    exception_state.ClearException();
+    v8::Local<v8::Value> error = rethrow_scope.GetException();
+    rethrow_scope.SwallowException();
     script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
 
     // <spec step="8.2">Return script.</spec>

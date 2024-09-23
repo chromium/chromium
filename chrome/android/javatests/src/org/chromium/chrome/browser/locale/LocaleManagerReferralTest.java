@@ -16,13 +16,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -40,7 +40,7 @@ public class LocaleManagerReferralTest {
         mDefaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("ru", "RU"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocaleManager.getInstance()
                             .setDelegateForTest(
@@ -52,7 +52,7 @@ public class LocaleManagerReferralTest {
                                     });
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Void>() {
                     @Override
                     public Void call() {
@@ -72,11 +72,11 @@ public class LocaleManagerReferralTest {
     public void testYandexReferralId() throws TimeoutException {
         final CallbackHelper templateUrlServiceLoaded = new CallbackHelper();
         TemplateUrlService templateUrlService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile()));
-        TestThreadUtils.runOnUiThreadBlocking(
+                                        ProfileManager.getLastUsedRegularProfile()));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     templateUrlService.registerLoadListener(
                             new TemplateUrlService.LoadListener() {
@@ -91,7 +91,7 @@ public class LocaleManagerReferralTest {
 
         templateUrlServiceLoaded.waitForCallback("Template URLs never loaded", 0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     templateUrlService.setSearchEngine("yandex.ru");
 

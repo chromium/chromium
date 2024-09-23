@@ -5,9 +5,11 @@
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 
 #include "base/base64.h"
+#include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/components/quick_start/types.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/sha2.h"
@@ -24,6 +26,21 @@ constexpr char kFlowTypeKey[] = "flowType";
 // bootstrapOptions key telling the phone the number of
 // accounts are expected to transfer account to the target device.
 constexpr char kAccountRequirementKey[] = "accountRequirement";
+// bootstrapOptions key telling the deviceName of target device.
+constexpr char kDeviceNameKey[] = "deviceName";
+// bootstrapOptions key containing object with phone actions after transfer.
+constexpr char kPostTransferActionKey[] = "PostTransferAction";
+// bootstrapOptions URI key inside the PostTransferAction object.
+constexpr char kPostTransferActionURIKey[] = "uri";
+// bootstrapOptions PostTransferAction uri value.
+constexpr char kPostTransferActionURIValue[] =
+    "intent:#Intent;action=com.google.android.gms.quickstart.LANDING_SCREEN;"
+    "package=com.google.android.gms;end";
+
+// Device names
+constexpr char kChromebook[] = "Chromebook";
+constexpr char kChromebase[] = "Chromebase";
+constexpr char kChromebox[] = "Chromebox";
 
 // Base64 encoded CBOR bytes containing the Fido command. This will be used
 // for GetInfo and GetAssertion.
@@ -82,6 +99,19 @@ constexpr int kBootstrapStateComplete = 2;
 // Key in BootstrapState message.
 constexpr char kBootstrapStateKey[] = "bootstrapState";
 
+std::string GetDeviceName() {
+  switch (chromeos::GetDeviceType()) {
+    case chromeos::DeviceType::kChromebook:
+      return kChromebook;
+    case chromeos::DeviceType::kChromebase:
+      return kChromebase;
+    case chromeos::DeviceType::kChromebox:
+      return kChromebox;
+    default:
+      return kChromebook;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
@@ -91,6 +121,16 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
   message->GetPayload()->Set(kAccountRequirementKey, kAccountRequirementSingle);
   message->GetPayload()->Set(kFlowTypeKey, kFlowTypeTargetChallenge);
   message->GetPayload()->Set(kDeviceTypeKey, kDeviceTypeChrome);
+  message->GetPayload()->Set(kDeviceNameKey, GetDeviceName());
+
+  // TODO(b/332603236): Remove postTransferAction payload when new device info
+  // exchange is implemented.
+  base::Value::Dict post_transfer_action;
+  post_transfer_action.Set(kPostTransferActionURIKey,
+                           kPostTransferActionURIValue);
+
+  message->GetPayload()->Set(kPostTransferActionKey,
+                             std::move(post_transfer_action));
   return message;
 }
 
@@ -129,8 +169,7 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
   std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
-
+  message->GetPayload()->Set(kSessionIdKey, base::NumberToString(session_id));
   return message;
 }
 
@@ -173,7 +212,7 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
   std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
   std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
+  message->GetPayload()->Set(kSessionIdKey, base::NumberToString(session_id));
 
   return message;
 }
@@ -191,6 +230,14 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage() {
       std::make_unique<QuickStartMessage>(
           QuickStartMessageType::kBootstrapState);
   message->GetPayload()->Set(kBootstrapStateKey, kBootstrapStateComplete);
+
+  // TODO(b/332603236): Remove postTransferAction payload when new device info
+  // exchange is implemented.
+  base::Value::Dict post_transfer_action;
+  post_transfer_action.Set(kPostTransferActionURIKey,
+                           kPostTransferActionURIValue);
+  message->GetPayload()->Set(kPostTransferActionKey,
+                             std::move(post_transfer_action));
   return message;
 }
 

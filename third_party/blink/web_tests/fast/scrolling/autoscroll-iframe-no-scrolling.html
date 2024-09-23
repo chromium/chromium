@@ -31,6 +31,7 @@
     body {
       width: 410px;
       height: 410px;
+      margin: 0px;
     }
     #scroller {
       width: 300px;
@@ -67,16 +68,31 @@ function autoScroll(start_x, start_y, end_x, end_y) {
   });
 }
 
-window.addEventListener('load', () => {
+function cancelAutoScroll() {
+  return new Promise((resolve, reject) => {
+    if (!window.eventSender) {
+      reject();
+    } else {
+      const LEFT_BUTTON = 0;
+      eventSender.mouseDown(LEFT_BUTTON);
+      eventSender.mouseUp(LEFT_BUTTON);
+      resolve();
+    }
+  });
+}
+
+scrollable.addEventListener('load', () => {
     var inner_scroller = frames[0].document.getElementById('scroller');
     inner_scroller.scrollTop = 1000;
     promise_test(async t => {
+      await waitForCompositorReady();
+
       const MIDDLE_CLICK_AUTOSCROLL_RADIUS = 15; // from blink::kNoMiddleClickAutoscrollRadius
       var rect = scrollable.getBoundingClientRect();
-      var startX = rect.left + 50;
-      var startY = rect.top + 50;
+      var startX = rect.left + inner_scroller.clientWidth / 3;
+      var startY = rect.top + inner_scroller.clientHeight / 3;
       var endX = startX;
-      var endY = startY + 30 * MIDDLE_CLICK_AUTOSCROLL_RADIUS;
+      var endY = startY + window.visualViewport.height * 0.75;
       assert_equals(inner_scroller.scrollTop,
                     inner_scroller.scrollHeight - inner_scroller.clientHeight,
                     "Inner scroller starts fully scrolled.");
@@ -84,17 +100,30 @@ window.addEventListener('load', () => {
       assert_equals(frames[0].window.scrollY, 0, "IFrame starts unscrolled.");
 
       // Autoscroll over the inner scroller.
+      let scrollEndPromise = waitForScrollendEvent(document);
       await autoScroll(startX, startY, endX, endY);
-      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
+      await waitUntil(() => { return window.scrollY > 0; } );
+      await cancelAutoScroll();
+      await scrollEndPromise;
+      assert_true(window.scrollY > 0, "Main frame should have scrolled for the first scroll.");
       assert_equals(frames[0].window.scrollY, 0, "Iframe frame should not scroll");
 
-      // Autoscroll over the iframe.
-      startX = rect.right - 20;
+      // Reset the scroll offset of the document so that the events in the next phase
+      // of the test are sent to a consistent target for each test iteration.
+      await waitForScrollReset();
+      assert_equals(window.scrollY, 0, "Scroll should be reset.");
+
+      // Autoscroll over the iframe. Ensure the pointer is over the iframe and not the inner
+      // scroller.
+      startX = rect.right - (rect.width - inner_scroller.clientWidth) / 2;
       endX = startX;
+      scrollEndPromise = waitForScrollendEvent(document);
       await autoScroll(startX, startY, endX, endY);
-      await waitForAnimationEndTimeBased( () => { return window.scrollY; } );
-      assert_true(window.scrollY > 0, "Main frame should not scroll");
-      assert_equals(frames[0].window.scrollY, 0, "IFrame must NOT scroll.");
+      await waitUntil(() => { return window.scrollY > 0; } );
+      await cancelAutoScroll();
+      await scrollEndPromise;
+      assert_true(window.scrollY > 0, "Main frame should have scrolled for the second scroll.");
+      assert_equals(frames[0].window.scrollY, 0, "Iframe frame should not scroll");
     });
 });
 

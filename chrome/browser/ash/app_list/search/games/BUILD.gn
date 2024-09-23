@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("games") {
+  sources = [
+    "game_provider.cc",
+    "game_provider.h",
+    "game_result.cc",
+    "game_result.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:app_icon_resources",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chromeos/ash/components/string_matching",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "game_provider_unittest.cc",
+    "game_result_unittest.cc",
+  ]
+
+  deps = [
+    ":games",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:gfx_skia",
+    "//url",
+  ]
+}

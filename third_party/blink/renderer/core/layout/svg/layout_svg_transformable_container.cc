@@ -21,10 +21,13 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
+#include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/core/svg/svg_switch_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 
 namespace blink {
@@ -106,11 +109,30 @@ void LayoutSVGTransformableContainer::StyleDidChange(
     if (old_style->X() != style.X() || old_style->Y() != style.Y()) {
       SetNeedsTransformUpdate();
     }
+    // Any descendant could use context-fill or context-stroke, so we must
+    // repaint the whole subtree.
+    if (old_style->FillPaint() != style.FillPaint() ||
+        old_style->StrokePaint() != style.StrokePaint()) {
+      SetSubtreeShouldDoFullPaintInvalidation(
+          PaintInvalidationReason::kSVGResource);
+    }
+  }
+
+  // To support context-fill and context-stroke
+  if (IsA<SVGUseElement>(element)) {
+    SVGResources::UpdatePaints(*this, old_style, StyleRef());
   }
 
   TransformHelper::UpdateOffsetPath(element, old_style);
   SetTransformUsesReferenceBox(
       TransformHelper::UpdateReferenceBoxDependency(*this));
+}
+
+void LayoutSVGTransformableContainer::WillBeDestroyed() {
+  if (IsA<SVGUseElement>(GetElement())) {
+    SVGResources::ClearPaints(*this, Style());
+  }
+  LayoutSVGContainer::WillBeDestroyed();
 }
 
 }  // namespace blink

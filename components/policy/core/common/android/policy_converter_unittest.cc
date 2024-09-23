@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/schema.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,8 @@ class PolicyConverterTest : public testing::Test {
           "dict": { "type": "object" }
         }
       })";
-
-    std::string error;
-    schema_ = Schema::Parse(kSchemaTemplate, &error);
-    ASSERT_TRUE(schema_.valid()) << error;
+    ASSIGN_OR_RETURN(schema_, Schema::Parse(kSchemaTemplate),
+                     [](const auto& e) { ADD_FAILURE() << e; });
   }
 
  protected:
@@ -78,7 +77,7 @@ class PolicyConverterTest : public testing::Test {
       JNIEnv* env,
       std::vector<std::string> values) {
     jobjectArray java_array = (jobjectArray)env->NewObjectArray(
-        values.size(), env->FindClass("java/lang/String"), nullptr);
+        values.size(), jni_zero::g_string_class, nullptr);
     for (size_t i = 0; i < values.size(); i++) {
       env->SetObjectArrayElement(
           java_array, i,

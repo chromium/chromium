@@ -15,7 +15,7 @@
                selectedText:(NSString*)selectedText
                  sourceView:(UIView*)sourceView
                  sourceRect:(CGRect)sourceRect {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _URL = URL;
     _title = [title copy];
     _selectedText = [selectedText copy];

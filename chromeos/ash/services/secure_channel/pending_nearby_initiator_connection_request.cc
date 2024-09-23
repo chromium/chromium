@@ -72,7 +72,7 @@ PendingNearbyInitiatorConnectionRequest::
 
 void PendingNearbyInitiatorConnectionRequest::HandleBleDiscoveryStateChange(
     mojom::DiscoveryResult discovery_state,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   UpdateBleDiscoveryState(discovery_state, potential_error_code);
 }
 void PendingNearbyInitiatorConnectionRequest::HandleNearbyConnectionChange(

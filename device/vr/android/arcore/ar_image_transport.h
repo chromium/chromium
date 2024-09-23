@@ -9,8 +9,10 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "device/vr/android/local_texture.h"
 #include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/android/xr_renderer.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
@@ -35,9 +37,15 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
   virtual GLuint GetCameraTextureId();
 
   // This transfers whatever the contents of the texture specified
-  // by GetCameraTextureId() is at the time it is called and returns
-  // a gpu::MailboxHolder with that texture copied to a shared buffer.
-  virtual gpu::MailboxHolder TransferCameraImageFrame(
+  // by GetCameraTextureId() is at the time it is called and intends
+  // to return to its caller a sync token as well as
+  // a scoped_refptr<gpu::ClientSharedImage> with that texture copied
+  // to a shared buffer. The two values are currently returned
+  // together via a wrapping WebXrSharedBuffer.
+  // TODO(crbug.com/40286368): Change the return type to
+  // scoped_refptr<gpu::ClientSharedImage> once the sync token is
+  // incorporated into ClientSharedImage.
+  virtual WebXrSharedBuffer* TransferCameraImageFrame(
       WebXrPresentationState* webxr,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform);
@@ -50,18 +58,18 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
                                    const gfx::Transform& uv_transform);
 
  private:
-  void DoRuntimeInitialization() override;
+  void DoRuntimeInitialization(int texture_taget) override;
 
   // Makes all the relevant GL calls to actually draw the texture for the
   // runtime, will operate on the supplied framebuffer.
-  void CopyTextureToFramebuffer(GLuint texture,
+  void CopyTextureToFramebuffer(const LocalTexture& texture,
                                 GLuint framebuffer,
                                 const gfx::Size& frame_size,
                                 const gfx::Transform& uv_transform);
 
   std::unique_ptr<XrRenderer> renderer_;
   // samplerExternalOES texture for the camera image.
-  GLuint camera_texture_id_arcore_ = 0;
+  LocalTexture camera_texture_arcore_;
   GLuint camera_fbo_ = 0;
   GLuint camera_image_fbo_ = 0;
 

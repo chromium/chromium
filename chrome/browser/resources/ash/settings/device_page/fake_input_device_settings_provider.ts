@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardAmbientLightSensorObserverInterface, KeyboardBrightnessObserverInterface, KeyboardObserverInterface, KeyboardSettings, LidStateObserverInterface, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -21,7 +21,11 @@ interface InputDeviceSettingsType {
   fakeGraphicsTablets: GraphicsTablet[];
   fakeMouseButtonActions: {options: ActionChoice[]};
   fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
-  fakeHasLauncherButton: {hasLauncherButton: boolean};
+  fakeMetaKeyToDisplay: {metaKey: MetaKey};
+  fakeDeviceIconImage: {dataUrl: string|null};
+  fakeHasKeyboardBacklight: {hasKeyboardBacklight: boolean};
+  fakeHasAmbientLightSensor: {hasAmbientLightSensor: boolean};
+  fakeIsRgbKeyboardSupported: {isRgbKeyboardSupported: boolean};
 }
 
 class FakeMethodState {
@@ -87,10 +91,20 @@ export class FakeInputDeviceSettingsProvider implements
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
   private buttonPressObservers: ButtonPressObserverInterface[] = [];
+  private keyboardBrightnessObserver: KeyboardBrightnessObserverInterface|null =
+      null;
+  private keyboardAmbientLightSensorObserver:
+      KeyboardAmbientLightSensorObserverInterface|null = null;
+  private lidStateObserver: LidStateObserverInterface|null = null;
   private observedIds: number[] = [];
+  private keyboardBrightness: number = 40.0;
+  private keyboardAmbientLightSensorEnabled: boolean = false;
+  private keyboardColorLinkClicks: number = 0;
+  private isLidOpen: boolean = false;
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
     setMouseSettings: 0,
+    recordKeyboardBrightnessChangeFromSlider: 0,
   };
 
   constructor() {
@@ -103,7 +117,13 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeGraphicsTablets');
     this.methods.register('fakeMouseButtonActions');
     this.methods.register('fakeGraphicsTabletButtonActions');
-    this.methods.register('fakeHasLauncherButton');
+    this.methods.register('fakeMetaKeyToDisplay');
+    this.methods.register('fakeDeviceIconImage');
+    this.methods.register('fakeHasKeyboardBacklight');
+    this.methods.register('fakeHasAmbientLightSensor');
+    this.methods.register('fakeIsRgbKeyboardSupported');
+    this.methods.register('fakeRecordKeyboardColorLinkClicked');
+    this.methods.register('fakeRecordKeyboardBrightnessChangeFromSlider');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -246,6 +266,23 @@ export class FakeInputDeviceSettingsProvider implements
     return this.callCounts_.setGraphicsTabletSettings;
   }
 
+  setKeyboardBrightness(percent: number): void {
+    this.keyboardBrightness = percent;
+  }
+
+  getKeyboardBrightness(): number {
+    return this.keyboardBrightness;
+  }
+
+  setKeyboardAmbientLightSensorEnabled(enabled: boolean): void {
+    this.keyboardAmbientLightSensorEnabled = enabled;
+  }
+
+  getKeyboardAmbientLightSensorEnabled(): boolean {
+    return this.keyboardAmbientLightSensorEnabled;
+  }
+
+
   notifyKeboardListUpdated(): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     // Make a deep copy to notify the functions observing keyboard settings.
@@ -325,6 +362,30 @@ export class FakeInputDeviceSettingsProvider implements
     this.buttonPressObservers.push(observer);
   }
 
+  observeKeyboardBrightness(observer: KeyboardBrightnessObserverInterface):
+      void {
+    this.keyboardBrightnessObserver = observer;
+  }
+
+  observeKeyboardAmbientLightSensor(
+      observer: KeyboardAmbientLightSensorObserverInterface): void {
+    this.keyboardAmbientLightSensorObserver = observer;
+  }
+
+  observeLidState(observer: LidStateObserverInterface):
+      Promise<{isLidOpen: boolean}> {
+    this.lidStateObserver = observer;
+    return Promise.resolve({isLidOpen: true});
+  }
+
+  setLidStateOpen(): void {
+    this.lidStateObserver!.onLidStateChanged(true);
+  }
+
+  setLidStateClosed(): void {
+    this.lidStateObserver!.onLidStateChanged(false);
+  }
+
   getActionsForMouseButtonCustomization(): Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeMouseButtonActions');
   }
@@ -338,6 +399,16 @@ export class FakeInputDeviceSettingsProvider implements
       Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeGraphicsTabletButtonActions');
   }
+
+  setDeviceIconImage(dataUrl: string): void {
+    return this.methods.setResult('fakeDeviceIconImage', {dataUrl});
+  }
+
+  getDeviceIconImage(): Promise<{dataUrl: string | null}> {
+    return this.methods.resolveMethod('fakeDeviceIconImage');
+  }
+
+  launchCompanionApp(): void {}
 
   setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
                                                          ActionChoice[]): void {
@@ -366,12 +437,71 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
-    return this.methods.resolveMethod('fakeHasLauncherButton');
+  sendKeyboardBrightnessChange(percent: number): void {
+    if (this.keyboardBrightnessObserver) {
+      this.keyboardBrightnessObserver.onKeyboardBrightnessChanged(percent);
+    }
   }
 
-  setFakeHasLauncherButton(hasLauncherButton: boolean): void {
+  sendKeyboardAmbientLightSensorEnabledChange(enabled: boolean): void {
+    if (this.keyboardAmbientLightSensorObserver) {
+      this.keyboardAmbientLightSensorObserver
+          .onKeyboardAmbientLightSensorEnabledChanged(enabled);
+    }
+  }
+
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}> {
+    return this.methods.resolveMethod('fakeMetaKeyToDisplay');
+  }
+
+  setFakeMetaKeyToDisplay(metaKey: MetaKey): void {
+    this.methods.setResult('fakeMetaKeyToDisplay', {metaKey: metaKey});
+  }
+
+  hasKeyboardBacklight(): Promise<{hasKeyboardBacklight: boolean}> {
+    return this.methods.resolveMethod('fakeHasKeyboardBacklight');
+  }
+
+  setFakeHasKeyboardBacklight(hasKeyboardBacklight: boolean): void {
     this.methods.setResult(
-        'fakeHasLauncherButton', {hasLauncherButton: hasLauncherButton});
+        'fakeHasKeyboardBacklight',
+        {hasKeyboardBacklight: hasKeyboardBacklight});
+  }
+
+  hasAmbientLightSensor(): Promise<{hasAmbientLightSensor: boolean}> {
+    return this.methods.resolveMethod('fakeHasAmbientLightSensor');
+  }
+
+  setFakeHasAmbientLightSensor(hasAmbientLightSensor: boolean): void {
+    this.methods.setResult(
+        'fakeHasAmbientLightSensor',
+        {hasAmbientLightSensor: hasAmbientLightSensor});
+  }
+
+  isRgbKeyboardSupported(): Promise<{isRgbKeyboardSupported: boolean}> {
+    return this.methods.resolveMethod('fakeIsRgbKeyboardSupported');
+  }
+
+  setFakeIsRgbKeyboardSupported(isRgbKeyboardSupported: boolean): void {
+    this.methods.setResult(
+        'fakeIsRgbKeyboardSupported',
+        {isRgbKeyboardSupported: isRgbKeyboardSupported});
+  }
+
+  recordKeyboardColorLinkClicked(): void {
+    this.keyboardColorLinkClicks++;
+  }
+
+  getKeyboardColorLinkClicks(): number {
+    return this.keyboardColorLinkClicks;
+  }
+
+  recordKeyboardBrightnessChangeFromSlider(percent: number): void {
+    assert(percent >= 0);
+    this.callCounts_.recordKeyboardBrightnessChangeFromSlider++;
+  }
+
+  getRecordKeyboardBrightnessChangeFromSliderCallCount(): number {
+    return this.callCounts_.recordKeyboardBrightnessChangeFromSlider;
   }
 }

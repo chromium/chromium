@@ -9,11 +9,9 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace {
@@ -21,7 +19,7 @@ namespace {
 static const char kDefaultName[] = "";
 static std::string* g_default_name;
 
-ABSL_CONST_INIT thread_local const char* thread_name = kDefaultName;
+constinit thread_local const char* thread_name = kDefaultName;
 }
 
 ThreadIdNameManager::Observer::~Observer() = default;
@@ -62,7 +60,7 @@ void ThreadIdNameManager::AddObserver(Observer* obs) {
 void ThreadIdNameManager::RemoveObserver(Observer* obs) {
   AutoLock locked(lock_);
   DCHECK(base::Contains(observers_, obs));
-  base::Erase(observers_, obs);
+  std::erase(observers_, obs);
 }
 
 void ThreadIdNameManager::SetName(const std::string& name) {
@@ -127,11 +125,13 @@ void ThreadIdNameManager::RemoveName(PlatformThreadHandle::Handle handle,
   AutoLock locked(lock_);
   auto handle_to_name_iter = thread_handle_to_interned_name_.find(handle);
 
-  DCHECK(handle_to_name_iter != thread_handle_to_interned_name_.end());
+  CHECK(handle_to_name_iter != thread_handle_to_interned_name_.end(),
+        base::NotFatalUntil::M125);
   thread_handle_to_interned_name_.erase(handle_to_name_iter);
 
   auto id_to_handle_iter = thread_id_to_handle_.find(id);
-  DCHECK((id_to_handle_iter!= thread_id_to_handle_.end()));
+  CHECK(id_to_handle_iter != thread_id_to_handle_.end(),
+        base::NotFatalUntil::M125);
   // The given |id| may have been re-used by the system. Make sure the
   // mapping points to the provided |handle| before removal.
   if (id_to_handle_iter->second != handle)

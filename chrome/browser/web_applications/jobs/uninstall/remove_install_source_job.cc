@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -20,29 +21,27 @@ namespace {
 
 enum class Action {
   kNone,
-  kRemoveInstallSource,
+  kRemoveInstallSources,
   kRemoveApp,
 };
 
 Action GetAction(const WebAppManagementTypes& sources,
-                 WebAppManagement::Type install_source) {
-  if (sources.Empty()) {
-    // TODO(crbug.com/1427340): Return a different UninstallResultCode
+                 const WebAppManagementTypes& sources_to_remove) {
+  if (sources.empty()) {
+    // TODO(crbug.com/40261748): Return a different UninstallResultCode
     // for this case and log it in metrics.
     return Action::kRemoveApp;
   }
 
-  if (!sources.Has(install_source)) {
+  if (!sources.HasAny(sources_to_remove)) {
     return Action::kNone;
   }
 
-  if (sources.Size() > 1) {
-    return Action::kRemoveInstallSource;
+  if (sources_to_remove.HasAll(sources)) {
+    return Action::kRemoveApp;
   }
 
-  CHECK_EQ(sources.Size(), 1u);
-  CHECK(sources.Has(install_source));
-  return Action::kRemoveApp;
+  return Action::kRemoveInstallSources;
 }
 
 }  // namespace
@@ -52,16 +51,17 @@ RemoveInstallSourceJob::RemoveInstallSourceJob(
     Profile& profile,
     base::Value::Dict& debug_value,
     webapps::AppId app_id,
-    WebAppManagement::Type install_source)
+    WebAppManagementTypes install_managements_to_remove)
     : uninstall_source_(uninstall_source),
       profile_(profile),
       debug_value_(debug_value),
       app_id_(app_id),
-      install_source_(install_source) {
+      install_managements_to_remove_(install_managements_to_remove) {
   debug_value_->Set("!job", "RemoveInstallSourceJob");
   debug_value_->Set("app_id", app_id_);
   debug_value_->Set("uninstall_source", base::ToString(uninstall_source_));
-  debug_value_->Set("install_source", base::ToString(install_source_));
+  debug_value_->Set("install_managements_to_remove",
+                    base::ToString(install_managements_to_remove_));
 }
 
 RemoveInstallSourceJob::~RemoveInstallSourceJob() = default;
@@ -77,31 +77,28 @@ void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
     return;
   }
 
-  WebAppManagement::Type install_source = install_source_;
-  switch (GetAction(app->GetSources(), install_source)) {
+  switch (GetAction(app->GetSources(), install_managements_to_remove_)) {
     case Action::kNone:
-      // TODO(crbug.com/1427340): Return a different UninstallResultCode
+      // TODO(crbug.com/40261748): Return a different UninstallResultCode
       // for when no action is taken instead of being overly specific to the "no
       // app" case.
       CompleteAndSelfDestruct(webapps::UninstallResultCode::kNoAppToUninstall);
       return;
 
-    case Action::kRemoveInstallSource:
-      // Install sources may block user uninstallation (e.g. policy), if one of
-      // these install sources is being removed then the ability to uninstall
-      // may need to be re-deployed into the OS.
-      MaybeRegisterOsUninstall(
-          app, install_source, lock_->os_integration_manager(),
-          base::BindOnce(
-              &RemoveInstallSourceJob::RemoveInstallSourceFromDatabase,
-              weak_ptr_factory_.GetWeakPtr()));
+    case Action::kRemoveInstallSources:
+      // Removing an install source from an app might change the OS integration
+      // characteristics of an app, for example, an app that was installed by
+      // both policy and default sources cannot be removed from the OS by an end
+      // user on Windows, but if the policy source is removed, the app becomes
+      // user uninstallable. This requires an OS integration synchronization to
+      // be triggered.
+      RemoveInstallSourceFromDatabaseSyncOsIntegration();
       return;
 
     case Action::kRemoveApp:
       sub_job_ = std::make_unique<RemoveWebAppJob>(
           uninstall_source_, profile_.get(),
-          *debug_value_->EnsureDict("sub_job"), app_id_,
-          /*is_initial_request=*/false);
+          *debug_value_->EnsureDict("sub_job"), app_id_);
       sub_job_->Start(
           *lock_,
           base::BindOnce(&RemoveInstallSourceJob::CompleteAndSelfDestruct,
@@ -115,23 +112,36 @@ webapps::WebappUninstallSource RemoveInstallSourceJob::uninstall_source()
   return uninstall_source_;
 }
 
-void RemoveInstallSourceJob::RemoveInstallSourceFromDatabase(
-    OsHooksErrors os_hooks_errors) {
+void RemoveInstallSourceJob::
+    RemoveInstallSourceFromDatabaseSyncOsIntegration() {
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* app = update->UpdateApp(app_id_);
-    app->RemoveSource(install_source_);
-    if (install_source_ == WebAppManagement::kSubApp) {
-      app->SetParentAppId(std::nullopt);
+    for (WebAppManagement::Type source : install_managements_to_remove_) {
+      app->RemoveSource(source);
+      if (source == WebAppManagement::kSubApp) {
+        app->SetParentAppId(std::nullopt);
+      }
     }
-    // TODO(crbug.com/1447308): Make sync uninstall not synchronously
+    WebApp::ExternalConfigMap modified_config_map;
+    for (const auto& [type, config_data] :
+         app->management_to_external_config_map()) {
+      if (!base::Contains(install_managements_to_remove_, type)) {
+        modified_config_map.insert_or_assign(type, config_data);
+      }
+    }
+    app->SetWebAppManagementExternalConfigMap(std::move(modified_config_map));
+    // TODO(crbug.com/40913556): Make sync uninstall not synchronously
     // remove its sync install source even while a command has an app lock so
     // that we can CHECK(app->HasAnySources()) here.
   }
 
   lock_->install_manager().NotifyWebAppSourceRemoved(app_id_);
-
-  CompleteAndSelfDestruct(webapps::UninstallResultCode::kSuccess);
+  lock_->os_integration_manager().Synchronize(
+      app_id_,
+      base::BindOnce(&RemoveInstallSourceJob::CompleteAndSelfDestruct,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     webapps::UninstallResultCode::kInstallSourceRemoved));
 }
 
 void RemoveInstallSourceJob::CompleteAndSelfDestruct(

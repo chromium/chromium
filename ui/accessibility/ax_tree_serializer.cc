@@ -6,8 +6,8 @@
 
 namespace ui {
 
-ClientTreeNode::ClientTreeNode() {
-}
+ClientTreeNode::ClientTreeNode(AXNodeID id, ClientTreeNode* parent)
+    : id(id), parent(parent) {}
 
 ClientTreeNode::~ClientTreeNode() {
 }

@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/process/process.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/startup.h"
 
 namespace chromeos {
@@ -46,7 +47,7 @@ crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
 
 // static
 void BrowserPostLoginParams::WaitForLogin() {
-  // TODO(crbug.com/1475643): added to investigate the cause of this crash.
+  // TODO(crbug.com/40070475): added to investigate the cause of this crash.
   // Please remove once the cause is identified.
   LOG(WARNING) << "Waiting for login.";
 

@@ -1,0 +1,22 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item name='Level 1, item 1 of set size unknown' row_span=1 column_span=1
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item name='++Level 2, item 1 of set size unknown' row_span=1 column_span=1
+++android.widget.ListView collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item name='++Level 2, item 2 of set size unknown' item_index=1 row_index=1 row_span=1 column_span=1
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item name='++Level 2, item 3 of set size unknown' item_index=2 row_index=2 row_span=1 column_span=1
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item name='++++Level 3, item 1 of set size unknown' row_span=1 column_span=1
+++android.widget.ListView collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item name='++++Level 3, item 2 of set size unknown' item_index=1 row_index=1 row_span=1 column_span=1
+++android.widget.ListView collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item name='Level 1, item 2 of set size unknown' item_index=1 row_index=1 row_span=1 column_span=1
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item name='Level 1, item 3 of set size unknown' item_index=2 row_index=2 row_span=1 column_span=1
+++android.widget.ListView collection hierarchical column_count=1
+++++android.widget.ListView collection hierarchical item_count=4 row_count=4 column_count=1
+++++++android.view.View collection_item name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4' item_index=3 row_index=3 row_span=1 column_span=1
+++++android.widget.ListView collection hierarchical item_count=5 row_count=5 column_count=1
+++++++android.view.View collection_item name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5' item_index=4 row_index=4 row_span=1 column_span=1

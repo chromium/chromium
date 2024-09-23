@@ -15,15 +15,15 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
-#include "chrome/browser/sharing/sharing_constants.h"
-#include "chrome/browser/sharing/sharing_fcm_handler.h"
-#include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/sharing_message/shared_clipboard/remote_copy_handle_message_result.h"
+#include "components/sharing_message/sharing_constants.h"
+#include "components/sharing_message/sharing_fcm_handler.h"
+#include "components/sharing_message/sharing_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -77,7 +77,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
         SharingServiceFactory::GetForBrowserContext(browser()->profile());
     auto* remote_copy_handler = static_cast<RemoteCopyMessageHandler*>(
         sharing_service_->GetSharingHandlerForTesting(
-            chrome_browser_sharing::SharingMessage::kRemoteCopyMessage));
+            components_sharing_message::SharingMessage::kRemoteCopyMessage));
     ASSERT_TRUE(remote_copy_handler);
     remote_copy_handler->set_allowed_origin_for_testing(server_->base_url());
   }
@@ -90,7 +90,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   gcm::IncomingMessage CreateMessage(const std::string& device_name,
                                      std::optional<std::string> text,
                                      std::optional<GURL> image_url) {
-    chrome_browser_sharing::SharingMessage sharing_message;
+    components_sharing_message::SharingMessage sharing_message;
     sharing_message.set_sender_guid(
         base::Uuid::GenerateRandomV4().AsLowercaseString());
     sharing_message.set_sender_device_name(device_name);

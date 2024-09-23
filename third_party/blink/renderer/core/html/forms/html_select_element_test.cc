@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -675,7 +676,7 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
   auto* green = GetDocument().getElementById(AtomicString("green"));
 
   // Make sure the select is outside the flat tree.
-  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Changing the select rendering should not clear the style recalc root set by

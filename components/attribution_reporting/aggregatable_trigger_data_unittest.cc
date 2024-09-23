@@ -36,16 +36,6 @@ using ::testing::IsEmpty;
 using ::testing::Property;
 
 TEST(AggregatableTriggerDataTest, FromJSON) {
-  const auto make_aggregatable_trigger_data_with_key_length = [](size_t n) {
-    base::Value::Dict dict;
-    dict.Set("key_piece", "0x1");
-
-    base::Value::List list;
-    list.Append(std::string(n, 'a'));
-    dict.Set("source_keys", std::move(list));
-    return base::Value(std::move(dict));
-  };
-
   struct {
     const char* description;
     base::Value json;
@@ -75,7 +65,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           "non_empty_source_keys",
           base::test::ParseJson(R"json({
             "key_piece": "0x1234",
-            "source_keys": ["a", "b"]
+            "source_keys": ["b", "a", "b"]
           })json"),
           ValueIs(Property(&AggregatableTriggerData::source_keys,
                            ElementsAre("a", "b"))),
@@ -121,34 +111,27 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           "key_piece_wrong_type",
           base::test::ParseJson(R"json({"key_piece":123})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataKeyPieceWrongType),
+                      kAggregatableTriggerDataKeyPieceInvalid),
       },
       {
           "key_piece_wrong_format",
           base::test::ParseJson(R"json({"key_piece":"1234"})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataKeyPieceWrongFormat),
+                      kAggregatableTriggerDataKeyPieceInvalid),
       },
       {
           "source_keys_wrong_type",
           base::test::ParseJson(
               R"json({"key_piece":"0x1234", "source_keys":{}})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysWrongType),
+                      kAggregatableTriggerDataSourceKeysInvalid),
       },
       {
           "source_keys_key_wrong_type",
           base::test::ParseJson(
               R"json({"key_piece":"0x1234", "source_keys":[123]})json"),
           ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysKeyWrongType),
-      },
-      {
-          "source_keys_key_too_long",
-          make_aggregatable_trigger_data_with_key_length(
-              kMaxBytesPerAggregationKeyId + 1),
-          ErrorIs(TriggerRegistrationError::
-                      kAggregatableTriggerDataSourceKeysKeyTooLong),
+                      kAggregatableTriggerDataSourceKeysInvalid),
       },
       {
           "filters_wrong_type",
@@ -175,12 +158,6 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
     EXPECT_THAT(AggregatableTriggerData::FromJSON(test_case.json),
                 test_case.matches);
   }
-
-  {
-    base::Value json = make_aggregatable_trigger_data_with_key_length(
-        kMaxBytesPerAggregationKeyId);
-    EXPECT_TRUE(AggregatableTriggerData::FromJSON(json).has_value());
-  }
 }
 
 TEST(AggregatableTriggerDataTest, ToJson) {
@@ -193,7 +170,7 @@ TEST(AggregatableTriggerDataTest, ToJson) {
           R"json({"key_piece":"0x0"})json",
       },
       {
-          *AggregatableTriggerData::Create(
+          AggregatableTriggerData(
               /*key_piece=*/1,
               /*source_keys=*/{"a", "b"},
               FilterPair(

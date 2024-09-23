@@ -30,6 +30,8 @@ class WebStateWrapper : public WebWrapper {
 
   const GURL& GetLastCommittedURL() override;
 
+  const std::u16string& GetTitle() override;
+
   bool IsFirstLoadForNavigationFinished() override;
 
   void SetIsFirstLoadForNavigationFinished(bool finished);

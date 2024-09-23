@@ -152,8 +152,8 @@ void NotificationGroupingController::PopulateGroupParent(
                 ->GetMessageViewForNotificationId(notification_id)
           : nullptr;
 
-  // TODO(crbug/1277765) Need this check to fix crbug/1275765. However, this
-  // should not be necessary if the message center bubble is initialized
+  // TODO(crbug.com/40809802) Need this check to fix crbug/1275765. However,
+  // this should not be necessary if the message center bubble is initialized
   // properly. Need to monitor for empty group notifications if this check is
   // hit and fix the root cause.
   if (!parent_view) {
@@ -298,7 +298,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
         parent_notification.delegate()->GetDelegateForParentCopy());
   }
   copy->set_vector_small_image(parent_notification.parent_vector_small_image());
-  copy->set_small_image(parent_notification.small_image());
+  copy->SetSmallImage(parent_notification.small_image());
 
   if (parent_notification.accent_color_id().has_value()) {
     copy->set_accent_color_id(parent_notification.accent_color_id().value());

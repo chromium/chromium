@@ -8,13 +8,16 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,11 +37,18 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
     if (!browser) {
       return;
     }
+
+    bool is_sync_promo = access_point ==
+                         signin_metrics::AccessPoint::
+                             ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+    TurnSyncOnHelper::SigninAbortedMode abort_mode =
+        is_sync_promo ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
+                      : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
+
     // TurnSyncOnHelper is suicidal (it will kill itself once it
     // finishes enabling sync).
     new TurnSyncOnHelper(profile, browser, access_point, promo_action,
-                         account_info.account_id,
-                         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+                         account_info.account_id, abort_mode, is_sync_promo);
   });
 }
 
@@ -104,6 +114,13 @@ void DiceTabHelper::InitializeSigninFlow(
     state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
   }
 
+  // This profile creation may lead to the user signing in. To speed up a
+  // potential subsequent account capabililties fetch, notify IdentityManager.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  identity_manager->PrepareForAddingNewAccount();
+
   if (!record_signin_started_metrics) {
     return;
   }
@@ -121,6 +138,12 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
+  }
+
+  if (signin_util::IsSigninPending(identity_manager)) {
+    base::UmaHistogramEnumeration(
+        "Signin.SigninPending.ResolutionSourceStarted", access_point,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
   }
 }
 

@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "crypto/sha2.h"
@@ -53,10 +54,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillPaymentCvcStorage, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      kAutofillPaymentCardBenefits, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterBooleanPref(prefs::kAutofillCreditCardFidoAuthEnabled,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillRanQuasiDuplicateExtraDeduplication, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -64,7 +70,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kAutocompleteLastVersionRetentionPolicy,
                                 0);
   registry->RegisterStringPref(prefs::kAutofillUploadEncodingSeed, "");
-  registry->RegisterDictionaryPref(prefs::kAutofillUploadEvents);
+  registry->RegisterDictionaryPref(prefs::kAutofillVoteUploadEvents);
+  registry->RegisterDictionaryPref(prefs::kAutofillMetadataUploadEvents);
   registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAutofillSyncTransportOptIn);
@@ -98,11 +105,24 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kAutofillLastVersionDisusedAddressesDeleted, 0);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
+  registry->RegisterStringPref(kAutofillAblationSeedPref, "");
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillThirdPartyPasswordManagersAllowed, true);
+  registry->RegisterBooleanPref(
+      prefs::kFacilitatedPaymentsPix, /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kAutofillPredictionImprovementsEnabled,
+                                false);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
@@ -112,9 +132,15 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kAutofillOrphanRowsRemoved);
   // Added 09/2023.
   pref_service->ClearPref(prefs::kAutofillIbanEnabled);
-  // Added 10/2024
+  // Added 10/2023
   pref_service->ClearPref(prefs::kAutofillLastVersionDisusedAddressesDeleted);
   pref_service->ClearPref(prefs::kAutofillLastVersionDisusedCreditCardsDeleted);
+  // Added 07/2024 (moved from profile pref to local state)
+  pref_service->ClearPref(prefs::kAutofillAblationSeedPref);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(kAutofillAblationSeedPref, "");
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
@@ -170,15 +196,7 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
-  bool featureEnabled = base::FeatureList::IsEnabled(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    featureEnabled = true;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  return featureEnabled &&
-         prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
+  return prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
@@ -243,6 +261,14 @@ void SetPaymentCvcStorage(PrefService* prefs, bool value) {
   prefs->SetBoolean(kAutofillPaymentCvcStorage, value);
 }
 
+bool IsPaymentCardBenefitsEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillPaymentCardBenefits);
+}
+
+void SetPaymentCardBenefits(PrefService* prefs, bool value) {
+  prefs->SetBoolean(kAutofillPaymentCardBenefits, value);
+}
+
 void SetUserOptedInWalletSyncTransport(PrefService* prefs,
                                        const CoreAccountId& account_id,
                                        bool opted_in) {
@@ -290,14 +316,18 @@ void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
-bool UsesVirtualViewStructureForAutofill(const PrefService* prefs) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroid)) {
-    return false;
-  }
+// UsesVirtualViewStructureForAutofill is defined in
+// //chrome/browser/ui/autofill/autofill_client_provider.cc
 
-  return prefs->GetBoolean(kAutofillUsingVirtualViewStructure);
+void SetFacilitatedPaymentsPix(PrefService* prefs, bool value) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->SetBoolean(kFacilitatedPaymentsPix, value);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return prefs->GetBoolean(kFacilitatedPaymentsPix);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)

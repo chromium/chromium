@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_ANDROID_SIGNIN_SIGNIN_MANAGER_ANDROID_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 
@@ -49,16 +51,16 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  jboolean IsSigninAllowedByPolicy(JNIEnv* env) const;
+  bool IsSigninAllowedByPolicy(JNIEnv* env) const;
 
-  jboolean IsForceSigninEnabled(JNIEnv* env);
+  bool IsForceSigninEnabled(JNIEnv* env);
 
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
   // the policy if necessary.
   void FetchAndApplyCloudPolicy(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_account_info,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::RepeatingClosure& j_callback);
 
   void StopApplyingCloudPolicy(JNIEnv* env);
 
@@ -70,16 +72,14 @@ class SigninManagerAndroid : public KeyedService {
   base::android::ScopedJavaLocalRef<jstring> GetManagementDomain(JNIEnv* env);
 
   // Delete all data for this profile.
-  void WipeProfileData(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& j_callback);
+  void WipeProfileData(JNIEnv* env, const base::RepeatingClosure& callback);
 
   // Delete service worker caches for google.<eTLD>.
-  void WipeGoogleServiceWorkerCaches(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+  void WipeGoogleServiceWorkerCaches(JNIEnv* env,
+                                     const base::RepeatingClosure& callback);
 
   void SetUserAcceptedAccountManagement(JNIEnv* env,
-                                        jboolean acceptedAccountManagement);
+                                        bool accepted_account_management);
 
   bool GetUserAcceptedAccountManagement(JNIEnv* env);
 
@@ -98,6 +98,17 @@ class SigninManagerAndroid : public KeyedService {
     const std::vector<std::string> user_affiliation_ids;
   };
 
+  // Cached value for a previous execution of IsAccountManaged().
+  struct CachedIsAccountManaged {
+    std::string gaia_id;
+    bool is_account_managed;
+    base::Time expiration_time;
+  };
+
+  static bool MatchesCachedIsAccountManagedEntry(
+      const CachedIsAccountManaged& cached_entry,
+      const CoreAccountInfo& account);
+
   void OnSigninAllowedPrefChanged() const;
   bool IsSigninAllowed() const;
 
@@ -112,6 +123,12 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDone(
       const CoreAccountInfo& account_id,
       base::OnceCallback<void()> policy_callback,
+      const std::optional<ManagementCredentials>& credentials);
+
+  void OnPolicyRegisterDoneForIsAccountManaged(
+      const CoreAccountInfo& account,
+      base::android::ScopedJavaGlobalRef<jobject> callback,
+      base::Time start_time,
       const std::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
@@ -139,6 +156,9 @@ class SigninManagerAndroid : public KeyedService {
 
   // Java-side SigninManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_signin_manager_;
+
+  // The last invocation of IsAccountManaged() is cached.
+  std::optional<CachedIsAccountManaged> cached_is_account_managed_;
 
   base::ThreadChecker thread_checker_;
 

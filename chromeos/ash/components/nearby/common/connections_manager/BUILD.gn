@@ -1,0 +1,93 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+source_set("connections_manager") {
+  sources = [
+    "nearby_connection.cc",
+    "nearby_connection.h",
+    "nearby_connection_impl.cc",
+    "nearby_connection_impl.h",
+    "nearby_connections_manager.cc",
+    "nearby_connections_manager.h",
+    "nearby_connections_manager_impl.cc",
+    "nearby_connections_manager_impl.h",
+    "nearby_file_handler.cc",
+    "nearby_file_handler.h",
+  ]
+
+  deps = [
+    "//chrome/browser/nearby_sharing/common",
+    "//chromeos/ash/components/nearby/presence/conversions:conversions",
+    "//components/cross_device/logging:logging",
+    "//components/cross_device/nearby:nearby",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/services/nearby/public/cpp:cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/nearby:platform",
+    "//net",
+    "//third_party/nearby:presence_types",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_nearby_connection.cc",
+    "fake_nearby_connection.h",
+    "fake_nearby_connections_manager.cc",
+    "fake_nearby_connections_manager.h",
+  ]
+
+  deps = [
+    ":connections_manager",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  public_deps = [ "//third_party/nearby:presence_types" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "nearby_connections_manager_impl_unittest.cc" ]
+
+  deps = [
+    ":connections_manager",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/nearby/presence/conversions",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/nearby:nearby",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  public_deps = [ "//third_party/nearby:presence_types" ]
+}

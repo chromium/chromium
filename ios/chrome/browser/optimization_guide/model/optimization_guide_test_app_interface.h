@@ -38,6 +38,12 @@ class OptimizationGuideTestAppInterfaceWrapper {
                     metadata:
                         (optimization_guide::OptimizationMetadata*)metadata;
 
+// Add hint to OptimizationGuide for testing purposes.
++ (void)addHintForTesting:(NSString*)url
+                     type:(optimization_guide::proto::OptimizationType)type
+           serialized_any:(NSData*)serialized_any
+                 type_url:(NSString*)type_url;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_TEST_APP_INTERFACE_H_

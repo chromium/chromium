@@ -55,7 +55,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
     std::string CreateExceptionString(const v8::TryCatch& try_catch);
     // A script context associated with this handler. Owned by the module
     // system.
-    raw_ptr<ScriptContext, ExperimentalRenderer> context_;
+    raw_ptr<ScriptContext> context_;
   };
 
   // Enables native bindings for the duration of its lifetime.
@@ -69,7 +69,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
     ~NativesEnabledScope();
 
    private:
-    ModuleSystem* module_system_;
+    raw_ptr<ModuleSystem> module_system_;
   };
 
   // |source_map| is a weak pointer.
@@ -213,14 +213,14 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   v8::Local<v8::Function> GetModuleFunction(const std::string& module_name,
                                             const std::string& method_name);
 
-  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
+  raw_ptr<ScriptContext> context_;
 
-  // TODO(1276144): remove once investigation finished.
+  // TODO(crbug.com/40058107): remove once investigation finished.
   bool has_been_invalidated_ = false;
 
   // A map from module names to the JS source for that module. GetSource()
   // performs a lookup on this map.
-  const raw_ptr<const SourceMap, ExperimentalRenderer> source_map_;
+  const raw_ptr<const SourceMap> source_map_;
 
   // A map from native handler names to native handlers.
   NativeHandlerMap native_handler_map_;

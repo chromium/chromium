@@ -6,9 +6,9 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_WIN_H_
 
 #include <objbase.h>
+
 #include <oleacc.h>
 #include <oleauto.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <array>
@@ -30,6 +30,8 @@
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/gfx/range/range.h"
 
+#include <uiautomation.h>
+
 // This nonstandard GUID is taken directly from the Mozilla sources
 // (https://searchfox.org/mozilla-central/source/accessible/windows/msaa/ServiceProvider.cpp#60).
 const GUID GUID_IAccessibleContentDocument = {
@@ -41,6 +43,8 @@ const GUID GUID_IAccessibleContentDocument = {
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.
+//
+// LINT.IfChange
 enum {
   UMA_API_ACC_DO_DEFAULT_ACTION = 0,
   UMA_API_ACC_HIT_TEST = 1,
@@ -303,6 +307,7 @@ enum {
   // increase, but none of the other enum values may change.
   UMA_API_MAX
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityWinAPIEnum)
 
 #define WIN_ACCESSIBILITY_API_HISTOGRAM(enum_value) \
   UMA_HISTOGRAM_ENUMERATION("Accessibility.WinAPIs", enum_value, UMA_API_MAX)
@@ -473,12 +478,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   ULONG InternalAddRef();
   ULONG InternalRelease();
 
-  // Invoked when the instance's refcount rises above 1. This generally means
-  // that a reference to an interface pointer is being handed out to an
-  // accessibility consumer.
+  // Invoked when the instance is first referenced. This generally means that a
+  // reference to an interface pointer is being handed out to an accessibility
+  // consumer.
   virtual void OnReferenced();
 
-  // Invoked when the instance's refcount drops to 1. This generally means that
+  // Invoked when the instance is fully dereferenced. This generally means that
   // an accessibility consumer has released its last reference to the instance.
   virtual void OnDereferenced();
 
@@ -1350,12 +1355,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
                               ax::mojom::State state,
                               const char* uia_aria_property);
 
-  // If the Html attribute |html_attribute_name| is present, add its value as a
-  // UIA AriaProperties Property with the name |uia_aria_property|.
-  void HtmlAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
-                                      const char* html_attribute_name,
-                                      const char* uia_aria_property);
-
   // If the IntList attribute |attribute| is present, return an array
   // of automation elements referenced by the ids in the
   // IntList attribute. Otherwise return an empty array.
@@ -1554,6 +1553,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   UIARoleProperties GetUIARoleProperties();
 
   AXPlatformNodeWin* GetUIATableAncestor() const;
+
+  bool IsSelectionItemSupported() const;
+
+  bool IsToggleSupported() const;
+
+  bool IsInvokeSupported() const;
 
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;

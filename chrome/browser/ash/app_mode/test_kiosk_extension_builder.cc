@@ -73,8 +73,8 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
   if (!secondary_extensions_.empty()) {
     base::Value::List secondary_extension_list_builder;
     for (const auto& secondary_extension : secondary_extensions_) {
-      base::Value::Dict secondary_extension_builder;
-      secondary_extension_builder.Set("id", secondary_extension.id);
+      auto secondary_extension_builder =
+          base::Value::Dict().Set("id", secondary_extension.id);
       if (secondary_extension.enabled_on_launch.has_value()) {
         secondary_extension_builder.Set(
             "enabled_on_launch", secondary_extension.enabled_on_launch.value());

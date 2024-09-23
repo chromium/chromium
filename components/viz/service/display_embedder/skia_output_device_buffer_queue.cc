@@ -12,9 +12,10 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -41,6 +42,10 @@
 #endif  // BUILDFLAG(IS_OZONE)
 
 namespace {
+BASE_FEATURE(kRestartReadAccessForConcurrentReadWrite,
+             "RestartReadAccessForConcurrentReadWrite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
 NOINLINE void CheckForLoopFailuresBufferQueue() {
@@ -58,7 +63,8 @@ namespace viz {
 
 class SkiaOutputDeviceBufferQueue::OverlayData {
  public:
-  OverlayData() = default;
+  OverlayData() = delete;
+  OverlayData(OverlayData&& other) = delete;
 
   OverlayData(std::unique_ptr<gpu::OverlayImageRepresentation> representation,
               std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
@@ -66,28 +72,14 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
               bool is_root_render_pass)
       : representation_(std::move(representation)),
         scoped_read_access_(std::move(scoped_read_access)),
-        ref_(1),
         is_root_render_pass_(is_root_render_pass) {
     DCHECK(representation_);
     DCHECK(scoped_read_access_);
   }
 
-  OverlayData(OverlayData&& other) { *this = std::move(other); }
+  ~OverlayData() = default;
 
-  ~OverlayData() { Reset(); }
-
-  OverlayData& operator=(OverlayData&& other) {
-    DCHECK(!IsInUseByWindowServer());
-    DCHECK(!ref_);
-    DCHECK(!scoped_read_access_);
-    DCHECK(!representation_);
-    scoped_read_access_ = std::move(other.scoped_read_access_);
-    representation_ = std::move(other.representation_);
-    ref_ = other.ref_;
-    other.ref_ = 0;
-    is_root_render_pass_ = other.is_root_render_pass_;
-    return *this;
-  }
+  OverlayData& operator=(OverlayData&& other) = delete;
 
   bool IsInUseByWindowServer() const {
 #if BUILDFLAG(IS_APPLE)
@@ -105,19 +97,28 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
 #endif
   }
 
-  void Ref() { ++ref_; }
+  void Ref() const { ++ref_; }
 
-  void Unref() {
-    DCHECK_GT(ref_, 0);
-    if (ref_ > 1) {
-      --ref_;
-    } else if (ref_ == 1) {
-      DCHECK(!IsInUseByWindowServer());
-      Reset();
+  void Unref() const {
+    // Unref should only be called when there is more than one reference.
+    DCHECK_GT(ref_, 1);
+    --ref_;
+  }
+
+  void OnReuse() const {
+    // This is a proxy check for single-buffered overlay.
+    if (representation_->usage().Has(
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
+        base::FeatureList::IsEnabled(
+            kRestartReadAccessForConcurrentReadWrite)) {
+      // If this is a single-buffered overlay, want to restart read access to
+      // pick up any new write fences for this frame.
+      scoped_read_access_.reset();
+      scoped_read_access_ = representation_->BeginScopedReadAccess();
     }
   }
 
-  void OnContextLost() { representation_->OnContextLost(); }
+  void OnContextLost() const { representation_->OnContextLost(); }
 
   bool unique() const { return ref_ == 1; }
   const gpu::Mailbox& mailbox() const { return representation_->mailbox(); }
@@ -126,20 +127,14 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     return scoped_read_access_.get();
   }
 
-  bool IsRootRenderPass() { return is_root_render_pass_; }
+  bool IsRootRenderPass() const { return is_root_render_pass_; }
 
  private:
-  void Reset() {
-    scoped_read_access_.reset();
-    representation_.reset();
-    ref_ = 0;
-  }
-
-  std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
-  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
+  const std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
+  mutable std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
       scoped_read_access_;
-  int ref_ = 0;
-  bool is_root_render_pass_ = false;
+  mutable int ref_ = 1;
+  const bool is_root_render_pass_ = false;
 };
 
 SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
@@ -177,12 +172,8 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 #endif  // BUILDFLAG(IS_OZONE)
 
   capabilities_.uses_default_gl_framebuffer = false;
-  capabilities_.preserve_buffer_content = true;
-  capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
-
-  capabilities_.renderer_allocates_images =
-      ::features::ShouldRendererAllocateImages();
+  capabilities_.renderer_allocates_images = true;
 
 #if BUILDFLAG(IS_ANDROID)
   if (::features::IncreaseBufferCountForHighFrameRate()) {
@@ -208,6 +199,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     capabilities_.pending_swap_params.max_pending_swaps_120hz = 4;
   }
 #endif
+
   DCHECK_LT(capabilities_.pending_swap_params.max_pending_swaps,
             capabilities_.number_of_buffers);
   DCHECK_LT(
@@ -221,6 +213,11 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 
   if (capabilities_.supports_post_sub_buffer)
     capabilities_.supports_target_damage = true;
+
+#if BUILDFLAG(IS_MAC)
+  presenter_->SetMaxPendingSwaps(
+      capabilities_.pending_swap_params.max_pending_swaps);
+#endif
 }
 
 SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
@@ -234,127 +231,19 @@ SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
     for (auto& overlay : overlays_) {
       overlay.OnContextLost();
     }
-
-    for (auto& image : images_) {
-      image->OnContextLost();
-    }
-  }
-
-  FreeAllSurfaces();
-  // Clear and cancel swap_completion_callbacks_ to free all resource bind to
-  // callbacks.
-  swap_completion_callbacks_.clear();
-}
-
-OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextImage() {
-  DCHECK(!capabilities_.renderer_allocates_images);
-  CHECK(!available_images_.empty());
-  auto* image = available_images_.front();
-  available_images_.pop_front();
-  return image;
-}
-
-void SkiaOutputDeviceBufferQueue::PageFlipComplete(
-    OutputPresenter::Image* image,
-    gfx::GpuFenceHandle release_fence) {
-  if (displayed_image_) {
-    DCHECK(!capabilities_.renderer_allocates_images);
-    DCHECK_EQ(displayed_image_->skia_representation()->size(), image_size_);
-    DCHECK_EQ(displayed_image_->GetPresentCount() > 1,
-              displayed_image_ == image);
-    // MakeCurrent is necessary for inserting release fences and for
-    // BeginWriteSkia below.
-    context_state_->MakeCurrent(/*surface=*/nullptr);
-    displayed_image_->EndPresent(std::move(release_fence));
-    if (!displayed_image_->GetPresentCount()) {
-      available_images_.push_back(displayed_image_);
-      // Call BeginWriteSkia() for the next frame here to avoid some expensive
-      // operations on the critical code path. Do this only if we wrote to an
-      // image this frame (if we did not, assume we will not for the next
-      // frame).
-      if (!available_images_.front()->sk_surface() && image) {
-        // BeginWriteSkia() may alter GL's state.
-        context_state_->set_need_context_state_reset(true);
-        available_images_.front()->BeginWriteSkia(sample_count_);
-      }
-    }
-  }
-
-  displayed_image_ = image;
-  swap_completion_callbacks_.pop_front();
-
-  // If there is no displayed image, then purge one available image.
-  if (base::FeatureList::IsEnabled(features::kBufferQueueImageSetPurgeable)) {
-    if (!displayed_image_) {
-      for (auto* image_to_discard : available_images_) {
-        if (image_to_discard->SetPurgeable())
-          break;
-      }
-    }
   }
 }
 
-void SkiaOutputDeviceBufferQueue::FreeAllSurfaces() {
-  images_.clear();
-  current_image_ = nullptr;
-  submitted_image_ = nullptr;
-  displayed_image_ = nullptr;
-  available_images_.clear();
-  primary_plane_waiting_on_paint_ = true;
-}
-
-bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
-  return true;
-}
-
-void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
-    const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
-        plane) {
-  if (plane) {
-    DCHECK(!capabilities_.renderer_allocates_images);
-    // If the current_image_ is nullptr, it means there is no change on the
-    // primary plane. So we just need to schedule the last submitted image.
-    auto* image =
-        current_image_ ? current_image_.get() : submitted_image_.get();
-    // |image| can be null if there was a fullscreen overlay last frame (e.g.
-    // no primary plane). If the fullscreen quad suddenly fails the fullscreen
-    // overlay check this frame (e.g. TestPageFlip failing) and then gets
-    // promoted via a different strategy like single-on-top, the quad's damage
-    // is still removed from the primary plane's damage. With no damage, we
-    // never invoke |BeginPaint| which initializes a new image. Since there
-    // still really isn't any primary plane content, it's fine to early-exit.
-    if (!image && primary_plane_waiting_on_paint_)
-      return;
-    DCHECK(image);
-
-    image->BeginPresent();
-    presenter_->SchedulePrimaryPlane(plane.value(), image,
-                                     image == submitted_image_);
-  } else {
-    primary_plane_waiting_on_paint_ =  true;
-    current_frame_has_no_primary_plane_ = true;
-    // Even if there is no primary plane, |current_image_| may be non-null if
-    // an overlay just transitioned from an underlay strategy to a fullscreen
-    // strategy (e.g. a the media controls disappearing on a fullscreen video).
-    // In this case, there is still damage which triggers a render pass, but
-    // since we promote via fullscreen, we remove the primary plane in the end.
-    // We need to recycle |current_image_| to avoid a use-after-free error.
-    if (current_image_) {
-      available_images_.push_back(current_image_);
-      current_image_ = nullptr;
-    }
-  }
-}
-
-SkiaOutputDeviceBufferQueue::OverlayData*
+const SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
                                                     bool is_root_render_pass,
                                                     bool* is_existing) {
   if (is_existing)
     *is_existing = false;
 
-  if (!mailbox.IsSharedImage())
+  if (mailbox.IsZero()) {
     return nullptr;
+  }
 
   auto it = overlays_.find(mailbox);
   if (it != overlays_.end()) {
@@ -362,6 +251,7 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
     // added to keep it alive. This ref will be removed, when the overlay is
     // replaced by a new frame.
     it->Ref();
+    it->OnReuse();
     if (is_existing)
       *is_existing = true;
     return &*it;
@@ -435,8 +325,8 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     std::unique_ptr<gfx::GpuFence> acquire_fence;
     if (context_state_->GrContextIsGL() && access &&
         !overlay_has_been_submitted &&
-        (access->representation()->usage() &
-         gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
+        access->representation()->usage().Has(
+            gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
         gl::GLFence::IsGpuFenceSupported()) {
       DCHECK(features::IsDelegatedCompositingEnabled());
       // Create a single fence that will be duplicated and inserted into each
@@ -467,65 +357,24 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
   }
 }
 
-void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
-                                         base::OnceClosure callback) {
-  // The current image may be missing, for example during WebXR presentation.
-  // The SkSurface may also be missing due to a rare edge case (seen at ~1CPM
-  // on CrOS)- if we end up skipping the swap for a frame and don't have
-  // damage in the next frame (e.g.fullscreen overlay),
-  // |current_image_->BeginWriteSkia| won't get called before |Submit|. In
-  // this case, we shouldn't call |PreGrContextSubmit| since there's no active
-  // surface to flush.
-  if (current_image_ && current_image_->sk_surface())
-    current_image_->PreGrContextSubmit();
-
-  SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
-}
-
 void SkiaOutputDeviceBufferQueue::Present(
     const std::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
-  if (current_frame_has_no_primary_plane_) {
-    DCHECK(!current_image_);
-    submitted_image_ = nullptr;
-    current_frame_has_no_primary_plane_ = false;
-  } else {
-    if (current_image_) {
-      submitted_image_ = current_image_;
-      current_image_ = nullptr;
-    }
-    DCHECK(submitted_image_);
-  }
-
-#if BUILDFLAG(IS_APPLE)
-  presenter_->SetCALayerErrorCode(frame.ca_layer_error_code);
-#endif
-
-  // Cancelable callback uses weak ptr to drop this task upon destruction.
-  // Thus it is safe to use |base::Unretained(this)|.
-  // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
-  // be released due to reshape() or destruction.
-  auto data = frame.data;
-  swap_completion_callbacks_.emplace_back(
-      std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
-          &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
-          submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
-          std::move(committed_overlay_mailboxes_))));
+  presenter_->Present(
+      base::BindOnce(&SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
+                     weak_ptr_.GetWeakPtr(), GetSwapBuffersSize(),
+                     std::move(frame), std::move(committed_overlay_mailboxes_)),
+      std::move(feedback), frame.data);
   committed_overlay_mailboxes_.clear();
-
-  presenter_->Present(swap_completion_callbacks_.back()->callback(),
-                      std::move(feedback), data);
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 
 void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     const gfx::Size& size,
     OutputSurfaceFrame frame,
-    const base::WeakPtr<OutputPresenter::Image>& image,
     std::vector<gpu::Mailbox> overlay_mailboxes,
     gfx::SwapCompletionResult result) {
   last_swap_time_ = swap_time_clock_->NowTicks();
@@ -535,7 +384,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   // have been replaced.
   for (const auto& mailbox : overlay_mailboxes) {
     auto it = overlays_.find(mailbox);
-    DCHECK(it != overlays_.end());
+    CHECK(it != overlays_.end(), base::NotFatalUntil::M130);
     it->Unref();
   }
 
@@ -545,20 +394,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   // overlay representations are destroyed, backing may get destroyed leading to
   // GL texture destruction. This destruction needs GL context current.
   need_gl_context = true;
-#elif BUILDFLAG(IS_OZONE)
-  // GL textures are cached in OzoneImageBacking with this workaround and when
-  // overlay representations are destroyed, backing may get destroyed leading to
-  // GL texture destruction. This destruction needs GL context current. Please
-  // note there are two type of caches as of now - one is per context cache that
-  // is only enabled when the feature is enabled, and another is a general cache
-  // that has some drawbacks and cannot be enabled by default. The cache that is
-  // used when the feature is enabled also supersedes the workaround and doesn't
-  // require a gl context as it is able to manage that by itself.
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePerContextGLTextureCache) &&
-      workarounds_.cache_texture_in_ozone_backing) {
-    need_gl_context = true;
-  }
 #endif
 
   // Code below can destroy last representation of the overlay shared image. On
@@ -575,7 +410,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   [[maybe_unused]] std::vector<gpu::Mailbox> released_overlays;
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
-  base::EraseIf(overlays_, [&result, &has_in_use_overlays,
+  std::erase_if(overlays_, [&result, &has_in_use_overlays,
                             &released_overlays](auto& overlay) {
     if (!overlay.unique()) {
       return false;
@@ -604,23 +439,11 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       overlay.scoped_read_access()->SetReleaseFence(
           result.release_fence.Clone());
     }
-    overlay.Unref();
     return true;
   });
 
-  bool should_reallocate =
-      result.swap_result == gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
-
-  const auto& mailbox =
-      image ? image->skia_representation()->mailbox() : gpu::Mailbox();
-  auto release_fence = result.release_fence.Clone();
   FinishSwapBuffers(std::move(result), size, std::move(frame),
-                    /*damage_area=*/std::nullopt, std::move(released_overlays),
-                    mailbox);
-  PageFlipComplete(image.get(), std::move(release_fence));
-
-  if (should_reallocate)
-    RecreateImages();
+                    /*damage_area=*/std::nullopt, std::move(released_overlays));
 
   if (has_in_use_overlays) {
     // Try again later, even if no further swaps happen.
@@ -660,7 +483,7 @@ void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
 
   std::vector<gpu::Mailbox> released_overlays;
 
-  base::EraseIf(overlays_, [&released_overlays](auto& overlay) {
+  std::erase_if(overlays_, [&released_overlays](auto& overlay) {
     if (!overlay.unique() || overlay.IsInUseByWindowServer() ||
         overlay.IsRootRenderPass()) {
       return false;
@@ -675,8 +498,6 @@ void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
 #else
     (void)released_overlays;
 #endif
-
-    overlay.Unref();
     return true;
   });
 
@@ -689,6 +510,8 @@ gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
   switch (overlay_transform_) {
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
       return gfx::Size(image_size_.height(), image_size_.width());
     case gfx::OVERLAY_TRANSFORM_INVALID:
     case gfx::OVERLAY_TRANSFORM_NONE:
@@ -699,14 +522,9 @@ gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
   }
 }
 
-bool SkiaOutputDeviceBufferQueue::Reshape(const SkImageInfo& image_info,
-                                          const gfx::ColorSpace& color_space,
-                                          int sample_count,
-                                          float device_scale_factor,
-                                          gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceBufferQueue::Reshape(const ReshapeParams& params) {
   DCHECK(pending_overlay_mailboxes_.empty());
-  if (!presenter_->Reshape(image_info, color_space, sample_count,
-                           device_scale_factor, transform)) {
+  if (!presenter_->Reshape(params)) {
     LOG(ERROR) << "Failed to resize.";
     CheckForLoopFailuresBufferQueue();
     // To prevent tail call, so we can see the stack.
@@ -714,21 +532,11 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const SkImageInfo& image_info,
     return false;
   }
 
-  overlay_transform_ = transform;
-  gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
-  if (color_space_ == color_space && image_size_ == size)
-    return true;
-  color_space_ = color_space;
-  image_size_ = size;
-  sample_count_ = sample_count;
+  overlay_transform_ = params.transform;
+  color_space_ = params.color_space;
+  image_size_ = params.GfxSize();
 
-  bool success = RecreateImages();
-  if (!success) {
-    CheckForLoopFailuresBufferQueue();
-    // To prevent tail call, so we can see the stack.
-    base::debug::Alias(nullptr);
-  }
-  return success;
+  return true;
 }
 
 void SkiaOutputDeviceBufferQueue::SetViewportSize(
@@ -736,78 +544,41 @@ void SkiaOutputDeviceBufferQueue::SetViewportSize(
   viewport_size_ = viewport_size;
 }
 
-bool SkiaOutputDeviceBufferQueue::RecreateImages() {
-  if (capabilities_.renderer_allocates_images) {
-    return true;
-  }
-  FreeAllSurfaces();
-  size_t number_to_allocate =
-      capabilities_.supports_dynamic_frame_buffer_allocation
-          ? number_of_images_to_allocate_
-          : capabilities_.number_of_buffers;
-  if (!number_to_allocate)
-    return true;
-
-  images_ =
-      presenter_->AllocateImages(color_space_, image_size_, number_to_allocate);
-  for (auto& image : images_) {
-    available_images_.push_back(image.get());
-  }
-
-  DCHECK(images_.empty() || images_.size() == number_to_allocate);
-  return !images_.empty();
-}
-
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(!capabilities_.renderer_allocates_images);
-  primary_plane_waiting_on_paint_ = false;
-
-  if (!current_image_) {
-    current_image_ = GetNextImage();
-  }
-
-  if (!current_image_->sk_surface())
-    current_image_->BeginWriteSkia(sample_count_);
-  *end_semaphores = current_image_->TakeEndWriteSkiaSemaphores();
-  return current_image_->sk_surface();
+  NOTREACHED();
 }
 
 void SkiaOutputDeviceBufferQueue::EndPaint() {
-  DCHECK(!capabilities_.renderer_allocates_images);
-  DCHECK(current_image_);
-  current_image_->EndWriteSkia();
+  NOTREACHED();
 }
 
-bool SkiaOutputDeviceBufferQueue::EnsureMinNumberOfBuffers(size_t n) {
-  DCHECK(!capabilities_.renderer_allocates_images);
-  DCHECK(capabilities_.supports_dynamic_frame_buffer_allocation);
-  DCHECK_GT(n, 0u);
-  DCHECK_LE(n, static_cast<size_t>(capabilities_.number_of_buffers));
-
-  if (number_of_images_to_allocate_ >= n)
-    return true;
-  number_of_images_to_allocate_ = n;
-  if (image_size_.IsEmpty())
-    return true;
-  return RecreateImages();
+size_t SkiaOutputDeviceBufferQueue::OverlayDataHash::operator()(
+    const OverlayData& o) const {
+  return std::hash<gpu::Mailbox>{}(o.mailbox());
 }
 
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
+size_t SkiaOutputDeviceBufferQueue::OverlayDataHash::operator()(
+    const gpu::Mailbox& m) const {
+  return std::hash<gpu::Mailbox>{}(m);
+}
+
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
     const OverlayData& lhs,
     const OverlayData& rhs) const {
-  return lhs.mailbox() < rhs.mailbox();
+  return lhs.mailbox() == rhs.mailbox();
 }
 
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
     const OverlayData& lhs,
     const gpu::Mailbox& rhs) const {
-  return lhs.mailbox() < rhs;
+  return lhs.mailbox() == rhs;
 }
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
+
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
     const gpu::Mailbox& lhs,
     const OverlayData& rhs) const {
-  return lhs < rhs.mailbox();
+  return lhs == rhs.mailbox();
 }
 
 void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {

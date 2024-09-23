@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,7 +44,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class SelectActionMenuHelperTest {
     @Mock private SelectActionMenuHelper.SelectActionMenuDelegate mDelegate;
-    @Rule public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
     @Mock private Context mContext;
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {

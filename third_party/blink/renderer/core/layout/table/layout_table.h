@@ -17,10 +17,8 @@ class LayoutTableSection;
 class LayoutTableCell;
 class TableBorders;
 
-enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
-
-// LayoutTable is the LayoutObject associated with
-// display: table or inline-table.
+// LayoutTable is the LayoutObject associated with display: table or
+// inline-table.
 //
 // LayoutTable is the coordinator for determining the overall table structure.
 // The reason is that LayoutTableSection children have a local view over what
@@ -107,13 +105,12 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   static LayoutTable* CreateAnonymousWithParent(const LayoutObject&);
 
   bool IsFirstCell(const LayoutTableCell&) const;
+
+  // All the section methods will return non-empty sections.
   LayoutTableSection* FirstSection() const;
-  LayoutTableSection* FirstNonEmptySection() const;
-  LayoutTableSection* LastNonEmptySection() const;
-  LayoutTableSection* NextSection(const LayoutTableSection*,
-                                  SkipEmptySectionsValue) const;
-  LayoutTableSection* PreviousSection(const LayoutTableSection*,
-                                      SkipEmptySectionsValue) const;
+  LayoutTableSection* LastSection() const;
+  LayoutTableSection* NextSection(const LayoutTableSection*) const;
+  LayoutTableSection* PreviousSection(const LayoutTableSection*) const;
 
   wtf_size_t ColumnCount() const;
 

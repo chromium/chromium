@@ -25,6 +25,21 @@ class Label;
 namespace ash {
 class RoundedImageView;
 
+// Identifies an icon to be shown.
+struct SavedDeskIconIdentifier {
+  // This is either a:
+  //   1. A regular URL that we'll attempt to load a favicon for.
+  //   2. A special identifier (like "incognito_window").
+  //   3. An app ID - this is used for ARC apps etc.
+  std::string url_or_id;
+  // When `url_or_id` is a regular URL, then this should be the profile the URL
+  // came from.
+  uint64_t lacros_profile_id = 0;
+
+  // This type is used as a map key.
+  auto operator<=>(const SavedDeskIconIdentifier&) const = default;
+};
+
 // The base class of SavedDeskRegularIconView and SavedDeskOverflowIconView.
 // A class for loading and displaying the icon of apps/urls used in a
 // SavedDeskItemView. Depending on the `count_` and `icon_identifier_`,
@@ -43,7 +58,8 @@ class SavedDeskIconView : public views::View {
   ~SavedDeskIconView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Sets `count_` to `count` and updates the `count_label_`. Please note,
   // currently it does not support update on regular icon.
@@ -95,7 +111,7 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   // `on_icon_loaded` is the callback for updating the icon container.
   SavedDeskRegularIconView(
       const ui::ColorProvider* incognito_window_color_provider,
-      const std::string& icon_identifier,
+      const SavedDeskIconIdentifier& icon_identifier,
       const std::string& app_title,
       int count,
       size_t sorting_key,
@@ -106,7 +122,9 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   ~SavedDeskRegularIconView() override;
 
   bool is_showing_default_icon() const { return is_showing_default_icon_; }
-  const std::string& icon_identifier() const { return icon_identifier_; }
+  const SavedDeskIconIdentifier& icon_identifier() const {
+    return icon_identifier_;
+  }
 
   // views::View:
   void Layout(PassKey) override;
@@ -137,9 +155,8 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
   // True if this icon view is showing the default (fallback) icon.
   bool is_showing_default_icon_ = false;
 
-  // The identifier for an icon. For a favicon, this will be a url. For an app,
-  // this will be an app id.
-  std::string icon_identifier_;
+  // Identifies the icon to show.
+  SavedDeskIconIdentifier icon_identifier_;
 
   raw_ptr<RoundedImageView> icon_view_ = nullptr;
 

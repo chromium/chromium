@@ -5,6 +5,7 @@
 #include "net/http/http_basic_stream.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,13 +14,13 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_parser.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 
 namespace net {
 
-HttpBasicStream::HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
+HttpBasicStream::HttpBasicStream(std::unique_ptr<StreamSocketHandle> connection,
                                  bool is_for_get_to_http_proxy)
     : state_(std::move(connection), is_for_get_to_http_proxy) {}
 
@@ -37,6 +38,9 @@ int HttpBasicStream::InitializeStream(bool can_send_early,
                                       CompletionOnceCallback callback) {
   DCHECK(request_info_);
   state_.Initialize(request_info_, priority, net_log);
+  // RequestInfo is no longer needed after this point.
+  request_info_ = nullptr;
+
   int ret = OK;
   if (!can_send_early) {
     // parser() cannot outlive |this|, so we can use base::Unretained().
@@ -44,8 +48,6 @@ int HttpBasicStream::InitializeStream(bool can_send_early,
         base::BindOnce(&HttpBasicStream::OnHandshakeConfirmed,
                        base::Unretained(this), std::move(callback)));
   }
-  // RequestInfo is no longer needed after this point.
-  request_info_ = nullptr;
   return ret;
 }
 
@@ -56,8 +58,9 @@ int HttpBasicStream::SendRequest(const HttpRequestHeaders& headers,
   if (request_headers_callback_) {
     HttpRawRequestHeaders raw_headers;
     raw_headers.set_request_line(state_.GenerateRequestLine());
-    for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
+    for (HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
       raw_headers.Add(it.name(), it.value());
+    }
     request_headers_callback_.Run(std::move(raw_headers));
   }
   return parser()->SendRequest(
@@ -77,29 +80,12 @@ int HttpBasicStream::ReadResponseBody(IOBuffer* buf,
 }
 
 void HttpBasicStream::Close(bool not_reusable) {
-  // parser() is null if |this| is created by an orphaned HttpStreamFactory::Job
-  // in which case InitializeStream() will not have been called. This also
-  // protects against null dereference in the case where
-  // state_.ReleaseConnection() has been called.
-  //
-  // TODO(mmenke):  Can these cases be handled a bit more cleanly?
-  // WebSocketHandshakeStream will need to be updated as well.
-  if (!parser())
-    return;
-  StreamSocket* socket = state_.connection()->socket();
-  if (not_reusable && socket)
-    socket->Disconnect();
-  parser()->OnConnectionClose();
-  state_.connection()->Reset();
+  state_.Close(not_reusable);
 }
 
 std::unique_ptr<HttpStream> HttpBasicStream::RenewStreamForAuth() {
   DCHECK(IsResponseBodyComplete());
   DCHECK(!parser()->IsMoreDataBuffered());
-  // The HttpStreamParser object still has a pointer to the connection. Just to
-  // be extra-sure it doesn't touch the connection again, delete it here rather
-  // than leaving it until the destructor is called.
-  state_.DeleteParser();
   return std::make_unique<HttpBasicStream>(state_.ReleaseConnection(),
                                            state_.is_for_get_to_http_proxy());
 }
@@ -113,12 +99,11 @@ bool HttpBasicStream::IsConnectionReused() const {
 }
 
 void HttpBasicStream::SetConnectionReused() {
-  state_.connection()->set_reuse_type(ClientSocketHandle::REUSED_IDLE);
+  state_.SetConnectionReused();
 }
 
 bool HttpBasicStream::CanReuseConnection() const {
-  return parser() && state_.connection()->socket() &&
-         parser()->CanReuseConnection();
+  return state_.CanReuseConnection();
 }
 
 int64_t HttpBasicStream::GetTotalReceivedBytes() const {
@@ -135,9 +120,7 @@ int64_t HttpBasicStream::GetTotalSentBytes() const {
 
 bool HttpBasicStream::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
-  if (!state_.connection()->GetLoadTimingInfo(IsConnectionReused(),
-                                              load_timing_info) ||
-      !parser()) {
+  if (!state_.GetLoadTimingInfo(load_timing_info) || !parser()) {
     return false;
   }
 
@@ -163,26 +146,11 @@ bool HttpBasicStream::GetAlternativeService(
 }
 
 void HttpBasicStream::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!state_.connection()->socket() ||
-      !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
-  }
-}
-
-void HttpBasicStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  if (!state_.connection()->socket()) {
-    cert_request_info->Reset();
-    return;
-  }
-  parser()->GetSSLCertRequestInfo(cert_request_info);
+  state_.GetSSLInfo(ssl_info);
 }
 
 int HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  if (!state_.connection() || !state_.connection()->socket())
-    return ERR_SOCKET_NOT_CONNECTED;
-
-  return state_.connection()->socket()->GetPeerAddress(endpoint);
+  return state_.GetRemoteEndpoint(endpoint);
 }
 
 void HttpBasicStream::Drain(HttpNetworkSession* session) {
@@ -211,7 +179,7 @@ const std::set<std::string>& HttpBasicStream::GetDnsAliases() const {
   return state_.GetDnsAliases();
 }
 
-base::StringPiece HttpBasicStream::GetAcceptChViaAlps() const {
+std::string_view HttpBasicStream::GetAcceptChViaAlps() const {
   return {};
 }
 

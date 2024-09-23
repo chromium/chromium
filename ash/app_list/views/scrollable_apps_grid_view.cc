@@ -23,7 +23,7 @@
 namespace ash {
 namespace {
 
-// TODO(crbug.com/1211608): Add this to AppListConfig.
+// TODO(crbug.com/40182999): Add this to AppListConfig.
 const int kVerticalTilePadding = 8;
 
 // Vertical margin in DIPs inside the top and bottom of scroll view where
@@ -73,7 +73,7 @@ void ScrollableAppsGridView::Layout(PassKey) {
   if (GetContentsBounds().IsEmpty())
     return;
 
-  // TODO(crbug.com/1211608): Use FillLayout on the items container.
+  // TODO(crbug.com/40182999): Use FillLayout on the items container.
   items_container()->SetBoundsRect(GetContentsBounds());
 
   CalculateIdealBounds();
@@ -112,6 +112,13 @@ bool ScrollableAppsGridView::ShouldContainerHandleDragEvents() {
   // Apps grid folder view handles its own drag and drop events, otherwise, it
   // should delegate to the apps grid container.
   return !IsInFolder();
+}
+
+bool ScrollableAppsGridView::IsAboveTheFold(AppListItemView* item_view) {
+  gfx::Rect item_bounds_in_scroll_view = views::View::ConvertRectToTarget(
+      item_view, scroll_view_->contents(), item_view->GetLocalBounds());
+  return item_bounds_in_scroll_view.bottom() <
+         scroll_view_->GetVisibleRect().height();
 }
 
 gfx::Size ScrollableAppsGridView::GetTileGridSize() const {

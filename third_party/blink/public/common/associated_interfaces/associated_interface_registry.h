@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -64,6 +65,12 @@ class BLINK_COMMON_EXPORT AssociatedInterfaceRegistry {
     AddInterface(
         Interface::Name_,
         base::BindRepeating(&BindInterfaceReceiver<Interface>, binder));
+  }
+
+  void GetInterfacesForTesting(std::vector<std::string>& out) {
+    for (const auto& [key, _] : interfaces_) {
+      out.push_back(key);
+    }
   }
 
   base::WeakPtr<AssociatedInterfaceRegistry> GetWeakPtr();

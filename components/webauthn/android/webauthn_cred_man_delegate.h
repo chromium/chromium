@@ -57,7 +57,7 @@ class WebAuthnCredManDelegate {
 
   // Returns whether there are passkeys in the Android Credential Manager UI.
   // Returns `kNotReady` if Credential Manager has not replied yet.
-  virtual State HasPasskeys();
+  virtual State HasPasskeys() const;
 
   // Clears the cached `show_cred_man_ui_callback_` and `has_results_`.
   virtual void CleanUpConditionalRequest();

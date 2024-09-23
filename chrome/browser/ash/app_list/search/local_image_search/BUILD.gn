@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("local_image_search") {
+  sources = [
+    "annotation_storage.cc",
+    "annotation_storage.h",
+    "annotations_table.cc",
+    "annotations_table.h",
+    "documents_table.cc",
+    "documents_table.h",
+    "file_search_result.cc",
+    "file_search_result.h",
+    "image_annotation_worker.cc",
+    "image_annotation_worker.h",
+    "image_content_annotator.cc",
+    "image_content_annotator.h",
+    "inverted_index_table.cc",
+    "inverted_index_table.h",
+    "local_image_search_provider.cc",
+    "local_image_search_provider.h",
+    "local_image_search_service.cc",
+    "local_image_search_service.h",
+    "local_image_search_service_factory.cc",
+    "local_image_search_service_factory.h",
+    "search_utils.cc",
+    "search_utils.h",
+    "sql_database.cc",
+    "sql_database.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/keyed_service/core",
+    "//services/screen_ai/public/mojom",
+    "//sql",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "annotation_storage_unittest.cc",
+    "image_annotation_worker_unittest.cc",
+    "local_image_search_test_util.cc",
+    "local_image_search_test_util.h",
+    "sql_database_unittest.cc",
+  ]
+
+  deps = [
+    ":local_image_search",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ui",
+    "//chromeos/dbus/machine_learning",
+    "//sql",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

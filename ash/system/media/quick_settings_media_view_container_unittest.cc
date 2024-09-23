@@ -8,8 +8,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
-#include "media/base/media_switches.h"
 
 namespace ash {
 
@@ -23,10 +21,7 @@ class QuickSettingsMediaViewContainerTest : public NoSessionAshTestBase {
   ~QuickSettingsMediaViewContainerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
-                                   {});
     NoSessionAshTestBase::SetUp();
-
     MediaTray::SetPinnedToShelf(false);
     GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
@@ -38,9 +33,6 @@ class QuickSettingsMediaViewContainerTest : public NoSessionAshTestBase {
   QuickSettingsMediaViewContainer* media_view_container() {
     return quick_settings_view()->media_view_container_for_testing();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(QuickSettingsMediaViewContainerTest, ChangeMediaViewVisibility) {

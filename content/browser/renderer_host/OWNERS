@@ -38,6 +38,7 @@ per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 # Clipboard
 per-file *clipboard_host_impl*=asully@chromium.org
 per-file *clipboard_host_impl*=ayui@chromium.org
+per-file *clipboard_host_impl*=christinesm@chromium.org
 per-file *clipboard_host_impl*=dcheng@chromium.org
 per-file *clipboard_host_impl*=estade@chromium.org
 
@@ -46,6 +47,8 @@ per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
 per-file agent_scheduling_group*=haraken@chromium.org
 
+per-file render_process_host_impl_receiver_bindings.cc=set noparent
+per-file render_process_host_impl_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
 per-file render_frame_host_impl_interface_binders.cc=set noparent
 per-file render_frame_host_impl_interface_binders.cc=file://ipc/SECURITY_OWNERS
 per-file *_sandboxed*.*=set noparent

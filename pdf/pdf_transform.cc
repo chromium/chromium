@@ -123,7 +123,6 @@ gfx::PointF CalculateNonScaledClipBoxOffset(
                          page_width - source_clip_box.top);
     default:
       NOTREACHED();
-      return gfx::PointF();
   }
 }
 

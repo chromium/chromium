@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/compose/features.gni")
+
+static_library("home_modules") {
+  sources = [
+    "card_selection_info.cc",
+    "card_selection_info.h",
+    "card_selection_signals.cc",
+    "card_selection_signals.h",
+    "constants.h",
+    "ephemeral_home_module_backend.cc",
+    "ephemeral_home_module_backend.h",
+    "home_modules_card_registry.cc",
+    "home_modules_card_registry.h",
+    "price_tracking_notification_promo.cc",
+    "price_tracking_notification_promo.h",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/prefs",
+    "//components/segmentation_platform/internal",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "card_selection_signals_unittest.cc",
+    "ephemeral_home_module_backend_unittest.cc",
+    "home_modules_card_registry_unittest.cc",
+    "price_tracking_notification_promo_unittest.cc",
+  ]
+
+  deps = [
+    ":home_modules",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder/default_model:default_model_test_base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -33,7 +32,7 @@ TEST(ClipboardDataTest, BitmapTest) {
 // Tests that two ClipboardData objects won't be equal if they don't have the
 // same data source.
 TEST(ClipboardDataTest, DataSrcTest) {
-  GURL url("www.example.com");
+  GURL url("https://www.example.com");
   ClipboardData data1;
   data1.set_source(std::make_optional<DataTransferEndpoint>(url));
 

@@ -7,9 +7,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/logging.h"
-#include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 
 namespace messages {
 
@@ -92,6 +94,18 @@ void MessageWrapper::SetPrimaryButtonText(
       base::android::ConvertUTF16ToJavaString(env, primary_button_text);
   Java_MessageWrapper_setPrimaryButtonText(env, java_message_wrapper_,
                                            jprimary_button_text);
+}
+
+int MessageWrapper::GetPrimaryButtonTextMaxLines() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_getPrimaryButtonTextMaxLines(
+      env, java_message_wrapper_);
+}
+
+void MessageWrapper::SetPrimaryButtonTextMaxLines(int max_lines) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setPrimaryButtonTextMaxLines(env, java_message_wrapper_,
+                                                   max_lines);
 }
 
 std::u16string MessageWrapper::GetSecondaryButtonMenuText() {

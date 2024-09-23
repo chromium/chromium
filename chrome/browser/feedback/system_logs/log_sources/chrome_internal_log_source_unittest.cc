@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,8 +31,6 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #endif
-
-#include "gpu/config/gpu_finch_features.h"
 
 namespace system_logs {
 namespace {
@@ -92,15 +91,22 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(ChromeInternalLogSourceTest, GraphiteEnabledPresentAndValid) {
+TEST_F(ChromeInternalLogSourceTest, SkiaGraphiteStatusPresentAndValid) {
   auto response = GetChromeInternalLogs();
-  auto value = response->at("graphite_enabled");
+  auto value = response->at("skia_graphite_status");
+  EXPECT_EQ(value, "unknown");
 
-  std::string expected_value =
-      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
-          ? "true"
-          : "false";
-  EXPECT_EQ(value, expected_value);
+  content::GpuDataManager::GetInstance()->SetSkiaGraphiteEnabledForTesting(
+      true);
+  response = GetChromeInternalLogs();
+  value = response->at("skia_graphite_status");
+  EXPECT_EQ(value, "enabled");
+
+  content::GpuDataManager::GetInstance()->SetSkiaGraphiteEnabledForTesting(
+      false);
+  response = GetChromeInternalLogs();
+  value = response->at("skia_graphite_status");
+  EXPECT_EQ(value, "disabled");
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

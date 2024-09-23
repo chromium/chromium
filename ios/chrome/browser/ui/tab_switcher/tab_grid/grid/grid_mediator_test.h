@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_id.h"
@@ -27,7 +28,6 @@ class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
 @class SceneState;
-class TestChromeBrowserState;
 
 namespace web {
 class FakeWebState;
@@ -61,6 +61,7 @@ class GridMediatorTestClass : public PlatformTest {
   web::WebStateID original_selected_identifier_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<Browser> other_browser_;
   raw_ptr<BrowserList> browser_list_;
   base::UserActionTester user_action_tester_;
   raw_ptr<AuthenticationService> auth_service_;

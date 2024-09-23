@@ -10,6 +10,8 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -37,16 +40,13 @@ class CanvasImageSource;
 class DOMRectReadOnly;
 class ExceptionState;
 class ExecutionContext;
-class ScriptPromise;
-class ScriptPromiseResolver;
+class PlaneLayout;
 class ScriptState;
 class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
 class VideoFrameLayout;
-
-MODULES_EXPORT BASE_DECLARE_FEATURE(kRemoveWebCodecsSpecViolations);
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -59,7 +59,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   VideoFrame(scoped_refptr<media::VideoFrame> frame,
              ExecutionContext*,
              std::string monitoring_source_id = std::string(),
-             sk_sp<SkImage> sk_image = nullptr);
+             sk_sp<SkImage> sk_image = nullptr,
+             bool use_capture_timestamp = false);
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of
@@ -96,10 +97,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
-  ScriptPromise copyTo(ScriptState* script_state,
-                       const AllowSharedBufferSource* destination,
-                       VideoFrameCopyToOptions* options,
-                       ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<PlaneLayout>> copyTo(
+      ScriptState* script_state,
+      const AllowSharedBufferSource* destination,
+      VideoFrameCopyToOptions* options,
+      ExceptionState& exception_state);
 
   // Invalidates |handle_|, releasing underlying media::VideoFrame references.
   // This effectively "destroys" all frames sharing the same Handle.
@@ -125,7 +127,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
+      const AlphaDisposition alpha_disposition) override;
 
   gfx::SizeF ElementSize(const gfx::SizeF&,
                          const RespectImageOrientationEnum) const override;
@@ -137,30 +139,33 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                            const gfx::Rect& src_rect,
                            const VideoFrameLayout& dest_layout,
-                           base::span<uint8_t> buffer);
-  ScriptPromiseResolver* CopyToAsync(ScriptState* script_state,
-                                     scoped_refptr<media::VideoFrame> frame,
-                                     gfx::Rect src_rect,
-                                     const AllowSharedBufferSource* destination,
-                                     const VideoFrameLayout& dest_layout);
+                           base::span<uint8_t> buffer,
+                           PredefinedColorSpace target_color_space);
+
+  bool CopyToAsync(ScriptPromiseResolver<IDLSequence<PlaneLayout>>*,
+                   scoped_refptr<media::VideoFrame> frame,
+                   gfx::Rect src_rect,
+                   const AllowSharedBufferSource* destination,
+                   const VideoFrameLayout& dest_layout);
 
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect> crop_rect,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromise<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&) override;
 
   // Underlying frame
   scoped_refptr<VideoFrameHandle> handle_;
 
   // Caches
-  int64_t external_allocated_memory_;
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;
   Member<VideoColorSpace> empty_color_space_;
+  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 }  // namespace blink

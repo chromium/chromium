@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -49,6 +50,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
@@ -149,7 +151,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies,
-        /*has_storage_access=*/false, isolation_info,
+        net::StorageAccessApiStatus::kNone, isolation_info,
         std::move(additional_headers), process->GetID(), origin,
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
@@ -274,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SecureWebSocketSplitRecords DISABLED_SecureWebSocketSplitRecords
@@ -337,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WebSocketBasicAuthInHTTPSURL DISABLED_WebSocketBasicAuthInHTTPSURL
@@ -417,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPConnectToTest,
 // HTTPS connection limits should not be applied to wss:. This is only tested
 // for secure connections here because the unencrypted case is tested in the
 // Blink layout tests, and browser tests are expensive to run.
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SSLConnectionLimit DISABLED_SSLConnectionLimit
@@ -433,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// TODO(crbug.com/40748162): Disabled on macOS because the WSS SpawnedTestServer
 // does not support modern TLS on the macOS bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WebSocketAppliesHSTS DISABLED_WebSocketAppliesHSTS
@@ -509,16 +511,16 @@ class ExpectInvalidUtf8Client : public network::mojom::WebSocketClient {
   void OnDataFrame(bool fin,
                    network::mojom::WebSocketMessageType,
                    uint64_t data_length) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnDropChannel(bool was_clean,
                      uint16_t code,
                      const std::string& reason) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void OnClosingHandshake() override { NOTREACHED(); }
+  void OnClosingHandshake() override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   void OnDisconnect(uint32_t reason, const std::string& message) {
@@ -579,14 +581,16 @@ class InvalidUtf8HandshakeClient
     websocket_.Bind(std::move(websocket));
 
     // Invalid UTF-8.
-    static const uint32_t message[] = {0xff};
-    uint32_t size = static_cast<uint32_t>(sizeof(message));
+    static const uint32_t message = 0xff;
+    size_t actually_written_bytes = 0;
+    websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT,
+                            sizeof(message));
 
-    websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT, size);
-
-    EXPECT_EQ(writable->WriteData(message, &size, MOJO_WRITE_DATA_FLAG_NONE),
-              MOJO_RESULT_OK);
-    EXPECT_EQ(size, sizeof(message));
+    EXPECT_EQ(
+        writable->WriteData(base::byte_span_from_ref(message),
+                            MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes),
+        MOJO_RESULT_OK);
+    EXPECT_EQ(actually_written_bytes, sizeof(message));
 
     connected_ = true;
   }
@@ -807,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
                     ContentSettingsPattern::FromURLNoWildcard(
                         server().GetURL(kHostB, "/")),
                     /*setting_value=*/base::Value(CONTENT_SETTING_ALLOW),
-                    /*source=*/"preference",
+                    content_settings::ProviderType::kPrefProvider,
                     /*incognito=*/false,
                     /*metadata=*/content_settings::RuleMetaData()),
             },

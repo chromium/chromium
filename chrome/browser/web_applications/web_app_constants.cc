@@ -24,6 +24,41 @@ static_assert(WebAppManagementTypes::kValueCount ==
                   WebAppManagement::kMaxValue + 1,
               "WebAppManagementTypes is missing an enum value");
 
+// WebAppManagement types that can't be uninstalled by the user. Counterpart to
+// kUserUninstallableSources.
+constexpr WebAppManagementTypes kNotUserUninstallableSources = {
+    WebAppManagement::kSystem,    WebAppManagement::kIwaShimlessRma,
+    WebAppManagement::kKiosk,     WebAppManagement::kPolicy,
+    WebAppManagement::kIwaPolicy,
+};
+
+constexpr bool AllWebAppManagementTypesListed() {
+  for (int i = WebAppManagement::Type::kMinValue;
+       i < WebAppManagement::Type::kMaxValue; ++i) {
+    WebAppManagement::Type t = static_cast<WebAppManagement::Type>(i);
+
+    if (!kUserUninstallableSources.Has(t) &&
+        !kNotUserUninstallableSources.Has(t)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// When adding a new WebAppManagement::Type, mark whether or not it is
+// uninstallable by adding it to the appropriate WebAppManagementTypes constant.
+//
+// Note: A nicer way to do this would be to compute kUserUninstallableSources
+// using a constexpr function which includes an exhaustive switch statement over
+// WebAppManagement::Types. Such a method would use base::Union to accumulate
+// sources, which is only constexpr once std::bitset::operator| is constexpr in
+// C++23.
+static_assert(AllWebAppManagementTypesListed(),
+              "All WebAppManagement::Types must be listed in either "
+              "web_app::kUserUninstallableSources or "
+              "web_app::kNotUserUninstallableSources");
+
 namespace WebAppManagement {
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
@@ -43,18 +78,40 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "OneDriveIntegration";
     case WebAppManagement::Type::kSync:
       return os << "Sync";
-    case WebAppManagement::Type::kCommandLine:
-      return os << "CommandLine";
+    case WebAppManagement::Type::kIwaShimlessRma:
+      return os << "IwaShimlessRma";
+    case WebAppManagement::Type::kIwaPolicy:
+      return os << "IwaPolicy";
+    case WebAppManagement::Type::kIwaUserInstalled:
+      return os << "IwaUserInstalled";
     case WebAppManagement::Type::kApsDefault:
       return os << "ApsDefault";
     case WebAppManagement::Type::kDefault:
       return os << "Default";
   }
 }
-}  // namespace WebAppManagement
 
-static_assert(OsHookType::kShortcuts == 0,
-              "OsHookType enum should be zero based");
+bool IsIwaType(WebAppManagement::Type type) {
+  switch (type) {
+    case WebAppManagement::kSystem:
+    case WebAppManagement::kKiosk:
+    case WebAppManagement::kPolicy:
+    case WebAppManagement::kOem:
+    case WebAppManagement::kSubApp:
+    case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kOneDriveIntegration:
+    case WebAppManagement::kSync:
+    case WebAppManagement::kApsDefault:
+    case WebAppManagement::kDefault:
+      return false;
+    case WebAppManagement::kIwaPolicy:
+    case WebAppManagement::kIwaShimlessRma:
+    case WebAppManagement::kIwaUserInstalled:
+      return true;
+  }
+}
+
+}  // namespace WebAppManagement
 
 std::ostream& operator<<(std::ostream& os, RunOnOsLoginMode mode) {
   switch (mode) {
@@ -75,58 +132,6 @@ std::ostream& operator<<(std::ostream& os, ApiApprovalState state) {
       return os << "Disallowed";
     case ApiApprovalState::kRequiresPrompt:
       return os << "RequiresPrompt";
-  }
-}
-
-std::string ConvertUninstallSourceToStringType(
-    const webapps::WebappUninstallSource& uninstall_source) {
-  switch (uninstall_source) {
-    case webapps::WebappUninstallSource::kUnknown:
-      return "Unknown";
-    case webapps::WebappUninstallSource::kAppMenu:
-      return "AppMenu";
-    case webapps::WebappUninstallSource::kAppsPage:
-      return "AppsPage";
-    case webapps::WebappUninstallSource::kOsSettings:
-      return "OS Settings";
-    case webapps::WebappUninstallSource::kSync:
-      return "Sync";
-    case webapps::WebappUninstallSource::kAppManagement:
-      return "App Management";
-    case webapps::WebappUninstallSource::kMigration:
-      return "Migration";
-    case webapps::WebappUninstallSource::kAppList:
-      return "App List";
-    case webapps::WebappUninstallSource::kShelf:
-      return "Shelf";
-    case webapps::WebappUninstallSource::kInternalPreinstalled:
-      return "Internal Preinstalled";
-    case webapps::WebappUninstallSource::kExternalPreinstalled:
-      return "External Preinstalled";
-    case webapps::WebappUninstallSource::kExternalPolicy:
-      return "External Policy";
-    case webapps::WebappUninstallSource::kSystemPreinstalled:
-      return "System Preinstalled";
-    case webapps::WebappUninstallSource::kPlaceholderReplacement:
-      return "Placeholder Replacement";
-    case webapps::WebappUninstallSource::kArc:
-      return "Arc";
-    case webapps::WebappUninstallSource::kSubApp:
-      return "SubApp";
-    case webapps::WebappUninstallSource::kStartupCleanup:
-      return "Startup Cleanup";
-    case webapps::WebappUninstallSource::kParentUninstall:
-      return "Parent App Uninstalled";
-    case webapps::WebappUninstallSource::kExternalLockScreen:
-      return "External Lock Screen";
-    case webapps::WebappUninstallSource::kTestCleanup:
-      return "Test cleanup";
-    case webapps::WebappUninstallSource::kInstallUrlDeduping:
-      return "Install URL deduping";
-    case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
-      return "Healthcare User Install Cleanup";
-    case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
-      return "Isolated Web Apps Enterprise Policy";
   }
 }
 

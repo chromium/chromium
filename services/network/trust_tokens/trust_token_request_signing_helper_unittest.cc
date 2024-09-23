@@ -61,9 +61,11 @@ MATCHER_P2(Header,
            other_matcher,
            "Evaluate the given matcher on the given header, if "
            "present.") {
-  std::string header;
-  if (!arg.extra_request_headers().GetHeader(name, &header))
+  std::optional<std::string> header =
+      arg.extra_request_headers().GetHeader(name);
+  if (!header) {
     return false;
+  }
   return Matches(other_matcher)(header);
 }
 
@@ -203,9 +205,9 @@ TEST_F(TrustTokenRequestSigningHelperTest,
 
   ASSERT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
 
-  std::string redemption_record_header;
-  ASSERT_TRUE(my_request->extra_request_headers().GetHeader(
-      "Sec-Redemption-Record", &redemption_record_header));
+  std::string redemption_record_header = my_request->extra_request_headers()
+                                             .GetHeader("Sec-Redemption-Record")
+                                             .value();
   std::map<SuitableTrustTokenOrigin, std::string> redemption_records_per_issuer;
   std::string error;
   ASSERT_TRUE(ExtractRedemptionRecordsFromHeader(

@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include "third_party/blink/renderer/core/dom/names_map.h"
+
+#include <memory>
+
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -30,12 +38,12 @@ void NamesMap::Set(const AtomicString& source) {
 
 void NamesMap::Add(const AtomicString& key, const AtomicString& value) {
   // AddResult
-  auto add_result = data_.insert(key, std::optional<SpaceSplitString>());
+  auto add_result = data_.insert(key, nullptr);
   if (add_result.is_new_entry) {
     add_result.stored_value->value =
-        std::make_optional<SpaceSplitString>(SpaceSplitString());
+        MakeGarbageCollected<SpaceSplitStringWrapper>();
   }
-  add_result.stored_value->value.value().Add(value);
+  add_result.stored_value->value->value.Add(value);
 }
 
 // Parser for HTML exportparts attribute. See
@@ -233,9 +241,9 @@ void NamesMap::Set(const AtomicString& source,
   }
 }
 
-std::optional<SpaceSplitString> NamesMap::Get(const AtomicString& key) const {
+SpaceSplitString* NamesMap::Get(const AtomicString& key) const {
   auto it = data_.find(key);
-  return it != data_.end() ? it->value : std::nullopt;
+  return it != data_.end() ? &it->value->value : nullptr;
 }
 
 }  // namespace blink

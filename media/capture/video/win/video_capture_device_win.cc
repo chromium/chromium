@@ -2,18 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/win/video_capture_device_win.h"
+
+#include <objbase.h>
 
 #include <ks.h>
 #include <ksmedia.h>
-#include <objbase.h>
 
 #include <algorithm>
 #include <list>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -138,10 +146,10 @@ void VideoCaptureDeviceWin::GetPinCapabilityList(
     return;
   }
 
-  std::unique_ptr<BYTE[]> caps(new BYTE[byte_size]);
+  auto caps = base::HeapArray<BYTE>::Uninit(byte_size);
   for (int i = 0; i < count; ++i) {
     VideoCaptureDeviceWin::ScopedMediaType media_type;
-    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.get());
+    hr = stream_config->GetStreamCaps(i, media_type.Receive(), caps.data());
     // GetStreamCaps() may return S_FALSE, so don't use FAILED() or SUCCEED()
     // macros here since they'll trigger incorrectly.
     if (hr != S_OK || !media_type.get()) {
@@ -287,7 +295,7 @@ void VideoCaptureDeviceWin::ScopedMediaType::FreeMediaType(AM_MEDIA_TYPE* mt) {
     mt->pbFormat = nullptr;
   }
   if (mt->pUnk != nullptr) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // pUnk should not be used.
     mt->pUnk->Release();
     mt->pUnk = nullptr;
@@ -348,12 +356,7 @@ bool VideoCaptureDeviceWin::Init() {
   }
 
   // Create the sink filter used for receiving Captured frames.
-  sink_filter_ = new SinkFilter(this);
-  if (sink_filter_.get() == nullptr) {
-    DLOG(ERROR) << "Failed to create sink filter";
-    return false;
-  }
-
+  sink_filter_ = base::MakeRefCounted<SinkFilter>(this);
   input_sink_pin_ = sink_filter_->GetPin(0);
 
   HRESULT hr =
@@ -451,14 +454,14 @@ void VideoCaptureDeviceWin::AllocateAndStart(
     return;
   }
 
-  std::unique_ptr<BYTE[]> caps(new BYTE[size]);
+  auto caps = base::HeapArray<BYTE>::Uninit(size);
   ScopedMediaType media_type;
 
   // Get the windows capability from the capture device.
   // GetStreamCaps can return S_FALSE which we consider an error. Therefore the
   // FAILED macro can't be used.
   hr = stream_config->GetStreamCaps(found_capability.media_type_index,
-                                    media_type.Receive(), caps.get());
+                                    media_type.Receive(), caps.data());
   if (hr != S_OK) {
     SetErrorState(media::VideoCaptureError::
                       kWinDirectShowFailedToGetCaptureDeviceCapabilities,
@@ -891,9 +894,9 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
     // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
     // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
     // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
-    client_->OnIncomingCapturedData(buffer, length, format, gfx::ColorSpace(),
-                                    camera_rotation_.value(), flip_y,
-                                    base::TimeTicks::Now(), timestamp);
+    client_->OnIncomingCapturedData(
+        buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
+        flip_y, base::TimeTicks::Now(), timestamp, std::nullopt);
   }
 
   while (!take_photo_callbacks_.empty()) {

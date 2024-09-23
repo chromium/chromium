@@ -38,7 +38,16 @@ declare_args() {
   # generation of snapshot_blob.bin take ~40-60 s longer. Therefore this
   # defaults to off.
   enable_iterator_debugging = false
+
+  # Use Clang header modules for libc++.
+  # This is experimental only (see crbug.com/543704).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  use_libcxx_modules = false
 }
+
+assert(!use_libcxx_modules || !use_remoteexec,
+       "Implicit Clang header modules don't work with remote execution.")
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
@@ -52,6 +61,11 @@ declare_args() {
   # true, you must also set libcxx_abi_unstable=false, which is bad for
   # performance and memory use.
   libcxx_is_shared = use_custom_libcxx && is_component_build
+
+  # In case the C++ standard library implementation used is libstdc++, then
+  # enable its own hardening checks. As we cannot determine in GN if libstdc++
+  # is used or not, by default enable it for Linux without the custom libc++.
+  use_safe_libstdcxx = is_linux && !use_custom_libcxx
 }
 
 # The saigo libc++ is distinct from the custom hermetic libc++. However, since
@@ -83,6 +97,7 @@ if (is_android && export_libcxxabi_from_executables) {
 
 libcxx_prefix = "//third_party/libc++/src"
 libcxxabi_prefix = "//third_party/libc++abi/src"
+libcxx_module_prefix = "$root_gen_dir/libcxx"
 
 assert(!(is_ios && libcxx_is_shared),
        "Can't build libc++ as a shared library on iOS.")

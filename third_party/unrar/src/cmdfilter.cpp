@@ -1,7 +1,7 @@
 // Return 'true' if we need to exclude the file from processing as result
 // of -x switch. If CheckInclList is true, we also check the file against
 // the include list created with -n switch.
-bool CommandData::ExclCheck(const wchar *CheckName,bool Dir,bool CheckFullPath,bool CheckInclList)
+bool CommandData::ExclCheck(const std::wstring &CheckName,bool Dir,bool CheckFullPath,bool CheckInclList)
 {
   if (CheckArgs(&ExclArgs,Dir,CheckName,CheckFullPath,MATCH_WILDSUBPATH))
     return true;
@@ -13,17 +13,15 @@ bool CommandData::ExclCheck(const wchar *CheckName,bool Dir,bool CheckFullPath,b
 }
 
 
-bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,bool CheckFullPath,int MatchMode)
+bool CommandData::CheckArgs(StringList *Args,bool Dir,const std::wstring &CheckName,bool CheckFullPath,int MatchMode)
 {
-  wchar *Name=ConvertPath(CheckName,NULL,0);
-  wchar FullName[NM];
-  wchar CurMask[NM];
-  *FullName=0;
+  std::wstring Name,FullName,CurMask;
+  ConvertPath(&CheckName,&Name);
   Args->Rewind();
-  while (Args->GetString(CurMask,ASIZE(CurMask)))
+  while (Args->GetString(CurMask))
   {
-    wchar *LastMaskChar=PointToLastChar(CurMask);
-    bool DirMask=IsPathDiv(*LastMaskChar); // Mask for directories only.
+    wchar LastMaskChar=GetLastChar(CurMask);
+    bool DirMask=IsPathDiv(LastMaskChar); // Mask for directories only.
 
     if (Dir)
     {
@@ -33,16 +31,33 @@ bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,boo
         // We process the directory and have the directory exclusion mask.
         // So let's convert "mask\" to "mask" and process it normally.
         
-        *LastMaskChar=0;
+        CurMask.pop_back();
       }
       else
       {
-        // REMOVED, we want -npath\* to match empty folders too.
-        // If mask has wildcards in name part and does not have the trailing
-        // '\' character, we cannot use it for directories.
-      
-        // if (IsWildcard(PointToName(CurMask)))
-        //  continue;
+        // This code doesn't allow to apply -n and -x wildcard masks without
+        // trailing slash to folders unless these masks are * and *.*.
+        // See the changes history below.
+        // 2023.03.26: Previously we removed this code completely to let
+        // 'rar a arc dir -ndir\path\*' include empty folders in 'path' too.
+        // But then we received an email from user not willing -x*.avi to
+        // exclude folders like dir.avi with non-avi files. Also rar.txt
+        // mentions that masks like *.avi exclude only files. Initially
+        // we wanted masks like -npath\* or -xpath\* to match the entire
+        // contents of path including empty folders and added the special
+        // check for "*" and "*.*". But this is not very straightforward,
+        // when *.* and *.avi are processed differently, especially taking
+        // into account that we can specify the exact folder name without
+        // wildcards to process it and masks like 'dir*\' can be used to
+        // exclude folders. So we decided to skip all usual wildcard masks
+        // for folders.
+        // 2023.11.22: We returned the special check for "*" and "*.*",
+        // because users expected 'rar a arc dir -xdir\*' to exclude
+        // everything including subfolders in 'dir'. For now we returned it
+        // both for -n and -x, but we can limit it to -x only if needed.
+        std::wstring Name=PointToName(CurMask);
+        if (IsWildcard(Name) && Name!=L"*" && Name!=L"*.*")
+         continue;
       }
     }
     else
@@ -54,7 +69,7 @@ bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,boo
       // is excluded from further scanning.
 
       if (DirMask)
-        wcsncatz(CurMask,L"*",ASIZE(CurMask));
+        CurMask+=L"*";
     }
 
 #ifndef SFX_MODULE
@@ -66,19 +81,20 @@ bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,boo
       // correctly. Moreover, removing "*\" from mask would break
       // the comparison, because now all names have the path.
 
-      if (*FullName==0)
-        ConvertNameToFull(CheckName,FullName,ASIZE(FullName));
+      if (FullName.empty())
+        ConvertNameToFull(CheckName,FullName);
       if (CmpName(CurMask,FullName,MatchMode))
         return true;
     }
     else
 #endif
     {
-      wchar NewName[NM+2],*CurName=Name;
+      std::wstring CurName=Name;
 
       // Important to convert before "*\" check below, so masks like
       // d:*\something are processed properly.
-      wchar *CmpMask=ConvertPath(CurMask,NULL,0);
+      size_t MaskOffset=ConvertPath(&CurMask,nullptr);
+      std::wstring CmpMask=CurMask.substr(MaskOffset);
 
       if (CmpMask[0]=='*' && IsPathDiv(CmpMask[1]))
       {
@@ -86,10 +102,9 @@ bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,boo
         // but also in the current directory. We convert the name
         // from 'name' to '.\name' to be matched by "*\" part even if it is
         // in current directory.
-        NewName[0]='.';
-        NewName[1]=CPATHDIVIDER;
-        wcsncpyz(NewName+2,Name,ASIZE(NewName)-2);
-        CurName=NewName;
+        CurName=L'.';
+        CurName+=CPATHDIVIDER;
+        CurName+=Name;
       }
 
       if (CmpName(CmpMask,CurName,MatchMode))
@@ -262,6 +277,8 @@ bool CommandData::TimeCheck(RarTime &ftm,RarTime &ftc,RarTime &fta)
 // Return 'true' if we need to exclude the file from processing.
 bool CommandData::SizeCheck(int64 Size)
 {
+  if (Size==INT64NDF) // If called from archive formats like bzip2, not storing the file size.
+    return false;
   if (FileSizeLess!=INT64NDF && Size>=FileSizeLess)
     return true;
   if (FileSizeMore!=INT64NDF && Size<=FileSizeMore)
@@ -275,10 +292,10 @@ bool CommandData::SizeCheck(int64 Size)
 
 // Return 0 if file must not be processed or a number of matched parameter otherwise.
 int CommandData::IsProcessFile(FileHeader &FileHead,bool *ExactMatch,int MatchType,
-                               bool Flags,wchar *MatchedArg,uint MatchedArgSize)
+                               bool Flags,std::wstring *MatchedArg)
 {
-  if (MatchedArg!=NULL && MatchedArgSize>0)
-    *MatchedArg=0;
+  if (MatchedArg!=NULL)
+    MatchedArg->clear();
   bool Dir=FileHead.Dir;
   if (ExclCheck(FileHead.FileName,Dir,false,true))
     return 0;
@@ -287,23 +304,28 @@ int CommandData::IsProcessFile(FileHeader &FileHead,bool *ExactMatch,int MatchTy
     return 0;
   if ((FileHead.FileAttr & ExclFileAttr)!=0 || FileHead.Dir && ExclDir)
     return 0;
-  if (InclAttrSet && (!FileHead.Dir && (FileHead.FileAttr & InclFileAttr)==0 ||
-      FileHead.Dir && !InclDir))
+  if (InclAttrSet && (FileHead.FileAttr & InclFileAttr)==0 &&
+      (!FileHead.Dir || !InclDir))
     return 0;
   if (!Dir && SizeCheck(FileHead.UnpSize))
     return 0;
 #endif
-  wchar *ArgName;
+  std::wstring ArgName;
   FileArgs.Rewind();
-  for (int StringCount=1;(ArgName=FileArgs.GetString())!=NULL;StringCount++)
+  for (int StringCount=1;FileArgs.GetString(ArgName);StringCount++)
+  {
+    // Ensure that both parameters of CmpName are either C++ strings or
+    // pointers, so we avoid time consuming string construction for one of
+    // parameters in this expensive loop.
     if (CmpName(ArgName,FileHead.FileName,MatchType))
     {
       if (ExactMatch!=NULL)
         *ExactMatch=wcsicompc(ArgName,FileHead.FileName)==0;
       if (MatchedArg!=NULL)
-        wcsncpyz(MatchedArg,ArgName,MatchedArgSize);
+        *MatchedArg=ArgName;
       return StringCount;
     }
+  }
   return 0;
 }
 

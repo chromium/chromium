@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -27,8 +28,17 @@ SearchEngineChoiceTabHelper::SearchEngineChoiceTabHelper(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<SearchEngineChoiceTabHelper>(*web_contents) {
-  CHECK(search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog));
+}
+
+// static
+bool SearchEngineChoiceTabHelper::IsHelperNeeded() {
+  // TODO(crbug.com/347223092): Replace this with a check of availability of
+  // `SearchEngineChoiceDialogService`. However we need to be mindful of how
+  // this might affect metrics, see https://b/351778022.
+  // We can't get a browser at this point, so checking the eligibility of the
+  // browser itself is not possible now.
+
+  return true;
 }
 
 void SearchEngineChoiceTabHelper::DidFinishNavigation(
@@ -67,8 +77,8 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  // The browser will be null if the web contents are rendered in a portal, in
-  // devtools or if the renderer crashes.
+  // The browser will be null if the web contents are rendered in devtools or
+  // if the renderer crashes.
   if (!browser) {
     return;
   }
@@ -81,9 +91,12 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  // Note: `CanShowDialog()` will trigger condition metrics to be logged, so it
-  // needs to be checked last.
-  if (!search_engine_choice_dialog_service->CanShowDialog(*browser)) {
+  search_engines::SearchEngineChoiceScreenConditions conditions =
+      search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
+  search_engines::RecordChoiceScreenNavigationCondition(conditions);
+
+  if (conditions !=
+      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     return;
   }
 

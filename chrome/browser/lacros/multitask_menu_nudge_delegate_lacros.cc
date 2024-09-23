@@ -31,7 +31,7 @@ MultitaskMenuNudgeDelegateLacros::~MultitaskMenuNudgeDelegateLacros() = default;
 
 int MultitaskMenuNudgeDelegateLacros::GetTabletNudgeYOffset() const {
   // Tablet nudge is handled by ash.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -122,11 +122,11 @@ void MultitaskMenuNudgeDelegateLacros::OnGotAllPreferences(
           .show_count = *shown_count, .last_shown_time = *last_shown_time});
 }
 
-bool MultitaskMenuNudgeDelegateLacros::IsUserNew() const {
+bool MultitaskMenuNudgeDelegateLacros::IsUserNewOrGuest() const {
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles) {
     if (profile->IsMainProfile()) {
-      return profile->IsNewProfile();
+      return profile->IsNewProfile() || profile->IsGuestSession();
     }
   }
   return false;

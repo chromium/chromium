@@ -73,7 +73,8 @@ HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   return blink::mojom::PermissionStatus::ASK;
 }
 
@@ -92,18 +93,5 @@ HeadlessPermissionManager::GetPermissionStatusForEmbeddedRequester(
     const url::Origin& overridden_origin) {
   return blink::mojom::PermissionStatus::ASK;
 }
-
-HeadlessPermissionManager::SubscriptionId
-HeadlessPermissionManager::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return SubscriptionId();
-}
-
-void HeadlessPermissionManager::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {}
 
 }  // namespace headless

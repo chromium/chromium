@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -17,7 +17,7 @@ namespace syncer {
 
 class MockUpdateHandler : public UpdateHandler {
  public:
-  explicit MockUpdateHandler(ModelType type);
+  explicit MockUpdateHandler(DataType type);
   ~MockUpdateHandler() override;
 
   // UpdateHandler implementation.

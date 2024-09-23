@@ -1,0 +1,103 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/descriptors.proto";
+
+enum ControlToken {
+  CONTROL_TOKEN_UNKNOWN = 0;
+  CONTROL_TOKEN_SYSTEM = 1;
+  CONTROL_TOKEN_MODEL = 2;
+  CONTROL_TOKEN_USER = 3;
+  CONTROL_TOKEN_END = 4;
+}
+
+message SubstitutedString {
+  reserved 2, 3;
+
+  // String template with %s as the delimiter for substitutions.
+  string string_template = 1;
+
+  // The strings to be substituted in `string_template`.
+  repeated StringSubstitution substitutions = 6;
+
+  // The conditions for which to apply this substituted string.
+  ConditionList conditions = 4;
+
+  // Whether the input context should be ignored if this substituted string is
+  // applied.
+  bool should_ignore_input_context = 5;
+}
+
+message StringSubstitution {
+  // The candidates to use for this string substitution.
+  //
+  // The first candidate that passes all conditions will be the one that is used
+  // for the substitution.
+  repeated StringArg candidates = 1;
+}
+
+message RangeExpr {
+  // Reference to the a repeated field to range over.
+  ProtoField proto_field = 1;
+
+  // The expression to evaluate for each field entry.
+  SubstitutedString expr = 2;
+}
+
+message IndexExpr {
+  // If true, use 1-based indexes instead of 0-based.
+  bool one_based = 1;
+}
+
+message StringArg {
+  oneof arg {
+    string raw_string = 1;
+    ProtoField proto_field = 2;
+    RangeExpr range_expr = 4;
+    IndexExpr index_expr = 5;
+    ControlToken control_token = 6;
+  }
+
+  // TODO(b/302402959): Add support for max number of characters to apply.
+
+  // The conditions for which to apply this substituted string.
+  ConditionList conditions = 3;
+}
+
+// Operators available for comparing the value of fields.
+enum OperatorType {
+  OPERATOR_TYPE_UNSPECIFIED = 0;
+  // Equal.
+  OPERATOR_TYPE_EQUAL_TO = 1;
+  // Not Equal.
+  OPERATOR_TYPE_NOT_EQUAL_TO = 2;
+}
+
+enum ConditionEvaluationType {
+  CONDITION_EVALUATION_TYPE_UNSPECIFIED = 0;
+  CONDITION_EVALUATION_TYPE_AND = 1;
+  CONDITION_EVALUATION_TYPE_OR = 2;
+}
+
+message ConditionList {
+  // How to evaluate the below conditions.
+  ConditionEvaluationType condition_evaluation_type = 1;
+
+  // The set of conditions to evaluate.
+  repeated Condition conditions = 2;
+}
+
+// Evaluated as "value at proto_field" "operator_type" "value".
+message Condition {
+  ProtoField proto_field = 1;
+  OperatorType operator_type = 2;
+  Value value = 3;
+}

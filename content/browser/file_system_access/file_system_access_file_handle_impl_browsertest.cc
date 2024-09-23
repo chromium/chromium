@@ -9,16 +9,23 @@
 #include "content/browser/file_system_access/features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
 class FileSystemAccessFileHandleImplBrowserTest : public ContentBrowserTest {
  public:
+  FileSystemAccessFileHandleImplBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLocal);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -79,9 +86,12 @@ class FileSystemAccessFileHandleImplBrowserTest : public ContentBrowserTest {
  protected:
   base::ScopedTempDir temp_dir_;
   GURL test_url_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-// TODO(crbug.com/1408211): Make this a WPT once crbug.com/1114920 is fixed.
+// TODO(crbug.com/40888337): Make this a WPT once crbug.com/1114920 is fixed.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
                        MoveLocalToSandboxed) {
   std::string file_contents = "move me to a sandboxed file system";
@@ -96,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
       << result.error;
 }
 
-// TODO(crbug.com/1408211): Make this a WPT once crbug.com/1114920 is fixed.
+// TODO(crbug.com/40888337): Make this a WPT once crbug.com/1114920 is fixed.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleImplBrowserTest,
                        MoveSandboxedToLocal) {
   CreateTestDirectoryInDirectory(temp_dir_.GetPath());

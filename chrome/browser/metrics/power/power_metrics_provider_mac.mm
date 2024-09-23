@@ -7,16 +7,15 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -53,8 +52,8 @@ ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state) {
   }
 }
 
-void RecordSMCHistogram(base::StringPiece prefix,
-                        base::StringPiece suffix,
+void RecordSMCHistogram(std::string_view prefix,
+                        std::string_view suffix,
                         std::optional<double> watts) {
   if (watts.has_value()) {
     double milliwatts = watts.value() * 1000;
@@ -100,12 +99,11 @@ class PowerMetricsProvider::Impl {
       RecordSMC("DuringStartup");
     } else {
       RecordSMC("All");
-      RecordIsOnBattery();
       RecordThermal();
     }
   }
 
-  void RecordSMC(base::StringPiece suffix) {
+  void RecordSMC(std::string_view suffix) {
     if (!smc_reader_)
       return;
 
@@ -119,13 +117,6 @@ class PowerMetricsProvider::Impl {
                        smc_reader_->ReadKey(SMCKeyIdentifier::GPU0Power));
     RecordSMCHistogram("Power.Mac.GPU1.", suffix,
                        smc_reader_->ReadKey(SMCKeyIdentifier::GPU1Power));
-  }
-
-  void RecordIsOnBattery() {
-    if (base::PowerMonitor::IsInitialized()) {
-      UMA_HISTOGRAM_BOOLEAN("Power.Mac.IsOnBattery2",
-                            base::PowerMonitor::IsOnBatteryPower());
-    }
   }
 
   void RecordThermal() {

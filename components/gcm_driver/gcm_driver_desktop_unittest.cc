@@ -631,7 +631,7 @@ TEST_F(GCMDriverFunctionalTest, UnregisterExplicitly) {
   EXPECT_EQ(GCMClient::SUCCESS, unregistration_result());
 }
 
-// TODO(crbug.com/1009185): Test is failing on ASan build.
+// TODO(crbug.com/40650420): Test is failing on ASan build.
 #if defined(ADDRESS_SANITIZER)
 TEST_F(GCMDriverFunctionalTest, DISABLED_UnregisterRemovesEncryptionInfo) {
 #else

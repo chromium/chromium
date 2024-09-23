@@ -8,12 +8,14 @@
 #include <optional>
 #include <string>
 
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
-class PrefService;
+class PrefRegistrySimple;
+class TestingPrefServiceSimple;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -72,20 +74,30 @@ void AddProductInfoToExistingBookmark(
 
 // Sets the state of the enterprise policy for the shopping list feature for
 // testing.
-void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled);
+void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                         bool enabled);
+
+// Register prefs related to commerce in the provided prefs.
+void RegisterCommercePrefs(PrefRegistrySimple* registry);
+
+// Set the tab compare enterprise policy for testing.
+void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                       int enabled_state);
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
     bool has_price_range_data = false,
     bool has_price_history_data = false,
     PriceBucket price_bucket = PriceBucket::kUnknown);
 
-DiscountInfo CreateValidDiscountInfo(const std::string& detail,
-                                     const std::string& terms_and_conditions,
-                                     const std::string& value_in_text,
-                                     const std::string& discount_code,
-                                     int64_t id,
-                                     bool is_merchant_wide,
-                                     double expiry_time_sec);
+DiscountInfo CreateValidDiscountInfo(
+    const std::string& detail,
+    const std::string& terms_and_conditions,
+    const std::string& value_in_text,
+    const std::string& discount_code,
+    int64_t id,
+    bool is_merchant_wide,
+    double expiry_time_sec,
+    DiscountClusterType cluster_type = DiscountClusterType::kOfferLevel);
 
 }  // namespace commerce
 

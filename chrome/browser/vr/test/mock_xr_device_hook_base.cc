@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
+
 #include "content/public/test/xr_test_utils.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
-// TODO(https://crbug.com/891832): Remove these conversion functions as part of
+// TODO(crbug.com/41418750): Remove these conversion functions as part of
 // the switch to only mojom types.
 device_test::mojom::ControllerRole DeviceToMojoControllerRole(
     device::ControllerRole role) {
@@ -47,6 +53,27 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
           row, col, data.pose_data.device_to_origin[row + col * 4]);
     }
   }
+
+  if (data.has_hand_data) {
+    device::mojom::XRHandTrackingDataPtr hand_tracking_data =
+        device::mojom::XRHandTrackingData::New();
+    hand_tracking_data->hand_joint_data =
+        std::vector<device::mojom::XRHandJointDataPtr>{};
+    auto& joint_data = hand_tracking_data->hand_joint_data;
+
+    // We need to use `resize` here to create default data fields so we can use
+    // [] indexing to ensure things are added to the right spot.
+    joint_data.resize(std::size(data.hand_data));
+    for (const auto& joint_entry : data.hand_data) {
+      uint32_t joint_index = static_cast<uint32_t>(joint_entry.joint);
+
+      joint_data[joint_index] = device::mojom::XRHandJointData::New(
+          joint_entry.joint, joint_entry.mojo_from_joint, joint_entry.radius);
+    }
+
+    ret->hand_data = std::move(hand_tracking_data);
+  }
+
   return ret;
 }
 
@@ -130,7 +157,7 @@ void MockXRDeviceHookBase::WaitGetControllerData(
   if (tracked_classes_[index] ==
       device_test::mojom::TrackedDeviceClass::kTrackedDeviceController) {
     auto iter = controller_data_map_.find(index);
-    DCHECK(iter != controller_data_map_.end());
+    CHECK(iter != controller_data_map_.end());
     std::move(callback).Run(DeviceToMojoControllerFrameData(iter->second));
     return;
   }
@@ -169,7 +196,7 @@ unsigned int MockXRDeviceHookBase::ConnectController(
     }
   }
   // We shouldn't be running out of slots during a test.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // NOTREACHED should make it unnecessary to return here (as it does elsewhere
   // in the code), but compilation fails if this is not present.
   return device::kMaxTrackedDevices;
@@ -184,7 +211,7 @@ void MockXRDeviceHookBase::UpdateController(
     unsigned int index,
     const device::ControllerFrameData& updated_data) {
   auto iter = controller_data_map_.find(index);
-  DCHECK(iter != controller_data_map_.end());
+  CHECK(iter != controller_data_map_.end());
   iter->second = updated_data;
 }
 
@@ -192,7 +219,7 @@ void MockXRDeviceHookBase::DisconnectController(unsigned int index) {
   DCHECK(tracked_classes_[index] ==
          device_test::mojom::TrackedDeviceClass::kTrackedDeviceController);
   auto iter = controller_data_map_.find(index);
-  DCHECK(iter != controller_data_map_.end());
+  CHECK(iter != controller_data_map_.end());
   controller_data_map_.erase(iter);
   tracked_classes_[index] =
       device_test::mojom::TrackedDeviceClass::kTrackedDeviceInvalid;

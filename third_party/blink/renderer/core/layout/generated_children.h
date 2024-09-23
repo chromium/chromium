@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GENERATED_CHILDREN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GENERATED_CHILDREN_H_
 
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
@@ -18,15 +19,15 @@ static bool CanHaveGeneratedChildren(const LayoutObject& layout_object) {
   // FIXME: LayoutMedia::layout makes assumptions about what children are
   // allowed so we can't support generated content.
   if (layout_object.IsMedia() || layout_object.IsTextControl() ||
-      IsMenuList(&layout_object)) {
+      layout_object.IsMenuList() || layout_object.IsInputButton()) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+        layout_object.IsMenuList() &&
+        To<HTMLSelectElement>(layout_object.GetNode())
+            ->IsAppearanceBaseButton()) {
+      // appearance:base-select <select>s should be allowed to have ::after etc.
+      return true;
+    }
     return false;
-  }
-
-  // Input elements can't have generated children, but button elements can.
-  // We'll write the code assuming any other button types that might emerge in
-  // the future can also have children.
-  if (layout_object.IsButton()) {
-    return !IsA<HTMLInputElement>(*layout_object.GetNode());
   }
 
   return layout_object.CanHaveChildren();

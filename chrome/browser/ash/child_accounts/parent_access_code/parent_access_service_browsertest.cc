@@ -127,13 +127,9 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
   }
 
   AccessCodeValues test_values_;
-  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
-                                          LoggedInUserMixin::LogInType::kChild,
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
                                           embedded_test_server(),
-                                          this,
-                                          true /*should_launch_browser*/,
-                                          std::nullopt /*account_id*/,
-                                          true /*include_initial_user*/};
+                                          LoggedInUserMixin::LogInType::kChild};
   std::unique_ptr<TestParentAccessServiceObserver> test_observer_;
 };
 

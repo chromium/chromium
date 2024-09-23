@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -19,8 +19,10 @@
 
 @class FakeSystemIdentity;
 @class ElementSelector;
+@class JavaScriptExecutionResult;
 @protocol GREYAction;
 @protocol GREYMatcher;
+enum class TipsNotificationType;
 
 namespace chrome_test_util {
 
@@ -41,6 +43,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // will properly synchronize the UI for Earl Grey tests.
 @interface ChromeEarlGreyImpl : BaseEGTestHelperImpl
 
+// Reloads the page without waiting for the page to load.
+- (void)startReloading;
+
 #pragma mark - Test Utilities
 
 // Wait until `matcher` is accessible (not nil) on the device.
@@ -50,6 +55,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns YES if running on an iPad.
 - (BOOL)isIPadIdiom;
+
+// Returns YES if running on an iPhone.
+- (BOOL)isIPhoneIdiom;
 
 // YES if the current interface language uses RTL layout.
 - (BOOL)isRTL;
@@ -77,6 +85,15 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Takes a snapshot of memory usage by calling into the internal
 // framework (should only be used by performance tests)
 - (void)primesTakeMemorySnapshot:(NSString*)eventName;
+
+// Returns whether the bottom omnibox steady state feature is enabled.
+- (BOOL)isBottomOmniboxAvailable;
+
+// Returns whether the current layout is showing the bottom omnibox.
+- (BOOL)isCurrentLayoutBottomOmnibox;
+
+// Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
+- (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
 
 #pragma mark - History Utilities (EG2)
 
@@ -199,8 +216,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Sync Utilities (EG2)
 
-// Signs in with `identity` without sync consent.
-- (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
+- (BOOL)isFakeSyncServerSetUp;
+
+// Undoes the effects of disconnectFakeSyncServerNetwork.
+- (void)connectFakeSyncServerNetwork;
+
+// Forces every request to fail in a way that simulates a network failure.
+- (void)disconnectFakeSyncServerNetwork;
 
 // Injects user demographics into the fake sync server. `rawBirthYear` is the
 // true birth year, pre-noise, and the gender corresponds to the proto enum
@@ -241,10 +263,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)flushFakeSyncServerToDisk;
 
 // Gets the number of entities of the given `type`.
-- (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type [[nodiscard]];
+- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type [[nodiscard]];
 
 // Adds typed URL into HistoryService.
 - (void)addHistoryServiceTypedURL:(const GURL&)URL;
+
+// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
 
 // Deletes typed URL from HistoryService.
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
@@ -269,7 +295,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
 // Triggers a sync cycle for a `type`.
-- (void)triggerSyncCycleForType:(syncer::ModelType)type;
+- (void)triggerSyncCycleForType:(syncer::DataType)type;
 
 // Deletes an autofill profile from the fake sync server with `GUID`, if it
 // exists. If it doesn't exist, nothing is done.
@@ -285,7 +311,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Waits until sync server contains `count` entities of the given `type` and
 // `name`. Folders are not included in this count.
 // If the condition is not met within a timeout a GREYAssert is induced.
-- (void)waitForSyncServerEntitiesWithType:(syncer::ModelType)type
+- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
                                      name:(const std::string&)UTF8Name
                                     count:(size_t)count
                                   timeout:(base::TimeDelta)timeout;
@@ -313,6 +339,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)openNewTab;
 
 // Simulates opening `url` from another application.
+- (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
 - (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
 // Simulates opening the add account sign-in flow from the web.
@@ -504,31 +531,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
-// Waits for the JavaScript query `javaScriptCondition` to return `boolValue`
-// YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
-// induced.
-- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
-
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for
 // the completion of those steps. Induces a GREYAssert if the operation fails or
 // timeouts.
-// TODO(crbug.com/1451733): When the browser data cleaning will always have an
-// acceptable delay, this method should be merged with
-// `signOutAndClearIdentities` and the whole sign-out operation completion
-// should always be ensured before executing next steps.
-- (void)signOutAndClearIdentitiesAndWaitForCompletion;
-
-// Signs the user out, clears the known accounts entirely and checks whether the
-// accounts were correctly removed from the keychain. Induces a GREYAssert if
-// the operation fails. This will block the UI with a spinner until all
-// identities are cleared. In order to interact with the UI again call
-// `WaitForActivityOverlayToDisappear()`.
-// TODO(crbug.com/1451733): When the browser data cleaning will always have an
-// acceptable delay, this method should be merged with
-// `signOutAndClearIdentitiesAndWaitForCompletion` and the whole sign-out
-// operation completion should always be ensured before executing next steps.
 - (void)signOutAndClearIdentities;
 
 #pragma mark - Sync Utilities (EG2)
@@ -555,8 +562,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (std::string)syncCacheGUID;
 
 // Adds a bookmark with a sync passphrase. The sync server will need the sync
-// passphrase to start.
+// passphrase to start. In order to work, this need to be called before the
+// primary user is signed-in.
 - (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
+
+// Add a sync passphrase requirement to start the sync server.
+- (void)addSyncPassphrase:(NSString*)syncPassphrase;
 
 #pragma mark - WebState Utilities (EG2)
 
@@ -582,6 +593,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Attempts to submit form with `formID` in the current WebState.
 // Induces a GREYAssert if the operation fails.
 - (void)submitWebStateFormWithID:(const std::string&)formID;
+
+// Returns YES if the current WebState contains an element matching `selector`.
+- (BOOL)webStateContainsElement:(ElementSelector*)selector;
 
 // Waits for the current web state to contain `UTF8Text`. If the condition is
 // not met within a timeout a GREYAssert is induced.
@@ -653,15 +667,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - JavaScript Utilities (EG2)
 
+// Waits for the JavaScript query `javaScriptCondition` to return `boolValue`
+// YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
+// induced.
+// Fails if the execution causes an error.
+- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
+
 // Executes JavaScript on current WebState, and waits for either the completion
 // or timeout. If execution does not complete within a timeout a GREYAssert is
 // induced.
-
+// Fails if the execution causes an error.
 - (base::Value)evaluateJavaScript:(NSString*)javaScript [[nodiscard]];
+
+// Executes JavaScript on current WebState, and waits for either the completion
+// or timeout. If execution does not complete within a timeout a GREYAssert is
+// induced.
+- (JavaScriptExecutionResult*)evaluateJavaScriptWithPotentialError:
+    (NSString*)javaScript;
 
 // Executes JavaScript on current WebState. This function should be used in
 // place -evaluateJavaScript when the executed JavaScript's return value will
 // not be used.
+// Fails if the execution causes an error.
 - (void)evaluateJavaScriptForSideEffect:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
@@ -698,9 +725,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if DemographicMetricsReporting feature is enabled.
 - (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
 
-// Returns YES if the ReplaceSyncPromosWithSignInPromos feature is enabled.
-- (BOOL)isReplaceSyncWithSigninEnabled [[nodiscard]];
-
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 - (BOOL)appHasLaunchSwitch:(const std::string&)launchSwitch;
 
@@ -708,9 +732,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // system frameworks. Always returns YES if the app was not requested to run
 // with custom WebKit frameworks.
 - (BOOL)isCustomWebKitLoadedIfRequested [[nodiscard]];
-
-// Returns YES if error pages are displayed using loadSimulatedRequest.
-- (BOOL)isLoadSimulatedRequestAPIEnabled;
 
 // Returns whether the mobile version of the websites are requested by default.
 - (BOOL)isMobileModeByDefault [[nodiscard]];
@@ -728,8 +749,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
 
-// Returns whether the bottom omnibox steady state feature is enabled.
-- (BOOL)isBottomOmniboxSteadyStateEnabled;
+// Returns whether the Tab Group Sync feature is enabled.
+- (BOOL)isTabGroupSyncEnabled;
 
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;
@@ -747,6 +768,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Resets the desktop content setting to its default value.
 - (void)resetDesktopContentSetting;
 
+// Sets the preference value of a content settings type for the original browser
+// state.
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type;
+
 #pragma mark - Keyboard utilities
 
 // The count of key commands registered with the currently active BVC.
@@ -760,6 +786,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)simulatePhysicalKeyboardEvent:(NSString*)input
                                 flags:(UIKeyModifierFlags)flags;
 
+// Waits for the keyboard to appear;
+- (void)waitForKeyboardToAppear;
+
+// Waits for the keyboard to disappear;
+- (void)waitForKeyboardToDisappear;
+
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.
@@ -772,6 +804,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
+
+// Commit synchronously the pending user prefs write. Waits until the disk write
+// operation is done.
+- (void)commitPendingUserPrefsWrite;
 
 // Gets the value of a local state pref.
 - (bool)localStateBooleanPref:(const std::string&)prefName;
@@ -789,6 +825,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setTimeValue:(base::Time)value
     forLocalStatePref:(const std::string&)prefName;
 
+// Sets the time value for the user pref in the original browser state.
+- (void)setTimeValue:(base::Time)value
+         forUserPref:(const std::string&)UTF8PrefName;
+
 // Sets the string value for the local state pref with `prefName`. `value` Local
 // State contains the preferences that are shared between all browser states.
 - (void)setStringValue:(const std::string&)value
@@ -804,11 +844,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (std::string)userStringPref:(const std::string&)prefName;
 
 // Sets the value of a user pref in the original browser state.
+- (void)setStringValue:(NSString*)value
+           forUserPref:(const std::string&)UTF8PrefName;
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
-// Returns true if the Preference is currently using its default value,
-// and has not been set by any higher-priority source (even with the same
+// Returns true if the LocaState Preference is currently using its default
+// value, and has not been set by any higher-priority source (even with the same
 // value).
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
 
@@ -886,6 +928,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Clear the watcher list, stopping monitoring.
 - (void)stopWatcher;
 
+#pragma mark - Default Browser Promo Utilities
+
+// Clears default browser promo data to restart capping for the promos.
+- (void)clearDefaultBrowserPromoData;
+
+// Copies a chrome:// URL that doesn't require internet connection.
+- (void)copyURLToPasteBoard;
+
 #pragma mark - ActivitySheet utilities
 
 // Induces a GREYAssert if the activity sheet is not visible.
@@ -908,6 +958,22 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Taps the element with `buttonText` within the activity sheet. A GREYAssert
 // is induced on failure.
 - (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
+#pragma mark - First Run Utilities
+
+// Writes the First Run Sentinel file, used to record that First Run has
+// completed.
+- (void)writeFirstRunSentinel;
+
+// Removes the FirstRun sentinel file.
+- (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
+- (bool)hasFirstRunSentinel;
+
+#pragma mark - Notification Utilities
+
+- (void)requestTipsNotification:(TipsNotificationType)type;
 
 @end
 

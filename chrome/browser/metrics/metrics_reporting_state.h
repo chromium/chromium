@@ -13,7 +13,7 @@ using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 // metrics reporting is enabled from a settings page, histogram data that was
 // collected while metrics reporting was disabled should be cleared (marked as
 // reported) so as to not include them in the next log.
-// TODO(crbug.com/1296618): Make all call sites pass an appropriate value, and
+// TODO(crbug.com/40821809): Make all call sites pass an appropriate value, and
 // remove |kUnknown|. Right now, |kUnknown| is used as a placeholder value while
 // call sites are being migrated.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.metrics
@@ -56,7 +56,7 @@ void ChangeMetricsReportingState(
 // disabled as reported so as to not include them in the next log). If
 // |called_from| is set to anything else (|kUnknown| by default), then metrics
 // will not be cleared when enabling metrics reporting.
-// TODO(https://crbug.com/880936): Support setting the pref on all platforms.
+// TODO(crbug.com/40592297): Support setting the pref on all platforms.
 void ChangeMetricsReportingStateWithReply(
     bool enabled,
     OnMetricsReportingCallbackType callback_fn,

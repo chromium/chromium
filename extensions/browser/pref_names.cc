@@ -29,7 +29,7 @@ bool ScopeToPrefName(ChromeSettingScope scope, std::string* result) {
     case ChromeSettingScope::kNone:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

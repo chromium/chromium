@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 
 import java.util.List;
 
@@ -23,15 +23,15 @@ interface TabSwitcherResetHandler {
     boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode);
 
     /**
-     * Reset the tab grid with the given {@link List<PseudoTab>}, which can be null.
+     * Reset the tab grid with the given {@link List<Tab>}, which can be null.
      *
-     * @param tabs The {@link List<PseudoTab>} to show the tabs for in the grid.
+     * @param tabs The {@link List<Tab>} to show the tabs for in the grid.
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
      * @return Whether the {@link TabListRecyclerView} can be shown quickly.
      * @deprecated Use resetWithTabList instead to minimize the surface area of PseudoTab which
      *     should be removed with instant start. See https://crbug.com/1413207.
      */
-    boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode);
+    boolean resetWithTabs(@Nullable List<Tab> tabs, boolean quickMode);
 
     /**
      * Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}.

@@ -142,7 +142,7 @@ class ClipboardProvider : public AutocompleteProvider {
       ClipboardImageMatchCallback callback,
       scoped_refptr<base::RefCountedMemory> image_bytes);
 
-  // TODO(crbug.com/1195673): OmniboxViewIOS should use following functions
+  // TODO(crbug.com/40176141): OmniboxViewIOS should use following functions
   // instead their own implementations.
   // Called when url data is received from clipboard for creating match with
   // content.

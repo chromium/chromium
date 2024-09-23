@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -164,12 +163,11 @@ void PendingScript::ExecuteScriptBlock() {
     return;
   }
 
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
-    DCHECK(ThreadScheduler::Current());
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
       task_attribution_scope = tracker->CreateTaskScope(
           script_state, parent_task_,
           scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
@@ -332,23 +330,24 @@ void PendingScript::Trace(Visitor* visitor) const {
 bool PendingScript::IsControlledByScriptRunner() const {
   switch (scheduling_type_) {
     case ScriptSchedulingType::kNotSet:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
 
     case ScriptSchedulingType::kDefer:
     case ScriptSchedulingType::kParserBlocking:
     case ScriptSchedulingType::kParserBlockingInline:
     case ScriptSchedulingType::kImmediate:
-    case ScriptSchedulingType::kForceDefer:
       return false;
+
+    case ScriptSchedulingType::kDeprecatedForceDefer:
+      NOTREACHED()
+          << "kDeprecatedForceDefer is deprecated and should not be in use";
 
     case ScriptSchedulingType::kInOrder:
     case ScriptSchedulingType::kAsync:
     case ScriptSchedulingType::kForceInOrder:
       return true;
   }
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace blink

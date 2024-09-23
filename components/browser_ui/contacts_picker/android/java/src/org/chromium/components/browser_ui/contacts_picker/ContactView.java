@@ -98,7 +98,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
     }
 
     @Override
-    public void onClick() {
+    public void handleNonSelectionClick() {
         // Selection is handled in onClick for the parent class.
         assert false;
     }

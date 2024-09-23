@@ -17,6 +17,9 @@ accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
 tsc_out_dir = "$target_gen_dir/tsc"
 
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
 group("build") {
   deps = [
     ":copied_files",
@@ -25,19 +28,36 @@ group("build") {
 }
 
 js_sources = [
-  "async_util.js",
-  "browser_util.js",
   "gdocs_script.js",
-  "key_code.js",
   "testing/accessibility_test_base.js",
   "testing/test_node_generator.js",
 ]
 
 # Add typescript files to compile here.
 ts_modules = [
+  "action_fulfillment/context_checker.ts",
+  "action_fulfillment/input_controller.ts",
+  "action_fulfillment/macros/custom_callback_macro.ts",
+  "action_fulfillment/macros/delete_prev_sent_macro.ts",
+  "action_fulfillment/macros/input_text_view_macro.ts",
+  "action_fulfillment/macros/key_press_macro.ts",
+  "action_fulfillment/macros/macro.ts",
+  "action_fulfillment/macros/mouse_click_macro.ts",
+  "action_fulfillment/macros/nav_sent_macro.ts",
+  "action_fulfillment/macros/repeat_macro.ts",
+  "action_fulfillment/macros/repeatable_key_press_macro.ts",
+  "action_fulfillment/macros/smart_delete_phrase_macro.ts",
+  "action_fulfillment/macros/smart_insert_before_macro.ts",
+  "action_fulfillment/macros/smart_replace_phrase_macro.ts",
+  "action_fulfillment/macros/smart_select_between_macro.ts",
+  "action_fulfillment/macros/toggle_dictation_macro.ts",
   "array_util.ts",
+  "async_util.ts",
   "automation_predicate.ts",
   "automation_util.ts",
+  "bridge_callback_manager.ts",
+  "bridge_helper.ts",
+  "browser_util.ts",
   "chrome_event_handler.ts",
   "constants.ts",
   "cursors/cursor.ts",
@@ -47,6 +67,7 @@ ts_modules = [
   "event_handler.ts",
   "flags.ts",
   "instance_checker.ts",
+  "key_code.ts",
   "local_storage.ts",
   "node_navigation_utils.ts",
   "node_utils.ts",
@@ -57,25 +78,13 @@ ts_modules = [
   "sentence_utils.ts",
   "settings.ts",
   "string_util.ts",
-  "word_utils.ts",
   "testing/test_import_manager.ts",
   "tree_walker.ts",
-  "action_fulfillment/context_checker.ts",
-  "action_fulfillment/input_controller.ts",
-  "action_fulfillment/macros/mouse_click_macro.ts",
-  "action_fulfillment/macros/delete_prev_sent_macro.ts",
-  "action_fulfillment/macros/toggle_dictation_macro.ts",
-  "action_fulfillment/macros/input_text_view_macro.ts",
-  "action_fulfillment/macros/macro.ts",
-  "action_fulfillment/macros/macro_names.ts",
-  "action_fulfillment/macros/nav_sent_macro.ts",
-  "action_fulfillment/macros/repeat_macro.ts",
-  "action_fulfillment/macros/repeatable_key_press_macro.ts",
-  "action_fulfillment/macros/smart_delete_phrase_macro.ts",
-  "action_fulfillment/macros/smart_insert_before_macro.ts",
-  "action_fulfillment/macros/smart_replace_phrase_macro.ts",
-  "action_fulfillment/macros/smart_select_between_macro.ts",
+  "word_utils.ts",
 ]
+
+# The relative path in the staging directory of TS modules that need to be copied from another directory.
+copied_ts_modules = [ "action_fulfillment/macros/macro_names.ts" ]
 
 ts_definitions = [
   "../definitions/accessibility_private_mv2.d.ts",
@@ -89,16 +98,36 @@ ts_definitions = [
   "../definitions/storage_mv2.d.ts",
   "../definitions/tabs.d.ts",
   "../definitions/tts.d.ts",
-  "//tools/typescript/definitions/windows.d.ts",
+  "../definitions/windows.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
 ]
 
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_sources") {
+  sources = js_sources + ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}
+
+copy("copy_ash_common_macros") {
+  sources = [ "//ash/webui/common/resources/accessibility/macro_names.ts" ]
+  outputs = [ "$ts_build_staging_dir/action_fulfillment/macros/macro_names.ts" ]
+}
+
 ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
   definitions = ts_definitions
   composite = true
-  in_files = ts_modules + js_sources
+  in_files = ts_modules + js_sources + copied_ts_modules
 
-  deps = []
+  # Targets that need to run before running the TS build.
+  extra_deps = [
+    # copied files in staging directory.
+    ":copy_ash_common_macros",
+    ":stage_ts_sources",
+  ]
 
   tsconfig_base = "../tsconfig.base.json"
 }
@@ -179,8 +208,9 @@ js2gtest("accessibility_tests") {
     deps = [
       "//ash",
       "//base",
-      "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps",
       "//chrome/common",
     ]
   }

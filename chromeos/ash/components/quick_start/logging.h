@@ -6,21 +6,26 @@
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_LOGGING_H_
 
 #include <sstream>
+#include <string_view>
 
 #include "base/logging.h"
 
 namespace ash::quick_start {
 
 // Use the QS_LOG() macro for all logging related to Quick Start.
-#define QS_LOG(severity) \
-  ScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity).stream()
+#define QS_LOG(severity)                                                      \
+  ScopedLogMessage(std::string_view(__FILE__, std::size(__FILE__)), __LINE__, \
+                   logging::LOGGING_##severity)                               \
+      .stream()
 
 // An intermediate object used by the QS_LOG macro, wrapping a
 // logging::LogMessage instance. When this object is destroyed, the message will
 // be logged with the standard logging system.
 class ScopedLogMessage {
  public:
-  ScopedLogMessage(const char* file, int line, logging::LogSeverity severity);
+  ScopedLogMessage(const std::string_view file,
+                   int line,
+                   logging::LogSeverity severity);
   ScopedLogMessage(const ScopedLogMessage&) = delete;
   ScopedLogMessage& operator=(const ScopedLogMessage&) = delete;
   ~ScopedLogMessage();
@@ -30,7 +35,7 @@ class ScopedLogMessage {
  private:
   bool ShouldEmitToStandardLog() const;
 
-  const char* file_;
+  const std::string_view file_;
   int line_;
   logging::LogSeverity severity_;
   std::ostringstream stream_;
@@ -38,4 +43,4 @@ class ScopedLogMessage {
 
 }  // namespace ash::quick_start
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_LOGGING_LOGGING_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_LOGGING_H_

@@ -119,7 +119,7 @@ LaunchResult ConvertBoolToLaunchResult(bool success) {
 }
 
 bool ConvertLaunchResultToBool(const LaunchResult& result) {
-  return result.state == State::kSuccess ? true : false;
+  return result.state == State::kSuccess;
 }
 
 }  // namespace apps

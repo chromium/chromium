@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace {
 
@@ -82,7 +84,7 @@ SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
       profile_(profile),
       callback_(std::move(callback)) {
   set_can_close(true);
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   set_dialog_content_url(GURL(chrome::kChromeUISigninEmailConfirmationURL));
   // This dialog chooses its height automatically based on its contents.
   set_dialog_size(gfx::Size(kSigninEmailConfirmationDialogWidth, 0));
@@ -172,10 +174,12 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
       } else if (*action_string == kSigninEmailConfirmationActionStartSync) {
         action = START_SYNC;
       } else {
-        NOTREACHED() << "Unexpected action value [" << *action_string << "]";
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected action value [" << *action_string << "]";
       }
     } else {
-      NOTREACHED() << "No action in the dialog close return arguments";
+      NOTREACHED_IN_MIGRATION()
+          << "No action in the dialog close return arguments";
     }
   } else {
     // If the dialog is dismissed without any return value, then simply close

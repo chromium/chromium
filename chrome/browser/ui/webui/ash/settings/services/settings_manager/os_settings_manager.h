@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/backend/accelerator_fetcher.h"
 #include "ash/webui/common/backend/shortcut_input_provider.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
@@ -48,6 +49,7 @@ namespace settings {
 
 class AppNotificationHandler;
 class AppPermissionHandler;
+class AppParentalControlsHandler;
 class Hierarchy;
 class OsSettingsSections;
 class SearchHandler;
@@ -114,6 +116,10 @@ class OsSettingsManager : public KeyedService {
     return app_permission_handler_.get();
   }
 
+  AppParentalControlsHandler* app_parental_controls_handler() {
+    return app_parental_controls_handler_.get();
+  }
+
   InputDeviceSettingsProvider* input_device_settings_provider() {
     return input_device_settings_provider_.get();
   }
@@ -126,6 +132,10 @@ class OsSettingsManager : public KeyedService {
 
   SettingsUserActionTracker* settings_user_action_tracker() {
     return settings_user_action_tracker_.get();
+  }
+
+  AcceleratorFetcher* accelerator_fetcher() {
+    return accelerator_fetcher_.get();
   }
 
   ShortcutInputProvider* shortcut_input_provider() {
@@ -147,9 +157,11 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<SearchHandler> search_handler_;
   std::unique_ptr<AppNotificationHandler> app_notification_handler_;
   std::unique_ptr<AppPermissionHandler> app_permission_handler_;
+  std::unique_ptr<AppParentalControlsHandler> app_parental_controls_handler_;
   std::unique_ptr<InputDeviceSettingsProvider> input_device_settings_provider_;
   std::unique_ptr<DisplaySettingsProvider> display_settings_provider_;
   std::unique_ptr<ShortcutInputProvider> shortcut_input_provider_;
+  std::unique_ptr<AcceleratorFetcher> accelerator_fetcher_;
 };
 
 }  // namespace settings

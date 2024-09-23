@@ -121,7 +121,7 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
                                              &more_results_left);
     std::vector<std::string> results;
     for (const FakeWebHistoryService::Visit& visit : visits) {
-      std::string unix_time = std::to_string(
+      std::string unix_time = base::NumberToString(
           (visit.timestamp - base::Time::UnixEpoch()).InMicroseconds());
       results.push_back(base::StringPrintf(
           "{\"result\":[{\"id\":[{\"timestamp_usec\":\"%s\"}"

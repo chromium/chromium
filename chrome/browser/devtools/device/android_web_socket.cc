@@ -15,6 +15,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/server/web_socket_encoder.h"
+#include "net/server/web_socket_parse_result.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -119,10 +120,10 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   void ProcessResponseBuffer(scoped_refptr<net::IOBuffer> io_buffer) {
     int bytes_consumed;
     std::string output;
-    WebSocket::ParseResult parse_result = encoder_->DecodeFrame(
-        response_buffer_, &bytes_consumed, &output);
+    net::WebSocketParseResult parse_result =
+        encoder_->DecodeFrame(response_buffer_, &bytes_consumed, &output);
 
-    while (parse_result == WebSocket::FRAME_OK_FINAL) {
+    while (parse_result == net::WebSocketParseResult::FRAME_OK_FINAL) {
       response_buffer_ = response_buffer_.substr(bytes_consumed);
       response_task_runner_->PostTask(
           FROM_HERE,
@@ -130,10 +131,11 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
       parse_result = encoder_->DecodeFrame(
           response_buffer_, &bytes_consumed, &output);
     }
-    if (parse_result == WebSocket::FRAME_CLOSE)
+    if (parse_result == net::WebSocketParseResult::FRAME_CLOSE) {
       SendData(kCloseResponse);
+    }
 
-    if (parse_result == WebSocket::FRAME_ERROR) {
+    if (parse_result == net::WebSocketParseResult::FRAME_ERROR) {
       Disconnect();
       return;
     }

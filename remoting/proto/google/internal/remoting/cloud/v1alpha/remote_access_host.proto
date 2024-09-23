@@ -1,0 +1,60 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+import "operating_system_info.proto";
+import "service_account_info.proto";
+import "tachyon_account_info.proto";
+import "timestamp.proto";
+
+// Represents a remote access host instance.
+//
+// Next ID: 12
+message RemoteAccessHost {
+  // A fully qualified resource name matching the pattern:
+  //   users/{user}/hosts/{host}
+  string name = 1;
+
+  // Unique identifier (UUID) for the remote access host instance. This ID is
+  // created and assigned by the CRD backend and is not specified by the user.
+  string directory_id = 2;
+
+  // A readable name which is shown in the website client UI. Set by the user
+  // when the host is created or edited via the website afterwards.
+  optional string display_name = 3;
+
+  // Public key for the host. Must be a 2048-bit RSA key encoded with Base64.
+  optional bytes public_key = 4;
+
+  // Version of the Chrome Remote Desktop package installed on the host machine.
+  optional string version = 5;
+
+  // Service account details for the remote access host instance.
+  optional ServiceAccountInfo service_account_info = 6;
+
+  // The Tachyon account info for this remote access host instance. This is used
+  // to send a message to this host instance over the Tachyon signaling channel.
+  // This field is not set if the host is offline.
+  optional TachyonAccountInfo tachyon_account_info = 7;
+
+  // Timestamp indicating when the remote access host instance was created.
+  optional Timestamp create_time = 8;
+
+  // Timestamp indicating the last time the host updated its signaling state.
+  optional Timestamp last_seen_time = 9;
+
+  // The reason why the remote access host is offline (i.e. not available via
+  // signaling). The value is a stringified ENUM value. For more context see:
+  //   - src/remoting/host/heartbeat_sender.h
+  //   - src/remoting/host/host_exit_codes.cc
+  optional string offline_reason = 10;
+
+  // Information about the operating system of the host machine.
+  optional OperatingSystemInfo operating_system_info = 11;
+}

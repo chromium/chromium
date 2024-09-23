@@ -160,6 +160,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kCancel"/>
   <int value="8" label="kPause"/>
   <int value="9" label="kResume"/>
+  <int value="10" label="kShowInBrowser"/>
+  <int value="11" label="kViewDetailsInBrowser"/>
 </enum>
 
 <enum name="HoldingSpaceItemLaunchFailureReason">

@@ -10,7 +10,6 @@ android_library("reporter_java") {
 
   deps = [
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
-    "//third_party/android_sdk:android_test_base_java",
   ]
 
   sources = [ "java/src/org/chromium/test/reporter/TestStatusReporter.java" ]

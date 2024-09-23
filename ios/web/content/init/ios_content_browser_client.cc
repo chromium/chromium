@@ -5,12 +5,15 @@
 #include "ios/web/content/init/ios_content_browser_client.h"
 
 #import "components/embedder_support/user_agent_utils.h"
+#import "components/performance_manager/embedder/performance_manager_registry.h"
 #import "components/version_info/version_info.h"
 #import "content/public/browser/browser_context.h"
 #import "content/public/browser/devtools_manager_delegate.h"
+#import "content/public/browser/web_contents_view_delegate.h"
 #import "content/public/common/url_constants.h"
 #import "content/public/common/user_agent.h"
 #import "ios/web/content/init/ios_browser_main_parts.h"
+#import "ios/web/content/ui/web_contents_view_delegate_impl.h"
 
 namespace web {
 
@@ -81,12 +84,23 @@ blink::UserAgentMetadata IOSContentBrowserClient::GetUserAgentMetadata() {
   return metadata;
 }
 
+std::unique_ptr<content::WebContentsViewDelegate>
+IOSContentBrowserClient::GetWebContentsViewDelegate(
+    content::WebContents* web_contents) {
+  if (auto* registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    registry->MaybeCreatePageNodeForWebContents(web_contents);
+  }
+  return CreateWebContentsViewDelegate(web_contents);
+}
+
 bool IOSContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin,
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   return true;
 }
 
@@ -94,7 +108,8 @@ bool IOSContentBrowserClient::IsSharedStorageSelectURLAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin,
-    std::string* out_debug_message) {
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
   return true;
 }
 

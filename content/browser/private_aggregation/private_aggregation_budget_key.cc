@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/origin.h"
 
@@ -16,7 +17,7 @@ namespace content {
 namespace {
 base::Time FloorToDuration(base::Time time) {
   // `FloorToMultiple` would no-op on `base::Time::Max()`.
-  DCHECK(!time.is_max());
+  CHECK(!time.is_max());
 
   return base::Time() + time.since_origin().FloorToMultiple(
                             PrivateAggregationBudgetKey::TimeWindow::kDuration);
@@ -29,15 +30,15 @@ PrivateAggregationBudgetKey::TimeWindow::TimeWindow(base::Time start_time)
 PrivateAggregationBudgetKey::PrivateAggregationBudgetKey(
     url::Origin origin,
     base::Time api_invocation_time,
-    Api api)
+    PrivateAggregationCallerApi api)
     : origin_(std::move(origin)), time_window_(api_invocation_time), api_(api) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin_));
+  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 }
 
 std::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(
     url::Origin origin,
     base::Time api_invocation_time,
-    Api api) {
+    PrivateAggregationCallerApi api) {
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
     return std::nullopt;
   }
@@ -49,7 +50,7 @@ std::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(
 PrivateAggregationBudgetKey PrivateAggregationBudgetKey::CreateForTesting(
     url::Origin origin,
     base::Time api_invocation_time,
-    Api api) {
+    PrivateAggregationCallerApi api) {
   return PrivateAggregationBudgetKey(std::move(origin), api_invocation_time,
                                      api);
 }

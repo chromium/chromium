@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+// Step 3 (wpt_internal/cookies/dt-coexist.{}.sub.https.window.js)
+document.cookie = "test=test;Secure;SameSite=None";
+window.localStorage.setItem("test", "test");
+
+// Step 4 (wpt_internal/cookies/dt-coexist.{}.sub.https.window.js)
+window.opener.postMessage({type: "SetData"}, "*");
+</script>

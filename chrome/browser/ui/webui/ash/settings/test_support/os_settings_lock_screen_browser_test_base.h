@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_OS_SETTINGS_LOCK_SCREEN_BROWSER_TEST_BASE_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_OS_SETTINGS_LOCK_SCREEN_BROWSER_TEST_BASE_H_
 
+#include <string>
+
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/account_id/account_id.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::settings {
 
@@ -22,15 +27,11 @@ namespace ash::settings {
 class OSSettingsLockScreenBrowserTestBase
     : public MixinBasedInProcessBrowserTest {
  public:
-  enum class PasswordType {
-    kGaia,
-    kLocal,
-  };
   // The password of the user that is set up by this fixture.
   static constexpr char kPassword[] = "the-password";
 
   explicit OSSettingsLockScreenBrowserTestBase(
-      PasswordType = PasswordType::kGaia);
+      ash::AshAuthFactor password_type = ash::AshAuthFactor::kGaiaPassword);
   ~OSSettingsLockScreenBrowserTestBase() override;
 
   void SetUpOnMainThread() override;
@@ -52,12 +53,12 @@ class OSSettingsLockScreenBrowserTestBase
   // The account ID of the user set up by this fixture.
   const AccountId& GetAccountId();
 
+  void AuthenticateUsingPassword();
+
  protected:
-  PasswordType password_type_;
-  CryptohomeMixin cryptohome_{&mixin_host_};
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(), this};
+  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
+  std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
+  raw_ptr<CryptohomeMixin> cryptohome_{nullptr};
   OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
 
  private:
@@ -67,7 +68,6 @@ class OSSettingsLockScreenBrowserTestBase
       const std::string& relative_url = "");
 
   mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
-  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
 };
 
 }  // namespace ash::settings

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/token.h"
 #include "base/values.h"
@@ -41,7 +41,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
  protected:
   // Parses |xml| and compares its parsed representation with |expected_json|.
   // If |expected_json| is empty, the XML parsing is expected to fail.
-  void TestParse(base::StringPiece xml, const std::string& expected_json) {
+  void TestParse(std::string_view xml, const std::string& expected_json) {
     SCOPED_TRACE(xml);
 
     base::RunLoop run_loop;

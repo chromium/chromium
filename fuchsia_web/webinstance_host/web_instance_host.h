@@ -11,6 +11,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 #include <zircon/types.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 
@@ -42,7 +42,8 @@ class OutgoingDirectory;
 // To ensure proper product data registration, Components using the class must:
 // * Have the same version and channel as WebEngine.
 // * Instantiate the class on a thread with an async_dispatcher.
-// TODO(crbug.com/1275224): Remove these requirements when platform supports it.
+// TODO(crbug.com/42050393): Remove these requirements when platform supports
+// it.
 class WebInstanceHost {
  public:
   virtual ~WebInstanceHost();
@@ -76,7 +77,7 @@ class WebInstanceHost {
   // `outgoing_directory`. WebInstanceHost owners must serve the directory
   // before creating web instances, and must ensure that the directory outlives
   // the WebInstanceHost instance.
-  // TODO(crbug.com/1327587): Remove `outgoing_directory` if and when it is
+  // TODO(crbug.com/40841277): Remove `outgoing_directory` if and when it is
   // possible for tests to serve a test-specific outgoing directory via
   // base::TestComponentContextForProcess on a separate thread.
   WebInstanceHost(sys::OutgoingDirectory& outgoing_directory,
@@ -93,7 +94,7 @@ class WebInstanceHost {
       fuchsia::web::CreateContextParams params,
       fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
       base::CommandLine extra_args,
-      base::StringPiece instance_component_url,
+      std::string_view instance_component_url,
       std::vector<std::string> services_to_offer);
 
  private:
@@ -136,7 +137,7 @@ class WebInstanceHost {
   fidl::InterfaceHandle<fuchsia::io::Directory> tmp_dir_;
 
   // Whether `web_instance.cm` is in the same Package as this host Component.
-  // TODO(crbug.com/1255292): Determine this based on a static Structured
+  // TODO(crbug.com/42050363): Determine this based on a static Structured
   // Configuration value once Structured Configuration is supported.
   const bool is_web_instance_component_in_same_package_;
 

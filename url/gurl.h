@@ -44,6 +44,10 @@
 // path that contains a literal '#'. Using string concatenation will generate a
 // URL with a truncated path and a reference fragment, while ReplaceComponents
 // will know to escape this and produce the desired result.
+//
+// WARNING: While there is no length limit on GURLs, the Mojo serialization
+// code will replace any very long URL with an invalid GURL.
+// See url::mojom::kMaxURLChars for more details.
 class COMPONENT_EXPORT(URL) GURL {
  public:
   using Replacements = url::StringViewReplacements<char>;
@@ -57,7 +61,9 @@ class COMPONENT_EXPORT(URL) GURL {
   GURL(const GURL& other);
   GURL(GURL&& other) noexcept;
 
-  // The strings to this constructor should be UTF-8 / UTF-16.
+  // The strings to this constructor should be UTF-8 / UTF-16. They will be
+  // parsed and canonicalized. For example, the host is lower cased, and
+  // characters may be percent-encoded or percent-decoded to normalize the URL.
   explicit GURL(std::string_view url_string);
   explicit GURL(std::u16string_view url_string);
 
@@ -135,8 +141,9 @@ class COMPONENT_EXPORT(URL) GURL {
   }
 
   // Allows GURL to used as a key in STL (for example, a std::set or std::map).
-  bool operator<(const GURL& other) const;
-  bool operator>(const GURL& other) const;
+  constexpr friend auto operator<=>(const GURL& lhs, const GURL& rhs) {
+    return lhs.spec_ <=> rhs.spec_;
+  }
 
   // Resolves a URL that's possibly relative to this object's URL, and returns
   // it. Absolute URLs are also handled according to the rules of URLs on web
@@ -504,19 +511,12 @@ COMPONENT_EXPORT(URL)
 std::ostream& operator<<(std::ostream& out, const GURL& url);
 
 COMPONENT_EXPORT(URL) bool operator==(const GURL& x, const GURL& y);
-COMPONENT_EXPORT(URL) bool operator!=(const GURL& x, const GURL& y);
 
 // Equality operator for comparing raw spec_. This should be used in place of
 // url == GURL(spec) where |spec| is known (i.e. constants). This is to prevent
 // needlessly re-parsing |spec| into a temporary GURL.
 COMPONENT_EXPORT(URL)
 bool operator==(const GURL& x, std::string_view spec);
-COMPONENT_EXPORT(URL)
-bool operator==(std::string_view spec, const GURL& x);
-COMPONENT_EXPORT(URL)
-bool operator!=(const GURL& x, std::string_view spec);
-COMPONENT_EXPORT(URL)
-bool operator!=(std::string_view spec, const GURL& x);
 
 // DEBUG_ALIAS_FOR_GURL(var_name, url) copies |url| into a new stack-allocated
 // variable named |<var_name>|.  This helps ensure that the value of |url| gets

@@ -5,8 +5,9 @@
 #ifndef CHROME_UPDATER_WIN_INSTALLER_PE_RESOURCE_H_
 #define CHROME_UPDATER_WIN_INSTALLER_PE_RESOURCE_H_
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 namespace updater {
 

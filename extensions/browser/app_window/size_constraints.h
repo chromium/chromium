@@ -9,7 +9,8 @@
 
 namespace gfx {
 class Insets;
-}
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace extensions {
 
@@ -23,9 +24,17 @@ class SizeConstraints {
   SizeConstraints(const gfx::Size& min_size, const gfx::Size& max_size);
   ~SizeConstraints();
 
-  // Adds frame insets to a size constraint.
-  static gfx::Size AddFrameToConstraints(const gfx::Size& size_constraints,
-                                         const gfx::Insets& frame_insets);
+  // Returns the minimum size required to prevent overlapping of rounded
+  // corners.
+  static gfx::Size GetMinimumSizeSupportingRoundedCorners(
+      const gfx::RoundedCornersF& radii);
+
+  // Adds window constraints (frame insets and window radii) to a size
+  // constraint.
+  static gfx::Size AddWindowToConstraints(
+      const gfx::Size& size_constraints,
+      const gfx::Insets& frame_insets,
+      const gfx::RoundedCornersF& window_radii);
 
   // Returns the bounds with its size clamped to the min/max size.
   gfx::Size ClampSize(gfx::Size size) const;

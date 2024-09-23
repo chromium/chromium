@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -22,6 +23,16 @@
 // Encapsulates an SQL database that holds DIPS info.
 class DIPSDatabase {
  public:
+  // Version number of the database schema.
+  // NOTE: When changing the version, add a new golden file for the new version
+  // at `//chrome/test/data/dips/v<N>.sql`.
+  static constexpr int kLatestSchemaVersion = 7;
+
+  // The minimum database schema version this Chrome code is compatible with.
+  static constexpr int kMinCompatibleSchemaVersion = 6;
+
+  static constexpr char kPrepopulatedKey[] = "prepopulated";
+
   // The length of time that will be waited between emitting db health metrics.
   static const base::TimeDelta kMetricsInterval;
 
@@ -40,31 +51,6 @@ class DIPSDatabase {
 
   DIPSDatabase(const DIPSDatabase&) = delete;
   DIPSDatabase& operator=(const DIPSDatabase&) = delete;
-
-  // Updates `db_` to use the latest schema. Returns whether the migration was
-  // successful.
-  bool MigrateAsNeeded();
-
-  // Migrates from v1 to v2 of the DIPS database schema. This migration:
-  // - Makes all timestamp columns nullable instead of using base::Time() as
-  // default.
-  // - Replaces both the first and last stateless bounce columns to track the
-  // first and last bounce times instead.
-  bool MigrateToVersion2();
-
-  // Migrates from v2 to v3 of the DIPS database schema. This migration adds two
-  // extra columns for recording the first and last time a web authn assertion
-  // was called.
-  bool MigrateToVersion3();
-
-  // Migrates from v2 to v3 of the DIPS database schema. This migration adds a
-  // Popups table for recording popupts with a current or prior user
-  // interaction.
-  bool MigrateToVersion4();
-
-  // Migrates from v2 to v3 of the DIPS database schema. This migration adds an
-  // `is_current_interaction` field to the Popups table.
-  bool MigrateToVersion5();
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -100,18 +86,17 @@ class DIPSDatabase {
   // the other database querying methods.
   std::vector<std::string> GetAllSitesForTesting(const DIPSDatabaseTable table);
 
-  // Returns the subset of sites in |sites| WITH user interaction or successful
-  // web authn assertion recorded.
+  // Returns the subset of sites in |sites| WITH a protective event recorded.
+  // A protective event is a user interaction or successful WebAuthn assertion.
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
   //
-  // TODO(njeunje): Consider making this FilterSites(set<string> sites,
-  // FilterType filter) where FilterType lets us specify if we want to filter
-  // out interactions, web authn assertions, or both. There may be other
-  // criteria that we want to filter for in the future & this name might get
-  // even longer.
-  std::set<std::string> FilterSitesWithInteractionOrWaa(
+  // TODO(njeunje): Consider making a method FilterSites(set<string> sites,
+  // FilterType filter) that we call from this method, where FilterType lets us
+  // specify if we want to filter out interactions, WebAuthn assertions, or
+  // both. There may be other criteria that we want to filter for in the future.
+  std::set<std::string> FilterSitesWithProtectiveEvent(
       const std::set<std::string>& sites);
 
   // Returns all sites which bounced the user and aren't protected from DIPS.
@@ -222,23 +207,24 @@ class DIPSDatabase {
   // Checks that the internal SQLite database is initialized.
   bool CheckDBInit();
 
-  // Marks meta_table_'s `prepopulated` field as true.
-  //
-  // Called once this database has finished prepopulating with information from
-  // the SiteEngagement service. Returns whether this operation was successful.
-  bool MarkAsPrepopulated();
-
-  // Whether the database was prepopulated using the SiteEngagement service.
-  bool IsPrepopulated();
-
   size_t GetMaxEntries() const { return max_entries_; }
   size_t GetPurgeEntries() const { return purge_entries_; }
+
+  std::optional<base::Time> GetTimerLastFired();
+  bool SetTimerLastFired(base::Time time);
 
   // Testing functions --------------------------------------------------
   void SetMaxEntriesForTesting(size_t entries) { max_entries_ = entries; }
   void SetPurgeEntriesForTesting(size_t entries) { purge_entries_ = entries; }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-  bool ExecuteSqlForTesting(const char* sql);
+  bool ExecuteSqlForTesting(const base::cstring_view sql);
+
+  bool SetConfigValueForTesting(std::string_view name, int64_t value) {
+    return SetConfigValue(name, value);
+  }
+  std::optional<int64_t> GetConfigValueForTesting(std::string_view name) {
+    return GetConfigValue(name);
+  }
 
  protected:
   // Initialization functions --------------------------------------------------
@@ -280,6 +266,11 @@ class DIPSDatabase {
   bool AdjustLastTimestamps(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             const DIPSEventRemovalType type);
+
+  // Upsert the row for `key` in the config table to contain `value`.
+  bool SetConfigValue(std::string_view key, int64_t value);
+  // Get the value for `key` from the config table, or nullopt if absent.
+  std::optional<int64_t> GetConfigValue(std::string_view key);
 
   // When the number of entries in the database exceeds |max_entries_|, purge
   // down to |max_entries_| - |purge_entries_|.

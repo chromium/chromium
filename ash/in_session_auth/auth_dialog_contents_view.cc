@@ -4,7 +4,9 @@
 
 #include "ash/in_session_auth/auth_dialog_contents_view.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/login/resources/grit/login_resources.h"
@@ -14,23 +16,35 @@
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -38,6 +52,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
 namespace {
@@ -104,6 +120,11 @@ AuthDialogContentsView::TestApi::GetPinTextInputView() const {
   return view_->pin_text_input_view_;
 }
 
+views::Label* AuthDialogContentsView::TestApi::GetDialogFingerprintLabel()
+    const {
+  return view_->GetFingerprintLabel();
+}
+
 // Consists of fingerprint icon view and a label.
 class AuthDialogContentsView::FingerprintView : public views::View {
   METADATA_HEADER(FingerprintView, views::View)
@@ -115,10 +136,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     METADATA_HEADER(FingerprintLabel, views::Label)
 
    public:
-    // views::View
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-      node_data->role = ax::mojom::Role::kStaticText;
-      node_data->SetNameChecked(GetAccessibleName());
+    FingerprintLabel() {
+      GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
     }
   };
 
@@ -179,17 +198,17 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     if (state_ == FingerprintState::DISABLED_FROM_ATTEMPTS) {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS));
     } else if (success) {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_SUCCESS));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_SUCCESS));
     } else {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_FAILED));
     }
 
@@ -207,15 +226,19 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::View::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    views::SizeBounds content_available_size(available_size);
+    content_available_size.set_width(kFingerprintViewWidthDp);
+    gfx::Size size =
+        views::View::CalculatePreferredSize(content_available_size);
     size.set_width(kFingerprintViewWidthDp);
     return size;
   }
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() != ui::ET_GESTURE_TAP) {
+    if (event->type() != ui::EventType::kGestureTap) {
       return;
     }
     if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
@@ -228,6 +251,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
+  views::Label* GetLabelView() const { return label_; }
+
  private:
   void DisplayCurrentState() {
     SetVisible(state_ != FingerprintState::UNAVAILABLE);
@@ -236,7 +261,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
       std::u16string fingerprint_text =
           l10n_util::GetStringUTF16(GetTextIdFromState());
       label_->SetText(fingerprint_text);
-      label_->SetAccessibleName(
+      label_->GetViewAccessibility().SetName(
           state_ == FingerprintState::DISABLED_FROM_ATTEMPTS
               ? l10n_util::GetStringUTF16(
                     IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS)
@@ -269,6 +294,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
                 kFingerprintFailedAnimationNumFrames),
             AnimatedRoundedImageView::Playback::kSingle);
         break;
+      case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
+        NOTREACHED();
     }
   }
 
@@ -286,8 +313,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
         }
         return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
       case FingerprintState::UNAVAILABLE:
+      case FingerprintState::AVAILABLE_WITH_FAILED_ATTEMPT:
         NOTREACHED();
-        return 0;
     }
   }
 
@@ -298,12 +325,10 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   base::OneShotTimer reset_state_;
 };
 
-BEGIN_METADATA(AuthDialogContentsView, FingerprintView, views::View)
+BEGIN_METADATA(AuthDialogContentsView, FingerprintView)
 END_METADATA
 
-BEGIN_METADATA(AuthDialogContentsView::FingerprintView,
-               FingerprintLabel,
-               views::Label)
+BEGIN_METADATA(AuthDialogContentsView::FingerprintView, FingerprintLabel)
 END_METADATA
 
 class AuthDialogContentsView::TitleLabel : public views::Label {
@@ -326,6 +351,8 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetPreferredSize(gfx::Size(kContainerPreferredWidth,
                                GetHeightForWidth(kContainerPreferredWidth)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   }
 
   bool IsShowingError() const { return is_showing_error_; }
@@ -336,29 +363,23 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetText(title);
     SetEnabledColorId(kColorAshTextColorPrimary);
     is_showing_error_ = false;
-    SetAccessibleName(title);
+    GetViewAccessibility().SetName(title);
   }
 
   void ShowError(const std::u16string& error_text) {
     SetText(error_text);
     SetEnabledColorId(kColorAshTextColorAlert);
     is_showing_error_ = true;
-    SetAccessibleName(error_text);
+    GetViewAccessibility().SetName(error_text);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
                              true /*send_native_event*/);
-  }
-
-  // views::View
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetNameChecked(GetAccessibleName());
   }
 
  private:
   bool is_showing_error_ = false;
 };
 
-BEGIN_METADATA(AuthDialogContentsView, TitleLabel, views::Label)
+BEGIN_METADATA(AuthDialogContentsView, TitleLabel)
 END_METADATA
 
 AuthDialogContentsView::AuthDialogContentsView(
@@ -424,17 +445,14 @@ AuthDialogContentsView::AuthDialogContentsView(
 
   AddVerticalSpacing(kSpacingBeforeButtons);
   AddActionButtonsView();
-}
 
-AuthDialogContentsView::~AuthDialogContentsView() = default;
-
-void AuthDialogContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE,
                                  base::UTF8ToUTF16(origin_name_)));
 }
+
+AuthDialogContentsView::~AuthDialogContentsView() = default;
 
 void AuthDialogContentsView::RequestFocus() {
   if (auth_methods_ == kAuthFingerprint) {
@@ -500,7 +518,6 @@ void AuthDialogContentsView::AddPinTextInputView() {
   pin_text_input_view_->SetPaintToLayer();
   pin_text_input_view_->layer()->SetFillsBoundsOpaquely(false);
   pin_text_input_view_->SetDisplayPasswordButtonVisible(true);
-  pin_text_input_view_->SetEnabledOnEmptyPassword(false);
   pin_text_input_view_->SetFocusEnabledForTextfield(true);
 
   pin_text_input_view_->SetPlaceholderText(
@@ -514,7 +531,6 @@ void AuthDialogContentsView::AddPasswordView() {
   password_view_->SetPaintToLayer();
   password_view_->layer()->SetFillsBoundsOpaquely(false);
   password_view_->SetDisplayPasswordButtonVisible(true);
-  password_view_->SetEnabledOnEmptyPassword(false);
   password_view_->SetFocusEnabledForTextfield(true);
 
   password_view_->SetPlaceholderText(
@@ -601,8 +617,8 @@ void AuthDialogContentsView::AddActionButtonsView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CANCEL)));
 
-  action_view_container_->SetPreferredSize(
-      gfx::Size(kContainerPreferredWidth, cancel_button_->height()));
+  action_view_container_->SetPreferredSize(gfx::Size(
+      kContainerPreferredWidth, cancel_button_->GetPreferredSize().height()));
 }
 
 void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
@@ -728,6 +744,10 @@ void AuthDialogContentsView::OnCancelButtonPressed(const ui::Event& event) {
 
 void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {
   WebAuthNDialogController::Get()->OpenInSessionAuthHelpPage();
+}
+
+views::Label* AuthDialogContentsView::GetFingerprintLabel() const {
+  return fingerprint_view_ ? fingerprint_view_->GetLabelView() : nullptr;
 }
 
 BEGIN_METADATA(AuthDialogContentsView)

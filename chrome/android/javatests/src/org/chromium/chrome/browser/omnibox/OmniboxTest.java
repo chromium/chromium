@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,14 +30,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -47,7 +45,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
@@ -71,14 +68,14 @@ public class OmniboxTest {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         Assert.assertNotNull(urlBar);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     urlBar.setText("");
                 });
     }
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
-            (result, autocompleteText, isFinal) -> {};
+            (result, isFinal) -> {};
 
     /**
      * Sanity check of Omnibox. The problem in http://b/5021723 would cause this to fail (hang or
@@ -88,6 +85,7 @@ public class OmniboxTest {
     @EnormousTest
     @Feature({"Omnibox"})
     public void testSimpleUse() throws InterruptedException {
+        mActivityTestRule.startMainActivityOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
         omnibox.typeText("aaaaaaa", false);
@@ -124,7 +122,7 @@ public class OmniboxTest {
         // Type something in the omnibox.
         // Note that the TextView does not provide a way to test if the hint is showing, the API
         // documentation simply says it shows when the text is empty.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     urlBar.requestFocus();
                     urlBar.setText("G");
@@ -136,6 +134,7 @@ public class OmniboxTest {
     @MediumTest
     @Feature({"Omnibox"})
     public void testAltEnterOpensSearchResultInNewTab() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         int tabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
         Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -145,23 +144,7 @@ public class OmniboxTest {
         omnibox.checkSuggestionsShown();
 
         // Dispatch ALT + ENTER key event.
-        final UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        KeyEvent keyDownEvent =
-                new KeyEvent(
-                        0,
-                        0,
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_ENTER,
-                        0,
-                        KeyEvent.META_ALT_ON);
-        KeyEvent keyUpEvent =
-                new KeyEvent(
-                        0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    urlBar.dispatchKeyEvent(keyDownEvent);
-                    urlBar.dispatchKeyEvent(keyUpEvent);
-                });
+        omnibox.sendKey(KeyEvent.KEYCODE_ENTER, KeyEvent.META_ALT_ON);
 
         Tab resultTab = mActivityTestRule.getActivity().getActivityTab();
         Assert.assertNotEquals(
@@ -216,6 +199,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTP() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -235,6 +219,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPS() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer httpsTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
@@ -246,7 +231,7 @@ public class OmniboxTest {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         final String testHttpsUrl =
@@ -289,8 +274,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
-        // Prevents recreating Chrome when the default search engine is changed.
-        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
+        mActivityTestRule.startMainActivityOnBlankPage();
         setNonDefaultSearchEngine();
 
         EmbeddedTestServer httpsTestServer =
@@ -304,7 +288,7 @@ public class OmniboxTest {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
@@ -327,11 +311,11 @@ public class OmniboxTest {
             final int firstIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
 
             UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
+            ThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != firstIcon);
             final int secondIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
-            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
+            ThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != secondIcon);
 
@@ -356,14 +340,14 @@ public class OmniboxTest {
 
     private void setNonDefaultSearchEngine() {
         TemplateUrlService templateUrlService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
+                                        ProfileManager.getLastUsedRegularProfile()));
+        ThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
         CriteriaHelper.pollUiThread(() -> templateUrlService.isLoaded());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
                     TemplateUrl defaultEngine =
@@ -384,11 +368,11 @@ public class OmniboxTest {
     }
 
     private void restoreDefaultSearchEngine() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TemplateUrlService service =
                             TemplateUrlServiceFactory.getForProfile(
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
                     service.setSearchEngine(defaultEngine.getKeyword());
                 });
@@ -399,6 +383,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     public void testHttpsLocationBarColor() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
@@ -464,14 +449,5 @@ public class OmniboxTest {
                             .getLocationBarModelForTesting()
                             .shouldEmphasizeHttpsScheme());
         }
-    }
-
-    @Before
-    public void setUp() throws InterruptedException {
-        if (mActivityTestRule.getName().equals("testsplitPathFromUrlDisplayText")
-                || mActivityTestRule.getName().equals("testDefaultText")) {
-            return;
-        }
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 }

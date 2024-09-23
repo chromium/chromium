@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -95,7 +95,9 @@ void LanguagePrefs::GetUserSelectedLanguagesList(
 
 void LanguagePrefs::SetUserSelectedLanguagesList(
     const std::vector<std::string>& languages) {
-  std::string languages_str = base::JoinString(languages, ",");
+  std::vector<std::string> filtered_languages =
+      l10n_util::KeepAcceptedLanguages(languages);
+  std::string languages_str = base::JoinString(filtered_languages, ",");
   prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
@@ -181,7 +183,7 @@ void ResetLanguagePrefs(PrefService* prefs) {
 #endif
 }
 
-std::string GetFirstLanguage(base::StringPiece language_list) {
+std::string GetFirstLanguage(std::string_view language_list) {
   auto end = language_list.find(",");
   return std::string(language_list.substr(0, end));
 }

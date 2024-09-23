@@ -5,8 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "url/origin.h"
 
@@ -42,13 +44,20 @@ class FederatedIdentityPermissionContextDelegate {
 
   // Determine whether there is an existing permission grant to share identity
   // information for the given account to the `relying_party_requester` when
-  // embedded in `relying_party_embedder`. `account_id` can be omitted to
-  // represent "sharing permission for any account".
-  virtual bool HasSharingPermission(
+  // embedded in `relying_party_embedder`.
+  virtual bool HasSharingPermission(const url::Origin& relying_party_requester,
+                                    const url::Origin& relying_party_embedder,
+                                    const url::Origin& identity_provider) = 0;
+
+  // Returns the last time when `account_id` was used via FedCM on the
+  // (relying_party_requester, relying_party_embedder, identity_provider). If
+  // there is no known last time, returns nullopt. If the `account_id` was known
+  // to be used but a timestamp is not known, returns 0.
+  virtual std::optional<base::Time> GetLastUsedTimestamp(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
-      const std::optional<std::string>& account_id) = 0;
+      const std::string& account_id) = 0;
 
   // Determine whether there is an existing permission grant to share identity
   // information for any account to the `relying_party_requester`.
@@ -67,6 +76,14 @@ class FederatedIdentityPermissionContextDelegate {
   // permission associated with the given `account_id`, an arbitrary sharing
   // permission is revoked.
   virtual void RevokeSharingPermission(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) = 0;
+
+  // Refreshes an existing sharing permission. Updates the timestamp
+  // corresponding to the last time in which the sharing permission was used.
+  virtual void RefreshExistingSharingPermission(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
@@ -91,6 +108,11 @@ class FederatedIdentityPermissionContextDelegate {
 
   // Unregisters an IdP.
   virtual void UnregisterIdP(const GURL& url) = 0;
+
+  // Updates internal state when an origin's "requires user mediation" status
+  // changes.
+  virtual void OnSetRequiresUserMediation(const url::Origin& relying_party,
+                                          base::OnceClosure callback) = 0;
 };
 
 }  // namespace content

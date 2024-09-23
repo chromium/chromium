@@ -14,7 +14,13 @@ namespace media {
 // Test data arrays.
 static const uint8_t kHeaderDataOkWithFieldLen4[] = {
     0x01, 0x42, 0x00, 0x28, 0xFF, 0xE1, 0x00, 0x08, 0x67, 0x42, 0x00, 0x28,
-    0xE9, 0x05, 0x89, 0xC8, 0x01, 0x00, 0x04, 0x68, 0xCE, 0x06, 0xF2, 0x00};
+    0xE9, 0x05, 0x89, 0xC8, 0x01, 0x00, 0x04, 0x68, 0xCE, 0x06, 0xF2};
+
+// SPS and PPS have trailing null bytes.
+static const uint8_t kHeaderDataTrailingNullsWithFieldLen4[] = {
+    0x01, 0x42, 0x00, 0x28, 0xFF, 0xE1, 0x00, 0x09, 0x67,
+    0x42, 0x00, 0x28, 0xE9, 0x05, 0x89, 0xC8, 0x00, 0x01,
+    0x00, 0x05, 0x68, 0xCE, 0x06, 0xF2, 0x00};
 
 static const uint8_t kPacketDataOkWithFieldLen4[] = {
     0x00, 0x00, 0x0B, 0xF7, 0x65, 0xB8, 0x40, 0x57, 0x0B, 0xF0, 0xDF, 0xF8,
@@ -352,6 +358,31 @@ TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest, Conversion_FailureNullParams) {
   EXPECT_FALSE(converter.ConvertPacket(test_packet.get()));
 
   // Converter will be automatically cleaned up.
+}
+
+TEST_F(FFmpegH264ToAnnexBBitstreamConverterTest,
+       Conversion_SuccessTrailingNulls) {
+  // Convert using the standard configuration to find the expected size.
+  FFmpegH264ToAnnexBBitstreamConverter converter(&test_parameters_);
+  auto expected_packet = ScopedAVPacket::Allocate();
+  CreatePacket(expected_packet.get(), kPacketDataOkWithFieldLen4,
+               sizeof(kPacketDataOkWithFieldLen4));
+  EXPECT_TRUE(converter.ConvertPacket(expected_packet.get()));
+
+  // Convert using the trailing nulls configuration.
+  AVCodecParameters parameters;
+  parameters.extradata =
+      const_cast<uint8_t*>(kHeaderDataTrailingNullsWithFieldLen4);
+  parameters.extradata_size = sizeof(kHeaderDataTrailingNullsWithFieldLen4);
+  FFmpegH264ToAnnexBBitstreamConverter test_converter(&parameters);
+
+  auto test_packet = ScopedAVPacket::Allocate();
+  CreatePacket(test_packet.get(), kPacketDataOkWithFieldLen4,
+               sizeof(kPacketDataOkWithFieldLen4));
+  EXPECT_TRUE(test_converter.ConvertPacket(test_packet.get()));
+
+  // The converted packets should be the same.
+  EXPECT_EQ(expected_packet->size, test_packet->size);
 }
 
 }  // namespace media

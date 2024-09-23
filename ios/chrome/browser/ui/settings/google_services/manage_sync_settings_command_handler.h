@@ -12,6 +12,9 @@
 // Opens the "Web & App Activity" dialog.
 - (void)openWebAppActivityDialog;
 
+// Open the "Personalize Google Services" page.
+- (void)openPersonalizeGoogleServices;
+
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 
@@ -19,8 +22,8 @@
 // Otherwise, if the sync feature is enabled, presents the data options
 // available when turning off Sync. `targetRect` rect in table view system
 // coordinate to display the signout popover dialog.
-// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
-// won't be enabled anymore.
+// TODO(crbug.com/40066949): Update this comment when syncing users no longer
+// exist on iOS.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // Shows a dialog to warn users that addresses are not encrypted by custom

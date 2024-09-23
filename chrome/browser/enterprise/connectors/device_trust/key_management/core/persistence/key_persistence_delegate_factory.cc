@@ -48,7 +48,7 @@ KeyPersistenceDelegateFactory::CreateKeyPersistenceDelegate() {
 #elif BUILDFLAG(IS_LINUX)
   return std::make_unique<LinuxKeyPersistenceDelegate>();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

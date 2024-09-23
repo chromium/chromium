@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_FRAME_DATA_UTILS_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_FRAME_DATA_UTILS_H_
 
@@ -49,7 +54,7 @@ class ResourceLoadAggregator {
   // Get the mime type of a resource. This only returns a subset of mime types,
   // grouped at a higher level. For example, all video mime types return the
   // same value.
-  // TODO(crbug.com/1136068): This is used well out of the scope of the
+  // TODO(crbug.com/40152120): This is used well out of the scope of the
   // AdsPageLoadMetricsObserver and should sit in a common directory.
   static ResourceMimeType GetResourceMimeType(
       const mojom::ResourceDataUpdatePtr& resource);

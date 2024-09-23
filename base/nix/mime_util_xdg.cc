@@ -4,7 +4,6 @@
 
 #include "base/nix/mime_util_xdg.h"
 
-#include <arpa/inet.h>
 #include <memory>
 #include <utility>
 
@@ -16,6 +15,7 @@
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -76,7 +76,8 @@ bool ReadInt(const std::string& buf,
                << ", string size=" << buf.size();
     return false;
   }
-  *result = ntohl(*reinterpret_cast<const uint32_t*>(buf.c_str() + offset));
+  auto bytes = base::as_byte_span(buf);
+  *result = base::U32FromBigEndian(bytes.subspan(offset).first<4u>());
   if (*result < min_result || *result > max_result) {
     LOG(ERROR) << "Invalid " << field_name << "=" << *result
                << " not between min_result=" << min_result
@@ -192,11 +193,13 @@ bool ParseMimeTypes(const FilePath& file_path, MimeTypeMap& out_mime_types) {
         }
         p += 4;
         if (n.ext.size() > 0 && n.ext[0] == '.') {
-          std::string ext = n.ext.substr(1);
+          std::string_view ext = std::string_view(n.ext).substr(1u);
           auto it = out_mime_types.find(ext);
           if (it == out_mime_types.end() || weight > it->second.weight) {
-            out_mime_types[ext] = {std::string(buf.c_str() + mime_type_offset),
-                                   weight};
+            // Use the mime type string from `buf` up to the first NUL.
+            auto mime_type = std::string_view(buf).substr(mime_type_offset);
+            mime_type = mime_type.substr(0u, mime_type.find('\0'));
+            out_mime_types[std::string(ext)] = {std::string(mime_type), weight};
           }
         }
         continue;

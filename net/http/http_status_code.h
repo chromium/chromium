@@ -5,10 +5,15 @@
 #ifndef NET_HTTP_HTTP_STATUS_CODE_H_
 #define NET_HTTP_HTTP_STATUS_CODE_H_
 
+#include <optional>
+
 #include "net/base/net_export.h"
 
 namespace net {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // HTTP status codes.
 enum HttpStatusCode {
 
@@ -32,6 +37,12 @@ NET_EXPORT const char* GetHttpReasonPhrase(HttpStatusCode code);
 // to a known reasone phrase, which allows a gentle recovery in case the code
 // was obtained from a non-trusted party.
 NET_EXPORT const char* TryToGetHttpReasonPhrase(HttpStatusCode code);
+
+// Returns the corresponding HTTP status code enum value for a given
+// |response_code|. Returns std::nullopt if the status code is not in the IANA
+// HTTP Status Code Registry.
+NET_EXPORT const std::optional<HttpStatusCode> TryToGetHttpStatusCode(
+    int response_code);
 
 }  // namespace net
 

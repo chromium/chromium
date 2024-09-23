@@ -15,6 +15,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
@@ -22,7 +23,7 @@ import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './settings_category_default_radio_group.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
-import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
+import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 
 /**
  * Selected content setting radio option.
@@ -36,6 +37,7 @@ export interface SettingsCategoryDefaultRadioGroupElement {
   $: {
     enabledRadioOption: SettingsCollapseRadioButtonElement,
     disabledRadioOption: SettingsCollapseRadioButtonElement,
+    settingsCategoryDefaultRadioGroup: SettingsRadioGroupElement,
   };
 }
 
@@ -125,11 +127,12 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   private getAllowOptionForCategory_(): ContentSetting {
     switch (this.category) {
       case ContentSettingsTypes.ADS:
+      case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
       case ContentSettingsTypes.BACKGROUND_SYNC:
       case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:
       case ContentSettingsTypes.JAVASCRIPT:
-      case ContentSettingsTypes.JAVASCRIPT_JIT:
+      case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
       case ContentSettingsTypes.MIXEDSCRIPT:
       case ContentSettingsTypes.PAYMENT_HANDLER:
       case ContentSettingsTypes.POPUPS:
@@ -145,20 +148,26 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.BLUETOOTH_DEVICES:
       case ContentSettingsTypes.BLUETOOTH_SCANNING:
       case ContentSettingsTypes.CAMERA:
+      case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
       case ContentSettingsTypes.CLIPBOARD:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
       case ContentSettingsTypes.GEOLOCATION:
+      case ContentSettingsTypes.HAND_TRACKING:
       case ContentSettingsTypes.HID_DEVICES:
       case ContentSettingsTypes.IDLE_DETECTION:
+      case ContentSettingsTypes.KEYBOARD_LOCK:
       case ContentSettingsTypes.LOCAL_FONTS:
       case ContentSettingsTypes.MIC:
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.NOTIFICATIONS:
+      case ContentSettingsTypes.POINTER_LOCK:
       case ContentSettingsTypes.SERIAL_PORTS:
+      case ContentSettingsTypes.SMART_CARD_READERS:
       case ContentSettingsTypes.STORAGE_ACCESS:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.WINDOW_MANAGEMENT:
+      case ContentSettingsTypes.WEB_APP_INSTALLATION:
       case ContentSettingsTypes.WEB_PRINTING:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;
@@ -196,18 +205,18 @@ export class SettingsCategoryDefaultRadioGroupElement extends
    */
   private updatePref_(update: DefaultContentSetting) {
     if (update.source !== undefined &&
-        update.source !== ContentSettingProvider.PREFERENCE) {
+        update.source !== DefaultSettingSource.PREFERENCE) {
       this.set(
           'pref_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
       let controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
       switch (update.source) {
-        case ContentSettingProvider.POLICY:
+        case DefaultSettingSource.POLICY:
           controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
           break;
-        case ContentSettingProvider.SUPERVISED_USER:
+        case DefaultSettingSource.SUPERVISED_USER:
           controlledBy = chrome.settingsPrivate.ControlledBy.PARENT;
           break;
-        case ContentSettingProvider.EXTENSION:
+        case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
           break;
       }

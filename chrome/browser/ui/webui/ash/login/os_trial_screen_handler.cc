@@ -35,4 +35,8 @@ void OsTrialScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<OsTrialScreenView> OsTrialScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

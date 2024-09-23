@@ -27,7 +27,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/traced_value.h"
 
 namespace viz {
@@ -165,9 +164,6 @@ DrawQuad* CompositorRenderPass::CopyFromAndAppendDrawQuad(
       break;
     case DrawQuad::Material::kVideoHole:
       quad_list.AllocateAndCopyFrom(VideoHoleDrawQuad::MaterialCast(quad));
-      break;
-    case DrawQuad::Material::kYuvVideoContent:
-      quad_list.AllocateAndCopyFrom(YUVVideoDrawQuad::MaterialCast(quad));
       break;
     case DrawQuad::Material::kSharedElement:
       quad_list.AllocateAndCopyFrom(SharedElementDrawQuad::MaterialCast(quad));

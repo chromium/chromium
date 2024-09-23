@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
+#include "ui/views/accessibility/view_ax_platform_node_delegate_auralinux.h"
 
 #include <atk/atk.h>
+
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/test/gtest_util.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views::test {
 
@@ -27,14 +30,15 @@ class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
 };
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(u"Name");
+  textfield->GetViewAccessibility().SetName(u"Name");
   content->AddChildView(textfield);
 
   ASSERT_EQ(0, atk_object_get_n_accessible_children(
@@ -103,8 +107,9 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
        ExpandedChangedNotFiredOnNonExpandableViews) {
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
@@ -114,9 +119,9 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
   // Create the parent widget->
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 400, 200);
   widget->Init(std::move(init_params));
   widget->Show();
@@ -127,9 +132,9 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
   ASSERT_EQ(1, atk_object_get_n_accessible_children(root_view_accessible));
 
   // Create the child widget, one of two ways (see below).
-  UniqueWidgetPtr child_widget = std::make_unique<Widget>();
-  Widget::InitParams child_init_params =
-      CreateParams(Widget::InitParams::TYPE_BUBBLE);
+  auto child_widget = std::make_unique<Widget>();
+  Widget::InitParams child_init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_BUBBLE);
   child_init_params.parent = widget->GetNativeView();
   child_init_params.bounds = gfx::Rect(30, 40, 100, 50);
   child_init_params.child = false;
@@ -158,16 +163,16 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
 // corresponding View is removed from a widget->
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   // Create the Widget that will represent the application
-  UniqueWidgetPtr parent_widget = std::make_unique<Widget>();
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto parent_widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   parent_widget->Init(std::move(init_params));
   parent_widget->Show();
 
   // |widget| will be destroyed later.
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams child_init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams child_init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   child_init_params.parent = parent_widget->GetNativeView();
   widget->Init(std::move(child_init_params));
   widget->Show();

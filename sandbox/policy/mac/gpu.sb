@@ -40,9 +40,7 @@
 )
 
 ; Needed for metal decoding - https://crbug.com/957217
-(if (>= os-version 1014)
-  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
-)
+(allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
 
 ; Allow access to the Apple Neural Engine for the Shape Detection API.
 ; https://crbug.com/1382442
@@ -126,6 +124,13 @@
   (subpath (param darwin-user-dir))
   (subpath (param darwin-user-temp-dir))
 )
+
+; Metal issues a sandbox extension to permit MTLCompilerService to read source
+; files from disk. It's much broader than we'd like (https://crbug.com/41485470).
+(allow file-issue-extension
+  (require-all
+    (extension-class "com.apple.app-sandbox.read")
+    (subpath "/")))
 
 (if (param-true? filter-syscalls-debug)
   (when (defined? 'syscall-unix)

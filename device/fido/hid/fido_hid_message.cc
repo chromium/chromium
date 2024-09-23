@@ -8,6 +8,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -23,11 +24,9 @@ std::optional<FidoHidMessage> FidoHidMessage::Create(
   if (data.size() > kHidMaxMessageSize)
     return std::nullopt;
 
-  if (max_report_size <= kHidInitPacketHeaderSize ||
-      max_report_size > kHidMaxPacketSize) {
-    NOTREACHED();
-    return std::nullopt;
-  }
+  // Unsupported devices should have been dropped in fido_hid_discovery.cc.
+  CHECK_GT(max_report_size, kHidInitPacketHeaderSize);
+  CHECK_LE(max_report_size, kHidMaxPacketSize);
 
   switch (type) {
     case FidoHidDeviceCommand::kPing:

@@ -7,7 +7,6 @@ compile_js_files = [
   "app_window.ts",
   "assert.ts",
   "async_job_queue.ts",
-  "barcode_chip.ts",
   "cover_photo.ts",
   "custom_effect.ts",
   "deployed_version.ts",
@@ -16,6 +15,7 @@ compile_js_files = [
   "device/camera_operation.ts",
   "device/capture_candidate_preferrer.ts",
   "device/capture_candidate.ts",
+  "device/device_monitor.ts",
   "device/index.ts",
   "device/mode/index.ts",
   "device/mode/mode_base.ts",
@@ -25,8 +25,8 @@ compile_js_files = [
   "device/mode/scan.ts",
   "device/mode/video.ts",
   "device/preview.ts",
+  "device/ptz_controller.ts",
   "device/stream_constraints.ts",
-  "device/stream_manager.ts",
   "device/stream_manager_chrome.ts",
   "device/type.ts",
   "dom.ts",
@@ -46,6 +46,7 @@ compile_js_files = [
   "lit/components/index.ts",
   "lit/components/mode-selector.ts",
   "lit/components/record-time-chip.ts",
+  "lit/components/super-res-loading-indicator.ts",
   "lit/components/svg-wrapper.ts",
   "lit/components/switch-device-button.ts",
   "lit/components/text-tooltip.ts",
@@ -76,10 +77,14 @@ compile_js_files = [
   "mojo/device_operator.ts",
   "mojo/image_capture.ts",
   "mojo/type.ts",
+  "mojo/type_utils.ts",
   "mojo/util.ts",
   "multi_window_manager.ts",
   "nav.ts",
+  "ocr.ts",
   "perf.ts",
+  "photo_mode_auto_scanner.ts",
+  "scanner_chip.ts",
   "snackbar.ts",
   "sound.ts",
   "spoken_msg.ts",
@@ -130,7 +135,5 @@ compile_js_files = [
 
 local_dev_js_files = [ "local_dev_overrides.ts" ]
 compile_js_files += local_dev_js_files
-
-no_compile_js_files = [ "lib/analytics.js" ]
 
 wasm_files = [ "lib/ffmpeg.wasm" ]

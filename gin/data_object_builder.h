@@ -5,11 +5,11 @@
 #ifndef GIN_DATA_OBJECT_BUILDER_H_
 #define GIN_DATA_OBJECT_BUILDER_H_
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-forward.h"
@@ -45,7 +45,7 @@ class GIN_EXPORT DataObjectBuilder {
   ~DataObjectBuilder();
 
   template <typename T>
-  DataObjectBuilder& Set(base::StringPiece key, T&& value) {
+  DataObjectBuilder& Set(std::string_view key, T&& value) {
     DCHECK(!object_.IsEmpty());
     v8::Local<v8::String> v8_key = StringToSymbol(isolate_, key);
     v8::Local<v8::Value> v8_value =

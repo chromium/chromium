@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <utility>
 
 #include "net/filter/brotli_source_stream.h"
@@ -47,8 +52,7 @@ class BrotliSourceStream : public FilterSourceStream {
   ~BrotliSourceStream() override {
     BrotliDecoderErrorCode error_code =
         BrotliDecoderGetErrorCode(brotli_state_);
-    BrotliDecoderDestroyInstance(brotli_state_);
-    brotli_state_ = nullptr;
+    BrotliDecoderDestroyInstance(brotli_state_.ExtractAsDangling());
     DCHECK_EQ(0u, used_memory_);
 
 
@@ -178,7 +182,7 @@ class BrotliSourceStream : public FilterSourceStream {
   const scoped_refptr<IOBuffer> dictionary_;
   const size_t dictionary_size_;
 
-  raw_ptr<BrotliDecoderState, DanglingUntriaged> brotli_state_;
+  raw_ptr<BrotliDecoderState> brotli_state_;
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 

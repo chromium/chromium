@@ -31,4 +31,31 @@ void BindContentTranslateDriver(
   translate_client->translate_driver()->AddReceiver(std::move(receiver));
 }
 
+void BindContentLanguageDetectionDriver(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<
+        language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
+  // TOOD(https://crbug.com/354069716): Move binding off RenderFrameHost so that
+  // the model can be loaded from JS running in any context at any time.
+  // Only valid for the primary main frame. The current code is just mirroring
+  // the translate driver to ensure it behaves as before.
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents) {
+    return;
+  }
+
+  ChromeTranslateClient* const translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  if (!translate_client) {
+    return;
+  }
+
+  translate_client->language_detection_driver()->AddReceiver(
+      std::move(receiver));
+}
 }  // namespace translate

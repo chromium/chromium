@@ -2,6 +2,7 @@ include_rules = [
   "+chromecast/device/bluetooth",
   "+chromecast/public/bluetooth",
   "+chromeos/dbus",
+  "+components/prefs",
   "+crypto",
   "+dbus",
   "+device/bluetooth/jni_headers",

@@ -8,12 +8,15 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/url_pattern.h"
 
 namespace extensions::declarative_net_request {
+
+inline constexpr char kManifestSandboxPageFilepath[] = "manifest_sandbox.html";
 
 struct DictionarySource {
   DictionarySource() = default;
@@ -199,6 +202,14 @@ enum ConfigFlag {
   // Whether the "declarativeNetRequestWithHostAccess" permission should be
   // included.
   kConfig_HasDelarativeNetRequestWithHostAccessPermission = 1 << 5,
+
+  // Whether the extension listens for the onUpdateAvailable event. This is
+  // needed for an extension with a background script to receive delayed
+  // updates.
+  kConfig_ListenForOnUpdateAvailable = 1 << 6,
+
+  // Whether the extension has an manifest sandbox page entry.
+  kConfig_HasManifestSandbox = 1 << 7,
 };
 
 // Describes a single extension ruleset.

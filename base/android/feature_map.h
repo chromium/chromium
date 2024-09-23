@@ -5,10 +5,11 @@
 #ifndef BASE_ANDROID_FEATURE_MAP_H_
 #define BASE_ANDROID_FEATURE_MAP_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 
 namespace base::android {
 
@@ -24,10 +25,10 @@ class BASE_EXPORT FeatureMap {
   ~FeatureMap();
 
   // Map a |feature_name| to a Feature*.
-  const Feature* FindFeatureExposedToJava(const StringPiece& feature_name);
+  const Feature* FindFeatureExposedToJava(const std::string& feature_name);
 
  private:
-  flat_map<StringPiece, const Feature*> mapping_;
+  flat_map<std::string_view, const Feature*> mapping_;
 };
 
 }  // namespace base::android

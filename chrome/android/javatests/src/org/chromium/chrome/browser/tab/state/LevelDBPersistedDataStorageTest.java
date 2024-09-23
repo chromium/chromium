@@ -18,12 +18,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
@@ -55,19 +54,19 @@ public class LevelDBPersistedDataStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (int i = 0; i < mPersistedDataStorage.length; i++) {
                         mPersistedDataStorage[i] =
                                 new LevelDBPersistedDataStorage(
-                                        Profile.getLastUsedRegularProfile(), NAMESPACES[i]);
+                                        ProfileManager.getLastUsedRegularProfile(), NAMESPACES[i]);
                     }
                 });
     }
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Both PersistedDataStorage are associated with the same BrowserContext so
                     // calling destroy() on the first one will free the same SessionProtoDB for
@@ -174,7 +173,7 @@ public class LevelDBPersistedDataStorageTest {
             throws TimeoutException {
         CallbackHelper ch = new CallbackHelper();
         int chCount = ch.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     persistedDataStorage.saveForTesting(
                             key,

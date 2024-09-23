@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/lacros/browser_test_util.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -17,6 +17,8 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
@@ -54,7 +56,7 @@ struct TestParam {};
 // capabilities.
 mojo::Remote<InputMethodTestInterface> BindInputMethodTestInterface(
     const TestParam& test_param,
-    const std::vector<base::StringPiece>& required_test_capabilities = {}) {
+    const std::vector<std::string_view>& required_test_capabilities = {}) {
   if (!IsInputMethodTestInterfaceAvailable()) {
     return {};
   }
@@ -95,12 +97,7 @@ bool RenderHtmlInLacros(Browser* browser, const std::string& html) {
     return false;
   }
 
-  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->frame()
-          ->GetNativeWindow()
-          ->GetRootWindow());
-  EXPECT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
+  EXPECT_TRUE(browser_test_util::WaitForWindowCreation(browser));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser)
                   ->contents_web_view()
                   ->HasFocus());
@@ -160,9 +157,9 @@ struct Modifiers {
   }
 };
 
-auto IsKeyboardEvent(const base::StringPiece type,
-                     const base::StringPiece key,
-                     const base::StringPiece code,
+auto IsKeyboardEvent(const std::string_view type,
+                     const std::string_view key,
+                     const std::string_view code,
                      int key_code,
                      Modifiers modifiers = {}) {
   return base::test::IsJson(content::JsReplace(
@@ -180,29 +177,29 @@ auto IsKeyboardEvent(const base::StringPiece type,
       modifiers.meta, modifiers.shift));
 }
 
-auto IsKeyDownEvent(const base::StringPiece key,
-                    const base::StringPiece code,
+auto IsKeyDownEvent(const std::string_view key,
+                    const std::string_view code,
                     int key_code,
                     Modifiers modifiers = {}) {
   return IsKeyboardEvent("keydown", key, code, key_code, modifiers);
 }
 
-auto IsKeyUpEvent(const base::StringPiece key,
-                  const base::StringPiece code,
+auto IsKeyUpEvent(const std::string_view key,
+                  const std::string_view code,
                   int key_code,
                   Modifiers modifiers = {}) {
   return IsKeyboardEvent("keyup", key, code, key_code, modifiers);
 }
 
-auto IsKeyPressEvent(const base::StringPiece key,
-                     const base::StringPiece code,
+auto IsKeyPressEvent(const std::string_view key,
+                     const std::string_view code,
                      int key_code,
                      Modifiers modifiers = {}) {
   return IsKeyboardEvent("keypress", key, code, key_code, modifiers);
 }
 
-auto IsCompositionEvent(const base::StringPiece type,
-                        const base::StringPiece data) {
+auto IsCompositionEvent(const std::string_view type,
+                        const std::string_view data) {
   return base::test::IsJson(content::JsReplace(
       R"({
         "type": $1,
@@ -215,7 +212,7 @@ auto IsCompositionStartEvent() {
   return IsCompositionEvent("compositionstart", "");
 }
 
-auto IsCompositionUpdateEvent(const base::StringPiece data) {
+auto IsCompositionUpdateEvent(const std::string_view data) {
   return IsCompositionEvent("compositionupdate", data);
 }
 
@@ -225,9 +222,9 @@ auto IsCompositionEndEvent() {
 
 enum class CompositionState { kComposing, kNotComposing };
 
-auto IsInputEvent(const base::StringPiece type,
-                  const base::StringPiece input_type,
-                  const std::optional<base::StringPiece> data,
+auto IsInputEvent(const std::string_view type,
+                  const std::string_view input_type,
+                  const std::optional<std::string_view> data,
                   CompositionState composition_state) {
   const bool is_composing = composition_state == CompositionState::kComposing;
 
@@ -252,14 +249,14 @@ auto IsInputEvent(const base::StringPiece type,
       type, input_type, *data, is_composing));
 }
 
-auto IsBeforeInputEvent(const base::StringPiece input_type,
-                        const std::optional<base::StringPiece> data,
+auto IsBeforeInputEvent(const std::string_view input_type,
+                        const std::optional<std::string_view> data,
                         CompositionState composition_state) {
   return IsInputEvent("beforeinput", input_type, data, composition_state);
 }
 
-auto IsInputEvent(const base::StringPiece input_type,
-                  const std::optional<base::StringPiece> data,
+auto IsInputEvent(const std::string_view input_type,
+                  const std::optional<std::string_view> data,
                   CompositionState composition_state) {
   return IsInputEvent("input", input_type, data, composition_state);
 }
@@ -286,7 +283,7 @@ class InputEventListener {
 
 // Listens for web input events from `element_id`.
 InputEventListener ListenForInputEvents(content::WebContents* web_content,
-                                        base::StringPiece element_id) {
+                                        std::string_view element_id) {
   const std::string script = content::JsReplace(
       R"(elem = document.getElementById($1);
          function extractEventData(e) {
@@ -339,8 +336,8 @@ InputEventListener ListenForInputEvents(content::WebContents* web_content,
 // Returns true if the conditions are met within 3 seconds.
 // Returns false otherwise.
 bool WaitUntilInputFieldHasText(content::WebContents* web_content,
-                                base::StringPiece element_id,
-                                base::StringPiece expected_text,
+                                std::string_view element_id,
+                                std::string_view expected_text,
                                 const gfx::Range& expected_selection) {
   const std::string script = content::JsReplace(
       R"(new Promise((resolve) => {
@@ -376,8 +373,8 @@ bool WaitUntilInputFieldHasText(content::WebContents* web_content,
 // Sets the contents of the input field with ID `element_id` to be `text`, with
 // the text selection at `selection`.
 bool SetInputFieldText(content::WebContents* web_content,
-                       base::StringPiece element_id,
-                       base::StringPiece text,
+                       std::string_view element_id,
+                       std::string_view text,
                        const gfx::Range& selection) {
   const std::string script = content::JsReplace(
       R"(elem = document.getElementById($1);
@@ -523,7 +520,7 @@ class InputMethodLacrosBrowserTest
   }
 
   void SetUp() override {
-    // TODO(crbug.com/1492215): The ash side fix (crrev.com/c/5046561,
+    // TODO(crbug.com/40285433): The ash side fix (crrev.com/c/5046561,
     // landed in 121.0.6140.0) is not in all ash used for version skew tests
     // yet, skip the test for older version of ash.
     if (GetAshChromeVersion() < base::Version({121, 0, 6140})) {

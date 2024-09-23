@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -86,17 +86,17 @@ public class SearchResumptionModuleUtils {
     /**
      * Creates a {@link SearchResumptionModuleCoordinator} if we are currently allowed to and
      * dependencies are met:
-     * 1) Feature flags SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID and SEARCH_RESUMPTION_MODULE_ANDROID are
-     *    both enabled;
-     * 2) The default search engine is Google;
-     * 3) The user has signed in;
-     * 4) The current Tab isn't shown due to such as tapping the back button.
-     * 5) The Tab to track is a regular Tab, not a native page, not with an empty URL;
-     * 6) The Tab to track was visited within an expiration time.
+     *
+     * <ol>
+     *   <li>Feature flag SEARCH_RESUMPTION_MODULE_ANDROID is enabled;
+     *   <li>The default search engine is Google;
+     *   <li>The user has signed in;
+     *   <li>The current Tab isn't shown due to such as tapping the back button.
+     *   <li>The Tab to track is a regular Tab, not a native page, not with an empty URL;
+     *   <li>The Tab to track was visited within an expiration time.
+     * </ol>
      *
      * @param parent The parent layout which the search resumption module lives.
-     * @param autocompleteProvider The mechanism supplying AutocompleteControllers for a given
-     *         profile.
      * @param tabModel The TabModel to find the Tab to track.
      * @param currentTab The Tab that the search resumption module is associated to.
      * @param profile The profile of the user.
@@ -104,7 +104,6 @@ public class SearchResumptionModuleUtils {
      */
     public static SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
             ViewGroup parent,
-            AutocompleteControllerProvider autocompleteProvider,
             TabModel tabModel,
             Tab currentTab,
             Profile profile,
@@ -121,7 +120,6 @@ public class SearchResumptionModuleUtils {
 
         return new SearchResumptionModuleCoordinator(
                 parent,
-                autocompleteProvider,
                 tabToTrack,
                 currentTab,
                 profile,
@@ -132,11 +130,13 @@ public class SearchResumptionModuleUtils {
     /**
      * Returns whether to show the search resumption module. Only shows the module if all of the
      * criteria meet:
-     * 1) Feature flags SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID and SEARCH_RESUMPTION_MODULE_ANDROID are
-     *    both enabled;
-     * 2) The default search engine is Google;
-     * 3) The user has signed in;
-     * 4) The user has turned on sync.
+     *
+     * <ol>
+     *   <li>Feature flag SEARCH_RESUMPTION_MODULE_ANDROID is enabled;
+     *   <li>The default search engine is Google;
+     *   <li>The user has signed in;
+     *   <li>The user has turned on sync.
+     * </ol>
      */
     @VisibleForTesting
     static boolean shouldShowSearchResumptionModule(Profile profile) {
@@ -152,12 +152,14 @@ public class SearchResumptionModuleUtils {
 
         if (!IdentityServicesProvider.get()
                 .getIdentityManager(profile)
-                .hasPrimaryAccount(ConsentLevel.SYNC)) {
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SIGN_IN);
             return false;
         }
 
-        if (!SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced()) {
+        if (!SyncServiceFactory.getForProfile(profile)
+                .getSelectedTypes()
+                .contains(UserSelectableType.HISTORY)) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }

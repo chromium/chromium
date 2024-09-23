@@ -1,0 +1,157 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 10px;
+  border-bottom: var(--cr-separator-line);
+}
+
+.header h1 {
+  font-size: 2.7rem;
+}
+
+h1 > .trace-counter {
+  margin-inline-start: 14px;
+}
+
+.loading-spinner {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner {
+  --spinner-size: 60px;
+  mask-image: url(chrome://resources/images/throbber_medium.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--google-blue-500);
+  mask-size: var(--spinner-size) var(--spinner-size);
+  height: var(--spinner-size);
+  width: var(--spinner-size);
+}
+
+@media (prefers-color-scheme: dark) {
+  .spinner {
+    background-color: var(--google-blue-300);
+  }
+}
+
+#notification-card {
+  display: flex;
+}
+
+.notification-message {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px
+}
+
+.notification-type {
+  text-transform: uppercase;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.notification-type.error {
+  color: rgb(195, 40, 40);
+}
+
+.notification-type.accouncement {
+  color: rgb(98, 133, 52);
+}
+
+.notification-type.update {
+  color: rgb(34, 135, 211);
+}
+
+.notification-label {
+  color: white;
+}
+
+.icon-container {
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline-end: 24px;
+  height: auto;
+}
+
+.icon-container > cr-icon {
+  --iron-icon-fill-color: white;
+  --iron-icon-width: 40px;
+  --iron-icon-height: 40px;
+}
+
+.icon-container.error > cr-icon {
+  --iron-icon-fill-color: rgb(195, 40, 40);
+}
+
+.icon-container.accouncement > cr-icon {
+  --iron-icon-fill-color: rgb(98, 133, 52);
+}
+
+.icon-container.update > cr-icon {
+  --iron-icon-fill-color: rgb(34, 135, 211);
+}
+
+.traces-header h1 {
+  font-size: 3em;
+  color: var(--cr-primary-text-color);
+}
+
+.traces-header .traces-counter {
+  padding: 2px 8px;
+  height: fit-content;
+  margin-top: 16px;
+  margin-left: 4px;
+  font-weight: 800;
+  color: var(--cr-primary-text-color)
+}
+
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  color: var(--cr-secondary-text-color);
+}
+
+.empty-message iron-icon {
+  --iron-icon-width: 40px;
+  --iron-icon-height: 40px;
+}
+
+.utility-bar {
+  display: flex;
+  justify-content: end;
+  margin: 0 12px 12px;
+  align-items: flex-end;
+}
+
+.report-list-container {
+  flex-direction: column;
+  display: flex;
+  height: 100%;
+  margin: 0 8px;
+  overflow-y: auto;
+}

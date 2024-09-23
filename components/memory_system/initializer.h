@@ -6,10 +6,10 @@
 #define COMPONENTS_MEMORY_SYSTEM_INITIALIZER_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
+#include "base/profiler/process_type.h"
 #include "components/memory_system/parameters.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
 namespace memory_system {
@@ -25,16 +25,16 @@ class Initializer {
   ~Initializer();
 
   Initializer& SetGwpAsanParameters(bool boost_sampling,
-                                    base::StringPiece process_type);
+                                    std::string_view process_type);
   Initializer& SetProfilingClientParameters(
       version_info::Channel channel,
-      metrics::CallStackProfileParams::Process process_type);
+      base::ProfilerProcessType process_type);
   Initializer& SetDispatcherParameters(
       DispatcherParameters::PoissonAllocationSamplerInclusion
           poisson_allocation_sampler_inclusion,
       DispatcherParameters::AllocationTraceRecorderInclusion
           allocation_trace_recorder_inclusion,
-      base::StringPiece process_type);
+      std::string_view process_type);
 
   void Initialize(MemorySystem& memory_system) const;
 

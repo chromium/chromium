@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -24,12 +25,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -39,9 +41,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -55,10 +56,7 @@ public class ClearBrowsingDataFragmentBasicTest {
             new ChromeTabbedActivityTestRule();
     public final SettingsActivityTestRule<ClearBrowsingDataFragmentBasic>
             mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(
-                            ClearBrowsingDataFragmentBasic.class,
-                            ClearBrowsingDataFragment.createFragmentArgs(
-                                    /* isFetcherSuppliedFromOutside= */ false));
+                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class);
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.
@@ -89,14 +87,14 @@ public class ClearBrowsingDataFragmentBasicTest {
     }
 
     private void setSyncable(boolean syncable) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
                     when(mMockSyncService.getActiveDataTypes())
                             .thenReturn(
                                     syncable
                                             ? CollectionUtil.newHashSet(
-                                                    ModelType.HISTORY_DELETE_DIRECTIVES)
+                                                    DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<Integer>());
                 });
     }
@@ -118,16 +116,30 @@ public class ClearBrowsingDataFragmentBasicTest {
                 });
     }
 
+    private void waitForCacheCounter() {
+        // The cache counter is populated asynchronusly.
+        ViewUtils.waitForVisibleView(withText(containsString("Frees up")));
+    }
+
+    private SettingsActivity startPreferences() {
+        SettingsActivity settingsActivity =
+                mSettingsActivityTestRule.startSettingsActivity(
+                        ClearBrowsingDataFragment.createFragmentArgs(
+                                mActivityTestRule.getActivity().getClass().getName(),
+                                /* isFetcherSuppliedFromOutside= */ false));
+        return settingsActivity;
+    }
+
     @Test
     @LargeTest
     public void testSignOutLinkNotOfferedToSupervisedAccounts() {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         setSyncable(false);
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
 
         final ClearBrowsingDataFragmentBasic clearBrowsingDataFragmentBasic =
-                mSettingsActivityTestRule.getFragment();
+                (ClearBrowsingDataFragmentBasic) settingsActivity.getMainFragment();
         onView(withText(clearBrowsingDataFragmentBasic.buildSignOutOfChromeText().toString()))
                 .check(doesNotExist());
     }
@@ -138,13 +150,10 @@ public class ClearBrowsingDataFragmentBasicTest {
     public void testRenderSignedInAndSyncing() throws IOException {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(true);
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_signed_in_sync");
     }
 
@@ -152,13 +161,10 @@ public class ClearBrowsingDataFragmentBasicTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSearchHistoryLinkSignedOutGoogleDSE() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_out");
     }
 
@@ -168,13 +174,10 @@ public class ClearBrowsingDataFragmentBasicTest {
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_google_signed_in");
     }
 
@@ -188,20 +191,16 @@ public class ClearBrowsingDataFragmentBasicTest {
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
         Mockito.doReturn(true).when(mMockSearchEngine).getIsPrepopulated();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_in");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1446398#c8")
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
@@ -209,14 +208,10 @@ public class ClearBrowsingDataFragmentBasicTest {
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
         Mockito.doReturn(false).when(mMockSearchEngine).getIsPrepopulated();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
-        ViewUtils.waitForVisibleView(withText("Frees up"));
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 
@@ -228,32 +223,25 @@ public class ClearBrowsingDataFragmentBasicTest {
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
         Mockito.doReturn(true).when(mMockSearchEngine).getIsPrepopulated();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_known_signed_out");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "Flaky because the rendered page doesn't always finish loading ")
     public void testRenderSearchHistoryLinkSignedOutUnknownNonGoogleDSE() throws IOException {
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
         Mockito.doReturn(false).when(mMockSearchEngine).getIsPrepopulated();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        final SettingsActivity settingsActivity = startPreferences();
         waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+        View view = settingsActivity.findViewById(android.R.id.content).getRootView();
+        waitForCacheCounter();
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_out");
     }
 }

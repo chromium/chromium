@@ -21,6 +21,10 @@
         flex: 1;
         overflow: hidden;
       }
+
+      #plusAddressSettingsButton {
+        margin-top: 16px;
+      }
     </style>
     <settings-toggle-button id="autofillProfileToggle"
         no-extension-indicator label="$i18n{enableProfilesLabel}"
@@ -57,10 +61,11 @@
         $i18n{add}
       </cr-button>
     </div>
-    <div class="list-frame" aria-label="$i18n{addressesTableAriaLabel}">
-      <div id="addressList" class="vertical-list">
+    <div class="list-frame" aria-label="$i18n{addressesTableAriaLabel}"
+         role="list">
+      <div id="addressList" class="vertical-list" role="none">
         <template is="dom-repeat" items="[[addresses]]">
-          <div class="list-item">
+          <div class="list-item" role="listitem">
             <div class="start">
               <span id="addressSummary">
                 <span class="ellipses">
@@ -70,11 +75,11 @@
                   [[item.metadata.summarySublabel]]
                 </span>
               </span>
-              <iron-icon icon="cr20:cloud-off"
+              <cr-icon icon="cr20:cloud-off"
                   hidden$="[[!isCloudOffVisible_(item, accountInfo_)]]"
                   aria-label="$i18n{localAddressIconA11yLabel}"
                   role="img">
-              </iron-icon>
+              </cr-icon>
             </div>
             <cr-icon-button class="icon-more-vert address-menu"
                 on-click="onAddressMenuClick_"
@@ -106,3 +111,12 @@
           on-close="onAddressRemoveConfirmationDialogClose_">
       </settings-address-remove-confirmation-dialog>
     </template>
+    <template is="dom-if" if="[[isPlusAddressEnabled_]]">
+    <cr-link-row class="cr-row" id="plusAddressSettingsButton"
+        label="$i18n{plusAddressSettings}"
+        sub-label="$i18n{plusAddressSettingsSublabel}"
+        on-click="onPlusAddressClick_"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        external>
+    </cr-link-row>
+  </template>

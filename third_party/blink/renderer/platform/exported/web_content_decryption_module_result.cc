@@ -4,6 +4,9 @@
 
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 
+#include <utility>
+
+#include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
 
 namespace blink {
@@ -14,8 +17,8 @@ void WebContentDecryptionModuleResult::Complete() {
 }
 
 void WebContentDecryptionModuleResult::CompleteWithContentDecryptionModule(
-    WebContentDecryptionModule* cdm) {
-  impl_->CompleteWithContentDecryptionModule(cdm);
+    std::unique_ptr<WebContentDecryptionModule> cdm) {
+  impl_->CompleteWithContentDecryptionModule(std::move(cdm));
   Reset();
 }
 

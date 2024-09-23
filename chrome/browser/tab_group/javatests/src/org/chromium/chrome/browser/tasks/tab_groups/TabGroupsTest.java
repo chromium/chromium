@@ -9,6 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 
+import android.text.TextUtils;
+
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -22,6 +24,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -40,7 +44,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
@@ -56,6 +59,9 @@ import java.util.List;
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 @Batch(Batch.PER_CLASS)
 public class TabGroupsTest {
+    private static final int OTHER_ROOT_ID_1 = 11;
+    private static final int OTHER_ROOT_ID_2 = 22;
+
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -80,7 +86,7 @@ public class TabGroupsTest {
                                 .getTabModelSelector()
                                 .getTabModelFilterProvider()
                                 .getTabModelFilter(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.addObserver(mTabModelFilterObserver);
                 });
@@ -88,7 +94,7 @@ public class TabGroupsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.removeObserver(mTabModelFilterObserver);
                 });
@@ -106,10 +112,9 @@ public class TabGroupsTest {
                                 /* incognito= */ false);
                 tabs.add(tab);
             }
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabGroupModelFilter.mergeListOfTabsToGroup(
-                                tabs, tabs.get(0), false, false);
+                        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), false);
                     });
         }
     }
@@ -260,7 +265,12 @@ public class TabGroupsTest {
         Tab tab5 = tabs.get(5);
         Tab tab6 = tabs.get(6);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        // All of the old roots have titles set.
+        TabGroupTitleUtils.storeTabGroupTitle(tab0.getId(), "0");
+        TabGroupTitleUtils.storeTabGroupTitle(tab1.getId(), "1");
+        TabGroupTitleUtils.storeTabGroupTitle(tab6.getId(), "6");
+
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab0.setRootId(tab6.getId());
                     tab1.setRootId(tab0.getId());
@@ -272,6 +282,10 @@ public class TabGroupsTest {
                     mTabGroupModelFilter.resetFilterState();
                 });
 
+        // This should move:
+        // 6 -> 0
+        // 0 -> 1
+        // 1 -> 6
         assertFixedTabGroupRootIdCount(3);
 
         assertEquals(tab0.getId(), tab0.getRootId());
@@ -280,6 +294,68 @@ public class TabGroupsTest {
         assertEquals(tab1.getId(), tab3.getRootId());
         assertEquals(tab5.getId(), tab4.getRootId());
         assertEquals(tab5.getId(), tab5.getRootId());
+        assertEquals(tab6.getId(), tab6.getRootId());
+
+        // The three titles should have been rotated around.
+        assertEquals("0", mTabGroupModelFilter.getTabGroupTitle(tab1.getRootId()));
+        assertEquals("1", mTabGroupModelFilter.getTabGroupTitle(tab6.getRootId()));
+        assertEquals("6", mTabGroupModelFilter.getTabGroupTitle(tab0.getRootId()));
+    }
+
+    @Test
+    @SmallTest
+    public void testFixTabGroupRootIds_movesMetadata() {
+        prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));
+        List<Tab> tabs = getCurrentTabs();
+
+        // Tab 0
+        // Tab 1, 2, 3
+        // Tab 4, 5
+        // Tab 6
+        Tab tab0 = tabs.get(0);
+        Tab tab1 = tabs.get(1);
+        Tab tab2 = tabs.get(2);
+        Tab tab3 = tabs.get(3);
+        Tab tab4 = tabs.get(4);
+        Tab tab5 = tabs.get(5);
+        Tab tab6 = tabs.get(6);
+
+        TabGroupTitleUtils.storeTabGroupTitle(OTHER_ROOT_ID_1, "together");
+        TabGroupTitleUtils.storeTabGroupTitle(tab4.getRootId(), "split");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // This whole group stays together with a wrong id.
+                    tab1.setRootId(OTHER_ROOT_ID_1);
+                    tab2.setRootId(OTHER_ROOT_ID_1);
+                    tab3.setRootId(OTHER_ROOT_ID_1);
+
+                    // Split this group in half, one of the tabs was updated while one wasn't.
+                    tab4.setRootId(OTHER_ROOT_ID_2);
+
+                    mTabGroupModelFilter.resetFilterState();
+                });
+
+        // This should move:
+        // OTHER_ROOT_ID_2 -> 4
+        // 4 > 5
+        // OTHER_ROOT_ID_1 -> 1
+        assertFixedTabGroupRootIdCount(3);
+
+        assertEquals(tab0.getId(), tab0.getRootId());
+        assertEquals(tab1.getId(), tab1.getRootId());
+        assertEquals(tab1.getId(), tab2.getRootId());
+        assertEquals(tab1.getId(), tab3.getRootId());
+        assertEquals(tab4.getId(), tab4.getRootId());
+        assertEquals(tab5.getId(), tab5.getRootId());
+        assertEquals(tab6.getId(), tab6.getRootId());
+
+        // Should have been completely moved.
+        assertEquals("together", mTabGroupModelFilter.getTabGroupTitle(tab1.getRootId()));
+        assertTrue(TextUtils.isEmpty(mTabGroupModelFilter.getTabGroupTitle(OTHER_ROOT_ID_1)));
+        // Should now be duplicated.
+        assertEquals("split", mTabGroupModelFilter.getTabGroupTitle(tab4.getRootId()));
+        assertEquals("split", mTabGroupModelFilter.getTabGroupTitle(tab5.getRootId()));
     }
 
     @Test
@@ -290,10 +366,10 @@ public class TabGroupsTest {
         final List<Tab> tabs = getCurrentTabs();
         assertEquals(5, tabs.size());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
-                    mTabModel.closeAllTabs();
+                    mTabModel.setIndex(2, TabSelectionType.FROM_USER);
+                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                 });
 
         List<Tab> noTabs = getCurrentTabs();
@@ -304,7 +380,7 @@ public class TabGroupsTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         InOrder calledInOrder = inOrder(mTabModelFilterObserver);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Tab tab : tabs) {
                         mTabModel.cancelTabClosure(tab.getId());
@@ -323,7 +399,7 @@ public class TabGroupsTest {
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(4)));
 
         // Exit the tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
 
         List<Tab> finalTabs = getCurrentTabs();
@@ -333,19 +409,17 @@ public class TabGroupsTest {
 
     private void assertOrderValid(boolean expectedState) {
         boolean isOrderValid =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        mTabGroupModelFilter::isOrderValid);
+                ThreadUtils.runOnUiThreadBlocking(mTabGroupModelFilter::isOrderValid);
         assertEquals(expectedState, isOrderValid);
     }
 
     private void assertFixedTabGroupRootIdCount(int expectedCount) {
-        int fixedRootIdCount =
-                TestThreadUtils.runOnUiThreadBlockingNoException(mTabGroupModelFilter::fixRootIds);
+        int fixedRootIdCount = ThreadUtils.runOnUiThreadBlocking(mTabGroupModelFilter::fixRootIds);
         assertEquals(expectedCount, fixedRootIdCount);
     }
 
     private void moveTab(Tab tab, int index) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.moveTab(tab.getId(), index);
                 });
@@ -357,7 +431,7 @@ public class TabGroupsTest {
      */
     private Tab addTabAt(int index, Tab parent) {
         Tab tab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             @TabLaunchType
                             int type =
@@ -376,7 +450,7 @@ public class TabGroupsTest {
 
     private List<Tab> getCurrentTabs() {
         List<Tab> tabs = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (int i = 0; i < mTabModel.getCount(); i++) {
                         tabs.add(mTabModel.getTabAt(i));
@@ -387,7 +461,7 @@ public class TabGroupsTest {
 
     private List<Integer> getCurrentTabIds() {
         List<Integer> tabIds = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (int i = 0; i < mTabModel.getCount(); i++) {
                         tabIds.add(mTabModel.getTabAt(i).getId());

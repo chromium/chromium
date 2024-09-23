@@ -68,13 +68,15 @@ public class ModalDialogProperties {
     @IntDef({
         ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
-        ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
+        ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED,
+        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonStyles {
         int PRIMARY_OUTLINE_NEGATIVE_OUTLINE = 0;
         int PRIMARY_FILLED_NEGATIVE_OUTLINE = 1;
         int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
+        int PRIMARY_FILLED_NO_NEGATIVE = 3;
     }
 
     /**
@@ -223,6 +225,13 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Whether the custom view should be wrapped in a ScrollView. The custom view must not be a
+     * ScrollView itself if this is set.
+     */
+    public static final WritableBooleanPropertyKey WRAP_CUSTOM_VIEW_IN_SCROLLABLE =
+            new WritableBooleanPropertyKey();
+
     /** Whether the primary (positive) or negative button should be a filled button */
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
@@ -241,11 +250,27 @@ public class ModalDialogProperties {
 
     /**
      * Duration of initial tap protection period after dialog is displayed to user. During this
-     * period, none of dialog buttons will respond to any click event; i.e.:
-     * {@link Controller#onClick(PropertyModel, int)} won't be triggered until it is elapsed.
+     * period, none of dialog buttons will respond to any click event; i.e.: {@link
+     * Controller#onClick(PropertyModel, int)} won't be triggered until it is elapsed.
      */
     public static final WritableLongPropertyKey BUTTON_TAP_PROTECTION_PERIOD_MS =
             new WritableLongPropertyKey();
+
+    /**
+     * Whether a tab modal dialog should be canceled by the escape key. The value is always set to
+     * true in {@link org.chromium.components.browser_ui.modaldialog.TabModalPresenter}.
+     *
+     * <p>Please note that app modal dialogs are canceled by the escape key without the need of
+     * specifying any property.
+     */
+    public static final WritableBooleanPropertyKey TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE =
+            new WritableBooleanPropertyKey();
+
+    /** The minimum horizontal margin used by the dialog relative to the window. */
+    public static final WritableIntPropertyKey HORIZONTAL_MARGIN = new WritableIntPropertyKey();
+
+    /** The minimum vertical margin used by the dialog relative to the window. */
+    public static final WritableIntPropertyKey VERTICAL_MARGIN = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -269,11 +294,15 @@ public class ModalDialogProperties {
                 BUTTON_GROUP_BUTTON_SPEC_LIST,
                 TOUCH_FILTERED_CALLBACK,
                 FILTER_TOUCH_FOR_SECURITY,
+                WRAP_CUSTOM_VIEW_IN_SCROLLABLE,
                 TITLE_SCROLLABLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
                 FOCUS_DIALOG,
                 APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                BUTTON_TAP_PROTECTION_PERIOD_MS
+                BUTTON_TAP_PROTECTION_PERIOD_MS,
+                TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE,
+                HORIZONTAL_MARGIN,
+                VERTICAL_MARGIN,
             };
 }

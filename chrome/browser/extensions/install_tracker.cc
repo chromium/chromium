@@ -93,7 +93,7 @@ void InstallTracker::OnDownloadProgress(const std::string& extension_id,
   if (install_data != active_installs_.end()) {
     install_data->second.percent_downloaded = percent_downloaded;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   for (auto& observer : observers_) {

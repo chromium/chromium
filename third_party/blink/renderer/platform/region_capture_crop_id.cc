@@ -7,10 +7,10 @@
 #include <inttypes.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -30,7 +30,7 @@ base::Token GUIDToToken(const base::Uuid& guid) {
   base::RemoveChars(lowercase, "-", &lowercase);
   DCHECK_EQ(lowercase.length(), 32u);  // 32 hex-chars; 0 hyphens.
 
-  base::StringPiece string_piece(lowercase);
+  std::string_view string_piece(lowercase);
 
   uint64_t high = 0;
   bool success = base::HexStringToUInt64(string_piece.substr(0, 16), &high);
@@ -46,7 +46,7 @@ base::Token GUIDToToken(const base::Uuid& guid) {
 base::Uuid TokenToGUID(const base::Token& token) {
   const std::string hex_str = base::StringPrintf("%016" PRIx64 "%016" PRIx64,
                                                  token.high(), token.low());
-  const base::StringPiece hex_string_piece(hex_str);
+  const std::string_view hex_string_piece(hex_str);
   const std::string lowercase = base::StrCat(
       {hex_string_piece.substr(0, 8), "-", hex_string_piece.substr(8, 4), "-",
        hex_string_piece.substr(12, 4), "-", hex_string_piece.substr(16, 4), "-",

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 
-#include "base/strings/string_piece.h"
 
 void RemoveAsStringInExplicitStringConstruction() {
   base::StringPiece piece = "Hello";

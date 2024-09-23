@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,7 +79,7 @@ public class ClipboardImageFileProviderTest {
         mTestImageData = baos.toByteArray();
 
         mActivityTestRule.startMainActivityFromLauncher();
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
     }
 
     @After

@@ -49,4 +49,8 @@ void TpmErrorScreenHandler::SetTPMDbusErrorStep() {
   CallExternalAPI("setStep", std::string(kTPMErrorDbusStep));
 }
 
+base::WeakPtr<TpmErrorView> TpmErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

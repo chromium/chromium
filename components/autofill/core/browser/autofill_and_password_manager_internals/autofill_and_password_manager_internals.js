@@ -110,21 +110,29 @@ function getUrlHashParam(key) {
 // - value: name of tag | text content
 // - children (opt): list of child nodes
 // - attributes (opt): dictionary of name/value pairs
-function nodeToDomNode(node) {
+// If a node contains PII data, all its children texts are stripped, unless it
+// is explicit set by the user that PII values can be displayed.
+function nodeToDomNode(node, parentContainsPII = false) {
   if (node.type === 'text') {
-    return document.createTextNode(node.value);
+    const displayPIIEnabled =
+        document.getElementById('display-pii-on-submission').checked;
+    const canDisplayNodeValue = !parentContainsPII || displayPIIEnabled;
+    return document.createTextNode(
+        canDisplayNodeValue ? node.value : 'PII stripped');
   }
   // Else the node is of type 'element'.
   const domNode = document.createElement(node.value);
-  if ('children' in node) {
-    node.children.forEach((child) => {
-      domNode.appendChild(nodeToDomNode(child));
-    });
-  }
   if ('attributes' in node) {
     for (const attribute in node.attributes) {
       domNode.setAttribute(attribute, node.attributes[attribute]);
     }
+  }
+  if ('children' in node) {
+    parentContainsPII |=
+        node.attributes && node.attributes['data-pii'] === 'true';
+    node.children.forEach((child) => {
+      domNode.appendChild(nodeToDomNode(child, parentContainsPII));
+    });
   }
   return domNode;
 }
@@ -245,6 +253,7 @@ function setUpAutofillInternals() {
       'Captured autofill logs are not available in Incognito.';
   setUpLogDisplayConfig();
   setUpMarker();
+  setUpSubmittedFormsJSONDataDownload();
   setUpDownload('autofill');
   setUpStopRecording();
 }
@@ -261,8 +270,14 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
+  // <if expr="is_android">
+  document.getElementById('reset-upm-eviction-fake-button').style.display =
+      'inline';
   addWebUiListener(
       'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
+  document.getElementById('reset-account-storage-notice-fake-button')
+      .style.display = 'inline';
+  // </if>
 }
 
 function enableResetCacheButton() {
@@ -270,8 +285,8 @@ function enableResetCacheButton() {
 }
 
 function enableResetUpmEvictionButton(isEnabled) {
-  document.getElementById('reset-upm-eviction-fake-button').style.display =
-      isEnabled ? 'inline' : 'none';
+  document.getElementById('reset-upm-eviction-fake-button').innerText =
+      isEnabled ? 'Reset UPM eviction' : 'Evict from UPM';
 }
 
 function notifyAboutIncognito(isIncognito) {
@@ -348,6 +363,140 @@ function setUpDownload(moduleName) {
   // https://bugs.webkit.org/show_bug.cgi?id=167341
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
   downloadFakeButton.style = 'display: none';
+  // </if>
+}
+
+// Retrieve the top level data about a submitted form:
+// 1. Timestamp
+// 2. Renderer id
+// 3. URL
+//
+// Note that a form is not a html <form /> tag, but a <div> whose
+// scope attribute is "Submission". Such a div contains children information
+// related to a submitted form detected by Autofill.
+function getSubmittedFormTopLevelData(form) {
+  const formTopLevelData = {};
+  const formLevelDataOfInterest = new Set(['Renderer id:', 'URL:']);
+  const childrenTableElements = form.getElementsByTagName('td');
+  for (const childTableElement of childrenTableElements) {
+    if (!formLevelDataOfInterest.has(childTableElement.innerText)) {
+      continue;
+    }
+
+    formTopLevelData[childTableElement.innerText] =
+        childTableElement.nextSibling.innerText;
+    // If all interested top level entries were found, we can early return.
+    if (Object.keys(formTopLevelData).length == formLevelDataOfInterest.size) {
+      break;
+    }
+  }
+
+  // Include the submission timestamp information.
+  const getSubmissionTimestamp = () => {
+    // Find the substring "timestamp: 123456789";
+    const timestampSection = form.textContent.match(/timestamp: ([0-9]+)/);
+    return timestampSection ? timestampSection[1] : 'Not found';
+  };
+
+  return {timestamp: getSubmissionTimestamp(), ...formTopLevelData};
+}
+
+// Retrieve the field level data about the submitted form.
+function getSubmittedFormFieldsData(form) {
+  // The children are organized inside <td> tags.
+  const childrenTableElements = form.getElementsByTagName('td');
+  // Regex to match "Field: " strings.
+  const fieldRegexPattern = /Field\s[0-9]+:/;
+  // As of the time of writing this CL, only labels and values are interesting
+  // to us.
+  const fieldsOfInterest = new Set(['Label:', 'Value:']);
+
+  const fieldsData = [];
+  for (const childTableElement of childrenTableElements) {
+    if (!fieldRegexPattern.test(childTableElement.innerText)) {
+      continue;
+    }
+
+    // The next sibling contains the actual data name and value we are
+    // interested in.
+    //  <td> Field 1:</td> <- Matched by the regex above.
+    //  <td> <- Next sibling
+    //    <table>
+    //      </table>
+    //        <tr> <- children containing the information we want.
+    //          <td>Label: </td>
+    //          <td>First name</td>
+    //        </tr>
+    //      </table>
+    //    </table>
+    //  </td>
+    const elementRows =
+        childTableElement.nextSibling.getElementsByTagName('tr');
+    const fieldData = {};
+    for (const row of elementRows) {
+      // It is expected two children, in the example above that would be:
+      // <td>Label: </td>
+      // <td>First name</td>
+      if (row.children.length != 2) {
+        continue;
+      }
+
+      let name = row.children[0].innerText;
+      if (!fieldsOfInterest.has(name)) {
+        continue;
+      }
+
+      // Remove trailing ":"
+      name = name.substring(0, name.length - 1);
+      const value = row.children[1].innerText;
+      fieldData[name] = value;
+    }
+    fieldsData.push(fieldData);
+  }
+  return fieldsData;
+}
+
+function getSubmittedFormData(form) {
+  const formData = getSubmittedFormTopLevelData(form);
+  const formFieldsData = getSubmittedFormFieldsData(form);
+  return {
+    ...formData,
+    fields: formFieldsData,
+  };
+}
+
+// Setup a (fake) download button to download a json file containing information
+// about the submitted forms.
+function setUpSubmittedFormsJSONDataDownload() {
+  const downloadSubmittedFormJSONDataButton =
+      document.getElementById('download-submitted-forms-json-data-fake-button');
+  downloadSubmittedFormJSONDataButton.style.display = 'inline';
+  downloadSubmittedFormJSONDataButton.addEventListener('click', () => {
+    const formsSubmittedSection =
+        document.querySelectorAll('[scope="Submission"]');
+    const parsedFormData = [...formsSubmittedSection].map(
+        submittedForm => getSubmittedFormData(submittedForm));
+    const dataStr = 'data:application/json;charset=utf-8,' +
+        encodeURIComponent(JSON.stringify(parsedFormData, null, 2));
+    const a = document.createElement('a');
+    a.href = dataStr;
+    const dateString = new Date()
+                           .toISOString()
+                           .replace(/T/g, '_')
+                           .replace(/\..+/, '')
+                           .replace(/:/g, '-');
+    const filename = `autofill-internals-submitted-forms-${dateString}.json`;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+  // <if expr="is_ios">
+  // Hide this until downloading a file works on iOS, see
+  // https://bugs.webkit.org/show_bug.cgi?id=167341
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
+  downloadSubmittedFormJSONData.style = 'display: none';
   // </if>
 }
 
@@ -436,6 +585,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
       document.getElementById('reset-upm-eviction-fake-button');
   resetUpmEvictionButton.addEventListener('click', () => {
     chrome.send('resetUpmEviction');
-    showModalDialog('UPM re-enabled. Please, restart Chrome.');
+  });
+
+  const resetAccountStorageNoticeButton =
+      document.getElementById('reset-account-storage-notice-fake-button');
+  resetAccountStorageNoticeButton.addEventListener('click', () => {
+    chrome.send('resetAccountStorageNotice');
   });
 });

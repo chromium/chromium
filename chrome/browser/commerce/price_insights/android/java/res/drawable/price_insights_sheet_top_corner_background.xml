@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:shape="rectangle"
+    app:surfaceElevation="@dimen/price_insights_surface_elevation">
+
+    <corners
+        android:topRightRadius="@dimen/price_insights_content_background_radius"
+        android:topLeftRadius="@dimen/price_insights_content_background_radius"
+    />
+</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

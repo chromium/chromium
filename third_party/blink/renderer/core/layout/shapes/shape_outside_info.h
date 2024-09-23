@@ -83,13 +83,14 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
  private:
   static bool IsEnabledFor(const LayoutBox&);
 
+  PhysicalSize ReferenceBoxPhysicalSize() const;
   std::unique_ptr<Shape> CreateShapeForImage(StyleImage*,
                                              float shape_image_threshold,
                                              WritingMode,
                                              float margin) const;
 
-  LayoutUnit LogicalTopOffset() const;
-  LayoutUnit LogicalLeftOffset() const;
+  LayoutUnit BlockStartOffset() const;
+  LayoutUnit InlineStartOffset() const;
 
   using InfoMap =
       HeapHashMap<WeakMember<const LayoutBox>, Member<ShapeOutsideInfo>>;

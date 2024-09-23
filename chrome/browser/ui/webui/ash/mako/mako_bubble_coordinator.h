@@ -31,6 +31,8 @@ class MakoBubbleCoordinator {
   void LoadConsentUI(Profile* profile);
   void LoadEditorUI(Profile* profile,
                     MakoEditorMode mode,
+                    bool can_fallback_to_center_position,
+                    bool feedback_enabled,
                     std::optional<std::string_view> preset_query_id,
                     std::optional<std::string_view> freeform_text);
   void ShowUI();
@@ -42,6 +44,10 @@ class MakoBubbleCoordinator {
   // active). This should be called before showing the mako UI, while the text
   // context for the mako UI is focused.
   void CacheContextCaretBounds();
+
+  gfx::Rect context_caret_bounds_for_testing() const {
+    return context_caret_bounds_;
+  }
 
  private:
   // Cached context caret bounds at which to anchor the mako UI. This might not

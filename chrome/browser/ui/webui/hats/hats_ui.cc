@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 
 #include "chrome/browser/ui/ui_features.h"
@@ -14,17 +19,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 HatsUIConfig::HatsUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIUntrustedHatsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         chrome::kChromeUIUntrustedHatsHost) {}
 
 bool HatsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(features::kHaTSWebUI);
-}
-
-std::unique_ptr<content::WebUIController> HatsUIConfig::CreateWebUIController(
-    content::WebUI* web_ui,
-    const GURL& url) {
-  return std::make_unique<HatsUI>(web_ui);
 }
 
 HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
@@ -40,13 +39,13 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
-      // The SHA256 hash of the initial inline JS.
-      // Must be replaced when the inline js of hats.html changes.
-      // The new hash can be viewed via terminal or via developer tools on
-      // chrome-untrusted://hats if the page throws an error.
-      "'sha256-gE2l7O/qvxOSNGhz8GPZzb9y0Ca6tLZWE1M0p/uvGt8=' "
-      // Scripts loaded transitively from the initial one are allowed:
-      "'strict-dynamic' "
+
+      // only allow loading script from these trusted sources
+      "chrome-untrusted://hats/ "
+      "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js "
+      "https://apis.google.com "
+      "https://gstatic.com "
+      "https://www.gstatic.com "
       ";");
 
   source->OverrideContentSecurityPolicy(
@@ -73,9 +72,13 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
-      "frame-src https://scone-pa.clients6.google.com/ ;");
+      "frame-src "
 
-  // TODO(crbug.com/1481674): Enable TrustedType.
+      "https://scone-pa.clients6.google.com/ "
+      "https://feedback-pa.clients6.google.com/ "
+      ";");
+
+  // TODO(crbug.com/40281687): Enable TrustedType.
   source->DisableTrustedTypesCSP();
 }
 

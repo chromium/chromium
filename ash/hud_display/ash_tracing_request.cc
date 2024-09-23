@@ -40,8 +40,8 @@ class DefaultAshTraceDestinationIO : public AshTraceDestinationIO {
   bool CreateDirectory(const base::FilePath& path) override {
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(path, &error)) {
-      LOG(ERROR) << "Failed to create Ash trace file directory '"
-                 << path.value() << "' : error " << error;
+      PLOG(ERROR) << "Failed to create Ash trace file directory '"
+                  << path.value() << "'";
       return false;
     }
     return true;
@@ -110,8 +110,7 @@ std::unique_ptr<AshTraceDestination> GenerateTraceDestinationMemFD(
   constexpr char kMemFDDebugName[] = "ash-trace-buffer.dat";
   auto [memfd, success] = io->CreateMemFD(kMemFDDebugName, MFD_CLOEXEC);
   if (!success) {
-    LOG(ERROR) << "Failed to create memfd for '" << kMemFDDebugName
-               << "', error:" << base::safe_strerror(errno);
+    PLOG(ERROR) << "Failed to create memfd for '" << kMemFDDebugName << "'";
     return nullptr;
   }
   return std::make_unique<AshTraceDestination>(std::move(io), base::FilePath(),

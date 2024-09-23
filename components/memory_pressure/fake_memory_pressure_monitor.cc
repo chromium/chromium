@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
+
 #include "base/logging.h"
 
 namespace memory_pressure {

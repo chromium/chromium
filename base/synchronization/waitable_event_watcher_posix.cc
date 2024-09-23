@@ -138,9 +138,12 @@ bool WaitableEventWatcher::StartWatching(
   DCHECK(!cancel_flag_) << "StartWatching called while still watching";
 
   cancel_flag_ = new Flag;
+  // UnsafeDanglingUntriaged triggered by test:
+  // WaitableEventWatcherDeletionTest.SignalAndDelete
+  // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
   OnceClosure internal_callback =
       base::BindOnce(&AsyncCallbackHelper, base::RetainedRef(cancel_flag_),
-                     std::move(callback), event);
+                     std::move(callback), base::UnsafeDanglingUntriaged(event));
   WaitableEvent::WaitableEventKernel* kernel = event->kernel_.get();
 
   AutoLock locked(kernel->lock_);

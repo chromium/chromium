@@ -74,8 +74,8 @@ class SendMessageTester {
                                 Method method,
                                 v8::Local<v8::Value>& out_value);
 
-  raw_ptr<TestIPCMessageSender, ExperimentalRenderer> ipc_sender_;
-  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_;
+  raw_ptr<TestIPCMessageSender> ipc_sender_;
+  raw_ptr<ScriptContext> script_context_;
   int next_port_id_;
   std::string api_namespace_;
 };

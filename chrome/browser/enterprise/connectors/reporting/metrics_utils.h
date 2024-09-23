@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_METRICS_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_METRICS_UTILS_H_
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 
 namespace enterprise_connectors {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -25,40 +28,40 @@ enum class EnterpriseReportingEventType {
   kUrlFilteringInterstitialEvent = 9,
   kExtensionInstallEvent = 10,
   kBrowserCrashEvent = 11,
-  kMaxValue = kBrowserCrashEvent,
+  kExtensionTelemetryEvent = 12,
+  kMaxValue = kExtensionTelemetryEvent,
 };
 
 // Mapping from event name to UMA enum for logging histogram.
 constexpr auto kEventNameToUmaEnumMap =
-    base::MakeFixedFlatMap<base::StringPiece, EnterpriseReportingEventType>({
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent,
+    base::MakeFixedFlatMap<std::string_view, EnterpriseReportingEventType>({
+        {kKeyPasswordReuseEvent,
          EnterpriseReportingEventType::kPasswordReuseEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordChangedEvent,
+        {kKeyPasswordChangedEvent,
          EnterpriseReportingEventType::kPasswordChangedEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent,
+        {kKeyDangerousDownloadEvent,
          EnterpriseReportingEventType::kDangerousDownloadEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyInterstitialEvent,
+        {kKeyInterstitialEvent,
          EnterpriseReportingEventType::kInterstitialEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent,
+        {kKeySensitiveDataEvent,
          EnterpriseReportingEventType::kSensitiveDataEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent,
+        {kKeyUnscannedFileEvent,
          EnterpriseReportingEventType::kUnscannedFileEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyLoginEvent,
-         EnterpriseReportingEventType::kLoginEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent,
+        {kKeyLoginEvent, EnterpriseReportingEventType::kLoginEvent},
+        {kKeyPasswordBreachEvent,
          EnterpriseReportingEventType::kPasswordBreachEvent},
-        {extensions::SafeBrowsingPrivateEventRouter::
-             kKeyUrlFilteringInterstitialEvent,
+        {kKeyUrlFilteringInterstitialEvent,
          EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
-        {ReportingServiceSettings::kExtensionInstallEvent,
+        {kExtensionInstallEvent,
          EnterpriseReportingEventType::kExtensionInstallEvent},
-        {ReportingServiceSettings::kBrowserCrashEvent,
-         EnterpriseReportingEventType::kBrowserCrashEvent},
+        {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
+        {kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
     });
 
 // Return the UMA EnterpriseReportingEventType enum for the given event name.
 EnterpriseReportingEventType GetUmaEnumFromEventName(
-    const base::StringPiece& eventName);
+    std::string_view eventName);
 
 }  // namespace enterprise_connectors
 

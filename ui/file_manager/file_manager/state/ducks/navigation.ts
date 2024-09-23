@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isOneDriveId} from '../../common/js/entry_utils.js';
-import {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isOneDrive, isOneDriveId} from '../../common/js/entry_utils.js';
+import type {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {Slice} from '../../lib/base_store.js';
 import {type AndroidApp, DialogType, type NavigationKey, type NavigationRoot, NavigationSection, NavigationType, type State, type Volume} from '../../state/state.js';
 import {getMyFiles} from '../ducks/all_entries.js';
-import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
+import {driveRootEntryListKey, oneDriveFakeRootKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
 import {getEntry} from '../store.js';
 
 /**
@@ -39,7 +40,7 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
     return entry as VolumeEntry | EntryList | null;
   }
   if (volume.volumeType === VolumeType.DOWNLOADS) {
-    return getMyFiles(state).myFilesEntry;
+    return getMyFiles(state)!.myFilesEntry;
   }
 
   const entry = getEntry(state, volume.rootKey!);
@@ -71,6 +72,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
     navigation: {roots: previousRoots},
     folderShortcuts,
     androidApps,
+    materializedViews,
   } = currentState;
 
   /** Roots in the desired order. */
@@ -78,7 +80,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
   /** Set to avoid adding the same entry multiple times. */
   const processedEntryKeys = new Set<NavigationKey>();
 
-  // 1. Add the Recent/Materialized view root.
+  // Add the Recent/Materialized view root.
   const recentRoot = previousRoots.find(root => root.key === recentRootKey);
   if (recentRoot) {
     roots.push(recentRoot);
@@ -97,7 +99,19 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   }
 
-  // 2. Add the Shortcuts.
+  // Add Starred files.
+  for (const view of materializedViews) {
+    if (view.isRoot) {
+      roots.push({
+        key: view.key,
+        section: NavigationSection.TOP,
+        separator: false,
+        type: NavigationType.MATERIALIZED_VIEW,
+      });
+    }
+  }
+
+  // Add the Shortcuts.
   // TODO: Since Shortcuts are only for Drive, do we need to remove shortcuts
   // if Drive isn't available anymore?
   folderShortcuts.forEach(shortcutKey => {
@@ -114,18 +128,20 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   });
 
-  // 3. MyFiles
+  // MyFiles.
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
-  roots.push({
-    key: myFilesEntry.toURL(),
-    section: NavigationSection.MY_FILES,
-    // Only show separator if this is not the first navigation item.
-    separator: processedEntryKeys.size > 0,
-    type: myFilesVolume ? NavigationType.VOLUME : NavigationType.ENTRY_LIST,
-  });
-  processedEntryKeys.add(myFilesEntry.toURL());
+  if (myFilesEntry) {
+    roots.push({
+      key: myFilesEntry.toURL(),
+      section: NavigationSection.MY_FILES,
+      // Only show separator if this is not the first navigation item.
+      separator: processedEntryKeys.size > 0,
+      type: myFilesVolume ? NavigationType.VOLUME : NavigationType.ENTRY_LIST,
+    });
+    processedEntryKeys.add(myFilesEntry.toURL());
+  }
 
-  // 4. Add Google Drive - the only Drive.
+  // Add Google Drive - the only Drive.
   // When drive pref changes from enabled to disabled, we remove the drive root
   // key from the `state.uiEntries` immediately, but the drive root entry itself
   // is removed asynchronously, so here we need to check both, if the key
@@ -145,8 +161,26 @@ function refreshNavigationRootsReducer(currentState: State): State {
     processedEntryKeys.add(driveEntry.toURL());
   }
 
+  // Add OneDrive placeholder if needed.
+  // OneDrive is always added directly below Drive.
+  if (isSkyvaultV2Enabled()) {
+    const oneDriveUIEntryExists =
+        currentState.uiEntries.includes(oneDriveFakeRootKey);
+    const oneDriveVolumeExists =
+        Object.values<Volume>(currentState.volumes).find(v => isOneDrive(v)) !==
+        undefined;
+    if (oneDriveUIEntryExists && !oneDriveVolumeExists) {
+      roots.push({
+        key: oneDriveFakeRootKey,
+        section: NavigationSection.ODFS,
+        separator: true,
+        type: NavigationType.VOLUME,
+      });
+      processedEntryKeys.add(oneDriveFakeRootKey);
+    }
+  }
 
-  // 5/6/7/8 Other volumes.
+  // Other volumes.
   const volumesOrder: Partial<Record<VolumeType, number>> = {
     // ODFS is a PROVIDED volume type but is a special case to be directly
     // below Drive.
@@ -216,7 +250,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   }
 
-  // 9. Android Apps.
+  // Android Apps.
   Object.values(androidApps as Record<string, AndroidApp>)
       .forEach((app, index) => {
         roots.push({
@@ -228,7 +262,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
         processedEntryKeys.add(app.packageName);
       });
 
-  // 10. Trash
+  // Trash.
   // Trash should only show when Files app is open as a standalone app. The ARC
   // file selector, however, opens Files app as a standalone app but passes a
   // query parameter to indicate the mode. As Trash is a fake volume, it is

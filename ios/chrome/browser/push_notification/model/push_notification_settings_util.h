@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <string>
+#import <vector>
 
 class PrefService;
 enum class PushNotificationClientId;
@@ -34,6 +35,13 @@ ClientPermissionState GetClientPermissionState(
     const std::string& gaia_id,
     PrefService* pref_service);
 
+// Returns whether the push notification permission statuses aggregated across
+// multiple clients are enabled or disabled.
+ClientPermissionState GetClientPermissionStateForMultipleClients(
+    std::vector<PushNotificationClientId> client_ids,
+    const std::string& gaia_id,
+    PrefService* pref_service);
+
 // Returns whether the push notification permission status is enabled for any
 // client for mobile notifications.
 BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
@@ -46,6 +54,12 @@ BOOL GetMobileNotificationPermissionStatusForClient(
     PushNotificationClientId clientID,
     const std::string& gaia_id);
 
+// Returns whether the push notification client's, `client_ids`,
+// permission status for mobile notifications is enabled or disabled for the
+// current user. Only returns YES if all clients are enabled.
+BOOL GetMobileNotificationPermissionStatusForMultipleClients(
+    std::vector<PushNotificationClientId> client_ids,
+    const std::string& gaia_id);
 }  // namespace push_notification_settings
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_

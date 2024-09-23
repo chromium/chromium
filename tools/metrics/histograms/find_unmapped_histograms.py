@@ -461,8 +461,6 @@ def output_log(unmapped_histograms, location_map, verbose):
 def main():
   # Find default paths.
   default_root = path_util.GetInputFile('/')
-  default_extra_histograms_path = path_util.GetInputFile(
-      'tools/metrics/histograms/histograms.xml')
 
   # Parse command line options
   parser = optparse.OptionParser()
@@ -472,22 +470,24 @@ def main():
         default_root,
     metavar='DIRECTORY')
   parser.add_option(
-    '--extra_histograms-file', dest='extra_histograms_file_location',
-    default=default_extra_histograms_path,
-    help='read additional histogram definitions from FILE (relative to '
-         '--root-directory) [optional, defaults to "%s"]' %
-         default_extra_histograms_path,
-    metavar='FILE')
-  parser.add_option(
-      '--csv', action='store_true', dest='output_as_csv', default=False,
-      help=(
-          'output as csv for ease of parsing ' +
-          '[optional, defaults to %default]'))
-  parser.add_option(
-      '--verbose', action='store_true', dest='verbose', default=False,
-      help=(
-          'print file position information with histograms ' +
-          '[optional, defaults to %default]'))
+      '--extra_histograms-file',
+      dest='extra_histograms_file_location',
+      default=None,
+      help='read additional histogram definitions from FILE (relative to '
+      '--root-directory) [optional]',
+      metavar='FILE')
+  parser.add_option('--csv',
+                    action='store_true',
+                    dest='output_as_csv',
+                    default=False,
+                    help=('output as csv for ease of parsing ' +
+                          '[optional, defaults to %default]'))
+  parser.add_option('--verbose',
+                    action='store_true',
+                    dest='verbose',
+                    default=False,
+                    help=('print file position information with histograms ' +
+                          '[optional, defaults to %default]'))
 
   (options, args) = parser.parse_args()
   if args:
@@ -505,12 +505,14 @@ def main():
   xml_histograms = read_all_xml_histograms()
   unmapped_histograms = chromium_histograms - xml_histograms
 
-  if os.path.isfile(options.extra_histograms_file_location):
-    xml_histograms2 = read_xml_histograms(
-        options.extra_histograms_file_location)
-    unmapped_histograms -= xml_histograms2
-  else:
-    logging.warning('No such file: %s', options.extra_histograms_file_location)
+  if options.extra_histograms_file_location:
+    if os.path.isfile(options.extra_histograms_file_location):
+      xml_histograms2 = read_xml_histograms(
+          options.extra_histograms_file_location)
+      unmapped_histograms -= xml_histograms2
+    else:
+      logging.warning('No such file: %s',
+                      options.extra_histograms_file_location)
 
   if options.output_as_csv:
     output_csv(unmapped_histograms, location_map)

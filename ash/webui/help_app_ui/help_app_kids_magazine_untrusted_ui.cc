@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 
 #include <string_view>
@@ -61,18 +66,11 @@ void CreateAndAddHelpAppKidsMagazineUntrustedDataSource(
 }  // namespace
 
 HelpAppKidsMagazineUntrustedUIConfig::HelpAppKidsMagazineUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIHelpAppKidsMagazineHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         kChromeUIHelpAppKidsMagazineHost) {}
 
 HelpAppKidsMagazineUntrustedUIConfig::~HelpAppKidsMagazineUntrustedUIConfig() =
     default;
-
-std::unique_ptr<content::WebUIController>
-HelpAppKidsMagazineUntrustedUIConfig::CreateWebUIController(
-    content::WebUI* web_ui,
-    const GURL& url) {
-  return std::make_unique<HelpAppKidsMagazineUntrustedUI>(web_ui);
-}
 
 HelpAppKidsMagazineUntrustedUI::HelpAppKidsMagazineUntrustedUI(
     content::WebUI* web_ui)

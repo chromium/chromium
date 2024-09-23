@@ -12,21 +12,23 @@ namespace blink {
 class ExceptionState;
 class GPUBindGroupDescriptor;
 
-class GPUBindGroup : public DawnObject<WGPUBindGroup> {
+class GPUBindGroup : public DawnObject<wgpu::BindGroup> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static GPUBindGroup* Create(GPUDevice* device,
                               const GPUBindGroupDescriptor* webgpu_desc,
                               ExceptionState& exception_state);
-  explicit GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group);
+  explicit GPUBindGroup(GPUDevice* device,
+                        wgpu::BindGroup bind_group,
+                        const String& label);
 
   GPUBindGroup(const GPUBindGroup&) = delete;
   GPUBindGroup& operator=(const GPUBindGroup&) = delete;
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().bindGroupSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 };
 

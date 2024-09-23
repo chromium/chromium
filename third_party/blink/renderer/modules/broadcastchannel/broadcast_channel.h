@@ -75,6 +75,8 @@ class MODULES_EXPORT BroadcastChannel final
 
   void Trace(Visitor*) const override;
 
+  bool IsRemoteClientConnectedForTesting() const;
+
  private:
   BroadcastChannel(
       ExecutionContext*,

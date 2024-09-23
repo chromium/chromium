@@ -22,7 +22,6 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
-    ":subresource_filter_jni_headers",
     "//base:base_java",
     "//build/android:build_java",
     "//components/infobars/android:infobar_android_enums_java",

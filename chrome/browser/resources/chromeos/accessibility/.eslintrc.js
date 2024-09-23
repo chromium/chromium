@@ -46,8 +46,8 @@ module.exports = {
                       'HTML[A-Za-z]{0,}Element|' +
                       // Exclude native DOM interfaces.
                       'UIEvent|UIEventInit|DOMError|' +
-                      // Exclude ISearchUI.
-                      'ISearchUI|' +
+                      // Exclude ISearch.
+                      'ISearch|ISearchHandler|ISearchUI|' +
                       // Exclude the SA* classes.
                       'SACache|SACommands|SAChildNode|SANode|SARootNode)$',
                   match: false,
@@ -64,7 +64,11 @@ module.exports = {
                 filter: {
                   regex: '^(' +
                       // Exclude initialisms such as JSON and IME
-                      'toJSON|describeTextChangedByIME' +
+                      'toJSON|describeTextChangedByIME|' +
+                      // Exclude the short name CVox
+                      'isCVoxModifierActive|' +
+                      // Exclude the phrase OS.
+                      'addOSKeyboardShortcutsMenuItem' +
                       ')$',
                   match: false,
                 },
@@ -75,7 +79,11 @@ module.exports = {
                 modifiers: ['private'],
                 trailingUnderscore: 'allow',
                 filter: {
-                  regex: '^createITutorial_$',
+                  regex: '^(' +
+                  // Exclude ISearch and ITutorial.
+                  'createNewISearch_|destroyISearch_|setRangeToISearchNode_|' +
+                  'createITutorial_' +
+                  ')$',
                   match: false,
                 },
               },

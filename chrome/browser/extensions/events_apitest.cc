@@ -14,13 +14,17 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -35,6 +39,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
+namespace {
+
+using ContextType = ExtensionBrowserTest::ContextType;
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Events) {
   ASSERT_TRUE(RunExtensionTest("events")) << message_;
@@ -467,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
 // Tests that, if an extension registers multiple listeners for a filtered
 // event where the listeners overlap, but are not identical, each listener is
 // only triggered once for a given event.
-// TODO(https://crbug.com/373579): This test is currently (intentionally)
+// TODO(crbug.com/40365717): This test is currently (intentionally)
 // testing improper behavior and will be fixed as part of the linked bug.
 IN_PROC_BROWSER_TEST_F(
     EventsApiTest,
@@ -522,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // TODO(https://crbug.com/373579): This should be:
+  // TODO(crbug.com/40365717): This should be:
   // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
   // because each listener should fire exactly once (we only visited one new
   // page).
@@ -614,44 +622,58 @@ IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, ChromeUpdates) {
   EXPECT_FALSE(observed_extension_names().count("chrome updates non listener"));
 }
 
-class EventPageEventDispatchingApiTest : public ExtensionApiTest {
+// TODO(crbug.com/41493334): Also test extensions with service workers and their
+// equivalent to ExtensionHost (EventAckData) for these scenarios:
+//   1. Dispatch to background context acks (duplicate of
+//     DispatchToBackgroundPage_Acks)
+//   2. Dispatch to content script doesn't ack (duplicate of
+//     DispatchToContentScript_DoesNotRecordMessageForAcking)
+//   2. Dispatch guest view event (EventRouter::DispatchEventToSender()) acks
+//     (similar to DispatchToPage_Acks)
+
+class EventDispatchingApiTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
  public:
-  EventPageEventDispatchingApiTest() = default;
+  EventDispatchingApiTest() = default;
 
-  EventPageEventDispatchingApiTest(const EventPageEventDispatchingApiTest&) =
-      delete;
-  EventPageEventDispatchingApiTest& operator=(
-      const EventPageEventDispatchingApiTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(StartEmbeddedTestServer());
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  EventDispatchingApiTest(const EventDispatchingApiTest&) = delete;
+  EventDispatchingApiTest& operator=(const EventDispatchingApiTest&) = delete;
 };
 
-// Tests that an event page will receive an event message and properly track
-// and remove the unacked event message in ExtensionHost.
-IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
-                       DispatchToEventPage_Acks) {
-  // Load an extension with a chrome.storage.onChanged listener.
+// Tests that background pages will receive an event message (routed through the
+// EventRouter::DispatchToProcess() flow) and properly track and remove the
+// unacked event message in ExtensionHost. Rather than send generate webRequest
+// events this uses storage events to use this flow.
+IN_PROC_BROWSER_TEST_P(EventDispatchingApiTest, DispatchToBackgroundPage_Acks) {
+  // Load either a persistent background page or a event page script.
+  static constexpr char kManifestPersistentBackgroundScript[] =
+      R"("persistent": true)";
+  static constexpr char kManifestEventPageBackgroundScript[] =
+      R"("persistent": false)";
+
+  // Load an extension with a chrome.storage.onChanged
+  // (EventRouter::DispatchToProcess()) listener and wait for the
+  // chrome.runtime.onInstalled listener to fire.
   static constexpr char kManifest[] =
       R"({
-           "name": "Event page",
-           "version": "0.1",
-           "manifest_version": 2,
-           "background": {
-             "scripts": ["background.js"],
-             "persistent": false
-            },
-           "permissions": ["storage"]
-         })";
+       "name": "Background page",
+       "version": "0.1",
+       "manifest_version": 2,
+       "background": {
+         "scripts": ["background.js"],
+         %s
+       },
+       "permissions": ["storage"]
+     })";
+  bool persistent_background_extension =
+      GetParam() == ContextType::kPersistentBackground;
+  const char* background_script = persistent_background_extension
+                                      ? kManifestPersistentBackgroundScript
+                                      : kManifestEventPageBackgroundScript;
+  std::string manifest = base::StringPrintf(kManifest, background_script);
   TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
+  test_dir.WriteManifest(manifest);
   constexpr char kBackgroundJs[] =
       R"(
       chrome.runtime.onInstalled.addListener((details) => {
@@ -685,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
       process_manager->GetBackgroundHostForExtension(extension->id());
   ASSERT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 
-  // Set storage value which should fire chrome.storage.onChanged listeners.
+  // Set storage value which should fire chrome.storage.onChanged listener.
   ExtensionTestMessageListener extension_event_listener_fired("listener fired");
   static constexpr char kScript[] =
       R"(chrome.storage.local.set({"key" : "value"});)";
@@ -694,24 +716,52 @@ IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
 
   // Confirm that the listener in the event page background script was fired.
   EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
   // unacked message was added and then removed?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
 
-// TODO(crbug.com/41493334): Refactor this test into the
-// DispatchToEventPage_Acks test since they are so similar.
-using PersistentBackgroundPageEventDispatchToSenderApiTest =
-    EventPageEventDispatchingApiTest;
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         EventDispatchingApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         EventDispatchingApiTest,
+                         ::testing::Values(ContextType::kEventPage));
+
+// This allows tests to perform web navigations that trigger webRequest API
+// events to be sent.
+class NavigatingEventDispatchingApiTest : public EventDispatchingApiTest {
+ public:
+  NavigatingEventDispatchingApiTest() = default;
+
+  NavigatingEventDispatchingApiTest(const NavigatingEventDispatchingApiTest&) =
+      delete;
+  NavigatingEventDispatchingApiTest& operator=(
+      const NavigatingEventDispatchingApiTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
+using PersistentBackgroundPageDispatchEventToSenderEventApiTest =
+    NavigatingEventDispatchingApiTest;
 
 // Tests that persistent background pages will receive an event message (routed
-// through the EventRouter::DispatchToSender() flow) and properly track and
+// through the EventRouter::DispatchEventToSender() flow) and properly track and
 // remove the unacked event message in ExtensionHost. Only persistent background
 // pages can use the webRequest API so event pages are not tested.
-IN_PROC_BROWSER_TEST_F(PersistentBackgroundPageEventDispatchToSenderApiTest,
-                       DispatchToPage_Acks) {
+IN_PROC_BROWSER_TEST_F(
+    PersistentBackgroundPageDispatchEventToSenderEventApiTest,
+    DispatchToPage_Acks) {
   // Load an extension with a chrome.webRequest.onBeforeRequest
-  // (EventRouter::DispatchToSender()) listener and wait for the
+  // (EventRouter::DispatchEventToSender()) listener and wait for the
   // chrome.runtime.onInstalled listener to fire.
   static constexpr char kManifest[] =
       R"({
@@ -771,25 +821,33 @@ IN_PROC_BROWSER_TEST_F(PersistentBackgroundPageEventDispatchToSenderApiTest,
 
   // Confirm that the listener in the persistent background page script fired.
   EXPECT_TRUE(extension_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
   // unacked message was added and then removed?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
 
-// Tests that an event targeted to a content script listener is not recorded
-// in unacked event messages in ExtensionHost.
-IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
+// Tests that an event targeted to a content script listener is not recorded in
+// unacked event messages in ExtensionHost (for event pages and persistent
+// background pages). EventRouter::DispatchEventToSender() flow is not tested
+// since content scripts cannot listen to webRequest events.
+IN_PROC_BROWSER_TEST_P(NavigatingEventDispatchingApiTest,
                        DispatchToContentScript_DoesNotRecordMessageForAcking) {
+  // Load either a persistent background page or a event page script.
+  static constexpr char kManifestPersistentBackgroundScript[] =
+      R"("persistent": true)";
+  static constexpr char kManifestEventPageBackgroundScript[] =
+      R"("persistent": false)";
+
   // Load an extension with a content script that has the only
   // chrome.storage.onChanged listener.
   static constexpr char kManifest[] =
       R"({
-           "name": "Event page",
+           "name": "Background page",
            "version": "0.1",
            "manifest_version": 2,
            "background": {
              "scripts": ["background.js"],
-             "persistent": false
+             %s
             },
            "content_scripts": [{
              "matches": ["https://*/*", "http://*/*"],
@@ -797,8 +855,14 @@ IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
            }],
            "permissions": ["storage"]
          })";
+  bool persistent_background_extension =
+      GetParam() == ContextType::kPersistentBackground;
+  const char* background_script = persistent_background_extension
+                                      ? kManifestPersistentBackgroundScript
+                                      : kManifestEventPageBackgroundScript;
+  std::string manifest = base::StringPrintf(kManifest, background_script);
   TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
+  test_dir.WriteManifest(manifest);
   constexpr char kContentScriptJs[] =
       R"(
        chrome.storage.onChanged.addListener((details) => {
@@ -857,9 +921,74 @@ IN_PROC_BROWSER_TEST_F(EventPageEventDispatchingApiTest,
   // Confirm that the listener in the content script was fired and no unacked
   // messages remain.
   EXPECT_TRUE(content_script_event_listener_fired.WaitUntilSatisfied());
-  // TODO(crbug.com/1496093): Can we add an observer so that we know that an
-  // unacked message was not added to map at all?
+  // TODO(crbug.com/40286706): Can we add an observer so that we know that an
+  // unacked message was not added to the map at all?
   EXPECT_EQ(extension_host->GetUnackedMessagesSizeForTesting(), 0UL);
 }
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         NavigatingEventDispatchingApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         NavigatingEventDispatchingApiTest,
+                         ::testing::Values(ContextType::kEventPage));
+
+using ServiceWorkerEventAckBrowserTest = EventDispatchingApiTest;
+
+// Tests that when a renderer process is no longer available that we clear any
+// unacked events from EventAckData for that render process. Otherwise we would
+// leak these unacked events and never remove them.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
+                       RendererProcessGoesAway_ClearsUnackedEventData) {
+  // TODO(crbug.com/331358155): This currently tests
+  // EventRouter::RenderProcessExited(), but it does not test the case of
+  // EventRouter::RenderProcessHostDestroyed(). It can be simulated with a
+  // worker that is delayed in terminating.
+
+  // Load an extension and wait until the service worker is running.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/memory"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      // The first SW version ID is always 0.
+      GetServiceWorkerContext(), /*service_worker_version_id=*/0));
+
+  // Dispatch an event that the renderer will never ack (that the event was
+  // executed), therefore simulating that the render process has gone away
+  // before it could ack. This should keep the unacked event info in
+  // `EventAckData`.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Confirm the `EventInfo` for the above event is still unacked.
+  EventRouter* event_router = EventRouter::Get(profile());
+  EventAckData::EventInfo* unacked_event_info =
+      // 1 is inferred since the extension has two listeners and the above
+      // navigation should be the second event encountered.
+      event_router->event_ack_data()->GetUnackedEventForTesting(/*event_id=*/1);
+  ASSERT_TRUE(unacked_event_info);
+  content::RenderProcessHost* worker_render_process_host =
+      content::RenderProcessHost::FromID(unacked_event_info->render_process_id);
+  ASSERT_TRUE(worker_render_process_host);
+  ASSERT_EQ(unacked_event_info->render_process_id,
+            worker_render_process_host->GetID());
+
+  // Terminate worker's RenderProcessHost which triggers the cleanup logic.
+  content::RenderProcessHostWatcher process_exit_observer(
+      worker_render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  worker_render_process_host->Shutdown(content::RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  // Confirm we no longer have the `EventInfo` for the unacked event.
+  EXPECT_FALSE(event_router->event_ack_data()->GetUnackedEventForTesting(
+      /*event_id=*/1));
+}
+
+}  // namespace
 }  // namespace extensions

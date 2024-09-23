@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-shared.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

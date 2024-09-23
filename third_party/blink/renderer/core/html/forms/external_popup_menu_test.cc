@@ -8,8 +8,8 @@
 
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_popup_menu_info.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -197,7 +197,7 @@ class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
   gfx::Rect bounds_;
 };
 
-class ExternalPopupMenuTest : public testing::Test {
+class ExternalPopupMenuTest : public PageTestBase {
  public:
   ExternalPopupMenuTest() : base_url_("http://www.test.com") {}
 
@@ -248,7 +248,6 @@ class ExternalPopupMenuTest : public testing::Test {
   WebLocalFrameImpl* MainFrame() const { return helper_.LocalMainFrame(); }
 
  private:
-  test::TaskEnvironment task_environment_;
   TestLocalFrameExternalPopupClient frame_host_;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
   std::string base_url_;

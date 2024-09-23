@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
@@ -16,11 +22,12 @@ class CommandBuffer;
 class MockTransferBuffer : public TransferBufferInterface {
  public:
   struct ExpectedMemoryInfo {
+    STACK_ALLOCATED();
+
+   public:
     uint32_t offset;
     int32_t id;
-    // `ptr` is not a raw_ptr<...> because it requires a rewrite in a generated
-    // file (gles2_implementation_unittest_autogen.h)
-    RAW_PTR_EXCLUSION uint8_t* ptr;
+    uint8_t* ptr;
   };
 
   MockTransferBuffer(CommandBuffer* command_buffer,

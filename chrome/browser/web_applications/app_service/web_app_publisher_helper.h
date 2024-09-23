@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -30,6 +29,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -111,9 +111,6 @@ void UninstallImpl(WebAppProvider* provider,
                    const std::string& app_id,
                    apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window);
-
-RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-    apps::RunOnOsLoginMode login_mode);
 
 class WebAppPublisherHelper : public WebAppRegistrarObserver,
                               public WebAppInstallManagerObserver,
@@ -242,9 +239,6 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   void UpdateAppSize(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id, apps::WindowMode window_mode);
-
-  void SetRunOnOsLoginMode(const std::string& app_id,
-                           apps::RunOnOsLoginMode run_on_os_login_mode);
 
   // Converts |display_mode| to a |window_mode|.
   apps::WindowMode ConvertDisplayModeToWindowMode(
@@ -385,6 +379,8 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   // Get the list of identifiers for the app that will be used in policy
   // controls, such as force-installation and pinning. May be empty.
   std::vector<std::string> GetPolicyIds(const WebApp& web_app) const;
+
+  apps::PackageId GetPackageId(const WebApp& web_app) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates app visibility.

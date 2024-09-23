@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/browsing_topics/annotator_impl.h"
+
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
@@ -58,7 +65,7 @@ std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
 LoadOverrideListFromFile(const base::FilePath& path) {
   if (!path.IsAbsolute() ||
       path.BaseName() != base::FilePath(kOverrideListBasePath)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // This is enforced by calling code, so no UMA in this case.
     return std::nullopt;
   }
@@ -408,7 +415,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
 
   // Prune out categories that do not meet the minimum threshold.
   if (category_params.min_category_weight() > 0) {
-    base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+    std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
       return category.second < category_params.min_category_weight();
     });
   }
@@ -425,7 +432,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
     }
     // None weight doesn't matter, so prune it out. Note that it may have
     // already been removed above if its weight was below the category min.
-    base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+    std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
       return category.first == kNoneCategoryId;
     });
   }
@@ -433,7 +440,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
   // Normalize category weights.
   float normalization_factor =
       sum_positive_scores > 0 ? sum_positive_scores : 1.0;
-  base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+  std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
     return (category.second / normalization_factor) <
            category_params.min_normalized_weight_within_top_n();
   });

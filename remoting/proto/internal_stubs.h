@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "remoting/proto/logging_service.h"
 #include "remoting/proto/session_authz_service.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -34,19 +35,24 @@ class DoNothingProto : public google::protobuf::MessageLite {
 };
 
 // Aliases for internal protos.
-using ProvisionCorpMachineRequest = DoNothingProto;
-using ProvisionCorpMachineResponse = DoNothingProto;
 using RemoteAccessHostV1Proto = DoNothingProto;
-using ReportProvisioningErrorRequest = DoNothingProto;
-using SendHeartbeatRequest = DoNothingProto;
-using GenerateHostTokenRequest = DoNothingProto;
-using GenerateHostTokenResponse = DoNothingProto;
-using VerifySessionTokenRequest = DoNothingProto;
-using VerifySessionTokenResponse = DoNothingProto;
-using ReauthorizeHostRequest = DoNothingProto;
-using ReauthorizeHostResponse = DoNothingProto;
 
-// RemoteAccessHost helpers.
+// ===========================
+// RemoteAccessService helpers
+// ===========================
+
+// ProvisionCorpMachine
+using ProvisionCorpMachineRequest = DoNothingProto;
+extern std::string GetMachineProvisioningRequestPath();
+extern std::unique_ptr<ProvisionCorpMachineRequest>
+GetMachineProvisioningRequest(
+    const std::string& owner_email,
+    const std::string& fqdn,
+    const std::string& public_key,
+    const std::string& version,
+    const std::optional<std::string>& existing_host_id);
+
+using ProvisionCorpMachineResponse = DoNothingProto;
 extern const std::string& GetAuthorizationCode(
     const ProvisionCorpMachineResponse&);
 extern const std::string& GetServiceAccount(
@@ -54,43 +60,70 @@ extern const std::string& GetServiceAccount(
 extern const std::string& GetOwnerEmail(const ProvisionCorpMachineResponse&);
 extern const std::string& GetHostId(const ProvisionCorpMachineResponse&);
 
-// RemoteAccessService helpers.
-extern std::string GetMachineProvisioningRequestPath();
-extern std::unique_ptr<ProvisionCorpMachineRequest>
-GetMachineProvisioningRequest(const std::string& owner_email,
-                              const std::string& fqdn,
-                              const std::string& public_key,
-                              const std::string& version,
-                              std::optional<std::string> existing_host_id);
-
+// ReportProvisioningError
+using ReportProvisioningErrorRequest = DoNothingProto;
 extern std::string GetReportProvisioningErrorRequestPath();
 extern std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
                                   const std::string& error_message,
                                   const std::string& version);
 
-// SessionAuthzService helpers.
-extern std::string GetGenerateHostTokenRequestPath();
-extern std::string GetVerifySessionTokenRequestPath();
-extern std::string GetReauthorizeHostRequestPath();
-
-extern std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
-    const GenerateHostTokenRequestStruct&);
-extern std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
-    const VerifySessionTokenRequestStruct&);
-extern std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(
-    const ReauthorizeHostRequestStruct&);
-
-extern std::unique_ptr<GenerateHostTokenResponseStruct>
-GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&);
-extern std::unique_ptr<VerifySessionTokenResponseStruct>
-GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&);
-extern std::unique_ptr<ReauthorizeHostResponseStruct>
-GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
-
+// SendHeartbeat
+using SendHeartbeatRequest = DoNothingProto;
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
     const std::string& host_id);
+
+// UpdateRemoteAccessHost
+using UpdateRemoteAccessHostRequest = DoNothingProto;
+extern std::string GetUpdateRemoteAccessHostRequestPath();
+extern std::unique_ptr<UpdateRemoteAccessHostRequest>
+GetUpdateRemoteAccessHostRequest(const std::string& host_id);
+
+// ===========================
+// SessionAuthzService helpers
+// ===========================
+
+// GenerateHostToken
+using GenerateHostTokenRequest = DoNothingProto;
+extern std::string GetGenerateHostTokenRequestPath();
+extern std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
+    const GenerateHostTokenRequestStruct&);
+
+using GenerateHostTokenResponse = DoNothingProto;
+extern std::unique_ptr<GenerateHostTokenResponseStruct>
+GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&);
+
+// VerifySessionToken
+using VerifySessionTokenRequest = DoNothingProto;
+extern std::string GetVerifySessionTokenRequestPath();
+extern std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
+    const VerifySessionTokenRequestStruct&);
+
+using VerifySessionTokenResponse = DoNothingProto;
+extern std::unique_ptr<VerifySessionTokenResponseStruct>
+GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&);
+
+// ReauthorizeHost
+using ReauthorizeHostRequest = DoNothingProto;
+extern std::string GetReauthorizeHostRequestPath();
+extern std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(
+    const ReauthorizeHostRequestStruct&);
+
+using ReauthorizeHostResponse = DoNothingProto;
+extern std::unique_ptr<ReauthorizeHostResponseStruct>
+GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
+
+// ======================
+// LoggingService helpers
+// ======================
+
+// ReportSessionDisconnected
+using ReportSessionDisconnectedRequest = DoNothingProto;
+extern std::string GetReportSessionDisconnectedRequestPath();
+extern std::unique_ptr<ReportSessionDisconnectedRequest>
+GetReportSessionDisconnectedRequest(
+    const ReportSessionDisconnectedRequestStruct&);
 
 }  // namespace remoting::internal
 

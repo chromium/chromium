@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/win/pe_image_reader.h"
 
 #include <wintrust.h>
@@ -169,8 +174,9 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
     }
     if (!(*callback)(
             win_certificate->wRevision, win_certificate->wCertificateType,
-            &win_certificate->bCertificate[0],
-            win_certificate->dwLength - kWinCertificateSize, context)) {
+            base::span(&win_certificate->bCertificate[0],
+                       win_certificate->dwLength - kWinCertificateSize),
+            context)) {
       return false;
     }
     size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;

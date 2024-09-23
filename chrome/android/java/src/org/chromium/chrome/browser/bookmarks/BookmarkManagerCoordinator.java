@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -55,7 +56,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.function.Consumer;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
-// TODO(crbug.com/1446506): Add a new coordinator so this class doesn't own everything.
+// TODO(crbug.com/40268641): Add a new coordinator so this class doesn't own everything.
 public class BookmarkManagerCoordinator
         implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
@@ -80,24 +81,19 @@ public class BookmarkManagerCoordinator
 
         @Override
         public boolean onFailedToRecycleView(@NonNull ViewHolder holder) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                // The view has transient state, which is probably because there's an outstanding
-                // fade animation. Theoretically we could clear it and let the RecyclerView continue
-                // normally, but it seems sometimes this is called after bind, and the transient
-                // state is really just the fade in animation of the new content. For more details
-                // see https://crbug.com/1496181. Instead, return true to tell the RecyclerView to
-                // reuse the view regardless. The view binding code should be robust enough to
-                // handle an in progress animation anyway.
-                return true;
-            } else {
-                return super.onFailedToRecycleView(holder);
-            }
+            // The view has transient state, which is probably because there's an outstanding
+            // fade animation. Theoretically we could clear it and let the RecyclerView continue
+            // normally, but it seems sometimes this is called after bind, and the transient
+            // state is really just the fade in animation of the new content. For more details
+            // see https://crbug.com/1496181. Instead, return true to tell the RecyclerView to
+            // reuse the view regardless. The view binding code should be robust enough to
+            // handle an in progress animation anyway.
+            return true;
         }
 
         @Override
         public void onViewRecycled(ViewHolder holder) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                    && holder.itemView instanceof CancelableAnimator cancelable) {
+            if (holder.itemView instanceof CancelableAnimator cancelable) {
                 // Try to eagerly clean up any in progress animations if there are anything. This
                 // should reduce the amount of transient state the view has, which could get in the
                 // way of view recycling. This approach is likely not strictly necessary, but no
@@ -123,6 +119,7 @@ public class BookmarkManagerCoordinator
     private final Profile mProfile;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final ModalDialogManager mModalDialogManager;
+    private final ModelList mModelList;
 
     /**
      * Creates an instance of {@link BookmarkManagerCoordinator}. It also initializes resources,
@@ -162,15 +159,10 @@ public class BookmarkManagerCoordinator
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        mSelectableListLayout.initializeEmptyStateView(
-                R.drawable.bookmark_empty_state_illustration,
-                R.string.bookmark_manager_empty_state,
-                R.string.bookmark_manager_back_to_page_by_adding_bookmark);
-        mSelectableListLayout.ignoreItemTypeForEmptyState(ViewType.SEARCH_BOX);
 
-        ModelList modelList = new ModelList();
+        mModelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
-                new DragAndCancelAdapter(context, modelList);
+                new DragAndCancelAdapter(context, mModelList);
         mRecyclerView =
                 mSelectableListLayout.initializeRecyclerView(dragReorderableRecyclerViewAdapter);
 
@@ -208,7 +200,8 @@ public class BookmarkManagerCoordinator
                         mBookmarkUiPrefs,
                         mModalDialogManager,
                         this::onEndSearch,
-                        moveSnackbarManager);
+                        moveSnackbarManager,
+                        () -> IncognitoUtils.isIncognitoModeEnabled(profile));
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
@@ -219,6 +212,7 @@ public class BookmarkManagerCoordinator
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
+                        profile,
                         context,
                         mBookmarkModel,
                         mImageFetcher,
@@ -245,7 +239,7 @@ public class BookmarkManagerCoordinator
                         mBackPressStateSupplier,
                         mProfile,
                         bookmarkUndoController,
-                        modelList,
+                        mModelList,
                         mBookmarkUiPrefs,
                         this::hideKeyboard,
                         bookmarkImageFetcher,
@@ -273,34 +267,12 @@ public class BookmarkManagerCoordinator
                 BookmarkManagerViewBinder::bindLegacyPromoView);
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.SECTION_HEADER,
-                BookmarkManagerCoordinator::buildSectionHeaderView,
+                this::buildSectionHeaderView,
                 BookmarkManagerViewBinder::bindSectionHeaderView);
-        dragReorderableRecyclerViewAdapter.registerDraggableType(
-                ViewType.FOLDER,
-                this::buildAndInitBookmarkFolderView,
-                BookmarkManagerViewBinder::bindBookmarkFolderView,
-                BookmarkManagerViewBinder::bindDraggableViewHolder,
-                mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerDraggableType(
-                ViewType.BOOKMARK,
-                this::buildAndInitBookmarkItemRow,
-                BookmarkManagerViewBinder::bindBookmarkItemView,
-                BookmarkManagerViewBinder::bindDraggableViewHolder,
-                mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerDraggableType(
-                ViewType.SHOPPING_POWER_BOOKMARK,
-                this::buildAndInitShoppingItemView,
-                BookmarkManagerViewBinder::bindShoppingItemView,
-                BookmarkManagerViewBinder::bindDraggableViewHolder,
-                mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerType(
                 ViewType.DIVIDER,
                 BookmarkManagerCoordinator::buildDividerView,
                 BookmarkManagerViewBinder::bindDividerView);
-        dragReorderableRecyclerViewAdapter.registerType(
-                ViewType.SHOPPING_FILTER,
-                BookmarkManagerCoordinator::buildShoppingFilterView,
-                BookmarkManagerViewBinder::bindShoppingFilterView);
         dragReorderableRecyclerViewAdapter.registerDraggableType(
                 ViewType.IMPROVED_BOOKMARK_VISUAL,
                 BookmarkManagerCoordinator::buildVisualImprovedBookmarkRow,
@@ -317,6 +289,10 @@ public class BookmarkManagerCoordinator
                 ViewType.SEARCH_BOX,
                 this::buildSearchBoxRow,
                 BookmarkSearchBoxRowViewBinder.createViewBinder());
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.EMPTY_STATE,
+                this::buildEmptyStateView,
+                BookmarkManagerEmptyStateViewBinder::bindEmptyStateView);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -340,7 +316,7 @@ public class BookmarkManagerCoordinator
     }
 
     /** Sets the listener that reacts upon the change of the UI state of bookmark manager. */
-    // TODO(crbug.com/1418859): Create abstraction between BookmarkManager & BasicNativePage.
+    // TODO(crbug.com/40257874): Create abstraction between BookmarkManager & BasicNativePage.
     public void setBasicNativePage(BasicNativePage nativePage) {
         mMediator.setBasicNativePage(nativePage);
     }
@@ -429,44 +405,17 @@ public class BookmarkManagerCoordinator
         return mPromoHeaderManager.createSyncPromoHolder(parent);
     }
 
-    static @VisibleForTesting View buildSectionHeaderView(ViewGroup parent) {
+    @VisibleForTesting
+    View buildSectionHeaderView(ViewGroup parent) {
         return inflate(
                 parent,
-                BookmarkFeatures.isBookmarksAccountStorageEnabled()
+                mBookmarkModel.areAccountBookmarkFoldersActive()
                         ? R.layout.bookmark_section_header_v2
                         : R.layout.bookmark_section_header);
     }
 
-    private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
-        BookmarkFolderRow bookmarkFolderRow =
-                BookmarkFolderRow.buildView(
-                        parent.getContext(),
-                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
-        return bookmarkFolderRow;
-    }
-
-    static @VisibleForTesting BookmarkItemRow buildBookmarkItemView(ViewGroup parent) {
-        BookmarkItemRow bookmarkItemRow =
-                BookmarkItemRow.buildView(
-                        parent.getContext(),
-                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
-        return bookmarkItemRow;
-    }
-
-    static @VisibleForTesting PowerBookmarkShoppingItemRow buildShoppingItemView(ViewGroup parent) {
-        PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow =
-                PowerBookmarkShoppingItemRow.buildView(
-                        parent.getContext(),
-                        BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled());
-        return powerBookmarkShoppingItemRow;
-    }
-
     static @VisibleForTesting View buildDividerView(ViewGroup parent) {
         return inflate(parent, R.layout.list_section_divider);
-    }
-
-    static @VisibleForTesting View buildShoppingFilterView(ViewGroup parent) {
-        return inflate(parent, R.layout.shopping_filter_row);
     }
 
     static ImprovedBookmarkRow buildCompactImprovedBookmarkRow(ViewGroup parent) {
@@ -483,33 +432,13 @@ public class BookmarkManagerCoordinator
         return inflate(parent, R.layout.bookmark_search_box_row);
     }
 
+    View buildEmptyStateView(ViewGroup parent) {
+        return inflate(parent, R.layout.empty_state_view);
+    }
+
     private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {
         Context context = parent.getContext();
         return LayoutInflater.from(context).inflate(layoutId, parent, false);
-    }
-
-    @VisibleForTesting
-    BookmarkFolderRow buildAndInitBookmarkFolderView(ViewGroup parent) {
-        BookmarkFolderRow bookmarkFolderRow = buildBookmarkFolderView(parent);
-        bookmarkFolderRow.onDelegateInitialized(mMediator);
-        return bookmarkFolderRow;
-    }
-
-    @VisibleForTesting
-    BookmarkItemRow buildAndInitBookmarkItemRow(ViewGroup parent) {
-        BookmarkItemRow bookmarkItemRow = buildBookmarkItemView(parent);
-        bookmarkItemRow.onDelegateInitialized(mMediator);
-        return bookmarkItemRow;
-    }
-
-    @VisibleForTesting
-    PowerBookmarkShoppingItemRow buildAndInitShoppingItemView(ViewGroup parent) {
-        PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow = buildShoppingItemView(parent);
-        powerBookmarkShoppingItemRow.onDelegateInitialized(mMediator);
-        // TODO(https://crbug.com/1416611): Move init to view binding.
-        powerBookmarkShoppingItemRow.init(
-                mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
-        return powerBookmarkShoppingItemRow;
     }
 
     private void hideKeyboard() {
@@ -552,5 +481,13 @@ public class BookmarkManagerCoordinator
 
     public TestingDelegate getTestingDelegate() {
         return mMediator;
+    }
+
+    public ModelList getModelListForTesting() {
+        return mModelList;
+    }
+
+    public BookmarkUiPrefs getBookmarkUiPrefsForTesting() {
+        return mBookmarkUiPrefs;
     }
 }

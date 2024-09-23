@@ -18,8 +18,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/latency/latency_info.h"
-#include "ui/latency/latency_tracker.h"
 
 namespace viz {
 class SoftwareOutputDevice;
@@ -40,12 +38,11 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   void DiscardBackbuffer() override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  bool IsDisplayedAsOverlayPlane() const override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetNeedsSwapSizeNotifications(
@@ -65,10 +62,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   base::TimeTicks refresh_timebase_;
   base::TimeDelta refresh_interval_ = BeginFrameArgs::DefaultInterval();
 
-  std::queue<std::vector<ui::LatencyInfo>> stored_latency_info_;
-  ui::LatencyTracker latency_tracker_;
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool needs_swap_size_notifications_ = false;

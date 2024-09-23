@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package domatolpm.generated.{{template_name}};
+
+{% for grammar in grammars %}
+import "{{template_path}}/{{grammar['proto_type']}}.proto";
+{% endfor %}
+
+message fuzzcase {
+{% for grammar in grammar_elements|rejectattr("is_str") %}
+  domatolpm.generated.{{grammar['proto_type']}}.fuzzcase {{grammar['proto_field_name']}} = {{loop.index}};
+{% endfor %}
+}

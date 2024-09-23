@@ -14,8 +14,7 @@
 #include <stddef.h>
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace task_manager {
 namespace browsertest_util {
@@ -61,10 +60,10 @@ void WaitForTaskManagerStatToExceed(const std::u16string& title_pattern,
                                     size_t min_column_value);
 
 // ASCII matcher convenience functions for use with WaitForTaskManagerRows()
-std::u16string MatchTab(base::StringPiece title);   // "Tab: " + title
+std::u16string MatchTab(std::string_view title);    // "Tab: " + title
 std::u16string MatchAnyTab();                       // "Tab: *"
 std::u16string MatchAboutBlankTab();                // "Tab: about:blank"
-std::u16string MatchIncognitoTab(base::StringPiece title);
+std::u16string MatchIncognitoTab(std::string_view title);
 std::u16string MatchAnyIncognitoTab();
 std::u16string MatchExtension(const char* title);   // "Extension: " + title
 std::u16string MatchAnyExtension();                 // "Extension: *"
@@ -81,13 +80,13 @@ std::u16string MatchAnySubframe();                  // "Subframe: *"
 // "Utility: " + title
 std::u16string MatchUtility(const std::u16string& title);
 std::u16string MatchAnyUtility();  // "Utility: *"
-std::u16string MatchBFCache(base::StringPiece title);
+std::u16string MatchBFCache(std::string_view title);
 std::u16string MatchAnyBFCache();
-std::u16string MatchPrerender(base::StringPiece title);
+std::u16string MatchPrerender(std::string_view title);
 std::u16string MatchAnyPrerender();
-std::u16string MatchFencedFrame(base::StringPiece title);
+std::u16string MatchFencedFrame(std::string_view title);
 std::u16string MatchAnyFencedFrame();
-std::u16string MatchIncognitoFencedFrame(base::StringPiece title);
+std::u16string MatchIncognitoFencedFrame(std::string_view title);
 std::u16string MatchAnyIncognitoFencedFrame();
 }  // namespace browsertest_util
 }  // namespace task_manager

@@ -1,0 +1,68 @@
+<style include="cr-shared-style sanitize-shared">
+cros-button {
+  margin: 0px 4px 0px 4px;
+}
+
+#dialog:focus-visible {
+  outline: none;
+}
+
+.extensions-icon {
+  height: 32px;
+  width: 32px;
+}
+
+.footer {
+  background-color: var(--cros-sys-secondary_container);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  color: var(--cros-sys-on_secondary_container);
+  font: var(--cros-button-2-font);
+  font-family: var(--cros-button-2-font-family);
+  font-size: var(--cros-button-2-font-size);
+  font-weight: var(--cros-button-2-font-weight);
+  line-height: var(--cros-button-2-line-height);
+  margin-top: 16px;
+  padding: 22px 32px 22px 32px;
+}
+
+.illo-icon {
+  display: block;
+  margin-bottom: 48px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 48px;
+  height: 268px;
+  width: 268px;
+}
+</style>
+
+<div slot="body" role="dialog" id="dialog" autofocus tabindex="-1"
+     aria-labelledby="title">
+  <svg class="extensions-icon"
+       preserveAspectRatio="xMidYMid meet"
+       role="img" viewBox="0 0 32 32">
+    <use href="svg/extension_off_32.svg#extension_off_32"></use>
+  </svg>
+  <h2><div id="title" class="title">$i18n{sanitizeDialogTitle}</div></h2>
+  <div class="sanitize-description">
+    $i18n{sanitizeDescription}
+    $i18n{sanitizeDialogExplanation}
+  </div>
+  <svg class="illo-icon"
+       preserveAspectRatio="xMidYMid meet"
+       role="img" viewBox="0 0 268 268">
+    <use href="svg/illo.svg#illo"></use>
+  </svg>
+  <div class="done-button-container">
+    <cros-button role="button" button-style="secondary" id="cancelButton"
+        aria-label="$i18n{sanitizeCancel}" label="$i18n{sanitizeCancel}"
+        on-click="onCancel">
+    </cros-button>
+    <cros-button role="button" button-style="primary" id="sanitizeButton"
+        aria-label="$i18n{sanitizeDialogButton}"
+        label="$i18n{sanitizeDialogButton}"
+        on-click="onPerformSanitize">
+    </cros-button>
+  </div>
+</div>

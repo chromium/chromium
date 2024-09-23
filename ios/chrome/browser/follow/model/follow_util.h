@@ -30,7 +30,7 @@ bool IsFollowIPHShownFrequencyEligible(NSString* host);
 void StoreFollowIPHDisplayEvent(NSString* host);
 // Removes the last follow IPH event, this is called when follow IPH is
 // triggered by experimental settings.
-// TODO(crbug.com/1340154): Remove the method when removing follow IPH
+// TODO(crbug.com/40230248): Remove the method when removing follow IPH
 // experimental setting.
 void RemoveLastFollowIPHDisplayEvent();
 

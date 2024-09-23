@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3085752524577180175">Gazdă SOCKS</translation>
 <translation id="3104793765551262433">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
-<translation id="3113153474486991170">Nu s-a putut deschide <ph name="PATH" /> din această locație. Copiază în Fișierele mele pentru a deschide.</translation>
 <translation id="3113592018909187986">Mai ai o încercare. Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>
 <translation id="3124404833828281817">Persoană care visează cu ochii deschiși</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Anulează <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="3691184985318546178">Singaleză</translation>
+<translation id="3702842351052426940">Cardul SIM sau profilul eSIM poate fi dezactivat. Încearcă să înlocuiești cardul SIM sau să schimbi profilul eSIM.</translation>
 <translation id="3722341589402358578">A apărut o eroare. Este posibil ca unele elemente să nu fi fost adăugate în coșul de gunoi.</translation>
 <translation id="3726463242007121105">Acest dispozitiv nu poate fi deschis, deoarece sistemul său de fișiere nu este acceptat.</translation>
 <translation id="3727148787322499904">Modificarea acestei setări se va aplica tuturor rețelelor folosite în comun</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Acest proxy este impus de administrator</translation>
 <translation id="3830674330436234648">Nicio redare disponibilă</translation>
 <translation id="383652340667548381">Sârbă</translation>
+<translation id="3839045880592694915">Operatorul nu are permisiunea de a se conecta la modem. Contactează operatorul pentru mai multe detalii.</translation>
 <translation id="385051799172605136">Înapoi</translation>
-<translation id="3851491607336266896">Conectat, conectivitate limitată</translation>
 <translation id="3855472144336161447">Germană Neo 2</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3866249974567520381">Descriere</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Fișierele Microsoft deschise recent au fost mutate în OneDrive</translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4017788180641807848">Engleză (S.U.A.) cu tastatură Workman</translation>
-<translation id="4019998208269143058">Fixează în Fișiere rapide</translation>
 <translation id="4040753847560036377">Cod PUK incorect</translation>
 <translation id="4057991113334098539">Activare...</translation>
 <translation id="4092890906744441904">Irlandeză</translation>
+<translation id="4101601646343868113">Conectează-te la rețeaua ta mobilă și confirmă că planul de date mobile este activ</translation>
 <translation id="4124731372776320263">Se sincronizează un fișier Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tastatură tamilă Tamil99</translation>
 <translation id="5633226425545095130">În cazul în care muți elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Ascultă</translation>
+<translation id="5650895901941743674">Verifică-ți configurația APN</translation>
 <translation id="5669691691057771421">Introdu noul cod PIN</translation>
 <translation id="5678784840044122290">Aplicația Linux va fi disponibilă pe terminal și este posibil ca Lansatorul să afișeze și o pictogramă.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nu se poate deconecta de la o arhivă sau un disc virtual<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
 <translation id="6269630227984243955">Malaieză</translation>
 <translation id="6271903698064569429">Fișierele nu pot fi încărcate deoarece <ph name="SHARED_DRIVE_NAME" /> nu are suficient spațiu de stocare.</translation>
+<translation id="6279140785485544797">Este posibil ca planul de date mobile să fi expirat. Contactează operatorul de telefonie mobilă pentru asistență.</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
 <translation id="6295542640242147836">Blochează cardul SIM</translation>
 <translation id="6296410173147755564">PUK nevalid</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Arhivă <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Semn cu mâna</translation>
 <translation id="6327785803543103246">Web Proxy Auto-Discovery</translation>
-<translation id="6337014272874260727">Anulează fixarea în Fișiere rapide</translation>
 <translation id="6339145975392024142">S.U.A. internațională (PC)</translation>
 <translation id="6356685157277930264">Fereastra cu feedback pentru fișiere</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Directorul curent</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6755827872271341378">Dispozitiv cu sistemul de operare Chrome Flex</translation>
+<translation id="6777029074498310250">Accesează <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> pentru mai multe informații</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6794539005637808366">Restabilește articolul sau trage-l într-un dosar nou în afara coșului de gunoi</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tastatură tamilă InScript</translation>
 <translation id="7088615885725309056">Mai vechi</translation>
 <translation id="7103992300314999525">Macedoneană</translation>
+<translation id="7104338189998813914">A apărut o problemă la accesarea contului OneDrive</translation>
 <translation id="7106346894903675391">Cumpărați mai mult spațiu de stocare...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;căutați în Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonetică</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Așteptați puțin</translation>
 <translation id="7600126690270271294">Sârbă</translation>
 <translation id="7603724359189955920">Grile</translation>
+<translation id="7624010287655004652">Blocat de alt furnizor de servicii mobile</translation>
 <translation id="7627790789328695202">Hopa, <ph name="FILE_NAME" /> există deja. Redenumiți și încercați din nou.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % finalizat</translation>
 <translation id="7649070708921625228">Ajutor</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
 <translation id="8609695766746872526">Islandeză</translation>
+<translation id="8630384863424041081">Introdu PIN-ul cartelei SIM sau PIN-ul implicit furnizat de operator. Contactează operatorul de telefonie mobilă pentru asistență.</translation>
 <translation id="863903787380594467">Codul PIN este incorect. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Fișierele offline trebuiau eliminate</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Fișierul este confidențial și se supune restricțiilor impuse de politica implementată de administrator.</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8713112442029511308">Malteză</translation>
-<translation id="8714138378966541668">Blocată de furnizor</translation>
 <translation id="8714406895390098252">Bicicletă</translation>
 <translation id="8719721339511222681">S-a selectat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croată</translation>

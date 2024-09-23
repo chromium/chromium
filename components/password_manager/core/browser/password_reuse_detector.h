@@ -45,7 +45,6 @@ struct MatchingReusedCredential {
   std::u16string username;
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
-
 };
 
 // Per-profile class responsible for detection of password reuse, i.e. that the
@@ -68,6 +67,7 @@ class PasswordReuseDetector {
       const password_manager::PasswordStoreChangeList& changes) = 0;
 
   virtual void OnLoginsRetained(
+      PasswordForm::Store password_store_type,
       const std::vector<PasswordForm>& retained_passwords) = 0;
 
   // Clears all the cached passwords which are stored on the account store.

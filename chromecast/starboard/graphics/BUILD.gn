@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/starboard/starboard.gni")
+
+shared_library("GL_starboard") {
+  sources = [
+    "egl_starboard.h",
+    "gles2_starboard.h",
+  ]
+  deps = [ "//third_party/angle:includes" ]
+
+  # TODO(b/333131992): remove this, using the real impls instead of dummies.
+  if (remove_starboard_headers) {
+    sources += [
+      "egl_starboard_dummy.cc",
+      "gles2_starboard_dummy.cc",
+    ]
+  } else {
+    sources += [
+      "egl_starboard.cc",
+      "gles2_starboard.cc",
+    ]
+    configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
+    deps += [
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+      "//chromecast/starboard/third_party/starboard/public",
+    ]
+  }
+}
+
+source_set("graphics") {
+  sources = [
+    "cast_egl_platform_starboard.cc",
+    "graphics_properties_default.cc",
+  ]
+  deps = [
+    ":GL_starboard",
+    "//chromecast/public",
+    "//chromecast/starboard:starboard_buildflags",
+    "//chromecast/starboard/chromecast/starboard_adapter",
+  ]
+  if (!remove_starboard_headers) {
+    configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
+    deps += [
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+      "//chromecast/starboard/third_party/starboard/public",
+    ]
+  }
+}
+
+shared_library("libcast_graphics_1.0_starboard") {
+  deps = [ ":graphics" ]
+}

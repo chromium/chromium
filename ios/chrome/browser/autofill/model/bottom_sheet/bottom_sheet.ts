@@ -61,18 +61,16 @@ function showBottomSheet_(hasUserGesture: boolean): void {
     form = lastBlurredElement_;
   }
 
-  // TODO(crbug.com/1427221): convert these "gCrWeb.fill" and "gCrWeb.form"
+  // TODO(crbug.com/40261693): convert these "gCrWeb.fill" and "gCrWeb.form"
   // calls to import and call the functions directly once the conversion to
   // TypeScript is done.
-  gCrWeb.fill.setUniqueIDIfNeeded(field);
-  gCrWeb.fill.setUniqueIDIfNeeded(form);
 
   const msg = {
     'frameID': gCrWeb.message.getFrameId(),
     'formName': gCrWeb.form.getFormIdentifier(form),
-    'uniqueFormID': gCrWeb.fill.getUniqueID(form),
+    'formRendererID': gCrWeb.fill.getUniqueID(form),
     'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
-    'uniqueFieldID': gCrWeb.fill.getUniqueID(field),
+    'fieldRendererID': gCrWeb.fill.getUniqueID(field),
     'fieldType': fieldType,
     'type': 'focus',
     'value': fieldValue,

@@ -21,6 +21,10 @@ component("drivefs") {
     "drivefs_pinning_manager.h",
     "drivefs_search.cc",
     "drivefs_search.h",
+    "drivefs_search_query.cc",
+    "drivefs_search_query.h",
+    "drivefs_search_query_delegate.cc",
+    "drivefs_search_query_delegate.h",
     "drivefs_session.cc",
     "drivefs_session.h",
     "drivefs_util.h",
@@ -84,6 +88,7 @@ source_set("unit_tests") {
     "drivefs_host_unittest.cc",
     "drivefs_http_client_unittest.cc",
     "drivefs_pinning_manager_unittest.cc",
+    "drivefs_search_query_unittest.cc",
     "drivefs_search_unittest.cc",
     "drivefs_session_unittest.cc",
   ]

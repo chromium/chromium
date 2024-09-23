@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/testing",
 
     # Dependencies.
+    "+base/base_switches.h",
     "+base/path_service.h",
     "+base/process",
     "+base/task/single_thread_task_executor.h",
@@ -24,7 +25,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/heap",
-    "+third_party/blink/renderer/platform/heap_observer_set.h",
+    "+third_party/blink/renderer/platform/heap_observer_list.h",
     "+third_party/blink/renderer/platform/image-decoders/image_decoder.h",
     "+third_party/blink/renderer/platform/instrumentation",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",
@@ -51,11 +52,11 @@ specific_include_rules = {
     "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
     ],
-    "task_environment\.cc": [
-        "+third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h",
-    ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
+    ],
+    "exception_state_matchers\.cc": [
+        "+third_party/blink/renderer/core/dom/dom_exception.h",
     ],
     "run_all_tests\.cc": [
         "+gin/array_buffer.h",

@@ -23,19 +23,27 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
-    enum="NetErrorCodes" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
+<histogram
+    name="FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus"
+    enum="InstanceIDResult" expires_after="2025-02-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Status of an attempt to register with FM and retrieve a registration token.
+    Recorded on every registration attempt or cached token retrieval.
+  </summary>
+</histogram>
 
+<histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
+    enum="NetErrorCodes" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>Net error codes for failed subscription requests.</summary>
 </histogram>
 
 <histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
-    enum="FCMInvalidationMessageStatus" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="FCMInvalidationMessageStatus" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -54,9 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.InitialTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="InstanceIDResult" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -65,9 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.SubscriptionRequestStatus"
-    enum="FCMInvalidationSubscriptionStatus" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -77,9 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.SubscriptionResponseCode"
-    enum="HttpResponseCode" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="HttpResponseCode" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -89,9 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
-    enum="TokenStateOnRegistrationRequest" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="TokenStateOnRegistrationRequest" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -102,9 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FCMInvalidations.UnsubscriptionRequestStatus"
-    enum="FCMInvalidationSubscriptionStatus" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
+    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

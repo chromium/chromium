@@ -71,23 +71,6 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
   }
 }
 
-void MessageEvent::RegisterAmountOfExternallyAllocatedMemory() {
-  CHECK_EQ(amount_of_external_memory_, 0u);
-  size_t size = SizeOfExternalMemoryInBytes();
-
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      static_cast<int64_t>(size));
-  amount_of_external_memory_ = size;
-}
-
-void MessageEvent::UnregisterAmountOfExternallyAllocatedMemory() {
-  if (amount_of_external_memory_ > 0) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(amount_of_external_memory_));
-    amount_of_external_memory_ = 0;
-  }
-}
-
 MessageEvent::MessageEvent() : data_type_(kDataTypeScriptValue) {}
 
 MessageEvent::MessageEvent(const AtomicString& type,
@@ -151,7 +134,8 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
       ports_(ports),
       user_activation_(user_activation) {
   DCHECK(IsValidSource(source_.Get()));
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 MessageEvent::MessageEvent(
@@ -173,7 +157,8 @@ MessageEvent::MessageEvent(
       user_activation_(user_activation),
       delegated_capability_(delegated_capability) {
   DCHECK(IsValidSource(source_.Get()));
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 MessageEvent::MessageEvent(const String& origin, EventTarget* source)
@@ -189,7 +174,8 @@ MessageEvent::MessageEvent(const String& data, const String& origin)
       data_type_(kDataTypeString),
       data_as_string_(data),
       origin_(origin) {
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 MessageEvent::MessageEvent(Blob* data, const String& origin)
@@ -197,7 +183,8 @@ MessageEvent::MessageEvent(Blob* data, const String& origin)
       data_type_(kDataTypeBlob),
       data_as_blob_(data),
       origin_(origin) {
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
@@ -205,11 +192,12 @@ MessageEvent::MessageEvent(DOMArrayBuffer* data, const String& origin)
       data_type_(kDataTypeArrayBuffer),
       data_as_array_buffer_(data),
       origin_(origin) {
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 MessageEvent::~MessageEvent() {
-  UnregisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 MessageEvent* MessageEvent::Create(const AtomicString& type,
@@ -278,7 +266,8 @@ void MessageEvent::initMessageEvent(
   is_ports_dirty_ = true;
   user_activation_ = user_activation;
   delegated_capability_ = delegated_capability;
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 void MessageEvent::initMessageEvent(const AtomicString& type,
@@ -302,7 +291,8 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   source_ = source;
   ports_ = ports;
   is_ports_dirty_ = true;
-  RegisterAmountOfExternallyAllocatedMemory();
+  serialized_data_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                             SizeOfExternalMemoryInBytes());
 }
 
 ScriptValue MessageEvent::data(ScriptState* script_state) {
@@ -327,7 +317,7 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
         // The data is put on the V8 GC heap here, and therefore the V8 GC does
         // the accounting from here on. We unregister the registered memory to
         // avoid double accounting.
-        UnregisterAmountOfExternallyAllocatedMemory();
+        serialized_data_memory_accounter_.Clear(isolate);
         MessagePortArray message_ports = ports();
         SerializedScriptValue::DeserializeOptions options;
         options.message_ports = &message_ports;
@@ -434,10 +424,9 @@ v8::Local<v8::Object> MessageEvent::AssociateWithWrapper(
     case kDataTypeArrayBuffer:
       V8PrivateProperty::GetSymbol(isolate,
                                    kPrivatePropertyMessageEventCachedData)
-          .Set(wrapper,
-               ToV8Traits<DOMArrayBuffer>::ToV8(
-                   ScriptState::From(wrapper->GetCreationContextChecked()),
-                   data_as_array_buffer_));
+          .Set(wrapper, ToV8Traits<DOMArrayBuffer>::ToV8(
+                            ScriptState::ForRelevantRealm(isolate, wrapper),
+                            data_as_array_buffer_));
       break;
   }
 

@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "content/renderer/render_thread_impl.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 namespace {
 
@@ -41,19 +40,13 @@ MockAgentSchedulingGroup::MockAgentSchedulingGroup(
     RenderThread& render_thread,
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
         pending_receiver)
-    : AgentSchedulingGroup(
-          render_thread,
-          std::move(pending_receiver),
-          mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()) {}
+    : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
 
 MockAgentSchedulingGroup::MockAgentSchedulingGroup(
     base::PassKey<MockAgentSchedulingGroup> pass_key,
     RenderThread& render_thread,
     mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> pending_receiver)
-    : AgentSchedulingGroup(
-          render_thread,
-          std::move(pending_receiver),
-          mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()) {}
+    : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
 
 void MockAgentSchedulingGroup::Init() {
   mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>

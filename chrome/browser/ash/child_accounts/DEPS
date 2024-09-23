@@ -1,0 +1,59 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/child_accounts",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/app_restore",
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/login/lock",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/status_collector",
+  "+chrome/browser/ash/policy/uploading",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/extension_service_test_with_install.h",
+  "+chrome/browser/extensions/launch_util.h",
+  "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/supervised_user",
+  "+chrome/browser/ui/ash/shelf",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/web_app_command_scheduler.h",
+  "+chrome/browser/web_applications/web_app_constants.h",
+  "+chrome/browser/web_applications/web_app_helpers.h",
+  "+chrome/browser/web_applications/web_app_install_finalizer.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_sync_bridge.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/extensions",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+  "+chrome/test/interaction",
+  "+chrome/test/supervised_user",
+  "+chrome/test/views",
+]

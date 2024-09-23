@@ -27,6 +27,8 @@
 namespace chromeos::onc {
 namespace {
 
+using IdToAPNMap = std::map<std::string, const base::Value::Dict*>;
+
 // Error messages that can be reported when decrypting encrypted ONC.
 constexpr char kUnableToDecrypt[] = "Unable to decrypt encrypted ONC";
 constexpr char kUnableToDecode[] = "Unable to decode encrypted ONC";
@@ -156,6 +158,261 @@ CertPEMsByGUIDMap GetServerAndCACertsByGUID(
   }
 
   return certs_by_guid;
+}
+
+// Set APN dictionary and associated recommended values to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// old APN UI.
+void SetAPNDictAndRecommendedIfNone(base::Value::Dict& cellular_fields) {
+  if (cellular_fields.Find(::onc::cellular::kAPN)) {
+    return;
+  }
+
+  auto apn_recommended_list = base::Value::List()
+                                  .Append(::onc::cellular_apn::kAccessPointName)
+                                  .Append(::onc::cellular_apn::kAttach)
+                                  .Append(::onc::cellular_apn::kAuthentication)
+                                  .Append(::onc::cellular_apn::kUsername)
+                                  .Append(::onc::cellular_apn::kPassword);
+
+  base::Value* apn_dict = cellular_fields.Set(
+      ::onc::cellular::kAPN, base::Value(base::Value::Type::DICT));
+  apn_dict->GetDict().Set(::onc::kRecommended, std::move(apn_recommended_list));
+}
+
+// Modify recommended list to include custom APN list field to solve the issue
+// of setting the APN for managed eSIM profiles (see http://b/295226668) in
+// revamp APN UI.
+void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
+  auto* recommended = cellular_fields.Find(::onc::kRecommended);
+  if (!recommended) {
+    recommended = cellular_fields.Set(::onc::kRecommended,
+                                      base::Value(base::Value::Type::LIST));
+  }
+  for (const auto& field : recommended->GetList()) {
+    if (field == ::onc::cellular::kCustomAPNList) {
+      return;
+    }
+  }
+  recommended->GetList().Append(::onc::cellular::kCustomAPNList);
+}
+
+void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
+                                       base::Value::Dict& onc_object,
+                                       bool allow_apn_modification) {
+  if (&signature == &kCellularSignature) {
+    if (allow_apn_modification) {
+      AddCustomAPNListToRecommended(onc_object);
+    } else {
+      onc_object.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    }
+    SetAPNDictAndRecommendedIfNone(onc_object);
+
+    return;
+  }
+
+  // The function takes any ONC object and recursively searches until it finds a
+  // Cellular dictionary to set the default values.
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    FillInCellularDefaultsInOncObject(*field_signature->value_signature,
+                                      it.second.GetDict(),
+                                      allow_apn_modification);
+  }
+}
+
+// Creates an APN dict with nested recommended field in cellular entries lacking
+// an APN dict in |network_configs| list. If |allow_apn_modification| is true,
+// "CustomAPNList" is added as a recommended field to the cellular config,
+// otherwise, the CustomAPNList field is set to an empty list.
+void FillInCellularDefaultsInNetworks(base::Value::List& network_configs,
+                                      bool allow_apn_modification) {
+  for (auto& network : network_configs) {
+    FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
+                                      network.GetDict(),
+                                      allow_apn_modification);
+  }
+}
+
+// Creates a map from APN IDs to their corresponding configuration dictionaries.
+IdToAPNMap BuildIdToAPNMap(const base::Value::List* apn_list) {
+  IdToAPNMap apn_map;
+
+  if (!apn_list) {
+    return apn_map;
+  }
+
+  for (const base::Value& apn_value : *apn_list) {
+    const base::Value::Dict& apn_dict = apn_value.GetDict();
+    const std::string* apn_id = apn_dict.FindString(::onc::cellular_apn::kId);
+
+    if (apn_id) {
+      apn_map.emplace(*apn_id, &apn_dict);
+    }
+  }
+
+  return apn_map;
+}
+
+// Extracts a list of APN dictionaries based on a provided list of APN IDs, such
+// that |apn_id_list| is a list of string IDs representing the APNs to extract,
+// and |apn_map| is a map of all available APN dictionaries with key being APN
+// ID. Returns a base::List if IDs are successfully extracted and the source is
+// set successfully, and an std::nullopt otherwise.
+std::optional<base::Value::List> ExtractAPNsByIdsAndSetAdminSource(
+    const base::Value::List* apn_id_list,
+    const IdToAPNMap& apn_map) {
+  base::Value::List result = base::Value::List();
+
+  for (const base::Value& apn_id_value : *apn_id_list) {
+    const std::string apn_id = apn_id_value.GetString();
+
+    // Find the APN in the map
+    auto it = apn_map.find(apn_id);
+    if (it == apn_map.end()) {
+      NET_LOG(ERROR)
+          << "Failed to find an admin provided APN associated to an ID of "
+          << apn_id;
+      return std::nullopt;
+    }
+    base::Value::Dict apn_cpy = it->second->Clone();
+    apn_cpy.Set(::onc::cellular_apn::kSource,
+                ::onc::cellular_apn::kSourceAdmin);
+
+    result.Append(std::move(apn_cpy));
+  }
+
+  return result;
+}
+
+// Updates a cellular network configuration with custom APN information from
+// admin-assigned APNs. Looks for a list of admin-assigned APN IDs in
+// |cellular_fields|. If found, it extracts the corresponding APN dictionaries
+// from |admin_apn_by_id| and sets the CustomAPNList field in |cellular_fields|.
+// Note that if |admin_apn_by_id| is null, no changes are made to
+// |cellular_fields|. Also note that each extracted APN will have a
+// |::onc::cellular_apn::kSource| of
+// |::onc::cellular_apn::kSourceAdmin|. Returns true if |cellular_fields| are
+// successfully updated.
+bool UpdateCellularFieldsWithAdminApns(base::Value::Dict& cellular_fields,
+                                       const IdToAPNMap& admin_apn_by_id) {
+  const base::Value::List* admin_apn_id_list =
+      cellular_fields.FindList(::onc::cellular::kAdminAssignedAPNIds);
+  if (!admin_apn_id_list) {
+    return true;
+  }
+
+  if (admin_apn_id_list->empty()) {
+    cellular_fields.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    return true;
+  }
+
+  std::optional<base::Value::List> admin_apns =
+      ExtractAPNsByIdsAndSetAdminSource(admin_apn_id_list, admin_apn_by_id);
+  if (!admin_apns.has_value()) {
+    NET_LOG(ERROR) << "Failed to extract admin APNs";
+    return false;
+  }
+
+  cellular_fields.Set(::onc::cellular::kCustomAPNList, std::move(*admin_apns));
+  return true;
+}
+
+bool ConstructAndSetPSIMAdminAPNs(base::Value::Dict& global_network_config,
+                                  const IdToAPNMap& admin_apn_by_id) {
+  if (admin_apn_by_id.empty()) {
+    return true;
+  }
+  const base::Value::List* psim_admin_apn_id_list =
+      global_network_config.FindList(
+          ::onc::global_network_config::kPSIMAdminAssignedAPNIds);
+  if (!psim_admin_apn_id_list) {
+    return true;
+  }
+
+  std::optional<base::Value::List> psim_admin_apns =
+      ExtractAPNsByIdsAndSetAdminSource(psim_admin_apn_id_list,
+                                        admin_apn_by_id);
+  if (!psim_admin_apns.has_value()) {
+    NET_LOG(ERROR) << "Failed to extract pSIM admin APNs";
+    return false;
+  }
+
+  global_network_config.Set(
+      ::onc::global_network_config::kPSIMAdminAssignedAPNs,
+      std::move(*psim_admin_apns));
+  return true;
+}
+
+// Recursively traverses the |onc_object|, searching for
+// cellular dictionaries. If found, it updates the 'CustomAPNList' field within
+// the Cellular dictionary using |admin_apn_by_id| if applicable.
+//
+// The recursion is guided by the |signature|, which defines the structure of
+// the ONC object and helps the function determine which fields to traverse.
+// Returns true if admin APNs are successfully applied.
+bool ApplyAdminApnsToOncObject(const OncValueSignature& signature,
+                               base::Value::Dict& onc_object,
+                               const IdToAPNMap& admin_apn_by_id) {
+  if (&signature == &kCellularSignature) {
+    return UpdateCellularFieldsWithAdminApns(onc_object, admin_apn_by_id);
+  }
+
+  // The function takes any ONC object and recursively searches until it finds a
+  // Cellular dictionary to set the Custom APN List.
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    if (!ApplyAdminApnsToOncObject(*field_signature->value_signature,
+                                   it.second.GetDict(), admin_apn_by_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Processes a list of network configurations, identifying those of cellular
+// type. For each cellular configuration, it associates and embeds the
+// corresponding admin defined APN details found in |admin_apn_by_id|. This is
+// achieved by recursively traversing the cellular configuration's structure and
+// updating the APN information where applicable.
+//
+// The function relies on a top-level ONC configuration that contains a list of
+// APNs provided by administrators. Cellular networks within the configuration
+// may reference these APNs using unique identifiers (IDs).
+//
+// Ultimately, this function ensures that the cellular networks in the provided
+// |network_configs| list are populated with the complete APN configurations
+// that they are associated with. Otherwise, it returns false.
+bool ConfigureAdminApnsInCellularNetworks(base::Value::List& network_configs,
+                                          const IdToAPNMap& admin_apn_by_id) {
+  if (admin_apn_by_id.empty()) {
+    return true;
+  }
+  for (auto& network : network_configs) {
+    if (!ApplyAdminApnsToOncObject(kNetworkConfigurationSignature,
+                                   network.GetDict(), admin_apn_by_id)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Fills HexSSID fields in all entries in the |network_configs| list.
@@ -489,7 +746,7 @@ std::string GetSourceAsString(::onc::ONCSource source) {
     case ::onc::ONC_SOURCE_USER_IMPORT:
       return "user import";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 
@@ -524,6 +781,45 @@ void ExpandStringsInNetworks(const VariableExpander& variable_expander,
   for (auto& network : network_configs) {
     ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                              &network.GetDict());
+  }
+}
+
+void FillInCellularCustomAPNListField(
+    base::Value::Dict& cellular_fields,
+    const base::Value::List* custom_apn_list) {
+  if (cellular_fields.Find(::onc::cellular::kCustomAPNList)) {
+    NET_LOG(DEBUG) << "kCustomAPNList found, skipping";
+    return;
+  }
+
+  NET_LOG(DEBUG) << "Filling in kCustomAPNList with "
+                 << custom_apn_list->DebugString();
+  cellular_fields.Set(::onc::cellular::kCustomAPNList,
+                      custom_apn_list->Clone());
+}
+
+void FillInCellularCustomAPNListFieldsInOncObject(
+    const OncValueSignature& signature,
+    base::Value::Dict& onc_object,
+    const base::Value::List* custom_apn_list) {
+  if (&signature == &kCellularSignature) {
+    FillInCellularCustomAPNListField(onc_object, custom_apn_list);
+  }
+
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    FillInCellularCustomAPNListFieldsInOncObject(
+        *field_signature->value_signature, it.second.GetDict(),
+        custom_apn_list);
   }
 }
 
@@ -709,8 +1005,34 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   // all segments of the ONC blob).
   base::Value::List* validated_networks_list = validated_toplevel_onc->FindList(
       ::onc::toplevel_config::kNetworkConfigurations);
+
+  base::Value::Dict* validated_global_config = validated_toplevel_onc->FindDict(
+      ::onc::toplevel_config::kGlobalNetworkConfiguration);
+
+  const IdToAPNMap id_to_apn_map = BuildIdToAPNMap(
+      validated_toplevel_onc->FindList(::onc::toplevel_config::kAdminAPNList));
+
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
+
+    bool allow_apn_modification = true;
+    if (validated_global_config) {
+      allow_apn_modification =
+          (validated_global_config->FindBool(
+               ::onc::global_network_config::kAllowAPNModification))
+              .value_or(allow_apn_modification);
+    }
+
+    FillInCellularDefaultsInNetworks(*validated_networks_list,
+                                     allow_apn_modification);
+
+    // Sets the CustomAPNList for cellular networks if an AdminAPNList and
+    // AdminAssignedAPNIds have been specified for a cellular network.
+    if (!ConfigureAdminApnsInCellularNetworks(*validated_networks_list,
+                                              id_to_apn_map)) {
+      success = false;
+    }
+
     // Set HiddenSSID to default value to solve the issue crbug.com/1171837
     SetHiddenSSIDFieldsInNetworks(*validated_networks_list);
 
@@ -731,10 +1053,14 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   }
 
   if (global_network_config) {
-    base::Value::Dict* validated_global_config =
-        validated_toplevel_onc->FindDict(
-            ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (validated_global_config) {
+      // Constructs and sets the PSIMAdminAssignedAPNs global network
+      // configuration field if an AdminAPNList and PSIMAdminAssignedAPNIds have
+      // been specified.
+      if (!ConstructAndSetPSIMAdminAPNs(*validated_global_config,
+                                        id_to_apn_map)) {
+        success = false;
+      }
       *global_network_config = std::move(*validated_global_config);
     }
   }

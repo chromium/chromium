@@ -51,35 +51,71 @@ RootfsLacrosLoader::RootfsLacrosLoader(ash::UpstartClient* upstart_client,
 RootfsLacrosLoader::~RootfsLacrosLoader() = default;
 
 void RootfsLacrosLoader::Load(LoadCompletionCallback callback, bool forced) {
+  CHECK(state_ == State::kNotLoaded ||
+        state_ == State::kVersionReadyButNotLoaded)
+      << state_;
   LOG(WARNING) << "Loading rootfs lacros.";
 
-  // Make sure to calculate `version_` before start loading.
-  // It may not be calculated yet in case when lacros selection is defined by
+  if (state_ == State::kVersionReadyButNotLoaded) {
+    OnVersionReadyToLoad(std::move(callback), version_.value());
+    return;
+  }
+
+  // Calculate `version_` before start loading.
+  // It's not calculated yet in case when lacros selection is defined by
   // selection policy or stateful lacros is not installed.
-  GetVersion(base::BindOnce(&RootfsLacrosLoader::OnVersionReadyToLoad,
-                            weak_factory_.GetWeakPtr(), std::move(callback)));
+  state_ = State::kReadingVersion;
+  GetVersionInternal(base::BindOnce(&RootfsLacrosLoader::OnVersionReadyToLoad,
+                                    weak_factory_.GetWeakPtr(),
+                                    std::move(callback)));
 }
 
-void RootfsLacrosLoader::Unload() {
-  upstart_client_->StartJob(kLacrosUnmounterUpstartJob, {},
-                            base::BindOnce([](bool) {}));
-}
+void RootfsLacrosLoader::Unload(base::OnceClosure callback) {
+  switch (state_) {
+    case State::kNotLoaded:
+    case State::kVersionReadyButNotLoaded:
+    case State::kUnloaded:
+      // Nothing to unload if it's not loaded or already unloaded.
+      state_ = State::kUnloaded;
+      std::move(callback).Run();
+      break;
+    case State::kReadingVersion:
+    case State::kLoading:
+    case State::kUnloading:
+      // If loader is busy, wait Unload until the current task has finished.
+      pending_unload_ =
+          base::BindOnce(&RootfsLacrosLoader::Unload,
+                         weak_factory_.GetWeakPtr(), std::move(callback));
+      break;
+    case State::kLoaded:
+      state_ = State::kUnloading;
 
-void RootfsLacrosLoader::Reset() {
-  // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
-  // to handle such edge cases.
-  version_ = std::nullopt;
+      upstart_client_->StartJob(
+          kLacrosUnmounterUpstartJob, {},
+          base::BindOnce(&RootfsLacrosLoader::OnUnloadCompleted,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void RootfsLacrosLoader::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
-  // If version is already calculated, immediately return the cached value.
-  // Calculate if not.
-  // Note that version value is reset on reloading.
-  if (version_.has_value()) {
-    std::move(callback).Run(version_.value());
-    return;
-  }
+  CHECK_EQ(state_, State::kNotLoaded) << state_;
+  state_ = State::kReadingVersion;
+  GetVersionInternal(std::move(callback));
+}
+
+bool RootfsLacrosLoader::IsUnloading() const {
+  return state_ == State::kUnloading;
+}
+
+bool RootfsLacrosLoader::IsUnloaded() const {
+  return state_ == State::kUnloaded;
+}
+
+void RootfsLacrosLoader::GetVersionInternal(
+    base::OnceCallback<void(const base::Version&)> callback) {
+  CHECK_EQ(state_, State::kReadingVersion) << state_;
+  CHECK(!version_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -93,19 +129,39 @@ void RootfsLacrosLoader::OnGetVersion(
     base::OnceCallback<void(const base::Version&)> callback,
     base::Version version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kReadingVersion) << state_;
 
   version_ = version;
+  state_ = State::kVersionReadyButNotLoaded;
+
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during getting version of rootfs.";
+    std::move(callback).Run(base::Version());
+    std::move(pending_unload_).Run();
+    return;
+  }
+
   std::move(callback).Run(version_.value());
 }
 
 void RootfsLacrosLoader::OnVersionReadyToLoad(LoadCompletionCallback callback,
                                               const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kVersionReadyButNotLoaded) << state_;
+
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during loading rootfs.";
+    std::move(callback).Run(base::Version(), base::FilePath());
+    std::move(pending_unload_).Run();
+    return;
+  }
 
   // `version_` must be already filled by `version`.
-  DCHECK(version_.has_value() &&
-         ((!version_.value().IsValid() && !version.IsValid()) ||
-          (version_.value() == version)));
+  CHECK(version_.has_value() &&
+        ((!version_.value().IsValid() && !version.IsValid()) ||
+         (version_.value() == version)));
+
+  state_ = State::kLoading;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -119,6 +175,15 @@ void RootfsLacrosLoader::OnVersionReadyToLoad(LoadCompletionCallback callback,
 void RootfsLacrosLoader::OnMountCheckToLoad(LoadCompletionCallback callback,
                                             bool already_mounted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kLoading) << state_;
+
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during loading rootfs.";
+    state_ = State::kVersionReadyButNotLoaded;
+    std::move(callback).Run(base::Version(), base::FilePath());
+    std::move(pending_unload_).Run();
+    return;
+  }
 
   if (already_mounted) {
     OnUpstartLacrosMounter(std::move(callback), true);
@@ -139,23 +204,58 @@ void RootfsLacrosLoader::OnMountCheckToLoad(LoadCompletionCallback callback,
 void RootfsLacrosLoader::OnUpstartLacrosMounter(LoadCompletionCallback callback,
                                                 bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kLoading) << state_;
+  state_ = State::kLoaded;
 
   LOG_IF(WARNING, !success) << "Upstart failed to mount rootfs lacros.";
 
-  // `version_` must be calculated before coming here.
-  // If `version_` is not filled, it implies Reset() is called, so handling this
-  // case as an error.
-  if (!version_.has_value()) {
+  if (pending_unload_) {
+    LOG(WARNING) << "Unload is requested during loading rootfs.";
     std::move(callback).Run(base::Version(), base::FilePath());
+    std::move(pending_unload_).Run();
     return;
   }
 
+  // `version_` must be calculated before coming here.
+  CHECK(version_.has_value());
   std::move(callback).Run(
       version_.value(),
       // If mounting wasn't successful, return a empty mount point to indicate
       // failure. `OnLoadComplete` handles empty mount points and forwards the
       // errors on the return callbacks.
       success ? base::FilePath(kRootfsLacrosMountPoint) : base::FilePath());
+}
+
+void RootfsLacrosLoader::OnUnloadCompleted(base::OnceClosure callback,
+                                           bool success) {
+  // Proceed anyway regardless of unload success.
+  if (!success) {
+    LOG(ERROR) << "Failed to unload rootfs lacros";
+  }
+
+  CHECK_EQ(state_, State::kUnloading) << state_;
+  state_ = State::kUnloaded;
+  std::move(callback).Run();
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         RootfsLacrosLoader::State state) {
+  switch (state) {
+    case RootfsLacrosLoader::State::kNotLoaded:
+      return ostream << "NotLoaded";
+    case RootfsLacrosLoader::State::kReadingVersion:
+      return ostream << "ReadingVersion";
+    case RootfsLacrosLoader::State::kVersionReadyButNotLoaded:
+      return ostream << "VersionReadyButNotLoaded";
+    case RootfsLacrosLoader::State::kLoading:
+      return ostream << "Loading";
+    case RootfsLacrosLoader::State::kLoaded:
+      return ostream << "Loaded";
+    case RootfsLacrosLoader::State::kUnloading:
+      return ostream << "Unloading";
+    case RootfsLacrosLoader::State::kUnloaded:
+      return ostream << "Unloaded";
+  }
 }
 
 }  // namespace crosapi

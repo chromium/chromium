@@ -12,7 +12,7 @@ namespace ash {
 
 // Interface for dependency injection between GuestTosScreen and its
 // WebUI representation.
-class GuestTosScreenView : public base::SupportsWeakPtr<GuestTosScreenView> {
+class GuestTosScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"guest-tos",
                                                        "GuestTosScreen"};
@@ -21,10 +21,11 @@ class GuestTosScreenView : public base::SupportsWeakPtr<GuestTosScreenView> {
 
   virtual void Show(const std::string& google_eula_url,
                     const std::string& cros_eula_url) = 0;
+  virtual base::WeakPtr<GuestTosScreenView> AsWeakPtr() = 0;
 };
 
-class GuestTosScreenHandler : public GuestTosScreenView,
-                              public BaseScreenHandler {
+class GuestTosScreenHandler final : public GuestTosScreenView,
+                                    public BaseScreenHandler {
  public:
   using TView = GuestTosScreenView;
 
@@ -37,10 +38,14 @@ class GuestTosScreenHandler : public GuestTosScreenView,
   // GuestTosScreenView
   void Show(const std::string& google_eula_url,
             const std::string& cros_eula_url) override;
+  base::WeakPtr<GuestTosScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<GuestTosScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

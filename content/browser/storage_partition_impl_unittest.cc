@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/storage_partition_impl.h"
 
 #include <stddef.h>
@@ -150,10 +155,11 @@ class RemoveCookieTester {
   void AddCookie(const url::Origin& origin) {
     net::CookieInclusionStatus status;
     std::unique_ptr<net::CanonicalCookie> cc(
-        net::CanonicalCookie::Create(origin.GetURL(), "A=1", base::Time::Now(),
-                                     /*server_time=*/std::nullopt,
-                                     /*cookie_partition_key=*/std::nullopt,
-                                     /*block_truncated=*/true, &status));
+        net::CanonicalCookie::CreateForTesting(
+            origin.GetURL(), "A=1", base::Time::Now(),
+            /*server_time=*/std::nullopt,
+            /*cookie_partition_key=*/std::nullopt,
+            net::CookieSourceType::kUnknown, &status));
     base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
         *cc, origin.GetURL(), net::CookieOptions::MakeAllInclusive(),
@@ -246,7 +252,8 @@ class RemoveInterestGroupTester {
     interest_group_manager->JoinInterestGroup(group, origin.GetURL());
 
     // Update the K-anonymity so that we can tell when it gets removed.
-    k_anon_key = KAnonKeyForAdBid(group, GURL("https://owner.example.com/ad1"));
+    k_anon_key = HashedKAnonKeyForAdBid(
+        group, GURL("https://owner.example.com/ad1").spec());
     interest_group_manager->UpdateLastKAnonymityReported(k_anon_key);
   }
 
@@ -308,10 +315,7 @@ class RemoveLocalStorageTester {
     // how exactly the Local Storage subsystem stores persistent data.
 
     base::RunLoop open_loop;
-    leveldb_env::Options options;
-    options.create_if_missing = true;
     auto database = storage::AsyncDomStorageDatabase::OpenDirectory(
-        std::move(options),
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
         storage::kLocalStorageLeveldbName, std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -342,31 +346,47 @@ class RemoveLocalStorageTester {
                                const url::Origin& origin1,
                                const url::Origin& origin2,
                                const url::Origin& origin3) {
-    storage::LocalStorageStorageKeyMetaData data;
+    storage::LocalStorageAreaAccessMetaData access_data;
+    storage::LocalStorageAreaWriteMetaData write_data;
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> entries;
 
     base::Time now = base::Time::Now();
-    data.set_last_modified(now.ToInternalValue());
-    data.set_size_bytes(16);
+    access_data.set_last_accessed(now.ToInternalValue());
+    write_data.set_last_modified(now.ToInternalValue());
+    write_data.set_size_bytes(16);
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin1),
-               base::as_bytes(base::make_span(data.SerializeAsString())))
+        db.Put(CreateAccessMetaDataKey(origin1),
+               base::as_bytes(base::make_span(access_data.SerializeAsString())))
+            .ok());
+    ASSERT_TRUE(
+        db.Put(CreateWriteMetaDataKey(origin1),
+               base::as_bytes(base::make_span(write_data.SerializeAsString())))
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin1), {}).ok());
 
     base::Time one_day_ago = now - base::Days(1);
-    data.set_last_modified(one_day_ago.ToInternalValue());
+    access_data.set_last_accessed(one_day_ago.ToInternalValue());
+    write_data.set_last_modified(one_day_ago.ToInternalValue());
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin2),
-               base::as_bytes(base::make_span((data.SerializeAsString()))))
+        db.Put(CreateAccessMetaDataKey(origin2),
+               base::as_bytes(base::make_span(access_data.SerializeAsString())))
             .ok());
+    ASSERT_TRUE(db.Put(CreateWriteMetaDataKey(origin2),
+                       base::as_bytes(
+                           base::make_span((write_data.SerializeAsString()))))
+                    .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin2), {}).ok());
 
     base::Time sixty_days_ago = now - base::Days(60);
-    data.set_last_modified(sixty_days_ago.ToInternalValue());
+    access_data.set_last_accessed(sixty_days_ago.ToInternalValue());
+    write_data.set_last_modified(sixty_days_ago.ToInternalValue());
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin3),
-               base::as_bytes(base::make_span(data.SerializeAsString())))
+        db.Put(CreateAccessMetaDataKey(origin3),
+               base::as_bytes(base::make_span(access_data.SerializeAsString())))
+            .ok());
+    ASSERT_TRUE(
+        db.Put(CreateWriteMetaDataKey(origin3),
+               base::as_bytes(base::make_span(write_data.SerializeAsString())))
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin3), {}).ok());
   }
@@ -383,7 +403,22 @@ class RemoveLocalStorageTester {
     return key;
   }
 
-  static std::vector<uint8_t> CreateMetaDataKey(const url::Origin& origin) {
+  static std::vector<uint8_t> CreateAccessMetaDataKey(
+      const url::Origin& origin) {
+    const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', 'A', 'C',
+                                   'C', 'E', 'S', 'S', ':'};
+    auto origin_str = origin.Serialize();
+    std::vector<uint8_t> serialized_origin(origin_str.begin(),
+                                           origin_str.end());
+    std::vector<uint8_t> key;
+    key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
+    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+    key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
+    return key;
+  }
+
+  static std::vector<uint8_t> CreateWriteMetaDataKey(
+      const url::Origin& origin) {
     const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
@@ -1291,8 +1326,9 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {
       url::Origin::Create(GURL("https://host1.test:1/"));
   const url::Origin kInterestGroupOrigin =
       url::Origin::Create(GURL("https://host2.test:2/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kFrameOrigin,
-                                                      kFrameOrigin);
+  const net::SchemefulSite kFrameSite =
+      net::SchemefulSite(GURL("https://host1.test:1/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kFrameSite, kFrameSite);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
@@ -1747,21 +1783,20 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
 
   base::Time now = base::Time::Now();
   std::vector<std::unique_ptr<CanonicalCookie>> valid_cookies;
-  valid_cookies.push_back(CanonicalCookie::Create(
-      url, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
-  valid_cookies.push_back(CanonicalCookie::Create(
-      url, "C=F", now, server_time, std::nullopt /* cookie_partition_key */));
+  valid_cookies.push_back(
+      CanonicalCookie::CreateForTesting(url, "A=B", now, server_time));
+  valid_cookies.push_back(
+      CanonicalCookie::CreateForTesting(url, "C=F", now, server_time));
   // We should match a different scheme with the same host.
-  valid_cookies.push_back(CanonicalCookie::Create(
-      url2, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
+  valid_cookies.push_back(
+      CanonicalCookie::CreateForTesting(url2, "A=B", now, server_time));
 
   std::vector<std::unique_ptr<CanonicalCookie>> invalid_cookies;
   // We don't match domain cookies.
+  invalid_cookies.push_back(CanonicalCookie::CreateForTesting(
+      url2, "A=B;domain=.example.com", now, server_time));
   invalid_cookies.push_back(
-      CanonicalCookie::Create(url2, "A=B;domain=.example.com", now, server_time,
-                              std::nullopt /* cookie_partition_key */));
-  invalid_cookies.push_back(CanonicalCookie::Create(
-      url3, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
+      CanonicalCookie::CreateForTesting(url3, "A=B", now, server_time));
 
   for (const auto& cookie : valid_cookies) {
     EXPECT_TRUE(FilterMatchesCookie(deletion_filter, *cookie))
@@ -2484,8 +2519,13 @@ TEST_F(StoragePartitionImplTest, PrivateNetworkAccessPermission) {
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
+
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateAuthCertObserverForServiceWorker(
+          network::mojom::kBrowserProcessId));
+
   base::test::TestFuture<bool> grant_permission;
-  partition->OnPrivateNetworkAccessPermissionRequired(
+  observer->OnPrivateNetworkAccessPermissionRequired(
       GURL(), net::IPAddress(192, 163, 1, 1), "test-id", "test-name",
       base::BindOnce(grant_permission.GetCallback()));
   EXPECT_FALSE(grant_permission.Get());

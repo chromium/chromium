@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class MediaDevices;
 class ScriptState;
 
 // Mutual non-Web-exposed parent class for various Web-exposed tokens
@@ -28,10 +29,11 @@ class MODULES_EXPORT SubCaptureTarget : public ScriptWrappable {
   const String& GetId() const { return id_; }
 
  protected:
-  static ScriptPromise fromElement(ScriptState* script_state,
-                                   Element* element,
-                                   ExceptionState& exception_state,
-                                   Type type);
+  // Tries to get the relevant MediaDevices object.
+  // If unsuccessful, throws a relevant exception and returns nullptr.
+  static MediaDevices* GetMediaDevices(ScriptState* script_state,
+                                       Element* element,
+                                       ExceptionState& exception_state);
 
   SubCaptureTarget(Type type, String id);
 

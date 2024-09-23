@@ -4,7 +4,7 @@
 
 import("//ios/build/config.gni")
 
-# TODO(crbug.com/698657): Create EarlGrey 2 test target if needed.
+# TODO(crbug.com/41305715): Create EarlGrey 2 test target if needed.
 group("all_tests") {
   testonly = true
 }

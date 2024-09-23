@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Test pseudo elements parsing of invalid selectors</title>
-<link rel="author" href="https://github.com/nt1m">
+<link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -18,11 +18,18 @@ function test_invalid_selector_combinations(pseudo) {
     test_invalid_selector(`${pseudo}.a`);
     test_invalid_selector(`${pseudo} div`);
     test_invalid_selector(`${pseudo}:hover`);
+    test_invalid_selector(`${pseudo}:active`);
+    test_invalid_selector(`${pseudo}:first-child`);
+    test_invalid_selector(`${pseudo}:last-child`);
+    test_invalid_selector(`${pseudo}:empty`);
+    test_invalid_selector(`${pseudo}:visited`);
+    test_invalid_selector(`${pseudo}:enabled`);
     test_invalid_selector(`:not(${pseudo})`);
     test_invalid_selector(`:has(${pseudo})`);
 }
 
 test_invalid_selector_combinations("::view-transition");
+test_invalid_selector("::view-transition:only-child");
 test_invalid_selector("::view-transition(*)");
 test_invalid_selector("::view-transition(valid)");
 test_invalid_selector("::view-transition(root)");
@@ -60,9 +67,7 @@ for (const fn of functionPseudoElements) {
     test_invalid_selector(`${fn}(foo bar)`);
     test_invalid_selector_combinations(`${fn}(foo bar)`);
 
-    // Test function with selector arguments.
-    test_invalid_selector(`${fn}(.foo)`);
-    test_invalid_selector_combinations(`${fn}(.foo)`);
+  // Test function with selector arguments.
     test_invalid_selector(`${fn}(#bar)`);
     test_invalid_selector_combinations(`${fn}(#bar)`);
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 
 #include <algorithm>
@@ -45,7 +50,9 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     if (loader_->IsAborted()) {
       return Result::kError;
     }
-    if (loader_->IsSuspended()) {
+    // When the loader is suspended for non back/forward cache reason, return
+    // with kShouldWait.
+    if (IsSuspendedButNotForBackForwardCache()) {
       return Result::kShouldWait;
     }
     if (state_ == State::kCancelled) {
@@ -178,10 +185,14 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     base::AutoReset<bool> auto_reset_for_waiting_for_lookahead_bytes(
         &waiting_for_lookahead_bytes_, false);
 
-    if (loader_->IsAborted() || loader_->IsSuspended() ||
+    // Do not proceed to read the data if loader is aborted, suspended for non
+    // back/forward cache reason, or the state is cancelled.
+    if (loader_->IsAborted() || IsSuspendedButNotForBackForwardCache() ||
         state_ == State::kCancelled) {
       return;
     }
+
+    // Proceed to read the data, even if in back/forward cache.
     while (state_ == State::kLoading) {
       // Peek available bytes from |bytes_consumer_| and report them to
       // |loader_|.
@@ -228,7 +239,7 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     if (has_pending_state_change_signal_) {
       switch (state_) {
         case State::kLoading:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case State::kDone:
           loader_->DidFinishLoadingBody();
@@ -289,6 +300,10 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
                                       WrapWeakPersistent(loader_.Get())));
       }
     }
+  }
+
+  bool IsSuspendedButNotForBackForwardCache() {
+    return loader_->IsSuspended() && !loader_->IsSuspendedForBackForwardCache();
   }
 
   const Member<BytesConsumer> bytes_consumer_;
@@ -536,9 +551,12 @@ void ResponseBodyLoader::Suspend(LoaderFreezeMode mode) {
 
 void ResponseBodyLoader::EvictFromBackForwardCacheIfDrainedAsBytesConsumer() {
   if (drained_as_bytes_consumer_) {
-    EvictFromBackForwardCache(
-        mojom::blink::RendererEvictionReason::
-            kNetworkRequestDatapipeDrainedAsBytesConsumer);
+    if (!base::FeatureList::IsEnabled(
+            features::kAllowDatapipeDrainedAsBytesConsumerInBFCache)) {
+      EvictFromBackForwardCache(
+          mojom::blink::RendererEvictionReason::
+              kNetworkRequestDatapipeDrainedAsBytesConsumer);
+    }
   }
 }
 
@@ -576,7 +594,7 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {
-    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    const size_t chunk_size = network::features::GetLoaderChunkSize();
     if (chunk_size == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.

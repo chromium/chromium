@@ -4,10 +4,14 @@
 
 #include "media/formats/webm/webm_crypto_helpers.h"
 
+#include <array>
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/logging.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/formats/webm/webm_constants.h"
 
@@ -16,23 +20,15 @@ namespace {
 
 // Generates a 16 byte CTR counter block. The CTR counter block format is a
 // CTR IV appended with a CTR block counter. |iv| is an 8 byte CTR IV.
-// |iv_size| is the size of |iv| in btyes. Returns a string of
+// |iv_size| is the size of |iv| in bytes. Returns a string of
 // kDecryptionKeySize bytes.
-std::string GenerateWebMCounterBlock(const uint8_t* iv, int iv_size) {
-  std::string counter_block(reinterpret_cast<const char*>(iv), iv_size);
-  counter_block.append(DecryptConfig::kDecryptionKeySize - iv_size, 0);
+std::string GenerateWebMCounterBlock(base::span<const uint8_t> iv) {
+  std::string counter_block(iv.begin(), iv.end());
+  counter_block.append(DecryptConfig::kDecryptionKeySize - iv.size(), 0);
   return counter_block;
 }
 
-uint32_t ReadInteger(const uint8_t* buf, int size) {
-  // Read in the big-endian integer.
-  uint32_t value = 0;
-  for (int i = 0; i < size; ++i)
-    value = (value << 8) | buf[i];
-  return value;
-}
-
-bool ExtractSubsamples(const uint8_t* buf,
+bool ExtractSubsamples(base::span<const uint8_t> buf,
                        size_t frame_data_size,
                        size_t num_partitions,
                        std::vector<SubsampleEntry>* subsample_entries) {
@@ -54,13 +50,18 @@ bool ExtractSubsamples(const uint8_t* buf,
   //   Subsample2.clear_bytes = partition_offset_5 - partition_offset_4
   //   Subsample2.cipher_bytes = 0
   uint32_t partition_offset = 0;
-  for (size_t i = 0, offset = 0; i <= num_partitions; ++i) {
+  for (size_t i = 0; i <= num_partitions; ++i) {
     const uint32_t prev_partition_offset = partition_offset;
-    partition_offset =
-        (i == num_partitions)
-            ? frame_data_size
-            : ReadInteger(buf + offset, kWebMEncryptedFramePartitionOffsetSize);
-    offset += kWebMEncryptedFramePartitionOffsetSize;
+    if (i < num_partitions) {
+      // For each partition, the offset is read from the partition offset data.
+      partition_offset = base::U32FromBigEndian(
+          buf.subspan(kWebMEncryptedFramePartitionOffsetSize * i)
+              .first<kWebMEncryptedFramePartitionOffsetSize>());
+    } else {
+      // On the last iteration, we're past the last partition offset in `buf`,
+      // and the offset is the remaining bytes in the frame.
+      partition_offset = frame_data_size;
+    }
     if (partition_offset < prev_partition_offset) {
       DVLOG(1) << "Partition should not be decreasing " << prev_partition_offset
                << " " << partition_offset;
@@ -93,49 +94,61 @@ bool ExtractSubsamples(const uint8_t* buf,
 
 }  // namespace anonymous
 
-bool WebMCreateDecryptConfig(const uint8_t* data,
+bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
                              int data_size,
-                             const uint8_t* key_id,
+                             const uint8_t* key_id_ptr,
                              int key_id_size,
                              std::unique_ptr<DecryptConfig>* decrypt_config,
                              int* data_offset) {
-  if (data_size < kWebMSignalByteSize) {
+  // TODO(crbug.com/40284755):: The function should receive a span, not a
+  // pointer/length pair.
+  auto data =
+      UNSAFE_TODO(base::span(data_ptr, base::checked_cast<size_t>(data_size)));
+  // TODO(crbug.com/40284755):: The function should receive a span, not a
+  // pointer/length pair.
+  auto key_id = UNSAFE_TODO(
+      base::span(key_id_ptr, base::checked_cast<size_t>(key_id_size)));
+  auto reader = base::SpanReader(data);
+
+  uint8_t signal_byte;
+  static_assert(sizeof(signal_byte) == kWebMSignalByteSize);
+  if (!reader.ReadU8BigEndian(signal_byte)) {
     DVLOG(1) << "Got a block from an encrypted stream with no data.";
     return false;
   }
 
-  const uint8_t signal_byte = data[0];
-  int frame_offset = sizeof(signal_byte);
   std::string counter_block;
   std::vector<SubsampleEntry> subsample_entries;
 
   if (signal_byte & kWebMFlagEncryptedFrame) {
-    if (data_size < kWebMSignalByteSize + kWebMIvSize) {
-      DVLOG(1) << "Got an encrypted block with not enough data " << data_size;
+    base::span<const uint8_t> iv;
+    if (!reader.ReadInto(size_t{kWebMIvSize}, iv)) {
+      DVLOG(1) << "Got an encrypted block with not enough data " << data.size();
       return false;
     }
-    counter_block = GenerateWebMCounterBlock(data + frame_offset, kWebMIvSize);
-    frame_offset += kWebMIvSize;
+    counter_block = GenerateWebMCounterBlock(iv);
 
     if (signal_byte & kWebMFlagEncryptedFramePartitioned) {
-      if (data_size < frame_offset + kWebMEncryptedFrameNumPartitionsSize) {
+      uint8_t num_partitions;
+      static_assert(sizeof(num_partitions) ==
+                    kWebMEncryptedFrameNumPartitionsSize);
+      if (!reader.ReadU8BigEndian(num_partitions)) {
         DVLOG(1) << "Got a partitioned encrypted block with not enough data "
-                 << data_size;
+                 << data.size();
         return false;
       }
 
-      const size_t num_partitions = data[frame_offset];
-      frame_offset += kWebMEncryptedFrameNumPartitionsSize;
-      const uint8_t* partition_data_start = data + frame_offset;
-      frame_offset += kWebMEncryptedFramePartitionOffsetSize * num_partitions;
-      if (data_size <= frame_offset) {
+      base::span<const uint8_t> partition_data;
+      if (!reader.ReadInto(
+              size_t{kWebMEncryptedFramePartitionOffsetSize} * num_partitions,
+              partition_data) ||
+          reader.remaining() == 0u) {
         DVLOG(1) << "Got a partitioned encrypted block with " << num_partitions
-                 << " partitions but not enough data " << data_size;
+                 << " partitions but not enough data " << data.size();
         return false;
       }
-      const size_t frame_data_size = data_size - frame_offset;
-      if (!ExtractSubsamples(partition_data_start, frame_data_size,
-                             num_partitions, &subsample_entries)) {
+      if (!ExtractSubsamples(partition_data, reader.remaining(), num_partitions,
+                             &subsample_entries)) {
         return false;
       }
     }
@@ -146,10 +159,10 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
     decrypt_config->reset();
   } else {
     *decrypt_config = DecryptConfig::CreateCencConfig(
-        std::string(reinterpret_cast<const char*>(key_id), key_id_size),
-        counter_block, subsample_entries);
+        std::string(key_id.begin(), key_id.end()), counter_block,
+        subsample_entries);
   }
-  *data_offset = frame_offset;
+  *data_offset = base::checked_cast<int>(data.size() - reader.remaining());
 
   return true;
 }

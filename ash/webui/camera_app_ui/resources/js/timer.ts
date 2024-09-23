@@ -27,10 +27,12 @@ export class OneShotTimer {
   }
 
   /**
-   * Stops the pending timeout.
+   * Stops the pending timeout. It's a no-op if the timer is already stopped.
    */
   stop(): void {
-    assert(this.timeoutId !== null);
+    if (this.timeoutId === null) {
+      return;
+    }
     clearTimeout(this.timeoutId);
     this.timeoutId = null;
   }

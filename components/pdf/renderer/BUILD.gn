@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf)
 
@@ -21,6 +21,8 @@ static_library("renderer") {
   sources = [
     "internal_plugin_renderer_helpers.cc",
     "pdf_accessibility_tree.cc",
+    "pdf_accessibility_tree_builder.cc",
+    "pdf_accessibility_tree_builder.h",
     "pdf_ax_action_target.cc",
     "pdf_internal_plugin_delegate.cc",
     "pdf_view_web_plugin_client.cc",
@@ -31,8 +33,6 @@ static_library("renderer") {
     "//base",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
-    "//components/services/screen_ai/buildflags",
-    "//components/services/screen_ai/public/mojom",
     "//components/strings",
     "//content/public/common",
     "//gin",
@@ -43,12 +43,14 @@ static_library("renderer") {
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
+    "//services/screen_ai/buildflags",
+    "//services/screen_ai/public/cpp:metrics",
     "//skia",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/icu",
     "//ui/display",
     "//ui/gfx/geometry",
+    "//ui/strings:auto_image_annotation_strings",
     "//url",
     "//v8",
   ]
@@ -65,7 +67,14 @@ static_library("renderer") {
   }
 
   if (enable_screen_ai_service) {
-    deps += [ "//components/language/core/common" ]
+    sources += [
+      "pdf_ocr_helper.cc",
+      "pdf_ocr_helper.h",
+    ]
+    deps += [
+      "//components/language/core/common",
+      "//services/screen_ai/public/mojom",
+    ]
   }
 }
 
@@ -80,7 +89,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx/geometry",
 
-    # TODO(crbug.com/1233217): The V8 dependency should have been propagated
+    # TODO(crbug.com/40191420): The V8 dependency should have been propagated
     # from ":renderer".
     "//v8",
   ]

@@ -10,7 +10,7 @@
 
 namespace policy {
 
-// TODO(crbug.com/1291609): Mock Lacros side of crosapi instead when possible.
+// TODO(crbug.com/40818864): Mock Lacros side of crosapi instead when possible.
 // This will allow these tests to be just unit_tests, not
 // lacros_chrome_browsertests.
 class MockDlpCrosapi : public crosapi::mojom::Dlp {

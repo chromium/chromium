@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
@@ -29,7 +30,7 @@ public class TabModelFilterProvider {
     private final Callback<TabModel> mCurrentTabModelObserver = this::onCurrentTabModelChanged;
 
     private TabModelSelector mTabModelSelector;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public TabModelFilterProvider() {}
@@ -57,16 +58,12 @@ public class TabModelFilterProvider {
         }
         mPendingTabModelObserver.clear();
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabStateInitialized() {
-                        markTabStateInitialized();
-                        mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-                        mTabModelSelectorObserver = null;
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                mCallbackController.makeCancelable(
+                        (unusedTabModelSelector) -> {
+                            markTabStateInitialized();
+                        }));
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
     }
 
@@ -132,6 +129,10 @@ public class TabModelFilterProvider {
 
     /** This method destroys all owned {@link TabModelFilter}. */
     public void destroy() {
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         for (TabModelFilter filter : mTabModelFilterList) {
             filter.destroy();
         }
@@ -161,14 +162,11 @@ public class TabModelFilterProvider {
         mTabModelFilterList = Collections.emptyList();
         mCurrentTabModelFilterSupplier.set(null);
         cleanupTabModelSelectorObservers();
+        mCallbackController = new CallbackController();
     }
 
     private void cleanupTabModelSelectorObservers() {
         if (mTabModelSelector != null) {
-            if (mTabModelSelectorObserver != null) {
-                mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-                mTabModelSelectorObserver = null;
-            }
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
     }

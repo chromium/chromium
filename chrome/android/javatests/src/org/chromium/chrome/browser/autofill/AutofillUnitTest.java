@@ -16,6 +16,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -26,8 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -60,7 +60,7 @@ public class AutofillUnitTest {
                 ViewAndroidDelegate.createBasicDelegate(
                         sActivityTestRule.getActivity().findViewById(android.R.id.content));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View anchorView = viewDelegate.acquireView();
                     viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
@@ -110,14 +110,14 @@ public class AutofillUnitTest {
                     .setLabel("Sherlock Holmes")
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build()
         };
@@ -129,42 +129,42 @@ public class AutofillUnitTest {
                     .setLabel("Sherlock Holmes")
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthos")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Porthos")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Aramis")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build()
         };
     }
 
     public void openAutofillPopupAndWaitUntilReady(final AutofillSuggestion[] suggestions) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAutofillPopup.filterAndShow(suggestions, /* isRtl= */ false));
         CriteriaHelper.pollInstrumentationThread(
                 () -> {

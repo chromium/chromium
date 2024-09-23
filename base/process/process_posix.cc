@@ -31,8 +31,13 @@
 #include "base/test/clang_profiling.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "TargetConditionals.h"
+#endif
+
 namespace {
 
+#if !BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
 bool WaitpidWithTimeout(base::ProcessHandle handle,
                         int* status,
                         base::TimeDelta wait) {
@@ -92,6 +97,7 @@ bool WaitpidWithTimeout(base::ProcessHandle handle,
 
   return ret_pid > 0;
 }
+#endif
 
 #if BUILDFLAG(IS_MAC)
 // Using kqueue on Mac so that we can wait on non-child processes.
@@ -183,46 +189,6 @@ bool WaitForSingleNonChildProcess(base::ProcessHandle handle,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
-                                int* exit_code,
-                                base::TimeDelta timeout) {
-  const base::ProcessHandle our_pid = base::GetCurrentProcessHandle();
-  if (handle == our_pid) {
-    // We won't be able to wait for ourselves to exit.
-    return false;
-  }
-
-  TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
-
-  const base::ProcessHandle parent_pid = base::GetParentProcessId(handle);
-  const bool exited = (parent_pid < 0);
-
-  if (!exited && parent_pid != our_pid) {
-#if BUILDFLAG(IS_MAC)
-    // On Mac we can wait on non child processes.
-    return WaitForSingleNonChildProcess(handle, timeout);
-#else
-    // Currently on Linux we can't handle non child processes.
-    NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_MAC)
-  }
-
-  int status;
-  if (!WaitpidWithTimeout(handle, &status, timeout))
-    return exited;
-  if (WIFSIGNALED(status)) {
-    if (exit_code)
-      *exit_code = -1;
-    return true;
-  }
-  if (WIFEXITED(status)) {
-    if (exit_code)
-      *exit_code = WEXITSTATUS(status);
-    return true;
-  }
-  return exited;
-}
-
 }  // namespace
 
 namespace base {
@@ -233,6 +199,9 @@ Process::Process(Process&& other) : process_(other.process_) {
 #if BUILDFLAG(IS_CHROMEOS)
   unique_token_ = std::move(other.unique_token_);
 #endif
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+  content_process_ = other.content_process_;
+#endif
 
   other.Close();
 }
@@ -241,6 +210,9 @@ Process& Process::operator=(Process&& other) {
   process_ = other.process_;
 #if BUILDFLAG(IS_CHROMEOS)
   unique_token_ = std::move(other.unique_token_);
+#endif
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+  content_process_ = other.content_process_;
 #endif
   other.Close();
   return *this;
@@ -288,13 +260,13 @@ Process Process::Duplicate() const {
   if (is_current())
     return Current();
 
-#if BUILDFLAG(IS_CHROMEOS)
   Process duplicate = Process(process_);
+#if BUILDFLAG(IS_CHROMEOS)
   duplicate.unique_token_ = unique_token_;
-  return duplicate;
-#else
-  return Process(process_);
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+  duplicate.content_process_ = content_process_;
 #endif
+  return duplicate;
 }
 
 ProcessHandle Process::Release() {
@@ -317,11 +289,17 @@ void Process::Close() {
   // end up w/ a zombie when it does finally exit.
 }
 
+#if !BUILDFLAG(IS_IOS)
 bool Process::Terminate(int exit_code, bool wait) const {
   // exit_code isn't supportable.
   DCHECK(IsValid());
   CHECK_GT(process_, 0);
+  return TerminateInternal(exit_code, wait);
+}
+#endif
 
+#if !BUILDFLAG(IS_IOS) || (BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR)
+bool Process::TerminateInternal(int exit_code, bool wait) const {
   // RESULT_CODE_KILLED_BAD_MESSAGE == 3, but layering prevents its use.
   // |wait| is always false when terminating badly-behaved processes.
   const bool maybe_compromised = !wait && exit_code == 3;
@@ -355,11 +333,13 @@ bool Process::Terminate(int exit_code, bool wait) const {
   }
   return WaitForExit(nullptr);
 }
+#endif
 
 bool Process::WaitForExit(int* exit_code) const {
   return WaitForExitWithTimeout(TimeDelta::Max(), exit_code);
 }
 
+#if !BUILDFLAG(IS_IOS)
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   if (!timeout.is_zero()) {
     // Assert that this thread is allowed to wait below. This intentionally
@@ -378,6 +358,52 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   }
   return exited;
 }
+#endif
+
+#if !BUILDFLAG(IS_IOS) || (BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR)
+bool Process::WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
+                                         int* exit_code,
+                                         base::TimeDelta timeout) const {
+  const base::ProcessHandle our_pid = base::GetCurrentProcessHandle();
+  if (handle == our_pid) {
+    // We won't be able to wait for ourselves to exit.
+    return false;
+  }
+
+  TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
+
+  const base::ProcessHandle parent_pid = base::GetParentProcessId(handle);
+  const bool exited = (parent_pid < 0);
+
+  if (!exited && parent_pid != our_pid) {
+#if BUILDFLAG(IS_MAC)
+    // On Mac we can wait on non child processes.
+    return WaitForSingleNonChildProcess(handle, timeout);
+#else
+    // Currently on Linux we can't handle non child processes.
+    NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_MAC)
+  }
+
+  int status;
+  if (!WaitpidWithTimeout(handle, &status, timeout)) {
+    return exited;
+  }
+  if (WIFSIGNALED(status)) {
+    if (exit_code) {
+      *exit_code = -1;
+    }
+    return true;
+  }
+  if (WIFEXITED(status)) {
+    if (exit_code) {
+      *exit_code = WEXITSTATUS(status);
+    }
+    return true;
+  }
+  return exited;
+}
+#endif
 
 void Process::Exited(int exit_code) const {
 #if BUILDFLAG(IS_CHROMEOS)

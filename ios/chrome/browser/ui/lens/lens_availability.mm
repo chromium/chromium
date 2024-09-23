@@ -53,7 +53,7 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       availability_metric_name = kIOSPlusButtonSupportStatusHistogramName;
       break;
     default:
-      NOTREACHED() << "Unsupported Lens Entry Point.";
+      NOTREACHED_IN_MIGRATION() << "Unsupported Lens Entry Point.";
   }
 
   LensSupportStatus lens_support_status;

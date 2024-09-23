@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/video_player/decoder_listener.h"
 
 #include "base/functional/bind.h"
@@ -122,6 +127,12 @@ bool DecoderListener::WaitForEvent(Event sought_event, size_t times) {
         times--;
       if (times == 0)
         return true;
+
+      if (received_event == DecoderListener::Event::kFailure) {
+        LOG(ERROR) << "Failed waiting for '" << EventName(sought_event)
+                   << "' event.";
+        return false;
+      }
     }
 
     // Check whether we've exceeded the maximum time we're allowed to wait.

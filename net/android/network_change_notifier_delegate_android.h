@@ -89,10 +89,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   jint GetConnectionCost(JNIEnv* env, jobject obj);
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
-  // the maximum bandwidth of the connection changes. This updates the current
-  // max bandwidth seen by this class and forwards the notification to the
-  // observers that subscribed through RegisterObserver().
-  void NotifyMaxBandwidthChanged(
+  // the connection subtype changes. This updates the current
+  // max bandwidth and connection subtype seen by this class and forwards the
+  // max bandwidth change to the observers that subscribed through
+  // RegisterObserver().
+  void NotifyConnectionSubtypeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint subtype);
@@ -155,7 +156,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void GetCurrentlyConnectedNetworks(NetworkList* network_list) const;
   bool IsDefaultNetworkActive();
 
-  // Can only be called from the main (Java) thread.
+  // Can be called from any thread if kStoreConnectionSubtype is enabled,
+  // otherwise should be only called from main thread.
   NetworkChangeNotifier::ConnectionSubtype GetCurrentConnectionSubtype() const;
 
   // Returns true if NetworkCallback failed to register, indicating that
@@ -187,6 +189,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // Setters that grab appropriate lock.
   void SetCurrentConnectionCost(ConnectionCost connection_cost);
   void SetCurrentConnectionType(ConnectionType connection_type);
+  void SetCurrentConnectionSubtype(ConnectionSubtype connection_subtype);
   void SetCurrentMaxBandwidth(double max_bandwidth);
   void SetCurrentDefaultNetwork(handles::NetworkHandle default_network);
   void SetCurrentNetworksAndTypes(NetworkMap network_map);
@@ -218,6 +221,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   mutable base::Lock connection_lock_;  // Protects the state below.
   ConnectionType connection_type_;
+  ConnectionSubtype connection_subtype_;
   ConnectionCost connection_cost_;
   double connection_max_bandwidth_;
   handles::NetworkHandle default_network_;

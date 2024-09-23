@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/page/print_context.h"
 
 #include <memory>
@@ -29,7 +34,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -129,7 +133,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().body()->setInnerHTML(body_content);
   }
 
-  gfx::Rect PrintSinglePage(SkCanvas& canvas, int page_number = 0) {
+  gfx::Rect PrintSinglePage(SkCanvas& canvas, int page_index = 0) {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
@@ -138,23 +142,21 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 
-    gfx::Rect page_rect = GetPrintContext().PageRect(page_number);
+    gfx::Rect page_rect = GetPrintContext().PageRect(page_index);
 
-    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-    GraphicsContext& context = builder->Context();
+    PaintRecordBuilder builder;
+    GraphicsContext& context = builder.Context();
     context.SetPrinting(true);
-    GetDocument().View()->PaintOutsideOfLifecycle(
-        context, PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
-        CullRect(page_rect));
-    {
-      DrawingRecorder recorder(
-          context, *GetDocument().GetLayoutView(),
-          DisplayItem::kPrintedContentDestinationLocations);
-      GetPrintContext().OutputLinkedDestinations(context, page_rect);
-    }
-    builder->EndRecording().Playback(&canvas);
+    GetDocument().View()->PrintPage(context, page_index, CullRect(page_rect));
+    GetPrintContext().OutputLinkedDestinations(
+        context,
+        GetDocument().GetLayoutView()->FirstFragment().ContentsProperties(),
+        page_rect);
+    builder.EndRecording().Playback(&canvas);
     GetPrintContext().EndPrintMode();
-    return page_rect;
+
+    // The drawing operations are relative to the current page.
+    return gfx::Rect(page_rect.size());
   }
 
   static String AbsoluteBlockHtmlForLink(int x,
@@ -533,7 +535,7 @@ TEST_P(PrintContextTest, LinkedTarget) {
   );
   PrintSinglePage(canvas);
 
-  const Vector<MockPageContextCanvas::Operation>& operations =
+  Vector<MockPageContextCanvas::Operation> operations =
       canvas.RecordedOperations();
   ASSERT_EQ(8u, operations.size());
   // The DrawRect operations come from a stable iterator.
@@ -547,14 +549,20 @@ TEST_P(PrintContextTest, LinkedTarget) {
   EXPECT_SKRECT_EQ(50, 460, 10, 10, operations[3].rect);
 
   // The DrawPoint operations come from an unstable iterator.
+  std::sort(operations.begin() + 4, operations.begin() + 8,
+            [](const MockPageContextCanvas::Operation& a,
+               const MockPageContextCanvas::Operation& b) {
+              return std::pair(a.rect.x(), a.rect.y()) <
+                     std::pair(b.rect.x(), b.rect.y());
+            });
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[4].type);
-  EXPECT_SKRECT_EQ(450, 260, 0, 0, operations[4].rect);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[4].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[5].type);
   EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[5].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[6].type);
   EXPECT_SKRECT_EQ(450, 60, 0, 0, operations[6].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[7].type);
-  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[7].rect);
+  EXPECT_SKRECT_EQ(450, 260, 0, 0, operations[7].rect);
 }
 
 TEST_P(PrintContextTest, EmptyLinkedTarget) {
@@ -636,6 +644,31 @@ TEST_P(PrintContextTest, LinkInFragmentedContainer) {
   EXPECT_EQ(page2_link2.type, MockPageContextCanvas::kDrawRect);
   EXPECT_GE(page2_link2.rect.y(), page_rect.y() + 50);
   EXPECT_LE(page2_link2.rect.bottom(), page_rect.y() + 100);
+}
+
+TEST_P(PrintContextTest, LinkedTargetSecondPage) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#nextpage"></a>
+    <div style="break-before:page;"></div>
+    <div id="nextpage" style="margin-top:50px; width:100px; height:100px;"></div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 0, 33, 33, (*operations)[0].rect);
+
+  // The destination is on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 50, 0, 0, (*operations)[0].rect);
 }
 
 // Here are a few tests to check that shrink to fit doesn't mess up page count.
@@ -787,7 +820,6 @@ TEST_P(PrintContextTest, SvgMarkersOnMultiplePages) {
   PrintSinglePage(first_page_canvas, 0);
 
   MockCanvas second_page_canvas;
-  EXPECT_CALL(second_page_canvas, didTranslate(0, kPageHeight)).Times(1);
   EXPECT_CALL(second_page_canvas, didTranslate(2, 0)).Times(1);
   EXPECT_CALL(second_page_canvas, onDrawRect(SkRect::MakeWH(50, 25), _))
       .Times(1);
@@ -862,7 +894,8 @@ TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
   float maximum_shrink_ratio = 1.1;
   auto* node = GetDocument().documentElement();
 
-  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size),
+                                          maximum_shrink_ratio);
   EXPECT_EQ(node->OffsetWidth(), 400);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(node->OffsetWidth(), 800);
@@ -870,7 +903,8 @@ TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
   SetBodyInnerHTML(R"HTML(
       <div style='border: 0px; margin: 0px; background-color: #0000FF;
       width:800px; height:400px'></div>)HTML");
-  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size),
+                                          maximum_shrink_ratio);
   EXPECT_EQ(node->OffsetWidth(), 440);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(node->OffsetWidth(), 800);
@@ -977,7 +1011,7 @@ class PrintContextAcceleratedCanvasTest : public PrintContextTest {
     // destroyed before the TestContextProvider.
     PrintContextTest::TearDown();
 
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_ = nullptr;
     accelerated_canvas_scope_ = nullptr;
   }
@@ -1052,7 +1086,7 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
     // destroyed before the TestContextProvider.
     accelerated_compositing_scope_ = nullptr;
     test_context_provider_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     PrintContextTest::TearDown();
     accelerated_canvas_scope_ = nullptr;
   }
@@ -1232,7 +1266,8 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   // The iframe element in the document.
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
-  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams(page_size),
+                                          maximum_shrink_ratio);
   EXPECT_EQ(parent->OffsetWidth(), 440);
   EXPECT_EQ(child->OffsetWidth(), 800);
   EXPECT_EQ(target->OffsetWidth(), 440);
@@ -1241,7 +1276,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   EXPECT_EQ(child->OffsetWidth(), 800);
   EXPECT_EQ(target->OffsetWidth(), 800);
 
-  GetDocument().GetFrame()->StartPrinting();
+  GetDocument().GetFrame()->StartPrinting(WebPrintParams());
   EXPECT_EQ(parent->OffsetWidth(), 800);
   EXPECT_EQ(child->OffsetWidth(), 800);
   EXPECT_EQ(target->OffsetWidth(), 800);
@@ -1251,7 +1286,8 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   EXPECT_EQ(target->OffsetWidth(), 800);
 
   ASSERT_TRUE(ChildDocument() != GetDocument());
-  ChildDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
+  ChildDocument().GetFrame()->StartPrinting(WebPrintParams(page_size),
+                                            maximum_shrink_ratio);
   EXPECT_EQ(parent->OffsetWidth(), 800);
   EXPECT_EQ(child->OffsetWidth(), 400);
   EXPECT_EQ(target->OffsetWidth(), 800);

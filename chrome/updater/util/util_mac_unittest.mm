@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +37,8 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
 }
 
 TEST(UtilTest, GetCacheBaseDirectoryTest) {
-  std::optional<base::FilePath> path(GetCacheBaseDirectory(GetTestScope()));
+  std::optional<base::FilePath> path(
+      GetCacheBaseDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(path);
 
   EXPECT_EQ(path->BaseName().value(),

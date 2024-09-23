@@ -7,21 +7,25 @@
 #include "base/no_destructor.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
 sync_bookmarks::BookmarkSyncService*
-AccountBookmarkSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+AccountBookmarkSyncServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+sync_bookmarks::BookmarkSyncService*
+AccountBookmarkSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -44,11 +48,10 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(
       new sync_bookmarks::BookmarkSyncService(
-          BookmarkUndoServiceFactory::GetForBrowserStateIfExists(browser_state),
+          BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways));
   return bookmark_sync_service;
 }

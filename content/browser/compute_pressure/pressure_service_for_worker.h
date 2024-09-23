@@ -39,6 +39,8 @@ class EXPORT_TEMPLATE_DECLARE(CONTENT_EXPORT) PressureServiceForWorker
 
   // PressureServiceBase override.
   bool ShouldDeliverUpdate() const override;
+  std::optional<base::UnguessableToken> GetTokenFor(
+      device::mojom::PressureSource) const override;
 
  private:
   // DedicatedWorkerHost/SharedWorkerHost owns an instance of this class.

@@ -1,7 +1,7 @@
-rootWebArea scrollable=true
+rootWebArea scrollable=false
 ++genericContainer ignored
 ++++genericContainer
 ++++++iframe name='Empty iframe'
-++++++++rootWebArea scrollable=true
+++++++++rootWebArea scrollable=false
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored

@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.mockito.Mockito.doReturn;
+
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
+
+import android.view.View;
+import android.widget.TextView;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,10 +20,11 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -32,23 +38,30 @@ public class HistoryAdapterTest {
 
     @Mock private MoreProgressButton mMockButton;
     @Mock private HistoryContentManager mContentManager;
+    @Mock private ChipView mAppFilterChip;
+    @Mock private TextView mTextView;
+    @Mock private View mAppFilterContainer;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter =
-                new HistoryAdapter(
-                        mContentManager,
-                        mHistoryProvider,
-                        new ObservableSupplierImpl<>(),
-                        (vg) -> null);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
+        doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
     }
 
     private void initializeAdapter() {
         mAdapter.startLoadingItems();
+    }
+
+    private boolean showSourceApp() {
+        return mAdapter.showSourceAppForTest();
+    }
+
+    private String getAppId() {
+        return mAdapter.getAppIdForTest();
     }
 
     @Test
@@ -68,6 +81,57 @@ public class HistoryAdapterTest {
 
         // There should be three items - the header, a date and the history item.
         checkAdapterContents(mAdapter, true, false, null, null, item1);
+    }
+
+    @Test
+    public void testHideSourceAppInAppSpecficHistory() {
+        // For the entire lifecycle, source app should remain hidden for app-specific history.
+        final String appId = "org.nicecompany.niceapp";
+        Assert.assertFalse("Source app should be hidden", showSourceApp());
+
+        mAdapter.setAppId(appId);
+
+        mAdapter.onSearchStart();
+        Assert.assertFalse("Source app should remain hidden on entering search", showSourceApp());
+        Assert.assertEquals("App id should remain unchanged on entering search", appId, getAppId());
+
+        mAdapter.onEndSearch();
+        Assert.assertFalse("Source app should remain hidden on exiting search", showSourceApp());
+        Assert.assertEquals("App id should remain unchanged on exiting search", appId, getAppId());
+    }
+
+    @Test
+    public void testShowSourceAppInBrAppHistory() {
+        // Reinstantiate HistoryAdapter with |showAppFilter| flag on. Now we're in BrApp.
+        doReturn(true).when(mContentManager).showAppFilter();
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+
+        mAdapter.generateHeaderItemsForTest();
+        mAdapter.generateFooterItemsForTest(mMockButton);
+        mAdapter.setAppFilterButtonForTest(mAppFilterChip);
+        Assert.assertTrue("Source app should be on", showSourceApp());
+        Assert.assertEquals("App id should be null", null, getAppId());
+
+        // |onSearchStart| is called when search mode is entered. This should
+        // not affect the show-source-app flag.
+        mAdapter.onSearchStart();
+        Assert.assertTrue("Source app should remain on when entering search", showSourceApp());
+
+        mAdapter.updateHistory(new AppInfo("org.great.app", null, "Great App"));
+        Assert.assertFalse("No source app when app filter is on", showSourceApp());
+        Assert.assertEquals("App id should switch to greatapp", "org.great.app", getAppId());
+
+        mAdapter.updateHistory(null);
+        Assert.assertTrue("Source app when app filter is reset", showSourceApp());
+        Assert.assertEquals("App id should switch to null", null, getAppId());
+
+        mAdapter.updateHistory(new AppInfo("org.awesome.app", null, "Awesome App"));
+        Assert.assertFalse("No source app when app filter is on again", showSourceApp());
+        Assert.assertEquals("App id should switch to awesomeapp", "org.awesome.app", getAppId());
+
+        mAdapter.onEndSearch();
+        Assert.assertTrue("Should show source app when search is exited", showSourceApp());
+        Assert.assertEquals("App id should reverted to null", null, getAppId());
     }
 
     @Test

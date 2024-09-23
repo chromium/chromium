@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
@@ -67,6 +68,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       std::optional<base::TimeDelta> prompt_display_duration,
       bool is_post_prompt,
       const GURL& gurl,
+      std::optional<
+          permissions::feature_params::PermissionElementPromptPosition>
+          pepc_prompt_position,
+      ContentSetting initial_permission_status,
       base::OnceCallback<void()> hats_shown_callback_) override;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -83,6 +88,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       permissions::PermissionRequestGestureType gesture_type,
       std::optional<QuietUiReason> quiet_ui_reason,
       base::TimeDelta prompt_display_duration,
+      std::optional<
+          permissions::feature_params::PermissionElementPromptPosition>
+          pepc_prompt_position,
+      ContentSetting initial_permission_status,
       content::WebContents* web_contents) override;
   std::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
@@ -90,7 +99,11 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission) override;
-  std::optional<url::Origin> GetAutoApprovalOrigin() override;
+  std::optional<url::Origin> GetAutoApprovalOrigin(
+      content::BrowserContext* browser_context) override;
+  std::optional<permissions::PermissionAction> GetAutoApprovalStatus(
+      content::BrowserContext* browser_context,
+      const GURL& origin) override;
   bool CanBypassEmbeddingOriginCheck(const GURL& requesting_origin,
                                      const GURL& embedding_origin) override;
   std::optional<GURL> OverrideCanonicalOrigin(
@@ -128,6 +141,9 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::WebContents* web_contents,
       permissions::PermissionPrompt::Delegate* delegate) override;
 #endif
+
+  bool HasDevicePermission(ContentSettingsType type) const override;
+  bool CanRequestDevicePermission(ContentSettingsType type) const override;
 
  private:
   friend base::NoDestructor<ChromePermissionsClient>;

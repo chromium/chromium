@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // When this is called, |NetworkCertLoader| stops sending out updates to its
   // observers. This is a workaround for https://crbug.com/894867, where a crash
   // is suspected to happen due to updates sent out during the shutdown
-  // procedure. TODO(https://crbug.com/894867): Remove this when the root cause
+  // procedure. TODO(crbug.com/41420425): Remove this when the root cause
   // is found.
   void set_is_shutting_down() { is_shutting_down_ = true; }
 

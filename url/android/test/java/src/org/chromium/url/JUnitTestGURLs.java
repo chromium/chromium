@@ -10,6 +10,7 @@ public class JUnitTestGURLs {
     public static final GURL HTTP_URL = new GURL("http://www.example.com/");
     public static final GURL URL_1 = new GURL("https://www.one.com/");
     public static final GURL URL_1_WITH_PATH = new GURL("https://www.one.com/some_path.html");
+    public static final GURL URL_1_WITH_PDF_PATH = new GURL("https://www.one.com/some_path.pdf");
     public static final GURL URL_2 = new GURL("https://www.two.com/");
     public static final GURL URL_3 = new GURL("https://www.three.com/");
     public static final GURL MAPS_URL = new GURL("https://maps.google.com/");

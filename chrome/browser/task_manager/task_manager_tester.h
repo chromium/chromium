@@ -41,6 +41,9 @@ class TaskManagerTester {
   // Get the title text of a particular |row|.
   std::u16string GetRowTitle(size_t row);
 
+  // Get the row of the active task, or nullopt if not found.
+  std::optional<size_t> GetRowForActiveTask();
+
   // Hide or show a column. If a column is not visible its stats are not
   // necessarily gathered.
   void ToggleColumnVisibility(ColumnSpecifier column);

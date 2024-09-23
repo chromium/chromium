@@ -7,6 +7,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -165,7 +166,7 @@ void PushableMediaStreamAudioSource::DeliverData(
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBuffer::WrapOrCopyToAudioBus(data);
 
-  DeliverDataToTracks(*audio_bus, base::TimeTicks() + data->timestamp());
+  DeliverDataToTracks(*audio_bus, base::TimeTicks() + data->timestamp(), {});
 }
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {

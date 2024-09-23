@@ -67,7 +67,8 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   void AddAuthFactor(std::unique_ptr<AuthFactorModel> auth_factor);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
   // Should be called when the visibility of PIN authentication changes.

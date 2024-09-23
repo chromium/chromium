@@ -54,13 +54,23 @@ class NavigatorDelegate {
   // of this call.
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) = 0;
 
+  // Called when the navigation gets cancelled before it even starts (i.e.,
+  // the respective `NavigationRequest::StartNavigation()`). This can happen
+  // when the user decides to not leave the current page by interacting with the
+  // BeforeUnload dialog. Can also happen if `BeginNavigationImpl()` reaches an
+  // early out. If the navigation never starts, `DidFinishNavigation()` won't be
+  // fired. Use this API to observe the destruction of such a navigation
+  // request.
+  virtual void DidCancelNavigationBeforeStart(
+      NavigationHandle* navigation_handle) = 0;
+
   // TODO(clamy): all methods below that are related to navigation
   // events should go away in favor of the ones above.
 
   // Handles post-navigation tasks in navigation BEFORE the entry has been
   // committed to the NavigationController.
   virtual void DidNavigateMainFramePreCommit(
-      FrameTreeNode* frame_tree_node,
+      NavigationHandle* navigation_handle,
       bool navigation_is_within_page) = 0;
 
   // Handles post-navigation tasks in navigation AFTER the entry has been
@@ -74,6 +84,12 @@ class NavigatorDelegate {
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details) = 0;
 
+  // Called when the NavigationHandleTiming associated with `navigation_handle`
+  // has been updated. See the comment at
+  // `WebContentsObserver::DidUpdateNavigationHandleTiming()` for more details.
+  virtual void DidUpdateNavigationHandleTiming(
+      NavigationHandle* navigation_handle) = 0;
+
   // Notification to the Navigator embedder that navigation state has
   // changed. This method corresponds to
   // WebContents::NotifyNavigationStateChanged.
@@ -81,7 +97,9 @@ class NavigatorDelegate {
 
   // Opens a URL with the given parameters. See PageNavigator::OpenURL, which
   // this is an alias of.
-  virtual WebContents* OpenURL(const OpenURLParams& params) = 0;
+  virtual WebContents* OpenURL(const OpenURLParams& params,
+                               base::OnceCallback<void(NavigationHandle&)>
+                                   navigation_handle_callback) = 0;
 
   // Returns whether to continue a navigation that needs to transfer to a
   // different process between the load start and commit.
@@ -145,6 +163,14 @@ class NavigatorDelegate {
   virtual void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) = 0;
+
+  // Request to capture the content area as a bitmap. Return false if the
+  // embedder is not overlaying any content on the current navigation entry's
+  // Document. Return true if a bitmap will be captured. Callback must be
+  // dispatched asynchronously (with an empty bitmap if the capture fails,
+  // e.g. not enough memory) if this returns true.
+  virtual bool MaybeCopyContentAreaAsBitmap(
+      base::OnceCallback<void(const SkBitmap&)> callback) = 0;
 };
 
 }  // namespace content

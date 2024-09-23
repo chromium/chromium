@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/app_constants/constants.h"
@@ -194,21 +192,6 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     pattern.SetHost(launch_web_url_.host());
     pattern.SetPath("/*");
     extension->AddWebExtentPattern(pattern);
-  }
-
-  // In order for the --apps-gallery-url switch to work with the gallery
-  // process isolation, we must insert any provided value into the component
-  // app's launch url and web extent.
-  if (extension->id() == extensions::kWebStoreAppId) {
-    std::string gallery_url_str =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kAppsGalleryURL);
-
-    // Empty string means option was not used.
-    if (!gallery_url_str.empty()) {
-      GURL gallery_url(gallery_url_str);
-      OverrideLaunchURL(extension, gallery_url);
-    }
   }
 
   return true;

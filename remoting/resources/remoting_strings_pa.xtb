@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ਕਲਾਇੰਟ 'ਤੇ <ph name="URL" /> ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2366718077645204424">ਹੋਸਟ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਨੈੱਟਵਰਕ ਦਸੰਰੂਪਣ ਦੇ ਕਾਰਨ ਹੈ।</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ਆਖਰੀ ਵਾਰ ਆਨਲਾਈਨ <ph name="RELATIVE_TIMESTAMP" />।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ਨੂੰ 'ਪਹੁੰਚਯੋਗਤਾ' ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="2540992418118313681">ਕੀ ਤੁਸੀਂ ਕਿਸੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਦਿਖਾਉਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਦੇਣ ਲਈ ਇਹ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਰਿਮੋਟਿੰਗ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="3581045510967524389">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਆਨਲਾਈਨ ਹੈ।</translation>
 <translation id="3596628256176442606">ਇਹ ਸੇਵਾ ਕਲਾਈਂਟਾਂ ਨੂੰ Chromoting ਤੋਂ ਆਉਣ ਵਾਲੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਂਦੀ ਹੈ।</translation>
-<translation id="369442766917958684">ਆਫ਼ਲਾਈਨ।</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3776024066357219166">ਤੁਹਾਡਾ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਸੈਸ਼ਨ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ।</translation>
 <translation id="3858860766373142691">ਨਾਮ</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ਤੁਹਾਡਾ ਡੈਸਕਟਾਪ ਇਸ ਵੇਲੇ <ph name="USER" /> ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="579702532610384533">ਰੀਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5810269635982033450">ਸਕ੍ਰੀਨ ਕਿਸੇ ਟਰੈਕਪੈਡ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ਨੇ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਦੇਖਣ ਅਤੇ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਬੇਨਤੀ ਦੀ ਉਮੀਦ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ਦਬਾਓ। ਨਹੀਂ ਤਾਂ ਤਿਆਰ ਹੋਣ 'ਤੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ਚੁਣੋ।</translation>

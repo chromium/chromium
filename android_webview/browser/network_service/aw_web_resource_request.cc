@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
 
+#include "android_webview/browser/network_service/net_helpers.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "net/http/http_request_headers.h"
@@ -18,21 +19,6 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ToJavaArrayOfStrings;
 
 namespace android_webview {
-namespace {
-
-void ConvertRequestHeadersToVectors(const net::HttpRequestHeaders& headers,
-                                    std::vector<std::string>* header_names,
-                                    std::vector<std::string>* header_values) {
-  DCHECK(header_names->empty());
-  DCHECK(header_values->empty());
-  net::HttpRequestHeaders::Iterator headers_iterator(headers);
-  while (headers_iterator.GetNext()) {
-    header_names->push_back(headers_iterator.name());
-    header_values->push_back(headers_iterator.value());
-  }
-}
-
-}  // namespace
 
 AwWebResourceRequest::AwWebResourceRequest(
     const network::ResourceRequest& request)

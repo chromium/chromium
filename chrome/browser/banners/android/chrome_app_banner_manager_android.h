@@ -33,8 +33,6 @@ class ChromeAppBannerManagerAndroid
   // AppBannerManagerAndroid::ChromeDelegate:
   void OnInstallableCheckedNoErrors(
       const ManifestId& manifest_id) const override;
-  bool MaybeShowInProductHelpShouldAvoidAmbientBadge(
-      const GURL& validated_url) override;
   segmentation_platform::SegmentationPlatformService*
   GetSegmentationPlatformService() override;
   PrefService* GetPrefService() override;

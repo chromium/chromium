@@ -6,11 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "sql/database.h"
 #include "sql/statement.h"
-
-using base::StringPrintf;
 
 namespace extensions {
 
@@ -25,12 +23,10 @@ DatabaseStringTable::~DatabaseStringTable() {}
 
 bool DatabaseStringTable::Initialize(sql::Database* connection) {
   if (!connection->DoesTableExist(table_.c_str())) {
-    return connection->Execute(StringPrintf(
-        "CREATE TABLE %s (id INTEGER PRIMARY KEY, value TEXT NOT NULL); "
-        "CREATE UNIQUE INDEX %s_index ON %s(value)",
-        table_.c_str(),
-        table_.c_str(),
-        table_.c_str()).c_str());
+    return connection->Execute(base::StrCat(
+        {"CREATE TABLE ", table_,
+         "(id INTEGER PRIMARY KEY, value TEXT NOT NULL);",
+         "CREATE UNIQUE INDEX ", table_, "_index ON ", table_, "(value)"}));
   } else {
     return true;
   }
@@ -54,8 +50,7 @@ bool DatabaseStringTable::StringToInt(sql::Database* connection,
   // frequently-used strings--if there is a cache miss, first act on the
   // assumption that the string is not in the database either.
   sql::Statement update(connection->GetUniqueStatement(
-      StringPrintf("INSERT OR IGNORE INTO %s(value) VALUES (?)", table_.c_str())
-          .c_str()));
+      base::StrCat({"INSERT OR IGNORE INTO ", table_, "(value) VALUES (?)"})));
   update.BindString(0, value);
   if (!update.Run())
     return false;
@@ -71,8 +66,7 @@ bool DatabaseStringTable::StringToInt(sql::Database* connection,
   // case the insert above will have been ignored.  If this happens, do a
   // lookup to find the old value.
   sql::Statement query(connection->GetUniqueStatement(
-      StringPrintf("SELECT id FROM %s WHERE value = ?", table_.c_str())
-          .c_str()));
+      base::StrCat({"SELECT id FROM ", table_, " WHERE value = ?"})));
   query.BindString(0, value);
   if (!query.Step())
     return false;
@@ -96,8 +90,7 @@ bool DatabaseStringTable::IntToString(sql::Database* connection,
   PruneCache();
 
   sql::Statement query(connection->GetUniqueStatement(
-      StringPrintf("SELECT value FROM %s WHERE id = ?", table_.c_str())
-          .c_str()));
+      base::StrCat({"SELECT value FROM ", table_, " WHERE id = ?"})));
   query.BindInt64(0, id);
   if (!query.Step())
     return false;

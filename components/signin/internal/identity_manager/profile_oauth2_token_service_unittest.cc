@@ -2,17 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
-#include <stddef.h>
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
+#include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -26,6 +39,8 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
 
 // A testing consumer that retries on error.
 class RetryingTestingOAuth2AccessTokenManagerConsumer
@@ -53,11 +68,25 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
   std::unique_ptr<OAuth2AccessTokenManager::Request> request_;
 };
 
-class FakeOAuth2TokenServiceObserver
-    : public ProfileOAuth2TokenServiceObserver {
+class MockOAuth2AccessTokenConsumer
+    : public TestingOAuth2AccessTokenManagerConsumer {
  public:
-  MOCK_METHOD2(OnAuthErrorChanged,
-               void(const CoreAccountId&, const GoogleServiceAuthError&));
+  MockOAuth2AccessTokenConsumer() = default;
+
+  MockOAuth2AccessTokenConsumer(const MockOAuth2AccessTokenConsumer&) = delete;
+  MockOAuth2AccessTokenConsumer& operator=(
+      const MockOAuth2AccessTokenConsumer&) = delete;
+
+  ~MockOAuth2AccessTokenConsumer() override = default;
+
+  MOCK_METHOD2(
+      OnGetTokenSuccess,
+      void(const OAuth2AccessTokenManager::Request* request,
+           const OAuth2AccessTokenConsumer::TokenResponse& token_response));
+
+  MOCK_METHOD2(OnGetTokenFailure,
+               void(const OAuth2AccessTokenManager::Request* request,
+                    const GoogleServiceAuthError& error));
 };
 
 // This class fakes the behaviour of a MutableProfileOAuth2TokenServiceDelegate
@@ -91,6 +120,8 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
   }
 };
 
+}  // namespace
+
 class ProfileOAuth2TokenServiceTest : public testing::Test {
  public:
   void SetUp() override {
@@ -98,38 +129,34 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
     // Save raw delegate pointer for later.
     delegate_ptr_ = delegate.get();
 
-    test_url_loader_factory_ = delegate->test_url_loader_factory();
     oauth2_service_ = std::make_unique<ProfileOAuth2TokenService>(
         &prefs_, std::move(delegate));
     account_id_ = CoreAccountId::FromGaiaId("test_user");
   }
 
-  void TearDown() override {
-    oauth2_service_.reset();
-    // Makes sure that all the clean up tasks are run:
-    // OAuth2AccessTokenManager::Fetcher is destroyed using DeleteSoon().
-    base::RunLoop().RunUntilIdle();
-  }
-
   void SimulateOAuthTokenResponse(const std::string& token,
                                   net::HttpStatusCode status = net::HTTP_OK) {
-    test_url_loader_factory_->AddResponse(
+    test_url_loader_factory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(), token, status);
   }
 
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return delegate_ptr_->test_url_loader_factory();
+  }
+
+  void ResetTokenService() {
+    delegate_ptr_ = nullptr;
+    oauth2_service_.reset();
+  }
+
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::
-          IO};  // net:: stuff needs IO
-                // message loop.
-  raw_ptr<network::TestURLLoaderFactory, DanglingUntriaged>
-      test_url_loader_factory_ = nullptr;
-  raw_ptr<FakeProfileOAuth2TokenServiceDelegate, DanglingUntriaged>
-      delegate_ptr_ = nullptr;  // Not owned.
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  TestingPrefServiceSimple prefs_;
   std::unique_ptr<ProfileOAuth2TokenService> oauth2_service_;
+  raw_ptr<FakeProfileOAuth2TokenServiceDelegate> delegate_ptr_ = nullptr;
   CoreAccountId account_id_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;
-  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(ProfileOAuth2TokenServiceTest, NoOAuth2RefreshToken) {
@@ -178,7 +205,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, FailureShouldNotRetry) {
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(1, consumer_.number_of_errors_);
-  EXPECT_EQ(0, test_url_loader_factory_->NumPending());
+  EXPECT_EQ(0, test_url_loader_factory()->NumPending());
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, SuccessWithoutCaching) {
@@ -316,7 +343,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestDeletedBeforeCompletion) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(0, consumer_.number_of_errors_);
-  EXPECT_EQ(1, test_url_loader_factory_->NumPending());
+  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
 
   request.reset();
 
@@ -392,6 +419,67 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   EXPECT_EQ(1, consumer_.number_of_errors_);
 }
 
+TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenAdded) {
+  std::unique_ptr<
+      testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>
+      observers[5];
+  for (auto& observer : observers) {
+    observer = std::make_unique<
+        testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>(
+        oauth2_service_.get());
+  }
+
+  // `OnAuthErrorChanged()` is not called after adding a new account in tests.
+  testing::InSequence sequence;
+  // First, all observers will receive `OnRefreshTokenAvailable()` notification.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnRefreshTokenAvailable(account_id_));
+  }
+  // Then, `OnEndBatchChanges()` is called.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnEndBatchChanges());
+  }
+
+  oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
+                                                    "first refreshToken");
+}
+
+TEST_F(ProfileOAuth2TokenServiceTest, NotificationOrderOnRefreshTokenRevoked) {
+  oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
+                                                    "first refreshToken");
+  // `OnAuthErrorChanged()` shouldn't be called if the refresh token is revoked.
+  std::unique_ptr<
+      testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>
+      observers[5];
+  for (auto& observer : observers) {
+    observer = std::make_unique<
+        testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver>>(
+        oauth2_service_.get());
+  }
+
+  MockOAuth2AccessTokenConsumer consumer;
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      oauth2_service_->StartRequest(account_id_, {"s1", "s2"}, &consumer));
+  testing::InSequence sequence;
+  // First, all observers will receive `OnRefreshTokenAvailable()` notification.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnRefreshTokenRevoked(account_id_));
+  }
+  // Then, all ongoing requests get cancelled.
+  EXPECT_CALL(
+      consumer,
+      OnGetTokenFailure(
+          ::testing::_,
+          GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP)))
+      .Times(1);
+  // Finally, `OnEndBatchChanges()` is called.
+  for (auto& observer : observers) {
+    EXPECT_CALL(*observer, OnEndBatchChanges());
+  }
+
+  oauth2_service_->RevokeCredentials(account_id_);
+}
+
 TEST_F(ProfileOAuth2TokenServiceTest,
        ChangedRefreshTokenCancelsInFlightRequests) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
@@ -406,7 +494,7 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       oauth2_service_->StartRequest(account_id_, scopes, &consumer_));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(1, test_url_loader_factory_->NumPending());
+  ASSERT_EQ(1, test_url_loader_factory()->NumPending());
 
   // Note |request| is still pending when the refresh token changes.
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
@@ -418,7 +506,7 @@ TEST_F(ProfileOAuth2TokenServiceTest,
   // OnRefreshTokenAvailable().
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(1, consumer_.number_of_errors_);
-  ASSERT_EQ(0, test_url_loader_factory_->NumPending());
+  ASSERT_EQ(0, test_url_loader_factory()->NumPending());
 
   // Verify that an access token request started after the refresh token was
   // updated can complete successfully.
@@ -429,7 +517,7 @@ TEST_F(ProfileOAuth2TokenServiceTest,
 
   network::URLLoaderCompletionStatus ok_status(net::OK);
   auto response_head = network::CreateURLResponseHead(net::HTTP_OK);
-  EXPECT_TRUE(test_url_loader_factory_->SimulateResponseForPendingRequest(
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_token_url(), ok_status,
       std::move(response_head), GetValidTokenResponse("second token", 3600),
       network::TestURLLoaderFactory::kMostRecentMatch));
@@ -439,27 +527,6 @@ TEST_F(ProfileOAuth2TokenServiceTest,
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
-  class MockOAuth2AccessTokenConsumer
-      : public TestingOAuth2AccessTokenManagerConsumer {
-   public:
-    MockOAuth2AccessTokenConsumer() = default;
-
-    MockOAuth2AccessTokenConsumer(const MockOAuth2AccessTokenConsumer&) =
-        delete;
-    MockOAuth2AccessTokenConsumer& operator=(
-        const MockOAuth2AccessTokenConsumer&) = delete;
-
-    ~MockOAuth2AccessTokenConsumer() override = default;
-
-    MOCK_METHOD2(
-        OnGetTokenSuccess,
-        void(const OAuth2AccessTokenManager::Request* request,
-             const OAuth2AccessTokenConsumer::TokenResponse& token_response));
-
-    MOCK_METHOD2(OnGetTokenFailure,
-                 void(const OAuth2AccessTokenManager::Request* request,
-                      const GoogleServiceAuthError& error));
-  };
   ProfileOAuth2TokenService token_service(
       &prefs_,
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
@@ -507,7 +574,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginMobile) {
   base::RunLoop().RunUntilIdle();
   network::URLLoaderCompletionStatus ok_status(net::OK);
   auto response_head = network::CreateURLResponseHead(net::HTTP_OK);
-  EXPECT_TRUE(test_url_loader_factory_->SimulateResponseForPendingRequest(
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_token_url(), ok_status,
       std::move(response_head), GetValidTokenResponse("second token", 3600),
       network::TestURLLoaderFactory::kMostRecentMatch));
@@ -526,7 +593,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, ServiceShutDownBeforeFetchComplete) {
   EXPECT_EQ(0, consumer_.number_of_errors_);
 
   // The destructor should cancel all in-flight fetchers.
-  oauth2_service_.reset(nullptr);
+  ResetTokenService();
 
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(1, consumer_.number_of_errors_);
@@ -553,36 +620,40 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
   auto delegate =
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>();
   ProfileOAuth2TokenService token_service(&prefs_, std::move(delegate));
-  FakeOAuth2TokenServiceObserver observer;
-  token_service.GetDelegate()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnAuthErrorChanged(account_id_,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
+  signin::MockProfileOAuth2TokenServiceObserver observer(&token_service);
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(
+                  account_id_,
+                  GoogleServiceAuthError(
+                      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(1);
 
-  token_service.GetDelegate()->UpdateCredentials(account_id_, "refreshToken");
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_, "refreshToken",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
   const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
-  token_service.GetDelegate()->UpdateCredentials(account_id_2, "refreshToken2");
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_2, "refreshToken2",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
   token_service.InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens for failed accounts are set in error.
   EXPECT_EQ(token_service.GetDelegate()->GetAuthError(account_id_).state(),
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   EXPECT_EQ(token_service.GetDelegate()->GetAuthError(account_id_2).state(),
             GoogleServiceAuthError::NONE);
-
-  token_service.GetDelegate()->RemoveObserver(&observer);
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
-  FakeOAuth2TokenServiceObserver observer;
-  oauth2_service_->GetDelegate()->AddObserver(&observer);
+  signin::MockProfileOAuth2TokenServiceObserver observer(oauth2_service_.get());
   EXPECT_CALL(
       observer,
       OnAuthErrorChanged(account_id_,
                          GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
+                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                         testing::_))
       .Times(0);
 
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
@@ -597,8 +668,6 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
             GoogleServiceAuthError::NONE);
   EXPECT_EQ(oauth2_service_->GetDelegate()->GetAuthError(account_id_2).state(),
             GoogleServiceAuthError::NONE);
-
-  oauth2_service_->GetDelegate()->RemoveObserver(&observer);
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateToken) {
@@ -634,7 +703,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateToken) {
 
   // Clear previous response so the token request will be pending and we can
   // simulate a response after it started.
-  test_url_loader_factory_->ClearResponses();
+  test_url_loader_factory()->ClearResponses();
 
   // Invalidating the token should return a new token on the next request.
   oauth2_service_->InvalidateAccessToken(account_id_, scopes,
@@ -720,7 +789,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
   }
 }
 
-TEST_F(ProfileOAuth2TokenServiceTest, FixRequestErrorIfPossible) {
+TEST_F(ProfileOAuth2TokenServiceTest, FixAccountErrorIfPossible) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
                                                     "refreshToken");
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
@@ -729,22 +798,29 @@ TEST_F(ProfileOAuth2TokenServiceTest, FixRequestErrorIfPossible) {
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(0, consumer_.number_of_errors_);
 
-  delegate_ptr_->set_fix_request_if_possible(true);
+  auto callback = base::BindRepeating(
+      [](ProfileOAuth2TokenService* service,
+         const CoreAccountId& account_id) -> bool {
+        service->GetDelegate()->UpdateCredentials(account_id,
+                                                  "validRefreshToken");
+        return true;
+      },
+      oauth2_service_.get(), account_id_);
+  delegate_ptr_->set_fix_request_if_possible(std::move(callback));
+
+  signin::MockProfileOAuth2TokenServiceObserver observer(oauth2_service_.get());
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(account_id_,
+                                 GoogleServiceAuthError::FromServiceError(""),
+                                 testing::_))
+      .Times(1);
+  EXPECT_CALL(
+      observer,
+      OnAuthErrorChanged(account_id_, GoogleServiceAuthError::AuthErrorNone(),
+                         testing::_))
+      .Times(1);
   SimulateOAuthTokenResponse("", net::HTTP_UNAUTHORIZED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
-  EXPECT_EQ(0, consumer_.number_of_errors_);
-
-  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
-  base::RunLoop().RunUntilIdle();
-  for (int max_reties = 5;
-       max_reties >= 0 && consumer_.number_of_successful_tokens_ != 1;
-       --max_reties) {
-    base::RunLoop().RunUntilIdle();
-    base::PlatformThread::Sleep(base::Seconds(1));
-  }
-
-  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
-  EXPECT_EQ(0, consumer_.number_of_errors_);
-  EXPECT_EQ("token", consumer_.last_token_);
+  EXPECT_EQ(1, consumer_.number_of_errors_);
 }

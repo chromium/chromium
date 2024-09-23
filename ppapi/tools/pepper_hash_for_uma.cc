@@ -16,6 +16,11 @@
 // can be compared to tools/metrics/histograms/histograms.xml to determine if
 // any interfaces have been left out.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

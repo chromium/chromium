@@ -69,7 +69,13 @@ FakeRecentSource::CallContext::CallContext(CallContext&& context)
       active_producer_count(context.active_producer_count) {}
 FakeRecentSource::CallContext::~CallContext() = default;
 
-FakeRecentSource::FakeRecentSource() {}
+FakeRecentSource::FakeRecentSource()
+    : FakeRecentSource(
+          extensions::api::file_manager_private::VolumeType::kTesting) {}
+
+FakeRecentSource::FakeRecentSource(
+    extensions::api::file_manager_private::VolumeType volume_type)
+    : RecentSource(volume_type) {}
 
 FakeRecentSource::~FakeRecentSource() = default;
 
@@ -77,7 +83,7 @@ void FakeRecentSource::AddProducer(std::unique_ptr<FileProducer> producer) {
   producers_.emplace_back(std::move(producer));
 }
 
-void FakeRecentSource::GetRecentFiles(Params params,
+void FakeRecentSource::GetRecentFiles(const Params& params,
                                       GetRecentFilesCallback callback) {
   const auto& [it, _] = context_map_.emplace(
       params.call_id(), CallContext(std::move(callback), params));

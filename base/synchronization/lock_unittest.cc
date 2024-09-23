@@ -6,11 +6,19 @@
 
 #include <stdlib.h>
 
+#include <cstdint>
+
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::UnorderedElementsAre;
+using testing::UnorderedElementsAreArray;
 
 namespace base {
 
@@ -249,5 +257,123 @@ TEST(LockTest, ReleasableAutoLockImplicitRelease) {
   }
   EXPECT_DCHECK_DEATH(lock.AssertAcquired());
 }
+
+class TryLockTest : public testing::Test {
+ protected:
+  Lock lock_;
+  int x_ GUARDED_BY(lock_) = 0;
+};
+
+// Verifies thread safety annotations do not prevent correct `AutoTryLock` usage
+// from compiling. A dual of this test exists in lock_nocompile.nc. For more
+// context, see <https://crbug.com/340196356>.
+TEST_F(TryLockTest, CorrectlyCheckIsAcquired) {
+  AutoTryLock maybe(lock_);
+  // Should compile because we correctly check whether the lock is acquired
+  // before writing to `x_`.
+  if (maybe.is_acquired()) {
+    x_ = 5;
+  }
+}
+
+#if DCHECK_IS_ON()
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThread) {
+  Lock lock_a;
+  Lock lock_b;
+  Lock lock_c;
+  const uintptr_t lock_a_ptr = reinterpret_cast<uintptr_t>(&lock_a);
+  const uintptr_t lock_b_ptr = reinterpret_cast<uintptr_t>(&lock_b);
+  const uintptr_t lock_c_ptr = reinterpret_cast<uintptr_t>(&lock_c);
+
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre());
+  ReleasableAutoLock auto_lock_a(&lock_a, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_a_ptr));
+  ReleasableAutoLock auto_lock_b(&lock_b, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_a_ptr, lock_b_ptr));
+  auto_lock_a.Release();
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr));
+  ReleasableAutoLock auto_lock_c(&lock_c, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr, lock_c_ptr));
+  auto_lock_c.Release();
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr));
+  auto_lock_b.Release();
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre());
+}
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThread_AutoLock) {
+  Lock lock;
+  const uintptr_t lock_ptr = reinterpret_cast<uintptr_t>(&lock);
+  AutoLock auto_lock(lock, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_ptr));
+}
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThread_MovableAutoLock) {
+  Lock lock;
+  const uintptr_t lock_ptr = reinterpret_cast<uintptr_t>(&lock);
+  MovableAutoLock auto_lock(lock, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_ptr));
+}
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThread_AutoTryLock) {
+  Lock lock;
+  const uintptr_t lock_ptr = reinterpret_cast<uintptr_t>(&lock);
+  AutoTryLock auto_lock(lock, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_ptr));
+}
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThread_AutoLockMaybe) {
+  Lock lock;
+  const uintptr_t lock_ptr = reinterpret_cast<uintptr_t>(&lock);
+  AutoLockMaybe auto_lock(&lock, subtle::LockTracking::kEnabled);
+  EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_ptr));
+}
+
+TEST(LockTest, GetTrackedLocksHeldByCurrentThreadOverCapacity)
+// Thread-safety analysis doesn't handle the array of locks properly.
+NO_THREAD_SAFETY_ANALYSIS {
+  constexpr size_t kHeldLocksCapacity = 10;
+  std::array<Lock, kHeldLocksCapacity + 1> locks;
+
+  for (size_t i = 0; i < kHeldLocksCapacity; ++i) {
+    locks[i].Acquire(subtle::LockTracking::kEnabled);
+  }
+
+  EXPECT_DCHECK_DEATH({
+    locks[kHeldLocksCapacity].Acquire(subtle::LockTracking::kEnabled);
+    locks[kHeldLocksCapacity].Release();
+  });
+
+  for (size_t i = 0; i < kHeldLocksCapacity; ++i) {
+    locks[i].Release();
+
+    std::vector<uintptr_t> expected_locks;
+    for (size_t j = i + 1; j < kHeldLocksCapacity; ++j) {
+      expected_locks.push_back(reinterpret_cast<uintptr_t>(&locks[j]));
+    }
+
+    EXPECT_THAT(subtle::GetTrackedLocksHeldByCurrentThread(),
+                UnorderedElementsAreArray(expected_locks));
+  }
+}
+
+TEST(LockTest, TrackingDisabled) {
+  Lock lock;
+  AutoLock auto_lock(lock, subtle::LockTracking::kDisabled);
+  EXPECT_TRUE(subtle::GetTrackedLocksHeldByCurrentThread().empty());
+}
+
+#endif  // DCHECK_IS_ON()
 
 }  // namespace base

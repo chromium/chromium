@@ -18,14 +18,14 @@ namespace certificateProviderInternal {
   interface Functions {
     // Matches certificateProvider.SignCallback. Must be called without the
     // signature to report an error.
-    [supportsPromises] static void reportSignature(
+    static void reportSignature(
         long requestId,
         optional ArrayBuffer signature,
         optional DoneCallback callback);
 
     // Matches certificateProvider.CertificatesCallback. Must be called without
     // the certificates argument to report an error.
-    [supportsPromises] static void reportCertificates(
+    static void reportCertificates(
         long requestId,
         optional certificateProvider.CertificateInfo[] certificates,
         optional ResultCallback callback);

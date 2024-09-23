@@ -4,10 +4,10 @@
 
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h"
 
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
@@ -37,9 +37,11 @@ bool FastInitiationScannerFeatureUsageMetrics::IsEnabled() const {
   return IsEligible() &&
          GetNearbyShareEnabledState(pref_service_) !=
              NearbyShareEnabledState::kDisallowedByPolicy &&
-         static_cast<FastInitiationNotificationState>(pref_service_->GetInteger(
-             prefs::kNearbySharingFastInitiationNotificationStatePrefName)) ==
-             FastInitiationNotificationState::kEnabled;
+         static_cast<nearby_share::mojom::FastInitiationNotificationState>(
+             pref_service_->GetInteger(
+                 prefs::
+                     kNearbySharingFastInitiationNotificationStatePrefName)) ==
+             nearby_share::mojom::FastInitiationNotificationState::kEnabled;
 }
 
 void FastInitiationScannerFeatureUsageMetrics::SetBluetoothAdapter(

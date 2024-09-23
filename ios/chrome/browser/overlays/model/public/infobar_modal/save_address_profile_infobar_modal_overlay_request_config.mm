@@ -7,10 +7,11 @@
 #import "base/check.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
 namespace autofill_address_profile_infobar_overlays {
 
@@ -60,22 +61,8 @@ void SaveAddressProfileModalRequestConfig::StoreProfileDiff(
           base::SysUTF16ToNSString(row.first_value),
           base::SysUTF16ToNSString(row.second_value)
         ]
-           forKey:[NSNumber
-                      numberWithInt:AutofillUITypeFromAutofillType(row.type)]];
+           forKey:[NSNumber numberWithInt:base::to_underlying(row.type)]];
   }
-}
-
-NSDictionary* SaveAddressProfileModalRequestConfig::GetProfileInfo() {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
-          infobar_->delegate());
-  NSMutableDictionary* items = [[NSMutableDictionary alloc] init];
-  for (const auto& type : GetAutofillTypeForProfileEdit()) {
-    [items setObject:base::SysUTF16ToNSString(delegate->GetProfileInfo(type))
-              forKey:[NSNumber
-                         numberWithInt:AutofillUITypeFromAutofillType(type)]];
-  }
-  return items;
 }
 
 const autofill::AutofillProfile*

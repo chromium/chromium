@@ -72,14 +72,14 @@
 <translation id="1360699455582016846">Cliquez sur l'élément sous la clé de routage <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">passer au caractère suivant</translation>
 <translation id="1377925789329510816">Ceci est le dernier titre. Appuyez sur Recherche+h pour revenir au premier titre ou sur Recherche+Maj+h pour accéder au deuxième titre de cette page.</translation>
-<translation id="138218114945450791">Bleu ciel</translation>
+<translation id="138218114945450791">Bleu clair</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1396114365388024581">liste d'onglets</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1411043317877497323">Zone d'exercice</translation>
 <translation id="141454040365657399">En-tête de page</translation>
 <translation id="1417092723421264764">Page actuelle</translation>
-<translation id="1417889266572670458">Marine</translation>
+<translation id="1417889266572670458">Bleu marine</translation>
 <translation id="1431911867058218151">Prune</translation>
 <translation id="1439316808600711881">Région</translation>
 <translation id="146450394670219700">Objet graphique</translation>
@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Brun rosé</translation>
 <translation id="249330843868392562">Ouvrir les paramètres de synthèse vocale</translation>
 <translation id="2497706219848005458">Jaune vert</translation>
+<translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2523609930580546572">Tutoriel de ChromeVox</translation>
 <translation id="2525706221823668172">Raccourcis clavier du Chromebook</translation>
 <translation id="2553108862507765288">faute de grammaire</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}one{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Vous pouvez aussi passer à l'élément précédent en balayant l'écran de droite à gauche avec un doigt. Essayez maintenant.</translation>
 <translation id="280499067616661124">Rechercher sur la page ChromeVox</translation>
-<translation id="2811019999044652585">Pour accéder aux autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl + Suivant. Sur un Chromebook, la touche Suivant se situe immédiatement au-dessus de la touche du numéro 2.</translation>
 <translation id="2811204574343810641">Rangée</translation>
 <translation id="2816868829355607410">Zone d'exercice : commandes d'accès direct</translation>
 <translation id="2841013758207633010">Heure</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Bleu acier</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="4254798249533888099">Arbre</translation>
+<translation id="4259220820964911921">Activer le contrôle par le visage?</translation>
 <translation id="4271220233568730077">Expression mathématique suivante</translation>
 <translation id="4275397969489577657">Activer la journalisation de flux d'événements</translation>
 <translation id="4278486392851938658">Aucun lien consulté précédent</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Rouge indien</translation>
 <translation id="4432896207833262240">Contenu marqué</translation>
 <translation id="4437615272777527928">Tapez pour effectuer une recherche dans les menus. Servez-vous des flèches vers le haut et vers le bas pour naviguer dans les résultats. Servez-vous des flèches de gauche et de droite pour ajuster le point d'insertion de texte et pour vous déplacer entre les menus.</translation>
+<translation id="4453530046591759283">Pour accéder à d'autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl+F1. F1 est la première touche à droite de la touche Échap.</translation>
 <translation id="4457472090507035117">Sélectionner la voix actuelle :</translation>
 <translation id="4476183483923481720">nouvelle ligne</translation>
 <translation id="4479068155583208887">Brique d'argile</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Annexe</translation>
 <translation id="5761219715606611783">Bien joué! Vous avez appris les bases nécessaires pour utiliser ChromeVox avec les gestes. Pour revoir ce tutoriel ou le quitter, utilisez les boutons ci-dessous.</translation>
 <translation id="5776001898637896684">Extension de la synthèse vocale de Google Enhanced Network</translation>
+<translation id="5783252477644995371">Le contrôle par le visage vous permet de contrôler le curseur en pointant le visage et d'effectuer des actions, comme un clic gauche, avec des gestes du visage tels qu'un sourire</translation>
 <translation id="5805940204952508776">Touchez avec deux doigts</translation>
 <translation id="5819072574982403430">Élément d'arborescence</translation>
 <translation id="5822819874379903994">Turquoise foncé</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Blanc navajo</translation>
 <translation id="7095834689119144465">Modifier le texte, numérique seulement</translation>
 <translation id="7096001299300236431">Contenu multimédia précédent</translation>
+<translation id="7096668131290451939">Appuyez à nouveau sur Échap. pour quitter le mode d'apprentissage</translation>
 <translation id="7116595520562830928">multiligne</translation>
 <translation id="712735679809149106">Écho de caractères</translation>
 <translation id="7137397390322864165">Saumon</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Aucune case à cocher suivante</translation>
 <translation id="8473540203671727883">Dicter le texte sous la souris</translation>
 <translation id="8476408756881832830">Interrompre la lecture lorsque ChromeVox est en train de parler</translation>
-<translation id="8476508772960940536">aperçu de la fenêtre</translation>
 <translation id="8480873377842220259">Vous allez maintenant découvrir des commandes pour la navigation de base. Vous pouvez maintenir enfoncée la touche Recherche et appuyer sur les touches fléchées pour naviguer dans l'écran. Pour continuer, appuyez sur Recherche+Flèche vers la droite.</translation>
 <translation id="8503360654911991865">Diminuer la granularité de la navigation</translation>
 <translation id="8520472399088452386">Bouton fléché</translation>

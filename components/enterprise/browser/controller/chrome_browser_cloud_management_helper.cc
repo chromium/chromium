@@ -197,4 +197,8 @@ void MachineLevelUserCloudPolicyFetcher::TryToFetchPolicy() {
     SetupRegistrationAndFetchPolicy(dm_token, client_id);
 }
 
+std::string_view MachineLevelUserCloudPolicyFetcher::name() const {
+  return "MachineLevelUserCloudPolicyFetcher";
+}
+
 }  // namespace policy

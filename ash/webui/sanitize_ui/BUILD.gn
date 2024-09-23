@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Sanitize App is ash-chrome only")
+
+static_library("sanitize_ui") {
+  sources = [
+    "sanitize_ui.cc",
+    "sanitize_ui.h",
+    "sanitize_ui_delegate.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  public_deps = [ ":url_constants" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/sanitize_ui/mojom",
+    "//ash/webui/sanitize_ui/resources:resources",
+    "//chromeos/strings/",
+    "//content/public/browser:browser",
+    "//ui/base",
+    "//ui/resources",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+}

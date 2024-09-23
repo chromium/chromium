@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "android_webview/browser_jni_headers/AwDevToolsServer_jni.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -22,6 +21,9 @@
 #include "net/socket/tcp_server_socket.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwDevToolsServer_jni.h"
+
 using base::android::JavaParamRef;
 using content::DevToolsAgentHost;
 
@@ -31,6 +33,8 @@ const char kSocketNameFormat[] = "webview_devtools_remote_%d";
 const char kTetheringSocketName[] = "webview_devtools_tethering_%d_%d";
 
 const int kBackLog = 10;
+
+bool g_is_debugging_started_ = false;
 
 // Factory for UnixDomainServerSocket.
 class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
@@ -127,55 +131,33 @@ std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory() {
 
 namespace android_webview {
 
-AwDevToolsServer::AwDevToolsServer() : is_started_(false) {}
-
-AwDevToolsServer::~AwDevToolsServer() {
-  Stop();
-}
-
-void AwDevToolsServer::Start() {
-  if (is_started_)
+void StartAwDevToolsServer() {
+  if (g_is_debugging_started_) {
     return;
-  is_started_ = true;
+  }
+  g_is_debugging_started_ = true;
 
   DevToolsAgentHost::StartRemoteDebuggingServer(
       CreateSocketFactory(), base::FilePath(), base::FilePath());
 }
 
-void AwDevToolsServer::Stop() {
+void StopAwDevToolsServer() {
   DevToolsAgentHost::StopRemoteDebuggingServer();
-  is_started_ = false;
+  g_is_debugging_started_ = false;
 }
 
-bool AwDevToolsServer::IsStarted() const {
-  return is_started_;
-}
-
-static jlong JNI_AwDevToolsServer_InitRemoteDebugging(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  AwDevToolsServer* server = new AwDevToolsServer();
-  return reinterpret_cast<intptr_t>(server);
-}
-
-static void JNI_AwDevToolsServer_DestroyRemoteDebugging(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jlong server) {
-  delete reinterpret_cast<AwDevToolsServer*>(server);
+bool IsAwDevToolsServerStarted() {
+  return g_is_debugging_started_;
 }
 
 static void JNI_AwDevToolsServer_SetRemoteDebuggingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jlong server,
     jboolean enabled) {
-  AwDevToolsServer* devtools_server =
-      reinterpret_cast<AwDevToolsServer*>(server);
   if (enabled) {
-    devtools_server->Start();
+    StartAwDevToolsServer();
   } else {
-    devtools_server->Stop();
+    StopAwDevToolsServer();
   }
 }
 

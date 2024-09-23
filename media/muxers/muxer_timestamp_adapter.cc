@@ -156,7 +156,7 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   // data before live-and-enabled transitions to true. This can lead to us
   // emitting non-monotonic timestamps to the muxer, which results in an error
   // return. Fix this by enforcing monotonicity by rewriting timestamps.
-  // TODO(crbug.com/1145203): consider auto-marking a track live-and-enabled
+  // TODO(crbug.com/40155764): consider auto-marking a track live-and-enabled
   // when media appears and remove this catch-all.
   base::TimeDelta relative_timestamp =
       frame.timestamp_minus_paused - first_timestamp_;
@@ -182,7 +182,7 @@ base::TimeTicks MuxerTimestampAdapter::UpdateLastTimestampAndGetNext(
   DVLOG(3) << __func__ << " ts " << timestamp << " last " << *last_timestamp;
   // In theory, time increases monotonically. In practice, it does not.
   // See http://crbug/618407.
-  // TODO(crbug.com/1494273): consider not re-using the last timestamp for
+  // TODO(crbug.com/40286147): consider not re-using the last timestamp for
   // MP4.
   DLOG_IF(WARNING, timestamp < last_timestamp)
       << "Encountered a non-monotonically increasing timestamp. Was: "

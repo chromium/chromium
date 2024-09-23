@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Shadow on a spelling error - reference</title>
+<link rel="author" title="Stephen Chenney" href="mailto:schenney@igalia.com">
+<style>
+  span {
+    color: green;
+  }
+  div {
+    color: black;
+    text-shadow: 0.1em 0.1em 3px rgba(0,0,0,0.5);
+  }
+</style>
+
+<p>The test passes if "quikc" has a spelling error marker that is green with no shadow.</p>
+<div id="target" contenteditable spellcheck>The <span>quikc</span> brown fox.</div>
+
+<script>
+  target.focus();
+</script>
+</html>

@@ -20,6 +20,7 @@ build_webui("build") {
     "word_streamer.ts",
   ]
   icons_html_files = [ "icons.html" ]
+  html_to_wrapper_template = "detect"
   ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
@@ -38,4 +39,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/common/compose/compose.mojom-webui.ts",
     "$root_gen_dir/components/compose/core/browser/compose_enums.mojom-webui.ts",
   ]
+
+  webui_context_type = "untrusted"
 }

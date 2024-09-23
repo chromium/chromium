@@ -11,6 +11,8 @@
 
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 namespace web_package {
@@ -51,13 +53,25 @@ class SignedWebBundleIntegrityBlock {
     return signature_stack_;
   }
 
+  // Returns the id of the web bundle specified in integrity block attributes.
+  const SignedWebBundleId& web_bundle_id() const { return web_bundle_id_; }
+
+  const std::vector<uint8_t>& attributes_cbor() const {
+    return attributes_cbor_;
+  }
+
  private:
   explicit SignedWebBundleIntegrityBlock(
       uint64_t size_in_bytes,
-      SignedWebBundleSignatureStack&& signature_stack);
+      SignedWebBundleSignatureStack&& signature_stack,
+      SignedWebBundleId web_bundle_id,
+      std::vector<uint8_t> attributes_cbor);
 
   uint64_t size_in_bytes_;
   SignedWebBundleSignatureStack signature_stack_;
+
+  SignedWebBundleId web_bundle_id_;
+  std::vector<uint8_t> attributes_cbor_;
 };
 
 }  // namespace web_package

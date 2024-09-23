@@ -4,18 +4,21 @@
 
 #include "ash/wm/toplevel_window_event_handler.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -25,6 +28,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -216,14 +220,14 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
   if (features::IsPipDoubleTapToResizeEnabled()) {
     pip_double_tap_ = std::make_unique<PipDoubleTapHandler>();
   }
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   // It's possible that `ToplevelWindowEventHandler` was not removed as the
   // window observer of its observed window `gesture_target_` yet, so remove it
   // here to avoid hitting the CHECK error in WindowObserver's destructor.
@@ -247,7 +251,7 @@ void ToplevelWindowEventHandler::OnDisplayMetricsChanged(
 }
 
 void ToplevelWindowEventHandler::OnKeyEvent(ui::KeyEvent* event) {
-  if (window_resizer_.get() && event->type() == ui::ET_KEY_PRESSED &&
+  if (window_resizer_.get() && event->type() == ui::EventType::kKeyPressed &&
       event->key_code() == ui::VKEY_ESCAPE) {
     CompleteDrag(DragResult::REVERT);
   }
@@ -262,7 +266,7 @@ void ToplevelWindowEventHandler::OnMouseEvent(ui::MouseEvent* event) {
        (ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON)) != 0)
     return;
 
-  if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED) {
+  if (event->type() == ui::EventType::kMouseCaptureChanged) {
     // Capture is grabbed when both gesture and mouse drags start. Handle
     // capture loss regardless of which type of drag is in progress.
     HandleCaptureLost(event);
@@ -273,19 +277,19 @@ void ToplevelWindowEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     return;
   aura::Window* target = static_cast<aura::Window*>(event->target());
   switch (event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       HandleMousePressed(target, event);
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       HandleDrag(target, event);
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       HandleMouseReleased(target, event);
       break;
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       HandleMouseMoved(target, event);
       break;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       HandleMouseExited(target, event);
       break;
     default:
@@ -306,9 +310,10 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   bool client_area_drag = false;
   if (component == HTCLIENT) {
     // When dragging on a client area starts a gesture drag, |this| stops the
-    // propagation of the ET_GESTURE_SCROLL_BEGIN event. Subsequent gestures on
-    // the HTCLIENT area should also be stopped lest the client receive an
-    // ET_GESTURE_SCROLL_UPDATE without the ET_GESTURE_SCROLL_BEGIN.
+    // propagation of the EventType::kGestureScrollBegin event. Subsequent
+    // gestures on the HTCLIENT area should also be stopped lest the client
+    // receive an EventType::kGestureScrollUpdate without the
+    // EventType::kGestureScrollBegin.
     if (in_gesture_drag_ && target != gesture_target_) {
       event->StopPropagation();
       return;
@@ -318,7 +323,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 
     client_area_drag = !!new_target;
     if (new_target && (target != new_target)) {
-      DCHECK_EQ(ui::ET_GESTURE_SCROLL_BEGIN, event->type());
+      DCHECK_EQ(ui::EventType::kGestureScrollBegin, event->type());
       aura::Window::ConvertPointToTarget(target, new_target, &event_location);
 
       aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
@@ -328,10 +333,10 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     }
   }
 
-  if (event->type() == ui::ET_GESTURE_PINCH_BEGIN) {
+  if (event->type() == ui::EventType::kGesturePinchBegin) {
     in_pinch_ = true;
-  } else if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-             event->type() == ui::ET_GESTURE_PINCH_END) {
+  } else if (event->type() == ui::EventType::kGestureScrollBegin ||
+             event->type() == ui::EventType::kGesturePinchEnd) {
     in_pinch_ = false;
   }
 
@@ -352,22 +357,22 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_END &&
+  if (event->type() == ui::EventType::kGestureEnd &&
       event->details().touch_points() == 1) {
     UpdateGestureTarget(nullptr);
-  } else if (event->type() == ui::ET_GESTURE_BEGIN) {
-    // We don't always process ET_GESTURE_END events (i.e. on a fling or swipe),
-    // so reset `is_moving_floated_window_` in ET_GESTURE_BEGIN.
+  } else if (event->type() == ui::EventType::kGestureBegin) {
+    // We don't always process EventType::kGestureEnd events (i.e. on a fling or
+    // swipe), so reset `is_moving_floated_window_` in EventType::kGestureBegin.
     is_moving_floated_window_ = false;
   }
 
-  if (event->type() == ui::ET_GESTURE_END &&
+  if (event->type() == ui::EventType::kGestureEnd &&
       event->details().touch_points() == 1) {
     UpdateGestureTarget(nullptr);
   }
 
   if (!gesture_target_) {
-    if (event->type() == ui::ET_GESTURE_BEGIN) {
+    if (event->type() == ui::EventType::kGestureBegin) {
       // If `gesture_target_` does not exist then this is the start of a
       // completely new gesture. We sometimes cannot wait for
       // event-type-specific `BEGIN` event to set `gesture_target_`
@@ -376,8 +381,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       in_pinch_ = event->details().touch_points() != 1;
     }
   } else if (!in_gesture_drag_ &&
-             (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-              event->type() == ui::ET_GESTURE_PINCH_BEGIN)) {
+             (event->type() == ui::EventType::kGestureScrollBegin ||
+              event->type() == ui::EventType::kGesturePinchBegin)) {
     // If `gesture_target_` exists but `in_gesture_drag_` is false then
     // the gesture has been received by `this` but the client has not
     // called `AttemptToStartDrag()` yet. We should update the
@@ -396,7 +401,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN: {
+    case ui::EventType::kGestureTapDown: {
       if (!(WindowResizer::GetBoundsChangeForWindowComponent(component) &
             WindowResizer::kBoundsChange_Resizes) ||
           (!client_area_drag && !CanStartOneFingerDrag(component)))
@@ -411,7 +416,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     }
-    case ui::ET_GESTURE_END: {
+    case ui::EventType::kGestureEnd: {
       HideResizeShadow(target);
 
       if (window_resizer_ && (event->details().touch_points() == 1 ||
@@ -421,7 +426,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       }
       return;
     }
-    case ui::ET_GESTURE_BEGIN: {
+    case ui::EventType::kGestureBegin: {
       if (event->details().touch_points() == 1) {
         first_finger_touch_point_ = event_location;
         aura::Window::ConvertPointToTarget(target, target->parent(),
@@ -431,9 +436,9 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
         if (!window_resizer_->IsMove()) {
           // The transition from resizing with one finger to resizing with two
           // fingers causes unintended resizing because the location of
-          // ET_GESTURE_SCROLL_UPDATE jumps from the position of the first
-          // finger to the position in the middle of the two fingers. For this
-          // reason two finger resizing is not supported.
+          // EventType::kGestureScrollUpdate jumps from the position of the
+          // first finger to the position in the middle of the two fingers. For
+          // this reason two finger resizing is not supported.
           CompleteDrag(DragResult::SUCCESS);
           event->StopPropagation();
         }
@@ -449,12 +454,13 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       }
       return;
     }
-    case ui::ET_GESTURE_SCROLL_BEGIN: {
-      // The one finger drag is not started in ET_GESTURE_BEGIN to avoid the
-      // window jumping upon initiating a two finger drag. When a one finger
+    case ui::EventType::kGestureScrollBegin: {
+      // The one finger drag is not started in EventType::kGestureBegin to avoid
+      // the window jumping upon initiating a two finger drag. When a one finger
       // drag is converted to a two finger drag, a jump occurs because the
-      // location of the ET_GESTURE_SCROLL_UPDATE event switches from the single
-      // finger's position to the position in the middle of the two fingers.
+      // location of the EventType::kGestureScrollUpdate event switches from the
+      // single finger's position to the position in the middle of the two
+      // fingers.
       if (window_resizer_.get()) {
         return;
       }
@@ -473,7 +479,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     }
-    case ui::ET_GESTURE_PINCH_BEGIN: {
+    case ui::EventType::kGesturePinchBegin: {
       if (AttemptToStartPinch(target,
                               ConvertToLocationInParent(target, event_location),
                               component, /*update_gesture_target=*/false)) {
@@ -481,7 +487,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       }
       return;
     }
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
         event->StopPropagation();
         return;
@@ -500,15 +506,15 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_UPDATE: {
-      // `ET_GESTURE_SCROLL_UPDATE` is also called during a pinch but should
-      // be ignored.
+    case ui::EventType::kGestureScrollUpdate: {
+      // `EventType::kGestureScrollUpdate` is also called during a pinch but
+      // should be ignored.
       if (in_pinch_) {
         return;
       }
 
-      // `ET_GESTURE_SCROLL_BEGIN` is not called after a pinch ends, so if a
-      // drag is ongoing after a pinch then `window_resizer_` has to be
+      // `EventType::kGestureScrollBegin` is not called after a pinch ends, so
+      // if a drag is ongoing after a pinch then `window_resizer_` has to be
       // reinitialized here.
       if (requires_reinitialization_) {
         if (!window_resizer_) {
@@ -550,30 +556,23 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     }
-    case ui::ET_GESTURE_SCROLL_END:
-      // We must complete the drag here instead of as a result of ET_GESTURE_END
-      // because otherwise the drag will be reverted when EndMoveLoop() is
-      // called.
+    case ui::EventType::kGestureScrollEnd:
+      // We must complete the drag here instead of as a result of
+      // EventType::kGestureEnd because otherwise the drag will be reverted when
+      // EndMoveLoop() is called.
       // TODO(pkotwicz): Pass drag completion status to
       // WindowMoveClient::EndMoveLoop().
       CompleteDrag(DragResult::SUCCESS);
       event->StopPropagation();
       return;
-    case ui::ET_GESTURE_PINCH_END: {
-      if (!features::IsPipPinchToResizeEnabled()) {
-        return;
-      }
+    case ui::EventType::kGesturePinchEnd: {
       CompletePinch();
       event->StopPropagation();
       return;
     }
-    case ui::ET_GESTURE_PINCH_UPDATE:
-      if (!features::IsPipPinchToResizeEnabled()) {
-        return;
-      }
-
-      // `ET_GESTURE_PINCH_UPDATE` is also called during two-finger edge resize,
-      // but is handled with `ET_GESTURE_SCROLL_UPDATE`.
+    case ui::EventType::kGesturePinchUpdate:
+      // `EventType::kGesturePinchUpdate` is also called during two-finger edge
+      // resize, but is handled with `EventType::kGestureScrollUpdate`.
       if (window_resizer_ && window_resizer_->IsResize()) {
         return;
       }
@@ -581,8 +580,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       HandlePinch(target, event);
       event->StopPropagation();
       return;
-    case ui::ET_SCROLL_FLING_START:
-    case ui::ET_GESTURE_SWIPE:
+    case ui::EventType::kScrollFlingStart:
+    case ui::EventType::kGestureSwipe:
       // Ignore swipe during pinch.
       if (in_pinch_ || (gesture_target_ && !in_gesture_drag_)) {
         return;
@@ -677,7 +676,7 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
   // initiated, during which time the gesture type may have changed. To
   // start the appropriate gesture, `this` keeps track of if the current
   // gesture is a drag or a pinch.
-  if (in_pinch_ && features::IsPipPinchToResizeEnabled()) {
+  if (in_pinch_) {
     return AttemptToStartPinch(window, point_in_parent, window_component,
                                /*update_gesture_target=*/true);
   }
@@ -729,7 +728,7 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
   in_gesture_drag_ = (source == ::wm::WINDOW_MOVE_SOURCE_TOUCH);
   // `gesture_target_` and `first_finger_hittest_` need to be updated if the
   // drag originated from a client (i.e. `this` never handled
-  // ET_GESTURE_EVENT_BEGIN).
+  // EventType::kGestureEventBegin).
   if (in_gesture_drag_ && (!gesture_target_ || update_gesture_target)) {
     UpdateGestureTarget(window);
   }
@@ -741,6 +740,10 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
     // stop propagation of any events that may show the tab strip.
     is_moving_floated_window_ = true;
   }
+
+  // Mark the currently dragged or resized window as excluded for occlusion
+  // purposes.
+  scoped_exclude_.emplace(window);
 
   return true;
 }
@@ -755,12 +758,9 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
     aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
         gesture_target_, window, ui::TransferTouchesBehavior::kDontCancel);
   }
-  if (!features::IsPipPinchToResizeEnabled()) {
-    return false;
-  }
 
-  // `ET_GESTURE_PINCH_BEGIN` is also called during two-finger edge resize,
-  // in which case should be ignored. `IsResize()` is determined by the
+  // `EventType::kGesturePinchBegin` is also called during two-finger edge
+  // resize, in which case should be ignored. `IsResize()` is determined by the
   // gesture start location, so even though pinch resizes the window
   // `IsResize()` should be false.
   if (window_resizer_ && window_resizer_->IsResize()) {
@@ -790,7 +790,7 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
 
   // `gesture_target_` and `first_finger_hittest_` need to be updated if
   // the drag originated from a client (i.e. `this` never handled
-  // ET_GESTURE_EVENT_BEGIN).
+  // EventType::kGestureEventBegin).
   if (!gesture_target_ || update_gesture_target) {
     UpdateGestureTarget(window);
   }
@@ -833,8 +833,9 @@ void ToplevelWindowEventHandler::RevertDrag() {
 aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     ui::GestureEvent* event,
     aura::Window* target) {
-  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN)
+  if (event->type() != ui::EventType::kGestureScrollBegin) {
     return nullptr;
+  }
 
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(target);
   if (!widget)
@@ -852,9 +853,9 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  auto app_type = toplevel->GetProperty(aura::client::kAppType);
-  if (app_type == static_cast<int>(AppType::BROWSER) ||
-      app_type == static_cast<int>(AppType::LACROS)) {
+  auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
+  if (app_type == chromeos::AppType::BROWSER ||
+      app_type == chromeos::AppType::LACROS) {
     return nullptr;
   }
 
@@ -872,7 +873,7 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
   hit_bounds_in_screen.set_height(kDragStartTopEdgeInset);
 
   // There may be a bezel sensor off screen logically above
-  // |hit_bounds_in_screen|. Handles the ET_GESTURE_SCROLL_BEGIN event
+  // |hit_bounds_in_screen|. Handles the EventType::kGestureScrollBegin event
   // triggered in the bezel area too.
   bool in_bezel = location_in_screen.y() < hit_bounds_in_screen.y() &&
                   location_in_screen.x() >= hit_bounds_in_screen.x() &&
@@ -882,6 +883,14 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return toplevel;
 
   return nullptr;
+}
+
+void ToplevelWindowEventHandler::CompleteDragForTesting(DragResult result) {
+  CompleteDrag(result);
+}
+
+void ToplevelWindowEventHandler::ResetWindowResizerForTesting() {
+  window_resizer_.reset();
 }
 
 bool ToplevelWindowEventHandler::PrepareForDrag(
@@ -918,8 +927,11 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
 }
 
 bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
-  if (!window_resizer_)
+  scoped_exclude_.reset();
+
+  if (!window_resizer_) {
     return false;
+  }
 
   std::unique_ptr<ScopedWindowResizer> resizer(std::move(window_resizer_));
   switch (result) {
@@ -952,10 +964,10 @@ bool ToplevelWindowEventHandler::CompletePinch() {
     return false;
   }
 
-  // Reinitialize the `window_resizer_` if an `ET_GESTURE_SCROLL_UPDATE` event
-  // is called right after pinch is completed. This is necessary because
-  // `ET_GESTURE_SCROLL_BEGIN` event is not called after
-  // `ET_GESTURE_PINCH_END`.
+  // Reinitialize the `window_resizer_` if an `EventType::kGestureScrollUpdate`
+  // event is called right after pinch is completed. This is necessary because
+  // `EventType::kGestureScrollBegin` event is not called after
+  // `EventType::kGesturePinchEnd`.
   requires_reinitialization_ = true;
   return true;
 }
@@ -1000,17 +1012,30 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
                                             ui::LocatedEvent* event) {
   // This function only be triggered to move window
   // by mouse drag or touch move event.
-  DCHECK(event->type() == ui::ET_MOUSE_DRAGGED ||
-         event->type() == ui::ET_TOUCH_MOVED ||
-         event->type() == ui::ET_GESTURE_SCROLL_UPDATE);
+  DCHECK(event->type() == ui::EventType::kMouseDragged ||
+         event->type() == ui::EventType::kTouchMoved ||
+         event->type() == ui::EventType::kGestureScrollUpdate);
 
   // Drag actions are performed pre-target handling to prevent spurious mouse
   // moves from the move/size operation from being sent to the target.
   if (event->phase() != ui::EP_PRETARGET)
     return;
 
-  if (!window_resizer_)
+  // Break the Snap Group when dragging a window out of it. Check
+  // `window_resizer_` to avoid breaking the group if it is tab dragging.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(target);
+        snap_group && window_resizer_) {
+      snap_group->OnLocatedEvent(event);
+    }
+  }
+
+  // `window_resizer_` may have been reset, early return in this case.
+  if (!window_resizer_) {
     return;
+  }
+
   gfx::PointF location_in_parent = event->location_f();
   aura::Window::ConvertPointToTarget(
       target, window_resizer_->resizer()->GetTarget()->parent(),
@@ -1023,7 +1048,7 @@ void ToplevelWindowEventHandler::HandlePinch(aura::Window* target,
                                              ui::GestureEvent* event) {
   // This function is only to be triggered to move and resize
   // a PiP window with a pinch event.
-  CHECK_EQ(event->type(), ui::ET_GESTURE_PINCH_UPDATE);
+  CHECK_EQ(event->type(), ui::EventType::kGesturePinchUpdate);
 
   if (!window_resizer_ || !in_pinch_) {
     return;
@@ -1034,8 +1059,7 @@ void ToplevelWindowEventHandler::HandlePinch(aura::Window* target,
       target, window_resizer_->resizer()->GetTarget()->parent(),
       &location_in_parent);
   window_resizer_->resizer()->Pinch(location_in_parent,
-                                    event->details().scale(),
-                                    event->details().pinch_angle());
+                                    event->details().scale());
   event->StopPropagation();
 }
 
@@ -1097,7 +1121,7 @@ void ToplevelWindowEventHandler::ResizerWindowDestroyed() {
   CompleteDrag(DragResult::WINDOW_DESTROYED);
 }
 
-void ToplevelWindowEventHandler::OnDisplayConfigurationChanging() {
+void ToplevelWindowEventHandler::OnWillApplyDisplayChanges() {
   CompleteDrag(DragResult::REVERT);
 }
 

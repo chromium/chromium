@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/error_test_util.h"
@@ -50,11 +50,11 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    TestProfileIOS::Builder test_profile_builder;
+    profile_ = std::move(test_profile_builder).Build();
 
-    first_web_state_.SetBrowserState(chrome_browser_state_.get());
-    second_web_state_.SetBrowserState(chrome_browser_state_.get());
+    first_web_state_.SetBrowserState(profile_.get());
+    second_web_state_.SetBrowserState(profile_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -76,7 +76,7 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
   UIScrollView* scroll_view_ = nil;

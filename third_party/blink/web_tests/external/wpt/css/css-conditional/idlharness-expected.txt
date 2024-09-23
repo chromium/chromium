@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] CSSMediaRule interface: attribute matches
+  assert_true: The prototype object must have a property "matches" expected true got false
+[FAIL] CSSMediaRule interface: cssMediaRule must inherit property "matches" with the proper type
+  assert_inherits: property "matches" not found in prototype chain
+[FAIL] CSSSupportsRule interface: attribute matches
+  assert_true: The prototype object must have a property "matches" expected true got false
+[FAIL] CSSSupportsRule interface: cssSupportsRule must inherit property "matches" with the proper type
+  assert_inherits: property "matches" not found in prototype chain
+Harness: the test ran to completion.
+

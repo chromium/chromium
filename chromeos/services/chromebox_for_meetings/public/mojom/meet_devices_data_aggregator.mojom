@@ -1,0 +1,65 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module ash.cfm.mojom;
+
+[Stable]
+struct DataFilter {
+  // The filter type used to trigger a watchdog notification
+  // REGEX = Trigger watchdog on a specified regex pattern
+  // CHANGE = Trigger watchdog if the previous output does not match the current
+  // Note: Change filter triggers on first add.
+  [Stable, Extensible]
+  enum FilterType {
+    [Default] REGEX,
+    CHANGE,
+  };
+
+  // The type of filter to trigger the watchdog on
+  FilterType filter_type@0;
+  // The pattern to use in the match, if applicable
+  string? pattern@1;
+};
+
+// A watchdog used to notify a client when input triggers a filter
+[Stable, Uuid="82f840c8-9a52-4c48-9212-b6f45c7a5b08"]
+interface DataWatchDog {
+  // Notifies the client that their filter was triggered
+  OnNotify@0(string data);
+};
+
+// Describes a single source of data (eg a log file)
+[Stable, Uuid="d2432515-005f-4571-888b-adbb312a9f49"]
+interface DataSource {
+  // Returns an array of serialised protos ready for transport
+  Fetch@0()=>(array<string> serialized_payloads);
+  // Adds a watchdog to the log source. Returns true if successful
+  // and false otherwise.
+  AddWatchDog@1(DataFilter filter, pending_remote<DataWatchDog> watch_dog)=>
+    (bool success);
+  // Tell the data source to flush any internal buffers. Typically
+  // used after a successful processing step (eg upload to cloud logs).
+  Flush@2();
+};
+
+// The main implementation that is responsible for aggregating
+// CfM data into batches and processing them (eg uploading).
+// This provides the externally facing API to remote clients.
+[Stable, Uuid="fef40ea8-75b7-4b28-893f-22f55fbb3a8a"]
+interface DataAggregator {
+  // Returns a list of all currently tracked data sources
+  GetDataSourceNames@0()=>(array<string> data_source_names);
+  // Adds a new Data source to be collected. |source_name| is technically
+  // arbitrary, but it should accurately reflect the underlying source
+  // (eg the file path for a DataSource that tracks a log file). Returns
+  // true if successful and false otherwise.
+  AddDataSource@1(string source_name, pending_remote<DataSource> data_source)=>
+    (bool success);
+  // Adds a new Watchdog to a specified data source
+  // to inform a client when a specified trigger occurs
+  AddWatchDog@2(string source_name, DataFilter filter,
+                pending_remote<DataWatchDog> watch_dog)=>(bool success);
+};

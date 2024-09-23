@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/paint/marker_range_mapping_context.h"
@@ -22,37 +24,78 @@ using HighlightLayer = HighlightOverlay::HighlightLayer;
 using HighlightRange = HighlightOverlay::HighlightRange;
 using HighlightEdge = HighlightOverlay::HighlightEdge;
 using HighlightDecoration = HighlightOverlay::HighlightDecoration;
+using HighlightBackground = HighlightOverlay::HighlightBackground;
+using HighlightTextShadow = HighlightOverlay::HighlightTextShadow;
 using HighlightPart = HighlightOverlay::HighlightPart;
 
 unsigned ClampOffset(unsigned offset, const TextFragmentPaintInfo& fragment) {
   return std::min(std::max(offset, fragment.from), fragment.to);
 }
 
-}  // namespace
-
-String HighlightLayer::ToString() const {
+String HighlightTypeToString(HighlightLayerType type) {
   StringBuilder result{};
   switch (type) {
     case HighlightLayerType::kOriginating:
-      result.Append("ORIG");
+      result.Append("originating");
       break;
     case HighlightLayerType::kCustom:
-      result.Append(name.GetString());
+      result.Append("custom");
       break;
     case HighlightLayerType::kGrammar:
-      result.Append("GRAM");
+      result.Append("grammar");
       break;
     case HighlightLayerType::kSpelling:
-      result.Append("SPEL");
+      result.Append("spelling");
       break;
     case HighlightLayerType::kTargetText:
-      result.Append("TARG");
+      result.Append("target");
+      break;
+    case HighlightLayerType::kSearchText:
+      result.Append("search");
+      break;
+    case HighlightLayerType::kSearchTextCurrent:
+      result.Append("search:current");
       break;
     case HighlightLayerType::kSelection:
-      result.Append("SELE");
+      result.Append("selection");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
+  }
+  return result.ToString();
+}
+
+uint16_t HighlightLayerIndex(const HeapVector<HighlightLayer>& layers,
+                             HighlightLayerType type,
+                             const AtomicString& name = g_null_atom) {
+  // This may be a performance bottleneck when there are many layers,
+  // the solution being to keep a Map in addition to the Vector. But in
+  // practice it's hard to see a document using more than tens of custom
+  // highlights.
+  wtf_size_t index = 0;
+  wtf_size_t layers_size = layers.size();
+  while (index < layers_size &&
+         (layers[index].type != type || layers[index].name != name)) {
+    index++;
+  }
+  CHECK_LT(index, layers_size);
+  return static_cast<uint16_t>(index);
+}
+
+}  // namespace
+
+HighlightLayer::HighlightLayer(HighlightLayerType type,
+                               const AtomicString& name)
+    : type(type),
+      name(std::move(name)) {}
+
+String HighlightLayer::ToString() const {
+  StringBuilder result{};
+  result.Append(HighlightTypeToString(type));
+  if (!name.IsNull()) {
+    result.Append("(");
+    result.Append(name);
+    result.Append(")");
   }
   return result.ToString();
 }
@@ -69,10 +112,14 @@ enum PseudoId HighlightLayer::PseudoId() const {
       return kPseudoIdSpellingError;
     case HighlightLayerType::kTargetText:
       return kPseudoIdTargetText;
+    case HighlightLayerType::kSearchText:
+      return kPseudoIdSearchText;
+    case HighlightLayerType::kSearchTextCurrent:
+      return kPseudoIdSearchText;
     case HighlightLayerType::kSelection:
       return kPseudoIdSelection;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -81,6 +128,8 @@ const AtomicString& HighlightLayer::PseudoArgument() const {
 }
 
 bool HighlightLayer::operator==(const HighlightLayer& other) const {
+  // For equality we are not concerned with the styles or decorations.
+  // Those are dependent on the type and name.
   return type == other.type && name == other.name;
 }
 
@@ -141,14 +190,24 @@ String HighlightRange::ToString() const {
 
 String HighlightEdge::ToString() const {
   StringBuilder result{};
-  result.AppendNumber(Offset());
-  result.Append(type == HighlightEdgeType::kStart ? "<" : ">");
-  result.Append(layer.ToString());
+  if (edge_type == HighlightEdgeType::kStart) {
+    result.Append("<");
+    result.AppendNumber(Offset());
+    result.Append(" ");
+  }
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(layer_type));
+  if (edge_type == HighlightEdgeType::kEnd) {
+    result.Append(" ");
+    result.AppendNumber(Offset());
+    result.Append(">");
+  }
   return result.ToString();
 }
 
 unsigned HighlightEdge::Offset() const {
-  switch (type) {
+  switch (edge_type) {
     case HighlightEdgeType::kStart:
       return range.from;
     case HighlightEdgeType::kEnd:
@@ -157,6 +216,7 @@ unsigned HighlightEdge::Offset() const {
 }
 
 bool HighlightEdge::LessThan(const HighlightEdge& other,
+                             const HeapVector<HighlightLayer>& layers,
                              const HighlightRegistry* registry) const {
   if (Offset() < other.Offset()) {
     return true;
@@ -164,124 +224,291 @@ bool HighlightEdge::LessThan(const HighlightEdge& other,
   if (Offset() > other.Offset()) {
     return false;
   }
-  if (type > other.type)
+  if (edge_type > other.edge_type) {
     return true;
-  if (type < other.type)
+  }
+  if (edge_type < other.edge_type) {
     return false;
-  return layer.ComparePaintOrder(other.layer, registry) < 0;
+  }
+  return layers[layer_index].ComparePaintOrder(layers[other.layer_index],
+                                               registry) < 0;
 }
 
 bool HighlightEdge::operator==(const HighlightEdge& other) const {
-  return Offset() == other.Offset() && type == other.type &&
-         layer == other.layer;
+  return Offset() == other.Offset() && edge_type == other.edge_type &&
+         layer_type == other.layer_type && layer_index == other.layer_index;
 }
 
 bool HighlightEdge::operator!=(const HighlightEdge& other) const {
   return !operator==(other);
 }
 
-HighlightDecoration::HighlightDecoration(HighlightLayer layer,
-                                         HighlightRange range)
-    : layer(std::move(layer)), range(range) {}
+HighlightDecoration::HighlightDecoration(HighlightLayerType type,
+                                         uint16_t layer_index,
+                                         HighlightRange range,
+                                         Color override_color)
+    : type(type),
+      layer_index(layer_index),
+      range(range),
+      highlight_override_color(override_color) {}
 
 String HighlightDecoration::ToString() const {
   StringBuilder result{};
-  result.Append(layer.ToString());
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
   result.Append(range.ToString());
   return result.ToString();
 }
 
 bool HighlightDecoration::operator==(const HighlightDecoration& other) const {
-  return layer == other.layer && range == other.range;
+  return type == other.type && layer_index == other.layer_index &&
+         range == other.range;
 }
 
 bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
   return !operator==(other);
 }
 
-HighlightPart::HighlightPart(HighlightLayer layer,
-                             HighlightRange range,
-                             Vector<HighlightDecoration> decorations)
-    : layer(std::move(layer)),
-      range(range),
-      decorations(std::move(decorations)) {}
+String HighlightBackground::ToString() const {
+  StringBuilder result{};
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
+  result.Append(color.SerializeAsCSSColor());
+  return result.ToString();
+}
 
-HighlightPart::HighlightPart(HighlightLayer layer, HighlightRange range)
-    : HighlightPart(layer, range, Vector<HighlightDecoration>{}) {}
+bool HighlightBackground::operator==(const HighlightBackground& other) const {
+  return type == other.type && layer_index == other.layer_index &&
+         color == other.color;
+}
+
+bool HighlightBackground::operator!=(const HighlightBackground& other) const {
+  return !operator==(other);
+}
+
+String HighlightTextShadow::ToString() const {
+  StringBuilder result{};
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
+  result.Append(current_color.SerializeAsCSSColor());
+  return result.ToString();
+}
+
+bool HighlightTextShadow::operator==(const HighlightTextShadow& other) const {
+  return type == other.type && layer_index == other.layer_index &&
+         current_color == other.current_color;
+}
+
+bool HighlightTextShadow::operator!=(const HighlightTextShadow& other) const {
+  return !operator==(other);
+}
+
+HighlightPart::HighlightPart(HighlightLayerType type,
+                             uint16_t layer_index,
+                             HighlightRange range,
+                             TextPaintStyle style,
+                             float stroke_width,
+                             Vector<HighlightDecoration> decorations,
+                             Vector<HighlightBackground> backgrounds,
+                             Vector<HighlightTextShadow> text_shadows)
+    : type(type),
+      layer_index(layer_index),
+      range(range),
+      style(style),
+      stroke_width(stroke_width),
+      decorations(std::move(decorations)),
+      backgrounds(std::move(backgrounds)),
+      text_shadows(std::move(text_shadows)) {}
+
+HighlightPart::HighlightPart(HighlightLayerType type,
+                             uint16_t layer_index,
+                             HighlightRange range,
+                             TextPaintStyle style,
+                             float stroke_width,
+                             Vector<HighlightDecoration> decorations)
+    : type(type),
+      layer_index(layer_index),
+      range(range),
+      style(style),
+      stroke_width(stroke_width),
+      decorations(std::move(decorations)),
+      backgrounds({}),
+      text_shadows({}) {}
 
 String HighlightPart::ToString() const {
   StringBuilder result{};
-  result.Append(layer.ToString());
+  result.Append("\n");
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
   result.Append(range.ToString());
-  for (const HighlightDecoration& decoration : decorations) {
-    result.Append("+");
-    result.Append(decoration.ToString());
+  // A part should contain one kOriginating decoration struct, followed by one
+  // decoration struct for each active overlay in highlight painting order,
+  // along with background and shadow structs for the active overlays only.
+  // Stringify the three vectors in a way that keeps the layers aligned.
+  if (decorations.size() >= 1) {
+    result.Append("\n    decoration ");
+    result.Append(decorations[0].ToString());
+  }
+  wtf_size_t len =
+      std::max(std::max(decorations.size(), backgrounds.size() + 1),
+               text_shadows.size() + 1) -
+      1;
+  for (wtf_size_t i = 0; i < len; i++) {
+    result.Append("\n  ");
+    if (i + 1 < decorations.size()) {
+      result.Append("  decoration ");
+      result.Append(decorations[i + 1].ToString());
+    }
+    if (i < backgrounds.size()) {
+      result.Append("  background ");
+      result.Append(backgrounds[i].ToString());
+    }
+    if (i < text_shadows.size()) {
+      result.Append("  shadow ");
+      result.Append(text_shadows[i].ToString());
+    }
   }
   return result.ToString();
 }
 
 bool HighlightPart::operator==(const HighlightPart& other) const {
-  return layer == other.layer && range == other.range &&
-         decorations == other.decorations;
+  return type == other.type && layer_index == other.layer_index &&
+         range == other.range && decorations == other.decorations &&
+         backgrounds == other.backgrounds && text_shadows == other.text_shadows;
 }
 
 bool HighlightPart::operator!=(const HighlightPart& other) const {
   return !operator==(other);
 }
 
-Vector<HighlightLayer> HighlightOverlay::ComputeLayers(
-    const HighlightRegistry* registry,
+HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
+    const Document& document,
+    Node* node,
+    const ComputedStyle& originating_style,
+    const TextPaintStyle& originating_text_style,
+    const PaintInfo& paint_info,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
     const DocumentMarkerVector& spelling,
-    const DocumentMarkerVector& target) {
-  Vector<HighlightLayer> result{};
-  result.emplace_back(HighlightLayerType::kOriginating);
+    const DocumentMarkerVector& target,
+    const DocumentMarkerVector& search) {
+  const HighlightRegistry* registry =
+      HighlightRegistry::GetHighlightRegistry(node);
+  HeapVector<HighlightLayer> layers{};
+  layers.emplace_back(HighlightLayerType::kOriginating);
 
-  for (const auto& marker : custom) {
-    auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
-    HighlightLayer layer{HighlightLayerType::kCustom,
-                         custom_marker->GetHighlightName()};
-    if (!result.Contains(layer))
-      result.push_back(layer);
+  const auto* text_node = DynamicTo<Text>(node);
+  if (!text_node) {
+    DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
+           target.empty() && search.empty())
+        << "markers can not be painted without a valid Text node";
+    if (selection) {
+      layers.emplace_back(HighlightLayerType::kSelection);
+    }
+    return layers;
+  }
+
+  if (!custom.empty()) {
+    // We must be able to store the layer index within 16 bits. Enforce
+    // that now when making layers.
+    unsigned max_custom_layers =
+        std::numeric_limits<uint16_t>::max() -
+        static_cast<unsigned>(HighlightLayerType::kSelection);
+    const HashSet<AtomicString>& active_highlights =
+        registry->GetActiveHighlights(*text_node);
+    auto highlight_iter = active_highlights.begin();
+    unsigned layer_count = 0;
+    while (highlight_iter != active_highlights.end() &&
+           layer_count < max_custom_layers) {
+      HighlightLayer layer{HighlightLayerType::kCustom, *highlight_iter};
+      DCHECK(!layers.Contains(layer));
+      layers.push_back(layer);
+      highlight_iter++;
+      layer_count++;
+    }
   }
   if (!grammar.empty())
-    result.emplace_back(HighlightLayerType::kGrammar);
+    layers.emplace_back(HighlightLayerType::kGrammar);
   if (!spelling.empty())
-    result.emplace_back(HighlightLayerType::kSpelling);
+    layers.emplace_back(HighlightLayerType::kSpelling);
   if (!target.empty())
-    result.emplace_back(HighlightLayerType::kTargetText);
+    layers.emplace_back(HighlightLayerType::kTargetText);
+  if (!search.empty() &&
+      RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+    layers.emplace_back(HighlightLayerType::kSearchText);
+    layers.emplace_back(HighlightLayerType::kSearchTextCurrent);
+  }
   if (selection)
-    result.emplace_back(HighlightLayerType::kSelection);
+    layers.emplace_back(HighlightLayerType::kSelection);
 
-  std::sort(result.begin(), result.end(),
+  std::sort(layers.begin(), layers.end(),
             [registry](const HighlightLayer& p, const HighlightLayer& q) {
               return p.ComparePaintOrder(q, registry) < 0;
             });
 
-  return result;
+  layers[0].style = &originating_style;
+  layers[0].text_style.style = originating_text_style;
+  layers[0].text_style.text_decoration_color =
+      originating_style.VisitedDependentColor(
+          GetCSSPropertyTextDecorationColor());
+  layers[0].decorations_in_effect =
+      originating_style.HasAppliedTextDecorations()
+          ? originating_style.TextDecorationsInEffect()
+          : TextDecorationLine::kNone;
+  for (wtf_size_t i = 1; i < layers.size(); i++) {
+    layers[i].style =
+        layers[i].type == HighlightLayerType::kSearchTextCurrent
+            ? originating_style.HighlightData().SearchTextCurrent()
+            : HighlightStyleUtils::HighlightPseudoStyle(
+                  node, originating_style, layers[i].PseudoId(),
+                  layers[i].PseudoArgument());
+    layers[i].text_style = HighlightStyleUtils::HighlightPaintingStyle(
+        document, originating_style, layers[i].style, node,
+        layers[i].PseudoId(), layers[i - 1].text_style.style, paint_info,
+        layers[i].type == HighlightLayerType::kSearchTextCurrent
+            ? SearchTextIsCurrent::kYes
+            : SearchTextIsCurrent::kNo);
+    layers[i].decorations_in_effect =
+        layers[i].style && layers[i].style->HasAppliedTextDecorations()
+            ? layers[i].style->TextDecorationsInEffect()
+            : TextDecorationLine::kNone;
+  }
+  return layers;
 }
 
 Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     const Node* node,
-    const HighlightRegistry* registry,
     bool is_generated_text_fragment,
     std::optional<TextOffsetRange> dom_offsets,
+    const HeapVector<HighlightLayer>& layers,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
     const DocumentMarkerVector& spelling,
-    const DocumentMarkerVector& target) {
+    const DocumentMarkerVector& target,
+    const DocumentMarkerVector& search) {
+  const HighlightRegistry* registry =
+      HighlightRegistry::GetHighlightRegistry(node);
   Vector<HighlightEdge> result{};
 
   if (selection) {
     DCHECK_LT(selection->start, selection->end);
+    uint16_t layer_index =
+        HighlightLayerIndex(layers, HighlightLayerType::kSelection);
     result.emplace_back(HighlightRange{selection->start, selection->end},
-                        HighlightLayer{HighlightLayerType::kSelection},
+                        HighlightLayerType::kSelection, layer_index,
                         HighlightEdgeType::kStart);
     result.emplace_back(HighlightRange{selection->start, selection->end},
-                        HighlightLayer{HighlightLayerType::kSelection},
+                        HighlightLayerType::kSelection, layer_index,
                         HighlightEdgeType::kEnd);
   }
 
@@ -293,7 +520,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
   const auto* text_node = DynamicTo<Text>(node);
   if (!text_node) {
     DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
-           target.empty())
+           target.empty() && search.empty())
         << "markers can not be painted without a valid Text node";
   } else if (is_generated_text_fragment) {
     // Custom highlights and marker-based highlights are defined in terms of
@@ -301,7 +528,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
     // TODO(crbug.com/17528) handle ::first-letter
     DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
-           target.empty())
+           target.empty() && search.empty())
         << "no marker can ever apply to fragment items with generated text";
   } else {
     DCHECK(dom_offsets);
@@ -317,103 +544,162 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
       if (content_start >= content_end)
         continue;
       auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
+      uint16_t layer_index =
+          HighlightLayerIndex(layers, HighlightLayerType::kCustom,
+                              custom_marker->GetHighlightName());
       result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kCustom,
-                                         custom_marker->GetHighlightName()},
+                          HighlightLayerType::kCustom, layer_index,
                           HighlightEdgeType::kStart);
       result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kCustom,
-                                         custom_marker->GetHighlightName()},
+                          HighlightLayerType::kCustom, layer_index,
                           HighlightEdgeType::kEnd);
     }
 
-    mapping_context.Reset();
-    for (const auto& marker : grammar) {
-      std::optional<TextOffsetRange> marker_offsets =
-          mapping_context.GetTextContentOffsets(*marker);
-      if (!marker_offsets) {
-        continue;
+    if (!grammar.empty()) {
+      mapping_context.Reset();
+      uint16_t layer_index =
+          HighlightLayerIndex(layers, HighlightLayerType::kGrammar);
+      for (const auto& marker : grammar) {
+        std::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (!marker_offsets) {
+          continue;
+        }
+        const unsigned content_start = marker_offsets->start;
+        const unsigned content_end = marker_offsets->end;
+        if (content_start >= content_end) {
+          continue;
+        }
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kGrammar, layer_index,
+                            HighlightEdgeType::kStart);
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kGrammar, layer_index,
+                            HighlightEdgeType::kEnd);
       }
-      const unsigned content_start = marker_offsets->start;
-      const unsigned content_end = marker_offsets->end;
-      if (content_start >= content_end)
-        continue;
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kGrammar},
-                          HighlightEdgeType::kStart);
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kGrammar},
-                          HighlightEdgeType::kEnd);
     }
-
-    mapping_context.Reset();
-    for (const auto& marker : spelling) {
-      std::optional<TextOffsetRange> marker_offsets =
-          mapping_context.GetTextContentOffsets(*marker);
-      if (!marker_offsets) {
-        continue;
+    if (!spelling.empty()) {
+      mapping_context.Reset();
+      uint16_t layer_index =
+          HighlightLayerIndex(layers, HighlightLayerType::kSpelling);
+      for (const auto& marker : spelling) {
+        std::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (!marker_offsets) {
+          continue;
+        }
+        const unsigned content_start = marker_offsets->start;
+        const unsigned content_end = marker_offsets->end;
+        if (content_start >= content_end) {
+          continue;
+        }
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kSpelling, layer_index,
+                            HighlightEdgeType::kStart);
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kSpelling, layer_index,
+                            HighlightEdgeType::kEnd);
       }
-      const unsigned content_start = marker_offsets->start;
-      const unsigned content_end = marker_offsets->end;
-      if (content_start >= content_end)
-        continue;
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kSpelling},
-                          HighlightEdgeType::kStart);
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kSpelling},
-                          HighlightEdgeType::kEnd);
     }
-
-    mapping_context.Reset();
-    for (const auto& marker : target) {
-      std::optional<TextOffsetRange> marker_offsets =
-          mapping_context.GetTextContentOffsets(*marker);
-      if (!marker_offsets) {
-        continue;
+    if (!target.empty()) {
+      mapping_context.Reset();
+      uint16_t layer_index =
+          HighlightLayerIndex(layers, HighlightLayerType::kTargetText);
+      for (const auto& marker : target) {
+        std::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (!marker_offsets) {
+          continue;
+        }
+        const unsigned content_start = marker_offsets->start;
+        const unsigned content_end = marker_offsets->end;
+        if (content_start >= content_end) {
+          continue;
+        }
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kTargetText, layer_index,
+                            HighlightEdgeType::kStart);
+        result.emplace_back(HighlightRange{content_start, content_end},
+                            HighlightLayerType::kTargetText, layer_index,
+                            HighlightEdgeType::kEnd);
       }
-      const unsigned content_start = marker_offsets->start;
-      const unsigned content_end = marker_offsets->end;
-      if (content_start >= content_end)
-        continue;
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kTargetText},
-                          HighlightEdgeType::kStart);
-      result.emplace_back(HighlightRange{content_start, content_end},
-                          HighlightLayer{HighlightLayerType::kTargetText},
-                          HighlightEdgeType::kEnd);
+    }
+    if (!search.empty() &&
+        RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+      mapping_context.Reset();
+      uint16_t layer_index_not_current =
+          HighlightLayerIndex(layers, HighlightLayerType::kSearchText);
+      uint16_t layer_index_current =
+          HighlightLayerIndex(layers, HighlightLayerType::kSearchTextCurrent);
+      for (const auto& marker : search) {
+        std::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (!marker_offsets) {
+          continue;
+        }
+        const unsigned content_start = marker_offsets->start;
+        const unsigned content_end = marker_offsets->end;
+        if (content_start >= content_end) {
+          continue;
+        }
+        auto* text_match_marker = To<TextMatchMarker>(marker.Get());
+        HighlightLayerType type = text_match_marker->IsActiveMatch()
+                                      ? HighlightLayerType::kSearchTextCurrent
+                                      : HighlightLayerType::kSearchText;
+        uint16_t layer_index = text_match_marker->IsActiveMatch()
+                                   ? layer_index_current
+                                   : layer_index_not_current;
+        result.emplace_back(HighlightRange{content_start, content_end}, type,
+                            layer_index, HighlightEdgeType::kStart);
+        result.emplace_back(HighlightRange{content_start, content_end}, type,
+                            layer_index, HighlightEdgeType::kEnd);
+      }
     }
   }
 
   std::sort(result.begin(), result.end(),
-            [registry](const HighlightEdge& p, const HighlightEdge& q) {
-              return p.LessThan(q, registry);
+            [layers, registry](const HighlightEdge& p, const HighlightEdge& q) {
+              return p.LessThan(q, layers, registry);
             });
 
   return result;
 }
 
-Vector<HighlightPart> HighlightOverlay::ComputeParts(
+HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
     const TextFragmentPaintInfo& content_offsets,
-    const Vector<HighlightLayer>& layers,
+    const HeapVector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
-  const HighlightLayer originating_layer{HighlightLayerType::kOriginating};
+  DCHECK_EQ(layers[0].type, HighlightLayerType::kOriginating);
+  const float originating_stroke_width =
+      layers[0].style ? layers[0].style->TextStrokeWidth() : 0;
+  const HighlightStyleUtils::HighlightTextPaintStyle& originating_text_style =
+      layers[0].text_style;
   const HighlightDecoration originating_decoration{
-      originating_layer, {content_offsets.from, content_offsets.to}};
-  Vector<HighlightPart> result{};
+      HighlightLayerType::kOriginating,
+      0,
+      {content_offsets.from, content_offsets.to},
+      originating_text_style.text_decoration_color};
+
+  HeapVector<HighlightPart> result;
   Vector<std::optional<HighlightRange>> active(layers.size());
   std::optional<unsigned> prev_offset{};
   if (edges.empty()) {
-    result.push_back(HighlightPart{originating_layer,
+    result.push_back(HighlightPart{HighlightLayerType::kOriginating,
+                                   0,
                                    {content_offsets.from, content_offsets.to},
+                                   originating_text_style.style,
+                                   originating_stroke_width,
                                    {originating_decoration}});
     return result;
   }
   if (content_offsets.from < edges.front().Offset()) {
     result.push_back(
-        HighlightPart{originating_layer,
+        HighlightPart{HighlightLayerType::kOriginating,
+                      0,
                       {content_offsets.from,
                        ClampOffset(edges.front().Offset(), content_offsets)},
+                      originating_text_style.style,
+                      originating_stroke_width,
                       {originating_decoration}});
   }
   for (const HighlightEdge& edge : edges) {
@@ -424,41 +710,66 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
       unsigned part_to = ClampOffset(edge.Offset(), content_offsets);
       if (part_from < part_to) {
         // ...then find the topmost layer and enqueue a new part to be painted.
-        HighlightPart part{
-            originating_layer, {part_from, part_to}, {originating_decoration}};
-        for (wtf_size_t i = 0; i < layers.size(); i++) {
+        HighlightPart part{HighlightLayerType::kOriginating,
+                           0,
+                           {part_from, part_to},
+                           originating_text_style.style,
+                           originating_stroke_width,
+                           {originating_decoration},
+                           {},
+                           {}};
+        HighlightStyleUtils::HighlightTextPaintStyle previous_layer_style =
+            originating_text_style;
+        for (wtf_size_t i = 1; i < layers.size(); i++) {
           if (active[i]) {
             unsigned decoration_from =
                 ClampOffset(active[i]->from, content_offsets);
             unsigned decoration_to =
                 ClampOffset(active[i]->to, content_offsets);
-            part.layer = layers[i];
-            part.decorations.push_back(HighlightDecoration{
-                layers[i], {decoration_from, decoration_to}});
+            part.type = layers[i].type;
+            part.layer_index = static_cast<uint16_t>(i);
+            HighlightStyleUtils::HighlightTextPaintStyle part_style =
+                layers[i].text_style;
+            HighlightStyleUtils::ResolveColorsFromPreviousLayer(
+                part_style, previous_layer_style);
+            part.style = part_style.style;
+            part.decorations.push_back(
+                HighlightDecoration{layers[i].type,
+                                    static_cast<uint16_t>(i),
+                                    {decoration_from, decoration_to},
+                                    part_style.text_decoration_color});
+            part.backgrounds.push_back(
+                HighlightBackground{layers[i].type, static_cast<uint16_t>(i),
+                                    part_style.background_color});
+            part.text_shadows.push_back(
+                HighlightTextShadow{layers[i].type, static_cast<uint16_t>(i),
+                                    part_style.style.current_color});
+            previous_layer_style = part_style;
           }
         }
         result.push_back(part);
       }
     }
-    wtf_size_t edge_layer_index = layers.Find(edge.layer);
-    DCHECK_NE(edge_layer_index, kNotFound)
-        << "edge layer should be one of the given layers";
     // This algorithm malfunctions if the edges represent overlapping ranges.
-    DCHECK(active[edge_layer_index] ? edge.type == HighlightEdgeType::kEnd
-                                    : edge.type == HighlightEdgeType::kStart)
+    DCHECK(active[edge.layer_index]
+               ? edge.edge_type == HighlightEdgeType::kEnd
+               : edge.edge_type == HighlightEdgeType::kStart)
         << "edge should be kStart iff the layer is active or else kEnd";
-    if (edge.type == HighlightEdgeType::kStart) {
-      active[edge_layer_index].emplace(edge.range);
+    if (edge.edge_type == HighlightEdgeType::kStart) {
+      active[edge.layer_index].emplace(edge.range);
     } else {
-      active[edge_layer_index].reset();
+      active[edge.layer_index].reset();
     }
     prev_offset.emplace(edge.Offset());
   }
   if (edges.back().Offset() < content_offsets.to) {
     result.push_back(
-        HighlightPart{originating_layer,
+        HighlightPart{HighlightLayerType::kOriginating,
+                      0,
                       {ClampOffset(edges.back().Offset(), content_offsets),
                        content_offsets.to},
+                      originating_text_style.style,
+                      originating_stroke_width,
                       {originating_decoration}});
   }
   return result;

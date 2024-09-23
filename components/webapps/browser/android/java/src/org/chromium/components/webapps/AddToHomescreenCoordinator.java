@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class AddToHomescreenCoordinator {
     private Context mActivityContext;
     private ModalDialogManager mModalDialogManager;
+    private PropertyModel mModel;
     private WindowAndroid mWindowAndroid;
     // May be null during tests.
     private WebContents mWebContents;
@@ -104,15 +105,11 @@ public class AddToHomescreenCoordinator {
      * @return The instance of {@link AddToHomescreenMediator} that was constructed.
      */
     private AddToHomescreenMediator buildMediatorAndShowDialog() {
-        PropertyModel model = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
+        mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(model, mWindowAndroid);
+                new AddToHomescreenMediator(mModel, mWindowAndroid);
         PropertyModelChangeProcessor.create(
-                model,
-                initView(
-                        AppBannerManager.getHomescreenLanguageOption(mWebContents),
-                        addToHomescreenMediator),
-                AddToHomescreenViewBinder::bind);
+                mModel, initView(addToHomescreenMediator), AddToHomescreenViewBinder::bind);
         return addToHomescreenMediator;
     }
 
@@ -121,11 +118,8 @@ public class AddToHomescreenCoordinator {
      * easier testing.
      */
     @VisibleForTesting
-    protected AddToHomescreenDialogView initView(
-            AppBannerManager.InstallStringPair installStrings,
-            AddToHomescreenViewDelegate delegate) {
-        return new AddToHomescreenDialogView(
-                mActivityContext, mModalDialogManager, installStrings, delegate);
+    protected AddToHomescreenDialogView initView(AddToHomescreenViewDelegate delegate) {
+        return new AddToHomescreenDialogView(mActivityContext, mModalDialogManager, delegate);
     }
 
     protected ModalDialogManager getModalDialogManagerForTests() {
@@ -134,5 +128,9 @@ public class AddToHomescreenCoordinator {
 
     protected Context getContextForTests() {
         return mActivityContext;
+    }
+
+    public PropertyModel getPropertyModelForTesting() {
+        return mModel;
     }
 }

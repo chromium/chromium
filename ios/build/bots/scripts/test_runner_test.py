@@ -17,6 +17,7 @@ import result_sink_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
+import xcode_util
 
 
 class TestCase(unittest.TestCase):
@@ -73,8 +74,7 @@ class SimulatorTestRunnerTest(TestCase):
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
     self.mock(test_apps, 'get_bundle_id', lambda _: 'fake-bundle-id')
-    self.mock(test_apps.SimulatorXCTestUnitTestsApp,
-              '_xctest_path', lambda _: 'fake-path')
+    self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(test_apps.plistlib, 'dump', lambda _1, _2: '')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)

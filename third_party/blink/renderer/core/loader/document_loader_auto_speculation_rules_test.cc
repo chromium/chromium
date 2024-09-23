@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -23,11 +25,19 @@ class DocumentLoaderAutoSpeculationRulesTest : public ::testing::Test {
  protected:
   void SetUp() override {
     web_view_helper_.Initialize();
-    web_view_impl_ = web_view_helper_.InitializeAndLoad("about:blank");
+    url_test_helpers::RegisterMockedURLLoad(
+        url_test_helpers::ToKURL("https://start.example.com/foo.html"),
+        test::CoreTestDataPath("foo.html"));
+    web_view_impl_ = web_view_helper_.InitializeAndLoad(
+        "https://start.example.com/foo.html");
 
     // We leave the "config" parameter at its default value, since
     // SpeculationRulesConfigOverride takes care of that in each test.
     scoped_feature_list_.InitAndEnableFeature(features::kAutoSpeculationRules);
+  }
+
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   LocalFrame& GetLocalFrame() const {
@@ -74,6 +84,9 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, InvalidJSON) {
   {
     "framework_to_speculation_rules": {
       "1": "true"
+    },
+    "url_match_pattern_to_speculation_rules": {
+      "https://start.example.com/foo.html": "true"
     }
   }
   )");
@@ -89,7 +102,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, InvalidJSON) {
   EXPECT_EQ(rules.rule_sets().size(), 0u);
 }
 
-TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidRules) {
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidFrameworkRules) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
@@ -111,93 +124,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidRules) {
   // the speculation rules tests.
 }
 
-TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, ExistingRuleSetOptsOut) {
-  test::AutoSpeculationRulesConfigOverride override(R"(
-  {
-    "framework_to_speculation_rules": {
-      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}"
-    }
-  }
-  )");
-
-  auto& rules = GetDocumentSpeculationRules();
-  CHECK_EQ(rules.rule_sets().size(), 0u);
-
-  auto* rule_set = GetOptOutRuleSet();
-  rules.AddRuleSet(rule_set);
-
-  EXPECT_EQ(rules.rule_sets().size(), 1u);
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
-
-  base::HistogramTester histogram_tester;
-
-  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
-                1);
-  GetDocumentLoader().DidObserveJavaScriptFrameworks(
-      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected}}});
-
-  // Still just one, but now the UseCounter and histogram have triggered.
-  EXPECT_EQ(rules.rule_sets().size(), 1u);
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
-  histogram_tester.ExpectUniqueSample(
-      "Blink.SpeculationRules.LoadOutcome",
-      SpeculationRulesLoadOutcome::kAutoSpeculationRulesOptedOut,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, AddedLaterRuleSetOptsOut) {
-  // Test 2 auto speculation rule sets to ensure we remove both of them
-  // correctly.
-  test::AutoSpeculationRulesConfigOverride override(R"(
-  {
-    "framework_to_speculation_rules": {
-      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}",
-      "3": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/baz.html\"]}]}"
-    }
-  }
-  )");
-
-  base::HistogramTester histogram_tester;
-
-  auto& rules = GetDocumentSpeculationRules();
-  CHECK_EQ(rules.rule_sets().size(), 0u);
-
-  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
-                1);
-  static_assert(base::to_underlying(mojom::JavaScriptFramework::kGatsby) == 3);
-  GetDocumentLoader().DidObserveJavaScriptFrameworks(
-      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected},
-        {mojom::JavaScriptFramework::kGatsby, kNoFrameworkVersionDetected}}});
-
-  EXPECT_EQ(rules.rule_sets().size(), 2u);
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
-
-  auto* manually_added_rule_set = GetOptOutRuleSet();
-  rules.AddRuleSet(manually_added_rule_set);
-
-  EXPECT_EQ(rules.rule_sets().size(), 1u);
-  EXPECT_EQ(rules.rule_sets().at(0), manually_added_rule_set);
-
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
-
-  // The load outcome should not be AutoSpeculationRulesOptedOut, since it did
-  // load correctly. Instead, we should get 3 succeses: 2 auto speculation rules
-  // + 1 normal speculation rule.
-  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
-                                      SpeculationRulesLoadOutcome::kSuccess,
-                                      /*expected_bucket_count=*/3);
-}
-
-INSTANTIATE_TEST_SUITE_P(FromInlineOrExternal,
-                         DocumentLoaderAutoSpeculationRulesOptOutTest,
-                         testing::Values(OptOutRuleSetType::kInline,
-                                         OptOutRuleSetType::kExternal));
-
-TEST_F(DocumentLoaderAutoSpeculationRulesTest, MultipleRules) {
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, MultipleFrameworkRules) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
@@ -228,6 +155,197 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, MultipleRules) {
       rules.rule_sets().at(1)->prefetch_rules().at(0)->urls().at(0).GetString(),
       "https://example.com/baz.html");
 }
+
+TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidUrlMatchPatternRules) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "url_match_pattern_to_speculation_rules": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}",
+      "https://*.example.com/*": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/2.html\"]}]}",
+      "https://*.example.org/*": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/3.html\"]}]}"
+    }
+  }
+  )");
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
+                1);
+  GetDocumentLoader().DidObserveJavaScriptFrameworks(
+      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected}}});
+
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
+  // Assume the rules were parsed correctly; testing that would be redundant
+  // with the speculation rules tests.
+}
+
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, ExistingRuleSetOptsOut) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "framework_to_speculation_rules": {
+      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}"
+    },
+    "url_match_pattern_to_speculation_rules": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}"
+    }
+  }
+  )");
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  auto* rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  base::HistogramTester histogram_tester;
+
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
+                1);
+  GetDocumentLoader().DidObserveJavaScriptFrameworks(
+      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected}}});
+
+  // Still just one, but now the UseCounter and histogram have triggered.
+  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+  histogram_tester.ExpectUniqueSample(
+      "Blink.SpeculationRules.LoadOutcome",
+      SpeculationRulesLoadOutcome::kAutoSpeculationRulesOptedOut,
+      /*expected_bucket_count=*/2);
+}
+
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest,
+       ExistingRuleSetOptOutIgnored) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "url_match_pattern_to_speculation_rules_ignore_opt_out": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}"
+    }
+  }
+  )");
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  auto* rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_FALSE(rules.rule_sets()[0]->source()->IsFromBrowserInjected());
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  base::HistogramTester histogram_tester;
+
+  GetDocumentLoader().DidObserveJavaScriptFrameworks({});
+
+  // The rule set is added, the UseCounter has not triggered, and the only
+  // histogram update is +1 success.
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
+  EXPECT_FALSE(rules.rule_sets().at(0)->source()->IsFromBrowserInjected());
+  EXPECT_TRUE(rules.rule_sets().at(1)->source()->IsFromBrowserInjected());
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, AddedLaterRuleSetOptsOut) {
+  // Test 2 auto speculation rule sets per type to ensure we remove both of them
+  // correctly.
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "framework_to_speculation_rules": {
+      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}",
+      "3": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/baz.html\"]}]}"
+    },
+    "url_match_pattern_to_speculation_rules": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}",
+      "https://*.example.com/*": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/2.html\"]}]}"
+    }
+  }
+  )");
+
+  base::HistogramTester histogram_tester;
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
+                1);
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kGatsby) == 3);
+  GetDocumentLoader().DidObserveJavaScriptFrameworks(
+      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected},
+        {mojom::JavaScriptFramework::kGatsby, kNoFrameworkVersionDetected}}});
+
+  EXPECT_EQ(rules.rule_sets().size(), 4u);
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  auto* manually_added_rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(manually_added_rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_EQ(rules.rule_sets().at(0), manually_added_rule_set);
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  // The load outcome should not be AutoSpeculationRulesOptedOut, since it did
+  // load correctly. Instead, we should get 5 succeses: 4 auto speculation rules
+  // + 1 normal speculation rule.
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/5);
+}
+
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest,
+       AddedLaterRuleSetOptOutIgnored) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "url_match_pattern_to_speculation_rules_ignore_opt_out": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}",
+      "https://*.example.com/*": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/2.html\"]}]}"
+    }
+  }
+  )");
+
+  base::HistogramTester histogram_tester;
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  GetDocumentLoader().DidObserveJavaScriptFrameworks({});
+
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  auto* manually_added_rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(manually_added_rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 3u);
+  EXPECT_EQ(rules.rule_sets().at(2), manually_added_rule_set);
+
+  // The UseCounter has not triggered, and the histogram is at 3 successes: 2
+  // auto speculation rules + 1 normal speculation rule.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/3);
+}
+
+INSTANTIATE_TEST_SUITE_P(FromInlineOrExternal,
+                         DocumentLoaderAutoSpeculationRulesOptOutTest,
+                         testing::Values(OptOutRuleSetType::kInline,
+                                         OptOutRuleSetType::kExternal));
 
 }  // namespace
 }  // namespace blink

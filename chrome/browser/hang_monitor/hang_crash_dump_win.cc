@@ -20,8 +20,7 @@ static const int kGenerateDumpTimeoutMS = 10000;
 
 void CrashDumpHungChildProcess(base::ProcessHandle handle) {
   HANDLE remote_thread = InjectDumpForHungInput_ExportThunk(handle);
-  DCHECK(remote_thread) << "Failed creating remote thread: error "
-                        << GetLastError();
+  DPCHECK(remote_thread) << "Failed creating remote thread";
   if (remote_thread) {
     WaitForSingleObject(remote_thread, kGenerateDumpTimeoutMS);
     CloseHandle(remote_thread);

@@ -11,9 +11,11 @@ import '../settings_shared.css.js';
 import './os_paired_bluetooth_list.js';
 import './settings_fast_pair_toggle.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
+import {HidWarningDialogSource} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -65,7 +67,7 @@ export class SettingsBluetoothDevicesSubpageElement extends
        */
       isBluetoothToggleOn_: {
         type: Boolean,
-        observer: 'onBluetoothToggleChanged_',
+        observer: 'onIsBluetoothToggleOnChanged_',
       },
 
       /**
@@ -92,6 +94,14 @@ export class SettingsBluetoothDevicesSubpageElement extends
         type: Array,
         value: [],
       },
+
+      isBluetoothDisconnectWarningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -103,6 +113,7 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private lastSelectedDeviceId_: string|null;
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
+  private isBluetoothDisconnectWarningEnabled_: boolean;
 
   constructor() {
     super();
@@ -211,17 +222,12 @@ export class SettingsBluetoothDevicesSubpageElement extends
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
    */
-  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean):
+  private onIsBluetoothToggleOnChanged_(_newValue: boolean, oldValue?: boolean):
       void {
     if (oldValue === undefined) {
       return;
     }
-    // If the toggle value changed but the toggle is disabled, the change came
-    // from CrosBluetoothConfig, not the user. Don't attempt to update the
-    // enabled state.
-    if (!this.isToggleDisabled_()) {
-      getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
-    }
+
     this.announceBluetoothStateChange_();
   }
 
@@ -256,6 +262,28 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isFastPairToggleVisible_(): boolean {
     return this.isFastPairSupportedByDevice_ &&
         loadTimeData.getBoolean('enableFastPairFlag');
+  }
+
+  private onBluetoothToggleChange_(event: CustomEvent): void {
+    event.stopPropagation();
+
+    // If the toggle value changed but the toggle is disabled, the change came
+    // from CrosBluetoothConfig, not the user. Don't attempt to update the
+    // enabled state.
+    if (this.isToggleDisabled_()) {
+      return;
+    }
+
+    const enabled = event.detail;
+    if (this.isBluetoothDisconnectWarningEnabled_) {
+      // Reset Bluetooth toggle state to previous state. Toggle should only be
+      // updated when System properties changes.
+      this.isBluetoothToggleOn_ = !enabled;
+      getHidPreservingController().tryToSetBluetoothEnabledState(
+          enabled, HidWarningDialogSource.kOsSettings);
+    } else {
+      getBluetoothConfig().setBluetoothEnabledState(enabled);
+    }
   }
 
   /**

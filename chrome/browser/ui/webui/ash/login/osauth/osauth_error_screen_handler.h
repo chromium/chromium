@@ -17,8 +17,7 @@ namespace ash {
 
 // Interface for dependency injection between OSAuthErrorScreen and its actual
 // representation. Owned by OSAuthErrorScreen.
-class OSAuthErrorScreenView
-    : public base::SupportsWeakPtr<OSAuthErrorScreenView> {
+class OSAuthErrorScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"osauth-error",
                                                        "OSAuthErrorScreen"};
@@ -27,11 +26,14 @@ class OSAuthErrorScreenView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<OSAuthErrorScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles the WebUI hooks in error screen.
-class OSAuthErrorScreenHandler : public BaseScreenHandler,
-                                 public OSAuthErrorScreenView {
+class OSAuthErrorScreenHandler final : public BaseScreenHandler,
+                                       public OSAuthErrorScreenView {
  public:
   using TView = OSAuthErrorScreenView;
 
@@ -45,6 +47,7 @@ class OSAuthErrorScreenHandler : public BaseScreenHandler,
  private:
   // OSAuthErrorScreenView:
   void Show() override;
+  base::WeakPtr<OSAuthErrorScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

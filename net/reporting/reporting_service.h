@@ -16,6 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
+#include "net/reporting/reporting_target_type.h"
 
 class GURL;
 
@@ -50,7 +51,8 @@ class NET_EXPORT ReportingService {
   static std::unique_ptr<ReportingService> Create(
       const ReportingPolicy& policy,
       URLRequestContext* request_context,
-      ReportingCache::PersistentReportingStore* store);
+      ReportingCache::PersistentReportingStore* store,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 
   // Creates a ReportingService for testing purposes using an
   // already-constructed ReportingContext. The ReportingService will take
@@ -68,6 +70,8 @@ class NET_EXPORT ReportingService {
   // |user_agent| is the User-Agent header that was used for the request.
   // |group| is the endpoint group to which the report should be delivered.
   // |type| is the type of the report. |body| is the body of the report.
+  // |target_type| is used to tag the report as either a web developer report
+  // or an enterprise report.
   //
   // The Reporting system will take ownership of |body|; all other parameters
   // will be copied.
@@ -79,7 +83,8 @@ class NET_EXPORT ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) = 0;
+      int depth,
+      ReportingTargetType target_type) = 0;
 
   // Processes a Report-To header. |origin| is the Origin of the URL that the
   // header came from; |header_value| is the normalized value of the Report-To
@@ -102,6 +107,12 @@ class NET_EXPORT ReportingService {
       const url::Origin& origin,
       const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) = 0;
+
+  // Configures reporting endpoints set by the ReportingEndpoints enterprise
+  // policy.
+  // `endpoints` is a mapping of endpoint names to URLs.
+  virtual void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) = 0;
 
   // Attempts to send any queued reports and removes all associated
   // configuration for `reporting_source`. This is called when a source is

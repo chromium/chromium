@@ -8,6 +8,14 @@
 
 namespace ash {
 
+FloatTestApi::ScopedTuckEducationDisabler::ScopedTuckEducationDisabler() {
+  Shell::Get()->float_controller()->disable_tuck_education_for_testing_ = true;
+}
+
+FloatTestApi::ScopedTuckEducationDisabler::~ScopedTuckEducationDisabler() {
+  Shell::Get()->float_controller()->disable_tuck_education_for_testing_ = false;
+}
+
 // static
 int FloatTestApi::GetFloatedWindowCounter() {
   return Shell::Get()->float_controller()->floated_window_counter_;

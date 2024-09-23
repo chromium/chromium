@@ -14,19 +14,6 @@
 
 namespace ash::trash_service {
 
-// Constant representing the maximum buffer to read from a supplied .trashinfo
-// file. The buffer should be made up of:
-//   - 12 bytes for the trash info header
-//   - 1 byte for the new line character
-//   - 5 bytes for the "Path=" token
-//   - `PATH_MAX` bytes for the maximum allowable path (from <linux/limits.h>)
-//   - 1 byte for the newline after the path
-//   - 12 bytes for the "DeletionDate=" token
-//   - 1 byte for the new line character
-//   - 24 bytes for the ISO-8601 compliant date string
-// Any remaining content in the file is ignored past this read limit.
-extern const size_t kMaxReadBufferInBytes;
-
 // Implementation of the Trash utility process. The trash implementation follows
 // the XDG specification which maintains metadata in a user visible directory at
 // ({TRASH_DIR}/info) and in files with a suffix .trashinfo. These files have a

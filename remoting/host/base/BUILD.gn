@@ -35,6 +35,7 @@ source_set("base") {
   deps = [
     "//base",
     "//remoting/base",
+    "//remoting/base:name_value_map",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

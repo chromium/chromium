@@ -5,7 +5,6 @@
     display: flex;
     flex-flow: row nowrap;
     height: 100%;
-    padding: 0 10px;
   }
 
   #selector {
@@ -51,13 +50,14 @@
 
   #seaPenDropdown {
     --iron-icon-fill-color: var(--cros-sys-secondary);
+    padding-inline-start: 12px;
   }
 
   .dropdown-check {
     margin-inline-end: 16px;
   }
 
-  button:not([aria-selected='true']) iron-icon.dropdown-check {
+  button:not([aria-checked='true']) iron-icon.dropdown-check {
     visibility: hidden;
   }
 
@@ -76,21 +76,34 @@
       <template is="dom-if" if="[[index]]">
         <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
       </template>
-      <cr-button class="breadcrumb selectable" role="link"
-          aria-current$="[[getBreadcrumbAriaCurrent_(index, breadcrumbs_)]]"
-          tabindex$="[[getInitialTabIndex_(index)]]"
-          id="breadcrumb[[index]]"
-          on-click="onBreadcrumbClick_">
-        <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
-        <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+      <template is="dom-if" if="[[!shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+        <cr-button class="breadcrumb selectable"
+            role="link"
+            aria-current$="[[getBreadcrumbAriaCurrent_(index, breadcrumbs_)]]"
+            tabindex$="[[getInitialTabIndex_(index)]]"
+            id="breadcrumb[[index]]"
+            on-click="onBreadcrumbClick_">
+          <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+        <cr-button class="breadcrumb selectable"
+            aria-haspopup="true"
+            aria-controls="actionMenu"
+            id="breadcrumb[[index]]"
+            on-click="onClickMenuIcon_">
+          <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
           <iron-icon id="seaPenDropdown" icon="cr:arrow-drop-down"></iron-icon>
-        </template>
-      </cr-button>
+        </cr-button>
     </template>
-    <cr-action-menu>
+    <cr-action-menu
+        accessibility-label="$i18n{seaPenTemplateHeading}"
+        role-description="$i18n{seaPenMenuRoleDescription}">
       <template is="dom-repeat" items="[[seaPenTemplates_]]" as="template">
-        <button aria-selected$="[[getAriaSelected_(template.id, seaPenTemplateId)]]"
+        <button
+            aria-checked$="[[getAriaChecked_(template.id, seaPenTemplateId)]]"
             class="dropdown-item"
+            role="menuitemcheckbox"
             data-id$="[[template.id]]"
             on-click="onClickMenuItem_">
           <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>

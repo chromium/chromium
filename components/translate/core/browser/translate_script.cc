@@ -9,7 +9,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -139,7 +138,7 @@ void TranslateScript::OnScriptFetchComplete(bool success,
                         server_params.c_str());
 
     GURL security_origin = translate::GetTranslateSecurityOrigin();
-    base::StringAppendF(&data_, "var securityOrigin = '%s';",
+    base::StringAppendF(&data_, "var securityOrigin = '%s';\n",
                         security_origin.spec().c_str());
 
     // Load embedded translate.js.

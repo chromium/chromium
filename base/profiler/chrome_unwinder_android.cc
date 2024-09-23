@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/profiler/chrome_unwinder_android.h"
 
 #include <algorithm>
@@ -83,9 +88,11 @@ bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
          current_frame.module->GetBaseAddress() == chrome_module_base_address_;
 }
 
-UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
-                                              uintptr_t stack_top,
-                                              std::vector<Frame>* stack) {
+UnwindResult ChromeUnwinderAndroid::TryUnwind(
+    UnwinderStateCapture* capture_state,
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) {
   DCHECK(CanUnwindFrom(stack->back()));
   uintptr_t frame_initial_sp = RegisterContextStackPointer(thread_context);
   const uintptr_t unwind_initial_pc =
@@ -96,7 +103,7 @@ UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     const uintptr_t instruction_byte_offset_from_text_section_start =
         pc - text_section_start_address_;
 
-    const absl::optional<FunctionOffsetTableIndex> function_offset_table_index =
+    const std::optional<FunctionOffsetTableIndex> function_offset_table_index =
         GetFunctionTableIndexFromInstructionOffset(
             unwind_info_.page_table, unwind_info_.function_table,
             instruction_byte_offset_from_text_section_start);
@@ -296,10 +303,9 @@ uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
   } while (true);
 
   NOTREACHED();
-  return 0;
 }
 
-const absl::optional<FunctionOffsetTableIndex>
+const std::optional<FunctionOffsetTableIndex>
 GetFunctionTableIndexFromInstructionOffset(
     span<const uint32_t> page_start_instructions,
     span<const FunctionTableEntry> function_offset_table_indices,
@@ -320,7 +326,7 @@ GetFunctionTableIndexFromInstructionOffset(
   // Invalid instruction_byte_offset_from_text_section_start:
   // instruction_byte_offset_from_text_section_start falls after the last page.
   if (page_number >= page_start_instructions.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const span<const FunctionTableEntry>::iterator function_table_entry_start =

@@ -27,7 +27,8 @@ class WebThreadTest : public PlatformTest {
     std::move(continuation).Run();
   }
 
-  web::WebTaskEnvironment task_environment_{WebTaskEnvironment::REAL_IO_THREAD};
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
 };
 
 TEST_F(WebThreadTest, BasePostTask) {

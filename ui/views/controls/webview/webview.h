@@ -48,6 +48,16 @@ class WEBVIEW_EXPORT WebView : public View,
   METADATA_HEADER(WebView, View)
 
  public:
+  // Whether the navigation should be allowed to be automatically upgraded to
+  // HTTPS. Only applies to initial loads.
+  enum class HttpsUpgradePolicy {
+    // Allows the navigation to be upgraded to HTTPS when possible.
+    kAllowUpgrade,
+    // Exempts the navigation from being upgraded to HTTPS (e.g. when loading
+    // a captive portal login page).
+    kNoUpgrade,
+  };
+
   using WebContentsAttachedCallback = base::RepeatingCallback<void(WebView*)>;
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);
@@ -77,7 +87,11 @@ class WEBVIEW_EXPORT WebView : public View,
   // convenience for loading the initial URL, and so URLs are navigated with
   // PAGE_TRANSITION_AUTO_TOPLEVEL, so this is not intended as a general purpose
   // navigation method - use WebContents' API directly.
-  void LoadInitialURL(const GURL& url);
+  void LoadInitialURL(
+      const GURL& url,
+      HttpsUpgradePolicy https_upgrade_policy =
+          HttpsUpgradePolicy::kAllowUpgrade,
+      base::Location invoke_location = base::Location::Current());
 
   // Controls how the attached WebContents is resized.
   // false = WebContents' views' bounds are updated continuously as the
@@ -98,7 +112,7 @@ class WEBVIEW_EXPORT WebView : public View,
   // if the web contents is changed. The passed-in overlay view must be owned by
   // the client; this method never takes ownership of it.
   //
-  // TODO(https://crbug.com/1471674): This method should take ownership of
+  // TODO(crbug.com/40278361): This method should take ownership of
   // `crashed_overlay_view`.
   void SetCrashedOverlayView(View* crashed_overlay_view);
 
@@ -145,9 +159,6 @@ class WEBVIEW_EXPORT WebView : public View,
 
     ~ScopedWebContentsCreatorForTesting();
   };
-
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // Called when letterboxing (scaling the native view to preserve aspect

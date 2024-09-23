@@ -31,7 +31,7 @@ class MojoDecoderFactory final : public DecoderFactory {
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) final;
 
-  // TODO(crbug.com/1173503): Implement GetSupportedVideoDecoderConfigs.
+  // TODO(crbug.com/40167137): Implement GetSupportedVideoDecoderConfigs.
 
   void CreateVideoDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,

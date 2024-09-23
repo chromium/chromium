@@ -58,7 +58,6 @@ source_set("cells") {
   ]
 
   deps = [
-    "resources:table_view_cell_chevron",
     "//base",
     "//base:i18n",
     "//components/url_formatter",
@@ -69,6 +68,7 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/cells/resources",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/common:string_util",

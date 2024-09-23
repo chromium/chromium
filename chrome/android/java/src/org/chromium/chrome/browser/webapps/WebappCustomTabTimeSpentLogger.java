@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.Launch
 /**
  * Logs to UMA the amount of time user spends in a CCT for CCTs launched from webapps.
  *
- * TODO(https://crbug.com/883402): Rename this to CustomTabTimeSpentLogger and refactor into the
+ * <p>TODO(crbug.com/41413392): Rename this to CustomTabTimeSpentLogger and refactor into the
  * customtabs package.
  */
 public class WebappCustomTabTimeSpentLogger {

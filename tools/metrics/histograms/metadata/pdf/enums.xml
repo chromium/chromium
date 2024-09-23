@@ -92,6 +92,16 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="Present"/>
   <int value="63" label="PropertiesFirst"/>
   <int value="64" label="Properties"/>
+  <int value="65" label="SidenavAttachmentFirst"/>
+  <int value="66" label="SidenavAttachment"/>
+  <int value="67" label="CutFirst"/>
+  <int value="68" label="Cut"/>
+  <int value="69" label="CopyFirst"/>
+  <int value="70" label="Copy"/>
+  <int value="71" label="PasteFirst"/>
+  <int value="72" label="Paste"/>
+  <int value="73" label="FindInPageFirst"/>
+  <int value="74" label="FindInPage"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

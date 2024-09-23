@@ -35,7 +35,6 @@ void PluginCrashed(PP_Module module) {
 PP_Instance GetInstanceForResource(PP_Resource resource) {
   // If a test relies on this, we need to implement it.
   NOTREACHED();
-  return 0;
 }
 
 void SetReserveInstanceIDCallback(PP_Module module,

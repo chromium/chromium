@@ -14,18 +14,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/liburlpattern/pattern.h"
 
 namespace blink {
 
+namespace {
 bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
   return manifest == mojom::blink::Manifest::New();
 }
+}  // namespace
 
 class ManifestParserTest : public testing::Test {
  public:
@@ -49,28 +53,64 @@ class ManifestParserTest : public testing::Test {
     for (auto& error : errors)
       errors_.push_back(std::move(error->message));
     manifest_ = parser.TakeManifest();
+    EXPECT_TRUE(manifest_);
     return manifest_;
   }
 
   mojom::blink::ManifestPtr& ParseManifest(const String& data) {
-    return ParseManifestWithURLs(data, default_manifest_url,
-                                 default_document_url);
+    return ParseManifestWithURLs(data, DefaultManifestUrl(),
+                                 DefaultDocumentUrl());
   }
 
   const Vector<String>& errors() const { return errors_; }
 
   unsigned int GetErrorCount() const { return errors_.size(); }
 
-  const KURL& DefaultDocumentUrl() const { return default_document_url; }
-  const KURL& DefaultManifestUrl() const { return default_manifest_url; }
+  static KURL DefaultDocumentUrl() { return KURL("http://foo.com/index.html"); }
+  static KURL DefaultManifestUrl() {
+    return KURL("http://foo.com/manifest.json");
+  }
+
+  bool HasDefaultValuesWithUrls(
+      const mojom::blink::ManifestPtr& manifest,
+      const KURL& document_url = DefaultDocumentUrl(),
+      const KURL& manifest_url = DefaultManifestUrl()) {
+    mojom::blink::ManifestPtr expected_manifest = mojom::blink::Manifest::New();
+    // A true "default" manifest would have an empty manifest URL. However in
+    // these tests we don't want to check for that, rather this method is used
+    // to check that a manifest has all its fields set to "default" values, but
+    // also have the expected manifest url.
+    expected_manifest->manifest_url = manifest_url;
+    expected_manifest->start_url = document_url;
+    expected_manifest->id = document_url;
+    expected_manifest->id.RemoveFragmentIdentifier();
+    expected_manifest->scope = KURL(document_url.BaseAsString());
+    return manifest == expected_manifest;
+  }
+
+  void VerifySafeUrlPatternSizes(const SafeUrlPattern& pattern,
+                                 size_t protocol_size,
+                                 size_t username_size,
+                                 size_t password_size,
+                                 size_t hostname_size,
+                                 size_t port_size,
+                                 size_t pathname_size,
+                                 size_t search_size,
+                                 size_t hash_size) {
+    EXPECT_EQ(pattern.protocol.size(), protocol_size);
+    EXPECT_EQ(pattern.username.size(), username_size);
+    EXPECT_EQ(pattern.password.size(), password_size);
+    EXPECT_EQ(pattern.hostname.size(), hostname_size);
+    EXPECT_EQ(pattern.port.size(), port_size);
+    EXPECT_EQ(pattern.pathname.size(), pathname_size);
+    EXPECT_EQ(pattern.search.size(), search_size);
+    EXPECT_EQ(pattern.hash.size(), hash_size);
+  }
 
  private:
   test::TaskEnvironment task_environment_;
   mojom::blink::ManifestPtr manifest_;
   Vector<String> errors_;
-
-  const KURL default_document_url = KURL("http://foo.com/index.html");
-  const KURL default_manifest_url = KURL("http://foo.com/manifest.json");
 };
 
 TEST_F(ManifestParserTest, CrashTest) {
@@ -110,28 +150,31 @@ TEST_F(ManifestParserTest, EmptyStringNull) {
   EXPECT_EQ("Line: 1, column: 1, Syntax error.", errors()[0]);
 
   // A parsing error is equivalent to an empty manifest.
-  ASSERT_TRUE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
 }
 
 TEST_F(ManifestParserTest, ValidNoContentParses) {
-  auto& manifest = ParseManifest("{}");
+  auto& manifest = ParseManifestWithURLs("{}", KURL(), DefaultDocumentUrl());
 
   // Empty Manifest is not a parsing error.
   EXPECT_EQ(0u, GetErrorCount());
 
   // Check that the fields are null or set to their default values.
-  ASSERT_FALSE(IsManifestEmpty(manifest));
-  ASSERT_TRUE(manifest->name.IsNull());
-  ASSERT_TRUE(manifest->short_name.IsNull());
-  ASSERT_TRUE(manifest->start_url.IsEmpty());
-  ASSERT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
-  ASSERT_EQ(manifest->orientation,
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(HasDefaultValuesWithUrls(manifest, DefaultDocumentUrl(), KURL()));
+  EXPECT_EQ(manifest->dir, mojom::blink::Manifest::TextDirection::kAuto);
+  EXPECT_TRUE(manifest->name.IsNull());
+  EXPECT_TRUE(manifest->short_name.IsNull());
+  EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+  EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+  EXPECT_EQ(manifest->orientation,
             device::mojom::ScreenOrientationLockType::DEFAULT);
-  ASSERT_FALSE(manifest->has_theme_color);
-  ASSERT_FALSE(manifest->has_background_color);
-  ASSERT_TRUE(manifest->gcm_sender_id.IsNull());
-  ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
-  ASSERT_TRUE(manifest->shortcuts.empty());
+  EXPECT_FALSE(manifest->has_theme_color);
+  EXPECT_FALSE(manifest->has_background_color);
+  EXPECT_TRUE(manifest->gcm_sender_id.IsNull());
+  EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
+  EXPECT_TRUE(manifest->shortcuts.empty());
 }
 
 TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
@@ -145,73 +188,139 @@ TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
   EXPECT_EQ(0u, GetErrorCount());
 
   // Check that subsequent fields parsed.
-  ASSERT_FALSE(IsManifestEmpty(manifest));
-  ASSERT_EQ(manifest->name, "bar");
-  ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
+  EXPECT_EQ(manifest->name, "bar");
+  EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
 }
 
 TEST_F(ManifestParserTest, MultipleErrorsReporting) {
   auto& manifest = ParseManifest(
-      R"({ "name": 42, "short_name": 4, "id": 12,
-      "orientation": {}, "display": "foo",
+      R"({ "dir": "foo", "name": 42, "short_name": 4,
+      "id": 12, "orientation": {}, "display": "foo",
       "start_url": null, "icons": {}, "theme_color": 42,
       "background_color": 42, "shortcuts": {} })");
-  ASSERT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(HasDefaultValuesWithUrls(manifest));
 
-  EXPECT_EQ(9u, GetErrorCount());
+  EXPECT_THAT(errors(),
+              testing::UnorderedElementsAre(
+                  "unknown 'dir' value ignored.",
+                  "property 'name' ignored, type string expected.",
+                  "property 'short_name' ignored, type string expected.",
+                  "property 'start_url' ignored, type string expected.",
+                  "property 'id' ignored, type string expected.",
+                  "unknown 'display' value ignored.",
+                  "property 'orientation' ignored, type string expected.",
+                  "property 'icons' ignored, type array expected.",
+                  "property 'theme_color' ignored, type string expected.",
+                  "property 'background_color' ignored, type string expected.",
+                  "property 'shortcuts' ignored, type array expected."));
+}
 
-  EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
-  EXPECT_EQ("property 'short_name' ignored, type string expected.",
-            errors()[1]);
-  EXPECT_EQ("property 'start_url' ignored, type string expected.", errors()[2]);
-  EXPECT_EQ("unknown 'display' value ignored.", errors()[3]);
-  EXPECT_EQ("property 'orientation' ignored, type string expected.",
-            errors()[4]);
-  EXPECT_EQ("property 'icons' ignored, type array expected.", errors()[5]);
-  EXPECT_EQ("property 'theme_color' ignored, type string expected.",
-            errors()[6]);
-  EXPECT_EQ("property 'background_color' ignored, type string expected.",
-            errors()[7]);
-  EXPECT_EQ("property 'shortcuts' ignored, type array expected.", errors()[8]);
+TEST_F(ManifestParserTest, DirParseRules) {
+  using TextDirection = mojom::blink::Manifest::TextDirection;
+
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "ltr" })");
+    EXPECT_EQ(manifest->dir, TextDirection::kLTR);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Trim whitespaces.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "  rtl  " })");
+    EXPECT_EQ(manifest->dir, TextDirection::kRTL);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Don't parse if dir isn't a string.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": {} })");
+    EXPECT_EQ(manifest->dir, TextDirection::kAuto);
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'dir' ignored, type string expected.", errors()[0]);
+  }
+
+  // Don't parse if dir isn't a string.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": 42 })");
+    EXPECT_EQ(manifest->dir, TextDirection::kAuto);
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'dir' ignored, type string expected.", errors()[0]);
+  }
+
+  // Accept 'auto'.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "auto" })");
+    EXPECT_EQ(manifest->dir, TextDirection::kAuto);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'ltr'.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "ltr" })");
+    EXPECT_EQ(manifest->dir, TextDirection::kLTR);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'rtl'.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "rtl" })");
+    EXPECT_EQ(manifest->dir, TextDirection::kRTL);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Parse fails if string isn't known.
+  {
+    auto& manifest = ParseManifest(R"({ "dir": "foo" })");
+    EXPECT_EQ(manifest->dir, TextDirection::kAuto);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("unknown 'dir' value ignored.", errors()[0]);
+  }
 }
 
 TEST_F(ManifestParserTest, NameParseRules) {
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({ "name": "foo" })");
-    ASSERT_EQ(manifest->name, "foo");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->name, "foo");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Trim whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "name": "  foo  " })");
-    ASSERT_EQ(manifest->name, "foo");
+    EXPECT_EQ(manifest->name, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Don't parse if name isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "name": {} })");
-    ASSERT_TRUE(manifest->name.IsNull());
-    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->name.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
   }
 
   // Don't parse if name isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "name": 42 })");
-    ASSERT_TRUE(manifest->name.IsNull());
-    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->name.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
   }
 
   // Test stripping out of \t \r and \n.
   {
     auto& manifest = ParseManifest("{ \"name\": \"abc\\t\\r\\ndef\" }");
-    ASSERT_EQ(manifest->name, "abcdef");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->name, "abcdef");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -221,22 +330,22 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "description": "foo is the new black" })");
-    ASSERT_EQ(manifest->description, "foo is the new black");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->description, "foo is the new black");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Trim whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "description": "  foo  " })");
-    ASSERT_EQ(manifest->description, "foo");
+    EXPECT_EQ(manifest->description, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Don't parse if description isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "description": {} })");
-    ASSERT_TRUE(manifest->description.IsNull());
+    EXPECT_TRUE(manifest->description.IsNull());
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'description' ignored, type string expected.",
               errors()[0]);
@@ -245,8 +354,8 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
   // Don't parse if description isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "description": 42 })");
-    ASSERT_TRUE(manifest->description.IsNull());
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->description.IsNull());
+    EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'description' ignored, type string expected.",
               errors()[0]);
   }
@@ -299,72 +408,87 @@ TEST_F(ManifestParserTest, IdParseRules) {
   // Empty manifest.
   {
     auto& manifest = ParseManifest("{ }");
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ(String(), manifest->id);
+    ASSERT_TRUE(manifest);
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_EQ(manifest->id, DefaultDocumentUrl());
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Does not contain id field.
   {
     auto& manifest = ParseManifest(R"({"start_url": "/start?query=a" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Invalid type.
   {
     auto& manifest =
         ParseManifest("{\"start_url\": \"/start?query=a\", \"id\": 1}");
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::ElementsAre(
+                              "property 'id' ignored, type string expected."));
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Empty string.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Full url.
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": \"http://foo.com/foo\" "
         "}");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/foo", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Full url with different origin.
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": "
         "\"http://another.com/foo\" }");
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_THAT(
+        errors(),
+        testing::ElementsAre(
+            "property 'id' ignored, should be same origin as document."));
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Relative path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \".\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Absolute path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"/\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // url with fragment
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": \"/#abc\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Smoke test.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "foo" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/foo", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Invalid UTF-8 character.
   {
@@ -373,12 +497,14 @@ TEST_F(ManifestParserTest, IdParseRules) {
         String("{ \"start_url\": \"/start?query=a\", \"id\": \"") +
         String(invalid_utf8_chars) + String("\" }");
 
-    ParseManifest(manifest_str);
+    auto& manifest = ParseManifest(manifest_str);
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_THAT(
         errors()[0].Utf8(),
         testing::EndsWith("Unsupported encoding. JSON and all string literals "
                           "must contain valid Unicode characters."));
+    ASSERT_TRUE(manifest);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
 }
 
@@ -388,42 +514,49 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
     auto& manifest = ParseManifest(R"({ "start_url": "land.html" })");
     ASSERT_EQ(manifest->start_url, KURL(DefaultDocumentUrl(), "land.html"));
     ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
+    EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
   }
 
   // Whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "start_url": "  land.html  " })");
     ASSERT_EQ(manifest->start_url, KURL(DefaultDocumentUrl(), "land.html"));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "start_url": {} })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    ASSERT_EQ(String(), manifest->id);
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, type string expected.",
-              errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_EQ(DefaultDocumentUrl(), manifest->id);
+    EXPECT_THAT(errors(),
+                testing::ElementsAre(
+                    "property 'start_url' ignored, type string expected."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
+    EXPECT_TRUE(HasDefaultValuesWithUrls(manifest));
   }
 
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "start_url": 42 })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, type string expected.",
-              errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(),
+                testing::ElementsAre(
+                    "property 'start_url' ignored, type string expected."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Don't parse if property isn't a valid URL.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "http://www.google.ca:a" })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, URL is invalid.", errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(), testing::ElementsAre(
+                              "property 'start_url' ignored, URL is invalid."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Absolute start_url, same origin with document.
@@ -432,8 +565,9 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "http://foo.com/land.html" })",
                               KURL("http://foo.com/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_EQ(manifest->start_url.GetString(), "http://foo.com/land.html");
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/land.html");
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 
   // Absolute start_url, cross origin with document.
@@ -442,12 +576,11 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "http://bar.com/land.html" })",
                               KURL("http://foo.com/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "property 'start_url' ignored, should "
-        "be same origin as document.",
-        errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(),
+                testing::ElementsAre("property 'start_url' ignored, should "
+                                     "be same origin as document."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Resolving has to happen based on the manifest_url.
@@ -456,9 +589,10 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "land.html" })",
                               KURL("http://foo.com/landing/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_EQ(manifest->start_url.GetString(),
+    EXPECT_EQ(manifest->start_url.GetString(),
               "http://foo.com/landing/land.html");
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 }
 
@@ -469,7 +603,7 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
         R"({ "scope": "land", "start_url": "land/landing.html" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land"));
     ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
   }
 
   // Whitespaces.
@@ -477,7 +611,7 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
     auto& manifest = ParseManifest(
         R"({ "scope": "  land  ", "start_url": "land/landing.html" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land"));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
   }
 
   // Return the default value if the property isn't a string.
@@ -612,9 +746,28 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
+  // Scope removes query args.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "start_url": "app/index.html",
+             "scope": "/?test=abc" })");
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Scope removes fragments.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "start_url": "app/index.html",
+             "scope": "/#abc" })");
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
   // Scope defaults to start_url with the filename, query, and fragment removed.
   {
-    auto& manifest = ParseManifest(R"({ "start_url": "land/landing.html" })");
+    auto& manifest =
+        ParseManifest(R"({ "start_url": "land/landing.html?query=test#abc" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land/"));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -5840,7 +5993,7 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, PermissionsPolicy) {
+TEST_F(ManifestParserTest, PermissionsPolicyParsesOrigins) {
   auto& manifest = ParseManifest(
       R"({ "permissions_policy": {
                 "geolocation": ["https://example.com"],
@@ -5848,6 +6001,54 @@ TEST_F(ManifestParserTest, PermissionsPolicy) {
         }})");
   EXPECT_EQ(0u, GetErrorCount());
   EXPECT_EQ(2u, manifest->permissions_policy.size());
+  for (const auto& policy : manifest->permissions_policy) {
+    EXPECT_EQ(1u, policy.allowed_origins.size());
+    EXPECT_EQ("https://example.com", policy.allowed_origins[0].Serialize());
+    EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesSelf) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["self"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ("http://foo.com",
+            manifest->permissions_policy[0].self_if_matches->Serialize());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyIgnoresSrc) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["src"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+  EXPECT_FALSE(manifest->permissions_policy[0].self_if_matches.has_value());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesNone) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["none"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_EQ(0u, manifest->permissions_policy[0].allowed_origins.size());
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyParsesWildcard) {
+  auto& manifest = ParseManifest(
+      R"({ "permissions_policy": {
+        "geolocation": ["*"]
+      }})");
+  EXPECT_EQ(0u, GetErrorCount());
+  EXPECT_EQ(1u, manifest->permissions_policy.size());
+  EXPECT_TRUE(manifest->permissions_policy[0].matches_all_origins);
 }
 
 TEST_F(ManifestParserTest, PermissionsPolicyEmptyOrigin) {
@@ -5920,120 +6121,100 @@ TEST_F(ManifestParserTest, PermissionsPolicyInvalidAllowlistEntry) {
 
 TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
   using ClientMode = mojom::blink::ManifestLaunchHandler::ClientMode;
-
+  // Smoke test.
   {
-    ScopedWebAppLaunchHandlerForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
     auto& manifest = ParseManifest(R"({
       "launch_handler": {
-        "client_mode": "navigate-existing"
+        "client_mode": "focus-existing"
       }
     })");
-    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kFocusExisting);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": "navigate-new"
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kNavigateNew);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
+  // Empty object is fine.
   {
-    ScopedWebAppLaunchHandlerForTest feature(true);
-    // Smoke test.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "focus-existing"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kFocusExisting);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "navigate-new"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kNavigateNew);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {}
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 
-    // Empty object is fine.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {}
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+  // Empty array is fine.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": []
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 
-    // Empty array is fine.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": []
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+  // Unknown single string.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": "space"
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[0]);
+  }
 
-    // Unknown single string.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "space"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("client_mode value 'space' ignored, unknown value.",
-                errors()[0]);
-    }
+  // First known value in array is used.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": ["navigate-existing", "navigate-new"]
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kNavigateExisting);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": [null, "space", "focus-existing", "auto"]
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kFocusExisting);
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("client_mode value 'null' ignored, string expected.",
+              errors()[0]);
+    EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[1]);
+  }
 
-    // First known value in array is used.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": ["navigate-existing", "navigate-new"]
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kNavigateExisting);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": [null, "space", "focus-existing", "auto"]
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kFocusExisting);
-      EXPECT_EQ(2u, GetErrorCount());
-      EXPECT_EQ("client_mode value 'null' ignored, string expected.",
-                errors()[0]);
-      EXPECT_EQ("client_mode value 'space' ignored, unknown value.",
-                errors()[1]);
-    }
-
-    // Don't parse if the property isn't an object.
-    {
-      auto& manifest = ParseManifest(R"({ "launch_handler": null })");
-      EXPECT_FALSE(manifest->launch_handler);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": [{
-          "client_mode": "navigate-new"
-        }]
-      })");
-      EXPECT_FALSE(manifest->launch_handler);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
-    }
+  // Don't parse if the property isn't an object.
+  {
+    auto& manifest = ParseManifest(R"({ "launch_handler": null })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": [{
+        "client_mode": "navigate-new"
+      }]
+    })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
   }
 }
 
@@ -6181,323 +6362,6 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
               errors()[1]);
     EXPECT_EQ("property 'description' of 'translations' is an empty string.",
               errors()[2]);
-  }
-}
-
-TEST_F(ManifestParserTest, UserPreferencesParseRules) {
-  {
-    ScopedWebAppDarkModeForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences":
-          {"color_scheme_dark": {"theme_color": "#FF0000"}} })");
-      EXPECT_TRUE(manifest->user_preferences.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences":
-          {"color_scheme": {"dark": {"theme_color": "#FF0000"}}} })");
-      EXPECT_TRUE(manifest->user_preferences.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-  }
-  {
-    ScopedWebAppDarkModeForTest feature(true);
-
-    // Manifest does not contain a 'user_preferences' field.
-    {
-      auto& manifest = ParseManifest(R"({ })");
-      EXPECT_TRUE(manifest->user_preferences.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // user_preferences object is empty.
-    {
-      auto& manifest = ParseManifest(R"({ "user_preferences": {} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Empty preference is ignored.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "user_preferences": {"color_scheme_dark": {}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences": {"color_scheme": {"dark": {}}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Valid theme_color and background_color should be parsed
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences": {"color_scheme_dark":
-          {"theme_color": "#FF0000", "background_color": "#FFF"}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
-                0xFFFF0000u);
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->background_color,
-                0xFFFFFFFFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences": {"color_scheme": {"dark":
-          {"theme_color": "#FF0000", "background_color": "#FFF"}}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
-                0xFFFF0000u);
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->background_color,
-                0xFFFFFFFFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Don't parse if the property isn't an object.
-    {
-      auto& manifest = ParseManifest(R"({ "user_preferences": [] })");
-      EXPECT_TRUE(manifest->user_preferences.is_null());
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("property 'user_preferences' ignored, object expected.",
-                errors()[0]);
-    }
-
-    // Ignore preference if it isn't an object.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "user_preferences": {"color_scheme_dark": []} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("preference 'color_scheme_dark' ignored, object expected.",
-                errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences": {"color_scheme": {"dark": []}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("preference 'dark' ignored, object expected.", errors()[0]);
-    }
-
-    // Ignore color_scheme if it isn't an object.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "user_preferences": {"color_scheme": []} })");
-      EXPECT_TRUE(manifest->user_preferences.is_null());
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("property 'color_scheme' ignored, object expected.",
-                errors()[0]);
-    }
-
-    // Preferences overriding a single value should be parsed.
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences":
-          {"color_scheme_dark": {"theme_color": "#FF0000"}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
-                0xFFFF0000u);
-      EXPECT_FALSE(
-          manifest->user_preferences->color_scheme_dark->has_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences":
-          {"color_scheme": {"dark": {"theme_color": "#FF0000"}}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
-                0xFFFF0000u);
-      EXPECT_FALSE(
-          manifest->user_preferences->color_scheme_dark->has_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Unknown preference string should be ignored.
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences": {"something": {"theme_color": "#FF0000"}} })");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Manifests with both old and new formats should prefer the new format.
-    {
-      auto& manifest = ParseManifest(
-          R"({ "user_preferences":
-          {"color_scheme_dark": {"theme_color": "#FFFFFF"},
-          "color_scheme": {"dark": {"theme_color": "#FF0000"}}}})");
-      EXPECT_FALSE(manifest->user_preferences.is_null());
-      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
-      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
-                0xFFFF0000u);
-      EXPECT_FALSE(
-          manifest->user_preferences->color_scheme_dark->has_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-  }
-}
-
-TEST_F(ManifestParserTest, DarkColorOverrideParseRules) {
-  {
-    ScopedWebAppDarkModeForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000", "media": "(prefers-color-scheme: dark) "}],
-          "background_colors":
-            [{"color": "#000000", "media": "(prefers-color-scheme: dark) "}]
-          })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-  }
-  {
-    ScopedWebAppDarkModeForTest feature(true);
-
-    // Manifest does not contain any overrides fields.
-    {
-      auto& manifest = ParseManifest(R"({ })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Overrides objects are empty.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "theme_colors": [], "background_colors": [] })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Don't parse if the overrides aren't arrays.
-    {
-      auto& manifest =
-          ParseManifest(R"({ "theme_colors": {}, "background_colors": 5 })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(2u, GetErrorCount());
-      EXPECT_EQ("property 'theme_colors' ignored, type array expected.",
-                errors()[0]);
-      EXPECT_EQ("property 'background_colors' ignored, type array expected.",
-                errors()[1]);
-    }
-
-    // Override arrays don't contain objects.
-    {
-      auto& manifest = ParseManifest(R"({
-            "theme_colors": [true],
-            "background_colors":
-            [5, {"color": "#0000FF", "media": "(prefers-color-scheme: dark) "}]
-            })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_TRUE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_background_color, 0xFF0000FFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Valid overrides should be parsed
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000", "media": "(prefers-color-scheme: dark) "}],
-          "background_colors":
-            [{"color": "#FFFFFF", "media": "(prefers-color-scheme: dark) "}]
-          })");
-      EXPECT_TRUE(manifest->has_dark_theme_color);
-      EXPECT_TRUE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_theme_color, 0xFF000000u);
-      EXPECT_EQ(manifest->dark_background_color, 0xFFFFFFFFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Color from first matching media condition used.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000", "media":
-            "(prefers-color-scheme: dark) and (prefers-contrast: more) "},
-            {"color": "#0000FF", "media": "(prefers-color-scheme: dark) "},
-            {"color": "#00FF00", "media": "(prefers-color-scheme: dark) "}]
-          })");
-      EXPECT_TRUE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_theme_color, 0xFF0000FFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Invalid list items skipped.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000"},
-            {"media": "(prefers-color-scheme: dark) "},
-            {"color": "#0000FF", "media": "(prefers-color-scheme: dark) "}]
-          })");
-      EXPECT_TRUE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_theme_color, 0xFF0000FFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Media query without "(prefers-color-scheme: dark)" not used as dark
-    // color.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000", "media": "(width >= 0) "}]
-          })");
-      EXPECT_FALSE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Case-insensitive media query is parsed.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000", "media": "(Prefers-color-scheme: DARK) "}]
-          })");
-      EXPECT_TRUE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_theme_color, 0xFF000000u);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-
-    // Media query containing more than "(prefer-color-scheme: dark)" skipped.
-    {
-      auto& manifest = ParseManifest(R"({
-          "theme_colors":
-            [{"color": "#000000",
-              "media": "(width >= 0) and (prefers-color-scheme: dark) "},
-            {"color": "#0000FF", "media": "(prefers-color-scheme: dark) "}]
-          })");
-      EXPECT_TRUE(manifest->has_dark_theme_color);
-      EXPECT_FALSE(manifest->has_dark_background_color);
-      EXPECT_EQ(manifest->dark_theme_color, 0xFF0000FFu);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
   }
 }
 
@@ -6649,35 +6513,285 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
 TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   ScopedWebAppTabStripForTest feature(true);
 
-  // Valid scope patterns are parsed.
+  // Valid scope hostname and protocol patterns override the default manifest
+  // URL.
   {
     auto& manifest = ParseManifest(R"({
         "tab_strip": {
           "home_tab": {"scope_patterns":
-            [{"pathname": "foo"}, {"pathname": "foo/bar/"}]}} })");
+            [{"protocol": "ftp"}, {"hostname": "bar.com"},
+            {"protocol": "ftp", "hostname": "bar.com"}]}} })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
-        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 2u);
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 3u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
+        0, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
+        1, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        1, 0, 0, 0, 0);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .protocol[0]
+                  .value,
+              "ftp");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .protocol[0]
+                  .value,
+              "http");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .protocol[0]
+                  .value,
+              "ftp");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .value,
+              "bar.com");
 
     EXPECT_EQ(0u, GetErrorCount());
   }
 
-  // Reject patterns containing custom regex.
+  // Valid scope pathname patterns are parsed. Relative pathnames are made
+  // absolute, resolved relative to the manifest URL.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"pathname": "foo"}, {"pathname": "foo/bar/"},
+            {"pathname": "/foo/"}, {"pathname": "/foo/bar/"}]
+          }} })",
+        KURL("http://foo.com/static/manifest.json"), DefaultDocumentUrl());
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 4u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .protocol[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .value,
+              "/static/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .protocol[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .value,
+              "/static/foo/bar/");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .protocol[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .value,
+              "/foo/");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .protocol[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .value,
+              "foo.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .value,
+              "/foo/bar/");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Base URL provided in scope patterns is respected if it is valid.
   {
     auto& manifest = ParseManifest(R"({
         "tab_strip": {
           "home_tab": {"scope_patterns":
-            [{"pathname": "([a-z]+)/"}, {"pathname": "/foo/([a-z]+)/"}]}} })");
+            [{"protocol": "ftp", "baseURL": "https://www.bar.com"},
+            {"hostname": "bar.com", "baseURL": "https://foobar.com"},
+            {"pathname": "/foo/bar/", "baseURL": "https://bar.com"},
+            // Invalid (expect to be discarded).
+            {"pathname": "/foobar/", "baseURL": "notaurl"},
+            {"pathname": "bar", "baseURL": "https://bar.com/foo"},
+            {"pathname": "bar", "baseURL": "https://bar.com/foo/"}
+          ]}}
+         })");
     EXPECT_FALSE(manifest->tab_strip.is_null());
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
-        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 5u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
+        0, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
+        1, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .protocol[0]
+                  .value,
+              "ftp");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .protocol[0]
+                  .value,
+              "https");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .protocol[0]
+                  .value,
+              "https");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .value,
+              "/foo/bar/");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .protocol[0]
+                  .value,
+              "https");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .value,
+              "/bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .protocol[0]
+                  .value,
+              "https");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[0]
+                  .value,
+              "/foo/bar");
 
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(1u, GetErrorCount());
   }
 
-  // Allow patterns with wildcards and named groups.
+  // Allow patterns with wildcards and named groups in the pathname.
   {
     auto& manifest = ParseManifest(R"({
         "tab_strip": {
@@ -6690,8 +6804,285 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
     EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
     EXPECT_EQ(
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 6u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
+        1, 0, 1, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        1, 0, 2, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
+        1, 0, 3, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
+        1, 0, 2, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[5], 1, 0, 0,
+        1, 0, 3, 0, 0);
+
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[2]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .pathname[2]
+                  .value,
+              "/bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[0]
+                  .value,
+              "/foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[1]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .pathname[2]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
 
     EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Allow patterns with wildcards and named groups in the hostname.
+  {
+    auto& manifest = ParseManifest(R"({
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"hostname": "*"}, {"hostname": "bar.com"}, {"hostname": "bar*.com"},
+            {"hostname": "bar.*"}, {"hostname": "bar.*.com"},
+            {"hostname": "foo.:bar.*"}, {"hostname": "*.com"}]}}
+        })");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 7u);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[0], 1, 0, 0,
+        1, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[1], 1, 0, 0,
+        1, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[2], 1, 0, 0,
+        3, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[3], 1, 0, 0,
+        2, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[4], 1, 0, 0,
+        3, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[5], 1, 0, 0,
+        3, 0, 0, 0, 0);
+    VerifySafeUrlPatternSizes(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns[6], 1, 0, 0,
+        2, 0, 0, 0, 0);
+
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[0]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[1]
+                  .hostname[0]
+                  .value,
+              "bar.com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[0]
+                  .value,
+              "bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[2]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[2]
+                  .hostname[2]
+                  .value,
+              ".com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[0]
+                  .value,
+              "bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[3]
+                  .hostname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[0]
+                  .value,
+              "bar");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[1]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[2]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[4]
+                  .hostname[2]
+                  .value,
+              ".com");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .hostname[0]
+                  .value,
+              "foo");
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .hostname[1]
+                  .type,
+              liburlpattern::PartType::kSegmentWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[5]
+                  .hostname[2]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[6]
+                  .hostname[0]
+                  .type,
+              liburlpattern::PartType::kFullWildcard);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[6]
+                  .hostname[1]
+                  .type,
+              liburlpattern::PartType::kFixed);
+    EXPECT_EQ(manifest->tab_strip->home_tab->get_params()
+                  ->scope_patterns[6]
+                  .hostname[1]
+                  .value,
+              ".com");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject patterns containing custom regex in any field, with errors.
+  {
+    auto& manifest = ParseManifest(R"a({
+        "tab_strip": {
+          "home_tab": {"scope_patterns":
+            [{"pathname": "([a-z]+)/"}, {"pathname": "/foo/([a-z]+)/"},
+            {"protocol": "http([a-z])+)"}, {"hostname": "([a-z]+).com"},
+            {"username": "([A-Za-z])+"}, {"password": "([A-Za-z0-9@%^!])+"},
+            {"port": "(80|443)"}, {"hash": "([a-zA-Z0-9])+"},
+            {"search": "([A-Za-z0-9])+"}
+    ]}} })a");
+    EXPECT_FALSE(manifest->tab_strip.is_null());
+    EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
+    EXPECT_EQ(
+        manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
+
+    EXPECT_EQ(9u, GetErrorCount());
   }
 
   // Patterns list doesn't contain objects.

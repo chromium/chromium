@@ -48,7 +48,7 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
       return gpu::TextureOwner::Mode::kAImageReaderInsecureSurfaceControl;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Run on the GPU main thread to allocate the texture owner, and return it
@@ -63,9 +63,9 @@ static void AllocateTextureOwnerOnGpuThread(
     return;
   }
 
-  std::move(init_cb).Run(
-      gpu::TextureOwner::Create(GetTextureOwnerMode(overlay_mode),
-                                shared_context_state, std::move(drdc_lock)));
+  std::move(init_cb).Run(gpu::TextureOwner::Create(
+      GetTextureOwnerMode(overlay_mode), shared_context_state,
+      std::move(drdc_lock), gpu::TextureOwnerCodecType::kMediaCodec));
 }
 
 }  // namespace
@@ -260,18 +260,10 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   // record before we move it into |completion_cb|.
   auto codec_image_holder = std::move(record.codec_image_holder);
 
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-  mailbox_holders[0] = gpu::MailboxHolder(record.mailbox, gpu::SyncToken(),
-                                          GL_TEXTURE_EXTERNAL_OES);
-
-  auto frame = VideoFrame::WrapNativeTextures(
-      pixel_format, mailbox_holders, VideoFrame::ReleaseMailboxCB(),
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      pixel_format, std::move(record.shared_image), gpu::SyncToken(),
+      GL_TEXTURE_EXTERNAL_OES, VideoFrame::ReleaseMailboxCB(),
       frame_info.coded_size, frame_info.visible_rect, natural_size, timestamp);
-
-  // For Vulkan.
-  frame->set_ycbcr_info(frame_info.ycbcr_info);
-
-  frame->set_color_space(color_space);
 
   // If, for some reason, we failed to create a frame, then fail.  Note that we
   // don't need to call |release_cb|; dropping it is okay since the api says so.
@@ -280,6 +272,11 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     std::move(output_cb).Run(nullptr);
     return;
   }
+
+  // For Vulkan.
+  frame->set_ycbcr_info(frame_info.ycbcr_info);
+
+  frame->set_color_space(color_space);
 
   frame->metadata().copy_required = video_frame_copy_required;
 

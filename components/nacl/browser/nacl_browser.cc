@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/nacl/browser/nacl_browser.h"
 
 #include <stddef.h>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
@@ -168,7 +174,7 @@ void NaClBrowser::EarlyStartup() {
 }
 
 NaClBrowser::~NaClBrowser() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NaClBrowser::InitIrtFilePath() {
@@ -352,7 +358,8 @@ void NaClBrowser::OnValidationCacheLoaded(const std::string *data) {
     // No file found.
     validation_cache_.Reset();
   } else {
-    base::Pickle pickle(data->data(), data->size());
+    base::Pickle pickle =
+        base::Pickle::WithUnownedBuffer(base::as_byte_span(*data));
     validation_cache_.Deserialize(&pickle);
   }
   validation_cache_state_ = NaClResourceReady;

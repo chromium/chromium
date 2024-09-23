@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"
 #include "chrome/common/pref_names.h"
@@ -129,8 +129,8 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   ScopedTestingLocalState scoped_testing_local_state_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
-  ash::ScopedTestCrosSettings scoped_test_cros_settings_{
-      scoped_testing_local_state_.Get()};
+  ash::CrosSettingsHolder cros_settings_holder_{
+      ash::DeviceSettingsService::Get(), scoped_testing_local_state_.Get()};
   ash::FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;
 };

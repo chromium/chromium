@@ -26,8 +26,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <algorithm>
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
+
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {

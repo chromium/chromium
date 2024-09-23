@@ -13,7 +13,7 @@
 namespace blink {
 
 // static
-ScriptPromise InternalsStorageAccess::setStorageAccess(
+ScriptPromise<IDLUndefined> InternalsStorageAccess::setStorageAccess(
     ScriptState* script_state,
     Internals&,
     const String& origin,
@@ -26,16 +26,16 @@ ScriptPromise InternalsStorageAccess::setStorageAccess(
       storage_access_automation.BindNewPipeAndPassReceiver());
   DCHECK(storage_access_automation.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   auto* raw_storage_access_automation = storage_access_automation.get();
   raw_storage_access_automation->SetStorageAccess(
       origin, embedding_origin, blocked,
       WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolver<IDLUndefined>* resolver,
              mojo::Remote<test::mojom::blink::StorageAccessAutomation>,
              bool success) {
             if (success)

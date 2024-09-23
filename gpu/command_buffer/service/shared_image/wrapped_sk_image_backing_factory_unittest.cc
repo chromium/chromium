@@ -25,7 +25,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -35,9 +35,10 @@ namespace {
 constexpr GrSurfaceOrigin kSurfaceOrigin = kTopLeft_GrSurfaceOrigin;
 constexpr SkAlphaType kAlphaType = kPremul_SkAlphaType;
 constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
-constexpr uint32_t kUsage =
+constexpr SharedImageUsageSet kUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
     SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
 class WrappedSkImageBackingFactoryTest
     : public SharedImageTestBase,
       public testing::WithParamInterface<
@@ -51,12 +52,9 @@ class WrappedSkImageBackingFactoryTest
 
   void SetUp() override {
     auto gr_context_type = GetGrContextType();
-    if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // TODO(crbug.com/1442381): Enable these tests for Windows once
-      // DawnMultiPlanarFormats is supported on D3D11.
-#if !BUILDFLAG(IS_MAC)
-      GTEST_SKIP();
-#endif
+    if (gr_context_type == GrContextType::kGraphiteDawn &&
+        !IsGraphiteDawnSupported()) {
+      GTEST_SKIP() << "Graphite/Dawn not supported";
     }
     ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
 
@@ -94,7 +92,7 @@ class WrappedSkImageBackingFactoryTest
 // Verify creation and Skia access works as expected.
 TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -177,7 +175,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Basic) {
 // Verify that pixel upload works as expected.
 TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   auto backing = backing_factory_->CreateSharedImage(
@@ -195,12 +193,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  if (gr_context()) {
-    VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
-  } else {
-    ASSERT_TRUE(context_state_->graphite_context());
-    VerifyPixelsWithReadbackGraphite(mailbox, bitmaps);
-  }
+  VerifyPixelsWithReadback(mailbox, bitmaps);
 }
 
 std::string TestParamToString(

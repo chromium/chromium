@@ -55,12 +55,13 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 
   // Returns the font list to use in the window's title bar.
-  // TODO(https://crbug.com/968860): Move this into the typography provider.
+  // TODO(crbug.com/41461956): Move this into the typography provider.
   static gfx::FontList GetWindowTitleFontList();
 
  private:

@@ -16,13 +16,16 @@
 
 #include "base/memory/raw_ptr.h"
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 namespace content {
 
 class BrowserPluginGuest;
 class BrowserPluginGuestManager;
 class WebContents;
 class WebContentsImpl;
-struct NativeWebKeyboardEvent;
 
 // TODO(wjmaclean): Get rid of "BrowserPlugin" in the name of this class.
 // Perhaps "WebContentsEmbedderDelegate" would be better?
@@ -39,7 +42,7 @@ class BrowserPluginEmbedder {
   void CancelGuestDialogs();
 
   // Used to handle special keyboard events.
-  bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event);
+  bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event);
 
   // Returns the "full page" guest if there is one. That is, if there is a
   // single BrowserPlugin in the embedder which takes up the full page, then it

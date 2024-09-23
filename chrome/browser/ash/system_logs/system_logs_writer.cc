@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/system_logs/debug_log_writer.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/logging_chrome.h"
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
@@ -74,10 +75,11 @@ void FetchCompleted(
 namespace system_logs_writer {
 
 void WriteSystemLogs(
+    Profile* profile,
     const base::FilePath& dest_dir,
     bool scrub_data,
     base::OnceCallback<void(std::optional<base::FilePath>)> callback) {
-  system_logs::BuildChromeSystemLogsFetcher(scrub_data)
+  system_logs::BuildChromeSystemLogsFetcher(profile, scrub_data)
       ->Fetch(base::BindOnce(FetchCompleted, dest_dir, std::move(callback)));
 }
 

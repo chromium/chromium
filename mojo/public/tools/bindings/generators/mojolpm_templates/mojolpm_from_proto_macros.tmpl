@@ -89,7 +89,7 @@ bool FromProto(
 {%-     set unnullable_kind = kind.kind|to_unnullable_kind %}
 {%-     set mojom_maybe_type = unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
     {{mojom_maybe_type}} maybe_value{ {{- unnullable_kind|default_constructor_args -}} };
-    if (FromProto(entry.value(), maybe_value)) {
+    if (entry.has_value() && FromProto(entry.value(), maybe_value)) {
       value = std::move(maybe_value);
     }
 {%-   elif kind.kind|is_map_kind or kind.kind|is_array_kind %}

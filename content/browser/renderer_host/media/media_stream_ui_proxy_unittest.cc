@@ -82,7 +82,8 @@ class MockMediaStreamUI : public MediaStreamUI {
   void OnDeviceStoppedForSourceChange(
       const std::string& label,
       const DesktopMediaID& old_media_id,
-      const DesktopMediaID& new_media_id) override {}
+      const DesktopMediaID& new_media_id,
+      bool captured_surface_control_active) override {}
 
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id) override {}
@@ -100,7 +101,9 @@ class MockStopStreamHandler {
 
 class MockChangeSourceStreamHandler {
  public:
-  MOCK_METHOD1(OnChangeSource, void(const DesktopMediaID& media_id));
+  MOCK_METHOD2(OnChangeSource,
+               void(const DesktopMediaID& media_id,
+                    bool captured_surface_control_active));
 };
 
 }  // namespace
@@ -145,7 +148,8 @@ TEST_F(MediaStreamUIProxyTest, Deny) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -186,7 +190,8 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -239,7 +244,8 @@ TEST_F(MediaStreamUIProxyTest, DeleteBeforeAccepted) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -273,7 +279,8 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -340,7 +347,8 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
 
   proxy_->RequestAccess(
@@ -388,7 +396,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -443,8 +452,11 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(source_callback.is_null());
-  EXPECT_CALL(source_handler, OnChangeSource(DesktopMediaID()));
-  source_callback.Run(DesktopMediaID());
+  EXPECT_CALL(source_handler,
+              OnChangeSource(DesktopMediaID(),
+                             /*captured_surface_control_active=*/false));
+  source_callback.Run(DesktopMediaID(),
+                      /*captured_surface_control_active=*/false);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -456,7 +468,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   MediaStreamRequest* request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -526,7 +539,8 @@ TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
       /*requested_video_device_ids=*/std::vector<std::string>{},
       blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   request_ptr = request.get();
   proxy_->RequestAccess(
       std::move(request),
@@ -611,7 +625,8 @@ class MediaStreamUIProxyPermissionsPolicyTest
         /*requested_video_device_ids=*/std::vector<std::string>{}, mic_type,
         cam_type,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false);
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*captured_surface_control_active=*/false);
   }
 
  private:

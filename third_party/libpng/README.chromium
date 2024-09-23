@@ -1,7 +1,7 @@
 Name: libpng
 URL: http://libpng.org/
-Version: 1.6.37
-CPEPrefix: cpe:/a:libpng:libpng:1.6.37
+Version: 1.6.43
+CPEPrefix: cpe:/a:libpng:libpng:1.6.43
 Security Critical: yes
 Shipped: yes
 License: libpng license
@@ -9,21 +9,9 @@ License File: LICENSE
 License Android Compatible: yes
 
 Description:
-Updated to 1.6.37, stripped all unneeded files.
+Updated to 1.6.43, stripped all unneeded files.
 
 - Use custom configuration file pnglibconf.h, which turns off all features that
   are not in use.
 - Configures custom png chunk user limits (crbug.com/117369) in pnglibconf.h.
-- Applies the patch in patches/0001-chunkerror.patch (modify
-  png_check_chunk_length to call png_benign_error instead of png_chunk_error --
-  see crbug.com/827754).
 - Keeps the fuzz target in contrib/oss-fuzz/ for running on clusterfuzz.
-- Applies the patch in patches/0002-fuzzeroom.patch to prevent clusterfuzz
-  running into OOM errors.
-- Applies the patch from https://github.com/glennrp/libpng/pull/285 to keep
-  clang-cl build working.
-- Applies the commit from
-  https://github.com/pnggroup/libpng/commit/893b8113f04d408cc6177c6de19c9889a48faa24
-  to address a build failure with the latest Clang for Apple targets.
-- Applies the commit from
-  https://github.com/pnggroup/libpng/commit/7f1f960d4ffdb47ddb964b7d7753701b402f5214

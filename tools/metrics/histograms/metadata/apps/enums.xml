@@ -55,6 +55,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kAppDataCorrupted"/>
   <int value="4" label="kAppProviderNotAvailable"/>
   <int value="5" label="kAppTypeNotSupported"/>
+  <int value="6" label="kInstallParametersInvalid"/>
+  <int value="7" label="kInstallDialogNotAccepted"/>
+  <int value="8" label="kAppTypeInstallFailed"/>
+  <int value="9" label="kUserTypeNotPermitted"/>
+  <int value="10" label="kBadAppRequest"/>
+  <int value="11" label="kInstallUrlFallback"/>
+</enum>
+
+<enum name="AppListAppCollections">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Essentials"/>
+  <int value="2" label="Productivity"/>
+  <int value="3" label="Creativity"/>
+  <int value="4" label="Entertainment"/>
+  <int value="5" label="OEM"/>
+  <int value="6" label="Utilities"/>
 </enum>
 
 <enum name="AppListAppMovingType">
@@ -74,6 +90,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Chrome"/>
   <int value="2" label="Play"/>
   <int value="3" label="PWA"/>
+</enum>
+
+<enum name="AppListContinueFileSuggestionType">
+  <int value="0" label="Recently viewed drive file"/>
+  <int value="1" label="Recently modified drive file"/>
+  <int value="2" label="Drive file recently modified by user"/>
+  <int value="3" label="Drive file recently shared with user"/>
+  <int value="4" label="Recently viewed local file"/>
+  <int value="5" label="Local file recently modified by user"/>
+</enum>
+
+<enum name="AppListEntity">
+  <int value="0" label="Default Apps"/>
+  <int value="1" label="Third-Party Apps"/>
 </enum>
 
 <enum name="AppListFederatedActions">
@@ -115,6 +145,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Launched From RecentApps"/>
   <int value="6" label="Launched From ContinueSection"/>
   <int value="7" label="Launched From Quick App Access"/>
+  <int value="8" label="Launched From Apps Collections"/>
+  <int value="9" label="Launched From Discovery Chip"/>
 </enum>
 
 <enum name="AppListOrderUpdateEvent">
@@ -260,22 +292,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Color order"/>
 </enum>
 
-<enum name="AppListUsageStateByNewUsers">
-  <int value="0" label="LAUNCHER_USED"/>
-  <int value="1" label="LAUNCHER_NOT_USED_BEFORE_DESTRUCTION"/>
-  <int value="2" label="LAUNCHER_NOT_USED_BEFORE_SWITCHING_ACCOUNTS"/>
-</enum>
-
-<enum name="AppListUserEvent">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
-  <int value="0" label="Impression"/>
-  <int value="1" label="Launch"/>
-  <int value="2" label="Abandon"/>
-  <int value="3" label="Ignore"/>
-</enum>
-
 <enum name="AppListUserEventError">
   <int value="0" label="Missing notifier"/>
   <int value="1" label="Result not found"/>
@@ -301,6 +317,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Page info view"/>
   <int value="15" label="Privacy indicators notification settings button"/>
   <int value="16" label="Sub Apps install dialog"/>
+  <int value="17" label="Page specific site data dialog"/>
 </enum>
 
 <enum name="AppManagementUserAction">
@@ -339,13 +356,9 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="App Store Link clicked"/>
 </enum>
 
-<enum name="AppPreloadServiceWebAppInstallResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid manifest URL"/>
-  <int value="2" label="Network error while downloading manifest"/>
-  <int value="3" label="HTTP response error while downloading manifest"/>
-  <int value="4" label="Empty manifest response"/>
-  <int value="5" label="Web app installation error"/>
+<enum name="AppsCollectionsDismissedReason">
+  <int value="0" label="Dismissed by Sorting"/>
+  <int value="1" label="Dismissed by Nudge"/>
 </enum>
 
 <enum name="AppTypeV2">
@@ -436,15 +449,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="File error"/>
 </enum>
 
-<enum name="DriveZeroStateProviderStatus">
-  <int value="0" label="Ok"/>
-  <int value="1" label="Drive FS not mounted"/>
-  <int value="2" label="No results"/>
-  <int value="3" label="Path location failed"/>
-  <int value="4" label="All files errored"/>
-  <int value="5" label="Drive disabled"/>
-</enum>
-
 <enum name="FileHandlerRegistrationLinuxResult">
   <summary>Result of registering file handlers for PWA on Linux</summary>
   <int value="0" label="Success"/>
@@ -485,12 +489,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Load icon via non-mojom call"/>
 </enum>
 
+<enum name="ImageAnnotationWorkerIndexingStatus">
+  <int value="0" label="Start indexing"/>
+  <int value="1" label="Start OCR processing"/>
+  <int value="2" label="OCR Succeed"/>
+  <int value="3" label="Start ICA processing"/>
+  <int value="4" label="ICA Succeed"/>
+</enum>
+
 <enum name="ImageAnnotationWorkerStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Failed to initialize ICA"/>
   <int value="2" label="Failed to initialize OCR"/>
   <int value="3" label="Failed to decode image"/>
   <int value="4" label="Image processing time out"/>
+</enum>
+
+<enum name="ImageContentAnnotatorStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Model Specification Error"/>
+  <int value="2" label="Load Model Error"/>
+  <int value="3" label="Feature Not Supported Error"/>
+  <int value="4" label="Language Not Supported Error"/>
 </enum>
 
 <enum name="ItemSuggestCacheStatus">
@@ -518,15 +538,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unknown"/>
 </enum>
 
-<enum name="LauncherSearchSessionConclusion">
-<!-- Should be kept in sync with LauncherSearchSessionConclusionVariants in
-  tools/metrics/histograms/metadata/apps/histograms.xml.
--->
+<!-- LINT.IfChange(LauncherSearchSessionConclusion) -->
 
+<enum name="LauncherSearchSessionConclusion">
   <int value="0" label="Quit"/>
   <int value="1" label="Launch"/>
   <int value="2" label="AnswerCardSeen"/>
 </enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/apps/histograms.xml:LauncherSearchSessionConclusion) -->
 
 <enum name="LauncherUserAction">
   <summary>
@@ -539,6 +559,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="App search result opened"/>
   <int value="4" label="Continue section task opened"/>
   <int value="5" label="Suggestion chip opened"/>
+  <int value="6" label="Scrolled to apps grid bottom"/>
+  <int value="7" label="App launched from apps collections"/>
 </enum>
 
 <enum name="NoteTakingAppLaunchResult">
@@ -697,7 +719,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebAppCreateShortcutLinuxResult">
-  <summary>Result of creating shortcut for web app on MacOS.</summary>
+  <summary>Result of creating shortcut for web app on Linux.</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Fail to get shortcut file name"/>
   <int value="2" label="Fail to get chrome executable path"/>
@@ -716,8 +738,10 @@ chromium-metrics-reviews@google.com.
   <summary>Result of creating shortcut for web app on MacOS.</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Couldn't find application directory to copy app to."/>
-  <int value="2" label="Fail to localize application"/>
-  <int value="3" label="Fail to get application paths"/>
+  <int value="2"
+      label="(Obsolete) Fail to localize application. Removed in 2024/06."/>
+  <int value="3"
+      label="(Obsolete) Fail to get application paths. Removed in 2024/06."/>
   <int value="4"
       label="Fail to create temporary directory as staging area to write
              application bundle"/>

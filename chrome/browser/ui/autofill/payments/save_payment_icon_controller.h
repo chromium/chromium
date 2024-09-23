@@ -16,18 +16,6 @@ class AutofillBubbleBase;
 // The controller for SavePaymentIconView.
 class SavePaymentIconController {
  public:
-  // The type of the autofill bubble attached to the icon.
-  enum class PaymentBubbleType {
-    kUnknown = 0,
-    // Bubble for credit card.
-    kCreditCard = 1,
-    // Bubble for save IBAN.
-    kSaveIban = 2,
-    // Bubble for manage saved IBAN
-    kManageSavedIban = 3,
-    kMaxValue = kManageSavedIban
-  };
-
   virtual ~SavePaymentIconController() = default;
 
   // Returns a reference to the SavePaymentIconController associated with the
@@ -52,8 +40,6 @@ class SavePaymentIconController {
   // Returns the currently active save payment or manage saved payment bubble
   // view. Can be nullptr if no bubble is visible.
   virtual AutofillBubbleBase* GetPaymentBubbleView() const = 0;
-
-  virtual PaymentBubbleType GetPaymentBubbleType() const = 0;
 
   // Returns the tooltip message for the save payment icon.
   virtual std::u16string GetSavePaymentIconTooltipText() const = 0;

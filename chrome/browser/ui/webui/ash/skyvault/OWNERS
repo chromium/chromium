@@ -1,0 +1,4 @@
+file://chrome/browser/ash/policy/skyvault/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

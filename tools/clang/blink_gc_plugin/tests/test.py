@@ -58,7 +58,7 @@ def main():
 
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
-  return BlinkGcPluginTest(dir_name, args.clang_path, 'blink-gc-plugin',
+  return BlinkGcPluginTest(dir_name, args.clang_path, ['blink-gc-plugin'],
                            args.reset_results).Run()
 
 

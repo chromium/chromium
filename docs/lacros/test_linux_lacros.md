@@ -43,6 +43,10 @@ symbol_level = 0
 target_os = "chromeos"
 use_remoteexec = true
 ```
+Caveat: On CQ builder, ToT ash is built with `dcheck_always_on=true`; however, older ash used
+for version skew tests is pre-built on a separate builder and is built with `dcheck_always_on=false`.
+This could lead to different behavior between ToT and version skew tests if dcheck is hit in code path.
+
 
 CI gn args:
 ```
@@ -149,6 +153,9 @@ you can pass --ash-chrome-path-override=/absolute/path/out/ashdesktop/test_ash_c
 
 If you’re debugging, we suggest you have 2 checkouts, one for (older) ash and
 the other for (newer) lacros.
+
+Note: The prebuilt ash mentioned in #1 is built with `dcheck_always_on=false`,
+while the ash built localled in #2 can have `dcheck_always_on=true`.
 
 ### Ash browser tests require Lacros
 

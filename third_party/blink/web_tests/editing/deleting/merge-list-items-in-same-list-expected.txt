@@ -6,6 +6,5 @@
 |     "one"
 |   <li>
 |     "<#selection-caret>three"
-|     <br>
 | "
 "

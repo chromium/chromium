@@ -15,10 +15,8 @@ import androidx.test.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
-import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -36,7 +34,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellViewAndroidDelegate.OnCursorUpdateHelper;
 
@@ -45,7 +42,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,33 +62,23 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public Statement apply(final Statement base, final Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        PowerManager pm =
-                                (PowerManager)
-                                        InstrumentationRegistry.getInstrumentation()
-                                                .getContext()
-                                                .getSystemService(Context.POWER_SERVICE);
-                        Assert.assertTrue(
-                                "Many tests will fail if the screen is not on.",
-                                pm.isInteractive());
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        PowerManager pm =
+                (PowerManager)
+                        InstrumentationRegistry.getInstrumentation()
+                                .getContext()
+                                .getSystemService(Context.POWER_SERVICE);
+        Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isInteractive());
     }
 
     public void runOnUiThread(Runnable r) {
-        TestThreadUtils.runOnUiThreadBlocking(r);
+        ThreadUtils.runOnUiThreadBlocking(r);
     }
 
     /**
-     * Starts the ContentShell activity and loads the given URL.
-     * The URL can be null, in which case will default to ContentShellActivity.DEFAULT_SHELL_URL.
+     * Starts the ContentShell activity and loads the given URL. The URL can be null, in which case
+     * will default to ContentShellActivity.DEFAULT_SHELL_URL.
      */
     public ContentShellActivity launchContentShellWithUrl(String url) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -122,8 +108,8 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     /** Returns the OnCursorUpdateHelper. */
-    public OnCursorUpdateHelper getOnCursorUpdateHelper() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+    public OnCursorUpdateHelper getOnCursorUpdateHelper() {
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<OnCursorUpdateHelper>() {
                     @Override
                     public OnCursorUpdateHelper call() {
@@ -137,109 +123,72 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     /** Returns the current {@link ViewEventSink} or null if there is none; */
     public ViewEventSink getViewEventSink() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
+                });
     }
 
     /** Returns the WebContents of this Shell. */
     public WebContents getWebContents() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return getActivity().getActiveShell().getWebContents();
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return getActivity().getActiveShell().getWebContents();
+                });
     }
 
     /** Returns the {@link SelectionPopupControllerImpl} of the WebContents. */
     public SelectionPopupControllerImpl getSelectionPopupController() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return SelectionPopupControllerImpl.fromWebContents(
-                                getActivity().getActiveShell().getWebContents());
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return SelectionPopupControllerImpl.fromWebContents(
+                            getActivity().getActiveShell().getWebContents());
+                });
     }
 
     /** Returns the {@link ImeAdapterImpl} of the WebContents. */
     public ImeAdapterImpl getImeAdapter() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ImeAdapterImpl.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ImeAdapterImpl.fromWebContents(getWebContents()));
     }
 
     /** Returns the {@link SelectPopup} of the WebContents. */
     public SelectPopup getSelectPopup() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> SelectPopup.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> SelectPopup.fromWebContents(getWebContents()));
     }
 
     public WebContentsAccessibilityImpl getWebContentsAccessibility() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
     }
 
     /** Returns the RenderCoordinates of the WebContents. */
     public RenderCoordinatesImpl getRenderCoordinates() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
     }
 
     /** Returns the current container view or null if there is no WebContents. */
     public View getContainerView() {
         final WebContents webContents = getWebContents();
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return webContents != null
-                                ? webContents.getViewAndroidDelegate().getContainerView()
-                                : null;
-                    });
-        } catch (ExecutionException e) {
-            Log.w(TAG, "Getting container view failed. Returning null", e);
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return webContents != null
+                            ? webContents.getViewAndroidDelegate().getContainerView()
+                            : null;
+                });
     }
 
     public JavascriptInjector getJavascriptInjector() {
-        return getJavascriptInjector(false);
-    }
-
-    public JavascriptInjector getJavascriptInjector(boolean useMojo) {
-        return JavascriptInjector.fromWebContents(getWebContents(), useMojo);
+        return JavascriptInjector.fromWebContents(getWebContents());
     }
 
     /**
-     * Waits for the Active shell to finish loading.  This times out after
-     * WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT milliseconds and it shouldn't be used for long
-     * loading pages. Instead it should be used more for test initialization. The proper way
-     * to wait is to use a TestCallbackHelperContainer after the initial load is completed.
+     * Waits for the Active shell to finish loading. This times out after
+     * WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT milliseconds and it shouldn't be used for long loading
+     * pages. Instead it should be used more for test initialization. The proper way to wait is to
+     * use a TestCallbackHelperContainer after the initial load is completed.
      */
     public void waitForActiveShellToBeDoneLoading() {
         // Wait for the Content Shell to be initialized.
@@ -260,13 +209,13 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     /**
      * Creates a new {@link Shell} and waits for it to finish loading.
+     *
      * @param url The URL to create the new {@link Shell} with.
      * @return A new instance of a {@link Shell}.
-     * @throws ExecutionException
      */
-    public Shell loadNewShell(String url) throws ExecutionException {
+    public Shell loadNewShell(String url) {
         Shell shell =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Shell>() {
                             @Override
                             public Shell call() {
@@ -303,8 +252,8 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     /**
-     * Handles performing an action on the UI thread that will return when the specified callback
-     * is incremented.
+     * Handles performing an action on the UI thread that will return when the specified callback is
+     * incremented.
      *
      * @param callbackHelper The callback helper that will be blocked on.
      * @param uiThreadAction The action to be performed on the UI thread.
@@ -312,7 +261,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     public void handleBlockingCallbackAction(CallbackHelper callbackHelper, Runnable uiThreadAction)
             throws Throwable {
         int currentCallCount = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(uiThreadAction);
+        ThreadUtils.runOnUiThreadBlocking(uiThreadAction);
         callbackHelper.waitForCallback(
                 currentCallCount, 1, WAIT_PAGE_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }

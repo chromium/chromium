@@ -73,7 +73,7 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   // |session_id_| identifies the capture device used for this capture session.
   const media::VideoCaptureSessionId session_id_;
 
-  const raw_ptr<WebVideoCaptureImplManager, ExperimentalRenderer> manager_;
+  const raw_ptr<WebVideoCaptureImplManager> manager_;
 
   LocalFrameToken frame_token_;
   base::OnceClosure release_device_cb_;

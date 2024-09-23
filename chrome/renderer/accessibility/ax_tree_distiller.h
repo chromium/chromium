@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
@@ -42,15 +42,16 @@ class MojoUkmRecorder;
 //  by the Screen2x ML model in the utility process. Otherwise, distillation is
 //  done using rules defined in this file.
 //
-class AXTreeDistiller {
+class AXTreeDistiller : public content::RenderFrameObserver {
   using OnAXTreeDistilledCallback = base::RepeatingCallback<void(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXNodeID>& content_node_ids)>;
 
  public:
   explicit AXTreeDistiller(
+      content::RenderFrame* render_frame,
       OnAXTreeDistilledCallback on_ax_tree_distilled_callback);
-  virtual ~AXTreeDistiller();
+  ~AXTreeDistiller() override;
   AXTreeDistiller(const AXTreeDistiller&) = delete;
   AXTreeDistiller& operator=(const AXTreeDistiller&) = delete;
 
@@ -64,7 +65,10 @@ class AXTreeDistiller {
                        const ui::AXTreeUpdate& snapshot,
                        const ukm::SourceId ukm_source_id);
 
-  void ScreenAIServiceReady(content::RenderFrame* render_frame);
+  void ScreenAIServiceReady();
+
+  // content::RenderFrameObserver:
+  void OnDestruct() override {}
 
  private:
   // Distills the AXTree via a rules-based algorithm. Results are added to
@@ -110,11 +114,14 @@ class AXTreeDistiller {
                            base::TimeDelta elapsed_time,
                            bool success);
 
-  // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is
+  // TODO(crbug.com/40802192): Ensure this is called even if ScreenAIService is
   // disconnected.
   OnAXTreeDistilledCallback on_ax_tree_distilled_callback_;
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+
+  // ScreenAI service is successfully initialized.
+  bool screen_ai_service_ready_ = false;
 
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.

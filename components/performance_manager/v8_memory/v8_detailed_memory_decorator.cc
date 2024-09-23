@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,6 +20,7 @@
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/execution_context/execution_context_attached_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -340,13 +340,12 @@ void NodeAttachedProcessData::ApplyToAllRenderers(
     Graph* graph,
     base::FunctionRef<void(NodeAttachedProcessData*)> func) {
   for (const ProcessNode* node : graph->GetAllProcessNodes()) {
-    NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
-    if (!process_data) {
-      // NodeAttachedProcessData should have been created for all renderer
-      // processes in OnProcessNodeAdded.
-      DCHECK_NE(content::PROCESS_TYPE_RENDERER, node->GetProcessType());
+    if (node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
       continue;
     }
+
+    NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
+    DCHECK(process_data);
     func(process_data);
   }
 }
@@ -667,14 +666,10 @@ V8DetailedMemoryDecorator::~V8DetailedMemoryDecorator() = default;
 
 void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(nullptr, graph_);
-  graph_ = graph;
-
-  graph->RegisterObject(this);
-
   // Iterate over the existing process nodes to put them under observation.
-  for (const ProcessNode* process_node : graph->GetAllProcessNodes())
+  for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
     OnProcessNodeAdded(process_node);
+  }
 
   graph->AddProcessNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(
@@ -683,15 +678,11 @@ void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
 
 void V8DetailedMemoryDecorator::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(graph, graph_);
-
   ApplyToAllRequestQueues(&V8DetailedMemoryRequestQueue::OnOwnerUnregistered);
   UpdateProcessMeasurementSchedules();
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->RemoveProcessNodeObserver(this);
-  graph->UnregisterObject(this);
-  graph_ = nullptr;
 }
 
 void V8DetailedMemoryDecorator::OnProcessNodeAdded(
@@ -798,17 +789,16 @@ void V8DetailedMemoryDecorator::ApplyToAllRequestQueues(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   func(measurement_requests_.get());
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_, [func](NodeAttachedProcessData* process_data) {
+      GetOwningGraph(), [func](NodeAttachedProcessData* process_data) {
         func(&process_data->process_measurement_requests());
       });
 }
 
 void V8DetailedMemoryDecorator::UpdateProcessMeasurementSchedules() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(graph_);
   measurement_requests_->Validate();
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_, &NodeAttachedProcessData::ScheduleNextMeasurement);
+      GetOwningGraph(), &NodeAttachedProcessData::ScheduleNextMeasurement);
 }
 
 void V8DetailedMemoryDecorator::NotifyObserversOnMeasurementAvailable(
@@ -924,10 +914,10 @@ size_t V8DetailedMemoryRequestQueue::RemoveMeasurementRequest(
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
-  return base::Erase(IsMeasurementBounded(request->mode())
-                         ? bounded_measurement_requests_
-                         : lazy_measurement_requests_,
-                     request);
+  return std::erase(IsMeasurementBounded(request->mode())
+                        ? bounded_measurement_requests_
+                        : lazy_measurement_requests_,
+                    request);
 }
 
 void V8DetailedMemoryRequestQueue::NotifyObserversOnMeasurementAvailable(

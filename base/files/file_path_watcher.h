@@ -8,6 +8,7 @@
 #define BASE_FILES_FILE_PATH_WATCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -39,7 +39,7 @@ class BASE_EXPORT FilePathWatcher {
   // Type of change which occurred on the affected. Note that this may differ
   // from the watched path, e.g. in the case of recursive watches.
   enum class ChangeType {
-    kUnsupported,  // The implementation does not support change types.
+    kUnknown,  // One or more changes occurred at the path or its descendants.
     kCreated,
     kDeleted,
     kModified,  // Includes modifications to either file contents or attributes.
@@ -65,20 +65,20 @@ class BASE_EXPORT FilePathWatcher {
   // known given the limitations on some platforms.
   struct ChangeInfo {
     FilePathType file_path_type = FilePathType::kUnknown;
-    ChangeType change_type = ChangeType::kUnsupported;
+    ChangeType change_type = ChangeType::kUnknown;
     // Can be used to associate related events. For example, renaming a file may
     // trigger separate "moved from" and "moved to" events with the same
     // `cookie` value.
     //
-    // TODO(https://crbug.com/1425601): This is currently only used to associate
+    // TODO(crbug.com/40260973): This is currently only used to associate
     // `kMoved` events, and requires all consumers to implement the same logic
     // to coalesce these events. Consider upstreaming this event coalesing logic
     // to the platform-specific implementations and then replacing `cookie` with
     // the file path that the file was moved from, if this is known.
-    absl::optional<uint32_t> cookie;
+    std::optional<uint32_t> cookie;
   };
 
-  // TODO(https://crbug.com/1425601): Rename this now that this class declares
+  // TODO(crbug.com/40260973): Rename this now that this class declares
   // other types of Types.
   enum class Type {
     // Indicates that the watcher should watch the given path and its
@@ -157,6 +157,13 @@ class BASE_EXPORT FilePathWatcher {
     // allow to shut down properly while the object is still alive.
     virtual void Cancel() = 0;
 
+#if BUILDFLAG(IS_WIN)
+    // Gets the Lock associated with the base::FilePathWatcher implementation's
+    // Watch thread. Tests can use this to block that thread and cause a buffer
+    // overflow.
+    virtual Lock& GetWatchThreadLockForTest() = 0;
+#endif
+
    protected:
     friend class FilePathWatcher;
 
@@ -212,6 +219,13 @@ class BASE_EXPORT FilePathWatcher {
   bool WatchWithChangeInfo(const FilePath& path,
                            const WatchOptions& options,
                            const CallbackWithChangeInfo& callback);
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the Lock associated with the base::FilePathWatcher implementation's
+  // Watch thread. Tests can use this to block that thread and cause a buffer
+  // overflow.
+  Lock& GetWatchThreadLockForTest();
+#endif
 
  private:
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);

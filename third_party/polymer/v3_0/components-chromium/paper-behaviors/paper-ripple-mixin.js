@@ -4,7 +4,6 @@
 import '../polymer/polymer_bundled.min.js';
 import '../paper-ripple/paper-ripple.js';
 
-import {IronButtonStateImpl} from '../iron-behaviors/iron-button-state.js';
 import {dedupingMixin, dom} from '../polymer/polymer_bundled.min.js';
 
 /**
@@ -12,9 +11,6 @@ import {dedupingMixin, dom} from '../polymer/polymer_bundled.min.js';
  *
  * `PaperRippleMixin` dynamically implements a ripple when the element has
  * focus via pointer or keyboard.
- *
- * NOTE: This behavior is intended to be used in conjunction with and after
- * `IronButtonState` and `IronControlState`.
  */
 
 export const PaperRippleMixin = dedupingMixin(superClass => {
@@ -30,57 +26,25 @@ export const PaperRippleMixin = dedupingMixin(superClass => {
         /**
          * @type {Element|undefined}
          */
-        _rippleContainer: {
-          type: Object,
-        }
+        _rippleContainer: Object,
       };
     }
 
-    /**
-     * Ensures a `<paper-ripple>` element is available when the element is
-     * focused.
-     */
-    _buttonStateChanged() {
-      if (this.focused) {
-        this.ensureRipple();
-      }
-    }
-
-    /**
-     * In addition to the functionality provided in `IronButtonState`, ensures
-     * a ripple effect is created when the element is in a `pressed` state.
-     */
-    _downHandler(event) {
-      IronButtonStateImpl._downHandler.call(this, event);
-      if (this.pressed) {
-        this.ensureRipple(event);
-      }
-    }
 
     /**
      * Ensures this element contains a ripple effect. For startup efficiency
      * the ripple effect is dynamically on demand when needed.
-     * @param {!Event=} optTriggeringEvent (optional) event that triggered the
-     * ripple.
      */
-    ensureRipple(optTriggeringEvent) {
-      if (!this.hasRipple()) {
-        this._ripple = this._createRipple();
-        this._ripple.noink = this.noink;
-        var rippleContainer = this._rippleContainer || this.root;
-        if (rippleContainer) {
-          dom(rippleContainer).appendChild(this._ripple);
-        }
-        if (optTriggeringEvent) {
-          // Check if the event happened inside of the ripple container
-          // Fall back to host instead of the root because distributed text
-          // nodes are not valid event targets
-          var domContainer = dom(this._rippleContainer || this);
-          var target = dom(optTriggeringEvent).rootTarget;
-          if (domContainer.deepContains(/** @type {Node} */ (target))) {
-            this._ripple.uiDownAction(optTriggeringEvent);
-          }
-        }
+    ensureRipple() {
+      if (this.hasRipple()) {
+        return;
+      }
+
+      this._ripple = this._createRipple();
+      this._ripple.noink = this.noink;
+      var rippleContainer = this._rippleContainer || this.root;
+      if (rippleContainer) {
+        rippleContainer.appendChild(this._ripple);
       }
     }
 

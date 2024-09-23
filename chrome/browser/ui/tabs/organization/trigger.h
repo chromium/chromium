@@ -11,6 +11,7 @@
 
 class BackoffLevelProvider;
 class TabStripModel;
+class Profile;
 
 // Decides whether to trigger the nudge UI. Can incorporate considerations such
 // as rate limiting / backoff, historical score distribution, historical CTR for
@@ -49,9 +50,11 @@ TriggerScoringFunction GetTriggerScoringFunction();
 float GetTriggerScoreThreshold();
 float GetSensitivityThreshold();
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
-    BackoffLevelProvider* backoff_level_provider);
+    BackoffLevelProvider* backoff_level_provider,
+    Profile* profile);
 
 std::unique_ptr<TabOrganizationTrigger> MakeTrigger(
-    BackoffLevelProvider* backoff_level_provider);
+    BackoffLevelProvider* backoff_level_provider,
+    Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_H_

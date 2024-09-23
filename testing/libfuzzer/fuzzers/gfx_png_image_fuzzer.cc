@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image.h"
@@ -21,7 +23,9 @@ Environment* env = new Environment();
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   ui::SetSupportedResourceScaleFactors({ui::k100Percent});
-  gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(data, size);
+  // SAFETY: `data` has length `size`, as guaranteed by the fuzzer API.
+  gfx::Image image =
+      gfx::Image::CreateFrom1xPNGBytes(UNSAFE_BUFFERS(base::span(data, size)));
   if (image.IsEmpty()) {
     return 0;
   }

@@ -8,14 +8,13 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 OverflowButton::OverflowButton() {
   auto menu_button_controller = std::make_unique<views::MenuButtonController>(
@@ -31,18 +30,7 @@ OverflowButton::OverflowButton() {
 
 void OverflowButton::RunMenu() {
   CHECK(GetVisible());
-  CHECK(create_menu_model_callback_);
-  if (menu_model_) {
-    menu_model_->Clear();
-  }
-  menu_model_ = create_menu_model_callback_.Run();
-  CHECK(menu_model_);
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
-  menu_runner_->RunMenuAt(
-      menu_button_controller_->button()->GetWidget(), menu_button_controller_,
-      menu_button_controller_->button()->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
+  toolbar_controller_->ShowMenu();
   base::RecordAction(
       base::UserMetricsAction("ResponsiveToolbar.OverflowButtonActivated"));
 }

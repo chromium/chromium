@@ -18,6 +18,7 @@ static_library("browser") {
     "//components/guest_view/browser/guest_view_base.h",
     "//components/guest_view/browser/guest_view_event.cc",
     "//components/guest_view/browser/guest_view_event.h",
+    "//components/guest_view/browser/guest_view_histogram_value.h",
     "//components/guest_view/browser/guest_view_manager.cc",
     "//components/guest_view/browser/guest_view_manager.h",
     "//components/guest_view/browser/guest_view_manager_delegate.cc",

@@ -59,14 +59,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       const std::string& token_binding_challenge) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-  void UpdateCredentials(const CoreAccountId& account_id,
-                         const std::string& refresh_token) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
-  void RevokeCredentials(const CoreAccountId& account_id) override;
-  void RevokeAllCredentials() override;
   void UpdateAuthError(const CoreAccountId& account_id,
                        const GoogleServiceAuthError& error,
                        bool fire_auth_error_changed = true) override;
@@ -82,6 +76,16 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
 
  private:
   friend class TestProfileOAuth2TokenServiceDelegateChromeOS;
+
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+  void UpdateCredentialsInternal(const CoreAccountId& account_id,
+                                 const std::string& refresh_token) override;
+  void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+
   // Callback handler for `account_manager::AccountManagerFacade::GetAccounts`.
   void OnGetAccounts(const std::vector<account_manager::Account>& accounts);
 

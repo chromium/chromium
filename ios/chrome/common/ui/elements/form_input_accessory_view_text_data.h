@@ -13,13 +13,20 @@
 @interface FormInputAccessoryViewTextData : NSObject
 
 - (instancetype)initWithCloseButtonTitle:(NSString*)closeButtonTitle
-           closeButtonAccessibilityLabel:
-               (NSString*)closeButtonAccessibilityLabel
-            nextButtonAccessibilityLabel:(NSString*)nextButtonAccessibilityLabel
-        previousButtonAccessibilityLabel:
-            (NSString*)previousButtonAccessibilityLabel
-      manualFillButtonAccessibilityLabel:
-          (NSString*)manualFillButtonAccessibilityLabel
+                   closeButtonAccessibilityLabel:
+                       (NSString*)closeButtonAccessibilityLabel
+                    nextButtonAccessibilityLabel:
+                        (NSString*)nextButtonAccessibilityLabel
+                previousButtonAccessibilityLabel:
+                    (NSString*)previousButtonAccessibilityLabel
+              manualFillButtonAccessibilityLabel:
+                  (NSString*)manualFillButtonAccessibilityLabel
+      passwordManualFillButtonAccessibilityLabel:
+          (NSString*)passwordManualFillButtonAccessibilityLabel
+    creditCardManualFillButtonAccessibilityLabel:
+        (NSString*)creditCardManualFillButtonAccessibilityLabel
+       addressManualFillButtonAccessibilityLabel:
+           (NSString*)addressManualFillButtonAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -33,10 +40,16 @@
 @property(nonatomic, readonly) NSString* nextButtonAccessibilityLabel;
 // Accessibility label for keyboard accessory previous button.
 @property(nonatomic, readonly) NSString* previousButtonAccessibilityLabel;
-// Accessibility label for the manual fill keyboard accessory button.
+// Accessibility label for the manual fill keyboard accessory buttons.
 // Must be provided if the keyboard accessory has the ability to show
 // password and/or autofill suggestions. Can be nil otherwise.
 @property(nonatomic, readonly) NSString* manualFillButtonAccessibilityLabel;
+@property(nonatomic, readonly)
+    NSString* passwordManualFillButtonAccessibilityLabel;
+@property(nonatomic, readonly)
+    NSString* creditCardManualFillButtonAccessibilityLabel;
+@property(nonatomic, readonly)
+    NSString* addressManualFillButtonAccessibilityLabel;
 
 @end
 

@@ -15,7 +15,10 @@ source_set("bluetooth_internals") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//device/bluetooth:deprecated_experimental_mojo" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//device/bluetooth:deprecated_experimental_mojo",
+  ]
 
   deps = [
     ":mojo_bindings",
@@ -29,7 +32,12 @@ source_set("bluetooth_internals") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash" ]
+    deps += [
+      "//ash/public/cpp",
+      "//chrome/browser/ash/bluetooth",
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/ash/services/bluetooth_config/public/mojom",
+    ]
   }
   if (is_android) {
     deps += [

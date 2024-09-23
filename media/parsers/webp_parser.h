@@ -6,10 +6,11 @@
 #define MEDIA_PARSERS_WEBP_PARSER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/containers/span.h"
-#include "media/parsers/media_parsers_export.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -23,13 +24,13 @@ struct Vp8FrameHeader;
 
 // Returns true if |encoded_data| claims to encode a simple (non-extended) lossy
 // WebP image. Returns false otherwise.
-MEDIA_PARSERS_EXPORT
+MEDIA_EXPORT
 bool IsLossyWebPImage(base::span<const uint8_t> encoded_data);
 
 // Parses a simple (non-extended) lossy WebP image and returns a Vp8FrameHeader
 // containing the parsed VP8 frame contained by the image. Returns nullptr on
 // failure.
-MEDIA_PARSERS_EXPORT
+MEDIA_EXPORT
 std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
     base::span<const uint8_t> encoded_data);
 

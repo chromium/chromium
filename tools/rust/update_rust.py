@@ -10,6 +10,7 @@ version specified in //tools/clang/scripts/update.py.
 '''
 
 import argparse
+import glob
 import os
 import re
 import shutil
@@ -34,8 +35,8 @@ sys.path.append(
 # In the case that a Rust roll fails and you want to roll Clang alone, reset
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
-RUST_REVISION = 'cd6d8f2a04528f827ad3d399581c0f3502b15a72'
-RUST_SUB_REVISION = 1
+RUST_REVISION = '009e73825af0e59ad4fc603562e038b3dbd6593a'
+RUST_SUB_REVISION = 2
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that
@@ -56,7 +57,7 @@ CRUBIT_SUB_REVISION = 1
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = '1cf1158e41f64da21e6ebbf92354da3b3b901dd5f6afe90db36e3e184eaf3b78'
+STAGE0_JSON_SHA256 = 'ed1bd5afab062116c6926ed9d3bbaa3ecdc037ff983f9dc34dbecece10ef91e0'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
@@ -64,7 +65,6 @@ THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 # Path to the VERSION file stored in the archive.
 VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
-VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'INSTALLED_VERSION')
 
 
 def GetRustClangRevision():
@@ -75,8 +75,8 @@ def GetRustClangRevision():
 
 # Get the version of the toolchain package we already have.
 def GetStampVersion():
-    if os.path.exists(VERSION_STAMP_PATH):
-        with open(VERSION_STAMP_PATH) as version_file:
+    if os.path.exists(VERSION_SRC_PATH):
+        with open(VERSION_SRC_PATH) as version_file:
             existing_stamp = version_file.readline().rstrip()
         version_re = re.compile(r'rustc [0-9.]+ [0-9a-f]+ \((.+?) chromium\)')
         match = version_re.fullmatch(existing_stamp)
@@ -126,8 +126,13 @@ def main():
     # downloading the toolchain if it hasn't changed, it also leads to multiple
     # versions of the same rustlibs. build/rust/std/find_std_rlibs.py chokes in
     # this case.
+    # .*_is_first_class_gcs file is created by first class GCS deps when rust
+    # hooks are migrated to be first class deps. In case we need to go back to
+    # using a hook, this file will indicate that the previous download was
+    # from the first class dep and the dir needs to be cleared.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        if version == GetStampVersion():
+        if version == GetStampVersion() and not glob.glob(
+                os.path.join(RUST_TOOLCHAIN_OUT_DIR, '.*_is_first_class_gcs')):
             return 0
 
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
@@ -135,10 +140,7 @@ def main():
 
     try:
         url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
-        DownloadAndUnpack(url, THIRD_PARTY_DIR)
-        # The archive contains a VERSION file. Copy it to INSTALLED_VERSION as
-        # the very last step in case the unpack fails after writing VERSION.
-        shutil.copyfile(VERSION_SRC_PATH, VERSION_STAMP_PATH)
+        DownloadAndUnpack(url, RUST_TOOLCHAIN_OUT_DIR)
     except urllib.error.HTTPError as e:
         print(f'error: Failed to download Rust package')
         return 1

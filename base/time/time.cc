@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <utility>
@@ -17,7 +18,6 @@
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -116,7 +116,7 @@ Time Time::Midnight(bool is_local) const {
   [[maybe_unused]] const bool result =
       FromExploded(is_local, exploded, &out_time);
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
-  // TODO(crbug.com/1263873): DCHECKs have limited coverage during automated
+  // TODO(crbug.com/40800460): DCHECKs have limited coverage during automated
   // testing on CrOS and this check failed when tested on an experimental
   // builder. Testing for ARCH_CPU_ARM_FAMILY prevents regressing coverage on
   // x86_64, which is already enabled. See go/chrome-dcheck-on-cros or
@@ -279,6 +279,11 @@ LiveTicks LiveTicksNowIgnoringOverride() {
 }  // namespace subtle
 
 #endif
+
+std::ostream& operator<<(std::ostream& os, LiveTicks live_ticks) {
+  const TimeDelta as_time_delta = live_ticks - LiveTicks();
+  return os << as_time_delta.InMicroseconds() << " bogo-live-microseconds";
+}
 
 // ThreadTicks ----------------------------------------------------------------
 

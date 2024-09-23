@@ -15,7 +15,5 @@ public interface XSurfaceHooks {
     }
 
     /** Creates and returns a {@link ProcessScope}. */
-    default ProcessScope createProcessScope(ProcessScopeDependencyProvider dependencies) {
-        return null;
-    }
+    ProcessScope createProcessScope(ProcessScopeDependencyProvider dependencies);
 }

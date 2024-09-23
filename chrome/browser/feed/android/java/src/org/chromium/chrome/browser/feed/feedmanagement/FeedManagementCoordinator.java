@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
-import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -27,10 +26,7 @@ public class FeedManagementCoordinator {
     private AppCompatActivity mActivity;
     private final View mView;
 
-    public FeedManagementCoordinator(
-            Activity activity,
-            FollowManagementLauncher followManagementLauncher,
-            @StreamKind int feedType) {
+    public FeedManagementCoordinator(Activity activity, @StreamKind int feedType) {
         mActivity = (AppCompatActivity) activity;
         ModelList listItems = new ModelList();
 
@@ -46,9 +42,7 @@ public class FeedManagementCoordinator {
         ListView listView = (ListView) mView.findViewById(R.id.feed_management_menu);
         listView.setAdapter(adapter);
 
-        mMediator =
-                new FeedManagementMediator(
-                        mActivity, listItems, followManagementLauncher, feedType);
+        mMediator = new FeedManagementMediator(mActivity, listItems, feedType);
     }
 
     public View getView() {

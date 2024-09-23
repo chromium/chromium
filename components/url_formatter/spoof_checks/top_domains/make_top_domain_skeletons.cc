@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -26,7 +28,7 @@
 
 const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
-base::FilePath GetPath(base::StringPiece basename) {
+base::FilePath GetPath(std::string_view basename) {
   base::FilePath path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path.Append(FILE_PATH_LITERAL("components"))
@@ -36,7 +38,7 @@ base::FilePath GetPath(base::StringPiece basename) {
       .AppendASCII(basename);
 }
 
-bool WriteToFile(const std::string& content, base::StringPiece basename) {
+bool WriteToFile(const std::string& content, std::string_view basename) {
   base::FilePath path = GetPath(basename);
   bool succeeded = base::WriteFile(path, content.data());
   if (!succeeded)
@@ -128,6 +130,12 @@ int GenerateSkeletons(const char* input_file_name,
       continue;
     }
 
+    std::string domain_and_registry = lookalikes::GetETLDPlusOne(domain);
+    if (domain_and_registry.empty()) {
+      // This can happen with domains like "com.se".
+      continue;
+    }
+
     const std::u16string domain16 = base::UTF8ToUTF16(domain);
     const Skeletons skeletons = skeleton_generator.GetSkeletons(domain16);
     if (skeletons.empty()) {
@@ -155,7 +163,7 @@ int GenerateSkeletons(const char* input_file_name,
       output += GenerateNormalOutputLine(skeletons, domain);
     }
 
-    std::vector<base::StringPiece> labels = base::SplitStringPiece(
+    std::vector<std::string_view> labels = base::SplitStringPiece(
         domain, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (labels.size() > max_labels) {
       domain_with_max_labels = domain;

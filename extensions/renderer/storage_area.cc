@@ -25,9 +25,14 @@ namespace extensions {
 namespace {
 
 #define DEFINE_STORAGE_AREA_HANDLERS()                                      \
-  const char* GetTypeName() override { return "StorageArea"; }              \
+  const char* GetTypeName() override {                                      \
+    return "StorageArea";                                                   \
+  }                                                                         \
   void Get(gin::Arguments* arguments) {                                     \
     storage_area_.HandleFunctionCall("get", arguments);                     \
+  }                                                                         \
+  void GetKeys(gin::Arguments* arguments) {                                 \
+    storage_area_.HandleFunctionCall("getKeys", arguments);                 \
   }                                                                         \
   void Set(gin::Arguments* arguments) {                                     \
     storage_area_.HandleFunctionCall("set", arguments);                     \
@@ -74,6 +79,7 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
       v8::Isolate* isolate) override {
     return Wrappable<LocalStorageArea>::GetObjectTemplateBuilder(isolate)
         .SetMethod("get", &LocalStorageArea::Get)
+        .SetMethod("getKeys", &LocalStorageArea::GetKeys)
         .SetMethod("set", &LocalStorageArea::Set)
         .SetMethod("remove", &LocalStorageArea::Remove)
         .SetMethod("clear", &LocalStorageArea::Clear)
@@ -113,6 +119,7 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
       v8::Isolate* isolate) override {
     return Wrappable<SyncStorageArea>::GetObjectTemplateBuilder(isolate)
         .SetMethod("get", &SyncStorageArea::Get)
+        .SetMethod("getKeys", &SyncStorageArea::GetKeys)
         .SetMethod("set", &SyncStorageArea::Set)
         .SetMethod("remove", &SyncStorageArea::Remove)
         .SetMethod("clear", &SyncStorageArea::Clear)
@@ -162,6 +169,7 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
       v8::Isolate* isolate) override {
     return Wrappable<ManagedStorageArea>::GetObjectTemplateBuilder(isolate)
         .SetMethod("get", &ManagedStorageArea::Get)
+        .SetMethod("getKeys", &ManagedStorageArea::GetKeys)
         .SetMethod("set", &ManagedStorageArea::Set)
         .SetMethod("remove", &ManagedStorageArea::Remove)
         .SetMethod("clear", &ManagedStorageArea::Clear)
@@ -200,11 +208,12 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
       v8::Isolate* isolate) override {
     return Wrappable<SessionStorageArea>::GetObjectTemplateBuilder(isolate)
         .SetMethod("get", &SessionStorageArea::Get)
+        .SetMethod("getKeys", &SessionStorageArea::GetKeys)
         .SetMethod("set", &SessionStorageArea::Set)
         .SetMethod("remove", &SessionStorageArea::Remove)
         .SetMethod("clear", &SessionStorageArea::Clear)
         .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
-        // TODO(crbug.com/1227410): Only expose `setAccessLevel` in privileged
+        // TODO(crbug.com/40189208): Only expose `setAccessLevel` in privileged
         // contexts.
         .SetMethod("setAccessLevel", &SessionStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)
@@ -326,7 +335,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
       isolate, gin::StringToSymbol(isolate, "onChangedEvent"));
   v8::Local<v8::Value> event;
   if (!wrapper->GetPrivate(context, key).ToLocal(&event)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Value>();
   }
 
@@ -340,7 +349,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
         context);
     v8::Maybe<bool> set_result = wrapper->SetPrivate(context, key, event);
     if (!set_result.IsJust() || !set_result.FromJust()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return v8::Local<v8::Value>();
     }
   }

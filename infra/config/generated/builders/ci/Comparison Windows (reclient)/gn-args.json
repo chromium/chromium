@@ -8,7 +8,10 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_remoteexec": true
+        "target_cpu": "x64",
+        "target_os": "win",
+        "use_remoteexec": true,
+        "use_siso": true
       }
     },
     "build2": {
@@ -19,7 +22,10 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_remoteexec": true
+        "target_cpu": "x64",
+        "target_os": "win",
+        "use_remoteexec": true,
+        "use_siso": true
       }
     }
   }

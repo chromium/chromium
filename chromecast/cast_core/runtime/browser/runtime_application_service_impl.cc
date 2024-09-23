@@ -6,9 +6,13 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
+#include "chromecast/base/version.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
@@ -118,6 +122,17 @@ const cast::common::Dictionary::Entry* FindEntry(
     return nullptr;
   }
   return &*iter;
+}
+
+bool GetFlagEntry(const std::string& key,
+                  const cast::common::Dictionary& dict,
+                  bool default_value = false) {
+  auto* entry = FindEntry(key, dict);
+  if (!entry) {
+    return default_value;
+  }
+  CHECK(entry->value().value_case() == cast::common::Value::kFlag);
+  return entry->value().flag();
 }
 
 }  // namespace
@@ -264,7 +279,7 @@ void RuntimeApplicationServiceImpl::NavigateToPage(const GURL& url) {
   cast_web_contents->SetAppProperties(
       runtime_application_->GetAppId(),
       runtime_application_->GetCastSessionId(), IsAudioOnly(), url,
-      GetEnforceFeaturePermissions(), std::vector<int>(),
+      IsFeaturePermissionsEnforced(), std::vector<int>(),
       std::vector<std::string>());
 
   // Start loading the URL while JS visibility is disabled and no window is
@@ -312,15 +327,37 @@ void RuntimeApplicationServiceImpl::HandlePostMessage(
 CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
-  params->renderer_type = mojom::RendererType::MOJO_RENDERER;
-  params->handle_inner_contents = true;
-  params->session_id = runtime_application_->GetCastSessionId();
-  params->is_remote_control_mode = IsRemoteControlMode();
-  params->activity_id = params->is_remote_control_mode
-                            ? params->session_id
-                            : runtime_application_->GetAppId();
+  params->use_media_blocker = true;
+  params->keep_screen_on = false;
+  params->gesture_priority = mojom::GesturePriority::MAIN_ACTIVITY;
+  params->log_prefix =
+      base::StringPrintf("Cast App (%s)", config_.app_id().c_str());
+  params->is_remote_control_mode =
+      GetFlagEntry(feature::kCastCoreIsRemoteControlMode,
+                   config_.extra_features(), /*default_value=*/false);
   params->enabled_for_dev = IsEnabledForDev();
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
+  // cast_receiver::ApplicationControlsImpl constructs an instance of
+  // url_rewrite::UrlRequestRewriteRulesManager. CastWebContentsImpl should NOT
+  // construct its own instance, or UrlRequestRulesReceiver will crash when a
+  // second mojo connection is attempted.
   params->enable_url_rewrite_rules = false;
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
+  params->enable_touch_input = IsTouchInputAllowed();
+  params->log_js_console_messages =
+      GetFlagEntry(feature::kCastCoreLogJsConsoleMessages,
+                   config_.extra_features(), /*default_value=*/false);
+  params->allow_media_access =
+      GetFlagEntry(feature::kCastCoreAllowMediaAccess, config_.extra_features(),
+                   /*default_value=*/false);
+  params->force_720p_resolution =
+      GetFlagEntry(feature::kCastCoreForce720p, config_.extra_features(),
+                   /*default_value=*/false);
+  params->turn_on_screen =
+      GetFlagEntry(feature::kCastCoreTurnOnScreen, config_.extra_features(),
+                   /*default_value=*/false);
+  params->activity_id =
+      params->is_remote_control_mode ? params->session_id : config_.app_id();
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
@@ -645,30 +682,15 @@ base::Value::Dict RuntimeApplicationServiceImpl::GetRendererFeatures() const {
 
 bool RuntimeApplicationServiceImpl::IsAudioOnly() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry =
-      FindEntry(feature::kCastCoreIsAudioOnly, config_.extra_features());
-  if (!entry) {
-    return false;
-  }
-
-  CHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
-}
-
-bool RuntimeApplicationServiceImpl::IsRemoteControlMode() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreIsRemoteControlMode,
-                                config_.extra_features());
-  if (!entry) {
-    return false;
-  }
-
-  CHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
+  return GetFlagEntry(feature::kCastCoreIsAudioOnly, config_.extra_features(),
+                      /*default_value=*/false);
 }
 
 bool RuntimeApplicationServiceImpl::IsEnabledForDev() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (CAST_IS_DEBUG_BUILD()) {
+    return true;
+  }
   const auto* entry =
       FindEntry(feature::kCastCoreRendererFeatures, config_.extra_features());
   if (!entry) {
@@ -680,16 +702,24 @@ bool RuntimeApplicationServiceImpl::IsEnabledForDev() const {
                    entry->value().dictionary()) != nullptr;
 }
 
-bool RuntimeApplicationServiceImpl::GetEnforceFeaturePermissions() const {
+bool RuntimeApplicationServiceImpl::IsTouchInputAllowed() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
-                                config_.extra_features());
+  const auto* entry =
+      FindEntry(feature::kCastCoreRendererFeatures, config_.extra_features());
   if (!entry) {
     return false;
   }
+  CHECK(entry->value().has_dictionary());
+  const auto* enable_window_controls_entry =
+      FindEntry(feature::kEnableWindowControls, entry->value().dictionary());
+  return enable_window_controls_entry != nullptr;
+}
 
-  CHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
+bool RuntimeApplicationServiceImpl::IsFeaturePermissionsEnforced() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetFlagEntry(feature::kCastCoreEnforceFeaturePermissions,
+                      config_.extra_features(),
+                      /*default_value=*/false);
 }
 
 void RuntimeApplicationServiceImpl::InnerContentsCreated(
@@ -717,7 +747,7 @@ void RuntimeApplicationServiceImpl::InnerContentsCreated(
   inner_contents->SetAppProperties(
       runtime_application_->GetAppId(),
       runtime_application_->GetCastSessionId(), IsAudioOnly(), GURL(url),
-      GetEnforceFeaturePermissions(), std::vector<int>(),
+      IsFeaturePermissionsEnforced(), std::vector<int>(),
       std::vector<std::string>());
   CastWebContents::Observer::Observe(inner_contents);
 }

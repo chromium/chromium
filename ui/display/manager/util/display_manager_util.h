@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
@@ -28,7 +29,6 @@ class Size;
 
 namespace display {
 
-class DisplayMode;
 class DisplaySnapshot;
 class ManagedDisplayMode;
 class ManagedDisplayInfo;
@@ -39,7 +39,10 @@ using DisplayInfoList = std::vector<ManagedDisplayInfo>;
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
 
 // Returns a string describing |state|.
-std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state);
+std::string VrrStateToString(const base::flat_set<int64_t>& state);
+
+std::string RefreshRateOverrideToString(
+    const std::unordered_map<int64_t, float>& refresh_rate_override);
 
 // Returns the number of displays in |displays| that should be turned on, per
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
@@ -48,15 +51,6 @@ DISPLAY_MANAGER_EXPORT int GetDisplayPower(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     chromeos::DisplayPowerState state,
     std::vector<bool>* display_power);
-
-// Get a vector of DisplayMode pointers from |display|'s set of modes that
-// should be considered for seamless refresh rate switching. These will have the
-// same refresh rate as |matching_mode|, be no slower than 60 Hz, and no faster
-// than the display's native mode. The vector will be ordered by refresh rate,
-// with the slowest refresh rate at index 0.
-std::vector<const DisplayMode*> GetSeamlessRefreshRateModes(
-    const DisplaySnapshot& display,
-    const DisplayMode& matching_mode);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -76,7 +70,7 @@ DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactors(
     const ManagedDisplayMode& mode);
 
 // Returns a list of display zooms supported by the given |display_width|.
-DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDisplayWidth(
     const int display_width);
 
 // Returns a list of display zooms based on the provided |dsf| of the display.

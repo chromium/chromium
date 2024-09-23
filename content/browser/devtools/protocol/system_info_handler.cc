@@ -10,8 +10,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -77,7 +79,7 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
   template <typename T>
   void MaybeSetAuxAttribute(const char* name, T value) {
     if (in_aux_attributes_)
-      dictionary_.Set(name, value);
+      dictionary_->Set(name, value);
   }
 
   void AddInt64(const char* name, int64_t value) override {
@@ -130,7 +132,7 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
     in_aux_attributes_ = false;
   }
 
-  protocol::DictionaryValue& dictionary_;
+  const raw_ref<protocol::DictionaryValue, DanglingUntriaged> dictionary_;
   bool in_aux_attributes_ = false;
 };
 
@@ -375,7 +377,8 @@ std::unique_ptr<protocol::SystemInfo::ProcessInfo> MakeProcessInfo(
     const String& process_type) {
   std::unique_ptr<base::ProcessMetrics> pm =
       CreateProcessMetrics(process.Handle());
-  base::TimeDelta cpu_usage = pm->GetCumulativeCPUUsage();
+  const base::TimeDelta cpu_usage =
+      pm->GetCumulativeCPUUsage().value_or(base::TimeDelta());
 
   return SystemInfo::ProcessInfo::Create()
       .SetId(process.Pid())

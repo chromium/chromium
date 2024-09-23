@@ -211,11 +211,11 @@ public class CastMediaSource implements MediaSource {
 
     /**
      * @deprecated Legacy Cast Presentation URLs are deprecated in favor of cast: URLs.
-     * TODO(crbug.com/757358): remove this method when we drop support for legacy URLs.
-     * Helper method to create a MediaSource object from a legacy (https:) presentation URL.
+     *     TODO(crbug.com/40536148): remove this method when we drop support for legacy URLs. Helper
+     *     method to create a MediaSource object from a legacy (https:) presentation URL.
      * @param sourceId the source id for the Cast media source.
      * @return an initialized media source if the uri is a valid https presentation URL, null
-     * otherwise.
+     *     otherwise.
      */
     @Deprecated
     @Nullable

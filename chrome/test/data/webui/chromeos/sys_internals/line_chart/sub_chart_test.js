@@ -6,6 +6,7 @@ import {UnitLabelAlign} from 'chrome://sys-internals/line_chart/constants.js';
 import {DataSeries} from 'chrome://sys-internals/line_chart/data_series.js';
 import {SubChart} from 'chrome://sys-internals/line_chart/sub_chart.js';
 import {UnitLabel} from 'chrome://sys-internals/line_chart/unit_label.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertCloseTo} from '../test_util.js';
 

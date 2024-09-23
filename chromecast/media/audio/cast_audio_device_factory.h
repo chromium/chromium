@@ -24,10 +24,10 @@ class CastAudioDeviceFactory final : public blink::AudioDeviceFactory {
   CastAudioDeviceFactory();
   ~CastAudioDeviceFactory() override;
 
-  scoped_refptr<::media::SwitchableAudioRendererSink>
-  NewSwitchableAudioRendererSink(
+  scoped_refptr<::media::SwitchableAudioRendererSink> NewMixableSink(
       blink::WebAudioDeviceSourceType source_type,
       const blink::LocalFrameToken& frame_token,
+      const blink::FrameToken& main_frame_token,
       const ::media::AudioSinkParameters& params) override;
 };
 

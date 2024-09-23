@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/constants.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -121,6 +122,14 @@ void FakeAuthenticator::Resume() {
   std::move(resume_closure_).Run();
 }
 
+CredentialsType FakeAuthenticator::credentials_type() const {
+  return config_.credentials_type;
+}
+
+const Authenticator& FakeAuthenticator::implementing_authenticator() const {
+  return *this;
+}
+
 Authenticator::State FakeAuthenticator::state() const {
   EXPECT_LE(messages_, config_.round_trips * 2);
 
@@ -182,6 +191,7 @@ void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
   }
 
   ++messages_;
+  SubscribeRejectedAfterAcceptedIfNecessary();
   if (messages_ == pause_message_index_) {
     resume_closure_ = std::move(resume_callback);
     return;
@@ -215,6 +225,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> FakeAuthenticator::GetNextMessage() {
   }
 
   ++messages_;
+  SubscribeRejectedAfterAcceptedIfNecessary();
   return result;
 }
 
@@ -224,11 +235,28 @@ const std::string& FakeAuthenticator::GetAuthKey() const {
   return auth_key_;
 }
 
+const SessionPolicies* FakeAuthenticator::GetSessionPolicies() const {
+  EXPECT_EQ(ACCEPTED, state());
+  return nullptr;
+}
+
 std::unique_ptr<ChannelAuthenticator>
 FakeAuthenticator::CreateChannelAuthenticator() const {
   EXPECT_EQ(ACCEPTED, state());
   return std::make_unique<FakeChannelAuthenticator>(
       config_.action != REJECT_CHANNEL, config_.async);
+}
+
+void FakeAuthenticator::SubscribeRejectedAfterAcceptedIfNecessary() {
+  if (state() == ACCEPTED && config_.reject_after_accepted) {
+    reject_after_accepted_subscription_ =
+        config_.reject_after_accepted->Add(base::BindRepeating(
+            [](FakeAuthenticator* self) {
+              self->config_.action = REJECT;
+              self->NotifyStateChangeAfterAccepted();
+            },
+            base::Unretained(this)));
+  }
 }
 
 FakeHostAuthenticatorFactory::FakeHostAuthenticatorFactory(

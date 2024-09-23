@@ -25,12 +25,12 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
+namespace {
+
 using testing::_;
 using testing::Eq;
 using testing::SaveArg;
 using testing::StrictMock;
-
-namespace {
 
 // Creates the same fake http response for every request.
 std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
@@ -41,9 +41,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
   return response;
 }
 
-}  // namespace
-
-class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
+class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
  public:
   void SetUpOnMainThread() override {
     Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -51,7 +49,7 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
     fetcher_ =
         FastCheckoutCapabilitiesFetcherFactory::GetInstance()
             ->SetTestingSubclassFactoryAndUse(
-                profile, base::BindRepeating([](content::BrowserContext*) {
+                profile, base::BindOnce([](content::BrowserContext*) {
                   return std::make_unique<
                       StrictMock<MockFastCheckoutCapabilitiesFetcher>>();
                 }));
@@ -121,3 +119,5 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*fast_checkout_client(), OnNavigation);
   NavigateToUrl(shopping_cart_url);
 }
+
+}  // namespace

@@ -5,15 +5,46 @@
 #ifndef MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
-#include <stddef.h>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
-#include "media/filters/h264_bitstream_buffer.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/gpu/h264_dpb.h"
+#include "media/gpu/h264_ratectrl_rtc.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
 namespace media {
 class VaapiWrapper;
+
+struct H264RateControllerSettings;
+typedef H264RateControllerSettings H264RateControlConfigRTC;
+struct H264FrameParamsRTC;
+// Wrapper for the H264RateCtrlRTC that allows us to override methods for unit
+// testing.
+class H264RateControlWrapper {
+ public:
+  static std::unique_ptr<H264RateControlWrapper> Create(
+      const H264RateControlConfigRTC& config);
+
+  virtual ~H264RateControlWrapper();
+
+  virtual void UpdateRateControl(const H264RateControlConfigRTC& config);
+  virtual H264RateCtrlRTC::FrameDropDecision ComputeQP(
+      const H264FrameParamsRTC& frame_params);
+  //  GetQP() needs to be called after ComputeQP() to get the current frame's
+  //  computed QP.
+  virtual int GetQP() const;
+  virtual void PostEncodeUpdate(uint64_t encoded_frame_size,
+                                const H264FrameParamsRTC& frame_params);
+
+ protected:
+  explicit H264RateControlWrapper(std::unique_ptr<H264RateCtrlRTC> impl);
+  // For a mock class in unit tests.
+  H264RateControlWrapper();
+
+ private:
+  const std::unique_ptr<H264RateCtrlRTC> impl_;
+};
 
 // This class provides an H264 encoder functionality, generating stream headers,
 // managing encoder state, reference frames, and other codec parameters, while
@@ -45,11 +76,15 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint8_t min_qp;
     uint8_t max_qp;
 
-    // Maxium Number of Reference frames.
+    // Maximum Number of Reference frames.
     size_t max_num_ref_frames;
 
     // Maximum size of reference picture list 0.
     size_t max_ref_pic_list0_size;
+
+    // Type of content being encoded.
+    VideoEncodeAccelerator::Config::ContentType content_type =
+        VideoEncodeAccelerator::Config::ContentType::kCamera;
   };
 
   H264VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -70,6 +105,9 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 
+  static bool UseSoftwareRateController(
+      const VideoEncodeAccelerator::Config& config);
+
  private:
   class TemporalLayers;
 
@@ -78,18 +116,15 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
+  void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;
 
   // Fill current_sps_ and current_pps_ with current encoding state parameters.
   void UpdateSPS();
   void UpdatePPS();
 
-  // Generate packed SPS and PPS in packed_sps_ and packed_pps_, using values
-  // in current_sps_ and current_pps_.
-  void GeneratePackedSPS();
-  void GeneratePackedPPS();
-
   // Generate packed slice header from |pic_param|, |slice_param| and |pic|.
-  scoped_refptr<H264BitstreamBuffer> GeneratePackedSliceHeader(
+  void GeneratePackedSliceHeader(
+      H26xAnnexBBitstreamBuilder& packed_slice_header,
       const VAEncPictureParameterBufferH264& pic_param,
       const VAEncSliceParameterBufferH264& sliice_param,
       const H264Picture& pic);
@@ -98,8 +133,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
 
-  bool SubmitPackedHeaders(const H264BitstreamBuffer& packed_sps,
-                           const H264BitstreamBuffer& packed_pps);
+  bool SubmitPackedHeaders(const H26xAnnexBBitstreamBuilder& packed_sps,
+                           const H26xAnnexBBitstreamBuilder& packed_pps);
 
   bool SubmitFrameParameters(
       EncodeJob& job,
@@ -108,15 +143,20 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
       const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0,
-      const std::optional<size_t>& ref_frame_index);
+      const std::optional<size_t>& ref_frame_index,
+      const std::optional<int>& qp);
+
+  // Inject instance of |rate_ctrl_| for testing purposes.
+  void set_rate_ctrl_for_testing(
+      std::unique_ptr<H264RateControlWrapper> rate_ctrl);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
   // (those are expected to be added by the client as needed).
   H264SPS current_sps_;
-  scoped_refptr<H264BitstreamBuffer> packed_sps_;
+  std::optional<H26xAnnexBBitstreamBuilder> packed_sps_;
   H264PPS current_pps_;
-  scoped_refptr<H264BitstreamBuffer> packed_pps_;
+  std::optional<H26xAnnexBBitstreamBuilder> packed_pps_;
   bool submit_packed_headers_;
 
   // Current encoding parameters being used.
@@ -153,6 +193,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
 
   uint8_t num_temporal_layers_ = 1;
+
+  std::unique_ptr<H264RateControlWrapper> rate_ctrl_;
 };
 
 }  // namespace media

@@ -55,7 +55,8 @@ void Separator::SetOrientation(Orientation orientation) {
 ////////////////////////////////////////////////////////////////////////////////
 // Separator, View overrides:
 
-gfx::Size Separator::CalculatePreferredSize() const {
+gfx::Size Separator::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   gfx::Size size(kThickness, preferred_length_);
   if (orientation_ == Orientation::kHorizontal)
     size.Transpose();

@@ -49,7 +49,9 @@ class FakeBaseTabStripController : public TabStripController {
   void ExtendSelectionTo(int index) override;
   void ToggleSelected(int index) override;
   void AddSelectionFromAnchorTo(int index) override;
-  bool BeforeCloseTab(int index, CloseTabSource source) override;
+  void OnCloseTab(int index,
+                  CloseTabSource source,
+                  base::OnceCallback<void()> callback) override;
   void CloseTab(int index) override;
   void ToggleTabAudioMute(int index) override;
   void MoveTab(int from_index, int to_index) override;
@@ -88,12 +90,20 @@ class FakeBaseTabStripController : public TabStripController {
   bool HasVisibleBackgroundTabShapes() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
   bool CanDrawStrokes() const override;
+  bool IsFrameButtonsRightAligned() const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   Profile* GetProfile() const override;
   const Browser* GetBrowser() const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsLockedForOnTask() override;
+
+  // Sets OnTask locked for testing purposes. Only relevant for non-web browser
+  // scenarios.
+  void SetLockedForOnTask(bool locked) { on_task_locked_ = locked; }
+#endif
 
  private:
   void SetActiveIndex(int new_index);
@@ -104,6 +114,9 @@ class FakeBaseTabStripController : public TabStripController {
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
   std::optional<int> active_index_ = std::nullopt;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool on_task_locked_ = false;
+#endif
 
   tab_groups::TabGroupVisualData fake_group_data_;
   std::vector<std::optional<tab_groups::TabGroupId>> tab_groups_;

@@ -18,7 +18,6 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -217,7 +216,10 @@ public class WebappRegistry {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
-            if (scope.startsWith(origin)) return true;
+            if (scope.startsWith(origin)
+                    && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
+                return true;
+            }
         }
         return false;
     }
@@ -283,11 +285,12 @@ public class WebappRegistry {
             }
 
             WebappInfo webApkInfo = WebApkDataProvider.getPartialWebappInfo(scope);
-            WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+            WebApkSpecifics webApkSpecifics =
+                    WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
             if (webApkSpecifics == null) {
                 continue;
             }
-            webApkSpecificsList.add(WebApkSyncService.getWebApkSpecifics(webApkInfo));
+            webApkSpecificsList.add(webApkSpecifics);
         }
         return webApkSpecificsList;
     }
@@ -320,9 +323,19 @@ public class WebappRegistry {
      * restored from Sync on Chrome's 2nd run.
      */
     @CalledByNative
-    public static void setNeedsPwaRestore() {
+    public static void setNeedsPwaRestore(boolean needs) {
         ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
+                .writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, needs);
+    }
+
+    /**
+     * Gets the value of an Android Shared Preference bit which indicates whether or not there are
+     * WebAPKs that need to be restored from Sync on Chrome's 2nd run.
+     */
+    @CalledByNative
+    public static boolean getNeedsPwaRestore() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, false);
     }
 
     /**
@@ -392,11 +405,12 @@ public class WebappRegistry {
 
     /**
      * Deletes the data for all "old" web apps, as well as all WebAPKs that have been uninstalled in
-     * the last month. "Old" web apps have not been opened by the user in the last 3 months, or have
-     * had their last used time set to 0 by the user clearing their history. Cleanup is run, at
-     * most, once a month.
+     * the last month, and removes all WebAPKs from Sync which haven't been used in the last month.
+     * "Old" web apps have not been opened by the user in the last 3 months, or have had their last
+     * used time set to 0 by the user clearing their history. Cleanup is run, at most, once a month.
+     *
      * @param currentTime The current time which will be checked to decide if the task should be run
-     *                    and if a web app should be cleaned up.
+     *     and if a web app should be cleaned up.
      */
     public void unregisterOldWebapps(long currentTime) {
         if ((currentTime - mPreferences.getLong(KEY_LAST_CLEANUP, 0)) < FULL_CLEANUP_DURATION) {
@@ -419,6 +433,8 @@ public class WebappRegistry {
             storage.delete();
             it.remove();
         }
+
+        WebApkSyncService.removeOldWebAPKsFromSync(currentTime);
 
         mPreferences
                 .edit()
@@ -501,13 +517,8 @@ public class WebappRegistry {
     }
 
     private static SharedPreferences openSharedPreferences() {
-        // TODO(peconn): Don't open general WebappRegistry preferences when we just need the
-        // InstalledWebappPermissionStore.
-        // This is required to fix https://crbug.com/952841.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getApplicationContext()
-                    .getSharedPreferences(REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
-        }
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     private void clearStoragesForTesting() {

@@ -28,6 +28,13 @@ buildflag_header("mojo_buildflags") {
   ]
 }
 
+# Logically part of the "bindings_base" target, but split out separately so code
+# can use this without depending on all of Mojo bindings (and all of its
+# underlying implementation dependencies).
+source_set("default_construct_tag") {
+  sources = [ "default_construct_tag.h" ]
+}
+
 # Headers and sources which generated bindings can depend upon. No need for
 # other targets to depend on this directly: just use the "bindings" target.
 component("bindings_base") {
@@ -41,7 +48,6 @@ component("bindings_base") {
     "clone_traits.h",
     "connection_group.cc",
     "connection_group.h",
-    "default_construct_tag.h",
     "deprecated_interface_types_forward.h",
     "disconnect_reason.h",
     "enum_traits.h",
@@ -71,6 +77,8 @@ component("bindings_base") {
     "lib/message_header_validator.cc",
     "lib/message_internal.cc",
     "lib/message_internal.h",
+    "lib/message_size_estimator.cc",
+    "lib/message_size_estimator.h",
     "lib/pending_receiver_state.cc",
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
@@ -122,6 +130,7 @@ component("bindings_base") {
   defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]
 
   public_deps = [
+    ":default_construct_tag",
     ":mojo_buildflags",
     "//base",
     "//mojo/public/cpp/system",

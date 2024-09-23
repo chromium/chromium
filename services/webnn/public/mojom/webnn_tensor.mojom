@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_graph.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
+
+// A struct is used to represent MLTensorUsageFlags since Mojo does not have
+// the concept of an enum set (see https://crbug.com/40130879#comment11).
+struct TensorUsage {
+  bool web_gpu_interop;
+  // This tensor can be used with readTensor().
+  bool read;
+  // This tensor can be used with writeTensor().
+  bool write;
+};
+
+// Description of the WebNNTensor to create.
+struct TensorInfo {
+  OperandDescriptor descriptor;
+  TensorUsage usage;
+};
+
+// Represents the return value of `ReadTensor()`. Let it be
+// `buffer` if the buffer was successfully read back and `error` otherwise.
+union ReadTensorResult {
+  mojo_base.mojom.BigBuffer buffer;
+  Error error;
+};
+
+// WebNNTensor creates memory in the GPU process and is used by the renderer
+// process to execute or transfer data for the computational graph.
+// Tensor creation is performed by calling hardware accelerated OS machine
+// learning APIs.
+interface WebNNTensor {
+  // Called by the renderer process to carryout reading data from a
+  // `WebNNTensor`. The result callback contains a copy of the data being
+  // read.
+  ReadTensor() => (ReadTensorResult result);
+
+  // Called by the renderer process to carryout writing to a `WebNNTensor`.
+  // The src_buffer is a BigBuffer representing the data to write from.
+  WriteTensor(mojo_base.mojom.BigBuffer src_buffer);
+};

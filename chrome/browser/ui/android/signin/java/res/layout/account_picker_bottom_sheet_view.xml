@@ -50,6 +50,9 @@ found in the LICENSE file.
             <include
                 android:id="@+id/account_picker_state_auth_error"
                 layout="@layout/account_picker_state_auth_error" />
+            <include
+                android:id="@+id/account_picker_state_confirm_management"
+                layout="@layout/account_picker_state_confirm_management" />
         </ViewFlipper>
     </LinearLayout>
 </ScrollView>

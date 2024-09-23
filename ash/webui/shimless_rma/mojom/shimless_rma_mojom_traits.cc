@@ -228,10 +228,7 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
       NOTREACHED();
-      return MojomRmadErrorCode::kNotSet;
   }
-  NOTREACHED();
-  return MojomRmadErrorCode::kNotSet;
 }
 
 // static
@@ -384,10 +381,8 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
 
     case MojomRmadErrorCode::kNotSet:
       NOTREACHED();
-      return false;
   }
   NOTREACHED();
-  return false;
 }
 
 MojomOsUpdateOperation
@@ -424,10 +419,8 @@ EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::ToMojom(
     case update_engine::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
     case update_engine::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return MojomOsUpdateOperation::kIdle;
   }
   NOTREACHED();
-  return MojomOsUpdateOperation::kIdle;
 }
 
 // static
@@ -476,7 +469,6 @@ bool EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 MojomUpdateErrorCode
@@ -565,10 +557,7 @@ MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
     case rmad::RmadComponent::RMAD_COMPONENT_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomComponentType::kComponentUnknown;
   }
-  NOTREACHED();
-  return MojomComponentType::kComponentUnknown;
 }
 
 // static
@@ -645,10 +634,8 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
 
     case MojomComponentType::kComponentUnknown:
       NOTREACHED();
-      return false;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -671,10 +658,7 @@ EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomComponentRepairState::kRepairUnknown;
   }
-  NOTREACHED();
-  return MojomComponentRepairState::kRepairUnknown;
 }
 
 // static
@@ -700,10 +684,7 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
 
     default:
       NOTREACHED();
-      return false;
   }
-  NOTREACHED();
-  return false;
 }
 
 // static
@@ -736,10 +717,7 @@ EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomWpDisableAction::kUnknown;
   }
-  NOTREACHED();
-  return MojomWpDisableAction::kUnknown;
 }
 
 // static
@@ -766,10 +744,8 @@ bool EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::FromMojom(
 
     case MojomWpDisableAction::kUnknown:
       NOTREACHED();
-      return false;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -789,10 +765,7 @@ EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::ToMojom(
     case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomProvisioningStatus::kInProgress;
   }
-  NOTREACHED();
-  return MojomProvisioningStatus::kInProgress;
 }
 
 // static
@@ -814,7 +787,6 @@ bool EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -849,10 +821,7 @@ EnumTraits<MojomProvisioningError, ProtoProvisioningError>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomProvisioningError::kUnknown;
   }
-  NOTREACHED();
-  return MojomProvisioningError::kUnknown;
 }
 
 // static
@@ -900,7 +869,6 @@ bool EnumTraits<MojomProvisioningError, ProtoProvisioningError>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 bool StructTraits<ash::shimless_rma::mojom::ComponentDataView,
@@ -939,12 +907,7 @@ EnumTraits<MojomCalibrationInstruction, ProtoCalibrationInstruction>::ToMojom(
         RMAD_CALIBRATION_INSTRUCTION_NO_NEED_CALIBRATION:
     default:
       NOTREACHED();
-      return MojomCalibrationInstruction::
-          kCalibrationInstructionPlaceBaseOnFlatSurface;
   }
-  NOTREACHED();
-  return MojomCalibrationInstruction::
-      kCalibrationInstructionPlaceBaseOnFlatSurface;
 }
 
 // static
@@ -967,7 +930,6 @@ bool EnumTraits<MojomCalibrationInstruction, ProtoCalibrationInstruction>::
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -993,10 +955,7 @@ EnumTraits<MojomCalibrationOverallStatus, ProtoCalibrationOverallStatus>::
     case ProtoCalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomCalibrationOverallStatus::kCalibrationOverallComplete;
   }
-  NOTREACHED();
-  return MojomCalibrationOverallStatus::kCalibrationOverallComplete;
 }
 
 // static
@@ -1021,7 +980,6 @@ bool EnumTraits<MojomCalibrationOverallStatus, ProtoCalibrationOverallStatus>::
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -1043,10 +1001,7 @@ EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::ToMojom(
     case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomCalibrationStatus::kCalibrationWaiting;
   }
-  NOTREACHED();
-  return MojomCalibrationStatus::kCalibrationWaiting;
 }
 
 // static
@@ -1071,7 +1026,6 @@ bool EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static// static
@@ -1091,10 +1045,7 @@ EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::ToMojom(
     case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomFinalizationStatus::kInProgress;
   }
-  NOTREACHED();
-  return MojomFinalizationStatus::kInProgress;
 }
 
 bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
@@ -1115,7 +1066,6 @@ bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -1138,10 +1088,7 @@ EnumTraits<MojomFinalizationError, ProtoFinalizationError>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomFinalizationError::kUnknown;
   }
-  NOTREACHED();
-  return MojomFinalizationError::kUnknown;
 }
 
 // static
@@ -1169,7 +1116,6 @@ bool EnumTraits<MojomFinalizationError, ProtoFinalizationError>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 bool StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
@@ -1208,10 +1154,7 @@ EnumTraits<MojomUpdateRoFirmwareStatus, ProtoUpdateRoFirmwaretatus>::ToMojom(
     case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomUpdateRoFirmwareStatus::kUnknown;
   }
-  NOTREACHED();
-  return MojomUpdateRoFirmwareStatus::kUnknown;
 }
 
 bool EnumTraits<MojomUpdateRoFirmwareStatus, ProtoUpdateRoFirmwaretatus>::
@@ -1238,10 +1181,8 @@ bool EnumTraits<MojomUpdateRoFirmwareStatus, ProtoUpdateRoFirmwaretatus>::
       return true;
     case MojomUpdateRoFirmwareStatus::kUnknown:
       NOTREACHED();
-      return false;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -1260,10 +1201,7 @@ EnumTraits<MojomShutdownMethod, ProtoShutdownMethod>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomShutdownMethod::kUnknown;
   }
-  NOTREACHED();
-  return MojomShutdownMethod::kUnknown;
 }
 
 // static
@@ -1285,7 +1223,6 @@ bool EnumTraits<MojomShutdownMethod, ProtoShutdownMethod>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -1303,10 +1240,7 @@ MojomFeatureLevel EnumTraits<MojomFeatureLevel, ProtoFeatureLevel>::ToMojom(
 
     default:
       NOTREACHED();
-      return MojomFeatureLevel::kRmadFeatureLevelUnknown;
   }
-  NOTREACHED();
-  return MojomFeatureLevel::kRmadFeatureLevelUnknown;
 }
 
 // static
@@ -1328,7 +1262,6 @@ bool EnumTraits<MojomFeatureLevel, ProtoFeatureLevel>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

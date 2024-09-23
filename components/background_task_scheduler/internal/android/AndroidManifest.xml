@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="org.chromium.components.background_task_scheduler">
+  <application>
+    <!-- Background Task Scheduler job service -->
+    <service android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+    <!-- Background Task Scheduler alarm receiver -->
+    <receiver android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
+        android:exported="false" />
+  </application>
+</manifest>

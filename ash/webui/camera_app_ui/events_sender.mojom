@@ -1,0 +1,458 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.camera_app.mojom;
+
+import "ash/webui/camera_app_ui/types.mojom";
+
+// The type indicates how the camera app is launched.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LaunchType)
+enum LaunchType {
+  // The default option that most of the launches will fall in.
+  kDefault = 0,
+
+  // The camera app is launched by user query through Google Assistant.
+  kAssistant = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct StartSessionEventParams {
+  LaunchType launch_type;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(Mode)
+enum Mode {
+  kPhoto = 0,
+  kVideo = 1,
+  kScan = 2,
+  kPortrait = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(Facing)
+enum Facing {
+  kEnvironment = 0,
+  kUser = 1,
+  kExternal = 2,
+  kUnknown = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GridType)
+enum GridType {
+  kNone = 0,
+  k3X3 = 1,
+  k4X4 = 2,
+  kGolden = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(TimerType)
+enum TimerType {
+  kNone = 0,
+  k3Seconds = 1,
+  k10Seconds = 2,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ShutterType)
+enum ShutterType {
+  kUnknown = 0,
+  kAssistant = 1,
+  kKeyboard = 2,
+  kMouse = 3,
+  kTouch = 4,
+  kVolumeKey = 5,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(Pressure)
+enum Pressure {
+  kNominal = 0,
+  kFair = 1,
+  kSerious = 2,
+  kCritical = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AndroidIntentResultType)
+enum AndroidIntentResultType {
+  kNotIntent = 0,
+  kConfirmed = 1,
+  kCanceled = 2,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ResolutionLevel)
+enum ResolutionLevel {
+  kUnknown = 0,
+  k4K = 1,
+  kQuadHD = 2,
+  kFullHD = 3,
+  kHD = 4,
+  k360P = 5,
+  kFull = 6,
+  kMedium = 7,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AspectRatioSet)
+enum AspectRatioSet {
+  kOthers = 0,
+  k4To3 = 1,
+  k16To9 = 2,
+  kSquare = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct PhotoDetails {
+  bool is_video_snapshot;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RecordType)
+enum RecordType {
+  kNotRecording = 0,
+  kNormal = 1,
+  kGif = 2,
+  kTimelapse = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GifResultType)
+enum GifResultType {
+  kNotGif = 0,
+  kRetake = 1,
+  kShare = 2,
+  kSave = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct NormalVideoDetails {};
+
+struct GifVideoDetails {
+  GifResultType gif_result_type;
+};
+
+struct TimelapseVideoDetails {
+  int32 timelapse_speed;
+};
+
+union RecordTypeDetails {
+  NormalVideoDetails normal_video_details;
+  GifVideoDetails gif_video_details;
+  TimelapseVideoDetails timelapse_video_details;
+};
+
+struct VideoDetails {
+  bool is_muted;
+  int32 fps;
+  bool ever_paused;
+
+  // In milliseconds.
+  int32 duration;
+
+  RecordTypeDetails record_type_details;
+};
+
+union CaptureDetails {
+  PhotoDetails photo_details;
+  VideoDetails video_details;
+};
+
+struct CaptureEventParams {
+  Mode mode;
+  Facing facing;
+  bool is_mirrored;
+  GridType grid_type;
+  TimerType timer_type;
+  ShutterType shutter_type;
+  AndroidIntentResultType android_intent_result_type;
+  bool is_window_maximized;
+  bool is_window_portrait;
+  int32 resolution_width;
+  int32 resolution_height;
+  ResolutionLevel resolution_level;
+  AspectRatioSet aspect_ratio_set;
+  CaptureDetails? capture_details;
+  double zoom_ratio;
+};
+
+struct AndroidIntentEventParams {
+  Mode mode;
+  bool should_handle_result;
+  bool should_downscale;
+  bool is_secure;
+};
+
+struct OpenPTZPanelEventParams {
+  bool support_pan;
+  bool support_tilt;
+  bool support_zoom;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DocScanActionType)
+enum DocScanActionType {
+  kAddPage = 0,
+  kDeletePage = 1,
+  kFix = 2,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct DocScanActionEventParams {
+  DocScanActionType action_type;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DocScanResultType)
+enum DocScanResultType {
+  kCancel = 0,
+  kSaveAsPdf = 1,
+  kSaveAsPhoto = 2,
+  kShare = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+enum DocScanFixType {
+  kCorner = 1,
+  kRotation = 2,
+
+  // Next enum value should be 4.
+};
+
+struct DocScanResultEventParams {
+  DocScanResultType result_type;
+
+  // A bit mask of the combination of `DocScanFixType` representing what kinds
+  // of fix are applied.
+  uint32 fix_types_mask;
+
+  int32 fix_count;
+  int32 page_count;
+};
+
+struct MipiCameraModule {};
+
+struct UsbCameraModule {
+  // If it is in the top 20 module list, the format will be "[vid]:[pid]"
+  // (e.g. "abcd:1234"). Otherwise, it will be null.
+  string? id;
+};
+
+union CameraModule {
+  MipiCameraModule mipi_camera;
+  UsbCameraModule usb_camera;
+};
+
+struct OpenCameraEventParams {
+  CameraModule camera_module;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LowStorageActionType)
+enum LowStorageActionType {
+  kManageStorageAutoStop = 0,
+  kManageStorageCannotStart = 1,
+  kShowAutoStopDialog = 2,
+  kShowCannotStartDialog = 3,
+  kShowWarningMessage = 4,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct LowStorageActionEventParams {
+  LowStorageActionType action_type;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BarcodeContentType)
+enum BarcodeContentType {
+  kText = 0,
+  kUrl = 1,
+  kWiFi = 2,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct BarcodeDetectedEventParams {
+  BarcodeContentType content_type;
+  WifiSecurityType wifi_security_type;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PerfEventType)
+enum PerfEventType {
+  kCameraSwitching = 0,
+  kGifCapturePostProcessing = 1,
+  kLaunchingFromLaunchAppCold = 2,
+  kLaunchingFromLaunchAppWarm = 3,
+  kLaunchingFromWindowCreation = 4,
+  kModeSwitching = 5,
+  kPhotoCapturePostProcessingSaving = 6,
+  kPhotoCaptureShutter = 7,
+  // kPhotoTakingDeprecated = 8, // Deprecated
+  kPortraitModeCapturePostProcessingSaving = 9,
+  kTimelapseCapturePostProcessingSaving = 10,
+  kVideoCapturePostProcessingSaving = 11,
+  kSnapshotTaking = 12,
+  kDocumentCapturePostProcessing = 13,
+  kDocumentPdfSaving = 14,
+  kOcrScanning = 15,
+  kGifCaptureSaving = 16,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct PerfEventParams {
+  PerfEventType event_type;
+
+  // In milliseconds.
+  int32 duration;
+
+  // TODO(b/331904752): Use union for extra information since the members depend
+  // on `event_type`.
+  Facing facing;
+  int32 resolution_width;
+  int32 resolution_height;
+  // Only for kDocumentPdfSaving
+  uint32 page_count;
+  Pressure pressure;
+};
+
+enum UserBehavior {
+  kTakeNormalPhoto = 1,
+  kTakePortraitPhoto = 2,
+  kScanBarcode = 4,
+  kScanDocument = 8,
+  kRecordNormalVideo = 16,
+  kRecordGifVideo = 32,
+  kRecordTimelapseVideo = 64,
+  // Next enum value should be 128.
+};
+
+struct MemoryUsageEventParams {
+  // A bit mask of the combination of `UserBehavior` representing what kinds of
+  // behavior the user has performed in this session.
+  uint32 behaviors_mask;
+
+  // In bytes.
+  uint64 memory_usage;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(OcrEventType)
+enum OcrEventType {
+  kCopyText = 0,
+  kTextDetected = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
+struct OcrEventParams {
+  // The type of the event about the OCR feature.
+  OcrEventType event_type;
+  // Whether the language of detected text is the same as the user's primary
+  // language.
+  bool is_primary_language;
+  // The number of lines of the detected text.
+  uint32 line_count;
+  // The number of words of the detected text.
+  uint32 word_count;
+};
+
+// This interface is used by CCA to send metrics to CrOS Events.
+interface EventsSender {
+  // Sends an event to indicate a CCA session is started.
+  SendStartSessionEvent(StartSessionEventParams params);
+
+  // Sends an event to indicate a capture is happened.
+  SendCaptureEvent(CaptureEventParams params);
+
+  // Sends an event when an Android intent is handled by CCA.
+  SendAndroidIntentEvent(AndroidIntentEventParams params);
+
+  // Sends an event when the PTZ panel is opened.
+  SendOpenPTZPanelEvent(OpenPTZPanelEventParams params);
+
+  // Sends an event when a document scanning related action is performed.
+  SendDocScanActionEvent(DocScanActionEventParams params);
+
+  // Sends an event when the user finishes a document scanning session.
+  SendDocScanResultEvent(DocScanResultEventParams params);
+
+  // Sends an event when the camera is opened.
+  SendOpenCameraEvent(OpenCameraEventParams params);
+
+  // Sends an event when an action is performed due to low storage detection.
+  SendLowStorageActionEvent(LowStorageActionEventParams params);
+
+  // Sends an event when a barcode is detected on the preview.
+  SendBarcodeDetectedEvent(BarcodeDetectedEventParams params);
+
+  // Sends an event when a performance measurement is performed.
+  SendPerfEvent(PerfEventParams params);
+
+  // Sends an event when a barcode is detected and it is unsupported protocol.
+  SendUnsupportedProtocolEvent();
+
+  // Update the memory usage events parameter of the current camera session
+  // which will be sent when the camera session ends.
+  UpdateMemoryUsageEventParams(MemoryUsageEventParams params);
+
+  // Sends an event when OCR detects text or users copy the detected text.
+  SendOcrEvent(OcrEventParams params);
+};

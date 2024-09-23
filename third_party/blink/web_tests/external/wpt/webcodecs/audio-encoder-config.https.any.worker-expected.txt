@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Test that AudioEncoder.isConfigSupported() rejects invalid config: Bit rate present but equal to zero
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that AudioEncoder.isConfigSupported() rejects invalid config: Bitrate is too low for Opus
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that AudioEncoder.configure() rejects invalid config: Bit rate present but equal to zero
+  assert_throws_js: function "() => {\n          codec.configure(entry.config);\n        }" did not throw
+[FAIL] Test that AudioEncoder.configure() rejects invalid config: Bitrate is too low for Opus
+  assert_throws_js: function "() => {\n          codec.configure(entry.config);\n        }" did not throw
+Harness: the test ran to completion.
+

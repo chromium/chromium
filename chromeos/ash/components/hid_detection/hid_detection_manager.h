@@ -94,7 +94,7 @@ class HidDetectionManager {
   void StopHidDetection();
 
  protected:
-  HidDetectionManager();
+  HidDetectionManager() = default;
 
   // Implementation-specific version of StartHidDetection().
   virtual void PerformStartHidDetection() = 0;

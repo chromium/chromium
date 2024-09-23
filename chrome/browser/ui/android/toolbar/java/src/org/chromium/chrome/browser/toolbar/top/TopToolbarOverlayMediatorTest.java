@@ -14,9 +14,7 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,7 +24,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,8 +39,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TopToolbarOverlayMediatorTest {
     private TopToolbarOverlayMediator mMediator;
     private PropertyModel mModel;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private Context mContext;
 
@@ -126,13 +121,15 @@ public class TopToolbarOverlayMediatorTest {
     @Test
     public void testShadowVisibility_browserControlsOffsets() {
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         Assert.assertFalse(
                 "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(100, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
@@ -234,7 +231,9 @@ public class TopToolbarOverlayMediatorTest {
         Assert.assertTrue(
                 "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
 
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(100, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));

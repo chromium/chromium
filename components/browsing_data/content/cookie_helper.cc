@@ -62,7 +62,9 @@ CannedCookieHelper::~CannedCookieHelper() {
 
 void CannedCookieHelper::AddCookies(
     const content::CookieAccessDetails& details) {
-  for (const auto& cookie : details.cookie_list) {
+  for (const auto& cookie_with_access_result :
+       details.cookie_access_result_list) {
+    const auto& cookie = cookie_with_access_result.cookie;
     auto existing_slot = origin_cookie_set_.find(cookie);
     if (existing_slot != origin_cookie_set_.end()) {
       // |cookie| already exists in the set. We need to remove the old instance

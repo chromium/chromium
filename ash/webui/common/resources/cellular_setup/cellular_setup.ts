@@ -117,8 +117,6 @@ export class CellularSetupElement extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.addEventListener(
-        'backward-nav-requested', this.onBackwardNavRequested_);
     this.addEventListener('retry-requested', this.onRetryRequested_);
     this.addEventListener('forward-nav-requested', this.onForwardNavRequested_);
     this.addEventListener('cancel-requested', this.onCancelRequested_);
@@ -132,10 +130,6 @@ export class CellularSetupElement extends PolymerElement {
     }
   }
 
-  private onBackwardNavRequested_(): void {
-    this.currentPage_.navigateBackward();
-  }
-
   private onCancelRequested_(): void {
     this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
       bubbles: true,
@@ -144,7 +138,7 @@ export class CellularSetupElement extends PolymerElement {
   }
 
   private onRetryRequested_(): void {
-    // TODO(crbug.com/1093185): Add try again logic.
+    // TODO(crbug.com/40134918): Add try again logic.
   }
 
   private onForwardNavRequested_(): void {

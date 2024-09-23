@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -71,8 +71,8 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
 
-  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
-  // go through proper APIs (SyncService/SyncUserSettings).
+  // TODO(crbug.com/40265119): Instead of directly accessing internal sync
+  // prefs, go through proper APIs (SyncService/SyncUserSettings).
   browser_prefs_change_observer_.Add(
       syncer::prefs::internal::kSyncManaged,
       base::BindRepeating(
@@ -130,8 +130,8 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   BOOL syncDisabledAlertShown =
       [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
-  // TODO(crbug.com/1435427): Instead of directly accessing internal sync prefs,
-  // go through proper APIs (SyncService/SyncUserSettings).
+  // TODO(crbug.com/40265119): Instead of directly accessing internal sync
+  // prefs, go through proper APIs (SyncService/SyncUserSettings).
   BOOL isSyncDisabledByAdministrator =
       browser_->GetBrowserState()->GetPrefs()->GetBoolean(
           syncer::prefs::internal::kSyncManaged);
@@ -154,7 +154,7 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
 void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   bool backup_allowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
       prefs::kAllowChromeDataInBackups);
-  // TODO(crbug.com/1303652): If multiple profiles are supported on iOS, update
+  // TODO(crbug.com/40826035): If multiple profiles are supported on iOS, update
   // this logic to work with multiple profiles having possibly-possibly
   // conflicting preference values.
   base::FilePath storage_dir = base::apple::GetUserLibraryPath();

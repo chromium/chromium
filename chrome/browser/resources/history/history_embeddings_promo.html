@@ -1,0 +1,94 @@
+<style include="cr-hidden-style">
+  :host {
+    display: block;
+    box-sizing: border-box;
+  }
+
+  #promo {
+    display: flex;
+    align-items: center;
+    background: var(--cr-card-background-color);
+    border-radius: 8px;
+    box-shadow: var(--cr-card-shadow);
+    box-sizing: border-box;
+    margin-block-start: 16px;
+    margin-block-end: 8px;
+    padding: 32px 48px 32px 27px;
+    gap: 18px;
+    position: relative;
+    width: 100%;
+  }
+
+  #close {
+    --cr-icon-button-margin-end: 0;
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+  }
+
+  #illustration {
+    flex-shrink: 0;
+    width: 250px;
+    height: 121px;
+    background: url(images/history_embeddings_promo.svg)
+        no-repeat center center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #illustration {
+      background-image: url(images/history_embeddings_promo_dark.svg);
+    }
+  }
+
+  #text {
+    max-width: 573px;
+  }
+
+  #title {
+    margin-block-start: 0;
+    margin-block-end: 8px;
+    color: var(--cr-primary-text-color);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #description-first-block {
+    margin-block-end: 1em;
+  }
+
+  a {
+    color: var(--cr-link-color);
+    display: inline-block;
+  }
+</style>
+
+<div id="promo" role="dialog" aria-label="$i18n{historyEmbeddingsPromoLabel}"
+    hidden$="[[!shown_]]">
+  <cr-icon-button id="close" iron-icon="cr:close"
+      aria-label="$i18n{historyEmbeddingsPromoClose}"
+      on-click="onCloseClick_">
+  </cr-icon-button>
+
+  <div id="illustration" aria-hidden="true"></div>
+  <div id="text">
+    <h2 id="title">$i18n{historyEmbeddingsPromoHeading}</h2>
+    <div id="description">
+      <div id="description-first-block">$i18n{historyEmbeddingsPromoBody}</div>
+      <div>
+        $i18n{historyEmbeddingsDisclaimer}
+        <a href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank">
+          $i18n{historyEmbeddingsPromoSettingsLinkText}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -4,18 +4,23 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -59,10 +64,11 @@ class SaveToDriveMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
     browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
-    DriveTabHelper::CreateForWebState(web_state_.get());
+    DriveTabHelper::GetOrCreateForWebState(web_state_.get());
     FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
@@ -81,6 +87,9 @@ class SaveToDriveMediatorTest : public PlatformTest {
         manageStorageAlertHandler:manage_storage_alert_commands_handler_
                applicationHandler:application_commands_handler_
              accountPickerHandler:account_picker_commands_handler_
+                      prefService:browser_state_->GetPrefs()
+            accountManagerService:ChromeAccountManagerServiceFactory::
+                                      GetForBrowserState(browser_state_.get())
                      driveService:drive::DriveServiceFactory::
                                       GetForBrowserState(browser_state_.get())];
   }
@@ -92,7 +101,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
   }
 
   DriveTabHelper* GetDriveTabHelper() const {
-    return DriveTabHelper::FromWebState(web_state_.get());
+    return DriveTabHelper::GetOrCreateForWebState(web_state_.get());
   }
 
   drive::TestDriveService* GetTestDriveService() {
@@ -106,6 +115,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
@@ -165,12 +175,14 @@ TEST_F(SaveToDriveMediatorTest, DoesNotSaveToDriveIfDestinationIsFiles) {
 // when `startDownloadWithIdentity:` is invoked if the selected destination is
 // `FileDestination::kDrive`.
 TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
+  base::HistogramTester histogram_tester;
   FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
   DriveTabHelper* drive_helper = GetDriveTabHelper();
   // Set up test file uploader with a quit closure.
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
   auto test_file_uploader = std::make_unique<TestDriveFileUploader>(identity);
-  test_file_uploader->SetQuitClosure(task_environment_.QuitClosure());
+  test_file_uploader->SetFetchStorageQuotaQuitClosure(
+      task_environment_.QuitClosure());
   GetTestDriveService()->SetFileUploader(std::move(test_file_uploader));
   // No download/uploader task should have been started/created yet.
   EXPECT_EQ(nullptr, download_helper->download_task_started_);
@@ -192,4 +204,7 @@ TEST_F(SaveToDriveMediatorTest, SavesToDriveIfDestinationIsDrive) {
       drive_helper->GetUploadTaskForDownload(download_task_.get());
   ASSERT_NE(nullptr, upload_task);
   EXPECT_EQ(identity, upload_task->GetIdentity());
+  // Test that expected histograms were recorded.
+  histogram_tester.ExpectUniqueSample(kDriveStorageQuotaResultSuccessful, true,
+                                      1);
 }

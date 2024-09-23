@@ -8,6 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Proxy;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 final class ProxyBroadcastReceiver extends BroadcastReceiver {
     private final ProxyChangeListener mListener;
@@ -17,6 +20,7 @@ final class ProxyBroadcastReceiver extends BroadcastReceiver {
     }
 
     @Override
+    @RequiresApi(Build.VERSION_CODES.M)
     public void onReceive(Context context, final Intent intent) {
         if (intent.getAction().equals(Proxy.PROXY_CHANGE_ACTION)) {
             mListener.updateProxyConfigFromConnectivityManager(intent);

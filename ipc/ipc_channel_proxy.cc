@@ -291,7 +291,7 @@ void ChannelProxy::Context::OnRemoveFilter(MessageFilter* filter) {
     }
   }
 
-  NOTREACHED() << "filter to be removed not found";
+  NOTREACHED_IN_MIGRATION() << "filter to be removed not found";
 }
 
 // Called on the listener's thread

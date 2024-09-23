@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/skia_benchmarking_extension.h"
 
 #include <stddef.h>
@@ -106,7 +111,7 @@ class PicturePlaybackController : public SkPicture::AbortCallback {
   bool abort() override { return canvas_->CommandCount() > playback_count_; }
 
  private:
-  const raw_ref<const skia::BenchmarkingCanvas, ExperimentalRenderer> canvas_;
+  const raw_ref<const skia::BenchmarkingCanvas> canvas_;
   size_t playback_count_;
 };
 

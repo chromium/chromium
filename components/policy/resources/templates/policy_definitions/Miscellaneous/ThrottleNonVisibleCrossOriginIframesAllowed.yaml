@@ -1,4 +1,5 @@
 caption: Allows enabling throttling of non-visible, cross-origin iframes
+deprecated: true
 owners:
 - wjmaclean@chromium.org
 - creis@chromium.org
@@ -9,9 +10,9 @@ desc: |-
 future_on:
 - fuchsia
 supported_on:
-- android:110-
-- chrome.*:110-
-- chrome_os:110-
+- android:110-123
+- chrome.*:110-123
+- chrome_os:110-123
 features:
   dynamic_refresh: true
   per_profile: false

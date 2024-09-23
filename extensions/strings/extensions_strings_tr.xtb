@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx dosyası değiştirilemedi. Dosyanın kullanımda olup olmadığını kontrol edin.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
-<translation id="3369521687965833290">Uzantının paketi açılamıyor. Bir uzantının paketini güvenli bir şekilde açabilmek için profil dizininize, sürücü harfi ile başlayan ve bağlantı, bağlantı noktası veya sembolik bağlantı içermeyen bir yol olmalıdır. Profiliniz için böyle bir yol bulunmuyor.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> kimliğine sahip üretici firma tarafından sağlanan <ph name="PRODUCT_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Özel anahtara ilişkin giriş değeri geçerli bir yol olmalıdır.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> adlı uzantının yüklenmesini şart koşuyor. Uzantı kaldırılamaz.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> tarafından sağlanan <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Uzantının paketi açılamıyor. Bir uzantının paketini güvenli bir şekilde açabilmek için profil dizininize sembolik bağlantı içermeyen bir yol olmalıdır. Profiliniz için böyle bir yol bulunmuyor.</translation>
 <translation id="6322279351188361895">Özel anahtar okunamadı.</translation>
 <translation id="6391538222494443604">Giriş dizininin olması gerekir.</translation>
 <translation id="641087317769093025">Uzantı açılamadı</translation>

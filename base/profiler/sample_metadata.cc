@@ -4,30 +4,32 @@
 
 #include "base/profiler/sample_metadata.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/threading/thread_local.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 namespace {
 
-absl::optional<PlatformThreadId> GetPlatformThreadIdForScope(
+std::optional<PlatformThreadId> GetPlatformThreadIdForScope(
     SampleMetadataScope scope) {
   if (scope == SampleMetadataScope::kProcess)
-    return absl::nullopt;
+    return std::nullopt;
   return PlatformThread::CurrentId();
 }
 
 }  // namespace
 
-SampleMetadata::SampleMetadata(StringPiece name, SampleMetadataScope scope)
+SampleMetadata::SampleMetadata(std::string_view name, SampleMetadataScope scope)
     : name_hash_(HashMetricName(name)), scope_(scope) {}
 
 void SampleMetadata::Set(int64_t value) {
-  GetSampleMetadataRecorder()->Set(name_hash_, absl::nullopt,
+  GetSampleMetadataRecorder()->Set(name_hash_, std::nullopt,
                                    GetPlatformThreadIdForScope(scope_), value);
 }
 
@@ -37,7 +39,7 @@ void SampleMetadata::Set(int64_t key, int64_t value) {
 }
 
 void SampleMetadata::Remove() {
-  GetSampleMetadataRecorder()->Remove(name_hash_, absl::nullopt,
+  GetSampleMetadataRecorder()->Remove(name_hash_, std::nullopt,
                                       GetPlatformThreadIdForScope(scope_));
 }
 
@@ -46,16 +48,15 @@ void SampleMetadata::Remove(int64_t key) {
                                       GetPlatformThreadIdForScope(scope_));
 }
 
-ScopedSampleMetadata::ScopedSampleMetadata(StringPiece name,
+ScopedSampleMetadata::ScopedSampleMetadata(std::string_view name,
                                            int64_t value,
                                            SampleMetadataScope scope)
     : name_hash_(HashMetricName(name)),
       thread_id_(GetPlatformThreadIdForScope(scope)) {
-  GetSampleMetadataRecorder()->Set(name_hash_, absl::nullopt, thread_id_,
-                                   value);
+  GetSampleMetadataRecorder()->Set(name_hash_, std::nullopt, thread_id_, value);
 }
 
-ScopedSampleMetadata::ScopedSampleMetadata(StringPiece name,
+ScopedSampleMetadata::ScopedSampleMetadata(std::string_view name,
                                            int64_t key,
                                            int64_t value,
                                            SampleMetadataScope scope)
@@ -71,30 +72,29 @@ ScopedSampleMetadata::~ScopedSampleMetadata() {
 
 // This function is friended by StackSamplingProfiler so must live directly in
 // the base namespace.
-void ApplyMetadataToPastSamplesImpl(
-    TimeTicks period_start,
-    TimeTicks period_end,
-    uint64_t name_hash,
-    absl::optional<int64_t> key,
-    int64_t value,
-    absl::optional<PlatformThreadId> thread_id) {
+void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
+                                    TimeTicks period_end,
+                                    uint64_t name_hash,
+                                    std::optional<int64_t> key,
+                                    int64_t value,
+                                    std::optional<PlatformThreadId> thread_id) {
   StackSamplingProfiler::ApplyMetadataToPastSamples(
       period_start, period_end, name_hash, key, value, thread_id);
 }
 
 void ApplyMetadataToPastSamples(TimeTicks period_start,
                                 TimeTicks period_end,
-                                StringPiece name,
+                                std::string_view name,
                                 int64_t value,
                                 SampleMetadataScope scope) {
   return ApplyMetadataToPastSamplesImpl(
-      period_start, period_end, HashMetricName(name), absl::nullopt, value,
+      period_start, period_end, HashMetricName(name), std::nullopt, value,
       GetPlatformThreadIdForScope(scope));
 }
 
 void ApplyMetadataToPastSamples(TimeTicks period_start,
                                 TimeTicks period_end,
-                                StringPiece name,
+                                std::string_view name,
                                 int64_t key,
                                 int64_t value,
                                 SampleMetadataScope scope) {
@@ -106,11 +106,11 @@ void ApplyMetadataToPastSamples(TimeTicks period_start,
 void AddProfileMetadataImpl(uint64_t name_hash,
                             int64_t key,
                             int64_t value,
-                            absl::optional<PlatformThreadId> thread_id) {
+                            std::optional<PlatformThreadId> thread_id) {
   StackSamplingProfiler::AddProfileMetadata(name_hash, key, value, thread_id);
 }
 
-void AddProfileMetadata(StringPiece name,
+void AddProfileMetadata(std::string_view name,
                         int64_t key,
                         int64_t value,
                         SampleMetadataScope scope) {

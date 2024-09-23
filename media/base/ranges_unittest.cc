@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include <sstream>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const Ranges<T>& r) {
 // Helper method for asserting stringified form of |r| matches expectation.
 template<class T>
 static void ExpectRanges(const Ranges<T>& r,
-                         const base::StringPiece& expected_string) {
+                         const std::string_view expected_string) {
   std::stringstream ss;
   ss << r;
   ASSERT_EQ(ss.str(), expected_string);
@@ -115,7 +115,7 @@ TEST(RangesTest, IntersectionWith) {
   ASSERT_RANGES(a.IntersectionWith(b), "{ }");
   ASSERT_RANGES(b.IntersectionWith(a), "{ }");
 
-  // Test intersections with a completely overlaping range.
+  // Test intersections with a completely overlapping range.
   ASSERT_EQ(b.Add(-1, 13), 1u) << b;
   ASSERT_RANGES(a, "{ [0,1) [4,7) [10,12) }");
   ASSERT_RANGES(b, "{ [-1,13) }");

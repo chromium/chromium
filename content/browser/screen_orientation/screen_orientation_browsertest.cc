@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdlib.h>
 
 #include "base/command_line.h"
@@ -348,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   GURL second_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationManager delayer(shell()->web_contents(), second_url);
   shell()->LoadURL(second_url);
-  EXPECT_TRUE(delayer.WaitForRequestStart());
+  delayer.WaitForSpeculativeRenderFrameHostCreation();
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
@@ -519,8 +524,8 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
 
   // Start a prerender.
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper_.AddPrerender(prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
 
   // Shut down the prerendered page. It shouldn't trigger orientation unlock.
   test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);

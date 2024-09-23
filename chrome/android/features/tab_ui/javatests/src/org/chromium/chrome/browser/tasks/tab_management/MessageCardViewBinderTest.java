@@ -15,16 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -62,7 +62,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
 
         ViewGroup view = new LinearLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view);
 
@@ -107,15 +107,6 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     public void testBindingDescription_WithoutTemplate() {
         mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, "test");
         assertEquals("test", getDescriptionText());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testBindingDescription_WithTemplate() {
-        mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, "%s template");
-        mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, "test");
-        assertEquals("test template", getDescriptionText());
     }
 
     @Test
@@ -181,9 +172,9 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @SmallTest
     public void testUpdateMessageCardColor() {
-        TextView description = (TextView) mItemView.findViewById(R.id.description);
-        TextView actionButton = (TextView) mItemView.findViewById(R.id.action_button);
-        ImageView closeButton = (ImageView) mItemView.findViewById(R.id.close_button);
+        TextView description = mItemView.findViewById(R.id.description);
+        TextView actionButton = mItemView.findViewById(R.id.action_button);
+        ImageView closeButton = mItemView.findViewById(R.id.close_button);
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, false);
         assertThat(
@@ -213,7 +204,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
         super.tearDownTest();
     }
 }

@@ -30,16 +30,22 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/chromeos/edu_coexistence:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
   ts_definitions = [
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+    "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",

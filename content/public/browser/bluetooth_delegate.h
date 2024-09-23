@@ -42,7 +42,7 @@ class RenderFrameHost;
 // Provides an interface for managing device permissions for Web Bluetooth and
 // Web Bluetooth Scanning API. An embedder may implement this to manage these
 // permissions.
-// TODO(https://crbug.com/1048325): There are several Bluetooth related methods
+// TODO(crbug.com/40117221): There are several Bluetooth related methods
 // in WebContentsDelegate and ContentBrowserClient that can be moved into this
 // class.
 class CONTENT_EXPORT BluetoothDelegate {
@@ -161,6 +161,9 @@ class CONTENT_EXPORT BluetoothDelegate {
   virtual void RevokeDevicePermissionWebInitiated(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) = 0;
+
+  // This should return true if |frame| is allowed to use bluetooth.
+  virtual bool MayUseBluetooth(RenderFrameHost* frame) = 0;
 
   // This should return true if |frame| has permission to access |service| from
   // the device with |device_id|.

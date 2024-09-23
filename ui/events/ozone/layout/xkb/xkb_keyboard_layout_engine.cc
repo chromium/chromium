@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 #include <stddef.h>
 #include <xkbcommon/xkbcommon-names.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -683,6 +690,10 @@ XkbKeyboardLayoutEngine::~XkbKeyboardLayoutEngine() {
   }
 }
 
+std::string_view XkbKeyboardLayoutEngine::GetLayoutName() const {
+  return current_layout_name_;
+}
+
 bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
@@ -691,21 +702,16 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 #endif
 }
 
-bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
-    const std::string& layout_name) {
-  return SetCurrentLayoutByNameWithCallback(layout_name, base::DoNothing());
-}
-
-bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
+void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
       SetKeymap(entry.keymap);
-      std::move(callback).Run();
-      return true;
+      std::move(callback).Run(true);
+      return;
     }
   }
   LoadKeymapCallback reply_callback =
@@ -720,11 +726,10 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
 #else
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
-    base::OnceClosure callback,
+    base::OnceCallback<void(bool)> callback,
     const std::string& layout_name,
     std::unique_ptr<char, base::FreeDeleter> keymap_str) {
   if (keymap_str) {
@@ -735,7 +740,9 @@ void XkbKeyboardLayoutEngine::OnKeymapLoaded(
     xkb_keymaps_.push_back(entry);
     if (layout_name == current_layout_name_) {
       SetKeymap(keymap);
-      std::move(callback).Run();
+      std::move(callback).Run(true);
+    } else {
+      std::move(callback).Run(false);
     }
   } else {
     LOG(FATAL) << "Keymap file failed to load: " << layout_name;
@@ -972,7 +979,7 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
-    const std::optional<std::vector<base::StringPiece>>& modifiers) const {
+    const std::optional<std::vector<std::string_view>>& modifiers) const {
   // Look up all candidates.
   auto range = std::equal_range(
       xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},

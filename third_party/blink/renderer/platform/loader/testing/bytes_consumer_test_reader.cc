@@ -22,11 +22,8 @@ void BytesConsumerTestReader::OnStateChange() {
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     if (result == BytesConsumer::Result::kOk) {
-      // We don't use |available| as-is to test cases where endRead
-      // is called with a number smaller than |available|. We choose 3
-      // because of the same reasons as Reader::onStateChange.
       wtf_size_t read =
-          static_cast<wtf_size_t>(std::min(static_cast<size_t>(3), available));
+          static_cast<wtf_size_t>(std::min(max_chunk_size_, available));
       data_.Append(buffer, read);
       result = consumer_->EndRead(read);
     }

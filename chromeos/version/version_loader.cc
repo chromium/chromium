@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -108,7 +109,7 @@ std::string ParseFirmware(const std::string& contents) {
   //   fixed. So we just match kFirmwarePrefix at the start of the line and find
   //   the first character that is not "|" or space
 
-  base::StringPiece firmware_prefix(kFirmwarePrefix);
+  std::string_view firmware_prefix(kFirmwarePrefix);
   for (const std::string& line : base::SplitString(
            contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (base::StartsWith(line, firmware_prefix,

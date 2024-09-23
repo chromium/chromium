@@ -128,6 +128,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   std::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   bool ShouldContainerHandleDragEvents() override;
+  bool IsAboveTheFold(AppListItemView* item_view) override;
 
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;

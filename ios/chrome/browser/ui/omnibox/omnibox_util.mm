@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -23,7 +22,7 @@ const CGFloat kSymbolLocationBarPointSize = 10;
 
 OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     AutocompleteMatchType::Type type) {
-  // TODO(crbug.com/1122669): Handle trending zero-prefix suggestions by
+  // TODO(crbug.com/40716245): Handle trending zero-prefix suggestions by
   // checking the match subtype similar to AutocompleteMatch::GetVectorIcon().
 
   switch (type) {
@@ -68,7 +67,9 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::NUM_TYPES:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
-      NOTREACHED();
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS:
+    case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+      DUMP_WILL_BE_NOTREACHED();
       return OmniboxSuggestionIconType::kDefaultFavicon;
   }
 }
@@ -89,7 +90,7 @@ UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
     return nil;
   }
 
-  if (iconType == DANGEROUS) {
+  if (iconType == LocationBarSecurityIconType::DANGEROUS) {
     return CustomSymbolTemplateWithPointSize(name, kSymbolLocationBarPointSize);
   } else {
     return DefaultSymbolTemplateWithPointSize(name,
@@ -102,25 +103,22 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
     case security_state::NONE:
-      return INFO;
+      return LocationBarSecurityIconType::INFO;
     case security_state::DANGEROUS:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kRedInterstitialFacelift)) {
-        return DANGEROUS;
-      }
-      return NOT_SECURE_WARNING;
+      return LocationBarSecurityIconType::DANGEROUS;
     case security_state::WARNING:
-      return NOT_SECURE_WARNING;
+      return LocationBarSecurityIconType::NOT_SECURE_WARNING;
     case security_state::SECURE:
-      return base::FeatureList::IsEnabled(kOmniboxLockIconEnabled) ? SECURE
-                                                                   : NONE;
+      return base::FeatureList::IsEnabled(kOmniboxLockIconEnabled)
+                 ? LocationBarSecurityIconType::SECURE
+                 : LocationBarSecurityIconType::NONE;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "SECURE_WITH_POLICY_INSTALLED_CERT is used only on ChromeOS";
-      return NONE;
+      return LocationBarSecurityIconType::NONE;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
-      return LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;
+      NOTREACHED_IN_MIGRATION();
+      return LocationBarSecurityIconType::LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;
   }
 }
 

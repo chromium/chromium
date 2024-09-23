@@ -22,9 +22,7 @@ class CreditCardTestApi {
     credit_card_->issuer_id_ = std::string(network);
   }
 
-  void set_network_for_virtual_card(std::string_view network) {
-    DCHECK_EQ(CreditCard::RecordType::kVirtualCard,
-              credit_card_->record_type());
+  void set_network_for_card(std::string_view network) {
     credit_card_->network_ = std::string(network);
   }
 

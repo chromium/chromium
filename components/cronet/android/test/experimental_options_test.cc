@@ -9,7 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "components/cronet/url_request_context_config.h"
 #include "net/base/address_family.h"
@@ -21,6 +20,9 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/url_request/url_request_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h"
 
 using base::android::JavaParamRef;
 

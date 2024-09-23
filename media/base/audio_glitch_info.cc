@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 
 namespace media {
 
@@ -19,8 +20,16 @@ std::string AudioGlitchInfo::ToString() const {
        ", count: ", base::NumberToString(count)});
 }
 
+void AudioGlitchInfo::MaybeAddTraceEvent() const {
+  if (!count) {
+    return;
+  }
+  TRACE_EVENT_INSTANT("audio", "Glitch!", "glitch count", count,
+                      "glitch duration", duration);
+}
+
 // static
-AudioGlitchInfo AudioGlitchInfo::SingleBoundedGlitch(
+AudioGlitchInfo AudioGlitchInfo::SingleBoundedSystemGlitch(
     const base::TimeDelta duration,
     const Direction direction) {
   CHECK(duration.is_positive());

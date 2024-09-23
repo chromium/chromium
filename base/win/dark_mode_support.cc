@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/native_library.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 
 namespace {
@@ -57,8 +58,10 @@ const DarkModeSupport& GetDarkModeSupport() {
       [] {
         DarkModeSupport dark_mode_support;
         auto* os_info = base::win::OSInfo::GetInstance();
-        // Dark mode only works on WIN10_RS5 and up.
-        if (os_info->version() >= base::win::Version::WIN10_RS5) {
+        // Dark mode only works on WIN10_RS5 and up. uxtheme.dll depends on
+        // GDI32.dll which is not available under win32k lockdown sandbox.
+        if (os_info->version() >= base::win::Version::WIN10_RS5 &&
+            base::win::IsUser32AndGdi32Available()) {
           base::NativeLibraryLoadError error;
           HMODULE ux_theme_lib = base::PinSystemLibrary(L"uxtheme.dll", &error);
           DCHECK(!error.code);

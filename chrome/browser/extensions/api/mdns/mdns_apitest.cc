@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
@@ -146,9 +147,7 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterTooManyListeners) {
               RemoveObserver(A<DnsSdRegistry::DnsSdObserver*>()))
       .Times(1);
 
-  EXPECT_TRUE(RunExtensionTest("mdns/api-packaged-apps",
-                               {.launch_as_platform_app = true}))
-      << message_;
+  EXPECT_TRUE(RunExtensionTest("mdns/too_many_listeners")) << message_;
 }
 
 // Test loading extension and registering multiple listeners.

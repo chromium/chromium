@@ -8,11 +8,17 @@
 #include <map>
 #include <memory>
 
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace media {
 
@@ -27,6 +33,19 @@ class CAPTURE_EXPORT CameraBufferFactory {
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace());
+
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImageFromGmbHandle(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace());
+
   virtual ChromiumPixelFormat ResolveStreamBufferFormat(
       cros::mojom::HalPixelFormat hal_format,
       gfx::BufferUsage usage);
@@ -35,6 +54,8 @@ class CAPTURE_EXPORT CameraBufferFactory {
   std::map<std::pair<cros::mojom::HalPixelFormat, gfx::BufferUsage>,
            ChromiumPixelFormat>
       resolved_format_usages_;
+
+  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
 };
 
 }  // namespace media

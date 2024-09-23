@@ -51,7 +51,6 @@
       "content/test/data/.*",
       "content/test/gpu/.*",
       "extensions/test/data/.*",
-      "gpu/gles2_conform_support/gles2_conform_test_expectations.txt",
       "media/test/data/.*",
       "mojo/tools/.*",
       "net/data/.*",
@@ -67,16 +66,22 @@
       "third_party/vulkan-deps/DEPS",
       "third_party/web-animations-js/.*(css|html|js)",
       "third_party/zlib/google/test/data/.*",
-      "tools/android/avd/proto/creation/.*",
       "tools/clang/scripts/update.py",
       "tools/rust/update_rust.py",
       "tools/grit/.*",
       "tools/mb/.*",
-      "tools/metrics/histograms/histograms.xml",
+      "tools/msan/.*",
       "tools/perf/.*",
       "tools/telemetry/.*",
       "tools/traffic_annotation/scripts/.*",
+      "tools/ubsan/.*",
       "ui/webui/resources/.*(css|html|js)"
+    ]
+  },
+  "dawn_chromium_presubmit": {
+    "exclusions": [
+      "third_party/dawn/webgpu-cts/compat-expectations.txt",
+      "third_party/dawn/webgpu-cts/expectations.txt"
     ]
   },
   "fuchsia": {

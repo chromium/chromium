@@ -10,7 +10,11 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace password_manager {
 class PasswordStoreInterface;
@@ -21,7 +25,7 @@ class DualReadingListModel;
 }  // namespace reading_list
 
 namespace sync_bookmarks {
-class BookmarkSyncService;
+class BookmarkModelView;
 }  // namespace sync_bookmarks
 
 namespace syncer {
@@ -32,15 +36,14 @@ namespace browser_sync {
 
 // Helper class to query information about existing local data (like count,
 // domains etc.) for requested data types.
-// TODO(crbug.com/1489660): Look into reducing code duplicacy between
+// TODO(crbug.com/40074182): Look into reducing code duplicacy between
 // LocalDataQueryHelper and LocalDataMigrationHelper.
 class LocalDataQueryHelper {
  public:
   LocalDataQueryHelper(
       password_manager::PasswordStoreInterface* profile_password_store,
       password_manager::PasswordStoreInterface* account_password_store,
-      sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
-      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      bookmarks::BookmarkModel* bookmark_model,
       reading_list::DualReadingListModel* dual_reading_list_model);
   ~LocalDataQueryHelper();
 
@@ -49,9 +52,9 @@ class LocalDataQueryHelper {
   // via the callback `callback` once the information for all the data types in
   // `types` is available.
   void Run(
-      syncer::ModelTypeSet types,
+      syncer::DataTypeSet types,
       base::OnceCallback<void(
-          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback);
+          std::map<syncer::DataType, syncer::LocalDataDescription>)> callback);
 
  private:
   class LocalDataQueryRequest;
@@ -59,19 +62,23 @@ class LocalDataQueryHelper {
   void OnRequestComplete(
       LocalDataQueryRequest* request,
       base::OnceCallback<void(
-          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback);
+          std::map<syncer::DataType, syncer::LocalDataDescription>)> callback);
 
   // To keep track of all ongoing requests.
   std::list<std::unique_ptr<LocalDataQueryRequest>> request_list_;
 
   // For PASSWORDS.
-  raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
-  raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
   // For BOOKMARKS.
-  raw_ptr<sync_bookmarks::BookmarkSyncService> local_bookmark_sync_service_;
-  raw_ptr<sync_bookmarks::BookmarkSyncService> account_bookmark_sync_service_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      local_bookmark_model_view_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      account_bookmark_model_view_;
   // For READING_LIST.
-  raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  const raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
 };
 
 // Helper class to move all local data to account for the requested data types.
@@ -80,8 +87,7 @@ class LocalDataMigrationHelper {
   LocalDataMigrationHelper(
       password_manager::PasswordStoreInterface* profile_password_store,
       password_manager::PasswordStoreInterface* account_password_store,
-      sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
-      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      bookmarks::BookmarkModel* bookmark_model,
       reading_list::DualReadingListModel* dual_reading_list_model);
   ~LocalDataMigrationHelper();
 
@@ -89,7 +95,14 @@ class LocalDataMigrationHelper {
   // types. This is an asynchronous method which moves the local data for all
   // `types` to the account store locally. Upload to the server will happen as
   // part of the regular commit process, and is NOT part of this method.
-  void Run(syncer::ModelTypeSet types);
+  void Run(syncer::DataTypeSet types);
+
+  // Returns the set of types that are in the middle of an ongoing
+  // asynchronous migration, previously triggered via Run(). Normally,
+  // migrations are very fast as it is purely a local move between local
+  // storage and account storage (which completes ahead of the data actually
+  // being uploaded to sync servers).
+  syncer::DataTypeSet GetTypesWithOngoingMigrations() const;
 
  private:
   class LocalDataMigrationRequest;
@@ -100,13 +113,17 @@ class LocalDataMigrationHelper {
   std::list<std::unique_ptr<LocalDataMigrationRequest>> request_list_;
 
   // For PASSWORDS.
-  raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
-  raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
   // For BOOKMARKS.
-  raw_ptr<sync_bookmarks::BookmarkSyncService> local_bookmark_sync_service_;
-  raw_ptr<sync_bookmarks::BookmarkSyncService> account_bookmark_sync_service_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      local_bookmark_model_view_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      account_bookmark_model_view_;
   // For READING_LIST.
-  raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  const raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
 };
 
 }  // namespace browser_sync

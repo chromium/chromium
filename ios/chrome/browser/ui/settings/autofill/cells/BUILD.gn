@@ -4,7 +4,7 @@
 
 source_set("cells") {
   sources = [
-    "autofill_address_profile_source.h",
+    "autofill_address_profile_record_type.h",
     "autofill_card_item.h",
     "autofill_card_item.mm",
     "autofill_profile_item.h",
@@ -15,10 +15,10 @@ source_set("cells") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",

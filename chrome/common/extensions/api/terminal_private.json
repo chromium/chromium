@@ -238,10 +238,6 @@
               "name": "info",
               "type": "object",
               "properties": {
-                "alternative_emulator": {
-                  "description": "True if alternative emulator flag is enabled.",
-                  "type": "boolean"
-                },
                 "tast": {
                   "description": "True if tast extension is installed.",
                   "type": "boolean"

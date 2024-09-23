@@ -79,7 +79,47 @@ luci.realm(
     ],
 )
 
+# @project realm.
+luci.realm(
+    name = "@project",
+    bindings = [
+        # Allow everyone (including non-logged-in users) to see chromium tree status.
+        luci.binding(
+            roles = "role/treestatus.limitedReader",
+            groups = [
+                "all",
+            ],
+        ),
+        # Only allow Googlers to see PII.
+        luci.binding(
+            roles = "role/treestatus.reader",
+            groups = [
+                "googlers",
+            ],
+            users = [
+                "luci-notify-dev@appspot.gserviceaccount.com",
+            ],
+        ),
+        # Only allow Googlers and service accounts.
+        luci.binding(
+            roles = "role/treestatus.writer",
+            groups = [
+                "googlers",
+            ],
+            users = [
+                "luci-notify-dev@appspot.gserviceaccount.com",
+            ],
+        ),
+    ],
+)
+
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
+
+# Test buildbucket v2 pubsub with findit-staging
+# TODO(b/352560718): Delete once testing is done.
+luci.buildbucket_notification_topic(
+    name = "projects/findit-for-me-staging/topics/buildbucket_build_staging_test",
+)
 
 exec("//dev/swarming.star")
 

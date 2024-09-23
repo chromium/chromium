@@ -9,13 +9,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -217,7 +217,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // to the callback. Will return a QuotaError to the callback on operation
   // failure.
   //
-  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // TODO(crbug.com/40181609): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
   virtual void CreateBucketForTesting(
       const blink::StorageKey& storage_key,
@@ -352,8 +352,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // deletion, `callback` may be called with a kErrorAbort status.
   // TODO(estade): Consider removing the status code from `callback` as it's
   // unused outside of tests.
-  // TODO(crbug/1456643): DEPRECATED please prefer using `DeleteStorageKeyData`.
-  // This should be removed as part of `CookiesTreeModel` deprecation.
+  // TODO(crbug.com/40273188): DEPRECATED please prefer using
+  // `DeleteStorageKeyData`. This should be removed as part of
+  // `CookiesTreeModel` deprecation.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       StatusCallback callback);
@@ -587,7 +588,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
+      const base::flat_set<blink::mojom::StorageType>& storage_types);
 
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
@@ -744,7 +745,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Evaluates disk statistics to identify storage pressure
   // (low disk space availability) and starts the storage
   // pressure event dispatch if appropriate.
-  // TODO(crbug.com/1088004): Implement UsageAndQuotaInfoGatherer::Completed()
+  // TODO(crbug.com/40133191): Implement UsageAndQuotaInfoGatherer::Completed()
   // to use DetermineStoragePressure().
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
@@ -831,7 +832,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Iterating over this list is almost always incorrect. Most algorithms should
   // iterate over an entry in |client_types_|.
   //
-  // TODO(crbug.com/1016065): Handle Storage Service crashes. Will likely entail
+  // TODO(crbug.com/40103974): Handle Storage Service crashes. Will likely
+  // entail
   //                          using a mojo::RemoteSet here.
   std::vector<mojo::Remote<mojom::QuotaClient>> clients_for_ownership_;
 

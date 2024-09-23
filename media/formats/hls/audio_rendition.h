@@ -84,6 +84,8 @@ class MEDIA_EXPORT AudioRendition {
 class MEDIA_EXPORT AudioRenditionGroup
     : public base::RefCounted<AudioRenditionGroup> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit AudioRenditionGroup(base::PassKey<MultivariantPlaylist>,
                                std::string id);
   AudioRenditionGroup(const AudioRenditionGroup&) = delete;
@@ -110,7 +112,7 @@ class MEDIA_EXPORT AudioRenditionGroup
 
   // Looks up the renditions within this group identified by the given name.
   // If no such renditions exists, returns `nullptr`.
-  const AudioRendition* GetRendition(base::StringPiece name) const;
+  const AudioRendition* GetRendition(std::string_view name) const;
 
   // Returns the rendition which was specified with the DEFAULT=YES attribute.
   // If no such rendition was in this group, returns `nullptr`;
@@ -138,4 +140,4 @@ class MEDIA_EXPORT AudioRenditionGroup
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_AUDIO_RENDITION_H_

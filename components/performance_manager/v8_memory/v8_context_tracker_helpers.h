@@ -25,17 +25,11 @@ class V8ContextDescription;
 
 namespace v8_memory {
 
-// Helper function to convert a WorkerToken to an ExecutionContext token.
-// TODO(crbug.com/1126285): There should be automatic type conversion for this
-// added to MultiToken<>.
-[[nodiscard]] blink::ExecutionContextToken ToExecutionContextToken(
-    const blink::WorkerToken& token);
-
 // Determines if the provided frame has a cross-process parent frame.
 [[nodiscard]] bool HasCrossProcessParent(const FrameNode* frame_node);
 
 // Determines if a string is a valid extension ID.
-// TODO(crbug.com/1096617): The extension ID should be strongly typed, with
+// TODO(crbug.com/40136290): The extension ID should be strongly typed, with
 // built-in validation, mojo type-mapping, etc. Ideally this would be done
 // directly in extensions/common/extension_id.h.
 [[nodiscard]] bool IsValidExtensionId(const std::string& s);

@@ -4,6 +4,7 @@
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -25,14 +26,27 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   AutofillSnackbarControllerImpl& operator=(
       const AutofillSnackbarControllerImpl&) = delete;
 
-  // Show the snackbar.
-  void Show(AutofillSnackbarType autofill_snackbar_type);
+  // The default duration for which the snackbar should be shown.
+  static constexpr base::TimeDelta kDefaultSnackbarDuration = base::Seconds(10);
+
+  // Shows the snackbar.
+  virtual void Show(AutofillSnackbarType autofill_snackbar_type);
+
+  // Similar to Show() but includes a duration and callback parameter. The
+  // duration parameter controls how long the snackbar will be shown before it
+  // is automatically dismissed. The callback parameter is an optional parameter
+  // which is called when the snackbar is dismissed.
+  virtual void ShowWithDurationAndCallback(
+      AutofillSnackbarType autofill_snackbar_type,
+      base::TimeDelta snackbar_duration,
+      std::optional<base::OnceClosure> on_dismiss_callback);
 
   // AutofillSnackbarController:
   void OnActionClicked() override;
   void OnDismissed() override;
   std::u16string GetMessageText() const override;
   std::u16string GetActionButtonText() const override;
+  base::TimeDelta GetDuration() const override;
   content::WebContents* GetWebContents() const override;
 
  private:
@@ -50,6 +64,12 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   // The type of the progress dialog that is being displayed.
   AutofillSnackbarType autofill_snackbar_type_ =
       AutofillSnackbarType::kUnspecified;
+
+  // The duration for which the snackbar should be shown before being dismissed.
+  base::TimeDelta autofill_snackbar_duration_ = kDefaultSnackbarDuration;
+
+  // Callback to run after the snackbar is dismissed.
+  std::optional<base::OnceClosure> on_dismiss_callback_;
 };
 
 }  // namespace autofill

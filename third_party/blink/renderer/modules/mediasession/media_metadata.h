@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_METADATA_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_chapter_information_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_image.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -16,6 +17,7 @@
 
 namespace blink {
 
+class ChapterInformation;
 class ExceptionState;
 class MediaMetadataInit;
 class MediaSession;
@@ -54,9 +56,6 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   void setArtwork(ScriptState*,
                   const HeapVector<Member<MediaImage>>&,
                   ExceptionState&);
-  void setChapterInfo(ScriptState*,
-                      const HeapVector<Member<ChapterInformation>>&,
-                      ExceptionState&);
 
   // Called by MediaSession to associate or de-associate itself.
   void SetSession(MediaSession*);
@@ -78,6 +77,11 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   void SetArtworkInternal(ScriptState*,
                           const HeapVector<Member<MediaImage>>&,
                           ExceptionState&);
+
+  // Set the `ChapterInfo` from `ChapterInformationInit` list.
+  void SetChapterInfoFromInit(ScriptState*,
+                              const HeapVector<Member<ChapterInformationInit>>&,
+                              ExceptionState&);
 
   String title_;
   String artist_;

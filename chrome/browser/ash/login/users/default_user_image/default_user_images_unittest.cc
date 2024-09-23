@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
-#include "ash/constants/ash_features.h"
+#include <string_view>
+
 #include "ash/public/cpp/default_user_image.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +44,6 @@ TEST(DefaultUserImagesTest, RandomlyPickedIndexShouldBeCurrent) {
 }
 
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
-
   std::vector<DefaultUserImage> current_default_images =
       default_user_image::GetCurrentImageSet();
 
@@ -62,14 +59,11 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligibleWithFlag) {
     const auto url_string = image.url.spec();
 
     // Current image set should have support for 200 percent scale factor.
-    EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+    EXPECT_NE(url_string.find(k200PercentPrefix), std::string_view::npos);
   }
 }
 
 TEST(DefaultUserImagesTest, AllDefaultImagesShouldHaveCorrectInfoWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kAvatarsCloudMigration);
-
   for (auto index = 0; index < kDefaultImagesCount; index++) {
     EXPECT_TRUE(IsValidIndex(index));
     bool is_current = IsInCurrentImageSet(index);
@@ -83,9 +77,9 @@ TEST(DefaultUserImagesTest, AllDefaultImagesShouldHaveCorrectInfoWithFlag) {
 
     const auto url_string = default_user_image.url.spec();
     if (index <= kLastLegacyImageIndex) {
-      EXPECT_NE(url_string.find(k100PercentPrefix), base::StringPiece::npos);
+      EXPECT_NE(url_string.find(k100PercentPrefix), std::string_view::npos);
     } else {
-      EXPECT_NE(url_string.find(k200PercentPrefix), base::StringPiece::npos);
+      EXPECT_NE(url_string.find(k200PercentPrefix), std::string_view::npos);
     }
   }
 }

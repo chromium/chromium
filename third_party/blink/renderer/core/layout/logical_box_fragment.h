@@ -87,9 +87,16 @@ class CORE_EXPORT LogicalBoxFragment final : public LogicalFragment {
     return GetPhysicalBoxFragment().Borders().ConvertToLogical(
         writing_direction_);
   }
+  BoxStrut Scrollbar() const {
+    return GetPhysicalBoxFragment().Scrollbar().ConvertToLogical(
+        writing_direction_);
+  }
   BoxStrut Padding() const {
     return GetPhysicalBoxFragment().Padding().ConvertToLogical(
         writing_direction_);
+  }
+  BoxStrut BoxDecorations() const {
+    return Borders() + Scrollbar() + Padding();
   }
 
   bool HasDescendantsForTablePart() const {

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/server/web_socket_encoder.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_export.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
 #include "net/websockets/websocket_extension_parser.h"
@@ -19,6 +26,7 @@
 
 namespace net {
 
+NET_EXPORT
 const char WebSocketEncoder::kClientExtensions[] =
     "permessage-deflate; client_max_window_bits";
 
@@ -41,14 +49,14 @@ const size_t kTwoBytePayloadLengthField = 126;
 const size_t kEightBytePayloadLengthField = 127;
 const size_t kMaskingKeyWidthInBytes = 4;
 
-WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
-                                         bool client_frame,
-                                         int* bytes_consumed,
-                                         std::string* output,
-                                         bool* compressed) {
+WebSocketParseResult DecodeFrameHybi17(std::string_view frame,
+                                       bool client_frame,
+                                       int* bytes_consumed,
+                                       std::string* output,
+                                       bool* compressed) {
   size_t data_length = frame.length();
   if (data_length < 2)
-    return WebSocket::FRAME_INCOMPLETE;
+    return WebSocketParseResult::FRAME_INCOMPLETE;
 
   const char* buffer_begin = const_cast<char*>(frame.data());
   const char* p = buffer_begin;
@@ -65,7 +73,8 @@ WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
   bool masked = (second_byte & kMaskBit) != 0;
   *compressed = reserved1;
   if (reserved2 || reserved3)
-    return WebSocket::FRAME_ERROR;  // Only compression extension is supported.
+    return WebSocketParseResult::FRAME_ERROR;  // Only compression extension is
+                                               // supported.
 
   bool closed = false;
   switch (op_code) {
@@ -83,11 +92,11 @@ WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
     case WebSocketFrameHeader::OpCodeEnum::kOpCodeBinary:  // We don't support
                                                            // binary frames yet.
     default:
-      return WebSocket::FRAME_ERROR;
+      return WebSocketParseResult::FRAME_ERROR;
   }
 
   if (client_frame && !masked)  // In Hybi-17 spec client MUST mask its frame.
-    return WebSocket::FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
 
   uint64_t payload_length64 = second_byte & kPayloadLengthMask;
   if (payload_length64 > kMaxSingleBytePayloadLength) {
@@ -99,7 +108,7 @@ WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
       extended_payload_length_size = 8;
     }
     if (buffer_end - p < extended_payload_length_size)
-      return WebSocket::FRAME_INCOMPLETE;
+      return WebSocketParseResult::FRAME_INCOMPLETE;
     payload_length64 = 0;
     for (int i = 0; i < extended_payload_length_size; ++i) {
       payload_length64 <<= 8;
@@ -113,13 +122,13 @@ WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
   if (payload_length64 > max_payload_length ||
       payload_length64 + actual_masking_key_length > max_length) {
     // WebSocket frame length too large.
-    return WebSocket::FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
   }
   size_t payload_length = static_cast<size_t>(payload_length64);
 
   size_t total_length = actual_masking_key_length + payload_length;
   if (static_cast<size_t>(buffer_end - p) < total_length)
-    return WebSocket::FRAME_INCOMPLETE;
+    return WebSocketParseResult::FRAME_INCOMPLETE;
 
   if (masked) {
     output->resize(payload_length);
@@ -135,18 +144,19 @@ WebSocket::ParseResult DecodeFrameHybi17(base::StringPiece frame,
   *bytes_consumed = pos;
 
   if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePing)
-    return WebSocket::FRAME_PING;
+    return WebSocketParseResult::FRAME_PING;
 
   if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePong)
-    return WebSocket::FRAME_PONG;
+    return WebSocketParseResult::FRAME_PONG;
 
   if (closed)
-    return WebSocket::FRAME_CLOSE;
+    return WebSocketParseResult::FRAME_CLOSE;
 
-  return final ? WebSocket::FRAME_OK_FINAL : WebSocket::FRAME_OK_MIDDLE;
+  return final ? WebSocketParseResult::FRAME_OK_FINAL
+               : WebSocketParseResult::FRAME_OK_MIDDLE;
 }
 
-void EncodeFrameHybi17(base::StringPiece message,
+void EncodeFrameHybi17(std::string_view message,
                        int masking_key,
                        bool compressed,
                        WebSocketFrameHeader::OpCodeEnum op_code,
@@ -293,31 +303,31 @@ WebSocketEncoder::WebSocketEncoder(Type type,
 
 WebSocketEncoder::~WebSocketEncoder() = default;
 
-WebSocket::ParseResult WebSocketEncoder::DecodeFrame(base::StringPiece frame,
-                                                     int* bytes_consumed,
-                                                     std::string* output) {
+WebSocketParseResult WebSocketEncoder::DecodeFrame(std::string_view frame,
+                                                   int* bytes_consumed,
+                                                   std::string* output) {
   bool compressed;
   std::string current_output;
-  WebSocket::ParseResult result = DecodeFrameHybi17(
+  WebSocketParseResult result = DecodeFrameHybi17(
       frame, type_ == FOR_SERVER, bytes_consumed, &current_output, &compressed);
   switch (result) {
-    case WebSocket::FRAME_OK_FINAL:
-    case WebSocket::FRAME_OK_MIDDLE: {
+    case WebSocketParseResult::FRAME_OK_FINAL:
+    case WebSocketParseResult::FRAME_OK_MIDDLE: {
       if (continuation_message_frames_.empty())
         is_current_message_compressed_ = compressed;
       continuation_message_frames_.push_back(current_output);
 
-      if (result == WebSocket::FRAME_OK_FINAL) {
+      if (result == WebSocketParseResult::FRAME_OK_FINAL) {
         *output = base::StrCat(continuation_message_frames_);
         continuation_message_frames_.clear();
         if (is_current_message_compressed_ && !Inflate(output)) {
-          return WebSocket::FRAME_ERROR;
+          return WebSocketParseResult::FRAME_ERROR;
         }
       }
       break;
     }
 
-    case WebSocket::FRAME_PING:
+    case WebSocketParseResult::FRAME_PING:
       *output = current_output;
       break;
 
@@ -329,7 +339,7 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(base::StringPiece frame,
   return result;
 }
 
-void WebSocketEncoder::EncodeTextFrame(base::StringPiece frame,
+void WebSocketEncoder::EncodeTextFrame(std::string_view frame,
                                        int masking_key,
                                        std::string* output) {
   std::string compressed;
@@ -340,14 +350,14 @@ void WebSocketEncoder::EncodeTextFrame(base::StringPiece frame,
     EncodeFrameHybi17(frame, masking_key, false, op_code, output);
 }
 
-void WebSocketEncoder::EncodeCloseFrame(base::StringPiece frame,
+void WebSocketEncoder::EncodeCloseFrame(std::string_view frame,
                                         int masking_key,
                                         std::string* output) {
   constexpr auto op_code = WebSocketFrameHeader::OpCodeEnum::kOpCodeClose;
   EncodeFrameHybi17(frame, masking_key, false, op_code, output);
 }
 
-void WebSocketEncoder::EncodePongFrame(base::StringPiece frame,
+void WebSocketEncoder::EncodePongFrame(std::string_view frame,
                                        int masking_key,
                                        std::string* output) {
   constexpr auto op_code = WebSocketFrameHeader::OpCodeEnum::kOpCodePong;
@@ -376,7 +386,7 @@ bool WebSocketEncoder::Inflate(std::string* message) {
   return true;
 }
 
-bool WebSocketEncoder::Deflate(base::StringPiece message, std::string* output) {
+bool WebSocketEncoder::Deflate(std::string_view message, std::string* output) {
   if (!deflater_)
     return false;
   if (!deflater_->AddBytes(message.data(), message.length())) {

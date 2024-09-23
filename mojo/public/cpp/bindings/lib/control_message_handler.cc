@@ -79,7 +79,6 @@ bool ControlMessageHandler::Accept(Message* message) {
     return RunOrClosePipe(message);
 
   NOTREACHED();
-  return false;
 }
 
 bool ControlMessageHandler::AcceptWithResponder(
@@ -92,7 +91,6 @@ bool ControlMessageHandler::AcceptWithResponder(
     return Run(message, std::move(responder));
 
   NOTREACHED();
-  return false;
 }
 
 bool ControlMessageHandler::Run(

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Verifies the main user journeys for supervised users. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -50,7 +50,7 @@ public class IncognitoSignInInteractionTest {
         }
 
         public void waitForClose() throws Exception {
-            mCallbackHelper.waitForFirst();
+            mCallbackHelper.waitForOnly();
         }
     }
 
@@ -66,7 +66,7 @@ public class IncognitoSignInInteractionTest {
         // supervised.
         Tab tab = mActivityTestRule.newIncognitoTabFromMenu();
         TabClosedWaiter tabClosedWaiter = new TabClosedWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(tabClosedWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(tabClosedWaiter));
 
         // Add a supervised user to the device.
         mSigninTestRule.addChildTestAccountThenWaitForSignin();

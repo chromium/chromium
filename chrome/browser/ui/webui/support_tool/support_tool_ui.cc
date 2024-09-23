@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 
 #include <optional>
@@ -32,6 +37,7 @@
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -54,6 +60,13 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
+
+bool SupportToolUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return base::FeatureList::IsEnabled(features::kSupportTool) &&
+         SupportToolUI::IsEnabled(profile);
+}
 
 namespace {
 
@@ -156,11 +169,9 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void HandleGenerateSupportToken(const base::Value::List& args);
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
 
-  void FileSelectionCanceled(void* params) override;
+  void FileSelectionCanceled() override;
 
  private:
   base::Value::List GetAccountsList();
@@ -343,7 +354,7 @@ void SupportToolMessageHandler::HandleStartDataCollection(
       GetSupportToolHandler(*issue_details->FindString("caseId"),
                             *issue_details->FindString("emailAddress"),
                             *issue_details->FindString("issueDescription"),
-                            Profile::FromWebUI(web_ui()),
+                            std::nullopt, Profile::FromWebUI(web_ui()),
                             GetIncludedDataCollectorTypes(data_collectors));
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
@@ -412,8 +423,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
 }
 
 void SupportToolMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                             int index,
-                                             void* params) {
+                                             int index) {
   base::UmaHistogramEnumeration(
       kSupportToolWebUIActionHistogram,
       SupportToolWebUIActionType::kCreateSupportPacket);
@@ -428,7 +438,7 @@ void SupportToolMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SupportToolMessageHandler::FileSelectionCanceled(void* params) {
+void SupportToolMessageHandler::FileSelectionCanceled() {
   selected_pii_to_keep_.clear();
   select_file_dialog_.reset();
 }
@@ -602,8 +612,6 @@ base::Value::Dict SupportToolUI::GetLocalizedStrings() {
       l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DONT_INCLUDE_EMAIL));
   localized_strings.Set("selectAll",
                         l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_ALL));
-  localized_strings.Set(
-      "selectNone", l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_NONE));
   return localized_strings;
 }
 

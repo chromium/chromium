@@ -32,19 +32,32 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
 #include "components/component_updater/android/components_info_holder.h"
-#include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crash/core/common/crash_key.h"
+#include "components/metrics/component_metrics_provider.h"
 #include "components/update_client/utils.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
 
 namespace component_updater {
 namespace {
 
 constexpr char kManifestFileName[] = "manifest.json";
+
+// Size of the "crx-components" crash key in bytes. Each entry is of the form
+// "COMPONENT_NAME-123.456.789," and the longest component name is 39 bytes so
+// the maximum size of an entry is 52 bytes. Currently there are 5 components
+// registered for WebView, 512 bytes should be able to hold about 10 entries.
+constexpr size_t kComponentsKeySize = 512;
 
 std::optional<base::Value::Dict> ReadManifest(
     const std::string& manifest_content) {
@@ -74,6 +87,29 @@ void RecordComponentLoadStatusHistogram(const std::string& suffix,
       base::StrCat(
           {"ComponentUpdater.AndroidComponentLoader.LoadStatus.", suffix}),
       status);
+}
+
+std::string ComponentToString(const ComponentInfo& component) {
+  const auto id =
+      metrics::ComponentMetricsProvider::CrxIdToComponentId(component.id);
+  if (id == metrics::SystemProfileProto_ComponentId_UNKNOWN) {
+    return std::string();
+  }
+  return base::StringPrintf("%s-%s",
+                            SystemProfileProto_ComponentId_Name(id).c_str(),
+                            component.version.GetString().c_str());
+}
+
+void UpdateCrashKeys() {
+  std::vector<std::string> components_crash_key_values;
+  for (const ComponentInfo& component :
+       ComponentsInfoHolder::GetInstance()->GetComponents()) {
+    components_crash_key_values.push_back(ComponentToString(component));
+  }
+
+  static ::crash_reporter::CrashKeyString<kComponentsKeySize>
+      components_crash_key("crx-components");
+  components_crash_key.Set(base::JoinString(components_crash_key_values, ","));
 }
 
 }  // namespace
@@ -180,6 +216,7 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
                                      ComponentLoadResult::kComponentLoaded);
   ComponentsInfoHolder::GetInstance()->AddComponent(GetComponentId(), version);
   loader_policy_->ComponentLoaded(version, fd_map, std::move(*manifest));
+  UpdateCrashKeys();
 }
 
 void AndroidComponentLoaderPolicy::ComponentLoadFailedInternal(

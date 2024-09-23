@@ -137,8 +137,8 @@ bool TestTargetView::AreDropTypesRequired() {
 }
 
 bool TestTargetView::CanDrop(const OSExchangeData& data) {
-  std::u16string contents;
-  return data.GetString(&contents) && contents == kTestNestedDragData;
+  std::u16string contents = data.GetString().value_or(std::u16string());
+  return contents == kTestNestedDragData;
 }
 
 void TestTargetView::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -300,8 +300,8 @@ bool MenuViewDragAndDropTest::AreDropTypesRequired(views::MenuItemView* menu) {
 
 bool MenuViewDragAndDropTest::CanDrop(views::MenuItemView* menu,
                                       const ui::OSExchangeData& data) {
-  std::u16string contents;
-  return data.GetString(&contents) && contents == kTestTopLevelDragData;
+  std::u16string contents = data.GetString().value_or(std::u16string());
+  return contents == kTestTopLevelDragData;
 }
 
 DragOperation MenuViewDragAndDropTest::GetDropOperation(
@@ -418,7 +418,7 @@ void MenuViewDragAndDropTestTestInMenuDrag::StartDrag() {
 // menu automatically once the drag is complete, and does not ask the delegate
 // to stay open.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
-// TODO(crbug.com/1443197): Re-enable this test for linux.
+// TODO(crbug.com/40911016): Re-enable this test for linux.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestInMenuDrag DISABLED_TestInMenuDrag
 #else
@@ -512,7 +512,7 @@ void MenuViewDragAndDropTestNestedDrag::StartDrag() {
 // implemented in menu code) will consult the delegate before closing the view
 // after the drag.
 // TODO(pkasting): https://crbug.com/939621 Fails on Mac.
-// TODO(crbug/1523611): Test is failing under ChromeRefresh2023 on wayland.
+// TODO(crbug.com/41496561): Test is failing under ChromeRefresh2023 on wayland.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_MenuViewDragAndDropNestedDrag \
   DISABLED_MenuViewDragAndDropNestedDrag

@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<title>Test that disableUntrustedNetwork() applies to dedicated workers.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const key_1 = token();
+  const key_2 = token();
+  await fencedframe.execute(async (key_1, key_2) => {
+    // The worker will take anything postMessaged to it and attempt to forward
+    // it to `key-value-store.py` via the Fetch API.
+    const worker = new Worker(
+        "/wpt_internal/fenced_frame/resources/revoke-dedicated-worker.js");
+
+    // Sanity check that the worker can receive postMessage() events and send
+    // fetch requests.
+    worker.postMessage([key_1, "before"]);
+    const first_value = await nextValueFromServer(key_1);
+    assert_equals(first_value, "before");
+
+    await window.fence.disableUntrustedNetwork();
+
+    worker.postMessage([key_2, "after"]);
+    await new Promise(resolve => {
+      worker.onmessage = evt => {
+        if (evt.data == "fetch failed") {
+          resolve();
+        }
+      };
+    });
+  }, [key_1, key_2]);
+
+  // Ensure that no message was sent from the worker.
+  const timeout = new Promise(r => t.step_timeout(r, 1000));
+  const result = await Promise.race([timeout, nextValueFromServer(key_2)]);
+  assert_true(typeof result === 'undefined');
+}, 'window.fence.disableUntrustedNetwork disables dedicated workers');
+</script>
+</body>

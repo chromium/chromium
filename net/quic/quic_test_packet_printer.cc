@@ -46,7 +46,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnRetryPacket\n";
   }
   bool OnUnauthenticatedPublicHeader(const QuicPacketHeader& header) override {
-    *output_ << "OnUnauthenticatedPublicHeader: " << header << "\n";
+    *output_ << "OnUnauthenticatedPublicHeader: " << header;
     return true;
   }
   bool OnUnauthenticatedHeader(const QuicPacketHeader& header) override {
@@ -187,6 +187,10 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
   bool OnMessageFrame(const QuicMessageFrame& frame) override {
     *output_ << "OnMessageFrame: " << frame;
+    // In a test context, `frame.data` should always be set.
+    CHECK(frame.data);
+    *output_ << "         data: { "
+             << base::HexEncode(frame.data, frame.message_length) << " }\n";
     return true;
   }
   bool OnHandshakeDoneFrame(const QuicHandshakeDoneFrame& frame) override {

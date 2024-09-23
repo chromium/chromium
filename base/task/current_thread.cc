@@ -71,8 +71,10 @@ bool CurrentThread::IsIdleForTesting() {
 }
 
 void CurrentThread::EnableMessagePumpTimeKeeperMetrics(
-    const char* thread_name) {
-  return current_->EnableMessagePumpTimeKeeperMetrics(thread_name);
+    const char* thread_name,
+    bool wall_time_based_metrics_enabled_for_testing) {
+  return current_->EnableMessagePumpTimeKeeperMetrics(
+      thread_name, wall_time_based_metrics_enabled_for_testing);
 }
 
 void CurrentThread::AddTaskObserver(TaskObserver* task_observer) {
@@ -99,19 +101,20 @@ CallbackListSubscription CurrentThread::RegisterOnNextIdleCallback(
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
     ScopedAllowApplicationTasksInNativeNestedLoop()
     : sequence_manager_(GetCurrentSequenceManagerImpl()),
-      previous_state_(sequence_manager_->IsTaskExecutionAllowed()) {
+      previous_state_(
+          sequence_manager_->IsTaskExecutionAllowedInNativeNestedLoop()) {
   TRACE_EVENT_BEGIN0("base", "ScopedNestableTaskAllower");
-  sequence_manager_->SetTaskExecutionAllowed(true);
+  sequence_manager_->SetTaskExecutionAllowedInNativeNestedLoop(true);
 }
 
 CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop::
     ~ScopedAllowApplicationTasksInNativeNestedLoop() {
-  sequence_manager_->SetTaskExecutionAllowed(previous_state_);
+  sequence_manager_->SetTaskExecutionAllowedInNativeNestedLoop(previous_state_);
   TRACE_EVENT_END0("base", "ScopedNestableTaskAllower");
 }
 
 bool CurrentThread::ApplicationTasksAllowedInNativeNestedLoop() const {
-  return current_->IsTaskExecutionAllowed();
+  return current_->IsTaskExecutionAllowedInNativeNestedLoop();
 }
 
 #if !BUILDFLAG(IS_NACL)

@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("in_session_auth") {
+  sources = [
+    "in_session_auth_dialog_client.cc",
+    "in_session_auth_dialog_client.h",
+    "in_session_auth_token_provider_impl.cc",
+    "in_session_auth_token_provider_impl.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/auth",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/in_session_auth",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/osauth/public",
+    "//components/account_id",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "in_session_auth_dialog_client_unittest.cc" ]
+
+  deps = [
+    ":in_session_auth",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/account_id",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -34,6 +34,16 @@ namespace {
 
 #define ALIGN(x, y) (x + (y - 1)) & (~(y - 1))
 
+ui::GLOzone& GetCurrentGLOzone() {
+  ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
+  CHECK(platform);
+  ui::SurfaceFactoryOzone* surface_factory = platform->GetSurfaceFactoryOzone();
+  CHECK(surface_factory);
+  ui::GLOzone* gl_ozone = surface_factory->GetCurrentGLOzone();
+  CHECK(gl_ozone);
+  return *gl_ozone;
+}
+
 template <typename T>
 base::CheckedNumeric<T> GetNV12PlaneDimension(int dimension, int plane) {
   base::CheckedNumeric<T> dimension_scaled(base::strict_cast<T>(dimension));
@@ -73,6 +83,9 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     int plane) {
   CHECK(plane == 0 || plane == 1);
 
+  // Note: if this is changed to accept other formats,
+  // GLImageProcessorBackend::InitializeTask() should be updated to ensure
+  // GetCurrentGLOzone().CanImportNativePixmap() returns true for those formats.
   if (frame->format() != PIXEL_FORMAT_NV12) {
     LOG(ERROR) << "The frame's format is not NV12";
     return nullptr;
@@ -102,13 +115,10 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
     // Import the NativePixmap into GL.
-    return ui::OzonePlatform::GetInstance()
-        ->GetSurfaceFactoryOzone()
-        ->GetCurrentGLOzone()
-        ->ImportNativePixmap(std::move(native_pixmap),
-                             gfx::BufferFormat::YUV_420_BIPLANAR,
-                             gfx::BufferPlane::DEFAULT, frame->coded_size(),
-                             gfx::ColorSpace(), target, texture_id);
+    return GetCurrentGLOzone().ImportNativePixmap(
+        std::move(native_pixmap), gfx::BufferFormat::YUV_420_BIPLANAR,
+        gfx::BufferPlane::DEFAULT, frame->coded_size(), gfx::ColorSpace(),
+        target, texture_id);
   }
 
   base::CheckedNumeric<int> uv_width(0);
@@ -137,12 +147,10 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
   // Import the NativePixmap into GL.
-  return ui::OzonePlatform::GetInstance()
-      ->GetSurfaceFactoryOzone()
-      ->GetCurrentGLOzone()
-      ->ImportNativePixmap(std::move(native_pixmap), plane_format,
-                           plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y,
-                           plane_size, gfx::ColorSpace(), target, texture_id);
+  return GetCurrentGLOzone().ImportNativePixmap(
+      std::move(native_pixmap), plane_format,
+      plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y, plane_size,
+      gfx::ColorSpace(), target, texture_id);
 }
 
 }  // namespace
@@ -169,6 +177,13 @@ std::string GLImageProcessorBackend::type() const {
 
 bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
                                           const PortConfig& output_config) {
+  // Technically speaking GLIPBackend doesn't need Ozone but it
+  // relies on it to initialize GL.
+  if (!ui::OzonePlatform::IsInitialized()) {
+    VLOGF(2) << "The GLImageProcessorBackend needs Ozone initialized.";
+    return false;
+  }
+
   if (input_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12 ||
       output_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12) {
     VLOGF(2) << "The GLImageProcessorBackend only supports NV12.";
@@ -259,6 +274,10 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
                                              bool* success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
+  // InitializeTask() should only be called on a freshly constructed
+  // GLImageProcessorBackend, so there shouldn't be any GL errors yet.
+  CHECK(!got_unrecoverable_gl_error_);
+
   // Create a driver-level GL context just for us. This is questionable because
   // work in this context will be competing with the context(s) used for
   // rasterization and compositing. However, it's a simple starting point.
@@ -286,16 +305,67 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
     return;
   }
 
-  const gfx::Size input_visible_size = input_config_.visible_rect.size();
-  const gfx::Size output_visible_size = output_config_.visible_rect.size();
-  GLint max_texture_size;
+  // CreateAndBindImage() will need to call
+  // GetCurrentGLOzone().ImportNativePixmap() for NV12 frames, so we should
+  // ensure that's supported.
+  if (!GetCurrentGLOzone().CanImportNativePixmap(
+          gfx::BufferFormat::YUV_420_BIPLANAR)) {
+    LOG(ERROR) << "Importing NV12 buffers is not supported";
+    done->Signal();
+    return;
+  }
+
+  // Ensure we can use EGLImage objects as texture images and that we can use
+  // the GL_TEXTURE_EXTERNAL_OES target.
+  if (!gl_context_->HasExtension("GL_OES_EGL_image")) {
+    LOG(ERROR) << "The context doesn't support GL_OES_EGL_image";
+    done->Signal();
+    return;
+  }
+  if (!gl_context_->HasExtension("GL_OES_EGL_image_external")) {
+    LOG(ERROR) << "The context doesn't support GL_OES_EGL_image_external";
+    done->Signal();
+    return;
+  }
+
+  // Ensure the coded size and visible rectangle are reasonable.
+  const gfx::Size input_coded_size = input_config_.size;
+  const gfx::Size output_coded_size = output_config_.size;
+  if (input_coded_size.IsEmpty() || output_coded_size.IsEmpty()) {
+    LOG(ERROR) << "Either the input or output coded size is empty";
+    done->Signal();
+    return;
+  }
+  if (!VideoFrame::IsValidCodedSize(input_coded_size) ||
+      !VideoFrame::IsValidCodedSize(output_coded_size)) {
+    LOG(ERROR) << "Either the input or output coded size is invalid";
+    done->Signal();
+    return;
+  }
+  if (input_config_.visible_rect.IsEmpty() ||
+      output_config_.visible_rect.IsEmpty()) {
+    LOG(ERROR) << "Either the input or output visible rectangle is empty";
+    done->Signal();
+    return;
+  }
+  if (!gfx::Rect(input_coded_size).Contains(input_config_.visible_rect) ||
+      !gfx::Rect(output_coded_size).Contains(output_config_.visible_rect)) {
+    LOG(ERROR) << "Either the input or output visible rectangle is invalid";
+    done->Signal();
+    return;
+  }
+
+  // Note: we use the coded size to import the frames later in
+  // CreateAndBindImage(), so we need to check that size against
+  // GL_MAX_TEXTURE_SIZE.
+  GLint max_texture_size = 0;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (max_texture_size < input_visible_size.width() ||
-      max_texture_size < input_visible_size.height() ||
-      max_texture_size < output_visible_size.width() ||
-      max_texture_size < output_visible_size.height()) {
-    LOG(ERROR)
-        << "Either the input or output size exceeds the maximum texture size";
+  if (max_texture_size < base::strict_cast<GLint>(input_coded_size.width()) ||
+      max_texture_size < base::strict_cast<GLint>(input_coded_size.height()) ||
+      max_texture_size < base::strict_cast<GLint>(output_coded_size.width()) ||
+      max_texture_size < base::strict_cast<GLint>(output_coded_size.height())) {
+    LOG(ERROR) << "Either the input or output coded size exceeds the maximum "
+                  "texture size";
     done->Signal();
     return;
   }
@@ -304,7 +374,9 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // framebuffer and will be eventually attached to the output dma-buf. Since we
   // won't sample from it, we don't need to set parameters.
   glGenFramebuffersEXT(1, &fb_id_);
+  CHECK_GT(fb_id_, 0u);
   glGenTextures(1, &dst_texture_id_);
+  CHECK_GT(dst_texture_id_, 0u);
 
   // These calculations are used to calculate vertices such that
   // regions that were meant to be cropped out would be clipped out
@@ -317,49 +389,50 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // These absolute coordinate space vertices are converted to relative
   // space texture coordinates:
   //    Example: |input_left / input_width|
-  const float input_width =
-      static_cast<float>(input_config_.visible_rect.width());
-  const float input_height =
-      static_cast<float>(input_config_.visible_rect.height());
-  const float input_coded_width =
-      static_cast<float>(input_config_.size.width());
-  const float input_coded_height =
-      static_cast<float>(input_config_.size.height());
+  const GLfloat input_width =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.width());
+  const GLfloat input_height =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.height());
+  const GLfloat input_coded_width =
+      base::checked_cast<GLfloat>(input_coded_size.width());
+  const GLfloat input_coded_height =
+      base::checked_cast<GLfloat>(input_coded_size.height());
 
-  const float input_left = static_cast<float>(input_config_.visible_rect.x());
-  const float input_top = static_cast<float>(input_config_.visible_rect.y());
+  const GLfloat input_left =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.x());
+  const GLfloat input_top =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.y());
 
-  const float normalized_left = input_left / input_width;
-  const float normalized_top = input_top / input_height;
+  const GLfloat normalized_left = input_left / input_width;
+  const GLfloat normalized_top = input_top / input_height;
 
-  const float x_start = -1.0f - normalized_left * 2.0f;
+  const GLfloat x_start = -1.0f - normalized_left * 2.0f;
 
-  const float x_end = 1.0f + (input_coded_width - input_width - input_left) /
-                                 input_width * 2.0f;
+  const GLfloat x_end = 1.0f + (input_coded_width - input_width - input_left) /
+                                   input_width * 2.0f;
 
-  const float y_start = -1.0f - normalized_top * 2.0f;
+  const GLfloat y_start = -1.0f - normalized_top * 2.0f;
 
-  const float y_end = 1.0f + (input_coded_height - input_height - input_top) /
-                                 input_height * 2.0f;
+  const GLfloat y_end = 1.0f + (input_coded_height - input_height - input_top) /
+                                   input_height * 2.0f;
 
-  const float vertices[] = {
+  const GLfloat vertices[] = {
       // clang-format off
-    x_end,   y_start, 0.0f,
-    x_end,   y_end,   0.0f,
-    x_start, y_start, 0.0f,
-    x_start, y_end,   0.0f
+      x_end,   y_start, 0.0f,
+      x_end,   y_end,   0.0f,
+      x_start, y_start, 0.0f,
+      x_start, y_end,   0.0f
       // clang-format on
   };
 
-  GLuint vbo_id;
-  glGenBuffersARB(1, &vbo_id);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices, GL_STATIC_DRAW);
+  glGenBuffersARB(1, &vbo_id_);
+  CHECK_GT(vbo_id_, 0u);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 
-  GLuint vao_id;
-  glGenVertexArraysOES(1, &vao_id);
-  glBindVertexArrayOES(vao_id);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+  glGenVertexArraysOES(1, &vao_id_);
+  CHECK_GT(vao_id_, 0u);
+  glBindVertexArrayOES(vao_id_);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
   glEnableVertexAttribArray(0);
 
@@ -499,6 +572,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // Create an input texture. This will be eventually attached to the input
   // dma-buf and we will sample from it, so we need to set some parameters.
   glGenTextures(1, &src_texture_id_);
+  CHECK_GT(src_texture_id_, 0u);
   const auto gl_texture_target =
       scaling ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES;
   const auto gl_texture_filter = scaling ? GL_LINEAR : GL_NEAREST;
@@ -511,41 +585,86 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   if (!scaling) {
     glUniform1i(glGetUniformLocation(program, "tex"), 0);
     glUniform1ui(glGetUniformLocation(program, "width"),
-                 ALIGN(output_visible_size.width(), kTileWidth));
+                 base::checked_cast<GLuint>(
+                     ALIGN(output_config_.visible_rect.width(), kTileWidth)));
     glUniform1ui(glGetUniformLocation(program, "height"),
-                 ALIGN(output_visible_size.height(), kTileHeight));
+                 base::checked_cast<GLuint>(
+                     ALIGN(output_config_.visible_rect.height(), kTileHeight)));
   }
 
-  // This glGetError() blocks until all the commands above have executed. This
-  // should be okay because initialization only happens once.
-  const GLenum error = glGetError();
-  if (error != GL_NO_ERROR) {
-    LOG(ERROR) << "Could not initialize the GL image processor: "
-               << gl::GLEnums::GetStringError(error);
+  // Ensure the GLImageProcessorBackend is fully initialized by blocking until
+  // all the commands above have completed. This should be okay because
+  // initialization only happens once.
+  glFinish();
+  GLenum last_gl_error = GL_NO_ERROR;
+  bool gl_error_occurred = false;
+  while ((last_gl_error = glGetError()) != GL_NO_ERROR) {
+    if (last_gl_error == GL_OUT_OF_MEMORY ||
+        last_gl_error == GL_CONTEXT_LOST_KHR) {
+      got_unrecoverable_gl_error_ = true;
+    }
+    gl_error_occurred = true;
+    VLOGF(2) << "Got a GL error: "
+             << gl::GLEnums::GetStringError(last_gl_error);
+  }
+  if (gl_error_occurred) {
+    LOG(ERROR)
+        << "Could not initialize the GL image processor due to GL errors";
     done->Signal();
     return;
   }
 
-  LOG(ERROR) << "Initialized a GLImageProcessorBackend: input size = "
-             << input_visible_size.ToString()
-             << ", output size = " << output_visible_size.ToString();
+  VLOGF(1) << "Initialized a GLImageProcessorBackend: input coded size = "
+           << input_coded_size.ToString() << ", input visible rectangle = "
+           << input_config_.visible_rect.ToString()
+           << ", output coded size = " << output_coded_size.ToString()
+           << ", output visible rectangle = "
+           << output_config_.visible_rect.ToString();
   *success = true;
   done->Signal();
 }
 
-// Note that the ImageProcessor calls the destructor from the
-// backend_task_runner, so this should be threadsafe.
+// Note that the ImageProcessor deletes the ImageProcessorBackend on the
+// |backend_task_runner_| so this should be thread-safe.
+//
+// TODO(b/339883058): do we need to explicitly call |gl_surface_|->Destroy()?
 GLImageProcessorBackend::~GLImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  if (gl_context_->MakeCurrent(gl_surface_.get())) {
-    glDeleteTextures(1, &src_texture_id_);
-    glDeleteTextures(1, &dst_texture_id_);
-    glDeleteFramebuffersEXT(1, &fb_id_);
-    gl_context_->ReleaseCurrent(gl_surface_.get());
-    gl_surface_->HasOneRef();
-    gl_context_->HasOneRef();
+  if (!gl_surface_) {
+    // If there's no surface, nothing else was created.
+    CHECK(!gl_context_);
+    return;
   }
+  if (!gl_context_) {
+    // If there's no context, nothing else was created.
+    return;
+  }
+  // In case of an unrecoverable GL error, let's assume the GL state machine is
+  // in an undefined state such that it's unsafe to issue further commands.
+  if (got_unrecoverable_gl_error_) {
+    return;
+  }
+  if (!gl_context_->MakeCurrent(gl_surface_.get())) {
+    // If the context can't be made current, we shouldn't do anything else.
+    return;
+  }
+  if (fb_id_) {
+    glDeleteFramebuffersEXT(1, &fb_id_);
+  }
+  if (dst_texture_id_) {
+    glDeleteTextures(1, &dst_texture_id_);
+  }
+  if (src_texture_id_) {
+    glDeleteTextures(1, &src_texture_id_);
+  }
+  if (vao_id_) {
+    glDeleteVertexArraysOES(1, &vao_id_);
+  }
+  if (vbo_id_) {
+    glDeleteBuffersARB(1, &vbo_id_);
+  }
+  gl_context_->ReleaseCurrent(gl_surface_.get());
 }
 
 void GLImageProcessorBackend::ProcessFrame(
@@ -557,6 +676,14 @@ void GLImageProcessorBackend::ProcessFrame(
                input_frame->AsHumanReadableString(), "output_frame",
                output_frame->AsHumanReadableString());
   SCOPED_UMA_HISTOGRAM_TIMER("GLImageProcessorBackend::Process");
+
+  // In the case of unrecoverable GL errors, we assume it's unsafe to issue
+  // further commands.
+  if (got_unrecoverable_gl_error_) {
+    VLOGF(2) << "Earlying out because an unrecoverable GL error was detected";
+    error_cb_.Run();
+    return;
+  }
 
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
     LOG(ERROR) << "Could not make the GL context current";
@@ -634,14 +761,35 @@ void GLImageProcessorBackend::ProcessFrame(
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, indices);
   }
 
-  // glFlush() is not quite sufficient, and will result in frames being output
+  // glFlush() is not quite sufficient and will result in frames being output
   // out of order, so we use a full glFinish() call.
-  // TODO(bchoobineh): add proper synchronization that does not require
-  // blocking the CPU.
+  //
+  // TODO(bchoobineh): add proper synchronization that does not require blocking
+  // the CPU.
   glFinish();
+
+  // Check if any errors occurred. Note that we call glGetError() in a loop to
+  // clear all error flags.
+  GLenum last_gl_error = GL_NO_ERROR;
+  bool gl_error_occurred = false;
+  while ((last_gl_error = glGetError()) != GL_NO_ERROR) {
+    if (last_gl_error == GL_OUT_OF_MEMORY ||
+        last_gl_error == GL_CONTEXT_LOST_KHR) {
+      got_unrecoverable_gl_error_ = true;
+    }
+    gl_error_occurred = true;
+    VLOGF(2) << "Got a GL error: "
+             << gl::GLEnums::GetStringError(last_gl_error);
+  }
+  if (gl_error_occurred) {
+    LOG(ERROR) << "Could not process a frame due to one or more GL errors";
+    error_cb_.Run();
+    return;
+  }
 
   output_frame->set_timestamp(input_frame->timestamp());
   std::move(cb).Run(std::move(output_frame));
   return;
 }
+
 }  // namespace media

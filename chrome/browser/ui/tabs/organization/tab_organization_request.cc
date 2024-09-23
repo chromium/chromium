@@ -8,15 +8,25 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
+
+GroupData::GroupData(tab_groups::TabGroupId id_,
+                     std::u16string label_,
+                     std::vector<std::unique_ptr<TabData>> tabs_)
+    : id(id_), label(label_), tabs(std::move(tabs_)) {}
+
+GroupData::~GroupData() = default;
 
 TabOrganizationResponse::Organization::Organization(
     std::u16string label_,
     std::vector<TabData::TabID> tab_ids_,
+    std::optional<tab_groups::TabGroupId> group_id_,
     std::optional<TabOrganization::ID> organization_id_)
     : label(label_),
       tab_ids(std::move(tab_ids_)),
+      group_id(group_id_),
       organization_id(organization_id_) {}
 
 TabOrganizationResponse::Organization::Organization(
@@ -68,6 +78,14 @@ TabData* TabOrganizationRequest::AddTabData(std::unique_ptr<TabData> tab_data) {
   return tab_data_ptr;
 }
 
+void TabOrganizationRequest::AddGroupData(
+    tab_groups::TabGroupId id,
+    std::u16string label,
+    std::vector<std::unique_ptr<TabData>> tabs) {
+  group_datas_.emplace_back(
+      std::make_unique<GroupData>(id, label, std::move(tabs)));
+}
+
 void TabOrganizationRequest::StartRequest() {
   CHECK(state_ == State::NOT_STARTED);
   state_ = State::STARTED;
@@ -76,18 +94,17 @@ void TabOrganizationRequest::StartRequest() {
   std::move(backend_start_request_lambda_)
       .Run(this,
            base::BindOnce(&TabOrganizationRequest::CompleteRequest,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
            base::BindOnce(&TabOrganizationRequest::FailRequest,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabOrganizationRequest::CompleteRequest(
     std::unique_ptr<TabOrganizationResponse> response) {
-  // Ignore cancelled state.
-  if (state_ == State::CANCELED) {
+  // Ignore non-started states.
+  if (state_ != State::STARTED) {
     return;
   }
-  CHECK(state_ == State::STARTED);
 
   request_end_time_ = base::Time::Now();
   state_ = State::COMPLETED;

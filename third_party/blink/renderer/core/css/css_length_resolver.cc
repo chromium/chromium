@@ -298,7 +298,7 @@ double CSSLengthResolver::ZoomedComputedPixels(
       return value * RcapFontSize(Zoom());
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

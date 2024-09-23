@@ -7,18 +7,22 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 
 namespace blink {
 
-// ScriptPromiseResolverWithTracker is a wrapper around ScriptPromiseResolver
-// which simplifies recording UMA metric and latency for APIs.
+// ScriptPromiseResolverWithTracker is a wrapper around
+// ScriptPromiseResolverBase which simplifies recording UMA metric and latency
+// for APIs.
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
 // values. This is a sample usage CL: http://crrev.com/c/4053546.
-template <typename ResultEnumType>
+template <typename ResultEnumType, typename IDLResolvedType>
 class CORE_EXPORT ScriptPromiseResolverWithTracker
     : public GarbageCollected<
-          ScriptPromiseResolverWithTracker<ResultEnumType>> {
+          ScriptPromiseResolverWithTracker<ResultEnumType, IDLResolvedType>>,
+      public ExecutionContextLifecycleObserver {
  public:
   // For a given metric |metric_name_prefix|, this class will record
   // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency",
@@ -42,16 +46,22 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       base::TimeDelta min_latency_bucket = base::Milliseconds(1),
       base::TimeDelta max_latency_bucket = base::Seconds(10),
       size_t n_buckets = 50)
-      : metric_name_prefix_(std::move(metric_name_prefix)),
+      : ExecutionContextLifecycleObserver(nullptr),
+        metric_name_prefix_(std::move(metric_name_prefix)),
         start_time_(base::TimeTicks::Now()),
         min_latency_bucket_(min_latency_bucket),
         max_latency_bucket_(max_latency_bucket),
         n_buckets_(n_buckets) {
     DCHECK(!metric_name_prefix_.empty());
-    resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLResolvedType>>(
+        script_state);
     if (timeout_interval.is_positive()) {
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kInternalDefault)
+      auto* execution_context = ExecutionContext::From(script_state);
+      // We're goging to keep this class alive for the duration of timeout,
+      // so observe execution context to detach the underlying resolver when
+      // context is gone.
+      SetExecutionContext(execution_context);
+      execution_context->GetTaskRunner(TaskType::kInternalDefault)
           ->PostDelayedTask(
               FROM_HERE,
               WTF::BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
@@ -64,7 +74,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       delete;
   ScriptPromiseResolverWithTracker& operator=(
       const ScriptPromiseResolverWithTracker&) = delete;
-  ~ScriptPromiseResolverWithTracker() = default;
+  ~ScriptPromiseResolverWithTracker() override = default;
 
   template <typename T>
   void Resolve(T value, ResultEnumType result = ResultEnumType::kOk) {
@@ -72,10 +82,10 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->Resolve(value);
   }
 
-  template <typename T>
+  template <typename IDLRejectType, typename T>
   void Reject(T value, ResultEnumType result) {
     RecordResultAndLatency(result);
-    resolver_->Reject(value);
+    resolver_->template Reject<IDLRejectType>(value);
   }
 
   void SetResultSuffix(std::string result_suffix) {
@@ -134,12 +144,17 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
   ScriptState* GetScriptState() const { return resolver_->GetScriptState(); }
 
-  ScriptPromise Promise() { return resolver_->Promise(); }
+  ScriptPromise<IDLResolvedType> Promise() { return resolver_->Promise(); }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
+  void Trace(Visitor* visitor) const override {
+    ExecutionContextLifecycleObserver::Trace(visitor);
+    visitor->Trace(resolver_);
+  }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  void ContextDestroyed() override { resolver_->Detach(); }
+
+  Member<ScriptPromiseResolver<IDLResolvedType>> resolver_;
   const std::string metric_name_prefix_;
   const base::TimeTicks start_time_;
   const base::TimeDelta min_latency_bucket_;

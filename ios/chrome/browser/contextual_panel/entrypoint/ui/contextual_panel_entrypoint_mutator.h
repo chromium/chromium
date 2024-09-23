@@ -8,8 +8,16 @@
 // Mutator for ContextualPanelEntrypointViewController.
 @protocol ContextualPanelEntrypointMutator
 
+// Notify the mutator to dismiss the entrypoint's IPH.
+- (void)dismissIPHAnimated:(BOOL)animated;
+
 // Notify the mutator that the entrypoint was tapped.
 - (void)entrypointTapped;
+
+// Sets the location label of the location bar centered relative to the content
+// around it when centered is passed as YES. Otherwise, resets it to the
+// "absolute" center.
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
 @end
 

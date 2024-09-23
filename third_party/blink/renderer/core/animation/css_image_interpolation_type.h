@@ -63,7 +63,8 @@ class CSSImageInterpolationType : public CSSInterpolationType {
   }
 
   static const CSSValue* StaticCreateCSSValue(const InterpolableValue&,
-                                              const NonInterpolableValue*);
+                                              const NonInterpolableValue*,
+                                              const CSSLengthResolver&);
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;

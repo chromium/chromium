@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
 #include <algorithm>
 
 namespace media {
+
+ScopedD3DBuffer::ScopedD3DBuffer(base::span<uint8_t> data) : data_(data) {}
+ScopedD3DBuffer::~ScopedD3DBuffer() = default;
 
 D3DInputBuffer::D3DInputBuffer(std::unique_ptr<ScopedD3DBuffer> buffer)
     : buffer_(std::move(buffer)) {}

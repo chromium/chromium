@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/audio/input_sync_writer.h"
 
 #include <algorithm>
@@ -9,6 +14,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -143,8 +150,12 @@ void InputSyncWriter::Write(const media::AudioBus* data,
                             bool key_pressed,
                             base::TimeTicks capture_time,
                             const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT1("audio", "InputSyncWriter::Write", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "InputSyncWriter::Write", "capture_time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF());
+  glitch_info.MaybeAddTraceEvent();
+
   CheckTimeSinceLastWrite();
 
   pending_glitch_info_ += glitch_info;
@@ -155,9 +166,10 @@ void InputSyncWriter::Write(const media::AudioBus* data,
   // writing. We verify that each buffer index is in sequence.
   size_t number_of_indices_available = socket_->Peek() / sizeof(uint32_t);
   if (number_of_indices_available > 0) {
-    auto indices = std::make_unique<uint32_t[]>(number_of_indices_available);
-    size_t bytes_received = socket_->Receive(
-        &indices[0], number_of_indices_available * sizeof(indices[0]));
+    auto indices =
+        base::HeapArray<uint32_t>::WithSize(number_of_indices_available);
+    size_t bytes_received =
+        socket_->Receive(base::as_writable_bytes(indices.as_span()));
     CHECK_EQ(number_of_indices_available * sizeof(indices[0]), bytes_received);
     for (size_t i = 0; i < number_of_indices_available; ++i) {
       ++next_read_buffer_index_;
@@ -263,8 +275,13 @@ bool InputSyncWriter::PushDataToFifo(
     bool key_pressed,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
-  TRACE_EVENT1("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+  TRACE_EVENT("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF(),
+              "fifo delay (ms)",
+              (number_of_filled_segments_ + overflow_data_.size()) *
+                  dropped_buffer_glitch_.duration);
   if (overflow_data_.size() == kMaxOverflowBusesSize) {
     TRACE_EVENT_INSTANT0(
         "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
@@ -306,8 +323,15 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
   CHECK(number_of_filled_segments_ < audio_buses_.size());
-  TRACE_EVENT1("audio", "WriteDataToCurrentSegment", "capture time (ms)",
-               (capture_time - base::TimeTicks()).InMillisecondsF());
+
+  TRACE_EVENT("audio", "WriteDataToCurrentSegment", "glitches",
+              glitch_info.count, "glitch_duration (ms)",
+              glitch_info.duration.InMillisecondsF(), "capture_time (ms)",
+              (capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)",
+              (base::TimeTicks::Now() - capture_time).InMillisecondsF(),
+              "fifo delay (ms)",
+              number_of_filled_segments_ * dropped_buffer_glitch_.duration);
   media::AudioInputBuffer* buffer = GetSharedInputBuffer(current_segment_id_);
   buffer->params.volume = volume;
   buffer->params.size = audio_bus_memory_size_;
@@ -325,7 +349,7 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
 }
 
 bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
-  if (socket_->Send(&current_segment_id_, sizeof(current_segment_id_)) !=
+  if (socket_->Send(base::byte_span_from_ref(current_segment_id_)) !=
       sizeof(current_segment_id_)) {
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.

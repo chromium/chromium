@@ -34,7 +34,7 @@ namespace {
 // Chrome feature flags that gate Live Caption.
 std::vector<base::test::FeatureRef> RequiredFeatureFlags() {
   std::vector<base::test::FeatureRef> features = {
-      media::kLiveCaption, media::kLiveTranslate,
+      media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS,
       media::kLiveCaptionAutomaticLanguageDownload};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   features.push_back(ash::features::kOnDeviceSpeechRecognition);
@@ -54,9 +54,8 @@ void SetRequiredLacrosInitParams() {
 
 }  // namespace
 
-void LiveCaptionBrowserTest::SetUp() {
+LiveCaptionBrowserTest::LiveCaptionBrowserTest() {
   scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
-  InProcessBrowserTest::SetUp();
 }
 
 void LiveCaptionBrowserTest::CreatedBrowserMainParts(

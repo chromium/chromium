@@ -1,0 +1,25 @@
+Tests that the cookie exemption reason is in responseReceivedExtraInfo.
+Iframe Network Enabled
+Number of exempted cookies: 0
+Number of exempted cookies: 1
+{
+    cookie : {
+        domain : .example.test
+        expires : -1
+        httpOnly : false
+        name : foo
+        path : /
+        priority : Medium
+        sameParty : false
+        sameSite : None
+        secure : true
+        session : true
+        size : 6
+        sourcePort : 8443
+        sourceScheme : Secure
+        value : bar
+    }
+    cookieLine : foo=bar; Path=/; Domain=example.test; Secure; SameSite=None;
+    exemptionReason : StorageAccess
+}
+

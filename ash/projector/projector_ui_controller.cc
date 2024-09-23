@@ -5,20 +5,15 @@
 #include "ash/projector/projector_ui_controller.h"
 
 #include "ash/accessibility/caption_bubble_context_ash.h"
-#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
-#include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "base/functional/callback_helpers.h"
@@ -48,52 +43,6 @@ constexpr char kProjectorErrorNotificationId[] = "projector_error_notification";
 // A unique id for system notifications reporting a save failure.
 constexpr char kProjectorSaveErrorNotificationId[] =
     "projector_save_error_notification";
-
-ProjectorAnnotationTray* GetProjectorAnnotationTrayForRoot(aura::Window* root) {
-  // It may happen that root is nullptr. This may happen in the event that
-  // the annotation tray is hidden before the canvas finishes its
-  // initialization.
-  if (!root) {
-    return nullptr;
-  }
-
-  DCHECK(root->IsRootWindow());
-
-  // Recording can end when a display being fullscreen-captured gets removed, in
-  // this case, we don't need to hide the button.
-  if (root->is_destroying())
-    return nullptr;
-
-  // Can be null while shutting down.
-  auto* root_window_controller = RootWindowController::ForWindow(root);
-  if (!root_window_controller)
-    return nullptr;
-
-  auto* projector_annotation_tray =
-      root_window_controller->GetStatusAreaWidget()
-          ->projector_annotation_tray();
-  DCHECK(projector_annotation_tray);
-  return projector_annotation_tray;
-}
-
-void SetProjectorAnnotationTrayVisibility(aura::Window* root, bool visible) {
-  if (auto* projector_annotation_tray = GetProjectorAnnotationTrayForRoot(root))
-    projector_annotation_tray->SetVisiblePreferred(visible);
-}
-
-void ToggleAnnotatorCanvas() {
-  auto* capture_mode_controller = CaptureModeController::Get();
-  // TODO(b/200292852): This check should not be necessary, but because
-  // several Projector unit tests that rely on mocking and don't test the real
-  // code path, we can end up calling |ToggleRecordingOverlayEnabled()|
-  // without ever starting a Projector recording session.
-  // |CaptureModeController| asserts all invariants via DCHECKs, and those
-  // tests would crash. Remove any unnecessary mocks and test the real thing
-  // if possible.
-  if (capture_mode_controller->is_recording_in_progress()) {
-    capture_mode_controller->ToggleRecordingOverlayEnabled();
-  }
-}
 
 // Shows a Projector-related notification to the user with the given parameters.
 void ShowNotification(
@@ -144,103 +93,8 @@ void ProjectorUiController::ShowSaveFailureNotification() {
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 
-ProjectorUiController::ProjectorUiController(
-    ProjectorControllerImpl* projector_controller) {
-  projector_session_observation_.Observe(
-      projector_controller->projector_session());
-}
+ProjectorUiController::ProjectorUiController() = default;
 
 ProjectorUiController::~ProjectorUiController() = default;
 
-void ProjectorUiController::ShowAnnotationTray(aura::Window* current_root) {
-  current_root_ = current_root;
-
-  // Show the tray icon.
-  SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/true);
-}
-
-void ProjectorUiController::HideAnnotationTray() {
-  ResetTools();
-  // Hide the tray icon.
-  if (auto* projector_annotation_tray =
-          GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->HideAnnotationTray();
-  }
-
-  canvas_initialized_state_.reset();
-  current_root_ = nullptr;
-}
-
-void ProjectorUiController::EnableAnnotatorTool() {
-  if (!annotator_enabled_) {
-    ToggleAnnotatorCanvas();
-    annotator_enabled_ = !annotator_enabled_;
-    RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
-  }
-}
-
-void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
-  ash::ProjectorAnnotatorController::Get()->SetTool(tool);
-  RecordMarkerColorMetrics(GetMarkerColorForMetrics(tool.color));
-}
-
-void ProjectorUiController::ResetTools() {
-  if (annotator_enabled_) {
-    ToggleAnnotatorCanvas();
-    annotator_enabled_ = false;
-    ash::ProjectorAnnotatorController::Get()->Clear();
-  }
-}
-
-void ProjectorUiController::OnCanvasInitialized(bool success) {
-  canvas_initialized_state_ = success;
-  UpdateTrayEnabledState();
-}
-
-bool ProjectorUiController::GetAnnotatorAvailability() {
-  if (!canvas_initialized_state_) {
-    return false;
-  }
-  return *canvas_initialized_state_;
-}
-
-void ProjectorUiController::ToggleAnnotationTray() {
-  if (auto* projector_annotation_tray =
-          GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->ToggleAnnotator();
-  }
-}
-
-void ProjectorUiController::OnRecordedWindowChangingRoot(
-    aura::Window* new_root) {
-  DCHECK_NE(new_root, current_root_);
-
-  SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/false);
-  SetProjectorAnnotationTrayVisibility(new_root, /*visible=*/true);
-  current_root_ = new_root;
-  if (GetAnnotatorAvailability())
-    UpdateTrayEnabledState();
-}
-
-void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
-  if (!active)
-    ResetTools();
-}
-
-ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
-    SkColor color) {
-  std::map<SkColor, ProjectorMarkerColor> marker_colors_map = {
-      {kProjectorMagentaPenColor, ProjectorMarkerColor::kMagenta},
-      {kProjectorBluePenColor, ProjectorMarkerColor::kBlue},
-      {kProjectorRedPenColor, ProjectorMarkerColor::kRed},
-      {kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
-  return marker_colors_map[color];
-}
-
-void ProjectorUiController::UpdateTrayEnabledState() {
-  if (auto* projector_annotation_tray =
-          GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
-  }
-}
 }  // namespace ash

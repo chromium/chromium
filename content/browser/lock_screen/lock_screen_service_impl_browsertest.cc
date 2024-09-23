@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenServiceImplBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath expected_dir = GetStoragePath();
   EXPECT_FALSE(base::PathExists(expected_dir));
-  // TODO(crbug.com/1268227): Consider testing write failure case.
+  // TODO(crbug.com/40204655): Consider testing write failure case.
   ASSERT_EQ(blink::mojom::LockScreenServiceStatus::kSuccess,
             AwaitSetData(service(), "key1", "data1"));
   ASSERT_TRUE(base::PathExists(expected_dir));

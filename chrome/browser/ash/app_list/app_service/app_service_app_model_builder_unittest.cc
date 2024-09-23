@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -18,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
-#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -121,8 +121,7 @@ MATCHER(IsSystemFolder, "") {
 
 // Get a set of all apps in |model|.
 std::vector<std::string> GetModelContent(AppListModelUpdater* model_updater) {
-  return base::test::ToVector(model_updater->GetItems(),
-                              &ChromeAppListItem::name);
+  return base::ToVector(model_updater->GetItems(), &ChromeAppListItem::name);
 }
 
 scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
@@ -334,9 +333,9 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   std::string CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl("https://example.com/");
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
     web_app_info->title = base::UTF8ToUTF16(app_name);
-    web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -379,7 +378,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
 
     extensions::ChromeAppIcon::ApplyEffects(
         size_in_dip, extensions::ChromeAppIcon::ResizeFunction(),
-        true /* app_launchable */, true /* from_bookmark */,
+        /*app_launchable=*/true, /*rounded_corners=*/true,
         extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
     for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       // Force the icon to be loaded.

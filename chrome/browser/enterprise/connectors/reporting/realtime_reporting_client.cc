@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -52,6 +52,7 @@
 #else
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -60,6 +61,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/features.h"
@@ -82,20 +84,27 @@ bool IsClientValid(const std::string& dm_token,
   return client && client->dm_token() == dm_token;
 }
 
-void UploadCallback(base::Value::Dict wrapper,
+void UploadCallback(base::Value::Dict event_wrapper,
                     bool per_profile,
-                    std::string dm_token,
+                    policy::CloudPolicyClient* client,
                     EnterpriseReportingEventType eventType,
                     policy::CloudPolicyClient::Result upload_result) {
   // TODO(b/256553070): Do not crash if the client is unregistered.
   CHECK(!upload_result.IsClientNotRegisteredError());
 
-  // Show the report on chrome://safe-browsing, if appropriate.
-  wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
-  wrapper.Set(per_profile ? "profile_dm_token" : "browser_dm_token",
-              std::move(dm_token));
+// Device DM token is already set on Ash by reporting::GetContext(...)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!per_profile && client) {
+    event_wrapper.SetByDottedPath(
+        "context.device",
+        policy::ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            BuildDeviceDictionary(client->dm_token(), client->client_id()));
+  }
+#endif
+  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
+
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-      std::move(wrapper));
+      std::move(event_wrapper));
 
   if (upload_result.IsSuccess()) {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
@@ -112,23 +121,26 @@ void UploadSecurityEventReport(base::Value::Dict event,
                                const ReportingSettings& settings,
                                content::BrowserContext* context,
                                base::Time time) {
-  auto upload_callback = base::BindOnce(
-      &UploadCallback, event.Clone(), settings.per_profile, client->dm_token(),
-      enterprise_connectors::GetUmaEnumFromEventName(name));
+  base::Value::Dict event_wrapper =
+      base::Value::Dict()
+          .Set("time", base::TimeFormatAsIso8601(time))
+          .Set(name, std::move(event));
 
-  base::Value::Dict wrapper;
-  wrapper.Set("time", base::TimeFormatAsIso8601(time));
-  wrapper.Set(name, std::move(event));
-
-  VLOG(1) << "enterprise.connectors: security event: " << wrapper.DebugString();
-  base::Value::List event_list;
-  event_list.Append(std::move(wrapper));
+  VLOG(1) << "enterprise.connectors: security event: "
+          << event_wrapper.DebugString();
 
   Profile* profile = Profile::FromBrowserContext(context);
-  client->UploadSecurityEventReport(
-      context, IncludeDeviceInfo(profile, settings.per_profile),
+  base::Value::Dict report =
       policy::RealtimeReportingJobConfiguration::BuildReport(
-          std::move(event_list), reporting::GetContext(profile)),
+          base::Value::List().Append(std::move(event_wrapper)),
+          reporting::GetContext(profile));
+
+  auto upload_callback = base::BindOnce(
+      &UploadCallback, report.Clone(), settings.per_profile, client,
+      enterprise_connectors::GetUmaEnumFromEventName(name));
+
+  client->UploadSecurityEventReport(
+      IncludeDeviceInfo(profile, settings.per_profile), std::move(report),
       std::move(upload_callback));
 }
 
@@ -172,17 +184,6 @@ RealtimeReportingClient::~RealtimeReportingClient() {
     browser_client_->RemoveObserver(this);
   if (profile_client_)
     profile_client_->RemoveObserver(this);
-}
-
-// static
-std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
-  base::FilePath::StringType os_filename;
-#if BUILDFLAG(IS_WIN)
-  os_filename = base::UTF8ToWide(filename);
-#else
-  os_filename = filename;
-#endif
-  return base::FilePath(os_filename).BaseName().AsUTF8Unsafe();
 }
 
 // static
@@ -324,9 +325,6 @@ RealtimeReportingClient::InitBrowserReportingClient(
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   client = browser_private_client_.get();
 
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
   if (!client->is_registered()) {
     client->SetupRegistration(
         dm_token, client_id,
@@ -340,8 +338,8 @@ RealtimeReportingClient::InitBrowserReportingClient(
 std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {
-  policy::UserCloudPolicyManager* policy_manager =
-      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+  policy::CloudPolicyManager* policy_manager =
+      Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
   if (!policy_manager || !policy_manager->core() ||
       !policy_manager->core()->client()) {
     return {kProfilePolicyClientDescription, nullptr};
@@ -352,10 +350,6 @@ RealtimeReportingClient::InitProfileReportingClient(
       g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
   policy::CloudPolicyClient* client = profile_private_client_.get();
-
-  // TODO(crbug.com/1069049): when we decide to add the extra URL parameters to
-  // the uploaded reports, do the following:
-  //     client->add_connector_url_params(true);
 
   client->SetupRegistration(dm_token,
                             policy_manager->core()->client()->client_id(),
@@ -464,7 +458,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 #ifndef NDEBUG
   // Make sure the event is included in the kAllReportingEvents array.
   bool found = false;
-  for (const char* event_name : ReportingServiceSettings::kAllReportingEvents) {
+  for (const char* event_name : kAllReportingEvents) {
     if (event_name == name) {
       found = true;
       break;
@@ -507,8 +501,17 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 }
 
 std::string RealtimeReportingClient::GetProfileUserName() const {
-  return identity_manager_ ? safe_browsing::GetProfileEmail(identity_manager_)
-                           : std::string();
+  std::string username =
+      identity_manager_ ? GetProfileEmail(identity_manager_) : std::string();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (username.empty()) {
+    username = Profile::FromBrowserContext(context_)->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return username;
 }
 
 std::string RealtimeReportingClient::GetProfileIdentifier() const {

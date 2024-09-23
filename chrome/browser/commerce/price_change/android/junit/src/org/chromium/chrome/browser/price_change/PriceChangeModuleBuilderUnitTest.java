@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_change;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,9 +18,9 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -29,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -50,7 +50,6 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
         shadows = {ShadowAppCompatResources.class})
 public class PriceChangeModuleBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Profile mProfile;
@@ -67,6 +66,7 @@ public class PriceChangeModuleBuilderUnitTest {
         MockitoAnnotations.initMocks(this);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
 
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
@@ -93,10 +93,16 @@ public class PriceChangeModuleBuilderUnitTest {
     @SmallTest
     public void testBuildModule_NotEligible() {
         assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
-        assertFalse(mModuleBuilder.isEligible());
 
         assertFalse(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildModule_NotEligibleWithoutProfileInitialized() {
+        mProfile = null;
+        assertFalse(mModuleBuilder.isEligible());
     }
 
     @Test
@@ -105,9 +111,18 @@ public class PriceChangeModuleBuilderUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
-        assertTrue(mModuleBuilder.isEligible());
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, times(1)).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetRegularProfile() {
+        Profile regularProfile = Mockito.mock(Profile.class);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(regularProfile);
+
+        assertEquals(regularProfile, mModuleBuilder.getRegularProfile());
     }
 }

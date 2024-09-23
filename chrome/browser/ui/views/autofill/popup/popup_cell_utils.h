@@ -7,16 +7,18 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
-#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/style/typography.h"
 
 namespace views {
 class View;
 class Label;
-class BoxLayout;
+class BoxLayoutView;
 class ImageView;
 }  // namespace views
 
@@ -25,46 +27,12 @@ class PopupRowContentView;
 }  // namespace autofill
 
 namespace gfx {
-class Insets;
+struct VectorIcon;
 }
 
 namespace autofill::popup_cell_utils {
 
-// Returns the padding for a content cell.
-//
-// For content cells that make up the entire Autofill popup row (i.e. there is
-// no control element), the following reasoning applies:
-// * If `kAutofillShowAutocompleteDeleteButton` is on, then there is padding
-//   with distance `DISTANCE_CONTENT_LIST_VERTICAL_SINGLE` between the edge of
-//   the Autofill popup row and the start of the content cell.
-// * In addition, there is also padding inside the content cell. Together, these
-//   two paddings need to add up to `PopupBaseView::GetHorizontalMargin`, since
-//   to ensure that the content inside the content cell is aligned with the
-//   popup bubble's arrow.
-// * Similarly, the right padding of the content cell needs to be adjusted.
-//
-//           / \
-//          /   \
-//         /     \
-//        / arrow \
-// ┌─────/         \────────────────────────┐
-// │  ┌──────────────────────────────────┐  │
-// │  │  ┌─────────┐ ┌────────────────┐  │  │
-// ├──┼──┤         │ │                │  │  │
-// ├──┤▲ │  Icon   │ │ Text labels    │  │  │
-// │▲ │| │         │ │                │  │  │
-// ││ ││ └─────────┘ └────────────────┘  │  │
-// ││ └┼─────────────────────────────────┘  │
-// └┼──┼────────────────────────────────────┘
-//  │  │
-//  │  PopupBaseView::GetHorizontalMargin()
-//  │
-//  DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
-//
-// If the popup row has a control element, then the adjustment does not need
-// to be made for the right padding, since the right side of the content cell
-// borders another cell and not the right padding area of the popup row.
-gfx::Insets GetMarginsForContentCell(bool has_control_element);
+std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon);
 
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion);
 
@@ -76,28 +44,14 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
 
 // Adds a spacer with `spacer_width` to `view`. `layout` must be the
 // LayoutManager of `view`.
-void AddSpacerWithSize(views::View& view,
-                       views::BoxLayout& layout,
+void AddSpacerWithSize(views::BoxLayoutView& view,
                        int spacer_width,
                        bool resize);
 
-// Creates the table in which all the Autofill suggestion content apart from
-// leading and trailing icons is contained and adds it to `content_view`.
-// It registers `main_text_label`, `minor_text_label`, and `description_label`
-// with `content_view` for tracking, but assumes that the labels inside of of
-// `subtext_views` have already been registered for tracking with
-// `content_view`.
-void AddSuggestionContentTableToView(
-    std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
-    std::unique_ptr<views::Label> description_label,
-    std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupRowContentView& content_view);
-
 // Creates the content structure shared by autocomplete, address, credit card,
 // and password suggestions.
-// - `minor_text_label`, `description_label`, and `subtext_labels` may all be
-// null or empty.
+// - `main/minor_text_label`, `description_label`, `subtext_views` and
+// `icon` may all be null or empty.
 // - `content_view` is the (assumed to be empty) view to which the content
 // structure for the `suggestion` is added.
 void AddSuggestionContentToView(
@@ -106,36 +60,14 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
+    std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view);
 
-void FormatLabel(views::Label& label,
-                 const Suggestion::Text& text,
-                 FillingProduct main_filling_product,
-                 int maximum_width_single_line);
+ui::ImageModel ImageModelFromVectorIcon(const gfx::VectorIcon& vector_icon,
+                                        int icon_size);
 
-// Creates a label for the suggestion's main text.
-std::unique_ptr<views::Label> CreateMainTextLabel(
-    const Suggestion::Text& main_text,
-    int text_style);
-
-// Creates a label for the suggestion's minor text.
-std::unique_ptr<views::Label> CreateMinorTextLabel(
-    const Suggestion::Text& minor_text);
-
-// Creates sub-text views and pass their references to `PopupRowContentView` for
-// centralized style management. If `text_style` is not provided, the default
-// style from GetSecondaryTextStyle() will be used for the label views."
-std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
-    PopupRowContentView& content_view,
-    const Suggestion& suggestion,
-    FillingProduct main_filling_product,
-    std::optional<int> text_style = std::nullopt);
-
-int GetMaxPopupAddressProfileWidth();
-
-std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
-    const gfx::VectorIcon& vector_icon,
-    int icon_size);
+// Returns the expandable menu icon depending on `type`.
+const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type);
 
 }  // namespace autofill::popup_cell_utils
 

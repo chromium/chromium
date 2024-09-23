@@ -40,7 +40,7 @@ gfx::ImageSkia CreateNotificationAppIcon(
       cros_tokens::kCrosSysOnPrimary);
   SkColor icon_background_color = CalculateIconBackgroundColor(notification);
 
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // TODO(crbug.com/40541732): figure out if this has a performance impact and
   // cache images if so.
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
       kNotificationAppIconImageSize, icon_color, icon_background_color,
@@ -58,9 +58,16 @@ gfx::ImageSkia CreateNotificationAppIcon(
 
 gfx::ImageSkia CreateNotificationItemIcon(
     const message_center::NotificationItem* item) {
-  // TODO(b/284512022): Return a resized image provided in `item` or a
-  // default contact icon. Remove the temporary implementation returning a
-  // hardcoded chrome icon.
+  if (item->icon().has_value()) {
+    gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
+        item->icon().value().GetImage().AsImageSkia(),
+        skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+        gfx::Size(kNotificationAppIconViewSize, kNotificationAppIconViewSize));
+
+    return resized;
+  }
+  // TODO(b/284512022): Remove the temporary implementation returning a
+  // hardcoded chrome icon as a default icon.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kNotificationAppIconViewSize / 2, SK_ColorRED,
       gfx::CreateVectorIcon(message_center::kProductIcon,
@@ -77,7 +84,7 @@ SkColor CalculateIconBackgroundColor(
   }
 
   auto color_id = notification->accent_color_id();
-  absl::optional<SkColor> accent_color = notification->accent_color();
+  std::optional<SkColor> accent_color = notification->accent_color();
 
   if (!color_id || !accent_color.has_value()) {
     return default_color;
@@ -106,7 +113,7 @@ SkColor CalculateIconBackgroundColor(
                      : gfx::kPlaceholderColor;
   return color_utils::BlendForMinContrast(
              fg_color, bg_color,
-             /*high_contrast_foreground=*/absl::nullopt, minContrastRatio)
+             /*high_contrast_foreground=*/std::nullopt, minContrastRatio)
       .color;
 }
 
@@ -152,7 +159,7 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
                                                   background_radii);
 }
 
-void StyleNotificationPopup(views::View* notification_view) {
+void StyleNotificationPopup(message_center::MessageView* notification_view) {
   notification_view->SetPaintToLayer();
   auto* layer = notification_view->layer();
   layer->SetFillsBoundsOpaquely(false);
@@ -168,6 +175,8 @@ void StyleNotificationPopup(views::View* notification_view) {
   notification_view->SetBorder(std::make_unique<views::HighlightBorder>(
       kMessagePopupCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  notification_view->UpdateCornerRadius(kMessagePopupCornerRadius,
+                                        kMessagePopupCornerRadius);
 }
 
 std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(

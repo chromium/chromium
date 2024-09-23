@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,25 +48,6 @@ constexpr char kStartTime[] = "1 Jan 2020 21:15";
 
 const app_time::AppId kArcApp(apps::AppType::kArc, "packageName");
 
-arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
-    const std::string& package_name) {
-  auto package = arc::mojom::ArcPackageInfo::New();
-  package->package_name = package_name;
-  package->package_version = 1;
-  package->last_backup_android_id = 1;
-  package->last_backup_time = 1;
-  package->sync = false;
-  return package;
-}
-
-arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name) {
-  auto app = arc::mojom::AppInfo::New();
-  app->package_name = package_name;
-  app->name = package_name;
-  app->activity = base::StrCat({package_name, ".", "activity"});
-  app->sticky = true;
-  return app;
-}
 }  // namespace
 
 namespace utils = time_limit_test_utils;
@@ -249,7 +230,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
   std::string package_name = kArcApp.app_id();
   arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
   std::vector<arc::mojom::AppInfoPtr> apps;
-  apps.emplace_back(CreateArcAppInfo(package_name));
+  apps.emplace_back(CreateArcAppInfo(package_name, package_name));
   arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
 
   // Add limit policy to the Chrome and the Arc app.

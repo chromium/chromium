@@ -40,10 +40,12 @@ source_set("eg2_tests") {
   sources = [ "destination_usage_history_egtest.mm" ]
   deps = [
     ":destination_usage_history",
+    "//components/feature_engagement/public",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
   ]
   frameworks = [ "UIKit.framework" ]
 }

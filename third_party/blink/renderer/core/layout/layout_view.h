@@ -25,22 +25,29 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
-#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/hit_test_cache.h"
-#include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 
+class HitTestCache;
+class HitTestLocation;
+class HitTestResult;
+class LayoutText;
 class LayoutViewTransitionRoot;
 class LocalFrameView;
+
+struct VariableLengthTransformResult {
+  wtf_size_t original_length;
+  TextOffsetMap offset_map;
+};
 
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
 //
@@ -58,12 +65,13 @@ class LocalFrameView;
 // Because there is one LayoutView per rooted layout tree (or Frame), this class
 // is used to add members shared by this tree (e.g. m_layoutState or
 // m_layoutQuoteHead).
-class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutView : public LayoutBlockFlow {
  public:
   explicit LayoutView(ContainerNode* document);
   ~LayoutView() override;
   void Trace(Visitor*) const override;
 
+  void LayoutRoot();
   void WillBeDestroyed() override;
 
   // hitTest() will update layout, style and compositing first while
@@ -105,7 +113,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   void InvalidateSvgRootsWithRelativeLengthDescendents();
-  void UpdateLayout() final;
   LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:
@@ -113,6 +120,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // - Accounts for printing layout
   // - scrollbar exclusion is compatible with root layer scrolling
   gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
+
+  // Same as above, but ignore print settings.
+  gfx::Size GetNonPrintingLayoutSize(IncludeScrollbarsInRect) const;
 
   int ViewHeight(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
@@ -151,8 +161,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   void CommitPendingSelection();
 
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
 
   PhysicalRect ViewRect() const override;
   PhysicalRect OverflowClipRect(const PhysicalOffset& location,
@@ -185,37 +196,23 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   bool IsFragmentationContextRoot() const override;
 
-  void SetDefaultPageDescription(const WebPrintPageDescription& description) {
+  void SetInitialContainingBlockSizeForPrinting(PhysicalSize size) {
     NOT_DESTROYED();
-    default_page_description_ = description;
+    initial_containing_block_size_for_printing_ = size;
   }
-  const WebPrintPageDescription& DefaultPageDescription() const {
+  PhysicalSize InitialContainingBlockSizeForPrinting() const {
     NOT_DESTROYED();
-    return default_page_description_;
-  }
-
-  void SetInitialContainingBlockSizeForPagination(PhysicalSize size) {
-    NOT_DESTROYED();
-    initial_containing_block_size_for_pagination_ = size;
-  }
-  PhysicalSize InitialContainingBlockSizeForPagination() const {
-    NOT_DESTROYED();
-    return initial_containing_block_size_for_pagination_;
+    return initial_containing_block_size_for_printing_;
   }
 
-  void SetPageScaleFactor(float factor) {
+  void SetPaginationScaleFactor(float factor) {
     NOT_DESTROYED();
-    page_scale_factor_ = factor;
+    pagination_scale_factor_ = factor;
   }
-  float PageScaleFactor() const {
+  float PaginationScaleFactor() const {
     NOT_DESTROYED();
-    return page_scale_factor_;
+    return pagination_scale_factor_;
   }
-
-  // Get the page area size (fragmentainer size) for a given page number and
-  // name.
-  PhysicalSize PageAreaSize(wtf_size_t page_index,
-                            const AtomicString& page_name) const;
 
   AtomicString NamedPageAtIndex(wtf_size_t page_index) const;
 
@@ -265,10 +262,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // node within the same lifecycle update will return false.
   bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
-  // Update generated markers and counters after style and layout tree update.
+  // Update generated counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.
-  void UpdateMarkersAndCountersAfterStyleChange(
-      LayoutObject* container = nullptr);
+  void UpdateCountersAfterStyleChange(LayoutObject* container = nullptr);
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
@@ -329,10 +325,10 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
                           TransformState&,
                           MapCoordinatesFlags) const override;
 
-  static bool ShouldUsePrintingLayout(const Document&);
-  bool ShouldUsePrintingLayout() const {
+  static bool ShouldUsePaginatedLayout(const Document&);
+  bool ShouldUsePaginatedLayout() const {
     NOT_DESTROYED();
-    return ShouldUsePrintingLayout(GetDocument());
+    return ShouldUsePaginatedLayout(GetDocument());
   }
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
@@ -342,6 +338,14 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   LogicalSize InitialContainingBlockSize() const;
 
   TrackedDescendantsMap& SvgTextDescendantsMap();
+
+  // Manage rare data of LayoutText.
+  void RegisterVariableLengthTransformResult(
+      const LayoutText& text,
+      const VariableLengthTransformResult& result);
+  void UnregisterVariableLengthTransformResult(const LayoutText& text);
+  VariableLengthTransformResult GetVariableLengthTransformResult(
+      const LayoutText& text);
 
   LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
@@ -371,11 +375,10 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     return false;
   }
 
-  // Default page description (size and margins):
-  WebPrintPageDescription default_page_description_;
-
-  // The page area (content area) size of the first page, when printing.
-  PhysicalSize initial_containing_block_size_for_pagination_;
+  // The page area (content area) size of the first page, when printing. This
+  // size should always be consulted when printing, also when not paginating
+  // (e.g. if it's a subframe).
+  PhysicalSize initial_containing_block_size_for_printing_;
 
   // The scale factor that is applied to page area sizes. This affects the
   // initial containing block size for print layout. Used to honor any scaling
@@ -386,7 +389,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // the print parameters. If this results in inline overflow, we'll increase
   // the scale factor and relayout, to fit more content, as an attempt to avoid
   // inline overflow.
-  float page_scale_factor_ = 1.0;
+  float pagination_scale_factor_ = 1.0;
 
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;
@@ -398,6 +401,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // because LayoutSVGText's layout result depends on scaling factors
   // computed with ancestor transforms.
   Member<TrackedDescendantsMap> svg_text_descendants_;
+
+  HeapHashMap<WeakMember<const LayoutText>, VariableLengthTransformResult>
+      text_to_variable_length_transform_result_;
 
   unsigned hit_test_count_;
   unsigned hit_test_cache_hits_;

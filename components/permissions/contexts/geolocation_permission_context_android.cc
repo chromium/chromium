@@ -218,7 +218,7 @@ content::PermissionResult
 GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
     content::PermissionResult result,
     const GURL& requesting_origin,
-    const GURL& embedding_origin) const {
+    const GURL& embedding_origin) {
   if (result.status != PermissionStatus::DENIED) {
     if (!location_settings_->IsSystemLocationSettingEnabled()) {
       // As this is returning the status for possible future permission
@@ -251,6 +251,10 @@ GeolocationPermissionContextAndroid::UpdatePermissionStatusWithDeviceStatus(
   }
 
   return result;
+}
+
+bool GeolocationPermissionContextAndroid::AlwaysIncludeDeviceStatus() const {
+  return true;
 }
 
 std::string
@@ -305,7 +309,7 @@ void GeolocationPermissionContextAndroid::UpdateLocationSettingsBackOff(
       next_show += base::Days(90);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   PrefService* prefs = delegate_->GetPrefs(browser_context());

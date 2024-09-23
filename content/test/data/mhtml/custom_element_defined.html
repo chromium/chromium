@@ -1,0 +1,61 @@
+<body>
+
+Below is a custom element.
+<test-element>
+
+</test-element>
+
+<undefined-test-element>
+Hidden because undefined-test-element is not defined.
+</undefined-test-element>
+
+<b>Hidden with adopted stylesheet on document</b>
+
+<script>
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const testContents = document.getElementById('test-contents');
+      const shadowRoot = this.attachShadow({mode: 'open'});
+
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync("a { display: none; }");
+      shadowRoot.adoptedStyleSheets = [sheet];
+
+      shadowRoot.innerHTML = `
+<div>
+    Inside Custom Element
+    <a>Hidden with adopted stylesheet on shadowRoot</a>
+    <i>Hidden with stylesheet on shadowRoot</i>
+</div>
+<style>
+    /*This will be overridden by the adopted stylesheet.*/
+    a { display: block; }
+    i { display: none; }
+</style>
+`;
+    }
+  }
+  customElements.define('test-element', TestElement);
+
+
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync("b { display: none; }");
+  document.adoptedStyleSheets = [sheet];
+</script>
+</body>
+
+<style>
+    /** TODO(crbug.com/363289333): MHTML should retain status of defined
+        elements, but it currently does not. Uncomment this when fixed.
+    test-element:not(:defined) {
+        display: none;
+    }
+    */
+    undefined-test-element:not(:defined) {
+        display: none;
+    }
+    /*This will be overridden by the adopted stylesheet.*/
+    b { display: block; }
+</style>

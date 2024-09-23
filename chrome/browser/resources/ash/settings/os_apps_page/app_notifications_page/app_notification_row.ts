@@ -17,6 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {recordSettingChange} from '../../metrics_recorder.js';
 import {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './app_notification_row.html.js';
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
@@ -80,9 +81,8 @@ export class AppNotificationRowElement extends PolymerElement {
 
     this.mojoInterfaceProvider_.setNotificationPermission(
         this.app.id, permission);
-    recordSettingChange();
-    chrome.metricsPrivate.recordBoolean(
-        'ChromeOS.Settings.NotificationPage.PermissionOnOff', !this.checked_);
+    recordSettingChange(
+        Setting.kAppNotificationOnOff, {boolValue: !this.checked_});
   }
 }
 

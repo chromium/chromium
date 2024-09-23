@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Suppress x.py warning about configuration changes
-changelog-seen = 2
+# FIXME: Remove after next rust roll.
+$CHANGELOG_SEEN
 
 [llvm]
 # We use LLVM that we've built ourselves.
@@ -33,6 +33,19 @@ docs = false
 # We enable profiler so that PGO and coverage build options are available
 # with the rust compiler we build.
 profiler = true
+
+# With `extended = true`, `x.py install` will install rustc and the listed
+# tools. This is the *only* way to install rust-analyzer-proc-macro-srv, which
+# is necessary to use rust-analyzer.
+extended = true
+tools = [
+    "cargo",
+    "clippy",
+    "rustfmt",
+    "rust-analyzer",
+    "rust-analyzer-proc-macro-srv",
+    "src",
+]
 
 [install]
 prefix = "$INSTALL_DIR"

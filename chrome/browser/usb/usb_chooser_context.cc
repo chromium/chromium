@@ -5,6 +5,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif
 
@@ -200,7 +201,7 @@ base::Value::Dict UsbChooserContext::DeviceInfoToValue(
   base::Value::Dict device_value;
   device_value.Set(kDeviceNameKey, device_info.product_name
                                        ? *device_info.product_name
-                                       : base::StringPiece16());
+                                       : std::u16string_view());
   device_value.Set(kVendorIdKey, device_info.vendor_id);
   device_value.Set(kProductIdKey, device_info.product_id);
 
@@ -234,6 +235,11 @@ void UsbChooserContext::InitDeviceList(
         .Run(std::move(device_list));
     pending_get_devices_requests_.pop();
   }
+}
+
+void UsbChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
 }
 
 void UsbChooserContext::EnsureConnectionWithDeviceManager() {
@@ -308,8 +314,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
         DCHECK(base::Contains(devices_, guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
-            content_settings::SettingSource::SETTING_SOURCE_USER,
-            is_incognito_));
+            content_settings::SettingSource::kUser, is_incognito_));
       }
     }
   }
@@ -318,7 +323,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
   // to device object if the object is also allowed by policy. Any objects that
   // have been granted by policy are removed from |objects| to avoid duplicate
   // permissions from being displayed.
-  // TODO(https://crbug.com/926984): This logic is very similar to the logic for
+  // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetAllGrantedObjects(), so it could potentially be centralized.
   std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {
@@ -356,7 +361,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
       }
 
       objects.push_back(std::make_unique<Object>(
-          url, std::move(object), content_settings::SETTING_SOURCE_POLICY,
+          url, std::move(object), content_settings::SettingSource::kPolicy,
           is_incognito_));
     }
   }
@@ -379,14 +384,14 @@ UsbChooserContext::GetAllGrantedObjects() {
       DCHECK(base::Contains(devices_, guid));
       objects.push_back(std::make_unique<Object>(
           origin, DeviceInfoToValue(*devices_[guid]),
-          content_settings::SETTING_SOURCE_USER, is_incognito_));
+          content_settings::SettingSource::kUser, is_incognito_));
     }
   }
 
   // Iterate through the user granted objects to create a mapping of device IDs
   // to device object for the policy granted objects to use, and remove
   // objects that have already been granted permission by the policy.
-  // TODO(https://crbug.com/926984): This logic is very similar to the logic for
+  // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetGrantedObjects(), so it could potentially be centralized.
   std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {
@@ -421,8 +426,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       }
 
       objects.push_back(std::make_unique<Object>(
-          url, std::move(object),
-          content_settings::SettingSource::SETTING_SOURCE_POLICY,
+          url, std::move(object), content_settings::SettingSource::kPolicy,
           is_incognito_));
     }
   }

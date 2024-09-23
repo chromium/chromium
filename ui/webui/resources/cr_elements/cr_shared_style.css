@@ -4,24 +4,12 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
+ * #scheme=relative
  * #import=./cr_shared_vars.css.js
  * #import=./cr_hidden_style.css.js
  * #import=./cr_icons.css.js
- * #scheme=relative
  * #include=cr-hidden-style cr-icons
  * #css_wrapper_metadata_end */
-
-html,
-:host {
-  --scrollable-border-color: var(--google-grey-300);
-}
-
-@media (prefers-color-scheme: dark) {
-  html,
-  :host {
-    --scrollable-border-color: var(--google-grey-700);
-  }
-}
 
 [actionable] {
   cursor: pointer;
@@ -90,15 +78,18 @@ iron-list.cr-separators > *:not([first]) {
   z-index: 1;
 }
 
-/** Styles for elements that implement the CrContainerShadowBehavior */
+/** Styles for elements that implement the CrContainerShadowMixin */
 #cr-container-shadow-bottom {
   margin-bottom: 0;
   margin-top: var(--cr-container-shadow-margin);
   transform: scaleY(-1);
 }
 
-#cr-container-shadow-top.has-shadow,
-#cr-container-shadow-bottom.has-shadow {
+#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
+#container.can-scroll:not(.scrolled-to-bottom) +
+    #cr-container-shadow-bottom,
+#cr-container-shadow-bottom.force-shadow,
+#cr-container-shadow-top.force-shadow {
   opacity: var(--cr-container-shadow-max-opacity);
 }
 
@@ -123,7 +114,8 @@ iron-list.cr-separators > *:not([first]) {
   margin-inline-start: 8px;
 }
 
-paper-tooltip::part(tooltip) {
+paper-tooltip::part(tooltip),
+cr-tooltip::part(tooltip) {
   border-radius: var(--paper-tooltip-border-radius, 2px);
   font-size: 92.31%;  /* Effectively 12px if the host default is 13px. */
   font-weight: 500;

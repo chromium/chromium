@@ -13,15 +13,14 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/test_timeouts.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -29,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
@@ -62,6 +60,7 @@
 @end
 
 @implementation TestTabGridCoordinatorDelegate
+
 @synthesize didEndCalled = _didEndCalled;
 - (void)tabGrid:(TabGridCoordinator*)tabGrid
     shouldActivateBrowser:(Browser*)browser
@@ -73,9 +72,6 @@
   self.didEndCalled = YES;
 }
 
-- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
-  return TabGridPageRegularTabs;
-}
 @end
 
 namespace {
@@ -112,16 +108,16 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
-        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
-        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+        ios::BookmarkModelFactory::GetInstance(),
+        ios::BookmarkModelFactory::GetDefaultFactory());
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    bookmark_model_ =
-        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-            chrome_browser_state_.get());
-    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        ios::BookmarkModelFactory::GetForBrowserState(
+            chrome_browser_state_.get()));
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
                                              scene_state_);
@@ -150,8 +146,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
                      initWithWindow:window
          applicationCommandEndpoint:OCMProtocolMock(
                                         @protocol(ApplicationCommands))
-        browsingDataCommandEndpoint:OCMProtocolMock(
-                                        @protocol(BrowsingDataCommands))
                      regularBrowser:browser_.get()
                     inactiveBrowser:browser_->CreateInactiveBrowser()
                    incognitoBrowser:incognito_browser_.get()];
@@ -187,11 +181,8 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-
-  // Model for bookmarks.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;
@@ -238,7 +229,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
   // Now setting a TabSwitcher will make the switcher active.
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
         return GetBaseViewController() == coordinator_.activeViewController;
@@ -249,20 +240,20 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
 // Tests that it is possible to set a TabViewController after setting a
 // TabSwitcher.
 TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
-    [coordinator_ showTabGrid];
-    bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForUIElementTimeout, ^bool {
-          return GetBaseViewController() == coordinator_.activeViewController;
-        });
-    EXPECT_TRUE(tab_switcher_active);
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
+  bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return GetBaseViewController() == coordinator_.activeViewController;
+      });
+  EXPECT_TRUE(tab_switcher_active);
 }
 
 // Tests swapping between two TabViewControllers.
@@ -281,10 +272,10 @@ TEST_F(TabGridCoordinatorTest, SwapTabViewControllers) {
 
 // Tests calling showTabSwitcher twice in a row with the same VC.
 TEST_F(TabGridCoordinatorTest, ShowTabSwitcherTwice) {
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 }
 
@@ -305,7 +296,7 @@ TEST_F(TabGridCoordinatorTest, ShowTabViewControllerTwice) {
 // handlers are called properly after the new view controller is made active.
 TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
   // Setup: show the switcher.
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
 
   // Tests that the completion handler is called when showing a tab view
   // controller. Tests that the delegate 'didEnd' method is also called.
@@ -350,11 +341,11 @@ TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
 TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
   scoped_clock_.Advance(base::Minutes(1));
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
   scoped_clock_.Advance(base::Seconds(20));
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
                                            base::Seconds(20), 1);
@@ -368,11 +359,11 @@ TEST_F(TabGridCoordinatorTest, tabGridActive) {
   EXPECT_FALSE(coordinator_.tabGridActive);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   EXPECT_FALSE(coordinator_.tabGridActive);
 
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return coordinator_.tabGridActive;

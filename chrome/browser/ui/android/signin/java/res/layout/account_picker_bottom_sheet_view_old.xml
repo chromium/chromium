@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/drag_handlebar" />
+
+        <ViewFlipper
+            android:id="@+id/account_picker_state_view_flipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:measureAllChildren="false" >
+
+            <include
+                android:id="@+id/account_picker_state_no_account"
+                layout="@layout/account_picker_state_no_account_old" />
+            <include
+                android:id="@+id/account_picker_state_collapsed"
+                layout="@layout/account_picker_state_collapsed_old" />
+            <include
+                android:id="@+id/account_picker_state_expanded"
+                layout="@layout/account_picker_state_expanded_old" />
+            <include
+                android:id="@+id/account_picker_state_signin_in_progress"
+                layout="@layout/account_picker_state_signin_in_progress_old" />
+            <include
+                android:id="@+id/account_picker_state_general_error"
+                layout="@layout/account_picker_state_general_error_old" />
+            <include
+                android:id="@+id/account_picker_state_auth_error"
+                layout="@layout/account_picker_state_auth_error_old" />
+            <include
+                android:id="@+id/account_picker_state_confirm_management"
+                layout="@layout/account_picker_state_confirm_management_old" />
+        </ViewFlipper>
+    </LinearLayout>
+</ScrollView>

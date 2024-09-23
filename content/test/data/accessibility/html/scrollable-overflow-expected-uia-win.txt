@@ -5,8 +5,7 @@ Document IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.
 ++++Text Name='clipped large lots of text more text' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++Edit ClassName='textarea scrollable' IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=false Scroll.VerticallyScrollable=true Value.Value='ab cd'
 ++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
-++++++Text Name='tiny' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
+++++Text Name='tiny' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++Group ClassName='x-overflow-group' IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true
 ++++Group ClassName='x-hidden-small not-scrollable' IsControlElement=false IsScrollPatternAvailable=true IsScrollItemPatternAvailable=true Scroll.HorizontallyScrollable=true Scroll.VerticallyScrollable=false
 ++++++Group IsControlElement=false IsScrollPatternAvailable=false IsScrollItemPatternAvailable=true

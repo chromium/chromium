@@ -1,27 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
     <!-- Experimental enterprise plus_addresses feature strings -->
-    <!-- Modal strings -->
+    <!-- Fallback strings -->
+    <!-- TODO(b/326392415): Make all strings translatable. -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address creation bottom sheet." translateable="false">
+      Create new plus addresses placeholder
+    </message>
+    <message name="IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID" desc="The text of the link in the address sheet that opens the bottom sheet with all user plus addresses." translateable="false">
+      Select Plus Address placeholder
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address management web page." translateable="false">
+      Manage Plus Addresses placeholder
+    </message>
+
+    <!-- Creation dialog strings -->
+    <!-- Android strings -->
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android" translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID" desc="The description text on the creation dialog for plus addresses on Android." translateable="false">
+      Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID" desc="A placeholder for the plus address on Android" translateable="false">
+      Lorem Ipsum or whatever
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID" desc="Cancel button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+      Cancel
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID" desc="Ok button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+      Use address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID" desc="The error message shown on the android bottom sheet." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME_ANDROID" desc="The acessible name of the refresh button on the plus address modal" formatter_data="android_java" translateable="false">
+      Refresh
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT_ANDROID" desc="The content shown in the plus address label of the modal while a refresh is ongoing" formatter_data="android_java" translateable="false">
+      Refreshing...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android used when the modal is shown for the first time." translateable="false">
+      First time usage title placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID" desc="The description text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+      First time usage feature description placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID" desc="The notice text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+      First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link <ph name="BEGIN_LINK">&lt;link&gt;</ph>link placeholder<ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <!-- Android reserve error strings -->
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+      Make sure you're online and try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+      Too many plus addresses
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+      Can't create any more plus addresses.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Can't create plus address right now.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+      Make sure you're online and try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+      Too many plus addresses
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+      Can't create any more plus addresses.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+      Use existing address?
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+      You already have a plus address for &lt;b1&gt;<ph name="DOMAIN">$1<ex>domain.com</ex></ph>&lt;/b1&gt;. Use existing address &lt;b2&gt;<ph name="GAIA_EMAIL">$2<ex>example@gmail.com</ex></ph>&lt;/b2&gt;?
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
+      Can't create plus address right now.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+      OK
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that retries the previously failed action." translateable="false">
+      Try again
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that tries to fill an existing plus address into the triggering field." translateable="false">
+      Use existing address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID" desc="Cancel button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+      Cancel
+    </message>
+
+    <!-- iOS strings -->
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS." translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS used when the bottom sheet is shown for the first time." translateable="false">
+      First time usage title placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+    </message>
+   <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_IOS" desc="The notice text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>). <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottomsheet." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS" desc="Cancel button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
+      Cancel
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS" desc="Ok button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
+      Use Address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
+      Loading...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
+      Refreshing...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CELL_INDEX_IOS" desc="Accessibility label for the plus address suggestions in the manual fallback view to indicate the position of the plus address suggestion in the list of plus address suggestions." translateable="false">
+      {count, plural,
+           =1 {{position} of {count} plus address}
+           other {{position} of {count} plus addresses}}
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_MANAGE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to manage the plus addresses" translateable="false">
+	Manage Plus Address...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CREATE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to create a plus addresss" translateable="false">
+        Create Plus Address...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SELECT_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to select a plus addresss from the list of plus addresses" translateable="false">
+        Select Plus Address...
+    </message>
+   <message name="IDS_SELECT_PLUS_ADDRESS_TITLE_IOS" desc="The title shown in the sheet listing all plus addresses for selections" translateable="false">
+        Select Plus Address
+    </message>
+    <message name="IDS_SELECT_PLUS_ADDRESS_HEADER_TEXT_IOS" desc="The header text shown in the sheet listing all plus addresses for selection" translateable="false">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS" desc="The prefix of the sub label of the plus address manual fallback suggestion." translateable="false">
+	Plus address for <ph name="DOMAIN">$1<ex>foo.com</ex></ph>
+    </message>
+
+    <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LABEL" desc="Label for the upper portion of the plus addresses modal" translateable="false">
-      Lorem Ipsum
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_AND_COPY" desc="The plus address with some descriptive text around it." translateable="false">
-      Use <ph name="PLUS_ADDRESS">$1<ex>plus@plus.plus</ex>?</ph>
+    <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION" desc="The description text on the creation dialog for plus addresses." translateable="false">
+    Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
       Settings
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START" desc="The start of the plus address description that has a placeholder for a link." translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="LINK">$1</ph>. Ut enim ad minim veniam...
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END" desc="The end of the plus address description that has a placeholder for the primary email address." translateable="false">
-      Lorem <ph name="REGULAR_ADDRESS">$1</ph>.
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE" desc="The error message shown on the modal." translateable="false">
-      Lorem ipsum or whatever
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT" desc="The text of the link shown on the Plus Address error message." translateable="false">
       error-link
@@ -29,36 +175,144 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_DESKTOP" desc="The error message shown on the desktop modal." translateable="false">
       Lorem ipsum, consectetur adipiscing <ph name="LINK">$1</ph>.
     </message>
-     <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2" desc="The error message shown on the android bottom sheet." translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">&lt;link&gt;</ph>incididunt ut labore et<ph name="END_LINK">&lt;/link&gt;</ph>.
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottom sheet." translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
-    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER" desc="A placeholder for the plus address" translateable="false">
       Lorem Ipsum or whatever
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL" desc="A label for the regular address in the plus address modal" translateable="false">
-      For <ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph>
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION" desc="An illustrative description of the plus addresses modal" translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
-      Dolor
+      Cancel
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
-      Sit
+      Use address
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_V2" desc="An illustrative description of the plus addresses modal" translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">&lt;link&gt;</ph>Ut enim ad minim veniam<ph name="END_LINK">&lt;/link&gt;</ph> for <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>.
+    <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
+      Refresh
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_IOS" desc="An illustrative description of the plus addresses modal, with iOS formatting" translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>. For
+    <message name="IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a server request is ongoing" translateable="false">
+      Generating...
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE" desc="Title of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+      First time usage title placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE" desc="Description of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+      First time usage feature description placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE" desc="The notice text on the creation modal on Desktop that is used on the first run and thus contains a notice." translateable="false">
+      First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link. <ph name="LEARN_MORE_LINK">$2</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT" desc="The text of the link to learn more about plus addresses." translateable="false">
+      Learn more
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR" desc="The error text shown instead of the suggested plus address if no plus address could be reserved." translateable="false">
+      Can't get address. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created." translateable="false">
+      Can't create plus address address. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_TIMEOUT_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created due to a timeout." translateable="false">
+      Make sure you're online and try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON" desc="The message on the accept button after an error has occurred during an attempt to create a plus address." translateable="false">
+      Try again
+    </message>
+
     <!-- Settings strings -->
-    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="The label for the link in settings to manage plus addresses" translateable="false">
+      Plus Address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL" desc="The description of the link in settings to manage plus addresses" translateable="false">
+      Manage plus addresses you've created
+    </message>
+
+    <!-- Suggestion strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT" desc="The main text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT" desc="The secondary text in the Autofill suggestion for create a new plus address." translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO" desc="The secondary text in the Autofill suggestion for creating a new plus address." translateable="false">
+      Lorem Ipsum <ph name="GAIA_EMAIL"><ex>foo@gmail.com</ex>$1</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+      Refresh plus address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP" desc="The tooltip on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+      Refresh
+    </message>
+    <message name="IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT" desc="The main text in the Autofill suggestion for filling an existing plus address." translateable="false">
+      Lorem Ipsum dolor
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT" desc="The main text in the Autofill suggestion for opening the settings page with creates plus addresses." translateable="false">
+      Lorem Ipsum dolor ...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT" desc="The error description shown inside the popup when a timeout error occurs while attempting to reserve a plus address." translateable="false">
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+      Can't create any more addresses.
+    </message>
+
+    <!-- Error modal for inline creation strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_TITLE" desc="The title in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      Oops! We found an affiliated plus address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      We found <ph name="DOMAIN">$1<ex>foo.com</ex></ph> that can be used for: <ph name="PLUS_ADDRESS">$2<ex>foo@bar.com</ex></ph> Use this one instead of creating a new one.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+      Fill with existing address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE" desc="The title in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Something went wrong
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Can't save plus address.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_TIMEOUT_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a timeout error is encountered during inline creation." translateable="false">
+      Make sure you're online and try again
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+      Try again
+    </message>
+
+    <!-- IPH strings -->
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH" desc="Text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH String
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH Screenreader String
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID" desc="Text shown in the IPH bubble for educating the user on creating plus addresses on Android." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH String.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_IOS" desc="Text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH String
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
+      Placeholder Plus Address Create Suggestion IPH Screenreader String
+    </message>
+
+    <!-- Manual fallback strings -->
+    <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE" desc="Message in the keyboard accessory manual filling sheet that indicates the origin of the plus addresses in that section." translateable="false">
+      Plus addresses for <ph name="domain">$1<ex>example.com</ex></ph>
+    </message>
+
+    <!-- All plus addresses bottom sheet strings -->
+    <!-- Android strings -->
+    <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID" desc="The title text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+      Select Plus Address placeholder
+    </message>
+    <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+      Select Plus Address warning placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+      Search hint placeholder
     </message>
 
 </grit-part>

@@ -13,6 +13,12 @@
 
 namespace password_sharing_helper {
 
+// Decrypts the invitation data sent to the recipient.
+sync_pb::PasswordSharingInvitationData DecryptInvitationData(
+    const std::string& encrypted_data,
+    const sync_pb::CrossUserSharingPublicKey& sender_public_key,
+    const syncer::CrossUserSharingPublicPrivateKeyPair& recipient_key_pair);
+
 // Creates an incoming password sharing invitation specifics including
 // encrypting the `invitation_data`.
 sync_pb::IncomingPasswordSharingInvitationSpecifics

@@ -1,12 +1,12 @@
 [
   {
     "directory": "$test_files_dir",
-    "command": "clang++ -fsyntax-only -std=c++11 -c test.cc",
+    "command": "clang++ -fsyntax-only -std=c++11 test.cc",
     "file": "test.cc"
   },
   {
     "directory": "$test_files_dir",
-    "command": "clang++ -fsyntax-only -std=c++11 --sysroot ./sysroot -c test_relative_sysroot.cc",
+    "command": "clang++ -fsyntax-only -std=c++11 --sysroot ./sysroot test_relative_sysroot.cc",
     "file": "test_relative_sysroot.cc"
   },
   {

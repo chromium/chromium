@@ -68,7 +68,7 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
 
  private:
   // Non-owning pointer to the host for the current plugin.
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> host_impl_;
+  raw_ptr<RendererPpapiHostImpl> host_impl_;
 };
 
 }  // namespace content

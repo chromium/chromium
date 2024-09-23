@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include <windows.h>
 
 #include <ntstatus.h>
-#include <windows.h>
 #include <winioctl.h>
 #include <winternl.h>
 
+#include <algorithm>
+
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/filesystem_policy.h"
@@ -26,6 +33,11 @@
       ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), #name))
 
 namespace sandbox {
+
+namespace {
+constexpr wchar_t kNTDevicePrefix[] = L"\\Device\\";
+constexpr size_t kNTDevicePrefixLen = std::size(kNTDevicePrefix) - 1;
+}  // namespace
 
 const ULONG kSharing = FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE;
 
@@ -109,8 +121,9 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
-  if (argc != 1)
+  if (argc < 1 || argc > 2) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
 
   std::wstring file(argv[0]);
   if (0 != _wcsnicmp(file.c_str(), kNTDevicePrefix, kNTDevicePrefixLen))
@@ -123,11 +136,16 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
   InitializeObjectAttributes(&obj_attributes, &object_name,
                              OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
+  unsigned options = 0;
+  if (argc == 2 && !base::StringToUint(argv[1], &options)) {
+    return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
+
   HANDLE handle;
   IO_STATUS_BLOCK io_block = {};
   NTSTATUS status =
       NtCreateFile(&handle, FILE_READ_DATA, &obj_attributes, &io_block, nullptr,
-                   0, kSharing, FILE_OPEN, 0, nullptr, 0);
+                   0, kSharing, FILE_OPEN, options, nullptr, 0);
   if (NT_SUCCESS(status)) {
     ::CloseHandle(handle);
     return SBOX_TEST_SUCCEEDED;
@@ -147,8 +165,9 @@ SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
-  if (argc != 1)
+  if (argc < 1 || argc > 2) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
 
   std::wstring file = MakePathToSys(argv[0], true);
   UNICODE_STRING object_name;
@@ -158,10 +177,15 @@ SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
   InitializeObjectAttributes(&obj_attributes, &object_name,
                              OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
+  unsigned options = 0;
+  if (argc == 2 && !base::StringToUint(argv[1], &options)) {
+    return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
+
   HANDLE handle;
   IO_STATUS_BLOCK io_block = {};
   NTSTATUS status = NtOpenFile(&handle, FILE_READ_DATA, &obj_attributes,
-                               &io_block, kSharing, 0);
+                               &io_block, kSharing, options);
   if (NT_SUCCESS(status)) {
     ::CloseHandle(handle);
     return SBOX_TEST_SUCCEEDED;
@@ -370,7 +394,6 @@ TEST(FilePolicyTest, AllowImplicitDeviceName) {
   ASSERT_NE(::GetTempFileName(temp_directory, L"test", 0, temp_file_name), 0u);
 
   std::wstring path(temp_file_name);
-  EXPECT_TRUE(ConvertToLongPath(&path));
   auto opt_nt_path = GetNtPathFromWin32Path(path);
   EXPECT_TRUE(opt_nt_path);
   path = opt_nt_path->substr(sandbox::kNTDevicePrefixLen);
@@ -676,9 +699,9 @@ TEST(FilePolicyTest, TestReparsePoint) {
   EXPECT_TRUE(SetReparsePoint(dir, temp_dir_nt.c_str()));
   EXPECT_TRUE(::CloseHandle(dir));
 
-  // Try to open the file again.
+  // Try to open the file again. This should still work.
   runner = ReparsePointRunner(temp_dir_wildcard);
-  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(command_write.c_str()));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner->RunTest(command_write.c_str()));
 
   // Remove the reparse point.
   dir = ::CreateFile(subfolder.c_str(), FILE_WRITE_DATA,
@@ -692,30 +715,6 @@ TEST(FilePolicyTest, TestReparsePoint) {
   // Cleanup.
   EXPECT_TRUE(::DeleteFile(temp_file_in_temp.c_str()));
   EXPECT_TRUE(::RemoveDirectory(subfolder.c_str()));
-}
-
-TEST(FilePolicyTest, CheckExistingNTPrefixEscape) {
-  std::wstring name = L"\\??\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), L"\\/?/?\\NAME");
-}
-
-TEST(FilePolicyTest, CheckEscapedNTPrefixNoEscape) {
-  std::wstring name = L"\\/?/?\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), name.c_str());
-}
-
-TEST(FilePolicyTest, CheckMissingNTPrefixEscape) {
-  std::wstring name = L"C:\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), L"\\/?/?\\C:\\NAME");
 }
 
 TEST(FilePolicyTest, TestCopyFile) {
@@ -733,6 +732,22 @@ TEST(FilePolicyTest, TestCopyFile) {
             SBOX_ALL_OK);
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"File_CopyFile"));
+}
+
+TEST(FilePolicyTest, DenyOpenById) {
+  std::wstring option = base::NumberToWString(FILE_OPEN_BY_FILE_ID);
+  auto runner = AllowNotepadRunner();
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner->RunTest(L"File_CreateSys32 notepad.exe 0"));
+  runner = AllowNotepadRunner();
+  std::wstring test = L"File_CreateSys32 notepad.exe " + option;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(test.c_str()));
+  runner = AllowNotepadRunner();
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner->RunTest(L"File_OpenSys32 notepad.exe 0"));
+  runner = AllowNotepadRunner();
+  test = L"File_OpenSys32 notepad.exe " + option;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(test.c_str()));
 }
 
 }  // namespace sandbox

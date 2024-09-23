@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusable="false">
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/address_bar_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/address_bar_top"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          app:primaryText="@string/address_bar_settings_top" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/address_bar_bottom"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          app:primaryText="@string/address_bar_settings_bottom" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+</LinearLayout>

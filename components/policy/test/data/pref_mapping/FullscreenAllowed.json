@@ -13,8 +13,12 @@
           "FullscreenAllowed": false
         },
         "prefs": {
-          "apps.fullscreen.allowed": {},
-          "fullscreen.allowed": {}
+          "apps.fullscreen.allowed": {
+            "value": false
+          },
+          "fullscreen.allowed": {
+            "value": false
+          }
         }
       }
     ]

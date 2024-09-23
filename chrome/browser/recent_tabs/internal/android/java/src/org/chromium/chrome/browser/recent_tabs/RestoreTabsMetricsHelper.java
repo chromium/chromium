@@ -20,6 +20,7 @@ public class RestoreTabsMetricsHelper {
         RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE,
         RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS,
         RestoreTabsOnFREPromoShowResult.NULL_PROFILE,
+        RestoreTabsOnFREPromoShowResult.TAB_SYNC_DISABLED,
         RestoreTabsOnFREPromoShowResult.NUM_ENTRIES
     })
     public @interface RestoreTabsOnFREPromoShowResult {
@@ -27,9 +28,10 @@ public class RestoreTabsMetricsHelper {
         int NOT_ELIGIBLE = 1;
         int NO_SYNCED_TABS = 2;
         int NULL_PROFILE = 3;
+        int TAB_SYNC_DISABLED = 4;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -99,7 +101,7 @@ public class RestoreTabsMetricsHelper {
     // Histograms
     public static void recordPromoShowResultHistogram(@RestoreTabsOnFREPromoShowResult int action) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.RestoreTabsOnFRE.PromoShowResult",
+                "Android.RestoreTabsOnFRE.PromoShowResult2",
                 action,
                 RestoreTabsOnFREPromoShowResult.NUM_ENTRIES);
     }

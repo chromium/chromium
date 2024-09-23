@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/fake_video_capture_device.h"
 
 #include <stddef.h>
@@ -9,6 +14,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -142,7 +148,9 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
+    case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_YUV422P9:
@@ -152,7 +160,9 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_Y16:
     case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444A:
@@ -244,7 +254,7 @@ class OwnBufferFrameDeliverer : public FrameDeliverer {
   void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) override;
 
  private:
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 // Delivers frames using buffers provided by the client via
@@ -317,7 +327,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
       painter_format = PacmanFramePainter::Format::NV12;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       painter_format = PacmanFramePainter::Format::I420;
   }
   auto frame_painter =
@@ -355,7 +365,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
       return std::make_unique<GpuMemoryBufferFrameDeliverer>(
           std::move(frame_painter), gmb_support_.get());
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PacmanFramePainter::PacmanFramePainter(Format pixel_format,
@@ -698,12 +708,22 @@ void FakePhotoDevice::GetPhotoState(
                                           ? mojom::BackgroundBlurMode::BLUR
                                           : mojom::BackgroundBlurMode::OFF;
 
+  photo_state->supported_background_segmentation_mask_states = {false, true};
+  photo_state->current_background_segmentation_mask_state =
+      fake_device_state_->background_segmentation_mask;
+
   photo_state->supported_eye_gaze_correction_modes = {
       mojom::EyeGazeCorrectionMode::OFF, mojom::EyeGazeCorrectionMode::ON};
   photo_state->current_eye_gaze_correction_mode =
       fake_device_state_->eye_gaze_correction
           ? mojom::EyeGazeCorrectionMode::ON
           : mojom::EyeGazeCorrectionMode::OFF;
+
+  photo_state->supported_face_framing_modes = {mojom::MeteringMode::NONE,
+                                               mojom::MeteringMode::CONTINUOUS};
+  photo_state->current_face_framing_mode = fake_device_state_->face_framing
+                                               ? mojom::MeteringMode::CONTINUOUS
+                                               : mojom::MeteringMode::NONE;
 
   std::move(callback).Run(std::move(photo_state));
 }
@@ -755,6 +775,11 @@ void FakePhotoDevice::SetPhotoOptions(
     }
   }
 
+  if (settings->background_segmentation_mask_state.has_value()) {
+    device_state_write_access->background_segmentation_mask =
+        settings->background_segmentation_mask_state.value();
+  }
+
   if (settings->eye_gaze_correction_mode.has_value()) {
     switch (settings->eye_gaze_correction_mode.value()) {
       case mojom::EyeGazeCorrectionMode::OFF:
@@ -765,6 +790,20 @@ void FakePhotoDevice::SetPhotoOptions(
         break;
       case mojom::EyeGazeCorrectionMode::STARE:
         return;  // Not a supported fake eye gaze correction mode.
+    }
+  }
+
+  if (settings->has_face_framing_mode) {
+    switch (settings->face_framing_mode) {
+      case mojom::MeteringMode::NONE:
+        device_state_write_access->face_framing = false;
+        break;
+      case mojom::MeteringMode::CONTINUOUS:
+        device_state_write_access->face_framing = true;
+        break;
+      case mojom::MeteringMode::MANUAL:
+      case mojom::MeteringMode::SINGLE_SHOT:
+        return;  // Not a supported face framing mode.
     }
   }
 
@@ -788,7 +827,7 @@ void OwnBufferFrameDeliverer::Initialize(
     std::unique_ptr<VideoCaptureDevice::Client> client,
     const FakeDeviceState* device_state) {
   FrameDeliverer::Initialize(pixel_format, std::move(client), device_state);
-  buffer_ = std::make_unique<uint8_t[]>(VideoFrame::AllocationSize(
+  buffer_ = base::HeapArray<uint8_t>::Uninit(VideoFrame::AllocationSize(
       pixel_format, device_state->format.frame_size));
 }
 
@@ -799,14 +838,14 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
   const auto& frame_format = device_state()->format;
   const size_t frame_size = VideoFrame::AllocationSize(
       frame_format.pixel_format, frame_format.frame_size);
-  memset(buffer_.get(), 0, frame_size);
-  frame_painter()->PaintFrame(timestamp_to_paint, buffer_.get());
+  memset(buffer_.data(), 0, frame_size);
+  frame_painter()->PaintFrame(timestamp_to_paint, buffer_.data());
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedData(
-      buffer_.get(), frame_size, device_state()->format,
+      buffer_.data(), frame_size, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now));
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 ClientBufferFrameDeliverer::ClientBufferFrameDeliverer(
@@ -824,7 +863,8 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   VideoCaptureDevice::Client::Buffer capture_buffer;
   const auto reserve_result = client()->ReserveOutputBuffer(
       device_state()->format.frame_size, device_state()->format.pixel_format,
-      arbitrary_frame_feedback_id, &capture_buffer);
+      arbitrary_frame_feedback_id, &capture_buffer,
+      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
   if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     client()->OnFrameDropped(
         ConvertReservationFailureToFrameDropReason(reserve_result));
@@ -840,9 +880,9 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   buffer_access.reset();  // Can't outlive `capture_buffer.handle_provider'.
 
   base::TimeTicks now = base::TimeTicks::Now();
-  client()->OnIncomingCapturedBuffer(std::move(capture_buffer),
-                                     device_state()->format, now,
-                                     CalculateTimeSinceFirstInvocation(now));
+  client()->OnIncomingCapturedBuffer(
+      std::move(capture_buffer), device_state()->format, now,
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 JpegEncodingFrameDeliverer::JpegEncodingFrameDeliverer(
@@ -881,7 +921,7 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   client()->OnIncomingCapturedData(
       &jpeg_buffer_[0], frame_size, device_state()->format,
       gfx::ColorSpace::CreateJpeg(), 0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now));
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(
@@ -936,9 +976,9 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for most
   // of the time.  Currently the only supported underlying format is NV12.
   modified_format.pixel_format = PIXEL_FORMAT_NV12;
-  client()->OnIncomingCapturedBuffer(std::move(capture_buffer), modified_format,
-                                     now,
-                                     CalculateTimeSinceFirstInvocation(now));
+  client()->OnIncomingCapturedBuffer(
+      std::move(capture_buffer), modified_format, now,
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(

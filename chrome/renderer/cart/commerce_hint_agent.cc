@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
-#include "base/features.h"
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,8 +35,8 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -75,7 +81,7 @@ constexpr base::FeatureParam<std::string> kSkipPattern{
 };
 
 // This is based on top 30 US shopping sites.
-// TODO(crbug/1164236): cover more shopping sites.
+// TODO(crbug.com/40163450): cover more shopping sites.
 constexpr base::FeatureParam<std::string> kAddToCartPattern{
 #if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
@@ -267,7 +273,7 @@ void RecordCommerceEvent(CommerceEvent event) {
       base::RecordAction(base::UserMetricsAction("Commerce.Purchase"));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -279,7 +285,7 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
   // Subframes including fenced frames shouldn't be reached here.
   DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
 
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       observer.BindNewPipeAndPassReceiver());
   return observer;
 }
@@ -458,7 +464,7 @@ const re2::RE2& GetSkipPattern() {
   return *instance;
 }
 
-// TODO(crbug/1164236): need i18n.
+// TODO(crbug.com/40163450): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
   auto* pattern_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
@@ -474,7 +480,7 @@ const re2::RE2& GetPurchaseTextPattern() {
   return *instance;
 }
 
-bool GetProductIdFromRequest(base::StringPiece request,
+bool GetProductIdFromRequest(std::string_view request,
                              std::string* product_id) {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
@@ -527,7 +533,7 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
   if (navigation_url.DomainIs("dickssportinggoods.com")) {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.spec());
   } else if (url.DomainIs("rei.com")) {
-    // TODO(crbug.com/1188143): There are other true positives like
+    // TODO(crbug.com/40754689): There are other true positives like
     // 'neo-product/rs/cart/item' that are missed here. Figure out a more
     // comprehensive solution.
     is_add_to_cart = url.path_piece() == "/rest/cart/item";
@@ -587,10 +593,10 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     if (element.type != blink::HTTPBodyElementType::kTypeData)
       continue;
 
-    // TODO(crbug/1168704): this copy is avoidable if element is guaranteed to
-    // have contiguous buffer.
+    // TODO(crbug.com/40165127): this copy is avoidable if element is guaranteed
+    // to have contiguous buffer.
     std::vector<uint8_t> buf = element.data.Copy().ReleaseVector();
-    base::StringPiece str(reinterpret_cast<char*>(buf.data()), buf.size());
+    std::string_view str(reinterpret_cast<char*>(buf.data()), buf.size());
 
     // Per-site hard-coded exclusion rules:
     if (navigation_url.DomainIs("groupon.com") && buf.size() > 10000)
@@ -706,20 +712,19 @@ CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
 
 CommerceHintAgent::~CommerceHintAgent() = default;
 
-bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
+bool CommerceHintAgent::IsAddToCart(std::string_view str,
                                     bool skip_length_limit) {
   return RE2::PartialMatch(
       skip_length_limit ? str : str.substr(0, kLengthLimit),
       GetAddToCartPattern());
 }
 
-bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(
-    base::StringPiece str) {
+bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(std::string_view str) {
   return RE2::PartialMatch(str.substr(0, kLengthLimit),
                            GetDOMBasedAddToCartPattern());
 }
 
-// TODO(crbug.com/1310422): Remove below two APIs and move all related unit
+// TODO(crbug.com/40219864): Remove below two APIs and move all related unit
 // tests to component.
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
   return commerce_heuristics::IsVisitCart(url);
@@ -737,7 +742,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url) {
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url,
-                                   base::StringPiece button_text) {
+                                   std::string_view button_text) {
   const std::map<std::string, std::string>& purchase_string_map =
       GetPurchaseButtonPatternMapping();
   static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
@@ -756,7 +761,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url,
   return RE2::PartialMatch(button_text, *purchase_regex_map->at(domain));
 }
 
-bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
+bool CommerceHintAgent::ShouldSkip(std::string_view product_name) {
   return RE2::PartialMatch(product_name.substr(0, kLengthLimit),
                            GetSkipPattern());
 }
@@ -770,7 +775,7 @@ const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
   std::vector<std::string> button_texts;
   for (WebElement button = buttons.FirstItem(); !button.IsNull();
        button = buttons.NextItem()) {
-    // TODO(crbug/1164236): emulate innerText to be more robust.
+    // TODO(crbug.com/40163450): emulate innerText to be more robust.
     button_texts.push_back(base::UTF16ToUTF8(base::CollapseWhitespace(
         base::TrimWhitespace(button.TextContent().Utf16(),
                              base::TrimPositions::TRIM_ALL),
@@ -815,7 +820,7 @@ bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
 }
 
 void CommerceHintAgent::MaybeExtractProducts() {
-  // TODO(crbug/1241582): Add a test for rate control based on whether the
+  // TODO(crbug.com/40194728): Add a test for rate control based on whether the
   // histogram is recorded.
   if (is_extraction_pending_) {
     DVLOG(1) << "Extraction is scheduled. Skip this request.";
@@ -871,7 +876,7 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
       GetProductExtractionScript(product_id_json, cart_extraction_script));
 
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
       blink::mojom::LoadEventBlockingOption::kDoNotBlock,
@@ -995,10 +1000,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 
   // The rest of this method is not concerned with data URLs but makes a copy of
   // the URL which can be expensive for large data URLs.
-  // TODO(crbug.com/1321924): Clean up this method to avoid copies once this
-  // optimization has been measured in the field and launches.
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-      request.Url().ProtocolIs(url::kDataScheme)) {
+  // TODO(crbug.com/40224104): Clean up this method to avoid copies.
+  if (request.Url().ProtocolIs(url::kDataScheme)) {
     return;
   }
 
@@ -1022,7 +1025,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
     OnWillSendRequest(render_frame(), is_add_to_cart);
   }
 
-  // TODO(crbug/1164236): use MutationObserver on cart instead.
+  // TODO(crbug.com/40163450): use MutationObserver on cart instead.
   // Detect XHR in cart page.
   // Don't do anything for subframes.
   if (frame->Parent())
@@ -1109,7 +1112,7 @@ void CommerceHintAgent::DidCommitProvisionalLoadCallback(
     CommerceHeuristicsData::GetInstance().UpdateVersion(
         base::Version(heuristics->version_number));
   }
-  // TODO(crbug.com/1383422): Add a test for when starting_url_ is invalid
+  // TODO(crbug.com/40061704): Add a test for when starting_url_ is invalid
   // because of multiple continuous DidCommitProvisionalLoad calls.
   if (!starting_url_.is_valid())
     return;
@@ -1202,7 +1205,7 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
   OnFormSubmit(render_frame(), is_purchase);
 }
 
-// TODO(crbug/1164236): use MutationObserver on cart instead.
+// TODO(crbug.com/40163450): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
   if (!should_skip_.has_value() || should_skip_.value())
     return;

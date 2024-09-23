@@ -254,7 +254,7 @@ PlayerUtils.registerEMEEventListeners = function(player) {
     }
   } else {
     // Some tests (e.g. mse_different_containers.html) specify audio and
-    // video codecs seperately.
+    // video codecs separately.
     if (player.testConfig.videoFormat) {
       config.videoCapabilities = [{contentType: player.testConfig.videoFormat}];
     }

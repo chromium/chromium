@@ -1,4 +1,1 @@
 This tests for a crash when the fragment contains only an interchange newline.
-
-
-

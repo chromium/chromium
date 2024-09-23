@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class OptionalStyleColor;
 class StyleColor;
 
 class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
@@ -39,11 +40,23 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                                      InterpolableList& list_b);
 
   static InterpolableColor* CreateInterpolableColor(const Color&);
-  static InterpolableColor* CreateInterpolableColor(CSSValueID);
-  static InterpolableColor* CreateInterpolableColor(const StyleColor&);
-  static InterpolableColor* MaybeCreateInterpolableColor(const CSSValue&);
+  static InterpolableColor* CreateInterpolableColor(
+      CSSValueID,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableColor* CreateInterpolableColor(
+      const StyleColor&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableColor* MaybeCreateInterpolableColor(
+      const CSSValue&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
-  static BaseInterpolableColor* CreateBaseInterpolableColor(const StyleColor&);
+  static BaseInterpolableColor* CreateBaseInterpolableColor(
+      const StyleColor&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   static Color ResolveInterpolableColor(
       const InterpolableValue& interpolable_color,
@@ -72,11 +85,15 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
   static InterpolationValue ConvertStyleColorPair(
-      const std::optional<StyleColor>&,
-      const std::optional<StyleColor>&);
+      const OptionalStyleColor&,
+      const OptionalStyleColor&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
   static InterpolationValue ConvertStyleColorPair(
       const StyleColor& unvisited_color,
-      const StyleColor& visited_color);
+      const StyleColor& visited_color,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,

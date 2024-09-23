@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -11,14 +12,16 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
@@ -61,11 +64,12 @@ class FileAnalysisRequestTest : public testing::Test {
   std::unique_ptr<FileAnalysisRequest> MakeRequest(base::FilePath path,
                                                    base::FilePath file_name,
                                                    bool delay_opening_file,
-                                                   std::string mime_type = "") {
+                                                   std::string mime_type = "",
+                                                   bool is_obfuscated = false) {
     enterprise_connectors::AnalysisSettings settings;
-    return std::make_unique<FileAnalysisRequest>(settings, path, file_name,
-                                                 mime_type, delay_opening_file,
-                                                 DoNothingConnector());
+    return std::make_unique<FileAnalysisRequest>(
+        settings, path, file_name, mime_type, delay_opening_file,
+        DoNothingConnector(), base::DoNothing(), is_obfuscated);
   }
 
   void GetResultsForFileContents(const std::string& file_contents,
@@ -277,7 +281,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request = MakeRequest(file_path, file_path.BaseName(),
                              /*delay_opening_file*/ false);
@@ -302,7 +306,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request = MakeRequest(file_path, file_path.BaseName(),
                              /*delay_opening_file*/ false);
@@ -386,7 +390,7 @@ TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request =
       MakeRequest(file_path, file_path.BaseName(), /*delay_opening_file*/ true);
@@ -513,6 +517,44 @@ TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   EXPECT_TRUE(data.contents.empty());
   EXPECT_EQ(test_zip, data.path);
   EXPECT_TRUE(IsZipMimeType(data.mime_type));
+}
+
+TEST_F(FileAnalysisRequestTest, ObfuscatedFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  base::test::TaskEnvironment task_environment;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create original file contents.
+  std::vector<uint8_t> original_contents(5000, 'a');
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("obfuscated");
+
+  // Obfuscate the file contents and write to file.
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+  auto obfuscation_result =
+      obfuscator.ObfuscateChunk(base::span(original_contents), true);
+
+  ASSERT_TRUE(obfuscation_result.has_value());
+  ASSERT_TRUE(base::WriteFile(file_path, obfuscation_result.value()));
+
+  auto obfuscated_request = MakeRequest(file_path, file_path.BaseName(),
+                                        /*delay_opening_file=*/false,
+                                        /*mime_type=*/"",
+                                        /*is_obfuscated=*/true);
+  base::test::TestFuture<BinaryUploadService::Result,
+                         BinaryUploadService::Request::Data>
+      future;
+  obfuscated_request->GetRequestData(future.GetCallback());
+  auto [result, data] = future.Take();
+
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+
+  // Check if size has been updated to use the calculated unobfuscated content
+  // size.
+  EXPECT_EQ(data.size, original_contents.size());
 }
 
 }  // namespace safe_browsing

@@ -1,0 +1,109 @@
+{
+  "description": "aggregatable_report_window clamped despite exceeding MAX_INT",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                // Should be clamped to 30 days despite exceeding MAX_INT.
+                "aggregatable_report_window": 2147483648,
+                "aggregation_keys": {"a": "0x159"}
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an aggregatable report as the source hasn't expired.
+      {
+        "timestamp": "2591999999",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {"a": 123}
+              }
+            }
+          }
+        ]
+      },
+      // Should not result in an aggregatable report as the source has expired.
+      {
+        "timestamp": "2592000000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": {"a": 123},
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination.test"
+          },
+          "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "2592000000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
+           "histograms": [ {
+              "id": "0",
+              "key": "0x559",
+              "value": 123
+           } ],
+           "shared_info": {
+              "api": "attribution-reporting",
+              "attribution_destination": "https://destination.test",
+              "reporting_origin": "https://reporter.test",
+              "scheduled_report_time": "2595599",
+              "version": "1.0"
+           }
+        },
+        "report_time": "2595599999",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      }
+    ]
+  }
+}

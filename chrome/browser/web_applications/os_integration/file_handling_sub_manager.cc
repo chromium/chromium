@@ -11,7 +11,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -97,10 +99,10 @@ void FileHandlingSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
 
-  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id) ||
+  if (provider_->registrar_unsafe().GetInstallState(app_id) !=
+          proto::INSTALLED_WITH_OS_INTEGRATION ||
       provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
-          ApiApprovalState::kDisallowed ||
-      !ShouldRegisterFileHandlersWithOs()) {
+          ApiApprovalState::kDisallowed) {
     std::move(configure_done).Run();
     return;
   }
@@ -136,6 +138,11 @@ void FileHandlingSubManager::Execute(
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (!HasFileHandling(desired_state) && !HasFileHandling(current_state)) {
     std::move(callback).Run();
     return;
@@ -147,6 +154,8 @@ void FileHandlingSubManager::Execute(
     std::move(callback).Run();
     return;
   }
+
+  CHECK_OS_INTEGRATION_ALLOWED();
 
   // All changes are generalized by first unregistering any existing file
   // handlers and then registering any desired file handlers.
@@ -189,14 +198,6 @@ void FileHandlingSubManager::Unregister(
                                   (result == Result::kOk));
       }).Then(std::move(callback));
 
-  // TODO(https://crbug.com/1295044): remove after fully deprecate old
-  // `InstallOsHooks/UninstallOsHooks` paths.
-  if (!HasFileHandling(desired_state)) {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
-        OsIntegrationState::kDisabled);
-  }
-
   UnregisterFileHandlersWithOs(app_id, profile_path_,
                                std::move(metrics_callback));
 }
@@ -215,14 +216,6 @@ void FileHandlingSubManager::Register(
         base::UmaHistogramBoolean("WebApp.FileHandlersRegistration.Result",
                                   (result == Result::kOk));
       }).Then(std::move(callback));
-
-  // TODO(https://crbug.com/1295044): remove after fully deprecate old
-  // `InstallOsHooks/UninstallOsHooks` paths.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
-        OsIntegrationState::kEnabled);
-  }
 
   RegisterFileHandlersWithOs(
       app_id, provider_->registrar_unsafe().GetAppShortName(app_id),

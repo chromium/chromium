@@ -18,6 +18,10 @@ public class BrowserIntentUtils {
     public static final String EXTRA_STARTUP_REALTIME_MS =
             "org.chromium.chrome.browser.startup.realtime";
 
+    /** Alias for the ChromeLauncherActivity. */
+    public static final String CHROME_LAUNCHER_ACTIVITY_CLASS_NAME =
+            "com.google.android.apps.chrome.IntentDispatcher";
+
     /**
      * Adds two timestamps to an intent, as returned by {@link SystemClock#elapsedRealtime()}.
      *

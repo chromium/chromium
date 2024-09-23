@@ -135,7 +135,7 @@ class LinkerDriver(object):
                 assert driver_action[0] not in linker_driver_actions
                 linker_driver_actions[driver_action[0]] = driver_action[1]
             else:
-                # TODO(crbug.com/1446796): On Apple, the linker command line
+                # TODO(crbug.com/40268754): On Apple, the linker command line
                 # produced by rustc for LTO includes these arguments, but the
                 # Apple linker doesn't accept them.
                 # Upstream bug: https://github.com/rust-lang/rust/issues/60059

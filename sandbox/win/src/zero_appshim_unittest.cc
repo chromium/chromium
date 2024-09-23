@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <ntstatus.h>
 #include <windows.h>
 
+#include <ntstatus.h>
+
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/target_services.h"
@@ -45,6 +47,11 @@ SBOX_TESTS_COMMAND int ZeroAppShimCommand(int argc, wchar_t** argv) {
 // This test validates that writing zero to the pShimData member of the child's
 // PEB works.
 TEST(ZeroAppShimTest, ZeroAppShim) {
+  if (!base::win::OSInfo::GetInstance()->IsWowDisabled() ||
+      base::win::OSInfo::IsRunningEmulatedOnArm64()) {
+    GTEST_SKIP() << "ZeroAppShim not supported in WoW or ARM64 emulated modes.";
+  }
+
   std::wstring test_command = L"ZeroAppShimCommand";
   TestRunner runner;
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();

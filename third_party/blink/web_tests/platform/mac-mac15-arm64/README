@@ -1,0 +1,3 @@
+This directory holds baselines for running web platform tests against content
+shell on mac15-arm64 platform. The fallback search path for baselines is
+mac-mac15-arm64 -> mac -> generic.

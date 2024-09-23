@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+import "url/mojom/url.mojom";
+
+// JavaScript source location.
+struct ScriptSourceLocation {
+  // The absolute URL (e.g. https://...) of a file. This should be empty
+  // string if there's no URL involved, which happens for script executed
+  // from web console and testing console (EvalJs, ExecJs).
+  url.mojom.Url url;
+  // The JavaScript function name. This will be empty string if it's an
+  // anonymous function.
+  string function_name;
+  // The line number of the JavaScript file. 1-based; the first line is 1.
+  uint64 line_number;
+  // The column number of the JavaScript file. 1-based; the first column
+  // is 1.
+  uint64 column_number;
+};

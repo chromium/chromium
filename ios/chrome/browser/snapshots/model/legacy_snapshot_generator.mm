@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
@@ -62,25 +64,31 @@ struct SnapshotInfo {
       willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                              initWithWebState:_webState.get()]];
 
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return nil;
+  }
   // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
   // however, it generates a black image when the size of `baseView` is larger
   // than `frameInBaseView`. So this is a workaround to generate an UIImage by
   // dividing the step into 2 steps; 1) convert an UIView to an UIImage 2) crop
   // an UIImage with `frameInBaseView`.
-  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.baseView];
+  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.value().baseView];
   return [self cropImage:baseImage
-         frameInBaseView:snapshotInfo.snapshotFrameInBaseView];
+         frameInBaseView:snapshotInfo.value().snapshotFrameInBaseView];
 }
 
 - (UIImage*)generateUIViewSnapshotWithOverlays {
   if (![self canTakeSnapshot]) {
     return nil;
   }
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return nil;
+  }
   return [self addOverlays:[self overlays]
                  baseImage:[self generateUIViewSnapshot]
-             frameInWindow:snapshotInfo.snapshotFrameInWindow];
+             frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
 }
 
 #pragma mark - Private methods
@@ -108,7 +116,10 @@ struct SnapshotInfo {
       willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                              initWithWebState:_webState.get()]];
 
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return;
+  }
   auto wrappedCompletion =
       ^(__weak LegacySnapshotGenerator* generator, UIImage* image) {
         if (!generator) {
@@ -117,14 +128,14 @@ struct SnapshotInfo {
         UIImage* snapshot =
             [generator addOverlays:[generator overlays]
                          baseImage:image
-                     frameInWindow:snapshotInfo.snapshotFrameInWindow];
+                     frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
         if (completion) {
           completion(snapshot);
         }
       };
 
   __weak LegacySnapshotGenerator* weakSelf = self;
-  _webState->TakeSnapshot(snapshotInfo.snapshotFrameInBaseView,
+  _webState->TakeSnapshot(snapshotInfo.value().snapshotFrameInBaseView,
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
@@ -296,7 +307,7 @@ struct SnapshotInfo {
 }
 
 // Retrieves information needed for snapshotting.
-- (SnapshotInfo)snapshotInfo {
+- (std::optional<SnapshotInfo>)snapshotInfo {
   CHECK(_webState);
   SnapshotInfo snapshotInfo;
   snapshotInfo.baseView = [_delegate
@@ -309,12 +320,16 @@ struct SnapshotInfo {
                                              initWithWebState:_webState.get()]];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);
-  DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView));
+  if (CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView)) {
+    return std::nullopt;
+  }
 
   snapshotInfo.snapshotFrameInWindow =
       [snapshotInfo.baseView convertRect:snapshotInfo.snapshotFrameInBaseView
                                   toView:nil];
-  DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow));
+  if (CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow)) {
+    return std::nullopt;
+  }
   return snapshotInfo;
 }
 

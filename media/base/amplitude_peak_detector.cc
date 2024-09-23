@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/amplitude_peak_detector.h"
 
 #include "base/compiler_specific.h"
@@ -38,7 +43,7 @@ void AmplitudePeakDetector::SetIsTracingEnabledForTests(
 void AmplitudePeakDetector::FindPeak(const void* data,
                                      int frames,
                                      int bytes_per_sample) {
-  if (LIKELY(!is_tracing_enabled_)) {
+  if (!is_tracing_enabled_) [[likely]] {
     return;
   }
 
@@ -46,7 +51,7 @@ void AmplitudePeakDetector::FindPeak(const void* data,
 }
 
 void AmplitudePeakDetector::FindPeak(const AudioBus* audio_bus) {
-  if (LIKELY(!is_tracing_enabled_)) {
+  if (!is_tracing_enabled_) [[likely]] {
     return;
   }
 
@@ -113,7 +118,7 @@ bool AmplitudePeakDetector::AreFramesLoud(const void* data,
     case 4:
       return LoudDetector<int32_t>(data, frames);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   };
 }

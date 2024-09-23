@@ -203,4 +203,7 @@ BOOL EdgeLeadsEdge(CGFloat a, CGFloat b);
 // Determines the best alignment for the provided `text`.
 NSTextAlignment DetermineBestAlignmentForText(NSString* text);
 
+// Scrolls to the scroll view semantic leading.
+void ScrollToSemanticLeading(UIScrollView* scrollview, BOOL animated);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_RTL_GEOMETRY_H_

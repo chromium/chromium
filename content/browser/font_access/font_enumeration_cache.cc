@@ -103,8 +103,8 @@ void FontEnumerationCache::BuildEnumerationCache(
   }
 
   DCHECK_GE(font_data_region.mapping.size(), table.ByteSizeLong());
-  if (!table.SerializeToArray(font_data_region.mapping.memory(),
-                              font_data_region.mapping.size())) {
+  base::span<uint8_t> font_mem(font_data_region.mapping);
+  if (!table.SerializeToArray(font_mem.data(), font_mem.size())) {
     data_.status = blink::mojom::FontEnumerationStatus::kUnexpectedError;
     return;
   }

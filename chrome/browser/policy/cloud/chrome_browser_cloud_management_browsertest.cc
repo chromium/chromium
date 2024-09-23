@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -31,11 +32,13 @@
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -45,6 +48,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
@@ -114,9 +118,6 @@ void UpdatePolicyStorage(PolicyStorage* policy_storage) {
   policy_storage->SetPolicyPayload(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       settings.SerializeAsString());
-  policy_storage->SetPolicyPayload(
-      dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType,
-      settings.SerializeAsString());
   policy_storage->set_robot_api_auth_code("fake_auth_code");
   policy_storage->set_service_account_identity("foo@bar.com");
 }
@@ -127,7 +128,6 @@ ClientStorage::ClientInfo CreateTestClientInfo() {
   client_info.device_token = kDMToken;
   client_info.allowed_policy_types.insert(
       {dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-       dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType,
        dm_protocol::kChromeMachineLevelExtensionCloudPolicyType});
   return client_info;
 }
@@ -205,14 +205,19 @@ class PolicyFetchStoreObserver : public CloudPolicyStore::Observer {
 
   void OnStoreLoaded(CloudPolicyStore* store) override {
     std::move(quit_closure_).Run();
+    is_succesfully_loaded_ = true;
   }
   void OnStoreError(CloudPolicyStore* store) override {
     std::move(quit_closure_).Run();
+    is_succesfully_loaded_ = false;
   }
+
+  bool is_successfully_loaded() const { return is_succesfully_loaded_; }
 
  private:
   raw_ptr<CloudPolicyStore> store_;
   base::OnceClosure quit_closure_;
+  bool is_succesfully_loaded_;
 };
 
 class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
@@ -280,7 +285,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
     }
 
     auto params = DMServerJobConfiguration::CreateParams::WithoutClient(
-        DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT,
+        DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION,
         service_.get(), kClientID,
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory());
@@ -300,8 +305,9 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
     em::RegisterBrowserRequest* register_browser_request =
         request.mutable_register_browser_request();
     register_browser_request->set_os_platform(GetOSPlatform());
-    if (!machine_name.empty())
+    if (!machine_name.empty()) {
       register_browser_request->set_machine_name(machine_name);
+    }
     std::string payload;
     ASSERT_TRUE(request.SerializeToString(&payload));
     config->SetRequestPayload(payload);
@@ -648,15 +654,26 @@ class MachineLevelUserCloudPolicyPolicyFetchObserver
 
 class MachineLevelUserCloudPolicyPolicyFetchTest
     : public PlatformBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
+      public ::testing::WithParamInterface<std::tuple<
+          /*dm_token=*/std::string,
+          /*storage_enabled=*/bool,
+          /*is_policy_fetch_with_sha256_enabled=*/bool>> {
  public:
   MachineLevelUserCloudPolicyPolicyFetchTest() : observer_(&delegate_) {
     BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetEnrollmentToken(kEnrollmentToken);
     storage_.SetClientId(kClientID);
     storage_.EnableStorage(storage_enabled());
-    if (!dm_token().empty())
+    if (!dm_token().empty()) {
       storage_.SetDMToken(dm_token());
+    }
+
+    if (is_policy_fetch_with_sha256_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(policy::kPolicyFetchWithSha256);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::kPolicyFetchWithSha256);
+    }
   }
   MachineLevelUserCloudPolicyPolicyFetchTest(
       const MachineLevelUserCloudPolicyPolicyFetchTest&) = delete;
@@ -697,9 +714,10 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
     UpdatePolicyStorage(test_server_->policy_storage());
     // Configure the policy server to signal that DMToken deletion has been
     // requested via the DMServer response.
-    if (dm_token() == kDeletionDMToken)
+    if (dm_token() == kDeletionDMToken) {
       test_server_->policy_storage()->set_error_detail(
           em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+    }
     test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 
@@ -707,23 +725,22 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
 
   const std::string dm_token() const { return std::get<0>(GetParam()); }
   bool storage_enabled() const { return std::get<1>(GetParam()); }
+  bool is_policy_fetch_with_sha256_enabled() const {
+    return std::get<2>(GetParam());
+  }
 
  protected:
   ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
-
   MachineLevelUserCloudPolicyPolicyFetchObserver observer_;
-
   base::HistogramTester histogram_tester_;
-
- private:
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
-  base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1235367): Test is flaky.
+// TODO(crbug.com/40782028): Test is flaky.
 IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest,
                        DISABLED_Test) {
 #else
@@ -787,16 +804,16 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
     EXPECT_EQ(base::Value(true),
               *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
                     ->value(base::Value::Type::BOOLEAN)));
-
     // The token in storage should be valid.
     EXPECT_TRUE(token.is_valid());
 
     // The test server will register with kFakeDeviceToken if
     // Chrome is started without a DM token.
-    if (dm_token().empty())
+    if (dm_token().empty()) {
       EXPECT_EQ(token.value(), kFakeDeviceToken);
-    else
+    } else {
       EXPECT_EQ(token.value(), kDMToken);
+    }
 
     histogram_tester_.ExpectTotalCount(kUnenrollmentSuccessMetrics, 0);
     histogram_tester_.ExpectTotalCount(kDmTokenDeletionMetrics, 0);
@@ -811,13 +828,110 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
 //  get an error. There should be no more cloud policy applied.
 //  3) Start Chrome without DM token. Chrome will register itself and fetch
 //  policy after it.
-INSTANTIATE_TEST_SUITE_P(MachineLevelUserCloudPolicyPolicyFetchTest,
-                         MachineLevelUserCloudPolicyPolicyFetchTest,
-                         ::testing::Combine(::testing::Values(kDMToken,
-                                                              kInvalidDMToken,
-                                                              kDeletionDMToken,
-                                                              ""),
-                                            ::testing::Bool()));
+// The tests also cover the migration of the policy stack to SHA256_RSA
+// signature algorithm.
+INSTANTIATE_TEST_SUITE_P(
+    MachineLevelUserCloudPolicyPolicyFetchTest,
+    MachineLevelUserCloudPolicyPolicyFetchTest,
+    ::testing::Combine(
+        /*dm_token=*/::testing::Values(kDMToken,
+                                       kInvalidDMToken,
+                                       kDeletionDMToken,
+                                       ""),
+        /*storage_enabled=*/::testing::Bool(),
+        /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
+
+#if !BUILDFLAG(IS_ANDROID)
+class MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest
+    : public MachineLevelUserCloudPolicyPolicyFetchTest {
+ public:
+  MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest() = default;
+  ~MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest() override = default;
+  MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest(
+      const MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest&) = delete;
+  MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest& operator=(
+      const MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
+                       KeyRotationTest) {
+  MachineLevelUserCloudPolicyManager* manager =
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager();
+  ASSERT_TRUE(manager);
+  test_server_->policy_storage()->signature_provider()->set_rotate_keys(true);
+  // If the policy hasn't been updated, force the initialization which will
+  // force policy fetch.
+  if (manager->core()->client()->last_policy_timestamp().is_null()) {
+    base::RunLoop run_loop;
+    std::unique_ptr<PolicyFetchStoreObserver> store_observer =
+        std::make_unique<PolicyFetchStoreObserver>(manager->store(),
+                                                   run_loop.QuitClosure());
+    g_browser_process->browser_policy_connector()
+        ->device_management_service()
+        ->ScheduleInitialization(0);
+    run_loop.Run();
+  }
+  ASSERT_TRUE(
+      manager->IsInitializationComplete(PolicyDomain::POLICY_DOMAIN_CHROME));
+  const PolicyMap& policy_map = manager->store()->policy_map();
+  EXPECT_EQ(base::Value(true),
+            *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
+                  ->value(base::Value::Type::BOOLEAN)));
+  int current_public_key_version =
+      manager->store()->policy()->public_key_version();
+
+  // Configure new policies on the server and refresh policies on the client.
+  // This will force the key rotation.
+  {
+    em::CloudPolicySettings settings;
+    em::BooleanPolicyProto* saving_browser_history_disabled =
+        settings.mutable_savingbrowserhistorydisabled();
+    saving_browser_history_disabled->mutable_policy_options()->set_mode(
+        em::PolicyOptions::MANDATORY);
+    saving_browser_history_disabled->set_value(false);
+    test_server_->policy_storage()->SetPolicyPayload(
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+        settings.SerializeAsString());
+    base::RunLoop run_loop;
+    std::unique_ptr<PolicyFetchStoreObserver> store_observer =
+        std::make_unique<PolicyFetchStoreObserver>(manager->store(),
+                                                   run_loop.QuitClosure());
+    manager->RefreshPolicies(PolicyFetchReason::kTest);
+    run_loop.Run();
+  }
+
+  // Verify new policy and verify that key has been rotated.
+  EXPECT_EQ(base::Value(false),
+            *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
+                  ->value(base::Value::Type::BOOLEAN)));
+  EXPECT_EQ(current_public_key_version + 1,
+            manager->store()->policy()->public_key_version());
+  current_public_key_version = manager->store()->policy()->public_key_version();
+  // Verify that policies are reloaded correctly with the new key.
+  {
+    manager->store()->Load();
+    base::RunLoop run_loop;
+    PolicyFetchStoreObserver store_observer(manager->store(),
+                                            run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(store_observer.is_successfully_loaded());
+    EXPECT_EQ(base::Value(false),
+              *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
+                    ->value(base::Value::Type::BOOLEAN)));
+    EXPECT_EQ(current_public_key_version,
+              manager->store()->policy()->public_key_version());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
+    MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
+    ::testing::Combine(
+        /*dm_token=*/::testing::Values(kDMToken),
+        /*storage_enabled=*/::testing::Values(true),
+        /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {

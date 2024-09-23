@@ -1,0 +1,200 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/chromeos/crosier_tests.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("scanning") {
+  sources = [
+    "chrome_scanning_app_delegate.cc",
+    "chrome_scanning_app_delegate.h",
+    "lorgnette_notification_controller.cc",
+    "lorgnette_notification_controller.h",
+    "lorgnette_scanner_manager.cc",
+    "lorgnette_scanner_manager.h",
+    "lorgnette_scanner_manager_factory.cc",
+    "lorgnette_scanner_manager_factory.h",
+    "lorgnette_scanner_manager_util.cc",
+    "lorgnette_scanner_manager_util.h",
+    "scan_service.cc",
+    "scan_service.h",
+    "scan_service_factory.cc",
+    "scan_service_factory.h",
+    "scanner_detector.h",
+    "scanning_file_path_helper.cc",
+    "scanning_file_path_helper.h",
+    "zeroconf_scanner_detector.cc",
+    "zeroconf_scanner_detector.h",
+    "zeroconf_scanner_detector_utils.cc",
+    "zeroconf_scanner_detector_utils.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/scanning",
+    "//ash/webui/scanning/mojom",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos:chromeos_export",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/lorgnette_manager",
+    "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+    "//chromeos/ash/components/scanning",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/device/wake_lock/power_save_blocker",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base:i18n",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/ash/holding_space",
+    "//chrome/browser/web_applications",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/constants",
+    "//chromeos/strings",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/utils",
+    "//components/device_event_log",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//mojo/public/cpp/bindings:struct_traits",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/message_center/public/cpp",
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/printing",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_lorgnette_scanner_manager.cc",
+    "fake_lorgnette_scanner_manager.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ash/scanning",
+    "//chromeos/ash/components/dbus/lorgnette_manager",
+    "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/ash:test_support",
+    "//skia",
+    "//third_party/re2",
+    "//ui/gfx/codec",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chrome_scanning_app_delegate_unittest.cc",
+    "lorgnette_notification_controller_unittest.cc",
+    "lorgnette_scanner_manager_unittest.cc",
+    "lorgnette_scanner_manager_util_unittest.cc",
+    "scan_service_factory_unittest.cc",
+    "scan_service_unittest.cc",
+    "scanning_file_path_helper_unittest.cc",
+    "zeroconf_scanner_detector_unittest.cc",
+    "zeroconf_scanner_detector_utils_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/webui/scanning",
+    "//ash/webui/scanning/mojom",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//chrome/app/vector_icons",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/scanning",
+    "//chrome/browser/ash/scanning:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/ash/holding_space",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/browser/ui/ash/session:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/lorgnette_manager",
+    "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+    "//chromeos/ash/components/scanning",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/gfx/codec",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+if (is_chromeos_device) {
+  crosier_tests("integration_tests") {
+    sources = [
+      "multi_page_scan_integration_test.cc",
+      "scan_integration_test.cc",
+    ]
+    sources_metadata = [
+      "multi_page_scan_integration_test.yaml",
+      "scan_integration_test.yaml",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/scanning",
+      "//chrome/browser/ash/scanning:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:constants",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
+      "//components/keyed_service/core",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/aura",
+    ]
+  }
+}

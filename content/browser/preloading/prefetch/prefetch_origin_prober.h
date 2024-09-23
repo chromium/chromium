@@ -46,9 +46,6 @@ class CONTENT_EXPORT PrefetchOriginProber {
   virtual void Probe(const GURL& url, OnProbeResultCallback callback);
 
  private:
-  void DNSProbe(const GURL& url, OnProbeResultCallback callback);
-  void TLSProbe(const GURL& url, OnProbeResultCallback callback);
-
   // Does a DNS resolution for a DNS or TLS probe, passing all the arguments to
   // |OnDNSResolved|.
   void StartDNSResolution(const GURL& url,

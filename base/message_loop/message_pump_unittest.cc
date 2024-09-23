@@ -15,18 +15,20 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/input_hint_checker.h"
+#include "base/test/test_support_android.h"
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-#include "base/message_loop/message_pump_libevent.h"
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
 #endif
 
 using ::testing::_;
@@ -75,7 +77,7 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   void BeforeWait() override {}
   void BeginNativeWorkBeforeDoWork() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
-  MOCK_METHOD0(DoIdleWork, bool());
+  MOCK_METHOD0(DoIdleWork, void());
 
   // Functions invoked directly by the message pump.
   void OnBeginWorkItem() override {
@@ -178,12 +180,6 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-    // MessagePumpLibEvent checks for native notifications once after processing
-    // a DoWork() but only instantiates a ScopedDoWorkItem that triggers
-    // MessagePumpLibevent::OnLibeventNotification() which this test does not
-    // so there are no post-work expectations at the moment.
-#endif
 #if defined(USE_GLIB)
     if (GetParam() == MessagePumpType::UI) {
       // The GLib MessagePump can create and destroy work items between DoWorks
@@ -226,6 +222,62 @@ TEST_P(MessagePumpTest, QuitStopsWork) {
   message_pump_->ScheduleWork();
   message_pump_->Run(&delegate);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class MockInputHintChecker : public android::InputHintChecker {
+ public:
+  MOCK_METHOD(bool, HasInputImplWithThrottling, (), (override));
+};
+
+TEST_P(MessagePumpTest, DetectingHasInputYieldsOnUi) {
+  testing::InSequence sequence;
+  MessagePumpType pump_type = GetParam();
+  testing::StrictMock<MockMessagePumpDelegate> delegate(pump_type);
+  testing::StrictMock<MockInputHintChecker> hint_checker_mock;
+  android::InputHintChecker::ScopedOverrideInstance scoped_override_hint(
+      &hint_checker_mock);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(android::kYieldWithInputHint);
+  android::InputHintChecker::InitializeFeatures();
+  uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
+
+  // Override the first DoWork() to return an immediate next.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([] {
+    auto work_info =
+        MessagePump::Delegate::NextWorkInfo{.delayed_run_time = TimeTicks()};
+    CHECK(work_info.is_immediate());
+    return work_info;
+  }));
+
+  if (pump_type == MessagePumpType::UI) {
+    // Override the following InputHintChecker::HasInput() to return true.
+    EXPECT_CALL(hint_checker_mock, HasInputImplWithThrottling())
+        .WillOnce(Invoke([] { return true; }));
+  }
+
+  // Override the second DoWork() to quit the loop.
+  EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
+    message_pump_->Quit();
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
+                                                   TimeTicks::Max()};
+  }));
+
+  // No immediate next_work_info remaining before the yield. Not expecting
+  // to observe an input hint check.
+  EXPECT_CALL(delegate, DoIdleWork()).Times(0);
+
+  message_pump_->Run(&delegate);
+
+  // Expect two calls to DoNonDelayedLooperWork(). The first one occurs as a
+  // result of MessagePump::Run(). The second one is the result of yielding
+  // after HasInput() returns true. For non-UI MessagePumpType the
+  // MessagePump::Create() does not intercept entering DoNonDelayedLooperWork(),
+  // so it remains 0 instead of 1.
+  uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
+  EXPECT_EQ(initial_work_enters + work_loop_entered,
+            GetAndroidNonDelayedWorkEnterCount());
+}
+#endif
 
 TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   testing::InSequence sequence;
@@ -273,9 +325,9 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
 
 TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
   // The handling of the "yield_to_native" boolean in the NextWorkInfo is only
-  // implemented on the MessagePumpForUI on android. However since we inject a
-  // fake one for testing this is hard to test. This test ensures that setting
-  // this boolean doesn't cause any MessagePump to explode.
+  // implemented on the MessagePumpAndroid. However since we inject a fake one
+  // for testing this is hard to test. This test ensures that setting this
+  // boolean doesn't cause any MessagePump to explode.
   testing::StrictMock<MockMessagePumpDelegate> delegate(GetParam());
 
   testing::InSequence sequence;

@@ -42,7 +42,7 @@ class SoftwareFeatureManager {
   // This is the v2 DeviceSync analog of SetSoftwareFeatureState. This function
   // should only be used when v1 and v2 DeviceSync are both active so that
   // SetSoftwareFeatureState() and SetFeatureStatus() calls can be ordered.
-  // TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled and
+  // TODO(crbug.com/40105247): Remove when v1 DeviceSync is disabled and
   // CryptAuthFeatureStatusSetter is called directly.
   virtual void SetFeatureStatus(
       const std::string& device_id,

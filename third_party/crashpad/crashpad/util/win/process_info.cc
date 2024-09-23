@@ -24,6 +24,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
@@ -147,33 +148,34 @@ MEMORY_BASIC_INFORMATION64 MemoryBasicInformationToMemoryBasicInformation64(
 
 // NtQueryObject with a retry for size mismatch as well as a minimum size to
 // retrieve (and expect).
-std::unique_ptr<uint8_t[]> QueryObject(
+base::HeapArray<uint8_t> QueryObject(
     HANDLE handle,
     OBJECT_INFORMATION_CLASS object_information_class,
     ULONG minimum_size) {
-  ULONG size = minimum_size;
   ULONG return_length;
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
-  NTSTATUS status = crashpad::NtQueryObject(
-      handle, object_information_class, buffer.get(), size, &return_length);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(minimum_size);
+  NTSTATUS status = crashpad::NtQueryObject(handle,
+                                            object_information_class,
+                                            buffer.data(),
+                                            (ULONG)buffer.size(),
+                                            &return_length);
   if (status == STATUS_INFO_LENGTH_MISMATCH) {
-    DCHECK_GT(return_length, size);
-    size = return_length;
+    DCHECK_GT(return_length, buffer.size());
 
-    // Free the old buffer before attempting to allocate a new one.
-    buffer.reset();
-
-    buffer.reset(new uint8_t[size]);
-    status = crashpad::NtQueryObject(
-        handle, object_information_class, buffer.get(), size, &return_length);
+    buffer = base::HeapArray<uint8_t>::Uninit(return_length);
+    status = crashpad::NtQueryObject(handle,
+                                     object_information_class,
+                                     buffer.data(),
+                                     (ULONG)buffer.size(),
+                                     &return_length);
   }
 
   if (!NT_SUCCESS(status)) {
     NTSTATUS_LOG(ERROR, status) << "NtQueryObject";
-    return nullptr;
+    return base::HeapArray<uint8_t>();
   }
 
-  DCHECK_LE(return_length, size);
+  DCHECK_LE(return_length, buffer.size());
   DCHECK_GE(return_length, minimum_size);
   return buffer;
 }
@@ -413,14 +415,14 @@ std::vector<ProcessInfo::Handle> ProcessInfo::BuildHandleVector(
       // information, but include the information that we do have already.
       ScopedKernelHANDLE scoped_dup_handle(dup_handle);
 
-      std::unique_ptr<uint8_t[]> object_basic_information_buffer =
+      auto object_basic_information_buffer =
           QueryObject(dup_handle,
                       ObjectBasicInformation,
                       sizeof(PUBLIC_OBJECT_BASIC_INFORMATION));
-      if (object_basic_information_buffer) {
+      if (!object_basic_information_buffer.empty()) {
         PUBLIC_OBJECT_BASIC_INFORMATION* object_basic_information =
             reinterpret_cast<PUBLIC_OBJECT_BASIC_INFORMATION*>(
-                object_basic_information_buffer.get());
+                object_basic_information_buffer.data());
         // The Attributes and GrantedAccess sometimes differ slightly between
         // the data retrieved in SYSTEM_HANDLE_INFORMATION_EX and
         // PUBLIC_OBJECT_TYPE_INFORMATION. We prefer the values in
@@ -439,14 +441,14 @@ std::vector<ProcessInfo::Handle> ProcessInfo::BuildHandleVector(
         result_handle.handle_count = object_basic_information->HandleCount - 1;
       }
 
-      std::unique_ptr<uint8_t[]> object_type_information_buffer =
+      auto object_type_information_buffer =
           QueryObject(dup_handle,
                       ObjectTypeInformation,
                       sizeof(PUBLIC_OBJECT_TYPE_INFORMATION));
-      if (object_type_information_buffer) {
+      if (!object_type_information_buffer.empty()) {
         PUBLIC_OBJECT_TYPE_INFORMATION* object_type_information =
             reinterpret_cast<PUBLIC_OBJECT_TYPE_INFORMATION*>(
-                object_type_information_buffer.get());
+                object_type_information_buffer.data());
 
         DCHECK_EQ(object_type_information->TypeName.Length %
                       sizeof(result_handle.type_name[0]),

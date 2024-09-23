@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
@@ -212,7 +213,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   const auto it = base::ranges::find(
       root_window_controllers_, root_window_controller,
       [](const auto& candidate_pair) { return candidate_pair.second.get(); });
-  DCHECK(it != root_window_controllers_.end());
+  CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);
   TearDownRootWindowController(it->second.get());
   root_window_controllers_.erase(it);
 
@@ -229,7 +230,7 @@ void ShellDesktopControllerAura::PowerButtonEventReceived(
   }
 }
 
-void ShellDesktopControllerAura::OnDisplayModeChanged(
+void ShellDesktopControllerAura::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& displays) {
   for (const display::DisplaySnapshot* display_mode : displays) {
     if (!display_mode->current_mode())
@@ -331,7 +332,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
     // classes in CreateDesktopScreen() do, and remove this.
     display::Screen::SetScreenInstance(screen_.get());
 #else
-    // TODO(crbug.com/756680): Refactor DesktopScreen out of views.
+    // TODO(crbug.com/40535820): Refactor DesktopScreen out of views.
     screen_ = views::CreateDesktopScreen();
 #endif
   }
@@ -345,10 +346,9 @@ void ShellDesktopControllerAura::InitWindowManager() {
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
-          user_activity_detector_.get(), /*fingerprint=*/mojo::NullRemote());
+          ui::UserActivityDetector::Get(), /*fingerprint=*/mojo::NullRemote());
 #endif
 }
 
@@ -359,7 +359,6 @@ void ShellDesktopControllerAura::TearDownWindowManager() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_activity_notifier_.reset();
-  user_activity_detector_.reset();
 #endif
   cursor_manager_.reset();
   focus_controller_.reset();

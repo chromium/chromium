@@ -71,7 +71,6 @@ SkColor GetFgColor(version_info::Channel channel) {
 }
 
 ui::ColorId GetFgColorJelly(version_info::Channel channel) {
-  CHECK(chromeos::features::IsJellyEnabled());
   switch (channel) {
     case version_info::Channel::BETA:
       return cros_tokens::kCrosSysOnProgressContainer;
@@ -105,7 +104,6 @@ SkColor GetBgColor(version_info::Channel channel) {
 }
 
 ui::ColorId GetBgColorJelly(version_info::Channel channel) {
-  CHECK(chromeos::features::IsJellyEnabled());
   switch (channel) {
     case version_info::Channel::BETA:
       return cros_tokens::kCrosSysProgressContainer;
@@ -143,7 +141,6 @@ const gfx::VectorIcon& GetVectorIcon(version_info::Channel channel) {
     case version_info::Channel::UNKNOWN:
     case version_info::Channel::STABLE:
       NOTREACHED();
-      return kChannelCanaryIcon;
   }
 }
 

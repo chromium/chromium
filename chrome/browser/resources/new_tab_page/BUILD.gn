@@ -12,12 +12,14 @@ assert(!is_android)
 grd_prefix = "new_tab_page"
 
 build_webui("build") {
-  icons_html_files = [ "modules/v2/icons.html" ]
+  icons_html_files = [
+    "modules/v2/icons.html",
+    "modules/v2/most_relevant_tab_resumption/icons.html",
+  ]
 
   static_files = [
     "new_tab_page.html",
     "shared_vars.css",
-    "modules/chromefetti.svg",
     "untrusted/background_image.html",
     "untrusted/background_image.js",
     "untrusted/image.html",
@@ -27,20 +29,12 @@ build_webui("build") {
 
   extra_grdp_files = [
     "$target_gen_dir/icons/resources.grdp",
-    "$target_gen_dir/modules/cart/icons/resources.grdp",
-    "$target_gen_dir/modules/feed/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/icons/resources.grdp",
-    "$target_gen_dir/modules/photos/images/resources.grdp",
-    "$target_gen_dir/modules/recipes/icons/resources.grdp",
+    "$target_gen_dir/modules/v2/calendar/icons/resources.grdp",
   ]
 
   extra_grdp_deps = [
     "icons:build_grdp",
-    "modules/cart/icons:build_grdp",
-    "modules/feed/icons:build_grdp",
-    "modules/photos/icons:build_grdp",
-    "modules/photos/images:build_grdp",
-    "modules/recipes/icons:build_grdp",
+    "modules/v2/calendar/icons:build_grdp",
   ]
 
   if (optimize_webui) {
@@ -50,37 +44,24 @@ build_webui("build") {
 
   web_component_files = all_web_component_files
   non_web_component_files = all_non_web_component_files
+  css_files = all_css_files
+
+  html_to_wrapper_template = "detect"
 
   mojo_files_deps = [
-    "//chrome/browser/cart:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/v2/history_clusters:mojo_bindings_ts__generator",
-    "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
-    "//components/history/core/browser/mojom:mojo_bindings_ts__generator",
-    "//components/history_clusters/public/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters_layout_type.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/cart/cart.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/discount/discount.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
-    "$root_gen_dir/components/history_clusters/public/mojom/history_cluster_types.mojom-webui.ts",
-    "$root_gen_dir/components/history/core/browser/mojom/history_types.mojom-webui.ts",
   ]
 
   if (!is_official_build) {
@@ -97,18 +78,19 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
-    "//ui/webui/resources/cr_components/omnibox:build_ts",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "new-tab-page"
@@ -118,10 +100,9 @@ build_webui("build") {
     ]
     optimize_webui_excludes = [
                                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-                                "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
                                 "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
                                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-                                "chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js",
+                                "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
                                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
                                 "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
                                 "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",

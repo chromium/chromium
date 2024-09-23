@@ -23,7 +23,6 @@ items:
   value: null
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   type: boolean
 supported_on:

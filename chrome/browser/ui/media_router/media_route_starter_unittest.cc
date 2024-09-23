@@ -107,7 +107,7 @@ class PresentationRequestCallbacks {
   void Success(const blink::mojom::PresentationInfo&,
                mojom::RoutePresentationConnectionPtr,
                const MediaRoute&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Error(const blink::mojom::PresentationError& error) {
@@ -889,7 +889,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContextError) {
 }
 
 TEST_F(MediaRouteStarterTest, GetScreenCapturePermission) {
-// TODO(https://crbug.com/1266425): Fix screen-capture tests on macOS.
+// TODO(crbug.com/40802122): Fix screen-capture tests on macOS.
 #if BUILDFLAG(IS_MAC)
   bool screen_capture_is_allowed = false;
 #else

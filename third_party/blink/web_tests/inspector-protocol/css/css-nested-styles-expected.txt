@@ -2,7 +2,7 @@ The test verifies functionality of protocol methods working correctly with CSS n
 *div* {    user-agent    readonly
     display: block; @[undefined-undefined]
 }
-address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output {    user-agent    readonly
+address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i] {    user-agent    readonly
     unicode-bidi: isolate; @[undefined-undefined]
 }
 *#nested* {    regular
@@ -13,30 +13,31 @@ nesting selectors: #parent
 *div* {    user-agent    readonly
     display: block; @[undefined-undefined]
 }
-address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output {    user-agent    readonly
+address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i] {    user-agent    readonly
     unicode-bidi: isolate; @[undefined-undefined]
 }
 *#deep-nested* {    regular
     height: 42px; @[5:6-5:19]
     height: 42px; @[undefined-undefined]
 }
-nesting selectors: #nested,#parent
+nesting selectors: & #nested,#parent
 .cls1, *#deep-nested*, .cls2 {    regular
     display: grid; @[9:6-9:20]
     display: grid; @[undefined-undefined]
 }
-nesting selectors: #nested,#parent
+nesting selectors: & #nested,#parent
 ==== Style sheet text ====
 #parent {
   #nested {
     width: 41px;
+    
 
     #deep-nested {
-    height: 42px;
+      height: 42px;
     }
 
-    #deep-nested {
-    display: grid;
+    .cls1, #deep-nested, .cls2 {
+      display: grid;
     }
   }
 }
@@ -44,7 +45,7 @@ nesting selectors: #nested,#parent
 *div* {    user-agent    readonly
     display: block; @[undefined-undefined]
 }
-address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output {    user-agent    readonly
+address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i] {    user-agent    readonly
     unicode-bidi: isolate; @[undefined-undefined]
 }
 *#nested* {    regular

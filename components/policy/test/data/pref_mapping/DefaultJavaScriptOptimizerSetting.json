@@ -1,0 +1,22 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.javascript_optimizer",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
+  }
+]

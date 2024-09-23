@@ -52,7 +52,7 @@ const size_t kNumResourcesLimit = 10 * 1000 * 1000;
 
 class SoftwareDevice : public viz::SoftwareOutputDevice {
  public:
-  SoftwareDevice(SkCanvas** canvas) : canvas_(canvas) {}
+  explicit SoftwareDevice(raw_ptr<SkCanvas>* canvas) : canvas_(canvas) {}
   SoftwareDevice(const SoftwareDevice&) = delete;
   SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
@@ -66,7 +66,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  raw_ptr<SkCanvas*, ExperimentalRenderer> canvas_;
+  raw_ptr<raw_ptr<SkCanvas>> canvas_;
 };
 
 // This is used with resourceless software draws.
@@ -113,7 +113,6 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void DiscardBackbuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
   void Reshape(const ReshapeParams& params) override {}
-  bool IsDisplayedAsOverlayPlane() const override { return false; }
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
@@ -154,7 +153,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
       unbound_client_(std::move(client_receiver)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       viz_frame_submission_enabled_(
-          features::IsUsingVizFrameSubmissionForWebView()),
+          ::features::IsUsingVizFrameSubmissionForWebView()),
       use_zero_copy_sw_draw_(
           Platform::Current()
               ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()) {
@@ -234,8 +233,8 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // software only and the overlay processor is a stub.
   display_ = std::make_unique<viz::Display>(
       &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
-      /*sync_point_manager=*/nullptr, software_renderer_settings,
-      &debug_settings_, kRootFrameSinkId,
+      /*sync_point_manager=*/nullptr, /*gpu_scheduler=*/nullptr,
+      software_renderer_settings, &debug_settings_, kRootFrameSinkId,
       nullptr /* gpu::GpuTaskSchedulerHelper */, std::move(output_surface),
       std::move(overlay_processor), nullptr /* scheduler */,
       nullptr /* current_task_runner */);
@@ -432,14 +431,14 @@ void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
   // but this is called for software /resources/).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SynchronousLayerTreeFrameSink::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
   // but this is called for software /resources/).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
@@ -477,7 +476,8 @@ void SynchronousLayerTreeFrameSink::DemandDrawSw(SkCanvas* canvas) {
   DCHECK(canvas);
   DCHECK(!current_sw_canvas_);
 
-  base::AutoReset<SkCanvas*> canvas_resetter(&current_sw_canvas_, canvas);
+  base::AutoReset<raw_ptr<SkCanvas>> canvas_resetter(&current_sw_canvas_,
+                                                     canvas);
 
   SkIRect canvas_clip = canvas->getDeviceClipBounds();
   gfx::Rect viewport = gfx::SkIRectToRect(canvas_clip);
@@ -591,7 +591,7 @@ void SynchronousLayerTreeFrameSink::OnBeginFrame(
     bool frame_ack,
     Vector<viz::ReturnedResource> resources) {
   DCHECK(viz_frame_submission_enabled_);
-  if (features::IsOnBeginFrameAcksEnabled()) {
+  if (::features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {
       DidReceiveCompositorFrameAck(std::move(resources));
     } else if (!resources.empty()) {

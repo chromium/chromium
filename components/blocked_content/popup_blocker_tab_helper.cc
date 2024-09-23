@@ -132,7 +132,7 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
 
   switch (popup->block_type) {
     case PopupBlockType::kNotBlocked:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case PopupBlockType::kNoGesture:
       LogAction(Action::kClickedThroughNoGesture);

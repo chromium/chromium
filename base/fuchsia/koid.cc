@@ -10,7 +10,7 @@ namespace base {
 
 namespace {
 
-absl::optional<zx_info_handle_basic_t> GetBasicInfo(
+std::optional<zx_info_handle_basic_t> GetBasicInfo(
     const zx::object_base& handle) {
   zx_info_handle_basic_t basic;
   zx_status_t status = handle.get_info(ZX_INFO_HANDLE_BASIC, &basic,
@@ -25,14 +25,14 @@ absl::optional<zx_info_handle_basic_t> GetBasicInfo(
 
 }  // namespace
 
-absl::optional<zx_koid_t> GetKoid(const zx::object_base& handle) {
+std::optional<zx_koid_t> GetKoid(const zx::object_base& handle) {
   auto basic_info = GetBasicInfo(handle);
   if (!basic_info)
     return {};
   return basic_info->koid;
 }
 
-absl::optional<zx_koid_t> GetRelatedKoid(const zx::object_base& handle) {
+std::optional<zx_koid_t> GetRelatedKoid(const zx::object_base& handle) {
   auto basic_info = GetBasicInfo(handle);
   if (!basic_info)
     return {};

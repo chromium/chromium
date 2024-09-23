@@ -23,39 +23,28 @@ namespace blink {
 class Subscriber::CloseSubscriptionAlgorithm final
     : public AbortSignal::Algorithm {
  public:
-  explicit CloseSubscriptionAlgorithm(Subscriber* subscriber)
-      : subscriber_(subscriber) {}
+  explicit CloseSubscriptionAlgorithm(Subscriber* subscriber,
+                                      AbortSignal* signal,
+                                      ScriptState* script_state)
+      : subscriber_(subscriber), signal_(signal), script_state_(script_state) {}
   ~CloseSubscriptionAlgorithm() override = default;
 
   void Run() override {
-    // There are two things to do when the signal associated with a subscription
-    // gets aborted.
-    //  1. "Close" the subscription. This is idempotent; it only makes the
-    //     web-exposed `Subscriber#active` false, and makes it impossible to
-    //     call any `Observer`-provided functions.
-    //  2. Run any and all teardown callbacks that were registered with
-    //     `Subscriber#addTeardown()` in LIFO order, and then remove all of
-    //     them.
-    subscriber_->CloseSubscription();
-
-    // Note that since the subscription is now inactive, `teardown_callbacks_`
-    // cannot be modified anymore. If any of these callbacks below invoke
-    // `addTeardown()` with a *new* callback, it will be invoked synchronously
-    // instead of added to this vector.
-    for (Member<V8VoidFunction> teardown :
-         base::Reversed(subscriber_->teardown_callbacks_)) {
-      teardown->InvokeAndReportException(nullptr);
-    }
-    subscriber_->teardown_callbacks_.clear();
+    subscriber_->CloseSubscription(script_state_,
+                                   signal_->reason(script_state_));
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(subscriber_);
+    visitor->Trace(signal_);
+    visitor->Trace(script_state_);
     Algorithm::Trace(visitor);
   }
 
  private:
   Member<Subscriber> subscriber_;
+  Member<AbortSignal> signal_;
+  Member<ScriptState> script_state_;
 };
 
 Subscriber::Subscriber(base::PassKey<Observable>,
@@ -64,95 +53,56 @@ Subscriber::Subscriber(base::PassKey<Observable>,
                        SubscribeOptions* options)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       internal_observer_(internal_observer),
-      complete_or_error_controller_(AbortController::Create(script_state)) {
-  // Initialize `signal_` as a dependent signal on based on two input signals:
-  //   1. [Possibly null]: The input `Observer#signal` member, if it exists.
-  //      When this input signal is aborted we:
-  //      a. Call `CloseSubscription()`, which sets `active_` to false and
-  //         ensures that no `Observer` callback methods can be called.
-  //      b. Runs all of the teardowns.
-  //   2. [Never null]: The signal associated with
-  //      `complete_or_error_controller_`. This signal is aborted when the
-  //      `complete()` or `error()` method is called. Specifically, in this
-  //      case, the order of operations is:
-  //      a. `Subscriber#{complete(), error()}` gets called
-  //      b. We mark the subscription as closed, so that all `Observer`
-  //         callbacks can never be invoked again. This sets `active_` to false.
-  //      c. Invoke the appropriate `Observer` callback, if it exists. This
-  //         callback can observe that `active_` is false.
-  //      d. Abort `complete_or_error_controller_`, which is only used to abort
-  //         `signal_`.
-  //      e. In response to `signal_`'s abortion, run all of the teardowns.
-  //      f. Finally return from the `Subscriber#{complete(), error()}` method.
-  //
-  // See https://dom.spec.whatwg.org/#abortsignal-dependent-signals for more
-  // info on the dependent signal infrastructure.
-  HeapVector<Member<AbortSignal>> signals;
-  signals.push_back(complete_or_error_controller_->signal());
+      subscription_controller_(AbortController::Create(script_state)) {
+  // If a downstream `AbortSignal` is provided, setup an instance of
+  // `CloseSubscriptionAlgorithm` as one of its internal abort algorithms. it
+  // enables `this` to close the subscription that `this` represents in response
+  // to downstream aborts.
   if (options->hasSignal()) {
-    signals.push_back(options->signal());
-  }
-  signal_ = MakeGarbageCollected<AbortSignal>(script_state, signals);
+    AbortSignal* downstream_signal = options->signal();
 
-  if (signal_->aborted()) {
-    CloseSubscription();
-  } else {
-    // When `signal_` is finally aborted, this should immediately:
-    //  1. Close the subscription (making `active_` false).
-    //  2. Run any registered teardown callbacks.
-    // See the documentation in `CloseSubscriptionAlgorithm::Run()`.
-    //
-    // Note that by the time `signal_` gets aborted, the subscription might
-    // *already* be closed (i.e., (1) above might have already been done). For
-    // example, when `complete()` or `error()` are called, they manually close
-    // the subscription *before* invoking their respective `Observer` callbacks
-    // and aborting `complete_or_error_controller_`. This is fine because
-    // closing the subscription is idempotent.
-    close_subscription_algorithm_handle_ = signal_->AddAlgorithm(
-        MakeGarbageCollected<CloseSubscriptionAlgorithm>(this));
+    if (downstream_signal->aborted()) {
+      CloseSubscription(
+          script_state,
+          /*abort_reason=*/downstream_signal->reason(script_state));
+    } else {
+      close_subscription_algorithm_handle_ = downstream_signal->AddAlgorithm(
+          MakeGarbageCollected<CloseSubscriptionAlgorithm>(
+              this, downstream_signal, script_state));
+    }
   }
 }
 
 void Subscriber::next(ScriptValue value) {
-  if (internal_observer_) {
-    internal_observer_->Next(value);
+  if (!active_) {
+    return;
   }
+
+  // This is a DCHECK because dispatching every single value to a subscriber is
+  // performance-criticial.
+  DCHECK(internal_observer_);
+  internal_observer_->Next(value);
 }
 
 void Subscriber::complete(ScriptState* script_state) {
-  ObservableInternalObserver* internal_observer = internal_observer_;
-  CloseSubscription();
-
-  if (internal_observer) {
-    // Once `signal_` is aborted, the first thing that runs is
-    // `CloseSubscription()`, which makes it impossible to invoke user-provided
-    // callbacks anymore.
-    CHECK(!signal_->aborted());
-    internal_observer->Complete();
+  if (!active_) {
+    return;
   }
 
-  // This will trigger the abort of `signal_`, which will run all of the
-  // registered teardown callbacks.
-  complete_or_error_controller_->abort(script_state);
+  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
+  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // `internal_observer` out before calling this.
+  CloseSubscription(script_state, /*abort_reason=*/std::nullopt);
+
+  CHECK(internal_observer_);
+  internal_observer_->Complete();
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
-  ObservableInternalObserver* internal_observer = internal_observer_;
-  CloseSubscription();
-
-  if (internal_observer) {
-    // Once `signal_` is aborted, the first thing that runs is
-    // `CloseSubscription()`, which makes it impossible to invoke user-provided
-    // callbacks anymore.
-    CHECK(!signal_->aborted());
-    internal_observer->Error(script_state, error_value);
-  } else {
-    // The given `internal_observer` can be null here if the subscription is
-    // already closed (`CloseSubscription() manually clears
-    // `internal_observer_`).
-    //
-    // In this case, if the observable is still producing errors, we must
-    // surface them to the global via "report the exception":
+  if (!active_) {
+    // If `active_` is false, the subscription has already been closed by
+    // `CloseSubscription()`. In this case, if the observable is still producing
+    // errors, we must surface them to the global via "report the exception":
     // https://html.spec.whatwg.org/C#report-the-exception.
     //
     // Reporting the exception requires a valid `ScriptState`, which we don't
@@ -165,11 +115,16 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     ScriptState::Scope scope(script_state);
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     error_value.V8Value());
+    return;
   }
 
-  // This will trigger the abort of `signal_`, which will run all of the
-  // registered teardown callbacks.
-  complete_or_error_controller_->abort(script_state);
+  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
+  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
+  // `internal_observer` out before calling this.
+  CloseSubscription(script_state, error_value);
+
+  CHECK(internal_observer_);
+  internal_observer_->Error(script_state, error_value);
 }
 
 void Subscriber::addTeardown(V8VoidFunction* teardown) {
@@ -182,18 +137,59 @@ void Subscriber::addTeardown(V8VoidFunction* teardown) {
   }
 }
 
-void Subscriber::CloseSubscription() {
+AbortSignal* Subscriber::signal() const {
+  return subscription_controller_->signal();
+}
+
+void Subscriber::CloseSubscription(ScriptState* script_state,
+                                   std::optional<ScriptValue> abort_reason) {
+  // Guard against re-entrant invocation, which can happen during
+  // producer-initiated unsubscription. For example: `complete()` ->
+  // `CloseSubscription()` -> Run script (either by aborting an `AbortSignal` or
+  // running a teardown) -> Script aborts the downstream `AbortSignal` (the one
+  // passed in via `SubscribeOptions` in the constructor) -> the downstream
+  // signal's internal abort algorithm runs ->
+  // `Subscriber::CloseSubscriptionAlgorithm::Run()` -> `CloseSubscription()`.
+  if (!active_) {
+    return;
+  }
+
   close_subscription_algorithm_handle_.Clear();
+
+  // There are three things to do when the signal associated with a subscription
+  // gets aborted.
+  //  1. Mark the subscription as inactive. This only makes the web-exposed
+  //     `Subscriber#active` false, and makes it impossible for `this` to emit
+  //     any more values to downstream `Observer`-provided callbacks.
   active_ = false;
 
-  // Reset all handlers, making it impossible to signal any more values to the
-  // subscriber.
-  internal_observer_ = nullptr;
+  // 2. Abort `subscription_controller_`. This actually does two things:
+  //    (a) Immediately aborts any "upstream" subscriptions, i.e., any
+  //        observables that the observable associated with `this` had
+  //        subscribed to, if any exist.
+  //    (2) Fires the abort event at `this`'s signal.
+  CHECK(!subscription_controller_->signal()->aborted());
+  if (abort_reason) {
+    subscription_controller_->abort(script_state, *abort_reason);
+  } else {
+    subscription_controller_->abort(script_state);
+  }
+
+  // 3. Run all teardown callbacks that were registered with
+  //    `Subscriber#addTeardown()` in LIFO order, and then remove all of them.
+  //
+  // Note that since the subscription is now inactive, `teardown_callbacks_`
+  // cannot be modified anymore. If any of these callbacks below invoke
+  // `addTeardown()` with a *new* callback, it will be invoked synchronously
+  // instead of added to this vector.
+  for (Member<V8VoidFunction> teardown : base::Reversed(teardown_callbacks_)) {
+    teardown->InvokeAndReportException(nullptr);
+  }
+  teardown_callbacks_.clear();
 }
 
 void Subscriber::Trace(Visitor* visitor) const {
-  visitor->Trace(complete_or_error_controller_);
-  visitor->Trace(signal_);
+  visitor->Trace(subscription_controller_);
   visitor->Trace(close_subscription_algorithm_handle_);
   visitor->Trace(teardown_callbacks_);
   visitor->Trace(internal_observer_);

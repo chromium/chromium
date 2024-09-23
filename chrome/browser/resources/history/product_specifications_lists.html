@@ -1,0 +1,166 @@
+<style include="shared-style cr-shared-style">
+  :host {
+    display: block;
+    overflow: auto;
+  }
+
+  #product-specifications-info-text {
+    padding: 6px 10px 8px 8px;
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .history-cards {
+    margin-block-start: 4px;
+  }
+
+  #product-list-container {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: var(--card-first-last-item-padding);
+    margin-bottom: var(--card-padding-between);
+  }
+
+  #product-list-padding-container {
+    padding: 0 var(--card-padding-side);
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #card-title-header {
+    margin-bottom: var(--card-first-last-item-padding);
+  }
+
+  .sync-or-error-message {
+    font-size: 20px;
+    margin-block-start: 11px;
+  }
+
+  .sync-or-error-message-desc {
+    color: var(--cr-secondary-text-color);
+    font-size: 14px;
+    margin-block-start: 8px;
+  }
+
+  #turn-on-sync-button {
+    margin: 32px 0;
+  }
+
+  .sync-or-error-message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    text-align: center;
+  }
+
+  .centered-message {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 100%;
+  }
+
+  #sync-or-error-message-picture-and-text-container {
+    height: 100%;
+  }
+</style>
+<div class="sync-or-error-message-container"
+    id="sync-or-error-message-picture-and-text-container"
+    hidden="[[!hideHistoryList_(productSpecificationsFeatureState_.*)]]">
+  <picture>
+    <source srcset="images/compare_sync_promo_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img id="emptyImg" src="images/compare_sync_promo.svg">
+  </picture>
+  <!-- Sign in sync screen. -->
+  <div class="sync-or-error-message-container"
+      id="sync-message"
+      hidden="[[hideSyncScreen_(productSpecificationsFeatureState_.*)]]">
+    <div class="sync-or-error-message">$i18n{compareHistorySyncMessage}</div>
+    <div class="sync-or-error-message-desc">
+      $i18n{compareHistorySyncDescription}
+    </div>
+    <cr-button id="turn-on-sync-button" class="action-button"
+        on-click="showSyncSetupFlow_">
+      $i18n{compareHistorySyncButton}
+    </cr-button>
+  </div>
+  <!-- Error state, when data can't be fetched. -->
+  <div class="sync-or-error-message-container"
+      hidden="[[hideErrorMessage_(productSpecificationsFeatureState_.*)]]"
+      id="error-message">
+    <div class="sync-or-error-message">$i18n{compareHistoryErrorMessage}</div>
+    <div class="sync-or-error-message-desc">
+      $i18n{compareHistoryErrorDescription}
+    </div>
+  </div>
+</div>
+
+<!-- Product specs history list, including empty state. -->
+<div hidden="[[hideHistoryList_(productSpecificationsFeatureState_.*)]]"
+  id="product-list-padding-container">
+  <div class="centered-message"
+      hidden$="[[hasResults_(displayedItems_.length)]]">
+    $i18n{compareHistoryEmpty}
+  </div>
+  <div id="product-specifications-info-text" class="history-cards"
+    hidden$="[[!hasResults_(displayedItems_.length)]]">
+    $i18n{compareHistoryInfo}
+  </div>
+  <div class="history-cards" id="product-list-container"
+      hidden$="[[!hasResults_(displayedItems_.length)]]">
+    <div id="card-title-header" class="card-title" role="row">
+      <div role="rowheader">
+        <div role="heading" aria-level="2">
+          $i18n{compareHistoryHeader}
+        </div>
+      </div>
+    </div>
+    <template is="dom-repeat" items="[[displayedItems_]]"
+        id="displayedItemsList"
+        on-dom-change="updateFocusGrid_">
+      <product-specifications-item item="[[item]]"
+          index="[[index]]"
+          on-product-spec-item-select="onItemSelected_"
+          on-item-menu-open="onOpenMenu_"
+          search-term="[[searchTerm]]">
+      </product-specifications-item>
+    </template>
+
+    <cr-lazy-render id="sharedMenu">
+      <template>
+        <cr-action-menu>
+          <button class="dropdown-item" on-click="onRemoveItemClick_"
+              disabled="[[pendingDelete_]]">
+            $i18n{compareHistoryRemove}
+          </button>
+        </cr-action-menu>
+      </template>
+    </cr-lazy-render>
+
+    <cr-lazy-render id="deleteItemDialog">
+      <template>
+        <cr-dialog consume-keydown-event>
+          <div slot="title" id="title">$i18n{removeSelected}</div>
+          <div slot="body" id="body">$i18n{deleteWarning}</div>
+          <div slot="button-container">
+            <cr-button class="cancel-button" on-click="onDialogCancelClick_">
+              $i18n{cancel}
+            </cr-button>
+            <cr-button class="action-button" on-click="onDialogConfirmClick_"
+                <if expr="is_macosx">aria-describedby="title body"</if>>
+              $i18n{deleteConfirm}
+            </cr-button>
+          </div>
+        </cr-dialog>
+      </template>
+    </cr-lazy-render>
+  </div>
+</div>

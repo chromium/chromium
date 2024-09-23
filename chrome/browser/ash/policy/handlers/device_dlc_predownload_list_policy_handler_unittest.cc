@@ -5,6 +5,7 @@
 #include "device_dlc_predownload_list_policy_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -51,7 +52,7 @@ class DeviceDlcPredownloadListPolicyHandlerTest : public testing::Test {
 
 void RecordGetExistingDlcsResult(std::string& out_err,
                                  dlcservice::DlcsWithContent& out_dlcs,
-                                 const std::string& err,
+                                 std::string_view err,
                                  const dlcservice::DlcsWithContent& dlcs) {
   out_dlcs = dlcs;
   out_err = err;
@@ -92,8 +93,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, OnlyValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_TRUE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST(DecodeDeviceDlcPredownloadListPolicy, DuplicateValidValues) {
@@ -106,8 +106,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, DuplicateValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_TRUE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST(DecodeDeviceDlcPredownloadListPolicy, InvalidAndValidValues) {
@@ -120,8 +119,7 @@ TEST(DecodeDeviceDlcPredownloadListPolicy, InvalidAndValidValues) {
       DecodeDeviceDlcPredownloadListPolicy(policy, warning);
 
   EXPECT_FALSE(warning.empty());
-  EXPECT_EQ(decoded_policies,
-            base::Value::List().Append("sane-backends-extras-dlc"));
+  EXPECT_EQ(decoded_policies, base::Value::List().Append("sane-backends-pfu"));
 }
 
 }  // namespace policy

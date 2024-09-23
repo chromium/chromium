@@ -15,7 +15,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -111,7 +110,7 @@ public class VoiceRecognitionUtil {
     /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
     private static @Nullable PrefService getPrefService() {
         if (!ProfileManager.isInitialized()) return null;
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
     /**

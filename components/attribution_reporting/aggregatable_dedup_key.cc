@@ -15,7 +15,6 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -36,12 +35,11 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
 
   AggregatableDedupKey out;
 
-  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
+  ASSIGN_OR_RETURN(out.dedup_key, ParseDeduplicationKey(*dict), [](ParseError) {
+    return TriggerRegistrationError::kAggregatableDedupKeyValueInvalid;
+  });
 
-  ASSIGN_OR_RETURN(
-      out.dedup_key, ParseDeduplicationKey(*dict), [](absl::monostate) {
-        return TriggerRegistrationError::kAggregatableDedupKeyValueInvalid;
-      });
+  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
 
   return out;
 }

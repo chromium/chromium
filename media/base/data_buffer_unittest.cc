@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/data_buffer.h"
 
 #include <stdint.h>
@@ -19,8 +24,8 @@ TEST(DataBufferTest, Constructor_ZeroSize) {
   // Zero-sized buffers are valid. In practice they aren't used very much but it
   // eliminates clients from worrying about null data pointers.
   scoped_refptr<DataBuffer> buffer = new DataBuffer(0);
-  EXPECT_TRUE(buffer->data());
-  EXPECT_TRUE(buffer->writable_data());
+  EXPECT_FALSE(buffer->data());
+  EXPECT_FALSE(buffer->writable_data());
   EXPECT_EQ(0, buffer->data_size());
   EXPECT_FALSE(buffer->end_of_stream());
 }
@@ -30,17 +35,17 @@ TEST(DataBufferTest, Constructor_NonZeroSize) {
   scoped_refptr<DataBuffer> buffer = new DataBuffer(10);
   EXPECT_TRUE(buffer->data());
   EXPECT_TRUE(buffer->writable_data());
-  EXPECT_EQ(0, buffer->data_size());
+  EXPECT_EQ(10, buffer->data_size());
   EXPECT_FALSE(buffer->end_of_stream());
 }
 
 TEST(DataBufferTest, Constructor_ScopedArray) {
   // Data should be passed and both data and buffer size should be set.
   const int kSize = 8;
-  std::unique_ptr<uint8_t[]> data(new uint8_t[kSize]);
-  const uint8_t* kData = data.get();
+  auto data = base::HeapArray<uint8_t>::Uninit(kSize);
+  const uint8_t* kData = data.data();
 
-  scoped_refptr<DataBuffer> buffer = new DataBuffer(std::move(data), kSize);
+  scoped_refptr<DataBuffer> buffer = new DataBuffer(std::move(data));
   EXPECT_TRUE(buffer->data());
   EXPECT_TRUE(buffer->writable_data());
   EXPECT_EQ(kData, buffer->data());
@@ -52,8 +57,8 @@ TEST(DataBufferTest, CopyFrom) {
   const uint8_t kTestData[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
   const int kTestDataSize = std::size(kTestData);
 
-  scoped_refptr<DataBuffer> buffer =
-      DataBuffer::CopyFrom(kTestData, kTestDataSize);
+  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(
+      base::make_span(kTestData, static_cast<size_t>(kTestDataSize)));
   EXPECT_EQ(kTestDataSize, buffer->data_size());
   EXPECT_FALSE(buffer->end_of_stream());
 

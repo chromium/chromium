@@ -9,9 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.view.ViewGroup;
@@ -23,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,25 +35,35 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link HubPaneHostMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
 public class HubPaneHostMediatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock Pane mPane;
     private @Mock FullButtonData mButtonData;
     private @Mock ViewGroup mRootView;
+    private @Mock EdgeToEdgeController mEdgeToEdgeController;
+    private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjuster;
 
     private ObservableSupplierImpl<Pane> mPaneSupplier;
     private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
         mPaneSupplier = new ObservableSupplierImpl<>();
         mActionButtonSupplier = new ObservableSupplierImpl<>();
+        mEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
 
         when(mPane.getRootView()).thenReturn(mRootView);
@@ -63,10 +77,11 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
     public void testDestroy() {
-        HubFieldTrial.FLOATING_ACTION_BUTTON.setForTesting(true);
         mPaneSupplier.set(mPane);
-        HubPaneHostMediator mediator = new HubPaneHostMediator(mModel, mPaneSupplier);
+        HubPaneHostMediator mediator =
+                new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         ShadowLooper.idleMainLooper();
         assertNotNull(mModel.get(PANE_ROOT_VIEW));
         assertTrue(mPaneSupplier.hasObservers());
@@ -81,7 +96,7 @@ public class HubPaneHostMediatorUnitTest {
     @Test
     @SmallTest
     public void testRootView() {
-        new HubPaneHostMediator(mModel, mPaneSupplier);
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         assertNull(mModel.get(PANE_ROOT_VIEW));
 
         mPaneSupplier.set(mPane);
@@ -96,16 +111,16 @@ public class HubPaneHostMediatorUnitTest {
     public void testRootView_paneAlreadySet() {
         mPaneSupplier.set(mPane);
 
-        new HubPaneHostMediator(mModel, mPaneSupplier);
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         ShadowLooper.idleMainLooper();
         assertEquals(mRootView, mModel.get(PANE_ROOT_VIEW));
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
     public void testActionButtonData() {
-        HubFieldTrial.FLOATING_ACTION_BUTTON.setForTesting(true);
-        new HubPaneHostMediator(mModel, mPaneSupplier);
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         assertNull(mModel.get(ACTION_BUTTON_DATA));
 
         mPaneSupplier.set(mPane);
@@ -132,10 +147,42 @@ public class HubPaneHostMediatorUnitTest {
     @Test
     @SmallTest
     public void testDisabledActionButtonData() {
-        HubFieldTrial.FLOATING_ACTION_BUTTON.setForTesting(false);
-        new HubPaneHostMediator(mModel, mPaneSupplier);
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         mPaneSupplier.set(mPane);
         mActionButtonSupplier.set(mButtonData);
         assertNull(mModel.get(ACTION_BUTTON_DATA));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testFloatingActionButtonMargins() {
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
+        assertTrue("Expecting observers for edge to edge.", mEdgeToEdgeSupplier.hasObservers());
+
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mEdgeToEdgePadAdjuster.capture());
+
+        assertEquals(0, mModel.get(EDGE_TO_EDGE_BOTTOM_INSETS));
+
+        mEdgeToEdgePadAdjuster.getValue().overrideBottomInset(100);
+        assertEquals(100, mModel.get(EDGE_TO_EDGE_BOTTOM_INSETS));
+
+        mEdgeToEdgePadAdjuster.getValue().overrideBottomInset(0);
+        assertEquals(0, mModel.get(EDGE_TO_EDGE_BOTTOM_INSETS));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+    })
+    public void testDisableEdgeToEdgeOnNativePage() {
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
+        assertFalse("Expecting observers for edge to edge.", mEdgeToEdgeSupplier.hasObservers());
     }
 }

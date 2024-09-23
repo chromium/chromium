@@ -82,7 +82,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
     case RemoteCommand::BROWSER_ROTATE_ATTESTATION_CREDENTIAL:
       // These types of commands should be sent to `UserCommandsFactoryAsh`
       // instead of here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

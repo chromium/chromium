@@ -1,0 +1,15 @@
+Name: moshi
+Short Name: moshi
+URL: https://github.com/square/moshi/
+Version: 1.15.0
+License: Apache Version 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+A modern JSON API for Android and Java
+
+Local Modifications:
+No modifications.

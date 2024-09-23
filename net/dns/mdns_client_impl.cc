@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -412,7 +413,7 @@ void MDnsClientImpl::Core::RemoveListener(MDnsListenerImpl* listener) {
   ListenerKey key(listener->GetName(), listener->GetType());
   auto observer_list_iterator = listeners_.find(key);
 
-  DCHECK(observer_list_iterator != listeners_.end());
+  CHECK(observer_list_iterator != listeners_.end(), base::NotFatalUntil::M130);
   DCHECK(observer_list_iterator->second->HasObserver(listener));
 
   observer_list_iterator->second->RemoveObserver(listener);
@@ -423,7 +424,7 @@ void MDnsClientImpl::Core::RemoveListener(MDnsListenerImpl* listener) {
     // happens while iterating over the observer list.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MDnsClientImpl::Core::CleanupObserverList,
-                                  AsWeakPtr(), key));
+                                  weak_ptr_factory_.GetWeakPtr(), key));
   }
 }
 
@@ -601,7 +602,7 @@ void MDnsListenerImpl::HandleRecordUpdate(MDnsCache::UpdateType update_type,
         break;
       case MDnsCache::NoChange:
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         // Dummy assignment to suppress compiler warning.
         update_external = MDnsListener::RECORD_CHANGED;
         break;
@@ -628,8 +629,8 @@ void MDnsListenerImpl::ScheduleNextRefresh() {
     return;
   }
 
-  next_refresh_.Reset(
-      base::BindRepeating(&MDnsListenerImpl::DoRefresh, AsWeakPtr()));
+  next_refresh_.Reset(base::BindRepeating(&MDnsListenerImpl::DoRefresh,
+                                          weak_ptr_factory_.GetWeakPtr()));
 
   // Schedule refreshes at both 85% and 95% of the original TTL. These will both
   // be canceled and rescheduled if the record's TTL is updated due to a
@@ -680,7 +681,7 @@ bool MDnsTransactionImpl::Start() {
   DCHECK(!started_);
   started_ = true;
 
-  base::WeakPtr<MDnsTransactionImpl> weak_this = AsWeakPtr();
+  base::WeakPtr<MDnsTransactionImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (flags_ & MDnsTransaction::QUERY_CACHE) {
     ServeRecordsFromCache();
 
@@ -754,7 +755,7 @@ void MDnsTransactionImpl::SignalTransactionOver() {
 
 void MDnsTransactionImpl::ServeRecordsFromCache() {
   std::vector<const RecordParsed*> records;
-  base::WeakPtr<MDnsTransactionImpl> weak_this = AsWeakPtr();
+  base::WeakPtr<MDnsTransactionImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   if (client_->core()) {
     client_->core()->QueryCache(rrtype_, name_, &records);
@@ -788,8 +789,8 @@ bool MDnsTransactionImpl::QueryAndListen() {
   if (!client_->core()->SendQuery(rrtype_, name_))
     return false;
 
-  timeout_.Reset(
-      base::BindOnce(&MDnsTransactionImpl::SignalTransactionOver, AsWeakPtr()));
+  timeout_.Reset(base::BindOnce(&MDnsTransactionImpl::SignalTransactionOver,
+                                weak_ptr_factory_.GetWeakPtr()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_.callback(), kTransactionTimeout);
 

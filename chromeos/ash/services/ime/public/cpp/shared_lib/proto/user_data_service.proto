@@ -1,0 +1,45 @@
+syntax = "proto2";
+
+package chromeos_input;
+
+import "fetch_japanese_legacy_config.proto";
+import "japanese_dictionary.proto";
+
+message Status {
+  optional bool success = 1;
+  optional string reason = 2;
+}
+
+message UserDataRequest {
+  oneof request {
+    // Directly reads the Japanese settings from the extension.
+    FetchJapaneseLegacyConfigRequest fetch_japanese_legacy_config = 1;
+    // Get all user dictionary data.
+    FetchJapaneseDictionaryRequest fetch_japanese_dictionary = 2;
+    // Add japanese dictionary entry.
+    AddJapaneseDictionaryEntryRequest add_japanese_dictionary_entry = 3;
+    // Edit japanese dictionary entry.
+    EditJapaneseDictionaryEntryRequest edit_japanese_dictionary_entry = 4;
+    // Delete japanese dictionary entry.
+    DeleteJapaneseDictionaryEntryRequest delete_japanese_dictionary_entry = 5;
+    // Creates a japanese dictionary with the given name.
+    CreateJapaneseDictionaryRequest create_japanese_dictionary = 6;
+    // Renames a japanese dictionary with the given name.
+    RenameJapaneseDictionaryRequest rename_japanese_dictionary = 7;
+    // Deletes a japanese dictionary.
+    DeleteJapaneseDictionaryRequest delete_japanese_dictionary = 8;
+    // Returns the TSV string that represents a japanese dictionary.
+    ExportJapaneseDictionaryRequest export_japanese_dictionary = 9;
+  }
+}
+
+message UserDataResponse {
+  optional Status status = 1;
+  oneof response {
+    FetchJapaneseLegacyConfigResponse fetch_japanese_legacy_config = 2;
+    // Get all user dictionary data.
+    FetchJapaneseDictionaryResponse fetch_japanese_dictionary = 3;
+    // Dictionary Data as TSV
+    string export_japanese_dictionary = 4;
+  }
+}

@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("url_deduplication") {
+  sources = [
+    "deduplication_strategy.cc",
+    "deduplication_strategy.h",
+    "docs_url_strip_handler.cc",
+    "docs_url_strip_handler.h",
+    "url_deduplication_helper.cc",
+    "url_deduplication_helper.h",
+    "url_strip_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/url_formatter",
+    "//net",
+    "//third_party/re2",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "docs_url_strip_handler_unittest.cc",
+    "url_deduplication_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":url_deduplication",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -9,42 +9,49 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace viz {
 
-// See share_element_resource_id.mojom for details.
+// See view_transition_element_resource_id.mojom for details.
 class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
  public:
-  // Generates a new id.
-  static ViewTransitionElementResourceId Generate();
+  static constexpr uint32_t kInvalidLocalId = 0;
 
-  // For mojo deserialization.
-  explicit ViewTransitionElementResourceId(uint32_t id);
+  ViewTransitionElementResourceId(
+      const blink::ViewTransitionToken& transition_token,
+      uint32_t local_id);
 
   // Creates an invalid id.
   ViewTransitionElementResourceId();
   ~ViewTransitionElementResourceId();
 
-  bool operator==(const ViewTransitionElementResourceId& o) const {
-    return id_ == o.id_;
-  }
-  bool operator!=(const ViewTransitionElementResourceId& o) const {
-    return !(*this == o);
-  }
-  bool operator<(const ViewTransitionElementResourceId& o) const {
-    return id_ < o.id_;
-  }
+  VIZ_COMMON_EXPORT friend bool operator==(
+      const ViewTransitionElementResourceId&,
+      const ViewTransitionElementResourceId&);
+  friend auto operator<=>(const ViewTransitionElementResourceId&,
+                          const ViewTransitionElementResourceId&) = default;
 
   bool IsValid() const;
   std::string ToString() const;
 
-  uint32_t id() const { return id_; }
+  uint32_t local_id() const { return local_id_; }
+  const blink::ViewTransitionToken& transition_token() const {
+    CHECK(transition_token_);
+    return *transition_token_;
+  }
 
  private:
-  uint32_t id_;
+  // Refers to a specific view transition - globally unique.
+  std::optional<blink::ViewTransitionToken> transition_token_;
+
+  // Refers to a specific snapshot resource within a specific transition
+  // Unique only with respect to a given `transition_token_`.
+  uint32_t local_id_ = kInvalidLocalId;
 };
 
 }  // namespace viz

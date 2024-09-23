@@ -39,7 +39,7 @@ void RespondWithObserver::DidDispatchEvent(
 
 // https://w3c.github.io/ServiceWorker/#fetch-event-respondwith
 void RespondWithObserver::RespondWith(ScriptState* script_state,
-                                      ScriptPromise script_promise,
+                                      ScriptPromiseUntyped script_promise,
                                       ExceptionState& exception_state) {
   // 1. `If the dispatch flag is unset, throw an "InvalidStateError"
   //    DOMException.`
@@ -95,7 +95,7 @@ void RespondWithObserver::ResponseWasFulfilled(
 }
 
 bool RespondWithObserver::WaitUntil(ScriptState* script_state,
-                                    ScriptPromise promise,
+                                    ScriptPromiseUntyped promise,
                                     ExceptionState& exception_state) {
   return observer_->WaitUntil(script_state, promise, exception_state);
 }

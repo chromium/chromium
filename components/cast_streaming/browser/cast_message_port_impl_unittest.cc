@@ -86,7 +86,7 @@ class CastMessagePortImplTest : public testing::Test,
       std::move(receiver_message_closure_).Run();
     }
   }
-  void OnError(openscreen::Error error) override {
+  void OnError(const openscreen::Error& error) override {
     latest_error_ = error;
     if (error_closure_) {
       std::move(error_closure_).Run();

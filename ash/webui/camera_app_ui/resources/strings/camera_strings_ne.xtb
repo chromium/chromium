@@ -28,24 +28,32 @@
 <translation id="2036868001356139588">टाइमरको अवधि</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> सक्रिय भयो</translation>
 <translation id="2134029355740465625">भिडियोसम्बन्धी सेटिङ</translation>
-<translation id="2144806332417375165">भिडियोसम्बन्धी आफू अनुकूल प्यारामिटरहरू</translation>
+<translation id="2144806332417375165">भिडियोसम्बन्धी  कस्टम प्यारामिटरहरू</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2244252133441425811">भिडियोको FPS पिकर अन गर्नुहोस्</translation>
-<translation id="2271433936731426666">पूर्ण आकारको भिडियो स्न्यापसट अन गरियोस्</translation>
+<translation id="2271433936731426666">पूर्ण आकारको भिडियो स्न्यापसट अन गर्नुहोस्</translation>
+<translation id="2281736597583450397">परिष्कृत जुम प्रयोग गरी फोटोमा ससाना कुराहरूसमेत अझ स्पष्ट रूपमा कैद गर्नुहोस्</translation>
 <translation id="2320741269052147773">बायाँतिर प्यान गर्नुहोस्</translation>
+<translation id="2360840973209616515">तपाईंका एड्मिन क्यामेरा एप व्यवस्थापन गर्नुहुन्छ।
+        विवरणहरू चाहिएमा एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="2442754296994859145">यो टेक्स्ट पुष्टि गर्न यसलाई कपी गर्नुहोस् वा स्क्यान गर्न छाड्न एक्स्पान्ड गर्नुहोस्।</translation>
+<translation id="2486151619109781620">यो डायलग कोल्याप्स गर्नुहोस् र स्क्यान गर्न थाल्नुहोस्</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2501853267655415902">रेकर्डिङ गर्न छाडियो</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="2577915835281444458">रेकर्डिङ चाँडै नै बन्द हुने छ। डिभाइसको भण्डारणमा गएर त्यसमा ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="2599796128805996109">पछाडिको क्यामेरा</translation>
+<translation id="2654491636277477479">पत्ता लागेको टेक्स्ट कपी गर्नुहोस्</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />सेकेन्ड</translation>
 <translation id="2761536921376153655">स्क्यानको प्रकार</translation>
 <translation id="28682968802727151">प्रिभ्यू मिरर गर्नुहोस्</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> जोडिएको छ।</translation>
 <translation id="3067436040345934772">दायाँतिर प्यान गर्नुहोस्</translation>
 <translation id="3081586908890909590">भिडियो रेकर्ड गर्ने मोड प्रयोग गर्नुहोस्</translation>
+<translation id="3091480460059548935">प्रिभ्यूमा भएको टेक्स्ट पत्ता लगाउने सुविधा</translation>
 <translation id="313467653172006084">३० FPS</translation>
+<translation id="3157038259444425153">तपाईं अब आफ्नो फोटोमा भएको टेक्स्ट सीधै कपी गर्न सक्नुहुन्छ</translation>
 <translation id="3158534262962737808">"<ph name="WIFINAME" />" मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3240426699337459095">लिंक कपी गरियो</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
 <translation id="4121305183798804752">कागजात भेटियो</translation>
 <translation id="414641094616694804">यो क्यामेरामा रिजोल्युसन बदल्न मिल्दैन</translation>
-<translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="428234092390943511">पेजको थम्बनेल</translation>
-<translation id="4349714250734879769">फ्रेमहरू Chrome अनुसार मिलाउनुहोस्</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>
 <translation id="4445542136948522167">तस्बिर खिच्न छाड्नुहोस्‌</translation>
 <translation id="4570032796877367747">अगाडिको क्यामेरा</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">स्क्यान गरिएको पेजको सूची</translation>
 <translation id="4890010094662541459">३ x ३</translation>
 <translation id="4892746741161549733">लिंक एड्रेस <ph name="URL" /> कपी गर्नुहोस्</translation>
-<translation id="491895758387112773">मल्टिस्ट्रिम भिडियो रेकर्डिङ</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4984613436295737187">क्वाड एचडी (१४४० पिक्सेल)</translation>
 <translation id="5034763830503483128">फोटोको एस्पेक्ट रेसियो</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5320594929574852403">बायाँतिर सारिँदै छ</translation>
 <translation id="5374917190292010970">४K (२१६० पिक्सेल)</translation>
+<translation id="5634947914995388399">यो डायलग एक्स्पान्ड गर्नुहोस् र स्क्यान गर्न छाड्नुहोस्</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्क्यान गरिँदै छ</translation>
 <translation id="5671277269877808209">वर्गाकार</translation>
 <translation id="574392208103952083">मध्यम</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5976160379964388480">अन्य</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
+<translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6197807149213783179">मेटाडेटा सेभ गर्नुहोस्</translation>
 <translation id="6233780560267770709">३ गुणा ३</translation>
 <translation id="6243827288366940320">सुनौलो अनुपात</translation>
@@ -115,11 +122,14 @@
 तपाईंको प्रतिक्रिया फोटो वा भिडियोको गुणस्तरका सम्बन्धमा हो भने कृपया फोटो वा भिडियोको एउटा नमुना एट्याच गर्नुहोस् र उक्त फोटो वा भिडियोमा के समस्या छ भन्ने कुरा बताउनुहोस्। (उदाहरणका लागि, फोटो ज्यादै अँध्यारो छ वा जुन कुराको फोटो खिच्नु पर्ने हो त्यो कुरा फोकसबाहिर छ।)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" /> मा कनेक्ट गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
-<translation id="6617916774429601017">सबै रिजोल्युसनहरू देखाइयोस्</translation>
+<translation id="6586509689874700895">पहिला जुम इन गर्न <ph name="BUTTON_NAME" /> थिच्नुहोस्। त्यसपछि तपाईंले फोटो खिचेपछि तपाईं ससाना कुराहरूसमेत परिष्कृत रूपमा देख्नु हुने छ।</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> कपी गरियो</translation>
+<translation id="6617916774429601017">सबै रिजोल्युसनहरू देखाउनुहोस्</translation>
 <translation id="6631515515009660915">मिरर अफ गर्नुहोस्</translation>
 <translation id="6652737148136672975">एरो कीहरू प्रयोग गरेर कुना सार्नुहोस्</translation>
 <translation id="667999046851023355">कागजात</translation>
 <translation id="6681668084120808868">तस्बिर खिच्नुहोस्</translation>
+<translation id="6692092766759105707">यो टेक्स्ट पुष्टि गर्न यसलाई कपी गर्नुहोस्।</translation>
 <translation id="6778482348691154169">तस्बिर खिच्न सकिएन</translation>
 <translation id="6888362557094394345">पुछारतिर सारिँदै छ</translation>
 <translation id="695140971690006676">सबै रिसेट गर्नुहोस्</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">फाइल प्रणालीसम्बन्धी त्रुटिहरू।</translation>
 <translation id="7450541714075000668">टेक्स्ट कपी गरियो</translation>
 <translation id="7488619942230388918">GIF भिडियो रेकर्ड गर्नुहोस्</translation>
+<translation id="7527714402753141485">कपी गर्नु पर्ने टेक्स्ट र बटन देखाउँछ</translation>
 <translation id="7557677699350329807">अर्को क्यामेरा प्रयोग गर्नुहोस्</translation>
-<translation id="7562584071994185503">टेक्स्ट <ph name="TEXT" /> कपी गर्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7608223098072244877">४ गुणा ४</translation>
 <translation id="761421184377987513">पुछारको बायाँतिर सारिँदै छ</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">तस्बिर खिच्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="8167081290930651932">फोटोका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="8239780215768881278">भिडियो स्न्यापसट खिच्नुहोस्</translation>
-<translation id="8346544573713510785">फ्रेमहरू क्यामेरा HAL अनुसार मिलाउनुहोस्</translation>
 <translation id="8425673304802773841">तलतिर ढल्काइयोस्</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8609951387004618906"><ph name="URL" /> खोल्नुहोस्</translation>
 <translation id="8629662593426079630">३६० पिक्सेल</translation>
 <translation id="8711011893539266636">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अन छ</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8732462232047530626">मेटाडेटाको पूर्वावलोकन</translation>
 <translation id="874854738381978209">Wi-Fi नेटवर्क पत्ता लाग्यो।</translation>

@@ -6,7 +6,6 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -29,26 +28,12 @@ namespace {
 constexpr char kProcessNamePrefix[] = "org.chromium-";
 }  // namespace
 
-PerfettoPlatform::PerfettoPlatform(TaskRunnerType task_runner_type)
-    : task_runner_type_(task_runner_type),
-      deferred_task_runner_(new DeferredSequencedTaskRunner()),
-      thread_local_object_([](void* object) {
+PerfettoPlatform::PerfettoPlatform(PerfettoTaskRunner* task_runner)
+    : task_runner_(task_runner), thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
       }) {}
 
 PerfettoPlatform::~PerfettoPlatform() = default;
-
-void PerfettoPlatform::StartTaskRunner(
-    scoped_refptr<SequencedTaskRunner> task_runner) {
-  DCHECK_EQ(task_runner_type_, TaskRunnerType::kThreadPool);
-  DCHECK(!did_start_task_runner_);
-  deferred_task_runner_->StartWithTaskRunner(task_runner);
-  did_start_task_runner_ = true;
-}
-
-SequencedTaskRunner* PerfettoPlatform::task_runner() const {
-  return deferred_task_runner_.get();
-}
 
 PerfettoPlatform::ThreadLocalObject*
 PerfettoPlatform::GetOrCreateThreadLocalObject() {
@@ -62,22 +47,9 @@ PerfettoPlatform::GetOrCreateThreadLocalObject() {
 
 std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
     const CreateTaskRunnerArgs&) {
-  switch (task_runner_type_) {
-    case TaskRunnerType::kBuiltin:
-#if !BUILDFLAG(IS_NACL)
-      return std::make_unique<perfetto::base::ThreadTaskRunner>(
-          perfetto::base::ThreadTaskRunner::CreateAndStart());
-#else
-      DCHECK(false);
-      return nullptr;
-#endif
-    case TaskRunnerType::kThreadPool:
-      // We can't create a real task runner yet because the ThreadPool may not
-      // be initialized. Instead, we point Perfetto to a buffering task runner
-      // which will become active as soon as the thread pool is up (see
-      // StartTaskRunner).
-      return std::make_unique<PerfettoTaskRunner>(deferred_task_runner_);
-  }
+  // TODO(b/242965112): Add support for the builtin task runner
+  return std::make_unique<PerfettoTaskRunner>(
+      task_runner_->GetOrCreateTaskRunner());
 }
 
 // This method is used by the SDK to determine the producer name.

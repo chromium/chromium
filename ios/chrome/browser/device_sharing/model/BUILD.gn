@@ -21,7 +21,9 @@ source_set("model") {
     "//components/prefs/ios",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public:web_state_observer",
     "//net",
     "//url",
   ]
@@ -39,7 +41,7 @@ source_set("unit_tests") {
     "//components/handoff",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public/test",
     "//testing/gtest",
@@ -58,6 +60,7 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":model",
     "//components/handoff",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]
 }

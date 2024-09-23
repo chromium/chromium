@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>CSS Images Module Level 3: image-orientation: from-image with will-change: transform and no border. Blink treats this as 'directly composited' and rasterizes the image at its intrinsic size</title>
+<!-- GPU rasterization may cause slight color differences of antialiased pixels along the edges of the images. --> 
+<meta name=fuzzy content="maxDifference=0-3;totalPixels=0-500">
 <style>
     body {
         overflow: hidden;

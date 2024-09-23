@@ -110,6 +110,7 @@ void VideoPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
     return;
 
   window_->Hide();
+  // The call to `Hide()` may cause `window_` to be cleared.
   CloseInternal(should_pause_video);
 }
 
@@ -270,8 +271,12 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   SetShowPlayPauseButton(show_play_pause_button);
   Show();
 
-  // TODO(crbug.com/1331248): Rather than set this synchronously, we should call
-  // back with the bounds once the window provides them.
+  if (on_window_created_notify_observers_callback_) {
+    std::move(on_window_created_notify_observers_callback_).Run();
+  }
+
+  // TODO(crbug.com/40227464): Rather than set this synchronously, we should
+  // call back with the bounds once the window provides them.
   *window_size = GetSize();
   return result;
 }
@@ -354,7 +359,7 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
     const std::set<media_session::mojom::MediaSessionAction>& actions) {
-  // TODO(crbug.com/919842): Currently, the first Media Session to be created
+  // TODO(crbug.com/40608570): Currently, the first Media Session to be created
   // (independently of the frame) will be used. This means, we could show a
   // Skip Ad button for a PiP video from another frame. Ideally, we should have
   // a Media Session per frame, not per tab. This is not implemented yet.
@@ -500,6 +505,13 @@ void VideoPictureInPictureWindowControllerImpl::
   window_->SetPlayPauseButtonVisibility((media_session_action_pause_handled_ &&
                                          media_session_action_play_handled_) ||
                                         always_show_play_pause_button_);
+}
+
+void VideoPictureInPictureWindowControllerImpl::
+    SetOnWindowCreatedNotifyObserversCallback(
+        base::OnceClosure on_window_created_notify_observers_callback) {
+  on_window_created_notify_observers_callback_ =
+      std::move(on_window_created_notify_observers_callback);
 }
 
 WebContentsImpl*

@@ -5,13 +5,13 @@
 #include "chrome/common/profiler/process_type.h"
 
 #include "base/command_line.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
+#include "base/profiler/process_type.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/switches.h"
+#include "extensions/common/switches.h"  // nogncheck
 #endif
 
 namespace {
@@ -27,35 +27,35 @@ bool IsExtensionRenderer(const base::CommandLine& command_line) {
 
 }  // namespace
 
-metrics::CallStackProfileParams::Process GetProfileParamsProcess(
+base::ProfilerProcessType GetProfilerProcessType(
     const base::CommandLine& command_line) {
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
   if (process_type.empty())
-    return metrics::CallStackProfileParams::Process::kBrowser;
+    return base::ProfilerProcessType::kBrowser;
 
   // Renderer process exclusive of extension renderers.
   if (process_type == switches::kRendererProcess &&
       !IsExtensionRenderer(command_line)) {
-    return metrics::CallStackProfileParams::Process::kRenderer;
+    return base::ProfilerProcessType::kRenderer;
   }
 
   if (process_type == switches::kGpuProcess)
-    return metrics::CallStackProfileParams::Process::kGpu;
+    return base::ProfilerProcessType::kGpu;
 
   if (process_type == switches::kUtilityProcess) {
     auto utility_sub_type =
         command_line.GetSwitchValueASCII(switches::kUtilitySubType);
     if (utility_sub_type == network::mojom::NetworkService::Name_)
-      return metrics::CallStackProfileParams::Process::kNetworkService;
-    return metrics::CallStackProfileParams::Process::kUtility;
+      return base::ProfilerProcessType::kNetworkService;
+    return base::ProfilerProcessType::kUtility;
   }
 
   if (process_type == switches::kZygoteProcess)
-    return metrics::CallStackProfileParams::Process::kZygote;
+    return base::ProfilerProcessType::kZygote;
 
   if (process_type == switches::kPpapiPluginProcess)
-    return metrics::CallStackProfileParams::Process::kPpapiPlugin;
+    return base::ProfilerProcessType::kPpapiPlugin;
 
-  return metrics::CallStackProfileParams::Process::kUnknown;
+  return base::ProfilerProcessType::kUnknown;
 }

@@ -30,7 +30,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER)
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -41,7 +41,6 @@ namespace {
 const char kShellExecutableName[] = "content_shell.exe";
 #else
 const char kShellExecutableName[] = "content_shell";
-const char kMojoCoreLibraryName[] = "libmojo_core.so";
 #endif
 
 base::FilePath GetCurrentDirectory() {
@@ -66,7 +65,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
   base::CommandLine MakeShellCommandLine() {
     base::CommandLine command_line(
         GetFilePathNextToCurrentExecutable(kShellExecutableName));
-    command_line.AppendSwitchPath(switches::kContentShellDataPath,
+    command_line.AppendSwitchPath(switches::kContentShellUserDataDir,
                                   temp_dir_.GetPath());
 #if BUILDFLAG(IS_OZONE)
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
@@ -82,6 +81,16 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                    gl::kGLImplementationANGLEName);
     command_line.AppendSwitchASCII(switches::kUseANGLE,
                                    gl::kANGLEImplementationSwiftShaderName);
+    command_line.AppendSwitch(switches::kEnableUnsafeSwiftShader);
+#endif
+
+#if defined(MEMORY_SANITIZER)
+    // MSan and GL do not get along so avoid using the GPU with MSan. Normally,
+    // BrowserTestBase::SetUp() forces browser tests to use software GL for
+    // tests (in both non-MSan and MSan builds), but since this test builds a
+    // command line to launch the shell directly, that logic needs to be
+    // replicated here.
+    command_line.AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
 #endif
 
     const auto& current_command_line = *base::CommandLine::ForCurrentProcess();
@@ -126,12 +135,6 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                    channel.TakeLocalEndpoint());
     return controller;
   }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  base::FilePath GetMojoCoreLibraryPath() {
-    return GetFilePathNextToCurrentExecutable(kMojoCoreLibraryName);
-  }
-#endif
 
  private:
   base::FilePath GetFilePathNextToCurrentExecutable(
@@ -185,44 +188,6 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   shell_controller->ShutDown();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1259557): This test implementation fundamentally conflicts
-// with a fix for the linked bug because it causes a browser process to behave
-// partially as a broker and partially as a non-broker. This can be re-enabled
-// when we migrate away from the current Mojo implementation. It's OK to disable
-// for now because no production code relies on this feature.
-IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest,
-                       DISABLED_WithMojoCoreLibrary) {
-  // Instructs a newly launched Content Shell browser to initialize Mojo Core
-  // dynamically from a shared library, rather than using the version linked
-  // into the Content Shell binary.
-  //
-  // This exercises end-to-end JS in order to cover real IPC behavior between
-  // the browser and a renderer.
-
-  base::CommandLine command_line = MakeShellCommandLine();
-  command_line.AppendSwitchPath(switches::kMojoCoreLibraryPath,
-                                GetMojoCoreLibraryPath());
-  mojo::Remote<mojom::ShellController> shell_controller =
-      LaunchContentShell(command_line);
-
-  // Indisputable proof that we're evaluating JavaScript.
-  const std::string kExpressionToEvaluate = "'ba'+ +'a'+'as'";
-  const base::Value kExpectedValue("baNaNas");
-
-  base::RunLoop loop;
-  shell_controller->ExecuteJavaScript(
-      base::ASCIIToUTF16(kExpressionToEvaluate),
-      base::BindLambdaForTesting([&](base::Value value) {
-        EXPECT_EQ(kExpectedValue, value);
-        loop.Quit();
-      }));
-  loop.Run();
-
-  shell_controller->ShutDown();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace content

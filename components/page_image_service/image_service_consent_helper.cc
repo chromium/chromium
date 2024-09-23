@@ -4,25 +4,14 @@
 
 #include "components/page_image_service/image_service_consent_helper.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
-#include "components/unified_consent/consent_throttle.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "components/sync/service/sync_service_utils.h"
 
 namespace page_image_service {
 
 namespace {
-
-void RunConsentThrottleCallback(
-    base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
-    bool success) {
-  std::move(callback).Run(success ? PageImageServiceConsentStatus::kSuccess
-                                  : PageImageServiceConsentStatus::kFailure);
-}
 
 PageImageServiceConsentStatus ConsentStatusToUmaStatus(
     std::optional<bool> consent_status) {
@@ -37,31 +26,13 @@ PageImageServiceConsentStatus ConsentStatusToUmaStatus(
 
 ImageServiceConsentHelper::ImageServiceConsentHelper(
     syncer::SyncService* sync_service,
-    syncer::ModelType model_type)
+    syncer::DataType data_type)
     : sync_service_(sync_service),
-      model_type_(model_type),
-      timeout_duration_(base::Seconds(GetFieldTrialParamByFeatureAsInt(
-          kImageServiceObserveSyncDownloadStatus,
-          "timeout_seconds",
-          10))) {
-  if (base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus)) {
+      data_type_(data_type),
+      timeout_duration_(base::Seconds(10)) {
+  // `sync_service` can be null, for example when disabled via flags.
+  if (sync_service) {
     sync_service_observer_.Observe(sync_service);
-  } else if (model_type == syncer::ModelType::BOOKMARKS) {
-    // TODO(crbug.com/40067770): Migrate to require_sync_feature_enabled =
-    // false.
-    consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
-        unified_consent::UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedBookmarksDataCollectionConsentHelper(
-                sync_service,
-                /*require_sync_feature_enabled=*/true),
-        timeout_duration_);
-  } else if (model_type == syncer::ModelType::HISTORY_DELETE_DIRECTIVES) {
-    consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
-        unified_consent::UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedDataCollectionConsentHelper(sync_service),
-        timeout_duration_);
-  } else {
-    NOTREACHED();
   }
 }
 
@@ -71,11 +42,6 @@ void ImageServiceConsentHelper::EnqueueRequest(
     base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
     mojom::ClientId client_id) {
   base::UmaHistogramBoolean("PageImageService.ConsentStatusRequestCount", true);
-  if (consent_throttle_) {
-    consent_throttle_->EnqueueRequest(
-        base::BindOnce(&RunConsentThrottleCallback, std::move(callback)));
-    return;
-  }
 
   std::optional<bool> consent_status = GetConsentStatus();
   if (consent_status.has_value()) {
@@ -97,7 +63,6 @@ void ImageServiceConsentHelper::EnqueueRequest(
 void ImageServiceConsentHelper::OnStateChanged(
     syncer::SyncService* sync_service) {
   CHECK_EQ(sync_service_, sync_service);
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   std::optional<bool> consent_status = GetConsentStatus();
   if (!consent_status.has_value()) {
@@ -122,27 +87,37 @@ void ImageServiceConsentHelper::OnStateChanged(
 void ImageServiceConsentHelper::OnSyncShutdown(
     syncer::SyncService* sync_service) {
   CHECK_EQ(sync_service_, sync_service);
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   sync_service_observer_.Reset();
   sync_service_ = nullptr;
 }
 
 std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
-
   if (!sync_service_) {
     return false;
   }
 
-  syncer::SyncService::ModelTypeDownloadStatus download_status =
-      sync_service_->GetDownloadStatusFor(model_type_);
+  // If upload of the given DataType is disabled (or inactive due to an
+  // error), then consent must be assumed to be NOT given.
+  // Note that the "INITIALIZING" state is good enough: It means the data
+  // type is enabled in principle, Sync just hasn't fully finished
+  // initializing yet. This case is handled by the DownloadStatus check
+  // below.
+  if (syncer::GetUploadToGoogleState(sync_service_, data_type_) ==
+      syncer::UploadState::NOT_ACTIVE) {
+    return false;
+  }
+
+  // Ensure Sync has downloaded all relevant updates (i.e. any deletions from
+  // other devices are known).
+  syncer::SyncService::DataTypeDownloadStatus download_status =
+      sync_service_->GetDownloadStatusFor(data_type_);
   switch (download_status) {
-    case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
       return std::nullopt;
-    case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate:
       return true;
-    case syncer::SyncService::ModelTypeDownloadStatus::kError:
+    case syncer::SyncService::DataTypeDownloadStatus::kError:
       return false;
   }
 }
@@ -161,14 +136,6 @@ void ImageServiceConsentHelper::OnTimeoutExpired() {
         ConsentStatusToUmaStatus(GetConsentStatus());
     base::UmaHistogramEnumeration("PageImageService.ConsentStatusOnTimeout",
                                   consent_status);
-    if (sync_service_) {
-      sync_service_->RecordReasonIfWaitingForUpdates(
-          model_type_, kConsentTimeoutReasonHistogramName);
-      sync_service_->RecordReasonIfWaitingForUpdates(
-          model_type_,
-          std::string(kConsentTimeoutReasonHistogramName) + "." +
-              ClientIdToString(request_callback_with_client_id.second));
-    }
     std::move(request_callback_with_client_id.first).Run(consent_status);
   }
 }

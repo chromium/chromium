@@ -4,7 +4,9 @@
 
 import type {ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {assertCheckboxMenuButton, openToolbarMenu} from './test_util.js';
 
 function createToolbar() {
   document.body.innerHTML = '';
@@ -21,19 +23,13 @@ function getCrIconButtons(toolbar: ViewerToolbarElement, parentId: string) {
       'cr-icon-button');
 }
 
-function assertCheckboxMenuButton(button: HTMLElement, enabled: boolean) {
-  chrome.test.assertEq(
-      enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
-  chrome.test.assertEq(enabled, !button.querySelector('iron-icon')!.hidden);
-}
-
 // Unit tests for the viewer-toolbar element.
 const tests = [
   /**
    * Test that the toolbar toggles between showing the fit-to-page and
    * fit-to-width buttons.
    */
-  function testFitButton() {
+  async function testFitButton() {
     const toolbar = createToolbar();
     const fitButton = getCrIconButtons(toolbar, 'center')[2]!;
     const fitWidthIcon = 'pdf:fit-to-width';
@@ -53,51 +49,60 @@ const tests = [
     fitButton.click();
     chrome.test.assertEq(FittingType.FIT_TO_PAGE, lastFitType);
     chrome.test.assertEq(1, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitWidthIcon, fitButton.ironIcon);
 
     // Tap 2: Fire fit-to-changed(FIT_TO_WIDTH), show fit-to-page.
     fitButton.click();
     chrome.test.assertEq(FittingType.FIT_TO_WIDTH, lastFitType);
     chrome.test.assertEq(2, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitHeightIcon, fitButton.ironIcon);
 
     // Do the same as above, but with fitToggle().
     toolbar.fitToggle();
     chrome.test.assertEq(FittingType.FIT_TO_PAGE, lastFitType);
     chrome.test.assertEq(3, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitWidthIcon, fitButton.ironIcon);
     toolbar.fitToggle();
     chrome.test.assertEq(FittingType.FIT_TO_WIDTH, lastFitType);
     chrome.test.assertEq(4, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitHeightIcon, fitButton.ironIcon);
 
     // Test forceFit(FIT_TO_PAGE): Updates the icon, does not fire an event.
     toolbar.forceFit(FittingType.FIT_TO_PAGE);
     chrome.test.assertEq(4, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitWidthIcon, fitButton.ironIcon);
 
     // Force fitting the same fit as the existing fit should do nothing.
     toolbar.forceFit(FittingType.FIT_TO_PAGE);
     chrome.test.assertEq(4, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitWidthIcon, fitButton.ironIcon);
 
     // Force fit width.
     toolbar.forceFit(FittingType.FIT_TO_WIDTH);
     chrome.test.assertEq(4, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitHeightIcon, fitButton.ironIcon);
 
     // Force fit height.
     toolbar.forceFit(FittingType.FIT_TO_HEIGHT);
     chrome.test.assertEq(4, numEvents);
+    await microtasksFinished();
     chrome.test.assertEq(fitWidthIcon, fitButton.ironIcon);
 
     chrome.test.succeed();
   },
 
-  function testZoomButtons() {
+  async function testZoomButtons() {
     const toolbar = createToolbar();
     toolbar.zoomBounds = {min: 25, max: 500};
     toolbar.viewportZoom = 1;
+    await microtasksFinished();
 
     let zoomInCount = 0;
     let zoomOutCount = 0;
@@ -112,23 +117,27 @@ const tests = [
     // Zoom out
     chrome.test.assertEq('pdf:remove', zoomButtons[0]!.ironIcon);
     zoomButtons[0]!.click();
+    await microtasksFinished();
     chrome.test.assertEq(0, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
 
     // Set zoom to min. Zoom out is disabled.
     toolbar.viewportZoom = .25;
+    await microtasksFinished();
     chrome.test.assertTrue(zoomButtons[0]!.disabled);
     chrome.test.assertFalse(zoomButtons[1]!.disabled);
 
     // Zoom in
     chrome.test.assertEq('pdf:add', zoomButtons[1]!.ironIcon);
     zoomButtons[1]!.click();
+    await microtasksFinished();
     chrome.test.assertEq(1, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
 
     // Set zoom to max. Zoom in is disabled.
     toolbar.zoomBounds = {min: 25, max: 500};
     toolbar.viewportZoom = 5;
+    await microtasksFinished();
     chrome.test.assertFalse(zoomButtons[0]!.disabled);
     chrome.test.assertTrue(zoomButtons[1]!.disabled);
 
@@ -150,17 +159,20 @@ const tests = [
     const toolbar = createToolbar();
     toolbar.viewportZoom = .8;
     toolbar.zoomBounds = {min: 25, max: 500};
+    await microtasksFinished();
     const zoomField = toolbar.shadowRoot!.querySelector<HTMLInputElement>(
         '#zoom-controls input')!;
     chrome.test.assertEq('80%', zoomField.value);
 
     // Value is set based on viewport zoom.
     toolbar.viewportZoom = .533;
+    await microtasksFinished();
     chrome.test.assertEq('53%', zoomField.value);
 
     // Setting a non-number value resets to viewport zoom.
     zoomField.value = 'abc';
     zoomField.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
     chrome.test.assertEq('53%', zoomField.value);
 
     // Setting a value that is over the max zoom clips to the max value.
@@ -172,12 +184,14 @@ const tests = [
 
     // This happens in the parent.
     toolbar.viewportZoom = 5;
+    await microtasksFinished();
     chrome.test.assertEq('500%', zoomField.value);
 
     // Setting a value that is over the maximum again restores the max
     // value, even though no event is sent.
     zoomField.value = '80000%';
     zoomField.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
     chrome.test.assertEq('500%', zoomField.value);
 
     // Setting a new value sends the value in a zoom-changed event.
@@ -220,52 +234,73 @@ const tests = [
 
   async function testTwoPageViewToggle() {
     const toolbar = createToolbar();
+
+    // The menu needs to be open to check for visible menu elements.
+    await openToolbarMenu(toolbar);
+
     toolbar.twoUpViewEnabled = false;
+    await microtasksFinished();
     const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
         '#two-page-view-button')!;
-    assertCheckboxMenuButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
+    // Clicking the button closes the menu, so re-open it.
+    await openToolbarMenu(toolbar);
+
     // Happens in the parent.
     toolbar.twoUpViewEnabled = true;
+    await microtasksFinished();
     chrome.test.assertEq(true, event.detail);
-    assertCheckboxMenuButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
     whenChanged = eventToPromise('two-up-view-changed', toolbar);
     button.click();
     event = await whenChanged;
 
+    await openToolbarMenu(toolbar);
+
     // Happens in the parent.
     toolbar.twoUpViewEnabled = false;
+    await microtasksFinished();
     chrome.test.assertEq(false, event.detail);
-    assertCheckboxMenuButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
     chrome.test.succeed();
   },
 
   async function testShowAnnotationsToggle() {
     const toolbar = createToolbar();
+
+    // The menu needs to be open to check for visible menu elements.
+    await openToolbarMenu(toolbar);
+
     const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
         '#show-annotations-button')!;
-    assertCheckboxMenuButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
 
     let whenChanged = eventToPromise('display-annotations-changed', toolbar);
     button.click();
     let event = await whenChanged;
 
+    // Clicking the button closes the menu, so re-open it.
+    await openToolbarMenu(toolbar);
+
     chrome.test.assertEq(false, event.detail);
-    assertCheckboxMenuButton(button, false);
+    assertCheckboxMenuButton(toolbar, button, false);
     whenChanged = eventToPromise('display-annotations-changed', toolbar);
     button.click();
     event = await whenChanged;
 
+    await openToolbarMenu(toolbar);
+
     chrome.test.assertEq(true, event.detail);
-    assertCheckboxMenuButton(button, true);
+    assertCheckboxMenuButton(toolbar, button, true);
     chrome.test.succeed();
   },
 
-  function testSidenavToggleButton() {
+  async function testSidenavToggleButton() {
     const toolbar = createToolbar();
     chrome.test.assertFalse(toolbar.sidenavCollapsed);
 
@@ -275,11 +310,13 @@ const tests = [
     chrome.test.assertEq('true', toggleButton.getAttribute('aria-expanded'));
 
     toolbar.sidenavCollapsed = true;
+    await microtasksFinished();
     chrome.test.assertEq('false', toggleButton.getAttribute('aria-expanded'));
 
-    toolbar.addEventListener(
-        'sidenav-toggle-click', () => chrome.test.succeed());
+    const event = eventToPromise('sidenav-toggle-click', toolbar);
     toggleButton.click();
+    await event;
+    chrome.test.succeed();
   },
 
   async function testPresentButton() {
@@ -295,6 +332,7 @@ const tests = [
 
     // The present button should be disabled if the PDF Viewer is embedded.
     toolbar.embeddedViewer = true;
+    await microtasksFinished();
     chrome.test.assertTrue(toolbar.$['present-button'].disabled);
     chrome.test.succeed();
   },

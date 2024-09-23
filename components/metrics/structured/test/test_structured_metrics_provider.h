@@ -9,7 +9,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/recorder.h"
-#include "components/metrics/structured/structured_metrics_provider.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 
 namespace metrics::structured {
@@ -22,8 +21,8 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
  public:
   TestStructuredMetricsProvider();
   explicit TestStructuredMetricsProvider(
-      std::unique_ptr<StructuredMetricsRecorder> recorder);
-  ~TestStructuredMetricsProvider() override;
+      scoped_refptr<StructuredMetricsRecorder> recorder);
+  virtual ~TestStructuredMetricsProvider();
   TestStructuredMetricsProvider(const TestStructuredMetricsProvider&) = delete;
   TestStructuredMetricsProvider& operator=(
       const TestStructuredMetricsProvider&) = delete;
@@ -45,8 +44,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void EnableRecording();
   void DisableRecording();
 
-  void AddProfilePath(const base::FilePath& user_path);
-
   // Waits until the recorder is fully initialized.
   void WaitUntilReady();
 
@@ -57,12 +54,9 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
 
  private:
   // Recorder::RecorderImpl:
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnEventRecord(const Event& event) override;
 
-  std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
-
-  std::unique_ptr<StructuredMetricsProvider> structured_metrics_provider_;
+  scoped_refptr<StructuredMetricsRecorder> structured_metrics_recorder_;
 
   base::ScopedTempDir temp_dir_;
 

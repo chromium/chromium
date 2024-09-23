@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -263,7 +264,7 @@ std::unique_ptr<ContentNegotiationAlgorithm> GetContentNegotiationAlgorithm(
 
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants
 std::optional<std::vector<std::pair<std::string, std::vector<std::string>>>>
-ParseVariants(const base::StringPiece& str) {
+ParseVariants(const std::string_view& str) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants)
   // uses a custom format for the Variants-04 header, which this method attempts
@@ -313,7 +314,7 @@ ParseVariants(const base::StringPiece& str) {
 
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key
 std::optional<std::vector<std::vector<std::string>>> ParseVariantKey(
-    const base::StringPiece& str,
+    const std::string_view& str,
     size_t num_variant_axes) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key)
@@ -455,10 +456,8 @@ std::vector<std::vector<std::string>> WebPackageRequestMatcher::CacheBehavior(
       // field-name in incoming-request (after being combined as allowed by
       // Section 3.2.2 of [RFC7230]), or null if field-name is not in
       // incoming-request. [spec text]
-      std::optional<std::string> request_value;
-      std::string header_value;
-      if (request_headers.GetHeader(field_name, &header_value))
-        request_value = header_value;
+      std::optional<std::string> request_value =
+          request_headers.GetHeader(field_name);
       // Step 4.2.1.2. Let sorted-values be the result of running the algorithm
       // defined by the content negotiation mechanism with request-value and
       // variant-axis' available-values. [spec text]
@@ -624,10 +623,8 @@ std::optional<size_t> WebPackageRequestMatcher::FindBestMatchingIndex(
         GetContentNegotiationAlgorithm(field_name);
     if (!negotiation_algorithm)
       return std::nullopt;
-    std::optional<std::string> request_value;
-    std::string header_value;
-    if (request_headers.GetHeader(field_name, &header_value))
-      request_value = header_value;
+    std::optional<std::string> request_value =
+        request_headers.GetHeader(field_name);
 
     std::vector<std::string> sorted_values =
         negotiation_algorithm->run(variant_axis.second, request_value);

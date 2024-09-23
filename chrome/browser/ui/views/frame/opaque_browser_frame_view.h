@@ -82,9 +82,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
   ui::ImageModel GetFaviconForTabIconView() override;
@@ -112,8 +109,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   bool IsFrameCondensed() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
   FrameButtonStyle GetFrameButtonStyle() const override;
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& bounding_rect) const override;
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   bool ShouldDrawRestoredFrameShadow() const override;
 #if BUILDFLAG(IS_LINUX)
   bool IsTiled() const override;

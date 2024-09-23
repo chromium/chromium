@@ -11,6 +11,7 @@
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -28,6 +29,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -38,13 +41,14 @@
 #include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "components/feed/core/v2/public/feed_api.h"
-#include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/feed_api.h"      // nogncheck
+#include "components/feed/core/v2/public/feed_service.h"  // nogncheck
 #include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #endif
+
 
 namespace {
 
@@ -64,8 +68,7 @@ bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
 
   return feed_service->GetStream()->WasUrlRecentlyNavigatedFromFeed(url);
 }
-
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool ShouldConsiderForNtpMostVisited(
     content::WebContents& web_contents,
@@ -80,7 +83,7 @@ bool ShouldConsiderForNtpMostVisited(
                            navigation_handle->GetRedirectChain()[0])) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
 }
@@ -119,6 +122,8 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kTabbed;
     case chrome::android::ActivityType::kCustomTab:
       return history::VisitContextAnnotations::BrowserType::kCustomTab;
+    case chrome::android::ActivityType::kAuthTab:
+      return history::VisitContextAnnotations::BrowserType::kAuthTab;
     case chrome::android::ActivityType::kTrustedWebActivity:
     case chrome::android::ActivityType::kWebapp:
     case chrome::android::ActivityType::kWebApk:
@@ -260,6 +265,29 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           ? nullptr
           : static_cast<ChromeNavigationUIData*>(
                 navigation_handle->GetNavigationUIData());
+
+  // (crbug.com/365922169) When generating the HistoryAddPageArgs below, we must
+  // calculate the value for its member `is_ephemeral`. This member represents
+  // whether our navigation came from a credentialless iframe (which is an
+  // ephemeral context). Our goal is to use this information to avoid storing
+  // ephemeral navigations from credentialless iframes in the history backend.
+  // Currently, this is behavior which will be tested behind the partitioned
+  // :visited links experiments flags (PartitionVisitedLinkDatabase and
+  // PartitionVisitedLinkDatabaseWithSelfLinks). HOWEVER, due to layering
+  // constraints, we do not have the ability to check these blink::feature flags
+  // in any code found in components/history/core/ (which is where most history
+  // DB code lives).
+
+  // Instead, we check the values of these flags here - setting `is_ephemeral`
+  // to false if neither of these experimental flags are enabled. Once the
+  // experiments have completed, is_ephemeral will go back to being a pure check
+  // of whether the navigation is from a credentialless iframe.
+  const bool are_partitioned_visited_links_enabled =
+      base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabase) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
@@ -268,8 +296,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       // Reloads do not result in calling TitleWasSet() (which normally sets
-      // the title), so a reload needs to set the title. This is important for
-      // a reload after clearing history.
+      // the title), so a reload needs to set the title. This is
+      // important for a reload after clearing history.
       navigation_handle->IsSameDocument() ||
               navigation_handle->GetReloadType() != content::ReloadType::NONE
           ? std::optional<std::u16string>(
@@ -290,7 +318,13 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : std::nullopt),
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
-      app_id_, std::move(context_annotations));
+      app_id_, std::move(context_annotations),
+      are_partitioned_visited_links_enabled
+          ? navigation_handle->GetRenderFrameHost()
+                ->GetStorageKey()
+                .nonce()
+                .has_value()
+          : false);
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
@@ -377,6 +411,12 @@ void HistoryTabHelper::DidFinishNavigation(
           HistoryClustersTabHelper::FromWebContents(web_contents())) {
     clusters_tab_helper->OnUpdatedHistoryForNavigation(
         navigation_handle->GetNavigationId(), timestamp, add_page_args.url);
+  }
+
+  if (HistoryEmbeddingsTabHelper* embeddings_tab_helper =
+          HistoryEmbeddingsTabHelper::FromWebContents(web_contents())) {
+    embeddings_tab_helper->OnUpdatedHistoryForNavigation(
+        navigation_handle, timestamp, add_page_args.url);
   }
 }
 
@@ -483,12 +523,15 @@ bool HistoryTabHelper::IsEligibleTab(
     return true;
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* background_tab_manager = BackgroundTabManager::GetInstance();
-  if (background_tab_manager->IsBackgroundTab(web_contents())) {
-    // No history insertion is done for now since this is a tab that speculates
-    // future navigations. Just caching and returning for now.
-    background_tab_manager->CacheHistory(add_page_args);
-    return false;
+  if (web_contents()) {
+    auto* background_tab_manager =
+        BackgroundTabManager::FromWebContents(web_contents());
+    if (background_tab_manager) {
+      // No history insertion is done for now since this is a tab that
+      // speculates future navigations. Just caching and returning for now.
+      background_tab_manager->CacheHistory(add_page_args);
+      return false;
+    }
   }
   return true;
 #else

@@ -2,38 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_management_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app_content_dialog.html.js';
+import {getCss} from './app_content_dialog.css.js';
+import {getHtml} from './app_content_dialog.html.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-const AppManagementAppContentDialogElementBase = I18nMixin(PolymerElement);
-
-export class AppManagementAppContentDialogElement extends
-    AppManagementAppContentDialogElementBase {
+export class AppContentDialogElement extends CrLitElement {
   static get is() {
     return 'app-management-app-content-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      app: Object,
+      app: {type: Object},
     };
   }
-  app: App;
 
-  override ready() {
-    super.ready();
+  app: App = createDummyApp();
+
+  override firstUpdated() {
     this.addEventListener('keydown', e => this.trapFocus_(e as KeyboardEvent));
   }
 
@@ -55,10 +55,8 @@ export class AppManagementAppContentDialogElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-app-content-dialog': AppManagementAppContentDialogElement;
+    'app-management-app-content-dialog': AppContentDialogElement;
   }
 }
 
-customElements.define(
-    AppManagementAppContentDialogElement.is,
-    AppManagementAppContentDialogElement);
+customElements.define(AppContentDialogElement.is, AppContentDialogElement);

@@ -56,7 +56,7 @@ class MEDIA_EXPORT AndroidOverlay {
   // Android.  It is not reporting the destruction of |this|.
   //
   // Destroying |this| prevents any further destroyed callbacks.  This includes
-  // cases in which an earlier callback out of multiple registred ones deletes
+  // cases in which an earlier callback out of multiple registered ones deletes
   // |this|.  None of the later callbacks will be called.
   //
   // These will be called in the same order that they're added.

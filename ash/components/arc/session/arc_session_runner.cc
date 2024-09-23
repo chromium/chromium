@@ -59,7 +59,6 @@ std::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
   }
 
   NOTREACHED();
-  return std::nullopt;
 }
 
 // Returns true if restart is needed for given conditions.
@@ -93,7 +92,6 @@ bool IsRestartNeeded(std::optional<ArcInstanceMode> target_mode,
   }
 
   NOTREACHED();
-  return false;
 }
 
 // Returns true if the request to start/upgrade ARC instance is allowed

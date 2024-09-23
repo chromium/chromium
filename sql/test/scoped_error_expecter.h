@@ -39,6 +39,7 @@ class ScopedErrorExpecter {
   // individually, or the base code can be specified to expect errors for the
   // entire group (SQLITE_IOERR_* versus SQLITE_IOERR).
   void ExpectError(int err);
+  void ExpectError(SqliteResultCode err);
 
   // Return |true| if the all of the expected errors were encountered.  Failure
   // to call this results in an EXPECT failure when the instance is destructed.

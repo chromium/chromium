@@ -9,7 +9,7 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module chromeos.cdm.mojom;
 
@@ -26,22 +26,39 @@ import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
 interface CdmFactory {
   // Deprecated, do not use.
   [MinVersion=1]
-  CreateCdmDeprecated@1(
-              pending_associated_remote<ContentDecryptionModuleClient> client,
-              pending_associated_remote<CdmStorage> storage,
-              pending_associated_receiver<ContentDecryptionModule> cdm,
-              pending_remote<OutputProtection> output_protection);
+  DEPRECATED_1@1(
+      pending_associated_remote<ContentDecryptionModuleClient> client,
+      pending_associated_remote<CdmStorage> storage,
+      pending_associated_receiver<ContentDecryptionModule> cdm,
+      pending_remote<OutputProtection> output_protection);
+
+  // Deprecated, do not use.
+  [MinVersion=3]
+  CreateCdmDeprecated@2(
+      pending_associated_remote<ContentDecryptionModuleClient> client,
+      pending_associated_remote<CdmStorage> storage,
+      pending_remote<OutputProtection> output_protection,
+      string host,
+      pending_associated_receiver<ContentDecryptionModule> cdm);
+
+  [Stable, Extensible]
+  enum CreateCdmStatus {
+    [Default] kSuccess,
+    kNoMoreInstances,
+    kInsufficientGpuResources,
+  };
 
   // Creates a new ContentDecryptionModule instance for a |host| with the
   // corresponding |client|, remote |storage| implementation and
   // |output_protection|. Use an associated interface to ensure ordering and
   // that all become invalidated at the same time.
-  [MinVersion=3]
-  CreateCdm@2(pending_associated_remote<ContentDecryptionModuleClient> client,
+  [MinVersion=9]
+  CreateCdm@3(pending_associated_remote<ContentDecryptionModuleClient> client,
               pending_associated_remote<CdmStorage> storage,
               pending_remote<OutputProtection> output_protection,
               string host,
-              pending_associated_receiver<ContentDecryptionModule> cdm);
+              pending_associated_receiver<ContentDecryptionModule> cdm) =>
+      (CreateCdmStatus result);
 };
 
 // Next Method ID: 10

@@ -19,6 +19,8 @@ base::LazyInstance<TabModelList>::Leaky tab_model_list_ =
     LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+static TabModel* archived_tab_model_ = nullptr;
+
 TabModelList::TabModelList() = default;
 TabModelList::~TabModelList() = default;
 
@@ -57,7 +59,7 @@ void TabModelList::HandlePopupNavigation(NavigateParams* params) {
 
   // NOTE: If this fails contact dtrainor@.
   DCHECK(tab);
-  TabModel* model = FindTabModelWithId(tab->window_id());
+  TabModel* model = FindTabModelWithId(tab->GetWindowId());
   if (model)
     model->HandlePopupNavigation(tab, params);
 }
@@ -111,11 +113,18 @@ TabModel* TabModelList::FindNativeTabModelForJavaObject(
     }
   }
 
+  TabModel* archived_tab_model = GetArchivedTabModel();
+  if (archived_tab_model != nullptr &&
+      env->IsSameObject(jtab_model.obj(),
+                        archived_tab_model->GetJavaObject().obj())) {
+    return archived_tab_model;
+  }
+
   return nullptr;
 }
 
 bool TabModelList::IsOffTheRecordSessionActive() {
-  // TODO(https://crbug.com/1023759): This function should return true for
+  // TODO(crbug.com/40107157): This function should return true for
   // incognito CCTs.
   for (TabModel* model : models()) {
     if (model->IsOffTheRecord() && model->GetTabCount() > 0)
@@ -128,4 +137,14 @@ bool TabModelList::IsOffTheRecordSessionActive() {
 // static
 const TabModelList::TabModelVector& TabModelList::models() {
   return tab_model_list_.Get().models_;
+}
+
+// static
+void TabModelList::SetArchivedTabModel(TabModel* archived_tab_model) {
+  archived_tab_model_ = archived_tab_model;
+}
+
+// static
+TabModel* TabModelList::GetArchivedTabModel() {
+  return archived_tab_model_;
 }

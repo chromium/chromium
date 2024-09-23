@@ -1,0 +1,48 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  [
+    '<div contenteditable>',
+      '<div>An Editable Block</div>',
+      '<div>',
+        '|<span contenteditable="false">"First Inline Element"</span>',
+        '<span contenteditable="false">"Second Inline Element"</span>',
+      '</div></div>',
+    '</div>'
+  ].join(''),
+  'delete',
+  [
+    '<div contenteditable>',
+      '<div>An Editable Block',
+      '<span contenteditable="false">|"First Inline Element"</span>',
+      '<span contenteditable="false">"Second Inline Element"</span>',
+      '</div>',
+    '</div>'
+  ].join('')),
+  'Delete across block boundary where the second block has all uneditable items');
+
+  test(() => assert_selection(
+  [
+    '<div contenteditable>',
+      '<div>An Editable Block</div>',
+      '<div>',
+        '|Some text',
+        '<span contenteditable="false">"First Inline Element"</span>',
+        'more text<span contenteditable="false">"Second Inline Element"</span>',
+      '</div></div>',
+    '</div>'
+  ].join(''),
+  'delete',
+  [
+    '<div contenteditable>',
+      '<div>An Editable Block|Some text',
+      '<span contenteditable="false">"First Inline Element"</span>',
+      'more text<span contenteditable="false">"Second Inline Element"</span>',
+      '</div>',
+    '</div>'
+  ].join('')),
+  'Delete across block boundary where the second block has editable and uneditable items');
+</script>

@@ -6,6 +6,8 @@ static_library("content") {
   sources = [
     "content_utils.cc",
     "content_utils.h",
+    "security_state_tab_helper.cc",
+    "security_state_tab_helper.h",
   ]
 
   public_deps = [ "//components/security_state/core" ]

@@ -40,6 +40,12 @@ class ErrorScreen : public BaseScreen,
   // Toggles the guest sign-in prompt.
   void AllowGuestSignin(bool allowed);
 
+  // Disallows offline login option. We can't expose publicly an opportunity to
+  // allow offline login as it can be controlled by policy.
+  // TODO(https://crbug.com/1241511): Should be removed or refactored together
+  // with removing the global variables for the offline login allowance.
+  void DisallowOfflineLogin();
+
   // Toggles the offline sign-in.
   static void AllowOfflineLogin(bool allowed);
 

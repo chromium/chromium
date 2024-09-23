@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] setParameters() with codecs undefined should reject with InvalidModificationError (audio)
+  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to read the 'codecs' property from 'RTCRtpParameters': Required member is undefined." that is not a DOMException InvalidModificationError: property "code" is equal to undefined, expected 13
+[FAIL] RTCRtpSender.getParameters() should have codecs after negotiation (audio)
+  assert_not_equals: got disallowed value 0
+[FAIL] RTCRtpReceiver.getParameters() should have codecs after negotiation (audio)
+  assert_not_equals: got disallowed value 0
+[FAIL] RTCRtpReceiver.getParameters() codecs should match local SDP (audio, offerer)
+  assert_not_equals: got disallowed value 0
+[FAIL] setParameters() with codecs undefined should reject with InvalidModificationError (video)
+  promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'setParameters' on 'RTCRtpSender': Failed to read the 'codecs' property from 'RTCRtpParameters': Required member is undefined." that is not a DOMException InvalidModificationError: property "code" is equal to undefined, expected 13
+[FAIL] RTCRtpSender.getParameters() should have codecs after negotiation (video)
+  assert_not_equals: got disallowed value 0
+[FAIL] RTCRtpReceiver.getParameters() should have codecs after negotiation (video)
+  assert_not_equals: got disallowed value 0
+[FAIL] RTCRtpReceiver.getParameters() codecs should match local SDP (video, offerer)
+  assert_not_equals: got disallowed value 0
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (audio, no fmtp checks, offerer)
+  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote answer sdp: The m= section with mid='0' is invalid. RTCP-MUX is not enabled when it is required."
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (audio, no fmtp checks, answerer)
+  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: The m= section with mid='mid1' is invalid. RTCP-MUX is not enabled when it is required."
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (audio, with fmtp checks, offerer)
+  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote answer sdp: The m= section with mid='0' is invalid. RTCP-MUX is not enabled when it is required."
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (audio, with fmtp checks, answerer)
+  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: The m= section with mid='mid1' is invalid. RTCP-MUX is not enabled when it is required."
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (video, minimal fmtp checks, offerer)
+  assert_equals: expected 7 but got 9
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (video, minimal fmtp checks, answerer)
+  assert_equals: expected 7 but got 0
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (video, with fmtp checks, offerer)
+  assert_equals: expected 7 but got 9
+[FAIL] RTCRtpSender.getParameters() codecs should match remote SDP (video, with fmtp checks, answerer)
+  assert_equals: expected 7 but got 0
+Harness: the test ran to completion.
+

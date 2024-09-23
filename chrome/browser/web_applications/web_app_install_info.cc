@@ -4,12 +4,20 @@
 
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
-#include <sstream>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
+#include "base/check.h"
+#include "base/containers/flat_tree.h"
+#include "base/not_fatal_until.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
+#include "url/origin.h"
 
 // This definition needs to be in the top-level namespace to be picked up by
 // IconBitmaps::operator==().
@@ -18,17 +26,6 @@ static bool operator==(const SkBitmap& a, const SkBitmap& b) {
 }
 
 namespace web_app {
-
-namespace {
-
-template <typename T>
-std::string ConvertToString(const T& value) {
-  std::stringstream ss;
-  ss << value;
-  return ss.str();
-}
-
-}  // namespace
 
 apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
     IconPurpose manifest_purpose) {
@@ -241,7 +238,7 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
          GetShortcutIconInfosForPurpose(purpose)) {
       purpose_list.Append(icon.AsDebugValue());
     }
-    icons.Set(ConvertToString(purpose), std::move(purpose_list));
+    icons.Set(base::ToString(purpose), std::move(purpose_list));
   }
   root.Set("icons", std::move(icons));
 
@@ -264,7 +261,7 @@ base::Value IconsWithSizeAny::ToDebugValue() const {
   base::Value::Dict icons;
   base::Value::Dict manifest;
   for (const auto& icon : manifest_icons) {
-    manifest.Set(ConvertToString(icon.first), icon.second.spec());
+    manifest.Set(base::ToString(icon.first), icon.second.spec());
   }
   icons.Set("manifest_icons", base::Value(std::move(manifest)));
   base::Value::List manifest_sizes;
@@ -275,7 +272,7 @@ base::Value IconsWithSizeAny::ToDebugValue() const {
 
   base::Value::Dict shortcut_icon;
   for (const auto& shicon : shortcut_menu_icons) {
-    shortcut_icon.Set(ConvertToString(shicon.first), shicon.second.spec());
+    shortcut_icon.Set(base::ToString(shicon.first), shicon.second.spec());
   }
   icons.Set("shortcut_icons", base::Value(std::move(shortcut_icon)));
   base::Value::List shortcut_sizes;
@@ -287,7 +284,7 @@ base::Value IconsWithSizeAny::ToDebugValue() const {
 
   base::Value::Dict file_handlers;
   for (const auto& fhicon : file_handling_icons) {
-    file_handlers.Set(ConvertToString(fhicon.first), fhicon.second.spec());
+    file_handlers.Set(base::ToString(fhicon.first), fhicon.second.spec());
   }
   icons.Set("file_handling_icons", base::Value(std::move(file_handlers)));
   base::Value::List file_handling_sizes;
@@ -299,7 +296,7 @@ base::Value IconsWithSizeAny::ToDebugValue() const {
 
   base::Value::Dict tab_icons;
   for (const auto& thicon : home_tab_icons) {
-    tab_icons.Set(ConvertToString(thicon.first), thicon.second.spec());
+    tab_icons.Set(base::ToString(thicon.first), thicon.second.spec());
   }
   icons.Set("home_tab_icons", base::Value(std::move(tab_icons)));
   base::Value::List home_tab_sizes;
@@ -324,10 +321,9 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const std::u16string& document_title,
     const WebAppInstallInfo& other) {
   WebAppInstallInfo create_shortcut_info(
-      GenerateManifestIdFromStartUrlOnly(document_url));
+      GenerateManifestIdFromStartUrlOnly(document_url), document_url);
   create_shortcut_info.title = document_title;
   create_shortcut_info.description = other.description;
-  create_shortcut_info.start_url = document_url;
   create_shortcut_info.manifest_url = other.manifest_url;
   create_shortcut_info.manifest_icons = other.manifest_icons;
   create_shortcut_info.icon_bitmaps = other.icon_bitmaps;
@@ -354,19 +350,48 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   return info;
 }
 
-WebAppInstallInfo::WebAppInstallInfo() = default;
+// static
+base::expected<WebAppInstallInfo, std::string> WebAppInstallInfo::Create(
+    const GURL& manifest_url,
+    const webapps::ManifestId& manifest_id,
+    const GURL& start_url) {
+  if (!manifest_id.is_valid()) {
+    return base::unexpected(
+        "Manifest `id` is not present or invalid. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  if (!start_url.is_valid()) {
+    return base::unexpected(
+        "Manifest `start_url` is not present or invalid. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  if (!url::Origin::Create(start_url).IsSameOriginWith(
+          url::Origin::Create(manifest_id))) {
+    return base::unexpected(
+        "Manifest `id` and `start_url` must have the same origin. "
+        "manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
 
-WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id)
-    : manifest_id(manifest_id) {
-  CHECK(manifest_id.is_valid());
+  return WebAppInstallInfo(manifest_id, start_url);
 }
+
+namespace {
+void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
+                                     const GURL& start_url) {
+  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M129);
+  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M129);
+  CHECK(start_url.is_valid(), base::NotFatalUntil::M129);
+  CHECK(url::Origin::Create(start_url).IsSameOriginWith(
+            url::Origin::Create(manifest_id)),
+        base::NotFatalUntil::M129);
+}
+}  // namespace
 
 WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
-    : manifest_id(manifest_id), start_url(start_url) {
-  CHECK(manifest_id.is_valid());
-  CHECK(!manifest_id.has_ref());
-  CHECK(start_url.is_valid());
+    : manifest_id_(manifest_id), start_url_(start_url) {
+  CheckValidManifestIdAndStartUrl(manifest_id_, start_url_);
 }
 
 WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;
@@ -379,6 +404,14 @@ WebAppInstallInfo::~WebAppInstallInfo() = default;
 
 WebAppInstallInfo WebAppInstallInfo::Clone() const {
   return WebAppInstallInfo(*this);
+}
+
+void WebAppInstallInfo::SetManifestIdAndStartUrl(
+    const webapps::ManifestId& manifest_id,
+    const GURL& start_url) {
+  CheckValidManifestIdAndStartUrl(manifest_id, start_url);
+  manifest_id_ = manifest_id;
+  start_url_ = start_url;
 }
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {

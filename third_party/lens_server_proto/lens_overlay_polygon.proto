@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Specifies the coordinate system used for geometry protos.
+enum CoordinateType {
+  // Unspecified default value, per proto best practice.
+  COORDINATE_TYPE_UNSPECIFIED = 0;
+
+  // Normalized coordinates.
+  NORMALIZED = 1;
+
+  // Image pixel coordinates.
+  IMAGE = 2;
+}
+
+// Information about a polygon.
+message Polygon {
+  // Represents a single vertex in the polygon.
+  message Vertex {
+    float x = 1;
+    float y = 2;
+  }
+
+  repeated Vertex vertex = 1;
+
+  // Specifies the vertex ordering.
+  enum VertexOrdering {
+    VERTEX_ORDERING_UNSPECIFIED = 0;
+    CLOCKWISE = 1;
+    COUNTER_CLOCKWISE = 2;
+  }
+
+  VertexOrdering vertex_ordering = 2;
+
+  // Specifies the coordinate type of vertices.
+  CoordinateType coordinate_type = 3;
+}

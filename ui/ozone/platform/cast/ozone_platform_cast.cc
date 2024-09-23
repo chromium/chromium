@@ -92,10 +92,12 @@ class OzonePlatformCast : public OzonePlatform {
     return event_factory_ozone_->input_controller();
   }
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
+  void InitScreen(PlatformScreen* screen) override {
+    NOTREACHED_IN_MIGRATION();
+  }
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return gpu_platform_support_host_.get();
   }
@@ -124,6 +126,8 @@ class OzonePlatformCast : public OzonePlatform {
            usage == gfx::BufferUsage::SCANOUT;
   }
 
+  bool IsWindowCompositingSupported() const override { return true; }
+
   bool InitializeUI(const InitParams& params) override {
     device_manager_ = CreateDeviceManager();
     cursor_factory_ = std::make_unique<CursorFactory>();
@@ -151,10 +155,18 @@ class OzonePlatformCast : public OzonePlatform {
 
     return true;
   }
+
   void InitializeGPU(const InitParams& params) override {
     overlay_manager_ = std::make_unique<OverlayManagerCast>();
     surface_factory_ =
         std::make_unique<SurfaceFactoryCast>(std::move(egl_platform_));
+  }
+
+  void PostCreateMainMessageLoop(base::OnceCallback<void()> shutdown_cb,
+                                 scoped_refptr<base::SingleThreadTaskRunner>
+                                     user_input_task_runner) override {
+    event_factory_ozone_->SetUserInputTaskRunner(
+        std::move(user_input_task_runner));
   }
 
  private:

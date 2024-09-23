@@ -91,8 +91,7 @@ class PowerButtonTestBase : public AshTestBase {
 
   raw_ptr<PowerButtonController, DanglingUntriaged> power_button_controller_ =
       nullptr;  // Not owned.
-  raw_ptr<LockStateController, DanglingUntriaged> lock_state_controller_ =
-      nullptr;  // Not owned.
+  raw_ptr<LockStateController> lock_state_controller_ = nullptr;  // Not owned.
   raw_ptr<PowerButtonScreenshotController, DanglingUntriaged>
       screenshot_controller_ = nullptr;  // Not owned.
   std::unique_ptr<LockStateControllerTestApi> lock_state_test_api_;

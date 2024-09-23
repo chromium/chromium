@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -23,16 +24,16 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
@@ -88,29 +89,26 @@
 - (void)start {
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
+          self.browser->GetProfile()->GetSharedURLLoaderFactory());
 
-  BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
 
   RemoteSuggestionsService* remoteSuggestionsService =
-      RemoteSuggestionsServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), /*create_if_necessary=*/true);
+      RemoteSuggestionsServiceFactory::GetForProfile(
+          self.browser->GetProfile(), /*create_if_necessary=*/true);
 
   self.mediator = [[OmniboxPopupMediator alloc]
                initWithFetcher:std::move(imageFetcher)
-                 faviconLoader:IOSChromeFaviconLoaderFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   self.browser->GetProfile())
         autocompleteController:self.autocompleteController
       remoteSuggestionsService:remoteSuggestionsService
                       delegate:_popupView.get()
                        tracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                   GetForProfile(self.browser->GetProfile())];
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
   self.mediator.defaultSearchEngineIsGoogle =
       templateURLService && templateURLService->GetDefaultSearchProvider() &&
       templateURLService->GetDefaultSearchProvider()->GetEngineType(
@@ -127,10 +125,10 @@
   self.popupViewController.dataSource = self.mediator;
   self.popupViewController.incognito = isIncognito;
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+      IOSChromeLargeIconServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  LargeIconCache* cache =
+      IOSChromeLargeIconCacheFactory::GetForProfile(self.browser->GetProfile());
   self.popupViewController.largeIconService = largeIconService;
   self.popupViewController.largeIconCache = cache;
   self.popupViewController.carouselMenuProvider = self.mediator;
@@ -143,7 +141,7 @@
   self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
-      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+      !IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs());
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
@@ -151,6 +149,8 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+  annotator.quickDeleteHandler =
+      HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
   self.mediator.pedalAnnotator = annotator;
 
@@ -163,9 +163,6 @@
                  popupViewController:self.popupViewController
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                            incognito:isIncognito];
-  self.mediator.originalPrefService = self.browser->GetBrowserState()
-                                          ->GetOriginalChromeBrowserState()
-                                          ->GetPrefs();
 
   _popupView->SetMediator(self.mediator);
 
@@ -175,6 +172,8 @@
 }
 
 - (void)stop {
+  [self.mediator disconnect];
+
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   _popupView.reset();
@@ -202,8 +201,7 @@
 #pragma mark - OmniboxPopupMediatorProtocolProvider
 
 - (scoped_refptr<history::TopSites>)topSites {
-  return ios::TopSitesFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return ios::TopSitesFactory::GetForProfile(self.browser->GetProfile());
 }
 
 - (id<SnackbarCommands>)snackbarCommandsHandler {

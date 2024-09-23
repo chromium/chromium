@@ -74,8 +74,8 @@ void FormatValidatedNumber(const ::i18n::phonenumbers::PhoneNumber& number,
 
   // Drop the leading '+' for US/CA numbers as some sites can't handle the "+",
   // and in these regions dialing "+1..." is the same as dialing "1...".
-  // TODO(crbug/226778): Investigate whether the leading "+" is desirable in
-  // other regions. Closed bug crbug/98911 contains additional context.
+  // TODO(crbug.com/40311205): Investigate whether the leading "+" is desirable
+  // in other regions. Closed bug crbug/98911 contains additional context.
   std::string prefix;
   if (processed_number[0] == '+') {
     processed_number = processed_number.substr(1);
@@ -306,7 +306,7 @@ bool PhoneNumbersMatch(const std::u16string& number_a,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -318,8 +318,8 @@ std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,
   // The reason for this is international phone numbers for another country. For
   // example, without adding a "+", the US number 1-415-123-1234 for an AU
   // address would be wrongly formatted as +61 1-415-123-1234 which is invalid.
-  std::string phone = base::UTF16ToUTF8(
-      profile.GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), locale));
+  std::string phone =
+      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale));
   std::string tentative_intl_phone = "+" + phone;
 
   // Always favor the tentative international phone number if it's determined as
@@ -369,7 +369,8 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 }
 
 PhoneObject::PhoneObject(const std::u16string& number,
-                         const std::string& region) {
+                         const std::string& region,
+                         bool infer_country_code) {
   DCHECK_EQ(2u, region.size());
 
   std::unique_ptr<::i18n::phonenumbers::PhoneNumber> i18n_number(
@@ -380,6 +381,13 @@ PhoneObject::PhoneObject(const std::u16string& number,
     // The formatted and normalized versions will be set on the first call to
     // the coresponding methods.
     i18n_number_ = std::move(i18n_number);
+    // `ParsePhoneNumber()` only sets `country_code_` for internationally
+    // formatted numbers. `i18n_number_`'s country_code defaults to `region` in,
+    // this case. If `infer_country_code` is true, fall back to that.
+    if (infer_country_code && country_code_.empty() &&
+        i18n_number_->has_country_code()) {
+      country_code_ = base::NumberToString16(i18n_number_->country_code());
+    }
     // Autofill doesn't support filling extensions, so we should not store them.
     i18n_number_->clear_extension();
   } else {

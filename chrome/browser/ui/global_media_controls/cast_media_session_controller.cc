@@ -72,7 +72,7 @@ void CastMediaSessionController::Send(
     case media_session::mojom::MediaSessionAction::kPreviousSlide:
     case media_session::mojom::MediaSessionAction::kNextSlide:
     case media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -130,7 +130,7 @@ void CastMediaSessionController::IncrementCurrentTimeAfterOneSecond() {
   increment_current_time_callback_.Reset(
       base::BindOnce(&CastMediaSessionController::IncrementCurrentTime,
                      weak_ptr_factory_.GetWeakPtr()));
-  // TODO(crbug.com/1052156): If the playback rate is not 1, we must increment
+  // TODO(crbug.com/40118765): If the playback rate is not 1, we must increment
   // at a different rate.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, increment_current_time_callback_.callback(), base::Seconds(1));

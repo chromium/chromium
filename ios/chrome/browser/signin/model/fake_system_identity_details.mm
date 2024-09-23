@@ -6,30 +6,36 @@
 
 #import "base/check.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 
 @implementation FakeSystemIdentityDetails {
-  AccountCapabilities _nativeCapabilities;
-  std::unique_ptr<AccountCapabilitiesTestMutator> _capabilitiesMutator;
+  AccountCapabilities _pendingCapabilities;
+  AccountCapabilities _visibleCapabilities;
+  std::unique_ptr<AccountCapabilitiesTestMutator> _pendingCapabilitiesMutator;
 }
 
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
+- (instancetype)initWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   if ((self = [super init])) {
-    _capabilitiesMutator =
-        std::make_unique<AccountCapabilitiesTestMutator>(&_nativeCapabilities);
-    _identity = identity;
-    DCHECK(_identity);
+    _pendingCapabilitiesMutator =
+        std::make_unique<AccountCapabilitiesTestMutator>(&_pendingCapabilities);
+    _fakeIdentity = fakeIdentity;
+    DCHECK(_fakeIdentity);
   }
   return self;
 }
 
 #pragma mark - Properties
 
-- (const FakeSystemIdentityCapabilitiesMap&)capabilities {
-  return _nativeCapabilities.ConvertToAccountCapabilitiesIOS();
+- (void)updateVisibleCapabilities {
+  _visibleCapabilities.UpdateWith(_pendingCapabilities);
 }
 
-- (AccountCapabilitiesTestMutator*)capabilitiesMutator {
-  return _capabilitiesMutator.get();
+- (const FakeSystemIdentityCapabilitiesMap&)visibleCapabilities {
+  return _visibleCapabilities.ConvertToAccountCapabilitiesIOS();
+}
+
+- (AccountCapabilitiesTestMutator*)pendingCapabilitiesMutator {
+  return _pendingCapabilitiesMutator.get();
 }
 
 @end

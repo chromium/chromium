@@ -96,7 +96,8 @@ class EventSender {
   void KeyEvent(KeyEventType event_type,
                 const std::string& code_str,
                 int modifiers,
-                KeyLocationCode location);
+                KeyLocationCode location,
+                bool async);
 
   struct SavedEvent {
     enum SavedEventType {
@@ -208,8 +209,9 @@ class EventSender {
   void DoDragAfterMouseUp(const blink::WebMouseEvent&);
   void DoDragAfterMouseMove(const blink::WebMouseEvent&);
   void ReplaySavedEvents();
-  blink::WebInputEventResult HandleInputEventOnViewOrPopup(
-      const blink::WebInputEvent& event);
+  std::optional<blink::WebInputEventResult> HandleInputEventOnViewOrPopup(
+      const blink::WebInputEvent& event,
+      bool async = false);
 
   void SendGesturesForMouseWheelEvent(
       const blink::WebMouseWheelEvent wheel_event);
@@ -268,8 +270,8 @@ class EventSender {
   int wm_sys_dead_char_;
 #endif
 
-  const raw_ptr<blink::WebFrameWidget, ExperimentalRenderer> web_frame_widget_;
-  const raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
+  const raw_ptr<blink::WebFrameWidget> web_frame_widget_;
+  const raw_ptr<TestRunner> test_runner_;
 
   bool force_layout_on_events_;
 

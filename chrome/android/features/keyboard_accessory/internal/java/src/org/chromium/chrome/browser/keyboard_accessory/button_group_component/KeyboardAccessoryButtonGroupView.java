@@ -54,6 +54,8 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_width));
         button.setMaxHeight(
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_size));
+        button.setMinimumWidth(button.getMaxWidth());
+        button.setMinimumHeight(button.getMaxHeight());
         button.setPaddingRelative(
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding),
                 0,
@@ -81,7 +83,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         // The parent, which is KeyboardAccessoryView's recycler view may measure
         // StickyLastItemDecoration offsets before the buttons are added. Notify the parent to
         // recalculate the offset during each measurement.
-        // TODO(crbug.com/1424789): Find a better alternative.
+        // TODO(crbug.com/40898366): Find a better alternative.
         if (getParent() == null || !(getParent() instanceof RecyclerView)) return;
         RecyclerView parent = (RecyclerView) getParent();
         parent.post(parent::invalidateItemDecorations);

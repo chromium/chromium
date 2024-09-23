@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <memory>
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,7 +32,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -239,17 +243,6 @@ void AppendStringToBuffer(std::vector<uint8_t>* data,
   memcpy(data->data() + old_size.ValueOrDie(), str, len);
 }
 
-void AssignGLRectangle(GLint rectangle[4],
-                       GLint x,
-                       GLint y,
-                       GLint width,
-                       GLint height) {
-  rectangle[0] = x;
-  rectangle[1] = y;
-  rectangle[2] = width;
-  rectangle[3] = height;
-}
-
 // In order to minimize the amount of data copied, the command buffer client
 // unpack pixels before sending the glTex[Sub]Image[2|3]D calls. The only
 // parameter it doesn't handle is the alignment. Resetting the unpack state is
@@ -370,7 +363,26 @@ SkYUVAPixmapInfo::DataType ToSkYUVADataType(viz::SharedImageFormat format) {
     case viz::SharedImageFormat::ChannelFormat::k16F:
       return SkYUVAPixmapInfo::DataType::kFloat16;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+bool IsGLFormatAndTypeSupported(GLenum format, GLenum type) {
+  switch (format) {
+    case GL_RGBA:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
+    case GL_RGB:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5;
+    case GL_RGBA8:
+    case GL_RGB565:
+    case GL_RGBA16F:
+    case GL_RGB8:
+    case GL_RGB10_A2:
+    case GL_RGBA4:
+    case GL_SRGB8_ALPHA8:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // anonymous namespace
@@ -478,16 +490,13 @@ error::Error GLES2DecoderPassthroughImpl::DoBindFramebuffer(
   }
 
   // Update tracking of the bound framebuffer
-  bool draw_framebuffer_changed = false;
   switch (target) {
     case GL_FRAMEBUFFER_EXT:
-      draw_framebuffer_changed = true;
       bound_draw_framebuffer_ = framebuffer;
       bound_read_framebuffer_ = framebuffer;
       break;
 
     case GL_DRAW_FRAMEBUFFER:
-      draw_framebuffer_changed = true;
       bound_draw_framebuffer_ = framebuffer;
       break;
 
@@ -496,15 +505,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindFramebuffer(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
-  }
-
-  // Resync the surface offset if the draw framebuffer has changed to or from
-  // the default framebuffer
-  if (draw_framebuffer_changed && bound_draw_framebuffer_ != framebuffer &&
-      (bound_draw_framebuffer_ == 0 || framebuffer == 0)) {
-    ApplySurfaceDrawOffset();
   }
 
   return error::kNoError;
@@ -554,7 +556,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   }
 
   // Track the currently bound textures
-  DCHECK(GLenumToTextureTarget(target) != TextureTarget::kUnkown);
+  TextureTarget texture_target = GLenumToTextureTarget(target);
+  CHECK_NE(texture_target, TextureTarget::kUnkown);
   scoped_refptr<TexturePassthrough> texture_passthrough;
 
   if (service_id != 0) {
@@ -576,7 +579,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   }
 
   BoundTexture* bound_texture =
-      &bound_textures_[static_cast<size_t>(GLenumToTextureTarget(target))]
+      &bound_textures_[static_cast<size_t>(texture_target)]
                       [active_texture_unit_];
   bound_texture->client_id = texture;
   bound_texture->texture = std::move(texture_passthrough);
@@ -1043,9 +1046,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteFramebuffers(
         api()->glBindFramebufferEXTFn(
             GL_DRAW_FRAMEBUFFER, emulated_back_buffer_->framebuffer_service_id);
       }
-
-      // Update the surface offset if the bound draw framebuffer is deleted
-      ApplySurfaceDrawOffset();
     }
     if (framebuffer == bound_read_framebuffer_) {
       bound_read_framebuffer_ = 0;
@@ -2453,7 +2453,7 @@ error::Error GLES2DecoderPassthroughImpl::DoMultiDrawEndCHROMIUM() {
           result.baseinstances.data(), result.drawcount);
       return error::kNoError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return error::kLostContext;
   }
 }
@@ -3006,19 +3006,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScissor(GLint x,
                                                     GLint y,
                                                     GLsizei width,
                                                     GLsizei height) {
-  CheckErrorCallbackState();
-
-  gfx::Vector2d scissor_offset = GetSurfaceDrawOffset();
-  api()->glScissorFn(x + scissor_offset.x(), y + scissor_offset.y(), width,
-                     height);
-
-  if (CheckErrorCallbackState()) {
-    // Skip any state tracking updates if an error was generated
-    return error::kNoError;
-  }
-
-  AssignGLRectangle(scissor_, x, y, width, height);
-
+  api()->glScissorFn(x, y, width, height);
   return error::kNoError;
 }
 
@@ -3693,20 +3681,7 @@ error::Error GLES2DecoderPassthroughImpl::DoViewport(GLint x,
                                                      GLint y,
                                                      GLsizei width,
                                                      GLsizei height) {
-  CheckErrorCallbackState();
-
-  gfx::Vector2d viewport_offset = GetSurfaceDrawOffset();
-  api()->glViewportFn(x + viewport_offset.x(), y + viewport_offset.y(), width,
-                      height);
-
-  if (CheckErrorCallbackState()) {
-    // Skip any state tracking updates if an error was generated. Viewport may
-    // have been out of bounds.
-    return error::kNoError;
-  }
-
-  AssignGLRectangle(viewport_, x, y, width, height);
-
+  api()->glViewportFn(x, y, width, height);
   return error::kNoError;
 }
 
@@ -4829,53 +4804,6 @@ error::Error GLES2DecoderPassthroughImpl::DoVertexAttribDivisorANGLE(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoProduceTextureDirectCHROMIUM(
-    GLuint texture_client_id,
-    const volatile GLbyte* mailbox) {
-  scoped_refptr<TexturePassthrough> texture;
-  if (!resources_->texture_object_map.GetServiceID(texture_client_id,
-                                                   &texture) ||
-      texture == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "Unknown texture.");
-    return error::kNoError;
-  }
-
-  const Mailbox& mb = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  mailbox_manager_->ProduceTexture(mb, texture.get());
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoCreateAndConsumeTextureINTERNAL(
-    GLuint texture_client_id,
-    const volatile GLbyte* mailbox) {
-  if (!texture_client_id ||
-      resources_->texture_id_map.HasClientID(texture_client_id)) {
-    return error::kInvalidArguments;
-  }
-
-  const Mailbox& mb = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  scoped_refptr<TexturePassthrough> texture = TexturePassthrough::CheckedCast(
-      group_->mailbox_manager()->ConsumeTexture(mb));
-  if (texture == nullptr) {
-    // Create texture to handle invalid mailbox (see http://crbug.com/472465 and
-    // http://crbug.com/851878).
-    DoGenTextures(1, &texture_client_id);
-    InsertError(GL_INVALID_OPERATION, "Invalid mailbox name.");
-    return error::kNoError;
-  }
-
-  // Update id mappings
-  resources_->texture_id_map.RemoveClientID(texture_client_id);
-  resources_->texture_id_map.SetIDMapping(texture_client_id,
-                                          texture->service_id());
-  resources_->texture_object_map.RemoveClientID(texture_client_id);
-  resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
-
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoBindUniformLocationCHROMIUM(
     GLuint program,
     GLint location,
@@ -4985,11 +4913,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawBuffersEXT(
   }
   std::vector<GLenum> bufs_copy(bufs, bufs + count);
   api()->glDrawBuffersARBFn(count, bufs_copy.data());
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoDiscardBackbufferCHROMIUM() {
-  NOTIMPLEMENTED();
   return error::kNoError;
 }
 
@@ -5238,107 +5161,6 @@ error::Error GLES2DecoderPassthroughImpl::DoEndSharedImageAccessDirectCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  if (!lazy_context_) {
-    lazy_context_ = LazySharedContextState::Create(this);
-    if (!lazy_context_) {
-      return error::kNoError;
-    }
-  }
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
-  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
-                            lazy_context_->shared_context_state()->surface());
-  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
-                               lazy_context_->shared_context_state());
-  auto result = helper.ConvertRGBAToYUVAMailboxes(yuv_color_space, plane_config,
-                                                  subsampling, mailboxes_in);
-  if (!result.has_value()) {
-    InsertError(result.error().gl_error, result.error().msg);
-  }
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  if (!lazy_context_) {
-    lazy_context_ = LazySharedContextState::Create(this);
-    if (!lazy_context_) {
-      return error::kNoError;
-    }
-  }
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
-  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
-                            lazy_context_->shared_context_state()->surface());
-  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
-                               lazy_context_->shared_context_state());
-  auto result = helper.ConvertYUVAMailboxesToRGB(src_x, src_y, width, height,
-                                                 yuv_color_space, plane_config,
-                                                 subsampling, mailboxes_in);
-  if (!result.has_value()) {
-    InsertError(result.error().gl_error, result.error().msg);
-  }
-  return error::kNoError;
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  if (!lazy_context_) {
-    lazy_context_ = LazySharedContextState::Create(this);
-    if (!lazy_context_) {
-      return error::kNoError;
-    }
-  }
-  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
-  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
-                            lazy_context_->shared_context_state()->surface());
-
-  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
-    InsertError(GL_INVALID_VALUE, "Invalid texture target");
-    return error::kNoError;
-  }
-
-  GLuint gl_texture_service_id = GetTextureServiceID(
-      api(), texture, resources_, /*create_if_missing=*/false);
-  if (gl_texture_service_id == 0) {
-    InsertError(GL_INVALID_OPERATION, "Cannot get texture service id");
-    return error::kNoError;
-  }
-
-  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
-                               lazy_context_->shared_context_state());
-  auto result = helper.ConvertYUVAMailboxesToGLTexture(
-      gl_texture_service_id, target, internal_format, type, src_x, src_y, width,
-      height, flip_y, yuv_color_space, plane_config, subsampling, mailboxes_in);
-  if (!result.has_value()) {
-    InsertError(result.error().gl_error, result.error().msg);
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
     GLint xoffset,
     GLint yoffset,
@@ -5388,8 +5210,12 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
+  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE) {
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
+    return error::kNoError;
+  }
+  if (!IsGLFormatAndTypeSupported(internal_format, type)) {
+    InsertError(GL_INVALID_VALUE, "Invalid GL format");
     return error::kNoError;
   }
 

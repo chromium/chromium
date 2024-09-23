@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Corresponds to a wrapped binary protobuf.
+//
+// When used via the mojo_base::ProtoWrapper class this adds basic type safety
+// and a documented wrapper type for protobuf bytes that are sent over mojo.
+//
+// !!! DO NOT USE WRAPPED PROTOBUFS IN PLACE OF MOJOM IN CHROMIUM IPC !!!
+//
+// This wrapper exists to help people that have to interact with other systems
+// that talk protobuf and allows the bytes to be moved into an appropriate
+// process over mojom in a more appropriate type than `string`.
+//
+// Do not use or manipulate this struct directly - instead use the typemapped
+// class mojo_base::ProtoWrapper. This class may only be used with approval from
+// an IPC security reviewer, and must not be used to simply replace mojom
+// serialization with protobuf serialization.
+struct ProtoWrapper {
+  // Security Note: do not access this directly.
+  // Contains the name of the proto message class that was serialized into this
+  // wrapper.
+  string proto_name;
+  // Security Note: do not access this directly.
+  // Contains the byte stream produced by the protobuf implementation. As it is
+  // a BigBuffer it may be implemented using shared memory.
+  mojo_base.mojom.BigBuffer smuggled;
+};

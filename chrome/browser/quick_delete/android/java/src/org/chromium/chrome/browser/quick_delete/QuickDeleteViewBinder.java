@@ -8,17 +8,20 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegate.DomainVisitsData;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -35,11 +38,15 @@ class QuickDeleteViewBinder {
                     model.get(QuickDeleteProperties.TIME_PERIOD));
         } else if (QuickDeleteProperties.CLOSED_TABS_COUNT == propertyKey
                 || QuickDeleteProperties.TIME_PERIOD == propertyKey) {
-            updateClosedTabsCount(
-                    model.get(QuickDeleteProperties.CONTEXT),
-                    quickDeleteView,
-                    model.get(QuickDeleteProperties.CLOSED_TABS_COUNT),
-                    model.get(QuickDeleteProperties.TIME_PERIOD));
+            if (model.get(QuickDeleteProperties.HAS_MULTI_WINDOWS)) {
+                disableTabsRow(model.get(QuickDeleteProperties.CONTEXT), quickDeleteView);
+            } else {
+                updateClosedTabsCount(
+                        model.get(QuickDeleteProperties.CONTEXT),
+                        quickDeleteView,
+                        model.get(QuickDeleteProperties.CLOSED_TABS_COUNT),
+                        model.get(QuickDeleteProperties.TIME_PERIOD));
+            }
         } else if (QuickDeleteProperties.IS_SIGNED_IN == propertyKey) {
             updateSearchHistoryVisibility(
                     quickDeleteView, model.get(QuickDeleteProperties.IS_SIGNED_IN));
@@ -52,6 +59,25 @@ class QuickDeleteViewBinder {
                     quickDeleteView,
                     model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         }
+    }
+
+    private static void disableTabsRow(@NonNull Context context, @NonNull View quickDeleteView) {
+        ViewGroup tabsRow = quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
+        TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
+        ImageView icon = tabsRow.findViewById(R.id.quick_delete_tabs_row_icon);
+
+        title.setEnabled(false);
+        title.setText(context.getString(R.string.quick_delete_tabs_title));
+
+        subtitle.setEnabled(false);
+        subtitle.setText(context.getString(R.string.clear_tabs_disabled_summary));
+        subtitle.setVisibility(VISIBLE);
+
+        final @ColorInt int color =
+                ContextCompat.getColor(tabsRow.getContext(), R.color.default_icon_color_disabled);
+
+        icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 
     private static void updateSearchHistoryVisibility(
@@ -135,8 +161,8 @@ class QuickDeleteViewBinder {
             @NonNull View quickDeleteView,
             int tabsCount,
             @TimePeriod int timePeriod) {
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRow =
-                quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        ViewGroup tabsRow = quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
 
         if (tabsCount > 0) {
             String tabDescription =
@@ -145,14 +171,14 @@ class QuickDeleteViewBinder {
                                     R.plurals.quick_delete_dialog_tabs_closed_text,
                                     tabsCount,
                                     tabsCount);
-            quickDeleteTabsCloseRow.setText(tabDescription);
+            title.setText(tabDescription);
         } else {
             if (timePeriod == TimePeriod.ALL_TIME) {
-                quickDeleteTabsCloseRow.setText(
+                title.setText(
                         context.getString(
                                 R.string.quick_delete_dialog_zero_tabs_closed_all_time_text));
             } else {
-                quickDeleteTabsCloseRow.setText(
+                title.setText(
                         context.getString(
                                 R.string.quick_delete_dialog_zero_tabs_closed_text,
                                 getTimePeriodString(context, timePeriod)));

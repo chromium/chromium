@@ -4,8 +4,9 @@
 
 #include "chrome/browser/win/parental_controls.h"
 
-#include <combaseapi.h>
 #include <windows.h>
+
+#include <combaseapi.h>
 #include <winerror.h>
 #include <wpcapi.h>
 #include <wrl/client.h>

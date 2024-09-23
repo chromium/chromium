@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -154,13 +155,18 @@ void RdpClientTest::CloseRdpClient() {
 }
 
 // Creates a loopback RDP connection.
-// TODO(crbug.com/1523705): Consistently times out on Windows 11 ARM64.
+// TODO(crbug.com/41496654): Consistently times out on Windows 11 ARM64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
 TEST_F(RdpClientTest, MAYBE_Basic) {
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_23H2) {
+    GTEST_SKIP() << "https://crbug.com/365126540: Skipping test for WIN11_23H2 "
+                    "and greater";
+  }
   terminal_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // An ability to establish a loopback RDP connection depends on many factors

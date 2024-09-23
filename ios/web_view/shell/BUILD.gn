@@ -43,6 +43,7 @@ ios_app_bundle("ios_web_view_shell") {
   bundle_deps = [
     "//ios/web_view:web_view+bundle",
     "//ios/web_view/shell/resources",
+    "//ios/web_view/shell/resources:launchscreen",
   ]
   entitlements_path = ios_web_view_shell_entitlements_path
   bundle_identifier = ios_web_view_shell_bundle_identifier

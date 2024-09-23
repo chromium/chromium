@@ -3,38 +3,13 @@
     "os": [
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "system_notifications.allowed": {
-            "default_value": true,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "AllowSystemNotifications": true
-        },
-        "prefs": {
-          "system_notifications.allowed": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "AllowSystemNotifications": false
-        },
-        "prefs": {
-          "system_notifications.allowed": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "system_notifications.allowed",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

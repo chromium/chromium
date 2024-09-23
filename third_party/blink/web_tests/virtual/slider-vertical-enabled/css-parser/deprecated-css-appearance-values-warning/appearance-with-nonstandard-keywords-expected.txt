@@ -1,0 +1,6 @@
+CONSOLE WARNING: The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+This is a testharness.js-based test.
+[FAIL] There should be console warnings about non-standard appearance keywords
+  assert_true: This should FAIL so we generate a -expected.txt expected true got false
+Harness: the test ran to completion.
+

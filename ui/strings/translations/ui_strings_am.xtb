@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">የዳሰሳ ጥናት</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ቴባ/ሰ</translation>
 <translation id="2353636109065292463">የበይነመረብ ግንኙነትዎን ይፈትሹ</translation>
+<translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2388990488038464401">ከእርስዎ ስልክ ወደዚህ ቁጥር ይደወል?</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="24452542372838207">ማሳወቂያን ዘርጋ</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">አዲስ</translation>
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2701330563083355633">በ <ph name="DEVICE_NAME" /> የተጋራ</translation>
-<translation id="271033894570825754">አዲስ</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ከ1 ዓመት በፊት}one{ከ# ዓመቶች በፊት}other{ከ# ዓመቶች በፊት}}</translation>
 <translation id="2878511608894704031">ሁሉንም ሰርዝ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{በ 1ቀ ውስጥ}one{በ #ቀ ውስጥ}other{በ #ቀ ውስጥ}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">የ<ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ሥርዓት</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ግራ ቀስት</translation>
+<translation id="5633029987065897167">ባዶ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ደቂቃ}one{# ደቂቃዎች}other{# ደቂቃዎች}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ዛሬ ንቁ}=1{ከ1 ቀን በፊት ንቁ ነበር}one{ከ# ቀኖች በፊት ንቁ ነበር}other{ከ# ቀኖች በፊት ንቁ ነበር}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ቀን እና }one{# ቀኖች እና }other{# ቀኖች እና }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">የአርቲኤፍ ይዘት</translation>
 <translation id="6539092367496845964">የሆነ ችግር ተፈጥሯል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="654149438358937226">ሁሉንም ማሳወቂያዎች አግድ</translation>
-<translation id="6612467943526193239">ከመቃኘት ለመውጣት Escን ይጫኑ።</translation>
 <translation id="6620110761915583480">ፋይል አስቀምጥ</translation>
 <translation id="6699343763173986273">የሚዲያ ቀጣይ ትራክ</translation>
 <translation id="6808150112686056157">ሚዲያ አቁም</translation>

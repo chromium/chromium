@@ -30,6 +30,7 @@
           un pārliecinieties, vai konfigurācija ir iestatīta uz “no proxy” (bez starpniekservera) vai “direct” (tieša).</translation>
 <translation id="6549378540556750549">Pārlūku Chromium nodrošina arī cita <ph name="BEGIN_LINK_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
+<translation id="691026815377248078">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">Pārlūku Chromium nodrošina <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> atklātā pirmkoda projekts.</translation>
 <translation id="7861509383340276692">Atveriet
         Chromium izvēlni &gt;

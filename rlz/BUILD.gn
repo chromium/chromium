@@ -128,7 +128,6 @@ if (enable_rlz_support) {
 
     deps = [
       ":rlz_utils",
-      "//base/third_party/dynamic_annotations",
       "//build:chromeos_buildflags",
       "//net",
       "//services/network/public/cpp:cpp",

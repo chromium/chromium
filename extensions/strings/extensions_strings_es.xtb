@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No se ha podido reemplazar el archivo .crx. Comprueba si se está utilizando el archivo.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
-<translation id="3369521687965833290">No se puede descomprimir la extensión. Para descomprimir de forma segura una extensión, debe existir una ruta al directorio de tu perfil que comience con una letra de unidad y que no incluya ninguna unión, ningún punto de montaje ni ningún enlace simbólico. No existe ninguna ruta de este tipo para tu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" /> no se puede desinstalar porque el administrador de este ordenador requiere que esté instalado.</translation>
 <translation id="6027032947578871493">Producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">No se puede descomprimir la extensión. Para descomprimir de forma segura una extensión, debe existir una ruta al directorio de tu perfil que no contenga ningún enlace simbólico. No existe ninguna ruta de este tipo para tu perfil.</translation>
 <translation id="6322279351188361895">Se ha producido un error al leer la clave privada.</translation>
 <translation id="6391538222494443604">Debe existir el directorio de entrada.</translation>
 <translation id="641087317769093025">No se ha podido descomprimir la extensión.</translation>

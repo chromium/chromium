@@ -1,0 +1,108 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("quick_unlock") {
+  sources = [
+    "auth_token.cc",
+    "auth_token.h",
+    "fake_pin_salt_storage.cc",
+    "fake_pin_salt_storage.h",
+    "fingerprint_power_button_race_detector.cc",
+    "fingerprint_power_button_race_detector.h",
+    "fingerprint_storage.cc",
+    "fingerprint_storage.h",
+    "fingerprint_utils.cc",
+    "fingerprint_utils.h",
+    "pin_backend.cc",
+    "pin_backend.h",
+    "pin_salt_storage.cc",
+    "pin_salt_storage.h",
+    "pin_storage_cryptohome.cc",
+    "pin_storage_cryptohome.h",
+    "pin_storage_prefs.cc",
+    "pin_storage_prefs.h",
+    "quick_unlock_factory.cc",
+    "quick_unlock_factory.h",
+    "quick_unlock_storage.cc",
+    "quick_unlock_storage.h",
+    "quick_unlock_utils.cc",
+    "quick_unlock_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/services/auth_factor_config",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/profiles",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/biod",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/osauth/public",
+    "//components/keep_alive_registry",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//crypto",
+    "//services/network/public/mojom:url_loader_base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fingerprint_power_button_race_detector_unittest.cc",
+    "fingerprint_storage_unittest.cc",
+    "pin_storage_cryptohome_unittest.cc",
+    "pin_storage_prefs_unittest.cc",
+    "quick_unlock_storage_unittest.cc",
+    "quick_unlock_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":quick_unlock",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

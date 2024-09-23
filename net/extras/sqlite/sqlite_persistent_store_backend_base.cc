@@ -25,14 +25,14 @@ namespace net {
 
 SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
     const base::FilePath& path,
-    std::string histogram_tag,
+    const std::string& histogram_tag,
     const int current_version_number,
     const int compatible_version_number,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     bool enable_exclusive_access)
     : path_(path),
-      histogram_tag_(std::move(histogram_tag)),
+      histogram_tag_(histogram_tag),
       current_version_number_(current_version_number),
       compatible_version_number_(compatible_version_number),
       background_task_runner_(std::move(background_task_runner)),
@@ -91,7 +91,7 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     return false;
   }
 
-  // TODO(crbug.com/1430231): Remove explicit_locking = false. This currently
+  // TODO(crbug.com/40262972): Remove explicit_locking = false. This currently
   // needs to be set to false because of several failing MigrationTests.
   db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
       .exclusive_locking = false,
@@ -116,9 +116,10 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     if (base::PathExists(path_)) {
       // See comments in Database::Preload for explanation of these values.
       constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-      // TODO(crbug.com/1434166): Consider moving preload behind a database
+      // TODO(crbug.com/40904059): Consider moving preload behind a database
       // option.
-      base::PreReadFile(path_, /*is_executable=*/false, kPreReadSize);
+      base::PreReadFile(path_, /*is_executable=*/false, /*sequential=*/false,
+                        kPreReadSize);
     }
   }
 
@@ -227,7 +228,8 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
     base::UmaHistogramBoolean(histogram_tag_ + ".CorruptMetaTableRecovered",
                               recovered);
     if (!recovered) {
-      NOTREACHED() << "Unable to reset the " << histogram_tag_ << " DB.";
+      DUMP_WILL_BE_NOTREACHED()
+          << "Unable to reset the " << histogram_tag_ << " DB.";
       meta_table_.Reset();
       db_.reset();
       return false;

@@ -8,7 +8,6 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -39,6 +38,15 @@ bool OverlayCandidate::IsInvisibleQuad(const DrawQuad* quad) {
       SolidColorDrawQuad::MaterialCast(quad)->color.fA * opacity;
   return quad->ShouldDrawWithBlending() &&
          cc::MathUtil::IsWithinEpsilon(alpha, 0.f);
+}
+
+// static
+bool OverlayCandidate::QuadHasRoundedDisplayMasks(const DrawQuad* quad) {
+  if (const auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
+    return !texture_quad->rounded_display_masks_info.IsEmpty();
+  }
+
+  return false;
 }
 
 // static
@@ -76,9 +84,6 @@ bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
                  OverlayPriority::kRequired;
     case DrawQuad::Material::kVideoHole:
       return true;
-    case DrawQuad::Material::kYuvVideoContent:
-      return YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type ==
-             gfx::ProtectedVideoType::kHardwareProtected;
     default:
       return false;
   }

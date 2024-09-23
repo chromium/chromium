@@ -25,16 +25,8 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
-#include "url/android/gurl_android.h"
-#endif
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -129,18 +121,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
       history::ClusterKeywordData::ClusterKeywordType>(
       "ClusterKeywordType", matched_keyword_data_.type,
       matched_keyword_data_.GetKeywordTypeLabel(), executed);
-
-  // Record entity collection UMA metrics.
-  if (matched_keyword_data_.entity_collections.empty()) {
-    return;
-  }
-  const auto& collection_str = matched_keyword_data_.entity_collections.front();
-  const optimization_guide::PageEntityCollection collection =
-      optimization_guide::GetPageEntityCollectionForString(collection_str);
-  const auto collection_label =
-      optimization_guide::GetPageEntityCollectionLabel(collection_str);
-  RecordShownUsedEnumAndCtrMetrics<optimization_guide::PageEntityCollection>(
-      "PageEntityCollection", collection, collection_label, executed);
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {
@@ -159,18 +139,6 @@ OmniboxActionId HistoryClustersAction::ActionId() const {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
   return omnibox::kJourneysIcon;
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-HistoryClustersAction::GetOrCreateJavaObject(JNIEnv* env) const {
-  if (!j_omnibox_action_) {
-    j_omnibox_action_.Reset(BuildHistoryClustersAction(
-        env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        strings_.accessibility_hint, query_));
-  }
-  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
 #endif
 

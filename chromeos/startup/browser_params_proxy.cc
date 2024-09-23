@@ -244,6 +244,10 @@ bool BrowserParamsProxy::IsFlossAvailabilityCheckNeeded() const {
   return BrowserInitParams::Get()->is_floss_availability_check_needed;
 }
 
+bool BrowserParamsProxy::IsLLPrivacyAvailable() const {
+  return BrowserInitParams::Get()->is_llprivacy_available;
+}
+
 bool BrowserParamsProxy::IsCurrentUserDeviceOwner() const {
   if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->is_current_user_device_owner;
@@ -339,16 +343,46 @@ bool BrowserParamsProxy::IsDeskProfilesEnabled() const {
   return BrowserInitParams::Get()->is_desk_profiles_enabled;
 }
 
-bool BrowserParamsProxy::IsCrosWebAppShortcutUiUpdateEnabled() const {
-  return BrowserInitParams::Get()->is_cros_web_app_shortcut_ui_update_enabled;
-}
-
-bool BrowserParamsProxy::IsCrosShortstandEnabled() const {
-  return BrowserInitParams::Get()->is_cros_shortstand_enabled;
-}
-
 bool BrowserParamsProxy::ShouldDisableChromeComposeOnChromeOS() const {
   return BrowserInitParams::Get()->should_disable_chrome_compose_on_chromeos;
+}
+
+bool BrowserParamsProxy::IsCaptivePortalPopupWindowEnabled() const {
+  return BrowserInitParams::Get()->is_captive_portal_popup_window_enabled;
+}
+
+bool BrowserParamsProxy::IsFileSystemProviderCloudFileSystemEnabled() const {
+  return BrowserInitParams::Get()
+      ->is_file_system_provider_cloud_file_system_enabled;
+}
+
+bool BrowserParamsProxy::IsFileSystemProviderContentCacheEnabled() const {
+  return BrowserInitParams::Get()
+      ->is_file_system_provider_content_cache_enabled;
+}
+
+bool BrowserParamsProxy::IsOrcaEnabled() const {
+  return BrowserInitParams::Get()->is_orca_enabled;
+}
+
+bool BrowserParamsProxy::IsCrosMallWebAppEnabled() const {
+  return BrowserInitParams::Get()->is_cros_mall_web_app_enabled;
+}
+
+bool BrowserParamsProxy::IsMahiEnabled() const {
+  return BrowserInitParams::Get()->is_mahi_enabled;
+}
+
+bool BrowserParamsProxy::IsContainerAppPreinstallEnabled() const {
+  return BrowserInitParams::Get()->is_container_app_preinstall_enabled;
+}
+
+bool BrowserParamsProxy::IsOrcaUseL10nStringsEnabled() const {
+  return BrowserInitParams::Get()->is_orca_use_l10n_strings_enabled;
+}
+
+bool BrowserParamsProxy::IsOrcaInternationalizeEnabled() const {
+  return BrowserInitParams::Get()->is_orca_internationalize_enabled;
 }
 
 }  // namespace chromeos

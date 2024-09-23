@@ -11,7 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -101,7 +101,7 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         }
         assert status >= 0;
 
-        if (GSAState.isGsaPackageName(packageName)) {
+        if (GSAUtils.isGsaPackageName(packageName)) {
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.ConnectionStatusOnReturn.GSA",
                     status,

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -20,12 +21,14 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_mdns_manager.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/cross_device/nearby/nearby_features.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -60,6 +63,30 @@ const char kIPv4ConfigPath[] = "/ipconfig/ipv4_config";
 const char kWifiGuid[] = "wifi_guid";
 const char kWifiServiceName[] = "wifi_service_name";
 const char kWifiServicePath[] = "/service/wifi0";
+
+const char kNearbyServiceName[] = "Android1";
+const char kNearbyServiceType[] = "_FC9F5ED42C8A.tcp_.";
+const char kNearbyServiceIpAddress[] = "192.168.57.64";
+const int kNearbyServicePort = 40;
+const char kNearbyServiceEndpointKey[] = "n";
+const char kNearbyServiceEndpointValue[] = "TestEndpointInfo";
+
+sharing::mojom::NsdServiceInfoPtr MakeServiceInfoPtr(std::string service_name,
+                                                     std::string service_type) {
+  ::sharing::mojom::NsdServiceInfoPtr service_info =
+      ::sharing::mojom::NsdServiceInfo::New();
+  service_info->service_name = service_name;
+  // Mimic how the Mdns Manager requires the service type to be in "local" form,
+  // so it will only be notifying for found service info with this suffix.
+  service_info->service_type = service_type + "local";
+  service_info->ip_address = kNearbyServiceIpAddress;
+  service_info->port = kNearbyServicePort;
+  service_info->txt_records.emplace();
+  service_info->txt_records->insert_or_assign(kNearbyServiceEndpointKey,
+                                              kNearbyServiceEndpointValue);
+
+  return service_info;
+}
 
 }  // namespace
 
@@ -140,12 +167,21 @@ class WifiLanMediumTest : public ::testing::Test {
         std::move(fake_firewall_hole_factory),
         firewall_hole_factory_shared_remote_.BindNewPipeAndPassReceiver());
 
+    // Set up Mdns Manager mojo service.
+    auto fake_mdns_manager = std::make_unique<ash::nearby::FakeMdnsManager>();
+    fake_mdns_manager_ = fake_mdns_manager.get();
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_mdns_manager),
+        mdns_manager_shared_remote_.BindNewPipeAndPassReceiver());
+
     nsd_service_info_.SetIPAddress(kRemoteIpString);
     nsd_service_info_.SetPort(kRemotePort);
 
     wifi_lan_medium_ = std::make_unique<WifiLanMedium>(
         socket_factory_shared_remote_, cros_network_config_,
-        firewall_hole_factory_shared_remote_);
+        firewall_hole_factory_shared_remote_, mdns_manager_shared_remote_);
+
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
@@ -156,6 +192,8 @@ class WifiLanMediumTest : public ::testing::Test {
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
     scoped_user_manager_.reset();
+    found_service_info_.clear();
+    lost_service_info_.clear();
     ash::LoginState::Shutdown();
   }
 
@@ -318,6 +356,36 @@ class WifiLanMediumTest : public ::testing::Test {
     }
   }
 
+  void StartMdnsDiscovery(const std::string& service_type) {
+    api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
+        .service_discovered_cb =
+            [this, service_type](const NsdServiceInfo& service_info) {
+              LOG(INFO) << "Service found for discovery session: "
+                        << service_type;
+              found_service_info_.push_back(service_info);
+              if (on_service_discovered_callback_) {
+                std::move(on_service_discovered_callback_).Run();
+              }
+            },
+        .service_lost_cb =
+            [this, service_type](const NsdServiceInfo& service_info) {
+              LOG(INFO) << "Service lost for discovery session: "
+                        << service_type;
+              lost_service_info_.push_back(service_info);
+              if (on_service_discovered_callback_) {
+                std::move(on_service_discovered_callback_).Run();
+              }
+            }};
+
+    EXPECT_TRUE(wifi_lan_medium_->StartDiscovery(
+        /*service_type=*/service_type,
+        /*callback=*/std::move(discovery_callback)));
+  }
+
+  void SetOnServiceDiscoveredCallback(base::OnceClosure callback) {
+    on_service_discovered_callback_ = std::move(callback);
+  }
+
   base::test::TaskEnvironment task_environment_;
   size_t num_running_connect_calls_ = 0;
   size_t num_running_listen_calls_ = 0;
@@ -326,7 +394,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // TCP socket factory:
   raw_ptr<ash::nearby::FakeTcpSocketFactory> fake_socket_factory_;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
 
   // Local IP fetching:
@@ -347,8 +415,15 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // Firewall hole factory:
   raw_ptr<ash::nearby::FakeFirewallHoleFactory> fake_firewall_hole_factory_;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
+
+  // Mdns manager
+  raw_ptr<ash::nearby::FakeMdnsManager> fake_mdns_manager_;
+  mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager_shared_remote_;
+  base::OnceClosure on_service_discovered_callback_;
+  std::vector<NsdServiceInfo> found_service_info_ = {};
+  std::vector<NsdServiceInfo> lost_service_info_ = {};
 
   std::unique_ptr<WifiLanMedium> wifi_lan_medium_;
 };
@@ -615,6 +690,191 @@ TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {
 }
 /*============================================================================*/
 // End: ListenForService()
+/*============================================================================*/
+
+/*============================================================================*/
+// Begin: StartDiscovery()
+/*============================================================================*/
+TEST_F(WifiLanMediumTest, Discovery_FlagEnabled_StartAndStopSucceeds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyMdns},
+      /*disabled_features=*/{});
+
+  Initialize(WifiInitState::kComplete);
+
+  api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
+      .service_discovered_cb = [](const NsdServiceInfo& service_info) {},
+      .service_lost_cb = [](const NsdServiceInfo& service_info) {}};
+
+  EXPECT_TRUE(wifi_lan_medium_->StartDiscovery(
+      /*service_type=*/kNearbyServiceType,
+      /*callback=*/std::move(discovery_callback)));
+  EXPECT_TRUE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kNearbyServiceType));
+}
+
+TEST_F(WifiLanMediumTest, Discovery_FlagDisabled_StartAndStopFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kEnableNearbyMdns});
+
+  Initialize(WifiInitState::kComplete);
+
+  api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
+      .service_discovered_cb = [](const NsdServiceInfo& service_info) {},
+      .service_lost_cb = [](const NsdServiceInfo& service_info) {}};
+
+  EXPECT_FALSE(wifi_lan_medium_->StartDiscovery(
+      /*service_type=*/kNearbyServiceType,
+      /*callback=*/std::move(discovery_callback)));
+  EXPECT_FALSE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kNearbyServiceType));
+}
+
+TEST_F(WifiLanMediumTest, Discovery_StopUnknownServiceFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyMdns},
+      /*disabled_features=*/{});
+
+  Initialize(WifiInitState::kComplete);
+
+  api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
+      .service_discovered_cb = [](const NsdServiceInfo& service_info) {},
+      .service_lost_cb = [](const NsdServiceInfo& service_info) {}};
+
+  EXPECT_TRUE(wifi_lan_medium_->StartDiscovery(
+      /*service_type=*/kNearbyServiceType,
+      /*callback=*/std::move(discovery_callback)));
+  EXPECT_FALSE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/"An Unknown Service Type"));
+}
+
+TEST_F(WifiLanMediumTest, Discovery_FindsService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyMdns},
+      /*disabled_features=*/{});
+
+  Initialize(WifiInitState::kComplete);
+
+  StartMdnsDiscovery(/*service_type=*/kNearbyServiceType);
+
+  base::RunLoop run_loop;
+  SetOnServiceDiscoveredCallback(run_loop.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr service_info = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName, /*service_type=*/kNearbyServiceType);
+  fake_mdns_manager_->NotifyObserversServiceFound(std::move(service_info));
+  run_loop.Run();
+
+  EXPECT_EQ(1u, found_service_info_.size());
+  EXPECT_EQ(kNearbyServiceName, found_service_info_[0].GetServiceName());
+  EXPECT_EQ(kNearbyServiceType, found_service_info_[0].GetServiceType());
+  EXPECT_EQ(kNearbyServiceIpAddress, found_service_info_[0].GetIPAddress());
+  EXPECT_EQ(kNearbyServicePort, found_service_info_[0].GetPort());
+  EXPECT_EQ(kNearbyServiceEndpointValue,
+            found_service_info_[0].GetTxtRecord(kNearbyServiceEndpointKey));
+
+  EXPECT_TRUE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kNearbyServiceType));
+}
+
+TEST_F(WifiLanMediumTest, Discovery_LosesAndFindsService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyMdns},
+      /*disabled_features=*/{});
+
+  Initialize(WifiInitState::kComplete);
+
+  StartMdnsDiscovery(/*service_type=*/kNearbyServiceType);
+
+  base::RunLoop run_loop;
+  SetOnServiceDiscoveredCallback(run_loop.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr found_service_info = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName, /*service_type=*/kNearbyServiceType);
+  fake_mdns_manager_->NotifyObserversServiceFound(
+      std::move(found_service_info));
+  run_loop.Run();
+
+  // Find a service.
+  EXPECT_EQ(1u, found_service_info_.size());
+  EXPECT_EQ(kNearbyServiceType, found_service_info_[0].GetServiceType());
+
+  base::RunLoop run_loop_2;
+  SetOnServiceDiscoveredCallback(run_loop_2.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr lost_service_info = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName, /*service_type=*/kNearbyServiceType);
+  fake_mdns_manager_->NotifyObserversServiceLost(std::move(lost_service_info));
+  run_loop_2.Run();
+
+  // Lose a service.
+  EXPECT_EQ(1u, lost_service_info_.size());
+  EXPECT_EQ(kNearbyServiceType, lost_service_info_[0].GetServiceType());
+
+  base::RunLoop run_loop_3;
+  SetOnServiceDiscoveredCallback(run_loop_3.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr found_service_info_2 = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName, /*service_type=*/kNearbyServiceType);
+  fake_mdns_manager_->NotifyObserversServiceFound(
+      std::move(found_service_info_2));
+  run_loop_3.Run();
+
+  // Find the service again.
+  EXPECT_EQ(2u, found_service_info_.size());
+  EXPECT_EQ(kNearbyServiceType, found_service_info_[1].GetServiceType());
+
+  EXPECT_TRUE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kNearbyServiceType));
+}
+
+TEST_F(WifiLanMediumTest, Discovery_MultipleDiscovery) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kEnableNearbyMdns},
+      /*disabled_features=*/{});
+
+  Initialize(WifiInitState::kComplete);
+
+  // Start 2 discovery sessions.
+  StartMdnsDiscovery(/*service_type=*/kNearbyServiceType);
+  const std::string kAnotherServiceType = "Another Service Type";
+  StartMdnsDiscovery(/*service_type=*/kAnotherServiceType);
+
+  base::RunLoop run_loop;
+  SetOnServiceDiscoveredCallback(run_loop.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr another_service_info = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName,
+      /*service_type=*/kAnotherServiceType);
+  fake_mdns_manager_->NotifyObserversServiceFound(
+      std::move(another_service_info));
+  run_loop.Run();
+
+  // Only 1 discovery session should be notified.
+  EXPECT_EQ(1u, found_service_info_.size());
+  EXPECT_EQ(kAnotherServiceType, found_service_info_[0].GetServiceType());
+
+  base::RunLoop run_loop_2;
+  SetOnServiceDiscoveredCallback(run_loop_2.QuitClosure());
+  ::sharing::mojom::NsdServiceInfoPtr found_service_info = MakeServiceInfoPtr(
+      /*service_name=*/kNearbyServiceName, /*service_type=*/kNearbyServiceType);
+  fake_mdns_manager_->NotifyObserversServiceFound(
+      std::move(found_service_info));
+  run_loop_2.Run();
+
+  // Multiple service types should be able to be discovered simultaneously.
+  EXPECT_EQ(2u, found_service_info_.size());
+  EXPECT_EQ(kNearbyServiceType, found_service_info_[1].GetServiceType());
+
+  EXPECT_TRUE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kAnotherServiceType));
+  EXPECT_TRUE(wifi_lan_medium_->StopDiscovery(
+      /*service_type=*/kNearbyServiceType));
+}
+/*============================================================================*/
+// End: StartDiscovery()
 /*============================================================================*/
 
 TEST_F(WifiLanMediumTest, GetDynamicPortRange) {

@@ -7,9 +7,9 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -61,7 +61,8 @@ class ProtobufHttpClient final {
   void DoExecuteRequest(std::unique_ptr<ProtobufHttpRequestBase> request,
                         OAuthTokenGetter::Status status,
                         const std::string& user_email,
-                        const std::string& access_token);
+                        const std::string& access_token,
+                        const std::string& scopes);
 
   void CancelRequest(const PendingRequestListIterator& request_iterator);
 

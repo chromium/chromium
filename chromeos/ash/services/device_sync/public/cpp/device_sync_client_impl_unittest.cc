@@ -33,9 +33,12 @@
 #include "chromeos/ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -58,6 +61,21 @@ const cryptauth::GcmDeviceInfo& GetTestGcmDeviceInfo() {
   return *gcm_device_info;
 }
 
+class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
+ public:
+  MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+  ~MockInstanceIDDriver() override = default;
+  MOCK_METHOD(instance_id::InstanceID*,
+              GetInstanceID,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, RemoveInstanceID, (const std::string& app_id), (override));
+  MOCK_METHOD(bool,
+              ExistsInstanceID,
+              (const std::string& app_id),
+              (const override));
+};
+
 class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
  public:
   explicit FakeDeviceSyncImplFactory(
@@ -69,7 +87,7 @@ class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
   // DeviceSyncImpl::Factory:
   std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
-      gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
@@ -158,7 +176,6 @@ class DeviceSyncClientImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
     fake_gcm_device_info_provider_ =
         std::make_unique<FakeGcmDeviceInfoProvider>(GetTestGcmDeviceInfo());
     fake_client_app_metadata_provider_ =
@@ -190,8 +207,9 @@ class DeviceSyncClientImplTest : public testing::Test {
     RegisterProfilePrefs(test_pref_service_->registry());
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
-        identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
-        test_pref_service_.get(), fake_gcm_device_info_provider_.get(),
+        identity_test_environment_->identity_manager(),
+        &fake_instance_id_driver_, test_pref_service_.get(),
+        fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
         std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(
@@ -562,7 +580,7 @@ class DeviceSyncClientImplTest : public testing::Test {
   const base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
+  testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
   std::unique_ptr<FakeClientAppMetadataProvider>
       fake_client_app_metadata_provider_;

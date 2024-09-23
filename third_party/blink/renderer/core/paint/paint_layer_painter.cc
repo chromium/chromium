@@ -6,11 +6,10 @@
 
 #include <optional>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
@@ -113,17 +113,10 @@ static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
 PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
                                      PaintFlags paint_flags) {
   const auto& object = paint_layer_.GetLayoutObject();
-  if (UNLIKELY(object.NeedsLayout() &&
-               !object.ChildLayoutBlockedByDisplayLock())) {
-    // Skip if we need layout. This should never happen. See crbug.com/1423308.
-
-    // Record whether the LayoutView exists and if it needs layout.
-    LayoutView* view = object.GetFrameView()->GetLayoutView();
-    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewExists", !!view);
-    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewNeedsLayout",
-                          view && view->NeedsLayout());
-    base::debug::DumpWithoutCrashing();
-
+  if (object.NeedsLayout() && !object.ChildLayoutBlockedByDisplayLock())
+      [[unlikely]] {
+    // Skip if we need layout. This should never happen. See crbug.com/1423308
+    // and crbug.com/330051489.
     return kFullyPainted;
   }
 
@@ -139,6 +132,23 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (!paint_layer_.IsSelfPaintingLayer() &&
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
+
+  if (auto* node = DynamicTo<Element>(object.GetNode())) {
+    if (node->IsInCanvasSubtree() && !DynamicTo<HTMLCanvasElement>(node)) {
+      // This prevents canvas fallback content from being rendered.
+      return kFullyPainted;
+    }
+  }
+
+  std::optional<CheckAncestorPositionVisibilityScope>
+      check_position_visibility_scope;
+  if (paint_layer_.InvisibleForPositionVisibility() ||
+      paint_layer_.HasAncestorInvisibleForPositionVisibility()) {
+    return kFullyPainted;
+  }
+  if (paint_layer_.GetLayoutObject().IsStackingContext()) {
+    check_position_visibility_scope.emplace(paint_layer_);
+  }
 
   // A paint layer should always have LocalBorderBoxProperties when it's ready
   // for paint.
@@ -303,8 +313,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (should_paint_content && !selection_drag_image_only) {
     if (const auto* properties = object.FirstFragment().PaintProperties()) {
       if (properties->Mask()) {
-        if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled() &&
-            object.IsSVGForeignObject()) {
+        if (object.IsSVGForeignObject()) {
           SVGMaskPainter::Paint(context, object, object);
         } else {
           PaintWithPhase(PaintPhase::kMask, context, paint_flags);
@@ -393,9 +402,10 @@ void PaintLayerPainter::PaintFragmentWithPhase(
       context.GetPaintController(), chunk_properties, paint_layer_,
       DisplayItem::PaintPhaseToDrawingType(phase));
 
-  PaintInfo paint_info(context, cull_rect, phase, paint_flags);
-  if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
-    paint_info.SetDescendantPaintingBlocked(true);
+  PaintInfo paint_info(
+      context, cull_rect, phase,
+      paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock(),
+      paint_flags);
 
   if (physical_fragment) {
     BoxFragmentPainter(*physical_fragment).Paint(paint_info);

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/test/bind.h"
@@ -31,7 +32,7 @@ namespace viz {
 
 namespace {
 
-constexpr gfx::BufferFormat kBufferQueueFormat = gfx::BufferFormat::RGBA_8888;
+constexpr SharedImageFormat kBufferQueueFormat = SinglePlaneFormat::kRGBA_8888;
 constexpr gfx::ColorSpace kBufferQueueColorSpace =
     gfx::ColorSpace::CreateSRGB();
 
@@ -148,8 +149,8 @@ class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             RenderPassAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
+                            gpu::SharedImageUsageSet usage,
+                            std::string_view debug_label,
                             gpu::SurfaceHandle surface_handle));
   MOCK_METHOD1(DestroySharedImage, void(const gpu::Mailbox& mailbox));
 };
@@ -159,11 +160,12 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
   std::unique_ptr<BufferQueue> buffer_queue = std::make_unique<BufferQueue>(
       mock_skia_output_surface.get(), kFakeSurfaceHandle, 1);
 
-  const gpu::Mailbox expected_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const gpu::Mailbox expected_mailbox = gpu::Mailbox::Generate();
   {
     testing::InSequence dummy;
     EXPECT_CALL(*mock_skia_output_surface,
                 CreateSharedImage(_, _, _, _,
+
                                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
@@ -174,12 +176,14 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
   }
 
   EXPECT_TRUE(buffer_queue->Reshape(screen_size, kBufferQueueColorSpace,
+                                    RenderPassAlphaType::kPremul,
                                     kBufferQueueFormat));
   EXPECT_EQ(expected_mailbox, buffer_queue->GetCurrentBuffer());
 }
 
 TEST_F(BufferQueueTest, PartialSwapReuse) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   SendFullFrame();
   SendDamagedFrame(small_damage);
@@ -191,6 +195,7 @@ TEST_F(BufferQueueTest, PartialSwapReuse) {
 
 TEST_F(BufferQueueTest, PartialSwapFullFrame) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   SendFullFrame();
   SendDamagedFrame(small_damage);
@@ -204,6 +209,7 @@ TEST_F(BufferQueueTest, PartialSwapFullFrame) {
 TEST_F(BufferQueueTest, PartialSwapWithTripleBuffering) {
   EXPECT_EQ(0, CountBuffers());
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   EXPECT_EQ(3, CountBuffers());
 
@@ -230,6 +236,7 @@ TEST_F(BufferQueueTest, PartialSwapWithTripleBuffering) {
 
 TEST_F(BufferQueueTest, PartialSwapOverlapping) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
 
   SendFullFrame();
@@ -243,6 +250,7 @@ TEST_F(BufferQueueTest, MultipleGetCurrentBufferCalls) {
   // It is not valid to call GetCurrentBuffer without having set an initial
   // size via Reshape.
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   // Check that multiple bind calls do not create or change buffers.
   EXPECT_FALSE(buffer_queue_->GetCurrentBuffer().IsZero());
@@ -260,6 +268,7 @@ TEST_F(BufferQueueTest, CheckDoubleBuffering) {
 
   EXPECT_EQ(0, CountBuffers());
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   EXPECT_EQ(2, CountBuffers());
 
@@ -297,6 +306,7 @@ TEST_F(BufferQueueTest, CheckTripleBuffering) {
   // Check buffer flow through triple buffering path.
   EXPECT_EQ(0, CountBuffers());
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   EXPECT_EQ(3, CountBuffers());
 
@@ -328,6 +338,7 @@ TEST_F(BufferQueueTest, CheckEmptySwap) {
   // It is not valid to call GetCurrentBuffer without having set an initial
   // size via Reshape.
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   // Check empty swap flow, in which the damage is empty.
   gpu::Mailbox mailbox = buffer_queue_->GetCurrentBuffer();
@@ -358,6 +369,7 @@ TEST_F(BufferQueueTest, CheckEmptySwap) {
 
 TEST_F(BufferQueueTest, CheckCorrectBufferOrdering) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   const size_t kSwapCount = 3;
   for (size_t i = 0; i < kSwapCount; ++i) {
@@ -375,6 +387,7 @@ TEST_F(BufferQueueTest, CheckCorrectBufferOrdering) {
 
 TEST_F(BufferQueueTest, ReshapeWithInFlightBuffers) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   const size_t kSwapCount = 3;
   for (size_t i = 0; i < kSwapCount; ++i) {
@@ -383,6 +396,7 @@ TEST_F(BufferQueueTest, ReshapeWithInFlightBuffers) {
   }
 
   EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(10, 20), kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   EXPECT_EQ(3u, in_flight_buffers().size());
   EXPECT_EQ(3u, available_buffers().size());
@@ -401,6 +415,7 @@ TEST_F(BufferQueueTest, ReshapeWithInFlightBuffers) {
 
 TEST_F(BufferQueueTest, SwapAfterReshape) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   const size_t kSwapCount = 3;
   for (size_t i = 0; i < kSwapCount; ++i) {
@@ -409,6 +424,7 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
   }
 
   EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(10, 20), kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
 
   for (size_t i = 0; i < kSwapCount; ++i) {
@@ -440,6 +456,7 @@ TEST_F(BufferQueueTest, SwapAfterReshape) {
 
 TEST_F(BufferQueueTest, SwapBuffersSkipped) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   SendDamagedFrame(small_damage);
   SendDamagedFrame(small_damage);
@@ -472,6 +489,7 @@ TEST_F(BufferQueueTest, EnsureMinNumberOfBuffers) {
   EXPECT_EQ(CountBuffers(), 0);
 
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
 
   EXPECT_EQ(CountBuffers(), 4);
@@ -517,6 +535,7 @@ TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
 
   // After reshape we'll get the last buffer in the queue.
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   gpu::Mailbox last_swapped1 = buffer_queue_->GetLastSwappedBuffer();
   EXPECT_FALSE(last_swapped1.IsZero());
@@ -562,6 +581,7 @@ TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
 
 TEST_F(BufferQueueTest, RecreateBuffers) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   auto mb1 = SendDamagedFrame(small_damage);
   auto mb2 = SendDamagedFrame(small_damage);
@@ -597,6 +617,7 @@ TEST_F(BufferQueueTest, RecreateBuffers) {
 
 TEST_F(BufferQueueTest, DestroyBuffers) {
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   auto mb1 = SendDamagedFrame(small_damage);
   auto mb2 = SendDamagedFrame(small_damage);
@@ -617,6 +638,7 @@ TEST_F(BufferQueueTest, DestroyBuffers) {
   EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
   // Reshape should not reallocate buffers.
   EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(20, 20), kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
 
@@ -633,6 +655,7 @@ TEST_F(BufferQueueTest, SetPurgeable) {
       base::BindLambdaForTesting(mock.AsStdFunction()));
 
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
   auto mb1 = SendDamagedFrame(small_damage);
   auto mb2 = SendDamagedFrame(small_damage);
@@ -686,6 +709,7 @@ TEST_F(BufferQueueTest, SetPurgeableThenReshape) {
   EXPECT_CALL(mock, Call(testing::_, testing::_)).Times(0);
 
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
 
   // Swap three buffers. First buffer swap completes so there is one displayed
@@ -704,6 +728,7 @@ TEST_F(BufferQueueTest, SetPurgeableThenReshape) {
   // recreated at the new size until they will be used.
   buffer_queue_->SetBuffersPurgeable();
   EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(1, 1), kBufferQueueColorSpace,
+                                     RenderPassAlphaType::kPremul,
                                      kBufferQueueFormat));
 
   // Complete the last two swaps. Since the reshape deleted all the buffers

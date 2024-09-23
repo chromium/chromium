@@ -166,29 +166,6 @@ void VideoProcessorProxy::SetOutputColorSpace(
   }
 }
 
-void VideoProcessorProxy::SetStreamHDRMetadata(
-    const DXGI_HDR_METADATA_HDR10& stream_metadata) {
-  ComD3D11VideoContext2 video_context2;
-  if (FAILED(video_context_.As(&video_context2)))
-    return;
-
-  // TODO: we shouldn't do this unless we also set the display metadata.
-  video_context2->VideoProcessorSetStreamHDRMetaData(
-      video_processor_.Get(), 0, DXGI_HDR_METADATA_TYPE_HDR10,
-      sizeof(stream_metadata), &stream_metadata);
-}
-
-void VideoProcessorProxy::SetDisplayHDRMetadata(
-    const DXGI_HDR_METADATA_HDR10& display_metadata) {
-  ComD3D11VideoContext2 video_context2;
-  if (FAILED(video_context_.As(&video_context2)))
-    return;
-
-  video_context2->VideoProcessorSetOutputHDRMetaData(
-      video_processor_.Get(), DXGI_HDR_METADATA_TYPE_HDR10,
-      sizeof(display_metadata), &display_metadata);
-}
-
 HRESULT VideoProcessorProxy::VideoProcessorBlt(
     ID3D11VideoProcessorOutputView* output_view,
     UINT output_frameno,

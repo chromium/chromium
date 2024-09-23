@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_callback_metadata.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -212,7 +212,7 @@ void VideoFrameCallbackRequesterImpl::ExecuteVideoFrameCallbacks(
 
   last_presented_frames_ = frame_metadata->presented_frames;
 
-  auto* metadata = VideoFrameMetadata::Create();
+  auto* metadata = VideoFrameCallbackMetadata::Create();
   auto& time_converter =
       GetSupplementable()->GetDocument().Loader()->GetTiming();
 

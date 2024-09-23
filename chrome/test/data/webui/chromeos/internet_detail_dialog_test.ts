@@ -6,6 +6,8 @@ import 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 
 import {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
@@ -16,11 +18,9 @@ import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/netw
 import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
 import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -161,10 +161,12 @@ suite('internet-detail-dialog', () => {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
     });
   }
 
-  function createApn(accessPointName: string, name?: string) {
+  function createApn(
+      accessPointName: string, source: ApnSource, name?: string) {
     return {
       accessPointName: accessPointName,
       id: undefined,
@@ -178,6 +180,7 @@ suite('internet-detail-dialog', () => {
       state: ApnState.kEnabled,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
+      source: source,
     };
   }
 
@@ -246,13 +249,13 @@ suite('internet-detail-dialog', () => {
       });
     });
 
-    test('WiFi in a proxy-auth portalState', function() {
+    test('WiFi in a portal suspected portalState', function() {
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
       wifiNetwork.source = OncSource.kUser;
       wifiNetwork.connectable = true;
       wifiNetwork.connectionState = ConnectionStateType.kPortal;
-      wifiNetwork.portalState = PortalState.kProxyAuthRequired;
+      wifiNetwork.portalState = PortalState.kPortalSuspected;
 
       mojoApi.setManagedPropertiesForTest(wifiNetwork);
       init();
@@ -441,7 +444,7 @@ suite('internet-detail-dialog', () => {
         const accessPointName = 'access point name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(accessPointName));
+            createApn(accessPointName, ApnSource.kModb));
 
         // Force a refresh.
         internetDetailDialog.onDeviceStateListChanged();
@@ -455,7 +458,7 @@ suite('internet-detail-dialog', () => {
         const name = 'name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(accessPointName, name),
+            createApn(accessPointName, ApnSource.kModb, name),
             /* customApnList= */ undefined, /* errorState= */ undefined,
             PortalState.kNoInternet);
 
@@ -484,6 +487,72 @@ suite('internet-detail-dialog', () => {
     });
   });
 
+  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
+    test(
+        `Managed APN UI states when ` +
+            `isApnRevampAndAllowApnModificationPolicyEnabled is ${
+                isApnRevampAndAllowApnModificationPolicyEnabled}`,
+        async () => {
+          loadTimeData.overrideValues({
+            apnRevamp: true,
+            isApnRevampAndAllowApnModificationPolicyEnabled:
+                isApnRevampAndAllowApnModificationPolicyEnabled,
+          });
+          await setupCellularNetwork(
+              /* isPrimary= */ true, /* isInhibited= */ false);
+
+          await init();
+          assertTrue(!!internetDetailDialog.shadowRoot!.querySelector(
+              'cr-expand-button'));
+
+          // Check for APN policies managed icon.
+          const getApnManagedIcon = () =>
+              internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
+          assertFalse(!!getApnManagedIcon());
+          const apnList =
+              internetDetailDialog.shadowRoot!.querySelector<ApnList>(
+                  '#apnList');
+          assertTrue(!!apnList);
+          assertFalse(apnList.shouldDisallowApnModification);
+          const createCustomApnButton = () =>
+              getElement<CrButtonElement>('#createCustomApnButton');
+          const discoverMoreApnsButton = () =>
+              getElement<CrButtonElement>('#discoverMoreApnsButton');
+          assertTrue(!!createCustomApnButton());
+          assertFalse(createCustomApnButton().disabled);
+          assertTrue(!!discoverMoreApnsButton());
+          assertFalse(discoverMoreApnsButton().disabled);
+
+          let globalPolicy = {
+            allowApnModification: true,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushAsync();
+          assertFalse(!!getApnManagedIcon());
+          assertFalse(apnList.shouldDisallowApnModification);
+          assertFalse(createCustomApnButton().disabled);
+          assertFalse(discoverMoreApnsButton().disabled);
+
+          globalPolicy = {
+            allowApnModification: false,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushAsync();
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              !!getApnManagedIcon());
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              apnList.shouldDisallowApnModification);
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              createCustomApnButton().disabled);
+          assertEquals(
+              isApnRevampAndAllowApnModificationPolicyEnabled,
+              discoverMoreApnsButton().disabled);
+        });
+  });
+
   test(
       'Disable and show tooltip for New APN button when custom APNs limit is' +
           ' reached',
@@ -493,30 +562,39 @@ suite('internet-detail-dialog', () => {
         });
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'), []);
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
+            []);
         await init();
         getElement('cr-expand-button').click();
 
-        const getApnButton = () =>
+        const createCustomApnButton = () =>
             getElement<CrButtonElement>('#createCustomApnButton');
+
+        const discoverMoreApnsButton = () =>
+            getElement<CrButtonElement>('#discoverMoreApnsButton');
 
         const getApnTooltip = () =>
             internetDetailDialog.shadowRoot!.querySelector('#apnTooltip');
 
-        assertTrue(!!getApnButton());
+        assertTrue(!!createCustomApnButton());
         assertFalse(!!getApnTooltip());
-        assertFalse(getApnButton().disabled);
+        assertFalse(createCustomApnButton().disabled);
+        assertTrue(!!discoverMoreApnsButton());
+        assertFalse(discoverMoreApnsButton().disabled);
 
         // We're setting the list of APNs to the max number
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'),
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
             Array(MAX_NUM_CUSTOM_APNS)
-                .fill(createApn(/*accessPointName=*/ 'apn')));
+                .fill(createApn(/*accessPointName=*/ 'apn', ApnSource.kUi)));
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
-        assertTrue(getApnButton().disabled);
+        assertTrue(createCustomApnButton().disabled);
+        assertTrue(discoverMoreApnsButton().disabled);
         const apnTooltip = getApnTooltip();
         assert(apnTooltip);
         assertTrue(apnTooltip.innerHTML.includes(
@@ -524,39 +602,38 @@ suite('internet-detail-dialog', () => {
 
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'), []);
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
+            []);
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
         assertFalse(!!getApnTooltip());
-        assertFalse(getApnButton().disabled);
+        assertFalse(createCustomApnButton().disabled);
+        assertFalse(discoverMoreApnsButton().disabled);
 
-        getApnButton().click();
+        createCustomApnButton().click();
         await flushAsync();
-        assertTrue(!!getElement('apn-list')
-                         .shadowRoot!.querySelector('apn-detail-dialog'));
-      });
 
-  [false, true].forEach(isJellyEnabled => {
-    test('Dynamic theme CSS is added when isJellyEnabled is set', async () => {
-      loadTimeData.overrideValues({
-        isJellyEnabled: isJellyEnabled,
-      });
-      await setupCellularNetwork(
-          /*isPrimary=*/ true, /*isInhibited=*/ false);
-      await init();
+        const apnDetailDialog =
+            getElement('apn-list')
+                .shadowRoot!.querySelector('apn-detail-dialog');
+        assertTrue(!!apnDetailDialog);
 
-      const linkEl =
-          document.querySelector('link[href*=\'chrome://theme/colors.css\']');
-      if (isJellyEnabled) {
-        assertTrue(!!linkEl);
-        assertTrue(document.body.classList.contains('jelly-enabled'));
-      } else {
-        assertEquals(null, linkEl);
-        assertFalse(document.body.classList.contains('jelly-enabled'));
-      }
-    });
-  });
+        const apnDetailDialogCancelBtn =
+            apnDetailDialog.shadowRoot!.querySelector<CrButtonElement>(
+                '#apnDetailCancelBtn');
+        assertTrue(!!apnDetailDialogCancelBtn);
+        apnDetailDialogCancelBtn.click();
+
+        discoverMoreApnsButton().click();
+        await flushAsync();
+
+        const apnSelectionDialog =
+            getElement('apn-list')
+                .shadowRoot!.querySelector('apn-selection-dialog');
+        assertTrue(!!apnSelectionDialog);
+      });
 
   test('Show toast on show-error-toast event', async function() {
     loadTimeData.overrideValues({

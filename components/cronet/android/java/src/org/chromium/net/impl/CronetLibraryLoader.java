@@ -267,29 +267,40 @@ public class CronetLibraryLoader {
     }
 
     /**
-     * Called by native Cronet library early initialization code to obtain the values of
-     * native base::Feature overrides that will be applied for the entire lifetime of the Cronet
-     * native library.
+     * Returns the HTTP flags that apply to this instance of the Cronet library.
+     *
+     * <p>Never returns null: if HTTP flags were not loaded, will return an empty set of flags.
+     *
+     * <p>This function will deadlock if {@link #ensureInitialized} is not called.
+     */
+    public static ResolvedFlags getHttpFlags() {
+        sHttpFlagsLoaded.block();
+        return sHttpFlags;
+    }
+
+    /**
+     * Called by native Cronet library early initialization code to obtain the values of native
+     * base::Feature overrides that will be applied for the entire lifetime of the Cronet native
+     * library.
      *
      * <p>Note that this call sits in the critical path of native library initialization, as
      * practically no Chromium native code can run until base::Feature values have settled.
      *
      * @return The base::Feature overrides as a binary serialized {@link
-     * org.chromium.net.httpflags.BaseFeatureOverrides} proto.
+     *     org.chromium.net.httpflags.BaseFeatureOverrides} proto.
      */
     @CalledByNative
     private static byte[] getBaseFeatureOverrides() {
-        sHttpFlagsLoaded.block();
-        return BaseFeature.getOverrides(sHttpFlags).toByteArray();
+        return BaseFeature.getOverrides(getHttpFlags()).toByteArray();
     }
 
     /**
-     * Called from native library to get default user agent constructed
-     * using application context. May be called on any thread.
+     * Called from native library to get default user agent constructed using application context.
+     * May be called on any thread.
      *
-     * Expects that ContextUtils.initApplicationContext() was called already
-     * either by some testing framework or an embedder constructing a Java
-     * CronetEngine via CronetEngine.Builder.build().
+     * <p>Expects that ContextUtils.initApplicationContext() was called already either by some
+     * testing framework or an embedder constructing a Java CronetEngine via
+     * CronetEngine.Builder.build().
      */
     @CalledByNative
     private static String getDefaultUserAgent() {
@@ -319,6 +330,7 @@ public class CronetLibraryLoader {
 
     @CalledByNative
     private static void setNetworkThreadPriorityOnNetworkThread(int priority) {
+        Log.d(TAG, "Setting network thread priority to " + priority);
         Process.setThreadPriority(priority);
     }
 

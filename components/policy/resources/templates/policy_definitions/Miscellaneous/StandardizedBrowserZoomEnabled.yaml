@@ -1,0 +1,33 @@
+caption: Enable Standardized Browser Zoom Behavior
+owners:
+  - szager@chromium.org
+  - pdr@chromium.org
+desc: |-
+  This policy enables conformance to the newly-adopted specification of CSS zoom.
+
+  When this policy is Enabled or unset, the CSS "zoom" property will adhere to the specification:
+
+    https://drafts.csswg.org/css-viewport/#zoom-property
+
+  When Disabled, the CSS "zoom" property will fall back to its legacy pre-standardized behavior.
+
+  This policy is a temporary reprieve to allow time to migrate web content to the new behavior. There is also an origin trial ("DisableStandardizedBrowserZoom") that corresponds to the behavior when this policy is Disabled. This policy will be removed and the "Enabled" behavior made permanent in milestone 134.
+supported_on:
+  - chrome.*:128-
+  - chrome_os:128-
+  - android:128-
+  - webview_android:128-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+  - caption: "Enabled: CSS zoom conforms to the standard specification."
+    value: true
+  - caption: "Disabled: CSS zoom preserves its legacy pre-standard behavior."
+    value: false
+default: true
+example_value: true
+tags: []

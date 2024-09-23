@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ash/crostini/termina_installer.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -29,8 +31,8 @@ class TerminaInstallTest : public testing::Test {
 
   void CommonSetUp() {
     component_manager_ =
-        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
-    browser_part_.InitializeCrosComponentManager(component_manager_);
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
+    browser_part_.InitializeComponentManager(component_manager_);
     fake_dlc_client_.set_install_root_path(dlc_root_path_);
   }
 
@@ -42,7 +44,7 @@ class TerminaInstallTest : public testing::Test {
   }
 
   void TearDown() override {
-    browser_part_.ShutdownCrosComponentManager();
+    browser_part_.ShutdownComponentManager();
     component_manager_.reset();
   }
 
@@ -56,9 +58,9 @@ class TerminaInstallTest : public testing::Test {
   const base::FilePath component_install_path_ =
       base::FilePath("/install/path");
   const base::FilePath component_mount_path_ = base::FilePath("/mount/path");
-  using ComponentError = component_updater::CrOSComponentManager::Error;
+  using ComponentError = component_updater::ComponentManagerAsh::Error;
   using ComponentInfo =
-      component_updater::FakeCrOSComponentManager::ComponentInfo;
+      component_updater::FakeComponentManagerAsh::ComponentInfo;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -75,7 +77,7 @@ class TerminaInstallTest : public testing::Test {
   const std::string dlc_root_path_ = "/dlc/root/path";
 
   void CheckDlcInstallCalledTimes(int times) {
-    TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+    TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
         result_future;
     fake_dlc_client_.GetExistingDlcs(result_future.GetCallback());
 
@@ -94,7 +96,7 @@ class TerminaInstallTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
   ash::FakeDlcserviceClient fake_dlc_client_;
   TerminaInstaller termina_installer_;

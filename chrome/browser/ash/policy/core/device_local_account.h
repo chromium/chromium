@@ -17,29 +17,6 @@ class OwnerSettingsServiceAsh;
 
 namespace policy {
 
-struct ArcKioskAppBasicInfo {
-  ArcKioskAppBasicInfo(const std::string& package_name,
-                       const std::string& class_name,
-                       const std::string& action,
-                       const std::string& display_name);
-  ArcKioskAppBasicInfo(const ArcKioskAppBasicInfo& other);
-  ArcKioskAppBasicInfo();
-  ~ArcKioskAppBasicInfo();
-
-  bool operator==(const ArcKioskAppBasicInfo& other) const;
-
-  const std::string& package_name() const { return package_name_; }
-  const std::string& class_name() const { return class_name_; }
-  const std::string& action() const { return action_; }
-  const std::string& display_name() const { return display_name_; }
-
- private:
-  std::string package_name_;
-  std::string class_name_;
-  std::string action_;
-  std::string display_name_;
-};
-
 struct WebKioskAppBasicInfo {
   WebKioskAppBasicInfo(const std::string& url,
                        const std::string& title,
@@ -57,37 +34,29 @@ struct WebKioskAppBasicInfo {
   std::string icon_url_;
 };
 
+struct IsolatedWebAppKioskBasicInfo {
+ public:
+  IsolatedWebAppKioskBasicInfo(std::string web_bundle_id,
+                               std::string update_manifest_url);
+  IsolatedWebAppKioskBasicInfo() = default;
+  ~IsolatedWebAppKioskBasicInfo() = default;
+
+  [[nodiscard]] const std::string& web_bundle_id() const {
+    return web_bundle_id_;
+  }
+
+  [[nodiscard]] const std::string& update_manifest_url() const {
+    return update_manifest_url_;
+  }
+
+ private:
+  std::string web_bundle_id_;
+  std::string update_manifest_url_;
+};
+
 // This must match DeviceLocalAccountInfoProto.AccountType in
 // chrome_device_policy.proto.
 struct DeviceLocalAccount {
-  // DEPRECATED: please use DeviceLocalAccountType, instead.
-  // TODO(b/267685577): Remove this.
-  enum Type {
-    // A login-less, policy-configured browsing session.
-    TYPE_PUBLIC_SESSION,
-    // An account that serves as a container for a single full-screen app.
-    TYPE_KIOSK_APP,
-    // An account that serves as a container for a single full-screen
-    // Android app.
-    TYPE_ARC_KIOSK_APP,
-    // SAML public session account
-    TYPE_SAML_PUBLIC_SESSION,
-    // An account that serves as a container for a single full-screen web app.
-    TYPE_WEB_KIOSK_APP,
-    // Sentinel, must be last.
-    TYPE_COUNT
-  };
-  static_assert(TYPE_PUBLIC_SESSION ==
-                static_cast<Type>(DeviceLocalAccountType::kPublicSession));
-  static_assert(TYPE_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kKioskApp));
-  static_assert(TYPE_ARC_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kArcKioskApp));
-  static_assert(TYPE_SAML_PUBLIC_SESSION ==
-                static_cast<Type>(DeviceLocalAccountType::kSamlPublicSession));
-  static_assert(TYPE_WEB_KIOSK_APP ==
-                static_cast<Type>(DeviceLocalAccountType::kWebKioskApp));
-
   enum class EphemeralMode {
     // Default value. Same behaviour as `kFollowDeviceWidePolicy` value.
     kUnset = 0,
@@ -102,70 +71,61 @@ struct DeviceLocalAccount {
     kMaxValue = kEnable,
   };
 
-  DeviceLocalAccount(Type type,
+  DeviceLocalAccount(DeviceLocalAccountType type,
                      EphemeralMode ephemeral_mode,
                      const std::string& account_id,
                      const std::string& kiosk_app_id,
                      const std::string& kiosk_app_update_url);
-  DeviceLocalAccount(EphemeralMode ephemeral_mode,
-                     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
-                     const std::string& account_id);
+
   DeviceLocalAccount(EphemeralMode ephemeral_mode,
                      const WebKioskAppBasicInfo& app_info,
                      const std::string& account_id);
+
+  DeviceLocalAccount(EphemeralMode ephemeral_mode,
+                     const IsolatedWebAppKioskBasicInfo& kiosk_iwa_info,
+                     const std::string& account_id);
+
   DeviceLocalAccount(const DeviceLocalAccount& other);
   ~DeviceLocalAccount();
 
-  Type type;
+  DeviceLocalAccountType type;
   EphemeralMode ephemeral_mode;
   // A device-local account has two identifiers:
-  // * The |account_id| is chosen by the entity that defines the device-local
-  //   account. The only constraints are that the |account_id| be unique and,
+  // * The `account_id` is chosen by the entity that defines the device-local
+  //   account. The only constraints are that the `account_id` be unique and,
   //   for legacy reasons, it contain an @ symbol.
-  // * The |user_id| is a synthesized identifier that is guaranteed to be
-  //   unique, contain an @ symbol, not collide with the |user_id| of any other
+  // * The `user_id` is a synthesized identifier that is guaranteed to be
+  //   unique, contain an @ symbol, not collide with the `user_id` of any other
   //   user on the device (such as regular users or supervised users) and be
   //   identifiable as belonging to a device-local account by.
-  // The |account_id| is primarily used by policy code: If device policy defines
-  // a device-local account with a certain |account_id|, the user policy for
-  // that account has to be fetched by referencing the same |account_id|.
-  // The |user_id| is passed to the user_manager::UserManager where it becomes
+  // The `account_id` is primarily used by policy code: If device policy defines
+  // a device-local account with a certain `account_id`, the user policy for
+  // that account has to be fetched by referencing the same `account_id`.
+  // The `user_id` is passed to the user_manager::UserManager where it becomes
   // part
-  // of the global user list on the device. The |account_id| would not be safe
+  // of the global user list on the device. The `account_id` would not be safe
   // to use here as it is a free-form identifier that could conflict with
-  // another |user_id| on the device and cannot be easily identified as
+  // another `user_id` on the device and cannot be easily identified as
   // belonging to a device-local account.
   std::string account_id;
   std::string user_id;
   std::string kiosk_app_id;
   std::string kiosk_app_update_url;
 
-  ArcKioskAppBasicInfo arc_kiosk_app_info;
   WebKioskAppBasicInfo web_kiosk_app_info;
+  IsolatedWebAppKioskBasicInfo kiosk_iwa_info;
 };
 
-// DEPRECATED: please use the one defined in
-// components/policy/core/common/device_local_account_type.h
-// TODO(b/267685577): Remove this.
-std::string GenerateDeviceLocalAccountUserId(const std::string& account_id,
-                                             DeviceLocalAccount::Type type);
-
-// DEPRECATED: please use the one defined in
-// components/policy/core/common/device_local_account_type.h
-// TODO(b/267685577): Remove this.
-bool IsDeviceLocalAccountUser(const std::string& user_id,
-                              DeviceLocalAccount::Type* type);
-
-// Stores a list of device-local accounts in |service|. The accounts are stored
-// as a list of dictionaries with each dictionary containing the information
-// about one |DeviceLocalAccount|.
-void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
-                            const std::vector<DeviceLocalAccount>& accounts);
-
-// Retrieves a list of device-local accounts from |cros_settings|.
+// Retrieves a list of device-local accounts from `cros_settings`.
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     ash::CrosSettings* cros_settings);
 
+// Stores a list of device-local accounts in `service`. The accounts are stored
+// as a list of dictionaries with each dictionary containing the information
+// about one `DeviceLocalAccount`.
+void SetDeviceLocalAccountsForTesting(
+    ash::OwnerSettingsServiceAsh* service,
+    const std::vector<DeviceLocalAccount>& accounts);
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_H_

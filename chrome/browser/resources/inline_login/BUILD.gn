@@ -17,7 +17,11 @@ build_webui("build") {
   non_web_component_files = [ "inline_login_browser_proxy.ts" ]
 
   ts_composite = true
-  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+  ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -28,4 +32,6 @@ build_webui("build") {
       [ "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir) ]
+
+  webui_context_type = "trusted"
 }

@@ -6,10 +6,10 @@
 #define CC_SLIM_FRAME_SINK_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

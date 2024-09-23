@@ -8,9 +8,11 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
@@ -27,45 +29,7 @@ mojom::ParsedHeadersPtr ParseHeaders(const std::string_view headers) {
   return network::PopulateParsedHeaders(parsed.get(), GURL("https://a.com"));
 }
 
-class NoVarySearchPrefetchDisabledTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<std::string_view> {
- public:
-  NoVarySearchPrefetchDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        network::features::kPrefetchNoVarySearch);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
-  const auto parsed_headers = ParseHeaders(GetParam());
-
-  EXPECT_TRUE(parsed_headers);
-  EXPECT_FALSE(parsed_headers->no_vary_search_with_parse_error);
-}
-
-constexpr std::string_view no_vary_search_prefetch_disabled_data[] = {
-    // No No-Vary-Search header.
-    "HTTP/1.1 200 OK\r\n"
-    "Set-Cookie: a\r\n"
-    "Set-Cookie: b\r\n\r\n",
-    // No-Vary-Search header present.
-    "HTTP/1.1 200 OK\r\n"
-    R"(No-Vary-Search: params=("a"))"
-    "\r\n\r\n",
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    NoVarySearchPrefetchDisabledTest,
-    NoVarySearchPrefetchDisabledTest,
-    testing::ValuesIn(no_vary_search_prefetch_disabled_data));
-
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsDefaultURLVariance) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -80,9 +44,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultValue) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsDefaultValue) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -98,9 +60,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultValue) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNotDictionary) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsNotDictionary) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -116,9 +76,11 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNotDictionary) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsUnknownDictionaryKey) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsUnknownDictionaryKey) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kNoVarySearchIgnoreUnrecognizedKeys)) {
+    GTEST_SKIP() << "unrecognized keys are now ignored";
+  }
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -134,9 +96,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsUnknownDictionaryKey) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNonBooleanKeyOrder) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsNonBooleanKeyOrder) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -152,9 +112,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNonBooleanKeyOrder) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsParamsNotStringList) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsParamsNotStringList) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -170,9 +128,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsParamsNotStringList) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsExceptNotStringList) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsExceptNotStringList) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -188,10 +144,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsExceptNotStringList) {
             parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
-TEST(NoVarySearchPrefetchEnabledTest,
-     ParsingNVSReturnsExceptWithoutTrueParams) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
+TEST(NoVarySearchPrefetchTest, ParsingNVSReturnsExceptWithoutTrueParams) {
   const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -215,20 +168,11 @@ struct NoVarySearchTestData {
   const bool expected_vary_by_default;
 };
 
-class NoVarySearchPrefetchEnabledTest
+class NoVarySearchPrefetchTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<NoVarySearchTestData> {
- public:
-  NoVarySearchPrefetchEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        network::features::kPrefetchNoVarySearch);
-  }
+      public ::testing::WithParamInterface<NoVarySearchTestData> {};
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(NoVarySearchPrefetchEnabledTest, ParsingSuccess) {
+TEST_P(NoVarySearchPrefetchTest, ParsingSuccess) {
   const auto& test_data = GetParam();
   std::string headers =
       net::HttpUtil::AssembleRawHeaders(test_data.raw_headers);
@@ -297,8 +241,8 @@ NoVarySearchTestData response_headers_tests[] = {
     },
 };
 
-INSTANTIATE_TEST_SUITE_P(NoVarySearchPrefetchEnabledTest,
-                         NoVarySearchPrefetchEnabledTest,
+INSTANTIATE_TEST_SUITE_P(NoVarySearchPrefetchTest,
+                         NoVarySearchPrefetchTest,
                          testing::ValuesIn(response_headers_tests));
 
 TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithoutClearSiteDataTest) {
@@ -405,5 +349,19 @@ TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithClearSiteDataAllTest) {
   EXPECT_FALSE(parsed_headers->accept_ch);
   EXPECT_FALSE(parsed_headers->critical_ch);
 }
+
+TEST(ParsedHeadersTest, CookieIndices) {
+  base::test::ScopedFeatureList enable{features::kCookieIndicesHeader};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Cookie-Indices: \"logged_in\", \"user_lang\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_THAT(
+      parsed_headers->cookie_indices,
+      ::testing::Optional(::testing::ElementsAre("logged_in", "user_lang")));
+}
+
 }  // namespace
 }  // namespace network

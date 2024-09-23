@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 if (typeof hasRunContentScriptAtDocumentStart == 'undefined') {
-  chrome.extension.sendRequest('document_start script has not run!');
+  chrome.runtime.sendMessage('document_start script has not run!');
 } else if (window.parent !== window) {
   // Assume iframe
-  chrome.extension.sendRequest('jsresult/' + document.body.textContent.trim());
+  chrome.runtime.sendMessage('jsresult/' + document.body.textContent.trim());
 }

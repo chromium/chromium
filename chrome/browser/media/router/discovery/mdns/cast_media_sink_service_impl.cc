@@ -75,7 +75,7 @@ std::string EnumToString(MediaRouterChannelError error) {
     case MediaRouterChannelError::PING_TIMEOUT:
       return "PING_TIMEOUT";
     case MediaRouterChannelError::TOTAL_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -84,7 +84,7 @@ MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
   MediaRouterChannelError error_code = MediaRouterChannelError::UNKNOWN;
 
   switch (channel_error) {
-    // TODO(crbug.com/767204): Add in errors for transient socket and timeout
+    // TODO(crbug.com/41345758): Add in errors for transient socket and timeout
     // errors, but only after X number of occurences.
     case cast_channel::ChannelError::UNKNOWN:
       error_code = MediaRouterChannelError::UNKNOWN;
@@ -107,7 +107,7 @@ MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
   }
 
   // If we have details, we may override the generic error codes set above.
-  // TODO(crbug.com/767204): Expand and refine below as we see more actual
+  // TODO(crbug.com/41345758): Expand and refine below as we see more actual
   // reports.
 
   // General certificate errors
@@ -386,7 +386,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
 
 void CastMediaSinkServiceImpl::OnMessage(
     const cast_channel::CastSocket& socket,
-    const cast::channel::CastMessage& message) {}
+    const openscreen::cast::proto::CastMessage& message) {}
 
 void CastMediaSinkServiceImpl::OnReadyStateChanged(
     const cast_channel::CastSocket& socket) {}
@@ -458,8 +458,8 @@ CastMediaSinkServiceImpl::CreateCastSocketOpenParams(
                  kMaxLivenessTimeoutInSeconds);
   }
 
-  // TODO(crbug.com/814419): Switching cast socket implementation to use network
-  // service will allow us to get back NetLog.
+  // TODO(crbug.com/41371793): Switching cast socket implementation to use
+  // network service will allow us to get back NetLog.
   return cast_channel::CastSocketOpenParams(
       sink.cast_data().ip_endpoint, base::Seconds(connect_timeout_in_seconds),
       base::Seconds(liveness_timeout_in_seconds),

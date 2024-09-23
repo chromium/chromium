@@ -30,7 +30,7 @@ std::atomic<bool> g_subsampling_never_sample = false;
 
 uint64_t RandUint64() {
   uint64_t number;
-  RandBytes(&number, sizeof(number));
+  RandBytes(base::byte_span_from_ref(number));
   return number;
 }
 
@@ -111,17 +111,14 @@ uint64_t RandGenerator(uint64_t range) {
 }
 
 std::string RandBytesAsString(size_t length) {
-  DCHECK_GT(length, 0u);
   std::string result(length, '\0');
-  RandBytes(result.data(), length);
+  RandBytes(as_writable_byte_span(result));
   return result;
 }
 
 std::vector<uint8_t> RandBytesAsVector(size_t length) {
   std::vector<uint8_t> result(length);
-  if (result.size()) {
-    RandBytes(result);
-  }
+  RandBytes(result);
   return result;
 }
 

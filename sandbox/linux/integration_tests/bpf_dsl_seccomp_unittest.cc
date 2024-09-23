@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -189,10 +194,8 @@ bool IsSyscallForTestHarness(int sysno) {
   if (sysno == kMMapNr || sysno == __NR_munmap ||
 #if !defined(__aarch64__)
       sysno == __NR_pipe ||
-#else
-      sysno == __NR_pipe2 ||
 #endif
-      sysno == __NR_sigaltstack) {
+      sysno == __NR_pipe2 || sysno == __NR_sigaltstack) {
     return true;
   }
 #endif

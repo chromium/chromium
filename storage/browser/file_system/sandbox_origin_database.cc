@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -125,11 +126,10 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
       return Init(init_option, FAIL_ON_CORRUPTION);
   }
   NOTREACHED();
-  return false;
 }
 
 bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
-  DCHECK(!db_.get());
+  CHECK(!db_.get(), base::NotFatalUntil::M130);
   leveldb_env::Options options;
   options.reuse_logs = false;
   options.max_open_files = 0;  // Use minimum.
@@ -151,7 +151,7 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
   auto db_dir_itr = directories.find(base::FilePath(kOriginDatabaseName));
   // Make sure we have the database file in its directory and therefore we are
   // working on the correct path.
-  DCHECK(db_dir_itr != directories.end());
+  CHECK(db_dir_itr != directories.end(), base::NotFatalUntil::M130);
   directories.erase(db_dir_itr);
 
   std::vector<OriginRecord> origins;

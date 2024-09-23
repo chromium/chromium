@@ -10,10 +10,10 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -56,12 +56,22 @@ class MockAttributionObserver : public AttributionObserver {
               (const AttributionDebugReport&, int status, base::Time),
               (override));
 
+  MOCK_METHOD(
+      void,
+      OnAggregatableDebugReportSent,
+      (const AggregatableDebugReport&,
+       base::ValueView report_body,
+       attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
+       const SendAggregatableDebugReportResult&),
+      (override));
+
   MOCK_METHOD(void,
               OnTriggerHandled,
-              (const AttributionTrigger&,
-               std::optional<uint64_t> cleared_debug_key,
+              (std::optional<uint64_t> cleared_debug_key,
                const CreateReportResult&),
               (override));
+
+  MOCK_METHOD(void, OnDebugModeChanged, (bool debug_mode), (override));
 };
 
 }  // namespace content

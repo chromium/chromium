@@ -1,0 +1,42 @@
+[{
+  "id": 10,
+  "priority": 2,
+  "condition": {
+    "requestDomains": ["b.com", "c.com", "d.com"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "header"}]
+  },
+  "action": {
+    "type": "block"
+  }
+}, {
+  "id": 11,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["b.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "block"
+  }
+}, {
+  "id": 12,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["c.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "allow"
+  }
+}, {
+  "id": 13,
+  "priority": 3,
+  "condition": {
+    "requestDomains": ["d.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "allow"
+  }
+}]

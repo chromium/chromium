@@ -42,7 +42,7 @@ void ExternalPlatformDelegateImplLacros::Enqueue(
 }
 
 void ExternalPlatformDelegateImplLacros::Stop(const GURL& source_url) {
-  // TODO(crbug.com/1251979): When Tts is supported for secondary prfoile in
+  // TODO(crbug.com/40792881): When Tts is supported for secondary prfoile in
   // in Lacros, use TtsClientLacros created for the same profile.
   content::BrowserContext* browser_context =
       ProfileManager::GetPrimaryUserProfile();

@@ -268,6 +268,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
       {"bruschettaEnable", IDS_SETTINGS_TURN_ON},
+      {"bruschettaMicDialogShutdownButton",
+       IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_SHUTDOWN_BUTTON},
       {"bruschettaRemoveButton", IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
@@ -500,6 +502,14 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("bruschettaRemove",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_BRUSCHETTA_REMOVE, bruschetta_name));
+  html_source->AddString(
+      "bruschettaMicTitle",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_BRUSCHETTA_MIC_TITLE,
+                                 bruschetta_name));
+  html_source->AddString(
+      "bruschettaMicDialogLabel",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_LABEL,
+                                 bruschetta_name));
 
   html_source->AddString(
       "crostiniSubtext",
@@ -608,6 +618,9 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kCrostiniDiskResize,
       mojom::Setting::kCrostiniMicAccess,
       mojom::Setting::kUninstallCrostini,
+      mojom::Setting::kBruschettaMicAccess,
+      mojom::Setting::kGuestUsbNotification,
+      mojom::Setting::kGuestUsbPersistentPassthrough,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kCrostiniDetails,
                             kCrostiniDetailsSettings, generator);

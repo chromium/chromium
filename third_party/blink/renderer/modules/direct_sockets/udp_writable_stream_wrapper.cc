@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 
 #include "net/base/net_errors.h"
@@ -71,19 +76,20 @@ void UDPWritableStreamWrapper::OnAbortSignal() {
   }
 }
 
-ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
-                                              ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
+    ScriptValue chunk,
+    ExceptionState& exception_state) {
   DCHECK(udp_socket_->get().is_bound());
 
   UDPMessage* message = UDPMessage::Create(GetScriptState()->GetIsolate(),
                                            chunk.V8Value(), exception_state);
   if (exception_state.HadException()) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (!message->hasData()) {
     exception_state.ThrowTypeError("UDPMessage: missing 'data' field.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   std::optional<net::HostPortPair> dest_addr;
@@ -92,7 +98,7 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
       exception_state.ThrowTypeError(
           "UDPMessage: 'remoteAddress' and 'remotePort' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromise();
+      return EmptyPromise();
     }
     dest_addr = net::HostPortPair(message->remoteAddress().Utf8(),
                                   message->remotePort());
@@ -100,12 +106,12 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
     exception_state.ThrowTypeError(
         "UDPMessage: either none or both 'remoteAddress' and 'remotePort' "
         "fields must be specified.");
-    return ScriptPromise();
+    return EmptyPromise();
   } else if (mode_ == network::mojom::RestrictedUDPSocketMode::BOUND) {
     exception_state.ThrowTypeError(
         "UDPMessage: 'remoteAddress' and 'remotePort' must be specified "
         "in 'bound' mode.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   auto dns_query_type = net::DnsQueryType::UNSPECIFIED;
@@ -114,7 +120,7 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
       exception_state.ThrowTypeError(
           "UDPMessage: 'dnsQueryType' must not be specified "
           "in 'connected' mode.");
-      return ScriptPromise();
+      return EmptyPromise();
     }
     switch (message->dnsQueryType().AsEnum()) {
       case V8SocketDnsQueryType::Enum::kIpv4:
@@ -129,9 +135,16 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
   DOMArrayPiece array_piece(message->data());
   base::span<const uint8_t> data{array_piece.Bytes(), array_piece.ByteLength()};
 
+  if (data.empty()) {
+    exception_state.ThrowTypeError(
+        "UDPMessage: 'data' field must not be empty.");
+    return EmptyPromise();
+  }
+
   DCHECK(!write_promise_resolver_);
-  write_promise_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      GetScriptState(), exception_state.GetContext());
+  write_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+          GetScriptState(), exception_state.GetContext());
 
   auto callback = WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
                                 WrapWeakPersistent(this));

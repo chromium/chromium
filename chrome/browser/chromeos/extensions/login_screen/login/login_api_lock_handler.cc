@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace chromeos {

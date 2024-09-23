@@ -17,22 +17,21 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './hw_data_collection.html.js';
 
 
 const HwDataCollectionScreenElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
+
+enum HwDataCollectionStep {
+  OVERVIEW = 'overview',
+}
 
 interface HwDataCollectionScreenData {
   hwDataUsageEnabled: boolean;
@@ -58,6 +57,15 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
 
   private dataUsageChecked: boolean;
 
+  override get UI_STEPS() {
+    return HwDataCollectionStep;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): HwDataCollectionStep {
+    return HwDataCollectionStep.OVERVIEW;
+  }
+
   constructor() {
     super();
   }
@@ -67,6 +75,7 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
    * param data Screen init payload
    */
   override onBeforeShow(data: HwDataCollectionScreenData): void {
+    super.onBeforeShow(data);
     this.dataUsageChecked =
         'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;
   }
@@ -76,7 +85,7 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
     this.initializeLoginScreen('HWDataCollectionScreen');
   }
 
-  private getHwDataCollectionContent_(locale: string): string {
+  private getHwDataCollectionContent_(locale: string): TrustedHTML {
     return this.i18nAdvancedDynamic(
         locale, 'HWDataCollectionContent', {tags: ['p']});
   }

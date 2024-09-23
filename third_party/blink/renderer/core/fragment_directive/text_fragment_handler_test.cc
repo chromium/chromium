@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -125,11 +126,12 @@ class TextFragmentHandlerTest : public SimTest {
   }
 
   void LoadAhem() {
-    scoped_refptr<SharedBuffer> shared_buffer =
+    std::optional<Vector<char>> data =
         test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
+    ASSERT_TRUE(data);
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-            DOMArrayBuffer::Create(shared_buffer));
+            DOMArrayBuffer::Create(base::as_byte_span(*data)));
     FontFace* ahem = FontFace::Create(GetDocument().GetExecutionContext(),
                                       AtomicString("Ahem"), buffer,
                                       FontFaceDescriptors::Create());
@@ -997,6 +999,9 @@ TEST_F(TextFragmentHandlerTest,
 // crbug.com/1266937 Even if |TextFragmentSelectorGenerator| gets reset between
 // generation completion and selector request we should record the correct error
 // code.
+// TODO(https://crbug.com/338340754): It's not clear how useful this behavior is
+// and it prevents us from clearing the TextFragmentHandler and
+// TextFragmentSelectorGenerator entirely between navigations.
 TEST_F(TextFragmentHandlerTest, IfGeneratorResetShouldRecordCorrectError) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

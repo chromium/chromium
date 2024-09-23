@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("cookies") {
+  sources = [
+    "cookies_api.cc",
+    "cookies_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    ":helpers",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui",
+    "//components/safe_browsing/core/common:features",
+    "//skia",
+  ]
+}
+
+source_set("helpers") {
+  sources = [
+    "cookies_helpers.cc",
+    "cookies_helpers.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/common/extensions/api",
+    "//extensions/common",
+    "//net",
+    "//skia",
+    "//url",
+  ]
+}

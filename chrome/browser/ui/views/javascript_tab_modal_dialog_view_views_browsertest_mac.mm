@@ -46,28 +46,22 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
   // JavaScriptTabModalDialogViewViews sets the accessible description of the
   // RootView to the message contents. That description is set with
   // kDescriptionFrom set to kAriaDescription, which is exposed in
-  // accessibilityHelp before macOS 11 and in accessibilityCustomContent
-  // for macOS 11 and later.
-  if (@available(macOS 11.0, *)) {
-    NSString* description = nil;
-    ASSERT_TRUE(
-        [native_dialog conformsToProtocol:@protocol(AXCustomContentProvider)]);
-    auto element_with_content =
-        static_cast<id<AXCustomContentProvider>>(native_dialog);
-    for (AXCustomContent* content in element_with_content
-             .accessibilityCustomContent) {
-      if ([content.label isEqualToString:@"description"]) {
-        // There should be only one AXCustomContent with the label
-        // "description".
-        EXPECT_EQ(description, nil);
-        description = content.value;
-      }
+  // accessibilityCustomContent.
+  NSString* description = nil;
+  ASSERT_TRUE(
+      [native_dialog conformsToProtocol:@protocol(AXCustomContentProvider)]);
+  auto element_with_content =
+      static_cast<id<AXCustomContentProvider>>(native_dialog);
+  for (AXCustomContent* content in element_with_content
+           .accessibilityCustomContent) {
+    if ([content.label isEqualToString:@"description"]) {
+      // There should be only one AXCustomContent with the label
+      // "description".
+      EXPECT_EQ(description, nil);
+      description = content.value;
     }
-    EXPECT_EQ(message, base::SysNSStringToUTF16(description));
-  } else {
-    EXPECT_EQ(message,
-              base::SysNSStringToUTF16([native_dialog accessibilityHelp]));
   }
+  EXPECT_EQ(message, base::SysNSStringToUTF16(description));
 
   // While some screen readers use the accessible description to know what to
   // present to the user, VoiceOver currently does not. Therefore, we set the

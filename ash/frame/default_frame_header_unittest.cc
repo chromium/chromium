@@ -62,7 +62,8 @@ class DefaultFrameHeaderTest : public AshTestBase {
 // Ensure the title text is vertically aligned with the window icon.
 TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
   views::StaticSizedView window_icon(gfx::Size(16, 16));
   window_icon.SetBounds(0, 0, 16, 16);
@@ -79,8 +80,9 @@ TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
 }
 
 TEST_F(DefaultFrameHeaderTest, BackButtonAlignment) {
-  std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
   FrameBackButton back;
 
@@ -98,7 +100,8 @@ TEST_F(DefaultFrameHeaderTest, BackButtonAlignment) {
 TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
 
   DefaultFrameHeader frame_header(
@@ -114,7 +117,7 @@ TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
 // Ensure the right frame colors are used.
 TEST_F(DefaultFrameHeaderTest, FrameColors) {
   const auto win0_bounds = gfx::Rect{1, 2, 3, 4};
-  auto win0 = CreateAppWindow(win0_bounds, AppType::BROWSER);
+  auto win0 = CreateAppWindow(win0_bounds, chromeos::AppType::BROWSER);
   Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
   DefaultFrameHeader* frame_header =
       static_cast<DefaultFrameHeader*>(FrameHeader::Get(widget));
@@ -195,8 +198,8 @@ class FramePaintWaiter : public ui::CompositorObserver {
 
 TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);
-  auto win0 = CreateAppWindow(bounds, AppType::BROWSER);
-  auto win1 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win0 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
+  auto win1 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
 
   Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
   EXPECT_TRUE(FrameHeader::Get(widget));
@@ -233,8 +236,8 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
 // Make sure that the animation is canceled when resized.
 TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);
-  auto win_0 = CreateAppWindow(bounds, AppType::BROWSER);
-  auto win_1 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win_0 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
+  auto win_1 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
 
   EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
 
@@ -309,14 +312,14 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
 // create another animation.
 TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);
-  auto win_0 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win_0 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
   // A frame will not animate until it is painted first.
   FramePaintWaiter(win_0.get()).Wait();
 
   auto* widget = Widget::GetWidgetForNativeWindow(win_0.get());
 
   auto lock = widget->LockPaintAsActive();
-  auto win_1 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win_1 = CreateAppWindow(bounds, chromeos::AppType::BROWSER);
   FramePaintWaiter(win_1.get()).Wait();
 
   EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
@@ -334,7 +337,7 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
 
 // Ensure that the number of frame color changes is recorded as metrics.
 TEST_F(DefaultFrameHeaderTest, FrameColorChangeMetrics) {
-  const auto app_type = AppType::ARC_APP;
+  const auto app_type = chromeos::AppType::ARC_APP;
   auto win0 = CreateAppWindow(gfx::Rect(300, 300), app_type);
   Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
   DefaultFrameHeader* frame_header =

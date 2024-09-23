@@ -2,20 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstring>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +98,8 @@ TEST_F(SQLiteFeaturesTest, FTS3) {
 // "*"}.  Test that fts3 works correctly.
 TEST_F(SQLiteFeaturesTest, FTS3_Prefix) {
   db_.Close();
-  sql::Database db({.enable_virtual_tables_discouraged = true});
+  sql::Database db;
+  db.SetEnableVirtualTablesForTesting(true);
   ASSERT_TRUE(db.Open(db_path_));
 
   static constexpr char kCreateSql[] =

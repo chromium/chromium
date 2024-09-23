@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 
 #include <string>
 #include <utility>
 
-#include "chrome/browser/image_service/image_service_factory.h"
+#include "base/feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
+#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
@@ -20,6 +28,8 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/history_clusters/core/features.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,8 +38,26 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
+    : DefaultTopChromeWebUIConfig(
+          content::kChromeUIScheme,
+          chrome::kChromeUIHistoryClustersSidePanelHost) {}
+
+bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
+}
+
+bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
+  return true;
+}
+
+std::optional<int> HistoryClustersSidePanelUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL;
+}
+
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : TopChromeWebUIController(web_ui),
       content::WebContentsObserver(web_ui->GetWebContents()) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -40,6 +68,11 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  source->AddBoolean(
+      "enableHistoryEmbeddings",
+      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
+          history_embeddings::kEnableSidePanel.Get());
 
   webui::SetupWebUIDataSource(
       source,
@@ -54,6 +87,11 @@ HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
 
+void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
+    BrowserWindowInterface* browser_window_interface) {
+  browser_window_interface_ = browser_window_interface;
+}
+
 void HistoryClustersSidePanelUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
@@ -67,7 +105,7 @@ void HistoryClustersSidePanelUI::BindInterface(
   history_clusters_handler_ =
       std::make_unique<history_clusters::HistoryClustersHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(), browser_window_interface_);
   history_clusters_handler_->SetSidePanelUIEmbedder(this->embedder());
 }
 
@@ -127,4 +165,14 @@ void HistoryClustersSidePanelUI::DidFinishNavigation(
 
   logger->set_navigation_id(navigation_handle->GetNavigationId());
   logger->set_initial_state(metrics_initial_state_);
+}
+
+void HistoryClustersSidePanelUI::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_ui()->GetWebContents()->GetPrimaryPage())
+      ->WasShown();
 }

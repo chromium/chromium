@@ -6,6 +6,7 @@
 
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -14,10 +15,8 @@ namespace trace_event {
 namespace {
 
 uint64_t HashString(const std::string& str) {
-  uint64_t hash[(kSHA1Length + sizeof(uint64_t) - 1) / sizeof(uint64_t)] = {0};
-  SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.data()), str.size(),
-                reinterpret_cast<unsigned char*>(hash));
-  return hash[0];
+  SHA1Digest digest = SHA1Hash(base::as_byte_span(str));
+  return base::U64FromLittleEndian(base::span(digest).first<8u>());
 }
 
 }  // namespace

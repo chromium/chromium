@@ -41,7 +41,7 @@ class MockAppActivity : public AppActivity {
       AddClient,
       mojom::RoutePresentationConnectionPtr(const CastMediaSource& source,
                                             const url::Origin& origin,
-                                            int tab_id));
+                                            content::FrameTreeNodeId tab_id));
   MOCK_METHOD1(RemoveClient, void(const std::string& client_id));
   MOCK_METHOD1(OnSessionSet, void(const CastSession& session));
   MOCK_METHOD2(OnSessionUpdated,
@@ -56,7 +56,8 @@ class MockAppActivity : public AppActivity {
       ClosePresentationConnections,
       void(blink::mojom::PresentationConnectionCloseReason close_reason));
   MOCK_METHOD0(TerminatePresentationConnections, void());
-  MOCK_METHOD1(OnAppMessage, void(const cast::channel::CastMessage& message));
+  MOCK_METHOD1(OnAppMessage,
+               void(const openscreen::cast::proto::CastMessage& message));
   MOCK_METHOD1(OnInternalMessage,
                void(const cast_channel::InternalMessage& message));
   MOCK_METHOD2(

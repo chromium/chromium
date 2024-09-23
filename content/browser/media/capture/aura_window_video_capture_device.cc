@@ -32,9 +32,7 @@ namespace content {
 // Threading note: This is constructed on the device thread, while the
 // destructor and the rest of the class will run exclusively on the UI thread.
 class AuraWindowVideoCaptureDevice::WindowTracker final
-    : public aura::WindowObserver,
-      public base::SupportsWeakPtr<
-          AuraWindowVideoCaptureDevice::WindowTracker> {
+    : public aura::WindowObserver {
  public:
   WindowTracker(base::WeakPtr<AuraWindowVideoCaptureDevice> device,
                 MouseCursorOverlayController* cursor_controller,
@@ -47,8 +45,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     DCHECK(cursor_controller_);
 
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WindowTracker::ResolveTarget, AsWeakPtr(), source_id));
+        FROM_HERE, base::BindOnce(&WindowTracker::ResolveTarget,
+                                  weak_ptr_factory_.GetWeakPtr(), source_id));
   }
 
   WindowTracker(const WindowTracker&) = delete;
@@ -180,11 +178,14 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   std::optional<viz::VideoCaptureTarget> target_;
 
   std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
+  base::WeakPtrFactory<AuraWindowVideoCaptureDevice::WindowTracker>
+      weak_ptr_factory_{this};
 };
 
 AuraWindowVideoCaptureDevice::AuraWindowVideoCaptureDevice(
-    const DesktopMediaID& source_id)
-    : tracker_(new WindowTracker(AsWeakPtr(), cursor_controller(), source_id)) {
+    const DesktopMediaID& source_id) {
+  tracker_.reset(new WindowTracker(weak_ptr_factory_.GetWeakPtr(),
+                                   cursor_controller(), source_id));
 }
 
 AuraWindowVideoCaptureDevice::~AuraWindowVideoCaptureDevice() = default;

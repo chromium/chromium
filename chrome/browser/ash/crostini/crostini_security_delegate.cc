@@ -14,6 +14,7 @@ namespace crostini {
 
 void CrostiniSecurityDelegate::Build(
     Profile* profile,
+    std::string vm_name,
     base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)>
         callback) {
   std::string reason;
@@ -23,7 +24,8 @@ void CrostiniSecurityDelegate::Build(
     return;
   }
   // WrapUnique is used because the constructor is private.
-  std::move(callback).Run(base::WrapUnique(new CrostiniSecurityDelegate()));
+  std::move(callback).Run(
+      base::WrapUnique(new CrostiniSecurityDelegate(std::move(vm_name))));
 }
 
 CrostiniSecurityDelegate::~CrostiniSecurityDelegate() = default;

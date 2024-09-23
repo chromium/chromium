@@ -1,0 +1,7 @@
+Document
+++TabItem Name='First Tab' SelectionItem.IsSelected=true
+++TabItem Name='Second Tab' SelectionItem.IsSelected=false
+++TabItem Name='Third Tab' SelectionItem.IsSelected=false
+++Pane Name='First Tab'
+++++Group IsControlElement=false
+++++++Text Name='Content for the first panel, this should be read.'

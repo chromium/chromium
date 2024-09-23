@@ -74,7 +74,7 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
 
     @Override
     public void onNewToken(String token) {
-        // TODO(crbug.com/1138706): Figure out if we can use this method or if
+        // TODO(crbug.com/40725597): Figure out if we can use this method or if
         // we need another mechanism that supports multiple FirebaseApp
         // instances.
         Log.d(TAG, "New FCM Token: %s", token);
@@ -127,7 +127,7 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
 
         boolean isSubscriptionLazy = LazySubscriptionsManager.isSubscriptionLazy(subscriptionId);
         boolean isHighPriority = message.getOriginalPriority() == GCMMessage.Priority.HIGH;
-        // TODO(crbug.com/945402): Add metrics for the new high priority message logic.
+        // TODO(crbug.com/40619931): Add metrics for the new high priority message logic.
         boolean shouldPersistMessage = isSubscriptionLazy && !isHighPriority;
         if (shouldPersistMessage) {
             LazySubscriptionsManager.persistMessage(subscriptionId, message);

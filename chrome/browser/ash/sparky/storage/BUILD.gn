@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("storage") {
+  sources = [
+    "simple_size_calculator.cc",
+    "simple_size_calculator.h",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/spaced",
+    "//components/user_manager",
+  ]
+}

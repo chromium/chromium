@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "google_apis/common/base_requests.h"
 
 #include <stddef.h>
@@ -12,6 +17,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -295,8 +301,8 @@ bool UrlFetchRequestBase::WriteFileData(std::string file_data,
     if (!download_data->output_file.IsValid())
       return false;
   }
-  if (download_data->output_file.WriteAtCurrentPos(file_data.data(),
-                                                   file_data.size()) == -1) {
+  if (!download_data->output_file.WriteAtCurrentPosAndCheck(
+          base::as_byte_span(file_data))) {
     download_data->output_file.Close();
     return false;
   }

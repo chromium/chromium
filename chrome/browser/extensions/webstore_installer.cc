@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -130,8 +130,7 @@ void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
   url::Component query(0, old_query.length());
   url::Component key, value;
   // Ensure that the URL doesn't already specify an authuser parameter.
-  while (url::ExtractQueryKeyValue(
-             old_query.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(old_query, &query, &key, &value)) {
     std::string key_string = old_query.substr(key.begin, key.len);
     if (key_string == kAuthUserQueryKey) {
       return;
@@ -192,7 +191,7 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
     return GURL(base::StringPrintfNonConstexpr(download_url.c_str(),
                                                extension_id.c_str()));
   }
-  std::vector<base::StringPiece> params;
+  std::vector<std::string_view> params;
   std::string extension_param = "id=" + extension_id;
   std::string installsource_param = "installsource=" + install_source;
   params.push_back(extension_param);
@@ -313,7 +312,7 @@ void WebstoreInstaller::Start() {
   const std::string* name =
       approval_->manifest->available_values().FindString(manifest_keys::kName);
   if (!name) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
@@ -324,7 +323,7 @@ void WebstoreInstaller::Start() {
 
   tracker->OnBeginExtensionDownload(id_);
 
-  // TODO(crbug.com/305343): Query manifest of dependencies before
+  // TODO(crbug.com/41064141): Query manifest of dependencies before
   // downloading & installing those dependencies.
   DownloadNextPendingModule();
 }

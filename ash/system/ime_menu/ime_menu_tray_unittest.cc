@@ -20,6 +20,8 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -383,8 +385,9 @@ TEST_F(ImeMenuTrayTest, ImeBubbleAccelerator) {
 // Tests that tapping the emoji button does not crash. http://crbug.com/739630
 TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   int call_count = 0;
-  ui::SetShowEmojiKeyboardCallback(
-      base::BindRepeating([](int* count) { (*count)++; }, (&call_count)));
+  ui::SetShowEmojiKeyboardCallback(base::BindLambdaForTesting(
+      [&](ui::EmojiPickerCategory unused, ui::EmojiPickerFocusBehavior,
+          const std::string&) { ++call_count; }));
 
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(

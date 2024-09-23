@@ -1,0 +1,330 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "chrome_autofill_client_ios.h",
+    "chrome_autofill_client_ios.mm",
+    "ios_chrome_payments_autofill_client.h",
+    "ios_chrome_payments_autofill_client.mm",
+  ]
+  deps = [
+    ":bridges",
+    ":common",
+    ":ui",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util",
+    "//components/browser_sync",
+    "//components/infobars/core",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/common",
+    "//components/password_manager/ios",
+    "//components/plus_addresses",
+    "//components/prefs",
+    "//components/security_state/ios",
+    "//components/strings",
+    "//components/translate/core/browser",
+    "//components/variations/service",
+    "//google_apis",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:model_shared",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/credit_card:infobar_delegate",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_ui",
+    "//ios/chrome/browser/device_reauth",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/plus_addresses/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ssl/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/translate/model:model",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("bridges") {
+  sources = [
+    "card_expiration_date_fix_flow_view_bridge.h",
+    "card_expiration_date_fix_flow_view_bridge.mm",
+    "card_name_fix_flow_view_bridge.h",
+    "card_name_fix_flow_view_bridge.mm",
+    "card_unmask_prompt_view_bridge.h",
+    "card_unmask_prompt_view_bridge.mm",
+    "card_unmask_prompt_view_controller+Testing.h",
+    "card_unmask_prompt_view_controller.h",
+    "card_unmask_prompt_view_controller.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/strings",
+    "//ios/chrome/browser/autofill/model/credit_card:credit_card",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("ui") {
+  sources = [
+    "expiration_date_picker.h",
+    "expiration_date_picker.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "autofill_constants.h",
+    "autofill_constants.mm",
+  ]
+}
+
+source_set("autofill_shared_ui") {
+  sources = [
+    "autofill_country_selection_table_view_controller.h",
+    "autofill_country_selection_table_view_controller.mm",
+    "autofill_credit_card_util.h",
+    "autofill_credit_card_util.mm",
+    "autofill_profile_address_field.h",
+    "autofill_profile_address_field.mm",
+    "autofill_profile_edit_consumer.h",
+    "autofill_profile_edit_handler.h",
+    "autofill_profile_edit_mediator.h",
+    "autofill_profile_edit_mediator.mm",
+    "autofill_profile_edit_mediator_delegate.h",
+    "autofill_profile_edit_table_view_constants.h",
+    "autofill_profile_edit_table_view_controller.h",
+    "autofill_profile_edit_table_view_controller.mm",
+    "autofill_profile_edit_table_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    ":ui_type",
+    "//base:base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/settings/autofill:shared_ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("ui_type") {
+  sources = [
+    "autofill_credit_card_ui_type.h",
+    "autofill_ui_type_util.h",
+    "autofill_ui_type_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings",
+  ]
+}
+
+source_set("autofill_metrics") {
+  sources = [
+    "save_card_infobar_metrics_recorder.h",
+    "save_card_infobar_metrics_recorder.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("common") {
+  sources = [
+    "scoped_autofill_payment_reauth_module_override.h",
+    "scoped_autofill_payment_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "save_card_infobar_egtest.mm",
+    "save_profile_egtest.mm",
+  ]
+  deps = [
+    ":common",
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/browser:autofill_test_bundle_data",
+    "//components/autofill/ios/common",
+    "//components/strings",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
+    "//ios/chrome/browser/badges/ui_bundled:public",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "autofill_app_interface.h",
+    "autofill_app_interface.mm",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
+    "//components/autofill/ios/common",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
+    "//ios/web/public:public",
+    "//ios/web/public/js_messaging",
+    "//services/network:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "autofill_app_interface.h",
+    "autofill_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication:reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_profile_edit_mediator_unittest.mm",
+    "autofill_profile_edit_table_view_controller_unittest.mm",
+    "card_unmask_prompt_view_controller_unittest.mm",
+    "chrome_autofill_client_ios_unittest.mm",
+    "ios_chrome_payments_autofill_client_unittest.mm",
+  ]
+  deps = [
+    ":autofill_shared_ui",
+    ":bridges",
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
+    "//components/autofill/ios/common",
+    "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/ui_bundled:constants",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/settings:test_support",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/js_messaging:js_messaging",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

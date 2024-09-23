@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify Partitioned Popins cannot open their own popin
+  assert_equals: expected "Could not open inner popin" but got "Did open inner popin"
+Harness: the test ran to completion.
+

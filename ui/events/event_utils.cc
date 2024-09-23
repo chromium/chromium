@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <map>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -14,12 +15,14 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -31,7 +34,7 @@ namespace ui {
 
 namespace {
 
-int g_custom_event_types = ET_LAST;
+int g_custom_event_types = base::to_underlying(EventType::kLast);
 
 #define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)           \
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
@@ -62,34 +65,34 @@ std::unique_ptr<Event> EventFromNative(const PlatformEvent& native_event) {
   std::unique_ptr<Event> event;
   EventType type = EventTypeFromNative(native_event);
   switch(type) {
-    case ET_KEY_PRESSED:
-    case ET_KEY_RELEASED:
+    case EventType::kKeyPressed:
+    case EventType::kKeyReleased:
       event = std::make_unique<KeyEvent>(native_event);
       break;
 
-    case ET_MOUSE_PRESSED:
-    case ET_MOUSE_DRAGGED:
-    case ET_MOUSE_RELEASED:
-    case ET_MOUSE_MOVED:
-    case ET_MOUSE_ENTERED:
-    case ET_MOUSE_EXITED:
+    case EventType::kMousePressed:
+    case EventType::kMouseDragged:
+    case EventType::kMouseReleased:
+    case EventType::kMouseMoved:
+    case EventType::kMouseEntered:
+    case EventType::kMouseExited:
       event = std::make_unique<MouseEvent>(native_event);
       break;
 
-    case ET_MOUSEWHEEL:
+    case EventType::kMousewheel:
       event = std::make_unique<MouseWheelEvent>(native_event);
       break;
 
-    case ET_SCROLL_FLING_START:
-    case ET_SCROLL_FLING_CANCEL:
-    case ET_SCROLL:
+    case EventType::kScrollFlingStart:
+    case EventType::kScrollFlingCancel:
+    case EventType::kScroll:
       event = std::make_unique<ScrollEvent>(native_event);
       break;
 
-    case ET_TOUCH_RELEASED:
-    case ET_TOUCH_PRESSED:
-    case ET_TOUCH_MOVED:
-    case ET_TOUCH_CANCELLED:
+    case EventType::kTouchReleased:
+    case EventType::kTouchPressed:
+    case EventType::kTouchMoved:
+    case EventType::kTouchCancelled:
       event = std::make_unique<TouchEvent>(native_event);
       break;
 
@@ -151,36 +154,37 @@ void ComputeEventLatencyOS(EventType type,
 
   switch (type) {
 #if BUILDFLAG(IS_APPLE)
-    // On Mac, ET_SCROLL and ET_MOUSEWHEEL represent the same class of events.
-    case ET_SCROLL:
+    // On Mac, EventType::kScroll and EventType::kMousewheel represent the same
+    // class of events.
+    case EventType::kScroll:
 #endif
-    case ET_MOUSEWHEEL:
+    case EventType::kMousewheel:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMouseWheelEventName, delta);
       // Do not record traces for wheel events to avoid spam.
       return;
-    case ET_TOUCH_MOVED:
+    case EventType::kTouchMoved:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchMovedEventName, delta);
       // Do not record traces for move events to avoid spam.
       return;
-    case ET_TOUCH_PRESSED:
+    case EventType::kTouchPressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchPressedEventName, delta);
       RecordEventLatencyTrace(kTouchPressedEventName, time_stamp, current_time);
       return;
-    case ET_TOUCH_RELEASED:
+    case EventType::kTouchReleased:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchReleasedEventName, delta);
       RecordEventLatencyTrace(kTouchReleasedEventName, time_stamp,
                               current_time);
       return;
-    case ET_TOUCH_CANCELLED:
+    case EventType::kTouchCancelled:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kTouchCancelledEventName, delta);
       RecordEventLatencyTrace(kTouchCancelledEventName, time_stamp,
                               current_time);
       return;
-    case ET_KEY_PRESSED:
+    case EventType::kKeyPressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kKeyPressedEventName, delta);
       RecordEventLatencyTrace(kKeyPressedEventName, time_stamp, current_time);
       return;
-    case ET_MOUSE_PRESSED:
+    case EventType::kMousePressed:
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES(kMousePressedEventName, delta);
       RecordEventLatencyTrace(kMousePressedEventName, time_stamp, current_time);
       return;
@@ -236,68 +240,69 @@ void ConvertEventLocationToTargetWindowLocation(
   located_event->set_location_f(location_in_pixel_in_host);
 }
 
-base::StringPiece EventTypeName(EventType type) {
-  if (type >= ET_LAST)
+std::string_view EventTypeName(EventType type) {
+  if (type >= EventType::kLast) {
     return "";
+  }
 
 #define CASE_TYPE(t) \
   case t:            \
     return #t
 
   switch (type) {
-    CASE_TYPE(ET_UNKNOWN);
-    CASE_TYPE(ET_MOUSE_PRESSED);
-    CASE_TYPE(ET_MOUSE_DRAGGED);
-    CASE_TYPE(ET_MOUSE_RELEASED);
-    CASE_TYPE(ET_MOUSE_MOVED);
-    CASE_TYPE(ET_MOUSE_ENTERED);
-    CASE_TYPE(ET_MOUSE_EXITED);
-    CASE_TYPE(ET_KEY_PRESSED);
-    CASE_TYPE(ET_KEY_RELEASED);
-    CASE_TYPE(ET_MOUSEWHEEL);
-    CASE_TYPE(ET_MOUSE_CAPTURE_CHANGED);
-    CASE_TYPE(ET_TOUCH_RELEASED);
-    CASE_TYPE(ET_TOUCH_PRESSED);
-    CASE_TYPE(ET_TOUCH_MOVED);
-    CASE_TYPE(ET_TOUCH_CANCELLED);
-    CASE_TYPE(ET_DROP_TARGET_EVENT);
-    CASE_TYPE(ET_GESTURE_SCROLL_BEGIN);
-    CASE_TYPE(ET_GESTURE_SCROLL_END);
-    CASE_TYPE(ET_GESTURE_SCROLL_UPDATE);
-    CASE_TYPE(ET_GESTURE_SHOW_PRESS);
-    CASE_TYPE(ET_GESTURE_TAP);
-    CASE_TYPE(ET_GESTURE_TAP_DOWN);
-    CASE_TYPE(ET_GESTURE_TAP_CANCEL);
-    CASE_TYPE(ET_GESTURE_BEGIN);
-    CASE_TYPE(ET_GESTURE_END);
-    CASE_TYPE(ET_GESTURE_TWO_FINGER_TAP);
-    CASE_TYPE(ET_GESTURE_PINCH_BEGIN);
-    CASE_TYPE(ET_GESTURE_PINCH_END);
-    CASE_TYPE(ET_GESTURE_PINCH_UPDATE);
-    CASE_TYPE(ET_GESTURE_SHORT_PRESS);
-    CASE_TYPE(ET_GESTURE_LONG_PRESS);
-    CASE_TYPE(ET_GESTURE_LONG_TAP);
-    CASE_TYPE(ET_GESTURE_SWIPE);
-    CASE_TYPE(ET_GESTURE_TAP_UNCONFIRMED);
-    CASE_TYPE(ET_GESTURE_DOUBLE_TAP);
-    CASE_TYPE(ET_SCROLL);
-    CASE_TYPE(ET_SCROLL_FLING_START);
-    CASE_TYPE(ET_SCROLL_FLING_CANCEL);
-    CASE_TYPE(ET_CANCEL_MODE);
-    CASE_TYPE(ET_UMA_DATA);
-    case ET_LAST:
-      NOTREACHED();
+    CASE_TYPE(EventType::kUnknown);
+    CASE_TYPE(EventType::kMousePressed);
+    CASE_TYPE(EventType::kMouseDragged);
+    CASE_TYPE(EventType::kMouseReleased);
+    CASE_TYPE(EventType::kMouseMoved);
+    CASE_TYPE(EventType::kMouseEntered);
+    CASE_TYPE(EventType::kMouseExited);
+    CASE_TYPE(EventType::kKeyPressed);
+    CASE_TYPE(EventType::kKeyReleased);
+    CASE_TYPE(EventType::kMousewheel);
+    CASE_TYPE(EventType::kMouseCaptureChanged);
+    CASE_TYPE(EventType::kTouchReleased);
+    CASE_TYPE(EventType::kTouchPressed);
+    CASE_TYPE(EventType::kTouchMoved);
+    CASE_TYPE(EventType::kTouchCancelled);
+    CASE_TYPE(EventType::kDropTargetEvent);
+    CASE_TYPE(EventType::kGestureScrollBegin);
+    CASE_TYPE(EventType::kGestureScrollEnd);
+    CASE_TYPE(EventType::kGestureScrollUpdate);
+    CASE_TYPE(EventType::kGestureShowPress);
+    CASE_TYPE(EventType::kGestureTap);
+    CASE_TYPE(EventType::kGestureTapDown);
+    CASE_TYPE(EventType::kGestureTapCancel);
+    CASE_TYPE(EventType::kGestureBegin);
+    CASE_TYPE(EventType::kGestureEnd);
+    CASE_TYPE(EventType::kGestureTwoFingerTap);
+    CASE_TYPE(EventType::kGesturePinchBegin);
+    CASE_TYPE(EventType::kGesturePinchEnd);
+    CASE_TYPE(EventType::kGesturePinchUpdate);
+    CASE_TYPE(EventType::kGestureShortPress);
+    CASE_TYPE(EventType::kGestureLongPress);
+    CASE_TYPE(EventType::kGestureLongTap);
+    CASE_TYPE(EventType::kGestureSwipe);
+    CASE_TYPE(EventType::kGestureTapUnconfirmed);
+    CASE_TYPE(EventType::kGestureDoubleTap);
+    CASE_TYPE(EventType::kScroll);
+    CASE_TYPE(EventType::kScrollFlingStart);
+    CASE_TYPE(EventType::kScrollFlingCancel);
+    CASE_TYPE(EventType::kCancelMode);
+    CASE_TYPE(EventType::kUmaData);
+    case EventType::kLast:
+      NOTREACHED_IN_MIGRATION();
       return "";
       // Don't include default, so that we get an error when new type is added.
   }
 #undef CASE_TYPE
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
-std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
-  std::vector<base::StringPiece> names;
+std::vector<std::string_view> EventFlagsNames(int event_flags) {
+  std::vector<std::string_view> names;
   names.reserve(5);  // Seems like a good starting point.
   if (!event_flags) {
     names.push_back("NONE");
@@ -318,6 +323,8 @@ std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
     names.push_back("ALTGR_DOWN");
   if (event_flags & EF_MOD3_DOWN)
     names.push_back("MOD3_DOWN");
+  if (event_flags & EF_FUNCTION_DOWN)
+    names.push_back("FUNCTION_DOWN");
   if (event_flags & EF_NUM_LOCK_ON)
     names.push_back("NUM_LOCK_ON");
   if (event_flags & EF_CAPS_LOCK_ON)
@@ -338,8 +345,8 @@ std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
   return names;
 }
 
-std::vector<base::StringPiece> KeyEventFlagsNames(int event_flags) {
-  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+std::vector<std::string_view> KeyEventFlagsNames(int event_flags) {
+  std::vector<std::string_view> names = EventFlagsNames(event_flags);
   if (!event_flags)
     return names;
 
@@ -353,12 +360,17 @@ std::vector<base::StringPiece> KeyEventFlagsNames(int event_flags) {
     names.push_back("IS_EXTENDED_KEY");
   if (event_flags & EF_IS_STYLUS_BUTTON)
     names.push_back("IS_STYLUS_BUTTON");
+#if BUILDFLAG(IS_CHROMEOS)
+  if (event_flags & EF_IS_CUSTOMIZED_FROM_BUTTON) {
+    names.push_back("IS_CUSTOMIZED_FROM_BUTTON");
+  }
+#endif
 
   return names;
 }
 
-std::vector<base::StringPiece> MouseEventFlagsNames(int event_flags) {
-  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+std::vector<std::string_view> MouseEventFlagsNames(int event_flags) {
+  std::vector<std::string_view> names = EventFlagsNames(event_flags);
   if (!event_flags)
     return names;
 

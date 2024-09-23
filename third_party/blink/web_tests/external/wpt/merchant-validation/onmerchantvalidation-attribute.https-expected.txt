@@ -4,8 +4,8 @@ This is a testharness.js-based test.
 [FAIL] onmerchantvalidation attribute is a generic handler for "merchantvalidation"
   assert_true: event did not fire expected true got false
 [FAIL] onmerchantvalidation attribute is a handler for MerchantValidationEvent
-  assert_true: event did not fire expected true got false
+  MerchantValidationEvent is not defined
 [FAIL] onmerchantvalidation attribute and listeners both work
-  assert_true: onmerchantvalidation must receive the event expected true got false
+  MerchantValidationEvent is not defined
 Harness: the test ran to completion.
 

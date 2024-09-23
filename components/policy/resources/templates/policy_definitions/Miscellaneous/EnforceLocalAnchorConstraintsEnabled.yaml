@@ -2,6 +2,7 @@ caption: Determines whether the built-in certificate verifier
   will enforce constraints encoded into trust anchors loaded from the platform
   trust store.
 default: true
+deprecated: true
 desc: |-
   X.509 certificates may encode constraints, such as Name Constraints,
   in extensions in the certificate. RFC 5280 specifies that enforcing such
@@ -28,8 +29,9 @@ desc: |-
   <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph>
   policy is disabled.
 
-  This policy is planned to be removed in
-  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 118.
+  This policy was removed in
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 126. Starting
+  that version, constraints in trust anchors are always enforced.
 
 example_value: false
 features:
@@ -46,12 +48,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.win:112-
-- chrome.mac:112-
-- chrome.linux:112-
-- chrome_os:112-
-future_on:
-- android
+- chrome.win:112-127
+- chrome.mac:112-127
+- chrome.linux:112-127
+- chrome_os:112-127
 tags: []
 type: main
-

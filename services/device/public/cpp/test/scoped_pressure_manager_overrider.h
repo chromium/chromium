@@ -29,8 +29,8 @@ class FakePressureManager : public mojom::PressureManager {
   bool is_bound() const;
 
   // mojom::PressureManager implementation.
-  void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
-                 mojom::PressureSource source,
+  void AddClient(mojom::PressureSource source,
+                 const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override;
 
   void UpdateClients(const mojom::PressureUpdate& update);
@@ -38,6 +38,21 @@ class FakePressureManager : public mojom::PressureManager {
   void set_is_supported(bool is_supported);
 
  private:
+  void AddVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::VirtualPressureSourceMetadataPtr metadata,
+      AddVirtualPressureSourceCallback callback) override {}
+  void RemoveVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      RemoveVirtualPressureSourceCallback callback) override {}
+  void UpdateVirtualPressureSourceState(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::PressureState state,
+      UpdateVirtualPressureSourceStateCallback callback) override {}
+
   bool is_supported_ = true;
   mojo::ReceiverSet<mojom::PressureManager> receivers_;
   std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>

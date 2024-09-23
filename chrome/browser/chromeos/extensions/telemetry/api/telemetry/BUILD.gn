@@ -42,8 +42,9 @@ source_set("browser_tests") {
     ":telemetry",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:remote_probe_strategy",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
-    "//chrome/browser/chromeos/telemetry:test_support",
+    "//chromeos/crosapi/cpp/telemetry:test_support",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_config/public/mojom:network_types",
     "//chromeos/services/network_health/public/mojom:types",
@@ -55,17 +56,13 @@ source_set("browser_tests") {
 
   data = [ "//chrome/test/data" ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_probe_service_factory.cc",
-      "fake_probe_service_factory.h",
-    ]
-
-    deps += [ "//chrome/browser/ash/telemetry_extension/telemetry" ]
-  }
-
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps +=
+        [ "//chromeos/ash/components/telemetry_extension/telemetry:telemetry" ]
   }
 }
 

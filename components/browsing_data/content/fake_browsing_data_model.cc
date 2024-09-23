@@ -25,5 +25,5 @@ void FakeBrowsingDataModel::RemoveBrowsingDataEntriesFromDisk(
 
 void FakeBrowsingDataModel::PopulateFromDisk(
     base::OnceClosure finished_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

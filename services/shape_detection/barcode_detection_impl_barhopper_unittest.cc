@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -17,7 +19,7 @@ namespace shape_detection {
 
 constexpr struct TestParams {
   base::FilePath::StringPieceType filename;
-  base::StringPiece expected_value;
+  std::string_view expected_value;
   float x;
   float y;
   float width;

@@ -13,6 +13,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 constexpr char kRequestNotifications[] = R"(
       new Promise(resolve => {

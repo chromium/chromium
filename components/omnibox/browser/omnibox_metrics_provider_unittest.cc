@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -17,11 +18,15 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "ui/base/window_open_disposition.h"
 
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using OmniboxScoringSignals = ::metrics::OmniboxScoringSignals;
 
 class OmniboxMetricsProviderTest : public testing::Test {
  public:
@@ -56,19 +61,36 @@ class OmniboxMetricsProviderTest : public testing::Test {
     return AutocompleteMatch(nullptr, 0, false, type);
   }
 
-  void RecordLogAndVerifyClientSummarizedResultType(const OmniboxLog& log,
-                                                    int32_t sample,
-                                                    int32_t expected_count) {
+  void RecordLogAndVerifyClientSummarizedResultType(
+      const OmniboxLog& log,
+      int32_t expected_uma_sample,
+      int64_t expected_ukm_value) {
     base::HistogramTester histogram_tester;
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
     provider_->RecordOmniboxOpenedURLClientSummarizedResultType(log);
+
+    // Verify the UMA histogram.
     histogram_tester.ExpectBucketCount(
-        "Omnibox.SuggestionUsed.ClientSummarizedResultType", sample,
-        expected_count);
+        "Omnibox.SuggestionUsed.ClientSummarizedResultType",
+        expected_uma_sample,
+        /*expected_count=*/1);
+
+    // Verify the UKM event.
+    const char* entry_name = ukm::builders::Omnibox_SuggestionUsed::kEntryName;
+    if (log.ukm_source_id != ukm::kInvalidSourceId) {
+      EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 1ul);
+      auto* entry = ukm_recorder.GetEntriesByName(entry_name)[0].get();
+      ukm_recorder.ExpectEntryMetric(
+          entry, ukm::builders::Omnibox_SuggestionUsed::kResultTypeName,
+          expected_ukm_value);
+    } else {
+      EXPECT_EQ(ukm_recorder.GetEntriesByName(entry_name).size(), 0ul);
+    }
   }
 
   void RecordLogAndVerifyScoringSignals(
       const OmniboxLog& log,
-      ScoringSignals& expected_scoring_signals) {
+      OmniboxScoringSignals& expected_scoring_signals) {
     // Clear the event cache so we start with a clean slate.
     provider_->omnibox_events_cache.clear_omnibox_event();
 
@@ -84,27 +106,35 @@ class OmniboxMetricsProviderTest : public testing::Test {
       // Scoring signals should not be logged when in incognito/off-the-record
       // mode, regardless of result type.
       if (log.is_incognito) {
-        ASSERT_FALSE(suggestion.has_scoring_signals());
+        EXPECT_FALSE(suggestion.has_scoring_signals());
         continue;
       }
 
-      // When not in incognito, scoring signals should only be logged for URL
-      // (not search) types. Check that the signals are logged correctly for URL
-      // types, and not logged at all for search types.
-      if (suggestion.has_result_type() &&
-          suggestion.result_type() !=
-              metrics::
-                  OmniboxEventProto_Suggestion_ResultType_SEARCH_WHAT_YOU_TYPED) {
-        ASSERT_TRUE(suggestion.has_scoring_signals());
-        ASSERT_EQ(
-            expected_scoring_signals.first_bookmark_title_match_position(),
-            suggestion.scoring_signals().first_bookmark_title_match_position());
-        ASSERT_EQ(expected_scoring_signals.allowed_to_be_default_match(),
-                  suggestion.scoring_signals().allowed_to_be_default_match());
-        ASSERT_EQ(expected_scoring_signals.length_of_url(),
-                  suggestion.scoring_signals().length_of_url());
+      // When not in incognito, scoring signals should only be logged for the
+      // proper suggestion types. Check that the signals are logged correctly
+      // for URL types and Search types, while not being logged for any others.
+      if (suggestion.has_result_type()) {
+        EXPECT_TRUE(suggestion.has_scoring_signals());
+
+        if (suggestion.result_type() ==
+            metrics::
+                OmniboxEventProto_Suggestion_ResultType_SEARCH_WHAT_YOU_TYPED) {
+          EXPECT_EQ(suggestion.scoring_signals().search_suggest_relevance(),
+                    expected_scoring_signals.search_suggest_relevance());
+          EXPECT_EQ(suggestion.scoring_signals().is_search_suggest_entity(),
+                    expected_scoring_signals.is_search_suggest_entity());
+        } else {
+          EXPECT_EQ(
+              suggestion.scoring_signals()
+                  .first_bookmark_title_match_position(),
+              expected_scoring_signals.first_bookmark_title_match_position());
+          EXPECT_EQ(suggestion.scoring_signals().allowed_to_be_default_match(),
+                    expected_scoring_signals.allowed_to_be_default_match());
+          EXPECT_EQ(suggestion.scoring_signals().length_of_url(),
+                    expected_scoring_signals.length_of_url());
+        }
       } else {
-        ASSERT_FALSE(suggestion.has_scoring_signals());
+        EXPECT_FALSE(suggestion.has_scoring_signals());
       }
     }
 
@@ -113,6 +143,7 @@ class OmniboxMetricsProviderTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<OmniboxMetricsProvider> provider_;
 };
 
@@ -121,16 +152,18 @@ TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeSingleURL) {
   result.AppendMatches(
       {BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/0,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/0,
+                                               /*expected_ukm_value=*/0);
 }
 
 TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeSingleSearch) {
   AutocompleteResult result;
   result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/1,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/1,
+                                               /*expected_ukm_value=*/1);
 }
 
 TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeMultipleSearch) {
@@ -140,8 +173,19 @@ TEST_F(OmniboxMetricsProviderTest, ClientSummarizedResultTypeMultipleSearch) {
        BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST),
        BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1);
-  RecordLogAndVerifyClientSummarizedResultType(log, /*sample=*/1,
-                                               /*expected_count=*/1);
+  log.ukm_source_id = ukm::NoURLSourceId();
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/1,
+                                               /*expected_ukm_value=*/1);
+}
+
+TEST_F(OmniboxMetricsProviderTest,
+       ClientSummarizedResultTypeInvalidUkmSourceId) {
+  AutocompleteResult result;
+  result.AppendMatches(
+      {BuildMatch(AutocompleteMatch::Type::URL_WHAT_YOU_TYPED)});
+  OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0);
+  RecordLogAndVerifyClientSummarizedResultType(log, /*expected_uma_sample=*/0,
+                                               /*expected_ukm_value=*/0);
 }
 
 // TODO(b/261895038): This test is flaky on android.  Currently scoring signals
@@ -154,10 +198,14 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
 
   // Populate a set of scoring signals with some test values. This will be used
   // to ensure the scoring signals are being propagated correctly.
-  ScoringSignals expected_scoring_signals;
-  expected_scoring_signals.set_first_bookmark_title_match_position(3);
-  expected_scoring_signals.set_allowed_to_be_default_match(true);
-  expected_scoring_signals.set_length_of_url(20);
+  OmniboxScoringSignals expected_url_scoring_signals;
+  expected_url_scoring_signals.set_first_bookmark_title_match_position(3);
+  expected_url_scoring_signals.set_allowed_to_be_default_match(true);
+  expected_url_scoring_signals.set_length_of_url(20);
+
+  OmniboxScoringSignals expected_search_scoring_signals;
+  expected_search_scoring_signals.set_search_suggest_relevance(1000);
+  expected_search_scoring_signals.set_is_search_suggest_entity(true);
 
   // Create matches and populate the scoring signals. Signals should only be
   // logged for non-search suggestions.
@@ -165,7 +213,9 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
       BuildMatch(AutocompleteMatchType::Type::BOOKMARK_TITLE),
       BuildMatch(AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED)};
   for (auto& match : matches) {
-    match.scoring_signals = expected_scoring_signals;
+    match.scoring_signals = AutocompleteMatch::IsSearchHistoryType(match.type)
+                                ? expected_search_scoring_signals
+                                : expected_url_scoring_signals;
   }
   AutocompleteResult result;
   result.AppendMatches(matches);

@@ -35,7 +35,7 @@ class MockSignalDatabase : public SignalDatabase {
                uint64_t,
                base::Time,
                base::Time,
-               SignalDatabase::SamplesCallback),
+               SignalDatabase::EntriesCallback),
               (override));
   MOCK_METHOD(const std::vector<SignalDatabase::DbEntry>*,
               GetAllSamples,

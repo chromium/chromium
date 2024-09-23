@@ -1,0 +1,22 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+enum ParserKind {
+  // Config does not specify parser kind (handled as SIMPLE for now).
+  PARSER_KIND_UNSPECIFIED = 0;
+  // Model output is placed in the field specified by
+  // OnDeviceModelExecutionOutputConfig::proto_field with no transformation.
+  PARSER_KIND_SIMPLE = 1;
+  // Model output is parsed as JSON then converted to the response proto.
+  PARSER_KIND_JSON = 2;
+  // Model output is parsed as answers from an AQA model.
+  PARSER_KIND_AQA = 3;
+}

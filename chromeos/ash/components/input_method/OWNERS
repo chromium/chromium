@@ -1,3 +1,15 @@
-shend@chromium.org
-curtismcmullan@chromium.org
+# Unless you want a specific reviewer's expertise, send to the email below.
+# CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews. Googlers can read more about this at go/gwsq-gerrit.
+
+e14s-review@google.com
+
+curtismcmullan@chromium.org #{LAST_RESORT_SUGGESTION}
+dvallet@chromium.org        #{LAST_RESORT_SUGGESTION}
 hidehiko@chromium.org
+jiwan@chromium.org          #{LAST_RESORT_SUGGESTION}
+jopalmer@chromium.org       #{LAST_RESORT_SUGGESTION}
+mehrab@chromium.org         #{LAST_RESORT_SUGGESTION}
+shend@chromium.org          #{LAST_RESORT_SUGGESTION}
+tranbaoduy@chromium.org     #{LAST_RESORT_SUGGESTION}

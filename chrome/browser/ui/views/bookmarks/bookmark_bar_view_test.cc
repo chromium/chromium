@@ -28,7 +28,9 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
@@ -36,6 +38,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
@@ -53,6 +56,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -214,7 +218,7 @@ class TabKeyWaiter : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() == ui::ET_KEY_RELEASED &&
+    if (event->type() == ui::EventType::kKeyReleased &&
         event->key_code() == ui::VKEY_TAB) {
       received_tab_ = true;
       if (!quit_closure_.is_null()) {
@@ -249,7 +253,9 @@ class TestingPageNavigator : public PageNavigator {
 
   ~TestingPageNavigator() override {}
 
-  WebContents* OpenURL(const OpenURLParams& params) override {
+  WebContents* OpenURL(const OpenURLParams& params,
+                       base::OnceCallback<void(content::NavigationHandle&)>
+                           navigation_handle_callback) override {
     urls_.push_back(params.url);
     transitions_.push_back(params.transition);
     return nullptr;
@@ -304,10 +310,13 @@ class TestingPageNavigator : public PageNavigator {
 // TearDown.
 class BookmarkBarViewEventTestBase : public ViewEventTestBase {
  public:
-  BookmarkBarViewEventTestBase() = default;
+  BookmarkBarViewEventTestBase()
+      : scoped_testing_factory_installer_(
+            base::BindRepeating(&gcm::FakeGCMProfileService::Build)) {}
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    InitializeActionIdStringMapping();
     content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
     browser_content_client_ = std::make_unique<ChromeContentBrowserClient>();
@@ -335,6 +344,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_ = CreateBrowserWithTestWindowForParams(native_params);
 
     model_->DisableWritesToDiskForTest();
+    PinnedToolbarActionsModel::Get(browser_->profile())
+        ->UpdatePinnedState(kActionShowChromeLabs, false);
 
     AddTestData(CreateBigMenu());
 
@@ -362,6 +373,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
       // before |model_| is deleted (which happens when |profile_| is reset).
       window()->CloseNow();
     }
+    actions::ActionIdMap::ResetMapsForTesting();
 
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();
@@ -462,6 +474,9 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
                                                base::Milliseconds(20));
                        })));
   }
+
+  gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
+      scoped_testing_factory_installer_;
 
   raw_ptr<BookmarkModel, AcrossTasksDanglingUntriaged> model_ = nullptr;
   raw_ptr<BookmarkBarView, AcrossTasksDanglingUntriaged> bb_view_ = nullptr;
@@ -659,7 +674,7 @@ class BookmarkBarViewTest1 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Basic DISABLED_Basic
 #else
@@ -709,7 +724,7 @@ class BookmarkBarViewTest2 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_HideOnDesktopClick DISABLED_HideOnDesktopClick
 #else
@@ -765,7 +780,7 @@ class BookmarkBarViewTest3 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Submenus DISABLED_Submenus
 #else
@@ -850,7 +865,7 @@ class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenus DISABLED_ContextMenus
 #else
@@ -924,12 +939,12 @@ class BookmarkBarViewTest6 : public BookmarkBarViewEventTestBase {
 };
 
 #if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
-// TODO (crbug/1523247): This test is failing under wayland and Windows when
-// the ChromeRefresh2023 flags are set. This skips it until it can be fixed.
+// TODO (crbug/1523247): This test is failing under wayland and Windows. This
+// skips it until it can be fixed.
 #define MAYBE_OpenMenuOnClickAndHold DISABLED_OpenMenuOnClickAndHold
 #else
 #define MAYBE_OpenMenuOnClickAndHold OpenMenuOnClickAndHold
-#endif
+#endif  // BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(BookmarkBarViewTest6, MAYBE_OpenMenuOnClickAndHold)
 
@@ -982,7 +997,7 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DNDToDifferentMenu DISABLED_DNDToDifferentMenu
 #else
@@ -1044,7 +1059,7 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DNDBackToOriginatingMenu DISABLED_DNDBackToOriginatingMenu
 #else
@@ -1135,7 +1150,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
 // Something about coordinate transforms is wrong on Wayland -- attempting to
 // hover the scroll buttons sends the mouse to the wrong location, so it never
 // winds up over the button, so the test times out.
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScrollButtonScrolls DISABLED_ScrollButtonScrolls
 #else
@@ -1240,7 +1255,7 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_KeyEvents DISABLED_KeyEvents
 #else
@@ -1305,8 +1320,9 @@ class BookmarkBarViewTest11 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/1483505): Fails on latest versions of ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/40282036): Fails on latest versions of ChromeOS.
+// TODO(crbug.com/337055374): Flaky on Windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_CloseMenuAfterClosingContextMenu \
   DISABLED_CloseMenuAfterClosingContextMenu
 #else
@@ -1384,7 +1400,7 @@ class BookmarkBarViewTest12 : public BookmarkBarViewEventTestBase {
       &chrome::kNumBookmarkUrlsBeforePrompting, 1};
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CloseWithModalDialog DISABLED_CloseWithModalDialog
 #else
@@ -1450,7 +1466,7 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ClickOnContextMenuSeparator DISABLED_ClickOnContextMenuSeparator
 #else
@@ -1490,7 +1506,7 @@ class BookmarkBarViewTest14 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenus2 DISABLED_ContextMenus2
 #else
@@ -1558,7 +1574,7 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MenuStaysVisibleAfterDelete \
     DISABLED_MenuStaysVisibleAfterDelete
@@ -1590,7 +1606,7 @@ class BookmarkBarViewTest16 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DeleteMenu DISABLED_DeleteMenu
 #else
@@ -1663,8 +1679,8 @@ class BookmarkBarViewTest17 : public BookmarkBarViewEventTestBase {
   std::unique_ptr<BookmarkContextMenuNotificationObserver> observer_;
 };
 
-// TODO(crbug.com/1483505): Fails on latest versions of ChromeOS.
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40282036): Fails on latest versions of ChromeOS.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenus3 DISABLED_ContextMenus3
 #else
@@ -1714,7 +1730,7 @@ class BookmarkBarViewTest18 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest18_SiblingMenu \
     DISABLED_BookmarkBarViewTest18_SiblingMenu
@@ -1778,7 +1794,7 @@ class BookmarkBarViewTest19 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest19_SiblingMenu \
     DISABLED_BookmarkBarViewTest19_SiblingMenu
@@ -1874,20 +1890,17 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
   raw_ptr<TestViewForMenuExit, DanglingUntriaged> test_view_ = nullptr;
 };
 
-BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit, views::View)
+BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit)
 END_METADATA
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
-#elif BUILDFLAG(IS_OZONE_WAYLAND)
-// TODO (crbug/1523247): This test is failing under wayland when the
-//                       ChromeRefresh2023 flags are set. This skips it
-//                       until it can be fixed.
+// TODO(crbug.com/40947483): Flaky on Windows.
+// TODO (crbug/1523247): This test is failing under wayland and Windows. This
+// skips it until it can be fixed.
+#if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
 #else
 #define MAYBE_ContextMenuExitTest ContextMenuExitTest
-#endif
+#endif  // BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
 VIEW_TEST(BookmarkBarViewTest20, MAYBE_ContextMenuExitTest)
 
 // Tests context menu by way of opening a context menu for a empty folder menu.
@@ -1951,7 +1964,7 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
 };
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenusForEmptyFolder DISABLED_ContextMenusForEmptyFolder
 #else
@@ -1999,7 +2012,7 @@ class BookmarkBarViewTest22 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CloseSourceBrowserDuringDrag DISABLED_CloseSourceBrowserDuringDrag
 #else
@@ -2068,7 +2081,7 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContextMenusKeyboard DISABLED_ContextMenusKeyboard
 #else
@@ -2162,7 +2175,7 @@ class BookmarkBarViewTest25 : public BookmarkBarViewEventTestBase {
 
 // Tests that pressing F10 system key closes the menu.
 using BookmarkBarViewTest25F10 = BookmarkBarViewTest25<ui::VKEY_F10>;
-// TODO(crbug.com/1520458) flaky on windows
+// TODO(crbug.com/41493431) flaky on windows
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_F10ClosesMenu DISABLED_F10ClosesMenu
 #else
@@ -2172,7 +2185,7 @@ VIEW_TEST(BookmarkBarViewTest25F10, MAYBE_F10ClosesMenu)
 
 // Tests that pressing Alt system key closes the menu.
 using BookmarkBarViewTest25Alt = BookmarkBarViewTest25<ui::VKEY_MENU>;
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AltClosesMenu DISABLED_AltClosesMenu
 #else
@@ -2209,7 +2222,7 @@ class BookmarkBarViewTest26 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CancelModeClosesMenu DISABLED_CancelModeClosesMenu
 #else
@@ -2238,7 +2251,7 @@ class BookmarkBarViewTest27 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
     DISABLED_MiddleClickOnFolderOpensAllBookmarks
@@ -2273,7 +2286,7 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
     DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
@@ -2332,8 +2345,8 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(https://crbug.com/1503458): Flaky on Mac.
-// TODO(https://crbug.com/1506808): Flaky on Windows.
+// TODO(crbug.com/40943907): Flaky on Mac.
+// TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
 #else

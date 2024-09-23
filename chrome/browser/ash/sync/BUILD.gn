@@ -1,0 +1,114 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("sync") {
+  sources = [
+    "sync_appsync_optin_client.cc",
+    "sync_appsync_optin_client.h",
+    "sync_appsync_service.cc",
+    "sync_appsync_service.h",
+    "sync_appsync_service_factory.cc",
+    "sync_appsync_service_factory.h",
+    "sync_error_notifier.cc",
+    "sync_error_notifier.h",
+    "sync_error_notifier_factory.cc",
+    "sync_error_notifier_factory.h",
+    "sync_explicit_passphrase_client_ash.cc",
+    "sync_explicit_passphrase_client_ash.h",
+    "sync_mojo_service_ash.cc",
+    "sync_mojo_service_ash.h",
+    "sync_mojo_service_factory_ash.cc",
+    "sync_mojo_service_factory_ash.h",
+    "sync_user_settings_client_ash.cc",
+    "sync_user_settings_client_ash.h",
+    "synced_session_client_ash.cc",
+    "synced_session_client_ash.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/crosapi/mojom",
+    "//components/keyed_service/core",
+    "//components/sync/service",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/common",
+    "//components/account_id",
+    "//components/account_manager_core",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/chromeos",
+    "//components/sync/engine",
+    "//components/sync_sessions",
+    "//components/trusted_vault",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "sync_appsync_optin_client_unittest.cc",
+    "sync_appsync_service_unittest.cc",
+    "sync_error_notifier_unittest.cc",
+    "sync_explicit_passphrase_client_ash_unittest.cc",
+    "sync_mojo_service_ash_unittest.cc",
+    "sync_user_settings_client_ash_unittest.cc",
+    "synced_session_client_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":sync",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/signin/public/identity_manager",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/chromeos",
+    "//components/sync/engine",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/user_manager",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+}

@@ -27,10 +27,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "build/build_config.h"
 
 #include "base/memory/values_equivalent.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -60,8 +65,6 @@ struct SameSizeAsFontDescription {
 };
 
 ASSERT_SIZE(FontDescription, SameSizeAsFontDescription);
-
-TypesettingFeatures FontDescription::default_typesetting_features_ = 0;
 
 bool FontDescription::use_subpixel_text_positioning_ = false;
 
@@ -105,7 +108,7 @@ FontDescription::FontDescription()
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;
   fields_.subpixel_text_position_ = use_subpixel_text_positioning_;
-  fields_.typesetting_features_ = default_typesetting_features_;
+  fields_.typesetting_features_ = 0;
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
@@ -114,6 +117,7 @@ FontDescription::FontDescription()
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
+  fields_.variant_emoji_ = kNormalVariantEmoji;
   static_assert(static_cast<unsigned>(TextSpacingTrim::kInitial) == 0);
 }
 
@@ -268,6 +272,7 @@ FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
     bool is_unique_match) const {
   unsigned options =
+      static_cast<unsigned>(fields_.variant_emoji_) << 10 |         // bit 11-12
       static_cast<unsigned>(fields_.font_synthesis_style_) << 9 |   // bit 10
       static_cast<unsigned>(fields_.font_synthesis_weight_) << 8 |  // bit 9
       static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |    // bit 8
@@ -283,7 +288,7 @@ FontCacheKey FontDescription::CacheKey(
   float device_scale_factor_for_key = 1.0f;
 #endif
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
-                         options | font_selection_request_.GetHash() << 11,
+                         options | font_selection_request_.GetHash() << 13,
                          device_scale_factor_for_key, size_adjust_,
                          variation_settings_, font_palette_,
                          font_variant_alternates_, is_unique_match);
@@ -296,17 +301,8 @@ FontCacheKey FontDescription::CacheKey(
   return cache_key;
 }
 
-void FontDescription::SetDefaultTypesettingFeatures(
-    TypesettingFeatures typesetting_features) {
-  default_typesetting_features_ = typesetting_features;
-}
-
-TypesettingFeatures FontDescription::DefaultTypesettingFeatures() {
-  return default_typesetting_features_;
-}
-
 void FontDescription::UpdateTypesettingFeatures() {
-  fields_.typesetting_features_ = default_typesetting_features_;
+  fields_.typesetting_features_ = 0;
 
   switch (TextRendering()) {
     case kAutoTextRendering:
@@ -364,8 +360,9 @@ namespace {
 // This converts -0.0 to 0.0, so that they have the same hash value. This
 // ensures that equal FontDescription have the same hash value.
 float NormalizeSign(float number) {
-  if (UNLIKELY(number == 0.0))
+  if (number == 0.0) [[unlikely]] {
     return 0.0;
+  }
   return number;
 }
 
@@ -373,7 +370,6 @@ float NormalizeSign(float number) {
 
 unsigned FontDescription::StyleHashWithoutFamilyList() const {
   unsigned hash = 0;
-  StringHasher string_hasher;
   const FontFeatureSettings* settings = FeatureSettings();
   if (settings) {
     unsigned num_features = settings->size();
@@ -393,10 +389,8 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
 
   if (locale_) {
     const AtomicString& locale = locale_->LocaleString();
-    for (unsigned i = 0; i < locale.length(); i++)
-      string_hasher.AddCharacter(locale[i]);
+    WTF::AddIntToHash(hash, locale.Hash());
   }
-  WTF::AddIntToHash(hash, string_hasher.GetHash());
 
   WTF::AddFloatToHash(hash, NormalizeSign(specified_size_));
   WTF::AddFloatToHash(hash, NormalizeSign(computed_size_));
@@ -744,7 +738,8 @@ String FontDescription::ToString() const {
       "subpixel_ascent_descent=%s, variant_numeric=[%s], "
       "variant_east_asian=[%s], font_optical_sizing=%s, "
       "font_synthesis_weight=%s, font_synthesis_style=%s, "
-      "font_synthesis_small_caps=%s, font_variant_position=%s",
+      "font_synthesis_small_caps=%s, font_variant_position=%s, "
+      "font_variant_emoji=%s",
       family_list_.ToString().Ascii().c_str(),
       (feature_settings_ ? feature_settings_->ToString().Ascii().c_str() : ""),
       (variation_settings_ ? variation_settings_->ToString().Ascii().c_str()
@@ -778,7 +773,8 @@ String FontDescription::ToString() const {
       FontDescription::ToString(GetFontSynthesisWeight()).Ascii().c_str(),
       FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str(),
       FontDescription::ToString(GetFontSynthesisSmallCaps()).Ascii().c_str(),
-      FontDescription::ToString(VariantPosition()).Ascii().c_str());
+      FontDescription::ToString(VariantPosition()).Ascii().c_str(),
+      blink::ToString(VariantEmoji()).Ascii().c_str());
 }
 
 }  // namespace blink

@@ -11,9 +11,9 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include <iostream>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -45,7 +45,7 @@ namespace {
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
-// TODO(crbug.com/1421342): This flag will be removed. Keep for now to prevent
+// TODO(crbug.com/40896202): This flag will be removed. Keep for now to prevent
 // users from failing.
 constexpr char kUseWebInstance[] = "use-web-instance";
 constexpr char kUseContextProvider[] = "use-context-provider";
@@ -114,10 +114,6 @@ int main(int argc, char** argv) {
 
   std::optional<uint16_t> remote_debugging_port =
       GetRemoteDebuggingPort(*command_line);
-  if (!remote_debugging_port) {
-    PrintUsage();
-    return 1;
-  }
 
   const bool is_headless = command_line->HasSwitch(kHeadlessSwitch);
   const bool enable_protected_media_identifier_access =
@@ -183,7 +179,9 @@ int main(int argc, char** argv) {
   }
 
   create_context_params.set_features(features);
-  create_context_params.set_remote_debugging_port(*remote_debugging_port);
+  if (remote_debugging_port) {
+    create_context_params.set_remote_debugging_port(*remote_debugging_port);
+  }
 
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
@@ -253,7 +251,9 @@ int main(int argc, char** argv) {
 
   // Create the browser |frame| which will contain the webpage.
   fuchsia::web::CreateFrameParams frame_params;
-  frame_params.set_enable_remote_debugging(true);
+  if (remote_debugging_port) {
+    frame_params.set_enable_remote_debugging(true);
+  }
 
   fuchsia::web::FramePtr frame;
   context->CreateFrameWithParams(std::move(frame_params), frame.NewRequest());
@@ -266,18 +266,6 @@ int main(int argc, char** argv) {
   fuchsia::web::ContentAreaSettings settings;
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
-
-  // Log the debugging port.
-  context->GetRemoteDebuggingPort(
-      [](fuchsia::web::Context_GetRemoteDebuggingPort_Result result) {
-        if (result.is_err()) {
-          LOG(ERROR) << "Remote debugging service was not opened.";
-          return;
-        }
-        // Telemetry expects this exact format of log line output to retrieve
-        // the remote debugging port.
-        LOG(INFO) << "Remote debugging port: " << result.response().port;
-      });
 
   // Navigate |frame| to |url|.
   fuchsia::web::LoadUrlParams load_params;

@@ -26,8 +26,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -49,13 +49,12 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -127,6 +126,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     // not provided.
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
+    private boolean mSyncStartedRecorded;
     private boolean mIsSignedInWithoutSync;
     protected @SigninAccessPoint int mSigninAccessPoint;
     private ModalDialogManager mModalDialogManager;
@@ -206,12 +206,13 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
     /**
      * The sync consent was accepted.
+     *
      * @param accountName The name of the account
      * @param settingsClicked Whether the user requested to see their sync settings
      * @param callback The callback invoked when the process of enabling sync is finished or aborted
      */
     protected abstract void onSyncAccepted(
-            String accountName, boolean settingsClicked, Runnable callback);
+            String accountName, boolean settingsClicked, SigninManager.SignInCallback callback);
 
     /**
      * Called if signinAndEnableSync() succeeds.
@@ -221,7 +222,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     protected abstract void closeAndMaybeOpenSyncSettings(boolean settingsClicked);
 
     private SigninManager.SignInCallback newSignInCallback(
-            Profile profile, boolean settingsClicked, Runnable callback) {
+            Profile profile, boolean settingsClicked, SigninManager.SignInCallback callback) {
         return new SigninManager.SignInCallback() {
             @Override
             public void onSignInComplete() {
@@ -233,21 +234,24 @@ public abstract class SyncConsentFragmentBase extends Fragment
                             SyncFirstSetupCompleteSource.BASIC_FLOW);
                 }
                 closeAndMaybeOpenSyncSettings(settingsClicked);
-                callback.run();
+                callback.onSignInComplete();
             }
 
             @Override
             public void onSignInAborted() {
-                callback.run();
+                callback.onSignInAborted();
             }
         };
     }
 
-    // TODO(crbug.com/1302635): |callback| is only used to set |mIsSigninInProgress| to false. Once
+    // TODO(crbug.com/40217047): |callback| is only used to set |mIsSigninInProgress| to false. Once
     // this method replaces onSyncAccepted(), the field can be set directly.
-    // TODO(crbug.com/1462264): Refactor method to take CoreAccountInfo instead of String email.
+    // TODO(crbug.com/40274844): Refactor method to take CoreAccountInfo instead of String email.
     protected void signinAndEnableSync(
-            String accountEmail, boolean settingsClicked, Runnable callback) {
+            String accountEmail, boolean settingsClicked, SigninManager.SignInCallback callback) {
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        final Profile profile = getProfile();
         AccountManagerFacadeProvider.getInstance()
                 .getCoreAccountInfos()
                 .then(
@@ -257,10 +261,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                     AccountUtils.findCoreAccountInfoByEmail(
                                             coreAccountInfos, accountEmail);
                             if (coreAccountInfo == null) {
-                                callback.run();
+                                callback.onSignInAborted();
                                 return;
                             }
-                            Profile profile = getProfile();
                             SigninManager signinManager =
                                     IdentityServicesProvider.get().getSigninManager(profile);
                             signinManager.signinAndEnableSync(
@@ -284,7 +287,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
 
-        // TODO(crbug.com/1306971): remove usage of Profile.isChild() and the need for a bundle
+        // TODO(crbug.com/40828116): remove usage of Profile.isChild() and the need for a bundle
         // argument in the FRE, but moving to a new API for determining device supervision status.
         mSelectedAccountEmail = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
         if (arguments.containsKey(ARGUMENT_CHILD_ACCOUNT_STATUS)) {
@@ -322,8 +325,6 @@ public abstract class SyncConsentFragmentBase extends Fragment
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;
-        SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
-        SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
     }
 
     @Override
@@ -360,10 +361,21 @@ public abstract class SyncConsentFragmentBase extends Fragment
      */
     protected void displayDeviceLockPage(Runnable onSuccess) {
         mDeviceLockPageCallback = onSuccess;
+
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        Profile profile = getProfile();
         mAccountManagerFacade
                 .getCoreAccountInfos()
                 .then(
                         (coreAccountInfos) -> {
+                            Activity activity = getActivity();
+                            if (activity == null
+                                    || activity.isFinishing()
+                                    || activity.isDestroyed()) {
+                                return;
+                            }
+
                             CoreAccountInfo selectedCoreAccountInfo =
                                     AccountUtils.findCoreAccountInfoByEmail(
                                             coreAccountInfos, mSelectedAccountEmail);
@@ -373,7 +385,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                     new DeviceLockCoordinator(
                                             this,
                                             getWindowAndroid(),
-                                            getActivity(),
+                                            profile,
+                                            activity,
                                             CoreAccountInfo.getAndroidAccountFrom(
                                                     selectedCoreAccountInfo));
                         });
@@ -386,11 +399,16 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void createSigninView(LayoutInflater inflater, ViewGroup container) {
         mSigninView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
 
-        mSigninView.createButtons(
-                /* equallyWeighted */ !SigninFeatureMap.isEnabled(
-                        SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN));
+        // Buttons are temporary to satisfy view calculations. Will be replaced by target
+        // ones with recreateButtons call originating at
+        // SyncConsentFragmentBase.updateProfileData once
+        // IdentityManager provides the data on how to display them
+        mSigninView.getAcceptButton().setVisibility(View.GONE);
+        mSigninView.getRefuseButton().setVisibility(View.GONE);
+
         mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
+
         mSigninView.getButtonBar().setVisibility(View.GONE);
         mSigninView.getMoreButton().setVisibility(View.VISIBLE);
         mSigninView
@@ -400,7 +418,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                             mSigninView
                                     .getScrollView()
                                     .smoothScrollBy(0, mSigninView.getScrollView().getHeight());
-                            // TODO(https://crbug.com/821127): Revise this user action.
+                            // TODO(crbug.com/41376043): Revise this user action.
                             RecordUserAction.record("Signin_MoreButton_Shown");
                         });
         mSigninView.getScrollView().setScrolledToBottomObserver(this::showButtonBar);
@@ -421,6 +439,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         return getDelegate().getWindowAndroid();
     }
 
+    @Nullable
     private Profile getProfile() {
         return getDelegate().getProfile();
     }
@@ -507,17 +526,30 @@ public abstract class SyncConsentFragmentBase extends Fragment
             mSigninView
                     .getAccountPickerView()
                     .setVisibility(hideAccountPicker ? View.GONE : View.VISIBLE);
-            mConsentTextTracker.setText(
-                    mSigninView.getAcceptButton(), R.string.signin_accept_button);
-            mSigninView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
+
+            // The following calls register lambdas that will be executed on the current and every
+            // recreated accept button.
+            mSigninView.setAcceptConsentTextUpdater(this::setSigninAcceptConsent);
+            mSigninView.setAcceptOnClickListener(this::onAcceptButtonClicked);
         } else {
             mSigninView.getAccountPickerView().setVisibility(View.GONE);
-            mConsentTextTracker.setText(mSigninView.getAcceptButton(), R.string.signin_add_account);
-            mSigninView.getAcceptButton().setOnClickListener(this::onAddAccountButtonClicked);
+
+            // The following calls register lambdas that will be executed on the current and every
+            // recreated accept button.
+            mSigninView.setAcceptConsentTextUpdater(this::setSigninAddAccountConsent);
+            mSigninView.setAcceptOnClickListener(this::onAddAccountButtonClicked);
         }
 
         // Show "Settings" link in description only if there are accounts on the device.
         updateSigninDetailsDescription(hasAccounts);
+    }
+
+    private void setSigninAcceptConsent(TextView textView) {
+        mConsentTextTracker.setText(textView, R.string.signin_accept_button);
+    }
+
+    private void setSigninAddAccountConsent(TextView textView) {
+        mConsentTextTracker.setText(textView, R.string.signin_add_account);
     }
 
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
@@ -546,7 +578,13 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void updateSigninViewText(@StringRes int refuseButtonTextId) {
         mConsentTextTracker.setText(mSigninView.getTitleView(), R.string.signin_title);
 
-        mConsentTextTracker.setText(mSigninView.getSyncTitleView(), R.string.signin_sync_title);
+        mConsentTextTracker.setText(
+                mSigninView.getSyncTitleView(),
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
+                        ? R.string.signin_sync_title_without_passwords
+                        : R.string.signin_sync_title);
         mConsentTextTracker.setText(
                 mSigninView.getSyncDescriptionView(), R.string.signin_sync_description);
 
@@ -597,6 +635,30 @@ public abstract class SyncConsentFragmentBase extends Fragment
             // full name or the default account string. The secondary TextView is hidden.
             mSigninView.getAccountTextSecondary().setVisibility(View.GONE);
         }
+
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
+
+        // Promise may not yet be fulfilled.
+        mAccountManagerFacade
+                .getCoreAccountInfos()
+                .then(
+                        (List<CoreAccountInfo> accounts) -> {
+                            CoreAccountInfo account =
+                                    AccountUtils.findCoreAccountInfoByEmail(accounts, accountEmail);
+                            if (account == null) {
+                                return;
+                            }
+
+                            // Shows buttons hidden by createSigninView.
+                            // MinorModeHelper.resolveMinorMode will either show the buttons
+                            // immediately or after a short timeout during which the button
+                            // configuration is retrieved.
+                            MinorModeHelper.resolveMinorMode(
+                                    identityManager,
+                                    account,
+                                    mSigninView::recreateSyncConsentButtons);
+                        });
     }
 
     private void showButtonBar() {
@@ -612,6 +674,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private void onRefuseButtonClicked(View button) {
+        mSigninView.refuseButtonClicked();
         refuseSignIn();
     }
 
@@ -635,6 +698,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     protected void onSettingsLinkClicked(View view) {
+        mSigninView.settingsClicked();
+
         if (!areControlsEnabled()) return;
         mIsSigninInProgress = true;
         RecordUserAction.record("Signin_Signin_WithAdvancedSyncSettings");
@@ -652,6 +717,9 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        final Profile profile = getProfile();
         AccountInfoServiceProvider.get()
                 .getAccountInfoByEmail(mSelectedAccountEmail)
                 .then(
@@ -667,7 +735,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 return;
                             }
                             mConsentTextTracker.recordConsent(
-                                    getProfile(),
+                                    profile,
                                     accountInfo.getId(),
                                     ConsentAuditorFeature.CHROME_SYNC,
                                     (TextView) confirmationView,
@@ -684,7 +752,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         var listener =
                 new ConfirmSyncDataStateMachine.Listener() {
                     @Override
-                    public void onConfirm(boolean wipeData) {
+                    public void onConfirm(boolean wipeData, boolean acceptedAccountManagement) {
                         mConfirmSyncDataStateMachine = null;
 
                         // Don't start sign-in if this fragment has been destroyed.
@@ -692,6 +760,26 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
                         SigninManager signinManager =
                                 IdentityServicesProvider.get().getSigninManager(getProfile());
+                        if (acceptedAccountManagement) {
+                            signinManager.setUserAcceptedAccountManagement(true);
+                        }
+
+                        SigninManager.SignInCallback callback =
+                                new SigninManager.SignInCallback() {
+                                    @Override
+                                    public void onSignInComplete() {
+                                        mIsSigninInProgress = false;
+                                    }
+
+                                    @Override
+                                    public void onSignInAborted() {
+                                        if (acceptedAccountManagement) {
+                                            signinManager.setUserAcceptedAccountManagement(false);
+                                        }
+                                        mIsSigninInProgress = false;
+                                    }
+                                };
+
                         signinManager.runAfterOperationInProgress(
                                 () -> {
                                     if (wipeData) {
@@ -700,14 +788,12 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                                     onSyncAccepted(
                                                             mSelectedAccountEmail,
                                                             settingsClicked,
-                                                            () -> mIsSigninInProgress = false);
+                                                            callback);
                                                 },
                                                 DataWipeOption.WIPE_SYNC_DATA);
                                     } else {
                                         onSyncAccepted(
-                                                mSelectedAccountEmail,
-                                                settingsClicked,
-                                                () -> mIsSigninInProgress = false);
+                                                mSelectedAccountEmail, settingsClicked, callback);
                                     }
                                 });
                     }
@@ -719,11 +805,13 @@ public abstract class SyncConsentFragmentBase extends Fragment
                     }
                 };
 
+        Profile profile = getProfile();
         mConfirmSyncDataStateMachine =
                 new ConfirmSyncDataStateMachine(
+                        profile,
                         new ConfirmSyncDataStateMachineDelegate(
-                                requireContext(), getChildFragmentManager(), mModalDialogManager),
-                        UserPrefs.get(getProfile())
+                                requireContext(), profile, mModalDialogManager),
+                        UserPrefs.get(profile)
                                 .getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME),
                         mSelectedAccountEmail,
                         listener);
@@ -789,14 +877,14 @@ public abstract class SyncConsentFragmentBase extends Fragment
                 mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountEmail = primaryAccount.getEmail();
-
-            AccountCapabilitiesLatencyTracker.trackAccountCapabilitiesFetchLatency(
-                    identityManager, primaryAccount);
         }
+
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
         if (mSelectedAccountEmail != null) {
             updateProfileData(mSelectedAccountEmail);
+        } else {
+            mSigninView.recreateAddAccountButtons();
         }
 
         updateAccounts(
@@ -804,6 +892,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         mAccountManagerFacade.getCoreAccountInfos()));
 
         mSigninView.startAnimations();
+        if (!mSyncStartedRecorded) {
+            SigninMetricsUtils.logSyncConsentStarted(mSigninAccessPoint);
+            SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
+            mSyncStartedRecorded = true;
+        }
         if (mDeviceLockReady) {
             mDeviceLockPageCallback.run();
         }

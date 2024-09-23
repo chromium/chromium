@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.View;
 
@@ -16,7 +15,12 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,10 +44,6 @@ public class ContextMenuHelper {
     private Callback<Integer> mCallback;
     private Runnable mOnMenuShown;
     private Runnable mOnMenuClosed;
-    private long mMenuShownTimeMs;
-    private boolean mSelectedItemBeforeDismiss;
-    private boolean mIsIncognito;
-    private String mPageTitle;
     private ChipDelegate mChipDelegate;
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
@@ -96,6 +96,7 @@ public class ContextMenuHelper {
                 || windowAndroid == null
                 || windowAndroid.getActivity().get() == null
                 || mPopulatorFactory == null
+                || !mPopulatorFactory.isEnabled()
                 || mCurrentContextMenu != null) {
             return;
         }
@@ -105,21 +106,16 @@ public class ContextMenuHelper {
         mCurrentPopulator =
                 mPopulatorFactory.createContextMenuPopulator(
                         windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
-        mIsIncognito = mCurrentPopulator.isIncognito();
-        mPageTitle = mCurrentPopulator.getPageTitle();
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mCallback =
                 (result) -> {
                     if (mCurrentPopulator == null) return;
 
-                    mSelectedItemBeforeDismiss = true;
                     mCurrentPopulator.onItemSelected(result);
                 };
         mOnMenuShown =
                 () -> {
-                    mSelectedItemBeforeDismiss = false;
-                    mMenuShownTimeMs = SystemClock.uptimeMillis();
                     RecordHistogram.recordBooleanHistogram(
                             "ContextMenu.Shown", mWebContents != null);
                     recordContextMenuShownType(params);
@@ -130,7 +126,6 @@ public class ContextMenuHelper {
                 };
         mOnMenuClosed =
                 () -> {
-                    recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
                     mCurrentContextMenu = null;
                     if (mCurrentNativeDelegate != null) {
                         mCurrentNativeDelegate.destroy();
@@ -206,13 +201,6 @@ public class ContextMenuHelper {
                     mOnMenuShown,
                     mOnMenuClosed);
         }
-    }
-
-    private void recordTimeToTakeActionHistogram(boolean selectedItem) {
-        final String histogramName =
-                "ContextMenu.TimeToTakeAction." + (selectedItem ? "SelectedItem" : "Abandoned");
-        final long timeToTakeActionMs = SystemClock.uptimeMillis() - mMenuShownTimeMs;
-        RecordHistogram.recordTimesHistogram(histogramName, timeToTakeActionMs);
     }
 
     public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {

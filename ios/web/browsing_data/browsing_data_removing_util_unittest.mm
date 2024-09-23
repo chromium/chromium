@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/web/common/uikit_ui_util.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "testing/platform_test.h"
 
@@ -20,11 +21,11 @@ namespace {
 
 // Makes sure that the DataStore is created, otherwise cookies can't be set in
 // some cases.
-[[nodiscard]] bool FetchCookieStore() {
+[[nodiscard]] bool FetchCookieStore(WKWebsiteDataStore* data_store) {
   __block bool fetch_done = false;
 
   NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-  [[WKWebsiteDataStore defaultDataStore]
+  [data_store
       fetchDataRecordsOfTypes:data_types
             completionHandler:^(NSArray<WKWebsiteDataRecord*>* records) {
               fetch_done = true;
@@ -36,7 +37,7 @@ namespace {
 
 // Adds cookies to the default data store. Returns whether it succeed to add
 // cookies.
-[[nodiscard]] bool AddCookie() {
+[[nodiscard]] bool AddCookie(WKWebsiteDataStore* data_store) {
   NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
     NSHTTPCookiePath : @"path",
     NSHTTPCookieName : @"cookieName",
@@ -45,10 +46,10 @@ namespace {
   }];
 
   __block bool cookie_set = false;
-  [[WKWebsiteDataStore defaultDataStore].httpCookieStore setCookie:cookie
-                                                 completionHandler:^{
-                                                   cookie_set = true;
-                                                 }];
+  [data_store.httpCookieStore setCookie:cookie
+                      completionHandler:^{
+                        cookie_set = true;
+                      }];
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return cookie_set;
@@ -57,15 +58,15 @@ namespace {
 
 // Checks that the cookies data store has cookies or not, depending on
 // `should_have_cookies`.
-[[nodiscard]] bool HasCookies(bool should_have_cookies) {
+[[nodiscard]] bool HasCookies(bool should_have_cookies,
+                              WKWebsiteDataStore* data_store) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
 
-  [[WKWebsiteDataStore defaultDataStore].httpCookieStore
-      getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-        has_cookies = cookies.count > 0;
-        completion_called = true;
-      }];
+  [data_store.httpCookieStore getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
+    has_cookies = cookies.count > 0;
+    completion_called = true;
+  }];
 
   bool completed = WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return completion_called;
@@ -109,11 +110,13 @@ class ClearBrowsingDataTest : public PlatformTest {
                                              configuration:config];
     [controller.view addSubview:web_view];
 
-    ASSERT_TRUE(FetchCookieStore());
+    data_store_ = GetDataStoreForBrowserState(&browser_state_);
+
+    ASSERT_TRUE(FetchCookieStore(data_store_));
     __block bool clear_done = false;
     bool clear_success = false;
     // Clear store from cookies.
-    [[WKWebsiteDataStore defaultDataStore]
+    [data_store_
         removeDataOfTypes:[NSSet setWithObject:WKWebsiteDataTypeCookies]
             modifiedSince:[NSDate distantPast]
         completionHandler:^{
@@ -136,6 +139,7 @@ class ClearBrowsingDataTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   FakeBrowserState browser_state_;
+  WKWebsiteDataStore* data_store_;
   // The key window's original root view controller, to be  restored at the end
   // of the test.
   UIViewController* original_root_view_controller_;
@@ -143,32 +147,32 @@ class ClearBrowsingDataTest : public PlatformTest {
 
 // Tests that removing the cookies remove them from the cookie store.
 TEST_F(ClearBrowsingDataTest, RemoveCookie) {
-  ASSERT_TRUE(AddCookie());
-  ASSERT_TRUE(HasCookies(true));
+  ASSERT_TRUE(AddCookie(data_store_));
+  ASSERT_TRUE(HasCookies(true, data_store_));
 
   // Remove the cookies.
   EXPECT_TRUE(
       RemoveCookies(&browser_state_, ClearBrowsingDataMask::kRemoveCookies));
 
-  EXPECT_TRUE(HasCookies(false));
+  EXPECT_TRUE(HasCookies(false, data_store_));
 }
 
 // Tests that removing the anything but cookies leave the cookies in the store.
 TEST_F(ClearBrowsingDataTest, RemoveNothing) {
-  ASSERT_TRUE(AddCookie());
-  ASSERT_TRUE(HasCookies(true));
+  ASSERT_TRUE(AddCookie(data_store_));
+  ASSERT_TRUE(HasCookies(true, data_store_));
 
   // Remove other things than cookies.
   EXPECT_TRUE(RemoveCookies(&browser_state_,
                             ClearBrowsingDataMask::kRemoveAppCache |
                                 ClearBrowsingDataMask::kRemoveIndexedDB));
 
-  EXPECT_TRUE(HasCookies(true));
+  EXPECT_TRUE(HasCookies(true, data_store_));
 }
 
 // Tests that removing nothing still call the closure.
 TEST_F(ClearBrowsingDataTest, KeepCookie) {
-  ASSERT_TRUE(AddCookie());
+  ASSERT_TRUE(AddCookie(data_store_));
 
   // Don't remove anything but check that the closure is still called.
   EXPECT_TRUE(

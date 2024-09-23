@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
@@ -75,8 +75,7 @@ bool HTMLScriptElement::HasLegalLinkAttribute(const QualifiedName& name) const {
 
 void HTMLScriptElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
-  if (change.IsChildInsertion())
-    loader_->ChildrenChanged();
+  loader_->ChildrenChanged(change);
 
   // We'll record whether the script element children were ever changed by
   // the API (as opposed to the parser).
@@ -109,8 +108,18 @@ void HTMLScriptElement::ParseAttribute(
     }
   } else if (params.name == html_names::kAttributionsrcAttr) {
     if (GetDocument().GetFrame()) {
+      // Copied from `ScriptLoader::PrepareScript()`.
+      String referrerpolicy_attr = ReferrerPolicyAttributeValue();
+      network::mojom::ReferrerPolicy referrer_policy =
+          network::mojom::ReferrerPolicy::kDefault;
+      if (!referrerpolicy_attr.empty()) {
+        SecurityPolicy::ReferrerPolicyFromString(
+            referrerpolicy_attr, kDoNotSupportReferrerPolicyLegacyKeywords,
+            &referrer_policy);
+      }
+
       GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
-          params.new_value, /*element=*/this);
+          params.new_value, /*element=*/this, referrer_policy);
     }
   } else {
     HTMLElement::ParseAttribute(params);
@@ -154,7 +163,8 @@ void HTMLScriptElement::setInnerTextForBinding(
         string_or_trusted_script,
     ExceptionState& exception_state) {
   const String& value = TrustedTypesCheckForScript(
-      string_or_trusted_script, GetExecutionContext(), exception_state);
+      string_or_trusted_script, GetExecutionContext(), "HTMLScriptElement",
+      "innerText", exception_state);
   if (exception_state.HadException())
     return;
   // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
@@ -167,8 +177,9 @@ void HTMLScriptElement::setInnerTextForBinding(
 void HTMLScriptElement::setTextContentForBinding(
     const V8UnionStringOrTrustedScript* value,
     ExceptionState& exception_state) {
-  const String& string =
-      TrustedTypesCheckForScript(value, GetExecutionContext(), exception_state);
+  const String& string = TrustedTypesCheckForScript(
+      value, GetExecutionContext(), "HTMLScriptElement", "textContent",
+      exception_state);
   if (exception_state.HadException())
     return;
   setTextContent(string);

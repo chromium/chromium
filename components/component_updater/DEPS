@@ -1,6 +1,7 @@
 include_rules = [
   "+components/crx_file",
   "+components/prefs",
+  "+components/privacy_sandbox/masked_domain_list",
   "+components/update_client",
   "+components/version_info",
   "+services/service_manager/public",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../assert.js';
+import {assertExists, assertInstanceof} from '../assert.js';
 import {Intent} from '../intent.js';
 import * as Comlink from '../lib/comlink.js';
 import {
@@ -252,10 +252,9 @@ export class TimeLapseSaver {
   private readonly encoder: VideoEncoder;
 
   /**
-   * Maps a frame's timestamp with frameNo, only storing frames being
-   * encoded.
+   * Queue containing frameNo of frames being encoded.
    */
-  private readonly frameNoMap = new Map<number, number>();
+  private readonly frameNoQueue: number[] = [];
 
   /**
    * Maps all encoded frames with their frame numbers.
@@ -347,13 +346,11 @@ export class TimeLapseSaver {
    * |chunk| to Blob and stores with its frame number.
    */
   onFrameEncoded(chunk: EncodedVideoChunk): void {
-    const frameNo = this.frameNoMap.get(chunk.timestamp);
-    assert(frameNo !== undefined);
+    const frameNo = assertExists(this.frameNoQueue.shift());
     const chunkData = new Uint8Array(chunk.byteLength);
     chunk.copyTo(chunkData);
     this.frames.set(frameNo, new Blob([chunkData]));
     this.maxFrameNo = frameNo;
-    this.frameNoMap.delete(chunk.timestamp);
   }
 
   /**
@@ -363,7 +360,7 @@ export class TimeLapseSaver {
     if (frame.timestamp === null || this.ended || this.canceled) {
       return;
     }
-    this.frameNoMap.set(frame.timestamp, frameNo);
+    this.frameNoQueue.push(frameNo);
     // Frames that are only in the initial speed video don't have to be encoded
     // as key frames because they'll be dropped soon.
     const keyFrame = frameNo % (this.initialSpeed * 2) === 0;

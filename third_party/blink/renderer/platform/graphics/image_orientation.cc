@@ -56,7 +56,7 @@ AffineTransform ImageOrientation::TransformFromDefault(
       return AffineTransform(0, -1, 1, 0, 0, h);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AffineTransform();
 }
 
@@ -84,7 +84,7 @@ AffineTransform ImageOrientation::TransformToDefault(
       return AffineTransform(0, 1, -1, 0, w, 0);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AffineTransform();
 }
 

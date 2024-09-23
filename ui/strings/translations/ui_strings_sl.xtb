@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Anketa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Preverjanje internetne povezave</translation>
+<translation id="2359808026110333948">Naprej</translation>
 <translation id="2388990488038464401">Želite poklicati to številko iz telefona?</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="24452542372838207">Razširi obvestilo</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NEW</translation>
 <translation id="2666092431469916601">Na vrh</translation>
 <translation id="2701330563083355633">V skupno rabo dala naprava: <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Novo</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Pred 1 letom}one{Pred # letom}two{Pred # letoma}few{Pred # leti}other{Pred # leti}}</translation>
 <translation id="2878511608894704031">Izbriši vse</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{čez 1 d}one{čez # d}two{čez # d}few{čez # d}other{čez # d}}</translation>
@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Nalaganje strani ni uspelo, ker modul uporabniškega vmesnika za razvijalce (dev_ui) ni nameščen</translation>
 <translation id="5583640892426849032">Vračalka</translation>
 <translation id="5613020302032141669">Puščica levo</translation>
+<translation id="5633029987065897167">Prazno</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}two{# min}few{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktivna danes}=1{Aktivna pred 1 dnevom}one{Aktivna pred # dnevom}two{Aktivna pred # dnevoma}few{Aktivna pred # dnevi}other{Aktivna pred # dnevi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dan in }one{# dan in }two{# dneva in }few{# dni in }other{# dni in }}</translation>
@@ -157,7 +158,6 @@
 <translation id="6503257047630241175">Vsebina v obliki RTF</translation>
 <translation id="6539092367496845964">Prišlo je do napake. Poskusite znova pozneje.</translation>
 <translation id="654149438358937226">Blokiraj vsa obvestila</translation>
-<translation id="6612467943526193239">Če želite zapustiti umerjanje, pritisnite tipko Esc.</translation>
 <translation id="6620110761915583480">Shrani datoteko</translation>
 <translation id="6699343763173986273">Naslednja skladba</translation>
 <translation id="6808150112686056157">Ustavitev</translation>

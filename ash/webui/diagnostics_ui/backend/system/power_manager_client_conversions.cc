@@ -25,7 +25,6 @@ mojom::BatteryState ConvertBatteryStateFromProto(
       return mojom::BatteryState::kFull;
     default:
       NOTREACHED();
-      return mojom::BatteryState::kFull;
   }
 }
 
@@ -40,7 +39,6 @@ mojom::ExternalPowerSource ConvertPowerSourceFromProto(
       return mojom::ExternalPowerSource::kDisconnected;
     default:
       NOTREACHED();
-      return mojom::ExternalPowerSource::kDisconnected;
   }
 }
 

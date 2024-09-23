@@ -58,7 +58,7 @@ void EXTDisjointTimerQuery::deleteQueryEXT(WebGLTimerQueryEXT* query) {
   query->DeleteObject(scoped.Context()->ContextGL());
 }
 
-GLboolean EXTDisjointTimerQuery::isQueryEXT(WebGLTimerQueryEXT* query) {
+bool EXTDisjointTimerQuery::isQueryEXT(WebGLTimerQueryEXT* query) {
   WebGLExtensionScopedContext scoped(this);
   if (!query || scoped.IsLost() || query->MarkedForDeletion() ||
       !query->Validate(nullptr, scoped.Context())) {

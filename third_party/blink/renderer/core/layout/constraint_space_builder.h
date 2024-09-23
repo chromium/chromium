@@ -87,7 +87,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     is_available_size_set_ = true;
 #endif
 
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.available_size_ = available_size;
     } else {
       space_.available_size_ = {available_size.block_size,
@@ -136,6 +136,15 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->fragmentainer_block_size = size;
   }
 
+  // This function may be called after having set available size (and thus
+  // converted to the destination writing mode, if necessary).
+  void SetFragmentainerBlockSizeFromAvailableSize() {
+#if DCHECK_IS_ON()
+    DCHECK(is_available_size_set_);
+#endif
+    SetFragmentainerBlockSize(space_.AvailableSize().block_size);
+  }
+
   // Shrink the fragmentainer block-size, to reserve space for repeated table
   // headers and footers. If there's a repeated header, the argument to
   // SetFragmentainerOffset() also needs to be compensated for the block-size
@@ -182,27 +191,41 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     space_.DisableMonolithicOverflowPropagation();
   }
 
+  void SetIsHiddenForPaint(bool is_hidden_for_paint) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_hidden_for_paint_set_);
+    is_hidden_for_paint_set_ = true;
+#endif
+    if (is_hidden_for_paint) {
+      space_.bitfields_.is_hidden_for_paint = true;
+    }
+  }
+
   void SetIsFixedInlineSize(bool b) {
-    if (LIKELY(is_in_parallel_flow_))
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.is_fixed_inline_size = b;
-    else
+    } else {
       space_.bitfields_.is_fixed_block_size = b;
+    }
   }
 
   void SetIsFixedBlockSize(bool b) {
-    if (LIKELY(is_in_parallel_flow_))
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.is_fixed_block_size = b;
-    else
+    } else {
       space_.bitfields_.is_fixed_inline_size = b;
+    }
   }
 
   void SetIsInitialBlockSizeIndefinite(bool b) {
-    if (LIKELY(is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_))
+    if (is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_)
+        [[likely]] {
       space_.bitfields_.is_initial_block_size_indefinite = b;
+    }
   }
 
   void SetInlineAutoBehavior(AutoSizeBehavior auto_behavior) {
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.inline_auto_behavior =
           static_cast<unsigned>(auto_behavior);
     } else {
@@ -212,18 +235,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetBlockAutoBehavior(AutoSizeBehavior auto_behavior) {
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.block_auto_behavior =
           static_cast<unsigned>(auto_behavior);
     } else {
       space_.bitfields_.inline_auto_behavior =
           static_cast<unsigned>(auto_behavior);
     }
-  }
-
-  void SetOverrideMinMaxBlockSizes(const MinMaxSizes& min_max_sizes) {
-    if (!min_max_sizes.IsEmpty() || space_.HasRareData())
-      space_.EnsureRareData()->SetOverrideMinMaxBlockSizes(min_max_sizes);
   }
 
   void SetIsPaintedAtomically(bool b) {
@@ -352,7 +370,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     DCHECK(!is_optimistic_bfc_block_offset_set_);
     is_optimistic_bfc_block_offset_set_ = true;
 #endif
-    if (LIKELY(!is_new_fc_)) {
+    if (!is_new_fc_) [[likely]] {
       space_.EnsureRareData()->SetOptimisticBfcBlockOffset(
           optimistic_bfc_block_offset);
     }
@@ -414,17 +432,6 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     space_.EnsureRareData()->SetTableCellColumnIndex(column_index);
   }
 
-  void SetIsTableCellHiddenForPaint(bool is_hidden_for_paint) {
-#if DCHECK_IS_ON()
-    DCHECK(!is_table_cell_hidden_for_paint_set_);
-    is_table_cell_hidden_for_paint_set_ = true;
-#endif
-    if (is_hidden_for_paint) {
-      space_.EnsureRareData()->SetIsTableCellHiddenForPaint(
-          is_hidden_for_paint);
-    }
-  }
-
   void SetIsTableCellWithCollapsedBorders(bool has_collapsed_borders) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_cell_with_collapsed_borders_set_);
@@ -481,24 +488,47 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
                                                  section_index);
   }
 
-  void SetIsLineClampContext(bool is_line_clamp_context) {
-    DCHECK(!is_new_fc_);
+  void SetLineClampData(LineClampData data) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_line_clamp_context_set_);
-    is_line_clamp_context_set_ = true;
+    DCHECK(!is_line_clamp_data_set_);
+    is_line_clamp_data_set_ = true;
 #endif
-    if (is_line_clamp_context)
-      space_.EnsureRareData()->is_line_clamp_context = true;
+    DCHECK(!is_new_fc_);
+    if (data.state != LineClampData::kDisabled) {
+      space_.EnsureRareData()->SetLineClampData(data);
+    }
   }
 
-  void SetLinesUntilClamp(const std::optional<int>& clamp) {
+  void SetLineClampEndMarginStrut(MarginStrut end_margin_strut) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_lines_until_clamp_set_);
-    is_lines_until_clamp_set_ = true;
+    DCHECK(!is_line_clamp_end_margin_strut_set_);
+    is_line_clamp_end_margin_strut_set_ = true;
 #endif
     DCHECK(!is_new_fc_);
-    if (clamp)
-      space_.EnsureRareData()->SetLinesUntilClamp(*clamp);
+    if (!end_margin_strut.IsEmpty()) {
+      space_.EnsureRareData()->SetLineClampEndMarginStrut(end_margin_strut);
+    }
+  }
+
+  void SetLineClampEndPadding(LayoutUnit end_padding) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_line_clamp_end_padding_set_);
+    is_line_clamp_end_padding_set_ = true;
+#endif
+    DCHECK(!is_new_fc_);
+    if (end_padding) {
+      space_.EnsureRareData()->SetLineClampEndPadding(end_padding);
+    }
+  }
+
+  void SetShouldTextBoxTrimStart() { space_.SetShouldTextBoxTrimStart(); }
+  void SetShouldTextBoxTrimEnd() { space_.SetShouldTextBoxTrimEnd(); }
+  void SetShouldForceTextBoxTrimEnd() { space_.SetShouldForceTextBoxTrimEnd(); }
+
+  void SetDecorationPercentageResolutionType(
+      DecorationPercentageResolutionType type) {
+    space_.EnsureRareData()->decoration_percentage_resolution_type =
+        static_cast<unsigned>(type);
   }
 
   void SetIsPushedByFloats() {
@@ -562,6 +592,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool adjust_inline_size_if_needed_;
 
 #if DCHECK_IS_ON()
+  bool is_hidden_for_paint_set_ = false;
   bool is_available_size_set_ = false;
   bool is_percentage_resolution_size_set_ = false;
   bool is_fragmentainer_block_size_set_ = false;
@@ -574,13 +605,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool is_table_cell_borders_set_ = false;
   bool is_table_cell_alignment_baseline_set_ = false;
   bool is_table_cell_column_index_set_ = false;
-  bool is_table_cell_hidden_for_paint_set_ = false;
   bool is_table_cell_with_collapsed_borders_set_ = false;
   bool is_custom_layout_data_set_ = false;
-  bool is_lines_until_clamp_set_ = false;
+  bool is_line_clamp_data_set_ = false;
+  bool is_line_clamp_end_padding_set_ = false;
+  bool is_line_clamp_end_margin_strut_set_ = false;
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
-  bool is_line_clamp_context_set_ = false;
   bool is_grid_layout_subtree_set_ = false;
 
   bool to_constraint_space_called_ = false;

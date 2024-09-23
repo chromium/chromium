@@ -59,6 +59,17 @@ class TestUIHandler : public mojom::TestUIHandlerMojo {
   void SetClientPage(mojo::PendingRemote<mojom::TestPage> page) override {
     page_.Bind(std::move(page));
   }
+
+  void HandleJsMessageWithCallback(
+      const std::string& message,
+      HandleJsMessageWithCallbackCallback callback) override {
+    auto result = mojom::NativeMessageResultMojo::New();
+    result->message = "ack2";
+    // Replay via PostTask to check it also works well.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
+
   void HandleJsMessage(const std::string& message) override {
     if (message == "syn") {
       // Received "syn" message from WebUI page, send "ack" as reply.
@@ -75,7 +86,7 @@ class TestUIHandler : public mojom::TestUIHandlerMojo {
       DCHECK(!fin_received_);
       fin_received_ = true;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -201,7 +212,7 @@ TEST_F(WebUIMojoTest, MessageExchange) {
     GURL url(tuple.Serialize());
     test::LoadUrl(web_state(), url);
     // LoadIfNecessary is needed because the view is not created (but needed)
-    // when loading the page. TODO(crbug.com/705819): Remove this call.
+    // when loading the page. TODO(crbug.com/41309809): Remove this call.
     web_state()->GetNavigationManager()->LoadIfNecessary();
 
     // Wait until `TestUIHandler` receives "fin" message from WebUI page.
@@ -211,7 +222,7 @@ TEST_F(WebUIMojoTest, MessageExchange) {
           // RunUntilIdle() is incompatible with mojo::SimpleWatcher's
           // automatic arming behavior, which Mojo JS still depends upon.
           //
-          // TODO(crbug.com/701875): Introduce the full watcher API to JS and
+          // TODO(crbug.com/41307566): Introduce the full watcher API to JS and
           // get rid of this hack.
           base::RunLoop loop;
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

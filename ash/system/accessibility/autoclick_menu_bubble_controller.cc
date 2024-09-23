@@ -149,6 +149,7 @@ void AutoclickMenuBubbleController::ShowBubble(AutoclickEventType type,
                           kShellWindowId_AccessibilityBubbleContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.is_anchored_to_status_area = false;
+  init_params.close_on_deactivate = false;
   // The widget's shadow is drawn below and on the sides of the view, with a
   // width of kCollisionWindowWorkAreaInsetsDp. Set the top inset to 0 to ensure
   // the scroll view is drawn at kCollisionWindowWorkAreaInsetsDp above the
@@ -206,12 +207,12 @@ void AutoclickMenuBubbleController::ClickOnBubble(gfx::Point location_in_dips,
   location_in_dips -= bubble_view_->GetBoundsInScreen().OffsetFromOrigin();
 
   // Generate synthesized mouse events for the click.
-  const ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, location_in_dips,
-                                   location_in_dips, ui::EventTimeForNow(),
-                                   mouse_event_flags | ui::EF_LEFT_MOUSE_BUTTON,
-                                   ui::EF_LEFT_MOUSE_BUTTON);
+  const ui::MouseEvent press_event(
+      ui::EventType::kMousePressed, location_in_dips, location_in_dips,
+      ui::EventTimeForNow(), mouse_event_flags | ui::EF_LEFT_MOUSE_BUTTON,
+      ui::EF_LEFT_MOUSE_BUTTON);
   const ui::MouseEvent release_event(
-      ui::ET_MOUSE_RELEASED, location_in_dips, location_in_dips,
+      ui::EventType::kMouseReleased, location_in_dips, location_in_dips,
       ui::EventTimeForNow(), mouse_event_flags | ui::EF_LEFT_MOUSE_BUTTON,
       ui::EF_LEFT_MOUSE_BUTTON);
 

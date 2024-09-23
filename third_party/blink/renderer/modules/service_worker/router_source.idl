@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Experimental.
-// https://github.com/WICG/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dictdef-routersourcedict
 dictionary RouterSource {
   // For the cache storage source.
   // A string that represents a specific cache to search within.

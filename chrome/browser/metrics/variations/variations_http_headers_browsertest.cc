@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -57,6 +58,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +66,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+constexpr char kTrialName[] = "t1";
 
 class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
  public:
@@ -502,6 +506,40 @@ void CreateFieldTrialsWithDifferentVisibilities() {
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY));
 }
 
+// Sets the limited entropy randomization source to a custom value so that we
+// can have an expectation about a specific group being chosen.
+void SetUpLimitedEntropyRandomizationSource() {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(
+      metrics::prefs::kMetricsLimitedEntropyRandomizationSource,
+      "00000000000000000000000000000001");
+}
+
+// Creates a trial named "t1" with 100 groups. If
+// `with_google_web_experiment_ids` is true, each group will be associated with
+// a variation ID.
+// TODO(crbug.com/40729905): Refactor this so that creating the field trial
+// either uses a different API or tighten the current API to set up a field
+// trial that can only be made with the low entropy provider.
+void CreateFieldTrial(const base::FieldTrial::EntropyProvider& entropy_provider,
+                      bool with_google_web_experiment_ids) {
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::FactoryGetFieldTrial(kTrialName, 100, "default",
+                                                 entropy_provider);
+  for (int i = 1; i < 101; ++i) {
+    const std::string group_name = base::StringPrintf("%d", i);
+    if (with_google_web_experiment_ids) {
+      variations::AssociateGoogleVariationID(
+          variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial->trial_name(),
+          group_name, i);
+    }
+    trial->AppendGroup(group_name, 1);
+  }
+  // Activate the trial. This corresponds to ACTIVATE_ON_STARTUP for server-side
+  // studies.
+  trial->Activate();
+}
+
 }  // namespace
 
 // Verify in an integration test that the variations header (X-Client-Data) is
@@ -651,31 +689,12 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
                        CheckLowEntropySourceValue) {
-  // `entropy_providers` will contain a limited entropy provider.
-  // TODO(crbug.com/1518876): Add a test for limited entropy randomization.
   auto entropy_providers = g_browser_process->GetMetricsServicesManager()
                                ->CreateEntropyProvidersForTesting();
-
-  // Create a trial with 100 groups and variation ids to validate that the group
-  // reported in the variations header is actually based on the low entropy
-  // source.
-  //
-  // TODO(crbug.com/1146199): Refactor this so that creating the field trial
-  // either uses a different API or tighten the current API to set up a field
-  // trial that can only be made with the low entropy provider.
-  scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrial(
-          "t1", 100, "default", entropy_providers->low_entropy());
-  for (int i = 1; i < 101; ++i) {
-    const std::string group_name = base::StringPrintf("%d", i);
-    variations::AssociateGoogleVariationID(
-        variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial->trial_name(),
-        group_name, i);
-    trial->AppendGroup(group_name, 1);
-  }
-  // Activate the trial. This corresponds to ACTIVATE_ON_STARTUP for server-side
-  // studies.
-  trial->Activate();
+  // `with_google_web_experiment_ids` is true so that the low entropy provider
+  // is used for randomization.
+  CreateFieldTrial(entropy_providers->low_entropy(),
+                   /*with_google_web_experiment_ids=*/true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   std::optional<std::string> header =
@@ -694,6 +713,80 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
   // entropy source. 33 is the group that is derived from the low entropy source
   // value of 5.
   EXPECT_TRUE(base::Contains(variation_ids, 33));
+}
+
+// The PRE_ prefix ensures this runs before
+// LimitedEntropyRandomization_ExperimentLogging.
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
+                       PRE_LimitedEntropyRandomization_ExperimentLogging) {
+  SetUpLimitedEntropyRandomizationSource();
+}
+
+IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTest,
+                       LimitedEntropyRandomization_ExperimentLogging) {
+  // CreateEntropyProvidersForTesting() ensures a limited entropy provider is
+  // created.
+  auto entropy_providers = g_browser_process->GetMetricsServicesManager()
+                               ->CreateEntropyProvidersForTesting();
+  ASSERT_TRUE(entropy_providers->has_limited_entropy());
+  // Create a field trial that will be randomized with the limited entropy
+  // provider.
+  CreateFieldTrial(entropy_providers->limited_entropy(),
+                   /*with_google_web_experiment_ids=*/true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
+  std::optional<std::string> header =
+      GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
+  ASSERT_TRUE(header);
+
+  std::set<variations::VariationID> variation_ids;
+  std::set<variations::VariationID> trigger_ids;
+  ASSERT_TRUE(variations::ExtractVariationIds(header.value(), &variation_ids,
+                                              &trigger_ids));
+
+  // 56 is the group that is derived from the setup in
+  // `PRE_CheckGoogleWebExperimentIdUnderLimitedEntropyRandomization`.
+  EXPECT_EQ("56", base::FieldTrialList::FindFullName(kTrialName));
+  // Check that the reported group in the header is consistent with the
+  // limited entropy randomization source.
+  EXPECT_TRUE(base::Contains(variation_ids, 56));
+}
+
+// The PRE_ prefix ensures this runs before
+// LimitedEntropyRandomization_ExperimentLoggingWithoutGoogleWebExperimentationId.
+IN_PROC_BROWSER_TEST_P(
+    VariationsHttpHeadersBrowserTest,
+    PRE_LimitedEntropyRandomization_ExperimentLoggingWithoutGoogleWebExperimentationId) {
+  SetUpLimitedEntropyRandomizationSource();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VariationsHttpHeadersBrowserTest,
+    LimitedEntropyRandomization_ExperimentLoggingWithoutGoogleWebExperimentationId) {
+  // CreateEntropyProvidersForTesting() ensures a limited entropy provider is
+  // created.
+  auto entropy_providers = g_browser_process->GetMetricsServicesManager()
+                               ->CreateEntropyProvidersForTesting();
+  ASSERT_TRUE(entropy_providers->has_limited_entropy());
+  CreateFieldTrial(entropy_providers->limited_entropy(),
+                   /*with_google_web_experiment_ids=*/false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
+  std::optional<std::string> header =
+      GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
+  ASSERT_TRUE(header);
+
+  std::set<variations::VariationID> variation_ids;
+  std::set<variations::VariationID> trigger_ids;
+  ASSERT_TRUE(variations::ExtractVariationIds(header.value(), &variation_ids,
+                                              &trigger_ids));
+
+  // 56 is the group that is derived from the setup in
+  // `PRE_CheckGoogleWebExperimentIdUnderLimitedEntropyRandomization`.
+  EXPECT_EQ("56", base::FieldTrialList::FindFullName(kTrialName));
+  // The experiment does not have a google_web_experiment_id and thus should
+  // NOT appear in the header.
+  EXPECT_FALSE(base::Contains(variation_ids, 56));
 }
 
 void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(

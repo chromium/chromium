@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] gatherElements float32 2D input and uint32 indices options.axis=1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gatherElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] gatherElements float32 3D input and int32 negative indices
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gatherElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] gatherElements float32 1D input and uint32 out-of-bounds indices
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gatherElements' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

@@ -8,7 +8,7 @@
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
-assert(is_android || is_chromeos)
+assert(is_android || is_chromeos || is_robolectric)
 
 declare_args() {
   # Adds intrumentation to each function. Writes a file with the order that
@@ -23,10 +23,6 @@ declare_args() {
   # See base::android::orderfile::StartDelayedDump for more information.
   devtools_instrumentation_dumping = false
 
-  # Only effective if use_order_profiling = true. When this is true the call
-  # graph based instrumentation is used.
-  use_call_graph = false
-
   # Build additional browser splits with HWASAN instrumentation enabled.
   build_hwasan_splits = false
 
@@ -38,12 +34,11 @@ declare_args() {
 
 assert(!devtools_instrumentation_dumping || use_order_profiling,
        "devtools_instrumentation_dumping requires use_order_profiling")
-assert(!use_call_graph || use_order_profiling,
-       "use_call_graph requires use_order_profiling")
 
 if (current_cpu == "x86") {
   android_app_abi = "x86"
   android_abi_target = "i686-linux-android"
+  sanitizer_arch = "i686"
 } else if (current_cpu == "arm") {
   import("//build/config/arm.gni")
   if (arm_version < 7) {
@@ -52,18 +47,18 @@ if (current_cpu == "x86") {
     android_app_abi = "armeabi-v7a"
   }
   android_abi_target = "arm-linux-androideabi"
+  sanitizer_arch = "arm"
 } else if (current_cpu == "mipsel") {
   android_app_abi = "mips"
   android_abi_target = "mipsel-linux-android"
 } else if (current_cpu == "x64") {
   android_app_abi = "x86_64"
-
-  # Place holder for x64 support, not tested.
-  # TODO: Enable clang support for Android x64. http://crbug.com/539781
   android_abi_target = "x86_64-linux-android"
+  sanitizer_arch = "x86_64"
 } else if (current_cpu == "arm64") {
   android_app_abi = "arm64-v8a"
   android_abi_target = "aarch64-linux-android"
+  sanitizer_arch = "aarch64"
 } else if (current_cpu == "mips64el") {
   android_app_abi = "mips64"
 
@@ -74,6 +69,7 @@ if (current_cpu == "x86") {
 
   # Place holder for riscv64 support, not tested.
   android_abi_target = "riscv64-linux-android"
+  sanitizer_arch = "riscv64"
 } else {
   assert(false, "Unknown Android ABI: " + current_cpu)
 }

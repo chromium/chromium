@@ -500,7 +500,7 @@ cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
     case crosapi::ProbeCpuArchitectureEnum::kArmv7l:
       return cx_telem::CpuArchitectureEnum::kArmv7l;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::NetworkState Convert(
@@ -523,7 +523,7 @@ cx_telem::NetworkState Convert(
     case network_health::mojom::NetworkState::kOnline:
       return cx_telem::NetworkState::kOnline;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::NetworkType Convert(
@@ -550,7 +550,7 @@ cx_telem::NetworkType Convert(
     case network_config::mojom::NetworkType::kWiFi:
       return cx_telem::NetworkType::kWifi;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::TpmGSCVersion Convert(crosapi::ProbeTpmGSCVersion input) {
@@ -562,7 +562,7 @@ cx_telem::TpmGSCVersion Convert(crosapi::ProbeTpmGSCVersion input) {
     case crosapi::ProbeTpmGSCVersion::kTi50:
       return cx_telem::TpmGSCVersion::kTi50;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::FwupdVersionFormat Convert(crosapi::ProbeFwupdVersionFormat input) {
@@ -594,7 +594,7 @@ cx_telem::FwupdVersionFormat Convert(crosapi::ProbeFwupdVersionFormat input) {
     case crosapi::ProbeFwupdVersionFormat::kHex:
       return cx_telem::FwupdVersionFormat::kHex;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::UsbVersion Convert(crosapi::ProbeUsbVersion input) {
@@ -608,7 +608,7 @@ cx_telem::UsbVersion Convert(crosapi::ProbeUsbVersion input) {
     case crosapi::ProbeUsbVersion::kUsb3:
       return cx_telem::UsbVersion::kUsb3;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::UsbSpecSpeed Convert(crosapi::ProbeUsbSpecSpeed input) {
@@ -628,7 +628,7 @@ cx_telem::UsbSpecSpeed Convert(crosapi::ProbeUsbSpecSpeed input) {
     case crosapi::ProbeUsbSpecSpeed::k20Gbps:
       return cx_telem::UsbSpecSpeed::kN20Gbps;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
@@ -640,7 +640,7 @@ cx_telem::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
     case crosapi::ProbeDisplayInputType::kAnalog:
       return cx_telem::DisplayInputType::kAnalog;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_telem::ThermalSensorSource Convert(crosapi::ProbeThermalSensorSource input) {
@@ -652,7 +652,7 @@ cx_telem::ThermalSensorSource Convert(crosapi::ProbeThermalSensorSource input) {
     case crosapi::ProbeThermalSensorSource::kSysFs:
       return cx_telem::ThermalSensorSource::kSysFs;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace chromeos::converters::telemetry

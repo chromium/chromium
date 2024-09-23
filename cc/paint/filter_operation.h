@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -241,12 +242,13 @@ class CC_PAINT_EXPORT FilterOperation {
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // Maps "forward" to determine which pixels in a destination rect are affected
-  // by pixels in the source rect.
-  gfx::Rect MapRect(const gfx::Rect& rect, const SkMatrix& matrix) const;
+  // by pixels in the source rect. See PaintFilter::MapRect() about `ctm`.
+  gfx::Rect MapRect(const gfx::Rect& rect,
+                    const std::optional<SkMatrix>& ctm = std::nullopt) const;
 
   // Maps "backward" to determine which pixels in the source affect the pixels
-  // in the destination rect.
-  gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& matrix) const;
+  // in the destination rect. See PaintFilter::MapRect() about `ctm`.
+  gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& ctm) const;
 
  private:
   FilterOperation(FilterType type, float amount);

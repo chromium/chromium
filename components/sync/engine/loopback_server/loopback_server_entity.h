@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace sync_pb {
@@ -26,23 +26,23 @@ namespace syncer {
 class LoopbackServerEntity {
  public:
   // Creates an ID of the form <type><separator><inner-id> where
-  // <type> is the EntitySpecifics field number for |model_type|, <separator>
+  // <type> is the EntitySpecifics field number for |data_type|, <separator>
   // is kIdSeparator, and <inner-id> is |inner_id|.
   //
   // If |inner_id| is globally unique, then the returned ID will also be
   // globally unique.
-  static std::string CreateId(const syncer::ModelType& model_type,
+  static std::string CreateId(const syncer::DataType& data_type,
                               const std::string& inner_id);
 
   // Returns the ID string of the top level node for the specified type.
-  static std::string GetTopLevelId(const syncer::ModelType& model_type);
+  static std::string GetTopLevelId(const syncer::DataType& data_type);
 
   static std::unique_ptr<LoopbackServerEntity> CreateEntityFromProto(
       const sync_pb::LoopbackServerEntity& entity);
 
   virtual ~LoopbackServerEntity();
   const std::string& GetId() const;
-  syncer::ModelType GetModelType() const;
+  syncer::DataType GetDataType() const;
   int64_t GetVersion() const;
   void SetVersion(int64_t version);
   const std::string& GetName() const;
@@ -66,16 +66,16 @@ class LoopbackServerEntity {
   virtual void SerializeAsLoopbackServerEntity(
       sync_pb::LoopbackServerEntity* entity) const;
 
-  // Extracts the ModelType from |id|. If |id| is malformed or does not contain
-  // a valid ModelType, UNSPECIFIED is returned.
-  static syncer::ModelType GetModelTypeFromId(const std::string& id);
+  // Extracts the DataType from |id|. If |id| is malformed or does not contain
+  // a valid DataType, UNSPECIFIED is returned.
+  static syncer::DataType GetDataTypeFromId(const std::string& id);
 
   // Extracts the inner ID as specified in the constructor from |id|.
   static std::string GetInnerIdFromId(const std::string& id);
 
  protected:
   LoopbackServerEntity(const std::string& id,
-                       const syncer::ModelType& model_type,
+                       const syncer::DataType& data_type,
                        int64_t version,
                        const std::string& name);
 
@@ -85,8 +85,8 @@ class LoopbackServerEntity {
   // The entity's ID.
   const std::string id_;
 
-  // The ModelType that categorizes this entity.
-  const syncer::ModelType model_type_;
+  // The DataType that categorizes this entity.
+  const syncer::DataType data_type_;
 
   // The version of this entity.
   int64_t version_;

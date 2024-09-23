@@ -1,16 +1,72 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <p>This tests for a bug where outdenting a list item twice would incorrectly move it above the list it was outdented from. Below you should see 'two' in order with 'one' and 'three' and it should not be in a list.</p>
-<div contenteditable="true">
-<ol>
-    <li>one</li>
-    <li id="insert"><ol><li id="outdent">two</li><li>three</li></ol></li>
-</ol>
-</div>
-
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-outdent = document.getElementById("outdent");
-window.getSelection().collapse(outdent, 0);
-document.execCommand("Outdent");
-document.execCommand("Outdent");
+
+// Outdenting the item with "two" should cause it to become the next sibling
+// of the item with "one" and preserve its id. It should also become the parent
+// of the nested list with "three".
+
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="insert">',
+            '<ol>',
+              '<li id="outdent">|two</li>',
+              '<li>three</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="outdent">|two',
+            '<ol>',
+              '<li>three</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent nested item two');
+
+selection_test(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+          '<li id="outdent">|two',
+            '<ol>',
+              '<li>three</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>one</li>',
+        '</ol>',
+        '|two',
+        '<ol>',
+          '<li>',
+            '<ol>',
+              '<li>three</li>',
+            '</ol>',
+          '</li>',
+        '</ol>',
+      '</div>',
+    ],
+    'Outdent unnested item two');
+
 </script>

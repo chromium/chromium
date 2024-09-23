@@ -171,21 +171,6 @@ template <typename Result>
       /*max_attempts=*/n, job, should_retry, std::move(on_done));
 }
 
-// Deprecated in favor of the more explicit implementation above.
-template <typename Result>
-[[nodiscard]] std::unique_ptr<CancellableJob> RunUpToNTimes(
-    int n,
-    VoidRetryJob<std::optional<Result>> job,
-    RetryResultCallback<std::optional<Result>> on_done) {
-  return RunUpToNTimes<std::optional<Result>>(
-      n, job,
-      /*should_retry=*/
-      base::BindRepeating([](const std::optional<Result>& result) {
-        return !result.has_value();
-      }),
-      std::move(on_done));
-}
-
 template <typename T>
 base::RepeatingCallback<bool(const std::optional<T>&)> RetryIfNullopt() {
   return base::BindRepeating(

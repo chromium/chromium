@@ -11,6 +11,7 @@ import {InstanceChecker} from '/common/instance_checker.js';
 import {ActionManager} from './action_manager.js';
 import {AutoScanManager} from './auto_scan_manager.js';
 import {SACommands} from './commands.js';
+import {FocusRingManager} from './focus_ring_manager.js';
 import {Navigator} from './navigator.js';
 import {SettingsManager} from './settings_manager.js';
 import {SwitchAccess} from './switch_access.js';
@@ -27,6 +28,7 @@ async function initAll(): Promise<void> {
 
   ActionManager.init();
   AutoScanManager.init();
+  FocusRingManager.init();
   SACommands.init();
   SettingsManager.init();
 

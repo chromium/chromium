@@ -7,11 +7,9 @@
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -72,10 +70,8 @@ ACTION_P(RunContinuation, success) {
 class IdleActionRunnerTest : public PlatformTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
   }
 
   void TearDown() override {
@@ -97,9 +93,7 @@ class IdleActionRunnerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 

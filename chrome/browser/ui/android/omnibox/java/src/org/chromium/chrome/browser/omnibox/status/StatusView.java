@@ -12,6 +12,7 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -61,6 +60,7 @@ public class StatusView extends LinearLayout {
     private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
+    // The default value is 0, which matches R.dimen.location_bar_start_padding.
     private int mTouchDelegateStartOffset;
     private int mTouchDelegateEndOffset;
 
@@ -106,6 +106,33 @@ public class StatusView extends LinearLayout {
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
 
+        // Set onHoverListener for verbose status view to hide the divider while the verbose hover
+        // highlight is showing.
+        setOnHoverListener(
+                new OnHoverListener() {
+                    private int mSeparatorVisibility;
+
+                    @Override
+                    public boolean onHover(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_HOVER_ENTER:
+                                mSeparatorVisibility = mSeparatorView.getVisibility();
+                                if (getBackground() != null
+                                        && mSeparatorVisibility == View.VISIBLE) {
+                                    mSeparatorView.setVisibility(View.GONE);
+                                }
+                                return false;
+                            case MotionEvent.ACTION_HOVER_EXIT:
+                                if (mSeparatorView.getVisibility() != mSeparatorVisibility) {
+                                    mSeparatorView.setVisibility(mSeparatorVisibility);
+                                }
+                                return false;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+
         // Configure icon rounding.
         mIconView.setOutlineProvider(
                 new RoundedCornerOutlineProvider(
@@ -116,17 +143,6 @@ public class StatusView extends LinearLayout {
         mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
-
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            // Set Icon background size
-            ViewGroup.LayoutParams params = mIconBackground.getLayoutParams();
-            int iconBackgroundSize =
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.omnibox_search_engine_logo_composed_size);
-            params.width = iconBackgroundSize;
-            params.height = iconBackgroundSize;
-        }
     }
 
     /**
@@ -498,13 +514,6 @@ public class StatusView extends LinearLayout {
         mVerboseStatusTextView.setVisibility(visibility);
         mSeparatorView.setVisibility(visibility);
         mStatusExtraSpace.setVisibility(visibility);
-
-        if (visibility != View.VISIBLE) {
-            setBackground(
-                    AppCompatResources.getDrawable(getContext(), R.drawable.status_view_ripple));
-        } else {
-            setBackground(null);
-        }
     }
 
     /** Specify width of the verbose status text. */
@@ -565,11 +574,6 @@ public class StatusView extends LinearLayout {
         if (touchDelegateBounds.equals(new Rect())) return;
 
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        if (mTouchDelegateStartOffset == 0
-                && !OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            mTouchDelegateStartOffset =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding);
-        }
         if (mTouchDelegateEndOffset == 0) {
             mTouchDelegateEndOffset =
                     getResources().getDimensionPixelSize(R.dimen.location_bar_icon_margin_end);

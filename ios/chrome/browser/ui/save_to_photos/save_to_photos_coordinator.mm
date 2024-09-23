@@ -6,12 +6,16 @@
 
 #import <StoreKit/StoreKit.h>
 
+#import "base/metrics/user_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
@@ -23,8 +27,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
@@ -36,6 +38,7 @@
 #import "url/gurl.h"
 
 @interface SaveToPhotosCoordinator () <AccountPickerCoordinatorDelegate,
+                                       AccountPickerLogger,
                                        ManageStorageAlertCommands,
                                        SaveToPhotosMediatorDelegate,
                                        StoreKitCoordinatorDelegate>
@@ -84,7 +87,7 @@
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   _mediator = [[SaveToPhotosMediator alloc]
           initWithPhotosService:photosService
                     prefService:prefService
@@ -122,6 +125,7 @@
                          browser:self.browser
                    configuration:configuration];
   _accountPickerCoordinator.delegate = self;
+  _accountPickerCoordinator.logger = self;
   [_accountPickerCoordinator start];
   if (selectedIdentity) {
     // If the mediator does not want to override the selected identity, leave
@@ -285,6 +289,33 @@
   _accountPickerCoordinator = nil;
 }
 
+#pragma mark - AccountPickerLogger
+
+- (void)logAccountPickerSelectionScreenOpened {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToPhotosAccountPickerSelectionScreenOpened"));
+}
+
+- (void)logAccountPickerNewIdentitySelected {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToPhotosAccountPickerNewIdentitySelected"));
+}
+
+- (void)logAccountPickerSelectionScreenClosed {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToPhotosAccountPickerSelectionScreenClosed"));
+}
+
+- (void)logAccountPickerAddAccountScreenOpened {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToPhotosAccountPickerAddAccountScreenOpened"));
+}
+
+- (void)logAccountPickerAddAccountCompleted {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToPhotosAccountPickerAddAccountCompleted"));
+}
+
 #pragma mark - ManageStorageAlertCommands
 
 - (void)showManageStorageAlertForIdentity:(id<SystemIdentity>)identity {
@@ -310,7 +341,8 @@
   UIAlertAction* cancelAction =
       [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                style:UIAlertActionStyleCancel
-                             handler:^(UIAlertAction* action){
+                             handler:^(UIAlertAction* action) {
+                               [weakMediator manageStorageAlertDidCancel];
                              }];
   [_alertController addAction:manageStorageAction];
   [_alertController addAction:cancelAction];

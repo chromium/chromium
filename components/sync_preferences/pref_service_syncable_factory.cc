@@ -66,7 +66,7 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     // hooked up directly to the underlying account store.
 
     // In some tests, `account_pref_store_` may not have been set.
-    // TODO(crbug.com/1486805): Fix all the usages.
+    // TODO(crbug.com/40283049): Fix all the usages.
     if (!account_pref_store_) {
       CHECK_IS_TEST();
       account_pref_store_ = base::MakeRefCounted<InMemoryPrefStore>();

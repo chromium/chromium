@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -175,7 +176,7 @@ void CrostiniInstallerUI::ClickInstallForTesting() {
       // before clicking "install" button.
       u"app.$$('#next:not([hidden])')?.click();"
       u"app.$.install.click();",
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void CrostiniInstallerUI::BindInterface(

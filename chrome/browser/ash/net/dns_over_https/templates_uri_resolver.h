@@ -23,7 +23,7 @@ class TemplatesUriResolver {
   // pref values of `pref_service` at the time of execution of this function.
   // The results of the last evaluation are available through the getter methods
   // of the class.
-  virtual void UpdateFromPrefs(PrefService* pref_service) = 0;
+  virtual void Update(PrefService* pref_service) = 0;
 
   // Checks whether the DoH system is configured to provide DoH identifiers in
   // the DNS URL.

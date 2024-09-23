@@ -20,7 +20,7 @@ const char* SyncActionToString(SyncAction action) {
       return "Deleted";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown SyncAction";
 }
 

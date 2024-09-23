@@ -59,8 +59,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
       NonMainThreadTaskQueue::QueueCreationParams params =
           NonMainThreadTaskQueue::QueueCreationParams());
 
-  raw_ptr<NonMainThreadSchedulerBase, ExperimentalRenderer>
-      non_main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<NonMainThreadSchedulerBase> non_main_thread_scheduler_;  // NOT OWNED
   const scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> input_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;

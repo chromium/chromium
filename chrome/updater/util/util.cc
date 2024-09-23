@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/util/util.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -18,7 +24,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #include "base/base_paths.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -180,9 +185,7 @@ TagParsingResult& TagParsingResult::operator=(const TagParsingResult&) =
 
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
-  std::string tag = command_line.HasSwitch(kTagSwitch)
-                        ? command_line.GetSwitchValueASCII(kTagSwitch)
-                    : command_line.HasSwitch(kInstallSwitch)
+  std::string tag = command_line.HasSwitch(kInstallSwitch)
                         ? command_line.GetSwitchValueASCII(kInstallSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
   if (tag.empty()) {
@@ -263,6 +266,9 @@ void InitLogging(UpdaterScope updater_scope) {
   logging::LoggingSettings settings;
   settings.log_file_path = log_file->value().c_str();
   settings.logging_dest = logging::LOG_TO_ALL;
+#if BUILDFLAG(IS_WIN)
+  settings.logging_dest &= ~logging::LOG_TO_SYSTEM_DEBUG_LOG;
+#endif  // BUILDFLAG(IS_WIN)
   logging::InitLogging(settings);
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
@@ -374,22 +380,28 @@ bool DeleteExcept(const std::optional<base::FilePath>& except) {
   if (!except) {
     return false;
   }
-
   bool delete_success = true;
   base::FileEnumerator(
       except->DirName(), false,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
-      .ForEach([&except, &delete_success](const base::FilePath& item) {
+      .ForEach([&](const base::FilePath& item) {
         if (item != *except) {
-          VLOG(2) << __func__ << ": Deleting: " << item;
+          VLOG(2) << "DeleteExcept deleting: " << item;
           if (!base::DeletePathRecursively(item)) {
-            LOG(ERROR) << __func__ << ": Failed to delete: " << item;
+            VPLOG(1) << "DeleteExcept failed to delete: " << item;
             delete_success = false;
           }
         }
       });
-
   return delete_success;
+}
+
+int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
+  if (downloaded_bytes == -1 || total_bytes == -1 || total_bytes == 0) {
+    return -1;
+  }
+  return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
+                          0.0, 1.0);
 }
 
 }  // namespace updater

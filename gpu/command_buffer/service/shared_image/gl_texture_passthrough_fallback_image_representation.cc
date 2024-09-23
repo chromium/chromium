@@ -51,16 +51,11 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
 
   gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
 
-  if (IsTexStorage2DAvailable()) {
-    const GLenum internal_format = format_desc.storage_internal_format;
-    api->glTexStorage2DEXTFn(target, /*levels=*/1, internal_format,
-                             size.width(), size.height());
-  } else {
-    const GLenum internal_format = format_desc.image_internal_format;
-    api->glTexImage2DFn(target, 0, internal_format, size.width(), size.height(),
-                        0, format_desc.data_format, format_desc.data_type,
-                        nullptr);
-  }
+  // Use glTexImage2D instead of glTexStorage2D so that we can later use
+  // glTexSubImage2D in GLTextureHolder::UploadFromMemory.
+  api->glTexImage2DFn(target, 0, format_desc.image_internal_format,
+                      size.width(), size.height(), 0, format_desc.data_format,
+                      format_desc.data_type, nullptr);
 
   return base::MakeRefCounted<gles2::TexturePassthrough>(service_id, target);
 }

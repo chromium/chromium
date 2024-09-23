@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
 
-#include <vector>
+#import <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/password_generation_frame_helper.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/ios/password_manager_driver_bridge.h"
-#include "url/gurl.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/password_manager/core/browser/password_generation_frame_helper.h"
+#import "components/password_manager/core/browser/password_manager_driver.h"
+#import "components/password_manager/ios/password_manager_driver_bridge.h"
+#import "url/gurl.h"
 
 namespace autofill {
 struct PasswordFormFillData;
@@ -47,8 +48,16 @@ class IOSPasswordManagerDriver final
   void GeneratedPasswordAccepted(const std::u16string& password) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password) override;
+  void FillSuggestionById(autofill::FieldRendererId username_element_id,
+                          autofill::FieldRendererId password_element_id,
+                          const std::u16string& username,
+                          const std::u16string& password) override;
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
+  void PreviewSuggestionById(autofill::FieldRendererId username_element_id,
+                             autofill::FieldRendererId password_element_id,
+                             const std::u16string& username,
+                             const std::u16string& password) override;
   void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(
@@ -67,6 +76,12 @@ class IOSPasswordManagerDriver final
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }
   const GURL& security_origin() const { return security_origin_; }
+  autofill::FieldDataManager& field_data_manager() {
+    return *field_data_manager_;
+  }
+  const autofill::FieldDataManager& field_data_manager() const {
+    return *field_data_manager_;
+  }
 
  private:
   // The constructor below is private so that no one uses it while trying to
@@ -104,9 +119,23 @@ class IOSPasswordManagerDriver final
   // form submission.
   std::string frame_id_;
 
+  // Because `this` can outlast `web_frame_`, we keep a refptr to the associated
+  // FieldDataManager, to ensure it also outlives the frame.
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager_;
+
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.
   GURL security_origin_;
+
+  // True when the conditions are met to display the proactive password
+  // generation bottom sheet, the sheet that is automatically triggered when you
+  // tap on a new password field.
+  bool can_use_proactive_generation_ = false;
+
+  // Forms eligible for proactive generation that need listeners attached to if
+  // the conditions are met.
+  std::vector<autofill::PasswordFormGenerationData>
+      pending_forms_for_proactive_generation_;
 
   base::WeakPtrFactory<IOSPasswordManagerDriver> weak_factory_{this};
 };

@@ -41,8 +41,8 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
-- (void)testTrackingPriceSwipeDown {
-  [self openTrackingPriceSettings];
+- (void)testTrackingPriceSwipeDown_FromUpdatedSettingsView {
+  [self openTrackingPriceSettingsFromUpdatedSettingsView];
 
   // Check that Tracking Price TableView is presented.
   [[EarlGrey selectElementWithMatcher:SettingsTrackingPriceTableView()]
@@ -59,13 +59,15 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 
 #pragma mark - Helpers
 
-// Opens tracking price settings from price notifications setting page.
-- (void)openTrackingPriceSettings {
+// Opens tracking price settings from updated notifications setting page.
+- (void)openTrackingPriceSettingsFromUpdatedSettingsView {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
-  [ChromeEarlGreyUI tapPriceNotificationsMenuButton:
-                        ButtonWithAccessibilityLabelId(
-                            IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)];
+  id priceTrackingCell =
+      grey_allOf(chrome_test_util::ContainsPartialText(l10n_util::GetNSString(
+                     IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE)),
+                 grey_sufficientlyVisible(), nil);
+  [ChromeEarlGreyUI tapPriceNotificationsMenuButton:priceTrackingCell];
 }
 
 @end

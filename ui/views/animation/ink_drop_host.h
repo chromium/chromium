@@ -37,10 +37,10 @@ namespace test {
 class InkDropHostTestApi;
 }  // namespace test
 
-// TODO(crbug.com/931964): Rename this type and move this header. Also consider
-// if InkDropHost should be what implements the InkDrop interface and have that
-// be the public interface.
-// The current division of labor is roughly as follows:
+// TODO(crbug.com/40613900): Rename this type and move this header. Also
+// consider if InkDropHost should be what implements the InkDrop interface and
+// have that be the public interface. The current division of labor is roughly
+// as follows:
 // * InkDropHost manages an InkDrop and is responsible for a lot of its
 //   configuration and creating the parts of the InkDrop.
 // * InkDrop manages the parts of the ink-drop effect once it's up and running.
@@ -114,7 +114,7 @@ class VIEWS_EXPORT InkDropHost {
   // Sets the base color of the ink drop. If `SetBaseColor` is called, the
   // effect of previous calls to `SetBaseColorId` and `SetBaseColorCallback` is
   // overwritten and vice versa.
-  // TODO(crbug.com/1341361): Replace SetBaseColor with SetBaseColorId.
+  // TODO(crbug.com/40230665): Replace SetBaseColor with SetBaseColorId.
   void SetBaseColor(SkColor color);
   void SetBaseColorId(ui::ColorId color_id);
   // Callback version of `GetBaseColor`. If possible, prefer using

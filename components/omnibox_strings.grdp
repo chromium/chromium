@@ -62,6 +62,11 @@
       Search or type URL
     </message>
   </if>
+  <if expr="is_android">
+    <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
+      Search the web in Chrome
+    </message>
+  </if>
   <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
     <ph name="TRADITIONAL_TEXT">$1</ph> - <ph name="ADDITIONAL_TEXT">$2</ph>
   </message>
@@ -71,6 +76,11 @@
   <message name="IDS_OMNIBOX_TAB_SUGGEST_HINT" desc="The button text contents to say that this suggestion will switch to another tab.">
     Switch to this tab
   </message>
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_OMNIBOX_HISTORY_EMBEDDING_HINT" desc="The chip text shown on the omnibox popup suggestions that were generated using history embeddings.">
+      AI Best Match
+    </message>
+  </if>
   <message name="IDS_OMNIBOX_FILE" desc="Text shown in the omnibox to indicate a user is viewing a file.">
     File
   </message>
@@ -226,7 +236,21 @@
     Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
   </message>
 
-  <!-- Accessibility suffix for suggestions when the remove button is focused. -->
+  <!-- Accessibility labels for the omnibox thumbs up feedback button. -->
+  <message name="IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs up feedback button is focused.">
+    Thumbs up button, press Enter to submit feedback that you like, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
+  </message>
+  <message name="IDS_ACC_THUMBS_UP_SUGGESTION_BUTTON" desc="Announcement when thumbs up feedback button is focused.">
+    Thumbs up button, press Enter to submit feedback that you like this suggestion
+  </message>
+  <!-- Accessibility labels for the omnibox thumbs down feedback button. -->
+  <message name="IDS_ACC_THUMBS_DOWN_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs down feedback button is focused.">
+    Thumbs down button, press Enter to open a form for submitting detailed feedback on why you dislike, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
+  </message>
+  <message name="IDS_ACC_THUMBS_DOWN_SUGGESTION_BUTTON" desc="Announcement when thumbs down feedback button is focused.">
+    Thumbs down button, press Enter to open a form for submitting detailed feedback on why you dislike this suggestion
+  </message>
+  <!-- Accessibility labels for the omnibox suggestion remove button. -->
   <message name="IDS_ACC_REMOVE_SUGGESTION_SUFFIX" desc="Suffix for suggestions with remove suggestion button to explain keystroke used to remove suggestion.">
     <ph name="REMOVE_SUGGESTION_SUFFIX">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Remove Suggestion.
   </message>
@@ -258,6 +282,20 @@
     &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section hidden
   </message>
 
+  <!-- Accessibility announcements made for the Chrome tip IPH suggestions sometimes shown at the bottom of the Omnibox -->
+  <message name="IDS_ACC_CHROME_TIP" desc="Announcement that is read after the last suggestion when the IPH row is present in the Omnibox.">
+    Role: Chrome tip. Accessibility label: <ph name="CHROME_TIP">$1<ex>Type @gemini to Chat with Gemini</ex></ph>
+  </message>
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_SUFFIX" desc="Suffix for Chrome Tip IPH rows with a dismiss button to explain keystroke used to dismiss the tip.">
+    <ph name="CHROME_TIP">$1<ex>Type @gemini to Chat with Gemini</ex></ph>, press Tab then Enter to Dismiss Chrome Tip.
+  </message>
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX" desc="Announcement when dismiss chrome tip button is focused.">
+    Dismiss Chrome Tip button, press Enter to dismiss, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Type @gemini to Chat with Gemini</ex></ph>
+  </message>
+  <message name="IDS_ACC_DISMISS_CHROME_TIP_BUTTON" desc="Announcement when dismiss chrome tip button is focused.">
+    Dismiss Chrome Tip button, press Enter to dismiss
+  </message>
+
   <!-- Site Search/Keyword mode Starter Pack strings. Note: kCurrentDataVersion in template_url_starter_pack_data.cc must also be updated when changing these values. -->
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME" desc = "The name of the chrome bookmarks search engine as it appears on chrome://settings/searchEngines">
     Bookmarks
@@ -277,16 +315,55 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_TABS_KEYWORD" desc = "The keyword required to trigger tab search in keyword mode. This will be prepended with an '@'.">
     Tabs
   </message>
-  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
-    Search <ph name="KEYWORD_SHORT_NAME">$1<ex>Bookmarks</ex></ph>
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME" desc = "The name of the Gemini engine as it appears on chrome://settings/searchEngines.">
+    Gemini
   </message>
-  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_HELP" desc = "Helper text shown with instant keyword search suggestions.">
-    Select to type your search directly in the address bar
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Chat with Gemini in keyword mode. This will be prepended with an '@'.">
+    Gemini
+  </message>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
+    <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Chat with <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
+  </message>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for searching. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
+    <ph name="KEYWORD">$1<ex>@bookmarks</ex></ph> - Search <ph name="KEYWORD_SHORT_NAME">$2<ex>Bookmarks</ex></ph>
+  </message>
+  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
+    Chat with <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
   </message>
 
-  <!-- No results description for the Starter Pack's Tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
+  <!-- No results description for the Starter Pack's tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
   <message name="IDS_OMNIBOX_TAB_SEARCH_NO_RESULTS_FOUND" desc = "The string displayed as the first row in the Omnibox when no results are found in Tab Search mode.">
     No results found
+  </message>
+
+  <message name="IDS_OMNIBOX_GEMINI_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the @gemini starter pack.">
+    Type @gemini to Chat with Gemini
+  </message>
+
+  <message name="IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the featured Enterprise search.">
+    Type @ to search <ph name="FEATURED_SEARCH_LIST">$1<ex>jira.atlassian.com, office.com, salesforce.com</ex></ph>
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
+    For a more powerful way to search your browsing history, turn on
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH directing users to the chrome://settings/ai page to enable the history embeddings setting.">
+    History search, powered by AI
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH" desc="The string displayed as the last row in the Omnibox as IPH informing them their info is sent to Google.">
+    Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. This is an experimental feature and won't always get it right.
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT" desc="The link displayed on the last row in the Omnibox as IPH informing them their info is sent to Google.">
+    Learn more
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope.">
+    Type @history to search your browsing history
+  </message>
+
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PROMO_IPH" desc="The string displayed as the last row in the Omnibox as IPH encouraging users to try the @history scope when AI features are enabled.">
+    Type @history to search your browsing history, powered by AI
   </message>
 
   <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
@@ -296,6 +373,23 @@
   <!-- Supplementary Omnibox header strings, that appear above suggestion groups. -->
   <message name="IDS_OMNIBOX_HEADER_POPULAR_TOPICS" desc="The text displayed above the popular topic search suggestions section.">
     Popular topics
+  </message>
+
+  <!-- Placeholder text for the various starter pack scopes -->
+  <message name="IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @bookmarks scope.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and hasn't opted into the history AI setting.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and has opted into the history AI setting.">
+    In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @tabs scope.">
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @gemini scope.">
+    Enter your question or prompt
   </message>
 
 </grit-part>

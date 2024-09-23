@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <libxml/catalog.h>
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 #include <libxml/tree.h>
@@ -82,20 +83,6 @@ static int nb_errors = 0;
 static int nb_leaks = 0;
 
 /*
- * We need to trap calls to the resolver to not account memory for the catalog
- * and not rely on any external resources.
- */
-static xmlParserInputPtr
-testExternalEntityLoader(const char *URL, const char *ID ATTRIBUTE_UNUSED,
-			 xmlParserCtxtPtr ctxt) {
-    xmlParserInputPtr ret;
-
-    ret = xmlNewInputFromFile(ctxt, (const char *) URL);
-
-    return(ret);
-}
-
-/*
  * Trapping the error messages at the generic level to grab the equivalent of
  * stderr messages on CLI tools.
  */
@@ -151,7 +138,10 @@ static void
 initializeLibxml2(void) {
     xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
     xmlInitParser();
-    xmlSetExternalEntityLoader(testExternalEntityLoader);
+#ifdef LIBXML_CATALOG_ENABLED
+    xmlInitializeCatalog();
+    xmlCatalogSetDefaults(XML_CATA_ALLOW_NONE);
+#endif
     ctxtXPath = xmlXPathNewContext(NULL);
     /*
     * Deactivate the cache if created; otherwise we have to create/free it
@@ -163,7 +153,6 @@ initializeLibxml2(void) {
     */
     if (ctxtXPath->cache != NULL)
 	xmlXPathContextSetCache(ctxtXPath, 0, -1, 0);
-    xmlSetStructuredErrorFunc(NULL, testErrorHandler);
 }
 
 /************************************************************************
@@ -184,6 +173,7 @@ xmlconfTestInvalid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s invalid document turned not well-formed too\n",
@@ -214,6 +204,7 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 	         id, filename);
         return(0);
     }
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse a valid document\n",
@@ -236,14 +227,17 @@ xmlconfTestValid(const char *id, const char *filename, int options) {
 
 static int
 xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
     /*
      * In case of Namespace errors, libxml2 will still parse the document
      * but log a Namespace error.
      */
-    doc = xmlReadFile(filename, NULL, options);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc == NULL) {
         test_log("test %s : %s failed to parse the XML\n",
 	         id, filename);
@@ -261,15 +255,19 @@ xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
 	}
 	xmlFreeDoc(doc);
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 
 static int
 xmlconfTestNotWF(const char *id, const char *filename, int options) {
+    xmlParserCtxtPtr ctxt;
     xmlDocPtr doc;
     int ret = 1;
 
-    doc = xmlReadFile(filename, NULL, options);
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testErrorHandler, NULL);
+    doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
     if (doc != NULL) {
         test_log("test %s : %s failed to detect not well formedness\n",
 	         id, filename);
@@ -277,6 +275,7 @@ xmlconfTestNotWF(const char *id, const char *filename, int options) {
 	xmlFreeDoc(doc);
 	ret = 0;
     }
+    xmlFreeParserCtxt(ctxt);
     return(ret);
 }
 
@@ -406,7 +405,6 @@ xmlconfTestItem(xmlDocPtr doc, xmlNodePtr cur) {
         test_log("test %s : %s leaked %d bytes\n",
 	         id, filename, final - mem);
         nb_leaks++;
-	xmlMemDisplayLast(logfile, final - mem);
     }
     nb_tests++;
 

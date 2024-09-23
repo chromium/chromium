@@ -14,12 +14,12 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
 
@@ -32,8 +32,7 @@ MandatoryReauthIconView::MandatoryReauthIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "MandatoryReauth") {
-  SetAccessibilityProperties(
-      /*role=*/std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP));
 }
 
@@ -69,9 +68,7 @@ void MandatoryReauthIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& MandatoryReauthIconView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kCreditCardChromeRefreshIcon
-             : kCreditCardIcon;
+  return kCreditCardChromeRefreshIcon;
 }
 
 MandatoryReauthBubbleController* MandatoryReauthIconView::GetController()

@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -30,11 +29,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -48,9 +46,7 @@ import java.util.function.Consumer;
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxActionDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock Consumer<String> mMockOpenUrl;
-    private @Mock OpenHistoryClustersDelegate mMockOpenHistoryClustersUi;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
     private @Mock SettingsLauncher mMockSettingsLauncher;
@@ -68,27 +64,19 @@ public class OmniboxActionDelegateImplUnitTest {
                 new OmniboxActionDelegateImpl(
                         mContext,
                         () -> mTabReference.get(),
-                        mMockSettingsLauncher,
                         mMockOpenUrl,
                         mMockOpenIncognitoPage,
                         mMockOpenPasswordSettings,
-                        mMockOpenHistoryClustersUi,
                         mMockOpenQuickDeleteDialog);
+        SettingsLauncherFactory.setInstanceForTesting(mMockSettingsLauncher);
     }
 
     @After
     public void cleanUp() {
         verifyNoMoreInteractions(mMockOpenIncognitoPage);
         verifyNoMoreInteractions(mMockOpenPasswordSettings);
-        verifyNoMoreInteractions(mMockOpenHistoryClustersUi);
         verifyNoMoreInteractions(mMockOpenUrl);
         verifyNoMoreInteractions(mMockOpenQuickDeleteDialog);
-    }
-
-    @Test
-    public void openHistoryClustersPage() {
-        mDelegate.openHistoryClustersPage("query");
-        verify(mMockOpenHistoryClustersUi, times(1)).openHistoryClustersUi("query");
     }
 
     @Test

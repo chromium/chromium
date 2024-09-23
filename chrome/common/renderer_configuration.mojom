@@ -7,6 +7,7 @@ module chrome.mojom;
 import "components/content_settings/common/content_settings_manager.mojom";
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // Renderer configuration for a bound session.
 // Network requests with `domain` and that are on `path` require a short lived
@@ -23,9 +24,9 @@ struct BoundSessionThrottlerParams {
 
 // The renderer configuration parameters which can change post renderer launch.
 struct DynamicParams {
-  // `BoundSessionThrottlerParams` can be null if there is no bound session.
+  // `BoundSessionThrottlerParams` can be empty if there are no bound sessions.
   [EnableIf=enable_bound_session_credentials]
-  BoundSessionThrottlerParams? bound_session_throttler_params;
+  array<BoundSessionThrottlerParams> bound_session_throttler_params;
   bool force_safe_search = true;
   int32 youtube_restrict = 0;
   string allowed_domains_for_apps;
@@ -43,7 +44,8 @@ enum ResumeBlockedRequestsTrigger {
   kTimeout = 4,
   kShutdownOrSessionTermination = 5,
   kCookieAlreadyFresh = 6,
-  kRendererDisconnected = 7
+  kRendererDisconnected = 7,
+  kThrottlingRequestsPaused = 8,
 };
 
 // Allows the renderer to notify the browser process that requests in renderer
@@ -52,10 +54,12 @@ interface BoundSessionRequestThrottledHandler {
   // Called to notify the browser process when a network request requires a
   // fresh cookie. This triggers a cookie refresh request and will
   // run the callback to release the request upon success, failure or timeout.
-  // Note: The callback might be called synchronously in process if the
-  // previous conditions apply.
+  // |untrusted_request_url| is used to determine which bound sessions cover
+  // the request.
+  // TODO(crbug.com/41495201): Remove this interface when DBSC is migrated to
+  // the network stack.
   [EnableIf=enable_bound_session_credentials]
-  HandleRequestBlockedOnCookie()
+  HandleRequestBlockedOnCookie(url.mojom.Url untrusted_request_url)
       => (ResumeBlockedRequestsTrigger resume_trigger);
 };
 

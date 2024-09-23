@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/devtools/protocol/webauthn_handler.h"
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +19,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/devtools/protocol/web_authn.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
@@ -93,7 +98,7 @@ class GetCredentialCallbackAggregator
       std::make_unique<Array<WebAuthn::Credential>>();
 };
 
-device::ProtocolVersion ConvertToProtocolVersion(base::StringPiece protocol) {
+device::ProtocolVersion ConvertToProtocolVersion(std::string_view protocol) {
   if (protocol == WebAuthn::AuthenticatorProtocolEnum::Ctap2)
     return device::ProtocolVersion::kCtap2;
   if (protocol == WebAuthn::AuthenticatorProtocolEnum::U2f)
@@ -102,7 +107,7 @@ device::ProtocolVersion ConvertToProtocolVersion(base::StringPiece protocol) {
 }
 
 std::optional<device::Ctap2Version> ConvertToCtap2Version(
-    base::StringPiece version) {
+    std::string_view version) {
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_0)
     return device::Ctap2Version::kCtap2_0;
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_1)
@@ -118,11 +123,13 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
     base::span<const uint8_t> id,
     const device::VirtualFidoDevice::RegistrationData* registration) {
   auto credential = WebAuthn::Credential::Create()
-                        .SetCredentialId(Binary::fromSpan(id.data(), id.size()))
+                        .SetCredentialId(Binary::fromSpan(id))
                         .SetPrivateKey(Binary::fromVector(
                             registration->private_key->GetPKCS8PrivateKey()))
                         .SetSignCount(registration->counter)
                         .SetIsResidentCredential(registration->is_resident)
+                        .SetBackupEligibility(registration->backup_eligible)
+                        .SetBackupState(registration->backup_state)
                         .Build();
 
   if (registration->rp)
@@ -244,7 +251,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
           options->GetDefaultBackupState(/*defaultValue=*/false);
       break;
     case device::ProtocolVersion::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -377,6 +384,18 @@ void WebAuthnHandler::AddCredential(
     return;
   }
 
+  // VirtualFidoDevice takes care of setting BE & BS flags to the default
+  // authenticator values whenever a new credential is created. Only override
+  // the values if the client specified them.
+  if (credential->HasBackupEligibility()) {
+    authenticator->SetBackupEligibility(
+        credential_id, credential->GetBackupEligibility(/*unused*/ false));
+  }
+  if (credential->HasBackupState()) {
+    authenticator->SetBackupState(credential_id,
+                                  credential->GetBackupState(/*unused*/ false));
+  }
+
   callback->sendSuccess();
 }
 
@@ -479,6 +498,33 @@ Response WebAuthnHandler::SetAutomaticPresenceSimulation(
     return response;
 
   authenticator->SetUserPresence(enabled);
+  return Response::Success();
+}
+
+Response WebAuthnHandler::SetCredentialProperties(
+    const String& authenticator_id,
+    const Binary& in_credential_id,
+    Maybe<bool> backup_eligibility,
+    Maybe<bool> backup_state) {
+  VirtualAuthenticator* authenticator;
+  Response response = FindAuthenticator(authenticator_id, &authenticator);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  std::vector<uint8_t> credential_id = CopyBinaryToVector(in_credential_id);
+  auto registration = authenticator->registrations().find(credential_id);
+  if (registration == authenticator->registrations().end()) {
+    return Response::InvalidParams(kCredentialNotFound);
+  }
+
+  if (backup_eligibility.has_value()) {
+    authenticator->SetBackupEligibility(credential_id,
+                                        backup_eligibility.value());
+  }
+  if (backup_state.has_value()) {
+    authenticator->SetBackupState(credential_id, backup_state.value());
+  }
   return Response::Success();
 }
 

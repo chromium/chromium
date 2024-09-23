@@ -87,7 +87,7 @@ void ClientCertificateFetcher::FetchAutoSelectedCertificateForUrl(
   fetch_callback_ = std::move(callback);
   cert_request_info_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
   client_cert_store_->GetClientCerts(
-      *cert_request_info_,
+      cert_request_info_,
       base::BindOnce(&ClientCertificateFetcher::OnGetClientCertsComplete,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
@@ -96,7 +96,7 @@ void ClientCertificateFetcher::OnGetClientCertsComplete(
     const GURL& url,
     net::ClientCertIdentityList client_certs) {
   net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
-  chrome::enterprise_util::AutoSelectCertificates(
+  enterprise_util::AutoSelectCertificates(
       profile_, url, std::move(client_certs), &matching_certificates,
       &nonmatching_certificates);
 

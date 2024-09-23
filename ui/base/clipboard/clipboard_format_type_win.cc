@@ -67,10 +67,7 @@ ClipboardFormatType ClipboardFormatType::Deserialize(
   int clipboard_format = -1;
   // |serialization| is expected to be a string representing the Windows
   // data_.cfFormat (format number) returned by GetType.
-  if (!base::StringToInt(serialization, &clipboard_format)) {
-    NOTREACHED();
-    return ClipboardFormatType();
-  }
+  CHECK(base::StringToInt(serialization, &clipboard_format));
   return ClipboardFormatType(clipboard_format);
 }
 
@@ -203,7 +200,7 @@ const ClipboardFormatType& ClipboardFormatType::FilenameAType() {
 // static
 const ClipboardFormatType& ClipboardFormatType::TextHtmlType() {
   static base::NoDestructor<ClipboardFormatType> format(
-      RegisterClipboardFormatChecked(L"text/html"));
+      RegisterClipboardFormatChecked(CFSTR_MIME_HTML));
   return *format;
 }
 
@@ -236,7 +233,7 @@ const ClipboardFormatType& ClipboardFormatType::FileContentZeroType() {
   // used with CFSTR_FILECONTENTS (but used in Chromium--see
   // OSExchangeDataProviderWin::SetFileContents). Use FileContentAtIndexType
   // if TYMED_ISTREAM and TYMED_ISTORAGE are needed.
-  // TODO(https://crbug.com/950756): Should TYMED_ISTREAM / TYMED_ISTORAGE be
+  // TODO(crbug.com/41451800): Should TYMED_ISTREAM / TYMED_ISTORAGE be
   // used instead of TYMED_HGLOBAL in
   // OSExchangeDataProviderWin::SetFileContents.
   // The 0 constructor argument is used with CFSTR_FILECONTENTS to specify file
@@ -294,10 +291,31 @@ const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
+const ClipboardFormatType& ClipboardFormatType::DataTransferCustomType() {
   // TODO(http://crbug.com/106449): Standardize this name.
   static base::NoDestructor<ClipboardFormatType> format(
       RegisterClipboardFormatChecked(L"Chromium Web Custom MIME Data Format"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::InternalSourceUrlType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(L"Chromium internal source URL"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::ClipboardHistoryType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(L"CanIncludeInClipboardHistory"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::UploadCloudClipboardType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(L"CanUploadToCloudClipboard"));
   return *format;
 }
 

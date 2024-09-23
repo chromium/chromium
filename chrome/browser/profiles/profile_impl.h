@@ -115,12 +115,9 @@ class ProfileImpl : public Profile {
   std::string GetProfileUserName() const override;
   base::FilePath GetPath() override;
   base::Time GetCreationTime() const override;
-  bool IsOffTheRecord() override;
-  bool IsOffTheRecord() const override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  const OTRProfileID& GetOTRProfileID() const override;
   base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
                                   bool create_if_needed) override;
@@ -144,6 +141,7 @@ class ProfileImpl : public Profile {
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::CloudPolicyManager* GetCloudPolicyManager() override;
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
       const override;
@@ -224,9 +222,11 @@ class ProfileImpl : public Profile {
   // Called to initialize Data Reduction Proxy.
   void InitializeDataReductionProxy();
 
-  policy::ConfigurationPolicyProvider* configuration_policy_provider();
+  // Called after a profile is initialized, to record 'one per profile creation'
+  // metrics relating to user prefs.
+  void RecordPrefValuesAfterProfileInitialization();
 
-  PrefChangeRegistrar pref_change_registrar_;
+  policy::ConfigurationPolicyProvider* configuration_policy_provider();
 
   base::FilePath path_;
 
@@ -272,12 +272,13 @@ class ProfileImpl : public Profile {
 
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
-  // Keep |prefs_| on top for destruction order because |extension_prefs_|,
-  // |io_data_| and others store pointers to |prefs_| and shall be destructed
-  // first.
+  // Keep `prefs_` on top for destruction order because `dummy_otr_prefs_`,
+  // `pref_change_registrar_` and others store pointers to `prefs_` and shall be
+  // destructed first.
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   std::unique_ptr<sync_preferences::PrefServiceSyncable> dummy_otr_prefs_;
+  PrefChangeRegistrar pref_change_registrar_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;

@@ -49,10 +49,6 @@ void BrowsingTopicsDocumentHost::CreateMojoService(
     return;
   }
 
-  // We do not check for portals here and we check at the API entry points
-  // because whether or not a frame is in a portal is dynamic state that could
-  // change.
-
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
   new BrowsingTopicsDocumentHost(*render_frame_host, std::move(receiver));
@@ -66,14 +62,10 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
   //   frame that has been detached (this could happen as a result of
   //   cross-process races when navigating).
   if (!render_frame_host().IsActive() ||
-      // Ignore non-primary frames, e.g. frames in a portal. Fenced frames and
-      // prerendered pages are also covered in this condition but they should
-      // have already been checked in `CreateMojoService()`.
-      !render_frame_host().GetPage().IsPrimary() ||
-      // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals
-      // yet. Remove this when it does.
-      render_frame_host().GetOutermostMainFrame() !=
-          render_frame_host().GetMainFrame()) {
+      // Ignore non-primary frames. Fenced frames and prerendered pages are
+      // covered in this condition but they should have already been checked in
+      // `CreateMojoService()`.
+      !render_frame_host().GetPage().IsPrimary()) {
     std::move(callback).Run(
         blink::mojom::GetBrowsingTopicsResult::NewErrorMessage(
             "document.browsingTopics() is only allowed in the outermost page "

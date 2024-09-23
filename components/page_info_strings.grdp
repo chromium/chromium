@@ -16,22 +16,7 @@
   <message name="IDS_PAGE_INFO_NOT_SECURE_SUMMARY_SHORT" desc="A shorter one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the connection to the current website is not secure.">
     Connection is not secure
   </message>
-  <message name="IDS_PAGE_INFO_MALWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing malware.">
-    This site contains malware
-  </message>
-  <message name="IDS_PAGE_INFO_MALWARE_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing malware.">
-    Dangerous site
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as social engineering.">
-    This site is deceptive
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as social engineering.">
-    Dangerous site
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing unwanted software.">
-    This site contains harmful programs
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as containing unwanted software.">
+  <message name="IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as unsafe.">
     Dangerous site
   </message>
 
@@ -89,21 +74,12 @@
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
   </message>
   <message name="IDS_PAGE_INFO_MALWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
-    Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages, and credit cards).
-  </message>
-  <message name="IDS_PAGE_INFO_MALWARE_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as containing malware.">
     Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
-    Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards).
-  </message>
-  <message name="IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as social engineering.">
     Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number.
   </message>
   <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
-    Attackers on this site might try to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites you visit).
-  </message>
-  <message name="IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW" desc="A short paragraph explaining to the user that the current website has been flagged as containing unwanted software.">
     Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.
   </message>
 
@@ -144,7 +120,7 @@
   <if expr="not is_ios">
 
     <!-- Certificate exception decision UI (after clicking through an SSL certificate error) -->
-    <!-- TODO(crbug.com/502473): Support revoking certificate overrides on iOS Page Info. -->
+    <!-- TODO(crbug.com/41183997): Support revoking certificate overrides on iOS Page Info. -->
     <message name="IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION" desc="A short paragraph to the user that security warnings are disabled. This is the case when the user has encountered a certificate error for the current site and chosen to override it.">
       You have chosen to turn off security warnings for this site.
     </message>
@@ -179,9 +155,6 @@
     </message>
     <message name="IDS_PAGE_INFO_SECURITY_TAB_ENCRYPTION_DETAILS_AEAD" desc="This message gives details of the cryptographic primitives used to protect the HTTPS connection. It should be translated in a similar manner as IDS_PAGE_INFO_SECURITY_TAB_ENCRYPTION_DETAILS">
       The connection is encrypted and authenticated using <ph name="CIPHER">$1<ex>AES_128_GCM</ex></ph> and uses <ph name="KX">$2<ex>RSA</ex></ph> as the key exchange mechanism.
-    </message>
-    <message name="IDS_PAGE_INFO_SECURITY_TAB_NON_UNIQUE_NAME" desc="The text of the identity section when the host is not unique (such as with Intranet host names).">
-      The identity of the server you are connected to cannot be fully validated. You are connected to a server using a name only valid within your network, which an external certificate authority has no way to validate ownership of. As some certificate authorities will issue certificates for these names regardless, there is no way to ensure you are connected to the intended website and not an attacker.
     </message>
     <message name="IDS_PAGE_INFO_SECURITY_TAB_NOT_ENCRYPTED_CONNECTION_TEXT" desc="The text of the connection section when the connection is not encrypted.">
       Your connection to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> is not encrypted.
@@ -238,8 +211,8 @@
       <message name="IDS_PAGE_INFO_CERTIFICATE_IS_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with a valid certificate.">
         Certificate is valid
       </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
-        Certificate is not valid
+      <message name="IDS_PAGE_INFO_CERTIFICATE_DETAILS" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
+        Certificate details
       </message>
       <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_CERTIFICATE_VALID_LINK.">
         Show certificate (issued by <ph name="ISSUER">$1<ex>Let's Encrypt X3</ex></ph>)
@@ -403,6 +376,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera permission is in the ask state and the site can prompt the user to ask if they allow the site to use their camera.">
       Can ask to use your camera
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_CAPTURED_SURFACE_CONTROL_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the scroll and zoom permission is in the ask state and the site can prompt the user to ask if they allow the site to scroll and zoom shared tabs.">
+      Can ask to scroll and zoom shared tabs
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_PAN_TILT_ZOOM_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera and movement permission is in the ask state and the site can prompt the user to ask if they allow the site to use and move their camera.">
       Can ask to use &amp; move your camera
     </message>
@@ -412,8 +388,14 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_SYSTEM_WRITE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file system permission is in the ask state and the site can prompt the user to ask if they allow the site to edit files and folders on your device.">
       Can ask to edit files and folders on your device
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the hand tracking permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their hands.">
+      Can ask to track your hands
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
       Can ask to connect to HID devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_KEYBOARD_LOCK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the keyboard lock permission is in the ask state and the site can prompt the user to ask if they allow the site to lock and use the input from their keyboard.">
+      Can ask to lock and use your keyboard
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_LOCATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the location permission is in the ask state and the site can prompt the user to ask if they allow the site to use your location.">
       Can ask for your location
@@ -426,6 +408,9 @@
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the notification permission is in the ask state and the site can prompt the user to ask if they want to receive notifications.">
       Can ask to send notifications
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the pointer lock permission is in the ask state and the site can prompt the user to ask if they allow the site to lock and use the input from their mouse pointer.">
+      Can ask to lock and use your mouse
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_USB_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the USB permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to USB devices.">
       Can ask to connect to USB devices
@@ -450,6 +435,12 @@
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" translateable="false"  desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
       Can ask to access cookies
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the web app installation permission is in the ask state and the site can prompt the user to ask if they allow the site to install web apps.">
+      Can ask to install web apps
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth devices permission is in the ask state and the site can prompt the user to ask if they allow the site to use advanced printer features.">
+      Can ask to use advanced printer features
     </message>
 
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
@@ -493,6 +484,28 @@
     </message>
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
       Go to site settings
+    </message>
+
+    <!-- Link to guide users to system settings. -->
+    <if expr="is_macosx">
+      <message name="IDS_PAGE_INFO_SYSTEM_SETTINGS_LINK" desc="This is the text of the link pointing to macOS's System Settings. This sometimes appears under the notification permission in the Page Info bubble.">
+        System Settings
+      </message>
+      <message name="IDS_PAGE_INFO_NOTIFICATIONS_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the notifications permission with a link to macOS's System Settings.">
+        Enable notifications in the Notification Center. Open <ph name="LINK">$1<ex>System Settings</ex></ph>.
+      </message>
+    </if>
+    <message name="IDS_PAGE_INFO_CAMERA_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the camera permission with a link to system settings.">
+        To use your camera, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
+    <message name="IDS_PAGE_INFO_MICROPHONE_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the microphone permission with a link to system settings.">
+        To use your microphone, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
+    <message name="IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the location permission with a link to system settings.">
+        To use your location, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
+    <message name="IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK" desc="This is the text of the link pointing to settings of a system. This appears under a permission in the Page Info bubble if the permission is blocked on the system level.">
+        system settings
     </message>
 
     <!-- Permission decision strings -->
@@ -680,8 +693,8 @@
   </message>
 
   <!-- Permissions subpage -->
-  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP" desc="The label of the button to open the Permissions subpage for a specific permission in Page Info bubble.">
-    Show permission details
+  <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP" desc="The tooltip/accessibility text of the button to open a Permissions subpage for a specific permission in Page Info bubble, if such a subpage is supported.">
+    Show <ph name="PERMISSION_NAME">$1<ex>location</ex></ph> permission details
   </message>
   <message name="IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON" desc="The text on the button, that opens settings page for the permission, in permission's subpage in page info bubble.">
     Manage
@@ -723,13 +736,13 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME" desc="A button in the Page Info bubble (which shows when you click the lock icon) that expands to another bubble detailing the user's Tracking protection settings.">
     Tracking Protection
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are allowed.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are allowed." formatter_data="android_java">
     Third-party cookies allowed
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are blocked.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are blocked." formatter_data="android_java">
     Third-party cookies blocked
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are limited.">
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED" desc="The label for the Tracking Protection button in the Page Info bubble (which shows when you click the site info icon) detailing that third party cookies are limited." formatter_data="android_java">
     Third-party cookies limited
   </message>
   <message name="IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER" desc="The header label of Tracking Protection subview page.">
@@ -738,23 +751,23 @@
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
-   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the third-party cookies settings page.">
+   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble. Contains a link to the Tracking Protection settings page.">
-    Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble. Contains a link to the third-party cookies settings page.">
+    Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
-    You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble if all cookies are blocked. Contains a link to the third-party cookies settings page.">
+    You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
-    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the third-party cookies settings page.">
+    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK" desc="The text of the link to the tracking protection settings used within the tracking protection description.">
-    manage your tracking protections
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK" desc="The text of the link to the third-party cookies settings within the 'Cookies and site data' page info subpage description.">
+    manage access to third-party cookies
   </message>
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage.">
     Block third-party cookies
@@ -783,38 +796,65 @@
   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage on-device site data' button. The following screen shows on-device site data used by the site the user is viewing.">
     Review a list of on-device site data in a new window
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP" desc="The tooltip of related website sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
     See related sites in a new tab
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TITLE" desc="The title of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     See related sites
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE" desc="The subtitle of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can see your activity
   </message>
 
   <!-- History strings -->
-  <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
-    History
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
-    Last visited today
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
-    Last visited yesterday
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
-    Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
-  </message>
-  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
-    Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
-  </message>
+  <if expr="is_ios">
+    <then>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="Title of the Last Visited row in Page Info on iOS. The button opens history page for the site.">
+        Last Visited
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited today.">
+        Today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited yesterday.">
+        Yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited NUM_DAYS days ago.">
+        <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for the Last Visited row in Page Info on iOS. The site was last visited on a particular date.">
+        <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </then>
+    <else>
+      <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
+        History
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+        Last visited today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+        Last visited yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+        Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+        Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+      </message>
+    </else>
+  </if>
 
   <!-- Enterprise interstitial strings -->
   <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
     This site is flagged by your organization
   </message>
   <message name="IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS" desc="A more detailed summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been flagged by your admin to show a warning">
+    Your organization has flagged this site as it might violate a policy.
+  </message>
+  <message name="IDS_PAGE_INFO_ENTERPRISE_BLOCK_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been blocked by your admin">
+    This site is blocked by your organization
+  </message>
+  <message name="IDS_PAGE_INFO_ENTERPRISE_BLOCK_DETAILS" desc="A more detailed summary at the top of the Page Info bubble (which shows when you click the security indicator) if the website has been blocked by your admin">
     Your organization has blocked this site because it violates a policy.
   </message>
 

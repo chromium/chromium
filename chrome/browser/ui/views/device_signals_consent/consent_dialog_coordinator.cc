@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -65,7 +66,7 @@ ConsentDialogCoordinator::CreateDeviceSignalsConsentDialogModel() {
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON))
               .SetId(kDeviceSignalsConsentCancelButtonElementId))
-      .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+      .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
       .AddParagraph(ui::DialogModelLabel(GetDialogBodyText()))
       .SetCloseActionCallback(
           base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogClose,

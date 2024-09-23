@@ -211,7 +211,6 @@ struct WebPreferences {
   bool initialize_at_minimum_page_scale;
   bool smart_insert_delete_enabled;
   bool spatial_navigation_enabled;
-  bool fake_no_alloc_direct_call_for_testing_enabled;
   V8CacheOptions v8_cache_options;
   bool record_whole_document;
 
@@ -359,6 +358,10 @@ struct WebPreferences {
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
 
+  [EnableIf=is_android]
+  // Long press on links selects text instead of triggering context menu.
+  bool long_press_link_select_text;
+
   // Disable the Web Authentication (WebAuthn) API.
   // TODO(crbug.com/1284805): Remove once WebView supports WebAuthn.
   [EnableIf=is_android]
@@ -405,9 +408,27 @@ struct WebPreferences {
   // policy.
   bool require_transient_activation_for_show_file_or_directory_picker;
 
-  // HTML Fullscreen (e.g. `Element.requestFullscreen()`)'s transient activation
-  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
-  bool require_transient_activation_for_html_fullscreen;
+  // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
+  // can be bypassed via
+  // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
+  bool require_transient_activation_and_user_confirmation_for_subapps_api;
+
+  // The forced colors state for the web content. The forced colors state
+  // is used to evaluate the forced-colors media query, as well as determining
+  // when to apply system color overrides to author specified styles.
+  bool in_forced_colors;
+
+  // Indicates if Forced Colors mode should be disabled for this page.
+  // This allows users opt out of forced colors on specific sites.
+  // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
+  bool is_forced_colors_disabled;
+
+  // The preferred color scheme set by the user's browser settings. The variable
+  // follows the browser's color mode setting unless a browser theme (custom or
+  // not) is defined, in which case the color scheme is set to the default
+  // value. This value is used to evaluate the used color scheme in non overlay
+  // root scrollbars.
+  PreferredColorScheme preferred_root_scrollbar_color_scheme;
 
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme

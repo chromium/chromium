@@ -206,7 +206,7 @@ class NetErrorHelperCore {
 
   void Reload();
 
-  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The last DnsProbeStatus received from the browser.
   error_page::DnsProbeStatus last_probe_status_;

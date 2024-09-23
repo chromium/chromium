@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gtk/printing/print_dialog_gtk.h"
 
 #include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -160,7 +166,7 @@ class GtkPrinterList {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
-                                   base::StringPiece key) {
+                                   std::string_view key) {
   const std::string* data_string = data.FindString(key);
   CHECK(data_string);
 
@@ -264,7 +270,7 @@ void PrintDialogGtk::UpdateSettings(
     // the Resolution PPD attribute. For this reason "cups-Resolution"
     // makes the most sense here.
     //
-    // TODO(crbug.com/1119956): Since PrintBackendCUPS parses the PPD file in
+    // TODO(crbug.com/40714448): Since PrintBackendCUPS parses the PPD file in
     // Chromium, it should be possible to store the resolution attribute name
     // as well as a map from the gfx::Size resolution to the std::string
     // serialized value (in case a non-standard value such as 500x500dpi is
@@ -312,7 +318,7 @@ void PrintDialogGtk::UpdateSettings(
         cups_duplex_mode = kDuplexNone;
         break;
       default:  // kUnknownDuplexMode
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     gtk_print_settings_set(gtk_settings_, kCUPSDuplex, cups_duplex_mode);
@@ -410,7 +416,7 @@ void PrintDialogGtk::ShowDialog(
   if (parent_view)
     parent_view->AddObserver(this);
   if (gtk::GtkCheckVersion(4)) {
-    gtk_window_set_hide_on_close(GTK_WINDOW(dialog_), true);
+    gtk_window_set_hide_on_close(GTK_WINDOW(dialog_.get()), true);
   } else {
     g_signal_connect(dialog_, "delete-event",
                      G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
@@ -434,15 +440,15 @@ void PrintDialogGtk::ShowDialog(
       GTK_PRINT_CAPABILITY_GENERATE_PDF | GTK_PRINT_CAPABILITY_PAGE_SET |
       GTK_PRINT_CAPABILITY_COPIES | GTK_PRINT_CAPABILITY_COLLATE |
       GTK_PRINT_CAPABILITY_REVERSE);
-  gtk_print_unix_dialog_set_manual_capabilities(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                                cap);
-  gtk_print_unix_dialog_set_embed_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                             TRUE);
-  gtk_print_unix_dialog_set_support_selection(GTK_PRINT_UNIX_DIALOG(dialog_),
-                                              TRUE);
-  gtk_print_unix_dialog_set_has_selection(GTK_PRINT_UNIX_DIALOG(dialog_),
+  gtk_print_unix_dialog_set_manual_capabilities(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), cap);
+  gtk_print_unix_dialog_set_embed_page_setup(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), TRUE);
+  gtk_print_unix_dialog_set_support_selection(
+      GTK_PRINT_UNIX_DIALOG(dialog_.get()), TRUE);
+  gtk_print_unix_dialog_set_has_selection(GTK_PRINT_UNIX_DIALOG(dialog_.get()),
                                           has_selection);
-  gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_),
+  gtk_print_unix_dialog_set_settings(GTK_PRINT_UNIX_DIALOG(dialog_.get()),
                                      gtk_settings_);
   // Unretained is safe since we own `signal_`.
   signal_ = ScopedGSignal(
@@ -450,7 +456,7 @@ void PrintDialogGtk::ShowDialog(
       base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
   gtk_widget_show(dialog_);
 
-  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_));
+  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_.get()));
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
@@ -517,17 +523,17 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       if (gtk_settings_) {
         g_object_unref(gtk_settings_.ExtractAsDangling());
       }
-      gtk_settings_ =
-          gtk_print_unix_dialog_get_settings(GTK_PRINT_UNIX_DIALOG(dialog_));
+      gtk_settings_ = gtk_print_unix_dialog_get_settings(
+          GTK_PRINT_UNIX_DIALOG(dialog_.get()));
 
       printer_ = WrapGObject(gtk_print_unix_dialog_get_selected_printer(
-          GTK_PRINT_UNIX_DIALOG(dialog_)));
+          GTK_PRINT_UNIX_DIALOG(dialog_.get())));
 
       if (page_setup_) {
         g_object_unref(page_setup_.ExtractAsDangling());
       }
-      page_setup_ =
-          gtk_print_unix_dialog_get_page_setup(GTK_PRINT_UNIX_DIALOG(dialog_));
+      page_setup_ = gtk_print_unix_dialog_get_page_setup(
+          GTK_PRINT_UNIX_DIALOG(dialog_.get()));
       g_object_ref(page_setup_);
 
       // Handle page ranges.
@@ -557,7 +563,7 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
           break;
         case GTK_PRINT_PAGES_CURRENT:
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 
@@ -577,7 +583,7 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
     }
     case GTK_RESPONSE_APPLY:
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

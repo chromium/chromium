@@ -198,7 +198,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return true;
@@ -643,7 +643,7 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
       break;
 
     default:
-      NOTREACHED() << "Unsupported output pixel format";
+      NOTREACHED_IN_MIGRATION() << "Unsupported output pixel format";
   }
 
   output_gmb_buffer->Unmap();

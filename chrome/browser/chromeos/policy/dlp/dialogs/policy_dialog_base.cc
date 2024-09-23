@@ -84,7 +84,7 @@ void PolicyDialogBase::SetupUpperPanel() {
   auto color = ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kIconColorPrimary);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+  // TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
   auto color = SK_ColorGRAY;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   managed_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
@@ -98,7 +98,7 @@ views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
       upper_panel_->AddChildView(std::make_unique<views::Label>(title));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   title_label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorPrimary));
@@ -114,7 +114,7 @@ views::Label* PolicyDialogBase::AddMessage(const std::u16string& message) {
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   message_label->SetEnabledColor(
       ash::ColorProvider::Get()->GetContentLayerColor(
@@ -159,7 +159,7 @@ views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);
-// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+// TODO(crbug.com/40202228) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorSecondary));

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,23 @@ const int kMaxApproxMemoryUseMB = 16;
 bool PrefixStopCallback(const std::string& prefix, const std::string& key) {
   return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE);
 }
+
+// Controls whether database writes are asynchronous. This is expected to reduce
+// disk contention and improve overall browser speed. The last asynchronous
+// writes may be lost in case of operating system or power failure (note: a mere
+// process crash wouldn't prevent a write from completing), but leveldb_proto
+// clients don't have strong persistence requirements (see
+// https://docs.google.com/document/d/1nd74W_uUZrU0sOFjWO9xyxFhQPIR1uBcJyoRWkw0_LA/edit?usp=sharing).
+// Database corruption is not a concern due to leveldb's journaling system.
+// More details at
+// https://github.com/google/leveldb/blob/main/doc/index.md#synchronous-writes.
+//
+// TODO(crbug.com/40287434): By the end of 2024, we should have measured the
+// potential gains of avoiding synchronous writes in //components/leveldb_proto/
+// and decided whether to move forward with this change.
+BASE_FEATURE(kLevelDBProtoAsyncWrite,
+             "LevelDBProtoAsyncWrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -142,7 +160,7 @@ bool LevelDB::Save(const base::StringPairs& entries_to_save,
     updates.Delete(leveldb::Slice(key));
 
   leveldb::WriteOptions options;
-  options.sync = true;
+  options.sync = !base::FeatureList::IsEnabled(kLevelDBProtoAsyncWrite);
 
   *status = db_->Write(options, &updates);
   if (status->ok())
@@ -189,7 +207,7 @@ bool LevelDB::UpdateWithRemoveFilter(const base::StringPairs& entries_to_save,
   }
 
   leveldb::WriteOptions write_options;
-  write_options.sync = true;
+  write_options.sync = !base::FeatureList::IsEnabled(kLevelDBProtoAsyncWrite);
   *status = db_->Write(write_options, &updates);
   if (status->ok())
     return true;

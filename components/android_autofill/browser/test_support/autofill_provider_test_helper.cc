@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
 #include <iterator>
 #include <string>
@@ -19,6 +18,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
 namespace autofill {
 
@@ -81,8 +83,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   for (auto& j : form_structures) {
     FormData formData = j.second->ToFormData();
     for (size_t i = 0; i < field_ids.size(); ++i) {
-      for (auto form_field_data : formData.fields) {
-        if (form_field_data.id_attribute == field_ids[i]) {
+      for (auto form_field_data : formData.fields()) {
+        if (form_field_data.id_attribute() == field_ids[i]) {
           autofill::test::AddFieldPredictionToForm(
               form_field_data,
               static_cast<autofill::FieldType>(raw_field_types[i]),
@@ -135,8 +137,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   for (auto& j : form_structures) {
     FormData formData = j.second->ToFormData();
     for (size_t i = 0; i < field_ids.size(); ++i) {
-      for (auto form_field_data : formData.fields) {
-        if (form_field_data.id_attribute == field_ids[i]) {
+      for (auto form_field_data : formData.fields()) {
+        if (form_field_data.id_attribute() == field_ids[i]) {
           std::vector<FieldType> field_types;
           field_types.reserve(raw_field_types[i].size());
           base::ranges::transform(

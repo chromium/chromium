@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_REPORTING_API_ENDPOINT_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_REPORTING_API_ENDPOINT_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/network_anonymization_key.h"
@@ -46,7 +48,8 @@ struct StructTraits<network::mojom::ReportingApiEndpointDataView,
     return endpoint.info.weight;
   }
 
-  static const url::Origin& origin(const net::ReportingEndpoint& endpoint) {
+  static const std::optional<url::Origin>& origin(
+      const net::ReportingEndpoint& endpoint) {
     return endpoint.group_key.origin;
   }
 

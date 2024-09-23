@@ -12,7 +12,7 @@ namespace media {
 // Describes the current state of media being controlled via the
 // FlingingController interface. This is a copy of
 // media_router.mojom.MediaStatus interface, without the cast specific portions.
-// TODO(https://crbug.com/820277): Deduplicate media_router::MediaStatus.
+// TODO(crbug.com/41375562): Deduplicate media_router::MediaStatus.
 class MediaStatusObserver {
  public:
   virtual ~MediaStatusObserver() = default;

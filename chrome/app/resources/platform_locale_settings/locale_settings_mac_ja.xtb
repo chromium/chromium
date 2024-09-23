@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="IDS_STANDARD_FONT_FAMILY">Hiragino Kaku Gothic ProN</translation>
-<translation id="IDS_FIXED_FONT_FAMILY">Osaka-Mono</translation>
+<translation id="IDS_FIXED_FONT_FAMILY">,Osaka,BIZ UDGothic,Menlo</translation>
 <translation id="IDS_SERIF_FONT_FAMILY">Hiragino Mincho ProN</translation>
 <translation id="IDS_SANS_SERIF_FONT_FAMILY">Hiragino Kaku Gothic ProN</translation>
 <translation id="IDS_MINIMUM_FONT_SIZE">10</translation>

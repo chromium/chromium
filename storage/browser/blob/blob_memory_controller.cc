@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/browser/blob/blob_memory_controller.h"
 
 #include <algorithm>
@@ -400,8 +405,8 @@ class BlobMemoryController::FileQuotaAllocationTask
 // check when we have a custom file transportation trigger.
 #if DCHECK_IS_ON()
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (LIKELY(
-            !command_line->HasSwitch(kBlobFileTransportByFileTriggerSwitch))) {
+    if (!command_line->HasSwitch(kBlobFileTransportByFileTriggerSwitch))
+        [[likely]] {
       DCHECK_LE(total_size, controller_->GetAvailableFileSpaceForBlobs());
     }
 #endif
@@ -598,9 +603,9 @@ BlobMemoryController::Strategy BlobMemoryController::DetermineStrategy(
     return Strategy::NONE_NEEDED;
   }
 
-  if (UNLIKELY(limits_.override_file_transport_min_size > 0) &&
-      file_paging_enabled_ &&
-      total_transportation_bytes >= limits_.override_file_transport_min_size) {
+  if (limits_.override_file_transport_min_size > 0 && file_paging_enabled_ &&
+      total_transportation_bytes >= limits_.override_file_transport_min_size)
+      [[unlikely]] {
     return Strategy::FILE;
   }
 

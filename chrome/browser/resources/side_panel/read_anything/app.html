@@ -1,100 +1,63 @@
-<style include="cr-hidden-style sp-shared-style">
-  :host-context([chrome-refresh-2023]) #empty-state-container {
-    border-radius: 12px;
-  }
-  .sp-scroller {
-    display: block;
-  }
-  :host-context([chrome-refresh-2023]) #empty-state-container {
-    margin: 0 8px;
-    padding: 20px 0;
-  }
-
-  #toolbar-container {
-    width: 100%;
-  }
-
-  #flexParent {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #container-parent {
-    background: var(--background-color);
-    height: 100%;
-  }
-
-  :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-track {
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-
-  #container {
-    background: var(--background-color);
-    color: var(--foreground-color);
-    font-family: var(--font-family);
-    font-size: var(--font-size);
-    letter-spacing: var(--letter-spacing);
-    line-height: var(--line-height);
-    padding: 20px;
-    /* max-width should match line width limit in read_anything_constants.h. */
-    max-width: 60ch;
-    margin: 0 auto;
-  }
-  a:link {
-    color: var(--link-color);
-  }
-  a:visited {
-    color: var(--visited-link-color);
-  }
-  #empty-state-container {
-    background: var(--background-color);
-    height: 100%;
-    padding: 20px;
-  }
-  sp-empty-state {
-    display: flex;
-    margin: 0 auto 16px auto;
-    width: fit-content;
-  }
-  ::selection {
-    background: var(--selection-color);
-    color: var(--selection-text-color);
-  }
-  .current-read-highlight {
-    background-color: var(--current-highlight-bg-color);
-  }
-  .previous-read-highlight {
-    color: var(--previous-highlight-color);
-    background-color: transparent;
-  }
-
-</style>
-<div id="flexParent" on-keydown="onKeyDown_">
-  <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
+<div id="appFlexParent" @keydown="${this.onKeyDown_}">
+  <div id="toolbar-container">
     <read-anything-toolbar
-      paused="[[paused]]"
-      selected-voice="[[selectedVoice]]"
-      available-voices="[[availableVoices]]"
-      preview-voice-playing="[[previewVoicePlaying]]"
-      on-select-voice="onSelectVoice_"
-      on-preview-voice="onPreviewVoice_"
-      on-voice-menu-close="onVoiceMenuClose_"
-      id="toolbar">
+        .isSpeechActive="${this.speechPlayingState.isSpeechActive}"
+        .isAudioCurrentlyPlaying="${this.speechPlayingState.isAudioCurrentlyPlaying}"
+        .isReadAloudPlayable="${this.computeIsReadAloudPlayable()}"
+        .selectedVoice="${this.selectedVoice_}"
+        .settingsPrefs="${this.settingsPrefs_}"
+        .enabledLangs="${this.enabledLangs}"
+        .voicePackInstallStatus="${this.voiceStatusLocalState_}"
+        .availableVoices="${this.availableVoices_}"
+        .previewVoicePlaying="${this.previewVoicePlaying_}"
+        .localeToDisplayName="${this.localeToDisplayName_}"
+        .lastDownloadedLang="${this.lastDownloadedLang_}"
+        @select-voice="${this.onSelectVoice_}"
+        @voice-language-toggle="${this.onVoiceLanguageToggle_}"
+        @preview-voice="${this.onPreviewVoice_}"
+        @voice-menu-close="${this.onVoiceMenuClose_}"
+        @play-pause-click="${this.onPlayPauseClick_}"
+        @font-size-change="${this.onFontSizeChange_}"
+        @font-change="${this.onFontChange_}"
+        @rate-change="${this.resetSpeechPostSettingChange_}"
+        @next-granularity-click="${this.playNextGranularity_}"
+        @previous-granularity-click="${this.playPreviousGranularity_}"
+        @links-toggle="${this.updateLinks_}"
+        @images-toggle="${this.updateImages_}"
+        @letter-spacing-change="${this.onLetterSpacingChange_}"
+        @theme-change="${this.onThemeChange_}"
+        @line-spacing-change="${this.onLineSpacingChange_}"
+        @highlight-change="${this.onHighlightChange_}"
+        @reset-toolbar="${this.onResetToolbar_}"
+        @toolbar-overflow="${this.onToolbarOverflow_}"
+        id="toolbar">
     </read-anything-toolbar>
   </div>
-  <div id="container-parent" class="sp-card sp-scroller"
-       hidden="[[!hasContent_]]">
-    <div id="container"></div>
+  <div id="containerParent" class="sp-card sp-scroller"
+      ?hidden="${!this.hasContent_}">
+    <div id="container"
+        class="user-select-disabled-when-speech-active-${this.speechPlayingState.isSpeechActive}">
+    </div>
+    <cr-button id="docs-load-more-button" tabindex="0"
+        @click="${this.onDocsLoadMoreButtonClick_}"
+        ?hidden="${!this.isDocsLoadMoreButtonVisible_}">
+        Load More
+    </cr-button>
   </div>
-  <div id="empty-state-container" hidden="[[hasContent_]]">
-    <sp-empty-state
-      image-path="[[emptyStateImagePath_]]"
-      dark-image-path="[[emptyStateDarkImagePath_]]"
-      heading="[[emptyStateHeading_]]"
-      body="[[emptyStateSubheading_]]">
+  <div id="empty-state-container" ?hidden="${this.hasContent_}">
+    <sp-empty-state image-path="${this.emptyStateImagePath_}"
+        dark-image-path="${this.emptyStateDarkImagePath_}"
+        heading="${this.emptyStateHeading_}"
+        body="${this.emptyStateSubheading_}">
     </sp-empty-state>
   </div>
 </div>
+
+<cr-toast id="toast" duration="${this.toastDuration_}">
+  <div id="toastDiv">
+    <span id="toastTitle">
+      ${this.getLanguageDownloadedTitle_()}
+    </span>
+    <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
+  </div>
+</cr-toast>

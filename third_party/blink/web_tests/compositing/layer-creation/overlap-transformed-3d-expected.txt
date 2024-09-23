@@ -8,7 +8,7 @@ Before:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
+      "name": "LayoutBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
@@ -48,21 +48,21 @@ After:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
+      "name": "LayoutBlockFlow (positioned) DIV id='green-box' class='box green center composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top left'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box top left'",
       "position": [8, 8],
       "bounds": [100, 300],
       "contentsOpaque": true,
       "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top right'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box top right'",
       "position": [208, 8],
       "bounds": [100, 300],
       "contentsOpaque": true,

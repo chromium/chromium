@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
-<translation id="1088086359088493902">Секунды</translation>
-<translation id="1142001580032786438">Паказаць сродак выбару тыдня</translation>
+<translation id="1012241361789814178">Адладчык прыпынены на іншай укладцы. Націсніце, каб пераключыцца на яе.</translation>
 <translation id="1171774979989969504">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1306460908038601864">выключыць</translation>
 <translation id="1311894908970423688">Значэнне павінна быць <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">ёсць магчымасць множнага выбару, выбрана: <ph name="SELECTED" /> з <ph name="COUNT" /></translation>
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="1591562245178063882">Гэты месяц</translation>
 <translation id="1637811476055996098">Выбраць файлы</translation>
-<translation id="1681022320378710418">бягучы час</translation>
-<translation id="1727839386348365796">Піпетка</translation>
+<translation id="1680090928918677457">Выкарыстоўваць камеру</translation>
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1758486001363313524">Іншая...</translation>
-<translation id="1787192514241997742">агульны час: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Даць доступ да камеры</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">прайграць на аддаленай прыладзе</translation>
 <translation id="1921819250265091946">дд</translation>
 <translation id="1938124657309484470">Час павінен быць указаны не пазнейшы, чым <ph name="MAXIMUM_DATE_OR_TIME" />.</translation>
-<translation id="1946271899482435442">Паказаць інструмент выбару даты</translation>
 <translation id="1993104285338243655">Пераключана на адлюстраванне</translation>
-<translation id="2031987842108996681">Чырвоны канал</translation>
 <translation id="2060505056492490888">Сімвал "<ph name="DOT" />" у адрасе "<ph name="INVALIDDOMAIN" />" размешчаны няправільна.</translation>
 <translation id="2068711044993563745">Мінімальнае значэнне (<ph name="MINIMUM" />) павінна быць меншым за максімальнае (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Сёння</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">Тыдзень <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трэк <ph name="NUMBER" /></translation>
 <translation id="2353297238722298836">Камера і мікрафон дазволены</translation>
-<translation id="2393030564806080191">Шаснаццатковае значэнне колеру</translation>
-<translation id="2398813069815436052">дыялогавае акно адкрыта.</translation>
-<translation id="245932805758469625">колькі секунд відэа засталося</translation>
-<translation id="248395913932153421">Дзень</translation>
 <translation id="2507943997699731163">Запоўніце гэта поле.</translation>
-<translation id="2530182415807757784">ёсць магчымасць множнага выбару, нічога не выбрана</translation>
-<translation id="2561842179657104141">паказаць больш элементаў кіравання мультымедыя</translation>
-<translation id="2572483411312390101">прайграць</translation>
 <translation id="2613802280814924224">Увядзіце дапушчальнае значэнне. Найбліжэйшае дапушчальнае значэнне: <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Зялёны канал</translation>
 <translation id="2653659639078652383">Адправіць</translation>
-<translation id="2723001399770238859">аўдыя</translation>
 <translation id="2746543609216772311">Час павінен быць указаны не ранейшы, чым <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Каб працягнуць, пастаўце птушку ў гэтым полі.</translation>
 <translation id="2908441821576996758">Увядзіце раздзелены коскамі спіс адрасоў электроннай пошты.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
-<translation id="3053226512517284904">меню паказу аўдыяапісанняў</translation>
 <translation id="3075154866155599887">Увядзіце дапушчальнае значэнне. Поле не запоўнена, або ўказана няправільная дата.</translation>
 <translation id="310520048233152454">Увядзіце URL-адрас.</translation>
-<translation id="3220661731597678625">бягучы крок</translation>
 <translation id="3321030238473337787">Хуткасць прайгравання</translation>
-<translation id="3329013043687509092">Насычанасць</translation>
-<translation id="3377518164566272702">Даць доступ да мікрафона і камеры</translation>
 <translation id="3450233048674729344">Значэнне павінна быць меншым або роўным <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Выйсці з рэжыму "Відарыс у відарысе"</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">У частцы перад "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
-<translation id="4103419683916926126">Мілісекунды</translation>
-<translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>
-<translation id="4748357248530471599">уключэнне і выключэнне поўнаэкраннага рэжыму для выраза экрана</translation>
-<translation id="4763480195061959176">відэа</translation>
 <translation id="4792862212177489858">Абагуліць геаданыя</translation>
 <translation id="4812940957355064477">Увядзіце лік.</translation>
-<translation id="4912200001568447310">бягучы элемент</translation>
-<translation id="4915360478455618802">Паказаць сродак выбару часу</translation>
-<translation id="4924138096460353083">не вызначана</translation>
-<translation id="4950364064308314478">Паказваць сродак выбару мясцовых даты і часу</translation>
-<translation id="4971739861736909480">Выбрана: <ph name="ACCNAME" /></translation>
+<translation id="49269513399674318">Выкарыстоўваць мікрафон</translation>
 <translation id="4975562563186953947">Выбрана: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
 <translation id="49969490063480558">Увядзіце частку пасля сімвала "<ph name="ATSIGN" />". Адрас "<ph name="INVALIDADDRESS" />" – няпоўны.</translation>
-<translation id="5037575921016181960">Надзейны пароль</translation>
-<translation id="5090250355906949916">паўзунок часу відэафайла</translation>
-<translation id="509897012892853729">Сіні канал</translation>
-<translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5164977714490026579">Значэнне павінна быць большым або роўным <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">назад да параметраў</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
-<translation id="5272594226096532950">Не выбрана. Варыянт <ph name="INDEX" /> з <ph name="COUNT" /> у групе</translation>
 <translation id="5307600278924710095">Адрас "<ph name="INVALIDADDRESS" />" – няпоўны. Увядзіце частку перад сімвалам "<ph name="ATSIGN" />".</translation>
 <translation id="5334352251556557839">Не ўдалося прайграць мультымедыйны файл.</translation>
 <translation id="537648784377940524">Мінімальная дата (<ph name="MIN_DATE_OR_TIME" />) павінна быць ранейшая за максімальную (<ph name="MAX_DATE_OR_TIME" />).</translation>
-<translation id="5378437566635403538">– разгорнута, дыялогавае акно адкрыта.</translation>
-<translation id="5425179576310518467">бягучая дата</translation>
 <translation id="5466621249238537318">Выберыце адзін або некалькі файлаў.</translation>
-<translation id="5468998798572797635">выключыць поўнаэкранны рэжым</translation>
 <translation id="5514612371225420585">Файл на вашай прыладзе</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
-<translation id="5546461542133609677">уключыць гук</translation>
 <translation id="5630795885300617244">Каб пераскочыць на 10 с, двойчы націсніце справа або злева</translation>
-<translation id="5677946354068040947">дадатковыя параметры</translation>
 <translation id="57838592816432529">Выключыць</translation>
-<translation id="5786442179789148008">паказаць меню хуткасці прайгравання</translation>
-<translation id="5787939484346677755">– разгорнута, варыянты аўтазапаўнення даступныя.</translation>
-<translation id="5860033963881614850">Выключана</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
 <translation id="5888666972993069672">Ідзе трансляцыя на прыладу <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">Уключана</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="5966707198760109579">Тыдзень</translation>
 <translation id="5985507339671257014">0,5</translation>
-<translation id="6011459053400940133">рэгулятар гучнасці</translation>
-<translation id="6015796118275082299">Год</translation>
-<translation id="6165053282446038410">– разгорнута, даступных варыянтаў аўтазапаўнення: <ph name="COUNT" />.</translation>
-<translation id="6212595056017402527">бягучая старонка</translation>
-<translation id="6281588256137006900">Светласць</translation>
 <translation id="6310801910862476708">Выйсці з рэжыму "Відарыс у відарысе"</translation>
-<translation id="6398862346408813489">Паказаць панэль выбару месяца</translation>
-<translation id="6404546809543547843">паўзунок часу аўдыяфайла</translation>
-<translation id="6443871981718447451">паказаць меню субцітраў</translation>
 <translation id="6484738902856791350">Вывесці ў зручным фармаце</translation>
 <translation id="6550675742724504774">Параметры</translation>
-<translation id="6572309429103589720">Граматычная памылка</translation>
-<translation id="658823671542763450">уключыць поўнаэкранны рэжым</translation>
-<translation id="6606094904835912297">Сістэмныя колеры</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="668171684555832681">Іншы...</translation>
 <translation id="6709093583001123835">Значэнне павінна быць <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Кепская якасць прайгравання</translation>
-<translation id="6719914554879143100">Выбрана. Варыянт <ph name="INDEX" /> з <ph name="COUNT" /> у групе</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6820355525329141109">Не ўдалося загрузіць убудову.</translation>
-<translation id="6831465880655513317">Палітра выбару колераў з двухмерным паўзунком для выбару насычанасці і светласці</translation>
-<translation id="6843725295806269523">выключыць гук</translation>
 <translation id="6919891270253167948">1,5</translation>
-<translation id="6941933287844615239">спампаваць мультымедыя</translation>
-<translation id="698788488269350478">– разгорнута.</translation>
 <translation id="6989848892321993519">Павялічце колькасць сімвалаў у гэтым тэксце як мінімум да <ph name="MIN_CHARACTERS" /> (зараз у вас 1 сімвал).</translation>
 <translation id="7080893216867146095">Абагульванне геаданых дазволена</translation>
 <translation id="709897737746224366">Прытрымлівайцеся ўказанага фармату.</translation>
-<translation id="7102274145889307184">бягучае месцазнаходжанне</translation>
+<translation id="7134810312945846184">Выкарыстоўваць мікрафон і камеру</translation>
 <translation id="7263440858009898357">Выберыце пункт са спіса</translation>
-<translation id="7320576522385648310">буферызацыя</translation>
-<translation id="7341556277900466204">Палітра выбару колераў</translation>
 <translation id="7364796246159120393">Выбраць файл</translation>
 <translation id="739024184232394898">Іншыя...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7514365320538308">Спампаваць</translation>
-<translation id="7673697353781729403">Гадзіны</translation>
 <translation id="7750228210027921155">Відарыс у відарысе</translation>
-<translation id="775297008183122718">Несапраўдны запіс</translation>
 <translation id="7782515065589691344">1,25</translation>
-<translation id="7789962463072032349">прыпыніць</translation>
-<translation id="7852167693871241274">Паўзунок адцення</translation>
 <translation id="7888071071722539607">У адрасе электроннай пошты павінен быць сімвал "<ph name="ATSIGN" />". У "<ph name="INVALIDADDRESS" />" няма "<ph name="ATSIGN" />".</translation>
 <translation id="795667975304826397">Файл не выбраны</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" />, не выбрана</translation>
 <translation id="8117451130807776954">Гэты тыдзень</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
-<translation id="8261464734335370856">Арфаграфічная памылка</translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="835897206747267392">Недапушчальнае значэнне.</translation>
 <translation id="839593075537728968">Значэнне павінна быць у дыяпазоне паміж <ph name="MINIMUM_TIME" /> і <ph name="MAXIMUM_TIME" />.</translation>
-<translation id="8403857369060869934">прайшло часу: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423">Файлаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="8451268428117625855">Выберыце файл.</translation>
-<translation id="8534579021159131403">Хвіліны</translation>
-<translation id="8541249477527128034">кіраванне мультымедыя</translation>
-<translation id="8613126697340063924">кіраваць аддаленым прайграваннем</translation>
-<translation id="8634971699417195529">Паказаць сродак выбару месяца</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пераносіць радкі</translation>
 <translation id="8750798805984357768">Выберыце адзін з варыянтаў.</translation>
 <translation id="8845239796550121995">Ідзе трансляцыя на тэлевізар</translation>
 <translation id="8875657656876809964">Памылка прайгравання відэа</translation>
-<translation id="8889402386540077796">Адценне</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
-<translation id="894736920926684893">Інструмент пераключэння фармату</translation>
-<translation id="8987927404178983737">Месяц</translation>
-<translation id="901493112792887934">колькі секунд прайшло</translation>
-<translation id="9093215626363556771">выйсці з рэжыму "відарыс у відарысе"</translation>
 <translation id="9132465097189459683">Іншае...</translation>
-<translation id="9155987714137265666"><ph name="WEEK" />, пачынаецца з <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Відарыс у відарысе</translation>
-<translation id="918430632320614861">Даць доступ да мікрафона</translation>
-<translation id="945780513535800434">Выбраны толькі некаторыя варыянты</translation>
-<translation id="954003015749068518">уключыць рэжым "Відарыс у відарысе"</translation>
 </translationbundle>

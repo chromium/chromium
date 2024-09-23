@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This test validates that the ProcessSingleton class properly makes sure
 // that there is only one main browser process.
 //
@@ -21,6 +26,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
@@ -78,16 +84,12 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
   void StartChrome(base::WaitableEvent* start_event, bool first_run) {
     base::CommandLine command_line_for_relaunch(
         initial_command_line_for_relaunch_.GetProgram());
-    test_launcher_utils::RemoveCommandLineSwitch(
-        initial_command_line_for_relaunch_, switches::kUserDataDir,
-        &command_line_for_relaunch);
+    command_line_for_relaunch.RemoveSwitch(switches::kUserDataDir);
     command_line_for_relaunch.AppendSwitchPath(switches::kUserDataDir,
                                                user_data_dir_);
 
     if (first_run) {
-      base::CommandLine tmp_command_line = command_line_for_relaunch;
-      test_launcher_utils::RemoveCommandLineSwitch(
-          tmp_command_line, switches::kNoFirstRun, &command_line_for_relaunch);
+      command_line_for_relaunch.RemoveSwitch(switches::kNoFirstRun);
       command_line_for_relaunch.AppendSwitch(switches::kForceFirstRun);
     }
 

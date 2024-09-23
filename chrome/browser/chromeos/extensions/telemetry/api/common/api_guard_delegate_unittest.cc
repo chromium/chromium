@@ -10,15 +10,20 @@
 #include <utility>
 #include <vector>
 
+#include "ash/session/session_controller_impl.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -38,7 +43,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
-#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,7 +54,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -63,6 +67,12 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
+
+namespace {
+
+namespace crosapi = crosapi::mojom;
+
+}
 
 struct ExtensionInfoTestParams {
   ExtensionInfoTestParams(const std::string& extension_id,
@@ -133,11 +143,16 @@ class ApiGuardDelegateTest
     BrowserWithTestWindowTest::SetUp();
 
     CreateExtension();
+
+    fake_probe_service_ = std::make_unique<FakeProbeService>();
+    RemoteProbeServiceStrategy::Get()->SetServiceForTesting(
+        fake_probe_service_->BindNewPipeAndPassRemote());
+
     // Make sure device manufacturer is allowlisted.
     SetDeviceManufacturer(manufacturer());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto params = crosapi::mojom::BrowserInitParams::New();
+    auto params = crosapi::BrowserInitParams::New();
     params->is_current_user_device_owner = true;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
 
@@ -171,11 +186,13 @@ class ApiGuardDelegateTest
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void SetDeviceManufacturer(std::string manufacturer) {
-    hardware_info_delegate_factory_ =
-        std::make_unique<FakeHardwareInfoDelegate::Factory>(manufacturer);
-    HardwareInfoDelegate::Factory::SetForTesting(
-        hardware_info_delegate_factory_.get());
+  void SetDeviceManufacturer(const std::string& manufacturer) {
+    HardwareInfoDelegate::Get().ClearCacheForTesting();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
+    telemetry_info->system_result = crosapi::ProbeSystemResult::NewSystemInfo(
+        crosapi::ProbeSystemInfo::New(crosapi::ProbeOsInfo::New(manufacturer)));
+    fake_probe_service_->SetProbeTelemetryInfoResponse(
+        std::move(telemetry_info));
   }
 
   void OpenAppUIUrlAndSetCertificateWithStatus(net::CertStatus cert_status) {
@@ -212,8 +229,7 @@ class ApiGuardDelegateTest
   }
 
   scoped_refptr<const extensions::Extension> extension_;
-  std::unique_ptr<HardwareInfoDelegate::Factory>
-      hardware_info_delegate_factory_;
+  std::unique_ptr<FakeProbeService> fake_probe_service_;
 };
 
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
@@ -224,7 +240,7 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto params = crosapi::mojom::BrowserInitParams::New();
+  auto params = crosapi::BrowserInitParams::New();
   params->is_current_user_device_owner = false;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -382,8 +398,8 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
     ApiGuardDelegateTest::SetUp();
 
     // Make sure the main user is affiliated.
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
-    init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
+    auto init_params = crosapi::BrowserInitParams::New();
+    init_params->session_type = crosapi::SessionType::kPublicSession;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
     ASSERT_TRUE(policy::PolicyLoaderLacros::IsMainUserAffiliated());
   }
@@ -551,7 +567,6 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     feature_list_.InitWithFeatures(
         {
             ::ash::features::kShimlessRMA3pDiagnostics,
-            ::chromeos::features::kIWAForTelemetryExtensionAPI,
         },
         {});
 
@@ -598,7 +613,7 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     auto* content = ash::shimless_rma::ExternalAppDialog::GetWebContents();
     CHECK(content);
 
-    CommitPendingLoad(&content->GetController());
+    web_app::CommitPendingIsolatedWebAppNavigation(content);
   }
 
   // BrowserWithTestWindowTest overrides.

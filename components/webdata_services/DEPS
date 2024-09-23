@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/password_manager/core/browser/webdata",
   "+components/payments/content",
+  "+components/plus_addresses/webdata",
   "+components/search_engines",
   "+components/signin/public/webdata",
   "+components/sync",
@@ -12,3 +13,9 @@ include_rules = [
   "+sql",
   "+testing/gtest",
 ]
+
+specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+}

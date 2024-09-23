@@ -64,6 +64,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       bool decision_result_update_trigger = false) override;
   void CollectTrainingData(SegmentId segment_id,
                            TrainingRequestId request_id,
+                           ukm::SourceId ukm_source_id,
                            const TrainingLabels& param,
                            SuccessCallback callback) override;
 

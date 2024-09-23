@@ -1,66 +1,12 @@
 This is a testharness.js-based test.
-Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
   assert_true: member bufferData is unique expected true got false
 [FAIL] WebGL2RenderingContext includes WebGL2RenderingContextBase: member names are unique
   assert_true: member texImage3D is unique expected true got false
 [FAIL] WebGL2RenderingContext includes WebGL2RenderingContextOverloads: member names are unique
   assert_true: member bufferData is unique expected true got false
-[FAIL] WebGLObject interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLObject interface object length
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLObject interface object name
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLObject interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLObject interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLObject interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLBuffer interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLBuffer interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLFramebuffer interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLFramebuffer interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLProgram interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLProgram interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLRenderbuffer interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLRenderbuffer interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLShader interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLShader interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLTexture interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLTexture interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLQuery interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLQuery interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLSampler interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLSampler interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLSync interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLSync interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLTransformFeedback interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLTransformFeedback interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLVertexArrayObject interface: existence and properties of interface object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
-[FAIL] WebGLVertexArrayObject interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "WebGLObject" expected property "WebGLObject" missing
+[FAIL] WebGLObject interface: attribute label
+  assert_true: The prototype object must have a property "label" expected true got false
 Harness: the test ran to completion.
 

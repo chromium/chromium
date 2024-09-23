@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/w3c/csswg-drafts/issues/10332">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<select>
+  <option>option</option>
+</select>
+
+<script>
+const useCounterId = 4991;
+promise_test(async () => {
+  await new Promise(requestAnimationFrame);
+  assert_false(internals.isUseCounted(document, useCounterId));
+  document.querySelector('select').style.appearance = 'none';
+  await new Promise(requestAnimationFrame);
+  assert_true(internals.isUseCounted(document, useCounterId));
+}, 'UseCounter should count when <select> has appearance:none.');
+</script>

@@ -55,7 +55,7 @@ std::string GetMessageSendStatusString(
     case gcm::MCSClient::TTL_EXCEEDED:
       return "TTL_EXCEEDED";
     case gcm::MCSClient::SEND_STATUS_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return "UNKNOWN";
@@ -79,7 +79,7 @@ std::string GetConnectionResetReasonString(
     case gcm::ConnectionFactory::NEW_HEARTBEAT_INTERVAL:
       return "NEW_HEARTBEAT_INTERVAL";
     case gcm::ConnectionFactory::CONNECTION_RESET_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return "UNKNOWN_REASON";
@@ -158,7 +158,7 @@ std::string GetUnregistrationStatusString(
     case gcm::UnregistrationRequest::DEVICE_REGISTRATION_ERROR:
       return "DEVICE_REGISTRATION_ERROR";
     case gcm::UnregistrationRequest::UNREGISTRATION_STATUS_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return "UNKNOWN_STATUS";

@@ -10,7 +10,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
@@ -24,14 +28,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 2)
     return 0;
 
+  // SAFETY: required from fuzzer.
+  auto all_input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
+
   // Create a copy of input buffer, as otherwise we don't catch
   // overflow that touches the last byte (which is used in options).
-  std::unique_ptr<char[]> input(new char[size - 1]);
-  memcpy(input.get(), data, size - 1);
+  auto input = base::HeapArray<char>::CopiedFrom(
+      base::as_chars(all_input.first(size - 1)));
 
-  base::StringPiece input_string(input.get(), size - 1);
+  std::string_view input_string = base::as_string_view(input.as_span());
 
-  const int options = data[size - 1];
+  const int options = all_input[size - 1];
   auto result =
       base::JSONReader::ReadAndReturnValueWithError(input_string, options);
   if (!result.has_value())

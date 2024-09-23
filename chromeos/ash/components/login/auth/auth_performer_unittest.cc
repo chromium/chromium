@@ -8,25 +8,19 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -35,6 +29,7 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 using ::testing::_;
+using ::testing::UnorderedElementsAre;
 
 void SetupUserWithLegacyPasswordFactor(UserContext* context) {
   std::vector<cryptohome::AuthFactor> factors;
@@ -68,6 +63,9 @@ class AuthPerformerTest : public testing::Test {
   AuthPerformerTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFingerprintAuthFactor},
+        /*disabled_features=*/{});
     CryptohomeMiscClient::InitializeFake();
     SystemSaltGetter::Initialize();
     context_ = std::make_unique<UserContext>();
@@ -82,6 +80,9 @@ class AuthPerformerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   ::testing::StrictMock<MockUserDataAuthClient> mock_client_;
   std::unique_ptr<UserContext> context_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks that a key that has no type is recognized during StartAuthSession() as
@@ -95,10 +96,13 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
         reply.set_auth_session_id("123");
         reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
-        auto* factor = reply.add_auth_factors();
-        factor->set_label("legacy-0");
-        factor->set_type(
+        auto* factor = reply.add_configured_auth_factors_with_status();
+        factor->mutable_auth_factor()->set_label("legacy-0");
+        factor->mutable_auth_factor()->set_type(
             user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_UNSPECIFIED);
+        factor->mutable_status_info()->set_time_available_in(0);
+        factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
         std::move(callback).Run(reply);
       });
   AuthPerformer performer(&mock_client_);
@@ -133,10 +137,13 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
         reply.set_auth_session_id("123");
         reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
-        auto* factor = reply.add_auth_factors();
-        factor->set_label("legacy-0");
-        factor->set_type(
+        auto* factor = reply.add_configured_auth_factors_with_status();
+        factor->mutable_auth_factor()->set_label("legacy-0");
+        factor->mutable_auth_factor()->set_type(
             user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_UNSPECIFIED);
+        factor->mutable_status_info()->set_time_available_in(0);
+        factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
         std::move(callback).Run(reply);
       });
   AuthPerformer performer(&mock_client_);
@@ -157,6 +164,56 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
   EXPECT_TRUE(user_context->GetAuthFactorsData().FindKioskFactor());
 }
 
+// Checks that a legacy fp factor returned by StartAuthSession() is skipped.
+TEST_F(AuthPerformerTest, StartWithLegacyFp) {
+  EXPECT_CALL(mock_client_, StartAuthSession(_, _))
+      .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
+                   UserDataAuthClient::StartAuthSessionCallback callback) {
+        ::user_data_auth::StartAuthSessionReply reply;
+        reply.set_auth_session_id("123");
+        reply.set_broadcast_id("broadcast");
+        reply.set_user_exists(true);
+        auto* legacy_fp_factor =
+            reply.add_configured_auth_factors_with_status();
+        legacy_fp_factor->mutable_auth_factor()->set_label("");
+        legacy_fp_factor->mutable_auth_factor()->set_type(
+            user_data_auth::AuthFactorType::
+                AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT);
+        legacy_fp_factor->mutable_status_info()->set_time_available_in(0);
+        legacy_fp_factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
+        auto* password_factor = reply.add_configured_auth_factors_with_status();
+        password_factor->mutable_auth_factor()->set_label("password");
+        password_factor->mutable_auth_factor()->set_type(
+            user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_PASSWORD);
+        legacy_fp_factor->mutable_status_info()->set_time_available_in(0);
+        legacy_fp_factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
+        std::move(callback).Run(reply);
+      });
+  AuthPerformer performer(&mock_client_);
+
+  // Act.
+  base::test::TestFuture<bool, std::unique_ptr<UserContext>,
+                         std::optional<AuthenticationError>>
+      result;
+  performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
+                             AuthSessionIntent::kVerifyOnly,
+                             result.GetCallback());
+  auto [user_exists, user_context, cryptohome_error] = result.Take();
+
+  // Assert: no error, user context has AuthSession ID and the password factor.
+  EXPECT_TRUE(user_exists);
+  ASSERT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_EQ(user_context->GetBroadcastId(), "broadcast");
+  EXPECT_TRUE(user_context->GetAuthFactorsData().FindPasswordFactor(
+      cryptohome::KeyLabel{"password"}));
+  EXPECT_EQ(user_context->GetAuthFactorsData().FindFactorByType(
+                cryptohome::AuthFactorType::kLegacyFingerprint),
+            nullptr);
+}
+
 // Checks that AuthenticateUsingKnowledgeKey (which will be called with "gaia"
 // label after online authentication) correctly falls back to "legacy-0" label.
 TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
@@ -173,7 +230,8 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
       .WillOnce(
           [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
              UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
-            EXPECT_EQ(request.auth_factor_label(), "legacy-0");
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("legacy-0"));
             EXPECT_TRUE(request.has_auth_input());
             EXPECT_TRUE(request.auth_input().has_password_input());
             ReplyAsSuccess(std::move(callback));
@@ -207,7 +265,8 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
       .WillOnce(
           [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
              UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
-            EXPECT_EQ(request.auth_factor_label(), "pin");
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("pin"));
             EXPECT_TRUE(request.has_auth_input());
             EXPECT_TRUE(request.auth_input().has_pin_input());
             ReplyAsKeyMismatch(std::move(callback));
@@ -235,7 +294,8 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
       .WillOnce(
           [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
              UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
-            EXPECT_EQ(request.auth_factor_label(), "legacy-0");
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("legacy-0"));
             EXPECT_TRUE(request.has_auth_input());
             EXPECT_TRUE(request.auth_input().has_password_input());
             EXPECT_FALSE(
@@ -284,8 +344,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
                                            cryptohome::KeyLabel("pin"));
   cryptohome::AuthFactor pin_factor(
       std::move(pin_factor_ref), cryptohome::AuthFactorCommonMetadata(),
-      cryptohome::PinMetadata::CreateWithoutSalt(),
-      cryptohome::PinStatus{.auth_locked = false});
+      cryptohome::PinMetadata::CreateWithoutSalt(), cryptohome::PinStatus());
   context_->SetSessionAuthFactors(SessionAuthFactors({std::move(pin_factor)}));
 
   AuthPerformer performer(&mock_client_);
@@ -294,7 +353,8 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
       .WillOnce(
           [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
              UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
-            EXPECT_EQ(request.auth_factor_label(), "pin");
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("pin"));
             EXPECT_TRUE(request.has_auth_input());
             EXPECT_TRUE(request.auth_input().has_pin_input());
             EXPECT_FALSE(request.auth_input().pin_input().secret().empty());
@@ -306,6 +366,46 @@ TEST_F(AuthPerformerTest, AuthenticateWithPinSuccess) {
 
   performer.AuthenticateWithPin("1234", "pin-salt", std::move(context_),
                                 result.GetCallback());
+  // Check for no error
+  ASSERT_TRUE(result.Get<0>());
+  ASSERT_FALSE(result.Get<1>().has_value());
+}
+
+TEST_F(AuthPerformerTest, AuthenticateWithFingerprintSuccess) {
+  SetupUserWithLegacyPasswordFactor(context_.get());
+  // Simulate the already started auth session.
+  context_->SetAuthSessionIds("123", "broadcast");
+
+  // Add two fp factors to session auth factors.
+  cryptohome::AuthFactorRef fp1_ref(cryptohome::AuthFactorType::kFingerprint,
+                                    cryptohome::KeyLabel("fp1"));
+  cryptohome::AuthFactorRef fp2_ref(cryptohome::AuthFactorType::kFingerprint,
+                                    cryptohome::KeyLabel("fp2"));
+  cryptohome::AuthFactor fp_factor1(std::move(fp1_ref),
+                                    cryptohome::AuthFactorCommonMetadata());
+  cryptohome::AuthFactor fp_factor2(std::move(fp2_ref),
+                                    cryptohome::AuthFactorCommonMetadata());
+  context_->SetSessionAuthFactors(
+      SessionAuthFactors({std::move(fp_factor1), std::move(fp_factor2)}));
+
+  AuthPerformer performer(&mock_client_);
+
+  EXPECT_CALL(mock_client_, AuthenticateAuthFactor(_, _))
+      .WillOnce(
+          [](const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+             UserDataAuthClient::AuthenticateAuthFactorCallback callback) {
+            EXPECT_THAT(request.auth_factor_labels(),
+                        UnorderedElementsAre("fp1", "fp2"));
+            EXPECT_TRUE(request.has_auth_input());
+            EXPECT_TRUE(request.auth_input().has_fingerprint_input());
+            ReplyAsSuccess(std::move(callback));
+          });
+  base::test::TestFuture<std::unique_ptr<UserContext>,
+                         std::optional<AuthenticationError>>
+      result;
+
+  performer.AuthenticateWithFingerprint(std::move(context_),
+                                        result.GetCallback());
   // Check for no error
   ASSERT_TRUE(result.Get<0>());
   ASSERT_FALSE(result.Get<1>().has_value());

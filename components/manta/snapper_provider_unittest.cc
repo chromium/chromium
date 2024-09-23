@@ -9,8 +9,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/manta/base_provider_test_helper.h"
 #include "components/manta/manta_status.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -26,76 +28,27 @@
 namespace manta {
 
 namespace {
-
-constexpr base::TimeDelta kMockTimeout = base::Seconds(100);
-constexpr char kMockOAuthConsumerName[] = "mock_oauth_consumer_name";
-constexpr char kMockScope[] = "mock_scope";
 constexpr char kMockEndpoint[] = "https://my-endpoint.com";
-constexpr char kHttpMethod[] = "POST";
-constexpr char kMockContentType[] = "mock_content_type";
-constexpr char kEmail[] = "mock_email@gmail.com";
-
 }  // namespace
 
-class FakeSnapperProvider : public SnapperProvider {
+class FakeSnapperProvider : public SnapperProvider, public FakeBaseProvider {
  public:
   FakeSnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory,
       signin::IdentityManager* identity_manager)
-      : SnapperProvider(std::move(test_url_loader_factory), identity_manager) {}
-
- private:
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::vector<std::string>& scopes,
-      const std::string& post_data) override {
-    CHECK(identity_manager_observation_.IsObserving());
-    return std::make_unique<EndpointFetcher>(
-        /*url_loader_factory=*/url_loader_factory_,
-        /*oauth_consumer_name=*/kMockOAuthConsumerName,
-        /*url=*/GURL{kMockEndpoint},
-        /*http_method=*/kHttpMethod, /*content_type=*/kMockContentType,
-        /*scopes=*/std::vector<std::string>{kMockScope},
-        /*timeout=*/kMockTimeout, /*post_data=*/post_data,
-        /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
-        /*identity_manager=*/identity_manager_observation_.GetSource(),
-        /*consent_level=*/signin::ConsentLevel::kSync);
-  }
+      : BaseProvider(test_url_loader_factory, identity_manager),
+        SnapperProvider(test_url_loader_factory, identity_manager),
+        FakeBaseProvider(test_url_loader_factory, identity_manager) {}
 };
 
-class SnapperProviderTest : public testing::Test {
+class SnapperProviderTest : public BaseProviderTest {
  public:
-  SnapperProviderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  SnapperProviderTest() = default;
 
   SnapperProviderTest(const SnapperProviderTest&) = delete;
   SnapperProviderTest& operator=(const SnapperProviderTest&) = delete;
 
   ~SnapperProviderTest() override = default;
-
-  void SetUp() override {
-    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-    identity_test_env_->MakePrimaryAccountAvailable(
-        kEmail, signin::ConsentLevel::kSync);
-    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
-  }
-
-  void SetEndpointMockResponse(const GURL& request_url,
-                               const std::string& response_data,
-                               net::HttpStatusCode response_code,
-                               net::Error error) {
-    auto head = network::mojom::URLResponseHead::New();
-    std::string headers(base::StringPrintf(
-        "HTTP/1.1 %d %s\nContent-type: application/x-protobuf\n\n",
-        static_cast<int>(response_code), GetHttpReasonPhrase(response_code)));
-    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(headers));
-    head->mime_type = "application/x-protobuf";
-    network::URLLoaderCompletionStatus status(error);
-    status.decoded_body_length = response_data.size();
-    test_url_loader_factory_.AddResponse(request_url, std::move(head),
-                                         response_data, status);
-  }
 
   std::unique_ptr<FakeSnapperProvider> CreateSnapperProvider() {
     return std::make_unique<FakeSnapperProvider>(
@@ -103,17 +56,11 @@ class SnapperProviderTest : public testing::Test {
             &test_url_loader_factory_),
         identity_test_env_->identity_manager());
   }
-
- protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-
- private:
-  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 // Test POST data is correctly passed from SnapperProvider to EndpointFetcher.
 TEST_F(SnapperProviderTest, SimpleRequestPayload) {
+  base::HistogramTester histogram_tester;
   manta::proto::Response response;
   manta::proto::OutputData& output_data = *response.add_output_data();
   manta::proto::Image& image = *output_data.mutable_image();
@@ -127,8 +74,9 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
       CreateSnapperProvider();
   auto quit_closure = task_environment_.QuitClosure();
 
+  manta::proto::Request request;
   snapper_provider->Call(
-      manta::proto::Request(),
+      request, TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [&quit_closure](std::unique_ptr<manta::proto::Response> response,
                           MantaStatus manta_status) {
@@ -143,16 +91,22 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
+
+  // Metric is logged when respose is successfully parsed.
+  histogram_tester.ExpectTotalCount("Ash.MantaService.SnapperProvider.TimeCost",
+                                    1);
 }
 
 TEST_F(SnapperProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<FakeSnapperProvider> snapper_provider =
       CreateSnapperProvider();
 
   identity_test_env_.reset();
 
+  manta::proto::Request request;
   snapper_provider->Call(
-      manta::proto::Request(),
+      request, TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
               std::unique_ptr<manta::proto::Response> response,
@@ -163,6 +117,10 @@ TEST_F(SnapperProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
+
+  // No metric logged.
+  histogram_tester.ExpectTotalCount("Ash.MantaService.SnapperProvider.TimeCost",
+                                    0);
 }
 
 }  // namespace manta

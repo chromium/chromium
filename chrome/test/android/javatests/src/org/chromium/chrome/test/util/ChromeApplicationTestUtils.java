@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.test.util;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
 import android.util.Pair;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -20,8 +17,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.omaha.OmahaBase;
-import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.Coordinates;
 
@@ -38,35 +33,6 @@ public class ChromeApplicationTestUtils {
     // fully stop/start Chrome.
     private static final long CHROME_STOP_START_TIMEOUT_MS =
             Math.max(10000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-
-    private static PowerManager.WakeLock sWakeLock;
-
-    // TODO(jbudorick): fix deprecation warning crbug.com/537347
-    @SuppressWarnings("deprecation")
-    @SuppressLint("WakelockTimeout")
-    public static void setUp(Context context) {
-        // Make sure the screen is on during test runs.
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        sWakeLock =
-                pm.newWakeLock(
-                        PowerManager.SCREEN_DIM_WAKE_LOCK
-                                | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                                | PowerManager.ON_AFTER_RELEASE,
-                        "Chromium:" + TAG);
-        sWakeLock.acquire();
-
-        // Disable Omaha related activities.
-        OmahaBase.setIsDisabledForTesting(true);
-        VersionNumberGetter.setEnableUpdateDetection(false);
-    }
-
-    public static void tearDown(Context context) {
-        Assert.assertNotNull("Uninitialized wake lock", sWakeLock);
-        if (sWakeLock.isHeld()) {
-            // Make sure that sWakeLock is only released from being held state
-            sWakeLock.release();
-        }
-    }
 
     // TODO(bauerb): make this function throw more specific exception and update
     // StartupLoadingMetricsTest correspondingly.
@@ -163,25 +129,6 @@ public class ChromeApplicationTestUtils {
                     Criteria.checkThat(
                             (double) scale,
                             Matchers.is(Matchers.closeTo(expectedScale, FLOAT_EPSILON)));
-                });
-    }
-
-    /**
-     * Waits till the WebContents receives a page scale factor different
-     * from the specified value and asserts that this happens.
-     */
-    public static void assertWaitForPageScaleFactorChange(
-            final ChromeActivity activity, final float initialScale) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Tab tab = activity.getActivityTab();
-                    Criteria.checkThat(tab, Matchers.notNullValue());
-
-                    Coordinates coord = Coordinates.createFor(tab.getWebContents());
-                    float scale = coord.getPageScaleFactor();
-                    Criteria.checkThat(
-                            (double) scale,
-                            Matchers.not(Matchers.closeTo(initialScale, FLOAT_EPSILON)));
                 });
     }
 }

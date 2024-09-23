@@ -53,7 +53,6 @@ class TransportSecurityPersister;
 class TransportSecurityState;
 class URLRequest;
 class URLRequestJobFactory;
-class URLRequestThrottlerManager;
 class URLRequestContextBuilder;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -61,6 +60,12 @@ class NetworkErrorLoggingService;
 class PersistentReportingAndNelStore;
 class ReportingService;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+namespace device_bound_sessions {
+class SessionService;
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 // Class that provides application-specific context for URLRequest
 // instances. May only be created by URLRequestContextBuilder.
@@ -83,7 +88,7 @@ class NET_EXPORT URLRequestContext final {
   // session.
   const HttpNetworkSessionContext* GetNetworkSessionContext() const;
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if !BUILDFLAG(IS_WIN) && \
     !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -173,11 +178,6 @@ class NET_EXPORT URLRequestContext final {
 
   const URLRequestJobFactory* job_factory() const { return job_factory_; }
 
-  // May return nullptr.
-  URLRequestThrottlerManager* throttler_manager() const {
-    return throttler_manager_.get();
-  }
-
   QuicContext* quic_context() const { return quic_context_.get(); }
 
   // Gets the URLRequest objects that hold a reference to this
@@ -212,6 +212,13 @@ class NET_EXPORT URLRequestContext final {
     return network_error_logging_service_.get();
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // May return nullptr if the feature is disabled.
+  device_bound_sessions::SessionService* device_bound_session_service() const {
+    return device_bound_session_service_.get();
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   bool enable_brotli() const { return enable_brotli_; }
 
@@ -273,8 +280,6 @@ class NET_EXPORT URLRequestContext final {
       std::unique_ptr<TransportSecurityState> state);
   void set_sct_auditing_delegate(std::unique_ptr<SCTAuditingDelegate> delegate);
   void set_job_factory(std::unique_ptr<const URLRequestJobFactory> job_factory);
-  void set_throttler_manager(
-      std::unique_ptr<URLRequestThrottlerManager> throttler_manager);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
   void set_http_user_agent_settings(
       std::unique_ptr<const HttpUserAgentSettings> http_user_agent_settings);
@@ -309,6 +314,11 @@ class NET_EXPORT URLRequestContext final {
       std::unique_ptr<TransportSecurityPersister> transport_security_persister);
 
   raw_ptr<NetLog> net_log_ = nullptr;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void set_device_bound_session_service(
+      std::unique_ptr<device_bound_sessions::SessionService>
+          device_bound_session_service);
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
@@ -333,8 +343,6 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<const URLRequestJobFactory> job_factory_storage_;
   raw_ptr<const URLRequestJobFactory> job_factory_ = nullptr;
 
-  std::unique_ptr<URLRequestThrottlerManager> throttler_manager_;
-
 #if BUILDFLAG(ENABLE_REPORTING)
   // Must precede |reporting_service_| and |network_error_logging_service_|
   std::unique_ptr<PersistentReportingAndNelStore>
@@ -357,6 +365,11 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
       url_requests_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<device_bound_sessions::SessionService>
+      device_bound_session_service_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;

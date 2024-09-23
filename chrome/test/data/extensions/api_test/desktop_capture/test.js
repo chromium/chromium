@@ -135,7 +135,7 @@ chrome.test.runTests([
   //  6. To actually get audio track, getUserMedia() should set audio
   //     constraint.
 
-  // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
+  // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
   // function tabShareWithAudioPermissionGetStream() {
   //   chrome.desktopCapture.chooseDesktopMedia(
   //       ["tab", "audio"], onPickerResult.bind(undefined, 1));
@@ -153,7 +153,7 @@ chrome.test.runTests([
                             expected_audio_tracks_for_screen_share));
   },
 
-  // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
+  // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
   // function tabShareWithoutAudioPermissionGetStream() {
   //   chrome.desktopCapture.chooseDesktopMedia(
   //       ["tab", "audio"], onPickerResult.bind(undefined, 0));

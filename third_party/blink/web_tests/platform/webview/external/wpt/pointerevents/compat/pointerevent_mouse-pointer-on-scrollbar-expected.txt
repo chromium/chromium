@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test point (103,249.5416717529297) is on the scrollbar
+  assert_equals: Didn't hit the scrollbar as expected expected Element node <div id="spacer"></div> but got Element node <div id="target">\n<div id="spacer"></div>\n</div>
+Harness: the test ran to completion.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
@@ -9,9 +14,9 @@
 
 namespace blink {
 
-// Number of bits in .BMP used to store the file header (doesn't match
-// "sizeof(BMPImageDecoder::BitmapFileHeader)" since we omit some fields and
-// don't pack).
+// Number of bytes in .BMP used to store the file header. This is effectively
+// `sizeof(BITMAPFILEHEADER)`, as defined in
+// https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapfileheader
 static const wtf_size_t kSizeOfFileHeader = 14;
 
 BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
@@ -20,6 +25,7 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
+                   cc::AuxImage::kDefault,
                    max_decoded_bytes),
       decoded_offset_(0) {}
 

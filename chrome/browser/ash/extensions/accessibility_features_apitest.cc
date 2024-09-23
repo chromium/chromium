@@ -10,8 +10,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/accessibility/api_test_config.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
@@ -98,7 +100,7 @@ class AccessibilityFeaturesApiTest
       return kTestExtensionPathReadPermissionV3;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

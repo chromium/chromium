@@ -14,10 +14,12 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "sql/statement.h"
@@ -38,20 +40,24 @@ namespace password_manager {
 // stored as an attribute along with the password in the keychain.
 // A side effect of this approach is that the same password saved multiple
 // times will have different "encrypted" values.
-LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
+EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) {
-  return OSCrypt::EncryptString16(plain_text, cipher_text)
-             ? ENCRYPTION_RESULT_SUCCESS
-             : ENCRYPTION_RESULT_SERVICE_FAILURE;
+    std::string* cipher_text) const {
+  bool result = encryptor_
+                    ? encryptor_->EncryptString16(plain_text, cipher_text)
+                    : OSCrypt::EncryptString16(plain_text, cipher_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
-LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
+EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) {
-  return OSCrypt::DecryptString16(cipher_text, plain_text)
-             ? ENCRYPTION_RESULT_SUCCESS
-             : ENCRYPTION_RESULT_SERVICE_FAILURE;
+    std::u16string* plain_text) const {
+  bool result = encryptor_
+                    ? encryptor_->DecryptString16(cipher_text, plain_text)
+                    : OSCrypt::DecryptString16(cipher_text, plain_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
 bool CreateKeychainIdentifier(const std::u16string& plain_text,
@@ -84,7 +90,7 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
 
   OSStatus status = SecItemAdd(attributes.get(), NULL);
   if (status != errSecSuccess) {
-    // TODO(crbug.com/1091121): This was a NOTREACHED() that would trigger when
+    // TODO(crbug.com/40697564): This was a NOTREACHED() that would trigger when
     // sync runs on a locked device. When the linked bug is resolved it may be
     // possible to turn the LOG(ERROR) back into a NOTREACHED().
     LOG(ERROR) << "Unable to save password in keychain: " << status;
@@ -126,11 +132,11 @@ OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
 
   CFDataRef data = base::apple::CFCast<CFDataRef>(data_cftype.get());
   const size_t size = CFDataGetLength(data);
-  std::unique_ptr<UInt8[]> buffer(new UInt8[size]);
-  CFDataGetBytes(data, CFRangeMake(0, size), buffer.get());
+  auto buffer = base::HeapArray<UInt8>::Uninit(size);
+  CFDataGetBytes(data, CFRangeMake(0, size), buffer.data());
 
   *plain_text = base::UTF8ToUTF16(
-      std::string(static_cast<char*>(static_cast<void*>(buffer.get())),
+      std::string(static_cast<char*>(static_cast<void*>(buffer.data())),
                   static_cast<size_t>(size)));
   return errSecSuccess;
 }

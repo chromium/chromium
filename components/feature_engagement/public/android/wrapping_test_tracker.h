@@ -52,7 +52,7 @@ class WrappingTestTracker : public Tracker {
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
-                          base::Time& initial_time) override;
+                          base::Time initial_time) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;

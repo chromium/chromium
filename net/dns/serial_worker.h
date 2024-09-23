@@ -93,6 +93,9 @@ class NET_EXPORT_PRIVATE SerialWorker {
   // Must return true on success.
   virtual bool OnWorkFinished(std::unique_ptr<WorkItem> work_item) = 0;
 
+  // Returns the failure count for this job.
+  int GetFailureCount() const;
+
   base::WeakPtr<SerialWorker> AsWeakPtr();
 
   // Used to verify that the constructor, WorkNow(), Cancel() and

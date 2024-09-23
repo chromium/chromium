@@ -12,12 +12,14 @@
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
-#include "components/payments/content/android/jni_headers/JniPaymentApp_jni.h"
 #include "components/payments/content/android/payment_handler_host.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/core/payment_method_data.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/JniPaymentApp_jni.h"
 
 namespace payments {
 namespace {
@@ -66,7 +68,7 @@ ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
                                     payment_app_->GetAppMethodNames().end()));
 }
 
-// TODO(crbug.com/1209835): Remove jdata_byte_buffer here, as it is no longer
+// TODO(crbug.com/40182225): Remove jdata_byte_buffer here, as it is no longer
 // used.
 bool JniPaymentApp::IsValidForPaymentMethodData(
     JNIEnv* env,

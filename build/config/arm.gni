@@ -41,7 +41,7 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
 
   # For lacros build, we use ARM v8 by default.
   if (is_chromeos_lacros && arm_arch == "") {
-    # TODO(crbug.com/1467681) Enable i8mm and dotprod instructions for ffmpeg
+    # TODO(crbug.com/40276884) Enable i8mm and dotprod instructions for ffmpeg
     # if ever we update to a version of arm that supports these instructions.
     arm_version = 8
     arm_arch = "armv8-a+crc"

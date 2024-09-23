@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+Terminate a worker while it's doing readback and video encoding
+-->
+<title>Frame readback in a worker</title>
+<script src="webcodecs_common.js"></script>
+
+<script type="text/javascript">
+  'use strict';
+
+  function makeWorker() {
+    const worker = new Worker('terminate-worker-worker.js');
+    let resolve_promise = null;
+    worker.onmessage = function(e) { resolve_promise(e.data); }
+    let worker_promise = new Promise((resolve) => {
+      resolve_promise = resolve;
+    });
+    return { worker, worker_promise };
+  }
+
+  async function main(arg) {
+    let source_type = arg.source_type;
+    TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
+    let source = await createFrameSource(source_type, 320, 240);
+    if (!source) {
+      TEST.skip('Unsupported source: ' + source_type);
+      return;
+    }
+
+    let frame = await source.getNextFrame();
+    let {worker, worker_promise} = makeWorker();
+    worker.postMessage(frame, [frame]);
+    await worker_promise;
+
+    worker.terminate();
+
+    frame.close();
+    source.close();
+    TEST.log('Worker termination initiated');
+  }
+  addManualTestButton([{'source_type': 'offscreen'}]);
+</script>

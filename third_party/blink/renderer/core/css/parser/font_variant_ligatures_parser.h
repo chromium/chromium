@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
@@ -25,8 +24,8 @@ class FontVariantLigaturesParser {
 
   enum class ParseResult { kConsumedValue, kDisallowedValue, kUnknownValue };
 
-  ParseResult ConsumeLigature(CSSParserTokenRange& range) {
-    CSSValueID value_id = range.Peek().Id();
+  ParseResult ConsumeLigature(CSSParserTokenStream& stream) {
+    CSSValueID value_id = stream.Peek().Id();
     switch (value_id) {
       case CSSValueID::kNoCommonLigatures:
       case CSSValueID::kCommonLigatures:
@@ -59,7 +58,7 @@ class FontVariantLigaturesParser {
       default:
         return ParseResult::kUnknownValue;
     }
-    result_->Append(*css_parsing_utils::ConsumeIdent(range));
+    result_->Append(*css_parsing_utils::ConsumeIdent(stream));
     return ParseResult::kConsumedValue;
   }
 

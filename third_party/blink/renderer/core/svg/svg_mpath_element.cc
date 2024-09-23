@@ -109,8 +109,9 @@ void SVGMPathElement::TargetPathChanged() {
 }
 
 void SVGMPathElement::NotifyParentOfPathChange(ContainerNode* parent) {
-  if (auto* motion = DynamicTo<SVGAnimateMotionElement>(parent))
-    motion->UpdateAnimationPath();
+  if (auto* motion = DynamicTo<SVGAnimateMotionElement>(parent)) {
+    motion->ChildMPathChanged();
+  }
 }
 
 }  // namespace blink

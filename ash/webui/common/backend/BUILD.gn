@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
+    "accelerator_fetcher.cc",
+    "accelerator_fetcher.h",
     "accessibility_features.cc",
     "accessibility_features.h",
     "plural_string_handler.cc",
@@ -23,6 +25,7 @@ static_library("backend") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
+    "//ui/events/ash",
     "//ui/webui",
   ]
 }
@@ -31,6 +34,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "accelerator_fetcher_unittest.cc",
     "accessibility_features_unittest.cc",
     "plural_string_handler_unittest.cc",
     "shortcut_input_provider_unittest.cc",
@@ -47,6 +51,8 @@ source_set("unit_tests") {
     "//chromeos/strings/",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/events/ash:ash",
+    "//ui/events/devices:test_support",
     "//ui/webui",
   ]
 }

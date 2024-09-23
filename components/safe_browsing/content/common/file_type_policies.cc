@@ -53,10 +53,13 @@ const DownloadFileType& GetOrCreatePolicyForExtensionOverrideNotDangerous(
 
 using base::AutoLock;
 
-// Our Singleton needs to populate itself when first constructed.
-// This is left out of the constructor to make testing simpler.
+// Our Singleton needs to populate itself when first constructed.  This
+// is left out of the constructor to make testing simpler. This
+// singleton needs to be leaky so that archive analyzers can access file
+// type policies from a helper thread. FileTypePolicies must not do
+// nontrivial work in the destructor.
 struct FileTypePoliciesSingletonTrait
-    : public base::DefaultSingletonTraits<FileTypePolicies> {
+    : public base::LeakySingletonTraits<FileTypePolicies> {
   static FileTypePolicies* New() {
     FileTypePolicies* instance = new FileTypePolicies();
     instance->PopulateFromResourceBundle();
@@ -82,9 +85,9 @@ FileTypePolicies::FileTypePolicies() {
   settings->set_auto_open_hint(DownloadFileType::DISALLOW_AUTO_OPEN);
 }
 
-FileTypePolicies::~FileTypePolicies() {
-  AutoLock lock(lock_);  // DCHECK fail if the lock is held.
-}
+// Since FileTypePolicies is a leaky singleton, the destructor will
+// never run.
+FileTypePolicies::~FileTypePolicies() = default;
 
 std::string FileTypePolicies::ReadResourceBundle() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -150,8 +153,17 @@ FileTypePolicies::UpdateResult FileTypePolicies::PopulateFromBinaryPb(
       return UpdateResult::SKIPPED_VERSION_CHECK_EQUAL;
 
     // Check that version number increases
-    if (new_config->version_id() <= config_->version_id())
+    if (new_config->version_id() <= config_->version_id()) {
+      // TODO(crbug.com/347288618): Remove these, since they are not
+      // expected to be useful long-term.
+      base::UmaHistogramSparse(
+          "SafeBrowsing.FileTypeUpdate.FailedUpdateSourceVersion",
+          config_->version_id());
+      base::UmaHistogramSparse(
+          "SafeBrowsing.FileTypeUpdate.FailedUpdateDestinationVersion",
+          new_config->version_id());
       return UpdateResult::FAILED_VERSION_CHECK;
+    }
 
     // Check that we haven't dropped more than 1/2 the list.
     if (new_config->file_types().size() * 2 < config_->file_types().size())
@@ -232,9 +244,10 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
 
   if (safe_browsing::IsInNotDangerousOverrideList(ascii_ext, source_url,
                                                   prefs)) {
-    if (itr != file_type_by_ext_.find(ascii_ext))
+    if (itr != file_type_by_ext_.end()) {
       return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
           ascii_ext, *itr->second);
+    }
     return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
         ascii_ext, config_->default_file_type());
   }
@@ -327,10 +340,6 @@ uint64_t FileTypePolicies::GetMaxFileSizeToAnalyze(
       break;
     case DownloadFileType::DMG:
       inspection_ext = "dmg";
-      break;
-    case DownloadFileType::OFFICE_DOCUMENT:
-      // Office documents don't currently check a max file size to analyze, so
-      // they don't need an `inspection_ext` here.
       break;
     case DownloadFileType::SEVEN_ZIP:
       inspection_ext = "7z";

@@ -12,13 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/os_crypt/sync/os_crypt_mocker_linux.h"
@@ -354,5 +355,38 @@ TEST_F(OSCryptTestWin, AuditMigrationTest) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_FUCHSIA)
+// os_crypt_posix.cc has no mocker, so it can be a standalone fixture.
+TEST(OSCrypt, PosixMetric) {
+  {
+    std::string ciphertext;
+    EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
+    base::HistogramTester histograms;
+    std::string plaintext;
+    EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &plaintext));
+    histograms.ExpectUniqueSample("OSCrypt.Posix.NoEncryptionPrefixFound",
+                                  false, 1u);
+  }
+
+  {
+    base::HistogramTester histograms;
+    std::string plaintext;
+    EXPECT_TRUE(OSCrypt::DecryptString("invaliddata!", &plaintext));
+    histograms.ExpectUniqueSample("OSCrypt.Posix.NoEncryptionPrefixFound", true,
+                                  1u);
+  }
+
+  {
+    base::HistogramTester histograms;
+    std::string plaintext;
+    // Empty string should not set this histogram.
+    EXPECT_TRUE(OSCrypt::DecryptString(std::string(), &plaintext));
+    histograms.ExpectTotalCount("OSCrypt.Posix.NoEncryptionPrefixFound", 0u);
+  }
+}
+#endif
 
 }  // namespace

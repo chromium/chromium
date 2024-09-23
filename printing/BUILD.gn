@@ -82,6 +82,30 @@ component("printing_base") {
   ]
 }
 
+component("settings") {
+  sources = [
+    "page_range.cc",
+    "page_range.h",
+    "page_setup.cc",
+    "page_setup.h",
+    "print_settings.cc",
+    "print_settings.h",
+  ]
+
+  public_deps = [ ":printing_base" ]
+
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+
+  defines = [ "IS_PRINTING_SETTINGS_IMPL" ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
+}
+
 if (enable_oop_printing && (is_linux || is_chromeos)) {
   source_set("printing_sandbox_hook") {
     sources = [
@@ -162,6 +186,8 @@ component("metafile") {
       "emf_win.cc",
       "emf_win.h",
     ]
+
+    libs = [ "xpsprint.lib" ]
   }
 }
 
@@ -171,14 +197,8 @@ component("printing") {
     "nup_parameters.h",
     "page_number.cc",
     "page_number.h",
-    "page_range.cc",
-    "page_range.h",
-    "page_setup.cc",
-    "page_setup.h",
     "pdf_render_settings.h",
     "print_dialog_linux_interface.h",
-    "print_settings.cc",
-    "print_settings.h",
     "print_settings_conversion.cc",
     "print_settings_conversion.h",
     "printed_document.cc",
@@ -198,11 +218,11 @@ component("printing") {
     ":metafile",
     ":native_drawing_context",
     ":printing_base",
+    ":settings",
   ]
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//printing/mojom",
     "//skia",
@@ -268,6 +288,7 @@ component("printing") {
       "printing_context_system_dialog_win.h",
       "printing_context_win.cc",
       "printing_context_win.h",
+      "windows_types.h",
     ]
 
     deps += [ "//printing/backend" ]
@@ -286,7 +307,7 @@ component("printing") {
     ]
 
     deps += [
-      "//chromeos/crosapi/mojom:mojom",
+      "//chromeos/crosapi/mojom",
       "//third_party/re2",
     ]
   }
@@ -403,6 +424,7 @@ test("printing_unittests") {
 
   if (is_win) {
     sources += [
+      "backend/print_backend_win_unittest.cc",
       "backend/win_helper_unittest.cc",
       "backend/xps_utils_win_unittest.cc",
       "emf_win_unittest.cc",

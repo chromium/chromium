@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Browser>NewTabPage"
-}
-buganizer_public: {
-  component_id: 1457163
-}
+mixins: "//chrome/browser/ui/customize_chrome/COMMON_METADATA"

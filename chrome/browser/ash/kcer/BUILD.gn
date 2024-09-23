@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kcer") {
+  sources = [
+    "kcer_factory_ash.cc",
+    "kcer_factory_ash.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/kcer",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/kcer/nssdb_migration",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/tpm",
+    "//components/account_id",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//crypto",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/kcer/nssdb_migration" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "kcer_factory_ash_no_nss_browsertest.cc",
+    "kcer_factory_ash_nss_browsertest.cc",
+  ]
+
+  deps = [
+    ":kcer",
+    "//ash/components/kcer",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//crypto:test_support",
+    "//testing/gtest",
+  ]
+}

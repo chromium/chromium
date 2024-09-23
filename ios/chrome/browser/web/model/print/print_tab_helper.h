@@ -6,13 +6,13 @@
 #define IOS_CHROME_BROWSER_WEB_MODEL_PRINT_PRINT_TAB_HELPER_H_
 
 #import "base/memory/raw_ptr.h"
+#import "ios/web/public/lazy_web_state_user_data.h"
 #include "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
 
 @protocol WebStatePrinter;
 
 // Handles print requests from JavaScript window.print.
-class PrintTabHelper : public web::WebStateUserData<PrintTabHelper> {
+class PrintTabHelper : public web::LazyWebStateUserData<PrintTabHelper> {
  public:
   explicit PrintTabHelper(web::WebState* web_state);
 
@@ -29,7 +29,7 @@ class PrintTabHelper : public web::WebStateUserData<PrintTabHelper> {
   void Print();
 
  private:
-  friend class web::WebStateUserData<PrintTabHelper>;
+  friend class web::LazyWebStateUserData<PrintTabHelper>;
 
   raw_ptr<web::WebState> web_state_;
   __weak id<WebStatePrinter> printer_ = nil;

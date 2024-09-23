@@ -10,8 +10,6 @@
 
 namespace ash {
 
-struct ForeignSyncedSessionAsh;
-
 namespace phonehub {
 
 class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
@@ -23,11 +21,6 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   void Fetch(
       const sync_sessions::SyncedSession* session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
-  void FetchForeignSyncedPhoneSessionMetadata(
-      const ForeignSyncedSessionAsh& session,
-      SyncedSessionClientAsh* synced_session_client_ash,
-      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
-
   void RespondToCurrentFetchAttempt(
       const BrowserTabsMetadataResponse& response);
 
@@ -35,11 +28,8 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
 
   const sync_sessions::SyncedSession* GetSession() const;
 
-  const ash::ForeignSyncedSessionAsh* GetForeignSyncedSession() const;
-
  private:
   raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged> session_;
-  raw_ptr<const ForeignSyncedSessionAsh> foreign_synced_session_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 };
 

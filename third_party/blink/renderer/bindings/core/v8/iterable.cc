@@ -17,16 +17,22 @@ namespace bindings {
 v8::Local<v8::Object> ESCreateIterResultObject(ScriptState* script_state,
                                                bool done,
                                                v8::Local<v8::Value> value) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  v8::Local<v8::Object> result = v8::Object::New(isolate);
-  result
-      ->CreateDataProperty(context, V8String(isolate, "done"),
-                           v8::Boolean::New(isolate, done))
-      .ToChecked();
-  result->CreateDataProperty(context, V8String(isolate, "value"), value)
-      .ToChecked();
-  return result;
+  static constexpr std::string_view properties[] = {"done", "value"};
+
+  v8::Isolate* const isolate = script_state->GetIsolate();
+  auto* per_isolate_data = V8PerIsolateData::From(isolate);
+  v8::MaybeLocal<v8::DictionaryTemplate> maybe_template =
+      per_isolate_data->FindV8DictionaryTemplate(properties);
+  v8::Local<v8::DictionaryTemplate> just_template;
+  if (!maybe_template.IsEmpty()) {
+    just_template = maybe_template.ToLocalChecked();
+  } else {
+    just_template = v8::DictionaryTemplate::New(isolate, properties);
+    per_isolate_data->AddV8DictionaryTemplate(properties, just_template);
+  }
+
+  v8::MaybeLocal<v8::Value> values[] = {v8::Boolean::New(isolate, done), value};
+  return just_template->NewInstance(script_state->GetContext(), values);
 }
 
 v8::Local<v8::Object> ESCreateIterResultObject(ScriptState* script_state,

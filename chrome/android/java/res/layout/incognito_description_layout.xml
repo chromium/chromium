@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView
+<org.chromium.chrome.browser.ntp.IncognitoDescriptionView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -79,4 +79,4 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp" />
 
-</org.chromium.chrome.browser.ntp.LegacyIncognitoDescriptionView>
+</org.chromium.chrome.browser.ntp.IncognitoDescriptionView>

@@ -34,13 +34,31 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
 
 #pragma mark - Public methods
 
+  // Notifies that the view that a tab-based IPH is based on has appeared.
+  // Should be invoked when tab is fully expanded from tab grid, or when the tab
+  // view regains first responder status after dismissing infobars or bottom
+  // sheets.
+  // TODO(crbug.com/40276959): Invoke when tab becomes first responder.
+  void RootViewForInProductHelpDidAppear();
+
+  // Notifies that the view that a tab-based IPH is based on will disappear.
+  // Should be invoked when entering tab grid, or when the tab view stops being
+  // first responder because of infobars or bottom sheets.
+  // TODO(crbug.com/40276959): Invoke when tab resigns first responder.
+  void RootViewForInProductHelpWillDisappear();
+
   // Notifies the browser agent that the user has performed a multi-gesture tab
-  // refresh, so that the related in-product help would be attempted.
+  // refresh. If the page happened to be scrolled to the top when it happened, a
+  // in-product help for pull-to-refresh would be attempted.
   void NotifyMultiGestureRefreshEvent();
 
   // Notifies that the user has tapped the back/forward button in the toolbar,
   // so that the related in-product help would be attempted.
   void NotifyBackForwardButtonTap();
+
+  // Notifies that the user has used the tab grid solely to switch to an
+  // adjacent tab.
+  void NotifySwitchToAdjacentTabFromTabGrid();
 
 #pragma mark - Observer headers
 
@@ -55,7 +73,12 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // WebStateObserver
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void DidStopLoading(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
@@ -94,6 +117,9 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // Whether the user has just tapped back/forward button in the toolbar; will
   // be reset to `false` after the navigation has completed.
   bool back_forward_button_tapped_ = false;
+  // Whether the user has just tapped an adjacent tab through the tab grid; will
+  // be reset to `false` once the active tab is changed.
+  bool tapped_adjacent_tab_ = false;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

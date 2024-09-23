@@ -36,6 +36,7 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
 
  private:
   // ChromeBrowserMainExtraParts overrides.
+  void PostCreateThreads() override;
   void PostBrowserStart() override;
   void PostMainMessageLoopRun() override;
 

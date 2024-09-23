@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -157,7 +157,7 @@ void AssistantBindings::FlushV8ToAssistantQueue() {
 const mojo::Remote<chromecast::mojom::AssistantMessageService>&
 AssistantBindings::GetMojoInterface() {
   if (!assistant_.is_bound()) {
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         assistant_.BindNewPipeAndPassReceiver());
     assistant_.set_disconnect_handler(base::BindOnce(
         &AssistantBindings::OnAssistantConnectionError, weak_this_));

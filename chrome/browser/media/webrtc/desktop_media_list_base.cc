@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
 #include <set>
@@ -100,11 +105,12 @@ bool DesktopMediaListBase::IsSourceListDelegated() const {
 }
 
 void DesktopMediaListBase::ClearDelegatedSourceListSelection() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DesktopMediaListBase::FocusList() {}
 void DesktopMediaListBase::HideList() {}
+void DesktopMediaListBase::ShowDelegatedList() {}
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
@@ -250,6 +256,8 @@ void DesktopMediaListBase::OnDelegatedSourceListSelection() {
   DCHECK(IsSourceListDelegated());
   if (observer_)
     observer_->OnDelegatedSourceListSelection();
+
+  Refresh(false);
 }
 
 void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
@@ -257,4 +265,6 @@ void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
   DCHECK(IsSourceListDelegated());
   if (observer_)
     observer_->OnDelegatedSourceListDismissed();
+
+  Refresh(false);
 }

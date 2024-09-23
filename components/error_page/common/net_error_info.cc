@@ -28,7 +28,7 @@ const char* DnsProbeStatusToString(int status) {
     case DNS_PROBE_FINISHED_BAD_SECURE_CONFIG:
       return "DNS_PROBE_FINISHED_BAD_SECURE_CONFIG";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

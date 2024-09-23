@@ -26,7 +26,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/flags/about_flags.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -194,7 +194,7 @@ FlagsUI::FlagsUI(web::WebUIIOS* web_ui, const std::string& host)
                 flag_access);
 
   // Set up the about:flags source.
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateFlagsUIHTMLSource());
 }
 

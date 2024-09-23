@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -237,8 +236,9 @@ JpegEncodeAcceleratorTestEnvironment::CreateTestYuvImage(
   // Fill in U and V values.
   std::fill(image_data.begin() + num_pixels, image_data.end(), 128);
 
-  base::FilePath output_filename(std::to_string(image_size.width()) + "x" +
-                                 std::to_string(image_size.height()) +
+  base::FilePath output_filename(base::NumberToString(image_size.width()) +
+                                 "x" +
+                                 base::NumberToString(image_size.height()) +
                                  (is_black ? "_black.jpg" : "_white.jpg"));
   return std::make_unique<TestImage>(std::move(image_data), image_size,
                                      output_filename);
@@ -572,7 +572,7 @@ void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
   if (exif_size_ > 0) {
     auto shm = base::UnsafeSharedMemoryRegion::Create(exif_size_);
     auto shm_mapping = shm.Map();
-    base::RandBytes(shm_mapping.memory(), exif_size_);
+    base::RandBytes(shm_mapping.GetMemoryAsSpan<uint8_t>());
     exif_buffer_ =
         media::BitstreamBuffer(bitstream_buffer_id, std::move(shm), exif_size_);
   }

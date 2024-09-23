@@ -267,7 +267,7 @@ chrome.test.getConfig(function(config) {
           ('ServiceWorkerGlobalScope' in self) &&
           (self instanceof ServiceWorkerGlobalScope);
       if (isInstanceOfServiceWorkerGlobalScope) {
-        // TODO(crbug.com/1146623): Fix event dispatch ordering for SWs so that
+        // TODO(crbug.com/40730182): Fix event dispatch ordering for SWs so that
         // permissions.onAdded listener is guaranteed to run *after*
         // chrome.permissions.remove API request below.
         chrome.test.succeed();

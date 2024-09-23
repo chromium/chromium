@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
+#include "chrome/browser/ash/app_list/apps_collections_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -244,6 +245,26 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
   }
 }
 
+// Test app collection name is set for item in the launcher.
+IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
+                       AppCollectionIsPassedToLauncher) {
+  apps::AppPtr app = std::make_unique<apps::App>(
+      apps::AppType::kUnknown, apps_util::kTestAppIdWithCollection);
+  app->readiness = apps::Readiness::kReady;
+  app->show_in_launcher = true;
+
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+      std::move(apps), apps::AppType::kUnknown,
+      false /* should_notify_initialized */);
+
+  ash::AppListItem* item = GetAppListItem(apps_util::kTestAppIdWithCollection);
+  ASSERT_TRUE(item);
+
+  EXPECT_EQ(item->collection_id(), ash::AppCollection::kEssentials);
+}
+
 class AppServiceSystemWebAppItemBrowserTest
     : public AppServiceAppItemBrowserTest,
       public WithCrosapiParam {
@@ -252,7 +273,7 @@ class AppServiceSystemWebAppItemBrowserTest
     if (browser() == nullptr) {
       // Create a new Ash browser window so test code using browser() can work
       // even when Lacros is the only browser.
-      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
@@ -280,10 +301,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   // Verify that a launch no longer occurs.
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
-          [](apps::AppLaunchParams&& params) -> content::WebContents* {
-            NOTREACHED();
-            return nullptr;
-          }));
+          [](apps::AppLaunchParams params) { NOTREACHED_IN_MIGRATION(); }));
 
   app_item.PerformActivate(ui::EF_NONE);
 }

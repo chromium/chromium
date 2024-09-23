@@ -29,15 +29,17 @@ shouldBeEqualToString('document.activeElement.id', 'text');
 shouldBe('dispatchedFocusInEvent', '1');
 shouldBe('dispatchedDOMFocusInEvent', '1');
 
-debug('Move to date field, should generate foucsin event');
+debug('Move to date field, should generate focusin event');
 eventSender.keyDown('\t'); // move to date input element.
 shouldBeEqualToString('document.activeElement.id', 'date');
 shouldBe('dispatchedFocusInEvent', '2');
 shouldBe('dispatchedDOMFocusInEvent', '2');
 eventSender.keyDown('\t'); // move to date field.
 eventSender.keyDown('\t'); // move to  year field.
+eventSender.keyDown('\t'); // move to  dropdown button.
 
-debug('Move to time field, should generate foucsin event');
+debug('Move to time field, should generate focusin event');
+
 eventSender.keyDown('\t'); // move to time field.
 shouldBeEqualToString('document.activeElement.id', 'time');
 shouldBe('dispatchedFocusInEvent', '3');

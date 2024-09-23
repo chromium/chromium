@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "ShelfIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "jamescook@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: True
+criteria: |
+  Integration test that opens and closes ChromeOS app shelf.
+cases:
+  - id: "OpenCloseSwitchApps"
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic", "informational"]
+...

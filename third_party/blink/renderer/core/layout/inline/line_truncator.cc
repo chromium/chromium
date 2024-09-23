@@ -166,7 +166,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
     // In order to preserve layout information before truncated, hide the
     // original fragment and insert a truncated one.
     unsigned child_index_to_truncate =
-        base::checked_cast<unsigned>(ellipsized_child - line_box->begin());
+        base::checked_cast<unsigned>(ellipsized_child - &*line_box->begin());
     line_box->InsertChild(child_index_to_truncate + 1,
                           std::move(*truncated_child));
     box_states->ChildInserted(child_index_to_truncate + 1);
@@ -175,7 +175,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
 
     HideChild(child_to_truncate);
     DCHECK_LE(ellipsized_child->inline_size, child_to_truncate->inline_size);
-    if (UNLIKELY(IsRtl(line_direction_))) {
+    if (IsRtl(line_direction_)) [[unlikely]] {
       ellipsized_child->rect.offset.inline_offset +=
           child_to_truncate->inline_size - ellipsized_child->inline_size;
     }
@@ -427,7 +427,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Return the offset to place the ellipsis.

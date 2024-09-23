@@ -78,7 +78,7 @@ void GpuArcVideoEncodeAccelerator::BitstreamBufferReady(
   DVLOGF(2) << "id=" << bitstream_buffer_id;
   DCHECK(client_);
   auto iter = use_bitstream_cbs_.find(bitstream_buffer_id);
-  DCHECK(iter != use_bitstream_cbs_.end());
+  CHECK(iter != use_bitstream_cbs_.end());
   std::move(iter->second)
       .Run(metadata.payload_size_bytes, metadata.key_frame,
            metadata.timestamp.InMicroseconds());
@@ -116,10 +116,6 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     const media::VideoEncodeAccelerator::Config& config,
     mojo::PendingRemote<mojom::VideoEncodeClient> client) {
   DVLOGF(2) << config.AsHumanReadableString();
-  if (!config.storage_type.has_value()) {
-    DLOG(ERROR) << "storage type must be specified";
-    return mojom::VideoEncodeAccelerator::Result::kInvalidArgumentError;
-  }
 
   if (config.input_format != media::PIXEL_FORMAT_NV12) {
     VLOGF(1) << "Unsupported pixel format: " << config.input_format;
@@ -206,11 +202,8 @@ void GpuArcVideoEncodeAccelerator::Encode(
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
           base::NullCallback());
 
-  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
   auto frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
       gfx::Rect(visible_size_), visible_size_, std::move(gpu_memory_buffer),
-      dummy_mailbox /* mailbox_holders */,
-      base::NullCallback() /* mailbox_holder_release_cb_ */,
       base::Microseconds(timestamp));
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";
@@ -285,7 +278,7 @@ void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
   // change the bitrate mode at runtime will result in the |accelerator_|
   // reporting an error through NotifyError.
   accelerator_->RequestEncodingParametersChange(bitrate, framerate,
-                                                absl::nullopt);
+                                                std::nullopt);
 }
 
 void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
@@ -297,7 +290,7 @@ void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
     return;
   }
   accelerator_->RequestEncodingParametersChange(
-      media::Bitrate::ConstantBitrate(bitrate), framerate, absl::nullopt);
+      media::Bitrate::ConstantBitrate(bitrate), framerate, std::nullopt);
 }
 
 void GpuArcVideoEncodeAccelerator::Flush(FlushCallback callback) {

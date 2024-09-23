@@ -47,6 +47,7 @@ source_set("public") {
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//url",
   ]
 
@@ -90,12 +91,15 @@ source_set("test_support") {
 
   sources = [
     "testing/mock_database_client.h",
+    "testing/mock_device_switcher_result_dispatcher.h",
+    "testing/mock_field_trial_register.h",
     "testing/mock_segmentation_platform_service.h",
   ]
 
   deps = [
     ":public",
     "//base",
+    "//components/segmentation_platform/embedder/default_model",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -133,7 +137,10 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptionsTest.java",
+    ]
 
     deps = [
       ":public_java",

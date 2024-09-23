@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -120,6 +121,7 @@ class PageHandler : public DevToolsDomainHandler,
   Response Close() override;
   void Reload(Maybe<bool> bypassCache,
               Maybe<std::string> script_to_evaluate_on_load,
+              Maybe<std::string> loader_id,
               std::unique_ptr<ReloadCallback> callback) override;
   void Navigate(const std::string& url,
                 Maybe<std::string> referrer,
@@ -164,6 +166,7 @@ class PageHandler : public DevToolsDomainHandler,
                                Maybe<std::string> download_path) override;
 
   void GetAppManifest(
+      protocol::Maybe<std::string> manifest_id,
       std::unique_ptr<GetAppManifestCallback> callback) override;
 
   Response SetWebLifecycleState(const std::string& state) override;
@@ -213,11 +216,6 @@ class PageHandler : public DevToolsDomainHandler,
       const std::optional<blink::web_pref::WebPreferences>& original_web_prefs,
       const gfx::Image& image);
 
-  void GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
-                   const GURL& manifest_url,
-                   ::blink::mojom::ManifestPtr parsed_manifest,
-                   blink::mojom::ManifestDebugInfoPtr debug_info);
-
   // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
                                          bool became_visible) override;
@@ -257,9 +255,9 @@ class PageHandler : public DevToolsDomainHandler,
   // to be requested. This changes due to window resizing.
   gfx::Size last_surface_size_;
 
-  RenderFrameHostImpl* host_;
-  EmulationHandler* emulation_handler_;
-  BrowserHandler* browser_handler_;
+  raw_ptr<RenderFrameHostImpl> host_;
+  raw_ptr<EmulationHandler> emulation_handler_;
+  raw_ptr<BrowserHandler> browser_handler_;
 
   std::unique_ptr<Page::Frontend> frontend_;
 
@@ -269,7 +267,8 @@ class PageHandler : public DevToolsDomainHandler,
   // Maps DevTools navigation tokens to pending NavigateCallbacks.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
-  base::flat_set<download::DownloadItem*> pending_downloads_;
+  base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
+      pending_downloads_;
 
   bool is_prerendering_allowed_ = true;
 

@@ -11,4 +11,5 @@ struct AudioDeviceDescription {
   string unique_id;
   string group_id;
   bool is_system_default;
+  bool is_communications_device;
 };

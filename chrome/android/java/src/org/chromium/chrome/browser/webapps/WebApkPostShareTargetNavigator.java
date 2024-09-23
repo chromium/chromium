@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import androidx.browser.trusted.sharing.ShareData;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
@@ -43,12 +44,12 @@ public class WebApkPostShareTargetNavigator {
     public interface Natives {
         void nativeLoadViewForShareTargetPost(
                 boolean isMultipartEncoding,
-                String[] names,
-                String[] values,
+                @JniType("std::vector<std::string>") String[] names,
+                @JniType("std::vector<std::string>") String[] values,
                 boolean[] isValueFileUris,
-                String[] filenames,
-                String[] types,
-                String startUrl,
+                @JniType("std::vector<std::string>") String[] filenames,
+                @JniType("std::vector<std::string>") String[] types,
+                @JniType("std::string") String startUrl,
                 WebContents webContents);
     }
 }

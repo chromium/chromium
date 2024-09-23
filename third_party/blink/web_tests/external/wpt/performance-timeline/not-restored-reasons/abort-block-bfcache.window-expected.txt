@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] aborting a parser should block bfcache.
-  assert_equals: expected (string) "parser-aborted" but got (object) object "[object NotRestoredReasonDetails]"
-Harness: the test ran to completion.
-

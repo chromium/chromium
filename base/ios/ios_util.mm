@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/ios/ios_util.h"
 
 #import <Foundation/Foundation.h>
@@ -9,7 +14,6 @@
 #include <stddef.h>
 
 #include "base/apple/foundation_util.h"
-#import "base/ios/device_util.h"
 #include "base/system/sys_info.h"
 
 namespace {
@@ -19,26 +23,6 @@ std::string* g_icudtl_path_override = nullptr;
 }  // namespace
 
 namespace base::ios {
-
-bool IsRunningOnIOS12OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(12, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS13OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(13, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS14OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(14, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS15OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(15, 0, 0);
-  return is_running_on_or_later;
-}
 
 bool IsRunningOnIOS16OrLater() {
   static const bool is_running_on_or_later = IsRunningOnOrLater(16, 0, 0);
@@ -102,13 +86,6 @@ bool IsMultipleScenesSupported() {
 
 bool IsApplicationPreWarmed() {
   return [NSProcessInfo.processInfo.environment objectForKey:@"ActivePrewarm"];
-}
-
-bool HasDynamicIsland() {
-  std::string hardware_model = ::ios::device_util::GetPlatform();
-  static bool is_dynamic_island_model =
-      (hardware_model == "iPhone15,2" || hardware_model == "iPhone15,3");
-  return is_dynamic_island_model;
 }
 
 }  // namespace base::ios

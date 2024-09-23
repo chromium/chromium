@@ -138,6 +138,8 @@ void EligibleHostDevicesProviderImpl::UpdateEligibleDevicesSet() {
     device_sync_client_->GetDevicesActivityStatus(base::BindOnce(
         &EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus,
         base::Unretained(this)));
+  } else {
+    NotifyObserversEligibleDevicesSynced();
   }
 }
 
@@ -147,6 +149,7 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
         devices_activity_status_optional) {
   if (network_result != device_sync::mojom::NetworkRequestResult::kSuccess ||
       !devices_activity_status_optional) {
+    NotifyObserversEligibleDevicesSynced();
     return;
   }
 
@@ -307,11 +310,42 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
               }
 
               set_of_same_last_activity_time.insert(last_activity_time);
-
               return false;
             }),
         eligible_active_devices_from_last_sync_.end());
   }
+
+  // Remove devices that have duplicate `bluetooth_public_addresses`, which
+  // indicate they are the same device. Filter after the other sorting happens
+  // to keep the most recent version of the phone when there's duplicates
+  base::flat_set<std::string> set_of_same_public_bluetooth_address;
+  eligible_active_devices_from_last_sync_.erase(
+      std::remove_if(
+          eligible_active_devices_from_last_sync_.begin(),
+          eligible_active_devices_from_last_sync_.end(),
+          [&set_of_same_public_bluetooth_address](
+              const multidevice::DeviceWithConnectivityStatus& device) {
+            const std::string& bluetooth_public_address =
+                device.remote_device.bluetooth_public_address();
+
+            // Do not filter out devices if the `bluetooth_public_address`
+            // is not available.
+            if (bluetooth_public_address.empty()) {
+              return false;
+            }
+
+            if (set_of_same_public_bluetooth_address.contains(
+                    bluetooth_public_address)) {
+              return true;
+            }
+
+            set_of_same_public_bluetooth_address.insert(
+                bluetooth_public_address);
+            return false;
+          }),
+      eligible_active_devices_from_last_sync_.end());
+
+  NotifyObserversEligibleDevicesSynced();
 }
 
 }  // namespace multidevice_setup

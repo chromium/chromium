@@ -14,7 +14,6 @@ import com.google.android.gms.common.api.Status;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +21,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
@@ -37,7 +35,6 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordStoreAndroidBackendReceiverBridgeTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final PasswordSpecificsData.Builder sTestProfile =
             PasswordSpecificsData.newBuilder()

@@ -10,8 +10,7 @@
 #include <utility>
 
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/controls/scroll_view_gradient_helper.h"
-#include "ash/picker/views/picker_view.h"
+#include "ash/picker/views/picker_style.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -19,23 +18,28 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
 
-constexpr int kScrollViewGradientHeight = 16;
-
-constexpr auto kScrollViewContentsBorderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
-
-gfx::Insets GetPickerScrollBarInsets(PickerView::PickerLayoutType layout_type) {
+gfx::Insets GetScrollViewContentsBorderInsets(PickerLayoutType layout_type) {
   switch (layout_type) {
-    case PickerView::PickerLayoutType::kResultsBelowSearchField:
+    case PickerLayoutType::kMainResultsBelowSearchField:
+      return gfx::Insets::TLBR(0, 0, 8, 0);
+    case PickerLayoutType::kMainResultsAboveSearchField:
+      return gfx::Insets::TLBR(8, 0, 8, 0);
+  }
+}
+
+gfx::Insets GetPickerScrollBarInsets(PickerLayoutType layout_type) {
+  switch (layout_type) {
+    case PickerLayoutType::kMainResultsBelowSearchField:
       return gfx::Insets::TLBR(1, 0, 12, 0);
-    case PickerView::PickerLayoutType::kResultsAboveSearchField:
+    case PickerLayoutType::kMainResultsAboveSearchField:
       return gfx::Insets::TLBR(12, 0, 1, 0);
   }
 }
@@ -53,24 +57,10 @@ class PickerScrollView : public views::ScrollView {
         .SetBackgroundColor(std::nullopt)
         .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
         .BuildChildren();
-
-    // Paint to layer so that we can apply a gradient mask.
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
-        this, kScrollViewGradientHeight);
   }
   PickerScrollView(const PickerScrollView&) = delete;
   PickerScrollView& operator=(const PickerScrollView&) = delete;
   ~PickerScrollView() override = default;
-
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    gradient_helper_->UpdateGradientMask();
-  }
-
- private:
-  // Applies fade in / fade out gradients at the top and bottom of the scroll
-  // view to indicate when the contents can be scrolled.
-  std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 };
 
 BEGIN_METADATA(PickerScrollView)
@@ -78,22 +68,22 @@ END_METADATA
 
 }  // namespace
 
-PickerContentsView::PickerContentsView(
-    PickerView::PickerLayoutType layout_type) {
+PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto* scroll_view = AddChildView(std::make_unique<PickerScrollView>());
   auto vertical_scroll_bar = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
+  vertical_scroll_bar->SetAlwaysShowThumb(true);
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll_bar));
 
-  auto page_container = std::make_unique<views::FlexLayoutView>();
-  page_container->SetOrientation(views::LayoutOrientation::kVertical);
-  page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  page_container->SetBorder(
-      views::CreateEmptyBorder(kScrollViewContentsBorderInsets));
-  page_container_ = scroll_view->SetContents(std::move(page_container));
+  page_container_ = scroll_view->SetContents(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+          .SetInsideBorderInsets(GetScrollViewContentsBorderInsets(layout_type))
+          .Build());
 }
 
 PickerContentsView::~PickerContentsView() = default;

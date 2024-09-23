@@ -107,8 +107,8 @@ class FileSystemProviderOperationsReadDirectoryTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -118,7 +118,7 @@ class FileSystemProviderOperationsReadDirectoryTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   using extensions::api::file_system_provider::ReadDirectoryRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
@@ -148,7 +148,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
@@ -160,7 +160,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
@@ -204,7 +204,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnSuccess) {
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest,
        OnSuccess_InvalidMetadata) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
@@ -244,7 +244,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest,
 }
 
 TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(

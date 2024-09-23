@@ -7,9 +7,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
@@ -17,6 +19,7 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "extensions/common/extension.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace base {
@@ -167,6 +170,10 @@ T CreateString(const flatbuffers::String& str) {
 // |composite_matcher|.
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 
+// Whether the `extension` has the permission to use the declarativeNetRequest
+// API.
+bool HasAnyDNRPermission(const Extension& extension);
+
 // Returns true if |extension| has the declarativeNetRequestFeedback permission
 // for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
 // permissions are checked.
@@ -195,6 +202,15 @@ url_pattern_index::flat::RequestMethod GetRequestMethod(
 
 bool IsRuleSafe(const api::declarative_net_request::Rule& rule);
 bool IsRuleSafe(const flat::UrlRuleMetadata& rule);
+
+// Returns if the browser has enabled matching by response header conditions.
+// This looks at the `kDeclarativeNetRequestResponseHeaderMatching` feature flag
+// and the current browser channel.
+bool IsResponseHeaderMatchingEnabled();
+
+// Returns if the browser has enabled regex substitutions (and filtering) for
+// modifyHeaders rules.
+bool IsHeaderSubstitutionEnabled();
 
 }  // namespace declarative_net_request
 }  // namespace extensions

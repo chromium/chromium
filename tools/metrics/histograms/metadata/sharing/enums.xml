@@ -1,0 +1,103 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="PageSummarySheetEvents">
+  <int value="0" label="OPEN_SUMMARY_SHEET">
+    Open summary sheet: user clicked the 'create summary' option on the share
+    sheet. This starts the summary sharing flow.
+  </int>
+  <int value="1" label="CLOSE_SHEET_WHILE_INITIALIZING">
+    Dismiss/Close summary sheet while initializing: user dismissed or closed the
+    summary sheet before text started to load. This finishes the summary sharing
+    flow.
+  </int>
+  <int value="2" label="CLOSE_SHEET_WHILE_LOADING">
+    Dismiss/Close summary sheet while loading: user dismissed or closed the
+    summary sheet while text was loading. This finishes the summary sharing
+    flow.
+  </int>
+  <int value="3" label="CLOSE_SHEET_ON_ERROR">
+    Dismiss/Close summary sheet on error: user dismissed or closed the summary
+    sheet after loading failed. This finishes the summary sharing flow.
+  </int>
+  <int value="4" label="CLOSE_SHEET_AFTER_SUCCESS">
+    Dismiss/Close summary sheet on success: user dismissed or closed the summary
+    sheet after loading succeeded. This finishes the summary sharing flow.
+  </int>
+  <int value="5" label="ADD_SUMMARY">
+    Add summary: user clicked the 'add summary' button on the summary sheet,
+    share sheet will be re-opened with the summary attached. This finishes the
+    summary sharing flow.
+  </int>
+  <int value="6" label="REMOVE_SUMMARY">
+    Remove summary: user clicked the 'remove summary' option on the share sheet.
+    This is only available after the user opened the summary sheet and then
+    clicked 'add summary' on it. This will re-open the share sheet without the
+    summary.
+  </int>
+  <int value="7" label="CLICK_POSITIVE_FEEDBACK">
+    Provide positive feedback: user clicked the 'thumbs up' button on the
+    summary sheet.
+  </int>
+  <int value="8" label="CLICK_NEGATIVE_FEEDBACK">
+    Provide negative feedback: user clicked the 'thumbs down' button on the
+    summary sheet. This will open another sheet with negative feedback types.
+  </int>
+  <int value="9" label="NEGATIVE_FEEDBACK_TYPE_SELECTED">
+    Negative feedback type selected: user clicked 'submit' on the negative
+    feedback sheet. This will open the system feedback UI and finish the summary
+    sharing flow.
+  </int>
+  <int value="10" label="NEGATIVE_FEEDBACK_SHEET_DISMISSED">
+    Negative feedback sheet dismissed: user clicked 'cancel' or dismissed the
+    negative feedback sheet. This will re-open the summary sheet.
+  </int>
+  <int value="11" label="CLICK_LEARN_MORE">
+    Learn more clicked: user clicked 'learn more' link, which opens a help
+    center article.
+  </int>
+</enum>
+
+<enum name="ShareCustomAction">
+  <int value="0" label="COPY"/>
+  <int value="1" label="COPY_IMAGE"/>
+  <int value="2" label="COPY_TEXT"/>
+  <int value="3" label="COPY_URL"/>
+  <int value="4" label="LONG_SCREENSHOT"/>
+  <int value="5" label="PRINT"/>
+  <int value="6" label="QR_CODE"/>
+  <int value="7" label="SEND_TAB_TO_SELF"/>
+  <int value="8" label="COPY_HIGHLIGHT_WITHOUT_LINK"/>
+  <int value="9" label="COPY_IMAGE_WITH_LINK"/>
+  <int value="10" label="PAGE_INFO"/>
+  <int value="11" label="REMOVE_PAGE_INFO"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -1,0 +1,89 @@
+Tests shared storage item deletion & clearing via devtools.
+Metadata: {
+    bytesUsed : 180
+    creationTime : <number>
+    length : 3
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-document
+        value : value0
+    }
+    [1] : {
+        key : key1-set-from-document
+        value : value1value1
+    }
+    [2] : {
+        key : key2-set-from-document
+        value : value2
+    }
+]
+Delete an existing entry via devtools
+Delete a non-existing entry via devtools
+Metadata: {
+    bytesUsed : 124
+    creationTime : <number>
+    length : 2
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-document
+        value : value0
+    }
+    [1] : {
+        key : key1-set-from-document
+        value : value1value1
+    }
+]
+Clear entries via devtools
+undefined
+Entries:[
+]
+Events: [
+    [0] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key0-set-from-document
+            value : value0
+        }
+        type : documentSet
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key1-set-from-document
+            value : value1
+        }
+        type : documentSet
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key1-set-from-document
+            value : value1
+        }
+        type : documentAppend
+    }
+    [3] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key2-set-from-document
+            value : value2
+        }
+        type : documentSet
+    }
+]
+

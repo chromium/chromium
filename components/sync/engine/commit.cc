@@ -35,15 +35,16 @@ std::string RandASCIIString(size_t length) {
   const int kMin = static_cast<int>(' ');
   const int kMax = static_cast<int>('~');
   result.reserve(length);
-  for (size_t i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+  }
   return result;
 }
 
 SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.type()) {
     case SyncerError::Type::kSuccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case SyncerError::Type::kNetworkError:
       return SyncCommitError::kNetworkError;
@@ -59,7 +60,7 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
       return SyncCommitError::kBadServerResponse;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -75,7 +76,7 @@ Commit::~Commit() = default;
 
 // static
 std::unique_ptr<Commit> Commit::Init(
-    ModelTypeSet enabled_types,
+    DataTypeSet enabled_types,
     size_t max_entries,
     const std::string& account_name,
     const std::string& cache_guid,
@@ -88,8 +89,9 @@ std::unique_ptr<Commit> Commit::Init(
       commit_processor->GatherCommitContributions(max_entries);
 
   // Give up if no one had anything to commit.
-  if (contributions.empty())
+  if (contributions.empty()) {
     return nullptr;
+  }
 
   sync_pb::ClientToServerMessage message;
   message.set_message_contents(sync_pb::ClientToServerMessage::COMMIT);
@@ -111,7 +113,7 @@ std::unique_ptr<Commit> Commit::Init(
     }
   }
 
-  ModelTypeSet contributed_data_types;
+  DataTypeSet contributed_data_types;
   for (const auto& [type, contribution] : contributions) {
     contributed_data_types.Put(type);
   }
@@ -146,11 +148,11 @@ SyncerError Commit::PostAndProcessResponse(
     SyncCycle* cycle,
     StatusController* status,
     ExtensionsActivity* extensions_activity) {
-  ModelTypeSet request_types;
+  DataTypeSet request_types;
   for (const auto& [request_type, contribution] : contributions_) {
     request_types.Put(request_type);
     UMA_HISTOGRAM_ENUMERATION("Sync.PostedDataTypeCommitRequest",
-                              ModelTypeHistogramValue(request_type));
+                              DataTypeHistogramValue(request_type));
   }
 
   if (cycle->context()->debug_info_getter()) {
@@ -209,8 +211,8 @@ SyncerError Commit::PostAndProcessResponse(
   // Let the contributors process the responses to each of their requests.
   SyncerError processing_result = SyncerError::Success();
   for (const auto& [type, contributions] : contributions_) {
-    const char* model_type_str = ModelTypeToDebugString(type);
-    TRACE_EVENT1("sync", "ProcessCommitResponse", "type", model_type_str);
+    const char* data_type_str = DataTypeToDebugString(type);
+    TRACE_EVENT1("sync", "ProcessCommitResponse", "type", data_type_str);
     SyncerError type_result =
         contributions->ProcessCommitResponse(response, status);
     if (type_result.type() == SyncerError::Type::kProtocolError &&
@@ -235,17 +237,17 @@ SyncerError Commit::PostAndProcessResponse(
   return processing_result;
 }
 
-ModelTypeSet Commit::GetContributingDataTypes() const {
-  ModelTypeSet contributed_data_types;
-  for (const auto& [model_type, contribution] : contributions_) {
-    contributed_data_types.Put(model_type);
+DataTypeSet Commit::GetContributingDataTypes() const {
+  DataTypeSet contributed_data_types;
+  for (const auto& [data_type, contribution] : contributions_) {
+    contributed_data_types.Put(data_type);
   }
   return contributed_data_types;
 }
 
 void Commit::ReportFullCommitFailure(SyncerError syncer_error) {
   const SyncCommitError commit_error = GetSyncCommitError(syncer_error);
-  for (auto& [model_type, contribution] : contributions_) {
+  for (auto& [data_type, contribution] : contributions_) {
     contribution->ProcessCommitFailure(commit_error);
   }
 }

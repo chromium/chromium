@@ -41,9 +41,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   // directly calling ResolveHost()) with ERR_FAILED. Also on pipe close, calls
   // |connection_shutdown_callback| and passes |this| to notify that the
   // resolver has cancelled all receivers and may be cleaned up.
+  //
+  // `owned_internal_resolver` if set should be equal to `internal_resolver` and
+  // denotes that `this` takes ownership.
   HostResolver(mojo::PendingReceiver<mojom::HostResolver> resolver_receiver,
                ConnectionShutdownCallback connection_shutdown_callback,
                net::HostResolver* internal_resolver,
+               std::unique_ptr<net::HostResolver> owned_internal_resolver,
                net::NetLog* net_log);
   // Constructor for when the resolver will not be bound to a
   // mojom::HostResolver pipe, eg because it is handling ResolveHost requests
@@ -86,7 +90,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   std::set<std::unique_ptr<HostResolverMdnsListener>, base::UniquePtrComparator>
       listeners_;
 
-  const raw_ptr<net::HostResolver, FlakyDanglingUntriaged> internal_resolver_;
+  const std::unique_ptr<net::HostResolver> owned_internal_resolver_;
+  const raw_ptr<net::HostResolver> internal_resolver_;
   const raw_ptr<net::NetLog> net_log_;
 
   base::WeakPtrFactory<HostResolver> weak_factory_{this};

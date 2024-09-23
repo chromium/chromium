@@ -38,7 +38,17 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     const Vector<String>& protocols,
     WebSocketChannel* channel,
     ExceptionState& exception_state) {
-  url_ = KURL(NullURL(), url);
+  // CompleteURL is not used here because this is expected to always be UTF-8,
+  // and not match document encoding.
+  url_ = KURL(execution_context->BaseURL(), url);
+
+  if (url_.IsValid()) {
+    if (url_.ProtocolIs("http")) {
+      url_.SetProtocol("ws");
+    } else if (url_.ProtocolIs("https")) {
+      url_.SetProtocol("wss");
+    }
+  }
 
   bool upgrade_insecure_requests_set =
       (execution_context->GetSecurityContext().GetInsecureRequestPolicy() &
@@ -65,8 +75,8 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
     state_ = kClosed;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The URL's scheme must be either 'ws' or 'wss'. '" + url_.Protocol() +
-            "' is not allowed.");
+        "The URL's scheme must be either 'http', 'https', 'ws', or 'wss'. '" +
+            url_.Protocol() + "' is not allowed.");
     return ConnectResult::kException;
   }
 

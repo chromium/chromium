@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
@@ -23,6 +24,15 @@
 - (UIViewController*)popupParentViewControllerForPresenter:
     (OmniboxPopupPresenter*)presenter;
 
+/// Returns the background color for the popup to match the style of the
+/// toolbar.
+- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter;
+
+/// Returns the layout guide name used to anchor the omnibox popup to the
+/// omnibox textfield. If nil, the popup will be fully expanded inside of the
+/// parent view, from `popupParentViewForPresenter`.
+- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter;
+
 /// Alert the delegate that the popup opened.
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter;
 
@@ -32,7 +42,7 @@
 @end
 
 /// The UI Refresh implementation of the popup presenter.
-/// TODO(crbug.com/936833): This class should be refactored to handle a nil
+/// TODO(crbug.com/40616000): This class should be refactored to handle a nil
 /// delegate.
 @interface OmniboxPopupPresenter : NSObject <ToolbarOmniboxConsumer>
 
@@ -44,7 +54,6 @@
 /// `isFocusingOmnibox`: Omnibox is being focused.
 - (void)updatePopupOnFocus:(BOOL)isFocusingOmnibox;
 
-/// Only called when IsIpadPopoutOmniboxEnabled is true.
 /// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 

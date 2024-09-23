@@ -33,7 +33,7 @@ android_resources("cardboard_java_resources") {
   ]
 }
 source_set("android") {
-  # TODO(https://crbug.com/1426233): Investigate why this cannot simply be an
+  # TODO(crbug.com/40899237): Investigate why this cannot simply be an
   # assert(enable_vr).
   if (enable_vr) {
     sources = [
@@ -75,6 +75,7 @@ source_set("android") {
 
     deps = [
       ":android_utils",
+      ":features",
       ":xr_jni_headers",
       "//base",
       "//components/messages/android",
@@ -123,6 +124,7 @@ android_library("xr_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
+    "//device/vr/public:java",
   ]
 
   public_deps = []
@@ -228,5 +230,36 @@ generate_jni("xr_jni_headers") {
 if (enable_arcore) {
   java_cpp_enum("webxr_ar_android_enums") {
     sources = [ "arcore_install_helper.h" ]
+  }
+}
+
+generate_jni("features_jni") {
+  sources =
+      [ "java/src/org/chromium/components/webxr/WebXrAndroidFeatureMap.java" ]
+}
+
+android_library("features_java") {
+  srcjar_deps = [ ":features_jni" ]
+  sources =
+      [ "java/src/org/chromium/components/webxr/WebXrAndroidFeatureMap.java" ]
+  deps = [
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  deps += [ "//device/vr/public:java" ]
+}
+
+component("features") {
+  sources = [ "webxr_android_feature_map.cc" ]
+
+  deps = [
+    ":features_jni",
+    "//base",
+    "//device/vr/buildflags",
+  ]
+
+  if (enable_vr) {
+    deps += [ "//device/vr/public/cpp:features" ]
   }
 }

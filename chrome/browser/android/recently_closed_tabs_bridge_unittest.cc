@@ -14,8 +14,8 @@ namespace {
 
 // Create a new tab entry with `tabstrip_index` of `tab_counter` and increment
 // `tab_counter`.
-std::unique_ptr<sessions::TabRestoreService::Tab> MakeTab(int* tab_counter) {
-  auto tab = std::make_unique<sessions::TabRestoreService::Tab>();
+std::unique_ptr<sessions::tab_restore::Tab> MakeTab(int* tab_counter) {
+  auto tab = std::make_unique<sessions::tab_restore::Tab>();
   tab->tabstrip_index = (*tab_counter)++;
   return tab;
 }
@@ -30,9 +30,9 @@ void AddGroupWithTabs(sessions::TabRestoreService::Entries& entries,
                       const std::u16string& title,
                       int tab_count,
                       int* tab_counter) {
-  entries.push_back(std::make_unique<sessions::TabRestoreService::Group>());
+  entries.push_back(std::make_unique<sessions::tab_restore::Group>());
   auto* group =
-      static_cast<sessions::TabRestoreService::Group*>(entries.back().get());
+      static_cast<sessions::tab_restore::Group*>(entries.back().get());
   group->visual_data = tab_groups::TabGroupVisualData(title, 0);
   for (int i = 0; i < tab_count; ++i) {
     group->tabs.push_back(MakeTab(tab_counter));
@@ -44,9 +44,9 @@ void AddWindowWithTabs(sessions::TabRestoreService::Entries& entries,
                        const std::string& user_title,
                        int tab_count,
                        int* tab_counter) {
-  entries.push_back(std::make_unique<sessions::TabRestoreService::Window>());
+  entries.push_back(std::make_unique<sessions::tab_restore::Window>());
   auto* window =
-      static_cast<sessions::TabRestoreService::Window*>(entries.back().get());
+      static_cast<sessions::tab_restore::Window*>(entries.back().get());
   window->user_title = user_title;
   for (int i = 0; i < tab_count; ++i) {
     window->tabs.push_back(MakeTab(tab_counter));
@@ -94,9 +94,10 @@ TEST(RecentlyClosedTabsBridge_TabIterator, AllEntryTypes) {
   ASSERT_NE(it, TabIterator::end(entries));
   EXPECT_FALSE(it.IsCurrentEntryTab());
   auto entry = it.CurrentEntry();
-  EXPECT_EQ(sessions::TabRestoreService::GROUP, (*entry)->type);
-  EXPECT_EQ(u"foo", static_cast<sessions::TabRestoreService::Group&>(**entry)
-                        .visual_data.title());
+  EXPECT_EQ(sessions::tab_restore::Type::GROUP, (*entry)->type);
+  EXPECT_EQ(
+      u"foo",
+      static_cast<sessions::tab_restore::Group&>(**entry).visual_data.title());
   EXPECT_EQ(1, it->tabstrip_index);
   ++it;
   ASSERT_NE(it, TabIterator::end(entries));
@@ -115,10 +116,9 @@ TEST(RecentlyClosedTabsBridge_TabIterator, AllEntryTypes) {
   ASSERT_NE(it, TabIterator::end(entries));
   EXPECT_FALSE(it.IsCurrentEntryTab());
   entry = it.CurrentEntry();
-  EXPECT_EQ(sessions::TabRestoreService::WINDOW, (*entry)->type);
-  EXPECT_EQ(
-      "bar",
-      static_cast<sessions::TabRestoreService::Window&>(**entry).user_title);
+  EXPECT_EQ(sessions::tab_restore::Type::WINDOW, (*entry)->type);
+  EXPECT_EQ("bar",
+            static_cast<sessions::tab_restore::Window&>(**entry).user_title);
   EXPECT_EQ(5, it->tabstrip_index);
   ++it;
   ASSERT_NE(it, TabIterator::end(entries));

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
@@ -16,8 +17,8 @@
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
@@ -134,6 +135,10 @@ CameraPreviewView* GetCameraPreviewView() {
       ->camera_preview_view();
 }
 
+bool PointerHighlightingEnabled() {
+  return !Shell::Get()->annotator_controller()->is_annotator_enabled();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -241,12 +246,13 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
 
-  const bool should_create_recording_overlay =
-      active_behavior_->ShouldCreateRecordingOverlayController();
-  if (should_create_recording_overlay) {
-    recording_overlay_controller_ =
-        std::make_unique<RecordingOverlayController>(window_being_recorded_,
-                                                     GetOverlayWidgetBounds());
+  if (active_behavior_->ShouldCreateAnnotationsOverlayController()) {
+    std::optional<gfx::Rect> region_bounds =
+        recording_source_ == CaptureModeSource::kRegion
+            ? std::optional<gfx::Rect>(partial_region_bounds_)
+            : std::nullopt;
+    Shell::Get()->annotator_controller()->CreateAnnotationOverlayForWindow(
+        window_being_recorded_, region_bounds);
   }
 
   controller_->camera_controller()->OnRecordingStarted(active_behavior_);
@@ -263,14 +269,6 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
   CHECK(is_shutting_down_);
 }
 
-void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
-  CHECK(active_behavior_->ShouldCreateRecordingOverlayController());
-  CHECK(!is_shutting_down_);
-  CHECK(recording_overlay_controller_);
-
-  recording_overlay_controller_->Toggle();
-}
-
 void VideoRecordingWatcher::ShutDown() {
   is_shutting_down_ = true;
   CHECK(window_being_recorded_);
@@ -279,7 +277,6 @@ void VideoRecordingWatcher::ShutDown() {
   cursor_events_throttle_timer_.Stop();
   cursor_capture_overlay_remote_.reset();
   root_observer_.reset();
-  recording_overlay_controller_.reset();
   demo_tools_controller_.reset();
   dimmers_.clear();
   ReleaseLayer();
@@ -335,9 +332,8 @@ gfx::Rect VideoRecordingWatcher::GetEffectivePartialRegionBounds() const {
   // so that screen rotation doesn't result in the apparent change of the region
   // position. Discussion with PM/UX determined that this is a low priority for
   // now.
-  gfx::Rect result = partial_region_bounds_;
-  result.AdjustToFit(current_root_->bounds());
-  return result;
+  return capture_mode_util::GetEffectivePartialRegionBounds(
+      partial_region_bounds_, current_root_);
 }
 
 const views::Widget* VideoRecordingWatcher::GetKeyComboWidgetIfVisible() const {
@@ -369,10 +365,6 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (recording_overlay_controller_) {
-    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
-  }
-
   if (recording_source_ != CaptureModeSource::kWindow) {
     return;
   }
@@ -510,12 +502,6 @@ void VideoRecordingWatcher::OnDisplayTabletStateChanged(
 void VideoRecordingWatcher::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  // A change in the work area, could mean that the docked magnifier state has
-  // changed, therefore we must update the overlay widget's bounds if any.
-  if (recording_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
-    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
-  }
-
   if (!(metrics &
         (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
          DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
@@ -568,8 +554,9 @@ void VideoRecordingWatcher::OnKeyEvent(ui::KeyEvent* event) {
   if (demo_tools_controller_)
     demo_tools_controller_->OnKeyEvent(event);
 
-  if (event->type() != ui::ET_KEY_PRESSED)
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
+  }
 
   auto* camera_preview_view = GetCameraPreviewView();
   if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
@@ -583,11 +570,11 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
   const gfx::PointF location_in_window =
       GetEventLocationInWindow(window_being_recorded_, *event);
   switch (event->type()) {
-    case ui::ET_MOUSEWHEEL:
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
+    case ui::EventType::kMousewheel:
+    case ui::EventType::kMouseCaptureChanged:
       return;
 
-    case ui::ET_MOUSE_PRESSED: {
+    case ui::EventType::kMousePressed: {
       auto* camera_preview_view = GetCameraPreviewView();
       if (camera_preview_view)
         camera_preview_view->MaybeBlurFocus(*event);
@@ -597,7 +584,7 @@ void VideoRecordingWatcher::OnMouseEvent(ui::MouseEvent* event) {
       }
     }
       [[fallthrough]];
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       // Pressed/released events are important, so we handle them immediately.
       UpdateCursorOverlayNow(location_in_window);
       return;
@@ -891,22 +878,6 @@ void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
 
   controller_->OnRecordedWindowSizeChanged(
       window_being_recorded_->bounds().size());
-}
-
-gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
-  gfx::Rect bounds = recording_source_ == CaptureModeSource::kRegion
-                         ? GetEffectivePartialRegionBounds()
-                         : gfx::Rect(window_being_recorded_->bounds().size());
-  bounds.Subtract(Shell::Get()
-                      ->docked_magnifier_controller()
-                      ->GetTotalMagnifierBoundsForRoot(
-                          window_being_recorded_->GetRootWindow()));
-  return bounds;
-}
-
-bool VideoRecordingWatcher::PointerHighlightingEnabled() const {
-  return !(recording_overlay_controller_ &&
-           recording_overlay_controller_->is_enabled());
 }
 
 }  // namespace ash

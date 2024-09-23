@@ -86,7 +86,7 @@ class ScrollJankDroppedFrameTrackerTest : public testing::Test {
       tick_clock.SetNowTicks(prev_frame.first_input_ts);
 
       auto event = ScrollUpdateEventMetrics::CreateForTesting(
-          ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+          ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           /*delta=*/10.0f, prev_frame.first_input_ts, base::TimeTicks(),
@@ -103,7 +103,7 @@ class ScrollJankDroppedFrameTrackerTest : public testing::Test {
     base::SimpleTestTickClock tick_clock;
     tick_clock.SetNowTicks(frame.first_input_ts);
     auto event = ScrollUpdateEventMetrics::CreateForTesting(
-        ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
+        ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
         /*is_inertial=*/false,
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         /*delta=*/10.0f, frame.first_input_ts, base::TimeTicks(), &tick_clock,

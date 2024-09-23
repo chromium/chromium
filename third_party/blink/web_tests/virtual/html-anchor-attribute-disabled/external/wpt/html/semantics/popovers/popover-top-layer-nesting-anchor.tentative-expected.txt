@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Single popover=auto ancestor with dialog, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Single popover=auto ancestor with fullscreen, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Single popover=manual ancestor with dialog, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Single popover=manual ancestor with fullscreen, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Nested popover=auto ancestors with dialog, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Nested popover=auto ancestors with fullscreen, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Nested popover=auto ancestors, target is outer with dialog, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Nested popover=auto ancestors, target is outer with fullscreen, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Top layer inside of nested element with dialog, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+[FAIL] Top layer inside of nested element with fullscreen, anchor attribute
+  assert_equals: Incorrect behavior expected true but got false
+Harness: the test ran to completion.
+

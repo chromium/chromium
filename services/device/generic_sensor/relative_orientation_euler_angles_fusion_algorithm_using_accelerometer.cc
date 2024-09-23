@@ -7,9 +7,9 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
 
@@ -41,9 +41,10 @@ void ComputeRelativeOrientationFromAccelerometer(double acceleration_x,
   // This is necessary in order to provide enough information to solve
   // the equations.
   *alpha_in_degrees = NAN;
-  *beta_in_degrees = gfx::RadToDeg(std::atan2(-acceleration_y, acceleration_z));
+  *beta_in_degrees =
+      base::RadToDeg(std::atan2(-acceleration_y, acceleration_z));
   *gamma_in_degrees =
-      gfx::RadToDeg(std::asin(acceleration_x / base::kMeanGravityDouble));
+      base::RadToDeg(std::asin(acceleration_x / base::kMeanGravityDouble));
 
   // Convert beta and gamma to fit the intervals in the specification. Beta is
   // [-180, 180) and gamma is [-90, 90).

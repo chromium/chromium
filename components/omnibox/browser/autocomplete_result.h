@@ -39,7 +39,7 @@ class AutocompleteResult {
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
-  using MatchDedupComparator = ACMatchKey<std::string, bool>;
+  using MatchDedupComparator = ACMatchKey<std::string, bool, bool>;
 
   // Max number of matches we'll show from the various providers. This limit
   // may be different for zero suggest and non zero suggest. Does not take into
@@ -232,29 +232,28 @@ class AutocompleteResult {
   }
 
   bool zero_prefix_enabled_in_session() const {
-    return zero_prefix_enabled_in_session_;
+    return session_.zero_prefix_enabled_;
   }
 
   void set_zero_prefix_enabled_in_session(bool enabled) {
-    zero_prefix_enabled_in_session_ = enabled;
+    session_.zero_prefix_enabled_ = enabled;
   }
 
   size_t num_zero_prefix_suggestions_shown_in_session() const {
-    return num_zero_prefix_suggestions_shown_in_session_;
+    return session_.num_zero_prefix_suggestions_shown_;
   }
 
   void set_num_zero_prefix_suggestions_shown_in_session(size_t number) {
-    num_zero_prefix_suggestions_shown_in_session_ = number;
+    session_.num_zero_prefix_suggestions_shown_ = number;
   }
 
-  // Clears the matches and their related data for this result set.
+  // Clears this result set - i.e., `matches_` and `suggestion_groups_map_`.
   void ClearMatches();
 
-  // Clears the matches and their related data for the session. Called only when
+  // Clears this result set and the session data - i.e., `matches_`,
+  // `suggestion_groups_map_` and `session_`. Called when
   // AutocompleteController::Stop() with `clear_result=true` is called.
   void Reset();
-
-  void Swap(AutocompleteResult* other);
 
 #if DCHECK_IS_ON()
   // Does a data integrity check on this result.
@@ -291,7 +290,7 @@ class AutocompleteResult {
   // Returns false if |suggestion_group_id| is not found in
   // |suggestion_groups_map_| or if the suggestion group does not contain the
   // original server provided group ID.
-  bool IsSuggestionGroupHidden(PrefService* prefs,
+  bool IsSuggestionGroupHidden(const PrefService* prefs,
                                omnibox::GroupId suggestion_group_id) const;
 
   // Sets the UI collapsed/expanded state of the |suggestion_group_id| in the
@@ -348,12 +347,13 @@ class AutocompleteResult {
   static constexpr size_t kMaxAutocompletePositionValue = 30;
 
  private:
-  friend class AutocompleteController;  // Friended to use `CopyFrom()`.
+  friend class AutocompleteController;
   friend class AutocompleteResultForTesting;
   friend class AutocompleteProviderTest;
   friend class HistoryURLProviderTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Desktop_TwoColumnRealbox);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Android_TrimOmniboxActions);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, SwapMatches);
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 
@@ -365,9 +365,23 @@ class AutocompleteResult {
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
 
-  // operator=() by another name.
-  // To be called in AutocompleteController and AutocompleteProviderTest only.
-  void CopyFrom(const AutocompleteResult& other);
+  struct SessionData {
+    void Reset();
+
+    // Whether zero-prefix suggestions could have been shown in the session.
+    bool zero_prefix_enabled_ = false;
+
+    // The number of zero-prefix suggestions shown in the session.
+    size_t num_zero_prefix_suggestions_shown_ = 0u;
+  };
+
+  // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -
+  // with `other`. Called in AutocompleteController and tests only.
+  void SwapMatchesWith(AutocompleteResult* other);
+
+  // Copies the result set - i.e., `matches_` and `suggestion_groups_map_` -
+  // from `other`. Called in AutocompleteController and tests only.
+  void CopyMatchesFrom(const AutocompleteResult& other);
 
   // Modifies |matches| such that any duplicate matches are coalesced into
   // representative "best" matches. The erased matches are moved into the
@@ -399,11 +413,8 @@ class AutocompleteResult {
   void MergeMatchesByProvider(ACMatches* old_matches,
                               const ACMatches& new_matches);
 
-  // This pulls the relevant fields out of a match for comparison with other
-  // matches for the purpose of deduping. It uses the stripped URL, so that we
-  // collapse similar URLs if necessary, and whether the match is a calculator
-  // suggestion, because we don't want to dedupe them against URLs that simply
-  // happen to go to the same destination.
+  // Returns a tuple encompassing all attributes relevant to determining whether a match should
+  // be deduplicated with another match.
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 
@@ -428,18 +439,22 @@ class AutocompleteResult {
   // The current result set. Cleared on `ClearMatches()` or `Reset()`.
   ACMatches matches_;
 
-  // The map of suggestion group IDs to suggestion group information for
-  // `matches_`. Cleared on `ClearMatches()` or `Reset()`.
+  // The map of suggestion group IDs to suggestion group information for the
+  // current result set. Cleared along with `matches_` on `ClearMatches()` or
+  // `Reset()`.
   omnibox::GroupConfigMap suggestion_groups_map_;
 
-  // Whether zero-prefix suggestions were enabled in the session (i.e., the
-  // user could have seen zero-prefix suggestions), regardless of current
-  // `matches_` - Cleared on `Reset()`.
-  bool zero_prefix_enabled_in_session_ = false;
-
-  // The number of zero-prefix suggestions in the session, regardless of current
-  // `matches_`. Cleared on `Reset()`.
-  size_t num_zero_prefix_suggestions_shown_in_session_ = 0u;
+  // The session data irrespective of the current result set. Cleared on
+  // `Reset()`.
+  // TODO(crbug.com/40218651): This is a bandaid solution for storing the
+  // session data. It relies on `ClearMatches()`, `SwapMatchesWith()`, and
+  // `CopyMatchesFrom()` to only modify the current result set and not the
+  // session data; and for `Reset()` to be called once during the autocomplete
+  // session. Ideally, this should be replaced with a more general solution such
+  // as changing the OmniboxTriggeredFeatureService so that it defines an
+  // autocomplete session to start when the omnibox is focused and to end when
+  // the popup closes.
+  SessionData session_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

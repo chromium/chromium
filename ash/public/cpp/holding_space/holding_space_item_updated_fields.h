@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_colors.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -50,8 +51,10 @@ struct ASH_PUBLIC_EXPORT HoldingSpaceItemUpdatedFields {
   // Contains the previous secondary text iff the field was updated.
   std::optional<std::optional<std::u16string>> previous_secondary_text;
 
-  // Contains the previous secondary text color ID iff the field was updated.
-  std::optional<std::optional<ui::ColorId>> previous_secondary_text_color_id;
+  // Contains the previous secondary text color variant iff the field was
+  // updated.
+  std::optional<std::optional<HoldingSpaceColorVariant>>
+      previous_secondary_text_color_variant;
 
   // Contains the previous text iff the field was updated.
   std::optional<std::optional<std::u16string>> previous_text;

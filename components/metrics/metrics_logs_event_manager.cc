@@ -4,6 +4,8 @@
 
 #include "components/metrics/metrics_logs_event_manager.h"
 
+#include <string_view>
+
 namespace metrics {
 
 // static
@@ -37,17 +39,17 @@ void MetricsLogsEventManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MetricsLogsEventManager::NotifyLogCreated(base::StringPiece log_hash,
-                                               base::StringPiece log_data,
-                                               base::StringPiece log_timestamp,
+void MetricsLogsEventManager::NotifyLogCreated(std::string_view log_hash,
+                                               std::string_view log_data,
+                                               std::string_view log_timestamp,
                                                CreateReason reason) {
   for (Observer& observer : observers_)
     observer.OnLogCreated(log_hash, log_data, log_timestamp, reason);
 }
 
 void MetricsLogsEventManager::NotifyLogEvent(LogEvent event,
-                                             base::StringPiece log_hash,
-                                             base::StringPiece message) {
+                                             std::string_view log_hash,
+                                             std::string_view message) {
   for (Observer& observer : observers_)
     observer.OnLogEvent(event, log_hash, message);
 }

@@ -5,18 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_H_
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 namespace syncer {
@@ -27,7 +28,6 @@ class AuthenticationServiceDelegate;
 class AuthenticationServiceObserver;
 class FakeAuthenticationService;
 class PrefService;
-class SyncSetupService;
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
 
@@ -53,7 +53,6 @@ class AuthenticationService : public KeyedService,
 
   // Initializes the service.
   AuthenticationService(PrefService* pref_service,
-                        SyncSetupService* sync_setup_service,
                         ChromeAccountManagerService* account_manager_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service);
@@ -107,6 +106,9 @@ class AuthenticationService : public KeyedService,
   virtual bool HasPrimaryIdentityManaged(
       signin::ConsentLevel consent_level) const;
 
+  // Returns true if data should be cleared on sign-out.
+  virtual bool ShouldClearDataForSignedInPeriodOnSignOut() const;
+
   // Retrieves the identity of the currently authenticated user or `nil` if
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.
@@ -153,6 +155,13 @@ class AuthenticationService : public KeyedService,
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
 
+  // Returns whether an account switch is in progress.
+  bool IsAccountSwitchInProgress();
+
+  // The account switch is considered to be in progress while the returned
+  // object exists. Can only be called when no switch is in progress.
+  base::ScopedClosureRunner DeclareAccountSwitchInProgress();
+
  private:
   friend class FakeAuthenticationService;
   friend class AuthenticationServiceTest;
@@ -180,29 +189,22 @@ class AuthenticationService : public KeyedService,
   // `invalid_identity` is an additional identity to consider invalid. It can be
   // nil if there is no such additional identity to ignore.
   //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out.
-  //
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
   void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
-                               bool should_prompt,
                                bool device_restore);
 
   // Checks if the authenticated identity was removed by calling
   // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out of Chrome.
-  void ReloadCredentialsFromIdentities(bool should_prompt);
+  void ReloadCredentialsFromIdentities();
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentityListChanged(bool notify_user) override;
+  void OnIdentityListChanged() override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   id<RefreshAccessTokenError> error) override;
 
@@ -221,14 +223,19 @@ class AuthenticationService : public KeyedService,
   // Clears the account settings prefs of all removed accounts from device.
   void ClearAccountSettingsPrefsOfRemovedAccounts();
 
+  // Returns the active identities for MDM.
+  NSArray<id<SystemIdentity>>* ActiveIdentities();
+
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
   // is null.
   std::unique_ptr<AuthenticationServiceDelegate> delegate_;
 
+  // Whether an account is currently switching.
+  bool accountSwitchInProgress_ = false;
+
   // Pointer to the KeyedServices used by AuthenticationService.
   raw_ptr<PrefService> pref_service_ = nullptr;
-  raw_ptr<SyncSetupService> sync_setup_service_ = nullptr;
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;

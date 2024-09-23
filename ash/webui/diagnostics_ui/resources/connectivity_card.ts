@@ -30,8 +30,8 @@ import {RoutineSectionElement} from './routine_section.js';
 const ConnectivityCardElementBase = I18nMixin(PolymerElement);
 
 export class ConnectivityCardElement extends ConnectivityCardElementBase {
-  static get is(): string {
-    return 'connectivity-card';
+  static get is(): 'connectivity-card' {
+    return 'connectivity-card' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -109,6 +109,10 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     this.getRoutineSectionElem().stopTests();
   }
 
+  getRoutineGroupsForTesting(): RoutineGroup[] {
+    return this.routineGroups;
+  }
+
   protected hasRoutines(): boolean {
     return this.routineGroups && this.routineGroups.length > 0;
   }
@@ -181,11 +185,15 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     }
     return formatMacAddress(this.macAddress);
   }
+
+  getRoutineSectionElemForTesting(): RoutineSectionElement {
+    return this.getRoutineSectionElem();
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'connectivity-card': ConnectivityCardElement;
+    [ConnectivityCardElement.is]: ConnectivityCardElement;
   }
 }
 

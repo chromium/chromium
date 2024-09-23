@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/color_chooser_ui_controller.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -60,7 +60,7 @@ void ColorChooserUIController::OpenUI() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   OpenColorChooser();
 #else
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "ColorChooserUIController should only be used on Android or iOS";
 #endif
 }
@@ -84,7 +84,7 @@ void ColorChooserUIController::DidChooseColor(uint32_t color) {
   client_->DidChooseColor(Color::FromRGBA32(color));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void ColorChooserUIController::OpenColorChooser() {
   DCHECK(!chooser_);
   scoped_refptr<base::SequencedTaskRunner> runner =

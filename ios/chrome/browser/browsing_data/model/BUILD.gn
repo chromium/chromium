@@ -16,8 +16,8 @@ source_set("model_remove_mask") {
 
 source_set("model") {
   sources = [
-    "browsing_data_counter_wrapper.cc",
     "browsing_data_counter_wrapper.h",
+    "browsing_data_counter_wrapper.mm",
     "browsing_data_remover.h",
     "browsing_data_remover.mm",
     "browsing_data_remover_factory.h",
@@ -36,6 +36,7 @@ source_set("model") {
   deps = [
     ":counters",
     ":feature_flags",
+    ":util",
     "//base",
     "//components/autofill/core/browser",
     "//components/browser_sync",
@@ -54,26 +55,33 @@ source_set("model") {
     "//components/translate/core/browser:browser",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/browser_state/model:ios_thread",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/profile/model:ios_thread",
     "//ios/chrome/browser/reading_list/model:reading_list_remover",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/translate/model:model",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/font_size",
+    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/safe_browsing",
@@ -93,13 +101,37 @@ source_set("counters") {
   sources = [
     "cache_counter.cc",
     "cache_counter.h",
+    "tabs_counter.h",
+    "tabs_counter.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/browsing_data/core",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_util",
+    "//net",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "tabs_closure_util.h",
+    "tabs_closure_util.mm",
   ]
   deps = [
     "//base",
-    "//components/browsing_data/core",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//components/tab_groups",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
-    "//net",
+    "//ios/web/public/session/proto",
+    "//ios/web/public/session/proto:proto_util",
   ]
 }
 
@@ -110,11 +142,13 @@ source_set("unit_tests") {
     "browsing_data_remover_observer_bridge_unittest.mm",
     "cache_counter_unittest.cc",
     "system_snapshots_cleaner_unittest.mm",
+    "tabs_closure_util_unittest.mm",
   ]
   deps = [
     ":counters",
     ":model",
     ":test_support",
+    ":util",
     "//base",
     "//base/test:test_support",
     "//components/browsing_data/core",
@@ -125,12 +159,23 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:fake",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

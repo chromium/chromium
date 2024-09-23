@@ -29,7 +29,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.VerificationResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
@@ -110,7 +110,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
     public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (!isNativeOriginVerifierInitialized()) {
-            initNativeOriginVerifier(Profile.getLastUsedRegularProfile());
+            initNativeOriginVerifier(ProfileManager.getLastUsedRegularProfile());
         }
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.

@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("gesture_iph") {
+  sources = [
+    "gesture_in_product_help_gesture_recognizer.h",
+    "gesture_in_product_help_gesture_recognizer.mm",
+    "gesture_in_product_help_view+subclassing.h",
+    "gesture_in_product_help_view.h",
+    "gesture_in_product_help_view.mm",
+    "gesture_in_product_help_view_delegate.h",
+    "toolbar_swipe_gesture_in_product_help_view.h",
+    "toolbar_swipe_gesture_in_product_help_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
+    "//ios/chrome/browser/bubble/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "gesture_in_product_help_constants.h",
+    "gesture_in_product_help_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "gesture_in_product_help_view_egtest_utils.h",
+    "gesture_in_product_help_view_egtest_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/bubble/ui_bundled:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

@@ -33,9 +33,13 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -58,9 +62,12 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
+#include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
@@ -404,7 +411,7 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
     property_name_to_id_map = new HashMap<StringImpl*, CSSPropertyID>;
     // This is a list of all base CSS and SVG CSS properties which are exposed
     // as SVG XML attributes
-    const QualifiedName* const attr_names[] = {
+    const auto attr_names = std::to_array<const QualifiedName*>({
         &svg_names::kAlignmentBaselineAttr,
         &svg_names::kBaselineShiftAttr,
         &svg_names::kBufferedRenderingAttr,
@@ -463,13 +470,12 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
         &svg_names::kVisibilityAttr,
         &svg_names::kWordSpacingAttr,
         &svg_names::kWritingModeAttr,
-    };
-    for (size_t i = 0; i < std::size(attr_names); i++) {
+    });
+    for (const auto* qname : attr_names) {
       CSSPropertyID property_id =
-          CssPropertyID(execution_context, attr_names[i]->LocalName());
+          CssPropertyID(execution_context, qname->LocalName());
       DCHECK_GT(property_id, CSSPropertyID::kInvalid);
-      property_name_to_id_map->Set(attr_names[i]->LocalName().Impl(),
-                                   property_id);
+      property_name_to_id_map->Set(qname->LocalName().Impl(), property_id);
     }
   }
 
@@ -641,6 +647,14 @@ SVGUseElement* SVGElement::GeneratingUseElement() const {
   return nullptr;
 }
 
+SVGResourceTarget& SVGElement::EnsureResourceTarget() {
+  return EnsureSVGRareData()->EnsureResourceTarget(*this);
+}
+
+bool SVGElement::IsResourceTarget() const {
+  return HasSVGRareData() && SvgRareData()->HasResourceTarget();
+}
+
 void SVGElement::SetCorrespondingElement(SVGElement* corresponding_element) {
   EnsureSVGRareData()->SetCorrespondingElement(corresponding_element);
 }
@@ -691,10 +705,10 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
   if (css_property_map.empty()) {
     // Fill the map for the first use.
     struct AttrToTypeEntry {
-      const QualifiedName& attr;
+      const QualifiedName& attr = g_null_name;
       const AnimatedPropertyType prop_type;
     };
-    const AttrToTypeEntry attr_to_types[] = {
+    const auto attr_to_types = std::to_array<const AttrToTypeEntry>({
         {svg_names::kAlignmentBaselineAttr, kAnimatedString},
         {svg_names::kBaselineShiftAttr, kAnimatedString},
         {svg_names::kBufferedRenderingAttr, kAnimatedString},
@@ -748,9 +762,10 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
         {svg_names::kVectorEffectAttr, kAnimatedString},
         {svg_names::kVisibilityAttr, kAnimatedString},
         {svg_names::kWordSpacingAttr, kAnimatedLength},
-    };
-    for (size_t i = 0; i < std::size(attr_to_types); i++)
-      css_property_map.Set(attr_to_types[i].attr, attr_to_types[i].prop_type);
+    });
+    for (const auto& item : attr_to_types) {
+      css_property_map.Set(item.attr, item.prop_type);
+    }
   }
   auto it = css_property_map.find(attribute_name);
   if (it == css_property_map.end())
@@ -772,13 +787,7 @@ bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
 }
 
 bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (const SVGAnimatedPropertyBase* property = PropertyFromAttribute(name))
-    return property->HasPresentationAttributeMapping();
-  if (name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr) {
-    return true;
-  }
-  return CssPropertyIdForSVGAttributeName(GetExecutionContext(), name) >
-         CSSPropertyID::kInvalid;
+  return name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr;
 }
 
 namespace {
@@ -788,7 +797,44 @@ bool ProbablyUrlFunction(const AtomicString& value) {
          memcmp(value.Characters8(), "url(", 4) == 0;
 }
 
+bool UseCSSURIValueCacheForProperty(CSSPropertyID property_id) {
+  return property_id == CSSPropertyID::kFill ||
+         property_id == CSSPropertyID::kClipPath;
+}
+
 }  // namespace
+
+void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
+    MutableCSSPropertyValueSet* style,
+    CSSPropertyID property_id,
+    const AtomicString& value) {
+  if (UseCSSURIValueCacheForProperty(property_id) &&
+      ProbablyUrlFunction(value)) {
+    // Cache CSSURIValue objects for a given attribute value string. If other
+    // presentation attributes change repeatedly while the fill or clip-path
+    // stay the same, we still recreate the presentation attribute style for
+    // the mentioned attributes/properties. Cache them to avoid expensive url
+    // parsing and resolution.
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    if (const CSSValue* cached_value =
+            engine.GetCachedFillOrClipPathURIValue(value)) {
+      AddPropertyToPresentationAttributeStyle(style, property_id,
+                                              *cached_value);
+    } else {
+      AddPropertyToPresentationAttributeStyle(style, property_id, value);
+      if (unsigned count = style->PropertyCount()) {
+        // Cache the value if it was added.
+        CSSPropertyValueSet::PropertyReference last_decl =
+            style->PropertyAt(--count);
+        if (last_decl.Id() == property_id) {
+          engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
+        }
+      }
+    }
+  } else {
+    AddPropertyToPresentationAttributeStyle(style, property_id, value);
+  }
+}
 
 void SVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
@@ -797,37 +843,18 @@ void SVGElement::CollectStyleForPresentationAttribute(
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
   if (property_id > CSSPropertyID::kInvalid) {
-    if ((property_id == CSSPropertyID::kFill ||
-         property_id == CSSPropertyID::kClipPath) &&
-        ProbablyUrlFunction(value)) {
-      // Cache CSSURIValue objects for a given attribute value string. If other
-      // presentation attributes change repeatedly while the fill or clip-path
-      // stay the same, we still recreate the presentation attribute style for
-      // the mentioned attributes/properties. Cache them to avoid expensive url
-      // parsing and resolution.
-      //
-      // Alternatively, we could start to update SVG presentation attribute
-      // style synchronously. See https://crbug.com/1375215
-      StyleEngine& engine = GetDocument().GetStyleEngine();
-      if (const CSSValue* cached_value =
-              engine.GetCachedFillOrClipPathURIValue(value)) {
-        AddPropertyToPresentationAttributeStyle(style, property_id,
-                                                *cached_value);
-      } else {
-        AddPropertyToPresentationAttributeStyle(style, property_id, value);
-        if (unsigned count = style->PropertyCount()) {
-          // Cache the value if it was added.
-          CSSPropertyValueSet::PropertyReference last_decl =
-              style->PropertyAt(--count);
-          if (last_decl.Id() == property_id) {
-            engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
-          }
-        }
-      }
-    } else {
-      AddPropertyToPresentationAttributeStyle(style, property_id, value);
+    AddPropertyToPresentationAttributeStyleWithCache(style, property_id, value);
+    return;
+  }
+  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
+  if (property && property->HasPresentationAttributeMapping()) {
+    if (const CSSValue* css_value = property->CssValue()) {
+      AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+                                              *css_value);
     }
-  } else if (name.Matches(xml_names::kLangAttr)) {
+    return;
+  }
+  if (name.Matches(xml_names::kLangAttr)) {
     MapLanguageAttributeToLocale(value, style);
   } else if (name == svg_names::kLangAttr) {
     if (!FastHasAttribute(xml_names::kLangAttr)) {
@@ -963,6 +990,7 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
   CSSPropertyID prop_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), params.name);
   if (prop_id > CSSPropertyID::kInvalid) {
+    UpdatePresentationAttributeStyle(prop_id, params.name, params.new_value);
     InvalidateInstances();
     return;
   }
@@ -1035,24 +1063,118 @@ void SVGElement::SynchronizeAllSVGAttributes() const {
   GetElementData()->SetSvgAttributesAreDirty(false);
 }
 
-void SVGElement::CollectExtraStyleForPresentationAttribute(
+MutableCSSPropertyValueSet*
+SVGElement::GetPresentationAttributeStyleForDirectUpdate() {
+  if (!RuntimeEnabledFeatures::SvgEagerPresAttrStyleUpdateEnabled()) {
+    return nullptr;
+  }
+  // If the element is not attached to the layout tree, then just mark dirty.
+  if (!GetLayoutObject()) {
+    return nullptr;
+  }
+  auto& element_data = EnsureUniqueElementData();
+  // If _something_ has already marked our presentation attribute style as
+  // dirty, just roll with that and let the normal update via
+  // CollectStyleForPresentationAttribute() handle it.
+  if (element_data.presentation_attribute_style_is_dirty()) {
+    return nullptr;
+  }
+  // Ditto if no property value set has been created yet.
+  if (!element_data.PresentationAttributeStyle()) {
+    return nullptr;
+  }
+  return To<MutableCSSPropertyValueSet>(
+      element_data.presentation_attribute_style_.Get());
+}
+
+void SVGElement::UpdatePresentationAttributeStyle(
+    const QualifiedName& attr_name) {
+  const SVGAnimatedPropertyBase* property = PropertyFromAttribute(attr_name);
+  // This code-path is only for attributes with an associated SVG DOM property.
+  DCHECK(property);
+  UpdatePresentationAttributeStyle(*property);
+}
+
+void SVGElement::UpdatePresentationAttributeStyle(
+    const SVGAnimatedPropertyBase& property) {
+  DCHECK(property.HasPresentationAttributeMapping());
+  if (auto* mutable_style = GetPresentationAttributeStyleForDirectUpdate()) {
+    const CSSPropertyID property_id = property.CssPropertyId();
+    if (property.IsSpecified()) {
+      if (const CSSValue* value = property.CssValue()) {
+        mutable_style->SetProperty(property_id, *value);
+      } else {
+        mutable_style->RemoveProperty(property_id);
+      }
+    } else {
+      mutable_style->RemoveProperty(property_id);
+    }
+  } else {
+    InvalidateSVGPresentationAttributeStyle();
+  }
+  SetNeedsStyleRecalc(
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::FromAttribute(property.AttributeName()));
+}
+
+void SVGElement::UpdatePresentationAttributeStyle(
+    CSSPropertyID property_id,
+    const QualifiedName& attr_name,
+    const AtomicString& value) {
+  auto set_result = MutableCSSPropertyValueSet::kModifiedExisting;
+  if (auto* mutable_style = GetPresentationAttributeStyleForDirectUpdate()) {
+    auto* execution_context = GetExecutionContext();
+    set_result = mutable_style->ParseAndSetProperty(
+        property_id, value, false,
+        execution_context ? execution_context->GetSecureContextMode()
+                          : SecureContextMode::kInsecureContext,
+        GetDocument().ElementSheet().Contents());
+    // We want "replace" semantics, so if parsing failed, then make sure any
+    // existing value is removed.
+    if (set_result == MutableCSSPropertyValueSet::kParseError) {
+      if (mutable_style->RemoveProperty(property_id)) {
+        set_result = MutableCSSPropertyValueSet::kChangedPropertySet;
+      }
+    }
+  } else {
+    InvalidateSVGPresentationAttributeStyle();
+  }
+  if (set_result >= MutableCSSPropertyValueSet::kModifiedExisting) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::FromAttribute(attr_name));
+  }
+}
+
+void SVGElement::AddAnimatedPropertyToPresentationAttributeStyle(
+    const SVGAnimatedPropertyBase& property,
     MutableCSSPropertyValueSet* style) {
-  // TODO(fs): This re-applies all animating attributes that are also
-  // presentation attributes. The precise predicate that we want is animated
-  // attributes that are presentation attributes and do not have a content
-  // attribute.
-  // That last bit ("do not have a content attribute") would mean a linear
-  // search of the attribute collection per property.
-  // Maybe reversing the order of operations would be preferable here (i.e
-  // collect style for animating attributes first, stashing which in a map, and
-  // then selectively collecting the rest of the presentation attributes).
-  // Maintaining the presentation attribute style "manually" also seems like a
-  // reasonable scheme since that means we can avoid reparsing the presentation
-  // attributes that didn't change.
+  DCHECK(property.HasPresentationAttributeMapping());
+  // Apply values from animating attributes that are also presentation
+  // attributes, but do not have a corresponding content attribute.
+  if (property.HasContentAttribute() || !property.IsAnimating()) {
+    return;
+  }
+  const CSSValue* value = property.CssValue();
+  if (!value) {
+    return;
+  }
+  AddPropertyToPresentationAttributeStyle(style, property.CssPropertyId(),
+                                          *value);
 }
 
 const ComputedStyle* SVGElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
+  // If ResolveStyle() needs to create presentation attribute style for the
+  // SVG object, those values need to be parsed, and we want that to happen in
+  // SVG mode using the element sheet (which is a fake stylesheet used for
+  // things like inline style). We don't need to switch the parser mode here
+  // for correctness, but if we don't, CSSParser::ParseValue() will create a
+  // new parser context due to mismatch. So override it temporarily here
+  // to gain a tiny bit of performance.
+  CSSParserContext::ParserModeOverridingScope scope(
+      *GetDocument().ElementSheet().Contents()->ParserContext(),
+      kSVGAttributeMode);
+
   SVGElement* corresponding_element = CorrespondingElement();
   if (!corresponding_element) {
     return GetDocument().GetStyleResolver().ResolveStyle(this,
@@ -1348,6 +1470,14 @@ void SVGElement::SynchronizeListOfSVGAttributes(
     if (attr->NeedsSynchronizeAttribute()) {
       attr->SynchronizeAttribute();
     }
+  }
+}
+
+void SVGElement::AddAnimatedPropertiesToPresentationAttributeStyle(
+    const base::span<const SVGAnimatedPropertyBase*> properties,
+    MutableCSSPropertyValueSet* style) {
+  for (const SVGAnimatedPropertyBase* property : properties) {
+    AddAnimatedPropertyToPresentationAttributeStyle(*property, style);
   }
 }
 

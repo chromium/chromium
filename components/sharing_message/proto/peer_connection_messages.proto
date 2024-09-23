@@ -1,0 +1,43 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Used to send an initial offer to a remote device as part of the signalling
+// mechanism of WebRTC.
+message PeerConnectionOfferMessage {
+  // required
+  string sdp = 1;
+}
+
+// Used to send the answer to a received offer as part of the signalling
+// mechanism of WebRTC.
+message PeerConnectionAnswerMessage {
+  // required
+  string sdp = 1;
+}
+
+// Represents an ICE candidate for a WebRTC connection.
+message PeerConnectionIceCandidate {
+  // required
+  string candidate = 1;
+  // required
+  string sdp_mid = 2;
+  // required
+  int32 sdp_mline_index = 3;
+}
+
+// Used to exchange ice candidate messages between peers for WebRTC connection.
+message PeerConnectionIceCandidatesMessage {
+  // required
+  repeated PeerConnectionIceCandidate ice_candidates = 1;
+}

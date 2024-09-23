@@ -22,6 +22,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -83,7 +84,7 @@ void LockedTpmMessageView::SetRemainingTime(base::TimeDelta time_left) {
     message_warning_->SetText(message_warning);
 
     if (time_left.InMinutes() != prev_time_left_.InMinutes()) {
-      message_warning_->SetAccessibleName(message_warning);
+      message_warning_->GetViewAccessibility().SetName(message_warning);
     }
     prev_time_left_ = time_left;
   }

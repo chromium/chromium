@@ -62,8 +62,10 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   ASSERT_NE(worker_token, worker_token2);
 
   worker_watcher->OnWorkerCreated(worker_token, rfh->GetProcess()->GetID(),
+                                  rfh->GetLastCommittedOrigin(),
                                   rfh->GetGlobalId());
   worker_watcher->OnWorkerCreated(worker_token2, rfh->GetProcess()->GetID(),
+                                  rfh->GetLastCommittedOrigin(),
                                   rfh->GetGlobalId());
   absl::Cleanup delete_workers = [&] {
     worker_watcher->OnBeforeWorkerDestroyed(worker_token, rfh->GetGlobalId());
@@ -117,7 +119,7 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   EXPECT_EQ(worker_token, worker_context->GetWorkerToken());
   EXPECT_FALSE(WorkerContext::FromWorkerToken(worker_token).has_value());
   performance_manager::RunInGraph([&](Graph* graph) {
-    EXPECT_TRUE(graph->GetAllWorkerNodes().empty());
+    EXPECT_EQ(graph->GetAllWorkerNodes().size(), 0u);
     EXPECT_FALSE(worker_node);
     EXPECT_EQ(nullptr, worker_context->GetWorkerNode());
     EXPECT_EQ(std::nullopt, WorkerContext::FromWeakWorkerNode(worker_node));

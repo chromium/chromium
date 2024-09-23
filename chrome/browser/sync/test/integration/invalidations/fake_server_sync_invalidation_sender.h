@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/fake_server.h"
 
@@ -46,7 +46,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
 
   // FakeServer::Observer implementation.
   void OnWillCommit() override;
-  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::DataTypeSet committed_data_types) override;
 
   // gcm::GCMConnectionObserver implementation.
   void OnConnected(const net::IPEndPoint& ip_endpoint) override;
@@ -74,7 +74,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
 
   // List of tokens with a list of interested data types. Used to send
   // invalidations to a corresponding client.
-  std::map<std::string, syncer::ModelTypeSet> token_to_interested_data_types_;
+  std::map<std::string, syncer::DataTypeSet> token_to_interested_data_types_;
 
   std::vector<raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
       fake_gcm_drivers_;

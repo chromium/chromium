@@ -4,13 +4,11 @@
 
 module safe_browsing.mojom;
 
-
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
-import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
-import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
@@ -36,15 +34,6 @@ interface SafeBrowsing {
   // ran with |proceed == true| and |showed_interstitial == false| as if the URL
   // is safe.
   //
-  // If |slow_check_notifier| is a valid interface receiver, it indicates that
-  // the URL may be unsafe and a more time-consuming process is required to get
-  // the final result. In that case, the rest of the callback arguments should
-  // be ignored. The result will be reported using the UrlCheckNotifier
-  // interface. Receiving a valid |slow_check_notifier| could be considered as
-  // a singal that the resource should be handled with more caution until the
-  // final result is obtained. For example, the network service may want to
-  // pause reading the response body for MIME sniffing.
-  //
   // |proceed| indicates whether it is okay to proceed with loading the URL.
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
   // has been shown to the user.
@@ -55,11 +44,9 @@ interface SafeBrowsing {
       string method,
       network.mojom.HttpRequestHeaders headers,
       int32 load_flags,
-      network.mojom.RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker)
-          => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
-              bool proceed,
+          => (bool proceed,
               bool showed_interstitial);
 
   // Bind an additional pipe to this instance of the SafeBrowsing interface.
@@ -152,10 +139,11 @@ enum PhishingDetectorResult {
 interface PhishingDetector {
   // Tells the renderer to begin phishing detection for the given toplevel URL
   // which it has started loading. Returns the serialized request proto and a
-  // |result| enum to indicate failure. If the URL is phishing the request proto
-  // will have |is_phishing()| set to true.
+  // `result` enum to indicate failure. If the URL is phishing the `request`
+  // ClientPhishingRequest will have `is_phishing()` set to true.
   StartPhishingDetection(url.mojom.Url url)
-    => (PhishingDetectorResult result, string request_proto);
+    => (PhishingDetectorResult result,
+        mojo_base.mojom.ProtoWrapper? request);
 };
 
 [EnableIf=full_safe_browsing]
@@ -239,7 +227,7 @@ interface PhishingImageEmbedderDetector {
   // ImageFeatureEmbedding object declared in csd.proto
   StartImageEmbedding(url.mojom.Url url)
     => (PhishingImageEmbeddingResult result,
-        mojo_base.mojom.ByteString image_embedding_request_proto);
+        mojo_base.mojom.ProtoWrapper? image_embedding_request);
 };
 
 // Enum representing protocol type of a web request.

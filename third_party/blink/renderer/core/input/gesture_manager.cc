@@ -29,8 +29,8 @@
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -110,7 +110,7 @@ HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
       // FIXME: Shouldn't LongTap and TwoFingerTap clear the Active state?
       return hit_type | HitTestRequest::kActive | HitTestRequest::kReadOnly;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return hit_type | HitTestRequest::kActive | HitTestRequest::kReadOnly;
   }
 }
@@ -161,7 +161,7 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     case WebInputEvent::Type::kGestureTapUnconfirmed:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return WebInputEventResult::kNotHandled;
@@ -232,7 +232,16 @@ WebInputEventResult GestureManager::HandleGestureTap(
             modifiers |
             WebInputEvent::Modifiers::kIsCompatibilityEventForTouch),
         gesture_event.TimeStamp());
-    mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+
+    // This updates hover state to the location of the tap, but does NOT update
+    // MouseEventManager::last_known_mouse_position_*. That's deliberate, since
+    // we don't want the page to continue to act as if this point is hovered
+    // (if the user scrolls for example).
+    //
+    // TODO(crbug.com/368256331): When we've applied a tap-based hover state, we
+    // should actually suppress RecomputeMouseHoverState until the user moves
+    // the mouse or navigates away.
+    mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
         current_hit_test.InnerElement(), event_type_names::kMousemove,
         fake_mouse_move);
   }
@@ -265,7 +274,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
       tapped_node ? tapped_node->GetDocument().GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kInteraction);
 
-  mouse_event_manager_->SetClickElement(tapped_element);
+  mouse_event_manager_->SetMouseDownElement(tapped_element);
 
   WebMouseEvent fake_mouse_down(
       WebInputEvent::Type::kMouseDown, gesture_event,
@@ -284,7 +293,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
     mouse_event_manager_->SetClickCount(gesture_event.TapCount());
 
     mouse_down_event_result =
-        mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+        mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
             current_hit_test.InnerElement(), event_type_names::kMousedown,
             fake_mouse_down);
     selection_controller_->InitializeSelectionState();
@@ -329,7 +338,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
   WebInputEventResult mouse_up_event_result =
       suppress_mouse_events_from_gestures_
           ? WebInputEventResult::kHandledSuppressed
-          : mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+          : mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
                 current_hit_test.InnerElement(), event_type_names::kMouseup,
                 fake_mouse_up);
 
@@ -342,14 +351,14 @@ WebInputEventResult GestureManager::HandleGestureTap(
       fake_mouse_up.id = GetPointerIdFromWebGestureEvent(gesture_event);
       fake_mouse_up.pointer_type = gesture_event.primary_pointer_type;
       click_event_result =
-          mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+          mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
               click_target_element, event_type_names::kClick, fake_mouse_up);
 
       // Dispatching a JS event could have detached the frame.
       if (frame_->View())
         frame_->View()->RegisterTapEvent(tapped_element);
     }
-    mouse_event_manager_->SetClickElement(nullptr);
+    mouse_event_manager_->SetMouseDownElement(nullptr);
   }
 
   if (mouse_up_event_result == WebInputEventResult::kNotHandled) {
@@ -521,7 +530,7 @@ WebInputEventResult GestureManager::SendContextMenuEventForGesture(
         static_cast<WebInputEvent::Modifiers>(
             modifiers | WebInputEvent::kIsCompatibilityEventForTouch),
         gesture_event.TimeStamp());
-    mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+    mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
         targeted_event.GetHitTestResult().InnerElement(),
         event_type_names::kMousemove, fake_mouse_move);
   }
@@ -560,10 +569,10 @@ WebInputEventResult GestureManager::HandleGestureShowPress() {
   LocalFrameView* view = frame_->View();
   if (!view)
     return WebInputEventResult::kNotHandled;
-  const LocalFrameView::ScrollableAreaSet* areas = view->UserScrollableAreas();
+  const LocalFrameView::ScrollableAreaMap* areas = view->UserScrollableAreas();
   if (!areas)
     return WebInputEventResult::kNotHandled;
-  for (PaintLayerScrollableArea* scrollable_area : *areas) {
+  for (PaintLayerScrollableArea* scrollable_area : areas->Values()) {
     if (scrollable_area->ScrollsOverflow())
       scrollable_area->CancelScrollAnimation();
   }

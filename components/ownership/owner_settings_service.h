@@ -29,13 +29,8 @@ class OwnerKeyUtil;
 class PrivateKey;
 class PublicKey;
 
-// Feature flag to toggle Chrome-side owner key generation (see
-// go/generate-owner-key-in-chrome). If enabled, Chrome will take the
-// responsibility of generating the owner key from session_manager. If disabled,
-// Chrome will still load/generate the owner key using the new code in parallel,
-// but the result will be discarded (see OwnerKeyDarkLaunchTracker).
 OWNERSHIP_EXPORT
-BASE_DECLARE_FEATURE(kChromeSideOwnerKeyGeneration);
+BASE_DECLARE_FEATURE(kOwnerSettingsWithSha256);
 
 // This class is a common interface for platform-specific classes
 // which deal with ownership, keypairs and owner-related settings.

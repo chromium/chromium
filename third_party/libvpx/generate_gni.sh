@@ -111,7 +111,7 @@ function convert_srcs_to_project_files() {
   #    compiler options.
   # 3. Replace .asm.s to .asm because gn will do the conversion.
 
-  local source_list=$(grep -E '(\.c|\.h|\.S|\.s|\.asm)$' $1)
+  local source_list=$(grep -E '(\.c|\.cc|\.h|\.S|\.s|\.asm)$' $1)
 
   # Not sure why vpx_config.c is not included.
   source_list=$(echo "$source_list" | grep -v 'vpx_config\.c')
@@ -124,9 +124,10 @@ function convert_srcs_to_project_files() {
   # are present in $1, hence "gn check" will detect them as invalid includes
   # unless explicitly added.
   source_list=$(echo -e "$source_list\\nvpx_ports/arm.h")
-  source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
-  source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
   source_list=$(echo -e "$source_list\\nvpx_ports/loongarch.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/ppc.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
   source_list=$(echo "$source_list" | sort -u)
 
   # The actual ARM files end in .asm. We have rules to translate them to .S
@@ -181,7 +182,14 @@ function convert_srcs_to_project_files() {
     write_gni avx2_sources $2_avx2 "$BASE_DIR/libvpx_srcs.gni"
     write_gni avx512_sources $2_avx512 "$BASE_DIR/libvpx_srcs.gni"
   else
-    if [[ `echo $2 | grep loongarch` ]]; then
+    if [[ `echo $2 | egrep 'test_srcs_generic$'` ]]; then
+      local c_sources=$(echo "$source_list" | egrep '\.c$')
+      local c_headers=$(echo "$source_list" | egrep '\.h$')
+      local cc_sources=$(echo "$source_list" | egrep '\.cc$')
+      write_gni c_sources $2 "$BASE_DIR/libvpx_test_srcs.gni"
+      write_gni c_headers $2_headers "$BASE_DIR/libvpx_test_srcs.gni"
+      write_gni cc_sources $2_cc "$BASE_DIR/libvpx_test_srcs.gni"
+    elif [[ `echo $2 | grep loongarch` ]]; then
       local c_sources=$(echo "$source_list" | egrep '\.c$')
       local c_headers=$(echo "$source_list" | egrep '\.h$')
       local lsx_sources=$(echo "$intrinsic_list" | egrep '_lsx\.(c|h)$')
@@ -207,10 +215,12 @@ function convert_srcs_to_project_files() {
         local neon_i8mm_sources=$(echo "$intrinsic_list" | \
           grep '_neon_i8mm\.c$')
         local sve_sources=$(echo "$intrinsic_list" | grep '_sve\.c$')
+        local sve2_sources=$(echo "$intrinsic_list" | grep '_sve2\.c$')
         write_gni neon_dotprod_sources $2_neon_dotprod \
           "$BASE_DIR/libvpx_srcs.gni"
         write_gni neon_i8mm_sources $2_neon_i8mm "$BASE_DIR/libvpx_srcs.gni"
         write_gni sve_sources $2_sve "$BASE_DIR/libvpx_srcs.gni"
+        write_gni sve2_sources $2_sve2 "$BASE_DIR/libvpx_srcs.gni"
       fi
      fi
   fi
@@ -225,7 +235,7 @@ function make_clean() {
 # Lint a pair of vpx_config.h and vpx_config.asm to make sure they match.
 # $1 - Header file directory.
 function lint_config() {
-  # mips, native and loongarch client do not contain any assembly so the
+  # mips, native client and loongarch do not contain any assembly so the
   # headers do not need to be compared to the asm.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
       && "$1" != *loongarch ]]; then
@@ -340,7 +350,8 @@ function gen_config_files() {
     local ASM_CONV=ads2gas_apple.pl
   fi
 
-  # Generate vpx_config.asm. Do not create one for mips or native client.
+  # Generate vpx_config.asm. Do not create one for mips, native client or
+  # loongarch.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
       && "$1" != *loongarch ]]; then
     if [[ "$1" == *x64* ]] || [[ "$1" == *ia32* ]]; then
@@ -394,7 +405,13 @@ all_platforms+=" --size-limit=16384x16384"
 all_platforms+=" --enable-realtime-only"
 all_platforms+=" --disable-install-docs"
 all_platforms+=" --disable-libyuv"
+all_platforms+=" --enable-unit-tests"
 x86_platforms="--enable-pic --as=yasm $DISABLE_AVX512 $HIGHBD"
+# SVE is disabled for Windows Arm64 due to a limitation with clang-cl-18:
+# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+# error: cannot mangle this built-in __SVInt8_t type yet
+disable_sve="--disable-sve --disable-sve2"
+
 gen_config_files linux/ia32 \
   "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/x64 \
@@ -419,7 +436,7 @@ gen_config_files linux/loongarch \
 gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
 gen_config_files win/arm64-highbd \
-  "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
+  "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD} ${disable_sve}"
 gen_config_files win/ia32 \
   "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
 gen_config_files win/x64 \
@@ -483,10 +500,7 @@ gen_rtcd_header linux/mips64el mips64el
 gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
-# SVE is disabled due to a limitation with clang-cl-18:
-# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
-# error: cannot mangle this built-in __SVInt8_t type yet
-gen_rtcd_header win/arm64-highbd armv8 "${require_neon} --disable-sve"
+gen_rtcd_header win/arm64-highbd armv8 "${require_neon} ${disable_sve}"
 gen_rtcd_header win/ia32 x86 "${require_sse2}"
 gen_rtcd_header win/x64 x86_64
 gen_rtcd_header mac/ia32 x86 "${require_sse2}"
@@ -500,9 +514,10 @@ echo "Prepare Makefile."
 make_clean
 
 if [[ -z $ONLY_CONFIGS ]]; then
-  # Remove existing .gni file.
-  rm -rf $BASE_DIR/libvpx_srcs.gni
+  # Remove existing .gni files.
+  rm -rf $BASE_DIR/libvpx_srcs.gni $BASE_DIR/libvpx_test_srcs.gni
   write_license $BASE_DIR/libvpx_srcs.gni
+  write_license $BASE_DIR/libvpx_test_srcs.gni
 
   echo "Generate X86 source list."
   config=$(print_config linux/ia32)
@@ -584,7 +599,6 @@ if [[ -z $ONLY_CONFIGS ]]; then
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_ppc64
 
-
   echo "Generate NaCl source list."
   config=$(print_config_basic nacl)
   make_clean
@@ -594,8 +608,9 @@ if [[ -z $ONLY_CONFIGS ]]; then
   echo "Generate GENERIC source list."
   config=$(print_config_basic linux/generic)
   make_clean
-  make libvpx_srcs.txt target=libs $config > /dev/null
+  make libvpx_srcs.txt libvpx_test_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_generic
+  convert_srcs_to_project_files libvpx_test_srcs.txt libvpx_test_srcs_generic
 fi
 
 echo "Remove temporary directory."

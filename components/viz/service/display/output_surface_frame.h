@@ -42,15 +42,11 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   std::vector<gfx::Rect> content_bounds;
   std::vector<ui::LatencyInfo> latency_info;
   std::optional<int64_t> choreographer_vsync_id;
-  bool top_controls_visible_height_changed = false;
-  // FrameData for GLSurface.
+  // FrameData for the GLSurface.
   gfx::FrameData data;
   // Metadata containing information to draw a delegated ink trail using
   // platform APIs.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
-#if BUILDFLAG(IS_APPLE)
-  gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
-#endif
 };
 
 }  // namespace viz

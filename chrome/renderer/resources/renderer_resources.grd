@@ -53,13 +53,13 @@
         <if expr="is_chromeos">
           <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\enterprise_platform_keys_custom_bindings.js" type="BINDATA" />
-          <include name="IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS" file="extensions\enterprise_platform_keys\key_pair.js" type="BINDATA" />
+          <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CRYPTO_KEY_JS" file="extensions\enterprise_platform_keys\crypto_key.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\enterprise_platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS" file="extensions\enterprise_platform_keys\token.js" type="BINDATA" />
           <include name="IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS" file="extensions\file_browser_handler_custom_bindings.js" type="BINDATA" />
           <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\platform_keys_custom_bindings.js" type="BINDATA" />
-          <include name="IDR_PLATFORM_KEYS_GET_PUBLIC_KEY_JS" file="extensions\platform_keys\get_public_key.js" type="BINDATA" />
+          <include name="IDR_PLATFORM_KEYS_GET_CRYPTO_KEY_UTIL_JS" file="extensions\platform_keys\get_crypto_key_util.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_KEY_JS" file="extensions\platform_keys\key.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_UTILS_JS" file="extensions\platform_keys\utils.js" type="BINDATA" />

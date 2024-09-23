@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -43,7 +44,7 @@ const SkColor kChildColor = SK_ColorWHITE;
 
 views::WidgetDelegateView* CreateChildModalWindow() {
   auto child = std::make_unique<views::WidgetDelegateView>();
-  child->SetModalType(ui::MODAL_TYPE_CHILD);
+  child->SetModalType(ui::mojom::ModalType::kChild);
   child->SetTitle(u"Examples: Child Modal Window");
   child->SetBackground(views::CreateSolidBackground(kChildColor));
   child->SetPreferredSize(gfx::Size(kChildWindowWidth, kChildWindowHeight));
@@ -62,7 +63,8 @@ views::WidgetDelegateView* CreateChildModalWindow() {
 TestChildModalParent* TestChildModalParent::Show(aura::Window* context) {
   auto* test_child_modal_parent = new TestChildModalParent(context);
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = test_child_modal_parent;
   params.context = context;
   params.bounds =
@@ -78,8 +80,9 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
       host_(new views::NativeViewHost) {
   SetTitle(u"Examples: Child Modal Parent");
   textfield_->SetPlaceholderText(u"top level window");
-  Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_CONTROL);
   params.context = context;
   modal_parent_->Init(std::move(params));
   modal_parent_->GetRootView()->SetBackground(

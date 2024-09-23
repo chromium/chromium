@@ -16,10 +16,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace embedder_support {
+class InputStream;
 }
 
 namespace android_webview {
@@ -84,7 +89,7 @@ class AwContentsIoThreadClient {
   // This map is useful when browser side navigations are enabled as
   // render_frame_ids will not be valid anymore for some of the navigations.
   static std::unique_ptr<AwContentsIoThreadClient> FromID(
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Called on the IO thread when a subframe is created.
   static void SubFrameCreated(int child_id,
@@ -92,8 +97,19 @@ class AwContentsIoThreadClient {
                               const blink::LocalFrameToken& child_frame_token);
 
   // This method is called on the IO thread only.
+  struct InterceptResponseData {
+    InterceptResponseData();
+    ~InterceptResponseData();
+
+    // Move only.
+    InterceptResponseData(InterceptResponseData&& other);
+    InterceptResponseData& operator=(InterceptResponseData&& other);
+
+    std::unique_ptr<AwWebResourceInterceptResponse> response;
+    std::unique_ptr<embedder_support::InputStream> input_stream;
+  };
   using ShouldInterceptRequestResponseCallback =
-      base::OnceCallback<void(std::unique_ptr<AwWebResourceInterceptResponse>)>;
+      base::OnceCallback<void(InterceptResponseData)>;
   void ShouldInterceptRequestAsync(
       AwWebResourceRequest request,
       ShouldInterceptRequestResponseCallback callback);
@@ -116,6 +132,9 @@ class AwContentsIoThreadClient {
   // Retrieve the BlockNetworkLoads setting value of this AwContents.
   // This method is called on the IO thread only.
   bool ShouldBlockNetworkLoads() const;
+
+  // Retrieve the AcceptCookies setting value of this AwContents.
+  bool ShouldAcceptCookies() const;
 
   // Retrieve the AcceptThirdPartyCookies setting value of this AwContents.
   bool ShouldAcceptThirdPartyCookies() const;

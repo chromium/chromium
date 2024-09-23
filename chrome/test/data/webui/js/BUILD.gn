@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "parse_html_subset_test.ts",
     "parse_html_subset_trusted_types_test.ts",
     "promise_resolver_test.ts",
+    "cr_router_test.ts",
     "static_types_test.ts",
     "store_test.ts",
     "test_suite_self_test.ts",

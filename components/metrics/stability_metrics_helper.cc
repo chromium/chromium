@@ -242,7 +242,7 @@ void StabilityMetricsHelper::LogRendererCrash(
       break;
 #endif
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -277,7 +277,7 @@ void StabilityMetricsHelper::LogRendererCrashImpl(
     int exit_code) {
   if (renderer_type == CoarseRendererType::kExtension) {
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
     RecordStabilityEvent(StabilityEventType::kExtensionCrash);
     base::UmaHistogramSparse("CrashExitCodes.Extension",

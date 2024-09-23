@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2244252133441425811">Уключыць сродак выбару частаты кадраў для відэа</translation>
 <translation id="2271433936731426666">Пры здымцы відэа рабіць фотаздымкі максімальна магчымага памеру</translation>
+<translation id="2281736597583450397">Дэталі большай рэзкасці з палепшаным маштабаваннем</translation>
 <translation id="2320741269052147773">Зрушыць улева</translation>
+<translation id="2360840973209616515">Праграмай камеры кіруе адміністратар.
+        Звярніцеся да яго па дадатковую інфармацыю.</translation>
+<translation id="2442754296994859145">Каб спраўдзіць змесціва, скапіруйце. Каб спыніць сканіраванне, разгарніце.</translation>
+<translation id="2486151619109781620">Згарнуць дыялогавае акно і запусціць сканіраванне</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Запіс спынены</translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="2577915835281444458">Запіс хутка спыніцца. Вызваліце месца ў сховішчы прылады.</translation>
 <translation id="2599796128805996109">Задняя камера</translation>
+<translation id="2654491636277477479">Скапіраваць выяўлены тэкст</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
 <translation id="2761536921376153655">Тып праверкі</translation>
 <translation id="28682968802727151">Перадпрагляд у рэжыме люстэрка</translation>
 <translation id="2879583609344924966">Камера "<ph name="CAMERA" />" падключана.</translation>
 <translation id="3067436040345934772">Зрушыць управа</translation>
 <translation id="3081586908890909590">Пераключыцца на здымку відэа</translation>
+<translation id="3091480460059548935">Выяўленне тэксту ў перадпраглядзе</translation>
 <translation id="313467653172006084">30 кадр/c</translation>
+<translation id="3157038259444425153">Можна скапіраваць тэкст непасрэдна з фота</translation>
 <translation id="3158534262962737808">Далучыцца да сеткі "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3240426699337459095">Спасылка скапіравана</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Прыпыніць запіс</translation>
 <translation id="4121305183798804752">Выяўлены дакумент</translation>
 <translation id="414641094616694804">Гэта камера не можа змяняць раздзяляльнасць</translation>
-<translation id="4176463684765177261">Выключана</translation>
 <translation id="428234092390943511">Мініяцюра старонкі</translation>
-<translation id="4349714250734879769">Маштабаванне кадраў Chrome</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>
 <translation id="4445542136948522167">Спыніць фотаздымку</translation>
 <translation id="4570032796877367747">Пярэдняя камера</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Адсканіраваныя старонкі ў выглядзе спіса</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Скапіраваць адрас спасылкі (<ph name="URL" />)</translation>
-<translation id="491895758387112773">Відэазапіс некалькіх плыней</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Суадносіны бакоў фота</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5320594929574852403">Перамяшчаецца ўлева</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Разгарнуць дыялогавае акно і спыніць сканіраванне</translation>
 <translation id="5662366948659129155">Сканіруецца старонка <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="574392208103952083">Сярэдні</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5976160379964388480">Іншыя</translation>
 <translation id="6073451960410192870">Спыніць запіс</translation>
+<translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6197807149213783179">Захаваць метаданыя</translation>
 <translation id="6233780560267770709">3 на 3</translation>
 <translation id="6243827288366940320">Залатое сячэнне</translation>
@@ -115,11 +122,14 @@
 Калі ваш водгук тычыцца якасці відарыса або відэа, далучыце прыклад фота або відэа і апішыце праблему. (Напрыклад, калі фота занадта цёмнае, або прадмет размыты.)</translation>
 <translation id="6519884562954018934">Далучыцца да сеткі "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
+<translation id="6586509689874700895">Спачатку націсніце <ph name="BUTTON_NAME" />, каб павялічыць маштаб. Калі вы зробіце фота, на ім будуць бачныя ўсе дэталі.</translation>
+<translation id="659539649712855529">Скапіравана: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Паказаць усе раздзяляльнасці</translation>
 <translation id="6631515515009660915">Рэжым люстэрка выключаны</translation>
 <translation id="6652737148136672975">Перамяшчайце вугал з дапамогай клавіш са стрэлкамі</translation>
 <translation id="667999046851023355">Дакумент</translation>
 <translation id="6681668084120808868">Зрабіць фота</translation>
+<translation id="6692092766759105707">Скапіраваць для спраўджання змесціва.</translation>
 <translation id="6778482348691154169">Не ўдалося зрабіць фота</translation>
 <translation id="6888362557094394345">Перамяшчаецца ўніз</translation>
 <translation id="695140971690006676">Скінуць усе</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">Памылкі ў файлавай сістэме.</translation>
 <translation id="7450541714075000668">Тэкст скапіраваны</translation>
 <translation id="7488619942230388918">Запісаць відэа ў фармаце GIF</translation>
+<translation id="7527714402753141485">Паказ тэксту і кнопкі для капіравання</translation>
 <translation id="7557677699350329807">Пераключыцца на наступную камеру</translation>
-<translation id="7562584071994185503">Скапіраваць тэкст (<ph name="TEXT" />)</translation>
 <translation id="7607002721634913082">Прыпынена</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="761421184377987513">Перамяшчаецца ўлева ўніз</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">Пераключыцца на здымку фота</translation>
 <translation id="8167081290930651932">Захаваць як фота</translation>
 <translation id="8239780215768881278">Зрабіць здымак экрана</translation>
-<translation id="8346544573713510785">Маштабаванне кадраў камеры HAL</translation>
 <translation id="8425673304802773841">Нахіліць уніз</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8609951387004618906">Адкрыць <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Уключыць або выключыць мікрафон. Мікрафон выключаны</translation>
+<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8732462232047530626">Выканаць перадпрагляд метаданых</translation>
 <translation id="874854738381978209">Выяўлена сетка Wi-Fi</translation>

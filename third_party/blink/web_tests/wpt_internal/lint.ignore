@@ -55,6 +55,9 @@ PRINT STATEMENT: *
 # //third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py
 *: webgpu/*.html
 
+# Allow testdriver in reftests and crashtests
+TESTDRIVER-IN-UNSUPPORTED-TYPE: *
+
 # Other exceptions.
 WEB-PLATFORM.TEST: *
 MULTIPLE-TESTDRIVER-VENDOR: fenced_frame/hid.https.html

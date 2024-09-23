@@ -1,0 +1,14 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='One'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2'
+++++++android.widget.TextView name='Two'
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='Four'
+++android.view.View collection_item row_span=1 column_span=1
+++++android.view.View name='%E2%80%A2'
+++++android.widget.TextView name='Three'

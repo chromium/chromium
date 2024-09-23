@@ -11,6 +11,7 @@ mojom("interfaces") {
 
   public_deps = [
     "//components/safe_browsing/core/common:interfaces",
+    "//mojo/public/mojom/base:protobuf_support",
     "//services/network/public/mojom",
     "//third_party/blink/public/mojom/tokens",
     "//url/mojom:url_mojom_gurl",
@@ -66,6 +67,7 @@ if (safe_browsing_mode != 0) {
 
     deps = [
       ":file_type_policies",
+      ":file_type_policies_test_support",
       "//base:base",
       "//components/policy/core/browser:test_support",
       "//components/prefs:test_support",
@@ -80,8 +82,11 @@ if (safe_browsing_mode != 0) {
 
     deps = [
       ":file_type_policies",
+      ":file_type_policies_test_support",
       "//base:base",
       "//build:chromeos_buildflags",
+      "//components/policy/core/browser:test_support",
+      "//components/prefs:test_support",
       "//testing/gmock:gmock",
       "//testing/gtest:gtest",
     ]

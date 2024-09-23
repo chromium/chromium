@@ -38,6 +38,7 @@ class AutoCompleteHandler : public AXTreeSourceAndroid::Hook {
       AXTreeSourceAndroid* tree_source,
       const mojom::AccessibilityEventData& event_data) override;
   void PostSerializeNode(ui::AXNodeData* out_data) const override;
+  bool ShouldDestroy(AXTreeSourceAndroid* tree_source) const override;
 
  private:
   const int32_t anchored_node_id_;
@@ -47,4 +48,4 @@ class AutoCompleteHandler : public AXTreeSourceAndroid::Hook {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_AUTO_COMPLETE_HANDLER_H_

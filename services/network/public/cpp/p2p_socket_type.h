@@ -18,9 +18,10 @@
 namespace network {
 
 enum P2PSocketOption {
-  P2P_SOCKET_OPT_RCVBUF,  // Receive buffer size.
-  P2P_SOCKET_OPT_SNDBUF,  // Send buffer size.
-  P2P_SOCKET_OPT_DSCP,    // DSCP code.
+  P2P_SOCKET_OPT_RCVBUF,    // Receive buffer size.
+  P2P_SOCKET_OPT_SNDBUF,    // Send buffer size.
+  P2P_SOCKET_OPT_DSCP,      // DSCP code.
+  P2P_SOCKET_OPT_RECV_ECN,  // Enable ECN receiving.
   P2P_SOCKET_OPT_MAX
 };
 

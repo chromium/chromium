@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 
@@ -63,6 +64,7 @@ AudioDeviceThread::AudioDeviceThread(Callback* callback,
 }
 
 AudioDeviceThread::~AudioDeviceThread() {
+  in_shutdown_.Set();
   socket_.Shutdown();
   if (thread_handle_.is_null())
     return;
@@ -82,7 +84,7 @@ void AudioDeviceThread::ThreadMain() {
   uint32_t buffer_index = 0;
   while (true) {
     uint32_t pending_data = 0;
-    size_t bytes_read = socket_.Receive(&pending_data, sizeof(pending_data));
+    size_t bytes_read = socket_.Receive(base::byte_span_from_ref(pending_data));
     if (bytes_read != sizeof(pending_data))
       break;
 
@@ -108,9 +110,13 @@ void AudioDeviceThread::ThreadMain() {
     // expects. For more details on how this works see
     // AudioSyncReader::WaitUntilDataIsReady().
     ++buffer_index;
-    size_t bytes_sent = socket_.Send(&buffer_index, sizeof(buffer_index));
+    size_t bytes_sent = socket_.Send(base::byte_span_from_ref(buffer_index));
     if (bytes_sent != sizeof(buffer_index))
       break;
+  }
+
+  if (!in_shutdown_.IsSet()) {
+    callback_->OnSocketError();
   }
 }
 

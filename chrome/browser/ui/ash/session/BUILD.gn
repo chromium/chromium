@@ -1,0 +1,106 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("session") {
+  sources = [
+    "session_controller_client_impl.cc",
+    "session_controller_client_impl.h",
+    "session_util.cc",
+    "session_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/floating_workspace",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/policy/off_hours",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/common",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/ash/shelf",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_session_controller.cc",
+    "test_session_controller.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "session_controller_client_impl_unittest.cc" ]
+
+  deps = [
+    ":session",
+    ":test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crosapi:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/ui/ash/assistant",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

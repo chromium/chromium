@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS;
+
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -30,9 +32,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -41,18 +43,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
-import org.chromium.components.browser_ui.accessibility.TextScalePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.ViewUtils;
@@ -63,7 +62,7 @@ import java.text.NumberFormat;
 /**
  * Tests for the Accessibility Settings menu.
  *
- * <p>TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * <p>TODO(crbug.com/40214849): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -73,7 +72,6 @@ import java.text.NumberFormat;
 })
 @Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
 public class AccessibilitySettingsTest {
-    private static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
     private AccessibilitySettings mAccessibilitySettings;
     private PageZoomPreference mPageZoomPref;
 
@@ -81,12 +79,10 @@ public class AccessibilitySettingsTest {
     public SettingsActivityTestRule<AccessibilitySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccessibilitySettings.class);
 
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
-
     @Before
     public void setUp() {
         // Enable screen reader to display all settings options.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(true));
 
         mSettingsActivityTestRule.startSettingsActivity();
@@ -95,7 +91,7 @@ public class AccessibilitySettingsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(false));
     }
 
@@ -174,7 +170,7 @@ public class AccessibilitySettingsTest {
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
 
         // Simulate activity stopping.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
 
         Assert.assertEquals(
                 "Histogram should have been recorded once.",
@@ -194,7 +190,7 @@ public class AccessibilitySettingsTest {
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
     public void testUnchangedFontPrefNotSavedOnStop() {
         // Simulate activity stopping.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
         Assert.assertEquals(
                 "Histogram should not have been recorded.",
                 0,
@@ -297,7 +293,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setZoomValueForTesting(0);
                 });
@@ -320,7 +316,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setZoomValueForTesting(
                             PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
@@ -430,7 +426,7 @@ public class AccessibilitySettingsTest {
     public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
         getPageZoomPref();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(20);
                 });
@@ -446,7 +442,7 @@ public class AccessibilitySettingsTest {
     @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(0);
                 });
@@ -472,7 +468,7 @@ public class AccessibilitySettingsTest {
     @EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPageZoomPref.setTextContrastValueForTesting(
                             PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
@@ -519,10 +515,10 @@ public class AccessibilitySettingsTest {
 
     private void assertFontSizePrefs(
             final boolean expectedForceEnableZoom, final float expectedFontScale) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FontSizePrefs fontSizePrefs =
-                            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
+                            FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
                             expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
                     Assert.assertEquals(

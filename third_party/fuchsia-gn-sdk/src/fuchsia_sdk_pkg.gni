@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/fuchsia/gn_configs.gni")
+import("gn_configs.gni")
 import("gn_sdk_configs.gni")
 
 # Defines a Fuchsia SDK library target from source or prebuilt.
@@ -35,7 +35,8 @@ import("gn_sdk_configs.gni")
 #
 #   sdk_dist_dir
 #     Optional: Directory of libraries to distribute in the
-#               target. Defaults to ${fuchsia_sdk}/arch/${target_cpu}/dist.
+#               target. Defaults to
+#               ${fuchsia_arch_root}/dist.
 #   deps
 #     Optional: List of other targets that this library depends on.
 #
@@ -52,7 +53,7 @@ template("fuchsia_sdk_pkg") {
     if (defined(invoker.sdk_dist_dir)) {
       sdk_dist_dir = invoker.sdk_dist_dir
     } else {
-      sdk_dist_dir = "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}/dist"
+      sdk_dist_dir = "${fuchsia_arch_root}/dist"
     }
 
     copy("${target_name}_dist_libs") {

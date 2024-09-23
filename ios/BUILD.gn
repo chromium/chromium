@@ -34,11 +34,14 @@ group("all") {
       "//ios/web:all_tests",
       "//ios/web/shell/test:all_tests",
       "//ios/web_view:all_tests",
+
+      # List all support targets that need to be build on iOS by default.
+      "//third_party/breakpad:dump_syms",
+      "//third_party/breakpad:symupload",
     ]
   } else {
     deps = []
   }
 
-  # Force dependency on symupload needed by official builder.
-  deps += [ "//third_party/breakpad:symupload" ]
+  deps += [ "//ios/intents/app:intents" ]
 }

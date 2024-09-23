@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import argparse
-import optparse
 import os
 import sys
 
@@ -12,6 +11,8 @@ from core import path_util
 path_util.AddTelemetryToPath()
 
 from core import benchmark_finders
+
+from telemetry.core import optparse_argparse_migration as oam
 
 from py_utils import cloud_storage
 
@@ -44,7 +45,7 @@ def GetAllStorySets():
     if benchmark.Name() in benchmarks_to_skip:
       continue
 
-    parser = optparse.OptionParser()
+    parser = oam.CreateFromOptparseInputs()
     benchmark.AddBenchmarkCommandLineArgs(parser)
     options, _ = parser.parse_args([])
     story_sets.append(benchmark().CreateStorySet(options))

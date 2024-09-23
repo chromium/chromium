@@ -1,0 +1,35 @@
+caption: Native application signing during Progressive Web Application installation
+desc: |-
+  Setting the policy to Enabled or leaving it unset enables the use of ad-hoc signatures for the native application that is created when installing a Progressive Web Application (PWA). This ensures that each installed application has a unique identity to <ph name="MAC_OS_NAME">macOS</ph> system components.
+
+  Setting the policy to Disabled will result in every native application created when installing Progressive Web Applications having the same identity. This can interfere with <ph name="MAC_OS_NAME">macOS</ph> functionality.
+
+  Only turn off the policy if you are using an endpoint security solution that blocks applications with an ad-hoc signature.
+
+supported_on:
+- chrome.mac:129-
+
+features:
+  dynamic_refresh: false
+  per_profile: false
+
+type: main
+schema:
+  type: boolean
+
+items:
+- caption: Use ad-hoc code signatures.
+  value: true
+- caption: Do not use ad-hoc code signatures.
+  value: false
+- caption: Depend on feature launch process.
+  value: null
+
+default: null
+example_value: false
+
+owners:
+- markrowe@chromium.org
+- file://chrome/browser/web_applications/OWNERS
+
+tags: []

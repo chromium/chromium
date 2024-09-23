@@ -6,6 +6,7 @@ module attribution_reporting.mojom;
 
 import "components/attribution_reporting/source_registration_time_config.mojom";
 import "components/attribution_reporting/trigger_data_matching.mojom";
+import "components/attribution_reporting/debug_types.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -86,6 +87,48 @@ struct TriggerSpecs {
 
   // Keys are trigger data. Values are indices into `specs`.
   map<uint32, uint8> trigger_data_indices;
+
+  // Specifies how many event-level reports can be generated across all trigger
+  // specs for the source.
+  int32 max_event_level_reports;
+};
+
+// Aggregatable contribution for aggregatable debug types.
+struct AggregatableDebugReportingContribution {
+  mojo_base.mojom.Uint128 key_piece;
+  uint32 value;
+};
+
+// Configuration for aggregatable debug reporting.
+struct AggregatableDebugReportingConfig {
+  mojo_base.mojom.Uint128 key_piece;
+  map<DebugDataType,
+      AggregatableDebugReportingContribution> debug_data;
+  SuitableOrigin? aggregation_coordinator_origin;
+};
+
+// Configuration for source-side aggregatable debug reporting.
+struct SourceAggregatableDebugReportingConfig {
+  int32 budget;
+  AggregatableDebugReportingConfig config;
+};
+
+// Target identifiers used for pre-attribution filtering.
+struct AttributionScopesSet {
+  array<string> scopes;
+};
+
+// Configuration for attribution scopes.
+struct AttributionScopesData {
+  AttributionScopesSet attribution_scopes_set;
+
+  // Represents the number of distinct attribution scopes allowed per
+  // destination for a source's reporting origin.
+  uint32 attribution_scope_limit;
+
+  // Represents the maximum number of trigger states for an event source type
+  // sources per destination for a source's reporting origin.
+  uint32 max_event_states;
 };
 
 struct SourceRegistration {
@@ -97,16 +140,11 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta expiry;
 
-  // Specifies a custom set of report windows determining the time
-  // bounds of a report being generated with this source.
-  EventReportWindows event_report_windows;
+  TriggerSpecs trigger_specs;
 
   // Specifies how long after source registration an aggregatable
   // report can be generated with this source.
   mojo_base.mojom.TimeDelta aggregatable_report_window;
-
-  // Specifies how many event-level reports can be generated with this source.
-  int32 max_event_level_reports;
 
   // Priority for this source.
   int64 priority = 0;
@@ -129,6 +167,18 @@ struct SourceRegistration {
   // the containing source registration. Must be greater than or equal to 0.
   // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
   double event_level_epsilon;
+
+  // Specifies aggregatable debug reporting configuration.
+  SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+
+  // Specifies the priority of the destination in regards to source destination
+  // limit.
+  int64 destination_limit_priority;
+
+  // Controls the scopes the source can be attributed to along with the amount
+  // limit of scopes and the max number of event states. Logic pertaining to
+  // scopes are ignored if this field is null.
+  AttributionScopesData? attribution_scopes_data;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -159,6 +209,19 @@ struct AggregatableDedupKey {
   FilterPair filters;
 };
 
+struct AggregatableValuesValue {
+  uint32 value;
+  uint64 filtering_id;
+};
+
+struct AggregatableValues {
+  // A map of aggregation key identifier and the corresponding aggregatable
+  // values value.
+  map<string, AggregatableValuesValue> values;
+
+  FilterPair filters;
+};
+
 // Represents a request from a reporting origin to trigger attribution on a
 // given site. See:
 // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
@@ -173,8 +236,9 @@ struct TriggerRegistration {
   // header.
   array<AggregatableTriggerData> aggregatable_trigger_data;
 
-  // A map of aggregation key identifier and the corresponding value.
-  map<string, uint32> aggregatable_values;
+  // List of all aggregatable values for matching a contribution value with a
+  // source's aggregation key.
+  array<AggregatableValues> aggregatable_values;
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
@@ -198,6 +262,15 @@ struct TriggerRegistration {
   // Specifies the context ID associated with the trigger. The context ID
   // cannot be empty or longer than 64 bytes.
   string? trigger_context_id;
+
+  // Specifies the maximum size of filtering ids within `aggregatable_values`.
+  uint8 aggregatable_filtering_id_max_bytes;
+
+  // Specifies the aggregatable debug reporting configuration.
+  AggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+
+  // Specifies the scopes that this trigger can attribute to.
+  AttributionScopesSet attribution_scopes;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

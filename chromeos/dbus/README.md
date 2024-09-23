@@ -13,7 +13,10 @@ in [src/chromeos/dbus/dlp].
 *   Create a subdirectory under `src/chromeos/dbus` for new clients or use an
     existing directory. If a new client is ash-specific, create a subdirectory
     under `src/chromeos/ash/components/dbus`. Do not add new clients to this
-    directory.
+    directory. If Lacros wants to talk to D-Bus service, the default
+    recommendation is to build a crosapi class in ash proxying requests to the
+    D-Bus service, then let lacros talk to ash. If you need direct communication
+    from lacros to the D-Bus service, please be consulted by lacros-team@.
 
 *   D-Bus clients are explicitly initialized and shut down. They provide a
     static getter for the single global instance. In Ash Chrome, initialization

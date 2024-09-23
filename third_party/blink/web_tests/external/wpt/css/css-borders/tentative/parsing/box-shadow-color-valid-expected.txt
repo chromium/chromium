@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] e.style['box-shadow-color'] = "currentcolor" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "transparent" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "red" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "magenta" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "#234" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "#FEDCBA" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(2, 3, 4)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(100%, 0%, 0%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgba(2, 3, 4, 0.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgba(2, 3, 4, 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "hsl(120, 100%, 50%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "hsla(120, 100%, 50%, 0.25)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(-2, 3, 4)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(100, 200, 300)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(20, 10, 0, -10)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "rgb(100%, 200%, 300%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-color'] = "red, blue" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

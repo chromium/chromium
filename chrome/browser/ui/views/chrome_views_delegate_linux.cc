@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
 #include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/nix/xdg_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -12,7 +13,9 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/channel.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 
@@ -48,8 +51,18 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
     return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
   }
 
-  if (params.requires_accelerated_widget)
+  const bool default_desktop_bubble =
+      (params.type == views::Widget::InitParams::TYPE_BUBBLE ||
+       params.type == views::Widget::InitParams::TYPE_POPUP) &&
+      base::FeatureList::IsEnabled(features::kOzoneBubblesUsePlatformWidgets) &&
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_subwindows_as_accelerated_widgets;
+
+  if (!params.child &&
+      params.use_accelerated_widget_override.value_or(default_desktop_bubble)) {
     return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+  }
 
   return (params.parent &&
           params.type != views::Widget::InitParams::TYPE_MENU &&

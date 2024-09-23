@@ -82,23 +82,6 @@ dump both an ignored and an unignored axnode
         value : StaticText
     }
 }
-{
-    backendDOMNodeId : <number>
-    childIds : <object>
-    chromeRole : {
-        type : internalRole
-        value : 101
-    }
-    ignored : false
-    nodeId : <string>
-    parentId : <string>
-    properties : [
-    ]
-    role : {
-        type : internalRole
-        value : InlineTextBox
-    }
-}
 
 Running test: testGetNodesForSubtreeByAccessibleName
 find all elements with accessible name "foo"
@@ -119,7 +102,6 @@ find all elements with accessible name "Accessible Name"
 node20
 node21
 node23
-node24
 find all elements with accessible name "item1 item2 item3"
 node30
 

@@ -1,0 +1,126 @@
+{% from "enum.tmpl" import declare_enum -%}
+
+{% macro declare_struct(name, struct) -%}
+
+#[derive(Debug)]
+pub struct {{name}} {
+{%- for field in struct.fields %}
+    pub r#{{field.name}}: {{field.kind|rust_field_type}},
+{%- endfor %}
+}
+
+{%- set packed_fields = struct.packed.packed_fields %}
+
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(C)]
+pub struct {{name}}_Data {
+    pub _header: bindings::data::StructHeader,
+{%- for field in struct.packed|get_rust_data_fields%}
+    pub r#{{field.name}}: {{field.type}},
+{%- endfor %}
+}
+
+// Ensure that the Rust type's size is the same as mojo's.
+static_assertions::assert_eq_size!(
+    [u8; {{struct.versions[-1].num_bytes}}],
+    {{name}}_Data,
+);
+
+impl {{name}}_Data {
+    const KNOWN_VERSION_SIZES: &'static [(u32, u32)] =
+        &[
+{%- for version in struct.versions -%}
+            ({{version.version}}, {{version.num_bytes}}),
+{%- endfor -%}
+        ];
+
+    pub fn validate(
+        #[allow(unused_variables)]
+        ctx: &'_ mut bindings::ValidationContext<'_, '_>,
+        chunk: &'_ bindings::MessageViewChunk<'_, '_, Self>,
+    ) -> bindings::Result<()> {
+        let data: Self = chunk.read();
+        assert_eq!(chunk.len(), data._header.size as usize);
+
+        // Ensure that the size and version match, or:
+        // * if the version is newer than any known version, the size is not
+        //   less than the last known version, or
+        // * if the version is between known versions, the size is between their
+        //   sizes (inclusive)
+        for (version, size) in Self::KNOWN_VERSION_SIZES.iter().copied() {
+            if data._header.version == version  {
+                if data._header.size != size {
+                    return Err(bindings::ValidationError::new(
+                        bindings::ValidationErrorKind::UnexpectedStructHeader));
+                }
+                break;
+            }
+
+            if data._header.version > version && data._header.size < size {
+                return Err(bindings::ValidationError::new(
+                    bindings::ValidationErrorKind::UnexpectedStructHeader));
+            }
+
+            if data._header.version < version && data._header.size > size {
+                return Err(bindings::ValidationError::new(
+                    bindings::ValidationErrorKind::UnexpectedStructHeader));
+            } else if data._header.version < version {
+                break;
+            }
+        }
+
+{%- macro validate_child(field_name, kind) %}
+{%-   if kind|is_struct_kind %}
+        if data.r#{{field_name}}.offset != 0 {
+            let abs_ptr = bindings::AbsolutePointer::resolve_from(
+                &data.r#{{field_name}},
+                &data,
+                chunk,
+            )?;
+
+            let child_chunk = ctx.claim_struct(abs_ptr)?;
+            {{kind|rust_referent_data_type}}
+                ::validate(ctx, &child_chunk)?;
+        }
+{%-   elif kind|is_enum_kind %}
+        data.r#{{field_name}}.validate()?;
+{%-   endif %}
+{%- endmacro -%}
+
+{% for packed_field in struct.packed.packed_fields -%}
+{%-   set kind = packed_field.field.kind -%}
+{%    if packed_field.linked_value_packed_field  -%}
+{#-     The current field is a packed boolean which determines if its associated
+        value field is present. Process both. The loop will iterate over the value
+        field later, but it will be skipped. -#}
+{%-     set orig_field = packed_field.original_field -%}
+{%-     set value_field = packed_field.linked_value_packed_field -%}
+{%-     set flag_location = packed_field|get_packed_bool_location -%}
+        // {{orig_field.name}} is nullable and has an associated boolean flag.
+        if (data.r#{{flag_location.field_name}}
+          & 1u8 << {{flag_location.bit_offset}}) > 0 {
+            {{validate_child(orig_field.name, value_field.field.kind)}}
+        }
+{%-   elif packed_field.original_field -%}
+{#-     Skip field: it was already processed above. -#}
+{%-   elif kind|is_pointer_kind and not kind|is_nullable_kind -%}
+        if data.r#{{packed_field.field.name}}.offset == 0 {
+            return Err(bindings::ValidationError::new(
+                bindings::ValidationErrorKind::UnexpectedNullPointer));
+        }
+
+        {{validate_child(packed_field.field.name, packed_field.field.kind)}}
+{%-   else -%}
+        {{validate_child(packed_field.field.name, packed_field.field.kind)}}
+{%-   endif %}
+{%- endfor %}
+
+        Ok(())
+    }
+}
+
+{%- for enum in struct.enums %}
+{{declare_enum(name + "_" + enum.name, enum)}}
+{%- endfor %}
+
+{%- endmacro -%}

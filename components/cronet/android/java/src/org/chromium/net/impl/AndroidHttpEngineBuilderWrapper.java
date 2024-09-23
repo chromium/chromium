@@ -8,6 +8,7 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import android.net.http.HttpEngine;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.RequiresExtension;
@@ -27,7 +28,11 @@ import java.util.Set;
 class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     private static final String TAG = "HttpEngBuilderWrap";
 
+    private static boolean sLibraryLoaderUnsupportedLogged;
+    private static boolean sNQEUnsupportedLogged;
+
     private final HttpEngine.Builder mBackend;
+    private int mThreadPriority = Integer.MIN_VALUE;
 
     public AndroidHttpEngineBuilderWrapper(HttpEngine.Builder backend) {
         this.mBackend = backend;
@@ -52,10 +57,12 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     @Override
     public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-        Log.w(
-                TAG,
-                "Custom library loader isn't supported when using the platform Cronet provider."
-                        + " Ignoring...");
+        if (!sLibraryLoaderUnsupportedLogged) {
+            Log.i(
+                    TAG,
+                    "Custom library loader is unsupported when HttpEngineNativeProvider is used.");
+            sLibraryLoaderUnsupportedLogged = true;
+        }
         return this;
     }
 
@@ -113,12 +120,33 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
+    public ICronetEngineBuilder setThreadPriority(int priority) {
+        // not supported by HttpEngine hence implemented in wrapper
+        if (priority > Process.THREAD_PRIORITY_LOWEST || priority < -20) {
+            throw new IllegalArgumentException("Thread priority invalid");
+        }
+        mThreadPriority = priority;
+        return this;
+    }
+
+    @Override
     public ICronetEngineBuilder setExperimentalOptions(String stringOptions) {
         // This only translates known experimental options
         ExperimentalOptions options = new ExperimentalOptions(stringOptions);
         mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
         mBackend.setDnsOptions(parseDnsOptions(options));
         mBackend.setQuicOptions(parseQuicOptions(options));
+        return this;
+    }
+
+    @Override
+    public ICronetEngineBuilder enableNetworkQualityEstimator(boolean value) {
+        if (!sNQEUnsupportedLogged) {
+            Log.i(
+                    TAG,
+                    "NetworkQualityEstimator is unsupported when HttpEngineNativeProvider is used");
+            sNQEUnsupportedLogged = true;
+        }
         return this;
     }
 
@@ -129,7 +157,7 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
      */
     @Override
     public ExperimentalCronetEngine build() {
-        return new AndroidHttpEngineWrapper(mBackend.build());
+        return new AndroidHttpEngineWrapper(mBackend.build(), mThreadPriority);
     }
 
     @VisibleForTesting

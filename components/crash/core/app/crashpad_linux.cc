@@ -27,7 +27,7 @@
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -63,7 +63,7 @@ bool FirstChanceHandlerHelper(int signo,
   return g_first_chance_handler(signo, siginfo, context);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 // Returns /run/crash_reporter/crashpad_ready/<pid>, the file we touch to
 // tell crash_reporter that crashpad is ready and it doesn't need to use
 // early-crash mode.
@@ -104,7 +104,7 @@ void InformCrashReporterThatCrashpadIsReady() {
   // losing a single crash report is not a huge deal.
   base::AtExitManager::RegisterTask(base::BindOnce(&DeleteCrashpadIsReadyFile));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 }  // namespace
 
@@ -119,7 +119,7 @@ bool GetHandlerSocket(int* fd, pid_t* pid) {
   return crashpad::CrashpadClient::GetHandlerSocket(fd, pid);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 void DeleteCrashpadIsReadyFile() {
   // Attempt delete but do not log errors if the delete fails. The file might
   // not exist if this function is called twice, or if Chrome did a fork-
@@ -127,7 +127,7 @@ void DeleteCrashpadIsReadyFile() {
   // InformCrashReporterThatCrashpadIsReady().
   base::DeleteFile(GetCrashpadReadyFilename());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace internal {
 
@@ -178,7 +178,7 @@ bool PlatformCrashpadInitialization(
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to
     // crash_sender which handles the upload.
     std::string url;
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
     url = crash_reporter_client->GetUploadUrl();
 #else
     url = std::string();
@@ -217,7 +217,7 @@ bool PlatformCrashpadInitialization(
     annotations["build_time_millis"] = base::NumberToString(build_time);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
     // Chromium OS: save board and builder path for 'tast symbolize'.
     annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
     std::string builder_path;
@@ -242,7 +242,7 @@ bool PlatformCrashpadInitialization(
     // contain these annotations.
     arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
     arguments.push_back("--use-cros-crash-reporter");
 
     if (crash_reporter_client->IsRunningUnattended()) {
@@ -285,7 +285,7 @@ bool PlatformCrashpadInitialization(
       ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
                                                 kIndirectMemoryLimit);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
   if (initial_client) {
     InformCrashReporterThatCrashpadIsReady();
   }

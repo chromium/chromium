@@ -1,5 +1,6 @@
 include_rules = [
   "+components/content_settings/core/common",
+  "+components/custom_handlers",
   "+components/download",
   "+components/keyed_service/core",
   "+components/network_session_configurator/common",
@@ -11,6 +12,7 @@ include_rules = [
   "+content/shell/common",
   "+content/web_test/common",
   "+device/bluetooth",
+  "+services/device/public/cpp/compute_pressure",
   "+services/device/public/cpp/test",
   "+services/device/public/mojom",
   "+services/network/public/cpp",

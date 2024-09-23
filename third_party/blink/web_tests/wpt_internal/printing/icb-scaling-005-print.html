@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<link rel="match" href="icb-scaling-005-print-ref.html">
+<style>
+  @page {
+    size: 300px;
+    margin: 0;
+    background: url(../support/cat.png) no-repeat;
+    background-position-x: 200px;
+    background-size: 100px;
+  }
+  body {
+    margin: 0;
+    background: url(../support/cat.png) no-repeat;
+    background-size: 100px;
+  }
+  .block {
+    background: url(../support/cat.png) no-repeat;
+    background-position-x: 100px;
+    background-size: 100px;
+    width: 375px; /* Triggers content scaling. Page size is only 300px. */
+    height: 150px;
+  }
+</style>
+<!-- There should be three cats on this page. The two left ones should have the
+     same size. The one in the right corner should be larger. -->
+<div class="block"></div>

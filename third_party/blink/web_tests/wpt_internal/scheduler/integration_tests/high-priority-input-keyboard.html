@@ -1,0 +1,48 @@
+<!doctype html>
+<title>Blink Scheduler Prioritize Input - Keyboard</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<h1>Test Page</h1>
+<textarea id="text" autofocus></textarea>
+
+<script>
+'use strict';
+
+window.onload = () => {
+  promise_test(async t => {
+    const taskCountDuringInputEvent = await new Promise(async resolve => {
+      let taskCount = 0;
+      function blockingTask() {
+        ++taskCount;
+        spin(50);
+      }
+
+      document.getElementById('text').addEventListener('keypress', () => {
+        resolve(taskCount);
+      });
+
+      await requestAnimationFramePromise();
+      await scheduler.yield();
+
+      const controller = new TaskController({priority: "user-blocking"});
+      t.add_cleanup(() => controller.abort());
+
+      for (let i = 0; i < 50; i++) {
+        const p = scheduler.postTask(blockingTask, {signal: controller.signal});
+        ignoreUnhandledRejection(p);
+        const id = setTimeout(blockingTask, 0);
+        t.add_cleanup(() => clearTimeout(id));
+      }
+
+      window.eventSender.keyDownAsync('A');
+    });
+
+    // There's some lag in posting the task from the compositor thread, so the
+    // first input event won't happen immediately.
+    assert_less_than_equal(taskCountDuringInputEvent, 10);
+  }, 'Test that keyboard input is prioritized');
+};
+
+</script>

@@ -187,6 +187,12 @@ message FeatureSetupConfig {
   bool ping_capability_supported = 2;
 }
 
+enum NetworkStatus {
+  DISCONNECTED = 0;
+  CELLULAR = 1;
+  WIFI = 2;
+}
+
 message PhoneProperties {
   int32 battery_percentage = 1;
   ChargingState charging_state = 2;
@@ -224,7 +230,17 @@ message PhoneProperties {
 
   FeatureStatus eche_feature_status = 20;
 
-  // Next ID: 21
+  // Used for Phone Hub Structured Metrics
+  optional string phone_manufacturer = 21;
+  optional string phone_model = 22;
+  optional int64 ambient_version = 23;
+  optional NetworkStatus network_status = 24;
+  optional bytes ssid = 25;
+  optional string locale = 26;
+  optional string phone_pseudonymous_id = 27;
+  optional int64 pseudonymous_id_next_rotation_date = 28;
+
+  // Next ID: 29
 }
 
 message UserState {
@@ -271,6 +287,11 @@ message CrosState {
   CameraRollSetting camera_roll_setting = 2;
   // Optional for older Chromebooks pre-attestation.
   AttestationData attestation_data = 4;
+  // Request Eche feature status info from the phone through Phone hub.
+  bool should_provide_eche_status = 5;
+
+  optional int64 pseudonymous_id_next_rotation_date = 6;
+  optional string phone_hub_session_id = 7;
 
   reserved 3;  // deprecated notification_icon_styling field.
 }

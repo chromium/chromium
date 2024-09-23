@@ -14,9 +14,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "chrome/updater/test_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
-#include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
@@ -362,13 +362,13 @@ TEST_F(ProgressWndTest, LaunchCmdLine) {
   // also confirm that the test process is launched at medium integrity, by
   // creating an event with a security descriptor that allows the medium
   // integrity process to signal it.
-  test::EventHolder event_holder(IsElevatedWithUACOn()
-                                     ? CreateEveryoneWaitableEventForTest()
-                                     : test::CreateWaitableEventForTest());
+  test::EventHolder event_holder(
+      IsElevatedWithUACOn() ? test::CreateEveryoneWaitableEventForTest()
+                            : test::CreateWaitableEventForTest());
   ASSERT_NE(event_holder.event.handle(), nullptr);
 
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(
       IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
                             : kTestEventToSignal,

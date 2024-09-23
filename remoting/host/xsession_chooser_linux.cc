@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file implements a dialog allowing the user to pick between installed
 // X session types. It finds sessions by looking for .desktop files in
 // /etc/X11/sessions and in the xsessions folder (if any) in each XDG system
@@ -17,10 +22,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -37,13 +42,12 @@
 #include "base/task/single_thread_task_executor.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/string_resources.h"
+#include "remoting/host/xsession_chooser_ui.inc"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#include "remoting/host/xsession_chooser_ui.inc"
 
 namespace remoting {
 

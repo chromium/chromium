@@ -10,7 +10,12 @@ assert(is_chromeos_ash)
 build_webui("build") {
   grd_prefix = "ash_vc_background"
 
-  static_files = [ "index.html" ]
+  static_files = [
+    "vc_background_ui_app_icon_128.png",
+    "vc_background_ui_app_icon_256.png",
+
+    "index.html",
+  ]
 
   web_component_files = [
     "js/vc_background_app.ts",
@@ -25,15 +30,16 @@ build_webui("build") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ash/webui/common/resources/personalization:build_ts",
     "//ash/webui/common/resources/sea_pen:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
 
+  webui_context_type = "trusted"
   grit_output_dir = "$root_gen_dir/ash/webui"
 }

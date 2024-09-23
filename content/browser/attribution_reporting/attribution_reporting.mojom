@@ -22,11 +22,13 @@ enum RegistrationType {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(OsRegistrationResult)
 enum OsRegistrationResult {
   kPassedToOs = 0,
-  kUnsupported = 1,
   kInvalidRegistrationUrl = 2,
   kProhibitedByBrowserPolicy = 3,
   kExcessiveQueueSize = 4,
   kRejectedByOs = 5,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionOsRegistrationResult)

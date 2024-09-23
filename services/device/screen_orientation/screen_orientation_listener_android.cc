@@ -8,6 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/current_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/screen_orientation/screen_orientation_jni_headers/ScreenOrientationListener_jni.h"
 
 namespace device {

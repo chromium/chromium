@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const logOptions = { message: "Test log message" };
-
 const testCases = [
-  async function AddLogWithCallback() {
-    chrome.systemLog.add(logOptions, () => {
-      chrome.test.assertNoLastError();
-      chrome.test.succeed();
-    });
-  },
-  async function AddLogWithPromise() {
+  async function SystemLogAvailable() {
+    const logOptions = { message: "Test log message" };
     await chrome.systemLog.add(logOptions);
+    chrome.test.succeed();
+  },
+  function SystemLogUndefined() {
+    chrome.test.assertTrue(chrome.systemLog === undefined);
     chrome.test.succeed();
   },
 ];

@@ -36,14 +36,13 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
   response->headers->GetMimeType(&response->mime_type);
 
   std::string body = "some data\r\n";
-  uint32_t bytes_written = body.size();
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   CHECK_EQ(mojo::CreateDataPipe(body.size(), producer_handle, consumer_handle),
            MOJO_RESULT_OK);
   CHECK_EQ(MOJO_RESULT_OK,
-           producer_handle->WriteData(body.data(), &bytes_written,
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteAllData(base::as_byte_span(body)));
+  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
   params->client->OnReceiveResponse(std::move(response),
                                     std::move(consumer_handle), std::nullopt);
 

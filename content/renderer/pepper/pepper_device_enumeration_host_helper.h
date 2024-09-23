@@ -107,7 +107,7 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
                             const std::vector<ppapi::DeviceRefData>& devices);
 
   // Non-owning pointers.
-  raw_ptr<ppapi::host::ResourceHost, ExperimentalRenderer> resource_host_;
+  raw_ptr<ppapi::host::ResourceHost> resource_host_;
   base::WeakPtr<Delegate> delegate_;
 
   PP_DeviceType_Dev device_type_;

@@ -9,9 +9,10 @@
 #include <CoreServices/CoreServices.h>
 
 #include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,7 +31,7 @@ namespace {
 
 class KeyboardLayoutMonitorMac : public KeyboardLayoutMonitor {
  public:
-  KeyboardLayoutMonitorMac(
+  explicit KeyboardLayoutMonitorMac(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
 
   ~KeyboardLayoutMonitorMac() override;
@@ -207,7 +208,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       }
 
       key_actions[shift_level].set_character(
-          base::UTF16ToUTF8(base::StringPiece16(
+          base::UTF16ToUTF8(std::u16string_view(
               reinterpret_cast<const char16_t*>(result_array), result_length)));
     }
 

@@ -22,7 +22,10 @@
   }
 </style>
 <template is="dom-if" if="[[enableLiveCaption_]]">
-  <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+  <settings-live-caption prefs="{{prefs}}"
+      languages="[[languages]]"
+      language-helper="[[languageHelper]]">
+  </settings-live-caption>
 </template>
 <div class="cr-row">
   <h2 class="start">$i18n{captionsPreferencesTitle}</h2>

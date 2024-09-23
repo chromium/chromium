@@ -2,7 +2,7 @@ Tests that blank origins aren't shown in the security panel origins list.
 
 Group: Main origin
 Group: Unknown / canceled
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 https
     </SPAN>

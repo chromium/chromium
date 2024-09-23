@@ -88,13 +88,13 @@ void PasswordsPrivateEventRouter::OnPasswordsExportProgress(
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
-void PasswordsPrivateEventRouter::OnAccountStorageOptInStateChanged(
-    bool opted_in) {
+void PasswordsPrivateEventRouter::OnAccountStorageEnabledStateChanged(
+    bool enabled) {
   auto extension_event = std::make_unique<Event>(
-      events::PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_OPT_IN_STATE_CHANGED,
-      api::passwords_private::OnAccountStorageOptInStateChanged::kEventName,
-      api::passwords_private::OnAccountStorageOptInStateChanged::Create(
-          opted_in));
+      events::PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_ENABLED_STATE_CHANGED,
+      api::passwords_private::OnAccountStorageEnabledStateChanged::kEventName,
+      api::passwords_private::OnAccountStorageEnabledStateChanged::Create(
+          enabled));
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 

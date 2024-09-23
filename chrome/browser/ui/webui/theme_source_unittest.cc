@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/theme_source.h"
+
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -11,8 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/test_theme_provider.h"
@@ -43,7 +45,7 @@ class WebUISourcesTest : public testing::Test {
 
  private:
   void SetUp() override {
-    webui::SetThemeProviderForTesting(&test_theme_provider_);
+    webui::SetThemeProviderForTestingDeprecated(&test_theme_provider_);
     profile_ = std::make_unique<TestingProfile>();
     theme_source_ = std::make_unique<ThemeSource>(profile_.get());
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -57,7 +59,7 @@ class WebUISourcesTest : public testing::Test {
     test_web_contents_.reset();
     test_web_contents_getter_ = content::WebContents::Getter();
     profile_.reset();
-    webui::SetThemeProviderForTesting(nullptr);
+    webui::SetThemeProviderForTestingDeprecated(nullptr);
   }
 
   void SendResponse(scoped_refptr<base::RefCountedMemory> data) {

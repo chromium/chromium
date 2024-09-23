@@ -12,7 +12,7 @@
 
 class WifiCredentialsAttachment : public Attachment {
  public:
-  using SecurityType = sharing::mojom::WifiCredentialsMetadata::SecurityType;
+  using SecurityType = ::sharing::mojom::WifiCredentialsMetadata::SecurityType;
 
   WifiCredentialsAttachment(int64_t id,
                             SecurityType security_type,

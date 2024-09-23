@@ -31,7 +31,7 @@ CreateTestBitmapResult(GURL url, int size, SkColor color = SK_ColorRED) {
   // Create bitmap and fill with |color|.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(size, color), false,
-                                    &data->data());
+                                    &data->as_vector());
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(size, size);

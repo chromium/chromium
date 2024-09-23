@@ -19,6 +19,7 @@ found in the LICENSE file.
     <dimen name="text_size_small_leading" tools:ignore="UnusedResources">16sp</dimen>
 
     <!-- Common alpha values -->
+    <item name="default_enabled_alpha" format="float" type="dimen">1.0</item>
     <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
     <item name="default_pressed_alpha" format="float" type="dimen">0.06</item>
     <item name="default_focused_hovered_alpha" format="float" type="dimen">0.06</item>
@@ -54,7 +55,7 @@ found in the LICENSE file.
 
     <!-- Use arbitrary high number so that if the button text spans multiple
      lines with XL text, the corners will still look fully rounded
-     TODO(crbug/1217139): Determine the corner radius based on button height-->
+     TODO(crbug.com/40770875): Determine the corner radius based on button height-->
     <dimen name="button_compat_corner_radius">500dp</dimen>
 
     <dimen name="chrome_bullet_gap">12dp</dimen>
@@ -78,7 +79,7 @@ found in the LICENSE file.
          cannot be retrieved by name.
          Note: Constants taken directly from Android's core/res/values/config.xml.
     -->
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
 
     <!-- Elevation levels -->
@@ -89,7 +90,7 @@ found in the LICENSE file.
     <dimen name="default_elevation_4">8dp</dimen>
     <dimen name="default_elevation_5">12dp</dimen>
     <dimen name="default_elevation_6">67dp</dimen>
-    <!-- TODO(crbug.com/1236215): Remove once dynamic color is ready for all cards -->
+    <!-- TODO(crbug.com/40782657): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
 
     <dimen name="toast_elevation">@dimen/default_elevation_4</dimen>
@@ -111,4 +112,7 @@ found in the LICENSE file.
     <dimen name="list_menu_item_text_size">14sp</dimen>
     <dimen name="list_menu_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
+
+    <!-- Automotive -->
+    <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
 </resources>

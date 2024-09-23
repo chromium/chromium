@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -30,6 +32,8 @@ class ProcessMemoryDump;
 namespace storage {
 class AsyncDomStorageDatabase;
 
+BASE_DECLARE_FEATURE(kDomStorageSmartFlushing);
+
 // This is a wrapper around a AsyncDomStorageDatabase. Multiple interface
 // endpoints can be bound to the same object. The wrapper adds a couple of
 // features not found directly in leveldb:
@@ -42,7 +46,8 @@ class AsyncDomStorageDatabase;
 // 4) Throttles requests to avoid overwhelming the disk.
 //
 // The wrapper supports two different caching modes.
-class StorageAreaImpl : public blink::mojom::StorageArea {
+class StorageAreaImpl : public blink::mojom::StorageArea,
+                        public AsyncDomStorageDatabase::Committer {
  public:
   using ValueMap = std::map<std::vector<uint8_t>, std::vector<uint8_t>>;
   using ValueMapCallback = base::OnceCallback<void(std::unique_ptr<ValueMap>)>;
@@ -164,7 +169,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   // waiting on the result of initializing our map the commit won't happen
   // until the load has finished. If provided, |callback| is run only once the
   // commit is fully completed.
-  void ScheduleImmediateCommit(base::OnceClosure callback = {});
+  void ScheduleImmediateCommit();
 
   // Clears the in-memory cache if currently no changes are pending. If there
   // are uncommitted changes this method does nothing.
@@ -198,6 +203,14 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   void GetAll(
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
+  void Checkpoint() override;
+
+  // Committer:
+  std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;
+  base::OnceCallback<void(leveldb::Status)> GetCommitCompleteCallback()
+      override;
+
+  void OnCommitComplete(leveldb::Status status);
 
   void SetOnLoadCallbackForTesting(base::OnceClosure callback) {
     on_load_callback_for_testing_ = std::move(callback);
@@ -208,7 +221,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
                            PutLoadsValuesAfterCacheModeUpgrade);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, SetCacheModeConsistent);
-  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplParamTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplCacheModeTest,
                            CommitOnDifferentCacheModes);
 
   // Used to rate limit commits.
@@ -248,6 +261,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> changed_values;
     // Used if the map_type_ is LOADED_KEYS_AND_VALUES.
     std::set<std::vector<uint8_t>> changed_keys;
+    // Timestamp of each discrete `Put()` call that was coalesced into this
+    // batch.
+    std::vector<base::TimeTicks> put_timestamps;
   };
 
   enum class MapState {
@@ -291,8 +307,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   void StartCommitTimer();
   base::TimeDelta ComputeCommitDelay() const;
 
-  void CommitChanges(base::OnceClosure callback = {});
-  void OnCommitComplete(base::OnceClosure callback, leveldb::Status status);
+  void CommitChanges();
 
   void UnloadMapIfPossible();
 

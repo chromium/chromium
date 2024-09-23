@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 
 #include "base/test/task_environment.h"
@@ -143,7 +148,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   segment_reader = nullptr;
   parkable_image = nullptr;
 
-  EXPECT_FALSE(memcmp(shared_buffer->Data(), sk_data->bytes(), kDataSize));
+  EXPECT_FALSE(memcmp(data, sk_data->bytes(), kDataSize));
 }
 
 }  // namespace blink

@@ -1,0 +1,109 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabContentManagerThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabGridIphDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcher.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManager.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherIphController.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherUtils.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabUiThemeUtils.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_cached_flags_java",
+    "//base:base_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/favicon:java_resources",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/embedder_support/android:util_java",
+    "//components/tab_groups:tab_groups_java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.tab_ui"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/ic_group_icon_16dp.xml",
+    "java/res/drawable/ic_tab_placeholder.xml",
+    "java/res/drawable/iph_drag_and_drop_animated_drawable.xml",
+    "java/res/drawable/tab_strip_favicon_circle.xml",
+    "java/res/drawable/tabstrip_favicon_background.xml",
+    "java/res/values/attrs.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+    "java/res/values/values.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.tab_ui"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/tab_groups:tab_groups_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}

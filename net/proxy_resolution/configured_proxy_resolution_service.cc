@@ -255,7 +255,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #elif BUILDFLAG(IS_APPLE)
     return std::make_unique<ProxyResolverFactoryApple>();
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
 #endif
   }
@@ -380,7 +380,7 @@ base::Value::Dict NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
 // for security (attacker can already route traffic through their HTTP proxy
 // and see the full URL for http:// requests).
 //
-// TODO(https://crbug.com/882536): Use the same stripping for insecure URL
+// TODO(crbug.com/41412888): Use the same stripping for insecure URL
 // schemes.
 GURL SanitizeUrl(const GURL& url) {
   DCHECK(url.is_valid());
@@ -539,7 +539,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
           rv = DoCreateResolverComplete(rv);
           break;
         default:
-          NOTREACHED() << "bad state: " << static_cast<int>(state);
+          NOTREACHED_IN_MIGRATION() << "bad state: " << static_cast<int>(state);
           rv = ERR_UNEXPECTED;
           break;
       }
@@ -1175,23 +1175,16 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
   SetReady();
 }
 
-bool ConfiguredProxyResolutionService::MarkProxiesAsBadUntil(
-    const ProxyInfo& result,
-    base::TimeDelta retry_delay,
-    const std::vector<ProxyChain>& additional_bad_proxies,
-    const NetLogWithSource& net_log) {
-  result.proxy_list().UpdateRetryInfoOnFallback(&proxy_retry_info_, retry_delay,
-                                                false, additional_bad_proxies,
-                                                OK, net_log);
-  return result.proxy_list().size() > (additional_bad_proxies.size() + 1);
-}
-
 void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const ProxyRetryInfoMap& new_retry_info = result.proxy_retry_info();
   if (new_retry_info.empty())
     return;
+
+  if (proxy_delegate_) {
+    proxy_delegate_->OnSuccessfulRequestAfterFailures(new_retry_info);
+  }
 
   for (const auto& iter : new_retry_info) {
     auto existing = proxy_retry_info_.find(iter.first);
@@ -1439,7 +1432,8 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   switch (availability) {
     case ProxyConfigService::CONFIG_PENDING:
       // ProxyConfigService implementors should never pass CONFIG_PENDING.
-      NOTREACHED() << "Proxy config change with CONFIG_PENDING availability!";
+      NOTREACHED_IN_MIGRATION()
+          << "Proxy config change with CONFIG_PENDING availability!";
       return;
     case ProxyConfigService::CONFIG_VALID:
       effective_config = config;

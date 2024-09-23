@@ -45,20 +45,28 @@ struct CORE_EXPORT ExclusionArea final
   ExclusionArea(const BfcRect& rect,
                 const EFloat type,
                 const Kind kind,
+                bool is_hidden_for_paint,
                 const ExclusionShapeData* shape_data)
-      : rect(rect), type(type), kind(kind), shape_data(std::move(shape_data)) {}
+      : rect(rect),
+        type(type),
+        kind(kind),
+        is_hidden_for_paint(is_hidden_for_paint),
+        shape_data(std::move(shape_data)) {}
 
   static const ExclusionArea* Create(const BfcRect& rect,
                                      const EFloat type,
+                                     bool is_hidden_for_paint,
                                      ExclusionShapeData* shape_data = nullptr) {
-    return MakeGarbageCollected<ExclusionArea>(rect, type, kFloat,
-                                               std::move(shape_data));
+    return MakeGarbageCollected<ExclusionArea>(
+        rect, type, kFloat, is_hidden_for_paint, std::move(shape_data));
   }
 
-  static const ExclusionArea* CreateForInitialLetterBox(const BfcRect& rect,
-                                                        const EFloat type) {
+  static const ExclusionArea* CreateForInitialLetterBox(
+      const BfcRect& rect,
+      const EFloat type,
+      bool is_hidden_for_paint) {
     return MakeGarbageCollected<ExclusionArea>(rect, type, kInitialLetterBox,
-                                               nullptr);
+                                               is_hidden_for_paint, nullptr);
   }
 
   const ExclusionArea* CopyWithOffset(const BfcDelta& offset_delta) const {
@@ -70,7 +78,7 @@ struct CORE_EXPORT ExclusionArea final
     new_rect.end_offset += offset_delta;
 
     return MakeGarbageCollected<ExclusionArea>(
-        new_rect, type, kind,
+        new_rect, type, kind, is_hidden_for_paint,
         shape_data ? MakeGarbageCollected<ExclusionShapeData>(*shape_data)
                    : nullptr);
   }
@@ -83,6 +91,7 @@ struct CORE_EXPORT ExclusionArea final
   const EFloat type;
   const Kind kind;
   bool is_past_other_exclusions = false;
+  const bool is_hidden_for_paint = false;
   const Member<const ExclusionShapeData> shape_data;
 
   bool operator==(const ExclusionArea& other) const;

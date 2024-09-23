@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash",
+  "+ash/constants",
+  "+google_apis/common",
+  "+components/user_manager",
+  "+content/public/test",
+  "+components/signin/public/identity_manager",
+  "+components/gcm_driver"
+]

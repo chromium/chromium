@@ -20,14 +20,16 @@ import java.util.Set;
  * Helps with setting Field Trial parameters during instrumentation tests. It parses the field
  * trials info from CommandLine, and applies the overrides to {@link CachedFlag}.
  */
-class FieldTrials {
+public class FieldTrials {
+    // TODO(crbug.com/40257556): Allow setting field trial via annotation.
+
     private static FieldTrials sInstance;
     private final Map<String, Map<String, String>> mTrialToParamValueMap = new HashMap<>();
     private final Map<String, Set<String>> mTrialToFeatureNameMap = new HashMap<>();
 
     private FieldTrials() {}
 
-    static FieldTrials getInstance() {
+    public static FieldTrials getInstance() {
         if (sInstance == null) sInstance = new FieldTrials();
         return sInstance;
     }
@@ -108,11 +110,10 @@ class FieldTrials {
     }
 
     /**
-     * Applies the <feature, param, value> info to CachedFeatureFlags, and enables these features
-     * in CachedFeatureFlags.
+     * Applies the <feature, param, value> info to CachedFeatureFlags, and enables these features in
+     * CachedFeatureFlags.
      */
-    void applyFieldTrials() {
-        CommandLine commandLine = CommandLine.getInstance();
+    public void applyFieldTrials(CommandLine commandLine) {
         String forceFieldTrials = commandLine.getSwitchValue(BaseSwitches.FORCE_FIELD_TRIALS);
         String forceFieldTrialParams =
                 commandLine.getSwitchValue(BaseSwitches.FORCE_FIELD_TRIAL_PARAMS);

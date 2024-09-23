@@ -1,1 +1,5 @@
 per-file *audio*=file://media/audio/OWNERS
+
+# For Media Remoting related changes:
+per-file media_remoting*=file://media/remoting/OWNERS
+

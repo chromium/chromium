@@ -4,9 +4,10 @@
 
 #include "components/exo/keyboard.h"
 
+#include <string_view>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -21,6 +22,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
@@ -42,6 +45,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
@@ -55,7 +59,6 @@ constexpr uint32_t kShiftMask = 1 << 0;
 constexpr uint32_t kControlMask = 1 << 2;
 constexpr uint32_t kAltMask = 1 << 3;
 constexpr uint32_t kNumLockMask = 1 << 4;
-constexpr uint32_t kCommandMask = 1 << 6;
 
 class KeyboardTest : public test::ExoTestBase {
  public:
@@ -70,16 +73,18 @@ class MockKeyboardDelegate : public KeyboardDelegate {
 
   // Overridden from KeyboardDelegate:
   MOCK_METHOD(bool, CanAcceptKeyboardEventsForSurface, (Surface*), (const));
-  MOCK_METHOD(void,
-              OnKeyboardEnter,
-              (Surface*, (const base::flat_map<ui::DomCode, KeyState>&)));
+  MOCK_METHOD(
+      void,
+      OnKeyboardEnter,
+      (Surface*,
+       (const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&)));
   MOCK_METHOD(void, OnKeyboardLeave, (Surface*));
   MOCK_METHOD(uint32_t, OnKeyboardKey, (base::TimeTicks, ui::DomCode, bool));
   MOCK_METHOD(void, OnKeyboardModifiers, (const KeyboardModifiers&));
   MOCK_METHOD(void,
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta));
-  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (base::StringPiece));
+  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (std::string_view));
 };
 using NiceMockKeyboardDelegate = ::testing::NiceMock<MockKeyboardDelegate>;
 
@@ -156,19 +161,24 @@ TEST_F(KeyboardTest, CorrectSeatPressedKeysOnSwitchingDesks) {
     seat.WillProcessEvent(&key_event);
     GetEventGenerator()->Dispatch(&key_event);
 
-    EXPECT_EQ(type != ui::ET_KEY_RELEASED, seat.pressed_keys().count(code));
+    EXPECT_EQ(type != ui::EventType::kKeyReleased,
+              seat.pressed_keys().count(PhysicalCode(code)));
 
     seat.DidProcessEvent(&key_event);
   };
 
   ash::DeskSwitchAnimationWaiter waiter;
-  displatch_key_event(ui::ET_KEY_PRESSED, ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
+  displatch_key_event(ui::EventType::kKeyPressed, ui::VKEY_MENU,
+                      ui::DomCode::ALT_LEFT,
                       /*flags=*/0);
-  displatch_key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::DomCode::TAB,
+  displatch_key_event(ui::EventType::kKeyPressed, ui::VKEY_TAB,
+                      ui::DomCode::TAB,
                       /*flags=*/ui::EF_ALT_DOWN);
-  displatch_key_event(ui::ET_KEY_RELEASED, ui::VKEY_MENU, ui::DomCode::ALT_LEFT,
+  displatch_key_event(ui::EventType::kKeyReleased, ui::VKEY_MENU,
+                      ui::DomCode::ALT_LEFT,
                       /*flags=*/0);
-  displatch_key_event(ui::ET_KEY_RELEASED, ui::VKEY_TAB, ui::DomCode::TAB,
+  displatch_key_event(ui::EventType::kKeyReleased, ui::VKEY_TAB,
+                      ui::DomCode::TAB,
                       /*flags=*/0);
 
   EXPECT_TRUE(seat.pressed_keys().empty());
@@ -203,11 +213,12 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   // Set up expectation for the key release.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
-                                   {{ui::DomCode::US_A,
-                                     KeyState{ui::DomCode::US_A, false}}})));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface,
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>(
+                      {{ui::DomCode::US_A, base::flat_set<KeyState>{
+                                               {ui::DomCode::US_A, false}}}})));
   focus_client->FocusWindow(nullptr);
   focus_client->FocusWindow(surface->window());
   // Surface should maintain keyboard focus when moved to top-level window.
@@ -225,7 +236,8 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
                                  kShiftMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window()->GetToplevelWindow());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
@@ -249,7 +261,8 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -261,7 +274,8 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -269,6 +283,183 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   shell_surface.reset();
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, OnKeyboardKeyMultipleRewrites) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  NiceMockKeyboardObserver observer;
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+  keyboard.AddObserver(&observer);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // Test Rewriting A -> Ctrl + B
+  {
+    testing::InSequence s;
+    // Presses:
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+
+    // Releases:
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+  }
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator.PressKey(ui::VKEY_LCONTROL,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.PressKey(ui::VKEY_B,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.ReleaseKey(ui::VKEY_B,
+                       ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.ReleaseKey(ui::VKEY_LCONTROL, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, OnKeyboardKeyMultipleRewritesReleaseAllPressed) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  NiceMockKeyboardObserver observer;
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+  keyboard.AddObserver(&observer);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // Test Rewriting A -> Ctrl + B, release all events when we get non-matching
+  // release event.
+  {
+    testing::InSequence s;
+    // Presses:
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+
+    // Releases:
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+  }
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator.PressKey(ui::VKEY_LCONTROL,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.PressKey(ui::VKEY_B,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  // Invalid release event, therefore we should release all pressed keys from
+  // the currently held physical key.
+  generator.ReleaseKey(ui::VKEY_A, 0);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
+TEST_F(KeyboardTest, OnKeyboardKeyMultipleRewritesInvalid) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  NiceMockKeyboardObserver observer;
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+  keyboard.AddObserver(&observer);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // Test Rewriting A -> Ctrl + B, Only ctrl events should be emitted since
+  // these events are not allowlisted.
+  {
+    testing::InSequence s;
+    // Presses:
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+  }
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator.PressKey(ui::VKEY_LCONTROL, ui::EF_CONTROL_DOWN);
+  generator.PressKey(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::VKEY_LCONTROL, 0);
+  testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
@@ -293,7 +484,8 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -370,11 +562,12 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
                                  kControlMask | kNumLockMask, 0, 0, 0}));
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
-                                   {{ui::DomCode::US_W,
-                                     KeyState{ui::DomCode::US_W, false}}})));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface,
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>(
+                      {{ui::DomCode::US_W, base::flat_set<KeyState>{
+                                               {ui::DomCode::US_W, false}}}})));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -428,6 +621,84 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
+TEST_F(KeyboardTest, OnKeyboardKey_MousePhysicalEvent) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  NiceMockKeyboardObserver observer;
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+  keyboard.AddObserver(&observer);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  // This should only generate a press event for KEY_A.
+  {
+    testing::InSequence s;
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_A, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_A, true));
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_A, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_A, false));
+  }
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ash::mojom::CustomizableButton::kExtra);
+  generator.PressKey(ui::VKEY_A, 0);
+  generator.ReleaseKey(ui::VKEY_A, 0);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // Test Rewriting A -> Ctrl + B
+  {
+    testing::InSequence s;
+    // Presses:
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true));
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
+
+    // Releases:
+    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
+    EXPECT_CALL(observer,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+    EXPECT_CALL(*delegate_ptr,
+                OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false));
+  }
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ash::mojom::CustomizableButton::kMiddle);
+  generator.PressKey(ui::VKEY_LCONTROL,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.PressKey(ui::VKEY_B,
+                     ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.ReleaseKey(ui::VKEY_B,
+                       ui::EF_CONTROL_DOWN | ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  generator.ReleaseKey(ui::VKEY_LCONTROL, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+}
+
 TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
@@ -449,7 +720,8 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -470,7 +742,7 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
       ui::DomCode::US_A);
 
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_A, 0);
     ui::SetKeyboardImeFlags(&event, ui::kPropertyKeyboardImeHandledFlag);
     event.set_source_device_id(0);
     generator.Dispatch(&event);
@@ -519,8 +791,8 @@ TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -550,7 +822,8 @@ TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -593,8 +866,8 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -631,7 +904,7 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_X);
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_X, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_X, 0);
     event.set_source_device_id(ui::ED_UNKNOWN_DEVICE);
     {
       ui::Event::Properties properties;
@@ -662,7 +935,7 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_Y);
   {
-    ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_Y, 0);
+    ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_Y, 0);
     event.set_source_device_id(ui::ED_UNKNOWN_DEVICE);
     {
       ui::Event::Properties properties;
@@ -692,8 +965,8 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
     void PopulateProperties(
         const Params& params,
         ui::PropertyHandler& out_properties_container) override {
-      out_properties_container.SetProperty(
-          aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+      out_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                           chromeos::AppType::ARC_APP);
     }
   };
   WMHelper::GetInstance()->RegisterAppPropertyResolver(
@@ -718,8 +991,7 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->SetClientSurfaceId("billing_id:test");
   surface->Attach(buffer.get());
   surface->Commit();
@@ -770,7 +1042,8 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1101,8 +1374,7 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->Attach(buffer.get());
   surface->Commit();
 
@@ -1120,9 +1392,10 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface.get(),
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1229,7 +1502,8 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1260,8 +1534,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   std::unique_ptr<Surface> surface(new Surface);
   auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->Attach(buffer.get());
   surface->Commit();
 
@@ -1278,9 +1551,10 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface.get(),
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1331,13 +1605,13 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   // Register accelerator to be triggered.
   ui::TestAcceleratorTarget accelerator_target;
   {
-    ui::Accelerator accelerator(ui::VKEY_LWIN, 0,
+    ui::Accelerator accelerator(ui::VKEY_CONTROL, 0,
                                 ui::Accelerator::KeyState::RELEASED);
     ash::AcceleratorControllerImpl* controller =
         ash::Shell::Get()->accelerator_controller();
@@ -1359,23 +1633,24 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   keyboard.SetNeedKeyboardKeyAcks(true);
 
-  // Press SEARCH key.
+  // Press CONTROL key.
   EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kCommandMask | kNumLockMask, 0, 0, 0}));
+                                 kControlMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, true))
+              OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true))
       .WillOnce(testing::Return(1));
 
   seat.set_physical_code_for_currently_processing_event_for_testing(
-      ui::DomCode::META_LEFT);
-  generator.PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+      ui::DomCode::CONTROL_LEFT);
+  generator.PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
   // SEARCH key can be used as a modifier, so it is handled in release event.
   // Thus accelerator handler should not be triggered.
   EXPECT_EQ(0, accelerator_target.accelerator_count());
@@ -1391,9 +1666,9 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, false))
+              OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false))
       .WillOnce(testing::Return(2));
-  generator.ReleaseKey(ui::VKEY_LWIN, 0);
+  generator.ReleaseKey(ui::VKEY_CONTROL, 0);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
   // Now the accelerator should be handled.
   EXPECT_EQ(1, accelerator_target.accelerator_count());
@@ -1431,8 +1706,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
       std::make_unique<TestShellSurfaceWithMovingFocusAccelerator>(
           surface.get());
   gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->Attach(buffer.get());
   surface->Commit();
 
@@ -1449,9 +1723,10 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface.get(),
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1520,7 +1795,8 @@ TEST_F(KeyboardTest, OnKeyboardKey_ChangeFocusInPreTargetHandler) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
 
   generator.PressKey(ui::VKEY_A, 0);
   EXPECT_EQ(shell_surface->GetWidget()->GetNativeView(),
@@ -1557,11 +1833,12 @@ TEST_F(KeyboardTest, SystemKeysNotSentAsPressedKeys) {
       .WillByDefault(testing::Return(true));
 
   // LAUNCH_APP1 should be filtered out before sending OnKeyboardEnter.
-  EXPECT_CALL(
-      *delegate_ptr,
-      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
-                                   {{ui::DomCode::US_A,
-                                     KeyState{ui::DomCode::US_A, false}}})));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardEnter(
+                  surface,
+                  base::flat_map<PhysicalCode, base::flat_set<KeyState>>(
+                      {{ui::DomCode::US_A, base::flat_set<KeyState>{
+                                               {ui::DomCode::US_A, false}}}})));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
@@ -1597,11 +1874,13 @@ TEST_F(KeyboardTest, CanConsumeSystemKeysSentAsPressedKeys) {
   EXPECT_CALL(
       *delegate_ptr,
       OnKeyboardEnter(
-          surface, base::flat_map<ui::DomCode, KeyState>({
-                       {ui::DomCode::US_A, KeyState{ui::DomCode::US_A, false}},
-                       {ui::DomCode::LAUNCH_APP1,
-                        KeyState{ui::DomCode::LAUNCH_APP1, false}},
-                   })));
+          surface,
+          base::flat_map<PhysicalCode, base::flat_set<KeyState>>({
+              {ui::DomCode::US_A,
+               base::flat_set<KeyState>{{ui::DomCode::US_A, false}}},
+              {ui::DomCode::LAUNCH_APP1,
+               base::flat_set<KeyState>{{ui::DomCode::LAUNCH_APP1, false}}},
+          })));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }

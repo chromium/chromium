@@ -2,18 +2,26 @@
     <div id="details" hidden$="[[shouldHideCategory_(site)]]">
       <div id="permissionItem"
           class$="list-item [[permissionInfoStringClass_(site.source,
-                                                         category,
-                                                         site.setting)]]">
+                                            category,
+                                            site.setting,
+                                            systemPermissionWarningKey_)]]">
         <div>
-          <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
-          </iron-icon>
+          <cr-icon icon="[[icon]]" aria-hidden="true" role="presentation">
+          </cr-icon>
         </div>
         <div class="middle" id="permissionHeader">
           [[label]]
           <div class="secondary" id="permissionSecondary"
+              hidden$="[[!showSystemPermissionWarning_(site.source,
+                  category,site.setting,systemPermissionWarningKey_)]]"
+              inner-h-t-m-l="[[getSystemPermissionWarning_(
+                  systemPermissionWarningKey_)]]">
+          </div>
+          <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
-                                                   category,
-                                                   site.setting)]]"
+                                        category,
+                                        site.setting, 
+                                        systemPermissionWarningKey_)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
@@ -40,7 +48,7 @@
             aria-describedby="permissionSecondary"
             on-change="onPermissionSelectionChange_"
             disabled$="[[!isPermissionUserControlled_(site.source, category,
-                                                      site.setting)]]">
+                              site.setting, systemPermissionWarningKey_)]]">
           <option id="default" value$="[[contentSettingEnum_.DEFAULT]]">
             [[defaultSettingString_(
                 defaultSetting_,
@@ -64,7 +72,6 @@
           </option>
         </select>
       </div>
-
       <div class="list-frame" role="table">
         <template is="dom-repeat" items="[[chooserExceptions_]]">
           <site-details-permission-device-entry exception="[[item]]">

@@ -18,7 +18,7 @@ aggregate_vector_icons("app_list_vector_icons") {
   ]
 }
 
-source_set("vector_icons") {
+static_library("vector_icons") {
   sources = get_target_outputs(":app_list_vector_icons")
 
   deps = [

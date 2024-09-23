@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("account_picker_confirmation") {
+  sources = [
+    "account_picker_confirmation_screen_consumer.h",
+    "account_picker_confirmation_screen_coordinator.h",
+    "account_picker_confirmation_screen_coordinator.mm",
+    "account_picker_confirmation_screen_coordinator_delegate.h",
+    "account_picker_confirmation_screen_mediator.h",
+    "account_picker_confirmation_screen_mediator.mm",
+    "account_picker_confirmation_screen_view_controller.h",
+    "account_picker_confirmation_screen_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_configuration",
+    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "account_picker_confirmation_screen_constants.h",
+    "account_picker_confirmation_screen_constants.mm",
+  ]
+}

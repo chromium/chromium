@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -117,12 +118,13 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // that testing is possible.
   virtual bool IsFocused(WebContents* web_contents);
 
-  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
-  // API call originating from |render_frame_host| should be overridden with
-  // that value, or std::nullopt otherwise.
-  virtual std::optional<bool>
-  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost* render_frame_host);
+  // Determines if the isUserVerifyingPlatformAuthenticator API call originating
+  // from |render_frame_host| should be overridden with a value. The callback is
+  // invoked with the override value, or with std::nullopt if it should not be
+  // overridden. The callback can be invoked synchronously or asynchronously.
+  virtual void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost* render_frame_host,
+      base::OnceCallback<void(std::optional<bool>)> callback);
 
   // Returns the active WebAuthenticationRequestProxy for WebAuthn requests
   // originating from `caller_origin` in `browser_context`.
@@ -133,8 +135,36 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
-  // Returns true when the cloud enclave authenticator is available for use.
-  virtual bool IsEnclaveAuthenticatorAvailable(BrowserContext* browser_context);
+  // DeletePasskey removes a passkey from the credential storage provider using
+  // the provided credential ID and relying party ID.
+  virtual void DeletePasskey(content::WebContents* web_contents,
+                             const std::vector<uint8_t>& passkey_credential_id,
+                             const std::string& relying_party_id);
+
+  // DeleteUnacceptedPasskeys removes any non-appearing credential in the
+  // all_accepted_credentials_ids list from the credential storage provider for
+  // the given relying party ID and user ID.
+  virtual void DeleteUnacceptedPasskeys(
+      content::WebContents* web_contents,
+      const std::string& relying_party_id,
+      const std::vector<uint8_t>& user_id,
+      const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids);
+
+  // UpdateUserPasskeys updates the name and display name of a passkey for the
+  // given relying party ID and user ID.
+  virtual void UpdateUserPasskeys(content::WebContents* web_contents,
+                                  const url::Origin& origin,
+                                  const std::string& relying_party_id,
+                                  std::vector<uint8_t>& user_id,
+                                  const std::string& name,
+                                  const std::string& display_name);
+
+  // Invokes the callback with true when passkeys provided by browser sync
+  // are available for use, and false otherwise. The callback can be invoked
+  // synchronously or asynchronously.
+  virtual void BrowserProvidedPasskeysAvailable(
+      BrowserContext* browser_context,
+      base::OnceCallback<void(bool)> callback);
 
 #if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
@@ -170,7 +200,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
   using AccountPreselectedCallback =
-      base::RepeatingCallback<void(device::PublicKeyCredentialDescriptor)>;
+      base::RepeatingCallback<void(device::DiscoverableCredentialMetadata)>;
 
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.
@@ -199,6 +229,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // unlike security keys) because, like hybrid, the user has taken some
     // action to send the request to the enclave.
     kEnclaveError,
+    // kEnclaveCancel means that the user canceled an enclave transaction.
+    // At the time of writing the only way to trigger this is to cancel the
+    // Windows Hello user verification dialog.
+    kEnclaveCancel,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web
@@ -248,31 +282,17 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   // Supplies callbacks that the embedder can invoke to initiate certain
   // actions, namely: cancel the request, start the request over, preselect an
-  // account, dispatch request to connected authenticators, and power on the
-  // bluetooth adapter.
+  // account, dispatch request to connected authenticators, power on the
+  // bluetooth adapter, and request permission to use the bluetooth adapter.
   virtual void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback);
-
-  // Invokes |callback| with |true| if the given relying party ID is permitted
-  // to receive attestation certificates from the provided FidoAuthenticator.
-  // Otherwise invokes |callback| with |false|.
-  //
-  // If |is_enterprise_attestation| is true then that authenticator has asserted
-  // that |relying_party_id| is known to it and the attesation has no
-  // expectations of privacy.
-  //
-  // Since these certificates may uniquely identify the authenticator, the
-  // embedder may choose to show a permissions prompt to the user, and only
-  // invoke |callback| afterwards. This may hairpin |callback|.
-  virtual void ShouldReturnAttestation(
-      const std::string& relying_party_id,
-      const device::FidoAuthenticator* authenticator,
-      bool is_enterprise_attestation,
-      base::OnceCallback<void(bool)> callback);
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          request_ble_permission_callback);
 
   // ConfigureDiscoveries optionally configures |fido_discovery_factory|.
   //
@@ -280,6 +300,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // identifier of the request, |request_type| is the type of the request and
   // |resident_key_requirement| (which is only set when provided, i.e. for
   // makeCredential calls) reflects the value requested by the site.
+  //
+  // For a create() request, |user_name| contains the contents of the
+  // |user.name| field, which is set by the site.
   //
   // caBLE (also called the "hybrid" transport) must be configured in order to
   // be functional and |pairings_from_extension| contains any caBLEv1 pairings
@@ -297,6 +320,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       device::FidoRequestType request_type,
       std::optional<device::ResidentKeyRequirement> resident_key_requirement,
       device::UserVerificationRequirement user_verification_requirement,
+      std::optional<std::string_view> user_name,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);
@@ -342,6 +366,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // shown alongside autofilled passwords, instead of the modal flow.
   virtual void SetConditionalRequest(bool is_conditional);
 
+  // Set the credential types that are expected by the Ambient UI.
+  // Credential types are defined in `credential_types.mojom`.
+  virtual void SetAmbientCredentialTypes(int credential_type_flags);
+
   // Sets a credential filter for conditional mediation requests, which will
   // only allow passkeys with matching credential IDs to be displayed to the
   // user.
@@ -351,6 +379,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Optionally configures the user entity passed for a makeCredential request.
   virtual void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity);
+
+  // Returns a list of `FidoDiscoveryBase` instances that can instantiate an
+  // embedder-specific platform authenticator for handling WebAuthn requests.
+  // The discoveries' `transport()` must be `FidoTransportProtocol::kInternal`.
+  virtual std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+  CreatePlatformDiscoveries();
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -366,10 +400,11 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |FidoAuthenticatorAdded|.
   bool EmbedderControlsAuthenticatorDispatch(
       const device::FidoAuthenticator& authenticator) override;
-  void BluetoothAdapterPowerChanged(bool is_powered_on) override;
+  void BluetoothAdapterStatusChanged(
+      device::FidoRequestHandlerBase::BleStatus ble_status) override;
   void FidoAuthenticatorAdded(
       const device::FidoAuthenticator& authenticator) override;
-  void FidoAuthenticatorRemoved(base::StringPiece device_id) override;
+  void FidoAuthenticatorRemoved(std::string_view device_id) override;
   bool SupportsPIN() const override;
   void CollectPIN(
       CollectPINOptions options,

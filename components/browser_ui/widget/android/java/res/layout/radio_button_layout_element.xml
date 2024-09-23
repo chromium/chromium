@@ -9,6 +9,6 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="36dp"
+    android:minHeight="48dp"
     android:gravity="center_vertical"
     android:textAppearance="@style/TextAppearance.TextLarge.Primary" />

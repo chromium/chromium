@@ -257,7 +257,7 @@ class AccountTrackerTest : public testing::Test {
   // exercise functionality dependent on that callback firing are not relevant
   // on ChromeOS and should simply not run on that platform.
   CoreAccountInfo SetActiveAccount(const std::string& email) {
-    // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+    // TODO(crbug.com/40067875): Delete account-tracking code, latest when
     // ConsentLevel::kSync is cleaned up from the codebase.
     return identity_test_env_.SetPrimaryAccount(email,
                                                 signin::ConsentLevel::kSync);

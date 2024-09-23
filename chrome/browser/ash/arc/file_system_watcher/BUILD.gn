@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("file_system_watcher") {
+  sources = [
+    "arc_file_system_watcher_service.cc",
+    "arc_file_system_watcher_service.h",
+    "arc_file_system_watcher_util.cc",
+    "arc_file_system_watcher_util.h",
+    "file_system_scanner.cc",
+    "file_system_scanner.h",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_file_system_watcher_service_unittest.cc",
+    "arc_file_system_watcher_util_unittest.cc",
+    "file_system_scanner_unittest.cc",
+  ]
+
+  deps = [
+    ":file_system_watcher",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

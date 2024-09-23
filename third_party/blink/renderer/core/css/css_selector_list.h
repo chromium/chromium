@@ -23,12 +23,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_LIST_H_
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -85,6 +91,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
                                   CSSSelector* selector_array);
 
   CSSSelectorList* Copy() const;
+  static HeapVector<CSSSelector> Copy(const CSSSelector* selector_list);
 
   bool IsValid() const {
     return first_selector_[0].Match() != CSSSelector::kInvalidList;
@@ -127,12 +134,10 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   unsigned MaximumSpecificity() const;
 
   // See CSSSelector::Reparent.
-  static void Reparent(CSSSelector* selector_list,
-                       StyleRule* old_parent,
-                       StyleRule* new_parent);
+  static void Reparent(CSSSelector* selector_list, StyleRule* new_parent);
 
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent) {
-    CSSSelectorList::Reparent(first_selector_, old_parent, new_parent);
+  void Reparent(StyleRule* new_parent) {
+    CSSSelectorList::Reparent(first_selector_, new_parent);
   }
 
   CSSSelectorList(const CSSSelectorList&) = delete;

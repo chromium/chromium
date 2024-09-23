@@ -66,7 +66,7 @@ class FakeRadioWinrt
 
   // This is needed to be able respond to SimulateAdapterPowerFailure() while
   // |set_state_callback_| is in a pending state.
-  // TODO(https://crbug.com/878680): Implement SimulateAdapterPowerSuccess() and
+  // TODO(crbug.com/41410591): Implement SimulateAdapterPowerSuccess() and
   // clean this up.
   base::CancelableOnceClosure cancelable_closure_;
 };

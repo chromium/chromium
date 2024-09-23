@@ -31,6 +31,9 @@ group("blink") {
   if (use_blink_extensions_chromeos) {
     deps += [ "//third_party/blink/renderer/extensions/chromeos" ]
   }
+  if (use_blink_extensions_webview) {
+    deps += [ "//third_party/blink/renderer/extensions/webview" ]
+  }
 }
 
 group("test_support") {
@@ -100,6 +103,7 @@ if (is_android) {
 source_set("test_headers") {
   testonly = true
   sources = [
+    "common/interest_group/test/interest_group_test_utils.h",
     "common/interest_group/test_interest_group_builder.h",
     "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
@@ -125,6 +129,7 @@ source_set("test_headers") {
 source_set("blink_headers") {
   sources = [
     "platform/audio/web_audio_device_source_type.h",
+    "platform/browser_interface_broker_proxy.h",
     "platform/child_url_loader_factory_bundle.h",
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
@@ -133,12 +138,10 @@ source_set("blink_headers") {
     "platform/modules/mediastream/media_stream_types.h",
     "platform/modules/mediastream/secure_display_link_tracker.h",
     "platform/modules/mediastream/web_media_stream.h",
-    "platform/modules/mediastream/web_media_stream_audio_renderer.h",
     "platform/modules/mediastream/web_media_stream_audio_sink.h",
     "platform/modules/mediastream/web_media_stream_sink.h",
     "platform/modules/mediastream/web_media_stream_source.h",
     "platform/modules/mediastream/web_media_stream_track.h",
-    "platform/modules/mediastream/web_media_stream_video_renderer.h",
     "platform/modules/mediastream/web_platform_media_stream_source.h",
     "platform/modules/remoteplayback/remote_playback_source.h",
     "platform/modules/remoteplayback/web_remote_playback_client.h",
@@ -210,6 +213,7 @@ source_set("blink_headers") {
     "platform/web_font_render_style.h",
     "platform/web_gesture_curve.h",
     "platform/web_graphics_context_3d_provider.h",
+    "platform/web_graphics_shared_image_interface_provider.h",
     "platform/web_http_body.h",
     "platform/web_http_header_visitor.h",
     "platform/web_icon_sizes_parser.h",
@@ -233,7 +237,6 @@ source_set("blink_headers") {
     "platform/web_runtime_features.h",
     "platform/web_scoped_page_pauser.h",
     "platform/web_scroll_anchor_data.h",
-    "platform/web_scrollbar_overlay_color_theme.h",
     "platform/web_security_origin.h",
     "platform/web_set_sink_id_callbacks.h",
     "platform/web_source_buffer.h",
@@ -292,6 +295,7 @@ source_set("blink_headers") {
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
+    "web/web_crypto_histograms.h",
     "web/web_crypto_normalize.h",
     "web/web_css_origin.h",
     "web/web_custom_element.h",
@@ -330,13 +334,13 @@ source_set("blink_headers") {
     "web/web_label_element.h",
     "web/web_language_detection_details.h",
     "web/web_lifecycle_update.h",
+    "web/web_link_preview_triggerer.h",
     "web/web_local_frame.h",
     "web/web_local_frame_client.h",
     "web/web_local_frame_observer.h",
     "web/web_manifest_manager.h",
     "web/web_meaningful_layout.h",
     "web/web_media_inspector.h",
-    "web/web_memory_statistics.h",
     "web/web_message_port_converter.h",
     "web/web_meta_element.h",
     "web/web_navigation_control.h",
@@ -476,6 +480,8 @@ blink_python_runner("runtime_features_for_public") {
   inputs =
       scripts_for_json5_files + [
         runtime_enabled_features_json5,
+        "../renderer/build/scripts/make_runtime_features_utilities.py",
+        "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/templates/features_generated.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]

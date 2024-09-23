@@ -5,6 +5,7 @@
 #include "chrome/common/conflicts/module_watcher_win.h"
 
 #include <windows.h>
+
 #include <tlhelp32.h>
 #include <winternl.h>  // For UNICODE_STRING.
 
@@ -255,8 +256,8 @@ void __stdcall ModuleWatcher::LoaderNotificationCallback(
 
     default:
       // This is unexpected, but not a reason to crash.
-      NOTREACHED() << "Unknown LDR_DLL_NOTIFICATION_REASON: "
-                   << notification_reason;
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown LDR_DLL_NOTIFICATION_REASON: " << notification_reason;
   }
 }
 

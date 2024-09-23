@@ -8,7 +8,7 @@
  * allow users to configure their keyboard remapped keys for each keyboard.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
@@ -36,9 +36,9 @@ interface PrefPolicyFields {
   recommendedValue?: ExtendedFkeysModifier|SixPackShortcutModifier;
 }
 
-function getPrefPolicyFields(
-    policy?: InputDeviceSettingsFkeyPolicy|
-    InputDeviceSettingsSixPackKeyPolicy): PrefPolicyFields {
+function getPrefPolicyFields(policy: InputDeviceSettingsFkeyPolicy|
+                             InputDeviceSettingsSixPackKeyPolicy|
+                             null): PrefPolicyFields {
   if (policy) {
     const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
         chrome.settingsPrivate.Enforcement.ENFORCED :
@@ -152,6 +152,28 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         },
       },
 
+      fakeRightAltPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeRightAltKeyRemapPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ModifierKey.kRightAlt,
+          };
+        },
+      },
+
+      fakeFunctionPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'fakeFunctionKeyRemapPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ModifierKey.kFunction,
+          };
+        },
+      },
+
       insertPref: {
         type: Object,
         value() {
@@ -250,6 +272,17 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         value: false,
       },
 
+      hasRightAltKey: {
+        type: Boolean,
+        value: false,
+      },
+
+      hasFunctionKey: {
+        type: Boolean,
+        value: false,
+      },
+
+
       keyboard: {
         type: Object,
       },
@@ -324,6 +357,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'homePref.value,' +
           'f11KeyPref.value,' +
           'f12KeyPref.value,' +
+          'fakeRightAltPref.value,' +
+          'fakeFunctionPref.value,' +
           'fakeCapsLockPref.value)',
       'onKeyboardListUpdated(keyboards.*)',
       'onPoliciesChanged(keyboardPolicies)',
@@ -348,6 +383,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     [ModifierKey.kBackspace]: ModifierKey.kBackspace,
     [ModifierKey.kAssistant]: ModifierKey.kAssistant,
     [ModifierKey.kCapsLock]: ModifierKey.kCapsLock,
+    [ModifierKey.kRightAlt]: ModifierKey.kRightAlt,
+    [ModifierKey.kFunction]: ModifierKey.kFunction,
   };
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
@@ -357,6 +394,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private fakeCtrlPref: chrome.settingsPrivate.PrefObject;
   private fakeCapsLockPref: chrome.settingsPrivate.PrefObject;
   private fakeEscPref: chrome.settingsPrivate.PrefObject;
+  private fakeRightAltPref: chrome.settingsPrivate.PrefObject;
+  private fakeFunctionPref: chrome.settingsPrivate.PrefObject;
   private fakeMetaPref: chrome.settingsPrivate.PrefObject;
   private insertPref: chrome.settingsPrivate.PrefObject;
   private pageUpPref: chrome.settingsPrivate.PrefObject;
@@ -368,6 +407,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private f12KeyPref: chrome.settingsPrivate.PrefObject;
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
+  private hasRightAltKey: boolean;
+  private hasFunctionKey: boolean;
   private metaKeyLabel: string;
   private isInitialized: boolean;
 
@@ -419,6 +460,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         searchedKeyboard.modifierKeys.includes(ModifierKey.kAssistant);
     this.hasCapsLockKey =
         searchedKeyboard.modifierKeys.includes(ModifierKey.kCapsLock);
+    this.hasRightAltKey =
+        searchedKeyboard.modifierKeys.includes(ModifierKey.kRightAlt);
+    this.hasFunctionKey =
+        searchedKeyboard.modifierKeys.includes(ModifierKey.kFunction);
 
     // Update Prefs according to keyboard modifierRemappings.
     Array.from(this.computeModifierRemappings().keys())
@@ -506,6 +551,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.set('fakeCapsLockPref.value', ModifierKey.kCapsLock);
     this.set('fakeEscPref.value', ModifierKey.kEscape);
     this.set('fakeMetaPref.value', ModifierKey.kMeta);
+    if (loadTimeData.getBoolean('enableModifierSplit')) {
+      this.set('fakeRightAltPref.value', ModifierKey.kRightAlt);
+    }
+    if (this.hasFunctionKey) {
+      this.set('fakeFunctionPref.value', ModifierKey.kFunction);
+    }
   }
 
   restoreDefaults(): void {
@@ -542,6 +593,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       }
       case ModifierKey.kMeta: {
         this.set('fakeMetaPref.value', targetKey);
+        break;
+      }
+      case ModifierKey.kRightAlt: {
+        this.set('fakeRightAltPref.value', targetKey);
+        break;
+      }
+      case ModifierKey.kFunction: {
+        this.set('fakeFunctionPref.value', targetKey);
         break;
       }
     }
@@ -607,6 +666,18 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       updatedRemappings[ModifierKey.kMeta] = this.fakeMetaPref.value;
     }
 
+    if (loadTimeData.getBoolean('enableModifierSplit')) {
+      if (ModifierKey.kRightAlt !== this.fakeRightAltPref.value) {
+        updatedRemappings[ModifierKey.kRightAlt] = this.fakeRightAltPref.value;
+      }
+    }
+
+    if (this.hasFunctionKey) {
+      if (ModifierKey.kFunction !== this.fakeFunctionPref.value) {
+        updatedRemappings[ModifierKey.kFunction] = this.fakeFunctionPref.value;
+      }
+    }
+
     return updatedRemappings;
   }
 
@@ -646,7 +717,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   private setSixPackKeyRemappings(): void {
-    const sixPackKeyRemappings: SixPackKeyInfo|undefined =
+    const sixPackKeyRemappings: SixPackKeyInfo|null =
         this.keyboard.settings?.sixPackKeyRemappings;
     if (!sixPackKeyRemappings) {
       return;
@@ -689,7 +760,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   protected shouldShowFkeys(): boolean {
     return this.areF11andF12KeyShortcutsEnabled &&
         (this.keyboard?.settings?.f11 != null &&
-         this.keyboard?.settings?.f12 != null);
+         this.keyboard?.settings?.f12 != null) &&
+        !this.hasFunctionKey;
   }
 
   private onPoliciesChanged(): void {

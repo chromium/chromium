@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -174,9 +175,11 @@ bool VirtualCardManualFallbackBubbleControllerImpl::ShouldIconBeVisible()
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnLinkClicked(
     const GURL& url) {
-  web_contents()->OpenURL(content::OpenURLParams(
-      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false));
+  web_contents()->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
@@ -210,13 +213,13 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
   LogVirtualCardManualFallbackBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
   UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
-                      ? CreditCard::StripSeparators(GetValueForField(field))
+                      ? StripCardNumberSeparators(GetValueForField(field))
                       : GetValueForField(field));
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
     const std::u16string& text) const {
-  // TODO(crbug.com/1196021): Add metrics for user interaction with manual
+  // TODO(crbug.com/40176273): Add metrics for user interaction with manual
   // fallback bubble UI elements.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }

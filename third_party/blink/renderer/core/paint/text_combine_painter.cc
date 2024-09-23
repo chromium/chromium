@@ -16,11 +16,14 @@
 
 namespace blink {
 
-TextCombinePainter::TextCombinePainter(GraphicsContext& context,
-                                       const gfx::Rect& visual_rect,
-                                       const ComputedStyle& style,
-                                       const LineRelativeOffset& text_origin)
+TextCombinePainter::TextCombinePainter(
+    GraphicsContext& context,
+    const SvgContextPaints* svg_context_paints,
+    const gfx::Rect& visual_rect,
+    const ComputedStyle& style,
+    const LineRelativeOffset& text_origin)
     : TextPainter(context,
+                  svg_context_paints,
                   style.GetFont(),
                   visual_rect,
                   text_origin,
@@ -68,18 +71,19 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
           style.GetWritingMode()));
 
   TextCombinePainter text_painter(paint_info.context,
+                                  paint_info.GetSvgContextPaints(),
                                   text_combine.VisualRectForPaint(paint_offset),
                                   style, text_frame_rect.offset);
-  const TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
+  const TextPaintStyle text_style = TextPainter::TextPaintingStyle(
       text_combine.GetDocument(), style, paint_info);
 
   // Setup arguments for painting text decorations
   std::optional<TextDecorationInfo> decoration_info;
   std::optional<TextDecorationPainter> decoration_painter;
   if (has_text_decoration) {
-    decoration_info.emplace(text_frame_rect.offset,
-                            text_frame_rect.InlineSize(), style,
-                            /* inline_context */ nullptr, std::nullopt);
+    decoration_info.emplace(
+        text_frame_rect.offset, text_frame_rect.InlineSize(), style,
+        /* inline_context */ nullptr, TextDecorationLine::kNone, Color());
     decoration_painter.emplace(text_painter, /* inline_context */ nullptr,
                                paint_info, style, text_style, text_frame_rect,
                                nullptr);
@@ -120,25 +124,25 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   SetEmphasisMark(style_.TextEmphasisMarkString(),
                   style_.GetTextEmphasisPosition());
   DCHECK(emphasis_mark_font.GetFontDescription().IsVerticalBaseline());
-  DCHECK(emphasis_mark_);
-  const SimpleFontData* const font_data = font_.PrimaryFont();
+  DCHECK(emphasis_mark());
+  const SimpleFontData* const font_data = font().PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
     return;
   }
   if (text_style.emphasis_mark_color != text_style.fill_color) {
     // See virtual/text-antialias/emphasis-combined-text.html
-    graphics_context_.SetFillColor(text_style.emphasis_mark_color);
+    graphics_context().SetFillColor(text_style.emphasis_mark_color);
   }
 
   const int font_ascent = font_data->GetFontMetrics().Ascent();
   const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
   const gfx::PointF emphasis_mark_text_origin =
-      gfx::PointF(text_origin_) +
-      gfx::Vector2dF(0, font_ascent + emphasis_mark_offset_);
+      gfx::PointF(text_origin()) +
+      gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);
-  graphics_context_.DrawEmphasisMarks(
-      emphasis_mark_font, text_run_paint_info, emphasis_mark_,
+  graphics_context().DrawEmphasisMarks(
+      emphasis_mark_font, text_run_paint_info, emphasis_mark(),
       emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }

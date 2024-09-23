@@ -113,7 +113,7 @@ public class CronetFixedModeOutputStreamTest {
         IOException e =
                 assertThrows(
                         IOException.class, () -> out.write(largeData, 10, largeData.length - 10));
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;
@@ -136,7 +136,7 @@ public class CronetFixedModeOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         // Forces OutputStream implementation to flush. crbug.com/653072
         IOException e = assertThrows(IOException.class, () -> out.write(1));
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;
@@ -146,7 +146,7 @@ public class CronetFixedModeOutputStreamTest {
         // Make sure NetworkException is reported again when trying to read response
         // from the mConnection.
         e = assertThrows(IOException.class, mConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(NetworkException.class);
             NetworkException networkException = (NetworkException) e;
@@ -381,7 +381,7 @@ public class CronetFixedModeOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
         IOException e = assertThrows(IOException.class, mConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CallbackExceptionImpl.class);
         }

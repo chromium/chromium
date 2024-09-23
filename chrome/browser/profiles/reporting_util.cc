@@ -48,7 +48,7 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
     return nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1254373): Clean up for Dent V2
+  // TODO(crbug.com/40199547): Clean up for Dent V2
   if (profile->IsMainProfile()) {
     const enterprise_management::PolicyData* policy =
         policy::PolicyLoaderLacros::main_user_policy_data();
@@ -57,18 +57,15 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   }
 #endif
 
-  auto* manager =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      profile->GetUserCloudPolicyManagerAsh();
-#else
-      profile->GetUserCloudPolicyManager();
-#endif
-  if (!manager)
+  auto* manager = profile->GetCloudPolicyManager();
+  if (!manager) {
     return nullptr;
+  }
 
   policy::CloudPolicyStore* store = manager->core()->store();
-  if (!store || !store->has_policy())
+  if (!store || !store->has_policy()) {
     return nullptr;
+  }
 
   return store->policy();
 }

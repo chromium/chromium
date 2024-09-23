@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
-#include "ash/constants/app_types.h"
+
 #include "ash/public/cpp/window_properties.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "ui/aura/client/aura_constants.h"

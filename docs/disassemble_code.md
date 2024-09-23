@@ -47,7 +47,7 @@ blink_symbol_level = 1
 symbol_level = 1
 
 # Restricted options. May not make sense for non-Googlers.
-use_goma = true
+use_remoteexec = true
 proprietary_codecs = true
 ffmpeg_branding = "Chrome"
 ```

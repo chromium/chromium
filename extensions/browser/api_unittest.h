@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/api_test_utils.h"
@@ -48,10 +49,9 @@ class ApiUnitTest : public ExtensionsTest {
   void SetUp() override;
   void TearDown() override;
 
-  // Creates a background page for |extension_|, and sets it for the WebContents
-  // to be used in API calls.
-  // If |contents_| is already set, this does nothing.
-  void CreateBackgroundPage();
+  // Creates a page for |extension_|, and sets it for the WebContents to be used
+  // in API calls. If |contents_| is already set, this does nothing.
+  void CreateExtensionPage();
 
   // Various ways of running an API function. These methods take ownership of
   // |function|. |args| should be in JSON format, wrapped in a list.

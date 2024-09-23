@@ -54,29 +54,31 @@ void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceEnabled() {
 {% if feature in origin_trial_controlled_features %}
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
-{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
+{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning2' %}
   UseCounter::Count(use_counter_,
-                          WebFeature::kDisableThirdPartyStoragePartitioning);
+                          WebFeature::kDisableThirdPartyStoragePartitioning2);
   // If the base::Feature for the deprecation trial is disabled, we should
   // not send any overrides to the browser, so we return false immediately,
   // skipping any mojom messaging.
   if(!base::FeatureList::IsEnabled(
-    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial)){
+    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial2)){
     return false;
   }
 {% endif %}
   // Origin Trial feature values should not override any sent from
   // the browser, so we only add a value if has not already been set
-  // in the override_values_ map. Return whether the override was
-  // successful.
+  // in the override_values_ map with an identical token set. Return
+  // whether the override was successful.
+  auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
   if(!override_values_.contains(
-      mojom::RuntimeFeature::k{{feature.name}})) {
+      mojom::RuntimeFeature::k{{feature.name}}) ||
+     origin_trial_overrides_[
+      mojom::RuntimeFeature::k{{feature.name}}] != value) {
     // Update the state of all feature overrides in this class.
     override_values_
       [mojom::RuntimeFeature::k{{feature.name}}] = true;
     // Add successful overrides to the list of features we sent back
     // to the browser process.
-    auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
     origin_trial_overrides_[
       mojom::RuntimeFeature::k{{feature.name}}] = std::move(value);
     return true;
@@ -134,6 +136,12 @@ void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
 
 mojom::blink::OriginTrialStateHost*
 RuntimeFeatureStateOverrideContext::GetOrBindOriginTrialStateHost(){
+  // It's possible that the prior interface we bound is no longer available
+  // in which case we should reset the connection and re-bind a new one.
+  if (origin_trial_state_host_remote_.is_bound() &&
+      !origin_trial_state_host_remote_.is_connected()) {
+    origin_trial_state_host_remote_.reset();
+  }
   // TODO(https://crbug.com/1410817): add support for workers/non-frames that
   // are enabling origin trials to send their information to the browser too.
   if (!origin_trial_state_host_remote_.is_bound()) {

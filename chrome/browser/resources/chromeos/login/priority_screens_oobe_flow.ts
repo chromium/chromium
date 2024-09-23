@@ -3,16 +3,8 @@
 // found in the LICENSE file.
 
 import './screens/oobe/welcome.js';
+import {OobeTypes} from './components/oobe_types.js';
 
-//TODO(b/324392321) Move type definition to oobe_types after its TS migration
-export interface OobeScreen {
-  tag: string;
-  id: string;
-  condition?: string;
-  extra_classes?: string[];
-}
-export interface ScreensList extends Array<OobeScreen>{}
-
-export const priorityOobeScreenList: ScreensList = [
+export const priorityOobeScreenList: OobeTypes.ScreensList = [
   {tag: 'oobe-welcome-element', id: 'connect'},
 ];

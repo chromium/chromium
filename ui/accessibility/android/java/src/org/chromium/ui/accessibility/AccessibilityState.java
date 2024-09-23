@@ -51,7 +51,7 @@ import java.util.WeakHashMap;
 
 /**
  * Provides utility methods relating to measuring accessibility state on Android. See native
- * counterpart in ui::accessibility::AccessibilityState.
+ * counterpart in accessibility::AccessibilityState.
  */
 @JNINamespace("ui")
 public class AccessibilityState {
@@ -639,8 +639,24 @@ public class AccessibilityState {
         // back-off.
         Collections.sort(runningServiceNames);
         Collections.sort(enabledServiceNames);
-        if (runningServiceNames.equals(enabledServiceNames)) {
-            Log.i(TAG, "Enabled accessibility services list updated.");
+
+        // In some cases, Autofill will be running but will not be listed as an enabled service,
+        // such as when some third-party password managers are running. In these cases, we will
+        // have a mismatch between these lists until the max timeout. So try comparing the lists
+        // while ignoring autofill, and if they match, then we can continue.
+        List<String> prunedRunningServiceNames = new ArrayList<String>();
+        for (String service : runningServiceNames) {
+            if (!service.equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)) {
+                prunedRunningServiceNames.add(service);
+            }
+        }
+
+        if (runningServiceNames.equals(enabledServiceNames)
+                || prunedRunningServiceNames.equals(enabledServiceNames)) {
+            Log.i(
+                    TAG,
+                    "Enabled accessibility services list updated. "
+                            + enabledServiceNames.toString());
             sNextDelayMillis = MIN_DELAY_MILLIS;
         } else {
             Log.i(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
@@ -714,15 +730,10 @@ public class AccessibilityState {
 
         // Calculate traditional state values.
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
-        boolean isTouchExplorationEnabled;
-        if (UiAccessibilityFeatureMap.isEnabled(
-                UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)) {
-            isTouchExplorationEnabled =
-                    (0 != (sCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
-                            && (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
-        } else {
-            isTouchExplorationEnabled = sAccessibilityManager.isTouchExplorationEnabled();
-        }
+        boolean isTouchExplorationEnabled =
+                (0 != (sCapabilitiesMask & CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION))
+                        && (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
+
         boolean isPerformGesturesEnabled =
                 (0 != (sCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
 

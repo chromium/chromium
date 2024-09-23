@@ -52,7 +52,7 @@ using ::base::test::EqualsProto;
 // if the constant used internally in the implementation changes.
 constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
-// TODO(crbug/1205645): Consider consolidating TestVariationsSeedStore and
+// TODO(crbug.com/40764723): Consider consolidating TestVariationsSeedStore and
 // SignatureVerifyingVariationsSeedStore. Outside of tests, signature
 // verification is enabled although prior to crrev.com/c/2181564, signature
 // verification was not done on iOS or Android.

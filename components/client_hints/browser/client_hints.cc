@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/client_hints/browser/client_hints.h"
+
 #include <cmath>
 #include <functional>
 #include <string>
@@ -9,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
-#include "components/client_hints/browser/client_hints.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/client_hints/common/switches.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/features.h"
@@ -119,6 +121,9 @@ network::NetworkQualityTracker* ClientHints::GetNetworkQualityTracker() {
 void ClientHints::GetAllowedClientHintsFromSource(
     const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
+  if (network::features::ShouldBlockAcceptClientHintsFor(origin)) {
+    return;
+  }
   const GURL& url = origin.GetURL();
   if (!network::IsUrlPotentiallyTrustworthy(url)) {
     return;
@@ -200,7 +205,7 @@ void ClientHints::PersistClientHints(
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_session_model(content_settings::SessionModel::Durable);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
       base::Value(std::move(client_hints_dictionary)), constraints);

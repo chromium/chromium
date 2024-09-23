@@ -14,33 +14,38 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 
+namespace {
+
+// Wraps `factory` as a KeyedServiceFactory::TestingFactory.
+base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
+    BrowserContextKeyedServiceFactory::TestingFactory factory) {
+  if (!factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](BrowserContextKeyedServiceFactory::TestingFactory factory,
+         void* context) -> std::unique_ptr<KeyedService> {
+        return std::move(factory).Run(
+            static_cast<content::BrowserContext*>(context));
+      },
+      std::move(factory));
+}
+
+}  // namespace
+
 void BrowserContextKeyedServiceFactory::SetTestingFactory(
     content::BrowserContext* context,
     TestingFactory testing_factory) {
-  KeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](const TestingFactory& testing_factory, void* context) {
-          return testing_factory.Run(
-              static_cast<content::BrowserContext*>(context));
-        },
-        std::move(testing_factory));
-  }
-  KeyedServiceFactory::SetTestingFactory(context, std::move(wrapped_factory));
+  KeyedServiceFactory::SetTestingFactory(
+      context, WrapFactory(std::move(testing_factory)));
 }
 
 KeyedService* BrowserContextKeyedServiceFactory::SetTestingFactoryAndUse(
     content::BrowserContext* context,
     TestingFactory testing_factory) {
-  DCHECK(testing_factory);
   return KeyedServiceFactory::SetTestingFactoryAndUse(
-      context,
-      base::BindRepeating(
-          [](const TestingFactory& testing_factory, void* context) {
-            return testing_factory.Run(
-                static_cast<content::BrowserContext*>(context));
-          },
-          std::move(testing_factory)));
+      context, WrapFactory(std::move(testing_factory)));
 }
 
 BrowserContextKeyedServiceFactory::BrowserContextKeyedServiceFactory(
@@ -96,7 +101,7 @@ BrowserContextKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 KeyedService* BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Stub to prevent converted sub-classes from needing to implement this form.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -105,10 +110,6 @@ BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     void* context) const {
   return BuildServiceInstanceForBrowserContext(
       static_cast<content::BrowserContext*>(context));
-}
-
-bool BrowserContextKeyedServiceFactory::IsOffTheRecord(void* context) const {
-  return static_cast<content::BrowserContext*>(context)->IsOffTheRecord();
 }
 
 void* BrowserContextKeyedServiceFactory::GetContextToUse(void* context) const {

@@ -9,27 +9,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultInsecureContentSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.insecure_content": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultInsecureContentSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.insecure_content": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.insecure_content",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]

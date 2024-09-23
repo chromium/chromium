@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CategoryEnum, Emoji, Gender, Tone, VisualContent} from './types';
+import {CategoryEnum, Emoji, Gender, Tone, VisualContent} from './types.js';
 
 export type CategoryButtonClickEvent =
     CustomEvent<{categoryName: CategoryEnum}>;

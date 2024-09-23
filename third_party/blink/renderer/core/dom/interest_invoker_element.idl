@@ -1,0 +1,9 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=HTMLInterestTargetAttribute]
+interface mixin InterestInvokerElement {
+  [CEReactions,Reflect=interesttarget] attribute Element? interestTargetElement;
+  [CEReactions,Reflect=interestaction] attribute DOMString interestAction;
+};

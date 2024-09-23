@@ -5,11 +5,18 @@
 #ifndef ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 #define ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "ash/webui/camera_app_ui/ocr.mojom-forward.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom-forward.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class BrowserContext;
@@ -22,8 +29,22 @@ class MediaDeviceSaltService;
 }  // namespace media_device_salt
 
 namespace ash {
-class HoldingSpaceClient;
 
+class ProgressivePdf {
+ public:
+  virtual ~ProgressivePdf() = default;
+
+  // Adds a new page to the PDF at `page_index`. If a page at `page_index`
+  // already exists, it will be replaced.
+  virtual void NewPage(const std::vector<uint8_t>& jpg,
+                       uint32_t page_index) = 0;
+
+  // Deletes the page of the PDF at `page_index`.
+  virtual void DeletePage(uint32_t page_index) = 0;
+
+  // Returns the PDF produced by the preceding operations.
+  virtual void Save(base::OnceCallback<void(const std::vector<uint8_t>&)>) = 0;
+};
 // A delegate which exposes browser functionality from //chrome to the camera
 // app ui page handler.
 class CameraAppUIDelegate {
@@ -73,8 +94,6 @@ class CameraAppUIDelegate {
   };
 
   virtual ~CameraAppUIDelegate() = default;
-
-  virtual HoldingSpaceClient* GetHoldingSpaceClient() = 0;
 
   // Sets Downloads folder as launch directory by File Handling API so that we
   // can get the handle on the app side.
@@ -130,6 +149,24 @@ class CameraAppUIDelegate {
 
   // Opens a Wi-Fi connection dialog based on the given information.
   virtual void OpenWifiDialog(WifiConfig wifi_config) = 0;
+
+  // Gets the system language of the current profile.
+  virtual std::string GetSystemLanguage() = 0;
+
+  // Returns the first page of a PDF as a JPEG.
+  virtual void RenderPdfAsJpeg(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
+
+  // Performs OCR on the image and returns the OCR result.
+  virtual void PerformOcr(
+      base::span<const uint8_t> jpeg_data,
+      base::OnceCallback<void(camera_app::mojom::OcrResultPtr)> callback) = 0;
+
+  // Creates a PDF and provides operations to add and delete pages, and save the
+  // searchified PDF.
+  virtual void CreatePdfBuilder(
+      mojo::PendingReceiver<camera_app::mojom::PdfBuilder>) = 0;
 };
 
 }  // namespace ash

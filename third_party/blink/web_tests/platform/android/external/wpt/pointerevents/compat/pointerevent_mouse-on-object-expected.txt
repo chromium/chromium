@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Click and drag outside of object event sequence
+  assert_array_equals: Drag from object should result in the correct sequence of pointer events lengths differ, expected array ["pointermove", "pointerdown", "pointermove", "pointerup"] length 4, got ["pointermove", "pointerdown"] length 2
+Harness: the test ran to completion.

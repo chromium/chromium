@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/av1_decoder.h"
 #include "media/gpu/vaapi/test/h264_decoder.h"
 #include "media/gpu/vaapi/test/shared_va_surface.h"
@@ -27,6 +26,7 @@
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 #include "media/gpu/vaapi/va_stubs.h"
 #include "media/media_buildflags.h"
+#include "media/parsers/ivf_parser.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)

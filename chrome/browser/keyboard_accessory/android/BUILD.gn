@@ -6,14 +6,70 @@ import("//build/config/android/rules.gni")
 
 static_library("public") {
   sources = [
+    "accessory_controller.h",
     "accessory_sheet_data.cc",
     "accessory_sheet_data.h",
     "accessory_sheet_enums.h",
+    "address_accessory_controller.h",
+    "affiliated_plus_profiles_provider.h",
+    "manual_filling_controller.h",
+    "password_accessory_controller.h",
+    "payment_method_accessory_controller.h",
   ]
 
   deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/browser",
+    "//components/plus_addresses:types",
+    "//content/public/browser",
     "//url",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "manual_filling_utils.cc",
+    "manual_filling_utils.h",
+  ]
+  public_deps = [ ":public" ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_test") {
+  testonly = true
+  sources = [
+    "address_accessory_controller_impl_unittest.cc",
+    "affiliated_plus_profiles_cache_unittest.cc",
+    "manual_filling_controller_impl_unittest.cc",
+    "password_accessory_controller_impl_unittest.cc",
+    "payment_method_accessory_controller_impl_unittest.cc",
+  ]
+  deps = [
+    ":android",
+    "../test_utils/android",
+    "//base",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser/autofill",
+    "//chrome/browser/password_manager/android/access_loss:test_support",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
+    "//components/device_reauth",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/settings:test_support",
+    "//components/resources:android_resources",
+    "//components/strings",
+    "//components/webauthn/android",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 

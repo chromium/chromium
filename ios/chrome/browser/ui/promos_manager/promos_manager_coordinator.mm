@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
 
 #import <Foundation/Foundation.h>
 
@@ -20,8 +19,18 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_display_handler.h"
+#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_display_handler.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/all_tabs_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/made_for_ios_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/post_default_abandonment_promo_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/post_restore/post_restore_default_browser_promo_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/promo_handler/default_browser_promo_display_handler.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/stay_safe_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
@@ -36,18 +45,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
-#import "ios/chrome/browser/ui/app_store_rating/features.h"
-#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
-#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
-#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/post_default_abandonment_promo_provider.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/post_restore_default_browser_promo_provider.h"
-#import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_display_handler.h"
-#import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
-#import "ios/chrome/browser/ui/first_run/omnibox_position/promo/omnibox_position_choice_display_handler.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
@@ -124,9 +124,9 @@
                                                credentialProviderPromoHandler
                        dockingPromoHandler:
                            (id<DockingPromoCommands>)dockingPromoHandler {
-  DCHECK(ShouldDisplayPromos());
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  DCHECK(ShouldPromoManagerDisplayPromos());
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
     _dockingPromoCommandHandler = dockingPromoHandler;
 
@@ -144,7 +144,7 @@
           PromosManagerFactory::GetForBrowserState(browser->GetBrowserState());
       _mediator = [[PromosManagerMediator alloc]
           initWithPromosManager:promosManager
-          promoImpressionLimits:[self promoImpressionLimits]];
+                   promoConfigs:[self promoConfigs]];
     }
   }
 
@@ -186,6 +186,13 @@
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
+  // Check if UI is no longer available before proceeding. It is possible that
+  // while tracker is being initialized the UI can change and become not
+  // available.
+  if (!IsUIAvailableForPromo(self.browser->GetSceneState())) {
+    return;
+  }
+
   // If there's already a displayed promo, skip.
   if (_currentPromoData.has_value()) {
     return;
@@ -201,7 +208,7 @@
 
 - (void)promoWasDismissed {
   if (_currentPromoData.has_value() && !_currentPromoData.value().was_forced) {
-    PromoConfigsSet configs = [self promoImpressionLimits];
+    PromoConfigsSet configs = [self promoConfigs];
     auto it = configs.find(_currentPromoData.value().promo);
     if (it == configs.end() || !it->feature_engagement_feature) {
       return;
@@ -239,7 +246,7 @@
 
     [handler handleDisplay];
 
-    [self.mediator recordImpression:handler.config.identifier];
+    [self.mediator deregisterAfterDisplay:handler.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo.Type",
@@ -265,7 +272,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:provider.config.identifier];
+    [self.mediator deregisterAfterDisplay:provider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(
@@ -292,7 +299,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:banneredProvider.config.identifier];
+    [self.mediator deregisterAfterDisplay:banneredProvider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(
@@ -360,7 +367,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:alertProvider.config.identifier];
+    [self.mediator deregisterAfterDisplay:alertProvider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(
@@ -454,8 +461,8 @@
 
 // Invoked when a link in the disclaimer is tapped.
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
-  // TODO(crbug.com/1363906): Complete `didTapURLInDisclaimer` to bring users to
-  // Settings page.
+  // TODO(crbug.com/40238885): Complete `didTapURLInDisclaimer` to bring users
+  // to Settings page.
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -505,12 +512,12 @@
   if ([self.provider
           respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.provider standardPromoDismissAction];
-    [self dismissViewControllers];
   } else if ([self.banneredProvider
                  respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.banneredProvider standardPromoDismissAction];
-    [self dismissViewControllers];
   }
+
+  [self dismissViewControllers];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -572,26 +579,27 @@
   // Docking promo handler.
   _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
       [[DockingPromoDisplayHandler alloc]
-          initWithHandler:_dockingPromoCommandHandler];
+                   initWithHandler:_dockingPromoCommandHandler
+          showRemindMeLaterVersion:NO];
   _displayHandlerPromos[promos_manager::Promo::DockingPromoRemindMeLater] =
       [[DockingPromoDisplayHandler alloc]
-          initWithHandler:_dockingPromoCommandHandler];
+                   initWithHandler:_dockingPromoCommandHandler
+          showRemindMeLaterVersion:YES];
 
   // Default browser promo handler.
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =
       [[DefaultBrowserPromoDisplayHandler alloc] init];
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
       [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
-
-  // Omnibox position choice promo handler.
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
-    _displayHandlerPromos[promos_manager::Promo::OmniboxPosition] =
-        [[OmniboxPositionChoiceDisplayHandler alloc] init];
-  }
 }
 
 - (void)registerStandardPromoViewProviderPromos {
-  // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
+  _viewProviderPromos[promos_manager::Promo::AllTabsDefaultBrowser] =
+      [[AllTabsDefaultBrowserPromoViewProvider alloc] init];
+  _viewProviderPromos[promos_manager::Promo::MadeForIOSDefaultBrowser] =
+      [[MadeForIOSDefaultBrowserPromoViewProvider alloc] init];
+  _viewProviderPromos[promos_manager::Promo::StaySafeDefaultBrowser] =
+      [[StaySafeDefaultBrowserPromoViewProvider alloc] init];
 }
 
 - (void)registerBanneredPromoViewProviderPromos {
@@ -603,13 +611,9 @@
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
       [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
 
-  // Post-restore default browser promo handler.
-  if (GetPostRestoreDefaultBrowserPromoType() ==
-      PostRestoreDefaultBrowserPromoType::kAlert) {
     _alertProviderPromos
         [promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
             [[PostRestoreDefaultBrowserPromoProvider alloc] init];
-  }
 
   // Post-default browser abandonment promo handler.
   if (IsPostDefaultAbandonmentPromoEnabled()) {
@@ -625,7 +629,7 @@
   [self registerStandardPromoAlertProviderPromos];
 }
 
-- (PromoConfigsSet)promoImpressionLimits {
+- (PromoConfigsSet)promoConfigs {
   PromoConfigsSet result;
 
   for (auto const& [promo, handler] : _displayHandlerPromos)

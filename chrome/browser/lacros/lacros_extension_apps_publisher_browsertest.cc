@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
@@ -15,12 +16,17 @@
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
@@ -85,6 +91,26 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
   std::vector<Accesses>& accesses_history() { return accesses_history_; }
 
   std::map<std::string, std::string>& app_windows() { return app_windows_; }
+
+  const apps::App* GetLastPublishedChangeForExtensionId() {
+    for (size_t i = apps_history_.size() - 1; i >= 0; --i) {
+      if (auto it = std::find_if(
+              apps_history_[i].begin(), apps_history_[i].end(),
+              [](const apps::AppPtr& app) {
+                Profile* profile = nullptr;
+                const extensions::Extension* extension = nullptr;
+                if (lacros_extensions_util::GetProfileAndExtension(
+                        app->app_id, &profile, &extension)) {
+                  return extension->id() == extensions::kWebStoreAppId;
+                }
+                return false;
+              });
+          it != apps_history_[i].end()) {
+        return (*it).get();
+      }
+    }
+    return nullptr;
+  }
 
  private:
   // Override to intercept calls to Publish().
@@ -188,6 +214,75 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, DefaultApps) {
   ASSERT_TRUE(publisher->apps_history().empty());
   publisher->Initialize();
   VerifyOnlyDefaultAppsPublished(publisher.get());
+}
+
+// When publisher is created and initialized, only chrome default apps
+// should be published.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
+                       SystemFeaturesPoliciesWorkAsExpected) {
+  base::Value::List system_features;
+  system_features.Append(static_cast<int>(policy::SystemFeature::kWebStore));
+  g_browser_process->local_state()->SetList(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      std::move(system_features));
+  g_browser_process->local_state()->SetString(
+      policy::policy_prefs::kSystemFeaturesDisableMode,
+      policy::kBlockedDisableMode);
+
+  LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
+  std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
+      std::make_unique<LacrosExtensionAppsPublisherFake>();
+  ASSERT_TRUE(publisher->apps_history().empty());
+  publisher->Initialize();
+
+  // Verify that the Web Store has been published at least one time
+  ASSERT_GE(publisher->apps_history().size(), 1u);
+
+  // Set the policy to disable the Web Store app.
+  const apps::App* latest_web_store_app =
+      publisher->GetLastPublishedChangeForExtensionId();
+  EXPECT_EQ(latest_web_store_app->readiness,
+            apps::Readiness::kDisabledByPolicy);
+  ASSERT_TRUE(latest_web_store_app->show_in_launcher.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_launcher.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_shelf.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_shelf.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_search.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_search.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_management.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_management.value());
+
+  // Set the policy to hide apps, Web Store should be republished as disable and
+  // hidden.
+  g_browser_process->local_state()->SetString(
+      policy::policy_prefs::kSystemFeaturesDisableMode,
+      policy::kHiddenDisableMode);
+
+  latest_web_store_app = publisher->GetLastPublishedChangeForExtensionId();
+  EXPECT_EQ(latest_web_store_app->readiness,
+            apps::Readiness::kDisabledByPolicy);
+  ASSERT_TRUE(latest_web_store_app->show_in_launcher.has_value());
+  EXPECT_FALSE(latest_web_store_app->show_in_launcher.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_shelf.has_value());
+  EXPECT_FALSE(latest_web_store_app->show_in_shelf.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_search.has_value());
+  EXPECT_FALSE(latest_web_store_app->show_in_search.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_management.has_value());
+  EXPECT_FALSE(latest_web_store_app->show_in_management.value());
+
+  // Reset the policy, Web Store should be republished as enabled.
+  g_browser_process->local_state()->SetList(
+      policy::policy_prefs::kSystemFeaturesDisableList, base::Value::List());
+  latest_web_store_app = publisher->GetLastPublishedChangeForExtensionId();
+  EXPECT_EQ(latest_web_store_app->readiness, apps::Readiness::kReady);
+  ASSERT_TRUE(latest_web_store_app->show_in_launcher.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_launcher.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_shelf.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_shelf.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_search.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_search.value());
+  ASSERT_TRUE(latest_web_store_app->show_in_management.has_value());
+  EXPECT_TRUE(latest_web_store_app->show_in_management.value());
 }
 
 // If the profile has one app installed, then creating a publisher should
@@ -424,8 +519,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoAccessingForWebApp) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("app.com", "/ssl/google.html");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   web_app_info->scope = url;
   auto app_id = web_app::test::InstallWebApp(browser()->profile(),
                                              std::move(web_app_info));

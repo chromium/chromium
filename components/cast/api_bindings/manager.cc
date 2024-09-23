@@ -4,6 +4,7 @@
 
 #include "components/cast/api_bindings/manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -16,19 +17,19 @@ Manager::~Manager() {
   DCHECK(port_handlers_.empty());
 }
 
-void Manager::RegisterPortHandler(base::StringPiece port_name,
+void Manager::RegisterPortHandler(std::string_view port_name,
                                   MessagePortConnectedHandler handler) {
   auto result = port_handlers_.try_emplace(port_name, std::move(handler));
   DCHECK(result.second);
 }
 
-void Manager::UnregisterPortHandler(base::StringPiece port_name) {
+void Manager::UnregisterPortHandler(std::string_view port_name) {
   size_t deleted = port_handlers_.erase(port_name);
   DCHECK_EQ(deleted, 1u);
 }
 
 bool Manager::OnPortConnected(
-    base::StringPiece port_name,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   if (!port)
     return false;

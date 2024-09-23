@@ -5,32 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__
 #define IOS_CHROME_BROWSER_SYNC_MODEL_IOS_CHROME_SYNC_CLIENT_H__
 
-#include <memory>
+#import <memory>
 
-#include "base/files/file_path.h"
+#import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/browser_sync/browser_sync_client.h"
-#include "components/trusted_vault/trusted_vault_client.h"
-
-class ChromeBrowserState;
-
-namespace autofill {
-class AutofillWebDataService;
-}
-
-namespace password_manager {
-class PasswordStoreInterface;
-}
+#import "base/memory/weak_ptr.h"
+#import "components/sync/service/sync_client.h"
+#import "components/trusted_vault/trusted_vault_client.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace browser_sync {
 class LocalDataQueryHelper;
 class LocalDataMigrationHelper;
-class SyncApiComponentFactoryImpl;
+class SyncEngineFactoryImpl;
 }  // namespace browser_sync
 
-class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
+namespace password_manager {
+class PasswordStoreInterface;
+}  // namespace password_manager
+
+class IOSChromeSyncClient : public syncer::SyncClient {
  public:
   explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
 
@@ -39,56 +33,38 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   ~IOSChromeSyncClient() override;
 
-  // BrowserSyncClient implementation.
+  // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
-  syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
-  syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
-  favicon::FaviconService* GetFaviconService() override;
-  history::HistoryService* GetHistoryService() override;
-  ReadingListModel* GetReadingListModel() override;
-  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
-      override;
-  sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
-  sync_sessions::SessionSyncService* GetSessionSyncService() override;
-  password_manager::PasswordReceiverService* GetPasswordReceiverService()
-      override;
-  password_manager::PasswordSenderService* GetPasswordSenderService() override;
-  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
-      syncer::SyncService* sync_service) override;
-  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
+  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetControllerDelegateForModelType(syncer::ModelType type) override;
-  syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
-  void OnLocalSyncTransportDataCleared() override;
+  bool IsPasswordSyncAllowed() override;
+  void SetPasswordSyncAllowedChangeCb(
+      const base::RepeatingClosure& cb) override;
   void GetLocalDataDescriptions(
-      syncer::ModelTypeSet types,
+      syncer::DataTypeSet types,
       base::OnceCallback<void(
-          std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
+          std::map<syncer::DataType, syncer::LocalDataDescription>)> callback)
       override;
-  void TriggerLocalDataMigration(syncer::ModelTypeSet types) override;
+  void TriggerLocalDataMigration(syncer::DataTypeSet types) override;
+  void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
+      const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
+      override;
 
  private:
   const raw_ptr<ChromeBrowserState> browser_state_;
 
-  // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
+  // The sync engine factory in use by this client.
+  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
 
-  // Members that must be fetched on the UI thread but accessed on their
-  // respective backend threads.
-  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
-  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store_;
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store_;
-
-  // The task runner for the `web_data_service_`, if any.
-  scoped_refptr<base::SequencedTaskRunner> db_thread_;
 
   std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
   std::unique_ptr<browser_sync::LocalDataMigrationHelper>

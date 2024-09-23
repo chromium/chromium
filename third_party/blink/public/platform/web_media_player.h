@@ -159,9 +159,15 @@ class WebMediaPlayer {
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
   // Sets a flag indicating whether the audio stream was played with user
-  // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  // activation and high media engagement.
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
+
+  // Sets a flag indicating whether media playback should be paused when the
+  // the iframe is hidden.
+  virtual void SetShouldPauseWhenFrameIsHidden(
+      bool should_pause_when_frame_is_hidden) = 0;
+  virtual bool GetShouldPauseWhenFrameIsHidden() { return false; }
 
   // The associated media element is going to enter Picture-in-Picture. This
   // method should make sure the player is set up for this and has a SurfaceId
@@ -328,8 +334,8 @@ class WebMediaPlayer {
 
   virtual void EnabledAudioTracksChanged(
       const WebVector<TrackId>& enabled_track_ids) {}
-  // |selected_track_id| is null if no track is selected.
-  virtual void SelectedVideoTrackChanged(TrackId* selected_track_id) {}
+  virtual void SelectedVideoTrackChanged(
+      std::optional<TrackId> selected_track_id) {}
 
   // Callback called whenever the media element may have received or last native
   // controls. It might be called twice with the same value: the caller has to
@@ -386,6 +392,11 @@ class WebMediaPlayer {
   // Adjusts the frame sink hierarchy for the media frame sink.
   virtual void RegisterFrameSinkHierarchy() {}
   virtual void UnregisterFrameSinkHierarchy() {}
+
+  // Records the `MediaVideoVisibilityTracker` occlusion state, at the time that
+  // HTMLVideoElement visibility is reported. The state is recorded using
+  // `MediaLogEvent` s.
+  virtual void RecordVideoOcclusionState(std::string_view occlusion_state) {}
 };
 
 }  // namespace blink

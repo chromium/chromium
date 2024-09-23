@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -43,10 +44,10 @@ final class AutofillExpirationDateFixFlowBridge
     @CalledByNative
     private static AutofillExpirationDateFixFlowBridge create(
             long nativeCardExpirationDateFixFlowViewAndroid,
-            String title,
-            String confirmButtonLabel,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String confirmButtonLabel,
             int iconId,
-            String cardLabel) {
+            @JniType("std::u16string") String cardLabel) {
         return new AutofillExpirationDateFixFlowBridge(
                 nativeCardExpirationDateFixFlowViewAndroid,
                 title,
@@ -120,8 +121,8 @@ final class AutofillExpirationDateFixFlowBridge
         void onUserAccept(
                 long nativeCardExpirationDateFixFlowViewAndroid,
                 AutofillExpirationDateFixFlowBridge caller,
-                String month,
-                String year);
+                @JniType("std::u16string") String month,
+                @JniType("std::u16string") String year);
 
         void onUserDismiss(
                 long nativeCardExpirationDateFixFlowViewAndroid,

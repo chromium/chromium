@@ -4,6 +4,8 @@
 
 #include "chromeos/printing/epson_driver_matching.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -23,15 +25,15 @@ bool CanUseEpsonGenericPPD(const PrinterSearchData& sd) {
 
   // Fail if this isn't an Epson printer.
   // Note: Assumes make and model strings are already lowercase.
-  if (base::ranges::none_of(sd.make_and_model, [](base::StringPiece emm) {
-        return emm.find("epson") != base::StringPiece::npos;
+  if (base::ranges::none_of(sd.make_and_model, [](std::string_view emm) {
+        return emm.find("epson") != std::string_view::npos;
       })) {
     return false;
   }
 
   // The command set is retrieved from the 'CMD' field of the printer's IEEE
   // 1284 Device ID.
-  for (base::StringPiece format : sd.printer_id.command_set()) {
+  for (std::string_view format : sd.printer_id.command_set()) {
     if (base::StartsWith(format, "ESCPR")) {
       return true;
     }

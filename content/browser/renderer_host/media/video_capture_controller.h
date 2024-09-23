@@ -25,6 +25,7 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -65,7 +66,8 @@ class CONTENT_EXPORT VideoCaptureController
   void AddClient(const VideoCaptureControllerID& id,
                  VideoCaptureControllerEventHandler* event_handler,
                  const media::VideoCaptureSessionId& session_id,
-                 const media::VideoCaptureParams& params);
+                 const media::VideoCaptureParams& params,
+                 std::optional<url::Origin> origin);
 
   // Stop video capture. This will take back all buffers held by
   // |event_handler|, and |event_handler| shouldn't use those buffers any more.
@@ -108,6 +110,8 @@ class CONTENT_EXPORT VideoCaptureController
 
   bool has_received_frames() const { return has_received_frames_; }
 
+  const std::optional<url::Origin> GetFirstClientOrigin() const;
+
   // Implementation of media::VideoFrameReceiver interface:
   void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int32_t buffer_id,
@@ -136,8 +140,8 @@ class CONTENT_EXPORT VideoCaptureController
       const media::VideoCaptureParams& params,
       VideoCaptureDeviceLaunchObserver* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
-          video_effects_manager);
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;
   void GetPhotoState(
@@ -283,6 +287,8 @@ class CONTENT_EXPORT VideoCaptureController
   base::TimeTicks time_of_start_request_;
 
   std::optional<media::VideoCaptureFormat> video_capture_format_;
+
+  std::optional<url::Origin> first_client_origin_;
 
   // As a work-around to technical limitations, we don't allow multiple
   // captures of the same tab, by the same capturer, if the first capturer

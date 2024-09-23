@@ -2,16 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
+#include <vector>
+
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 
 namespace content {
+
+namespace {
+
+// Returns keys of `map` for safe iteration.
+//
+// `K` must be copyable.
+template <class K, class V>
+std::vector<K> Keys(const std::map<K, V>& map) {
+  std::vector<K> keys;
+
+  for (auto& item : map) {
+    keys.push_back(item.first);
+  }
+
+  return keys;
+}
+
+}  // namespace
 
 PrefetchMatchResolver::PrefetchMatchResolver(
     NavigationHandle& navigation_handle) {}
@@ -98,11 +119,12 @@ void PrefetchMatchResolver::
 
 void PrefetchMatchResolver::
     FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged(
-        PrefetchContainer& prefetch_container) {
+        PrefetchContainer& prefetch_container,
+        const GURL& navigated_url) {
   // The prefetch_container has already received its head.
   CHECK(!IsWaitingForPrefetch(prefetch_container));
-  prefetch_container.OnCookiesChanged();
-  prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
+  prefetch_container.OnDetectedCookiesChange();
+  prefetch_container.OnReturnPrefetchToServe(/*served=*/false, navigated_url);
   DVLOG(1) << *this
            << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"
            << prefetch_container << " not served because Cookies changed.";
@@ -113,8 +135,9 @@ void PrefetchMatchResolver::
     if (!weak_prefetch_container) {
       continue;
     }
-    weak_prefetch_container->OnCookiesChanged();
-    weak_prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    weak_prefetch_container->OnDetectedCookiesChange();
+    weak_prefetch_container->OnReturnPrefetchToServe(/*served=*/false,
+                                                     navigated_url);
     DVLOG(1)
         << *this
         << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"
@@ -142,5 +165,343 @@ CONTENT_EXPORT std::ostream& operator<<(
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(PrefetchMatchResolver);
+
+PrefetchMatchResolver2::CandidateData::CandidateData() = default;
+PrefetchMatchResolver2::CandidateData::~CandidateData() = default;
+
+PrefetchMatchResolver2::PrefetchMatchResolver2(
+    PrefetchContainer::Key navigated_key,
+    base::WeakPtr<PrefetchService> prefetch_service,
+    Callback callback)
+    : navigated_key_(std::move(navigated_key)),
+      prefetch_service_(std::move(prefetch_service)),
+      callback_(std::move(callback)) {}
+
+PrefetchMatchResolver2::~PrefetchMatchResolver2() = default;
+
+std::optional<base::TimeDelta> PrefetchMatchResolver2::GetBlockedDuration()
+    const {
+  if (wait_started_at_.has_value()) {
+    return base::TimeTicks::Now() - wait_started_at_.value();
+  } else {
+    return std::nullopt;
+  }
+}
+
+// static
+void PrefetchMatchResolver2::FindPrefetch(
+    PrefetchContainer::Key navigated_key,
+    PrefetchService& prefetch_service,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container,
+    Callback callback) {
+  // See the comment of `self_`.
+  auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver2(
+      std::move(navigated_key), prefetch_service.GetWeakPtr(),
+      std::move(callback)));
+  PrefetchMatchResolver2& ref = *prefetch_match_resolver.get();
+  ref.self_ = std::move(prefetch_match_resolver);
+
+  ref.FindPrefetchInternal(prefetch_service,
+                           std::move(serving_page_metrics_container));
+}
+
+void PrefetchMatchResolver2::FindPrefetchInternal(
+    PrefetchService& prefetch_service,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container) {
+  for (auto& prefetch_container :
+       prefetch_service.CollectPotentiallyMatchingPrefetchContainers(
+           navigated_key_, std::move(serving_page_metrics_container))) {
+    PrefetchContainer::ServableState servable_state =
+        prefetch_container->GetServableState(PrefetchCacheableDuration());
+
+    // Filter out `kNotServable` ones.
+    //
+    // Note that
+    // `PrefetchService::CollectPotentiallyMatchingPrefetchContainers()` above
+    // checks `ServableState`, but the return value of
+    // `PrefetchContainer::GetServableState()` depends on
+    // `base::TimeTicks::now()` and can expires (can become `kServable` to
+    // `kNotServable`) in the minute between two calls. So, we rely on
+    // `cached_servable_state` during this method.
+    switch (servable_state) {
+      case PrefetchContainer::ServableState::kNotServable:
+        continue;
+      case PrefetchContainer::ServableState::kServable:
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        break;
+    }
+
+    RegisterCandidate(*prefetch_container, servable_state);
+  }
+
+  // Backward compatibility to the behavior of `PrefetchMatchResolver`: If it
+  // finds a `PrefetchContainer` in which the cookies of the head of redirect
+  // chain changed, propagate it to other potentially matching
+  // `PrefetchContainer`s and give up to serve.
+  //
+  // TODO(kenoss): kenoss@ believes that we can improve it by propagating
+  // cookies changed event with `PrefetchContainer` and `PrefetchService`
+  // (without `PrefetchMatchResoler`/`PrefetchMatchResoler2`) and marking them
+  // `kNotServable`.
+  for (auto& candidate : candidates_) {
+    switch (candidate.second->cached_servable_state) {
+      case PrefetchContainer::ServableState::kServable:
+        if (candidate.second->prefetch_container->CreateReader()
+                .HaveDefaultContextCookiesChanged()) {
+          UnblockForCookiesChanged();
+          return;
+        }
+        break;
+      case PrefetchContainer::ServableState::kNotServable:
+        NOTREACHED_NORETURN();
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        // nop
+        break;
+    }
+  }
+
+  for (auto& candidate : candidates_) {
+    switch (candidate.second->cached_servable_state) {
+      case PrefetchContainer::ServableState::kServable:
+        // Got matching and servable.
+        UnblockForMatch(candidate.first);
+        return;
+      case PrefetchContainer::ServableState::kNotServable:
+        NOTREACHED_NORETURN();
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        // nop
+        break;
+    }
+  }
+
+  // There is no matching and servable prefetch at this point. We should wait
+  // remaining ones.
+
+  CHECK(!wait_started_at_.has_value());
+  wait_started_at_ = base::TimeTicks::Now();
+
+  for (auto& candidate : candidates_) {
+    StartWaitFor(candidate.first);
+  }
+
+  if (candidates_.size() == 0) {
+    UnblockForNoCandidates();
+  }
+}
+
+void PrefetchMatchResolver2::RegisterCandidate(
+    PrefetchContainer& prefetch_container,
+    PrefetchContainer::ServableState servable_state) {
+  auto candidate_data = std::make_unique<CandidateData>();
+  // #prefetch-key-availability
+  //
+  // Note that `CHECK(candidates_.contains(prefetch_key))` and
+  // `CHECK(candidate_data->prefetch_container)` below always hold because
+  // `PrefetchMatchResolver2` observes lifecycle events of `PrefetchContainer`.
+  candidate_data->prefetch_container = prefetch_container.GetWeakPtr();
+  candidate_data->cached_servable_state = servable_state;
+  candidate_data->timeout_timer = nullptr;
+
+  candidates_[prefetch_container.key()] = std::move(candidate_data);
+}
+
+void PrefetchMatchResolver2::StartWaitFor(
+    const PrefetchContainer::Key& prefetch_key) {
+  // By #prefetch-key-availability
+  CHECK(candidates_.contains(prefetch_key));
+  auto& candidate_data = candidates_[prefetch_key];
+  CHECK(candidate_data->prefetch_container);
+  PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+  CHECK_EQ(candidate_data->cached_servable_state,
+           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
+  // `kServable` -> `kNotServable` is the only possible change during
+  // `FindPrefetchInternal()` call. If `cached_servable_state` is
+  // `kShouldBlockUntilHeadReceived`, `GetServableState()` is the same.
+  CHECK_EQ(prefetch_container.GetServableState(PrefetchCacheableDuration()),
+           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
+  CHECK(!candidate_data->timeout_timer);
+
+  // TODO(crbug.com/356552413): Merge
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5668924 and write
+  // tests.
+  base::TimeDelta timeout =
+      PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
+  if (timeout.is_positive()) {
+    candidate_data->timeout_timer = std::make_unique<base::OneShotTimer>();
+    candidate_data->timeout_timer->Start(
+        FROM_HERE, timeout,
+        base::BindOnce(&PrefetchMatchResolver2::OnTimeout,
+                       // Safety: `timeout_timer` is owned by this.
+                       Unretained(this), prefetch_key));
+  }
+
+  prefetch_container.AddObserver(this);
+}
+
+void PrefetchMatchResolver2::UnregisterCandidate(
+    const PrefetchContainer::Key& prefetch_key,
+    bool is_served) {
+  // By #prefetch-key-availability
+  CHECK(candidates_.contains(prefetch_key));
+  auto& candidate_data = candidates_[prefetch_key];
+  CHECK(candidate_data->prefetch_container);
+  PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+  prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
+                                           GetBlockedDuration());
+  prefetch_container.RemoveObserver(this);
+  candidates_.erase(prefetch_key);
+}
+
+void PrefetchMatchResolver2::OnWillBeDestroyed(
+    PrefetchContainer& prefetch_container) {
+  MaybeUnblockForUnmatch(prefetch_container.key());
+}
+
+void PrefetchMatchResolver2::OnDeterminedHead(
+    PrefetchContainer& prefetch_container) {
+  CHECK(candidates_.contains(prefetch_container.key()));
+  CHECK(!prefetch_container.is_in_dtor());
+
+  if (prefetch_container.CreateReader().HaveDefaultContextCookiesChanged()) {
+    UnblockForCookiesChanged();
+    return;
+  }
+
+  switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
+    // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is redirected
+    // and the redirect is not eligible.
+    //
+    //    PrefetchService::OnGotEligibilityForRedirect()
+    // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
+    // -> PrefetchContainer::OnDeterminedHead2()
+    // -> here
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchContainer::ServableState::kNotServable:
+      MaybeUnblockForUnmatch(prefetch_container.key());
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      // Proceed.
+      break;
+  }
+
+  // Non-redirect header is received and now the value of
+  // `PrefetchContainer::IsNoVarySearchHeaderMatch()` is determined.
+  const bool is_match =
+      prefetch_container.IsExactMatch(navigated_key_.url()) ||
+      prefetch_container.IsNoVarySearchHeaderMatch(navigated_key_.url());
+  if (!is_match) {
+    MaybeUnblockForUnmatch(prefetch_container.key());
+    return;
+  }
+
+  if (prefetch_container.HasPrefetchBeenConsideredToServe()) {
+    MaybeUnblockForUnmatch(prefetch_container.key());
+    return;
+  }
+
+  // Got matching and servable.
+  UnblockForMatch(prefetch_container.key());
+}
+
+void PrefetchMatchResolver2::OnTimeout(PrefetchContainer::Key prefetch_key) {
+  // `timeout_timer` is alive, which implies `candidate` is alive.
+  CHECK(candidates_.contains(prefetch_key));
+  auto& candidate_data = candidates_[prefetch_key];
+  CHECK(candidate_data->prefetch_container);
+
+  MaybeUnblockForUnmatch(prefetch_key);
+}
+
+void PrefetchMatchResolver2::UnblockForMatch(
+    const PrefetchContainer::Key& prefetch_key) {
+  // By #prefetch-key-availability
+  CHECK(candidates_.contains(prefetch_key));
+  auto& candidate_data = candidates_[prefetch_key];
+  CHECK(candidate_data->prefetch_container);
+  PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+  UnregisterCandidate(prefetch_key, /*is_served=*/true);
+
+  // Unregister remaining candidates as not served.
+  for (auto& key2 : Keys(candidates_)) {
+    UnregisterCandidate(key2, /*is_served=*/false);
+  }
+
+  // Postprocess for success case.
+
+  PrefetchContainer::Reader reader = prefetch_container.CreateReader();
+
+  // Cookie change is handled in two paths:
+  //
+  // - Before waiting `PrefetchContainer`, which is `kServable` at the match
+  //   start timing. It is handled in `FindPrefetchInternal()`.
+  // - After waiting `PrefetchContainer`, which is `kShouldBlockUntilHead` at
+  //   the match start timing. It is handled in `OnDeterminedHead()`.
+  //
+  // So, the below condition is satisfied.
+  CHECK(!reader.HaveDefaultContextCookiesChanged());
+
+  if (!reader.HasIsolatedCookieCopyStarted()) {
+    // Basically, we can assume `PrefetchService` is available as waiting
+    // `PrefetchContainer` is owned by it. But in unit tests, we use invalid
+    // frame tree node id and this `prefetch_service` is not available.
+    if (prefetch_service_) {
+      prefetch_service_->CopyIsolatedCookies(reader);
+    }
+  }
+  CHECK(reader);
+
+  UnblockInternal(std::move(reader));
+}
+
+void PrefetchMatchResolver2::UnblockForNoCandidates() {
+  UnblockInternal({});
+}
+
+void PrefetchMatchResolver2::MaybeUnblockForUnmatch(
+    const PrefetchContainer::Key& prefetch_key) {
+  UnregisterCandidate(prefetch_key, /*is_served=*/false);
+
+  if (candidates_.size() == 0) {
+    UnblockForNoCandidates();
+  }
+
+  // It still waits for other `PrefetchContainer`s.
+}
+
+void PrefetchMatchResolver2::UnblockForCookiesChanged() {
+  // Unregister remaining candidates as not served, with calling
+  // `PrefetchContainer::OnDetectedCookiesChange2()`.
+  for (auto& prefetch_key : Keys(candidates_)) {
+    // By #prefetch-key-availability
+    CHECK(candidates_.contains(prefetch_key));
+    auto& candidate_data = candidates_[prefetch_key];
+    CHECK(candidate_data->prefetch_container);
+    PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+    UnregisterCandidate(prefetch_key, /*is_served=*/false);
+
+    prefetch_container.OnDetectedCookiesChange2();
+  }
+
+  UnblockForNoCandidates();
+}
+
+void PrefetchMatchResolver2::UnblockInternal(PrefetchContainer::Reader reader) {
+  // Postcondition: This resolver waits for no `PrefetchContainer`s when it has
+  // been unblocking.
+  CHECK_EQ(candidates_.size(), 0u);
+
+  auto callback = std::move(callback_);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                             std::move(self_));
+
+  std::move(callback).Run(std::move(reader));
+}
 
 }  // namespace content

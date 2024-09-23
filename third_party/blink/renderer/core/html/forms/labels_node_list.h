@@ -35,8 +35,24 @@ class LabelsNodeList final : public LiveNodeList {
   LabelsNodeList(ContainerNode& owner_node, CollectionType type);
   ~LabelsNodeList() override;
 
+  ContainerNode& RootNode() const override;
+
+  // Collection IndexCache API.
+  Element* TraverseToFirst() const override;
+  Element* TraverseToLast() const override;
+  Element* TraverseForwardToOffset(unsigned offset,
+                                   Element& current_node,
+                                   unsigned& current_offset) const override;
+  Element* TraverseBackwardToOffset(unsigned offset,
+                                    Element& current_node,
+                                    unsigned& current_offset) const override;
+
  protected:
   bool ElementMatches(const Element&) const override;
+
+ private:
+  Element* Next(Element& current_element) const;
+  Element* Previous(Element& current_element) const;
 };
 
 }  // namespace blink

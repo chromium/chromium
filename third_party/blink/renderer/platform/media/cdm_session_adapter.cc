@@ -13,6 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -25,10 +26,14 @@ namespace {
 const char kMediaEME[] = "Media.EME.";
 const char kDot[] = ".";
 const char kCreateCdmUMAName[] = "CreateCdm";
+const char kCreateCdmStatusUMAName[] = "CreateCdmStatus";
 const char kTimeToCreateCdmUMAName[] = "CreateCdmTime";
 }  // namespace
 
-CdmSessionAdapter::CdmSessionAdapter() : trace_id_(0) {}
+CdmSessionAdapter::CdmSessionAdapter(media::KeySystems* key_systems)
+    : key_systems_(key_systems), trace_id_(0) {
+  DCHECK(key_systems_);
+}
 
 CdmSessionAdapter::~CdmSessionAdapter() = default;
 
@@ -73,8 +78,8 @@ void CdmSessionAdapter::GetStatusForPolicy(
 
 std::unique_ptr<WebContentDecryptionModuleSessionImpl>
 CdmSessionAdapter::CreateSession(WebEncryptedMediaSessionType session_type) {
-  return std::make_unique<WebContentDecryptionModuleSessionImpl>(this,
-                                                                 session_type);
+  return std::make_unique<WebContentDecryptionModuleSessionImpl>(
+      this, session_type, key_systems_);
 }
 
 bool CdmSessionAdapter::RegisterSession(
@@ -136,7 +141,7 @@ std::unique_ptr<media::CdmContextRef> CdmSessionAdapter::GetCdmContextRef() {
   DVLOG(2) << __func__;
 
   if (!cdm_->GetCdmContext()) {
-    NOTREACHED() << "All CDMs should support CdmContext.";
+    NOTREACHED_IN_MIGRATION() << "All CDMs should support CdmContext.";
     return nullptr;
   }
 
@@ -161,23 +166,25 @@ void CdmSessionAdapter::OnCdmCreated(
     const media::CdmConfig& cdm_config,
     base::TimeTicks start_time,
     const scoped_refptr<media::ContentDecryptionModule>& cdm,
-    const std::string& error_message) {
+    media::CreateCdmStatus status) {
   DVLOG(1) << __func__ << ": "
-           << (cdm ? "success" : "failure (" + error_message + ")");
+           << (cdm ? "success" : "failure (" + base::ToString(status) + ")");
   DCHECK(!cdm_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "media", "CdmSessionAdapter::CreateCdm", trace_id_, "success",
-      (cdm ? "true" : "false"), "error_message", error_message);
+  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm",
+                                  trace_id_, "success",
+                                  (cdm ? "true" : "false"), "status", status);
 
   auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
       cdm_config.key_system, cdm_config.use_hw_secure_codecs);
   auto key_system_uma_prefix = kMediaEME + key_system_name_for_uma + kDot;
   base::UmaHistogramBoolean(key_system_uma_prefix + kCreateCdmUMAName,
                             cdm ? true : false);
+  base::UmaHistogramEnumeration(key_system_uma_prefix + kCreateCdmStatusUMAName,
+                                status);
 
   if (!cdm) {
-    std::move(web_cdm_created_cb_).Run(nullptr, error_message);
+    std::move(web_cdm_created_cb_).Run(nullptr, status);
     return;
   }
 
@@ -192,7 +199,9 @@ void CdmSessionAdapter::OnCdmCreated(
   cdm_ = cdm;
 
   std::move(web_cdm_created_cb_)
-      .Run(new WebContentDecryptionModuleImpl(this), "");
+      .Run(std::make_unique<WebContentDecryptionModuleImpl>(
+               base::PassKey<CdmSessionAdapter>(), this, key_systems_),
+           media::CreateCdmStatus::kSuccess);
 }
 
 void CdmSessionAdapter::OnSessionMessage(const std::string& session_id,

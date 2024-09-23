@@ -7,6 +7,8 @@
 
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -16,9 +18,8 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
+class V8PermissionState;
 
 class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
                                          public Supplement<ExecutionContext> {
@@ -30,7 +31,8 @@ class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
   explicit IdleManager(ExecutionContext*);
   ~IdleManager();
 
-  ScriptPromise RequestPermission(ScriptState*, ExceptionState&);
+  ScriptPromise<V8PermissionState> RequestPermission(ScriptState*,
+                                                     ExceptionState&);
   void AddMonitor(mojo::PendingRemote<mojom::blink::IdleMonitor>,
                   mojom::blink::IdleManager::AddMonitorCallback);
 
@@ -40,7 +42,7 @@ class MODULES_EXPORT IdleManager final : public GarbageCollected<IdleManager>,
       mojo::PendingRemote<mojom::blink::IdleManager> idle_service);
 
  private:
-  void OnPermissionRequestComplete(ScriptPromiseResolver*,
+  void OnPermissionRequestComplete(ScriptPromiseResolver<V8PermissionState>*,
                                    mojom::blink::PermissionStatus);
 
   HeapMojoRemote<mojom::blink::IdleManager> idle_service_;

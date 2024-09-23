@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -43,7 +44,7 @@ std::string PathWithoutParams(const std::string& path) {
 scoped_refptr<base::RefCountedMemory> CreateNotFoundResponse() {
   const char kHttpNotFound[] = "HTTP/1.1 404 Not Found\n\n";
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kHttpNotFound, strlen(kHttpNotFound));
+      base::byte_span_from_cstring(kHttpNotFound));
 }
 
 // DevToolsDataSource ---------------------------------------------------------
@@ -145,7 +146,8 @@ void DevToolsDataSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     GotDataCallback callback) {
   // Serve request to devtools://bundled/ from local bundle.
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string bundled_path_prefix(chrome::kChromeUIDevToolsBundledPath);
   bundled_path_prefix += "/";

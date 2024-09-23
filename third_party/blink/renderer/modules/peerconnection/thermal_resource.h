@@ -61,8 +61,7 @@ class MODULES_EXPORT ThermalResource : public webrtc::Resource {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::Lock lock_;
-  raw_ptr<webrtc::ResourceListener, ExperimentalRenderer> listener_
-      GUARDED_BY(&lock_) = nullptr;
+  raw_ptr<webrtc::ResourceListener> listener_ GUARDED_BY(&lock_) = nullptr;
   mojom::blink::DeviceThermalState measurement_ GUARDED_BY(&lock_) =
       mojom::blink::DeviceThermalState::kUnknown;
   size_t measurement_id_ GUARDED_BY(&lock_) = 0u;

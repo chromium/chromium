@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension.h"
 #include "ui/views/view_tracker.h"
 
 namespace views {
@@ -87,8 +88,16 @@ class ExtensionsMenuViewController
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
-                                    const url::Origin& origin) override;
+  void OnSiteAccessRequestAdded(const extensions::ExtensionId& extension_id,
+                                int tab_id) override;
+  void OnSiteAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
+  void OnSiteAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+                                  int tab_id) override;
+  void OnSiteAccessRequestsCleared(int tab_id) override;
+  void OnSiteAccessRequestDismissedByUser(
+      const extensions::ExtensionId& extension_id,
+      const url::Origin& origin) override;
 
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
@@ -120,13 +129,21 @@ class ExtensionsMenuViewController
                               const extensions::ExtensionId& extension_id,
                               int index);
 
+  // Adds or updates a request access entry for `extension_id` in `main_page` at
+  // `index`.
+  void AddOrUpdateExtensionRequestingAccess(
+      ExtensionsMenuMainPageView* main_page,
+      const extensions::ExtensionId& extension_id,
+      int index,
+      content::WebContents* web_contents);
+
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<views::View> bubble_contents_;
-  // TODO(crbug.com/1425522) There are no guarantee this pointer is safe
+  // TODO(crbug.com/40260941) There are no guarantee this pointer is safe
   // to be used. In practice its lifetime is probably always shorter than
   // `this`. This has to be fixed.
   const raw_ptr<views::BubbleDialogDelegate, DisableDanglingPtrDetection>

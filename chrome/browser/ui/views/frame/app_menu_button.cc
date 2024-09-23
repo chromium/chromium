@@ -49,8 +49,7 @@ void AppMenuButton::CloseMenu() {
 
 void AppMenuButton::OnMenuClosed() {
   promo_handle_.Release();
-  for (AppMenuButtonObserver& observer : observer_list_)
-    observer.AppMenuClosed();
+  observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
 }
 
 bool AppMenuButton::IsMenuShowing() const {
@@ -86,8 +85,11 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
   menu_->RunMenu(menu_button_controller_);
 
-  for (AppMenuButtonObserver& observer : observer_list_)
-    observer.AppMenuShown();
+  observer_list_.Notify(&AppMenuButtonObserver::AppMenuShown);
+}
+
+void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {
+  menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
 }
 
 BEGIN_METADATA(AppMenuButton)

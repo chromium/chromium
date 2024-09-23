@@ -51,4 +51,4 @@ xmlinc_HEADERS = \
 
 nodist_xmlinc_HEADERS = xmlversion.h
 
-EXTRA_DIST = xmlversion.h.in
+EXTRA_DIST = xmlversion.h.in meson.build

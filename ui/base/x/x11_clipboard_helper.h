@@ -29,7 +29,7 @@ class SelectionRequestor;
 // Helper class that provides core X11 clipboard integration code. Shared by
 // both legacy and Ozone X11 backends.
 //
-// TODO(crbug.com/789065): Merge into X11ClipboardOzone class once ozone
+// TODO(crbug.com/40551833): Merge into X11ClipboardOzone class once ozone
 // migration is complete and legacy backend gets removed.
 class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
  public:

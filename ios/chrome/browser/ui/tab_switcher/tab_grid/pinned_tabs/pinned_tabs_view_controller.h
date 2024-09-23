@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tab_collection_consumer.h"
 
 @class LegacyGridTransitionLayout;
 @class PinnedTabsViewController;
@@ -29,20 +29,13 @@ class WebStateID;
             (PinnedTabsViewController*)pinnedTabsViewController
              didSelectItemWithID:(web::WebStateID)itemID;
 
-// Tells the delegate that the the number of items in `pinnedTabsViewController`
-// changed to `count`.
-- (void)pinnedTabsViewController:
-            (PinnedTabsViewController*)pinnedTabsViewController
-              didChangeItemCount:(NSUInteger)count;
-
 // Tells the delegate that the item with `itemID` was moved.
-- (void)pinnedTabsViewController:
-            (PinnedTabsViewController*)pinnedTabsViewController
-               didMoveItemWithID:(web::WebStateID)itemID;
+- (void)pinnedTabsViewControllerDidMoveItem:
+    (PinnedTabsViewController*)pinnedTabsViewController;
 
 // Tells the delegate that the item with `itemID` was removed.
 - (void)pinnedTabsViewController:(PinnedTabsViewController*)gridViewController
-             didRemoveItemWIthID:(web::WebStateID)itemID;
+             didRemoveItemWithID:(web::WebStateID)itemID;
 
 // Tells the delegate that the `pinnedTabsViewController` visibility has
 // changed.
@@ -65,11 +58,15 @@ class WebStateID;
 - (void)pinnedViewControllerDragSessionDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController;
 
+// Tells the delegate that a context menu has been requested.
+- (void)pinnedViewControllerDidRequestContextMenu:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
 @end
 
 // UICollectionViewController used to display pinned tabs.
 @interface PinnedTabsViewController
-    : UICollectionViewController <TabCollectionConsumer>
+    : UICollectionViewController <PinnedTabCollectionConsumer>
 
 // Delegate used to to relay relevant user interactions.
 @property(nonatomic, weak) id<PinnedTabsViewControllerDelegate> delegate;

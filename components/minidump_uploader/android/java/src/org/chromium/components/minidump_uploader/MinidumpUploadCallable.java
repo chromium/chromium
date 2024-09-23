@@ -79,10 +79,10 @@ public class MinidumpUploadCallable implements Callable<Integer> {
                 return MinidumpUploadStatus.USER_DISABLED;
             }
 
-            if (!mPermManager.isClientInMetricsSample()) {
+            if (!mPermManager.isClientInSampleForCrashes()) {
                 Log.i(
                         TAG,
-                        "Minidump upload skipped due to sampling.  Marking file as skipped for "
+                        "Minidump upload skipped due to sampling. Marking file as skipped for "
                                 + "cleanup to prevent future uploads.");
                 CrashFileManager.markUploadSkipped(mFileToUpload);
                 return MinidumpUploadStatus.DISABLED_BY_SAMPLING;

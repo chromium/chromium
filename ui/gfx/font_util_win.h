@@ -12,8 +12,11 @@ namespace gfx {
 class FontUtilWin {
  public:
   static base::win::RegKey GetTextSettingsRegistryKey(REGSAM access = KEY_READ);
+  static float ClampContrast(float value);
+  static float ClampGamma(float value);
   static float GetContrastFromRegistry();
   static float GetGammaFromRegistry();
+  static float TextGammaContrast();
 };
 
 }  // namespace gfx

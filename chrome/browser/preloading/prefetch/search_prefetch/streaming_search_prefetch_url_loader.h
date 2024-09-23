@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -144,7 +145,7 @@ class StreamingSearchPrefetchURLLoader
     void StartReadingResponseFromData(
         network::mojom::URLResponseHeadPtr& resource_response);
 
-    // TODO(https://crbug.com/1400881): These methods will replace the
+    // TODO(crbug.com/40250486): These methods will replace the
     // `StreamingSearchPrefetchURLLoader`'s.
     // Pushes the received data into the producer end of the data pipe.
     void PushData();
@@ -212,7 +213,7 @@ class StreamingSearchPrefetchURLLoader
     std::optional<network::URLLoaderCompletionStatus>
         url_loader_completion_status_;
 
-    // TODO(crbug.com/1400881): We'd have a failure strategy to determine
+    // TODO(crbug.com/40250486): We'd have a failure strategy to determine
     // whether to fallback real navigation or to discard the reader's caller.
   };
 
@@ -233,7 +234,7 @@ class StreamingSearchPrefetchURLLoader
 
   // Similar to `GetCallbackForReadingViaResponseReader`, but support direct
   // forwarding.
-  // TODO(crbug.com/1400881): Unify the logic and delete this entry.
+  // TODO(crbug.com/40250486): Unify the logic and delete this entry.
   static RequestHandler GetServingResponseHandler(
       scoped_refptr<StreamingSearchPrefetchURLLoader> loader);
 
@@ -259,7 +260,7 @@ class StreamingSearchPrefetchURLLoader
   ~StreamingSearchPrefetchURLLoader() override;
 
   // mojo::DataPipeDrainer::Client:
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
+  void OnDataAvailable(base::span<const uint8_t> data) override;
   void OnDataComplete() override;
 
   // network::mojom::URLLoader:
@@ -315,11 +316,11 @@ class StreamingSearchPrefetchURLLoader
 
   // Returns the view of `body_content_`, starting from the `writing_position`
   // and ending at the end of the string.
-  // Returns an invalid StringPiece (note, not an empty StringPiece) if there is
-  // no more valid data. Returns an empty StringPiece if writing_position
-  // reaches the end of the current response body but `this` is waiting for the
-  // network to produce more data.
-  base::StringPiece GetMoreDataFromCache(int writing_position) const;
+  // Returns an invalid std::string_view (note, not an empty std::string_view)
+  // if there is no more valid data. Returns an empty std::string_view if
+  // writing_position reaches the end of the current response body but `this` is
+  // waiting for the network to produce more data.
+  std::string_view GetMoreDataFromCache(size_t writing_position) const;
 
   // Push data into |producer_handle_|.
   void PushData();
@@ -385,10 +386,8 @@ class StreamingSearchPrefetchURLLoader
   // The status returned from |network_url_loader_|.
   std::optional<network::URLLoaderCompletionStatus> status_;
 
-  // Total amount of bytes to transfer.
-  int bytes_of_raw_data_to_transfer_ = 0;
   // Bytes sent to |producer_handle_| already.
-  int write_position_ = 0;
+  size_t write_position_ = 0;
   // The request body.
   std::string body_content_;
   int estimated_length_ = 0;
@@ -404,7 +403,7 @@ class StreamingSearchPrefetchURLLoader
   // URL Loader Events that occur before serving to the navigation stack should
   // be queued internally until the request is being served.
   std::vector<base::OnceClosure> event_queue_;
-  // TODO(https://crbug.com/1400881): Migrate `receiver_`, `forwarding_client_`,
+  // TODO(crbug.com/40250486): Migrate `receiver_`, `forwarding_client_`,
   // `producer_handle_`, `handle_watcher_` and `write_position_` into
   // ResponseReader.
   // Forwarding client receiver.
@@ -420,7 +419,7 @@ class StreamingSearchPrefetchURLLoader
   // `receiver_` is disconnected or encountered a failure.
   scoped_refptr<StreamingSearchPrefetchURLLoader> self_pointer_;
 
-  // TODO(https://crbug.com/1400881): Make it a generic reader.
+  // TODO(crbug.com/40250486): Make it a generic reader.
   std::unique_ptr<ResponseReader> response_reader_for_prerender_;
   // The number of times that this loader created a reader and served the
   // response to prerendering navigation.

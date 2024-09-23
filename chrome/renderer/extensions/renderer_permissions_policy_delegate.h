@@ -29,7 +29,7 @@ class RendererPermissionsPolicyDelegate
   bool IsRestrictedUrl(const GURL& document_url, std::string* error) override;
 
  private:
-  raw_ptr<Dispatcher, ExperimentalRenderer> dispatcher_;
+  raw_ptr<Dispatcher> dispatcher_;
 };
 
 }  // namespace extensions

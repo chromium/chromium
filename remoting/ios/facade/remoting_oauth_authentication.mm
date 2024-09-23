@@ -21,10 +21,6 @@
 #import "remoting/ios/persistence/remoting_preferences.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-static const char kOauthRedirectUrl[] =
-    "https://chromoting-oauth.talkgadget."
-    "google.com/talkgadget/oauth/chrome-remote-desktop/dev";
-
 // We currently don't support multi-account sign in for OAuth authentication, so
 // we store the current refresh token for an unspecified account. If we later
 // decide to support multi-account sign in, we may use the user email as the
@@ -32,25 +28,6 @@ static const char kOauthRedirectUrl[] =
 // in UserDefaults.
 static const auto kRefreshTokenAccount =
     remoting::Keychain::kUnspecifiedAccount;
-
-std::unique_ptr<remoting::OAuthTokenGetter>
-CreateOAuthTokenGetterWithAuthorizationCode(
-    const std::string& auth_code,
-    const remoting::OAuthTokenGetter::CredentialsUpdatedCallback&
-        on_credentials_update) {
-  std::unique_ptr<remoting::OAuthTokenGetter::OAuthIntermediateCredentials>
-      oauth_credentials(
-          new remoting::OAuthTokenGetter::OAuthIntermediateCredentials(
-              auth_code, /*is_service_account=*/false));
-  oauth_credentials->oauth_redirect_uri = kOauthRedirectUrl;
-
-  std::unique_ptr<remoting::OAuthTokenGetter> oauth_tokenGetter(
-      new remoting::OAuthTokenGetterImpl(
-          std::move(oauth_credentials), on_credentials_update,
-          RemotingService.instance.runtime->url_loader_factory(),
-          /*auto_refresh=*/true));
-  return oauth_tokenGetter;
-}
 
 std::unique_ptr<remoting::OAuthTokenGetter> CreateOAuthTokenWithRefreshToken(
     const std::string& refresh_token,
@@ -119,17 +96,6 @@ RemotingAuthenticationStatus oauthStatusToRemotingAuthenticationStatus(
 #pragma mark - Class Implementation
 
 - (void)authenticateWithAuthorizationCode:(NSString*)authorizationCode {
-  __weak RemotingOAuthAuthentication* weakSelf = self;
-  _tokenGetter = CreateOAuthTokenGetterWithAuthorizationCode(
-      std::string(base::SysNSStringToUTF8(authorizationCode)),
-      base::BindRepeating(
-          ^(const std::string& user_email, const std::string& refresh_token) {
-            VLOG(1) << "New Creds: " << user_email << " " << refresh_token;
-            UserInfo* user = [[UserInfo alloc] init];
-            user.userEmail = base::SysUTF8ToNSString(user_email);
-            user.refreshToken = base::SysUTF8ToNSString(refresh_token);
-            [weakSelf setUser:user];
-          }));
   // Stimulate the oAuth Token Getter to fetch and access token, this forces it
   // to convert the authorization code into a refresh token, and saving the
   // refresh token will happen automatically in the above block.
@@ -166,7 +132,8 @@ RemotingAuthenticationStatus oauthStatusToRemotingAuthenticationStatus(
   if (_tokenGetter) {
     _tokenGetter->CallWithToken(base::BindOnce(
         ^(remoting::OAuthTokenGetter::Status status,
-          const std::string& user_email, const std::string& access_token) {
+          const std::string& user_email, const std::string& access_token,
+          const std::string& scopes) {
           onAccessToken(oauthStatusToRemotingAuthenticationStatus(status),
                         base::SysUTF8ToNSString(user_email),
                         base::SysUTF8ToNSString(access_token));

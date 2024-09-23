@@ -60,7 +60,7 @@ class DemographicMetricsProvider : public MetricsProvider,
     virtual PrefService* GetProfilePrefs() = 0;
 
     // Gets the network time that represents now.
-    // TODO(crbug/1145655): Remove this function and replace with
+    // TODO(crbug.com/40729596): Remove this function and replace with
     // base::Time::Now().
     virtual base::Time GetNetworkTime() const = 0;
   };

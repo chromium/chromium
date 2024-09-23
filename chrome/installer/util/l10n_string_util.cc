@@ -4,18 +4,26 @@
 //
 // This file defines utility functions for fetching localized resources.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/l10n_string_util.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/buffer_iterator.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
@@ -132,9 +140,17 @@ std::wstring GetLocalizedString(int base_message_id) {
   DEBUG_ALIAS_FOR_WCHARCSTR(selected_translation,
                             language_selector.selected_translation().c_str(),
                             16);
-  NOTREACHED() << "Unable to find resource id " << message_id;
+  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
 
   return std::wstring();
+}
+
+std::wstring GetLocalizedStringF(int base_message_id,
+                                 std::vector<std::wstring> replacements) {
+  // Replacements start at index 1, corresponding to placeholder `$1`.
+  replacements.insert(replacements.begin(), {});
+  return base::ReplaceStringPlaceholders(GetLocalizedString(base_message_id),
+                                         replacements, /*offsets=*/{});
 }
 
 // Here we generate the url spec with the Microsoft res:// scheme which is
@@ -165,11 +181,11 @@ std::wstring GetLocalizedEulaResource() {
   // (see the definition of full_exe_path and resource).
   DCHECK(std::numeric_limits<uint32_t>::max() > (url_path.size() * 3));
   DWORD count = static_cast<DWORD>(url_path.size() * 3);
-  std::unique_ptr<wchar_t[]> url_canon(new wchar_t[count]);
-  HRESULT hr = ::UrlCanonicalizeW(url_path.c_str(), url_canon.get(), &count,
+  auto url_canon = base::HeapArray<wchar_t>::WithSize(count);
+  HRESULT hr = ::UrlCanonicalizeW(url_path.c_str(), url_canon.data(), &count,
                                   URL_ESCAPE_UNSAFE);
   if (SUCCEEDED(hr))
-    return std::wstring(url_canon.get());
+    return std::wstring(url_canon.data());
   return url_path;
 }
 

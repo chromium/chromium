@@ -24,9 +24,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/html/shadow/meter_shadow_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -40,6 +40,7 @@ namespace blink {
 HTMLMeterElement::HTMLMeterElement(Document& document)
     : HTMLElement(html_names::kMeterTag, document) {
   UseCounter::Count(document, WebFeature::kMeterElement);
+  SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
 }
 
@@ -59,6 +60,23 @@ LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
       break;
   }
   return HTMLElement::CreateLayoutObject(style);
+}
+
+void HTMLMeterElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLElement::DidRecalcStyle(change);
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    bool is_horizontal = style->IsHorizontalWritingMode();
+    bool is_ltr = style->IsLeftToRightDirection();
+    if (is_horizontal && is_ltr) {
+      UseCounter::Count(GetDocument(), WebFeature::kMeterElementHorizontalLtr);
+    } else if (is_horizontal && !is_ltr) {
+      UseCounter::Count(GetDocument(), WebFeature::kMeterElementHorizontalRtl);
+    } else if (is_ltr) {
+      UseCounter::Count(GetDocument(), WebFeature::kMeterElementVerticalLtr);
+    } else {
+      UseCounter::Count(GetDocument(), WebFeature::kMeterElementVerticalRtl);
+    }
+  }
 }
 
 void HTMLMeterElement::ParseAttribute(
@@ -176,23 +194,25 @@ void HTMLMeterElement::DidElementStateChange() {
 void HTMLMeterElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(!value_);
 
-  auto* inner = MakeGarbageCollected<MeterShadowElement>(GetDocument());
+  auto* inner = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   inner->SetShadowPseudoId(shadow_element_names::kPseudoMeterInnerElement);
   root.AppendChild(inner);
 
-  auto* bar = MakeGarbageCollected<MeterShadowElement>(GetDocument());
+  auto* bar = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   bar->SetShadowPseudoId(AtomicString("-webkit-meter-bar"));
 
-  value_ = MakeGarbageCollected<MeterShadowElement>(GetDocument());
+  value_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   UpdateValueAppearance(0);
   bar->AppendChild(value_);
 
   inner->AppendChild(bar);
 
-  auto* fallback = MakeGarbageCollected<MeterShadowElement>(GetDocument());
-  fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
-  fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
-  root.AppendChild(fallback);
+  if (!RuntimeEnabledFeatures::MeterAppearanceNoneFallbackStyleEnabled()) {
+    auto* fallback = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+    fallback->AppendChild(MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
+    fallback->SetShadowPseudoId(AtomicString("-internal-fallback"));
+    root.AppendChild(fallback);
+  }
 }
 
 void HTMLMeterElement::UpdateValueAppearance(double percentage) {
@@ -229,6 +249,22 @@ bool HTMLMeterElement::CanContainRangeEndPoint() const {
     return false;
   }
   return GetComputedStyle() && !GetComputedStyle()->HasEffectiveAppearance();
+}
+
+void HTMLMeterElement::AdjustStyle(ComputedStyleBuilder& builder) {
+  // Descendants of the <meter> UA shadow host use
+  // a -internal-shadow-host-has-non-auto-appearance selector which depends on
+  // the computed value of the host's 'appearance'.
+  // This information is propagated via StyleUAShadowHostData to ensure
+  // invalidation of those descendants when the appearance changes.
+
+  builder.SetUAShadowHostData(std::make_unique<StyleUAShadowHostData>(
+      /* width */ Length(),
+      /* height */ Length(),
+      StyleAspectRatio(EAspectRatioType::kAuto, gfx::SizeF()),
+      /* alt_text */ g_null_atom,
+      /* alt_attr */ g_null_atom,
+      /* src_attr */ g_null_atom, builder.HasEffectiveAppearance()));
 }
 
 void HTMLMeterElement::Trace(Visitor* visitor) const {

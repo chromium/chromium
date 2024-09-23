@@ -23,10 +23,21 @@
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
     Open to continue
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW" desc="The message read out by a screen reader whtn the Compose nudge is shown.">
+  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE" desc="The message read out by a screen reader when the Compose nudge is shown.">
+    Help me write. Tab and press enter to open
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_RESUME" desc="The message read out by a screen reader when the Compose resume nudge is shown.">
     Resume Help me write. Tab and press enter to open
   </message>
-
+  <message name="IDS_COMPOSE_DONT_SHOW_ON_THIS_SITE_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Autofill popup will no longer be displayed on the current domain.">
+    Don't show on this site
+  </message>
+  <message name="IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Help me write feature is disabled for all websites.">
+    Never show
+  </message>
+  <message name="IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the user is navigate to a decicated Help me write feature settings page.">
+    Go to Settings
+  </message>
   <!-- FRE dialog -->
   <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
     Write with more confidence anywhere on the web
@@ -99,7 +110,16 @@
 
   <!-- Result dialog -->
   <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
-  Edit your input
+    Edit your input
+  </message>
+  <message name="IDS_COMPOSE_MODIFIERS_MENU_TITLE" desc="Title for options to select a style modifier to apply on returned text.">
+    Refine
+  </message>
+  <message name="IDS_COMPOSE_MODIFIERS_MENU_LABEL" desc="Accessibility label for the menu used to select a style modifier to apply.">
+    Refine results
+  </message>
+  <message name="IDS_COMPOSE_MENU_RETRY_OPTION" desc="Option title to regenerate the text result without modifiers.">
+    Retry
   </message>
   <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
     Length
@@ -119,8 +139,17 @@
   <message name="IDS_COMPOSE_MENU_FORMAL_OPTION" desc="Option title to request a more formal text result.">
     Formal
   </message>
-  <message name="IDS_COMPOSE_UNDO" desc="Label shown on hover and read by screen-readers for button that user clicks to undo to the last result.">
+  <message name="IDS_COMPOSE_UNDO_BUTTON_TEXT" desc="Button that user clicks to undo to the last result.">
     Undo
+  </message>
+  <message name="IDS_COMPOSE_UNDO_LABEL" desc="Label shown on hover and read by screen-readers for button that user clicks to undo to the last result.">
+    Undo
+  </message>
+  <message name="IDS_COMPOSE_REDO_BUTTON_TEXT" desc="Button that user clicks to redo to the next result.">
+    Redo
+  </message>
+  <message name="IDS_COMPOSE_REDO_LABEL" desc="Label shown on hover and read by screen-readers for button that user clicks to redo to the next result.">
+    Redo
   </message>
   <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to regenerate input.">
     Retry
@@ -136,6 +165,21 @@
   </message>
   <message name="IDS_COMPOSE_THUMBS_UP" desc="Accessibility label for thumbs up button that submits positive feedback for the generated text.">
     Thumbs up submits feedback that you like these results
+  </message>
+  <message name="IDS_COMPOSE_RESULT_TEXT_LABEL" desc="Accesibility label for the area holding the result text.">
+    Result
+  </message>
+  <message name="IDS_COMPOSE_RESULT_LOADING_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the result dialog is loading a new response.">
+    Result loading
+  </message>
+  <message name="IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE" desc="Accessibility string read by screen readers when the text in the result dialog has changed.">
+    Result updated
+  </message>
+  <message name="IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the undo button in the result dialog has been pressed.">
+    Undoing result
+  </message>
+  <message name="IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the redo button in the result dialog has been pressed.">
+    Redoing result
   </message>
 
   <!-- Errors -->
@@ -154,12 +198,15 @@
   <message name="IDS_COMPOSE_ERROR_FILTERED" desc="Error indicating that the request was filtered.">
     Couldn't help with that. Try again.
   </message>
+  <message name="IDS_COMPOSE_ERROR_FILTERED_BACK_BUTTON" desc="Button that navigates back to the last good result from a filtered error state.">
+    Go back
+  </message>
   <message name="IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE" desc="Error that the language is not yet supported.">
     This language is not yet supported.
     <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
-    <ph name="BEGIN_LINK">&lt;a href="#" id="signInLink" role="button"&gt;</ph>Sign in<ph name="END_LINK">&lt;/a&gt;</ph> 
+    <ph name="BEGIN_LINK">&lt;a href="#" id="signInLink" role="button"&gt;</ph>Sign in<ph name="END_LINK">&lt;/a&gt;</ph>
     again, then come back to this tab to get writing help
   </message>
   <message name="IDS_COMPOSE_ERROR_REQUEST_THROTTLED" desc="Error that the request was throttled.">
@@ -178,6 +225,10 @@
   </message>
   <message name="IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER" desc="A disclaimer footer text for help me write, that this is experimental and not always right.">
     This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_REFINEMENTS_EXPERIMENTAL_DISCLAIMER_FOOTER" desc="Disclaimer privacy footer text for used in the result dialog when the UI refinements feature is enabled.">
+    This experimental AI tool won't always be right. To improve it, your content is sent to Google.
     <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED" desc="A footer indicating that on-device evaluation was used." translateable="false">

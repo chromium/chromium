@@ -110,7 +110,7 @@ public class PlayerFrameScaleController {
         }
         final float correctedAggregateScaleFactor = lastUncommittedScaleFactor * scaleFactor;
 
-        // TODO(crbug/1090804): trigger a fetch of new bitmaps periodically when zooming out.
+        // TODO(crbug.com/40133900): trigger a fetch of new bitmaps periodically when zooming out.
 
         mViewport.scale(scaleFactor, focalPointX, focalPointY);
         mBitmapScaleMatrix.postScale(scaleFactor, scaleFactor, focalPointX, focalPointY);

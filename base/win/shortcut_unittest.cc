@@ -22,8 +22,8 @@ namespace win {
 
 namespace {
 
-static const char kFileContents[] = "This is a target.";
-static const char kFileContents2[] = "This is another target.";
+constexpr std::string_view kFileContents = "This is a target.";
+constexpr std::string_view kFileContents2 = "This is another target.";
 
 class ShortcutTest : public testing::Test {
  protected:
@@ -37,7 +37,7 @@ class ShortcutTest : public testing::Test {
     {
       const FilePath target_file(
           temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Target 1.txt")));
-      WriteFile(target_file, kFileContents, std::size(kFileContents));
+      WriteFile(target_file, base::as_byte_span(kFileContents));
 
       link_properties_.set_target(target_file);
       link_properties_.set_working_dir(temp_dir_.GetPath());
@@ -60,7 +60,7 @@ class ShortcutTest : public testing::Test {
     {
       const FilePath target_file_2(
           temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Target 2.txt")));
-      WriteFile(target_file_2, kFileContents2, std::size(kFileContents2));
+      WriteFile(target_file_2, base::as_byte_span(kFileContents2));
 
       FilePath icon_path_2;
       CreateTemporaryFileInDir(temp_dir_.GetPath(), &icon_path_2);
@@ -149,9 +149,9 @@ TEST_F(ShortcutTest, CreateAndResolveShortcut) {
   FilePath resolved_name;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, nullptr));
 
-  char read_contents[std::size(kFileContents)];
+  char read_contents[kFileContents.size()];
   ReadFile(resolved_name, read_contents);
-  EXPECT_STREQ(kFileContents, read_contents);
+  EXPECT_EQ(base::span(read_contents), base::span(kFileContents));
 }
 
 TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
@@ -162,9 +162,9 @@ TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
   std::wstring args;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, &args));
 
-  char read_contents[std::size(kFileContents)];
+  char read_contents[kFileContents.size()];
   ReadFile(resolved_name, read_contents);
-  EXPECT_STREQ(kFileContents, read_contents);
+  EXPECT_EQ(base::span(read_contents), base::span(kFileContents));
   EXPECT_EQ(link_properties_.arguments, args);
 }
 
@@ -214,9 +214,9 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
   FilePath resolved_name;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, nullptr));
 
-  char read_contents[std::size(kFileContents2)];
+  char read_contents[kFileContents2.size()];
   ReadFile(resolved_name, read_contents);
-  EXPECT_STREQ(kFileContents2, read_contents);
+  EXPECT_EQ(base::span(read_contents), base::span(kFileContents2));
 }
 
 TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {

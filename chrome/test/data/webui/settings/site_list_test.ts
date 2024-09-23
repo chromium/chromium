@@ -11,7 +11,7 @@ import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteExcep
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -67,6 +67,26 @@ let prefsOneEnabled: SiteSettingsPref;
  * An example pref with 1 blocked location item.
  */
 let prefsOneDisabled: SiteSettingsPref;
+
+/**
+ * An example pref with 1 allowed notification item.
+ */
+let prefsOneEnabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 1 blocked notification item.
+ */
+let prefsOneDisabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 2 allowed notification item.
+ */
+let prefsTwoEnabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 2 blocked notification item.
+ */
+let prefsTwoDisabledNotification: SiteSettingsPref;
 
 /**
  * An example Cookies pref with 1 in each of the three categories.
@@ -201,6 +221,7 @@ function populateTestExceptions() {
         ContentSettingsTypes.GEOLOCATION,
         [createRawSiteException('https://foo-allow.com:443', {
           embeddingOrigin: '',
+          type: ContentSettingsTypes.GEOLOCATION,
         })]),
   ]);
 
@@ -211,6 +232,60 @@ function populateTestExceptions() {
           embeddingOrigin: '',
           setting: ContentSetting.BLOCK,
         })]),
+  ]);
+
+  prefsOneEnabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [createRawSiteException('https://foo-allow.com:443', {
+          embeddingOrigin: '',
+          type: ContentSettingsTypes.NOTIFICATIONS,
+          setting: ContentSetting.ALLOW,
+        })]),
+  ]);
+
+  prefsOneDisabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [createRawSiteException('https://foo-block.com:443', {
+          embeddingOrigin: '',
+          type: ContentSettingsTypes.NOTIFICATIONS,
+          setting: ContentSetting.BLOCK,
+        })]),
+  ]);
+
+  prefsTwoEnabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [
+          createRawSiteException('https://foo-allow1.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.ALLOW,
+          }),
+          createRawSiteException('https://foo-allow2.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.ALLOW,
+          }),
+        ]),
+  ]);
+
+  prefsTwoDisabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [
+          createRawSiteException('https://foo-block1.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException('https://foo-block2.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.BLOCK,
+          }),
+        ]),
   ]);
 
   prefsSessionOnly = createSiteSettingsPrefs([], [
@@ -733,6 +808,93 @@ suite('SiteList', function() {
     assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
   });
 
+  /**
+   * Creates test |SiteSettingsPref|s with 2 allowed and 2 blocked
+   * sites for the given ContentSettingsTypes.
+   */
+  function create2AllowAnd2BlockPrefs(type: ContentSettingsTypes) {
+    return createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          type,
+          [
+            createRawSiteException('https://bar-allow.com:443'),
+            createRawSiteException('https://foo-allow.com:443'),
+            createRawSiteException('https://bar-block.com:443', {
+              setting: ContentSetting.BLOCK,
+            }),
+            createRawSiteException('https://foo-block.com:443', {
+              setting: ContentSetting.BLOCK,
+            }),
+          ]),
+    ]);
+  }
+
+  // Runs the system permission warning test for a given content type.
+  async function systemPermissionWarningTest(
+      category: ContentSettingsTypes, categoryName: string) {
+    setUpCategory(
+        category, ContentSetting.ALLOW, create2AllowAnd2BlockPrefs(category));
+    const contentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(category, contentType);
+    assertEquals(2, testElement.sites.length);
+
+    for (const disabled of [true, false]) {
+      const blockedPermissions = disabled ? [category] : [];
+      webUIListenerCallback('osGlobalPermissionChanged', blockedPermissions);
+
+      const warningElement =
+          testElement.$.category.querySelector<HTMLDivElement>(
+              '#systemPermissionDeclinedWarning');
+      assertTrue(!!warningElement);
+      const linkElement =
+          warningElement.querySelector('#openSystemSettingsLink');
+      if (!disabled) {
+        assertTrue(warningElement.hidden);
+        assertEquals(warningElement.textContent, '');
+        assertFalse(!!linkElement);
+        return;
+      }
+
+      assertFalse(warningElement.hidden);
+      const variant =
+          warningElement.innerHTML.includes('Chromium') ? 'Chromium' : 'Chrome';
+      assertEquals(
+          warningElement.textContent,
+          `To use your ${categoryName} on these sites,` +
+              ` give ${variant} access in system settings`);
+      assertTrue(!!linkElement);
+      // Check that the link covers the right part of the warning.
+      assertEquals('system settings', linkElement.innerHTML);
+      // This is needed for the <a> to look like a link.
+      assertEquals('#', linkElement.getAttribute('href'));
+      // This is needed for accessibility. First letter if the category name is
+      // capitalized.
+      assertEquals(
+          `System Settings: ${
+              categoryName.replace(/^\w/, (c) => c.toUpperCase())}`,
+          linkElement.getAttribute('aria-label'));
+
+      linkElement.dispatchEvent(new MouseEvent('click'));
+      await browserProxy.whenCalled('openSystemPermissionSettings')
+          .then((contentType: string) => {
+            assertEquals(category, contentType);
+          });
+    }
+  }
+
+  test('System permission warning for camera', async function() {
+    await systemPermissionWarningTest(ContentSettingsTypes.CAMERA, 'camera');
+  });
+
+  test('System permission warning for microphone', async function() {
+    await systemPermissionWarningTest(ContentSettingsTypes.MIC, 'microphone');
+  });
+
+  test('System permission warning for location', async function() {
+    await systemPermissionWarningTest(
+        ContentSettingsTypes.GEOLOCATION, 'location');
+  });
+
   test('Empty list', async function() {
     setUpCategory(
         ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
@@ -1193,16 +1355,18 @@ suite('SiteList', function() {
           ['c', testElement, new Event('blur')],
           ['d', tooltip, new MouseEvent('mouseenter')],
         ];
-        testsParams.forEach(params => {
+        for (const params of testsParams) {
           const text = params[0] as string;
           const eventTarget = params[1] as HTMLElement;
           const event = params[2] as MouseEvent;
           entry.fire('show-tooltip', {target: testElement, text});
-          assertTrue(tooltip._showing);
+          await microtasksFinished();
+          assertFalse(tooltip.$.tooltip.hidden);
           assertEquals(text, tooltip.innerHTML.trim());
           eventTarget.dispatchEvent(event);
-          assertFalse(tooltip._showing);
-        });
+          await microtasksFinished();
+          assertTrue(tooltip.$.tooltip.hidden);
+        }
       });
 
   test(
@@ -1215,6 +1379,183 @@ suite('SiteList', function() {
         flush();
         assertTrue(testElement.$.addSite.hidden);
       });
+
+  test('Reset the last entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsOneEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'Remove' from menu.
+    const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
+    assertTrue(!!remove);
+    remove.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Block the last allowed entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsOneEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'block' from menu.
+    const block = testElement.shadowRoot!.querySelector<HTMLElement>('#block');
+    assertTrue(!!block);
+    block.click();
+    await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Allow the last blocked entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.BLOCK,
+        prefsOneDisabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'allow' from menu.
+    const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
+    assertTrue(!!allow);
+    allow.click();
+    await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Reset not the last entry focuses the next entry', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsTwoEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'Remove' from menu.
+    const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
+    assertTrue(!!remove);
+    remove.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    const firstListEntry =
+        testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+    assertTrue(!!firstListEntry);
+
+    // Focus a site’s list entry.
+    assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
+  });
+
+  test(
+      'Block not the last allowed entry focuses the next entry',
+      async function() {
+        setUpCategory(
+            ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+            prefsTwoEnabledNotification);
+        await browserProxy.whenCalled('getExceptionList');
+
+        await microtasksFinished();
+        flush();  // Populates action menu.
+        openActionMenu(0);
+        await microtasksFinished();
+
+        // Select 'block' from menu.
+        const block =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#block');
+        assertTrue(!!block);
+        block.click();
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+        await microtasksFinished();
+
+        const firstListEntry =
+            testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+        assertTrue(!!firstListEntry);
+
+        // Focus a site’s list entry.
+        assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
+      });
+
+  test(
+      'Allow not the last blocked entry focuses the next entry',
+      async function() {
+        setUpCategory(
+            ContentSettingsTypes.NOTIFICATIONS, ContentSetting.BLOCK,
+            prefsTwoDisabledNotification);
+        await browserProxy.whenCalled('getExceptionList');
+
+        await microtasksFinished();
+        flush();  // Populates action menu.
+        openActionMenu(0);
+        await microtasksFinished();
+
+        // Select 'allow' from menu.
+        const allow =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
+        assertTrue(!!allow);
+        allow.click();
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+        await microtasksFinished();
+
+        const firstListEntry =
+            testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+        assertTrue(!!firstListEntry);
+
+        // Focus a site’s list entry.
+        assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
+      });
+
+  test('Reset the last Geolocation entry moves focus', async function() {
+    testElement.readOnlyList = true;
+    flush();
+
+    setUpCategory(
+        ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
+        prefsOneEnabled);
+    await browserProxy.whenCalled('getExceptionList');
+    flush();
+
+    const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
+
+    const resetButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+    assertTrue(!!resetButton);
+    resetButton.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
 });
 
 suite('SiteListSearchTests', function() {
@@ -1336,6 +1677,7 @@ suite('EditExceptionDialog', function() {
 
     // Simulate user input of whitespace only text.
     input!.value = '  ';
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
@@ -1346,6 +1688,7 @@ suite('EditExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = '*';
     input!.value = expectedPattern;
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
@@ -1362,6 +1705,7 @@ suite('EditExceptionDialog', function() {
     // Simulate user edit.
     const newValue = input!.value + ':1234';
     input!.value = newValue;
+    await input.updateComplete;
 
     const actionButton = dialog.$.actionButton;
     assertTrue(!!actionButton);
@@ -1397,8 +1741,10 @@ suite('AddExceptionDialog', function() {
     assertTrue(actionButton.disabled);
 
     const input = dialog.shadowRoot!.querySelector('cr-input');
-    input!.value = expectedPattern;
-    input!.dispatchEvent(
+    assertTrue(!!input);
+    input.value = expectedPattern;
+    await input.updateComplete;
+    input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
     const [pattern, _category] =
@@ -1450,6 +1796,7 @@ suite('AddExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = 'foobarbaz';
     input!.value = expectedPattern;
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
@@ -1514,5 +1861,21 @@ suite('AddExceptionDialog', function() {
         await browserProxy.whenCalled('setCategoryPermissionForPattern');
     assertEquals(primaryPattern, expectedPattern);
     assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
+  });
+
+  test('add tracking protection exception', async function() {
+    dialog.set('category', ContentSettingsTypes.TRACKING_PROTECTION);
+    flush();
+
+    // Enter a pattern and click the button.
+    const expectedPattern = 'foo-bar.com';
+    await inputText(expectedPattern);
+    dialog.$.add.click();
+
+    // The created exception has primary pattern wildcard.
+    const [primaryPattern, secondaryPattern] =
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    assertEquals(primaryPattern, SITE_EXCEPTION_WILDCARD);
+    assertEquals(secondaryPattern, expectedPattern);
   });
 });

@@ -238,16 +238,6 @@ var defaultTests = [
     });
   },
 
-  async function douleStopArc() {
-    try {
-      await promisify(chrome.autotestPrivate.stopArc);
-      chrome.test.fail();
-    } catch (error) {
-      chrome.test.assertEq("ARC is already stopped", error.message);
-      chrome.test.succeed();
-    }
-  },
-
   // This test verifies that Play Store window is not shown by default but
   // Chrome is shown.
   function isAppShown() {
@@ -989,10 +979,16 @@ var defaultTests = [
     });
   },
   function startSmoothnessTrackingExplicitThroughputInterval() {
-    chrome.autotestPrivate.startSmoothnessTracking(100, async function() {
+    chrome.autotestPrivate.startSmoothnessTracking(10, async function() {
       chrome.test.assertNoLastError();
 
+      // Let test run a bit to collect a few data points.
+      // Minimizing/unminimizing to generate some screen changes.
+      await sleep(100);
+      await promisify(minimizeBrowserWindow);
+
       await sleep(200);
+      await promisify(unminimizeBrowserWindow);
 
       chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
         chrome.test.assertNoLastError();
@@ -1144,6 +1140,139 @@ var defaultTests = [
         chrome.test.callbackFail('No frame counting data'));
   },
 
+  async function startOverdrawTracking() {
+    let browserWindow;
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1);
+
+      // Perform a UI action to generate compositor frames so that overdraw
+      // of those frames can be tracked.
+      await new Promise(resolve => {
+        browserWindow = window.open('about:blank');
+        resolve();
+      });
+
+      const data = await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.assertTrue(!!data);
+      chrome.test.assertTrue(data.averageOverdraws.length > 0);
+      browserWindow.close();
+
+      chrome.test.succeed();
+    } catch (error) {
+      if (browserWindow) {
+        browserWindow.close();
+      }
+      chrome.test.fail();
+    }
+  },
+
+  async function collectOverdrawDataWithExplicitDisplayId() {
+    const displaysInfo = await promisify(chrome.system.display.getInfo);
+    const displayId = displaysInfo[0].id;
+
+    let browserWindow;
+
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1),
+          displayId;
+
+      // Perform a UI action to generate compositor frames so that overdraw
+      // of those frames can be tracked.
+      await new Promise(resolve => {
+        browserWindow = window.open('about:blank');
+        resolve();
+      });
+
+      const data = await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.assertTrue(!!data);
+      chrome.test.assertTrue(data.averageOverdraws.length > 0);
+      browserWindow.close();
+
+      chrome.test.succeed();
+    } catch (error) {
+      if (browserWindow) {
+        browserWindow.close();
+      }
+      chrome.test.fail();
+    }
+  },
+
+  async function noOverdrawDataCollectedBetweenStartAndStopCalls() {
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1);
+
+      // No data since no compositor frame was submitted to viz in between start
+      // and stop calls. (No overdraw data is treated as an error)
+      await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'No overdraw data; maybe forgot to call startOverdrawTracking or ' +
+              'no UI changes between start and stop calls');
+      chrome.test.succeed();
+    }
+  },
+
+  async function stopCollectingOverdrawDataWithoutStart() {
+    try {
+      // Wait so that gpu process can fully initialize.
+      await sleep(500);
+      await promisify(chrome.autotestPrivate.stopOverdrawTracking);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'No overdraw data; maybe forgot to call startOverdrawTracking or ' +
+              'no UI changes between start and stop calls');
+      chrome.test.succeed();
+    }
+  },
+
+  async function startCollectingOverdrawDataForInvalidDisplay() {
+    const badDisplayId = '-1';
+    try {
+      await promisify(
+          chrome.autotestPrivate.startOverdrawTracking,
+          /*bucketSizeInSeconds=*/ 1, badDisplayId);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'Invalid displayId; no display found for the display id -1');
+      chrome.test.succeed();
+    }
+  },
+
+  async function stopCollectingOverdrawDataForInvalidDisplay() {
+    const badDisplayId = '-1';
+    try {
+      await promisify(
+          chrome.autotestPrivate.stopOverdrawTracking, badDisplayId);
+      chrome.test.fail();
+    } catch (error) {
+      chrome.test.assertEq(
+          error.message,
+          'Invalid displayId; no display found for the display id -1');
+      chrome.test.succeed();
+    }
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {
@@ -1230,27 +1359,6 @@ var arcEnabledTests = [
           chrome.test.assertEq(false, packageInfo.vpnProvider);
           chrome.test.succeed();
         }));
-  },
-
-  async function douleStartArc() {
-    try {
-      await promisify(
-          chrome.autotestPrivate.startArc);
-          chrome.test.fail();
-    } catch (error) {
-      chrome.test.assertEq("ARC is already started", error.message);
-      chrome.test.succeed();
-    }
-  },
-
-  // This test verifies restating ARC.
-  function restartArc() {
-    chrome.autotestPrivate.stopArc(function() {
-          chrome.test.assertNoLastError();
-          chrome.autotestPrivate.startArc(
-              chrome.test.callbackPass(function() {
-          }));
-    });
   }
 ];
 
@@ -1587,6 +1695,33 @@ var setDeviceLanguage = [
   }
 ];
 
+var getDeviceEventLog = [
+  function getDeviceEventLogSingle() {
+    chrome.autotestPrivate.getDeviceEventLog('printer',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertFalse(logs.includes('NetworkTestLog'));
+        chrome.test.assertFalse(logs.includes('USBTestLog'));
+      }));
+  },
+  function getDeviceEventLogMultiple() {
+    chrome.autotestPrivate.getDeviceEventLog('printer,network',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertTrue(logs.includes('NetworkTestLog'));
+        chrome.test.assertFalse(logs.includes('USBTestLog'));
+      }));
+  },
+  function getDeviceEventLogAll() {
+    chrome.autotestPrivate.getDeviceEventLog('',
+      chrome.test.callbackPass(logs => {
+        chrome.test.assertTrue(logs.includes('PrinterTestLog'));
+        chrome.test.assertTrue(logs.includes('NetworkTestLog'));
+        chrome.test.assertTrue(logs.includes('USBTestLog'));
+      }));
+  }
+];
+
 // Tests that requires a concrete system web app installation.
 var systemWebAppsTests = [
   function getRegisteredSystemWebApps() {
@@ -1677,7 +1812,8 @@ var systemWebAppsTests = [
       'launcherSearchBoxState': launcherSearchBoxStateTests,
       'isFieldTrialActive': isFieldTrialActiveTests,
       'clearAllowedPref': clearAllowedPrefTests,
-      'setDeviceLanguage': setDeviceLanguage
+      'setDeviceLanguage': setDeviceLanguage,
+      'getDeviceEventLog': getDeviceEventLog
     };
 
 chrome.test.getConfig(function(config) {

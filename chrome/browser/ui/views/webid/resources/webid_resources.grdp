@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include type="chrome_scaled_image" name="IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT" file="ui/views/webid/resources/modal_icon_background_light.png" />
+  <include type="chrome_scaled_image" name="IDR_WEBID_MODAL_ICON_BACKGROUND_DARK" file="ui/views/webid/resources/modal_icon_background_dark.png" />
+</grit-part>

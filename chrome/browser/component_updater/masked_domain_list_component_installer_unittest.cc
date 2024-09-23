@@ -62,7 +62,7 @@ TEST_F(MaskedDomainListComponentInstallerPolicyTest,
 
   // If no file has been passed, the allow list is not populated.
   EXPECT_FALSE(network::NetworkService::GetNetworkServiceForTesting()
-                   ->network_service_proxy_allow_list()
+                   ->masked_domain_list_manager()
                    ->IsPopulated());
 }
 

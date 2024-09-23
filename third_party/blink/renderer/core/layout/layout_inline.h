@@ -137,6 +137,12 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
+  // A block-in-inline became floated or out-of-flow positioned. The anonymous
+  // wrapper around it may therefore need to be removed, if it no longer
+  // contains any in-flow blocks at all.
+  void BlockInInlineBecameFloatingOrOutOfFlow(
+      LayoutBlockFlow* anonymous_block_child);
+
   Element* GetNode() const {
     NOT_DESTROYED();
     return To<Element>(LayoutBoxModelObject::GetNode());
@@ -229,8 +235,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
-  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode = 0) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
 
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,
@@ -239,8 +246,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
  private:
   bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
+                            const LayoutBoxModelObject* ancestor,
                             MapCoordinatesFlags mode,
-                            bool map_to_absolute) const;
+                            bool map_to_ancestor) const;
 
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();
@@ -286,11 +294,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const final;
 
-  void UpdateLayout() final {
-    NOT_DESTROYED();
-    NOTREACHED();
-  }  // Do nothing for layout()
-
   void Paint(const PaintInfo&) const final;
 
   bool NodeAtPoint(HitTestResult&,
@@ -330,7 +333,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 
-  void AddAnnotatedRegions(Vector<AnnotatedRegionValue>&) final;
+  void AddDraggableRegions(Vector<DraggableRegionValue>&) final;
 
   void UpdateFromStyle() final;
   bool AnonymousHasStylePropagationOverride() final {

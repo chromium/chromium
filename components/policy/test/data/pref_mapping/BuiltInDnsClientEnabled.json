@@ -3,29 +3,15 @@
     "os": [
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "async_dns.enabled": {
-            "default_value": false,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "BuiltInDnsClientEnabled": true
-        },
-        "prefs": {
-          "async_dns.enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "async_dns.enabled",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   },
   {
     "os": [
@@ -36,28 +22,14 @@
       "chromeos_lacros",
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "async_dns.enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "BuiltInDnsClientEnabled": false
-        },
-        "prefs": {
-          "async_dns.enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "async_dns.enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

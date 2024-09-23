@@ -25,8 +25,7 @@ class CORE_EXPORT AXObjectCacheBase : public AXObjectCache {
   AXObjectCacheBase& operator=(const AXObjectCacheBase&) = delete;
   ~AXObjectCacheBase() override = default;
 
-  virtual AXObject* GetOrCreate(const Node*,
-                                AXObject* parent_if_known = nullptr) = 0;
+  virtual AXObject* GetOrCreate(const Node*, AXObject* parent) = 0;
 
   virtual AXObject* Get(const Node*) = 0;
 

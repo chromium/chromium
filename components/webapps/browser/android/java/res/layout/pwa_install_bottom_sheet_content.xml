@@ -80,7 +80,7 @@ found in the LICENSE file.
                 android:singleLine="true"
                 android:gravity="center"
                 android:text="@string/app_banner_install"
-                style="@style/FilledButton.Flat"/>
+                style="@style/FilledButton"/>
 
         </LinearLayout>
     </FrameLayout>

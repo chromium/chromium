@@ -5,6 +5,7 @@ include_rules = [
     "+components/viz/test/test_raster_interface.h",
     "+gpu/command_buffer/client/gles2_interface_stub.h",
     "+gpu/command_buffer/client/raster_implementation_gles.h",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+gpu/command_buffer/client/webgpu_interface_stub.h",
     "+gpu/config/gpu_feature_info.h",
 ]

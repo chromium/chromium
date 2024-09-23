@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+      <TextView
+          android:id="@+id/title"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_marginStart="@dimen/password_manager_dialog_text_margin"
+          android:layout_marginEnd="@dimen/password_manager_dialog_text_margin"
+          android:paddingTop="@dimen/password_manager_dialog_title_padding_top"
+          android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+      <org.chromium.ui.widget.ChromeImageButton
+          android:id="@+id/help_button"
+          android:layout_height="48dp"
+          android:layout_width="48dp"
+          android:layout_weight="0"
+          android:layout_marginTop="4dp"
+          android:layout_marginEnd="4dp"
+          android:background="?attr/selectableItemBackground"
+          app:srcCompat ="@drawable/ic_help_and_feedback"
+          android:visibility="gone"/>
+    </LinearLayout>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/password_manager_dialog_text_margin"
+        android:layout_marginEnd="@dimen/password_manager_dialog_text_margin"
+        android:layout_marginTop="@dimen/password_manager_dialog_details_padding_top"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:leading="@dimen/text_size_medium_leading" />
+  </LinearLayout>
+</ScrollView>

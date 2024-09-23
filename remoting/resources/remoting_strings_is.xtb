@@ -28,7 +28,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="2329392777730037872">Ekki tókst að opna <ph name="URL" /> í biðlaranum.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2366718077645204424">Ekki næst í hýsilinn. Þetta er líklega vegna grunnstillingar á netkerfinu sem þú notar.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Síðasta virkni <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Veittu <ph name="PRODUCT_NAME" /> heimildina „Aðgengi“</translation>
 <translation id="2509394361235492552">Tengt við <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Viltu deila þessari tölvu þannig að annar notandi hafi aðgang og stjórn á henni?</translation>
@@ -53,7 +52,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="3423542133075182604">Fjarvinnsla öryggislykils</translation>
 <translation id="3581045510967524389">Ekki var hægt að tengjast netinu. Gakktu úr skugga um að tækið sé nettengt.</translation>
 <translation id="3596628256176442606">Þessi þjónusta leyfir tengingar á innleið frá Chromoting biðlurum.</translation>
-<translation id="369442766917958684">Án nettengingar</translation>
 <translation id="3695446226812920698">Kynntu þér hvernig</translation>
 <translation id="3776024066357219166">Lotu fjarstjórnunar tölvu í Chrome er lokið.</translation>
 <translation id="3858860766373142691">Heiti</translation>
@@ -105,7 +103,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="5601503069213153581">PIN-númer</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Þú ert að deila skjáborðinu þínu með <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Skráð(ur) inn sem <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Tengjast aftur</translation>
 <translation id="5810269635982033450">Skjárinn virkar sem snertiflötur</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> bað um aðgang til að sjá skjáinn hjá þér og stjórna lyklaborðinu þínu og músinni. Ýttu á „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ef þú áttir ekki von á þessari beiðni. Annars skaltu velja „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ til að heimila tenginguna þegar þú ert tilbúin(n).</translation>

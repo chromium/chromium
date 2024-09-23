@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
@@ -32,7 +33,7 @@ class PageCaptureSaveAsMHTMLDelegate
       scoped_refptr<storage::ShareableFileReference> file) override {
     file->AddFinalReleaseCallback(
         base::BindOnce(&PageCaptureSaveAsMHTMLDelegate::OnReleaseCallback,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
     ++temp_file_count_;
   }
 
@@ -52,6 +53,7 @@ class PageCaptureSaveAsMHTMLDelegate
   base::RunLoop run_loop_;
   base::RepeatingClosure release_closure_ = run_loop_.QuitClosure();
   std::atomic<int> temp_file_count_{0};
+  base::WeakPtrFactory<PageCaptureSaveAsMHTMLDelegate> weak_factory_{this};
 };
 
 class ExtensionPageCaptureApiTest
@@ -90,8 +92,15 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// TODO(crbug.com/326868086, crbug.com/342254075): Test is flaky on MSan and on
+// Windows.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
+#define MAYBE_SaveAsMHTMLWithoutFileAccess DISABLED_SaveAsMHTMLWithoutFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       SaveAsMHTMLWithoutFileAccess) {
+                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
@@ -99,7 +108,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   WaitForFileCleanup(&delegate);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
+// TODO(crbug.com/326868086): Test is flaky.
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
+                       DISABLED_SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,

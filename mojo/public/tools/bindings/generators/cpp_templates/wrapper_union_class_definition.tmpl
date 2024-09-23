@@ -62,7 +62,6 @@ size_t {{union.name}}::Hash(size_t seed) const {
 {%- endfor %}
     default:
       NOTREACHED();
-      return seed;
   }
 }
 {%- endif %}

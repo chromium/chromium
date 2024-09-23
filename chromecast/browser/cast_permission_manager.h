@@ -53,7 +53,8 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       const url::Origin& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host) override;
+      content::RenderFrameHost* render_frame_host,
+      bool should_include_device_status) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
@@ -62,15 +63,6 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      content::RenderProcessHost* render_process_host,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-  void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) override;
 };
 
 }  // namespace shell

@@ -10,7 +10,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -141,6 +140,13 @@ template("single_gcc_toolchain") {
     assert(defined(invoker_toolchain_args.current_os),
            "toolchain_args must specify a current_os")
 
+    # use_reclient is default to use_remoteexec
+    if (!defined(invoker_toolchain_args.use_reclient) &&
+        defined(invoker_toolchain_args.use_remoteexec)) {
+      invoker_toolchain_args.use_reclient =
+          invoker_toolchain_args.use_remoteexec
+    }
+
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
     toolchain_args = {
@@ -158,97 +164,64 @@ template("single_gcc_toolchain") {
       }
     }
 
-    # When the invoker has explicitly overridden use_remoteexec, use_goma or
+    # When the invoker has explicitly overridden use_remoteexec or
     # cc_wrapper in the toolchain args, use those values, otherwise default
     # to the global one.  This works because the only reasonable override
     # that toolchains might supply for these values are to force-disable them.
-    if (defined(toolchain_args.use_remoteexec)) {
-      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
+    if (defined(toolchain_args.use_reclient)) {
+      toolchain_uses_reclient = toolchain_args.use_reclient
     } else {
-      toolchain_uses_remoteexec = use_remoteexec
+      toolchain_uses_reclient = use_reclient
     }
-    if (defined(toolchain_args.use_remoteexec_links)) {
-      toolchain_uses_remoteexec_links = toolchain_args.use_remoteexec_links
+    if (defined(toolchain_args.use_reclient_links)) {
+      toolchain_uses_reclient_links = toolchain_args.use_reclient_links
     } else {
-      toolchain_uses_remoteexec_links = use_remoteexec_links
-    }
-    if (defined(toolchain_args.use_goma)) {
-      toolchain_uses_goma = toolchain_args.use_goma
-    } else {
-      toolchain_uses_goma = use_goma
+      toolchain_uses_reclient_links = use_reclient_links
     }
 
-    # x86_64-nacl-* is ELF-32 and Goma/RBE won't support ELF-32.
-    if (toolchain_uses_goma &&
-        get_path_info(invoker.cc, "name") == "x86_64-nacl-gcc") {
-      # it will also disable x86_64-nacl-g++ since these are in
-      # the same toolchain.
-      toolchain_uses_goma = false
-    }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
-           "Goma and re-client can't be used together.")
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_reclient),
            "re-client and cc_wrapper can't be used together.")
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
-           "Goma and cc_wrapper can't be used together.")
 
-    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
+    # When the invoker has explicitly overridden cc_wrapper in the
     # toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
     # supply for these values are to force-disable them.
-    # But if needs_gomacc_path_arg is set in a Chrome OS build, the toolchain
-    # wrapper will have picked up gomacc via cmd-line arg. So need to prepend
-    # gomacc in that case.
-    goma_path = "$goma_dir/gomacc"
-    if (toolchain_uses_remoteexec && (!defined(invoker.needs_gomacc_path_arg) ||
-                                      !invoker.needs_gomacc_path_arg)) {
-      if (defined(toolchain_args.rbe_cc_cfg_file)) {
-        toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
+    # But if needs_rewrapper_path_arg is set in a Chrome OS build, the
+    # toolchain wrapper will have picked up rewrapper via cmd-line arg. So
+    # need to prepend rewrapper in that case.
+    if (toolchain_uses_reclient &&
+        (!defined(invoker.needs_rewrapper_path_arg) ||
+         !invoker.needs_rewrapper_path_arg)) {
+      if (defined(toolchain_args.reclient_cc_cfg_file)) {
+        toolchain_reclient_cc_cfg_file = toolchain_args.reclient_cc_cfg_file
       } else {
-        toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
+        toolchain_reclient_cc_cfg_file = reclient_cc_cfg_file
       }
 
-      # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
-      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
-    } else if (toolchain_uses_goma &&
-               (!defined(invoker.needs_gomacc_path_arg) ||
-                !invoker.needs_gomacc_path_arg)) {
-      compiler_prefix = "${goma_path} "
-      if (use_goma_rust) {
-        rust_compiler_prefix = compiler_prefix
-      }
+      # C/C++ (clang) rewrapper prefix to use when use_reclient is true.
+      compiler_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
 
       # Prevent warning about unused variable since it is not read in the code
-      # paths when goma is not needed.
-      not_needed(invoker, [ "needs_gomacc_path_arg" ])
+      # paths when reclient is not needed.
+      not_needed(invoker, [ "needs_rewrapper_path_arg" ])
     }
 
-    if (toolchain_uses_remoteexec_links) {
-      if (defined(toolchain_args.rbe_link_cfg_file)) {
-        toolchain_rbe_link_cfg_file = toolchain_args.rbe_link_cfg_file
+    if (toolchain_uses_reclient_links) {
+      if (defined(toolchain_args.reclient_link_cfg_file)) {
+        toolchain_reclient_link_cfg_file = toolchain_args.reclient_link_cfg_file
       } else {
-        toolchain_rbe_link_cfg_file = rbe_link_cfg_file
+        toolchain_reclient_link_cfg_file = reclient_link_cfg_file
       }
-      link_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_link_cfg_file} -exec_root=${rbe_exec_root} "
-      not_needed([ "goma_path" ])
-    } else if (use_goma_thin_lto && toolchain_uses_goma && use_thin_lto) {
-      # remote_ld.py uses autoninja in an attempt to set a reasonable
-      # number of jobs, but this results in too low a value on
-      # Chrome OS builders. So we pass in an explicit value.
-      link_prefix =
-          "\"$python_path\" " +
-          rebase_path("//tools/clang/scripts/remote_ld.py", root_build_dir) +
-          " --wrapper ${goma_path} --jobs 200 --ar-path ${invoker.ar} -- "
+      link_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_link_cfg_file} -exec_root=${rbe_exec_root} "
     } else {
       link_prefix = ""
-      not_needed([ "goma_path" ])
     }
 
     # A specific toolchain may wish to avoid coverage instrumentation, so we
@@ -297,8 +270,8 @@ template("single_gcc_toolchain") {
     cc = compiler_prefix + invoker.cc
     cxx = compiler_prefix + invoker.cxx
 
-    # "asm" doesn't support any of toolchain_cc_wrapper, toolchain_uses_goma and
-    # toolchain_uses_remoteexec. The coverage flags are also nonsensical on
+    # "asm" doesn't support any of toolchain_cc_wrapper and
+    # toolchain_uses_reclient. The coverage flags are also nonsensical on
     # assembler runs.
     asm = invoker.cc
     ar = invoker.ar
@@ -640,7 +613,11 @@ template("single_gcc_toolchain") {
         start_group_flag = "-Wl,--start-group"
         end_group_flag = "-Wl,--end-group "
       }
-      link_command = "$ld {{ldflags}}${extra_ldflags} -o \"$unstripped_outfile\" $start_group_flag @\"$rspfile\" {{solibs}} $end_group_flag {{libs}} {{rlibs}}"
+
+      # We need to specify link groups, at least, for single pass linkers. I.e.
+      # Rust libraries are alpha-sorted instead of by dependencies so they fail
+      # to link if not properly ordered or grouped.
+      link_command = "$ld {{ldflags}}${extra_ldflags} -o \"$unstripped_outfile\" $start_group_flag @\"$rspfile\" $end_group_flag {{solibs}} {{libs}} $start_group_flag {{rlibs}} $end_group_flag"
 
       # Generate a map file to be used for binary size analysis.
       # Map file adds ~10% to the link time on a z620.
@@ -821,6 +798,72 @@ template("single_gcc_toolchain") {
   }
 }
 
+# Make an additional toolchain which is used for making tools that are run
+# on the host machine as part of the build process (such as proc macros
+# and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+# comes with the compiler, so it doesn't have to wait for the stdlib to be
+# built before building other stuff. And this ensures its proc macro
+# outputs have the right ABI to be loaded by the compiler, and it can be
+# used to compile build scripts that are part of the stdlib that is built
+# for the default toolchain.
+template("gcc_rust_host_build_tools_toolchain") {
+  single_gcc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "toolchain_args" ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_for_rust_host_build_tools = true
+
+      # The host build tools are static release builds to make the Chromium
+      # build faster.
+      is_debug = false
+      is_component_build = false
+      is_official_build = false
+      use_clang_coverage = false
+      use_sanitizer_coverage = false
+      generate_linker_map = false
+      use_thin_lto = false
+    }
+
+    # When cross-compiling we don't want to use the target platform's file
+    # extensions.
+    shlib_extension = host_shlib_extension
+  }
+}
+
+# If PartitionAlloc is part of the build (even as a transitive dependency), then
+# it replaces the system allocator. If this toolchain is used, that will be
+# overridden and the system allocator will be used regardless. This is important
+# in some third-party binaries outside of Chrome.
+template("gcc_system_allocator_toolchain") {
+  single_gcc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "toolchain_args" ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_allows_use_partition_alloc_as_malloc = false
+
+      # Disable component build so that we can copy the exes to the
+      # root_build_dir and support the default_toolchain redirection on Windows.
+      # See also the comment in //build/symlink.gni.
+      is_component_build = false
+
+      # Only one toolchain can be configured with MSAN support with our current
+      # GN setup, or they all try to make the instrumented libraries and
+      # collide.
+      is_msan = false
+    }
+  }
+}
+
 # Makes a GCC toolchain for the target, and an equivalent toolchain with the
 # prebuilt Rust stdlib for building proc macros (and other for-build-use
 # artifacts).
@@ -828,56 +871,28 @@ template("gcc_toolchain") {
   single_gcc_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
            "Toolchains must declare toolchain_args")
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "visibility",
-                             "test_only",
-                           ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
 
     # No need to forward visibility and test_only as they apply to targets not
     # toolchains, but presubmit checks require that we explicitly exclude them
   }
 
-  if (enable_rust && current_toolchain == default_toolchain) {
-    # Make an additional toolchain which is used for making tools that are run
-    # on the host machine as part of the build process (such as proc macros
-    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
-    # comes with the compiler, so it doesn't have to wait for the stdlib to be
-    # built before building other stuff. And this ensures its proc macro
-    # outputs have the right ABI to be loaded by the compiler, and it can be
-    # used to compile build scripts that are part of the stdlib that is built
-    # for the default toolchain.
-    single_gcc_toolchain("${target_name}_for_rust_host_build_tools") {
-      assert(defined(invoker.toolchain_args),
-             "Toolchains must declare toolchain_args")
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "toolchain_args",
-                               "visibility",
-                               "test_only",
-                             ])
-      toolchain_args = {
-        # Populate toolchain args from the invoker.
-        forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_for_rust_host_build_tools = true
+  gcc_rust_host_build_tools_toolchain(
+      "${target_name}_for_rust_host_build_tools") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+  }
 
-        # The host build tools are static release builds to make the Chromium
-        # build faster.
-        is_debug = false
-        is_component_build = false
-        is_official_build = false
-        use_clang_coverage = false
-        use_sanitizer_coverage = false
-        generate_linker_map = false
-        use_thin_lto = false
-      }
-
-      # When cross-compiling we don't want to use the target platform's file
-      # extensions.
-      shlib_extension = host_shlib_extension
-    }
+  gcc_system_allocator_toolchain("${target_name}_host_with_system_allocator") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+  }
+  gcc_system_allocator_toolchain("${target_name}_with_system_allocator") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 }
 
@@ -886,8 +901,7 @@ template("gcc_toolchain") {
 # be specified by the invoker, and optionally toolprefix if it's a
 # cross-compile case. Note that for a cross-compile case this toolchain
 # requires a config to pass the appropriate -target option, or else it will
-# actually just be doing a native compile. The invoker can optionally override
-# use_gold too.
+# actually just be doing a native compile.
 template("clang_toolchain") {
   gcc_toolchain(target_name) {
     _path = "$clang_base_path/bin"

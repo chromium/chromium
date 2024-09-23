@@ -19,10 +19,6 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/url_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using content::BrowserContext;
 using content::OpenURLParams;
 using content::WebContents;
@@ -41,16 +37,11 @@ ChromeWebContentsHandler::~ChromeWebContentsHandler() {
 WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     content::BrowserContext* context,
     WebContents* source,
-    const OpenURLParams& params) {
+    const OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   if (!context)
     return nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Try to intercept the request and open the URL with Lacros.
-  if (ash::TryOpenUrl(params.url, params.disposition)) {
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -77,7 +68,11 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     nav_params.disposition = params.disposition;
   }
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&nav_params);
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&nav_params);
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
 
   // Close the browser if chrome::Navigate created a new one.
   if (browser_created && (browser != nav_params.browser))

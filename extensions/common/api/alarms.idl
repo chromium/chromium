@@ -72,26 +72,28 @@ namespace alarms {
     // repeating alarm, <var>periodInMinutes</var> is used as the default for
     // <var>delayInMinutes</var>.
     // |callback|: Invoked when the alarm has been created.
-    [supportsPromises] static void create(
+    static void create(
         optional DOMString name,
         AlarmCreateInfo alarmInfo,
         optional VoidCallback callback);
 
     // Retrieves details about the specified alarm.
     // |name|: The name of the alarm to get. Defaults to the empty string.
-    [supportsPromises] static void get(optional DOMString name,
-                                       AlarmCallback callback);
+    static void get(
+        optional DOMString name,
+        AlarmCallback callback);
 
     // Gets an array of all the alarms.
-    [supportsPromises] static void getAll(AlarmListCallback callback);
+    static void getAll(AlarmListCallback callback);
 
     // Clears the alarm with the given name.
     // |name|: The name of the alarm to clear. Defaults to the empty string.
-    [supportsPromises] static void clear(optional DOMString name,
-                                         optional ClearCallback callback);
+    static void clear(
+        optional DOMString name,
+        optional ClearCallback callback);
 
     // Clears all alarms.
-    [supportsPromises] static void clearAll(optional ClearCallback callback);
+    static void clearAll(optional ClearCallback callback);
   };
 
   interface Events {

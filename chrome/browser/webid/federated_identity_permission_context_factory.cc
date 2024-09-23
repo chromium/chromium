@@ -39,9 +39,12 @@ FederatedIdentityPermissionContextFactory::
           "FederatedIdentityPermissionContext",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -54,15 +57,6 @@ std::unique_ptr<KeyedService> FederatedIdentityPermissionContextFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* profile) const {
   return std::make_unique<FederatedIdentityPermissionContext>(profile);
-}
-
-void FederatedIdentityPermissionContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* federated_identity_permission_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (federated_identity_permission_context)
-    federated_identity_permission_context->FlushScheduledSaveSettingsCalls();
-  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
 }
 
 bool FederatedIdentityPermissionContextFactory::

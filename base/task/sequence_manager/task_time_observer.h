@@ -5,18 +5,20 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASK_TIME_OBSERVER_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASK_TIME_OBSERVER_H_
 
+#include "base/base_export.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 
 namespace base {
 namespace sequence_manager {
 
 // TaskTimeObserver provides an API for observing completion of tasks.
-class TaskTimeObserver {
+class BASE_EXPORT TaskTimeObserver : public CheckedObserver {
  public:
   TaskTimeObserver() = default;
   TaskTimeObserver(const TaskTimeObserver&) = delete;
   TaskTimeObserver& operator=(const TaskTimeObserver&) = delete;
-  virtual ~TaskTimeObserver() = default;
+  ~TaskTimeObserver() override;
 
   // To be called when task is about to start.
   virtual void WillProcessTask(TimeTicks start_time) = 0;

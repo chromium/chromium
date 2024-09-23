@@ -1,0 +1,84 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Public target.
+group("folder_editor") {
+  public_deps = [ ":coordinator_headers" ]
+  deps = [ ":coordinator_impl" ]
+}
+
+# Do not include this target. Prefer :folder_editor instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator headers.
+source_set("coordinator_headers") {
+  visibility = [
+    ":coordinator_impl",
+    ":folder_editor",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser:coordinator_impl",
+  ]
+  sources = [
+    "bookmarks_folder_editor_coordinator.h",
+    "bookmarks_folder_editor_coordinator_delegate.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+}
+
+# Do not include this target. Prefer :folder_editor instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator implementation.
+source_set("coordinator_impl") {
+  visibility = [ ":folder_editor" ]
+  sources = [ "bookmarks_folder_editor_coordinator.mm" ]
+  deps = [
+    ":coordinator_headers",
+    ":ui",
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser:coordinator_headers",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+  ]
+}
+
+# Private to this coordinator.
+# Contains folder editor ui implementation.
+source_set("ui") {
+  visibility = [ ":coordinator_impl" ]
+  sources = [
+    "bookmarks_folder_editor_view_controller.h",
+    "bookmarks_folder_editor_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/cells",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view:views",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

@@ -1,7 +1,8 @@
 {
   "description": "Max source registration reporting endpoints per rate limit window",
   "api_config": {
-    "rate_limit_max_source_registration_reporting_origins": "1"
+    "rate_limit_max_source_registration_reporting_origins": "1",
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "2"
   },
   "input": {
     "registrations": [
@@ -9,8 +10,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://example.source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -29,8 +29,7 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source2.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -51,8 +50,7 @@
         "timestamp": "1999",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://example.reporter1.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -73,8 +71,7 @@
         "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -96,8 +93,7 @@
         "timestamp": "2001",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -120,8 +116,7 @@
         "timestamp": "3000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -141,8 +136,7 @@
         "timestamp": "4000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter3.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -161,7 +155,6 @@
       {
         "timestamp": "10000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination1.test"
         },
         "responses": [
@@ -183,7 +176,6 @@
       {
         "timestamp": "11000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination1.test"
         },
         "responses": [
@@ -205,7 +197,6 @@
       {
         "timestamp": "12000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -227,7 +218,6 @@
       {
         "timestamp": "12001",
         "registration_request": {
-          "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination1.test"
         },
         "responses": [
@@ -250,8 +240,7 @@
         "timestamp": "2592000000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter3.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -269,7 +258,6 @@
       {
         "timestamp": "2592001000",
         "registration_request": {
-          "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination1.test"
         },
         "responses": [
@@ -290,7 +278,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": [

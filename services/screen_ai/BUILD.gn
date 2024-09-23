@@ -1,0 +1,136 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/screen_ai/buildflags/features.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(enable_screen_ai_service)
+
+source_set("screen_ai") {
+  sources = [
+    "screen_ai_library_wrapper.h",
+    "screen_ai_service_impl.cc",
+    "screen_ai_service_impl.h",
+  ]
+
+  if (use_fake_screen_ai) {
+    sources += [
+      "screen_ai_library_wrapper_fake.cc",
+      "screen_ai_library_wrapper_fake.h",
+    ]
+  } else {
+    sources += [
+      "screen_ai_library_wrapper_impl.cc",
+      "screen_ai_library_wrapper_impl.h",
+    ]
+  }
+
+  public_deps = [ "//services/screen_ai/proto:proto_convertors" ]
+
+  deps = [
+    "//mojo/public/cpp/bindings",
+    "//sandbox/policy",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/screen_ai/buildflags",
+    "//services/screen_ai/proto",
+    "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom:factory",
+    "//services/screen_ai/public/mojom:mojom",
+    "//skia",
+    "//ui/accessibility:accessibility",
+  ]
+
+  if (!use_fake_screen_ai) {
+    deps += [ "//components/crash/core/common:crash_key" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+if (is_chromeos) {
+  test("screen_ai_ocr_perf_test") {
+    sources = [ "screen_ai_ocr_perf_test.cc" ]
+
+    deps = [
+      ":screen_ai",
+      "//base/test:test_support",
+      "//services/screen_ai/buildflags",
+      "//services/screen_ai/public/cpp:utilities",
+      "//skia",
+      "//ui/gfx/codec",
+    ]
+  }
+}
+
+if (is_linux || is_chromeos) {
+  source_set("screen_ai_sandbox_hook") {
+    sources = [
+      "sandbox/screen_ai_sandbox_hook_linux.cc",
+      "sandbox/screen_ai_sandbox_hook_linux.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/component_updater",
+      "//sandbox/linux:sandbox_services",
+      "//services/screen_ai/public/cpp:utilities",
+      "//ui/accessibility:ax_base",
+    ]
+
+    public_deps = [ "//sandbox/policy" ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  }
+}
+
+group("test_support_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+
+  data = [ "$root_gen_dir/services/screen_ai/proto/view_hierarchy.descriptor" ]
+
+  deps = [ "//services/screen_ai/proto:view_hierarchy_proto_descriptor" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "proto/main_content_extractor_proto_convertor_unittest.cc",
+    "proto/visual_annotator_proto_convertor_unittest.cc",
+    "public/cpp/metrics_unittest.cc",
+    "screen_ai_service_impl_unittest.cc",
+  ]
+
+  data = [ "//services/test/data/screen_ai/" ]
+  deps = [
+    ":screen_ai",
+    "//base/test:proto_test_support",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//services/screen_ai/proto",
+    "//services/screen_ai/public/cpp:metrics",
+    "//testing/gtest",
+    "//ui/accessibility:test_support",
+  ]
+
+  data_deps = [ ":test_support_data" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "public/test/fake_screen_ai_annotator.cc",
+    "public/test/fake_screen_ai_annotator.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//services/screen_ai/public/mojom",
+    "//ui/accessibility:test_support",
+  ]
+}

@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "ash/public/cpp/view_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 
 namespace ash {
 class PillButton;
@@ -54,7 +54,7 @@ class EducationalView : public views::View {
   // Image banner.
   raw_ptr<views::ImageView> banner_ = nullptr;
   // View shadow for this view.
-  std::unique_ptr<ash::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
   // Whether or not phone specs should be used.
   bool portrait_mode_ = false;
 

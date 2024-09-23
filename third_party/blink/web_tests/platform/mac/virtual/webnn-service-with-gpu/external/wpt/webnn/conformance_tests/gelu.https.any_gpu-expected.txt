@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] gelu float32 0D scalar
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 0D scalar
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 1D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 1D constant tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 1D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 2D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 2D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 3D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 3D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 4D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 4D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float32 5D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] gelu float16 5D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+Harness: the test ran to completion.
+

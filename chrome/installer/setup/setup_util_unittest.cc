@@ -4,8 +4,9 @@
 
 #include "chrome/installer/setup/setup_util_unittest.h"
 
-#include <shlobj.h>
 #include <windows.h>
+
+#include <shlobj.h>
 
 #include <ios>
 #include <memory>

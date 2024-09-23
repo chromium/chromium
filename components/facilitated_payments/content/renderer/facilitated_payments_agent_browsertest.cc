@@ -23,16 +23,25 @@ class FacilitatedPaymentsAgentTest : public content::RenderViewTest {
                                                       &associated_interfaces_);
   }
 
-  mojom::PixCodeDetectionResult IsPixCodeFound(
-      FacilitatedPaymentsAgent* agent) {
-    mojom::PixCodeDetectionResult actual =
+  void Expect(mojom::PixCodeDetectionResult expected_status_code,
+              const std::string& expected_pix_code,
+              FacilitatedPaymentsAgent* agent) {
+    mojom::PixCodeDetectionResult actual_status_code =
         mojom::PixCodeDetectionResult::kPixCodeNotFound;
+    std::string actual_pix_code;
     static_cast<mojom::FacilitatedPaymentsAgent*>(agent)
         ->TriggerPixCodeDetection(base::BindOnce(
-            [](mojom::PixCodeDetectionResult* output,
-               mojom::PixCodeDetectionResult result) { *output = result; },
-            /*output=*/&actual));
-    return actual;
+            [](mojom::PixCodeDetectionResult* output_status_code,
+               std::string* output_pix_code,
+               mojom::PixCodeDetectionResult status_code,
+               const std::string& pix_code) {
+              *output_status_code = status_code;
+              *output_pix_code = pix_code;
+            },
+            /*output_status_code=*/&actual_status_code,
+            /*output_pix_code=*/&actual_pix_code));
+    EXPECT_EQ(expected_status_code, actual_status_code);
+    EXPECT_EQ(expected_pix_code, actual_pix_code);
   }
 
  private:
@@ -40,36 +49,130 @@ class FacilitatedPaymentsAgentTest : public content::RenderViewTest {
 };
 
 TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_NotFound) {
-  EXPECT_EQ(mojom::PixCodeDetectionResult::kPixCodeNotFound,
-            IsPixCodeFound(CreateAgentFor(R"(
+  Expect(mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string(),
+         CreateAgentFor(R"(
    <body>
     <div>
       Hello world!
     </div>
-  </form>
-  )").get()));
+  </body>
+  )").get());
 }
 
 TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundValid) {
-  EXPECT_EQ(mojom::PixCodeDetectionResult::kValidPixCodeFound,
-            IsPixCodeFound(CreateAgentFor(R"(
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
    <body>
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
-  </form>
-  )").get()));
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_FoundValidInInputElement) {
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
+   <body>
+    <input type="text" readonly=""
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_NotFoundInEditableInput) {
+  Expect(mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string(),
+         CreateAgentFor(R"(
+   <body>
+    <input type="text"
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_NotFoundInNonTextInput) {
+  Expect(mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string(),
+         CreateAgentFor(R"(
+   <body>
+    <input type="url" readonly=""
+      value="00020126370014br.gov.bcb.pix2515www.example.com6304EA3F">
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_FoundValid_IgnoreCase) {
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014BR.gov.bcb.PIX2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
+   <body>
+    <div>
+      00020126370014BR.gov.bcb.PIX2515www.example.com6304EA3F
+    </div>
+  </body>
+  )").get());
 }
 
 TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundInvalid) {
-  EXPECT_EQ(mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
-            IsPixCodeFound(CreateAgentFor(R"(
+  Expect(mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string(),
+         CreateAgentFor(R"(
    <body>
     <div>
       0014br.gov.bcb.pix
     </div>
-  </form>
-  )").get()));
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundTwoInvalid) {
+  Expect(mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string(),
+         CreateAgentFor(R"(
+   <body>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_IgnoreFirstInvalid) {
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
+   <body>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+    <div>
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
+    </div>
+  </body>
+  )").get());
+}
+
+TEST_F(FacilitatedPaymentsAgentTest,
+       TriggerPixCodeDetection_IgnoreSecondInvalid) {
+  Expect(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+         "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+         CreateAgentFor(R"(
+   <body>
+    <div>
+      00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
+    </div>
+    <div>
+      0014br.gov.bcb.pix
+    </div>
+  </body>
+  )").get());
 }
 
 TEST_F(FacilitatedPaymentsAgentTest,
@@ -79,7 +182,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
     </div>
-  </form>
+  </body>
   )");
   // Relesase the pointer because OnDestruct() calls DeleteSoon() on the PIX
   // agent.
@@ -87,8 +190,8 @@ TEST_F(FacilitatedPaymentsAgentTest,
 
   static_cast<content::RenderFrameObserver*>(unowned_agent)->OnDestruct();
 
-  EXPECT_EQ(mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun,
-            IsPixCodeFound(unowned_agent));
+  Expect(mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun, std::string(),
+         unowned_agent);
 }
 
 }  // namespace

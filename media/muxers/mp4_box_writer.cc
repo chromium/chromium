@@ -4,6 +4,8 @@
 
 #include "media/muxers/mp4_box_writer.h"
 
+#include <string_view>
+
 #include "base/big_endian.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
@@ -34,7 +36,7 @@ size_t Mp4BoxWriter::WriteAndFlush(BoxByteStream& writer) {
 
   // Write the entire boxes to the blob.
   context().GetOutputPositionTracker().WriteString(
-      base::StringPiece(reinterpret_cast<char*>(buffer.data()), buffer.size()));
+      std::string_view(reinterpret_cast<char*>(buffer.data()), buffer.size()));
 
   return buffer.size();
 }

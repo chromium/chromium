@@ -544,6 +544,8 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChild) {
 
   PaintLayer* parent_paint_layer = GetPaintLayerByElementId("parent");
   PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
+  parent_paint_layer->GetScrollableArea()->SetScrollbarsHiddenIfOverlay(false);
+  UpdateAllLifecyclePhasesForTest();
 
   ClipRectsContext context(
       parent_paint_layer,
@@ -575,8 +577,10 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChildScrollBetween) {
 
   Element* parent = GetDocument().getElementById(AtomicString("parent"));
   PaintLayer* root_paint_layer = parent->GetLayoutObject()->View()->Layer();
-
   PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
+  parent->GetLayoutBox()->GetScrollableArea()->SetScrollbarsHiddenIfOverlay(
+      false);
+  UpdateAllLifecyclePhasesForTest();
 
   ClipRectsContext context(root_paint_layer,
                            &root_paint_layer->GetLayoutObject().FirstFragment(),
@@ -606,6 +610,8 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorParent) {
   )HTML");
 
   PaintLayer* parent_paint_layer = GetPaintLayerByElementId("parent");
+  parent_paint_layer->GetScrollableArea()->SetScrollbarsHiddenIfOverlay(false);
+  UpdateAllLifecyclePhasesForTest();
 
   ClipRectsContext context(
       parent_paint_layer,

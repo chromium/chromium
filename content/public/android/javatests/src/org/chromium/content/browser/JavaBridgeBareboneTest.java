@@ -11,31 +11,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 
 /** Common functionality for testing the Java Bridge. */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeBareboneTest {
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private TestCallbackHelperContainer mTestCallbackHelperContainer;
-    private boolean mUseMojo;
-
-    @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void setupMojoTest(boolean useMojo) {
-        mUseMojo = useMojo;
-        mActivityTestRule.setupMojoTest(useMojo);
-    }
 
     private void injectDummyObject(final String name) throws Throwable {
         mActivityTestRule.runOnUiThread(
@@ -43,7 +31,7 @@ public class JavaBridgeBareboneTest {
                     @Override
                     public void run() {
                         mActivityTestRule
-                                .getJavascriptInjector(mUseMojo)
+                                .getJavascriptInjector()
                                 .addPossiblyUnsafeInterface(new Object(), name, null);
                     }
                 });
@@ -70,8 +58,7 @@ public class JavaBridgeBareboneTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
-    public void testImmediateAddition(boolean useMojo) throws Throwable {
+    public void testImmediateAddition() throws Throwable {
         injectDummyObject("testObject");
         Assert.assertEquals("\"object\"", evaluateJsSync("typeof testObject"));
     }
@@ -81,8 +68,7 @@ public class JavaBridgeBareboneTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void testNoImmediateAdditionAfterJSEvaluation(boolean useMojo) throws Throwable {
+    public void testNoImmediateAdditionAfterJSEvaluation() throws Throwable {
         evaluateJsSync("true");
         injectDummyObject("testObject");
         Assert.assertEquals("\"undefined\"", evaluateJsSync("typeof testObject"));
@@ -91,8 +77,7 @@ public class JavaBridgeBareboneTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
-    public void testImmediateAdditionAfterReload(boolean useMojo) throws Throwable {
+    public void testImmediateAdditionAfterReload() throws Throwable {
         mActivityTestRule.synchronousPageReload();
         injectDummyObject("testObject");
         Assert.assertEquals("\"object\"", evaluateJsSync("typeof testObject"));
@@ -101,8 +86,7 @@ public class JavaBridgeBareboneTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void testReloadAfterAddition(boolean useMojo) throws Throwable {
+    public void testReloadAfterAddition() throws Throwable {
         injectDummyObject("testObject");
         mActivityTestRule.synchronousPageReload();
         Assert.assertEquals("\"object\"", evaluateJsSync("typeof testObject"));

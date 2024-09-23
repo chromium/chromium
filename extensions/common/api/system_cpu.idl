@@ -56,6 +56,6 @@ namespace system.cpu {
 
   interface Functions {
     // Queries basic CPU information of the system.
-    [supportsPromises] static void getInfo(CpuInfoCallback callback);
+    static void getInfo(CpuInfoCallback callback);
   };
 };

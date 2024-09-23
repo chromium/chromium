@@ -21,9 +21,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -42,6 +42,7 @@
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "record.pb.h"
 #include "record_constants.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -99,7 +100,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
-    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 
@@ -117,7 +117,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
     kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
-    arc_kiosk_app_manager_.reset();
 
     ash::DebugDaemonClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
@@ -146,7 +145,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
  protected:
   // App manager instances for testing kiosk sessions.
-  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
@@ -156,6 +154,8 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
   ash::system::FakeStatisticsProvider statistics_provider_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   base::HistogramTester histogram_tester_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   base::FilePath target_dir_;
@@ -245,20 +245,20 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
       enqueued_event.mutable_upload_settings()->origin_path());
   // Ensure that the resulting `exported_file` exist under target directory.
   EXPECT_EQ(exported_file.DirName(), target_dir_);
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
   // Check the contents of LogUploadEvent that the job enqueued.
   std::string expected_upload_parameters = test::GetExpectedUploadParameters(
       kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
+  EXPECT_TRUE(enqueued_event.has_remote_command_details());
   // The result payload should contain the success result code.
   EXPECT_THAT(
-      enqueued_event.command_result_payload(),
+      enqueued_event.remote_command_details().command_result_payload(),
       IsJson(base::Value::Dict().Set(
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
+  EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
@@ -301,14 +301,16 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
       enqueued_event.mutable_upload_settings()->origin_path());
   // Ensure that the resulting `exported_file` exist under target directory.
   EXPECT_EQ(exported_file.DirName(), target_dir_);
-  EXPECT_TRUE(enqueued_event.has_command_id());
-  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
+
   // Check the contents of LogUploadEvent that the job enqueued.
   std::string expected_upload_parameters = test::GetExpectedUploadParameters(
       kUniqueID, exported_file.BaseName().value());
   EXPECT_EQ(
       expected_upload_parameters,
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
+
+  EXPECT_TRUE(enqueued_event.has_remote_command_details());
+  EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
 
   // The result payload should contain the success result code.
   base::Value::Dict expected_payload;
@@ -323,8 +325,8 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
                      enterprise_management::FetchSupportPacketResultNote::
                          WARNING_PII_NOT_ALLOWED));
   }
-  EXPECT_THAT(enqueued_event.command_result_payload(),
-              IsJson(std::move(expected_payload)));
+  EXPECT_THAT(enqueued_event.remote_command_details().command_result_payload(),
+              IsJson(expected_payload));
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_test;
@@ -342,13 +344,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandFetchSupportPacketTestParameterized,
     ::testing::Values(
-        test::SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
-                          /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
                           /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
-                          /*pii_allowed=*/true},
-        test::SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
                           /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
                           /*pii_allowed=*/true},

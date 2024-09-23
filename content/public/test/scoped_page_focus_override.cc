@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -33,8 +34,8 @@ ScopedPageFocusOverride::~ScopedPageFocusOverride() {
 void ScopedPageFocusOverride::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
-  base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
-                                message.size());
+  std::string_view message_str(reinterpret_cast<const char*>(message.data()),
+                               message.size());
   std::optional<base::Value> parsed_message =
       base::JSONReader::Read(message_str);
   ASSERT_TRUE(parsed_message.has_value());

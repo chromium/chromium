@@ -26,6 +26,7 @@ static_library("common") {
   deps = [
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:autofill_regex",
     "//sql",
     "//url",
   ]
@@ -66,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//testing/gtest",
   ]
 

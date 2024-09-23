@@ -16,6 +16,7 @@
 
 namespace content {
 
+class MediaSession;
 class WebContents;
 class RenderFrameHost;
 
@@ -64,6 +65,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void FrameReceivedUserActivation(RenderFrameHost*) override;
   void WebContentsDestroyed() override;
   void DidChangeThemeColor() override;
+  void OnBackgroundColorChanged() override;
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,
                            const MediaPlayerId& id) override;
   void MediaStoppedPlaying(
@@ -78,6 +80,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) override;
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;
+  void MediaSessionCreated(MediaSession* media_session) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
   GURL base_url_of_last_started_data_url_;

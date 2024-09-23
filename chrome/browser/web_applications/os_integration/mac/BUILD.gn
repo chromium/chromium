@@ -1,0 +1,44 @@
+# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2018 The Chromium Authors
+# found in the LICENSE file.
+
+import("//build/util/branding.gni")
+import("//chrome/version.gni")
+
+source_set("web_app_shortcut_copier_lib") {
+  sources = [ "web_app_shortcut_copier_mac.mm" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/app_shim:app_shim",
+    "//content/public/common:main_function_params",
+  ]
+}
+
+executable("web_app_shortcut_copier") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  sources = [ "web_app_shortcut_copier_main_mac.cc" ]
+
+  deps = [ "//chrome:chrome_framework+link_nested" ]
+
+  ldflags = []
+  if (is_component_build) {
+    ldflags += [
+      # When run within Chromium, the helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers
+      # so set rpath up to the base.
+      "-Wl,-rpath,@executable_path/../../../../../../..",
+
+      # When run from test executables, Chromium.framework is in root of the
+      # build directory so the rpath needs to look up fewer levels to find it.
+      "-Wl,-rpath,@executable_path/../../../..",
+    ]
+  } else {
+    ldflags += [
+      # The helper is a standalone tool rather than a bundled app so the
+      # framework's install name does not work as-is. Rewrite it so the
+      # relative path is correct given the executable's location.
+      "-Wcrl,installnametool,-change,@executable_path/../Frameworks/${chrome_product_full_name} Framework.framework/Versions/${chrome_version_full}/${chrome_product_full_name} Framework,@executable_path/../${chrome_product_full_name} Framework",
+    ]
+  }
+}

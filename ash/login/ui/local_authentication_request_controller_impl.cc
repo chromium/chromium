@@ -38,6 +38,18 @@ bool LocalAuthenticationRequestControllerImpl::ShowWidget(
     return false;
   }
 
+  const auto& auth_factors = user_context->GetAuthFactorsData();
+  const cryptohome::AuthFactor* local_password_factor =
+      auth_factors.FindLocalPasswordFactor();
+  if (local_password_factor == nullptr) {
+    LOG(ERROR) << "The local password authentication factor is not available, "
+                  "skip to show the local authentication dialog.";
+    // TODO(b/334215182): It seems sometimes this dialog appears even when the
+    // local password is not available.
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+
   const AccountId& account_id = user_context->GetAccountId();
 
   const std::string& user_email = account_id.GetUserEmail();
@@ -50,7 +62,7 @@ bool LocalAuthenticationRequestControllerImpl::ShowWidget(
       std::move(local_authentication_callback),
       l10n_util::GetStringUTF16(
           IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE),
-      desc, this, std::move(user_context));
+      desc, weak_factory_.GetWeakPtr(), std::move(user_context));
   return true;
 }
 

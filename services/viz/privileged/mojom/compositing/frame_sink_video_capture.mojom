@@ -109,7 +109,9 @@ enum BufferFormatPreference {
 // again to resume capture; or the mojo binding can be dropped to auto-terminate
 // the capturer.
 interface FrameSinkVideoCapturer {
-  // Specifies the pixel format to use.
+  // Specifies the pixel format to use. Please note when format is
+  // PIXEL_FORMAT_ARGB, the frame might be BGRA or RGBA depends on platform
+  // support, please refer to the actual VideoFrameInfo's format at callback.
   //
   // Default, if never called: PIXEL_FORMAT_I420.
   SetFormat(media.mojom.VideoPixelFormat format);

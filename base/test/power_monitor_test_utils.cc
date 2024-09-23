@@ -22,13 +22,13 @@ TestBatteryLevelProvider::TestBatteryLevelProvider() = default;
 
 void TestBatteryLevelProvider::GetBatteryState(
     base::OnceCallback<
-        void(const absl::optional<base::BatteryLevelProvider::BatteryState>&)>
+        void(const std::optional<base::BatteryLevelProvider::BatteryState>&)>
         callback) {
   std::move(callback).Run(battery_state_);
 }
 
 void TestBatteryLevelProvider::SetBatteryState(
-    absl::optional<base::BatteryLevelProvider::BatteryState> battery_state) {
+    std::optional<base::BatteryLevelProvider::BatteryState> battery_state) {
   battery_state_ = battery_state;
 }
 

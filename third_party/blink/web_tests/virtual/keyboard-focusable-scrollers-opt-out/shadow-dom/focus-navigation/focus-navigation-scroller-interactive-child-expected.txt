@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] While focusing a keyboard-focusable scroller, adding interactive content should not cancel focusability
+  assert_equals: scroller should be keyboard focusable expected Element node <div id="scroller" style="overflow:scroll; width:50px; he... but got Element node <button id="end">END</button>
+Harness: the test ran to completion.
+

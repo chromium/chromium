@@ -5,6 +5,7 @@
 #include "chrome/browser/win/conflicts/inspection_results_cache.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -14,7 +15,6 @@
 #include "base/hash/md5.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -213,7 +213,8 @@ ReadCacheResult ReadInspectionResultsCache(
   if (!ReadFileToString(file_path, &contents))
     return ReadCacheResult::kFailReadFile;
 
-  base::Pickle pickle(contents.data(), contents.length());
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(contents));
   InspectionResultsCache temporary_result;
   ReadCacheResult read_result = DeserializeInspectionResultsCache(
       min_time_stamp, pickle, &temporary_result);
@@ -231,8 +232,8 @@ bool WriteInspectionResultsCache(
   base::Pickle pickle =
       SerializeInspectionResultsCache(inspection_results_cache);
 
-  // TODO(1022041): Investigate if using WriteFileAtomically() in a
+  // TODO(crbug.com/40106434): Investigate if using WriteFileAtomically() in a
   // CONTINUE_ON_SHUTDOWN sequence can cause too many corrupted caches.
   return base::ImportantFileWriter::WriteFileAtomically(
-      file_path, base::StringPiece(pickle.data_as_char(), pickle.size()));
+      file_path, std::string_view(pickle.data_as_char(), pickle.size()));
 }

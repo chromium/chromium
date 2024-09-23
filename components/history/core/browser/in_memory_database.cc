@@ -9,9 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 
 namespace history {
 
@@ -22,7 +19,8 @@ InMemoryDatabase::~InMemoryDatabase() = default;
 
 bool InMemoryDatabase::InitDB() {
   if (!db_.OpenInMemory()) {
-    NOTREACHED() << "Cannot open databse " << GetDB().GetErrorMessage();
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot open databse " << GetDB().GetErrorMessage();
     return false;
   }
 
@@ -31,14 +29,14 @@ bool InMemoryDatabase::InitDB() {
 
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {
-    NOTREACHED() << "Unable to create table";
+    DUMP_WILL_BE_NOTREACHED() << "Unable to create table";
     db_.Close();
     return false;
   }
 
   // Create the keyword search terms table.
   if (!InitKeywordSearchTermsTable()) {
-    NOTREACHED() << "Unable to create keyword search terms";
+    NOTREACHED_IN_MIGRATION() << "Unable to create keyword search terms";
     db_.Close();
     return false;
   }
@@ -60,16 +58,10 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   if (!InitDB())
     return false;
 
-  // Attach to the history database on disk.  (We can't ATTACH in the middle of
-  // a transaction.)
-  sql::Statement attach(GetDB().GetUniqueStatement("ATTACH ? AS history"));
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  attach.BindString(0, history_name.value());
-#else
-  attach.BindString(0, base::WideToUTF8(history_name.value()));
-#endif
-  if (!attach.Run())
+  // Attach to the history database on disk.
+  if (!db_.AttachDatabase(history_name, "history")) {
     return false;
+  }
 
   // Copy URL data to memory.
 
@@ -77,7 +69,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // may or may not have a favicon_id column, but the in-memory one will never
   // have it. Therefore, the columns aren't guaranteed to match.
   //
-  // TODO(https://crbug.com/736136) Once we can guarantee that the favicon_id
+  // TODO(crbug.com/40527222) Once we can guarantee that the favicon_id
   // column doesn't exist with migration code, this can be replaced with the
   // simpler:
   //   "INSERT INTO urls SELECT * FROM history.urls WHERE typed_count > 0"
@@ -113,14 +105,17 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   }
 
   // Detach from the history database on disk.
-  if (!db_.Execute("DETACH history")) {
-    NOTREACHED() << "Unable to detach from history database.";
+  if (!db_.DetachDatabase("history")) {
+    NOTREACHED_IN_MIGRATION() << "Unable to detach from history database.";
     return false;
   }
 
   // Index the table, this is faster than creating the index first and then
   // inserting into it.
   CreateMainURLIndex();
+
+  // After this point, the database may be accessed from another sequence.
+  db_.DetachFromSequence();
 
   return true;
 }

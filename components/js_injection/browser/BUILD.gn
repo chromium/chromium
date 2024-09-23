@@ -8,6 +8,8 @@ source_set("browser") {
     "js_communication_host.h",
     "js_to_browser_messaging.cc",
     "js_to_browser_messaging.h",
+    "navigation_web_message_sender.cc",
+    "navigation_web_message_sender.h",
     "web_message.cc",
     "web_message.h",
     "web_message_host.h",
@@ -17,11 +19,32 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/back_forward_cache",
     "//components/js_injection/common",
     "//components/js_injection/common:common_mojom",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
     "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "navigation_listener_browsertest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/back_forward_cache",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

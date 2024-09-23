@@ -8,7 +8,9 @@ assert(!is_android)
 
 build_webui_tests("build") {
   files = [
+    "autofill_metadata_test.ts",
     "feedback_test.ts",
+    "system_info_test.ts",
     "test_feedback_browser_proxy.ts",
   ]
 

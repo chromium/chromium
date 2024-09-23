@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/bluetooth/test/bluetooth_test_win.h"
 
 #include <windows.devices.bluetooth.h>
@@ -278,7 +283,7 @@ void BluetoothTestWin::StartLowEnergyDiscoverySession() {
 }
 
 BluetoothDevice* BluetoothTestWin::SimulateLowEnergyDevice(int device_ordinal) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
@@ -290,87 +295,87 @@ std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
 }
 
 void BluetoothTestWin::SimulateGattConnection(BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateStatusChangeToDisconnect(
     BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
     const std::vector<std::string>& uuids,
     const std::vector<std::string>& blocked_uuids) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristic(
     BluetoothRemoteGattService* service,
     const std::string& uuid,
     int properties) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRemoved(
     BluetoothRemoteGattService* service,
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRead(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWrite(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::DeleteDevice(BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattDescriptor(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::string& uuid) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStarted(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicChanged(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::FinishPendingTasks() {
@@ -386,7 +391,7 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
   } else {
     disabled.push_back(kNewBLEGattSessionHandling);
   }
-  // TODO(crbug.com/1335586): Remove once `kWebBluetoothConfirmPairingSupport`
+  // TODO(crbug.com/40847175): Remove once `kWebBluetoothConfirmPairingSupport`
   // is enabled by default.
   enabled.push_back(features::kWebBluetoothConfirmPairingSupport);
   scoped_feature_list_.InitWithFeatures(enabled, disabled);

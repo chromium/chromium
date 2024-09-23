@@ -141,6 +141,7 @@ export enum ViewName {
   REVIEW = 'view-review',
   SETTINGS = 'view-settings',
   SPLASH = 'view-splash',
+  SUPER_RES_INTRO_DIALOG = 'view-super-res-intro-dialog',
   VIDEO_RESOLUTION_SETTINGS = 'view-video-resolution-settings',
   WARNING = 'view-warning',
 }
@@ -221,19 +222,65 @@ export type FpsRangeList = FpsRange[];
  * Type for performance event.
  */
 export enum PerfEvent {
+  // In all modes, the duration between the camera switch button being clicked
+  // and the preview stream being updated.
   CAMERA_SWITCHING = 'camera-switching',
+  // In Doc Scan mode, the duration between a shutter sound playing and the
+  // image appearing in the review page.
+  DOCUMENT_CAPTURE_POST_PROCESSING = 'document-capture-post-processing',
+  // In Doc Scan mode, the duration between "Save as PDF" button being clicked
+  // and the review page closing.
+  DOCUMENT_PDF_SAVING = 'document-pdf-saving',
+  // In GIF mode, the duration between GIF recording stopping and the temporal
+  // GIF appearing in the review page.
   GIF_CAPTURE_POST_PROCESSING = 'gif-capture-post-processing',
+  // In GIF mode, the duration between "Save" button being clicked and the
+  // result file saving finished.
+  GIF_CAPTURE_SAVING = 'gif-capture-saving',
+  // Used for testing. The duration between app window being created and the app
+  // being launched.
   LAUNCHING_FROM_LAUNCH_APP_COLD = 'launching-from-launch-app-cold',
+  // Used for testing. The duration between app window being created and the app
+  // being launched.
   LAUNCHING_FROM_LAUNCH_APP_WARM = 'launching-from-launch-app-warm',
+  // The duration between CCA window being created and the preview stream
+  // appearing.
   LAUNCHING_FROM_WINDOW_CREATION = 'launching-from-window-creation',
+  // In all modes, the duration between the mode switch button being clicked and
+  // the preview stream being updated.
   MODE_SWITCHING = 'mode-switching',
-  PHOTO_CAPTURE_POST_PROCESSING = 'photo-capture-post-processing',
+  // In Photo mode, the duration between a snapshot of the preview being scanned
+  // by OCR(automatically, with 500ms intervals) and the scanned result
+  // appearing in the preview. The result might not be shown if it is empty or
+  // if other scanners have detected results.
+  OCR_SCANNING = 'ocr-scanning',
+  // In Photo mode, the duration between a shutter sound playing and the
+  // result file saving finished.
+  PHOTO_CAPTURE_POST_PROCESSING_SAVING = 'photo-capture-post-processing-saving',
+  // In Photo, Doc Scan and Portrait mode, the duration between the shutter
+  // button being clicked or a timer expiring and a shutter sound playing.
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
-  PHOTO_TAKING = 'photo-taking',
-  PORTRAIT_MODE_CAPTURE_POST_PROCESSING =
-      'portrait-mode-capture-post-processing',
-  TIME_LAPSE_CAPTURE_POST_PROCESSING = 'time-lapse-capture-post-processing',
-  VIDEO_CAPTURE_POST_PROCESSING = 'video-capture-post-processing',
+  // In Portrait mode, the duration between a shutter sound playing and the
+  // two result files saving finished.
+  PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING =
+      'portrait-mode-capture-post-processing-saving',
+  // In Video mode, the duration between the video snapshot button being clicked
+  // and the result file saving finished.
+  SNAPSHOT_TAKING = 'snapshot-taking',
+  // In Time lapse mode, the duration between a shutter sound playing and
+  // the result file saving finished.
+  TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING =
+      'time-lapse-capture-post-processing-saving',
+  // In Video mode, the duration between the shutter button being clicked to
+  // stop recording and the result file saving finished.
+  VIDEO_CAPTURE_POST_PROCESSING_SAVING = 'video-capture-post-processing-saving',
+}
+
+export enum Pressure {
+  NOMINAL,
+  FAIR,
+  SERIOUS,
+  CRITICAL,
 }
 
 export interface ImageBlob {
@@ -249,12 +296,14 @@ export interface PerfInformation {
   hasError?: boolean;
   resolution?: Resolution;
   facing?: Facing;
+  pageCount?: number;  // Only for DOCUMENT_PDF_SAVING
+  pressure?: Pressure;
 }
 
 export interface PerfEntry {
   event: PerfEvent;
   duration: number;
-  perfInfo?: PerfInformation;
+  perfInfo: PerfInformation;
 }
 
 export interface VideoTrackSettings {
@@ -324,6 +373,7 @@ export interface ErrorInfo {
  * Types of error used in ERROR metrics.
  */
 export enum ErrorType {
+  BIG_BUFFER_FAILURE = 'big-buffer-failure',
   BROKEN_THUMBNAIL = 'broken-thumbnail',
   CHECK_COVER_FAILURE = 'check-cover-failed',
   DEVICE_INFO_UPDATE_FAILURE = 'device-info-update-failure',
@@ -332,7 +382,6 @@ export enum ErrorType {
   FILE_SYSTEM_FAILURE = 'file-system-failure',
   FRAME_ROTATION_NOT_DISABLED = 'frame-rotation-not-disabled',
   HANDLE_CAMERA_RESULT_FAILURE = 'handle-camera-result-failure',
-  IDLE_DETECTOR_FAILURE = 'idle-detector-failure',
   INVALID_REVIEW_UI_STATE = 'invalid-review-ui-state',
   METADATA_MAPPING_FAILURE = 'metadata-mapping-failure',
   MULTI_WINDOW_HANDLING_FAILURE = 'multi-window-handling-failure',
@@ -463,7 +512,14 @@ export class PortraitErrorNoFaceDetected extends Error {
  * Throws when the camera is suspended while camera effects are ongoing.
  */
 export class CameraSuspendError extends Error {
-  constructor(message = 'camera suspended') {
+  constructor(message = 'Camera suspended') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class NoCameraError extends Error {
+  constructor(message = 'No available cameras') {
     super(message);
     this.name = this.constructor.name;
   }
@@ -476,10 +532,10 @@ export enum LocalStorageKey {
   CUSTOM_VIDEO_PARAMETERS = 'customVideoParameters',
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
-  ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
-  ENABLE_MULTISTREAM_RECORDING_CHROME = 'enableMultistreamRecordingChrome',
+  ENABLE_PREVIEW_OCR = 'enablePreviewOcr',
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
+  FIRST_OPENING = 'firstOpening',
   GA_ID_REFRESH_TIME = 'gaIdRefreshTime',
   GA_USER_ID = 'google-analytics.analytics.user-id',
   GA4_CLIENT_ID = 'ga4ClientId',
@@ -490,10 +546,12 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_EXPERT = 'deviceVideoResolutionExpert',
   PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
+  PREVIEW_OCR_TOAST_SHOWN = 'previewOcrToastShown',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
+  SUPER_RES_DIALOG_SHOWN = 'superResDialogShown',
   TOGGLE_MIC = 'toggleMic',
 }
 

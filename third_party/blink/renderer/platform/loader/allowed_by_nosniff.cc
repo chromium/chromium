@@ -25,44 +25,44 @@ using WebFeature = mojom::WebFeature;
 // future decisions about which types can be safely be disallowed. Below
 // is a number of constants about which use counters to report.
 
-const WebFeature kApplicationFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationFeatures = {
     WebFeature::kCrossOriginApplicationScript,
     WebFeature::kSameOriginApplicationScript};
 
-const WebFeature kTextFeatures[2] = {WebFeature::kCrossOriginTextScript,
-                                     WebFeature::kSameOriginTextScript};
+const std::array<WebFeature, 2> kTextFeatures = {
+    WebFeature::kCrossOriginTextScript, WebFeature::kSameOriginTextScript};
 
-const WebFeature kApplicationOctetStreamFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationOctetStreamFeatures = {
     WebFeature::kCrossOriginApplicationOctetStream,
     WebFeature::kSameOriginApplicationOctetStream,
 };
 
-const WebFeature kApplicationXmlFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationXmlFeatures = {
     WebFeature::kCrossOriginApplicationXml,
     WebFeature::kSameOriginApplicationXml,
 };
 
-const WebFeature kTextHtmlFeatures[2] = {
+const std::array<WebFeature, 2> kTextHtmlFeatures = {
     WebFeature::kCrossOriginTextHtml,
     WebFeature::kSameOriginTextHtml,
 };
 
-const WebFeature kTextPlainFeatures[2] = {
+const std::array<WebFeature, 2> kTextPlainFeatures = {
     WebFeature::kCrossOriginTextPlain,
     WebFeature::kSameOriginTextPlain,
 };
 
-const WebFeature kTextXmlFeatures[2] = {
+const std::array<WebFeature, 2> kTextXmlFeatures = {
     WebFeature::kCrossOriginTextXml,
     WebFeature::kSameOriginTextXml,
 };
 
-const WebFeature kJsonFeatures[2] = {
+const std::array<WebFeature, 2> kJsonFeatures = {
     WebFeature::kCrossOriginJsonTypeForScript,
     WebFeature::kSameOriginJsonTypeForScript,
 };
 
-const WebFeature kUnknownFeatures[2] = {
+const std::array<WebFeature, 2> kUnknownFeatures = {
     WebFeature::kCrossOriginStrictNosniffWouldBlock,
     WebFeature::kSameOriginStrictNosniffWouldBlock,
 };
@@ -76,10 +76,11 @@ const WebFeature kUnknownFeatures[2] = {
 // expected future blocking of this resource. 'counter' determines which
 // Use counter should be used to count this. 'is_worker_global_scope' is used
 // for choosing 'counter' value.
-bool AllowMimeTypeAsScript(const String& mime_type,
-                           bool same_origin,
-                           AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
-                           WebFeature& counter) {
+static bool AllowMimeTypeAsScript(
+    const String& mime_type,
+    bool same_origin,
+    AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
+    std::optional<WebFeature>& counter) {
   using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
 
   // If strict mime type checking for workers is enabled, we'll treat all
@@ -194,8 +195,7 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // For any MIME type, we can do three things: accept/reject it, print a
   // warning into the console, and count it using a use counter.
-  const WebFeature kWebFeatureNone = WebFeature::kNumberOfFeatures;
-  WebFeature counter = kWebFeatureNone;
+  std::optional<WebFeature> counter;
   bool allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                      mime_type_check_mode, counter);
 
@@ -209,13 +209,13 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // The code above has made a decision and handed down the result in accept
   // and counter.
-  if (counter != kWebFeatureNone) {
-    use_counter.CountUse(counter);
+  if (counter.has_value()) {
+    use_counter.CountUse(*counter);
   }
   if (!allow) {
     console_logger->AddConsoleMessage(
-        mojom::ConsoleMessageSource::kSecurity,
-        mojom::ConsoleMessageLevel::kError,
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
         "Refused to execute script from '" +
             response.CurrentRequestUrl().ElidedString() +
             "' because its MIME type ('" + mime_type + "') is not executable.");
@@ -226,6 +226,29 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
       use_counter.CountUse(WebFeature::kStrictMimeTypeChecksWouldBlockWorker);
   }
   return allow;
+}
+
+bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
+    ConsoleLogger* console_logger,
+    const ResourceResponse& response) {
+  if (ParseContentTypeOptionsHeader(response.HttpHeaderField(
+          http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff) {
+    return true;
+  }
+
+  if (MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+          response.HttpContentType())) {
+    return true;
+  }
+
+  console_logger->AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kSecurity,
+      mojom::blink::ConsoleMessageLevel::kError,
+      "Refused to load XML external entity from '" +
+          response.CurrentRequestUrl().ElidedString() +
+          "' because its MIME type ('" + response.HttpContentType() +
+          "') is incorrect, and strict MIME type checking is enabled.");
+  return false;
 }
 
 }  // namespace blink

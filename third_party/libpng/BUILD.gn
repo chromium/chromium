@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/arm.gni")
-import("//build/config/cast.gni")
 import("//build/config/mips.gni")
+import("//build/config/loongarch64.gni")
 
 if (build_with_chromium) {
   import("//testing/libfuzzer/fuzzer_test.gni")
@@ -88,8 +88,14 @@ source_set("libpng_sources") {
     configs += [ "//build/config/compiler:optimize_speed" ]
   } else if (current_cpu == "mips64el" && mips_use_msa) {
     sources += [
+      "mips/filter_mmi_inline_assembly.c",
       "mips/filter_msa_intrinsics.c",
       "mips/mips_init.c",
+    ]
+  } else if (current_cpu == "loong64" && loongarch64_use_lsx) {
+    sources += [
+      "loongarch/filter_lsx_intrinsics.c",
+      "loongarch/loongarch_lsx_init.c",
     ]
   }
 

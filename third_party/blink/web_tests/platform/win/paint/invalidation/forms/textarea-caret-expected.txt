@@ -10,6 +10,13 @@
       ]
     },
     {
+      "name": "HorizontalScrollbar",
+      "position": [1, 22],
+      "bounds": [164, 15],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
       "name": "Caret",
       "position": [482, 3],
       "bounds": [1, 16],

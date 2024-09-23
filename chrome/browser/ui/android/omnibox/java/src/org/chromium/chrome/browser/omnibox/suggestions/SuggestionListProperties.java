@@ -8,13 +8,19 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The properties controlling the state of the list of suggestion items. */
 @interface SuggestionListProperties {
-    /** Whether the suggestion list is visible. */
-    static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
+    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+
+    static final WritableFloatPropertyKey CHILD_TRANSLATION_Y = new WritableFloatPropertyKey();
+
+    /** Whether the Omnibox session is active and Suggestions may be shown. */
+    static final WritableBooleanPropertyKey OMNIBOX_SESSION_ACTIVE =
+            new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
     static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
@@ -60,7 +66,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                VISIBLE,
+                ALPHA,
+                CHILD_TRANSLATION_Y,
+                OMNIBOX_SESSION_ACTIVE,
                 EMBEDDER,
                 SUGGESTION_MODELS,
                 COLOR_SCHEME,

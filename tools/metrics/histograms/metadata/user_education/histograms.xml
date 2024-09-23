@@ -1,0 +1,451 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+user education along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="NewBadgeFeature">
+  <variant name="AutofillForUnclassifiedFieldsAvailable"
+      summary="For address and card field-by-field filling; shown in the
+               autofill section of the context menu."/>
+  <variant name="Compose"
+      summary="For Compose feature; shown in web context menu."/>
+  <variant name="ComposeNudge"
+      summary="For Compose feature; shown on autofill popup when there is
+               saved state to resume.."/>
+  <variant name="ComposeProactiveNudge"
+      summary="For Compose feature; shown on autofill popup."/>
+  <variant name="LensOverlay"
+      summary="Lens Overlay entry points in app and web context menus."/>
+  <variant name="NewBadgeTestFeature"
+      summary="Used for testing purposes only."/>
+  <variant name="PasswordManualFallbackAvailable"
+      summary="For passwords manual fallback; shown in the context menu."/>
+  <variant name="PlusAddressesEnabled"
+      summary="For plus address creation; shown in the autofill popup."/>
+  <variant name="PlusAddressFallbackFromContextMenu"
+      summary="Plus address manual fallback entry point in the context menu."/>
+  <variant name="TabOrganization"
+      summary="Promotion for Organize Tabs in the app menu."/>
+</variants>
+
+<variants name="TutorialID">
+  <variant name="" summary="any tutorial"/>
+  <variant name="CustomizeChromeSidePanel"
+      summary="the tutorial for the customize chrome side panel"/>
+  <variant name="PasswordManager"
+      summary="the tutorial for the password manager"/>
+  <variant name="SavedTabGroup" summary="the tutorial for the saved tab group"/>
+  <variant name="SidePanelReadingList"
+      summary="the tutorial for the side panel reading list"/>
+  <variant name="TabGroup" summary="the tutorial for tab groups"/>
+  <variant name="Test" summary="the tutorial used for testing only"/>
+</variants>
+
+<variants name="WhatsNewModule">
+  <variant name="FamilyLink" summary="the module for Family Link"/>
+  <variant name="GeminiSiteSearchShortcut"
+      summary="the module for Gemini Site Search Shortcut"/>
+  <variant name="GenerativeTheming"
+      summary="the module for Generative Theming"/>
+  <variant name="GoogleLens" summary="the module for Google Lens"/>
+  <variant name="GooglePayReauth" summary="the module for Google Pay Re-auth"/>
+  <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
+  <variant name="SafetyCheck" summary="the module for Safety Check"/>
+  <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
+  <variant name="SearchBoxSuggestions"
+      summary="the module for Search Box Suggestions"/>
+  <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
+  <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
+  <variant name="TestDefaultModule"
+      summary="the default module used for testing only"/>
+  <variant name="TestModule" summary="the module used for testing only"/>
+  <variant name="TranslationSettings"
+      summary="the module for Translation Settings"/>
+</variants>
+
+<histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
+    expires_after="2024-09-20">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    Records whether the user edited the tab group title during the Tab Groups
+    tutorial. During one of the steps, the tutorial asks the user to name the
+    new group, but the tutorial will continue if they dismiss the bubble without
+    adding a name. We want to know if people follow the instruction or not.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial.{TutorialID}.AbortStep" units="int"
+    expires_after="2025-02-10">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialID} is aborted, the step at which the tutorial was aborted.
+    Only logged on desktop platforms. Logged each time a tutorial is aborted.
+  </summary>
+  <token key="TutorialID" variants="TutorialID"/>
+</histogram>
+
+<histogram name="Tutorial.{TutorialID}.Completion" enum="BooleanSuccess"
+    expires_after="2025-02-02">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialID} is ended, whether the tutorial was completed or aborted.
+    Only logged on desktop platforms. Logged each time a tutorial is ended.
+  </summary>
+  <token key="TutorialID" variants="TutorialID"/>
+</histogram>
+
+<histogram name="Tutorial.{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
+    expires_after="2024-09-15">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialID} button is shown from an IPHLink, whether the user clicks
+    to start the tutorial. Only logged on desktop platforms when the user either
+    clicks or dismisses the FeaturePromo.
+  </summary>
+  <token key="TutorialID" variants="TutorialID"/>
+</histogram>
+
+<histogram name="Tutorial.{TutorialID}.StartedFromWhatsNewPage"
+    enum="BooleanSuccess" expires_after="2025-02-02">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    The count of successful starts of the tutorial when {TutorialID} button is
+    clicked on the whats new page (called by the Tutorial BrowserCommand). A
+    false value correlates to a failure to start the tutorial.
+  </summary>
+  <token key="TutorialID" variants="TutorialID"/>
+</histogram>
+
+<histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
+    expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what failure prevented an In-Product Help from being shown to the
+    user. The failure defines the state of the User Education system, which can
+    be many varieties (e.g. snoozed, disabled blocked by another promo, etc.).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageNotShown.DesktopReEngagement.NoBrowser"
+    units="tries" expires_after="2024-12-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the re-engagement promo is not shown because there is no
+    eligible browser. This is recorded on a new User Education session. The
+    value is the number of times the promo had attempted to show; typical values
+    are low (1-2) as the number of retries is limited.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
+    expires_after="2024-09-01">
+  <expired_intentionally>
+    Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
+  </expired_intentionally>
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Record the index of a rotating promo when it is shown to the user. This can
+    be used to determine how deep in the rotation of rotating promos users are
+    going, and also what proportion of users have seen a particular promo from a
+    rotating promo set.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageShown.Subtype" enum="PromoSubtype"
+    expires_after="2025-03-09">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what subtype of In-Product Help was shown to the user. The subtype
+    dictates special rules for when it can be shown. It can be normal, per-app
+    (shown once each in multiple applications), or a legal notice (must be shown
+    until explicitly acknowledged by the user).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageShown.Type" enum="PromoType"
+    expires_after="2025-03-09">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what type of In-Product Help was shown to the user. The type defines
+    the behavior of the IPH, which can be many varieties (e.g. toast, snooze,
+    custom action, etc.).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxShownReached"
+    enum="BooleanCompleted" expires_after="2025-02-16">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when a &quot;New&quot; Badge is shown. Recorded as
+    &quot;Completed&quot; if the maximum number of shows has been reached and
+    the badge will not show again for this user, otherwise recorded as &quot;Not
+    Completed&quot;.
+  </summary>
+  <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
+</histogram>
+
+<histogram name="UserEducation.NewBadge.{NewBadgeFeature}.MaxUsedReached"
+    enum="BooleanCompleted" expires_after="2024-12-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when the feature promoted by a &quot;New&quot; Badge is used,
+    typically via entry point promoted by the badge. Recorded as
+    &quot;Completed&quot; if the maximum number of uses has been reached and the
+    badge will not show again for this user, otherwise recorded as &quot;Not
+    Completed&quot;.
+  </summary>
+  <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
+</histogram>
+
+<histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"
+    units="minutes" expires_after="2025-02-10">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Active Period of a User Education Session.
+    The timer starts when a session starts. The timer is stopped and recorded
+    when the current session is ended. Resolution is in minutes and the maximum
+    time recorded in this metric is 1 hour.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
+    units="minutes" expires_after="2025-02-10">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Active Period of a User Education Session.
+    The timer starts when a session starts. The timer is stopped and recorded
+    when the current session is ended. Resolution is in minutes and the maximum
+    time recorded in this metric is 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.IdlePeriodDuration.Hr.Under28Days"
+    units="hours" expires_after="2025-02-10">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Idle Period of a User Education Session.
+    The timer starts when a session ends. The timer is stopped and recorded when
+    a new session is started. Resolution in in hours and the maximum time
+    recorded in this metric is 28 days.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.IdlePeriodDuration.Min.Under24Hours"
+    units="minutes" expires_after="2025-02-10">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time duration of the Idle Period of a User Education Session.
+    The timer starts when a session ends. The timer is stopped and recorded when
+    a new session is started. Resolution is in minutes and the maximum time
+    recorded in this metric is 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.LongTermCount" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of recent
+    sessions in the &quot;long-term&quot; window, which is 28 days. This helps
+    us understand how frequently new sessions are triggered.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of days with at
+    least one session in the past month. This helps us understand how frequently
+    our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.RecentActiveDays" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of days with at
+    least one session in the past week. This helps us understand how frequently
+    our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.RecentActiveWeeks" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of weeks with
+    at least one session in the past month. This helps us understand how
+    frequently our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.RecentSuperActiveWeeks" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of weeks with
+    at least four active days in the past month. This helps us understand how
+    frequently our product is being used in alignment with standard Google user
+    segmentation metrics.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.ShortTermCount" units="count"
+    expires_after="2025-02-10">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of recent
+    sessions in the &quot;short-term&quot; window, which is 7 days. This helps
+    us understand how frequently new sessions are triggered.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ExploreMoreExpanded"
+    enum="BooleanYesNo" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user expands or collapses the &quot;Explore More&quot;
+    section of the What's New page.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ModuleLinkClicked.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that a link or button in the {ModuleName} module on the What's New
+    page was clicked. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ModuleShown.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the {ModuleName} module on the What's New page was visible to
+    the user. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ScrollDepth" enum="ScrollDepthQuartile"
+    expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user scrolls past a quartile threshold of the What's New
+    page.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.TimeOnPage" units="ms"
+    expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the total amount of time the user spent on the What's New page
+    before navigating away.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.TimeToLoadContent" units="ms"
+    expires_after="2025-02-23">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the time it took in milliseconds for the embedded What's New page to
+    load after the WebUI was created.
+  </summary>
+</histogram>
+
+<histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"
+    expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records load events for the What's New page when a load event occurs. This
+    tracks how many times loading remote content is attempted, and whether it
+    succeeds, fails and results in an error page, fails and redirects to the New
+    Tab Page, fails and doesn't open the tab (for preloading), or fails and
+    closes the tab. Load is attempted when the page is first opened or on first
+    startup after updating to a new milestone. Success or failure will occur
+    when the network request completes. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="WhatsNew.LoadResponseCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code of the network request for the
+    remote content for the iframe in the What's New page. This request is
+    triggered when the What's New page is opened. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
+    expires_after="2025-02-02">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records whether the What's New page should try to show, whether it is
+    overridden (e.g. by welcome) and whether the user is ineligible (e.g. due to
+    being in incognito mode). Recorded when startup tabs are being determined at
+    initialization. Desktop only.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

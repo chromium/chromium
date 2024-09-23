@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -50,7 +51,6 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.UiRestriction;
@@ -208,6 +208,7 @@ public class TrustedWebActivityTest {
     @MediumTest
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "b/352624584")
     public void testStatusBarColorCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule
@@ -230,7 +231,7 @@ public class TrustedWebActivityTest {
         ChromeTabUtils.loadUrlOnUiThread(activity.getActivityTab(), pageWithThemeColorCertError);
 
         int defaultColor =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> ThemeTestUtils.getDefaultThemeColor(activity.getActivityTab()));
         int expectedColor = defaultColor;
         // Use longer-than-default timeout to give page time to finish loading.
@@ -251,7 +252,6 @@ public class TrustedWebActivityTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1112720")
     public void testToolbarVisibleCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithoutCertError =
                 mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/about.html");
@@ -287,7 +287,7 @@ public class TrustedWebActivityTest {
     }
 
     private @BrowserControlsState int getBrowserControlConstraints(Tab tab) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> TabBrowserControlsConstraintsHelper.getConstraints(tab));
     }
 }

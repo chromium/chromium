@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -12,10 +13,6 @@ proto_library("safebrowsing_proto") {
 proto_library("v4_store_proto") {
   sources = [ "v4_store.proto" ]
   link_deps = [ ":safebrowsing_proto" ]
-}
-
-proto_library("metadata_proto") {
-  sources = [ "metadata.proto" ]
 }
 
 # This target is shared between the desktop and mobile versions.
@@ -227,17 +224,19 @@ if (is_android) {
 }
 
 source_set("v4_rice") {
-  sources = [
-    "v4_rice.cc",
-    "v4_rice.h",
-  ]
+  if (safe_browsing_mode != 0 || is_ios) {
+    sources = [
+      "v4_rice.cc",
+      "v4_rice.h",
+    ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//base",
-    "//third_party/protobuf:protobuf_lite",
-  ]
+    deps = [
+      "//base",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
 }
 
 source_set("v4_store") {
@@ -344,6 +343,7 @@ source_set("unit_tests_local_db") {
     "v4_update_protocol_manager_unittest.cc",
   ]
   deps = [
+    ":database_manager",
     ":unit_tests_shared",
     ":util",
     ":v4_database",

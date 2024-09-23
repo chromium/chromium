@@ -17,6 +17,7 @@ namespace features {
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossEnabled);
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossIsAvailable);
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossIsAvailabilityCheckNeeded);
+DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kLLPrivacyIsAvailable);
 #endif
 
 // A helper method that has the appropriate behavior on both Ash and Lacros.
@@ -27,6 +28,9 @@ bool DEVICE_BLUETOOTH_EXPORT IsFlossAvailable();
 
 // Helper method to get if it needs to check Floss availability.
 bool DEVICE_BLUETOOTH_EXPORT IsFlossAvailabilityCheckNeeded();
+
+// Helper method to get if the current device is available to enable LL privacy.
+bool DEVICE_BLUETOOTH_EXPORT IsLLPrivacyAvailable();
 }  // namespace features
 }  // namespace floss
 

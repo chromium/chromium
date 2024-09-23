@@ -1,0 +1,139 @@
+<style include="cr-icons cr-shared-style"></style>
+<if expr="chromeos_ash">
+  <style include="cros-color-overrides"></style>
+</if>
+<style>
+  #center-content {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin: 0 24px;
+    overflow: hidden;
+  }
+
+  #splash-image-column {
+    height: 200px;
+    margin: 8px;
+    width: 200px;
+  }
+
+  #nearby-settings-column {
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+    position: relative;
+    top: -12px;
+    width: calc(50% - 16px);
+  }
+
+  #deviceNameHelp {
+    bottom: 8px;
+    color: var(--cros-text-color-secondary);
+    font-size: 10px;
+    line-height: 10px;
+    position: absolute;
+  }
+
+  #device-name-group {
+    margin: 10px;
+    position: relative;
+  }
+
+  #device-visibility-group {
+    margin: 10px;
+    position: relative;
+  }
+
+  #deviceVisibilityHelp {
+    color: var(--cros-text-color-secondary);
+    font-size: 10px;
+    line-height: 12px;
+    position: relative;
+  }
+
+  .card-icon {
+    fill: var(--cros-icon-color-prominent);
+    margin-inline-end: 12px;
+  }
+
+  #arrowForward {
+    fill: var(--cros-icon-color-prominent);
+    margin-inline-start: auto;
+  }
+
+  #visibilityButton {
+    align-items: center;
+    display: flex;
+    margin-block-end: 6px;
+    padding-block-end: 6px;
+    padding-block-start: 6px;
+    padding-inline-end: 9px;
+    padding-inline-start: 9px;
+    position: relative;
+  }
+
+  cr-input,
+  .cr-form-field-label {
+    color: var(--cros-text-color-secondary);
+  }
+</style>
+<nearby-page-template title="$i18n{nearbyShareOnboardingPageTitle}"
+    sub-title="$i18n{nearbyShareOnboardingPageSubtitle}"
+    action-button-label="$i18n{nearbyShareActionsConfirm}"
+    action-button-event-name="next"
+    action-disabled=
+      "[[hasErrorMessage_(errorMessage)]]"
+    cancel-button-label="$i18n{nearbyShareActionsCancel}"
+    cancel-button-event-name="close">
+  <div id=center-content slot="content">
+    <iron-icon id="splash-image-column"
+        icon="nearby-images:nearby-onboarding-splash"
+        aria-hidden="true">>
+    </iron-icon>
+    <div id="nearby-settings-column">
+      <div id="device-name-group">
+        <cr-input label="$i18n{nearbyShareOnboardingPageDeviceName}"
+            id="deviceName" value="[[settings.deviceName]]"
+            on-input="onDeviceNameInput_" error-message="[[errorMessage]]"
+            invalid="[[hasErrorMessage_(errorMessage)]]"
+            aria-label="$i18n{nearbyShareOnboardingPageDeviceName}
+                $i18n{nearbyShareOnboardingPageDeviceNameHelp}">
+        </cr-input>
+        <!-- TODO(crbug.com/1155756) move this help text into cr-input -->
+        <div id="deviceNameHelp" hidden="[[hasErrorMessage_(errorMessage)]]"
+          aria-hidden="true">
+          $i18n{nearbyShareOnboardingPageDeviceNameHelp}
+        </div>
+      </div>
+      <div id="device-visibility-group">
+        <div id="visibilityLabel" class="cr-form-field-label"
+          aria-hidden="true">
+          $i18n{nearbyShareOnboardingPageDeviceVisibility}
+        </div>
+        <cr-button id="visibilityButton"
+            on-click="switchToVisibilitySelectionView_"
+            aria-label="$i18n{nearbyShareOnboardingPageDeviceVisibility}
+                [[getVisibilitySelectionButtonText_()]]
+                [[getVisibilitySelectionButtonHelpText_()]]">
+          <iron-icon slot="prefix-icon"
+              icon="nearby20:[[getVisibilitySelectionButtonIcon_()]]"
+              class="card-icon">
+          </iron-icon>
+          <div id="visibilityModeLabel" class="card-label"
+            aria-hidden="true">
+            [[getVisibilitySelectionButtonText_()]]
+          </div>
+          <iron-icon slot="suffix-icon"
+              id="arrowForward"
+              icon="nearby20:chevron-right">
+          </iron-icon>
+        </cr-button>
+        <div id="deviceVisibilityHelp" aria-hidden="true">
+          [[getVisibilitySelectionButtonHelpText_()]]
+        </div>
+      </div>
+    </div>
+  </div>
+</nearby-page-template>

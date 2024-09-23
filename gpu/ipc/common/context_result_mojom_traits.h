@@ -25,7 +25,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextResult, gpu::ContextResult> {
       case gpu::ContextResult::kSurfaceFailure:
         return gpu::mojom::ContextResult::SurfaceFailure;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::ContextResult::FatalFailure;
   }
 

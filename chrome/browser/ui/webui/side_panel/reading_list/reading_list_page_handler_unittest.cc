@@ -129,8 +129,9 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ReadingListModelFactory::GetInstance(),
-             ReadingListModelFactory::GetDefaultFactoryForTesting()}};
+    return {TestingProfile::TestingFactory{
+        ReadingListModelFactory::GetInstance(),
+        ReadingListModelFactory::GetDefaultFactoryForTesting()}};
   }
 
   Browser* incognito_browser() { return incognito_browser_.get(); }

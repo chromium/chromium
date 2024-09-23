@@ -28,7 +28,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/callback_helpers.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
@@ -50,7 +50,7 @@ class PipWindowResizerTest : public AshTestBase,
                              public ::testing::WithParamInterface<
                                  std::tuple<std::string, std::size_t>> {
  public:
-  PipWindowResizerTest() : scoped_feature_list_(features::kPipTilt) {}
+  PipWindowResizerTest() = default;
 
   PipWindowResizerTest(const PipWindowResizerTest&) = delete;
   PipWindowResizerTest& operator=(const PipWindowResizerTest&) = delete;
@@ -92,8 +92,8 @@ class PipWindowResizerTest : public AshTestBase,
         Shell::GetContainer(root_window, kShellWindowId_PipContainer);
 
     std::unique_ptr<views::Widget> widget(new views::Widget);
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     params.bounds = screen_bounds;
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
     params.context = root_window;
@@ -143,7 +143,7 @@ class PipWindowResizerTest : public AshTestBase,
     aura::Window* target_window = resizer->GetTarget();
     base::TimeTicks timestamp = base::TimeTicks::Now();
     ui::GestureEventDetails details = ui::GestureEventDetails(
-        ui::ET_SCROLL_FLING_START, velocity_x, velocity_y);
+        ui::EventType::kScrollFlingStart, velocity_x, velocity_y);
     ui::GestureEvent event = ui::GestureEvent(
         target_window->bounds().origin().x(),
         target_window->bounds().origin().y(), ui::EF_NONE, timestamp, details);
@@ -160,6 +160,11 @@ class PipWindowResizerTest : public AshTestBase,
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
     Shell::Get()->pip_controller()->SetPipWindow(window_);
 
+    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+        NonClientFrameViewAsh::Get(window()));
+    custom_frame->SetMaximumSize(gfx::Size(300, 200));
+    custom_frame->SetMinimumSize(gfx::Size(30, 20));
+
     long root_window_index = static_cast<long>(std::get<1>(GetParam()));
     window_->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
                          root_window_index);
@@ -171,7 +176,6 @@ class PipWindowResizerTest : public AshTestBase,
   raw_ptr<FakeWindowState, DanglingUntriaged> test_state_;
   base::HistogramTester histograms_;
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   void UpdateWorkArea(const std::string& bounds) {
     UpdateDisplay(bounds);
@@ -215,18 +219,12 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(30, 20));
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
 
   // Pinch zoom in.
   resizer->Pinch(
       CalculateDragPoint(*resizer, location_change.x(), location_change.y()),
-      scale, /*angle=*/0.f);
+      scale);
 
   // Calculate the expected new bounds.
   float left_ratio =
@@ -242,8 +240,7 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
 
   // Pinch zoom out.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f,
-                 /*angle=*/0.f);
+  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f);
 
   // Calculate the expected new bounds.
   scale *= 0.5f;
@@ -257,39 +254,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
                               new_size.width(), new_size.height());
 
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
-}
-
-TEST_P(PipWindowResizerTest, PipWindowCanTiltWithPinch) {
-  PreparePipWindow(gfx::Rect(200, 200, 120, 80));
-  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
-
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(60, 40));
-  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
-
-  // Pinch with a positive angle.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/1.f,
-                 /*angle=*/30.f);
-
-  // Confirm that the window has tilt applied with transform.
-  float tilt_angle = std::atan2(window()->transform().rc(1, 0),
-                                window()->transform().rc(0, 0)) *
-                     180.f / base::kPiFloat;
-  EXPECT_GE(tilt_angle, 3.f);
-
-  // Pinch with a negative angle.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/1.f,
-                 /*angle=*/-60.f);
-  tilt_angle = std::atan2(window()->transform().rc(1, 0),
-                          window()->transform().rc(0, 0)) *
-               180.f / base::kPiFloat;
-
-  // Confirm that the window has tilt applied with transform.
-  EXPECT_LE(tilt_angle, -3.f);
 }
 
 TEST_P(PipWindowResizerTest, PipWindowDragIsRestrictedToWorkArea) {
@@ -365,8 +329,8 @@ TEST_P(PipWindowResizerTest, PipWindowCanBeSwipeDismissed) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left.
-  resizer->Drag(CalculateDragPoint(*resizer, -100, 0), 0);
+  // Drag to the top.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -100), 0);
 
   // Should be dismissed when the drag completes.
   resizer->CompleteDrag();
@@ -378,8 +342,8 @@ TEST_P(PipWindowResizerTest, PipWindowPartiallySwipedDoesNotDismiss) {
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left, but only a little bit.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 0), 0);
+  // Drag to the top, but only a little bit.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -30), 0);
 
   // Should not be dismissed when the drag completes.
   resizer->CompleteDrag();
@@ -393,13 +357,13 @@ TEST_P(PipWindowResizerTest, PipWindowInSwipeToDismissGestureLocksToAxis) {
       CreateResizerForTest(HTCAPTION, gfx::Point(50, 50)));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the left, but only a little bit, to start a swipe-to-dismiss.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 0), 0);
-  EXPECT_EQ(gfx::Rect(-22, 8, 100, 100), test_state()->last_requested_bounds());
+  // Drag to the top, but only a little bit, to start a swipe-to-dismiss.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -30), 0);
+  EXPECT_EQ(gfx::Rect(8, -22, 100, 100), test_state()->last_requested_bounds());
 
-  // Now try to drag down, it should be locked to the horizontal axis.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 30), 0);
-  EXPECT_EQ(gfx::Rect(-22, 8, 100, 100), test_state()->last_requested_bounds());
+  // Now try to drag to the right, it should be locked to the horizontal axis.
+  resizer->Drag(CalculateDragPoint(*resizer, 30, -30), 0);
+  EXPECT_EQ(gfx::Rect(8, -22, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(PipWindowResizerTest,
@@ -408,13 +372,13 @@ TEST_P(PipWindowResizerTest,
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Drag to the right and up a bit.
-  resizer->Drag(CalculateDragPoint(*resizer, 30, -8), 0);
-  EXPECT_EQ(gfx::Rect(38, 8, 100, 100), test_state()->last_requested_bounds());
+  // Drag to the bottom and left a bit.
+  resizer->Drag(CalculateDragPoint(*resizer, -8, 30), 0);
+  EXPECT_EQ(gfx::Rect(8, 46, 100, 100), test_state()->last_requested_bounds());
 
-  // Now try to drag to the left start a swipe-to-dismiss. It should stop
+  // Now try to drag to the top start a swipe-to-dismiss. It should stop
   // at the edge of the work area.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, -8), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, -8, -30), 0);
   EXPECT_EQ(gfx::Rect(8, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
@@ -425,8 +389,8 @@ TEST_P(PipWindowResizerTest, PipWindowAtCornerLocksToOneAxisOnSwipeToDismiss) {
 
   // Try dragging up and to the left. It should lock onto the axis with the
   // largest displacement.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, -40), 0);
-  EXPECT_EQ(gfx::Rect(8, -32, 100, 100), test_state()->last_requested_bounds());
+  resizer->Drag(CalculateDragPoint(*resizer, -40, -30), 0);
+  EXPECT_EQ(gfx::Rect(-32, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(
@@ -436,9 +400,10 @@ TEST_P(
   std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
   ASSERT_TRUE(resizer.get());
 
-  // Try a lot downward and a bit to the left. Swiping should not be initiated.
-  resizer->Drag(CalculateDragPoint(*resizer, -30, 50), 0);
-  EXPECT_EQ(gfx::Rect(8, 58, 100, 100), test_state()->last_requested_bounds());
+  // Try a lot to the right and a bit to the top. Swiping should not be
+  // initiated.
+  resizer->Drag(CalculateDragPoint(*resizer, 50, -30), 0);
+  EXPECT_EQ(gfx::Rect(58, 8, 100, 100), test_state()->last_requested_bounds());
 }
 
 TEST_P(PipWindowResizerTest,
@@ -449,7 +414,7 @@ TEST_P(PipWindowResizerTest,
 
   // Move a small amount - this should not trigger any bounds change, since
   // we don't know whether a swipe will start or not.
-  resizer->Drag(CalculateDragPoint(*resizer, -4, 0), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -4), 0);
   EXPECT_TRUE(test_state()->last_requested_bounds().IsEmpty());
 }
 
@@ -640,7 +605,7 @@ TEST_P(PipWindowResizerTest, PipWindowFlungAvoidsFloatingKeyboard) {
                                         base::DoNothing());
   const display::Display display = WindowState::Get(window())->GetDisplay();
   keyboard_controller->ShowKeyboardInDisplay(display);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
   keyboard_window->SetBounds(gfx::Rect(8, 150, 100, 100));
@@ -712,7 +677,7 @@ TEST_P(PipWindowResizerTest, PipPinchResizeTriggersResizeUmaMetrics) {
 
   // Send pinch event. This also creates a `WindowResizer`.
   base::TimeTicks timestamp = base::TimeTicks::Now();
-  ui::GestureEventDetails details(ui::ET_GESTURE_PINCH_BEGIN);
+  ui::GestureEventDetails details(ui::EventType::kGesturePinchBegin);
   ui::GestureEvent event(window()->bounds().origin().x(),
                          window()->bounds().origin().y(), ui::EF_NONE,
                          timestamp, details);

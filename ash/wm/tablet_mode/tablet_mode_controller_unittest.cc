@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 #include <math.h>
@@ -15,7 +20,6 @@
 #include "ash/accelerometer/accelerometer_types.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -41,6 +45,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -112,7 +117,11 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 
 class TabletModeControllerTest : public AshTestBase {
  public:
-  TabletModeControllerTest() = default;
+  TabletModeControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
 
   TabletModeControllerTest(const TabletModeControllerTest&) = delete;
   TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
@@ -227,8 +236,9 @@ class TabletModeControllerTest : public AshTestBase {
   void WaitForWindowAnimation(aura::Window* window) {
     auto* compositor = window->layer()->GetCompositor();
 
-    while (window->layer()->GetAnimator()->is_animating())
+    while (window->layer()->GetAnimator()->is_animating()) {
       EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    }
   }
 
   // Wait one more frame presented for the metrics to get recorded.
@@ -241,6 +251,8 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<TabletModeControllerTestApi> test_api_;
 
   base::SimpleTestTickClock test_tick_clock_;
@@ -1108,6 +1120,63 @@ TEST_F(TabletModeControllerTest, ShowAndHideMouseCursorTest) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
+TEST_F(TabletModeControllerTest, StartingKioskSwitchesToUiClamshellMode) {
+  SetTabletMode(true);
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  // When the device is in the physical tablet state, the internal events should
+  // still be blocked even when the device is in the UI clamshell mode.
+  EXPECT_TRUE(AreEventsBlocked());
+}
+
+TEST_F(TabletModeControllerTest, KioskBlocksEnteringTabletMode) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  SetTabletMode(true);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+  EXPECT_TRUE(IsInPhysicalTabletState());
+}
+
+TEST_F(TabletModeControllerTest, DeviceReactsOnLidChangeInKioskSession) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  // Opening the lid to 270 degrees should start tablet mode if not blocked.
+  OpenLidToAngle(270.0f);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+  EXPECT_TRUE(IsInPhysicalTabletState());
+}
+
+TEST_F(TabletModeControllerTest,
+       KioskBlocksUiTabletModeEvenAfterMultipleLidChange) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  OpenLidToAngle(270.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  OpenLidToAngle(270.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+}
+
 class TabletModeControllerForceTabletModeTest
     : public TabletModeControllerTest {
  public:
@@ -1148,6 +1217,15 @@ TEST_F(TabletModeControllerForceTabletModeTest, ForceTabletModeTest) {
   AttachExternalMouse();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(AreEventsBlocked());
+}
+
+TEST_F(TabletModeControllerForceTabletModeTest,
+       ForceTabletModeOverridenInKiosk) {
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 }
 
 TEST_F(TabletModeControllerForceTabletModeTest, DockInForcedTabletMode) {
@@ -1626,7 +1704,7 @@ TEST_F(TabletModeControllerTest, TabletModeTransitionHistogramsNotLogged) {
   histogram_tester.ExpectTotalCount(kExitHistogram, 0);
 }
 
-// TODO(crbug.com/1382272): Flaky on Linux Chromium OS ASan LSan Tests.
+// TODO(crbug.com/40877227): Flaky on Linux Chromium OS ASan LSan Tests.
 TEST_F(TabletModeControllerTest,
        DISABLED_TabletModeTransitionHistogramsLogged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -1879,8 +1957,9 @@ class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
     for (int id :
          {kShellWindowId_FloatContainer, kShellWindowId_ShelfContainer}) {
       const aura::Window* container = root->GetChildById(id);
-      if (container->layer()->opacity() != 1.0f)
+      if (container->layer()->opacity() != 1.0f) {
         return false;
+      }
     }
     return true;
   }

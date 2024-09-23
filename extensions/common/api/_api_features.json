@@ -6,23 +6,23 @@
 // See chrome/common/extensions/api/_features.md to understand this file, as
 // well as feature.h, simple_feature.h, and feature_provider.h.
 //
-// Note that specifying "web_page", "blessed_web_page", or "all" as a context
+// Note that specifying "web_page", "privileged_web_page", or "all" as a context
 // type will require manually updating extensions/renderer/extension_bindings_system.cc.
 
 {
   "alarms": {
     "dependencies": ["permission:alarms"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "app.runtime": [{
     "channel": "stable",
-    "contexts": ["blessed_extension", "lock_screen_extension"],
+    "contexts": ["privileged_extension", "lock_screen_extension"],
     "extension_types": ["platform_app"],
     "noparent": true
   }, {
     "channel": "stable",
     "component_extensions_auto_granted": false,
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "noparent": true,
     "allowlist": [
@@ -33,12 +33,12 @@
   }],
   "app.window": [{
     "channel": "stable",
-    "contexts": ["blessed_extension", "lock_screen_extension"],
+    "contexts": ["privileged_extension", "lock_screen_extension"],
     "extension_types": ["platform_app"],
     "noparent": true
   }, {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "noparent": true,
     "component_extensions_auto_granted": false,
@@ -52,17 +52,17 @@
     "noparent": true,
     "internal": true,
     "channel": "stable",
-    "contexts": ["blessed_extension", "lock_screen_extension"]
+    "contexts": ["privileged_extension", "lock_screen_extension"]
   },
   "app.currentWindowInternal.setShape": {
     "dependencies": ["permission:app.window.shape"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   // The API for the *embedder* of appview. Appview has both an embedder and
   // guest API, which are different.
   "appViewEmbedderInternal": {
     "internal": true,
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": ["permission:appview"]
   },
   // Note that exposing this doesn't necessarily expose AppView,
@@ -71,24 +71,24 @@
   "appViewGuestInternal": {
     "internal": true,
     "channel": "stable",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "audio": {
     "dependencies": ["permission:audio"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "automationInternal": {
     "internal": true,
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "automation": {
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -99,12 +99,12 @@
   }],
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "platforms": ["chromeos", "lacros", "linux"]
   },
   "bluetoothPrivate": [{
     "dependencies": ["permission:bluetoothPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -115,15 +115,15 @@
   }],
   "bluetoothSocket": {
     "dependencies": ["manifest:bluetooth"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "cecPrivate": {
     "dependencies": ["permission:cecPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "clipboard": {
     "dependencies": ["permission:clipboard"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "clipboard.onClipboardDataChanged": {
     "dependencies": ["permission:clipboardRead"]
@@ -133,11 +133,11 @@
   },
   "declarativeNetRequest": [{
     "dependencies": ["permission:declarativeNetRequest"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   }, {
     "dependencies": ["permission:declarativeNetRequestWithHostAccess"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }],
   "declarativeNetRequest.onRuleMatchedDebug": [{
     "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequest"],
@@ -146,22 +146,25 @@
     "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequestWithHostAccess"],
     "location": "unpacked"
   }],
-  "declarativeNetRequest.testMatchOutcome": {
+  "declarativeNetRequest.testMatchOutcome": [{
     "dependencies": ["permission:declarativeNetRequest"],
     "location": "unpacked"
-  },
+  }, {
+    "dependencies": ["permission:declarativeNetRequestWithHostAccess"],
+    "location": "unpacked"
+  }],
   "declarativeWebRequest": {
     "dependencies": ["permission:declarativeWebRequest"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "diagnostics": {
     "dependencies": ["permission:diagnostics"],
     "extension_types": ["platform_app"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "dns": {
     "dependencies": ["permission:dns"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   // This is not a real API, only here for documentation purposes.
   // See http://crbug.com/275944 for background.
@@ -169,7 +172,7 @@
     "internal": true,
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "events": {
     "internal": true,
@@ -181,7 +184,7 @@
   "feedbackPrivate": [
     {
       "dependencies": ["permission:feedbackPrivate"],
-      "contexts": ["blessed_extension"],
+      "contexts": ["privileged_extension"],
       "default_parent": true
     },
     {
@@ -197,7 +200,7 @@
   "feedbackPrivate.openFeedback": {
     "dependencies": [],
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "allowlist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // http://crbug.com/1352358
@@ -220,14 +223,14 @@
   ],
   "fileSystem": {
     "dependencies": ["permission:fileSystem"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true
   },
   "guestViewInternal": [
     {
       "internal": true,
       "channel": "stable",
-      "contexts": ["blessed_extension"]
+      "contexts": ["privileged_extension"]
     }, {
       "internal": true,
       "channel": "stable",
@@ -237,6 +240,7 @@
         "chrome://assistant-optin/*",
         "chrome://discards/*",
         "chrome://extensions/*",
+        "chrome://graduation/*",
         "chrome://home/*",
         "chrome://chrome-signin/*",
         "chrome://mobilesetup/*",
@@ -252,6 +256,9 @@
       "internal": true,
       "channel": "stable",
       "contexts": ["web_page"],
+      "matches":[
+        "<all_urls>"
+      ],
       // This feature is only enabled if the embedder's delegated check returns
       // true.
       "requires_delegated_availability_check": true
@@ -259,32 +266,36 @@
   ],
   "hid": {
     "dependencies": ["permission:hid"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "i18n": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app",
                         "login_screen_extension"],
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script",
-                 "lock_screen_extension"]
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script",
+      "lock_screen_extension"
+    ]
   },
   "idle": {
     "dependencies": ["permission:idle"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "idle.getAutoLockDelay": {
     "platforms": ["chromeos", "lacros"]
   },
   "lockScreen.data": {
     "dependencies": ["permission:lockScreen"],
-    "contexts": ["blessed_extension", "lock_screen_extension"]
+    "contexts": ["privileged_extension", "lock_screen_extension"]
   },
   "lockScreen.data.create": {
     "contexts": ["lock_screen_extension"]
   },
   "management": [{
     "dependencies": ["permission:management"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   }, {
     "channel": "stable",
@@ -296,8 +307,14 @@
   }, {
     "channel": "stable",
     "contexts": ["web_page"],
-    "matches": ["https://chromewebstore.google.com/*"],
-    "feature_flag": "NewWebstoreDomain"
+    "matches": ["https://chromewebstore.google.com/*"]
+  }, {
+    // Used for webstore testing. See comment in
+    // chrome/common/extensions/webstore_override.cc
+    "channel": "stable",
+    "contexts": ["web_page"],
+    "requires_delegated_availability_check": true,
+    "matches": ["<all_urls>"]
   }],
   "management.getPermissionWarningsByManifest": {
     "dependencies": [],
@@ -321,11 +338,11 @@
   },
   "mediaPerceptionPrivate": {
     "dependencies": ["permission:mediaPerceptionPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "metricsPrivate": [{
     "dependencies": ["permission:metricsPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "metricsPrivateIndividualApis",
     "default_parent": true
   }, {
@@ -335,9 +352,9 @@
       "chrome://apps/*",
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
+      "chrome://compare/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
       "chrome://shopping-insights-side-panel.top-chrome/*",
-      "chrome://download-shelf.top-chrome/*",
       "chrome://eche-app/*",
       "chrome://extensions/*",
       "chrome://file-manager/*",
@@ -362,8 +379,10 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://boca-app/*",
       "chrome-untrusted://compose/*",
       "chrome-untrusted://help-app/*",
+      "chrome-untrusted://lens-overlay/*",
       "chrome-untrusted://media-app/*",
       "chrome-untrusted://mako/*",
       "chrome-untrusted://projector/*",
@@ -434,10 +453,10 @@
   },
   "mimeHandlerPrivate": {
     "dependencies": ["manifest:mime_types_handler"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "mojoPrivate": {
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
@@ -445,12 +464,12 @@
   },
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "networkingPrivate"
   },
   "networkingPrivate": [{
     "dependencies": ["permission:networkingPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     // TODO(tbarzic): networkingPrivate is being renamed to networking.onc.
     // The goal is to eventually remove networkingPrivate API in favour of
     // networking.onc, but until current usages are migrated to the new
@@ -470,28 +489,28 @@
   }],
   "odfsConfigPrivate": {
     "dependencies": ["permission:odfsConfigPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "feature_flag": "ApiOdfsConfigPrivate"
   },
   "offscreen": {
     "dependencies": ["permission:offscreen"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "power": {
     "dependencies": ["permission:power"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "power.reportActivity": {
     "platforms": ["chromeos", "lacros"]
   },
   "printerProvider": {
     "dependencies": ["permission:printerProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "printerProviderInternal": {
     "internal": true,
     "dependencies": ["permission:printerProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "runtime": {
     "channel": "stable",
@@ -503,7 +522,7 @@
       "chromeos_system_extension"
     ],
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension"
     ]
   },
@@ -515,21 +534,21 @@
   },
   "runtime.getManifest": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "content_script"
     ]
   },
   "runtime.connect": [{
     // Everything except WebUI.
     "contexts": [
-      "blessed_web_page",
+      "privileged_web_page",
       "content_script",
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "user_script",
       "web_page"
     ],
@@ -544,27 +563,27 @@
   }],
   "runtime.connectNative": {
     "dependencies": ["permission:nativeMessaging"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "runtime.getContexts": {
     "min_manifest_version": 3,
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "runtime.getURL": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "content_script"
     ]
   },
   "runtime.id": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "content_script"
     ]
   },
@@ -575,44 +594,44 @@
   },
   "runtime.onConnect": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "user_script",
       "content_script"
     ]
   },
   "runtime.onConnectExternal": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension"
     ]
   },
   "runtime.onConnectNative": {
     "dependencies": ["permission:nativeMessaging"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "runtime.onUserScriptConnect": {
     // NOTE: We can readily open this up to offscreen extensions and
     // lockscreen extensions, if there's desire. For now, limit it.
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "min_manifest_version": 3
   },
   "runtime.onMessage": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "user_script",
       "content_script"
     ]
   },
   "runtime.onMessageExternal": {
     "contexts": [
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension"
     ]
@@ -620,18 +639,18 @@
   "runtime.onUserScriptMessage": {
     // NOTE: We can readily open this up to offscreen extensions and
     // lockscreen extensions, if there's desire. For now, limit it.
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "min_manifest_version": 3
   },
   "runtime.sendMessage": [{
     // Everything except WebUI.
     "contexts": [
-      "blessed_web_page",
+      "privileged_web_page",
       "content_script",
-      "blessed_extension",
+      "privileged_extension",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "user_script",
       "web_page"
     ],
@@ -651,19 +670,19 @@
   }],
   "runtime.sendNativeMessage": {
     "dependencies": ["permission:nativeMessaging"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "serial": {
     "dependencies": ["permission:serial"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "socket": {
     "dependencies": ["permission:socket"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "sockets.tcp": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
@@ -673,7 +692,7 @@
   }],
   "sockets.tcpServer": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
@@ -683,7 +702,7 @@
   }],
   "sockets.udp": [{
     "dependencies": ["manifest:sockets"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },{
     "channel": "stable",
     "contexts": ["webui_untrusted"],
@@ -693,18 +712,22 @@
   }],
   "storage": {
     "dependencies": ["permission:storage"],
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ]
   },
   "storage.session": {
     "min_manifest_version": 3
   },
   "system.cpu": {
     "dependencies": ["permission:system.cpu"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "system.display": [{
     "dependencies": ["permission:system.display"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -714,31 +737,37 @@
   }],
   "system.memory": {
     "dependencies": ["permission:system.memory"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "system.network": {
     "dependencies": ["permission:system.network"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "system.storage": {
     "dependencies": ["permission:system.storage"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "system.storage.getAvailableCapacity": {
     "channel": "dev"
   },
+  // The test API also has custom checks in the bindings system which only make
+  // it available if specific command line flags are used:
+  //  - "extension-test-api-on-web-pages" for web_page contexts.
+  //  - "test-type=" for the other contexts listed here (set automatically in
+  //    browser, ui and gpu tests by the test harness).
+
   "test": [{
     "channel": "stable",
     "extension_types": "all",
-    // Everything except web pages and WebUI. WebUI is declared in a separate
-    // rule to keep the "matches" property isolated.
+    // Everything except web pages and WebUI. WebUI and web pages are declared
+    // in separate rules to keep the "matches" properties isolated.
     "contexts": [
-      "blessed_extension",
-      "blessed_web_page",
+      "privileged_extension",
+      "privileged_web_page",
       "content_script",
       "lock_screen_extension",
       "offscreen_extension",
-      "unblessed_extension",
+      "unprivileged_extension",
       "user_script"
     ]
   }, {
@@ -754,39 +783,56 @@
     "channel": "stable",
     "contexts": [ "webui_untrusted" ],
     "matches": [ "chrome-untrusted://api-test/*" ]
+  }, {
+    // This also depends on a special check in the NativeExtensionBindingsSystem
+    // that only exposes it if an associated command line flag is set.
+    "channel": "stable",
+    "contexts": ["web_page"],
+    "matches": ["<all_urls>"]
   }],
   "types": {
     "internal": true,
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "usb": {
     "dependencies": ["permission:usb"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],
-    "contexts": [ "blessed_extension" ],
+    "contexts": [ "privileged_extension" ],
+    "developer_mode_only": true
+  },
+  "userScripts.getWorldConfigurations": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "privileged_extension" ],
     "developer_mode_only": true,
-    "feature_flag": "ApiUserScripts"
+    "feature_flag": "ApiUserScriptsMultipleWorlds"
+  },
+  "userScripts.resetWorldConfiguration": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "privileged_extension" ],
+    "developer_mode_only": true,
+    "feature_flag": "ApiUserScriptsMultipleWorlds"
   },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "vpnProvider": {
     "dependencies": ["permission:vpnProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webRequest": {
     "dependencies": ["permission:webRequest"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webRequestInternal": [{
     "internal": true,
     "channel": "stable",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     // webview uses webRequestInternal API.
     "channel": "stable",
@@ -797,6 +843,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
@@ -811,6 +858,9 @@
     "internal": true,
     "channel": "stable",
     "contexts": ["web_page"],
+    "matches": [
+      "<all_urls>"
+    ],
     // This feature is only enabled if the embedder's delegated check returns
     // true.
     "requires_delegated_availability_check": true
@@ -818,7 +868,7 @@
   "webViewInternal": [{
     "internal": true,
     "dependencies": ["permission:webview"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "internal": true,
     "channel": "stable",
@@ -828,6 +878,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
@@ -842,13 +893,16 @@
     "internal": true,
     "channel": "stable",
     "contexts": ["web_page"],
+    "matches":[
+      "<all_urls>"
+    ],
     // This feature is only enabled if the embedder's delegated check returns
     // true.
     "requires_delegated_availability_check": true
   }],
   "webViewRequest": [{
     "dependencies": ["permission:webview"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -857,6 +911,7 @@
       "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
+      "chrome://graduation/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",

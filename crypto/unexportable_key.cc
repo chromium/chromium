@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "build/build_config.h"
 
 namespace crypto {
 
@@ -16,27 +15,36 @@ std::unique_ptr<UnexportableKeyProvider> (*g_mock_provider)() = nullptr;
 
 UnexportableSigningKey::~UnexportableSigningKey() = default;
 UnexportableKeyProvider::~UnexportableKeyProvider() = default;
-
 VirtualUnexportableSigningKey::~VirtualUnexportableSigningKey() = default;
 VirtualUnexportableKeyProvider::~VirtualUnexportableKeyProvider() = default;
+
+bool UnexportableSigningKey::IsHardwareBacked() const {
+  return false;
+}
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
 std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
+#elif BUILDFLAG(IS_MAC)
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
+    UnexportableKeyProvider::Config config);
 #endif
 
 // Implemented in unexportable_key_software_unsecure.cc.
 std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProviderSoftwareUnsecure();
 
-std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
+    UnexportableKeyProvider::Config config) {
   if (g_mock_provider) {
     return g_mock_provider();
   }
 
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
+#elif BUILDFLAG(IS_MAC)
+  return GetUnexportableKeyProviderMac(std::move(config));
 #else
   return nullptr;
 #endif
@@ -52,6 +60,10 @@ GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY() {
 }
 
 namespace internal {
+
+bool HasScopedUnexportableKeyProvider() {
+  return g_mock_provider != nullptr;
+}
 
 void SetUnexportableKeyProviderForTesting(
     std::unique_ptr<UnexportableKeyProvider> (*func)()) {

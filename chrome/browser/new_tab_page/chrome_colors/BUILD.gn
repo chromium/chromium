@@ -4,6 +4,21 @@
 
 import("//build/compiled_action.gni")
 
+source_set("chrome_colors") {
+  sources = [
+    "chrome_colors_util.cc",
+    "chrome_colors_util.h",
+  ]
+  public_deps = [
+    "//skia",
+    "//ui/base/mojom",
+  ]
+  deps = [
+    ":generate_chrome_colors_info",
+    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+  ]
+}
+
 executable("generate_colors_info") {
   sources = [
     "generate_colors_info.cc",

@@ -1235,8 +1235,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             // barrier for the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->TriggerMarkingSteps(
-                ThreadState::StackState::kMayContainHeapPointers);
+            driver->TriggerMarkingStepsWithStack();
           },
           WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
@@ -1263,8 +1262,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             // the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->TriggerMarkingSteps(
-                ThreadState::StackState::kMayContainHeapPointers);
+            driver->TriggerMarkingStepsWithStack();
           },
           WTF::Unretained(&driver), WrapWeakPersistent(holder.Get())),
       MakeGarbageCollected<LinkedObject>());
@@ -1332,9 +1330,6 @@ TEST_F(IncrementalMarkingTest, AdjustMarkedBytesOnMarkedBackingStore) {
 
   // Disable concurrent sweeping to check that sweeping is not in progress after
   // the FinishGC call.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBlinkHeapConcurrentSweeping);
   using Container = HeapVector<Member<LinkedObject>>;
   Persistent<Container> holder(MakeGarbageCollected<Container>());
   WeakPersistent<Container> canary(holder.Get());
@@ -1518,6 +1513,23 @@ TEST_F(IncrementalMarkingTest,
   driver.FinishGC();
   // All buckets were kept alive.
   EXPECT_EQ(0u, DestructedAndTraced::n_destructed);
+}
+
+TEST_F(IncrementalMarkingTest, NestedVectorsWithInlineCapacityOnStack) {
+  // Regression test: https://crbug.com/339967265
+  //
+  // Regression test ensures that on-stack nested vectors do not have their
+  // backing slot registered for compaction. Registering the slot would result
+  // in a nullptr crash.
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
+  // Pre-filled vector to trigger write barrier for backing below.
+  HeapVector<int> inner_vector({1});
+  driver.StartGC();
+  // Vector with inline capacity on stack.
+  HeapVector<HeapVector<int>, 1> vector;
+  vector.push_back(inner_vector);
+  driver.FinishGC();
 }
 
 }  // namespace incremental_marking_test

@@ -11,4 +11,9 @@ BASE_FEATURE(kAutofillSharedStorageServerCardData,
              "AutofillSharedStorageServerCardData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, we exclude geolocation data in the risk fingerprint.
+BASE_FEATURE(kAutofillDisableGeolocationInRiskFingerprint,
+             "AutofillDisableGeolocationInRiskFingerprint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace autofill::features

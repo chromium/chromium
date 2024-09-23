@@ -25,8 +25,8 @@ using AssistiveSuggestionType = ime::AssistiveSuggestionType;
 }  // namespace
 
 ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
-                      ui::DomKey::NONE, ui::EventTimeForNow());
+  return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code,
+                      ui::EF_NONE, ui::DomKey::NONE, ui::EventTimeForNow());
 }
 
 const char kEmojiData[] = "happy,😀;😃;😄";
@@ -47,8 +47,9 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
         if (currently_highlighted_index_ != INT_MAX && highlighted) {
           candidate_highlighted_[currently_highlighted_index_] = 0;
         }
-        currently_highlighted_index_ = highlighted ? button.index : INT_MAX;
-        candidate_highlighted_[button.index] = highlighted ? 1 : 0;
+        currently_highlighted_index_ =
+            highlighted ? button.suggestion_index : INT_MAX;
+        candidate_highlighted_[button.suggestion_index] = highlighted ? 1 : 0;
         return true;
       default:
         return false;

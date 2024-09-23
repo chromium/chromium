@@ -7,16 +7,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExclusionSpace;
 struct PositionedFloat;
 struct UnpositionedFloat;
-
-typedef HeapVector<PositionedFloat, 8> PositionedFloatVector;
 
 // Calculate and return the inline size of the unpositioned float.
 LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(UnpositionedFloat*);

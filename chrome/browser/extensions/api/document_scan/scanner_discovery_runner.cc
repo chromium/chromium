@@ -35,8 +35,6 @@ bool CanSkipConfirmation(content::BrowserContext* browser_context,
           ->GetPrefs()
           ->GetList(prefs::kDocumentScanAPITrustedExtensions);
   return base::Contains(list, base::Value(extension_id));
-
-  // TODO(b/312740272): Add a way for the user to make their consent permanent.
 }
 
 }  // namespace
@@ -64,15 +62,14 @@ void ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(
   g_discovery_confirmation_result = result;
 }
 
-void ScannerDiscoveryRunner::Start(crosapi::mojom::ScannerEnumFilterPtr filter,
+void ScannerDiscoveryRunner::Start(bool approved,
+                                   crosapi::mojom::ScannerEnumFilterPtr filter,
                                    GetScannerListCallback callback) {
   CHECK(!callback_) << "discovery call already in progress";
   callback_ = std::move(callback);
   filter_ = std::move(filter);
 
-  // TODO(b/312740272): Skip confirmation prompt if previous consent was within
-  // the recent past (specific timeout TBD).
-  if (CanSkipConfirmation(browser_context_, extension_->id())) {
+  if (approved || CanSkipConfirmation(browser_context_, extension_->id())) {
     SendGetScannerListRequest();
     return;
   }
@@ -127,9 +124,6 @@ void ScannerDiscoveryRunner::SendGetScannerListRequest() {
       extension_->id(), std::move(filter_),
       base::BindOnce(&ScannerDiscoveryRunner::OnScannerListReceived,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(b/312757530): Clean up the pending call if the DocumentScan service
-  // goes away without running our callback.
 }
 
 void ScannerDiscoveryRunner::OnScannerListReceived(

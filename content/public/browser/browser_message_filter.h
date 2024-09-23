@@ -27,7 +27,6 @@ class MessageFilter;
 }
 
 namespace content {
-class BrowserAssociatedInterfaceTest;
 struct BrowserMessageFilterTraits;
 
 // Base class for message filters in the browser process.  You can receive and
@@ -42,7 +41,6 @@ class CONTENT_EXPORT BrowserMessageFilter
           BrowserMessageFilter, BrowserMessageFilterTraits>,
       public IPC::Sender {
  public:
-  BrowserMessageFilter();  // For mojo-only BrowserAssociatedInterface.
   explicit BrowserMessageFilter(uint32_t message_class_to_filter);
   BrowserMessageFilter(const uint32_t* message_classes_to_filter,
                        size_t num_message_classes_to_filter);
@@ -88,16 +86,6 @@ class CONTENT_EXPORT BrowserMessageFilter
   // your function will be called on the requested thread.
   virtual bool OnMessageReceived(const IPC::Message& message) = 0;
 
-  // Adds an associated interface factory to this filter. Must be called before
-  // RegisterAssociatedInterfaces().
-  //
-  // |filter_removed_callback| is called on the IO thread when this filter is
-  // removed.
-  void AddAssociatedInterface(
-      const std::string& name,
-      const IPC::ChannelProxy::GenericAssociatedInterfaceFactory& factory,
-      const base::OnceClosure filter_removed_callback);
-
   // Can be called on any thread, after OnChannelConnected is called.
   base::ProcessHandle PeerHandle();
 
@@ -126,17 +114,14 @@ class CONTENT_EXPORT BrowserMessageFilter
 
   class Internal;
   friend class AgentSchedulingGroupHost;
-  friend class BrowserAssociatedInterfaceTest;
   friend class BrowserChildProcessHostImpl;
   friend class BrowserPpapiHost;
   friend class RenderProcessHostImpl;
 
   // These are private because the only classes that need access to them are
   // made friends above. These are only guaranteed to be valid to call on
-  // creation. After that this class could outlive the filter and new interface
-  // registrations could race with incoming requests.
+  // creation. After that this class could outlive the filter.
   IPC::MessageFilter* GetFilter();
-  void RegisterAssociatedInterfaces(IPC::ChannelProxy* proxy);
 
   // This implements IPC::MessageFilter so that we can hide that from child
   // classes. Internal keeps a reference to this class, which is why there's a
@@ -148,10 +133,6 @@ class CONTENT_EXPORT BrowserMessageFilter
   base::Process peer_process_;
 
   std::vector<uint32_t> message_classes_to_filter_;
-
-  std::vector<std::pair<std::string,
-                        IPC::ChannelProxy::GenericAssociatedInterfaceFactory>>
-      associated_interfaces_;
 
   // Callbacks to be called in OnFilterRemoved().
   std::vector<base::OnceClosure> filter_removed_callbacks_;

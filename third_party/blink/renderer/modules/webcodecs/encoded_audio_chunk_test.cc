@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
@@ -67,7 +68,7 @@ TEST(EncodedAudioChunkTest, TransferBuffer) {
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(timestamp);
   init->setType(type);
-  auto* buffer = DOMArrayBuffer::Create(data.data(), data.size());
+  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));

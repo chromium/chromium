@@ -51,4 +51,8 @@ interface TestBindingInterface {
 
     // Log a statement to the terminal.
     Log(string log_string);
+
+    // Signals to C++ that the checkpoint `checkpoint_identifier` has been
+    // reached during test execution.
+    CheckpointReached(string checkpoint_identifier);
 };

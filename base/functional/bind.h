@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/bind_internal.h"  // IWYU pragma: export
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -78,7 +79,7 @@
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          isIncognito:(BOOL)isIncognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _webStateList = webStateList;
     _isIncognito = isIncognito;
 
@@ -91,9 +92,18 @@
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserverBridge.get());
 
-    if (IsBottomOmniboxSteadyStateEnabled()) {
+    if (IsBottomOmniboxAvailable()) {
       // Device switcher data is not available in incognito.
       _shouldCheckSafariSwitcherOnFRE = !isIncognito && IsFirstRun();
+
+      _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:GetApplicationContext()->GetLocalState()
+                     prefName:prefs::kBottomOmnibox];
+      [_bottomOmniboxEnabled setObserver:self];
+      // Initialize to the correct value.
+      [self booleanDidChange:_bottomOmniboxEnabled];
+      [self updateOmniboxDefaultPosition];
+      [self logOmniboxPosition];
     }
   }
   return self;
@@ -111,34 +121,16 @@
   _bottomOmniboxEnabled = nil;
 }
 
-- (void)setOriginalPrefService:(PrefService*)originalPrefService {
-  _originalPrefService = originalPrefService;
-  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
-    _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:_originalPrefService
-                                              prefName:prefs::kBottomOmnibox];
-    [_bottomOmniboxEnabled setObserver:self];
-    // Initialize to the correct value.
-    [self booleanDidChange:_bottomOmniboxEnabled];
-    [self updateOmniboxDefaultPosition];
-    [self logOmniboxPosition];
-  } else {
-    [_bottomOmniboxEnabled stop];
-    [_bottomOmniboxEnabled setObserver:nil];
-    _bottomOmniboxEnabled = nil;
-  }
-}
-
 - (void)locationBarFocusChangedTo:(BOOL)focused {
   _locationBarFocused = focused;
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxPosition];
   }
 }
 
 - (void)toolbarTraitCollectionChangedTo:(UITraitCollection*)traitCollection {
   _toolbarTraitCollection = traitCollection;
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxPosition];
   }
 }
@@ -154,7 +146,7 @@
 
 - (void)didNavigateToNTPOnActiveWebState {
   _isNTP = YES;
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxPosition];
   }
 }
@@ -217,7 +209,7 @@
   [self.delegate updateToolbar];
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   _isNTP = NTPHelper && NTPHelper->IsActive();
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     if (_shouldCheckSafariSwitcherOnFRE) {
       [self checkSafariSwitcherOnFRE];
     }
@@ -228,7 +220,6 @@
 /// Computes the toolbar that should contain the unfocused omnibox in the
 /// current state.
 - (ToolbarType)steadyStateOmniboxPositionInCurrentState {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (_preferredOmniboxPosition == ToolbarType::kPrimary ||
       !IsSplitToolbarMode(_toolbarTraitCollection)) {
     return ToolbarType::kPrimary;
@@ -241,7 +232,6 @@
 
 /// Computes the toolbar that should contain the omnibox in the current state.
 - (ToolbarType)omniboxPositionInCurrentState {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (_locationBarFocused) {
     return ToolbarType::kPrimary;
   } else {
@@ -251,7 +241,7 @@
 
 /// Updates the omnibox position to the correct toolbar.
 - (void)updateOmniboxPosition {
-  if (!IsBottomOmniboxSteadyStateEnabled()) {
+  if (!IsBottomOmniboxAvailable()) {
     [self.delegate transitionOmniboxToToolbarType:ToolbarType::kPrimary];
     return;
   }
@@ -265,10 +255,8 @@
 
 /// Verifies if the user is a safari switcher on FRE.
 - (void)checkSafariSwitcherOnFRE {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   CHECK(_shouldCheckSafariSwitcherOnFRE);
   CHECK(self.deviceSwitcherResultDispatcher);
-  CHECK(self.originalPrefService);
 
   if (_isNTP) {
     _hasEnteredNTPOnFRE = YES;
@@ -285,10 +273,10 @@
         std::string featureParam = base::GetFieldTrialParamValueByFeature(
             kBottomOmniboxDefaultSetting, kBottomOmniboxDefaultSettingParam);
         if (featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
-          self.originalPrefService->SetDefaultPrefValue(prefs::kBottomOmnibox,
-                                                        base::Value(YES));
-          self.originalPrefService->SetBoolean(prefs::kBottomOmniboxByDefault,
-                                               YES);
+          PrefService* localState = GetApplicationContext()->GetLocalState();
+          localState->SetDefaultPrefValue(prefs::kBottomOmnibox,
+                                          base::Value(YES));
+          localState->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
         }
         base::UmaHistogramEnumeration(
             kOmniboxDeviceSwitcherResultAtFRE,
@@ -310,8 +298,6 @@
 /// `bottomOmniboxIsDefault`, still log the status as bottom as the user was
 /// classified as safari switcher in a previous session.
 - (BOOL)isSafariSwitcherAtStartup:(BOOL)bottomOmniboxIsDefault {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
-  CHECK(self.originalPrefService);
 
   if (!omnibox::IsNewUser()) {
     base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
@@ -345,21 +331,19 @@
 
 /// Updates the default setting for bottom omnibox.
 - (void)updateOmniboxDefaultPosition {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
-  CHECK(self.originalPrefService);
+  PrefService* localState = GetApplicationContext()->GetLocalState();
 
   // This only needs to be executed once and deviceSwitcherResult are not
   // available in incognito.
   if (!self.deviceSwitcherResultDispatcher ||
-      self.originalPrefService->GetUserPrefValue(prefs::kBottomOmnibox)) {
+      localState->GetUserPrefValue(prefs::kBottomOmnibox)) {
     return;
   }
 
   BOOL bottomOmniboxEnabledByDefault = NO;
-  if (self.originalPrefService->GetUserPrefValue(
-          prefs::kBottomOmniboxByDefault)) {
+  if (localState->GetUserPrefValue(prefs::kBottomOmniboxByDefault)) {
     bottomOmniboxEnabledByDefault =
-        self.originalPrefService->GetBoolean(prefs::kBottomOmniboxByDefault);
+        localState->GetBoolean(prefs::kBottomOmniboxByDefault);
   }
 
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
@@ -380,29 +364,27 @@
   // Make sure that users who have already seen the bottom omnibox by default
   // keep it.
   if (bottomOmniboxEnabledByDefault) {
-    self.originalPrefService->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
+    localState->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
   }
 
-  self.originalPrefService->SetDefaultPrefValue(
-      prefs::kBottomOmnibox, base::Value(bottomOmniboxEnabledByDefault));
+  localState->SetDefaultPrefValue(prefs::kBottomOmnibox,
+                                  base::Value(bottomOmniboxEnabledByDefault));
 }
 
 /// Logs preferred omnibox position.
 - (void)logOmniboxPosition {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
-  CHECK(self.originalPrefService);
 
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    BOOL isBottomOmnibox =
-        self.originalPrefService->GetBoolean(prefs::kBottomOmnibox);
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    const BOOL isBottomOmnibox = localState->GetBoolean(prefs::kBottomOmnibox);
     OmniboxPositionType positionType = isBottomOmnibox
                                            ? OmniboxPositionType::kBottom
                                            : OmniboxPositionType::kTop;
     base::UmaHistogramEnumeration(kOmniboxSteadyStatePositionAtStartup,
                                   positionType);
 
-    if (self.originalPrefService->GetUserPrefValue(prefs::kBottomOmnibox)) {
+    if (localState->GetUserPrefValue(prefs::kBottomOmnibox)) {
       base::UmaHistogramEnumeration(
           kOmniboxSteadyStatePositionAtStartupSelected, positionType);
     }

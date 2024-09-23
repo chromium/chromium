@@ -1,0 +1,6 @@
+{
+  "manifest_version": 2,
+  "name": "Privacy Sandbox Attestations",
+  "version": "2024.8.23.0",
+  "pre_installed": true
+}

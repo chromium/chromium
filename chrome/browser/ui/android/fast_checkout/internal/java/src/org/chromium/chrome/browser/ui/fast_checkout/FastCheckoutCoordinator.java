@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 class FastCheckoutCoordinator implements FastCheckoutComponent {
     private FastCheckoutMediator mMediator = new FastCheckoutMediator();
     private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
@@ -90,7 +92,7 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
 
     @Override
     public void showOptions(
-            FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards) {
+            List<FastCheckoutAutofillProfile> profiles, List<FastCheckoutCreditCard> creditCards) {
         mMediator.showOptions(profiles, creditCards);
     }
 

@@ -10,12 +10,11 @@ ScanTree::ScanTree(StringList *FileMasks,RECURSE_MODE Recurse,bool GetLinks,SCAN
   ScanEntireDisk=false;
   FolderWildcards=false;
 
+  FindStack.push_back(NULL); // We need a single NULL pointer for initial Depth==0.
+  
   SetAllMaskDepth=0;
-  *CurMask=0;
-  memset(FindStack,0,sizeof(FindStack));
   Depth=0;
   Errors=0;
-  *ErrArcName=0;
   Cmd=NULL;
   ErrDirList=NULL;
   ErrDirSpecPathLength=NULL;
@@ -42,7 +41,7 @@ SCAN_CODE ScanTree::GetNext(FindData *FD)
   SCAN_CODE FindCode;
   while (1)
   {
-    if (*CurMask==0 && !GetNextMask())
+    if (CurMask.empty() && !GetNextMask())
       return SCAN_DONE;
 
 #ifndef SILENT
@@ -79,7 +78,7 @@ bool ScanTree::ExpandFolderMask()
 {
   bool WildcardFound=false;
   uint SlashPos=0;
-  for (int I=0;CurMask[I]!=0;I++)
+  for (uint I=0;I<CurMask.size();I++)
   {
     if (CurMask[I]=='?' || CurMask[I]=='*')
       WildcardFound=true;
@@ -93,9 +92,7 @@ bool ScanTree::ExpandFolderMask()
     }
   }
 
-  wchar Mask[NM];
-  wcsncpyz(Mask,CurMask,ASIZE(Mask));
-  Mask[SlashPos]=0;
+  std::wstring Mask=CurMask.substr(0,SlashPos);
 
   // Prepare the list of all folders matching the wildcard mask.
   ExpandedFolderList.Reset();
@@ -105,12 +102,12 @@ bool ScanTree::ExpandFolderMask()
   while (Find.Next(&FD))
     if (FD.IsDir)
     {
-      wcsncatz(FD.Name,CurMask+SlashPos,ASIZE(FD.Name));
+      FD.Name+=CurMask.substr(SlashPos);
 
-      // Treat dir*\* or dir*\*.* as dir, so empty 'dir' is also matched
+      // Treat dir*\*, dir*\*.* or dir*\ as dir, so empty 'dir' is also matched
       // by such mask. Skipping empty dir with dir*\*.* confused some users.
-      wchar *LastMask=PointToName(FD.Name);
-      if (wcscmp(LastMask,L"*")==0 || wcscmp(LastMask,L"*.*")==0)
+      std::wstring LastMask=PointToName(FD.Name);
+      if (LastMask==L"*" || LastMask==L"*.*" || LastMask.empty())
         RemoveNameFromPath(FD.Name);
 
       ExpandedFolderList.AddString(FD.Name);
@@ -118,7 +115,7 @@ bool ScanTree::ExpandFolderMask()
   if (ExpandedFolderList.ItemsCount()==0)
     return false;
   // Return the first matching folder name now.
-  ExpandedFolderList.GetString(CurMask,ASIZE(CurMask));
+  ExpandedFolderList.GetString(CurMask);
   return true;
 }
 
@@ -130,12 +127,12 @@ bool ScanTree::GetFilteredMask()
 {
   // If we have some matching folders left for non-recursive folder wildcard
   // mask, we return it here.
-  if (ExpandedFolderList.ItemsCount()>0 && ExpandedFolderList.GetString(CurMask,ASIZE(CurMask)))
+  if (ExpandedFolderList.ItemsCount()>0 && ExpandedFolderList.GetString(CurMask))
     return true;
 
   FolderWildcards=false;
   FilterList.Reset();
-  if (!FileMasks->GetString(CurMask,ASIZE(CurMask)))
+  if (!FileMasks->GetString(CurMask))
     return false;
 
   // Check if folder wildcards present.
@@ -144,10 +141,10 @@ bool ScanTree::GetFilteredMask()
   uint SlashPos=0;
   uint StartPos=0;
 #ifdef _WIN_ALL // Not treat the special NTFS \\?\d: path prefix as a wildcard.
-  if (CurMask[0]=='\\' && CurMask[1]=='\\' && CurMask[2]=='?' && CurMask[3]=='\\')
+  if (CurMask.rfind(L"\\\\?\\",0)==0)
     StartPos=4;
 #endif
-  for (uint I=StartPos;CurMask[I]!=0;I++)
+  for (uint I=StartPos;I<CurMask.size();I++)
   {
     if (CurMask[I]=='?' || CurMask[I]=='*')
       WildcardFound=true;
@@ -174,19 +171,19 @@ bool ScanTree::GetFilteredMask()
   if ((Recurse==RECURSE_NONE || Recurse==RECURSE_DISABLE) && FolderWildcardCount==1)
     return ExpandFolderMask();
 
-  wchar Filter[NM];
   // Convert path\dir*\ to *\dir filter to search for 'dir' in all 'path' subfolders.
-  wcsncpyz(Filter,L"*",ASIZE(Filter));
-  AddEndSlash(Filter,ASIZE(Filter));
+  std::wstring Filter=L"*";
+  AddEndSlash(Filter); // Path separator is OS dependent, so we set it here instead of variable declaration.
+
   // SlashPos might point or not point to path separator for masks like 'dir*', '\dir*' or 'd:dir*'
-  wchar *WildName=IsPathDiv(CurMask[SlashPos]) || IsDriveDiv(CurMask[SlashPos]) ? CurMask+SlashPos+1 : CurMask+SlashPos;
-  wcsncatz(Filter,WildName,ASIZE(Filter));
+  std::wstring WildName=IsPathDiv(CurMask[SlashPos]) || IsDriveDiv(CurMask[SlashPos]) ? CurMask.substr(SlashPos+1) : CurMask.substr(SlashPos);
+  Filter+=WildName;
 
   // Treat dir*\* or dir*\*.* as dir\, so empty 'dir' is also matched
   // by such mask. Skipping empty dir with dir*\*.* confused some users.
-  wchar *LastMask=PointToName(Filter);
-  if (wcscmp(LastMask,L"*")==0 || wcscmp(LastMask,L"*.*")==0)
-    *LastMask=0;
+  std::wstring LastMask=PointToName(Filter);
+  if (LastMask==L"*" || LastMask==L"*.*")
+    GetPathWithSep(Filter,Filter);
 
   FilterList.AddString(Filter);
 
@@ -194,14 +191,14 @@ bool ScanTree::GetFilteredMask()
   if (RelativeDrive)
     SlashPos++; // Use "d:" instead of "d" for d:* mask.
 
-  CurMask[SlashPos]=0;
+  CurMask.erase(SlashPos);
 
   if (!RelativeDrive) // Keep d: mask as is, not convert to d:\*
   {
     // We need to append "\*" both for -ep1 to work correctly and to
     // convert d:\* masks previously truncated to d: back to original form.
-    AddEndSlash(CurMask,ASIZE(CurMask));
-    wcsncatz(CurMask,MASKALL,ASIZE(CurMask));
+    AddEndSlash(CurMask);
+    CurMask+=MASKALL;
   }
   return true;
 }
@@ -212,26 +209,39 @@ bool ScanTree::GetNextMask()
   if (!GetFilteredMask())
     return false;
 #ifdef _WIN_ALL
-  UnixSlashToDos(CurMask,CurMask,ASIZE(CurMask));
+  UnixSlashToDos(CurMask,CurMask);
 #endif
 
-  // We wish to scan entire disk if mask like c:\ is specified
-  // regardless of recursion mode. Use c:\*.* mask when need to scan only 
-  // the root directory.
-  ScanEntireDisk=IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3]==0;
-
-  wchar *Name=PointToName(CurMask);
-  if (*Name==0)
-    wcsncatz(CurMask,MASKALL,ASIZE(CurMask));
-  if (Name[0]=='.' && (Name[1]==0 || Name[1]=='.' && Name[2]==0))
+  // We prefer to scan entire disk if mask like \\server\share\ or c:\
+  // is specified regardless of recursion mode. Use \\server\share\*.*
+  // or c:\*.* mask to scan only the root directory.
+  if (CurMask.size()>2 && CurMask[0]=='\\' && CurMask[1]=='\\')
   {
-    AddEndSlash(CurMask,ASIZE(CurMask));
-    wcsncatz(CurMask,MASKALL,ASIZE(CurMask));
+    auto Slash=CurMask.find('\\',2);
+    if (Slash!=std::wstring::npos)
+    {
+      Slash=CurMask.find('\\',Slash+1);
+      // If backslash is found and it is the last string character.
+      ScanEntireDisk=Slash!=std::wstring::npos && Slash+1==CurMask.size();
+    }
   }
-  SpecPathLength=Name-CurMask;
+  else
+    ScanEntireDisk=IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3]==0;
+
+
+  auto NamePos=GetNamePos(CurMask);
+  std::wstring Name=CurMask.substr(NamePos);
+  if (Name.empty())
+    CurMask+=MASKALL;
+  if (Name==L"." || Name==L"..")
+  {
+    AddEndSlash(CurMask);
+    CurMask+=MASKALL;
+  }
+  SpecPathLength=NamePos;
   Depth=0;
 
-  wcsncpyz(OrigCurMask,CurMask,ASIZE(OrigCurMask));
+  OrigCurMask=CurMask;
 
   return true;
 }
@@ -239,7 +249,7 @@ bool ScanTree::GetNextMask()
 
 SCAN_CODE ScanTree::FindProc(FindData *FD)
 {
-  if (*CurMask==0)
+  if (CurMask.empty())
     return SCAN_NEXT;
   bool FastFindFile=false;
   
@@ -272,10 +282,9 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
       // Create the new FindFile object for wildcard based search.
       FindStack[Depth]=new FindFile;
 
-      wchar SearchMask[NM];
-      wcsncpyz(SearchMask,CurMask,ASIZE(SearchMask));
+      std::wstring SearchMask=CurMask;
       if (SearchAll)
-        SetName(SearchMask,MASKALL,ASIZE(SearchMask));
+        SetName(SearchMask,MASKALL);
       FindStack[Depth]->SetMask(SearchMask);
     }
     else
@@ -314,7 +323,7 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
         // It is not necessary for directories, because even in "fast find"
         // mode, directory recursing will quit by (Depth < 0) condition,
         // which returns SCAN_DONE to calling function.
-        *CurMask=0;
+        CurMask.clear();
 
         return RetCode;
       }
@@ -333,9 +342,6 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
     if (Error)
       ScanError(Error);
 
-    wchar DirName[NM];
-    *DirName=0;
-
     // Going to at least one directory level higher.
     delete FindStack[Depth];
     FindStack[Depth--]=NULL;
@@ -351,29 +357,32 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
       return SCAN_DONE;
     }
 
-    wchar *Slash=wcsrchr(CurMask,CPATHDIVIDER);
-    if (Slash!=NULL)
+    auto Slash=CurMask.rfind(CPATHDIVIDER);
+    if (Slash!=std::wstring::npos)
     {
-      wchar Mask[NM];
-      wcsncpyz(Mask,Slash,ASIZE(Mask));
+      std::wstring Mask;
+      Mask=CurMask.substr(Slash); // Name mask with leading slash like \*.*
       if (Depth<SetAllMaskDepth)
-        wcsncpyz(Mask+1,PointToName(OrigCurMask),ASIZE(Mask)-1);
-      *Slash=0;
-      wcsncpyz(DirName,CurMask,ASIZE(DirName));
-      wchar *PrevSlash=wcsrchr(CurMask,CPATHDIVIDER);
-      if (PrevSlash==NULL)
-        wcsncpyz(CurMask,Mask+1,ASIZE(CurMask));
+        Mask.replace(1, std::wstring::npos, PointToName(OrigCurMask));
+      CurMask.erase(Slash);
+
+      std::wstring DirName=CurMask;
+
+      auto PrevSlash=CurMask.rfind(CPATHDIVIDER);
+      if (PrevSlash==std::wstring::npos)
+        CurMask=Mask.substr(1); // Set to name only without leading slash.
       else
       {
-        *PrevSlash=0;
-        wcsncatz(CurMask,Mask,ASIZE(CurMask));
+        CurMask.erase(PrevSlash); // Remove one of two sequential slashes.
+        CurMask+=Mask;
       }
-    }
-    if (GetDirs==SCAN_GETDIRSTWICE &&
-        FindFile::FastFind(DirName,FD,GetLinks) && FD->IsDir)
-    {
-      FD->Flags|=FDDF_SECONDDIR;
-      return Error ? SCAN_ERROR:SCAN_SUCCESS;
+
+      if (GetDirs==SCAN_GETDIRSTWICE &&
+          FindFile::FastFind(DirName,FD,GetLinks) && FD->IsDir)
+      {
+        FD->Flags|=FDDF_SECONDDIR;
+        return Error ? SCAN_ERROR:SCAN_SUCCESS;
+      }
     }
     return Error ? SCAN_ERROR:SCAN_NEXT;
   }
@@ -403,21 +412,21 @@ SCAN_CODE ScanTree::FindProc(FindData *FD)
       return FastFindFile ? SCAN_DONE:SCAN_NEXT;
     }
     
-    wchar Mask[NM];
+    std::wstring Mask=FastFindFile ? MASKALL:PointToName(CurMask);
+    CurMask=FD->Name;
 
-    wcsncpyz(Mask,FastFindFile ? MASKALL:PointToName(CurMask),ASIZE(Mask));
-    wcsncpyz(CurMask,FD->Name,ASIZE(CurMask));
-
-    if (wcslen(CurMask)+wcslen(Mask)+1>=NM || Depth>=MAXSCANDEPTH-1)
+    if (CurMask.size()+Mask.size()+1>=MAXPATHSIZE || Depth>=MAXSCANDEPTH-1)
     {
       uiMsg(UIERROR_PATHTOOLONG,CurMask,SPATHDIVIDER,Mask);
       return SCAN_ERROR;
     }
 
-    AddEndSlash(CurMask,ASIZE(CurMask));
-    wcsncatz(CurMask,Mask,ASIZE(CurMask));
+    AddEndSlash(CurMask);
+    CurMask+=Mask;
 
     Depth++;
+
+    FindStack.resize(Depth+1);
 
     // We need to use OrigCurMask for depths less than SetAllMaskDepth
     // and "*" for depths equal or larger than SetAllMaskDepth.
@@ -459,19 +468,18 @@ void ScanTree::ScanError(bool &Error)
     // We cannot just check FD->FileAttr here, it can be undefined
     // if we process "folder\*" mask or if we process "folder" mask,
     // but "folder" is inaccessible.
-    wchar *Slash=PointToName(CurMask);
-    if (Slash>CurMask)
+    auto Slash=GetNamePos(CurMask);
+    if (Slash>1)
     {
-      *(Slash-1)=0;
-      DWORD Attr=GetFileAttributes(CurMask);
-      *(Slash-1)=CPATHDIVIDER;
+      std::wstring Parent=CurMask.substr(0,Slash-1);
+      DWORD Attr=GetFileAttr(Parent);
       if (Attr!=0xffffffff && (Attr & FILE_ATTRIBUTE_REPARSE_POINT)!=0)
         Error=false;
     }
 
     // Do not display an error if we cannot scan contents of
     // "System Volume Information" folder. Normally it is not accessible.
-    if (wcsstr(CurMask,L"System Volume Information\\")!=NULL)
+    if (CurMask.find(L"System Volume Information\\")!=std::wstring::npos)
       Error=false;
   }
 #endif
@@ -484,10 +492,10 @@ void ScanTree::ScanError(bool &Error)
     if (ErrDirList!=NULL)
       ErrDirList->AddString(CurMask);
     if (ErrDirSpecPathLength!=NULL)
-      ErrDirSpecPathLength->Push((uint)SpecPathLength);
-    wchar FullName[NM];
+      ErrDirSpecPathLength->push_back((uint)SpecPathLength);
+    std::wstring FullName;
     // This conversion works for wildcard masks too.
-    ConvertNameToFull(CurMask,FullName,ASIZE(FullName));
+    ConvertNameToFull(CurMask,FullName);
     uiMsg(UIERROR_DIRSCAN,FullName);
     ErrHandler.SysErrMsg();
   }

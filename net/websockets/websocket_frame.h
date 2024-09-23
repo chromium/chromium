@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -58,7 +59,7 @@ struct NET_EXPORT WebSocketFrameHeader {
 
   // Contains four-byte data representing "masking key" of WebSocket frames.
   struct WebSocketMaskingKey {
-    char key[WebSocketFrameHeader::kMaskingKeyLength];
+    std::array<uint8_t, WebSocketFrameHeader::kMaskingKeyLength> key;
   };
 
   // Constructor to avoid a lot of repetitive initialisation.
@@ -106,7 +107,7 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
-  // TODO(crbug.com/1001915): Find more better way to clarify the life cycle.
+  // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
   const char* payload = nullptr;
 };
 
@@ -148,7 +149,7 @@ struct NET_EXPORT WebSocketFrameChunk {
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
-  // TODO(crbug.com/1001915): Find more better way to clarify the life cycle.
+  // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
   base::span<const char> payload;
 };
 
@@ -157,7 +158,8 @@ using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;
 // Returns the size of WebSocket frame header. The size of WebSocket frame
 // header varies from 2 bytes to 14 bytes depending on the payload length
 // and maskedness.
-NET_EXPORT int GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
+NET_EXPORT size_t
+GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
 
 // Writes wire format of a WebSocket frame header into |output|, and returns
 // the number of bytes written.
@@ -177,8 +179,7 @@ NET_EXPORT int GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
 // ERR_INVALID_ARGUMENT and does not write any data to |buffer|.
 NET_EXPORT int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
                                          const WebSocketMaskingKey* masking_key,
-                                         char* buffer,
-                                         int buffer_size);
+                                         base::span<uint8_t> buffer);
 
 // Generates a masking key suitable for use in a new WebSocket frame.
 NET_EXPORT WebSocketMaskingKey GenerateWebSocketMaskingKey();
@@ -198,8 +199,7 @@ NET_EXPORT WebSocketMaskingKey GenerateWebSocketMaskingKey();
 NET_EXPORT void MaskWebSocketFramePayload(
     const WebSocketMaskingKey& masking_key,
     uint64_t frame_offset,
-    char* data,
-    int data_size);
+    base::span<uint8_t> data);
 
 }  // namespace net
 

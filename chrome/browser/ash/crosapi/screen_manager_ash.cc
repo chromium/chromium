@@ -100,7 +100,7 @@ class SnapshotCapturerBase : public mojom::SnapshotCapturer {
     gfx::Rect bounds = window->bounds();
     bounds.set_x(0);
     bounds.set_y(0);
-    ui::GrabWindowSnapshotAsync(
+    ui::GrabWindowSnapshot(
         window, bounds,
         base::BindOnce(
             [](TakeSnapshotCallback callback, gfx::Image image) {
@@ -190,7 +190,7 @@ class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
     // the most top-level window is at the end. So iterate children reversely
     // to make sure |windows| is in the expected order.
     for (aura::Window* window : base::Reversed(container->children())) {
-      // TODO(https://crbug.com/1094460): The window is currently not visible
+      // TODO(crbug.com/40135428): The window is currently not visible
       // or focusable. If the window later becomes invisible or unfocusable,
       // we don't bother removing the window from the list. We should handle
       // this more robustly.

@@ -100,12 +100,14 @@ keyDown('\t', ['shiftKey']); // -> [Sep] [0005]
 keyDown('J'); // -> [Jan] 0005
 shouldBeEqualToString('input.value', '0005-01');
 keyDown('\t'); // -> Jan [0005]
+keyDown('\t'); // -> Jan 0005 [dropdown-button]
 keyDown('\t'); // -> Jan 0005
 shouldBeEqualToString('document.activeElement.id', 'another');
 
 beginTest('Shfit+Tab key', '2012-09');
 another.focus();
-keyDown('\t', ['shiftKey']);
+keyDown('\t', ['shiftKey']);  // On drop down button in previous input.
+keyDown('\t', ['shiftKey']);  // Move to last field in previous inout.
 keyDown('3');
 shouldBeEqualToString('input.value', '0003-09');
 keyDown('\t', ['shiftKey']);

@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("device_sync") {
+  sources = [
+    "device_sync_client_factory.cc",
+    "device_sync_client_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/cryptauth",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/multidevice:stub_multidevice_util",
+    "//chromeos/ash/services/device_sync",
+    "//chromeos/ash/services/device_sync:stub_device_sync",
+    "//chromeos/ash/services/device_sync/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//components/account_id",
+    "//components/gcm_driver",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//services/network/public/cpp",
+  ]
+}

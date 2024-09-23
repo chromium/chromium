@@ -100,9 +100,9 @@ Test your user actions using `chrome://user-actions`. Make sure they're being
 emitted when you expect and not emitted otherwise.
 
 If this is a general UI surface, please try to check every platform. In
-particular, check Windows (Views-based platforms), Mac (non-Views), Android
-phone (yet other UI wrapper code), Android tablet (often triggers look-alike but
-different menus), and iOS (yet more different UI wrapper code).
+particular, check Windows (Views-based platforms), Android phone (yet other UI
+wrapper code), Android tablet (often triggers look-alike but different menus),
+and iOS (yet more different UI wrapper code).
 
 Also, check that your new user action is not mostly redundant in light of
 existing user actions (see [advice above](#Try-to-avoid-redundant-emits)) and
@@ -114,6 +114,17 @@ for details.
 
 See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
 for more thorough manual testing if needed.
+
+### Verify Action Suffixes
+
+If you have <action-suffix> entries that need to be updated to match code,
+you can use
+[ActionSuffixReader](https://cs.chromium.org/chromium/src/base/test/metrics/action_suffix_reader.h)
+to read and verify the expected values in a unit test. This prevents a mismatch
+between code and action data from slipping through CQ.
+
+For an example, see
+[BrowserUserEducationServiceTest.CheckFeaturePromoActions](https://cs.chromium.org/chromium/src/chrome/browser/ui/views/user_education/browser_user_education_service_unittest.cc).
 
 ## Interpreting the resulting data
 

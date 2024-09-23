@@ -20,26 +20,12 @@
     color: var(--cros-text-color-secondary);
     display: flex;
     flex-flow: row nowrap;
-    font: var(--cros-headline-1-font);
+    font: var(--cros-title-1-font);
     height: 100%;
     width: 100%;
   }
 
-  :host-context(body.jelly-enabled) #selector {
-    font: var(--cros-title-1-font);
-  }
-
-  /**
-   * TODO: After Jelly is launched, remove the cr-icon-button-fill-color
-   * references from #homeButton. The color will be inherited from
-   * cros_color_overrides.
-   */
-  :host-context(body.jelly-enabled) #homeButton {
-    --cr-icon-button-fill-color: var(--cros-sys-secondary);
-  }
-
   #homeButton {
-    --cr-icon-button-fill-color: var(--cros-text-color-primary);
     --cr-icon-button-size: 36px;
     margin-inline-end: 6px;
     margin-inline-start: -10px;
@@ -48,7 +34,15 @@
   .breadcrumb {
     --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-ripple-opacity);
-    --text-color: var(--cros-text-color-secondary);
+    /*
+     * Use |!important| to override the default styles defined in
+     * ash/webui/common/resources/cr_elements/cros_color_overrides.css.
+     *
+     * TODO: b/324903595 - Remove |!important| when CrOS color tokens are
+     * embedded into ash cr-button.
+     */
+    --text-color: var(--cros-sys-on_surface) !important;
+    background-color: transparent !important;
     border: none;
     min-width: 48px;
   }
@@ -58,7 +52,6 @@
   }
 
   .breadcrumb:last-of-type {
-    --text-color: var(--cros-text-color-primary);
     flex: 0 1 auto;
   }
 
@@ -66,20 +59,16 @@
     flex: 0 0 auto;
   }
 
-  :host-context(body.jelly-enabled) cr-button {
-    --text-color: var(--cros-sys-on_surface);
-    background-color: transparent;
-  }
-
   #seaPenDropdown {
     --iron-icon-fill-color: var(--cros-sys-secondary);
+    padding-inline-start: 12px;
   }
 
   .dropdown-check {
     margin-inline-end: 16px;
   }
 
-  button:not([aria-selected='true']) iron-icon.dropdown-check {
+  button:not([aria-checked='true']) iron-icon.dropdown-check {
     visibility: hidden;
   }
 
@@ -105,23 +94,36 @@
         <template is="dom-if" if="[[index]]">
           <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
         </template>
-        <cr-button class="breadcrumb selectable"
-            role="link"
-            aria-current$="[[getBreadcrumbAriaCurrent_(index, breadcrumbs_)]]"
-            tabindex="-1"
-            id="breadcrumb[[index]]"
-            on-click="onBreadcrumbClick_">
-          <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
-          <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+        <template is="dom-if" if="[[!shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+          <cr-button class="breadcrumb selectable"
+              role="link"
+              aria-current$="[[getBreadcrumbAriaCurrent_(index, breadcrumbs_)]]"
+              tabindex="-1"
+              id="breadcrumb[[index]]"
+              on-click="onBreadcrumbClick_">
+            <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[shouldShowSeaPenDropdown_(path, breadcrumb)]]" restamp>
+          <cr-button class="breadcrumb selectable"
+              aria-haspopup="true"
+              aria-controls="actionMenu"
+              id="breadcrumb[[index]]"
+              on-click="onClickMenuIcon_">
+            <div class="ellipsis" title$="[[breadcrumb]]">[[breadcrumb]]</div>
             <iron-icon id="seaPenDropdown" icon="cr:arrow-drop-down"></iron-icon>
-          </template>
-        </cr-button>
+          </cr-button>
+        </template>
       </template>
-      <cr-action-menu>
+      <cr-action-menu
+          id="actionMenu"
+          accessibility-label="$i18n{seaPenTemplateHeading}"
+          role-description="$i18n{seaPenMenuRoleDescription}">
         <template is="dom-repeat" items="[[seaPenTemplates_]]" as="template">
           <button
-              aria-selected$="[[getAriaSelected_(template.id, seaPenTemplateId)]]"
+              aria-checked$="[[getAriaChecked_(template.id, seaPenTemplateId)]]"
               class="dropdown-item"
+              role="menuitemcheckbox"
               data-id$="[[template.id]]"
               on-click="onClickMenuItem_">
             <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>

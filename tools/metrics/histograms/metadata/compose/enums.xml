@@ -31,16 +31,44 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Menu item clicked"/>
 </enum>
 
-<enum name="ComposeFirstRunSessionCloseReasonType">
-  <int value="0"
-      label="Session implicitly closed, often by web contents destruction"/>
-  <int value="1" label="Close button on the FRE dialog"/>
-  <int value="2"
-      label="FRE disclaimer was acknowledged and no insertion resulted"/>
-  <int value="3"
-      label="FRE disclaimer was acknowledged and followed by an inserted
-             suggestion"/>
-  <int value="4" label="New session with selected text opened"/>
+<enum name="ComposeEntryPoint">
+  <int value="0" label="Context Menu"/>
+  <int value="1" label="Proactive Nudge"/>
+  <int value="2" label="Selection Nudge"/>
+  <int value="3" label="Resume Nudge">
+    Shown on field focus when a sessions exists
+  </int>
+  <int value="4" label="Resume Notification">
+    Shown when the dialog closes but the session is still open
+  </int>
+</enum>
+
+<enum name="ComposeFreOrMsbbSessionCloseReasonType">
+  <int value="0" label="Abandoned">
+    The FRE/MSBB wasn't acknowledged/accepted and was abandoned, often by web
+    contents destruction.
+  </int>
+  <int value="1" label="Dialog close button">
+    The FRE/MSBB wasn't acknowledged/accepted and the user clicked on the close
+    button of the dialog.
+  </int>
+  <int value="2" label="Acked/Accepted but abandoned">
+    FRE acknowledged or MSBB accepted, but the session was abandoned, often by
+    web contents destruction, with no response inserted.
+  </int>
+  <int value="3" label="Acked/Accepted and inserted response">
+    FRE acknowledged or MSBB accepted, followed by a model response being
+    inserted.
+  </int>
+  <int value="4" label="New session on same field">
+    A new session was created for the same text field before the previous one
+    was inserted. The FRE/MSBB wasn't acknowledged/accepted.
+  </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session. The FRE/MSBB wasn't
+    acknowledged/accepted.
+  </int>
 </enum>
 
 <enum name="ComposeInnerTextNodeOffset">
@@ -48,15 +76,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Inner Text Node Offset found"/>
 </enum>
 
-<enum name="ComposeMSBBSessionCloseReasonType">
-  <int value="0"
-      label="Session implicitly closed, often by web contents destruction"/>
-  <int value="1" label="MSBB close button"/>
-  <int value="2"
-      label="MSBB was Accepted during the session but no insertion resulted"/>
-  <int value="3"
-      label="MSBB was Accepted during the session and followed by an inserted
-             suggestion"/>
+<enum name="ComposeNudgeCtrEvent">
+  <int value="0" label="Nudge shown"/>
+  <int value="1" label="Dialog opened from nudge"/>
+  <int value="2" label="Globally disabled from nudge"/>
+  <int value="3" label="Site disabled from nudge"/>
+  <int value="4" label="Open Settings from nudge"/>
 </enum>
 
 <enum name="ComposeRequestFeedback">
@@ -78,7 +103,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ComposeRequestStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Generic client error, not specified"/>
+  <int value="1" label="Unspecified client error"/>
   <int value="2" label="DEPRECATED: Request was unable to be processed"/>
   <int value="3" label="DEPRECATED: Server may have not responded"/>
   <int value="4"
@@ -86,26 +111,60 @@ chromium-metrics-reviews@google.com.
              response right now"/>
   <int value="5" label="The feature is disabled"/>
   <int value="6" label="User permission is denied"/>
-  <int value="7" label="Generic server error, not specified"/>
+  <int value="7" label="Unspecified server error"/>
   <int value="8" label="Invalid request sent"/>
   <int value="9" label="Request was throttled"/>
-  <int value="10" label="Retryable error occurred in the server"/>
-  <int value="11" label="Non-retryable error occured in the server"/>
+  <int value="10" label="Retryable server error">
+    Retryable error occurred in the server
+  </int>
+  <int value="11" label="Non-retryable server error">
+    Non-retryable error occured in the server
+  </int>
   <int value="12" label="Unsupported language used"/>
   <int value="13" label="Request was filtered"/>
   <int value="14" label="Compose service was disabled"/>
   <int value="15" label="Request was cancelled"/>
-  <int value="16" label="No response received from the server"/>
+  <int value="16" label="No server response">
+    No response received from the server
+  </int>
   <int value="17" label="The user is offline"/>
+  <int value="18" label="The request timed out"/>
+</enum>
+
+<enum name="ComposeSelectAllStatus">
+  <int value="0" label="Selection unchanged">
+    Did not select all text for the user
+  </int>
+  <int value="1" label="Selected all">Selected all text for the user</int>
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">
-  <int value="0" label="Accepted suggestion"/>
-  <int value="1" label="Close button"/>
-  <int value="2"
-      label="Session implicitly closed, often by web contents destruction"/>
-  <int value="3" label="New session with selected text opened"/>
-  <int value="4" label="Session was closed while waiting for a response"/>
+  <int value="0" label="Inserted model response"/>
+  <int value="1" label="Dialog close button"/>
+  <int value="2" label="Abandoned">
+    Session was abandoned, often by web contents destruction, with no response
+    inserted.
+  </int>
+  <int value="3" label="New session on same field">
+    A new session was created for the same text field before the previous one
+    could be inserted.
+  </int>
+  <int value="4" label="Closed while waiting response">
+    Dialog close button was clicked while waiting for a model response.
+  </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session.
+  </int>
+  <int value="6" label="Ended At FRE">
+    Session never progressed past the FRE. Added in M130.
+  </int>
+  <int value="7" label="FRE acknowledged ened at MSBB">
+    The FRE was seen and acknowledged but session ended at MSBB. Added in M130.
+  </int>
+  <int value="8" label="Ended At MSBB">
+    Session never progressed past the MSBB. Added in M130.
+  </int>
 </enum>
 
 <enum name="ComposeSessionEvalLocation">
@@ -116,13 +175,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ComposeSessionEventTypes">
-  <int value="0" label="Dialog Shown"/>
+  <int value="0" label="Main Dialog Shown"/>
   <int value="1" label="FRE Shown"/>
   <int value="2" label="FRE Accepted"/>
   <int value="3" label="MSBB Shown"/>
   <int value="4" label="MSBB Settings Opened"/>
   <int value="5" label="MSBB Enabled In Session"/>
-  <int value="6" label="Sesstion started with selection"/>
+  <int value="6" label="Session started with selection"/>
   <int value="7" label="Create Clicked"/>
   <int value="8" label="Update Clicked"/>
   <int value="9" label="Retry Clicked"/>
@@ -137,26 +196,78 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Close Clicked"/>
   <int value="19" label="Edit Clicked"/>
   <int value="20" label="Cancel Edit Clicked"/>
+  <int value="21" label="Used a modifier">Added in M124</int>
+  <int value="22" label="Redo Clicked"/>
+  <int value="23" label="Result Edited"/>
+  <int value="24" label="Edited Result Inserted"/>
+  <int value="25" label="Has successful request">Added in M127</int>
+  <int value="26" label="Has failed request">Added in M127</int>
+  <int value="27" label="Compose Dialog Opened">Added in M127</int>
 </enum>
 
 <enum name="ComposeShowStatus">
-  <int value="0" label="Menu item displayed"/>
-  <int value="1" label="Blocked for generic reason"/>
-  <int value="2" label="Blocked for incompatible field type"/>
-  <int value="3" label="Blocked for MSBB not enabled (OBSOLETE)"/>
-  <int value="4" label="Blocked for user not signed in"/>
-  <int value="5" label="Blocked for user language not supported"/>
-  <int value="6"
-      label="Blocked for form element appearing in cross-origin subframe"/>
-  <int value="7"
-      label="Blocked by Optimization Guide Result for main frame URL"/>
-  <int value="8"
-      label="Blocked for user was not allowed by optimization guide"/>
-  <int value="9" label="Feature not eligible, remotely disabled"/>
-  <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
-  <int value="11" label="Blocked for element appearing inside a fenced frame"/>
-  <int value="12"
-      label="Blocked for feature flag for Chrome Compose not enabled"/>
+  <int value="0" label="Shown">Successful outcome</int>
+  <int value="1" label="Unspecified">Blocked for an unspecified reason</int>
+  <int value="2" label="Incompatible field type">
+    Blocked for incompatible field type
+  </int>
+  <int value="3" label="DEPRECATED: Blocked for MSBB not enabled"/>
+  <int value="4" label="User not signed in">Blocked for user not signed in</int>
+  <int value="5" label="Unsupported page language">
+    Blocked due to page language not supported
+  </int>
+  <int value="6" label="Field in cross-origin subframe">
+    Blocked for form element appearing in cross-origin subframe
+  </int>
+  <int value="7" label="Disabled for URL">
+    Page URL disabled for Compose by optimization guide
+  </int>
+  <int value="8" label="User not allowed">
+    User not allowed by optimization guide
+  </int>
+  <int value="9" label="Feature disable override">
+    Feature not eligible, remotely disabled
+  </int>
+  <int value="10" label="Unsupported URL scheme">
+    Incorrect scheme, should be HTTP/HTTPS
+  </int>
+  <int value="11" label="Field in fenced frame">
+    Blocked for element appearing inside a fenced frame
+  </int>
+  <int value="12" label="Compose feature disabled"/>
+  <int value="13" label="Unsupported ChromeOS device">
+    Blocked for unsupported ChromeOS device
+  </int>
+  <int value="14" label="Nudge: autocomplete=off">
+    Proactive nudge blocked for autocomplete=off
+  </int>
+  <int value="15" label="Nudge: writingsuggestions=false">
+    Proactive nudge blocked for writingsuggestions=false
+  </int>
+  <int value="16" label="Nudge: feature disabled"/>
+  <int value="17" label="Nudge: fully disabled">
+    Proactive nudge globally disabled by user
+  </int>
+  <int value="18" label="Nudge: disabled for site">
+    Proactive nudge disabled for site by user
+  </int>
+  <int value="19" label="Nudge: disabled for URL">
+    Proactive nudge disabled by optimization guide
+  </int>
+  <int value="20" label="Nudge: unspecified for URL">
+    Proactive nudge disabled for unset optimization guide
+  </int>
+  <int value="21" label="DEPRECATED: Proactive nudge disabled randomly"/>
+  <int value="22" label="Nudge: disabled by MSBB"/>
+  <int value="23" label="Nudge: segmentation blocked">
+    Proactive nudge blocked for invalid Segmentation Platform
+  </int>
+  <int value="24" label="Disabled for country">
+    Compose not enabled at the user's country
+  </int>
+  <int value="25" label="Undetermined country">
+    Compose disabled because the user's country coult not be determined
+  </int>
 </enum>
 
 <enum name="OpenComposeDialogResult">
@@ -164,10 +275,32 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="No ChromeComposeClient instance"/>
   <int value="2" label="No RenderFrameHost instance"/>
   <int value="3" label="No ContentAutofillDriver instance"/>
-  <int value="4" label="autofill::FormData not found"/>
-  <int value="5" label="autofill::FormFieldData not found"/>
+  <int value="4" label="FormData not found"/>
+  <int value="5" label="FormFieldData not found"/>
   <int value="6" label="No WebContents instance"/>
   <int value="7" label="Failed creating ComposeDialogView"/>
+  <int value="8" label="FormData not found after select all"/>
+</enum>
+
+<enum name="ProactiveNudgeDerivedEngagement">
+  <int value="0" label="None">The user didn't interact with the nudge</int>
+  <int value="1" label="Disabled for site">
+    The user disabled the nudge on this site using the three-dot menu
+  </int>
+  <int value="2" label="Fully disabled">
+    The user disabled the nudge on all sites using the three-dot menu
+  </int>
+  <int value="3" label="Interacted but no HMW request">
+    User clicked the nudge, but didn't press generate in Compose
+  </int>
+  <int value="4" label="Interacted but unused HMW response">
+    User clicked the nudge, pressed generate at least once, but didn't accept a
+    response
+  </int>
+  <int value="5" label="Interacted and inserted HMW response">
+    User clicked, pressed generate at least once, and accepted a response
+    (successful outcome)
+  </int>
 </enum>
 
 </enums>

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -58,12 +59,28 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // Retrieves the current access level.
   GeolocationAccessLevel AccessLevel() const;
 
+  // Retrieves the previous access level.
+  // The value of the previous access level is always different than the current
+  // access level. This is used to decide into which 'blocking' state the system
+  // should return to in case that a command to disable geolocation comes from a
+  // context that does not distinguish bytween 'system only' and 'disabled for
+  // all' (e.g. ARC).
+  GeolocationAccessLevel PreviousAccessLevel() const;
+
   // Sets the current access level.
   void SetAccessLevel(GeolocationAccessLevel access_level);
 
   // Called when the notification should be updated (either preference changed
   // or apps started/stopped attempting to use geolocation).
   void UpdateNotification();
+
+  // Handles location change events originated from the ARC world. Enable events
+  // are directly propagated to ChromeOS. ARC doesn't trigger Disable events,
+  // but CrOS need to handle the case when user declines the confirmation dialog
+  // when they switched location from
+  // (`kDisallowed` | `kOnlyAllowedForSystem`) to `kAllowed`. In which case, we
+  // restore to the original state.
+  void ApplyArcLocationUpdate(bool geolocation_enabled);
 
  private:
   int usage_cnt_{};
@@ -72,6 +89,7 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   base::ScopedObservation<ash::SessionController,
                           GeolocationPrivacySwitchController>
       session_observation_;
+  std::optional<GeolocationAccessLevel> cached_access_level_;
 };
 
 }  // namespace ash

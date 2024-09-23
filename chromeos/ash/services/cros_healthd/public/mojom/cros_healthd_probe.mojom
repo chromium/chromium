@@ -7,7 +7,6 @@
 
 // NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
 // in src/platform2/diagnostics/mojom/public/cros_healthd_probe.mojom.
-
 module ash.cros_healthd.mojom;
 
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
@@ -162,18 +161,18 @@ struct ProcessInfo {
   // Unused memory available to the process, in KiB. This will always be
   // |total_memory_kib| - |resident_memory_kib|.
   uint32 free_memory_kib@8;
-  // The sum of bytes passed to system read calls. This includes terminal
-  // I/O and is independent of whether the physical disk is accessed.
+  // The sum of bytes passed to system read calls. This includes terminal I/O
+  // and is independent of whether the physical disk is accessed.
   uint64 bytes_read@9;
-  // The sum of bytes passed to system write calls. This includes terminal
-  // I/O and is independent of whether the physical disk is accessed.
+  // The sum of bytes passed to system write calls. This includes terminal I/O
+  // and is independent of whether the physical disk is accessed.
   uint64 bytes_written@10;
   // Attempted count of read syscalls.
   uint64 read_system_calls@11;
   // Attempted count of write syscalls.
   uint64 write_system_calls@12;
-  // Attempt to count the number of bytes which this process really did cause
-  // to be fetched from the storage layer.
+  // Attempt to count the number of bytes which this process really did cause to
+  // be fetched from the storage layer.
   uint64 physical_bytes_read@13;
   // Attempt to count the number of bytes which this process caused to be sent
   // to the storage layer.
@@ -182,15 +181,20 @@ struct ProcessInfo {
   // pagecache.
   uint64 cancelled_bytes_written@15;
   // Filename of the executable.
-  [MinVersion=1] string? name@16;
+  [MinVersion=1]
+  string? name@16;
   // PID of the parent of this process.
-  [MinVersion=1] uint32 parent_process_id@17;
+  [MinVersion=1]
+  uint32 parent_process_id@17;
   // Process group ID of the group.
-  [MinVersion=1] uint32 process_group_id@18;
+  [MinVersion=1]
+  uint32 process_group_id@18;
   // Number of threads in this process.
-  [MinVersion=1] uint32 threads@19;
+  [MinVersion=1]
+  uint32 threads@19;
   // Process ID of the particular process.
-  [MinVersion=2] uint32 process_id@20;
+  [MinVersion=2]
+  uint32 process_id@20;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
@@ -208,7 +212,7 @@ union BatteryResult {
 // NextMinVersion: 1, NextIndex: 14
 [Stable]
 struct BatteryInfo {
-  // TODO(https://crbug.com/979245): Update "smart" cycle count.
+  // TODO(crbug.com/40633980): Update "smart" cycle count.
   int64 cycle_count@0;
   // Current battery voltage (V)
   double voltage_now@1;
@@ -264,8 +268,12 @@ union BlockDeviceVendor {
   uint32 nvme_subsystem_vendor@0;
   uint16 emmc_oemid@1;
   uint16 other@2;
-  [MinVersion=1, Default] uint64 unknown@3;
-  [MinVersion=2] uint16 jedec_manfid@4;
+
+  [MinVersion=1, Default]
+  uint64 unknown@3;
+
+  [MinVersion=2]
+  uint16 jedec_manfid@4;
 };
 
 // The manufacturer-specific product identifier.
@@ -276,7 +284,9 @@ union BlockDeviceProduct {
   uint32 nvme_subsystem_device@0;
   uint64 emmc_pnm@1;
   uint16 other@2;
-  [MinVersion=1, Default] uint64 unknown@3;
+
+  [MinVersion=1, Default]
+  uint64 unknown@3;
 };
 
 // The revision of the device's hardware.
@@ -287,7 +297,9 @@ union BlockDeviceRevision {
   uint8 nvme_pcie_rev@0;
   uint8 emmc_prv@1;
   uint16 other@2;
-  [MinVersion=1, Default] uint64 unknown@3;
+
+  [MinVersion=1, Default]
+  uint64 unknown@3;
 };
 
 // The revision of the device's firmware.
@@ -298,18 +310,26 @@ union BlockDeviceFirmware {
   uint64 nvme_firmware_rev@0;
   uint64 emmc_fwrev@1;
   uint16 other@2;
-  [MinVersion=1, Default] uint64 unknown@3;
-  [MinVersion=2] uint64 ufs_fwrev@4;
+
+  [MinVersion=1, Default]
+  uint64 unknown@3;
+
+  [MinVersion=2]
+  uint64 ufs_fwrev@4;
 };
 
 // Purpose of the storage device.
 //
-// NextMinVersion: 1, NextIndex: 3
+// NextMinVersion: 2, NextIndex: 4
 [Stable, Extensible]
 enum StorageDevicePurpose {
   [Default] kUnknown = 0,
+  // The storage device is the root device which ChromeOS boots from.
   kBootDevice = 1,
-  kSwapDevice = 2,
+  // DEPRECATED. See b/287120238.
+  DEPRECATED_kSwapDevice = 2,
+  // The storage device is not the root device which ChromeOS boots from.
+  [MinVersion=1] kNonBootDevice = 3,
 };
 
 // NVMe-specific device info.
@@ -360,7 +380,8 @@ struct UfsDeviceInfo {
 union BlockDeviceInfo {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognized@0;
+  [Default]
+  bool unrecognized@0;
 
   NvmeDeviceInfo nvme_device_info@1;
   EmmcDeviceInfo emmc_device_info@2;
@@ -369,7 +390,7 @@ union BlockDeviceInfo {
 
 // Information related to a specific non-removable block device.
 //
-// NextMinVersion: 3, NextIndex: 19
+// NextMinVersion: 4, NextIndex: 20
 [Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
@@ -393,7 +414,8 @@ struct NonRemovableBlockDeviceInfo {
   // Additional device info.
 
   // Device specific info.
-  [MinVersion=1] BlockDeviceInfo? device_info@17;
+  [MinVersion=1]
+  BlockDeviceInfo? device_info@17;
 
   // Device identification.
 
@@ -424,7 +446,11 @@ struct NonRemovableBlockDeviceInfo {
   // PSN: Product serial number, 32 bits
   uint32 serial@16;
   // String representatil of the device FW version
-  [MinVersion=2] string? firmware_string@18;
+  [MinVersion=2]
+  string? firmware_string@18;
+  // Whether the block device is a spinning disk.
+  [MinVersion=3]
+  bool? is_rotational@19;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
@@ -455,10 +481,12 @@ struct CpuInfo {
   KeylockerInfo? keylocker_info@4;
   // The general virtualization info. Guaranteed to be not null unless the
   // version doesn't match.
-  [MinVersion=1] VirtualizationInfo? virtualization@5;
+  [MinVersion=1]
+  VirtualizationInfo? virtualization@5;
   // The cpu vulnerability info. The key is the name of the vulnerability.
   // Guaranteed to be not null unless the version doesn't match.
-  [MinVersion=1] map<string, VulnerabilityInfo>? vulnerabilities@6;
+  [MinVersion=1]
+  map<string, VulnerabilityInfo>? vulnerabilities@6;
 };
 
 // Information related to virtualization.
@@ -541,9 +569,11 @@ struct PhysicalCpuInfo {
   array<LogicalCpuInfo> logical_cpus@1;
   // The cpu flags, labelled as |flags| in x86 architecture and |Features| in
   // ARM architecture.
-  [MinVersion=1] array<string>? flags@2;
+  [MinVersion=1]
+  array<string>? flags@2;
   // The virtualization info of this cpu.
-  [MinVersion=1] CpuVirtualizationInfo? virtualization@3;
+  [MinVersion=1]
+  CpuVirtualizationInfo? virtualization@3;
 };
 
 // Information related to virtualization status of a cpu.
@@ -597,7 +627,8 @@ struct LogicalCpuInfo {
   // Information about the logical CPU's time in various C-states.
   array<CpuCStateInfo> c_states@6;
   // The core number this logical CPU corresponds to.
-  [MinVersion=1] uint32 core_id@7;
+  [MinVersion=1]
+  uint32 core_id@7;
 };
 
 // Information about a CPU's C-states.
@@ -643,8 +674,8 @@ struct TimezoneInfo {
   string region@1;
 };
 
-// Memory probe result. Can either be populated with the MemoryInfo or an
-// error retrieving the information.
+// Memory probe result. Can either be populated with the MemoryInfo or an error
+// retrieving the information.
 [Stable]
 union MemoryResult {
   // Valid MemoryInfo.
@@ -655,10 +686,11 @@ union MemoryResult {
 
 // Memory information.
 //
-// NextMinVersion: 2, NextIndex: 5
+// NextMinVersion: 3, NextIndex: 16
 [Stable]
 struct MemoryInfo {
-  // Total memory, in KiB.
+  // Computed total memory including memory reserved for the kernel, etc.,
+  // in KiB.
   uint32 total_memory_kib@0;
   // Free memory, in KiB.
   uint32 free_memory_kib@1;
@@ -667,7 +699,41 @@ struct MemoryInfo {
   // Number of page faults since the last boot.
   uint64 page_faults_since_last_boot@3;
   // Memory Encryption info.
-  [MinVersion=1] MemoryEncryptionInfo? memory_encryption_info@4;
+  [MinVersion=1]
+  MemoryEncryptionInfo? memory_encryption_info@4;
+  // Relatively temporary storage for raw disk blocks, in KiB.
+  [MinVersion=2]
+  uint64? buffers_kib@5;
+  // In-memory cache for files read from the disk, in KiB.
+  [MinVersion=2]
+  uint64? page_cache_kib@6;
+  // Shared memory, used in tmpfs, in KiB.
+  [MinVersion=2]
+  uint64? shared_memory_kib@7;
+  // More recently used memory, in KiB.
+  [MinVersion=2]
+  uint64? active_memory_kib@8;
+  // Less recently used memory, in KiB.
+  [MinVersion=2]
+  uint64? inactive_memory_kib@9;
+  // Total swap memory, in KiB.
+  [MinVersion=2]
+  uint64? total_swap_memory_kib@10;
+  // Free swap memory, in KiB.
+  [MinVersion=2]
+  uint64? free_swap_memory_kib@11;
+  // The swapped back memory in KiB, but is still in the swap.
+  [MinVersion=2]
+  uint64? cached_swap_memory_kib@12;
+  // Kernal-used memory, in KiB.
+  [MinVersion=2]
+  uint64? total_slab_memory_kib@13;
+  // Reclaimable slab memory, in KiB.
+  [MinVersion=2]
+  uint64? reclaimable_slab_memory_kib@14;
+  // Unreclaimable slab memory, in KiB.
+  [MinVersion=2]
+  uint64? unreclaimable_slab_memory_kib@15;
 };
 
 // NextMinVersion: 1, NextIndex: 4
@@ -794,21 +860,27 @@ struct BluetoothAdapterInfo {
   // The number of devices connected to this adapter.
   uint32 num_connected_devices@3;
   // The info of connected devices to this adapter.
-  [MinVersion=1] array<BluetoothDeviceInfo>? connected_devices@4;
+  [MinVersion=1]
+  array<BluetoothDeviceInfo>? connected_devices@4;
   // The adapter is visible or not.
-  [MinVersion=1] bool discoverable@5;
+  [MinVersion=1]
+  bool discoverable@5;
   // The device discovery procedure is active or not.
-  [MinVersion=1] bool discovering@6;
+  [MinVersion=1]
+  bool discovering@6;
   // The list of the available local services.
-  [MinVersion=1] array<string>? uuids@7;
+  [MinVersion=1]
+  array<string>? uuids@7;
   // Local Device ID information.
-  [MinVersion=1] string? modalias@8;
+  [MinVersion=1]
+  string? modalias@8;
   // List of allowed system devices.
-  [MinVersion=2] array<string>? service_allow_list@9;
+  [MinVersion=2]
+  array<string>? service_allow_list@9;
   // A dictionary of supported capabilities. DEPRECATED.
-  [MinVersion=2] DEPRECATED_SupportedCapabilities? deprecated_capabilities@10;
+  [MinVersion=2]
+  DEPRECATED_SupportedCapabilities? deprecated_capabilities@10;
 };
-
 
 // Information related to one of a adapter's Bluetooth connected devices.
 //
@@ -832,9 +904,11 @@ struct BluetoothDeviceInfo {
   // The list of the available remote services.
   array<string>? uuids@7;
   // The battery percentage of the device.
-  [MinVersion=1] NullableUint8? battery_percentage@8;
+  [MinVersion=1]
+  NullableUint8? battery_percentage@8;
   // The Bluetooth class of device (CoD) of the device.
-  [MinVersion=2] NullableUint32? bluetooth_class@9;
+  [MinVersion=2]
+  NullableUint32? bluetooth_class@9;
 };
 
 // An enumeration of type in Bluetooth device info.
@@ -860,7 +934,9 @@ struct DEPRECATED_SupportedCapabilities {};
 
 // System probe result. DEPRECATED.
 [Stable]
-union DEPRECATED_SystemResult { ProbeError error; };
+union DEPRECATED_SystemResult {
+  ProbeError error;
+};
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
@@ -885,7 +961,8 @@ struct SystemInfo {
   // logging and debugging.
   DmiInfo? dmi_info@2;
   // The info related to Intel Platform Service Record (PSR).
-  [MinVersion=1] PsrInfo? psr_info@3;
+  [MinVersion=1]
+  PsrInfo? psr_info@3;
 };
 
 // The OS information.
@@ -905,7 +982,8 @@ struct OsInfo {
   // The boot flow used by the current boot.
   BootMode boot_mode@3;
   // Contents of CrosConfig in /branding/oem-name.
-  [MinVersion=1] string? oem_name@4;
+  [MinVersion=1]
+  string? oem_name@4;
 
   // NextMinVersion: 1, NextIndex: 4
   [Stable, Extensible]
@@ -919,7 +997,9 @@ struct OsInfo {
     // 32 bit platform.
     k32 = 3,
   };
-  [MinVersion=2] EfiPlatformSize efi_platform_size@5;
+
+  [MinVersion=2]
+  EfiPlatformSize efi_platform_size@5;
 };
 
 // Structure containing information about the operating system version of the
@@ -934,7 +1014,8 @@ struct OsVersion {
   // The OS version build number (e.g. "13544").
   string build_number@1;
   // The OS version branch number (e.g. "59").
-  [MinVersion=1] string? branch_number@4;
+  [MinVersion=1]
+  string? branch_number@4;
   // The OS version patch number (e.g. "0").
   string patch_number@2;
   // The OS release channel (e.g. "stable-channel").
@@ -982,7 +1063,8 @@ struct VpdInfo {
   // The product model name. (Optional RO VPD field. b/35512367)
   string? model_name@5;
   // OEM name of the device. (Optional RO VPD field)
-  [MinVersion=1] string? oem_name@6;
+  [MinVersion=1]
+  string? oem_name@6;
 };
 
 // DMI (a.k.a. SMBIOS) is only supported on x86 platform. These info can be used
@@ -1109,7 +1191,8 @@ struct PsrInfo {
   // First 100 PSR events that have been saved.
   array<PsrEvent> events@14;
   // Is PSR supported.
-  [MinVersion=1] bool is_supported@15;
+  [MinVersion=1]
+  bool is_supported@15;
 };
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
@@ -1200,9 +1283,11 @@ struct AudioInfo {
   // Numbers of severe underruns.
   uint32 severe_underruns@7;
   // Output nodes.
-  [MinVersion=1] array<AudioNodeInfo>? output_nodes@8;
+  [MinVersion=1]
+  array<AudioNodeInfo>? output_nodes@8;
   // Input nodes.
-  [MinVersion=1] array<AudioNodeInfo>? input_nodes@9;
+  [MinVersion=1]
+  array<AudioNodeInfo>? input_nodes@9;
 };
 
 // Audio node information.
@@ -1297,17 +1382,23 @@ struct BootPerformanceInfo {
   // The shutdown reason (including reboot).
   string shutdown_reason@4;
   // TPM initialization time.
-  [MinVersion=1] NullableDouble? tpm_initialization_seconds@5;
+  [MinVersion=1]
+  NullableDouble? tpm_initialization_seconds@5;
   // Total time of [power on, jump to kernel], a.k.a. firmware time.
-  [MinVersion=2] double? power_on_to_kernel_seconds@6;
+  [MinVersion=2]
+  double? power_on_to_kernel_seconds@6;
   // Total time of [jump to kernel, pre start up], a.k.a. kernel time.
-  [MinVersion=2] double? kernel_to_pre_startup_seconds@7;
+  [MinVersion=2]
+  double? kernel_to_pre_startup_seconds@7;
   // Total time of [jump to kernel, post start up].
-  [MinVersion=2] double? kernel_to_post_startup_seconds@8;
+  [MinVersion=2]
+  double? kernel_to_post_startup_seconds@8;
   // Total time of [start up, chrome exec], a.k.a. system time.
-  [MinVersion=2] double? startup_to_chrome_exec_seconds@9;
+  [MinVersion=2]
+  double? startup_to_chrome_exec_seconds@9;
   // Total time of [chrome exec, login screen prompt], a.k.a. chrome time.
-  [MinVersion=2] double? chrome_exec_to_login_seconds@10;
+  [MinVersion=2]
+  double? chrome_exec_to_login_seconds@10;
 };
 
 // Bus probe result. Can either be populated with the BusDevice or an error
@@ -1365,7 +1456,8 @@ union BusInfo {
   ThunderboltBusInfo thunderbolt_bus_info;
   // The required field for backwards compatibility. The unrecognized Mojo
   // field will deserialize to this field. It should not be used.
-  [MinVersion=1, Default] bool unmapped_field;
+  [MinVersion=1, Default]
+  bool unmapped_field;
 };
 
 // The info related to pci.
@@ -1387,8 +1479,11 @@ struct PciBusInfo {
   // These fields can be used to classify / identify the pci subsystem devices.
   // See the pci.ids database for the values. (https://github.com/gentoo/hwids)
   // Note that not every device has these fields.
-  [MinVersion=1] NullableUint16? sub_vendor_id@6;
-  [MinVersion=1] NullableUint16? sub_device_id@7;
+  [MinVersion=1]
+  NullableUint16? sub_vendor_id@6;
+
+  [MinVersion=1]
+  NullableUint16? sub_device_id@7;
 };
 
 // The info related to usb.
@@ -1409,12 +1504,15 @@ struct UsbBusInfo {
   // The interfaces are sorted by the |interface_number| field.
   array<UsbBusInterfaceInfo> interfaces@5;
   // The firmware version obtained from fwupd.
-  [MinVersion=1] FwupdFirmwareVersionInfo? fwupd_firmware_version_info@6;
+  [MinVersion=1]
+  FwupdFirmwareVersionInfo? fwupd_firmware_version_info@6;
   // The recognized usb version. It may not be the highest USB version supportrd
   // by the hardware.
-  [MinVersion=2] UsbVersion version@7;
+  [MinVersion=2]
+  UsbVersion version@7;
   // The spec usb speed.
-  [MinVersion=2] UsbSpecSpeed spec_speed@8;
+  [MinVersion=2]
+  UsbSpecSpeed spec_speed@8;
 };
 
 // The info related to firmware version obtained from fwupd.
@@ -1718,7 +1816,8 @@ struct DisplayInfo {
   // Embedded display info.
   EmbeddedDisplayInfo embedded_display@0;
   // External display info.
-  [MinVersion=1] array<ExternalDisplayInfo>? external_displays@1;
+  [MinVersion=1]
+  array<ExternalDisplayInfo>? external_displays@1;
 };
 
 // NextMinVersion: 3, NextIndex: 15
@@ -1729,31 +1828,44 @@ struct EmbeddedDisplayInfo {
   // Privacy screen is enabled or not.
   bool privacy_screen_enabled@1;
   // Display width in millimeters.
-  [MinVersion=1] NullableUint32? display_width@2;
+  [MinVersion=1]
+  NullableUint32? display_width@2;
   // Display height in millimeters.
-  [MinVersion=1] NullableUint32? display_height@3;
+  [MinVersion=1]
+  NullableUint32? display_height@3;
   // Horizontal resolution.
-  [MinVersion=1] NullableUint32? resolution_horizontal@4;
+  [MinVersion=1]
+  NullableUint32? resolution_horizontal@4;
   // Vertical resolution.
-  [MinVersion=1] NullableUint32? resolution_vertical@5;
+  [MinVersion=1]
+  NullableUint32? resolution_vertical@5;
   // Refresh rate.
-  [MinVersion=1] NullableDouble? refresh_rate@6;
+  [MinVersion=1]
+  NullableDouble? refresh_rate@6;
   // Three letter manufacturer ID.
-  [MinVersion=2] string? manufacturer@7;
+  [MinVersion=2]
+  string? manufacturer@7;
   // Manufacturer product code.
-  [MinVersion=2] NullableUint16? model_id@8;
+  [MinVersion=2]
+  NullableUint16? model_id@8;
   // 32 bits serial number.
-  [MinVersion=2] NullableUint32? serial_number@9;
+  [MinVersion=2]
+  NullableUint32? serial_number@9;
   // Week of manufacture.
-  [MinVersion=2] NullableUint8? manufacture_week@10;
+  [MinVersion=2]
+  NullableUint8? manufacture_week@10;
   // Year of manufacture.
-  [MinVersion=2] NullableUint16? manufacture_year@11;
+  [MinVersion=2]
+  NullableUint16? manufacture_year@11;
   // EDID version.
-  [MinVersion=2] string? edid_version@12;
+  [MinVersion=2]
+  string? edid_version@12;
   // Digital or analog input.
-  [MinVersion=2] DisplayInputType input_type@13;
+  [MinVersion=2]
+  DisplayInputType input_type@13;
   // Name of display product.
-  [MinVersion=2] string? display_name@14;
+  [MinVersion=2]
+  string? display_name@14;
 };
 
 // NextMinVersion: 2, NextIndex: 13
@@ -1770,21 +1882,29 @@ struct ExternalDisplayInfo {
   // Refresh rate.
   NullableDouble? refresh_rate@4;
   // Three letter manufacturer ID.
-  [MinVersion=1] string? manufacturer@5;
+  [MinVersion=1]
+  string? manufacturer@5;
   // Manufacturer product code.
-  [MinVersion=1] NullableUint16? model_id@6;
+  [MinVersion=1]
+  NullableUint16? model_id@6;
   // 32 bits serial number.
-  [MinVersion=1] NullableUint32? serial_number@7;
+  [MinVersion=1]
+  NullableUint32? serial_number@7;
   // Week of manufacture.
-  [MinVersion=1] NullableUint8? manufacture_week@8;
+  [MinVersion=1]
+  NullableUint8? manufacture_week@8;
   // Year of manufacture.
-  [MinVersion=1] NullableUint16? manufacture_year@9;
+  [MinVersion=1]
+  NullableUint16? manufacture_year@9;
   // EDID version.
-  [MinVersion=1] string? edid_version@10;
+  [MinVersion=1]
+  string? edid_version@10;
   // Digital or analog input.
-  [MinVersion=1] DisplayInputType input_type@11;
+  [MinVersion=1]
+  DisplayInputType input_type@11;
   // Name of display product.
-  [MinVersion=1] string? display_name@12;
+  [MinVersion=1]
+  string? display_name@12;
 };
 
 // An enumeration of display input type.
@@ -1862,7 +1982,8 @@ struct InputInfo {
   // The touchscreen devices.
   array<TouchscreenDevice> touchscreen_devices@1;
   // The touchpad devices.
-  [MinVersion=1] array<TouchpadDevice>? touchpad_devices@2;
+  [MinVersion=1]
+  array<TouchpadDevice>? touchpad_devices@2;
 };
 
 // Data of a touch screen device.
@@ -1882,13 +2003,19 @@ struct TouchscreenDevice {
 
 // Data of a touchpad device.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 4
 [Stable]
 struct TouchpadDevice {
   // The input device of this touchpad.
   InputDevice input_device@0;
   // The kernel driver in use.
   string driver_name@1;
+  // The touchpad vendor id
+  [MinVersion=1]
+  string? vendor_id@2;
+  // the touchpad product id
+  [MinVersion=1]
+  string? product_id@3;
 };
 
 // Data of a input device.
@@ -1941,7 +2068,8 @@ struct SensorInfo {
   // Angle between lid and base.
   NullableUint16? lid_angle@0;
   // Information about the device's sensors.
-  [MinVersion=1] array<Sensor>? sensors@1;
+  [MinVersion=1]
+  array<Sensor>? sensors@1;
 };
 
 // Data of a sensor.
@@ -2088,33 +2216,39 @@ struct TelemetryInfo {
   // Information about boot performance. Only present when kBootPerformance was
   // included in the categories input to ProbeTelemetryInfo.
   BootPerformanceResult? boot_performance_result@12;
-  // Information about the bus devices. Only present when kBus was included
-  // in the categories input to ProbeTelemetryInfo.
+  // Information about the bus devices. Only present when kBus was included in
+  // the categories input to ProbeTelemetryInfo.
   BusResult? bus_result@13;
   // Information about the system. Only present when kSystem was included in the
   // categories input to ProbeTelemetryInfo.
   SystemResult? system_result@14;
-  // Information about the tpm. Only present when kTpm was included in
-  // the categories input to ProbeTelemetryInfo.
+  // Information about the tpm. Only present when kTpm was included in the
+  // categories input to ProbeTelemetryInfo.
   TpmResult? tpm_result@15;
   // Information about the graphics. Only present when kGraphics was included in
   // the categories input to ProbeTelemetryInfo.
   GraphicsResult? graphics_result@16;
   // Information about the display. Only present when kDisplay was included in
   // the categories input to ProbeTelemetryInfo.
-  [MinVersion=1] DisplayResult? display_result@17;
+  [MinVersion=1]
+  DisplayResult? display_result@17;
   // Information about the network interfaces. Only present when
   // kNetworkInterface was included in the categories input to
   // ProbeTelemetryInfo.
-  [MinVersion=2] NetworkInterfaceResult? network_interface_result@18;
-  // Information about the input software and hardware. Only present when
-  // kInput was included in the categories input to ProbeTelemetryInfo.
-  [MinVersion=3] InputResult? input_result@19;
+  [MinVersion=2]
+  NetworkInterfaceResult? network_interface_result@18;
+  // Information about the input software and hardware. Only present when kInput
+  // was included in the categories input to ProbeTelemetryInfo.
+  [MinVersion=3]
+  InputResult? input_result@19;
   // Information about audio hardware. Only present when kAudioHardware was
   // included.
-  [MinVersion=4] AudioHardwareResult? audio_hardware_result@20;
+  [MinVersion=4]
+  AudioHardwareResult? audio_hardware_result@20;
   // Information about sensor. Only present when kSensor was included.
-  [MinVersion=5] SensorResult? sensor_result@21;
+  [MinVersion=5]
+  SensorResult? sensor_result@21;
   // Information about thermal. Only present when kThermal was included.
-  [MinVersion=6] ThermalResult? thermal_result@22;
+  [MinVersion=6]
+  ThermalResult? thermal_result@22;
 };

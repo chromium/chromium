@@ -289,7 +289,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
 
 TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAllowApnModificationPolicy);
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,

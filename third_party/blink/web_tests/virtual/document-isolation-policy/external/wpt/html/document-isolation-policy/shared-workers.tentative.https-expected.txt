@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] isolate-and-require-corp (derived from blob URL creator)
+  assert_equals: expected "failure" but got "success"
+[FAIL] "isolate-and-require-corp" (derived from owner set due to use of local scheme - blob URL)
+  promise_test: Unhandled rejection with value: object "SecurityError: Failed to read a named property 'SharedWorker' from 'Window': Blocked a frame with origin "https://web-platform.test:8444" from accessing a cross-origin frame."
+[FAIL] "isolate-and-require-corp" (derived from owner set due to use of local scheme - data URL)
+  assert_equals: expected "failure" but got "success"
+[FAIL] default policy (derived from owner set due to use of local scheme - filesystem URL)
+  assert_unreached: SharedWorker.onerror should not be called Reached unreachable code
+[FAIL] isolate-and-require-corp (derived from filesystem URL creator)
+  assert_unreached: SharedWorker.onerror should not be called Reached unreachable code
+[FAIL] "isolate-and-require-corp" (derived from owner set due to use of local scheme - filesystem URL)
+  assert_unreached: SharedWorker.onerror should not be called Reached unreachable code
+Harness: the test ran to completion.
+

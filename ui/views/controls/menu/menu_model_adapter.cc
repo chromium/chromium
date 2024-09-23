@@ -67,6 +67,21 @@ std::unique_ptr<MenuItemView> MenuModelAdapter::CreateMenu() {
   return menu;
 }
 
+std::optional<SkColor> MenuModelAdapter::GetLabelColor(int command_id) const {
+  // Use STYLE_PRIMARY for title item. This aligns with 3-dot menu title style.
+  return command_id == ui::MenuModel::kTitleId
+             ? std::make_optional(
+                   menu_->GetSubmenu()->GetColorProvider()->GetColor(
+                       views::TypographyProvider::Get().GetColorId(
+                           views::style::CONTEXT_MENU,
+                           views::style::STYLE_PRIMARY)))
+             : std::nullopt;
+}
+
+bool MenuModelAdapter::IsTearingDown() const {
+  return !menu_model_;
+}
+
 // Static.
 MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        size_t model_index,
@@ -126,7 +141,6 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));
-  menu_item_view->SetAccessibleName(model->GetAccessibleNameAt(model_index));
   const ui::ElementIdentifier element_id =
       model->GetElementIdentifierAt(model_index);
   if (element_id) {
@@ -171,8 +185,8 @@ void MenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {
 
 bool MenuModelAdapter::IsTriggerableEvent(MenuItemView* source,
                                           const ui::Event& e) {
-  return e.type() == ui::ET_GESTURE_TAP ||
-         e.type() == ui::ET_GESTURE_TAP_DOWN ||
+  return e.type() == ui::EventType::kGestureTap ||
+         e.type() == ui::EventType::kGestureTapDown ||
          (e.IsMouseEvent() && (triggerable_event_flags_ & e.flags()));
 }
 

@@ -13,6 +13,7 @@ from .code_node import EmptyNode
 from .code_node import LiteralNode
 from .code_node import SequenceNode
 from .code_node import render_code_node
+from .codegen_accumulator import IncludeDefinition
 from .codegen_accumulator import CodeGenAccumulator
 from .path_manager import PathManager
 
@@ -60,17 +61,22 @@ def make_header_include_directives(accumulator):
         def __str__(self):
             lines = []
 
+            def eol_comment(header: IncludeDefinition) -> str:
+                return f"  // {header.annotation}" if header.annotation else ""
+
             if self._accumulator.stdcpp_include_headers:
-                lines.extend([
-                    "#include <{}>".format(header) for header in sorted(
-                        self._accumulator.stdcpp_include_headers)
-                ])
+                lines.extend(
+                    sorted([
+                        "#include <{}>{}".format(h.filename, eol_comment(h))
+                        for h in self._accumulator.stdcpp_include_headers
+                    ]))
                 lines.append("")
 
-            lines.extend([
-                "#include \"{}\"".format(header)
-                for header in sorted(self._accumulator.include_headers)
-            ])
+            lines.extend(
+                sorted([
+                    '#include "{}"{}'.format(h.filename, eol_comment(h))
+                    for h in self._accumulator.include_headers
+                ]))
 
             return "\n".join(lines)
 
@@ -186,6 +192,8 @@ def component_export_header(component, for_testing):
         return "third_party/blink/renderer/modules/modules_export.h"
     elif component == "extensions_chromeos":
         return "third_party/blink/renderer/extensions/chromeos/extensions_chromeos_export.h"
+    elif component == "extensions_webview":
+        return "third_party/blink/renderer/extensions/webview/extensions_webview_export.h"
     else:
         assert False
 

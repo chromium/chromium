@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -17,11 +18,11 @@ namespace autofill::autofill_metrics {
 // Separate stored profile count metrics exist for every profile category. Test
 // them in a parameterized way.
 class StoredProfileMetricsTestByCategory
-    : public testing::TestWithParam<AutofillProfileSourceCategory> {
+    : public testing::TestWithParam<AutofillProfileRecordTypeCategory> {
  public:
   StoredProfileMetricsTestByCategory() = default;
 
-  AutofillProfileSourceCategory Category() const { return GetParam(); }
+  AutofillProfileRecordTypeCategory Category() const { return GetParam(); }
 
   // Returns the suffix used for the metrics.
   std::string GetSuffix() const { return GetProfileCategorySuffix(Category()); }
@@ -30,9 +31,9 @@ class StoredProfileMetricsTestByCategory
 INSTANTIATE_TEST_SUITE_P(
     ,
     StoredProfileMetricsTestByCategory,
-    testing::ValuesIn({AutofillProfileSourceCategory::kLocalOrSyncable,
-                       AutofillProfileSourceCategory::kAccountChrome,
-                       AutofillProfileSourceCategory::kAccountNonChrome}));
+    testing::ValuesIn({AutofillProfileRecordTypeCategory::kLocalOrSyncable,
+                       AutofillProfileRecordTypeCategory::kAccountChrome,
+                       AutofillProfileRecordTypeCategory::kAccountNonChrome}));
 
 // Tests that no profile count metrics for the corresponding category are
 // emitted when no profiles of that category are stored.
@@ -90,7 +91,8 @@ TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
 // of superset profiles.
 TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile local_profile1 = test::StandardProfile();
   AutofillProfile local_profile2 = test::SubsetOfStandardProfile();
   AutofillProfile local_profile3 = test::DifferentFromStandardProfile();

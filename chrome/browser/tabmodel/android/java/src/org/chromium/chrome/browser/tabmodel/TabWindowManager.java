@@ -32,10 +32,24 @@ public interface TabWindowManager {
     // ChromeTabbedActivity.
     public static final int MAX_SELECTORS_S = 5;
 
+    // Maximum number of TabModelSelectors. Set high enough that it is functionally unlimited.
+    public static final int MAX_SELECTORS = 1000;
+
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_NAME =
             "Android.MultiWindowMode.AssertIndicesMatch";
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
+
+    public interface Observer {
+        /** Called when a tab model selector is added for an activity opening. */
+        public void onTabModelSelectorAdded(TabModelSelector selector);
+    }
+
+    /** Add an observer. */
+    void addObserver(Observer observer);
+
+    /** Removes an observer.s */
+    void removeObserver(Observer observer);
 
     /**
      * @return The maximum number of simultaneous TabModelSelector instances in this Application.
@@ -103,8 +117,18 @@ public interface TabWindowManager {
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
+     *
      * @param index The index of {@link TabModelSelector} to get.
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     TabModelSelector getTabModelSelectorById(int index);
+
+    /** Returns whether the tab with the given id can safely be deleted. */
+    boolean canTabStateBeDeleted(int tabId);
+
+    /** Returns whether the tab with the given id can safely be deleted. */
+    boolean canTabThumbnailBeDeleted(int tabId);
+
+    /** Sets the given archived {@link TabModelSelector} singleton instance. */
+    void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);
 }

@@ -30,8 +30,9 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -73,7 +74,7 @@ public class NotificationManager {
         // If this feature ever supports incognito mode, we need to modify
         // this method to obtain the current profile, rather than the last-used
         // regular profile.
-        final Profile profile = Profile.getLastUsedRegularProfile();
+        final Profile profile = ProfileManager.getLastUsedRegularProfile();
         switch (action) {
             case NOTIFICATION_ACTION_TAP:
                 openUrl(intent.getData());
@@ -108,7 +109,7 @@ public class NotificationManager {
             return false;
         }
         Context context = ContextUtils.getApplicationContext();
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
         manager.cancel(
                 NotificationConstants.GROUP_SEND_TAB_TO_SELF, activeNotification.notificationId);
         return true;
@@ -138,7 +139,7 @@ public class NotificationManager {
 
         // Post notification.
         Context context = ContextUtils.getApplicationContext();
-        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
 
         int nextId = NotificationSharedPrefManager.getNextNotificationId();
         Uri uri = Uri.parse(url);

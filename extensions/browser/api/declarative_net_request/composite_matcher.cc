@@ -4,17 +4,21 @@
 
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 
+#include <cstdint>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/url_pattern_index/flat/url_pattern_index_generated.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
@@ -32,25 +36,40 @@ bool AreIDsUnique(const CompositeMatcher::MatcherList& matchers) {
   std::set<RulesetID> ids;
   for (const auto& matcher : matchers) {
     bool did_insert = ids.insert(matcher->id()).second;
-    if (!did_insert)
+    if (!did_insert) {
       return false;
+    }
   }
 
   return true;
 }
 
-// Helper to log the time taken in CompositeMatcher::GetBeforeRequestAction.
+// Helper to log the time taken in CompositeMatcher::GetAction.
 class ScopedGetBeforeRequestActionTimer {
  public:
-  ScopedGetBeforeRequestActionTimer() = default;
+  explicit ScopedGetBeforeRequestActionTimer(RulesetMatchingStage stage)
+      : stage_(stage) {}
   ~ScopedGetBeforeRequestActionTimer() {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime."
-        "SingleExtension2",
-        timer_.Elapsed(), base::Microseconds(1), base::Milliseconds(50), 50);
+    switch (stage_) {
+      case RulesetMatchingStage::kOnBeforeRequest:
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime."
+            "SingleExtension2",
+            timer_.Elapsed(), base::Microseconds(1), base::Milliseconds(50),
+            50);
+        break;
+      case RulesetMatchingStage::kOnHeadersReceived:
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "Extensions.DeclarativeNetRequest.EvaluateHeadersReceivedTime."
+            "SingleExtension2",
+            timer_.Elapsed(), base::Microseconds(1), base::Milliseconds(50),
+            50);
+        break;
+    }
   }
 
  private:
+  RulesetMatchingStage stage_;
   base::ElapsedTimer timer_;
 };
 
@@ -68,8 +87,11 @@ ActionInfo::ActionInfo(ActionInfo&&) = default;
 ActionInfo& ActionInfo::operator=(ActionInfo&& other) = default;
 
 CompositeMatcher::CompositeMatcher(MatcherList matchers,
+                                   const ExtensionId& extension_id,
                                    HostPermissionsAlwaysRequired mode)
-    : matchers_(std::move(matchers)), host_permissions_always_required_(mode) {
+    : matchers_(std::move(matchers)),
+      extension_id_(extension_id),
+      host_permissions_always_required_(mode) {
   DCHECK(AreIDsUnique(matchers_));
 }
 
@@ -89,8 +111,9 @@ void CompositeMatcher::AddOrUpdateRuleset(
 
 void CompositeMatcher::AddOrUpdateRulesets(MatcherList matchers) {
   std::set<RulesetID> ids_to_remove;
-  for (const auto& matcher : matchers)
+  for (const auto& matcher : matchers) {
     ids_to_remove.insert(matcher->id());
+  }
 
   RemoveRulesetsWithIDs(ids_to_remove);
   matchers_.insert(matchers_.end(), std::make_move_iterator(matchers.begin()),
@@ -99,20 +122,22 @@ void CompositeMatcher::AddOrUpdateRulesets(MatcherList matchers) {
 }
 
 void CompositeMatcher::RemoveRulesetsWithIDs(const std::set<RulesetID>& ids) {
-  size_t erased_count = base::EraseIf(
+  size_t erased_count = std::erase_if(
       matchers_, [&ids](const std::unique_ptr<RulesetMatcher>& matcher) {
         return base::Contains(ids, matcher->id());
       });
 
-  if (erased_count > 0)
+  if (erased_count > 0) {
     OnMatchersModified();
+  }
 }
 
 std::set<RulesetID> CompositeMatcher::ComputeStaticRulesetIDs() const {
   std::set<RulesetID> result;
   for (const std::unique_ptr<RulesetMatcher>& matcher : matchers_) {
-    if (matcher->id() == kDynamicRulesetID)
+    if (matcher->id() == kDynamicRulesetID) {
       continue;
+    }
 
     result.insert(matcher->id());
   }
@@ -120,10 +145,11 @@ std::set<RulesetID> CompositeMatcher::ComputeStaticRulesetIDs() const {
   return result;
 }
 
-ActionInfo CompositeMatcher::GetBeforeRequestAction(
+ActionInfo CompositeMatcher::GetAction(
     const RequestParams& params,
-    PageAccess page_access) const {
-  ScopedGetBeforeRequestActionTimer timer;
+    RulesetMatchingStage stage,
+    PermissionsData::PageAccess page_access) const {
+  ScopedGetBeforeRequestActionTimer timer(stage);
 
   bool always_require_host_permissions =
       host_permissions_always_required_ == HostPermissionsAlwaysRequired::kTrue;
@@ -134,38 +160,49 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
            page_access == PermissionsData::PageAccess::kWithheld);
   }
 
-  std::optional<RequestAction> final_action;
+  // Get the max priority allow action for this extension, or implicitly assign
+  // it as nullopt in `params.max_priority_allow_action` if there isn't one.
+  auto& max_priority_allow_action_for_extension =
+      params.max_priority_allow_action[extension_id_];
 
-  // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or std::nullopt otherwise.
-  std::optional<uint64_t> max_allow_rule_priority;
+  // Assign `final_action` to the max priority allow action matched in previous
+  // request stages (if any). This way, that action will be returned again if it
+  // outprioritizes all rules that are matched in the current request `stage`.
+  std::optional<RequestAction> final_action =
+      max_priority_allow_action_for_extension.has_value()
+          ? std::make_optional(max_priority_allow_action_for_extension->Clone())
+          : std::nullopt;
 
   for (const auto& matcher : matchers_) {
-    std::optional<RequestAction> action =
-        matcher->GetBeforeRequestAction(params);
-    if (!action)
+    std::optional<RequestAction> action = matcher->GetAction(params, stage);
+    uint64_t max_allow_rule_priority =
+        max_priority_allow_action_for_extension.has_value()
+            ? max_priority_allow_action_for_extension->index_priority
+            : 0u;
+    if (!action || action->index_priority <= max_allow_rule_priority) {
       continue;
+    }
 
     if (action->IsAllowOrAllowAllRequests()) {
-      max_allow_rule_priority =
-          std::max(max_allow_rule_priority.value_or(0), action->index_priority);
+      // This will update `max_priority_allow_action_for_extension`.
+      params.max_priority_allow_action.insert_or_assign(extension_id_,
+                                                        action->Clone());
     }
 
     final_action =
         GetMaxPriorityAction(std::move(final_action), std::move(action));
   }
 
-  params.allow_rule_max_priority[this] = max_allow_rule_priority;
-
-  if (!final_action)
+  if (!final_action) {
     return ActionInfo();
+  }
 
   bool requires_host_permission =
       always_require_host_permissions ||
       final_action->type == RequestAction::Type::REDIRECT;
   if (!requires_host_permission || page_access == PageAccess::kAllowed) {
     return ActionInfo(std::move(final_action),
-                      false /* notify_request_withheld */);
+                      /*notify_request_withheld=*/false);
   }
 
   // `requires_host_permission` is true and `page_access` is withheld or denied.
@@ -175,21 +212,27 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
 }
 
 std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   std::vector<RequestAction> modify_headers_actions;
-  DCHECK(params.allow_rule_max_priority.contains(this));
 
   // The priority of the highest priority matching allow or allowAllRequests
-  // rule within this matcher, or std::nullopt if no such rule exists.
-  std::optional<uint64_t> max_allow_rule_priority =
-      params.allow_rule_max_priority[this];
+  // rule within this matcher, or 0 if no such rule exists (the minimum priority
+  // for a rule, specified in `kMinValidPriority`, is 1.)
+  uint64_t max_allow_rule_priority = 0u;
+
+  DCHECK(base::Contains(params.max_priority_allow_action, extension_id_));
+  if (auto& allow_action = params.max_priority_allow_action.at(extension_id_)) {
+    max_allow_rule_priority = allow_action->index_priority;
+  }
 
   for (const auto& matcher : matchers_) {
-    // Plumb |max_allow_rule_priority| into GetModifyHeadersActions so that
+    // Plumb `max_allow_rule_priority` into GetModifyHeadersActions so that
     // modifyHeaders rules with priorities less than or equal to the highest
     // priority matching allow/allowAllRequests rule are ignored.
     std::vector<RequestAction> actions_for_matcher =
-        matcher->GetModifyHeadersActions(params, max_allow_rule_priority);
+        matcher->GetModifyHeadersActions(params, stage,
+                                         max_allow_rule_priority);
 
     modify_headers_actions.insert(
         modify_headers_actions.end(),
@@ -197,32 +240,43 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
         std::make_move_iterator(actions_for_matcher.end()));
   }
 
-  // Sort |modify_headers_actions| in descending order of priority.
+  // Sort `modify_headers_actions` in descending order of priority.
   std::sort(modify_headers_actions.begin(), modify_headers_actions.end(),
             std::greater<>());
   return modify_headers_actions;
 }
 
 bool CompositeMatcher::HasAnyExtraHeadersMatcher() const {
-  if (!has_any_extra_headers_matcher_.has_value())
+  if (!has_any_extra_headers_matcher_.has_value()) {
     has_any_extra_headers_matcher_ = ComputeHasAnyExtraHeadersMatcher();
+  }
   return has_any_extra_headers_matcher_.value();
 }
 
 void CompositeMatcher::OnRenderFrameCreated(content::RenderFrameHost* host) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnRenderFrameCreated(host);
+  }
 }
 
 void CompositeMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnRenderFrameDeleted(host);
+  }
 }
 
 void CompositeMatcher::OnDidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  for (auto& matcher : matchers_)
+  for (auto& matcher : matchers_) {
     matcher->OnDidFinishNavigation(navigation_handle);
+  }
+}
+
+bool CompositeMatcher::HasRulesets(RulesetMatchingStage stage) const {
+  return base::ranges::any_of(
+      matchers_, [stage](const std::unique_ptr<RulesetMatcher>& matcher) {
+        return matcher->GetRulesCount(stage) > 0;
+      });
 }
 
 void CompositeMatcher::OnMatchersModified() {
@@ -237,8 +291,9 @@ void CompositeMatcher::OnMatchersModified() {
 
 bool CompositeMatcher::ComputeHasAnyExtraHeadersMatcher() const {
   for (const auto& matcher : matchers_) {
-    if (matcher->IsExtraHeadersMatcher())
+    if (matcher->IsExtraHeadersMatcher()) {
       return true;
+    }
   }
   return false;
 }

@@ -88,12 +88,9 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchOneTarget) {
       .service_worker_version_id = 2,
       .worker_thread_id = 3,
   };
-  const WorkerId kWorkerId{
-      .extension_id = "ext1",
-      .render_process_id = 1,
-      .version_id = 2,
-      .thread_id = 3,
-  };
+  const WorkerId kWorkerId(/*extension_id=*/"ext1", /*render_process_id=*/1,
+                           /*version_id=*/2,
+                           /*thread_id=*/3);
 
   // Simple case: a single request is dispatched and completed.
 
@@ -123,12 +120,10 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleTargets) {
     };
   };
   auto worker = [](int version_id) {
-    return WorkerId{
-        .extension_id = "ext1",
-        .render_process_id = 1000,
-        .version_id = version_id,
-        .thread_id = 3,
-    };
+    return WorkerId(
+        /*extension_id=*/"ext1",
+        /*render_process_id=*/1000, version_id,
+        /*thread_id=*/3);
   };
 
   // A request is dispatched to multiple targets in the same extension.
@@ -188,18 +183,16 @@ TEST_F(ServiceWorkerLifetimeManagerTest, TestDispatchMultipleEvents) {
       .service_worker_version_id = 4,
       .worker_thread_id = 5,
   };
-  const WorkerId kWorkerId1{
-      .extension_id = "ext1",
-      .render_process_id = 1000,
-      .version_id = 2,
-      .thread_id = 3,
-  };
-  const WorkerId kWorkerId2{
-      .extension_id = "ext2",
-      .render_process_id = 1001,
-      .version_id = 4,
-      .thread_id = 5,
-  };
+  const WorkerId kWorkerId1(
+      /*extension_id=*/"ext1",
+      /*render_process_id=*/1000,
+      /*version_id=*/2,
+      /*thread_id=*/3);
+  const WorkerId kWorkerId2(
+      /*extension_id=*/"ext2",
+      /*render_process_id=*/1001,
+      /*version_id=*/4,
+      /*thread_id=*/5);
 
   // Send four requests:
   // - two different extensions,

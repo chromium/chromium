@@ -5,13 +5,13 @@
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -22,7 +22,7 @@ namespace supervised_user {
 namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> FromProtoData(
-    base::StringPiece data) {
+    std::string_view data) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_OK);
@@ -31,10 +31,9 @@ std::unique_ptr<net::test_server::HttpResponse> FromProtoData(
   return http_response;
 }
 
-kids_chrome_management::ClassifyUrlResponse ClassifyUrlResponse(
-    kids_chrome_management::ClassifyUrlResponse::DisplayClassification
-        classification) {
-  kids_chrome_management::ClassifyUrlResponse response;
+kidsmanagement::ClassifyUrlResponse ClassifyUrlResponse(
+    kidsmanagement::ClassifyUrlResponse::DisplayClassification classification) {
+  kidsmanagement::ClassifyUrlResponse response;
   response.set_display_classification(classification);
   return response;
 }
@@ -42,7 +41,7 @@ kids_chrome_management::ClassifyUrlResponse ClassifyUrlResponse(
 
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
-    base::StringPiece hostname) {
+    std::string_view hostname) {
   feature_list.InitAndEnableFeatureWithParameters(
       kSupervisedUserProtoFetcherConfig,
       {{"service_endpoint", base::StrCat({"http://", hostname})}});
@@ -60,8 +59,7 @@ KidsManagementClassifyUrlMock::KidsManagementClassifyUrlMock() {
 KidsManagementClassifyUrlMock::~KidsManagementClassifyUrlMock() = default;
 
 void KidsManagementClassifyUrlMock::set_display_classification(
-    kids_chrome_management::ClassifyUrlResponse::DisplayClassification
-        classification) {
+    kidsmanagement::ClassifyUrlResponse::DisplayClassification classification) {
   display_classification_ = classification;
 }
 
@@ -91,20 +89,18 @@ KidsManagementApiServerMock::ListFamilyMembers(
     return nullptr;
   }
 
-  kids_chrome_management::ListFamilyMembersResponse response;
+  kidsmanagement::ListMembersResponse response;
   supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kids_chrome_management::HEAD_OF_HOUSEHOLD,
+      response.add_members(), kidsmanagement::HEAD_OF_HOUSEHOLD,
       "marge@gmail.com");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kids_chrome_management::PARENT,
-      "homer@gmail.com");
+      response.add_members(), kidsmanagement::PARENT, "homer@gmail.com");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kids_chrome_management::MEMBER,
-      "abraham@gmail.com");
+      response.add_members(), kidsmanagement::MEMBER, "abraham@gmail.com");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kids_chrome_management::CHILD, "lisa@gmail.com");
+      response.add_members(), kidsmanagement::CHILD, "lisa@gmail.com");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kids_chrome_management::CHILD, "bart@gmail.com");
+      response.add_members(), kidsmanagement::CHILD, "bart@gmail.com");
   return FromProtoData(response.SerializeAsString());
 }
 
@@ -133,13 +129,13 @@ void KidsManagementApiServerMock::RequestMonitorDispatcher(
 
 void KidsManagementApiServerMock::AllowSubsequentClassifyUrl() {
   classify_url_mock_.set_display_classification(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification::
+      kidsmanagement::ClassifyUrlResponse::DisplayClassification::
           ClassifyUrlResponse_DisplayClassification_ALLOWED);
 }
 
 void KidsManagementApiServerMock::RestrictSubsequentClassifyUrl() {
   classify_url_mock_.set_display_classification(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification::
+      kidsmanagement::ClassifyUrlResponse::DisplayClassification::
           ClassifyUrlResponse_DisplayClassification_RESTRICTED);
 }
 

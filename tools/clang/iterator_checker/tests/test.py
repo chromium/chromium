@@ -16,7 +16,7 @@ from clang import plugin_testing
 
 
 class IteratorCheckerPluginTest(plugin_testing.ClangPluginTest):
-  """Test harness for the Blink GC plugin."""
+  """Test harness for the Iterator Checker plugin."""
 
   def __init__(self, *args, **kwargs):
     super(IteratorCheckerPluginTest, self).__init__(*args, **kwargs)
@@ -41,7 +41,7 @@ def main():
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
   num_failures = IteratorCheckerPluginTest(dir_name, args.clang_path,
-                                           'iterator-checker',
+                                           ['iterator-checker'],
                                            args.reset_results).Run()
 
   return num_failures

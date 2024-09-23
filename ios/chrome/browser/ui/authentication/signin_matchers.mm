@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 
-#import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -20,16 +18,6 @@ id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email) {
   return grey_allOf(grey_accessibilityID(email),
                     grey_kindOfClassName(@"TableViewIdentityCell"),
                     grey_sufficientlyVisible(), nil);
-}
-
-id<GREYMatcher> AdvancedSyncSettingsDoneButtonMatcher() {
-  return grey_accessibilityID(kAdvancedSyncSettingsDoneButtonMatcherId);
-}
-
-id<GREYMatcher> SettingsLink() {
-  return grey_allOf(grey_accessibilityLabel(@"settings"),
-                    grey_accessibilityTrait(UIAccessibilityTraitLink),
-                    grey_interactable(), nil);
 }
 
 id<GREYMatcher> WebSigninSkipButtonMatcher() {

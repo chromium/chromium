@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+// Contains the information needed to send a message to a Chrome Remote Desktop
+// endpoint using the Tachyon service.
+message TachyonAccountInfo {
+  // This field typically contains an email address but may contain an opaque
+  // Tachyon identifier in some cases. The opaque identifier is still an
+  // identifying ID.
+  //
+  // When the field contains an email address, it will be:
+  //   - The service account email address when targeting a remote access host
+  //   - A human email address when targeting a remote support host
+  string account_id = 1;
+
+  // Used to send a message to a specific Tachyon endpoint. We don't use fan-out
+  // and instead target specific endpoints which is why this field is required.
+  string registration_id = 2;
+}

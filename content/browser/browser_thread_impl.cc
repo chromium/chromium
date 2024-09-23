@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/browser_thread_impl.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -157,10 +163,11 @@ void BrowserThreadImpl::ResetGlobalsForTesting(BrowserThread::ID identifier) {
 
 // static
 const char* BrowserThreadImpl::GetThreadName(BrowserThread::ID thread) {
-  static const char* const kBrowserThreadNames[BrowserThread::ID_COUNT] = {
-      "",                 // UI (name assembled in browser_main_loop.cc).
-      "Chrome_IOThread",  // IO
-  };
+  static const std::array<const char* const, BrowserThread::ID_COUNT>
+      kBrowserThreadNames = {
+          "",                 // UI (name assembled in browser_main_loop.cc).
+          "Chrome_IOThread",  // IO
+      };
 
   if (BrowserThread::UI < thread && thread < BrowserThread::ID_COUNT)
     return kBrowserThreadNames[thread];
@@ -238,7 +245,7 @@ BrowserThread::GetTaskRunnerForThread(ID identifier) {
     case IO:
       return GetIOThreadTaskRunner({});
     case ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -259,5 +266,42 @@ void BrowserThread::PostBestEffortTask(
           base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
                          std::move(task_runner), from_here, std::move(task)));
 }
+
+namespace internal {
+
+bool BrowserThreadChecker::CalledOnValidBrowserThread(
+    BrowserThread::ID thread_identifier) const {
+  return BrowserThread::CurrentlyOn(thread_identifier);
+}
+
+const BrowserThreadChecker& GetBrowserThreadChecker(
+    BrowserThread::ID thread_identifier) {
+  static std::array<BrowserThreadChecker, BrowserThread::ID_COUNT>
+      browser_thread_checkers;
+  return browser_thread_checkers[thread_identifier];
+}
+
+ScopedValidateBrowserThreadChecker::ScopedValidateBrowserThreadChecker(
+    BrowserThread::ID thread_identifier,
+    base::NotFatalUntil fatal_milestone) {
+  const auto& checker = GetBrowserThreadChecker(thread_identifier);
+  CHECK(checker.CalledOnValidBrowserThread(thread_identifier), fatal_milestone)
+      << BrowserThread::GetCurrentlyOnErrorMessage(thread_identifier);
+}
+
+ScopedValidateBrowserThreadChecker::~ScopedValidateBrowserThreadChecker() =
+    default;
+
+#if DCHECK_IS_ON()
+ScopedValidateBrowserThreadDebugChecker::
+    ScopedValidateBrowserThreadDebugChecker(
+        BrowserThread::ID thread_identifier) {
+  const auto& checker = GetBrowserThreadChecker(thread_identifier);
+  DCHECK(checker.CalledOnValidBrowserThread(thread_identifier))
+      << BrowserThread::GetCurrentlyOnErrorMessage(thread_identifier);
+}
+#endif  // DCHECK_IS_ON()
+
+}  // namespace internal
 
 }  // namespace content

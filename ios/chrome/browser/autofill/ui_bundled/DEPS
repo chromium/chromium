@@ -1,0 +1,31 @@
+include_rules = [
+  "+components/plus_addresses",
+  "+ios/chrome/browser/bubble/ui_bundled",
+  "+ios/chrome/browser/device_reauth",
+  "+ios/chrome/browser/history/model/history_service_factory.h",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/passwords/model",
+  "+ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
+  "+ios/chrome/browser/ui/settings/autofill/autofill_constants.h",
+  "+ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
+  "+ios/chrome/browser/ui/settings/password",
+  "+ios/chrome/browser/ui/alert_view",
+  "+ios/chrome/browser/webdata_services/model/web_data_service_factory.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "save_card_infobar_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "save_profile_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

@@ -29,7 +29,6 @@ source_set("model") {
   ]
   deps = [
     ":constants",
-    ":reading_list_remover",
     "//base",
     "//components/browser_sync",
     "//components/dom_distiller/ios",
@@ -47,20 +46,22 @@ source_set("model") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/sync/model:model_type_store_service_factory",
-    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/third_party/material_components_ios",
@@ -76,7 +77,6 @@ source_set("model") {
     "//url",
   ]
   public_deps = [ "//ios/chrome/browser/dom_distiller/model" ]
-  allow_circular_includes_from = [ ":reading_list_remover" ]
 }
 
 source_set("reading_list_remover") {
@@ -85,9 +85,10 @@ source_set("reading_list_remover") {
     "reading_list_remover_helper.mm",
   ]
   deps = [
+    ":model",
     "//base",
     "//components/reading_list/core",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
   public_deps = [
     # This is required because this target includes
@@ -149,9 +150,9 @@ source_set("unit_tests") {
     "//components/sync/model",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
     "//ios/web",

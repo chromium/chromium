@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/webui/web_ui_util.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -12,7 +18,6 @@
 #include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -83,8 +88,7 @@ WindowOpenDisposition GetDispositionFromClick(const base::Value::List& list,
       button == 1.0, alt_key, ctrl_key, meta_key, shift_key);
 }
 
-bool ParseScaleFactor(const base::StringPiece& identifier,
-                      float* scale_factor) {
+bool ParseScaleFactor(std::string_view identifier, float* scale_factor) {
   *scale_factor = 1.0f;
   if (identifier.empty()) {
     DLOG(WARNING) << "Invalid scale factor format: " << identifier;
@@ -115,7 +119,7 @@ bool ParseScaleFactor(const base::StringPiece& identifier,
 }
 
 // Parse a formatted frame index string into int and sets to |frame_index|.
-bool ParseFrameIndex(const base::StringPiece& identifier, int* frame_index) {
+bool ParseFrameIndex(std::string_view identifier, int* frame_index) {
   *frame_index = -1;
   if (identifier.empty()) {
     DLOG(WARNING) << "Invalid frame index format: " << identifier;
@@ -150,7 +154,7 @@ void ParsePathAndImageSpec(const GURL& url,
   // Detect and parse resource string ending in @<scale>x.
   std::size_t pos = path->rfind('@');
   if (pos != std::string::npos) {
-    base::StringPiece stripped_path(*path);
+    std::string_view stripped_path(*path);
     float factor;
 
     if (ParseScaleFactor(stripped_path.substr(
@@ -166,7 +170,7 @@ void ParsePathAndImageSpec(const GURL& url,
   // Detect and parse resource string ending in [<frame>].
   pos = path->rfind('[');
   if (pos != std::string::npos) {
-    base::StringPiece stripped_path(*path);
+    std::string_view stripped_path(*path);
     int index;
 
     if (ParseFrameIndex(
@@ -215,7 +219,7 @@ void AppendWebUiCssTextDefaults(std::string* html) {
 std::string GetFontFamily() {
   std::string font_family = l10n_util::GetStringUTF8(IDS_WEB_FONT_FAMILY);
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::string font_name = ui::ResourceBundle::GetSharedInstance()
@@ -237,7 +241,7 @@ std::string GetTextDirection() {
   return base::i18n::IsRTL() ? "rtl" : "ltr";
 }
 
-std::string GetLocalizedHtml(base::StringPiece html_template,
+std::string GetLocalizedHtml(std::string_view html_template,
                              const base::Value::Dict& strings) {
   // Populate $i18n{...} placeholders.
   ui::TemplateReplacements replacements;

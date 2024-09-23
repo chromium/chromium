@@ -11,12 +11,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -89,6 +89,9 @@ UIFont* GetNavigationBarTitleFont() {
   // Text should not be empty, otherwise the top and bottom can’t apply to the
   // text buttom and top line anymore.
   SetConfigurationTitle(self.primaryButton, @" ");
+  // Set accessibility label so that VoiceOver won't use the empty string.
+  self.primaryButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE);
 }
 
 - (void)stopSpinner {
@@ -103,6 +106,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
   SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+  self.primaryButton.accessibilityLabel = nil;
 }
 
 #pragma mark - UIViewController

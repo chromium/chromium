@@ -46,14 +46,15 @@ struct AppInfo {
   base::FilePath ecp;
 };
 
-using AppInstallerResult = update_client::CrxInstaller::Result;
 using InstallProgressCallback = update_client::CrxInstaller::ProgressCallback;
+
+using InstallerResult = update_client::CrxInstaller::Result;
 
 // Runs an app installer.
 //   The file `server_install_data` contains additional application-specific
 // install configuration parameters extracted either from the update response or
 // the app manifest.
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& install_args,
@@ -92,6 +93,7 @@ class Installer final : public update_client::CrxInstaller {
   Installer(const std::string& app_id,
             const std::string& client_install_data,
             const std::string& install_data_index,
+            const std::string& install_source,
             const std::string& target_channel,
             const std::string& target_version_prefix,
             bool rollback_allowed,
@@ -125,8 +127,8 @@ class Installer final : public update_client::CrxInstaller {
                std::unique_ptr<InstallParams> install_params,
                ProgressCallback progress_callback,
                Callback callback) override;
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
   bool Uninstall() override;
 
   Result InstallHelper(const base::FilePath& unpack_path,
@@ -151,6 +153,7 @@ class Installer final : public update_client::CrxInstaller {
   const std::string app_id_;
   const std::string client_install_data_;
   const std::string install_data_index_;
+  const std::string install_source_;
   const bool rollback_allowed_;
   const std::string target_channel_;
   const std::string target_version_prefix_;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
 
 #include <cstdint>
@@ -16,9 +21,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
-#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom-forward.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/grit/indexed_db_resources.h"
 #include "content/grit/indexed_db_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -35,7 +48,65 @@
 
 using storage::mojom::IdbPartitionMetadataPtr;
 
-namespace content {
+namespace content::indexed_db {
+
+namespace {
+
+scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
+    const storage::BucketClientInfo& client_info) {
+  int32_t process_id = client_info.process_id;
+  const blink::ExecutionContextToken& context_token = client_info.context_token;
+
+  if (client_info.document_token) {
+    auto* rfh = RenderFrameHostImpl::FromDocumentToken(
+        process_id, client_info.document_token.value());
+    return rfh ? RenderFrameDevToolsAgentHost::GetFor(rfh) : nullptr;
+  }
+
+  if (context_token.Is<blink::SharedWorkerToken>()) {
+    auto* rph = RenderProcessHost::FromID(process_id);
+    if (!rph || !rph->IsInitializedAndNotDead()) {
+      return nullptr;
+    }
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+            ->GetSharedWorkerService());
+    SharedWorkerHost* shared_worker_host =
+        worker_service->GetSharedWorkerHostFromToken(
+            context_token.GetAs<blink::SharedWorkerToken>());
+    return shared_worker_host
+               ? SharedWorkerDevToolsAgentHost::GetFor(shared_worker_host)
+               : nullptr;
+  }
+
+  if (context_token.Is<blink::ServiceWorkerToken>()) {
+    auto* rph = RenderProcessHost::FromID(process_id);
+    if (!rph || !rph->IsInitializedAndNotDead()) {
+      return nullptr;
+    }
+    ServiceWorkerContextWrapper* service_worker_context =
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+            ->GetServiceWorkerContext();
+    for (const auto& [version_id, info] :
+         service_worker_context->GetRunningServiceWorkerInfos()) {
+      if (info.token != context_token.GetAs<blink::ServiceWorkerToken>()) {
+        continue;
+      }
+      ServiceWorkerVersion* version =
+          service_worker_context->GetLiveVersion(version_id);
+      return version ? ServiceWorkerDevToolsManager::GetInstance()
+                           ->GetDevToolsAgentHostForWorker(
+                               version->GetInfo().process_id,
+                               version->GetInfo().devtools_agent_route_id)
+                     : nullptr;
+    }
+    return nullptr;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
@@ -47,7 +118,7 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types jstemplate static-types;");
   source->UseStringsJs();
   source->AddResourcePaths(
       base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));
@@ -88,9 +159,7 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
 
   browser_context->ForEachLoadedStoragePartition(
       [&](StoragePartition* partition) {
-        storage::mojom::IndexedDBControl& control =
-            partition->GetIndexedDBControl();
-        control.GetAllBucketsDetails(base::BindOnce(
+        partition->GetIndexedDBControl().GetAllBucketsDetails(base::BindOnce(
             [](base::WeakPtr<IndexedDBInternalsUI> handler,
                base::RepeatingCallback<void(IdbPartitionMetadataPtr)>
                    collect_partitions,
@@ -155,7 +224,7 @@ void IndexedDBInternalsUI::DownloadBucketData(
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found");
+    std::move(callback).Run("IndexedDB control not found");
     return;
   }
 
@@ -184,7 +253,7 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found");
+    std::move(callback).Run("IndexedDB control not found");
     return;
   }
 
@@ -195,6 +264,56 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
             std::move(callback).Run(std::nullopt);
           },
           std::move(callback)));
+}
+
+void IndexedDBInternalsUI::StartMetadataRecording(
+    storage::BucketId bucket_id,
+    StartMetadataRecordingCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
+  if (!control) {
+    std::move(callback).Run("IndexedDB control not found");
+    return;
+  }
+
+  control->StartMetadataRecording(
+      bucket_id, base::BindOnce(std::move(callback), std::nullopt));
+}
+void IndexedDBInternalsUI::StopMetadataRecording(
+    storage::BucketId bucket_id,
+    StopMetadataRecordingCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
+  if (!control) {
+    std::move(callback).Run("IndexedDB control not found", {});
+    return;
+  }
+
+  control->StopMetadataRecording(
+      bucket_id, base::BindOnce(std::move(callback), std::nullopt));
+}
+
+void IndexedDBInternalsUI::InspectClient(
+    const storage::BucketClientInfo& client_info,
+    InspectClientCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!devtools_agent_hosts_created_) {
+    // If a DevTools window has never been opened in this browser session,
+    // DevToolsAgentHosts will not have been created for RenderFrameHosts.
+    // Trigger their creation now so that the inspect call succeeds.
+    DevToolsAgentHostImpl::GetOrCreateAll();
+    devtools_agent_hosts_created_ = true;
+  }
+
+  scoped_refptr<DevToolsAgentHostImpl> dev_tools_agent =
+      GetDevToolsAgentHostForClient(client_info);
+  if (dev_tools_agent && dev_tools_agent->Inspect()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run("Client not found");
 }
 
 void IndexedDBInternalsUI::OnDownloadDataReady(
@@ -283,7 +402,7 @@ void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -311,4 +430,4 @@ void IndexedDBInternalsUI::OnDownloadStarted(
   std::move(callback).Run(std::nullopt);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -7,23 +7,28 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
@@ -37,6 +42,8 @@ using password_manager::FakeBulkLeakCheckService;
 using password_manager::PasswordForm;
 
 namespace {
+
+constexpr char kEncrypted[] = "encrypted";
 
 scoped_refptr<password_manager::PasswordStoreInterface>
 GetPasswordProfileStore() {
@@ -53,6 +60,13 @@ GetPasswordAccountStore() {
   return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
       ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+// Helper to get the passkey store.
+webauthn::PasskeyModel* GetPasskeyStore() {
+  ChromeBrowserState* browser_state =
+      chrome_test_util::GetOriginalBrowserState();
+  return IOSPasskeyModelFactory::GetForBrowserState(browser_state);
 }
 
 // This class is used to obtain results from the PasswordStore and hence both
@@ -143,8 +157,10 @@ bool SaveToPasswordProfileStore(const PasswordForm& form) {
     return false;
   }
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form)
+    if (testing::Value(
+            result, password_manager::EqualsIgnorePrimaryKey(expected_form))) {
       return true;
+    }
   }
   return false;
 }
@@ -164,7 +180,8 @@ bool SaveToPasswordAccountStore(const PasswordForm& form) {
     return false;
   }
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form) {
+    if (testing::Value(
+            result, password_manager::EqualsIgnorePrimaryKey(expected_form))) {
       return true;
     }
   }
@@ -181,12 +198,13 @@ PasswordForm CreateSampleFormWithIndex(int index) {
       base::ASCIIToUTF16(base::StringPrintf("concrete password %02d", index));
   form.url = GURL(base::StringPrintf("https://www%02d.example.com", index));
   form.signon_realm = form.url.spec();
+  form.date_created = base::Time::Now();
   return form;
 }
 
 bool ClearProfilePasswordStore() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchProfileStoreResults()) {
     return false;
@@ -196,7 +214,7 @@ bool ClearProfilePasswordStore() {
 
 bool ClearAccountPasswordStore() {
   GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchAccountStoreResults()) {
     return false;
@@ -206,9 +224,9 @@ bool ClearAccountPasswordStore() {
 
 bool ClearPasswordStores() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchProfileStoreResults()) {
     return false;
@@ -254,8 +272,8 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   [self mockModule].canAttempt = canAttempt;
 }
 
-+ (void)mockReauthenticationModuleShouldReturnSynchronously:(BOOL)returnSync {
-  [self mockModule].shouldReturnSynchronously = returnSync;
++ (void)mockReauthenticationModuleShouldSkipReAuth:(BOOL)returnSync {
+  [self mockModule].shouldSkipReAuth = returnSync;
 }
 
 + (void)mockReauthenticationModuleReturnMockedResult {
@@ -281,6 +299,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  example.date_created = base::Time::Now();
   return SaveToPasswordProfileStore(example);
 }
 
@@ -292,6 +311,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  example.date_created = base::Time::Now();
   return SaveToPasswordAccountStore(example);
 }
 
@@ -354,8 +374,23 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   federated.url = GURL(base::SysNSStringToUTF16(origin));
   federated.signon_realm = federated.url.spec();
   federated.federation_origin =
-      url::Origin::Create(GURL(base::SysNSStringToUTF16(federatedOrigin)));
+      url::SchemeHostPort(GURL(base::SysNSStringToUTF16(federatedOrigin)));
   return SaveToPasswordProfileStore(federated);
+}
+
++ (void)saveExamplePasskeyToStore:(NSString*)rpId
+                           userId:(NSString*)userId
+                         username:(NSString*)username
+                  userDisplayName:(NSString*)userDisplayName {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_credential_id(base::RandBytesAsString(16));
+  passkey.set_rp_id(base::SysNSStringToUTF8(rpId));
+  passkey.set_user_id(base::SysNSStringToUTF8(userId));
+  passkey.set_user_name(base::SysNSStringToUTF8(username));
+  passkey.set_user_display_name(base::SysNSStringToUTF8(userDisplayName));
+  passkey.set_encrypted(kEncrypted);
+  GetPasskeyStore()->AddNewPasskeyForTesting(passkey);
 }
 
 + (NSInteger)passwordProfileStoreResultsCount {

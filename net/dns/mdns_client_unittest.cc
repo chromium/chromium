@@ -1236,7 +1236,7 @@ TEST_F(MDnsTest, NsecConflictRemoval) {
   EXPECT_EQ(record1, record2);
 }
 
-// TODO(https://crbug.com/1274091): Flaky on fuchsia.
+// TODO(crbug.com/40807339): Flaky on fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RefreshQuery DISABLED_RefreshQuery
 #else

@@ -33,6 +33,8 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   // The `unreported_task_time` accumulated by the FrameSchedulerImpl, which
   // needs to be carried over in case of subframe navigations.
   base::TimeDelta frame_scheduler_unreported_task_time;
+  // Whether the previous LocalFrame is the focused frame or not.
+  bool was_focused_frame = false;
 };
 
 // Owns the OldDocumentInfoForCommit and exposes it through `info_`
@@ -64,4 +66,4 @@ class ScopedOldDocumentInfoForCommitCapturer {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_OLD_DOCUMENT_INFO_FOR_COMMIT_H_

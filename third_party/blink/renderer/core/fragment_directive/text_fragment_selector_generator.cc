@@ -9,7 +9,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
@@ -140,8 +140,10 @@ void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
 }
 
 void TextFragmentSelectorGenerator::Reset() {
-  if (finder_)
+  if (finder_) {
     finder_->Cancel();
+    finder_.Clear();
+  }
 
   generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
   state_ = kNotStarted;
@@ -183,6 +185,8 @@ String TextFragmentSelectorGenerator::GetSelectorTargetText() const {
 
 void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
                                                  bool is_unique) {
+  finder_.Clear();
+
   if (did_find_match_callback_for_testing_)
     std::move(did_find_match_callback_for_testing_).Run(is_unique);
 
@@ -203,6 +207,8 @@ void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
 }
 
 void TextFragmentSelectorGenerator::NoMatchFound() {
+  finder_.Clear();
+
   state_ = kFailure;
   error_ = LinkGenerationError::kIncorrectSelector;
   ResolveSelectorState();
@@ -243,8 +249,8 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // because block limits are also word limits.
     String start_text = corrected_start->textContent();
     start_text.Ensure16Bit();
-    corrected_start_offset = FindWordStartBoundary(
-        start_text.Characters16(), start_text.length(), corrected_start_offset);
+    corrected_start_offset =
+        FindWordStartBoundary(start_text.Span16(), corrected_start_offset);
   }
 
   // If end node has no text or given end position point to the first visible
@@ -268,11 +274,10 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // If |selection_end_pos| is at the beginning of a new word then don't
     // search for the word end as it will be the end of the next word, which was
     // not included in the selection.
-    if (corrected_end_offset != FindWordStartBoundary(end_text.Characters16(),
-                                                      end_text.length(),
-                                                      corrected_end_offset)) {
-      corrected_end_offset = FindWordEndBoundary(
-          end_text.Characters16(), end_text.length(), corrected_end_offset);
+    if (corrected_end_offset !=
+        FindWordStartBoundary(end_text.Span16(), corrected_end_offset)) {
+      corrected_end_offset =
+          FindWordEndBoundary(end_text.Span16(), corrected_end_offset);
     }
   }
 
@@ -361,7 +366,7 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
       break;
     case kNotStarted:
     case kNeedsNewCandidate:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       ABSL_FALLTHROUGH_INTENDED;
     case kFailure:
       OnSelectorReady(

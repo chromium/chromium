@@ -46,7 +46,7 @@ DriverEntry::State ToDriverEntryState(
     case DownloadItem::MAX_DOWNLOAD_STATE:
       return DriverEntry::State::UNKNOWN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DriverEntry::State::UNKNOWN;
   }
 }
@@ -204,7 +204,7 @@ void DownloadDriverImpl::Start(
     } else {
       // The request headers are validated in ControllerImpl::StartDownload.
       LOG(ERROR) << "Failed to parse Range request header.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

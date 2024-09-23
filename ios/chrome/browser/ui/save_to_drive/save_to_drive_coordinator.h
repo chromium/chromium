@@ -11,6 +11,9 @@ namespace web {
 class DownloadTask;
 }
 
+// Presents a view which lets the user select a destination for their download
+// e.g. "Files" or "Drive". If the user selects "Drive" as destination, the view
+// also lets the user select the Drive account to be used.
 @interface SaveToDriveCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

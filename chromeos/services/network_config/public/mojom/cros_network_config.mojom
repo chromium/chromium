@@ -223,6 +223,7 @@ struct CellularStateProperties {
   bool has_nick_name = false;
   // String representing the network operator.
   string network_operator;
+  PaymentPortalProperties? payment_portal;
 };
 
 struct EthernetStateProperties {
@@ -262,6 +263,8 @@ struct WiFiStateProperties {
   int32 signal_strength;
   // The network SSID.
   string ssid;
+  // Whether the network is in range.
+  bool visible;
   // Whether the AP has a hidden SSID.
   bool hidden_ssid;
   // Identifier of the set of Passpoint credentials that populated this Wi-Fi
@@ -293,7 +296,7 @@ struct NetworkStateProperties {
   // The captive portal state when connection_state == kPortal.
   PortalState portal_state = kUnknown;
   // The URL used to identify a captive portal state, set when portal_state is
-  // kPortal, kPortalSuspected, or kProxyAuthRequired.
+  // kPortal or kPortalSuspected.
   url.mojom.Url? portal_probe_url;
   // The relative priority of the network. Larger values have higher priority.
   int32 priority;
@@ -344,6 +347,9 @@ struct DeviceStateProperties {
   // Reported only for cellular devices. Defaults to false
   // for other device types.
   bool is_carrier_locked = false;
+  // Indicates whether the device is in the flashing state. Reported only
+  // for cellular devices. Defaults to false for other device types.
+  bool is_flashing = false;
 };
 
 const int32 kNoLimit = 0;
@@ -396,6 +402,13 @@ enum ApnType {
   kTether,
 };
 
+// Sources for APNs.
+enum ApnSource {
+  kModem,
+  kModb,
+  kUi,
+};
+
 struct ApnProperties {
   string access_point_name;
   // This id will only be set for custom APNs.
@@ -419,6 +432,7 @@ struct ApnProperties {
   ApnState state;
   ApnIpType ip_type;
   array<ApnType> apn_types;
+  ApnSource source;
 };
 
 struct RoamingProperties {
@@ -842,8 +856,11 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Contains traffic counter related information for this network.
-  TrafficCounterProperties traffic_counter_properties;
+  // Contains traffic counter related information for this network. This field
+  // is only applicable for Cellular and WiFi networks when
+  // TrafficCountersEnabled and TrafficCountersForWiFiTesting, respectively, is
+  // enabled.
+  TrafficCounterProperties? traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
@@ -870,7 +887,7 @@ struct PriorityConfig {
 
 // Wrapper to allow optional VpnType configuration. Note: only configuration of
 // internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
-// TODO(657632): Remove wrapper once optional enums are supported.
+// TODO(crbug.com/40489779): Remove wrapper once optional enums are supported.
 struct VpnTypeConfig {
   VpnType value;
 };
@@ -998,7 +1015,7 @@ struct CellularConfigProperties {
 
 struct EthernetConfigProperties {
   // |authentication| will default to "none" if not provided for new configs.
-  // TODO(657632): Use AuthenticationType here.
+  // TODO(crbug.com/40489779): Use AuthenticationType here.
   string? authentication;
   EAPConfigProperties? eap;
 };
@@ -1062,6 +1079,9 @@ struct CellularSimState {
 // configuration as a whole instead of individual network configurations.
 // Default values should be explicitly provided for boolean values.
 struct GlobalPolicy {
+  // If true, users will be allowed to modify APNs.
+  bool allow_apn_modification = true;
+
   // If true, allow PIN locking of SIMs attached to the device.
   // If false, PIN locking is prohibited.
   bool allow_cellular_sim_lock = true;
@@ -1154,7 +1174,7 @@ struct NetworkCertificate {
   // For user certificates, this contains the  PKCS#11 id to be passed to the
   // configuration manager (Shill) for retrieving the encrypted certificate.
   // This will be used in the appropriate ConfigProperties dictionary.
-  // TODO(1006901): Use a union here instead once the issue is fixed.
+  // TODO(crbug.com/40100073): Use a union here instead once the issue is fixed.
   string pem_or_id;
   // Whether the certificate is available for network authentication.
   bool available_for_network_auth;
@@ -1330,16 +1350,21 @@ interface CrosNetworkConfig {
   // Resets traffic counters for a service with ID |guid|.
   ResetTrafficCounters(string guid);
 
-  // Sets whether traffic counters should be automatically reset and the day of
-  // the month on which traffic counters are automatically reset. In order for
-  // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
-  SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
-    (bool success);
+  // Sets the traffic counters reset day. In order for |day| to be valid, it
+  // must be within the limit 1 <= |day| <= 31.
+  SetTrafficCountersResetDay(string guid, UInt32Value? day) => (bool success);
 
   // Creates a new APN for the cellular network with ID |network_guid|, and
   // appends it to |custom_apn_list|. Should only be called when the APN
   // Revamp feature flag is enabled.
   CreateCustomApn(string network_guid, ApnProperties apn) =>
+    (bool success);
+
+  // Creates a new APN for the cellular network with ID |network_guid|,
+  // appends it to |custom_apn_list| in the enabled state, and disables
+  // all other existing custom APNs. Should only be called when the APN
+  // Revamp feature flag is enabled.
+  CreateExclusivelyEnabledCustomApn(string network_guid, ApnProperties apn) =>
     (bool success);
 
   // Removes the APN with ID |apn_id| from |custom_apn_list| for the cellular

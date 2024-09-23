@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -61,14 +62,14 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/eol_incentive_util.h"
+#include "chrome/browser/ash/eol/eol_incentive_util.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
+#include "chrome/browser/ash/image_source/image_source.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
-#include "chrome/browser/ui/webui/ash/image_source.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -76,6 +77,8 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/version/version_loader.h"
@@ -87,6 +90,8 @@
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+using ash::eol_incentive_util::EolIncentiveType;
 
 // The directory containing the regulatory labels for supported
 // models/regions, relative to chromeos-assets directory
@@ -148,7 +153,7 @@ bool CanChangeChannel(Profile* profile) {
 // Returns the relative path under the chromeos-assets dir
 // to the directory of regulatory labels for a given region, if found
 // (e.g. "regulatory_labels/us"). Must be called from the blocking pool.
-base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
+base::FilePath GetRegulatoryLabelDirForRegion(std::string_view region) {
   base::FilePath region_path(kRegulatoryLabelsDirectory);
   const std::string model_subdir =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -173,7 +178,7 @@ base::FilePath GetRegulatoryLabelDirForRegion(base::StringPiece region) {
 base::FilePath FindRegulatoryLabelDir() {
   base::FilePath region_path;
   // Use the VPD region code to find the label dir.
-  const std::optional<base::StringPiece> region =
+  const std::optional<std::string_view> region =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kRegionKey);
   if (region && !region->empty()) {
@@ -290,11 +295,6 @@ void AboutHandler::RegisterMessages() {
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui()->RegisterMessageCallback(
-      "openExtendedUpdatesDialog",
-      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
@@ -376,6 +376,18 @@ void AboutHandler::RegisterMessages() {
       "openProductLicenseOther",
       base::BindRepeating(&AboutHandler::HandleOpenProductLicenseOther,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isExtendedUpdatesOptInEligible",
+      base::BindRepeating(&AboutHandler::HandleIsExtendedUpdatesOptInEligible,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openExtendedUpdatesDialog",
+      base::BindRepeating(&AboutHandler::HandleOpenExtendedUpdatesDialog,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordExtendedUpdatesShown",
+      base::BindRepeating(&AboutHandler::HandleRecordExtendedUpdatesShown,
+                          base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
   web_ui()->RegisterMessageCallback(
@@ -397,11 +409,21 @@ void AboutHandler::OnJavascriptAllowed() {
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+// TODO(b/330932781): Investigate and fix mismatched BUILDFLAG and comment.
 #if BUILDFLAG(IS_CHROMEOS)
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
       base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
                           weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::CrosSettings::IsInitialized()) {
+    extended_updates_setting_change_subscription_ =
+        ash::CrosSettings::Get()->AddSettingsObserver(
+            ash::kDeviceExtendedAutoUpdateEnabled,
+            base::BindRepeating(&AboutHandler::OnExtendedUpdatesSettingChanged,
+                                weak_factory_.GetWeakPtr()));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -470,7 +492,7 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
   DCHECK(args.empty());
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
-                             chrome::kFeedbackSourceMdSettingsAboutPage);
+                             feedback::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
@@ -480,12 +502,6 @@ void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void AboutHandler::HandleOpenExtendedUpdatesDialog(
-    const base::Value::List& args) {
-  DCHECK(args.empty());
-  ash::extended_updates::ExtendedUpdatesDialog::Show();
-}
-
 void AboutHandler::HandleOpenDiagnostics(const base::Value::List& args) {
   DCHECK(args.empty());
   chrome::ShowDiagnosticsApp(profile_);
@@ -685,44 +701,64 @@ void AboutHandler::HandleGetEndOfLifeInfo(const base::Value::List& args) {
 void AboutHandler::OnGetEndOfLifeInfo(
     std::string callback_id,
     ash::UpdateEngineClient::EolInfo eol_info) {
-  base::Value::Dict response;
+  // Response values.
+  bool eol_passed = false;
+  std::u16string eol_message;
+  bool show_eol_incentive = false;
+  bool show_offer_text = false;
+  bool extended_date_passed = false;
+  bool extended_opt_in_required = false;
+
+  if (!eol_info.extended_date.is_null()) {
+    extended_date_passed = eol_info.extended_date <= clock_->Now();
+    extended_opt_in_required = eol_info.extended_opt_in_required;
+  }
+
   if (!eol_info.eol_date.is_null()) {
-    bool has_eol_passed = eol_info.eol_date <= clock_->Now();
-    response.Set("hasEndOfLife", has_eol_passed);
-    int eol_string_id =
-        has_eol_passed ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
-                       : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
-    response.Set("aboutPageEndOfLifeMessage",
-                 l10n_util::GetStringFUTF16(
-                     eol_string_id,
-                     base::TimeFormatMonthAndYearForTimeZone(
-                         eol_info.eol_date, icu::TimeZone::getGMT()),
-                     has_eol_passed ? chrome::kEolNotificationURL
-                                    : chrome::kAutoUpdatePolicyURL));
-    const ash::eol_incentive_util::EolIncentiveType eolIncentiveType =
+    eol_passed = eol_info.eol_date <= clock_->Now();
+    if (extended_opt_in_required &&
+        !ash::ExtendedUpdatesController::Get()->IsOptedIn()) {
+      eol_message = GetEndOfLifeMessage(eol_info.extended_date);
+    } else {
+      eol_message = GetEndOfLifeMessage(eol_info.eol_date);
+    }
+    const EolIncentiveType eolIncentiveType =
         ash::eol_incentive_util::ShouldShowEolIncentive(
             profile_, eol_info.eol_date, clock_->Now());
-    response.Set(
-        "shouldShowEndOfLifeIncentive",
-        (eolIncentiveType ==
-             ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently ||
-         eolIncentiveType ==
-             ash::eol_incentive_util::EolIncentiveType::kEolPassed) &&
-            has_eol_passed &&
-            base::FeatureList::IsEnabled(ash::features::kEolIncentiveSettings));
-    eol_incentive_shows_offer_ =
+    show_eol_incentive =
+        (eolIncentiveType == EolIncentiveType::kEolPassedRecently ||
+         eolIncentiveType == EolIncentiveType::kEolPassed) &&
+        eol_passed &&
+        base::FeatureList::IsEnabled(ash::features::kEolIncentiveSettings);
+    show_offer_text =
         (ash::features::kEolIncentiveParam.Get() !=
              ash::features::EolIncentiveParam::kNoOffer &&
-         eolIncentiveType ==
-             ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently);
-    response.Set("shouldShowOfferText", eol_incentive_shows_offer_);
-  } else {
-    response.Set("hasEndOfLife", false);
-    response.Set("aboutPageEndOfLifeMessage", "");
-    response.Set("shouldShowEndOfLifeIncentive", false);
-    response.Set("shouldShowOfferText", false);
+         eolIncentiveType == EolIncentiveType::kEolPassedRecently);
+    eol_incentive_shows_offer_ = show_offer_text;
   }
+
+  base::Value::Dict response;
+  response.Set("hasEndOfLife", eol_passed);
+  response.Set("aboutPageEndOfLifeMessage", eol_message);
+  response.Set("shouldShowEndOfLifeIncentive", show_eol_incentive);
+  response.Set("shouldShowOfferText", show_offer_text);
+  response.Set("isExtendedUpdatesDatePassed", extended_date_passed);
+  response.Set("isExtendedUpdatesOptInRequired", extended_opt_in_required);
+
   ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+std::u16string AboutHandler::GetEndOfLifeMessage(base::Time eol_date) const {
+  bool eol_passed = eol_date <= clock_->Now();
+  int eol_string_id = eol_passed
+                          ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
+                          : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
+  const char16_t* eol_url =
+      eol_passed ? chrome::kEolNotificationURL : chrome::kAutoUpdatePolicyURL;
+  return l10n_util::GetStringFUTF16(eol_string_id,
+                                    base::TimeFormatMonthAndYearForTimeZone(
+                                        eol_date, icu::TimeZone::getGMT()),
+                                    eol_url);
 }
 
 void AboutHandler::HandleOpenEndOfLifeIncentive(const base::Value::List& args) {
@@ -784,6 +820,38 @@ void AboutHandler::HandleOpenProductLicenseOther(
       GURL(chrome::kChromeUICreditsURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
+}
+
+void AboutHandler::HandleIsExtendedUpdatesOptInEligible(
+    const base::Value::List& args) {
+  CHECK_EQ(4U, args.size());
+  ash::ExtendedUpdatesController::Params params{
+      .eol_passed = args[1].GetBool(),
+      .extended_date_passed = args[2].GetBool(),
+      .opt_in_required = args[3].GetBool(),
+  };
+  bool eligible =
+      ash::ExtendedUpdatesController::Get()->IsOptInEligible(profile_, params);
+  ResolveJavascriptCallback(args[0], base::Value(eligible));
+}
+
+void AboutHandler::HandleOpenExtendedUpdatesDialog(
+    const base::Value::List& args) {
+  CHECK(args.empty());
+  ash::ExtendedUpdatesController::
+      RecordEntryPointEventForSettingsSetUpButtonClicked();
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+}
+
+void AboutHandler::HandleRecordExtendedUpdatesShown(
+    const base::Value::List& args) {
+  CHECK(args.empty());
+  ash::ExtendedUpdatesController::
+      RecordEntryPointEventForSettingsSetUpButtonShown();
+}
+
+void AboutHandler::OnExtendedUpdatesSettingChanged() {
+  FireWebUIListener("extended-updates-setting-changed");
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

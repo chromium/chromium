@@ -58,7 +58,7 @@ When the content is block level:
 - LayoutListItem
   - LayoutOutsideListMarker
     - LayoutText (1.)
-  - LayoutNGBlockFlow (div)
+  - LayoutBlockFlow (div)
     - LayoutText (sample text)
 
 Since children except the list marker are block-level,
@@ -76,9 +76,9 @@ When the content is mixed:
 - LayoutListItem
   - LayoutOutsideListMarker
     - LayoutText (1.)
-  - LayoutNGBlockFlow (anonymous)
+  - LayoutBlockFlow (anonymous)
     - LayoutText (inline text)
-  - LayoutNGBlockFlow (div)
+  - LayoutBlockFlow (div)
     - LayoutText (block text)
 
 Children are block-level in this case and therefore

@@ -21,7 +21,7 @@ struct PreviewIds {
 };
 
 // Parameters required to do print preview.
-[EnableIf=enable_print_preview]
+[Stable, EnableIf=enable_print_preview]
 struct RequestPrintPreviewParams {
   [EnableIf=is_chromeos_ash]
   bool is_from_arc = false;
@@ -166,7 +166,7 @@ struct PrintParams {
   // embedder choice provided by PrintRenderFrameHelper delegate.
   bool? generate_tagged_pdf;
   // Whether the document outline should be embedded in the PDF.
-  bool generate_document_outline = false;
+  GenerateDocumentOutline generate_document_outline = kNone;
 };
 
 // Parameters for a print setting that has parameters for a print request and an
@@ -284,6 +284,7 @@ interface PrintPreviewUI {
 struct PrintWithParamsResultData {
   DidPrintDocumentParams params;
   ax.mojom.AXTreeUpdate accessibility_tree;
+  GenerateDocumentOutline generate_document_outline = kNone;
 };
 
 enum PrintFailureReason {

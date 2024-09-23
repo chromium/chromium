@@ -12,10 +12,12 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/map_util.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -31,8 +33,11 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -69,11 +74,13 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   LocalDevModeUpdateDiscoverer(Profile& profile, WebAppProvider& provider)
       : profile_(profile), provider_(provider) {}
 
-  void DiscoverLocalUpdate(const IsolatedWebAppLocation& location,
+  void DiscoverLocalUpdate(const IwaSourceDevModeWithFileOp& location,
                            const IsolatedWebAppUrlInfo& url_info,
                            Callback callback) {
-    if (!absl::holds_alternative<DevModeProxy>(location) &&
-        !absl::holds_alternative<DevModeBundle>(location)) {
+    const WebApp* installed_app =
+        provider_->registrar_unsafe().GetAppById(url_info.app_id());
+    if (!installed_app || !installed_app->isolation_data().has_value() ||
+        !installed_app->isolation_data()->location().dev_mode()) {
       std::move(callback).Run(
           base::unexpected("Discovering a local update is only supported for "
                            "dev mode-installed apps."));
@@ -91,7 +98,8 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
     provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            location, /*expected_version=*/std::nullopt),
+            location,
+            /*expected_version=*/std::nullopt),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr,
         base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
@@ -126,7 +134,7 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // Similar to extensions, we don't do any automatic updates in guest
           // sessions.
           !profile.IsGuestSession() &&
-          // Web Apps are not a thing in off the record profiles, but have this
+          // Web Apps are not a thing in off the record profiles, but have
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
           !profile.IsOffTheRecord() &&
@@ -155,6 +163,8 @@ void IsolatedWebAppUpdateManager::Start() {
 
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
 
   if (!IsAnyIwaInstalled()) {
     // If no IWA is installed, then we do not need to regularly check for
@@ -173,6 +183,11 @@ void IsolatedWebAppUpdateManager::Start() {
     if (!url_info.has_value()) {
       LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
                  << web_app.start_url();
+
+      web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+          "WebApp.Isolated.Update",
+          base::unexpected(
+              IsolatedWebAppUpdateError::kCantCalculateIsolatedWebAppUrlInfo));
       continue;
     }
 
@@ -301,6 +316,25 @@ void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
   MaybeResetScheduledUpdateDiscoveryCheck();
 }
 
+bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
+    const webapps::AppId& app_id) {
+  ASSIGN_OR_RETURN(const WebApp& iwa,
+                   GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
+                   [](const std::string&) { return false; });
+
+  base::flat_map<web_package::SignedWebBundleId, GURL>
+      id_to_update_manifest_map =
+          GetForceInstalledBundleIdToUpdateManifestUrlMap();
+
+  bool queued_update_discovery_task =
+      MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_manifest_map);
+  if (queued_update_discovery_task) {
+    task_queue_.MaybeStartNextTask();
+  }
+
+  return queued_update_discovery_task;
+}
+
 size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
   // If an update discovery check is already scheduled, reset it, so that the
   // next update discovery happens based on `update_discovery_frequency_` time
@@ -310,7 +344,7 @@ size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
 }
 
 void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-    const IsolatedWebAppLocation& location,
+    const IwaSourceDevModeWithFileOp& location,
     const IsolatedWebAppUrlInfo& url_info,
     base::OnceCallback<void(base::expected<base::Version, std::string>)>
         callback) {
@@ -319,6 +353,40 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       base::BindOnce(&IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered,
                      weak_factory_.GetWeakPtr(), url_info,
                      std::move(callback)));
+}
+
+void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
+    const base::Version& component_version) {
+  // The corresponding observer is added during `Start()`.
+  CHECK(has_started_);
+
+  if (!automatic_updates_enabled_) {
+    return;
+  }
+
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas = GetInstalledIwas(provider_->registrar_unsafe());
+
+  // Queue updates for all apps affected by key rotation.
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    auto result = LookupRotatedKey(web_bundle_id);
+    // If the rotated key is null, there's no point in updating the
+    // app (as the update won't succeed anyway).
+    if (result != KeyRotationLookupResult::kKeyFound) {
+      continue;
+    }
+
+    KeyRotationData data =
+        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
+    // If either the bundle or the pending update already includes the rotated
+    // key, there's no need to rush with updates.
+    if (data.current_installation_has_rk || data.pending_update_has_rk) {
+      continue;
+    }
+
+    MaybeDiscoverUpdatesForApp(iwa.get().app_id());
+  }
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
@@ -335,7 +403,7 @@ IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
   base::flat_map<web_package::SignedWebBundleId, GURL>
       id_to_update_manifest_map;
 
-// TODO(crbug.com/1458725): Enable automatic updates on other platforms.
+// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List& iwa_force_install_list =
       profile_->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
@@ -366,34 +434,11 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       id_to_update_manifest_map =
           GetForceInstalledBundleIdToUpdateManifestUrlMap();
 
-  // TODO(crbug.com/1459160): In the future, we also need to automatically
-  // update IWAs not installed via policy.
   size_t num_new_tasks = 0;
-  for (const auto& [web_bundle_id, update_manifest_url] :
-       id_to_update_manifest_map) {
-    auto url_info =
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-    const WebApp* web_app =
-        provider_->registrar_unsafe().GetAppById(url_info.app_id());
-    if (!web_app) {
-      continue;
+  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
+    if (MaybeQueueUpdateDiscoveryTask(web_app, id_to_update_manifest_map)) {
+      ++num_new_tasks;
     }
-    const std::optional<WebApp::IsolationData>& isolation_data =
-        web_app->isolation_data();
-    if (!isolation_data) {
-      continue;
-    }
-    if (!absl::holds_alternative<InstalledBundle>(isolation_data->location)) {
-      // Never automatically update IWAs installed in dev mode. Updates for dev
-      // mode apps will be triggerable manually from the upcoming dev mode
-      // browser UI.
-      continue;
-    }
-
-    task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-        update_manifest_url, url_info, provider_->scheduler(),
-        provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
-    ++num_new_tasks;
   }
 
   task_queue_.MaybeStartNextTask();
@@ -401,6 +446,44 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   MaybeScheduleUpdateDiscoveryCheck();
 
   return num_new_tasks;
+}
+
+bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
+    const WebApp& web_app,
+    const base::flat_map<web_package::SignedWebBundleId, GURL>&
+        id_to_update_manifest_map) {
+  // TODO(crbug.com/40274186): In the future, we also need to automatically
+  // update IWAs not installed via policy.
+  if (!web_app.IsIwaPolicyInstalledApp()) {
+    return false;
+  }
+
+  const std::optional<IsolationData>& isolation_data = web_app.isolation_data();
+  if (!isolation_data) {
+    return false;
+  }
+  if (isolation_data->location().dev_mode()) {
+    // Never automatically update IWAs installed in dev mode. Updates for dev
+    // mode apps can be triggered manually from the browser's dev mode UI.
+    return false;
+  }
+
+  ASSIGN_OR_RETURN(auto url_info,
+                   IsolatedWebAppUrlInfo::Create(web_app.manifest_id()),
+                   [](auto error) { return false; });
+
+  const GURL* update_manifest_url =
+      base::FindOrNull(id_to_update_manifest_map, url_info.web_bundle_id());
+  if (!update_manifest_url) {
+    // The app is no longer part of the policy (and thus should soon be
+    // uninstalled), so no need to check for updates.
+    return false;
+  }
+  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
+      *update_manifest_url, url_info, provider_->scheduler(),
+      provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
+
+  return true;
 }
 
 void IsolatedWebAppUpdateManager::MaybeScheduleUpdateDiscoveryCheck() {
@@ -444,6 +527,8 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  TrackResultOfUpdateDiscoveryTask(status);
+
   if (status.has_value() && *status ==
                                 IsolatedWebAppUpdateDiscoveryTask::Success::
                                     kUpdateFoundAndSavedInDatabase) {
@@ -451,6 +536,15 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
   }
 
   task_queue_.MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::TrackResultOfUpdateDiscoveryTask(
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const {
+  if (!status.has_value()) {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update",
+        base::unexpected(FromDiscoveryTaskError(status.error())));
+  }
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
@@ -471,6 +565,8 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
 void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  TrackResultOfUpdateApplyTask(status);
+
   auto callbacks_it =
       on_update_finished_callbacks_.find(task->url_info().app_id());
   if (callbacks_it != on_update_finished_callbacks_.end()) {
@@ -481,6 +577,18 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
   }
 
   task_queue_.MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::TrackResultOfUpdateApplyTask(
+    IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
+  if (status.has_value()) {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update", base::ok());
+  } else {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update",
+        base::unexpected(IsolatedWebAppUpdateError::kUpdateApplyFailed));
+  }
 }
 
 void IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered(
@@ -752,6 +860,31 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
   }
 
   update_manager_->OnUpdateApplyTaskCompleted(std::move(task), status);
+}
+
+IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
+    const IsolatedWebAppUpdateDiscoveryTask::Error& error) const {
+  switch (error) {
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestDownloadFailed:
+      return IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson:
+      return IsolatedWebAppUpdateError::kUpdateManifestInvalidJson;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestInvalidManifest:
+      return IsolatedWebAppUpdateError::kUpdateManifestInvalidManifest;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestNoApplicableVersion:
+      return IsolatedWebAppUpdateError::kUpdateManifestNoApplicableVersion;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kIwaNotInstalled:
+      return IsolatedWebAppUpdateError::kIwaNotInstalled;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kDownloadPathCreationFailed:
+      return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kBundleDownloadError:
+      return IsolatedWebAppUpdateError::kBundleDownloadError;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
+      return IsolatedWebAppUpdateError::kUpdateDryRunFailed;
+  }
 }
 
 }  // namespace web_app

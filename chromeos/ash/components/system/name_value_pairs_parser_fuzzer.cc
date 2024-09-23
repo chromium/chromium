@@ -27,14 +27,12 @@ class NameValuePairsParserFuzzer {
  private:
   void testInputAsVpdDumpLine(const std::string& input) {
     NameValuePairsParser parser(&name_value_map_);
-    parser.ParseNameValuePairs(input, NameValuePairsFormat::kVpdDump,
-                               "testAsVpd");
+    parser.ParseNameValuePairs(input, NameValuePairsFormat::kVpdDump);
   }
 
   void testInputAsCrossystemOutputLine(const std::string& input) {
     NameValuePairsParser parser(&name_value_map_);
-    parser.ParseNameValuePairs(input, NameValuePairsFormat::kCrossystem,
-                               "testAsCrossystem");
+    parser.ParseNameValuePairs(input, NameValuePairsFormat::kCrossystem);
   }
 
   void testInputAsVpdDumpValuesForKey(const std::string& input) {
@@ -47,7 +45,7 @@ class NameValuePairsParserFuzzer {
     std::string value = input;
     value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
     testInputAsVpdDumpValueForKey(value);
-    // TODO(crbug.com/1250434): Check that the value for "key" is |value|.
+    // TODO(crbug.com/40197992): Check that the value for "key" is |value|.
   }
 
   void testInputAsVpdDumpValueForKey(const std::string& input) {

@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -216,9 +218,8 @@ public interface TabObserver {
     void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle);
 
     /**
-     * TODO(crbug.com/1434461) Temporary fix for LocationBarModel not properly
-     * caching same document navigation state. Will be removed later, see bug for more
-     * details.
+     * TODO(crbug.com/40264745) Temporary fix for LocationBarModel not properly caching same
+     * document navigation state. Will be removed later, see bug for more details.
      */
     void onDidFinishNavigationEnd();
 
@@ -294,13 +295,22 @@ public interface TabObserver {
 
     /**
      * Called when renderer changes its state about being responsive to requests.
+     *
      * @param tab The notifying {@link Tab}.
      * @param {@code true} if the renderer becomes responsive, otherwise {@code false}.
      */
     void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive);
 
     /**
+     * Called when navigation entries of a tab have been appended while the tab is frozen.
+     *
+     * @param tab The notifying {@link Tab}.
+     */
+    void onNavigationEntriesAppended(Tab tab);
+
+    /**
      * Called when navigation entries of a tab have been deleted.
+     *
      * @param tab The notifying {@link Tab}.
      */
     void onNavigationEntriesDeleted(Tab tab);
@@ -320,6 +330,7 @@ public interface TabObserver {
     /**
      * Called when offset values related with the browser controls have been changed by the
      * renderer.
+     *
      * @param topControlsOffsetY The Y offset of the top controls in physical pixels.
      * @param bottomControlsOffsetY The Y offset of the bottom controls in physical pixels.
      * @param contentOffsetY The Y offset of the content in physical pixels.
@@ -335,10 +346,34 @@ public interface TabObserver {
             int bottomControlsMinHeightOffsetY);
 
     /**
+     * @see BrowserControlsStateProvider.onControlsConstraintsChanged
+     */
+    void onBrowserControlsConstraintsChanged(
+            Tab tab,
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            @BrowserControlsState int constraints);
+
+    /**
+     * Called when the tab is about to notify its renderer to show the browser controls.
+     *
+     * @param tab The notifying {@link Tab}.
+     * @param tab Whether the current page has opted in to same-origin view transitions.
+     */
+    void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn);
+
+    /**
      * Called when scrolling state of Tab's content view changes.
+     *
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
+
+    /** Called when the gesture begin event is received. */
+    void onGestureBegin();
+
+    /** Called when the gesture end event is received. */
+    void onGestureEnd();
 
     /** Back press refactor related. Called when navigation state is invalidated. */
     void onNavigationStateChanged();
@@ -353,12 +388,13 @@ public interface TabObserver {
 
     /**
      * Broadcast that the timestamp on a {@link Tab} has changed
+     *
      * @param tab {@link Tab} timestamp has changed on
      * @param timestampMillis new value of the timestamp
      */
     default void onTimestampChanged(Tab tab, long timestampMillis) {}
 
-    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
+    // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Broadcast that root identifier on a {@link Tab} has changed. This method will be functionally
      * replaced by onTabGroupIdChanged as part of https://crbug.com/1523745.
@@ -375,4 +411,10 @@ public interface TabObserver {
      * @param tabGroupId The new tab group ID, may be null.
      */
     default void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
+
+    /**
+     * Called when the animation state for the back forward session history navigation has changed.
+     * Retrieve the current animation state using the Tab's WebContents.
+     */
+    default void didBackForwardTransitionAnimationChange() {}
 }

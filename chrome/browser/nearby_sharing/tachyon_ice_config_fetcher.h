@@ -24,7 +24,7 @@ class SharedURLLoaderFactory;
 // Fetches a list of ICE servers using the Tachyon API. The lifetime of this
 // class is expected to span multiple requests, and the most recently fetched
 // ICE servers are cached in a private member variable.
-class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
+class TachyonIceConfigFetcher : public ::sharing::mojom::IceConfigFetcher {
  public:
   TachyonIceConfigFetcher(
       signin::IdentityManager* identity_manager,
@@ -35,7 +35,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   TachyonIceConfigFetcher& operator=(const TachyonIceConfigFetcher& other) =
       delete;
 
-  // sharing::mojom::IceConfigFetcher
+  // ::sharing::mojom::IceConfigFetcher
   void GetIceServers(GetIceServersCallback callback) override;
 
  private:
@@ -43,7 +43,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
                               const std::string& token);
 
   void OnIceServersResponse(
-      sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
+      ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
       const std::string& request_id,
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       std::unique_ptr<std::string> response_body);
@@ -52,7 +52,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   // caches a copy of the parsed result before returning it. Returns an empty
   // vector if parsing is unsuccessful. The |request_id| is for logging
   // purposes.
-  std::vector<sharing::mojom::IceServerPtr> ParseIceServersResponse(
+  std::vector<::sharing::mojom::IceServerPtr> ParseIceServersResponse(
       const std::string& serialized_proto,
       const std::string& request_id);
 
@@ -60,7 +60,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Cache the last retrieved ICE servers.
-  std::optional<std::vector<sharing::mojom::IceServerPtr>> ice_server_cache_;
+  std::optional<std::vector<::sharing::mojom::IceServerPtr>> ice_server_cache_;
   base::Time ice_server_cache_expiration_;
 
   base::WeakPtrFactory<TachyonIceConfigFetcher> weak_ptr_factory_{this};

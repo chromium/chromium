@@ -5,11 +5,10 @@
 #ifndef UI_BASE_IME_ASH_FAKE_IME_KEYBOARD_H_
 #define UI_BASE_IME_ASH_FAKE_IME_KEYBOARD_H_
 
-#include "ui/base/ime/ash/ime_keyboard.h"
-
 #include <string>
 
 #include "base/component_export.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ash {
 namespace input_method {
@@ -23,7 +22,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
 
   ~FakeImeKeyboard() override;
 
-  bool SetCurrentKeyboardLayoutByName(const std::string& layout_name) override;
+  void SetCurrentKeyboardLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) override;
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
   void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;

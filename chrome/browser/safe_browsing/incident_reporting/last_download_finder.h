@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_INCIDENT_REPORTING_LAST_DOWNLOAD_FINDER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_INCIDENT_REPORTING_LAST_DOWNLOAD_FINDER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -12,6 +14,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/incident_reporting/download_metadata_manager.h"
@@ -65,14 +69,42 @@ class LastDownloadFinder : public ProfileManagerObserver,
   LastDownloadFinder();
 
  private:
-  enum ProfileWaitState {
-    WAITING_FOR_METADATA,
-    WAITING_FOR_HISTORY,
-    WAITING_FOR_NON_BINARY_HISTORY,
+  // Holds state for a Profile for which a query is currently pending. The State
+  // describes what we are waiting for. The observation is a mechanism to ensure
+  // that we do not attempt to process the results of a search for a Profile
+  // that is no longer valid. This guarantees that a PendingProfileData exists
+  // iff the Profile is alive and we are waiting on a query for it.
+  struct PendingProfileData {
+    enum State {
+      WAITING_FOR_METADATA,
+      WAITING_FOR_HISTORY,
+      WAITING_FOR_NON_BINARY_HISTORY,
+    };
+
+    // Makes the `finder` start observing `profile`.
+    PendingProfileData(LastDownloadFinder* finder,
+                       Profile* profile,
+                       State state);
+
+    ~PendingProfileData();
+
+    Profile* profile() { return observation.GetSource(); }
+
+    State state;
+    base::ScopedObservation<Profile, LastDownloadFinder> observation;
   };
+
+  // We identify Profiles by their addresses, in the form of a uintptr_t value,
+  // which is derived from a Profile* but is not to be dereferenced.
+  using ProfileKey = base::StrongAlias<class ProfileKeyTag, uintptr_t>;
+
+  using PendingProfilesMap = std::map<ProfileKey, PendingProfileData>;
 
   LastDownloadFinder(DownloadDetailsGetter download_details_getter,
                      LastDownloadCallback callback);
+
+  // Returns the address of the Profile in a safe form to be used as a map key.
+  static inline ProfileKey KeyForProfile(Profile* profile);
 
   // Adds |profile| to the set of profiles to be searched if it is an
   // on-the-record profile with history that participates in safe browsing
@@ -84,19 +116,19 @@ class LastDownloadFinder : public ProfileManagerObserver,
   // begins a search in history. Reports results if there are no more pending
   // queries.
   void OnMetadataQuery(
-      Profile* profile,
+      ProfileKey profile_key,
       std::unique_ptr<ClientIncidentReport_DownloadDetails> details);
 
   // HistoryService::DownloadQueryCallback. Retrieves the most recent completed
   // executable download from |downloads| and reports results if there are no
   // more pending queries.
-  void OnDownloadQuery(Profile* profile,
+  void OnDownloadQuery(ProfileKey profile_key,
                        std::vector<history::DownloadRow> downloads);
 
-  // Removes the profile pointed to by |it| from profile_states_ and reports
-  // results if there are no more pending queries.
-  void RemoveProfileAndReportIfDone(
-      std::map<Profile*, ProfileWaitState>::iterator iter);
+  // Severs ties with the Profile whose state is pointed at by `iter` within
+  // `pending_profiles_`, either after a query finishes or to abandon an ongoing
+  // query. Also reports results if there are no more pending queries.
+  void RemoveProfileAndReportIfDone(PendingProfilesMap::iterator iter);
 
   // Invokes the caller-supplied callback with the download found.
   void ReportResults();
@@ -120,9 +152,10 @@ class LastDownloadFinder : public ProfileManagerObserver,
   // found.
   LastDownloadCallback callback_;
 
-  // A mapping of profiles for which a download query is pending to their
-  // respective states.
-  std::map<Profile*, ProfileWaitState> profile_states_;
+  // A mapping of profiles for which a query is pending to their respective
+  // states. Items are removed from here when a query finishes, or when we
+  // abandon a query.
+  PendingProfilesMap pending_profiles_;
 
   // The most interesting download details retrieved from download metadata.
   std::unique_ptr<ClientIncidentReport_DownloadDetails> details_;

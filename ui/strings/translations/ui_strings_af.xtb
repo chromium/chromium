@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Opname</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Gaan jou internetverbinding na</translation>
+<translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2388990488038464401">Skakel hierdie nommer van jou foon af?</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="24452542372838207">Vou kennisgewing uit</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NUUT</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Gedeel vanaf <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nuut</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar gelede}other{# jaar gelede}}</translation>
 <translation id="2878511608894704031">Vee alles uit</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{oor 1 d.}other{oor # d.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-stelsel</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Linkerpyltjie</translation>
+<translation id="5633029987065897167">Leeg</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktief vandag}=1{1 dag gelede aktief}other{# dae gelede aktief}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag en }other{# dae en }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-inhoud</translation>
 <translation id="6539092367496845964">Iets is fout. Probeer later weer.</translation>
 <translation id="654149438358937226">Blokkeer alle kennisgewings</translation>
-<translation id="6612467943526193239">Druk Esc om kalibrering te verlaat.</translation>
 <translation id="6620110761915583480">Stoor lêer</translation>
 <translation id="6699343763173986273">Media se volgende snit</translation>
 <translation id="6808150112686056157">Mediastop</translation>

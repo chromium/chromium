@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
 #include <string>
@@ -33,6 +38,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -52,9 +58,17 @@
 
 namespace {
 
+using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
+
+// Replace InfoBars when updating their content to avoid an animation instead of
+// removing the old InfoBar and then adding the new one, which causes an
+// animation flickering.
+BASE_FEATURE(kTabSharingBarReplace,
+             "TabSharingBarReplace",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_apply_dlp_for_all_users_for_testing_ = false;
@@ -113,6 +127,18 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
          AllowedScreenCaptureLevel::kSameOrigin;
 }
 
+TabRole GetTabRole(bool is_capturing_tab, bool is_captured_tab) {
+  if (is_capturing_tab && is_captured_tab) {
+    return TabRole::kSelfCapturingTab;
+  } else if (is_capturing_tab) {
+    return TabRole::kCapturingTab;
+  } else if (is_captured_tab) {
+    return TabRole::kCapturedTab;
+  } else {
+    return TabRole::kOtherTab;
+  }
+}
+
 }  // namespace
 
 uint32_t TabSharingUIViews::next_capture_session_id_ = 0;
@@ -124,10 +150,11 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const std::u16string& capturer_name,
     bool favicons_used_for_switch_to_tab_button,
     bool app_preferred_current_tab,
-    TabSharingInfoBarDelegate::TabShareType capture_type) {
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    bool captured_surface_control_active) {
   return std::make_unique<TabSharingUIViews>(
       capturer, media_id, capturer_name, favicons_used_for_switch_to_tab_button,
-      app_preferred_current_tab, capture_type);
+      app_preferred_current_tab, capture_type, captured_surface_control_active);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -136,7 +163,8 @@ TabSharingUIViews::TabSharingUIViews(
     const std::u16string& capturer_name,
     bool favicons_used_for_switch_to_tab_button,
     bool app_preferred_current_tab,
-    TabSharingInfoBarDelegate::TabShareType capture_type)
+    TabSharingInfoBarDelegate::TabShareType capture_type,
+    bool captured_surface_control_active)
     : capture_session_id_(next_capture_session_id_++),
       profile_(ProfileManager::GetLastUsedProfileAllowedByPolicy()),
       capturer_(capturer),
@@ -153,7 +181,8 @@ TabSharingUIViews::TabSharingUIViews(
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
       app_preferred_current_tab_(app_preferred_current_tab),
-      capture_type_(capture_type) {
+      capture_type_(capture_type),
+      captured_surface_control_active_(captured_surface_control_active) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Observe(shared_tab_);
@@ -166,6 +195,16 @@ TabSharingUIViews::TabSharingUIViews(
         shared_tab_, capturer_origin_,
         base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
                             base::Unretained(this)));
+  }
+
+  WebContents* const capturer_wc = WebContentsFromId(capturer_);
+  if (capturer_wc) {
+    // base::Unretained(this) is safe because `this` owns `csc_observer_` and
+    // will outlive it.
+    csc_observer_ = std::make_unique<CapturedSurfaceControlObserver>(
+        capturer_wc,
+        base::BindOnce(&TabSharingUIViews::OnCapturedSurfaceControlByCapturer,
+                       base::Unretained(this)));
   }
 }
 
@@ -192,6 +231,23 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   return 0;
 }
 
+void TabSharingUIViews::OnRegionCaptureRectChanged(
+    const std::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!shared_tab_) {
+    return;
+  }
+
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
+  if (!helper) {
+    return;
+  }
+
+  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
+}
+
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (source_callback_.is_null())
@@ -204,11 +260,13 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
 
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
-  source_callback_.Run(content::DesktopMediaID(
-      content::DesktopMediaID::TYPE_WEB_CONTENTS,
-      content::DesktopMediaID::kNullId,
-      content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                         main_frame->GetRoutingID())));
+  source_callback_.Run(
+      content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_WEB_CONTENTS,
+          content::DesktopMediaID::kNullId,
+          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
+                                             main_frame->GetRoutingID())),
+      captured_surface_control_active_);
 }
 
 void TabSharingUIViews::StopSharing() {
@@ -307,26 +365,9 @@ void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
 
 void TabSharingUIViews::WebContentsDestroyed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1276816): Prevent StopSharing() from interacting with
+  // TODO(crbug.com/40207587): Prevent StopSharing() from interacting with
   // |shared_tab_| while it is being destroyed.
   StopSharing();
-}
-
-void TabSharingUIViews::OnRegionCaptureRectChanged(
-    const std::optional<gfx::Rect>& region_capture_rect) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!shared_tab_) {
-    return;
-  }
-
-  auto* const helper =
-      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
-  if (!helper) {
-    return;
-  }
-
-  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -388,11 +429,16 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
     return;
   }
 
+  infobars::InfoBar* old_infobar = nullptr;
   auto infobars_entry = infobars_.find(contents);
-  // Recreate the infobar if it already exists.
+  // Stop observing the previous infobar instance if it already exists.
   if (infobars_entry != infobars_.end()) {
-    infobars_entry->second->owner()->RemoveObserver(this);
-    infobars_entry->second->RemoveSelf();
+    old_infobar = infobars_entry->second;
+    old_infobar->owner()->RemoveObserver(this);
+    if (!base::FeatureList::IsEnabled(kTabSharingBarReplace)) {
+      old_infobar->RemoveSelf();
+      old_infobar = nullptr;
+    }
   }
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(contents);
@@ -460,9 +506,10 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
                 : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
-      infobar_manager, shared_tab_name_, capturer_name_,
-      shared_tab_ == contents /*shared_tab*/,
-      share_this_tab_instead_button_state, focus_target, this, capture_type_,
+      infobar_manager, old_infobar, shared_tab_name_, capturer_name_, contents,
+      GetTabRole(is_capturing_tab, is_captured_tab),
+      share_this_tab_instead_button_state, focus_target,
+      captured_surface_control_active_, this, capture_type_,
       favicons_used_for_switch_to_tab_button_);
 }
 
@@ -539,7 +586,7 @@ void TabSharingUIViews::MaybeUpdateFavicon(
   const uint32_t hash = GetHash(favicon);
   if (*current_hash != hash) {
     *current_hash = hash;
-    // TODO(crbug.com/1224363): Update favicons without recreating infobars.
+    // TODO(crbug.com/40188004): Update favicons without recreating infobars.
     // To do so cleanly requires that |infobars_| map to |ConfirmInfoBar|.
     CreateInfobarForWebContents(infobar_owner);
   }
@@ -649,4 +696,46 @@ bool TabSharingUIViews::IsCapturableByCapturer(const Profile* profile) const {
   }
 
   return profile->GetOriginalProfile() == profile_;
+}
+
+void TabSharingUIViews::OnCapturedSurfaceControlByCapturer() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!captured_surface_control_active_) {
+    captured_surface_control_active_ = true;
+
+    content::WebContents* const capturer_wc = WebContentsFromId(capturer_);
+    if (capturer_wc) {
+      // Recreate the infobar with the CSC indicator in place - triggered by
+      // `captured_surface_control_active_` marking CSC as "active".
+      CreateInfobarForWebContents(capturer_wc);
+    } else {
+      // The capturer died - `TabSharingUIViews` will be destroyed promptly, so
+      // no need to do anything special.
+    }
+  }
+}
+
+TabSharingUIViews::CapturedSurfaceControlObserver::
+    CapturedSurfaceControlObserver(content::WebContents* web_contents,
+                                   base::OnceClosure callback)
+    : callback_(std::move(callback)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(callback_);
+
+  Observe(web_contents);
+}
+
+TabSharingUIViews::CapturedSurfaceControlObserver::
+    ~CapturedSurfaceControlObserver() = default;
+
+void TabSharingUIViews::CapturedSurfaceControlObserver::
+    OnCapturedSurfaceControl() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  Observe(nullptr);
+
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }

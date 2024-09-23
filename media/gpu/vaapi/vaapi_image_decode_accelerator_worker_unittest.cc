@@ -77,7 +77,7 @@ class MockNativePixmapDmaBuf : public gfx::NativePixmapDmaBuf {
                                 kFormatForDecodes,
                                 gfx::NativePixmapHandle()) {}
 
-  gfx::NativePixmapHandle ExportHandle() override {
+  gfx::NativePixmapHandle ExportHandle() const override {
     gfx::NativePixmapHandle handle{};
     DCHECK_EQ(gfx::BufferFormat::YVU_420, GetBufferFormat());
     handle.planes = std::vector<gfx::NativePixmapPlane>(3u);
@@ -102,13 +102,8 @@ class MockVaapiImageDecoder : public VaapiImageDecoder {
       case gpu::ImageDecodeAcceleratorType::kWebP:
         return SkYUVColorSpace::kRec601_SkYUVColorSpace;
       case gpu::ImageDecodeAcceleratorType::kUnknown:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
-  }
-
-  gpu::ImageDecodeAcceleratorSupportedProfile GetSupportedProfile()
-      const override {
-    return gpu::ImageDecodeAcceleratorSupportedProfile();
   }
 
   MOCK_METHOD1(Initialize, bool(const ReportErrorToUMACB&));
@@ -134,12 +129,29 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
          features::kVaapiWebPImageDecodeAcceleration} /* enabled_features */,
         {} /* disabled_features */);
     VaapiImageDecoderVector decoders;
-    decoders.push_back(std::make_unique<StrictMock<MockVaapiImageDecoder>>(
-        gpu::ImageDecodeAcceleratorType::kJpeg));
-    decoders.push_back(std::make_unique<StrictMock<MockVaapiImageDecoder>>(
-        gpu::ImageDecodeAcceleratorType::kWebP));
-    worker_ = base::WrapUnique(
-        new VaapiImageDecodeAcceleratorWorker(std::move(decoders)));
+    gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles;
+
+    auto fake_jpeg_profile =
+        GetFakeSupportedProfile(gpu::ImageDecodeAcceleratorType::kJpeg);
+    supported_profiles.push_back(fake_jpeg_profile);
+    auto fake_webp_profile =
+        GetFakeSupportedProfile(gpu::ImageDecodeAcceleratorType::kWebP);
+    supported_profiles.push_back(fake_webp_profile);
+
+    auto vaapi_jpeg_decoder =
+        std::make_unique<StrictMock<MockVaapiImageDecoder>>(
+            gpu::ImageDecodeAcceleratorType::kJpeg);
+    vaapi_jpeg_decoder_ = vaapi_jpeg_decoder.get();
+    decoders.push_back(std::move(vaapi_jpeg_decoder));
+
+    auto vaapi_webp_decoder =
+        std::make_unique<StrictMock<MockVaapiImageDecoder>>(
+            gpu::ImageDecodeAcceleratorType::kWebP);
+    vaapi_webp_decoder_ = vaapi_webp_decoder.get();
+    decoders.push_back(std::move(vaapi_webp_decoder));
+
+    worker_ = base::WrapUnique(new VaapiImageDecodeAcceleratorWorker(
+        std::move(decoders), std::move(supported_profiles)));
   }
 
   VaapiImageDecodeAcceleratorWorkerTest(
@@ -147,20 +159,19 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
   VaapiImageDecodeAcceleratorWorkerTest& operator=(
       const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
 
-  MockVaapiImageDecoder* GetJpegDecoder() const {
-    auto result =
-        worker_->decoders_.find(gpu::ImageDecodeAcceleratorType::kJpeg);
-    return result == worker_->decoders_.end()
-               ? nullptr
-               : static_cast<MockVaapiImageDecoder*>(result->second.get());
+  gpu::ImageDecodeAcceleratorSupportedProfile GetFakeSupportedProfile(
+      gpu::ImageDecodeAcceleratorType type) {
+    gpu::ImageDecodeAcceleratorSupportedProfile profile;
+    profile.image_type = type;
+    return profile;
   }
 
-  MockVaapiImageDecoder* GetWebPDecoder() const {
-    auto result =
-        worker_->decoders_.find(gpu::ImageDecodeAcceleratorType::kWebP);
-    return result == worker_->decoders_.end()
-               ? nullptr
-               : static_cast<MockVaapiImageDecoder*>(result->second.get());
+  StrictMock<MockVaapiImageDecoder>* GetJpegDecoder() const {
+    return vaapi_jpeg_decoder_;
+  }
+
+  StrictMock<MockVaapiImageDecoder>* GetWebPDecoder() const {
+    return vaapi_webp_decoder_;
   }
 
   MOCK_METHOD1(
@@ -171,6 +182,9 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<VaapiImageDecodeAcceleratorWorker> worker_;
+
+  raw_ptr<StrictMock<MockVaapiImageDecoder>> vaapi_jpeg_decoder_ = nullptr;
+  raw_ptr<StrictMock<MockVaapiImageDecoder>> vaapi_webp_decoder_ = nullptr;
 };
 
 ACTION_P2(ExportAsNativePixmapDmaBufSuccessfully,
@@ -194,6 +208,7 @@ TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeSucceeds) {
     InSequence sequence;
     MockVaapiImageDecoder* jpeg_decoder = GetJpegDecoder();
     ASSERT_TRUE(jpeg_decoder);
+    EXPECT_CALL(*jpeg_decoder, Initialize(_)).WillOnce(Return(true));
     EXPECT_CALL(
         *jpeg_decoder,
         Decode(AllOf(Property(&base::span<const uint8_t>::data,
@@ -209,6 +224,7 @@ TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeSucceeds) {
 
     MockVaapiImageDecoder* webp_decoder = GetWebPDecoder();
     ASSERT_TRUE(webp_decoder);
+    EXPECT_CALL(*webp_decoder, Initialize(_)).WillOnce(Return(true));
     EXPECT_CALL(
         *webp_decoder,
         Decode(AllOf(Property(&base::span<const uint8_t>::data,
@@ -244,6 +260,7 @@ TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeFails) {
     InSequence sequence;
     MockVaapiImageDecoder* jpeg_decoder = GetJpegDecoder();
     ASSERT_TRUE(jpeg_decoder);
+    EXPECT_CALL(*jpeg_decoder, Initialize(_)).WillOnce(Return(true));
     EXPECT_CALL(
         *jpeg_decoder,
         Decode(AllOf(Property(&base::span<const uint8_t>::data,
@@ -255,6 +272,7 @@ TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeFails) {
 
     MockVaapiImageDecoder* webp_decoder = GetWebPDecoder();
     ASSERT_TRUE(webp_decoder);
+    EXPECT_CALL(*webp_decoder, Initialize(_)).WillOnce(Return(true));
     EXPECT_CALL(
         *webp_decoder,
         Decode(AllOf(Property(&base::span<const uint8_t>::data,

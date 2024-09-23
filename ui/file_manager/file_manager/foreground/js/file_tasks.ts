@@ -13,33 +13,37 @@ import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR, isFilesAppId, parseActionId} from '../../common/js/file_tasks.js';
 import {getExtension} from '../../common/js/file_type.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
+import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {type FileTasks as StoreFileTasks} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
-import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import type {XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import {USER_CANCELLED} from '../../widgets/xf_password_dialog.js';
 
 import {DEFAULT_CROSTINI_VM} from './constants.js';
-import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
-import {FileTransferController, PastePlan} from './file_transfer_controller.js';
-import {MetadataItem} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {type DropdownItem, TaskController} from './task_controller.js';
-import {TaskHistory} from './task_history.js';
-import {DefaultTaskDialog} from './ui/default_task_dialog.js';
-import {FileManagerUI} from './ui/file_manager_ui.js';
+import type {DirectoryModel} from './directory_model.js';
+import {type DirectoryChangeTracker} from './directory_model.js';
+import type {FileTransferController} from './file_transfer_controller.js';
+import {PastePlan} from './file_transfer_controller.js';
+import type {MetadataItem} from './metadata/metadata_item.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {TaskController} from './task_controller.js';
+import {type DropdownItem} from './task_controller.js';
+import type {TaskHistory} from './task_history.js';
+import type {DefaultTaskDialog} from './ui/default_task_dialog.js';
+import type {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {UMA_INDEX_KNOWN_EXTENSIONS} from './uma_enums.gen.js';
 
 /**
  * Office file handlers UMA values (must be consistent with OfficeFileHandler in
  * tools/metrics/histograms/enums.xml).
- * @const @enum {number}
  */
 const OfficeFileHandlersHistogramValues = {
   OTHER: 0,
@@ -197,10 +201,14 @@ export class FileTasks {
   /** Records trial of opening file grouped by extensions.  */
   private static recordViewingFileTypeUma_(
       volumeManager: VolumeManager, entries: Array<Entry|FilesAppEntry>) {
+    const state = getStore().getState();
     for (const entry of entries) {
       FileTasks.recordEnumWithOnlineAndOffline_(
           volumeManager, 'ViewingFileType', FileTasks.getViewFileType(entry),
           UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+      recordViewingVolumeTypeUma(state, entry.toURL());
+      // Recorded per file.
+      recordViewingNavigationSurfaceUma(state);
     }
   }
 
@@ -574,12 +582,11 @@ export class FileTasks {
       for (const entry of this.entries_) {
         recordEnum(
             'DriveOfflineOpen.Unavailable', FileTasks.getViewFileType(entry),
-            UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+            UMA_INDEX_KNOWN_EXTENSIONS);
         if (isBulkPinningEnabled) {
           recordEnum(
               'GoogleDrive.BulkPinning.OfflineOpen',
-              FileTasks.getViewFileType(entry),
-              UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+              FileTasks.getViewFileType(entry), UMA_INDEX_KNOWN_EXTENSIONS);
         }
       }
       return Promise.reject('drive is offline');
@@ -701,7 +708,7 @@ export class FileTasks {
     // We need a password.
     const unlock = await this.mutex_.lock();
     try {
-      /** @type {?string} */ let password = null;
+      let password: string|null = null;
       while (true) {
         // Ask for password.
         do {
@@ -772,10 +779,7 @@ export class FileTasks {
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
-      const msgId = error === VolumeError.INVALID_PATH ?
-          'ARCHIVE_MOUNT_INVALID_PATH' :
-          'ARCHIVE_MOUNT_FAILED';
-      item.message = strf(msgId, filename);
+      item.message = strf('ARCHIVE_MOUNT_FAILED', filename);
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
@@ -844,10 +848,7 @@ export class FileTasks {
   }
 }
 
-/**
- * Dialog types to show a task picker.
- * @enum {string}
- */
+/** Dialog types to show a task picker. */
 export const TaskPickerType = {
   ChangeDefault: 'ChangeDefault',
   OpenWith: 'OpenWith',

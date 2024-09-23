@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cpu.h"
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+
+#if defined(ARCH_CPU_X86_FAMILY)
+#include "base/cpu.h"
+#endif
 
 namespace nacl {
 
@@ -48,7 +52,8 @@ std::string GetCpuFeatures() {
   //           doesn't handle other architectures very well, and we
   //           should at least detect the presence of ARM's integer
   //           divide.
-  std::vector<base::StringPiece> features;
+  std::vector<std::string_view> features;
+#if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu;
 
   // On x86, SSE features are ordered: the most recent one implies the
@@ -67,6 +72,8 @@ std::string GetCpuFeatures() {
   if (cpu.has_popcnt()) features.push_back("+popcnt");
 
   // TODO: AES, LZCNT, ...
+#endif
+
   return base::JoinString(features, ",");
 }
 

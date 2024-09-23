@@ -16,18 +16,14 @@ namespace performance_manager {
 
 class MockObserver : public TabPageObserver {
  public:
-  MOCK_METHOD(void,
-              OnTabAdded,
-              (TabPageDecorator::TabHandle * tab_handle),
-              (override));
+  MOCK_METHOD(void, OnTabAdded, (TabPageDecorator::TabHandle*), (override));
   MOCK_METHOD(void,
               OnTabAboutToBeDiscarded,
-              (const PageNode* old_page_node,
-               TabPageDecorator::TabHandle* tab_handle),
+              (const PageNode*, TabPageDecorator::TabHandle*),
               (override));
   MOCK_METHOD(void,
               OnBeforeTabRemoved,
-              (TabPageDecorator::TabHandle * tab_handle),
+              (TabPageDecorator::TabHandle*),
               (override));
 };
 

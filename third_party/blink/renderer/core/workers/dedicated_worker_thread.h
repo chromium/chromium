@@ -57,7 +57,6 @@ class CORE_EXPORT DedicatedWorkerThread : public WorkerThread {
   WorkerBackingThread& GetWorkerBackingThread() override {
     return *worker_backing_thread_;
   }
-  void ClearWorkerBackingThread() override;
   DedicatedWorkerObjectProxy& WorkerObjectProxy() const {
     return worker_object_proxy_;
   }

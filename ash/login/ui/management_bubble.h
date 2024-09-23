@@ -22,8 +22,9 @@ class ManagementBubble : public LoginTooltipView {
  public:
   ManagementBubble(const std::u16string& message,
                    base::WeakPtr<views::View> anchor_view);
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 };
 
 }  // namespace ash
-#endif  // ASH_LOGIN_UI_AUTH_ERROR_BUBBLE_H_
+#endif  // ASH_LOGIN_UI_MANAGEMENT_BUBBLE_H_

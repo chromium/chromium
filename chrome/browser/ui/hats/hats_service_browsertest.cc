@@ -31,6 +31,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -485,7 +486,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
 
   // Same-document navigation
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.location='#';", base::NullCallback());
+      u"document.location='#';", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetHatsService()->HasPendingTasks());

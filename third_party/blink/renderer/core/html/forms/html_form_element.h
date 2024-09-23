@@ -60,6 +60,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   HTMLFormControlsCollection* elements();
   void GetNamedElements(const AtomicString&, HeapVector<Member<Element>>&);
+  bool HasNamedElements(const AtomicString&);
 
   unsigned length() const;
   HTMLElement* item(unsigned index);
@@ -120,11 +121,22 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     return radio_button_group_scope_;
   }
 
+  // Returns the listed elements associated with `this`. If
+  // `include_shadow_trees` is `true`, then the list will also contain
+  // descendants of `this` that are form control elements and inside Shadow DOM.
+  // Note that if `kAutofillIncludeFormElementsInShadowDom` is enabled and
+  // `include_shadow_trees` is true, then, additionally, the result will contain
+  // the form control elements of <form>s nested inside `this`. In principle,
+  // form nesting is prohibited by the HTML standard, but in practice it can
+  // still occur - e.g., by dynamically appending <form> children to (a
+  // descendant of) `this`.
   const ListedElement::List& ListedElements(
       bool include_shadow_trees = false) const;
   const HeapVector<Member<HTMLImageElement>>& ImageElements();
 
   V8UnionElementOrRadioNodeList* AnonymousNamedGetter(const AtomicString& name);
+  bool NamedPropertyQuery(const AtomicString& name, ExceptionState&);
+
   void InvalidateDefaultButtonStyle() const;
 
   // 'construct the entry list'
@@ -134,6 +146,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                                const WTF::TextEncoding& encoding);
 
   void InvalidateListedElementsIncludingShadowTrees();
+  void UseCountPropertyAccess(v8::Local<v8::Name>&,
+                              const v8::PropertyCallbackInfo<v8::Value>&);
 
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -155,7 +169,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                               HTMLFormControlElement* submit_button);
 
   void CollectListedElements(
-      const Node& root,
+      const Node* root,
       ListedElement::List& elements,
       ListedElement::List* elements_including_shadow_trees = nullptr,
       bool in_shadow_tree = false) const;

@@ -2,6 +2,7 @@
 
 include_rules = [
   "+cc/test/pixel_test_utils.h",
+  "+components/input",
   "+components/viz",
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/context_support.h",
@@ -12,6 +13,8 @@ include_rules = [
   "+gpu/command_buffer/client/raster_interface.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
+  "+gpu/command_buffer/client/test_gpu_memory_buffer_manager.h",
+  "+gpu/command_buffer/client/test_shared_image_interface.h",
   "+gpu/command_buffer/common",
   "+gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h",
   "+gpu/config/gpu_feature_info.h",
@@ -57,6 +60,7 @@ specific_include_rules = {
   ],
 
   "test_gpu_service_holder\.cc": [
+    "+gpu/command_buffer/service/dawn_context_provider.h",
     "+gpu/command_buffer/service/scheduler_sequence.h",
     "+gpu/command_buffer/service/service_utils.h",
     "+gpu/config",

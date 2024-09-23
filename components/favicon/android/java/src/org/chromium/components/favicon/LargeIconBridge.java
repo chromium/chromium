@@ -226,8 +226,6 @@ public class LargeIconBridge {
      * #getLargeIconForUrl()} afterwards to get the icon.
      *
      * @param pageUrl The URL of the page whose icon will be fetched.
-     * @param mayPageUrlBePrivate Whether page url can be private. Unless you are sure set it to
-     *     true to avoid crawling private urls.
      * @param shouldTrimPageUrlPath Whether to remove path from the url. The result will be stored
      *     under the full url provided to the API.
      * @param trafficAnnotation Traffic annotation to make the request to the server.
@@ -235,7 +233,6 @@ public class LargeIconBridge {
      */
     public void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
             GURL pageUrl,
-            boolean mayPageUrlBePrivate,
             boolean shouldTrimPageUrlPath,
             NetworkTrafficAnnotationTag trafficAnnotation,
             GoogleFaviconServerCallback callback) {
@@ -244,7 +241,6 @@ public class LargeIconBridge {
                         mNativeLargeIconBridge,
                         mBrowserContextHandle,
                         pageUrl,
-                        mayPageUrlBePrivate,
                         shouldTrimPageUrlPath,
                         trafficAnnotation.getHashCode(),
                         callback);
@@ -286,7 +282,6 @@ public class LargeIconBridge {
                 long nativeLargeIconBridge,
                 BrowserContextHandle browserContextHandle,
                 GURL pageUrl,
-                boolean mayPageUrlBePrivate,
                 boolean shouldTrimPageUrlPath,
                 int annotationHashCode,
                 GoogleFaviconServerCallback callback);

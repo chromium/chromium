@@ -2,10 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 assert(is_chromeos)
 
 source_set("mahi") {
   sources = [
+    "mahi_condensed_menu_view.cc",
+    "mahi_condensed_menu_view.h",
+    "mahi_menu_constants.h",
     "mahi_menu_controller.cc",
     "mahi_menu_controller.h",
     "mahi_menu_view.cc",
@@ -14,15 +19,23 @@ source_set("mahi") {
 
   deps = [
     "//base",
+    "//chrome/browser/chromeos/mahi",
+    "//chrome/browser/ui/chromeos/magic_boost",
+    "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
+    "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",
-    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",
+    "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
-    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/color",
     "//ui/display",
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
+  }
 }

@@ -54,6 +54,11 @@ void FakeBluetoothAdapter::NotifyConfirmPasskey(
   pairing_delegate_->ConfirmPasskey(device, passkey);
 }
 
+void FakeBluetoothAdapter::NotifyDisplayPasskey(device::BluetoothDevice* device,
+                                                uint32_t passkey) {
+  pairing_delegate_->DisplayPasskey(device, passkey);
+}
+
 void FakeBluetoothAdapter::NotifyDevicePairedChanged(
     device::BluetoothDevice* device,
     bool new_paired_status) {

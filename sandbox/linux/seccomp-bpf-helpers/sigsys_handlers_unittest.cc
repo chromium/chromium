@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 
 #include <linux/net.h>
@@ -108,7 +113,10 @@ BPF_DEATH_TEST_C(
     GetSockoptPrintsCorrectMessage,
     DEATH_SEGV_MESSAGE(sandbox::GetSockoptErrorMessageContentForTests()),
     DisallowSockoptPolicy) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull"
   getsockopt(0, 0, 0, nullptr, nullptr);
+#pragma GCC diagnostic pop
 }
 
 const char kSigsysMessage[] =

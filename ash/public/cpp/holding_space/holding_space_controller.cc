@@ -17,31 +17,6 @@ HoldingSpaceController* g_instance = nullptr;
 
 }  // namespace
 
-// HoldingSpaceController::ScopedForceShowInShelf ------------------------------
-
-HoldingSpaceController::ScopedForceShowInShelf::ScopedForceShowInShelf() {
-  auto* controller = HoldingSpaceController::Get();
-  CHECK(controller);
-  ++controller->force_show_in_shelf_count_;
-  if (controller->force_show_in_shelf_count_ == 1) {
-    for (auto& observer : controller->observers_) {
-      observer.OnHoldingSpaceForceShowInShelfChanged();
-    }
-  }
-}
-
-HoldingSpaceController::ScopedForceShowInShelf::~ScopedForceShowInShelf() {
-  if (auto* controller = HoldingSpaceController::Get()) {
-    --controller->force_show_in_shelf_count_;
-    CHECK_GE(controller->force_show_in_shelf_count_, 0);
-    if (controller->force_show_in_shelf_count_ == 0) {
-      for (auto& observer : controller->observers_) {
-        observer.OnHoldingSpaceForceShowInShelfChanged();
-      }
-    }
-  }
-}
-
 // HoldingSpaceController ------------------------------------------------------
 
 HoldingSpaceController::HoldingSpaceController() {
@@ -88,14 +63,6 @@ void HoldingSpaceController::AddObserver(
 void HoldingSpaceController::RemoveObserver(
     HoldingSpaceControllerObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void HoldingSpaceController::OnHoldingSpaceTrayBubbleVisibilityChanged(
-    const HoldingSpaceTray* tray,
-    bool visible) {
-  for (auto& observer : observers_) {
-    observer.OnHoldingSpaceTrayBubbleVisibilityChanged(tray, visible);
-  }
 }
 
 void HoldingSpaceController::RegisterClientAndModelForUser(

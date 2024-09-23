@@ -7,10 +7,14 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/package_id.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
@@ -40,11 +44,32 @@ std::optional<apps::PackageId> GetPackageIdForApp(
         apk_web_app_service->GetPackageNameForWebApp(
             update.AppId(), /*include_installing_apks=*/true);
     if (package_name.has_value()) {
-      return apps::PackageId(apps::AppType::kArc, package_name.value());
+      return apps::PackageId(apps::PackageType::kArc, package_name.value());
     }
   }
-  return apps::PackageId(update.AppType(), update.PublisherId());
+  return apps::PackageId(ConvertAppTypeToPackageType(update.AppType()).value(),
+                         update.PublisherId());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::optional<std::string> GetAppWithPackageId(
+    Profile* profile,
+    const apps::PackageId& package_id) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (!proxy) {
+    return std::nullopt;
+  }
+
+  std::optional<std::string> app_id;
+  proxy->AppRegistryCache().ForEachApp(
+      [&app_id, package_id](const apps::AppUpdate& update) {
+        if (!app_id.has_value() && IsInstalled(update.Readiness()) &&
+            update.InstallerPackageId() == package_id) {
+          app_id = update.AppId();
+        }
+      });
+  return app_id;
+}
 
 }  // namespace apps_util

@@ -8,8 +8,6 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
@@ -20,25 +18,20 @@ import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
+import {ConsumerUpdatePage_ConsumerUpdateStep, ConsumerUpdatePageCallbackRouter, ConsumerUpdatePageHandlerRemote} from '../../mojom-webui/screens_oobe.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './consumer_update.html.js';
 
-/**
- * @constructor
- */
 const ConsumerUpdateScreenElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface
-      & LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 const UNREACHABLE_PERCENT = 1000;
 // Thresholds which are used to determine when update status announcement should
@@ -72,20 +65,6 @@ enum ConsumerUpdateStep {
   CELLULAR = 'cellular',
 }
 
-
-/**
- * Available user actions.
- */
-enum UserAction {
-  BACK = 'back',
-  SKIP = 'skip-consumer-update',
-  DECLINE_CELLULAR = 'consumer-update-reject-cellular',
-  ACCEPT_CELLULAR = 'consumer-update-accept-cellular',
-}
-
-/**
- * @polymer
- */
 class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
   static get is() {
     return 'consumer-update-element' as const;
@@ -100,7 +79,7 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
       /**
        * True if update is forced.
        */
-      isUpdateMandatory: {
+      isSkipButtonHidden: {
         type: Boolean,
         value: true,
       },
@@ -157,26 +136,42 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
     };
   }
 
-  private isUpdateMandatory: boolean;
+  static get observers(): string[] {
+    return ['playAnimation(uiStep)'];
+  }
+
+  private isSkipButtonHidden: boolean;
   private showLowBatteryWarning: boolean;
   private updateStatusMessagePercent: string;
   private updateStatusMessageTimeLeft: string;
   private betterUpdateProgressValue: number;
   private autoTransition: boolean;
   private thresholdIndex: number;
+  private callbackRouter: ConsumerUpdatePageCallbackRouter;
+  private handler: ConsumerUpdatePageHandlerRemote;
 
-  static get observers(): string[] {
-    return ['playAnimation(uiStep)'];
-  }
+  constructor() {
+    super();
+    this.callbackRouter = new ConsumerUpdatePageCallbackRouter();
+    this.handler = new ConsumerUpdatePageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory
+        .establishConsumerUpdateScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
 
-  override get EXTERNAL_API(): string[] {
-    return [
-      'setIsUpdateMandatory',
-      'showLowBatteryWarningMessage',
-      'setUpdateState',
-      'setUpdateStatus',
-      'setAutoTransition',
-    ];
+    this.callbackRouter.showSkipButton.addListener(
+        this.showSkipButton.bind(this));
+    this.callbackRouter.setLowBatteryWarningVisible.addListener(
+        this.setLowBatteryWarningVisible.bind(this));
+    this.callbackRouter.setScreenStep.addListener(
+        this.setScreenStep.bind(this));
+    this.callbackRouter.setUpdateStatusMessage.addListener(
+        this.setUpdateStatusMessage.bind(this));
+    this.callbackRouter.setAutoTransition.addListener(
+        this.setAutoTransition.bind(this));
   }
 
   override get UI_STEPS() {
@@ -194,41 +189,48 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ONBOARDING;
   }
 
   /**
-   * Shows or hides skip button while update in progress.
-   * @param visible Is skip button visible?
+   * Shows skip button while update in progress.
    */
-  setIsUpdateMandatory(visible: boolean): void {
-    this.isUpdateMandatory = visible;
+  showSkipButton(): void {
+    this.isSkipButtonHidden = false;
+  }
+
+  override onBeforeHide(): void {
+    super.onBeforeHide();
+    const animation = this.shadowRoot?.querySelector('#checkingAnimation');
+    if (animation instanceof OobeCrLottie) {
+      animation.playing = false;
+    }
   }
 
   /**
    * Decline to use cellular data.
    */
   private onDeclineCellularClicked(): void {
-    this.userActed(UserAction.DECLINE_CELLULAR);
+    this.handler.onDeclineCellularClicked();
   }
 
   /**
    * Accept to use cellular data.
    */
   private onAcceptCellularClicked(): void {
-    this.userActed(UserAction.ACCEPT_CELLULAR);
+    this.handler.onAcceptCellularClicked();
   }
 
   private onSkip(): void {
-    this.userActed(UserAction.SKIP);
+    this.handler.onSkipClicked();
   }
 
   /**
    * Shows or hides battery warning message.
    * @param visible Is message visible?
    */
-  showLowBatteryWarningMessage(visible: boolean): void {
+  setLowBatteryWarningVisible(visible: boolean): void {
     this.showLowBatteryWarning = visible;
   }
 
@@ -236,8 +238,24 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    * Sets which dialog should be shown.
    * @param value Current update state.
    */
-  setUpdateState(value: ConsumerUpdateStep): void {
-    this.setUIStep(value);
+  setScreenStep(value: ConsumerUpdatePage_ConsumerUpdateStep): void {
+    switch (value) {
+      case ConsumerUpdatePage_ConsumerUpdateStep.kCheckingForUpdate:
+        this.setUIStep(ConsumerUpdateStep.CHECKING);
+        break;
+      case ConsumerUpdatePage_ConsumerUpdateStep.kUpdateInProgress:
+        this.setUIStep(ConsumerUpdateStep.UPDATE);
+        break;
+      case ConsumerUpdatePage_ConsumerUpdateStep.kRestartInProgress:
+        this.setUIStep(ConsumerUpdateStep.RESTART);
+        break;
+      case ConsumerUpdatePage_ConsumerUpdateStep.kManualReboot:
+        this.setUIStep(ConsumerUpdateStep.REBOOT);
+        break;
+      case ConsumerUpdatePage_ConsumerUpdateStep.kCellularPermission:
+        this.setUIStep(ConsumerUpdateStep.CELLULAR);
+        break;
+    }
   }
 
   /**
@@ -246,8 +264,8 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    * @param messagePercent Message describing current progress.
    * @param messageTimeLeft Message describing time left.
    */
-  setUpdateStatus(percent: number, messagePercent: string,
-      messageTimeLeft: string): void {
+  setUpdateStatusMessage(
+      percent: number, messagePercent: string, messageTimeLeft: string): void {
     // Sets aria-live polite on percent and timeleft container every time
     // new threshold has been achieved otherwise do not initiate spoken
     // feedback update by setting aria-live off.
@@ -279,8 +297,8 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
   /**
    * Sets whether carousel should auto transit slides.
    */
-  setAutoTransition(value: boolean): void {
-    this.autoTransition = value;
+  setAutoTransition(enabled: boolean): void {
+    this.autoTransition = enabled;
   }
 
   /**
@@ -290,11 +308,11 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
    */
   private getAutoTransition(step: ConsumerUpdateStep,
       autoTransition: boolean): boolean {
-    return step == ConsumerUpdateStep.UPDATE && autoTransition;
+    return step === ConsumerUpdateStep.UPDATE && autoTransition;
   }
 
   private onBackClicked(): void {
-    this.userActed(UserAction.BACK);
+    this.handler.onBackClicked();
   }
 
   /**

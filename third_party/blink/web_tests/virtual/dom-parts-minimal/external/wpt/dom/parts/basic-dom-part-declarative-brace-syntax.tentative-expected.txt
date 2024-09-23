@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Basic declarative DOM Parts (Main Document)
+  assert_equals: Second level childpart should have NodePart and AttributePart: lengths differ expected 2 but got 1
+[FAIL] Basic declarative DOM Parts (Template)
+  assert_equals: Second level childpart should have NodePart and AttributePart: lengths differ expected 2 but got 1
+[FAIL] Basic declarative DOM Parts (PartClone)
+  assert_equals: undefined: lengths differ expected 0 but got 1
+[FAIL] Post-parsing structure of child parts, and stickiness
+  assert_equals: expected "Before <!---->Parts<!----> After" but got "Before <!--#-->Parts<!--/--> After"
+[FAIL] Just parts, no text before
+  assert_equals: expected "<!----><!---->" but got " <!--#--> <!--/-->"
+[FAIL] Foreign content should support Parts
+  assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

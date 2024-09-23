@@ -25,7 +25,6 @@ void TCPSocketState::CompletePendingTransition(bool success) {
   switch (pending_transition_) {
     case NONE:
       NOTREACHED();
-      break;
     case BIND:
       if (success)
         state_ = BOUND;
@@ -70,7 +69,6 @@ bool TCPSocketState::IsValidTransition(TransitionType transition) const {
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 bool TCPSocketState::IsPending(TransitionType transition) const {

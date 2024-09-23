@@ -10,8 +10,6 @@ import "sandbox/policy/mojom/sandbox.mojom";
 
 [EnableIf=is_chromeos]
 import "chrome/services/printing/public/mojom/pdf_flattener.mojom";
-[EnableIf=is_chromeos_ash]
-import "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom";
 
 [EnableIf=is_win]
 import "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom";
@@ -25,8 +23,9 @@ const sandbox.mojom.Sandbox kPrintingServiceSandbox
 const sandbox.mojom.Sandbox kPrintingServiceSandbox
   = sandbox.mojom.Sandbox.kUtility;
 
-// The main interface to Chrome's Printing Service, which performs various PDF
-// conversion operations in an isolated sandboxed process.
+// The main interface to Chrome's Printing Service, which performs various
+// conversion operations in an isolated sandboxed process. These operations
+// commonly involve working with PDFs.
 [ServiceSandbox=kPrintingServiceSandbox]
 interface PrintingService {
   // Binds an interface that can be used to do Nup PDF conversion.
@@ -41,10 +40,6 @@ interface PrintingService {
   // Binds an interface that can be used to flatten a PDF.
   [EnableIf=is_chromeos]
   BindPdfFlattener(pending_receiver<PdfFlattener> receiver);
-
-  // Binds an interface that is used to generate thumbnails for PDF content.
-  [EnableIf=is_chromeos_ash]
-  BindPdfThumbnailer(pending_receiver<PdfThumbnailer> receiver);
 
   // Binds an interface that can be used to do PDF to EMF conversion. Windows
   // only.

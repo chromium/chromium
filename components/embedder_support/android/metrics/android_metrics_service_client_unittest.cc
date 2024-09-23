@@ -175,7 +175,12 @@ class AndroidMetricsServiceClientTest : public testing::Test {
   }
 
  protected:
-  ~AndroidMetricsServiceClientTest() override = default;
+  ~AndroidMetricsServiceClientTest() override {
+    // The global allocator has to be detached here so that no metrics created
+    // by code called below get stored in it as that would make for potential
+    // use-after-free operations if that code is called again.
+    base::GlobalHistogramAllocator::ReleaseForTesting();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;

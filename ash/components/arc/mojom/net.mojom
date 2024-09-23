@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 36
+// Next MinVersion: 39
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -13,6 +13,7 @@
 module arc.mojom;
 
 import "ash/components/arc/mojom/app.mojom";
+import "ash/components/arc/mojom/net_shared.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "url/mojom/url.mojom";
 
@@ -281,18 +282,6 @@ struct IPConfiguration {
 
   // IP family for that configuration
   IPAddressType type;
-};
-
-// The subset of wireless security protocols that Android defines in
-// android.net.wifi.WifiConfiguration and that can be supported by the
-// host.
-[Extensible]
-enum SecurityType {
-  NONE,
-  WEP_PSK,
-  WEP_8021X,
-  WPA_PSK,
-  WPA_EAP,
 };
 
 // Deprecated enum. |is_metered| in NetworkConfiguration should be
@@ -641,6 +630,10 @@ struct AndroidVpnConfiguration {
   // by IP address and port. PAC URL configurations are not supported.
   // On ARC P, Android VPNs cannot specify a proxy configuration.
   [MinVersion=21] ArcProxyInfo? http_proxy@9;
+
+  // The maximum transmission unit (MTU) in bytes. See the comments for NetHost
+  // for the rationale of using int32 instead of uint32 here.
+  [MinVersion=38] int32 mtu@10;
 };
 
 // Result object that is returned to the caller of the ARC DNS
@@ -769,7 +762,7 @@ struct PasspointApprovalResponse {
   bool allowed;
 };
 
-// Next Method ID: 25
+// Next Method ID: 27
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -822,11 +815,32 @@ interface NetHost {
   [MinVersion=6] GetNetworks@10(GetNetworksRequestType type) =>
       (GetNetworksResponseType response);
 
-  // Inform Chrome OS that a VPN has connected.
+  // For the following AndroidVpn* methods, these are intentionally created as
+  // a multiplexed interface design (along with the corresponding NetInstance
+  // *AndroidVpn methods). This is because
+  // connection/configuration/disconnection events can be initiated from both
+  // the Android and the ChromeOS-side. There should only be one connected
+  // Android VPN at any time.
+  //
+  // Inform ChromeOS that an Android VPN has connected. If the Android VPN is
+  // already registered as a shill service, then the service will be updated. If
+  // not, a new shill service will be created for the current user.
   [MinVersion=7] AndroidVpnConnected@11(AndroidVpnConfiguration cfg);
 
-  // Inform Chrome OS that a VPN is disconnected, reconnecting, or reconnected.
-  [MinVersion=7] AndroidVpnStateChanged@12(ConnectionStateType state);
+  // Inform ChromeOS that an Android VPN's configuration has been updated. The
+  // Android VPN should already exist as a shill service for the current user,
+  // otherwise this is a no-op.
+  [MinVersion=36] AndroidVpnUpdated@25(AndroidVpnConfiguration cfg);
+
+  // Inform ChromeOS that an Android VPN is disconnected, reconnecting, or
+  // reconnected.
+  // DEPRECATED: Replaced by `AndroidVpnDisconnected`
+  // TODO(b/329529872): Remove method once M126 hits stable
+  [MinVersion=7] DEPRECATED_AndroidVpnStateChanged@12(
+      ConnectionStateType state);
+
+  // Inform ChromeOS that an Android VPN has disconnected.
+  [MinVersion=37] AndroidVpnDisconnected@26();
 
   // Tells Chrome OS that network traffic should go through a certain VPN
   // connection. |vpnPackage| is the package name of the Android VPN app. If
@@ -897,6 +911,13 @@ interface NetInstance {
   // Notifies the instance of a change in the state of WiFi on the host.
   [MinVersion=3] WifiEnabledStateChanged@3(bool is_enabled);
 
+  // For the following *AndroidVpn methods, these are intentionally created as
+  // a multiplexed interface design (along with the corresponding NetHost
+  // AndroidVpn* methods). This is because
+  // connection/configuration/disconnection events can be initiated from both
+  // the Android and the ChromeOS-side. There should only be one connected
+  // Android VPN at any time.
+  //
   // Ask Android to disconnect the VPN, per user request.
   [MinVersion=7] DisconnectAndroidVpn@4();
 

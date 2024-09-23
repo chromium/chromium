@@ -12,6 +12,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
 namespace segmentation_platform {
@@ -24,7 +26,6 @@ class SignalDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using Sample = std::pair<base::Time, int32_t>;
-  using SamplesCallback = base::OnceCallback<void(std::vector<Sample>)>;
 
   virtual ~SignalDatabase() = default;
 
@@ -38,26 +39,17 @@ class SignalDatabase {
                            std::optional<int32_t> value,
                            SuccessCallback callback) = 0;
 
+  using DbEntry = UmaMetricEntry;
+  using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
+
   // Called to get signals collected between any two timestamps (including both
   // ends). The samples are returned in the |callback| as a list of pairs
-  // containing signal timestamp and and an optional value.
+  // containing database entries.
   virtual void GetSamples(proto::SignalType signal_type,
                           uint64_t name_hash,
                           base::Time start_time,
                           base::Time end_time,
-                          SamplesCallback callback) = 0;
-
-  // Represents an entry in the signal database.
-  struct DbEntry {
-    proto::SignalType type;
-    // Hash of the histogram or user action.
-    uint64_t name_hash;
-    // Sample recorded time.
-    base::Time time;
-    // Sample value, always 0 for user actions.
-    int32_t value;
-  };
-  using EntriesCallback = base::OnceCallback<void(std::vector<DbEntry>)>;
+                          EntriesCallback callback) = 0;
 
   // Called to fetch all entries from the signal database. WARNING: This may
   // return signals that are deleted from database but are still cached in

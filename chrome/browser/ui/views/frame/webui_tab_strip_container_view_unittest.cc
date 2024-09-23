@@ -100,4 +100,4 @@ TEST_F(WebUITabStripDevToolsTest, DevToolsWindowHasNoTabStrip) {
   EXPECT_EQ(nullptr, browser_view()->webui_tab_strip());
 }
 
-// TODO(crbug.com/1066624): add coverage of open and close gestures.
+// TODO(crbug.com/40124617): add coverage of open and close gestures.

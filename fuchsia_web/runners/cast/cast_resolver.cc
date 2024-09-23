@@ -18,8 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace {
 
@@ -51,17 +50,11 @@ uint64_t FetchAbiRevision() {
 
   // Read the Little Endian representation of the unsigned 64-bit integer ABI
   // revision from the file in the metadata directory.
-  uint64_t abi_revision_le = 0u;
-  int read_bytes = base::ReadFile(base::FilePath(kPkgAbiRevisionPath),
-                                  reinterpret_cast<char*>(&abi_revision_le),
-                                  sizeof(abi_revision_le));
-  CHECK_EQ(read_bytes, static_cast<int>(sizeof(abi_revision_le)));
-
-  // Swap the byte-order of `abi_revision_le` from little-endian to host-endian
-  // by using `ByteSwapToLE64()`. If the host is little-endian then this is a
-  // no-op, otherwise the byte order will be swapped, resulting in the correct
-  // big-endian/host-endian.
-  return base::ByteSwapToLE64(abi_revision_le);
+  std::array<uint8_t, 8u> abi_revision_le = {};
+  std::optional<uint64_t> read_bytes =
+      base::ReadFile(base::FilePath(kPkgAbiRevisionPath), abi_revision_le);
+  CHECK_EQ(read_bytes.value(), sizeof(abi_revision_le));
+  return base::numerics::U64FromLittleEndian(abi_revision_le);
 }
 
 }  // namespace
@@ -80,7 +73,7 @@ void CastResolver::Resolve(CastResolver::ResolveRequest& request,
           }},
       }},
 
-      // TODO(crbug.com/1379385): Replace with attributed-capability expose
+      // TODO(crbug.com/40875550): Replace with attributed-capability expose
       // rules for each protocol, when supported by the framework.
       .uses =
           std::vector{

@@ -10,10 +10,10 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -214,7 +214,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
     size_t total_visits = visits_to_delete.size();
     if (!end_time.is_null() && !end_time.is_max()) {
       // Remove all items that should not be deleted from `visits_to_delete`.
-      base::EraseIf(visits_to_delete,
+      std::erase_if(visits_to_delete,
                     [=](auto& v) { return v.visit_time > end_time; });
     }
     DeleteVisitRelatedInfo(visits_to_delete, &effects);
@@ -238,7 +238,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
 
 void ExpireHistoryBackend::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
-    absl::optional<std::string> restrict_app_id,
+    std::optional<std::string> restrict_app_id,
     base::Time begin_time,
     base::Time end_time,
     bool user_initiated) {
@@ -434,11 +434,13 @@ void ExpireHistoryBackend::BroadcastNotifications(
         effects->modified_urls,
         /*is_from_expiration=*/type == DELETION_EXPIRED);
   }
-  if (!effects->deleted_urls.empty() || time_range.IsValid()) {
-    notifier_->NotifyURLsDeleted(DeletionInfo(
+  if (!effects->deleted_urls.empty() || !effects->deleted_visit_ids_.empty() ||
+      time_range.IsValid()) {
+    notifier_->NotifyDeletions(DeletionInfo(
         time_range, type == DELETION_EXPIRED, deletion_reason,
-        std::move(effects->deleted_urls), std::move(effects->deleted_favicons),
-        std::move(restrict_urls)));
+        std::move(effects->deleted_urls),
+        std::move(effects->deleted_visit_ids_),
+        std::move(effects->deleted_favicons), std::move(restrict_urls)));
   }
 }
 
@@ -463,9 +465,13 @@ VisitVector ExpireHistoryBackend::GetVisitsAndRedirectParents(
 
 void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
                                                   DeleteEffects* effects) {
+  std::vector<DeletedVisit> deleted_visits;
   for (const auto& visit : visits) {
     // Delete the visit itself.
     main_db_->DeleteVisit(visit);
+
+    // Add the deleted visit to the affected visit list.
+    effects->deleted_visit_ids_.insert(visit.visit_id);
 
     // Add the URL row to the affected URL list.
     if (!effects->affected_urls.count(visit.url_id)) {
@@ -477,6 +483,9 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
     // Delete content & context annotations associated with visit.
     if (visit.visit_id)
       main_db_->DeleteAnnotationsForVisit(visit.visit_id);
+
+    // Prepare to send a notification with deletion information.
+    DeletedVisit deleted_visit(visit);
 
     // Decrease the visit count of the corresponding VisitedLinkRow if the flag
     // is enabled.
@@ -492,13 +501,26 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
           main_db_->UpdateVisitedLinkRowVisitCount(visited_link_row.id,
                                                    new_visit_count);
         } else {
+          // In our VisitedLinkRow, we are given a URLID. We need to obtain the
+          // GURL associated with that URLID from the URLDatabase.
+          URLRow link_url_info;
+          if (main_db_->GetURLRow(visited_link_row.link_url_id,
+                                  &link_url_info)) {
+            // We only want to send our deleted VisitedLink if we can determine
+            // its link_url.
+            DeletedVisitedLink link;
+            link.link_url = link_url_info.url();
+            link.visited_link_row = visited_link_row;
+            deleted_visit.deleted_visited_link = link;
+          }
+          // This deletes the VisitedLinkRow from the VisitedLinkDatabase.
           main_db_->DeleteVisitedLinkRow(visit.visited_link_id);
         }
       }
     }
-
-    notifier_->NotifyVisitDeleted(visit);
+    deleted_visits.push_back(deleted_visit);
   }
+  notifier_->NotifyVisitsDeleted(deleted_visits);
 }
 
 void ExpireHistoryBackend::DeleteOneURL(const URLRow& url_row,

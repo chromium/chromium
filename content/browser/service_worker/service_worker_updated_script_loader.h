@@ -120,7 +120,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
                     base::OnceCallback<void(net::Error)> callback) override;
 
   // Buffer size for reading script data from network.
-  const static uint32_t kReadBufferSize;
+  const static size_t kReadBufferSize;
 
  private:
   class WrappedIOBuffer;
@@ -140,7 +140,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
                  uint32_t bytes_available);
   void OnWriteDataComplete(
       scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
-      uint32_t bytes_written,
+      size_t bytes_written,
       net::Error error);
 
   // This is the last method that is called on this class. Notifies the final
@@ -218,7 +218,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   WriterState body_writer_state_ = WriterState::kNotStarted;
 
   mojo::SimpleWatcher client_producer_watcher_;
-  const base::TimeTicks request_start_;
+  const base::TimeTicks request_start_time_;
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       pending_network_client_receiver_;
 

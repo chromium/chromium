@@ -55,6 +55,12 @@ class SyncServiceImplHarness {
   SyncServiceImplHarness(const SyncServiceImplHarness&) = delete;
   SyncServiceImplHarness& operator=(const SyncServiceImplHarness&) = delete;
 
+  // Change the username to use for future signins. Must only be called while
+  // there is no primary account.
+  void SetUsernameForFutureSignins(const std::string& username);
+
+  signin::GaiaIdHash GetGaiaIdHashForPrimaryAccount() const;
+
   // Signs in to a primary account without actually enabling sync the feature.
   [[nodiscard]] bool SignInPrimaryAccount(
       signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
@@ -189,9 +195,10 @@ class SyncServiceImplHarness {
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 
-  // Credentials used for GAIA authentication.
-  const std::string username_;
-  const std::string password_;
+  // Credentials to use for signin (and in the case of SIGNIN_UI, for the actual
+  // GAIA authentication).
+  std::string username_;
+  std::string password_;
 
   // Used to decide what method of profile signin to use.
   const SigninType signin_type_;

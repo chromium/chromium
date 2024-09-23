@@ -19,10 +19,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -31,10 +33,11 @@ namespace ash::user_education_util {
 namespace {
 
 // Keys used in `user_education::HelpBubbleParams::ExtendedProperties`.
+constexpr char kHelpBubbleAccessibleNameKey[] = "helpBubbleAccessibleName";
 constexpr char kHelpBubbleBodyIconKey[] = "helpBubbleBodyIcon";
+constexpr char kHelpBubbleBodyTextKey[] = "helpBubbleBodyText";
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
 constexpr char kHelpBubbleModalTypeKey[] = "helpBubbleModalType";
-constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -56,6 +59,12 @@ const AccountId& GetPrimaryAccountId() {
   return session_controller
              ? GetAccountId(session_controller->GetPrimaryUserSession())
              : EmptyAccountId();
+}
+
+PrefService* GetPrimaryUserPrefService() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return session_controller ? session_controller->GetPrimaryUserPrefService()
+                            : nullptr;
 }
 
 aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
@@ -102,23 +111,41 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
 }
 
 user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
-    HelpBubbleStyle help_bubble_style) {
-  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
-  extended_properties.values().Set(kHelpBubbleStyleKey,
-                                   static_cast<int>(help_bubble_style));
-  return extended_properties;
-}
-
-user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
-    ui::ModalType modal_type) {
+    ui::mojom::ModalType modal_type) {
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
   extended_properties.values().Set(kHelpBubbleModalTypeKey,
                                    static_cast<int>(modal_type));
   return extended_properties;
 }
 
+user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedPropertiesWithAccessibleName(const std::string& accessible_name) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleAccessibleNameKey,
+                                   accessible_name);
+  return extended_properties;
+}
+
+user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedPropertiesWithBodyText(const std::string& body_text) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleBodyTextKey, body_text);
+  return extended_properties;
+}
+
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
+}
+
+std::optional<std::string> GetHelpBubbleAccessibleName(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const std::string* help_bubble_accessible_name =
+          extended_properties.values().FindString(
+              kHelpBubbleAccessibleNameKey)) {
+    return *help_bubble_accessible_name;
+  }
+  return std::nullopt;
 }
 
 std::optional<std::reference_wrapper<const gfx::VectorIcon>>
@@ -135,6 +162,16 @@ GetHelpBubbleBodyIcon(
   return std::nullopt;
 }
 
+std::optional<std::string> GetHelpBubbleBodyText(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const std::string* help_bubble_body_text =
+          extended_properties.values().FindString(kHelpBubbleBodyTextKey)) {
+    return *help_bubble_body_text;
+  }
+  return std::nullopt;
+}
+
 HelpBubbleId GetHelpBubbleId(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
@@ -142,24 +179,21 @@ HelpBubbleId GetHelpBubbleId(
       extended_properties.values().FindInt(kHelpBubbleIdKey).value());
 }
 
-ui::ModalType GetHelpBubbleModalType(
+ui::mojom::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
   if (const std::optional<int> model_type =
           extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
-    return static_cast<ui::ModalType>(model_type.value());
+    return static_cast<ui::mojom::ModalType>(model_type.value());
   }
-  return ui::MODAL_TYPE_NONE;
+  return ui::mojom::ModalType::kNone;
 }
 
-std::optional<HelpBubbleStyle> GetHelpBubbleStyle(
-    const user_education::HelpBubbleParams::ExtendedProperties&
-        extended_properties) {
-  if (std::optional<int> help_bubble_style =
-          extended_properties.values().FindInt(kHelpBubbleStyleKey)) {
-    return static_cast<HelpBubbleStyle>(help_bubble_style.value());
-  }
-  return std::nullopt;
+PrefService* GetLastActiveUserPrefService() {
+  return Shell::HasInstance() ? Shell::Get()
+                                    ->session_controller()
+                                    ->GetLastActiveUserPrefService()
+                              : nullptr;
 }
 
 views::View* GetMatchingViewInRootWindow(int64_t display_id,
@@ -213,6 +247,11 @@ bool IsPrimaryAccountActive() {
   return IsPrimaryAccountId(GetActiveAccountId(session_controller)) &&
          GetSessionState(session_controller) ==
              session_manager::SessionState::ACTIVE;
+}
+
+bool IsPrimaryAccountPrefServiceActive() {
+  const auto* pref_service = GetPrimaryUserPrefService();
+  return pref_service && pref_service == GetLastActiveUserPrefService();
 }
 
 bool IsPrimaryAccountId(const AccountId& account_id) {

@@ -65,6 +65,7 @@ interface CoreProbes {
   class ScriptState;
   class SpeculationCandidate;
   class XMLHttpRequest;
+  using PropertyName = std::variant<const char*, String>;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
   void DidCreateMainWorldContext([Keep] LocalFrame*);
@@ -95,7 +96,7 @@ interface CoreProbes {
   void ApplyAcceptLanguageOverride(CoreProbeSink*, String* accept_language);
   void ApplyHardwareConcurrencyOverride(CoreProbeSink*, unsigned int& hardware_concurrency);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
-  void ApplyUserAgentMetadataOverride(CoreProbeSink*, absl::optional<blink::UserAgentMetadata>* ua_metadata_override);
+  void ApplyUserAgentMetadataOverride(CoreProbeSink*, std::optional<blink::UserAgentMetadata>* ua_metadata_override);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
@@ -103,7 +104,7 @@ interface CoreProbes {
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);
-  void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const char* data, uint64_t data_length);
+  void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::SpanOrSize<const char> data);
   void DidReceiveBlob(CoreProbeSink*, uint64_t identifier, DocumentLoader*, BlobDataHandle*);
   void DidReceiveEncodedDataLength(CoreProbeSink*, DocumentLoader* loader, uint64_t identifier, size_t encoded_data_length);
   void DidFinishLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length);
@@ -119,13 +120,14 @@ interface CoreProbes {
   void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
-  void FrameAttachedToParent([Keep] LocalFrame*, const absl::optional<AdScriptIdentifier>& ad_script_on_stack);
+  void FrameAttachedToParent([Keep] LocalFrame*, const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
+  void FrameSubtreeWillBeDetached(LocalFrame*, Frame*);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
   void WillCommitLoad([Keep] LocalFrame*, DocumentLoader*);
   void DidCommitLoad([Keep] LocalFrame*, DocumentLoader*);
-  void DidNavigateWithinDocument([Keep] LocalFrame*);
+  void DidNavigateWithinDocument([Keep] LocalFrame*, blink::mojom::SameDocumentNavigationType);
   void DidRestoreFromBackForwardCache([Keep] LocalFrame*);
   void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*);
   void WillCreateDocumentParser(Document*, bool& force_sync_parsing);
@@ -136,17 +138,17 @@ interface CoreProbes {
   void FrameRequestedNavigation(LocalFrame*, Frame* target_frame, const KURL& url, ClientNavigationReason reason, NavigationPolicy policy);
   void FrameScheduledNavigation([Keep] LocalFrame*, const KURL& url, base::TimeDelta delay, ClientNavigationReason reason);
   void FrameClearedScheduledNavigation([Keep] LocalFrame*);
-  void WillCreateWebSocket([Keep] ExecutionContext*, uint64_t identifier, const KURL& request_url, const String& protocol, absl::optional<base::UnguessableToken>* devtools_token);
+  void WillCreateWebSocket([Keep] ExecutionContext*, uint64_t identifier, const KURL& request_url, const String& protocol, std::optional<base::UnguessableToken>* devtools_token);
   void WillSendWebSocketHandshakeRequest([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
   void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
   void DidCloseWebSocket([Keep] ExecutionContext*, uint64_t identifier);
   void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const char>>& data);
-  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const char* payload, size_t payload_length);
+  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, base::span<const char> payload);
   void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
   void WebTransportCreated([Keep] ExecutionContext*, uint64_t transport_id, const KURL& request_url);
   void WebTransportConnectionEstablished(ExecutionContext*, uint64_t transport_id);
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
-  void WillCreateP2PSocketUdp(ExecutionContext*, absl::optional<base::UnguessableToken>* devtools_token);
+  void WillCreateP2PSocketUdp(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
   void LayerTreePainted(LocalFrame*);
@@ -154,7 +156,7 @@ interface CoreProbes {
   void TopLayerElementsChanged(Document*);
   void PseudoElementDestroyed([Keep] PseudoElement*);
   void DidCreateAnimation(Document*, unsigned);
-  void AnimationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState old_play_state, Animation::AnimationPlayState new_play_state);
+  void AnimationUpdated(Document*, Animation*);
   void WindowOpen(ExecutionContext*, const KURL& url, const AtomicString& window_name, const WebWindowFeatures& window_features, bool user_gestrue);
   void ConsoleMessageAdded(ExecutionContext*, ConsoleMessage*);
   void InspectorIssueAdded(CoreProbeSink*, protocol::Audits::InspectorIssue*);
@@ -163,7 +165,7 @@ interface CoreProbes {
   void DocumentWriteFetchScript([Keep] Document*);
   void DidChangeViewport(LocalFrame* document);
   void BreakableLocation(ExecutionContext* context, const char* name);
-  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, const String& property_like_name, const String& script_url);
+  void WillHandlePromise(ExecutionContext* context, ScriptState* script_state, bool resolving, const char* class_like_name, PropertyName property_like_name, const String& script_url);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
 
@@ -183,7 +185,7 @@ interface CoreProbes {
   void ShouldForceCorsPreflight(ExecutionContext*, bool* result);
   void ShouldBlockRequest(CoreProbeSink*, const KURL&, bool* result);
   void ShouldBypassServiceWorker(ExecutionContext* context, bool* result);
-  void ConsoleTimeStamp(ExecutionContext*, const String& title);
+  void ConsoleTimeStamp([Keep] v8::Isolate* isolate, v8::Local<v8::String> label);
   void WillStartDebuggerTask(CoreProbeSink*);
   void DidFinishDebuggerTask(CoreProbeSink*);
   void LifecycleEvent([Keep] LocalFrame*, DocumentLoader*, const char* name, double timestamp);
@@ -216,4 +218,5 @@ interface CoreProbes {
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
   void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
   void DidInitializeFrameWidget(LocalFrame* document);
+  void UpdateScrollableFlag([Keep] Node* node);
 }

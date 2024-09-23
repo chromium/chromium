@@ -23,4 +23,19 @@ interface ImageDownloader {
       => (int32 http_status_code,
           array<skia.mojom.BitmapN32> images,
           array<gfx.mojom.Size> original_image_sizes);
+
+  // Fetch and decode an image from a given ax_tree_id and ax_node_id.
+  // Returns the decoded images, or http_status_code to indicate error.
+  // "data:" URLs have a http_status_code of 0.
+  // Each call is independent, overlapping calls are possible.
+  // For documentation on the other arguments, please refer to the
+  // documentation for WebContents::DownloadImage.
+  DownloadImageFromAxNode(int32 ax_node_id,
+                gfx.mojom.Size preferred_size,
+                uint32 max_bitmap_size,
+                bool bypass_cache)
+            => (int32 http_status_code,
+            array<skia.mojom.BitmapN32> images,
+            array<gfx.mojom.Size> original_image_sizes);
+
 };

@@ -1,0 +1,404 @@
+This is a testharness.js-based test.
+Found 200 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "130 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "160 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "130 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "160 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "calc ( 0 % + 11.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "calc ( 0 % + 6.4px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "calc ( 0 % + 11.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "calc ( 0 % + 6.4px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [16px] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [16px] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 60 % + 11.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 120 % + 6.4px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [16px] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 60 % + 11.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 120 % + 6.4px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [16px] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "calc ( 0 % + 11.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "calc ( 0 % + 6.4px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [0%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [0%] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "calc ( 0 % + 11.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [0%] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "calc ( 0 % + 6.4px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [0%] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [1em] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "200 % "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [1em] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 60 % + 11.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 120 % + 6.4px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [1em] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [200%] at (0) should be [16px]
+  assert_equals: expected "16px " but got "calc ( 0 % + 16px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [200%] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 60 % + 11.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [200%] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 120 % + 6.4px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [1em] to [200%] at (1) should be [32px]
+  assert_equals: expected "32px " but got "200 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0px] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0px] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0px] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0px] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 70 % + 9.6px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 40 % + 19.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [32px] at (1) should be [32px]
+  assert_equals: expected "32px " but got "calc ( 0 % + 32px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [32px] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [32px] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 70 % + 9.6px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [32px] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 40 % + 19.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [32px] at (1) should be [32px]
+  assert_equals: expected "32px " but got "calc ( 0 % + 32px ) "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "0px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "0px "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [0em] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0em] at (0.3) should be [11.2px]
+  assert_equals: expected "11.2px " but got "70 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0em] at (0.6) should be [6.4px]
+  assert_equals: expected "6.4px " but got "40 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [0em] at (1) should be [0px]
+  assert_equals: expected "0px " but got "0 % "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions: property <text-decoration-thickness> from [100%] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "32px "
+[FAIL] CSS Transitions with transition: all: property <text-decoration-thickness> from [100%] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "32px "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 70 % + 9.6px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 40 % + 19.2px ) "
+[FAIL] CSS Animations: property <text-decoration-thickness> from [100%] to [2em] at (1) should be [32px]
+  assert_equals: expected "32px " but got "calc ( 0 % + 32px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [2em] at (0) should be [16px]
+  assert_equals: expected "16px " but got "100 % "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [2em] at (0.3) should be [20.8px]
+  assert_equals: expected "20.8px " but got "calc ( 70 % + 9.6px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [2em] at (0.6) should be [25.6px]
+  assert_equals: expected "25.6px " but got "calc ( 40 % + 19.2px ) "
+[FAIL] Web Animations: property <text-decoration-thickness> from [100%] to [2em] at (1) should be [32px]
+  assert_equals: expected "32px " but got "calc ( 0 % + 32px ) "
+Harness: the test ran to completion.
+

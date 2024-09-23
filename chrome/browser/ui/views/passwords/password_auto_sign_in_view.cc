@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/fill_layout.h"
 
 int PasswordAutoSignInView::auto_signin_toast_timeout_ = 3;
@@ -38,7 +39,7 @@ PasswordAutoSignInView::PasswordAutoSignInView(
   const password_manager::PasswordForm& form = controller_.pending_password();
 
   SetShowCloseButton(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));

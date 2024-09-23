@@ -80,14 +80,17 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
       const std::string& guid,
       RequestTrafficCountersCallback callback) override {}
   void ResetTrafficCounters(const std::string& guid) override {}
-  void SetTrafficCountersAutoReset(
+  void SetTrafficCountersResetDay(
       const std::string& guid,
-      bool auto_reset,
       mojom::UInt32ValuePtr day,
-      SetTrafficCountersAutoResetCallback callback) override {}
+      SetTrafficCountersResetDayCallback callback) override {}
   void CreateCustomApn(const std::string& network_guid,
                        chromeos::network_config::mojom::ApnPropertiesPtr apn,
                        CreateCustomApnCallback callback) override;
+  void CreateExclusivelyEnabledCustomApn(
+      const std::string& network_guid,
+      chromeos::network_config::mojom::ApnPropertiesPtr apn,
+      CreateExclusivelyEnabledCustomApnCallback callback) override;
   void RemoveCustomApn(const std::string& network_guid,
                        const std::string& apn_id) override {}
   void ModifyCustomApn(const std::string& network_guid,
@@ -169,6 +172,9 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   std::vector<mojom::ApnPropertiesPtr> custom_apns_;
   std::queue<std::pair<CreateCustomApnCallback, mojom::ApnPropertiesPtr>>
       pending_create_custom_apn_callbacks_;
+  std::queue<std::pair<CreateExclusivelyEnabledCustomApnCallback,
+                       mojom::ApnPropertiesPtr>>
+      pending_create_exclusively_enabled_custom_apn_callbacks_;
   mojo::RemoteSet<mojom::CrosNetworkConfigObserver> observers_;
   mojo::Receiver<mojom::CrosNetworkConfig> receiver_{this};
 };

@@ -24,12 +24,17 @@
 #include "extensions/renderer/bindings/event_emitter.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "gin/converter.h"
+#include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
 
 namespace extensions {
 
 namespace {
+
+constexpr char kFilterIdKey[] = "filterId";
+constexpr char kEventNameKey[] = "eventName";
 
 struct APIEventPerContextData : public base::SupportsUserData::Data {
   static constexpr char kPerContextDataKey[] = "extension_api_events";
@@ -47,7 +52,7 @@ struct APIEventPerContextData : public base::SupportsUserData::Data {
 
   // The associated v8::Isolate. Since this object is cleaned up at context
   // destruction, this should always be valid.
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
+  raw_ptr<v8::Isolate> isolate;
 
   // A map from event name -> event emitter.
   std::map<std::string, v8::Global<v8::Object>> emitters;
@@ -71,7 +76,7 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   if (info.Length() != 1 || !info[0]->IsArray()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -79,10 +84,26 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
   DCHECK(data);
-  std::string event_name = gin::V8ToString(isolate, info.Data());
+
+  v8::Local<v8::Object> dispatch_data = info.Data().As<v8::Object>();
+  v8::Local<v8::Value> filter_id_value =
+      dispatch_data->Get(context, gin::StringToSymbol(isolate, kFilterIdKey))
+          .ToLocalChecked();
+  CHECK(filter_id_value->IsInt32());
+  int filter_id = filter_id_value.As<v8::Int32>()->Value();
+
+  v8::Local<v8::Value> event_name_value =
+      dispatch_data->Get(context, gin::StringToSymbol(isolate, kEventNameKey))
+          .ToLocalChecked();
+  CHECK(event_name_value->IsString());
+  v8::Local<v8::String> event_name_string = event_name_value.As<v8::String>();
+  std::string event_name;
+  gin::ConvertFromV8(isolate, event_name_string, &event_name);
+
   auto iter = data->emitters.find(event_name);
-  if (iter == data->emitters.end())
+  if (iter == data->emitters.end()) {
     return;
+  }
   v8::Global<v8::Object>& v8_emitter = iter->second;
 
   v8::LocalVector<v8::Value> args(isolate);
@@ -98,7 +119,9 @@ void DispatchEvent(const v8::FunctionCallbackInfo<v8::Value>& info) {
   // TODO(devlin): It looks like the return result that requires this to be sync
   // is only used by the InputIME custom bindings; it would be kind of nice to
   // remove the dependency.
-  info.GetReturnValue().Set(emitter->FireSync(context, &args, nullptr));
+  mojom::EventFilteringInfoPtr filter = emitter->PopFilter(filter_id);
+  info.GetReturnValue().Set(
+      emitter->FireSync(context, &args, std::move(filter)));
 }
 
 }  // namespace
@@ -198,19 +221,20 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
   // context destruction.
   // TODO(devlin): Is it better to fail gracefully here, or track all these
   // down for determinism?
-  if (!data)
+  if (!data) {
     return;
+  }
 
   if (!gin::Converter<EventEmitter*>::FromV8(context->GetIsolate(), event,
                                              &emitter)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   emitter->Invalidate(context);
   auto emitter_entry = base::ranges::find(data->anonymous_emitters, event);
   if (emitter_entry == data->anonymous_emitters.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -225,8 +249,9 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   // NOTE(devlin): This causes a double data and EventEmitter lookup, since
   // the v8 version below also checks for listeners. This should be very cheap,
   // but if we were really worried we could refactor.
-  if (!HasListenerForEvent(event_name, context))
+  if (!HasListenerForEvent(event_name, context)) {
     return;
+  }
 
   // Note: since we only convert the arguments once, if a listener modifies an
   // object (including an array), other listeners will see that modification.
@@ -236,8 +261,9 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
 
   v8::LocalVector<v8::Value> v8_args(context->GetIsolate());
   v8_args.reserve(args.size());
-  for (const auto& arg : args)
+  for (const auto& arg : args) {
     v8_args.push_back(converter->ToV8Value(arg, context));
+  }
 
   FireEventInContext(event_name, context, &v8_args, std::move(filter),
                      JSRunner::ResultCallback());
@@ -250,12 +276,14 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
                                          JSRunner::ResultCallback callback) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return;
+  }
 
   auto iter = data->emitters.find(event_name);
-  if (iter == data->emitters.end())
+  if (iter == data->emitters.end()) {
     return;
+  }
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(
       context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);
@@ -267,7 +295,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
     // enabled). Unfortunately, massagers both transform the event args from
     // unexpected -> expected and (badly!) from expected -> unexpected. As such,
     // we simply don't validate if there's a massager attached to the event.
-    // TODO(crbug.com/1329587): Ideally, we'd be able to validate the response
+    // TODO(crbug.com/40226845): Ideally, we'd be able to validate the response
     // after the massagers run. This requires fixing our schema for at least
     // chrome.permissions events.
     if (api_response_validator_) {
@@ -301,9 +329,17 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
     // We don't store this in a template because the Data (event name) is
     // different for each instance. Luckily, this is called during dispatching
     // an event, rather than e.g. at initialization time.
+
+    int filter_id = emitter->PushFilter(std::move(filter));
+
+    v8::Local<v8::Object> dispatch_data =
+        gin::DataObjectBuilder(isolate)
+            .Set(kFilterIdKey, gin::ConvertToV8(isolate, filter_id))
+            .Set(kEventNameKey, gin::ConvertToV8(isolate, event_name))
+            .Build();
+
     v8::Local<v8::Function> dispatch_event =
-        v8::Function::New(context, &DispatchEvent,
-                          gin::StringToSymbol(isolate, event_name))
+        v8::Function::New(context, &DispatchEvent, std::move(dispatch_data))
             .ToLocalChecked();
 
     v8::Local<v8::Value> massager_args[] = {args_array, dispatch_event};
@@ -326,12 +362,14 @@ bool APIEventHandler::HasListenerForEvent(const std::string& event_name,
                                           v8::Local<v8::Context> context) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return false;
+  }
 
   auto iter = data->emitters.find(event_name);
-  if (iter == data->emitters.end())
+  if (iter == data->emitters.end()) {
     return false;
+  }
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(
       context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);
@@ -344,8 +382,9 @@ void APIEventHandler::InvalidateContext(v8::Local<v8::Context> context) {
       << "Trying to invalidate an already-invalid context.";
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
-  if (!data)
+  if (!data) {
     return;
+  }
 
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope scope(isolate);
@@ -386,7 +425,7 @@ size_t APIEventHandler::GetNumEventListenersForTesting(
   DCHECK(data);
 
   auto iter = data->emitters.find(event_name);
-  DCHECK(iter != data->emitters.end());
+  CHECK(iter != data->emitters.end());
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(
       context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);

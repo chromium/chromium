@@ -26,7 +26,8 @@ void Controller::StartProfilingClient(
     mojo::PendingRemote<mojom::ProfilingClient> client,
     base::ProcessId pid,
     mojom::ProcessType process_type,
-    base::OnceClosure started_profiling_closure) {
+    mojom::ProfilingService::AddProfilingClientCallback
+        started_profiling_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojom::ProfilingParamsPtr params = mojom::ProfilingParams::New();

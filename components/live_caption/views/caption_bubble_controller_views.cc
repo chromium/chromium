@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -271,7 +272,7 @@ void CaptionBubbleControllerViews::OnSodaProgress(
         IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
         speech::GetLanguageDisplayName(speech::GetLanguageName(language_code),
                                        application_locale_),
-        base::UTF8ToUTF16(std::to_string(progress))));
+        base::UTF8ToUTF16(base::NumberToString(progress))));
   }
 }
 

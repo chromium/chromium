@@ -17,12 +17,16 @@ FlattenPdfResult::FlattenPdfResult(std::vector<uint8_t> pdf_in,
   CHECK(!pdf.empty());
 }
 
-FlattenPdfResult::~FlattenPdfResult() = default;
-
 FlattenPdfResult::FlattenPdfResult(const FlattenPdfResult&) = default;
-FlattenPdfResult::FlattenPdfResult(FlattenPdfResult&&) = default;
+
 FlattenPdfResult& FlattenPdfResult::operator=(const FlattenPdfResult&) =
     default;
-FlattenPdfResult& FlattenPdfResult::operator=(FlattenPdfResult&&) = default;
+
+FlattenPdfResult::FlattenPdfResult(FlattenPdfResult&&) noexcept = default;
+
+FlattenPdfResult& FlattenPdfResult::operator=(FlattenPdfResult&&) noexcept =
+    default;
+
+FlattenPdfResult::~FlattenPdfResult() = default;
 
 }  // namespace chrome_pdf

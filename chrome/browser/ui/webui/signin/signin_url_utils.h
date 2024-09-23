@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_URL_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_URL_UTILS_H_
 
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
@@ -21,9 +20,16 @@ enum class SyncConfirmationStyle {
 // dialog, the signin intercept modal dialog version or as a window.
 SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url);
 
+// Returns true if the sync confirmation dialog is offered as an option, and
+// false if the user explicitly initiated the flow.
+bool IsSyncConfirmationPromo(const GURL& url);
+
 // Adds the `style` URL query parameters to `url` for the sync confirmation.
+// `is_sync_promo` is true if the sync confirmation dialog is offered as an
+// option. It is false if the user explicitly initiated the flow.
 GURL AppendSyncConfirmationQueryParams(const GURL& url,
-                                       SyncConfirmationStyle style);
+                                       SyncConfirmationStyle style,
+                                       bool is_sync_promo);
 
 // Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
 // URL.

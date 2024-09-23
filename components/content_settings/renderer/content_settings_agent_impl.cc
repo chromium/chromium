@@ -21,7 +21,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -55,6 +55,11 @@ bool IsFrameWithOpaqueOrigin(WebFrame* frame) {
 
 ContentSettingsAgentImpl::Delegate::~Delegate() = default;
 
+bool ContentSettingsAgentImpl::Delegate::IsFrameAllowlistedForStorageAccess(
+    blink::WebFrame* frame) const {
+  return false;
+}
+
 bool ContentSettingsAgentImpl::Delegate::IsSchemeAllowlisted(
     const std::string& scheme) {
   return false;
@@ -74,12 +79,10 @@ std::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
 
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
-    bool should_allowlist,
     std::unique_ptr<Delegate> delegate)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<ContentSettingsAgentImpl>(
           render_frame),
-      should_allowlist_(should_allowlist),
       delegate_(std::move(delegate)) {
   DCHECK(delegate_);
   ClearBlockedContentSettings();
@@ -143,7 +146,7 @@ ContentSetting GetContentSettingFromRules(
       return rule.GetContentSetting();
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CONTENT_SETTING_DEFAULT;
 }
 }  // namespace
@@ -157,8 +160,9 @@ void ContentSettingsAgentImpl::BindContentSettingsManager(
 
 void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
+  // This entire method will be removed soon. https://crbug.com/40282541.
   // Clear "block" flags for the new page. This needs to happen before any of
-  // `allowScript()`, `allowScriptFromSource()`, `allowImage()`, or
+  // `allowScript()`, `allowScriptFromSource()`, or
   // `allowPlugins()` is called for the new page so that these functions can
   // correctly detect that a piece of content flipped from "not blocked" to
   // "blocked".
@@ -188,10 +192,6 @@ void ContentSettingsAgentImpl::SetAllowRunningInsecureContent() {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (!frame->Parent())
     frame->StartReload(blink::WebFrameLoadType::kReload);
-}
-
-void ContentSettingsAgentImpl::SetDisabledMixedContentUpgrades() {
-  mixed_content_autoupgrades_disabled_ = true;
 }
 
 void ContentSettingsAgentImpl::SendRendererContentSettingRules(
@@ -229,6 +229,11 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
     StorageType storage_type,
     base::OnceCallback<void(bool)> callback) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (delegate_->IsFrameAllowlistedForStorageAccess(frame)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
   if (IsFrameWithOpaqueOrigin(frame)) {
     std::move(callback).Run(false);
     return;
@@ -262,8 +267,13 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
 bool ContentSettingsAgentImpl::AllowStorageAccessSync(
     StorageType storage_type) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (IsFrameWithOpaqueOrigin(frame))
+  if (delegate_->IsFrameAllowlistedForStorageAccess(frame)) {
+    return true;
+  }
+
+  if (IsFrameWithOpaqueOrigin(frame)) {
     return false;
+  }
 
   StoragePermissionsKey key(url::Origin(frame->GetSecurityOrigin()),
                             storage_type);
@@ -279,63 +289,6 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
   return result;
-}
-
-bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
-                                          const WebURL& image_url) {
-  bool allow = enabled_per_settings;
-  if (enabled_per_settings) {
-    if (IsAllowlistedForContentSettings())
-      return true;
-
-    if (content_setting_rules_) {
-      allow = GetContentSettingFromRules(content_setting_rules_->image_rules,
-                                         image_url) != CONTENT_SETTING_BLOCK;
-    }
-  }
-  if (!allow)
-    DidBlockContentType(ContentSettingsType::IMAGES);
-  return allow;
-}
-
-bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
-  if (!enabled_per_settings)
-    return false;
-
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  const auto it = cached_script_permissions_.find(frame);
-  if (it != cached_script_permissions_.end())
-    return it->second;
-
-  // Evaluate the content setting rules before
-  // IsAllowlistedForContentSettings(); if there is only the default rule
-  // allowing all scripts, it's quicker this way.
-  bool allow = true;
-  if (content_setting_rules_) {
-    ContentSetting setting = GetContentSettingFromRules(
-        content_setting_rules_->script_rules,
-        url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL());
-    allow = setting != CONTENT_SETTING_BLOCK;
-  }
-  allow = allow || IsAllowlistedForContentSettings();
-
-  cached_script_permissions_[frame] = allow;
-  return allow;
-}
-
-bool ContentSettingsAgentImpl::AllowScriptFromSource(
-    bool enabled_per_settings,
-    const blink::WebURL& script_url) {
-  if (!enabled_per_settings)
-    return false;
-
-  bool allow = true;
-  if (content_setting_rules_) {
-    ContentSetting setting = GetContentSettingFromRules(
-        content_setting_rules_->script_rules, script_url);
-    allow = setting != CONTENT_SETTING_BLOCK;
-  }
-  return allow || IsAllowlistedForContentSettings();
 }
 
 bool ContentSettingsAgentImpl::AllowReadFromClipboard() {
@@ -367,9 +320,6 @@ bool ContentSettingsAgentImpl::AllowRunningInsecureContent(
 }
 
 bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {
-  if (mixed_content_autoupgrades_disabled_)
-    return false;
-
   if (content_setting_rules_) {
     auto setting = GetContentSettingFromRules(
         content_setting_rules_->mixed_content_rules, GURL());
@@ -399,40 +349,6 @@ void ContentSettingsAgentImpl::DidNotAllowImage() {
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
   content_blocked_.clear();
   cached_storage_permissions_.clear();
-  cached_script_permissions_.clear();
-}
-
-bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {
-  if (should_allowlist_)
-    return true;
-
-  const WebDocument& document = render_frame()->GetWebFrame()->GetDocument();
-  WebSecurityOrigin origin = document.GetSecurityOrigin();
-  WebURL document_url = document.Url();
-  if (document_url.GetString() == content::kUnreachableWebDataURL)
-    return true;
-
-  if (origin.IsNull() || origin.IsOpaque())
-    return false;  // Uninitialized document?
-
-  blink::WebString protocol = origin.Protocol();
-
-  if (protocol == content::kChromeUIScheme)
-    return true;  // Browser UI elements should still work.
-
-  if (protocol == content::kChromeDevToolsScheme)
-    return true;  // DevTools UI elements should still work.
-
-  if (delegate_->IsSchemeAllowlisted(protocol.Utf8()))
-    return true;
-
-  // If the scheme is file:, an empty file name indicates a directory listing,
-  // which requires JavaScript to function properly.
-  if (protocol == url::kFileScheme &&
-      document_url.ProtocolIs(url::kFileScheme)) {
-    return GURL(document_url).ExtractFileName().empty();
-  }
-  return false;
 }
 
 }  // namespace content_settings

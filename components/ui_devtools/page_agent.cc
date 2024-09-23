@@ -10,9 +10,4 @@ PageAgent::PageAgent(DOMAgent* dom_agent) : dom_agent_(dom_agent) {}
 
 PageAgent::~PageAgent() {}
 
-protocol::Response PageAgent::reload(protocol::Maybe<bool> bypass_cache) {
-  NOTREACHED();
-  return protocol::Response::Success();
-}
-
 }  // namespace ui_devtools

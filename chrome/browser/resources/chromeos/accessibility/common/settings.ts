@@ -5,6 +5,8 @@
 /**
  * @fileoverview Class to handle accessing/storing/caching prefs data.
  */
+import {TestImportManager} from './testing/test_import_manager.js';
+
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
 export class Settings {
@@ -147,3 +149,5 @@ export class Settings {
 
 /** @private {Settings} */
 Settings.instance;
+
+TestImportManager.exportForTesting(Settings);

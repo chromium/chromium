@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -127,6 +128,10 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
  private:
   const raw_ptr<MockQuotaManager, AcrossTasksDanglingUntriaged>
       mock_quota_manager_;
+
+  // The real QuotaManagerProxy is safe to call into from any thread, therefore
+  // this mock quota manager must also be safe to call into from any thread.
+  base::Lock lock_;
 
   blink::StorageKey last_notified_storage_key_;
   blink::mojom::StorageType last_notified_type_ =

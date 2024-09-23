@@ -5,6 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_EXTENSION_TASK_H_
 #define CHROME_CREDENTIAL_PROVIDER_EXTENSION_TASK_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/user_device_context.h"

@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/loader/merkle_integrity_source_stream.h"
 
 #include <string.h>
 
+#include <string_view>
+
 #include "base/base64.h"
-#include "base/big_endian.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -36,7 +43,7 @@ size_t CopyClamped(base::span<const char>* input, base::span<char>* output) {
 }  // namespace
 
 MerkleIntegritySourceStream::MerkleIntegritySourceStream(
-    base::StringPiece digest_header_value,
+    std::string_view digest_header_value,
     std::unique_ptr<SourceStream> upstream)
     // TODO(ksakamoto): Use appropriate SourceType.
     : net::FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {
@@ -103,10 +110,9 @@ bool MerkleIntegritySourceStream::FilterDataImpl(base::span<char>* output,
       }
       return false;
     }
-    uint64_t record_size;
-    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(bytes.data()),
-                        &record_size);
-    if (record_size == 0) {
+    uint64_t record_size =
+        base::U64FromBigEndian(base::as_bytes(bytes).first<8u>());
+    if (record_size == 0u) {
       return false;
     }
     if (record_size > kMaxRecordSize) {

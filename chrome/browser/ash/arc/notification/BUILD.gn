@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("notification") {
+  sources = [
+    "arc_boot_error_notification.cc",
+    "arc_boot_error_notification.h",
+    "arc_management_transition_notification.cc",
+    "arc_management_transition_notification.h",
+    "arc_provision_notification_service.cc",
+    "arc_provision_notification_service.h",
+    "arc_vm_data_migration_notifier.cc",
+    "arc_vm_data_migration_notifier.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/components/mgs",
+    "//chromeos/ui/vector_icons",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_management_transition_notification_unittest.cc",
+    "arc_provision_notification_service_unittest.cc",
+    "arc_vm_data_migration_notifier_unittest.cc",
+  ]
+
+  deps = [
+    ":notification",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

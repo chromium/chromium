@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] EdDSA Ed448 verification
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 verification with altered signature after call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 with altered data after call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 using privateKey to verify
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 using publicKey to sign
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 no verify usage
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 round trip
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 signing with wrong algorithm name
+  assert_equals: Should have thrown InvalidAccessError instead of 'Failed to execute 'sign' on 'SubtleCrypto': Algorithm: Unrecognized name' expected "InvalidAccessError" but got "NotSupportedError"
+[FAIL] EdDSA Ed448 verifying with wrong algorithm name
+  assert_equals: Should have thrown InvalidAccessError instead of 'Failed to execute 'verify' on 'SubtleCrypto': Algorithm: Unrecognized name' expected "InvalidAccessError" but got "NotSupportedError"
+[FAIL] EdDSA Ed448 verification failure due to altered signature
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 verification failure due to shortened signature
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 verification failure due to altered data
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] Sign and verify using generated Ed448 keys.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+

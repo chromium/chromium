@@ -9,14 +9,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
 
 constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr int64_t kInstrumentId = 1122334455;
-
-}  // namespace
 
 class UnmaskIbanRequestTest : public testing::Test {
  public:
@@ -46,7 +43,8 @@ class UnmaskIbanRequestTest : public testing::Test {
 
 TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
-            "payments/apis-secure/ibanservice/getiban?s7e_suffix=chromewallet");
+            "payments/apis-secure/chromepaymentsservice/"
+            "getpaymentinstrument?s7e_suffix=chromewallet");
   ASSERT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
             std::string::npos);
@@ -64,14 +62,18 @@ TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("instrument_id"),
             std::string::npos);
+  // iban_info must always be set, even if blank, so that the Payments server
+  // knows this is an UnmaskIbanRequest.
+  EXPECT_NE(GetRequest()->GetRequestContent().find("iban_info"),
+            std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find(
                 base::NumberToString(kInstrumentId)),
             std::string::npos);
 }
 
 TEST_F(UnmaskIbanRequestTest, ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response =
-      base::Value::Dict().Set("value", base::Value(u"DE75512108001245126199"));
+  base::Value::Dict response = base::Value::Dict().Set(
+      "iban_info", base::Value::Dict().Set("value", u"DE75512108001245126199"));
 
   ParseResponse(response);
 
@@ -86,4 +88,5 @@ TEST_F(UnmaskIbanRequestTest, ParseResponse_MissingValue) {
   EXPECT_FALSE(IsResponseComplete());
 }
 
+}  // namespace
 }  // namespace autofill::payments

@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 
 #include <map>
 #include <set>
 #include <utility>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -15,9 +21,10 @@
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,6 +68,11 @@ MATCHER_P2(MatchesEntry, url_matcher, is_read_matcher, "") {
              .MatchAndExplain(arg->IsRead(), result_listener);
 }
 
+MATCHER_P(DeletionOriginMatchesLocation, expected_location, "") {
+  return arg.is_specified() &&
+         *arg.GetLocationForTesting() == expected_location;
+}
+
 // Tests that the transition from |entryA| to |entryB| is possible (|possible|
 // is true) or not.
 void ExpectAB(const sync_pb::ReadingListSpecifics& entryA,
@@ -98,13 +110,13 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-syncer::ModelTypeStore::RecordList ReadAllDataFromModelTypeStore(
-    syncer::ModelTypeStore* store) {
-  syncer::ModelTypeStore::RecordList result;
+syncer::DataTypeStore::RecordList ReadAllDataFromDataTypeStore(
+    syncer::DataTypeStore* store) {
+  syncer::DataTypeStore::RecordList result;
   base::RunLoop loop;
   store->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> records) {
         EXPECT_FALSE(error.has_value()) << error->ToString();
         result = std::move(*records);
         loop.Quit();
@@ -127,29 +139,29 @@ class ReadingListSyncBridgeTest : public testing::Test {
                            syncer::WipeModelUponSyncDisabledBehavior
                                wipe_model_upon_sync_disabled_behavior,
                            bool initial_sync_done) {
-    std::unique_ptr<syncer::ModelTypeStore> model_type_store =
-        syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
-    underlying_in_memory_store_ = model_type_store.get();
+    std::unique_ptr<syncer::DataTypeStore> data_type_store =
+        syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    underlying_in_memory_store_ = data_type_store.get();
 
     if (initial_sync_done) {
       // Mimic initial sync having been done earlier.
-      sync_pb::ModelTypeState model_type_state;
-      model_type_state.set_cache_guid(kCacheGuid);
-      model_type_state.set_initial_sync_state(
-          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState data_type_state;
+      data_type_state.set_cache_guid(kCacheGuid);
+      data_type_state.set_initial_sync_state(
+          sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
           underlying_in_memory_store_->CreateWriteBatch();
-      write_batch->GetMetadataChangeList()->UpdateModelTypeState(
-          model_type_state);
+      write_batch->GetMetadataChangeList()->UpdateDataTypeState(
+          data_type_state);
       underlying_in_memory_store_->CommitWriteBatch(std::move(write_batch),
                                                     base::DoNothing());
     }
 
     model_ = ReadingListModelImpl::BuildNewForTest(
         std::make_unique<ReadingListModelStorageImpl>(
-            syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
-                std::move(model_type_store))),
+            syncer::DataTypeStoreTestUtil::MoveStoreToFactory(
+                std::move(data_type_store))),
         storage_type, wipe_model_upon_sync_disabled_behavior, &clock_,
         processor_.CreateForwardingProcessor());
 
@@ -163,14 +175,14 @@ class ReadingListSyncBridgeTest : public testing::Test {
 
   ReadingListSyncBridge* bridge() { return model_->GetSyncBridgeForTest(); }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<ReadingListModelImpl> model_;
 
-  // ModelTypeStore is owned by |model_|.
-  raw_ptr<syncer::ModelTypeStore> underlying_in_memory_store_ = nullptr;
+  // DataTypeStore is owned by |model_|.
+  raw_ptr<syncer::DataTypeStore> underlying_in_memory_store_ = nullptr;
 };
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
@@ -202,12 +214,15 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
 }
 
 TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
+  const base::Location kLocation = FROM_HERE;
   auto entry = MakeRefCounted<ReadingListEntry>(
       GURL("http://unread.example.com/"), "unread title",
       AdvanceAndGetTime(&clock_));
-  EXPECT_CALL(processor_, Delete("http://unread.example.com/", _));
+  EXPECT_CALL(processor_, Delete("http://unread.example.com/",
+                                 DeletionOriginMatchesLocation(kLocation), _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
-  bridge()->DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
+  bridge()->DidRemoveEntry(*entry, kLocation,
+                           batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
@@ -412,9 +427,9 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
                       /*initial_sync_done=*/true);
 
   // Write some orphan or unexpected data directly onto the underlying
-  // ModelTypeStore, which should be rare but may be possible due to bugs or
+  // DataTypeStore, which should be rare but may be possible due to bugs or
   // edge cases.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       underlying_in_memory_store_->CreateWriteBatch();
   write_batch->WriteData("orphan-data-key", "orphan-data-value");
   std::optional<syncer::ModelError> error;
@@ -428,12 +443,12 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
           }));
   loop.Run();
 
-  ASSERT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+  ASSERT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
               SizeIs(1));
 
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
-  EXPECT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+  EXPECT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
               SizeIs(0));
 }
 

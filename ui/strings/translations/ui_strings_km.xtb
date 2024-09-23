@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">ស្ទង់មតិ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/វិនាទី</translation>
 <translation id="2353636109065292463">កំពុងពិនិត្យមើល​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក</translation>
+<translation id="2359808026110333948">បន្ត</translation>
 <translation id="2388990488038464401">ហៅទូរសព្ទទៅលេខនេះ​ពីទូរសព្ទរបស់អ្នក?</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
 <translation id="24452542372838207">ពង្រីក​ការ​ជូន​ដំណឹង</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ថ្មី</translation>
 <translation id="2666092431469916601">ខាងលើ</translation>
 <translation id="2701330563083355633">បាន​ចែករំលែក​ពី <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">ថ្មី</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ឆ្នាំមុន}other{# ឆ្នាំមុន}}</translation>
 <translation id="2878511608894704031">លុបទាំងអស់</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ថ្ងៃទៀត}other{# ថ្ងៃទៀត}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">ប្រព័ន្ធ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ព្រួញខាងឆ្វេង</translation>
+<translation id="5633029987065897167">ទទេ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{ 1 នាទី}other{# នាទី}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ដំណើរការ​ថ្ងៃនេះ}=1{ដំណើរការ 1 ថ្ងៃមុន}other{ដំណើរការ # ថ្ងៃមុន}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ថ្ងៃ និង }other{# ថ្ងៃ និង }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">ខ្លឹមសារ RTF</translation>
 <translation id="6539092367496845964">មានអ្វីមួយខុសប្រក្រតី។ សូមព្យាយាមម្តង​ទៀតនៅ​ពេលក្រោយ។</translation>
 <translation id="654149438358937226">ទប់ស្កាត់ការជូនដំណឹងទាំងអស់</translation>
-<translation id="6612467943526193239">ដើម្បី​ចាក​ចេញ​ពី​ការ​ក្រិត​​ខ្នាត​ សូម​ចុច Esc ។</translation>
 <translation id="6620110761915583480">រក្សាទុកឯកសារ</translation>
 <translation id="6699343763173986273">Media Next Track</translation>
 <translation id="6808150112686056157">Media Stop</translation>

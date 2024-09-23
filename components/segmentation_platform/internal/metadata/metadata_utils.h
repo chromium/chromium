@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_UTILS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_UTILS_H_
 
-#include <optional>
-
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"

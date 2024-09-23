@@ -4,7 +4,6 @@
 
 #include "components/app_restore/desk_template_read_handler.h"
 
-#include "ash/constants/app_types.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"

@@ -21,7 +21,7 @@ CdmResultForUMA ConvertCdmExceptionToResultForUMA(
     case media::CdmPromise::Exception::TYPE_ERROR:
       return TYPE_ERROR;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return INVALID_STATE_ERROR;
 }
 
@@ -37,7 +37,7 @@ WebContentDecryptionModuleException ConvertCdmException(
     case media::CdmPromise::Exception::TYPE_ERROR:
       return kWebContentDecryptionModuleExceptionTypeError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kWebContentDecryptionModuleExceptionInvalidStateError;
 }
 
@@ -59,7 +59,7 @@ WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
     case media::CdmKeyInformation::RELEASED:
       return WebEncryptedMediaKeyInformation::KeyStatus::kReleased;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebEncryptedMediaKeyInformation::KeyStatus::kInternalError;
 }
 

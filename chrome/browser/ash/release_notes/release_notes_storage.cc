@@ -25,10 +25,6 @@
 
 namespace {
 
-// This stores the latest milestone with new Release Notes content. If the last
-// milestone the user has seen the notification is before this, a new
-// notification will be shown.
-constexpr int kLastChromeVersionWithReleaseNotes = 122;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {
@@ -73,6 +69,7 @@ bool ShouldShowForCurrentChannel() {
 
 namespace ash {
 
+// Called on every session startup.
 void ReleaseNotesStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
@@ -85,8 +82,14 @@ ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
   // TODO(b/174514401): Make this server controlled.
-  if (!ShouldShowForCurrentChannel())
+  if (base::FeatureList::IsEnabled(
+          ash::features::kReleaseNotesNotificationAlwaysEligible)) {
+    return true;
+  }
+
+  if (!ShouldShowForCurrentChannel()) {
     return false;
+  }
 
   if (!IsEligibleProfile(profile_))
     return false;
@@ -109,8 +112,9 @@ bool ReleaseNotesStorage::ShouldNotify() {
 void ReleaseNotesStorage::MarkNotificationShown() {
   profile_->GetPrefs()->SetInteger(
       prefs::kHelpAppNotificationLastShownMilestone, GetMilestone());
-  // When the notification is shown we should also show the suggestion chip a
-  // number of times.
+}
+
+void ReleaseNotesStorage::StartShowingSuggestionChip() {
   profile_->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow,
       kTimesToShowSuggestionChip);

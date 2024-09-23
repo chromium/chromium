@@ -5,6 +5,7 @@
 #include "base/time/time_delta_from_string.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -19,13 +20,13 @@ namespace {
 //
 // Example:
 //
-//   StringPiece input("abc");
+//   std::string_view input("abc");
 //   EXPECT_TRUE(ConsumePrefix(input, "a"));
 //   EXPECT_EQ(input, "bc");
 //
 // Adapted from absl::ConsumePrefix():
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/strings/strip.h?l=45&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-bool ConsumePrefix(StringPiece& str, StringPiece expected) {
+bool ConsumePrefix(std::string_view& str, std::string_view expected) {
   if (!StartsWith(str, expected))
     return false;
   str.remove_prefix(expected.size());
@@ -48,15 +49,15 @@ struct ParsedDecimal {
 };
 
 // A helper for FromString() that tries to parse a leading number from the given
-// StringPiece. |number_string| is modified to start from the first unconsumed
-// char.
+// std::string_view. |number_string| is modified to start from the first
+// unconsumed char.
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=807&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
-    StringPiece& number_string) {
+constexpr std::optional<ParsedDecimal> ConsumeDurationNumber(
+    std::string_view& number_string) {
   ParsedDecimal res;
-  StringPiece::const_iterator orig_start = number_string.begin();
+  std::string_view::const_iterator orig_start = number_string.begin();
   // Parse contiguous digits.
   for (; !number_string.empty(); number_string.remove_prefix(1)) {
     const int d = number_string.front() - '0';
@@ -64,15 +65,15 @@ constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
       break;
 
     if (res.int_part > std::numeric_limits<int64_t>::max() / 10)
-      return absl::nullopt;
+      return std::nullopt;
     res.int_part *= 10;
     if (res.int_part > std::numeric_limits<int64_t>::max() - d)
-      return absl::nullopt;
+      return std::nullopt;
     res.int_part += d;
   }
   const bool int_part_empty = number_string.begin() == orig_start;
   if (number_string.empty() || number_string.front() != '.')
-    return int_part_empty ? absl::nullopt : absl::make_optional(res);
+    return int_part_empty ? std::nullopt : std::make_optional(res);
 
   number_string.remove_prefix(1);  // consume '.'
   // Parse contiguous digits.
@@ -89,17 +90,17 @@ constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
     }
   }
 
-  return int_part_empty && res.frac_scale == 1 ? absl::nullopt
-                                               : absl::make_optional(res);
+  return int_part_empty && res.frac_scale == 1 ? std::nullopt
+                                               : std::make_optional(res);
 }
 
 // A helper for FromString() that tries to parse a leading unit designator
-// (e.g., ns, us, ms, s, m, h, d) from the given StringPiece. |unit_string| is
-// modified to start from the first unconsumed char.
+// (e.g., ns, us, ms, s, m, h, d) from the given std::string_view. |unit_string|
+// is modified to start from the first unconsumed char.
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=841&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-absl::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
+std::optional<TimeDelta> ConsumeDurationUnit(std::string_view& unit_string) {
   for (const auto& str_delta : {
            std::make_pair("ns", Nanoseconds(1)),
            std::make_pair("us", Microseconds(1)),
@@ -115,19 +116,19 @@ absl::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
       return str_delta.second;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
 
-absl::optional<TimeDelta> TimeDeltaFromString(StringPiece duration_string) {
+std::optional<TimeDelta> TimeDeltaFromString(std::string_view duration_string) {
   int sign = 1;
   if (ConsumePrefix(duration_string, "-"))
     sign = -1;
   else
     ConsumePrefix(duration_string, "+");
   if (duration_string.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Handle special-case values that don't require units.
   if (duration_string == "0")
@@ -137,13 +138,13 @@ absl::optional<TimeDelta> TimeDeltaFromString(StringPiece duration_string) {
 
   TimeDelta delta;
   while (!duration_string.empty()) {
-    absl::optional<ParsedDecimal> number_opt =
+    std::optional<ParsedDecimal> number_opt =
         ConsumeDurationNumber(duration_string);
     if (!number_opt.has_value())
-      return absl::nullopt;
-    absl::optional<TimeDelta> unit_opt = ConsumeDurationUnit(duration_string);
+      return std::nullopt;
+    std::optional<TimeDelta> unit_opt = ConsumeDurationUnit(duration_string);
     if (!unit_opt.has_value())
-      return absl::nullopt;
+      return std::nullopt;
 
     ParsedDecimal number = number_opt.value();
     TimeDelta unit = unit_opt.value();

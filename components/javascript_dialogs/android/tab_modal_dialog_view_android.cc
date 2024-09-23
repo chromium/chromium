@@ -8,11 +8,13 @@
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/javascript_dialogs/android/jni_headers/JavascriptTabModalDialog_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/javascript_dialogs/android/jni_headers/JavascriptTabModalDialog_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -103,8 +105,7 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
 
   JNIEnv* env = AttachCurrentThread();
   jwindow_weak_ref_ = JavaObjectWeakGlobalRef(
-      env,
-      parent_web_contents->GetTopLevelNativeWindow()->GetJavaObject().obj());
+      env, parent_web_contents->GetTopLevelNativeWindow()->GetJavaObject());
 
   // Keep a strong ref to the parent window while we make the call to java to
   // display the dialog.
@@ -134,7 +135,7 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Keep a ref to the java side object until we get accept or cancel.

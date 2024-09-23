@@ -13,6 +13,7 @@ namespace content {
 
 class RenderFrameHost;
 class RenderFrameHostImpl;
+class PreloadingPredictor;
 
 // Handles speculation-rules bases prefetches.
 // TODO(isaboori  crbug.com/1384496): Currently Prefetcher class supports the
@@ -60,7 +61,8 @@ class CONTENT_EXPORT Prefetcher : public SpeculationHostDevToolsObserver {
   void ProcessCandidatesForPrefetch(
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
-  bool MaybePrefetch(blink::mojom::SpeculationCandidatePtr candidate);
+  bool MaybePrefetch(blink::mojom::SpeculationCandidatePtr candidate,
+                     const PreloadingPredictor& enacting_predictor);
 
   // Whether the prefetch attempt for target |url| failed or discarded.
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);

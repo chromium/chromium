@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/child_process_launcher_helper.h"
+
 #include <memory>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/android/apk_assets.h"
 #include "base/android/application_status_listener.h"
+#include "base/android/binder.h"
+#include "base/android/binder_box.h"
 #include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/base_switches.h"
@@ -14,12 +20,11 @@
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/process/launch.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -29,6 +34,9 @@
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -107,8 +115,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
                                     build_info->host_version_code());
   command_line()->AppendSwitchASCII(switches::kPackageVersionName,
                                     build_info->package_version_name());
-  command_line()->AppendSwitchASCII(switches::kPackageVersionCode,
-                                    build_info->package_version_code());
 
   return true;
 }
@@ -125,6 +131,14 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
+
+  std::vector<base::android::BinderRef> binders;
+  if (mojo_channel_->remote_endpoint().platform_handle().is_valid_binder()) {
+    base::LaunchOptions binder_options;
+    auto endpoint = mojo_channel_->TakeRemoteEndpoint();
+    endpoint.PrepareToPass(binder_options, *command_line());
+    binders = std::move(binder_options.binders);
+  }
 
   // Create the Command line String[]
   ScopedJavaLocalRef<jobjectArray> j_argv =
@@ -159,7 +173,8 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
       env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
-      can_use_warm_up_connection));
+      can_use_warm_up_connection,
+      base::android::PackBinderBox(env, std::move(binders))));
 
   client_task_runner_->PostTask(
       FROM_HERE,
@@ -274,11 +289,12 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
     const RenderProcessPriority& priority) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
-  return Java_ChildProcessLauncherHelperImpl_setPriority(
+  Java_ChildProcessLauncherHelperImpl_setPriority(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_foreground_service_worker,
       priority.frame_depth, priority.intersects_viewport,
-      priority.boost_for_pending_views, static_cast<jint>(priority.importance));
+      priority.boost_for_pending_views, priority.boost_for_loading,
+      static_cast<jint>(priority.importance));
 }
 
 // Called from ChildProcessLauncher.java when the ChildProcess was started.

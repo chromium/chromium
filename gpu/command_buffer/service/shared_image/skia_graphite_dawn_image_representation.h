@@ -23,8 +23,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      bool is_yuv_plane = false,
-      int legacy_plane_index = 0);
+      int array_slice = 0);
 
   ~SkiaGraphiteDawnImageRepresentation() override;
 
@@ -36,6 +35,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
 
   std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override;
   void EndReadAccess() override;
+  bool SupportsMultipleConcurrentReadAccess() override;
 
  private:
   SkiaGraphiteDawnImageRepresentation(
@@ -45,8 +45,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      bool is_yuv_plane,
-      int legacy_plane_index,
+      int array_slice,
       wgpu::TextureUsage supported_tex_usages);
 
   std::vector<skgpu::graphite::BackendTexture> CreateBackendTextures(
@@ -57,8 +56,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteDawnImageRepresentation
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> dawn_scoped_access_;
   scoped_refptr<SharedContextState> context_state_;
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  const bool is_yuv_plane_;
-  const int legacy_plane_index_;
+  const int array_slice_;
   const wgpu::TextureUsage supported_tex_usages_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 };

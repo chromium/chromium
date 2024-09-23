@@ -77,10 +77,10 @@ PresentationRequestNotificationProducer::
         base::RepeatingCallback<bool(content::WebContents*)>
             has_active_notifications_callback,
         const base::UnguessableToken& source_id)
-    : has_active_notifications_callback_(
+    : observer_receiver_(this),
+      has_active_notifications_callback_(
           std::move(has_active_notifications_callback)),
-      source_id_(source_id),
-      observer_receiver_(this) {}
+      source_id_(source_id) {}
 
 PresentationRequestNotificationProducer::
     ~PresentationRequestNotificationProducer() = default;

@@ -132,6 +132,12 @@ TextIteratorBehavior::Builder::SetEmitsPunctuationForReplacedElements(
   return *this;
 }
 
+TextIteratorBehavior::Builder&
+TextIteratorBehavior::Builder::SetIgnoresCSSTextTransforms(bool value) {
+  behavior_.values_.bits.ignores_css_text_transforms = value;
+  return *this;
+}
+
 // -
 TextIteratorBehavior::TextIteratorBehavior(const TextIteratorBehavior& other) =
     default;

@@ -12,7 +12,7 @@ namespace blink {
 
 struct FeatureIndicesWithPriority {
   Vector<uint32_t> indices;
-  unsigned layer_order = std::numeric_limits<unsigned>::max();
+  uint16_t layer_order = std::numeric_limits<uint16_t>::max();
 };
 
 using FontFeatureAliases = HashMap<AtomicString, FeatureIndicesWithPriority>;
@@ -67,14 +67,14 @@ class CORE_EXPORT FontFeatureValuesStorage {
   FontFeatureValuesStorage& operator=(const FontFeatureValuesStorage& other) =
       default;
 
-  Vector<uint32_t> ResolveStylistic(AtomicString) const;
-  Vector<uint32_t> ResolveStyleset(AtomicString) const;
-  Vector<uint32_t> ResolveCharacterVariant(AtomicString) const;
-  Vector<uint32_t> ResolveSwash(AtomicString) const;
-  Vector<uint32_t> ResolveOrnaments(AtomicString) const;
-  Vector<uint32_t> ResolveAnnotation(AtomicString) const;
+  Vector<uint32_t> ResolveStylistic(const AtomicString&) const;
+  Vector<uint32_t> ResolveStyleset(const AtomicString&) const;
+  Vector<uint32_t> ResolveCharacterVariant(const AtomicString&) const;
+  Vector<uint32_t> ResolveSwash(const AtomicString&) const;
+  Vector<uint32_t> ResolveOrnaments(const AtomicString&) const;
+  Vector<uint32_t> ResolveAnnotation(const AtomicString&) const;
 
-  void SetLayerOrder(unsigned layer_order);
+  void SetLayerOrder(uint16_t layer_order);
 
   // Update and extend this FontFeatureValuesStorage with information from
   // `other`. Intended to be used for fusing multiple at-rules in a document and
@@ -97,7 +97,7 @@ class CORE_EXPORT FontFeatureValuesStorage {
   FontFeatureAliases ornaments_;
   FontFeatureAliases annotation_;
   static Vector<uint32_t> ResolveInternal(const FontFeatureAliases&,
-                                          AtomicString);
+                                          const AtomicString&);
 
   friend class StyleRuleFontFeatureValues;
 };

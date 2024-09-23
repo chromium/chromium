@@ -6,27 +6,42 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "dns_reloader.h"
+#include "net/base/address_family.h"
+#include "net/base/address_list.h"
+#include "net/base/features.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/dns/address_info.h"
 #include "net/dns/dns_names_util.h"
+#include "net/dns/host_resolver_cache.h"
+#include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/public/host_resolver_source.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "net/base/winsock_init.h"
@@ -35,6 +50,13 @@
 namespace net {
 
 namespace {
+
+// System resolver results give no TTL, so a default caching time is needed.
+// Pick 1 minute to match the minimum cache time for built-in resolver results
+// because this is only serving as a secondary cache to the caching done by the
+// system. Additionally, this matches the long-standing historical behavior from
+// previous implementations of HostResolver caching.
+constexpr base::TimeDelta kTtl = base::Minutes(1);
 
 // Returns nullptr in the common case, or a task runner if the default has
 // been overridden.
@@ -184,6 +206,18 @@ HostResolverSystemTask::Params::Params(const Params& other) = default;
 
 HostResolverSystemTask::Params::~Params() = default;
 
+HostResolverSystemTask::CacheParams::CacheParams(
+    HostResolverCache& cache,
+    NetworkAnonymizationKey network_anonymization_key)
+    : cache(base::raw_ref(cache)),
+      network_anonymization_key(std::move(network_anonymization_key)) {}
+
+HostResolverSystemTask::CacheParams::CacheParams(const CacheParams&) = default;
+
+HostResolverSystemTask::CacheParams::CacheParams(CacheParams&&) = default;
+
+HostResolverSystemTask::CacheParams::~CacheParams() = default;
+
 // static
 std::unique_ptr<HostResolverSystemTask> HostResolverSystemTask::Create(
     std::string hostname,
@@ -191,9 +225,11 @@ std::unique_ptr<HostResolverSystemTask> HostResolverSystemTask::Create(
     HostResolverFlags flags,
     const Params& params,
     const NetLogWithSource& job_net_log,
-    handles::NetworkHandle network) {
+    handles::NetworkHandle network,
+    std::optional<CacheParams> cache_params) {
   return std::make_unique<HostResolverSystemTask>(
-      hostname, address_family, flags, params, job_net_log, network);
+      hostname, address_family, flags, params, job_net_log, network,
+      std::move(cache_params));
 }
 
 // static
@@ -205,7 +241,8 @@ HostResolverSystemTask::CreateForOwnHostname(
     const NetLogWithSource& job_net_log,
     handles::NetworkHandle network) {
   return std::make_unique<HostResolverSystemTask>(
-      std::nullopt, address_family, flags, params, job_net_log, network);
+      std::nullopt, address_family, flags, params, job_net_log, network,
+      /*cache_params=*/std::nullopt);
 }
 
 HostResolverSystemTask::HostResolverSystemTask(
@@ -214,16 +251,21 @@ HostResolverSystemTask::HostResolverSystemTask(
     HostResolverFlags flags,
     const Params& params,
     const NetLogWithSource& job_net_log,
-    handles::NetworkHandle network)
+    handles::NetworkHandle network,
+    std::optional<CacheParams> cache_params)
     : hostname_(std::move(hostname)),
       address_family_(address_family),
       flags_(flags),
       params_(params),
       net_log_(job_net_log),
-      network_(network) {
+      network_(network),
+      cache_params_(std::move(cache_params)) {
+  // Must have hostname if results are to be cached.
+  CHECK(!cache_params_.has_value() || hostname_.has_value());
+
   if (hostname_) {
-    // |host| should be a valid domain name. HostResolverManager has checks to
-    // fail early if this is not the case.
+    // `hostname` should be a valid domain name. HostResolverManager has checks
+    // to fail early if this is not the case.
     DCHECK(dns_names_util::IsValidDnsName(*hostname_))
         << "Invalid hostname: " << *hostname_;
   }
@@ -337,8 +379,90 @@ void HostResolverSystemTask::OnLookupComplete(const uint32_t attempt_number,
         "attempt_number", attempt_number);
   }
 
+  MaybeCacheResults(results);
+
   std::move(results_cb_).Run(results, os_error, error);
   // Running |results_cb_| can delete |this|.
+}
+
+void HostResolverSystemTask::MaybeCacheResults(
+    const AddressList& address_list) {
+  if (address_list.empty() || !cache_params_.has_value() ||
+      !base::FeatureList::IsEnabled(features::kUseHostResolverCache)) {
+    return;
+  }
+  CHECK(hostname_.has_value());
+
+  // Split out IPv4 and IPv6 endpoints while keeping them in the received order.
+  std::vector<IPEndPoint> ipv4;
+  std::vector<IPEndPoint> ipv6;
+  for (const IPEndPoint& endpoint : address_list) {
+    switch (endpoint.GetFamily()) {
+      case ADDRESS_FAMILY_IPV4:
+        ipv4.push_back(endpoint);
+        break;
+      case ADDRESS_FAMILY_IPV6:
+        ipv6.push_back(endpoint);
+        break;
+      default:
+        // Expect only IPv4 and IPv6 endpoints from system resolver.
+        NOTREACHED();
+    }
+  }
+  CHECK(!ipv4.empty() || !ipv6.empty());
+
+  std::string_view domain_name = hostname_.value();
+  if (!address_list.dns_aliases().empty()) {
+    // Expect at most one alias from system resolver.
+    CHECK_EQ(address_list.dns_aliases().size(), 1u);
+
+    // Save one alias cache entry for each query type.
+    CacheAlias(std::string(domain_name), DnsQueryType::A,
+               address_list.dns_aliases().front());
+    CacheAlias(std::string(domain_name), DnsQueryType::AAAA,
+               address_list.dns_aliases().front());
+
+    domain_name = address_list.dns_aliases().front();
+  }
+
+  CacheEndpoints(std::string(domain_name), std::move(ipv4), DnsQueryType::A);
+  CacheEndpoints(std::string(domain_name), std::move(ipv6), DnsQueryType::AAAA);
+}
+
+void HostResolverSystemTask::CacheEndpoints(std::string domain_name,
+                                            std::vector<IPEndPoint> endpoints,
+                                            DnsQueryType query_type) {
+  if (endpoints.empty()) {
+    cache_params_.value().cache->Set(
+        std::make_unique<HostResolverInternalErrorResult>(
+            std::move(domain_name), query_type, base::TimeTicks::Now() + kTtl,
+            base::Time::Now() + kTtl,
+            HostResolverInternalResult::Source::kUnknown,
+            ERR_NAME_NOT_RESOLVED),
+        cache_params_.value().network_anonymization_key,
+        HostResolverSource::SYSTEM, /*secure=*/false);
+  } else {
+    cache_params_.value().cache->Set(
+        std::make_unique<HostResolverInternalDataResult>(
+            std::move(domain_name), query_type, base::TimeTicks::Now() + kTtl,
+            base::Time::Now() + kTtl,
+            HostResolverInternalResult::Source::kUnknown, std::move(endpoints),
+            std::vector<std::string>{}, std::vector<HostPortPair>{}),
+        cache_params_.value().network_anonymization_key,
+        HostResolverSource::SYSTEM, /*secure=*/false);
+  }
+}
+
+void HostResolverSystemTask::CacheAlias(std::string domain_name,
+                                        DnsQueryType query_type,
+                                        std::string target_name) {
+  cache_params_.value().cache->Set(
+      std::make_unique<HostResolverInternalAliasResult>(
+          std::move(domain_name), query_type, base::TimeTicks::Now() + kTtl,
+          base::Time::Now() + kTtl,
+          HostResolverInternalResult::Source::kUnknown, std::move(target_name)),
+      cache_params_.value().network_anonymization_key,
+      HostResolverSource::SYSTEM, /*secure=*/false);
 }
 
 void EnsureSystemHostResolverCallReady() {

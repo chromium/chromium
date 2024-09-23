@@ -2841,4 +2841,221 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         }
     }
 }
+Testing 'window.iframe' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'window.iframe' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            src : data:text/html,<div>iframe content</div>
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        frameId : <string>
+        loaderId : <string>
+        localName : iframe
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
 

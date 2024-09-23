@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/strings/string_piece.h",
     "+services/device/public/mojom/nfc.mojom-blink.h",
     "+services/device/public/mojom/nfc.mojom-blink-forward.h",
 ]

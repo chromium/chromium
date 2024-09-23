@@ -35,6 +35,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -52,10 +53,12 @@
 #include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -174,11 +177,10 @@ blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
   return blink::CSPSourceList::New(
       std::move(sources), std::move(nonces), std::move(hashes),
       source_list->allow_self, source_list->allow_star,
-      source_list->allow_response_redirects, source_list->allow_inline,
-      source_list->allow_inline_speculation_rules, source_list->allow_eval,
-      source_list->allow_wasm_eval, source_list->allow_wasm_unsafe_eval,
-      source_list->allow_dynamic, source_list->allow_unsafe_hashes,
-      source_list->report_sample);
+      source_list->allow_inline, source_list->allow_inline_speculation_rules,
+      source_list->allow_eval, source_list->allow_wasm_eval,
+      source_list->allow_wasm_unsafe_eval, source_list->allow_dynamic,
+      source_list->allow_unsafe_hashes, source_list->report_sample);
 }
 
 blink::ContentSecurityPolicyHeaderPtr ConvertToBlink(
@@ -250,12 +252,6 @@ blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
   }
 }
 
-blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
-  DCHECK(in);
-  return blink::VariantsHeader::New(ConvertToBlink(in->name),
-                                    ConvertToBlink(in->available_values));
-}
-
 blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
     const NoVarySearchWithParseErrorPtr& in) {
   if (!in)
@@ -290,7 +286,8 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
   return blink::ParsedHeaders::New(
       ConvertToBlink(in->content_security_policy),
       ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
-      in->cross_origin_opener_policy, in->origin_agent_cluster,
+      in->cross_origin_opener_policy, in->document_isolation_policy,
+      in->origin_agent_cluster,
       in->accept_ch.has_value()
           ? std::make_optional(ConvertToBlink(in->accept_ch.value()))
           : std::nullopt,
@@ -303,14 +300,17 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->reporting_endpoints.has_value()
           ? std::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
           : std::nullopt,
-      in->variants_headers.has_value()
-          ? std::make_optional(ConvertToBlink(in->variants_headers.value()))
+      in->cookie_indices.has_value()
+          ? std::make_optional(ConvertToBlink(in->cookie_indices.value()))
+          : std::nullopt,
+      in->avail_language.has_value()
+          ? std::make_optional(ConvertToBlink(in->avail_language.value()))
           : std::nullopt,
       in->content_language.has_value()
           ? std::make_optional(ConvertToBlink(in->content_language.value()))
           : std::nullopt,
       ConvertToBlink(in->no_vary_search_with_parse_error),
-      in->observe_browsing_topics);
+      in->observe_browsing_topics, in->allow_cross_origin_event_reporting);
 }
 
 }  // namespace mojom
@@ -373,8 +373,6 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   for (unsigned i = 0; i < source.length(); ++i) {
     UChar ch = source[i];
     if (ch == kFullstopCharacter) {
-      // TODO(tkent): According to the HTML specification, we should support
-      // only integers. However we support fractional numbers.
       if (++full_stop_count == 2)
         number_end = i;
     } else if (!IsASCIIDigit(ch)) {
@@ -383,6 +381,9 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   }
   bool ok;
   double time = source.Left(number_end).ToDouble(&ok);
+  if (RuntimeEnabledFeatures::MetaRefreshNoFractionalEnabled()) {
+    time = floor(time);
+  }
   if (!ok)
     return false;
   delay = base::Seconds(time);
@@ -523,13 +524,44 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
     ++pos;
   }
 
+  // Use a StringView to create an AtomicString here so we do not allocate an
+  // intermediate string.
   return AtomicString(
-      media_type.GetString().Substring(type_start, type_end - type_start));
+      StringView(media_type, type_start, type_end - type_start));
 }
 
 bool IsHTTPTabOrSpace(UChar c) {
   // https://fetch.spec.whatwg.org/#http-tab-or-space
   return c == kSpaceCharacter || c == kTabulationCharacter;
+}
+
+// https://mimesniff.spec.whatwg.org/#minimize-a-supported-mime-type
+// Note that `mime_type` should already have been stripped of parameters by
+// `ExtractMIMETypeFromMediaType`.
+AtomicString MinimizedMIMEType(const AtomicString& mime_type) {
+  StringUTF8Adaptor mime_utf8(mime_type);
+
+  if (IsSupportedJavascriptMimeType(mime_utf8.AsStringView())) {
+    return AtomicString("text/javascript");
+  }
+
+  if (IsJSONMimeType(mime_utf8.AsStringView())) {
+    return AtomicString("application/json");
+  }
+
+  if (IsSVGMimeType(mime_utf8.AsStringView())) {
+    return AtomicString("image/svg+xml");
+  }
+
+  if (IsXMLMimeType(mime_utf8.AsStringView())) {
+    return AtomicString("application/xml");
+  }
+
+  if (IsSupportedMimeType(mime_utf8.AsStringView())) {
+    return mime_type;
+  }
+
+  return g_empty_atom;
 }
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
@@ -542,24 +574,25 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
   if (value.empty())
     return kContentTypeOptionsNone;
 
-  String decodedAndSplitHeaderValue;
+  String decoded_and_split_header_value;
   if (base::FeatureList::IsEnabled(
           features::kLegacyParsingOfXContentTypeOptions)) {
     // Header parsing, as used until M120.
     Vector<String> results;
     value.Split(",", results);
     if (results.size()) {
-      decodedAndSplitHeaderValue = results[0].StripWhiteSpace();
+      decoded_and_split_header_value = results[0].StripWhiteSpace();
     }
   } else {
     // Header parsing, as demanded by the spec.
     Vector<String> results;
     value.Split(",", /* allow_empty_entries */ true, results);
     CHECK(results.size());  // allow_empty_entries guarantees >= 1 results.
-    decodedAndSplitHeaderValue = results[0].StripWhiteSpace(IsHTTPTabOrSpace);
+    decoded_and_split_header_value =
+        results[0].StripWhiteSpace(IsHTTPTabOrSpace);
   }
 
-  if (decodedAndSplitHeaderValue.LowerASCII() == "nosniff") {
+  if (EqualIgnoringASCIICase(decoded_and_split_header_value, "nosniff")) {
     return kContentTypeOptionsNosniff;
   }
   return kContentTypeOptionsNone;
@@ -757,14 +790,13 @@ void ParseCommaDelimitedHeader(const String& header_value,
     header_set.insert(value.StripWhiteSpace(IsWhitespace));
 }
 
-bool ParseMultipartHeadersFromBody(const char* bytes,
-                                   wtf_size_t size,
+bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
                                    ResourceResponse* response,
                                    wtf_size_t* end) {
   DCHECK(IsMainThread());
 
   size_t headers_end_pos =
-      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, size, 0);
+      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, 0);
 
   if (headers_end_pos == std::string::npos)
     return false;
@@ -774,7 +806,7 @@ bool ParseMultipartHeadersFromBody(const char* bytes,
   // Eat headers and prepend a status line as is required by
   // HttpResponseHeaders.
   std::string headers("HTTP/1.1 200 OK\r\n");
-  headers.append(bytes, headers_end_pos);
+  headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
   auto response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
@@ -788,7 +820,7 @@ bool ParseMultipartHeadersFromBody(const char* bytes,
   for (const AtomicString& header : ReplaceHeaders()) {
     std::string value;
     StringUTF8Adaptor adaptor(header);
-    base::StringPiece header_string_piece(adaptor.AsStringPiece());
+    std::string_view header_string_piece(adaptor.AsStringView());
     size_t iterator = 0;
 
     response->ClearHttpHeaderField(header);
@@ -803,14 +835,13 @@ bool ParseMultipartHeadersFromBody(const char* bytes,
   return true;
 }
 
-bool ParseMultipartFormHeadersFromBody(const char* bytes,
-                                       wtf_size_t size,
+bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
                                        HTTPHeaderMap* header_fields,
                                        wtf_size_t* end) {
   DCHECK_EQ(0u, header_fields->size());
 
   size_t headers_end_pos =
-      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, size, 0);
+      net::HttpUtil::LocateEndOfAdditionalHeaders(bytes, 0);
 
   if (headers_end_pos == std::string::npos)
     return false;
@@ -820,7 +851,7 @@ bool ParseMultipartFormHeadersFromBody(const char* bytes,
   // Eat headers and prepend a status line as is required by
   // HttpResponseHeaders.
   std::string headers("HTTP/1.1 200 OK\r\n");
-  headers.append(bytes, headers_end_pos);
+  headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
   auto responseHeaders = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
@@ -831,7 +862,7 @@ bool ParseMultipartFormHeadersFromBody(const char* bytes,
   for (const AtomicString* headerNamePointer : headerNamePointers) {
     StringUTF8Adaptor adaptor(*headerNamePointer);
     size_t iterator = 0;
-    base::StringPiece headerNameStringPiece = adaptor.AsStringPiece();
+    std::string_view headerNameStringPiece = adaptor.AsStringView();
     std::string value;
     while (responseHeaders->EnumerateHeader(&iterator, headerNameStringPiece,
                                             &value)) {
@@ -847,7 +878,7 @@ bool ParseContentRangeHeaderFor206(const String& content_range,
                                    int64_t* last_byte_position,
                                    int64_t* instance_length) {
   return net::HttpUtil::ParseContentRangeHeaderFor206(
-      StringUTF8Adaptor(content_range).AsStringPiece(), first_byte_position,
+      StringUTF8Adaptor(content_range).AsStringView(), first_byte_position,
       last_byte_position, instance_length);
 }
 

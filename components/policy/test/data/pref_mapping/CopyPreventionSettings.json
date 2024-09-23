@@ -8,43 +8,20 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CopyPreventionSettings": {
-            "disable": [
-              "not-sensitive.example.com"
-            ],
-            "enable": [
-              "*"
-            ],
-            "minimum_data_size": 100
-          }
-        },
-        "prefs": {
-          "policy.copy_prevention_settings": {
-            "location": "user_profile",
-            "value": {
-              "disable": [
-                "not-sensitive.example.com"
-              ],
-              "enable": [
-                "*"
-              ],
-              "minimum_data_size": 100
-            }
-          }
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.copy_prevention_settings",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "disable": [
+            "not-sensitive.example.com"
+          ],
+          "enable": [
+            "*"
+          ],
+          "minimum_data_size": 100
         }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "policy.copy_prevention_settings": {
-            "default_value": {},
-            "location": "user_profile"
-          }
-        }
-      }
-    ]
+      ]
+    }
   }
 ]

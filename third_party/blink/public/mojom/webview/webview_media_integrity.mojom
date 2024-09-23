@@ -1,0 +1,120 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These error codes map to the MediaIntegrityErrorName enum in
+// media_integrity_error.idl, which is the JavaScript visible version of these
+// errors.
+//
+// Precise details for these errors (beyond the error code) are not conveyed
+// back to the renderer (and thus not the calling script either).
+enum WebViewMediaIntegrityErrorCode {
+  // There was an error. The operation may be retried.
+  kInternalError,
+  // There was an error, and the operation should not be retried.
+  //
+  // If there is no underlying implementation for token providers
+  // available on this build of WebView or there is a missing dependency,
+  // this error will be produced.
+  kNonRecoverableError,
+  // The embedding app has disabled Android WebView Media Integrity APIs.
+  //
+  // The application may enable or disable the APIs for specific origins
+  // dynamically at runtime, so API accessibility may change during the lifetime
+  // of a frame.
+  kApiDisabledByApplication,
+  // Invalid argument may arise if the content binding supplied for a token
+  // request is considered invalid by the underlying provider (such as by being
+  // too long).
+  kInvalidArgument,
+  // The token provider is no longer valid; for example, because the provider
+  // expired. The calling script may ask for a new token provider.
+  kTokenProviderInvalid,
+};
+
+// Either a token on success or an error code on failure.
+// See WebViewMediaIntegrityProvider.RequestToken for further details.
+union WebViewMediaIntegrityTokenResponse {
+  // Error code in case of a failure.
+  WebViewMediaIntegrityErrorCode error_code;
+  // A token to be returned verbatim to the calling script.
+  string token;
+};
+
+// Main entry point into the Android WebView Media Integrity API.
+// Implementations live in the browser process and are bound to individual
+// RenderFrameHosts. Remote lives in the renderer and is associated with the
+// JavaScript-visible WebView (window.android.webview) object.
+interface WebViewMediaIntegrityService {
+  // The limiting factor is JavaScript Number.MAX_SAFE_INTEGER (2**53 - 1). This
+  // isn't a limitation for the browser, but it's something which we don't
+  // expect the renderer to ever send, as it should be rejecting such numbers
+  // supplied by JavaScript scripts before getting to IPC.
+  const uint64 kMaxCloudProjectNumber = 9007199254740991;
+
+  // Attempts to acquire a token provider. If successful, the provider
+  // implementation is bound to the supplied provider_receiver and a null error
+  // code response is sent back. If there is a failure, a non-null error code
+  // will be sent back.
+  //
+  // The Android application embedding WebView may disable getting token providers
+  // through configuration, which will produce a kApiDisabledByApplication error.
+  //
+  // cloudProjectNumber has a maximum legal value of kMaxCloudProjectNumber.
+  // Messages with numbers larger than this are considered bad messages.
+  //
+  // Triggered by a (JavaScript) call to
+  // window.android.webview.getExperimentalMediaIntegrityTokenProvider(...)
+  //
+  // Common failure cases include:
+  // - The build of WebView doesn't have a provider implementation.
+  // - The system or some other dependency doesn't implement the underlying
+  //   token provisioning functionality, or is temporarily unavailable.
+  // - The embedding application has explicitly disabled the Android WebView
+  //   Media Integrity APIs.
+  // - An unknown or inappropriate cloud project number is supplied.
+  // - Some underlying provider implementation-specific failure.
+  GetIntegrityProvider(
+      pending_receiver<WebViewMediaIntegrityProvider> provider_receiver,
+      uint64 cloud_project_number)
+      => (WebViewMediaIntegrityErrorCode? error);
+};
+
+// Provides tokens upon request. Implementation lives in the browser
+// process. The remote lives in the renderer and is associated with a
+// MediaIntegrityTokenProvider object held in JavaScript.
+interface WebViewMediaIntegrityProvider {
+  // Requests a token, embedding an optional content_binding into the token.
+  //
+  // The underlying provider implementation may impose restrictions on the
+  // content_binding string (such as length), which are not defined here, though
+  // content_binding is effectively opaque data that the underlying token
+  // provider may include verbatim (in encrypted form) into the token. It is
+  // never parsed by the browser or renderer. However, as it is supplied by page
+  // scripts in UTF-16, and Mojo will perform intermediate conversions to UTF-8,
+  // any invalid Unicode (unpaired surrogates) will be mangled into \uFFFD
+  // characters. This situation is not unambiguosly visible to the browser
+  // implementation and is NOT considered a bad message.
+  //
+  // The token in the response provided by the browser should, in practice,
+  // contain only base64 characters, though this data is also opaque (not
+  // parsed) as far as the browser/renderer is concerned.
+  //
+  // Triggered by a (JavaScript) call to
+  // MediaIntegrityTokenProvider.requestToken(...)
+  //
+  // Common failure cases include:
+  // - The provider rejected the request because content_binding was invalid
+  //   (such as by being too long).
+  // - The provider rejected the request due to media integrity concerns.
+  // - Some underlying provider implementation-specific failure.
+  // - The token provider expired.
+  //
+  // Note that once a token provider is acquired, it remains usable even if the
+  // application later disables the API for the origin. (Token requests should
+  // never fail with kApiDisabledByApplication.)
+  RequestToken(string? content_binding)
+      => (WebViewMediaIntegrityTokenResponse response);
+};

@@ -12,7 +12,10 @@ mojom("mojom") {
 
   deps = [ "//mojo/public/mojom/base" ]
 
-  public_deps = [ "//services/network/public/mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base:protobuf_support",
+    "//services/network/public/mojom",
+  ]
 
   enabled_features = []
 

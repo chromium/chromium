@@ -1,0 +1,75 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("discovery") {
+  sources = [
+    "host_locator.h",
+    "in_memory_host_locator.cc",
+    "in_memory_host_locator.h",
+    "mdns_host_locator.cc",
+    "mdns_host_locator.h",
+    "netbios_client.cc",
+    "netbios_client.h",
+    "netbios_client_interface.h",
+    "netbios_host_locator.cc",
+    "netbios_host_locator.h",
+    "network_scanner.cc",
+    "network_scanner.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/smbprovider",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/mojom",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/smb_client:constants",
+    "//chromeos/components/firewall_hole",
+    "//content/public/browser",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_netbios_client.cc",
+    "fake_netbios_client.h",
+  ]
+
+  deps = [
+    ":discovery",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "in_memory_host_locator_unittest.cc",
+    "mdns_host_locator_unittest.cc",
+    "netbios_host_locator_unittest.cc",
+    "network_scanner_unittest.cc",
+  ]
+
+  deps = [
+    ":discovery",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/smb_client:constants",
+    "//chromeos/ash/components/dbus/smbprovider",
+    "//net",
+    "//testing/gtest",
+  ]
+}

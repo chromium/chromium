@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 
+#include <optional>
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

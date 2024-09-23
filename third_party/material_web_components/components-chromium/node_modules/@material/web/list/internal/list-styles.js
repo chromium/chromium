@@ -1,0 +1,10 @@
+/**
+ * @license
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+// Generated stylesheet for ./list/internal/list-styles.css.
+import { css } from 'lit';
+export const styles = css `:host{background:var(--md-list-container-color, var(--md-sys-color-surface, #fef7ff));color:unset;display:flex;flex-direction:column;outline:none;padding:8px 0;position:relative}
+`;
+//# sourceMappingURL=list-styles.js.map

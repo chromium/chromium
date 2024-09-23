@@ -6,7 +6,6 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -57,9 +56,9 @@ public interface AccountManagerDelegate {
      * @param authTokenScope The scope of the authToken being requested.
      * @return The access token data fetched from the authenticator.
      * @throws AuthException Indicates a failure in fetching the auth token perhaps due to a
-     * transient error or when user intervention is required (like confirming the credentials)
-     * which is expressed as an {@link Intent} to the handler.
-     * TODO(crbug/1171657): Rename this method to getAccessToken.
+     *     transient error or when user intervention is required (like confirming the credentials)
+     *     which is expressed as an {@link Intent} to the handler. TODO(crbug.com/40745233): Rename
+     *     this method to getAccessToken.
      */
     @WorkerThread
     AccessTokenData getAuthToken(Account account, String authTokenScope) throws AuthException;
@@ -67,14 +66,10 @@ public interface AccountManagerDelegate {
     /**
      * @param authToken The auth token to invalidate.
      * @throws AuthException Indicates a failure clearing the auth token; can be transient.
-     * TODO(crbug/1171657): Rename this method to invalidateAccessToken.
+     *     TODO(crbug.com/40745233): Rename this method to invalidateAccessToken.
      */
     @WorkerThread
     void invalidateAuthToken(String authToken) throws AuthException;
-
-    /** Get all the available authenticator types. */
-    @AnyThread
-    AuthenticatorDescription[] getAuthenticatorTypes();
 
     /** Check whether the given account has a specific feature. */
     @WorkerThread

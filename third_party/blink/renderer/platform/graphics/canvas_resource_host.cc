@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -78,7 +79,7 @@ bool CanvasResourceHost::IsComposited() const {
     return false;
   }
 
-  if (UNLIKELY(!resource_provider_)) {
+  if (!resource_provider_) [[unlikely]] {
     return false;
   }
 
@@ -153,16 +154,13 @@ void CanvasResourceHost::SetNeedsPushProperties() {
 
 void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
-  if (cc_layer_) {
-    cc_layer_->SetHdrMetadata(hdr_metadata_);
-  }
 }
 
 cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
   if (!IsComposited()) {
     return nullptr;
   }
-  if (UNLIKELY(!cc_layer_)) {
+  if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
@@ -170,7 +168,6 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     cc_layer_->SetNearestNeighbor(FilterQuality() ==
                                   cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetHdrMetadata(hdr_metadata_);
     cc_layer_->SetFlipped(!resource_provider_->IsOriginTopLeft());
   }
   return cc_layer_.get();
@@ -235,7 +232,7 @@ bool CanvasResourceHost::PrepareTransferableResource(
 
   CanvasResource::ReleaseCallback release_callback;
   if (!frame->PrepareTransferableResource(out_resource, &release_callback,
-                                          kUnverifiedSyncToken) ||
+                                          /*needs_verified_synctoken=*/false) ||
       *out_resource == cc_layer_->current_transferable_resource()) {
     // If the resource did not change, the release will be handled correctly
     // when the callback from the previous frame is dispatched. But run the
@@ -244,6 +241,11 @@ bool CanvasResourceHost::PrepareTransferableResource(
         .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
     return false;
   }
+  // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
+  // `frame`, and should be populated by the above call to
+  // CanvasResource::PrepareTransferableResource, rather than be inserted
+  // here.
+  out_resource->hdr_metadata = hdr_metadata_;
   // Note: frame is kept alive via a reference kept in out_release_callback.
   *out_release_callback = base::BindOnce(
       ReleaseCanvasResource, std::move(release_callback), std::move(frame));
@@ -268,8 +270,6 @@ void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
 void CanvasResourceHost::FlushRecording(FlushReason reason) {
   if (resource_provider_) {
     resource_provider_->FlushCanvas(reason);
-    // Flushing consumed locked images.
-    resource_provider_->ReleaseLockedImages();
   }
 }
 
@@ -277,12 +277,24 @@ bool CanvasResourceHost::IsResourceValid() {
   if (IsHibernating()) {
     return true;
   }
-  if (!cc_layer_ || (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU)) {
+
+  if (!cc_layer_) {
     return true;
   }
-  if (context_lost_) {
+
+  if (!features::IsCanvasSharedBitmapConversionEnabled() ||
+      (resource_provider_ &&
+       resource_provider_->GetType() == CanvasResourceProvider::kBitmap)) {
+    if (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU) {
+      return true;
+    }
+  }
+
+  if (context_lost_ || shared_bitmap_gpu_channel_lost_) {
     return false;
   }
+
+  // For Gpu rendering
   if (resource_provider_ && resource_provider_->IsAccelerated() &&
       resource_provider_->IsGpuContextLost()) {
     context_lost_ = true;
@@ -290,6 +302,17 @@ bool CanvasResourceHost::IsResourceValid() {
     NotifyGpuContextLost();
     return false;
   }
+
+  // For software rendering with CanvasResourceProvider::kSharedBitmap
+  if (resource_provider_ &&
+      resource_provider_->GetType() == CanvasResourceProvider::kSharedBitmap &&
+      resource_provider_->IsSharedBitmapGpuChannelLost()) {
+    shared_bitmap_gpu_channel_lost_ = true;
+    ReplaceResourceProvider(nullptr);
+    NotifyGpuContextLost();
+    return false;
+  }
+
   return !!GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode_);
 }
 

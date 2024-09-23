@@ -29,6 +29,9 @@ class CommerceInternalsUI : public CommerceInternalsUIBase,
   CommerceInternalsUI(const CommerceInternalsUI&) = delete;
   CommerceInternalsUI operator&(const CommerceInternalsUI&) = delete;
   ~CommerceInternalsUI() override;
+
+ private:
+  base::WeakPtrFactory<CommerceInternalsUI> weak_factory_{this};
 };
 
 }  // namespace commerce

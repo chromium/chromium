@@ -6,9 +6,14 @@
 #include <iterator>
 
 namespace display::test {
-const MonitorConfig MonitorConfig::k1024x768 = MonitorConfig(1024, 768);
+const MonitorConfig MonitorConfig::k2560x1440 = MonitorConfig(2560, 1440);
+const MonitorConfig MonitorConfig::k2560x1440_120 =
+    MonitorConfig(2560, 1440, 120);
 const MonitorConfig MonitorConfig::k1920x1080 = MonitorConfig(1920, 1080);
+const MonitorConfig MonitorConfig::k1920x1080_120 =
+    MonitorConfig(1920, 1080, 120);
 const MonitorConfig MonitorConfig::k1440x900 = MonitorConfig(1440, 900);
+const MonitorConfig MonitorConfig::k1024x768 = MonitorConfig(1024, 768);
 
 DriverProperties::DriverProperties(const std::vector<MonitorConfig>& modes) {
   requested_configs_size_ = std::min(modes.size(), kMaxMonitors);

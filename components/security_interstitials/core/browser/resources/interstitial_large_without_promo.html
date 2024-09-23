@@ -1,0 +1,64 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fff">
+  <meta name="viewport"
+      content="initial-scale=1, minimum-scale=1, width=device-width">
+  <meta http-equiv="Content-Security-Policy"
+      content="require-trusted-types-for 'script'; trusted-types;">
+  <title>$i18n{tabTitle}</title>
+  <link rel="stylesheet" href="../../common/resources/interstitial_core.css">
+  <link rel="stylesheet" href="../../common/resources/interstitial_common.css">
+  <link rel="stylesheet" href="interstitial_badclock.css">
+  <link rel="stylesheet" href="interstitial_captiveportal.css">
+  <link rel="stylesheet" href="interstitial_httpsonly.css">
+  <link rel="stylesheet" href="interstitial_insecureform.css">
+  <link rel="stylesheet" href="interstitial_lookalikeurl.css">
+  <link rel="stylesheet" href="interstitial_safebrowsing.css">
+  <link rel="stylesheet" href="interstitial_safebrowsing_shared.css">
+  <link rel="stylesheet" href="interstitial_ssl.css">
+  <link rel="stylesheet" href="interstitial_enterpriseblock.css">
+  <link rel="stylesheet" href="interstitial_enterprisewarn.css">
+  <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_large/interstitial_large.rollup.js"></script>
+</head>
+<body id="body" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
+  <div class="interstitial-wrapper">
+    <div id="main-content">
+      <div class="icon" id="icon"></div>
+      <div id="main-message">
+        <h1>$i18nRaw{heading}</h1>
+        <p>$i18nRaw{primaryParagraph}</p>
+        <div id="debugging">
+          <div id="error-code" class="error-code"></div>
+          <div id="error-debugging-info" class="hidden"></div>
+        </div>
+      </div>
+      <div id="recurrent-error-message">
+        $i18nRaw{recurrentErrorParagraph}
+      </div>
+      <div id="extended-reporting-opt-in" class="hidden">
+        <label>
+          <div class="checkboxes">
+            <input type="checkbox" id="opt-in-checkbox">
+            <span class="checkbox"></span>
+          </div>
+          <span id="opt-in-label">$i18nRaw{optInLink}</span>
+        </label>
+      </div>
+    </div>
+    <div class="nav-wrapper">
+      <button id="primary-button">$i18n{primaryButtonText}</button>
+      <button id="proceed-button" class="secondary-button small-link hidden"></button>
+      <button id="details-button" class="secondary-button small-link">
+        $i18n{openDetails}
+      </button>
+    </div>
+    <div id="details" class="hidden">
+      <p>$i18nRaw{explanationParagraph}</p>
+      <p id="final-paragraph">$i18nRaw{finalParagraph}</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -14,14 +14,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
-#include "components/segmentation_platform/public/constants.h"
-#include "components/segmentation_platform/public/result.h"
-#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 
 namespace webapps {
 
@@ -96,9 +94,10 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // The manifest URL changing in the middle of a pipeline doesn't always mean
   // the page data will be reset. To ensure that installable_ isn't accidentally
   // set twice, reset it here.
-  if (base::Contains(result.errors, MANIFEST_URL_CHANGED)) {
+  if (base::Contains(result.errors,
+                     InstallableStatusCode::MANIFEST_URL_CHANGED)) {
     installable_.reset();
-  } else if (!result.errors.empty()) {
+  } else if (blink::IsEmptyManifest(*result.manifest)) {
     // AppBannerManagerDesktop does not call
     // |OnDidPerformInstallableWebAppCheck| to complete the installability check
     // in this case, instead it early exits with failure.
@@ -131,16 +130,21 @@ TestAppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
   return this;
 }
 
-void TestAppBannerManagerDesktop::OnInstall(blink::mojom::DisplayMode display) {
-  AppBannerManager::OnInstall(display);
+void TestAppBannerManagerDesktop::OnInstall(
+    blink::mojom::DisplayMode display,
+    bool set_current_web_app_not_installable) {
+  AppBannerManager::OnInstall(display, set_current_web_app_not_installable);
   if (on_install_)
     std::move(on_install_).Run();
 }
 
 void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
+    const webapps::ManifestId& manifest_id,
+    base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  AppBannerManagerDesktop::DidFinishCreatingWebApp(app_id, code);
+  AppBannerManagerDesktop::DidFinishCreatingWebApp(
+      manifest_id, is_navigation_current, app_id, code);
   OnFinished();
 }
 

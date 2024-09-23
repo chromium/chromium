@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -30,11 +31,9 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /** Tests for the TabModelSelectorTabObserver. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -131,7 +130,7 @@ public class TabModelSelectorTabObserverTest {
     @SmallTest
     public void testObserverAddedBeforeInitialize() {
         TabModelSelectorBase selector =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new TabModelSelectorBase(null, TabGroupModelFilter::new, false) {
                                 @Override
@@ -153,7 +152,7 @@ public class TabModelSelectorTabObserverTest {
                             };
                         });
         TestTabModelSelectorTabObserver observer = createTabModelSelectorTabObserver();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     selector.initialize(
                             sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
@@ -171,7 +170,7 @@ public class TabModelSelectorTabObserverTest {
 
     private TestTabModelSelectorTabObserver createTabModelSelectorTabObserver() {
         final TestTabModelSelectorTabObserver observer =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new TestTabModelSelectorTabObserver(sTestRule.getSelector()));
         // Initially tabs are added in deferred state, wait for this to complete before proceeding
         // to ensure all tabs are registered. In production the observer should only ever be
@@ -187,21 +186,22 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private void destroyObserver(TestTabModelSelectorTabObserver observer) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     observer.destroy();
                 });
     }
 
     private Tab createTestTab(boolean incognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return new MockTab(mTabId++, incognito ? mIncognitoProfile : mProfile);
+                    return new MockTab(
+                            Tab.INVALID_TAB_ID, incognito ? mIncognitoProfile : mProfile);
                 });
     }
 
     private static void addTab(TabModel tabModel, Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabModel.addTab(
                                 tab,
@@ -211,15 +211,12 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private static void closeTab(TabModel tabModel, Tab tab) {
-        try {
-            TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.closeTab(tab));
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Error occurred waiting for runnable", e);
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build()));
     }
 
     private static void removeTab(TabModel tabModel, Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeTab(tab));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeTab(tab));
     }
 
     private static class TestTabModelSelectorTabObserver extends TabModelSelectorTabObserver {
@@ -252,7 +249,7 @@ public class TabModelSelectorTabObserverTest {
     private void assertTabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
         Assert.assertTrue(tabHasObserver(tab, observer));
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isRegisteredTab(tab);
                         }));
@@ -263,14 +260,14 @@ public class TabModelSelectorTabObserverTest {
         Assert.assertFalse(tabHasObserver(tab, observer));
         if (!checkUnregistration) return;
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isUnregisteredTab(tab);
                         }));
     }
 
     private static boolean tabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RewindableIterator<TabObserver> tabObservers =
                             TabTestUtils.getTabObservers(tab);

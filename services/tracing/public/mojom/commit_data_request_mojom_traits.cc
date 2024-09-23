@@ -5,6 +5,7 @@
 #include "services/tracing/public/mojom/commit_data_request_mojom_traits.h"
 
 #include <utility>
+#include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 
 namespace mojo {
 // static

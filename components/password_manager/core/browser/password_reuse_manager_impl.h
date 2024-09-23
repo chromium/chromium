@@ -30,7 +30,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   // Immediately called after |Init()| to retrieve password hash data for
   // reuse detection.
-  // TODO(crbug.com/1469280): This might need to be called from all platforms,
+  // TODO(crbug.com/40925300): This might need to be called from all platforms,
   // including ios.
   void PreparePasswordHashData(
       metrics_util::SignInState sign_in_state_for_metrics);
@@ -40,6 +40,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   // Implements PasswordReuseManager interface.
   void Init(PrefService* prefs,
+            PrefService* local_prefs,
             PasswordStoreInterface* profile_store,
             PasswordStoreInterface* account_store,
             std::unique_ptr<PasswordReuseDetector> password_reuse_detector,
@@ -67,8 +68,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   base::CallbackListSubscription RegisterStateCallbackOnHashPasswordManager(
       const base::RepeatingCallback<void(const std::string& username)>&
           callback) override;
-  void SetPasswordStoreSigninNotifier(
-      std::unique_ptr<PasswordStoreSigninNotifier> notifier) override;
+  void SetPasswordReuseManagerSigninNotifier(
+      std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier) override;
   void ScheduleEnterprisePasswordURLUpdate() override;
   void MaybeSavePasswordHash(const PasswordForm* submitted_form,
                              PasswordManagerClient* client) override;
@@ -141,7 +142,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   std::unique_ptr<PasswordReuseDetector> reuse_detector_;
 
   // Notifies PasswordReuseManager about sign-in events.
-  std::unique_ptr<PasswordStoreSigninNotifier> notifier_;
+  std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier_;
 
   // Responsible for saving, clearing, retrieving and encryption of a password
   // hash data in preferences.

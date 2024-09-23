@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -99,7 +99,7 @@ void CastWebService::FlushDomLocalStorage() {
 }
 
 void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
-  // TODO(https://crbug.com/1504422): Only the first StoragePartition gets a
+  // TODO(crbug.com/40944952): Only the first StoragePartition gets a
   // non-null `callback`; the subsequent ones all get a null callback, so this
   // only ends up waiting for the first storage partition beofre invoking the
   // reply callback.

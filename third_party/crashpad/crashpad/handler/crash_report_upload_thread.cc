@@ -237,7 +237,6 @@ void CrashReportUploadThread::ProcessPendingReport(
 
     case CrashReportDatabase::kCannotRequestUpload:
       NOTREACHED();
-      return;
   }
 
   std::string response_body;

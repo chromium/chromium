@@ -73,10 +73,17 @@ class ScopedSpinGuard final {
         ClockMonotonicNanoseconds() + timeout_nanos;
     while (true) {
       bool expected_current_value = false;
-      if (state.locked.compare_exchange_weak(expected_current_value,
-                                             true,
-                                             std::memory_order_acquire,
-                                             std::memory_order_relaxed)) {
+      // `std::atomic::compare_exchange_weak()` is allowed to spuriously fail on
+      // architectures like ARM, which can cause timeouts even for
+      // single-threaded cases (https://crbug.com/340980960,
+      // http://b/296082201).
+      //
+      // Use `std::compare_exchange_strong()` instead to avoid spurious failures
+      // in the common case.
+      if (state.locked.compare_exchange_strong(expected_current_value,
+                                               true,
+                                               std::memory_order_acquire,
+                                               std::memory_order_relaxed)) {
         return std::make_optional<ScopedSpinGuard>(state);
       }
       if (ClockMonotonicNanoseconds() >= clock_end_time_nanos) {

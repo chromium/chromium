@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_CONFIGURATION_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_CONFIGURATION_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_CONFIGURATION_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_CONFIGURATION_H_
 
 #import <Foundation/Foundation.h>
 
@@ -17,4 +17,4 @@ class DiscoverFeedService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_CONFIGURATION_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_CONFIGURATION_H_

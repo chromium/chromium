@@ -8,6 +8,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

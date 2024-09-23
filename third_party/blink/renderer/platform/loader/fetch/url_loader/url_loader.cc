@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
@@ -128,7 +129,7 @@ class URLLoader::Context : public ResourceRequestClient {
  private:
   ~Context() override;
 
-  raw_ptr<URLLoader, ExperimentalRenderer> loader_;
+  raw_ptr<URLLoader> loader_;
 
   KURL url_;
   // This is set in Start() and is used by SetSecurityStyleAndDetails() to
@@ -139,7 +140,7 @@ class URLLoader::Context : public ResourceRequestClient {
   // DevTools request id to that new request, and it will propagate here.
   bool has_devtools_request_id_;
 
-  raw_ptr<URLLoaderClient, ExperimentalRenderer> client_;
+  raw_ptr<URLLoaderClient> client_;
   // TODO(https://crbug.com/1137682): Remove |freezable_task_runner_|, migrating
   // the current usage to use |unfreezable_task_runner_| instead. Also, rename
   // |unfreezable_task_runner_| to |maybe_unfreezable_task_runner_| here and
@@ -152,7 +153,7 @@ class URLLoader::Context : public ResourceRequestClient {
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle_;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   const Vector<String> cors_exempt_header_list_;
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer> terminate_sync_load_event_;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_;
 
   int request_id_;
 
@@ -562,6 +563,12 @@ void URLLoader::SetResourceRequestSenderForTesting(
 void URLLoader::Context::SetResourceRequestSenderForTesting(
     std::unique_ptr<blink::ResourceRequestSender> resource_request_sender) {
   resource_request_sender_ = std::move(resource_request_sender);
+}
+
+void URLLoader::SetBackgroundResponseProcessorFactory(
+    std::unique_ptr<BackgroundResponseProcessorFactory>
+        background_response_processor_factory) {
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

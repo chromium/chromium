@@ -68,6 +68,14 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
+    public void didStartLoading(GURL gurl) {
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            awContents.releaseDragAndDropPermissions();
+        }
+    }
+
+    @Override
     public void didStopLoading(GURL gurl, boolean isKnownValid) {
         String url = isKnownValid ? gurl.getSpec() : gurl.getPossiblyInvalidSpec();
         if (url.length() == 0) url = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;

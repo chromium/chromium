@@ -27,8 +27,8 @@ Web Platform Tests for Web Bluetooth are being refactored to use
 `third_party/WebKit/LayoutTests/resources/bluetooth/web-bluetooth-test.js`.
 
 That library is implemented over a mojo interface `fake_bluetooth.mojom` in
-[bluetooth/public/mojom/test](/device/bluetooth/public/mojom/test)
-and is implemented in the `bluetooth/test/fake_*` files.
+[bluetooth/public/mojom/emulation](/device/bluetooth/public/mojom/emulation)
+and is implemented in the `bluetooth/emulation/fake_*` files.
 
 The `fake_bluetooth.mojom` interface is not intended to be used directly.
 `web-bluetooth-test.js` makes the Fake Bluetooth interface easier to work with.
@@ -40,13 +40,19 @@ If another C++ client intends to use Fake Bluetooth a C++ wrapper similar to
 `web-bluetooth-test.js` should be created.
 
 When a Bluetooth service is created the `fake_bluetooth.mojom` and
-`bluetooth/test/fake_*` files should be removed and the client facing test
+`bluetooth/emulation/fake_*` files should be removed and the client facing test
 wrapper `web-bluetooth-test.js` converted to implement the Bluetooth service as
 needed for tests.
 
 Design Doc:
 https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY
 
+## BluetoothEmulation support in Chrome Devtools Protocol
+
+The `BluetoothEmulation` domain in
+[Chrome Devtools Protocol](third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+now supports Bluetooth Device Emulation via the FakeBluetooth backend implemented in
+content/browser/devtools/protocol/bluetooth_emulation_handler.h.
 
 ## Implementation Testing
 

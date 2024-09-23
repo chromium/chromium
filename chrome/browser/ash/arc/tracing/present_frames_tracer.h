@@ -34,6 +34,12 @@ class PresentFramesTracer {
   // Record a commit as having occurred at the given time.
   void AddCommit(base::TimeTicks commit_ts);
 
+  // Record a present as having occurred at the given time. Ideally you would
+  // use ListenForPresent, but for detached displays the present event may never
+  // occur, but we still want to consider it as if it happened for performance
+  // metrics and testing.
+  void AddPresent(base::TimeTicks present_ts);
+
   // Record the next frame presented event on the given surface. This can be
   // called from within SurfaceObserver::OnCommit.
   void ListenForPresent(exo::Surface* surface);

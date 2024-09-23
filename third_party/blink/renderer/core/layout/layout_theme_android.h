@@ -12,6 +12,10 @@ namespace blink {
 class LayoutThemeAndroid final : public LayoutThemeMobile {
  public:
   static scoped_refptr<LayoutTheme> Create();
+  Color SystemColor(CSSValueID,
+                    mojom::blink::ColorScheme color_scheme,
+                    const ui::ColorProvider* color_provider,
+                    bool is_in_web_app_scope) const override;
   bool DelegatesMenuListRendering() const override { return true; }
   Color PlatformActiveSelectionBackgroundColor(
       mojom::blink::ColorScheme color_scheme) const override;

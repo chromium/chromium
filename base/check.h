@@ -6,6 +6,7 @@
 #define BASE_CHECK_H_
 
 #include <iosfwd>
+#include <memory>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -14,7 +15,6 @@
 #include "base/location.h"
 #include "base/macros/if.h"
 #include "base/macros/is_empty.h"
-#include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
@@ -140,9 +140,9 @@ class BASE_EXPORT CheckError {
 
  protected:
   // Takes ownership of `log_message`.
-  explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
+  explicit CheckError(LogMessage* log_message);
 
-  const raw_ptr<LogMessage, DanglingUntriaged> log_message_;
+  std::unique_ptr<LogMessage> log_message_;
 };
 
 class BASE_EXPORT NotReachedError : public CheckError {
@@ -152,11 +152,11 @@ class BASE_EXPORT NotReachedError : public CheckError {
           base::NotFatalUntil::NoSpecifiedMilestoneInternal,
       const base::Location& location = base::Location::Current());
 
-  // Used to trigger a NOTREACHED() without providing file or line while also
-  // discarding log-stream arguments. See base/notreached.h.
+  // Used to trigger a NOTREACHED_IN_MIGRATION() without providing file or line
+  // while also discarding log-stream arguments. See base/notreached.h.
   NOMERGE NOINLINE NOT_TAIL_CALLED static void TriggerNotReached();
 
-  // TODO(crbug.com/851128): Mark [[noreturn]] once this is CHECK-fatal on all
+  // TODO(crbug.com/40580068): Mark [[noreturn]] once this is CHECK-fatal on all
   // builds.
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
 
@@ -164,8 +164,9 @@ class BASE_EXPORT NotReachedError : public CheckError {
   using CheckError::CheckError;
 };
 
-// TODO(crbug.com/851128): This should take the name of the above class once all
-// callers of NOTREACHED() have migrated to the CHECK-fatal version.
+// TODO(crbug.com/40580068): This should take the name of the above class once
+// all callers of NOTREACHED_IN_MIGRATION() have migrated to the CHECK-fatal
+// version.
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
   explicit NotReachedNoreturnError(
@@ -178,15 +179,15 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // compiler to identify and warn about dead code, e.g.:
 //
 //   return 2;
-//   NOTREACHED();
+//   NOTREACHED_IN_MIGRATION();
 //
 // The 'switch' is used to prevent the 'else' from being ambiguous when the
 // macro is used in an 'if' clause such as:
 // if (a == 1)
 //   CHECK(Foo());
 //
-// TODO(crbug.com/1380930): Remove the const bool when the blink-gc plugin has
-// been updated to accept `if (LIKELY(!field_))` as well as `if (!field_)`.
+// TODO(crbug.com/40244950): Remove the const bool when the blink-gc plugin has
+// been updated to accept `if (!field_) [[likely]]` as well as `if (!field_)`.
 #define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition)              \
   switch (0)                                                              \
   case 0:                                                                 \
@@ -195,8 +196,8 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
     /* The optimizer can use this as a hint to place the failure path */  \
     /* out-of-line, e.g. at the tail of the function. */                  \
     if (const bool probably_true = static_cast<bool>(condition);          \
-        LIKELY(ANALYZER_ASSUME_TRUE(probably_true)))                      \
-      ;                                                                   \
+        ANALYZER_ASSUME_TRUE(probably_true))                              \
+      [[likely]];                                                         \
     else                                                                  \
       (check_stream)
 
@@ -207,10 +208,18 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
-[[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
+[[noreturn]] NOMERGE IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
   base::ImmediateCrash();
 }
 
+// TODO(crbug.com/357081797): Use `[[unlikely]]` instead when there's a way to
+// switch the expression below to a statement without breaking
+// -Wthread-safety-analysis.
+#if HAS_BUILTIN(__builtin_expect)
+#define BASE_INTERNAL_EXPECT_FALSE(cond) __builtin_expect(!(cond), 0)
+#else
+#define BASE_INTERNAL_EXPECT_FALSE(cond) !(cond)
+#endif
 // Discard log strings to reduce code bloat when there is no NotFatalUntil
 // argument (which temporarily preserves logging both locally and in crash
 // reports).
@@ -220,12 +229,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // compiler optimizations. Unlike the other check macros, this one does not use
 // LOGGING_CHECK_FUNCTION_IMPL(), since it is incompatible with
 // EAT_CHECK_STREAM_PARAMETERS().
-#define CHECK(condition, ...)                                 \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                         \
-          UNLIKELY(!(condition)) ? logging::CheckFailure()    \
-                                 : EAT_CHECK_STREAM_PARAMS(), \
-          LOGGING_CHECK_FUNCTION_IMPL(                        \
-              logging::CheckError::Check(#condition, __VA_ARGS__), condition))
+#define CHECK(cond, ...)                                                \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                                   \
+          BASE_INTERNAL_EXPECT_FALSE(cond) ? logging::CheckFailure()    \
+                                           : EAT_CHECK_STREAM_PARAMS(), \
+          LOGGING_CHECK_FUNCTION_IMPL(                                  \
+              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
 
 #define CHECK_WILL_STREAM() false
 
@@ -295,7 +304,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 [[noreturn]] BASE_EXPORT void RawCheckFailure(const char* message);
 #define RAW_CHECK(condition)                                        \
   do {                                                              \
-    if (UNLIKELY(!(condition))) {                                   \
+    if (!(condition)) [[unlikely]] {                                \
       ::logging::RawCheckFailure("Check failed: " #condition "\n"); \
     }                                                               \
   } while (0)

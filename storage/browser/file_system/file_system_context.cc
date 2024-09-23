@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -138,7 +139,6 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
       return FILE_PERMISSION_ALWAYS_DENY;
   }
   NOTREACHED();
-  return FILE_PERMISSION_ALWAYS_DENY;
 }
 
 scoped_refptr<FileSystemContext> FileSystemContext::Create(
@@ -268,56 +268,6 @@ void FileSystemContext::Initialize() {
           base::RetainedRef(this), std::move(quota_client_receiver)));
 }
 
-void FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
-    const blink::StorageKey& storage_key) {
-  DCHECK(default_file_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!storage_key.origin().opaque());
-
-  // Different FileSystemTypes may map to the same BucketLocator. Retrieve the
-  // bucket once for those FileSystemTypes.
-  base::flat_map<blink::mojom::StorageType, std::vector<FileSystemType>>
-      quota_to_fs_type_map;
-  for (auto& type_backend_pair : backend_map_) {
-    if (!type_backend_pair.second->GetQuotaUtil()) {
-      continue;
-    }
-    auto quota_type = FileSystemTypeToQuotaStorageType(type_backend_pair.first);
-    quota_to_fs_type_map[quota_type].push_back(type_backend_pair.first);
-  }
-
-  for (auto& type_pair : quota_to_fs_type_map) {
-    quota_manager_proxy()->GetOrCreateBucketDeprecated(
-        BucketInitParams::ForDefaultBucket(storage_key), type_pair.first,
-        default_file_task_runner_.get(),
-        base::BindOnce(&FileSystemContext::OnGetBucketForStorageKeyDeletion,
-                       weak_factory_.GetWeakPtr(), type_pair.second));
-  }
-}
-
-void FileSystemContext::OnGetBucketForStorageKeyDeletion(
-    std::vector<FileSystemType> types,
-    QuotaErrorOr<BucketInfo> result) {
-  if (!result.has_value()) {
-    return;
-  }
-
-  auto bucket = result->ToBucketLocator();
-  for (auto& type : types) {
-    FileSystemBackend* backend = GetFileSystemBackend(type);
-    backend->GetQuotaUtil()->DeleteBucketDataOnFileTaskRunner(
-        this, quota_manager_proxy().get(), bucket, type);
-  }
-
-  // Trigger cache deletion for the default bucket once. This is done after
-  // `storage_key` data deletion so deletion doesn't trigger twice for
-  // kFileSystemTypeTemporary and kFileSystemTypePersistent.
-  if (bucket.type == blink::mojom::StorageType::kTemporary) {
-    if (auto* quota_util = GetQuotaUtil(kFileSystemTypeTemporary)) {
-      quota_util->DeleteCachedDefaultBucket(bucket.storage_key);
-    }
-  }
-}
-
 scoped_refptr<QuotaReservation>
 FileSystemContext::CreateQuotaReservationOnFileTaskRunner(
     const blink::StorageKey& storage_key,
@@ -380,7 +330,6 @@ FileSystemBackend* FileSystemContext::GetFileSystemBackend(
   if (found != backend_map_.end())
     return found->second;
   NOTREACHED() << "Unknown filesystem type: " << type;
-  return nullptr;
 }
 
 WatcherManager* FileSystemContext::GetWatcherManager(
@@ -692,30 +641,23 @@ bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
 }
 
 FileSystemContext::~FileSystemContext() {
-  // TODO(crbug.com/823854) This is a leak. Delete env after the backends have
+  // TODO(crbug.com/41377719) This is a leak. Delete env after the backends have
   // been deleted.
   env_override_.release();
 }
 
-std::vector<blink::mojom::StorageType>
+base::flat_set<blink::mojom::StorageType>
 FileSystemContext::QuotaManagedStorageTypes() {
   std::vector<blink::mojom::StorageType> quota_storage_types;
-  for (const auto& file_system_type_and_backend : backend_map_) {
-    FileSystemType file_system_type = file_system_type_and_backend.first;
-    blink::mojom::StorageType storage_type =
+  for (FileSystemType file_system_type : GetFileSystemTypes()) {
+    const blink::mojom::StorageType storage_type =
         FileSystemTypeToQuotaStorageType(file_system_type);
-
-    // An more elegant way of filtering out non-quota-managed backends would be
-    // to call GetQuotaUtil() on backends. Unfortunately, the method assumes the
-    // backends are initialized.
-    if (storage_type == blink::mojom::StorageType::kUnknown ||
-        storage_type == blink::mojom::StorageType::kDeprecatedQuotaNotManaged) {
-      continue;
+    if (storage_type == blink::mojom::StorageType::kTemporary ||
+        storage_type == blink::mojom::StorageType::kSyncable) {
+      quota_storage_types.push_back(storage_type);
     }
-
-    quota_storage_types.push_back(storage_type);
   }
-  return quota_storage_types;
+  return base::MakeFlatSet<blink::mojom::StorageType>(quota_storage_types);
 }
 
 std::unique_ptr<FileSystemOperation>

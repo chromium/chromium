@@ -28,6 +28,9 @@
 
 @property(nonatomic, readonly) int32_t identifier;
 
+// Returns true if SnapshotID is valid.
+- (BOOL)valid;
+
 // Returns the hash value of `identifier`.
 - (NSUInteger)hash;
 

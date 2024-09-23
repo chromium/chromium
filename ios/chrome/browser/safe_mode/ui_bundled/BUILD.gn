@@ -1,0 +1,93 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  configs += []
+  sources = [
+    "safe_mode_coordinator.h",
+    "safe_mode_coordinator.mm",
+    "safe_mode_view_controller.h",
+    "safe_mode_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/safe_mode/model",
+    "//ios/chrome/browser/safe_mode/ui_bundled/resources",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/crash_report",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safe_mode_app_interface.h",
+    "safe_mode_app_interface.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "safe_mode_app_interface.h",
+    "safe_mode_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "safe_mode_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base:base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:block_swizzler",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "safe_mode_coordinator_unittest.mm",
+    "safe_mode_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/crash/core/app",
+    "//components/crash/core/common:reporter_running_ios",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/common/crash_report",
+    "//ios/testing:block_swizzler",
+    "//testing/gtest",
+    "//third_party/crashpad/crashpad/client",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

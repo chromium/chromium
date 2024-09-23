@@ -291,7 +291,7 @@ String Notification::dir() const {
       return "auto";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -377,7 +377,8 @@ v8::LocalVector<v8::Value> Notification::actions(
         action->setType("text");
         break;
       default:
-        NOTREACHED() << "Unknown action type: " << actions[i]->type;
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown action type: " << actions[i]->type;
     }
 
     action->setAction(actions[i]->action);
@@ -404,7 +405,7 @@ String Notification::scenario() const {
       return "incoming-call";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -419,7 +420,7 @@ String Notification::PermissionString(
       return "default";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "denied";
 }
 
@@ -455,11 +456,11 @@ String Notification::permission(ExecutionContext* context) {
   return PermissionString(status);
 }
 
-ScriptPromise Notification::requestPermission(
+ScriptPromise<V8NotificationPermission> Notification::requestPermission(
     ScriptState* script_state,
     V8NotificationPermissionCallback* deprecated_callback) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise();
+    return EmptyPromise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 

@@ -30,11 +30,11 @@ test("device_unittests") {
     "bluetooth/bluetooth_discovery_filter_unittest.cc",
     "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-    "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_characteristic_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_descriptor_unittest.cc",
     "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
     "bluetooth/device_unittest.cc",
+    "bluetooth/gatt_service_unittest.cc",
     "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
     "bluetooth/server_socket_unittest.cc",
     "bluetooth/socket_unittest.cc",
@@ -83,7 +83,10 @@ test("device_unittests") {
   }
 
   if (is_mac) {
-    sources += [ "bluetooth/bluetooth_adapter_mac_unittest.mm" ]
+    sources += [
+      "bluetooth/bluetooth_adapter_mac_unittest.mm",
+      "bluetooth/bluetooth_classic_device_mac_unittest.mm",
+    ]
   }
 
   if (is_android) {
@@ -116,11 +119,11 @@ test("device_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations:dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
+    "//components/prefs:test_support",
     "//crypto:test_support",
     "//device/base",
     "//device/base/synchronization",
@@ -128,6 +131,7 @@ test("device_unittests") {
     "//device/bluetooth:deprecated_experimental_mojo",
     "//device/bluetooth:fake_bluetooth",
     "//device/bluetooth:mocks",
+    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
     "//device/gamepad",
     "//device/gamepad:test_helpers",
     "//device/gamepad/public/cpp:shared_with_blink",
@@ -139,6 +143,7 @@ test("device_unittests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
     "//url",
@@ -149,6 +154,10 @@ test("device_unittests") {
     "//testing/buildbot/filters:device_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
+
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:device_unittests_filters" ]
+  }
 
   if (!is_ios) {
     deps += [
@@ -176,6 +185,11 @@ test("device_unittests") {
       "fido/ctap_request_unittest.cc",
       "fido/ctap_response_unittest.cc",
       "fido/enclave/enclave_protocol_utils_unittest.cc",
+      "fido/enclave/verify/amd_unittest.cc",
+      "fido/enclave/verify/claim_unittest.cc",
+      "fido/enclave/verify/endorsement_unittest.cc",
+      "fido/enclave/verify/rekor_unittest.cc",
+      "fido/enclave/verify/utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
       "fido/fido_device_discovery_unittest.cc",
@@ -189,11 +203,9 @@ test("device_unittests") {
       "fido/make_credential_handler_unittest.cc",
       "fido/make_credential_task_unittest.cc",
       "fido/pin_unittest.cc",
-      "fido/test_callback_receiver_unittest.cc",
       "fido/u2f_command_constructor_unittest.cc",
       "fido/u2f_register_operation_unittest.cc",
       "fido/u2f_sign_operation_unittest.cc",
-      "fido/value_response_conversions_unittest.cc",
       "fido/virtual_ctap2_device_unittest.cc",
       "fido/virtual_fido_device_authenticator_unittest.cc",
       "fido/virtual_u2f_device_unittest.cc",
@@ -204,6 +216,8 @@ test("device_unittests") {
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]
+
+    data = [ "fido/enclave/verify/testdata/" ]
 
     if (is_chromeos_lacros) {
       deps += [ "//chromeos/startup" ]
@@ -216,6 +230,7 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
+      "fido/enclave/icloud_recovery_key_mac_unittest.mm",
       "fido/mac/authenticator_unittest.mm",
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
@@ -225,7 +240,10 @@ test("device_unittests") {
       "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
     ]
-    deps += [ "//device/fido:icloud_keychain_test_support" ]
+    deps += [
+      "//components/trusted_vault",
+      "//device/fido:icloud_keychain_test_support",
+    ]
   }
 
   if (is_win) {
@@ -302,6 +320,7 @@ test("device_unittests") {
       "bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_unittest.cc",
       "bluetooth/floss/bluetooth_floss_unittest.cc",
       "bluetooth/floss/bluetooth_gatt_floss_unittest.cc",
+      "bluetooth/floss/bluetooth_local_gatt_service_floss_unittest.cc",
       "bluetooth/floss/bluetooth_socket_floss_unittest.cc",
       "bluetooth/floss/exported_callback_manager_unittest.cc",
       "bluetooth/floss/floss_adapter_client_unittest.cc",
@@ -339,7 +358,6 @@ test("device_unittests") {
     sources -= [
       "bluetooth/bluetooth_local_gatt_characteristic_unittest.cc",
       "bluetooth/bluetooth_local_gatt_descriptor_unittest.cc",
-      "bluetooth/bluetooth_local_gatt_service_unittest.cc",
     ]
 
     sources += [

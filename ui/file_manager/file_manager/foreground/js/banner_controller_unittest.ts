@@ -7,15 +7,15 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_
 import type {Crostini} from '../../background/js/crostini.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
-import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged} from '../../common/js/mock_chrome.js';
+import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {storage} from '../../common/js/storage.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {getRootTypeFromVolumeType, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../state/state.js';
 
 import {BannerController} from './banner_controller.js';
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {type AllowedVolumeOrType, Banner, BANNER_INFINITE_TIME, BannerEvent, type MinDiskThreshold} from './ui/banners/types.js';
 
@@ -30,6 +30,10 @@ let mockChromeFileManagerPrivate: MockChromeFileManagerPrivateDirectoryChanged;
 let volumeManagerGetVolumeInfoType: VolumeInfo;
 
 let mockDate: {setDate: (date: number) => void, restoreDate: () => void};
+
+let mockFileSystem: MockFileSystem;
+
+let mockEntry: Entry;
 
 interface TestBanner {
   setAllowedVolumes: (allowedBannerTypes: AllowedVolumeOrType[]) => void;
@@ -171,7 +175,6 @@ function isOnlyBannerVisible(banner: TestBanner) {
 
 /**
  * Helper method to use with waitUntil to assert that all banners are hidden.
- * @returns {boolean}
  */
 function isAllBannersHidden() {
   for (let i = 0; i < bannerContainer.children.length; i++) {
@@ -214,7 +217,7 @@ function changeCurrentVolume(
 
   directoryModel.getCurrentDirEntry = function(): any {
     const rootType = directoryModel.getCurrentRootType();
-    return rootType ? new FakeEntryImpl('entry', rootType) : null;
+    return rootType ? mockEntry : null;
   };
 
   directoryModel.dispatchEvent(new CustomEvent('directory-changed'));
@@ -333,6 +336,10 @@ export function setUp() {
 
   mockChromeFileManagerPrivate =
       new MockChromeFileManagerPrivateDirectoryChanged();
+
+  mockFileSystem = new MockFileSystem('volumeId');
+  mockFileSystem.populate(['/']);
+  mockEntry = mockFileSystem.entries['/']!;
 
   directoryModel = createFakeDirectoryModel();
   const volumeManager = {

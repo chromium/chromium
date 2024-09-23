@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  #container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #start {
+    position:relative;
+    width : 100px;
+    height : 100px;
+    overflow : scroll;
+  }
+
+  #start p {
+    width : 101px;
+    height :70px;
+  }
+
+  .focusable {
+    position: absolute;
+  }
+
+  #top {
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  #bottom {
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  #left {
+    top: 50%;
+    left: -50px;
+    transform: translateY(-50%);
+  }
+
+  #right {
+    top: 50%;
+    right: -50px;
+    transform: translateY(-50%);
+  }
+</style>
+
+<div id="container">
+  <div id="start">
+    <p> spatial nav test. </p>
+  </div>
+  <a id="top" href="#" class="focusable">top</a>
+  <a id="bottom" href="#" class="focusable">bottom</a>
+  <a id="left" href="#" class="focusable">left</a>
+  <a id="right" href="#" class="focusable">right</a>
+</div>
+
+<script>
+  function triggerAndAssertZoomLevel(direction, expectedElement, zoomLevel) {
+    snav.triggerMove(direction);
+    assert_equals(document.activeElement, expectedElement,
+      'Navigated "' + direction + '" at "' + zoomLevel + '%" zoom :');
+  }
+
+  function checkArrowKeyFunctionality(zoomLevel) {
+    document.getElementById("start").focus();
+    const start = document.getElementById('start');
+    const top = document.getElementById('top');
+    const bottom = document.getElementById('bottom');
+    const left = document.getElementById('left');
+    const right = document.getElementById('right');
+
+    let navigationMap = [
+      // #start is focused and scrollable down. First down key scrolls, not move focus.
+      ['Down', start],
+      // Scroller fully scrolled down. Down key moves focus to #bottom.
+      ['Down', bottom],
+      // Scroller scrolled up. Up key moves focus to #start.
+      ['Up', start],
+      // Up key scrolls to maintain state, not move focus.
+      ['Up', start],
+      // Scroller fully scrolled up. Up key moves focus to #top.
+      ['Up', top],
+      // Scroller scrolled down. Down key moves focus to #start.
+      ['Down', start],
+      // #start is focused and scrollable right. Right key scrolls, not move focus.
+      ['Right', start],
+      // Scroller fully scrolled right. Right key moves focus to #right.
+      ['Right', right],
+      // Scroller scrolled left. Left key moves focus to #start.
+      ['Left', start],
+      // Left key scrolls to maintain state, not move focus.
+      ['Left', start],
+      // Scroller fully scrolled left. Left key moves focus to #left.
+      ['Left', left],
+      // Final reset: scroller moves to #start using right key.
+      ['Right', start],
+    ]
+
+    for (const [direction, element] of navigationMap)
+      triggerAndAssertZoomLevel(direction, element, zoomLevel);
+  }
+
+  test(() => {
+    snav.assertSnavEnabledAndTestable();
+    let zoomLevels = [50, 75, 80, 90, 100, 110, 125, 200, 300];
+    for (zoom of zoomLevels) {
+      document.body.style.zoom = zoom + "%"
+      checkArrowKeyFunctionality(zoom);
+    }
+  }, 'Testing spatial navigation with scrolling and zoom changes');
+</script>

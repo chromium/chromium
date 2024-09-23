@@ -26,7 +26,7 @@ bool ServiceWorkerContentSettingsProxy::AllowStorageAccessSync(
     GetService()->AllowIndexedDB(&result);
     return result;
   } else if (storage_type == StorageType::kFileSystem) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   } else {
     // TODO(shuagga@microsoft.com): Revisit this default in the future.

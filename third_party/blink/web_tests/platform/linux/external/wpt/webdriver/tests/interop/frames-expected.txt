@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_classic_switch_to_parent_no_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+Harness: the test ran to completion.

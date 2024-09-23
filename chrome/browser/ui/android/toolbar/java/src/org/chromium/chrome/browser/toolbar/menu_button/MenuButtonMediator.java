@@ -61,7 +61,6 @@ class MenuButtonMediator implements AppMenuObserver {
     private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
-    private boolean mSuppressAppMenuUpdateBadge;
     private Resources mResources;
     private final OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
     private final Supplier<MenuButtonState> mMenuButtonStateSupplier;
@@ -174,15 +173,6 @@ class MenuButtonMediator implements AppMenuObserver {
         mPropertyModel.set(MenuButtonProperties.IS_HIGHLIGHTING, isHighlighting);
     }
 
-    void setAppMenuUpdateBadgeSuppressed(boolean isSuppressed) {
-        mSuppressAppMenuUpdateBadge = isSuppressed;
-        if (isSuppressed) {
-            removeAppMenuUpdateBadge(false);
-        } else if (isUpdateAvailable() && mCanShowAppUpdateBadge) {
-            showAppMenuUpdateBadge(false);
-        }
-    }
-
     void setVisibility(boolean visible) {
         mPropertyModel.set(MenuButtonProperties.IS_VISIBLE, visible);
     }
@@ -220,9 +210,6 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private void showAppMenuUpdateBadge(boolean animate) {
-        if (mSuppressAppMenuUpdateBadge) {
-            return;
-        }
         MenuButtonState buttonState = mMenuButtonStateSupplier.get();
         assert buttonState != null : "No button state when trying to show the badge.";
         updateContentDescription(true, buttonState.menuContentDescription);
@@ -238,16 +225,20 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private void onTintChanged(
-            ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+            ColorStateList tintList,
+            ColorStateList activityFocusTintList,
+            @BrandedColorScheme int brandedColorScheme) {
         mPropertyModel.set(
-                MenuButtonProperties.THEME, new ThemeProperty(tintList, brandedColorScheme));
+                MenuButtonProperties.THEME,
+                new ThemeProperty(activityFocusTintList, brandedColorScheme));
     }
 
     /**
      * Sets the content description for the menu button.
+     *
      * @param isUpdateBadgeVisible Whether the update menu badge is visible.
      * @param badgeContentDescription Resource id of the string to show if the update badge is
-     *         visible.
+     *     visible.
      */
     private void updateContentDescription(
             boolean isUpdateBadgeVisible, int badgeContentDescription) {

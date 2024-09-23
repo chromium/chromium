@@ -14,6 +14,7 @@
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -39,6 +40,11 @@ NET_EXPORT_PRIVATE scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
 NET_EXPORT_PRIVATE scoped_refptr<SSLPrivateKey> WrapCNGPrivateKey(
     const X509Certificate* certificate,
     crypto::ScopedNCryptKey key);
+
+// Uses `key` to load a second NCrypt key handle and return an
+// SSLPrivateKey making use of that new handle.
+NET_EXPORT scoped_refptr<SSLPrivateKey> WrapUnexportableKeySlowly(
+    const crypto::UnexportableSigningKey& key);
 
 }  // namespace net
 

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -100,7 +101,7 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
   // Contains the hostname and port.
   net::HostPortPair host_port_pair_;
   // Data to be sent to the destination.
-  base::span<const uint8_t> data_;
+  base::raw_span<const uint8_t> data_;
   // Network annotation tag describing the socket traffic.
   net::NetworkTrafficAnnotationTag tag_;
   // Represents the time after host resolution.
@@ -146,10 +147,11 @@ UdpProberImpl::UdpProberImpl(
 
   host_resolver_ = network::SimpleHostResolver::Create(network_context);
 
+  // Resolver host parameter source must be unset or set to ANY in order for DNS
+  // queries with BuiltInDnsClientEnabled policy disabled to work (b/353448388).
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = net::DnsQueryType::A;
-  parameters->source = net::HostResolverSource::DNS;
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 

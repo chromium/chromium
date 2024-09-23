@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [where] throw if condition is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'condition', must be one of [float32, float16, int32]."
+[FAIL] [where] throw if trueValue is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'condition', must be one of [float32, float16, int32]."
+[FAIL] [where] throw if falseValue is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'condition', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

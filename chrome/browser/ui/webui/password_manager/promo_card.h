@@ -16,7 +16,8 @@ class PrefService;
 namespace password_manager {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Needs to stay in sync with the
+// PasswordManagerPromoCard enum in enums.xml.
 enum class PromoCardType {
   // Password Checkup promo bubble.
   kCheckup = 0,
@@ -30,7 +31,9 @@ enum class PromoCardType {
   kRelauchChrome = 4,
   // Move passwords stored only on this device to the account.
   kMovePasswords = 5,
-  kMaxValue = kMovePasswords,
+  // Require reauth before accessing saved passwords.
+  kScreenlockReauth = 6,
+  kMaxValue = kScreenlockReauth,
 };
 
 // This is the base class for all password manager promo cards. It has a basic

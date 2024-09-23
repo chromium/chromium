@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/x/x11_clipboard_helper.h"
 
 #include <string>
@@ -224,8 +229,9 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
   if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType())) {
     available_types.push_back(kMimeTypeURIList);
   }
-  if (target_list.ContainsFormat(ClipboardFormatType::WebCustomDataType())) {
-    available_types.push_back(kMimeTypeWebCustomData);
+  if (target_list.ContainsFormat(
+          ClipboardFormatType::DataTransferCustomType())) {
+    available_types.push_back(kMimeTypeDataTransferCustomData);
   }
 
   return available_types;

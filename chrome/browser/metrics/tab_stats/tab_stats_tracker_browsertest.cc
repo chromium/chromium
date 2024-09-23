@@ -244,7 +244,7 @@ using MockTabStatsObserver = testing::NiceMock<LenientMockTabStatsObserver>;
 
 }  // namespace
 
-// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+// TODO(crbug.com/40752198): Fix the flakiness on MacOS and re-enable the test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
 #else
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_EQ(0U, count_observer.window_count());
 }
 
-// TODO(crbug.com/1459406): Re-enable this test
+// TODO(crbug.com/40919431): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabSwitch DISABLED_TabSwitch
 #else
@@ -493,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_CALL(mock_observer,
                 OnPrimaryMainFrameNavigationCommitted(::testing::_))
         .Times(0);
-    int host_id = prerender_test_helper().AddPrerender(prerender_url);
+    content::FrameTreeNodeId host_id =
+        prerender_test_helper().AddPrerender(prerender_url);
     host_observer = std::make_unique<content::test::PrerenderHostObserver>(
         *GetWebContents(), host_id);
     EXPECT_FALSE(host_observer->was_activated());

@@ -46,9 +46,9 @@ void SendToBrowser(ExecutionContext* context, const DeprecationInfo& info) {
       std::unique_ptr<SourceLocation> source_location =
           CaptureSourceLocation(context);
       frame->GetLocalFrameHostRemote().SendLegacyTechEvent(
-          info.type_,
+          info.type_.ToString(),
           mojom::blink::LegacyTechEventCodeLocation::New(
-              source_location->Url() ? source_location->Url() : String(""),
+              source_location->Url() ? source_location->Url() : g_empty_string,
               source_location->LineNumber(), source_location->ColumnNumber()));
     }
   }
@@ -118,8 +118,9 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   context->CountUse(feature);
   const DeprecationInfo info = GetDeprecationInfo(feature);
 
+  String type = info.type_.ToString();
   // Send the deprecation message as a DevTools issue.
-  AuditsIssue::ReportDeprecationIssue(context, info.type_);
+  AuditsIssue::ReportDeprecationIssue(context, type);
 
   // Send the deprecation message to browser process for enterprise usage.
   SendToBrowser(context, info);
@@ -127,7 +128,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   // Send the deprecation report to the Reporting API and any
   // ReportingObservers.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      info.type_, std::nullopt, info.message_);
+      type, std::nullopt, info.message_.ToString());
   Report* report = MakeGarbageCollected<Report>(ReportType::kDeprecation,
                                                 context->Url(), body);
   ReportingContext::From(context)->QueueReport(report);

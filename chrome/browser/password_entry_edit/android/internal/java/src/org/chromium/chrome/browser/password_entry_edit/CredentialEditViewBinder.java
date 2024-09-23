@@ -29,7 +29,7 @@ class CredentialEditViewBinder {
         } else if (propertyKey == URL_OR_APP) {
             fragmentView.setUrlOrApp(model.get(URL_OR_APP));
         } else if (propertyKey == FEDERATION_ORIGIN) {
-            // TODO(crbug.com/1180252): Treat this case when the federated credentials
+            // TODO(crbug.com/40169863): Treat this case when the federated credentials
             // layout is in place.
         } else if (propertyKey == USERNAME) {
             fragmentView.setUsername(model.get(USERNAME));

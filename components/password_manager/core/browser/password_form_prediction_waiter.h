@@ -36,6 +36,17 @@ class PasswordFormPredictionWaiter {
     virtual void OnTimeout() = 0;
   };
 
+  // This is used for metrics and must be kept in sync with the corresponding
+  // entry in tools/metrics/histograms/metadata/password/enums.xml.
+  // Entries should not be renumbered or reused.
+  enum class WaitResult {
+    kNoTimeout = 0,
+    kTimeoutWaitingForOneClosure = 1,
+    kTimeoutWaitingForTwoOrMoreClosures = 2,
+
+    kMaxValue = kTimeoutWaitingForTwoOrMoreClosures,
+  };
+
   explicit PasswordFormPredictionWaiter(Client* client);
 
   PasswordFormPredictionWaiter(const PasswordFormPredictionWaiter&) = delete;

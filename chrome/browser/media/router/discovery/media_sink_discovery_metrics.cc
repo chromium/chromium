@@ -32,7 +32,7 @@ void DeviceCountMetrics::RecordDeviceCountsIfNeeded(
 }
 
 void DeviceCountMetrics::SetClockForTest(base::Clock* clock) {
-  clock_ = std::move(clock);
+  clock_ = clock;
 }
 
 // static

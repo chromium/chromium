@@ -11,6 +11,8 @@ if (is_android) {
 
 source_set("embedder") {
   sources = [
+    "input_delegate/shopping_service_input_delegate.cc",
+    "input_delegate/shopping_service_input_delegate.h",
     "input_delegate/tab_rank_dispatcher.cc",
     "input_delegate/tab_rank_dispatcher.h",
     "input_delegate/tab_session_source.cc",
@@ -23,6 +25,7 @@ source_set("embedder") {
 
   deps = [
     "//base",
+    "//components/commerce/core:shopping_service",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/segmentation_platform/internal",
@@ -32,6 +35,7 @@ source_set("embedder") {
     "//components/sync_sessions:sync_sessions",
     "//url",
   ]
+  public_deps = [ "//components/segmentation_platform/embedder/home_modules" ]
 
   if (build_with_tflite_lib) {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
@@ -56,6 +60,7 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_list",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
+    "//components/segmentation_platform/embedder/home_modules:unit_tests",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",

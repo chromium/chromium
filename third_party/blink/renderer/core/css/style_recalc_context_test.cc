@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -118,8 +117,8 @@ TEST_F(StyleRecalcContextTest, FromAncestors) {
       before);
 }
 
-TEST_F(StyleRecalcContextTest, FromAncestors_ShadowIncluding) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+TEST_F(StyleRecalcContextTest, FromAncestors_FlatTree) {
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="outer_host" style="container-type:size">
       <template shadowrootmode="open">
         <div id="inner_host" style="container-type:size">
@@ -150,7 +149,7 @@ TEST_F(StyleRecalcContextTest, FromAncestors_ShadowIncluding) {
             outer_host);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*outer_child).container,
-            outer_host);
+            outer_slot);
   EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer_child).container,
             outer_child);
 
@@ -165,7 +164,7 @@ TEST_F(StyleRecalcContextTest, FromAncestors_ShadowIncluding) {
             inner_host);
 
   EXPECT_EQ(StyleRecalcContext::FromAncestors(*inner_child).container,
-            inner_host);
+            inner_slot);
   EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*inner_child).container,
             inner_child);
 

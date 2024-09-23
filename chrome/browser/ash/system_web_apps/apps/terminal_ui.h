@@ -12,14 +12,12 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class TerminalUIConfig : public content::WebUIConfig {
+class TerminalUI;
+
+class TerminalUIConfig : public content::DefaultWebUIConfig<TerminalUI> {
  public:
   TerminalUIConfig();
   ~TerminalUIConfig() override;
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 class TerminalUI : public ui::UntrustedWebUIController {

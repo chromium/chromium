@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/process.mojom.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 
 namespace arc {
@@ -15,16 +16,6 @@ namespace arc {
 using mojom::ProcessState;
 
 namespace {
-
-constexpr const char kCloudDpcrocessName[] =
-    "com.google.android.apps.work.clouddpc.arc";
-
-constexpr const char* kGmsCoreProtectedServices[] = {
-    "com.google.process.gservices",
-    "com.google.android.gms",
-    "com.google.android.gms.persistent",
-    "com.google.android.gms.unstable",
-};
 
 bool IsImportantState(ProcessState state) {
   switch (state) {
@@ -124,15 +115,21 @@ bool ArcProcess::IsBackgroundProtected() const {
 }
 
 bool ArcProcess::IsArcProtected() const {
-  return process_name() == kCloudDpcrocessName;
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+      {"com.google.android.apps.work.clouddpc.arc"});
+
+  return kSet.contains(process_name());
 }
 
 bool ArcProcess::IsGmsCoreProtected() const {
-  for (const char* service : kGmsCoreProtectedServices) {
-    if (process_name() == service)
-      return true;
-  }
-  return false;
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+      "com.google.process.gservices",
+      "com.google.android.gms",
+      "com.google.android.gms.persistent",
+      "com.google.android.gms.unstable",
+  });
+
+  return kSet.contains(process_name());
 }
 
 std::ostream& operator<<(std::ostream& out, const ArcProcess& arc_process) {

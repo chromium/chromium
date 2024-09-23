@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 IOSChromeSigninAndSyncStatusMetricsProvider::
@@ -26,17 +26,14 @@ void IOSChromeSigninAndSyncStatusMetricsProvider::ProvideCurrentSessionData(
 
 signin_metrics::ProfilesStatus
 IOSChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
-  std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
   signin_metrics::ProfilesStatus profiles_status;
-  for (ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     auto* session_duration =
         IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
             browser_state);
     signin_metrics::UpdateProfilesStatusBasedOnSignInAndSyncStatus(
-        profiles_status, session_duration->IsSignedIn(),
+        profiles_status, session_duration->GetSigninStatus(),
         session_duration->IsSyncing());
   }
   return profiles_status;

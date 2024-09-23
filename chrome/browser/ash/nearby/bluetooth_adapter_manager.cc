@@ -4,9 +4,64 @@
 
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/adapter.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated. This enum should be kept in sync with the
+// NearbyBluetoothAdapterAdvertisingSupport enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+enum class NearbyBluetoothAdapterAdvertisingSupport {
+  kExtendedAdvertisingAndScatternetDualRole = 0,
+  kExtendedAdvertisingOnly = 1,
+  kScatternetDualRoleOnly = 2,
+  kLegacyAdvertisingOnly = 3,
+  kMaxValue = kLegacyAdvertisingOnly,
+};
+
+void LogBluetoothAdapterAdvertisingSupport(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  bool is_extended_advertisement_supported =
+      bluetooth_adapter->IsExtendedAdvertisementsAvailable();
+  bool is_scatternet_dual_role_supported = base::Contains(
+      bluetooth_adapter->GetSupportedRoles(),
+      device::BluetoothAdapter::BluetoothRole::kCentralPeripheral);
+
+  if (is_extended_advertisement_supported &&
+      is_scatternet_dual_role_supported) {
+    base::UmaHistogramEnumeration(
+        "Nearby.BluetoothAdapter.AdvertisingSupport",
+        NearbyBluetoothAdapterAdvertisingSupport::
+            kExtendedAdvertisingAndScatternetDualRole);
+    return;
+  }
+
+  if (is_extended_advertisement_supported) {
+    base::UmaHistogramEnumeration(
+        "Nearby.BluetoothAdapter.AdvertisingSupport",
+        NearbyBluetoothAdapterAdvertisingSupport::kExtendedAdvertisingOnly);
+    return;
+  }
+
+  if (is_scatternet_dual_role_supported) {
+    base::UmaHistogramEnumeration(
+        "Nearby.BluetoothAdapter.AdvertisingSupport",
+        NearbyBluetoothAdapterAdvertisingSupport::kScatternetDualRoleOnly);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Nearby.BluetoothAdapter.AdvertisingSupport",
+      NearbyBluetoothAdapterAdvertisingSupport::kLegacyAdvertisingOnly);
+}
+
+}  // namespace
 
 namespace ash {
 namespace nearby {
@@ -17,6 +72,8 @@ BluetoothAdapterManager::~BluetoothAdapterManager() = default;
 void BluetoothAdapterManager::Initialize(
     mojo::PendingReceiver<bluetooth::mojom::Adapter> pending_receiver,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  LogBluetoothAdapterAdvertisingSupport(bluetooth_adapter);
+
   // It's safe to hold the raw pointer for |bluetooth_adapter| in
   // |device_bluetooth_adapter_| because ownership is passed to
   // |bluetooth_adapter_| which will stay around until this class is destroyed.

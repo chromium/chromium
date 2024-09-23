@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../cr_hidden_style.css.js';
-import '../cr_icons.css.js';
-import '../cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {MouseHoverableMixin} from '../mouse_hoverable_mixin.js';
+import {MouseHoverableMixinLit} from '../mouse_hoverable_mixin_lit.js';
 
-import {getTemplate} from './cr_url_list_item.html.js';
+import {getCss} from './cr_url_list_item.css.js';
+import {getHtml} from './cr_url_list_item.html.js';
 
 export enum CrUrlListItemSize {
   COMPACT = 'compact',
@@ -24,119 +23,155 @@ export enum CrUrlListItemSize {
 
 export interface CrUrlListItemElement {
   $: {
+    anchor: HTMLAnchorElement,
+    badgesContainer: HTMLElement,
     badges: HTMLSlotElement,
+    button: HTMLElement,
     content: HTMLSlotElement,
     description: HTMLSlotElement,
-    title: HTMLButtonElement,
+    metadata: HTMLElement,
   };
 }
 
-const CrUrlListItemElementBase = MouseHoverableMixin(PolymerElement);
+const CrUrlListItemElementBase = MouseHoverableMixinLit(CrLitElement);
 
 export class CrUrlListItemElement extends CrUrlListItemElementBase {
   static get is() {
     return 'cr-url-list-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      buttonAriaLabel: String,
-      buttonAriaDescription: String,
-      count: Number,
-      description: String,
-      url: String,
+      alwaysShowSuffix: {
+        type: Boolean,
+        reflect: true,
+      },
+      itemAriaLabel: {type: String},
+      itemAriaDescription: {type: String},
+      count: {type: Number},
+      description: {type: String},
+      url: {type: String},
 
       title: {
-        reflectToAttribute: true,
+        reflect: true,
         type: String,
       },
 
-      hasBadges_: {
+      hasBadges: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       hasDescriptions_: {
         type: Boolean,
-        computed: 'computeHasDescriptions_(hasBadges_, description)',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       hasSlottedContent_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       reverseElideDescription: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
 
       isFolder_: {
-        computed: 'computeIsFolder_(count)',
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       size: {
-        observer: 'onSizeChanged_',
-        reflectToAttribute: true,
         type: String,
-        value: CrUrlListItemSize.MEDIUM,
+        reflect: true,
       },
 
-      imageUrls: {
-        observer: 'resetFirstImageLoaded_',
-        type: Array,
-        value: () => [],
-      },
+      imageUrls: {type: Array},
 
       firstImageLoaded_: {
         type: Boolean,
-        value: false,
+        state: true,
       },
 
       forceHover: {
-        reflectToAttribute: true,
+        reflect: true,
         type: Boolean,
-        value: false,
       },
 
-      descriptionMeta: {
-        type: String,
-        value: '',
-      },
+      descriptionMeta: {type: String},
+
+      /**
+       * Flag that determines if the element should use an anchor tag or a
+       * button element as its focusable item. An anchor provides the native
+       * context menu and browser interactions for links, while a button
+       * provides its own unique functionality, such as pressing space to
+       * activate.
+       */
+      asAnchor: {type: Boolean},
+      asAnchorTarget: {type: String},
     };
   }
 
-  buttonAriaLabel?: string;
-  buttonAriaDescription?: string;
+  alwaysShowSuffix: boolean = false;
+  asAnchor: boolean = false;
+  asAnchorTarget: string = '_self';
+  itemAriaLabel?: string;
+  itemAriaDescription?: string;
   count?: number;
   description?: string;
-  reverseElideDescription: boolean;
-  private hasBadges_: boolean;
-  private hasDescription_: boolean;
-  private hasSlottedContent_: boolean;
-  private isFolder_: boolean;
-  size: CrUrlListItemSize;
+  reverseElideDescription: boolean = false;
+  hasBadges: boolean = false;
+  protected hasDescriptions_: boolean = false;
+  protected hasSlottedContent_: boolean = false;
+  protected isFolder_: boolean = false;
+  size: CrUrlListItemSize = CrUrlListItemSize.MEDIUM;
+  override title: string = '';
   url?: string;
-  imageUrls: string[];
-  private firstImageLoaded_: boolean;
-  forceHover: boolean;
-  descriptionMeta: string;
+  imageUrls: string[] = [];
+  protected firstImageLoaded_: boolean = false;
+  forceHover: boolean = false;
+  descriptionMeta: string = '';
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     FocusOutlineManager.forDocument(document);
     this.addEventListener('pointerdown', () => this.setActiveState_(true));
     this.addEventListener('pointerup', () => this.setActiveState_(false));
     this.addEventListener('pointerleave', () => this.setActiveState_(false));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('hasBadges') ||
+        changedProperties.has('description')) {
+      this.hasDescriptions_ =
+          !!this.description || this.hasBadges || !!this.descriptionMeta;
+    }
+
+    if (changedProperties.has('count')) {
+      this.isFolder_ = this.count !== undefined;
+    }
+
+    if (changedProperties.has('size')) {
+      assert(Object.values(CrUrlListItemSize).includes(this.size));
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('imageUrls')) {
+      this.resetFirstImageLoaded_();
+    }
   }
 
   override connectedCallback() {
@@ -145,9 +180,15 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   override focus() {
-    // This component itself is not focusable, so override its focus method
-    // to focus its main focusable child, the title button.
-    this.$.title.focus();
+    this.getFocusableElement().focus();
+  }
+
+  getFocusableElement() {
+    if (this.asAnchor) {
+      return this.$.anchor;
+    } else {
+      return this.$.button;
+    }
   }
 
   private resetFirstImageLoaded_() {
@@ -167,80 +208,67 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     }, {once: true});
   }
 
-  private computeHasDescriptions_(): boolean {
-    return !!this.description || this.hasBadges_ || !!this.descriptionMeta;
+  protected getItemAriaDescription_(): string|undefined {
+    return this.itemAriaDescription || this.description;
   }
 
-  private computeIsFolder_(): boolean {
-    return this.count !== undefined;
+  protected getItemAriaLabel_(): string {
+    return this.itemAriaLabel || this.title;
   }
 
-  private getButtonAriaDescription_(): string|undefined {
-    return this.buttonAriaDescription || this.description;
-  }
-
-  private getButtonAriaLabel_(): string {
-    return this.buttonAriaLabel || this.title;
-  }
-
-  private getDisplayedCount_() {
+  protected getDisplayedCount_(): string {
     if (this.count && this.count > 999) {
       // The square to display the count only fits 3 characters.
       return '99+';
     }
 
-    return this.count;
+    return this.count === undefined ? '' : this.count.toString();
   }
 
-  private getFavicon_(): string {
+  protected getFavicon_(): string {
     return getFaviconForPageURL(this.url || '', false);
   }
 
-  private shouldShowImageUrl_(_url: string, index: number) {
+  protected shouldShowImageUrl_(_url: string, index: number): boolean {
     return index <= 1;
   }
 
-  private onBadgesSlotChange_() {
-    this.hasBadges_ =
-        this.$.badges.assignedElements({flatten: true}).length > 0;
+  protected onBadgesSlotChange_() {
+    this.hasBadges = this.$.badges.assignedElements({flatten: true}).length > 0;
   }
 
-  private onContentSlotChange_() {
+  protected onContentSlotChange_() {
     this.hasSlottedContent_ =
         this.$.content.assignedElements({flatten: true}).length > 0;
-  }
-
-  private onSizeChanged_() {
-    assert(Object.values(CrUrlListItemSize).includes(this.size));
   }
 
   private setActiveState_(active: boolean) {
     this.classList.toggle('active', active);
   }
 
-  private shouldShowFavicon_(): boolean {
+  protected shouldShowFavicon_(): boolean {
     return this.url !== undefined &&
         (this.size === CrUrlListItemSize.COMPACT ||
          this.imageUrls.length === 0);
   }
 
-  private shouldShowUrlImage_(): boolean {
+  protected shouldShowUrlImage_(): boolean {
     return this.url !== undefined &&
         !(this.size === CrUrlListItemSize.COMPACT ||
           this.imageUrls.length === 0) &&
         this.firstImageLoaded_;
   }
 
-  private shouldShowFolderImages_(): boolean {
+  protected shouldShowFolderImages_(): boolean {
     return this.size !== CrUrlListItemSize.COMPACT;
   }
 
-  private shouldShowFolderIcon_(): boolean {
+  protected shouldShowFolderIcon_(): boolean {
     return this.size === CrUrlListItemSize.COMPACT ||
         this.imageUrls.length === 0;
   }
 
-  private shouldShowFolderCount_(): boolean {
+  protected shouldShowFolderCount_(): boolean {
     return this.url === undefined;
   }
 }

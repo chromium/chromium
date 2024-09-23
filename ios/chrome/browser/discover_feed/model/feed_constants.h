@@ -37,6 +37,14 @@ typedef NS_ENUM(NSInteger, FeedUpdateType) {
   FeedUpdateTypeResumeFromBackground,
 };
 
+// Enum representing the different types of updates to the feed layout.
+typedef NS_ENUM(NSInteger, FeedLayoutUpdateType) {
+  FeedLayoutUpdateTypeUnknown = 0,
+  FeedLayoutUpdateTypeAdd,
+  FeedLayoutUpdateTypeDelete,
+  FeedLayoutUpdateTypeReload,
+};
+
 // The types of sorting for the Following feed.
 typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   // Does not provide a sort type. Used for non-Following feeds.
@@ -46,9 +54,6 @@ typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   // Sorts content in reverse-chronological order without groups.
   FollowingFeedSortTypeByLatest
 };
-
-// The identifier used to register and schedule background feed refresh tasks.
-extern NSString* const kFeedBackgroundRefreshTaskIdentifier;
 
 // The user defaults key indicating if the user has ever engaged with a feed.
 extern NSString* const kEngagedWithFeedKey;

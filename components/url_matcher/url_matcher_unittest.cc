@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/url_matcher/url_matcher.h"
 
 #include <stddef.h>
@@ -71,7 +76,7 @@ namespace {
 void CreateAndAddCidrBlock(
     const std::string& cidr_block,
     std::vector<URLMatcherCidrBlockFilter::CidrBlock>& blocks) {
-  const auto& block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
+  auto block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
   ASSERT_TRUE(block.has_value());
   blocks.push_back(std::move(*block));
 }

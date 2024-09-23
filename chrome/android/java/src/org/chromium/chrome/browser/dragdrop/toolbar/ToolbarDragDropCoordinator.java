@@ -56,7 +56,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
         int NUM_ENTRIES = 5;
     }
 
-    // TODO(crbug.com/1469224): Swap error message to a translated string.
+    // TODO(crbug.com/40277406): Swap error message to a translated string.
     private static final String ERROR_MESSAGE = "Unable to handle drop";
     private AutocompleteDelegate mAutocompleteDelegate;
     private PropertyModelChangeProcessor mModelChangeProcessor;
@@ -137,7 +137,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             // Try to get the byte array needed for image search from local state. If drag and drop
             // is started from the same Chrome activity, then DropDataAndroid should be set as a
             // local state.
-            //  TODO(crbug.com/1469084): Read the image bytes from localState using a util method
+            //  TODO(crbug.com/40277338): Read the image bytes from localState using a util method
             Object dropData = event.getLocalState();
             TemplateUrlService urlService = mTemplateUrlServiceSupplier.get();
             if (!urlService.isSearchByImageAvailable()
@@ -146,7 +146,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                 return;
             }
             String[] postData = urlService.getImageUrlAndPostContent();
-            // TODO(crbug.com/1473127): Pass in correct imageByteArray to AutocompleteDelegate
+            // TODO(crbug.com/40278861): Pass in correct imageByteArray to AutocompleteDelegate
             byte[] imageByteArray = new byte[0];
             mAutocompleteDelegate.loadUrl(
                     new OmniboxLoadUrlParams.Builder(postData[0], PageTransition.GENERATED)
@@ -165,11 +165,10 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
             recordDropType(DropType.CHROME_TEXT);
         } else if (event.getClipDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK)) {
             /**
-             * This parsing is based on the implementation in
-             * DragAndDropDelegateImpl#BuildClipData. Ideally we should handle build / parsing
-             * in a similar place to keep things consistent.
-             * TODO(crbug.com/1469084): Build ClipData and parse link URL using a static helper
-             * method
+             * This parsing is based on the implementation in DragAndDropDelegateImpl#BuildClipData.
+             * Ideally we should handle build / parsing in a similar place to keep things
+             * consistent. TODO(crbug.com/40277338): Build ClipData and parse link URL using a
+             * static helper method
              */
             String url = event.getClipData().getItemAt(0).getIntent().getData().toString();
             mAutocompleteDelegate.loadUrl(

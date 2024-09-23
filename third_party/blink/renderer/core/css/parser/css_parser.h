@@ -31,7 +31,6 @@ class ImmutableCSSPropertyValueSet;
 class StyleRule;
 class StyleRuleBase;
 class StyleRuleKeyframe;
-class StyleRuleTry;
 class StyleSheetContents;
 class CSSValue;
 class CSSPrimitiveValue;
@@ -69,9 +68,18 @@ class CORE_EXPORT CSSParser {
   static CSSSelectorList* ParsePageSelector(const CSSParserContext&,
                                             StyleSheetContents*,
                                             const String&);
+  static StyleRuleBase* ParseMarginRule(const CSSParserContext*,
+                                        StyleSheetContents*,
+                                        const String&);
   static bool ParseDeclarationList(const CSSParserContext*,
                                    MutableCSSPropertyValueSet*,
                                    const String&);
+
+  static StyleRuleBase* ParseNestedDeclarationsRule(
+      const CSSParserContext*,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting,
+      StringView);
 
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
@@ -109,8 +117,11 @@ class CORE_EXPORT CSSParser {
   static ImmutableCSSPropertyValueSet* ParseInlineStyleDeclaration(
       const String&,
       Element*);
-  static ImmutableCSSPropertyValueSet*
-  ParseInlineStyleDeclaration(const String&, CSSParserMode, SecureContextMode);
+  static ImmutableCSSPropertyValueSet* ParseInlineStyleDeclaration(
+      const String&,
+      CSSParserMode,
+      SecureContextMode,
+      const Document*);
 
   static std::unique_ptr<Vector<KeyframeOffset>> ParseKeyframeKeyList(
       const CSSParserContext*,
@@ -118,8 +129,6 @@ class CORE_EXPORT CSSParser {
   static StyleRuleKeyframe* ParseKeyframeRule(const CSSParserContext*,
                                               const String&);
   static String ParseCustomPropertyName(const String&);
-
-  static StyleRuleTry* ParseTryRule(const CSSParserContext*, const String&);
 
   static bool ParseSupportsCondition(const String&, const ExecutionContext*);
 
@@ -129,7 +138,8 @@ class CORE_EXPORT CSSParser {
   static bool ParseSystemColor(Color&,
                                const String&,
                                mojom::blink::ColorScheme color_scheme,
-                               const ui::ColorProvider* color_provider);
+                               const ui::ColorProvider* color_provider,
+                               bool is_in_web_app_scope);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

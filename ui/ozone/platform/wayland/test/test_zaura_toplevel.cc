@@ -20,7 +20,7 @@ void SetOrientationLock(struct wl_client* client,
 
 void SurfaceSubmissionInPixelCoordinates(struct wl_client* client,
                                          struct wl_resource* resource) {
-  // TODO(crbug.com/1346347): Implement zaura-shell protocol requests and test
+  // TODO(crbug.com/40232463): Implement zaura-shell protocol requests and test
   // their usage.
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -52,11 +52,11 @@ void SetRestoreInfo(struct wl_client* client,
                     struct wl_resource* resource,
                     int32_t restore_session_id,
                     int32_t restore_window_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetSystemModal(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UnsetSystemModal(struct wl_client* client, struct wl_resource* resource) {
@@ -67,17 +67,17 @@ void SetRestoreInfoWithWindowIdSource(struct wl_client* client,
                                       struct wl_resource* resource,
                                       int32_t restore_session_id,
                                       const char* restore_window_id_source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetDecoration(struct wl_client* client,
                    struct wl_resource* resource,
                    uint32_t type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetFloat(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UnSetFloat(struct wl_client* client, struct wl_resource* resource) {

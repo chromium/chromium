@@ -33,6 +33,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,14 +49,21 @@ using testing::Return;
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  FakeAutocompleteProviderClient()
-      : template_url_service_(
-            new TemplateURLService(/*prefs=*/nullptr,
-                                   /*search_engine_choice_service=*/nullptr)),
-        pref_service_(new TestingPrefServiceSimple()) {
-    pref_service_->registry()->RegisterBooleanPref(
-        omnibox::kDocumentSuggestEnabled, true);
+  FakeAutocompleteProviderClient() {
+    set_template_url_service(
+        search_engines_test_environment_.template_url_service());
+    search_engines_test_environment_.pref_service()
+        .registry()
+        ->RegisterBooleanPref(omnibox::kDocumentSuggestEnabled, true);
   }
+
+  ~FakeAutocompleteProviderClient() {
+    // We do that because the `TemplateURLService` object lives in
+    // `MockAutocompleteProviderClient` which is the parent class while its pref
+    // live in `SearchEnginesTestEnvironment`.
+    set_template_url_service(nullptr);
+  }
+
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
   FakeAutocompleteProviderClient& operator=(
@@ -63,21 +71,14 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   bool SearchSuggestEnabled() const override { return true; }
 
-  TemplateURLService* GetTemplateURLService() override {
-    return template_url_service_.get();
+  PrefService* GetPrefs() const override {
+    return &search_engines_test_environment_.pref_service();
   }
-
-  TemplateURLService* GetTemplateURLService() const override {
-    return template_url_service_.get();
-  }
-
-  PrefService* GetPrefs() const override { return pref_service_.get(); }
 
   std::string ProfileUserName() const override { return "goodEmail@gmail.com"; }
 
  private:
-  std::unique_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 }  // namespace
@@ -147,8 +148,9 @@ class DocumentProviderTest : public testing::Test,
     std::vector<Summary> summaries;
     base::ranges::transform(
         matches, std::back_inserter(summaries), [](const auto& match) {
-          return Summary{match.contents, match.relevance,
-                         match.GetAdditionalInfo("from cache") == "true"};
+          return Summary{
+              match.contents, match.relevance,
+              match.GetAdditionalInfoForDebugging("from cache") == "true"};
         });
     return summaries;
   }

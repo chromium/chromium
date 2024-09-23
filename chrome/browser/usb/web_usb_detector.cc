@@ -92,9 +92,12 @@ GURL GetActiveTabURL() {
 void OpenURL(const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
-  browser_displayer.browser()->OpenURL(content::OpenURLParams(
-      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initialized */));
+  browser_displayer.browser()->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             false /* is_renderer_initialized */),
+      /*navigation_handle_callback=*/{});
 }
 
 // Delegate for webusb notification
@@ -143,8 +146,8 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
     for (auto it = all_tabs.begin(), end = all_tabs.end(); it != end; ++it) {
       if (base::StartsWith(it->GetVisibleURL().spec(), landing_page_.spec(),
                            base::CompareCase::INSENSITIVE_ASCII) &&
-          (!tab_to_activate ||
-           it->GetLastActiveTime() > tab_to_activate->GetLastActiveTime())) {
+          (!tab_to_activate || it->GetLastActiveTimeTicks() >
+                                   tab_to_activate->GetLastActiveTimeTicks())) {
         tab_to_activate = *it;
         browser = it.browser();
       }

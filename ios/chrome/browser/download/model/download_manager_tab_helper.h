@@ -7,15 +7,12 @@
 
 #include <memory>
 
-#import <Foundation/Foundation.h>
-
-#import "base/memory/raw_ptr.h"
-#import "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
-
-@protocol DownloadManagerTabHelperDelegate;
-@protocol SystemIdentity;
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
+#include "ios/web/public/download/download_task_observer.h"
+#include "ios/web/public/web_state_observer.h"
+#include "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class DownloadTask;
@@ -52,6 +49,9 @@ class DownloadManagerTabHelper
   // Sets whether the Download toolbar should adapt to the fullscreen state.
   virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 
+  // Returns whether `task_` still needs to be saved to Drive.
+  bool WillDownloadTaskBeSavedToDrive() const;
+
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.
   explicit DownloadManagerTabHelper(web::WebState* web_state);
@@ -70,13 +70,19 @@ class DownloadManagerTabHelper
   // Assigns `task` to `task_`; replaces the current download if exists;
   // instructs the delegate that download has started.
   void DidCreateDownload(std::unique_ptr<web::DownloadTask> task);
-  // Returns whether `task_` still needs to be saved to Drive.
-  bool WillDownloadTaskBeSavedToDrive() const;
+
+  // When a new download is started while another is in progress, the delegate
+  // is queried to know how to proceed. This method is passed as callback to
+  // the delegate and is invoked with the decision made by the user.
+  void OnDownloadPolicyDecision(std::unique_ptr<web::DownloadTask> task,
+                                NewDownloadPolicy policy);
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
   bool delegate_started_ = false;
+
+  base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

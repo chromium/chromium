@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
 #include <limits>
@@ -10,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
@@ -106,7 +110,7 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
     if (i >= length)
       return 0;
     uint8_t byte = raw_data[i];
-    if (LIKELY(shift < 32)) {
+    if (shift < 32) [[likely]] {
       version |= static_cast<uint32_t>(byte & 0x7f) << shift;
       shift += 7;
     }
@@ -692,20 +696,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     }
     case kFencedFrameConfigTag: {
       String url_string, shared_storage_context, urn_uuid_string;
-      uint32_t width, height, has_shared_storage_context, has_container_size,
-          container_width, container_height, has_content_size, content_width,
-          content_height, freeze_initial_size;
+      uint32_t has_shared_storage_context, has_container_size, container_width,
+          container_height, has_content_size, content_width, content_height,
+          freeze_initial_size;
       KURL url;
       std::optional<KURL> urn_uuid;
-      FencedFrameConfig::AttributeVisibility url_visibility, size_visibility;
+      FencedFrameConfig::AttributeVisibility url_visibility;
       std::optional<gfx::Size> container_size, content_size;
 
-      if (!ReadUTF8String(&url_string) || !ReadUint32(&width) ||
-          !ReadUint32(&height) ||
+      if (!ReadUTF8String(&url_string) ||
           !ReadUint32Enum<FencedFrameConfig::AttributeVisibility>(
               &url_visibility) ||
-          !ReadUint32Enum<FencedFrameConfig::AttributeVisibility>(
-              &size_visibility) ||
           !ReadUint32(&freeze_initial_size) ||
           !ReadUTF8String(&urn_uuid_string)) {
         return nullptr;
@@ -753,9 +754,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
 
-      return FencedFrameConfig::Create(
-          url, width, height, shared_storage_context, urn_uuid, container_size,
-          content_size, url_visibility, size_visibility, freeze_initial_size);
+      return FencedFrameConfig::Create(url, shared_storage_context, urn_uuid,
+                                       container_size, content_size,
+                                       url_visibility, freeze_initial_size);
     }
     default:
       break;
@@ -857,7 +858,7 @@ V8ScriptValueDeserializer::GetOrCreateBlobDataHandle(const String& uuid,
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(
     v8::Isolate* isolate) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
                                  nullptr, nullptr);
   ScriptWrappable* wrappable = nullptr;
   SerializationTag tag = kVersionTag;
@@ -902,7 +903,7 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
     DCHECK(wrapper->IsSharedArrayBuffer());
     return v8::Local<v8::SharedArrayBuffer>::Cast(wrapper);
   }
-  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
                                  nullptr, nullptr);
   exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                     "Unable to deserialize SharedArrayBuffer.");
@@ -919,7 +920,7 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
           serialized_script_value_->MaybeGetSharedValueConveyor()) {
     return conveyor;
   }
-  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kUnknown,
                                  nullptr, nullptr);
   exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                     "Unable to deserialize shared JS value.");
@@ -930,11 +931,6 @@ V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
 bool V8ScriptValueDeserializer::ExecutionContextExposesInterface(
     ExecutionContext* execution_context,
     SerializationTag interface_tag) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSSVTrailerEnforceExposureAssertion)) {
-    return true;
-  }
-
   // If you're updating this, consider whether you should also update
   // V8ScriptValueSerializer to call TrailerWriter::RequireExposedInterface
   // (generally via WriteAndRequireInterfaceTag). Any interface which might

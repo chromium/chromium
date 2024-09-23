@@ -97,7 +97,8 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // Gets the cursor container for testing purposes.
   const aura::Window* GetContainerForTest() const;
   SkColor GetCursorColorForTest() const;
-  gfx::Rect GetBoundsForTest() const;
+  gfx::Rect GetCursorBoundsInScreenForTest() const;
+  const aura::Window* GetCursorHostWindowForTest() const;
 
  private:
   friend class CursorWindowControllerTest;
@@ -151,8 +152,12 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // For mirroring mode, the display is always the primary display.
   display::Display display_;
 
+  // When using software compositing, cursor_window_ will be used to paint
+  // cursor and composited with other elements by ui compositor.
   std::unique_ptr<aura::Window> cursor_window_;
   std::unique_ptr<CursorWindowDelegate> delegate_;
+  // When using fast ink, cursor_view_widget_ draws cursor image
+  // directly to the front buffer that is overlay candidate.
   views::UniqueWidgetPtr cursor_view_widget_;
 
   const bool is_fast_ink_enabled_;

@@ -29,7 +29,7 @@ vars = {
 deps = {
   'buildtools':
       Var('chromium_git') + '/chromium/src/buildtools.git@' +
-      '8b16338d17cd71b04a6ba28da7322ab6739892c2',
+      '8919328651a559f8a974641d40fe712062cc6718',
   'buildtools/clang_format/script':
       Var('chromium_git') +
       '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
@@ -47,7 +47,7 @@ deps = {
       '9719c1e1e676814c456b55f5f070eabad6709d31',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '203a01130fac64bfdcc8cab2e1798c7b2c0619bf',
+      'e04c707cb33a876b595a9b8be7aa284c6b536afa',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -86,6 +86,16 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'host_os == "win"',
   },
+  'crashpad/build/fuchsia': {
+     'packages': [
+       {
+        'package': 'chromium/fuchsia/test-scripts',
+        'version': 'latest',
+       }
+     ],
+     'condition': 'checkout_fuchsia',
+     'dep_type': 'cipd',
+  },
   'crashpad/third_party/linux/clang/linux-amd64': {
     'packages': [
       {
@@ -100,7 +110,7 @@ deps = {
     'packages': [
       {
         'package': 'fuchsia/third_party/clang/mac-amd64',
-        'version': 'MAOjNhwTu5JU3P_0C9dITiyCTtQ1n7lRJnMfB9hhvOkC',
+        'version': 'latest',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "mac"',
@@ -110,25 +120,20 @@ deps = {
     'packages': [
       {
         'package': 'fuchsia/third_party/clang/linux-amd64',
-        'version': 'Tpc85d1ZwSlZ6UKl2d96GRUBGNA5JKholOKe24sRDr0C',
+        'version': 'latest',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
   },
   'crashpad/third_party/fuchsia-gn-sdk': {
-    'url': Var('chromium_git') + '/chromium/src/third_party/fuchsia-gn-sdk.git@' +
-           '0d6902558d92fe3d49ba9a8f638ddea829be595b',
-    'condition': 'checkout_fuchsia',
-  },
-  'crashpad/third_party/fuchsia/sdk/mac-amd64': {
     'packages': [
       {
-        'package': 'fuchsia/sdk/core/mac-amd64',
+        'package': 'chromium/fuchsia/gn-sdk',
         'version': 'latest'
       },
     ],
-    'condition': 'checkout_fuchsia and host_os == "mac"',
+    'condition': 'checkout_fuchsia',
     'dep_type': 'cipd'
   },
   'crashpad/third_party/fuchsia/sdk/linux-amd64': {
@@ -255,11 +260,24 @@ hooks = [
     ],
   },
   {
+    # Avoid introducing unnecessary PRESUBMIT.py file from build/fuchsia.
+    # Never fail and ignore the error if the file does not exist.
+    'name': 'Remove the PRESUBMIT.py from build/fuchsia',
+    'pattern': '.',
+    'condition': 'checkout_fuchsia',
+    'action': [
+      'rm',
+      '-f',
+      'crashpad/build/fuchsia/PRESUBMIT.py',
+    ],
+  },
+  {
     'name': 'Generate Fuchsia Build Definitions',
     'pattern': '.',
     'condition': 'checkout_fuchsia',
     'action': [
       'python3',
+      'crashpad/build/fuchsia_envs.py',
       'crashpad/build/fuchsia/gen_build_defs.py'
     ],
   },

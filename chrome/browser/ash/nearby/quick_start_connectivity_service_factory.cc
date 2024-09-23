@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,9 +32,12 @@ QuickStartConnectivityServiceFactory::QuickStartConnectivityServiceFactory()
           "QuickStartConnectivityService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(nearby::NearbyProcessManagerFactory::GetInstance());
 }
@@ -44,24 +48,27 @@ QuickStartConnectivityServiceFactory::~QuickStartConnectivityServiceFactory() =
 std::unique_ptr<KeyedService>
 QuickStartConnectivityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
+    return nullptr;
+  }
+
   if (!ash::IsSigninBrowserContext(context)) {
     return nullptr;
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsPrimaryOTRProfile()) {
-    // The "signin profile" is actually a pair of profiles: a "regular" profile
-    // and a "primary OTR" profile tied to the regular profile. The primary OTR
-    // profile is the one that is used in OOBE.
-    //
-    // Note: the NearbyProcessManager* fetched here is bound to the lifetime of
-    // the profile and is guaranteed to outlive
-    // QuickStartConnectivityServiceImpl.
-    return std::make_unique<QuickStartConnectivityServiceImpl>(
-        nearby::NearbyProcessManagerFactory::GetForProfile(profile));
+
+  // The "signin profile" is actually a pair of profiles: a "regular" profile
+  // and a "primary OTR" profile tied to the regular profile. The primary OTR
+  // profile is the one that is used in OOBE.
+  if (!profile->IsPrimaryOTRProfile()) {
+    return nullptr;
   }
 
-  return nullptr;
+  // The NearbyProcessManager* fetched here is bound to the lifetime of the
+  // profile and is guaranteed to outlive QuickStartConnectivityServiceImpl.
+  return std::make_unique<QuickStartConnectivityServiceImpl>(
+      nearby::NearbyProcessManagerFactory::GetForProfile(profile));
 }
 
 bool QuickStartConnectivityServiceFactory::ServiceIsCreatedWithBrowserContext()

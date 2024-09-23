@@ -24,7 +24,7 @@ export class PasskeysBrowserProxyImpl implements PasskeysBrowserProxy {
   }
 
   managePasskeys() {
-    return chrome.send('passkeysManagePasskeys');
+    chrome.send('passkeysManagePasskeys');
   }
 
   static getInstance(): PasskeysBrowserProxy {

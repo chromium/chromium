@@ -22,6 +22,34 @@
 
 namespace cc {
 
+LayerTreeSettings CommitToActiveTreeLayerListSettings() {
+  LayerTreeSettings settings;
+  settings.commit_to_active_tree = true;
+  settings.use_layer_lists = true;
+  return settings;
+}
+
+LayerTreeSettings CommitToActiveTreeLayerTreeSettings() {
+  LayerTreeSettings settings;
+  settings.commit_to_active_tree = true;
+  settings.use_layer_lists = false;
+  return settings;
+}
+
+LayerTreeSettings CommitToPendingTreeLayerListSettings() {
+  LayerTreeSettings settings;
+  settings.commit_to_active_tree = false;
+  settings.use_layer_lists = true;
+  return settings;
+}
+
+LayerTreeSettings CommitToPendingTreeLayerTreeSettings() {
+  LayerTreeSettings settings;
+  settings.commit_to_active_tree = false;
+  settings.use_layer_lists = false;
+  return settings;
+}
+
 // Align with expected and actual output.
 static const char* kQuadString = "    Quad: ";
 
@@ -135,7 +163,8 @@ void UpdateDrawProperties(LayerTreeImpl* layer_tree_impl,
                           LayerImplList* output_update_layer_list) {
   PrepareForUpdateDrawProperties(layer_tree_impl);
   layer_tree_impl->UpdateDrawProperties(
-      /*update_image_animation_controller*/ true, output_update_layer_list);
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true,
+      output_update_layer_list);
 }
 
 void UpdateDrawProperties(LayerTreeHost* layer_tree_host,

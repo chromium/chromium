@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -29,7 +30,7 @@ FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer,
     const std::string& token_binding_challenge) {
   auto it = refresh_tokens_.find(account_id);
-  DCHECK(it != refresh_tokens_.end());
+  CHECK(it != refresh_tokens_.end(), base::NotFatalUntil::M130);
   return GaiaAccessTokenFetcher::
       CreateExchangeRefreshTokenForAccessTokenInstance(
           consumer, url_loader_factory, it->second);
@@ -39,6 +40,16 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
   return !GetRefreshToken(account_id).empty();
 }
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+std::vector<uint8_t>
+FakeProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
+    const CoreAccountId& account_id) const {
+  auto it = wrapped_binding_keys_.find(account_id);
+  return it != wrapped_binding_keys_.end() ? it->second
+                                           : std::vector<uint8_t>();
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(
     const CoreAccountId& account_id) const {
@@ -56,7 +67,8 @@ std::vector<CoreAccountId> FakeProfileOAuth2TokenServiceDelegate::GetAccounts()
   return account_ids;
 }
 
-void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
+void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
+    signin_metrics::SourceForRefreshTokenOperation source) {
   std::vector<CoreAccountId> account_ids = GetAccounts();
   if (account_ids.empty())
     return;
@@ -65,10 +77,10 @@ void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
   // fired only once, like in production.
   ScopedBatchChange batch(this);
   for (const auto& account : account_ids)
-    RevokeCredentials(account);
+    RevokeCredentials(account, source);
 }
 
-void FakeProfileOAuth2TokenServiceDelegate::LoadCredentials(
+void FakeProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   set_load_credentials_state(
@@ -76,7 +88,7 @@ void FakeProfileOAuth2TokenServiceDelegate::LoadCredentials(
   FireRefreshTokensLoaded();
 }
 
-void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentials(
+void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -84,15 +96,28 @@ void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentials(
     const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
-  IssueRefreshTokenForUser(account_id, refresh_token);
+  IssueRefreshTokenForUser(account_id, refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                           ,
+                           wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
-    const std::string& token) {
+    const std::string& token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    ,
+    const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+) {
   if (token.empty()) {
     std::erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    wrapped_binding_keys_.erase(account_id);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
@@ -101,6 +126,9 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
       account_ids_.push_back(account_id);
     }
     refresh_tokens_[account_id] = token;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    wrapped_binding_keys_[account_id] = wrapped_binding_key;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from
@@ -111,23 +139,31 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
                   GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                       CREDENTIALS_REJECTED_BY_CLIENT)
             : GoogleServiceAuthError(GoogleServiceAuthError::NONE);
+
+    // The main difference with this call compared to the production call is
+    // that it is also called for newly added accounts.
     UpdateAuthError(account_id, error,
-                    /*fire_auth_error_changed=*/false);
+                    /*fire_auth_error_changed=*/true);
 
     FireRefreshTokenAvailable(account_id);
   }
 }
 
-void FakeProfileOAuth2TokenServiceDelegate::RevokeCredentials(
+void FakeProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
-  IssueRefreshTokenForUser(account_id, std::string());
+  IssueRefreshTokenForUser(account_id, std::string()
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                           ,
+                           std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 }
 
-void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentials(
+void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
   auto it = refresh_tokens_.find(account_id);
-  DCHECK(it != refresh_tokens_.end());
+  CHECK(it != refresh_tokens_.end(), base::NotFatalUntil::M130);
   to_service->GetDelegate()->UpdateCredentials(account_id, it->second);
   RevokeCredentials(account_id);
 }
@@ -137,8 +173,8 @@ FakeProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
   return shared_factory_;
 }
 
-bool FakeProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
-  return fix_request_if_possible_;
+bool FakeProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
+  return fix_account_if_possible_ ? fix_account_if_possible_.Run() : false;
 }
 
 #if BUILDFLAG(IS_ANDROID)

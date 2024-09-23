@@ -91,12 +91,18 @@ bool Address::MergeStructuredAddress(const Address& newer,
 std::optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
   return AlternativeStateNameMap::GetCanonicalStateName(
-      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),
-      GetRawInfo(ADDRESS_HOME_STATE));
+      GetAddressCountryCode().value(), GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 bool Address::IsStructuredAddressMergeable(const Address& newer) const {
   return GetRoot().IsMergeableWithComponent(newer.GetRoot());
+}
+
+bool Address::IsStructuredAddressMergeableForType(FieldType type,
+                                                  const Address& other) const {
+  return address_component_store_.GetNodeForType(type)
+      ->IsMergeableWithComponent(
+          *other.address_component_store_.GetNodeForType(type));
 }
 
 const AddressComponent& Address::GetRoot() const {
@@ -108,9 +114,7 @@ AddressComponent* Address::Root() {
 }
 
 AddressCountryCode Address::GetAddressCountryCode() const {
-  std::string country_code =
-      base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
-  return AddressCountryCode(country_code);
+  return GetRoot().GetCountryCode();
 }
 
 std::u16string Address::GetRawInfo(FieldType type) const {
@@ -145,13 +149,15 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
   Root()->SetValueForType(type, value, status);
 }
 
-void Address::GetMatchingTypes(const std::u16string& text,
-                               const std::string& app_locale,
-                               FieldTypeSet* matching_types) const {
-  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+void Address::GetMatchingTypesWithProfileSources(
+    const std::u16string& text,
+    const std::string& app_locale,
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
+  FormGroup::GetMatchingTypesWithProfileSources(
+      text, app_locale, matching_types, profile_value_sources);
 
-  std::string country_code =
-      base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
+  std::string country_code = GetRoot().GetCountryCode().value();
 
   // Check to see if the |text| canonicalized as a country name is a match.
   std::string entered_country_code =
@@ -173,7 +179,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
   if (!state_name.empty() || !state_abbreviation.empty()) {
     std::u16string canon_profile_state =
         AutofillProfileComparator::NormalizeForComparison(
-            GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
+            GetInfo(ADDRESS_HOME_STATE, app_locale));
     if ((!state_name.empty() &&
          compare.StringsEqual(state_name, canon_profile_state)) ||
         (!state_abbreviation.empty() &&
@@ -261,12 +267,6 @@ VerificationStatus Address::GetVerificationStatusImpl(FieldType type) const {
 
 void Address::SetAddressCountryCode(const std::u16string& country_code,
                                     VerificationStatus verification_status) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    Root()->SetValueForType(ADDRESS_HOME_COUNTRY, country_code,
-                            verification_status);
-    return;
-  }
-
   const AddressCountryCode new_address_country_code =
       AddressCountryCode(base::UTF16ToUTF8(country_code));
 

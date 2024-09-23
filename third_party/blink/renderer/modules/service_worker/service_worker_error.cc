@@ -80,7 +80,7 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
                              web_error.message);
     case mojom::blink::ServiceWorkerErrorType::kNavigation:
       // ErrorTypeNavigation should have bailed out before calling this.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ExceptionParams(DOMExceptionCode::kUnknownError);
     case mojom::blink::ServiceWorkerErrorType::kNetwork:
       return ExceptionParams(DOMExceptionCode::kNetworkError,
@@ -111,17 +111,17 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
     case mojom::blink::ServiceWorkerErrorType::kNone:
     case mojom::blink::ServiceWorkerErrorType::kType:
       // ErrorTypeType should have been handled before reaching this point.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ExceptionParams(DOMExceptionCode::kUnknownError);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ExceptionParams(DOMExceptionCode::kUnknownError);
 }
 
 }  // namespace
 
 // static
-DOMException* ServiceWorkerError::Take(ScriptPromiseResolver*,
+DOMException* ServiceWorkerError::Take(ScriptPromiseResolverBase*,
                                        const WebServiceWorkerError& web_error) {
   ExceptionParams params = GetExceptionParams(web_error);
   return MakeGarbageCollected<DOMException>(params.code, params.message);
@@ -129,7 +129,7 @@ DOMException* ServiceWorkerError::Take(ScriptPromiseResolver*,
 
 // static
 DOMException* ServiceWorkerError::GetException(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     mojom::blink::ServiceWorkerErrorType error,
     const String& error_msg) {
   return Take(resolver, WebServiceWorkerError(error, error_msg));
@@ -137,7 +137,7 @@ DOMException* ServiceWorkerError::GetException(
 
 // static
 v8::Local<v8::Value> ServiceWorkerErrorForUpdate::Take(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverBase* resolver,
     const WebServiceWorkerError& web_error) {
   ScriptState* script_state = resolver->GetScriptState();
   switch (web_error.error_type) {

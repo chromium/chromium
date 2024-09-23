@@ -96,12 +96,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                        const ComputedStyle&,
                                        const SVGViewportResolver&);
 
-  // Determines if any ancestor has adjusted the scale factor.
-  static bool ScreenScaleFactorChanged(const LayoutObject*);
-
-  // Determines if any ancestor's layout size has changed.
-  static bool LayoutSizeOfNearestViewportChanged(const LayoutObject*);
-
   // Helper method for determining if a LayoutObject marked as text (isText()==
   // true) can/will be laid out as part of a <text>.
   static bool IsLayoutableTextNode(const LayoutObject*);

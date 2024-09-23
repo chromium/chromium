@@ -12,6 +12,7 @@ namespace borealis {
 
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
+extern const char kBorealisInstallSourceHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
 extern const char kBorealisShutdownNumAttemptsHistogram[];
 extern const char kBorealisShutdownResultHistogram[];
@@ -21,6 +22,21 @@ extern const char kBorealisStartupResultHistogram[];
 extern const char kBorealisStartupOverallTimeHistogram[];
 extern const char kBorealisUninstallNumAttemptsHistogram[];
 extern const char kBorealisUninstallResultHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BorealisLaunchSource {
+  kUnknown = 0,
+  kInstallUrl = 1,
+  kUnifiedAppInstaller = 2,
+  kSteamInstallerApp = 3,
+  kInsertCoin = 4,
+  kAppUninstaller = 5,
+  kAppUrlHandler = 6,
+  kErrorDialogRetryButton = 7,
+  kPostInstallLaunch = 8,
+  kMaxValue = kPostInstallLaunch,
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -117,13 +133,17 @@ enum class BorealisShutdownResult {
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(
     borealis::mojom::InstallResult install_result);
+void RecordBorealisInstallSourceHistogram(BorealisLaunchSource install_source);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
+void RecordBorealisLaunchSourceHistogram(BorealisLaunchSource launch_source);
 void RecordBorealisUninstallNumAttemptsHistogram();
 void RecordBorealisUninstallResultHistogram(
     BorealisUninstallResult uninstall_result);
 void RecordBorealisStartupNumAttemptsHistogram();
 void RecordBorealisStartupResultHistogram(BorealisStartupResult startup_result);
 void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
+void RecordBorealisStartupTimeToFirstWindowHistogram(
+    base::TimeDelta startup_time);
 void RecordBorealisShutdownNumAttemptsHistogram();
 void RecordBorealisShutdownResultHistogram(
     BorealisShutdownResult shutdown_result);

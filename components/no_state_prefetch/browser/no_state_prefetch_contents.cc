@@ -95,8 +95,11 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
       : no_state_prefetch_contents_(no_state_prefetch_contents) {}
 
   // content::WebContentsDelegate implementation:
-  WebContents* OpenURLFromTab(WebContents* source,
-                              const OpenURLParams& params) override {
+  WebContents* OpenURLFromTab(
+      WebContents* source,
+      const OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
     // |OpenURLFromTab| is typically called when a frame performs a navigation
     // that requires the browser to perform the transition instead of WebKit.
     // Examples include client redirects to hosted app URLs.
@@ -171,14 +174,9 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       browser_context_(browser_context),
       final_status_(FINAL_STATUS_UNKNOWN),
       process_pid_(base::kNullProcessId),
-      origin_(origin),
-      network_bytes_(0) {
+      origin_(origin) {
   switch (origin) {
-    case ORIGIN_OMNIBOX:
-    case ORIGIN_EXTERNAL_REQUEST:
-    case ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER:
     case ORIGIN_NAVIGATION_PREDICTOR:
-    case ORIGIN_ISOLATED_PRERENDER:
       DCHECK(!initiator_origin_.has_value());
       break;
 
@@ -191,7 +189,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       break;
     case ORIGIN_NONE:
     case ORIGIN_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   DCHECK(no_state_prefetch_manager);
@@ -304,10 +302,7 @@ void NoStatePrefetchContents::StartPrerendering(
   load_url_params.referrer = referrer_;
   load_url_params.initiator_origin = initiator_origin_;
   load_url_params.transition_type = ui::PAGE_TRANSITION_LINK;
-  if (origin_ == ORIGIN_OMNIBOX) {
-    load_url_params.transition_type = ui::PageTransitionFromInt(
-        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  } else if (origin_ == ORIGIN_NAVIGATION_PREDICTOR) {
+  if (origin_ == ORIGIN_NAVIGATION_PREDICTOR) {
     load_url_params.transition_type =
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED);
   }
@@ -333,8 +328,6 @@ NoStatePrefetchContents::~NoStatePrefetchContents() {
   DCHECK_NE(ORIGIN_MAX, origin());
 
   no_state_prefetch_manager_->RecordFinalStatus(origin(), final_status());
-  no_state_prefetch_manager_->RecordNetworkBytesConsumed(origin(),
-                                                         network_bytes_);
 
   if (no_state_prefetch_contents_) {
     no_state_prefetch_contents_->SetDelegate(nullptr);
@@ -615,12 +608,6 @@ void NoStatePrefetchContents::CancelPrerenderForNoStatePrefetch() {
 void NoStatePrefetchContents::AddPrerenderCancelerReceiver(
     mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver) {
   prerender_canceler_receiver_set_.Add(this, std::move(receiver));
-}
-
-void NoStatePrefetchContents::AddNetworkBytes(int64_t bytes) {
-  network_bytes_ += bytes;
-  for (Observer& observer : observer_list_)
-    observer.OnPrefetchNetworkBytesChanged(this);
 }
 
 }  // namespace prerender

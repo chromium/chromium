@@ -62,7 +62,6 @@ void TestGeolocationUrlLoaderFactory::Clone(
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TestGeolocationUrlLoaderFactory::Clone() {
   NOTREACHED();
-  return nullptr;
 }
 
 void TestGeolocationUrlLoaderFactory::SetValidPosition(double latitude,

@@ -9,8 +9,8 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
+#include "components/sharing_message/sharing_service.h"
 
 SharingNotificationHandler::SharingNotificationHandler() = default;
 SharingNotificationHandler::~SharingNotificationHandler() = default;

@@ -177,7 +177,7 @@ void SecurityInterstitialPageController::SendCommand(
     default:
       // Other values in the enum are only used by tests so this
       // method should not be called with them.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -40,24 +40,15 @@ class AutofillExperimentsTest : public testing::Test {
 
   bool IsCreditCardUploadEnabled(
       const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-    return IsCreditCardUploadEnabled("john.smith@gmail.com",
-                                     signin_state_for_metrics);
+    return IsCreditCardUploadEnabled("US", signin_state_for_metrics);
   }
 
   bool IsCreditCardUploadEnabled(
-      const std::string& user_email,
-      const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-    return IsCreditCardUploadEnabled(user_email, "US",
-                                     signin_state_for_metrics);
-  }
-
-  bool IsCreditCardUploadEnabled(
-      const std::string& user_email,
       const std::string& user_country,
       const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-    return autofill::IsCreditCardUploadEnabled(
-        &sync_service_, user_email, user_country, signin_state_for_metrics,
-        log_manager_.get());
+    return autofill::IsCreditCardUploadEnabled(&sync_service_, user_country,
+                                               signin_state_for_metrics,
+                                               log_manager_.get());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -78,7 +69,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureEnabled) {
   // Use an unsupported country to show that feature flag enablement overrides
   // the client-side country check.
   EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com", "ZZ",
+      "ZZ",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
@@ -91,7 +82,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureEnabled) {
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UnsupportedCountry) {
   // "ZZ" is NOT one of the countries in |kAutofillUpstreamLaunchedCountries|.
   EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com", "ZZ",
+      "ZZ",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
@@ -107,7 +98,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
   scoped_feature_list_.InitAndDisableFeature(features::kAutofillUpstream);
   // "US" is one of the countries in |kAutofillUpstreamLaunchedCountries|.
   EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com", "US",
+      "US",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
@@ -178,7 +169,7 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
   base::test::ScopedFeatureList feature{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
@@ -191,7 +182,7 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
   base::test::ScopedFeatureList features{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPayments});
@@ -213,7 +204,7 @@ TEST_F(AutofillExperimentsTest,
   base::test::ScopedFeatureList feature;
   feature.InitAndDisableFeature(
       syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
@@ -227,7 +218,7 @@ TEST_F(AutofillExperimentsTest,
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(
       syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPayments});
@@ -266,26 +257,14 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_PaymentsTypeNotSelected) {
       1);
 }
 
-TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
-      "",
-      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailEmpty, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kEmailEmpty, 1);
-}
-
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
   // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
-  EXPECT_TRUE(IsCreditCardUploadEnabled(
-      "john.smith@gmail.com", AutofillMetrics::PaymentsSigninState::
-                                  kSignedInAndWalletSyncTransportEnabled));
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
@@ -310,8 +289,6 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
 TEST_F(
     AutofillExperimentsTest,
     IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
@@ -320,18 +297,6 @@ TEST_F(
 #else
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #endif
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsDeviceAuthAvailable_FeatureDisabledAndAuthenticationAvailableForMacAndWin) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-#endif
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 }
 
 }  // namespace autofill

@@ -7,6 +7,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
@@ -28,10 +30,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
-#else
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/lacros/window_properties.h"
+#else
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #endif
 
 namespace {
@@ -47,7 +49,7 @@ ToImmersiveFullscreenControllerAnimateReveal(
     case ImmersiveModeController::ANIMATE_REVEAL_NO:
       return chromeos::ImmersiveFullscreenController::ANIMATE_REVEAL_NO;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {
@@ -78,15 +80,14 @@ void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
-  // If `enabled` is same as the state that has requested previously, do not
-  // request the state change again. Note that we should compare this against
-  // the previously requested state instead of the current state since the state
-  // change happesn asynchronously on Lacros so that the current state might not
-  // yet synchronized to the latest request.
-  if (previous_request_enabled_ == enabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, state transition happens synchronously, so we can compare it
+  // against the current state. For Lacros, it will be skipped inside
+  // WaylandExtension.
+  if (controller_.IsEnabled() == enabled) {
     return;
   }
-  previous_request_enabled_ = enabled;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()
@@ -147,24 +148,35 @@ void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
     return;
   }
 
-  // Don't use immersive mode as long as we are in the locked fullscreen mode
-  // since immersive shows browser controls which allow exiting the mode.
-  if (platform_util::IsBrowserLockedFullscreen(browser_view_->browser()))
+  // Avoid using immersive mode in locked fullscreen as it allows the user to
+  // exit the locked mode. Keep immersive mode enabled if the webapp is locked
+  // for OnTask (only relevant for non-web browser scenarios).
+  // TODO(b/365146870): Remove once we consolidate locked fullscreen with
+  // OnTask.
+  Browser* const browser = browser_view_->browser();
+  bool avoid_using_immersive_mode =
+      platform_util::IsBrowserLockedFullscreen(browser);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (browser->IsLockedForOnTask()) {
+    avoid_using_immersive_mode = false;
+  }
+#endif
+  if (avoid_using_immersive_mode) {
     return;
+  }
 
   // TODO(sammiequon): Investigate if we can move immersive mode logic to the
   // browser non client frame view.
   DCHECK_EQ(browser_view_->frame(), widget);
   if (widget->GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
       chromeos::WindowStateType::kFloated) {
-    chromeos::ImmersiveFullscreenController::EnableForWidget(widget, false);
+    SetEnabled(false);
     return;
   }
 
   // Enable immersive mode if the widget is activated. Do not disable immersive
   // mode if the widget deactivates, but is not minimized.
-  chromeos::ImmersiveFullscreenController::EnableForWidget(
-      widget, active || !widget->IsMinimized());
+  SetEnabled(active || !widget->IsMinimized());
 }
 
 int ImmersiveModeControllerChromeos::GetMinimumContentOffset() const {
@@ -285,16 +297,16 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (key == aura::client::kShowStateKey) {
-    ui::WindowShowState new_state =
+    ui::mojom::WindowShowState new_state =
         window->GetProperty(aura::client::kShowStateKey);
-    auto old_state = static_cast<ui::WindowShowState>(old);
+    auto old_state = static_cast<ui::mojom::WindowShowState>(old);
 
     // Make sure the browser stays up to date with the window's state. This is
     // necessary in classic Ash if the user exits fullscreen with the restore
     // button, and it's necessary in OopAsh if the window manager initiates a
     // fullscreen mode change (e.g. due to a WM shortcut).
-    if (new_state == ui::SHOW_STATE_FULLSCREEN ||
-        old_state == ui::SHOW_STATE_FULLSCREEN) {
+    if (new_state == ui::mojom::WindowShowState::kFullscreen ||
+        old_state == ui::mojom::WindowShowState::kFullscreen) {
       // If the browser view initiated this state change,
       // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
       browser_view_->FullscreenStateChanging();

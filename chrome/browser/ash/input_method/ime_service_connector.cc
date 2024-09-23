@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/service_process_host.h"
 #include "net/base/load_flags.h"
@@ -47,8 +48,9 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
 bool IsDownloadPathValid(const base::FilePath& file_path) {
   // Only non-empty, relative path which doesn't reference a parent is allowed.
   if (file_path.empty() || file_path.IsAbsolute() ||
-      file_path.ReferencesParent())
+      file_path.ReferencesParent()) {
     return false;
+  }
 
   // Target path must be restricted in the provided path.
   base::FilePath parent(ime::kInputMethodsDirName);
@@ -85,7 +87,9 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
 }  // namespace
 
 ImeServiceConnector::ImeServiceConnector(Profile* profile)
-    : profile_(profile), url_loader_factory_(profile->GetURLLoaderFactory()) {}
+    : profile_(profile), url_loader_factory_(profile->GetURLLoaderFactory()) {
+  profile_observation_.Observe(profile);
+}
 
 ImeServiceConnector::~ImeServiceConnector() = default;
 
@@ -131,6 +135,11 @@ void ImeServiceConnector::DownloadImeFileTo(
       full_path);
 }
 
+void ImeServiceConnector::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
+}
+
 void ImeServiceConnector::SetupImeService(
     mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {
   if (!remote_service_) {
@@ -147,6 +156,24 @@ void ImeServiceConnector::SetupImeService(
   }
 
   remote_service_->BindInputEngineManager(std::move(receiver));
+}
+
+void ImeServiceConnector::BindInputMethodUserDataService(
+    mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver) {
+  if (!remote_service_) {
+    content::ServiceProcessHost::Launch(
+        remote_service_.BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(IDS_IME_SERVICE_DISPLAY_NAME)
+            .Pass());
+    remote_service_.reset_on_disconnect();
+
+    platform_access_receiver_.reset();
+    remote_service_->SetPlatformAccessProvider(
+        platform_access_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  remote_service_->BindInputMethodUserDataService(std::move(receiver));
 }
 
 void ImeServiceConnector::OnFileDownloadComplete(

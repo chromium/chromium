@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/stop_find_action.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/common/api/web_view_internal.h"
@@ -295,7 +296,8 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   const auto& instance_id_value = args()[0];
   EXTENSION_FUNCTION_PRERUN_VALIDATE(instance_id_value.is_int());
   instance_id_ = instance_id_value.GetInt();
-  // TODO(780728): Remove crash key once the cause of the kill is known.
+  // TODO(crbug.com/41353094): Remove crash key once the cause of the kill is
+  // known.
   static crash_reporter::CrashKeyString<128> name_key("webview-function");
   crash_reporter::ScopedCrashKeyString name_key_scope(&name_key, name());
   if (!WebViewGuest::FromInstanceID(source_process_id(), instance_id_)) {
@@ -322,7 +324,7 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  absl::optional<ImageDetails> image_details;
+  std::optional<ImageDetails> image_details;
   if (args().size() > 1) {
     image_details = ImageDetails::FromValue(args()[1]);
   }
@@ -421,7 +423,7 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
       reason_description = "screenshot has been disabled";
       break;
     case OK:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "GetErrorMessage should not be called with a successful result";
       return "";
   }
@@ -434,7 +436,8 @@ ExtensionFunction::ResponseAction WebViewInternalNavigateFunction::Run() {
       web_view_internal::Navigate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string src = params->src;
-  GetGuest().NavigateGuest(src, true /* force_navigation */);
+  GetGuest().NavigateGuest(src, /*navigation_handle_callback=*/{},
+                           true /* force_navigation */);
   return RespondNow(NoArguments());
 }
 
@@ -528,7 +531,7 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForEmbedder(
 
   switch (host_id().type) {
     case mojom::HostID::HostType::kExtensions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case mojom::HostID::HostType::kControlledFrameEmbedder:
       url_fetcher_ = std::make_unique<ControlledFrameEmbedderURLFetcher>(
@@ -768,7 +771,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
       zoom_mode = ZoomController::ZOOM_MODE_DISABLED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   GetGuest().SetZoomMode(zoom_mode);
@@ -798,7 +801,7 @@ ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
       zoom_mode = web_view_internal::ZoomMode::kDisabled;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return RespondNow(WithArguments(web_view_internal::ToString(zoom_mode)));
@@ -917,7 +920,7 @@ WebViewInternalLoadDataWithBaseUrlFunction::Run() {
   content::NavigationController::LoadURLParams load_params(data_url);
   load_params.load_type = content::NavigationController::LOAD_TYPE_DATA;
   load_params.base_url_for_data_url = base_url;
-  load_params.virtual_url_for_data_url = virtual_url;
+  load_params.virtual_url_for_special_cases = virtual_url;
   load_params.override_user_agent =
       content::NavigationController::UA_OVERRIDE_INHERIT;
 
@@ -976,7 +979,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
     case api::web_view_internal::SetPermissionAction::kDefault:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::string user_input;
@@ -1037,7 +1040,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetAudioMutedFunction::Run() {
       web_view_internal::SetAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  GetGuest().web_contents()->SetAudioMuted(params->mute);
+  GetGuest().SetAudioMuted(params->mute);
   return RespondNow(NoArguments());
 }
 
@@ -1052,8 +1055,7 @@ ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
       web_view_internal::IsAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  content::WebContents* web_contents = GetGuest().web_contents();
-  return RespondNow(WithArguments(web_contents->IsAudioMuted()));
+  return RespondNow(WithArguments(GetGuest().IsAudioMuted()));
 }
 
 WebViewInternalGetAudioStateFunction::WebViewInternalGetAudioStateFunction() =

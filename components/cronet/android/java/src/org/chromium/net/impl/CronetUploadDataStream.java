@@ -23,18 +23,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * CronetUploadDataStream handles communication between an upload body
- * encapsulated in the embedder's {@link UploadDataSink} and a C++
- * UploadDataStreamAdapter, which it owns. It's attached to a {@link
- * CronetUrlRequest}'s during the construction of request's native C++ objects
- * on the network thread, though it's created on one of the embedder's threads.
- * It is called by the UploadDataStreamAdapter on the network thread, but calls
- * into the UploadDataSink and the UploadDataStreamAdapter on the Executor
- * passed into its constructor.
+ * CronetUploadDataStream handles communication between an upload body encapsulated in the
+ * embedder's {@link UploadDataSink} and a C++ UploadDataStreamAdapter, which it owns. It's attached
+ * to a {@link CronetUrlRequest}'s during the construction of request's native C++ objects on the
+ * network thread, though it's created on one of the embedder's threads. It is called by the
+ * UploadDataStreamAdapter on the network thread, but calls into the UploadDataSink and the
+ * UploadDataStreamAdapter on the Executor passed into its constructor.
  */
 @JNINamespace("cronet")
 @VisibleForTesting
@@ -47,6 +46,11 @@ public final class CronetUploadDataStream extends UploadDataSink {
     private long mLength;
     private long mRemainingLength;
     private long mByteBufferLimit;
+
+    // This is atomic because the read code, which runs during URL request metrics collection, could
+    // run at the same time we are issuing a read, especially if the request fails or is cancelled
+    // while uploading.
+    private final AtomicInteger mReadCount = new AtomicInteger();
 
     // Reusable read task, to reduce redundant memory allocation.
     private final Runnable mReadTask =
@@ -68,6 +72,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                         checkCallingThread();
                         assert mByteBuffer.position() == 0;
                         mDataProvider.read(CronetUploadDataStream.this, mByteBuffer);
+                        mReadCount.incrementAndGet();
                     } catch (Exception exception) {
                         onError(exception);
                     }
@@ -114,6 +119,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
 
     /**
      * Constructs a CronetUploadDataStream.
+     *
      * @param dataProvider the UploadDataProvider to read data from.
      * @param executor the Executor to execute UploadDataProvider tasks.
      */
@@ -124,10 +130,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
         mRequest = request;
     }
 
-    /**
-     * Called by native code to make the UploadDataProvider read data into
-     * {@code byteBuffer}.
-     */
+    /** Called by native code to make the UploadDataProvider read data into {@code byteBuffer}. */
     @SuppressWarnings("unused")
     @CalledByNative
     void readData(ByteBuffer byteBuffer) {
@@ -178,9 +181,9 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Called when the native UploadDataStream is destroyed.  At this point,
-     * the native adapter needs to be destroyed, but only after any pending
-     * read operation completes, as the adapter owns the read buffer.
+     * Called when the native UploadDataStream is destroyed. At this point, the native adapter needs
+     * to be destroyed, but only after any pending read operation completes, as the adapter owns the
+     * read buffer.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -189,8 +192,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Helper method called when an exception occurred. This method resets
-     * states and propagates the error to the request.
+     * Helper method called when an exception occurred. This method resets states and propagates the
+     * error to the request.
      */
     private void onError(Throwable exception) {
         final boolean sendClose;
@@ -234,6 +237,32 @@ public final class CronetUploadDataStream extends UploadDataSink {
                 throw new IllegalArgumentException("Non-chunked upload can't have last chunk");
             }
             int bytesRead = mByteBuffer.position();
+            if (bytesRead == 0 && !lastChunk) {
+                // Sending an empty buffer does not make any sense, if the user wishes
+                // to signal end of data then that is done automatically done by the
+                // networking stack as we know the size through |getLength()|. So once
+                // the data has all completely transmitted, the networking stack will
+                // automatically signal to the receiver. However, for the case for
+                // chunked-upload, the optimal scenario is that the last chunk must
+                // be sent with |lastChunk = true| with a non-empty buffer, but sending
+                // an empty buffer with |lastChunk = true| is also allowed.
+                //
+                // Currently, H/1 and H/3 requests will hang indefinitely which will
+                // means that the user must handle the request timeout manually, while
+                // H/2 requests will immediately crash. In order to provide a consistent
+                // behavior, we will fail the request immediately and put the request
+                // in terminal state of |onError|
+                //
+                // We explicitly choose not to crash / throw for the sake of maintaining
+                // app compatibility unlike the other branches in this method which throws
+                // immediately.
+                //
+                // See b/332860415 for more details.
+                onError(
+                        new IllegalStateException(
+                                "Bytes read can't be zero except for last chunk!"));
+                return;
+            }
             mRemainingLength -= bytesRead;
             if (mRemainingLength < 0 && mLength >= 0) {
                 throw new IllegalArgumentException(
@@ -302,9 +331,9 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * The adapter is owned by the CronetUploadDataStream, so it can be
-     * destroyed safely when there is no pending read; however, destruction is
-     * initiated by the destruction of the native UploadDataStream.
+     * The adapter is owned by the CronetUploadDataStream, so it can be destroyed safely when there
+     * is no pending read; however, destruction is initiated by the destruction of the native
+     * UploadDataStream.
      */
     private void destroyAdapter() {
         synchronized (mLock) {
@@ -337,9 +366,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Destroys the native adapter if the destruction is postponed due to a
-     * pending read, which has since completed. Caller needs to be on executor
-     * thread.
+     * Destroys the native adapter if the destruction is postponed due to a pending read, which has
+     * since completed. Caller needs to be on executor thread.
      */
     private void destroyAdapterIfPostponed() {
         synchronized (mLock) {
@@ -354,11 +382,10 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Initializes upload length by getting it from data provider. Submits to
-     * the user's executor thread to allow getLength() to block and/or report errors.
-     * If data provider throws an exception, then it is reported to the request.
-     * No native calls to urlRequest are allowed as this is done before request
-     * start, so native object may not exist.
+     * Initializes upload length by getting it from data provider. Submits to the user's executor
+     * thread to allow getLength() to block and/or report errors. If data provider throws an
+     * exception, then it is reported to the request. No native calls to urlRequest are allowed as
+     * this is done before request start, so native object may not exist.
      */
     void initializeWithRequest() {
         synchronized (mLock) {
@@ -377,8 +404,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Creates native objects and attaches them to the underlying request
-     * adapter object. Always called on executor thread.
+     * Creates native objects and attaches them to the underlying request adapter object. Always
+     * called on executor thread.
      */
     void attachNativeAdapterToRequest(final long requestAdapter) {
         synchronized (mLock) {
@@ -390,8 +417,8 @@ public final class CronetUploadDataStream extends UploadDataSink {
     }
 
     /**
-     * Creates a native CronetUploadDataStreamAdapter and
-     * CronetUploadDataStream for testing.
+     * Creates a native CronetUploadDataStreamAdapter and CronetUploadDataStream for testing.
+     *
      * @return the address of the native CronetUploadDataStream object.
      */
     public long createUploadDataStreamForTesting() throws IOException {
@@ -409,6 +436,10 @@ public final class CronetUploadDataStream extends UploadDataSink {
 
     void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
         mOnDestroyedCallbackForTesting = onDestroyedCallbackForTesting;
+    }
+
+    int getReadCount() {
+        return mReadCount.get();
     }
 
     // Native methods are implemented in upload_data_stream_adapter.cc.

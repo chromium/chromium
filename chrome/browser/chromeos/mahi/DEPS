@@ -1,0 +1,30 @@
+include_rules = [
+  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
+  # This is a temporary dependence to support ash chrome. We should remove this dependence when
+  # Lacros is enabled by default.
+  "+ash",
+
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/mahi",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/mahi",
+  "+chrome/browser/content_extraction/inner_text.h",
+  "+chrome/browser/download",
+  "+chrome/browser/favicon",
+  "+chrome/browser/printing",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/screen_ai",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+  "+chrome/test",
+]

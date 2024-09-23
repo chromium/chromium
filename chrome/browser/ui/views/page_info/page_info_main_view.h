@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -75,7 +76,8 @@ class PageInfoMainView : public views::View,
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
   void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
 
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // PermissionToggleRowViewObserver:
@@ -181,6 +183,12 @@ class PageInfoMainView : public views::View,
   // |Permission| changes.
   std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>
       toggle_rows_;
+
+  // This map contains rows for permission types that should be updated when
+  // their usage status is changed. This is needed to avoid recreating the whole
+  // PageInfo view if only a single permission is changed.
+  std::map<ContentSettingsType, raw_ptr<PermissionToggleRowView>>
+      syncable_permission_rows_;
 
   std::vector<raw_ptr<ChosenObjectView, VectorExperimental>>
       chosen_object_rows_;

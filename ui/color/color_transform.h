@@ -19,7 +19,8 @@ namespace ui {
 class ColorMixer;
 
 // Callback is a function which transforms an |input| color, optionally using a
-// |mixer| (to obtain other colors).
+// |mixer| (to obtain other colors). Do not depend on the callback running
+// except if it's necessary for the final color.
 using Callback =
     base::RepeatingCallback<SkColor(SkColor input, const ColorMixer& mixer)>;
 
@@ -37,10 +38,15 @@ class COMPONENT_EXPORT(COLOR) ColorTransform {
   ColorTransform& operator=(const ColorTransform&);
   ~ColorTransform();
 
+  // Returns true if the result of this transform will return the same result
+  // regardless of other transforms within the same ColorRecipe.
+  bool invariant() const { return invariant_; }
+
   SkColor Run(SkColor input_color, const ColorMixer& mixer) const;
 
  private:
   Callback callback_;
+  bool invariant_ = false;
 };
 
 // Functions to create common transforms:

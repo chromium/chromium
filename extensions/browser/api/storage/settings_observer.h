@@ -19,7 +19,7 @@ enum class StorageAreaNamespace;
 using SettingsChangedCallback =
     base::RepeatingCallback<void(const std::string&,
                                  StorageAreaNamespace,
-                                 absl::optional<api::storage::AccessLevel>,
+                                 std::optional<api::storage::AccessLevel>,
                                  base::Value)>;
 
 using SequenceBoundSettingsChangedCallback =

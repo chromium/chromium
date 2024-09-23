@@ -4,12 +4,10 @@
 
 #include "cc/trees/layer_tree_host_client.h"
 
-#include "cc/metrics/web_vital_metrics.h"
-
 namespace cc {
 
-std::unique_ptr<WebVitalMetrics> LayerTreeHostClient::GetWebVitalMetrics() {
-  return nullptr;
+std::string LayerTreeHostClient::GetPausedDebuggerLocalizedMessage() {
+  return "Debugger paused in another tab, click to switch to that tab.";
 }
 
 }  // namespace cc

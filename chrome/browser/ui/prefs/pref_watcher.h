@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -14,6 +15,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class Profile;
 class PrefsTabHelper;
@@ -21,7 +23,8 @@ class PrefsTabHelper;
 // Watches updates in WebKitPreferences and blink::RendererPreferences, and
 // notifies tab helpers and registered watchers of those updates.
 class PrefWatcher : public KeyedService,
-                    public privacy_sandbox::TrackingProtectionSettingsObserver {
+                    public privacy_sandbox::TrackingProtectionSettingsObserver,
+                    public ui::NativeThemeObserver {
  public:
   explicit PrefWatcher(Profile* profile);
   ~PrefWatcher() override;
@@ -36,6 +39,9 @@ class PrefWatcher : public KeyedService,
  private:
   // KeyedService overrides:
   void Shutdown() override;
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   void OnDoNotTrackEnabledChanged() override;
 
@@ -62,6 +68,9 @@ class PrefWatcher : public KeyedService,
   // preference changes, use |tab_helpers_|.
   mojo::RemoteSet<blink::mojom::RendererPreferenceWatcher>
       renderer_preference_watchers_;
+
+    base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
 };
 
 class PrefWatcherFactory : public ProfileKeyedServiceFactory {

@@ -30,7 +30,7 @@ namespace {
 
 // Returns true if this build should generate basic reports when an update is
 // detected.
-// TODO(crbug.com/1102047): Get rid of this function after Chrome OS reporting
+// TODO(crbug.com/40703888): Get rid of this function after Chrome OS reporting
 // logic has been split to its own delegates.
 constexpr bool ShouldReportUpdates() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -54,7 +54,7 @@ ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
   if (profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Profile reporting is on LaCrOs instead of Ash.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 }

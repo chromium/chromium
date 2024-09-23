@@ -11,6 +11,7 @@
 #include "autofill_address_util.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -71,7 +72,7 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
                                 ui_language_code, components_language_code);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -83,7 +84,7 @@ AutofillAddressUIComponent::LengthHint ConvertLengthHint(
     case AddressUiComponent::LengthHint::HINT_SHORT:
       return AutofillAddressUIComponent::LengthHint::HINT_SHORT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace
 
@@ -131,7 +132,7 @@ void ExtendAddressComponents(
           return component.literal.empty() &&
                  component.field == rule.placed_after;
         });
-    DCHECK(prev_component != components.end());
+    CHECK(prev_component != components.end(), base::NotFatalUntil::M130);
 
     // Insert the separator and `rule.type` after `prev_component`.
     if (include_literals) {
@@ -256,21 +257,19 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
   }
 
   return profile.ConstructInferredLabel(
-      kDetailsFields, std::size(kDetailsFields),
-      /*num_fields_to_include=*/2, ui_language_code);
+      kDetailsFields, /*num_fields_to_include=*/2, ui_language_code);
 }
 
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
-  static constexpr FieldType kTypeToCompare[] = {
+  static constexpr auto kTypeToCompare = {
       NAME_FULL, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
 
   base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
-          first_profile, second_profile,
-          FieldTypeSet(std::begin(kTypeToCompare), std::end(kTypeToCompare)),
+          first_profile, second_profile, FieldTypeSet(kTypeToCompare),
           app_locale);
 
   std::u16string first_address = GetEnvelopeStyleAddress(

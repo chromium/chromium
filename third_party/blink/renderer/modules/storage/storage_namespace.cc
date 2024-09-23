@@ -85,9 +85,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  BlinkStorageKey storage_key = IsSessionStorage()
-                                    ? local_dom_window->GetSessionStorageKey()
-                                    : local_dom_window->GetStorageKey();
+  BlinkStorageKey storage_key = local_dom_window->GetStorageKey();
   // The Storage Access API needs to use the first-party version of the storage
   // key. For more see:
   // third_party/blink/renderer/modules/storage_access/README.md
@@ -129,9 +127,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      IsSessionStorage() ? local_dom_window->GetSessionStorageKey()
-                         : local_dom_window->GetStorageKey(),
-      local_dom_window, this,
+      local_dom_window->GetStorageKey(), local_dom_window, this,
       /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 

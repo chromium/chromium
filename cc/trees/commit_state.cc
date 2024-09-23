@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/trees/commit_state.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 
@@ -38,7 +43,9 @@ CommitState::CommitState(const CommitState& prev)
       overscroll_behavior(prev.overscroll_behavior),
       background_color(prev.background_color),
       viewport_property_ids(prev.viewport_property_ids),
-      local_surface_id_from_parent(prev.local_surface_id_from_parent) {
+      local_surface_id_from_parent(prev.local_surface_id_from_parent),
+      primary_main_frame_item_sequence_number(
+          prev.primary_main_frame_item_sequence_number) {
   memcpy(event_listener_properties, prev.event_listener_properties,
          sizeof(event_listener_properties));
 }

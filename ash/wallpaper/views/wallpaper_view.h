@@ -46,16 +46,9 @@ class WallpaperView : public WallpaperBaseView,
 
  private:
   // views::View:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  bool AreDropTypesRequired() override;
-  bool CanDrop(const ui::OSExchangeData& data) override;
-  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
-  bool GetDropFormats(int*, std::set<ui::ClipboardFormatType>*) override;
-  void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragExited() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
@@ -85,7 +78,7 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view);
+    raw_ptr<WallpaperView>* out_wallpaper_view);
 
 }  // namespace ash
 

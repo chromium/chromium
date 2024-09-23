@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/substring_set_matcher/substring_set_matcher.h"
 
 #include <stddef.h>
@@ -484,8 +489,8 @@ size_t SubstringSetMatcher::AhoCorasickNode::EstimateMemoryUsage() const {
   if (edges_capacity_ == 0) {
     return 0;
   } else {
-    return base::trace_event::EstimateMemoryUsage(edges_.edges,
-                                                  edges_capacity_);
+    return base::trace_event::EstimateMemoryUsage(
+        base::span<const AhoCorasickEdge>(edges_.edges, edges_capacity_));
   }
 }
 

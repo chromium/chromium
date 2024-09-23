@@ -15,6 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/content_world.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 
 namespace base {
 class TimeDelta;
@@ -148,12 +149,12 @@ class JavaScriptFeature {
   // NOTE: Features should use `kIsolatedWorld` whenever possible to allow for
   // isolation between the feature and the loaded webpage JavaScript.
   JavaScriptFeature(ContentWorld supported_world,
-                    std::vector<const FeatureScript> feature_scripts);
+                    std::vector<FeatureScript> feature_scripts);
   // Same as above constructor with the addition of dependent features. If
   // `dependent_features` are given, they will be setup in the world specified
   // prior to configuring this feaure.
   JavaScriptFeature(ContentWorld supported_world,
-                    std::vector<const FeatureScript> feature_scripts,
+                    std::vector<FeatureScript> feature_scripts,
                     std::vector<const JavaScriptFeature*> dependent_features);
   virtual ~JavaScriptFeature();
 
@@ -173,10 +174,9 @@ class JavaScriptFeature {
   WebFramesManager* GetWebFramesManager(WebState* web_state);
 
   // Returns a vector of scripts used by this feature.
-  virtual const std::vector<const FeatureScript> GetScripts() const;
+  virtual std::vector<FeatureScript> GetScripts() const;
   // Returns a vector of features which this one depends upon being available.
-  virtual const std::vector<const JavaScriptFeature*> GetDependentFeatures()
-      const;
+  virtual std::vector<const JavaScriptFeature*> GetDependentFeatures() const;
 
   // Returns the script message handler name which this feature will receive
   // messages from JavaScript. Returning null will not register any handler.
@@ -213,6 +213,15 @@ class JavaScriptFeature {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout);
 
+  // Use of this function is DISCOURAGED. Prefer the `CallJavaScriptFunction`
+  // family of functions instead to keep the API clear and well defined.
+  // Executes `script` in `web_frame` within the content world that this feature
+  // has been configured.
+  // See WebFrame::ExecuteJavaScript for more details on `callback`.
+  bool ExecuteJavaScript(WebFrame* web_frame,
+                         const std::u16string& script,
+                         ExecuteJavaScriptCallbackWithError callback);
+
   // Callback for script messages registered through `GetScriptMessageHandler`.
   // `ScriptMessageReceived` is called when `web_state` receives a `message`.
   // `web_state` will always be non-null.
@@ -221,8 +230,8 @@ class JavaScriptFeature {
 
  private:
   ContentWorld supported_world_;
-  std::vector<const FeatureScript> scripts_;
-  std::vector<const JavaScriptFeature*> dependent_features_;
+  const std::vector<FeatureScript> scripts_;
+  const std::vector<const JavaScriptFeature*> dependent_features_;
   base::WeakPtrFactory<JavaScriptFeature> weak_factory_;
 };
 

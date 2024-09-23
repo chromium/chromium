@@ -168,7 +168,7 @@ public class TabListEditorBookmarkActionUnitTest {
         Assert.assertEquals(tabs, tabsCaptorValue);
         Assert.assertEquals(mSnackbarManager, snackbarManagerCaptorValue);
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
@@ -242,7 +242,7 @@ public class TabListEditorBookmarkActionUnitTest {
         Assert.assertEquals(tabs, tabsCaptorValue);
         Assert.assertEquals(mSnackbarManager, snackbarManagerCaptorValue);
 
-        helper.waitForFirst();
+        helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());

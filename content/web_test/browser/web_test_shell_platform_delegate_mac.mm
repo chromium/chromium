@@ -49,7 +49,7 @@ gfx::NativeWindow WebTestShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   if (!IsHeadless())
     return ShellPlatformDelegate::GetNativeWindow(shell);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -200,7 +200,7 @@ void WebTestShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(
 bool WebTestShellPlatformDelegate::HandleKeyboardEvent(
     Shell* shell,
     WebContents* source,
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (IsHeadless())
     return false;
   return ShellPlatformDelegate::HandleKeyboardEvent(shell, source, event);

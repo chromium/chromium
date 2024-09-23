@@ -51,6 +51,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+class IDBDatabaseInfo;
 class IDBFactoryClient;
 
 // This implements the IDBFactory Web IDL interface, i.e. the `window.indexedDB`
@@ -85,7 +86,8 @@ class MODULES_EXPORT IDBFactory final
                                                       const String& name,
                                                       ExceptionState&);
 
-  ScriptPromise GetDatabaseInfo(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLSequence<IDBDatabaseInfo>> GetDatabaseInfo(ScriptState*,
+                                                              ExceptionState&);
 
   // This method is exposed specifically for DevTools.
   void GetDatabaseInfoForDevTools(
@@ -127,9 +129,10 @@ class MODULES_EXPORT IDBFactory final
       const String& name,
       bool force_close);
 
-  void GetDatabaseInfoImpl(ScriptPromiseResolver* resolver);
+  void GetDatabaseInfoImpl(
+      ScriptPromiseResolver<IDLSequence<IDBDatabaseInfo>>*);
   void DidGetDatabaseInfo(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<IDLSequence<IDBDatabaseInfo>>*,
       Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
       mojom::blink::IDBErrorPtr error);
 

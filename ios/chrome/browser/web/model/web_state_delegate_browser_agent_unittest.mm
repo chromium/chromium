@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -31,8 +31,8 @@ const char kURL2[] = "https://www.some.url2.com";
 class WebStateDelegateBrowserAgentTest : public PlatformTest {
  public:
   WebStateDelegateBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     WebStateDelegateBrowserAgent::CreateForBrowser(
         browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
@@ -47,12 +47,13 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     web::NavigationManager::WebLoadParams load_params(url);
     load_params.transition_type = ui::PAGE_TRANSITION_TYPED;
 
-    web::WebState::CreateParams create_params(browser_->GetBrowserState());
+    web::WebState::CreateParams create_params(browser_->GetProfile());
     create_params.created_with_opener = false;
 
     std::unique_ptr<web::WebState> web_state =
         web::WebState::Create(create_params);
-    BlockedPopupTabHelper::CreateForWebState(web_state.get());
+    OverlayRequestQueue::CreateForWebState(web_state.get());
+    BlockedPopupTabHelper::GetOrCreateForWebState(web_state.get());
     SnapshotTabHelper::CreateForWebState(web_state.get());
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
 
@@ -65,7 +66,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 };
 
@@ -88,7 +89,7 @@ TEST_F(WebStateDelegateBrowserAgentTest, CreateNewWebStateAndPopup) {
 
   // Verify that this webstate's popups are blocked
   BlockedPopupTabHelper* popup_helper =
-      BlockedPopupTabHelper::FromWebState(web_state);
+      BlockedPopupTabHelper::GetOrCreateForWebState(web_state);
   EXPECT_TRUE(popup_helper->ShouldBlockPopup(GURL(kURL1)));
   // Create a new webstate without user initiation.
   web::WebState* web_state2 =

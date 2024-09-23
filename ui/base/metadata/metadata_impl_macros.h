@@ -21,18 +21,11 @@
   BEGIN_METADATA_INTERNAL_BASE(                             \
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name), class_name)
 
-#define _BEGIN_NESTED_METADATA(outer_class, class_name, parent_class_name) \
-  BEGIN_METADATA_INTERNAL(outer_class::class_name,                         \
-                          METADATA_CLASS_NAME_INTERNAL(class_name),        \
-                          parent_class_name)                               \
-  METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
-
-#define _BEGIN_METADATA(class_name, parent_class_name)                         \
-  static_assert(!std::is_same_v<parent_class_name, class_name>,                \
-                "class and ancestor are the same");                            \
-  BEGIN_METADATA_INTERNAL(                                                     \
-      class_name, METADATA_CLASS_NAME_INTERNAL(class_name), parent_class_name) \
-  METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
+#define _BEGIN_NESTED_METADATA(outer_class, class_name)             \
+  BEGIN_METADATA_INTERNAL(outer_class::class_name,                  \
+                          METADATA_CLASS_NAME_INTERNAL(class_name), \
+                          class_name::kAncestorClass)               \
+  METADATA_PARENT_CLASS_INTERNAL(class_name::kAncestorClass)
 
 #define _BEGIN_METADATA_SIMPLE(class_name)                          \
   BEGIN_METADATA_INTERNAL(class_name,                               \
@@ -40,7 +33,7 @@
                           class_name::kAncestorClass)               \
   METADATA_PARENT_CLASS_INTERNAL(class_name::kAncestorClass)
 
-#define _GET_MD_MACRO_NAME(_1, _2, _3, NAME, ...) NAME
+#define _GET_MD_MACRO_NAME(_1, _2, NAME, ...) NAME
 
 // The following macro overloads the above macros. For most cases, only two
 // parameters are used. In some instances when a class is nested within another
@@ -49,7 +42,7 @@
 
 #define BEGIN_METADATA(class_name, ...)                                 \
   _GET_MD_MACRO_NAME(class_name, ##__VA_ARGS__, _BEGIN_NESTED_METADATA, \
-                     _BEGIN_METADATA, _BEGIN_METADATA_SIMPLE)           \
+                     _BEGIN_METADATA_SIMPLE)                            \
   (class_name, ##__VA_ARGS__)
 
 // This macro is used for defining template specializations for a templated view

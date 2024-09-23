@@ -56,7 +56,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
   // views::AccessiblePaneView:
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void SetVisible(bool visible) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;
@@ -122,8 +123,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
 
   bool GetShowTitle() const;
 
-  SkColor title_bar_color_;
-  SkColor background_color_;
+  SkColor title_bar_color_ = SK_ColorTRANSPARENT;
+  SkColor background_color_ = SK_ColorTRANSPARENT;
 
   std::u16string last_title_;
   std::u16string last_location_;

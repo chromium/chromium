@@ -27,7 +27,7 @@ extern const char kPasscodeArticleURL[];
  * This is used by `PasswordsDetailsCollectionViewController` and
  * `PasswordExporter|to re-authenticate the user before displaying the password
  * in plain text, allowing it to be copied, or exporting passwords.
- * TODO(crbug.com/1116979): Convert reauthentication module to model object
+ * TODO(crbug.com/40144947): Convert reauthentication module to model object
  * (keyed service or browser agent).
  */
 @interface ReauthenticationModule : NSObject <ReauthenticationProtocol>

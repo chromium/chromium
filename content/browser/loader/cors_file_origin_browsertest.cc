@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -114,8 +113,6 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
     if (AllowFileAccessFromFiles()) {
       command_line->AppendSwitch(switches::kAllowFileAccessFromFiles);
     }
-
-    ContentBrowserTest::SetUpCommandLine(command_line);
   }
   void SetUpOnMainThread() override {
     base::AutoLock lock(lock_);
@@ -165,8 +162,9 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
       // Return the request origin header as the body so that JavaScript can
       // check if it sent the expected origin header.
       auto origin = request.headers.find(net::HttpRequestHeaders::kOrigin);
-      if (origin != request.headers.end())
+      if (origin != request.headers.end()) {
         response->set_content(origin->second);
+      }
     }
     return response;
   }

@@ -132,7 +132,7 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
   }
 
   // Send the queries to the ukm database to process.
-  ukm_database_->RunReadonlyQueries(
+  ukm_database_->RunReadOnlyQueries(
       std::move(processed_queries_),
       base::BindOnce(&SqlFeatureProcessor::OnQueriesRun,
                      weak_ptr_factory_.GetWeakPtr(), feature_processor_state));

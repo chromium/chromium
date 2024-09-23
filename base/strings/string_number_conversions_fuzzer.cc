@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
-
-#include "base/strings/string_number_conversions.h"
 
 template <class NumberType, class StringPieceType, class StringType>
 void CheckRoundtripsT(const uint8_t* data,
@@ -34,17 +35,17 @@ void CheckRoundtripsT(const uint8_t* data,
 template <class NumberType>
 void CheckRoundtrips(const uint8_t* data,
                      const size_t size,
-                     bool (*string_to_num)(base::StringPiece, NumberType*)) {
-  return CheckRoundtripsT<NumberType, base::StringPiece, std::string>(
+                     bool (*string_to_num)(std::string_view, NumberType*)) {
+  return CheckRoundtripsT<NumberType, std::string_view, std::string>(
       data, size, &base::NumberToString, string_to_num);
 }
 
 template <class NumberType>
 void CheckRoundtrips16(const uint8_t* data,
                        const size_t size,
-                       bool (*string_to_num)(base::StringPiece16,
+                       bool (*string_to_num)(std::u16string_view,
                                              NumberType*)) {
-  return CheckRoundtripsT<NumberType, base::StringPiece16, std::u16string>(
+  return CheckRoundtripsT<NumberType, std::u16string_view, std::u16string>(
       data, size, &base::NumberToString16, string_to_num);
 }
 
@@ -63,8 +64,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CheckRoundtrips<size_t>(data, size, &base::StringToSizeT);
   CheckRoundtrips16<size_t>(data, size, &base::StringToSizeT);
 
-  base::StringPiece string_piece_input(reinterpret_cast<const char*>(data),
-                                       size);
+  std::string_view string_piece_input(reinterpret_cast<const char*>(data),
+                                      size);
   std::string string_input(reinterpret_cast<const char*>(data), size);
 
   int out_int;
@@ -78,9 +79,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   size_t out_size;
   base::StringToSizeT(string_piece_input, &out_size);
 
-  // Test for StringPiece16 if size is even.
+  // Test for std::u16string_view if size is even.
   if (size % 2 == 0) {
-    base::StringPiece16 string_piece_input16(
+    std::u16string_view string_piece_input16(
         reinterpret_cast<const char16_t*>(data), size / 2);
 
     base::StringToInt(string_piece_input16, &out_int);

@@ -26,8 +26,8 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -294,7 +294,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner_;
   std::unique_ptr<base::Thread> impl_thread_;
   std::unique_ptr<base::Thread> image_worker_;
-  std::unique_ptr<viz::TestGpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  std::unique_ptr<gpu::TestGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<TestTaskGraphRunner> task_graph_runner_;
   base::CancelableOnceClosure timeout_;
   base::OnceClosure quit_closure_;

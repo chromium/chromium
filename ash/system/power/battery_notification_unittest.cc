@@ -63,7 +63,7 @@ class BatteryNotificationTest : public AshTestBase {
   }
 
   void TearDown() override {
-    OverrideIsBatterySaverAllowedForTesting(absl::nullopt);
+    OverrideIsBatterySaverAllowedForTesting(std::nullopt);
     battery_notification_.reset();
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();

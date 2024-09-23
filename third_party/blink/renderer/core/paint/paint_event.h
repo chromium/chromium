@@ -13,8 +13,7 @@ enum class PaintEvent {
   kFirstPaint,
   kFirstContentfulPaint,
   kProvisionalFirstMeaningfulPaint,
-  kFirstImagePaint,
-  kPortalActivatedPaint,
+  kFirstImagePaint
 };
 
 }  // namespace blink

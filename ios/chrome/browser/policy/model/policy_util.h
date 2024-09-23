@@ -29,6 +29,14 @@ enum class IncognitoModePrefs {
   kForced,
 };
 
+// Returns whether the browser has platform policies based on the presence of
+// policy data in the App Configuration from the platform.
+bool HasPlatformPolicies();
+
+// Returns whether the application is managed through MDM. This
+// checks the key set in the NSUserDefaults by iOS.
+bool IsApplicationManagedByMDM();
+
 // Returns true if IncognitoModeAvailability policy is set by enterprise or
 // custodian.
 bool IsIncognitoPolicyApplied(PrefService* pref_service);
@@ -38,10 +46,6 @@ bool IsIncognitoModeDisabled(PrefService* pref_service);
 
 // Returns true if incognito mode is forced by policy.
 bool IsIncognitoModeForced(PrefService* pref_service);
-
-// Returns whether the browser is managed based on the presence of policy data
-// in the App Configuration from the platform.
-bool IsApplicationManagedByPlatform();
 
 // Returns true if adding a new tab item is allowed by policy.
 bool IsAddNewTabAllowedByPolicy(PrefService* prefs, bool is_incognito);

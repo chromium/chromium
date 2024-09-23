@@ -404,10 +404,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   if (remove_mask & DATA_TYPE_COOKIES &&
       origin_type_mask_ & ORIGIN_TYPE_UNPROTECTED_WEB) {
     storage_partition_remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
-    // Interest groups should be cleared with cookies for its origin trial as
-    // the current FLEDGE implementation has the same privacy characteristics.
-    storage_partition_remove_mask |=
-        StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
+    if (!filter_builder->PartitionedCookiesOnly()) {
+      // Interest groups should be cleared with cookies for its origin trial as
+      // the current FLEDGE implementation has the same privacy characteristics.
+      //
+      // Interest groups are per-origin, and don't support the concept of
+      // partitioning, so we only trigger their deletion if *unpartitioned*
+      // cookies are being deleted (hence the not-PartitionedCookiesOnly check
+      // above).
+      storage_partition_remove_mask |=
+          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
+    }
     if (embedder_delegate_) {
       domains_for_deferred_cookie_deletion_ =
           embedder_delegate_->GetDomainsForDeferredCookieDeletion(
@@ -450,7 +457,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
   }
   if (remove_mask & DATA_TYPE_MEDIA_LICENSES ||
-      // TODO(crbug.com/1434517): For now, media licenses are part of the quota
+      // TODO(crbug.com/40264778): For now, media licenses are part of the quota
       // management system. If all DOM storage types are being removed, remove
       // media licenses as well. When bug is resolved, this condition can be
       // removed.
@@ -517,7 +524,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     bool perform_storage_cleanup =
         delete_begin_.is_null() && delete_end_.is_max() &&
         origin_type_mask_ & ORIGIN_TYPE_UNPROTECTED_WEB &&
-        filter_builder->GetMode() == BrowsingDataFilterBuilder::Mode::kPreserve;
+        filter_builder->MatchesMostOriginsAndDomains();
 
     storage_partition->ClearData(
         storage_partition_remove_mask,
@@ -537,9 +544,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     network::mojom::NetworkContext* network_context =
         storage_partition->GetNetworkContext();
 
-    RenderProcessHostImpl::ClearAllResourceCaches();
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      RenderProcessHostImpl::ClearAllResourceCaches();
+    }
 
-    // TODO(crbug.com/813882): implement retry on network service.
+    // TODO(crbug.com/40563720): implement retry on network service.
 
     // The clearing of the HTTP cache happens in the network service process
     // when enabled. Note that we've deprecated the concept of a media cache,
@@ -552,8 +561,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
             features::kCodeCacheDeletionWithoutFilter)) {
       // Experimentally perform preservelist deletions without filter and skip
       // origin specific deletions. See crbug.com/1040039#26.
-      if (filter_builder->GetMode() ==
-          BrowsingDataFilterBuilder::Mode::kPreserve) {
+      if (filter_builder->MatchesMostOriginsAndDomains()) {
         storage_partition->ClearCodeCaches(
             delete_begin, delete_end, /*url_matcher=*/base::NullCallback(),
             CreateTaskCompletionClosureForMojo(TracingDataType::kCodeCaches));
@@ -565,8 +573,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     }
 
     // TODO(crbug.com/1985971) : Implement filtering for NetworkHistory.
-    if (filter_builder->GetMode() ==
-        BrowsingDataFilterBuilder::Mode::kPreserve) {
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
       // When clearing cache, wipe accumulated network related data
       // (TransportSecurityState and HttpServerPropertiesManager data).
       network_context->ClearNetworkingHistoryBetween(
@@ -575,7 +582,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     }
 
     // Clears the PrefetchedSignedExchangeCache of all RenderFrameHostImpls.
-    RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache();
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache();
+    }
 
     // Clears the CORS PreFlight cache. We don't support delete_begin,
     // delete_end time range, as the preflight cache max age is capped to 2hrs.
@@ -613,7 +622,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
   //////////////////////////////////////////////////////////////////////////////
   // Reporting cache.
-  // TODO(https://crbug.com/1291489): Add unit test to cover this.
+  // TODO(crbug.com/40818785): Add unit test to cover this.
   if (remove_mask & DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* network_context =
         storage_partition->GetNetworkContext();
@@ -789,8 +798,7 @@ void BrowsingDataRemoverImpl::Notify() {
   }
 
   base::TimeDelta delta = base::TimeTicks::Now() - task.task_started;
-  if (task.filter_builder->GetMode() ==
-      BrowsingDataFilterBuilder::Mode::kPreserve) {
+  if (task.filter_builder->MatchesMostOriginsAndDomains()) {
     // Full, and time based and filtered deletions are often implemented
     // differently, so we track them in separate metrics.
     if (!task.filter_builder->MatchesAllOriginsAndDomains()) {

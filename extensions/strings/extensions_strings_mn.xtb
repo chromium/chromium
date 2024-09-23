@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_ID" /> тодорхойгүй бүтээгдэхүүн (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлыг солих боломжгүй байна.Файл нээлттэй байгаа эсэхийг шалгана уу.</translation>
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
-<translation id="3369521687965833290">Өргөтгөлийг задалж чадахгүй байна. Өргөтгөлийг аюулгүй задлахын тулд таны профайл drive letter-р эхэлсэн байх шаардлагатай бөгөөд junction, mount point эсвэл symlink гэх мэт зүйлсийг агуулаагүй байх зайлшгүй шаардлагатай. Ийм төрлийн урсгал таны профайлд байхгүй болно.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Энэ машины администратор нь <ph name="EXTENSION_NAME" />-ийг суулгахыг шаарддаг бөгөөд суулгалтыг устгах боломжгүй байдаг.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />-ийн тодорхойгүй бүтээгдэхүүн <ph name="PRODUCT_ID" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Өртгөтгөлийг задалж чадсангүй. Өргөтгөлийг аюулгүй задлахын тулд таны профайл директорт файлын өөр директор агуулсан зам байгаа, түүнийг сонгоно уу.</translation>
 <translation id="6322279351188361895">Хувийн түлхүүрийг унших явцад алдаа гарсан байна.</translation>
 <translation id="6391538222494443604">Оролтын хадгалалтын сантай байх ёстой.</translation>
 <translation id="641087317769093025">Өргөтгөлийг задалж чадсангүй.</translation>

@@ -5,6 +5,8 @@
     "is_component_build": false,
     "is_debug": false,
     "target_cpu": "arm64",
-    "use_remoteexec": true
+    "target_os": "mac",
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

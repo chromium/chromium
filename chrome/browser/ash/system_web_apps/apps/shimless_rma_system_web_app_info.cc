@@ -18,12 +18,13 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForShimlessRMASystemWebApp() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIShimlessRMAUrl);
+  GURL start_url(ash::kChromeUIShimlessRMAUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIShimlessRMAUrl);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_SHIMLESS_RMA_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192, IDR_ASH_SHIMLESS_RMA_APP_ICON_192_PNG}},
       *info);
   info->theme_color = 0xFFFFFFFF;

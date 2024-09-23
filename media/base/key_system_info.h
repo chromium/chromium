@@ -57,7 +57,7 @@ class MEDIA_EXPORT KeySystemInfo {
   // HW secure; if null then there is no HW secure requirement to apply. This
   // does not imply that `requested_robustness` should be ignored, both rules
   // must be applied.
-  // TODO(crbug.com/1204284): Refactor this and remove the
+  // TODO(crbug.com/40179944): Refactor this and remove the
   // `hw_secure_requirement` argument.
   virtual EmeConfig::Rule GetRobustnessConfigRule(
       const std::string& key_system,
@@ -70,7 +70,7 @@ class MEDIA_EXPORT KeySystemInfo {
   // requirement, which is enforced by `KeySystemConfigSelector`. Therefore, the
   // returned `EmeConfig` doesn't need to specify persistence requirement
   // explicitly.
-  // TODO(crbug.com/1324262): Refactor `EmeConfig` to make it easier to
+  // TODO(crbug.com/40839176): Refactor `EmeConfig` to make it easier to
   // express combinations of requirements.
   virtual EmeConfig::Rule GetPersistentLicenseSessionSupport() const = 0;
 
@@ -86,6 +86,8 @@ class MEDIA_EXPORT KeySystemInfo {
 
 using KeySystemInfos = std::vector<std::unique_ptr<KeySystemInfo>>;
 
+// TODO(b/321307544): Rename this callback to more appropriate name e.g.
+// SupportedKeySystemsUpdateCB.
 using GetSupportedKeySystemsCB = base::RepeatingCallback<void(KeySystemInfos)>;
 
 }  // namespace media

@@ -49,7 +49,7 @@ final class SearchEngineChoiceServiceTestUtil {
         mDeviceCountry.fulfill(deviceCountry);
         // `Promise` posts callback tasks on Android Looper which is not integrated with native
         // RunLoop in NativeTest. Run these tasks synchronously now.
-        // TODO(crbug.com/1135593): remove this hack once Promise uses PostTask.
+        // TODO(crbug.com/40723709): remove this hack once Promise uses PostTask.
         runLooperTasks();
     }
 

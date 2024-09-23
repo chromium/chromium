@@ -9,7 +9,7 @@ import type {SignInPromoElement} from 'chrome://intro/sign_in_promo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
 
@@ -40,30 +40,33 @@ suite('SignInPromoTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       signInPromoElement = document.createElement('sign-in-promo');
       document.body.appendChild(signInPromoElement);
-      return waitBeforeNextRender(signInPromoElement);
     });
 
-    test('accept sign-in button clicked', function() {
+    test('accept sign-in button clicked', async function() {
       checkSignInButtons(signInPromoElement, false);
       assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 0);
       signInPromoElement.$.acceptSignInButton.click();
+      await microtasksFinished();
       checkSignInButtons(signInPromoElement, true);
       assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 1);
     });
 
-    test('decline sign-in button clicked', function() {
+    test('decline sign-in button clicked', async function() {
       checkSignInButtons(signInPromoElement, false);
       assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 0);
       signInPromoElement.$.declineSignInButton.click();
+      await microtasksFinished();
       checkSignInButtons(signInPromoElement, true);
       assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 1);
     });
 
-    test('"reset-intro-buttons" event resets buttons', function() {
+    test('"reset-intro-buttons" event resets buttons', async function() {
       checkSignInButtons(signInPromoElement, false);
       signInPromoElement.$.acceptSignInButton.click();
+      await microtasksFinished();
       checkSignInButtons(signInPromoElement, true);
       webUIListenerCallback('reset-intro-buttons');
+      await microtasksFinished();
       checkSignInButtons(signInPromoElement, false);
     });
   });
@@ -77,18 +80,18 @@ suite('SignInPromoTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       signInPromoElement = document.createElement('sign-in-promo');
       document.body.appendChild(signInPromoElement);
-      return waitBeforeNextRender(signInPromoElement);
     });
 
-    test('buttons are disabled if disclaimer is empty', function() {
+    test('buttons are disabled if disclaimer is empty', async function() {
       checkSignInButtons(signInPromoElement, true);
       assertTrue(
-          signInPromoElement.$.disclaimerText.innerHTML.trim().length === 0);
+          signInPromoElement.$.disclaimerText.textContent!.trim().length === 0);
 
       webUIListenerCallback(
           'managed-device-disclaimer-updated', 'managedDeviceDisclaimer');
+      await microtasksFinished();
       assertTrue(
-          signInPromoElement.$.disclaimerText.innerHTML.trim().length !== 0);
+          signInPromoElement.$.disclaimerText.textContent!.trim().length !== 0);
       checkSignInButtons(signInPromoElement, false);
     });
   });

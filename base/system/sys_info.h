@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -18,7 +19,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
@@ -123,6 +123,9 @@ class BASE_EXPORT SysInfo {
   // For macOS, a useful reference of the resulting strings returned by this
   // function and their corresponding hardware can be found at
   // https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
+  //
+  // For iOS, corresponding hardware can be found at
+  // https://deviceatlas.com/resources/clientside/ios-hardware-identification
   static std::string HardwareModelName();
 
 #if BUILDFLAG(IS_MAC)
@@ -154,7 +157,7 @@ class BASE_EXPORT SysInfo {
   // Do not add any further callers! When the aforementioned 2022-era hardware
   // is the minimum requirement for Chromium, remove this function and adjust
   // all callers appropriately.
-  static absl::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
+  static std::optional<HardwareModelNameSplit> SplitHardwareModelNameDoNotUse(
       std::string_view name);
 #endif
 
@@ -270,6 +273,10 @@ class BASE_EXPORT SysInfo {
   // For example, iOS beta releases have the same version number but different
   // build number strings.
   static std::string GetIOSBuildNumber();
+
+  // Overrides the hardware model name. The overridden value is used instead of
+  // `StringSysctl({CTL_HW, HW_MACHINE})`. `name` should not be empty.
+  static void OverrideHardwareModelName(std::string name);
 #endif  // BUILDFLAG(IS_IOS)
 
   // Returns true for low-end devices that may require extreme tradeoffs,
@@ -337,7 +344,7 @@ class BASE_EXPORT SysInfo {
 
   // Sets the amount of physical memory in MB for testing, thus allowing tests
   // to run irrespective of the host machine's configuration.
-  static absl::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
+  static std::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
       uint64_t amount_of_memory_mb);
   static void ClearAmountOfPhysicalMemoryMbForTesting();
 };

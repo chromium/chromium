@@ -20,8 +20,6 @@ bool DeleteFolder(const std::optional<base::FilePath>& installed_path);
 // Delete this updater's versioned install folder.
 bool DeleteCandidateInstallFolder(UpdaterScope scope);
 
-base::FilePath GetUpdaterFolderName();
-
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope);
 
 // Copy a directory, including symlinks.

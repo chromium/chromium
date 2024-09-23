@@ -23,27 +23,29 @@ base::RepeatingCallback<bool()> Return(bool value) {
 class VirtualFileTasksTest : public testing::Test {
  protected:
   VirtualFileTasksTest() {
-    task1 =
-        std::make_unique<FakeVirtualTask>(ToSwaActionId("id1"),
-                                          /*enabled=*/true, /*matches=*/true,
-                                          base::BindLambdaForTesting([this]() {
-                                            task1_executed_++;
-                                          }).Then(Return(true)));
-    task2 =
-        std::make_unique<FakeVirtualTask>(ToSwaActionId("id2"),
-                                          /*enabled=*/false, /*matches=*/true,
-                                          base::BindLambdaForTesting([this]() {
-                                            task2_executed_++;
-                                          }).Then(Return(true))),
-    task3 =
-        std::make_unique<FakeVirtualTask>(ToSwaActionId("id3"),
-                                          /*enabled=*/true, /*matches=*/true,
-                                          base::BindLambdaForTesting([this]() {
-                                            task3_executed_++;
-                                          }).Then(Return(false)));
+    task1 = std::make_unique<FakeVirtualTask>(
+        ToSwaActionId("id1"),
+        /*enabled=*/true, /*matches=*/true,
+        /*is_dlp_blocked=*/false, base::BindLambdaForTesting([this]() {
+                                    task1_executed_++;
+                                  }).Then(Return(true)));
+    task2 = std::make_unique<FakeVirtualTask>(
+        ToSwaActionId("id2"),
+        /*enabled=*/false, /*matches=*/true,
+        /*is_dlp_blocked=*/false, base::BindLambdaForTesting([this]() {
+                                    task2_executed_++;
+                                  }).Then(Return(true))),
+    task3 = std::make_unique<FakeVirtualTask>(
+        ToSwaActionId("id3"),
+        /*enabled=*/true, /*matches=*/true,
+        /*is_dlp_blocked=*/false, base::BindLambdaForTesting([this]() {
+                                    task3_executed_++;
+                                  }).Then(Return(false)));
     task4 = std::make_unique<FakeVirtualTask>(ToSwaActionId("id4"),
                                               /*enabled=*/true,
-                                              /*matches=*/false, Return(true));
+                                              /*matches=*/false,
+                                              /*is_dlp_blocked=*/false,
+                                              Return(true));
   }
 
   void SetUp() override {
@@ -132,16 +134,16 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_ExecuteReturnsFalse) {
   ASSERT_EQ(task3_executed_, 1);
 }
 
-TEST_F(VirtualFileTasksTest, FindVirtualTasks_EmptyFileList) {
+TEST_F(VirtualFileTasksTest, MatchVirtualTasks_EmptyFileList) {
   std::vector<FullTaskDescriptor> result_list;
-  FindVirtualTasks(/*profile=*/nullptr, /*entries=*/{},
-                   /*file_urls=*/{}, /*dlp_source_urls=*/{}, &result_list);
+  MatchVirtualTasks(/*profile=*/nullptr, /*entries=*/{},
+                    /*file_urls=*/{}, /*dlp_source_urls=*/{}, &result_list);
   ASSERT_EQ(result_list.size(), 0UL);
 }
 
-TEST_F(VirtualFileTasksTest, FindVirtualTasks_OneFile) {
+TEST_F(VirtualFileTasksTest, MatchVirtualTasks_OneFile) {
   std::vector<FullTaskDescriptor> result_list;
-  FindVirtualTasks(
+  MatchVirtualTasks(
       /*profile=*/nullptr, /*entries=*/
       {{base::FilePath("/home/chronos/u-123/MyFiles/foo.txt"), "text/plain",
         /*is_directory=*/false}},

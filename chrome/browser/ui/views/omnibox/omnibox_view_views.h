@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -241,6 +242,7 @@ class OmniboxViewViews
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
+  void OnKeywordPlaceholderTextChange() override;
   gfx::NativeView GetNativeView() const override;
   void ShowVirtualKeyboardIfEnabled() override;
   void HideImeIfNeeded() override;
@@ -264,6 +266,8 @@ class OmniboxViewViews
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
   bool ShouldShowPlaceholderText() const override;
+
+  void UpdateAccessibleValue() override;
 
   // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -298,7 +302,9 @@ class OmniboxViewViews
   void OnCompositingDidCommit(ui::Compositor* compositor) override;
   void OnCompositingStarted(ui::Compositor* compositor,
                             base::TimeTicks start_time) override;
-  void OnCompositingEnded(ui::Compositor* compositor) override;
+  void OnDidPresentCompositorFrame(
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
   // TemplateURLServiceObserver:
@@ -317,12 +323,16 @@ class OmniboxViewViews
   // Helper method to construct part of the context menu.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
 
+  // Called when the popup view becomes visible.
+  void OnPopupOpened();
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
 
   // Owns either an OmniboxPopupViewViews or an OmniboxPopupViewWebUI.
   std::unique_ptr<OmniboxPopupView> popup_view_;
+  base::CallbackListSubscription popup_view_opened_subscription_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
   std::vector<gfx::Range> saved_temporary_selection_ = {{}};

@@ -5,12 +5,13 @@
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 
 #include "content/browser/bad_message.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 
 namespace content {
@@ -36,7 +37,7 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
     base::flat_map<::blink::mojom::RuntimeFeature,
                    ::blink::mojom::OriginTrialFeatureStatePtr>
         origin_trial_features) {
-  // TODO(crbug.com/1377000): RuntimeFeatureState does not yet support
+  // TODO(crbug.com/40243430): RuntimeFeatureState does not yet support
   // HTTP header origin trial tokens, which currently cause this function to be
   // called between RenderFrameHostImpl::CommitNavigation() and
   // RenderFrameHostImpl::DidCommitNavigation(). As a result, we will reject all
@@ -100,9 +101,28 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
     }
   }
   // Apply the diff changes to the mutable RuntimeFeatureStateReadContext.
+  // TODO(crbug.com/347186599): CAVEAT EMPTOR - there are corner cases where
+  // RuntimeFeatureStateDocumentData::GetForCurrentDocument() returned a nullptr
+  // when it shouldn't have. To prevent CHECK failures, we will create a new
+  // RuntimeFeatureStateDocumentData, but this does not resolve the original
+  // corner case where the DocumentData is incorrectly created/deleted.
+  // This issue should be revisited to avoid silently dropping any feature
+  // overrides that are stored in the RFSDocumentData, in these corner cases
+  // when the data has become a nullptr.
   RuntimeFeatureStateDocumentData* document_data =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           &render_frame_host());
+  if (!document_data) {
+    // We can't use
+    // RuntimeFeatureStateDocumentData::GetOrCreateForCurrentDocument() because
+    // that creates an empty RuntimeFeatureStateReadContext which will hit some
+    // internal CHECKs if used because all its member fields are empty. Passing
+    // in a RuntimeFeatureStateContext() will initialize those member fields.
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        &render_frame_host(), blink::RuntimeFeatureStateContext());
+    document_data = RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+        &render_frame_host());
+  }
   CHECK(document_data);
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(
@@ -128,7 +148,8 @@ void OriginTrialStateHostImpl::EnablePersistentTrial(
       /*origin=*/render_frame_host().GetLastCommittedOrigin(),
       /*partition_origin=*/
       render_frame_host().GetOutermostMainFrame()->GetLastCommittedOrigin(),
-      script_origins, tokens, base::Time::Now());
+      script_origins, tokens, base::Time::Now(),
+      render_frame_host().GetPageUkmSourceId());
 }
 
 }  // namespace content

@@ -259,43 +259,13 @@ gfx::Size OverflowView::GetMinimumSize() const {
   }
 }
 
-gfx::Size OverflowView::CalculatePreferredSize() const {
+gfx::Size OverflowView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Preferred size is the preferred size of the primary as the overflow
   // view wants to show the primary by itself if it can.
   gfx::Size result = GetSizeFromFlexRule(primary_view_, views::SizeBounds())
                          .value_or(primary_view_->GetPreferredSize());
   return result;
-}
-
-int OverflowView::GetHeightForWidth(int width) const {
-  const auto primary_size = GetSizeFromFlexRule(
-      primary_view_, views::SizeBounds(width, views::SizeBound()));
-
-  int primary_height = primary_size ? primary_size->height()
-                                    : primary_view_->GetHeightForWidth(width);
-
-  int prefix_indicator_height = 0;
-  if (prefix_indicator_view_) {
-    const auto prefix_indicator_size = GetSizeFromFlexRule(
-        prefix_indicator_view_, views::SizeBounds(width, views::SizeBound()));
-    prefix_indicator_height =
-        prefix_indicator_size
-            ? prefix_indicator_size->height()
-            : prefix_indicator_view_->GetHeightForWidth(width);
-  }
-
-  int postfix_indicator_height = 0;
-  if (postfix_indicator_view_) {
-    const auto postfix_indicator_size = GetSizeFromFlexRule(
-        postfix_indicator_view_, views::SizeBounds(width, views::SizeBound()));
-    postfix_indicator_height =
-        postfix_indicator_size
-            ? postfix_indicator_size->height()
-            : postfix_indicator_view_->GetHeightForWidth(width);
-  }
-
-  return std::max(
-      {primary_height, prefix_indicator_height, postfix_indicator_height});
 }
 
 BEGIN_METADATA(OverflowView)

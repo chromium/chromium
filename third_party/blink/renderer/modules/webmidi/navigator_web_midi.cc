@@ -76,7 +76,7 @@ NavigatorWebMIDI& NavigatorWebMIDI::From(Navigator& navigator) {
   return *supplement;
 }
 
-ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
+ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
     ScriptState* script_state,
     Navigator& navigator,
     const MIDIOptions* options,
@@ -85,14 +85,14 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
       script_state, options, exception_state);
 }
 
-ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
+ScriptPromise<MIDIAccess> NavigatorWebMIDI::requestMIDIAccess(
     ScriptState* script_state,
     const MIDIOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "The frame is not working.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
@@ -121,10 +121,12 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(window, WebFeature::kMidiDisabledByFeaturePolicy);
     exception_state.ThrowSecurityError(kFeaturePolicyErrorMessage);
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  return MIDIAccessInitializer::Start(script_state, options);
+  MIDIAccessInitializer* initializer =
+      MakeGarbageCollected<MIDIAccessInitializer>(script_state, options);
+  return initializer->Start(window);
 }
 
 }  // namespace blink

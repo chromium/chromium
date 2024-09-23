@@ -25,7 +25,7 @@ base::LazyInstance<MemoryKillsMonitor>::Leaky g_memory_kills_monitor_instance =
 MemoryKillsMonitor::MemoryKillsMonitor() = default;
 
 MemoryKillsMonitor::~MemoryKillsMonitor() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

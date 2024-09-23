@@ -101,7 +101,7 @@ void ServiceInstanceRegistry::Register(ServiceInstance* instance) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

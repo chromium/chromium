@@ -139,6 +139,8 @@ declare interface ClientApiDelegate {
    *     message. Resolves with undefined otherwise.
    */
   openFeedbackDialog: () => Promise<string|undefined>;
+  /** Opens the on device app controls section of OS settings. */
+  showOnDeviceAppControls: () => Promise<void>;
   /** Opens up the parental controls section of OS settings. */
   showParentalControls: () => Promise<void>;
   /** Triggers the call-to-action associated with the given action type id. */
@@ -163,12 +165,6 @@ declare interface ClientApiDelegate {
    * was already completed).
    */
   launchMicrosoft365Setup: () => Promise<void>;
-  /**
-   * Request for the discover page notification to be shown to the user. The
-   * notification will only be shown if the relevant heuristics are true, i.e.
-   * user is a child, is using a supported language etc.
-   */
-  maybeShowDiscoverNotification: () => Promise<void>;
   /**
    * Request for the release notes notification to be shown to the user. The
    * notification will only be shown if a notification for the help app has not

@@ -70,7 +70,7 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
 void ChromeAppIcon::ApplyEffects(int resource_size_in_dip,
                                  const ResizeFunction& resize_function,
                                  bool app_launchable,
-                                 bool from_bookmark,
+                                 bool rounded_corners,
                                  Badge badge_type,
                                  gfx::ImageSkia* image_skia) {
   if (!resize_function.is_null()) {
@@ -86,11 +86,12 @@ void ChromeAppIcon::ApplyEffects(int resource_size_in_dip,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Badge should be added after graying out the icon to have a crisp look.
-  if (badge_type != Badge::kNone)
+  if (badge_type != Badge::kNone) {
     util::ApplyBadge(image_skia, badge_type);
+  }
 #endif
 
-  if (from_bookmark) {
+  if (rounded_corners) {
     *image_skia =
         gfx::ImageSkia(std::make_unique<RoundedCornersImageSource>(*image_skia),
                        image_skia->size());
@@ -158,10 +159,8 @@ void ChromeAppIcon::UpdateIcon() {
   }
 #endif
 
-  // TODO(crbug.com/1065748): Remove arg `from_bookmark` from ApplyEffects()
-  // function signature.
   ApplyEffects(resource_size_in_dip_, resize_function_, app_launchable,
-               /*from_bookmark=*/false, badge_type, &image_skia_);
+               /*rounded_corners=*/false, badge_type, &image_skia_);
 
   delegate_->OnIconUpdated(this);
 }

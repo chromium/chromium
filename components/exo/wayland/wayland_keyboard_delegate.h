@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -39,7 +41,8 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   bool CanAcceptKeyboardEventsForSurface(Surface* surface) const override;
   void OnKeyboardEnter(
       Surface* surface,
-      const base::flat_map<ui::DomCode, KeyState>& pressed_keys) override;
+      const base::flat_map<PhysicalCode, base::flat_set<KeyState>>&
+          pressed_keys) override;
   void OnKeyboardLeave(Surface* surface) override;
   uint32_t OnKeyboardKey(base::TimeTicks time_stamp,
                          ui::DomCode key,
@@ -48,7 +51,7 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   void OnKeyRepeatSettingsChanged(bool enabled,
                                   base::TimeDelta delay,
                                   base::TimeDelta interval) override;
-  void OnKeyboardLayoutUpdated(base::StringPiece keymap) override;
+  void OnKeyboardLayoutUpdated(std::string_view keymap) override;
 
  private:
   // Sends the current modifiers to the client.

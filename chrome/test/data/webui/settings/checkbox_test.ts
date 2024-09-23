@@ -31,14 +31,16 @@ suite('SettingsCheckbox', function() {
     document.body.appendChild(testElement);
   });
 
-  test('value changes on click', function() {
+  test('value changes on click', async function() {
     assertTrue(testElement.checked);
 
     testElement.$.checkbox.click();
+    await testElement.$.checkbox.updateComplete;
     assertFalse(testElement.checked);
     assertFalse(pref.value);
 
     testElement.$.checkbox.click();
+    await testElement.$.checkbox.updateComplete;
     assertTrue(testElement.checked);
     assertTrue(pref.value);
   });
@@ -51,18 +53,19 @@ suite('SettingsCheckbox', function() {
     testElement.$.checkbox.click();
   });
 
-  test('does not change when disabled', function() {
+  test('does not change when disabled', async function() {
     testElement.checked = false;
     testElement.setAttribute('disabled', '');
     assertTrue(testElement.disabled);
     assertTrue(testElement.$.checkbox.disabled);
 
     testElement.$.checkbox.click();
+    await testElement.$.checkbox.updateComplete;
     assertFalse(testElement.checked);
     assertFalse(testElement.$.checkbox.checked);
   });
 
-  test('numerical pref', function() {
+  test('numerical pref', async function() {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -73,10 +76,12 @@ suite('SettingsCheckbox', function() {
     assertTrue(testElement.checked);
 
     testElement.$.checkbox.click();
+    await testElement.$.checkbox.updateComplete;
     assertFalse(testElement.checked);
     assertEquals(0, prefNum.value);
 
     testElement.$.checkbox.click();
+    await testElement.$.checkbox.updateComplete;
     assertTrue(testElement.checked);
     assertEquals(1, prefNum.value);
   });

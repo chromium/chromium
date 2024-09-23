@@ -6,38 +6,14 @@
       "linux",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultBrowserSettingEnabled": true
-        },
-        "prefs": {
-          "browser.default_browser_setting_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultBrowserSettingEnabled": false
-        },
-        "prefs": {
-          "browser.default_browser_setting_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "browser.default_browser_setting_enabled": {
-            "default_value": false,
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.default_browser_setting_enabled",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

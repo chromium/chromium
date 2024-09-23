@@ -30,24 +30,57 @@ const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}"
 // permissions policy to allow use of the feature in subframes (The framed
 // document will still require a valid origin trial token to use the feature in
 // this scenario).
-const FeatureNameMap& GetDefaultFeatureNameMap() {
-  DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
-  if (default_feature_name_map.empty()) {
-    {% for feature in permissions_policy_features %}
-    {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
-    default_feature_name_map.Set(k{{feature.name}}PolicyName,
-                                 mojom::PermissionsPolicyFeature::k{{feature.name}});
+const FeatureNameMap GetDefaultFeatureNameMap(bool is_isolated_context) {
+  DEFINE_STATIC_LOCAL(FeatureNameMapCache, default_feature_name_map_cache, ());
+  FeatureNameMapCacheKey key(is_isolated_context);
+  if (default_feature_name_map_cache.Contains(key) &&
+      !default_feature_name_map_cache.at(key).empty()) {
+    return default_feature_name_map_cache.at(key);
+  }
+
+  FeatureNameMap default_feature_name_map;
+  {% for feature in permissions_policy_features %}
+  {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
+  {% if feature.visibility == "All" %}
+  default_feature_name_map.Set(
+      k{{feature.name}}PolicyName,
+      mojom::PermissionsPolicyFeature::k{{feature.name}});
+  {% elif feature.visibility == "IsolatedContext" %}
+  if (is_isolated_context) {
+    default_feature_name_map.Set(
+        k{{feature.name}}PolicyName,
+        mojom::PermissionsPolicyFeature::k{{feature.name}});
+  }
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+  {% for runtime_feature_name, dependent_features in runtime_to_permissions_policy_map.items() | sort %}
+  if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
+    {% for feature in dependent_features %}
+    {% if name_to_permissions_policy_map[feature].visibility == "All" %}
+    default_feature_name_map.Set(k{{feature}}PolicyName,
+                                 mojom::PermissionsPolicyFeature::k{{feature}});
+    {% elif name_to_permissions_policy_map[feature].visibility == "IsolatedContext" %}
+    if (is_isolated_context) {
+      default_feature_name_map.Set(
+          k{{feature}}PolicyName,
+          mojom::PermissionsPolicyFeature::k{{feature}});
+    }
     {% endif %}
     {% endfor %}
-    {% for runtime_feature_name, dependent_features in runtime_to_permissions_policy_map.items() | sort %}
-    if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
-      {% for feature in dependent_features %}
-      default_feature_name_map.Set(k{{feature}}PolicyName,
-                                   mojom::PermissionsPolicyFeature::k{{feature}});
-      {% endfor %}
-    }
-    {% endfor %}
   }
+  {% endfor %}
+
+  // Before we set |key| in the hash to be the map, check that it's empty.
+  if (default_feature_name_map_cache.Contains(key)) {
+    CHECK(default_feature_name_map_cache.at(key).empty());
+  }
+
+  // The contents of |default_feature_name_map| are copied into
+  // |default_feature_name_map_cache| here, which is declared static
+  // local above.
+  default_feature_name_map_cache.Set(key, default_feature_name_map);
+
   return default_feature_name_map;
 }
 
@@ -112,14 +145,30 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   return false;
 }
 
-String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature) {
+String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature, ExecutionContext* execution_context) {
+  if (execution_context && execution_context->IsIsolatedContext()) {
+    switch (feature) {
+      {% for feature in permissions_policy_features %}
+      {% if feature.visibility == "IsolatedContext" %}
+      case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+        return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
+      {% endif %}
+      {% endfor %}
+      default:
+        break;
+    }
+  }
   switch (feature) {
     {% for feature in permissions_policy_features %}
+    {% if feature.visibility == "All" %}
     case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
+    {% endif %}
     {% endfor %}
-    case mojom::blink::PermissionsPolicyFeature::kNotFound:
-      NOTREACHED();
+    default:
+      // This default case also handles the mojom entry for
+      // mojom::blink::PermissionsPolicyFeature::kNotFound.
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

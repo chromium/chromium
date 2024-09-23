@@ -15,7 +15,7 @@
                 passwordState:(PasswordSafetyCheckState)passwordState
             safeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
                  runningState:(RunningSafetyCheckState)runningState {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _updateChromeState = updateChromeState;
     _passwordState = passwordState;
     _safeBrowsingState = safeBrowsingState;

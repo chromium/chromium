@@ -71,6 +71,8 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
       {"signin_error_app.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_JS},
       {"signin_error_app.html.js",
        IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_HTML_JS},
+      {"signin_error_app.css.js",
+       IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_APP_CSS_JS},
       {"signin_error.js", IDR_SIGNIN_SIGNIN_ERROR_SIGNIN_ERROR_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
@@ -88,17 +90,13 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
     source->AddLocalizedString("signinErrorTitle",
                                IDS_OLD_PROFILES_DISABLED_TITLE);
   } else if (last_login_error.email().empty()) {
-    // TODO(https://crbug.com/1133189): investigate whether an empty email
+    // TODO(crbug.com/40150925): investigate whether an empty email
     // string is ever passed and possibly add a DCHECK.
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
   } else {
-    int title_string_id =
-        AccountConsistencyModeManager::IsDiceEnabledForProfile(webui_profile)
-            ? IDS_SIGNIN_ERROR_DICE_EMAIL_TITLE
-            : IDS_SIGNIN_ERROR_EMAIL_TITLE;
-    source->AddString(
-        "signinErrorTitle",
-        l10n_util::GetStringFUTF16(title_string_id, last_login_error.email()));
+    source->AddString("signinErrorTitle",
+                      l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
+                                                 last_login_error.email()));
   }
 
   source->AddString("signinErrorMessage", std::u16string());

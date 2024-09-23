@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/raw_eid_generator_impl.h"
 
-#include "base/sys_byteorder.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "crypto/sha2.h"
 
 namespace ash::secure_channel {
@@ -25,9 +26,8 @@ std::string RawEidGeneratorImpl::GenerateEid(
   if (extra_entropy) {
     to_hash += *extra_entropy;
   }
-  uint64_t timestamp_data =
-      base::HostToNet64(static_cast<uint64_t>(start_of_period_timestamp_ms));
-  to_hash.append(reinterpret_cast<char*>(&timestamp_data), sizeof(uint64_t));
+  to_hash.append(base::as_string_view(
+      base::numerics::U64ToBigEndian(start_of_period_timestamp_ms)));
 
   std::string result = crypto::SHA256HashString(to_hash);
   result.resize(RawEidGenerator::kNumBytesInEidValue);

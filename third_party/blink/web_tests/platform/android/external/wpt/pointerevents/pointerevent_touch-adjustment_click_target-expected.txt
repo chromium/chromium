@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Touch-generated events should have the same target
+  assert_equals: pointerdown should have un-adjusted y coordinates. expected 53 but got 52.999996185302734
+Harness: the test ran to completion.

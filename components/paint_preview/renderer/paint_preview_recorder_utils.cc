@@ -147,7 +147,7 @@ class OpConverterAndTracker {
   }
 
  private:
-  raw_ptr<PaintPreviewTracker, ExperimentalRenderer> tracker_;
+  raw_ptr<PaintPreviewTracker> tracker_;
   absl::variant<absl::monostate, cc::DrawImageOp, cc::DrawImageRectOp>
       converted_op_;
 };
@@ -159,17 +159,17 @@ sk_sp<const SkPicture> PaintRecordToSkPicture(const cc::PaintRecord& recording,
                                               const gfx::Rect& bounds) {
   // base::Unretained is safe as |tracker| outlives the usage of
   // |custom_callback|.
-  cc::PlaybackParams::CustomDataRasterCallback custom_callback =
+  cc::PlaybackCallbacks callbacks;
+  callbacks.custom_callback =
       base::BindRepeating(&PaintPreviewTracker::CustomDataToSkPictureCallback,
                           base::Unretained(tracker));
   OpConverterAndTracker converter_and_tracker(tracker);
-  cc::PlaybackParams::ConvertOpCallback convert_op_callback =
+  callbacks.convert_op_callback =
       base::BindRepeating(&OpConverterAndTracker::ConvertAndTrack,
                           base::Unretained(&converter_and_tracker));
 
   auto skp = recording.ToSkPicture(
-      SkRect::MakeWH(bounds.width(), bounds.height()), nullptr,
-      std::move(custom_callback), std::move(convert_op_callback));
+      SkRect::MakeWH(bounds.width(), bounds.height()), nullptr, callbacks);
 
   if (!skp || skp->cullRect().width() == 0 || skp->cullRect().height() == 0)
     return nullptr;

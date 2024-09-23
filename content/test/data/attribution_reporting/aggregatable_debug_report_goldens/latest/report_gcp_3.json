@@ -1,0 +1,8 @@
+{
+  "aggregation_coordinator_origin": "https://publickeyservice.msmt.gcp.privacysandboxservices.com",
+  "aggregation_service_payloads": [ {
+    "key_id": "example_id",
+    "payload": "F4GaJwR8k0nKzQbO6NRrakHRnm7Do5ZKel6c89aB8QCGBntc7JrEPKkv3TG9KGCPYAn3nAPkwhtPbY9FkylnO3ku+yE936iR4T8B6P6c3LLj51QyYCvCPi+00MHIbdAIrygbFQF0Sn3V5JA6XjNPX515Jo8oMdxQUlfBlo+yclDlBuZ8+SrHbRX790tLrH17z8dl8z2XS97mDndOqg=="
+  } ],
+  "shared_info": "{\"api\":\"attribution-reporting-debug\",\"attribution_destination\":\"https://conversion.test\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"1.0\"}"
+}

@@ -6,7 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -74,7 +74,7 @@ const char* OobeAuthPageWaiter::GetAuthenticator() {
     case AuthPageType::ENROLLMENT:
       return kEnrollmentAuthenticator;
   }
-  NOTREACHED() << "Unexpected value for auth_page_type_";
+  NOTREACHED_IN_MIGRATION() << "Unexpected value for auth_page_type_";
   return kGaiaAuthenticator;
 }
 

@@ -118,9 +118,7 @@ constexpr base::TimeDelta kMinTimeBetweenRequests = base::Seconds(30);
 class V8DetailedMemoryDecoratorTest : public GraphTestHarness,
                                       public V8MemoryTestBase {
  public:
-  V8DetailedMemoryDecoratorTest() {
-    GetGraphFeatures().EnableExecutionContextRegistry();
-  }
+  V8DetailedMemoryDecoratorTest() = default;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()
       override {
@@ -1688,7 +1686,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   run_loop2.Run();
 }
 
-// TODO(crbug.com/1203439) Sometimes timing out on Windows.
+// TODO(crbug.com/40763536) Sometimes timing out on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_SingleProcessRequest DISABLED_SingleProcessRequest
 #else

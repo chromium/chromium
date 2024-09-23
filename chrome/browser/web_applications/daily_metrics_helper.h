@@ -18,7 +18,7 @@ namespace web_app {
 
 struct DailyInteraction {
   // Required.
-  // TODO(crbug.com/1442799): Use manifest_identity_url here instead of
+  // TODO(crbug.com/40267110): Use manifest_identity_url here instead of
   // start_url.
   GURL start_url;
   // Implied bool used = true;
@@ -31,11 +31,6 @@ struct DailyInteraction {
   base::TimeDelta foreground_duration;
   base::TimeDelta background_duration;
   int num_sessions = 0;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::optional<int> preinstalled_web_app_window_experiment_user_group;
-  std::optional<bool>
-      preinstalled_web_app_window_experiment_has_launched_before;
-#endif
 
   DailyInteraction();
   explicit DailyInteraction(GURL start_url);

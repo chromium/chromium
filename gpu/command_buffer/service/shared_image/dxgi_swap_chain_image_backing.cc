@@ -24,7 +24,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_win.h"
@@ -38,13 +38,8 @@
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #endif
 
-#if BUILDFLAG(USE_DAWN)
-using dawn::native::d3d::ExternalImageDXGI;
-using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
-using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
-#endif
-
 namespace gpu {
+
 namespace {
 const char* kDXGISwapChainImageBackingLabel = "DXGISwapChainImageBacking";
 }  // namespace
@@ -59,8 +54,12 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label) {
+  if (!d3d11_device) {
+    return nullptr;
+  }
+
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
   d3d11_device.As(&dxgi_device);
   DCHECK(dxgi_device);
@@ -96,9 +95,6 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain;
   HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
       d3d11_device.Get(), &desc, nullptr, &dxgi_swap_chain);
-
-  base::UmaHistogramSparse(
-      "GPU.DirectComposition.CreateSwapChainForComposition", hr);
 
   // If CreateSwapChainForComposition fails, we cannot draw to the
   // browser window. Return false after disabling Direct Composition support
@@ -151,7 +147,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
@@ -171,8 +167,8 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
       dxgi_swap_chain_(std::move(dxgi_swap_chain)),
       buffers_need_alpha_initialization_count_(
           buffers_need_alpha_initialization_count) {
-  const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);
-  const bool has_write = !!(usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  const bool has_scanout = usage.Has(SHARED_IMAGE_USAGE_SCANOUT);
+  const bool has_write = usage.Has(SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   DCHECK(has_scanout);
   DCHECK(has_write);
 }
@@ -261,7 +257,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
 
 bool DXGISwapChainImageBacking::Present(
     bool should_synchronize_present_with_vblank) {
-  if (!pending_swap_rect_.has_value()) {
+  if (!pending_swap_rect_.has_value() || pending_swap_rect_.value().IsEmpty()) {
     DVLOG(1) << "Skipping present without an update rect";
     return true;
   }
@@ -369,7 +365,7 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
   DCHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteDawn);
 
   auto device = context_state->dawn_context_provider()->GetDevice();
-  if (!external_image_) {
+  if (!shared_texture_memory_) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;
     HRESULT hr =
         dxgi_swap_chain_->GetBuffer(0, IID_PPV_ARGS(&backbuffer_texture));
@@ -379,13 +375,10 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
       return nullptr;
     }
 
-    D3D11_TEXTURE2D_DESC d3d11_texture_desc;
-    backbuffer_texture->GetDesc(&d3d11_texture_desc);
-
-    external_image_ = CreateDawnExternalImageDXGI(
-        device, usage(), d3d11_texture_desc, backbuffer_texture,
-        /*view_formats=*/{});
-    if (!external_image_) {
+    shared_texture_memory_ =
+        CreateDawnSharedTextureMemory(device, backbuffer_texture);
+    if (!shared_texture_memory_) {
+      LOG(ERROR) << "Failed to create shared texture memory.";
       return nullptr;
     }
   }
@@ -397,36 +390,40 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
-#if BUILDFLAG(USE_DAWN)
 wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
   DidBeginWriteAccess(update_rect);
 
-  CHECK(external_image_);
-  ExternalImageDXGIBeginAccessDescriptor descriptor;
-  descriptor.isInitialized = true;
-  descriptor.isSwapChainTexture = true;
-  descriptor.usage = static_cast<WGPUTextureUsage>(usage);
-  descriptor.waitFences = {};
+  CHECK(shared_texture_memory_);
+  wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
+  swapchain_begin_state.isSwapchain = true;
+
+  wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
+  desc.initialized = true;
+  desc.nextInChain = &swapchain_begin_state;
 
   wgpu::Texture texture =
-      wgpu::Texture::Acquire(external_image_->BeginAccess(&descriptor));
-
+      CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
+                              /*view_formats=*/{});
+  if (!texture || !shared_texture_memory_.BeginAccess(texture, &desc)) {
+    LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
+    return nullptr;
+  }
   return texture;
 }
 
 void DXGISwapChainImageBacking::EndAccessDawn(const wgpu::Device& device,
                                               wgpu::Texture texture) {
-  ExternalImageDXGIFenceDescriptor descriptor;
-  external_image_->EndAccess(texture.Get(), &descriptor);
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  shared_texture_memory_.EndAccess(texture.Get(), &end_state);
   texture.Destroy();
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

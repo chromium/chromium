@@ -1,0 +1,62 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("shell_delegate") {
+  sources = [
+    "chrome_shell_delegate.cc",
+    "chrome_shell_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/api/tasks",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/scanner",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/accelerator",
+    "//chrome/browser/ui/ash/accessibility",
+    "//chrome/browser/ui/ash/back_gesture",
+    "//chrome/browser/ui/ash/boca",
+    "//chrome/browser/ui/ash/capture_mode",
+    "//chrome/browser/ui/ash/clipboard",
+    "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/focus_mode",
+    "//chrome/browser/ui/ash/game_dashboard",
+    "//chrome/browser/ui/ash/global_media_controls",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/session",
+    "//chrome/browser/ui/ash/user_education",
+    "//chrome/browser/ui/ash/wm",
+    "//chrome/browser/ui/chromeos",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/services/multidevice_setup",
+    "//components/ui_devtools",
+    "//components/user_manager",
+    "//components/version_info",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//url",
+  ]
+}

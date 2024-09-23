@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.widget.EditText clickable editable_text focusable hint='h2' input_type=1
+++android.widget.TextView role_description='heading 2' heading name='h2'

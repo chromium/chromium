@@ -22,7 +22,6 @@
 
 #include "base/check.h"
 #include "base/enterprise_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -59,14 +58,21 @@ namespace policy {
 
 namespace {
 
+// Logged to UMA - keep in sync with enums.xml.
+enum WindowsProfileType {
+  kApiFailure,
+  kInvalid,
+  kNone,
+  kMandatory,
+  kRoaming,
+  kRoamingPreExisting,
+  kTemporary,
+  kMaxValue = kTemporary
+};
+
 const char kKeyMandatory[] = "policy";
 const char kKeyRecommended[] = "recommended";
 const char kKeyThirdParty[] = "3rdparty";
-
-// Kill switcher for critical policy section API usage.
-BASE_FEATURE(kCriticalPolicySection,
-             "CriticalPolicySection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
@@ -177,6 +183,37 @@ void CollectEnterpriseUMAs() {
                             base::IsEnterpriseDevice());
   base::UmaHistogramBoolean("EnterpriseCheck.IsJoinedToAzureAD",
                             base::win::IsJoinedToAzureAD());
+
+  {
+    WindowsProfileType profile_type = kApiFailure;
+    DWORD flags = 0;
+    // Although this API takes 'flags' that's shaped like a bitfield, the type
+    // returned can only be one of the PT_* values below.
+    if (::GetProfileType(&flags)) {
+      switch (flags) {
+        case 0:
+          profile_type = kNone;
+          break;
+        case PT_MANDATORY:
+          profile_type = kMandatory;
+          break;
+        case PT_ROAMING:
+          profile_type = kRoaming;
+          break;
+        case PT_ROAMING_PREEXISTING:
+          profile_type = kRoamingPreExisting;
+          break;
+        case PT_TEMPORARY:
+          profile_type = kTemporary;
+          break;
+        default:
+          profile_type = kInvalid;
+          break;
+      }
+    }
+    base::UmaHistogramEnumeration("EnterpriseCheck.WindowsProfileType",
+                                  profile_type);
+  }
 
   std::wstring machine_name;
   if (GetName(
@@ -309,11 +346,6 @@ PolicyBundle PolicyLoaderWin::Load() {
 }
 
 void PolicyLoaderWin::Reload(bool force) {
-  if (!base::FeatureList::IsEnabled(kCriticalPolicySection)) {
-    AsyncPolicyLoader::Reload(force);
-    return;
-  }
-
   // If we need to get management bit first, no need to enter the critical
   // section as we won't actual read the policy.
   if (NeedManagementBitBeforeLoad()) {

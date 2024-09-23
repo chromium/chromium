@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_geometry.proto";
+
+// Overlay Object.
+message OverlayObject {
+  // The id.
+  string id = 1;
+
+  // The object geometry.
+  Geometry geometry = 2;
+
+  // Rendering metadata for the object.
+  message RenderingMetadata {
+    enum RenderType {
+      DEFAULT = 0;
+      GLEAM = 1;
+    }
+
+    RenderType render_type = 1;
+  }
+
+  // The rendering metadata for the object.
+  RenderingMetadata rendering_metadata = 8;
+
+  message InteractionProperties {
+    // Whether an object can be tapped
+    bool select_on_tap = 1;
+  }
+
+  InteractionProperties interaction_properties = 4;
+
+  // Indicates to the client that this object is eligible to be an object
+  // fulfillment request.
+  bool is_fulfilled = 9;
+
+  reserved 3, 5, 6, 7;
+}

@@ -68,7 +68,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
     update_service->CheckForUpdate(
         /*app_id=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
-        UpdateService::StateChangeCallback(),
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -81,7 +81,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*app_id=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
         UpdateService::PolicySameVersionUpdate::kNotAllowed,
-        UpdateService::StateChangeCallback(),
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -91,7 +91,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
   {
     base::RunLoop run_loop;
     update_service->UpdateAll(
-        UpdateService::StateChangeCallback(),
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -104,7 +104,7 @@ TEST(UpdateServiceImplInactiveTest, All) {
         RegistrationRequest(),
         /*client_install_data=*/"",
         /*install_data_index=*/"", UpdateService::Priority::kForeground,
-        UpdateService::StateChangeCallback(),
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();
@@ -122,7 +122,8 @@ TEST(UpdateServiceImplInactiveTest, All) {
         /*installer_path=*/base::FilePath(),
         /*install_args=*/"",
         /*install_data=*/"",
-        /*install_settings=*/"", UpdateService::StateChangeCallback(),
+        /*install_settings=*/"",
+        base::RepeatingCallback<void(const UpdateService::UpdateState&)>(),
         base::BindLambdaForTesting([&run_loop](UpdateService::Result result) {
           EXPECT_EQ(result, UpdateService::Result::kInactive);
           run_loop.Quit();

@@ -19,4 +19,4 @@
 # - No target in this project depends on forwarded internal dependencies.
 
 # *** START OF LIST ***
-../androidx/build.gradle
+../androidx/cipd/build.gradle

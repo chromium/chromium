@@ -78,7 +78,8 @@ class TabStripControlButton : public views::LabelButton,
   void AnimateToStateForTesting(views::InkDropState state);
 
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnThemeChanged() override;
@@ -112,7 +113,7 @@ class TabStripControlButton : public views::LabelButton,
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;
 
-  bool paint_transparent_for_custom_image_theme_;
+  bool paint_transparent_for_custom_image_theme_ = false;
 
   // Button edge which should render without rounded corners.
   Edge flat_edge_;

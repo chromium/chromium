@@ -29,6 +29,7 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       const ViewTransitionContentLayerImpl&) = delete;
 
   // LayerImpl overrides.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
@@ -49,8 +50,6 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       bool is_live_content_layer);
 
  private:
-  const char* LayerTypeAsString() const override;
-
   const viz::ViewTransitionElementResourceId resource_id_;
   const bool is_live_content_layer_;
   bool skip_unseen_resource_quads_ = false;

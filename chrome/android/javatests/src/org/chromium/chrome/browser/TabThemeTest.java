@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -22,6 +23,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -35,7 +37,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -91,7 +92,7 @@ public class TabThemeTest {
     }
 
     private int getThemeColor() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 mActivityTestRule
                                 .getActivity()
                                 .getRootUiCoordinatorForTesting()
@@ -100,7 +101,7 @@ public class TabThemeTest {
     }
 
     private static int getDefaultThemeColor(Tab tab) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ChromeColors.getDefaultThemeColor(tab.getContext(), tab.isIncognito());
                 });
@@ -121,7 +122,7 @@ public class TabThemeTest {
 
         ThemeColorWebContentsObserver colorObserver = new ThemeColorWebContentsObserver();
         CallbackHelper themeColorHelper = colorObserver.getCallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -175,7 +176,7 @@ public class TabThemeTest {
     @Feature({"Toolbar-Theme-Color"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testOverlayColorOnFrozenNativePages() throws ExecutionException, TimeoutException {
+    public void testOverlayColorOnNativePages() throws ExecutionException, TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -196,11 +197,10 @@ public class TabThemeTest {
                             colorProvider.getSceneLayerBackground(tab));
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> colorProvider.addThemeColorObserver(colorObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> colorProvider.addThemeColorObserver(colorObserver));
 
         // Load the ntp.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.loadUrl(new LoadUrlParams(UrlConstants.NTP_URL)));
 
         NewTabPageTestUtils.waitForNtpLoaded(tab);
@@ -209,12 +209,12 @@ public class TabThemeTest {
         mActivityTestRule.loadUrlInNewTab(testServer.getURL(THEMED_TEST_PAGE));
 
         // Freeze the ntp on the first tab.
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.freezeNativePage());
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.freezeNativePage());
 
         CriteriaHelper.pollUiThread(() -> tab.getNativePage() instanceof FrozenNativePage);
 
-        // Switch back to the now frozen tab.
-        TestThreadUtils.runOnUiThreadBlocking(
+        // Switch back to the native tab.
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model =
                             mActivityTestRule
@@ -222,20 +222,20 @@ public class TabThemeTest {
                                     .getTabModelSelectorSupplier()
                                     .get()
                                     .getCurrentModel();
-                    model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, true);
+                    model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER);
                 });
 
         Assert.assertEquals(
-                "The tab should still be frozen!",
+                "The tab shouldn't be frozen!",
                 mActivityTestRule
                         .getActivity()
                         .getActivityTabProvider()
                         .get()
                         .getNativePage()
                         .getClass(),
-                FrozenNativePage.class);
+                NewTabPage.class);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNotSame(
                             "Theme color should never be 0 or TRANSPARENT!",

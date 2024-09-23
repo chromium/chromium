@@ -6,12 +6,12 @@
 
 #include <array>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "media/base/media_serializers.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
@@ -32,7 +32,7 @@ types::DecimalInteger MaxSeconds() {
 }
 
 template <typename T>
-void ErrorTest(std::optional<base::StringPiece> content,
+void ErrorTest(std::optional<std::string_view> content,
                ParseStatusCode expected_status,
                const base::Location& from = base::Location::Current()) {
   auto tag = content ? TagItem::Create(ToTagName(T::kName),
@@ -45,7 +45,7 @@ void ErrorTest(std::optional<base::StringPiece> content,
 }
 
 template <typename T>
-void ErrorTest(std::optional<base::StringPiece> content,
+void ErrorTest(std::optional<std::string_view> content,
                const VariableDictionary& variable_dict,
                VariableDictionary::SubstitutionBuffer& sub_buffer,
                ParseStatusCode expected_status,
@@ -56,7 +56,9 @@ void ErrorTest(std::optional<base::StringPiece> content,
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   ASSERT_FALSE(result.has_value()) << from.ToString();
   auto error = std::move(result).error();
-  EXPECT_EQ(error.code(), expected_status) << from.ToString();
+  EXPECT_EQ(error.code(), expected_status)
+      << "Actual Error: " << MediaSerialize(error) << "\n"
+      << from.ToString();
 }
 
 template <typename T>
@@ -96,7 +98,7 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
   if (!result.has_value()) {
     CHECK(false) << from.ToString() << "\n"
                  << MediaSerialize(std::move(result).error());
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return OkTestResult<T>{.tag = std::move(result).value(),
                          .source = std::move(source)};
@@ -108,8 +110,8 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
 // matches what was expected), use `OkTest` and `ErrorTest` for that.
 void RunTagIdenficationTest(
     TagName name,
-    base::StringPiece line,
-    std::optional<base::StringPiece> expected_content,
+    std::string_view line,
+    std::optional<std::string_view> expected_content,
     const base::Location& from = base::Location::Current()) {
   auto iter = SourceLineIterator(line);
   auto item_result = GetNextLineItem(&iter);
@@ -128,8 +130,8 @@ void RunTagIdenficationTest(
 
 template <typename T>
 void RunTagIdenficationTest(
-    base::StringPiece line,
-    std::optional<base::StringPiece> expected_content,
+    std::string_view line,
+    std::optional<std::string_view> expected_content,
     const base::Location& from = base::Location::Current()) {
   RunTagIdenficationTest(ToTagName(T::kName), line, expected_content, from);
 }
@@ -192,7 +194,7 @@ VariableDictionary CreateBasicDictionary(
 }  // namespace
 
 TEST(HlsTagsTest, TagNameIdentity) {
-  std::set<base::StringPiece> names;
+  std::set<std::string_view> names;
 
   for (TagName name = kMinTagName; name <= kMaxTagName; ++name) {
     auto name_str = TagNameToString(name);
@@ -281,7 +283,7 @@ TEST(HlsTagsTest, ParseXStartTag) {
   RunTagIdenficationTest(ToTagName(CommonTagName::kXStart),
                          "#EXT-X-START:TIME-OFFSET=30,PRECISE=YES\n",
                          "TIME-OFFSET=30,PRECISE=YES");
-  // TODO(crbug.com/1266991): Implement the EXT-X-START tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-START tag.
 }
 
 TEST(HlsTagsTest, ParseXVersionTag) {
@@ -331,7 +333,7 @@ TEST(HlsTagsTest, ParseXContentSteeringTag) {
       "#EXT-X-CONTENT-STEERING:SERVER-URI=\"https://google.com/"
       "manifest.json\"\n",
       "SERVER-URI=\"https://google.com/manifest.json\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag.
 }
 
 TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
@@ -339,7 +341,7 @@ TEST(HlsTagsTest, ParseXIFrameStreamInfTag) {
       ToTagName(MultivariantPlaylistTagName::kXIFrameStreamInf),
       "#EXT-X-I-FRAME-STREAM-INF:URI=\"foo.m3u8\",BANDWIDTH=1000\n",
       "URI=\"foo.m3u8\",BANDWIDTH=1000");
-  // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-I-FRAME-STREAM-INF tag.
 }
 
 TEST(HlsTagsTest, ParseXMediaTag) {
@@ -1064,15 +1066,78 @@ TEST(HlsTagsTest, ParseXSessionDataTag) {
       ToTagName(MultivariantPlaylistTagName::kXSessionData),
       "#EXT-X-SESSION-DATA:DATA-ID=\"com.google.key\",VALUE=\"value\"\n",
       "DATA-ID=\"com.google.key\",VALUE=\"value\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-DATA tag.
 }
 
 TEST(HlsTagsTest, ParseXSessionKeyTag) {
-  RunTagIdenficationTest(
-      ToTagName(MultivariantPlaylistTagName::kXSessionKey),
-      "#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"https://google.com/key\"\n",
-      "METHOD=AES-128,URI=\"https://google.com/key\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag.
+  RunTagIdenficationTest<XSessionKeyTag>("#EXT-X-SESSION-KEY:METHOD=NONE\n",
+                                         "METHOD=NONE");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  // Invalid method
+  ErrorTest<XSessionKeyTag>("METHOD=77", dict, subs,
+                            ParseStatusCode::kMalformedTag);
+  ErrorTest<XSessionKeyTag>("METHOD=NONE", dict, subs,
+                            ParseStatusCode::kMalformedTag);
+
+  // No IV when method is SAMPLE-AES-CTR
+  ErrorTest<XSessionKeyTag>(
+      "METHOD=SAMPLE-AES-CTR,IV=0xf4d52cf0dc02329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  // Invalid IV
+  ErrorTest<XSessionKeyTag>(
+      "METHOD=AES-128,IV=0xf4d52cf0dc2329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "IV=0xf4d52cf0dc02329c3ad6578744590658",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_TRUE(result.tag.iv.has_value());
+    EXPECT_EQ(std::get<0>(result.tag.iv.value()), 0xf4d52cf0dc02329cu);
+    EXPECT_EQ(std::get<1>(result.tag.iv.value()), 0x3ad6578744590658u);
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=SAMPLE-AES,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAES);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
 }
 
 TEST(HlsTagsTest, ParseXStreamInfTag) {
@@ -1304,7 +1369,7 @@ TEST(HlsTagsTest, ParseXDateRangeTag) {
       ToTagName(MediaPlaylistTagName::kXDateRange),
       "#EXT-X-DATERANGE:ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"\n",
       "ID=\"ad\",START-DATE=\"2022-07-19T01:04:57+0000\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-DATERANGE tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-DATERANGE tag.
 }
 
 TEST(HlsTagsTest, ParseXDiscontinuityTag) {
@@ -1336,9 +1401,114 @@ TEST(HlsTagsTest, ParseXIFramesOnlyTag) {
 }
 
 TEST(HlsTagsTest, ParseXKeyTag) {
-  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXKey),
-                         "#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
-  // TODO(crbug.com/1266991): Implement the EXT-X-KEY tag.
+  RunTagIdenficationTest<XKeyTag>("#EXT-X-KEY:METHOD=NONE\n", "METHOD=NONE");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  // Invalid method
+  ErrorTest<XKeyTag>("METHOD=77", dict, subs, ParseStatusCode::kMalformedTag);
+
+  // If method is NONE, other attributes MUST NOT be present.
+  ErrorTest<XKeyTag>("METHOD=NONE,URI=\"https://example.com\"", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,IV=0xf4d52cf0dc02329c3ad6578744590658", dict,
+                     subs, ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,KEYFORMAT=identity", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XKeyTag>("METHOD=NONE,KEYFORMATVERSIONS=1/2/3", dict, subs,
+                     ParseStatusCode::kMalformedTag);
+
+  // No IV when method is SAMPLE-AES-CTR
+  ErrorTest<XKeyTag>(
+      "METHOD=SAMPLE-AES-CTR,IV=0xf4d52cf0dc02329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  // Invalid IV
+  ErrorTest<XKeyTag>("METHOD=AES-128,IV=0xf4d52cf0dc2329c3ad6578744590658",
+                     dict, subs, ParseStatusCode::kMalformedTag);
+
+  // Not allowed certain methods with clearkey or widevine
+  ErrorTest<XKeyTag>(
+      "METHOD=AES-128,FORMAT=\"org.w3.clearkey\",IV="
+      "0xf4d52cf0dc02329c3ad6578744590658",
+      dict, subs, ParseStatusCode::kMalformedTag);
+  // Not allowed certain methods with clearkey or widevine
+  ErrorTest<XKeyTag>(
+      "METHOD=AES-256,FORMAT=\"org.w3.clearkey\",IV="
+      "0xf4d52cf0dc02329c3ad6578744590658",
+      dict, subs, ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XKeyTag>("METHOD=NONE", dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kNone);
+    EXPECT_FALSE(result.tag.uri.has_value());
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "IV=0xf4d52cf0dc02329c3ad6578744590658",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_TRUE(result.tag.iv.has_value());
+    EXPECT_EQ(std::get<0>(result.tag.iv.value()), 0xf4d52cf0dc02329cu);
+    EXPECT_EQ(std::get<1>(result.tag.iv.value()), 0x3ad6578744590658u);
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAES);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"org.w3.clearkey\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKey);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
 }
 
 TEST(HlsTagsTest, ParseXMapTag) {
@@ -1446,7 +1616,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
   EXPECT_EQ(result.tag.gap, false);
   ErrorTest<XPartTag>(
       "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds() + 1),
-      variable_dict, sub_buffer, ParseStatusCode::kValueOverflowsTimeDelta);
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
 
   // Test BYTERANGE attribute
   ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$UNDEFINED}\"",
@@ -1570,7 +1740,7 @@ TEST(HlsTagsTest, ParseXPreloadHintTag) {
   RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXPreloadHint),
                          "#EXT-X-PRELOAD-HINT:TYPE=PART,URI=\"foo.ts\"\n",
                          "TYPE=PART,URI=\"foo.ts\"");
-  // TODO(crbug.com/1266991): Implement the EXT-X-PRELOAD-HINT tag.
+  // TODO(crbug.com/40057824): Implement the EXT-X-PRELOAD-HINT tag.
 }
 
 TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
@@ -1578,7 +1748,16 @@ TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
       ToTagName(MediaPlaylistTagName::kXProgramDateTime),
       "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031+08:00\n",
       "2010-02-19T14:54:23.031+08:00");
-  // TODO(crbug.com/1266991): Implement the EXT-X-PROGRAM-DATE-TIME tag.
+
+  ErrorTest<XProgramDateTimeTag>(std::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XProgramDateTimeTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XProgramDateTimeTag>("today", ParseStatusCode::kMalformedTag);
+
+  auto result = OkTest<XProgramDateTimeTag>("2010-02-19T14:54:23.031+08:00");
+  EXPECT_EQ(result.tag.time.InMillisecondsSinceUnixEpoch(), 1266562463031);
+
+  result = OkTest<XProgramDateTimeTag>("1970-01-01T00:00:00.1+00:00");
+  EXPECT_EQ(result.tag.time.InMillisecondsSinceUnixEpoch(), 100);
 }
 
 TEST(HlsTagsTest, ParseXRenditionReportTag) {
@@ -1586,7 +1765,42 @@ TEST(HlsTagsTest, ParseXRenditionReportTag) {
       ToTagName(MediaPlaylistTagName::kXRenditionReport),
       "#EXT-X-RENDITION-REPORT:URI=\"foo.m3u8\",LAST-MSN=200\n",
       "URI=\"foo.m3u8\",LAST-MSN=200");
-  // TODO(crbug.com/1266991): Implement the EXT-X-RENDITION-REPORT tag.
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XRenditionReportTag>(std::nullopt, dict, subs,
+                                 ParseStatusCode::kMalformedTag);
+  ErrorTest<XRenditionReportTag>("URI", dict, subs,
+                                 ParseStatusCode::kMalformedAttributeList);
+  ErrorTest<XRenditionReportTag>("URI=\"", dict, subs,
+                                 ParseStatusCode::kMalformedAttributeList);
+
+  auto result = OkTest<XRenditionReportTag>("", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("URI=\"foo\"", dict, subs);
+  EXPECT_EQ(result.tag.uri->Str(), "foo");
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("LAST-MSN=3,", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_EQ(result.tag.last_msn.value(), 3u);
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("LAST-PART=3", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_EQ(result.tag.last_part.value(), 3u);
+
+  result = OkTest<XRenditionReportTag>("URI=\"x\",LAST-PART=3,LAST-MSN=1", dict,
+                                       subs);
+  EXPECT_EQ(result.tag.uri->Str(), "x");
+  EXPECT_EQ(result.tag.last_msn.value(), 1u);
+  EXPECT_EQ(result.tag.last_part.value(), 3u);
 }
 
 TEST(HlsTagsTest, ParseXServerControlTag) {

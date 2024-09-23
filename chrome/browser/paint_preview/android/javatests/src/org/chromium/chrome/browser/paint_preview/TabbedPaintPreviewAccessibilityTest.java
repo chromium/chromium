@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -25,7 +26,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.concurrent.ExecutionException;
@@ -53,11 +53,11 @@ public class TabbedPaintPreviewAccessibilityTest {
     public void smokeTest() throws ExecutionException, TimeoutException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
-                TestThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
+                ThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
 
         // Capture paint preview.
         CallbackHelper captureSuccessCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabbedPaintPreview.capture(
                                 result -> {
@@ -67,7 +67,7 @@ public class TabbedPaintPreviewAccessibilityTest {
                                         Assert.fail("Failed to capture paint preview.");
                                     }
                                 }));
-        captureSuccessCallback.waitForFirst("Timeout waiting for paint preview capture.");
+        captureSuccessCallback.waitForOnly("Timeout waiting for paint preview capture.");
 
         // Show the captured paint preview.
         CallbackHelper viewReadyCallback = new CallbackHelper();
@@ -85,10 +85,10 @@ public class TabbedPaintPreviewAccessibilityTest {
                         viewReadyCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.maybeShow(listener));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.maybeShow(listener));
 
         // Wait until it's displayed.
-        viewReadyCallback.waitForFirst("Paint preview view ready never happened.");
+        viewReadyCallback.waitForOnly("Paint preview view ready never happened.");
 
         // Assert accessibility support is initialized.
         CriteriaHelper.pollInstrumentationThread(
@@ -100,7 +100,7 @@ public class TabbedPaintPreviewAccessibilityTest {
                 "PlayerManager doesn't have a valid WebContentsAccessibility.");
 
         // Try hit testing.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebContentsAccessibility wcax =
                             tabbedPaintPreview
@@ -115,7 +115,7 @@ public class TabbedPaintPreviewAccessibilityTest {
                 });
 
         // Remove the preview.
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(true, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(true, false));
         CriteriaHelper.pollUiThread(
                 () -> !tabbedPaintPreview.isAttached(), "Paint Preview not removed.");
     }

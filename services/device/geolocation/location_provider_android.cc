@@ -12,8 +12,6 @@
 
 namespace device {
 
-class GeolocationManager;
-
 LocationProviderAndroid::LocationProviderAndroid() = default;
 
 LocationProviderAndroid::~LocationProviderAndroid() {
@@ -67,9 +65,7 @@ void LocationProviderAndroid::OnPermissionGranted() {
   // Nothing to do here.
 }
 
-std::unique_ptr<LocationProvider> NewSystemLocationProvider(
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    GeolocationManager* geolocation_manager) {
+std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
   return std::make_unique<LocationProviderAndroid>();
 }
 

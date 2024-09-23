@@ -37,10 +37,10 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
 SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() {}
 
 void SecurityInterstitialControllerClient::GoBack() {
-  // TODO(crbug.com/1077074): This method is left so class can be non abstract
+  // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool SecurityInterstitialControllerClient::CanGoBack() {
@@ -68,10 +68,10 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
 }
 
 void SecurityInterstitialControllerClient::Proceed() {
-  // TODO(crbug.com/1077074): This method is left so class can be non abstract
+  // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurityInterstitialControllerClient::Reload() {
@@ -83,7 +83,7 @@ void SecurityInterstitialControllerClient::OpenUrlInCurrentTab(
   content::OpenURLParams params(url, Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
@@ -91,7 +91,7 @@ void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
   content::OpenURLParams params(url, Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
@@ -120,12 +120,12 @@ SecurityInterstitialControllerClient::GetExtendedReportingPrefName() const {
 }
 
 bool SecurityInterstitialControllerClient::CanLaunchDateAndTimeSettings() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void SecurityInterstitialControllerClient::LaunchDateAndTimeSettings() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool SecurityInterstitialControllerClient::CanGoBackBeforeNavigation() {

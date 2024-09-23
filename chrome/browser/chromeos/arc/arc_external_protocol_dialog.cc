@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -17,12 +18,12 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
@@ -206,7 +207,7 @@ void OpenUrlInChrome(base::WeakPtr<WebContents> web_contents, const GURL& url) {
                         network::mojom::ReferrerPolicy::kDefault),
       WindowOpenDisposition::CURRENT_TAB, page_transition_type,
       kIsRendererInitiated);
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 ArcIntentHelperMojoDelegate::IntentInfo CreateIntentInfo(const GURL& url,
@@ -381,7 +382,7 @@ void HandleDeviceSelection(WebContents* web_contents,
 
   const auto it =
       base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
-  DCHECK(it != devices.end());
+  CHECK(it != devices.end(), base::NotFatalUntil::M130);
   const SharingTargetDeviceInfo& device = *it;
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
@@ -557,11 +558,11 @@ void OnIntentPickerClosed(
       break;
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // We shouldn't be here if a preferred app was found.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;  // no UMA recording.
     case apps::IntentPickerCloseReason::STAY_IN_CHROME:
       LOG(ERROR) << "Chrome is not a valid option for external protocol URLs";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;  // no UMA recording.
     case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
       // This can happen since an error could occur right before invoking

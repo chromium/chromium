@@ -10,7 +10,6 @@
 #include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
-#import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_client_bridge.h"
@@ -32,11 +31,10 @@ class PasswordReuseDetectionManagerClient;
 }  // namespace safe_browsing
 
 // Per-tab password controller. Handles password autofill and saving.
-// TODO(crbug.com/1272487): Refactor this into an appropriately-scoped object,
+// TODO(crbug.com/40806286): Refactor this into an appropriately-scoped object,
 // such as a browser agent.
 @interface PasswordController
     : NSObject <CRWWebStateObserver,
-                PasswordsAccountStorageNoticeHandler,
                 IOSChromePasswordManagerClientBridge,
                 IOSChromePasswordReuseDetectionManagerClientBridge>
 

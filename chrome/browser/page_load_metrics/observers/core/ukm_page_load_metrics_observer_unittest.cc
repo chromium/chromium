@@ -154,12 +154,15 @@ class UkmPageLoadMetricsObserverTest
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {HistoryServiceFactory::GetInstance(),
-         HistoryServiceFactory::GetDefaultFactory()},
-        {TemplateURLServiceFactory::GetInstance(),
-         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}};
+        TestingProfile::TestingFactory{
+            BookmarkModelFactory::GetInstance(),
+            BookmarkModelFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            HistoryServiceFactory::GetDefaultFactory()},
+        TestingProfile::TestingFactory{
+            TemplateURLServiceFactory::GetInstance(),
+            base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}};
   }
 
   MockNetworkQualityProvider& mock_network_quality_provider() {
@@ -466,6 +469,37 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
 
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
           30 /* image_bpp = "8.0 - 9.0" */, net::RequestPriority::MEDIUM);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintCrossOrigin) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::Milliseconds(600);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->type =
+      blink::LargestContentfulPaintTypeToUKMFlags(
+          blink::LargestContentfulPaintType::kImage |
+          blink::LargestContentfulPaintType::kCrossOrigin);
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  NavigateAndCommit(GURL(kTestUrl1));
+  tester()->SimulateTimingUpdate(timing);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
+          30 /* image_bpp = "8.0 - 9.0" */, net::RequestPriority::MEDIUM,
+          blink::LargestContentfulPaintType::kImage |
+              blink::LargestContentfulPaintType::kCrossOrigin);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintVideo) {
@@ -871,7 +905,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
-  // TODO(https://crbug.com/1266001): Improve unit tests support for tracing.
+  // TODO(crbug.com/40801822): Improve unit tests support for tracing.
   // In particular, the initialization call below is most likely too narrow /
   // doesn't take care of everything that is needed.  In the future we might
   // need to 1) initialize tracing from a better place (maybe
@@ -1821,8 +1855,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
               testing::ElementsAre(base::Bucket(25, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                  "SessionWindow.Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(25, 1)));
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
@@ -1950,8 +1984,8 @@ TEST_F(UkmPageLoadMetricsObserverTest,
               testing::ElementsAre(base::Bucket(25, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-                  "SessionWindow.Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(25, 1)));
+                  "SessionWindow.Gap1000ms.Max5000ms2"),
+              testing::ElementsAre(base::Bucket(24000, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability."
                   "CumulativeShiftScoreAtFirstOnHidden"),
@@ -2949,13 +2983,12 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
   TestingPrefServiceSimple local_state;
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
       local_state.registry());
-  local_state.SetInteger(
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      static_cast<int>(performance_manager::user_tuning::prefs::
-                           BatterySaverModeState::kEnabled));
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       uptm_environment;
   uptm_environment.SetUp(&local_state);
+  performance_manager::user_tuning::
+      TestUserPerformanceTuningManagerEnvironment::SetBatterySaverMode(
+          &local_state, true);
 
   NavigateAndCommit(GURL(kTestUrl1));
 
@@ -2977,7 +3010,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
 // The following tests are ensure that Page Load metrics are recorded in a
 // trace. Currently enabled only for platforms where USE_PERFETTO_CLIENT_LIBRARY
 // is true (Android, Linux) as test infra (TestTraceProcessor) requires it.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 class TracingWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit TracingWebContentsObserver(content::WebContents* contents)
@@ -3070,4 +3102,3 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestTracingUserTimingMetrics) {
                                      std::vector<std::string>{
                                          base::NumberToString(navigation_id)}));
 }
-#endif

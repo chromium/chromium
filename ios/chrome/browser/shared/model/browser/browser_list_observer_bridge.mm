@@ -14,14 +14,7 @@ void BrowserListObserverBridge::OnBrowserAdded(const BrowserList* browser_list,
     [observer_ browserList:browser_list browserAdded:browser];
   }
 }
-void BrowserListObserverBridge::OnIncognitoBrowserAdded(
-    const BrowserList* browser_list,
-    Browser* browser) {
-  if ([observer_ respondsToSelector:@selector(browserList:
-                                        incognitoBrowserAdded:)]) {
-    [observer_ browserList:browser_list incognitoBrowserAdded:browser];
-  }
-}
+
 void BrowserListObserverBridge::OnBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
@@ -29,14 +22,7 @@ void BrowserListObserverBridge::OnBrowserRemoved(
     [observer_ browserList:browser_list browserRemoved:browser];
   }
 }
-void BrowserListObserverBridge::OnIncognitoBrowserRemoved(
-    const BrowserList* browser_list,
-    Browser* browser) {
-  if ([observer_ respondsToSelector:@selector(browserList:
-                                        incognitoBrowserRemoved:)]) {
-    [observer_ browserList:browser_list incognitoBrowserRemoved:browser];
-  }
-}
+
 void BrowserListObserverBridge::OnBrowserListShutdown(
     BrowserList* browser_list) {
   if ([observer_ respondsToSelector:@selector(browserListWillShutdown:)]) {

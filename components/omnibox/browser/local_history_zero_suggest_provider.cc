@@ -8,9 +8,9 @@
 #include <cmath>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -40,6 +40,7 @@
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "url/gurl.h"
 
 using metrics::OmniboxInputType;
@@ -157,7 +158,7 @@ void LocalHistoryZeroSuggestProvider::DeleteMatch(
       &history_task_tracker_);
 
   // Immediately update the list of matches to reflect the match was deleted.
-  base::EraseIf(matches_, [&](const auto& item) {
+  std::erase_if(matches_, [&](const auto& item) {
     return match.contents == item.contents;
   });
 }
@@ -216,7 +217,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         /*suggestion=*/result->normalized_term,
         AutocompleteMatchType::SEARCH_HISTORY,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME,
-        /*subtypes=*/{}, /*from_keyword=*/false, relevance--,
+        /*subtypes=*/{}, /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE, relevance--,
         /*relevance_from_server=*/false,
         /*input_text=*/base::ASCIIToUTF16(std::string()));
 

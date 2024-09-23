@@ -1,0 +1,25 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_VECTOR_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_VECTOR_
+
+namespace std {
+
+template<typename T>
+struct vector {
+  vector();
+  vector(const vector&);
+  vector(vector&&);
+  ~vector();
+  vector& operator=(const vector&);
+  vector& operator=(vector&&);
+  unsigned int size() { return 0; }
+  void insert() {}
+  void erase() {}
+};
+
+}  // namespace std
+
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_VECTOR_

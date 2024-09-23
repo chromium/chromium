@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 /**
  * @fileoverview Definitions for chrome.networkingPrivate API
  * Generated from: extensions/common/api/networking_private.idl
@@ -696,6 +694,7 @@ declare global {
         SavedIPConfig?: IPConfigProperties;
         Source?: string;
         Tether?: TetherProperties;
+        TrafficCounterResetTime?: number;
         Type: NetworkType;
         VPN?: VPNProperties;
         WiFi?: WiFiProperties;
@@ -721,6 +720,7 @@ declare global {
         SavedIPConfig?: IPConfigProperties;
         Source?: string;
         Tether?: TetherProperties;
+        TrafficCounterResetTime?: number;
         Type: NetworkType;
         VPN?: ManagedVPNProperties;
         WiFi?: ManagedWiFiProperties;

@@ -40,13 +40,12 @@ void PageInfoSecurityContentView::SetIdentityInfo(
   security_description_type_ = security_description->type;
 
   if (security_description->summary_style == SecuritySummaryColor::RED) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift) &&
-        (identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_MALWARE ||
-         identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING ||
-         identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE)) {
+    if (identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_MALWARE ||
+        identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING ||
+        identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE) {
       security_view_->SetIcon(
           PageInfoViewFactory::GetConnectionDangerousIcon());
     } else {
@@ -54,12 +53,19 @@ void PageInfoSecurityContentView::SetIdentityInfo(
           PageInfoViewFactory::GetConnectionNotSecureIcon());
     }
     security_view_->SetSummary(security_description->summary, STYLE_RED);
+  } else if (security_description->summary_style ==
+                 SecuritySummaryColor::ENTERPRISE &&
+             (identity_info.safe_browsing_status ==
+                  PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN ||
+              identity_info.safe_browsing_status ==
+                  PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK)) {
+    security_view_->SetIcon(PageInfoViewFactory::GetBusinessIcon());
+    security_view_->SetSummary(security_description->summary,
+                               views::style::STYLE_BODY_3_MEDIUM);
   } else {
     security_view_->SetIcon(PageInfoViewFactory::GetConnectionSecureIcon());
     security_view_->SetSummary(security_description->summary,
-                               features::IsChromeRefresh2023()
-                                   ? views::style::STYLE_BODY_3_MEDIUM
-                                   : views::style::STYLE_PRIMARY);
+                               views::style::STYLE_BODY_3_MEDIUM);
   }
   security_view_->SetDetails(
       security_description->details,
@@ -97,26 +103,23 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     const ui::ImageModel icon =
         valid_identity ? PageInfoViewFactory::GetValidCertificateIcon()
                        : PageInfoViewFactory::GetInvalidCertificateIcon();
-    const int title_id = valid_identity
-                             ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
-                             : IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID;
+    const int title_id = valid_identity ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
+                                        : IDS_PAGE_INFO_CERTIFICATE_DETAILS;
 
     std::u16string subtitle_text;
-    if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
-      // Only show the EV certificate details if there are no errors or mixed
-      // content.
-      if (identity_info.identity_status ==
-              PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
-          identity_info.connection_status ==
-              PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
-        // An EV cert is required to have an organization name and a country.
-        if (!certificate_->subject().organization_names.empty() &&
-            !certificate_->subject().country_name.empty()) {
-          subtitle_text = l10n_util::GetStringFUTF16(
-              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-              base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
-              base::UTF8ToUTF16(certificate_->subject().country_name));
-        }
+    // Only show the EV certificate details if there are no errors or mixed
+    // content.
+    if (identity_info.identity_status ==
+            PageInfo::SITE_IDENTITY_STATUS_EV_CERT &&
+        identity_info.connection_status ==
+            PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
+      // An EV cert is required to have an organization name and a country.
+      if (!certificate_->subject().organization_names.empty() &&
+          !certificate_->subject().country_name.empty()) {
+        subtitle_text = l10n_util::GetStringFUTF16(
+            IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+            base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
+            base::UTF8ToUTF16(certificate_->subject().country_name));
       }
     }
 

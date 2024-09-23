@@ -14,7 +14,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -96,7 +96,7 @@ void RichAnswersTranslationView::AddLanguageTitle(const std::string& locale,
   content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       base::UTF16ToUTF8(locale_name),
       GetFontList(TypographyToken::kCrosButton2), kContentHeaderWidth,
-      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+      /*is_multi_line=*/false, ui::kColorSysSecondary));
 }
 
 views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
@@ -106,16 +106,15 @@ views::FlexLayoutView* RichAnswersTranslationView::AddLanguageText(
       QuickAnswersTextLabel::CreateLabelWithStyle(
           language_text, GetFontList(TypographyToken::kCrosTitle1),
           kContentTextWidth,
-          /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface);
+          /*is_multi_line=*/true, ui::kColorSysOnSurface);
 
   // If appending the read and copy buttons is an option, then check if
   // the buttons can fit on a single line with the language text label.
   //
   // If there's enough space to append the buttons, return the container view
   // that the button views should be added to.
-  if (maybe_append_buttons &&
-      (language_text_label->CalculatePreferredSize().width() +
-       kReadAndCopyButtonsWidth) <= kContentTextWidth) {
+  if (maybe_append_buttons && (language_text_label->GetPreferredSize().width() +
+                               kReadAndCopyButtonsWidth) <= kContentTextWidth) {
     views::View* box_layout_view =
         content_view_->AddChildView(CreateHorizontalBoxLayoutView());
     box_layout_view->AddChildView(std::move(language_text_label));
@@ -144,23 +143,24 @@ void RichAnswersTranslationView::AddReadAndCopyButtons(
       weak_factory_.GetWeakPtr(), translation_result_.translated_text,
       translation_result_.target_locale);
   ui::ImageModel read_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kVolumeUpIcon, cros_tokens::kCrosSysOnSurface,
+      vector_icons::kVolumeUpIcon, ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
-      read_closure, read_image_model, cros_tokens::kCrosSysHoverOnSubtle,
+      read_closure, read_image_model, ui::kColorSysStateHoverOnSubtle,
       l10n_util::GetStringUTF16(
-          IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT)));
+          IDS_RICH_ANSWERS_VIEW_TRANSLATION_READ_BUTTON_A11Y_NAME_TEXT)));
 
   // Copy button.
   base::RepeatingClosure copy_closure = base::BindRepeating(
       &RichAnswersTranslationView::OnCopyButtonPressed,
       weak_factory_.GetWeakPtr(), translation_result_.translated_text);
   ui::ImageModel copy_image_model = ui::ImageModel::FromVectorIcon(
-      vector_icons::kContentCopyIcon, cros_tokens::kCrosSysOnSurface,
+      vector_icons::kContentCopyIcon, ui::kColorSysOnSurface,
       /*icon_size=*/kRichAnswersIconSizeDip);
   container_view->AddChildView(CreateImageButtonView(
-      copy_closure, copy_image_model, cros_tokens::kCrosSysHoverOnSubtle,
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_COPY_BUTTON_TOOLTIP_TEXT)));
+      copy_closure, copy_image_model, ui::kColorSysStateHoverOnSubtle,
+      l10n_util::GetStringUTF16(
+          IDS_RICH_ANSWERS_VIEW_TRANSLATION_COPY_BUTTON_A11Y_NAME_TEXT)));
 }
 
 void RichAnswersTranslationView::OnReadButtonPressed(

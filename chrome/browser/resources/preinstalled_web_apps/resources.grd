@@ -19,6 +19,7 @@
       <include name="IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG" file="internal/gmail_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG" file="internal/youtube_192.png" type="BINDATA" />
       <if expr="is_chromeos">
+        <include name="IDR_PREINSTALLED_WEB_APPS_CONTAINER_ICON_192_PNG" file="internal/container_192.png" type="BINDATA" />
         <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG" file="internal/google_calendar_192.png" type="BINDATA" />
       </if>
     </includes>

@@ -22,7 +22,7 @@ public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubC
     /**
      * Sets the color of the background.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      */
     public void tintBackground(@ColorInt int color) {
         mLocationBarTablet.getBackground().mutate().setTint(color);

@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -34,13 +34,13 @@ class DatabaseApiClients : public DefaultModelProvider {
 
   // Helper to write a query to sum the `metric_name` for the past `days`.
   static void AddSumQuery(MetadataWriter& writer,
-                          base::StringPiece metric_name,
+                          std::string_view metric_name,
                           int days);
 
   // Helper to write a query to get the sum of metric values for a given
   // `event_name` and a collection of `metric_names` for the past `days`.
   static void AddSumGroupQuery(MetadataWriter& writer,
-                               base::StringPiece event_name,
+                               std::string_view event_name,
                                const std::set<std::string>& metric_names,
                                int days);
 

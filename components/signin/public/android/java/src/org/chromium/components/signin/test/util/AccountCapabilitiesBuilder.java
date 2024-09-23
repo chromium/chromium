@@ -27,6 +27,7 @@ public final class AccountCapabilitiesBuilder {
         return this;
     }
 
+    /** Sets the isSubjectToParentalControls capability value. */
     public AccountCapabilitiesBuilder setIsSubjectToParentalControls(boolean value) {
         mCapabilities.put(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
@@ -34,7 +35,17 @@ public final class AccountCapabilitiesBuilder {
         return this;
     }
 
-    /** @return {@link AccountCapabilities} object with the capabilities set up with the builder. */
+    /** Sets the canHaveEmailAddressDisplayed capability value. */
+    public AccountCapabilitiesBuilder setCanHaveEmailAddressDisplayed(boolean value) {
+        mCapabilities.put(
+                AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                value);
+        return this;
+    }
+
+    /**
+     * @return {@link AccountCapabilities} object with the capabilities set up with the builder.
+     */
     public AccountCapabilities build() {
         return new AccountCapabilities((HashMap<String, Boolean>) mCapabilities.clone());
     }

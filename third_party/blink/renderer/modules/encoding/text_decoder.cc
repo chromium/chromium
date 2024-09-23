@@ -69,7 +69,7 @@ TextDecoder::TextDecoder(const WTF::TextEncoding& encoding,
 TextDecoder::~TextDecoder() = default;
 
 String TextDecoder::encoding() const {
-  String name = String(encoding_.GetName()).DeprecatedLower();
+  String name = encoding_.GetName().GetString().DeprecatedLower();
   // Where possible, encoding aliases should be handled by changes to Chromium's
   // ICU or Blink's WTF.  The same codec is used, but WTF maintains a different
   // name/identity for these.
@@ -78,38 +78,22 @@ String TextDecoder::encoding() const {
   return name;
 }
 
-String TextDecoder::decode(const V8BufferSource* input,
+String TextDecoder::decode(std::optional<base::span<const uint8_t>> input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
-  // In case of `input` == IDL "missing" special value, default to (nullptr, 0).
-  void* start = nullptr;
-  size_t length = 0;
-  if (input) {
-    switch (input->GetContentType()) {
-      case V8BufferSource::ContentType::kArrayBuffer:
-        start = input->GetAsArrayBuffer()->Data();
-        length = input->GetAsArrayBuffer()->ByteLength();
-        break;
-      case V8BufferSource::ContentType::kArrayBufferView:
-        start = input->GetAsArrayBufferView()->BaseAddress();
-        length = input->GetAsArrayBufferView()->byteLength();
-        break;
-    }
-  }
-
-  if (length > std::numeric_limits<uint32_t>::max()) {
+  base::span<const uint8_t> input_span =
+      input.value_or(base::span<const uint8_t>());
+  if (input_span.size() > std::numeric_limits<uint32_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return String();
   }
 
-  return decode(static_cast<const char*>(start), static_cast<uint32_t>(length),
-                options, exception_state);
+  return Decode(input_span, options, exception_state);
 }
 
-String TextDecoder::decode(const char* start,
-                           uint32_t length,
+String TextDecoder::Decode(base::span<const uint8_t> input,
                            const TextDecodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
@@ -132,7 +116,7 @@ String TextDecoder::decode(const char* start,
                                            : WTF::FlushBehavior::kDataEOF;
 
   bool saw_error = false;
-  String s = codec_->Decode(start, length, flush, fatal_, saw_error);
+  String s = codec_->Decode(input, flush, fatal_, saw_error);
 
   if (fatal_ && saw_error) {
     if (!do_not_flush_) {
@@ -145,10 +129,12 @@ String TextDecoder::decode(const char* start,
 
   if (!ignore_bom_ && !bom_seen_ && !s.empty()) {
     bom_seen_ = true;
-    String name(encoding_.GetName());
-    if ((name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE") &&
-        s[0] == 0xFEFF)
-      s.Remove(0);
+    if (s[0] == 0xFEFF) {
+      const AtomicString& name = encoding_.GetName();
+      if ((name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE")) {
+        s.Remove(0);
+      }
+    }
   }
 
   return s;
@@ -156,7 +142,7 @@ String TextDecoder::decode(const char* start,
 
 String TextDecoder::decode(ExceptionState& exception_state) {
   TextDecodeOptions* options = TextDecodeOptions::Create();
-  return decode(nullptr, 0, options, exception_state);
+  return Decode({}, options, exception_state);
 }
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 
 namespace base {
 
@@ -127,7 +128,7 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
   // - 10101nnn
   // - 10110000
   // - 10110010 uleb128
-  span<const uint8_t> unwind_instruction_table;
+  raw_span<const uint8_t> unwind_instruction_table;
 
   // Function offset table is expected to have following memory layout:
   // +---------------------+---------------------+
@@ -158,7 +159,7 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
   // - Within each function section, offset strictly decreases. By doing so,
   //   each function's own terminal instruction will serve as termination
   //   condition when searching in the table.
-  span<const uint8_t> function_offset_table;
+  raw_span<const uint8_t> function_offset_table;
 
   // The function table represents the individual functions within a 128kb page.
   // The relevant entry for an instruction offset from the start of the text
@@ -188,7 +189,7 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
   // - Within each page, `Page Offset` strictly increases.
   // - Each `FunctionTableEntry` represents a function where the start
   // address falls into the page memory address range.
-  span<const FunctionTableEntry> function_table;
+  raw_span<const FunctionTableEntry> function_table;
 
   // The page table represents discrete 128kb 'pages' of memory in the text
   // section, each of which contains functions. The page table is indexed by
@@ -212,7 +213,7 @@ struct BASE_EXPORT ChromeUnwindInfoAndroid {
   // Note:
   // - The page start instructions in page table non-strictly increases, i.e
   // empty page is allowed.
-  span<const uint32_t> page_table;
+  raw_span<const uint32_t> page_table;
 };
 
 // Creates `ChromeUnwindInfoAndroid` struct based on binary `data` assuming

@@ -19,6 +19,11 @@ import java.util.List;
  */
 @JNINamespace("webauthn")
 public class WebauthnBrowserBridge {
+    /** Owner of the bridge should implement this interface and cache the bridge. */
+    public interface Provider {
+        WebauthnBrowserBridge getBridge();
+    }
+
     private long mNativeWebauthnBrowserBridge;
 
     /**

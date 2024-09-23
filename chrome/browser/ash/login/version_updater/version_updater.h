@@ -59,7 +59,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     int better_update_progress = 0;
 
     // Estimated time left for only downloading stage, in seconds.
-    // TODO(crbug.com/1101317): Remove when better update is launched.
+    // TODO(crbug.com/40703499): Remove when better update is launched.
     int estimated_time_left_in_secs = 0;
     bool show_estimated_time_left = false;
 

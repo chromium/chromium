@@ -7,8 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -17,11 +18,10 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/insecure_form_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
@@ -68,15 +68,14 @@ void OnInsecureFormWarningResponse(base::OnceCallback<void(bool)> callback,
 // content setting when a parent has explicitly set site settings controls to
 // block permissions.
 bool IsMicOrCameraAccessSubjectToParentalControls(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     NSArray<NSNumber*>* permissions) {
-  if (!browser_state || !supervised_user::IsSubjectToParentalControls(
-                            *browser_state->GetPrefs())) {
+  if (!profile || !supervised_user::IsSubjectToParentalControls(profile)) {
     return false;
   }
 
   HostContentSettingsMap* host_content_settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
   CHECK(host_content_settings_map);
 
   ContentSetting default_mic_setting =
@@ -160,6 +159,18 @@ void WebStateDelegateBrowserAgent::WebStateListDidChange(
       SetWebStateDelegate(insert_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Do nothing when a tab group's visual data are updated.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 }
 
@@ -208,13 +219,13 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 
   // Check if requested web state is a popup and block it if necessary.
   if (!initiated_by_user) {
-    auto* helper = BlockedPopupTabHelper::FromWebState(source);
+    auto* helper = BlockedPopupTabHelper::GetOrCreateForWebState(source);
     if (helper->ShouldBlockPopup(opener_url)) {
       // It's possible for a page to inject a popup into a window created via
       // window.open before its initial load is committed.  Rather than relying
       // on the last committed or pending NavigationItem's referrer policy, just
       // use ReferrerPolicyDefault.
-      // TODO(crbug.com/719993): Update this to a more appropriate referrer
+      // TODO(crbug.com/41317904): Update this to a more appropriate referrer
       // policy once referrer policies are correctly recorded in
       // NavigationItems.
       web::Referrer referrer(opener_url, web::ReferrerPolicyDefault);
@@ -283,7 +294,7 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
 
   switch (warning_type) {
     case web::FormWarningType::kRepost:
-      // TODO(crbug.com/1266052) : Clean up this API.
+      // TODO(crbug.com/40203973) : Clean up this API.
       RepostFormTabHelper::FromWebState(source)->PresentDialog(
           [container_view_provider_ dialogLocation], std::move(callback));
       return;
@@ -301,7 +312,7 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     }
 
     case web::FormWarningType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -315,12 +326,10 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(source->GetBrowserState());
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(source->GetBrowserState());
   // For supervised users, sites can be denied permission to access camera or
   // mic by default. In this case, we do not show the dialog.
-  if (IsMicOrCameraAccessSubjectToParentalControls(chrome_browser_state,
-                                                   permissions)) {
+  if (IsMicOrCameraAccessSubjectToParentalControls(profile, permissions)) {
     handler(web::PermissionDecisionDeny);
     return;
   }

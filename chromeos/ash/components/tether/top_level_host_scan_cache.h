@@ -16,9 +16,9 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace ash {
 
@@ -46,7 +46,7 @@ class TopLevelHostScanCache : public HostScanCache {
   static constexpr int kNumMinutesBeforeCacheEntryExpires = 120;
 
   TopLevelHostScanCache(
-      std::unique_ptr<cross_device::TimerFactory> timer_factory,
+      std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory,
       ActiveHost* active_host,
       HostScanCache* network_host_scan_cache,
       PersistentHostScanCache* persistent_host_scan_cache);
@@ -73,7 +73,7 @@ class TopLevelHostScanCache : public HostScanCache {
   void StartTimer(const std::string& tether_network_guid);
   void OnTimerFired(const std::string& tether_network_guid);
 
-  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
+  std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_;
   raw_ptr<ActiveHost> active_host_;
   raw_ptr<HostScanCache> network_host_scan_cache_;
   raw_ptr<PersistentHostScanCache> persistent_host_scan_cache_;

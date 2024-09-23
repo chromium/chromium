@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 
@@ -18,10 +23,14 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/test/widget_test.h"
@@ -44,7 +53,7 @@ enum class TabSliderType {
 // Helpers ---------------------------------------------------------------------
 
 std::unique_ptr<views::Widget> CreateSystemDialogWidget(
-    ui::ModalType modal_type,
+    ui::mojom::ModalType modal_type,
     aura::Window* parent_window) {
   // Generate a new dialog delegate view.
   auto dialog_view = views::Builder<SystemDialogDelegateView>()
@@ -56,12 +65,11 @@ std::unique_ptr<views::Widget> CreateSystemDialogWidget(
   dialog_view->SetModalType(modal_type);
 
   // Create a dialog widget.
-  views::Widget::InitParams dialog_params;
-  dialog_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams dialog_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   dialog_params.bounds = gfx::Rect(dialog_view->GetPreferredSize());
   dialog_params.delegate = dialog_view.release();
-  dialog_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   dialog_params.parent = parent_window;
   auto dialog_widget =
       std::make_unique<views::Widget>(std::move(dialog_params));
@@ -90,6 +98,7 @@ class WidgetWithSystemUIComponentView : public views::WidgetDelegateView {
 std::unique_ptr<views::Widget> CreateWidgetWithComponent(
     std::unique_ptr<views::View> component) {
   return AshTestBase::CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       new WidgetWithSystemUIComponentView(std::move(component)));
 }
 
@@ -120,7 +129,7 @@ TEST_F(SystemComponentsTest, PillButtonTooltip) {
   EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
 }
 
-// TODO(crbug/1384370): Disable for constant failure.
+// TODO(crbug.com/40878458): Disable for constant failure.
 TEST_F(SystemComponentsTest,
        DISABLED_IconButtonWithBackgroundColorIdDoesNotCrash) {
   // Create an IconButton with an explicit background color ID.
@@ -267,8 +276,45 @@ TEST_F(SystemComponentsTest, CheckboxGroup) {
   EXPECT_FALSE(button_4->GetEnabled());
 }
 
+TEST_F(SystemComponentsTest, AccessibleDefaultActionVerb) {
+  std::unique_ptr<RadioButtonGroup> radio_button_group =
+      std::make_unique<RadioButtonGroup>(198);
+  auto* button = radio_button_group->AddButton(RadioButton::PressedCallback(),
+                                               u"Test Button");
+  ui::AXNodeData data;
+
+  // Enabled
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  button->SetSelected(true);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kUncheck);
+
+  button->SetSelected(false);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  // Disabled
+  button->SetEnabled(false);
+  button->SetSelected(true);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  button->SetSelected(false);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+}
+
 struct DialogTestParams {
-  ui::ModalType modal_type;
+  ui::mojom::ModalType modal_type;
   bool parent_to_root;
 };
 
@@ -276,7 +322,7 @@ using SystemDialogDelegateViewTest = SystemComponentsTest;
 
 TEST_F(SystemDialogDelegateViewTest, CancelCallback) {
   std::unique_ptr<views::Widget> dialog_widget =
-      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+      CreateSystemDialogWidget(ui::mojom::ModalType::kNone,
                                /*parent_window=*/Shell::GetPrimaryRootWindow());
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
@@ -304,7 +350,7 @@ TEST_F(SystemDialogDelegateViewTest, CancelCallback) {
 // should run when the dialog view is destroyed without clicking any buttons.
 TEST_F(SystemDialogDelegateViewTest, CloseCallback) {
   std::unique_ptr<views::Widget> dialog_widget =
-      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+      CreateSystemDialogWidget(ui::mojom::ModalType::kNone,
                                /*parent_window=*/Shell::GetPrimaryRootWindow());
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
@@ -343,7 +389,8 @@ class SystemDialogSizeTest
     } else {
       UpdateDisplay("1280x720");
       host_widget_ =
-          CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+          CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                           nullptr, desks_util::GetActiveDeskContainerId(),
                            gfx::Rect(host_size), /*show=*/true);
     }
 
@@ -365,14 +412,14 @@ class SystemDialogSizeTest
 };
 
 const DialogTestParams kSystemDialogTestParams[] = {
-    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/true},
-    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/false},
-    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kNone, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kNone, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kWindow, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kWindow, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kChild, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kChild, /*parent_to_root=*/true},
+    {ui::mojom::ModalType::kSystem, /*parent_to_root=*/false},
+    {ui::mojom::ModalType::kSystem, /*parent_to_root=*/true},
 };
 
 INSTANTIATE_TEST_SUITE_P(SystemDialogSize,

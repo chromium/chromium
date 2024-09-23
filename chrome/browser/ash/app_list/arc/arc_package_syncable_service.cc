@@ -146,7 +146,7 @@ void ArcPackageSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
 
 std::optional<syncer::ModelError>
 ArcPackageSyncableService::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(sync_processor.get());
@@ -210,7 +210,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
   return std::nullopt;
 }
 
-void ArcPackageSyncableService::StopSyncing(syncer::ModelType type) {
+void ArcPackageSyncableService::StopSyncing(syncer::DataType type) {
   DCHECK_EQ(type, syncer::ARC_PACKAGE);
 
   sync_processor_.reset();

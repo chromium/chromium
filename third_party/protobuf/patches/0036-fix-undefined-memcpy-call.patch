@@ -1,7 +1,7 @@
-diff --git a/third_party/protobuf/src/google/protobuf/parse_context.h b/third_party/protobuf/src/google/protobuf/parse_context.h
+diff --git a/src/google/protobuf/parse_context.h b/src/google/protobuf/parse_context.h
 index c00048d1670da..7c2385be48b8a 100644
---- a/third_party/protobuf/src/google/protobuf/parse_context.h
-+++ b/third_party/protobuf/src/google/protobuf/parse_context.h
+--- a/src/google/protobuf/parse_context.h
++++ b/src/google/protobuf/parse_context.h
 @@ -236,7 +236,9 @@ class PROTOBUF_EXPORT EpsCopyInputStream {
        if (aliasing_ == kOnPatch) aliasing_ = kNoDelta;
        return flat.data();

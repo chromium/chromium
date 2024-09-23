@@ -32,8 +32,6 @@ namespace ash {
 //      the notification text. Also found in |ash_strings.grd|.
 //    - {true or false} whether the deprecated accelerator is still enabled (we
 //      don't disable a deprecated accelerator abruptly).
-// 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
-//    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kShowShortcutViewer},
@@ -51,17 +49,20 @@ const AcceleratorData kDeprecatedAccelerators[] = {
 const size_t kNumDeprecatedAcceleratorsDuplicate = 2u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
+// When remove entries from kDeprecatedAcceleratorsData, also clean up their
+// prefs in kDeprecatedAcceleratorNotificationsShownCounts and
+// kDeprecatedAcceleratorNotificationsLastShown.
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
      IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
      ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
-     false},
+     false, "show_shortcut_viewer"},
     {AcceleratorAction::kOpenGetHelp,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
-     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false}};
+     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false, "open_get_help"}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
@@ -120,6 +121,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugClearUseKMeansPref},
     {true, ui::VKEY_H, kDebugModifier,
      AcceleratorAction::kDebugToggleFocusModeState},
+    {true, ui::VKEY_8, kDebugModifier,
+     AcceleratorAction::kDebugStartSunfishSession},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);
@@ -158,6 +161,7 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
      AcceleratorAction::kToggleFullscreen},
     // For testing on Linux desktop where it's hard to rebind the caps lock key.
     {true, ui::VKEY_A, ui::EF_ALT_DOWN, AcceleratorAction::kDevToggleAppList},
+    {true, ui::VKEY_S, ui::EF_ALT_DOWN, AcceleratorAction::kTogglePicker},
 
     // For testing fingerprint ui.
     {true, ui::VKEY_1, kDebugModifier, kTouchFingerprintSensor1},
@@ -181,7 +185,7 @@ const size_t kPreferredActionsLength = std::size(kPreferredActions);
 const AcceleratorAction kReservedActions[] = {
     AcceleratorAction::kPowerPressed, AcceleratorAction::kPowerReleased,
     AcceleratorAction::kLockPressed,  AcceleratorAction::kLockReleased,
-    AcceleratorAction::kSuspend,
+    AcceleratorAction::kSuspend,      AcceleratorAction::kLockScreen,
 };
 
 const size_t kReservedActionsLength = std::size(kReservedActions);
@@ -199,6 +203,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kDebugToggleTabletMode,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
@@ -230,6 +235,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
+    AcceleratorAction::kTogglePicker,
     AcceleratorAction::kToggleSpokenFeedback,
     AcceleratorAction::kToggleSystemTrayBubble,
     AcceleratorAction::kToggleWifi,
@@ -276,6 +282,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kDebugToggleTouchScreen,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kExit,
     AcceleratorAction::kKeyboardBacklightToggle,
@@ -317,6 +324,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
     AcceleratorAction::kToggleSpokenFeedback,
+    AcceleratorAction::kTogglePicker,
     AcceleratorAction::kToggleWifi,
     AcceleratorAction::kTouchFingerprintSensor1,
     AcceleratorAction::kTouchFingerprintSensor2,
@@ -343,6 +351,10 @@ const AcceleratorAction kRepeatableActions[] = {
     AcceleratorAction::kMediaPrevTrack,
     AcceleratorAction::kMediaRewind,
     AcceleratorAction::kRestoreTab,
+    AcceleratorAction::kTilingWindowResizeDown,
+    AcceleratorAction::kTilingWindowResizeLeft,
+    AcceleratorAction::kTilingWindowResizeRight,
+    AcceleratorAction::kTilingWindowResizeUp,
     AcceleratorAction::kVolumeDown,
     AcceleratorAction::kVolumeUp,
 };
@@ -361,6 +373,7 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     AcceleratorAction::kDebugToggleTouchScreen,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
@@ -431,10 +444,14 @@ const AcceleratorAction kActionsNeedingWindow[] = {
     AcceleratorAction::kDesksToggleAssignToAllDesks,
     AcceleratorAction::kMoveActiveWindowBetweenDisplays,
     AcceleratorAction::kRotateWindow,
+    AcceleratorAction::kTilingWindowResizeDown,
+    AcceleratorAction::kTilingWindowResizeLeft,
+    AcceleratorAction::kTilingWindowResizeRight,
+    AcceleratorAction::kTilingWindowResizeUp,
     AcceleratorAction::kToggleFloating,
     AcceleratorAction::kToggleFullscreen,
     AcceleratorAction::kToggleMaximized,
-    AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
+    AcceleratorAction::kCreateSnapGroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kWindowCycleSnapLeft,
     AcceleratorAction::kWindowCycleSnapRight,
@@ -459,6 +476,7 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     AcceleratorAction::kDesksNewDesk,
     AcceleratorAction::kDesksRemoveCurrentDesk,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,

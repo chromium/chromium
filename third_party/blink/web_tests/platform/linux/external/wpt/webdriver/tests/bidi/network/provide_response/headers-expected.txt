@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_set_cookie_header_and_cookies_before_request_sent
+  AssertionError: assert 1 == 2
+Harness: the test ran to completion.

@@ -50,7 +50,6 @@ DawnControlClientHolder::DawnControlClientHolder(
       api_channel_(context_provider_->ContextProvider()
                        ->WebGPUInterface()
                        ->GetAPIChannel()),
-      procs_(api_channel_->GetProcs()),
       recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
 DawnControlClientHolder::~DawnControlClientHolder() = default;
@@ -86,8 +85,8 @@ DawnControlClientHolder::GetContextProviderWeakPtr() const {
   return context_provider_->GetWeakPtr();
 }
 
-WGPUInstance DawnControlClientHolder::GetWGPUInstance() const {
-  return api_channel_->GetWGPUInstance();
+wgpu::Instance DawnControlClientHolder::GetWGPUInstance() const {
+  return wgpu::Instance(api_channel_->GetWGPUInstance());
 }
 
 void DawnControlClientHolder::MarkContextLost() {
@@ -109,15 +108,16 @@ DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info) {
 
 void DawnControlClientHolder::Flush() {
   auto context_provider = GetContextProviderWeakPtr();
-  if (LIKELY(context_provider)) {
+  if (context_provider) [[likely]] {
     context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
   }
 }
 
 void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
   auto context_provider = GetContextProviderWeakPtr();
-  if (UNLIKELY(!context_provider))
+  if (!context_provider) [[unlikely]] {
     return;
+  }
   if (!context_provider->ContextProvider()
            ->WebGPUInterface()
            ->EnsureAwaitingFlush()) {
@@ -137,7 +137,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
       scoped_refptr<DawnControlClientHolder>(this)));
 }
 
-std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
+std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
 #if BUILDFLAG(USE_DAWN)
   // Create a dawn::wire::WireClient on a noop serializer, to get an instance
   // from it.
@@ -155,16 +155,16 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
   dawn::wire::WireClient client{{.serializer = &noop_serializer}};
 
   // Control which WGSL features are exposed based on flags.
-  WGPUDawnWireWGSLControl wgsl_control = {};
-  wgsl_control.chain.sType = WGPUSType_DawnWireWGSLControl;
-  wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableUnsafeWebGPU);
+  wgpu::DawnWireWGSLControl wgsl_control = {{
+      .enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeWebGPU),
+      // This can be changed to true for manual testing with the
+      // chromium_testing_* WGSL features.
+      .enableTesting = false,
+  }};
   wgsl_control.enableExperimental =
       wgsl_control.enableUnsafe ||
       RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled();
-  // This can be changed to true for manual testing with the chromium_testing_*
-  // WGSL features.
-  wgsl_control.enableTesting = false;
 
   // Additionally populate the WGSL blocklist based on the Finch feature.
   std::vector<std::string> wgsl_unsafe_features_owned;
@@ -179,27 +179,25 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
       wgsl_unsafe_features.push_back(f.c_str());
     }
   }
-  WGPUDawnWGSLBlocklist wgsl_blocklist = {};
-  wgsl_blocklist.chain.sType = WGPUSType_DawnWGSLBlocklist;
-  wgsl_blocklist.chain.next = &wgsl_control.chain;
-  wgsl_blocklist.blocklistedFeatureCount = wgsl_unsafe_features.size();
-  wgsl_blocklist.blocklistedFeatures = wgsl_unsafe_features.data();
-
+  wgpu::DawnWGSLBlocklist wgsl_blocklist = {{
+      .nextInChain = &wgsl_control,
+      .blocklistedFeatureCount = wgsl_unsafe_features.size(),
+      .blocklistedFeatures = wgsl_unsafe_features.data(),
+  }};
   // Create the instance from all the chained structures and gather features
   // from it.
-  WGPUInstanceDescriptor instance_desc = {};
-  instance_desc.nextInChain = &wgsl_blocklist.chain;
-  WGPUInstance instance = client.ReserveInstance(&instance_desc).instance;
+  wgpu::InstanceDescriptor instance_desc = {
+      .nextInChain = &wgsl_blocklist,
+  };
+  wgpu::Instance instance = wgpu::Instance::Acquire(
+      client
+          .ReserveInstance(
+              &static_cast<const WGPUInstanceDescriptor&>(instance_desc))
+          .instance);
 
-  const DawnProcTable& procs = dawn::wire::client::GetProcs();
-
-  size_t feature_count =
-      procs.instanceEnumerateWGSLLanguageFeatures(instance, nullptr);
-  std::vector<WGPUWGSLFeatureName> features(feature_count,
-                                            WGPUWGSLFeatureName_Undefined);
-  procs.instanceEnumerateWGSLLanguageFeatures(instance, features.data());
-
-  procs.instanceRelease(instance);
+  size_t feature_count = instance.EnumerateWGSLLanguageFeatures(nullptr);
+  std::vector<wgpu::WGSLFeatureName> features(feature_count);
+  instance.EnumerateWGSLLanguageFeatures(features.data());
 
   return features;
 #else

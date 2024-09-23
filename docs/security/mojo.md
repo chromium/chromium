@@ -189,7 +189,7 @@ the browser process to:
     definition of proper defanging varies per platform.
 1.  Prepend its own parent directory to the basename, e.g. ~/Downloads.
 
-> TODO(https://crbug.com/779196): Even better would be to implement a C++ type
+> TODO(crbug.com/41352236): Even better would be to implement a C++ type
 > performs the appropriate sanitizations and recommend its usage directly here.
 
 
@@ -398,6 +398,8 @@ enforce that the input data is valid. Common ones to watch out for:
 *   Time types: use `mojo_base.mojom.TimeDelta` /
     `mojo_base.mojom.TimeTicks` / `mojo_base.mojom.Time`, not `int64` /
     `uint64` / `double` / et cetera.
+    *   In WebUI, use `mojo_base.mojom.JSTime` for times coming from Javascript
+        Date objects.
 *   URLs: use `url.mojom.Url`, not `string`.
 *   `array<uint8>` or `string` and `memcpy()`: use a Mojo struct and statically
     define the serialized fields. While `memcpy()` may be tempting for its

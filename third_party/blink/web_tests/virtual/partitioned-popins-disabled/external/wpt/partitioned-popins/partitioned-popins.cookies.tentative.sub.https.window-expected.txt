@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify Partitioned Popins only have access to third-party cookies
+  assert_equals: expected "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-" but got "ReadOnLoad:FirstPartyLax-FirstPartyNone-,ReadOnFetch:FirstPartyStrict-FirstPartyLax-FirstPartyNone-FirstPartyStrictPopin-FirstPartyLaxPopin-FirstPartyNonePopin-ThirdPartyStrictPopin-ThirdPartyLaxPopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyStrict-FirstPartyLax-FirstPartyNone-FirstPartyStrictPopin-FirstPartyLaxPopin-FirstPartyNonePopin-ThirdPartyStrictPopin-ThirdPartyLaxPopin-ThirdPartyNonePopin-"
+Harness: the test ran to completion.
+

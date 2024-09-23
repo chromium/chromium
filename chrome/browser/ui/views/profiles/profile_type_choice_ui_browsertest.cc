@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -38,7 +39,6 @@ const PixelTestParam kTestParams[] = {
      .use_dark_theme = true,
      .use_right_to_left_language = true,
      .use_small_window = true},
-    {.test_suffix = "CR2023", .use_chrome_refresh_2023_style = true},
 };
 
 const char kRemoveAvatarIconJS[] =

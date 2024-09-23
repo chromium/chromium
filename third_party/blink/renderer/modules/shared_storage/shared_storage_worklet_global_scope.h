@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,10 +37,12 @@
 namespace blink {
 
 struct GlobalScopeCreationParams;
+class CodeCacheFetcher;
 class ModuleScriptDownloader;
 class SharedStorageOperationDefinition;
 class V8NoArgumentConstructor;
 class SharedStorage;
+class ScriptCachedMetadataHandler;
 class PrivateAggregation;
 class Crypto;
 
@@ -109,14 +112,13 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       const String& name,
       const Vector<KURL>& urls,
       BlinkCloneableMessage serialized_data,
-      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-          private_aggregation_host,
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
       RunURLSelectionOperationCallback callback) override;
-  void RunOperation(const String& name,
-                    BlinkCloneableMessage serialized_data,
-                    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-                        private_aggregation_host,
-                    RunOperationCallback callback) override;
+  void RunOperation(
+      const String& name,
+      BlinkCloneableMessage serialized_data,
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details,
+      RunOperationCallback callback) override;
 
   // SharedStorageWorkletGlobalScope IDL
   SharedStorage* sharedStorage(ScriptState*, ExceptionState&);
@@ -142,7 +144,10 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       const KURL& script_source_url,
       mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
-      std::string error_message);
+      std::string error_message,
+      network::mojom::URLResponseHeadPtr response_head);
+
+  void DidReceiveCachedCode();
 
   void RecordAddModuleFinished();
 
@@ -157,7 +162,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   network::mojom::RequestDestination GetDestination() const override {
     // Not called as the current implementation uses the custom module script
     // loader.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
     // Once we migrate to the blink-worklet's script loading infra, this needs
     // to return a valid destination defined in the Fetch standard:
@@ -169,8 +174,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // particular operation invocation later, even after asynchronous operations.
   // Returns a closure that should be run when the operation finishes.
   base::OnceClosure StartOperation(
-      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-          private_aggregation_host);
+      mojom::blink::PrivateAggregationOperationDetailsPtr pa_operation_details);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
   // has finished.
@@ -183,6 +187,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   bool add_module_finished_ = false;
 
   int64_t operation_counter_ = 0;
+
+  base::OnceClosure handle_script_download_response_after_code_cache_response_;
 
   // `receiver_`'s disconnect handler explicitly deletes the worklet thread
   // object that owns this service, thus deleting `this` upon disconnect. To
@@ -217,6 +223,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
   std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
 
+  scoped_refptr<CodeCacheFetcher> code_cache_fetcher_;
+
   // This is associated because on the client side (i.e. worklet host), we want
   // the call-in methods (e.g. storage access) and the callback methods
   // (e.g. finish of a run-operation) to preserve their invocation order. This
@@ -232,7 +240,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
-  bool private_aggregation_permissions_policy_allowed_ = false;
+  bool private_aggregation_permissions_policy_allowed_;
 
   const SharedStorageWorkletToken token_;
 };

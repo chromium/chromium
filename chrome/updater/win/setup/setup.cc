@@ -143,9 +143,6 @@ int Setup(UpdaterScope scope) {
   if (IsSystemInstall(scope)) {
     run_updater_wake_command.AppendSwitch(kSystemSwitch);
   }
-  run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
-  run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                             kLoggingModuleSwitchValue);
 
   if (!IsSystemInstall(scope)) {
     RegisterUserRunAtStartup(GetTaskNamePrefix(scope), run_updater_wake_command,

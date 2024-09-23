@@ -27,21 +27,30 @@ USE_PYTHON_AUDITOR = True
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 
 class TrafficAnnotationTestsChecker():
-  def __init__(self, build_path=None, annotations_filename=None):
+
+  def __init__(self,
+               build_path=None,
+               annotations_filename=None,
+               errors_filename=None):
     """Initializes a TrafficAnnotationTestsChecker object.
 
     Args:
       build_path: str Absolute or relative path to a fully compiled build
           directory.
+      annotations_filename: str Path to a file to write annotations to.
+      errors_filename: str Path to a file to write errors to.
     """
     self.tools = NetworkTrafficAnnotationTools(build_path)
     self.last_result = None
     self.persist_annotations = bool(annotations_filename)
     if not annotations_filename:
-      annotations_file = tempfile.NamedTemporaryFile()
-      annotations_filename = annotations_file.name
-      annotations_file.close()
+      annotations_file, annotations_filename = tempfile.mkstemp()
+      os.close(annotations_file)
     self.annotations_filename = annotations_filename
+    if not errors_filename:
+      errors_file, errors_filename = tempfile.mkstemp()
+      errors_file.close()
+    self.errors_filename = errors_filename
 
   def RunAllTests(self):
     """Runs all tests and returns the result."""
@@ -132,8 +141,10 @@ class TrafficAnnotationTestsChecker():
       pass
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
-        args + ["--annotations-file=%s" % self.annotations_filename],
-        use_python_auditor)
+        args + [
+            "--annotations-file", self.annotations_filename, "--errors-file",
+            self.errors_filename
+        ], use_python_auditor)
 
     annotations = None
     if os.path.exists(self.annotations_filename):
@@ -175,10 +186,13 @@ def main():
   parser.add_argument(
       '--annotations-file',
       help='Optional path to a TSV output file with all annotations.')
+  parser.add_argument('--errors-file',
+                      help="Optional path to a JSON output file with errors.")
 
   args = parser.parse_args()
   checker = TrafficAnnotationTestsChecker(args.build_path,
-                                          args.annotations_file)
+                                          args.annotations_file,
+                                          args.errors_file)
   return 0 if checker.RunAllTests() else 1
 
 

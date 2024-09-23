@@ -7,10 +7,11 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
+#include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "content/public/common/process_type.h"
@@ -40,10 +41,12 @@ class BrowserChildProcessHostProxy;
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.
-class ProcessNode : public Node {
+class ProcessNode : public TypedNode<ProcessNode> {
  public:
-  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
-  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
+  using NodeSet = base::flat_set<const Node*>;
+  template <class ReturnType>
+  using NodeSetView = NodeSetView<NodeSet, ReturnType>;
+
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 
@@ -66,6 +69,8 @@ class ProcessNode : public Node {
 
   using ContentTypes =
       base::EnumSet<ContentType, ContentType::kExtension, ContentType::kWorker>;
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
 
   ProcessNode();
 
@@ -105,23 +110,11 @@ class ProcessNode : public Node {
   // metrics as specified in content::ChildProcessData during process creation.
   virtual const std::string& GetMetricsName() const = 0;
 
-  // Visits the frame nodes that are hosted in this process. The iteration is
-  // halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitFrameNodes(const FrameNodeVisitor& visitor) const = 0;
+  // Returns the set of frame nodes that are hosted in this process.
+  virtual NodeSetView<const FrameNode*> GetFrameNodes() const = 0;
 
-  // Visits the worker nodes that are hosted in this process. The iteration is
-  // halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitWorkerNodes(const WorkerNodeVisitor& visitor) const = 0;
-
-  // Returns the set of frame nodes that are hosted in this process. Note that
-  // calling this causes the set of nodes to be generated.
-  virtual base::flat_set<const FrameNode*> GetFrameNodes() const = 0;
-
-  // Returns the set of worker nodes that are hosted in this process. Note that
-  // calling this causes the set of nodes to be generated.
-  virtual base::flat_set<const WorkerNode*> GetWorkerNodes() const = 0;
+  // Returns the set of worker nodes that are hosted in this process.
+  virtual NodeSetView<const WorkerNode*> GetWorkerNodes() const = 0;
 
   // Returns true if the main thread task load is low (below some threshold
   // of usage). See ProcessNodeObserver::OnMainThreadTaskLoadIsLow.
@@ -165,14 +158,14 @@ class ProcessNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class ProcessNodeObserver {
+class ProcessNodeObserver : public base::CheckedObserver {
  public:
   ProcessNodeObserver();
 
   ProcessNodeObserver(const ProcessNodeObserver&) = delete;
   ProcessNodeObserver& operator=(const ProcessNodeObserver&) = delete;
 
-  virtual ~ProcessNodeObserver();
+  ~ProcessNodeObserver() override;
 
   // Node lifetime notifications.
 

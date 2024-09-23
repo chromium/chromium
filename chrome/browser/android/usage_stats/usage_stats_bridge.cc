@@ -10,15 +10,16 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/UsageStatsBridge_jni.h"
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/UsageStatsBridge_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::JavaArrayOfByteArrayToStringVector;
@@ -41,9 +42,7 @@ bool isSuccess(UsageStatsDatabase::Error error) {
 
 static jlong JNI_UsageStatsBridge_Init(JNIEnv* env,
                                        const JavaParamRef<jobject>& j_this,
-                                       const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-
+                                       Profile* profile) {
   std::unique_ptr<UsageStatsDatabase> usage_stats_database =
       std::make_unique<UsageStatsDatabase>(profile);
 
@@ -306,7 +305,7 @@ void UsageStatsBridge::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kUsageStatsEnabled, false);
 }
 
-void UsageStatsBridge::OnURLsDeleted(
+void UsageStatsBridge::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // We ignore expirations since they're not user-initiated.

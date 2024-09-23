@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -28,29 +29,17 @@ BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts[] = {
-        {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "false"}};
-
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts_WithOptimizationGuide[] = {
-        {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"}};
+    kCommercePriceTracking_PriceAlerts[] = {{"enable_price_tracking", "true"}};
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kCommercePriceTracking_PriceNotifications[] = {
         {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"},
         {"enable_price_notification", "true"}};
 
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kCommercePriceTrackingAndroidVariations[] = {
         {"Price alerts", kCommercePriceTracking_PriceAlerts,
          std::size(kCommercePriceTracking_PriceAlerts), nullptr},
-        {"Price alerts with OptimizationGuide",
-         kCommercePriceTracking_PriceAlerts_WithOptimizationGuide,
-         std::size(kCommercePriceTracking_PriceAlerts_WithOptimizationGuide),
-         nullptr},
         {"Price notifications", kCommercePriceTracking_PriceNotifications,
          std::size(kCommercePriceTracking_PriceNotifications), nullptr},
 };
@@ -86,18 +75,30 @@ extern const char kPriceInsightsShowFeedbackParam[];
 extern const base::FeatureParam<bool> kPriceInsightsShowFeedback;
 extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
+extern const char kProductSpecsMigrateToMultiSpecificsParam[];
+extern const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics;
 BASE_DECLARE_FEATURE(kPriceTrackingIconColors);
+BASE_DECLARE_FEATURE(kPriceTrackingPromo);
 
 BASE_DECLARE_FEATURE(kProductSpecifications);
-BASE_DECLARE_FEATURE(kProductSpecificationsRegionLaunched);
+BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
+BASE_DECLARE_FEATURE(kProductSpecificationsMultiSpecifics);
+BASE_DECLARE_FEATURE(kProductSpecificationsSyncTitle);
 
 BASE_DECLARE_FEATURE(kShoppingIconColorVariant);
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
+BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
 BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
+BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
+
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kPriceInsightsIos);
+BASE_DECLARE_FEATURE(kPriceInsightsHighPriceIos);
+#endif
 
 // Feature flag for Discounts on navigation.
 enum class DiscountDialogAutoPopupBehavior {
@@ -115,6 +116,10 @@ extern const char kMerchantWideBehaviorParam[];
 extern const base::FeatureParam<int> kMerchantWideBehavior;
 extern const char kNonMerchantWideBehaviorParam[];
 extern const base::FeatureParam<int> kNonMerchantWideBehavior;
+extern const char kDiscountOnShoppyPageParam[];
+extern const base::FeatureParam<bool> kDiscountOnShoppyPage;
+
+BASE_DECLARE_FEATURE(kDiscountsUiRefactor);
 
 BASE_DECLARE_FEATURE(kRetailCoupons);
 BASE_DECLARE_FEATURE(kCommerceDeveloper);
@@ -382,6 +387,16 @@ extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
 extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
 extern const base::FeatureParam<base::TimeDelta>
     kCodeBasedRuleDiscountCouponDeletionTime;
+
+// Feature params for product specifications.
+extern const char kProductSpecificationsSetValidForClusteringTimeParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kProductSpecificationsSetValidForClusteringTime;
+extern const char kProductSpecificationsUseServerClusteringParam[];
+extern const base::FeatureParam<bool> kProductSpecificationsUseServerClustering;
+extern const char kProductSpecificationsEnableQualityLoggingParam[];
+extern const base::FeatureParam<bool>
+    kProductSpecificationsEnableQualityLogging;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

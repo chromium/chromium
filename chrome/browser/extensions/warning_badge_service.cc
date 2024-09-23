@@ -87,7 +87,7 @@ bool ErrorBadge::HasShownBubbleView() {
 }
 
 void ErrorBadge::ShowBubbleView(Browser* browser) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 GlobalErrorBubbleViewBase* ErrorBadge::GetBubbleView() {

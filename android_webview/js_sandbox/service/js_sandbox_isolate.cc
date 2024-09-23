@@ -12,8 +12,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 #include "android_webview/js_sandbox/service/js_sandbox_array_buffer_allocator.h"
 #include "android_webview/js_sandbox/service/js_sandbox_isolate_callback.h"
 #include "base/android/callback_android.h"
@@ -32,7 +32,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -57,6 +56,9 @@
 #include "v8/include/v8-statistics.h"
 #include "v8/include/v8-template.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
+
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
@@ -64,9 +66,9 @@ using base::android::JavaRef;
 
 namespace {
 
-// TODO(crbug.com/1297672): This is what shows up as filename in errors. Revisit
-// this once error handling is in place.
-constexpr base::StringPiece resource_name = "<expression>";
+// TODO(crbug.com/40215244): This is what shows up as filename in errors.
+// Revisit this once error handling is in place.
+constexpr std::string_view resource_name = "<expression>";
 constexpr jlong kUnknownAssetFileDescriptorLength = -1;
 constexpr int64_t kDefaultChunkSize = 1 << 16;
 
@@ -194,7 +196,7 @@ jint remapConsoleMessageErrorLevel(const v8::Isolate::MessageErrorLevel level) {
     case v8::Isolate::MessageErrorLevel::kMessageWarning:
       return 1 << 4;
     case v8::Isolate::MessageErrorLevel::kMessageAll:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -204,12 +206,12 @@ base::android::ScopedJavaLocalRef<jstring> StringViewToJavaString(
     const v8_inspector::StringView& string_view) {
   if (string_view.is8Bit()) {
     return base::android::ConvertUTF8ToJavaString(
-        env, base::StringPiece(
+        env, std::string_view(
                  reinterpret_cast<const char*>(string_view.characters8()),
                  string_view.length()));
   } else {
     return base::android::ConvertUTF16ToJavaString(
-        env, base::StringPiece16(
+        env, std::u16string_view(
                  reinterpret_cast<const char16_t*>(string_view.characters16()),
                  string_view.length()));
   }
@@ -700,8 +702,7 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   v8::TryCatch try_catch(v8_isolate);
 
   // Compile
-  v8::ScriptOrigin origin(v8_isolate,
-                          gin::StringToV8(v8_isolate, resource_name));
+  v8::ScriptOrigin origin(gin::StringToV8(v8_isolate, resource_name));
   v8::MaybeLocal<v8::Script> maybe_script = v8::Script::Compile(
       context_holder_->context(), gin::StringToV8(v8_isolate, code), &origin);
   std::string compile_error = "";
@@ -716,7 +717,6 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   }
 
   // Run
-  v8::Isolate::SafeForTerminationScope safe_for_termination(v8_isolate);
   v8::MaybeLocal<v8::Value> maybe_result =
       script->Run(context_holder_->context());
   std::string run_error = "";

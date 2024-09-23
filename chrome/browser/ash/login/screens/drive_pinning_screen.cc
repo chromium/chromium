@@ -21,9 +21,6 @@
 namespace ash {
 namespace {
 
-constexpr const char kUserActionNext[] = "driveNext";
-constexpr const char kUserActionReturn[] = "return";
-
 using drivefs::pinning::PinningManager;
 using drivefs::pinning::Progress;
 
@@ -75,12 +72,14 @@ void RecordUserSelection(bool option) {
 
 // static
 std::string DrivePinningScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 void DrivePinningScreen::ApplyDrivePinningPref(Profile* profile) {
@@ -104,6 +103,7 @@ DrivePinningScreen::DrivePinningScreen(
     const ScreenExitCallback& exit_callback)
     : BaseScreen(DrivePinningScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -122,6 +122,10 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (features::IsOobeChoobeEnabled()) {
     auto* choobe_controller =
         WizardController::default_controller()->choobe_flow_controller();
+    if (!ignore_choobe_controller_state_for_tests_ && !choobe_controller) {
+      return true;
+    }
+
     if (choobe_controller && choobe_controller->ShouldScreenBeSkipped(
                                  DrivePinningScreenView::kScreenId)) {
       return true;
@@ -187,7 +191,14 @@ void DrivePinningScreen::OnBulkPinProgress(
     VLOG(1) << "Finished calculating required space";
     std::u16string free_space = ui::FormatBytes(progress.free_space);
     std::u16string required_space = ui::FormatBytes(progress.required_space);
-    view_->SetRequiredSpaceInfo(required_space, free_space);
+    SetRequiredSpaceInfo(required_space, free_space);
+  }
+}
+
+void DrivePinningScreen::SetRequiredSpaceInfo(std::u16string required_space,
+                                              std::u16string free_space) {
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetRequiredSpaceInfo(required_space, free_space);
   }
 }
 
@@ -226,28 +237,23 @@ void DrivePinningScreen::ShowImpl() {
 
 void DrivePinningScreen::HideImpl() {}
 
-void DrivePinningScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionNext) {
-    CHECK_EQ(args.size(), 2u);
-    ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
-    const bool drive_pinning = args[1].GetBool();
-    OnNext(drive_pinning);
+void DrivePinningScreen::OnReturnClicked(bool enable_drive_pinning) {
+  if (is_hidden()) {
     return;
   }
+  ReportScreenCompletedToChoobe(
+      WizardController::default_controller()->choobe_flow_controller());
+  context()->return_to_choobe_screen = true;
+  OnNext(enable_drive_pinning);
+}
 
-  if (action_id == kUserActionReturn) {
-    CHECK_EQ(args.size(), 2u);
-    ReportScreenCompletedToChoobe(
-        WizardController::default_controller()->choobe_flow_controller());
-    const bool drive_pinning = args[1].GetBool();
-    context()->return_to_choobe_screen = true;
-    OnNext(drive_pinning);
+void DrivePinningScreen::OnNextClicked(bool enable_drive_pinning) {
+  if (is_hidden()) {
     return;
   }
-
-  BaseScreen::OnUserAction(args);
+  ReportScreenCompletedToChoobe(
+      WizardController::default_controller()->choobe_flow_controller());
+  OnNext(enable_drive_pinning);
 }
 
 std::string DrivePinningScreen::RetrieveChoobeSubtitle() {

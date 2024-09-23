@@ -16,6 +16,7 @@ import android.os.Build;
 import android.util.Pair;
 
 import androidx.privacysandbox.ads.adservices.java.measurement.MeasurementManagerFutures;
+import androidx.privacysandbox.ads.adservices.measurement.SourceRegistrationRequest;
 import androidx.privacysandbox.ads.adservices.measurement.WebSourceParams;
 import androidx.privacysandbox.ads.adservices.measurement.WebSourceRegistrationRequest;
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerParams;
@@ -91,7 +92,7 @@ public class AttributionReportingTest {
                             mMockCallbackHelper.notifyCalled();
                             return Futures.immediateFuture(null);
                         });
-        when(mMockAttributionManager.registerSourceAsync(any(Uri.class), eq(null)))
+        when(mMockAttributionManager.registerSourceAsync(any(SourceRegistrationRequest.class)))
                 .thenAnswer(
                         invocation -> {
                             mMockCallbackHelper.notifyCalled();
@@ -175,7 +176,7 @@ public class AttributionReportingTest {
                                 null,
                                 null));
         verify(mMockAttributionManager, never())
-                .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
+                .registerSourceAsync(any(SourceRegistrationRequest.class));
         verify(mMockAttributionManager, never())
                 .registerWebTriggerAsync(
                         eq(
@@ -218,8 +219,10 @@ public class AttributionReportingTest {
                                 null,
                                 null,
                                 null));
-        verify(mMockAttributionManager, times(1))
-                .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
+        SourceRegistrationRequest expectedRequest =
+                new SourceRegistrationRequest(
+                        Arrays.asList(Uri.parse(SOURCE_REGISTRATION_URL)), null);
+        verify(mMockAttributionManager, times(1)).registerSourceAsync(eq(expectedRequest));
         verify(mMockAttributionManager, times(1))
                 .registerWebTriggerAsync(
                         eq(
@@ -263,7 +266,7 @@ public class AttributionReportingTest {
                                 null,
                                 null));
         verify(mMockAttributionManager, never())
-                .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
+                .registerSourceAsync(any(SourceRegistrationRequest.class));
         verify(mMockAttributionManager, times(1))
                 .registerWebTriggerAsync(
                         eq(
@@ -306,8 +309,11 @@ public class AttributionReportingTest {
                                 null,
                                 null,
                                 null));
-        verify(mMockAttributionManager, times(1))
-                .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
+
+        SourceRegistrationRequest expectedRequest =
+                new SourceRegistrationRequest(
+                        Arrays.asList(Uri.parse(SOURCE_REGISTRATION_URL)), null);
+        verify(mMockAttributionManager, times(1)).registerSourceAsync(eq(expectedRequest));
         verify(mMockAttributionManager, never())
                 .registerWebTriggerAsync(
                         eq(

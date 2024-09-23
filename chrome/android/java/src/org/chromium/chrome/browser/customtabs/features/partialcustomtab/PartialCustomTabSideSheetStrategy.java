@@ -36,7 +36,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -150,30 +149,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        CustomTabToolbar.HandleStrategy handleStrategy =
-                mHandleStrategyFactory.create(
-                        getStrategyType(),
-                        mActivity,
-                        this::isFullHeight,
-                        () -> 0,
-                        null,
-                        this::handleCloseAnimation);
         if (mShowMaximizeButton) {
             toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
         }
-        toolbar.setHandleStrategy(handleStrategy);
         toolbar.setMinimizeButtonEnabled(false);
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     boolean toggleMaximize(boolean animate) {
-        @ResizeType
-        int resizeType =
-                mIsMaximized ? ResizeType.MANUAL_MINIMIZATION : ResizeType.MANUAL_EXPANSION;
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.SideSheetResizeType", resizeType, ResizeType.COUNT);
-
         mIsMaximized = !mIsMaximized;
         if (mIsMaximized) {
             if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
@@ -196,7 +180,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         } else {
             start = windowLayout.width;
             end = mIsMaximized ? displayWidth : clampedInitialWidth;
-            View content = (ViewGroup) mActivity.findViewById(R.id.compositor_view_holder);
+            View content = mActivity.findViewById(R.id.compositor_view_holder);
             updateListener =
                     (anim) -> {
                         // Switch the invisibility type to GONE to prevent sluggish resizing
@@ -213,7 +197,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private void setContentVisible(boolean visible) {
-        View content = (ViewGroup) mActivity.findViewById(R.id.compositor_view_holder);
+        View content = mActivity.findViewById(R.id.compositor_view_holder);
         if (visible) {
             // Set a slight delay in restoring the view to hide the visual glitch caused by
             // the resized web contents.
@@ -308,7 +292,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         int leftMargin = mSheetOnRight ? shadowOffset : 0;
         int rightMargin = !mSheetOnRight ? shadowOffset : 0;
         float elevation = calculateElevation();
-        ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+        ViewGroup coordinatorLayout = mActivity.findViewById(R.id.coordinator);
         coordinatorLayout.setElevation(elevation);
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         if (handleView != null) {

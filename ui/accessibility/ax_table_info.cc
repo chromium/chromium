@@ -6,13 +6,15 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_set>
 
+#include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -59,7 +61,8 @@ bool isRowlessTable(AXNode* node) {
       return isRowlessTable(child);
     } else if (IsTableRow(child->GetRole())) {
       return false;
-    } else if (child->GetRole() == ax::mojom::Role::kCell) {
+    } else if (child->GetRole() == ax::mojom::Role::kCell ||
+               child->GetRole() == ax::mojom::Role::kGridCell) {
       // A row will always be reached before a cell if the table is not rowless.
       return true;
     }
@@ -98,7 +101,7 @@ void FindRows(AXNode* node,
 // 2-dimensional array.
 void FindCells(std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
                std::vector<std::vector<AXNode*>>* cell_nodes_per_row) {
-  for (ui::AXNode* row : *row_node_list) {
+  for (AXNode* row : *row_node_list) {
     cell_nodes_per_row->emplace_back();
     FindCellsInRow(row, &cell_nodes_per_row->back());
   }
@@ -151,11 +154,13 @@ void FindCellsForRowlessTable(
       } else if (IsCellOrTableHeader(child->GetRole())) {
         const int rowIndex =
             child->GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex);
+        CHECK_GE(rowIndex,0);
         if (current_row < rowIndex) {
           cell_nodes_per_row->emplace_back();
           current_row = rowIndex;
           current_index++;
         }
+        CHECK_GE(current_index,0);
         auto& cell_nodes = cell_nodes_per_row->at(current_index);
         cell_nodes.push_back(child);
       }
@@ -643,7 +648,7 @@ AXNode* AXTableInfo::CreateExtraMacTableHeaderNode() {
 }
 
 void AXTableInfo::UpdateExtraMacColumnNodeAttributes(size_t col_index) {
-  ui::AXNodeData data = extra_mac_nodes[col_index]->data();
+  AXNodeData data = extra_mac_nodes[col_index]->data();
   data.int_attributes.clear();
 
   // Update the column index.
@@ -677,19 +682,25 @@ void AXTableInfo::ClearExtraMacNodes() {
     return;
   }
 
+  std::vector<AXNodeID> deleting_node_ids;
+  deleting_node_ids.reserve(extra_mac_nodes.size());
   for (AXNode* extra_mac_node : extra_mac_nodes) {
+    deleting_node_ids.push_back(extra_mac_node->id());
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeWillBeDeleted(tree_, extra_mac_node);
     }
   }
 
-  std::vector<AXNodeID> deleted_ids;
+  base::flat_set<AXNodeID> deleting_node_ids_unique(
+      std::move(deleting_node_ids));
+  for (AXTreeObserver& observer : tree_->observers()) {
+    observer.OnAtomicUpdateStarting(tree_, deleting_node_ids_unique, {});
+  }
+
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*tree_);
 
     for (AXNode* extra_mac_node : extra_mac_nodes) {
-      AXNodeID deleted_id = extra_mac_node->id();
-      deleted_ids.push_back(deleted_id);
       delete extra_mac_node;
     }
 
@@ -697,7 +708,7 @@ void AXTableInfo::ClearExtraMacNodes() {
 
   }  // tree_update_in_progress.
 
-  for (AXNodeID deleted_id : deleted_ids) {
+  for (AXNodeID deleted_id : deleting_node_ids_unique) {
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeDeleted(tree_, deleted_id);
     }

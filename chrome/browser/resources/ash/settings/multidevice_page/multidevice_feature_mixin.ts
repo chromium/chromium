@@ -7,8 +7,8 @@
  * intended to facilitate passing data between elements in the MultiDevice page
  * cleanly and concisely. It includes some constants and utility methods.
  */
-
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
@@ -82,6 +82,13 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
           return !!this.pageContentData &&
               this.pageContentData.betterTogetherState !==
               MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
+        }
+
+        /**
+         * Whether the instant hotspot rebrand feature flag is enabled
+         */
+        isInstantHotspotRebrandEnabled(): boolean {
+          return loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
         }
 
         /**
@@ -214,7 +221,9 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
             case MultiDeviceFeature.BETTER_TOGETHER_SUITE:
               return this.i18n('multideviceSetupItemHeading');
             case MultiDeviceFeature.INSTANT_TETHERING:
-              return this.i18n('multideviceInstantTetheringItemTitle');
+              return this.isInstantHotspotRebrandEnabled() ?
+                  this.i18n('multideviceInstantHotspotItemTitle') :
+                  this.i18n('multideviceInstantTetheringItemTitle');
             case MultiDeviceFeature.SMART_LOCK:
               return this.i18n('multideviceSmartLockItemTitle');
             case MultiDeviceFeature.PHONE_HUB:

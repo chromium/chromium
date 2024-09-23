@@ -25,7 +25,10 @@
 
 #include "third_party/blink/renderer/core/frame/history.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -45,26 +48,12 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
-
-namespace {
-void ReportURLChange(LocalDOMWindow* window,
-                     const String& url) {
-  DCHECK(window);
-  DCHECK(window->GetFrame());
-  if (window->Url() != url) {
-    if (SoftNavigationHeuristics* heuristics =
-            SoftNavigationHeuristics::From(*window)) {
-      heuristics->SameDocumentNavigationStarted();
-    }
-  }
-}
-}  // namespace
 
 History::History(LocalDOMWindow* window)
     : ExecutionContextClient(window), last_state_object_requested_(nullptr) {}
@@ -216,28 +205,16 @@ void History::go(ScriptState* script_state,
     return;
 
   if (delta) {
-    // We don't have the URL here, as it is not available in the renderer just
-    // yet. We initially set it to an empty string, to signal to the
-    // SoftNavigationHeuristics class that it's not yet set. We will
-    // asynchronously set the URL at
-    // DocumentLoader::UpdateForSameDocumentNavigation, once the same document
-    // navigation is committed.
-    ReportURLChange(window,
-                    /*url=*/String(""));
-    // Pass the current task ID so it'd be set as the parent task for the future
-    // popstate event.
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-    scheduler::TaskAttributionInfo* task = nullptr;
-    if (tracker && script_state->World().IsMainWorld() &&
-        frame->IsOutermostMainFrame()) {
-      task = tracker->RunningTask(script_state->GetIsolate());
-      tracker->AddSameDocumentNavigationTask(task);
+    // Set up propagating the current task state to the navigation commit.
+    std::optional<scheduler::TaskAttributionId> soft_navigation_task_id;
+    if (script_state->World().IsMainWorld() && frame->IsOutermostMainFrame()) {
+      if (auto* heuristics = SoftNavigationHeuristics::From(*window)) {
+        soft_navigation_task_id =
+            heuristics->AsyncSameDocumentNavigationStarted();
+      }
     }
     DCHECK(frame->Client());
-    if (frame->Client()->NavigateBackForward(
-            delta, task
-                       ? std::optional<scheduler::TaskAttributionId>(task->Id())
-                       : std::nullopt)) {
+    if (frame->Client()->NavigateBackForward(delta, soft_navigation_task_id)) {
       if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }
@@ -327,7 +304,6 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   KURL full_url = UrlForState(url_string);
-  ReportURLChange(window, full_url);
   bool can_change = CanChangeToUrlForHistoryApi(
       full_url, window->GetSecurityOrigin(), window->Url());
 
@@ -374,7 +350,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
 
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
-      std::move(data), type);
+      std::move(data), type, FirePopstate::kNo);
 }
 
 }  // namespace blink

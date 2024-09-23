@@ -72,24 +72,27 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
            source_ == kEncodingFromContentSniffing;
   }
 
-  String Decode(const char* data, size_t length) override;
+  String Decode(base::span<const char> data) override;
+  String Decode(base::span<const uint8_t> data) {
+    return Decode(base::as_chars(data));
+  }
   String Flush() override;
   WebEncodingData GetEncodingData() const override;
 
   bool SawError() const { return saw_error_; }
-  wtf_size_t CheckForBOM(const char*, wtf_size_t);
+  wtf_size_t CheckForBOM(base::span<const char>);
 
  private:
   static const WTF::TextEncoding& DefaultEncoding(
       TextResourceDecoderOptions::ContentType,
       const WTF::TextEncoding& default_encoding);
 
-  void AddToBuffer(const char* data, wtf_size_t data_length);
-  void AddToBufferIfEmpty(const char* data, wtf_size_t data_length);
-  bool CheckForCSSCharset(const char*, wtf_size_t);
-  bool CheckForXMLCharset(const char*, wtf_size_t);
-  void CheckForMetaCharset(const char*, wtf_size_t);
-  void AutoDetectEncodingIfAllowed(const char* data, wtf_size_t len);
+  void AddToBuffer(base::span<const char> data);
+  void AddToBufferIfEmpty(base::span<const char> data);
+  bool CheckForCSSCharset(base::span<const char>);
+  bool CheckForXMLCharset(base::span<const char>);
+  void CheckForMetaCharset(base::span<const char>);
+  void AutoDetectEncodingIfAllowed(base::span<const char> data);
 
   const TextResourceDecoderOptions options_;
 

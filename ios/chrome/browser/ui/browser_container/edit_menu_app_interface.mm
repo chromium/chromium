@@ -17,9 +17,13 @@ namespace {
 // accessibility labels of the visible edit menu actions.
 // `menu_offset` and `menu_width` are used in the recursion to exclude invisible
 // items.
-NSArray* ExtractMenuElements(UIView* view,
-                             CGFloat menu_offset,
-                             CGFloat menu_width) {
+// Items are returned as a dictionary <x_position>,<items_label> so they can
+// be sorted.
+// As visible items are presented horizontally, there should not be any
+// collision on the X coordinate.
+NSDictionary* ExtractMenuElements(UIView* view,
+                                  CGFloat menu_offset,
+                                  CGFloat menu_width) {
   // The type of the edit menu cell depends on the OS version.
   bool is_edit_menu_cell = false;
   if (@available(iOS 16, *)) {
@@ -39,17 +43,17 @@ NSArray* ExtractMenuElements(UIView* view,
   if (is_edit_menu_cell) {
     // Exclude views that are hidden or outside of the scrollview visible part.
     if (view.hidden) {
-      return @[];
+      return @{};
     }
     // Consider the center to avoid rounding issues.
     CGFloat center = CGRectGetMidX(view.frame);
     if (center < menu_offset || center >= menu_offset + menu_width) {
-      return @[];
+      return @{};
     }
-    return @[ view.accessibilityLabel ];
+    return @{@(center) : view.accessibilityLabel};
   }
 
-  NSMutableArray* sub_views_elements = [NSMutableArray array];
+  NSMutableDictionary* sub_views_elements = [NSMutableDictionary dictionary];
   CGFloat new_width = std::min(menu_width, view.frame.size.width);
   if ([view isKindOfClass:[UIScrollView class]]) {
     UIScrollView* scroll_view = (UIScrollView*)view;
@@ -57,8 +61,8 @@ NSArray* ExtractMenuElements(UIView* view,
   }
   for (UIView* subView in view.subviews) {
     [sub_views_elements
-        addObjectsFromArray:ExtractMenuElements(subView, menu_offset,
-                                                new_width)];
+        addEntriesFromDictionary:ExtractMenuElements(subView, menu_offset,
+                                                     new_width)];
   }
   return sub_views_elements;
 }
@@ -142,7 +146,7 @@ NSArray* ExtractMenuElements(UIView* view,
 }
 
 + (NSArray*)editMenuActions {
-  NSMutableArray* menuElements = [NSMutableArray array];
+  NSMutableDictionary* menuElements = [NSMutableDictionary dictionary];
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
         base::apple::ObjCCastStrict<UIWindowScene>(scene);
@@ -151,11 +155,17 @@ NSArray* ExtractMenuElements(UIView* view,
         continue;
       }
       [menuElements
-          addObjectsFromArray:ExtractMenuElements(window, 0,
-                                                  window.bounds.size.width)];
+          addEntriesFromDictionary:ExtractMenuElements(
+                                       window, 0, window.bounds.size.width)];
     }
   }
-  return menuElements;
+  NSArray* sortedKeys =
+      [[menuElements allKeys] sortedArrayUsingSelector:@selector(compare:)];
+  NSMutableArray* sortedValues = [NSMutableArray array];
+  for (NSNumber* key in sortedKeys) {
+    [sortedValues addObject:[menuElements objectForKey:key]];
+  }
+  return sortedValues;
 }
 
 @end

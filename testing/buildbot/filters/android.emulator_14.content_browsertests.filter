@@ -1,0 +1,29 @@
+# crbug.com/1296333
+-WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
+-WebRtcBrowserTest.CallInsideIframe
+-WebRtcBrowserTest.CanSetupAudioAndVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCallWithOldGetUserMedia
+-WebRtcBrowserTest.CanSetupVideoCallAndDisableLocalVideo
+-WebRtcBrowserTest.CanSetupVideoCallWith16To9AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith1To1AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith4To3AspectRatio
+-WebRtcBrowserTest.GetSettingsReportsValuesForRemoteTracks
+-WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
+-WebRtcDataBrowserTest.CallWithSctpDataAndMedia
+
+# crbug.com/1428296
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/0
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
+
+# crbug.com/362833242
+-WebRtcCaptureFromElementBrowserTest.VerifyCanvasCaptureWebGLFrames
+
+# crbug.com/1428300
+-OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
+
+# crbug.com/343335591
+-FormControlsBrowserTest.Button
+
+# crbug.com/364371348
+-All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*

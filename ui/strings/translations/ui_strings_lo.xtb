@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">ແບບສຳຫຼວດ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/ວິນາທີ</translation>
 <translation id="2353636109065292463">ກຳລັງກວດການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
+<translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2388990488038464401">ໂທຫາເບີນີ້ຈາກໂທລະສັບຂອງທ່ານບໍ?</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="24452542372838207">ຂະຫຍາຍການແຈ້ງເຕືອນ</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ໃຫມ່</translation>
 <translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ປີກ່ອນນີ້}other{# ປີກ່ອນນີ້}}</translation>
 <translation id="2878511608894704031">ລຶບທັງໝົດ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ໃນ 1 ມື້}other{ໃນ # ມື້}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">ລະບົບ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
 <translation id="5613020302032141669">ລູກສອນຊ້າຍ</translation>
+<translation id="5633029987065897167">ຫວ່າງເປົ່າ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ນາ​ທີ}other{# ນາ​ທີ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ເປີດນຳໃຊ້ມື້ນີ້}=1{ເປີດນຳໃຊ້ເມື່ອ 1 ມື້ກ່ອນ}other{ເປີດນຳໃຊ້ເມື່ອ # ມື້ກ່ອນ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ວັນ​ ແລະ }other{# ວັນ ແລະ }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">ເນື້ອຫາ RTF</translation>
 <translation id="6539092367496845964">ມີບາງຢ່າງຜິດພາດ. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="654149438358937226">ບລັອກທຸກການແຈ້ງເຕືອນ</translation>
-<translation id="6612467943526193239">ເພື່ອອອກຈາການປັບຕັ້ງຄ່າ ໃຫ້ກົດ Esc.</translation>
 <translation id="6620110761915583480">ບັນທຶກໄຟລ໌</translation>
 <translation id="6699343763173986273">ເພງຕໍ່ໄປຂອງມີເດຍ</translation>
 <translation id="6808150112686056157">ຢຸດມີເດຍ</translation>

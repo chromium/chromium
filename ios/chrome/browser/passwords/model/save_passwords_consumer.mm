@@ -20,7 +20,7 @@ SavePasswordsConsumer::~SavePasswordsConsumer() = default;
 void SavePasswordsConsumer::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   // Not called because OnGetPasswordStoreResultsFrom() is overridden.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SavePasswordsConsumer::OnGetPasswordStoreResultsFrom(

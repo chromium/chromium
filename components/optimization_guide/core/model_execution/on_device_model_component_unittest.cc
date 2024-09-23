@@ -5,7 +5,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/scoped_add_feature_flags.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,16 +12,21 @@
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 namespace {
+
+const base::Value::Dict kTestManifest = base::Value::Dict().Set(
+    "BaseModelSpec",
+    base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
@@ -39,13 +43,14 @@ class StubObserver : public OnDeviceModelComponentStateManager::Observer {
 class OnDeviceModelComponentTest : public testing::Test {
  public:
   void SetUp() override {
-    prefs::RegisterLocalStatePrefs(local_state_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
 
     local_state_.SetInteger(
-        prefs::localstate::kOnDevicePerformanceClass,
+        model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
     local_state_.SetTime(
-        prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
+        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+            ModelBasedCapabilityKey::kCompose),
         base::Time::Now());
 
     feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
@@ -93,11 +98,11 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
   WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
-  EXPECT_GE(local_state_.GetTime(
-                prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload),
+  EXPECT_GE(local_state_.GetTime(model_execution::prefs::localstate::
+                                     kLastTimeEligibleForOnDeviceModelDownload),
             time_at_start);
-  EXPECT_LE(local_state_.GetTime(
-                prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload),
+  EXPECT_LE(local_state_.GetTime(model_execution::prefs::localstate::
+                                     kLastTimeEligibleForOnDeviceModelDownload),
             base::Time::Now());
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
@@ -127,7 +132,7 @@ TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   manager()->InstallerRegistered();
 
@@ -170,6 +175,27 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
   }
 }
 
+TEST_F(OnDeviceModelComponentTest,
+       DoesNotInstallWhenDisabledByEnterprisePolicy) {
+  // It should not install when disabled by enterprise policy.
+  base::HistogramTester histogram_tester;
+  local_state_.SetInteger(
+      model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(model_execution::prefs::
+                           GenAILocalFoundationalModelEnterprisePolicySettings::
+                               kDisallowed));
+
+  on_device_component_state_manager_.Reset();
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByEnterprisePolicy",
+      false, 1);
+}
+
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
@@ -191,7 +217,8 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
   local_state_.ClearPref(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
 
   manager()->OnStartup();
   WaitForStartup();
@@ -205,7 +232,8 @@ TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
 
 TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
   local_state_.SetTime(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose),
       base::Time::Now() - base::Days(31));
 
   manager()->OnStartup();
@@ -215,7 +243,8 @@ TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
-  local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
+  local_state_.ClearPref(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass);
 
   manager()->OnStartup();
   WaitForStartup();
@@ -225,7 +254,7 @@ TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
 
 TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
   local_state_.SetInteger(
-      prefs::localstate::kOnDevicePerformanceClass,
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
       base::to_underlying(OnDeviceModelPerformanceClass::kVeryLow));
 
   manager()->OnStartup();
@@ -241,12 +270,13 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
 TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
   // This pref records that the model was eligible for download previously,
   // and hasn't been cleaned up yet.
-  local_state_.SetTime(
-      prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-      base::Time::Now() - base::Minutes(1) -
-          features::GetOnDeviceModelRetentionTime());
+  local_state_.SetTime(model_execution::prefs::localstate::
+                           kLastTimeEligibleForOnDeviceModelDownload,
+                       base::Time::Now() - base::Minutes(1) -
+                           features::GetOnDeviceModelRetentionTime());
   local_state_.ClearPref(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
 
   // Should uninstall the first time, and skip uninstallation the next time.
   manager()->OnStartup();
@@ -263,9 +293,9 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
-  local_state_.SetTime(
-      prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-      base::Time::Now());
+  local_state_.SetTime(model_execution::prefs::localstate::
+                           kLastTimeEligibleForOnDeviceModelDownload,
+                       base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
@@ -288,11 +318,12 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 
-  // Simulate a restart, and clear kLastTimeOnDeviceEligibleFeatureWasUsed so
-  // that the model is no longer eligible for download.
+  // Simulate a restart, and clear feature recently used pref so that the model
+  // is no longer eligible for download.
   on_device_component_state_manager_.Reset();
   local_state_.ClearPref(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
   manager()->OnStartup();
   WaitForStartup();
 
@@ -301,7 +332,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   // The model is still available.
   EXPECT_TRUE(manager()->GetState());
@@ -324,7 +355,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   EXPECT_FALSE(manager()->GetState())
       << "state available even though performance class is not supported";
@@ -342,7 +373,7 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
   manager()->AddObserver(&observer);
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   const OnDeviceModelComponentState* state = manager()->GetState();
   ASSERT_TRUE(state);
@@ -355,7 +386,8 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
   // This sequence would happen on first run.
-  local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
+  local_state_.ClearPref(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass);
 
   StubObserver observer;
   manager()->AddObserver(&observer);
@@ -372,7 +404,7 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   EXPECT_TRUE(manager()->GetState());
   EXPECT_TRUE(observer.GetState());
@@ -398,7 +430,7 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   // State is not available, because device is not eligible.
   EXPECT_FALSE(manager()->GetState());
@@ -427,13 +459,14 @@ TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   local_state_.ClearPref(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
+      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
+          ModelBasedCapabilityKey::kCompose));
   manager()->OnStartup();
   WaitForStartup();
 
   ASSERT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
 
-  manager()->OnDeviceEligibleFeatureUsed();
+  manager()->OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
   WaitForStartup();
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 }
@@ -444,11 +477,11 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      base::Value::Dict());
+                      kTestManifest);
 
   manager()->InstallerRegistered();
 
-  manager()->OnDeviceEligibleFeatureUsed();
+  manager()->OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey::kCompose);
 
   histograms_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
@@ -478,33 +511,21 @@ TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
 TEST_F(OnDeviceModelComponentTest, SetPrefsWhenManifestContainsBaseModelSpec) {
   manager()->OnStartup();
   WaitForStartup();
-  base::Value::Dict manifest = base::Value::Dict().Set(
-      "BaseModelSpec",
-      base::Value::Dict().Set("version", "0.0.0.0").Set("name", "TestXS"));
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
-                      manifest);  // manifest is populated with test data.
-  EXPECT_EQ(manager()->GetCachedBaseModelSpec().value().model_name, "TestXS");
-  EXPECT_EQ(manager()->GetCachedBaseModelSpec().value().model_version,
-            "0.0.0.0");
+                      kTestManifest);  // manifest is populated with test data.
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "Test");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version, "0.0.1");
 }
 
-TEST_F(OnDeviceModelComponentTest, UninstallClearsCachedBaseModelSpec) {
-  // This pref records that the model was eligible for download previously,
-  // and hasn't been cleaned up yet.
-  local_state_.SetTime(
-      prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-      base::Time::Now() - base::Minutes(1) -
-          features::GetOnDeviceModelRetentionTime());
-  local_state_.ClearPref(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
-  // Should uninstall on next startup.
+TEST_F(OnDeviceModelComponentTest, SetStateWhenModelOverridden) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kOnDeviceModelExecutionOverride, "/some/path");
   manager()->OnStartup();
-  WaitForStartup();
-
-  EXPECT_TRUE(on_device_component_state_manager_.WasComponentUninstalled());
-  EXPECT_EQ(manager()->GetCachedBaseModelSpec().value().model_name, "");
-  EXPECT_EQ(manager()->GetCachedBaseModelSpec().value().model_version, "");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_name, "override");
+  EXPECT_EQ(manager()->GetState()->GetBaseModelSpec().model_version,
+            "override");
 }
+
 }  // namespace
 }  // namespace optimization_guide

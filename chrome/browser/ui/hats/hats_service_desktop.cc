@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,7 +44,7 @@ constexpr char kHatsShouldShowSurveyReasonHistogram[] =
 
 namespace {
 
-// TODO(crbug.com/1160661): When the minimum time between any survey, and the
+// TODO(crbug.com/40162245): When the minimum time between any survey, and the
 // minimum time between a specific survey, are the same, the logic supporting
 // the latter check is superfluous.
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts = base::Days(180);
@@ -523,7 +524,8 @@ void HatsServiceDesktop::RecordSurveyAsShown(std::string trigger_id) {
                            return pair.second.trigger_id;
                          });
 
-  DCHECK(trigger_survey_config != survey_configs_by_triggers_.end());
+  CHECK(trigger_survey_config != survey_configs_by_triggers_.end(),
+        base::NotFatalUntil::M130);
   std::string trigger = trigger_survey_config->first;
 
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
@@ -655,12 +657,15 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
                           base::TimeToValue(base::Time::Now()));
 
   DCHECK(!hats_next_dialog_exists_);
-  const auto& trigger_id =
-      supplied_trigger_id.has_value()
-          ? std::string(supplied_trigger_id.value())
-          : survey_configs_by_triggers_[trigger].trigger_id;
+  if (supplied_trigger_id.has_value()) {
+    survey_configs_by_triggers_[trigger].trigger_id =
+        std::string(supplied_trigger_id.value());
+  }
   browser->window()->ShowHatsDialog(
-      trigger_id, std::move(success_callback), std::move(failure_callback),
+      survey_configs_by_triggers_[trigger].trigger_id,
+      survey_configs_by_triggers_[trigger].hats_histogram_name,
+      survey_configs_by_triggers_[trigger].hats_survey_ukm_id,
+      std::move(success_callback), std::move(failure_callback),
       product_specific_bits_data, product_specific_string_data);
   hats_next_dialog_exists_ = true;
 }

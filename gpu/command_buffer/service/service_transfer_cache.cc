@@ -20,10 +20,10 @@
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -33,7 +33,8 @@ namespace {
 // unbounded handle growth with tiny entries.
 static size_t kMaxCacheEntries = 2000;
 
-constexpr base::TimeDelta kOldEntryCutoffTimeDelta = base::Seconds(30);
+constexpr base::TimeDelta kOldEntryCutoffTimeDelta = base::Seconds(25);
+constexpr base::TimeDelta kOldEntryPruneInterval = base::Seconds(30);
 
 // Alias the image entry to its skia counterpart, taking ownership of the
 // memory and preventing double counting.
@@ -52,19 +53,18 @@ void DumpMemoryForImageTransferCacheEntry(
                   MemoryAllocatorDump::kUnitsBytes, entry->CachedSize());
 
   GrBackendTexture image_backend_texture;
-  if (!SkImages::GetBackendTextureFromImage(
+  if (SkImages::GetBackendTextureFromImage(
           entry->image(), &image_backend_texture,
           false /* flushPendingGrContextIO */)) {
-    return;
-  }
-  GrGLTextureInfo info;
-  if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
-    auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
-    pmd->CreateSharedGlobalAllocatorDump(guid);
-    // Importance of 3 gives this dump priority over the dump made by Skia
-    // (importance 2), attributing memory here.
-    const int kImportance = 3;
-    pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+    GrGLTextureInfo info;
+    if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
+      auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
+      pmd->CreateSharedGlobalAllocatorDump(guid);
+      // Importance of 3 gives this dump priority over the dump made by Skia
+      // (importance 2), attributing memory here.
+      const int kImportance = 3;
+      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+    }
   }
 }
 
@@ -111,19 +111,18 @@ void DumpMemoryForYUVImageTransferCacheEntry(
     // getBackendTexture() would end up flattening them to RGB, which is
     // undesirable.
     GrBackendTexture image_backend_texture;
-    if (!SkImages::GetBackendTextureFromImage(
+    if (SkImages::GetBackendTextureFromImage(
             entry->GetPlaneImage(i), &image_backend_texture,
             false /* flushPendingGrContextIO */)) {
-      return;
-    }
-    GrGLTextureInfo info;
-    if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
-      auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
-      pmd->CreateSharedGlobalAllocatorDump(guid);
-      // Importance of 3 gives this dump priority over the dump made by Skia
-      // (importance 2), attributing memory here.
-      const int kImportance = 3;
-      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+      GrGLTextureInfo info;
+      if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
+        auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
+        pmd->CreateSharedGlobalAllocatorDump(guid);
+        // Importance of 3 gives this dump priority over the dump made by Skia
+        // (importance 2), attributing memory here.
+        const int kImportance = 3;
+        pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+      }
     }
   }
 }
@@ -302,7 +301,7 @@ void ServiceTransferCache::MaybePostPruneOldEntries() {
     request_post_prune_old_entries_while_pending_ = true;
     return;
   }
-  prune_old_entries_timer_.Start(FROM_HERE, kOldEntryCutoffTimeDelta, this,
+  prune_old_entries_timer_.Start(FROM_HERE, kOldEntryPruneInterval, this,
                                  &ServiceTransferCache::PruneOldEntries);
 }
 

@@ -50,8 +50,8 @@ class CONTENT_EXPORT BrowserTaskTraits {
   struct ValidTrait {
     ValidTrait(BrowserTaskType);
 
-    // TODO(1026641): Reconsider whether BrowserTaskTraits should really be
-    // supporting base::TaskPriority.
+    // TODO(crbug.com/40108370): Reconsider whether BrowserTaskTraits should
+    // really be supporting base::TaskPriority.
     ValidTrait(base::TaskPriority);
   };
 

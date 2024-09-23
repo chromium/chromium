@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 
 #include <stddef.h>
@@ -58,7 +63,7 @@ class RegistryVerifier : public PrefStore::Observer {
       : pref_registry_(pref_registry) {}
 
   // PrefStore::Observer implementation
-  void OnPrefValueChanged(const std::string& key) override {
+  void OnPrefValueChanged(std::string_view key) override {
     EXPECT_TRUE(base::Contains(*pref_registry_, key,
                                &PrefValueMap::Map::value_type::first))
         << "Unregistered key " << key << " was changed.";
@@ -91,8 +96,6 @@ class PrefStoreReadObserver : public PrefStore::Observer {
   }
 
   // PrefStore::Observer implementation
-  void OnPrefValueChanged(const std::string& key) override {}
-
   void OnInitializationCompleted(bool succeeded) override {
     if (stop_waiting_) {
       std::move(stop_waiting_).Run();

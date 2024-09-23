@@ -45,7 +45,7 @@ class BringAndroidTabsToIOSService : public KeyedService {
       segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher,
       syncer::SyncService* sync_service,
       sync_sessions::SessionSyncService* session_sync_service,
-      PrefService* browser_state_prefs);
+      PrefService* profile_prefs);
 
   BringAndroidTabsToIOSService(const BringAndroidTabsToIOSService&) = delete;
   BringAndroidTabsToIOSService& operator=(const BringAndroidTabsToIOSService&) =
@@ -95,7 +95,7 @@ class BringAndroidTabsToIOSService : public KeyedService {
       device_switcher_result_dispatcher_;
   const raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
-  const raw_ptr<PrefService> browser_state_prefs_;
+  const raw_ptr<PrefService> profile_prefs_;
   // Flag that marks whether `LoadTabs` has been invoked.
   bool load_tabs_invoked_ = false;
 

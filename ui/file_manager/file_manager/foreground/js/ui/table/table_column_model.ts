@@ -9,7 +9,8 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {type RenderFunction, TableColumn} from './table_column.js';
+import type {TableColumn} from './table_column.js';
+import {type RenderFunction} from './table_column.js';
 
 const MIMIMAL_WIDTH = 10;
 

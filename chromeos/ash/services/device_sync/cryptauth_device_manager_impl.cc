@@ -95,9 +95,9 @@ base::Value::List BeaconSeedsToListValue(
             // Set the timestamps as string representations of their numeric
             // value since there is no notion of a base::LongValue.
             .Set(kExternalDeviceKeyBeaconSeedStartMs,
-                 std::to_string(seed.start_time_millis()))
+                 base::NumberToString(seed.start_time_millis()))
             .Set(kExternalDeviceKeyBeaconSeedEndMs,
-                 std::to_string(seed.end_time_millis()));
+                 base::NumberToString(seed.end_time_millis()));
 
     list.Append(std::move(beacon_seed_value));
   }
@@ -234,7 +234,7 @@ base::Value::Dict UnlockKeyToDictionary(
 
   if (device.has_last_update_time_millis()) {
     dictionary.Set(kExternalDeviceKeyLastUpdateTimeMillis,
-                   std::to_string(device.last_update_time_millis()));
+                   base::NumberToString(device.last_update_time_millis()));
   }
 
   if (device.has_device_type() &&
@@ -443,7 +443,7 @@ bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
     }
   }
 
-  // TODO(crbug.com/848477): Migrate |unlockable| into
+  // TODO(crbug.com/40578817): Migrate |unlockable| into
   // |supported_software_features|.
   std::optional<bool> unlockable =
       dictionary.FindBool(kExternalDeviceKeyUnlockable);

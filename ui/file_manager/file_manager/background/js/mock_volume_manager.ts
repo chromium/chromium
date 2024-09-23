@@ -253,19 +253,6 @@ export class MockVolumeManager extends VolumeManager {
     throw new Error('Not implemented');
   }
 
-  override addEventListener(_type: string, _handler: any) {
-    throw new Error('Not implemented');
-  }
-
-  override removeEventListener(_type: string, _handler: any) {
-    throw new Error('Not implemented');
-  }
-
-  override dispatchEvent(_event: Event): boolean {
-    throw new Error('Not implemented');
-  }
-
-
   override hasDisabledVolumes(): boolean {
     return false;
   }

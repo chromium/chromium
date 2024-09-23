@@ -10,7 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -76,7 +75,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   JsonPrefStore& operator=(const JsonPrefStore&) = delete;
 
   // PrefStore overrides:
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
@@ -85,16 +84,17 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   bool IsInitializationComplete() const override;
 
   // PersistentPrefStore overrides:
-  bool GetMutableValue(const std::string& key, base::Value** result) override;
-  void SetValue(const std::string& key,
+  bool GetMutableValue(std::string_view key, base::Value** result) override;
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override;
-  void SetValueSilently(const std::string& key,
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override;
-  void RemoveValue(const std::string& key, uint32_t flags) override;
+  void RemoveValue(std::string_view key, uint32_t flags) override;
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
+  bool HasReadErrorDelegate() const override;
   // Note this method may be asynchronous if this instance has a |pref_filter_|
   // in which case it will return PREF_READ_ERROR_ASYNCHRONOUS_TASK_INCOMPLETE.
   // See details in pref_filter.h.
@@ -105,15 +105,16 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
       base::OnceClosure synchronous_done_callback =
           base::OnceClosure()) override;
   void SchedulePendingLossyWrites() override;
-  void ReportValueChanged(const std::string& key, uint32_t flags) override;
+  void ReportValueChanged(std::string_view key, uint32_t flags) override;
 
   // Just like RemoveValue(), but doesn't notify observers. Used when doing some
   // cleanup that shouldn't otherwise alert observers.
-  void RemoveValueSilently(const std::string& key, uint32_t flags);
+  void RemoveValueSilently(std::string_view key, uint32_t flags);
 
   // Just like RemoveValue(), but removes all the prefs that start with
   // |prefix|. Used for pref-initialization cleanup.
-  void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+  void RemoveValuesByPrefixSilently(std::string_view prefix) override;
+
   // Registers |on_next_successful_write_reply| to be called once, on the next
   // successful write event of |writer_|.
   // |on_next_successful_write_reply| will be called on the thread from which
@@ -200,9 +201,10 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   base::ImportantFileWriter writer_;
 
   std::unique_ptr<PrefFilter> pref_filter_;
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 
-  std::unique_ptr<ReadErrorDelegate> error_delegate_;
+  // Optional so we can differentiate `nullopt` from `nullptr`.
+  std::optional<std::unique_ptr<ReadErrorDelegate>> error_delegate_;
 
   bool initialized_;
   bool filtering_in_progress_;

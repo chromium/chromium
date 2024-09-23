@@ -34,7 +34,6 @@
 #include <optional>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

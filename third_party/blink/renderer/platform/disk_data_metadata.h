@@ -46,7 +46,7 @@ class PLATFORM_EXPORT ReservedChunk {
   std::unique_ptr<DiskDataMetadata> Take();
 
  private:
-  raw_ptr<DiskDataAllocator, ExperimentalRenderer> allocator_;
+  raw_ptr<DiskDataAllocator> allocator_;
   std::unique_ptr<DiskDataMetadata> metadata_;
 };
 

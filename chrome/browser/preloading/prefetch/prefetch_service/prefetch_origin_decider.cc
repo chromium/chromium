@@ -80,7 +80,7 @@ void PrefetchOriginDecider::LoadFromPrefs() {
     if (!url_origin.is_valid()) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -88,7 +88,7 @@ void PrefetchOriginDecider::LoadFromPrefs() {
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

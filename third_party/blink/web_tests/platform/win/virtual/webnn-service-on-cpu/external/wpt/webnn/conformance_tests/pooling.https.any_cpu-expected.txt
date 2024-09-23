@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] averagePool2d float32 4D tensor options.padding
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 41.94932556152344 should be close enough to expected 52.43666076660156 by the acceptable 27 ULP distance, but they have 2749192 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+[FAIL] averagePool2d float32 4D tensor options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': The output tensor size does not match graph's expectation: averagePool2dOutput"
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': The output tensor size does not match graph's expectation: averagePool2dOutput"
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': The output tensor size does not match graph's expectation: averagePool2dOutput"
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 4736288 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.dilations with options.strides
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 28.626827239990234 should be close enough to expected 42.940242767333984 by the acceptable 11 ULP distance, but they have 4636433 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor default all positive options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor default all negative options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.windowDimensions
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.padding
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.strides
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.layout=nchw
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.layout=nhwc
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] l2Pool2d float32 4D tensor options.dilations with options.strides
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'l2Pool2d' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] maxPool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
+[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': The output tensor size does not match graph's expectation: maxPool2dOutput"
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': The output tensor size does not match graph's expectation: maxPool2dOutput"
+Harness: the test ran to completion.
+

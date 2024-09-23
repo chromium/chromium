@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'RichAnswerTemplateProto';
+
+package omnibox;
+
+import "answer_data.proto";
+
+// Template to render the standard Rich Answer.
+// https://screenshot.googleplex.com/4D9edMcdf5g6jVL
+// https://screenshot.googleplex.com/39rLx6HNPw4GWfL
+// Next ID: 11
+message RichAnswerTemplate {
+  // Although multiple answers can be represented, we can assume there will only
+  // be one answer.
+  repeated AnswerData answers = 6;
+  optional FormattedString attribution = 7;
+  optional SuggestionEnhancements enhancements = 5;
+
+  reserved 1 to 4, 10;
+}
+
+message SuggestionEnhancements {
+  repeated SuggestionEnhancement enhancements = 1;
+
+  reserved 2;
+}
+
+message SuggestionEnhancement {
+  // Display text for this enhancement.
+  optional string display_text = 1;
+
+  // Query executed when this enhancement is selected. The query should be fully
+  // formed, and not rely on its parent suggestion's suggestion.
+  optional string query = 2;
+
+  // Extra URL params that should accompany the query.
+  map<string, string> query_cgi_params = 5;
+
+  reserved 4, 6, 8 to 12, 14;
+}

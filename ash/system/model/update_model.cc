@@ -48,8 +48,12 @@ void UpdateModel::SetShowEolNotice(bool show) {
   show_eol_notice_ = show;
 }
 
+void UpdateModel::SetShowExtendedUpdatesNotice(bool show) {
+  show_extended_updates_notice_ = show;
+}
+
 UpdateSeverity UpdateModel::GetSeverity() const {
-  // TODO(https://crbug.com/927010): adjust severity according the amount of
+  // TODO(crbug.com/41438408): adjust severity according the amount of
   // time passing after update is available over cellular connection. Use low
   // severity for update available over cellular connection.
   return update_over_cellular_available_ ? UpdateSeverity::kLow : severity_;

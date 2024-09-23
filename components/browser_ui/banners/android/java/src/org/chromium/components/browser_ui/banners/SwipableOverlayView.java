@@ -444,13 +444,13 @@ public abstract class SwipableOverlayView extends FrameLayout {
     }
 
     /**
-     * Override gatherTransparentRegion to make this view's layout a placeholder for its
-     * animations. This is only called during layout, so it doesn't really make sense to apply
-     * post-layout properties like it does by default. Together with setWillNotDraw(false),
-     * this ensures no child animation within this view's layout will be clipped by a SurfaceView.
+     * Override gatherTransparentRegion to make this view's layout a placeholder for its animations.
+     * This is only called during layout, so it doesn't really make sense to apply post-layout
+     * properties like it does by default. Together with setWillNotDraw(false), this ensures no
+     * child animation within this view's layout will be clipped by a SurfaceView.
      */
     @Override
-    // TODO(crbug.com/1231201): work out why this is causing a lint error
+    // TODO(crbug.com/40779510): work out why this is causing a lint error
     @SuppressWarnings("Override")
     public boolean gatherTransparentRegion(Region region) {
         float translationY = getTranslationY();

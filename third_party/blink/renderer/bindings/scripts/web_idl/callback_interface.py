@@ -62,6 +62,12 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
             self.operations = operations
             self.operation_groups = []
 
+            self.inherited = None
+            self.direct_subclasses = []
+            self.subclasses = []
+            self.tag = None
+            self.max_subclass_tag = None
+
         def iter_all_members(self):
             list_of_members = [
                 self.constants,
@@ -98,6 +104,8 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
                            owner=self)
             for operation_group_ir in ir.operation_groups
         ])
+        self._tag = ir.tag
+        self._max_subclass_tag = ir.max_subclass_tag
 
     @property
     def attributes(self):
@@ -138,6 +146,16 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
     def operation_groups(self):
         """Returns groups of overloaded operations."""
         return self._operation_groups
+
+    @property
+    def tag(self):
+        """Returns a tag integer or None."""
+        return self._tag
+
+    @property
+    def max_subclass_tag(self):
+        """Returns a tag integer or None."""
+        return self._max_subclass_tag
 
     # UserDefinedType overrides
     @property

@@ -1,0 +1,50 @@
+caption: Set the default policy value for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s covered generative AI features
+
+desc: |-
+  This policy defines the default setting for all covered generative AI features. For example, if this policy is set to value 1, then 1 will be the default setting for all covered generative AI features. It will not impact any manually set policy values. See https://support.google.com/chrome/a?p=generative_ai_settings for the list of covered features.
+
+  0 = Allows the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
+
+  1 = Allows the feature to be used, but does not allow Google to improve models using users' content (including prompts, inputs, outputs, source materials, and written feedback). 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph> and for Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
+
+  2 = Disable the feature.
+
+  If a covered feature does not have an equivalent policy value, the closest higher value will be used. Please review documentation for that feature for more details about how it interacts with values in this policy.
+
+  For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings
+
+default: 0
+default_for_enterprise_users: 1
+example_value: 2
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow GenAI features and improve AI models
+  name: Allowed
+  value: 0
+- caption: Allow GenAI features without improving AI models
+  name: AllowedWithoutLogging
+  value: 1
+- caption: Do not allow GenAI features
+  name: Disabled
+  value: 2
+owners:
+- igorruvinov@chromium.org
+- file://components/policy/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+supported_on:
+- android:130-
+- chrome.*:130-
+- chrome_os:130-
+- ios:130-
+tags: []
+type: int-enum

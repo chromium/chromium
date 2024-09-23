@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -28,7 +29,9 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     case kPseudoIdViewTransition:
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionGroup:
-      return pseudo_id == kPseudoIdViewTransitionImagePair;
+      return pseudo_id == kPseudoIdViewTransitionImagePair ||
+             (pseudo_id == kPseudoIdViewTransitionGroup &&
+              RuntimeEnabledFeatures::NestedViewTransitionEnabled());
     case kPseudoIdViewTransitionImagePair:
       return pseudo_id == kPseudoIdViewTransitionOld ||
              pseudo_id == kPseudoIdViewTransitionNew;
@@ -36,7 +39,7 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     case kPseudoIdViewTransitionNew:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -64,6 +67,11 @@ ViewTransitionPseudoElementBase::CustomStyleForLayoutObject(
 void ViewTransitionPseudoElementBase::Trace(Visitor* visitor) const {
   PseudoElement::Trace(visitor);
   visitor->Trace(style_tracker_);
+}
+
+bool ViewTransitionPseudoElementBase::IsBoundTo(
+    const blink::ViewTransitionStyleTracker* tracker) const {
+  return style_tracker_.Get() == tracker;
 }
 
 }  // namespace blink

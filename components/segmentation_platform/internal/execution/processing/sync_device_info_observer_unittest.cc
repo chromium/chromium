@@ -47,10 +47,16 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       kLocalDeviceFormFactor, "device_id", "manufacturer_name", "model_name",
       "full_hardware_class", last_updated,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      /*send_tab_to_self_receiving_enabled=*/false, std::nullopt,
+      /*send_tab_to_self_receiving_enabled=*/
+      false,
+      /*send_tab_to_self_receiving_type=*/
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet());
+      /*interested_data_types=*/syncer::DataTypeSet(),
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
 scoped_refptr<InputContext> CreateInputContext() {

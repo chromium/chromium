@@ -35,8 +35,24 @@ class LoadtimesExtensionBindingsTest : public InProcessBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest, LoadTimesSetup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL plain_url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      contents, "typeof(window.chrome.loadTimes().requestTime) === 'number'"));
+  ASSERT_TRUE(content::ExecJs(
+      contents,
+      "typeof(window.chrome.loadTimes().connectionInfo) === 'string'"));
+  ASSERT_TRUE(content::ExecJs(contents,
+                              "typeof(window.chrome.csi().tran) === 'number'"));
+}
+
+// TODO: crbug.com/329102379 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
-                       LoadTimesSameAfterClientInDocNavigation) {
+                       DISABLED_LoadTimesSameAfterClientInDocNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL plain_url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
@@ -51,8 +67,9 @@ IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
   CompareBeforeAndAfter();
 }
 
+// TODO: crbug.com/329102379 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
-                       LoadTimesSameAfterUserInDocNavigation) {
+                       DISABLED_LoadTimesSameAfterUserInDocNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL plain_url = embedded_test_server()->GetURL("/simple.html");
   GURL hash_url(plain_url.spec() + "#");

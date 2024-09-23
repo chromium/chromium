@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browsing_data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,13 +54,17 @@ public class BrowsingDataCounterBridge {
     }
 
     @CalledByNative
-    private void onBrowsingDataCounterFinished(String result) {
+    private void onBrowsingDataCounterFinished(@JniType("std::u16string") String result) {
         mCallback.onCounterFinished(result);
     }
 
     @NativeMethods
     interface Natives {
-        long init(BrowsingDataCounterBridge caller, Profile profile, int dataType, int prefType);
+        long init(
+                BrowsingDataCounterBridge caller,
+                @JniType("Profile*") Profile profile,
+                int dataType,
+                int prefType);
 
         void destroy(long nativeBrowsingDataCounterBridge, BrowsingDataCounterBridge caller);
     }

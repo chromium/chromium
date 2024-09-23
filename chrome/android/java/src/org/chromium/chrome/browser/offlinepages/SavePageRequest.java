@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.offlinepages;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 /** Data class representing an underlying request to save a page later. */
 @JNINamespace("offline_pages::android")
@@ -22,11 +23,11 @@ public class SavePageRequest {
     /**
      * Creates a SavePageRequest that's a copy of the C++ side version.
      *
-     * NOTE: This does not mirror all fields so it cannot be used to create a full SavePageRequest
-     * on its own.
+     * <p>NOTE: This does not mirror all fields so it cannot be used to create a full
+     * SavePageRequest on its own.
      *
-     * @param savePageResult Result of the saving. Uses
-     *     {@see org.chromium.components.offlinepages.RequestState} enum.
+     * @param savePageResult Result of the saving. Uses {@see
+     *     org.chromium.components.offlinepages.RequestState} enum.
      * @param requestId The unique ID of the request.
      * @param url The URL to download
      * @param clientIdNamespace a String that will be the namespace of the client ID of this
@@ -37,10 +38,10 @@ public class SavePageRequest {
     public static SavePageRequest create(
             int state,
             long requestId,
-            String url,
-            String clientIdNamespace,
-            String clientIdId,
-            String originString,
+            @JniType("std::string") String url,
+            @JniType("std::string") String clientIdNamespace,
+            @JniType("std::string") String clientIdId,
+            @JniType("std::string") String originString,
             int autoFetchNotificationState) {
         return new SavePageRequest(
                 state,

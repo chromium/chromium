@@ -70,7 +70,7 @@ void WebSubThread::Run(base::RunLoop* run_loop) {
       IOThreadRun(run_loop);
       return;
     case WebThread::ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -86,16 +86,12 @@ void WebSubThread::CleanUp() {
 
 void WebSubThread::UIThreadRun(base::RunLoop* run_loop) {
   Thread::Run(run_loop);
-  // Inhibit tail calls of Run and inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
 }
 
 void WebSubThread::IOThreadRun(base::RunLoop* run_loop) {
   Thread::Run(run_loop);
-  // Inhibit tail calls of Run and inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
 }
 
 }  // namespace web

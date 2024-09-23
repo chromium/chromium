@@ -84,7 +84,7 @@ Status UnwrapKey(blink::WebCryptoKeyFormat format,
 
 Status DeriveBits(const blink::WebCryptoAlgorithm& algorithm,
                   const blink::WebCryptoKey& base_key,
-                  unsigned int length_bits,
+                  std::optional<unsigned int> length_bits,
                   std::vector<uint8_t>* derived_bytes);
 
 // Derives a key by calling the underlying deriveBits/getKeyLength/importKey

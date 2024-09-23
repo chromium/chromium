@@ -23,9 +23,12 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/hash/sha1.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -42,6 +45,10 @@
 #include "net/http/http_transaction_factory.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace net {
 
@@ -173,21 +180,21 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   HttpTransactionFactory* network_layer() { return network_layer_.get(); }
 
+  using GetBackendResult = std::pair<int, raw_ptr<disk_cache::Backend>>;
+  using GetBackendCallback = base::OnceCallback<void(GetBackendResult)>;
   // Retrieves the cache backend for this HttpCache instance. If the backend
-  // is not initialized yet, this method will initialize it. The return value is
-  // a network error code, and it could be ERR_IO_PENDING, in which case the
-  // `callback` will be notified when the operation completes. The pointer that
-  // receives the `backend` must remain valid until the operation completes.
+  // is not initialized yet, this method will initialize it. The integer portion
+  // of the return value is a network error code, and it could be
+  // ERR_IO_PENDING, in which case the `callback` will be notified when the
+  // operation completes.
   // `callback` will get cancelled if the HttpCache is destroyed.
-  int GetBackend(disk_cache::Backend** backend,
-                 CompletionOnceCallback callback);
+  GetBackendResult GetBackend(GetBackendCallback callback);
 
   // Returns the current backend (can be NULL).
   disk_cache::Backend* GetCurrentBackend() const;
 
   // Given a header data blob, convert it to a response info object.
-  static bool ParseResponseInfo(const char* data,
-                                int len,
+  static bool ParseResponseInfo(base::span<const uint8_t> data,
                                 HttpResponseInfo* response_info,
                                 bool* response_truncated);
 
@@ -208,11 +215,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void CloseIdleConnections(const char* net_log_reason_utf8);
 
   // Called whenever an external cache in the system reuses the resource
-  // referred to by |url| and |http_method| and |network_isolation_key|.
+  // referred to by `url`, `http_method`, `network_isolation_key`, and
+  // `include_credentials`.
   void OnExternalCacheHit(const GURL& url,
                           const std::string& http_method,
                           const NetworkIsolationKey& network_isolation_key,
-                          bool is_subframe_document_resource,
                           bool include_credentials);
 
   // Causes all transactions created after this point to simulate lock timeout
@@ -255,18 +262,40 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
 
-  // Generates the cache key for a request. Returns nullopt if the cache is
-  // configured to be split by the NetworkIsolationKey, and the
-  // NetworkIsolationKey is transient, in which case nothing should generally be
-  // stored to disk.
-  static std::optional<std::string> GenerateCacheKey(
-      const GURL& url,
-      int load_flags,
-      const NetworkIsolationKey& network_isolation_key,
-      int64_t upload_data_identifier,
-      bool is_subframe_document_resource);
+  // Generates the cache key for a request.
   static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
+
+  enum class ExperimentMode {
+    // No additional partitioning is done for top-level navigations.
+    kStandard,
+    // A boolean is incorporated into the cache key that is true for
+    // renderer-initiated main frame navigations when the request initiator site
+    // is cross-site to the URL being navigated to.
+    kCrossSiteInitiatorBoolean,
+    // The request initiator site is incorporated into the cache key for
+    // renderer-initiated main frame navigations when the request initiator site
+    // is cross-site to the URL being navigated to. If the request initiator
+    // site is opaque, then no caching is performed of the navigated-to
+    // document.
+    kMainFrameNavigationInitiator,
+    // The request initiator site is incorporated into the cache key for all
+    // renderer-initiated navigations (including subframe navigations) when the
+    // request initiator site is cross-site to the URL being navigated to. If
+    // the request initiator site is opaque, then no caching is performed of the
+    // navigated-to document. When this scheme is used, the
+    // `is-subframe-document-resource` boolean is not incorporated into the
+    // cache key, since incorporating the initiator site for subframe
+    // navigations
+    // should be sufficient for mitigating the attacks that the
+    // `is-subframe-document-resource` mitigates.
+    kNavigationInitiator,
+  };
+
+  // Returns the HTTP Cache partitioning experiment mode currently in use. Only
+  // one experiment mode feature flag should be enabled at a time, but if
+  // multiple are enabled then `ExperimentMode::kStandard` will be returned.
+  static ExperimentMode GetExperimentMode();
 
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP
@@ -323,8 +352,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   FRIEND_TEST_ALL_PREFIXES(HttpCacheTest_SplitCacheFeatureEnabled,
                            SplitCacheUsesRegistrableDomain);
 
-  using TransactionList = std::list<Transaction*>;
-  using TransactionSet = std::unordered_set<Transaction*>;
+  using TransactionList = std::list<raw_ptr<Transaction, CtnExperimental>>;
+  using TransactionSet =
+      std::unordered_set<raw_ptr<Transaction, CtnExperimental>>;
   typedef std::list<std::unique_ptr<WorkItem>> WorkItemList;
 
   // We implement a basic reader/writer lock for the disk cache entry. If there
@@ -491,20 +521,37 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Methods ------------------------------------------------------------------
 
+  // Returns whether a request can be cached. Certain types of requests can't or
+  // shouldn't be cached, such as requests with a transient NetworkIsolationKey
+  // (when network state partitioning is enabled) or requests with an opaque
+  // initiator (for HTTP cache experiment partition schemes that incorporate the
+  // initiator into the cache key).
+  static bool CanGenerateCacheKeyForRequest(const HttpRequestInfo* request);
+
+  // Generates a cache key given the various pieces used to construct the key.
+  // Must not be called if a corresponding `CanGenerateCacheKeyForRequest`
+  // returns false.
+  static std::string GenerateCacheKey(
+      const GURL& url,
+      int load_flags,
+      const NetworkIsolationKey& network_isolation_key,
+      int64_t upload_data_identifier,
+      bool is_subframe_document_resource,
+      bool is_mainframe_navigation,
+      std::optional<url::Origin> initiator);
+
   // Creates a WorkItem and sets it as the |pending_op|'s writer, or adds it to
   // the queue if a writer already exists.
-  net::Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
-                                  Transaction* transaction,
-                                  WorkItemOperation operation,
-                                  PendingOp* pending_op);
+  Error CreateAndSetWorkItem(scoped_refptr<ActiveEntry>* entry,
+                             Transaction* transaction,
+                             WorkItemOperation operation,
+                             PendingOp* pending_op);
 
   // Creates the `disk_cache_` object and notifies the `callback` when the
   // operation completes. Returns an error code.
   int CreateBackend(CompletionOnceCallback callback);
 
-  void ReportGetBackendResult(disk_cache::Backend** backend,
-                              CompletionOnceCallback callback,
-                              int net_error);
+  void ReportGetBackendResult(GetBackendCallback callback, int net_error);
 
   // Makes sure that the backend creation is complete before allowing the
   // provided transaction to use the object. Returns an error code.
@@ -533,7 +580,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // isolation key.
   void DoomMainEntryForUrl(const GURL& url,
                            const NetworkIsolationKey& isolation_key,
-                           bool is_subframe_document_resource);
+                           bool is_subframe_document_resource,
+                           bool is_main_frame_navigation,
+                           const std::optional<url::Origin>& initiator);
 
   // Returns if there is an entry that is currently in use and not doomed, or
   // NULL.
@@ -667,6 +716,17 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   bool RemovePendingTransactionFromPendingOp(PendingOp* pending_op,
                                              Transaction* transaction);
 
+  // Notes that `key` led to receiving a no-store response.
+  // Stored keys rotate out in an LRU fashion so there is no guarantee that keys
+  // are accounted for throughout the lifetime of this class.
+  void MarkKeyNoStore(const std::string& key);
+
+  // Returns true if the `key` is has probably led to a no-store response.
+  // Collisions are possible so this function should not be used to make
+  // decisions that affect correctness. A correct use is to use the information
+  // to avoid attempting creating cache entries uselessly.
+  bool DidKeyLeadToNoStoreResponse(const std::string& key);
+
   // Events (called via PostTask) ---------------------------------------------
 
   void OnProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry);
@@ -738,6 +798,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // A clock that can be swapped out for testing.
   raw_ptr<base::Clock> clock_;
+
+  // Used to track which keys led to a no-store response.
+  base::LRUCacheSet<base::SHA1Digest> keys_marked_no_store_;
 
   THREAD_CHECKER(thread_checker_);
 

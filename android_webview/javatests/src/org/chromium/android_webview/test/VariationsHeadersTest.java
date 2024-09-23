@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -21,6 +23,7 @@ import org.chromium.components.variations.VariationsSwitches;
 /** Tests that the variations headers are correctly set. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @CommandLineFlags.Add({
     VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
     VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"

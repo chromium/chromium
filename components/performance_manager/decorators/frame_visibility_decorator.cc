@@ -6,6 +6,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 
 namespace performance_manager {
 
@@ -38,12 +39,13 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
 
   // Too early in the frame's lifecycle, don't know yet if it intersects with
   // the viewport. Can't determine the visibility.
-  if (!frame_node->IntersectsViewport().has_value()) {
+  if (!frame_node->GetViewportIntersectionState().has_value()) {
     return FrameNode::Visibility::kUnknown;
   }
 
   // The frame intersects with the viewport and is thus visible.
-  if (frame_node->IntersectsViewport().value()) {
+  if (frame_node->GetViewportIntersectionState().value() !=
+      ViewportIntersectionState::kNotIntersecting) {
     return FrameNode::Visibility::kVisible;
   }
 
@@ -120,14 +122,30 @@ void FrameVisibilityDecorator::OnFrameNodeInitializing(
       frame_node_impl, IsPageUserVisible(frame_node_impl->page_node())));
 }
 
-void FrameVisibilityDecorator::OnIsCurrentChanged(const FrameNode* frame_node) {
-  OnFramePropertyChanged(frame_node);
+void FrameVisibilityDecorator::OnCurrentFrameChanged(
+    const FrameNode* previous_frame_node,
+    const FrameNode* current_frame_node) {
+  if (base::FeatureList::IsEnabled(features::kSeamlessRenderFrameSwap)) {
+    if (current_frame_node) {
+      OnFramePropertyChanged(current_frame_node);
+    }
+    if (previous_frame_node) {
+      OnFramePropertyChanged(previous_frame_node);
+    }
+  } else {
+    if (previous_frame_node) {
+      OnFramePropertyChanged(previous_frame_node);
+    }
+    if (current_frame_node) {
+      OnFramePropertyChanged(current_frame_node);
+    }
+  }
 }
 
-void FrameVisibilityDecorator::OnIntersectsViewportChanged(
+void FrameVisibilityDecorator::OnViewportIntersectionStateChanged(
     const FrameNode* frame_node) {
   CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
-  CHECK(frame_node->IntersectsViewport().has_value());
+  CHECK(frame_node->GetViewportIntersectionState().has_value());
   OnFramePropertyChanged(frame_node);
 }
 

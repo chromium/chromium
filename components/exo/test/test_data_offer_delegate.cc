@@ -23,4 +23,8 @@ void TestDataOfferDelegate::OnAction(DndAction dnd_action) {
   dnd_action_ = dnd_action;
 }
 
+TestSecurityDelegate* TestDataOfferDelegate::GetSecurityDelegate() const {
+  return security_delegate_.get();
+}
+
 }  // namespace exo::test

@@ -12,45 +12,91 @@
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
 // A simple delegate class for an open RFCOMM channel that forwards methods to
-// its wrapped |channel_|.
+// its wrapped `_channel`.
 @interface BluetoothRfcommChannelDelegate
     : NSObject <IOBluetoothRFCOMMChannelDelegate> {
  @private
   raw_ptr<device::BluetoothRfcommChannelMac> _channel;  // weak
+  IOBluetoothRFCOMMChannel* __strong _rfcommChannel;
+
+  // While `_rfcommChannel` is open, the delegate holds a strong reference to
+  // itself to ensure it is not destroyed before rfcommChannelClosed is
+  // received. This is a workaround for a macOS bug, see Apple Feedback report
+  // FB13705522.
+  BluetoothRfcommChannelDelegate* __strong _strongSelf;
 }
 
-- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel
+                  rfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel;
+- (void)setRfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel;
 
 @end
 
 @implementation BluetoothRfcommChannelDelegate
 
-- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel {
-  if ((self = [super init]))
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel
+                  rfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel {
+  if ((self = [super init])) {
     _channel = channel;
+    _rfcommChannel = rfcommChannel;
+  }
 
   return self;
 }
 
 - (void)rfcommChannelOpenComplete:(IOBluetoothRFCOMMChannel*)rfcommChannel
                            status:(IOReturn)error {
-  _channel->OnChannelOpenComplete(rfcommChannel, error);
+  CHECK(_rfcommChannel);
+  if (error == kIOReturnSuccess) {
+    // Keep the delegate alive until rfcommChannelClosed.
+    _strongSelf = self;
+  }
+  if (_channel) {
+    _channel->OnChannelOpenComplete(rfcommChannel, error);
+  }
 }
 
 - (void)rfcommChannelWriteComplete:(IOBluetoothRFCOMMChannel*)rfcommChannel
                             refcon:(void*)refcon
                             status:(IOReturn)error {
-  _channel->OnChannelWriteComplete(rfcommChannel, refcon, error);
+  if (_channel) {
+    _channel->OnChannelWriteComplete(rfcommChannel, refcon, error);
+  }
 }
 
 - (void)rfcommChannelData:(IOBluetoothRFCOMMChannel*)rfcommChannel
                      data:(void*)dataPointer
                    length:(size_t)dataLength {
-  _channel->OnChannelDataReceived(rfcommChannel, dataPointer, dataLength);
+  if (_channel) {
+    _channel->OnChannelDataReceived(rfcommChannel, dataPointer, dataLength);
+  }
 }
 
 - (void)rfcommChannelClosed:(IOBluetoothRFCOMMChannel*)rfcommChannel {
-  _channel->OnChannelClosed(rfcommChannel);
+  [_rfcommChannel setDelegate:nil];
+
+  // If `_channel` still exists, notify it that the channel was closed so it
+  // can release its strong references to `rfcommChannel` and the channel
+  // delegate (this object). In the typical case we expect `_channel` has
+  // already been destroyed.
+  if (_channel) {
+    _channel->OnChannelClosed(rfcommChannel);
+  }
+
+  // Remove the last owning references to the channel and delegate. After
+  // releasing `_strongSelf` this object may be destroyed, so the only safe
+  // thing to do is return.
+  _rfcommChannel = nil;
+  _strongSelf = nil;
+}
+
+- (void)resetOwner {
+  _channel = nullptr;
+}
+
+- (void)setRfcommChannel:(IOBluetoothRFCOMMChannel*)rfcommChannel {
+  CHECK(!_rfcommChannel);
+  _rfcommChannel = rfcommChannel;
 }
 
 @end
@@ -66,7 +112,11 @@ BluetoothRfcommChannelMac::BluetoothRfcommChannelMac(
 }
 
 BluetoothRfcommChannelMac::~BluetoothRfcommChannelMac() {
-  [channel_ setDelegate:nil];
+  // If `channel_` is opened, `delegate_` and `channel_` are allowed to persist
+  // until the delegate is notified that the channel has been closed. Reset the
+  // delegate's reference to this object so the delegate will not notify us
+  // for events that occur after our destruction.
+  [delegate_ resetOwner];
   [channel_ closeChannel];
 }
 
@@ -87,6 +137,7 @@ std::unique_ptr<BluetoothRfcommChannelMac> BluetoothRfcommChannelMac::OpenAsync(
                                   delegate:channel->delegate_];
   if (*status == kIOReturnSuccess) {
     channel->channel_ = rfcomm_channel;
+    [channel->delegate_ setRfcommChannel:rfcomm_channel];
   } else {
     channel.reset();
   }
@@ -102,7 +153,8 @@ void BluetoothRfcommChannelMac::SetSocket(BluetoothSocketMac* socket) {
   // Now that the socket is set, it's safe to associate a delegate, which can
   // call back to the socket.
   DCHECK(!delegate_);
-  delegate_ = [[BluetoothRfcommChannelDelegate alloc] initWithChannel:this];
+  delegate_ = [[BluetoothRfcommChannelDelegate alloc] initWithChannel:this
+                                                        rfcommChannel:channel_];
   [channel_ setDelegate:delegate_];
 }
 
@@ -139,6 +191,9 @@ void BluetoothRfcommChannelMac::OnChannelOpenComplete(
 void BluetoothRfcommChannelMac::OnChannelClosed(
     IOBluetoothRFCOMMChannel* channel) {
   DCHECK_EQ(channel_, channel);
+  channel_ = nil;
+  [delegate_ resetOwner];
+  delegate_ = nil;
   socket()->OnChannelClosed();
 }
 

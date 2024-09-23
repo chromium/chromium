@@ -45,7 +45,7 @@ std::string Course::StateToString(Course::State state) {
   if (state == Course::State::kActive) {
     return kActiveCourseState;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // ----- Courses -----

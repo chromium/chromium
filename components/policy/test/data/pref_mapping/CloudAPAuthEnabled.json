@@ -3,38 +3,14 @@
     "os": [
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "auth.cloud_ap_auth.enabled": {
-            "default_value": 0,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "CloudAPAuthEnabled": 0
-        },
-        "prefs": {
-          "auth.cloud_ap_auth.enabled": {
-            "location": "local_state",
-            "value": 0
-          }
-        }
-      },
-      {
-        "policies": {
-          "CloudAPAuthEnabled": 1
-        },
-        "prefs": {
-          "auth.cloud_ap_auth.enabled": {
-            "location": "local_state",
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auth.cloud_ap_auth.enabled",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
   }
 ]

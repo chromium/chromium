@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/message_center/fake_message_center.h"
@@ -79,7 +80,12 @@ namespace ash {
 
 class PowerNotificationControllerTest : public AshTestBase {
  public:
-  PowerNotificationControllerTest() = default;
+  PowerNotificationControllerTest(
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features =
+          {features::kBatterySaver})
+      : enabled_features_(enabled_features),
+        disabled_features_(disabled_features) {}
 
   PowerNotificationControllerTest(const PowerNotificationControllerTest&) =
       delete;
@@ -93,16 +99,23 @@ class PowerNotificationControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeaturesAndParameters(enabled_features_,
+                                                        disabled_features_);
+
     AshTestBase::SetUp();
     message_center_ = std::make_unique<MockMessageCenter>();
     controller_ =
         std::make_unique<PowerNotificationController>(message_center_.get());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
     controller_.reset();
     message_center_.reset();
+    histogram_tester_.reset();
     AshTestBase::TearDown();
+    scoped_feature_list_.reset();
   }
 
   PowerNotificationController::NotificationState notification_state() const {
@@ -140,6 +153,29 @@ class PowerNotificationControllerTest : public AshTestBase {
 
   void SetBatteryWasFull(bool full) { controller_->battery_was_full_ = full; }
 
+  void SimulateSuspend() {
+    controller_->SuspendImminent(power_manager::SuspendImminent::LID_CLOSED);
+  }
+
+  void SimulateRestart() {
+    controller_->RestartRequested(
+        power_manager::RequestRestartReason::REQUEST_RESTART_FOR_USER);
+    controller_->OnShellDestroying();
+    controller_.reset();
+  }
+
+  void SimulateShutdownByUser() {
+    controller_->ShutdownRequested(
+        power_manager::RequestShutdownReason::REQUEST_SHUTDOWN_FOR_USER);
+    controller_->OnShellDestroying();
+    controller_.reset();
+  }
+
+  void SimulateShutdownByPowerd() {
+    controller_->OnShellDestroying();
+    controller_.reset();
+  }
+
   // Returns a discharging PowerSupplyProperties more appropriate for testing.
   static PowerSupplyProperties DefaultPowerSupplyProperties() {
     PowerSupplyProperties proto;
@@ -164,41 +200,44 @@ class PowerNotificationControllerTest : public AshTestBase {
     return controller_->no_warning_percentage_;
   }
 
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+
  private:
   std::unique_ptr<MockMessageCenter> message_center_;
   std::unique_ptr<PowerNotificationController> controller_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  const std::vector<base::test::FeatureRefAndParams> enabled_features_;
+  const std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 class PowerNotificationControllerWithBatterySaverTest
     : public PowerNotificationControllerTest,
       public testing::WithParamInterface<
           features::BatterySaverNotificationBehavior> {
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
-        features::kBatterySaver);
-    PowerNotificationControllerTest::SetUp();
-  }
-
-  void TearDown() override {
-    PowerNotificationControllerTest::TearDown();
-    scoped_feature_list_.reset();
-  }
-
  public:
-  void SetExperimentArm(features::BatterySaverNotificationBehavior arm) {
-    scoped_feature_list_.reset();
-    base::FieldTrialParams parameters;
-    parameters[features::kBatterySaverNotificationBehavior.name] =
-        features::kBatterySaverNotificationBehavior.options[arm].name;
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeatureWithParameters(
-        features::kBatterySaver, parameters);
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
-  }
+  PowerNotificationControllerWithBatterySaverTest()
+      : PowerNotificationControllerTest(
+            {{features::kBatterySaver,
+              {{features::kBatterySaverNotificationBehavior.name,
+                features::kBatterySaverNotificationBehavior.options[GetParam()]
+                    .name}}}},
+            {}) {}
 
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  PowerNotificationController::NotificationState GetLowPowerNotificationState()
+      const {
+    const auto arm = features::kBatterySaverNotificationBehavior.Get();
+    CHECK(arm == GetParam());
+    switch (arm) {
+      case features::kBSMAutoEnable:
+        return PowerNotificationController::
+            NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
+
+      case features::kBSMOptIn:
+        return PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
+    }
+    NOTREACHED();
+  }
 };
 
 TEST_F(PowerNotificationControllerTest, MaybeShowUsbChargerNotification) {
@@ -587,19 +626,6 @@ TEST_F(PowerNotificationControllerTest, UpdateNotificationState) {
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        UpdateNotificationStateWithBSM) {
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
 
   // There should be no notification when we are above the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
@@ -615,7 +641,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment());
   {
     SCOPED_TRACE("Notification when percentage matches threshold");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 
@@ -623,7 +649,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("Notification persists at lower values");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             false, false);
   }
 
@@ -647,7 +673,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
   {
     SCOPED_TRACE(
         "Notification when previously charging, but no longer charging.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 
@@ -677,28 +703,12 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        StickyOptStatusOnChargerUnplugHonorNoInput) {
-  SetExperimentArm(GetParam());
-
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
-
   // Show Battery Saver notification by going below the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("'Turning on BSM' Notification should appear.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
     const Notification* notification =
         message_center()->FindVisibleNotificationById("battery");
@@ -728,35 +738,19 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
     SCOPED_TRACE(
         "'Turning on BSM' Notification should reappear due to charger "
         "unplugged.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
   }
 }
 
 TEST_P(PowerNotificationControllerWithBatterySaverTest,
        StickyOptStatusOnChargerUnplugHonorViaButton) {
-  SetExperimentArm(GetParam());
-
-  PowerNotificationController::NotificationState low_power_notification_state;
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kBSMAutoEnable:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
-      break;
-    case features::kBSMOptIn:
-      low_power_notification_state =
-          PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN;
-      break;
-    default:
-      FAIL();
-  }
-
   // Show Battery Saver notification by going below the threshold.
   PowerSupplyProperties battery_saver_low = DefaultPowerSupplyProperties();
   battery_saver_low.set_battery_percent(GetLowPowerPercentageExperiment() - 1);
   {
     SCOPED_TRACE("'Turning on BSM' Notification should appear.");
-    UpdateNotificationState(battery_saver_low, low_power_notification_state,
+    UpdateNotificationState(battery_saver_low, GetLowPowerNotificationState(),
                             true, false);
 
     const Notification* notification =
@@ -804,6 +798,268 @@ TEST_F(PowerNotificationControllerTest, IgnoreMissingBatteryEstimates) {
   proto.set_battery_time_to_empty_sec(-1);
   UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
                           false, false);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_TimeToEmptyForCriticalState) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 0);
+
+  // Set the default power state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+
+  // Simulate setting to low power without reaching critical state, expecting no
+  // metrics emitted.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kLowPowerMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN,
+      true, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 0);
+
+  // Set conditions to trigger a critical notification and record the metrics.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, true);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 300, 1);
+
+  // Trigger another update; the state remains critical, so no additional
+  // metrics should be emitted.
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
+}
+
+TEST_F(PowerNotificationControllerTest, HistogramTest_TimeToEmptyPluggedIn) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Set the default power state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+
+  // Simulate plugging in the charger without any critical state.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Simulate unplugging the charger.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 0);
+
+  // Transition to critical state.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate plugging in the charger while in a critical state.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, true);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 300, 1);
+
+  // Trigger another update, the state remain normal, no additional metric
+  // should be emitted.
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyPluggedIn", 1);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalNotificationOutcome_PluggedIn_Suspended) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration.PluggedIn",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration.Suspended",
+      0);
+
+  // Set power state to default and simulate critical battery level.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate device being plugged into power and validate outcomes.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_AC);
+  UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
+                          false, true);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::PluggedIn, 1);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration.PluggedIn",
+      1);
+
+  // Unplug the power.
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate suspending the device.
+  SimulateSuspend();
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::Suspended, 1);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration.Suspended",
+      1);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalOutcome_UserShutdown) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "UserShutdown",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "LowBatteryShutdown",
+      0);
+
+  // Set default power state, and simulate setting to critical state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate shutdown.
+  SimulateShutdownByUser();
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::UserShutdown,
+      1);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "UserShutdown",
+      1);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "LowBatteryShutdown",
+      0);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalOutcome_RequestRestart) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+
+  // Set default power state, and simulate setting to critical state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+  // Record the NotificationShown outcome.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 1);
+
+  // Simulate restart.
+  SimulateRestart();
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 1);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalOutcome_LowBatteryShutdown) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "UserShutdown",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "LowBatteryShutdown",
+      0);
+
+  // Set the default power state and set to critical state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(5);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  // Simulate shutdown due to battery depletion and validate the expected
+  // outcome.
+  SimulateShutdownByPowerd();
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::
+          LowBatteryShutdown,
+      1);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "UserShutdown",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
+      "LowBatteryShutdown",
+      1);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalOutcome_Notificationshown) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+
+  // Set the default power state and set to critical state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(5);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::
+          NotificationShown,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -4,6 +4,8 @@
 
 #include "components/media_message_center/media_notification_view_impl.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,6 +27,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -113,6 +116,10 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF8(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+
   if (is_cros_)
     CreateCrOSHeaderRow(std::move(header_row_controls_view));
   else
@@ -121,6 +128,13 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   // |main_row_| holds the main content of the notification.
   auto main_row = std::make_unique<views::View>();
   main_row_ = AddChildView(std::move(main_row));
+
+  // TODO(crbug.com/40232718): `main_row_` sets the flex property in
+  // `UpdateViewForExpandedState`, which means it will always satisfy the
+  // constraints passed in during the CalculatePreferredSize phase. So we set it
+  // here to not require constraints. If possible, consider removing the
+  // following flex property
+  main_row_->SetLayoutManagerUseConstrainedSpace(false);
 
   // |title_artist_row_| contains the title and artist labels.
   auto title_artist_row = std::make_unique<views::View>();
@@ -330,19 +344,6 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   UpdateViewForExpandedState();
 }
 
-void MediaNotificationViewImpl::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
-
-  if (!GetAccessibleName().empty()) {
-    node_data->SetNameChecked(GetAccessibleName());
-  }
-}
-
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
   bool playing =
@@ -389,7 +390,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
 
-  SetAccessibleName(GetAccessibleNameFromMetadata(metadata));
+  GetViewAccessibility().SetName(GetAccessibleNameFromMetadata(metadata));
 
   // The title label should only be a11y-focusable when there is text to be
   // read.
@@ -597,7 +598,7 @@ void MediaNotificationViewImpl::CreateMediaButton(
                           base::Unretained(this), button.get()));
   button->set_tag(static_cast<int>(action));
   button->SetPreferredSize(is_cros_ ? kCrOSMediaButtonSize : kMediaButtonSize);
-  button->SetAccessibleName(accessible_name);
+  button->GetViewAccessibility().SetName(accessible_name);
   button->SetTooltipText(accessible_name);
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   button->SetFlipCanvasOnPaintForRTLUI(false);
@@ -792,7 +793,7 @@ MediaNotificationViewImpl::GetButtons() {
   buttons.insert(buttons.cbegin(),
                  playback_button_container_->children().cbegin(),
                  playback_button_container_->children().cend());
-  base::EraseIf(buttons, [](views::View* view) {
+  std::erase_if(buttons, [](views::View* view) {
     return !(views::IsViewClass<views::ImageButton>(view) ||
              views::IsViewClass<views::ToggleImageButton>(view));
   });

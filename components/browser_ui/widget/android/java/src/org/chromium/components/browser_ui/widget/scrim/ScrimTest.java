@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -40,10 +41,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PayloadCallbackHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -52,9 +51,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ScrimTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -99,7 +95,7 @@ public class ScrimTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                     sParent = new FrameLayout(sActivity);
@@ -109,7 +105,7 @@ public class ScrimTest {
 
     @Before
     public void setupTest() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sParent.removeAllViews();
 
@@ -134,7 +130,7 @@ public class ScrimTest {
 
     @After
     public void tearDownTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.destroy());
     }
 
     @Test
@@ -150,7 +146,7 @@ public class ScrimTest {
                 MathUtils.EPSILON);
 
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
         assertScrimVisibility(false);
     }
@@ -169,7 +165,7 @@ public class ScrimTest {
                 MathUtils.EPSILON);
 
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mScrimCoordinator.hideScrim(true);
                     mScrimCoordinator.forceAnimationToFinish();
@@ -200,7 +196,7 @@ public class ScrimTest {
 
         assertScrimColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -221,7 +217,7 @@ public class ScrimTest {
         assertScrimColor(Color.GREEN);
         assertEquals(Color.GREEN, mScrimColorCallbackHelper.getOnlyPayloadBlocking().intValue());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(ScrimProperties.BACKGROUND_COLOR, Color.RED));
         assertScrimColor(Color.RED);
         assertEquals(Color.RED, mScrimColorCallbackHelper.getPayloadByIndexBlocking(1).intValue());
@@ -261,7 +257,7 @@ public class ScrimTest {
 
         int callCount = mScrimClickCallbackHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> scrimView.callOnClick());
+        ThreadUtils.runOnUiThreadBlocking(() -> scrimView.callOnClick());
         mScrimClickCallbackHelper.waitForCallback(callCount, 1);
     }
 
@@ -271,7 +267,7 @@ public class ScrimTest {
     public void testGestureDetector() throws ExecutionException, TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -291,7 +287,7 @@ public class ScrimTest {
 
         int gestureCallCount = mDelegatedEventHelper.getCallCount();
         ScrimView scrimView = mScrimCoordinator.getViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         scrimView.dispatchTouchEvent(
                                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0)));
@@ -312,7 +308,7 @@ public class ScrimTest {
     public void testAnimation_canceled() throws TimeoutException {
         showScrim(buildModel(true, false, true, Color.RED), true);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
 
         assertFalse("Animations should not be running.", mScrimCoordinator.areAnimationsRunning());
     }
@@ -333,7 +329,7 @@ public class ScrimTest {
         int callCount = mStatusBarCallbackHelper.getCallCount();
         showScrim(buildModel(true, false, true, Color.RED), false);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
 
         assertEquals(
                 "Scrim alpha should be 0.5f.",
@@ -353,7 +349,7 @@ public class ScrimTest {
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
         int callCount = mNavigationBarCallbackHelper.getCallCount();
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -378,7 +374,7 @@ public class ScrimTest {
     public void testAffectsNavigationBar_disabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -406,7 +402,7 @@ public class ScrimTest {
     public void testCustomDrawable() throws TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -430,7 +426,7 @@ public class ScrimTest {
                 customDrawable,
                 mScrimCoordinator.getViewForTesting().getBackground());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -447,7 +443,7 @@ public class ScrimTest {
     public void testTopMargin() throws TimeoutException {
         int topMargin = 100;
         PropertyModel model =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, topMargin)
@@ -489,12 +485,12 @@ public class ScrimTest {
         assertNotEquals("The view should have changed.", oldScrim, newScrim);
         assertEquals("The old scrim should be gone.", View.GONE, oldScrim.getVisibility());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.MAGENTA));
         assertScrimColor(Color.BLUE);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.GREEN));
     }
 
@@ -513,7 +509,7 @@ public class ScrimTest {
             boolean affectsStatusBar,
             boolean showInFrontOfAnchor,
             @ColorInt int color) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             new PropertyModel.Builder(
@@ -550,7 +546,7 @@ public class ScrimTest {
      */
     private void showScrim(PropertyModel model, boolean animate) throws TimeoutException {
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mScrimCoordinator.showScrim(model);
 
@@ -589,7 +585,7 @@ public class ScrimTest {
      * @param visible Whether the scrim should be visible.
      */
     private void assertScrimVisibility(final boolean visible) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (visible) {
                         assertEquals(

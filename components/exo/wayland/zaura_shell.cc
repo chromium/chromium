@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -31,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
@@ -1034,7 +1036,7 @@ void AuraToplevel::OnConfigure(
   wl_array_init(&states);
   if (state_type == chromeos::WindowStateType::kMaximized)
     AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  // TODO(crbug/1250129): Support snapped state.
+  // TODO(crbug.com/40197882): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
     // If pinned state is not yet supported, always set fullscreen.
     if (wl_resource_get_version(aura_toplevel_resource_) <
@@ -1052,7 +1054,7 @@ void AuraToplevel::OnConfigure(
         shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
             chromeos::kImmersiveImpliedByFullscreen)) {
       // Imemrsive state should NOT be set for pinned state.
-      // TODO(crbug.com/1511187): Lacros randomly enters/exits immersive state
+      // TODO(crbug.com/41483774): Lacros randomly enters/exits immersive state
       // when transitioning to pinned/unpinned state. Add CHECK to guarantee
       // `state_type` is as same as chrome::WindowStateType::kFullscreen here
       // after resolving this bug.
@@ -1267,7 +1269,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     }
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
-      const base::StringPiece ash_version = version_info::GetVersionNumber();
+      const std::string_view ash_version = version_info::GetVersionNumber();
       zaura_shell_send_compositor_version(aura_shell_resource_,
                                           ash_version.data());
     }
@@ -1286,7 +1288,9 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION) {
       const int window_corner_radius =
-          chromeos::features::RoundedWindowsRadius();
+          chromeos::features::IsRoundedWindowsEnabled()
+              ? chromeos::features::RoundedWindowsRadius()
+              : chromeos::kTopCornerRadiusWhenRestored;
 
       zaura_shell_send_window_corners_radii(
           aura_shell_resource_, window_corner_radius, window_corner_radius,
@@ -1630,7 +1634,7 @@ ui::ZOrderLevel AuraTopLevelZOrderLevel(uint32_t z_order_level) {
       return ui::ZOrderLevel::kSecuritySurface;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ZOrderLevel::kNormal;
 }
 

@@ -4,12 +4,30 @@
 
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 
+#include "base/memory/ptr_util.h"
+
 namespace blink {
 
 MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(const gfx::Size& size)
     : cc::InspectableRecordPaintCanvas(size) {}
 
+MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(
+    CreateChildCanvasTag,
+    const MemoryManagedPaintCanvas& parent)
+    : cc::InspectableRecordPaintCanvas(CreateChildCanvasTag(), parent) {}
+
 MemoryManagedPaintCanvas::~MemoryManagedPaintCanvas() = default;
+
+std::unique_ptr<MemoryManagedPaintCanvas>
+MemoryManagedPaintCanvas::CreateChildCanvas() {
+  // Using `new` to access a non-public constructor.
+  auto canvas = base::WrapUnique(
+      new MemoryManagedPaintCanvas(CreateChildCanvasTag(), *this));
+  if (!IsDrawLinesAsPathsEnabled()) {
+    canvas->DisableLineDrawingAsPaths();
+  }
+  return canvas;
+}
 
 cc::PaintRecord MemoryManagedPaintCanvas::ReleaseAsRecord() {
   cached_image_ids_.clear();

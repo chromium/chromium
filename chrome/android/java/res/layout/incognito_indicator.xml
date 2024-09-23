@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:clickable="false"
+    android:visibility="gone"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/incognito_indicator_lateral_start_padding"
+    android:paddingEnd="@dimen/incognito_indicator_lateral_end_padding"
+    android:background="@drawable/incognito_indicator_background">
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:contentDescription="@string/accessibility_incognito_badge"
+      android:src="@drawable/ic_incognito"/>
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/incognito_indicator_text_lateral_start_margin"
+      android:textAppearance="@style/TextAppearance.TextLarge.Secondary.Baseline.Light"
+      android:text="@string/incognito_badge" />
+</LinearLayout>

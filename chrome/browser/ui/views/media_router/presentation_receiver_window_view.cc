@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -40,8 +41,7 @@
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
@@ -86,11 +86,12 @@ class FullscreenWindowObserver : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override {
     if (key == aura::client::kShowStateKey) {
-      ui::WindowShowState new_state =
+      ui::mojom::WindowShowState new_state =
           window->GetProperty(aura::client::kShowStateKey);
-      ui::WindowShowState old_state = static_cast<ui::WindowShowState>(old);
-      if (old_state == ui::SHOW_STATE_FULLSCREEN ||
-          new_state == ui::SHOW_STATE_FULLSCREEN) {
+      ui::mojom::WindowShowState old_state =
+          static_cast<ui::mojom::WindowShowState>(old);
+      if (old_state == ui::mojom::WindowShowState::kFullscreen ||
+          new_state == ui::mojom::WindowShowState::kFullscreen) {
         on_fullscreen_change_.Run();
       }
     }
@@ -150,7 +151,8 @@ void PresentationReceiverWindowView::Init() {
   const auto accelerators = GetAcceleratorList();
   const auto fullscreen_accelerator = base::ranges::find(
       accelerators, IDC_FULLSCREEN, &AcceleratorMapping::command_id);
-  DCHECK(fullscreen_accelerator != accelerators.end());
+  CHECK(fullscreen_accelerator != accelerators.end(),
+        base::NotFatalUntil::M130);
   fullscreen_accelerator_ = ui::Accelerator(fullscreen_accelerator->keycode,
                                             fullscreen_accelerator->modifiers);
 #endif
@@ -167,7 +169,7 @@ void PresentationReceiverWindowView::Init() {
   // ContentSubresourceFilterThrottleManager has it as a dependency.
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
@@ -181,8 +183,7 @@ void PresentationReceiverWindowView::Init() {
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents));
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -258,13 +259,13 @@ const LocationBarModel* PresentationReceiverWindowView::GetLocationBarModel()
 
 ContentSettingBubbleModelDelegate*
 PresentationReceiverWindowView::GetContentSettingBubbleModelDelegate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PresentationReceiverWindowView::ExecuteCommandWithDisposition(
     int id,
     WindowOpenDisposition disposition) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {
@@ -299,10 +300,8 @@ void PresentationReceiverWindowView::EnterFullscreen(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   OnFullscreenChanged();
 #endif
-  UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
-                                         ExclusiveAccessBubbleHideCallback(),
-                                         /*notify_download=*/false,
-                                         /*force_update=*/false);
+  UpdateExclusiveAccessBubble({.url = url, .type = bubble_type},
+                              base::NullCallback());
 }
 
 void PresentationReceiverWindowView::ExitFullscreen() {
@@ -312,42 +311,38 @@ void PresentationReceiverWindowView::ExitFullscreen() {
 #endif
 }
 
-void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-    bool notify_download,
-    bool force_update) {
+void PresentationReceiverWindowView::UpdateExclusiveAccessBubble(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
   // button available.
-  if ((!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
-      url.is_empty()) {
+  if ((!params.has_download &&
+       params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      params.url.is_empty()) {
 #else
-  if (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
+  if (!params.has_download &&
+      params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
 #endif
     // |exclusive_access_bubble_.reset()| will trigger callback for current
     // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
     exclusive_access_bubble_.reset();
-    if (bubble_first_hide_callback) {
-      std::move(bubble_first_hide_callback)
+    if (first_hide_callback) {
+      std::move(first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
     return;
   }
 
   if (exclusive_access_bubble_) {
-    exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback),
-        notify_download, force_update);
+    exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
     return;
   }
 
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      this, url, bubble_type, notify_download,
-      std::move(bubble_first_hide_callback));
+      this, params, std::move(first_hide_callback));
 }
 
 bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
@@ -356,7 +351,8 @@ bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
 
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 
-content::WebContents* PresentationReceiverWindowView::GetActiveWebContents() {
+content::WebContents*
+PresentationReceiverWindowView::GetWebContentsForExclusiveAccess() {
   return delegate_->web_contents();
 }
 
@@ -369,10 +365,6 @@ PresentationReceiverWindowView::GetExclusiveAccessManager() {
   return &exclusive_access_manager_;
 }
 
-views::Widget* PresentationReceiverWindowView::GetBubbleAssociatedWidget() {
-  return frame_;
-}
-
 ui::AcceleratorProvider*
 PresentationReceiverWindowView::GetAcceleratorProvider() {
   return this;
@@ -380,12 +372,6 @@ PresentationReceiverWindowView::GetAcceleratorProvider() {
 
 gfx::NativeView PresentationReceiverWindowView::GetBubbleParentView() const {
   return frame_->GetNativeView();
-}
-
-gfx::Point PresentationReceiverWindowView::GetCursorPointInParent() const {
-  gfx::Point cursor_pos = display::Screen::GetScreen()->GetCursorScreenPoint();
-  views::View::ConvertPointFromScreen(GetWidget()->GetRootView(), &cursor_pos);
-  return cursor_pos;
 }
 
 gfx::Rect PresentationReceiverWindowView::GetClientAreaBoundsInScreen() const {
@@ -402,10 +388,6 @@ gfx::Rect PresentationReceiverWindowView::GetTopContainerBoundsInScreen() {
 
 void PresentationReceiverWindowView::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
-}
-
-bool PresentationReceiverWindowView::CanTriggerOnMousePointer() const {
-  return true;
 }
 
 bool PresentationReceiverWindowView::GetAcceleratorForCommandId(

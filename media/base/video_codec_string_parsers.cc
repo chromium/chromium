@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/video_codec_string_parsers.h"
+
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -456,7 +463,7 @@ std::optional<VideoType> ParseAVCCodecId(std::string_view codec_id) {
   }
   uint32_t elem = 0;
   if (codec_id.size() != 11 ||
-      !base::HexStringToUInt(base::StringPiece(codec_id).substr(5), &elem)) {
+      !base::HexStringToUInt(codec_id.substr(5), &elem)) {
     DVLOG(4) << __func__ << ": invalid avc codec id (" << codec_id << ")";
     return std::nullopt;
   }
@@ -835,7 +842,7 @@ std::optional<VideoType> ParseVVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  // TODO(crbug.com/1417910): Add VideoCodec::kVVC here when its ready.
+  // TODO(crbug.com/40257449): Add VideoCodec::kVVC here when its ready.
   VideoType result = {
       .codec = VideoCodec::kUnknown,
       .profile = out_profile,

@@ -13,30 +13,13 @@
 // * Stores the constants to avoid hardcoded strings.
 namespace prerender_utils {
 
-// This is a temporal flag added for supporting a workaround that allows
-// prerender2 to stop the location bar from the displaying prefetch flag, we
-// will turn if off after we confirm the prerendered document will handle it by
-// themselves.
-BASE_DECLARE_FEATURE(kHidePrefetchParameter);
-
 extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
 extern const char kBookmarkBarMetricSuffix[];
 extern const char kNewTabPageMetricSuffix[];
 extern const char kLinkPreviewMetricsSuffix[];
 
-bool IsDirectUrlInputPrerenderEnabled();
-
 bool IsSearchSuggestionPrerenderEnabled();
-
-bool ShouldUpdateCacheEntryManually();
-
-// Whether supporting shareable search prefetch cache. By enabling this feature,
-// prerender won't take the prefetched response away. Instead, it turns to read
-// the response stored in StreamingSearchPrefetchURLLoader.
-// Always return false if `SearchPrefetchUpgradeToPrerenderIsEnabled` returns
-// false.
-bool SearchPreloadShareableCacheIsEnabled();
 
 }  // namespace prerender_utils
 

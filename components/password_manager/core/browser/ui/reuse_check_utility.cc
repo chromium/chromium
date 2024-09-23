@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
-#include <utility>
 
 #include <unordered_map>
+#include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
@@ -65,7 +65,7 @@ bool AllUsernameAreEquivalent(
 
 bool HasOnlyAndroidApps(const CredentialUIEntry* credential) {
   return base::ranges::all_of(credential->facets, [](const auto& facet) {
-    return IsValidAndroidFacetURI(facet.signon_realm);
+    return affiliations::IsValidAndroidFacetURI(facet.signon_realm);
   });
 }
 
@@ -95,14 +95,14 @@ bool AllDomainsAreEquivalent(
     }
 
     for (const auto& facet : credential->facets) {
-      if (IsValidAndroidFacetURI(facet.signon_realm)) {
+      if (affiliations::IsValidAndroidFacetURI(facet.signon_realm)) {
         continue;
       }
 
       signon_realms.insert(facet.signon_realm);
     }
   }
-  // TODO(crbug.com/1406472): Check additionally for local networks.
+  // TODO(crbug.com/40252723): Check additionally for local networks.
   return signon_realms.size() == 1 || IsMainDomainEqual(signon_realms);
 }
 

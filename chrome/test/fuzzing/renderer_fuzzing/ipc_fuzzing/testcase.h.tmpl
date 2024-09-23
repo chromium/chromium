@@ -1,0 +1,173 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_"|format(
+        filename|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "{{mojolpm_generator_filepath}}"
+
+#include "base/functional/bind.h"
+#include "mojo/public/tools/fuzzers/mojolpm.h"
+
+class RendererTestcase
+    : public {{mojolpm_generator_classname}} {
+ public:
+  explicit RendererTestcase(
+      std::unique_ptr<ProtoTestcase> testcase,
+      const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
+      blink::ThreadSafeBrowserInterfaceBrokerProxy*
+          process_interface_broker_proxy);
+  ~RendererTestcase() override;
+
+  scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() override;
+  void SetUp(base::OnceClosure done_closure) override;
+  void TearDown(base::OnceClosure done_closure) override;
+{% for interface in context_interfaces %}
+  void HandleNew{{interface.identifier}}Action(
+      uint32_t id,
+      base::OnceClosure done_closure) override;
+{% endfor %}
+
+{% for interface in process_interfaces %}
+  void HandleNew{{interface.identifier}}Action(
+      uint32_t id,
+      base::OnceClosure done_closure) override;
+{% endfor %}
+
+ private:
+  void SetUpOnFuzzerThread(base::OnceClosure done_closure);
+  void TearDownOnFuzzerThread(base::OnceClosure done_closure);
+
+  template <typename T>
+  void NewProcessInterface(uint32_t id, base::OnceClosure done_closure);
+  template <typename T>
+  void NewContextInterface(uint32_t id, base::OnceClosure done_closure);
+
+  // This is different to the "normal" MojoLPM testcase model, since we need
+  // to also own the lifetime of the protobuf object, when it's normally owned
+  // by libfuzzer.
+  std::unique_ptr<ProtoTestcase> proto_testcase_ptr_;
+
+  // Bindings
+  raw_ptr<const blink::BrowserInterfaceBrokerProxy>
+      context_interface_broker_proxy_;
+  raw_ptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
+      process_interface_broker_proxy_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+namespace {
+
+scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunnerImpl() {
+  // XXX: This should be main thread? IO thread? Probably doesn't
+  // actually matter.
+  static scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  return fuzzer_task_runner;
+}
+
+}  // anonymous namespace
+
+{% for interface in context_interfaces %}
+void RendererTestcase::HandleNew{{interface.identifier}}Action(
+    uint32_t id,
+    base::OnceClosure done_closure) {
+  NewContextInterface<{{interface.namespace}}::{{interface.name}}>(id, std::move(done_closure));
+}
+{% endfor %}
+
+{% for interface in process_interfaces %}
+void RendererTestcase::HandleNew{{interface.identifier}}Action(
+    uint32_t id,
+    base::OnceClosure done_closure) {
+  NewProcessInterface<{{interface.namespace}}::{{interface.name}}>(id, std::move(done_closure));
+}
+{% endfor %}
+
+
+scoped_refptr<base::SequencedTaskRunner>
+RendererTestcase::GetFuzzerTaskRunner() {
+  return GetFuzzerTaskRunnerImpl();
+}
+
+RendererTestcase::RendererTestcase(
+    std::unique_ptr<ProtoTestcase> testcase,
+    const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
+    blink::ThreadSafeBrowserInterfaceBrokerProxy*
+        process_interface_broker_proxy)
+    : {{mojolpm_generator_classname}}(*testcase.get()),
+      proto_testcase_ptr_(std::move(testcase)),
+      context_interface_broker_proxy_(context_interface_broker_proxy),
+      process_interface_broker_proxy_(process_interface_broker_proxy) {
+  // RendererTestcase is created on the main thread, but the actions that
+  // we want to validate the sequencing of take place on the fuzzer sequence.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+RendererTestcase::~RendererTestcase() {}
+
+void RendererTestcase::SetUp(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GetFuzzerTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RendererTestcase::SetUpOnFuzzerThread,
+                     base::Unretained(this), std::move(done_closure)));
+}
+
+void RendererTestcase::TearDown(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  GetFuzzerTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RendererTestcase::TearDownOnFuzzerThread,
+                     base::Unretained(this), std::move(done_closure)));
+}
+
+void RendererTestcase::SetUpOnFuzzerThread(base::OnceClosure done_closure) {
+  mojolpm::GetContext()->StartTestcase();
+
+  std::move(done_closure).Run();
+}
+
+void RendererTestcase::TearDownOnFuzzerThread(base::OnceClosure done_closure) {
+  mojolpm::GetContext()->EndTestcase();
+
+  std::move(done_closure).Run();
+}
+
+template <typename T>
+void RendererTestcase::NewProcessInterface(uint32_t id,
+                                           base::OnceClosure done_closure) {
+  mojo::Remote<T> remote;
+  mojo::GenericPendingReceiver receiver = remote.BindNewPipeAndPassReceiver();
+
+  process_interface_broker_proxy_->GetInterface(std::move(receiver));
+  CHECK(remote.is_bound() && remote.is_connected());
+
+  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+
+  std::move(done_closure).Run();
+}
+
+template <typename T>
+void RendererTestcase::NewContextInterface(uint32_t id,
+                                           base::OnceClosure done_closure) {
+  mojo::Remote<T> remote;
+  mojo::GenericPendingReceiver receiver = remote.BindNewPipeAndPassReceiver();
+
+  context_interface_broker_proxy_->GetInterface(std::move(receiver));
+  CHECK(remote.is_bound() && remote.is_connected());
+
+  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+
+  std::move(done_closure).Run();
+}
+
+#endif  // {{header_guard}}

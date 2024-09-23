@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/devtools/protocol/tracing_handler.h"
 
 #include <algorithm>
@@ -29,7 +34,6 @@
 #include "base/trace_event/tracing_agent.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/devtools/devtools_stream_file.h"
@@ -51,6 +55,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -69,9 +74,7 @@ const double kMinimumReportingInterval = 250.0;
 const char kRecordModeParam[] = "record_mode";
 const char kTraceBufferSizeInKb[] = "trace_buffer_size_in_kb";
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 const char kTrackEventDataSourceName[] = "track_event";
-#endif
 
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
@@ -200,6 +203,13 @@ void FillFrameData(base::trace_event::TracedValue* data,
   data->SetString("frame", frame_host->devtools_frame_token().ToString());
   data->SetString("url", std::move(trimmed_url));
   data->SetString("name", frame_host->GetFrameName());
+  data->SetBoolean("isOutermostMainFrame", frame_host->IsOutermostMainFrame());
+  // Use FrameTree's primary status since the `frame_host` itself might not be
+  // the primary main RenderFrameHost yet, if this function is called when
+  // `frame_host` is still speculative / pending commit.
+  data->SetBoolean("isInPrimaryMainFrame",
+                   frame_host->IsOutermostMainFrame() &&
+                       frame_host->frame_tree()->is_primary());
   if (frame_host->GetParent()) {
     data->SetString(
         "parent", frame_host->GetParent()->GetDevToolsFrameToken().ToString());
@@ -231,11 +241,7 @@ StringToMemoryDumpLevelOfDetail(const std::string& str) {
 void AddPidsToProcessFilter(
     const std::unordered_set<base::ProcessId>& included_process_ids,
     perfetto::TraceConfig& trace_config) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const std::string kDataSourceName = kTrackEventDataSourceName;
-#else
-  const std::string kDataSourceName = tracing::mojom::kTraceEventDataSourceName;
-#endif
   for (auto& data_source : *(trace_config.mutable_data_sources())) {
     auto* source_config = data_source.mutable_config();
     if (source_config->name() == kDataSourceName) {
@@ -279,7 +285,6 @@ std::optional<perfetto::BackendType> GetBackendTypeFromParameters(
 // a chrome_config instead. We build a track_event_config based on the
 // chrome_config if no other track_event data sources have been configured.
 void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   for (const auto& data_source : trace_config.data_sources()) {
     if (!data_source.config().track_event_config_raw().empty()) {
       return;
@@ -299,7 +304,6 @@ void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
       return;
     }
   }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 // We currently don't support concurrent tracing sessions, but are planning to.
@@ -787,7 +791,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
 
   // Check if we should adopt the startup tracing session. Only the first
   // Tracing.start() sent to the browser endpoint can adopt it.
-  // TODO(crbug.com/1183735): Add tests for system-controlled startup traces.
+  // TODO(crbug.com/40171330): Add tests for system-controlled startup traces.
   AttemptAdoptStartupSession(return_as_stream, gzip_compression, proto_format,
                              *backend);
 
@@ -882,8 +886,8 @@ void TracingHandler::AttemptAdoptStartupSession(
   if (session_for_process_filter_) {
     return;
   }
-  auto* startup_config = tracing::TraceStartupConfig::GetInstance();
-  if (!startup_config->AttemptAdoptBySessionOwner(
+  auto& startup_config = tracing::TraceStartupConfig::GetInstance();
+  if (!startup_config.AttemptAdoptBySessionOwner(
           tracing::TraceStartupConfig::SessionOwner::kDevToolsTracingHandler)) {
     return;
   }
@@ -892,10 +896,8 @@ void TracingHandler::AttemptAdoptStartupSession(
   gzip_compression_ = gzip_compression;
   proto_format_ = proto_format;
 
-  base::trace_event::TraceConfig browser_config =
-      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
-  perfetto::TraceConfig perfetto_config = CreatePerfettoConfiguration(
-      browser_config, return_as_stream_, proto_format_);
+  perfetto::TraceConfig perfetto_config =
+      tracing::TraceStartupConfig::GetInstance().GetPerfettoConfig();
 
   session_ =
       std::make_unique<PerfettoTracingSession>(proto_format_, tracing_backend);
@@ -1116,8 +1118,9 @@ void TracingHandler::EmitFrameTree() {
     auto* frame_host =
         static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
     CHECK(frame_host);
-    data->SetInteger("frameTreeNodeId",
-                     frame_host->frame_tree_node()->frame_tree_node_id());
+    data->SetInteger(
+        "frameTreeNodeId",
+        frame_host->frame_tree_node()->frame_tree_node_id().value());
     data->SetBoolean("persistentIds", true);
     data->BeginArray("frames");
     wc->ForEachRenderFrameHost([&data](RenderFrameHost* rfh) {
@@ -1162,7 +1165,7 @@ void TracingHandler::ReadyToCommitNavigation(
   }
 }
 
-void TracingHandler::FrameDeleted(int frame_tree_node_id) {
+void TracingHandler::FrameDeleted(FrameTreeNodeId frame_tree_node_id) {
   if (!did_initiate_recording_)
     return;
   FrameTreeNode* node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
@@ -1182,7 +1185,7 @@ void TracingHandler::FrameDeleted(int frame_tree_node_id) {
 
 // static
 bool TracingHandler::IsStartupTracingActive() {
-  return ::tracing::TraceStartupConfig::GetInstance()->IsEnabled();
+  return ::tracing::TraceStartupConfig::GetInstance().IsEnabled();
 }
 
 // static

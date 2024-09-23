@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+static_library("android") {
+  sources = [
+    "facilitated_payments_api_client_android.cc",
+    "facilitated_payments_api_client_android.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/facilitated_payments/android/java:jni_headers",
+    "//components/facilitated_payments/core/browser",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "facilitated_payments_api_client_android_unittest.cc" ]
+  deps = [
+    ":android",
+    "//components/facilitated_payments/core/browser",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

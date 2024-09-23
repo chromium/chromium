@@ -84,10 +84,10 @@ class ScriptError(Exception):
         return os.path.basename(command_path)
 
 
-class Executive(object):
+class Executive:
     PIPE = subprocess.PIPE
     STDOUT = subprocess.STDOUT
-    DEVNULL = open(os.devnull, 'wb')
+    DEVNULL = subprocess.DEVNULL
 
     def __init__(self, error_output_limit=500):
         """Args:
@@ -276,6 +276,13 @@ class Executive(object):
             # It's impossible for callers to avoid race conditions with process shutdown.
             pass
 
+    def terminate(self, pid):
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            # Silently ignore when the pid doesn't exist.
+            pass
+
     # Error handlers do not need to be static methods once all callers are
     # updated to use an Executive object.
 
@@ -334,8 +341,7 @@ class Executive(object):
             timeout_seconds=None,
             error_handler=None,
             return_exit_code=False,
-            return_stderr=True,
-            ignore_stderr=False,
+            stderr=STDOUT,
             decode_output=True,
             debug_logging=True):
         """Popen wrapper for convenience and to work around python bugs.
@@ -359,21 +365,15 @@ class Executive(object):
             return_exit_code: instead of returning the program output, return
                 the exit code. Setting this makes non-zero exit codes non-fatal
                 (the error_handler will not be called).
-            return_stderr: if True, include stderr in the returned output. If
-                False, stderr will be printed to the console unless ignore_stderr
-                is also True.
-            ignore_stderr: squash stderr so it doesn't appear in the console.
+            stderr: How to handle stderr. See [0] for usage.
             decode_output: whether to decode the program output.
             debug_logging: whether to log details about program execution.
+
+        [0]: https://docs.python.org/3/library/subprocess.html#frequently-used-arguments
         """
         assert isinstance(args, list) or isinstance(args, tuple)
         start_time = time.time()
-
-        assert not (return_stderr and ignore_stderr)
         stdin, string_to_communicate = self._compute_stdin(input)
-        stderr = self.STDOUT if return_stderr else (
-            self.DEVNULL if ignore_stderr else None)
-
         process = self.popen(
             args,
             stdin=stdin,
@@ -383,20 +383,15 @@ class Executive(object):
             env=env,
             close_fds=self._should_close_fds())
 
-        output = b''
+        stdout_data, stderr_data = b'', b''
         try:
-            output, _ = process.communicate(string_to_communicate,
-                                            timeout_seconds)
+            stdout_data, stderr_data = process.communicate(
+                string_to_communicate, timeout_seconds)
         except subprocess.TimeoutExpired:
             _log.error('Error: Command timed out after %s seconds',
                        timeout_seconds)
         finally:
             process.kill()
-
-        # run_command automatically decodes to unicode() unless explicitly told not to.
-        if decode_output:
-            output = output.decode(
-                self._child_process_encoding(), errors='replace')
 
         # wait() is not threadsafe and can throw OSError due to:
         # http://bugs.python.org/issue1731717
@@ -410,14 +405,20 @@ class Executive(object):
             return exit_code
 
         if exit_code:
-            script_error = ScriptError(
-                script_args=args,
-                exit_code=exit_code,
-                output=output,
-                cwd=cwd,
-                output_limit=self.error_output_limit)
+            # `stderr_data` may be `None` if `stderr` was not `PIPE`.
+            output = stdout_data + (stderr_data or b'')
+            script_error = ScriptError(script_args=args,
+                                       exit_code=exit_code,
+                                       output=output.decode(errors='replace'),
+                                       cwd=cwd,
+                                       output_limit=self.error_output_limit)
             (error_handler or self.default_error_handler)(script_error)
-        return output
+
+        # run_command automatically decodes to str() unless explicitly told not to.
+        if decode_output:
+            return stdout_data.decode(self._child_process_encoding(),
+                                      errors='replace')
+        return stdout_data
 
     def _child_process_encoding(self):
         # Win32 Python 2.x uses CreateProcessA rather than CreateProcessW

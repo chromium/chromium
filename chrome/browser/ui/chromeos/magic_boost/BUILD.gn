@@ -1,0 +1,78 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos)
+
+source_set("magic_boost") {
+  sources = [
+    "magic_boost_card_controller.cc",
+    "magic_boost_card_controller.h",
+    "magic_boost_metrics.cc",
+    "magic_boost_metrics.h",
+    "magic_boost_opt_in_card.cc",
+    "magic_boost_opt_in_card.h",
+  ]
+  deps = [
+    ":magic_boost_constants",
+    "//base",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chrome/browser/ui/chromeos/read_write_cards",
+    "//chrome/browser/ui/views/editor_menu:utils",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
+    "//ui/color",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/magic_boost" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/mock_magic_boost_controller_crosapi.cc",
+    "test/mock_magic_boost_controller_crosapi.h",
+  ]
+
+  deps = [
+    ":magic_boost",
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//testing/gmock",
+  ]
+}
+
+source_set("magic_boost_constants") {
+  sources = [ "magic_boost_constants.h" ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/strings:strings_grit",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
+  }
+}

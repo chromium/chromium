@@ -13,12 +13,19 @@
 #include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #include "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #include "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+const char kProfileName[] = "Test";
+
+}
+
 EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
-    const base::FilePath& state_directory_path) {
+    const base::FilePath& data_dir) {
+  const base::FilePath state_directory_path = data_dir.Append(kProfileName);
   policy_provider_.SetDefaultReturns(
       true /* is_initialization_complete_return */,
       true /* is_first_policy_load_complete_return */);
@@ -53,18 +60,19 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           state_directory_path,
           base::SingleThreadTaskRunner::GetCurrentDefault().get(),
           pref_registry, browser_state_policy_connector_->GetPolicyService(),
-          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr);
+          browser_policy_connector_.get(), /*supervised_user_prefs=*/nullptr,
+          /*async=*/false);
 
-  TestChromeBrowserState::Builder builder;
-  builder.SetPath(state_directory_path);
+  TestProfileIOS::Builder builder;
+  builder.SetName(kProfileName);
   builder.SetPrefService(std::move(pref_service));
-  browser_state_ = builder.Build();
+  profile_ = std::move(builder).Build(data_dir);
 }
 
 EnterprisePolicyTestHelper::~EnterprisePolicyTestHelper() = default;
 
-TestChromeBrowserState* EnterprisePolicyTestHelper::GetBrowserState() const {
-  return browser_state_.get();
+TestProfileIOS* EnterprisePolicyTestHelper::GetProfile() const {
+  return profile_.get();
 }
 
 PrefService* EnterprisePolicyTestHelper::GetLocalState() {

@@ -55,11 +55,19 @@ class SharedImageTestBase : public testing::Test {
   GrDirectContext* gr_context();
   GrContextType gr_context_type();
 
+  // Returns true if graphite/dawn is supported for running tests.
+  bool IsGraphiteDawnSupported();
+
   // Initializes `context_state_` for `context_type`. Expected to be called as
   // part of test SetUp(). Note this function can fail with an assertion error
   // so caller should wrap call in ASSERT_NO_FATAL_FAILURE() to ensure SetUp()
   // exits on error.
   void InitializeContext(GrContextType context_type);
+
+  // Reads back pixels for each plane and verifies that pixels match
+  // corresponding bitmap from `expected_bitmaps`.
+  void VerifyPixelsWithReadback(const Mailbox& mailbox,
+                                const std::vector<SkBitmap>& expect_bitmaps);
 
   // Reads back pixels for each plane using skia ganesh and verifies that pixels
   // match corresponding bitmap from `expected_bitmaps`.
@@ -103,6 +111,8 @@ class SharedImageTestBase : public testing::Test {
   // To be initialized by the test implementation.
   std::unique_ptr<SharedImageBackingFactory> backing_factory_;
 };
+
+void PrintTo(GrContextType type, std::ostream* os);
 
 }  // namespace gpu
 

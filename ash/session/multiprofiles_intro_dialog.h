@@ -28,7 +28,8 @@ class MultiprofilesIntroDialog : public views::DialogDelegateView {
   MultiprofilesIntroDialog& operator=(const MultiprofilesIntroDialog&) = delete;
 
   // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   explicit MultiprofilesIntroDialog(OnAcceptCallback on_accept);

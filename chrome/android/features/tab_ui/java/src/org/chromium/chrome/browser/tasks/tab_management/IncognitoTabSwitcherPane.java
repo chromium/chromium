@@ -23,11 +23,13 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.function.DoubleConsumer;
@@ -50,7 +52,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                                 : "isFocused requires a non-null PaneHubController.";
                         controller.focusPane(PaneId.TAB_SWITCHER);
                     }
-                    resetWithTabList(null, false);
+                    destroyTabSwitcherPaneCoordinator();
                 }
             };
 
@@ -94,24 +96,35 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     /**
      * @param context The activity context.
+     * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param incognitoTabModelFilterSupplier The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param incognitoReauthControllerSupplier Supplier for the incognito reauth controller.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param userEducationHelper Used for showing IPHs.
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabModelFilter> incognitoTabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @NonNull DoubleConsumer onToolbarAlphaChange) {
-        super(context, factory, /* isIncognito= */ true, onToolbarAlphaChange);
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull UserEducationHelper userEducationHelper) {
+        super(
+                context,
+                profileProviderSupplier,
+                factory,
+                /* isIncognito= */ true,
+                onToolbarAlphaChange,
+                userEducationHelper);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
 
-        // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
+        // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
+        // probably
         // just say "Incognito".
         mReferenceButtonData =
                 new ResourceButtonData(
@@ -126,7 +139,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                         R.drawable.new_tab_icon);
         mEnabledNewTabButtonData =
                 new DelegateButtonData(
-                        newTabButtonData, () -> newTabButtonClickListener.onClick(null));
+                        newTabButtonData,
+                        () -> {
+                            notifyNewTabButtonClick();
+                            newTabButtonClickListener.onClick(null);
+                        });
         mDisabledNewTabButtonData = new DelegateButtonData(newTabButtonData, null);
 
         if (incognitoReauthControllerSupplier != null) {
@@ -191,6 +208,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public boolean shouldEagerlyCreateCoordinator() {
+        return mReferenceButtonDataSupplier.get() != null;
+    }
+
+    @Override
     public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
         if (coordinator == null) return false;
@@ -235,6 +257,25 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         }
 
         super.requestAccessibilityFocusOnCurrentTab();
+    }
+
+    @Override
+    protected Runnable getOnTabGroupCreationRunnable() {
+        return null;
+    }
+
+    @Override
+    protected void tryToTriggerOnShownIphs() {}
+
+    @Override
+    public void openInvitationModal(String invitationId) {
+        assert false : "Not reached.";
+    }
+
+    @Override
+    public boolean requestOpenTabGroupDialog(int tabId) {
+        assert false : "Not reached.";
+        return false;
     }
 
     private IncognitoTabModel getIncognitoTabModel() {

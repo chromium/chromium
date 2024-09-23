@@ -19,6 +19,9 @@ TabOrganizationServiceFactory::TabOrganizationServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
@@ -32,12 +35,13 @@ std::unique_ptr<KeyedService>
 TabOrganizationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
-  return std::make_unique<TabOrganizationService>(context);
+  return features::IsTabOrganization()
+             ? std::make_unique<TabOrganizationService>(context)
+             : nullptr;
 }
 
 // static
 TabOrganizationServiceFactory* TabOrganizationServiceFactory::GetInstance() {
-  CHECK(base::FeatureList::IsEnabled(features::kTabOrganization));
   static base::NoDestructor<TabOrganizationServiceFactory> instance;
   return instance.get();
 }

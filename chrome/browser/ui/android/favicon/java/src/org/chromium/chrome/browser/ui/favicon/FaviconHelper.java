@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,11 +41,12 @@ public class FaviconHelper {
     public interface FaviconImageCallback {
         /**
          * This method will be called when the result favicon is ready.
+         *
          * @param image Favicon image.
          * @param iconUrl Favicon image's icon url.
          */
         @CalledByNative("FaviconImageCallback")
-        public void onFaviconAvailable(Bitmap image, GURL iconUrl);
+        public void onFaviconAvailable(Bitmap image, @JniType("GURL") GURL iconUrl);
     }
 
     /** Similar to {@link FaviconImageCallback} but with a list of urls used in the image. */
@@ -54,7 +56,8 @@ public class FaviconHelper {
          * @param iconUrls An ordered array of the icon urls that were used.
          */
         @CalledByNative("ComposedFaviconImageCallback")
-        public void onComposedFaviconAvailable(Bitmap image, GURL[] iconUrls);
+        public void onComposedFaviconAvailable(
+                Bitmap image, @JniType("std::vector<GURL>") GURL[] iconUrls);
     }
 
     /** Helper for generating default favicons and sharing the same icon between multiple views. */
@@ -249,22 +252,22 @@ public class FaviconHelper {
 
         boolean getComposedFaviconImage(
                 long nativeFaviconHelper,
-                Profile profile,
-                GURL[] urls,
+                @JniType("Profile*") Profile profile,
+                @JniType("std::vector<GURL>") GURL[] urls,
                 int desiredSizeInDip,
                 ComposedFaviconImageCallback composedFaviconImageCallback);
 
         boolean getLocalFaviconImageForURL(
                 long nativeFaviconHelper,
-                Profile profile,
-                GURL pageUrl,
+                @JniType("Profile*") Profile profile,
+                @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
                 FaviconImageCallback faviconImageCallback);
 
         boolean getForeignFaviconImageForURL(
                 long nativeFaviconHelper,
-                Profile profile,
-                GURL pageUrl,
+                @JniType("Profile*") Profile profile,
+                @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
                 FaviconImageCallback faviconImageCallback);
     }

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "device/bluetooth/bluetooth_gatt_characteristic.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
@@ -51,6 +51,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
                                         const std::vector<uint8_t>& new_value,
                                         bool indicate) override;
   device::BluetoothLocalGattService* GetService() const override;
+  std::vector<device::BluetoothLocalGattDescriptor*> GetDescriptors()
+      const override;
 
   // floss::FlossGattServerObserver overrides.
   void GattServerCharacteristicReadRequest(std::string address,
@@ -67,15 +69,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       bool needs_response,
       int32_t handle,
       std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
 
   void ResolveInstanceId(const GattService& service);
   int32_t InstanceId() const { return floss_instance_id_; }
-  const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorFloss>>&
-  GetDescriptors() const;
+  NotificationType CccdNotificationType();
 
  private:
   friend class BluetoothLocalGattServiceFloss;
   friend class BluetoothLocalGattDescriptorFloss;
+  friend class BluetoothLocalGattServiceFlossTest;
 
   BluetoothLocalGattCharacteristicFloss(
       const device::BluetoothUUID& uuid,
@@ -83,13 +88,33 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       Permissions permissions,
       BluetoothLocalGattServiceFloss* service);
 
-  // Convert this characteristic to GattCharacteristic struct.
+  // Convert this characteristic to DBUS |GattCharacteristic| struct.
   GattCharacteristic ToGattCharacteristic();
 
   // Adds a descriptor to this characteristic. Returns the index of the
   // descriptor.
   int32_t AddDescriptor(
       std::unique_ptr<BluetoothLocalGattDescriptorFloss> descriptor);
+
+  // Runs after the browser client has processed the read request and has sent a
+  // response.
+  void OnReadRequestCallback(
+      int32_t request_id,
+      std::optional<BluetoothGattServiceFloss::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
+
+  // Runs after the browser client has processed the write request and has sent
+  // a response.
+  void OnWriteRequestCallback(int32_t request_id,
+                              std::vector<uint8_t>& value,
+                              bool needs_response,
+                              bool success);
+
+  // Cached instance of the latest pending read/write request, if one exists.
+  std::optional<GattRequest> pending_request_;
+
+  // Timer to stop waiting for a callback response.
+  base::OneShotTimer response_timer_;
 
   // UUID of this characteristic.
   device::BluetoothUUID uuid_;
@@ -105,7 +130,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
 
   // Client and Floss-assigned instance ids.
   int32_t client_instance_id_;
-  int32_t floss_instance_id_;
+  int32_t floss_instance_id_ = -1;
 
   // Index of this characteristic within the containing service.
   int32_t index_;

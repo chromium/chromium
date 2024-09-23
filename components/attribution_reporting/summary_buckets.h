@@ -12,7 +12,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "components/attribution_reporting/summary_window_operator.mojom-forward.h"
+#include "components/attribution_reporting/summary_operator.mojom-forward.h"
 
 namespace attribution_reporting {
 
@@ -55,8 +55,11 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SummaryBuckets {
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<mojom::SummaryWindowOperator, mojom::SourceRegistrationError>
-ParseSummaryWindowOperator(const base::Value::Dict&);
+base::expected<mojom::SummaryOperator, mojom::SourceRegistrationError>
+ParseSummaryOperator(const base::Value::Dict&);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void Serialize(mojom::SummaryOperator, base::Value::Dict&);
 
 }  // namespace attribution_reporting
 

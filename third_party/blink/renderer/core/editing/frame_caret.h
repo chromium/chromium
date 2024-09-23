@@ -29,7 +29,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -117,7 +116,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   bool should_show_caret_ = false;
   bool is_caret_blinking_suspended_ = false;
   // Controls visibility of caret with opacity when the caret is blinking.
-  scoped_refptr<EffectPaintPropertyNode> effect_;
+  const Member<EffectPaintPropertyNode> effect_;
 };
 
 }  // namespace blink

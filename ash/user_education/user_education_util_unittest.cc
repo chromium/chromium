@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -66,10 +67,11 @@ TEST_F(UserEducationUtilTest, CreateExtendedProperties) {
   const user_education::HelpBubbleParams::ExtendedProperties
       extended_properties = CreateExtendedProperties(
           CreateExtendedProperties(HelpBubbleId::kTest),
-          CreateExtendedProperties(HelpBubbleStyle::kNudge));
+          CreateExtendedProperties(ui::mojom::ModalType::kSystem));
 
   EXPECT_EQ(GetHelpBubbleId(extended_properties), HelpBubbleId::kTest);
-  EXPECT_EQ(GetHelpBubbleStyle(extended_properties), HelpBubbleStyle::kNudge);
+  EXPECT_EQ(GetHelpBubbleModalType(extended_properties),
+            ui::mojom::ModalType::kSystem);
 }
 
 // Verifies that `CreateExtendedProperties()` can be used to create extended
@@ -99,25 +101,42 @@ TEST_F(UserEducationUtilTest, ExtendedPropertiesWithId) {
 // `GetHelpBubbleModalType()` can be used to retrieve help bubble modal type
 // from extended properties.
 TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithModalType) {
-  EXPECT_EQ(
-      GetHelpBubbleModalType(CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM)),
-      ui::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(GetHelpBubbleModalType(
+                CreateExtendedProperties(ui::mojom::ModalType::kSystem)),
+            ui::mojom::ModalType::kSystem);
 
   // It is permissible to query help bubble modal type even when absent.
   EXPECT_EQ(GetHelpBubbleModalType(HelpBubbleParams::ExtendedProperties()),
-            ui::MODAL_TYPE_NONE);
+            ui::mojom::ModalType::kNone);
 }
 
-// Verifies that `CreateExtendedProperties()` can be used to create extended
-// properties for a help bubble having set style, and `GetHelpBubbleStyle()` can
-// be used to retrieve help bubble style from extended properties.
-TEST_F(UserEducationUtilTest, ExtendedPropertiesWithStyle) {
-  EXPECT_EQ(
-      GetHelpBubbleStyle(CreateExtendedProperties(HelpBubbleStyle::kNudge)),
-      HelpBubbleStyle::kNudge);
+// Verifies that `CreateExtendedPropertiesWithAccessibleName()` can be used to
+// create extended properties for a help bubble having set accessible name, and
+// that `GetHelpBubbleAccessibleName()` can be used to retrieve help bubble
+// accessible name from extended properties.
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithAccessibleName) {
+  std::string accessible_name = "Accessible Name";
+  EXPECT_EQ(GetHelpBubbleAccessibleName(
+                CreateExtendedPropertiesWithAccessibleName(accessible_name)),
+            accessible_name);
 
-  // It is permissible to query help bubble style even when absent.
-  EXPECT_EQ(GetHelpBubbleStyle(HelpBubbleParams::ExtendedProperties()),
+  // It is permissible to query help bubble accessible name even when absent.
+  EXPECT_EQ(GetHelpBubbleAccessibleName(HelpBubbleParams::ExtendedProperties()),
+            std::nullopt);
+}
+
+// Verifies that `CreateExtendedPropertiesWithBodyText()` can be used to create
+// extended properties for a help bubble having set body text, and that
+// `GetHelpBubbleBodyText()` can be used to retrieve help bubble body text from
+// extended properties.
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithBodyText) {
+  std::string body_text = "Body Text";
+  EXPECT_EQ(
+      GetHelpBubbleBodyText(CreateExtendedPropertiesWithBodyText(body_text)),
+      body_text);
+
+  // It is permissible to query help bubble body text even when absent.
+  EXPECT_EQ(GetHelpBubbleBodyText(HelpBubbleParams::ExtendedProperties()),
             std::nullopt);
 }
 

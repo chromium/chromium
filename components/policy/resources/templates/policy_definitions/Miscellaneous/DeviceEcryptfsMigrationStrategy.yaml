@@ -26,7 +26,6 @@ items:
   value: 2
 owners:
 - igorcov@chromium.org
-- pmarko@chromium.org
 schema:
   enum:
   - 0
@@ -37,3 +36,4 @@ supported_on:
 - chrome_os:60-60
 tags: []
 type: int-enum
+generate_device_proto: False

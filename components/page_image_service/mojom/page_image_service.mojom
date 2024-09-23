@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+[JavaPackage="org.chromium.page_image_service.mojom"]
 module page_image_service.mojom;
 
 import "url/mojom/url.mojom";
@@ -16,6 +17,9 @@ enum ClientId {
 
   // Tracked at launch/4225832.
   Bookmarks,
+
+  // Tracked at launch/4279123.
+  NtpTabResumption,
 };
 
 // Options for image fetching.

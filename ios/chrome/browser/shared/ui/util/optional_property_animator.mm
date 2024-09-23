@@ -19,9 +19,9 @@
 - (instancetype)initWithDuration:(NSTimeInterval)duration
                            curve:(UIViewAnimationCurve)curve
                       animations:(void (^__nullable)(void))animations {
-  if (self = [super initWithDuration:duration
-                               curve:curve
-                          animations:animations]) {
+  if ((self = [super initWithDuration:duration
+                                curve:curve
+                           animations:animations])) {
     _hasAnimations = !!animations;
   }
   return self;
@@ -31,10 +31,10 @@
                    controlPoint1:(CGPoint)point1
                    controlPoint2:(CGPoint)point2
                       animations:(void (^__nullable)(void))animations {
-  if (self = [super initWithDuration:duration
-                       controlPoint1:point1
-                       controlPoint2:point2
-                          animations:animations]) {
+  if ((self = [super initWithDuration:duration
+                        controlPoint1:point1
+                        controlPoint2:point2
+                           animations:animations])) {
     _hasAnimations = !!animations;
   }
   return self;
@@ -43,9 +43,9 @@
 - (instancetype)initWithDuration:(NSTimeInterval)duration
                     dampingRatio:(CGFloat)ratio
                       animations:(void (^__nullable)(void))animations {
-  if (self = [super initWithDuration:duration
-                        dampingRatio:ratio
-                          animations:animations]) {
+  if ((self = [super initWithDuration:duration
+                         dampingRatio:ratio
+                           animations:animations])) {
     _hasAnimations = !!animations;
   }
   return self;

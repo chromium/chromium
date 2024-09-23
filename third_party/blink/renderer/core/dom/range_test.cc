@@ -40,7 +40,7 @@ using ::testing::ElementsAre;
 class RangeTest : public EditingTestBase {};
 
 TEST_F(RangeTest, extractContentsWithDOMMutationEvent) {
-  if (!RuntimeEnabledFeatures::MutationEventsEnabled()) {
+  if (!RuntimeEnabledFeatures::MutationEventsEnabledByRuntimeFlag()) {
     // TODO(crbug.com/1446498) Remove this test when MutationEvents are disabled
     // for good. This is just a test of `DOMSubtreeModified` and ranges.
     return;
@@ -315,10 +315,10 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   const gfx::RectF rect_before = range->BoundingRect();
   EXPECT_GT(rect_before.width(), 0);
   EXPECT_GT(rect_before.height(), 0);
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(EphemeralRange(range))
-          .Build());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .SetBaseAndExtent(EphemeralRange(range))
+                               .Build(),
+                           SetSelectionOptions());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(Selection().SelectedText(), "x x");
   const gfx::RectF rect_after = range->BoundingRect();
@@ -544,6 +544,101 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
                 GetBorderAndTextQuads(Position(sample->firstChild(), 2),
                                       Position(sample->firstChild(), 2))))
       << "Collapsed range in remaining text part";
+}
+
+TEST_F(RangeTest, ContainerNodeRemoval) {
+  GetDocument().body()->setInnerHTML("<p>aaaa</p><p>bbbbbb</p>");
+  auto* node_a = GetDocument().body()->firstChild();
+  auto* node_b = node_a->nextSibling();
+  auto* text_a = To<Text>(node_a->firstChild());
+  auto* text_b = To<Text>(node_b->firstChild());
+
+  auto* rangea0a2 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 0, text_a, 2);
+  auto* rangea2a4 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 2, text_a, 4);
+  auto* rangea2b2 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 0, text_b, 2);
+  auto* rangeb2b6 =
+      MakeGarbageCollected<Range>(GetDocument(), text_b, 2, text_b, 6);
+
+  // remove children in node_a
+  node_a->setTextContent("");
+
+  EXPECT_TRUE(rangea0a2->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea0a2->startContainer());
+  EXPECT_EQ(0u, rangea0a2->startOffset());
+  EXPECT_EQ(node_a, rangea0a2->endContainer());
+  EXPECT_EQ(0u, rangea0a2->endOffset());
+
+  EXPECT_TRUE(rangea2a4->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea2a4->startContainer());
+  EXPECT_EQ(0u, rangea2a4->startOffset());
+  EXPECT_EQ(node_a, rangea2a4->endContainer());
+  EXPECT_EQ(0u, rangea2a4->endOffset());
+
+  EXPECT_TRUE(rangea2b2->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea2b2->startContainer());
+  EXPECT_EQ(0u, rangea2b2->startOffset());
+  EXPECT_EQ(text_b, rangea2b2->endContainer());
+  EXPECT_EQ(2u, rangea2b2->endOffset());
+
+  EXPECT_TRUE(rangeb2b6->BoundaryPointsValid());
+  EXPECT_EQ(text_b, rangeb2b6->startContainer());
+  EXPECT_EQ(2u, rangeb2b6->startOffset());
+  EXPECT_EQ(text_b, rangeb2b6->endContainer());
+  EXPECT_EQ(6u, rangeb2b6->endOffset());
+
+  // remove children in body.
+  GetDocument().body()->setTextContent("");
+
+  EXPECT_TRUE(rangea0a2->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea0a2->startContainer());
+  EXPECT_EQ(0u, rangea0a2->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea0a2->endContainer());
+  EXPECT_EQ(0u, rangea0a2->endOffset());
+
+  EXPECT_TRUE(rangea2a4->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea2a4->startContainer());
+  EXPECT_EQ(0u, rangea2a4->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea2a4->endContainer());
+  EXPECT_EQ(0u, rangea2a4->endOffset());
+
+  EXPECT_TRUE(rangea2b2->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea2b2->startContainer());
+  EXPECT_EQ(0u, rangea2b2->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea2b2->endContainer());
+  EXPECT_EQ(0u, rangea2b2->endOffset());
+
+  EXPECT_TRUE(rangeb2b6->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangeb2b6->startContainer());
+  EXPECT_EQ(0u, rangeb2b6->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangeb2b6->endContainer());
+  EXPECT_EQ(0u, rangeb2b6->endOffset());
+}
+
+TEST_F(RangeTest,
+       ContainerNodeRemovalWithSequentialFocusNavigationStartingPoint) {
+  SetBodyContent("<input value='text inside input'>");
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  Node* text_inside_input = input.InnerEditorElement()->firstChild();
+  GetDocument().SetSequentialFocusNavigationStartingPoint(text_inside_input);
+
+  // Remove children in body.
+  GetDocument().body()->setTextContent("");
+
+  Range* sequential_focus_navigation_starting_point =
+      GetDocument().sequential_focus_navigation_starting_point_;
+
+  EXPECT_TRUE(
+      sequential_focus_navigation_starting_point->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(),
+            sequential_focus_navigation_starting_point->startContainer());
+  EXPECT_EQ(0u, sequential_focus_navigation_starting_point->startOffset());
+  EXPECT_EQ(GetDocument().body(),
+            sequential_focus_navigation_starting_point->endContainer());
+  EXPECT_EQ(0u, sequential_focus_navigation_starting_point->endOffset());
 }
 
 }  // namespace blink

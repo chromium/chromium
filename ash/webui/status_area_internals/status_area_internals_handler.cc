@@ -7,14 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/ime/ime_controller_impl.h"
-#include "ash/projector/projector_controller_impl.h"
-#include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/model/fake_power_status.h"
 #include "ash/system/model/fake_system_tray_model.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/model/scoped_fake_system_tray_model.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
@@ -23,6 +25,7 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -30,10 +33,12 @@ namespace ash {
 StatusAreaInternalsHandler::StatusAreaInternalsHandler(
     mojo::PendingReceiver<mojom::status_area_internals::PageHandler> receiver)
     : receiver_(this, std::move(receiver)) {
-  // When the web UI is in used, we will use a fake system tray model to mock
-  // the data shown in the system tray, then  switch back to use the real model
-  // when the web UI is destructed using the scoped setter.
+  // When the web UI is in used, we will use a fake system tray model and a fake
+  // power status  to mock the data shown in the system tray, then  switch back
+  // to use the real model when the web UI is destructed using the scoped
+  // setter.
   scoped_fake_model_ = std::make_unique<ScopedFakeSystemTrayModel>();
+  scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();
 }
 
 StatusAreaInternalsHandler::~StatusAreaInternalsHandler() = default;
@@ -95,19 +100,18 @@ void StatusAreaInternalsHandler::ToggleVideoConferenceTray(bool visible) {
   VideoConferenceTrayController::Get()->UpdateWithMediaState(state);
 }
 
-void StatusAreaInternalsHandler::ToggleProjectorTray(bool visible) {
+void StatusAreaInternalsHandler::ToggleAnnotationTray(bool visible) {
   auto* root_window_controller = Shell::Get()->GetPrimaryRootWindowController();
   DCHECK(root_window_controller);
   DCHECK(root_window_controller->GetStatusAreaWidget());
 
-  auto* projector_ui_controller =
-      Shell::Get()->projector_controller()->ui_controller();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
 
   if (visible) {
-    projector_ui_controller->ShowAnnotationTray(
+    annotator_controller->RegisterView(
         /*current_root=*/root_window_controller->GetRootWindow());
   } else {
-    projector_ui_controller->HideAnnotationTray();
+    annotator_controller->DisableAnnotator();
   }
 }
 
@@ -122,16 +126,42 @@ void StatusAreaInternalsHandler::TriggerPrivacyIndicators(
       PrivacyIndicatorsSource::kApps);
 }
 
-void StatusAreaInternalsHandler::SetActiveDirectoryManaged(bool managed) {
-  DeviceEnterpriseInfo info;
-  info.active_directory_managed = managed;
-  scoped_fake_model_->fake_model()->SetDeviceEnterpriseInfo(info);
-}
-
 void StatusAreaInternalsHandler::SetIsInUserChildSession(
     bool in_child_session) {
   scoped_fake_model_->fake_model()->set_is_in_user_child_session(
       in_child_session);
+}
+
+void StatusAreaInternalsHandler::ResetHmrConsentStatus() {
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kUnset);
+}
+
+void StatusAreaInternalsHandler::SetBatteryIcon(
+    const PageHandler::BatteryIcon icon) {
+  FakePowerStatus* fake_power_status =
+      scoped_fake_power_status_->fake_power_status();
+  fake_power_status->SetDefaultState();
+  switch (icon) {
+    case PageHandler::BatteryIcon::kXIcon:
+      fake_power_status->SetIsBatteryPresent(false);
+      break;
+    case PageHandler::BatteryIcon::kUnreliableIcon:
+      fake_power_status->SetIsUsbChargerConnected(true);
+      break;
+    case PageHandler::BatteryIcon::kBoltIcon:
+      fake_power_status->SetIsLinePowerConnected(true);
+      break;
+    case PageHandler::BatteryIcon::kBatterySaverPlusIcon:
+      fake_power_status->SetIsBatterySaverActive(true);
+      break;
+    default:
+      break;
+  }
+}
+
+void StatusAreaInternalsHandler::SetBatteryPercent(double percent) {
+  scoped_fake_power_status_->fake_power_status()->SetBatteryPercent(percent);
 }
 
 }  // namespace ash

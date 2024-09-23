@@ -368,9 +368,6 @@ class CONTENT_EXPORT MediaDevicesManager
                           bool has_permission,
                           const MediaDeviceEnumeration& enumeration);
 
-#if BUILDFLAG(IS_MAC)
-  void StartMonitoringOnUIThread();
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void RegisterVideoCaptureDevicesChangedObserver();
 #endif
@@ -393,7 +390,7 @@ class CONTENT_EXPORT MediaDevicesManager
   using CacheInfos = std::vector<CacheInfo>;
   CacheInfos cache_infos_;
 
-  BoolDeviceTypes has_seen_result_;
+  BoolDeviceTypes cache_is_populated_;
   std::vector<EnumerationRequest> requests_;
   MediaDeviceEnumeration current_snapshot_;
   bool monitoring_started_;
@@ -425,7 +422,7 @@ class CONTENT_EXPORT MediaDevicesManager
 // If the heuristic fails to find an association, the |video_info.device_id| is
 // returned to be used as group ID. This group ID and the device ID are later
 // obfuscated with different salts before being sent to the renderer process.
-// TODO(crbug.com/627793): Replace the heuristic with proper associations
+// TODO(crbug.com/41263713): Replace the heuristic with proper associations
 // provided by the OS.
 CONTENT_EXPORT std::string GuessVideoGroupID(
     const blink::WebMediaDeviceInfoArray& audio_infos,

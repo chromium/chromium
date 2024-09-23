@@ -108,21 +108,26 @@ CastDialogSinkButton::~CastDialogSinkButton() = default;
 
 void CastDialogSinkButton::OverrideStatusText(
     const std::u16string& status_text) {
-  if (subtitle()) {
-    if (!saved_status_text_)
-      saved_status_text_ = subtitle()->GetText();
-    subtitle()->SetText(status_text);
+  if (!subtitle()) {
+    return;
   }
-  SetTooltipAndAccessibleName();
+
+  if (!saved_status_text_) {
+    saved_status_text_ = subtitle()->GetText();
+  }
+
+  subtitle()->SetText(status_text);
 }
 
 void CastDialogSinkButton::RestoreStatusText() {
-  if (saved_status_text_) {
-    if (subtitle())
-      subtitle()->SetText(*saved_status_text_);
-    saved_status_text_.reset();
+  if (!saved_status_text_) {
+    return;
   }
-  SetTooltipAndAccessibleName();
+
+  if (subtitle()) {
+    subtitle()->SetText(*saved_status_text_);
+  }
+  saved_status_text_.reset();
 }
 
 bool CastDialogSinkButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -138,6 +143,7 @@ void CastDialogSinkButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void CastDialogSinkButton::OnEnabledChanged() {
+  HoverButton::OnEnabledChanged();
   // Prevent a DCHECK failure seen at https://crbug.com/912687 by not having an
   // InkDrop if the button is disabled.
   views::InkDrop::Get(this)->SetMode(

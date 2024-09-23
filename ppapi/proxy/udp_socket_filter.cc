@@ -90,7 +90,6 @@ int32_t UDPSocketFilter::RequestData(
   auto it = queues_.find(resource);
   if (it == queues_.end()) {
     NOTREACHED();
-    return PP_ERROR_FAILED;
   }
   return it->second->RequestData(num_bytes, buffer, addr, callback);
 }

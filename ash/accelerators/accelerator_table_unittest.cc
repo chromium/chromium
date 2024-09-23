@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <set>
 #include <tuple>
 
@@ -16,10 +21,10 @@ namespace ash {
 namespace {
 
 // The number of non-Search-based accelerators.
-constexpr int kNonSearchAcceleratorsNum = 110;
+constexpr int kNonSearchAcceleratorsNum = 112;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "4502a93279023a25b83dc6345cda35bf";
+    "b6b832050cc5c1b6f5e0701f47343815";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,

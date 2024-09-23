@@ -17,8 +17,8 @@
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -41,7 +41,7 @@ class PepperFileChooserHost::CompletionHandler {
                        blink::mojom::FileChooserParamsPtr params) {
     if (!render_frame)
       return false;
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         file_chooser_.BindNewPipeAndPassReceiver());
     file_chooser_.set_disconnect_handler(base::BindOnce(
         &CompletionHandler::OnConnectionError, base::Unretained(this)));

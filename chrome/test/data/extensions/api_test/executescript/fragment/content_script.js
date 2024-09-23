@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function notify() {
-  chrome.extension.sendRequest("content_script");
+  chrome.runtime.sendMessage("content_script");
 }
 
 if (document.readyState) {

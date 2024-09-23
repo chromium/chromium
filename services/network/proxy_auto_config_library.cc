@@ -67,7 +67,7 @@ void MyIpAddressImpl::DoLoop() {
     next_state_ = State::kNone;
     switch (state) {
       case State::kNone:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = net::ERR_FAILED;
         break;
       case State::kConnectSocketsPublicInternetRoutes:

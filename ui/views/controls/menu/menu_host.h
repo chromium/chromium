@@ -12,9 +12,13 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/owned_window_anchor.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace gfx {
+class Insets;
+class Rect;
+}  // namespace gfx
 
 namespace views {
 
@@ -99,6 +103,7 @@ class MenuHost : public Widget, public WidgetObserver {
   void OnDragWillStart() override;
   void OnDragComplete() override;
   Widget* GetPrimaryWindowWidget() override;
+  gfx::Insets GetCustomInsetsInDIP() const override;
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;

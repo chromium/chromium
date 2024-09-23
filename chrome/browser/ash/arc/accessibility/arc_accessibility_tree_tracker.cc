@@ -136,7 +136,7 @@ FromMojomResponseToAutomationResponse(
     case MojomResponse::NEED_DEPRECATION_CONFIRMATION:
       return SetNativeChromeVoxResponse::kNeedDeprecationConfirmation;
     case MojomResponse::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SetNativeChromeVoxResponse::kFailure;
   }
 }
@@ -568,6 +568,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     // No longer need to track windows and trees.
     trees_.clear();
     window_id_to_task_id_.clear();
+    task_id_to_window_.clear();
     focus_change_observer_.reset();
 
     DCHECK(aura::Env::HasInstance());
@@ -735,7 +736,7 @@ void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
                                         ui::AXTreeIDUnknown());
       break;
     case AccessibilityNotificationStateType::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

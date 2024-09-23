@@ -24,6 +24,7 @@ module.exports = {
     'new-parens': 'error',
     'no-array-constructor': 'error',
     'no-console': ['error', {allow: ['info', 'warn', 'error', 'assert']}],
+    'no-debugger': 'error',
     'no-extra-boolean-cast': 'error',
     'no-extra-semi': 'error',
     'no-new-wrappers': 'error',
@@ -74,6 +75,11 @@ module.exports = {
     },
     {
       // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+      'selector': 'TSAsExpression > TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
+      'message': 'Don\'t use \'querySelector(...)! as Type\'. Use the type parameter, \'querySelector<Type>(...)\', followed by an assertion instead',
+    },
+    {
+      // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
       'selector': 'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
       'message': 'Don\'t use \'querySelectorAll(...) as Type\'. Use the type parameter, \'querySelectorAll<Type>(...)\' instead',
     },
@@ -81,6 +87,18 @@ module.exports = {
       // Prevent a common misuse of "!" operator.
       "selector": "TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]",
       "message": "Remove unnecessary \"!\" non-null operator after querySelectorAll(). It always returns a non-null result",
+    },
+    {
+      // https://google.github.io/styleguide/jsguide.html#es-module-imports
+      //  1) Matching only import URLs that have at least one '/' slash, to
+      //     avoid false positives for NodeJS imports like
+      //     `import fs from 'fs';`.
+      //     Using '\u002F' instead of '/' as the suggested workaround for
+      //     https://github.com/eslint/eslint/issues/16555
+      //  2) Allowing extensions that have a length between 2-4 characters
+      //     (for example js, css, json)
+      "selector": "ImportDeclaration[source.value=/^.*\\u002F.*(?<!\\.[a-z]{2}|\\.[a-z]{3}|\\.[a-z]{4})$/]",
+      "message": "Disallowed extensionless import. Explicitly specify the extension suffix."
     }],
     'no-throw-literal': 'error',
     'no-trailing-spaces': 'error',
@@ -273,6 +291,9 @@ module.exports = {
           },
         }
       }],
+
+      // https://google.github.io/styleguide/tsguide.html#ts-ignore
+      '@typescript-eslint/ban-ts-comment': ['error', {'ts-ignore': true}],
     }
   }]
 };

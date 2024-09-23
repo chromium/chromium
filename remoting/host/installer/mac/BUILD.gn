@@ -10,6 +10,7 @@ action("remoting_me2me_host_archive") {
     "app-entitlements.plist",
     "do_signing.sh",
     "do_signing.props",
+    "me2me-entitlements.plist",
     "ChromotingHost.pkgproj",
     "ChromotingHostService.pkgproj",
     "ChromotingHostUninstaller.pkgproj",

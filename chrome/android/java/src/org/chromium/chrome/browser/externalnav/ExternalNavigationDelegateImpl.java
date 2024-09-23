@@ -228,4 +228,19 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public String getSelfScheme() {
         return IntentHandler.GOOGLECHROME_SCHEME;
     }
+
+    @Override
+    public boolean shouldDisableAllExternalIntents() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldReturnAsActivityResult(GURL url) {
+        return false;
+    }
+
+    @Override
+    public void returnAsActivityResult(GURL url) {
+        throw new UnsupportedOperationException("Returning as activity result is not supported.");
+    }
 }

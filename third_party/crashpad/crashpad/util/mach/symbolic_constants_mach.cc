@@ -18,6 +18,7 @@
 #include <sys/types.h>
 
 #include <iterator>
+#include <string_view>
 
 #include "base/strings/stringprintf.h"
 #include "util/mach/exception_behaviors.h"
@@ -138,7 +139,7 @@ constexpr struct {
 };
 
 // Returns the short name for a flavor name, given its full flavor name.
-std::string ThreadStateFlavorFullToShort(const base::StringPiece& flavor) {
+std::string ThreadStateFlavorFullToShort(std::string_view flavor) {
   // For generic flavors like THREAD_STATE_NONE and THREAD_STATE_FLAVOR_LIST_*.
   static constexpr char kThreadState[] = "THREAD_STATE_";
   size_t prefix_len = strlen(kThreadState);
@@ -211,14 +212,14 @@ std::string ExceptionToString(exception_type_t exception,
   return base::StringPrintf("%s%s", kExcPrefix, exception_name);
 }
 
-bool StringToException(const base::StringPiece& string,
+bool StringToException(std::string_view string,
                        StringToSymbolicConstantOptions options,
                        exception_type_t* exception) {
   if ((options & kAllowFullName) || (options & kAllowShortName)) {
     bool can_match_full =
         (options & kAllowFullName) &&
         string.substr(0, strlen(kExcPrefix)).compare(kExcPrefix) == 0;
-    base::StringPiece short_string =
+    std::string_view short_string =
         can_match_full ? string.substr(strlen(kExcPrefix)) : string;
     for (exception_type_t index = 0;
          index < implicit_cast<exception_type_t>(std::size(kExceptionNames));
@@ -290,7 +291,7 @@ std::string ExceptionMaskToString(exception_mask_t exception_mask,
   return mask_string;
 }
 
-bool StringToExceptionMask(const base::StringPiece& string,
+bool StringToExceptionMask(std::string_view string,
                            StringToSymbolicConstantOptions options,
                            exception_mask_t* exception_mask) {
   if (options & kAllowOr) {
@@ -301,15 +302,15 @@ bool StringToExceptionMask(const base::StringPiece& string,
       ++pos;
       const size_t start = pos;
       pos = string.find('|', pos);
-      base::StringPiece substring = (pos == base::StringPiece::npos)
-                                        ? string.substr(start)
-                                        : string.substr(start, pos - start);
+      std::string_view substring = (pos == std::string_view::npos)
+                                       ? string.substr(start)
+                                       : string.substr(start, pos - start);
       exception_mask_t temp_mask;
       if (!StringToExceptionMask(substring, options, &temp_mask)) {
         return false;
       }
       build_mask |= temp_mask;
-    } while (pos != base::StringPiece::npos);
+    } while (pos != std::string_view::npos);
 
     *exception_mask = build_mask;
     return true;
@@ -319,7 +320,7 @@ bool StringToExceptionMask(const base::StringPiece& string,
     bool can_match_full =
         (options & kAllowFullName) &&
         string.substr(0, strlen(kExcMaskPrefix)).compare(kExcMaskPrefix) == 0;
-    base::StringPiece short_string =
+    std::string_view short_string =
         can_match_full ? string.substr(strlen(kExcMaskPrefix)) : string;
     for (exception_type_t index = 0;
          index < implicit_cast<exception_type_t>(std::size(kExceptionNames));
@@ -388,15 +389,15 @@ std::string ExceptionBehaviorToString(exception_behavior_t behavior,
   return behavior_string;
 }
 
-bool StringToExceptionBehavior(const base::StringPiece& string,
+bool StringToExceptionBehavior(std::string_view string,
                                StringToSymbolicConstantOptions options,
                                exception_behavior_t* behavior) {
-  base::StringPiece sp = string;
+  std::string_view sp = string;
   exception_behavior_t build_behavior = 0;
   size_t pos = sp.find('|', 0);
-  if (pos != base::StringPiece::npos) {
-    base::StringPiece left = sp.substr(0, pos);
-    base::StringPiece right = sp.substr(pos + 1, sp.length() - pos - 1);
+  if (pos != std::string_view::npos) {
+    std::string_view left = sp.substr(0, pos);
+    std::string_view right = sp.substr(pos + 1, sp.length() - pos - 1);
     if (options & kAllowFullName) {
       if (left.compare(kMachExceptionCodesFull) == 0) {
         build_behavior |= MACH_EXCEPTION_CODES;
@@ -425,7 +426,7 @@ bool StringToExceptionBehavior(const base::StringPiece& string,
     bool can_match_full =
         (options & kAllowFullName) &&
         sp.substr(0, strlen(kBehaviorPrefix)).compare(kBehaviorPrefix) == 0;
-    base::StringPiece short_string =
+    std::string_view short_string =
         can_match_full ? sp.substr(strlen(kBehaviorPrefix)) : sp;
     for (exception_behavior_t index = 0;
          index < implicit_cast<exception_behavior_t>(std::size(kBehaviorNames));
@@ -492,7 +493,7 @@ std::string ThreadStateFlavorToString(thread_state_flavor_t flavor,
   return std::string(flavor_name);
 }
 
-bool StringToThreadStateFlavor(const base::StringPiece& string,
+bool StringToThreadStateFlavor(std::string_view string,
                                StringToSymbolicConstantOptions options,
                                thread_state_flavor_t* flavor) {
   if ((options & kAllowFullName) || (options & kAllowShortName)) {

@@ -38,6 +38,10 @@ namespace gfx {
 class Canvas;
 }  // namespace gfx
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class CaptureModeBarView;
@@ -49,6 +53,9 @@ class CursorSetter;
 class RecordingTypeMenuView;
 class UserNudgeController;
 class WindowDimmer;
+
+// TODO(http://b/366621847):  Create an API for creating action buttons that can
+// be called asynchronously from `capture_mode_util`.
 
 // Encapsulates an active capture mode session (i.e. an instance of this class
 // lives as long as capture mode is active). It creates and owns the capture
@@ -87,6 +94,9 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_label_widget() { return capture_label_widget_.get(); }
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
+  }
+  views::Widget* search_results_panel_widget() {
+    return search_results_panel_widget_.get();
   }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
@@ -165,8 +175,10 @@ class ASH_EXPORT CaptureModeSession
       bool did_bounds_or_visibility_change) override;
   void OnCameraPreviewDestroyed() override;
   void MaybeDismissUserNudgeForever() override;
-  void MaybeChangeRoot(aura::Window* new_root) override;
+  void MaybeChangeRoot(aura::Window* new_root,
+                       bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
+  void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -317,6 +329,17 @@ class ASH_EXPORT CaptureModeSession
   // child is visible.
   bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
 
+  // Creates the the action container widget if it wasn't previously created,
+  // and updates the widget's bounds.
+  void UpdateActionContainerWidget();
+
+  // Updates the action container widget's bounds.
+  void UpdateActionContainerWidgetBounds();
+
+  // Calculates the targeted action container widget bounds in screen
+  // coordinates.
+  gfx::Rect CalculateActionContainerWidgetBounds() const;
+
   // Updates |root_window_dimmers_| to dim the correct root windows.
   void UpdateRootWindowDimmers();
 
@@ -407,11 +430,20 @@ class ASH_EXPORT CaptureModeSession
   views::UniqueWidgetPtr capture_label_widget_;
   raw_ptr<CaptureLabelView, DanglingUntriaged> capture_label_view_ = nullptr;
 
+  // TODO(hewer): Check if we can migrate these widgets to `SunfishBehavior`.
+  views::UniqueWidgetPtr action_container_widget_;
+  raw_ptr<views::BoxLayoutView> action_container_view_ = nullptr;
+
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
   views::UniqueWidgetPtr recording_type_menu_widget_;
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
+
+  // Contains `SearchResultsPanel` as its contents view.
+  // TODO(b/362772923): Determine whether we need to move
+  // `search_results_panel_widget_` to `CaptureModeController`.
+  std::unique_ptr<views::Widget> search_results_panel_widget_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

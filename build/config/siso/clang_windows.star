@@ -9,6 +9,8 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 def __win_toolchain_dir(ctx):
@@ -61,7 +63,10 @@ def __step_config(ctx, step_config):
             if k.startswith("label:action"):
                 continue
             largePlatform[k] = v
-        largePlatform["label:action_large"] = "1"
+
+        # no "action_large" Windows worker pool
+        if reproxy_config["platform"]["OSFamily"] != "Windows":
+            largePlatform["label:action_large"] = "1"
         step_config["platforms"].update({
             "clang-cl": reproxy_config["platform"],
             "clang-cl_large": largePlatform,
@@ -72,9 +77,12 @@ def __step_config(ctx, step_config):
         # missing build/win_toolchain.json), we can't run
         # clang-cl remotely as we can find sysroot files
         # under exec_root, so just run locally.
+        # When building with ToT Clang, we can't run clang-cl
+        # remotely, too.
         remote = False
         win_toolchain_dir = __win_toolchain_dir(ctx)
         if win_toolchain_dir:
+            remote = True
             if reproxy_config["platform"]["OSFamily"] == "Windows":
                 step_config["input_deps"].update({
                     win_toolchain_dir + ":headers": [
@@ -229,28 +237,44 @@ def __step_config(ctx, step_config):
                         path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/shared/Devpropdef.h"),
                         # third_party/dawn/third_party/dxc/include/dxc/Support/WinIncludes.h "ObjIdl.h"
                         path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/um/ObjIdl.h"),
+                        # third_party/dawn/third_party/dxc/lib/Support includes "D3Dcommon.h"
+                        # https://github.com/microsoft/DirectXShaderCompiler/pull/6380
+                        path.join(win_toolchain_dir, "Windows Kits/10/Include/10.0.22621.0/um/D3Dcommon.h"),
                     ],
                 })
-                remote = True
+        remote_wrapper = reproxy_config.get("remote_wrapper")
+        input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
+        canonicalize_dir = not input_root_absolute_path
+
         step_config["rules"].extend([
             {
                 "name": "clang-cl/cxx",
                 "action": "(.*_)?cxx",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
                 "name": "clang-cl/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
+                ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
@@ -264,7 +288,9 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
             {
@@ -278,7 +304,9 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": remote,
-                "remote_wrapper": reproxy_config["remote_wrapper"],
+                "input_root_absolute_path": input_root_absolute_path,
+                "canonicalize_dir": canonicalize_dir,
+                "remote_wrapper": remote_wrapper,
                 "timeout": "2m",
             },
         ])

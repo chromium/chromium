@@ -9,7 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/gpu/vaapi/test/shared_va_surface.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media::vaapi_test {

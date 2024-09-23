@@ -130,14 +130,16 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       PeerConnectionTracker* peer_connection_tracker,
-      ExceptionState& exception_state);
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport);
 
   virtual bool Initialize(
       ExecutionContext* context,
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       WebLocalFrame* web_frame,
-      ExceptionState& exception_state);
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport);
 
   virtual void Close();
   virtual void CloseAndUnregister();
@@ -185,9 +187,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const String& label,
       const webrtc::DataChannelInit& init);
   virtual webrtc::PeerConnectionInterface* NativePeerConnection();
-  virtual void RunSynchronousOnceClosureOnSignalingThread(
-      CrossThreadOnceClosure closure,
-      const char* trace_event_name);
   virtual void RunSynchronousOnceClosureOnSignalingThread(
       base::OnceClosure closure,
       const char* trace_event_name);
@@ -255,8 +254,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::PeerConnectionInterface::SignalingState new_state);
   void OnIceConnectionChange(
       webrtc::PeerConnectionInterface::IceConnectionState new_state);
-  void OnStandardizedIceConnectionChange(
-      webrtc::PeerConnectionInterface::IceConnectionState new_state);
   void OnConnectionChange(
       webrtc::PeerConnectionInterface::PeerConnectionState new_state);
   void OnIceGatheringChange(
@@ -273,7 +270,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                       const String& sdp_mid,
                       int sdp_mline_index,
                       int component,
-                      int address_family);
+                      int address_family,
+                      const String& usernameFragment,
+                      const String& url);
   void OnIceCandidateError(const String& address,
                            std::optional<uint16_t> port,
                            const String& host_candidate,
@@ -300,20 +299,10 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
     bool rtcp_mux = false;
   };
 
-  RTCSessionDescriptionPlatform*
-  GetRTCSessionDescriptionPlatformOnSignalingThread(
-      CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-          description_cb,
-      const char* log_text);
-
   // Report to UMA whether an IceConnectionState has occurred. It only records
   // the first occurrence of a given state.
   void ReportICEState(
       webrtc::PeerConnectionInterface::IceConnectionState new_state);
-
-  // Reset UMA related members to the initial state. This is invoked at the
-  // constructor as well as after Ice Restart.
-  void ResetUMAStats();
 
   void ReportFirstSessionDescriptions(const FirstSessionDescription& local,
                                       const FirstSessionDescription& remote);
@@ -394,7 +383,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // references on the signaling thread during GC.
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
 
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_ = nullptr;
+  raw_ptr<blink::WebLocalFrame> frame_ = nullptr;
 
   // Map and owners of track adapters. Every track that is in use by the peer
   // connection has an associated blink and webrtc layer representation of it.

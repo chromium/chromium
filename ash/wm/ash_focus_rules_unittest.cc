@@ -19,6 +19,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -69,6 +70,7 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
     auto lock_view = std::make_unique<views::View>();
     lock_screen_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     gfx::Size ps = lock_view->GetPreferredSize();
 
@@ -78,7 +80,6 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
                               ps.width(), ps.height());
     params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                         kShellWindowId_LockScreenContainer);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     lock_screen_widget_->Init(std::move(params));
     lock_screen_widget_->SetContentsView(std::move(lock_view));
     lock_screen_widget_->Show();
@@ -138,14 +139,14 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   aura::Window* CreateWindowInLockSystemModalContainer() {
     aura::Window* window =
         CreateWindowInContainer(kShellWindowId_LockSystemModalContainer);
-    window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+    window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
     return window;
   }
 
   aura::Window* CreateWindowInSystemModalContainer() {
     aura::Window* window =
         CreateWindowInContainer(kShellWindowId_SystemModalContainer);
-    window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+    window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
     return window;
   }
 

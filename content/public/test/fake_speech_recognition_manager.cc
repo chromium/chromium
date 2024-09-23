@@ -14,9 +14,9 @@
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/test/test_utils.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 namespace {
 const char kTestResult[] = "Pictures of the moon";
@@ -102,6 +102,18 @@ void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value,
 
 int FakeSpeechRecognitionManager::CreateSession(
     const SpeechRecognitionSessionConfig& config) {
+  return CreateSession(std::move(config), mojo::NullReceiver(),
+                       mojo::NullRemote(), std::nullopt);
+}
+
+int FakeSpeechRecognitionManager::CreateSession(
+    const SpeechRecognitionSessionConfig& config,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        client_remote,
+    std::optional<SpeechRecognitionAudioForwarderConfig>
+        audio_forwarder_config) {
   VLOG(1) << "FAKE CreateSession invoked.";
   // FakeSpeechRecognitionManager only allows one active session at a time.
   EXPECT_EQ(0, session_id_);
@@ -184,6 +196,11 @@ SpeechRecognitionSessionContext FakeSpeechRecognitionManager::GetSessionContext(
   return session_ctx_;
 }
 
+bool FakeSpeechRecognitionManager::UseOnDeviceSpeechRecognition(
+    const SpeechRecognitionSessionConfig& config) {
+  return false;
+}
+
 void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
     bool end_recognition) {
   if (!session_id_)  // Do a check in case we were cancelled..
@@ -194,15 +211,15 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
     listener_->OnSoundStart(session_id_);
     has_sent_result_ = true;
   }
-  blink::mojom::SpeechRecognitionResultPtr result =
-      blink::mojom::SpeechRecognitionResult::New();
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
+  media::mojom::WebSpeechRecognitionResultPtr result =
+      media::mojom::WebSpeechRecognitionResult::New();
+  result->hypotheses.push_back(media::mojom::SpeechRecognitionHypothesis::New(
       base::UTF8ToUTF16(fake_result_), 1.0));
   // If `is_provisional` is true, then the result is an interim result that
   // could be changed. Otherwise, it's a final result. Consequently,
   // `is_provisional` is the converse of `is_final`.
   result->is_provisional = !is_final_;
-  std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> results;
   results.push_back(std::move(result));
   listener_->OnRecognitionResults(session_id_, results);
   GetUIThreadTaskRunner({})->PostTask(
@@ -247,9 +264,9 @@ void FakeSpeechRecognitionManager::SendFakeSpeechRecognitionError() {
 
   VLOG(1) << "Sending fake recognition error.";
   listener_->OnRecognitionError(
-      session_id_, *blink::mojom::SpeechRecognitionError::New(
-                       blink::mojom::SpeechRecognitionErrorCode::kNetwork,
-                       blink::mojom::SpeechAudioErrorDetails::kNone));
+      session_id_, *media::mojom::SpeechRecognitionError::New(
+                       media::mojom::SpeechRecognitionErrorCode::kNetwork,
+                       media::mojom::SpeechAudioErrorDetails::kNone));
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FakeSpeechRecognitionManager::OnFakeErrorSent,
                                 base::Unretained(this)));

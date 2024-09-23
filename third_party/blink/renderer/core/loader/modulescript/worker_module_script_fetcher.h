@@ -37,8 +37,9 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
 
   // Implements WorkerMainScriptLoaderClient, and these will be called for
   // dedicated workers (when PlzDedicatedWorker is enabled) and shared workers.
-  void DidReceiveData(base::span<const char> span) override;
-  void OnStartLoadingBody(const ResourceResponse& resource_response) override;
+  void DidReceiveDataWorkerMainScript(base::span<const char> span) override;
+  void OnStartLoadingBodyWorkerMainScript(
+      const ResourceResponse& resource_response) override;
   void OnFinishedLoadingWorkerMainScript() override;
   void OnFailedLoadingWorkerMainScript() override;
 

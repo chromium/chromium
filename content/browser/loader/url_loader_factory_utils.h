@@ -11,6 +11,10 @@
 #include "content/public/browser/content_browser_client.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 
+namespace net {
+class IsolationInfo;
+}
+
 namespace content {
 
 class StoragePartitionImpl;
@@ -29,8 +33,14 @@ CONTENT_EXPORT const Interceptor& GetTestingInterceptor();
 // behavior.
 // This method must be called either on the UI thread or before threads start.
 // This callback is run on the UI thread.
-// TODO(crbug.com/1506871): Document when the interception occurs.
+// TODO(crbug.com/40947547): Document when the interception occurs.
 CONTENT_EXPORT void SetInterceptorForTesting(const Interceptor& interceptor);
+
+// Only accessed on the IO thread.
+// Basically the same as `!!GetTestingInterceptor()`, and introduced to avoid
+// possible race conditions between UI/IO threads.
+CONTENT_EXPORT bool HasInterceptorOnIOThreadForTesting();
+CONTENT_EXPORT void SetHasInterceptorOnIOThreadForTesting(bool has_interceptor);
 
 // A parameter object for `ContentBrowserClient::WillCreateURLLoaderFactory()`.
 class CONTENT_EXPORT ContentClientParams final {
@@ -41,9 +51,10 @@ class CONTENT_EXPORT ContentClientParams final {
                       RenderFrameHost* frame,
                       int render_process_id,
                       const url::Origin& request_initiator,
+                      const net::IsolationInfo& isolation_info,
                       ukm::SourceIdObj ukm_source_id,
                       bool* bypass_redirect_checks = nullptr,
-                      std::optional<int64_t> navigation_id = absl::nullopt,
+                      std::optional<int64_t> navigation_id = std::nullopt,
                       scoped_refptr<base::SequencedTaskRunner>
                           navigation_response_task_runner = nullptr);
 
@@ -67,6 +78,7 @@ class CONTENT_EXPORT ContentClientParams final {
   raw_ptr<RenderFrameHost> frame_;
   int render_process_id_;
   raw_ref<const url::Origin> request_initiator_;
+  raw_ref<const net::IsolationInfo> isolation_info_;
   ukm::SourceIdObj ukm_source_id_;
   raw_ptr<bool> bypass_redirect_checks_;
   std::optional<int64_t> navigation_id_;
@@ -121,10 +133,13 @@ class CONTENT_EXPORT TerminalParams final {
   // caches. For requests served by the network service, use
   // `ForNetworkContext()` or `ForBrowserProcess()` as they should have
   // corresponding `NetworkContext`s.
+  //
+  // See the `process_id_` comment below for `process_id`.
   using URLLoaderFactoryTypes =
       absl::variant<mojo::PendingRemote<network::mojom::URLLoaderFactory>,
                     scoped_refptr<network::SharedURLLoaderFactory>>;
-  static TerminalParams ForNonNetwork(URLLoaderFactoryTypes url_loader_factory);
+  static TerminalParams ForNonNetwork(URLLoaderFactoryTypes url_loader_factory,
+                                      int process_id);
 
   TerminalParams(TerminalParams&&);
   TerminalParams& operator=(TerminalParams&&);
@@ -135,6 +150,7 @@ class CONTENT_EXPORT TerminalParams final {
   FactoryOverrideOption factory_override_option() const;
   DisableSecureDnsOption disable_secure_dns_option() const;
   StoragePartitionImpl* storage_partition() const;
+  int process_id() const;
   network::mojom::URLLoaderFactoryParamsPtr TakeFactoryParams();
   std::optional<URLLoaderFactoryTypes> TakeURLLoaderFactory();
 
@@ -145,7 +161,8 @@ class CONTENT_EXPORT TerminalParams final {
                  FactoryOverrideOption factory_override_option,
                  DisableSecureDnsOption disable_secure_dns_option,
                  StoragePartitionImpl* storage_partition,
-                 std::optional<URLLoaderFactoryTypes> url_loader_factory);
+                 std::optional<URLLoaderFactoryTypes> url_loader_factory,
+                 int process_id);
 
   raw_ptr<network::mojom::NetworkContext> network_context_;
   network::mojom::URLLoaderFactoryParamsPtr factory_params_;
@@ -154,6 +171,14 @@ class CONTENT_EXPORT TerminalParams final {
   DisableSecureDnsOption disable_secure_dns_option_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
   std::optional<URLLoaderFactoryTypes> url_loader_factory_;
+
+  // The process ID plumbed to URLLoaderInterceptor. This can be
+  // - a renderer process, or
+  // - `network::mojom::kBrowserProcessId` for browser process.
+  // TODO(crbug.com/324458368): This is different from
+  // `ContentClientParams::render_process_id_`. Clarify the meaning of
+  // `process_id_` here if needed.
+  int process_id_;
 };
 
 // Creates a URLLoaderFactory, intercepted by:

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_STORE_UTILS_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_STORE_UTILS_H_
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Query the password stores and reports multiple metrics. The actual reporting
 // is delayed by 30 seconds, to ensure it doesn't happen during the "hot phase"

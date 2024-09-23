@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("win") {
+  defines = [ "IS_STYLUS_HANDWRITING_WIN_IMPL" ]
+
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+}

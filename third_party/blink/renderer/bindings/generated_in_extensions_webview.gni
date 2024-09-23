@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generated sources for production
+
+generated_dictionary_sources_in_extensions_webview = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_get_media_integrity_token_provider_params.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_get_media_integrity_token_provider_params.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_options.h",
+]
+
+generated_enumeration_sources_in_extensions_webview = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.h",
+]
+
+generated_interface_sources_in_extensions_webview = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_android.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_android.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_token_provider.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_token_provider.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_web_view.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_webview/v8/v8_web_view.h",
+]

@@ -6,7 +6,7 @@ This is a brief overview of what they are and how they should be used. Refer to
 individual header files for details. C++ is not memory safe, so use these types
 to help guard against potential memory bugs.
 There are other pointer-like object types implemented elsewhere that may be
-right for a given use case, such as `absl::optional<T>` and
+right for a given use case, such as `std::optional<T>` and
 `std::unique_ptr<T>`. More on all types in video form
 [here](https://youtu.be/MpwbWSEDfjM?t=582s) and in a doc
 [here](https://docs.google.com/document/d/1VRevv8JhlP4I8fIlvf87IrW2IRjE0PbkSfIcI6-UbJo/edit?usp=sharing).

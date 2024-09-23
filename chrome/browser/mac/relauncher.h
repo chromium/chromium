@@ -32,6 +32,10 @@
 #include <string>
 #include <vector>
 
+namespace base {
+class FilePath;
+}
+
 namespace content {
 struct MainFunctionParams;
 }
@@ -40,29 +44,34 @@ namespace mac_relauncher {
 
 // Relaunches the application using the helper application associated with the
 // currently running instance of Chrome in the parent browser process as the
-// executable for the relauncher process. |args| is an argv-style vector of
-// command line arguments of the form normally passed to execv. args[0] is
-// also the path to the relaunched process. Because the relauncher process
-// will ultimately launch the relaunched process via Launch Services, args[0]
-// may be either a pathname to an executable file or a pathname to an .app
-// bundle directory. The caller should exit soon after RelaunchApp returns
-// successfully. Returns true on success, although some failures can occur
-// after this function returns true if, for example, they occur within the
-// relauncher process. Returns false when the relaunch definitely failed.
+// executable for the relauncher process. `args` is an argv-style vector of
+// command line arguments of the form normally passed to execv, to be passed to
+// the new instance of Chrome as it is launched. `args[0]` is ignored, as this
+// always relaunches the installation of Chrome used by the currently running
+// instance. If a different installation of Chrome needs to be launched, use
+// RelaunchAppAtPathWithHelper below.
+//
+// The caller should exit soon after RelaunchApp returns successfully. Returns
+// true on success, although some failures can occur after this function returns
+// true if, for example, they occur within the relauncher process. Returns false
+// when the relaunch definitely failed.
 bool RelaunchApp(const std::vector<std::string>& args);
 
-// Identical to RelaunchApp, but uses |helper| as the path to the relauncher
-// process, and allows additional arguments to be supplied to the relauncher
-// process in relauncher_args. Unlike args[0], |helper| must be a pathname to
-// an executable file. The helper path given must be from the same version of
-// Chrome as the running parent browser process, as there are no guarantees
-// that the parent and relauncher processes from different versions will be
-// able to communicate with one another. This variant can be useful to
-// relaunch the same version of Chrome from another location, using that
-// location's helper.
-bool RelaunchAppWithHelper(const std::string& helper,
-                           const std::vector<std::string>& relauncher_args,
-                           const std::vector<std::string>& args);
+// Identical to RelaunchApp, but uses `helper` as the path to use for the
+// relauncher process, launches the app at `app_bundle`, and allows additional
+// arguments to be supplied to the relauncher process in `relauncher_args`.
+// `args[0]` is ignored in favor of `app_bundle`.
+//
+// The specified helper must be from the same version of Chrome as the running
+// parent browser process, as there are no guarantees that the parent and
+// relauncher processes from different versions will be able to communicate with
+// one another. This variant can be useful to relaunch the same version of
+// Chrome from another location, using that location's helper.
+bool RelaunchAppAtPathWithHelper(
+    const base::FilePath& helper,
+    const base::FilePath& app_bundle,
+    const std::vector<std::string>& relauncher_args,
+    const std::vector<std::string>& args);
 
 namespace internal {
 

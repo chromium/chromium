@@ -1,0 +1,98 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("protocols") {
+  sources = [
+    "lens_overlay_bottom_sheet_presentation_delegate.h",
+    "lens_overlay_result_consumer.h",
+    "lens_result_page_mutator.h",
+    "lens_toolbar_consumer.h",
+    "lens_toolbar_mutator.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("view_controller") {
+  sources = [
+    "lens_overlay_consent_view_controller.h",
+    "lens_overlay_consent_view_controller.mm",
+    "lens_overlay_container_view_controller.h",
+    "lens_overlay_container_view_controller.mm",
+    "lens_result_page_consumer.h",
+    "lens_result_page_view_controller.h",
+    "lens_result_page_view_controller.mm",
+  ]
+  deps = [
+    ":lens_overlay_accessibility_identifier_constants",
+    ":lens_overlay_progress_bar",
+    ":protocols",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/omnibox/popup",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("lens_overlay_progress_bar") {
+  sources = [
+    "lens_overlay_progress_bar.h",
+    "lens_overlay_progress_bar.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+}
+
+source_set("entry_point") {
+  sources = [
+    "lens_overlay_entrypoint_view.h",
+    "lens_overlay_entrypoint_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("lens_overlay_accessibility_identifier_constants") {
+  sources = [
+    "lens_overlay_accessibility_identifier_constants.h",
+    "lens_overlay_accessibility_identifier_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "lens_overlay_container_egtest.mm" ]
+  deps = [
+    ":lens_overlay_accessibility_identifier_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

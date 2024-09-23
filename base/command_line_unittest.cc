@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/command_line.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
@@ -512,7 +518,7 @@ TEST(CommandLineTest, Init) {
   EXPECT_EQ(initial, current);
 }
 
-// Test that copies of CommandLine have a valid StringPiece map.
+// Test that copies of CommandLine have a valid std::string_view map.
 TEST(CommandLineTest, Copy) {
   auto initial = std::make_unique<CommandLine>(CommandLine::NO_PROGRAM);
   initial->AppendSwitch("a");
@@ -549,6 +555,42 @@ TEST(CommandLineTest, CopySwitches) {
   EXPECT_THAT(cl.argv(), testing::ElementsAre(FILE_PATH_LITERAL(""),
                                               FILE_PATH_LITERAL("--a"),
                                               FILE_PATH_LITERAL("--c")));
+}
+
+TEST(CommandLineTest, Move) {
+  static constexpr std::string_view kSwitches[] = {
+      "a",
+      "bbbbbbbbb",
+      "c",
+  };
+  static constexpr CommandLine::StringViewType kArgs[] = {
+      FILE_PATH_LITERAL("beebop"),
+      FILE_PATH_LITERAL("alouie"),
+  };
+  CommandLine initial(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    initial.AppendSwitch(a_switch);
+  }
+  for (auto an_arg : kArgs) {
+    initial.AppendArgNative(an_arg);
+  }
+
+  // Move construct and verify.
+  CommandLine move_constructed(std::move(initial));
+  initial = CommandLine(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    EXPECT_TRUE(move_constructed.HasSwitch(a_switch));
+  }
+  EXPECT_THAT(move_constructed.GetArgs(),
+              ::testing::ElementsAre(kArgs[0], kArgs[1]));
+
+  // Move assign and verify
+  initial = std::move(move_constructed);
+  move_constructed = CommandLine(CommandLine::NO_PROGRAM);
+  for (auto a_switch : kSwitches) {
+    EXPECT_TRUE(initial.HasSwitch(a_switch));
+  }
+  EXPECT_THAT(initial.GetArgs(), ::testing::ElementsAre(kArgs[0], kArgs[1]));
 }
 
 TEST(CommandLineTest, PrependSimpleWrapper) {
@@ -723,16 +765,16 @@ class MergeDuplicateFoosSemicolon : public DuplicateSwitchHandler {
  public:
   ~MergeDuplicateFoosSemicolon() override;
 
-  void ResolveDuplicate(base::StringPiece key,
-                        CommandLine::StringPieceType new_value,
+  void ResolveDuplicate(std::string_view key,
+                        CommandLine::StringViewType new_value,
                         CommandLine::StringType& out_value) override;
 };
 
 MergeDuplicateFoosSemicolon::~MergeDuplicateFoosSemicolon() = default;
 
 void MergeDuplicateFoosSemicolon::ResolveDuplicate(
-    base::StringPiece key,
-    CommandLine::StringPieceType new_value,
+    std::string_view key,
+    CommandLine::StringViewType new_value,
     CommandLine::StringType& out_value) {
   if (key != "mergeable-foo") {
     out_value = CommandLine::StringType(new_value);

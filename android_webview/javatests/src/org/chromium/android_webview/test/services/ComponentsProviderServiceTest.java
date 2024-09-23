@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.services;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,6 +32,7 @@ import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.services.SafeModeService;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -77,6 +80,7 @@ public class ComponentsProviderServiceTest {
      * service is unbound and killed, and the process is restarted between tests.
      */
     @RunWith(AwJUnit4ClassRunner.class)
+    @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
     public static class AutoBindServiceTests {
         private ServiceConnectionHelper mConnection;
         private IComponentsProviderService mService;
@@ -283,11 +287,12 @@ public class ComponentsProviderServiceTest {
     }
 
     /**
-     * This subclass groups tests that manually create the service object, unlike tests that
-     * bind the service (see {@link AutoBindServiceTests}). Since these tests don't rely on
-     * binding the service, they can be ran as unit tests.
+     * This subclass groups tests that manually create the service object, unlike tests that bind
+     * the service (see {@link AutoBindServiceTests}). Since these tests don't rely on binding the
+     * service, they can be ran as unit tests.
      */
     @RunWith(AwJUnit4ClassRunner.class)
+    @OnlyRunIn(EITHER_PROCESS) // These are unit tests
     @Batch(Batch.UNIT_TESTS)
     public static class ServiceOnCreateTests {
         private final ComponentsProviderService mService = new ComponentsProviderService();

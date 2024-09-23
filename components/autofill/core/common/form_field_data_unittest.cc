@@ -11,115 +11,116 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 void FillCommonFields(FormFieldData* data) {
-  data->label = u"label";
-  data->name = u"name";
-  data->value = u"value";
-  data->form_control_type = FormControlType::kInputPassword;
-  data->autocomplete_attribute = "off";
-  data->max_length = 200;
-  data->is_autofilled = true;
-  data->check_status = FormFieldData::CheckStatus::kChecked;
-  data->is_focusable = true;
-  data->should_autocomplete = false;
-  data->text_direction = base::i18n::RIGHT_TO_LEFT;
-  data->options = {{.value = u"First", .content = u"First"},
-                   {.value = u"Second", .content = u"Second"}};
+  data->set_label(u"label");
+  data->set_name(u"name");
+  data->set_value(u"value");
+  data->set_form_control_type(FormControlType::kInputPassword);
+  data->set_autocomplete_attribute("off");
+  data->set_max_length(200);
+  data->set_is_autofilled(true);
+  data->set_check_status(FormFieldData::CheckStatus::kChecked);
+  data->set_is_focusable(true);
+  data->set_should_autocomplete(false);
+  data->set_text_direction(base::i18n::RIGHT_TO_LEFT);
+  data->set_options({{.value = u"First", .text = u"First"},
+                     {.value = u"Second", .text = u"Second"}});
 }
 
 void FillVersion2Fields(FormFieldData* data) {
-  data->role = FormFieldData::RoleAttribute::kPresentation;
+  data->set_role(FormFieldData::RoleAttribute::kPresentation);
 }
 
 void FillVersion3Fields(FormFieldData* data) {
-  data->placeholder = u"placeholder";
+  data->set_placeholder(u"placeholder");
 }
 
 void FillVersion5Fields(FormFieldData* data) {
-  data->css_classes = u"class1 class2";
+  data->set_css_classes(u"class1 class2");
 }
 
 void FillVersion6Fields(FormFieldData* data) {
-  data->properties_mask =
-      FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
+  data->set_properties_mask(FieldPropertiesFlags::kUserTyped |
+                            FieldPropertiesFlags::kHadFocus);
 }
 
 void FillVersion7Fields(FormFieldData* data) {
-  data->id_attribute = u"id";
+  data->set_id_attribute(u"id");
 }
 
 void FillVersion8Fields(FormFieldData* data) {
-  data->name_attribute = u"name";
+  data->set_name_attribute(u"name");
 }
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.label);
-  pickle->WriteString16(data.name);
-  pickle->WriteString16(data.value);
-  pickle->WriteString(FormControlTypeToString(data.form_control_type));
-  pickle->WriteString(data.autocomplete_attribute);
-  pickle->WriteUInt64(data.max_length);
-  pickle->WriteBool(data.is_autofilled);
+  pickle->WriteString16(data.label());
+  pickle->WriteString16(data.name());
+  pickle->WriteString16(data.value());
+  pickle->WriteString(FormControlTypeToString(data.form_control_type()));
+  pickle->WriteString(data.autocomplete_attribute());
+  pickle->WriteUInt64(data.max_length());
+  pickle->WriteBool(data.is_autofilled());
 }
 
 void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteBool(IsChecked(data.check_status));
-  pickle->WriteBool(IsCheckable(data.check_status));
+  pickle->WriteBool(IsChecked(data.check_status()));
+  pickle->WriteBool(IsCheckable(data.check_status()));
 }
 
 void WriteSection4(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(static_cast<int>(data.check_status));
+  pickle->WriteInt(static_cast<int>(data.check_status()));
 }
 
 void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteBool(data.is_focusable);
-  pickle->WriteBool(data.should_autocomplete);
+  pickle->WriteBool(data.is_focusable());
+  pickle->WriteBool(data.should_autocomplete());
 }
 
 void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.text_direction);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const auto& option : data.options)
+  pickle->WriteInt(data.text_direction());
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const auto& option : data.options()) {
     pickle->WriteString16(option.value);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const auto& option : data.options)
-    pickle->WriteString16(option.content);
+  }
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const auto& option : data.options()) {
+    pickle->WriteString16(option.text);
+  }
 }
 
 void WriteVersion9Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.text_direction);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const SelectOption& option : data.options) {
+  pickle->WriteInt(data.text_direction());
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const SelectOption& option : data.options()) {
     pickle->WriteString16(option.value);
-    pickle->WriteString16(option.content);
+    pickle->WriteString16(option.text);
   }
 }
 
 void WriteVersion2Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(static_cast<int>(data.role));
+  pickle->WriteInt(static_cast<int>(data.role()));
 }
 
 void WriteVersion3Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.placeholder);
+  pickle->WriteString16(data.placeholder());
 }
 
 void WriteVersion5Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.css_classes);
+  pickle->WriteString16(data.css_classes());
 }
 
 void WriteVersion6Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteUInt32(data.properties_mask);
+  pickle->WriteUInt32(data.properties_mask());
 }
 
 void WriteVersion7Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.id_attribute);
+  pickle->WriteString16(data.id_attribute());
 }
 
 void WriteVersion8Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.name_attribute);
+  pickle->WriteString16(data.name_attribute());
 }
 
 void SerializeInVersion1Format(const FormFieldData& data,
@@ -222,8 +223,6 @@ void SerializeInVersion9Format(const FormFieldData& data,
   WriteVersion7Specific(data, pickle);
   WriteVersion8Specific(data, pickle);
 }
-
-}  // namespace
 
 TEST(FormFieldDataTest, SerializeAndDeserialize) {
   FormFieldData data;
@@ -444,9 +443,31 @@ TEST(FormFieldDataTest, IsTextInputElement) {
   for (const auto& test_case : test_data) {
     SCOPED_TRACE(testing::Message() << test_case.form_control_type);
     FormFieldData data;
-    data.form_control_type = test_case.form_control_type;
+    data.set_form_control_type(test_case.form_control_type);
     EXPECT_EQ(test_case.expected, data.IsTextInputElement());
   }
 }
 
+// Tests that FormFieldData::selected_option() finds the first matching option.
+TEST(FormFieldDataTest, SelectedOption) {
+  FormFieldData f;
+  EXPECT_EQ(f.selected_option(), std::nullopt);
+
+  f.set_options({SelectOption{.value = u"value1", .text = u"text1"},
+                 SelectOption{.value = u"value2", .text = u"text2"},
+                 SelectOption{.value = u"value2", .text = u"text3"}});
+
+  f.set_value(u"garbage");
+  EXPECT_EQ(f.selected_option(), std::nullopt);
+
+  f.set_value(u"value1");
+  EXPECT_EQ(f.selected_option().CopyAsOptional(),
+            (SelectOption{.value = u"value1", .text = u"text1"}));
+
+  f.set_value(u"value2");
+  EXPECT_EQ(f.selected_option().CopyAsOptional(),
+            (SelectOption{.value = u"value2", .text = u"text2"}));
+}
+
+}  // namespace
 }  // namespace autofill

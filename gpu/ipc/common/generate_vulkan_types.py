@@ -14,7 +14,7 @@ import typing
 
 from xml.etree import ElementTree
 
-_VK_XML_FILE = "third_party/vulkan-deps/vulkan-headers/src/registry/vk.xml"
+_VK_XML_FILE = "third_party/vulkan-headers/src/registry/vk.xml"
 
 _STRUCTS = [
   "VkExtensionProperties",
@@ -284,7 +284,7 @@ struct StructTraits<gpu::mojom::%sDataView, %s> {
       assert array_len
       traits_header_file.write(
 """
-  static base::StringPiece %s(const %s& input) {
+  static std::string_view %s(const %s& input) {
     return input.%s;
   }
 """ % (field_name, name, field_name))
@@ -334,7 +334,7 @@ bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
       read_method = "Read%s" % (NormalizedCamelCase(field_name))
       traits_source_file.write(
 """
-  base::StringPiece %s;
+  std::string_view %s;
   if (!data.%s(&%s))
     return false;
   %s.copy(out->%s, sizeof(out->%s));
@@ -389,7 +389,7 @@ struct EnumTraits<gpu::mojom::%s, %s> {
   traits_header_file.write(
 """
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return gpu::mojom::%s::INVALID_VALUE;
     }
   }
@@ -408,11 +408,11 @@ struct EnumTraits<gpu::mojom::%s, %s> {
   traits_header_file.write(
 """
       case gpu::mojom::%s::INVALID_VALUE:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
 
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };""" % name)
@@ -435,8 +435,9 @@ def GenerateTraitsFile(traits_header_file: typing.IO,
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "gpu/ipc/common/vulkan_types.h"
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 

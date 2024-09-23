@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -40,7 +41,7 @@ namespace {
 gfx::SizeF MakeViewport(const SVGViewportResolver& viewport_resolver,
                         const LengthPoint& point,
                         SVGUnitTypes::SVGUnitType type) {
-  if (!point.X().IsPercentOrCalc() && !point.Y().IsPercentOrCalc()) {
+  if (!point.X().HasPercent() && !point.Y().HasPercent()) {
     return gfx::SizeF(0, 0);
   }
   if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
@@ -52,7 +53,7 @@ gfx::SizeF MakeViewport(const SVGViewportResolver& viewport_resolver,
 float MakeViewportDimension(const SVGViewportResolver& viewport_resolver,
                             const Length& radius,
                             SVGUnitTypes::SVGUnitType type) {
-  if (!radius.IsPercentOrCalc()) {
+  if (!radius.HasPercent()) {
     return 0;
   }
   if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
@@ -131,6 +132,14 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
 
   // Create gradient object
   gradient_data->gradient = BuildGradient();
+  if (RuntimeEnabledFeatures::
+          SvgGradientColorInterpolationLinearRgbSupportEnabled()) {
+    gradient_data->gradient->SetColorInterpolationSpace(
+        StyleRef().ColorInterpolation() == EColorInterpolation::kLinearrgb
+            ? Color::ColorSpace::kSRGBLinear
+            : Color::ColorSpace::kNone,
+        Color::HueInterpolationMethod::kShorter);
+  }
   gradient_data->gradient->AddColorStops(attributes.Stops());
 
   gradient_data->userspace_transform *= attributes.GradientTransform();
@@ -210,7 +219,7 @@ GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(
       return kSpreadMethodRepeat;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSpreadMethodPad;
 }
 

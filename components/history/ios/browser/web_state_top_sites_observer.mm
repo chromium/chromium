@@ -25,7 +25,7 @@ WebStateTopSitesObserver::~WebStateTopSitesObserver() {
 void WebStateTopSitesObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // TODO(crbug.com/931841): Remove GetLastCommittedItem nil check once
+  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
   // HasComitted has been fixed.
   if (top_sites_ && navigation_context->HasCommitted() &&
       web_state->GetNavigationManager()->GetLastCommittedItem()) {

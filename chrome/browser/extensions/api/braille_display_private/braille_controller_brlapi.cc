@@ -81,8 +81,7 @@ void BrailleControllerImpl::TryLoadLibBrlApi() {
   static const char* const kSupportedVersion = "libbrlapi.so.0.8";
 
   if (!libbrlapi_loader_.Load(kSupportedVersion)) {
-    LOG(WARNING) << "Couldn't load libbrlapi(" << kSupportedVersion << ": "
-                 << strerror(errno);
+    PLOG(WARNING) << "Couldn't load libbrlapi(" << kSupportedVersion << ")";
   }
 }
 
@@ -140,7 +139,7 @@ void BrailleControllerImpl::AddObserver(BrailleObserver* observer) {
   if (!content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&BrailleControllerImpl::StartConnecting,
                                     base::Unretained(this)))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   observers_.AddObserver(observer);
 }
@@ -256,7 +255,7 @@ void BrailleControllerImpl::TryToConnect() {
         ScheduleTryToConnect();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -341,7 +340,7 @@ void BrailleControllerImpl::DispatchOnDisplayStateChanged(
             base::BindOnce(
                 &BrailleControllerImpl::DispatchOnDisplayStateChanged,
                 base::Unretained(this), std::move(new_state)))) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return;
   }

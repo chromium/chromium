@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -18,15 +19,19 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
 
 /**
- * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
- * to the {@link RecyclerView} used as view of a tab for the address accessory sheet component.
+ * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>} to the
+ * {@link RecyclerView} used as view of a tab for the address accessory sheet component.
  */
 class AddressAccessorySheetViewBinder {
-    static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
+    static ElementViewHolder create(
+            ViewGroup parent,
+            @AccessorySheetDataPiece.Type int viewType,
+            FaviconHelper faviconHelper) {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.TITLE:
-                return new AccessorySheetTabViewBinder.TitleViewHolder(
-                        parent, R.layout.keyboard_accessory_sheet_tab_title);
+                return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
+            case AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION:
+                return new PlusAddressInfoViewHolder(parent, faviconHelper);
             case AccessorySheetDataPiece.Type.ADDRESS_INFO:
                 return new AddressInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
@@ -34,6 +39,31 @@ class AddressAccessorySheetViewBinder {
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
+    }
+
+    static class PlusAddressInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.PlusAddressInfo, PlusAddressInfoView> {
+        private final FaviconHelper mFaviconHelper;
+
+        PlusAddressInfoViewHolder(ViewGroup parent, FaviconHelper faviconHelper) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_plus_address_info);
+            mFaviconHelper = faviconHelper;
+        }
+
+        @Override
+        protected void bind(
+                KeyboardAccessoryData.PlusAddressInfo section, PlusAddressInfoView view) {
+            UserInfoField plusAddressField = section.getPlusAddress();
+            ChipView chip = view.getPlusAddress();
+            chip.getPrimaryTextView().setText(plusAddressField.getDisplayText());
+            chip.getPrimaryTextView().setContentDescription(plusAddressField.getA11yDescription());
+            chip.setIcon(R.drawable.ic_plus_addresses_logo_24dp, /* tintWithTextColor= */ true);
+            chip.setOnClickListener(src -> plusAddressField.triggerSelection());
+
+            // Set the default icon, then try to get a better one.
+            view.setIconForBitmap(mFaviconHelper.getDefaultIcon(section.getOrigin()));
+            mFaviconHelper.fetchFavicon(section.getOrigin(), view::setIconForBitmap);
+        }
     }
 
     /** Holds a View representing a set of address data. */
@@ -71,8 +101,9 @@ class AddressAccessorySheetViewBinder {
         }
     }
 
-    static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
-        view.setAdapter(AddressAccessorySheetCoordinator.createAdapter(model));
+    static void initializeView(
+            RecyclerView view, AccessorySheetTabItemsModel model, FaviconHelper faviconHelper) {
+        view.setAdapter(AddressAccessorySheetCoordinator.createAdapter(model, faviconHelper));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(AddressAccessoryInfoView.class));
     }
 }

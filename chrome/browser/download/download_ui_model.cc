@@ -136,7 +136,7 @@ std::u16string FailStateDescription(FailState fail_state) {
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_CONTENT_LENGTH_MISMATCH;
       break;
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     // fallthrough
     case FailState::CANNOT_DOWNLOAD:
@@ -289,7 +289,7 @@ std::u16string DownloadUIModel::StatusTextBuilderBase::GetStatusText(
     case DownloadItem::CANCELLED:
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -354,10 +354,10 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DEEP_SCANNING, filename,
                                         offset);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-      // TODO(crbug.com/1491184): Implement UX for this danger type.
-      NOTREACHED();
-      break;
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+      return l10n_util::GetStringFUTF16(
+          IDS_DOWNLOAD_LOCAL_DECRYPTION_PROMPT_ALERT, filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return l10n_util::GetStringUTF16(IDS_PROMPT_DOWNLOAD_BLOCKED_SCAN_FAILED);
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -401,12 +401,12 @@ std::u16string DownloadUIModel::GetShowInFolderText() const {
 }
 
 ContentId DownloadUIModel::GetContentId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ContentId();
 }
 
 Profile* DownloadUIModel::profile() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -506,6 +506,15 @@ DownloadUIModel::GetInsecureDownloadStatus() const {
 
 void DownloadUIModel::OpenUsingPlatformHandler() {}
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::optional<DownloadCommands::Command>
+DownloadUIModel::MaybeGetMediaAppAction() const {
+  return std::nullopt;
+}
+
+void DownloadUIModel::OpenUsingMediaApp() {}
+#endif
+
 bool DownloadUIModel::IsBeingRevived() const {
   return true;
 }
@@ -529,7 +538,7 @@ base::FilePath DownloadUIModel::GetTargetFilePath() const {
 }
 
 void DownloadUIModel::OpenDownload() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 download::DownloadItem::DownloadState DownloadUIModel::GetState() const {
@@ -629,7 +638,9 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-      NOTREACHED();
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
+      NOTREACHED_IN_MIGRATION();
       return false;
     case DownloadCommands::CANCEL:
       return !IsDone();
@@ -657,7 +668,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
       return CanUserTurnOnSafeBrowsing(profile());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -667,7 +678,7 @@ bool DownloadUIModel::IsCommandChecked(
   switch (command) {
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
@@ -689,6 +700,8 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       return false;
   }
   return false;
@@ -700,7 +713,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case DownloadCommands::PLATFORM_OPEN:
       OpenUsingPlatformHandler();
@@ -713,27 +726,33 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
-      download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
-          download_commands->GetLearnMoreURLForInterruptedDownload(),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false));
+      download_commands->GetBrowser()->OpenURL(
+          content::OpenURLParams(
+              download_commands->GetLearnMoreURLForInterruptedDownload(),
+              content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK, false),
+          /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
-      download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
-          GURL(chrome::kInsecureDownloadBlockingLearnMoreUrl),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false));
+      download_commands->GetBrowser()->OpenURL(
+          content::OpenURLParams(
+              GURL(chrome::kInsecureDownloadBlockingLearnMoreUrl),
+              content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              ui::PAGE_TRANSITION_LINK, false),
+          /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
-      download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
-          google_util::AppendGoogleLocaleParam(
-              GURL(chrome::kDownloadBlockedLearnMoreURL),
-              g_browser_process->GetApplicationLocale()),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false));
+      download_commands->GetBrowser()->OpenURL(
+          content::OpenURLParams(google_util::AppendGoogleLocaleParam(
+                                     GURL(chrome::kDownloadBlockedLearnMoreURL),
+                                     g_browser_process->GetApplicationLocale()),
+                                 content::Referrer(),
+                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                 ui::PAGE_TRANSITION_LINK, false),
+          /*navigation_handle_callback=*/{});
       break;
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
       chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
@@ -758,12 +777,24 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
       break;
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      OpenUsingMediaApp();
+#else
+      NOTREACHED_IN_MIGRATION();
+#endif
+      break;
   }
 }
 
 DownloadUIModel::TailoredWarningType DownloadUIModel::GetTailoredWarningType()
     const {
   return TailoredWarningType::kNoTailoredWarning;
+}
+
+DownloadUIModel::DangerUiPattern DownloadUIModel::GetDangerUiPattern() const {
+  return DangerUiPattern::kNormal;
 }
 
 bool DownloadUIModel::ShouldShowInBubble() const {
@@ -999,7 +1030,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
             l10n_util::GetStringUTF16(
                 IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNED_FAILED_UPDATED),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_SUSPICIOUS));
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      // "Blocked • Scan failed"
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_SCAN_FAILED);
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
@@ -1133,28 +1166,28 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
   if (model_->GetEndTime().is_null()) {
     // Offline items have these null.
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE);
-  } else {
-    std::u16string delta_str;
-    if (model_->GetDangerType() ==
-        download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
-        // "2 B • Scan is done"
-        delta_str = l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED);
-    } else {
-      base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
-      // If less than 1 minute has passed since download completed: "2 B • Done"
-      // Otherwise: e.g. "2 B • 3 minutes ago"
-      delta_str =
-          time_elapsed.InMinutes() == 0
-              ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE)
-              : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
-                                       ui::TimeFormat::LENGTH_LONG,
-                                       time_elapsed);
-    }
-    return GetBubbleStatusMessageWithBytes(
-        ui::FormatBytes(model_->GetTotalBytes()), delta_str,
-        /*is_active=*/false);
   }
+  std::u16string delta_str;
+  if (model_->GetDangerType() ==
+      download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
+    // "2 B • Scan is done"
+    delta_str = l10n_util::GetStringUTF16(
+        IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED);
+  } else {
+    base::TimeDelta time_elapsed = base::Time::Now() - model_->GetEndTime();
+    // If less than 1 minute has passed since download completed: "2 B • Done"
+    // Otherwise: e.g. "2 B • 3 minutes ago"
+    // If the elapsed time is negative (could happen if the system time has
+    // been adjusted backwards), also just display "2 B • Done".
+    delta_str =
+        time_elapsed.InMinutes() <= 0
+            ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE)
+            : ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                     ui::TimeFormat::LENGTH_LONG, time_elapsed);
+  }
+  return GetBubbleStatusMessageWithBytes(
+      ui::FormatBytes(model_->GetTotalBytes()), delta_str,
+      /*is_active=*/false);
 }
 
 // To clarify variable / method names in methods below that help form failure
@@ -1279,7 +1312,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
       string_id = IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_WRONG;
       break;
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return l10n_util::GetStringUTF16(string_id);
@@ -1331,6 +1364,6 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
       GetFileNameToReportUser().LossyDisplayName());
 }
 
-bool DownloadUIModel::IsEncryptedArchive() const {
+bool DownloadUIModel::IsTopLevelEncryptedArchive() const {
   return false;
 }

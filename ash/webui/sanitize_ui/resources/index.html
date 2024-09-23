@@ -1,0 +1,28 @@
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <title></title>
+    <link rel="stylesheet" href="chrome://theme/typography.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <style>
+      body {
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      html {
+        background-color: var(--cros-sys-app_base_shaded);
+      }
+    </style>
+  </head>
+  <body class="jelly-enabled">
+    <sanitize-app></sanitize-app>
+    <script type="module" src="sanitize_app.js"></script>
+  </body>
+</html>

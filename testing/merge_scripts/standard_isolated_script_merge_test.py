@@ -8,28 +8,25 @@ import os
 import shutil
 import tempfile
 import unittest
-
-import mock
+from unittest import mock
 
 import common_merge_script_tests
-
-THIS_DIR = os.path.dirname(__file__)
-
 import standard_isolated_script_merge
 
-
 TWO_COMPLETED_SHARDS = {
-      u'shards': [
+    u'shards': [
         {
-          u'state': u'COMPLETED',
+            u'state': u'COMPLETED',
         },
         {
-          u'state': u'COMPLETED',
+            u'state': u'COMPLETED',
         },
-      ],
-    }
+    ],
+}
+
 
 class StandardIsolatedScriptMergeTest(unittest.TestCase):
+
   def setUp(self):
     self.temp_dir = tempfile.mkdtemp()
     self.test_files = []
@@ -39,6 +36,7 @@ class StandardIsolatedScriptMergeTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
     super(StandardIsolatedScriptMergeTest, self).tearDown()
+
   # pylint: enable=super-with-arguments
 
   def _write_temp_file(self, path, content):
@@ -59,20 +57,20 @@ class StandardIsolatedScriptMergeTest(unittest.TestCase):
       abs_path = self._write_temp_file(path, content)
       self.test_files.append(abs_path)
 
+
 class OutputTest(StandardIsolatedScriptMergeTest):
+
   def test_success_and_failure(self):
-    self._stage(TWO_COMPLETED_SHARDS,
-    {
-      '0/output.json':
-          {
-            'successes': ['fizz', 'baz'],
-          },
-      '1/output.json':
-          {
-            'successes': ['buzz', 'bar'],
-            'failures': ['failing_test_one']
-          }
-    })
+    self._stage(
+        TWO_COMPLETED_SHARDS, {
+            '0/output.json': {
+                'successes': ['fizz', 'baz'],
+            },
+            '1/output.json': {
+                'successes': ['buzz', 'bar'],
+                'failures': ['failing_test_one']
+            }
+        })
 
     output_json_file = os.path.join(self.temp_dir, 'output.json')
     standard_isolated_script_merge.StandardIsolatedScriptMerge(
@@ -80,17 +78,15 @@ class OutputTest(StandardIsolatedScriptMergeTest):
 
     with open(output_json_file, 'r') as f:
       results = json.load(f)
-      self.assertEquals(results['successes'], ['fizz', 'baz', 'buzz', 'bar'])
-      self.assertEquals(results['failures'], ['failing_test_one'])
+      self.assertEqual(results['successes'], ['fizz', 'baz', 'buzz', 'bar'])
+      self.assertEqual(results['failures'], ['failing_test_one'])
       self.assertTrue(results['valid'])
 
   def test_missing_shard(self):
-    self._stage(TWO_COMPLETED_SHARDS,
-    {
-      '0/output.json':
-          {
+    self._stage(TWO_COMPLETED_SHARDS, {
+        '0/output.json': {
             'successes': ['fizz', 'baz'],
-          },
+        },
     })
     output_json_file = os.path.join(self.temp_dir, 'output.json')
     standard_isolated_script_merge.StandardIsolatedScriptMerge(
@@ -98,11 +94,12 @@ class OutputTest(StandardIsolatedScriptMergeTest):
 
     with open(output_json_file, 'r') as f:
       results = json.load(f)
-      self.assertEquals(results['successes'], ['fizz', 'baz'])
-      self.assertEquals(results['failures'], [])
+      self.assertEqual(results['successes'], ['fizz', 'baz'])
+      self.assertEqual(results['failures'], [])
       self.assertTrue(results['valid'])
-      self.assertEquals(results['global_tags'], ['UNRELIABLE_RESULTS'])
-      self.assertEquals(results['missing_shards'], [1])
+      self.assertEqual(results['global_tags'], ['UNRELIABLE_RESULTS'])
+      self.assertEqual(results['missing_shards'], [1])
+
 
 class InputParsingTest(StandardIsolatedScriptMergeTest):
   # pylint: disable=super-with-arguments
@@ -110,60 +107,58 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
     super(InputParsingTest, self).setUp()
 
     self.merge_test_results_args = []
+
     def mock_merge_test_results(results_list):
       self.merge_test_results_args.append(results_list)
       return {
-        'foo': [
-          'bar',
-          'baz',
-        ],
+          'foo': [
+              'bar',
+              'baz',
+          ],
       }
 
     m = mock.patch(
-      'standard_isolated_script_merge.results_merger.merge_test_results',
-      side_effect=mock_merge_test_results)
+        'standard_isolated_script_merge.results_merger.merge_test_results',
+        side_effect=mock_merge_test_results)
     m.start()
     self.addCleanup(m.stop)
+
   # pylint: enable=super-with-arguments
 
   def test_simple(self):
-    self._stage(TWO_COMPLETED_SHARDS,
-    {
-      '0/output.json':
-          {
-            'result0': ['bar', 'baz'],
-          },
-      '1/output.json':
-          {
-            'result1': {'foo': 'bar'}
-          }
-    })
+    self._stage(
+        TWO_COMPLETED_SHARDS, {
+            '0/output.json': {
+                'result0': ['bar', 'baz'],
+            },
+            '1/output.json': {
+                'result1': {
+                    'foo': 'bar'
+                }
+            }
+        })
 
     output_json_file = os.path.join(self.temp_dir, 'output.json')
     exit_code = standard_isolated_script_merge.StandardIsolatedScriptMerge(
         output_json_file, self.summary, self.test_files)
 
-    self.assertEquals(0, exit_code)
-    self.assertEquals(
-      [
-        [
-          {
+    self.assertEqual(0, exit_code)
+    self.assertEqual([
+        [{
             'result0': [
-              'bar', 'baz',
+                'bar',
+                'baz',
             ],
-          },
-          {
+        }, {
             'result1': {
-              'foo': 'bar',
+                'foo': 'bar',
             },
-          }
-        ],
-      ],
-      self.merge_test_results_args)
+        }],
+    ], self.merge_test_results_args)
 
   def test_no_jsons(self):
     self._stage({
-      u'shards': [],
+        u'shards': [],
     }, {})
 
     json_files = []
@@ -171,16 +166,17 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
     exit_code = standard_isolated_script_merge.StandardIsolatedScriptMerge(
         output_json_file, self.summary, json_files)
 
-    self.assertEquals(0, exit_code)
-    self.assertEquals([[]], self.merge_test_results_args)
+    self.assertEqual(0, exit_code)
+    self.assertEqual([[]], self.merge_test_results_args)
 
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
   # pylint: disable=super-with-arguments
   def __init__(self, methodName='runTest'):
-    super(CommandLineTest, self).__init__(
-        methodName, standard_isolated_script_merge)
+    super(CommandLineTest, self).__init__(methodName,
+                                          standard_isolated_script_merge)
+
   # pylint: enable=super-with-arguments
 
 

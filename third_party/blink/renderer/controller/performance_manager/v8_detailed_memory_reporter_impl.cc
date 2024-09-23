@@ -70,7 +70,8 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
         isolate_memory_usage->detached_bytes_used += size;
         continue;
       }
-      if (DOMWrapperWorld::World(context).GetWorldId() !=
+      v8::Isolate* isolate = context->GetIsolate();
+      if (DOMWrapperWorld::World(isolate, context).GetWorldId() !=
           DOMWrapperWorld::kMainWorldId) {
         // TODO(crbug.com/1085129): Handle extension contexts once they get
         // their own V8ContextToken.
@@ -106,7 +107,7 @@ v8::MeasureMemoryExecution ToV8MeasureMemoryExecution(
     case V8DetailedMemoryReporterImpl::Mode::LAZY:
       return v8::MeasureMemoryExecution::kLazy;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ExecutionContextToken ToExecutionContextToken(WorkerToken token) {
@@ -240,7 +241,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
 
     std::move(callback_).Run(std::move(result_));
   }
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
   GetV8MemoryUsageCallback callback_;
   mojom::blink::PerProcessV8MemoryUsagePtr result_;
   bool main_measurement_done_ = false;

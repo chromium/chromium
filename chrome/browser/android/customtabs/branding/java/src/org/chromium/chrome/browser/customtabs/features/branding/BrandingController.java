@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
@@ -20,7 +21,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.ui.widget.Toast;
 
@@ -53,34 +53,36 @@ public class BrandingController {
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
     private final String mBrowserName;
+    private final int mToastTemplateId;
     @Nullable private final PureJavaExceptionReporter mExceptionReporter;
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
-    private boolean mReleaseStorageOnFinished;
 
     /**
      * Branding controller responsible for showing branding.
+     *
      * @param context Context used to fetch package information for embedded app.
-     * @param appId The ID for the embedded app.
+     * @param appId The ID for the embedded app. Can be {@code null}
      * @param browserName The browser name shown on the branding toast.
+     * @param toastTemplateId Resource ID of the string to be shown on Toast branding UI.
      * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
     public BrandingController(
             Context context,
             String appId,
             String browserName,
+            @StringRes int toastTemplateId,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
         mBrowserName = browserName;
+        mToastTemplateId = toastTemplateId;
         mExceptionReporter = exceptionReporter;
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
-        mReleaseStorageOnFinished =
-                ChromeFeatureList.sCctBrandTransparencyMemoryImprovement.isEnabled();
 
-        // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
+        // TODO(crbug.com/40234239): Start branding checker during CCT warm up.
         mBrandingChecker =
                 new BrandingChecker(
                         appId,
@@ -166,9 +168,7 @@ public class BrandingController {
             return;
         }
 
-        String toastText =
-                mContext.getResources()
-                        .getString(R.string.twa_running_in_chrome_template, mBrowserName);
+        String toastText = mContext.getResources().getString(mToastTemplateId, mBrowserName);
         TextView runInChromeTextView =
                 (TextView)
                         LayoutInflater.from(mContext)
@@ -177,18 +177,12 @@ public class BrandingController {
 
         Toast toast =
                 new Toast(mContext.getApplicationContext(), /* toastView= */ runInChromeTextView);
-        if (mReleaseStorageOnFinished) {
-            toast.setDuration(Toast.LENGTH_LONG);
-            toast.show();
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_BEST_EFFORT,
-                    mCallbackController.makeCancelable(toast::cancel),
-                    durationMs);
-            return;
-        }
-        mToast = toast;
-        mToast.setDuration((int) durationMs);
-        mToast.show();
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
+        PostTask.postDelayedTask(
+                TaskTraits.UI_BEST_EFFORT,
+                mCallbackController.makeCancelable(toast::cancel),
+                durationMs);
     }
 
     /** Prevent any updates to this instance and cancel all scheduled callbacks. */
@@ -221,7 +215,7 @@ public class BrandingController {
 
                             // Release the in-memory share pref from the current session if branding
                             // checker didn't timeout.
-                            if (mReleaseStorageOnFinished && !mBrandingChecker.isCancelled()) {
+                            if (!mBrandingChecker.isCancelled()) {
                                 SharedPreferencesBrandingTimeStorage.resetInstance();
                             }
                         }));

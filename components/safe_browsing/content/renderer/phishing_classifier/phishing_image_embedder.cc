@@ -52,6 +52,7 @@ void PhishingImageEmbedder::BeginImageEmbedding(DoneCallback done_callback) {
 }
 
 void PhishingImageEmbedder::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (bitmap) {
     bitmap_ = std::move(bitmap);
     ScorerStorage::GetInstance()
@@ -63,6 +64,9 @@ void PhishingImageEmbedder::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
   } else {
     RunFailureCallback();
   }
+#else
+  RunFailureCallback();
+#endif
 }
 
 void PhishingImageEmbedder::CancelPendingImageEmbedding() {

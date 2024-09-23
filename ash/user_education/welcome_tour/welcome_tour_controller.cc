@@ -4,7 +4,9 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -33,16 +35,22 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -57,15 +65,38 @@ namespace {
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
 
+// Strings.
+constexpr char16_t kTotalStepsV1[] = u"5";
+constexpr char16_t kTotalStepsV2[] = u"6";
+
 // Helpers ---------------------------------------------------------------------
 
 user_education::HelpBubbleParams::ExtendedProperties
 CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id) {
   return user_education_util::CreateExtendedProperties(
       user_education_util::CreateExtendedProperties(help_bubble_id),
-      user_education_util::CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM),
+      user_education_util::CreateExtendedProperties(
+          ui::mojom::ModalType::kSystem),
       user_education_util::CreateExtendedProperties(
           /*body_icon=*/gfx::kNoneIcon));
+}
+
+user_education::HelpBubbleParams::ExtendedProperties
+CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id,
+                                   const std::string& body_text) {
+  return user_education_util::CreateExtendedProperties(
+      CreateHelpBubbleExtendedProperties(help_bubble_id),
+      user_education_util::CreateExtendedPropertiesWithBodyText(body_text));
+}
+
+user_education::HelpBubbleParams::ExtendedProperties
+CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id,
+                                   const std::string& accessible_name,
+                                   const std::string& body_text) {
+  return user_education_util::CreateExtendedProperties(
+      CreateHelpBubbleExtendedProperties(help_bubble_id, body_text),
+      user_education_util::CreateExtendedPropertiesWithAccessibleName(
+          accessible_name));
 }
 
 base::RepeatingCallback<void(ui::TrackedElement*)> DefaultNextButtonCallback() {
@@ -93,7 +124,7 @@ views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
 
 void LaunchExploreAppAsync(UserEducationPrivateApiKey key) {
   UserEducationController::Get()->LaunchSystemWebAppAsync(
-      key, ash::SystemWebAppType::HELP,
+      key, ash::SystemWebAppType::HELP, apps::LaunchSource::kFromWelcomeTour,
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
@@ -154,6 +185,11 @@ ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
 
 user_education::TutorialDescription
 WelcomeTourController::GetTutorialDescription() const {
+  const std::u16string product_name = ui::GetChromeOSDeviceName();
+  const std::u16string total_steps =
+      features::IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
+  int current_step = 1;
+
   user_education::TutorialDescription tutorial_description;
   tutorial_description.complete_button_text_id =
       IDS_ASH_WELCOME_TOUR_COMPLETE_BUTTON_TEXT;
@@ -176,9 +212,16 @@ WelcomeTourController::GetTutorialDescription() const {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kShelfViewElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomCenter)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourShelf))
+              HelpBubbleId::kWelcomeTourShelf,
+              /*accessible_name=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_ACCNAME,
+                  base::NumberToString16(current_step++), total_steps),
+              /*body_text=*/
+              l10n_util::GetStringUTF8(
+                  IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)))
           .AddCustomNextButton(DefaultNextButtonCallback().Then(
               base::BindRepeating(&WelcomeTourController::SetCurrentStep,
                                   weak_ptr_factory_.GetMutableWeakPtr(),
@@ -200,9 +243,16 @@ WelcomeTourController::GetTutorialDescription() const {
       user_education::TutorialDescription::BubbleStep(
           kUnifiedSystemTrayElementName)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomRight)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourStatusArea))
+              HelpBubbleId::kWelcomeTourStatusArea,
+              /*accessible_name=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
+                  base::NumberToString16(current_step++), total_steps),
+              /*body_text=*/
+              l10n_util::GetStringUTF8(
+                  IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)))
           .AddCustomNextButton(DefaultNextButtonCallback().Then(
               base::BindRepeating(&WelcomeTourController::SetCurrentStep,
                                   weak_ptr_factory_.GetMutableWeakPtr(),
@@ -224,9 +274,21 @@ WelcomeTourController::GetTutorialDescription() const {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourHomeButton))
+              HelpBubbleId::kWelcomeTourHomeButton,
+              /*accessible_name=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
+                  base::NumberToString16(current_step++), total_steps,
+                  product_name),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  (chromeos::GetDeviceType() ==
+                   chromeos::DeviceType::kChromebook)
+                      ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
+                      : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
+                  product_name)))
           .AddCustomNextButton(base::BindRepeating([](ui::TrackedElement*) {
                                  Shell::Get()->app_list_controller()->Show(
                                      GetPrimaryDisplayId(),
@@ -244,13 +306,25 @@ WelcomeTourController::GetTutorialDescription() const {
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopCenter)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourSearchBox))
-          .AddCustomNextButton(DefaultNextButtonCallback().Then(
-              base::BindRepeating(&WelcomeTourController::SetCurrentStep,
-                                  weak_ptr_factory_.GetMutableWeakPtr(),
-                                  welcome_tour_metrics::Step::kSettingsApp)))
+              HelpBubbleId::kWelcomeTourSearchBox,
+              /*accessible_name=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
+                  base::NumberToString16(current_step++), total_steps,
+                  product_name),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                  product_name)))
+          .AddCustomNextButton(
+              DefaultNextButtonCallback().Then(base::BindRepeating(
+                  &WelcomeTourController::SetCurrentStep,
+                  weak_ptr_factory_.GetMutableWeakPtr(),
+                  features::IsWelcomeTourV2Enabled()
+                      ? welcome_tour_metrics::Step::kFilesApp
+                      : welcome_tour_metrics::Step::kSettingsApp)))
           .InAnyContext());
 
   // Wait for "Next" button click before proceeding to the next bubble step.
@@ -260,13 +334,51 @@ WelcomeTourController::GetTutorialDescription() const {
           kSearchBoxViewElementId)
           .InSameContext());
 
-  // Step 5: Settings app.
+  if (features::IsWelcomeTourV2Enabled()) {
+    // Step 5 in V2: Files app.
+    tutorial_description.steps.emplace_back(
+        user_education::TutorialDescription::BubbleStep(kFilesAppElementId)
+            .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
+            .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
+            .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
+                HelpBubbleId::kWelcomeTourFilesApp,
+                /*accessible_name=*/
+                l10n_util::GetStringFUTF8(
+                    IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME,
+                    base::NumberToString16(current_step++), total_steps),
+                /*body_text=*/
+                l10n_util::GetStringUTF8(
+                    IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)))
+            .AddCustomNextButton(DefaultNextButtonCallback().Then(
+                base::BindRepeating(&WelcomeTourController::SetCurrentStep,
+                                    weak_ptr_factory_.GetMutableWeakPtr(),
+                                    welcome_tour_metrics::Step::kSettingsApp)))
+            .InSameContext());
+
+    // Wait for "Next" button click before proceeding to the next bubble step.
+    tutorial_description.steps.emplace_back(
+        user_education::TutorialDescription::EventStep(
+            user_education::kHelpBubbleNextButtonClickedEvent,
+            kFilesAppElementId)
+            .InSameContext());
+  }
+
+  // Step 5 in V1 and step 6 in V2: Settings app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSettingsAppElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourSettingsApp))
+              HelpBubbleId::kWelcomeTourSettingsApp,
+              /*accessible_name=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
+                  base::NumberToString16(current_step++), total_steps,
+                  product_name),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                  product_name)))
           .AddCustomNextButton(DefaultNextButtonCallback().Then(
               base::BindRepeating(&WelcomeTourController::SetCurrentStep,
                                   weak_ptr_factory_.GetMutableWeakPtr(),
@@ -280,30 +392,52 @@ WelcomeTourController::GetTutorialDescription() const {
           kSettingsAppElementId)
           .InSameContext());
 
-  // Step 6: Explore app.
+  // Step 6 in V1 and step 7 in V2: Explore app.
+  // NOTE: The accessible name is the same as the body text.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kExploreAppElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
+          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourExploreApp))
+              HelpBubbleId::kWelcomeTourExploreApp,
+              /*body_text=*/l10n_util::GetStringFUTF8(
+                  IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
+                  product_name)))
           .InSameContext());
 
-  // Step 7: Explore app window.
+  // Step 7 in V1 and step 8 in V2: Explore app window.
   // Implemented in `WelcomeTourController::OnWelcomeTourEnded()`.
 
   return tutorial_description;
 }
 
 void WelcomeTourController::OnAccessibilityControllerShutdown() {
+  if (features::IsWelcomeTourChromeVoxSupported()) {
+    accessibility_observation_.Reset();
+    return;
+  }
+
   MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kShutdown);
 }
 
 void WelcomeTourController::OnAccessibilityStatusChanged() {
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    MaybeAbortWelcomeTour(
-        welcome_tour_metrics::AbortedReason::kChromeVoxEnabled);
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    return;
   }
+
+  // Record the usage of ChromeVox in Welcome Tour.
+  if (features::IsWelcomeTourChromeVoxSupported()) {
+    welcome_tour_metrics::RecordChromeVoxEnabled(
+        welcome_tour_metrics::ChromeVoxEnabled::kDuringTour);
+    return;
+  }
+
+  MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kChromeVoxEnabled);
+}
+
+void WelcomeTourController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  MaybeStartWelcomeTour();
 }
 
 void WelcomeTourController::OnActiveUserSessionChanged(
@@ -337,7 +471,8 @@ void WelcomeTourController::OnDisplayTabletStateChanged(
 void WelcomeTourController::MaybeStartWelcomeTour() {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  if (!user_education_util::IsPrimaryAccountActive()) {
+  if (!user_education_util::IsPrimaryAccountActive() ||
+      !user_education_util::IsPrimaryAccountPrefServiceActive()) {
     return;
   }
 
@@ -345,20 +480,27 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // the tour when the primary user session is activated for the first time.
   session_observation_.Reset();
 
+  // `prefs` is guaranteed to be non-null since this method is only called when
+  // the primary user pref service is active.
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+  CHECK(prefs);
+
+  welcome_tour_metrics::MaybeActivateExperimentalArm(prefs);
+
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
     // Welcome Tour is supported for regular users only.
     const auto* const session_controller = Shell::Get()->session_controller();
     if (const auto user_type = session_controller->GetUserType();
         user_type != user_manager::UserType::kRegular) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
+          prefs, welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
       return;
     }
 
     // Welcome Tour is not supported for managed accounts.
     if (session_controller->IsActiveAccountManaged()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kManagedAccount);
+          prefs, welcome_tour_metrics::PreventedReason::kManagedAccount);
       return;
     }
 
@@ -367,7 +509,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // considered "new" locally in case the proxy check proves to be erroneous.
     if (!session_controller->IsUserFirstLogin()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
+          prefs, welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
       return;
     }
 
@@ -379,6 +521,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // cannot be delayed and we want to err on the side of being conservative.
     if (!is_new_user.has_value()) {
       welcome_tour_metrics::RecordTourPrevented(
+          prefs,
           welcome_tour_metrics::PreventedReason::kUserNewnessNotAvailable);
       return;
     }
@@ -386,7 +529,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // Welcome Tour is not supported for "existing" users.
     if (!is_new_user.value()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
+          prefs, welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
       return;
     }
   }
@@ -394,36 +537,39 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // We should attempt to launch the Explore app even if the Welcome Tour is
   // prevented provided that (a) the user is new, and (b) the device is not in
   // tablet mode. This is in keeping with existing first run behavior.
-  base::ScopedClosureRunner maybe_launch_explore_app_async(
-      display::Screen::GetScreen()->InTabletMode()
-          ? base::DoNothing()
-          : base::BindOnce(&LaunchExploreAppAsync,
-                           UserEducationPrivateApiKey()));
+  absl::Cleanup maybe_launch_explore_app_async = [] {
+    if (!display::Screen::GetScreen()->InTabletMode()) {
+      LaunchExploreAppAsync(UserEducationPrivateApiKey());
+    }
+  };
 
-  // Welcome Tour is not supported with ChromeVox enabled.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+  // Welcome Tour is only conditionally supported with ChromeVox enabled.
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled() &&
+      !features::IsWelcomeTourChromeVoxSupported()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kChromeVoxEnabled);
+        prefs, welcome_tour_metrics::PreventedReason::kChromeVoxEnabled);
     return;
   }
 
   // Welcome Tour is not supported in tablet mode.
   if (display::Screen::GetScreen()->InTabletMode()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
+        prefs, welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
   }
 
-  // Welcome Tour is not supported for counterfactual experiment arms.
-  if (features::IsWelcomeTourEnabledCounterfactually()) {
+  welcome_tour_metrics::MaybeRecordExperimentalArm(prefs);
+
+  // Welcome Tour is not supported for holdback experiment arm.
+  if (features::IsWelcomeTourHoldbackEnabled()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm);
+        prefs, welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm);
     return;
   }
 
   // The Welcome Tour is not being prevented, so hold off on opening the Explore
   // app until the Welcome Tour is either completed or aborted.
-  std::ignore = maybe_launch_explore_app_async.Release();
+  std::move(maybe_launch_explore_app_async).Cancel();
 
   auto* const tutorial_controller = UserEducationTutorialController::Get();
   if (!tutorial_controller->IsTutorialRegistered(TutorialId::kWelcomeTour)) {
@@ -462,6 +608,12 @@ void WelcomeTourController::MaybeAbortWelcomeTour(
 }
 
 void WelcomeTourController::OnWelcomeTourStarted() {
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    CHECK(features::IsWelcomeTourChromeVoxSupported());
+    welcome_tour_metrics::RecordChromeVoxEnabled(
+        welcome_tour_metrics::ChromeVoxEnabled::kBeforeTour);
+  }
+
   aborted_reason_ = welcome_tour_metrics::AbortedReason::kUnknown;
   accelerator_handler_ = std::make_unique<WelcomeTourAcceleratorHandler>(
       base::BindRepeating(&WelcomeTourController::MaybeAbortWelcomeTour,
@@ -544,8 +696,13 @@ void WelcomeTourController::OnWelcomeTourEnded(
 
   SetCurrentStep(std::nullopt);
 
-  welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
-                                           completed);
+  welcome_tour_metrics::RecordTourDuration(
+      user_education_util::GetLastActiveUserPrefService(),
+      time_since_start.Elapsed(), completed);
+
+  welcome_tour_metrics::RecordTourResult(
+      completed ? welcome_tour_metrics::TourResult::kCompleted
+                : welcome_tour_metrics::TourResult::kAborted);
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();

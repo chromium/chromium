@@ -40,4 +40,11 @@ CreateMarkupOptions::Builder::SetIsForMarkupSanitization(
   return *this;
 }
 
+CreateMarkupOptions::Builder&
+CreateMarkupOptions::Builder::SetIgnoresCSSTextTransformsForRenderedText(
+    bool ignores_text_transforms) {
+  data_.ignores_css_text_transforms_for_rendered_text = ignores_text_transforms;
+  return *this;
+}
+
 }  // namespace blink

@@ -15,22 +15,21 @@ static_library("search_engines") {
     "choice_made_location.h",
     "default_search_manager.cc",
     "default_search_manager.h",
-    "default_search_policy_handler.cc",
-    "default_search_policy_handler.h",
     "eea_countries_ids.h",
-    "enterprise_site_search_manager.cc",
-    "enterprise_site_search_manager.h",
+    "enterprise/default_search_policy_handler.cc",
+    "enterprise/default_search_policy_handler.h",
+    "enterprise/enterprise_site_search_manager.cc",
+    "enterprise/enterprise_site_search_manager.h",
     "keyword_table.cc",
     "keyword_table.h",
     "keyword_web_data_service.cc",
     "keyword_web_data_service.h",
+    "search_engine_choice/search_engine_choice_metrics_service_accessor.h",
     "search_engine_choice/search_engine_choice_service.cc",
     "search_engine_choice/search_engine_choice_service.h",
-    "search_engine_choice_utils.cc",
-    "search_engine_choice_utils.h",
+    "search_engine_choice/search_engine_choice_utils.cc",
+    "search_engine_choice/search_engine_choice_utils.h",
     "search_engines_pref_names.h",
-    "search_engines_switches.cc",
-    "search_engines_switches.h",
     "search_host_to_urls_map.cc",
     "search_host_to_urls_map.h",
     "search_terms_data.cc",
@@ -62,6 +61,7 @@ static_library("search_engines") {
     ":prepopulated_engines",
     ":search_engine_type",
     ":search_engine_utils",
+    ":search_engines_switches",
     "//base",
     "//components/google/core/common",
     "//components/keyed_service/core",
@@ -75,9 +75,12 @@ static_library("search_engines") {
   deps = [
     "//base:i18n",
     "//components/country_codes",
+    "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/infobars/core",
     "//components/lens:lens",
+    "//components/lens/proto/server:proto",
+    "//components/metrics",
     "//components/omnibox/common",
     "//components/policy:generated",
     "//components/policy/core/browser",
@@ -101,20 +104,29 @@ static_library("search_engines") {
     "//url",
   ]
 
+  if (!is_fuchsia) {
+    deps += [ "//components/variations/service" ]
+  }
+
   if (is_android) {
     sources += [
+      "android/search_engines_feature_map.cc",
       "android/template_url_android.cc",
       "android/template_url_android.h",
       "android/template_url_service_android.cc",
       "android/template_url_service_android.h",
     ]
 
-    deps += [ "//components/search_engines/android:jni_headers" ]
+    deps += [
+      "//components/search_engines/android:features_jni_headers",
+      "//components/search_engines/android:jni_headers",
+    ]
   }
 
   if (!is_android) {
-    sources += [ "generated_marketing_snippets.cc" ]
+    sources += [ "search_engine_choice/generated_marketing_snippets.cc" ]
     deps += [
+      ":generate_search_engine_icons",
       "//components/resources:components_scaled_resources_grit",
       "//ui/resources",
     ]
@@ -122,8 +134,8 @@ static_library("search_engines") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "site_search_policy_handler.cc",
-      "site_search_policy_handler.h",
+      "enterprise/site_search_policy_handler.cc",
+      "enterprise/site_search_policy_handler.h",
     ]
   }
 
@@ -148,10 +160,6 @@ source_set("search_engine_utils") {
   ]
 
   deps = [ "//url" ]
-
-  if (is_android) {
-    deps += [ "//components/search_engines/android:jni_headers" ]
-  }
 }
 
 source_set("search_engine_type") {
@@ -161,6 +169,8 @@ source_set("search_engine_type") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "search_engines_test_environment.cc",
+    "search_engines_test_environment.h",
     "search_engines_test_util.cc",
     "search_engines_test_util.h",
     "template_url_service_test_util.cc",
@@ -172,6 +182,11 @@ static_library("test_support") {
   public_deps = [
     ":search_engines",
     "//base",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/metrics:metrics_pref_names",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
@@ -181,10 +196,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "default_search_manager_unittest.cc",
-    "enterprise_site_search_manager_unittest.cc",
+    "enterprise/enterprise_site_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
     "search_engine_choice/search_engine_choice_service_unittest.cc",
-    "search_engine_choice_utils_unittest.cc",
+    "search_engine_choice/search_engine_choice_utils_unittest.cc",
     "search_host_to_urls_map_unittest.cc",
     "template_url_data_unittest.cc",
     "template_url_prepopulate_data_unittest.cc",
@@ -200,6 +215,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/country_codes",
     "//components/google/core/common",
+    "//components/metrics",
     "//components/omnibox/common",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
@@ -221,11 +237,11 @@ source_set("unit_tests") {
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "site_search_policy_handler_unittest.cc" ]
+    sources += [ "enterprise/site_search_policy_handler_unittest.cc" ]
   }
 
   if (!is_ios) {
-    sources += [ "default_search_policy_handler_unittest.cc" ]
+    sources += [ "enterprise/default_search_policy_handler_unittest.cc" ]
 
     deps += [
       "//components/policy:generated",
@@ -256,6 +272,48 @@ if (is_android) {
     sources = [
       "choice_made_location.h",
       "search_engine_type.h",
+    ]
+  }
+}
+
+component("search_engines_switches") {
+  output_name = "search_engines_switches"
+
+  defines = [ "IS_SEARCH_ENGINES_SWITCHES_IMPL" ]
+
+  sources = [
+    "search_engines_switches.cc",
+    "search_engines_switches.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+if (!is_android) {
+  action("generate_search_engine_icons") {
+    script = "//tools/search_engine_choice/generate_search_engine_icons.py"
+
+    inputs = [
+      "//tools/search_engine_choice/generate_search_engine_icons_config.json",
+      "//components/search_engines/prepopulated_engines.json",
+      "//components/search_engines/search_engine_countries-inc.cc",
+      "//tools/json_comment_eater/json_comment_eater.py",
+      "//tools/search_engine_choice/generate_search_engine_icons.py",
+      "//tools/search_engine_choice/search_engine_icons_utils.py",
+    ]
+
+    outputs = [
+      "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
+      "$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
+    ]
+
+    args = [
+      rebase_path("//", root_build_dir),
+      rebase_path("$target_gen_dir/generated_search_engine_resource_ids-inc.cc",
+                  root_build_dir),
+      rebase_path(
+          "$target_gen_dir/../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils-inc.cc",
+          root_build_dir),
     ]
   }
 }

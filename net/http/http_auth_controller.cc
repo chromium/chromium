@@ -61,7 +61,7 @@ AuthTarget DetermineAuthTarget(const HttpAuthHandler* handler) {
         return AUTH_TARGET_SERVER;
       }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -319,7 +319,7 @@ int HttpAuthController::HandleAuthChallenge(
             INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

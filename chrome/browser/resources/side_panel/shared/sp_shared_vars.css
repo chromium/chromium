@@ -3,11 +3,11 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=vars
+ * #type=vars-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-html[chrome-refresh-2023] {
+html {
   --sp-body-padding: 8px;
   --sp-card-block-padding: 8px;
   --sp-card-inline-padding: 16px;

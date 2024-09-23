@@ -7,10 +7,12 @@
 #include <android/bitmap.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "components/viz/common/features.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -88,7 +90,7 @@ void DecorationTitle::SetUIResourceIds() {
     title_size_ = title_resource->size();
   }
 
-  if (!is_loading_) {
+  if (!is_loading_ && favicon_resource_id_ != -1) {
     ui::Resource* favicon_resource = resource_manager_->GetResource(
         ui::ANDROID_RESOURCE_TYPE_DYNAMIC_BITMAP, favicon_resource_id_);
     if (favicon_resource) {
@@ -98,7 +100,8 @@ void DecorationTitle::SetUIResourceIds() {
       layer_favicon_->SetUIResourceId(0);
     }
     layer_favicon_->SetTransform(gfx::Transform());
-  } else {
+  } else if (spinner_resource_id_ != -1 &&
+             spinner_incognito_resource_id_ != -1) {
     int resource_id =
         is_incognito_ ? spinner_incognito_resource_id_ : spinner_resource_id_;
 
@@ -110,7 +113,7 @@ void DecorationTitle::SetUIResourceIds() {
 
     // Rotate about the center of the layer.
     layer_favicon_->SetTransformOrigin(
-        gfx::Point3F(favicon_size_.width() / 2, favicon_size_.height() / 2, 0));
+        gfx::PointF(favicon_size_.width() / 2, favicon_size_.height() / 2));
   }
 
   size_ = gfx::Size(title_size_.width() + favicon_size_.width(),
@@ -173,13 +176,16 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
   float title_offset_y = (size_.height() - title_size_.height()) / 2.f;
 
   // Step 1. Place favicon.
-  int favicon_x = favicon_start_padding_;
-  if (sys_rtl) {
-    favicon_x = bounds.width() - favicon_size_.width() - favicon_start_padding_;
+  if (favicon_resource_id_ != -1) {
+    int favicon_x = favicon_start_padding_;
+    if (sys_rtl) {
+      favicon_x =
+          bounds.width() - favicon_size_.width() - favicon_start_padding_;
+    }
+    layer_favicon_->SetIsDrawable(true);
+    layer_favicon_->SetBounds(favicon_size_);
+    layer_favicon_->SetPosition(gfx::PointF(favicon_x, favicon_offset_y));
   }
-  layer_favicon_->SetIsDrawable(true);
-  layer_favicon_->SetBounds(favicon_size_);
-  layer_favicon_->SetPosition(gfx::PointF(favicon_x, favicon_offset_y));
 
   // Step 2. Place the opaque title component.
   if (title_space > 0.f) {
@@ -224,7 +230,18 @@ void DecorationTitle::setBounds(const gfx::Size& bounds) {
     layer_fade_->SetBounds(gfx::Size(fade_space, title_size_.height()));
     layer_fade_->SetPosition(gfx::PointF(x, title_offset_y));
     layer_fade_->SetUV(gfx::PointF(u1, 0.f), gfx::PointF(u2, 1.f));
-    layer_fade_->SetVertexOpacity(a1, a1, a2, a2);
+    // Left to right gradient.
+    gfx::LinearGradient gradient;
+    gradient.AddStep(0.f, a1 * 255);
+    gradient.AddStep(1.f, a2 * 255);
+    gradient.set_angle(0);
+
+    // TODO(b/361804880) With BCIV, offsets aren't applied correctly to layers
+    // with clipped regions. Remove the fade effect from the title for now, so
+    // we can still run the experiment for large screens.
+    if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+      layer_fade_->SetGradientMask(gradient);
+    }
   } else {
     layer_fade_->SetIsDrawable(false);
   }

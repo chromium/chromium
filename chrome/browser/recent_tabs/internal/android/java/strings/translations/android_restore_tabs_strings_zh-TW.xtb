@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">輕觸即可變更要還原分頁的已同步裝置，或在目前裝置上前往查看或還原選取的分頁。鍵盤已隱藏。</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{開啟 <ph name="TABS_COUNT_ONE" /> 個分頁}other{開啟 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="4509609396389120020">開啟其他裝置上的分頁</translation>
+<translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4811934403802581334">系統將會從目前所選裝置還原所有選取的分頁。</translation>
 <translation id="5336031759968328813">查看所有分頁</translation>
 <translation id="5494920125229734069">全選</translation>

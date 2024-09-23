@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rosy Brown</translation>
 <translation id="249330843868392562">Buksan ang mga setting ng text-to-speech</translation>
 <translation id="2497706219848005458">Green Yellow</translation>
+<translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2523609930580546572">Tutorial sa ChromeVox</translation>
 <translation id="2525706221823668172">Mga keyboard shortcut sa Chromebook</translation>
 <translation id="2553108862507765288">pagkakamali sa grammar</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Puwede ka ring mag-swipe ng isang daliri pakaliwa para lumipat sa nakaraang item. Subukan ito ngayon.</translation>
 <translation id="280499067616661124">May nakitang ChromeVox sa page</translation>
-<translation id="2811019999044652585">Upang pumunta sa iba pang mga bahagi ng screen, tulad ng mga toolbar o system tray, pindutin ang Control+Forward. Sa isang Chromebook, ang Forward key ay nasa itaas lang ng number 2 na key.</translation>
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Lugar ng pagsasanay: Mga jump command</translation>
 <translation id="2841013758207633010">Oras</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4259220820964911921">I-enable ang pagkontrol gamit ang mukha?</translation>
 <translation id="4271220233568730077">Susunod na math</translation>
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
 <translation id="4278486392851938658">Walang nakaraang binisitang link</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Indian Red</translation>
 <translation id="4432896207833262240">Minarkahang content</translation>
 <translation id="4437615272777527928">Mag-type para maghanap sa mga menu. Gamitin ang mga pataas at pababang arrow para makita ang mga resulta. Gamitin ang mga pakaliwa at pakanang arrow para maisaayos ang text caret, at para magpalipat-lipat sa mga menu.</translation>
+<translation id="4453530046591759283">Para pumunta sa iba pang bahagi ng screen, tulad ng mga toolbar o system tray, pindutin ang Control+F1. Ang F1 ay ang unang key sa kanan ng escape key.</translation>
 <translation id="4457472090507035117">Piliin ang kasalukuyang boses:</translation>
 <translation id="4476183483923481720">bagong linya</translation>
 <translation id="4479068155583208887">Fire Brick</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Appendix</translation>
 <translation id="5761219715606611783">Magaling! Natutunan mo na ang mga pangunahing kaalaman ng pagpindot sa ChromeVox. Puwede mong ulitin ang tutorial o lumabas dito gamit ang mga button sa ibaba.</translation>
 <translation id="5776001898637896684">Google Enhanced Network text-to-speech extension</translation>
+<translation id="5783252477644995371">Ang pagkontrol gamit ang mukha ay nagbibigay sa iyo ng pagkontrol sa cursor sa pamamagitan ng pagtutok sa mukha at kakayahang gumawa ng mga aksyon, gaya ng pag-click sa kaliwa gamit ang mga galaw ng mukha gaya ng ngiti</translation>
 <translation id="5805940204952508776">Mag-tap gamit ang dalawang daliri</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Navajo White</translation>
 <translation id="7095834689119144465">I-edit lang ang text numeric</translation>
 <translation id="7096001299300236431">Nakaraang media</translation>
+<translation id="7096668131290451939">Pindutin ulit ang escape para umalis sa Learn Mode</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">echo ng salita</translation>
 <translation id="7137397390322864165">Salmon</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Walang susunod na checkbox</translation>
 <translation id="8473540203671727883">Bigkasin ang text na hino-hover ng cursor</translation>
 <translation id="8476408756881832830">I-pause ang pag-playback kapag nagsasalita ang ChromeVox</translation>
-<translation id="8476508772960940536">pangkalahatang-ideya ng window</translation>
 <translation id="8480873377842220259">Ngayon, matuto ka ng ilang basic na pag-navigate. Puwede mong pindutin nang matagal ang Search at pindutin ang mga arrow key para gumalaw-galaw sa screen. Para magpatuloy, pindutin ang Search + Pakanang arrow.</translation>
 <translation id="8503360654911991865">Bawasan ang granularity ng navigation</translation>
 <translation id="8520472399088452386">Spin button</translation>

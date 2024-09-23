@@ -59,6 +59,16 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   void ExpectAttestationEnrollmentErrorRepeated(
       policy::EnrollmentStatus status);
 
+  // Configures and sets expectations for token-based enrollment to succeed.
+  void ExpectTokenBasedEnrollmentSuccess();
+  // Configures and sets expecations for token-based enrollment resulting in
+  // error.
+  void ExpectTokenBasedEnrollmentError(policy::EnrollmentStatus status);
+
+  // Sets expectation of enrollment token and proper token-based enrollment
+  // mode.
+  void ExpectEnrollmentTokenConfig(const std::string& enrollment_token);
+
   // Sets up expectation of kTestAuthCode as enrollment credentials.
   void ExpectEnrollmentCredentials();
   // Sets up default ClearAuth handling.

@@ -20,6 +20,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -29,6 +30,7 @@ enum class TabletState;
 
 namespace gfx {
 class ImageSkia;
+class RoundedCornersF;
 }
 
 namespace ui {
@@ -63,12 +65,10 @@ class ChromeNativeAppWindowViewsAuraAsh
   ~ChromeNativeAppWindowViewsAuraAsh() override;
 
  protected:
-  // NativeAppWindowViews:
+  // ChromeNativeAppWindowViewsAura:
   void InitializeWindow(
       extensions::AppWindow* app_window,
       const extensions::AppWindow::CreateParams& create_params) override;
-
-  // ChromeNativeAppWindowViews:
   void OnBeforeWidgetInit(
       const extensions::AppWindow::CreateParams& create_params,
       views::Widget::InitParams* init_params,
@@ -77,10 +77,11 @@ class ChromeNativeAppWindowViewsAuraAsh
       override;
   bool ShouldRemoveStandardFrame() override;
   void EnsureAppIconCreated() override;
+  gfx::RoundedCornersF GetWindowRadii() const override;
 
   // ui::BaseWindow:
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   ui::ZOrderLevel GetZOrderLevel() const override;
 
   // views::ContextMenuController:
@@ -112,28 +113,22 @@ class ChromeNativeAppWindowViewsAuraAsh
                        ExclusiveAccessBubbleType bubble_type,
                        int64_t display_id) override;
   void ExitFullscreen() override;
-  void UpdateExclusiveAccessExitBubbleContent(
-      const GURL& url,
-      ExclusiveAccessBubbleType bubble_type,
-      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-      bool notify_download,
-      bool force_update) override;
+  void UpdateExclusiveAccessBubble(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback) override;
   bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
-  content::WebContents* GetActiveWebContents() override;
+  content::WebContents* GetWebContentsForExclusiveAccess() override;
   bool CanUserExitFullscreen() const override;
 
   // ExclusiveAccessBubbleViewsContext:
   ExclusiveAccessManager* GetExclusiveAccessManager() override;
-  views::Widget* GetBubbleAssociatedWidget() override;
   ui::AcceleratorProvider* GetAcceleratorProvider() override;
   gfx::NativeView GetBubbleParentView() const override;
-  gfx::Point GetCursorPointInParent() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   bool IsImmersiveModeEnabled() const override;
   gfx::Rect GetTopContainerBoundsInScreen() override;
   void DestroyAnyExclusiveAccessBubble() override;
-  bool CanTriggerOnMousePointer() const override;
 
   // WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

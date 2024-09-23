@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/manager/managed_display_info.h"
 
 #include <stdio.h>
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -38,6 +43,13 @@ namespace display {
 namespace {
 
 const float kDpi96 = 96.0;
+
+// The recommended default external display DPI, only used when an external
+// display is connected for the first time. e.g. when a 4K native mode is used
+// when firstly connected, the content is almost certainly too small. The value
+// comes from the metrics of currently most used external effective display DPI
+// - Ash.Display.ExternalDisplay.ActiveEffectiveDPI.
+const float kRecommendedDefaultExternalDisplayDpi = kDpi96;
 
 // Check the content of |spec| and fill |bounds| and |device_scale_factor|.
 // Returns true when |bounds| is found.
@@ -100,7 +112,7 @@ std::string PanelOrientationToString(PanelOrientation orientation) {
     case kRightUp:
       return "RightUp";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -183,13 +195,13 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   const int kDefaultHostWindowHeight = 768;
   gfx::Rect bounds_in_native(kDefaultHostWindowX, kDefaultHostWindowY,
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
-  base::StringPiece main_spec = spec;
+  std::string_view main_spec = spec;
 
   gfx::RoundedCornersF panel_corners_radii;
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       main_spec, "~", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
-    std::vector<base::StringPiece> radii_part = base::SplitStringPiece(
+    std::vector<std::string_view> radii_part = base::SplitStringPiece(
         parts[1], "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
     DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
@@ -197,7 +209,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     float radii[4];
     int radius_in_int = 0;
     for (size_t idx = 0; idx < radii_part.size(); ++idx) {
-      const base::StringPiece& radius = radii_part[idx];
+      std::string_view radius = radii_part[idx];
       bool conversion_success = base::StringToInt(radius, &radius_in_int);
       DCHECK(conversion_success);
       radii[idx] = static_cast<float>(radius_in_int);
@@ -229,7 +241,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   if (!parts.empty()) {
     main_spec = parts[0];
     if (parts.size() >= 2) {
-      base::StringPiece options = parts[1];
+      std::string_view options = parts[1];
       for (char c : options) {
         switch (c) {
           case 'o':
@@ -266,7 +278,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
       int largest_area = -1;
       float highest_refresh_rate = -1.0f;
       main_spec = parts[0];
-      base::StringPiece resolution_list = parts[1];
+      std::string_view resolution_list = parts[1];
       parts =
           base::SplitStringPiece(resolution_list, "|", base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY);
@@ -276,7 +288,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
         bool is_interlaced = false;
 
         gfx::Rect mode_bounds;
-        std::vector<base::StringPiece> resolution = base::SplitStringPiece(
+        std::vector<std::string_view> resolution = base::SplitStringPiece(
             parts[i], "%", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         float device_scale_factor_for_mode = device_scale_factor;
         GetDisplayBounds(std::string(resolution[0]), &mode_bounds,
@@ -359,7 +371,7 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       is_aspect_preserving_scaling_(false),
       clear_overscan_insets_(false),
       bits_per_channel_(0),
-      variable_refresh_rate_state_(kVrrNotCapable),
+      variable_refresh_rate_state_(VariableRefreshRateState::kVrrNotCapable),
       vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
@@ -382,7 +394,7 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       is_aspect_preserving_scaling_(false),
       clear_overscan_insets_(false),
       bits_per_channel_(0),
-      variable_refresh_rate_state_(kVrrNotCapable),
+      variable_refresh_rate_state_(VariableRefreshRateState::kVrrNotCapable),
       vsync_rate_min_(std::nullopt) {}
 
 ManagedDisplayInfo::ManagedDisplayInfo(const ManagedDisplayInfo& other) =
@@ -443,10 +455,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   display_modes_ = native_info.display_modes_;
   maximum_cursor_size_ = native_info.maximum_cursor_size_;
   display_color_spaces_ = native_info.display_color_spaces_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   snapshot_color_space_ = native_info.snapshot_color_space_;
-#endif
 
   bits_per_channel_ = native_info.bits_per_channel_;
   refresh_rate_ = native_info.refresh_rate_;
@@ -499,6 +508,53 @@ float ManagedDisplayInfo::GetEffectiveDeviceScaleFactor() const {
   return pixel_size / static_cast<float>(logical_size);
 }
 
+void ManagedDisplayInfo::UpdateZoomFactorToMatchTargetDPI() {
+  // Only update zoom factor if device dpi is valid.
+  if (!device_dpi_) {
+    return;
+  }
+
+  const float target_zoom_factor =
+      device_dpi_ / kRecommendedDefaultExternalDisplayDpi;
+
+  // Refine zoom factor based on available zoom factors in settings.
+  const int display_larger_side =
+      std::max(bounds_in_native_.width(), bounds_in_native_.height());
+  const std::vector<float> avaialble_zoom_factors =
+      GetDisplayZoomFactorsByDisplayWidth(display_larger_side);
+  DCHECK_GE(avaialble_zoom_factors.size(), 1u);
+
+  const float min_zoom_factor = avaialble_zoom_factors.front();
+  const float max_zoom_factor = avaialble_zoom_factors.back();
+  // Check min boundary.
+  if (target_zoom_factor <= min_zoom_factor) {
+    zoom_factor_ = min_zoom_factor;
+  } else if (target_zoom_factor >= max_zoom_factor) {
+    // Check max boundary.
+    zoom_factor_ = max_zoom_factor;
+  } else {
+    // Round to the neareast available zoom factor.
+    DCHECK(std::is_sorted(avaialble_zoom_factors.begin(),
+                          avaialble_zoom_factors.end()));
+    for (size_t i = 0; i < avaialble_zoom_factors.size() - 1; i++) {
+      const float left_bound = avaialble_zoom_factors[i];
+      const float right_bound = avaialble_zoom_factors[i + 1];
+      if (target_zoom_factor >= right_bound) {
+        continue;
+      }
+
+      zoom_factor_ =
+          (target_zoom_factor - left_bound < right_bound - target_zoom_factor)
+              ? left_bound
+              : right_bound;
+      break;
+    }
+  }
+
+  // Also update the zoom factor in the zoom_factor_map_.
+  AddZoomFactorForSize(size_in_pixel_.ToString(), zoom_factor_);
+}
+
 gfx::Size ManagedDisplayInfo::GetSizeInPixelWithPanelOrientation() const {
   gfx::Size size = bounds_in_native_.size();
   if (panel_orientation_ == display::PanelOrientation::kLeftUp ||
@@ -533,7 +589,6 @@ gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
       overscan_insets_in_dip_, device_scale_factor_));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagedDisplayInfo::SetSnapshotColorSpace(
     const gfx::ColorSpace& snapshot_color) {
   snapshot_color_space_ = snapshot_color;
@@ -542,7 +597,6 @@ void ManagedDisplayInfo::SetSnapshotColorSpace(
 gfx::ColorSpace ManagedDisplayInfo::GetSnapshotColorSpace() const {
   return snapshot_color_space_;
 }
-#endif
 
 void ManagedDisplayInfo::SetManagedDisplayModes(
     const ManagedDisplayModeList& display_modes) {

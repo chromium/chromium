@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/mac/video_toolbox_h265_accelerator.h"
 
+#include <array>
 #include <utility>
 
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "media/base/media_log.h"
 
 namespace media {
@@ -142,7 +148,8 @@ bool VideoToolboxH265Accelerator::CreateFormat(scoped_refptr<H265Picture> pic) {
   // Record session metadata.
   active_session_metadata_ = VideoToolboxDecompressionSessionMetadata{
       /*allow_software_decoding=*/true,
-      /*is_hbd=*/frame_is_hbd_,
+      /*bit_depth=*/frame_bit_depth_,
+      /*chroma_sampling=*/frame_chroma_sampling_,
       /*has_alpha=*/frame_has_alpha_,
       /*visible_rect=*/pic->visible_rect()};
 
@@ -177,7 +184,8 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
 
   // Update frame state.
   frame_is_keyframe_ = slice_hdr->irap_pic;
-  frame_is_hbd_ = sps->bit_depth_y > 8;
+  frame_bit_depth_ = sps->bit_depth_y;
+  frame_chroma_sampling_ = sps->GetChromaSampling();
   frame_has_alpha_ = alpha_vps_ids_.contains(sps->sps_video_parameter_set_id);
 
   return Status::kOk;
@@ -265,7 +273,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
 
   // Create a new format description if necessary.
   // We assume that session metadata can only change at a keyframe.
-  // TODO(crbug.com/1331597): It's not clear when it is better to inline the
+  // TODO(crbug.com/40227557): It's not clear when it is better to inline the
   // parameter sets vs. creating a new format.
   if (!active_format_ || (combined_nalu_data.size() && frame_is_keyframe_)) {
     combined_nalu_data.clear();
@@ -307,19 +315,19 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   }
 
   // Copy each NALU into the buffer, prefixed with a length header.
-  size_t offset = 0;
+  size_t offset = 0u;
   for (const auto& nalu_data : combined_nalu_data) {
     // Write length header.
-    uint32_t header =
-        base::HostToNet32(static_cast<uint32_t>(nalu_data.size()));
-    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
-                                           kNALUHeaderLength);
+    std::array<uint8_t, kNALUHeaderLength> header =
+        base::U32ToBigEndian(static_cast<uint32_t>(nalu_data.size()));
+    status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
+                                           header.size());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
     }
-    offset += kNALUHeaderLength;
+    offset += header.size();
 
     // Write NALU data.
     status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data.get(), offset,
@@ -386,8 +394,9 @@ void VideoToolboxH265Accelerator::ResetFrameData() {
   frame_sps_ids_.clear();
   frame_pps_ids_.clear();
   frame_slice_data_.clear();
+  frame_bit_depth_ = 8;
+  frame_chroma_sampling_ = VideoChromaSampling::k420;
   frame_is_keyframe_ = false;
-  frame_is_hbd_ = false;
   frame_has_alpha_ = false;
   drop_frame_ = false;
 }

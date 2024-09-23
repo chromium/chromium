@@ -37,6 +37,7 @@ mojom("common_mojom") {
       traits_deps = [
         ":algorithm_mojom",
         ":common",
+        ":crypto_lib",
       ]
     },
   ]
@@ -57,9 +58,12 @@ component("common") {
   sources = [
     "encryptor.cc",
     "encryptor.h",
+    "encryptor_features.cc",
+    "encryptor_features.h",
   ]
 
   deps = [
+    ":crypto_lib",
     "//components/os_crypt/sync",
     "//crypto",
   ]
@@ -70,6 +74,15 @@ component("common") {
   ]
 
   defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
+}
+
+# Mojo typemaps do not support adding a library dependency directly, so this
+# allows the dependency on crypt32.lib to be forwarded to both :common and
+# :common_mojom which might be in different modules in a component-build.
+source_set("crypto_lib") {
+  if (is_win) {
+    libs = [ "crypt32.lib" ]
+  }
 }
 
 source_set("unit_tests") {

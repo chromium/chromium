@@ -1,0 +1,37 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+option java_package = "org.chromium.components.commerce";
+
+package commerce;
+
+message CategoryLabel {
+  // The default label name of this category in natural language. This should
+  // never be empty.
+  optional string category_default_label = 1;
+  // The short label name of this category in natural language. This could
+  // be empty.
+  optional string category_short_label = 2;
+  // When true, this category can be used for clustering.
+  optional bool should_trigger_clustering = 3;
+}
+
+message ProductCategory {
+  // Category labels showing partial path of this category. The order of the
+  // labels must be from high to low in the category tree.
+  repeated CategoryLabel category_labels = 1;
+
+  // The recommended label to use for clustering. This could be empty.
+  optional CategoryLabel recommended_clustering_category = 2;
+}
+
+message CategoryData {
+  // All the categories that this product belong to. One product could belong
+  // to multiple categories and thus have multiple category paths.
+  repeated ProductCategory product_categories = 1;
+}

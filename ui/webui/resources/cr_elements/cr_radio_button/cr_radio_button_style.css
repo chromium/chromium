@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
+ * #scheme=relative
  * #import=../cr_shared_vars.css.js
  * #import=../cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
@@ -11,14 +12,18 @@
 
 /* Common radio-button styling for Material Design WebUI. */
       :host {
-        --cr-radio-button-checked-color: var(--google-blue-600);
+        --cr-radio-button-checked-color:
+            var(--color-radio-button-foreground-checked,
+                var(--cr-fallback-color-primary));
         --cr-radio-button-checked-ripple-color:
-            rgba(var(--google-blue-600-rgb), .2);
-        --cr-radio-button-ink-size: 40px;
+            var(--cr-active-background-color);
+        --cr-radio-button-ink-size: 32px;
         --cr-radio-button-size: 16px;
-        --cr-radio-button-unchecked-color: var(--google-grey-700);
+        --cr-radio-button-unchecked-color:
+        var(--color-radio-button-foreground-unchecked,
+            var(--cr-fallback-color-outline));
         --cr-radio-button-unchecked-ripple-color:
-            rgba(var(--google-grey-600-rgb), .15);
+            var(--cr-active-background-color);
 
         --ink-to-circle: calc((var(--cr-radio-button-ink-size) -
                                var(--cr-radio-button-size)) / 2);
@@ -40,35 +45,18 @@
         }
       }
 
-      :host-context([chrome-refresh-2023]):host {
-        --cr-radio-button-ink-size: 32px;
-        --cr-radio-button-checked-color:
-            var(--color-radio-button-foreground-checked,
-                var(--cr-fallback-color-primary));
-        --cr-radio-button-checked-ripple-color:
-            var(--cr-active-background-color);
-        --cr-radio-button-unchecked-color:
-            var(--color-radio-button-foreground-unchecked,
-                var(--cr-fallback-color-outline));
-        --cr-radio-button-unchecked-ripple-color:
-            var(--cr-active-background-color);
-      }
-
       @media (forced-colors: active) {
         :host {
           --cr-radio-button-checked-color: SelectedItem;
+          forced-color-adjust: none;
         }
       }
 
       :host([disabled]) {
-        opacity: var(--cr-disabled-opacity);
+        opacity: 1;
         /* Disable pointer events for this whole element, as outer on-click gets
          * triggered when clicking anywhere in :host. */
         pointer-events: none;
-      }
-
-      :host-context([chrome-refresh-2023]):host([disabled]) {
-        opacity: 1;
         --cr-radio-button-checked-color: var(--color-radio-foreground-disabled,
             var(--cr-fallback-color-disabled-background));
         --cr-radio-button-unchecked-color:
@@ -88,7 +76,7 @@
         flex: 1;
       }
 
-      :host-context([chrome-refresh-2023]):host([disabled]) #labelWrapper {
+      :host([disabled]) #labelWrapper {
         opacity: var(--cr-disabled-opacity);
       }
 
@@ -106,6 +94,7 @@
       .disc-border,
       .disc,
       .disc-wrapper,
+      cr-ripple,
       paper-ripple {
         border-radius: 50%;
       }
@@ -149,7 +138,7 @@
         transform: scale(0.5);
       }
 
-      :host-context([chrome-refresh-2023]) #overlay {
+      #overlay {
         border-radius: 50%;
         box-sizing: border-box;
         display: none;
@@ -162,16 +151,17 @@
         width: var(--cr-radio-button-ink-size);
       }
 
-      :host-context([chrome-refresh-2023]) #button:hover #overlay {
+      #button:hover #overlay {
         background-color: var(--cr-hover-background-color);
         display: block;
       }
 
-      :host-context([chrome-refresh-2023]) #button:focus-visible #overlay {
+      #button:focus-visible #overlay {
         border: 2px solid var(--cr-focus-outline-color);
         display: block;
       }
 
+      cr-ripple,
       paper-ripple {
         --paper-ripple-opacity: 1;  /* Opacity in each color's alpha. */
         color: var(--cr-radio-button-unchecked-ripple-color);
@@ -184,11 +174,13 @@
         width: var(--cr-radio-button-ink-size);
       }
 
+      :host-context([dir=rtl]) cr-ripple,
       :host-context([dir=rtl]) paper-ripple {
         left: auto;
         right: calc(-1 * var(--ink-to-circle));
       }
 
+      :host([checked]) cr-ripple,
       :host([checked]) paper-ripple {
         color: var(--cr-radio-button-checked-ripple-color);
       }

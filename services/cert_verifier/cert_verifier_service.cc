@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/ip_address.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/x509_util.h"
@@ -133,28 +134,7 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
 
 void CertVerifierServiceImpl::UpdateAdditionalCertificates(
     mojom::AdditionalCertificatesPtr additional_certificates) {
-  instance_params_.additional_trust_anchors =
-      net::x509_util::ParseAllValidCerts(
-          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-              additional_certificates->trust_anchors));
-
-  instance_params_.additional_untrusted_authorities =
-      net::x509_util::ParseAllValidCerts(
-          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-              additional_certificates->all_certificates));
-
-  instance_params_.additional_trust_anchors_with_enforced_constraints =
-      net::x509_util::ParseAllValidCerts(
-          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-              additional_certificates
-                  ->trust_anchors_with_enforced_constraints));
-
-  instance_params_.additional_distrusted_spkis =
-      additional_certificates->distrusted_spkis;
-
-  instance_params_.include_system_trust_store =
-      additional_certificates->include_system_trust_store;
-
+  UpdateCertVerifierInstanceParams(additional_certificates, &instance_params_);
   verifier_->UpdateVerifyProcData(cert_net_fetcher_,
                                   service_factory_impl_->get_impl_params(),
                                   instance_params_);

@@ -44,10 +44,9 @@ constexpr char kUnknownActivity[] = "unknown";
 constexpr char kKeyActivity[] = "activity";
 constexpr char kKeyBuffers[] = "buffers";
 constexpr char kKeyChrome[] = "chrome";
-constexpr char kKeyDuration[] = "duration";
+constexpr char kKeyAppFps[] = "app_fps";
 constexpr char kKeyGlobalEvents[] = "global_events";
 constexpr char kKeyIcon[] = "icon";
-constexpr char kKeyInformation[] = "information";
 constexpr char kKeyViews[] = "views";
 constexpr char kKeyPlatform[] = "platform";
 constexpr char kKeySystem[] = "system";
@@ -86,8 +85,9 @@ class BufferGraphicsEventMapper {
 
     bool Produce(const ArcTracingEvent& event,
                  ArcTracingGraphicsModel::BufferEvents* collector) const {
-      if (!matcher->Match(event))
+      if (!matcher->Match(event)) {
         return false;
+      }
 
       if (map_start != EventType::kNone) {
         uint64_t start_timestamp = event.GetTimestamp();
@@ -145,8 +145,9 @@ class BufferGraphicsEventMapper {
   void Produce(const ArcTracingEvent& event,
                ArcTracingGraphicsModel::BufferEvents* collector) const {
     for (const auto& rule : rules_) {
-      if (rule.Produce(event, collector))
+      if (rule.Produce(event, collector)) {
         return;
+      }
     }
     LOG(ERROR) << "Unsupported event: " << event.ToString();
   }
@@ -161,8 +162,9 @@ using BufferToEvents =
 
 bool SortByTimestampPred(const ArcTracingGraphicsModel::BufferEvent& a,
                          const ArcTracingGraphicsModel::BufferEvent& b) {
-  if (a.timestamp != b.timestamp)
+  if (a.timestamp != b.timestamp) {
     return a.timestamp < b.timestamp;
+  }
   return static_cast<int>(a.type) < static_cast<int>(b.type);
 }
 
@@ -172,8 +174,9 @@ void SortBufferEventsByTimestamp(BufferEvents* events) {
 
 std::string RouteToSelector(const std::vector<const ArcTracingEvent*>& route) {
   std::string result;
-  for (const ArcTracingEvent* segment : route)
+  for (const ArcTracingEvent* segment : route) {
     result = result + "/" + segment->GetCategory() + ":" + segment->GetName();
+  }
   return result;
 }
 
@@ -181,16 +184,18 @@ void DetermineHierarchy(std::vector<const ArcTracingEvent*>* route,
                         const ArcTracingEvent* event,
                         const ArcTracingEventMatcher& matcher,
                         std::string* out_query) {
-  if (!out_query->empty())
+  if (!out_query->empty()) {
     return;
+  }
 
   route->emplace_back(event);
 
   if (matcher.Match(*event)) {
     *out_query = RouteToSelector(*route);
   } else {
-    for (const auto& child : event->children())
+    for (const auto& child : event->children()) {
       DetermineHierarchy(route, child.get(), matcher, out_query);
+    }
   }
 
   route->pop_back();
@@ -204,11 +209,12 @@ void AddJanks(std::vector<BufferEvent>* events,
               EventType pulse_event_type,
               EventType jank_event_type) {
   // Detect rate first.
-  BufferEvents pulse_events;
+  std::vector<base::Time> pulse_events;
 
   for (const auto& ev : *events) {
     if (ev.type == pulse_event_type) {
-      pulse_events.emplace_back(ev);
+      pulse_events.emplace_back(base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(ev.timestamp)));
     }
   }
   if (!ArcGraphicsJankDetector::IsEnoughSamplesToDetect(pulse_events.size())) {
@@ -216,11 +222,11 @@ void AddJanks(std::vector<BufferEvent>* events,
                  << pulse_events.size();
     return;
   }
-  SortBufferEventsByTimestamp(&pulse_events);
+  std::sort(pulse_events.begin(), pulse_events.end());
 
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
       [](EventType jank_event_type, BufferEvents* out_janks,
-         const base::Time& timestamp) {
+         base::Time timestamp) {
         out_janks->emplace_back(
             jank_event_type,
             timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -228,10 +234,10 @@ void AddJanks(std::vector<BufferEvent>* events,
       jank_event_type, events));
 
   for (const auto& it : pulse_events) {
-    jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(it.timestamp)));
-    if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive)
+    jank_detector.OnSample(it);
+    if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive) {
       break;
+    }
   }
   // At this point, no janks should be reported. We are detecting the rate.
   if (jank_detector.stage() != ArcGraphicsJankDetector::Stage::kActive) {
@@ -242,8 +248,7 @@ void AddJanks(std::vector<BufferEvent>* events,
   // Period is defined. Pass all samples to detect janks.
   jank_detector.SetPeriodFixed(jank_detector.period());
   for (const auto& it : pulse_events) {
-    jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(it.timestamp)));
+    jank_detector.OnSample(it);
   }
 
   SortBufferEventsByTimestamp(events);
@@ -271,8 +276,9 @@ base::Value::List SerializeEvents(
     base::Value::List event_value;
     event_value.Append(static_cast<int>(event.type));
     event_value.Append(static_cast<double>(event.timestamp));
-    if (!event.content.empty())
+    if (!event.content.empty()) {
       event_value.Append(base::Value(event.content));
+    }
     list.Append(std::move(event_value));
   }
   return list;
@@ -284,8 +290,9 @@ base::Value::Dict SerializeEventsContainer(
   base::Value::Dict dictionary;
 
   base::Value::List buffer_list;
-  for (auto& buffer : events.buffer_events())
+  for (auto& buffer : events.buffer_events()) {
     buffer_list.Append(SerializeEvents(buffer));
+  }
 
   dictionary.Set(kKeyBuffers, std::move(buffer_list));
   dictionary.Set(kKeyGlobalEvents, SerializeEvents(events.global_events()));
@@ -304,17 +311,21 @@ bool IsInRange(EventType type,
 bool LoadEvents(const base::Value::List* value,
                 ArcTracingGraphicsModel::BufferEvents* out_events) {
   DCHECK(out_events);
-  if (!value)
+  if (!value) {
     return false;
+  }
   int64_t previous_timestamp = 0;
   for (const auto& item : *value) {
-    if (!item.is_list())
+    if (!item.is_list()) {
       return false;
+    }
     const base::Value::List& entry = item.GetList();
-    if (entry.size() < 2)
+    if (entry.size() < 2) {
       return false;
-    if (!entry[0].is_int())
+    }
+    if (!entry[0].is_int()) {
       return false;
+    }
     const EventType type = static_cast<EventType>(entry[0].GetInt());
 
     if (!IsInRange(type, EventType::kBufferQueueDequeueStart,
@@ -333,14 +344,17 @@ bool LoadEvents(const base::Value::List* value,
       return false;
     }
 
-    if (!entry[1].is_double() && !entry[1].is_int())
+    if (!entry[1].is_double() && !entry[1].is_int()) {
       return false;
+    }
     const int64_t timestamp = entry[1].GetDouble();
-    if (timestamp < previous_timestamp)
+    if (timestamp < previous_timestamp) {
       return false;
+    }
     if (entry.size() == 3) {
-      if (!entry[2].is_string())
+      if (!entry[2].is_string()) {
         return false;
+      }
       out_events->emplace_back(type, timestamp, entry[2].GetString());
     } else {
       out_events->emplace_back(type, timestamp);
@@ -355,24 +369,28 @@ bool LoadEventsContainer(const base::Value::Dict* dict,
   DCHECK(out_events->buffer_events().empty());
   DCHECK(out_events->global_events().empty());
 
-  if (!dict)
+  if (!dict) {
     return false;
+  }
 
   const base::Value::List* buffer_entries = dict->FindList(kKeyBuffers);
-  if (!buffer_entries)
+  if (!buffer_entries) {
     return false;
+  }
 
   for (const auto& buffer_entry : *buffer_entries) {
     BufferEvents events;
-    if (!LoadEvents(buffer_entry.GetIfList(), &events))
+    if (!LoadEvents(buffer_entry.GetIfList(), &events)) {
       return false;
+    }
     out_events->buffer_events().emplace_back(std::move(events));
   }
 
   const base::Value::List* const global_events =
       dict->FindList(kKeyGlobalEvents);
-  if (!LoadEvents(global_events, &out_events->global_events()))
+  if (!LoadEvents(global_events, &out_events->global_events())) {
     return false;
+  }
 
   return true;
 }
@@ -385,8 +403,9 @@ bool ReadDuration(const base::Value::Dict* root, uint32_t* duration) {
   }
 
   *duration = duration_value->GetDouble();
-  if (*duration < 0)
+  if (*duration < 0) {
     return false;
+  }
 
   return true;
 }
@@ -413,8 +432,9 @@ ArcTracingGraphicsModel::ViewId::ViewId(int task_id,
     : task_id(task_id), activity(activity) {}
 
 bool ArcTracingGraphicsModel::ViewId::operator<(const ViewId& other) const {
-  if (task_id != other.task_id)
+  if (task_id != other.task_id) {
     return task_id < other.task_id;
+  }
   return activity.compare(other.activity) < 0;
 }
 
@@ -457,8 +477,9 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   GetChromeTopLevelEvents(common_model, &chrome_top_level_);
   if (chrome_top_level_.buffer_events().empty()) {
     LOG(ERROR) << "No Chrome top events";
-    if (!skip_structure_validation_)
+    if (!skip_structure_validation_) {
       return false;
+    }
   }
   AddJanks(&chrome_top_level_.buffer_events()[0], EventType::kChromeOSSwapDone,
            EventType::kChromeOSSwapJank);
@@ -466,6 +487,9 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   system_model_.CopyFrom(common_model.system_model());
 
   NormalizeTimestamps();
+
+  perceived_fps_ = present_frames.presents().size() * 1'000'000.0 / duration_;
+  app_fps_ = present_frames.commits().size() * 1'000'000.0 / duration_;
 
   system_model_.CloseRangeForValueEvents(duration_ - 1 /* max_timestamp */);
 
@@ -475,8 +499,9 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
 void ArcTracingGraphicsModel::NormalizeTimestamps() {
   std::vector<BufferEvents*> all_buffers;
   for (auto& view : view_buffers_) {
-    for (auto& buffer : view.second.buffer_events())
+    for (auto& buffer : view.second.buffer_events()) {
       all_buffers.emplace_back(&buffer);
+    }
     all_buffers.emplace_back(&view.second.global_events());
   }
 
@@ -509,17 +534,20 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
   duration_ = max - min + 1;
 
   for (BufferEvents* buffer : all_buffers) {
-    for (auto& event : *buffer)
+    for (auto& event : *buffer) {
       event.timestamp -= min;
+    }
   }
 
   for (auto& cpu_events : system_model_.all_cpu_events()) {
-    for (auto& cpu_event : cpu_events)
+    for (auto& cpu_event : cpu_events) {
       cpu_event.timestamp -= min;
+    }
   }
 
-  for (auto& memory_event : system_model_.memory_events())
+  for (auto& memory_event : system_model_.memory_events()) {
     memory_event.timestamp -= min;
+  }
 }
 
 void ArcTracingGraphicsModel::Reset() {
@@ -527,6 +555,8 @@ void ArcTracingGraphicsModel::Reset() {
   view_buffers_.clear();
   system_model_.Reset();
   duration_ = 0;
+  app_fps_ = 0;
+  perceived_fps_ = 0;
   app_title_ = std::string();
   app_icon_png_.clear();
   platform_ = std::string();
@@ -555,12 +585,17 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   // Information
   base::Value::Dict information;
   information.Set(kKeyDuration, static_cast<double>(duration_));
-  if (!platform_.empty())
+  information.Set(kKeyPerceivedFps, perceived_fps_);
+  information.Set(kKeyAppFps, app_fps_);
+  if (!platform_.empty()) {
     information.Set(kKeyPlatform, platform_);
-  if (!timestamp_.is_null())
+  }
+  if (!timestamp_.is_null()) {
     information.Set(kKeyTimestamp, timestamp_.InMillisecondsFSinceUnixEpoch());
-  if (!app_title_.empty())
+  }
+  if (!app_title_.empty()) {
     information.Set(kKeyTitle, app_title_);
+  }
   if (!app_icon_png_.empty()) {
     const std::string png_data_as_string(
         reinterpret_cast<const char*>(&app_icon_png_[0]), app_icon_png_.size());
@@ -584,8 +619,9 @@ std::string ArcTracingGraphicsModel::SerializeToJson() const {
 bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   Reset();
   std::optional<base::Value> root = base::JSONReader::Read(json_data);
-  if (!root || !root->is_dict())
+  if (!root || !root->is_dict()) {
     return false;
+  }
   return LoadFromValue(root->GetDict());
 }
 
@@ -595,58 +631,80 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
   const base::Value::List* view_list = root.FindList(kKeyViews);
   if (!view_list || view_list->empty()) {
     // Views are optional for overview tracing.
-    if (!skip_structure_validation_)
+    if (!skip_structure_validation_) {
       return false;
+    }
   } else {
     for (const auto& item : *view_list) {
       const base::Value::Dict* view_entry = item.GetIfDict();
-      if (!view_entry)
+      if (!view_entry) {
         return false;
+      }
       const std::string* activity = view_entry->FindString(kKeyActivity);
       std::optional<int> task_id = view_entry->FindInt(kKeyTaskId);
-      if (!activity || !task_id)
+      if (!activity || !task_id) {
         return false;
+      }
       const ViewId view_id(*task_id, *activity);
-      if (view_buffers_.find(view_id) != view_buffers_.end())
+      if (view_buffers_.find(view_id) != view_buffers_.end()) {
         return false;
+      }
 
-      if (!LoadEventsContainer(view_entry, &view_buffers_[view_id]))
+      if (!LoadEventsContainer(view_entry, &view_buffers_[view_id])) {
         return false;
+      }
     }
   }
 
-  if (!LoadEventsContainer(root.FindDict(kKeyChrome), &chrome_top_level_))
+  if (!LoadEventsContainer(root.FindDict(kKeyChrome), &chrome_top_level_)) {
     return false;
+  }
 
-  if (!system_model_.Load(root.Find(kKeySystem)))
+  if (!system_model_.Load(root.Find(kKeySystem))) {
     return false;
+  }
 
   const base::Value::Dict* informaton = root.FindDict(kKeyInformation);
   if (informaton) {
-    if (!ReadDuration(informaton, &duration_))
+    if (!ReadDuration(informaton, &duration_)) {
       return false;
+    }
+
+    const auto perceived_fps_value = informaton->FindDouble(kKeyPerceivedFps);
+    if (perceived_fps_value.has_value()) {
+      perceived_fps_ = *perceived_fps_value;
+    }
+    const auto app_fps_value = informaton->FindDouble(kKeyAppFps);
+    if (app_fps_value.has_value()) {
+      app_fps_ = *perceived_fps_value;
+    }
 
     const std::string* platform_value = informaton->FindString(kKeyPlatform);
-    if (platform_value)
+    if (platform_value) {
       platform_ = *platform_value;
+    }
     const std::string* title_value = informaton->FindString(kKeyTitle);
-    if (title_value)
+    if (title_value) {
       app_title_ = *title_value;
+    }
     const std::string* icon_value = informaton->FindString(kKeyIcon);
     if (icon_value) {
       std::string icon_content;
-      if (!base::Base64Decode(*icon_value, &icon_content))
+      if (!base::Base64Decode(*icon_value, &icon_content)) {
         return false;
+      }
       app_icon_png_ =
           std::vector<unsigned char>(icon_content.begin(), icon_content.end());
     }
     std::optional<double> timestamp_value =
         informaton->FindDouble(kKeyTimestamp);
-    if (timestamp_value)
+    if (timestamp_value) {
       timestamp_ = base::Time::FromMillisecondsSinceUnixEpoch(*timestamp_value);
+    }
   } else {
-    if (!ReadDuration(&root, &duration_))
+    if (!ReadDuration(&root, &duration_)) {
       return false;
+    }
   }
 
   return true;

@@ -17,7 +17,6 @@ import tempfile
 import time
 
 import requests
-import reversion_glibc
 
 DISTRO = "debian"
 RELEASE = "bullseye"
@@ -54,7 +53,6 @@ TRIPLES = {
     "i386": "i386-linux-gnu",
     "armhf": "arm-linux-gnueabihf",
     "arm64": "aarch64-linux-gnu",
-    "armel": "arm-linux-gnueabi",
     "mipsel": "mipsel-linux-gnu",
     "mips64el": "mips64el-linux-gnuabi64",
 }
@@ -77,6 +75,8 @@ RELEASE_FILE_GPG = "Release.gpg"
 DEBIAN_PACKAGES = [
     "comerr-dev",
     "krb5-multidev",
+    "libaom0",
+    "libaom3",
     "libasound2",
     "libasound2-dev",
     "libasyncns0",
@@ -91,14 +91,24 @@ DEBIAN_PACKAGES = [
     "libaudit1",
     "libavahi-client3",
     "libavahi-common3",
+    "libavcodec-dev",
+    "libavcodec58",
+    "libavcodec59",
+    "libavformat-dev",
+    "libavformat59",
+    "libavutil-dev",
+    "libavutil56",
+    "libavutil57",
     "libb2-1",
     "libblkid-dev",
     "libblkid1",
     "libbluetooth-dev",
     "libbluetooth3",
+    "libbluray2",
     "libbrotli-dev",
     "libbrotli1",
     "libbsd0",
+    "libbz2-1.0",
     "libc6",
     "libc6-dev",
     "libcairo-gobject2",
@@ -108,7 +118,11 @@ DEBIAN_PACKAGES = [
     "libcap-dev",
     "libcap-ng0",
     "libcap2",
+    "libchromaprint1",
+    "libcjson1",
     "libcloudproviders0",
+    "libcodec2-0.9",
+    "libcodec2-1.0",
     "libcolord2",
     "libcom-err2",
     "libcrypt-dev",
@@ -121,6 +135,8 @@ DEBIAN_PACKAGES = [
     "libcurl4-gnutls-dev",
     "libdatrie-dev",
     "libdatrie1",
+    "libdav1d4",
+    "libdav1d6",
     "libdb5.3",
     "libdbus-1-3",
     "libdbus-1-dev",
@@ -182,6 +198,7 @@ DEBIAN_PACKAGES = [
     "libglvnd0",
     "libglx-dev",
     "libglx0",
+    "libgme0",
     "libgmp10",
     "libgnutls-dane0",
     "libgnutls-openssl27",
@@ -195,6 +212,7 @@ DEBIAN_PACKAGES = [
     "libgraphene-1.0-dev",
     "libgraphite2-3",
     "libgraphite2-dev",
+    "libgsm1",
     "libgssapi-krb5-2",
     "libgssrpc4",
     "libgtk-3-0",
@@ -208,6 +226,7 @@ DEBIAN_PACKAGES = [
     "libharfbuzz-icu0",
     "libharfbuzz0b",
     "libhogweed6",
+    "libhwy1",
     "libice6",
     "libicu-le-hb0",
     "libicu67",
@@ -223,6 +242,8 @@ DEBIAN_PACKAGES = [
     "libjson-glib-1.0-0",
     "libjsoncpp-dev",
     "libjsoncpp24",
+    "libjxl0.7",
+    "libjxl0.7",
     "libk5crypto3",
     "libkadm5clnt-mit12",
     "libkadm5srv-mit12",
@@ -238,27 +259,35 @@ DEBIAN_PACKAGES = [
     "liblz4-1",
     "liblzma5",
     "liblzo2-2",
+    "libmbedcrypto7",
     "libmd0",
     "libmd4c0",
     "libminizip-dev",
     "libminizip1",
     "libmount-dev",
     "libmount1",
+    "libmp3lame0",
+    "libmpg123-0",
     "libmtdev1",
     "libncurses-dev",
     "libncurses6",
     "libncursesw6",
     "libnettle8",
     "libnghttp2-14",
+    "libnorm1",
     "libnsl2",
     "libnspr4",
     "libnspr4-dev",
     "libnss-db",
     "libnss3",
     "libnss3-dev",
+    "libnuma1",
     "libogg-dev",
     "libogg0",
     "libopengl0",
+    "libopenjp2-7",
+    "libopenmpt0",
+    "libopus-dev",
     "libopus-dev",
     "libopus0",
     "libp11-kit0",
@@ -283,6 +312,7 @@ DEBIAN_PACKAGES = [
     "libpcre3-dev",
     "libpcre32-3",
     "libpcrecpp0v5",
+    "libpgm-5.3-0",
     "libpipewire-0.3-0",
     "libpipewire-0.3-dev",
     "libpixman-1-0",
@@ -317,35 +347,51 @@ DEBIAN_PACKAGES = [
     "libqt6test6",
     "libqt6widgets6",
     "libqt6xml6",
+    "librabbitmq4",
+    "librav1e0",
     "libre2-9",
     "libre2-dev",
     "librest-0.7-0",
+    "librist4",
+    "librsvg2-2",
     "librtmp1",
     "libsasl2-2",
     "libselinux1",
     "libselinux1-dev",
     "libsepol1",
     "libsepol1-dev",
+    "libshine3",
     "libsm6",
     "libsnappy-dev",
     "libsnappy1v5",
     "libsndfile1",
+    "libsodium23",
     "libsoup-gnome2.4-1",
     "libsoup2.4-1",
+    "libsoxr0",
     "libspa-0.2-dev",
     "libspeechd-dev",
     "libspeechd2",
+    "libspeex1",
     "libsqlite3-0",
+    "libsrt1.5-gnutls",
+    "libssh-gcrypt-4",
     "libssh2-1",
     "libssl-dev",
     "libssl1.1",
     "libstdc++-10-dev",
     "libstdc++6",
+    "libsvtav1enc1",
+    "libswresample-dev",
+    "libswresample3",
+    "libswresample4",
     "libsystemd-dev",
     "libsystemd0",
     "libtasn1-6",
     "libthai-dev",
     "libthai0",
+    "libtheora0",
+    "libtheora0",
     "libtiff-dev",
     "libtiff5",
     "libtiff6",
@@ -353,8 +399,10 @@ DEBIAN_PACKAGES = [
     "libtinfo6",
     "libtirpc3",
     "libts0",
+    "libtwolame0",
     "libudev-dev",
     "libudev1",
+    "libudfread0",
     "libunbound8",
     "libunistring2",
     "libutempter-dev",
@@ -366,11 +414,17 @@ DEBIAN_PACKAGES = [
     "libva-wayland2",
     "libva-x11-2",
     "libva2",
+    "libvdpau1",
     "libvorbis0a",
     "libvorbisenc2",
+    "libvorbisfile3",
+    "libvpx-dev",
+    "libvpx6",
+    "libvpx7",
     "libvulkan-dev",
     "libvulkan1",
     "libwacom2",
+    "libwavpack1",
     "libwayland-bin",
     "libwayland-client0",
     "libwayland-cursor0",
@@ -389,6 +443,10 @@ DEBIAN_PACKAGES = [
     "libx11-dev",
     "libx11-xcb-dev",
     "libx11-xcb1",
+    "libx264-160",
+    "libx264-164",
+    "libx265-192",
+    "libx265-199",
     "libxau-dev",
     "libxau6",
     "libxcb-dri2-0",
@@ -461,11 +519,15 @@ DEBIAN_PACKAGES = [
     "libxt6",
     "libxtst-dev",
     "libxtst6",
+    "libxvidcore4",
     "libxxf86vm-dev",
     "libxxf86vm1",
+    "libzmq5",
     "libzstd1",
+    "libzvbi0",
     "linux-libc-dev",
     "mesa-common-dev",
+    "ocl-icd-libopencl1",
     "qt6-base-dev",
     "qt6-base-dev-tools",
     "qtbase5-dev",
@@ -484,6 +546,7 @@ DEBIAN_PACKAGES_ARCH = {
         "libdrm-intel1",
         "libitm1",
         "liblsan0",
+        "libmfx1",
         "libquadmath0",
         "libtsan0",
         "libubsan1",
@@ -519,14 +582,6 @@ DEBIAN_PACKAGES_ARCH = {
         "libtsan0",
         "libubsan1",
         "valgrind",
-    ],
-    "armel": [
-        "libasan6",
-        "libdrm-exynos1",
-        "libdrm-freedreno1",
-        "libdrm-omap1",
-        "libdrm-tegra0",
-        "libubsan1",
     ],
     "mipsel": [],
     "mips64el": [
@@ -726,26 +781,6 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
                      "symbols"),
     )
 
-    # __GLIBC_MINOR__ is used as a feature test macro. Replace it with the
-    # earliest supported version of glibc (2.26).
-    features_h = os.path.join(install_root, "usr", "include", "features.h")
-    replace_in_file(features_h, r"(#define\s+__GLIBC_MINOR__)", r"\1 26 //")
-
-    # fcntl64() was introduced in glibc 2.28. Make sure to use fcntl() instead.
-    fcntl_h = os.path.join(install_root, "usr", "include", "fcntl.h")
-    replace_in_file(
-        fcntl_h,
-        r"#ifndef __USE_FILE_OFFSET64(\nextern int fcntl)",
-        r"#if 1\1",
-    )
-
-    # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
-    cppconfig_h = os.path.join(install_root, "usr", "include", TRIPLES[arch],
-                               "c++", "10", "bits", "c++config.h")
-    replace_in_file(cppconfig_h,
-                    r"(#define\s+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT)",
-                    r"// \1")
-
     # Include limits.h in stdlib.h to fix an ODR issue.
     stdlib_h = os.path.join(install_root, "usr", "include", "stdlib.h")
     replace_in_file(stdlib_h, r"(#include <stddef.h>)",
@@ -761,15 +796,10 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
             shutil.move(os.path.join(triple_pkgconfig_dir, file),
                         pkgconfig_dir)
 
-    # Avoid requiring unsupported glibc versions.
-    for lib in ["libc.so.6", "libm.so.6", "libcrypt.so.1"]:
-        lib_path = os.path.join(install_root, "lib", TRIPLES[arch], lib)
-        reversion_glibc.reversion_glibc(lib_path)
-
     # GTK4 is provided by bookworm (12), but pango is provided by bullseye
     # (11).  Fix the GTK4 pkgconfig file to relax the pango version
     # requirement.
-    gtk4_pc = os.path.join(pkgconfig_dir, 'gtk4.pc')
+    gtk4_pc = os.path.join(pkgconfig_dir, "gtk4.pc")
     replace_in_file(gtk4_pc, r"pango [>=0-9. ]*", "pango")
     replace_in_file(gtk4_pc, r"pangocairo [>=0-9. ]*", "pangocairo")
 
@@ -869,7 +899,8 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                     # Compute the relative path from the symlink to the target.
                     relative_path = os.path.relpath(
                         os.path.join(install_root, target_path.strip("/")),
-                        os.path.dirname(full_path))
+                        os.path.dirname(full_path),
+                    )
                     # Verify that the target exists inside the install_root.
                     joined_path = os.path.join(os.path.dirname(full_path),
                                                relative_path)
@@ -924,16 +955,16 @@ def build_sysroot(arch: str) -> None:
     create_tarball(install_root, arch)
 
 
-def upload_sysroot(arch: str) -> None:
+def upload_sysroot(arch: str) -> str:
     tarball_path = os.path.join(BUILD_DIR,
                                 f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
-    sha = hash_file(hashlib.sha1(), tarball_path)
-
-    destination_url = f"gs://chrome-linux-sysroot/toolchain/{sha}/"
     command = [
-        "gsutil.py", "cp", "-a", "public-read", tarball_path, destination_url
+        "upload_to_google_storage_first_class.py",
+        "--bucket",
+        "chrome-linux-sysroot",
+        tarball_path,
     ]
-    subprocess.run(command, check=True)
+    return subprocess.check_output(command).decode("utf-8")
 
 
 def verify_package_listing(file_path: str, output_file: str,

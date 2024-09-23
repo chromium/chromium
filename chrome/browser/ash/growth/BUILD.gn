@@ -1,0 +1,141 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("growth") {
+  sources = [
+    "campaigns_manager_client_impl.cc",
+    "campaigns_manager_client_impl.h",
+    "campaigns_manager_session.cc",
+    "campaigns_manager_session.h",
+    "campaigns_manager_session_tab_helper.cc",
+    "campaigns_manager_session_tab_helper.h",
+    "install_web_app_action_performer.cc",
+    "install_web_app_action_performer.h",
+    "metrics.cc",
+    "metrics.h",
+    "open_url_action_performer.cc",
+    "open_url_action_performer.h",
+    "show_notification_action_performer.cc",
+    "show_notification_action_performer.h",
+    "show_nudge_action_performer.cc",
+    "show_nudge_action_performer.h",
+    "ui_action_performer.cc",
+    "ui_action_performer.h",
+    "update_user_pref_action_performer.cc",
+    "update_user_pref_action_performer.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui:browser_list",
+    "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/growth:config_provider",
+    "//chromeos/ash/components/growth:utils",
+    "//chromeos/ash/resources:resources_grit",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/component_updater/ash",
+    "//components/feature_engagement/public",
+    "//components/language/core/browser",
+    "//components/metrics",
+    "//components/metrics/structured:structured_events",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/session_manager/core",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "campaigns_manager_client_unittest.cc",
+    "campaigns_manager_session_unittest.cc",
+    "install_web_app_action_unittest.cc",
+    "mock_ui_performer_observer.cc",
+    "mock_ui_performer_observer.h",
+    "open_url_action_performer_unittest.cc",
+    "show_notification_action_performer_unittest.cc",
+    "show_nudge_action_performer_unittest.cc",
+    "update_user_pref_action_performer_unittest.cc",
+  ]
+
+  deps = [
+    ":growth",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/growth",
+    "//chromeos/ash/resources:resources_grit",
+    "//components/component_updater/ash",
+    "//components/component_updater/ash:test_support",
+    "//components/metrics",
+    "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "campaigns_manager_interactive_uitest.cc" ]
+
+    deps = [
+      ":growth",
+      "//ash",
+      "//ash/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/ash/components/growth",
+      "//chromeos/ash/components/growth:utils",
+      "//chromeos/constants",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/test:test_support",
+      "//testing/gmock",
+      "//ui/aura",
+      "//ui/base",
+      "//ui/compositor",
+      "//ui/display",
+      "//ui/message_center",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}

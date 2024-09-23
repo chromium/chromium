@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/xr_install_helper.h"
@@ -24,9 +25,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_ARCORE)
 #include "chrome/browser/android/vr/ar_jni_headers/ArCompositorDelegateProviderImpl_jni.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
@@ -37,11 +36,11 @@
 #include "chrome/browser/android/vr/vr_jni_headers/VrCompositorDelegateProviderImpl_jni.h"
 #include "components/webxr/android/cardboard_device_provider.h"
 #include "components/webxr/android/vr_compositor_delegate_provider.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
 #if BUILDFLAG(ENABLE_OPENXR)
 #include "components/webxr/android/openxr_device_provider.h"
-#endif
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OPENXR)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -94,23 +93,18 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
   std::unique_ptr<content::MediaStreamUI> ui_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// If none of the runtimes are enabled, this function will be unused.
-// This is a bit more scalable than wrapping it in all the typedefs
-[[maybe_unused]] bool IsEnabled(const base::CommandLine* command_line,
-                                const std::string& name,
-                                const base::Feature* maybe_feature = nullptr) {
-  // If we don't have a forced runtime we just need to check if the feature is
-  // enabled.
-  if (!command_line->HasSwitch(switches::kWebXrForceRuntime)) {
-    // Either we were passed a feature, in which case we need to check if it's
-    // enabled. Or we weren't, in which case the feature should be enabled.
-    return maybe_feature ? base::FeatureList::IsEnabled(*maybe_feature) : true;
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
+// Helper method to validate if a runtime is forced-enabled by the command line.
+// This can be used to override a feature check.
+bool IsForcedByCommandLine(const base::CommandLine* command_line,
+                           const std::string& name) {
+  if (command_line->HasSwitch(switches::kWebXrForceRuntime)) {
+    return (base::CompareCaseInsensitiveASCII(
+                command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
+                name) == 0);
   }
 
-  return (base::CompareCaseInsensitiveASCII(
-              command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
-              name) == 0);
+  return false;
 }
 #endif
 }  // namespace
@@ -135,8 +129,9 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_OPENXR)
-  if (IsEnabled(base::CommandLine::ForCurrentProcess(),
-                switches::kWebXrRuntimeOpenXr, &device::features::kOpenXR)) {
+  if (IsForcedByCommandLine(base::CommandLine::ForCurrentProcess(),
+                            switches::kWebXrRuntimeOpenXr) ||
+      device::features::IsOpenXrEnabled()) {
     providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
   }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
@@ -169,11 +164,10 @@ ChromeXrIntegrationClient::CreateRuntimeObserver() {
   return std::make_unique<CameraIndicationObserver>();
 }
 
-#if BUILDFLAG(IS_WIN)
 std::unique_ptr<content::VrUiHost> ChromeXrIntegrationClient::CreateVrUiHost(
-    device::mojom::XRDeviceId device_id,
-    mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) {
-  return std::make_unique<VRUiHostImpl>(device_id, std::move(compositor));
+    content::WebContents& contents,
+    const std::vector<device::mojom::XRViewPtr>& views,
+    mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay) {
+  return std::make_unique<VRUiHostImpl>(contents, views, std::move(overlay));
 }
-#endif
 }  // namespace vr

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -28,7 +29,8 @@ namespace {
 
 std::string GetAdjustedBounds(const gfx::Rect& visible,
                               gfx::Rect to_be_adjusted) {
-  AdjustBoundsToEnsureMinimumWindowVisibility(visible, &to_be_adjusted);
+  AdjustBoundsToEnsureMinimumWindowVisibility(
+      visible, /*client_controlled=*/false, &to_be_adjusted);
   return to_be_adjusted.ToString();
 }
 
@@ -37,66 +39,66 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
 using WindowUtilTest = AshTestBase;
 
 TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {
-  const gfx::Rect visible_bounds(0, 0, 100, 100);
+  constexpr gfx::Rect kVisibleBounds(0, 0, 100, 100);
 
   EXPECT_EQ("0,0 90x90",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(0, 0, 90, 90)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(0, 0, 90, 90)));
   EXPECT_EQ("0,0 100x100",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(0, 0, 150, 150)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(0, 0, 150, 150)));
   EXPECT_EQ("-50,0 100x100",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(-50, -50, 150, 150)));
-  EXPECT_EQ("-75,10 100x100",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(-100, 10, 150, 150)));
-  EXPECT_EQ("75,75 100x100",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(100, 100, 150, 150)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(-50, -50, 150, 150)));
+  EXPECT_EQ("-55,10 100x100",
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(-100, 10, 150, 150)));
+  EXPECT_EQ("55,55 100x100",
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(100, 100, 150, 150)));
 
   // For windows that have smaller dimensions than kMinimumOnScreenArea,
   // we should adjust bounds accordingly, leaving no white space.
   EXPECT_EQ("50,80 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(50, 80, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(50, 80, 20, 20)));
   EXPECT_EQ("80,50 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(80, 50, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(80, 50, 20, 20)));
   EXPECT_EQ("0,50 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(0, 50, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(0, 50, 20, 20)));
   EXPECT_EQ("50,0 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(50, 0, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(50, 0, 20, 20)));
   EXPECT_EQ("50,80 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(50, 100, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(50, 100, 20, 20)));
   EXPECT_EQ("80,50 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(100, 50, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(100, 50, 20, 20)));
   EXPECT_EQ("0,50 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(-10, 50, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(-10, 50, 20, 20)));
   EXPECT_EQ("50,0 20x20",
-            GetAdjustedBounds(visible_bounds, gfx::Rect(50, -10, 20, 20)));
+            GetAdjustedBounds(kVisibleBounds, gfx::Rect(50, -10, 20, 20)));
 
-  const gfx::Rect visible_bounds_right(200, 50, 100, 100);
+  constexpr gfx::Rect kVisibleBoundsRight(200, 50, 100, 100);
 
-  EXPECT_EQ("210,60 90x90", GetAdjustedBounds(visible_bounds_right,
-                                              gfx::Rect(210, 60, 90, 90)));
-  EXPECT_EQ("210,60 100x100", GetAdjustedBounds(visible_bounds_right,
+  EXPECT_EQ("210,60 90x90",
+            GetAdjustedBounds(kVisibleBoundsRight, gfx::Rect(210, 60, 90, 90)));
+  EXPECT_EQ("210,60 100x100", GetAdjustedBounds(kVisibleBoundsRight,
                                                 gfx::Rect(210, 60, 150, 150)));
-  EXPECT_EQ("125,50 100x100",
-            GetAdjustedBounds(visible_bounds_right, gfx::Rect(0, 0, 150, 150)));
-  EXPECT_EQ("275,50 100x100", GetAdjustedBounds(visible_bounds_right,
+  EXPECT_EQ("145,50 100x100",
+            GetAdjustedBounds(kVisibleBoundsRight, gfx::Rect(0, 0, 150, 150)));
+  EXPECT_EQ("255,50 100x100", GetAdjustedBounds(kVisibleBoundsRight,
                                                 gfx::Rect(300, 20, 150, 150)));
   EXPECT_EQ(
-      "125,125 100x100",
-      GetAdjustedBounds(visible_bounds_right, gfx::Rect(-100, 150, 150, 150)));
+      "145,105 100x100",
+      GetAdjustedBounds(kVisibleBoundsRight, gfx::Rect(-100, 150, 150, 150)));
 
-  const gfx::Rect visible_bounds_left(-200, -50, 100, 100);
-  EXPECT_EQ("-190,-40 90x90", GetAdjustedBounds(visible_bounds_left,
+  constexpr gfx::Rect kVisibleBoundsLeft(-200, -50, 100, 100);
+  EXPECT_EQ("-190,-40 90x90", GetAdjustedBounds(kVisibleBoundsLeft,
                                                 gfx::Rect(-190, -40, 90, 90)));
   EXPECT_EQ(
       "-190,-40 100x100",
-      GetAdjustedBounds(visible_bounds_left, gfx::Rect(-190, -40, 150, 150)));
+      GetAdjustedBounds(kVisibleBoundsLeft, gfx::Rect(-190, -40, 150, 150)));
   EXPECT_EQ(
       "-250,-40 100x100",
-      GetAdjustedBounds(visible_bounds_left, gfx::Rect(-250, -40, 150, 150)));
+      GetAdjustedBounds(kVisibleBoundsLeft, gfx::Rect(-250, -40, 150, 150)));
   EXPECT_EQ(
-      "-275,-50 100x100",
-      GetAdjustedBounds(visible_bounds_left, gfx::Rect(-400, -60, 150, 150)));
-  EXPECT_EQ("-125,0 100x100",
-            GetAdjustedBounds(visible_bounds_left, gfx::Rect(0, 0, 150, 150)));
+      "-255,-50 100x100",
+      GetAdjustedBounds(kVisibleBoundsLeft, gfx::Rect(-400, -60, 150, 150)));
+  EXPECT_EQ("-145,0 100x100",
+            GetAdjustedBounds(kVisibleBoundsLeft, gfx::Rect(0, 0, 150, 150)));
 }
 
 TEST_F(WindowUtilTest, MoveWindowToDisplay) {
@@ -279,8 +281,9 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   ui::EventTarget* root_target = window->GetRootWindow();
   auto* targeter = root_target->GetEventTargeter();
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(0, 0),
+                         gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(child, targeter->FindTargetForEvent(root_target, &mouse));
   }
 
@@ -288,8 +291,9 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   // its parent.
   WindowState::Get(window.get())->Restore();
   {
-    ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(0, 0), gfx::Point(0, 0),
-                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, gfx::Point(0, 0),
+                         gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
+                         ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
   }
 }

@@ -5,10 +5,10 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_TRACING_AW_BACKGROUND_TRACING_METRICS_PROVIDER_H_
 #define ANDROID_WEBVIEW_BROWSER_TRACING_AW_BACKGROUND_TRACING_METRICS_PROVIDER_H_
 
-#include "components/tracing/common/background_tracing_metrics_provider.h"
-
 #include <optional>
+
 #include "base/memory/weak_ptr.h"
+#include "components/tracing/common/background_tracing_metrics_provider.h"
 
 namespace tracing {
 

@@ -127,7 +127,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
 
   SetFileSystemContext(file_system_context);
 
-  // TODO(https://crbug.com/1236243): figure out if StorageKey conversion
+  // TODO(crbug.com/40782681): figure out if StorageKey conversion
   // should replaced with a third-party value: is ppapi only limited to
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
@@ -164,7 +164,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenIsolatedFileSystem(
       SendReplyForIsolatedFileSystem(reply_context, fsid, PP_OK);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       SendReplyForIsolatedFileSystem(reply_context, fsid, PP_ERROR_BADARGUMENT);
       return;
   }
@@ -179,7 +179,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
   int32_t pp_error = ppapi::FileErrorToPepperError(error);
   if (pp_error == PP_OK) {
     opened_ = true;
-    // TODO(crbug.com/1323925): Store and use FileSystemURL instead.
+    // TODO(crbug.com/40838958): Store and use FileSystemURL instead.
     root_url_ = root.ToGURL();
 
     ShouldCreateQuotaReservation(base::BindOnce(
@@ -350,7 +350,7 @@ void PepperFileSystemBrowserHost::OpenExisting(const GURL& root_url,
   int unused;
   if (!browser_ppapi_host_->GetRenderFrameIDsForInstance(
           pp_instance(), &render_process_id, &unused)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   called_open_ = true;
   // Get the file system context asynchronously, and then complete the Open
@@ -406,7 +406,7 @@ void PepperFileSystemBrowserHost::OpenQuotaFile(
   std::pair<FileMap::iterator, bool> insert_result =
       files_.insert(std::make_pair(id, file_io_host));
   if (!insert_result.second) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -427,7 +427,7 @@ void PepperFileSystemBrowserHost::CloseQuotaFile(
   if (it != files_.end()) {
     files_.erase(it);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

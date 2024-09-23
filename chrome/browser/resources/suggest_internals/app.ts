@@ -3,20 +3,22 @@
 // found in the LICENSE file.
 
 import './request.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_drawer/cr_drawer.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/cr_page_host_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.ts';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,8 +30,6 @@ interface SuggestInternalsAppElement {
   $: {
     hardcodeResponseDialog: CrDialogElement,
     toast: CrToastElement,
-    viewRequestDialog: CrDialogElement,
-    viewResponseDialog: CrDialogElement,
     drawer: CrDrawerElement,
   };
 }
@@ -107,14 +107,8 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.requests_ = [];
   }
 
-  private onClientDataLinkClick_() {
-    window.open('http://protoshop/webserver.gws.ClientDataHeader');
-  }
-
   private onCloseDialogs_() {
     this.$.hardcodeResponseDialog.close();
-    this.$.viewRequestDialog.close();
-    this.$.viewResponseDialog.close();
   }
 
   private async onConfirmHardcodeResponseDialog_() {
@@ -171,14 +165,6 @@ class SuggestInternalsAppElement extends PolymerElement {
   private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
     this.responseText_ = e.detail;
     this.$.hardcodeResponseDialog.showModal();
-  }
-
-  private onOpenViewRequestDialog_() {
-    this.$.viewRequestDialog.showModal();
-  }
-
-  private onOpenViewResponseDialog_() {
-    this.$.viewResponseDialog.showModal();
   }
 
   private async onPasteClick_() {
@@ -253,6 +239,15 @@ class SuggestInternalsAppElement extends PolymerElement {
     return JSON.stringify(
         this.requests_,
         (_key, value) => typeof value === 'bigint' ? value.toString() : value);
+  }
+
+  private populateSearchInput_(e: CustomEvent<string>) {
+    // Populate the searchbar with the pgcl of the selected chip.
+    const toolbar = this.shadowRoot!.querySelector<HTMLElement>('cr-toolbar')!;
+    const searchbar =
+        toolbar.shadowRoot!.querySelector<CrToolbarSearchFieldElement>(
+            'cr-toolbar-search-field')!;
+    searchbar.setValue('pgcl=' + e.detail);
   }
 }
 

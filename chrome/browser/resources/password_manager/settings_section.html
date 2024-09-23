@@ -35,16 +35,6 @@
     }
   }
 
-  pref-toggle-button:first-of-type {
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
-  }
-
-  cr-link-row:last-of-type {
-    border-bottom-left-radius: inherit;
-    border-bottom-right-radius: inherit;
-  }
-
   /* Hide the default icon element.*/
   cr-link-row[hide-icon]::part(icon) {
     display: none;
@@ -74,12 +64,12 @@
       sub-label="$i18n{autosigninDescription}"
       pref="{{prefs.credentials_enable_autosignin}}">
   </pref-toggle-button>
-  <if expr="is_win or is_macosx">
+  <if expr="is_win or is_macosx or is_chromeos">
     <template is="dom-if"
         if="[[isBiometricAuthenticationForFillingToggleVisible_]]">
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
-          label="$i18n{biometricAuthenticaionForFillingLabel}"
-          sub-label="$i18n{biometricAuthenticaionForFillingSublabel}"
+          label="$i18n{biometricAuthenticationForFillingLabel}"
+          sub-label="$i18n{biometricAuthenticationForFillingSubLabel}"
           pref="{{prefs.password_manager.biometric_authentication_filling}}"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
@@ -89,10 +79,10 @@
     <pref-toggle-button id="accountStorageToggle" class="hr"
         hidden="[[!isEligibleForAccountStorage]]"
         label="$i18n{accountStorageToggleLabel}"
-        sub-label="[[getToggleSubLabelForAccountStorageOptIn_(accountEmail)]]"
+        sub-label="[[getAccountStorageSubLabel_(accountEmail)]]"
         checked="[[isAccountStoreUser]]"
         change-requires-validation
-        on-validate-and-change-pref="changeAccountStorageOptIn_">
+        on-validate-and-change-pref="changeAccountStorageEnabled_">
     </pref-toggle-button>
   <template is="dom-if"
       if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser, passwordsOnDevice_)]]"
@@ -127,17 +117,35 @@
         sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
   </template>
-  <if expr="is_macosx">
-    <template is="dom-if" if="[[createPasskeysInICloudKeychainToggleVisible_]]"
-              restamp>
-      <pref-toggle-button id="createPasskeysInICloudKeychainRow" class="hr"
-          label="$i18n{createPasskeysInICloudKeychainLabel}"
-          sub-label="$i18n{createPasskeysInICloudKeychainSubLabel}"
-          on-click="onCreatePasskeysInICloudKeychainClick_"
-          pref="{{prefs.webauthn.create_in_icloud_keychain}}">
-      </pref-link-row>
-    </template>
-  </if>
+  <template is="dom-if" if="[[isConnectedToCloudAuthenticator_]]" restamp>
+    <cr-link-row id="disconnectCloudAuthenticatorRow"
+        class="cr-row settings-cr-link-row"
+        label="$i18n{disconnectCloudAuthenticatorTitle}"
+        sub-label="$i18n{disconnectCloudAuthenticatorDescription}"
+        hide-icon non-clickable>
+      <template is="dom-if"
+          if="[[!isDisconnectCloudAuthenticatorInProgress_]]" restamp>
+        <cr-button id="disconnectCloudAuthenticatorButton"
+            class="cr-row-action-button"
+            aria-label="[[getAriaLabelForCloudAuthenticatorButton_()]]"
+            on-click="onDisconnectCloudAuthenticatorClick_">
+          $i18n{disconnectCloudAuthenticatorButton}
+        </cr-button>
+      </template>
+      <template is="dom-if"
+          if="[[isDisconnectCloudAuthenticatorInProgress_]]" restamp>
+        <paper-spinner-lite active id="progressSpinner">
+        </paper-spinner-lite>
+      </template>
+    </cr-link-row>
+  </template>
+  <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
+    <cr-link-row id="changePasswordManagerPinRow"
+        class="cr-row settings-cr-link-row"
+        label="$i18n{changePasswordManagerPin}"
+        on-click="onChangePasswordManagerPinRowClick_">
+    </cr-link-row>
+  </template>
   <if expr="is_win or is_macosx">
     <template is="dom-if" if="[[hasPasskeys_]]" restamp>
       <cr-link-row id="managePasskeysRow" external
@@ -146,6 +154,12 @@
       </cr-link-row>
     </template>
   </if>
+  <template is="dom-if"
+      if="[[isDeleteAllPasswordManagerDataRowAvailable_]]" restamp>
+    <full-data-reset is-account-store-user="[[isAccountStoreUser]]"
+        is-syncing-passwords="[[isSyncingPasswords]]">
+    </full-data-reset>
+  </template>
 </div>
 <div hidden="[[!blockedSites_.length]]">
   <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
@@ -179,3 +193,12 @@
       trigger="[[getMovePasswordsDialogTrigger_()]]">
   </move-passwords-dialog>
 </template>
+<template is="dom-if" if="[[showDisconnectCloudAuthenticatorDialog_]]" restamp>
+  <disconnect-cloud-authenticator-dialog id="disconnectCloudAuthenticatorDialog"
+      on-close="onCloseDisconnectCloudAuthenticatorDialog_"
+      on-disconnect-cloud-authenticator="onDisconnectCloudAuthenticator_">
+  </disconnect-cloud-authenticator-dialog>
+</template>
+<cr-toast id="toast" duration="5000">
+  <span id="toast-message">[[toastMessage_]]</span>
+</cr-toast>

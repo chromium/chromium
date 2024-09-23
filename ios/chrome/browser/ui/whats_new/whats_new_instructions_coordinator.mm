@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_instructions_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-
 #import "url/gurl.h"
 
 @interface WhatsNewInstructionsCoordinator () <
@@ -23,7 +23,8 @@
 @property(nonatomic, strong) WhatsNewItem* item;
 // The delegate object that manages interactions with the primary action.
 @property(nonatomic, weak) id<WhatsNewDetailViewActionHandler> actionHandler;
-
+// What's New command handler.
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
 @implementation WhatsNewInstructionsCoordinator
@@ -32,11 +33,14 @@
                                    browser:(Browser*)browser
                                       item:(WhatsNewItem*)item
                              actionHandler:(id<WhatsNewDetailViewActionHandler>)
-                                               actionHandler {
+                                               actionHandler
+                           whatsNewHandler:
+                               (id<WhatsNewCommands>)whatsNewHandler {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     self.item = item;
     self.actionHandler = actionHandler;
+    self.whatsNewHandler = whatsNewHandler;
   }
   return self;
 }
@@ -66,26 +70,26 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
   [self.actionHandler didTapActionButton:self.item.type
-                           primaryAction:self.item.primaryAction];
+                           primaryAction:self.item.primaryAction
+                      baseViewController:self.viewController];
 }
 
 - (void)confirmationAlertSecondaryAction {
   [self.actionHandler didTapLearnMoreButton:self.item.learnMoreURL
                                        type:self.item.type];
-  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 - (void)confirmationAlertDismissAction {
-  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
+  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate dismissWhatsNewInstructionsCoordinator:self];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 @end

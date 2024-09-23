@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -107,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Open the settings again: no new window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  // TODO(https://crbug.com/1517134): Remove this once we can wait for the
+  // TODO(crbug.com/41490117): Remove this once we can wait for the
   // ShowOSSettings call correctly.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(settings_browser,

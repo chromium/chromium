@@ -6,6 +6,7 @@
  * @fileoverview Handle tap on 'CHROME_ANNOTATION' elements.
  */
 
+import {TextDecoration} from '//ios/web/annotations/resources/text_decoration';
 import {LiveTaskTimer, TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
 // Consumer of CHROME_ANNOTATION `HTMLElement` taps.
@@ -25,10 +26,15 @@ class MutationsTracker {
   private mutationObserver: MutationObserver;
   private mutationExtendId = 0;
 
-  // Mutation observer for handling added and removed nodes.
+  // Mutation observer for handling added and removed nodes. `strict` is true
+  // during both phases of the event, and false during the extra monitoring
+  // mutation delay afterward (in case the undetected 'button' caused some
+  // delayed/network action that will cause a mutation very soon after the
+  // click).
   private mutationCallback = (mutationList: MutationRecord[]) => {
     for (let mutation of mutationList) {
-      if (mutation.target.contains(this.initialEvent.target as Node)) {
+      if (this.strict ||
+          mutation.target.contains(this.initialEvent.target as Node)) {
         this.hasMutations = true;
         this.mutationObserver?.disconnect();
         return;
@@ -43,7 +49,8 @@ class MutationsTracker {
   // same. If not, it is considered, like mutations, as a preventative activity.
   constructor(
       private readonly initialEvent: Event, root: Element,
-      private taskTimer: TaskTimer = new LiveTaskTimer()) {
+      private taskTimer: TaskTimer = new LiveTaskTimer(),
+      private strict = true) {
     this.mutationObserver = new MutationObserver(this.mutationCallback);
     this.mutationObserver.observe(
         root, {attributes: false, childList: true, subtree: true});
@@ -59,6 +66,7 @@ class MutationsTracker {
   // Extends DOM observation by triggering `then` after `delayMs`. This can
   // be called multiple times if needed.
   extendObservation(then: Function, delayMs: number): void {
+    this.strict = false;
     if (this.mutationExtendId) {
       this.taskTimer.clear(this.mutationExtendId);
     }
@@ -85,8 +93,10 @@ class TextClick {
 
   constructor(
       private root: Element, private consumer: AnnotationsTapConsumer,
+      private decorationsProvider: () => Map<number, TextDecoration>| undefined,
       private taskTimer: TaskTimer = new LiveTaskTimer(),
-      private mutationCheckDelay = DOM_MUTATION_DELAY_MS) {}
+      private mutationCheckDelay = DOM_MUTATION_DELAY_MS,
+      private annotationForTest: Element|null = null) {}
 
   // Starts event listeners.
   start(): void {
@@ -108,9 +118,15 @@ class TextClick {
     this.mutationObserver?.updateForTesting();
   }
 
+  // Force annotation for testing, because document.elementFromPoint doesn't
+  // seem to work on test webview (visibility?).
+  annotationForTesting(annotation: Element): void {
+    this.annotationForTest = annotation;
+  }
+
   // Callback for tap handler.
   private onClick = (event: Event) => {
-    this.handleTopTap(event);
+    this.handleTopTap(event as PointerEvent);
   };
 
   // Stops observing DOM mutations.
@@ -119,11 +135,32 @@ class TextClick {
     this.mutationObserver = null;
   }
 
+  // Sets all `pointerEvents` style in the decoration list to the given `value`.
+  private toggleDecorationsPointerEvents(value: string): void {
+    this.decorationsProvider()?.forEach((decoration) => {
+      if (!decoration.live)
+        return;
+      decoration.replacements.forEach((replacement) => {
+        if (replacement instanceof HTMLElement) {
+          replacement.style.pointerEvents = value;
+        }
+      });
+    });
+  }
+
   // Monitors taps at the top, document level. This checks if it is tap
   // triggered by an annotation and if no DOM mutation have happened while the
   // event is bubbling up. If it's the case, the annotation callback is called.
-  private handleTopTap(event: Event): void {
-    const annotation = event.target;
+  private handleTopTap(event: PointerEvent): void {
+    // Make decoration not inert and find if the actual target should be an
+    // annotation. This way CHROME_ANNOTATION are never target in an Event.
+    let annotation = this.annotationForTest;
+    if (!annotation) {
+      this.toggleDecorationsPointerEvents('all');
+      annotation = document.elementFromPoint(event.clientX, event.clientY);
+      this.toggleDecorationsPointerEvents('none');
+    }
+
     if (annotation instanceof HTMLElement &&
         annotation.tagName === 'CHROME_ANNOTATION') {
       if (event.eventPhase === Event.CAPTURING_PHASE) {

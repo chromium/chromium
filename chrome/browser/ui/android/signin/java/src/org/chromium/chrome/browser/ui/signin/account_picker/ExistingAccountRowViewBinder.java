@@ -29,13 +29,15 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
     @Override
     public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         DisplayableProfileData profileData = model.get(ExistingAccountRowProperties.PROFILE_DATA);
+        boolean isCurrentlySelected = model.get(ExistingAccountRowProperties.IS_CURRENTLY_SELECTED);
         if (propertyKey == ExistingAccountRowProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(
                     v ->
                             model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER)
                                     .onResult(profileData));
-        } else if (propertyKey == ExistingAccountRowProperties.PROFILE_DATA) {
-            bindAccountView(profileData, view);
+        } else if ((propertyKey == ExistingAccountRowProperties.PROFILE_DATA)
+                || (propertyKey == ExistingAccountRowProperties.IS_CURRENTLY_SELECTED)) {
+            bindAccountView(profileData, view, isCurrentlySelected);
         } else {
             throw new IllegalArgumentException(
                     "Cannot update the view for propertyKey: " + propertyKey);
@@ -79,14 +81,19 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
      * Binds the view with the given profile data.
      *
      * @param profileData profile data needs to bind.
-     * @param view A view object inflated from @layout/account_picker_row.
+     * @param view A view object inflated from R.layout.account_picker_row,
+     *     R.layout.account_picker_dialog_row or R.layout.account_picker_bottom_sheet_row.
+     * @param isCurrentlySelected whether the account is the one which is currently selected by the
+     *     user.
      */
-    public static void bindAccountView(DisplayableProfileData profileData, View view) {
+    public static void bindAccountView(
+            DisplayableProfileData profileData, View view, boolean isCurrentlySelected) {
         ImageView accountImage = view.findViewById(R.id.account_image);
         accountImage.setImageDrawable(profileData.getImage());
         setAccountTextPrimary(profileData, view);
         setAccountTextSecondary(profileData, view);
         view.setContentDescription(
-                SigninUtils.getChooseAccountLabel(view.getContext(), profileData));
+                SigninUtils.getChooseAccountLabel(
+                        view.getContext(), profileData, isCurrentlySelected));
     }
 }

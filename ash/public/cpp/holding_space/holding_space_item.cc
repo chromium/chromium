@@ -72,7 +72,7 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_ == rhs.file_ &&
          text_ == rhs.text_ && secondary_text_ == rhs.secondary_text_ &&
-         secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
+         secondary_text_color_variant_ == rhs.secondary_text_color_variant_ &&
          *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
          in_progress_commands_ == rhs.in_progress_commands_;
 }
@@ -101,45 +101,12 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
 }
 
 // static
-bool HoldingSpaceItem::IsCameraAppType(HoldingSpaceItem::Type type) {
-  switch (type) {
-    case Type::kCameraAppPhoto:
-    case Type::kCameraAppScanJpg:
-    case Type::kCameraAppScanPdf:
-    case Type::kCameraAppVideoGif:
-    case Type::kCameraAppVideoMp4:
-      return true;
-    case Type::kArcDownload:
-    case Type::kDownload:
-    case Type::kDiagnosticsLog:
-    case Type::kDriveSuggestion:
-    case Type::kLacrosDownload:
-    case Type::kLocalSuggestion:
-    case Type::kNearbyShare:
-    case Type::kPhoneHubCameraRoll:
-    case Type::kPhotoshopWeb:
-    case Type::kPinnedFile:
-    case Type::kPrintedPdf:
-    case Type::kScan:
-    case Type::kScreenRecording:
-    case Type::kScreenRecordingGif:
-    case Type::kScreenshot:
-      return false;
-  }
-}
-
-// static
 bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kArcDownload:
     case Type::kDownload:
     case Type::kLacrosDownload:
       return true;
-    case Type::kCameraAppPhoto:
-    case Type::kCameraAppScanJpg:
-    case Type::kCameraAppScanPdf:
-    case Type::kCameraAppVideoGif:
-    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDriveSuggestion:
     case Type::kLocalSuggestion:
@@ -164,11 +131,6 @@ bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
     case Type::kScreenshot:
       return true;
     case Type::kArcDownload:
-    case Type::kCameraAppPhoto:
-    case Type::kCameraAppScanJpg:
-    case Type::kCameraAppScanPdf:
-    case Type::kCameraAppVideoGif:
-    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kDriveSuggestion:
@@ -191,11 +153,6 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
       return true;
     case Type::kArcDownload:
-    case Type::kCameraAppPhoto:
-    case Type::kCameraAppScanJpg:
-    case Type::kCameraAppScanPdf:
-    case Type::kCameraAppVideoGif:
-    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kLacrosDownload:
@@ -340,17 +297,18 @@ std::optional<std::optional<std::u16string>> HoldingSpaceItem::SetSecondaryText(
   return previous_secondary_text;
 }
 
-std::optional<std::optional<ui::ColorId>>
-HoldingSpaceItem::SetSecondaryTextColorId(
-    const std::optional<ui::ColorId>& secondary_text_color_id) {
-  if (secondary_text_color_id_ == secondary_text_color_id) {
+std::optional<std::optional<HoldingSpaceColorVariant>>
+HoldingSpaceItem::SetSecondaryTextColorVariant(
+    const std::optional<HoldingSpaceColorVariant>&
+        secondary_text_color_variant) {
+  if (secondary_text_color_variant_ == secondary_text_color_variant) {
     return std::nullopt;
   }
 
-  auto previous_secondary_text_color_id = secondary_text_color_id_;
-  secondary_text_color_id_ = secondary_text_color_id;
+  auto previous_secondary_text_color_variant = secondary_text_color_variant_;
+  secondary_text_color_variant_ = secondary_text_color_variant;
 
-  return previous_secondary_text_color_id;
+  return previous_secondary_text_color_variant;
 }
 
 std::u16string HoldingSpaceItem::GetAccessibleName() const {

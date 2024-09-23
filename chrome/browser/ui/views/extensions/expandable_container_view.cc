@@ -52,7 +52,7 @@ bool ExpandableContainerView::DetailsView::GetExpanded() const {
   return expanded_;
 }
 
-BEGIN_METADATA(ExpandableContainerView, DetailsView, views::View)
+BEGIN_METADATA(ExpandableContainerView, DetailsView)
 ADD_PROPERTY_METADATA(bool, Expanded)
 END_METADATA
 

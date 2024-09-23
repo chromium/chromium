@@ -71,7 +71,7 @@ ContentSetting AutoPipSettingHelper::GetEffectiveContentSetting() {
 
 void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_session_model(content_settings::SessionModel::Durable);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
 
   settings_map_->SetContentSettingDefaultScope(
       origin_, /*secondary_url=*/GURL(),
@@ -88,7 +88,6 @@ AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb(
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPipSettingHelper::CreateOverlayViewIfNeeded(
     base::OnceClosure close_pip_cb,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   switch (GetEffectiveContentSetting()) {
@@ -96,30 +95,40 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
       // If the user already said to allow once, then continue allowing.  It's
       // assumed that we're used for at most one visit to a site.
       if (already_selected_allow_once_) {
+        RecordResult(PromptResult::kNotShownAllowedOnce);
         return nullptr;
       }
       // Create and return the UI to ask the user.
       ui_was_shown_but_not_acknowledged_ = true;
       return std::make_unique<AutoPipSettingOverlayView>(
-          CreateResultCb(std::move(close_pip_cb)), origin_,
-          browser_view_overridden_bounds, anchor_view, arrow);
+          CreateResultCb(std::move(close_pip_cb)), origin_, anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
+      RecordResult(PromptResult::kNotShownAllowedOnEveryVisit);
       return nullptr;
     case CONTENT_SETTING_BLOCK:
       // Auto-pip is not allowed.  Close the window.
+      RecordResult(PromptResult::kNotShownBlocked);
       std::move(close_pip_cb).Run();
       return nullptr;
     default:
-      NOTREACHED() << " AutoPiP unknown effective content setting";
+      NOTREACHED_IN_MIGRATION() << " AutoPiP unknown effective content setting";
       std::move(close_pip_cb).Run();
       return nullptr;
   }
 }
 
+void AutoPipSettingHelper::OnAutoPipBlockedByPermission() {
+  RecordResult(PromptResult::kNotShownBlocked);
+}
+
+void AutoPipSettingHelper::OnAutoPipBlockedByIncognito() {
+  RecordResult(PromptResult::kNotShownIncognito);
+}
+
 void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
                                       AutoPipSettingView::UiResult result) {
-  // The UI was both shown and acknoweledged, so we don't have to worry about it
+  // The UI was both shown and acknowledged, so we don't have to worry about it
   // being dismissed without being acted on for the permission embargo.
   ui_was_shown_but_not_acknowledged_ = false;
   switch (result) {
@@ -143,6 +152,6 @@ void AutoPipSettingHelper::OnUiResult(base::OnceClosure close_pip_cb,
 }
 
 void AutoPipSettingHelper::RecordResult(PromptResult result) {
-  base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResult",
+  base::UmaHistogramEnumeration("Media.AutoPictureInPicture.PromptResultV2",
                                 result);
 }

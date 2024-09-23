@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -15,18 +15,15 @@ import androidx.annotation.RequiresApi;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
-import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Optional;
+
 /** Handles translating the UrlBar model data to the view state. */
 class UrlBarViewBinder {
-    private static final String TAG = "UrlBarViewBinder";
-
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
@@ -40,17 +37,22 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.AUTOCOMPLETE_TEXT.equals(propertyKey)) {
             AutocompleteText autocomplete = model.get(UrlBarProperties.AUTOCOMPLETE_TEXT);
             if (view.shouldAutocomplete()) {
-                view.setAutocompleteText(autocomplete.userText, autocomplete.autocompleteText);
+                view.setAutocompleteText(
+                        autocomplete.userText,
+                        autocomplete.autocompleteText,
+                        TextUtils.isEmpty(autocomplete.additionalText)
+                                ? Optional.empty()
+                                : Optional.of(autocomplete.additionalText));
             }
         } else if (UrlBarProperties.DELEGATE.equals(propertyKey)) {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));
         } else if (UrlBarProperties.FOCUS_CHANGE_CALLBACK.equals(propertyKey)) {
-            final Callback<Boolean> focusChangeCallback =
-                    model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK);
+            final Optional<Callback<Boolean>> focusChangeCallback =
+                    Optional.ofNullable(model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK));
             view.setOnFocusChangeListener(
                     (v, focused) -> {
                         if (focused) view.setIgnoreTextChangesForAutocomplete(false);
-                        focusChangeCallback.onResult(focused);
+                        focusChangeCallback.ifPresent(cb -> cb.onResult(focused));
                     });
         } else if (UrlBarProperties.SHOW_CURSOR.equals(propertyKey)) {
             view.setCursorVisible(model.get(UrlBarProperties.SHOW_CURSOR));
@@ -59,26 +61,10 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.TEXT_STATE.equals(propertyKey)) {
             UrlBarTextState state = model.get(UrlBarProperties.TEXT_STATE);
             view.setIgnoreTextChangesForAutocomplete(true);
-
-            try (TraceEvent te1 = TraceEvent.scoped("UrlBarViewBinder.setText")) {
-                try (TimingMetric t = TimingMetric.shortUptime("Omnibox.SetText.Duration")) {
-                    if (OmniboxFeatures.shouldTruncateVisibleUrlV2()) {
-                        view.setTextWithTruncation(
-                                state.text, state.scrollType, state.scrollToIndex);
-                    } else {
-                        view.setText(state.text);
-                    }
-                }
-            }
-
+            view.setTextWithTruncation(state.text, state.scrollType, state.scrollToIndex);
             view.setTextForAutofillServices(state.textForAutofillServices);
-
-            try (TraceEvent te2 = TraceEvent.scoped("UrlBarViewBinder.setScrollState")) {
-                view.setScrollState(state.scrollType, state.scrollToIndex);
-            }
-
+            view.setScrollState(state.scrollType, state.scrollToIndex);
             view.setIgnoreTextChangesForAutocomplete(false);
-
             if (view.hasFocus()) {
                 if (state.selectionState == UrlBarCoordinator.SelectionState.SELECT_ALL) {
                     view.selectAll();
@@ -90,8 +76,6 @@ class UrlBarViewBinder {
             view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
-        } else if (UrlBarProperties.TYPEFACE.equals(propertyKey)) {
-            view.setTypeface(model.get(UrlBarProperties.TYPEFACE));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
             final boolean incognitoColorsEnabled =
                     model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
@@ -101,8 +85,12 @@ class UrlBarViewBinder {
             }
         } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
-        } else if (UrlBarProperties.URL_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.setUrlTextChangeListener(model.get(UrlBarProperties.URL_TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+            view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
+        } else if (UrlBarProperties.TYPING_STARTED_LISTENER.equals(propertyKey)) {
+            view.setTypingStartedListener(model.get(UrlBarProperties.TYPING_STARTED_LISTENER));
+        } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
+            view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
         } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
             view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
         } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
@@ -115,6 +103,8 @@ class UrlBarViewBinder {
                                 ? view.getHandwritingBoundsOffsetTop()
                                 : 0);
             }
+        } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
+            view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
         }
     }
 
@@ -140,39 +130,21 @@ class UrlBarViewBinder {
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
-        try {
-            // These get* methods may fail on some devices, so we're calling all of them before
-            // applying tint to any of the drawables. See https://crbug.com/1263630.
-            final Drawable textCursor = view.getTextCursorDrawable();
-            final Drawable textSelectHandle = view.getTextSelectHandle();
-            final Drawable textSelectHandleLeft = view.getTextSelectHandleLeft();
-            final Drawable textSelectHandleRight = view.getTextSelectHandleRight();
+        // These get* methods may fail on some devices, so we're calling all of them before
+        // applying tint to any of the drawables. See https://crbug.com/1263630.
+        final Drawable textCursor = view.getTextCursorDrawable();
+        final Drawable textSelectHandle = view.getTextSelectHandle();
+        final Drawable textSelectHandleLeft = view.getTextSelectHandleLeft();
+        final Drawable textSelectHandleRight = view.getTextSelectHandleRight();
 
-            final int color =
-                    useIncognitoColors
-                            ? view.getContext().getColor(R.color.default_control_color_active_dark)
-                            : MaterialColors.getColor(view, R.attr.colorPrimary);
-            textCursor.mutate().setTint(color);
-            textSelectHandle.mutate().setTint(color);
-            textSelectHandleLeft.mutate().setTint(color);
-            textSelectHandleRight.mutate().setTint(color);
-        } catch (Resources.NotFoundException e) {
-            // Uploading the stack for APIs below 31 since we assume this doesn't happen on newer
-            // versions. We'll still throw the exception for APIs 31+ to keep track of any
-            // unexpected crashes.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                Log.e(TAG, "Failed to access the cursor or handle drawable, skipped tinting.", e);
-                final Throwable throwable =
-                        new Throwable(
-                                "This is not a crash. See https://crbug.com/1263630 for details.",
-                                e);
-                final Callback<Throwable> reportExceptionCallback =
-                        ((Callback<Throwable>) view.getTag(R.id.report_exception_callback));
-                reportExceptionCallback.onResult(throwable);
-            } else {
-                throw e;
-            }
-        }
+        final int color =
+                useIncognitoColors
+                        ? view.getContext().getColor(R.color.default_control_color_active_dark)
+                        : MaterialColors.getColor(view, R.attr.colorPrimary);
+        textCursor.mutate().setTint(color);
+        textSelectHandle.mutate().setTint(color);
+        textSelectHandleLeft.mutate().setTint(color);
+        textSelectHandleRight.mutate().setTint(color);
     }
 
     private UrlBarViewBinder() {}

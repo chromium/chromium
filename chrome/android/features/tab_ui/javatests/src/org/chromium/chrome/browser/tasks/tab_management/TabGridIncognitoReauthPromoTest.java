@@ -29,10 +29,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -42,13 +43,12 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Instrumentation tests for the incognito re-auth promo component.
  *
- * <p>TODO(crbug.com/1227656): Remove the restriction on only phone type and make it available for
+ * <p>TODO(crbug.com/40056462): Remove the restriction on only phone type and make it available for
  * tablets. Also, remove the restriction on running this suite only for high end phones when GTS is
  * available for them.
  */
@@ -56,6 +56,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID})
+@DisableFeatures({ChromeFeatureList.ANDROID_HUB_SEARCH})
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIncognitoReauthPromoTest {
     @Rule
@@ -76,13 +77,12 @@ public class TabGridIncognitoReauthPromoTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 TabSwitcherMessageManager::resetHasAppendedMessagesForTesting);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoReauthPromoShown() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -96,7 +96,6 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1510419")
     public void testSnackBarShown_WhenClickingReviewActionProvider() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -127,7 +126,6 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoPromoNotShownInRegularMode_WhenTogglingFromIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -146,7 +144,6 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoReauthPromo_NoThanks_HidesTheCard() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 

@@ -7,10 +7,8 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/printing/print_servers_provider.h"
-#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "components/policy/policy_constants.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
+#include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
 
 namespace policy {
 
@@ -19,20 +17,12 @@ namespace {
 base::WeakPtr<ash::PrintServersProvider> GetPrintServersProvider(
     const std::string& user_id) {
   return ash::PrintServersProviderFactory::Get()->GetForAccountId(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
 }
 
 }  // namespace
 
-PrintServersExternalDataHandler::PrintServersExternalDataHandler(
-    ash::CrosSettings* cros_settings,
-    DeviceLocalAccountPolicyService* policy_service)
-    : print_servers_observer_(cros_settings,
-                              policy_service,
-                              key::kExternalPrintServers,
-                              this) {
-  print_servers_observer_.Init();
-}
+PrintServersExternalDataHandler::PrintServersExternalDataHandler() = default;
 
 PrintServersExternalDataHandler::~PrintServersExternalDataHandler() = default;
 
@@ -57,10 +47,8 @@ void PrintServersExternalDataHandler::OnExternalDataFetched(
 }
 
 void PrintServersExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
+    const AccountId& account_id) {
   ash::PrintServersProviderFactory::Get()->RemoveForAccountId(account_id);
-  std::move(on_removed).Run();
 }
 
 }  // namespace policy

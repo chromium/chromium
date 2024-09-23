@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("survey") {
+  sources = [
+    "arc_survey_service.cc",
+    "arc_survey_service.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_survey_service_unittest.cc" ]
+
+  deps = [
+    ":survey",
+    "//ash/components/arc",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

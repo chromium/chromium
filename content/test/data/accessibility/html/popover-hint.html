@@ -15,7 +15,7 @@
 <div popover="hint" id="popover1">
   Test popover!
 </div>
-<button popovertarget="popover1"></button>
+<button popovertarget="popover1">popover1</button>
 
 <div popover="hint" id="popover2">
   <div>
@@ -23,8 +23,9 @@
     <img title="test 123">
   </div>
 </div>
-<button popovertarget="popover2"></button>
+<button popovertarget="popover2">popover2</button>
 
+<button popovertarget="popover3">popover3</button>
 <div popover="hint" id="popover3">
   Test popover with rich content like a datatable.
   <table>
@@ -38,7 +39,6 @@
     </tr>
   </table>
 </div>
-<button popovertarget="popover3"></button>
 
 <div popover="hint" id="popover4">
   Test popover with a textinput!
@@ -48,10 +48,16 @@
     </span>
   </div>
 </div>
-<button popovertarget="popover4"></button>
-
+<button popovertarget="popover4">popover4</button>
 
 <div popover="hint" id="popover5">
   Test popover with title in button to test description.
 </div>
-<button title="the title" popovertarget="popover5"></button>
+<button title="the title" popovertarget="popover5">popover5</button>
+
+<div popover="hint" id="popover6">Test popover, open</div>
+<button popovertarget="popover6">popover6</button>
+
+<script>
+  popover6.showPopover();
+</script>

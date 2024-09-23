@@ -204,6 +204,10 @@ class ArgumentSpec {
   // to allow the API to pass an object with arbitrary properties. Only
   // applicable for ArgumentType::OBJECT.
   std::unique_ptr<ArgumentSpec> additional_properties_;
+
+  // Whether this specific spec should ignore additional properties provided
+  // which do not match the spec, without emitting an error.
+  bool ignore_additional_properties_ = false;
 };
 
 }  // namespace extensions

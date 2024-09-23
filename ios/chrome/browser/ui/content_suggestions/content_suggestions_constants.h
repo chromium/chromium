@@ -15,6 +15,7 @@
 // reused.
 // LINT.IfChange
 enum class ContentSuggestionsModuleType {
+  kInvalid = -1,
   kMostVisited = 0,
   kShortcuts = 1,
   kSetUpListSync = 2,
@@ -30,7 +31,8 @@ enum class ContentSuggestionsModuleType {
   // Removed: kParcelTrackingSeeMore = 12,
   kSetUpListNotifications = 13,
   kPlaceholder = 14,
-  kMaxValue = kPlaceholder,
+  kPriceTrackingPromo = 15,
+  kMaxValue = kPriceTrackingPromo,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
@@ -66,12 +68,6 @@ extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
 // Represents the Magic Stack UIStackView.
 extern NSString* const kMagicStackViewAccessibilityIdentifier;
 
-// Represents the Edit Button Container in the Magic Stack.
-extern NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier;
-
-// Represents the Edit Button in the Magic Stack.
-extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
-
 // Represents the "Done" button in the Magic Stack edit half sheet.
 extern NSString* const
     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier;
@@ -89,11 +85,6 @@ extern const CGFloat kMostVisitedBottomMargin;
 
 // Most Visited Tiles favicon width when kMagicStack is enabled.
 extern const CGFloat kMagicStackFaviconWidth;
-
-// Maximum number of Trending Queries shown.
-// If the value of this constant is updated, please also update the
-// TrendingQueryIndex enum so it can capture a higher max value.
-const int kMaxTrendingQueries = 4;
 
 // Returns the matching ContentSuggestionsModuleType for a given
 // SetUpListItemType `type`.

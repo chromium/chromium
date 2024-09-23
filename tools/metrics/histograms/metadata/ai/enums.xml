@@ -1,0 +1,123 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(AIAPI) -->
+
+<enum name="AIAPI">
+  <int value="0" label="ai.canCreateSession"/>
+  <int value="1" label="ai.createSession"/>
+  <int value="2" label="ai.prompt"/>
+  <int value="3" label="ai.promptStreaming"/>
+  <int value="4" label="ai.defaultTestSessionOptions"/>
+  <int value="5" label="ai.sessionDestroy"/>
+  <int value="6" label="ai.sessionClone"/>
+  <int value="7" label="ai.textModelInfo"/>
+  <int value="8" label="ai.sessionSummarize"/>
+  <int value="9" label="ai.sessionSummarizeStreaming"/>
+  <int value="10" label="AIWriter.write"/>
+  <int value="11" label="AIWriter.writeStreaming"/>
+  <int value="12" label="AIRewriter.rewrite"/>
+  <int value="13" label="AIRewriter.rewriteStreaming"/>
+  <int value="14" label="ai.summarizer.summarize"/>
+  <int value="15" label="ai.summarizer.summarizeStreaming"/>
+  <int value="16" label="ai.summarizer.create"/>
+  <int value="17" label="ai.summarizer.destroy"/>
+  <int value="18" label="ai.assistant.countPromptTokens"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
+
+<!-- LINT.IfChange(AICapabilityAvailability) -->
+
+<enum name="AICapabilityAvailability">
+  <int value="0" label="Readily">
+    The model is available on-device and so creating will happen quickly.
+  </int>
+  <int value="1" label="AfterDownload">
+    The model is not available on-device, but the device is capable, so creating
+    the model will start the download process (which can take a while).
+  </int>
+  <int value="2" label="No">The model is not available for this device.</int>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_capability_availability.h:AICapabilityAvailability) -->
+
+<!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
+
+<enum name="AIModelStreamingResponseStatus">
+  <int value="0" label="Ongoing">
+    There response is not fully streamed back yet, and the interface will remain
+    open.
+  </int>
+  <int value="1" label="Complete">
+    The streaming responder completes and closes.
+  </int>
+  <int value="2" label="ErrorUnknown">
+    The execution encounters unknown error.
+  </int>
+  <int value="3" label="ErrorInvalidRequest">The request was invalid.</int>
+  <int value="4" label="ErrorRequestThrottled">The request was throttled.</int>
+  <int value="5" label="ErrorPermissionDenied">
+    User permission errors such as not signed-in or not allowed to execute
+    model.
+  </int>
+  <int value="6" label="ErrorGenericFailure">Other generic failures.</int>
+  <int value="7" label="ErrorRetryableError">
+    Retryable error occurred in server.
+  </int>
+  <int value="8" label="ErrorNonRetryableError">
+    Non-retryable error occurred in server.
+  </int>
+  <int value="9" label="ErrorUnsupportedLanguage">Unsupported.</int>
+  <int value="10" label="ErrorFiltered">Bad response.</int>
+  <int value="11" label="ErrorDisabled">Response was disabled.</int>
+  <int value="12" label="ErrorCancelled">The request was cancelled.</int>
+  <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
+
+<!-- LINT.IfChange(LoadTranslateKitResult) -->
+
+<enum name="LoadTranslateKitResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Success to load TranslateKit binary.</int>
+  <int value="2" label="InvalidBinary">
+    Fails due to invalid TranslateKit binary.
+  </int>
+  <int value="3" label="InvalidFunctionPointer">
+    Success to load TranslateKit binary but one or more function pointers are
+    null.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
+
+</enums>
+
+</histogram-configuration>

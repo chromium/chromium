@@ -5,17 +5,16 @@
 #include "ui/base/clipboard/url_file_parser.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
 namespace ui::clipboard_util::internal {
 
-std::string ExtractURLFromURLFileContents(
-    const base::StringPiece& file_contents) {
+std::string ExtractURLFromURLFileContents(std::string_view file_contents) {
   // NB: This code is written with the single goal of obvious correctness. It is
   // deliberately not optimized by any other measure.
 
@@ -32,9 +31,9 @@ std::string ExtractURLFromURLFileContents(
   const std::string kURL("URL=");
 
   // Start by splitting the file content into lines.
-  std::vector<base::StringPiece> lines_vector = base::SplitStringPiece(
+  std::vector<std::string_view> lines_vector = base::SplitStringPiece(
       file_contents, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::span<base::StringPiece> lines(lines_vector);
+  base::span<std::string_view> lines(lines_vector);
 
   // Search for the [InternetShortcut] section by discarding lines one by one
   // until either the section is found or there are no lines left.

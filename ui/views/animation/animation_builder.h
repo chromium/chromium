@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -56,9 +57,9 @@ class VIEWS_EXPORT AnimationBuilder {
     ~Observer() override;
 
     void SetOnStarted(base::OnceClosure callback);
-    void SetOnEnded(base::OnceClosure callback);
+    void SetOnEnded(base::OnceClosure callback, base::Location location);
     void SetOnWillRepeat(base::RepeatingClosure callback);
-    void SetOnAborted(base::OnceClosure callback);
+    void SetOnAborted(base::OnceClosure callback, base::Location location);
     void SetOnScheduled(base::OnceClosure callback);
 
     void SetAbortHandle(AnimationAbortHandle* abort_handle);
@@ -84,8 +85,16 @@ class VIEWS_EXPORT AnimationBuilder {
     RepeatMap repeat_map_;
     base::OnceClosure on_started_;
     base::OnceClosure on_ended_;
+    // Record where the on_ended_ callback was set from. Needed to debug a
+    // bad callback crash (https://g-issues.chromium.org/issues/335902543).
+    // TODO(b/335902543): Remove on_ended_location_.
+    base::Location on_ended_location_;
     base::RepeatingClosure on_will_repeat_;
     base::OnceClosure on_aborted_;
+    // Record where the on_aborted_ callback was set from. Needed to debug a
+    // bad callback crash (https://g-issues.chromium.org/issues/335902543).
+    // TODO(b/335902543): Remove on_aborted_location_.
+    base::Location on_aborted_location_;
     base::OnceClosure on_scheduled_;
 
     bool attached_to_sequence_ = false;
@@ -111,7 +120,8 @@ class VIEWS_EXPORT AnimationBuilder {
   // Registers |callback| to be called when the animation ends. Not called if
   // animation is aborted.
   // Must use before creating a sequence block.
-  AnimationBuilder& OnEnded(base::OnceClosure callback);
+  AnimationBuilder& OnEnded(base::OnceClosure callback,
+                            base::Location location = FROM_HERE);
   // Registers |callback| to be called when a sequence repetition ends and will
   // repeat. Not called if sequence is aborted.
   // Must use before creating a sequence block.
@@ -119,7 +129,8 @@ class VIEWS_EXPORT AnimationBuilder {
   // Registers |callback| to be called if animation is aborted for any reason.
   // Should never do anything that may cause another animation to be started.
   // Must use before creating a sequence block.
-  AnimationBuilder& OnAborted(base::OnceClosure callback);
+  AnimationBuilder& OnAborted(base::OnceClosure callback,
+                              base::Location location = FROM_HERE);
   // Registers |callback| to be called when the animation is scheduled.
   // Must use before creating a sequence block.
   AnimationBuilder& OnScheduled(base::OnceClosure callback);

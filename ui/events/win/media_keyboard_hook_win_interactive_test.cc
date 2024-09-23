@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/keyboard_hook.h"
-
 #include <windows.h>
 
 #include "base/functional/bind.h"
@@ -11,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/keyboard_hook.h"
 
 namespace ui {
 
@@ -113,12 +112,14 @@ TEST_F(MediaKeyboardHookWinInteractiveTest, CallbackReceivesProperEvents) {
   // Send a key down event and validate it when received through the hook.
   SendKeyDown(ui::VKEY_MEDIA_PLAY_PAUSE);
   WaitForKeyEvents(1);
-  ExpectReceivedEvent(/*index=*/0, ui::VKEY_MEDIA_PLAY_PAUSE, ET_KEY_PRESSED);
+  ExpectReceivedEvent(/*index=*/0, ui::VKEY_MEDIA_PLAY_PAUSE,
+                      EventType::kKeyPressed);
 
   // Send a key up event and validate it when received through the hook.
   SendKeyUp(ui::VKEY_MEDIA_PLAY_PAUSE);
   WaitForKeyEvents(2);
-  ExpectReceivedEvent(/*index=*/1, ui::VKEY_MEDIA_PLAY_PAUSE, ET_KEY_RELEASED);
+  ExpectReceivedEvent(/*index=*/1, ui::VKEY_MEDIA_PLAY_PAUSE,
+                      EventType::kKeyReleased);
 }
 
 }  // namespace ui

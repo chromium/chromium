@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
@@ -26,11 +27,14 @@ import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
+import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.webauthn.CredManUiRecommenderImpl;
 import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
+import org.chromium.components.webauthn.cred_man.CredManUiRecommenderProvider;
 import org.chromium.url.GURL;
 
 /**
@@ -59,16 +63,23 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             // or not we are actually building with splits.
             AppHooks.get().registerProtoExtensions();
 
-            // TODO(crbug.com/1442347): Remove this after code changes allow for //components to
+            // TODO(crbug.com/40266922): Remove this after code changes allow for //components to
             // access cached flags.
             BrowserUiUtilsCachedFlags.getInstance()
                     .setVerticalAutomotiveBackButtonToolbarFlag(
                             ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
+            BrowserUiUtilsCachedFlags.getInstance()
+                    .setAsyncNotificationManagerFlag(
+                            ChromeFeatureList.sAsyncNotificationManager.isEnabled());
+
+            if (ChromeFeatureList.sTraceBinderIpc.isEnabled()) {
+                BinderCallsListener.getInstance().installListener();
+            }
 
             // Only load the native library early for bundle builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at
             // this point to check.
-            if (ProductConfig.IS_BUNDLE) {
+            if (BuildConfig.IS_BUNDLE) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureInitialized()).start();
             }
@@ -86,12 +97,16 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             ContextualNotificationPermissionRequesterImpl.initialize();
             PartitionResolverSupplier.setInstance(new ProfileResolver());
 
-            AppHooks.get().getChimeDelegate().initialize();
+            new ChimeDelegate().initialize();
 
             // Initialize the AccessibilityHierarchySnapshotter. Do not include in release builds.
             if (!BuildConfig.IS_CHROME_BRANDED) {
                 HierarchySnapshotter.initialize();
             }
+
+            // Provide the supplier for CredManUiRecommender. This is set only for Chrome.
+            CredManUiRecommenderProvider.getOrCreate()
+                    .setCredManUiRecommenderSupplier(() -> new CredManUiRecommenderImpl());
         }
     }
 

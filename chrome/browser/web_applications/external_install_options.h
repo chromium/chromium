@@ -152,6 +152,9 @@ struct ExternalInstallOptions {
   // capabilities are not used (like file handlers).
   // Note: This is different behavior than using the "Create Shortcut..."
   // option in the GUI.
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead, or use
+  // shortcuts::CreateShortcutForWebContents.
   bool install_as_shortcut = false;
 
   // Whether the app should be reinstalled even if it is already installed.
@@ -233,6 +236,20 @@ struct ExternalInstallOptions {
   // expectation.
   // Intended to be used for post-install activities like metrics and migration.
   std::optional<webapps::AppId> expected_app_id;
+
+  // Whether the app should be set as the preferred app for its supported links
+  // after installation. Note that this has no effect if the app is already
+  // installed as the user may have already updated their preference.
+  bool is_preferred_app_for_supported_links = false;
+
+  // Whether the app should not be fully installed with os integration
+  // (shortcuts in application menu, etc), and instead only installed within
+  // Chromium. This sets the installation status to
+  // `InstallState::INSTALLED_WITHOUT_OS_INTEGRATION`. This will not
+  // downgrade an existing install.
+  bool install_without_os_integration = false;
+
+  // Note: All new fields must be added to AsDebugValue() and the == operator.
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

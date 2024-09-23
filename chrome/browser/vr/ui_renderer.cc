@@ -18,7 +18,7 @@ UiRenderer::UiRenderer(UiScene* scene, UiElementRenderer* ui_element_renderer)
 
 UiRenderer::~UiRenderer() = default;
 
-// TODO(crbug.com/767515): UiRenderer must not care about the elements it's
+// TODO(crbug.com/41345926): UiRenderer must not care about the elements it's
 // rendering and be platform agnostic, each element should know how to render
 // itself correctly.
 void UiRenderer::Draw(const RenderInfo& render_info) {

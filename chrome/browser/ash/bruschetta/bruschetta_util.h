@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-
-#include <optional>
 
 class Profile;
 
@@ -21,7 +21,9 @@ extern const char kUefiDlc[];
 extern const char kBruschettaVmName[];
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. BruschettaResult in
+// tools/metrics/histograms/enums.xml must be updated when making a change to
+// this enum.
 enum class BruschettaResult {
   kUnknown = 0,
   kSuccess = 1,
@@ -30,7 +32,8 @@ enum class BruschettaResult {
   kStartVmFailed = 4,
   kTimeout = 5,
   kForbiddenByPolicy = 6,
-  kMaxValue = kForbiddenByPolicy,
+  kConciergeUnavailable = 7,
+  kMaxValue = kConciergeUnavailable,
 };
 
 // The launch-time policy that applies to a specific VM. This is used to
@@ -92,6 +95,12 @@ GURL GetLearnMoreUrl(Profile* profile);
 
 // Gets the display name of the specified `guest` running under `profile`.
 std::string GetDisplayName(Profile* profile, guest_os::GuestId guest);
+
+// Returns whether the default Bruschetta VM is running for the user.
+bool IsBruschettaRunning(Profile* profile);
+
+// Gets the display name for the default Bruschetta VM.
+std::string GetBruschettaDisplayName(Profile* profile);
 
 }  // namespace bruschetta
 

@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tinker_tank/TinkerTankDelegate.java",
+  ]
+  deps = [
+    "//base:service_loader_java",
+    "//base:supplier_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/bottomsheet/android:java",
+  ]
+}

@@ -4,8 +4,9 @@
 
 #include "components/policy/core/common/scoped_critical_policy_section.h"
 
-#include <userenv.h>
 #include <windows.h>
+
+#include <userenv.h>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"

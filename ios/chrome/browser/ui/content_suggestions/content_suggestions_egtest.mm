@@ -14,7 +14,11 @@
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -22,19 +26,16 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
-#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -68,38 +69,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Matcher for the SetUpList.
-id<GREYMatcher> SetUpList() {
-  return grey_allOf(grey_accessibilityID(set_up_list::kAccessibilityID),
-                    grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the secondary action button.
-id<GREYMatcher> SetUpListAllSet() {
-  return grey_accessibilityID(set_up_list::kAllSetID);
-}
-
-// Scrolls to the SetUpList, if it is off-screen.
-void ScrollToSetUpList() {
-  [[[EarlGrey selectElementWithMatcher:SetUpList()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Taps the view with the given `accessibility_id`.
 void TapView(NSString* accessibility_id) {
   id<GREYMatcher> matcher = grey_accessibilityID(accessibility_id);
   [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
-}
-
-// Tap the PromoStylePrimaryActionButton.
-void TapPromoStylePrimaryActionButton() {
-  id<GREYMatcher> button =
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:button] assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
 // Tap the PromoStyleSecondaryActionButton.
@@ -118,31 +92,6 @@ void TapSecondaryActionButton() {
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }
 
-// Tap the SetUpList button to expand the list.
-void TapSetUpListExpand() {
-  id<GREYMatcher> expandButton =
-      grey_allOf(grey_accessibilityID(set_up_list::kExpandButtonID),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:expandButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:expandButton] performAction:grey_tap()];
-}
-
-// Tap the "More" button if it is visible.
-void TapMoreButtonIfVisible() {
-  id<GREYInteraction> button =
-      [EarlGrey selectElementWithMatcher:
-                    grey_accessibilityID(
-                        @"PromoStyleReadMoreActionAccessibilityIdentifier")];
-  NSError* error;
-  [button assertWithMatcher:grey_notNil() error:&error];
-  if (!error) {
-    [button performAction:grey_tap()];
-  }
-}
-
 }  // namespace
 
 #pragma mark - TestCase
@@ -159,43 +108,19 @@ void TapMoreButtonIfVisible() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
-  if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
-      [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninDisabled)] ||
-      [self isRunningTest:@selector
-            (testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninEnabled)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-    config.features_enabled.push_back(kConsistencyNewAccountInterface);
-  }
+  config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector
             (DISABLED_testMagicStackSetUpListCompleteAllItems)] ||
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
-    std::string enable_magic_stack_segmentation_arg =
-        "--enable-features=" +
-        std::string(segmentation_platform::features::
-                        kSegmentationPlatformIosModuleRanker.name) +
-        ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
-        kMagicStack.name;
-    if ([self isRunningTest:@selector
-              (testMagicStackCompactedSetUpListCompleteAllItems)]) {
-      enable_magic_stack_segmentation_arg +=
-          ":" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" + "0";
-    }
-    config.additional_args.push_back(enable_magic_stack_segmentation_arg);
     config.features_disabled.push_back(kContentPushNotifications);
-  } else {
-    config.features_disabled.push_back(kMagicStack);
+    config.features_disabled.push_back(kIOSTipsNotifications);
+  }
+  if ([self isRunningTest:@selector(testMVTInMagicStack)]) {
+    std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
+                                 kMagicStackMostVisitedModuleParam + "/true";
+    config.additional_args.push_back("--enable-features=" + enable_mvt_arg);
   }
   return config;
 }
@@ -221,7 +146,7 @@ void TapMoreButtonIfVisible() {
 
 - (void)tearDown {
   [ChromeEarlGrey clearBrowsingHistory];
-  [ChromeEarlGreyAppInterface removeFirstRunSentinel];
+  [ChromeEarlGrey removeFirstRunSentinel];
   [super tearDown];
 }
 
@@ -286,8 +211,15 @@ void TapMoreButtonIfVisible() {
                  @"Test did not switch to incognito");
 }
 
+// Tests the "Remove" action of the Most Visited context menu, and the "Undo"
 // action.
-- (void)testMostVisitedRemoveUndo {
+// TODO(crbug.com/337064665): Test is flaky on simluator. Re-enable when fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMostVisitedRemoveUndo FLAKY_testMostVisitedRemoveUndo
+#else
+#define MAYBE_testMostVisitedRemoveUndo testMostVisitedRemoveUndo
+#endif
+- (void)MAYBE_testMostVisitedRemoveUndo {
   [self setupMostVisitedTileLongPress];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
@@ -354,268 +286,9 @@ void TapMoreButtonIfVisible() {
       assertWithMatcher:grey_nil()];
 }
 
-#pragma mark - Set Up List tests
-
-// Tests that the SetUpList can be expanded and unexpanded by touching the
-// "expand" button at the bottom of the list.
-- (void)testSetUpListExpands {
-  [self prepareToTestSetUpList];
-
-  id<GREYMatcher> signinItem = grey_accessibilityID(set_up_list::kSignInItemID);
-  id<GREYMatcher> defaultBrowserItem =
-      grey_accessibilityID(set_up_list::kDefaultBrowserItemID);
-  id<GREYMatcher> autofillItem =
-      grey_accessibilityID(set_up_list::kAutofillItemID);
-  [[EarlGrey selectElementWithMatcher:signinItem]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:defaultBrowserItem]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:autofillItem]
-      assertWithMatcher:grey_nil()];
-
-  TapSetUpListExpand();
-  ScrollToSetUpList();
-
-  // Autofill item should appear.
-  [[EarlGrey selectElementWithMatcher:autofillItem]
-      assertWithMatcher:grey_notNil()];
-
-  TapSetUpListExpand();
-
-  // Autofill item should disappear.
-  [[EarlGrey selectElementWithMatcher:autofillItem]
-      assertWithMatcher:grey_nil()];
-}
-
-// Tests that each item opens the appropriate UI flow and that dismissing that
-// UI marks the item complete. Also tests that the "All Set" view appears when
-// all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninDisabled {
-  [self prepareToTestSetUpList];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears and touch "Don't Sign In".
-  id<GREYMatcher> signinView = grey_accessibilityID(
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:signinView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the signin view.
-  TapPromoStyleSecondaryActionButton();
-  // Verify the signin item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
-                 @"SetUpList item SignIn not completed.");
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-  // Verify the default browser item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemDefaultBrowserIsComplete],
-                 @"SetUpList item Default Browser not completed.");
-
-  TapSetUpListExpand();
-  ScrollToSetUpList();
-
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  // TODO - verify the CPE promo is displayed.
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-  // Verify the Autofill item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemAutofillIsComplete],
-                 @"SetUpList item Autofill not completed.");
-
-  // Verify All Set view appears.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SetUpListAllSet()];
-
-  // Close NTP and reopen.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is still visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_notNil()];
-
-  // Close NTP and reopen. SetUpList should not be visible.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is not visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_nil()];
-}
-
-// Tests that each item opens the appropriate UI flow and that dismissing that
-// UI marks the item complete. Also tests that the "All Set" view appears when
-// all items are complete.
-- (void)testSetUpListDismissItemsWithSyncToSigninEnabled {
-  [self prepareToTestSetUpList];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Dismiss the signin view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
-  // Verify the signin item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
-                 @"SetUpList item SignIn not completed.");
-
-  // Tap the default browser item.
-  TapView(set_up_list::kDefaultBrowserItemID);
-  // Ensure the Default Browser Promo is displayed.
-  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss Default Browser Promo.
-  TapPromoStyleSecondaryActionButton();
-  // Verify the default browser item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemDefaultBrowserIsComplete],
-                 @"SetUpList item Default Browser not completed.");
-
-  TapSetUpListExpand();
-  ScrollToSetUpList();
-
-  // Tap the autofill item.
-  TapView(set_up_list::kAutofillItemID);
-  // TODO - verify the CPE promo is displayed.
-  id<GREYMatcher> CPEPromoView =
-      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
-  [[EarlGrey selectElementWithMatcher:CPEPromoView]
-      assertWithMatcher:grey_notNil()];
-  // Dismiss the CPE promo.
-  TapSecondaryActionButton();
-  // Verify the Autofill item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemAutofillIsComplete],
-                 @"SetUpList item Autofill not completed.");
-
-  // Verify All Set view appears.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SetUpListAllSet()];
-
-  // Close NTP and reopen.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is still visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_notNil()];
-
-  // Close NTP and reopen. SetUpList should not be visible.
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  // SetUpList is not visible.
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_nil()];
-}
-
-// Tests that the signin UI flow works and that the signin item is marked
-// complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninDisabled {
-  [self prepareToTestSetUpList];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears and touch "Continue as ...".
-  id<GREYMatcher> signinView = grey_accessibilityID(
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:signinView]
-      assertWithMatcher:grey_notNil()];
-  // Tap "Continue as ...".
-  TapPromoStylePrimaryActionButton();
-
-  // Verify the tangible sync screen appears.
-  id<GREYMatcher> syncView =
-      grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:syncView]
-      assertWithMatcher:grey_notNil()];
-  // On small screens, we may need to tap the "More" button.
-  TapMoreButtonIfVisible();
-  // Tap "Yes, I'm in".
-  TapPromoStylePrimaryActionButton();
-
-  // Verify the signin item is complete.
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
-                 @"SetUpList item SignIn not completed.");
-}
-
-// Tests that the signin UI flow works and that the signin item is marked
-// complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninEnabled {
-  [self prepareToTestSetUpList];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-
-  // The signin screen should appear. Tap it.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
-  GREYAssertTrue([NewTabPageAppInterface setUpListItemSignInSyncIsComplete],
-                 @"SetUpList item SignIn not completed.");
-}
-
-// Tests that the signin and sync screens can be dismissed by a swipe.
-// Note that if SyncToSignin is enabled, then the signin screen is replaced
-// by a bottom sheet which can't be dismissed by swiping, so this test
-// doesn't apply.
-- (void)testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled {
-  [self prepareToTestSetUpList];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
-  id<GREYMatcher> signinView = grey_accessibilityID(
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:signinView]
-      assertWithMatcher:grey_notNil()];
-  // Swipe to dismiss the signin screen.
-  [[EarlGrey selectElementWithMatcher:signinView]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-  // Verify that the signin screen is gone.
-  [[EarlGrey selectElementWithMatcher:signinView] assertWithMatcher:grey_nil()];
-
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-
-  // Tap the signin item.
-  TapView(set_up_list::kSignInItemID);
-  // Verify the signin screen appears.
-  [[EarlGrey selectElementWithMatcher:signinView]
-      assertWithMatcher:grey_notNil()];
-  // Tap "Continue as ...".
-  TapPromoStylePrimaryActionButton();
-  // Verify the tangible sync screen appears.
-  id<GREYMatcher> syncView =
-      grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:syncView]
-      assertWithMatcher:grey_notNil()];
-  // Swipe to dismiss the sync screen.
-  [[EarlGrey selectElementWithMatcher:syncView]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-  // Verify that the sync screen is gone.
-  [[EarlGrey selectElementWithMatcher:syncView] assertWithMatcher:grey_nil()];
-}
-
 // Tests that the "All Set" module is shown after completing all Set Up List
 // Hero Cell modules in the Magic Stack.
-// TODO(crbug.com/1520954): Test is flaky, re-enable when fixed.
+// TODO(crbug.com/41493926): Test is flaky, re-enable when fixed.
 - (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 
@@ -669,15 +342,10 @@ void TapMoreButtonIfVisible() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   [ChromeEarlGreyUI waitForAppToIdle];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // The fake signin UI appears. Dismiss it.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthCancelButtonIdentifier)]
-        performAction:grey_tap()];
-  } else {
-    // The full-screen signin promo appears. Dismiss it.
-    TapPromoStyleSecondaryActionButton();
-  }
+  // The fake signin UI appears. Dismiss it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify the All Set item is shown.
   condition = ^{
@@ -743,15 +411,10 @@ void TapMoreButtonIfVisible() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   [ChromeEarlGreyUI waitForAppToIdle];
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // The fake signin UI appears. Dismiss it.
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthCancelButtonIdentifier)]
-        performAction:grey_tap()];
-  } else {
-    // The full-screen signin promo appears. Dismiss it.
-    TapPromoStyleSecondaryActionButton();
-  }
+  // The fake signin UI appears. Dismiss it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify the All Set item is shown.
   condition = ^{
@@ -773,9 +436,16 @@ void TapMoreButtonIfVisible() {
 // Set Up List, returns to the Magic Stack and ensures Set Up List is not in the
 // Magic Stack anymore.
 - (void)testMagicStackEditButton {
+  // Enable customization.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   [self prepareToTestSetUpListInMagicStack];
 
-  // Swipe all the way over to the end of the Magic Stack.
+  // Swipe all the way over to the end of the Magic Stack and tap the edit
+  // button, which opens the customization menu at the Magic Stack page.
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(grey_accessibilityID(
                                  kMagicStackEditButtonAccessibilityIdentifier),
@@ -785,23 +455,23 @@ void TapMoreButtonIfVisible() {
                                kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_tap()];
 
-  // Verify edit half sheet is visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
-                                   IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE))]
+      selectElementWithMatcher:
+          grey_accessibilityID([HomeCustomizationHelper
+              navigationBarTitleForPage:CustomizationMenuPage::kMagicStack])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  id<GREYMatcher> setUpToggle =
-      grey_allOf(grey_accessibilityID([NewTabPageAppInterface setUpListTitle]),
-                 grey_sufficientlyVisible(), nil);
-  // Assert Set Up List toggle is on, and then turn if off.
-  [[EarlGrey selectElementWithMatcher:setUpToggle]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  // Dismiss
+  // Turn off the Set Up list toggle.
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier)]
+                 grey_allOf(grey_kindOfClassName(@"UISwitch"),
+                            grey_ancestor(grey_accessibilityID(
+                                kCustomizationToggleSetUpListIdentifier)),
+                            nil)] performAction:grey_turnSwitchOn(NO)];
+
+  // Dismiss the menu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNavigationBarDismissButtonIdentifier)]
       performAction:grey_tap()];
 
   // Swipe back to first module
@@ -814,30 +484,68 @@ void TapMoreButtonIfVisible() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    [NewTabPageAppInterface setUpListTitle])]
-      assertWithMatcher:grey_nil()];
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Test that MVT navigation and removal works when the module is put in the
+// Magic Stack.
+- (void)testMVTInMagicStack {
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+  NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
+
+  // Clear history and verify that the tile does not exist.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+
+  // After loading URL, need to do another action before opening a new tab
+  // with the icon present.
+  [ChromeEarlGrey goBack];
+
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Navigate to MVT
+  id<GREYMatcher> matcher =
+      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
+                                          pageURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
+
+  [ChromeEarlGrey goBack];
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
+
+  // Tap on remove.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_SUGGESTIONS_REMOVE)]
+      performAction:grey_tap()];
+
+  // Check the tile is removed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
+              grey_sufficientlyVisible(), nil)] assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Test utils
 
-// Sets up the test case to test SetUpList.
-- (void)prepareToTestSetUpList {
-  [ChromeEarlGreyAppInterface writeFirstRunSentinel];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
-  [ChromeEarlGrey resetDataForLocalStatePref:
-                      prefs::kIosCredentialProviderPromoLastActionTaken];
-  [NewTabPageAppInterface resetSetUpListPrefs];
-  [ChromeEarlGrey closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-  ScrollToSetUpList();
-
-  // SetUpList is visible
-  [[EarlGrey selectElementWithMatcher:SetUpList()]
-      assertWithMatcher:grey_notNil()];
-}
-
 - (void)prepareToTestSetUpListInMagicStack {
-  [ChromeEarlGreyAppInterface writeFirstRunSentinel];
-  [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
+  [ChromeEarlGrey writeFirstRunSentinel];
+  [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
   [NewTabPageAppInterface resetSetUpListPrefs];

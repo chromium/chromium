@@ -8,20 +8,23 @@
 #include <optional>
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
+#include "extensions/common/stack_frame.h"
 
 namespace safe_browsing {
 
 // A signal that is created when an extension invokes cookies.getAll API.
 class CookiesGetAllSignal : public ExtensionSignal {
  public:
-  CookiesGetAllSignal(const extensions::ExtensionId& extension_id,
-                      const std::string& domain,
-                      const std::string& name,
-                      const std::string& path,
-                      std::optional<bool> secure,
-                      const std::string& store_id,
-                      const std::string& url,
-                      std::optional<bool> is_session);
+  CookiesGetAllSignal(
+      const extensions::ExtensionId& extension_id,
+      const std::string& domain,
+      const std::string& name,
+      const std::string& path,
+      std::optional<bool> secure,
+      const std::string& store_id,
+      const std::string& url,
+      std::optional<bool> is_session,
+      extensions::StackTrace js_callstack = extensions::StackTrace());
   ~CookiesGetAllSignal() override;
 
   // ExtensionSignal:
@@ -38,6 +41,7 @@ class CookiesGetAllSignal : public ExtensionSignal {
   const std::string& store_id() const { return store_id_; }
   const std::string& url() const { return url_; }
   std::optional<bool> is_session() const { return is_session_; }
+  const extensions::StackTrace& js_callstack() const { return js_callstack_; }
 
  protected:
   // Restricts the retrieved cookies to those whose domains match or are
@@ -57,6 +61,8 @@ class CookiesGetAllSignal : public ExtensionSignal {
   std::string url_;
   // Filters out session vs.persistent cookies.
   std::optional<bool> is_session_;
+  // JS callstack retrieved when the API was invoked.
+  extensions::StackTrace js_callstack_;
 };
 
 }  // namespace safe_browsing

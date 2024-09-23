@@ -7,11 +7,14 @@
 
 #include <memory>
 
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_registry_observer.h"
 
-// TODO(crbug.com/1443466): Reuse the result in Safety Check extensions handler.
+class Profile;
+
 class SafetyHubExtensionsResult : public SafetyHubService::Result {
  public:
   SafetyHubExtensionsResult() = delete;
@@ -24,11 +27,6 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
       std::set<extensions::ExtensionId> triggering_extensions,
       bool is_unpublished_extensions_only);
 
-  // Creates a Result based on the provided Dict. This should only be used for
-  // results that only capture the unpublished extensions, to be used in the
-  // menu notifications.
-  explicit SafetyHubExtensionsResult(const base::Value::Dict& dict);
-
   SafetyHubExtensionsResult(const SafetyHubExtensionsResult&);
   SafetyHubExtensionsResult& operator=(const SafetyHubExtensionsResult&);
 
@@ -38,26 +36,38 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
   // parameter only_unpublished_extensions indicates whether only extensions
   // that have been unpublished for a long time should be considered.
   static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
-      const extensions::CWSInfoService* extension_info_service,
       Profile* profile,
       bool only_unpublished_extensions);
 
   // Returns the number of extensions that need review according to the result.
   unsigned int GetNumTriggeringExtensions() const;
 
-  // SafetyHubService::Result implementation
+  // Updates the `triggering_extensions_` if an extension is kept.
+  void OnExtensionPrefsUpdated(const std::string& extension_id,
+                               Profile* profile);
 
+  // Updates the `triggering_extensions_` if an extension is uninstalled.
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason);
+
+  // SafetyHubService::Result implementation
   std::unique_ptr<SafetyHubService::Result> Clone() const override;
 
   base::Value::Dict ToDictValue() const override;
 
   bool IsTriggerForMenuNotification() const override;
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) const override;
+  bool WarrantsNewMenuNotification(
+      const base::Value::Dict& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 
   int GetNotificationCommandId() const override;
+
+  // Testing function to manipulate the `triggering_extensions_` dictionary.
+  void ClearTriggeringExtensionsForTesting();
+  void SetTriggeringExtensionForTesting(std::string extension_id);
 
  private:
   // A set of extension id's that have triggered a Safety Hub review, but

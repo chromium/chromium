@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
@@ -295,7 +300,7 @@ int BackendImpl::SyncInit() {
   trace_object_->EnableTracing(false);
   int sc = SelfCheck();
   if (sc < 0 && sc != ERR_NUM_ENTRIES_MISMATCH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   trace_object_->EnableTracing(true);
 #endif
 
@@ -333,7 +338,7 @@ void BackendImpl::CleanupCache() {
 
     if (user_flags_ & kNoRandom) {
       // This is a net_unittest, verify that we are not 'leaking' entries.
-      // TODO(https://crbug.com/1184679): Refactor this and eliminate the
+      // TODO(crbug.com/40171748): Refactor this and eliminate the
       //    WaitForPendingIOForTesting API.
       File::WaitForPendingIOForTesting(&num_pending_io_);
       DCHECK(!num_refs_);
@@ -544,7 +549,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
     DCHECK(!error);
     if (!parent && data_->table[hash & mask_]) {
       // We should have corrected the problem.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
   }
@@ -699,7 +704,7 @@ bool BackendImpl::SetMaxSize(int64_t max_bytes) {
 
 base::FilePath BackendImpl::GetFileName(Addr address) const {
   if (!address.is_separate_file() || !address.is_initialized()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::FilePath();
   }
 
@@ -1161,7 +1166,7 @@ int32_t BackendImpl::GetEntryCount() const {
       data_->header.num_entries - data_->header.lru.sizes[Rankings::DELETED];
 
   if (not_deleted < 0) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     not_deleted = 0;
   }
 
@@ -1421,7 +1426,7 @@ bool BackendImpl::InitStats() {
   }
 
   if (!address.is_block_file()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

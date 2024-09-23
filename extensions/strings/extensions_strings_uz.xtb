@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-faylini almashtirib bo‘lmadi. U ish faoliyatida emasligini tekshirib ko‘ring.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">Kengaytmani arxivdan chiqarib bo‘lmadi. Havfsiz chiqarib olish uchun profilingiz jildiga belgilarsiz yo‘l havolasini ko‘rsatish kerak. Profilingizda bunday havola mavjud emas.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> tomonidan ishlab chiqaruvchilgan <ph name="PRODUCT_NAME" /> mahsuloti (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Shaxsiy kalit uchun faqat yaroqli yo‘l ko‘rsatish mumkin.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Ushbu kompyuterda “<ph name="EXTENSION_NAME" />” kengaytmasini o‘chirish administrator tomonidan taqiqlangan.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Kengaytmani arxivdan chiqarib bo‘lmadi. Havfsiz chiqarib olish uchun profilingiz jildiga belgilarsiz yo‘l havolasini ko‘rsatish kerak. Profilingizda bunday havola mavjud emas.</translation>
 <translation id="6322279351188361895">Yopiq kalitni o‘qib bo‘lmadi.</translation>
 <translation id="6391538222494443604">Joylashtiriladigan katalog mavjud bo‘lishi kerak.</translation>
 <translation id="641087317769093025">Kengaytmani arxivdan chiqarib bo‘lmadi</translation>

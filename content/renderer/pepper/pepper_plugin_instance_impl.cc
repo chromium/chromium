@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 
 #include <utility>
@@ -13,6 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -350,7 +356,7 @@ void PrintPDFOutput(PP_Resource print_output,
 
   BufferAutoMapper mapper(enter.object());
   if (!mapper.data() || !mapper.size()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -437,7 +443,7 @@ PepperPluginInstanceImpl::ExternalDocumentLoader::~ExternalDocumentLoader() {}
 void PepperPluginInstanceImpl::ExternalDocumentLoader::ReplayReceivedData(
     WebAssociatedURLLoaderClient* document_loader) {
   for (auto it = data_.begin(); it != data_.end(); ++it) {
-    document_loader->DidReceiveData(it->c_str(), it->length());
+    document_loader->DidReceiveData(*it);
   }
   if (finished_loading_) {
     document_loader->DidFinishLoading();
@@ -448,9 +454,8 @@ void PepperPluginInstanceImpl::ExternalDocumentLoader::ReplayReceivedData(
 }
 
 void PepperPluginInstanceImpl::ExternalDocumentLoader::DidReceiveData(
-    const char* data,
-    int data_length) {
-  data_.push_back(std::string(data, data_length));
+    base::span<const char> data) {
+  data_.push_back(std::string(data.data(), data.size()));
 }
 
 void PepperPluginInstanceImpl::ExternalDocumentLoader::DidFinishLoading() {
@@ -485,7 +490,7 @@ void PepperPluginInstanceImpl::GamepadImpl::Sample(
     PP_Instance instance,
     PP_GamepadsSampleData* data) {
   // This gamepad singleton resource method should not be called
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 PepperPluginInstanceImpl::PepperPluginInstanceImpl(
@@ -717,11 +722,10 @@ void PepperPluginInstanceImpl::InvalidateRect(const gfx::Rect& rect) {
 
 void PepperPluginInstanceImpl::CommitTransferableResource(
     const viz::TransferableResource& resource) {
-  if (!committed_texture_.mailbox_holder.mailbox.IsZero() &&
-      !IsTextureInUse(committed_texture_)) {
+  if (!committed_texture_.is_empty() && !IsTextureInUse(committed_texture_)) {
     committed_texture_graphics_3d_->ReturnFrontBuffer(
-        committed_texture_.mailbox_holder.mailbox,
-        committed_texture_consumed_sync_token_, false);
+        committed_texture_.mailbox(), committed_texture_consumed_sync_token_,
+        false);
   }
 
   committed_texture_ = resource;
@@ -740,8 +744,9 @@ void PepperPluginInstanceImpl::CommitTransferableResource(
 void PepperPluginInstanceImpl::PassCommittedTextureToTextureLayer() {
   DCHECK(bound_graphics_3d_);
 
-  if (committed_texture_.mailbox_holder.mailbox.IsZero())
+  if (committed_texture_.is_empty()) {
     return;
+  }
 
   viz::ReleaseCallback callback(base::BindOnce(
       &PepperPluginInstanceImpl::FinishedConsumingCommittedTexture,
@@ -759,8 +764,8 @@ void PepperPluginInstanceImpl::FinishedConsumingCommittedTexture(
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   bool removed = DecrementTextureReferenceCount(resource);
-  bool is_committed_texture = committed_texture_.mailbox_holder.mailbox ==
-                              resource.mailbox_holder.mailbox;
+  bool is_committed_texture =
+      committed_texture_.mailbox() == resource.mailbox();
 
   if (is_committed_texture && !is_lost) {
     committed_texture_consumed_sync_token_ = sync_token;
@@ -768,8 +773,7 @@ void PepperPluginInstanceImpl::FinishedConsumingCommittedTexture(
   }
 
   if (removed && !is_committed_texture) {
-    graphics_3d->ReturnFrontBuffer(resource.mailbox_holder.mailbox, sync_token,
-                                   is_lost);
+    graphics_3d->ReturnFrontBuffer(resource.mailbox(), sync_token, is_lost);
   }
 }
 
@@ -1114,7 +1118,7 @@ void PepperPluginInstanceImpl::HandleMessage(ScopedPPVar message) {
   if (!dispatcher || (message.get().type == PP_VARTYPE_OBJECT)) {
     // The dispatcher should always be valid, and MessageChannel should never
     // send an 'object' var over PPP_Messaging.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   dispatcher->Send(new PpapiMsg_PPPMessaging_HandleMessage(
@@ -1134,7 +1138,7 @@ bool PepperPluginInstanceImpl::HandleBlockingMessage(ScopedPPVar message,
   if (!dispatcher || (message.get().type == PP_VARTYPE_OBJECT)) {
     // The dispatcher should always be valid, and MessageChannel should never
     // send an 'object' var over PPP_Messaging.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   ppapi::proxy::ReceiveSerializedVarReturnValue msg_reply;
@@ -1187,7 +1191,7 @@ void PepperPluginInstanceImpl::ViewChanged(
   // TODO(chrishtr): remove device_scale
   view_data_.device_scale = 1;
   view_data_.css_scale =
-      container_->PageZoomFactor() * container_->PageScaleFactor();
+      container_->LayoutZoomFactor() * container_->PageScaleFactor();
   WebWidget* widget = render_frame()->GetLocalRootWebFrameWidget();
 
   viewport_to_dip_scale_ =
@@ -1605,7 +1609,7 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
   if (!GetPreferredPrintOutputFormat(&format, print_params)) {
     // PrintBegin should not have been called since SupportsPrintInterface
     // would have returned false;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -1849,7 +1853,7 @@ void PepperPluginInstanceImpl::SimulateInputEvent(
   WebWidget* widget =
       container()->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
   if (!widget) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -2144,7 +2148,7 @@ ppapi::Resource* PepperPluginInstanceImpl::GetSingletonResource(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -2692,11 +2696,10 @@ void PepperPluginInstanceImpl::ConvertDIPToViewport(gfx::Rect* rect) const {
 
 void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
-  auto it =
-      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
-                         &MailboxRefCount::first);
+  auto it = base::ranges::find(texture_ref_counts_, resource.mailbox(),
+                               &MailboxRefCount::first);
   if (it == texture_ref_counts_.end()) {
-    texture_ref_counts_.emplace_back(resource.mailbox_holder.mailbox, 1);
+    texture_ref_counts_.emplace_back(resource.mailbox(), 1);
     return;
   }
 
@@ -2705,10 +2708,9 @@ void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
 
 bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
-  auto it =
-      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
-                         &MailboxRefCount::first);
-  DCHECK(it != texture_ref_counts_.end());
+  auto it = base::ranges::find(texture_ref_counts_, resource.mailbox(),
+                               &MailboxRefCount::first);
+  CHECK(it != texture_ref_counts_.end(), base::NotFatalUntil::M130);
 
   if (it->second == 1) {
     texture_ref_counts_.erase(it);
@@ -2721,7 +2723,7 @@ bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
 
 bool PepperPluginInstanceImpl::IsTextureInUse(
     const viz::TransferableResource& resource) const {
-  return base::Contains(texture_ref_counts_, resource.mailbox_holder.mailbox,
+  return base::Contains(texture_ref_counts_, resource.mailbox(),
                         &MailboxRefCount::first);
 }
 

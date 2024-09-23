@@ -15,6 +15,9 @@ const char kExtensionCreateError[] =
 const char kGestureNeededForEscalationError[] =
     "Re-enabling an extension disabled due to permissions increase "
     "requires a user gesture.";
+const char kGestureNeededForMV2DeprecationReEnableError[] =
+    "Re-enabling an extension disabled due to MV2 deprecation requires a user "
+    "gesture.";
 const char kGestureNeededForUninstallError[] =
     "chrome.management.uninstall requires a user gesture.";
 const char kManifestParseError[] = "Failed to parse manifest.";
@@ -25,7 +28,7 @@ const char kUninstallCanceledError[] =
     "Extension * uninstall canceled by user.";
 const char kUserDidNotReEnableError[] =
     "The user did not accept the re-enable dialog.";
-const char kMissingRequirementsError[] = "There were missing requirements: *.";
+const char kMissingRequirementsError[] = "There were missing requirements: *";
 const char kGestureNeededForCreateAppShortcutError[] =
     "chrome.management.createAppShortcut requires a user gesture.";
 const char kNoBrowserToCreateShortcut[] =

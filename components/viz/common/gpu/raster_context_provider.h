@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -32,24 +32,18 @@ class ContextSupport;
 struct GpuFeatureInfo;
 class SharedImageInterface;
 
-namespace gles2 {
-class GLES2Interface;
-}
-
 namespace raster {
 class RasterInterface;
 }
 }  // namespace gpu
-
-namespace media {
-class VideoResourceUpdater;
-}
 
 namespace viz {
 
 class VIZ_COMMON_EXPORT RasterContextProvider {
  public:
   class VIZ_COMMON_EXPORT ScopedRasterContextLock {
+    STACK_ALLOCATED();
+
    public:
     explicit ScopedRasterContextLock(RasterContextProvider* context_provider,
                                      const char* url = nullptr);
@@ -60,7 +54,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
     }
 
    private:
-    const raw_ptr<RasterContextProvider> context_provider_;
+    RasterContextProvider* const context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };
@@ -127,13 +121,6 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
 
  protected:
   virtual ~RasterContextProvider() = default;
-
- private:
-  friend media::VideoResourceUpdater;
-  // Get a GLES2 interface to the 3d context.  The context provider must have
-  // been successfully bound to a thread before calling this.
-  // Used only by VideoResourceUpdater, remove once that is removed.
-  virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
 };
 
 }  // namespace viz

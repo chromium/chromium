@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/url_request/url_request_test_job.h"
 
 #include <algorithm>
@@ -288,7 +293,8 @@ void URLRequestTestJob::ProcessNextOperation() {
       if (async_buf_) {
         int result = CopyDataForRead(async_buf_.get(), async_buf_size_);
         if (result < 0)
-          NOTREACHED() << "Reads should not fail in DATA_AVAILABLE.";
+          NOTREACHED_IN_MIGRATION()
+              << "Reads should not fail in DATA_AVAILABLE.";
         if (NextReadAsync()) {
           // Make all future reads return io pending until the next
           // ProcessNextOperation().
@@ -307,7 +313,7 @@ void URLRequestTestJob::ProcessNextOperation() {
     case DONE:
       return;
     default:
-      NOTREACHED() << "Invalid stage";
+      NOTREACHED_IN_MIGRATION() << "Invalid stage";
       return;
   }
 }

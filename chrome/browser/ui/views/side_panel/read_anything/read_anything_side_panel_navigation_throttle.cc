@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h"
 
 #include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"

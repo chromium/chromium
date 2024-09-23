@@ -18,7 +18,9 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_highlight_view.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_animations.h"
@@ -55,9 +57,9 @@ constexpr float kOtherHighlightScreenPrimaryAxisRatio = 0.03f;
 // Creates the widget responsible for displaying the indicators.
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* root_window) {
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = false;
   params.layer_type = ui::LAYER_NOT_DRAWN;
@@ -216,9 +218,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
   raw_ptr<views::Label> label_ = nullptr;
 };
 
-BEGIN_METADATA(SplitViewDragIndicators,
-               RotatedImageLabelView,
-               views::BoxLayoutView)
+BEGIN_METADATA(SplitViewDragIndicators, RotatedImageLabelView)
 END_METADATA
 
 // View which contains two highlights on each side indicator where a user should
@@ -397,33 +397,32 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       // window snapped in split view below if there is any, but respect the
       // minimum size of `dragged_window_`. See crbug/1017464.
       aura::Window* root_window = GetWidget()->GetNativeWindow();
-      // TODO(b/309856199): Currently we only check
-      // `SplitViewController::ShouldConsiderDivider()` because the divider is
-      // created there. Refactor this when we move the divider to
-      // `SnapGroup`.
-      const bool should_consider_divider =
-          SplitViewController::Get(root_window)->ShouldConsiderDivider();
-      int divider_position = CalculateDividerPosition(
-          snap_position, root_window, chromeos::kDefaultSnapRatio,
-          should_consider_divider);
+      // Use `chromeos::kDefaultSnapRatio` to calculate the default divider
+      // position. If there is a snapped window in `SplitViewOverviewSession`,
+      // calculate the divider position based on the snapped window bounds as it
+      // can be resized to an arbitrary location.
       // Note `dragged_window_` may not be on the same root as `root_window`.
       // Check the partial overview session on `root_window`, the root it's
       // being dragged to.
-      if (auto* split_view_overview_session =
-              RootWindowController::ForWindow(root_window)
-                  ->split_view_overview_session();
-          split_view_overview_session) {
-        divider_position = GetEquivalentDividerPosition(
-            split_view_overview_session->window(), should_consider_divider);
-      }
-      const int divider_width =
-          should_consider_divider ? kSplitviewDividerShortSideLength : 0;
+      // TODO(b/309856199): Consolidate the divider position calculation.
+      SplitViewOverviewSession* split_view_overview_session =
+          RootWindowController::ForWindow(root_window)
+              ->split_view_overview_session();
+      const bool should_consider_divider =
+          SplitViewController::Get(root_window)->ShouldConsiderDivider();
+      const int divider_position =
+          split_view_overview_session
+              ? GetEquivalentDividerPosition(
+                    split_view_overview_session->window(),
+                    should_consider_divider)
+              : CalculateDividerPosition(root_window, snap_position,
+                                         chromeos::kDefaultSnapRatio,
+                                         should_consider_divider);
       preview_area_bounds =
           gfx::Rect(CalculateSnappedWindowBoundsInScreen(
-                        snap_position,
-                        /*root_window=*/root_window,
+                        snap_position, root_window,
                         /*window_for_minimum_size=*/dragged_window_,
-                        divider_position, divider_width,
+                        should_consider_divider, divider_position,
                         /*is_resizing_with_divider=*/false)
                         .size());
 
@@ -440,7 +439,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       if (!horizontal)
         other_bounds.Transpose();
 
-      if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (IsPhysicallyLeftOrTop(snap_position, dragged_window_)) {
         left_highlight_bounds = preview_area_bounds;
         right_highlight_bounds = other_bounds;
         if (animate) {
@@ -478,7 +477,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     } else if (GetSnapPosition(previous_window_dragging_state_) !=
                    SnapPosition::kNone &&
                animate) {
-      if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (IsPhysicallyLeftOrTop(snap_position, dragged_window_)) {
         left_highlight_animation_type =
             SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT;
         right_highlight_animation_type =
@@ -549,7 +548,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     if (snap_position == SnapPosition::kNone) {
       preview_label_layer = nullptr;
       other_highlight_label_layer = nullptr;
-    } else if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+    } else if (IsPhysicallyLeftOrTop(snap_position, dragged_window_)) {
       preview_label_layer = left_rotated_view_->layer();
       other_highlight_label_layer = right_rotated_view_->layer();
       preview_label_transform = left_rotation;
@@ -576,7 +575,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
           0.5f * (highlight_width - other_highlight_width);
 
       // Positive (unchanged) for left or up; negative for right or down.
-      if (!IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
+      if (!IsPhysicallyLeftOrTop(snap_position, dragged_window_)) {
         preview_label_delta = -preview_label_delta;
         other_highlight_label_delta = -other_highlight_label_delta;
       }
@@ -654,20 +653,16 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
   raw_ptr<aura::Window> dragged_window_ = nullptr;
 };
 
-BEGIN_METADATA(SplitViewDragIndicators,
-               SplitViewDragIndicatorsView,
-               views::View)
+BEGIN_METADATA(SplitViewDragIndicators, SplitViewDragIndicatorsView)
 END_METADATA
 
-SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {
-  widget_ = CreateWidget(root_window);
-  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
-  indicators_view_ =
-      widget_->SetContentsView(std::make_unique<SplitViewDragIndicatorsView>());
-  widget_->Show();
-}
+SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window)
+    : root_window_(root_window) {}
 
 SplitViewDragIndicators::~SplitViewDragIndicators() {
+  if (!widget_) {
+    return;
+  }
   // Allow some extra time for animations to finish.
   aura::Window* window = widget_->GetNativeWindow();
   if (window == nullptr)
@@ -679,7 +674,7 @@ SplitViewDragIndicators::~SplitViewDragIndicators() {
 
 void SplitViewDragIndicators::SetDraggedWindow(aura::Window* dragged_window) {
   DCHECK_EQ(WindowDraggingState::kNoDrag, current_window_dragging_state_);
-  indicators_view_->SetDraggedWindow(dragged_window);
+  GetOrCreateIndicatorsView().SetDraggedWindow(dragged_window);
 }
 
 void SplitViewDragIndicators::SetWindowDraggingState(
@@ -703,27 +698,51 @@ void SplitViewDragIndicators::SetWindowDraggingState(
   }
 
   current_window_dragging_state_ = window_dragging_state;
-  indicators_view_->OnWindowDraggingStateChanged(window_dragging_state);
+  GetOrCreateIndicatorsView().OnWindowDraggingStateChanged(
+      window_dragging_state);
 }
 
 void SplitViewDragIndicators::OnDisplayBoundsChanged() {
-  aura::Window* root_window = widget_->GetNativeView()->GetRootWindow();
-  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
+  if (widget_) {
+    widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window_));
+  }
 }
 
 gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
-  return indicators_view_->left_highlight_view()->bounds();
+  return indicators_view_ ? indicators_view_->left_highlight_view()->bounds()
+                          : gfx::Rect();
+}
+
+void SplitViewDragIndicators::InitWidget() {
+  if (widget_) {
+    return;
+  }
+  widget_ = CreateWidget(root_window_);
+  widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window_));
+  CHECK(!indicators_view_);
+  indicators_view_ =
+      widget_->SetContentsView(std::make_unique<SplitViewDragIndicatorsView>());
+  widget_->Show();
 }
 
 gfx::Rect SplitViewDragIndicators::GetRightHighlightViewBoundsForTesting()
     const {
-  return indicators_view_->right_highlight_view()->bounds();
+  return indicators_view_ ? indicators_view_->right_highlight_view()->bounds()
+                          : gfx::Rect();
 }
 
 bool SplitViewDragIndicators::GetIndicatorTypeVisibilityForTesting(
     IndicatorType type) const {
-  return indicators_view_->GetViewForIndicatorType(type)->layer()->opacity() >
-         0.f;
+  return indicators_view_ ? indicators_view_->GetViewForIndicatorType(type)
+                                    ->layer()
+                                    ->opacity() > 0.f
+                          : false;
+}
+
+SplitViewDragIndicators::SplitViewDragIndicatorsView&
+SplitViewDragIndicators::GetOrCreateIndicatorsView() {
+  InitWidget();
+  return *indicators_view_;
 }
 
 }  // namespace ash

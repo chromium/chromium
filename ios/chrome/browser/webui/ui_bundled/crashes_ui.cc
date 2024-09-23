@@ -22,7 +22,7 @@
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/crash_report/model/crash_upload_list.h"
 #include "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_branded_strings.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -179,6 +179,6 @@ CrashesUI::CrashesUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<CrashesDOMHandler>());
 
   // Set up the chrome://crashes/ source.
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateCrashesUIHTMLSource());
 }

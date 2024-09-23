@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
 
 #include "base/containers/span.h"
@@ -122,8 +127,8 @@ bool EncryptWithSeed(const std::string& data,
   key = symmetric_key->key();
 
   // Generate initialized vector of size 128 bits.
-  std::string iv;
-  crypto::RandBytes(base::WriteInto(&iv, kAesBlockSize + 1), kAesBlockSize);
+  std::string iv(kAesBlockSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(iv));
 
   crypto::Encryptor encryptor;
   if (!encryptor.Init(symmetric_key.get(), crypto::Encryptor::CBC, iv)) {

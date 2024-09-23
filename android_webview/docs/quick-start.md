@@ -61,7 +61,7 @@ this:
 
   ```shell
   $ tools/android/avd/avd.py start \
-      --avd-config tools/android/avd/proto/generic_android29.textpb --emulator-window
+      --avd-config tools/android/avd/proto/android_29_google_apis_x86.textpb --emulator-window
   ```
 
 2. Android Studio Emulator image. [Install the Android Studio
@@ -306,6 +306,28 @@ Try building Chromium. If that doesn't work, please reach out to [the chromium
 team](https://groups.google.com/a/chromium.org/forum/#!forum/chromium-dev) for
 general guidance. If `system_webview_apk` is the only troublesome target, please
 reach out to the WebView team (see previous section).
+
+### Apps using WebView crash with "java.lang.RuntimeException: Unable to start activity"
+
+If apps using WebView crash with stack traces like the following:
+
+```
+AndroidRuntime: Shutting down VM
+AndroidRuntime: FATAL EXCEPTION: main
+AndroidRuntime: Process: org.chromium.webview_shell, PID: 6683
+AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{org.chromium.webview_shell/org.chromium.webview_shell.WebViewBrowserActivity}: android.util.AndroidRuntimeException: java.lang.reflect.InvocationTargetException
+...
+AndroidRuntime: Caused by: android.util.AndroidRuntimeException: java.lang.reflect.InvocationTargetException
+...
+AndroidRuntime: Caused by: org.chromium.base.library_loader.ProcessInitException: errorCode=2
+...
+AndroidRuntime: Caused by: java.lang.UnsatisfiedLinkError: dlopen failed: library "libc++_chrome.so" not found
+...
+```
+
+This `UnsatisfiedLinkError` can occur when WebView is built using the
+`target_cpu = "x86"` gn arg and the emulator architecture is x86_64. Double
+check your emulator is Android 10 (Q) and uses the x86 ABI.
 
 ## What if I didn't follow these instructions exactly?
 

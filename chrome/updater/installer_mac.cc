@@ -17,7 +17,7 @@
 
 namespace updater {
 
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
@@ -37,8 +37,8 @@ AppInstallerResult RunApplicationInstaller(
                          app_info.scope, app_info.version, arguments,
                          installer_data_file, usage_stats_enabled, timeout);
   return exit_code == 0
-             ? AppInstallerResult()
-             : AppInstallerResult(kErrorApplicationInstallerFailed, exit_code);
+             ? InstallerResult()
+             : InstallerResult(kErrorApplicationInstallerFailed, exit_code);
 }
 
 std::string LookupString(const base::FilePath& path,

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -63,7 +64,7 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
     std::unique_ptr<AsyncWaitableEvent> waitable_event =
         std::make_unique<AsyncWaitableEvent>();
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
         base::BindOnce(&RunWorkerTask, callback, user_data,
                        waitable_event->GetWaitableEventImpl()));
     return waitable_event;
@@ -80,13 +81,42 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
   }
 };
 
+void RecordDelayedUMA(scoped_refptr<DawnPlatform::CacheCountsMap> cache_map,
+                      std::string uma_prefix) {
+  base::AutoLock autolock(cache_map->lock);
+  for (auto [uma_name, cache_counts] : cache_map->counts) {
+    if (uma_name.find("Hit") != std::string::npos) {
+      base::UmaHistogramCounts10000(
+          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
+          cache_counts.cache_hit_count);
+    } else {
+      CHECK(uma_name.find("Miss") != std::string::npos);
+      base::UmaHistogramCounts10000(
+          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
+          cache_counts.cache_miss_count);
+    }
+  }
+}
+
 }  // anonymous namespace
+
+DawnPlatform::CacheCountsMap::CacheCountsMap() = default;
+DawnPlatform::CacheCountsMap::~CacheCountsMap() = default;
 
 DawnPlatform::DawnPlatform(
     std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
-    const char* uma_prefix)
+    const char* uma_prefix,
+    bool record_cache_count_uma)
     : dawn_caching_interface_(std::move(dawn_caching_interface)),
-      uma_prefix_(uma_prefix) {}
+      uma_prefix_(uma_prefix),
+      cache_map_(base::MakeRefCounted<CacheCountsMap>()),
+      startup_time_(base::TimeTicks::Now()) {
+  if (record_cache_count_uma) {
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, base::BindOnce(&RecordDelayedUMA, cache_map_, uma_prefix_),
+        base::Seconds(90));
+  }
+}
 
 DawnPlatform::~DawnPlatform() = default;
 
@@ -135,6 +165,29 @@ uint64_t DawnPlatform::AddTraceEvent(
   return result;
 }
 
+void DawnPlatform::HistogramCacheCountHelper(std::string name,
+                                             int sample,
+                                             int min,
+                                             int max,
+                                             int bucketCount) {
+  if (name.find("Cache") != std::string::npos) {
+    base::AutoLock autolock(cache_map_->lock);
+    auto& cache_counts = cache_map_->counts[name];
+    if (name.find("Hit") != std::string::npos) {
+      ++cache_counts.cache_hit_count;
+    } else {
+      CHECK(name.find("Miss") != std::string::npos);
+      ++cache_counts.cache_miss_count;
+    }
+
+    if (base::TimeTicks::Now() - startup_time_ <= base::Seconds(90)) {
+      base::UmaHistogramCustomCounts(
+          uma_prefix_ + name + ".90SecondsPostStartup", sample, min, max,
+          bucketCount);
+    }
+  }
+}
+
 void DawnPlatform::HistogramCustomCounts(const char* name,
                                          int sample,
                                          int min,
@@ -142,6 +195,7 @@ void DawnPlatform::HistogramCustomCounts(const char* name,
                                          int bucketCount) {
   base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
                                  bucketCount);
+  HistogramCacheCountHelper(name, sample, min, max, bucketCount);
 }
 
 void DawnPlatform::HistogramCustomCountsHPC(const char* name,
@@ -152,6 +206,7 @@ void DawnPlatform::HistogramCustomCountsHPC(const char* name,
   if (base::TimeTicks::IsHighResolution()) {
     base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
                                    bucketCount);
+    HistogramCacheCountHelper(name, sample, min, max, bucketCount);
   }
 }
 

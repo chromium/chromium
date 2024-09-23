@@ -117,8 +117,9 @@ class FederatedMetricsManagerTest : public testing::Test,
   }
 
  protected:
+  FederatedMetricsManager* metrics_manager() { return metrics_manager_.get(); }
+
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<FederatedMetricsManager> metrics_manager_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -129,6 +130,7 @@ class FederatedMetricsManagerTest : public testing::Test,
 
   ::test::TestAppListController app_list_controller_;
   AppListNotifierImpl app_list_notifier_;
+  std::unique_ptr<FederatedMetricsManager> metrics_manager_;
   TestFederatedServiceController federated_service_controller_;
 
   bool chrome_metrics_enabled_;
@@ -147,17 +149,17 @@ TEST_P(FederatedMetricsManagerTest, ChromeMetricsConsentDisabled) {
   }
 
   // Simulate various user search activities.
-  metrics_manager_->OnSearchSessionStarted();
-  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+  metrics_manager()->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionEnded(u"fake_query");
 
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
   std::u16string query = u"fake_query";
-  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
-  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
-                             query);
-  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+  metrics_manager()->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager()->OnLaunch(Location::kList, launched_result, shown_results,
+                              query);
+  metrics_manager()->OnSearchSessionEnded(u"fake_query");
 
   ExpectNoFederatedLogsOnUserAction();
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -174,20 +176,20 @@ TEST_P(FederatedMetricsManagerTest, DefaultSearchEngineNonGoogle) {
 
   // Expect no logging on user action when default search engine is non-Google
   // search.
-  metrics_manager_->OnDefaultSearchIsGoogleSet(false);
+  metrics_manager()->OnDefaultSearchIsGoogleSet(false);
 
   // Simulate various user search activities.
-  metrics_manager_->OnSearchSessionStarted();
-  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+  metrics_manager()->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionEnded(u"fake_query");
 
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
   std::u16string query = u"fake_query";
-  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
-  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
-                             query);
-  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+  metrics_manager()->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager()->OnLaunch(Location::kList, launched_result, shown_results,
+                              query);
+  metrics_manager()->OnSearchSessionEnded(u"fake_query");
 
   ExpectNoFederatedLogsOnUserAction();
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -202,11 +204,11 @@ TEST_P(FederatedMetricsManagerTest, SessionQuit) {
     ExpectInitLogsOk();
   }
 
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   // Search session ends without user taking other action (e.g. without
   // launching a result).
   std::u16string query = u"fake_query";
-  metrics_manager_->OnSearchSessionEnded(query);
+  metrics_manager()->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   if (launcher_fa_enabled) {
@@ -242,14 +244,14 @@ TEST_P(FederatedMetricsManagerTest, Launch) {
     ExpectInitLogsOk();
   }
 
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
   std::u16string query = u"fake_query";
 
-  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
-                             query);
-  metrics_manager_->OnSearchSessionEnded(query);
+  metrics_manager()->OnLaunch(Location::kList, launched_result, shown_results,
+                              query);
+  metrics_manager()->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   if (launcher_fa_enabled) {
@@ -281,12 +283,12 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
     ExpectInitLogsOk();
   }
 
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   std::u16string query = u"fake_query";
 
-  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
-  metrics_manager_->OnSearchSessionEnded(query);
+  metrics_manager()->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager()->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   if (launcher_fa_enabled) {
@@ -320,17 +322,17 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
 
   // Tests that a Launch event takes precedence over an AnswerCardSeen event,
   // within the same search session.
-  metrics_manager_->OnSearchSessionStarted();
+  metrics_manager()->OnSearchSessionStarted();
   std::vector<Result> shown_results;
   std::u16string query = u"fake_query";
 
-  metrics_manager_->OnSeen(Location::kAnswerCard, shown_results, query);
+  metrics_manager()->OnSeen(Location::kAnswerCard, shown_results, query);
 
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
-  metrics_manager_->OnLaunch(Location::kList, launched_result, shown_results,
-                             query);
+  metrics_manager()->OnLaunch(Location::kList, launched_result, shown_results,
+                              query);
 
-  metrics_manager_->OnSearchSessionEnded(query);
+  metrics_manager()->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   if (launcher_fa_enabled) {
@@ -362,7 +364,7 @@ TEST_P(FederatedMetricsManagerTest, ZeroStateDoesNotLogOnUserAction) {
     ExpectInitLogsOk();
   }
 
-  // Note: metrics_manager_->OnSearchSession{Started,Ended}() are not expected
+  // Note: metrics_manager()->OnSearchSession{Started,Ended}() are not expected
   // to be called during zero state search.
   //
   // Zero state search should not trigger any logging on user action.
@@ -372,12 +374,12 @@ TEST_P(FederatedMetricsManagerTest, ZeroStateDoesNotLogOnUserAction) {
   std::vector<Result> shown_results;
   std::u16string empty_query = u"";
 
-  metrics_manager_->OnSeen(Location::kContinue, shown_results, empty_query);
-  metrics_manager_->OnSeen(Location::kRecentApps, shown_results, empty_query);
+  metrics_manager()->OnSeen(Location::kContinue, shown_results, empty_query);
+  metrics_manager()->OnSeen(Location::kRecentApps, shown_results, empty_query);
 
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
-  metrics_manager_->OnLaunch(Location::kRecentApps, launched_result,
-                             shown_results, empty_query);
+  metrics_manager()->OnLaunch(Location::kRecentApps, launched_result,
+                              shown_results, empty_query);
   base::RunLoop().RunUntilIdle();
 
   ExpectNoFederatedLogsOnUserAction();

@@ -6,16 +6,16 @@
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
-
 #include <sys/ioctl.h>
 
 #include "base/bits.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
+#include "base/notreached.h"
 #include "media/gpu/macros.h"
+#include "media/parsers/ivf_parser.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 
@@ -384,7 +384,7 @@ void Vp9Decoder::SetupFrameParams(
         v4l2_frame_params->alt_frame_ts = reference_id;
         break;
       default:
-        NOTREACHED() << "Invalid reference frame index";
+        NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
     }
   }
 
@@ -416,8 +416,9 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
                                                  std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size) {
-  Vp9FrameHeader frame_hdr{};
+                                                 gfx::Size& size,
+                                                 BitDepth& bit_depth) {
+  Vp9FrameHeader frame_hdr;
 
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   switch (parser_res) {
@@ -481,14 +482,17 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
     CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
   }
 
+  v4l2_ioctl_->WaitForRequestCompletion(OUTPUT_queue_);
+
   uint32_t buffer_id;
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
 
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  bit_depth =
+      ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                   buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+                   CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(buffer_id),

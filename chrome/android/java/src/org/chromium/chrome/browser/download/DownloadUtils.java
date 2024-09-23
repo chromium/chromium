@@ -24,6 +24,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -69,6 +71,7 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -82,13 +85,15 @@ public class DownloadUtils {
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
+    private static Boolean sIsDownloadRestrictedByPolicyForTesting;
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
+     *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
      * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
-     * opened in incognito mode. If null, download page will be opened in normal profile.
+     *     opened in incognito mode. If null, download page will be opened in normal profile.
      * @param source The source where the user action is coming from.
      * @return Whether the UI was shown.
      */
@@ -102,13 +107,14 @@ public class DownloadUtils {
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
+     *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
      * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
-     * opened in incognito mode. Only used when no valid current or recent tab presents.
+     *     opened in incognito mode. Only used when no valid current or recent tab presents.
      * @param source The source where the user action is coming from.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
-     * expanded.
+     *     expanded.
      * @return Whether the UI was shown.
      */
     @CalledByNative
@@ -139,7 +145,8 @@ public class DownloadUtils {
 
         // If the profile is off-the-record and it does not exist, then do not start the activity.
         if (OTRProfileID.isOffTheRecord(otrProfileID)
-                && !Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID)) {
+                && !ProfileManager.getLastUsedRegularProfile()
+                        .hasOffTheRecordProfile(otrProfileID)) {
             return false;
         }
 
@@ -173,8 +180,8 @@ public class DownloadUtils {
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile =
                     otrProfileID == null
-                            ? Profile.getLastUsedRegularProfile()
-                            : Profile.getLastUsedRegularProfile()
+                            ? ProfileManager.getLastUsedRegularProfile()
+                            : ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
@@ -207,7 +214,7 @@ public class DownloadUtils {
         OTRProfileID otrProfileID = OTRProfileID.deserializeWithoutVerify(serializedId);
 
         return otrProfileID == null
-                || Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
+                || ProfileManager.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
     }
 
     /**
@@ -251,9 +258,15 @@ public class DownloadUtils {
 
     /**
      * Trigger the download of an Offline Page.
+     *
      * @param context Context to pull resources from.
+     * @param tab Tab triggering the download.
      */
     public static void downloadOfflinePage(Context context, Tab tab) {
+        if (tab.isNativePage() && tab.getNativePage().isPdf()) {
+            DownloadController.downloadUrl(tab.getUrl().getSpec(), tab);
+            return;
+        }
         OfflinePageOrigin origin = new OfflinePageOrigin(context, tab);
 
         if (tab.isShowingErrorPage()) {
@@ -333,7 +346,8 @@ public class DownloadUtils {
     }
 
     @CalledByNative
-    private static String getUriStringForPath(String filePath) {
+    private static @JniType("std::string") String getUriStringForPath(
+            @JniType("std::string") String filePath) {
         if (ContentUriUtils.isContentUri(filePath)) return filePath;
         Uri uri = getUriForItem(filePath);
         return uri != null ? uri.toString() : new String();
@@ -473,12 +487,12 @@ public class DownloadUtils {
      */
     @CalledByNative
     public static void openDownload(
-            String filePath,
-            String mimeType,
-            String downloadGuid,
+            @JniType("std::string") String filePath,
+            @JniType("std::string") String mimeType,
+            @JniType("std::string") String downloadGuid,
             OTRProfileID otrProfileID,
-            String originalUrl,
-            String referer,
+            @JniType("std::string") String originalUrl,
+            @JniType("std::string") String referer,
             @DownloadOpenSource int source) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
@@ -488,6 +502,23 @@ public class DownloadUtils {
         if (messageUiController != null
                 && messageUiController.isDownloadInterstitialItem(
                         new GURL(originalUrl), downloadGuid)) {
+            return;
+        }
+        Tab tab = null;
+        if (activity instanceof ChromeTabbedActivity chromeActivity) {
+            // TODO(crbug.com/356713476): Stop using the deprecated method.
+            tab = chromeActivity.getActivityTab();
+        }
+        if (otrProfileID == null && tab != null) {
+            otrProfileID = tab.getProfile().getOTRProfileID();
+        }
+        boolean isIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
+        // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
+        if (PdfUtils.shouldOpenPdfInline(isIncognito)
+                && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(filePath));
+            ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(isIncognito);
+            delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;
         }
         boolean canOpen =
@@ -546,7 +577,8 @@ public class DownloadUtils {
      * @param failState Why the download failed.
      * @return The resume mode for the current fail state.
      */
-    public static @ResumeMode int getResumeMode(String url, @FailState int failState) {
+    public static @ResumeMode int getResumeMode(
+            String url, @FailState @JniType("offline_items_collection::FailState") int failState) {
         return DownloadUtilsJni.get().getResumeMode(url, failState);
     }
 
@@ -661,7 +693,26 @@ public class DownloadUtils {
     }
 
     /**
+     * Returns whether download is restricted by policy.
+     *
+     * @param profile Profile to be checked.
+     * @return True if download is restricted, or false otherwise.
+     */
+    public static boolean isDownloadRestrictedByPolicy(Profile profile) {
+        if (sIsDownloadRestrictedByPolicyForTesting != null) {
+            return sIsDownloadRestrictedByPolicyForTesting;
+        }
+        return DownloadUtilsJni.get().isDownloadRestrictedByPolicy(profile);
+    }
+
+    public static void setIsDownloadRestrictedByPolicyForTesting(
+            Boolean isDownloadRestrictedByPolicy) {
+        sIsDownloadRestrictedByPolicyForTesting = isDownloadRestrictedByPolicy;
+    }
+
+    /**
      * Helper method to get the text to be displayed for duplicate download.
+     *
      * @param template Message template.
      * @param fileName Name of the file.
      * @param addSizeStringIfAvailable Whether size string should be added to the dialog text.
@@ -703,6 +754,10 @@ public class DownloadUtils {
 
     @NativeMethods
     interface Natives {
-        int getResumeMode(String url, @FailState int failState);
+        int getResumeMode(
+                @JniType("std::string") String url,
+                @FailState @JniType("offline_items_collection::FailState") int failState);
+
+        boolean isDownloadRestrictedByPolicy(@JniType("Profile*") Profile profile);
     }
 }

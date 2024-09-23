@@ -98,12 +98,7 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
   }
 #else  // BUILDFLAG(IS_CHROMEOS_ASH)
   policy::CloudPolicyManager* cloud_policy_manager =
-      profile->GetUserCloudPolicyManager();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!cloud_policy_manager) {
-    cloud_policy_manager = profile->GetProfileCloudPolicyManager();
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAS(IS_LINUX)
+      profile->GetCloudPolicyManager();
   if (cloud_policy_manager) {
     return std::make_unique<UserCloudPolicyStatusProvider>(
         cloud_policy_manager->core(), profile);

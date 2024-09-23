@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Aptauja</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Notiek interneta savienojuma pārbaude</translation>
+<translation id="2359808026110333948">Turpināt</translation>
 <translation id="2388990488038464401">Vai zvanīt uz šo numuru no jūsu tālruņa?</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="24452542372838207">Izvērst paziņojumu</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">JAUNS</translation>
 <translation id="2666092431469916601">Augša</translation>
 <translation id="2701330563083355633">Kopīgota no: <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Jauns</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Pirms 1 gada}zero{Pirms # gadiem}one{Pirms # gada}other{Pirms # gadiem}}</translation>
 <translation id="2878511608894704031">Dzēst visu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{pēc 1 d.}zero{pēc # d.}one{pēc # d.}other{pēc # d.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> sistēma</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5613020302032141669">Kreisā bulta</translation>
+<translation id="5633029987065897167">Tukša</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}zero{# min}one{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktīva šodien}=1{Aktīva pirms 1 dienas}zero{Aktīva pirms # dienām}one{Aktīva pirms # dienas}other{Aktīva pirms # dienām}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 diena un }zero{# dienas un }one{# diena un }other{# dienas un }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF saturs</translation>
 <translation id="6539092367496845964">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="654149438358937226">Bloķēt visus paziņojumus</translation>
-<translation id="6612467943526193239">Lai izietu no kalibrēšanas, nospiediet Esc.</translation>
 <translation id="6620110761915583480">Saglabāt failu</translation>
 <translation id="6699343763173986273">Multivide — nākamā dziesma</translation>
 <translation id="6808150112686056157">Multivide — pārtraukt</translation>

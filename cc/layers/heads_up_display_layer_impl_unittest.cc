@@ -41,8 +41,9 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
 
   size_t expected_quad_list_size = will_draw ? 1 : 0;
   EXPECT_EQ(expected_quad_list_size, pass_list.back()->quad_list.size());
-  EXPECT_EQ(0u, data.num_missing_tiles);
-  EXPECT_EQ(0u, data.num_incomplete_tiles);
+  EXPECT_EQ(0, data.num_missing_tiles);
+  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
+  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
 }
 
 class HeadsUpDisplayLayerImplTest : public LayerTreeImplTestBase,
@@ -56,7 +57,7 @@ class HeadsUpDisplayLayerImplTest : public LayerTreeImplTestBase,
 TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
   host_impl()->CreatePendingTree();
   auto* root = EnsureRootLayerInPendingTree();
-  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
   layer->set_visible_layer_rect(gfx::Rect(100, 100));
   CopyProperties(root, layer);
@@ -80,7 +81,7 @@ TEST_F(HeadsUpDisplayLayerImplTest, ResourcelessSoftwareDrawAfterResourceLoss) {
 TEST_F(HeadsUpDisplayLayerImplTest, CPUAndGPURasterCanvas) {
   host_impl()->CreatePendingTree();
   auto* root = EnsureRootLayerInPendingTree();
-  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>();
+  auto* layer = AddLayerInPendingTree<HeadsUpDisplayLayerImpl>(std::string());
   layer->SetBounds(gfx::Size(100, 100));
   CopyProperties(root, layer);
 

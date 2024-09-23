@@ -126,8 +126,7 @@ class MockWebRtcVideoTrack
   bool enabled_;
   TrackState state_;
   ObserverSet observers_;
-  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>, ExperimentalRenderer>
-      sink_;
+  raw_ptr<rtc::VideoSinkInterface<webrtc::VideoFrame>> sink_;
 };
 
 class MockMediaStream : public webrtc::MediaStreamInterface {
@@ -181,7 +180,8 @@ class MockPeerConnectionDependencyFactory
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* frame,
       webrtc::PeerConnectionObserver* observer,
-      ExceptionState& exception_state) override;
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport) override;
   scoped_refptr<webrtc::VideoTrackSourceInterface> CreateVideoTrackSourceProxy(
       webrtc::VideoTrackSourceInterface* source) override;
   scoped_refptr<webrtc::MediaStreamInterface> CreateLocalMediaStream(

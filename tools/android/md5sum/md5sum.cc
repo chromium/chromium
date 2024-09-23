@@ -5,18 +5,19 @@
 // Md5sum implementation for Android. In gzip mode, takes in a list of files,
 // and outputs a list of Md5sums in the same order. Otherwise,
 
+#include <dirent.h>
 #include <stddef.h>
 
-#include <dirent.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/heap_array.h"
 #include "base/hash/md5.h"
-
 #include "third_party/zlib/google/compression_utils_portable.h"
 
 namespace {
@@ -35,10 +36,11 @@ bool MD5Sum(const std::string& path, std::string* digest_string) {
   base::MD5Context ctx;
   base::MD5Init(&ctx);
   const size_t kBufferSize = 1 << 16;
-  std::unique_ptr<char[]> buf(new char[kBufferSize]);
+  auto buf = base::HeapArray<char>::Uninit(kBufferSize);
   size_t len;
-  while ((len = fread(buf.get(), 1, kBufferSize, fd)) > 0)
-    base::MD5Update(&ctx, base::StringPiece(buf.get(), len));
+  while ((len = fread(buf.data(), 1, buf.size(), fd)) > 0) {
+    base::MD5Update(&ctx, std::string_view(buf.data(), len));
+  }
   if (ferror(fd)) {
     fclose(fd);
     std::cerr << "Error reading file " << path << std::endl;
@@ -97,7 +99,7 @@ std::vector<std::string> MakeFileListFromCompressedList(const char* data) {
   std::string gzipdata;
   // Expected compressed input is using Base64 encoding, we got convert it
   // to a regular string before passing it to zlib.
-  base::Base64Decode(base::StringPiece(data), &gzipdata);
+  base::Base64Decode(std::string_view(data), &gzipdata);
 
   size_t compressed_size = gzipdata.size();
   unsigned long decompressed_size = zlib_internal::GetGzipUncompressedSize(

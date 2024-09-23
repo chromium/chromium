@@ -196,7 +196,7 @@ TtsClientLacros::TtsClientLacros(content::BrowserContext* browser_context)
   bool is_primary_profile = ProfileManager::GetPrimaryUserProfile() ==
                             Profile::FromBrowserContext(browser_context);
 
-  // TODO(crbug.com/1251979): Support secondary profiles when it becomes
+  // TODO(crbug.com/40792881): Support secondary profiles when it becomes
   // available for Lacros.
   if (!is_primary_profile)
     return;

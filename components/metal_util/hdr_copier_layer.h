@@ -33,11 +33,13 @@ CALayer* METAL_UTIL_EXPORT MakeHDRCopierLayer();
 
 // Update the contents of |layer| to the specified IOSurface and color space.
 // If `metal_device` is non-zero, then it is the MTLDevice that the
-// CAMetaLLayer should be set to.
+// CAMetaLLayer should be set to. Set |screen_hdr_headroom| to the HDR headroom
+// of the screen this layer is being displayed on.
 void METAL_UTIL_EXPORT
 UpdateHDRCopierLayer(CALayer* layer,
                      IOSurfaceRef buffer,
                      id<MTLDevice> device,
+                     float screen_hdr_headroom,
                      const gfx::ColorSpace& color_space,
                      const std::optional<gfx::HDRMetadata>& hdr_metadata);
 

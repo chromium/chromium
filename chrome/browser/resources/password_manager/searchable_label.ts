@@ -42,7 +42,7 @@ export class SearchableLabelElement extends PolymerElement {
     const titleText = this.title;
 
     if (!this.searchTerm) {
-      this.textContent = titleText;
+      this.textContent = ` ${titleText} `;
       return;
     }
 

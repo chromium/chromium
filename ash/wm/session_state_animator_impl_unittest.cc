@@ -62,6 +62,16 @@ TEST_F(SessionStateAnimatiorImplContainersTest, ContainersHaveIdTest) {
       SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS, &containers);
   EXPECT_TRUE(ParentHasWindowWithId(
       containers[0], kShellWindowId_NonLockScreenContainersContainer));
+  // Verify the containers inside `NON_LOCK_SCREEN_CONTAINERS` be animated.
+  auto iter = std::find(containers.begin(), containers.end(),
+                        desks_util::GetActiveDeskContainerForRoot(root_window));
+  EXPECT_TRUE(iter != containers.end());
+  for (const int id :
+       SessionStateAnimatorImpl::ContainersToAnimateInNonLockScreenContainer) {
+    iter = std::find(containers.begin(), containers.end(),
+                     Shell::GetContainer(root_window, id));
+    EXPECT_TRUE(iter != containers.end());
+  }
 
   containers.clear();
 

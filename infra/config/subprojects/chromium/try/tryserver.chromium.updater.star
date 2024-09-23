@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.updater builder group."""
 
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -14,9 +14,10 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     builderless = True,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -25,8 +26,8 @@ consoles.list_view(
 
 def updater_linux_builder(*, name, **kwargs):
     kwargs.setdefault("os", os.LINUX_DEFAULT)
-    kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
-    kwargs.setdefault("reclient_jobs", reclient.jobs.LOW_JOBS_FOR_CQ)
+    kwargs.setdefault("siso_project", siso.project.DEFAULT_UNTRUSTED)
+    kwargs.setdefault("siso_remote_jobs", siso.remote_jobs.LOW_JOBS_FOR_CQ)
     return try_.builder(name = name, **kwargs)
 
 def updater_mac_builder(*, name, **kwargs):
@@ -81,13 +82,15 @@ updater_mac_builder(
     name = "mac-updater-try-builder-dbg",
     mirrors = [
         "ci/mac-updater-builder-dbg",
-        "ci/mac10.15-updater-tester-dbg",
+        "ci/mac11-x64-updater-tester-dbg",
     ],
     gn_args = gn_args.config(
         configs = [
             "ci/mac-updater-builder-dbg",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -100,7 +103,7 @@ updater_mac_builder(
     name = "mac-updater-try-builder-rel",
     mirrors = [
         "ci/mac-updater-builder-rel",
-        "ci/mac10.15-updater-tester-rel",
+        "ci/mac11-x64-updater-tester-rel",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -108,6 +111,7 @@ updater_mac_builder(
             "release_try_builder",
         ],
     ),
+    cpu = cpu.ARM64,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

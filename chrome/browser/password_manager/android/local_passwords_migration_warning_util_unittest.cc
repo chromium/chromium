@@ -4,10 +4,12 @@
 
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 
+#include "base/android/build_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -40,10 +42,6 @@ class LocalPasswordsMigrationWarningUtilTest : public testing::Test {
   base::test::TaskEnvironment* task_env() { return &task_env_; }
 
   void SetUp() override {
-    pref_service()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
     fake_sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
@@ -66,28 +64,51 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
 }
 
 TEST_F(LocalPasswordsMigrationWarningUtilTest,
-       TestShouldShowWhenMoreThanAMonth) {
+       TestShouldNotShowWithDataLossWarning) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning},
+      {});
+  EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldShowWhenMoreThanADay) {
+  // The warning isn't shown on automotive at all.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   pref_service()->SetTime(
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
-  task_env()->FastForwardBy(base::Days(31));
-  sync_service()->SetHasSyncConsent(false);
+  task_env()->FastForwardBy(base::Hours(25));
+  sync_service()->SetSignedOut();
   EXPECT_TRUE(local_password_migration::ShouldShowWarning(profile()));
 }
 
 TEST_F(LocalPasswordsMigrationWarningUtilTest,
-       TestShouldNotShowWhenLessThanAMonth) {
+       TestShouldNotShowWhenLessThanADay) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   pref_service()->SetTime(
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
-  task_env()->FastForwardBy(base::Days(29));
-  sync_service()->SetHasSyncConsent(false);
+  task_env()->FastForwardBy(base::Hours(23));
+  sync_service()->SetSignedOut();
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }
 
@@ -96,6 +117,10 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   pref_service()->SetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
       true);
@@ -107,7 +132,11 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  sync_service()->SetHasSyncConsent(true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ false, {syncer::UserSelectableType::kPasswords});
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
@@ -118,7 +147,11 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  sync_service()->SetHasSyncConsent(true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ true, {});
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
@@ -126,10 +159,18 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
 
 TEST_F(LocalPasswordsMigrationWarningUtilTest,
        TestShouldShowWhenNotSyncingPasswords) {
+  // The warning isn't shown on automotive at all.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  sync_service()->SetHasSyncConsent(true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ false, {syncer::UserSelectableType::kBookmarks});
   EXPECT_TRUE(local_password_migration::ShouldShowWarning(profile()));
@@ -139,6 +180,10 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldNotShowInIncognito) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ false, {});
   TestingProfile::Builder off_the_record_builder;
@@ -161,4 +206,68 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       ShouldNotShowPostPasswordMigrationSheetWhenThePrefIsFalse) {
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  // ShouldShowPostPasswordMigrationSheetAtStartup is set to false in the test
+  // setup.
+  EXPECT_FALSE(
+      local_password_migration::ShouldShowPostMigrationSheet(profile()));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       ShouldNotShowPostPasswordMigrationSheetInIncognito) {
+  pref_service()->SetBoolean(
+      password_manager::prefs::kShouldShowPostPasswordMigrationSheetAtStartup,
+      true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  TestingProfile::Builder off_the_record_builder;
+  Profile* off_the_record_profile =
+      off_the_record_builder.BuildIncognito(profile());
+
+  EXPECT_FALSE(local_password_migration::ShouldShowPostMigrationSheet(
+      off_the_record_profile));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       ShouldShowPostPasswordMigrationSheetWithAllPreconditionsTrue) {
+  // The warning isn't shown on automotive at all.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  pref_service()->SetBoolean(
+      password_manager::prefs::kShouldShowPostPasswordMigrationSheetAtStartup,
+      true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+
+  EXPECT_TRUE(
+      local_password_migration::ShouldShowPostMigrationSheet(profile()));
+}
+
+TEST_F(LocalPasswordsMigrationWarningUtilTest,
+       ShouldNotPostPasswordMigrationSheetWithAllPreconditionsTrueAuto) {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  pref_service()->SetBoolean(
+      password_manager::prefs::kShouldShowPostPasswordMigrationSheetAtStartup,
+      true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+
+  EXPECT_FALSE(
+      local_password_migration::ShouldShowPostMigrationSheet(profile()));
 }

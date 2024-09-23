@@ -4,18 +4,13 @@
 
 package org.chromium.components.gcm_driver;
 
-import android.os.SystemClock;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 
 import java.io.IOException;
 import java.util.Set;
@@ -54,7 +49,7 @@ public class GCMDriver {
             throw new IllegalStateException("Already instantiated");
         }
         sInstance = new GCMDriver(nativeGCMDriverAndroid);
-        // TODO(crbug.com/946486): This has been in added in M75 to migrate the
+        // TODO(crbug.com/40620351): This has been in added in M75 to migrate the
         // way we store if there are persisted messages. It should be removed in
         // M77.
         LazySubscriptionsManager.migrateHasPersistedMessagesPref();
@@ -80,7 +75,6 @@ public class GCMDriver {
             return;
         }
 
-        long time = SystemClock.elapsedRealtime();
         for (String id : subscriptionsWithPersistedMessagesForAppId) {
             GCMMessage[] messages = LazySubscriptionsManager.readMessages(id);
             for (GCMMessage message : messages) {
@@ -88,15 +82,6 @@ public class GCMDriver {
             }
             LazySubscriptionsManager.deletePersistedMessagesForSubscriptionId(id);
         }
-        long duration = SystemClock.elapsedRealtime() - time;
-        // Call RecordHistogram.recordTimesHistogram() on a background thread to avoid
-        // expensive JNI calls in the critical path.
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> {
-                    RecordHistogram.recordTimesHistogram(
-                            "PushMessaging.TimeToReadPersistedMessages", duration);
-                });
     }
 
     @CalledByNative

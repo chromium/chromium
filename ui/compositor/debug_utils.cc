@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/compositor/debug_utils.h"
 
 #include <stddef.h>
@@ -12,7 +17,7 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "cc/trees/layer_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -89,6 +94,11 @@ void PrintLayerHierarchyImp(const Layer* layer,
     }
   }
 
+  const auto clip_rect = layer->clip_rect();
+  if (!clip_rect.IsEmpty()) {
+    *out << " clip_rect:" << clip_rect.ToString();
+  }
+
   if (!layer->rounded_corner_radii().IsEmpty()) {
     *out << "\n" << property_indent_str;
     *out << "rounded-corners-radii: "
@@ -117,7 +127,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
       *out << '\n' << property_indent_str;
       *out << "rotation: ";
-      *out << std::acos(decomp->quaternion.w()) * 360.0 / base::kPiDouble;
+      *out << base::RadToDeg(std::acos(decomp->quaternion.w()) * 2);
 
       *out << '\n' << property_indent_str;
       *out << "scale: " << decomp->scale[0];

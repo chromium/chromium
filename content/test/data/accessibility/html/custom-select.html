@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:class*
+@MAC-ALLOW:AXRoleDescription=*
+@WIN-ALLOW:HASPOPUP
+@WIN-ALLOW:haspopup*
+@WIN-ALLOW:ispopup*
+@WIN-ALLOW:readonly*
+@WIN-ALLOW:MULTISELECTABLE
+@WIN-ALLOW:EXTSELECTABLE
+@WIN-ALLOW:SELECT*
+@AURALINUX-ALLOW:haspopup*
+@AURALINUX-ALLOW:isspopup*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:expand*
+@AURALINUX-ALLOW:required
+-->
+<style>
+/* Enter into custom mode */
+
+select, select::picker(select) {
+  appearance: base-select;
+}
+
+/* remove checkmark  */
+option::before {
+  display: none;
+}
+
+
+/* Styling the options list */
+
+.datalist {
+  border-radius: 0.5rem;
+  padding: 0;
+}
+
+option {
+  grid-template-columns: 1.5rem 1fr auto;
+  padding: 0.5rem 1rem;
+
+  &:nth-child(even):not(:hover) {
+    background: #ececec;
+  }
+
+  .symbol {
+    margin-left: 1rem;
+  }
+
+  .currency-long {
+    font-size: 80%;
+    color: #595959;
+  }
+
+  .symbol {
+    justify-self: end;
+  }
+}
+
+/* Styles for both the options and selectedoption */
+
+option,
+selectedoption {
+  display: grid;
+  gap: 1rem;
+  font-size: 1rem;
+  align-items: center;
+}
+
+/* Style what you see before you open the select dropdown */
+
+selectedoption {
+  padding: 0.5rem;
+  grid-template-columns: 1.5rem auto;
+
+  .symbol,
+  .currency-long {
+    display: none
+  }
+}
+
+.btn-to-open-select {
+  border: none;
+  border-radius: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  padding: 0 1rem 0 0.5rem;
+  width: 8.25rem;
+
+  p {
+    line-height: 0;
+  }
+}
+
+.arrow {
+  margin-left: 0.5rem;
+  align-self: center;
+  transition: rotate 0.25s;
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 66.49 42.37'%3E%3Cdefs%3E%3Cstyle%3E .cls-1 %7B fill: %23221f20; stroke-width: 0px; %7D %3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M3.96,0h58.57c3.37,0,5.2,3.95,3.01,6.52l-29.28,34.46c-1.58,1.86-4.45,1.86-6.03,0L.95,6.52C-1.23,3.95.59,0,3.96,0Z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(4);
+    width: 0.5rem;
+    height: 0.5rem;
+
+  .currency-select:has(:popover-open) & {
+    rotate: x 180deg;
+  }
+}
+
+/* etc */
+
+[hidden] {
+  display: none;
+}
+
+body {
+  margin: 2rem 4rem;
+}
+
+img,
+figure {
+  width: 100%;
+}
+</style>
+<select name="currency-select" class="currency-select" aria-label="Currency for purchase">
+  <button class="btn-to-open-select" autofocus>
+    <selectedoption></selectedoption>
+    <span class="arrow"></span>
+  </button>
+  <div class="datalist">
+    <option value="eur">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/510px-Flag_of_Europe.svg.png" alt="" />
+      <div class="currency">
+        <div class="currency-short">EUR</div>
+        <div class="currency-long">Euro</div>
+      </div>
+      <div class="symbol" aria-hidden="true">€</div>
+    </option>
+    <option value="gbp" selected>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/510px-Flag_of_the_United_Kingdom_%281-2%29.svg.png" alt="" />
+      <div class="currency">
+        <div class="currency-short">GBP</div>
+        <div class="currency-long">Great British Pound</div>
+      </div>
+      <div class="symbol" aria-hidden="true">£</div>
+    </option>
+    <option value="usd" selected>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/510px-Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg.png" alt="" />
+      <div class="currency">
+        <div class="currency-short">USD</div>
+        <div class="currency-long">United States Dollar</div>
+      </div>
+      <div class="symbol" aria-hidden="true">$</div>
+    </option>
+  <option value="jpy">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/Flag_of_Japan.svg/510px-Flag_of_Japan.svg.png" alt="" />
+      <div class="currency">
+        <div class="currency-short">JPY</div>
+        <div class="currency-long">Japanese Yen</div>
+      </div>
+      <div class="symbol" aria-hidden="true">¥</div>
+    </option>
+    <option value="bitcoin">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/300px-Bitcoin.svg.png" alt="" />
+      <div class="currency">
+        <div class="currency-short">BTC</div>
+        <div class="currency-long">Bitcoin</div>
+      </div>
+      <div class="symbol" aria-hidden="true">₿</div>
+    </option>
+  </div>
+</select>

@@ -1634,6 +1634,9 @@ struct _xsltStylesheet {
     xmlHashTablePtr namedTemplates; /* hash table of named templates */
 
     xmlXPathContextPtr xpathCtxt;
+
+    unsigned long opLimit;
+    unsigned long opCount;
 };
 
 typedef struct _xsltTransformCache xsltTransformCache;

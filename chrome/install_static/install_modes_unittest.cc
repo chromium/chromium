@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/install_static/install_modes.h"
 
 #include <windows.h>
@@ -114,6 +119,12 @@ TEST(InstallModes, VerifyModes) {
 
     // Every mode must have an elevator IID.
     ASSERT_THAT(mode.elevator_iid, Ne(CLSID_NULL));
+
+    // Assert that html_doc_icon_resource_index is set.
+    ASSERT_THAT(mode.html_doc_icon_resource_index, Ne(0));
+
+    // Assert that pdf_doc_icon_resource_index is set.
+    ASSERT_THAT(mode.pdf_doc_icon_resource_index, Ne(0));
 
     // UNSUPPORTED and USE_GOOGLE_UPDATE_INTEGRATION are mutually exclusive.
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)

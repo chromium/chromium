@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("quickoffice") {
+  sources = [
+    "quickoffice_prefs.cc",
+    "quickoffice_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+  ]
+}

@@ -32,7 +32,7 @@ class PDFDocumentHelperClient;
 class PDFDocumentHelper
     : public content::DocumentUserData<PDFDocumentHelper>,
       public content::RenderWidgetHostObserver,
-      public mojom::PdfService,
+      public mojom::PdfHost,
       public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
@@ -42,8 +42,8 @@ class PDFDocumentHelper
 
   ~PDFDocumentHelper() override;
 
-  static void BindPdfService(
-      mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
+  static void BindPdfHost(
+      mojo::PendingAssociatedReceiver<mojom::PdfHost> pdf_host,
       content::RenderFrameHost* rfh,
       std::unique_ptr<PDFDocumentHelperClient> client);
 
@@ -75,7 +75,7 @@ class PDFDocumentHelper
   void OnManagerWillDestroy(
       content::TouchSelectionControllerClientManager* manager) override;
 
-  // pdf::mojom::PdfService:
+  // pdf::mojom::PdfHost:
   void SetListener(mojo::PendingRemote<mojom::PdfListener> listener) override;
   void HasUnsupportedFeature() override;
   void SaveUrlAs(const GURL& url,
@@ -86,6 +86,8 @@ class PDFDocumentHelper
                         const gfx::PointF& right,
                         int32_t right_height) override;
   void SetPluginCanSave(bool can_save) override;
+
+  void GetPdfBytes(pdf::mojom::PdfListener::GetPdfBytesCallback callback);
 
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
@@ -99,7 +101,7 @@ class PDFDocumentHelper
   gfx::PointF ConvertToRoot(const gfx::PointF& point_f);
   gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale);
 
-  content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
+  content::RenderFrameHostReceiverSet<mojom::PdfHost> pdf_host_receivers_;
   std::unique_ptr<PDFDocumentHelperClient> const client_;
   raw_ptr<content::TouchSelectionControllerClientManager>
       touch_selection_controller_client_manager_ = nullptr;

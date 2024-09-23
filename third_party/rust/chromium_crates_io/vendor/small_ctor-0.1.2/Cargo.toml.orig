@@ -1,0 +1,13 @@
+[package]
+name = "small_ctor"
+version = "0.1.2"
+edition = "2018"
+authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
+license = "Apache-2.0"
+description = "A minimal, dependency free version of the ctor crate"
+repository = "https://github.com/mitsuhiko/small-ctor"
+keywords = ["ctor", "attribute", "constructor"]
+
+[lib]
+name = "small_ctor"
+proc-macro = true

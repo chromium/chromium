@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 
 // How to treat private network requests.
@@ -52,5 +53,8 @@ struct ClientSecurityState {
 
   // The policy to apply to private network requests.
   PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
+
+  // See: https://github.com/explainers-by-googlers/document-isolation-policy
+  DocumentIsolationPolicy document_isolation_policy;
 };
 

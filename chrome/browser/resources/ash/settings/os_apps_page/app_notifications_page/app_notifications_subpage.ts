@@ -14,7 +14,6 @@ import '../../controls/settings_toggle_button.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../../common/deep_linking_mixin.js';
@@ -75,16 +74,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
       },
 
       /**
-       * Whether the App Badging toggle is visible.
-       */
-      showAppBadgingToggle_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showOsSettingsAppBadgingToggle');
-        },
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -111,7 +100,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
       null;
   private isDndEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
-  private showAppBadgingToggle_: boolean;
   private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private isRevampWayfindingEnabled_: boolean;
 

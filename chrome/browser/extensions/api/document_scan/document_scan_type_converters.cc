@@ -324,7 +324,7 @@ struct TypeConverter<mojom::OptionValuePtr,
       return mojom::OptionValue::NewStringValue(input.as_string.value());
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 };
@@ -497,6 +497,9 @@ TypeConverter<crosapi::mojom::StartScanOptionsPtr,
     Convert(const extensions::api::document_scan::StartScanOptions& input) {
   auto output = crosapi::mojom::StartScanOptions::New();
   output->format = input.format;
+  if (input.max_read_size) {
+    output->max_read_size = *input.max_read_size;
+  }
   return output;
 }
 

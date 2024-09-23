@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,8 +23,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -30,7 +32,6 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests basic functionality of WebappLaunchCauseMetrics. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -43,7 +44,7 @@ public final class WebappLaunchCauseMetricsTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
@@ -51,7 +52,7 @@ public final class WebappLaunchCauseMetricsTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
                     LaunchCauseMetrics.resetForTests();
@@ -73,8 +74,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -84,8 +86,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         Mockito.when(mWebappInfo.distributor()).thenReturn(WebApkDistributor.OTHER);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -95,8 +98,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
         Mockito.when(mWebappInfo.isForWebApk()).thenReturn(false);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
     }
 
     @Test
@@ -113,8 +117,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
     }
 
     @Test
@@ -128,7 +133,8 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
     }
 }

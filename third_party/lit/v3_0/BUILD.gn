@@ -12,10 +12,73 @@ ts_library("build_ts") {
   visibility = [
     ":build_bundle",
 
-    # TODO(crbug.com/1503223): Currently Limiting only to cr_elements for the
-    # initial experimentation phase. Update when the migration enters its next
-    # phase.
+    # Lit has officially being declared as the preferred framework (over
+    # Polymer) for new WebUI code, see [1] and [2]
+    #
+    # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    #
+    # Explicitly tracking targets that can depend on third_party/lit is still
+    # useful to audit UIs that depend on Lit, and to prevent adding Lit as a
+    # dependency to CrOS-only UIs (to reduce coupling between Desktop and CrOS
+    # and reduce the maintenance burden for the Desktop WebUI team).
+
+    "//chrome/browser/resources/about_sys:build_ts",
+    "//chrome/browser/resources/app_home:build_ts",
+    "//chrome/browser/resources/app_settings:build_ts",
+    "//chrome/browser/resources/browser_switch:build_ts",
+    "//chrome/browser/resources/commerce/product_specifications:build_ts",
+    "//chrome/browser/resources/downloads:build_ts",
+    "//chrome/browser/resources/extensions:build_ts",
+    "//chrome/browser/resources/feedback:build_ts",
+    "//chrome/browser/resources/internals/user_education:build_ts",
+    "//chrome/browser/resources/intro:build_ts",
+    "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
+    "//chrome/browser/resources/management:build_ts",
+    "//chrome/browser/resources/media_router/cast_feedback:build_ts",
+    "//chrome/browser/resources/new_tab_page:build_ts",
+    "//chrome/browser/resources/on_device_internals:build_ts",
+    "//chrome/browser/resources/pdf:build_ts",
+    "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
+    "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
+    "//chrome/browser/resources/profile_internals:build_ts",
+    "//chrome/browser/resources/search_engine_choice:build_ts",
+    "//chrome/browser/resources/side_panel/bookmarks:build_ts",
+    "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
+    "//chrome/browser/resources/side_panel/history_clusters:build_ts",
+    "//chrome/browser/resources/side_panel/read_anything:build_ts",
+    "//chrome/browser/resources/side_panel/reading_list:build_ts",
+    "//chrome/browser/resources/side_panel/shared:build_ts",
+    "//chrome/browser/resources/signin:build_ts",
+    "//chrome/browser/resources/signin/batch_upload:build_ts",
+    "//chrome/browser/resources/signin/profile_picker:build_ts",
+    "//chrome/browser/resources/tab_search:build_ts",
+    "//chrome/browser/resources/webui_gallery:build_ts",
+    "//chrome/browser/resources/welcome:build_ts",
+    "//chrome/browser/resources/whats_new:build_ts",
+    "//chrome/test/data/pdf:build_ts",
+    "//chrome/test/data/webui/app_home:build_ts",
+    "//chrome/test/data/webui/cr_components:build_ts",
+    "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
+    "//chrome/test/data/webui/cr_components/history_clusters:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
+    "//chrome/test/data/webui/extensions:build_ts",
+    "//chrome/test/data/webui/history:build_ts",
+    "//chrome/test/data/webui/privacy_sandbox/internals/private_state_tokens:build_ts",
+    "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
+    "//chrome/test/data/webui/signin:build_ts",
+    "//chrome/test/data/webui/tab_search:build_ts",
+    "//chrome/test/data/webui/welcome:build_ts",
+    "//content/browser/resources/traces_internals:build_ts",
+    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
+    "//ui/webui/resources/cr_components/managed_dialog:build_ts",
+    "//ui/webui/resources/cr_components/managed_footnote:build_ts",
+    "//ui/webui/resources/cr_components/most_visited:build_ts",
+    "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
   composite = true

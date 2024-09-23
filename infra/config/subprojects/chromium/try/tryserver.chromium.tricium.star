@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 """Definitions of builders used by Tricium for Chromium."""
 
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
-load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
+load("//lib/try.star", "SOURCELESS_BUILDER_CACHE", "try_")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
@@ -17,9 +17,10 @@ try_.defaults.set(
     cores = 8,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    # TODO: b/336209927 - Migrate tricium_clang_tidy_script.py to Siso.
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 
     # Make each bot specify its own OS, since we have a variety of these in this
     # file.
@@ -44,7 +45,7 @@ try_.builder(
     cores = try_.defaults.orchestrator_cores.get(),
     os = os.LINUX_DEFAULT,
     # src checkouts are only required by bots spawned by this builder.
-    caches = SOURCELESS_BUILDER_CACHES,
+    caches = [SOURCELESS_BUILDER_CACHE],
 )
 
 # Clang-tidy builders potentially spawned by the `tricium-clang-tidy`
@@ -56,8 +57,9 @@ try_.builder(
         configs = [
             "android_builder",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "strip_debug_info",
+            "arm",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -69,8 +71,9 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
             "fuchsia",
+            "x64",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -83,12 +86,13 @@ try_.builder(
         configs = [
             "chromeos_with_codecs",
             "release_try_builder",
-            "reclient",
+            "remoteexec",
+            "x64",
         ],
     ),
     builderless = False,
     os = os.LINUX_DEFAULT,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -97,27 +101,14 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     builderless = False,
     os = os.LINUX_DEFAULT,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-lacros-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_try_builder",
-            "reclient",
-            "also_build_ash_chrome",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -126,13 +117,16 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
+            "mac",
+            "x64",
         ],
     ),
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
     # Builder` don't.
     xcode = xcode.x13main,
@@ -144,7 +138,9 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
-            "reclient",
+            "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,

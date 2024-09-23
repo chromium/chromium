@@ -3,16 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/components/libsegmentation/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(is_chromeos_ash)
-
-declare_args() {
-  # Whether or not the target board supports the time of day feature. Set in
-  # the chromeos-chrome ebuild file.
-  is_time_of_day_supported = true
-}
 
 build_webui("build") {
   grd_prefix = "ash_personalization_app"
@@ -163,16 +158,18 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ash/webui/common/resources/personalization:build_ts",
     "//ash/webui/common/resources/sea_pen:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+  ts_tsconfig_base = "tsconfig_base.json"
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "personalization"
@@ -182,7 +179,7 @@ build_webui("build") {
   # Time of day assets cannot be made public until after the feature is
   # released. Thus, they are currently hosted in CIPD and downloaded to
   # this directory only if an internal chrome-branded checkout is being used.
-  if (is_chrome_branded && is_time_of_day_supported) {
+  if (is_chrome_branded && overlay_include_cbx) {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
       "time_of_day/thumbnails/new_mexico.jpg",

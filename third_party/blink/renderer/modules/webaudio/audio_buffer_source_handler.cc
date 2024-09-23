@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_handler.h"
 
 #include <algorithm>
@@ -403,7 +408,7 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
 
   // The context must be locked since changing the buffer can re-configure the
   // number of channels that are output.
-  BaseAudioContext::GraphAutoLocker context_locker(Context());
+  DeferredTaskHandler::GraphAutoLocker context_locker(Context());
 
   // This synchronizes with process().
   base::AutoLock process_locker(process_lock_);
@@ -494,6 +499,11 @@ void AudioBufferSourceHandler::ClampGrainParameters(
   // very common, it's worth considering quality.
   virtual_read_index_ = audio_utilities::TimeToSampleFrame(
       grain_offset_, shared_buffer_->sampleRate());
+}
+
+base::WeakPtr<AudioScheduledSourceHandler>
+AudioBufferSourceHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AudioBufferSourceHandler::Start(double when,

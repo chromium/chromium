@@ -17,6 +17,6 @@ union TimingAllowOrigin {
   array<string> serialized_origins;
   // Note: the actual value is irrelevant here; this is just to create a
   // distinct union subtype.
-  // TODO(https://crbug.com/999900): Replace this with a real placeholder type.
+  // TODO(crbug.com/40643013): Replace this with a real placeholder type.
   uint8 all;
 };

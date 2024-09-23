@@ -67,7 +67,7 @@ DialogModelTextfield* TestDialogModelHost::FindSingleTextfield() {
       return field->AsTextfield();
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TestDialogModelHost::SetSingleTextfieldText(std::u16string text) {
@@ -101,11 +101,11 @@ ElementIdentifier TestDialogModelHost::GetInitiallyFocusedField() {
 
 void TestDialogModelHost::Close() {
   // For now, TestDialogModelHost::Close() is the expected interface to close.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TestDialogModelHost::OnDialogButtonChanged() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ui

@@ -6,15 +6,15 @@
  * @fileoverview 'cr-slider' is a slider component used to select a number from
  * a continuous or discrete range of numbers.
  */
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
-
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_slider.html.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
+
+import {getCss} from './cr_slider.css.js';
+import {getHtml} from './cr_slider.html.js';
 
 /**
  * The |value| is the corresponding value that the current slider tick is
@@ -43,7 +43,7 @@ function getAriaValue(tick: SliderTick|number): number {
                                               sliderTick.value;
 }
 
-const CrSliderElementBase = PaperRippleMixin(PolymerElement);
+const CrSliderElementBase = CrRippleMixin(CrLitElement);
 
 /**
  * The following are the events emitted from cr-slider.
@@ -66,15 +66,18 @@ export class CrSliderElement extends CrSliderElementBase {
     return 'cr-slider';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        value: false,
       },
 
       /**
@@ -83,20 +86,16 @@ export class CrSliderElement extends CrSliderElementBase {
        */
       disabled_: {
         type: Boolean,
-        computed: 'computeDisabled_(disabled, ticks.*)',
-        reflectToAttribute: true,
-        observer: 'onDisabledChanged_',
+        reflect: true,
       },
 
       dragging: {
         type: Boolean,
-        value: false,
         notify: true,
       },
 
       updatingFromKey: {
         type: Boolean,
-        value: false,
         notify: true,
       },
 
@@ -106,22 +105,18 @@ export class CrSliderElement extends CrSliderElementBase {
        */
       keyPressSliderIncrement: {
         type: Number,
-        value: 1,
       },
 
       markerCount: {
         type: Number,
-        value: 0,
       },
 
       max: {
         type: Number,
-        value: 100,
       },
 
       min: {
         type: Number,
-        value: 0,
       },
 
       /**
@@ -131,12 +126,10 @@ export class CrSliderElement extends CrSliderElementBase {
        */
       noKeybindings: {
         type: Boolean,
-        value: false,
       },
 
       snaps: {
         type: Boolean,
-        value: false,
       },
 
       /**
@@ -145,26 +138,20 @@ export class CrSliderElement extends CrSliderElementBase {
        */
       ticks: {
         type: Array,
-        value: () => [],
       },
 
-      value: Number,
+      value: {
+        type: Number,
+      },
 
       label_: {
         type: String,
-        value: '',
+        state: true,
       },
 
       showLabel_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      isRtl_: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -176,48 +163,32 @@ export class CrSliderElement extends CrSliderElementBase {
        */
       transiting_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  static get observers() {
-    return [
-      'onTicksChanged_(ticks.*)',
-      'updateUi_(ticks.*, value, min, max)',
-      'onValueMinMaxChange_(value, min, max)',
-      'buildDeltaKeyMap_(isRtl_, keyPressSliderIncrement)',
-    ];
-  }
+  disabled: boolean = false;
+  dragging: boolean = false;
+  updatingFromKey: boolean = false;
+  keyPressSliderIncrement: number = 1;
+  markerCount: number = 0;
+  max: number = 100;
+  min: number = 0;
+  noKeybindings: boolean = false;
+  snaps: boolean = false;
+  ticks: SliderTick[]|number[] = [];
+  value: number = 0;
 
-  disabled: boolean;
-  dragging: boolean;
-  updatingFromKey: boolean;
-  keyPressSliderIncrement: number;
-  markerCount: number;
-  max: number;
-  min: number;
-  noKeybindings: boolean;
-  snaps: boolean;
-  ticks: SliderTick[]|number[];
-  value: number;
-
-  private disabled_: boolean;
-  private label_: string;
-  private showLabel_: boolean;
-  private isRtl_: boolean;
-  private transiting_: boolean;
+  protected disabled_: boolean = false;
+  protected label_: string = '';
+  protected showLabel_: boolean = false;
+  protected transiting_: boolean = false;
 
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;
-  private debouncer_: Debouncer;
 
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _rippleContainer: Element;
-
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.setAttribute('role', 'slider');
 
     this.addEventListener('blur', this.hideRipple_);
@@ -229,17 +200,54 @@ export class CrSliderElement extends CrSliderElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
     this.draggingEventTracker_ = new EventTracker();
   }
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('keyPressSliderIncrement')) {
+      this.onKeyPressSliderIncrementChanged_();
+    }
+
+    if (changedProperties.has('value') || changedProperties.has('min') ||
+        changedProperties.has('max')) {
+      if (this.value !== undefined) {
+        this.updateValue_(this.value);
+      }
+    }
+
+    if (changedProperties.has('disabled') || changedProperties.has('ticks')) {
+      this.disabled_ = this.disabled || this.ticks.length === 1;
+    }
+
+    if (changedProperties.has('ticks')) {
+      if (this.ticks.length > 1) {
+        this.snaps = true;
+        this.max = this.ticks.length - 1;
+        this.min = 0;
+      }
+    }
   }
 
-  private computeDisabled_(): boolean {
-    return this.disabled || this.ticks.length === 1;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if ((changedProperties as Map<PropertyKey, unknown>).has('disabled_')) {
+      this.setAttribute('tabindex', this.disabled_ ? '-1' : '0');
+      this.blur();
+    }
+
+    if (changedProperties.has('ticks')) {
+      if (this.value !== undefined) {
+        this.updateValue_(this.value);
+      }
+    }
+
+    if (changedProperties.has('value') || changedProperties.has('min') ||
+        changedProperties.has('max') || changedProperties.has('ticks')) {
+      this.updateUi_();
+    }
   }
 
   /**
@@ -247,14 +255,16 @@ export class CrSliderElement extends CrSliderElementBase {
    * the entire slider bar container and are rendered on top of the bar and
    * bar container. The location of the marks correspond to the discrete
    * values that the slider can have.
-   * @return The array items have no type since this is used to
-   *     create |markerCount| number of markers.
    */
-  private getMarkers_<T>(): T[] {
-    return new Array(Math.max(0, this.markerCount - 1));
+  protected getMarkers_(): number[] {
+    const array: number[] =
+        Array.from({length: Math.max(0, this.markerCount - 1)});
+    // Fill with dummy data so that Array#map() actually works in the template.
+    array.fill(0);
+    return array;
   }
 
-  private getMarkerClass_(index: number): string {
+  protected getMarkerClass_(index: number): string {
     const currentStep = (this.markerCount - 1) * this.getRatio();
     return index < currentStep ? 'active-marker' : 'inactive-marker';
   }
@@ -299,11 +309,6 @@ export class CrSliderElement extends CrSliderElementBase {
     this.showLabel_ = true;
   }
 
-  private onDisabledChanged_() {
-    this.setAttribute('tabindex', this.disabled_ ? '-1' : '0');
-    this.blur();
-  }
-
   private onKeyDown_(event: KeyboardEvent) {
     if (this.disabled_ || this.noKeybindings) {
       return;
@@ -328,7 +333,7 @@ export class CrSliderElement extends CrSliderElementBase {
 
     this.updatingFromKey = true;
     if (this.updateValue_(newValue)) {
-      this.fire_('cr-slider-value-changed');
+      this.fire('cr-slider-value-changed');
     }
     event.preventDefault();
     event.stopPropagation();
@@ -388,29 +393,8 @@ export class CrSliderElement extends CrSliderElementBase {
     });
   }
 
-  private onTicksChanged_() {
-    if (this.ticks.length > 1) {
-      this.snaps = true;
-      this.max = this.ticks.length - 1;
-      this.min = 0;
-    }
-    if (this.value !== undefined) {
-      this.updateValue_(this.value);
-    }
-  }
-
-  private onTransitionEnd_() {
+  protected onTransitionEnd_() {
     this.transiting_ = false;
-  }
-
-  private onValueMinMaxChange_() {
-    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
-      if (this.value === undefined || this.min === undefined ||
-          this.max === undefined) {
-        return;
-      }
-      this.updateValue_(this.value);
-    });
   }
 
   private updateUi_() {
@@ -441,7 +425,6 @@ export class CrSliderElement extends CrSliderElementBase {
   }
 
   private updateValue_(value: number): boolean {
-    this.$.container.hidden = false;
     if (this.snaps) {
       // Skip update if |value| has not passed the next value .8 units away.
       // The value will update as the drag approaches the next value.
@@ -458,18 +441,23 @@ export class CrSliderElement extends CrSliderElementBase {
     return true;
   }
 
+  private isRtl_(): boolean {
+    return this.matches(':host-context([dir=rtl]) cr-slider');
+  }
+
   private updateValueFromClientX_(clientX: number) {
     const rect = this.$.container.getBoundingClientRect();
     let ratio = (clientX - rect.left) / rect.width;
-    if (this.isRtl_) {
+    if (this.isRtl_()) {
       ratio = 1 - ratio;
     }
     if (this.updateValue_(ratio * (this.max - this.min) + this.min)) {
-      this.fire_('cr-slider-value-changed');
+      this.fire('cr-slider-value-changed');
     }
   }
 
-  private buildDeltaKeyMap_() {
+  private onKeyPressSliderIncrementChanged_() {
+    const isRtl = this.isRtl_();
     const increment = this.keyPressSliderIncrement;
     const decrement = -this.keyPressSliderIncrement;
     this.deltaKeyMap_ = new Map([
@@ -477,19 +465,17 @@ export class CrSliderElement extends CrSliderElementBase {
       ['ArrowUp', increment],
       ['PageDown', decrement],
       ['PageUp', increment],
-      ['ArrowLeft', this.isRtl_ ? increment : decrement],
-      ['ArrowRight', this.isRtl_ ? decrement : increment],
+      ['ArrowLeft', isRtl ? increment : decrement],
+      ['ArrowRight', isRtl ? decrement : increment],
     ]);
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.$.knob;
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.$.knob;
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

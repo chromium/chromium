@@ -37,7 +37,6 @@ const char* AuthTargetToString(AuthTarget target) {
       return kSecondaryName;
   }
   NOTREACHED();
-  return "";
 }
 
 LockContentsViewTestApi MakeLockContentsViewTestApi(LockContentsView* view) {

@@ -1,0 +1,104 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("glanceables") {
+  sources = [
+    "glanceables_classroom_client_impl.cc",
+    "glanceables_classroom_client_impl.h",
+    "glanceables_classroom_course_work_item.cc",
+    "glanceables_classroom_course_work_item.h",
+    "glanceables_keyed_service.cc",
+    "glanceables_keyed_service.h",
+    "glanceables_keyed_service_factory.cc",
+    "glanceables_keyed_service_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/api/tasks",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/policy/content",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//content/public/browser",
+    "//google_apis/classroom",
+    "//google_apis/common",
+    "//net/traffic_annotation",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "glanceables_classroom_client_impl_unittest.cc",
+    "glanceables_keyed_service_factory_unittest.cc",
+    "glanceables_keyed_service_unittest.cc",
+  ]
+
+  deps = [
+    ":glanceables",
+    "//ash",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/web_applications",
+    "//chrome/test:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//google_apis",
+    "//google_apis/common",
+    "//net:test_support",
+    "//net/traffic_annotation",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "glanceables_browsertest.cc" ]
+
+  deps = [
+    ":glanceables",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//url",
+  ]
+}

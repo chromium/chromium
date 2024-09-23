@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/media_session/public/cpp/media_session_mojom_traits.h"
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "services/media_session/public/cpp/chapter_information.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -40,6 +46,10 @@ bool StructTraits<media_session::mojom::MediaMetadataDataView,
   if (!data.ReadAlbum(&out->album))
     return false;
 
+  if (!data.ReadChapters(&out->chapters)) {
+    return false;
+  }
+
   if (!data.ReadSourceTitle(&out->source_title))
     return false;
 
@@ -64,7 +74,7 @@ StructTraits<media_session::mojom::MediaImageBitmapDataView,
     case (kBGRA_8888_SkColorType):
       return media_session::mojom::MediaImageBitmapColorType::kBGRA_8888;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return media_session::mojom::MediaImageBitmapColorType::kRGBA_8888;
   }
 }
@@ -132,6 +142,26 @@ bool StructTraits<media_session::mojom::MediaPositionDataView,
 
   out->playback_rate_ = data.playback_rate();
   out->end_of_media_ = data.end_of_media();
+
+  return true;
+}
+
+// static
+bool StructTraits<media_session::mojom::ChapterInformationDataView,
+                  media_session::ChapterInformation>::
+    Read(media_session::mojom::ChapterInformationDataView data,
+         media_session::ChapterInformation* out) {
+  if (!data.ReadTitle(&out->title_)) {
+    return false;
+  }
+
+  if (!data.ReadStartTime(&out->startTime_)) {
+    return false;
+  }
+
+  if (!data.ReadArtwork(&out->artwork_)) {
+    return false;
+  }
 
   return true;
 }

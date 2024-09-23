@@ -46,10 +46,7 @@ void ChromeOnDeviceModelServiceController::LaunchService() {
   }
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   service_remote_.reset_on_disconnect();
-  service_remote_.set_idle_handler(
-      features::GetOnDeviceModelIdleTimeout(),
-      base::BindRepeating(&OnDeviceModelServiceController::OnRemoteIdle,
-                          base::Unretained(this)));
+  service_remote_.reset_on_idle_timeout(base::TimeDelta());
   content::ServiceProcessHost::Launch<
       on_device_model::mojom::OnDeviceModelService>(
       std::move(receiver), content::ServiceProcessHost::Options()

@@ -195,8 +195,7 @@ void SpellingMenuObserver::OnContextMenuShown(
   // command_id is not found, e.g. if there is an early exit from InitMenu.
   proxy_->UpdateMenuItem(IDC_SPELLCHECK_SUGGESTION_0,
                          /*enabled=*/false,
-                         /*hidden=*/(use_remote_suggestions_ ? true : false),
-                         loading_message_);
+                         /*hidden=*/use_remote_suggestions_, loading_message_);
 
   // Disable and hide the rest of the placeholders until suggestions obtained.
   for (int i = 1;

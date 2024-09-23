@@ -15,6 +15,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -54,7 +56,7 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   set_margins(gfx::Insets(bubble_margin));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetArrow(GetArrow(alignment));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -83,8 +85,8 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
   GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
 
-  SetAccessibilityProperties(
-      ax::mojom::Role::kStaticText,
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
 }
 
@@ -98,11 +100,13 @@ void KioskAppInstructionBubble::OnThemeChanged() {
   title_->SetEnabledColor(label_color);
 }
 
-gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
+gfx::Size KioskAppInstructionBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   const int width = kBubblePreferredInternalWidth + 2 * bubble_margin;
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 BEGIN_METADATA(KioskAppInstructionBubble)

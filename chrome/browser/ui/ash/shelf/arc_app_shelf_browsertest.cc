@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -472,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   if (is_pinned()) {
     EXPECT_EQ(
         ash::SHELF_ACTION_NEW_WINDOW_CREATED,
-        SelectShelfItem(shelf_id, ui::ET_MOUSE_PRESSED,
+        SelectShelfItem(shelf_id, ui::EventType::kMousePressed,
                         display::kInvalidDisplayId, ash::LAUNCH_FROM_SHELF));
   } else {
     arc::LaunchApp(profile(), app_id, ui::EF_LEFT_MOUSE_BUTTON,

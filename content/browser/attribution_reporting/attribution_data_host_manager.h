@@ -10,35 +10,24 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 
 class GURL;
-
-namespace attribution_reporting {
-class SuitableOrigin;
-}  // namespace attribution_reporting
 
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
 
-namespace network {
-class TriggerVerification;
-}  // namespace network
-
 namespace content {
 
-struct AttributionInputEvent;
-struct GlobalRenderFrameHostId;
+class AttributionSuitableContext;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
@@ -48,16 +37,12 @@ class AttributionDataHostManager {
 
   // Registers a new data host with the browser process for the given context
   // origin. This is only called for events which are not associated with a
-  // navigation. Passes the topmost ancestor of the initiator render frame for
-  // obtaining the page access report. Passes the id  `last_navigation_id` of
-  // the navigation to the frame from which this call originates.
+  // navigation.
   virtual void RegisterDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      attribution_reporting::SuitableOrigin context_origin,
-      bool is_within_fenced_frame,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
+      AttributionSuitableContext,
       attribution_reporting::mojom::RegistrationEligibility,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t last_navigation_id) = 0;
+      bool is_for_background_requests) = 0;
 
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
@@ -65,7 +50,7 @@ class AttributionDataHostManager {
   // `attribution_src_token`. Returns `false` if `attribution_src_token` was
   // already registered.
   virtual bool RegisterNavigationDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) = 0;
 
   // Notifies the manager that an attribution-enabled navigation associated to
@@ -82,17 +67,13 @@ class AttributionDataHostManager {
 
   // Notifies the manager that an attribution-enabled navigation has started.
   // This may arrive before or after the attribution configuration is available
-  // for a given data host. Passes the topmost ancestor of the initiator render
-  // frame, `render_fame_id`, for obtaining the page access report. Every call
-  // to `NotifyNavigationRegistrationStarted` must be eventually
-  // followed by a call to `NotifyNavigationRegistrationCompleted`
-  // with the same `attribution_src_token`.
+  // for a given data host. Every call to `NotifyNavigationRegistrationStarted`
+  // must be eventually followed by a call to
+  // `NotifyNavigationRegistrationCompleted` with the same
+  // `attribution_src_token`.
   virtual void NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext suitable_context,
       const blink::AttributionSrcToken& attribution_src_token,
-      AttributionInputEvent input_event,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
       int64_t navigation_id,
       std::string devtools_request_id) = 0;
 
@@ -107,8 +88,7 @@ class AttributionDataHostManager {
   virtual bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
-      GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures) = 0;
+      GURL reporting_url) = 0;
 
   // Notifies the manager whenever an attribution-enabled navigation request
   // completes. Should be called even for navigations when
@@ -126,11 +106,8 @@ class AttributionDataHostManager {
   // `attribution_src_token`.
   virtual void NotifyBackgroundRegistrationStarted(
       BackgroundRegistrationsId id,
-      const attribution_reporting::SuitableOrigin& context_origin,
-      bool is_within_fenced_frame,
+      AttributionSuitableContext,
       attribution_reporting::mojom::RegistrationEligibility,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t last_navigation_id,
       std::optional<blink::AttributionSrcToken> attribution_src_token,
       std::optional<std::string> devtools_request_id) = 0;
 
@@ -143,29 +120,22 @@ class AttributionDataHostManager {
   virtual bool NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
-      GURL reporting_url,
-      network::AttributionReportingRuntimeFeatures,
-      std::vector<network::TriggerVerification>) = 0;
+      GURL reporting_url) = 0;
 
   // Notifies the manager that a background attribution request has completed.
   virtual void NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId id) = 0;
 
-  // Notifies the manager that a fenced frame reporting beacon was initiated
-  // for reportEvent or for an automatic beacon and should be tracked.
-  // The actual beacon may be sent after the navigation finished or after the
-  // RFHI was destroyed, therefore we need to store the information for later
-  // use. Passes the topmost ancestor of the initiator render frame for
-  // obtaining the page access report.
+  // Notifies the manager that a fenced frame reporting beacon was initiated for
+  // reportEvent or for an automatic beacon and should be tracked. The actual
+  // beacon may be sent after the navigation finished or after the RFHI was
+  // destroyed, therefore we need to store the information for later use.
   // `navigation_id` is the id of the navigation for automatic beacons and
   // `std::nullopt` for event beacons.
   virtual void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
+      AttributionSuitableContext,
       std::optional<int64_t> navigation_id,
-      attribution_reporting::SuitableOrigin source_origin,
-      bool is_within_fenced_frame,
-      AttributionInputEvent input_event,
-      GlobalRenderFrameHostId render_frame_id,
       std::string devtools_request_id) = 0;
 
   // Notifies the manager whenever a response has been received to a beacon HTTP
@@ -177,7 +147,6 @@ class AttributionDataHostManager {
   // be sent.
   virtual void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
-      network::AttributionReportingRuntimeFeatures,
       GURL reporting_url,
       const net::HttpResponseHeaders* headers,
       bool is_final_response) = 0;

@@ -6,10 +6,12 @@
 
 #include <stdint.h>
 
-#include "chrome/android/base_module_jni/UmaUtils_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "components/metrics/metrics_reporting_default_state.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/base_module_jni/UmaUtils_jni.h"
 
 using jni_zero::JavaParamRef;
 
@@ -30,8 +32,12 @@ base::TimeTicks GetProcessStartTime() {
       Java_UmaUtils_getProcessStartTime(env));
 }
 
-static jboolean JNI_UmaUtils_IsClientInMetricsReportingSample(JNIEnv* env) {
-  return ChromeMetricsServicesManagerClient::IsClientInSample();
+static jboolean JNI_UmaUtils_IsClientInSampleForMetrics(JNIEnv* env) {
+  return ChromeMetricsServicesManagerClient::IsClientInSampleForMetrics();
+}
+
+static jboolean JNI_UmaUtils_IsClientInSampleForCrashes(JNIEnv* env) {
+  return ChromeMetricsServicesManagerClient::IsClientInSampleForCrashes();
 }
 
 static void JNI_UmaUtils_RecordMetricsReportingDefaultOptIn(

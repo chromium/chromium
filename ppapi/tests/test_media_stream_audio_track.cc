@@ -4,6 +4,11 @@
 //
 // Tests PPB_MediaStreamAudioTrack interface.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ppapi/tests/test_media_stream_audio_track.h"
 
 // For MSVC.

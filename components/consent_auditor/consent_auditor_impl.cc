@@ -7,14 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 
 using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
-using sync_pb::UserConsentTypes;
 using sync_pb::UserConsentSpecifics;
+using sync_pb::UserConsentTypes;
 
 namespace consent_auditor {
 
@@ -123,12 +123,22 @@ void ConsentAuditorImpl::RecordAccountPasswordsConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+void ConsentAuditorImpl::RecordRecorderSpeakerLabelConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {
+  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
+      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+  specifics->mutable_recorder_speaker_label_consent()->CopyFrom(consent);
+
+  consent_sync_bridge_->RecordConsent(std::move(specifics));
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ConsentAuditorImpl::GetControllerDelegate() {
   if (consent_sync_bridge_) {
     return consent_sync_bridge_->GetControllerDelegate();
   }
-  return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
+  return base::WeakPtr<syncer::DataTypeControllerDelegate>();
 }
 
 }  // namespace consent_auditor

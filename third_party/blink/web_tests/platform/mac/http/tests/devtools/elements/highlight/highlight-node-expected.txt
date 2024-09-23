@@ -92,7 +92,7 @@ inspectedElement{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }
@@ -188,7 +188,7 @@ inspectedElement with RGB format{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }
@@ -284,7 +284,7 @@ inspectedElement with HSL format{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }
@@ -380,7 +380,7 @@ inspectedElement with HWB format{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }

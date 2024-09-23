@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/network/p2p/socket_test_utils.h"
 
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "net/base/io_buffer.h"
@@ -161,7 +168,7 @@ int FakeSocket::Connect(net::CompletionOnceCallback callback) {
 }
 
 void FakeSocket::Disconnect() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeSocket::IsConnected() const {
@@ -183,7 +190,7 @@ int FakeSocket::GetLocalAddress(net::IPEndPoint* address) const {
 }
 
 const net::NetLogWithSource& FakeSocket::NetLog() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net_log_;
 }
 
@@ -244,11 +251,11 @@ void CreateRandomPacket(std::vector<uint8_t>* packet) {
 
 static void CreateStunPacket(std::vector<uint8_t>* packet, uint16_t type) {
   CreateRandomPacket(packet);
-  *reinterpret_cast<uint16_t*>(&*packet->begin()) = base::HostToNet16(type);
-  *reinterpret_cast<uint16_t*>(&*packet->begin() + 2) =
-      base::HostToNet16(packet->size() - kStunHeaderSize);
-  *reinterpret_cast<uint32_t*>(&*packet->begin() + 4) =
-      base::HostToNet32(kStunMagicCookie);
+  auto header = base::span(*packet).first<8u>();
+  header.subspan<0u, 2u>().copy_from(base::U16ToBigEndian(type));
+  header.subspan<2u, 2u>().copy_from(base::U16ToBigEndian(
+      base::checked_cast<uint16_t>(packet->size() - kStunHeaderSize)));
+  header.subspan<4u, 4u>().copy_from(base::U32ToBigEndian(kStunMagicCookie));
 }
 
 void CreateStunRequest(std::vector<uint8_t>* packet) {

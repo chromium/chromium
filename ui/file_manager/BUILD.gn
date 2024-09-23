@@ -11,7 +11,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_definitions.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
@@ -39,75 +39,6 @@ component("file_manager") {
 }
 
 preprocess_folder = "$target_gen_dir/preprocessed"
-
-# Move files to the preprocessed folder to combine all resources in the same
-# folder for JS bundling with rollup.
-# This is for files direct from the src/:  input_folder="./".
-preprocess_if_expr("preprocess_static") {
-  in_folder = "./"
-  out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
-  if (enable_webui_inline_sourcemaps) {
-    out_folder = "${preprocess_folder}/_tmp"
-    enable_removal_comments = enable_webui_inline_sourcemaps
-  } else {
-    out_folder = preprocess_folder
-  }
-
-  in_files = static_js_files + unittest_files
-}
-
-if (enable_webui_inline_sourcemaps) {
-  create_js_source_maps("create_source_maps_static") {
-    inline_sourcemaps = true
-
-    sources =
-        filter_include(get_target_outputs(":preprocess_static"), [ "*.js" ])
-    originals = []
-    outputs = []
-
-    foreach(in_file, sources) {
-      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
-      originals += [ rebased_path ]
-      outputs += [ "${preprocess_folder}/" + rebased_path ]
-    }
-    deps = [ ":preprocess_static" ]
-  }
-}
-
-preprocess_if_expr("preprocess_static_image_loader") {
-  in_folder = "."
-  out_manifest = "$target_gen_dir/manifest_preprocess_static_image_loader.json"
-  if (enable_webui_inline_sourcemaps) {
-    out_folder = "${preprocess_folder}/_tmp"
-    enable_removal_comments = enable_webui_inline_sourcemaps
-  } else {
-    out_folder = preprocess_folder
-  }
-
-  in_files = image_loader_static_js_files + image_loader_ts
-}
-
-if (enable_webui_inline_sourcemaps) {
-  create_js_source_maps("create_source_maps_image_loader") {
-    inline_sourcemaps = true
-
-    sources =
-        filter_include(get_target_outputs(":preprocess_static_image_loader"),
-                       [
-                         "*.js",
-                         "*.ts",
-                       ])
-    originals = []
-    outputs = []
-
-    foreach(in_file, sources) {
-      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
-      originals += [ rebased_path ]
-      outputs += [ "${preprocess_folder}/" + rebased_path ]
-    }
-    deps = [ ":preprocess_static_image_loader" ]
-  }
-}
 
 # This is for files that are generated in "gen/": input_folder=target_gen_dir.
 preprocess_if_expr("preprocess_generated") {
@@ -139,7 +70,7 @@ common_path_mappings = [
       rebase_path("$preprocess_folder/file_manager/*", target_gen_dir),
 ]
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = preprocess_folder
   if (enable_webui_inline_sourcemaps) {
     out_dir = "$target_gen_dir/tsc/_tmp"
@@ -161,17 +92,9 @@ ts_library("build_ts") {
 
   if (enable_webui_inline_sourcemaps) {
     enable_source_maps = true
-    extra_deps += [
-      ":create_source_maps_copy_ts",
-      ":create_source_maps_image_loader",
-      ":create_source_maps_static",
-    ]
+    extra_deps += [ ":create_source_maps_copy_ts" ]
   } else {
-    extra_deps += [
-      ":copy_ts",
-      ":preprocess_static",
-      ":preprocess_static_image_loader",
-    ]
+    extra_deps += [ ":copy_ts" ]
   }
 
   deps = [
@@ -184,9 +107,8 @@ ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  in_files =
-      static_js_files + generated_js_files + ts_files + ts_polymer +
-      ts_generated_templates + image_loader_static_js_files + image_loader_ts
+  in_files = generated_js_files + ts_files + ts_polymer +
+             ts_generated_templates + shared_image_loader_ts
 
   definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
@@ -217,14 +139,14 @@ if (enable_webui_inline_sourcemaps) {
   }
 }
 
-ts_library("test_build_ts") {
+webui_ts_library("test_build_ts") {
   testonly = true
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   enable_source_maps = false
 
-  in_files = unittest_files + ts_test_files
+  in_files = ts_test_files
 
   path_mappings =
       common_path_mappings + [
@@ -260,15 +182,9 @@ ts_library("test_build_ts") {
     ":copy_definitions_to_preprocess",
   ]
   if (enable_webui_inline_sourcemaps) {
-    extra_deps += [
-      ":create_source_maps_copy_ts",
-      ":create_source_maps_static",
-    ]
+    extra_deps += [ ":create_source_maps_copy_ts" ]
   } else {
-    extra_deps += [
-      ":copy_ts",
-      ":preprocess_static",
-    ]
+    extra_deps += [ ":copy_ts" ]
   }
 }
 
@@ -304,7 +220,7 @@ preprocess_if_expr("copy_ts") {
     out_folder = preprocess_folder
   }
 
-  in_files = ts_files + ts_test_files + ts_polymer
+  in_files = ts_files + ts_test_files + ts_polymer + image_loader_ts
 }
 
 if (enable_webui_inline_sourcemaps) {
@@ -337,15 +253,9 @@ copy("for_image_loader") {
   }
 }
 
-shared_image_loader_files = [
-  "image_loader/image_loader_client.js",
-  "image_loader/image_orientation.js",
-  "image_loader/load_image_request.js",
-]
-
 copy("for_image_loader_unittests") {
   sources = []
-  foreach(f, shared_image_loader_files) {
+  foreach(f, image_loader_js) {
     sources += [ "$target_gen_dir/image_loader/tsc/$f" ]
   }
 
@@ -386,7 +296,7 @@ generate_grd("build_grd") {
           "file_manager/common/js/file_types_base.js",
           "file_manager/common/js/file_types_data.js",
           "file_manager/common/js/lru_cache.js",
-        ] + shared_image_loader_files
+        ] + shared_image_loader_js
 
     resource_path_rewrites += [
       "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
@@ -455,10 +365,19 @@ generate_grd("build_tests_gen_grdp") {
   grd_prefix = "file_manager_test"
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
-  deps = [ ":test_build_ts" ]
+  deps = [
+    ":for_image_loader_unittests",
+    ":test_build_ts",
+  ]
 
   manifest_files = filter_include(get_target_outputs(":test_build_ts"),
                                   [ "*_manifest.json" ])
+
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+
+  # Removed `shared_image_loader_js` because it's already included via the
+  # `:build_ts` below.
+  input_files = image_loader_js - shared_image_loader_js
 
   if (enable_webui_inline_sourcemaps) {
     deps += [ ":merge_source_maps" ]

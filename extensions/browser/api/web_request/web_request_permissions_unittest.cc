@@ -7,8 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -389,7 +389,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
        CanExtensionAccessURLWithWithheldPermissions) {
   ExtensionsAPIClient api_client;
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("ext").AddHostPermission("<all_urls>").Build();
   URLPatternSet all_urls(
       {URLPattern(Extension::kValidHostPermissionSchemes, "<all_urls>")});
   // Simulate withholding the <all_urls> permission.
@@ -490,7 +490,9 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   // Set up the extension to have access to kGoogleCom and withheld access to
   // kExampleCom.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").AddPermissions({kGoogleCom, kExampleCom}).Build();
+      ExtensionBuilder("ext")
+          .AddHostPermissions({kGoogleCom, kExampleCom})
+          .Build();
 
   URLPatternSet kActivePatternSet(
       {URLPattern(Extension::kValidHostPermissionSchemes, kGoogleCom)});

@@ -182,7 +182,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   char* const kEmptyEnviron = nullptr;
   char* const* old_environ =
       options.clear_environment ? &kEmptyEnviron : environ;
-  std::unique_ptr<char*[]> new_environ =
+  base::HeapArray<char*> new_environ =
       internal::AlterEnvironment(old_environ, environ_modifications);
 
   // Always clone the library loader service and UTC clock to new processes,
@@ -244,7 +244,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   char error_message[FDIO_SPAWN_ERR_MSG_MAX_LENGTH];
   zx_status_t status = fdio_spawn_etc(
       job->get(), spawn_flags, argv_cstr[0], argv_cstr.data(),
-      new_environ.get(), spawn_actions.size(), spawn_actions.data(),
+      new_environ.data(), spawn_actions.size(), spawn_actions.data(),
       process_handle.reset_and_get_address(), error_message);
 
   // fdio_spawn_etc() will close all handles specified in add-handle actions,

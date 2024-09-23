@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -42,7 +43,7 @@ uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
     case proto::Aggregation::LATEST_OR_DEFAULT:
       return 1;
     case proto::Aggregation::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -409,7 +410,7 @@ base::TimeDelta ConvertToTimeDelta(proto::TimeUnit time_unit) {
     case proto::TimeUnit::UNKNOWN_TIME_UNIT:
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::TimeDelta();
   }
 }
@@ -451,7 +452,7 @@ float ConvertToDiscreteScore(const std::string& mapping_key,
     if (iter == metadata.discrete_mappings().end())
       return input_score;
   }
-  DCHECK(iter != metadata.discrete_mappings().end());
+  CHECK(iter != metadata.discrete_mappings().end(), base::NotFatalUntil::M130);
 
   const auto& mapping = iter->second;
 

@@ -14,7 +14,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -37,8 +36,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -174,7 +173,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
       return api::passwords_private::PasswordCheckState::kOtherError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::passwords_private::PasswordCheckState::kNone;
 }
 
@@ -231,21 +230,17 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
 PasswordCheckDelegate::PasswordCheckDelegate(
     Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter,
-    IdGenerator* id_generator)
+    IdGenerator* id_generator,
+    PasswordsPrivateEventRouter* event_router)
     : profile_(profile),
       saved_passwords_presenter_(presenter),
-      insecure_credentials_manager_(presenter,
-                                    ProfilePasswordStoreFactory::GetForProfile(
-                                        profile,
-                                        ServiceAccessType::EXPLICIT_ACCESS),
-                                    AccountPasswordStoreFactory::GetForProfile(
-                                        profile,
-                                        ServiceAccessType::EXPLICIT_ACCESS)),
+      insecure_credentials_manager_(presenter),
       bulk_leak_check_service_adapter_(
           presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()),
-      id_generator_(id_generator) {
+      id_generator_(id_generator),
+      event_router_(event_router) {
   DCHECK(id_generator);
   observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_.get());
   observed_insecure_credentials_manager_.Observe(
@@ -447,9 +442,8 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(
 }
 
 void PasswordCheckDelegate::OnInsecureCredentialsChanged() {
-  if (auto* event_router =
-          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
-    event_router->OnInsecureCredentialsChanged(GetInsecureCredentials());
+  if (event_router_) {
+    event_router_->OnInsecureCredentialsChanged(GetInsecureCredentials());
   }
 }
 
@@ -517,9 +511,8 @@ void PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck() {
 }
 
 void PasswordCheckDelegate::NotifyPasswordCheckStatusChanged() {
-  if (auto* event_router =
-          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
-    event_router->OnPasswordCheckStatusChanged(GetPasswordCheckStatus());
+  if (event_router_) {
+    event_router_->OnPasswordCheckStatusChanged(GetPasswordCheckStatus());
   }
 }
 
@@ -538,7 +531,7 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   // Weak and reused flags should be cleaned before obtaining id. Otherwise
   // weak or reused flag will be saved to the database whenever credential is
   // modified.
-  // TODO(crbug.com/1369650): Update this once saving weak and reused issues is
+  // TODO(crbug.com/40869244): Update this once saving weak and reused issues is
   // supported.
   copy.password_issues.erase(InsecureType::kWeak);
   copy.password_issues.erase(InsecureType::kReused);

@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,6 +19,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +44,8 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 
   virtual TestingProfile::TestingFactories GetTestingFactories() { return {}; }
 
+  PrefService* GetPrefService() { return profile_->GetTestingPrefService(); }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
@@ -48,6 +54,11 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   base::HistogramTester tester;
+  if (features::IsForestFeatureEnabled()) {
+    drive::DriveIntegrationServiceFactory::GetInstance()
+        ->GetForProfile(profile_)
+        ->SetEnabled(true);
+  }
   FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile_)
       ->GetSuggestFileData(
@@ -59,7 +70,44 @@ TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   tester.ExpectBucketCount(
       "Ash.Search.DriveFileSuggestDataValidation.Status",
       /*sample=*/DriveSuggestValidationStatus::kDriveFSNotMounted,
-      /*expected_count=*/1);
+      /*expected_count=*/
+      (features::IsLauncherContinueSectionWithRecentsEnabled() ||
+       features::IsForestFeatureEnabled())
+          ? 0
+          : 1);
+}
+
+TEST_F(FileSuggestKeyedServiceTest, DisabledByPolicy) {
+  base::HistogramTester tester;
+  if (features::IsForestFeatureEnabled()) {
+    drive::DriveIntegrationServiceFactory::GetInstance()
+        ->GetForProfile(profile_)
+        ->SetEnabled(true);
+  }
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile_)
+      ->GetSuggestFileData(
+          FileSuggestionType::kDriveFile,
+          base::BindOnce([](const std::optional<std::vector<FileSuggestData>>&
+                                suggest_data) {
+            EXPECT_FALSE(suggest_data.has_value());
+          }));
+
+  // Disable file suggestion integration by policy.
+  GetPrefService()->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                            {});
+
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile_)
+      ->GetSuggestFileData(
+          FileSuggestionType::kDriveFile,
+          base::BindOnce([](const std::optional<std::vector<FileSuggestData>>&
+                                suggest_data) {
+            // Disabling by policy should ensure a list with zero items is
+            // returned.
+            EXPECT_TRUE(suggest_data.has_value());
+            EXPECT_EQ(suggest_data->size(), 0u);
+          }));
 }
 
 class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
@@ -91,10 +139,11 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{FileSuggestKeyedServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-                 temp_dir_.GetPath().Append("proto"))}};
+    return {TestingProfile::TestingFactory{
+        FileSuggestKeyedServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+            temp_dir_.GetPath().Append("proto"))}};
   }
 
   std::optional<std::vector<FileSuggestData>> GetSuggestionsForType(
@@ -135,10 +184,14 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
     for (size_t index = 0; index < count; ++index) {
       suggested_file_paths.push_back(mount_point->CreateArbitraryFile());
       suggestions.emplace_back(type, suggested_file_paths.back(),
+                               /*title=*/std::nullopt,
                                /*new_prediction_reason=*/std::nullopt,
-                               /*timestamp=*/std::nullopt,
-                               /*secondary_timestamp=*/std::nullopt,
-                               /*new_score=*/std::nullopt);
+                               /*modified_time=*/std::nullopt,
+                               /*viewed_time=*/std::nullopt,
+                               /*shared_time=*/std::nullopt,
+                               /*new_score=*/std::nullopt,
+                               /*drive_file_id=*/std::nullopt,
+                               /*icon_url=*/std::nullopt);
     }
     file_suggest_service_->SetSuggestionsForType(type, suggestions);
     return suggested_file_paths;

@@ -5,9 +5,9 @@
 #ifndef NET_DNS_DNS_CONFIG_SERVICE_POSIX_H_
 #define NET_DNS_DNS_CONFIG_SERVICE_POSIX_H_
 
-#include <sys/types.h>
 #include <netinet/in.h>
 #include <resolv.h>
+#include <sys/types.h>
 
 #include <memory>
 #include <optional>

@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -87,7 +88,7 @@ class ExtensionFunctionMemoryDumpProvider
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(function_name);
     auto it = function_map_.find(function_name);
-    DCHECK(it != function_map_.end());
+    CHECK(it != function_map_.end(), base::NotFatalUntil::M130);
     DCHECK_GE(it->second, static_cast<uint64_t>(1));
     if (it->second == 1) {
       function_map_.erase(it);
@@ -459,14 +460,14 @@ void ExtensionFunction::RespondWithError(std::string error) {
 }
 
 bool ExtensionFunction::PreRunValidation(std::string* error) {
-  // TODO(crbug.com/625646) This is a partial fix to avoid crashes when certain
-  // extension functions run during shutdown. Browser or Notification creation
-  // for example create a ScopedKeepAlive, which hit a CHECK if the browser is
-  // shutting down. This fixes the current problem as the known issues happen
-  // through synchronous calls from Run(), but posted tasks will not be covered.
-  // A possible fix would involve refactoring ExtensionFunction: unrefcount
-  // here and use weakptrs for the tasks, then have it owned by something that
-  // will be destroyed naturally in the course of shut down.
+  // TODO(crbug.com/40475418) This is a partial fix to avoid crashes when
+  // certain extension functions run during shutdown. Browser or Notification
+  // creation for example create a ScopedKeepAlive, which hit a CHECK if the
+  // browser is shutting down. This fixes the current problem as the known
+  // issues happen through synchronous calls from Run(), but posted tasks will
+  // not be covered. A possible fix would involve refactoring ExtensionFunction:
+  // unrefcount here and use weakptrs for the tasks, then have it owned by
+  // something that will be destroyed naturally in the course of shut down.
   if (extensions::ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     *error = "The browser is shutting down.";
     return false;
@@ -610,7 +611,7 @@ bool ExtensionFunction::ShouldKeepWorkerAliveIndefinitely() {
 void ExtensionFunction::OnResponseAck() {
   // Derived classes must override this if they require and implement an
   // ACK from the renderer.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {
@@ -674,7 +675,7 @@ bool ExtensionFunction::HasOptionalArgument(size_t index) {
 
 void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
                                        const std::string& message) {
-  // TODO(crbug.com/1096166): Service Worker-based extensions don't have a
+  // TODO(crbug.com/40700591): Service Worker-based extensions don't have a
   // RenderFrameHost.
   if (!render_frame_host_) {
     return;
@@ -684,7 +685,7 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
 
 void ExtensionFunction::ReportInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr info) {
-  // TODO(crbug.com/1096166): Service Worker-based extensions don't have a
+  // TODO(crbug.com/40700591): Service Worker-based extensions don't have a
   // RenderFrameHost.
   if (!render_frame_host_) {
     return;

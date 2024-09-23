@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -66,11 +67,22 @@ class ArcNetHostImpl : public KeyedService,
   void SetCertManager(std::unique_ptr<CertManager> cert_manager);
 
   // Overridden from mojom::NetHost.
+
+  // TODO(b/329552433): Delete get visible networks part in this method after
+  // pi-arc is removed.
+  // Deprecated for getting visible networks. ArcWifiHostImpl::GetScanResults()
+  // should be used.
   void GetNetworks(mojom::GetNetworksRequestType type,
                    GetNetworksCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::GetWifiEnabledState() should be used.
   void GetWifiEnabledState(GetWifiEnabledStateCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::SetWifiEnabledState() should be used.
   void SetWifiEnabledState(bool is_enabled,
                            SetWifiEnabledStateCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::StartScan() should be used.
   void StartScan() override;
   void CreateNetwork(mojom::WifiConfigurationPtr cfg,
                      CreateNetworkCallback callback) override;
@@ -84,7 +96,10 @@ class ArcNetHostImpl : public KeyedService,
   void StartDisconnect(const std::string& guid,
                        StartDisconnectCallback callback) override;
   void AndroidVpnConnected(mojom::AndroidVpnConfigurationPtr cfg) override;
-  void AndroidVpnStateChanged(mojom::ConnectionStateType state) override;
+  void AndroidVpnUpdated(mojom::AndroidVpnConfigurationPtr cfg) override;
+  void DEPRECATED_AndroidVpnStateChanged(
+      mojom::ConnectionStateType state) override;
+  void AndroidVpnDisconnected() override;
   void AddPasspointCredentials(
       mojom::PasspointCredentialsPtr credentials) override;
   void RemovePasspointCredentials(
@@ -106,10 +121,15 @@ class ArcNetHostImpl : public KeyedService,
       mojom::SocketConnectionEventPtr msg) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
+
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::ScanCompleted() should be used.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;
   void NetworkConnectionStateChanged(const ash::NetworkState* network) override;
   void NetworkListChanged() override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::DeviceListChanged() should be used.
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
 
@@ -282,6 +302,11 @@ class ArcNetHostImpl : public KeyedService,
       nullptr;
 
   std::unique_ptr<CertManager> cert_manager_;
+
+  // Cached NetworkConfigurations that were last sent to ARC. This is an
+  // already-filtered list of networks, e.g. non-ARC networks aren't included
+  // since we don't send them to ARC.
+  std::vector<arc::mojom::NetworkConfigurationPtr> cached_arc_networks_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNetHostImpl> weak_factory_{this};

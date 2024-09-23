@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_TOUCH_EVENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_TOUCH_EVENT_H_
 
+#include <array>
+
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
 
@@ -21,7 +23,7 @@ class BLINK_COMMON_EXPORT WebTouchEvent : public WebInputEvent {
 
   unsigned touches_length = 0;
   // List of all touches, regardless of state.
-  WebTouchPoint touches[kTouchesLengthCap] = {};
+  std::array<WebTouchPoint, kTouchesLengthCap> touches = {};
 
   // Whether the event is blocking, non-blocking, all event
   // listeners were passive or was forced to be non-blocking.

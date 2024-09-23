@@ -4,7 +4,6 @@
 
 #include "components/update_client/crx_cache.h"
 
-#include <optional>
 #include <string>
 
 #include "base/base_paths.h"
@@ -204,6 +203,37 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
         }));
     loop.Run();
   }
+  EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
+}
+
+TEST_F(CrxCacheTest, CheckPutCachedCrxSucceeds) {
+  std::string id = "rightid";
+  std::string fp = "rightfp";
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath expected_crx_path =
+      BuildCrxFilePathForTest(temp_dir.GetPath(), id, fp);
+  EXPECT_TRUE(base::CreateDirectory(expected_crx_path.DirName()));
+  {
+    base::File crx_file(expected_crx_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE |
+                                               base::File::FLAG_READ);
+  }
+  CrxCache::Options options(expected_crx_path.DirName());
+  scoped_refptr<CrxCache> cache = base::MakeRefCounted<CrxCache>(options);
+  base::RunLoop loop;
+  // The CRX is already in the cache so Put should succeed immediately.
+  cache->Put(expected_crx_path, id, fp,
+             base::BindLambdaForTesting(
+                 [&loop, &expected_crx_path](const CrxCache::Result& result) {
+                   EXPECT_EQ(result.error, UnpackerError::kNone);
+                   base::FilePath crx_cache_path = result.crx_cache_path;
+                   EXPECT_TRUE(base::DirectoryExists(crx_cache_path.DirName()));
+                   EXPECT_TRUE(base::PathExists(crx_cache_path));
+                   EXPECT_EQ(crx_cache_path, expected_crx_path);
+                   loop.Quit();
+                 }));
+  loop.Run();
   EXPECT_TRUE(base::DeletePathRecursively(temp_dir.GetPath()));
 }
 

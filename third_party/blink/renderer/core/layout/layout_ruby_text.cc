@@ -8,7 +8,9 @@
 
 namespace blink {
 
-LayoutRubyText::LayoutRubyText(Element* element) : LayoutNGBlockFlow(element) {}
+LayoutRubyText::LayoutRubyText(Element* element) : LayoutBlockFlow(element) {
+  DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+}
 
 LayoutRubyText::~LayoutRubyText() = default;
 
@@ -34,7 +36,7 @@ void LayoutRubyText::StyleDidChange(StyleDifference diff,
     UseCounter::Count(GetDocument(),
                       WebFeature::kRubyTextWithNonDefaultTextAlign);
   }
-  LayoutNGBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style);
 }
 
 }  // namespace blink

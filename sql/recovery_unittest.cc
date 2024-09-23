@@ -2,19 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sql/recovery.h"
 
 #include <stddef.h>
 
-#include <memory>
+#include <cstdint>
 #include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
-#include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
@@ -25,13 +31,13 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
-#include "sql/test/paths.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,10 +63,17 @@ std::string GetSchema(Database* db) {
   return ExecuteWithResults(db, kSql, "|", "\n");
 }
 
-// Base class for all recovery-related tests. Each subclass must initialize
-// `scoped_feature_list_`, as appropriate.
-class SqlRecoveryTestBase : public testing::Test {
+// Parameterized to test with and without WAL mode enabled.
+class SqlRecoveryTest : public testing::Test,
+                        public testing::WithParamInterface<bool> {
  public:
+  SqlRecoveryTest() : db_(DatabaseOptions{.wal_mode = ShouldEnableWal()}) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kEnableWALModeByDefault, ShouldEnableWal()}});
+  }
+
+  bool ShouldEnableWal() { return GetParam(); }
+
   void SetUp() override {
     db_.set_histogram_tag("MyFeatureDatabase");
 
@@ -93,9 +106,6 @@ class SqlRecoveryTestBase : public testing::Test {
   }
 
  protected:
-  explicit SqlRecoveryTestBase(DatabaseOptions options)
-      : db_(std::move(options)) {}
-
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -103,297 +113,35 @@ class SqlRecoveryTestBase : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// Tests both the legacy `sql::Recovery` interface and the newer
-// `sql::BuiltInRecovery` interface, if it's supported.
-//
-// Parameters are as follows:
-//   - Is BuiltInRecovery enabled?
-//   - Is WAL mode enabled?
-class SqlRecoveryTest
-    : public SqlRecoveryTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  SqlRecoveryTest()
-      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = UseWalMode()}) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kUseBuiltInRecoveryIfSupported, std::get<0>(GetParam())},
-         {features::kEnableWALModeByDefault, UseWalMode()}});
-  }
+#if BUILDFLAG(IS_FUCHSIA)
+// WAL + recovery is not supported on Fuchsia, so only test without WAL mode.
+INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Values(false));
+#else
+INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Bool());
+#endif
 
-  bool UseBuiltIn() {
-    return std::get<0>(GetParam()) && BuiltInRecovery::IsSupported();
-  }
-
-  bool UseWalMode() {
-    // The legacy recovery module does not support recovering WAL databases.
-    return std::get<1>(GetParam()) && BuiltInRecovery::IsSupported();
-  }
-};
-
-// Tests specific to the newer `sql::BuiltInRecovery` interface.
-//
-// Creating a new `SqlRecoveryTest` should be preferred, if possible.
-// These tests should include a comment indicating why it is not relevant to
-// the legacy `sql::Recovery` module.
-class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
- public:
-  SqlBuiltInRecoveryTest() : SqlRecoveryTestBase(DatabaseOptions{}) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kUseBuiltInRecoveryIfSupported);
-  }
-};
-
-// Tests specific to the legacy `sql::Recovery` interface.
-//
-// Creating a new `SqlRecoveryTest` should be preferred, if possible.
-// These tests should include a comment indicating why it is not relevant to
-// the new `sql::BuiltInRecovery` module.
-class SqlLegacyRecoveryTest : public SqlRecoveryTestBase {
- public:
-  SqlLegacyRecoveryTest()
-      // The legacy recovery module does not support recovering WAL databases.
-      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = false}) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kUseBuiltInRecoveryIfSupported);
-
-    // TODO(https://crbug.com/1385500): All databases which use legacy recovery
-    // must either disable WAL mode manually or be migrated to the new recovery
-    // module before WAL mode may be turned on globally. This assertion is added
-    // here as a guard against accidental regression.
-    assert(!base::FeatureList::IsEnabled(features::kEnableWALModeByDefault));
-  }
-};
-
-TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
+TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
   // Attempt to recover from corruption.
-  ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+  ASSERT_TRUE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 
   // Do not attempt to recover from transient errors.
-  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_BUSY));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_BUSY));
 
   // Do not attempt to recover null databases.
-  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
 
   // Do not attempt to recover closed databases.
   Database invalid_db;
-  EXPECT_FALSE(
-      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Do not attempt to recover in-memory databases.
   ASSERT_TRUE(invalid_db.OpenInMemory());
-  EXPECT_FALSE(
-      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+  EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Return true for databases which have an error callback set, even though
   // the error callback should be reset before recovery is attempted.
   db_.set_error_callback(base::DoNothing());
-  EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
-}
-
-// Baseline Recovery test covering the different ways to dispose of the scoped
-// pointer received from Recovery::Begin().
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, this tests what happens to the Recovery
-// object when it goes out of scope. The new API does not publicly expose such
-// an object.
-TEST_F(SqlLegacyRecoveryTest, RecoverBasic) {
-  static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
-  static const char kInsertSql[] = "INSERT INTO x VALUES ('This is a test')";
-  static const char kAltInsertSql[] =
-      "INSERT INTO x VALUES ('That was a test')";
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-  ASSERT_TRUE(db_.Execute(kInsertSql));
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  // If the Recovery handle goes out of scope without being
-  // Recovered(), the database is razed.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-  }
-  EXPECT_FALSE(db_.is_open());
-  ASSERT_TRUE(Reopen());
-  EXPECT_TRUE(db_.is_open());
-  ASSERT_EQ("", GetSchema(&db_));
-
-  // Recreate the database.
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-  ASSERT_TRUE(db_.Execute(kInsertSql));
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  // Unrecoverable() also razes.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-    Recovery::Unrecoverable(std::move(recovery));
-
-    // TODO(shess): Test that calls to recover.db_ start failing.
-  }
-  EXPECT_FALSE(db_.is_open());
-  ASSERT_TRUE(Reopen());
-  EXPECT_TRUE(db_.is_open());
-  ASSERT_EQ("", GetSchema(&db_));
-
-  // Attempting to recover a previously-recovered handle fails early.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-    recovery.reset();
-
-    recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_FALSE(recovery.get());
-  }
-  ASSERT_TRUE(Reopen());
-
-  // Recreate the database.
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-  ASSERT_TRUE(db_.Execute(kInsertSql));
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  // Unrecovered table to distinguish from recovered database.
-  ASSERT_TRUE(db_.Execute("CREATE TABLE y (c INTEGER)"));
-  ASSERT_NE("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  // Recovered() replaces the original with the "recovered" version.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-
-    // Create the new version of the table.
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    // Insert different data to distinguish from original database.
-    ASSERT_TRUE(recovery->db()->Execute(kAltInsertSql));
-
-    // Successfully recovered.
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-  EXPECT_FALSE(db_.is_open());
-  ASSERT_TRUE(Reopen());
-  EXPECT_TRUE(db_.is_open());
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  const char* kXSql = "SELECT * FROM x ORDER BY 1";
-  ASSERT_EQ("That was a test", ExecuteWithResult(&db_, kXSql));
-
-  // Reset the database contents.
-  ASSERT_TRUE(db_.Execute("DELETE FROM x"));
-  ASSERT_TRUE(db_.Execute(kInsertSql));
-
-  // Rollback() discards recovery progress and leaves the database as it was.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-    ASSERT_TRUE(recovery->db()->Execute(kAltInsertSql));
-
-    Recovery::Rollback(std::move(recovery));
-  }
-  EXPECT_FALSE(db_.is_open());
-  ASSERT_TRUE(Reopen());
-  EXPECT_TRUE(db_.is_open());
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  ASSERT_EQ("This is a test", ExecuteWithResult(&db_, kXSql));
-}
-
-// Test operation of the virtual table used by Recovery.
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, this tests what happens to virtual
-// tables added to the recovery database. The new API does not manually
-// create the recovery database. Virtual table support is required to use
-// the built-in module, but many of the other tests in this file would fail
-// if virtual tables were not supported.
-TEST_F(SqlLegacyRecoveryTest, VirtualTable) {
-  static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES ('This is a test')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES ('That was a test')"));
-
-  // Successfully recover the database.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-
-    // Tables to recover original DB, now at [corrupt].
-    static const char kRecoveryCreateSql[] =
-        "CREATE VIRTUAL TABLE temp.recover_x using recover("
-        "  corrupt.x,"
-        "  t TEXT STRICT"
-        ")";
-    ASSERT_TRUE(recovery->db()->Execute(kRecoveryCreateSql));
-
-    // Re-create the original schema.
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    // Copy the data from the recovery tables to the new database.
-    static const char kRecoveryCopySql[] =
-        "INSERT INTO x SELECT t FROM recover_x";
-    ASSERT_TRUE(recovery->db()->Execute(kRecoveryCopySql));
-
-    // Successfully recovered.
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-
-  // Since the database was not corrupt, the entire schema and all
-  // data should be recovered.
-  ASSERT_TRUE(Reopen());
-  ASSERT_EQ("CREATE TABLE x (t TEXT)", GetSchema(&db_));
-
-  static const char* kXSql = "SELECT * FROM x ORDER BY 1";
-  ASSERT_EQ("That was a test\nThis is a test",
-            ExecuteWithResults(&db_, kXSql, "|", "\n"));
-}
-
-// Our corruption handling assumes that a corrupt index doesn't impact
-// SQL statements that only operate on the associated table. This test verifies
-// the assumption.
-//
-// This tests an assumption of the legacy corruption recovery module which is
-// irrelevant to the new API. Specifically, that a corrupt index doesn't
-// impact SQL statements that only operate on the associated table.
-TEST_F(SqlLegacyRecoveryTest, TableIndependentFromCorruptIndex) {
-  static const char kCreateTable[] =
-      "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL)";
-  ASSERT_TRUE(db_.Execute(kCreateTable));
-  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX rows_index ON rows(indexed)"));
-
-  // Populate the table with powers of two. These numbers make it easy to see if
-  // SUM() missed a row.
-  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(1, 1)"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(2, 2)"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(4, 4)"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
-
-  // SQL statement that performs a table scan. SUM(unindexed) heavily nudges
-  // SQLite to use the table instead of the index.
-  static const char kUnindexedCountSql[] = "SELECT SUM(unindexed) FROM rows";
-  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
-      << "No SQL statement should fail before corruption";
-
-  // SQL statement that performs an index scan.
-  static const char kIndexedCountSql[] =
-      "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
-  EXPECT_EQ("15", ExecuteWithResult(&db_, kIndexedCountSql))
-      << "Table scan should not fail due to corrupt index";
-
-  db_.Close();
-  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
-  ASSERT_TRUE(Reopen());
-
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
-    EXPECT_FALSE(db_.Execute(kIndexedCountSql))
-        << "Index scan on corrupt index should fail";
-    EXPECT_TRUE(expecter.SawExpectedErrors())
-        << "Index scan on corrupt index should fail";
-  }
-
-  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
-      << "Table scan should not fail due to corrupt index";
+  EXPECT_TRUE(Recovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 }
 
 TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
@@ -424,28 +172,15 @@ TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
         // Recovery::Begin() does not support a pre-existing error callback.
         db_.reset_error_callback();
 
-        if (UseBuiltIn()) {
-          EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                        &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                    SqliteResultCode::kOk);
-          histogram_tester_.ExpectUniqueSample(
-              kRecoveryResultHistogramName, BuiltInRecovery::Result::kSuccess,
-              /*expected_bucket_count=*/1);
-          histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
-                                               SqliteLoggedResultCode::kNoError,
-                                               /*expected_bucket_count=*/1);
-          return;
-        }
-
-        std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-        ASSERT_TRUE(recovery.get());
-
-        ASSERT_TRUE(recovery->db()->Execute(kCreateTable));
-        ASSERT_TRUE(recovery->db()->Execute(kCreateIndex));
-
-        size_t rows = 0;
-        ASSERT_TRUE(recovery->AutoRecoverTable("rows", &rows));
-        ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
+        EXPECT_EQ(
+            Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
+        histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                             Recovery::Result::kSuccess,
+                                             /*expected_bucket_count=*/1);
+        histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                             SqliteLoggedResultCode::kNoError,
+                                             /*expected_bucket_count=*/1);
       }));
 
   // SUM(unindexed) heavily nudges SQLite to use the table instead of the index.
@@ -540,22 +275,9 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
         // Recovery::Begin() does not support a pre-existing error callback.
         db_.reset_error_callback();
 
-        if (UseBuiltIn()) {
-          EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                        &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                    SqliteResultCode::kOk);
-          return;
-        }
-
-        std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-        ASSERT_TRUE(recovery.get());
-
-        ASSERT_TRUE(recovery->db()->Execute(kCreateTable));
-        ASSERT_TRUE(recovery->db()->Execute(kCreateIndex));
-
-        size_t rows = 0;
-        ASSERT_TRUE(recovery->AutoRecoverTable("rows", &rows));
-        ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
+        EXPECT_EQ(
+            Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
       }));
 
   // SUM(unindexed) heavily nudges SQLite to use the table instead of the index.
@@ -587,26 +309,15 @@ TEST_P(SqlRecoveryTest, Meta) {
   }
 
   // Test expected case where everything works.
-  if (UseBuiltIn()) {
-    EXPECT_EQ(
-        BuiltInRecovery::RecoverDatabase(
-            &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-        SqliteResultCode::kOk);
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
-                                         BuiltInRecovery::Result::kSuccess,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
-                                         SqliteLoggedResultCode::kNoError,
-                                         /*expected_bucket_count=*/1);
-  } else {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    EXPECT_TRUE(recovery->SetupMeta());
-    int version = 0;
-    EXPECT_TRUE(recovery->GetMetaVersionNumber(&version));
-    EXPECT_EQ(kVersion, version);
-
-    Recovery::Rollback(std::move(recovery));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+            SqliteResultCode::kOk);
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                       Recovery::Result::kSuccess,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                       SqliteLoggedResultCode::kNoError,
+                                       /*expected_bucket_count=*/1);
 
   ASSERT_TRUE(Reopen());  // Handle was poisoned.
 
@@ -615,56 +326,31 @@ TEST_P(SqlRecoveryTest, Meta) {
   // Test version row missing.
   EXPECT_TRUE(db_.Execute("DELETE FROM meta WHERE key = 'version'"));
 
-  if (UseBuiltIn()) {
-    EXPECT_EQ(
-        BuiltInRecovery::RecoverDatabase(
-            &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-        SqliteResultCode::kError);
-    histogram_tester_.ExpectBucketCount(
-        kRecoveryResultHistogramName,
-        BuiltInRecovery::Result::kFailedMetaTableVersionWasInvalid,
-        /*expected_count=*/1);
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
-                                         SqliteLoggedResultCode::kNoError,
-                                         /*expected_bucket_count=*/2);
-  } else {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    EXPECT_TRUE(recovery->SetupMeta());
-    int version = 0;
-    EXPECT_FALSE(recovery->GetMetaVersionNumber(&version));
-    EXPECT_EQ(0, version);
-
-    Recovery::Rollback(std::move(recovery));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+            SqliteResultCode::kError);
+  histogram_tester_.ExpectBucketCount(
+      kRecoveryResultHistogramName,
+      Recovery::Result::kFailedMetaTableVersionWasInvalid,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                       SqliteLoggedResultCode::kNoError,
+                                       /*expected_bucket_count=*/2);
   ASSERT_TRUE(Reopen());  // Handle was poisoned.
 
   // Test meta table missing.
-  if (UseBuiltIn()) {
-    ASSERT_FALSE(db_.DoesTableExist("meta"));
+  ASSERT_FALSE(db_.DoesTableExist("meta"));
 
-    EXPECT_EQ(
-        BuiltInRecovery::RecoverDatabase(
-            &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-        SqliteResultCode::kError);
-    histogram_tester_.ExpectBucketCount(
-        kRecoveryResultHistogramName,
-        BuiltInRecovery::Result::kFailedMetaTableDoesNotExist,
-        /*expected_count=*/1);
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
-                                         SqliteLoggedResultCode::kNoError,
-                                         /*expected_bucket_count=*/3);
-  } else {
-    // The table was rolled back after the recovery failure. Manually drop the
-    // table.
-    ASSERT_TRUE(db_.DoesTableExist("meta"));
-    EXPECT_TRUE(db_.Execute("DROP TABLE meta"));
-
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);  // From virtual table.
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    EXPECT_FALSE(recovery->SetupMeta());
-    ASSERT_TRUE(expecter.SawExpectedErrors());
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(
+                &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+            SqliteResultCode::kError);
+  histogram_tester_.ExpectBucketCount(
+      kRecoveryResultHistogramName,
+      Recovery::Result::kFailedMetaTableDoesNotExist,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                       SqliteLoggedResultCode::kNoError,
+                                       /*expected_bucket_count=*/3);
 }
 
 // Baseline AutoRecoverTable() test.
@@ -681,35 +367,8 @@ TEST_P(SqlRecoveryTest, AutoRecoverTable) {
   static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
   const std::string orig_data(ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    // Create a lame-duck table which will not be propagated by recovery to
-    // detect that the recovery code actually ran.
-    ASSERT_TRUE(db_.Execute("CREATE TABLE y (c TEXT)"));
-    ASSERT_NE(orig_schema, GetSchema(&db_));
-
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    // Save a copy of the temp db's schema before recovering the table.
-    static const char kTempSchemaSql[] =
-        "SELECT name, sql FROM sqlite_temp_schema";
-    const std::string temp_schema(
-        ExecuteWithResults(recovery->db(), kTempSchemaSql, "|", "\n"));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(2u, rows);
-
-    // Test that any additional temp tables were cleaned up.
-    EXPECT_EQ(temp_schema,
-              ExecuteWithResults(recovery->db(), kTempSchemaSql, "|", "\n"));
-
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
   // data should be recovered.
@@ -717,22 +376,9 @@ TEST_P(SqlRecoveryTest, AutoRecoverTable) {
   ASSERT_EQ(orig_schema, GetSchema(&db_));
   ASSERT_EQ(orig_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
-  // Recovery fails if the target table doesn't exist.
-  if (UseBuiltIn()) {
-    // ... or it can succeed silently, since there's nothing to do.
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    // TODO(shess): Should this failure implicitly lead to Raze()?
-    size_t rows = 0;
-    EXPECT_FALSE(recovery->AutoRecoverTable("y", &rows));
-
-    Recovery::Unrecoverable(std::move(recovery));
-  }
+  // Recovery succeeds silently, since there's nothing to do.
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
 }
 
 // Test that default values correctly replace nulls.  The recovery
@@ -761,89 +407,14 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithDefault) {
 
   std::string final_schema(orig_schema);
   std::string final_data(orig_data);
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    // Create a lame-duck table which will not be propagated by recovery to
-    // detect that the recovery code actually ran.
-    ASSERT_TRUE(db_.Execute("CREATE TABLE y (c TEXT)"));
-    ASSERT_NE(orig_schema, GetSchema(&db_));
-
-    // Mechanically adjust the stored schema and data to allow detecting
-    // where the default value is coming from.  The target table is just
-    // like the original with the default for [t] changed, to signal
-    // defaults coming from the recovery system.  The two %5 rows should
-    // get the target-table default for [t], while the others should get
-    // the source-table default.
-    size_t pos;
-    while ((pos = final_schema.find("'a''a'")) != std::string::npos) {
-      final_schema.replace(pos, 6, "'c''c'");
-    }
-    while ((pos = final_data.find("5|a'a")) != std::string::npos) {
-      final_data.replace(pos, 5, "5|c'c");
-    }
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    // Different default to detect which table provides the default.
-    ASSERT_TRUE(recovery->db()->Execute(final_schema.c_str()));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(4u, rows);
-
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
   // data should be recovered.
   ASSERT_TRUE(Reopen());
   ASSERT_EQ(final_schema, GetSchema(&db_));
   ASSERT_EQ(final_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
-}
-
-// Test that rows with NULL in a NOT NULL column are filtered
-// correctly.  In the wild, this would probably happen due to
-// corruption, but here it is simulated by recovering a table which
-// allowed nulls into a table which does not.
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, this tests what happens to tables
-// with NULL values in non-nullable columns. This test is not easily
-// replicated, since SQLite does not support ALTER COLUMN. We'll trust that
-// it's handled properly upstream.
-TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableNullFilter) {
-  static const char kOrigSchema[] = "CREATE TABLE x (id INTEGER, t TEXT)";
-  static const char kFinalSchema[] =
-      "CREATE TABLE x (id INTEGER, t TEXT NOT NULL)";
-
-  ASSERT_TRUE(db_.Execute(kOrigSchema));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (5, NULL)"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (15, 'this is a test')"));
-
-  // Create a lame-duck table which will not be propagated by recovery to
-  // detect that the recovery code actually ran.
-  ASSERT_EQ(kOrigSchema, GetSchema(&db_));
-  ASSERT_TRUE(db_.Execute("CREATE TABLE y (c TEXT)"));
-  ASSERT_NE(kOrigSchema, GetSchema(&db_));
-
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kFinalSchema));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(1u, rows);
-
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-
-  // The schema should be the same, but only one row of data should
-  // have been recovered.
-  ASSERT_TRUE(Reopen());
-  ASSERT_EQ(kFinalSchema, GetSchema(&db_));
-  static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
-  ASSERT_EQ("15|this is a test", ExecuteWithResults(&db_, kXSql, "|", "\n"));
 }
 
 // Test AutoRecoverTable with a ROWID alias.
@@ -861,179 +432,14 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithRowid) {
   static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
   const std::string orig_data(ExecuteWithResults(&db_, kXSql, "|", "\n"));
 
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    // Create a lame-duck table which will not be propagated by recovery to
-    // detect that the recovery code actually ran.
-    ASSERT_TRUE(db_.Execute("CREATE TABLE y (c TEXT)"));
-    ASSERT_NE(orig_schema, GetSchema(&db_));
-
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(2u, rows);
-
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
 
   // Since the database was not corrupt, the entire schema and all
   // data should be recovered.
   ASSERT_TRUE(Reopen());
   ASSERT_EQ(orig_schema, GetSchema(&db_));
   ASSERT_EQ(orig_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
-}
-
-// Test that a compound primary key doesn't fire the ROWID code.
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, this tests how ROWID tables are
-// handled.
-TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableWithCompoundKey) {
-  static const char kCreateSql[] =
-      "CREATE TABLE x ("
-      "id INTEGER NOT NULL,"
-      "id2 TEXT NOT NULL,"
-      "t TEXT,"
-      "PRIMARY KEY (id, id2)"
-      ")";
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-
-  // NOTE(shess): Do not accidentally use [id] 1, 2, 3, as those will
-  // be the ROWID values.
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (1, 'a', 'This is a test')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (1, 'b', 'That was a test')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (2, 'a', 'Another test')"));
-
-  // Save aside a copy of the original schema and data.
-  const std::string orig_schema(GetSchema(&db_));
-  static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
-  const std::string orig_data(ExecuteWithResults(&db_, kXSql, "|", "\n"));
-
-  // Create a lame-duck table which will not be propagated by recovery to
-  // detect that the recovery code actually ran.
-  ASSERT_TRUE(db_.Execute("CREATE TABLE y (c TEXT)"));
-  ASSERT_NE(orig_schema, GetSchema(&db_));
-
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(3u, rows);
-
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-
-  // Since the database was not corrupt, the entire schema and all
-  // data should be recovered.
-  ASSERT_TRUE(Reopen());
-  ASSERT_EQ(orig_schema, GetSchema(&db_));
-  ASSERT_EQ(orig_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
-}
-
-// Test recovering from a table with fewer columns than the target.
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, this tests how tables with missing
-// columns are handled.
-TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableMissingColumns) {
-  static const char kCreateSql[] =
-      "CREATE TABLE x (id INTEGER PRIMARY KEY, t0 TEXT)";
-  static const char kAlterSql[] =
-      "ALTER TABLE x ADD COLUMN t1 TEXT DEFAULT 't'";
-  ASSERT_TRUE(db_.Execute(kCreateSql));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (1, 'This is')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES (2, 'That was')"));
-
-  // Generate the expected info by faking a table to match what recovery will
-  // create.
-  const std::string orig_schema(GetSchema(&db_));
-  static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
-  std::string expected_schema;
-  std::string expected_data;
-  {
-    ASSERT_TRUE(db_.BeginTransaction());
-    ASSERT_TRUE(db_.Execute(kAlterSql));
-
-    expected_schema = GetSchema(&db_);
-    expected_data = ExecuteWithResults(&db_, kXSql, "|", "\n");
-
-    db_.RollbackTransaction();
-  }
-
-  // Following tests are pointless if the rollback didn't work.
-  ASSERT_EQ(orig_schema, GetSchema(&db_));
-
-  // Recover the previous version of the table into the altered version.
-  {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-    ASSERT_TRUE(recovery->db()->Execute(kAlterSql));
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(2u, rows);
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-
-  // Since the database was not corrupt, the entire schema and all
-  // data should be recovered.
-  ASSERT_TRUE(Reopen());
-  ASSERT_EQ(expected_schema, GetSchema(&db_));
-  ASSERT_EQ(expected_data, ExecuteWithResults(&db_, kXSql, "|", "\n"));
-}
-
-// Recover a golden file where an interior page has been manually modified so
-// that the number of cells is greater than will fit on a single page.  This
-// case happened in <http://crbug.com/387868>.
-TEST_P(SqlRecoveryTest, Bug387868) {
-  base::FilePath golden_path;
-  ASSERT_TRUE(base::PathService::Get(sql::test::DIR_TEST_DATA, &golden_path));
-  golden_path = golden_path.AppendASCII("recovery_387868");
-  db_.Close();
-  ASSERT_TRUE(base::CopyFile(golden_path, db_path_));
-  ASSERT_TRUE(Reopen());
-
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-    ASSERT_TRUE(recovery.get());
-
-    // Create the new version of the table.
-    static const char kCreateSql[] =
-        "CREATE TABLE x (id INTEGER PRIMARY KEY, t0 TEXT)";
-    ASSERT_TRUE(recovery->db()->Execute(kCreateSql));
-
-    size_t rows = 0;
-    EXPECT_TRUE(recovery->AutoRecoverTable("x", &rows));
-    EXPECT_EQ(43u, rows);
-
-    // Successfully recovered.
-    EXPECT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
-}
-
-// Memory-mapped I/O interacts poorly with I/O errors.  Make sure the recovery
-// database doesn't accidentally enable it.
-//
-// This tests behavior of the legacy corruption recovery module which is not
-// needed in the new API. Specifically, that MMAPing is disabled.
-TEST_F(SqlLegacyRecoveryTest, NoMmap) {
-  std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-  ASSERT_TRUE(recovery.get());
-
-  // In the current implementation, the PRAGMA successfully runs with no result
-  // rows.  Running with a single result of |0| is also acceptable.
-  Statement s(recovery->db()->GetUniqueStatement("PRAGMA mmap_size"));
-  EXPECT_TRUE(!s.Step() || !s.ColumnInt64(0));
 }
 
 void TestRecoverDatabase(Database& db,
@@ -1110,13 +516,9 @@ void TestRecoverDatabase(Database& db,
 
 TEST_P(SqlRecoveryTest, RecoverDatabase) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    if (UseBuiltIn()) {
-      EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                    &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                SqliteResultCode::kOk);
-    } else {
-      Recovery::RecoverDatabase(&db_, db_path_);
-    }
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -1125,14 +527,9 @@ TEST_P(SqlRecoveryTest, RecoverDatabase) {
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseMeta) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    if (UseBuiltIn()) {
-      EXPECT_EQ(
-          BuiltInRecovery::RecoverDatabase(
-              &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-          SqliteResultCode::kOk);
-    } else {
-      Recovery::RecoverDatabaseWithMetaVersion(&db_, db_path_);
-    }
+    EXPECT_EQ(Recovery::RecoverDatabase(
+                  &db_, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+              SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
@@ -1141,8 +538,8 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseMeta) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossible) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -1151,9 +548,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossible) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossibleMeta) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze));
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
@@ -1164,9 +561,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithoutErrorCallback) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
     // `RecoverIfPossible()` should not set an error callback.
     EXPECT_FALSE(db_.has_error_callback());
-    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+    bool recovery_was_attempted = Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     EXPECT_TRUE(recovery_was_attempted);
     EXPECT_FALSE(db_.has_error_callback());
   });
@@ -1180,9 +577,9 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithErrorCallback) {
     db_.set_error_callback(base::DoNothing());
     // The error callback should be reset during `RecoverIfPossible()` if
     // recovery was attempted.
-    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+    bool recovery_was_attempted = Recovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT,
-        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+        Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     EXPECT_TRUE(recovery_was_attempted);
     EXPECT_NE(db_.has_error_callback(), recovery_was_attempted);
   });
@@ -1196,8 +593,8 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
     // Recovery should not be attempted on a closed database.
     db_.Close();
 
-    EXPECT_FALSE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+    EXPECT_FALSE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
@@ -1206,32 +603,29 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
 
 TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
-        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze,
-        &features::kUseBuiltInRecoveryIfSupported));
+    EXPECT_TRUE(Recovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, Recovery::Strategy::kRecoverOrRaze));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
                       std::move(run_recovery));
 
-  if (UseBuiltIn()) {
-    // Log to the overall histograms.
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
-                                         BuiltInRecovery::Result::kSuccess,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
-                                         SqliteLoggedResultCode::kNoError,
-                                         /*expected_bucket_count=*/1);
-    // And the histograms for this specific feature.
-    histogram_tester_.ExpectUniqueSample(
-        base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
-        BuiltInRecovery::Result::kSuccess,
-        /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample(
-        base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
-        SqliteLoggedResultCode::kNoError,
-        /*expected_bucket_count=*/1);
-  }
+  // Log to the overall histograms.
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                       Recovery::Result::kSuccess,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                       SqliteLoggedResultCode::kNoError,
+                                       /*expected_bucket_count=*/1);
+  // And the histograms for this specific feature.
+  histogram_tester_.ExpectUniqueSample(
+      base::StrCat({kRecoveryResultHistogramName, ".MyFeatureDatabase"}),
+      Recovery::Result::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      base::StrCat({kRecoveryResultCodeHistogramName, ".MyFeatureDatabase"}),
+      SqliteLoggedResultCode::kNoError,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
@@ -1270,13 +664,8 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   // Database handle is valid before recovery, poisoned after.
   static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db.IsSQLValid(kTrivialSql));
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    Recovery::RecoverDatabase(&db, db_path_);
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&db, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
   EXPECT_FALSE(db.IsSQLValid(kTrivialSql));
 
   // Since the database was not corrupt, the entire schema and all data should
@@ -1303,21 +692,15 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
     ASSERT_FALSE(Reopen());
 
     // This should "recover" the database by making it valid, but empty.
-    if (UseBuiltIn()) {
-      EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                    &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                SqliteResultCode::kNotADatabase);
-      histogram_tester_.ExpectUniqueSample(
-          kRecoveryResultHistogramName,
-          BuiltInRecovery::Result::kFailedRecoveryRun,
-          /*expected_bucket_count=*/1);
-      histogram_tester_.ExpectUniqueSample(
-          kRecoveryResultCodeHistogramName,
-          SqliteLoggedResultCode::kNotADatabase,
-          /*expected_bucket_count=*/1);
-    } else {
-      Recovery::RecoverDatabase(&db_, db_path_);
-    }
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kNotADatabase);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         Recovery::Result::kFailedRecoveryRun,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                         SqliteLoggedResultCode::kNotADatabase,
+                                         /*expected_bucket_count=*/1);
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
 
@@ -1347,16 +730,6 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
-  if (!UseBuiltIn()) {
-    // Run recovery code, then rollback.  Database remains the same.
-    std::unique_ptr<Recovery> recovery =
-        Recovery::BeginRecoverDatabase(&db_, db_path_);
-    ASSERT_TRUE(recovery);
-    Recovery::Rollback(std::move(recovery));
-    db_.Close();
-    ASSERT_TRUE(Reopen());
-  }
-
   static const char kIndexedCountSql[] =
       "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
   {
@@ -1369,16 +742,8 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   }
 
   // Run recovery code, then commit.  The index is recovered.
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    std::unique_ptr<Recovery> recovery =
-        Recovery::BeginRecoverDatabase(&db_, db_path_);
-    ASSERT_TRUE(recovery);
-    ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
   db_.Close();
   ASSERT_TRUE(Reopen());
 
@@ -1402,22 +767,15 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
     ASSERT_FALSE(Reopen());
 
     // Begin() should fail.
-    if (UseBuiltIn()) {
-      EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                    &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-                SqliteResultCode::kNotADatabase);
-      histogram_tester_.ExpectUniqueSample(
-          kRecoveryResultHistogramName,
-          BuiltInRecovery::Result::kFailedRecoveryRun,
-          /*expected_bucket_count=*/1);
-      histogram_tester_.ExpectUniqueSample(
-          kRecoveryResultCodeHistogramName,
-          SqliteLoggedResultCode::kNotADatabase,
-          /*expected_bucket_count=*/1);
-    } else {
-      std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
-      EXPECT_FALSE(recovery.get());
-    }
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(&db_, Recovery::Strategy::kRecoverOrRaze),
+        SqliteResultCode::kNotADatabase);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         Recovery::Result::kFailedRecoveryRun,
+                                         /*expected_bucket_count=*/1);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultCodeHistogramName,
+                                         SqliteLoggedResultCode::kNotADatabase,
+                                         /*expected_bucket_count=*/1);
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
 }
@@ -1430,8 +788,7 @@ void TestPageSize(const base::FilePath& db_prefix,
                   int initial_page_size,
                   const std::string& expected_initial_page_size,
                   int final_page_size,
-                  const std::string& expected_final_page_size,
-                  bool use_built_in) {
+                  const std::string& expected_final_page_size) {
   static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
   static const char kInsertSql1[] = "INSERT INTO x VALUES ('This is a test')";
   static const char kInsertSql2[] = "INSERT INTO x VALUES ('That was a test')";
@@ -1454,13 +811,9 @@ void TestPageSize(const base::FilePath& db_prefix,
   ASSERT_TRUE(recover_db.Open(db_path));
   // Recovery will use the page size set in the database object, which may not
   // match the file's page size.
-  if (use_built_in) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &recover_db, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    Recovery::RecoverDatabase(&recover_db, db_path);
-  }
+  EXPECT_EQ(Recovery::RecoverDatabase(&recover_db,
+                                      Recovery::Strategy::kRecoverOrRaze),
+            SqliteResultCode::kOk);
 
   // Recovery poisoned the handle, must re-open.
   recover_db.Close();
@@ -1484,93 +837,65 @@ TEST_P(SqlRecoveryTest, PageSize) {
   // Check the default page size first.
   EXPECT_NO_FATAL_FAILURE(TestPageSize(
       db_path_, DatabaseOptions::kDefaultPageSize, default_page_size,
-      DatabaseOptions::kDefaultPageSize, default_page_size, UseBuiltIn()));
+      DatabaseOptions::kDefaultPageSize, default_page_size));
 
   // Sync uses 32k pages.
   EXPECT_NO_FATAL_FAILURE(
-      TestPageSize(db_path_, 32768, "32768", 32768, "32768", UseBuiltIn()));
+      TestPageSize(db_path_, 32768, "32768", 32768, "32768"));
 
   // Many clients use 4k pages.  This is the SQLite default after 3.12.0.
-  EXPECT_NO_FATAL_FAILURE(
-      TestPageSize(db_path_, 4096, "4096", 4096, "4096", UseBuiltIn()));
+  EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path_, 4096, "4096", 4096, "4096"));
 
   // 1k is the default page size before 3.12.0.
-  EXPECT_NO_FATAL_FAILURE(
-      TestPageSize(db_path_, 1024, "1024", 1024, "1024", UseBuiltIn()));
+  EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path_, 1024, "1024", 1024, "1024"));
 
   ASSERT_NE("2048", default_page_size);
-  if (UseBuiltIn()) {
-    // Databases with no page size specified should recover to the page size of
-    // the source database.
-    EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path_, 2048, "2048",
-                                         DatabaseOptions::kDefaultPageSize,
-                                         "2048", UseBuiltIn()));
-  } else {
-    // Databases with no page size specified should recover with the new default
-    // page size.  2k has never been the default page size.
-    EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path_, 2048, "2048",
-                                         DatabaseOptions::kDefaultPageSize,
-                                         default_page_size, UseBuiltIn()));
-  }
+  // Databases with no page size specified should recover to the page size of
+  // the source database.
+  EXPECT_NO_FATAL_FAILURE(TestPageSize(
+      db_path_, 2048, "2048", DatabaseOptions::kDefaultPageSize, "2048"));
 }
 
 TEST_P(SqlRecoveryTest, CannotRecoverClosedDb) {
   db_.Close();
 
-  if (UseBuiltIn()) {
-    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
-  } else {
-    EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&db_, db_path_));
-  }
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &db_, Recovery::Strategy::kRecoverOrRaze));
 }
 
 TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
   db_.set_error_callback(base::DoNothing());
 
-  if (UseBuiltIn()) {
-    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
-  } else {
-    EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&db_, db_path_));
-  }
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &db_, Recovery::Strategy::kRecoverOrRaze));
 }
 
-// TODO(https://crbug.com/1255316): Ideally this would be a
+// TODO(crbug.com/40199997): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // that it is passed a non-null database pointer and will instead likely result
 // in unexpected behavior or crashes.
-TEST_F(SqlBuiltInRecoveryTest, CannotRecoverNullDb) {
-  EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                         nullptr, BuiltInRecovery::Strategy::kRecoverOrRaze));
+TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         nullptr, Recovery::Strategy::kRecoverOrRaze));
 }
 
-// TODO(https://crbug.com/1255316): Ideally this would be a
+// TODO(crbug.com/40199997): Ideally this would be a
 // `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
 // whether the database is in-memory and will instead likely result in
 // unexpected behavior or crashes.
-TEST_F(SqlBuiltInRecoveryTest, CannotRecoverInMemoryDb) {
+TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
   Database in_memory_db;
   ASSERT_TRUE(in_memory_db.OpenInMemory());
 
-  EXPECT_CHECK_DEATH(
-      std::ignore = BuiltInRecovery::RecoverDatabase(
-          &in_memory_db, BuiltInRecovery::Strategy::kRecoverOrRaze));
-}
-
-TEST_P(SqlRecoveryTest, BuiltInRecoveryNotAttempedIfNotEnabled) {
-  // `BuiltInRecovery` will return early if the kill switch is disabled.
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kUseBuiltInRecoveryIfSupported),
-      IsSqliteSuccessCode(BuiltInRecovery::RecoverDatabase(
-          &db_, BuiltInRecovery::Strategy::kRecoverOrRaze)));
+  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                         &in_memory_db, Recovery::Strategy::kRecoverOrRaze));
 }
 
 // This test mimics the case where a database that was using WAL mode crashed,
 // then next Chrome launch the database is not opened in WAL mode. This may
 // occur when e.g. WAL mode if configured via Finch and the user not in the
 // experiment group on the second launch of Chrome.
-TEST_F(SqlBuiltInRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
+TEST_P(SqlRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
   base::FilePath wal_db_path =
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
@@ -1586,7 +911,7 @@ TEST_F(SqlBuiltInRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
   EXPECT_DCHECK_DEATH(wal_db.set_error_callback(base::DoNothing()));
 }
 
-TEST_F(SqlBuiltInRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
+TEST_P(SqlRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   base::FilePath wal_db_path =
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
@@ -1594,29 +919,15 @@ TEST_F(SqlBuiltInRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   ASSERT_TRUE(non_wal_db.Open(wal_db_path));
 
   auto run_recovery = base::BindLambdaForTesting([&]() {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &non_wal_db,
-                  BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
-              SqliteResultCode::kOk);
+    EXPECT_EQ(
+        Recovery::RecoverDatabase(
+            &non_wal_db, Recovery::Strategy::kRecoverWithMetaVersionOrRaze),
+        SqliteResultCode::kOk);
   });
 
   TestRecoverDatabase(non_wal_db, wal_db_path, /*with_meta=*/true,
                       std::move(run_recovery));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SqlRecoveryTest,
-    testing::Values(
-        std::tuple(true, false),  // BuiltInRecovery with non-WAL databases.
-        std::tuple(false, false)  // Legacy recovery with non-WAL databases.
-// Recovering WAL databases is not supported on Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
-        ,
-        std::tuple(true, true)  // BuiltInRecovery with WAL databases.
-#endif
-        // The legacy recovery module does not support recovering WAL databases.
-        ));
 
 }  // namespace
 

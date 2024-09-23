@@ -132,7 +132,7 @@ CancelCallbackOnce FakeDriveUploader::ResumeUploadFile(
     ProgressCallback progress_callback) {
   // At the moment, sync file system doesn't support resuming of the uploading.
   // So this method shouldn't be reached.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CancelCallbackOnce();
 }
 

@@ -42,7 +42,7 @@ bool ServiceSkottieTransferCacheEntry::Deserialize(
     GrDirectContext* context,
     skgpu::graphite::Recorder* graphite_recorder,
     base::span<const uint8_t> data) {
-  skottie_ = SkottieWrapper::CreateNonSerializable(data);
+  skottie_ = SkottieWrapper::UnsafeCreateNonSerializable(data);
   cached_size_ = data.size();
   return skottie_->is_valid();
 }

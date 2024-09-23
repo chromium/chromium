@@ -31,7 +31,6 @@ enum class ScrollbarOrientation { kHorizontal, kVertical };
 
 enum class ScrollbarPart {
   kThumb,
-  kTrackButtonsTickmarks,  // for PartNeedsRepaint() and PaintPart() only.
   kBackButton,
   kForwardButton,
   kBackTrack,
@@ -48,10 +47,8 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual ScrollbarOrientation Orientation() const = 0;
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
-  // The color for a solid color scrollbar. This is meaningful only
-  // when IsSolidColor() is true.
-  virtual SkColor4f GetSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
+  virtual bool IsRunningWebTest() const = 0;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
@@ -70,16 +67,25 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual float Opacity() const = 0;
   virtual bool HasTickmarks() const = 0;
 
-  // Whether we need to repaint the part. Only kThumb and kTrackButtonsTickmarks
-  // are supported.
-  virtual bool NeedsRepaintPart(ScrollbarPart part) const = 0;
+  virtual bool ThumbNeedsRepaint() const = 0;
+  virtual void ClearThumbNeedsRepaint() = 0;
+  virtual bool TrackAndButtonsNeedRepaint() const = 0;
 
-  // Paints the part in the given rect. The implementation should paint
+  // Paints the thumb in the given rect. The implementation should paint
   // relative to the rect, and doesn't need to know the current coordinate
-  // space of |canvas|. Only kThumb, kTrackButtonsTickmarks are supported.
-  virtual void PaintPart(PaintCanvas* canvas,
-                         ScrollbarPart part,
-                         const gfx::Rect& rect) = 0;
+  // space of `canvas`. When `UsesNinePatchThumbResource()` returns true,
+  // whether to use nine-patch depends on the size of `rect`. Nine-patch
+  // will be disabled if the size is the full size of the thumb.
+  virtual void PaintThumb(PaintCanvas& canvas, const gfx::Rect& rect) = 0;
+  // Paints the track (including tickmarks if present) and buttons in the
+  // given rect. See the above function about `rect`.
+  virtual void PaintTrackAndButtons(PaintCanvas& canvas,
+                                    const gfx::Rect& rect) = 0;
+
+  // The thumb color for a solid color scrollbar, or a scrollbar using solid
+  // color thumb. This is meaningful only when IsSolidColor() or
+  // UsesSolidColorThumb() is true.
+  virtual SkColor4f ThumbColor() const = 0;
 
   // The following two functions are called from blink only.
   // Returns true if either the track or the thumb needs repaint, or the thumb
@@ -88,9 +94,31 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool NeedsUpdateDisplay() const = 0;
   virtual void ClearNeedsUpdateDisplay() = 0;
 
+  // Whether the thumb can be painted as a nine-patch resource. Cc will stretch
+  // the resource to fill the full size of the thumb. This should never change
+  // during the life of the scrollbar.
   virtual bool UsesNinePatchThumbResource() const = 0;
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
+
+  // Whether the thumb can be painted in a single color. This should not never
+  // change during the life of the scrollbar.
+  virtual bool UsesSolidColorThumb() const = 0;
+  // The insets of the solid color thumb from ThumbRect().
+  virtual gfx::Insets SolidColorThumbInsets() const = 0;
+
+  // Whether the track and buttons can be painted together as a nine-patch
+  // resource. Cc which will stretch the resource to fill the full size of the
+  // scrollbar. This should never change during the life of the scrollbar.
+  // Note that tickmarks can't be painted in nine-patch. If there are tickmarks
+  // (`HasTickmarks()`), this can still return true, but the nine-patch
+  // implementation in cc will not be used for painting.
+  virtual bool UsesNinePatchTrackAndButtonsResource() const = 0;
+  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize() const = 0;
+  virtual gfx::Rect NinePatchTrackAndButtonsAperture() const = 0;
+
+  // This is used by blink only, to adjust the painted thumb rect in
+  // main-thread minimal mode.
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const = 0;
 

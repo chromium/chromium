@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 
 #include <stdint.h>
@@ -26,6 +31,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -39,9 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #endif
 
 namespace {
@@ -66,12 +70,23 @@ constexpr auto kOutdatedBuildDetectorPeriod = base::Days(1);
 // The number of days after which we identify a build/install as outdated.
 constexpr auto kOutdatedBuildAge = base::Days(7) * 8;
 
-constexpr bool ShouldDetectOutdatedBuilds() {
+bool ShouldDetectOutdatedBuilds() {
 #if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS)
-  // Outdated build detection is not relevant on ChromeOS platforms where
-  // updates are handled differently than on other desktop platforms.
+  // Don't show the bubble if we have a brand code that is NOT organic
+  std::string brand;
+  if (google_brand::GetBrand(&brand) && !google_brand::IsOrganic(brand)) {
+    return false;
+  }
+
+  // Don't show the bubble for Enterprise users.
+  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+    return false;
+  }
+
   return true;
 #else
+  // Outdated build detection is not relevant on ChromeOS platforms where
+  // updates are handled differently than on other desktop platforms.
   return false;
 #endif
 }
@@ -209,22 +224,9 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
     return;
   }
 
-  // Don't show the bubble if we have a brand code that is NOT organic, unless
-  // an outdated build is being simulated by command line switches.
+  // Don't show the bubble for certain conditions unless an outdated build is
+  // being simulated by command line switches.
   if (!simulating_outdated_) {
-    std::string brand;
-    if (google_brand::GetBrand(&brand) && !google_brand::IsOrganic(brand))
-      return;
-
-#if BUILDFLAG(IS_WIN)
-    // TODO(crbug/1027107): Replace with a more generic CBCM check.
-    // Don't show the update bubbles to enterprise users.
-    if (base::IsEnterpriseDevice() ||
-        policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid()) {
-      return;
-    }
-#endif
-
     if (!ShouldDetectOutdatedBuilds())
       return;
 

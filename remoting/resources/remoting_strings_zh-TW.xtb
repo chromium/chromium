@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">無法在用戶端上開啟 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2366718077645204424">無法連線到主機，原因可能與你使用的網路設定有關。</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />上次上線時間：<ph name="RELATIVE_TIMESTAMP" />。</translation>
 <translation id="2504109125669302160">將「無障礙功能」權限授予 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">已連線至「<ph name="HOSTNAME" />」</translation>
 <translation id="2540992418118313681">您要與其他使用者分享這台電腦的瀏覽及控制權限嗎？</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">遠端處理安全金鑰</translation>
 <translation id="3581045510967524389">無法連上網路，請確認裝置是否處於上線狀態。</translation>
 <translation id="3596628256176442606">這項服務允許來自 Chromoting 用戶端的連線。</translation>
-<translation id="369442766917958684">離線。</translation>
 <translation id="3695446226812920698">操作說明</translation>
 <translation id="3776024066357219166">你的 Chrome 遠端桌面工作階段已結束。</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">你目前正與 <ph name="USER" /> 共用電腦。</translation>
-<translation id="5750083143895808682">目前登入的帳戶是 <ph name="EMAIL_ADDRESS" />。</translation>
 <translation id="579702532610384533">重新連線</translation>
 <translation id="5810269635982033450">把螢幕當作觸控板使用</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 要求你授予螢幕的檢視權限和鍵盤與滑鼠的控制權限。如果這不是預期收到的要求，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]；否則，請在準備就緒時選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
@@ -152,7 +149,7 @@
 <translation id="7693372326588366043">重新整理主機清單</translation>
 <translation id="7714222945760997814">回報這個問題</translation>
 <translation id="7868137160098754906">請為遠端電腦輸入你的 PIN。</translation>
-<translation id="7881455334687220899">版權所有 2024 The Chromium Authors。保留所有權利。</translation>
+<translation id="7881455334687220899">著作權所有 2024 The Chromium Authors。保留所有權利。</translation>
 <translation id="7895403300744144251">遠端電腦的安全性政策禁止從您的帳戶連線。</translation>
 <translation id="7936528439960309876">靠右固定</translation>
 <translation id="7970576581263377361">驗證失敗，請重新登入 Chromium。</translation>
@@ -184,7 +181,7 @@
 <translation id="8747048596626351634">工作階段當機或無法啟動。如果遠端電腦有 ~/.chrome-remote-desktop-session，請確認該檔案開始執行長期運作的前景程序，例如桌面環境或視窗管理員。</translation>
 <translation id="8804164990146287819">隱私權政策</translation>
 <translation id="8906511416443321782">該主機需要麥克風存取權才能擷取音訊，並將音訊投放到 Chrome 遠端桌面用戶端。</translation>
-<translation id="9042277333359847053">版權所有 2024 Google LLC。保留所有權利。</translation>
+<translation id="9042277333359847053">著作權所有 2024 Google LLC。保留所有權利。</translation>
 <translation id="9111855907838866522">你已連上遠端裝置，使用四指輕觸螢幕即可開啟選單。</translation>
 <translation id="9126115402994542723">此裝置連線至這個主機時，不必再次詢問 PIN。</translation>
 <translation id="916856682307586697">啟動預設的 XSession</translation>

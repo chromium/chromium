@@ -10,7 +10,7 @@
 // <if expr="is_ios">
 // This is needed for the iOS implementation of chrome.send (to communicate
 // between JS and native).
-// TODO(crbug.com/487000): Remove this once injected by web.
+// TODO(crbug.com/41173939): Remove this once injected by web.
 import 'chrome://resources/js/ios/web_ui.js';
 
 // </if>

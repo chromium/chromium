@@ -42,6 +42,9 @@ class ASH_EXPORT PostLoginGlanceablesMetricsRecorder : public OverviewObserver {
 
   std::optional<base::Time> fifteen_second_timestamp_;
   std::optional<base::Time> thirty_second_timestamp_;
+  std::optional<base::Time> five_minute_timestamp_;
+  std::optional<base::Time> fifteen_minute_timestamp_;
+  std::optional<base::Time> thirty_minute_timestamp_;
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};

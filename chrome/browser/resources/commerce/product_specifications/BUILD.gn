@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "commerce_product_specifications"
+
+  static_files = [
+    "product_specifications.html",
+    "disclosure/product_specifications_disclosure.html",
+    "images/empty_state_dark.svg",
+    "images/empty_state.svg",
+  ]
+
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "app.ts",
+    "header_menu.ts",
+    "header.ts",
+    "new_column_selector.ts",
+    "product_selection_menu.ts",
+    "product_selector.ts",
+    "table.ts",
+  ]
+
+  css_files = [
+    "buying_options_section.css",
+    "description_citation.css",
+    "description_section.css",
+    "disclosure/app.css",
+    "horizontal_carousel.css",
+    "loading_state.css",
+  ]
+
+  mojo_files_deps = [
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
+
+  non_web_component_files = [
+    "buying_options_section.html.ts",
+    "buying_options_section.ts",
+    "description_citation.html.ts",
+    "description_citation.ts",
+    "description_section.html.ts",
+    "description_section.ts",
+    "disclosure/app.html.ts",
+    "disclosure/app.ts",
+    "drag_and_drop_manager.ts",
+    "horizontal_carousel.html.ts",
+    "horizontal_carousel.ts",
+    "loading_state.html.ts",
+    "loading_state.ts",
+    "router.ts",
+    "utils.ts",
+    "window_proxy.ts",
+  ]
+
+  icons_html_files = [ "images/icons.html" ]
+
+  html_to_wrapper_template = "detect"
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/commerce:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "trusted"
+}

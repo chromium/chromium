@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/socks5_client_socket.h"
 
 #include <utility>
@@ -99,14 +104,14 @@ bool SOCKS5ClientSocket::WasEverUsed() const {
 NextProto SOCKS5ClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kProtoUnknown;
 }
 
 bool SOCKS5ClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   if (transport_socket_)
     return transport_socket_->GetSSLInfo(ssl_info);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -243,7 +248,7 @@ int SOCKS5ClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::SOCKS5_HANDSHAKE_READ, rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }
@@ -388,7 +393,7 @@ int SOCKS5ClientSocket::DoHandshakeWriteComplete(int result) {
   } else if (bytes_sent_ < buffer_.size()) {
     next_state_ = STATE_HANDSHAKE_WRITE;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return OK;

@@ -30,6 +30,10 @@ class BASE_EXPORT StackCopierSignal : public StackCopier {
 
   using StackCopier::CopyStackContentsAndRewritePointers;
 
+ protected:
+  std::vector<uintptr_t*> GetRegistersToRewrite(
+      RegisterContext* thread_context) override;
+
  private:
   std::unique_ptr<ThreadDelegate> thread_delegate_;
 };

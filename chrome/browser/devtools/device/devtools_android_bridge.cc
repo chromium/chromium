@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -90,9 +91,12 @@ DevToolsAndroidBridge::Factory::Factory()
           "DevToolsAndroidBridge",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
 DevToolsAndroidBridge::Factory::~Factory() {}
@@ -194,7 +198,7 @@ void DevToolsAndroidBridge::RemoveDeviceListListener(
     DeviceListListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = base::ranges::find(device_list_listeners_, listener);
-  DCHECK(it != device_list_listeners_.end());
+  CHECK(it != device_list_listeners_.end(), base::NotFatalUntil::M130);
   device_list_listeners_.erase(it);
   if (!NeedsDeviceListPolling())
     StopDeviceListPolling();
@@ -211,7 +215,7 @@ void DevToolsAndroidBridge::RemoveDeviceCountListener(
     DeviceCountListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = base::ranges::find(device_count_listeners_, listener);
-  DCHECK(it != device_count_listeners_.end());
+  CHECK(it != device_count_listeners_.end(), base::NotFatalUntil::M130);
   device_count_listeners_.erase(it);
   if (device_count_listeners_.empty())
     StopDeviceCountPolling();
@@ -228,7 +232,7 @@ void DevToolsAndroidBridge::AddPortForwardingListener(
 void DevToolsAndroidBridge::RemovePortForwardingListener(
     PortForwardingListener* listener) {
   auto it = base::ranges::find(port_forwarding_listeners_, listener);
-  DCHECK(it != port_forwarding_listeners_.end());
+  CHECK(it != port_forwarding_listeners_.end(), base::NotFatalUntil::M130);
   port_forwarding_listeners_.erase(it);
   if (!NeedsDeviceListPolling())
     StopDeviceListPolling();

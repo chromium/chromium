@@ -10,8 +10,10 @@
 #include "base/memory/ptr_util.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/public/android/jni_headers/ChildAccountInfoFetcher_jni.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/signin/public/android/jni_headers/ChildAccountInfoFetcher_jni.h"
 
 using base::android::JavaParamRef;
 

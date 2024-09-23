@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
@@ -43,6 +44,7 @@ UserRemoteCommandsServiceFactory::UserRemoteCommandsServiceFactory()
           "UserRemoteCommands",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
+  DependsOn(policy::UserFmRegistrationTokenUploaderFactory::GetInstance());
 }
 UserRemoteCommandsServiceFactory::~UserRemoteCommandsServiceFactory() = default;
 

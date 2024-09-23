@@ -26,10 +26,8 @@ class TrayBubbleView;
 class GlanceableTrayBubble;
 
 // This date tray is next to the `UnifiedSystemTray`. Activating this tray
-// results in the `CalendarView` showing in the `UnifiedSystemTray`'s bubble.
-// If GlanceablesV2 feature flag is enabled, it will instead show the
-// GlanceableTrayBubble.
-// TODO(b:277268122) update documentation.
+// results in the `GlanceableTrayBubble` showing in the `UnifiedSystemTray`'s
+// bubble.
 class ASH_EXPORT DateTray : public TrayBackgroundView,
                             public UnifiedSystemTray::Observer {
   METADATA_HEADER(DateTray, TrayBackgroundView)
@@ -47,10 +45,10 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
   void ShowBubble() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
 
   // UnifiedSystemTray::Observer:
@@ -65,11 +63,12 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void ShowGlanceableBubble(bool from_keyboard);
   void HideGlanceableBubble();
 
+  GlanceableTrayBubble* glanceables_bubble_for_test() const {
+    return bubble_.get();
+  }
+
  private:
   friend class DateTrayTest;
-  friend class GlanceablesPixelTest;
-  friend class GlanceablesBrowserTest;
-  friend class GlanceableTrayBubbleViewTest;
 
   // Owned by the views hierarchy.
   raw_ptr<TimeTrayItemView> time_view_ = nullptr;

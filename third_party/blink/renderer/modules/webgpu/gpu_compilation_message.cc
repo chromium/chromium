@@ -9,7 +9,7 @@
 namespace blink {
 
 GPUCompilationMessage::GPUCompilationMessage(String message,
-                                             WGPUCompilationMessageType type,
+                                             wgpu::CompilationMessageType type,
                                              uint64_t line_num,
                                              uint64_t line_pos,
                                              uint64_t offset,
@@ -20,17 +20,14 @@ GPUCompilationMessage::GPUCompilationMessage(String message,
       offset_(offset),
       length_(length) {
   switch (type) {
-    case WGPUCompilationMessageType_Error:
+    case wgpu::CompilationMessageType::Error:
       type_string_ = "error";
       break;
-    case WGPUCompilationMessageType_Warning:
+    case wgpu::CompilationMessageType::Warning:
       type_string_ = "warning";
       break;
-    case WGPUCompilationMessageType_Info:
+    case wgpu::CompilationMessageType::Info:
       type_string_ = "info";
-      break;
-    default:
-      NOTREACHED();
       break;
   }
 }

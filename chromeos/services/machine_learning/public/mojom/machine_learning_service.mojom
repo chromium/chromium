@@ -34,6 +34,8 @@ import "components/ml/mojom/web_platform_model.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Keep this enum in sync with MachineLearningServiceLoadModelResultEvent in
+// tools/metrics/histograms/metadata/cros_ml/enums.xml.
 [Stable, Extensible]
 enum LoadModelResult {
   OK = 0,

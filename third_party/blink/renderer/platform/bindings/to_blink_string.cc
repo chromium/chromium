@@ -42,9 +42,9 @@ struct V8StringTwoBytesTrait {
   typedef UChar CharType;
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
-                                  CharType* buffer,
-                                  int length) {
-    v8_string->Write(isolate, reinterpret_cast<uint16_t*>(buffer), 0, length);
+                                  base::span<CharType> buffer) {
+    v8_string->Write(isolate, reinterpret_cast<uint16_t*>(buffer.data()), 0,
+                     static_cast<int>(buffer.size()));
   }
 };
 
@@ -52,9 +52,9 @@ struct V8StringOneByteTrait {
   typedef LChar CharType;
   ALWAYS_INLINE static void Write(v8::Isolate* isolate,
                                   v8::Local<v8::String> v8_string,
-                                  CharType* buffer,
-                                  int length) {
-    v8_string->WriteOneByte(isolate, buffer, 0, length);
+                                  base::span<CharType> buffer) {
+    v8_string->WriteOneByte(isolate, buffer.data(), 0,
+                            static_cast<int>(buffer.size()));
   }
 };
 
@@ -63,9 +63,9 @@ String StringTraits<String>::FromV8String(v8::Isolate* isolate,
                                           v8::Local<v8::String> v8_string,
                                           int length) {
   DCHECK(v8_string->Length() == length);
-  typename V8StringTrait::CharType* buffer;
+  base::span<typename V8StringTrait::CharType> buffer;
   String result = String::CreateUninitialized(length, buffer);
-  V8StringTrait::Write(isolate, v8_string, buffer, length);
+  V8StringTrait::Write(isolate, v8_string, buffer);
   return result;
 }
 
@@ -79,12 +79,12 @@ AtomicString StringTraits<AtomicString>::FromV8String(
       32 / sizeof(typename V8StringTrait::CharType);
   if (length <= kInlineBufferSize) {
     typename V8StringTrait::CharType inline_buffer[kInlineBufferSize];
-    V8StringTrait::Write(isolate, v8_string, inline_buffer, length);
+    V8StringTrait::Write(isolate, v8_string, inline_buffer);
     return AtomicString(inline_buffer, static_cast<unsigned>(length));
   }
-  typename V8StringTrait::CharType* buffer;
+  base::span<typename V8StringTrait::CharType> buffer;
   String string = String::CreateUninitialized(length, buffer);
-  V8StringTrait::Write(isolate, v8_string, buffer, length);
+  V8StringTrait::Write(isolate, v8_string, buffer);
   return AtomicString(string);
 }
 
@@ -101,11 +101,12 @@ ALWAYS_INLINE bool CanExternalize(v8::Local<v8::String> v8_string,
 //
 // Returns a nullptr if there was no previous externalization.
 ALWAYS_INLINE StringResourceBase* GetExternalizedString(
+    v8::Isolate* isolate,
     v8::Local<v8::String> v8_string) {
   v8::String::Encoding encoding;
   v8::String::ExternalStringResourceBase* resource =
-      v8_string->GetExternalStringResourceBase(&encoding);
-  if (LIKELY(!!resource)) {
+      v8_string->GetExternalStringResourceBase(isolate, &encoding);
+  if (!!resource) [[likely]] {
     // Inheritance:
     // - V8 side: v8::String::ExternalStringResourceBase
     //   -> v8::External{One,}ByteStringResource
@@ -156,17 +157,17 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
                         V8StringTwoBytesTrait>(isolate, v8_string, length);
 
   *was_externalized = false;
-  if (LIKELY(can_externalize)) {
+  if (can_externalize) [[likely]] {
     if (result.Is8Bit()) {
       StringResource8* string_resource = new StringResource8(result);
-      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+      if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
         delete string_resource;
       } else {
         *was_externalized = true;
       }
     } else {
       StringResource16* string_resource = new StringResource16(result);
-      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+      if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
         delete string_resource;
       } else {
         *was_externalized = true;
@@ -192,12 +193,13 @@ StringType ToBlinkString(v8::Isolate* isolate,
   // Check for an already externalized string first as this is a very
   // common case for all platforms with the one exception being super short
   // strings on for platforms with v8 pointer compression.
-  StringResourceBase* string_resource = GetExternalizedString(v8_string);
+  StringResourceBase* string_resource =
+      GetExternalizedString(isolate, v8_string);
   if (string_resource)
     return StringTraits<StringType>::FromStringResource(string_resource);
 
   int length = v8_string->Length();
-  if (UNLIKELY(!length)) {
+  if (!length) [[unlikely]] {
     return StringType(g_empty_atom);
   }
 
@@ -229,13 +231,17 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // percent. This includes moving the StringTraits<>::FromStringResource() call
   // into GetExternalizedString() as it becomes impossible for the calling code
   // to satisfy all RVO constraints.
-  StringResourceBase* string_resource = GetExternalizedString(v8_string);
-  if (string_resource)
-    return StringTraits<AtomicString>::FromStringResource(string_resource);
+  StringResourceBase* string_resource =
+      GetExternalizedString(isolate, v8_string);
+  if (string_resource) {
+    return StringTraits<AtomicString>::FromStringResource(string_resource)
+        .Impl();
+  }
 
   int length = v8_string->Length();
-  if (UNLIKELY(!length))
+  if (!length) [[unlikely]] {
     return StringView(g_empty_atom);
+  }
 
   // Note that this code path looks very similar to ToBlinkString(). The
   // critical difference in ToBlinkStringView(), if `can_externalize` is false,
@@ -244,7 +250,7 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // churn which can be significantly faster in some hot paths.
   const bool is_one_byte = v8_string->IsOneByte();
   bool can_externalize = CanExternalize(v8_string, mode, is_one_byte);
-  if (LIKELY(can_externalize)) {
+  if (can_externalize) [[likely]] {
     bool was_externalized;
     // An AtomicString is always used here for externalization. Using a String
     // would avoid the AtomicStringTable insert however it also means APIs
@@ -264,8 +270,9 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
     // StringView::StackBackingStore yields the most efficient code.
     AtomicString blink_string = ConvertAndExternalizeString<AtomicString>(
         isolate, v8_string, can_externalize, is_one_byte, &was_externalized);
-    if (was_externalized)
-      return StringView(blink_string);
+    if (was_externalized) {
+      return StringView(blink_string.Impl());
+    }
   }
 
   // The string has not been externalized. Serialize into `backing_store` and

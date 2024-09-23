@@ -32,6 +32,7 @@ include_rules = [
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",
   "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
   "+third_party/blink/renderer/platform/bindings/parkable_string_manager.h",
+  "+third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h",
   "+third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h",
   "+third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h",
   "+third_party/blink/renderer/platform/heap/collection_support/heap_vector.h",

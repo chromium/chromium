@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <set>
@@ -22,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,6 +54,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
@@ -61,6 +68,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -69,8 +78,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -78,12 +89,16 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
+#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -98,6 +113,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
@@ -108,9 +124,11 @@
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/base/page_transition_types.h"
@@ -173,7 +191,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{// TODO(crbug.com/1394910): Use HTTPS URLs in
+        /*disabled_features=*/{// TODO(crbug.com/40248833): Use HTTPS URLs in
                                // tests to avoid having to
                                // disable this feature.
                                features::kHttpsUpgrades});
@@ -249,13 +267,14 @@ class SessionRestoreTest : public InProcessBrowserTest {
     return restored;
   }
 
-  Browser* QuitBrowserAndRestore(Browser* browser) {
-    return QuitBrowserAndRestoreWithURL(browser, GURL(), true);
-  }
-
-  Browser* QuitBrowserAndRestoreWithURL(Browser* browser,
-                                        const GURL& url,
-                                        bool no_memory_pressure) {
+  // Closes `browser` synchronously and creates a new Browser.
+  // `after_close_calback` is run after closing `browser` but before creating
+  // a new Browser.
+  Browser* QuitBrowserAndRestore(
+      Browser* browser,
+      const GURL& url = GURL(),
+      bool no_memory_pressure = true,
+      base::OnceClosure after_close_calback = base::DoNothing()) {
     Profile* profile = browser->profile();
 
     // Close the browser.
@@ -265,6 +284,8 @@ class SessionRestoreTest : public InProcessBrowserTest {
         profile, ProfileKeepAliveOrigin::kBrowserWindow);
     CloseBrowserSynchronously(browser);
 
+    std::move(after_close_calback).Run();
+
     ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
     SessionRestoreTestHelper restore_observer;
 
@@ -272,6 +293,11 @@ class SessionRestoreTest : public InProcessBrowserTest {
     // shut down.
     SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
+
+    // Ensure stale cookies are cleared immediately on startup for testing.
+    profile->GetDefaultStoragePartition()
+        ->OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+            base::Minutes(0));
 
     // Create a new window, which should trigger session restore.
     if (url.is_empty()) {
@@ -536,8 +562,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
   CloseBrowserSynchronously(browser());
 
   // Create a new window, which should open NTP.
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(incognito_browser);
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* new_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
   EXPECT_NE(new_browser, incognito_browser);
 
   ASSERT_TRUE(new_browser);
@@ -626,9 +655,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   // Expect a window with three tabs.
   ASSERT_EQ(1U, service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW,
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW,
             service->entries().front()->type);
-  auto* window = static_cast<sessions::TabRestoreService::Window*>(
+  auto* window = static_cast<sessions::tab_restore::Window*>(
       service->entries().front().get());
   EXPECT_EQ(3U, window->tabs.size());
 
@@ -639,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   ui_test_utils::BrowserChangeObserver browser_change_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   for (const auto& tab_ptr : window->tabs) {
-    const sessions::TabRestoreService::Tab& tab = *tab_ptr;
+    const sessions::tab_restore::Tab& tab = *tab_ptr;
     // If this tab held url2, then restore this single tab.
     if (tab.navigations[0].virtual_url() == url2) {
       timestamp = tab.navigations[0].timestamp();
@@ -659,9 +688,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   // Make sure that the restored tab is removed from the service.
   ASSERT_EQ(1U, service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW,
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW,
             service->entries().front()->type);
-  window = static_cast<sessions::TabRestoreService::Window*>(
+  window = static_cast<sessions::tab_restore::Window*>(
       service->entries().front().get());
   EXPECT_EQ(2U, window->tabs.size());
 
@@ -703,8 +732,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_WindowWithOneTab) {
 
   // Expect the window to be converted to a tab by the TRS.
   EXPECT_EQ(1U, service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::TAB, service->entries().front()->type);
-  auto* tab = static_cast<const sessions::TabRestoreService::Tab*>(
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  auto* tab = static_cast<const sessions::tab_restore::Tab*>(
       service->entries().front().get());
 
   // Restore the tab.
@@ -771,13 +800,7 @@ void VerifyNavigationEntries(content::NavigationController& controller,
 
 }  // namespace
 
-// Flaky on Lacros and Wayland. https://crbug.com/1283339
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_RestoreForeignTab DISABLED_RestoreForeignTab
-#else
-#define MAYBE_RestoreForeignTab RestoreForeignTab
-#endif
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreForeignTab) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   GURL url1("http://google.com");
   GURL url2("http://google2.com");
 
@@ -837,11 +860,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreForeignTab) {
   tab_content = nullptr;
   {
     content::CreateAndLoadWebContentsObserver observer;
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     tab_content = SessionRestore::RestoreForeignSessionTab(
         browser()->tab_strip_model()->GetActiveWebContents(), tab,
         WindowOpenDisposition::NEW_WINDOW);
     observer.Wait();
-    new_browser = BrowserList::GetInstance()->GetLastActive();
+    new_browser = new_browser_observer.Wait();
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser);
     EXPECT_NE(new_browser, browser());
   }
 
@@ -1241,9 +1267,9 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
   const sessions::TabRestoreService::Entries& entries = service->entries();
   ASSERT_GE(entries.size(), 1u);
-  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::GROUP);
+  ASSERT_EQ(entries.front()->type, sessions::tab_restore::Type::GROUP);
   const auto* const group_entry =
-      static_cast<sessions::TabRestoreService::Group*>(entries.front().get());
+      static_cast<sessions::tab_restore::Group*>(entries.front().get());
   ASSERT_EQ(group_entry->tabs.size(), 2u);
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
@@ -1254,10 +1280,9 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
   const sessions::TabRestoreService::Entries& new_entries =
       new_service->entries();
   ASSERT_GE(new_entries.size(), 1u);
-  ASSERT_EQ(new_entries.front()->type, sessions::TabRestoreService::GROUP);
+  ASSERT_EQ(new_entries.front()->type, sessions::tab_restore::Type::GROUP);
   const auto* const new_group_entry =
-      static_cast<sessions::TabRestoreService::Group*>(
-          new_entries.front().get());
+      static_cast<sessions::tab_restore::Group*>(new_entries.front().get());
   ASSERT_EQ(new_group_entry->tabs.size(), 2u);
 }
 
@@ -1346,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoMemoryPressureLoadsAllTabs) {
       browser(), GURL(url::kAboutBlankURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  Browser* restored = QuitBrowserAndRestoreWithURL(browser(), GURL(), true);
+  Browser* restored = QuitBrowserAndRestore(browser(), GURL(), true);
   TabStripModel* tab_strip_model = restored->tab_strip_model();
 
   ASSERT_EQ(1u, active_browser_list_->size());
@@ -1371,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Restore the brwoser, but instead of directly waiting, we issue a critical
   // memory pressure event and finish then the loading.
-  Browser* restored = QuitBrowserAndRestoreWithURL(browser(), GURL(), false);
+  Browser* restored = QuitBrowserAndRestore(browser(), GURL(), false);
 
   TabStripModel* tab_strip_model = restored->tab_strip_model();
 
@@ -1390,16 +1415,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              old_tab->GetPrimaryMainFrame()->GetEnabledBindings());
+  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kMojoWebUi));
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
   content::WebContents* new_tab =
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              new_tab->GetPrimaryMainFrame()->GetEnabledBindings());
+  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kMojoWebUi));
 }
 
 // http://crbug.com/803510 : Flaky on dbg and ASan bots.
@@ -1413,16 +1438,16 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_RestoreWebUISettings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
-              content::BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(old_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kWebUi));
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, active_browser_list_->size());
   content::WebContents* new_tab =
       new_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(webui_url, new_tab->GetURL());
-  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings() &
-              content::BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(new_tab->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      content::BindingsPolicyValue::kWebUi));
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoresForwardAndBackwardNavs) {
@@ -1935,8 +1960,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Restore the session by calling chrome::Navigate().
-  Browser* new_browser =
-      QuitBrowserAndRestoreWithURL(browser(), GetUrl3(), true);
+  Browser* new_browser = QuitBrowserAndRestore(browser(), GetUrl3(), true);
   ASSERT_EQ(1u, active_browser_list_->size());
   ASSERT_EQ(3, new_browser->tab_strip_model()->count());
   // Navigated url should be the active tab.
@@ -2041,45 +2065,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorage) {
   std::string restored_session_storage_id =
       new_controller->GetDefaultSessionStorageNamespace()->id();
   EXPECT_EQ(session_storage_id, restored_session_storage_id);
-}
-
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorageAfterTabReplace) {
-  // Simulate what prerendering does: create a new WebContents with the same
-  // SessionStorageNamespace as an existing tab, then replace the tab with it.
-  {
-    content::NavigationController* controller =
-        &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-    ASSERT_TRUE(controller->GetDefaultSessionStorageNamespace());
-
-    content::SessionStorageNamespaceMap session_storage_namespace_map =
-        content::CreateMapWithDefaultSessionStorageNamespace(
-            browser()->profile(),
-            controller->GetDefaultSessionStorageNamespace());
-
-    std::unique_ptr<content::WebContents> web_contents(
-        content::WebContents::CreateWithSessionStorage(
-            content::WebContents::CreateParams(browser()->profile()),
-            session_storage_namespace_map));
-
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    std::unique_ptr<content::WebContents> old_web_contents =
-        tab_strip_model->ReplaceWebContentsAt(tab_strip_model->active_index(),
-                                              std::move(web_contents));
-    // Navigate with the new tab.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));
-    // old_web_contents goes out of scope.
-  }
-
-  // Check that the sessionStorage data is going to be persisted.
-  content::NavigationController* controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  EXPECT_TRUE(
-      controller->GetDefaultSessionStorageNamespace()->should_persist());
-
-  // Quit and restore. Check that no extra tabs were created.
-  Browser* new_browser = QuitBrowserAndRestore(browser());
-  ASSERT_EQ(1u, active_browser_list_->size());
-  EXPECT_EQ(1, new_browser->tab_strip_model()->count());
 }
 
 // Failing on Mac. See https://crbug.com/1484860
@@ -2214,20 +2199,33 @@ class MultiBrowserObserver : public BrowserListObserver {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
+  // Open the second browser with the first profile and verify it becomes the
+  // active browser window.
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(first_profile_browser_one);
-  Browser* first_profile_browser_two =
-      BrowserList::GetInstance()->GetLastActive();
+  Browser* first_profile_browser_two = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(first_profile_browser_two);
   EXPECT_NE(first_profile_browser_one, first_profile_browser_two);
 
+  // Open the first browser window for the second profile and verify it becomes
+  // the active browser window.
   Profile* second_profile = CreateSecondaryProfile(1);
   base::FilePath second_profile_path = second_profile->GetPath();
   profiles::FindOrCreateNewWindowForProfile(
       second_profile, chrome::startup::IsProcessStartup::kNo,
       chrome::startup::IsFirstRun::kNo, false);
   Browser* second_profile_browser_one = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitUntilBrowserBecomeActive(second_profile_browser_one);
+
+  // Open the second browser window for the second profile and verify it becomes
+  // the active browser window.
+  ui_test_utils::BrowserChangeObserver second_profile_new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewWindow(second_profile_browser_one);
   Browser* second_profile_browser_two =
-      BrowserList::GetInstance()->GetLastActive();
+      second_profile_new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(second_profile_browser_two);
   EXPECT_NE(second_profile_browser_one, second_profile_browser_two);
 
   // Navigate the tab in each browser to a unique URL we can later reidentify.
@@ -2410,8 +2408,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i - 1]]);
     ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
-                web_contents[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTimeTicks(),
+                web_contents[i]->GetLastActiveTimeTicks());
     }
   }
 
@@ -2459,8 +2457,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i]]);
     ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
-                web_contents[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTimeTicks(),
+                web_contents[i]->GetLastActiveTimeTicks());
     }
   }
 }
@@ -2964,7 +2962,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       histogram_tester.GetAllSamples(kTimeSinceTabClosedUntilRestored).size(),
       0U);
 
-  QuitBrowserAndRestoreWithURL(browser(), GURL(), true);
+  QuitBrowserAndRestore(browser(), GURL(), true);
 
   EXPECT_EQ(
       histogram_tester.GetAllSamples(kTimeSinceTabClosedUntilRestored).size(),
@@ -2994,11 +2992,65 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                 .size(),
             0U);
 
-  QuitBrowserAndRestoreWithURL(browser(), GURL(), true);
+  QuitBrowserAndRestore(browser(), GURL(), true);
 
   EXPECT_EQ(histogram_tester.GetAllSamples(kTimeSinceWindowClosedUntilRestored)
                 .size(),
             0U);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    // Cannot simulate sync removal of tab using TabGroupSyncService API. This
+    // causes this test to fail when the migration flag is enabled.
+    // TODO(crbug.com/365152362): Skip for now and reassess if this test is
+    // still necessary.
+    GTEST_SKIP();
+  }
+
+  // Add two more tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  auto tab_group_id = browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+
+  auto* saved_tab_group_keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_tab_group_keyed_service, nullptr);
+
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_tab_group_keyed_service->SaveGroup(tab_group_id);
+  }
+
+  ASSERT_TRUE(saved_tab_group_keyed_service);
+
+  auto* saved_tab_group =
+      saved_tab_group_keyed_service->model()->Get(tab_group_id);
+  ASSERT_TRUE(saved_tab_group);
+  auto saved_tab_group_id = saved_tab_group->saved_guid();
+
+  // This ensures SessionService knows about the savedtabgroup. It shouldn't be
+  // necessary.
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(tab_group_id)
+      ->SetVisualData(tab_groups::TabGroupVisualData(
+          u"x", tab_groups::TabGroupColorId::kGrey));
+
+  QuitBrowserAndRestore(
+      browser(), GURL(), true, base::BindLambdaForTesting([&]() {
+        saved_tab_group_keyed_service->model()->RemoveTabFromGroupLocally(
+            saved_tab_group_id,
+            saved_tab_group->saved_tabs()[0].saved_tab_guid());
+      }));
 }
 
 // This class and tests are to verify reading a file with an error in it results
@@ -3095,7 +3147,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest, LogsReadError) {
   }
 }
 
-// TODO(crbug.com/1515868): Test fails on Mac.
+// TODO(crbug.com/41488859): Test fails on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SameDocumentNavigationWithNothingCommittedAfterRestore \
   DISABLED_SameDocumentNavigationWithNothingCommittedAfterRestore
@@ -3139,8 +3191,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // We perform session restore under memory pressure so the tab is not restored
   // in the background.
-  Browser* new_browser = QuitBrowserAndRestoreWithURL(
-      browser(), GURL(), /*no_memory_pressure=*/false);
+  Browser* new_browser =
+      QuitBrowserAndRestore(browser(), GURL(), /*no_memory_pressure=*/false);
   wc = new_browser->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(2, new_browser->tab_strip_model()->count());
   EXPECT_NE(0, new_browser->tab_strip_model()->active_index());
@@ -3186,7 +3238,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
-// TODO(crbug.com/1515868): Test fails on Mac.
+// TODO(crbug.com/41488859): Test fails on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore \
   DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterRestore
@@ -3232,8 +3284,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // We perform session restore under memory pressure so the tab is not restored
   // in the background.
-  Browser* new_browser = QuitBrowserAndRestoreWithURL(
-      browser(), GURL(), /*no_memory_pressure=*/false);
+  Browser* new_browser =
+      QuitBrowserAndRestore(browser(), GURL(), /*no_memory_pressure=*/false);
   wc = new_browser->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(2, new_browser->tab_strip_model()->count());
   EXPECT_NE(0, new_browser->tab_strip_model()->active_index());
@@ -3397,8 +3449,8 @@ class AppSessionRestoreTest : public SessionRestoreTest {
   }
 
   webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -3410,8 +3462,8 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     blink::Manifest::TabStrip tab_strip;
     tab_strip.home_tab = blink::Manifest::HomeTabParams();
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -3420,6 +3472,9 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     web_app_info->tab_strip = std::move(tab_strip);
     return web_app::test::InstallWebApp(profile, std::move(web_app_info));
   }
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 // This is disabled on mac pending http://crbug.com/1194201
@@ -3737,8 +3792,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // To keep the coverage from the rest of the test, we disable the failing check
 // on linux for window-maximization.
-// TODO(https://crbug.com/1255462): fails under lacros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreAppMinimized DISABLED_RestoreAppMinimized
 #else
 #define MAYBE_RestoreAppMinimized RestoreAppMinimized
@@ -3758,6 +3812,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
   app_browser->window()->Minimize();
+  ASSERT_TRUE(ui_test_utils::WaitForMinimized(app_browser));
+  EXPECT_TRUE(app_browser->window()->IsMinimized());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3786,6 +3842,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
     if (browser->type() == Browser::Type::TYPE_APP) {
       EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
 #if !BUILDFLAG(IS_LINUX)
+      EXPECT_TRUE(ui_test_utils::WaitForMinimized(browser));
       EXPECT_TRUE(browser->window()->IsMinimized());
 #endif
       EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
@@ -3807,8 +3864,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // In order to keep the coverage from the rest of the test, the checks that
 // fail on linux are explicitly disabled.
-// Flaky on Lacros https://crbug.com/1256498
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreMaximizedApp DISABLED_RestoreMaximizedApp
 #else
 #define MAYBE_RestoreMaximizedApp RestoreMaximizedApp
@@ -3821,9 +3877,12 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   // Open a PWA.
   webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_TRUE(app_browser);
 
   // Maximize.
   app_browser->window()->Maximize();
+  ASSERT_TRUE(ui_test_utils::WaitForMaximized(app_browser));
+  EXPECT_TRUE(app_browser->window()->IsMaximized());
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3857,6 +3916,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
     if (browser->type() == Browser::Type::TYPE_APP) {
       EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
 #if !BUILDFLAG(IS_LINUX)
+      EXPECT_TRUE(ui_test_utils::WaitForMaximized(browser));
       EXPECT_TRUE(browser->window()->IsMaximized());
 #endif
       EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
@@ -4009,15 +4069,10 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
 // This test ensures AppSessionService is notified of app restorations
 // correctly.
-// TODO(https://crbug.com/1255462): fails under lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CtrlShiftTRestoresAppsCorrectly \
-  DISABLED_CtrlShiftTRestoresAppsCorrectly
-#else
-#define MAYBE_CtrlShiftTRestoresAppsCorrectly CtrlShiftTRestoresAppsCorrectly
-#endif
-IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
-                       MAYBE_CtrlShiftTRestoresAppsCorrectly) {
+// Note: This test is ported for Lacros in
+// app_session_restore_lacros_browsertest.cc (in lacros_chrome_browsertests).
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
   Profile* profile = browser()->profile();
   auto example_url = GURL("http://www.example.com");
   auto example_url2 = GURL("http://www.example2.com");
@@ -4074,6 +4129,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   EXPECT_TRUE(app2_seen);
   EXPECT_TRUE(app3_seen);
 }
+#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Request a no app restore and ensure no app was reopened.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
@@ -4327,3 +4383,313 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   }
   EXPECT_TRUE(app_checked);
 }
+
+class SessionRestoreStaleSessionCookieDeletionTest
+    : public SessionRestoreTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SessionRestoreStaleSessionCookieDeletionTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatureState(
+        kDeleteStaleSessionCookiesOnStartup,
+        ShouldDeleteStaleSessionCookiesOnStartup());
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    SessionRestoreTest::SetUpOnMainThread();
+  }
+
+  bool ShouldDeleteStaleSessionCookiesOnStartup() { return GetParam(); }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  bool SetCookie(const std::string& name,
+                 const GURL& url,
+                 base::Time expiration,
+                 base::Time last_access_and_update) {
+    network::mojom::CookieManager* cookie_manager =
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateUnsafeCookieForTesting(
+            name, "test", url.host(), "/",
+            /*creation=*/base::Time::Now(), expiration,
+            /*last_access=*/last_access_and_update,
+            /*last_update=*/last_access_and_update, /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_MEDIUM, /*partition_key=*/std::nullopt,
+            net::CookieSourceScheme::kSecure);
+    EXPECT_TRUE(cookie->IsCanonicalForFromStorage());
+    base::test::TestFuture<net::CookieAccessResult> future;
+    cookie_manager->SetCanonicalCookie(*cookie, url,
+                                       net::CookieOptions::MakeAllInclusive(),
+                                       future.GetCallback());
+    return future.Take().status.IsInclude();
+  }
+
+  bool HasCookie(Browser* browser, const std::string& name) {
+    network::mojom::CookieManager* cookie_manager =
+        browser->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+    base::test::TestFuture<const std::vector<net::CanonicalCookie>&> future;
+    cookie_manager->GetAllCookies(future.GetCallback());
+    for (const net::CanonicalCookie& cookie : future.Take()) {
+      if (cookie.Name() == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SessionRestoreStaleSessionCookieDeletionTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
+                       CookieStorage) {
+  GURL open_page = https_server()->GetURL("a.test", "/empty.html");
+  GURL other_page = https_server()->GetURL("b.test", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), open_page));
+  // We write every combination of:
+  // (open page, other page) x (persistent, session) x (stale cookie, cookie)
+  // We define stale cookies to be those not accessed or updated in the past 7
+  // days.
+  ASSERT_TRUE(SetCookie("open_page_persistent_cookie", open_page,
+                        /*expiration=*/base::Time::Now() + base::Days(1000),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("open_page_persistent_stale_cookie", open_page,
+                /*expiration=*/base::Time::Now() + base::Days(1000),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("open_page_session_cookie", open_page,
+                        /*expiration=*/base::Time(),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("open_page_session_stale_cookie", open_page,
+                /*expiration=*/base::Time(),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("other_page_persistent_cookie", other_page,
+                        /*expiration=*/base::Time::Now() + base::Days(1000),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("other_page_persistent_stale_cookie", other_page,
+                /*expiration=*/base::Time::Now() + base::Days(1000),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("other_page_session_cookie", other_page,
+                        /*expiration=*/base::Time(),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("other_page_session_stale_cookie", other_page,
+                /*expiration=*/base::Time(),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+  ASSERT_EQ(1u, active_browser_list_->size());
+  ASSERT_EQ(open_page,
+            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  // No cookies should have been cleared except for the stale session cookie on
+  // a page that wasn't restored when kDeleteStaleSessionCookiesOnStartup is on.
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_session_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_session_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_session_cookie"));
+  EXPECT_EQ(HasCookie(new_browser, "other_page_session_stale_cookie"),
+            !ShouldDeleteStaleSessionCookiesOnStartup());
+}
+
+class SavedTabGroupSessionRestoreTest
+    : public SessionRestoreTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SavedTabGroupSessionRestoreTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupsSaveV2,
+           tab_groups::kTabGroupSyncServiceDesktopMigration},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupsSaveV2},
+          {tab_groups::kTabGroupSyncServiceDesktopMigration});
+    }
+  }
+  SavedTabGroupSessionRestoreTest(const SavedTabGroupSessionRestoreTest&) =
+      delete;
+  SavedTabGroupSessionRestoreTest& operator=(
+      const SavedTabGroupSessionRestoreTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test simulates migrating from V1 of SavedTabGroups to V2. A user may
+// have unsaved groups at the time they update the browser. We must ensure all
+// groups are saved by default correctly. See crbug.com/344016224.
+IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+                       UnsavedGroupDefaultSavedAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add the tab to a group. We use the restore version of the AddToGroup
+  // function to prevent the group from being saved by default. The group id sis
+  // respun when restoring to prevent collisions. Just create an arbitrary one
+  // for now.
+  browser()->tab_strip_model()->AddToGroupForRestore(
+      {0}, tab_groups::TabGroupId::GenerateNew());
+
+  // Expect no groups have been saved at this point.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  service->SetIsInitializedForTesting(true);
+  EXPECT_EQ(0u, service->GetAllGroups().size());
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(2, tabs);
+
+  // Expect the unsaved group has been saved at this point.
+  EXPECT_EQ(1u, service->GetAllGroups().size());
+}
+
+// This test simulates creating a default group (using the default group color
+// and no title). Ensure on restart there was no duplicated groups and that the
+// restored group is connected to the saved group.
+IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+                       NoDuplicatesOfDefaultSavedGroupAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Expect no groups have been saved at this point.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  service->SetIsInitializedForTesting(true);
+  EXPECT_EQ(0u, service->GetAllGroups().size());
+
+  // Add the tab to a new group.
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Expect the newly created to be saved at this point.
+  EXPECT_EQ(1u, service->GetAllGroups().size());
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(2, tabs);
+
+  // Expect the restored browser to still have 1 saved group i.e. no duplicates.
+  EXPECT_EQ(1u, service->GetAllGroups().size());
+}
+
+// This test simulates creating multiple groups with different visual data
+// and ensuring on restart they are restored with the same information.
+IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
+                       MultipleSavedGroupsAfterBrowserRestart) {
+  // Add a second tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Add a third tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Expect no groups have been saved at this point.
+  tab_groups::TabGroupSyncService* service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          browser()->profile());
+  ASSERT_TRUE(service);
+  service->SetIsInitializedForTesting(true);
+
+  // Add the tab to a new groups.
+  auto group1 = browser()->tab_strip_model()->AddToNewGroup({0});
+  base::Uuid group1_saved_guid = service->GetGroup(group1)->saved_guid();
+
+  auto group2 = browser()->tab_strip_model()->AddToNewGroup({1});
+  base::Uuid group2_saved_guid = service->GetGroup(group2)->saved_guid();
+
+  // Expect the newly created to be saved at this point.
+  EXPECT_EQ(2u, service->GetAllGroups().size());
+
+  // Update the visual data of the new groups.
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group1)
+      ->SetVisualData(tab_groups::TabGroupVisualData(
+                          u"Group1", tab_groups::TabGroupColorId::kGrey),
+                      true);
+
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group2)
+      ->SetVisualData(tab_groups::TabGroupVisualData(
+                          u"Group2", tab_groups::TabGroupColorId::kBlue),
+                      true);
+
+  // Close the browser and restore the last session
+  Browser* restored = QuitBrowserAndRestore(browser());
+  TabStripModel* tab_strip_model = restored->tab_strip_model();
+  const int tabs = tab_strip_model->count();
+  ASSERT_EQ(3, tabs);
+
+  // Expect the restored browser to still has 2 saved group.
+  EXPECT_EQ(2u, service->GetAllGroups().size());
+
+  std::optional<tab_groups::SavedTabGroup> saved_group1 =
+      service->GetGroup(group1_saved_guid);
+  ASSERT_TRUE(saved_group1);
+  ASSERT_TRUE(saved_group1->local_group_id().has_value());
+  auto* local_group1 = tab_strip_model->group_model()->GetTabGroup(
+      saved_group1->local_group_id().value());
+  EXPECT_EQ(u"Group1", local_group1->visual_data()->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGrey,
+            local_group1->visual_data()->color());
+
+  std::optional<tab_groups::SavedTabGroup> saved_group2 =
+      service->GetGroup(group2_saved_guid);
+  ASSERT_TRUE(saved_group2);
+  ASSERT_TRUE(saved_group2->local_group_id().has_value());
+  auto* local_group2 = tab_strip_model->group_model()->GetTabGroup(
+      saved_group2->local_group_id().value());
+  EXPECT_EQ(u"Group2", local_group2->visual_data()->title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue,
+            local_group2->visual_data()->color());
+}
+
+INSTANTIATE_TEST_SUITE_P(SessionRestore,
+                         SavedTabGroupSessionRestoreTest,
+                         testing::Bool());

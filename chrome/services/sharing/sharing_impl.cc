@@ -34,7 +34,7 @@ void SharingImpl::Connect(
     NearbyDependenciesPtr deps,
     mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
     mojo::PendingReceiver<NearbyPresenceMojom> presence_receiver,
-    mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+    mojo::PendingReceiver<::sharing::mojom::NearbySharingDecoder>
         decoder_receiver,
     mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
         quick_start_decoder_receiver) {
@@ -46,15 +46,16 @@ void SharingImpl::Connect(
 
   InitializeNearbySharedRemotes(std::move(deps));
 
-  nearby_connections_ = std::make_unique<NearbyConnections>(
-      std::move(connections_receiver), min_log_severity,
-      base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
-                     MojoDependencyName::kNearbyConnections));
-
   nearby_presence_ = std::make_unique<NearbyPresence>(
       std::move(presence_receiver),
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kNearbyPresence));
+
+  nearby_connections_ = std::make_unique<NearbyConnections>(
+      std::move(connections_receiver),
+      nearby_presence_->GetLocalDeviceProvider(), min_log_severity,
+      base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
+                     MojoDependencyName::kNearbyConnections));
 
   nearby_decoder_ = std::make_unique<NearbySharingDecoder>(
       std::move(decoder_receiver),
@@ -184,6 +185,37 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
                        weak_ptr_factory_.GetWeakPtr(),
                        MojoDependencyName::kTcpSocketFactory),
         base::SequencedTaskRunner::GetCurrentDefault());
+
+    if (deps->wifilan_dependencies->mdns_manager) {
+      nearby_shared_remotes_->mdns_manager.Bind(
+          std::move(deps->wifilan_dependencies->mdns_manager), io_task_runner_);
+      nearby_shared_remotes_->mdns_manager.set_disconnect_handler(
+          base::BindOnce(&SharingImpl::OnDisconnect,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         MojoDependencyName::kMdnsManager),
+          base::SequencedTaskRunner::GetCurrentDefault());
+    }
+  }
+
+  if (deps->wifidirect_dependencies) {
+    nearby_shared_remotes_->wifi_direct_firewall_hole_factory.Bind(
+        std::move(deps->wifidirect_dependencies->firewall_hole_factory),
+        io_task_runner_);
+    nearby_shared_remotes_->wifi_direct_firewall_hole_factory
+        .set_disconnect_handler(
+            base::BindOnce(&SharingImpl::OnDisconnect,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           MojoDependencyName::kFirewallHoleFactory),
+            base::SequencedTaskRunner::GetCurrentDefault());
+
+    nearby_shared_remotes_->wifi_direct_manager.Bind(
+        std::move(deps->wifidirect_dependencies->wifi_direct_manager),
+        io_task_runner_);
+    nearby_shared_remotes_->wifi_direct_manager.set_disconnect_handler(
+        base::BindOnce(&SharingImpl::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kWifiDirectManager),
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 }
 
@@ -216,6 +248,10 @@ std::string SharingImpl::GetMojoDependencyName(
       return "Quick Start Decoder";
     case MojoDependencyName::kNearbyPresenceCredentialStorage:
       return "Nearby Presence Credential Storage";
+    case MojoDependencyName::kWifiDirectManager:
+      return "WiFi Direct Manager";
+    case MojoDependencyName::kMdnsManager:
+      return "mDNS Manager";
   }
 }
 

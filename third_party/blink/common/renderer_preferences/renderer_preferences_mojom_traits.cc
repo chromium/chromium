@@ -28,6 +28,11 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
     return false;
   out->use_subpixel_positioning = data.use_subpixel_positioning();
 
+#if BUILDFLAG(IS_WIN)
+  out->text_contrast = data.text_contrast();
+  out->text_gamma = data.text_gamma();
+#endif  // BUILDFLAG(IS_WIN)
+
   out->focus_ring_color = data.focus_ring_color();
   out->active_selection_bg_color = data.active_selection_bg_color();
   out->active_selection_fg_color = data.active_selection_fg_color();
@@ -109,6 +114,9 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
           &out->explicitly_allowed_network_ports)) {
     return false;
   }
+
+  out->prefixed_fullscreen_video_api_availability =
+      data.prefixed_fullscreen_video_api_availability();
 
   return true;
 }

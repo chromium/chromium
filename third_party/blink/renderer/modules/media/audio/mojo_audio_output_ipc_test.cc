@@ -95,7 +95,7 @@ class TestStreamProvider
   }
 
  private:
-  raw_ptr<media::mojom::blink::AudioOutputStream, ExperimentalRenderer> stream_;
+  raw_ptr<media::mojom::blink::AudioOutputStream> stream_;
   mojo::Remote<media::mojom::blink::AudioOutputStreamProviderClient>
       provider_client_;
   std::optional<mojo::Receiver<media::mojom::blink::AudioOutputStream>>

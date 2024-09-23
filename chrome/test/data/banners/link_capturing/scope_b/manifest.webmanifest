@@ -1,0 +1,13 @@
+{
+  "name": "WebAppInstallInfo App Name",
+  "icons": [
+    {
+      "src": "/banners/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/banners/link_capturing/scope_b",
+  "start_url": "destination.html",
+  "display": "standalone"
+}

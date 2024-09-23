@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/test/test_gles2_interface.h"
 
 #include "base/containers/contains.h"
@@ -113,7 +118,7 @@ void TestGLES2Interface::BindTexture(GLenum target, GLuint texture) {
 
 void TestGLES2Interface::GetIntegerv(GLenum pname, GLint* params) {
   if (pname == GL_MAX_TEXTURE_SIZE)
-    *params = test_capabilities_.max_texture_size;
+    *params = test_gl_capabilities_.max_texture_size;
   else if (pname == GL_ACTIVE_TEXTURE)
     *params = GL_TEXTURE0;
   else if (pname == GL_UNPACK_ALIGNMENT)
@@ -176,7 +181,7 @@ void TestGLES2Interface::GetShaderPrecisionFormat(GLenum shadertype,
       *precision = 16;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -375,19 +380,6 @@ void TestGLES2Interface::GetQueryObjectuivEXT(GLuint id,
   }
 }
 
-void TestGLES2Interface::ProduceTextureDirectCHROMIUM(GLuint texture,
-                                                      GLbyte* mailbox) {
-  gpu::Mailbox gpu_mailbox = gpu::Mailbox::GenerateLegacyMailboxForTesting();
-  memcpy(mailbox, gpu_mailbox.name, sizeof(gpu_mailbox.name));
-}
-
-GLuint TestGLES2Interface::CreateAndConsumeTextureCHROMIUM(
-    const GLbyte* mailbox) {
-  GLuint texture_id;
-  GenTextures(1, &texture_id);
-  return texture_id;
-}
-
 GLuint TestGLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* mailbox) {
   GLuint texture_id;
@@ -441,14 +433,6 @@ void TestGLES2Interface::ReadPixels(GLint x,
   memset(pixels, 0, pixels_size);
 }
 
-void TestGLES2Interface::set_support_texture_format_bgra8888(bool support) {
-  test_capabilities_.texture_format_bgra8888 = support;
-}
-
-void TestGLES2Interface::set_support_sync_query(bool support) {
-  test_capabilities_.sync_query = support;
-}
-
 void TestGLES2Interface::set_support_texture_half_float_linear(bool support) {
   test_capabilities_.texture_half_float_linear = support;
 }
@@ -457,19 +441,12 @@ void TestGLES2Interface::set_support_texture_norm16(bool support) {
   test_capabilities_.texture_norm16 = support;
 }
 
-void TestGLES2Interface::set_msaa_is_slow(bool msaa_is_slow) {
-  test_capabilities_.msaa_is_slow = msaa_is_slow;
-}
-
 void TestGLES2Interface::set_gpu_rasterization(bool gpu_rasterization) {
   test_capabilities_.gpu_rasterization = gpu_rasterization;
 }
 
-void TestGLES2Interface::set_avoid_stencil_buffers(bool avoid_stencil_buffers) {
-  test_capabilities_.avoid_stencil_buffers = avoid_stencil_buffers;
-}
-
 void TestGLES2Interface::set_max_texture_size(int size) {
+  test_gl_capabilities_.max_texture_size = size;
   test_capabilities_.max_texture_size = size;
 }
 

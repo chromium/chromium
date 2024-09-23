@@ -1,0 +1,13 @@
+#anchor {
+    anchor-name: --fallback;
+}
+
+#anchored {
+    position: absolute;
+    position-try-fallbacks: --fallback;
+}
+
+@position-try --fallback {
+    bottom: anchor(--anchor bottom);
+    right: anchor(--anchor right);
+}

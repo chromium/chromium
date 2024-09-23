@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 """Tests for model.py."""
 
-# TODO(crbug.com/1148168): Set up these tests to run on the tryjobs.
+# TODO(crbug.com/40156926): Set up these tests to run on the tryjobs.
 
 import sync.model as model
 import unittest
@@ -35,7 +35,7 @@ class ModelTest(unittest.TestCase):
   def assert_model_raises(self, xml):
     raised = False
     try:
-      model.Model(xml)
+      model.Model(xml, 'chrome')
     except ValueError:
       raised = True
     self.assertTrue(raised)
@@ -84,7 +84,7 @@ class ModelTest(unittest.TestCase):
           </project>
           </structured-metrics>"""
 
-    data = model.Model(xml)
+    data = model.Model(xml, 'chrome')
 
     self.assertEqual(len(data.projects), 2)
     project_one, project_two = data.projects

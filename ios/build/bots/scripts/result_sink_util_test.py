@@ -6,14 +6,28 @@
 import base64
 import json
 import mock
+import os
 import requests
+import sys
 import unittest
 
 import result_sink_util
+import test_runner
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
+import exception_recorder
+
+from google.protobuf import json_format
+from google.protobuf import any_pb2
 
 
 SINK_ADDRESS = 'sink/address'
 SINK_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % SINK_ADDRESS
+UPATE_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' % SINK_ADDRESS
 AUTH_TOKEN = 'some_sink_token'
 LUCI_CONTEXT_FILE_DATA = """
 {
@@ -85,6 +99,7 @@ class UnitTest(unittest.TestCase):
         },
     }
     self.assertEqual(test_result, expected)
+
 
   def test_parsing_crash_message(self):
     """Tests parsing crash message from test log and setting it as the
@@ -235,6 +250,74 @@ class UnitTest(unittest.TestCase):
         url=SINK_POST_URL,
         headers=HEADERS,
         data=json.dumps({'testResults': [test_result]}))
+
+  @mock.patch.object(requests.Session, 'post')
+  @mock.patch('%s.open' % 'result_sink_util',
+              mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
+  @mock.patch('os.environ.get', return_value='filename')
+  @mock.patch('exception_recorder._record_time')
+  def test_post_extended_properties(self, _, mock_open_file, mock_session_post):
+    test_exception = test_runner.XcodeVersionNotFoundError("15abcd")
+    exception_recorder.register(test_exception)
+
+    count = measures.count('test_count')
+    count.record()
+    count.record()
+
+    inv_data = json.dumps(
+        {
+            "invocation": {
+                "extended_properties": {
+                    "exception_occurrences": {
+                        "@type": "type.googleapis.com/build.util.lib.proto.ExceptionOccurrences",
+                        "datapoints": [
+                            {
+                                "name": "test_runner.XcodeVersionNotFoundError",
+                                "stacktrace": [
+                                    f"test_runner.XcodeVersionNotFoundError: Xcode version not found: 15abcd\n"
+                                ]
+                            }
+                        ]
+                    },
+                    "test_script_metrics": {
+                        "@type": "type.googleapis.com/build.util.lib.proto.TestScriptMetrics",
+                        "metrics": [
+                            {
+                                "name": "test_count",
+                                "value": 2.0
+                            }
+                        ]
+                    }
+                }
+            },
+            "update_mask": {
+                "paths": [
+                    "extended_properties.exception_occurrences",
+                    "extended_properties.test_script_metrics"
+                ]
+            }
+        },
+        sort_keys=True)
+
+    client = result_sink_util.ResultSinkClient()
+    client.post_extended_properties()
+    mock_session_post.assert_called_with(
+        url=UPATE_POST_URL, headers=HEADERS, data=inv_data)
+
+  @mock.patch('%s.open' % 'result_sink_util',
+              mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
+  @mock.patch('os.environ.get', return_value='filename')
+  @mock.patch(
+      'result_sink_util.ResultSinkClient._post_extended_properties',
+      side_effect=Exception())
+  def test_post_extended_properties_retries(self, mock_post_ext_props, _):
+    count = measures.count('test_count')
+    count.record()
+
+    client = result_sink_util.ResultSinkClient()
+    client.post_extended_properties()
+
+    self.assertEqual(mock_post_ext_props.call_count, 2)
 
   @mock.patch.object(requests.Session, 'close')
   @mock.patch.object(requests.Session, 'post')

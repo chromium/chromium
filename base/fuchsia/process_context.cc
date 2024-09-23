@@ -31,7 +31,7 @@ fidl::ClientEnd<fuchsia_io::Directory>* GetIncomingServiceDirectory() {
 
 }  // namespace
 
-// TODO(crbug.com/1416555): This need to either be changed or removed when
+// TODO(crbug.com/40256913): This need to either be changed or removed when
 // TestComponentContextForProcess is migrated to Natural bindings.
 sys::ComponentContext* ComponentContextForProcess() {
   return GetComponentContextPtr()->get();
@@ -45,7 +45,7 @@ BorrowIncomingServiceDirectoryForProcess() {
 // Replaces the component context singleton value with the passed context. The
 // incoming service directory client end is also re-mapped to the new context's
 // outgoing directory.
-// TODO(crbug.com/1416555): Rework this to support the natural binding backed
+// TODO(crbug.com/40256913): Rework this to support the natural binding backed
 // TestComponentContextForProcess.
 std::unique_ptr<sys::ComponentContext> ReplaceComponentContextForProcessForTest(
     std::unique_ptr<sys::ComponentContext> context) {

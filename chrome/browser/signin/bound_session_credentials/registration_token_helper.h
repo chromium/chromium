@@ -7,12 +7,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -24,93 +25,95 @@ class Time;
 
 namespace unexportable_keys {
 class UnexportableKeyService;
-}
+class UnexportableKeyLoader;
+}  // namespace unexportable_keys
 
-// Helper class for generating a new binding key and a registration token to
-// bind the key on the server.
+// Helper class for generating registration tokens to bind the key on the
+// server.
 //
-// To use this class, simply create its instance and invoke `Start()` method.
-// The helper will return the result asynchronously through `callback`.
+// A single instance can be used to generate multiple registration tokens for
+// the same binding key. To use different binding keys, create multiple class
+// instances.
 //
-// This class is intended for one time use and must be destroyed after
-// `callback` is called.
+// TODO(alexilin): support a timeout aborting the token generation if it takes
+// too long.
 class RegistrationTokenHelper {
  public:
+  // Initialization parameter indicating which binding key should be used for
+  // registration token generation.
+  using KeyInitParam = std::variant<
+      // A list of acceptable signature algorithms to generate a new binding
+      // key.
+      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>,
+      // Wrapped binding key to reuse an existing binding key.
+      std::vector<uint8_t>>;
+
+  // The result of the registration token generation.
   struct Result {
+    unexportable_keys::UnexportableKeyId binding_key_id;
+    std::vector<uint8_t> wrapped_binding_key;
+    std::string registration_token;
+
     Result(unexportable_keys::UnexportableKeyId binding_key_id,
            std::vector<uint8_t> wrapped_binding_key,
            std::string registration_token);
-    ~Result();
 
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&& other);
     Result& operator=(Result&& other);
 
-    unexportable_keys::UnexportableKeyId binding_key_id;
-    std::vector<uint8_t> wrapped_binding_key;
-    std::string registration_token;
+    ~Result();
   };
 
-  // Invokes `callback` with a `Result` containing a new binding key ID and a
-  // corresponding registration token on success. Otherwise, invokes `callback`
-  // with `std::nullopt`.
   // `unexportable_key_service` must outlive `this`.
-  // TODO(alexilin): support timeout.
-  static std::unique_ptr<RegistrationTokenHelper> CreateForSessionBinding(
+  RegistrationTokenHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
-      base::StringPiece challenge,
-      const GURL& registration_url,
-      base::OnceCallback<void(std::optional<Result>)> callback);
-  static std::unique_ptr<RegistrationTokenHelper> CreateForTokenBinding(
-      unexportable_keys::UnexportableKeyService& unexportable_key_service,
-      base::StringPiece client_id,
-      base::StringPiece auth_code,
-      const GURL& registration_url,
-      base::OnceCallback<void(std::optional<Result>)> callback);
+      KeyInitParam key_init_param);
 
   RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
   RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
 
   virtual ~RegistrationTokenHelper();
 
+  // Invokes `callback` with a `Result` containing a new binding key ID and a
+  // corresponding registration token on success. Otherwise, invokes `callback`
+  // with `std::nullopt`.
   // Virtual for testing.
-  virtual void Start();
+  virtual void GenerateForSessionBinding(
+      std::string_view challenge,
+      const GURL& registration_url,
+      base::OnceCallback<void(std::optional<Result>)> callback);
+  virtual void GenerateForTokenBinding(
+      std::string_view client_id,
+      std::string_view auth_code,
+      const GURL& registration_url,
+      base::OnceCallback<void(std::optional<Result>)> callback);
 
- protected:
+ private:
   using HeaderAndPayloadGenerator =
       base::RepeatingCallback<std::optional<std::string>(
           crypto::SignatureVerifier::SignatureAlgorithm,
           base::span<const uint8_t>,
           base::Time)>;
 
-  // The clients should use static factory methods `CreateFor*` instead.
-  // Protected for testing.
-  explicit RegistrationTokenHelper(
-      unexportable_keys::UnexportableKeyService& unexportable_key_service,
+  void CreateKeyLoaderIfNeeded();
+  void SignHeaderAndPayload(
       HeaderAndPayloadGenerator header_and_payload_generator,
-      base::OnceCallback<void(std::optional<Result>)> callback);
-
- private:
-  // Callback for `GenerateSigningKeySlowlyAsync()`.
-  void OnKeyGenerated(
+      base::OnceCallback<void(std::optional<Result>)> callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          result);
-
-  // Callback for `SignSlowlyAsync()`.
-  void OnDataSigned(
-      crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-      unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result);
+          binding_key);
+  void CreateRegistrationToken(
+      std::string_view header_and_payload,
+      unexportable_keys::UnexportableKeyId binding_key,
+      base::OnceCallback<void(std::optional<Result>)> callback,
+      unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature);
 
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
-  HeaderAndPayloadGenerator header_and_payload_generator_;
-  base::OnceCallback<void(std::optional<Result>)> callback_;
+  const KeyInitParam key_init_param_;
 
-  bool started_ = false;
-  unexportable_keys::UnexportableKeyId key_id_;
-  std::string header_and_payload_;
-
+  std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
   base::WeakPtrFactory<RegistrationTokenHelper> weak_ptr_factory_{this};
 };
 

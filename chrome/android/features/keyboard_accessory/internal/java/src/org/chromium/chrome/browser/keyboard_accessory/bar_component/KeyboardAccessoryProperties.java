@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -46,6 +47,9 @@ class KeyboardAccessoryProperties {
             new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
     static final WritableObjectPropertyKey<Callback<Integer>> OBFUSCATED_CHILD_AT_CALLBACK =
             new WritableObjectPropertyKey<>("obfuscated_child_at_callback");
+    static final PropertyModel.WritableObjectPropertyKey<Callback<Boolean>>
+            ON_TOUCH_EVENT_CALLBACK =
+                    new PropertyModel.WritableObjectPropertyKey<>("on_touch_event_handler");
     static final WritableBooleanPropertyKey SHOW_SWIPING_IPH =
             new WritableBooleanPropertyKey("show_swiping_iph");
     static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
@@ -63,6 +67,7 @@ class KeyboardAccessoryProperties {
                         BOTTOM_OFFSET_PX,
                         SHEET_OPENER_ITEM,
                         OBFUSCATED_CHILD_AT_CALLBACK,
+                        ON_TOUCH_EVENT_CALLBACK,
                         SHOW_SWIPING_IPH,
                         HAS_SUGGESTIONS,
                         ANIMATION_LISTENER)
@@ -182,8 +187,8 @@ class KeyboardAccessoryProperties {
             mFeature = feature;
         }
 
-        void maybeEmitEventForIPH() {
-            if (mFeature != null) KeyboardAccessoryIPHUtils.emitFillingEvent(mFeature);
+        void maybeEmitEventForIPH(Tracker tracker) {
+            if (mFeature != null) KeyboardAccessoryIPHUtils.emitFillingEvent(tracker, mFeature);
         }
 
         @Nullable

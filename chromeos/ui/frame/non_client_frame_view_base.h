@@ -16,9 +16,16 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
+namespace display {
+class DisplayObserver;
+class ScopedDisplayObserver;
+enum class TabletState;
+}  // namespace display
+
 namespace chromeos {
 
-class NonClientFrameViewBase : public views::NonClientFrameView {
+class NonClientFrameViewBase : public views::NonClientFrameView,
+                               public display::DisplayObserver {
   METADATA_HEADER(NonClientFrameViewBase, views::NonClientFrameView)
 
  public:
@@ -38,11 +45,15 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Get the view of the header.
   HeaderView* GetHeaderView();
@@ -75,6 +86,8 @@ class NonClientFrameViewBase : public views::NonClientFrameView {
       frame_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&NonClientFrameViewBase::PaintAsActiveChanged,
                               base::Unretained(this)));
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 // View which takes up the entire widget and contains the HeaderView. HeaderView

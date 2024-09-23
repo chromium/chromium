@@ -101,7 +101,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
 
  private:
-  // TODO(crbug.com/1335251): merge |use_vbr| and |bitrate| into a single
+  // TODO(crbug.com/40228467): merge |use_vbr| and |bitrate| into a single
   // Bitrate-typed field.
   VideoEncoderTestEnvironment(
       TestType test_type,

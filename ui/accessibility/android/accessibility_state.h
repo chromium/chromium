@@ -75,6 +75,7 @@ class AccessibilityState {
   // (available in the shadow DOM), false if it should return bullets. Default
   // false.
   static bool ShouldRespectDisplayedPasswordText();
+  static void ForceRespectDisplayedPasswordTextForTesting();
 
   // Returns true if this instance should expose password text to AT (e.g. as a
   // user is typing in a field), false if it should return bullets. Default

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Impl for SurveyClient interface. */
-// TODO(crbug/1400731): Add metrics and refine the logging in this class.
+// TODO(crbug.com/40250401): Add metrics and refine the logging in this class.
 class SurveyClientImpl implements SurveyClient {
     private static final String TAG = "SurveyClient";
 
@@ -38,13 +39,13 @@ class SurveyClientImpl implements SurveyClient {
      */
     private static Boolean sForceShowSurveyForTesting;
 
-    private final SurveyConfig mConfig;
-    private final SurveyUiDelegate mUiDelegate;
-    private final SurveyController mController;
-    private final SurveyThrottler mThrottler;
-    private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
-    private final Map<String, String> mAggregatedSurveyPsd;
-    private final Profile mProfile;
+    private final @NonNull SurveyConfig mConfig;
+    private final @NonNull SurveyUiDelegate mUiDelegate;
+    private final @NonNull SurveyController mController;
+    private final @NonNull SurveyThrottler mThrottler;
+    private final @NonNull ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
+    private final @NonNull Map<String, String> mAggregatedSurveyPsd;
+    private final @NonNull Profile mProfile;
 
     private WeakReference<Activity> mActivityRef;
     private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -53,11 +54,11 @@ class SurveyClientImpl implements SurveyClient {
     private boolean mIsDestroyed;
 
     SurveyClientImpl(
-            SurveyConfig config,
-            SurveyUiDelegate uiDelegate,
-            SurveyController controller,
-            ObservableSupplier<Boolean> crashUploadPermissionSupplier,
-            Profile profile) {
+            @NonNull SurveyConfig config,
+            @NonNull SurveyUiDelegate uiDelegate,
+            @NonNull SurveyController controller,
+            @NonNull ObservableSupplier<Boolean> crashUploadPermissionSupplier,
+            @NonNull Profile profile) {
         mConfig = config;
         mUiDelegate = uiDelegate;
         mController = controller;
@@ -171,7 +172,7 @@ class SurveyClientImpl implements SurveyClient {
         mOnCrashUploadPermissionChangeCallback =
                 permitted -> {
                     if (!permitted) {
-                        // TODO(crbug/1482447): Dismiss the on going survey if possible.
+                        // TODO(crbug.com/40281825): Dismiss the on going survey if possible.
                         mUiDelegate.dismiss();
                     }
                 };
@@ -200,7 +201,7 @@ class SurveyClientImpl implements SurveyClient {
         mController.showSurveyIfAvailable(
                 mActivityRef.get(),
                 mConfig.mTriggerId,
-                0,
+                R.drawable.chrome_sync_logo,
                 mLifecycleDispatcher,
                 mAggregatedSurveyPsd);
         if (mLifecycleDispatcher != null && mLifecycleObserver != null) {

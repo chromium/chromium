@@ -19,7 +19,7 @@
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
@@ -55,7 +55,7 @@ base::FilePath AppIDToPath(const std::string& app_id) {
 #if BUILDFLAG(IS_WIN)
 std::vector<std::wstring> UsageStatsRegKeyPaths() {
   std::vector<std::wstring> key_paths = {CLIENT_STATE_KEY};
-  if (IsSystemInstall(GetTestScope())) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
     key_paths.push_back(CLIENT_STATE_MEDIUM_KEY);
   }
   return key_paths;
@@ -67,9 +67,10 @@ void ClearAppUsageStats(const std::string& app_id) {
   ASSERT_TRUE(base::DeletePathRecursively(AppIDToPath(app_id)));
 #elif BUILDFLAG(IS_WIN)
   for (const auto& key_path : UsageStatsRegKeyPaths()) {
-    LONG outcome = base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
-                                     key_path.c_str(), Wow6432(DELETE))
-                       .DeleteKey(base::SysUTF8ToWide(app_id).c_str());
+    LONG outcome =
+        base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                          key_path.c_str(), Wow6432(DELETE))
+            .DeleteKey(base::SysUTF8ToWide(app_id).c_str());
     ASSERT_TRUE(outcome == ERROR_SUCCESS || outcome == ERROR_FILE_NOT_FOUND ||
                 outcome == ERROR_INVALID_HANDLE);
   }
@@ -87,7 +88,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
     cleanups_.emplace_back(base::BindOnce(&ClearAppUsageStats, app_id));
 
     base::win::RegKey key =
-        base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
+        base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
                           key_path.c_str(), Wow6432(KEY_WRITE));
     ASSERT_EQ(
         key.CreateKey(base::SysUTF8ToWide(app_id).c_str(), Wow6432(KEY_WRITE)),
@@ -116,7 +117,10 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_FALSE(
+      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
+  ASSERT_FALSE(
+      AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -125,7 +129,10 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"},
+                                          GetUpdaterScopeForTesting()));
+    ASSERT_TRUE(
+        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
   }
 }
 
@@ -135,22 +142,27 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     ClearAppUsageStats("app2");
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
-    ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"},
+                                           GetUpdaterScopeForTesting()));
+    ASSERT_FALSE(
+        AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1", "app2"}));
   }
 }
 
 TEST_F(UpdateUsageStatsTaskTest,
        SystemInstallClientStateMediumKeyShadowClientStateKey) {
-  if (!IsSystemInstall(GetTestScope())) {
+  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", false);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", true);
-  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1"}, GetTestScope()));
+  ASSERT_FALSE(
+      OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
 
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
-  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetTestScope()));
+  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetUpdaterScopeForTesting()));
+  ASSERT_TRUE(AreRawUsageStatsEnabled(GetUpdaterScopeForTesting(), {"app1"}));
 }
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Mac Google-branded builds may pick up Chrome or other Google software
@@ -159,22 +171,25 @@ TEST_F(UpdateUsageStatsTaskTest,
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
-  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_FALSE(
+      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
 }
 
-// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux.
+// TODO(crbug.com/40821596): Enable tests once the feature is implemented.
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);
   SetAppUsageStats("app2", false);
-  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_TRUE(
+      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
   SetAppUsageStats("app1", false);
   SetAppUsageStats("app2", false);
-  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_FALSE(
+      OtherAppUsageStatsAllowed({"app1", "app2"}, GetUpdaterScopeForTesting()));
 }
 #endif
 

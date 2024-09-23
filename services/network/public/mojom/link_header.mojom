@@ -45,7 +45,7 @@ struct LinkHeader {
   // The resolved `href` attribute.
   url.mojom.Url href;
   // The parsed value of `rel` attribute.
-  // TODO(crbug.com/1182567): Change the type when multiple values are need to
+  // TODO(crbug.com/40170852): Change the type when multiple values are need to
   // be supported. `rel` can contain multiple values but rel=preload is the only
   // supported value for now.
   LinkRelAttribute rel;

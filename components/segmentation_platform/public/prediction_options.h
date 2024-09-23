@@ -11,7 +11,7 @@ namespace segmentation_platform {
 struct PredictionOptions {
   PredictionOptions() = default;
   explicit PredictionOptions(bool on_demand_execution,
-                             bool cached_execution_fallback_on_failure = false,
+                             bool can_update_cache_for_future_requests = false,
                              bool fallback_allowed = false);
   ~PredictionOptions() = default;
 

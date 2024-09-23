@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/base_export.h"
-#include "base/template_util.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "third_party/abseil-cpp/absl/meta/type_traits.h"
 

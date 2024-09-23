@@ -21,9 +21,9 @@ class CORE_EXPORT TableLayoutAlgorithm
  public:
   explicit TableLayoutAlgorithm(const LayoutAlgorithmParams& params)
       : LayoutAlgorithm(params) {}
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
   static LayoutUnit ComputeTableInlineSize(const TableNode& node,
                                            const ConstraintSpace& space,

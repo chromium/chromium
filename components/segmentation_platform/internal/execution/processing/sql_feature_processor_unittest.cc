@@ -60,7 +60,7 @@ class SqlFeatureProcessorTest : public testing::Test {
                                               &input_delegate_holder_,
                                               ukm_database_.get());
 
-    EXPECT_CALL(*ukm_database_, RunReadonlyQueries)
+    EXPECT_CALL(*ukm_database_, RunReadOnlyQueries)
         .WillOnce(testing::Invoke(
             [&processed_queries, &result](
                 const base::flat_map<SqlFeatureProcessor::FeatureIndex,

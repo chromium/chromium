@@ -86,42 +86,42 @@ bool EquivalenceSource::Initialize(BufferSource* source) {
          patch::ParseBuffer(source, &copy_count_);
 }
 
-absl::optional<Equivalence> EquivalenceSource::GetNext() {
+std::optional<Equivalence> EquivalenceSource::GetNext() {
   if (src_skip_.empty() || dst_skip_.empty() || copy_count_.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   Equivalence equivalence = {};
 
   uint32_t length = 0;
   if (!patch::ParseVarUInt<uint32_t>(&copy_count_, &length))
-    return absl::nullopt;
+    return std::nullopt;
   equivalence.length = base::strict_cast<offset_t>(length);
 
   int32_t src_offset_diff = 0;  // Intentionally signed.
   if (!patch::ParseVarInt<int32_t>(&src_skip_, &src_offset_diff))
-    return absl::nullopt;
+    return std::nullopt;
   base::CheckedNumeric<offset_t> src_offset =
       previous_src_offset_ + src_offset_diff;
   if (!src_offset.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   equivalence.src_offset = src_offset.ValueOrDie();
   previous_src_offset_ = src_offset + equivalence.length;
   if (!previous_src_offset_.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   uint32_t dst_offset_diff = 0;  // Intentionally unsigned.
   if (!patch::ParseVarUInt<uint32_t>(&dst_skip_, &dst_offset_diff))
-    return absl::nullopt;
+    return std::nullopt;
   base::CheckedNumeric<offset_t> dst_offset =
       previous_dst_offset_ + dst_offset_diff;
   if (!dst_offset.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   equivalence.dst_offset = dst_offset.ValueOrDie();
   previous_dst_offset_ = equivalence.dst_offset + equivalence.length;
   if (!previous_dst_offset_.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Caveat: |equivalence| is assumed to be safe only once the
   // ValidateEquivalencesAndExtraData() method has returned true. Prior to this
@@ -139,10 +139,10 @@ bool ExtraDataSource::Initialize(BufferSource* source) {
   return patch::ParseBuffer(source, &extra_data_);
 }
 
-absl::optional<ConstBufferView> ExtraDataSource::GetNext(offset_t size) {
+std::optional<ConstBufferView> ExtraDataSource::GetNext(offset_t size) {
   ConstBufferView buffer;
   if (!extra_data_.GetRegion(size, &buffer))
-    return absl::nullopt;
+    return std::nullopt;
   // |buffer| is assumed to always be safe/valid.
   return buffer;
 }
@@ -158,32 +158,32 @@ bool RawDeltaSource::Initialize(BufferSource* source) {
          patch::ParseBuffer(source, &raw_delta_diff_);
 }
 
-absl::optional<RawDeltaUnit> RawDeltaSource::GetNext() {
+std::optional<RawDeltaUnit> RawDeltaSource::GetNext() {
   if (raw_delta_skip_.empty() || raw_delta_diff_.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   RawDeltaUnit raw_delta = {};
   uint32_t copy_offset_diff = 0;
   if (!patch::ParseVarUInt<uint32_t>(&raw_delta_skip_, &copy_offset_diff))
-    return absl::nullopt;
+    return std::nullopt;
   base::CheckedNumeric<offset_t> copy_offset =
       copy_offset_diff + copy_offset_compensation_;
   if (!copy_offset.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   raw_delta.copy_offset = copy_offset.ValueOrDie();
 
   if (!raw_delta_diff_.GetValue<int8_t>(&raw_delta.diff))
-    return absl::nullopt;
+    return std::nullopt;
 
   // A 0 value for a delta.diff is considered invalid since it has no meaning.
   if (!raw_delta.diff)
-    return absl::nullopt;
+    return std::nullopt;
 
   // We keep track of the compensation needed for next offset, taking into
   // account delta encoding and bias of -1.
   copy_offset_compensation_ = copy_offset + 1;
   if (!copy_offset_compensation_.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   // |raw_delta| is assumed to always be safe/valid.
   return raw_delta;
 }
@@ -199,12 +199,12 @@ bool ReferenceDeltaSource::Initialize(BufferSource* source) {
   return patch::ParseBuffer(source, &source_);
 }
 
-absl::optional<int32_t> ReferenceDeltaSource::GetNext() {
+std::optional<int32_t> ReferenceDeltaSource::GetNext() {
   if (source_.empty())
-    return absl::nullopt;
+    return std::nullopt;
   int32_t ref_delta = 0;
   if (!patch::ParseVarInt<int32_t>(&source_, &ref_delta))
-    return absl::nullopt;
+    return std::nullopt;
   // |ref_delta| is assumed to always be safe/valid.
   return ref_delta;
 }
@@ -219,22 +219,22 @@ bool TargetSource::Initialize(BufferSource* source) {
   return patch::ParseBuffer(source, &extra_targets_);
 }
 
-absl::optional<offset_t> TargetSource::GetNext() {
+std::optional<offset_t> TargetSource::GetNext() {
   if (extra_targets_.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   uint32_t target_diff = 0;
   if (!patch::ParseVarUInt<uint32_t>(&extra_targets_, &target_diff))
-    return absl::nullopt;
+    return std::nullopt;
   base::CheckedNumeric<offset_t> target = target_diff + target_compensation_;
   if (!target.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   // We keep track of the compensation needed for next target, taking into
   // account delta encoding and bias of -1.
   target_compensation_ = target + 1;
   if (!target_compensation_.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
   // Caveat: |target| will be a valid offset_t, but it's up to the caller to
   // check whether it's a valid offset for an image.
   return offset_t(target.ValueOrDie());
@@ -320,12 +320,12 @@ bool PatchElementReader::ValidateEquivalencesAndExtraData() {
 
 /******** EnsemblePatchReader ********/
 
-absl::optional<EnsemblePatchReader> EnsemblePatchReader::Create(
+std::optional<EnsemblePatchReader> EnsemblePatchReader::Create(
     ConstBufferView buffer) {
   BufferSource source(buffer);
   EnsemblePatchReader patch;
   if (!patch.Initialize(&source))
-    return absl::nullopt;
+    return std::nullopt;
   return patch;
 }
 

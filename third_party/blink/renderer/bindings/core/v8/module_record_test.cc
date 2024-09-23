@@ -50,11 +50,13 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
   // Implements ModuleRecordResolver:
 
   void RegisterModuleScript(const ModuleScript*) override {}
-  void UnregisterModuleScript(const ModuleScript*) override { NOTREACHED(); }
+  void UnregisterModuleScript(const ModuleScript*) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   const ModuleScript* GetModuleScriptFromModuleRecord(
       v8::Local<v8::Module>) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -143,31 +145,31 @@ TEST_F(ModuleRecordTest, moduleRequests) {
   auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
   EXPECT_EQ(2u, requests.size());
   EXPECT_EQ("a", requests[0].specifier);
-  EXPECT_EQ(0u, requests[0].import_assertions.size());
+  EXPECT_EQ(0u, requests[0].import_attributes.size());
   EXPECT_EQ("b", requests[1].specifier);
-  EXPECT_EQ(0u, requests[1].import_assertions.size());
+  EXPECT_EQ(0u, requests[1].import_attributes.size());
 }
 
-TEST_F(ModuleRecordTest, moduleRequestsWithImportAssertions) {
+TEST_F(ModuleRecordTest, moduleRequestsWithImportAttributes) {
   V8TestingScope scope;
-  v8::V8::SetFlagsFromString("--harmony-import-assertions");
+  v8::V8::SetFlagsFromString("--harmony-import-attributes");
   const KURL js_url("https://example.com/foo.js");
-  v8::Local<v8::Module> module = ModuleTestBase::CompileModule(
-      scope.GetScriptState(),
-      "import 'a' assert { };"
-      "import 'b' assert { type: 'x'};"
-      "import 'c' assert { foo: 'y', type: 'z' };",
-      js_url);
+  v8::Local<v8::Module> module =
+      ModuleTestBase::CompileModule(scope.GetScriptState(),
+                                    "import 'a' with { };"
+                                    "import 'b' with { type: 'x'};"
+                                    "import 'c' with { foo: 'y', type: 'z' };",
+                                    js_url);
   ASSERT_FALSE(module.IsEmpty());
 
   auto requests = ModuleRecord::ModuleRequests(scope.GetScriptState(), module);
   EXPECT_EQ(3u, requests.size());
   EXPECT_EQ("a", requests[0].specifier);
-  EXPECT_EQ(0u, requests[0].import_assertions.size());
+  EXPECT_EQ(0u, requests[0].import_attributes.size());
   EXPECT_EQ(String(), requests[0].GetModuleTypeString());
 
   EXPECT_EQ("b", requests[1].specifier);
-  EXPECT_EQ(1u, requests[1].import_assertions.size());
+  EXPECT_EQ(1u, requests[1].import_attributes.size());
   EXPECT_EQ("x", requests[1].GetModuleTypeString());
 
   EXPECT_EQ("c", requests[2].specifier);

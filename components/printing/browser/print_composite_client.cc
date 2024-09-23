@@ -74,21 +74,6 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
 
 PrintCompositeClient::~PrintCompositeClient() {}
 
-// static
-mojom::PrintCompositor::DocumentType PrintCompositeClient::GetDocumentType() {
-  // Using the compositor already means that the source is modifiable (e.g., not
-  // PDF).
-  mojom::SkiaDocumentType skia_document_type =
-      GetPrintDocumentType(/*source_is_pdf=*/false);
-#if BUILDFLAG(IS_WIN)
-  if (skia_document_type == mojom::SkiaDocumentType::kXPS) {
-    return mojom::PrintCompositor::DocumentType::kXPS;
-  }
-#endif
-  CHECK_EQ(skia_document_type, mojom::SkiaDocumentType::kPDF);
-  return mojom::PrintCompositor::DocumentType::kPDF;
-}
-
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (document_cookie_ == 0) {
@@ -249,7 +234,8 @@ void PrintCompositeClient::PrepareToCompositeDocument(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+  auto* compositor =
+      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
   is_doc_concurrently_composited_ = true;
   compositor->PrepareToCompositeDocument(
       document_type,
@@ -284,13 +270,16 @@ void PrintCompositeClient::CompositeDocument(
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPrintContentParams& content,
     const ui::AXTreeUpdate& accessibility_tree,
+    mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!GetIsDocumentConcurrentlyComposited(document_cookie));
 
-  auto* compositor = CreateCompositeRequest(document_cookie, render_frame_host);
+  auto* compositor =
+      CreateCompositeRequest(document_cookie, render_frame_host, document_type);
   compositor->SetAccessibilityTree(accessibility_tree);
+  compositor->SetGenerateDocumentOutline(generate_document_outline);
 
   for (auto& requested : requested_subframes_) {
     if (!IsDocumentCookieValid(requested->document_cookie_))
@@ -359,7 +348,8 @@ bool PrintCompositeClient::GetIsDocumentConcurrentlyComposited(
 
 mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
     int cookie,
-    content::RenderFrameHost* initiator_frame) {
+    content::RenderFrameHost* initiator_frame,
+    mojom::PrintCompositor::DocumentType document_type) {
   DCHECK(initiator_frame);
 
   if (document_cookie_ != 0) {

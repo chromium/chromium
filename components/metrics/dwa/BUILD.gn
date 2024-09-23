@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("dwa") {
+  sources = [
+    "dwa_recorder.cc",
+    "dwa_recorder.h",
+    "dwa_recorder_factory_impl.cc",
+    "dwa_recorder_factory_impl.h",
+    "dwa_recorder_interface.cc",
+    "dwa_recorder_interface.h",
+    "dwa_service.cc",
+    "dwa_service.h",
+  ]
+  public_deps = [ "//components/metrics/dwa/mojom" ]
+  defines = [ "IS_DWA_IMPL" ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//components/metrics",
+    "//components/metrics:metrics_pref_names",
+    "//components/prefs:prefs",
+    "//components/version_info:version_info",
+    "//mojo/public/cpp/bindings",
+    "//third_party/metrics_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "dwa_service_unittest.cc" ]
+  deps = [
+    ":dwa",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+    "//third_party/metrics_proto",
+  ]
+}

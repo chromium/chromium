@@ -190,12 +190,27 @@ TEST_F(EntropyStateTest, SetExternalPrefs) {
   prefs_.ClearPref(prefs::kMetricsLowEntropySource);
   prefs_.ClearPref(prefs::kMetricsOldLowEntropySource);
   prefs_.ClearPref(prefs::kMetricsPseudoLowEntropySource);
+  prefs_.ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
 
-  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456);
+  std::string limited_entropy_randomization_source =
+      "00000000000000000000000000000001";
+  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456,
+                                 limited_entropy_randomization_source);
 
   EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsLowEntropySource), 1234);
   EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsOldLowEntropySource), 4567);
   EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsPseudoLowEntropySource), 3456);
+  EXPECT_EQ(prefs_.GetString(prefs::kMetricsLimitedEntropyRandomizationSource),
+            limited_entropy_randomization_source);
+}
+
+TEST_F(EntropyStateTest, SetEmptyStringToLimitedEntropyRandomizationSource) {
+  prefs_.ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
+
+  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456, std::string_view());
+
+  EXPECT_FALSE(
+      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
 
 #else

@@ -12,8 +12,9 @@
 class PrefRegistrySimple;
 
 namespace base {
+class Time;
 class TimeDelta;
-}
+}  // namespace base
 
 namespace ash {
 
@@ -40,6 +41,9 @@ class StartupUtils {
 
   // Stores the next OOBE screen after updating and rebooting to be resumed.
   static void SaveScreenAfterConsumerUpdate(const std::string& screen);
+
+  // Returns the time the OOBE flag file was created.
+  static base::Time GetTimeOfOobeFlagFileCreation();
 
   // Returns the time since the OOBE flag file was created.
   static base::TimeDelta GetTimeSinceOobeFlagFileCreation();

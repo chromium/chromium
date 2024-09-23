@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/test/chromedriver/util.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/files/file_enumerator.h"
@@ -448,7 +454,7 @@ namespace {
 
 template <typename T>
 bool GetOptionalValue(const base::Value::Dict& dict,
-                      base::StringPiece path,
+                      std::string_view path,
                       T* out_value,
                       bool* has_value,
                       std::optional<T> (base::Value::*getter)() const) {
@@ -471,7 +477,7 @@ bool GetOptionalValue(const base::Value::Dict& dict,
 }  // namespace
 
 bool GetOptionalBool(const base::Value::Dict& dict,
-                     base::StringPiece path,
+                     std::string_view path,
                      bool* out_value,
                      bool* has_value) {
   return GetOptionalValue(dict, path, out_value, has_value,
@@ -479,7 +485,7 @@ bool GetOptionalBool(const base::Value::Dict& dict,
 }
 
 bool GetOptionalInt(const base::Value::Dict& dict,
-                    base::StringPiece path,
+                    std::string_view path,
                     int* out_value,
                     bool* has_value) {
   if (GetOptionalValue(dict, path, out_value, has_value,
@@ -504,7 +510,7 @@ bool GetOptionalInt(const base::Value::Dict& dict,
 }
 
 bool GetOptionalDouble(const base::Value::Dict& dict,
-                       base::StringPiece path,
+                       std::string_view path,
                        double* out_value,
                        bool* has_value) {
   return GetOptionalValue(dict, path, out_value, has_value,
@@ -512,7 +518,7 @@ bool GetOptionalDouble(const base::Value::Dict& dict,
 }
 
 bool GetOptionalString(const base::Value::Dict& dict,
-                       base::StringPiece path,
+                       std::string_view path,
                        std::string* out_value,
                        bool* has_value) {
   if (has_value != nullptr)
@@ -532,7 +538,7 @@ bool GetOptionalString(const base::Value::Dict& dict,
 }
 
 bool GetOptionalDictionary(const base::Value::Dict& dict,
-                           base::StringPiece path,
+                           std::string_view path,
                            const base::Value::Dict** out_value,
                            bool* has_value) {
   if (has_value != nullptr)
@@ -550,7 +556,7 @@ bool GetOptionalDictionary(const base::Value::Dict& dict,
 }
 
 bool GetOptionalList(const base::Value::Dict& dict,
-                     base::StringPiece path,
+                     std::string_view path,
                      const base::Value::List** out_value,
                      bool* has_value) {
   if (has_value != nullptr)
@@ -571,7 +577,7 @@ bool GetOptionalList(const base::Value::Dict& dict,
 }
 
 bool GetOptionalSafeInt(const base::Value::Dict& dict,
-                        base::StringPiece path,
+                        std::string_view path,
                         int64_t* out_value,
                         bool* has_value) {
   // Check if we have a normal int, which is always a safe int.
@@ -608,7 +614,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
 }
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const base::StringPiece path,
+                const std::string_view path,
                 int64_t in_value_64) {
   int int_value = static_cast<int>(in_value_64);
   if (in_value_64 == int_value)

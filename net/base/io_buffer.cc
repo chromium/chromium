@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/io_buffer.h"
 
 #include <utility>
@@ -122,8 +127,26 @@ int GrowableIOBuffer::RemainingCapacity() {
   return capacity_ - offset_;
 }
 
-char* GrowableIOBuffer::StartOfBuffer() {
-  return real_data_.get();
+base::span<uint8_t> GrowableIOBuffer::everything() {
+  return base::as_writable_bytes(
+      // SAFETY: The capacity_ is the size of the allocation.
+      UNSAFE_BUFFERS(
+          base::span(real_data_.get(), base::checked_cast<size_t>(capacity_))));
+}
+
+base::span<const uint8_t> GrowableIOBuffer::everything() const {
+  return base::as_bytes(
+      // SAFETY: The capacity_ is the size of the allocation.
+      UNSAFE_BUFFERS(
+          base::span(real_data_.get(), base::checked_cast<size_t>(capacity_))));
+}
+
+base::span<uint8_t> GrowableIOBuffer::span_before_offset() {
+  return everything().first(base::checked_cast<size_t>(offset_));
+}
+
+base::span<const uint8_t> GrowableIOBuffer::span_before_offset() const {
+  return everything().first(base::checked_cast<size_t>(offset_));
 }
 
 GrowableIOBuffer::~GrowableIOBuffer() {

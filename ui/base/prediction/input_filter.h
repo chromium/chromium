@@ -24,12 +24,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputFilter {
 
   // Returns the name of the filter
   virtual const char* GetName() const = 0;
-
-  // Returns a copy of the filter.
-  virtual InputFilter* Clone() = 0;
-
-  // Reset the filter to its initial state
-  virtual void Reset() = 0;
 };
 
 }  // namespace ui

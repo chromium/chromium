@@ -96,6 +96,7 @@ void MlInstallResultReporter::ReportResultInternal(
     base::UmaHistogramEnumeration("WebApp.MlInstall.InstallSource",
                                   source.value(), WebappInstallSource::COUNT);
   }
+
   base::UmaHistogramEnumeration("WebApp.MlInstall.DialogResponse", response);
 
   bool ml_promoted =
@@ -138,6 +139,11 @@ void MlInstallResultReporter::ReportResultInternal(
       base::RandDouble() >
           features::kWebAppsMLGuardrailResultReportProb.Get()) {
     return;
+  }
+
+  if (ml_promoted) {
+    base::UmaHistogramEnumeration("WebApp.MLInstallPromo.UserResponse",
+                                  response);
   }
 
   segmentation_platform::SegmentationPlatformService* segmentation =

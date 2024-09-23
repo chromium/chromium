@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -35,16 +36,13 @@ constexpr gfx::Rect kAnchorWidgetRect(50, 50, 400, 250);
 class TestBubbleView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+      : BubbleDialogDelegateView(anchor_view,
+                                 BubbleBorder::TOP_LEFT,
+                                 BubbleBorder::DIALOG_SHADOW,
+                                 true) {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetLayoutManager(std::make_unique<FillLayout>());
     AddChildView(std::make_unique<View>())->SetPreferredSize(kTestViewSize);
-  }
-
- protected:
-  void AddedToWidget() override {
-    BubbleDialogDelegateView::AddedToWidget();
-    SizeToContents();
   }
 };
 
@@ -76,7 +74,8 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
  public:
   void SetUp() override {
     test::WidgetTest::SetUp();
-    anchor_widget_ = CreateTestWidget(Widget::InitParams::Type::TYPE_WINDOW);
+    anchor_widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                      Widget::InitParams::Type::TYPE_WINDOW);
     auto* const contents_view = anchor_widget_->GetRootView()->AddChildView(
         std::make_unique<FlexLayoutView>());
     contents_view->SetOrientation(LayoutOrientation::kHorizontal);

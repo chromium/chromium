@@ -60,7 +60,7 @@ class FloorNode : public AddressComponent {
 };
 
 // The number of the apartment.
-class ApartmentNode : public FeatureGuardedAddressComponent {
+class ApartmentNode : public AddressComponent {
  public:
   explicit ApartmentNode(SubcomponentsList children);
   ~ApartmentNode() override;
@@ -74,24 +74,24 @@ class SubPremiseNode : public AddressComponent {
 };
 
 // Stores the landmark of an address profile.
-class LandmarkNode : public FeatureGuardedAddressComponent {
+class LandmarkNode : public AddressComponent {
  public:
   explicit LandmarkNode(SubcomponentsList children);
   ~LandmarkNode() override;
 };
 
 // Stores the streets intersection of an address profile.
-class BetweenStreetsNode : public FeatureGuardedAddressComponent {
+class BetweenStreetsNode : public AddressComponent {
  public:
   explicit BetweenStreetsNode(SubcomponentsList children);
   ~BetweenStreetsNode() override;
 };
-class BetweenStreets1Node : public FeatureGuardedAddressComponent {
+class BetweenStreets1Node : public AddressComponent {
  public:
   explicit BetweenStreets1Node(SubcomponentsList children);
   ~BetweenStreets1Node() override;
 };
-class BetweenStreets2Node : public FeatureGuardedAddressComponent {
+class BetweenStreets2Node : public AddressComponent {
  public:
   explicit BetweenStreets2Node(SubcomponentsList children);
   ~BetweenStreets2Node() override;
@@ -99,7 +99,7 @@ class BetweenStreets2Node : public FeatureGuardedAddressComponent {
 
 // Stores administrative area level 2. A sub-division of a state, e.g. a
 // Municipio in Brazil or Mexico.
-class AdminLevel2Node : public FeatureGuardedAddressComponent {
+class AdminLevel2Node : public AddressComponent {
  public:
   explicit AdminLevel2Node(SubcomponentsList children);
   ~AdminLevel2Node() override;
@@ -109,19 +109,19 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
 // overflow fields, meaning that forms follow a consistent structure that is
 // typically identical across domains while also providing an option for an
 // overflow field.
-class AddressOverflowNode : public FeatureGuardedAddressComponent {
+class AddressOverflowNode : public AddressComponent {
  public:
   explicit AddressOverflowNode(SubcomponentsList children);
   ~AddressOverflowNode() override;
 };
 
-class AddressOverflowAndLandmarkNode : public FeatureGuardedAddressComponent {
+class AddressOverflowAndLandmarkNode : public AddressComponent {
  public:
   explicit AddressOverflowAndLandmarkNode(SubcomponentsList children);
   ~AddressOverflowAndLandmarkNode() override;
 };
 
-class BetweenStreetsOrLandmarkNode : public FeatureGuardedAddressComponent {
+class BetweenStreetsOrLandmarkNode : public AddressComponent {
  public:
   explicit BetweenStreetsOrLandmarkNode(SubcomponentsList children);
   ~BetweenStreetsOrLandmarkNode() override;

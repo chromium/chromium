@@ -4,7 +4,6 @@
 
 #include "chrome/updater/find_unregistered_apps_task.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/configurator.h"
@@ -35,11 +35,11 @@ void FindUnregisteredAppsTask::Run(base::OnceClosure callback) {
                   [](const std::vector<std::string>& known_apps,
                      scoped_refptr<PersistedData> persisted_data,
                      const RegistrationRequest& req) {
-                    if (std::find_if(known_apps.begin(), known_apps.end(),
-                                     [&](const std::string& known_id) {
-                                       return base::EqualsCaseInsensitiveASCII(
-                                           known_id, req.app_id);
-                                     }) == known_apps.end()) {
+                    if (base::ranges::find_if(
+                            known_apps, [&](const std::string& known_id) {
+                              return base::EqualsCaseInsensitiveASCII(
+                                  known_id, req.app_id);
+                            }) == known_apps.end()) {
                       persisted_data->RegisterApp(req);
                     }
                   },

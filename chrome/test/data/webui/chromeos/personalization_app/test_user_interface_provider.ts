@@ -14,7 +14,7 @@ export class TestUserProvider extends TestBrowserProxy implements
       index: 8,
       title: {data: 'Test title'.split('').map(ch => ch.charCodeAt(0))},
       url: {url: 'data://test_url'},
-      sourceInfo: undefined,
+      sourceInfo: null,
     },
   ];
 

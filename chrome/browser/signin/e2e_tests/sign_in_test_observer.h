@@ -27,12 +27,13 @@ class SignInTestObserver : public IdentityManager::Observer,
   void OnRefreshTokenRemovedForAccount(const CoreAccountId&) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo&,
-      const GoogleServiceAuthError&) override;
+      const GoogleServiceAuthError&,
+      signin_metrics::SourceForRefreshTokenOperation) override;
   void OnAccountsInCookieUpdated(const AccountsInCookieJarInfo&,
                                  const GoogleServiceAuthError&) override;
 
   // AccountReconcilor::Observer:
-  // TODO(https://crbug.com/1051864): Remove this observer method once the bug
+  // TODO(crbug.com/40673982): Remove this observer method once the bug
   // is fixed.
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 

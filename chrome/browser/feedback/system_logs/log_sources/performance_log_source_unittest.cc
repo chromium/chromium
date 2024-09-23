@@ -38,6 +38,8 @@ class QuitRunLoopOnPowerStateChangeObserver
 namespace {
 
 constexpr char kMemorySaverModeActiveKey[] = "high_efficiency_mode_active";
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kBatterySaverModeStateKey[] = "battery_saver_state";
 constexpr char kBatterySaverModeActiveKey[] = "battery_saver_mode_active";
 constexpr char kBatterySaverModeDisabledForSessionKey[] =
@@ -45,6 +47,7 @@ constexpr char kBatterySaverModeDisabledForSessionKey[] =
 constexpr char kHasBatteryKey[] = "device_has_battery";
 constexpr char kUsingBatteryPowerKey[] = "device_using_battery_power";
 constexpr char kBatteryPercentage[] = "device_battery_percentage";
+#endif
 
 class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
  public:
@@ -61,7 +64,7 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   void SetUp() override { environment_.SetUp(local_state_); }
 
   void TearDown() override {
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
     environment_.TearDown();
   }
 
@@ -101,7 +104,10 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
             run_loop.QuitClosure());
     performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
         ->AddObserver(observer.get());
-    environment_.power_monitor_source()->SetOnBatteryPower(on_battery_power);
+    environment_.power_monitor_source()->SetBatteryPowerStatus(
+        on_battery_power
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
         ->RemoveObserver(observer.get());
@@ -123,6 +129,8 @@ TEST_F(PerformanceLogSourceTest, CheckMemorySaverModeLogs) {
   EXPECT_EQ("false", response->at(kMemorySaverModeActiveKey));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Battery and battery saver logs are not used on ChromeOS.
 TEST_F(PerformanceLogSourceTest, CheckBatterySaverModeLogs) {
   SetBatterySaverModeEnabled(true);
   auto response = GetPerformanceLogs();
@@ -163,5 +171,6 @@ TEST_F(PerformanceLogSourceTest, CheckBatteryDetailLogs) {
   EXPECT_EQ("false", response->at(kUsingBatteryPowerKey));
   EXPECT_EQ("100", response->at(kBatteryPercentage));
 }
+#endif
 
 }  // namespace

@@ -41,7 +41,7 @@ content from an Isolated Web App:
 6. The validity of the Integrity Block is verified by
    `IsolatedWebAppValidator::ValidateIntegrityBlock`. This includes a check on
    whether the browser trusts the public key(s) used to sign the Web Bundle.
-   TODO(crbug.com/1365852): Not yet implemented.
+   TODO(crbug.com/40239530): Not yet implemented.
 7. If the Integrity Block is valid, then:
    - On non-ChromeOS: The signatures contained in the Isolated Web App are
      verified using `web_package::SignedWebBundleSignatureVerifier`.

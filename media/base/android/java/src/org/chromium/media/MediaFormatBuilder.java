@@ -4,6 +4,7 @@
 
 package org.chromium.media;
 
+import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
 
@@ -19,7 +20,8 @@ class MediaFormatBuilder {
             int height,
             byte[][] csds,
             HdrMetadata hdrMetadata,
-            boolean allowAdaptivePlayback) {
+            boolean allowAdaptivePlayback,
+            int profile) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         if (format == null) return null;
         setCodecSpecificData(format, csds);
@@ -27,6 +29,7 @@ class MediaFormatBuilder {
             hdrMetadata.addMetadataToFormat(format);
         }
         addInputSizeInfoToFormat(format, allowAdaptivePlayback);
+        addProfileInfoToFormat(format, profile);
         return format;
     }
 
@@ -132,6 +135,7 @@ class MediaFormatBuilder {
             case MimeTypes.VIDEO_HEVC:
             case MimeTypes.VIDEO_VP9:
             case MimeTypes.VIDEO_AV1:
+            case MimeTypes.VIDEO_DV:
                 maxPixels = maxWidth * maxHeight;
                 minCompressionRatio = 4;
                 break;
@@ -142,5 +146,19 @@ class MediaFormatBuilder {
         // Estimate the maximum input size assuming three channel 4:2:0 subsampled input frames.
         int maxInputSize = (maxPixels * 3) / (2 * minCompressionRatio);
         format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize);
+    }
+
+    private static void addProfileInfoToFormat(MediaFormat format, int profile) {
+        if (format.getString(MediaFormat.KEY_MIME).equals(MimeTypes.VIDEO_DV)) {
+            if (profile == VideoCodecProfile.DOLBYVISION_PROFILE5) {
+                format.setInteger(
+                        MediaFormat.KEY_PROFILE,
+                        MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheStn);
+            } else if (profile == VideoCodecProfile.DOLBYVISION_PROFILE8) {
+                format.setInteger(
+                        MediaFormat.KEY_PROFILE,
+                        MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheSt);
+            }
+        }
     }
 }

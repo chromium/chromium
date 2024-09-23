@@ -26,6 +26,8 @@ class OrderControllerSourceFromWebStateList final
   bool IsOpenerOfItemAt(int index,
                         int opener_index,
                         bool check_navigation_index) const final;
+  TabGroupRange GetGroupRangeOfItemAt(int index) const final;
+  std::set<int> GetCollapsedGroupIndexes() const final;
 
  private:
   raw_ref<const WebStateList> web_state_list_;

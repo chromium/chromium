@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -99,7 +100,7 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
 
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_UPGRADING_LABEL);
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));

@@ -16,11 +16,11 @@
 #include "components/history/core/test/thumbnail-inl.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
 
 namespace {
@@ -76,20 +76,6 @@ class TopSitesDatabaseTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
-};
-
-// Tests both the legacy `sql::Recovery` interface and the newer
-// `sql::BuiltInRecovery` interface, if it's supported.
-class TopSitesDatabaseRecoveryTest : public TopSitesDatabaseTest,
-                                     public testing::WithParamInterface<bool> {
- public:
-  TopSitesDatabaseRecoveryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        kTopSitesDatabaseUseBuiltInRecoveryIfSupported, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Version 1 is deprecated, the resulting schema should be current,
@@ -171,7 +157,7 @@ TEST_F(TopSitesDatabaseTest, Version5) {
 
 // Version 1 is deprecated, the resulting schema should be current, with no
 // data.
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
+TEST_F(TopSitesDatabaseTest, Recovery1) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v1.sql"));
 
@@ -183,7 +169,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -194,7 +180,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
   TopSitesDatabase db;
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
     ASSERT_TRUE(db.Init(file_name_));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -204,7 +190,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
 
 // Version 2 is deprecated, the resulting schema should be current, with no
 // data.
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
+TEST_F(TopSitesDatabaseTest, Recovery2) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v2.sql"));
 
@@ -216,7 +202,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -227,7 +213,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
   TopSitesDatabase db;
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
     ASSERT_TRUE(db.Init(file_name_));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
@@ -235,7 +221,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
   VerifyDatabaseEmpty(db.db_for_testing());
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
+TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
   // Create an example database.
   EXPECT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v4.sql"));
 
@@ -247,7 +233,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
     sql::Database raw_db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -259,7 +245,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
     TopSitesDatabase db;
     {
       sql::test::ScopedErrorExpecter expecter;
-      expecter.ExpectError(SQLITE_CORRUPT);
+      expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
       ASSERT_TRUE(db.Init(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
@@ -277,7 +263,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
   }
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndex) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
@@ -299,7 +285,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
 
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
 
     // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
     // will recover the database and poison the handle, so the outer call
@@ -336,7 +322,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
   EXPECT_EQ(kUrl2, urls[2].url);  // [2] because of url_rank.
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndexAndLostRow) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
@@ -366,7 +352,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndexAndLostRow) {
 
   {
     sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
+    expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
 
     // Accessing the index will throw SQLITE_CORRUPT. The corruption handler
     // will recover the database and poison the handle, so the outer call
@@ -549,7 +535,5 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_UpdatesAddedSiteTitle) {
     ASSERT_EQ(urls[1].title, u"B");
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, TopSitesDatabaseRecoveryTest, testing::Bool());
 
 }  // namespace history

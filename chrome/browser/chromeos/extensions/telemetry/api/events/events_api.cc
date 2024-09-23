@@ -35,7 +35,8 @@ namespace chromeos {
 
 namespace {
 
-const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
+const char kKeyboardDiagnosticsUrl[] =
+    "chrome://diagnostics?input&showDefaultKeyboardTester";
 
 namespace cx_events = ::chromeos::api::os_events;
 namespace crosapi = ::crosapi::mojom;

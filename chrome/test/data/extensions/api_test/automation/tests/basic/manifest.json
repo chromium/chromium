@@ -8,6 +8,6 @@
     "scripts": [ "background.js" ],
     "persistent": true
   },
-  "permissions": ["tabs", "http://a.com/"],
+  "permissions": ["tabs"],
   "automation": {"desktop": true}
 }

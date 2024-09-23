@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
+
+namespace sync_pb {
+enum SyncEnums_DeviceType : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -35,7 +38,7 @@ struct LocalDeviceNameInfo {
   std::string full_hardware_class;
 };
 
-sync_pb::SyncEnums::DeviceType GetLocalDeviceType();
+sync_pb::SyncEnums_DeviceType GetLocalDeviceType();
 
 DeviceInfo::OsType GetLocalDeviceOSType();
 

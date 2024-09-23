@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "components/grit/components_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ui/base/device_form_factor.h"
@@ -181,7 +181,7 @@ bool AboutUIHTMLSource::ShouldDenyXFrameOptions() const {
 
 AboutUI::AboutUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::URLDataSourceIOS::Add(ProfileIOS::FromWebUIIOS(web_ui),
                              new AboutUIHTMLSource(host));
 }
 

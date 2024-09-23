@@ -7,6 +7,7 @@
 
 #include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace segmentation_platform {
 
@@ -25,4 +26,4 @@ class MockDatabaseClient : public DatabaseClient {
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TESTING_MOCK_DATABASE_CLIENT_SERVICE_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TESTING_MOCK_DATABASE_CLIENT_H_

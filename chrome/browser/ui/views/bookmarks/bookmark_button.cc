@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/tooltip_manager.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -42,9 +44,11 @@ const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliseconds{
 const base::FeatureParam<bool> kPrerenderBookmarkBarOnMousePressedTrigger{
     &features::kBookmarkTriggerForPrerender2,
     "prerender_bookmarkbar_on_mouse_pressed_trigger", true};
+// The hover trigger is not enabled as we are aware that this negatively
+// affects other navigations like Omnibox search.
 const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
     &features::kBookmarkTriggerForPrerender2,
-    "prerender_bookmarkbar_on_mouse_hover_trigger", true};
+    "prerender_bookmarkbar_on_mouse_hover_trigger", false};
 
 // BookmarkButtonBase -----------------------------------------------
 
@@ -63,11 +67,6 @@ BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   SetHideInkDropWhenShowingContextMenu(false);
-
-  if (features::IsChromeRefresh2023() &&
-      base::FeatureList::IsEnabled(features::kChromeRefresh2023TopChromeFont)) {
-    label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  }
 
   show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!BookmarkBarView::GetAnimationsEnabled()) {
@@ -88,8 +87,8 @@ views::View* BookmarkButtonBase::GetTooltipHandlerForPoint(
 }
 
 bool BookmarkButtonBase::IsTriggerableEvent(const ui::Event& e) {
-  return e.type() == ui::ET_GESTURE_TAP ||
-         e.type() == ui::ET_GESTURE_TAP_DOWN ||
+  return e.type() == ui::EventType::kGestureTap ||
+         e.type() == ui::EventType::kGestureTapDown ||
          event_utils::IsPossibleDispositionEvent(e);
 }
 
@@ -141,15 +140,19 @@ std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
 
 void BookmarkButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   BookmarkButtonBase::GetAccessibleNodeData(node_data);
-  const std::u16string name = GetAccessibleName();
-  node_data->SetNameChecked(
-      name.empty()
-          ? l10n_util::GetStringFUTF16(
-                IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
-                url_formatter::FormatUrl(
-                    url_.get(), url_formatter::kFormatUrlOmitDefaults,
-                    base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr))
-          : name);
+  const std::u16string name = GetViewAccessibility().GetCachedName();
+}
+
+void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
+                                          ax::mojom::NameFrom& name_from) {
+  if (new_name.empty()) {
+    new_name = l10n_util::GetStringFUTF16(
+        IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
+        url_formatter::FormatUrl(
+            url_.get(), url_formatter::kFormatUrlOmitDefaults,
+            base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+    name_from = ax::mojom::NameFrom::kContents;
+  }
 }
 
 void BookmarkButton::SetText(const std::u16string& text) {
@@ -238,7 +241,8 @@ void BookmarkButton::StartPreconnecting(GURL url) {
         predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
     if (loading_predictor) {
       loading_predictor->PrepareForPageLoad(
-          url, predictors::HintOrigin::BOOKMARK_BAR, true);
+          /*initiator_origin=*/std::nullopt, url,
+          predictors::HintOrigin::BOOKMARK_BAR, true);
     }
 
     preloading_timer_.Start(
@@ -252,17 +256,21 @@ void BookmarkButton::StartPreconnecting(GURL url) {
 }
 
 void BookmarkButton::StartPrerendering(GURL url) {
-  // TODO(https://crbug.com/1422819): Prerender only for https scheme, and add
-  // an enum metric to report the protocol scheme.
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
-  if (!prerender_handle_) {
-    prerender_web_contents_ =
-        browser_->tab_strip_model()->GetActiveWebContents()->GetWeakPtr();
-    PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
-    auto* prerender_manager =
-        PrerenderManager::FromWebContents(&(*prerender_web_contents_));
-    prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
+  if (prerender_handle_) {
+    return;
   }
+  auto* active_web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_web_contents) {
+    return;
+  }
+
+  prerender_web_contents_ = active_web_contents->GetWeakPtr();
+  PrerenderManager::CreateForWebContents(prerender_web_contents_.get());
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(prerender_web_contents_.get());
+  prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
 }
 
 BEGIN_METADATA(BookmarkButton)

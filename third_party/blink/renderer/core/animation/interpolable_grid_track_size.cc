@@ -21,14 +21,15 @@ InterpolableGridTrackSize::InterpolableGridTrackSize(
 // static
 InterpolableGridTrackSize* InterpolableGridTrackSize::Create(
     const GridTrackSize& grid_track_size,
+    const CSSProperty& property,
     float zoom) {
   InterpolableValue* min_value = nullptr;
   InterpolableValue* max_value = nullptr;
 
   min_value = InterpolableGridLength::Create(
-      grid_track_size.MinOrFitContentTrackBreadth(), zoom);
+      grid_track_size.MinOrFitContentTrackBreadth(), property, zoom);
   max_value = InterpolableGridLength::Create(
-      grid_track_size.MaxOrFitContentTrackBreadth(), zoom);
+      grid_track_size.MaxOrFitContentTrackBreadth(), property, zoom);
   DCHECK(min_value);
   DCHECK(max_value);
 

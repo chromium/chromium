@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Synchronizované zariadenia na obnovenie kariet je možné klepnutím zmeniť. Klepnutím skontrolujte alebo obnovte vybrané karty pre aktuálne zariadenie. Klávesnica je skrytá.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Otvoriť <ph name="TABS_COUNT_ONE" /> kartu}few{Otvoriť <ph name="TABS_COUNT_MANY" /> karty}many{Open <ph name="TABS_COUNT_MANY" /> tabs}other{Otvoriť <ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="4509609396389120020">Získajte karty z iných zariadení</translation>
+<translation id="4619615317237390068">Karty z iných zariadení</translation>
 <translation id="4811934403802581334">Obnovia sa všetky vybrané karty z aktuálne vybraného zariadenia.</translation>
 <translation id="5336031759968328813">Skontrolovať všetky karty</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>

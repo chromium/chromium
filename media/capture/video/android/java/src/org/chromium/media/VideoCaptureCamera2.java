@@ -1561,6 +1561,20 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) return null;
         final int facing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
+        String displayFacing = "unknown";
+        switch (facing) {
+            case CameraCharacteristics.LENS_FACING_FRONT:
+                displayFacing = "front";
+                break;
+            case CameraCharacteristics.LENS_FACING_BACK:
+                displayFacing = "back";
+                break;
+            case CameraCharacteristics.LENS_FACING_EXTERNAL:
+                displayFacing = "external";
+                break;
+            default:
+                assert false : "Unexpected facing";
+        }
 
         boolean isInfrared = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -1572,11 +1586,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                             && infoColor.equals(
                                     CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR);
         }
-        return "camera2 "
-                + index
-                + ", facing "
-                + ((facing == CameraCharacteristics.LENS_FACING_FRONT) ? "front" : "back")
-                + (isInfrared ? " infrared" : "");
+        return "camera2 " + index + ", facing " + displayFacing + (isInfrared ? " infrared" : "");
     }
 
     // Retrieves the index within the camera ID list for the specified camera ID; returns

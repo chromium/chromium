@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "cc/input/scrollbar.h"
-#include "cc/layers/painted_overlay_scrollbar_layer.h"
+#include "cc/layers/nine_patch_thumb_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/paint/paint_canvas.h"
@@ -46,9 +46,10 @@ class PaintedScrollbar : public FakeScrollbar {
     set_track_rect(gfx::Rect(size));
   }
 
-  void PaintPart(PaintCanvas* canvas,
-                 ScrollbarPart part,
-                 const gfx::Rect& rect) override {
+  void set_paint_scale(int scale) { paint_scale_ = scale; }
+
+ private:
+  void Paint(PaintCanvas& canvas, const gfx::Rect& rect) override {
     PaintFlags flags;
     flags.setStyle(PaintFlags::kStroke_Style);
     flags.setStrokeWidth(SkIntToScalar(paint_scale_));
@@ -59,15 +60,12 @@ class PaintedScrollbar : public FakeScrollbar {
       int small_rect = paint_scale_;
       inset_rect.Inset(
           gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
-      canvas->drawRect(RectToSkRect(inset_rect), flags);
+      canvas.drawRect(RectToSkRect(inset_rect), flags);
       inset_rect.Inset(
           gfx::Insets::TLBR(big_rect, big_rect, small_rect, small_rect));
     }
   }
 
-  void set_paint_scale(int scale) { paint_scale_ = scale; }
-
- private:
   ~PaintedScrollbar() override = default;
 
   int paint_scale_ = 4;
@@ -137,7 +135,7 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, TransformScale) {
 }
 
 // Disabled on TSan due to frequent timeouts. crbug.com/848994
-// TODO(crbug.com/1416306): currently do not pass on iOS.
+// TODO(crbug.com/40256786): currently do not pass on iOS.
 #if defined(THREAD_SANITIZER) || BUILDFLAG(IS_IOS)
 #define MAYBE_HugeTransformScale DISABLED_HugeTransformScale
 #else
@@ -197,40 +195,15 @@ class LayerTreeHostOverlayScrollbarsPixelTest
   float thickness_scale_;
 };
 
-class PaintedOverlayScrollbar : public FakeScrollbar {
+class NinePatchThumbScrollbar : public FakeScrollbar {
  public:
-  PaintedOverlayScrollbar() {
+  NinePatchThumbScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
     set_orientation(ScrollbarOrientation::kVertical);
     set_is_overlay(true);
     set_thumb_size(gfx::Size(15, 50));
     set_track_rect(gfx::Rect(0, 0, 15, 400));
-  }
-
-  void PaintPart(PaintCanvas* canvas,
-                 ScrollbarPart part,
-                 const gfx::Rect& rect) override {
-    // The outside of the rect will be painted with a 1 pixel black, red, then
-    // blue border. The inside will be solid blue. This will allow the test to
-    // ensure that scaling the thumb doesn't scale the border at all.  Note
-    // that the inside of the border must be the same color as the center tile
-    // to prevent an interpolation from being applied.
-    PaintFlags flags;
-    flags.setStyle(PaintFlags::kFill_Style);
-    flags.setStrokeWidth(SkIntToScalar(1));
-    flags.setColor(SK_ColorBLACK);
-
-    gfx::Rect inset_rect = rect;
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
-
-    flags.setColor(SK_ColorRED);
-    inset_rect.Inset(1);
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
-
-    flags.setColor(SK_ColorBLUE);
-    inset_rect.Inset(1);
-    canvas->drawRect(RectToSkRect(inset_rect), flags);
   }
 
   bool UsesNinePatchThumbResource() const override { return true; }
@@ -242,7 +215,30 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
   }
 
  private:
-  ~PaintedOverlayScrollbar() override = default;
+  void Paint(PaintCanvas& canvas, const gfx::Rect& rect) override {
+    // The outside of the rect will be painted with a 1 pixel black, red, then
+    // blue border. The inside will be solid blue. This will allow the test to
+    // ensure that scaling the thumb doesn't scale the border at all.  Note
+    // that the inside of the border must be the same color as the center tile
+    // to prevent an interpolation from being applied.
+    PaintFlags flags;
+    flags.setStyle(PaintFlags::kFill_Style);
+    flags.setStrokeWidth(SkIntToScalar(1));
+    flags.setColor(SK_ColorBLACK);
+
+    gfx::Rect inset_rect = rect;
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
+
+    flags.setColor(SK_ColorRED);
+    inset_rect.Inset(1);
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
+
+    flags.setColor(SK_ColorBLUE);
+    inset_rect.Inset(1);
+    canvas.drawRect(RectToSkRect(inset_rect), flags);
+  }
+
+  ~NinePatchThumbScrollbar() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -254,15 +250,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     LayerTreeHostOverlayScrollbarsPixelTest);
 
-// Simulate increasing the thickness of a painted overlay scrollbar. Ensure that
+// Simulate increasing the thickness of a NinePatchThumbScrollbar. Ensure that
 // the scrollbar border remains crisp.
 TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledUp) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(400, 400), SK_ColorWHITE);
 
-  auto scrollbar = base::MakeRefCounted<PaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> layer =
-      PaintedOverlayScrollbarLayer::Create(std::move(scrollbar));
+  auto scrollbar = base::MakeRefCounted<NinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> layer =
+      NinePatchThumbScrollbarLayer::Create(std::move(scrollbar));
 
   scrollbar_layer_id_ = layer->id();
   thickness_scale_ = 5.f;
@@ -278,15 +274,15 @@ TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledUp) {
       base::FilePath(FILE_PATH_LITERAL("overlay_scrollbar_scaled_up.png")));
 }
 
-// Simulate decreasing the thickness of a painted overlay scrollbar. Ensure that
+// Simulate decreasing the thickness of a NinePatchThumbScrollbar. Ensure that
 // the scrollbar border remains crisp.
 TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledDown) {
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(400, 400), SK_ColorWHITE);
 
-  auto scrollbar = base::MakeRefCounted<PaintedOverlayScrollbar>();
-  scoped_refptr<PaintedOverlayScrollbarLayer> layer =
-      PaintedOverlayScrollbarLayer::Create(std::move(scrollbar));
+  auto scrollbar = base::MakeRefCounted<NinePatchThumbScrollbar>();
+  scoped_refptr<NinePatchThumbScrollbarLayer> layer =
+      NinePatchThumbScrollbarLayer::Create(std::move(scrollbar));
 
   scrollbar_layer_id_ = layer->id();
   thickness_scale_ = 0.4f;

@@ -113,7 +113,6 @@ const char* AlignmentToPref(ShelfAlignment alignment) {
       return nullptr;
   }
   NOTREACHED();
-  return nullptr;
 }
 
 ShelfAutoHideBehavior AutoHideBehaviorFromPref(const std::string& value) {
@@ -139,7 +138,6 @@ const char* AutoHideBehaviorToPref(ShelfAutoHideBehavior behavior) {
       return nullptr;
   }
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace

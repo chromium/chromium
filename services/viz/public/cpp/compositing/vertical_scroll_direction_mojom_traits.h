@@ -24,7 +24,7 @@ struct EnumTraits<viz::mojom::VerticalScrollDirection,
       case viz::VerticalScrollDirection::kUp:
         return viz::mojom::VerticalScrollDirection::kUp;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return viz::mojom::VerticalScrollDirection::kNull;
   }
 
@@ -41,7 +41,7 @@ struct EnumTraits<viz::mojom::VerticalScrollDirection,
         *out = viz::VerticalScrollDirection::kUp;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

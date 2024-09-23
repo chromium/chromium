@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/search_engines/template_url_service.h"
 
 #include <stddef.h>
@@ -12,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -210,13 +216,13 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
 
 // TemplateURLServiceTest -----------------------------------------------------
 
-class TemplateURLServiceTest : public testing::Test,
-                               public testing::WithParamInterface<bool> {
+class TemplateURLServiceTestBase : public testing::Test {
  public:
-  TemplateURLServiceTest();
+  explicit TemplateURLServiceTestBase(bool is_search_engine_choice_enabled);
 
-  TemplateURLServiceTest(const TemplateURLServiceTest&) = delete;
-  TemplateURLServiceTest& operator=(const TemplateURLServiceTest&) = delete;
+  TemplateURLServiceTestBase(const TemplateURLServiceTestBase&) = delete;
+  TemplateURLServiceTestBase& operator=(const TemplateURLServiceTestBase&) =
+      delete;
 
   // testing::Test:
   void SetUp() override;
@@ -268,13 +274,23 @@ class TemplateURLServiceTest : public testing::Test,
   }
 
  protected:
-  bool IsSearchEngineChoiceEnabled() const { return GetParam(); }
+  bool IsSearchEngineChoiceEnabled() const {
+    return is_search_engine_choice_enabled_;
+  }
 
  private:
+  const bool is_search_engine_choice_enabled_;
+
   content::BrowserTaskEnvironment
       task_environment_;  // To set up BrowserThreads.
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_;
   base::test::ScopedFeatureList feature_list_;
+};
+
+class TemplateURLServiceTest : public TemplateURLServiceTestBase,
+                               public testing::WithParamInterface<bool> {
+ public:
+  TemplateURLServiceTest() : TemplateURLServiceTestBase(GetParam()) {}
 };
 
 class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {
@@ -292,7 +308,32 @@ class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {
   }
 };
 
-TemplateURLServiceTest::TemplateURLServiceTest() {
+#if BUILDFLAG(IS_ANDROID)
+class TemplateURLServicePlayApiTest : public TemplateURLServiceTestBase,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  static std::string ParamToTestSuffix(
+      const ::testing::TestParamInfo<bool>& info) {
+    std::string suffix =
+        info.param ? "SearchEngineChoiceEnabled" : "SearchEngineChoiceDisabled";
+
+    return suffix;
+  }
+
+  TemplateURLServicePlayApiTest() : TemplateURLServiceTestBase(GetParam()) {
+    EXPECT_EQ(
+        IsSearchEngineChoiceEnabled(),
+        base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TemplateURLServiceTestBase::TemplateURLServiceTestBase(
+    bool is_search_engine_choice_enabled)
+    : is_search_engine_choice_enabled_(is_search_engine_choice_enabled) {
   if (IsSearchEngineChoiceEnabled()) {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
   } else {
@@ -300,18 +341,18 @@ TemplateURLServiceTest::TemplateURLServiceTest() {
   }
 }
 
-void TemplateURLServiceTest::SetUp() {
+void TemplateURLServiceTestBase::SetUp() {
   test_util_ = std::make_unique<TemplateURLServiceTestUtil>(
-      TestingProfile::TestingFactories{
-          {HistoryServiceFactory::GetInstance(),
-           HistoryServiceFactory::GetDefaultFactory()}});
+      TestingProfile::TestingFactories{TestingProfile::TestingFactory{
+          HistoryServiceFactory::GetInstance(),
+          HistoryServiceFactory::GetDefaultFactory()}});
 }
 
-void TemplateURLServiceTest::TearDown() {
+void TemplateURLServiceTestBase::TearDown() {
   test_util_.reset();
 }
 
-TemplateURL* TemplateURLServiceTest::AddKeywordWithDate(
+TemplateURL* TemplateURLServiceTestBase::AddKeywordWithDate(
     const std::string& short_name,
     const std::string& keyword,
     const std::string& url,
@@ -329,7 +370,7 @@ TemplateURL* TemplateURLServiceTest::AddKeywordWithDate(
                               last_visited);
 }
 
-TemplateURL* TemplateURLServiceTest::AddExtensionSearchEngine(
+TemplateURL* TemplateURLServiceTestBase::AddExtensionSearchEngine(
     const std::string& keyword,
     const std::string& extension_name,
     bool wants_to_be_default_engine,
@@ -344,8 +385,8 @@ TemplateURL* TemplateURLServiceTest::AddExtensionSearchEngine(
   return test_util()->AddExtensionControlledTURL(std::move(ext_dse));
 }
 
-void TemplateURLServiceTest::AssertEquals(const TemplateURL& expected,
-                                          const TemplateURL& actual) {
+void TemplateURLServiceTestBase::AssertEquals(const TemplateURL& expected,
+                                              const TemplateURL& actual) {
   ASSERT_EQ(expected.short_name(), actual.short_name());
   ASSERT_EQ(expected.keyword(), actual.keyword());
   ASSERT_EQ(expected.url(), actual.url());
@@ -362,8 +403,8 @@ void TemplateURLServiceTest::AssertEquals(const TemplateURL& expected,
   ASSERT_EQ(expected.sync_guid(), actual.sync_guid());
 }
 
-void TemplateURLServiceTest::AssertEquals(const TemplateURL* expected,
-                                          const TemplateURL* actual) {
+void TemplateURLServiceTestBase::AssertEquals(const TemplateURL* expected,
+                                              const TemplateURL* actual) {
   ASSERT_TRUE(expected);
   ASSERT_TRUE(actual);
   if (expected == actual) {
@@ -373,15 +414,16 @@ void TemplateURLServiceTest::AssertEquals(const TemplateURL* expected,
   AssertEquals(*expected, *actual);
 }
 
-void TemplateURLServiceTest::AssertTimesEqual(const Time& expected,
-                                              const Time& actual) {
+void TemplateURLServiceTestBase::AssertTimesEqual(const Time& expected,
+                                                  const Time& actual) {
   // Because times are stored with a granularity of one second, there is a loss
   // of precision when serializing and deserializing the timestamps. Hence, only
   // expect timestamps to be equal to within one second of one another.
   ASSERT_LT((expected - actual).magnitude(), base::Seconds(1));
 }
 
-std::unique_ptr<TemplateURL> TemplateURLServiceTest::CreatePreloadedTemplateURL(
+std::unique_ptr<TemplateURL>
+TemplateURLServiceTestBase::CreatePreloadedTemplateURL(
     bool safe_for_autoreplace,
     int prepopulate_id) {
   TemplateURLData data;
@@ -398,7 +440,7 @@ std::unique_ptr<TemplateURL> TemplateURLServiceTest::CreatePreloadedTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
-void TemplateURLServiceTest::SetOverriddenEngines() {
+void TemplateURLServiceTestBase::SetOverriddenEngines() {
   // Set custom search engine as default fallback through overrides.
   base::Value::Dict entry;
   entry.Set("name", "override_name");
@@ -418,16 +460,16 @@ void TemplateURLServiceTest::SetOverriddenEngines() {
                      base::Value(std::move(overrides_list)));
 }
 
-void TemplateURLServiceTest::VerifyObserverCount(int expected_changed_count) {
+void TemplateURLServiceTestBase::VerifyObserverCount(
+    int expected_changed_count) {
   EXPECT_EQ(expected_changed_count, test_util_->GetObserverCount());
   test_util_->ResetObserverCount();
 }
 
-void TemplateURLServiceTest::VerifyObserverFired() {
+void TemplateURLServiceTestBase::VerifyObserverFired() {
   EXPECT_LE(1, test_util_->GetObserverCount());
   test_util_->ResetObserverCount();
 }
-
 
 // Actual tests ---------------------------------------------------------------
 
@@ -847,7 +889,8 @@ TEST_P(TemplateURLServiceTest, Reset) {
   AssertTimesEqual(now, read_url->last_modified());
 }
 
-TEST_P(TemplateURLServiceTest, CreateFromPlayAPI) {
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(TemplateURLServicePlayApiTest, CreateFromPlayAPI) {
   test_util()->VerifyLoad();
   const size_t initial_count = model()->GetTemplateURLs().size();
 
@@ -862,11 +905,12 @@ TEST_P(TemplateURLServiceTest, CreateFromPlayAPI) {
   const std::string image_translate_url = "https://site.com/transl";
   const std::string image_translate_source_language_param_key = "s";
   const std::string image_translate_target_language_param_key = "t";
-  TemplateURL* t_url = model()->CreatePlayAPISearchEngine(
-      short_name, keyword, search_url, suggest_url, favicon_url, new_tab_url,
-      image_url, image_url_post_params, image_translate_url,
-      image_translate_source_language_param_key,
-      image_translate_target_language_param_key);
+  TemplateURL* t_url = model()->Add(std::make_unique<TemplateURL>(
+      TemplateURLService::CreatePlayAPITemplateURLData(
+          keyword, short_name, search_url, suggest_url, favicon_url,
+          new_tab_url, image_url, image_url_post_params, image_translate_url,
+          image_translate_source_language_param_key,
+          image_translate_target_language_param_key)));
   ASSERT_TRUE(t_url);
   ASSERT_EQ(short_name, t_url->short_name());
   ASSERT_EQ(keyword, t_url->keyword());
@@ -895,7 +939,7 @@ TEST_P(TemplateURLServiceTest, CreateFromPlayAPI) {
   AssertEquals(*cloned_url, *read_url);
 }
 
-TEST_P(TemplateURLServiceTest, UpdateFromPlayAPI) {
+TEST_P(TemplateURLServicePlayApiTest, UpdateFromPlayAPI) {
   std::u16string keyword = u"keyword";
 
   // Add a new TemplateURL.
@@ -929,10 +973,11 @@ TEST_P(TemplateURLServiceTest, UpdateFromPlayAPI) {
 
   // The update creates a new Play API engine and deletes the old replaceable
   // one.
-  t_url = model()->CreatePlayAPISearchEngine(
-      new_short_name, keyword, new_search_url, new_suggest_url, new_favicon_url,
-      new_other_data, new_other_data, new_other_data, new_other_data,
-      new_other_data, new_other_data);
+  t_url = model()->Add(std::make_unique<TemplateURL>(
+      TemplateURLService::CreatePlayAPITemplateURLData(
+          keyword, new_short_name, new_search_url, new_suggest_url,
+          new_favicon_url, new_other_data, new_other_data, new_other_data,
+          new_other_data, new_other_data, new_other_data)));
   ASSERT_TRUE(t_url);
   ASSERT_EQ(new_short_name, t_url->short_name());
   ASSERT_EQ(keyword, t_url->keyword());
@@ -959,6 +1004,13 @@ TEST_P(TemplateURLServiceTest, UpdateFromPlayAPI) {
   ASSERT_TRUE(read_url);
   AssertEquals(*cloned_url, *read_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TemplateURLServicePlayApiTest,
+                         testing::Values(true, false),
+                         &TemplateURLServicePlayApiTest::ParamToTestSuffix);
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(TemplateURLServiceTest, DefaultSearchProvider) {
   // Add a new TemplateURL.
@@ -1207,7 +1259,7 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   const TemplateURL* initial_dse = model()->GetDefaultSearchProvider();
   ASSERT_TRUE(initial_dse);
@@ -1222,14 +1274,15 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
   EXPECT_NE(initial_dse, user_dse);
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
 
   // Check that initial search engine is returned as default after repair.
   ASSERT_EQ(initial_dse, model()->GetDefaultSearchProvider());
   // Check that initial_dse guid is stored in kSyncedDefaultSearchProviderGUID.
-  const std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  const std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(initial_dse->sync_guid(), dse_guid);
   EXPECT_EQ(initial_dse->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
@@ -1246,7 +1299,7 @@ TEST_P(TemplateURLServiceTest,
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   TemplateURL* overridden_engine =
       model()->GetTemplateURLForKeyword(u"override_keyword");
@@ -1262,7 +1315,8 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
 
@@ -1270,7 +1324,7 @@ TEST_P(TemplateURLServiceTest,
   ASSERT_EQ(overridden_engine, model()->GetDefaultSearchProvider());
   // Check that overridden_engine guid is stored in
   // kSyncedDefaultSearchProviderGUID.
-  const std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  const std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(overridden_engine->sync_guid(), dse_guid);
   EXPECT_EQ(overridden_engine->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
@@ -1286,7 +1340,7 @@ TEST_P(TemplateURLServiceTest,
   // there is sync activity.
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  EXPECT_TRUE(GetDefaultSearchProviderPrefValue(*prefs).empty());
+  EXPECT_TRUE(GetDefaultSearchProviderGuidFromPrefs(*prefs).empty());
 
   // Get initial DSE to check its guid later.
   const TemplateURL* initial_dse = model()->GetDefaultSearchProvider();
@@ -1299,7 +1353,8 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
   // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   // Add extension controlled default search engine.
   TemplateURL* extension_dse =
@@ -1307,14 +1362,15 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   // Check that user DSE guid is still stored in
   // kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(), GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_EQ(user_dse->sync_guid(),
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 
   model()->RepairPrepopulatedSearchEngines();
   // Check that extension engine is still default but sync guid is updated to
   // initial dse guid.
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   EXPECT_EQ(initial_dse->sync_guid(),
-            GetDefaultSearchProviderPrefValue(*prefs));
+            GetDefaultSearchProviderGuidFromPrefs(*prefs));
 }
 
 TEST_P(TemplateURLServiceTest, RepairStarterPackEngines) {
@@ -1369,13 +1425,13 @@ TEST_P(TemplateURLServiceTest, SetDefaultSearchProviderPref) {
   test_util()->VerifyLoad();
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  SetDefaultSearchProviderPrefValue(*prefs, pref_value);
+  SetDefaultSearchProviderGuidToPrefs(*prefs, pref_value);
 
   // Test that the correct preference is set when
-  // `SetDefaultSearchProviderPrefValue` is called.
+  // `SetDefaultSearchProviderGuidToPrefs` is called.
   if (IsSearchEngineChoiceEnabled()) {
     EXPECT_EQ(pref_value, prefs->GetString(prefs::kDefaultSearchProviderGUID));
-    EXPECT_EQ(std::string(),
+    EXPECT_EQ(pref_value,
               prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
   } else {
     EXPECT_EQ(std::string(),
@@ -1390,34 +1446,22 @@ TEST_P(TemplateURLServiceTest, GetDefaultSearchProviderPref) {
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
 
-  const std::string sync_pref_value = "sync";
   EXPECT_EQ(std::string(), prefs->GetString(prefs::kDefaultSearchProviderGUID));
   EXPECT_EQ(std::string(),
             prefs->GetString(prefs::kSyncedDefaultSearchProviderGUID));
 
-  if (IsSearchEngineChoiceEnabled()) {
-    const std::string no_sync_pref_value = "no_sync";
-    // Test that `GetDefaultSearchProviderPrefValue` will set the value of
-    // `kDefaultSearchProviderGUID` when it's empty with the value in
-    // `kSyncedDefaultSearchProviderGUID` and return that value.
-    prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
-    EXPECT_EQ(sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-    EXPECT_EQ(sync_pref_value,
-              prefs->GetString(prefs::kDefaultSearchProviderGUID));
+  const std::string sync_pref_value = "sync";
+  const std::string no_sync_pref_value = "no_sync";
 
-    // Test that `GetDefaultSearchProviderPrefValue` will not change the value
-    // of `kDefaultSearchProviderGUID` if the pref's value is already set.
-    prefs->SetString(prefs::kDefaultSearchProviderGUID, no_sync_pref_value);
-    EXPECT_EQ(no_sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-    EXPECT_EQ(no_sync_pref_value,
-              prefs->GetString(prefs::kDefaultSearchProviderGUID));
-  } else {
-    // Test that we get the correct value for
-    // `kSyncedDefaultSearchProviderGUID`.
-    EXPECT_EQ(std::string(), GetDefaultSearchProviderPrefValue(*prefs));
-    prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
-    EXPECT_EQ(sync_pref_value, GetDefaultSearchProviderPrefValue(*prefs));
-  }
+  prefs->SetString(prefs::kSyncedDefaultSearchProviderGUID, sync_pref_value);
+  prefs->SetString(prefs::kDefaultSearchProviderGUID, no_sync_pref_value);
+
+  // Test that `GetDefaultSearchProviderGuidFromPrefs` will return the value
+  // of `kDefaultSearchProviderGUID` when the `kSearchEngineChoiceTrigger`
+  // feature is enabled or `kSyncedDefaultSearchProviderGUID` otherwise.
+  EXPECT_EQ(
+      GetDefaultSearchProviderGuidFromPrefs(*prefs),
+      IsSearchEngineChoiceEnabled() ? no_sync_pref_value : sync_pref_value);
 }
 
 TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
@@ -1964,7 +2008,7 @@ TEST_P(TemplateURLServiceTest, SetDefaultExtensionEngineAndRemoveUserDSE) {
   EXPECT_EQ(ext_dse_ptr, model()->GetDefaultSearchProvider());
   auto* prefs = test_util()->profile()->GetTestingPrefService();
   ASSERT_TRUE(prefs);
-  std::string dse_guid = GetDefaultSearchProviderPrefValue(*prefs);
+  std::string dse_guid = GetDefaultSearchProviderGuidFromPrefs(*prefs);
   EXPECT_EQ(user_dse->sync_guid(), dse_guid);
 
   model()->Remove(user_dse);
@@ -1973,7 +2017,7 @@ TEST_P(TemplateURLServiceTest, SetDefaultExtensionEngineAndRemoveUserDSE) {
   test_util()->RemoveExtensionControlledTURL("extension_id");
   // The DSE is set to the fallback search engine.
   EXPECT_TRUE(model()->GetDefaultSearchProvider());
-  EXPECT_NE(dse_guid, GetDefaultSearchProviderPrefValue(*prefs));
+  EXPECT_NE(dse_guid, GetDefaultSearchProviderGuidFromPrefs(*prefs));
 }
 
 TEST_P(TemplateURLServiceTest, DefaultExtensionEnginePersist) {

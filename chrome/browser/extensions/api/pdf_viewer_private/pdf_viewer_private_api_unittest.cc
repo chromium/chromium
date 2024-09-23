@@ -14,7 +14,10 @@
 #include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/pdf/common/constants.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 
@@ -137,6 +140,49 @@ TEST_F(PdfViewerPrivateApiUnitTest, GetStreamInfoValid) {
 
   EXPECT_THAT(*result_dict, base::test::IsJson(kExpectedStreamInfo));
 }
+
+// Succeed in setting tab title for a full-page PDF.
+TEST_F(PdfViewerPrivateApiUnitTest, SetPdfDocumentTitleFullPagePdf) {
+  auto function =
+      base::MakeRefCounted<PdfViewerPrivateSetPdfDocumentTitleFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  // Simulate full-page PDF by setting the MIME type of `web_contents()` to
+  // "application/pdf".
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType(pdf::kPDFMimeType);
+
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(),
+                                          "[\"PDF title test\"]", profile()));
+
+  const std::u16string kExpectedTitle = u"PDF title test";
+  EXPECT_EQ(kExpectedTitle, web_contents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, web_contents()->GetTitle());
+}
+
+// The following test validates that the DCHECK fails if `setPdfDocumentTitle`
+// is not called from a full-page PDF. Outside of debug builds, this will kill
+// the renderer rather than crash, hence the test is only run in debug builds.
+#ifndef NDEBUG
+TEST_F(PdfViewerPrivateApiUnitTest, SetPdfDocumentTitleEmbeddedPdf) {
+  auto function =
+      base::MakeRefCounted<PdfViewerPrivateSetPdfDocumentTitleFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  // Simulate embedded PDF by setting the MIME type of `web_contents()` to
+  // "text/html".
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
+
+  // Setting title should crash if it's not a full-page PDF.
+  ASSERT_DEATH(api_test_utils::RunFunction(function.get(),
+                                           "[\"PDF title test\"]", profile()),
+               "");
+}
+#endif
 
 // Getting the stream info should fail if there isn't an embedder host.
 TEST_F(PdfViewerPrivateApiUnitTest, SetPdfPluginAttributesNoEmbedderHost) {

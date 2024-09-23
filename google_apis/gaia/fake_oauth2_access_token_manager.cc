@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
@@ -25,7 +26,12 @@ FakeOAuth2AccessTokenManager::FakeOAuth2AccessTokenManager(
     : OAuth2AccessTokenManager(delegate),
       auto_post_fetch_response_on_message_loop_(false) {}
 
-FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() = default;
+FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() {
+  CompleteRequests(
+      CoreAccountId(), true, FakeOAuth2AccessTokenManager::ScopeSet(),
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+      OAuth2AccessTokenConsumer::TokenResponse());
+}
 
 void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(
     const CoreAccountId& account_id,
@@ -158,19 +164,11 @@ FakeOAuth2AccessTokenManager::GetPendingRequests() {
   return valid_requests;
 }
 
-void FakeOAuth2AccessTokenManager::CancelAllRequests() {
-  CompleteRequests(
-      CoreAccountId(), true, FakeOAuth2AccessTokenManager::ScopeSet(),
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-      OAuth2AccessTokenConsumer::TokenResponse());
-}
-
 void FakeOAuth2AccessTokenManager::CancelRequestsForAccount(
-    const CoreAccountId& account_id) {
-  CompleteRequests(
-      account_id, true, FakeOAuth2AccessTokenManager::ScopeSet(),
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-      OAuth2AccessTokenConsumer::TokenResponse());
+    const CoreAccountId& account_id,
+    const GoogleServiceAuthError& error) {
+  CompleteRequests(account_id, true, FakeOAuth2AccessTokenManager::ScopeSet(),
+                   error, OAuth2AccessTokenConsumer::TokenResponse());
 }
 
 void FakeOAuth2AccessTokenManager::FetchOAuth2Token(

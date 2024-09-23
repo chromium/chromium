@@ -16,7 +16,6 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
     super.testGenCppIncludes();
     GEN(`
       #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-      #include "chrome/browser/web_applications/web_app_provider.h"
     `);
   }
 
@@ -27,17 +26,6 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxE2ETest {
         ->InstallSystemAppsForTesting();
   `);
     super.testGenPreamble();
-  }
-
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('TtsSettings', '/chromevox/common/tts_types.js'),
-    ]);
   }
 };
 

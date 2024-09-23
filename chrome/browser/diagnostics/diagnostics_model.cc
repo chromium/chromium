@@ -34,8 +34,6 @@ const int DiagnosticsModel::kDiagnosticsTestCount = 19;
 #else
 const int DiagnosticsModel::kDiagnosticsTestCount = 17;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#elif BUILDFLAG(IS_FUCHSIA)
-const int DiagnosticsModel::kDiagnosticsTestCount = 17;
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -214,31 +212,6 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
   DiagnosticsModelPosix& operator=(const DiagnosticsModelPosix&) = delete;
 };
 
-#elif BUILDFLAG(IS_FUCHSIA)
-class DiagnosticsModelFuchsia : public DiagnosticsModelImpl {
- public:
-  DiagnosticsModelFuchsia() {
-    // TODO(crbug.com/1234737) Check that the list of diagnostic is correct.
-    tests_.push_back(MakeInstallTypeTest());
-    tests_.push_back(MakeVersionTest());
-    tests_.push_back(MakeUserDirTest());
-    tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
-    tests_.push_back(MakeResourcesFileTest());
-    tests_.push_back(MakeDiskSpaceTest());
-    tests_.push_back(MakePreferencesTest());
-    tests_.push_back(MakeLocalStateTest());
-    tests_.push_back(MakeLocalOrSyncableBookmarksTest());
-    tests_.push_back(MakeAccountBookmarksTest());
-    tests_.push_back(MakeSqliteWebDataDbTest());
-    tests_.push_back(MakeSqliteCookiesDbTest());
-    tests_.push_back(MakeSqliteFaviconsDbTest());
-    tests_.push_back(MakeSqliteHistoryDbTest());
-    tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
-  }
-};
-
 #endif
 
 }  // namespace
@@ -254,8 +227,6 @@ DiagnosticsModel* MakeDiagnosticsModel(const base::CommandLine& cmdline) {
   return new DiagnosticsModelMac();
 #elif BUILDFLAG(IS_POSIX)
   return new DiagnosticsModelPosix();
-#elif BUILDFLAG(IS_FUCHSIA)
-  return new DiagnosticsModelFuchsia();
 #endif
 }
 

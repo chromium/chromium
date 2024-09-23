@@ -40,7 +40,7 @@ std::string ComputeNetworkId(
     combined_ids = combined_ids + "!" + network_info.network_id;
   }
 
-  auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(combined_ids)));
+  auto hash = base::SHA1Hash(base::as_byte_span(combined_ids));
   return base::ToLowerASCII(base::HexEncode(hash));
 }
 

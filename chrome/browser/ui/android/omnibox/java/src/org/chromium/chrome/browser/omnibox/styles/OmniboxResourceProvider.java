@@ -24,7 +24,6 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -146,15 +145,16 @@ public class OmniboxResourceProvider {
      * Returns the ColorScheme based on the incognito state and the background color.
      *
      * @param context The {@link Context}.
-     * @param isIncognito Whether incognito mode is enabled.
+     * @param isIncognitoBranded Whether incognito mode is enabled.
      * @param primaryBackgroundColor The primary background color of the omnibox.
      * @return The {@link BrandedColorScheme}.
      */
     public static @BrandedColorScheme int getBrandedColorScheme(
-            Context context, boolean isIncognito, @ColorInt int primaryBackgroundColor) {
-        if (isIncognito) return BrandedColorScheme.INCOGNITO;
+            Context context, boolean isIncognitoBranded, @ColorInt int primaryBackgroundColor) {
+        if (isIncognitoBranded) return BrandedColorScheme.INCOGNITO;
 
-        if (ThemeUtils.isUsingDefaultToolbarColor(context, isIncognito, primaryBackgroundColor)) {
+        if (ThemeUtils.isUsingDefaultToolbarColor(
+                context, isIncognitoBranded, primaryBackgroundColor)) {
             return BrandedColorScheme.APP_DEFAULT;
         }
 
@@ -381,10 +381,35 @@ public class OmniboxResourceProvider {
      * the given context.
      */
     public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
-        return OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                ? ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_bg_elevation_modern)
-                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+        return ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+    }
+
+    /**
+     * Returns the background color for the suggestions dropdown in a "standard" (non-incognito)
+     * TabModel with the given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownStandardBackgroundColor(Context context) {
+        return ChromeColors.getSurfaceColor(
+                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+    }
+
+    /**
+     * Returns the background color for the suggestions dropdown in an incognito TabModel with the
+     * given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownIncognitoBackgroundColor(Context context) {
+        return context.getColor(R.color.omnibox_dropdown_bg_incognito);
+    }
+
+    /**
+     * Returns the background color for the suggestions dropdown for the given {@link
+     * BrandedColorScheme} with the given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownBackgroundColorForColorScheme(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        return brandedColorScheme == BrandedColorScheme.INCOGNITO
+                ? getSuggestionsDropdownIncognitoBackgroundColor(context)
+                : getSuggestionsDropdownStandardBackgroundColor(context);
     }
 
     /**
@@ -418,11 +443,6 @@ public class OmniboxResourceProvider {
 
     /** Get the top padding for the MV carousel. */
     public static @Px int getMostVisitedCarouselTopPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-        }
-
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller);
@@ -430,11 +450,6 @@ public class OmniboxResourceProvider {
 
     /** Get the bottom padding for the MV carousel. */
     public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-        }
-
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
@@ -458,10 +473,6 @@ public class OmniboxResourceProvider {
      * focused.
      */
     public static @Px int getFocusedStatusViewLeftSpacing(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return 0;
-        }
-
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.location_bar_status_view_left_space_width_bigger);
     }
@@ -471,15 +482,8 @@ public class OmniboxResourceProvider {
      * focused.
      */
     public static @Px int getToolbarOnFocusHeightIncrease(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return 0;
-        }
-
         return context.getResources()
-                .getDimensionPixelSize(
-                        OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                                ? R.dimen.toolbar_url_focus_height_increase_active_color
-                                : R.dimen.toolbar_url_focus_height_increase_no_active_color);
+                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
     }
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
@@ -489,18 +493,16 @@ public class OmniboxResourceProvider {
 
     /**
      * Returns the amount of pixels for the toolbar's side padding when the omnibox is pinned on the
-     * top of the screen in both the start surface and NTP.
+     * top of the screen in NTP.
      */
-    public static @Px int getToolbarSidePaddingForStartSurfaceOrNtp(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.toolbar_edge_padding_modern_polish);
+    public static @Px int getToolbarSidePaddingForNtp(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
     }
 
     /** Return the width of the Omnibox Suggestion decoration icon. */
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
         Context wrappedContext = maybeReplaceContextForSmallTabletWindow(context);
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && wrappedContext == context) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_modern);
@@ -539,8 +541,7 @@ public class OmniboxResourceProvider {
      */
     @VisibleForTesting
     static Context maybeReplaceContextForSmallTabletWindow(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return context;
         }
 
@@ -553,5 +554,14 @@ public class OmniboxResourceProvider {
         newConfig.smallestScreenWidthDp = existingConfig.screenWidthDp;
 
         return context.createConfigurationContext(newConfig);
+    }
+
+    /**
+     * @param context The context to retrieve the resources from.
+     * @return the color for the additional text.
+     */
+    @ColorInt
+    public static int getAdditionalTextColor(Context context) {
+        return SemanticColorUtils.getDefaultTextColorSecondary(context);
     }
 }

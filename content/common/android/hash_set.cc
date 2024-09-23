@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/jar_jni/HashSet_jni.h"
 
 namespace content {

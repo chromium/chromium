@@ -25,8 +25,6 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) {}
 
-  virtual void OnWebAppProfileWillBeDeleted(const webapps::AppId& app_id) {}
-
   virtual void OnAppRegistrarDestroyed() = 0;
 
   // Called after remembering the user choice to always launch an app via

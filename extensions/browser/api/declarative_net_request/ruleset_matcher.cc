@@ -29,6 +29,13 @@ namespace {
 using ExtensionMetadataList =
     flatbuffers::Vector<flatbuffers::Offset<flat::UrlRuleMetadata>>;
 
+// These constants specify the number of, the minimum, and the maximum buckets
+// for histograms which record the evaluation time for a request against a
+// single DNR ruleset.
+constexpr int kRequestActionTimeUmaBucketCount = 50;
+constexpr base::TimeDelta kRequestActionUmaMinTime = base::Microseconds(1);
+constexpr base::TimeDelta kRequestActionUmaMaxTime = base::Seconds(3);
+
 size_t ComputeUnsafeRuleCount(const ExtensionMetadataList* metadata_list) {
   size_t unsafe_rule_count = 0;
   for (const auto* url_rule_metadata : *metadata_list) {
@@ -41,6 +48,192 @@ size_t ComputeUnsafeRuleCount(const ExtensionMetadataList* metadata_list) {
 
 bool IsRulesetStatic(const RulesetID& id) {
   return id != kDynamicRulesetID && id != kSessionRulesetID;
+}
+
+void RecordOnBeforeRequestActionTime(const base::TimeTicks& start_time,
+                                     const base::TimeDelta& regex_time,
+                                     const base::TimeDelta& total_time,
+                                     int rules_count,
+                                     int regex_rules_count) {
+  int percent_taken_by_regex = 0;
+  // It's possible that the rule evaluation took no measurable time; be sure we
+  // don't divide by zero.
+  if (regex_time.is_positive()) {
+    percent_taken_by_regex =
+        static_cast<int>((regex_time / total_time) * 100.0);
+  }
+
+  if (regex_rules_count > 0) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Extensions.DeclarativeNetRequest."
+        "RegexRulesBeforeRequestEvaluationPercentage",
+        percent_taken_by_regex);
+
+    if (regex_rules_count < 15) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
+          "LessThan15Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else if (regex_rules_count < 100) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
+          "15To100Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else if (regex_rules_count < 500) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
+          "100To500Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
+          "Over500Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    }
+  }
+
+  if (rules_count < 1000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "LessThan1000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 10000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "1000To10000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 30000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "10000To30000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 100000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "30000To100000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 300000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "100000To300000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingBeforeRequestActionTime."
+        "Over300000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  }
+}
+
+void RecordOnHeadersReceivedActionTime(const base::TimeTicks& start_time,
+                                       const base::TimeDelta& regex_time,
+                                       const base::TimeDelta& total_time,
+                                       int rules_count,
+                                       int regex_rules_count) {
+  int percent_taken_by_regex = 0;
+  // It's possible that the rule evaluation took no measurable time; be sure we
+  // don't divide by zero.
+  if (regex_time.is_positive()) {
+    percent_taken_by_regex =
+        static_cast<int>((regex_time / total_time) * 100.0);
+  }
+
+  if (regex_rules_count > 0) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Extensions.DeclarativeNetRequest."
+        "RegexRulesHeadersReceivedEvaluationPercentage",
+        percent_taken_by_regex);
+
+    if (regex_rules_count < 15) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest."
+          "RegexRulesHeadersReceivedActionTime."
+          "LessThan15Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else if (regex_rules_count < 100) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest."
+          "RegexRulesHeadersReceivedActionTime."
+          "15To100Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else if (regex_rules_count < 500) {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest."
+          "RegexRulesHeadersReceivedActionTime."
+          "100To500Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Extensions.DeclarativeNetRequest."
+          "RegexRulesHeadersReceivedActionTime."
+          "Over500Rules",
+          regex_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+          kRequestActionTimeUmaBucketCount);
+    }
+  }
+
+  if (rules_count < 1000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "LessThan1000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 10000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "1000To10000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 30000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "10000To30000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 100000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "30000To100000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else if (rules_count < 300000) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "100000To300000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.DeclarativeNetRequest."
+        "RulesetMatchingHeadersReceivedActionTime."
+        "Over300000Rules",
+        total_time, kRequestActionUmaMinTime, kRequestActionUmaMaxTime,
+        kRequestActionTimeUmaBucketCount);
+  }
 }
 
 }  // namespace
@@ -68,122 +261,44 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
 
 RulesetMatcher::~RulesetMatcher() = default;
 
-std::optional<RequestAction> RulesetMatcher::GetBeforeRequestAction(
-    const RequestParams& params) const {
+std::optional<RequestAction> RulesetMatcher::GetAction(
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   base::TimeTicks start_time = base::TimeTicks::Now();
   std::optional<RequestAction> regex_result =
-      regex_matcher_.GetBeforeRequestAction(params);
+      regex_matcher_.GetAction(params, stage);
   base::TimeDelta regex_time = base::TimeTicks::Now() - start_time;
   std::optional<RequestAction> url_pattern_result =
-      url_matcher_.GetBeforeRequestAction(params);
+      url_matcher_.GetAction(params, stage);
   std::optional<RequestAction> final_result = GetMaxPriorityAction(
       std::move(url_pattern_result), std::move(regex_result));
   base::TimeDelta total_time = base::TimeTicks::Now() - start_time;
-  int regex_rules_count =
-      GetRegexRulesCount(RulesetMatchingStage::kOnBeforeRequest);
-  int rules_count = GetRulesCount(RulesetMatchingStage::kOnBeforeRequest);
+  int regex_rules_count = GetRegexRulesCount(stage);
+  int rules_count = GetRulesCount(stage);
 
-  int percent_taken_by_regex = 0;
-  // It's possible that the rule evaluation took no measurable time; be sure we
-  // don't divide by zero.
-  if (regex_time.is_positive()) {
-    percent_taken_by_regex =
-        static_cast<int>((regex_time / total_time) * 100.0);
-  }
-
-  constexpr int kBucketCount = 50;
-  constexpr base::TimeDelta kMinTime = base::Microseconds(1);
-  constexpr base::TimeDelta kMaxTime = base::Seconds(3);
-
-  if (regex_rules_count > 0) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Extensions.DeclarativeNetRequest.RegexRulesEvaluationPercentage",
-        percent_taken_by_regex);
-
-    if (regex_rules_count < 15) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
-          "LessThan15Rules",
-          regex_time, kMinTime, kMaxTime, kBucketCount);
-    } else if (regex_rules_count < 100) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
-          "15To100Rules",
-          regex_time, kMinTime, kMaxTime, kBucketCount);
-    } else if (regex_rules_count < 500) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
-          "100To500Rules",
-          regex_time, kMinTime, kMaxTime, kBucketCount);
-    } else {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime."
-          "Over500Rules",
-          regex_time, kMinTime, kMaxTime, kBucketCount);
-    }
-  }
-
-  if (rules_count < 1000) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "LessThan1000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
-  } else if (rules_count < 10000) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "1000To10000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
-  } else if (rules_count < 30000) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "10000To30000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
-  } else if (rules_count < 100000) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "30000To100000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
-  } else if (rules_count < 300000) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "100000To300000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
-  } else {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.DeclarativeNetRequest."
-        "RulesetMatchingBeforeRequestActionTime."
-        "Over300000Rules",
-        total_time, kMinTime, kMaxTime, kBucketCount);
+  switch (stage) {
+    case RulesetMatchingStage::kOnBeforeRequest:
+      RecordOnBeforeRequestActionTime(start_time, regex_time, total_time,
+                                      rules_count, regex_rules_count);
+      break;
+    case RulesetMatchingStage::kOnHeadersReceived:
+      RecordOnHeadersReceivedActionTime(start_time, regex_time, total_time,
+                                        rules_count, regex_rules_count);
+      break;
   }
 
   return final_result;
 }
 
-std::optional<RequestAction> RulesetMatcher::GetOnHeadersReceivedAction(
-    const RequestParams& params) const {
-  std::optional<RequestAction> regex_result =
-      regex_matcher_.GetHeadersReceivedAction(params);
-  std::optional<RequestAction> url_pattern_result =
-      url_matcher_.GetHeadersReceivedAction(params);
-  return GetMaxPriorityAction(std::move(url_pattern_result),
-                              std::move(regex_result));
-
-  // TODO(kelvinjiang): Log histograms for headers received actions.
-}
-
 std::vector<RequestAction> RulesetMatcher::GetModifyHeadersActions(
     const RequestParams& params,
+    RulesetMatchingStage stage,
     std::optional<uint64_t> min_priority) const {
   std::vector<RequestAction> modify_header_actions =
-      url_matcher_.GetModifyHeadersActions(params, min_priority);
+      url_matcher_.GetModifyHeadersActions(params, stage, min_priority);
 
   std::vector<RequestAction> regex_modify_header_actions =
-      regex_matcher_.GetModifyHeadersActions(params, min_priority);
+      regex_matcher_.GetModifyHeadersActions(params, stage, min_priority);
 
   modify_header_actions.insert(
       modify_header_actions.end(),
@@ -257,7 +372,7 @@ size_t RulesetMatcher::GetRulesCount(RulesetMatchingStage stage) const {
              regex_matcher_.GetHeadersReceivedRulesCount();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0u;
 }
 
@@ -269,7 +384,7 @@ size_t RulesetMatcher::GetRegexRulesCount(RulesetMatchingStage stage) const {
       return regex_matcher_.GetHeadersReceivedRulesCount();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0u;
 }
 

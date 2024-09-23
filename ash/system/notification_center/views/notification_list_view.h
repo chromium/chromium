@@ -29,6 +29,7 @@ class Notification;
 namespace ash {
 
 class NotificationCenterView;
+class MessageViewContainer;
 
 // Manages list of notifications. The class doesn't know about the ScrollView
 // it's enclosed. This class is used only from NotificationCenterView.
@@ -110,6 +111,10 @@ class ASH_EXPORT NotificationListView
   // Returns true if `animation_` is currently in progress.
   bool IsAnimating() const;
 
+  // Current progress of the animation between 0.0 and 1.0. Returns 1.0 when
+  // it's not animating.
+  double GetCurrentAnimationValue() const;
+
   // Returns whether `message_view_container` is being animated for expand or
   // collapse.
   bool IsAnimatingExpandOrCollapseContainer(const views::View* view) const;
@@ -122,7 +127,8 @@ class ASH_EXPORT NotificationListView
   void ChildPreferredSizeChanged(views::View* child) override;
   void PreferredSizeChanged() override;
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // message_center::NotificationViewController:
   void AnimateResize() override;
@@ -179,7 +185,6 @@ class ASH_EXPORT NotificationListView
   friend class NotificationListViewTest;
   friend class UnifiedMessageCenterBubbleTest;
   class Background;
-  class MessageViewContainer;
 
   // NotificationListView always runs a single animation at one time. When
   // `state_` is IDLE, `animation_->is_animating()` is always false and vice
@@ -217,10 +222,6 @@ class ASH_EXPORT NotificationListView
 
   // Returns the first removable notification from the top.
   MessageViewContainer* GetNextRemovableNotification();
-
-  // Current progress of the animation between 0.0 and 1.0. Returns 1.0 when
-  // it's not animating.
-  double GetCurrentValue() const;
 
   // Collapses all the existing notifications. It does not trigger
   // PreferredSizeChanged() (See |ignore_size_change_|).

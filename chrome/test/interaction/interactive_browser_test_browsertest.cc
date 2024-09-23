@@ -8,14 +8,22 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/test/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/test_switches.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace {
@@ -527,9 +535,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      // This is needed to prevent subsequent navigation from causing the
-      // previous step to fail due to the element immediately losing visibility.
-      FlushEvents(),
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));
@@ -551,9 +556,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      // This is needed to prevent subsequent navigation from causing the
-      // previous step to fail due to the element immediately losing visibility.
-      FlushEvents(),
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));
@@ -644,4 +646,132 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestCodeCoverageBrowsertest,
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       NavigateWebContents(kWebContentsId, GURL("chrome://history")));
+}
+
+namespace {
+
+class TestDialog : public views::DialogDelegateView {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
+  TestDialog() { SetProperty(views::kElementIdentifierKey, kElementId); }
+  ~TestDialog() override = default;
+
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return gfx::Size(200, 200);
+  }
+
+  static views::Widget* Show(Browser* parent, ui::mojom::ModalType modal_type) {
+    auto dialog = std::make_unique<TestDialog>();
+    dialog->SetModalType(modal_type);
+    views::Widget* widget = nullptr;
+    switch (modal_type) {
+      case ui::mojom::ModalType::kWindow:
+        widget = constrained_window::CreateBrowserModalDialogViews(
+            std::move(dialog), parent->window()->GetNativeWindow());
+        break;
+      case ui::mojom::ModalType::kChild:
+        widget = constrained_window::CreateWebModalDialogViews(
+            dialog.release(),
+            parent->tab_strip_model()->GetActiveWebContents());
+        break;
+      case ui::mojom::ModalType::kSystem:
+      case ui::mojom::ModalType::kNone:
+        widget = views::DialogDelegate::CreateDialogWidget(
+            std::move(dialog), nullptr,
+            BrowserView::GetBrowserViewForBrowser(parent)
+                ->GetWidget()
+                ->GetNativeView());
+        break;
+    }
+    widget->Show();
+    return widget;
+  }
+};
+
+// Scoped object that closes a widget it does not own.
+class SafeWidgetRef {
+ public:
+  SafeWidgetRef() = default;
+  SafeWidgetRef(const SafeWidgetRef&) = delete;
+  SafeWidgetRef& operator=(views::Widget* widget) {
+    if (widget != widget_) {
+      Close();
+      widget_ = widget;
+    }
+    return *this;
+  }
+  ~SafeWidgetRef() { Close(); }
+
+  void Close() {
+    if (views::Widget* widget = widget_.get()) {
+      widget_ = nullptr;
+      if (!widget->IsClosed()) {
+        widget->CloseNow();
+      }
+    }
+  }
+
+  views::Widget* operator->() { return widget_.get(); }
+
+ private:
+  raw_ptr<views::Widget> widget_ = nullptr;
+};
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TestDialog, kElementId);
+
+}  // namespace
+
+class InteractiveBrowserTestDialogBrowsertest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<ui::mojom::ModalType> {
+ public:
+  InteractiveBrowserTestDialogBrowsertest() = default;
+  ~InteractiveBrowserTestDialogBrowsertest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    InteractiveBrowserTestDialogBrowsertest,
+    ::testing::Values(
+        ui::mojom::ModalType::kNone,
+        ui::mojom::ModalType::kChild,
+        ui::mojom::ModalType::kWindow
+#if !BUILDFLAG(IS_MAC)
+        // System modals not supported on mac; see crbug.com/335864910
+        ,
+        ui::mojom::ModalType::kSystem
+#endif
+        ),
+    [](const testing::TestParamInfo<ui::mojom::ModalType>& param) {
+      switch (param.param) {
+        case ui::mojom::ModalType::kNone:
+          return "None";
+        case ui::mojom::ModalType::kChild:
+          return "Child";
+        case ui::mojom::ModalType::kWindow:
+          return "Window";
+        case ui::mojom::ModalType::kSystem:
+          return "System";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
+                       BrowserModalDialogContext) {
+  SafeWidgetRef widget;
+  RunTestSequence(
+      Do([this, &widget]() {
+        widget = TestDialog::Show(browser(), GetParam());
+      }),
+      InAnyContext(WaitForShow(TestDialog::kElementId)),
+      InSameContext(Steps(
+          CheckView(
+              TestDialog::kElementId,
+              [](views::View* view) { return view->GetWidget()->parent(); },
+              BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
+          CheckElement(
+              TestDialog::kElementId,
+              [](ui::TrackedElement* el) { return el->context(); },
+              browser()->window()->GetElementContext()))));
 }

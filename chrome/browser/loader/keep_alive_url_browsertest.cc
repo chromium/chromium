@@ -15,15 +15,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
-#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -277,7 +272,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   request_handler->Done();
 
   // The response should be processed by browser before shutting down.
-  // TODO(crbug.com/1356128): Deflake WaitForTotalOnReceiveResponseProcessed
+  // TODO(crbug.com/40236167): Deflake WaitForTotalOnReceiveResponseProcessed
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -411,162 +406,6 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   // The redirects/response should all be processed in browser.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(2);
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
-}
-
-// Browser tests to cover Chrome's Safe Browsing-specific behaviors when
-// handling fetch keepalive requests in browser.
-//
-// This test fixture utilizes a fake SafeBrowsingServiceFactory to reliably
-// reproduce safe browsing behaviors. Otherwise, the normal behavior may rely on
-// querying local URL database & remote server that changes from times to times.
-// TODO(crbug.com/1487858): Remove this test once kSafeBrowsingSkipSubresources
-// is fully rolled out.
-class ChromeKeepAliveURLSafeBrowsingBrowserTest
-    : public ChromeKeepAliveURLBrowserTestBase,
-      public ::testing::WithParamInterface<std::string> {
- public:
-  ChromeKeepAliveURLSafeBrowsingBrowserTest()
-      : safe_browsing_factory_(
-            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
-    feature_list_.InitWithFeaturesAndParameters(
-        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{blink::features::kKeepAliveInBrowserMigration, {}}}),
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
-            // We need to disable the skip subresource flag because fetch() is
-            // not checked by Safe Browsing when the flag is enabled.
-            {safe_browsing::kSafeBrowsingSkipSubresources}));
-  }
-
- protected:
-  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-    ChromeKeepAliveURLBrowserTestBase::CreatedBrowserMainParts(parts);
-
-    // Replace SafeBrowsingServiceFactory with a fake one that uses test
-    // database such that tests can register dangerous URLs manually.
-    safe_browsing_factory_->SetTestDatabaseManager(
-        new safe_browsing::FakeSafeBrowsingDatabaseManager(
-            content::GetUIThreadTaskRunner({}),
-            content::GetIOThreadTaskRunner({})));
-    safe_browsing::SafeBrowsingService::RegisterFactory(
-        safe_browsing_factory_.get());
-  }
-
-  void SetUpOnMainThread() override {
-    ChromeKeepAliveURLBrowserTestBase::SetUpOnMainThread();
-
-    CHECK(safe_browsing_factory_->test_safe_browsing_service());
-  }
-
-  void TearDown() override {
-    ChromeKeepAliveURLBrowserTestBase::TearDown();
-
-    safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
-  }
-
-  // Marks `url` as with `threat_type` in the fake Safe Browsing database.
-  void MarkURLThreatType(const GURL& url,
-                         safe_browsing::SBThreatType threat_type) {
-    static_cast<safe_browsing::FakeSafeBrowsingDatabaseManager*>(
-        safe_browsing_factory_->test_safe_browsing_service()
-            ->database_manager()
-            .get())
-        ->AddDangerousUrl(url, threat_type);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  const std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
-      safe_browsing_factory_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ChromeKeepAliveURLSafeBrowsingBrowserTest,
-    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
-                      net::HttpRequestHeaders::kPostMethod),
-    [](const testing::TestParamInfo<
-        ChromeKeepAliveURLSafeBrowsingBrowserTest::ParamType>& info) {
-      return info.param;
-    });
-
-// Checks that when a fetch keepalive request's redirect is handled in browser
-// and when the redirect target points to a safe URL, the browser will perform
-// the redirect.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTest,
-                       ReceiveRedirectToSafePageAfterPageUnload) {
-  const std::string method = GetParam();
-  const char redirect_target[] = "/safe";
-  auto request_handlers =
-      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
-  ASSERT_TRUE(server()->Start());
-
-  const auto safe_url = server()->GetURL(redirect_target);
-  MarkURLThreatType(safe_url, safe_browsing::SB_THREAT_TYPE_SAFE);
-
-  // Set up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
-  // --> http://a.com:<port>/safe
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handlers[0].get(),
-      base::StringPrintf(k301ResponseTemplate, safe_url.spec().c_str()));
-
-  // The redirect request should be executed.
-  request_handlers[1]->WaitForRequest();
-  EXPECT_TRUE(request_handlers[1]->has_received_request());
-  // Ends the keepalive request by sending back final response.
-  request_handlers[1]->Send(k200TextResponse);
-  request_handlers[1]->Done();
-
-  // The redirect/response should all be processed in browser.
-  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
-  loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
-}
-
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
-class ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig
-    : public ChromeKeepAliveURLSafeBrowsingBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ChromeKeepAliveURLSafeBrowsingBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("disable-field-trial-config");
-  }
-};
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
-    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
-                      net::HttpRequestHeaders::kPostMethod),
-    [](const testing::TestParamInfo<
-        ChromeKeepAliveURLSafeBrowsingBrowserTest::ParamType>& info) {
-      return info.param;
-    });
-
-// Checks that when a fetch keepalive request's redirect is handled in browser
-// and when the redirect target points to a dangerous URL, the browser will not
-// perform the redirect.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
-                       ReceiveRedirectToMalwareAfterPageUnload) {
-  const std::string method = GetParam();
-  const char redirect_target[] = "/malware";
-  auto request_handlers =
-      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
-  ASSERT_TRUE(server()->Start());
-
-  const auto malware_url = server()->GetURL(redirect_target);
-  MarkURLThreatType(malware_url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
-
-  // Set up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
-  // --> http://a.com:<port>/malware
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(kPrimaryHost, method), request_handlers[0].get(),
-      base::StringPrintf(k301ResponseTemplate, malware_url.spec().c_str()));
-
-  // The redirect should be processed in browser.
-  // Try to wait such that KeepAliveURLLoader can process the redirect and
-  // reject it.
-  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
-  loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_ABORTED});
 }
 
 // Chrome browser tests to cover variation header-related behaviors for fetch

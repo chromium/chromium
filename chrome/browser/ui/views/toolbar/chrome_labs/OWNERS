@@ -1,0 +1,6 @@
+# elainechien: I no longer work on Chrome, but I'm still happy to answer
+# questions about Chrome Labs. This feature is only on pre-stable channels and
+# does not require much maintenance anymore, so please send code reviews to
+# ellyjones@chromium.org or chrome/browser/ui/views/OWNERS when possible.
+elainechien@chromium.org
+ellyjones@chromium.org

@@ -5,6 +5,7 @@
 import {ComponentType} from './shimless_rma.mojom-webui.js';
 
 export const ComponentTypeToId: {[key in ComponentType]: string} = {
+  [ComponentType.kComponentUnknown]: '',
   [ComponentType.kAudioCodec]: 'componentAudio',
   [ComponentType.kBattery]: 'componentBattery',
   [ComponentType.kStorage]: 'componentStorage',

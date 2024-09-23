@@ -71,6 +71,30 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   CHECK(delegate_);
 
   gtk_context_ = gtk_im_multicontext_new();
+
+  static const char kAllowGtkWaylandIm[] = "allow-gtk-wayland-im";
+  static const gchar* const kContextIdWayland = "wayland";
+  static const gchar* kContextIdIbus = "ibus";
+  const gchar* context_id = gtk_im_multicontext_get_context_id(
+      GTK_IM_MULTICONTEXT(gtk_context_.get()));
+  // switch to allow wayland IM module if it is picked.
+  if (context_id) {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kAllowGtkWaylandIm) &&
+        (std::string(context_id) == kContextIdWayland)) {
+      // The wayland IM module doesn't work at all because of our usage of dummy
+      // window. So try using ibus module instead. Direct Wayland IM integration
+      // is being tracked under crbug.com/40113488.
+      // TODO(crbug.com/40801194) Remove this if dummy window is no longer used.
+      VLOG(1) << "Overriding wayland IM context to ibus";
+      gtk_im_multicontext_set_context_id(
+          GTK_IM_MULTICONTEXT(gtk_context_.get()), kContextIdIbus);
+    } else {
+      // This is the case where a non-wayland IM module is picked as per the
+      // user's configuration.
+      VLOG(1) << "Using GTK IM context: " << context_id;
+    }
+  }
   gtk_simple_context_ = gtk_im_context_simple_new();
 
   auto connect = [&](const char* detailed_signal, auto receiver) {
@@ -158,7 +182,7 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   // alternative API called gtk_im_context_filter_key() was added for clients
   // that would have needed to construct their own event.  The parameters to
   // the new API are just a deconstructed version of a KeyEvent.
-  bool press = key_event.type() == ui::ET_KEY_PRESSED;
+  bool press = key_event.type() == ui::EventType::kKeyPressed;
   auto* surface =
       gtk_native_get_surface(gtk_widget_get_native(GetDummyWindow()));
   auto* device = gdk_seat_get_keyboard(
@@ -231,6 +255,7 @@ void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
 void InputMethodContextImplGtk::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
+    const gfx::Range& composition_range,
     const gfx::Range& selection_range,
     const std::optional<ui::GrammarFragment>& fragment,
     const std::optional<ui::AutocorrectInfo>& autocorrect) {}

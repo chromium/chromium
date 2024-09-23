@@ -15,10 +15,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
@@ -69,7 +72,8 @@ public class SelectableListLayout<E> extends FrameLayout
     SelectableListToolbar<E> mToolbar;
     private FadingShadowView mToolbarShadow;
 
-    private int mEmptyStringResId;
+    private @StringRes int mEmptyStringResId;
+    private CharSequence mEmptySubheadingString;
 
     private UiConfig mUiConfig;
 
@@ -207,35 +211,84 @@ public class SelectableListLayout<E> extends FrameLayout
     /**
      * Initializes the SelectionToolbar.
      *
-     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into
-     *                        a ViewStub.
+     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into a
+     *     ViewStub.
      * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
      * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
-     *                   set a title when the selection is cleared.
+     *     set a title when the selection is cleared.
      * @param normalGroupResId The resource id of the menu group to show when a selection isn't
-     *                         established.
+     *     established.
      * @param selectedGroupResId The resource id of the menu item to show when a selection is
-     *                           established.
+     *     established.
      * @param listener The OnMenuItemClickListener to set on the toolbar.
      * @param updateStatusBarColor Whether the status bar color should be updated to match the
-     *                             toolbar color. If true, the status bar will only be updated if
-     *                             the current device fully supports theming and is on Android M+.
+     *     toolbar color. If true, the status bar will only be updated if the current device fully
+     *     supports theming and is on Android M+.
      * @return The initialized SelectionToolbar.
      */
     public SelectableListToolbar<E> initializeToolbar(
-            int toolbarLayoutId,
+            @LayoutRes int toolbarLayoutId,
             SelectionDelegate<E> delegate,
-            int titleResId,
-            int normalGroupResId,
-            int selectedGroupResId,
+            @StringRes int titleResId,
+            @IdRes int normalGroupResId,
+            @IdRes int selectedGroupResId,
             @Nullable OnMenuItemClickListener listener,
             boolean updateStatusBarColor) {
+        return initializeToolbar(
+                toolbarLayoutId,
+                delegate,
+                titleResId,
+                normalGroupResId,
+                selectedGroupResId,
+                listener,
+                updateStatusBarColor,
+                /* menuResId= */ 0,
+                false);
+    }
+
+    /**
+     * Initializes the SelectionToolbar with the option to show the back button in normal view.
+     * #onNavigationBack must also be overridden in order to assign behavior to the button.
+     *
+     * @param toolbarLayoutId The resource id of the toolbar layout. This will be inflated into a
+     *     ViewStub.
+     * @param delegate The SelectionDelegate that will inform the toolbar of selection changes.
+     * @param titleResId The resource id of the title string. May be 0 if this class shouldn't set
+     *     set a title when the selection is cleared.
+     * @param normalGroupResId The resource id of the menu group to show when a selection isn't
+     *     established.
+     * @param selectedGroupResId The resource id of the menu item to show when a selection is
+     *     established.
+     * @param listener The OnMenuItemClickListener to set on the toolbar.
+     * @param updateStatusBarColor Whether the status bar color should be updated to match the
+     *     toolbar color. If true, the status bar will only be updated if the current device fully
+     *     supports theming and is on Android M+.
+     * @param menuResId The resource id of the menu. {@code 0} if not required.
+     * @param showBackInNormalView Whether the back arrow should appear on the normal view.
+     * @return The initialized SelectionToolbar.
+     */
+    public SelectableListToolbar<E> initializeToolbar(
+            @LayoutRes int toolbarLayoutId,
+            SelectionDelegate<E> delegate,
+            @StringRes int titleResId,
+            @IdRes int normalGroupResId,
+            @IdRes int selectedGroupResId,
+            @Nullable OnMenuItemClickListener listener,
+            boolean updateStatusBarColor,
+            @MenuRes int menuResId,
+            boolean showBackInNormalView) {
         mToolbarStub.setLayoutResource(toolbarLayoutId);
         @SuppressWarnings("unchecked")
         SelectableListToolbar<E> toolbar = (SelectableListToolbar<E>) mToolbarStub.inflate();
         mToolbar = toolbar;
         mToolbar.initialize(
-                delegate, titleResId, normalGroupResId, selectedGroupResId, updateStatusBarColor);
+                delegate,
+                titleResId,
+                normalGroupResId,
+                selectedGroupResId,
+                updateStatusBarColor,
+                menuResId,
+                showBackInNormalView);
 
         if (listener != null) {
             mToolbar.setOnMenuItemClickListener(listener);
@@ -257,7 +310,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param emptyStringResId The string to show when the selectable list is empty.
      * @return The {@link TextView} displayed when the list is empty.
      */
-    public TextView initializeEmptyView(int emptyStringResId) {
+    public TextView initializeEmptyView(@StringRes int emptyStringResId) {
         setEmptyViewText(emptyStringResId);
 
         // Empty listener to have the touch events dispatched to this view tree for navigation UI.
@@ -268,14 +321,17 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Initializes the empty state view with an image, heading, and subheading.
+     *
      * @param imageResId Image view to show when the selectable list is empty.
      * @param emptyHeadingStringResId Heading string to show when the selectable list is empty.
-     * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
+     * @param emptySubheadingString Subheading string to show when the selectable list is empty.
      * @return The {@link TextView} displayed when the list is empty.
      */
     // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
     public TextView initializeEmptyStateView(
-            int imageResId, int emptyHeadingStringResId, int emptySubheadingStringResId) {
+            @DrawableRes int imageResId,
+            @StringRes int emptyHeadingStringResId,
+            CharSequence emptySubheadingString) {
         // Initialize and inflate empty state view stub.
         ViewStub emptyViewStub = findViewById(R.id.empty_state_view_stub);
         View emptyStateView = emptyViewStub.inflate();
@@ -288,23 +344,25 @@ public class SelectableListLayout<E> extends FrameLayout
 
         // Set empty state properties.
         setEmptyStateImageRes(imageResId);
-        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
+        setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingString);
         return mEmptyView;
     }
 
     /**
      * Sets the empty state view image when the selectable list is empty.
+     *
      * @param imageResId The image view to show when the selectable list is empty.
      */
-    public void setEmptyStateImageRes(int imageResId) {
+    public void setEmptyStateImageRes(@DrawableRes int imageResId) {
         mEmptyImageView.setImageResource(imageResId);
     }
 
     /**
      * Sets the view text when the selectable list is empty.
+     *
      * @param emptyStringResId The string to show when the selectable list is empty.
      */
-    public void setEmptyViewText(int emptyStringResId) {
+    public void setEmptyViewText(@StringRes int emptyStringResId) {
         mEmptyStringResId = emptyStringResId;
 
         mEmptyView.setText(mEmptyStringResId);
@@ -312,14 +370,17 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Sets the view text when the selectable list is empty.
-     * @param emptyStringResId Heading string to show when the selectable list is empty.
-     * @param emptySubheadingStringResId SubString to show when the selectable list is empty.
+     *
+     * @param emptyHeadingStringResId Heading string to show when the selectable list is empty.
+     * @param emptySubheadingString Subheading string to show when the selectable list is empty.
      */
-    public void setEmptyStateViewText(int emptyHeadingStringResId, int emptySubheadingStringResId) {
+    public void setEmptyStateViewText(
+            @StringRes int emptyHeadingStringResId, CharSequence emptySubheadingString) {
         mEmptyStringResId = emptyHeadingStringResId;
+        mEmptySubheadingString = emptySubheadingString;
 
         mEmptyView.setText(mEmptyStringResId);
-        mEmptyStateSubHeadingView.setText(emptySubheadingStringResId);
+        mEmptyStateSubHeadingView.setText(mEmptySubheadingString);
     }
 
     /**
@@ -353,22 +414,11 @@ public class SelectableListLayout<E> extends FrameLayout
         mUiConfig.addObserver(this);
     }
 
-    /** @return The {@link UiConfig} associated with this View if one has been created, or null. */
-    @Nullable
-    public UiConfig getUiConfig() {
-        return mUiConfig;
-    }
-
     @Override
     public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
         int padding = getPaddingForDisplayStyle(newDisplayStyle, getResources());
-
-        ViewCompat.setPaddingRelative(
-                mRecyclerView,
-                padding,
-                mRecyclerView.getPaddingTop(),
-                padding,
-                mRecyclerView.getPaddingBottom());
+        mRecyclerView.setPaddingRelative(
+                padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }
 
     @Override
@@ -379,22 +429,18 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Called when a search is starting.
-     * @param searchEmptyStringResId The string to show when the selectable list is empty during a
-     *         search.
-     */
-    public void onStartSearch(@StringRes int searchEmptyStringResId) {
-        onStartSearch(getContext().getString(searchEmptyStringResId));
-    }
-
-    /**
-     * Called when a search is starting.
+     *
      * @param searchEmptyString The string to show when the selectable list is empty during a
-     *         search.
+     *     search.
+     * @param searchEmptySubheadingResId The resource ID of the string to show as the description.
      */
-    public void onStartSearch(String searchEmptyString) {
+    public void onStartSearch(String searchEmptyString, @StringRes int searchEmptySubheadingResId) {
         mRecyclerView.setItemAnimator(null);
         mToolbarShadow.setVisibility(View.VISIBLE);
         mEmptyView.setText(searchEmptyString);
+        if (searchEmptySubheadingResId != Resources.ID_NULL) {
+            mEmptyStateSubHeadingView.setText(searchEmptySubheadingResId);
+        }
         onBackPressStateChanged();
     }
 
@@ -403,6 +449,8 @@ public class SelectableListLayout<E> extends FrameLayout
         mRecyclerView.setItemAnimator(mItemAnimator);
         setToolbarShadowVisibility();
         mEmptyView.setText(mEmptyStringResId);
+        mEmptyStateSubHeadingView.setText(mEmptySubheadingString);
+
         onBackPressStateChanged();
     }
 

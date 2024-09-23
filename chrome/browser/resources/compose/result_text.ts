@@ -14,6 +14,7 @@ import {WordStreamer} from './word_streamer.js';
 
 export interface ComposeResultTextElement {
   $: {
+    resultText: HTMLElement,
     partialResultText: HTMLElement,
     root: HTMLElement,
   };
@@ -91,6 +92,7 @@ export class ComposeResultTextElement extends PolymerElement {
   private wordStreamer_: WordStreamer;
   private displayedChunks_: StreamChunk[] = [];
   private displayedFullText_: string = '';
+  private initialText_: string = '';
 
   constructor() {
     super();
@@ -98,6 +100,8 @@ export class ComposeResultTextElement extends PolymerElement {
   }
 
   updateInputs() {
+    this.$.resultText.innerText = this.textInput.text;
+
     if (this.textInput.streamingEnabled) {
       this.isOutputComplete = false;
       this.wordStreamer_.setText(
@@ -119,6 +123,40 @@ export class ComposeResultTextElement extends PolymerElement {
     this.wordStreamer_.setMsPerTickForTesting(0);
     this.wordStreamer_.setMsWaitBeforeCompleteForTesting(0);
     this.wordStreamer_.setCharsPerTickForTesting(5);
+  }
+
+  private onFocusIn_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-result-focus', {bubbles: true, composed: true, detail: true}));
+
+    this.initialText_ = this.textInput.text;
+  }
+
+  private onFocusOut_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-result-focus', {bubbles: true, composed: true, detail: false}));
+
+    const currentText = this.$.resultText.innerText;
+    if (currentText === '') {
+      // We disallow the user from saving or using empty text. Instead, replace
+      // it with the starting state of the text before it was edited.
+      this.$.resultText.innerText = this.initialText_;
+      return;
+    }
+    // Only dispatch event if the text has changed from its initial state.
+    if (currentText !== this.initialText_) {
+      this.dispatchEvent(new CustomEvent(
+          'result-edit',
+          {bubbles: true, composed: true, detail: this.$.root.innerText}));
+    }
+  }
+
+  private partialTextCanEdit_() {
+    if (this.hasOutput && this.isOutputComplete) {
+      return 'plaintext-only';
+    } else {
+      return 'false';
+    }
   }
 
   private hasOutput_(): boolean {

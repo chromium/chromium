@@ -34,7 +34,7 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   // BrowserContext. This is used primarily for testing, where we want to feed
   // a specific test double into the BCKSF system.
   using TestingFactory =
-      base::RepeatingCallback<scoped_refptr<RefcountedKeyedService>(
+      base::OnceCallback<scoped_refptr<RefcountedKeyedService>(
           content::BrowserContext* context)>;
 
   RefcountedBrowserContextKeyedServiceFactory(
@@ -139,7 +139,6 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   // RefcountedKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       void* context) const final;
-  bool IsOffTheRecord(void* context) const final;
 
   // KeyedServiceBaseFactory:
   void* GetContextToUse(void* context) const final;

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +25,7 @@
 
 namespace web_app::test {
 namespace {
-constexpr base::StringPiece kDisableLogDebugInfoToConsole =
+constexpr std::string_view kDisableLogDebugInfoToConsole =
     "disable-web-app-internals-log";
 }  // namespace
 

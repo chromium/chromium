@@ -34,12 +34,14 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -73,7 +75,7 @@ struct ResourceLoaderOptions;
 class ResourceResponse;
 class XHRReplayData;
 class XMLHttpRequest;
-class WorkerGlobalScope;
+class WorkerOrWorkletGlobalScope;
 enum class ResourceRequestBlockedReason;
 enum class ResourceType : uint8_t;
 
@@ -83,7 +85,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   // TODO(horo): Extract the logic for frames and for workers into different
   // classes.
   InspectorNetworkAgent(InspectedFrames*,
-                        WorkerGlobalScope*,
+                        WorkerOrWorkletGlobalScope*,
                         v8_inspector::V8InspectorSession*);
   ~InspectorNetworkAgent() override;
   void Trace(Visitor*) const override;
@@ -125,8 +127,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                   const Resource*);
   void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
-                      const char* data,
-                      uint64_t data_length);
+                      base::SpanOrSize<const char> data);
   void DidReceiveBlob(uint64_t identifier,
                       DocumentLoader*,
                       scoped_refptr<BlobDataHandle>);
@@ -200,8 +201,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void DidSendWebSocketMessage(uint64_t identifier,
                                int op_code,
                                bool masked,
-                               const char* payload,
-                               size_t payload_length);
+                               base::span<const char> payload);
   void DidReceiveWebSocketMessageError(uint64_t identifier, const String&);
 
   void WebTransportCreated(ExecutionContext*,
@@ -245,7 +245,10 @@ class CORE_EXPORT InspectorNetworkAgent final
       double latency,
       double download_throughput,
       double upload_throughput,
-      Maybe<String> connection_type) override;
+      Maybe<String> connection_type,
+      Maybe<double> packet_loss,
+      Maybe<int> packet_queue_length,
+      Maybe<bool> packet_reordering) override;
   protocol::Response setCacheDisabled(bool) override;
   protocol::Response setBypassServiceWorker(bool) override;
   protocol::Response getCertificate(
@@ -272,6 +275,12 @@ class CORE_EXPORT InspectorNetworkAgent final
                             bool* loadingFailed);
   String NavigationInitiatorInfo(LocalFrame*);
 
+  static std::unique_ptr<protocol::Network::Initiator> BuildInitiatorObject(
+      Document*,
+      const FetchInitiatorInfo&,
+      int max_async_depth);
+  static String GetProtocolAsString(const ResourceResponse& response);
+
  private:
   String RequestId(DocumentLoader*, uint64_t identifier);
   void Enable();
@@ -288,16 +297,12 @@ class CORE_EXPORT InspectorNetworkAgent final
                            std::unique_ptr<GetResponseBodyCallback>);
   ExecutionContext* GetTargetExecutionContext() const;
 
-  static std::unique_ptr<protocol::Network::Initiator> BuildInitiatorObject(
-      Document*,
-      const FetchInitiatorInfo&,
-      int max_async_depth);
   static bool IsNavigation(DocumentLoader*, uint64_t identifier);
 
   // This is null while inspecting workers.
   Member<InspectedFrames> inspected_frames_;
   // This is null while inspecting frames.
-  Member<WorkerGlobalScope> worker_global_scope_;
+  Member<WorkerOrWorkletGlobalScope> worker_or_worklet_global_scope_;
   v8_inspector::V8InspectorSession* v8_session_;
   Member<NetworkResourcesData> resources_data_;
   const base::UnguessableToken devtools_token_;

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class TabGridMode;
+
 // Allows the tab grid mediator to reflect change in the UI layer.
 @protocol TabGridConsumer <NSObject>
 
@@ -15,6 +17,9 @@
 
 // Updates the tab grid for supervised users.
 - (void)updateTabGridForIncognitoModeDisabled:(BOOL)isIncognitoModeDisabled;
+
+// Sets the mode of the Tab Grid.
+- (void)setMode:(TabGridMode)mode;
 
 @end
 

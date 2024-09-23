@@ -8,14 +8,13 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace syncer {
 namespace {
@@ -87,9 +86,9 @@ HttpResponse Connection::PostRequestAndDownloadResponse(
     // Return early because cancelation signal was signaled.
     return HttpResponse::ForUnspecifiedError();
   }
-  base::ScopedClosureRunner auto_unregister(base::BindOnce(
-      &CancelationSignal::UnregisterHandler,
-      base::Unretained(cancelation_signal_), base::Unretained(this)));
+  absl::Cleanup auto_unregister = [this] {
+    cancelation_signal_->UnregisterHandler(this);
+  };
 
   int net_error_code = 0;
   int http_status_code = 0;

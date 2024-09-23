@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/tag.h"
 
 #include <algorithm>
@@ -10,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,11 +29,11 @@
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/uuid.h"
 #include "chrome/updater/certificate_tag.h"
 
 namespace updater::tagging {
@@ -84,6 +90,13 @@ constexpr std::string_view kTagArgBrowserType = "browser";
 // Example:
 //   "runtime=true&needsadmin=true"
 constexpr std::string_view kTagArgRuntimeMode = "runtime";
+
+// Enrollment token: "etoken" argument in the tag tells the per-machine updater
+// to register the machine to the device management server. The value must be a
+// GUID.
+// Example:
+//   "etoken=5d086552-4514-4dfb-8a3e-337024ec35ac"
+constexpr std::string_view kTagArgErollmentToken = "etoken";
 
 // The list of arguments that are needed for a meta-installer, to
 // indicate which application is being installed. These are stamped
@@ -253,7 +266,7 @@ ErrorCode ParseAppId(std::string_view value, TagArgs& args) {
 }
 
 ErrorCode ParseRuntimeMode(std::string_view value, TagArgs& args) {
-  for (const std::string expected_value : {"true", "persist", "false"}) {
+  for (const std::string_view expected_value : {"true", "persist", "false"}) {
     if (base::EqualsCaseInsensitiveASCII(expected_value, value)) {
       args.runtime_mode = RuntimeModeArgs();
       return ErrorCode::kSuccess;
@@ -261,6 +274,14 @@ ErrorCode ParseRuntimeMode(std::string_view value, TagArgs& args) {
   }
 
   return ErrorCode::kGlobal_RuntimeModeValueIsInvalid;
+}
+
+ErrorCode ParseEnrollmentToken(std::string_view value, TagArgs& args) {
+  if (!base::Uuid::ParseCaseInsensitive(value).is_valid()) {
+    return ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid;
+  }
+  args.enrollment_token = value;
+  return ErrorCode::kSuccess;
 }
 
 // |value| must not be empty.
@@ -272,20 +293,20 @@ using GlobalParseTable = std::map<std::string_view,
                                   CaseInsensitiveASCIICompare>;
 
 const GlobalParseTable& GetTable() {
-  static const base::NoDestructor<GlobalParseTable> instance{{
-      {kTagArgBundleName, &ParseBundleName},
-      {kTagArgInstallationId, &ParseInstallationId},
-      {kTagArgBrandCode, &ParseBrandCode},
-      {kTagArgClientId, &ParseClientId},
-      {kTagArgOmahaExperimentLabels, &ParseOmahaExperimentLabels},
-      {kTagArgReferralId, &ParseReferralId},
-      {kTagArgBrowserType, &ParseBrowserType},
-      {kTagArgLanguage, &ParseLanguage},
-      {kTagArgFlighting, &ParseFlighting},
-      {kTagArgUsageStats, &ParseUsageStats},
-      {kTagArgAppId, &ParseAppId},
-      {kTagArgRuntimeMode, &ParseRuntimeMode},
-  }};
+  static const base::NoDestructor<GlobalParseTable> instance{
+      {{kTagArgBundleName, &ParseBundleName},
+       {kTagArgInstallationId, &ParseInstallationId},
+       {kTagArgBrandCode, &ParseBrandCode},
+       {kTagArgClientId, &ParseClientId},
+       {kTagArgOmahaExperimentLabels, &ParseOmahaExperimentLabels},
+       {kTagArgReferralId, &ParseReferralId},
+       {kTagArgBrowserType, &ParseBrowserType},
+       {kTagArgLanguage, &ParseLanguage},
+       {kTagArgFlighting, &ParseFlighting},
+       {kTagArgUsageStats, &ParseUsageStats},
+       {kTagArgAppId, &ParseAppId},
+       {kTagArgRuntimeMode, &ParseRuntimeMode},
+       {kTagArgErollmentToken, &ParseEnrollmentToken}}};
   return *instance;
 }
 
@@ -504,12 +525,9 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
 
   const std::vector<std::pair<std::string, std::string>> attributes =
       query_string::Split(tag);
-  for (const auto& attribute : attributes) {
+  for (const auto& [name, value] : attributes) {
     // Attribute names are only ASCII, so no i18n case folding needed.
-    const std::string_view name = attribute.first;
-    const std::string_view value = attribute.second;
-
-    if (global_func_lookup_table.find(name) != global_func_lookup_table.end()) {
+    if (global_func_lookup_table.contains(name)) {
       if (value.empty()) {
         return ErrorCode::kAttributeMustHaveValue;
       }
@@ -518,8 +536,7 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
       if (result != ErrorCode::kSuccess) {
         return result;
       }
-    } else if ((runtime_mode_func_lookup_table.find(name) !=
-                runtime_mode_func_lookup_table.end()) &&
+    } else if ((runtime_mode_func_lookup_table.contains(name)) &&
                args.runtime_mode) {
       if (value.empty()) {
         return ErrorCode::kAttributeMustHaveValue;
@@ -530,8 +547,7 @@ ErrorCode ParseTag(std::string_view tag, TagArgs& args) {
       if (result != ErrorCode::kSuccess) {
         return result;
       }
-    } else if (app_func_lookup_table.find(name) !=
-               app_func_lookup_table.end()) {
+    } else if (app_func_lookup_table.contains(name)) {
       if (args.apps.empty()) {
         return ErrorCode::kApp_AppIdNotSpecified;
       }
@@ -577,7 +593,7 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
     }
 
     const auto& func_lookup_table = installer_data_attributes::GetTable();
-    if (func_lookup_table.find(name) == func_lookup_table.end()) {
+    if (!func_lookup_table.contains(name)) {
       return ErrorCode::kUnrecognizedName;
     }
 
@@ -646,16 +662,14 @@ std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
   int64_t file_size = 0;
   if (!base::GetFileSize(file, &file_size)) {
-    LOG(ERROR) << __func__ << ": Could not get file size: " << file << ": "
-               << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << ": Could not get file size: " << file;
     return {};
   }
 
   std::vector<uint8_t> contents(file_size);
   if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
                      contents.size()) == -1) {
-    LOG(ERROR) << __func__ << ": Could not read file: " << file << ": "
-               << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << ": Could not read file: " << file;
     return {};
   }
   return contents;
@@ -773,6 +787,8 @@ std::ostream& operator<<(std::ostream& os, const ErrorCode& error_code) {
       return os << "ErrorCode::kGlobal_UsageStatsValueIsInvalid";
     case ErrorCode::kGlobal_RuntimeModeValueIsInvalid:
       return os << "ErrorCode::kGlobal_RuntimeModeValueIsInvalid";
+    case ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid:
+      return os << "ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid";
     case ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid:
       return os << "ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid";
   }
@@ -961,8 +977,7 @@ bool BinaryWriteTag(const base::FilePath& in_file,
     out_file = in_file;
   }
   if (!base::WriteFile(out_file, *new_contents)) {
-    LOG(ERROR) << __func__ << "Error while writing updated file: " << out_file
-               << ": " << logging::GetLastSystemErrorCode();
+    PLOG(ERROR) << __func__ << "Error while writing updated file: " << out_file;
     return false;
   }
   return true;

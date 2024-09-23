@@ -4,15 +4,13 @@ import os
 
 from .executorwebdriver import (
     WebDriverCrashtestExecutor,
-    WebDriverProtocol,
     WebDriverRefTestExecutor,
     WebDriverRun,
     WebDriverTestharnessExecutor,
 )
 
 from .executorchrome import (
-    ChromeDriverPrintProtocolPart,
-    ChromeDriverTestharnessProtocolPart,
+    ChromeDriverProtocol,
     make_sanitizer_mixin,
 )
 
@@ -20,45 +18,28 @@ here = os.path.dirname(__file__)
 
 _SanitizerMixin = make_sanitizer_mixin(WebDriverCrashtestExecutor)
 
-class EdgeChromiumDriverTestharnessProtocolPart(ChromeDriverTestharnessProtocolPart):
-    def setup(self):
-        super().setup()
-        self.cdp_company_prefix = "ms"
+
+class EdgeDriverProtocol(ChromeDriverProtocol):
+    vendor_prefix = "ms"
 
 
-class EdgeChromiumDriverPrintProtocolPart(ChromeDriverPrintProtocolPart):
-    def setup(self):
-        super().setup()
-        self.cdp_company_prefix = "ms"
+class EdgeDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
+    protocol_cls = EdgeDriverProtocol
 
 
-class EdgeChromiumDriverProtocol(WebDriverProtocol):
-    implements = [
-        EdgeChromiumDriverPrintProtocolPart,
-        EdgeChromiumDriverTestharnessProtocolPart,
-        *(part for part in WebDriverProtocol.implements
-          if part.name != EdgeChromiumDriverTestharnessProtocolPart.name)
-    ]
-    reuse_window = False
-
-
-class EdgeChromiumDriverRefTestExecutor(WebDriverRefTestExecutor, _SanitizerMixin):  # type: ignore
-    protocol_cls = EdgeChromiumDriverProtocol
-
-
-class EdgeChromiumDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
-    protocol_cls = EdgeChromiumDriverProtocol
+class EdgeDriverTestharnessExecutor(WebDriverTestharnessExecutor, _SanitizerMixin):  # type: ignore
+    protocol_cls = EdgeDriverProtocol
 
     def __init__(self, *args, reuse_window=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol.reuse_window = reuse_window
 
 
-class EdgeChromiumDriverPrintRefTestExecutor(EdgeChromiumDriverRefTestExecutor):
-    protocol_cls = EdgeChromiumDriverProtocol
+class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
+    protocol_cls = EdgeDriverProtocol
 
-    def setup(self, runner):
-        super().setup(runner)
+    def setup(self, runner, protocol=None):
+        super().setup(runner, protocol)
         self.protocol.pdf_print.load_runner()
         self.has_window = False
         with open(os.path.join(here, "reftest.js")) as f:

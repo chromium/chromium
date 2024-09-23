@@ -9,7 +9,7 @@ import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "ui/display/mojom/screen_infos.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/window_show_state.mojom";
 
 // See public/common/widget/visual_properties.h
 struct VisualProperties {
@@ -71,17 +71,26 @@ struct VisualProperties {
 
   // The window show state.
   ui.mojom.WindowShowState window_show_state
-      = ui.mojom.WindowShowState.SHOW_STATE_DEFAULT;
+      = ui.mojom.WindowShowState.kDefault;
 
   // This represents the latest capture sequence number requested. When this is
   // incremented, that means the caller wants to synchronize surfaces which
   // should cause a new LocalSurfaceId to be generated.
   uint32 capture_sequence_number;
 
-  // This represents the page zoom level for a WebContents.
-  // (0 is the default value which results in 1.0 zoom factor).
-  // Page scoped value.
+  // This is composed from browser zoom (i.e. the page zoom level for a
+  // WebContents) and, for a non-main-frame widget, the effect of the CSS "zoom"
+  // property applied to the embedding element (e.g. <iframe>) in the embedding
+  // document. 0 is the default value which results in 1.0 zoom factor.
+  // See WebFrameWidgetImpl::SetZoomLevel() for how this value is used.
+
+  // This is the zoom setting from the browser UI.
   double zoom_level;
+
+  // For an embedded widget this is the cumulative effect of the CSS "zoom"
+  // property on the embedding element (e.g. <iframe>) and its ancestors. For a
+  // top-level widget this is 1.0.
+  double css_zoom_factor;
 
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.
@@ -98,7 +107,7 @@ struct VisualProperties {
   // property is set by the root RenderWidget in the renderer process, then
   // propagated to child local frame roots via RenderFrameProxy/
   // CrossProcessFrameConnector.
-  array<gfx.mojom.Rect> root_widget_window_segments;
+  array<gfx.mojom.Rect> root_widget_viewport_segments;
 
   // Indicates whether a pinch gesture is currently active. Originates in the
   // main frame's renderer, and needs to be shared with subframes.

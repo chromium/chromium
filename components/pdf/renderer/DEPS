@@ -1,9 +1,7 @@
 include_rules = [
   "+content/public/renderer",
   "+content/public/test",
-  "+components/language/core/common/language_util.h",
   "+components/printing/renderer/print_render_frame_helper.h",
-  "+components/services/screen_ai",
   "+components/strings/grit/components_strings.h",
   "+mojo/public/cpp/bindings",
   "+net",
@@ -16,10 +14,12 @@ include_rules = [
   "+pdf/pdf_features.h",
   "+pdf/pdf_view_web_plugin.h",
   "+printing/buildflags/buildflags.h",
+  "+services/screen_ai",
   "+third_party/blink/public",
   "+third_party/skia/include/core",
   "+ui/accessibility",
   "+ui/base",
   "+ui/display",
+  "+ui/strings/grit/auto_image_annotation_strings.h",
   "+v8/include",
 ]

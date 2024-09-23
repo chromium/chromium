@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Passing a Float16Array as element of the blobParts array should work.
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+Harness: the test ran to completion.
+

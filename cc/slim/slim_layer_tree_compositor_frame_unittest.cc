@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "cc/base/region.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -35,10 +38,12 @@
 #include "components/viz/test/draw_quad_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc::slim {
@@ -51,7 +56,6 @@ using testing::ElementsAre;
 class SlimLayerTreeCompositorFrameTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
     layer_tree_ = std::make_unique<TestLayerTreeImpl>(&client_);
     layer_tree_->SetVisible(true);
 
@@ -120,7 +124,6 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestLayerTreeClient client_;
   std::unique_ptr<TestLayerTreeImpl> layer_tree_;
   base::WeakPtr<TestFrameSinkImpl> frame_sink_;
@@ -147,7 +150,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
     EXPECT_EQ(1.0f, metadata.device_scale_factor);
     EXPECT_EQ(SkColors::kWhite, metadata.root_background_color);
     EXPECT_EQ(gfx::OVERLAY_TRANSFORM_NONE, metadata.display_transform_hint);
-    EXPECT_EQ(std::nullopt, metadata.top_controls_visible_height);
   }
 
   IncrementLocalSurfaceId();
@@ -156,7 +158,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
   layer_tree_->set_background_color(SkColors::kBlue);
   layer_tree_->set_display_transform_hint(
       gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
-  layer_tree_->UpdateTopControlsVisibleHeight(5.0f);
   {
     viz::CompositorFrame frame = ProduceFrame();
     viz::CompositorFrameMetadata& metadata = frame.metadata;
@@ -167,7 +168,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
     EXPECT_EQ(SkColors::kBlue, metadata.root_background_color);
     EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
               metadata.display_transform_hint);
-    EXPECT_EQ(5.0f, metadata.top_controls_visible_height);
   }
 }
 
@@ -241,7 +241,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, LayerTransform) {
   check_child_quad(gfx::Rect(10, 30, 20, 10));
 
   // Rotate about the center.
-  child->SetTransformOrigin(gfx::Point3F(5.0f, 10.0f, 0.0f));
+  child->SetTransformOrigin(gfx::PointF(5.0f, 10.0f));
   check_child_quad(gfx::Rect(25, 35, 20, 10));
 }
 
@@ -425,11 +425,13 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SuccessPresentationCallback) {
   std::optional<base::TimeTicks> feedback_time_opt_1;
   std::optional<base::TimeTicks> feedback_time_opt_2;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_1 = details.presentation_feedback.timestamp;
+      }));
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_2 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame1 = ProduceFrame();
 
   viz::FrameTimingDetailsMap timing_map;
@@ -454,15 +456,17 @@ TEST_F(SlimLayerTreeCompositorFrameTest,
 
   std::optional<base::TimeTicks> feedback_time_opt_1;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_1 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame1 = ProduceFrame();
   viz::CompositorFrame frame2 = ProduceFrame();
 
   std::optional<base::TimeTicks> feedback_time_opt_2;
   layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting(
-          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+      base::BindLambdaForTesting([&](const viz::FrameTimingDetails& details) {
+        feedback_time_opt_2 = details.presentation_feedback.timestamp;
+      }));
   viz::CompositorFrame frame3 = ProduceFrame();
 
   // Frame 1 failed. Should not run either callback.
@@ -597,10 +601,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
     EXPECT_EQ(gfx::PointF(0.0f, 0.0f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(1.0f, 1.0f), texture_quad->uv_bottom_right);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
@@ -614,7 +614,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
 
   ui_resource_layer->SetUV(gfx::PointF(0.25f, 0.25f),
                            gfx::PointF(0.75f, 0.75f));
-  ui_resource_layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
   {
     auto image_info =
         SkImageInfo::Make(2, 2, kN32_SkColorType, kPremul_SkAlphaType);
@@ -636,10 +635,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
     EXPECT_EQ(gfx::PointF(0.25f, 0.25f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(0.75f, 0.75f), texture_quad->uv_bottom_right);
-    EXPECT_EQ(0.1f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(0.2f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(0.3f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(0.4f, texture_quad->vertex_opacity[3]);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
@@ -776,10 +771,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
     EXPECT_TRUE(texture_quad->nearest_neighbor);
     EXPECT_EQ(expected_uv_top_left[i], texture_quad->uv_top_left);
     EXPECT_EQ(expected_uv_bottom_right[i], texture_quad->uv_bottom_right);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
 
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
@@ -897,7 +888,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
   child_surface_layer->SetBounds(gfx::Size(10, 10));
   child_surface_layer->SetIsDrawable(true);
   child_surface_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
-  child_surface_layer->SetTransformOrigin(gfx::Point3F(5.0f, 5.0f, 0.0f));
+  child_surface_layer->SetTransformOrigin(gfx::PointF(5.0f, 5.0f));
   gfx::Transform transform;
   transform.Rotate(45.0);
   child_surface_layer->SetTransform(transform);
@@ -1063,7 +1054,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedClip) {
   auto clip_layer = cc::slim::Layer::Create();
   clip_layer->SetMasksToBounds(true);
   clip_layer->SetBounds(gfx::Size(50, 50));
-  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  clip_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   clip_layer->SetTransform(transform);
@@ -1118,7 +1109,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, ChildPassOutputRect) {
   auto clip_layer = cc::slim::Layer::Create();
   clip_layer->SetMasksToBounds(true);
   clip_layer->SetBounds(gfx::Size(50, 50));
-  clip_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  clip_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   clip_layer->SetTransform(transform);
@@ -1734,7 +1725,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, PropertyChangeFromParentDamage) {
   check_frame(gfx::Rect(10, 10, 50, 50));
 
   // Rotate about center, which does not change visible rect.
-  parent->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  parent->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   parent->SetTransform(gfx::Transform::Make90degRotation());
   check_frame(gfx::Rect(10, 10, 50, 50));
 
@@ -2006,7 +1997,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NonAxisAlignedRoundedCorner) {
   auto rounded_corner_layer =
       CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
   rounded_corner_layer->SetRoundedCorner(gfx::RoundedCornersF(20.0f));
-  rounded_corner_layer->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  rounded_corner_layer->SetTransformOrigin(gfx::PointF(25.0f, 25.0f));
   gfx::Transform transform;
   transform.Rotate(45);
   rounded_corner_layer->SetTransform(transform);
@@ -2293,6 +2284,327 @@ TEST_F(SlimLayerTreeCompositorFrameTest,
     EXPECT_THAT(frame.metadata.referenced_surfaces,
                 testing::UnorderedElementsAre(viz::SurfaceRange(start, end)));
   }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagLayers) {
+  layer_tree_->set_background_color(SkColors::kGreen);
+  auto root_layer = Layer::Create();
+  layer_tree_->SetRoot(root_layer);
+
+  auto background_layer = SolidColorLayer::Create();
+  background_layer->SetBounds(viewport_.size());
+  background_layer->SetBackgroundColor(SkColors::kBlack);
+  background_layer->SetIsDrawable(true);
+  root_layer->AddChild(background_layer);
+
+  auto container_layer = Layer::Create();
+  root_layer->AddChild(container_layer);
+
+  auto solid_color_layer = SolidColorLayer::Create();
+  solid_color_layer->SetBounds(viewport_.size());
+  solid_color_layer->SetBackgroundColor(SkColors::kRed);
+  solid_color_layer->SetIsDrawable(true);
+  container_layer->AddChild(solid_color_layer);
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  const viz::FrameSinkId frame_sink_id(1u, 2u);
+  const viz::SurfaceId surface_id(frame_sink_id,
+                                  viz::LocalSurfaceId(3u, 4u, token));
+  surface_layer->SetSurfaceId(surface_id,
+                              cc::DeadlinePolicy::UseDefaultDeadline());
+  surface_layer->SetIsDrawable(true);
+  container_layer->AddChild(surface_layer);
+
+  {
+    // Draw the first frame. There are no OffsetTags added yet.
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.offset_tag_definitions, testing::SizeIs(0));
+
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+    auto* root_pass = frame.render_pass_list[0].get();
+
+    EXPECT_THAT(root_pass->quad_list,
+                testing::ElementsAre(
+                    // Quad for `surface_layer`.
+                    testing::AllOf(viz::IsSurfaceQuad(), viz::HasOffsetTag({})),
+                    // Quad for `solid_color_layer`. This is opaque and it
+                    // totally occludes `background_layer` so it's culled.
+                    testing::AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                   viz::HasOffsetTag({}))));
+  }
+
+  const auto offset_tag = viz::OffsetTag::CreateRandom();
+  const viz::OffsetTagConstraints constraints(0, 0, -10.0f, 0);
+  surface_layer->RegisterOffsetTag(offset_tag, constraints);
+  container_layer->SetOffsetTag(offset_tag);
+
+  {
+    // Add OffsetTag to `container_layer` so that it applies to subtree from
+    // there. There will be one OffsetTagDefinition now and quads for
+    // `surface_layer` and `solid_color_layer` will be tagged.
+    const viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_THAT(frame.metadata.offset_tag_definitions, testing::SizeIs(1));
+    auto& tag_def = frame.metadata.offset_tag_definitions[0];
+    EXPECT_EQ(tag_def.provider, viz::SurfaceRange(std::nullopt, surface_id));
+    EXPECT_EQ(tag_def.tag, offset_tag);
+
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+    auto* root_pass = frame.render_pass_list[0].get();
+
+    EXPECT_THAT(
+        root_pass->quad_list,
+        testing::ElementsAre(
+            // Quad for `surface_layer`.
+            testing::AllOf(viz::IsSurfaceQuad(), viz::HasOffsetTag(offset_tag)),
+            // Quad for `solid_color_layer`.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                           viz::HasOffsetTag(offset_tag)),
+            // Quad for `background_layer`. Since `solid_color_layer` has an
+            // offset tag background layer is no longer occluded.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kBlack),
+                           viz::HasOffsetTag({}))));
+  }
+
+  background_layer->SetIsDrawable(false);
+
+  {
+    // Stop `background_layer` from drawing. Since all drawable layers are
+    // tagged and it's not known where they draw, slim compositor will add a
+    // layer tree background color SolidColorDrawQuad automatically to ensure
+    // root render pass is opaque.
+    const viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+    auto* root_pass = frame.render_pass_list[0].get();
+
+    EXPECT_THAT(
+        root_pass->quad_list,
+        testing::ElementsAre(
+            // Quad for `surface_layer`.
+            testing::AllOf(viz::IsSurfaceQuad(), viz::HasOffsetTag(offset_tag)),
+            // Quad for `solid_color_layer`.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                           viz::HasOffsetTag(offset_tag)),
+            // Generated background quad that's green since `solid_color_layer`
+            // no longer counts as opaque and `background_layer` isn't drawn.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                           viz::HasOffsetTag({}))));
+  }
+
+  auto rotated_layer = Layer::Create();
+  rotated_layer->SetBounds(gfx::Size(10, 10));
+  {
+    // Rotate 45 degrees on center of layer and then translate 15, 15.
+    gfx::Transform transform = gfx::Transform::MakeTranslation(-5.0f, -5.0f);
+    transform.Rotate(-45.0);
+    transform.Translate(20.0f, 20.0f);
+    rotated_layer->SetTransform(transform);
+  }
+  rotated_layer->SetMasksToBounds(true);
+  solid_color_layer->AddChild(rotated_layer);
+
+  auto rotated_color_layer = SolidColorLayer::Create();
+  // This size is bigger than `rotated_layer` so it will be clipped.
+  rotated_color_layer->SetBounds(gfx::Size(100, 100));
+  rotated_color_layer->SetBackgroundColor(SkColors::kBlue);
+  rotated_color_layer->SetIsDrawable(true);
+  rotated_layer->AddChild(rotated_color_layer);
+
+  {
+    // Add a rotated container layer that masks to bounds and solid color layer
+    // inside of it. This will produce another render pass to do clipping in the
+    // rotated layer coordinate space. Make sure the RenderPassDrawQuad has
+    // the OffsetTag but not the SolidColorDrawQuad in the new render pass.
+    const viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(2));
+    auto* child_pass = frame.render_pass_list[0].get();
+    auto* root_pass = frame.render_pass_list[1].get();
+
+    EXPECT_THAT(
+        root_pass->quad_list,
+        testing::ElementsAre(
+            // Quad for `surface_layer`.
+            testing::AllOf(viz::IsSurfaceQuad(), viz::HasOffsetTag(offset_tag)),
+            // Quad for `rotated_layer` ends up in a new render pass.
+            testing::AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                           viz::HasOffsetTag(offset_tag)),
+            // Quad for `solid_color_layer`.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                           viz::HasOffsetTag(offset_tag)),
+            // Generated background quad that's green since `solid_color_layer`
+            // no longer counts as opaque and `background_layer` isn't drawn.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                           viz::HasOffsetTag({}))));
+
+    EXPECT_THAT(
+        child_pass->quad_list,
+        testing::ElementsAre(
+            // Quad for `rotated_color_layer`. It's clipped to `rotated_quad`
+            // size using visible_rect and it doesn't have an OffsetTag
+            // since that was already applied to the RenderPassDrawQuad.
+            testing::AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                           viz::HasVisibleRect(gfx::Rect(10, 10)),
+                           viz::HasOffsetTag({}))));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagVisibleRect) {
+  layer_tree_->set_background_color(SkColors::kTransparent);
+
+  auto root_layer = Layer::Create();
+  layer_tree_->SetRoot(root_layer);
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  const viz::FrameSinkId frame_sink_id(1u, 2u);
+  const viz::SurfaceId surface_id(
+      frame_sink_id,
+      viz::LocalSurfaceId(3u, 4u, base::UnguessableToken::Create()));
+  surface_layer->SetSurfaceId(surface_id,
+                              cc::DeadlinePolicy::UseDefaultDeadline());
+  surface_layer->SetIsDrawable(true);
+  root_layer->AddChild(surface_layer);
+
+  // This layer is outside the viewport so it's visible_rect will be clipped
+  // by the viewport / root render pass output_rect.
+  auto outside_viewport_layer = SolidColorLayer::Create();
+  outside_viewport_layer->SetBounds(gfx::Size(150, 150));
+  outside_viewport_layer->SetTransform(
+      gfx::Transform::MakeTranslation(-10, -10));
+  outside_viewport_layer->SetBackgroundColor(SkColors::kRed);
+  outside_viewport_layer->SetIsDrawable(true);
+  root_layer->AddChild(outside_viewport_layer);
+
+  {
+    const viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+    auto* root_pass = frame.render_pass_list[0].get();
+
+    // Without an offset tag `outside_viewport_layer` is clipped by viewport.
+    // `surface_layer` is also fully occluded and not included in the frame.
+    EXPECT_THAT(root_pass->quad_list,
+                testing::ElementsAre(testing::AllOf(
+                    viz::HasVisibleRect(gfx::Rect(10, 10, 100, 100)))));
+  }
+
+  {
+    const auto offset_tag = viz::OffsetTag::CreateRandom();
+    const viz::OffsetTagConstraints constraints(-30, 30, -30, 30);
+    surface_layer->RegisterOffsetTag(offset_tag, constraints);
+    outside_viewport_layer->SetOffsetTag(offset_tag);
+
+    const viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+    auto* root_pass = frame.render_pass_list[0].get();
+
+    // With offset tag more of `outside_viewport_layer` will be visible,
+    // depending on the OffsetTagValue, however with max shift 30 pixels up/left
+    // the right and bottom pixels are still always outside viewport.
+    EXPECT_THAT(root_pass->quad_list,
+                testing::ElementsAre(
+                    testing::AllOf(
+                        viz::IsSolidColorQuad(), viz::HasOffsetTag(offset_tag),
+                        viz::HasVisibleRect(gfx::Rect(0, 0, 140, 140))),
+                    viz::IsSurfaceQuad()));
+
+    auto* quad = root_pass->quad_list.ElementAt(0);
+    EXPECT_EQ(quad->visible_rect, gfx::Rect(0, 0, 140, 140));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagNoEmbeddedSurface) {
+  layer_tree_->set_background_color(SkColors::kTransparent);
+
+  auto root_layer = Layer::Create();
+  layer_tree_->SetRoot(root_layer);
+
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+
+  root_layer->AddChild(surface_layer);
+
+  const auto offset_tag = viz::OffsetTag::CreateRandom();
+  const viz::OffsetTagConstraints constraints(-30, 30, -30, 30);
+  surface_layer->RegisterOffsetTag(offset_tag, constraints);
+
+  const viz::CompositorFrame frame = ProduceFrame();
+
+  // Since `surface_layer` doesn't have a SurfaceId set no OffsetTagDefinition
+  // is added.
+  EXPECT_THAT(frame.metadata.offset_tag_definitions, testing::IsEmpty());
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, OffsetTagClipping) {
+  layer_tree_->set_background_color(SkColors::kTransparent);
+
+  auto root_layer = Layer::Create();
+  layer_tree_->SetRoot(root_layer);
+
+  // This layer clips rect (10, 10, 25, 25) in render pass coordinate space.
+  auto parent_clip_layer = Layer::Create();
+  parent_clip_layer->SetBounds(gfx::Size(25, 25));
+  parent_clip_layer->SetTransform(gfx::Transform::MakeTranslation(10, 10));
+  parent_clip_layer->SetMasksToBounds(true);
+  root_layer->AddChild(parent_clip_layer);
+
+  auto tag_layer = Layer::Create();
+  parent_clip_layer->AddChild(tag_layer);
+
+  // This layer will clips (0, 0, 35, 35) in render pass coordinate space with
+  // default tag but that will change depending on the offset value. The clip
+  // has to be expressed in layer coordinate space as a result.
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(gfx::Size(35, 35));
+  surface_layer->SetTransform(gfx::Transform::MakeTranslation(-10, -10));
+  surface_layer->SetMasksToBounds(true);
+  const viz::FrameSinkId frame_sink_id(1u, 2u);
+  const viz::SurfaceId surface_id(
+      frame_sink_id,
+      viz::LocalSurfaceId(3u, 4u, base::UnguessableToken::Create()));
+  surface_layer->SetSurfaceId(surface_id,
+                              cc::DeadlinePolicy::UseDefaultDeadline());
+  surface_layer->SetIsDrawable(true);
+  tag_layer->AddChild(surface_layer);
+
+  const auto offset_tag = viz::OffsetTag::CreateRandom();
+  const viz::OffsetTagConstraints constraints(-30, 30, -30, 30);
+  surface_layer->RegisterOffsetTag(offset_tag, constraints);
+  tag_layer->SetOffsetTag(offset_tag);
+
+  // This layer has clipping from both `surface_layer` and `parent_clip_layer`.
+  auto solid_color_layer = SolidColorLayer::Create();
+  solid_color_layer->SetBounds(gfx::Size(50, 50));
+  solid_color_layer->SetTransform(gfx::Transform::MakeTranslation(-5, -5));
+  solid_color_layer->SetBackgroundColor(SkColors::kRed);
+  solid_color_layer->SetIsDrawable(true);
+  surface_layer->AddChild(solid_color_layer);
+
+  const viz::CompositorFrame frame = ProduceFrame();
+  EXPECT_THAT(frame.metadata.offset_tag_definitions, testing::SizeIs(1));
+
+  ASSERT_THAT(frame.render_pass_list, testing::SizeIs(1));
+  auto* root_pass = frame.render_pass_list[0].get();
+
+  // This is clipping for `parent_clip_layer` which will only be done via
+  // SharedQuadState::clip_rect and not DrawQuad::visible_rect.
+  const gfx::Rect parent_clip_rect(10, 10, 25, 25);
+
+  EXPECT_THAT(root_pass->quad_list,
+              testing::ElementsAre(
+                  // Quad for `solid_color_layer`. This has both `surface_layer`
+                  // and `parent_clip_layer` applied.
+                  testing::AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                 viz::HasOffsetTag(offset_tag),
+                                 viz::HasVisibleRect(gfx::Rect(5, 5, 35, 35)),
+                                 viz::HasClipRect(parent_clip_rect)),
+                  // Quad for `surface_layer`. This only has clipping from
+                  // `parent_clip_layer` applied via `clip_rect`.
+                  testing::AllOf(
+                      viz::IsSurfaceQuad(), viz::HasOffsetTag(offset_tag),
+                      viz::HasVisibleRect(gfx::Rect(surface_layer->bounds())),
+                      viz::HasClipRect(parent_clip_rect))));
 }
 
 }  // namespace

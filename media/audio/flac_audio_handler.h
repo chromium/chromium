@@ -101,6 +101,10 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
 
   // Set to true if the error callback is called.
   bool has_error_ = false;
+
+  // True if `WriteCallbackInternal` is called in a single call to
+  // `FLAC__stream_decoder_process_single`.
+  bool write_callback_called_ = false;
 };
 
 }  // namespace media

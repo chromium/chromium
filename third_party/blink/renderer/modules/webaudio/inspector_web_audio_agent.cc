@@ -33,7 +33,7 @@ String GetContextStateEnum(BaseAudioContext* context) {
     case BaseAudioContext::AudioContextState::kClosed:
       return protocol::WebAudio::ContextStateEnum::Closed;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

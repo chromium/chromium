@@ -9,7 +9,8 @@
 
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
-#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/android/webapk/test/fake_data_type_store_service.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
@@ -71,7 +72,7 @@ class WebApkDatabaseTest : public ::testing::Test {
     profile_ = testing_profile_manager_.CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName, true);
 
-    database_factory_ = std::make_unique<FakeWebApkDatabaseFactory>();
+    data_type_store_service_ = std::make_unique<FakeDataTypeStoreService>();
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile());
   }
@@ -98,18 +99,11 @@ class WebApkDatabaseTest : public ::testing::Test {
   }
 
   void WriteBatch(
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch) {
-    base::RunLoop run_loop;
-
-    database_factory().GetStore()->CommitWriteBatch(
-        std::move(write_batch),
-        base::BindLambdaForTesting(
-            [&](const std::optional<syncer::ModelError>& error) {
-              EXPECT_FALSE(error);
-              run_loop.Quit();
-            }));
-
-    run_loop.Run();
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch) {
+    base::test::TestFuture<const std::optional<syncer::ModelError>&> error;
+    data_type_store_service().GetStore()->CommitWriteBatch(
+        std::move(write_batch), error.GetCallback());
+    EXPECT_FALSE(error.Get());
   }
 
   Registry CreateWebApps(uint32_t num_apps) {
@@ -129,7 +123,7 @@ class WebApkDatabaseTest : public ::testing::Test {
   Registry CreateAndWriteWebApps(uint32_t num_apps) {
     Registry registry = CreateWebApps(num_apps);
 
-    auto write_batch = database_factory().GetStore()->CreateWriteBatch();
+    auto write_batch = data_type_store_service().GetStore()->CreateWriteBatch();
     for (const auto& entry : registry) {
       write_batch->WriteData(entry.first, entry.second->SerializeAsString());
     }
@@ -140,15 +134,16 @@ class WebApkDatabaseTest : public ::testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
- protected:
-  FakeWebApkDatabaseFactory& database_factory() { return *database_factory_; }
-  FakeWebApkDatabaseFactory* database_factory_ptr() {
-    return database_factory_.get();
+  FakeDataTypeStoreService& data_type_store_service() {
+    return *data_type_store_service_;
+  }
+  FakeDataTypeStoreService* data_type_store_service_ptr() {
+    return data_type_store_service_.get();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<FakeWebApkDatabaseFactory> database_factory_;
+  std::unique_ptr<FakeDataTypeStoreService> data_type_store_service_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
 
@@ -164,23 +159,15 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndReadRegistry) {
 
   std::unique_ptr<WebApkDatabase> web_apk_database =
       std::make_unique<WebApkDatabase>(
-          database_factory_ptr(),
-          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+          data_type_store_service_ptr(),
+          base::BindRepeating([](const syncer::ModelError& error) {
             ASSERT_TRUE(false);  // should not be reached
           }));
 
-  {
-    base::RunLoop run_loop;
-    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
-        [&](Registry inner_registry,
-            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-          EXPECT_TRUE(IsRegistryEqual(inner_registry, registry));
-          // TODO(hartmanng): it might be a good idea to test the metadata_batch
-          // here too, although currently it's empty.
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<Registry, std::unique_ptr<syncer::MetadataBatch>>
+      registry_and_batch;
+  web_apk_database->OpenDatabase(registry_and_batch.GetCallback());
+  EXPECT_TRUE(IsRegistryEqual(registry_and_batch.Get<0>(), registry));
 }
 
 TEST_F(WebApkDatabaseTest, OpenDatabaseAndWriteRegistry) {
@@ -190,36 +177,24 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndWriteRegistry) {
 
   std::unique_ptr<WebApkDatabase> web_apk_database =
       std::make_unique<WebApkDatabase>(
-          database_factory_ptr(),
-          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+          data_type_store_service_ptr(),
+          base::BindRepeating([](const syncer::ModelError& error) {
             ASSERT_TRUE(false);  // should not be reached
           }));
 
-  {
-    base::RunLoop run_loop;
-    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
-        [&](Registry inner_registry,
-            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-          // we just need to wait here until the db is "fully open"
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<Registry, std::unique_ptr<syncer::MetadataBatch>>
+      open_result;
+  web_apk_database->OpenDatabase(open_result.GetCallback());
+  ASSERT_TRUE(open_result.Wait());
 
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
-  {
-    base::RunLoop run_loop;
-    web_apk_database->Write(*update_data, std::move(metadata_change_list),
-                            base::BindLambdaForTesting([&](bool success) {
-                              EXPECT_TRUE(success);
-                              run_loop.Quit();
-                            }));
-    run_loop.Run();
-  }
-
-  EXPECT_TRUE(
-      IsRegistryEqual(database_factory().ReadRegistry(), CreateWebApps(100)));
+  base::test::TestFuture<bool> success;
+  web_apk_database->Write(
+      *update_data,
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList(),
+      success.GetCallback());
+  EXPECT_TRUE(success.Get());
+  EXPECT_TRUE(IsRegistryEqual(data_type_store_service().ReadRegistry(),
+                              CreateWebApps(100)));
 }
 
 TEST_F(WebApkDatabaseTest, OpenDatabaseAndDeleteFromRegistry) {
@@ -227,21 +202,15 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndDeleteFromRegistry) {
 
   std::unique_ptr<WebApkDatabase> web_apk_database =
       std::make_unique<WebApkDatabase>(
-          database_factory_ptr(),
-          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+          data_type_store_service_ptr(),
+          base::BindRepeating([](const syncer::ModelError& error) {
             ASSERT_TRUE(false);  // should not be reached
           }));
 
-  {
-    base::RunLoop run_loop;
-    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
-        [&](Registry inner_registry,
-            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-          // we just need to wait here until the db is "fully open"
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<Registry, std::unique_ptr<syncer::MetadataBatch>>
+      open_result;
+  web_apk_database->OpenDatabase(open_result.GetCallback());
+  ASSERT_TRUE(open_result.Wait());
 
   RegistryUpdateData update_data;
   update_data.apps_to_delete.push_back(
@@ -255,20 +224,15 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndDeleteFromRegistry) {
   update_data.apps_to_delete.push_back(
       ManifestIdStrToAppId("https://example.com/id/99"));
 
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
-  {
-    base::RunLoop run_loop;
-    web_apk_database->Write(update_data, std::move(metadata_change_list),
-                            base::BindLambdaForTesting([&](bool success) {
-                              EXPECT_TRUE(success);
-                              run_loop.Quit();
-                            }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<bool> success;
+  web_apk_database->Write(
+      update_data,
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList(),
+      success.GetCallback());
+  EXPECT_TRUE(success.Get());
 
-  EXPECT_TRUE(
-      IsRegistryEqual(database_factory().ReadRegistry(), CreateWebApps(95)));
+  EXPECT_TRUE(IsRegistryEqual(data_type_store_service().ReadRegistry(),
+                              CreateWebApps(95)));
 }
 
 TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
@@ -276,21 +240,15 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
 
   std::unique_ptr<WebApkDatabase> web_apk_database =
       std::make_unique<WebApkDatabase>(
-          database_factory_ptr(),
-          base::BindLambdaForTesting([&](const syncer::ModelError& error) {
+          data_type_store_service_ptr(),
+          base::BindRepeating([](const syncer::ModelError& error) {
             ASSERT_TRUE(false);  // should not be reached
           }));
 
-  {
-    base::RunLoop run_loop;
-    web_apk_database->OpenDatabase(base::BindLambdaForTesting(
-        [&](Registry inner_registry,
-            std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
-          // we just need to wait here until the db is "fully open"
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<Registry, std::unique_ptr<syncer::MetadataBatch>>
+      open_result;
+  web_apk_database->OpenDatabase(open_result.GetCallback());
+  ASSERT_TRUE(open_result.Wait());
 
   std::unique_ptr<WebApkProto> replacement =
       CreateWebApkProto(0 /* suffix */, true /* is_locally_installed */);
@@ -301,17 +259,12 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
   RegistryUpdateData update_data;
   update_data.apps_to_create.emplace_back(std::move(replacement));
 
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
-  {
-    base::RunLoop run_loop;
-    web_apk_database->Write(update_data, std::move(metadata_change_list),
-                            base::BindLambdaForTesting([&](bool success) {
-                              EXPECT_TRUE(success);
-                              run_loop.Quit();
-                            }));
-    run_loop.Run();
-  }
+  base::test::TestFuture<bool> success;
+  web_apk_database->Write(
+      update_data,
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList(),
+      success.GetCallback());
+  EXPECT_TRUE(success.Get());
 
   std::unique_ptr<WebApkProto> final_proto =
       CreateWebApkProto(0 /* suffix */, true /* is_locally_installed */);
@@ -323,8 +276,8 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
   Registry final_registry;
   final_registry.emplace(app_id, std::move(final_proto));
 
-  EXPECT_TRUE(
-      IsRegistryEqual(database_factory().ReadRegistry(), final_registry));
+  EXPECT_TRUE(IsRegistryEqual(data_type_store_service().ReadRegistry(),
+                              final_registry));
 }
 
 }  // namespace webapk

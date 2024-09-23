@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/text/date_components.h"
 
 #include <limits.h>
@@ -505,7 +510,7 @@ double DateComponents::MillisecondsSinceEpoch() const {
     case kInvalid:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return InvalidMilliseconds();
 }
 
@@ -524,7 +529,7 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
 
   switch (effective_format) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SecondFormat::kNone:
       return String::Format("%02d:%02d", hour_, minute_);
@@ -552,7 +557,7 @@ String DateComponents::ToString(SecondFormat format) const {
     case kInvalid:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String("(Invalid DateComponents)");
 }
 

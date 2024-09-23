@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("device_scheduled_reboot") {
+  sources = [
+    "reboot_notification_controller.cc",
+    "reboot_notification_controller.h",
+    "scheduled_reboot_dialog.cc",
+    "scheduled_reboot_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles",
+    "//components/constrained_window",
+    "//components/strings:components_strings_grit",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "reboot_notification_controller_unittest.cc",
+    "scheduled_reboot_dialog_unittest.cc",
+  ]
+
+  deps = [
+    ":device_scheduled_reboot",
+    "//base",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/constrained_window",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "reboot_notification_controller_browsertest.cc" ]
+
+  deps = [
+    ":device_scheduled_reboot",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

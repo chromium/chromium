@@ -23,7 +23,10 @@
 @protocol SuggestedActionsDelegate;
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
+@protocol TabGridCommands;
+@protocol TabGroupConfirmationCommands;
 @class TabGridTransitionItem;
+class TabGroup;
 
 namespace web {
 class WebStateID;
@@ -36,38 +39,31 @@ class WebStateID;
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID;
+// Tells the delegate that the `group` was selected in `gridViewController`.
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group;
 // Tells the delegate that the item with `itemID` was closed in
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID;
-// Tells the delegate that the item with `itemID` was moved to
-// `destinationIndex`.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-         didMoveItemWithID:(web::WebStateID)itemID
-                   toIndex:(NSUInteger)destinationIndex;
-// Tells the delegate that the the number of items in `gridViewController`
-// changed to `count`.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-        didChangeItemCount:(NSUInteger)count;
+// Tells the delegate that an item was moved.
+- (void)gridViewControllerDidMoveItem:
+    (BaseGridViewController*)gridViewController;
 // Tells the delegate that the item with `itemID` was removed.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-       didRemoveItemWIthID:(web::WebStateID)itemID;
+       didRemoveItemWithID:(web::WebStateID)itemID;
 
-// Tells the delegate that the visibility of the last item of the grid changed.
-- (void)didChangeLastItemVisibilityInGridViewController:
+// Tells the delegate that the `gridViewController` will begin dragging a tab.
+- (void)gridViewControllerDragSessionWillBeginForTab:
     (BaseGridViewController*)gridViewController;
-
-// Tells the delegate that the grid view controller's scroll view will begin
-// dragging.
-- (void)gridViewControllerWillBeginDragging:
+// Tells the delegate that the `gridViewController` will begin dragging a tab
+// group.
+- (void)gridViewControllerDragSessionWillBeginForTabGroup:
     (BaseGridViewController*)gridViewController;
-// Tells the delegate that the grid view controller cells will begin dragging.
-- (void)gridViewControllerDragSessionWillBegin:
-    (BaseGridViewController*)gridViewController;
-// Tells the delegate that the grid view controller cells did end dragging.
+// Tells the delegate that the `gridViewController` cells did end dragging.
 - (void)gridViewControllerDragSessionDidEnd:
     (BaseGridViewController*)gridViewController;
-// Tells the delegate that the grid view controller did scroll.
+// Tells the delegate that the `gridViewController` did scroll.
 - (void)gridViewControllerScrollViewDidScroll:
     (BaseGridViewController*)gridViewController;
 
@@ -77,17 +73,27 @@ class WebStateID;
 // Tells the delegate that a drop animation did end.
 - (void)gridViewControllerDropAnimationDidEnd:
     (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did enter.
+- (void)gridViewControllerDropSessionDidEnter:
+    (BaseGridViewController*)gridViewController;
+// Tells the delegate that a drop session did exit.
+- (void)gridViewControllerDropSessionDidExit:
+    (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs button was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs (in
-// TabGridModeNormal).
+// TabGridMode::kNormal).
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs settings link was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs
-// settings (in TabGridModeInactive).
+// settings (in the Inactive grid).
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
+    (BaseGridViewController*)gridViewController;
+
+// Tells the delegate that a context menu has been requested.
+- (void)gridViewControllerDidRequestContextMenu:
     (BaseGridViewController*)gridViewController;
 
 @end
@@ -107,12 +113,10 @@ class WebStateID;
     BOOL containedGridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
-// The current mode for the grid.
-@property(nonatomic, assign) TabGridMode mode;
 // The current search text to use for filtering results when the search mode is
 // active.
 @property(nonatomic, copy) NSString* searchText;
-// Delegate for search results suggested actions.
+// Delegate for search results suggested actions. Only available in regular.
 @property(nonatomic, weak) id<SuggestedActionsDelegate>
     suggestedActionsDelegate;
 // Delegate is informed of user interactions in the grid UI.
@@ -140,6 +144,16 @@ class WebStateID;
 // of a scrollview, they don't all get the correct information when being laid
 // out. To that end, contentInsets are manually added.
 @property(nonatomic, assign) UIEdgeInsets contentInsets;
+// A Boolean value that controls whether the scroll-to-top gesture is enabled.
+// It is a wrapper around the inner `collectionView.scrollsToTop` property.
+// The default value of this property is YES.
+@property(nonatomic, assign, getter=isGridScrollsToTopEnabled)
+    BOOL gridScrollsToTopEnabled;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+// Handler for tab group confirmation commands.
+@property(nonatomic, weak) id<TabGroupConfirmationCommands>
+    tabGroupConfirmationHandler;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
@@ -152,6 +166,15 @@ class WebStateID;
 
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
+
+// Moves the visible cells such as their center is in `center` (expressed in
+// self.view's coordinates) and apply `scale`. `translationCompletion` is used
+// to start the translation from a percentage of the total distance.
+- (void)centerVisibleCellsToPoint:(CGPoint)center
+            translationCompletion:(CGFloat)translationCompletion
+                        withScale:(CGFloat)scale;
+// Resets the move and scale done by the method just above.
+- (void)resetVisibleCellsCenterAndScale;
 
 @end
 

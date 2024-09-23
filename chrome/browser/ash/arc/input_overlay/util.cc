@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/notreached.h"
@@ -75,7 +76,7 @@ InputElement* GetInputBindingByBindingOption(Action* action,
       input_binding = action->pending_input();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return input_binding;
 }
@@ -130,11 +131,8 @@ void UpdateFlagAndProperty(aura::Window* window,
 }
 
 bool IsBeta() {
-  return ash::features::IsArcInputOverlayBetaEnabled();
-}
-
-bool IsGameDashboardFlagOn() {
-  return ash::features::IsGameDashboardEnabled();
+  return ash::features::IsGameDashboardEnabled() &&
+         arc::GetArcAndroidSdkVersionAsInt() > arc::kArcVersionP;
 }
 
 }  // namespace arc::input_overlay

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.swangle builder group."""
 
-load("//lib/builders.star", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "gardener_rotations", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
@@ -14,14 +14,15 @@ ci.defaults.set(
     executable = "recipe:angle_chromium",
     builder_group = "chromium.swangle",
     pool = ci.gpu.POOL,
-    sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
+    gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -68,14 +69,16 @@ ci.gpu.linux_builder(
             "gpu_tests",
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Linux",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -106,7 +109,9 @@ ci.gpu.linux_builder(
             "gpu_tests",
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     # Uncomment this entry when this experimental tester is actually in use.
@@ -115,7 +120,7 @@ ci.gpu.linux_builder(
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -144,16 +149,18 @@ ci.gpu.linux_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -180,16 +187,18 @@ ci.gpu.linux_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -216,9 +225,11 @@ ci.gpu.linux_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "linux",
+            "x64",
         ],
     ),
     # Uncomment this entry when this experimental tester is actually in use.
@@ -227,7 +238,7 @@ ci.gpu.linux_builder(
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.mac_builder(
@@ -258,7 +269,9 @@ ci.gpu.mac_builder(
             "gpu_tests",
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
+            "mac",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -295,16 +308,17 @@ ci.gpu.windows_builder(
             "gpu_tests",
             "release_try_builder",
             "minimal_symbols",
-            "reclient",
+            "remoteexec",
             "x86",
             "resource_allowlisting",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Windows",
         short_name = "x86",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -333,16 +347,18 @@ ci.gpu.windows_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -371,9 +387,10 @@ ci.gpu.windows_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "win",
             "x86",
         ],
     ),
@@ -381,7 +398,7 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -408,16 +425,18 @@ ci.gpu.windows_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",
         short_name = "x64",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -444,9 +463,10 @@ ci.gpu.windows_builder(
             "angle_deqp_tests",
             "shared",
             "release",
-            "reclient",
+            "remoteexec",
             "minimal_symbols",
             "dcheck_always_on",
+            "win",
             "x86",
         ],
     ),
@@ -454,5 +474,5 @@ ci.gpu.windows_builder(
         category = "DEPS|Windows",
         short_name = "x86",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )

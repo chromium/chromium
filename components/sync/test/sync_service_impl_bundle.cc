@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/service/sync_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -21,11 +20,8 @@ namespace syncer {
 using testing::Return;
 
 SyncServiceImplBundle::SyncServiceImplBundle()
-    : identity_test_env_(&test_url_loader_factory_) {
+    : identity_test_env_(&test_url_loader_factory_, &pref_service_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-  // Pref is registered in signin internal `PrimaryAccountManager`.
-  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
-                                                false);
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 }
 
@@ -34,12 +30,14 @@ SyncServiceImplBundle::~SyncServiceImplBundle() = default;
 std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
   auto sync_client = std::make_unique<testing::NiceMock<SyncClientMock>>();
   ON_CALL(*sync_client, GetPrefService()).WillByDefault(Return(&pref_service_));
-  ON_CALL(*sync_client, GetSyncApiComponentFactory())
-      .WillByDefault(Return(&component_factory_));
+  ON_CALL(*sync_client, GetSyncEngineFactory())
+      .WillByDefault(Return(&engine_factory_));
   ON_CALL(*sync_client, GetSyncInvalidationsService())
       .WillByDefault(Return(sync_invalidations_service()));
   ON_CALL(*sync_client, GetTrustedVaultClient())
       .WillByDefault(Return(trusted_vault_client()));
+  ON_CALL(*sync_client, GetIdentityManager())
+      .WillByDefault(Return(identity_manager()));
   return std::move(sync_client);
 }
 
@@ -48,13 +46,12 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
   SyncServiceImpl::InitParams init_params;
 
   init_params.sync_client = std::move(sync_client);
-  init_params.identity_manager = identity_manager();
   init_params.url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
   init_params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
-  init_params.debug_identifier = "dummyDebugName";
+  init_params.debug_identifier = "fakeDebugName";
 
   return init_params;
 }

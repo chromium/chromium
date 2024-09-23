@@ -8,9 +8,9 @@
 namespace content {
 
 constexpr char kPEMECDSAP256SPKIHash[] =
-    "Roij6gF5orGtG9K8u8PkTe1LiRbVklxLM+EVABTK8I0=";
+    "ZFO6LtBASoBUvOnNeXEuD3YGnUHS+eFQBZoRemB8YCs=";
 constexpr char kPEMECDSAP384SPKIHash[] =
-    "wfk/4dogHdX/MbLIvpjbKQ7fhO+ovkX2wjzDPSrIsMY=";
+    "DiD+PNhd9XvhGqZap4Hrf0kwWui7Kf5SI5bSLfHC9C4=";
 
 }  // namespace content
 

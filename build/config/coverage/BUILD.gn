@@ -52,7 +52,7 @@ config("default_coverage") {
     }
 
     if (is_linux || is_chromeos) {
-      # TODO(crbug.com/1194301): Remove this flag.
+      # TODO(crbug.com/40175589): Remove this flag.
       cflags += [ "-fno-use-cxa-atexit" ]
     }
   }

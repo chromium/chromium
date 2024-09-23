@@ -96,7 +96,7 @@ namespace languageSettingsPrivate {
 
   interface Functions {
     // Gets languages available for translate, spell checking, input and locale.
-    [supportsPromises] static void getLanguageList(
+    static void getLanguageList(
         GetLanguageListCallback callback);
 
     // Enables a language, adding it to the Accept-Language list (used to decide
@@ -114,7 +114,7 @@ namespace languageSettingsPrivate {
     static void moveLanguage(DOMString languageCode, MoveType moveType);
 
     // Gets languages that should always be automatically translated.
-    [supportsPromises] static void getAlwaysTranslateLanguages(
+    static void getAlwaysTranslateLanguages(
         GetAlwaysTranslateLanguagesCallback callback);
 
     // Sets whether a given language should always be automatically translated.
@@ -122,15 +122,15 @@ namespace languageSettingsPrivate {
         DOMString languageCode, boolean alwaysTranslate);
 
     // Gets languages that should never be offered to translate.
-    [supportsPromises] static void getNeverTranslateLanguages(
+    static void getNeverTranslateLanguages(
         GetNeverTranslateLanguagesCallback callback);
 
     // Gets the current status of the chosen spell check dictionaries.
-    [supportsPromises] static void getSpellcheckDictionaryStatuses(
+    static void getSpellcheckDictionaryStatuses(
         GetSpellcheckDictionaryStatusesCallback callback);
 
     // Gets the custom spell check words, in sorted order.
-    [supportsPromises] static void getSpellcheckWords(
+    static void getSpellcheckWords(
         GetSpellcheckWordsCallback callback);
 
     // Adds a word to the custom dictionary.
@@ -140,7 +140,7 @@ namespace languageSettingsPrivate {
     static void removeSpellcheckWord(DOMString word);
 
     // Gets the translate target language (in most cases, the display locale).
-    [supportsPromises] static void getTranslateTargetLanguage(
+    static void getTranslateTargetLanguage(
         GetTranslateTargetLanguageCallback callback);
 
     // Sets the translate target language given a language code.
@@ -148,7 +148,7 @@ namespace languageSettingsPrivate {
 
     // Gets all supported input methods, including third-party IMEs.
     // Chrome OS only.
-    [supportsPromises] static void getInputMethodLists(
+    static void getInputMethodLists(
         GetInputMethodListsCallback callback);
 
     // Adds the input method to the current user's list of enabled input

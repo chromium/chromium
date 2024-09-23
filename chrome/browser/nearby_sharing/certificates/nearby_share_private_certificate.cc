@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -12,7 +13,6 @@
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
@@ -122,7 +122,7 @@ std::set<std::vector<uint8_t>> StringToSalts(const std::string& str) {
   std::set<std::vector<uint8_t>> salts;
   for (size_t i = 0; i < str.size(); i += chars_per_salt) {
     std::vector<uint8_t> salt;
-    base::HexStringToBytes(base::StringPiece(&str[i], chars_per_salt), &salt);
+    base::HexStringToBytes(std::string_view(&str[i], chars_per_salt), &salt);
     salts.insert(std::move(salt));
   }
   return salts;

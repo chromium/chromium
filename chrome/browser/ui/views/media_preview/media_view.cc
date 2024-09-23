@@ -17,8 +17,6 @@ MediaView::MediaView(bool is_subsection) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetInsideBorderInsets(insets);
-  SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
 
 void MediaView::RefreshSize() {
@@ -29,8 +27,11 @@ void MediaView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
-gfx::Size MediaView::CalculatePreferredSize() const {
-  return {width(), views::BoxLayoutView::CalculatePreferredSize().height()};
+gfx::Size MediaView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return {
+      width(),
+      views::BoxLayoutView::CalculatePreferredSize(available_size).height()};
 }
 
 MediaView::~MediaView() = default;

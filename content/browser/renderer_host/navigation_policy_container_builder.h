@@ -21,6 +21,7 @@ namespace content {
 
 class FrameNavigationEntry;
 class RenderFrameHostImpl;
+class StoragePartition;
 
 // Keeps track of a few important sets of policies during a navigation: those of
 // the parent document, of the navigation initiator, etc. Computes the policies
@@ -47,14 +48,21 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // All arguments may be nullptr and need only outlive this call.
   //
   // If `parent` is not nullptr, its policies are copied.
-  // If `initiator_frame_token` is not nullptr and maps to a
-  // `PolicyContainerHost`, then its policies are copied.
+  // If `initiator_frame_token` is not nullptr, the policies are copied from the
+  // corresponding RenderFrameHost.
+  // `initiator_process_id` is used with the frame token to look up the
+  // initiator frame.
+  // If `storage_partition` is not nullptr, it may contain a
+  // NavigationStateKeepAlive that is keeping the PolicyContainerHost of the
+  // initiator alive.
   // If `history_entry` is not nullptr and contains policies, those are copied.
   //
   // This must only be called on the browser's UI thread.
   NavigationPolicyContainerBuilder(
       RenderFrameHostImpl* parent,
       const blink::LocalFrameToken* initiator_frame_token,
+      int initiator_process_id,
+      StoragePartition* storage_partition,
       const FrameNavigationEntry* history_entry);
 
   ~NavigationPolicyContainerBuilder();
@@ -90,6 +98,11 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   //
   // This must be called before `ComputePolicies()`.
   void SetCrossOriginEmbedderPolicy(network::CrossOriginEmbedderPolicy coep);
+
+  // Sets the document isolation policy of the new document.
+  //
+  // This must be called before `ComputePolicies()`.
+  void SetDocumentIsolationPolicy(const network::DocumentIsolationPolicy& dip);
 
   // Sets the IP address space of the delivered policies of the new document.
   //

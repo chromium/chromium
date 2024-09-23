@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -78,8 +77,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   void SimulateNavigation() {
     const KURL& url = KURL(NullURL(), "https://www.example.com");
     GetDocument().GetFrame()->Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
@@ -118,7 +116,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
                                        unsigned second_dimension,
                                        const String& value) {
     StyleEnvironmentVariables::GetRootInstance().SetVariable(
-        variable, first_dimension, second_dimension, value);
+        variable, first_dimension, second_dimension, value, nullptr);
   }
 };
 
@@ -372,21 +370,6 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Remove) {
   // Check that the element does not have the background color any more.
   EXPECT_NE(kTestColorRed, target->ComputedStyleRef().VisitedDependentColor(
                                GetCSSPropertyBackgroundColor()));
-}
-
-TEST_F(StyleEnvironmentVariablesTest,
-       DISABLED_PrintExpectedVariableNameHashes) {
-  const UADefinedVariable variables[] = {
-      UADefinedVariable::kSafeAreaInsetTop,
-      UADefinedVariable::kSafeAreaInsetLeft,
-      UADefinedVariable::kSafeAreaInsetRight,
-      UADefinedVariable::kSafeAreaInsetBottom};
-  for (const auto& variable : variables) {
-    const AtomicString name = StyleEnvironmentVariables::GetVariableName(
-        variable, /*feature_context=*/nullptr);
-    printf("0x%x\n",
-           DocumentStyleEnvironmentVariables::GenerateHashFromName(name));
-  }
 }
 
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_IgnoreMediaControls) {

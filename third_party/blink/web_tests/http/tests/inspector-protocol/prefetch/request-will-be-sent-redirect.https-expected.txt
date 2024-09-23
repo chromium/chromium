@@ -10,6 +10,7 @@ Network.requestWillBeSent{
     redirectHasExtraInfo : false
     request : {
         headers : {
+            Accept-Language : en-us,en;q=0.9
             Upgrade-Insecure-Requests : 1
             User-Agent : <string>
             sec-ch-ua : "content_shell";v="999"
@@ -35,7 +36,7 @@ Network.requestWillBeSentExtraInfo{
     headers : {
         Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
         Accept-Encoding : gzip, deflate, br, zstd
-        Accept-Language : en-us,en
+        Accept-Language : en-us,en;q=0.9
         Connection : keep-alive
         Host : 127.0.0.1:8443
         Sec-Fetch-Dest : document
@@ -94,7 +95,10 @@ Network.responseReceived{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : https://127.0.0.1
+    cookiePartitionKey : {
+        hasCrossSiteAncestor : false
+        topLevelSite : https://127.0.0.1
+    } 
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
@@ -136,6 +140,9 @@ Network.requestWillBeSent{
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
             Sec-Purpose : prefetch
             Upgrade-Insecure-Requests : 1
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
         }
         initialPriority : VeryLow
         method : GET
@@ -165,6 +172,9 @@ Network.requestWillBeSentExtraInfo{
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
+        sec-ch-ua : "content_shell";v="999"
+        sec-ch-ua-mobile : ?0
+        sec-ch-ua-platform : "Unknown"
     }
     requestId : <string>
     siteHasCookieInOtherPartition : false
@@ -217,6 +227,9 @@ Network.requestWillBeSent{
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
             Sec-Purpose : prefetch
             Upgrade-Insecure-Requests : 1
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
         }
         initialPriority : VeryLow
         method : GET
@@ -231,7 +244,10 @@ Network.requestWillBeSent{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : https://127.0.0.1
+    cookiePartitionKey : {
+        hasCrossSiteAncestor : false
+        topLevelSite : https://127.0.0.1
+    } 
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
@@ -268,6 +284,9 @@ Network.requestWillBeSentExtraInfo{
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
+        sec-ch-ua : "content_shell";v="999"
+        sec-ch-ua-mobile : ?0
+        sec-ch-ua-platform : "Unknown"
     }
     requestId : <string>
     siteHasCookieInOtherPartition : false
@@ -315,7 +334,10 @@ Network.responseReceived{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : https://127.0.0.1
+    cookiePartitionKey : {
+        hasCrossSiteAncestor : false
+        topLevelSite : https://127.0.0.1
+    } 
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]

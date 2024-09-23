@@ -6,12 +6,13 @@
 #define REMOTING_PROTOCOL_PORT_ALLOCATOR_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/ice_config.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting::protocol {
@@ -23,20 +24,29 @@ class PortAllocator : public cricket::BasicPortAllocator {
                 scoped_refptr<TransportContext> transport_context);
   ~PortAllocator() override;
 
+  void ApplyNetworkSettings(const NetworkSettings& network_settings);
+
   scoped_refptr<TransportContext> transport_context() {
     return transport_context_;
   }
 
   cricket::PortAllocatorSession* CreateSessionInternal(
-      absl::string_view content_name,
+      std::string_view content_name,
       int component,
-      absl::string_view ice_ufrag,
-      absl::string_view ice_pwd) override;
+      std::string_view ice_ufrag,
+      std::string_view ice_pwd) override;
+
+  base::WeakPtr<PortAllocator> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   std::unique_ptr<rtc::NetworkManager> network_manager_;
   std::unique_ptr<rtc::PacketSocketFactory> socket_factory_;
   scoped_refptr<TransportContext> transport_context_;
+  bool network_settings_applied_ = false;
+
+  base::WeakPtrFactory<PortAllocator> weak_factory_{this};
 };
 
 class PortAllocatorSession : public cricket::BasicPortAllocatorSession {

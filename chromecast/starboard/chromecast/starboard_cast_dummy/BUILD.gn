@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/starboard/starboard.gni")
+
+if (!remove_starboard_headers) {
+  shared_library("cast_starboard_api") {
+    sources = [ "cast_starboard_api_dummy.cc" ]
+    configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
+    defines = [
+      "STARBOARD_IMPLEMENTATION",
+      "SB_IS_EVERGREEN",
+    ]
+    deps = [ "//chromecast/starboard/chromecast/starboard_cast_api" ]
+    public_deps = [ "//chromecast/starboard/third_party/starboard/public" ]
+  }
+}

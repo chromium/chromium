@@ -6,14 +6,44 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/rand_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+namespace {
+
+constexpr size_t kDataChunkSize = 524288;  // default download buffer size
+
+// Helper function to divide data in obfuscated chunks.
+void ObfuscateContentInChunks(const std::vector<uint8_t>& input,
+                              std::string& output) {
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+
+  size_t offset = 0;
+
+  while (offset < input.size()) {
+    size_t chunk_size = std::min(kDataChunkSize, input.size() - offset);
+    bool is_last_chunk = (offset + chunk_size == input.size());
+
+    auto result = obfuscator.ObfuscateChunk(
+        base::span(input).subspan(offset, chunk_size), is_last_chunk);
+
+    ASSERT_TRUE(result.has_value());
+
+    output.insert(output.end(), result->begin(), result->end());
+    offset += chunk_size;
+  }
+}
+}  // namespace
+
 class ConnectorDataPipeGetterTest : public testing::Test {
  public:
   std::optional<base::File> CreateFile(const std::string& content) {
@@ -21,12 +51,12 @@ class ConnectorDataPipeGetterTest : public testing::Test {
     base::FilePath path = temp_dir_.GetPath().AppendASCII("test.txt");
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE);
-    if (!file.IsValid())
+    if (!file.IsValid()) {
       return std::nullopt;
-
-    if (file.WriteAtCurrentPos(content.data(), content.size()) < 0)
+    }
+    if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(content))) {
       return std::nullopt;
-
+    }
     return file;
   }
 
@@ -63,10 +93,11 @@ class ConnectorDataPipeGetterTest : public testing::Test {
     body.reserve(expected_size);
     size_t read_chunks = 0;
     while (true) {
-      char buffer[1024];
-      uint32_t read_size = sizeof(buffer);
+      std::string buffer(1024, '\0');
+      size_t read_size = 0;
       MojoResult result = data_pipe_consumer_->ReadData(
-          buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          read_size);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         base::RunLoop().RunUntilIdle();
         continue;
@@ -74,7 +105,7 @@ class ConnectorDataPipeGetterTest : public testing::Test {
       if (result != MOJO_RESULT_OK) {
         break;
       }
-      body.append(buffer, read_size);
+      body.append(std::string_view(buffer).substr(0, read_size));
       ++read_chunks;
       if (max_chunks != 0 && read_chunks == max_chunks)
         break;
@@ -333,4 +364,31 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
   }
 }
 
+TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
+  if (!is_file_data_pipe() || !is_resumable_upload()) {
+    // This test only applies to file-based resumable uploads.
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  std::vector<uint8_t> original_content =
+      base::RandBytesAsVector(2 * kDataChunkSize + 1024);
+  std::string obfuscated_content;
+  ObfuscateContentInChunks(original_content, obfuscated_content);
+
+  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
+      CreateDataPipeGetter(obfuscated_content);
+  ASSERT_TRUE(data_pipe_getter);
+
+  std::string deobfuscated_string =
+      GetBodyFromPipe(data_pipe_getter.get(), original_content.size());
+
+  std::vector<uint8_t> deobfuscated_content(deobfuscated_string.begin(),
+                                            deobfuscated_string.end());
+
+  ASSERT_EQ(original_content, deobfuscated_content);
+}
 }  // namespace safe_browsing

@@ -68,6 +68,7 @@ static_library("signaling") {
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base:logging",
+    "//remoting/base:name_value_map",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//services/network/public/cpp:cpp",
   ]

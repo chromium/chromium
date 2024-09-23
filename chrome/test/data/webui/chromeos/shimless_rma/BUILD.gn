@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings = [
+    "chrome://shimless-rma/*|" +
+        rebase_path("$root_gen_dir/ash/webui/shimless_rma/resources/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+  ]
+
+  files = [
+    "all_inputs_disabled_test.ts",
+    "critical_error_page_test.ts",
+    "fake_shimless_rma_service_test.ts",
+    "hardware_error_page_test.ts",
+    "onboarding_choose_destination_page_test.ts",
+    "onboarding_choose_wipe_device_page_test.ts",
+    "onboarding_choose_wp_disable_method_page_test.ts",
+    "onboarding_enter_rsu_wp_disable_code_page_test.ts",
+    "onboarding_landing_page_test.ts",
+    "onboarding_network_page_test.ts",
+    "onboarding_select_components_page_test.ts",
+    "onboarding_update_page_test.ts",
+    "onboarding_wait_for_manual_wp_disable_page_test.ts",
+    "onboarding_wp_disable_complete_page_test.ts",
+    "reboot_page_test.ts",
+    "reimaging_calibration_failed_page_test.ts",
+    "reimaging_calibration_run_page_test.ts",
+    "reimaging_calibration_setup_page_test.ts",
+    "reimaging_device_information_page_test.ts",
+    "reimaging_firmware_update_page_test.ts",
+    "reimaging_provisioning_page_test.ts",
+    "repair_component_chip_test.ts",
+    "shimless_3p_diag_test.ts",
+    "shimless_rma_app_test.ts",
+    "wrapup_finalize_page_test.ts",
+    "wrapup_repair_complete_page_test.ts",
+    "wrapup_restock_page_test.ts",
+    "wrapup_wait_for_manual_wp_enable_page_test.ts",
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/shimless_rma/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

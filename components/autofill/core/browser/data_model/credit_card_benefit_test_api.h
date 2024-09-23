@@ -11,42 +11,42 @@
 
 namespace autofill {
 
-// Exposes some testing operations for CreditCardBenefit shared fields.
-class CreditCardBenefitTestApi {
+// Exposes some testing operations for CreditCardBenefitBase shared fields.
+class CreditCardBenefitBaseTestApi {
  public:
-  explicit CreditCardBenefitTestApi(CreditCardBenefit* benefit)
+  explicit CreditCardBenefitBaseTestApi(CreditCardBenefitBase* benefit)
       : benefit_(*benefit) {}
 
-  void SetBenefitIdForTesting(CreditCardBenefit::BenefitId benefit_id) {
+  void SetBenefitId(CreditCardBenefitBase::BenefitId benefit_id) {
     benefit_->benefit_id_ = std::move(benefit_id);
   }
-  void SetLinkedCardInstrumentIdForTesting(
-      CreditCardBenefit::LinkedCardInstrumentId linked_card_instrument_id) {
+  void SetLinkedCardInstrumentId(
+      CreditCardBenefitBase::LinkedCardInstrumentId linked_card_instrument_id) {
     benefit_->linked_card_instrument_id_ = linked_card_instrument_id;
   }
-  void SetBenefitDescriptionForTesting(std::u16string benefit_description) {
+  void SetBenefitDescription(std::u16string benefit_description) {
     benefit_->benefit_description_ = std::move(benefit_description);
   }
-  void SetStartTimeForTesting(base::Time start_time) {
+  void SetStartTime(base::Time start_time) {
     benefit_->start_time_ = start_time;
   }
-  void SetEndTimeForTesting(base::Time expiry_time) {
+  void SetExpiryTime(base::Time expiry_time) {
     benefit_->expiry_time_ = expiry_time;
   }
 
  private:
-  const raw_ref<CreditCardBenefit> benefit_;
+  const raw_ref<CreditCardBenefitBase> benefit_;
 };
 
 // Exposes some testing operations for CreditCardCategoryBenefit.
-class CreditCardCategoryBenefitTestApi : public CreditCardBenefitTestApi {
+class CreditCardCategoryBenefitTestApi : public CreditCardBenefitBaseTestApi {
  public:
   explicit CreditCardCategoryBenefitTestApi(
       CreditCardCategoryBenefit* category_benefit)
-      : CreditCardBenefitTestApi(category_benefit),
+      : CreditCardBenefitBaseTestApi(category_benefit),
         category_benefit_(*category_benefit) {}
 
-  void SetBenefitCategoryForTesting(
+  void SetBenefitCategory(
       CreditCardCategoryBenefit::BenefitCategory benefit_category) {
     category_benefit_->benefit_category_ = benefit_category;
   }
@@ -56,15 +56,14 @@ class CreditCardCategoryBenefitTestApi : public CreditCardBenefitTestApi {
 };
 
 // Exposes some testing operations for CreditCardMerchantBenefit.
-class CreditCardMerchantBenefitTestApi : public CreditCardBenefitTestApi {
+class CreditCardMerchantBenefitTestApi : public CreditCardBenefitBaseTestApi {
  public:
   explicit CreditCardMerchantBenefitTestApi(
       CreditCardMerchantBenefit* merchant_benefit)
-      : CreditCardBenefitTestApi(merchant_benefit),
+      : CreditCardBenefitBaseTestApi(merchant_benefit),
         merchant_benefit_(*merchant_benefit) {}
 
-  void SetMerchantDomainsForTesting(
-      base::flat_set<url::Origin> merchant_domains) {
+  void SetMerchantDomains(base::flat_set<url::Origin> merchant_domains) {
     merchant_benefit_->merchant_domains_ = std::move(merchant_domains);
   }
 
@@ -72,8 +71,13 @@ class CreditCardMerchantBenefitTestApi : public CreditCardBenefitTestApi {
   const raw_ref<CreditCardMerchantBenefit> merchant_benefit_;
 };
 
-inline CreditCardBenefitTestApi test_api(CreditCardBenefit& benefit) {
-  return CreditCardBenefitTestApi(&benefit);
+inline CreditCardBenefitBaseTestApi test_api(CreditCardBenefit& benefit) {
+  return CreditCardBenefitBaseTestApi(absl::visit(
+      [](auto& a) -> CreditCardBenefitBase* { return &a; }, benefit));
+}
+
+inline CreditCardBenefitBaseTestApi test_api(CreditCardBenefitBase& benefit) {
+  return CreditCardBenefitBaseTestApi(&benefit);
 }
 
 inline CreditCardCategoryBenefitTestApi test_api(

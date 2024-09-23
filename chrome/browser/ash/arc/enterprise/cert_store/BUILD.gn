@@ -1,0 +1,103 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cert_store") {
+  sources = [
+    "arc_cert_installer.cc",
+    "arc_cert_installer.h",
+    "arc_cert_installer_utils.cc",
+    "arc_cert_installer_utils.h",
+    "cert_store_service.cc",
+    "cert_store_service.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ash/arc/keymaster",
+    "//chrome/browser/ash/arc/keymint",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/remote_commands",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/services/keymanagement/public/mojom",
+    "//chrome/services/keymaster/public/mojom",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//content/public/browser",
+    "//crypto",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_cert_installer_unittest.cc" ]
+
+  deps = [
+    ":cert_store",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/test:test_support",
+    "//components/policy/core/common",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "cert_store_service_browsertest.cc" ]
+
+  deps = [
+    ":cert_store",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/keymaster",
+    "//chrome/browser/ash/arc/keymint",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/services/keymaster/public/mojom",
+    "//chrome/services/keymint/public/mojom",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto",
+    "//crypto:test_support",
+    "//extensions/browser",
+    "//net",
+    "//testing/gtest",
+  ]
+}

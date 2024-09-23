@@ -26,10 +26,6 @@
 
 namespace ash::system {
 
-// Result of loading values from the cached VPD file.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kMetricVpdCacheReadResult[];
-
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
     : public StatisticsProvider {
  public:
@@ -43,28 +39,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
     StatisticsSources(StatisticsSources&& other);
     StatisticsSources& operator=(StatisticsSources&& other);
 
+    // Command line for retrieving a filtered list of VPD key/value pairs. (Or,
+    // a fake tool.)
+    base::CommandLine vpd_tool{base::CommandLine::NO_PROGRAM};
     // Binary to fake crossystem tool with arguments. E.g. echo.
     base::CommandLine crossystem_tool{base::CommandLine::NO_PROGRAM};
 
     base::FilePath machine_info_filepath;
-    base::FilePath vpd_echo_filepath;
-    base::FilePath vpd_filepath;
-    base::FilePath vpd_status_filepath;
     base::FilePath oem_manifest_filepath;
     base::FilePath cros_regions_filepath;
-  };
-
-  // This enum is used to define the buckets for an enumerated UMA histogram.
-  // Hence,
-  //   (a) existing enumerated constants should never be deleted or reordered,
-  //   and
-  //   (b) new constants should only be appended at the end of the enumeration
-  //       (update tools/metrics/histograms/enums.xml as well).
-  enum class VpdCacheReadResult {
-    kSuccess = 0,
-    KMissing = 1,
-    kParseFailed = 2,
-    kMaxValue = kParseFailed,
   };
 
   // Constructs a provider with given `testing_sources` for testing purposes.
@@ -114,7 +97,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   // Waits up to `kTimeoutSecs` for statistics to be loaded. Returns true if
   // they were loaded successfully.
-  bool WaitForStatisticsLoaded();
+  bool WaitForStatisticsLoaded(std::string_view statistic_name);
 
   // Loads the machine statistics off of disk. Runs on the file thread.
   void LoadMachineStatistics(bool load_oem_manifest);
@@ -125,8 +108,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   // Loads the machine info statistics off of disk. Runs on the file thread.
   void LoadMachineInfoFile();
 
-  // Loads the VPD statistics off of disk. Runs on the file thread.
-  void LoadVpdFiles();
+  // Loads the VPD statistics. Runs on the file thread.
+  void LoadVpd();
 
   // Loads the OEM statistics off of disk. Runs on the file thread.
   void LoadOemManifestFromFile(const base::FilePath& file);
@@ -151,12 +134,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   // Stores VPD partitions status.
   // VPD partition or partitions are considered in invalid state if:
-  // 1. Status file or VPD file is missing: both RO_VPD and RW_VPD are
-  //    considered being invalid.
-  // 2. Partition key is missing in the status file: corresponding partition is
-  //    considered being invalid.
-  // 3. Partition key has invalid value: corresponding partition is considered
-  //    being invalid.
+  // 1. The VPD dump program encounters an error.
+  // 2. The region in question (RO or RW) is reported invalid (e.g., erased or
+  //    corrupted).
   VpdStatus vpd_status_{VpdStatus::kUnknown};
 
   // Lock held when `statistics_loaded_` is signaled and when

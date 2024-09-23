@@ -21,7 +21,7 @@ class SendTabToSelfEntry;
 
 // Delegate containing logic about what to display and how to behave
 // in the SendTabToSelf infobar. Used on Android.
-// TODO(crbug.com/964112): Rename this class to be Android specific.
+// TODO(crbug.com/40627861): Rename this class to be Android specific.
 class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
   static std::unique_ptr<SendTabToSelfInfoBarDelegate> Create(

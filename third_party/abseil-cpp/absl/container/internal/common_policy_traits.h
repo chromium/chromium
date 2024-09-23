@@ -64,7 +64,7 @@ struct common_policy_traits {
   //                UNINITIALIZED
   template <class Alloc>
   static void transfer(Alloc* alloc, slot_type* new_slot, slot_type* old_slot) {
-    transfer_impl(alloc, new_slot, old_slot, Rank0{});
+    transfer_impl(alloc, new_slot, old_slot, Rank2{});
   }
 
   // PRECONDITION: `slot` is INITIALIZED
@@ -83,7 +83,7 @@ struct common_policy_traits {
 
   static constexpr bool transfer_uses_memcpy() {
     return std::is_same<decltype(transfer_impl<std::allocator<char>>(
-                            nullptr, nullptr, nullptr, Rank0{})),
+                            nullptr, nullptr, nullptr, Rank2{})),
                         std::true_type>::value;
   }
 
@@ -95,18 +95,19 @@ struct common_policy_traits {
   }
 
  private:
-  // To rank the overloads below for overload resolution. Rank0 is preferred.
-  struct Rank2 {};
-  struct Rank1 : Rank2 {};
-  struct Rank0 : Rank1 {};
+  // Use go/ranked-overloads for dispatching.
+  struct Rank0 {};
+  struct Rank1 : Rank0 {};
+  struct Rank2 : Rank1 {};
 
   // Use auto -> decltype as an enabler.
   // P::transfer returns std::true_type if transfer uses memcpy (e.g. in
   // node_slot_policy).
   template <class Alloc, class P = Policy>
   static auto transfer_impl(Alloc* alloc, slot_type* new_slot,
-                            slot_type* old_slot, Rank0)
-      -> decltype(P::transfer(alloc, new_slot, old_slot)) {
+                            slot_type* old_slot,
+                            Rank2) -> decltype(P::transfer(alloc, new_slot,
+                                                           old_slot)) {
     return P::transfer(alloc, new_slot, old_slot);
   }
 #if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
@@ -129,7 +130,7 @@ struct common_policy_traits {
 
   template <class Alloc>
   static void transfer_impl(Alloc* alloc, slot_type* new_slot,
-                            slot_type* old_slot, Rank2) {
+                            slot_type* old_slot, Rank0) {
     construct(alloc, new_slot, std::move(element(old_slot)));
     destroy(alloc, old_slot);
   }

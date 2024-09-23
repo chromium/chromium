@@ -18,11 +18,11 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/login/auth/login_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -85,14 +85,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Cancels current password changed flow.
   void CancelPasswordChangedFlow();
 
-  // Decrypt cryptohome using user provided `old_password` and migrate to new
-  // password.
-  void MigrateUserData(const std::string& old_password);
-
-  // Ignore password change, remove existing cryptohome and force full sync of
-  // user data.
-  void ResyncUserData();
-
   // Resumes login process once local authentication is completed.
   void ResumeAfterLocalAuthentication(std::unique_ptr<UserContext>);
   // Invoked if login process was cancelled at local authentication.
@@ -104,7 +96,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // This is virtual for mocking in the unit tests.
   virtual void Login(const UserContext& user_context,
                      const SigninSpecifics& specifics);
-  void OnStartKioskEnableScreen();
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
@@ -193,13 +184,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   void OnOnlinePasswordUnusableImpl(std::unique_ptr<UserContext>,
                                     bool online_password_mismatch);
 
-  // Handles the continuation of successful login after an attempt has been made
-  // to divert to a hibernate resume flow. The execution of this method means
-  // that the diversion to a resume flow did not occur, indicating either no
-  // hibernation image was present, the resume was cancelled/aborted, or
-  // hibernate is simply not supported.
-  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context);
-
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
   base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override;
@@ -212,16 +196,8 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // not localized.
   void ShowError(SigninError error, const std::string& details);
 
-  // Handles result of consumer kiosk configurability check and starts
-  // enable kiosk screen if applicable.
-  void OnConsumerKioskAutoLaunchCheckCompleted(
-      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
-
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
-
-  // Shows kiosk feature enable screen.
-  void ShowKioskEnableScreen();
 
   // Shows "filesystem encryption migration" screen.
   void ShowEncryptionMigrationScreen(std::unique_ptr<UserContext> user_context,

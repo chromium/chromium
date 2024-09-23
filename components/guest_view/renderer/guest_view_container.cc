@@ -46,7 +46,7 @@ class GuestViewContainer::RenderFrameLifetimeObserver
   void OnDestruct() override;
 
  private:
-  const raw_ptr<GuestViewContainer, ExperimentalRenderer> container_;
+  const raw_ptr<GuestViewContainer> container_;
 };
 
 GuestViewContainer::RenderFrameLifetimeObserver::RenderFrameLifetimeObserver(

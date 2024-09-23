@@ -7,6 +7,7 @@
 #include <iterator>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,7 @@ bool ShouldRegisterFileHandlersWithOs() {
 }
 
 bool FileHandlingIconsSupportedByOs() {
-  // TODO(crbug/1218234): implement and flip this to true.
+  // TODO(crbug.com/40185571): implement and flip this to true.
   return false;
 }
 
@@ -80,7 +81,7 @@ void RegisterFileHandlersWithOsTask(const webapps::AppId& app_id,
     result &= ShellUtil::AddFileAssociations(
         file_handler_progids.back(), app_specific_launcher_command,
         user_visible_app_name,
-        base::AsWString(base::StringPiece16(file_handler.display_name)),
+        base::AsWString(std::u16string_view(file_handler.display_name)),
         icon_path, file_extensions_wide);
   }
   if (!result)

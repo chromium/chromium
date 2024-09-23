@@ -1,6 +1,11 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "media/audio/apple/audio_low_latency_input.h"
 
 #include <CoreServices/CoreServices.h>
@@ -12,6 +17,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -235,7 +241,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 #if BUILDFLAG(IS_MAC)
   hardware_latency_ = core_audio_mac::GetHardwareLatency(
       audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
-      format_.mSampleRate);
+      format_.mSampleRate, /*is_input=*/true);
 #else
   AudioManagerIOS* manager_ios = static_cast<AudioManagerIOS*>(manager_);
   hardware_latency_ = base::Seconds(manager_ios->HardwareLatency(
@@ -1023,9 +1029,8 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(
     const AudioTimeStamp* input_time_stamp) {
-  // Total latency is composed by the dynamic latency and the fixed
-  // hardware latency.
-  // https://lists.apple.com/archives/coreaudio-api/2017/Jul/msg00035.html
+  // We must subtract the hardware latency to calculate when the sample was
+  // received by the hardware capture device.
   return (input_time_stamp->mFlags & kAudioTimeStampHostTimeValid
               ? base::TimeTicks::FromMachAbsoluteTime(
                     input_time_stamp->mHostTime)
@@ -1115,7 +1120,7 @@ void AUAudioInputStream::UpdateCaptureTimestamp(
         lost_frames, input_params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (lost_audio_duration.is_positive()) {
-      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
           lost_audio_duration, AudioGlitchInfo::Direction::kCapture));
     }
   }

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
@@ -94,7 +95,7 @@ void CertDatabaseAsh::GetCertDatabaseInfo(
     GetCertDatabaseInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/1146430): For now Lacros-Chrome will initialize certificate
+  // TODO(crbug.com/40156265): For now Lacros-Chrome will initialize certificate
   // database only in session. Revisit later to decide what to do on the login
   // screen.
   if (!ash::LoginState::Get()->IsUserLoggedIn()) {
@@ -227,6 +228,11 @@ void CertDatabaseAsh::NotifyCertsChangedInAsh(
   for (const auto& observer : observers_) {
     observer->OnCertsChangedInAsh(change_type);
   }
+}
+
+void CertDatabaseAsh::OnPkcs12CertDualWritten() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
 }
 
 }  // namespace crosapi

@@ -7,26 +7,31 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='foo'",
+      "name": "LayoutBlockFlow DIV id='foo'",
       "bounds": [200, 1000],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "position": [8, 0],
       "bounds": [100, 500],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV",
       "position": [8, 500],
       "bounds": [300, 155],
       "invalidations": [
-        [8, 8, 29, 19],
-        [285, 0, 15, 150]
+        [8, 8, 29, 19]
       ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [293, 500],
+      "bounds": [15, 150],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",

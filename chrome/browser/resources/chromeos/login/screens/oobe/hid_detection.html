@@ -131,42 +131,16 @@
 </oobe-adaptive-dialog>
 
 <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
-<template  is="dom-if" if="[[!isOobeHidDetectionRevampEnabled]]">
-  <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed">
-    <h1 slot="title">[[pinDialogTitle]]</h1>
-    <div slot="content" class="content-padding">
-      <div>
-        [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCode')]]
-      </div>
-      <div id="hid-keyboard-pincode"
-          class="layout horizontal center-justified pin-code-style">
-        <div id="hid-pincode-sym-1"></div>
-        <div id="hid-pincode-sym-2"></div>
-        <div id="hid-pincode-sym-3"></div>
-        <div id="hid-pincode-sym-4"></div>
-        <div id="hid-pincode-sym-5"></div>
-        <div id="hid-pincode-sym-6"></div>
-      </div>
-      <div>
-        [[i18nDynamic(locale,
-            'hidDetectionBluetoothPairingCodeExplanation')]]
-      </div>
-    </div>
-  </oobe-modal-dialog>
-</template>
-
-<template is="dom-if" if="[[isOobeHidDetectionRevampEnabled]]">
-  <oobe-modal-dialog id="hid-pin-popup" should-hide-close-button
-      should-hide-title-row>
-    <div slot="content" class="content-padding">
-      <bluetooth-pairing-enter-code-page
-          id="hid-pairing-enter-code"
-          class="focus-on-show"
-          code="[[pinCode]]"
-          num-keys-entered="[[numKeysEnteredPinCode]]"
-          device-name="[[keyboardDeviceName]]"
-          on-cancel="onCancel">
-      </bluetooth-pairing-enter-code-page>
-    </div>
-  </oobe-modal-dialog>
-</template>
+<oobe-modal-dialog id="hid-pin-popup" should-hide-close-button
+    should-hide-title-row>
+  <div slot="content" class="content-padding">
+    <bluetooth-pairing-enter-code-page
+        id="hid-pairing-enter-code"
+        class="focus-on-show"
+        code="[[pinCode]]"
+        num-keys-entered="[[numKeysEnteredPinCode]]"
+        device-name="[[keyboardDeviceName]]"
+        on-cancel="onCancel">
+    </bluetooth-pairing-enter-code-page>
+  </div>
+</oobe-modal-dialog>

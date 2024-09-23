@@ -165,7 +165,7 @@ p: [user-agent] {
     ['margin-inline-start':'0px'] @[undefined-undefined] 
     ['margin-inline-end':'0px'] @[undefined-undefined] 
 }
-address, blockquote, center, div, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output: [user-agent] {
+address, blockquote, center, div, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i]: [user-agent] {
     ['unicode-bidi':'isolate'] @[undefined-undefined] 
 }
 #target:target: [regular, 17:0-17:14] {

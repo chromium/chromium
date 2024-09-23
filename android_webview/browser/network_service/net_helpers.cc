@@ -8,6 +8,7 @@
 #include "android_webview/common/url_constants.h"
 #include "base/check_op.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -96,6 +97,18 @@ int GetHttpCacheSize() {
   // size dynamically, since Android provides better support on newer versions
   // (http://crbug.com/893318).
   return 20 * 1024 * 1024;  // 20M
+}
+
+void ConvertRequestHeadersToVectors(const net::HttpRequestHeaders& headers,
+                                    std::vector<std::string>* header_names,
+                                    std::vector<std::string>* header_values) {
+  DCHECK(header_names->empty());
+  DCHECK(header_values->empty());
+  net::HttpRequestHeaders::Iterator headers_iterator(headers);
+  while (headers_iterator.GetNext()) {
+    header_names->push_back(headers_iterator.name());
+    header_values->push_back(headers_iterator.value());
+  }
 }
 
 }  // namespace android_webview

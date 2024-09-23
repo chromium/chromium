@@ -8,7 +8,10 @@
     "is_component_build": false,
     "is_debug": false,
     "proprietary_codecs": true,
+    "target_cpu": "x64",
+    "target_os": "win",
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_enable_verify_heap": true
   }
 }

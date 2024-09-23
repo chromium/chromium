@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/core.h"
 
 #include <string.h>
@@ -380,6 +385,28 @@ MojoResult Core::SerializeMessage(MojoMessageHandle message_handle,
   return reinterpret_cast<ports::UserMessageEvent*>(message_handle)
       ->GetMessage<UserMessageImpl>()
       ->SerializeIfNecessary();
+}
+
+MojoResult Core::ReserveMessageCapacity(MojoMessageHandle message_handle,
+                                        uint32_t payload_buffer_size,
+                                        uint32_t* buffer_size) {
+  if (!message_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  RequestContext request_context;
+  auto* message = reinterpret_cast<ports::UserMessageEvent*>(message_handle)
+                      ->GetMessage<UserMessageImpl>();
+  MojoResult rv = message->ReserveCapacity(payload_buffer_size);
+  if (rv != MOJO_RESULT_OK) {
+    return rv;
+  }
+
+  if (buffer_size) {
+    *buffer_size =
+        base::checked_cast<uint32_t>(message->user_payload_capacity());
+  }
+  return MOJO_RESULT_OK;
 }
 
 MojoResult Core::AppendMessageData(MojoMessageHandle message_handle,

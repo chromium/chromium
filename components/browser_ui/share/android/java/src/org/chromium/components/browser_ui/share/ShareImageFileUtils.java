@@ -24,8 +24,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
@@ -55,8 +55,8 @@ public class ShareImageFileUtils {
     /**
      * Directory name for shared images.
      *
-     * Named "screenshot" for historical reasons as we only initially shared screenshot images.
-     * TODO(crbug.com/1055886): consider changing the directory name.
+     * <p>Named "screenshot" for historical reasons as we only initially shared screenshot images.
+     * TODO(crbug.com/40676541): consider changing the directory name.
      */
     private static final String SHARE_IMAGES_DIRECTORY_NAME = "screenshot";
 
@@ -78,7 +78,7 @@ public class ShareImageFileUtils {
     private static boolean isUriInDirectory(Uri fileUri, File folder) {
         if (fileUri == null) return false;
 
-        Uri chromeUriPrefix = ContentUriUtils.getContentUriFromFile(folder);
+        Uri chromeUriPrefix = FileProviderUtils.getContentUriFromFile(folder);
         if (chromeUriPrefix == null) return false;
 
         return fileUri.toString().startsWith(chromeUriPrefix.toString());
@@ -355,7 +355,8 @@ public class ShareImageFileUtils {
                             } else {
                                 Log.w(
                                         TAG,
-                                        "Share failed -- Unable to create or write to destination file.");
+                                        "Share failed -- Unable to create or write to destination"
+                                            + " file.");
                                 StreamUtil.closeQuietly(mFileOut);
                                 saveImageCallback.onResult(null);
                             }
@@ -586,7 +587,7 @@ public class ShareImageFileUtils {
                 @Override
                 protected Uri doInBackground() {
                     try {
-                        return ContentUriUtils.getContentUriFromFile(new File(path));
+                        return FileProviderUtils.getContentUriFromFile(new File(path));
                     } catch (IllegalArgumentException e) {
                         return null;
                     }

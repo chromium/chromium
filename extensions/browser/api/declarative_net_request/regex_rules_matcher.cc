@@ -8,6 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,8 +50,9 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
   }
 
   // Compares included and excluded request domains.
-  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule))
+  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule)) {
     return false;
+  }
 
   // Compares included and excluded initiator domains.
   return url_pattern_index::DoesOriginMatchInitiatorDomainList(
@@ -71,7 +74,7 @@ bool ActionTypeAllowsMultipleActions(flat::ActionType action_type) {
     case flat::ActionType_modify_headers:
       return true;
     case flat::ActionType_count:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return true;
 }
@@ -101,9 +104,12 @@ RegexRulesMatcher::RegexRulesMatcher(
                                 this,
                                 RulesetMatchingStage::kOnHeadersReceived),
       metadata_list_(metadata_list),
+      // See comments for this field in extension_url_pattern_index_matcher.cc
+      // for why different checks are used for `before_request_regex_list` and
+      // `headers_received_regex_list`.
       is_extra_headers_matcher_(
           IsExtraHeadersMatcherInternal(before_request_regex_list) ||
-          IsExtraHeadersMatcherInternal(headers_received_regex_list)) {}
+          headers_received_regex_list->size() > 0) {}
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 
@@ -125,9 +131,10 @@ size_t RegexRulesMatcher::GetHeadersReceivedRulesCount() const {
 
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
+    RulesetMatchingStage stage,
     std::optional<uint64_t> min_priority) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
 
   std::vector<const flat_rule::UrlRule*> rules;
   for (const RegexRuleInfo& info : potential_matches) {
@@ -147,42 +154,28 @@ std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
 }
 
 std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return info.regex_rule->action_type() ==
                    flat::ActionType_allow_all_requests &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
-  if (info == potential_matches.end())
+  if (info == potential_matches.end()) {
     return std::nullopt;
+  }
 
   return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
 }
 
-std::optional<RequestAction>
-RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
-    const RequestParams& params) const {
+std::optional<RequestAction> RegexRulesMatcher::GetActionIgnoringAncestors(
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
-      potential_matches, [&params](const RegexRuleInfo& info) {
-        return !ActionTypeAllowsMultipleActions(
-                   info.regex_rule->action_type()) &&
-               re2::RE2::PartialMatch(params.url->spec(), *info.regex);
-      });
-
-  return info == potential_matches.end() ? std::nullopt
-                                         : CreateActionFromInfo(params, *info);
-}
-
-std::optional<RequestAction>
-RegexRulesMatcher::GetHeadersReceivedActionIgnoringAncestors(
-    const RequestParams& params) const {
-  const std::vector<RegexRuleInfo>& potential_matches =
-      headers_received_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return !ActionTypeAllowsMultipleActions(
@@ -247,7 +240,7 @@ RegexRulesMatcher::MatchHelper::GetPotentialMatches(
   std::vector<RegexRuleInfo> potential_matches;
   for (int re2_id : potential_re2_ids) {
     auto it = re2_id_to_rules_map_.find(re2_id);
-    DCHECK(it != re2_id_to_rules_map_.end());
+    CHECK(it != re2_id_to_rules_map_.end(), base::NotFatalUntil::M130);
 
     const flat::RegexRule* rule = it->second;
     if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params)) {
@@ -276,8 +269,9 @@ bool RegexRulesMatcher::MatchHelper::IsEmpty() const {
 }
 
 void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return;
+  }
 
   for (const auto* regex_rule : *regex_list_) {
     const flat_rule::UrlRule* rule = regex_rule->url_rule();
@@ -300,9 +294,10 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
     // regular expression while indexing the ruleset. That said, there are cases
     // possible where this may happen, for example, the library's implementation
     // may change etc.
-    // TODO(crbug.com/1050780): Notify the extension about the same.
-    if (error_code != re2::RE2::NoError)
+    // TODO(crbug.com/40118204): Notify the extension about the same.
+    if (error_code != re2::RE2::NoError) {
       continue;
+    }
 
     const bool did_insert =
         re2_id_to_rules_map_.insert({re2_id, regex_rule}).second;
@@ -326,8 +321,9 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
   std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
-  for (size_t i = 0; i < strings_to_match.size(); ++i)
+  for (size_t i = 0; i < strings_to_match.size(); ++i) {
     patterns.emplace_back(std::move(strings_to_match[i]), i);
+  }
 
   substring_matcher_ = std::make_unique<base::SubstringSetMatcher>();
 
@@ -360,7 +356,7 @@ std::optional<RequestAction> RegexRulesMatcher::CreateActionFromInfo(
       return CreateAllowAllRequestsAction(params, rule);
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -396,12 +392,26 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
   GURL redirect_url(redirect_str);
 
   // Redirects to JavaScript urls are not allowed.
-  // TODO(crbug.com/1033780): this results in counterintuitive behavior.
-  if (redirect_url.SchemeIs(url::kJavaScriptScheme))
+  // TODO(crbug.com/40111509): this results in counterintuitive behavior.
+  if (redirect_url.SchemeIs(url::kJavaScriptScheme)) {
     return std::nullopt;
+  }
 
   return CreateRedirectAction(params, *info.regex_rule->url_rule(),
                               std::move(redirect_url));
+}
+
+const RegexRulesMatcher::MatchHelper& RegexRulesMatcher::GetMatcherForStage(
+    RulesetMatchingStage stage) const {
+  switch (stage) {
+    case RulesetMatchingStage::kOnBeforeRequest:
+      return before_request_matcher_;
+    case RulesetMatchingStage::kOnHeadersReceived:
+      return headers_received_matcher_;
+  }
+
+  NOTREACHED_IN_MIGRATION();
+  return before_request_matcher_;
 }
 
 }  // namespace extensions::declarative_net_request

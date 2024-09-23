@@ -19,8 +19,8 @@
 
 namespace content {
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
+// WebSQL is disabled everywhere except Android WebView (crbug.com/333756088).
+#if !BUILDFLAG(IS_ANDROID)
 #define MAYBE_DatabaseTest DISABLED_DatabaseTest
 #else
 #define MAYBE_DatabaseTest DatabaseTest

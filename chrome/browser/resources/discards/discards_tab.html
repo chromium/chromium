@@ -158,6 +158,11 @@
       <div is="action-link" on-click="toggleBatterySaverMode_">
         [Toggle battery saver mode]
       </div>
+      <template is="dom-if" if="[[isPerformanceInterventionDemoModeEnabled_]]">
+        <div is="action-link" on-click="refreshPerformanceTabCpuMeasurements_">
+          [Trigger Performance CPU intervention]
+        </div>
+      </template>
       <table id="tab-discard-info-table">
         <thead >
           <tr id="tab-discards-info-table-header">

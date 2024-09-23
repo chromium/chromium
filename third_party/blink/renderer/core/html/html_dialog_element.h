@@ -64,7 +64,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps
   // can decide to focus the dialog itself if the dialog does not have a focus
   // delegate.
-  bool SupportsFocus(UpdateBehavior) const override { return true; }
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kFocusable;
+  }
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =
                                UpdateBehavior::kStyleAndLayout) const override;
 
@@ -77,6 +79,10 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // TODO(http://crbug.com/383230): Remove this when DialogNewFocusBehavior gets
   // to stable with no issues.
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
+
+  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool HandleCommandInternal(HTMLElement& invoker,
+                             CommandEventType command) override;
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;

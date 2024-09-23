@@ -10,19 +10,13 @@ import androidx.annotation.NonNull;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,15 +24,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
-    private static final int ITEM_VIEW_WIDTH = 12345;
-    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
-    // Stores PropertyModel for the suggestion.
+    private Context mContext;
     private PropertyModel mModel;
     private BaseCarouselSuggestionProcessorTestClass mProcessor;
 
     /** Test class to instantiate BaseCarouselSuggestionProcessor class */
-    public class BaseCarouselSuggestionProcessorTestClass extends BaseCarouselSuggestionProcessor {
+    public static class BaseCarouselSuggestionProcessorTestClass
+            extends BaseCarouselSuggestionProcessor {
+        public static int sReportedItemViewHeight;
+
         /**
          * Constructs a new BaseCarouselSuggestionProcessor.
          *
@@ -65,54 +60,27 @@ public class BaseCarouselSuggestionProcessorUnitTest {
 
         @Override
         public int getCarouselItemViewHeight() {
-            return 0;
-        }
-
-        @Override
-        public int getCarouselItemViewWidth() {
-            return ITEM_VIEW_WIDTH;
+            return sReportedItemViewHeight;
         }
     }
 
     @Before
     public void setUp() {
-        mProcessor =
-                new BaseCarouselSuggestionProcessorTestClass(ContextUtils.getApplicationContext());
+        mContext = ContextUtils.getApplicationContext();
+        mProcessor = new BaseCarouselSuggestionProcessorTestClass(mContext);
         mModel = mProcessor.createModel();
     }
 
     @Test
-    public void testPopulateModelTest_notTablet() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
-    }
+    public void getMinimumViewHeight_includesDecorations() {
+        int baseHeight =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
 
-    @Test
-    @Config(qualifiers = "w600dp-h820dp")
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testPopulateModelTest_isTabletWithoutRevamp() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertTrue(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
-    }
+        BaseCarouselSuggestionProcessorTestClass.sReportedItemViewHeight = 0;
+        Assert.assertEquals(baseHeight, mProcessor.getMinimumViewHeight());
 
-    @Test
-    @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testPopulateModelTest_isTabletWithRevamp() {
-        // Revamp turns off horizontal fading edge.
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
-    }
-
-    @Test
-    public void testPopulateItemViewWidth() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertEquals(
-                ITEM_VIEW_WIDTH, mModel.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
+        BaseCarouselSuggestionProcessorTestClass.sReportedItemViewHeight = 100;
+        Assert.assertEquals(100 + baseHeight, mProcessor.getMinimumViewHeight());
     }
 }

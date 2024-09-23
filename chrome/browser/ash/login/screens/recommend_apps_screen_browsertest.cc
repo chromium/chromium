@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
@@ -25,10 +24,10 @@
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -123,7 +122,7 @@ class StubRecommendAppsFetcher : public apps::RecommendAppsFetcher {
     EXPECT_FALSE(started_);
     started_ = true;
   }
-  void Retry() override { NOTREACHED(); }
+  void Retry() override { NOTREACHED_IN_MIGRATION(); }
 
  protected:
   const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;

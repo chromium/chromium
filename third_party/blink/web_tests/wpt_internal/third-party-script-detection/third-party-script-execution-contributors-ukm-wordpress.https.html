@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src=resources/third-party-script-test-utils.js></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+  third_party_script_test(
+    'script-execution',
+    'https://c0.wp.com/c/6.4.2/wp-includes/js/dist/vendor/wp-polyfill.min.js',
+    1 << 0 /*Technology::kWordPress*/);
+</script>

@@ -26,8 +26,10 @@
 namespace mojo {
 namespace core {
 
-constexpr uint64_t kNodeCapabilityNone = 0;
-constexpr uint64_t kNodeCapabilitySupportsUpgrade = 1;
+inline constexpr uint64_t kNodeCapabilityNone = 0;
+inline constexpr uint64_t kNodeCapabilitySupportsUpgrade = 1;
+
+inline constexpr uint32_t kNodeChannelHeaderSize = 8;
 
 // Wraps a Channel to send and receive Node control messages.
 class MOJO_SYSTEM_IMPL_EXPORT NodeChannel

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_DELEGATE_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_HISTORY_DELEGATE_IMPL_H_
 
-#include <optional>
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"

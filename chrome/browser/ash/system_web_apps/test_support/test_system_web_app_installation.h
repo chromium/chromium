@@ -13,9 +13,12 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+
+namespace web_app {
+class FakeWebAppProviderCreator;
+}  // namespace web_app
 
 namespace ash {
 
@@ -53,6 +56,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowFullscreen() const override;
   bool ShouldHaveTabStrip() const override;
+  bool ShouldHideNewTabButton() const override;
   bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
@@ -64,7 +68,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
       const apps::AppLaunchParams& params) const override;
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
-  bool PreferManifestBackgroundColor() const override;
   bool UseSystemThemeColor() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAnimateThemeChanges() const override;
@@ -84,6 +87,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldAllowResize(bool);
   void SetShouldAllowMaximize(bool);
   void SetShouldHaveTabStrip(bool);
+  void SetShouldHideNewTabButton(bool);
   void SetShouldHaveReloadButtonInMinimalUi(bool);
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemWebAppBackgroundTaskInfo&);
@@ -91,7 +95,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetLaunchAndNavigateSystemWebApp(LaunchAndNavigateSystemWebAppCallback);
   void SetIsAppEnabled(bool);
   void SetUrlInSystemAppScope(const GURL& url);
-  void SetPreferManifestBackgroundColor(bool);
   void SetUseSystemThemeColor(bool);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetShouldAnimateThemeChanges(bool);
@@ -114,11 +117,11 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool is_maximizable_ = true;
   bool is_fullscreenable_ = true;
   bool has_tab_strip_ = false;
+  bool hide_new_tab_button_ = false;
   bool should_have_reload_button_in_minimal_ui_ = true;
   bool allow_scripts_to_close_windows_ = false;
   bool is_app_enabled = true;
   GURL url_in_system_app_scope_;
-  bool prefer_manifest_background_color_ = false;
   bool use_system_theme_color_ = true;
 #if BUILDFLAG(IS_CHROMEOS)
   bool should_animate_theme_changes_ = false;
@@ -160,6 +163,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithEnabledOriginTrials(const OriginTrialsMap& origin_to_trials);
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppLaunchWithUrl();
+
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppNotShownInLauncher();
 
@@ -190,7 +195,8 @@ class TestSystemWebAppInstallation {
   SetupAppWithAllowScriptsToCloseWindows(bool value);
 
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithTabStrip(
-      bool has_tab_strip);
+      bool has_tab_strip,
+      bool hide_new_tab_button);
 
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithDefaultBounds(const gfx::Rect& default_bounds);

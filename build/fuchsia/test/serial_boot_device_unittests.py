@@ -29,6 +29,8 @@ class SerialBootDeviceTest(unittest.TestCase):
             self.assertNotEqual(serial_boot_device.main('reboot'), 0)
 
     @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[True])
+    @mock.patch('subprocess.run',
+                return_value=CompletedProcess(args=['/bin'], returncode=0))
     @mock.patch('builtins.print')
     def test_check_health_in_fuchsia(self, mock_print, *_) -> None:
         self.assertEqual(serial_boot_device.main('health-check'), 0)
@@ -36,8 +38,10 @@ class SerialBootDeviceTest(unittest.TestCase):
         self.assertEqual(result[0]['nodename'], 'fuchsia-node-id')
         self.assertEqual(result[0]['state'], 'healthy')
 
-    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
     @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[True])
+    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
+    @mock.patch('subprocess.run',
+                return_value=CompletedProcess(args=['/bin'], returncode=0))
     @mock.patch('builtins.print')
     def test_check_health_in_fastboot(self, mock_print, *_) -> None:
         self.assertEqual(serial_boot_device.main('health-check'), 0)
@@ -45,8 +49,10 @@ class SerialBootDeviceTest(unittest.TestCase):
         self.assertEqual(result[0]['nodename'], 'fuchsia-node-id')
         self.assertEqual(result[0]['state'], 'healthy')
 
-    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
     @mock.patch('serial_boot_device.is_in_fastboot', side_effect=[False])
+    @mock.patch('serial_boot_device.is_in_fuchsia', side_effect=[False])
+    @mock.patch('subprocess.run',
+                return_value=CompletedProcess(args=['/bin'], returncode=0))
     def test_check_health_undetectable(self, *_) -> None:
         self.assertNotEqual(serial_boot_device.main('health-check'), 0)
 

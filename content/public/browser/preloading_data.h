@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PRELOADING_DATA_H_
 #define CONTENT_PUBLIC_BROWSER_PRELOADING_DATA_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
@@ -94,6 +96,7 @@ class CONTENT_EXPORT PreloadingData {
   // Please see content/browser/preloading/preloading_data_impl.cc for more
   // details.
   static PreloadingData* GetOrCreateForWebContents(WebContents* web_contents);
+  static PreloadingData* GetForWebContents(WebContents* web_contents);
 
   // Helper method to return the PreloadingURLMatchCallback for
   // `destination_url`. This method will return true only for exact matches to
@@ -105,26 +108,41 @@ class CONTENT_EXPORT PreloadingData {
   // PreloadingAttempt class. Here callers pass the `url_predicate_callback` to
   // verify if the navigated and triggered URLs match based on callers logic.
   //
+  // A caller can pass `planned_max_preloading_type` (defaults to
+  // `preloading_type`) different from `preloading_type` if the caller expects
+  // this preloading attempt will be consumed by other preloadings. For
+  // example, a caller can start from triggering prefetch and then proceed
+  // with triggering prerender. `preloading_type` must be upgradable to
+  // `planned_max_preloading_type`. See `IsPreloadingTypeUpgradableTo()` in
+  // //content/browser/preloading/preloading_attempt_impl.cc.
+  //
   // `triggering_primary_page_source_id` is a UKM source ID of the page that
   // triggered preloading. This is used for recording the metrics for user
   // visible primary pages (Preloading_Attempt_PreviousPrimaryPage) to measure
   // the impact of PreloadingAttempt on the page user is viewing.
-  // TODO(crbug.com/1330783): Extend this for non-primary page and inner
+  // TODO(crbug.com/40227283): Extend this for non-primary page and inner
   // WebContents preloading attempts.
   virtual PreloadingAttempt* AddPreloadingAttempt(
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
+      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id) = 0;
 
   // Creates a new PreloadingPrediction. Same as above `url_predicate_callback`
   // is passed by the caller to verify that both predicted and navigated URLs
   // match. `confidence` signifies the confidence percentage of correct
   // predictor's preloading prediction.
+  //
+  // `triggering_primary_page_source_id` is a UKM source ID of the page that
+  // triggered preloading. This is used for recording the metrics for user
+  // visible primary pages (Preloading_Prediction_PreviousPrimaryPage) to
+  // measure the impact of PreloadingPrediction on the page user is viewing.
   virtual void AddPreloadingPrediction(
       PreloadingPredictor predictor,
-      int64_t confidence,
-      PreloadingURLMatchCallback url_match_predicate) = 0;
+      int confidence,
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id) = 0;
 
   // To calculate the recall score of the `predictor`, we need to know if the
   // `predictor` is potentially responsible for predicting the next navigation
@@ -139,6 +157,22 @@ class CONTENT_EXPORT PreloadingData {
   virtual void SetIsNavigationInDomainCallback(
       PreloadingPredictor predictor,
       PredictorDomainCallback is_navigation_in_domain_callback) = 0;
+
+  // This flag will be true if there's been at least 1 attempt to do a
+  // speculation-rules based prerender.
+  virtual bool HasSpeculationRulesPrerender() = 0;
+
+  // Called when the embedder is making a prediction with an ML model about
+  // whether a navigation to `url` will occur. The provided callback will be
+  // invoked on navigation with the result of whether the prediction would be
+  // accurate. If downsampling occurs, some callbacks may not be invoked, and
+  // the ones that are invoked will have the amount of sampling indicated in the
+  // `sampling_likelihood`.
+  virtual void OnPreloadingHeuristicsModelInput(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<double> sampling_likelihood,
+                              bool is_accurate_prediction)>
+          on_record_outcome) = 0;
 
  protected:
   virtual ~PreloadingData() = default;

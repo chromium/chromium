@@ -39,6 +39,7 @@ const char kServiceSandboxWithJit[] = "service_with_jit";
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 const char kScreenAISandbox[] = "screen_ai";
 #endif
+const char kVideoEffectsSandbox[] = "video_effects";
 const char kSpeechRecognitionSandbox[] = "speech_recognition";
 const char kVideoCaptureSandbox[] = "video_capture";
 
@@ -64,6 +65,7 @@ const char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";
+const char kNearbySandbox[] = "nearby";
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 const char kLibassistantSandbox[] = "libassistant";
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -133,6 +135,7 @@ const char kRendererProcess[] = "renderer";
 const char kUtilityProcess[] = "utility";
 const char kZygoteProcessType[] = "zygote";
 const char kRelauncherProcessType[] = "relauncher";
+const char kCodeSignCloneCleanupProcessType[] = "code-sign-clone-cleanup";
 
 }  // namespace switches
 }  // namespace policy

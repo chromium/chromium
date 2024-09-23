@@ -216,7 +216,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
+// TODO(crbug.com/40145619): Loading icon.png is flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_OfflineManifestValid DISABLED_OfflineManifestValid
 #else
@@ -238,7 +238,7 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
                                                     .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, u"Test App");
-  EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
+  EXPECT_EQ(app_info->start_url(), GURL("https://test.org/start.html"));
   EXPECT_EQ(app_info->scope, GURL("https://test.org/"));
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
   EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);
@@ -332,7 +332,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestScope) {
   )")) << "start_url is valid";
 }
 
-// TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
+// TODO(crbug.com/40145619): Loading icon.png is flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_OfflineManifestDisplay DISABLED_OfflineManifestDisplay
 #else

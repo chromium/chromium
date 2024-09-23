@@ -48,6 +48,8 @@ import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/page/prerender_page_param.mojom";
+import "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
@@ -97,7 +99,7 @@ struct CreateViewParams {
   // The session storage namespace ID this view should use.
   string session_storage_namespace_id;
 
-  // The frame token of the opener frame if one exists, or absl::nullopt
+  // The frame token of the opener frame if one exists, or std::nullopt
   // otherwise.
   blink.mojom.FrameToken? opener_frame_token;
 
@@ -121,8 +123,9 @@ struct CreateViewParams {
   // Whether the `blink::WebView` should initially be hidden.
   bool hidden;
 
-  // Prerender2: Whether the `blink::WebView` is for a prerendered page.
-  bool is_prerendering;
+  // Prerender2: This field is set iff the blink::WebView is for a prerendering
+  // page.
+  blink.mojom.PrerenderParam? prerender_param;
 
   // When true, all RenderWidgets under this `blink::WebView` will never be
   // shown to the user, and thus never composited, and will not need to produce
@@ -166,6 +169,10 @@ struct CreateViewParams {
   // Indicates whether web or OS-level Attribution Reporting is supported. See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md
   network.mojom.AttributionSupport attribution_support;
+
+  // This must be null unless the view being created is a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
 };
 
 // A union to distinguish between parameters specific to local main frame
@@ -272,7 +279,7 @@ struct CreateFrameParams {
   blink.mojom.FrameToken? previous_frame_token;
 
   // Specifies the new frame's opener.  The opener will be null if this is
-  // absl::nullopt.
+  // std::nullopt.
   blink.mojom.FrameToken? opener_frame_token;
 
   // The new frame should be created as a child of the object identified by
@@ -520,7 +527,7 @@ interface FrameBindingsControl {
   // Used to tell a render frame whether it should expose various bindings
   // that allow JS content extended privileges. See BindingsPolicy for valid
   // flag values.
-  AllowBindings(int32 enabled_bindings_flags);
+  AllowBindings(int64 enabled_bindings_flags);
 
   // Used to tell the RenderFrame to enable Mojo JS bindings, which allows
   // JS code running in the renderer process to connect to Mojo interfaces
@@ -676,6 +683,10 @@ struct CreateNewWindowReply {
 
   // The ColorProviderColorMaps for this view.
   blink.mojom.ColorProviderColorMaps color_provider_colors;
+
+  // This must be null unless the view being created is a partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  blink.mojom.PartitionedPopinParams? partitioned_popin_params;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used
@@ -763,15 +774,15 @@ interface FrameHost {
   // url in |common_params|, the navigation will result in a network error.
   // |navigation_client| is passed to the renderer to allow for further control
   // of the navigation. Allows for Commit and Cancels/Aborts.
-  // Passing the |initiator_policy_container_keep_alive_handle| is just a means
-  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
-  // kept alive, even if the RenderFrameHost itself has already been deleted in
-  // the meantime. If this can be ensured in other ways, it is safe to pass a
-  // mojo::NullRemote. In particular, if the initiator LocalFrame is alive when
-  // issuing this mojo call, there is no need to pass
-  // |initiator_policy_container_keep_alive_handle|, since the initiator
-  // PolicyContainerHost is kept alive by LocalFrame's PolicyContainer.
-  // TODO(https://crbug.com/1467502): |navigation_client| should not be
+  // Passing the |initiator_navigation_state_keep_alive_handle| is just a means
+  // to ensure that the NavigationStateKeepAlive of the initiator
+  // RenderFrameHost is kept alive, even if the RenderFrameHost itself has
+  // already been deleted in the meantime. If this can be ensured in other ways,
+  // it is safe to pass a mojo::NullRemote. In particular, if the initiator
+  // LocalFrame is alive when issuing this mojo call, there is no need to pass
+  // |initiator_navigation_state_keep_alive_handle|, since the initiator
+  // NavigationStateKeepAlive is kept alive by LocalFrame's PolicyContainer.
+  // TODO(crbug.com/40276805): |navigation_client| should not be
   // optional. Make it mandatory.
   // |renderer_cancellation_listener| is a per-navigation interface used to
   // listen to the end of the renderer-initiated navigation cancelation window
@@ -782,8 +793,8 @@ interface FrameHost {
       blink.mojom.BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
-      pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
-          initiator_policy_container_keep_alive_handle,
+      pending_remote<blink.mojom.NavigationStateKeepAliveHandle>?
+          initiator_navigation_state_keep_alive_handle,
       pending_receiver<NavigationRendererCancellationListener>
           renderer_cancellation_listener);
 

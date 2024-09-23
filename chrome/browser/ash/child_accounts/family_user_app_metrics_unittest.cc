@@ -91,7 +91,7 @@ class FamilyUserAppMetricsTest
 
     ExtensionServiceInitParams params;
     params.profile_is_supervised = IsFamilyLink();
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     WaitForAppServiceProxyReady(
         apps::AppServiceProxyFactory::GetForProfile(profile()));
 

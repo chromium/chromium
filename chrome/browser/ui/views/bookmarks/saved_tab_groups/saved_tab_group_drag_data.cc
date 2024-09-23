@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/drag_utils.h"
 
+namespace tab_groups {
 namespace {
 
 // The MIME type for the clipboard format for SavedTabGroupDragData.
@@ -78,12 +79,13 @@ SavedTabGroupDragData::ReadFromOSExchangeData(const ui::OSExchangeData* data) {
     return std::nullopt;
   }
 
-  base::Pickle drag_data_pickle;
-  if (!data->GetPickledData(GetFormatType(), &drag_data_pickle)) {
+  std::optional<base::Pickle> drag_data_pickle =
+      data->GetPickledData(GetFormatType());
+  if (!drag_data_pickle.has_value()) {
     return std::nullopt;
   }
 
-  base::PickleIterator data_iterator(drag_data_pickle);
+  base::PickleIterator data_iterator(drag_data_pickle.value());
   std::string guid_str;
   if (!data_iterator.ReadString(&guid_str)) {
     return std::nullopt;
@@ -109,3 +111,5 @@ void SavedTabGroupDragData::WriteToOSExchangeData(
   data_pickle.WriteString(button->guid().AsLowercaseString());
   data->SetPickledData(GetFormatType(), data_pickle);
 }
+
+}  // namespace tab_groups

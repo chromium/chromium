@@ -38,8 +38,16 @@ void FakeRoutineControl::Start() {
   start_called_ = true;
 }
 
+void FakeRoutineControl::ReplyInquiry(mojom::RoutineInquiryReplyPtr reply) {
+  last_inquiry_reply_ = std::move(reply);
+}
+
 void FakeRoutineControl::SetGetStateResponse(mojom::RoutineStatePtr& state) {
   get_state_response_.Swap(&state);
+}
+
+mojom::RoutineInquiryReplyPtr FakeRoutineControl::GetLastInquiryReply() {
+  return last_inquiry_reply_.Clone();
 }
 
 mojo::Remote<mojom::RoutineObserver>* FakeRoutineControl::GetObserver() {

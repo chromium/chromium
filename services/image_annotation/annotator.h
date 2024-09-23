@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/manta/anchovy/anchovy_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -101,6 +102,7 @@ class Annotator : public mojom::Annotator {
             int batch_size,
             double min_ocr_confidence,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+            std::unique_ptr<manta::AnchovyProvider> anchovy_provider,
             std::unique_ptr<Client> client);
 
   Annotator(const Annotator&) = delete;
@@ -223,6 +225,11 @@ class Annotator : public mojom::Annotator {
   void OnServerResponseReceived(const std::set<RequestKey>& request_keys,
                                 UrlLoaderList::iterator server_request_it,
                                 std::unique_ptr<std::string> json_response);
+  // Called once a response comes back from anchovy_provider_.
+  void OnMantaResponseReceived(const RequestKey& request_key,
+                               base::Time request_time,
+                               base::Value::Dict dict,
+                               manta::MantaStatus status);
 
   // Called when the data decoder service provides parsed JSON data for a server
   // response.
@@ -233,6 +240,10 @@ class Annotator : public mojom::Annotator {
   // Adds the given results to the cache (if successful) and notifies clients.
   void ProcessResults(
       const std::set<RequestKey>& request_keys,
+      const std::map<std::string, mojom::AnnotateImageResultPtr>& results);
+
+  void ProcessResult(
+      const RequestKey& request_key,
       const std::map<std::string, mojom::AnnotateImageResultPtr>& results);
 
   std::string ComputePreferredLanguage(const std::string& page_lang) const;
@@ -248,10 +259,11 @@ class Annotator : public mojom::Annotator {
   void OnServerLangsResponseJsonParsed(std::optional<base::Value> json_data,
                                        const std::optional<std::string>& error);
 
+  const std::unique_ptr<manta::AnchovyProvider> anchovy_provider_;
   const std::unique_ptr<Client> client_;
 
   // Maps from request key to previously-obtained annotation results.
-  // TODO(crbug.com/916420): periodically clear entries from this cache.
+  // TODO(crbug.com/41432508): periodically clear entries from this cache.
   std::map<RequestKey, mojom::AnnotateImageResultPtr> cached_results_;
 
   // Maps from request key to its list of request infos (i.e. info of clients

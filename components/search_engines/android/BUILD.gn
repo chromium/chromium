@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("delegate_java") {
   deps = [
+    ":features_java",
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -42,15 +43,46 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
+  public_deps = [ ":features_java" ]
+
   srcjar_deps = [
     ":jni_headers",
     "//components/search_engines:search_engine_enums_java",
   ]
   sources = [
+    "java/src/org/chromium/components/search_engines/FakeSearchEngineCountryDelegate.java",
     "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
   ]
+}
+
+android_library("features_java") {
+  deps = [
+    "//base:base_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [
+    ":features_jni_headers",
+    ":features_srcjar",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureMap.java",
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtils.java",
+  ]
+}
+
+java_cpp_features("features_srcjar") {
+  # External code should depend on ":java" instead.
+  visibility = [ ":*" ]
+  sources = [ "//components/search_engines/search_engines_switches.cc" ]
+  template = "//components/search_engines/android/java_templates/SearchEnginesFeatures.java.tmpl"
+}
+
+generate_jni("features_jni_headers") {
+  sources = [ "java/src/org/chromium/components/search_engines/SearchEnginesFeatureMap.java" ]
 }
 
 generate_jni("jni_headers") {
@@ -79,6 +111,29 @@ android_library("test_utils_java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/jni_zero:jni_zero_java",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceUnitTest.java",
+    "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtilsUnitTest.java",
+  ]
+  deps = [
+    ":delegate_java",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:promise_java",
+    "//base:supplier_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
   ]
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -53,19 +54,10 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void EnableButter() {
-    fake_sync_service_->SetLocalSyncEnabled(false);
-    fake_sync_service_->SetHasSyncConsent(false);
-
-    fake_sync_service_->SetTransportState(
-        syncer::MockSyncService::TransportState::ACTIVE);
-    fake_sync_service_->GetUserSettings()->SetSelectedTypes(
-        /* sync_everything = */ true, {});
-  }
-
-  void InitButterOnDesktopFollowupFeatureWithState(bool state) {
-    scoped_feature_list.InitWithFeatureState(
-        password_manager::features::kButterOnDesktopFollowup, state);
+  void EnableAccountStorage() {
+    fake_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+    ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+        pref_service(), fake_sync_service_.get()));
   }
 
   void SavePassword(password_manager::PasswordForm::Store store_type =
@@ -84,15 +76,14 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
   extensions::PasswordsPrivateDelegate* delegate() { return delegate_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<syncer::TestSyncService> fake_sync_service_;
   scoped_refptr<password_manager::TestPasswordStore> profile_store_;
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 
 TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
-  EnableButter();
+  EnableAccountStorage();
 
   ASSERT_THAT(pref_service()->GetList(
                   password_manager::prefs::kPasswordManagerPromoCardsList),
@@ -103,22 +94,7 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoPasswords) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfFeatureDisabled) {
-  InitButterOnDesktopFollowupFeatureWithState(false);
-  EnableButter();
-  SavePassword();
-
-  ASSERT_THAT(pref_service()->GetList(
-                  password_manager::prefs::kPasswordManagerPromoCardsList),
-              IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
-      std::make_unique<MovePasswordsPromo>(profile(), delegate());
-
-  EXPECT_FALSE(promo->ShouldShowPromo());
-}
-
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfButterDisabled) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
+TEST_F(PromoCardMovePasswordsTest, NoPromoIfAccountStorageDisabled) {
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
@@ -131,8 +107,7 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfButterDisabled) {
 }
 
 TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
-  EnableButter();
+  EnableAccountStorage();
   SavePassword(password_manager::PasswordForm::Store::kAccountStore);
 
   ASSERT_THAT(pref_service()->GetList(
@@ -145,8 +120,7 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
 }
 
 TEST_F(PromoCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
-  EnableButter();
+  EnableAccountStorage();
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
@@ -160,8 +134,7 @@ TEST_F(PromoCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
 
 TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   base::HistogramTester histogram_tester;
-  InitButterOnDesktopFollowupFeatureWithState(true);
-  EnableButter();
+  EnableAccountStorage();
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
@@ -181,8 +154,5 @@ TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PromoCard.Shown",
-      password_manager::PromoCardType::kMovePasswords, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PromoCard.Dismissed",
       password_manager::PromoCardType::kMovePasswords, 1);
 }

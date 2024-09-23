@@ -20,9 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -34,7 +32,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,7 +41,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/733324): Can be
+ * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/40525786): Can be
  * parametrized with a parametrized Robolectric test runner.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,8 +49,6 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     private static final int DEVICE_WIDTH = 900;
     private static final int DEVICE_HEIGHT = 1600;
     private static final int SYSTEM_UI_HEIGHT = 100;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Activity mActivity;
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;

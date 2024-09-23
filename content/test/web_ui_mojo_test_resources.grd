@@ -30,6 +30,12 @@ This file specifies resources for content_browsertests.
         <include name="IDR_WEB_UI_TEST_TYPES_MOJOM_JS" file="${root_gen_dir}/mojom-webui/content/test/data/web_ui_test_types.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="content/test/data/web_ui_test_types.test-mojom-webui.js" />
       </if>
       <include name="IDR_WEB_UI_TS_TEST_MOJOM_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test.test-mojom-webui.js" />
+      <include name="IDR_WEB_UI_TS_TEST_MOJOM_CONVERTER_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test.test-mojom-converters.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test.test-mojom-converters.js" />
+      <include name="IDR_WEB_UI_TS_TEST_MOJOM_OTHER_TYPES_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test_other_types.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test_other_types.test-mojom-webui.js" />
+      <include name="IDR_WEB_UI_TS_TEST_MOJOM_OTHER_TYPES_CONVERTER_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test_other_types.test-mojom-converters.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test_other_types.test-mojom-converters.js" />
+      <include name="IDR_WEB_UI_TS_TEST_MAPPED_TYPES_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_ts_test_mapped_types.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_ts_test_mapped_types.js" />
+      <include name="IDR_WEB_UI_TS_TEST_OTHER_MAPPED_TYPES_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_ts_test_other_mapped_types.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_ts_test_other_mapped_types.js" />
+      <include name="IDR_WEB_UI_TS_TEST_CONVERTERS_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_mojo_ts_test_converters.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_mojo_ts_test_converters.js" />
       <include name="IDR_WEB_UI_TS_TEST_TYPES_MOJOM_JS" file="${root_gen_dir}/content/test/data/tsc/web_ui_ts_test_types.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_ts_test_types.test-mojom-webui.js" />
     </includes>
   </release>

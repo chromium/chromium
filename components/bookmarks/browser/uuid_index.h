@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 
 namespace bookmarks {
@@ -44,7 +45,9 @@ class NodeUuidHash {
 };
 
 using UuidIndex =
-    std::unordered_set<const BookmarkNode*, NodeUuidHash, NodeUuidEquality>;
+    std::unordered_set<raw_ptr<const BookmarkNode, CtnExperimental>,
+                       NodeUuidHash,
+                       NodeUuidEquality>;
 
 }  // namespace bookmarks
 

@@ -8,8 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
+#include "base/types/fixed_array.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,7 +83,7 @@ void ToUnicodeCallbackSubstitute(const void* context,
 }
 
 bool ConvertFromUTF16(UConverter* converter,
-                      base::StringPiece16 src,
+                      std::u16string_view src,
                       OnStringConversionError::Type on_error,
                       std::string* encoded) {
   int encoded_max_length = UCNV_GET_MAX_BYTES_FOR_STRING(
@@ -138,7 +140,7 @@ void SetUpErrorHandlerForToUChars(OnStringConversionError::Type on_error,
 
 // Codepage <-> Wide/UTF-16  ---------------------------------------------------
 
-bool UTF16ToCodepage(base::StringPiece16 utf16,
+bool UTF16ToCodepage(std::u16string_view utf16,
                      const char* codepage_name,
                      OnStringConversionError::Type on_error,
                      std::string* encoded) {
@@ -152,7 +154,7 @@ bool UTF16ToCodepage(base::StringPiece16 utf16,
   return ConvertFromUTF16(converter, utf16, on_error, encoded);
 }
 
-bool CodepageToUTF16(base::StringPiece encoded,
+bool CodepageToUTF16(std::string_view encoded,
                      const char* codepage_name,
                      OnStringConversionError::Type on_error,
                      std::u16string* utf16) {
@@ -174,9 +176,9 @@ bool CodepageToUTF16(base::StringPiece encoded,
   size_t uchar_max_length = encoded.length() + 1;
 
   SetUpErrorHandlerForToUChars(on_error, converter, &status);
-  std::unique_ptr<char16_t[]> buffer(new char16_t[uchar_max_length]);
+  base::FixedArray<char16_t> buffer(uchar_max_length);
   int actual_size = ucnv_toUChars(
-      converter, buffer.get(), static_cast<int>(uchar_max_length),
+      converter, buffer.data(), static_cast<int>(uchar_max_length),
       encoded.data(), static_cast<int>(encoded.length()), &status);
   ucnv_close(converter);
   if (!U_SUCCESS(status)) {
@@ -184,11 +186,11 @@ bool CodepageToUTF16(base::StringPiece encoded,
     return false;
   }
 
-  utf16->assign(buffer.get(), actual_size);
+  utf16->assign(buffer.data(), actual_size);
   return true;
 }
 
-bool ConvertToUtf8AndNormalize(base::StringPiece text,
+bool ConvertToUtf8AndNormalize(std::string_view text,
                                const std::string& charset,
                                std::string* result) {
   result->clear();

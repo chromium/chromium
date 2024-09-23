@@ -7,17 +7,21 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -32,10 +36,8 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace prefs {
-namespace mojom {
+namespace prefs::mojom {
 class TrackedPreferenceValidationDelegate;
-}
 }
 
 namespace user_prefs {
@@ -45,7 +47,7 @@ class PrefRegistrySyncable;
 // Intercepts preference values as they are loaded from disk and verifies them
 // using a PrefHashStore. Keeps the PrefHashStore contents up to date as values
 // are changed.
-class PrefHashFilter : public InterceptablePrefFilter {
+class PrefHashFilter final : public InterceptablePrefFilter {
  public:
   using StoreContentsPair = std::pair<std::unique_ptr<PrefHashStore>,
                                       std::unique_ptr<HashStoreContents>>;
@@ -93,7 +95,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   void Initialize(base::Value::Dict& pref_store_contents);
 
   // PrefFilter remaining implementation.
-  void FilterUpdate(const std::string& path) override;
+  void FilterUpdate(std::string_view path) override;
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override;
 
@@ -108,6 +110,8 @@ class PrefHashFilter : public InterceptablePrefFilter {
       PostFilterOnLoadCallback post_filter_on_load_callback,
       base::Value::Dict pref_store_contents,
       bool prefs_altered) override;
+
+  base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override;
 
   // Helper function to generate FilterSerializeData()'s pre-write and
   // post-write callbacks. The returned callbacks are thread-safe.
@@ -136,7 +140,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // A map of paths to TrackedPreferences; this map owns this individual
   // TrackedPreference objects.
   using TrackedPreferencesMap =
-      std::unordered_map<std::string, std::unique_ptr<TrackedPreference>>;
+      TransparentUnorderedStringMap<std::unique_ptr<TrackedPreference>>;
 
   // A map from changed paths to their corresponding TrackedPreferences (which
   // aren't owned by this map).
@@ -160,6 +164,8 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // The set of all paths whose value has changed since the last call to
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
+
+  base::WeakPtrFactory<InterceptablePrefFilter> weak_ptr_factory_{this};
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_FILTER_H_

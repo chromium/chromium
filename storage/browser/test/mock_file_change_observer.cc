@@ -34,6 +34,13 @@ void MockFileChangeObserver::OnCreateFileFrom(const FileSystemURL& url,
                                               const FileSystemURL& src) {
   create_file_from_count_++;
   changed_urls_.insert(url);
+}
+
+void MockFileChangeObserver::OnMoveFileFrom(const FileSystemURL& url,
+                                            const FileSystemURL& src) {
+  create_file_from_count_++;
+  remove_file_count_++;
+  changed_urls_.insert(url);
   changed_urls_.insert(src);
 }
 

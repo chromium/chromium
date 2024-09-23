@@ -11,32 +11,19 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
-class AppListFolderViewTest : public AshTestBase,
-                              public testing::WithParamInterface<bool> {
+class AppListFolderViewTest : public AshTestBase {
  public:
   AppListFolderViewTest() = default;
   ~AppListFolderViewTest() override = default;
-
-  // testing::test:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kCrosWebAppShortcutUiUpdate, true},
-         {features::kSeparateWebAppShortcutBadgeIcon, true}});
-    AshTestBase::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppListFolderViewTest, ScrollViewSizeIsCappedForLargeFolders) {
@@ -100,8 +87,7 @@ TEST_F(AppListFolderViewTest, CloseFolderMakesA11yAnnouncement) {
             "Close folder");
 }
 
-TEST_F(AppListFolderViewTest,
-       ShortcutIconEffectsReflectsOnShorcutItemWithHostBadge) {
+TEST_F(AppListFolderViewTest, ExpandedCollapsedAccessibleState) {
   GetAppListTestHelper()->model()->CreateSingleWebAppShortcutItemFolder(
       "folder_id", "shortcut_id");
 
@@ -111,16 +97,35 @@ TEST_F(AppListFolderViewTest,
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
   AppListItemView* folder_item_view = apps_grid_view->GetItemViewAt(0);
   LeftClickOn(folder_item_view);
-  ASSERT_TRUE(helper->IsInFolderView());
 
   auto* folder_view = helper->GetBubbleFolderView();
-  AppListItemView* item_view = folder_view->items_grid_view()->GetItemViewAt(0);
 
-  AppListItem* item = GetAppListTestHelper()->model()->FindItem("shortcut_id");
+  ui::AXNodeData node_data;
+  folder_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 
-  ASSERT_TRUE(helper->IsInFolderView());
-  EXPECT_FALSE(item->GetHostBadgeIcon().isNull());
-  EXPECT_TRUE(item_view->has_host_badge_for_test());
+  folder_view->ScheduleShowHideAnimation(false, false);
+
+  // Check accessibility of app list view folder while it's closed.
+  node_data = ui::AXNodeData();
+  folder_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+}
+
+TEST_F(AppListFolderViewTest, AccessibleProperties) {
+  GetAppListTestHelper()->model()->CreateSingleWebAppShortcutItemFolder(
+      "folder_id", "shortcut_id");
+
+  GetAppListTestHelper()->ShowAppList();
+  LeftClickOn(
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0));
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+
+  ui::AXNodeData node_data;
+  folder_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kGenericContainer);
 }
 
 }  // namespace ash

@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] DeviceChangeEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface object length
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface object name
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface: attribute devices
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+[FAIL] DeviceChangeEvent interface: attribute userInsertedDevices
+  assert_own_property: self does not have own property "DeviceChangeEvent" expected property "DeviceChangeEvent" missing
+Harness: the test ran to completion.
+

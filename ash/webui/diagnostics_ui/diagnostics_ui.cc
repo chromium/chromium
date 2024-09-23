@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 
 #include <memory>
@@ -63,7 +68,7 @@ diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
   }
 
   // Note: Valid query strings map to strings in the GetUrlForPage located in
-  // chrome/browser/ui/webui/ash/diagnostics_dialog.cc.
+  // chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.cc.
   const std::string& original_query = url.query();  // must outlive |query|.
   std::string_view query =
       base::TrimString(original_query, " \t", base::TRIM_ALL);
@@ -385,8 +390,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsTouchpadInDiagnosticsAppEnabled());
   source->AddBoolean("isTouchscreenEnabled",
                      features::IsTouchscreenInDiagnosticsAppEnabled());
-  source->AddBoolean("isJellyEnabledForDiagnosticsApp",
-                     ash::features::IsJellyEnabledForDiagnosticsApp());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {

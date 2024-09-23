@@ -21,64 +21,60 @@ namespace blink {
 
 class ExceptionState;
 class PaymentInstrument;
+class PaymentManager;
 class ScriptState;
 
 class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit PaymentInstruments(
-      const HeapMojoRemote<payments::mojom::blink::PaymentManager>&,
-      ExecutionContext*);
+  explicit PaymentInstruments(const PaymentManager&, ExecutionContext*);
 
   PaymentInstruments(const PaymentInstruments&) = delete;
   PaymentInstruments& operator=(const PaymentInstruments&) = delete;
 
-  ScriptPromise deleteInstrument(ScriptState*,
-                                 const String& instrument_key,
-                                 ExceptionState&);
-  ScriptPromise get(ScriptState*,
-                    const String& instrument_key,
-                    ExceptionState&);
-  ScriptPromiseTyped<IDLSequence<IDLString>> keys(ScriptState*,
-                                                  ExceptionState&);
-  ScriptPromise has(ScriptState*,
-                    const String& instrument_key,
-                    ExceptionState&);
-  ScriptPromise set(ScriptState*,
-                    const String& instrument_key,
-                    const PaymentInstrument* details,
-                    ExceptionState&);
-  ScriptPromise clear(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLBoolean> deleteInstrument(ScriptState*,
+                                             const String& instrument_key,
+                                             ExceptionState&);
+  ScriptPromise<PaymentInstrument> get(ScriptState*,
+                                       const String& instrument_key,
+                                       ExceptionState&);
+  ScriptPromise<IDLSequence<IDLString>> keys(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLBoolean> has(ScriptState*,
+                                const String& instrument_key,
+                                ExceptionState&);
+  ScriptPromise<IDLUndefined> set(ScriptState*,
+                                  const String& instrument_key,
+                                  const PaymentInstrument* details,
+                                  ExceptionState&);
+  ScriptPromise<IDLUndefined> clear(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
  private:
   mojom::blink::PermissionService* GetPermissionService(ScriptState*);
-  void OnRequestPermission(ScriptPromiseResolver*,
+  void OnRequestPermission(ScriptPromiseResolver<IDLUndefined>*,
                            const String&,
                            const PaymentInstrument*,
                            mojom::blink::PermissionStatus);
 
-  void onDeletePaymentInstrument(ScriptPromiseResolver*,
+  void onDeletePaymentInstrument(ScriptPromiseResolver<IDLBoolean>*,
                                  payments::mojom::blink::PaymentHandlerStatus);
-  void onGetPaymentInstrument(ScriptPromiseResolver*,
+  void onGetPaymentInstrument(ScriptPromiseResolver<PaymentInstrument>*,
                               payments::mojom::blink::PaymentInstrumentPtr,
                               payments::mojom::blink::PaymentHandlerStatus);
   void onKeysOfPaymentInstruments(
-      ScriptPromiseResolverTyped<IDLSequence<IDLString>>*,
+      ScriptPromiseResolver<IDLSequence<IDLString>>*,
       const Vector<String>&,
       payments::mojom::blink::PaymentHandlerStatus);
-  void onHasPaymentInstrument(ScriptPromiseResolver*,
+  void onHasPaymentInstrument(ScriptPromiseResolver<IDLBoolean>*,
                               payments::mojom::blink::PaymentHandlerStatus);
-  void onSetPaymentInstrument(ScriptPromiseResolver*,
+  void onSetPaymentInstrument(ScriptPromiseResolver<IDLUndefined>*,
                               payments::mojom::blink::PaymentHandlerStatus);
-  void onClearPaymentInstruments(ScriptPromiseResolver*,
+  void onClearPaymentInstruments(ScriptPromiseResolver<IDLUndefined>*,
                                  payments::mojom::blink::PaymentHandlerStatus);
 
-  const raw_ref<const HeapMojoRemote<payments::mojom::blink::PaymentManager>,
-                ExperimentalRenderer>
-      manager_;
+  Member<const PaymentManager> payment_manager_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };

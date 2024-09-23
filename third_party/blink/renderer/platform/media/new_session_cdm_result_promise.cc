@@ -27,7 +27,7 @@ CdmResultForUMA ConvertStatusToUMAResult(SessionInitStatus status) {
     case SessionInitStatus::SESSION_ALREADY_EXISTS:
       return SESSION_ALREADY_EXISTS;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return INVALID_STATE_ERROR;
 }
 
@@ -45,7 +45,7 @@ static WebContentDecryptionModuleResult::SessionStatus ConvertStatus(
     case SessionInitStatus::SESSION_ALREADY_EXISTS:
       return WebContentDecryptionModuleResult::kSessionAlreadyExists;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebContentDecryptionModuleResult::kSessionNotFound;
 }
 

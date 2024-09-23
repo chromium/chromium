@@ -118,22 +118,33 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
 
     PaintWorkletPainter* painter = it->value.first;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner = it->value.second;
-    DCHECK(!task_runner->BelongsToCurrentThread());
 
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(
-            [](PaintWorkletPainter* painter,
-               scoped_refptr<cc::PaintWorkletJobVector> jobs,
-               std::unique_ptr<base::ScopedClosureRunner> on_done_runner) {
-              for (cc::PaintWorkletJob& job : jobs->data) {
-                job.SetOutput(painter->Paint(job.input().get(),
-                                             job.GetAnimatedPropertyValues()));
-              }
-              on_done_runner->RunAndReset();
-            },
-            WrapCrossThreadPersistent(painter), std::move(jobs),
-            std::move(on_done_runner)));
+    if (task_runner) {
+      DCHECK(!task_runner->BelongsToCurrentThread());
+
+      PostCrossThreadTask(
+          *task_runner, FROM_HERE,
+          CrossThreadBindOnce(
+              [](PaintWorkletPainter* painter,
+                 scoped_refptr<cc::PaintWorkletJobVector> jobs,
+                 std::unique_ptr<base::ScopedClosureRunner> on_done_runner) {
+                for (cc::PaintWorkletJob& job : jobs->data) {
+                  job.SetOutput(painter->Paint(
+                      job.input().get(), job.GetAnimatedPropertyValues()));
+                }
+                on_done_runner->RunAndReset();
+              },
+              WrapCrossThreadPersistent(painter), std::move(jobs),
+              std::move(on_done_runner)));
+    } else {
+      // A native paint worklet can run on the compsitor thread provided it does
+      // not require garbage collection.
+      for (cc::PaintWorkletJob& native_job : jobs->data) {
+        native_job.SetOutput(painter->Paint(
+            native_job.input().get(), native_job.GetAnimatedPropertyValues()));
+      }
+      on_done_runner->RunAndReset();
+    }
   }
 }
 

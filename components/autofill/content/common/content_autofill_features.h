@@ -13,6 +13,9 @@ namespace autofill::features {
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSharedStorageServerCardData);
 
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillDisableGeolocationInRiskFingerprint);
+
 }  // namespace autofill::features
 
-#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_FEATURES_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_COMMON_CONTENT_AUTOFILL_FEATURES_H_

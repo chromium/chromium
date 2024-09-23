@@ -4,6 +4,7 @@
   let params = new URLSearchParams(location.search);
   let prefetchUrl = params.get('url') ?? 'prefetch.https.html?page=2';
   let script = document.createElement('script');
+  script.id = "speculationrule";
   script.type = 'speculationrules';
   script.textContent = JSON.stringify({ prefetch: [{ source: "list", urls: [prefetchUrl] }] });
   document.head.appendChild(script);

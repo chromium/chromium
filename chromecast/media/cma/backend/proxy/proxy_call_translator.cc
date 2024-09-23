@@ -35,7 +35,6 @@ CmaProxyHandler::PipelineState ToClientTypes(
       return CmaProxyHandler::PipelineState::kPaused;
     default:
       NOTREACHED();
-      return CmaProxyHandler::PipelineState::kUninitialized;
   }
 }
 
@@ -68,7 +67,6 @@ cast::media::AudioConfiguration_AudioCodec ToGrpcTypes(AudioCodec codec) {
           AudioConfiguration_AudioCodec_AUDIO_CODEC_MPEG_H_AUDIO;
     default:
       NOTREACHED();
-      return cast::media::AudioConfiguration_AudioCodec_AUDIO_CODEC_UNKNOWN;
   }
 }
 
@@ -94,8 +92,6 @@ cast::media::AudioConfiguration_ChannelLayout ToGrpcTypes(
           AudioConfiguration_ChannelLayout_CHANNEL_LAYOUT_DISCRETE;
     default:
       NOTREACHED();
-      return cast::media::
-          AudioConfiguration_ChannelLayout_CHANNEL_LAYOUT_UNSUPPORTED;
   }
 }
 
@@ -125,7 +121,6 @@ cast::media::AudioConfiguration_SampleFormat ToGrpcTypes(
       return cast::media::AudioConfiguration_SampleFormat_SAMPLE_FORMAT_S24;
     default:
       NOTREACHED();
-      return cast::media::AudioConfiguration_SampleFormat_SAMPLE_FORMAT_UNKNOWN;
   }
 }
 

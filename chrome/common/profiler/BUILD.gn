@@ -6,17 +6,17 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("profiler") {
   public = [
+    "chrome_thread_profiler_client.h",
     "main_thread_stack_sampling_profiler.h",
     "process_type.h",
-    "thread_profiler.h",
     "thread_profiler_configuration.h",
     "unwind_util.h",
   ]
 
   sources = [
+    "chrome_thread_profiler_client.cc",
     "main_thread_stack_sampling_profiler.cc",
     "process_type.cc",
-    "thread_profiler.cc",
     "thread_profiler_configuration.cc",
     "thread_profiler_platform_configuration.cc",
     "thread_profiler_platform_configuration.h",
@@ -38,6 +38,8 @@ source_set("profiler") {
     "//extensions/buildflags",
     "//third_party/abseil-cpp:absl",
   ]
+
+  public_deps = [ "//components/sampling_profiler" ]
 
   if (is_android) {
     deps += [
@@ -61,7 +63,6 @@ source_set("unit_tests") {
   sources = [
     "process_type_unittest.cc",
     "thread_profiler_platform_configuration_unittest.cc",
-    "thread_profiler_unittest.cc",
     "unwind_util_unittest.cc",
   ]
 

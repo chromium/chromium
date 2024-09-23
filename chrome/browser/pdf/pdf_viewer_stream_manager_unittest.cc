@@ -7,15 +7,18 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -35,6 +38,12 @@ constexpr char kOriginalUrl2[] = "https://original_url2";
 
 class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
  protected:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
   void TearDown() override {
     ChromeRenderViewHostTestHarness::web_contents()->RemoveUserData(
         PdfViewerStreamManager::UserDataKey());
@@ -69,13 +78,17 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
     parent_host_tester->InitializeRenderFrameIfNeeded();
     return parent_host_tester->AppendChild(frame_name);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify adding and getting an `extensions::StreamContainer`.
 TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -105,7 +118,8 @@ TEST_F(PdfViewerStreamManagerTest,
        AddStreamContainerSameFrameTreeNodeIdUnclaimed) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
@@ -189,6 +203,102 @@ TEST_F(PdfViewerStreamManagerTest, AddMultipleStreamContainers) {
   EXPECT_TRUE(pdf_viewer_stream_manager());
 }
 
+// `PdfViewerStreamManager::IsPdfExtensionHost()` should correctly identify the
+// PDF extension hosts.
+TEST_F(PdfViewerStreamManagerTest, IsPdfExtensionHost) {
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
+
+  // In a PDF load, there's an RFH for the extension frame for the initial
+  // about:blank navigation. This RFH will always be replaced by
+  // `extension_host`.
+  auto* about_blank_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // `about_blank_host` and `extension_host` should have the same frame tree
+  // node ID, but this isn't possible with the current test infrastructure. For
+  // testing purposes, it's okay to set the extension frame tree node ID to the
+  // initial RFH.
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, about_blank_host->GetFrameTreeNodeId());
+
+  // `about_blank_host` should be considered a PDF content host, even if it
+  // isn't navigating to the original PDF URL.
+  EXPECT_TRUE(manager->IsPdfExtensionHost(about_blank_host));
+
+  // Now, set the extension frame tree node ID to the actual extension frame
+  // tree node ID, which will be the same ID as `about_blank_host` in real
+  // situations.
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  EXPECT_TRUE(manager->IsPdfExtensionHost(extension_host));
+
+  // Unrelated hosts shouldn't be considered PDF content hosts.
+  EXPECT_FALSE(manager->IsPdfExtensionHost(other_host));
+}
+
+// `PdfViewerStreamManager::IsPdfContentHost()` should correctly identify the
+// PDF content hosts.
+TEST_F(PdfViewerStreamManagerTest, IsPdfContentHost) {
+  const GURL pdf_url = GURL(kOriginalUrl1);
+
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, pdf_url);
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+
+  // In a PDF load, there's an RFH for the content frame for the initial
+  // stream URL navigation. This RFH will always be replaced by
+  // `content_host`.
+  auto* stream_url_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content_host = NavigateAndCommit(content_host, pdf_url);
+  auto* other_host = CreateChildRenderFrameHost(extension_host, "other host");
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // `stream_url_host` and `content_host` should have the same frame tree node
+  // ID, but this isn't possible with the current test infrastructure. For
+  // testing purposes, it's okay to set the content frame tree node ID to the
+  // initial RFH.
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, stream_url_host->GetFrameTreeNodeId());
+
+  // `stream_url_host` should be considered a PDF content host, even if it isn't
+  // navigating to the original PDF URL.
+  EXPECT_TRUE(manager->IsPdfContentHost(stream_url_host));
+
+  // Now, set the content frame tree node ID to the actual content frame tree
+  // node ID, which will be the same as `stream_url_host` in real situations.
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  EXPECT_TRUE(manager->IsPdfContentHost(content_host));
+
+  // Unrelated hosts shouldn't be considered PDF content hosts.
+  EXPECT_FALSE(manager->IsPdfContentHost(other_host));
+}
+
 // If multiple `extensions::StreamContainer`s exist, then deleting one stream
 // shouldn't delete the other stream.
 TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
@@ -215,6 +325,25 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(manager->GetStreamContainer(child_host));
   EXPECT_TRUE(pdf_viewer_stream_manager());
+}
+
+// Verify that unclaimed stream infos can be deleted.
+TEST_F(PdfViewerStreamManagerTest, DeleteUnclaimedStreamInfo) {
+  content::RenderFrameHost* unclaimed_embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  content::FrameTreeNodeId frame_tree_node_id =
+      unclaimed_embedder_host->GetFrameTreeNodeId();
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  EXPECT_FALSE(manager->GetStreamContainer(unclaimed_embedder_host));
+
+  manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
 }
 
 // If the embedder render frame is deleted, the stream should be deleted.
@@ -267,7 +396,7 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
 
 // If the `content::RenderFrameHost` for the stream changes, then the stream
 // should be deleted.
-TEST_F(PdfViewerStreamManagerTest, RenderFrameHostChanged) {
+TEST_F(PdfViewerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   content::RenderFrameHost* old_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* new_host = CreateChildRenderFrameHost(old_host, "new host");
@@ -293,12 +422,128 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameHostChanged) {
   EXPECT_FALSE(pdf_viewer_stream_manager());
 }
 
+// If the PDF extension host changes to a different host, the stream should be
+// deleted.
+TEST_F(PdfViewerStreamManagerTest, ExtensionRenderFrameHostChanged) {
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
+
+  // In a PDF load, there's an RFH for the extension frame for the initial
+  // about:blank navigation. This RFH will always be replaced by
+  // `extension_host` and shouldn't trigger stream deletion. Both hosts should
+  // share the same frame name.
+  auto* about_blank_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  about_blank_host = NavigateAndCommit(about_blank_host, GURL("about:blank"));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* new_host = CreateChildRenderFrameHost(embedder_host, "new host");
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // `about_blank_host` and `extension_host` should have the same frame tree
+  // node ID, but this isn't possible with the current test infrastructure. For
+  // testing purposes, it's okay to set the extension frame tree node ID to the
+  // initial RFH.
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, about_blank_host->GetFrameTreeNodeId());
+
+  // Changing `about_blank_host` to `extension_host` shouldn't delete the
+  // stream.
+  manager->RenderFrameHostChanged(about_blank_host, extension_host);
+
+  ASSERT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // Now, set the extension frame tree node ID to the actual extension frame
+  // tree node ID, which will be the same ID as `about_blank_host` in real
+  // situations.
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  // Changing the extension host should delete the stream.
+  manager->RenderFrameHostChanged(extension_host, new_host);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
+// If the PDF content host changes to a different host, the stream should be
+// deleted.
+TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
+  const GURL pdf_url = GURL(kOriginalUrl1);
+
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, pdf_url);
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+
+  // In a PDF load, there's an RFH for the content frame for the initial
+  // stream URL navigation. This RFH will always be replaced by
+  // `content_host` and shouldn't trigger stream deletion.
+  auto* stream_url_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content_host = NavigateAndCommit(content_host, pdf_url);
+  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // The extension host needs to have the PDF extension origin so that
+  // `pdf_frame_util::GetEmbedderHost()` can identify and get the embedder host
+  // in `PdfViewerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged()`.
+  content::OverrideLastCommittedOrigin(
+      extension_host,
+      url::Origin::Create(GURL(
+          "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html")));
+
+  // `stream_url_host` and `content_host` should have the same frame tree node
+  // ID, but this isn't possible with the current test infrastructure. For
+  // testing purposes, it's okay to set the content frame tree node ID to the
+  // initial RFH.
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, stream_url_host->GetFrameTreeNodeId());
+
+  // Changing `stream_url_host` to `content_host` shouldn't delete the stream.
+  manager->RenderFrameHostChanged(stream_url_host, content_host);
+
+  ASSERT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // Now, set the content frame tree node ID to the actual content frame tree
+  // node ID, which will be the same as `stream_url_host` in real situations.
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+
+  // Changing the content host should delete the stream.
+  manager->RenderFrameHostChanged(content_host, new_host);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
 // If the `content::RenderFrameHost` for the stream is deleted, then the stream
 // should be deleted.
-TEST_F(PdfViewerStreamManagerTest, FrameDeleted) {
+TEST_F(PdfViewerStreamManagerTest, EmbedderFrameDeleted) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  int frame_tree_node_id = embedder_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      embedder_host->GetFrameTreeNodeId();
 
   PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
@@ -309,6 +554,116 @@ TEST_F(PdfViewerStreamManagerTest, FrameDeleted) {
   // There are no remaining streams, so `PdfViewerStreamManager` should delete
   // itself.
   manager->FrameDeleted(frame_tree_node_id);
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
+// If the PDF extension frame is deleted, the stream should be deleted.
+TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
+  embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  content::FrameTreeNodeId frame_tree_node_id =
+      extension_host->GetFrameTreeNodeId();
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // Set the extension frame tree node ID so the stream can be deleted when the
+  // extension host is deleted.
+  manager->SetExtensionFrameTreeNodeIdForTesting(embedder_host,
+                                                 frame_tree_node_id);
+
+  // Deleting the extension host should cause the stream to be deleted.
+  manager->FrameDeleted(frame_tree_node_id);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
+// If the PDF content frame is deleted, the stream should be deleted.
+TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content::FrameTreeNodeId frame_tree_node_id =
+      content_host->GetFrameTreeNodeId();
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // Set the content frame tree node ID so the stream can be deleted when the
+  // content host is deleted.
+  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
+                                               frame_tree_node_id);
+
+  // Deleting the content host should cause the stream to be deleted.
+  manager->FrameDeleted(frame_tree_node_id);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
+// Starting the navigation for the content host should set the content host
+// frame tree node ID.
+TEST_F(PdfViewerStreamManagerTest,
+       DidStartNavigationSetContentHostFrameTreeNodeId) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
+  content::FrameTreeNodeId content_frame_tree_node_id =
+      pdf_host->GetFrameTreeNodeId();
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  // Deleting the frame using frame tree node ID shouldn't trigger the stream
+  // deletion, since the content host frame tree node ID hasn't been set.
+  manager->FrameDeleted(pdf_host->GetFrameTreeNodeId());
+
+  ASSERT_TRUE(pdf_viewer_stream_manager());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle;
+
+  // Set `navigation_handle`'s frame host to a grandchild frame host. This acts
+  // as the PDF frame host.
+  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
+  ON_CALL(navigation_handle, GetFrameTreeNodeId)
+      .WillByDefault(Return(content_frame_tree_node_id));
+  navigation_handle.set_render_frame_host(pdf_host);
+
+  // Start the navigation. The content host frame tree node ID should now be
+  // set.
+  manager->DidStartNavigation(&navigation_handle);
+
+  ASSERT_TRUE(pdf_viewer_stream_manager());
+
+  // Deleting the frame should now trigger stream deletion, as the content host
+  // frame tree node ID has been set.
+  manager->FrameDeleted(content_frame_tree_node_id);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
   EXPECT_FALSE(pdf_viewer_stream_manager());
 }
 

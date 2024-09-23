@@ -1,0 +1,298 @@
+<style>
+  :host {
+    --nearby-page-space-block: 26px;
+    --nearby-page-space-inline: 32px;
+    --nearby-page-space-large-inline: 42px;
+  }
+
+  #centerContent {
+    background: linear-gradient(to top,
+        var(--nearby-page-linear-gradient-color-start) 5%, transparent 50%);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+    padding: 0 32px;
+    position: relative;
+  }
+
+  #errorSection {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+  }
+
+  #error {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #error {
+    font-size: 12px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorTitle {
+    color: var(--cros-text-color-alert);
+    font-weight: bold;
+    margin: 3px 0;
+  }
+
+  :host-context(body.jelly-enabled) #errorTitle {
+    color: var(--cros-sys-error);
+    font: var(--cros-button-2-font);
+    margin-bottom: 3px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorDescription {
+    color: var(--cros-text-color-secondary);
+    line-height: 13px;
+  }
+
+  :host-context(body.jelly-enabled) #errorDescription {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
+  }
+
+  #errorIcon {
+    flex-shrink: 0;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #errorIcon {
+    fill: var(--cros-icon-color-alert);
+    margin-inline-end: 12px;
+    height: 20px;
+    width: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #errorIcon {
+    fill: var(--cros-sys-error);
+    margin-inline-end: 8px;
+    margin-top: 2px;
+    height: 16px;
+    width: 16px;
+  }
+
+  #help {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    margin-block-end: 8px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #help {
+    color: var(--cros-text-color-secondary);
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #help {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-annotation-2-font);
+  }
+
+  #helpText {
+    margin: auto;
+  }
+
+  #helpText a {
+    color: var(--cros-text-color-selection);
+    text-decoration: none;
+  }
+
+  #infoIcon {
+    flex-shrink: 0;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #infoIcon {
+    margin-inline-end: 12px;
+    height: 20px;
+    width: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #infoIcon {
+    fill: var(--cros-sys-secondary);
+    margin-inline-end: 8px;
+    height: 16px;
+    width: 16px;
+  }
+
+  #process-row {
+    align-items: flex-start;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    overflow: hidden;
+    overflow-y: scroll;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #process-row {
+    margin-block-end: 24px;
+    margin-block-start: 24px;
+  }
+
+  :host-context(body.jelly-enabled) #process-row {
+    margin-block-end: 40px;
+  }
+
+  .device-list-container {
+    align-self: stretch;
+    display: block;
+    margin-top: 12px;
+    overflow: auto;
+    width: 200px;
+  }
+
+  .device-list-container#selfShareDevices {
+    margin-bottom: 3px;
+  }
+
+  .device-list-container#nonSelfShareDevices {
+    margin-top: 0px;
+  }
+
+  #deviceLists {
+    flex-direction: column;
+  }
+
+  #animation {
+    bottom: 0;
+    height: 100px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+  }
+
+  #placeholder {
+    align-self: center;
+    margin-inline-end: var(--nearby-page-space-large-inline);
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #placeholder {
+    color: var(--cros-text-color-secondary);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #placeholder {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
+  }
+
+  nearby-device {
+    animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) slide-up;
+    animation: 200ms linear fade-in;
+  }
+
+  .device-list-container nearby-device:first-of-type {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top-style: solid;
+    margin-top: 3px;
+ }
+
+ .device-list-container nearby-device:last-of-type {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-style: solid;
+    margin-bottom: 3px;
+ }
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    0% { transform: translateY(2px); }
+    100% { transform: translateY(0); }
+  }
+</style>
+
+<nearby-page-template title="$i18n{nearbyShareDiscoveryPageTitle}"
+        sub-title="$i18n{nearbyShareDiscoveryPageSubtitle}"
+        action-button-label="$i18n{nearbyShareActionsNext}"
+        action-button-event-name="next"
+        action-disabled="[[!selectedShareTarget]]"
+        cancel-button-label="$i18n{nearbyShareActionsCancel}"
+        cancel-button-event-name="close"
+        close-only="[[errorTitle_]]">
+  <div id="centerContent" slot="content">
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_()]]"
+          autoplay dynamic aria-hidden>
+      </cros-lottie-renderer>
+    <div id="process-row">
+      <nearby-preview payload-preview="[[payloadPreview]]"
+          disabled="[[errorTitle_]]">
+      </nearby-preview>
+      <template is="dom-if" if="[[!errorTitle_]]" restamp>
+        <div id="placeholder"
+            hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+          $i18n{nearbyShareDiscoveryPagePlaceholder}
+        </div>
+        <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+          <div id="deviceLists">
+            <array-selector class="selector" items="{{shareTargets_}}" selected-item="{{selectedShareTarget}}">
+            </array-selector>
+            <div id="selfShareDevices" class="device-list-container" aria-live="polite">
+              <template is="dom-repeat" items="[[selfShareTargets_]]">
+                <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
+                  share-target="[[item]]"
+                  is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
+                  role="radio"
+                  aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
+                  on-click="onShareTargetClicked_"
+                  on-keydown="onKeyDownForShareTarget_">
+                </nearby-device>
+              </template>
+            </div>
+            <div id="nonSelfShareDevices" class="device-list-container" aria-live="polite">
+              <template is="dom-repeat" items="[[nonSelfShareTargets_]]">
+                <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
+                  share-target="[[item]]"
+                  is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
+                  role="radio"
+                  aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
+                  on-click="onShareTargetClicked_"
+                  on-keydown="onKeyDownForShareTarget_">
+                </nearby-device>
+              </template>
+            </div>
+          </div>
+        </template>
+      </template>
+    </div>
+    <!-- TODO(crbug.com/1149546) factor error section into its own component -->
+    <template is="dom-if" if="[[errorTitle_]]">
+      <div id="errorSection">
+        <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
+        <div id="error" role="alert" aria-labelledby="errorTitle"
+            aria-describedby="errorDescription">
+          <div id="errorTitle" aria-hidden="true">[[errorTitle_]]</div>
+          <div id="errorDescription" aria-hidden="true">
+            [[errorDescription_]]
+          </div>
+        </div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!errorTitle_]]">
+      <div id="help">
+        <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
+        <div id="helpText"
+            inner-h-t-m-l="[[getAriaLabelledHelpText_()]]">
+        </div>
+      </div>
+    </template>
+  </div>
+</nearby-page-template>

@@ -13,7 +13,6 @@ component("constants") {
     "ambient_time_of_day_constants.h",
     "ambient_video.cc",
     "ambient_video.h",
-    "app_types.h",
     "ash_constants.cc",
     "ash_constants.h",
     "ash_features.cc",
@@ -40,5 +39,8 @@ component("constants") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
-  deps = [ "//build:branding_buildflags" ]
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/components/libsegmentation:buildflags",
+  ]
 }

@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -23,6 +23,7 @@ class GoogleServiceAuthError;
 
 namespace ash::attestation {
 class AttestationFeatures;
+class AttestationFlow;
 }  // namespace ash::attestation
 
 namespace network {
@@ -91,6 +92,19 @@ class SecondDeviceAuthBroker {
 
       // Credential ID mismatch thrown during FIDO assertion verification.
       kCredentialIdMismatch,
+
+      // Federated Enterprise accounts are currently not supported.
+      kFederatedEnterpriseAccountNotSupported,
+
+      // A Unicorn account was used for QuickStart when QuickStart is disallowed
+      // for the account.
+      kUnicornAccountNotEnabled,
+
+      // Account lookup failed - account not found.
+      kAccountNotFound,
+
+      // Account lookup failed - captcha required.
+      kCaptchaRequired,
     };
 
     Reason reason;

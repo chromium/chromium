@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/single_extension_install_event_log.h"
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 
 namespace em = enterprise_management;
@@ -22,12 +23,12 @@ bool SingleExtensionInstallEventLog::Load(
   log->reset();
 
   ssize_t size;
-  std::unique_ptr<char[]> package_buffer;
+  base::HeapArray<char> package_buffer;
   if (!ParseIdFromFile(file, &size, &package_buffer))
     return false;
 
   *log = std::make_unique<SingleExtensionInstallEventLog>(
-      std::string(package_buffer.get(), size));
+      std::string(package_buffer.data(), size));
   return LoadEventLogFromFile(file, (*log).get());
 }
 

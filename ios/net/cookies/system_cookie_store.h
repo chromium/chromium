@@ -78,12 +78,14 @@ class SystemCookieStore {
  protected:
   // Compares cookies based on the path lengths and the creation times provided
   // by a non null creation time manager |context|, as per RFC6265.
-  static NSInteger CompareCookies(id a, id b, void* context);
+  static NSInteger CompareCookies(NSHTTPCookie* cookie_a,
+                                  NSHTTPCookie* cookie_b,
+                                  void* context);
 
   // Internal cookie stores doesn't store creation time. This object is used
   // to keep track of the creation time of cookies, this is required for
   // conversion between SystemCookie and Chromium CookieMonster.
-  // TODO(crbug.com/825227): Move this to be private.
+  // TODO(crbug.com/40568476): Move this to be private.
   std::unique_ptr<CookieCreationTimeManager> creation_time_manager_;
 
  private:

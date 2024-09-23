@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/shelf/shelf_app_button.h"
 
 #include <algorithm>
@@ -52,6 +57,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
@@ -66,8 +72,6 @@ namespace {
 
 constexpr int kStatusIndicatorRadiusDip = 2;
 constexpr int kStatusIndicatorMaxSize = 10;
-constexpr int kStatusIndicatorActiveSize = 8;
-constexpr int kStatusIndicatorRunningSize = 4;
 constexpr int kStatusIndicatorActiveSizeJellyEnabled = 12;
 constexpr int kStatusIndicatorRunningSizeJellyEnabled = 6;
 constexpr int kStatusIndicatorThickness = 2;
@@ -230,11 +234,10 @@ class ShelfAppButton::AppStatusIndicatorView
     : public gfx::AnimationDelegate,
       public views::View,
       public ShelfAppButtonAnimation::Observer {
- public:
-  METADATA_HEADER(AppStatusIndicatorView);
+  METADATA_HEADER(AppStatusIndicatorView, views::View)
 
-  AppStatusIndicatorView()
-      : jelly_enabled_(chromeos::features::IsJellyEnabled()) {
+ public:
+  AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
     status_change_animation_ = std::make_unique<gfx::SlideAnimation>(this);
@@ -261,19 +264,12 @@ class ShelfAppButton::AppStatusIndicatorView
     }
 
     gfx::ScopedCanvas scoped(canvas);
-    if (!jelly_enabled_) {
-      canvas->SaveLayerAlpha(GetAlpha());
-    }
 
     const float dsf = canvas->UndoDeviceScaleFactor();
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
-    if (jelly_enabled_) {
-      flags.setColor(GetJellyColor());
-    } else {
-      flags.setColor(
-          GetColorProvider()->GetColor(kColorAshAppStateIndicatorColor));
-    }
+    flags.setColor(GetJellyColor());
+
     // Active and running indicators look a little different in the new UI.
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
@@ -299,21 +295,14 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   float GetStrokeLength() {
-    bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-    int status_indicator_active_size =
-        is_jelly_enabled ? kStatusIndicatorActiveSizeJellyEnabled
-                         : kStatusIndicatorActiveSize;
-    int status_indicator_running_size =
-        is_jelly_enabled ? kStatusIndicatorRunningSizeJellyEnabled
-                         : kStatusIndicatorRunningSize;
-
     if (status_change_animation_->is_animating()) {
       return status_change_animation_->CurrentValueBetween(
-          status_indicator_running_size, status_indicator_active_size);
+          kStatusIndicatorRunningSizeJellyEnabled,
+          kStatusIndicatorActiveSizeJellyEnabled);
     }
 
-    return active_ ? status_indicator_active_size
-                   : status_indicator_running_size;
+    return active_ ? kStatusIndicatorActiveSizeJellyEnabled
+                   : kStatusIndicatorRunningSizeJellyEnabled;
   }
 
   SkColor GetJellyColor() {
@@ -405,7 +394,6 @@ class ShelfAppButton::AppStatusIndicatorView
       ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
   }
 
-  const bool jelly_enabled_;
   bool show_attention_ = false;
   bool active_ = false;
   bool horizontal_shelf_ = true;
@@ -413,25 +401,22 @@ class ShelfAppButton::AppStatusIndicatorView
   base::TimeTicks animation_end_time_;  // For attention throbbing underline.
 };
 
-BEGIN_METADATA(ShelfAppButton, AppStatusIndicatorView, views::View)
+BEGIN_METADATA(ShelfAppButton, AppStatusIndicatorView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // ShelfAppButton
 
 // static
-const char ShelfAppButton::kViewClassName[] = "ash/ShelfAppButton";
-
-// static
 bool ShelfAppButton::ShouldHandleEventFromContextMenu(
     const ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_END:
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureEnd:
+    case ui::EventType::kGestureTapCancel:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureScrollUpdate:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       return true;
     default:
       return false;
@@ -499,16 +484,14 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  if (chromeos::features::IsJellyEnabled()) {
-    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  } else {
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  }
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
+
+  UpdateAccessibleDescription();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -688,8 +671,6 @@ void ShelfAppButton::OnDragStarted(const ui::LocatedEvent* event) {
 }
 
 void ShelfAppButton::OnMenuClosed() {
-  DCHECK_EQ(views::InkDropState::ACTIVATED,
-            views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState());
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::DEACTIVATED);
   context_menu_target_visibility_ = false;
@@ -723,25 +704,10 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
 void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string accessible_name = GetAccessibleName();
+  const std::u16string accessible_name = GetViewAccessibility().GetCachedName();
   node_data->SetName(!accessible_name.empty()
                          ? accessible_name
                          : shelf_view_->GetTitleForView(this));
-
-  switch (app_status_) {
-    case AppStatus::kBlocked:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_BLOCKED_APP));
-      break;
-    case AppStatus::kPaused:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_PAUSED_APP));
-      break;
-    default:
-      break;
-  }
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -767,6 +733,7 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
     progress_ = item.progress;
     app_status_ = item.app_status;
     UpdateProgressRingBounds();
+    UpdateAccessibleDescription();
   }
 
   const ShelfID active_id = shelf_view_->model()->active_shelf_id();
@@ -901,10 +868,6 @@ gfx::Rect ShelfAppButton::CalculateSmallRippleArea() const {
   small_ripple_area.Offset(center_point.x() - ink_drop_small_size / 2,
                            center_point.y() - ink_drop_small_size / 2);
   return small_ripple_area;
-}
-
-const char* ShelfAppButton::GetClassName() const {
-  return kViewClassName;
 }
 
 bool ShelfAppButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -1112,7 +1075,7 @@ void ShelfAppButton::OnThemeChanged() {
 
 void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::EventType::kGestureTapDown:
       if (shelf_view_->shelf()->IsVisible()) {
         AddState(STATE_HOVERED);
         drag_timer_.Start(FROM_HERE, base::Milliseconds(kDragTimeThresholdMs),
@@ -1127,9 +1090,9 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       [[fallthrough]];  // Ensure tapped items are not enlarged for drag.
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       // If the button is being dragged, or there is an active context menu,
       // for this ShelfAppButton, don't deactivate the ink drop.
       if (!(state_ & STATE_DRAGGING) &&
@@ -1138,7 +1101,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
            views::InkDropState::ACTIVATED)) {
         views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
             views::InkDropState::DEACTIVATED);
-      } else if (event->type() == ui::ET_GESTURE_END) {
+      } else if (event->type() == ui::EventType::kGestureEnd) {
         // When the gesture ends, we may need to deactivate the button's
         // inkdrop. For example, when a mouse event interputs the gesture press
         // on a shelf app button, the button's inkdrop could be in the pending
@@ -1149,7 +1112,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
 
       ClearDragStateOnGestureEnd();
       break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (state_ & STATE_DRAGGING) {
         shelf_view_->PointerPressedOnButton(this, ShelfView::TOUCH, *event);
         event->SetHandled();
@@ -1161,21 +1124,21 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
             views::InkDropState::HIDDEN);
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if ((state_ & STATE_DRAGGING) && shelf_view_->IsDraggedView(this)) {
         shelf_view_->PointerDraggedOnButton(this, ShelfView::TOUCH, *event);
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       if (state_ & STATE_DRAGGING) {
         ClearState(STATE_DRAGGING);
         shelf_view_->PointerReleasedOnButton(this, ShelfView::TOUCH, false);
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
           views::InkDropState::ACTIVATED);
 
@@ -1188,7 +1151,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::EventType::kGestureTwoFingerTap:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
           views::InkDropState::ACTIVATED);
       break;
@@ -1475,5 +1438,26 @@ void ShelfAppButton::OnAnimatedInFromPromiseApp(
 
   callback.Run();
 }
+
+void ShelfAppButton::UpdateAccessibleDescription() {
+  switch (app_status_) {
+    case AppStatus::kBlocked:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_BLOCKED_APP));
+      break;
+    case AppStatus::kPaused:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_PAUSED_APP));
+      break;
+    default:
+      GetViewAccessibility().RemoveDescription();
+      break;
+  }
+}
+
+BEGIN_METADATA(ShelfAppButton)
+END_METADATA
 
 }  // namespace ash

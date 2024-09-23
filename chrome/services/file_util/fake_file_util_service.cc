@@ -19,7 +19,7 @@ MockSafeArchiveAnalyzer& FakeFileUtilService::GetSafeArchiveAnalyzer() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeFileUtilService::BindZipFileCreator(
     mojo::PendingReceiver<chrome::mojom::ZipFileCreator> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 
@@ -33,12 +33,12 @@ void FakeFileUtilService::BindSafeArchiveAnalyzer(
 #if BUILDFLAG(ENABLE_EXTRACTORS)
 void FakeFileUtilService::BindSingleFileTarXzFileExtractor(
     mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeFileUtilService::BindSingleFileTarFileExtractor(
     mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

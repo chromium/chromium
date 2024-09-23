@@ -7,7 +7,7 @@
  * credit cards for use in autofill and payments APIs.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -44,6 +44,9 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
+export const GOOGLE_PAY_HELP_URL =
+    'https://support.google.com/googlepay?p=card_benefits_chrome';
+
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
   anchorElement: HTMLElement,
@@ -68,7 +71,6 @@ export interface SettingsPaymentsSectionElement {
     creditCardSharedMenu: CrActionMenuElement,
     ibanSharedActionMenu: CrLazyRenderElement<CrActionMenuElement>,
     mandatoryAuthToggle: SettingsToggleButtonElement,
-    menuClearCreditCard: HTMLElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
     menuAddVirtualCard: HTMLElement,
@@ -111,36 +113,12 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Set to true if user can be verified through FIDO authentication.
-       */
-      userIsFidoVerifiable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'fidoAuthenticationAvailableForAutofill');
-        },
-      },
-
-      /**
        * Whether IBAN is supported in Settings page.
        */
       showIbanSettingsEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('showIbansSettings');
-        },
-        readOnly: true,
-      },
-
-      /**
-       * GPay-related links direct to the newer GPay Web site instead of
-       * the legacy Payments Center.
-       */
-      updateChromeSettingsLinkToGPayWebEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'updateChromeSettingsLinkToGPayWebEnabled');
         },
         readOnly: true,
       },
@@ -187,23 +165,33 @@ export class SettingsPaymentsSectionElement extends
       // </if>
 
       /**
-       * Whether the feature flag for mandatory re-auth is enabled.
-       */
-      mandatoryReauthFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'autofillEnablePaymentsMandatoryReauth');
-        },
-      },
-
-      /**
        * Checks if CVC storage is available based on the feature flag.
        */
       cvcStorageAvailable_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('cvcStorageAvailable');
+        },
+      },
+
+      /**
+       * Checks if a card benefits feature flag is enabled.
+       */
+      cardBenefitsFlagEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillCardBenefitsAvailable');
+        },
+      },
+
+      /**
+       * Sublabel for the card benefits toggle. The sublabel text also includes
+       * a link to learn about the card benefits.
+       */
+      cardBenefitsSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('cardBenefitsToggleSublabel');
         },
       },
     };
@@ -213,8 +201,6 @@ export class SettingsPaymentsSectionElement extends
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
   private showIbanSettingsEnabled_: boolean;
-  private userIsFidoVerifiable_: boolean;
-  private updateChromeSettingsLinkToGPayWebEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
   private showCreditCardDialog_: boolean;
@@ -231,8 +217,9 @@ export class SettingsPaymentsSectionElement extends
   private showBulkRemoveCvcConfirmationDialog_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
-  private mandatoryReauthFeatureEnabled_: boolean;
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
+  private cardBenefitsFlagEnabled_: boolean;
+  private cardBenefitsSublabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -242,17 +229,6 @@ export class SettingsPaymentsSectionElement extends
         (cardList: chrome.autofillPrivate.CreditCardEntry[]) => {
           this.creditCards = cardList;
         };
-
-    // Update |userIsFidoVerifiable_| based on the availability of a platform
-    // authenticator.
-    this.paymentsManager_.isUserVerifyingPlatformAuthenticatorAvailable().then(
-        r => {
-          if (r === null) {
-            return;
-          }
-
-          this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
-        });
 
     const setPersonalDataListener: PersonalDataChangedListener =
         (_addressList, cardList, ibanList) => {
@@ -294,7 +270,7 @@ export class SettingsPaymentsSectionElement extends
 
   /**
    * Returns true if IBAN should be shown from settings page.
-   * TODO(crbug.com/1352606): Add additional check (starter country-list, or
+   * TODO(crbug.com/40234941): Add additional check (starter country-list, or
    * the saved-pref-boolean on if the user has submitted an IBAN form).
    */
   private shouldShowIbanSettings_(): boolean {
@@ -409,8 +385,7 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.logServerCardLinkClicked();
     const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
     assert(this.activeCreditCard_);
-    if (this.updateChromeSettingsLinkToGPayWebEnabled_ &&
-        this.activeCreditCard_.instrumentId) {
+    if (this.activeCreditCard_.instrumentId) {
       url.searchParams.append('id', this.activeCreditCard_.instrumentId);
     }
     OpenWindowProxyImpl.getInstance().openUrl(url.toString());
@@ -492,16 +467,6 @@ export class SettingsPaymentsSectionElement extends
     this.$.ibanSharedActionMenu.get().close();
   }
 
-  /**
-   * Handles clicking on the "Clear copy" button for cached credit cards.
-   */
-  private onMenuClearCreditCardClick_() {
-    this.paymentsManager_.clearCachedCreditCard(this.activeCreditCard_!.guid!);
-    this.$.creditCardSharedMenu.close();
-    this.activeCreditCard_ = null;
-  }
-
-
   private onMenuAddVirtualCardClick_() {
     this.paymentsManager_.addVirtualCard(this.activeCreditCard_!.guid!);
     this.$.creditCardSharedMenu.close();
@@ -545,24 +510,6 @@ export class SettingsPaymentsSectionElement extends
 
   private onSaveIban_(event: CustomEvent<chrome.autofillPrivate.IbanEntry>) {
     this.paymentsManager_.saveIban(event.detail);
-  }
-
-  /**
-   * @return Whether the user is verifiable through FIDO authentication.
-   */
-  private shouldShowFidoToggle_(creditCardEnabled: boolean): boolean {
-    return creditCardEnabled && this.userIsFidoVerifiable_ &&
-        !this.mandatoryReauthFeatureEnabled_;
-  }
-
-  /**
-   * Listens for the enable-authentication event, and calls the private API.
-   */
-  private setFidoAuthenticationEnabledState_() {
-    this.paymentsManager_.setCreditCardFidoAuthEnabledState(
-        this.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>(
-                '#autofillCreditCardFIDOAuthToggle')!.checked);
   }
 
   /**
@@ -692,6 +639,14 @@ export class SettingsPaymentsSectionElement extends
       this.paymentsManager_.bulkDeleteAllCvcs();
     }
     this.showBulkRemoveCvcConfirmationDialog_ = false;
+
+    // Focus on the CVC storage toggle, post deletion of CVCs for voice reader
+    // correctness.
+    const cvcStorageToggle =
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#cvcStorageToggle');
+    assert(cvcStorageToggle);
+    cvcStorageToggle.focus();
   }
 
   /**
@@ -705,6 +660,25 @@ export class SettingsPaymentsSectionElement extends
     return this.i18nAdvanced(
         card === undefined ? 'enableCvcStorageSublabel' :
                              'enableCvcStorageDeleteDataSublabel');
+  }
+
+  /**
+   * Opens an article to learn about card benefits when the card benefits toggle
+   * sublabel link is clicked.
+   */
+  private onCardBenefitsSublabelLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(GOOGLE_PAY_HELP_URL);
+  }
+
+  /**
+   * Get the CVC storage toggle aria label for a11y voice readers.
+   * @returns CVC storage aria label.
+   */
+  private getCvcStorageAriaLabel_(): string {
+    const card = this.creditCards.find(cc => !!cc.cvc);
+    return this.i18n(
+        card === undefined ? 'enableCvcStorageAriaLabelForNoCvcSaved' :
+                             'enableCvcStorageLabel');
   }
 }
 

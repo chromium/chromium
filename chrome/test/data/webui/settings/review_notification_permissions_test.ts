@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsReviewNotificationPermissionsElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import type {CrActionMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -29,7 +28,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsReviewNotificationPermissionsElement;
-  let testRoutes: SettingsRoutes;
 
   const origin1 = 'https://www.example1.com:443';
   const detail1 = 'About 4 notifications a day';
@@ -102,7 +100,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('review-notification-permissions');
     testElement.setModelUpdateDelayMsForTesting(0);
-    Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS_NOTIFICATIONS);
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
@@ -116,10 +114,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    testRoutes = {
-      SITE_SETTINGS_NOTIFICATIONS: routes.SITE_SETTINGS_NOTIFICATIONS,
-    } as unknown as SettingsRoutes;
-    Router.resetInstanceForTesting(new Router(routes));
+    resetRouterForTesting();
     await createPage();
     // Clear the metrics that were recorded as part of the initial creation of
     // the page.
@@ -136,15 +131,16 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const menu1 = testElement.shadowRoot!.querySelector('cr-action-menu')!;
+    const menu1 = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu1);
     assertFalse(isVisible(menu1.getDialog()));
 
     const item = getEntries()[index]!;
-    (item.querySelector('#actionMenuButton')! as HTMLElement).click();
+    item.querySelector<HTMLElement>('#actionMenuButton')!.click();
     flush();
 
-    const menu2 = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
+    const menu2 = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu2);
     assertTrue(isVisible(menu2.getDialog()));
   }
 
@@ -191,7 +187,8 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertAnimation([false, false]);
 
     // User clicks don't allow.
-    const element = entries[0]!.querySelector('#block')! as HTMLElement;
+    const element = entries[0]!.querySelector<HTMLElement>('#block');
+    assertTrue(!!element);
     element.click();
     assertAnimation([true, false]);
     // Ensure the browser proxy call is done.
@@ -241,10 +238,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.IGNORE);
     // Ensure the action menu is closed.
-    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
-    const dialog = menu.getDialog() as HTMLDialogElement;
-    assertFalse(isVisible(dialog));
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertFalse(isVisible(menu.getDialog()));
   });
 
   /**
@@ -278,10 +274,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.RESET);
     // Ensure the action menu is closed.
-    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
-    const dialog = menu.getDialog() as HTMLDialogElement;
-    assertFalse(isVisible(dialog));
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertFalse(isVisible(menu.getDialog()));
   });
 
   /**
@@ -467,7 +462,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertTrue(!!expandButton);
 
     const notificationPermissionList =
-        testElement.shadowRoot!.querySelector('iron-collapse');
+        testElement.shadowRoot!.querySelector('cr-collapse');
     assertTrue(!!notificationPermissionList);
 
     // Button and list start out expanded.

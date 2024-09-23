@@ -1,0 +1,98 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#button {
+  border-radius: var(--segmented-button-height);
+  box-sizing: border-box;
+  color: var(--color-segmented-button-foreground-unchecked,
+      var(--cr-fallback-color-on-surface-subtle));
+  cursor: pointer;
+  height: 100%;
+  overflow: hidden;
+  padding: 4px 8px;
+  position: relative;
+}
+
+#button:focus {
+  outline: none;
+}
+
+:host([checked]) #button {
+  background-color: var(--color-segmented-button-checked,
+      var(--cr-fallback-color-primary));
+  color: var(--color-segmented-button-foreground-checked,
+      var(--cr-fallback-color-on-primary));
+}
+
+#button #overlay {
+  border-radius: var(--segmented-button-height);
+  box-sizing: border-box;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#button:hover #overlay {
+  background-color: var(--color-segmented-button-hover,
+      var(--cr-hover-on-subtle-background-color));
+}
+
+#button:focus-visible #overlay {
+  border: 2px var(--color-segmented-button-border) solid;
+}
+
+cr-ripple {
+  color: var(--color-segmented-button-ripple,
+      var(--cr-active-neutral-on-subtle-background-color));
+}
+
+#container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  justify-content: center;
+}
+
+#button ::slotted(.cr-icon) {
+  --cr-icon-color: var(--color-segmented-button-foreground-unchecked,
+      var(--cr-fallback-color-on-surface-subtle));
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-ripple-margin: 8px;
+  --cr-icon-ripple-size: 16px;
+  --cr-icon-size: 16px;
+}
+
+:host([checked]) #prefixIcon,
+#checkmark {
+  display: none;
+  flex-shrink: 0;
+}
+
+:host([checked]) #checkmark {
+  display: block;
+  fill: var(--color-segmented-button-foreground-checked,
+      var(--cr-fallback-color-on-primary));
+  height: 16px;
+  margin-inline-end: 8px;
+  width: 16px;
+}
+
+#content {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  max-height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

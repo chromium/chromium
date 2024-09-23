@@ -218,6 +218,11 @@ AccessibilityPageObjects::AccessibilityPageObjects(
 
 AccessibilityPageObjects::~AccessibilityPageObjects() = default;
 
+AccessibilityViewportInfo::AccessibilityViewportInfo() = default;
+AccessibilityViewportInfo::AccessibilityViewportInfo(
+    const AccessibilityViewportInfo& other) = default;
+AccessibilityViewportInfo::~AccessibilityViewportInfo() = default;
+
 AccessibilityActionData::AccessibilityActionData() = default;
 
 AccessibilityActionData::AccessibilityActionData(

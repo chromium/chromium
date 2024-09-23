@@ -5,8 +5,10 @@
 #ifndef BASE_NUMERICS_SAFE_MATH_ARM_IMPL_H_
 #define BASE_NUMERICS_SAFE_MATH_ARM_IMPL_H_
 
+// IWYU pragma: private
+
+#include <stdint.h>
 #include <cassert>
-#include <type_traits>
 
 #include "base/numerics/safe_conversions.h"
 

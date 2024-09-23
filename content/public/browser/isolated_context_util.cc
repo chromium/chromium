@@ -16,22 +16,24 @@ namespace content {
 namespace {
 
 bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
-  return GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-      process->GetBrowserContext(), process->GetProcessLock().lock_url());
+  const ProcessLock& process_lock = process->GetProcessLock();
+  return !process_lock.is_sandboxed() &&
+         GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
+             process->GetBrowserContext(), process_lock.lock_url());
 }
 
 }  // namespace
 
-bool IsIsolatedContext(RenderProcessHost* process) {
-  return (process->GetWebExposedIsolationLevel() >=
-          WebExposedIsolationLevel::kMaybeIsolatedApplication) ||
-         IsIsolatedContextAllowedByEmbedder(process);
-}
-
 bool HasIsolatedContextCapability(RenderFrameHost* frame) {
-  return (frame->GetWebExposedIsolationLevel() >=
+  return (frame->GetWebExposedIsolationLevel() ==
           WebExposedIsolationLevel::kIsolatedApplication) ||
          IsIsolatedContextAllowedByEmbedder(frame->GetProcess());
+}
+
+bool IsIsolatedContext(RenderProcessHost* process) {
+  return (process->GetWebExposedIsolationLevel() ==
+          WebExposedIsolationLevel::kIsolatedApplication) ||
+         IsIsolatedContextAllowedByEmbedder(process);
 }
 
 }  // namespace content

@@ -1,0 +1,59 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("system_web_dialog") {
+  sources = [
+    "system_web_dialog_delegate.cc",
+    "system_web_dialog_delegate.h",
+    "system_web_dialog_view.cc",
+    "system_web_dialog_view.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/constants",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/base/mojom",
+    "//ui/display",
+    "//ui/display/util",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "system_web_dialog_browsertest.cc" ]
+
+  deps = [
+    ":system_web_dialog",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/zoom",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//url",
+  ]
+}

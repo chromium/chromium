@@ -132,7 +132,7 @@
   </div>
 
   <!-- Secondary Accounts list -->
-  <template is="dom-repeat" id="accountList"
+  <template is="dom-repeat" id="secondaryAccountsList"
       items="[[getSecondaryAccounts_(accounts)]]">
     <div class="settings-box" role="listitem">
       <div class="profile-icon"
@@ -160,8 +160,14 @@
           <!-- Display ARC status -->
           <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
             <span class="arc-availability secondary" id="arcStatus_[[index]]"
-                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
-              $i18n{accountNotUsedInArcLabel}
+               aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
+             $i18n{accountNotUsedInArcLabel}
+            </span>
+          </template>
+          <template is="dom-if" if="[[isArcManagedAccountRestrictionEnabled_]]">
+            <span class="arc-availability secondary" id="arcStatus_[[index]]"
+               aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
+             $i18n{accountNotAllowedInArcLabel}
             </span>
           </template>
         </div>

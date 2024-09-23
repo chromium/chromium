@@ -15,8 +15,10 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +48,7 @@ struct FieldTemplate {
   std::string_view name;
   // This is a field type we assume the autofill server would provide for
   // the given field.
-  // TODO(crbug.com/1441057) Rename field_type to server_type to clarify what
+  // TODO(crbug.com/40266396) Rename field_type to server_type to clarify what
   // it represents. Also change to server_type_is_override below.
   FieldType field_type = UNKNOWN_TYPE;
   // Section name of a field.
@@ -85,33 +87,33 @@ FieldTemplate SetRolePresentation(FieldTemplate field_template) {
 std::pair<FormData, std::string> CreateFormAndServerClassification(
     std::vector<FieldTemplate> fields) {
   FormData form;
-  form.url = GURL("http://foo.com");
-  form.main_frame_origin = url::Origin::Create(form.url);
-  form.host_frame = test::MakeLocalFrameToken();
-  form.renderer_id = test::MakeFormRendererId();
+  form.set_url(GURL("http://foo.com"));
+  form.set_main_frame_origin(url::Origin::Create(form.url()));
+  form.set_host_frame(test::MakeLocalFrameToken());
+  form.set_renderer_id(test::MakeFormRendererId());
 
   // Build the fields for the form.
   for (const auto& field_template : fields) {
     FormFieldData field;
-    field.label = base::UTF8ToUTF16(field_template.label);
-    field.name = base::UTF8ToUTF16(field_template.name);
+    field.set_label(base::UTF8ToUTF16(field_template.label));
+    field.set_name(base::UTF8ToUTF16(field_template.name));
     if (!field_template.section.empty()) {
-      field.section = Section::FromAutocomplete(
-          {.section = std::string(field_template.section)});
+      field.set_section(Section::FromAutocomplete(
+          {.section = std::string(field_template.section)}));
     }
-    field.form_control_type = field_template.form_control_type;
-    field.is_focusable = field_template.is_focusable;
-    field.max_length = field_template.max_length;
-    field.parsed_autocomplete = field_template.parsed_autocomplete;
-    field.role = field_template.role;
-    field.origin =
-        field_template.subframe_origin.value_or(form.main_frame_origin);
-    field.host_frame =
-        field_template.host_form.value_or(form.global_id()).frame_token;
-    field.host_form_id =
-        field_template.host_form.value_or(form.global_id()).renderer_id;
-    field.renderer_id = test::MakeFieldRendererId();
-    form.fields.push_back(std::move(field));
+    field.set_form_control_type(field_template.form_control_type);
+    field.set_is_focusable(field_template.is_focusable);
+    field.set_max_length(field_template.max_length);
+    field.set_parsed_autocomplete(field_template.parsed_autocomplete);
+    field.set_role(field_template.role);
+    field.set_origin(
+        field_template.subframe_origin.value_or(form.main_frame_origin()));
+    field.set_host_frame(
+        field_template.host_form.value_or(form.global_id()).frame_token);
+    field.set_host_form_id(
+        field_template.host_form.value_or(form.global_id()).renderer_id);
+    field.set_renderer_id(test::MakeFieldRendererId());
+    test_api(form).Append(std::move(field));
   }
 
   // Build the response of the Autofill Server with field classifications.
@@ -120,7 +122,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   for (size_t i = 0; i < fields.size(); ++i) {
     auto* field_suggestion = form_suggestion->add_field_suggestions();
     field_suggestion->set_field_signature(
-        CalculateFieldSignatureForField(form.fields[i]).value());
+        CalculateFieldSignatureForField(form.fields()[i]).value());
     *field_suggestion->add_predictions() =
         ::autofill::test::CreateFieldPrediction(
             fields[i].field_type, fields[i].field_type_is_override);
@@ -143,7 +145,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                                             nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
-      form_structure->field(i)->set_heuristic_type(HeuristicSource::kLegacy,
+      form_structure->field(i)->set_heuristic_type(GetActiveHeuristicSource(),
                                                    fields[i].heuristic_type);
     }
   }
@@ -274,7 +276,7 @@ TEST_F(FormStructureRationalizerTest,
           {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
       },
       /*run_heuristics=*/false);
-  Section s = form_structure->field(0)->section;
+  Section s = form_structure->field(0)->section();
   EXPECT_FALSE(test_api(*form_structure).phone_rationalized(s));
   form_structure->RationalizePhoneNumbersInSection(s);
   EXPECT_TRUE(test_api(*form_structure).phone_rationalized(s));
@@ -1042,9 +1044,6 @@ TEST_F(FormStructureRationalizerTest, RationalizeCreditCardNumberOffsets_) {
 // rationalized into (`ADDRESS_HOME_BETWEEN_STREETS_1,
 // `ADDRESS_HOME_BETWEEN_STREETS_2`).
 TEST_F(FormStructureRationalizerTest, RationalizeAddressBetweenStreets) {
-  // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableSupportForBetweenStreets};
   EXPECT_THAT(
       *BuildFormStructure(
           {

@@ -91,6 +91,7 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
   bool have_window_list = false;
   bool have_tab_list = false;
   bool have_current_tab = false;
+
   for (auto source_type : types) {
     switch (source_type) {
       case DesktopMediaList::Type::kNone:
@@ -110,8 +111,15 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         if (!capturer)
           continue;
 
+#if BUILDFLAG(IS_MAC)
+        const bool auto_show_delegated_source_list = false;
+#else
+        const bool auto_show_delegated_source_list = true;
+#endif  // BUILDFLAG(IS_MAC)
         screen_list = std::make_unique<NativeDesktopMediaList>(
-            DesktopMediaList::Type::kScreen, std::move(capturer));
+            DesktopMediaList::Type::kScreen, std::move(capturer),
+            /*add_current_process_windows=*/false,
+            auto_show_delegated_source_list);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
         have_screen_list = true;
         source_lists.push_back(std::move(screen_list));
@@ -134,11 +142,16 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         // If the capturer is not going to enumerate current process windows
         // (to avoid a deadlock on Windows), then we have to find and add those
         // windows ourselves.
-        bool add_current_process_windows =
+        const bool add_current_process_windows =
             !content::desktop_capture::ShouldEnumerateCurrentProcessWindows();
+#if BUILDFLAG(IS_MAC)
+        const bool auto_show_delegated_source_list = false;
+#else
+        const bool auto_show_delegated_source_list = true;
+#endif  // BUILDFLAG(IS_MAC)
         window_list = std::make_unique<NativeDesktopMediaList>(
             DesktopMediaList::Type::kWindow, std::move(capturer),
-            add_current_process_windows);
+            add_current_process_windows, auto_show_delegated_source_list);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
         have_window_list = true;
         source_lists.push_back(std::move(window_list));

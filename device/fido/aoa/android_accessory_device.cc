@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/aoa/android_accessory_device.h"
 
 #include <limits>
@@ -26,7 +31,7 @@ AndroidAccessoryDevice::AndroidAccessoryDevice(
     : device_(std::move(device)),
       in_endpoint_(in_endpoint),
       out_endpoint_(out_endpoint) {
-  base::RandBytes(id_, sizeof(id_));
+  base::RandBytes(id_);
 }
 
 AndroidAccessoryDevice::~AndroidAccessoryDevice() = default;
@@ -36,7 +41,7 @@ FidoDevice::CancelToken AndroidAccessoryDevice::DeviceTransact(
     DeviceCallback callback) {
   if (static_cast<uint64_t>(command.size()) >
       std::numeric_limits<uint32_t>::max()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(std::nullopt);
     return 0;
   }

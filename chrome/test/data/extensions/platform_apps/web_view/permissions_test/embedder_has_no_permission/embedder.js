@@ -84,7 +84,7 @@ embedder.registerAndWaitForPostMessage_ = function(testName, expectedResult) {
 
 function testAllowGeolocation() {
   navigator.permissions.query({name: 'geolocation'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();
@@ -105,7 +105,7 @@ function testAllowGeolocation() {
 
 function testDenyGeolocation() {
   navigator.permissions.query({name: 'geolocation'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();
@@ -126,7 +126,7 @@ function testDenyGeolocation() {
 
 function testAllowCamera() {
   navigator.permissions.query({name: 'camera'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();
@@ -146,7 +146,7 @@ function testAllowCamera() {
 
 function testDenyCamera() {
   navigator.permissions.query({name: 'camera'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();
@@ -167,7 +167,7 @@ function testDenyCamera() {
 
 function testAllowMicrophone() {
   navigator.permissions.query({name: 'microphone'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();
@@ -187,7 +187,7 @@ function testAllowMicrophone() {
 }
 function testDenyMicrophone() {
   navigator.permissions.query({name: 'microphone'}).then(function(permission) {
-    // TODO(crbug.com/1298026) Permission's state is `prompt` even despite it is
+    // TODO(crbug.com/40215363) Permission's state is `prompt` even despite it is
     // not declared in the manifest.
     if (permission.state === 'prompt') {
       var webview = embedder.setUpGuest_();

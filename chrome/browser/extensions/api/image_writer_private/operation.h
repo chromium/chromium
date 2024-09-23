@@ -19,7 +19,6 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "extensions/common/extension_id.h"
 
@@ -39,6 +38,10 @@ namespace image_writer {
 const int kProgressComplete = 100;
 
 class OperationManager;
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class ImageWriterUtilityClient;
+#endif
 
 // Encapsulates an operation being run on behalf of the
 // OperationManager.  Construction of the operation does not start

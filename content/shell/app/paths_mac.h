@@ -28,4 +28,7 @@ base::FilePath GetResourcesPakFilePath();
 // Gets the path to content shell's Info.plist file.
 base::FilePath GetInfoPlistPath();
 
+// Sets up base::apple::BaseBundleID.
+void OverrideBundleID();
+
 #endif  // CONTENT_SHELL_APP_PATHS_MAC_H_

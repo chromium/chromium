@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <EditText
         tools:ignore="Autofill,LabelFor"
         android:id="@+id/cc_month_edit"
@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:text="@string/autofill_expiration_date_separator"/>
 
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <EditText
         tools:ignore="Autofill,LabelFor"
         android:id="@+id/cc_year_edit"

@@ -202,7 +202,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
     return;
   }
 
-  // TODO(crbug.com/1378775): Since the GC recursively deletes, insert a check
+  // TODO(crbug.com/40875193): Since the GC recursively deletes, insert a check
   // so that we can't attempt to delete outside the profile directory. The
   // problem is that in extension_garbage_collector_unittest.cc the directory
   // containing the extension installs is not a direct subdir of the profile
@@ -228,7 +228,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->install_directory(),
                                     extension_paths, /*unpacked=*/false))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -239,7 +239,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->unpacked_install_directory(),
                                     extension_paths, /*unpacked=*/true))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -259,7 +259,7 @@ void ExtensionGarbageCollector::OnFinishCrxInstall(
   if (crx_installs_in_progress_ < 0) {
     // This can only happen if there is a mismatch in our begin/finish
     // accounting.
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
 
     // Don't let the count go negative to avoid garbage collecting when
     // an install is actually in progress.

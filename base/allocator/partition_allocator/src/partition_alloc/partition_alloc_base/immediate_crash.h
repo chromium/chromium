@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 // Crashes in the fastest possible way with no attempt at logging.
 // There are several constraints; see http://crbug.com/664209 for more context.
@@ -39,38 +39,38 @@
 // int3/bkpt/brk will be removed in followups, so splitting it up like this now
 // makes it easy to land the followups.
 
-#if defined(COMPILER_GCC)
+#if PA_BUILDFLAG(PA_COMPILER_GCC)
 
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
 
-// TODO(https://crbug.com/958675): In theory, it should be possible to use just
+// TODO(crbug.com/40625592): In theory, it should be possible to use just
 // int3. However, there are a number of crashes with SIGILL as the exception
 // code, so it seems likely that there's a signal handler that allows execution
 // to continue after SIGTRAP.
 #define PA_TRAP_SEQUENCE1_() asm volatile("int3")
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 // Intentionally empty: __builtin_unreachable() is always part of the sequence
 // (see PA_IMMEDIATE_CRASH below) and already emits a ud2 on Mac.
 #define PA_TRAP_SEQUENCE2_() asm volatile("")
 #else
 #define PA_TRAP_SEQUENCE2_() asm volatile("ud2")
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 
-#elif defined(ARCH_CPU_ARMEL)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_ARMEL)
 
 // bkpt will generate a SIGBUS when running on armv7 and a SIGTRAP when running
 // as a 32 bit userspace app on arm64. There doesn't seem to be any way to
 // cause a SIGTRAP from userspace without using a syscall (which would be a
 // problem for sandboxing).
-// TODO(https://crbug.com/958675): Remove bkpt from this sequence.
+// TODO(crbug.com/40625592): Remove bkpt from this sequence.
 #define PA_TRAP_SEQUENCE1_() asm volatile("bkpt #0")
 #define PA_TRAP_SEQUENCE2_() asm volatile("udf #0")
 
-#elif defined(ARCH_CPU_ARM64)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 
 // This will always generate a SIGTRAP on arm64.
-// TODO(https://crbug.com/958675): Remove brk from this sequence.
+// TODO(crbug.com/40625592): Remove brk from this sequence.
 #define PA_TRAP_SEQUENCE1_() asm volatile("brk #0")
 #define PA_TRAP_SEQUENCE2_() asm volatile("hlt #0")
 
@@ -83,7 +83,7 @@
 
 #endif  // ARCH_CPU_*
 
-#elif defined(COMPILER_MSVC)
+#elif PA_BUILDFLAG(PA_COMPILER_MSVC)
 
 #if !defined(__clang__)
 
@@ -91,7 +91,7 @@
 #define PA_TRAP_SEQUENCE1_() __debugbreak()
 #define PA_TRAP_SEQUENCE2_()
 
-#elif defined(ARCH_CPU_ARM64)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 
 // Windows ARM64 uses "BRK #F000" as its breakpoint instruction, and
 // __debugbreak() generates that in both VC++ and clang.
@@ -128,7 +128,7 @@
 // calling function, but to this anonymous lambda. This is still useful as the
 // full name of the lambda will typically include the name of the function that
 // calls CHECK() and the debugger will still break at the right line of code.
-#if !defined(COMPILER_GCC) || defined(__clang__)
+#if !PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
 
 #define PA_WRAPPED_TRAP_SEQUENCE_() PA_TRAP_SEQUENCE_()
 
@@ -139,9 +139,9 @@
     [] { PA_TRAP_SEQUENCE_(); }();  \
   } while (false)
 
-#endif  // !defined(COMPILER_GCC) || defined(__clang__)
+#endif  // !PA_BUILDFLAG(PA_COMPILER_GCC) || defined(__clang__)
 
-#if defined(__clang__) || defined(COMPILER_GCC)
+#if defined(__clang__) || PA_BUILDFLAG(PA_COMPILER_GCC)
 
 // __builtin_unreachable() hints to the compiler that this is noreturn and can
 // be packed in the function epilogue.
@@ -158,6 +158,6 @@
 // pdfium. On MSVC there is no __builtin_unreachable().
 #define PA_IMMEDIATE_CRASH() PA_WRAPPED_TRAP_SEQUENCE_()
 
-#endif  // defined(__clang__) || defined(COMPILER_GCC)
+#endif  // defined(__clang__) || PA_BUILDFLAG(PA_COMPILER_GCC)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_

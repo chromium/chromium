@@ -8,25 +8,12 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AccessCodeCastDeviceDuration": 10
-        },
-        "prefs": {
-          "media_router.access_code_cast.device_duration": {
-            "value": 10
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "media_router.access_code_cast.device_duration": {
-            "default_value": 0
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "media_router.access_code_cast.device_duration",
+      "default_value": 0,
+      "values_to_test": [
+        10
+      ]
+    }
   }
 ]

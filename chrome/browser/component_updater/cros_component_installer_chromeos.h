@@ -14,7 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
@@ -85,6 +85,7 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
+  bool AllowUpdates() const override;
 
  protected:
   const raw_ptr<CrOSComponentInstaller, DanglingUntriaged>
@@ -136,6 +137,8 @@ class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
                       const base::FilePath& path,
                       base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+  bool SupportsGroupPolicyEnabledComponentUpdates() const override;
+  bool AllowUpdates() const override;
 
   static void SetAshVersionForTest(const char* version);
 };
@@ -180,7 +183,7 @@ class GrowthCampaignsInstallerPolicy : public CrOSComponentInstallerPolicy {
 };
 
 // This class contains functions used to register and install a component.
-class CrOSComponentInstaller : public CrOSComponentManager {
+class CrOSComponentInstaller : public ComponentManagerAsh {
  public:
   CrOSComponentInstaller(std::unique_ptr<MetadataTable> metadata_table,
                          ComponentUpdateService* component_updater);
@@ -188,7 +191,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   CrOSComponentInstaller(const CrOSComponentInstaller&) = delete;
   CrOSComponentInstaller& operator=(const CrOSComponentInstaller&) = delete;
 
-  // CrOSComponentManager:
+  // ComponentManagerAsh:
   void SetDelegate(Delegate* delegate) override;
   void Load(const std::string& name,
             MountPolicy mount_policy,

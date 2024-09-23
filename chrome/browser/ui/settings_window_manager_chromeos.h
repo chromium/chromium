@@ -11,6 +11,7 @@
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/display/types/display_constants.h"
 
@@ -44,10 +45,12 @@ class SettingsWindowManager {
   void RemoveObserver(SettingsWindowManagerObserver* observer);
 
   // Shows a chrome:// page (e.g. Settings, About) in an an existing system
-  // Browser window for |profile| or creates a new one.
+  // Browser window for `profile` or creates a new one. `callback` will run on
+  // Chrome page shown. `callback` can be null.
   virtual void ShowChromePageForProfile(Profile* profile,
                                         const GURL& gurl,
-                                        int64_t display_id);
+                                        int64_t display_id,
+                                        apps::LaunchCallback callback);
 
   // Shows the OS settings window for |profile|. When feature SplitSettings is
   // disabled, this behaves like ShowChromePageForProfile().

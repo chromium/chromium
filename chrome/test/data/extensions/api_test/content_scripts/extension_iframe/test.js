@@ -5,7 +5,7 @@
 chrome.test.runTests([
   // Tests receiving a request from a content script and responding.
   function onRequest() {
-    chrome.extension.onRequest.addListener(
+    chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
         chrome.test.assertTrue(request.success);
         chrome.test.succeed();

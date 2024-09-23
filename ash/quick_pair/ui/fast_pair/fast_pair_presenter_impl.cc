@@ -348,7 +348,6 @@ void FastPairPresenterImpl::OnPairingFailedDismissed(
       // Fast Pair Error Notifications do not have a timeout, so this is never
       // expected to be hit.
       NOTREACHED();
-      break;
     default:
       NOTREACHED();
   }
@@ -581,6 +580,11 @@ void FastPairPresenterImpl::OnCompanionAppDismissed(
     default:
       NOTREACHED();
   }
+}
+
+void FastPairPresenterImpl::ShowPasskey(std::u16string device_name,
+                                        uint32_t passkey) {
+  notification_controller_->ShowPasskey(device_name, passkey);
 }
 
 void FastPairPresenterImpl::RemoveNotifications() {

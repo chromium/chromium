@@ -547,7 +547,11 @@ class PathParser {
       this.resultPrefix = "ERROR";
     }
 
-    const href = pathWithoutQuery.replace(/^\/virtual\/[^\/]*/, "");  // virtual suites
+    const href = pathWithoutQuery
+      // virtual suites
+      .replace(/^\/virtual\/[^\/]*/, "")
+      // https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
+      .replace(/\.any(\.[-\w]+)?\.html/, ".any.js");
     this.testHref = this.testBaseHref() + href;
   }
 

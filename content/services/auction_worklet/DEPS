@@ -3,6 +3,7 @@
 # to this service, make sure they're not inadvertently breaking these
 # isolation requirements.  Please thoroughly discuss additions with OWNERS.
 include_rules = [
+  "+components/cbor",
   "+gin",
   "+net",
   "+services/network/public",
@@ -10,5 +11,13 @@ include_rules = [
   "+third_party/blink/public/common/mime_util",
   "+third_party/blink/public/mojom",
   "+third_party/inspector_protocol/crdtp",
+  "+third_party/zlib/google/compression_utils.h",
   "+v8",
 ]
+
+specific_include_rules = {
+  # Some unit tests use extra gmock matchers for EXPECT_THAT().
+  ".*_unittest\.cc": [
+    "+third_party/googletest/src/googlemock/include/gmock",
+  ],
+}

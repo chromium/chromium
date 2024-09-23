@@ -7,17 +7,17 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 
 class AuthenticatorListObserver;
 
-// List of AuthenticatorReference maintained by AuthenticatorRequestDialogModel
-// that BleDeviceHoverListModel observes to add views to WebAuthN UI modal
-// dialog views.
+// List of AuthenticatorReference maintained by
+// AuthenticatorRequestDialogController that BleDeviceHoverListModel observes to
+// add views to WebAuthN UI modal dialog views.
 class ObservableAuthenticatorList {
  public:
   ObservableAuthenticatorList();
@@ -31,9 +31,9 @@ class ObservableAuthenticatorList {
   ~ObservableAuthenticatorList();
 
   void AddAuthenticator(AuthenticatorReference authenticator);
-  void RemoveAuthenticator(base::StringPiece authenticator_id);
+  void RemoveAuthenticator(std::string_view authenticator_id);
   void RemoveAllAuthenticators();
-  AuthenticatorReference* GetAuthenticator(base::StringPiece authenticator_id);
+  AuthenticatorReference* GetAuthenticator(std::string_view authenticator_id);
 
   void SetObserver(AuthenticatorListObserver* observer);
   void RemoveObserver();
@@ -49,7 +49,7 @@ class ObservableAuthenticatorList {
       std::vector<AuthenticatorReference>::iterator;
 
   AuthenticatorListIterator GetAuthenticatorIterator(
-      base::StringPiece authenticator_id);
+      std::string_view authenticator_id);
 
   std::vector<AuthenticatorReference> authenticator_list_;
   raw_ptr<AuthenticatorListObserver> observer_ = nullptr;

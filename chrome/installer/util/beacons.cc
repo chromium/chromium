@@ -128,7 +128,7 @@ void Beacon::Initialize(std::wstring_view name) {
     // key's default value, which is okay since the majority case is likely a
     // machine with a single user.
     if (!base::win::GetUserSidString(&value_name_))
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

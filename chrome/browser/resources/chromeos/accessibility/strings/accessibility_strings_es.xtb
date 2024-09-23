@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Marrón rosáceo</translation>
 <translation id="249330843868392562">Abrir configuración de la conversión de texto a voz</translation>
 <translation id="2497706219848005458">Amarillo verdoso</translation>
+<translation id="2512979179176933762">mostrar ventanas</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Combinaciones de teclas de Chromebook</translation>
 <translation id="2553108862507765288">error gramatical</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">También puedes deslizar un dedo de derecha a izquierda para ir al elemento anterior. Pruébalo ahora.</translation>
 <translation id="280499067616661124">Buscar en la página en ChromeVox</translation>
-<translation id="2811019999044652585">Para acceder a otras partes de la pantalla, como las barras de herramientas o la bandeja del sistema, pulsa Control+tecla de avance. En un Chromebook, la tecla de avance se encuentra justamente encima de la tecla del número 2.</translation>
 <translation id="2811204574343810641">Fila</translation>
 <translation id="2816868829355607410">Zona de práctica: comandos de salto</translation>
 <translation id="2841013758207633010">Hora</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Azul acero</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Árbol</translation>
+<translation id="4259220820964911921">¿Habilitar control facial?</translation>
 <translation id="4271220233568730077">Siguiente expresión matemática</translation>
 <translation id="4275397969489577657">Habilitar registro de emisión de eventos</translation>
 <translation id="4278486392851938658">No hay ningún enlace visitado anterior</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Rojo indio</translation>
 <translation id="4432896207833262240">Contenido marcado</translation>
 <translation id="4437615272777527928">Escribe para buscar en los menús. Utiliza las flechas hacia arriba y hacia abajo para desplazarte por los resultados. Utiliza las flechas hacia la izquierda y hacia la derecha del teclado para ajustar el símbolo de intercalación de texto y para pasar de un menú a otro.</translation>
+<translation id="4453530046591759283">Para acceder a otras partes de la pantalla, como las barras de herramientas o la bandeja del sistema, pulsa Control + F1. F1 es la primera tecla a la derecha de la tecla Escape.</translation>
 <translation id="4457472090507035117">Selecciona la voz actual:</translation>
 <translation id="4476183483923481720">nueva línea</translation>
 <translation id="4479068155583208887">Rojo ladrillo</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Apéndice</translation>
 <translation id="5761219715606611783">¡Muy bien! Has aprendido los conceptos básicos de los gestos táctiles de ChromeVox. Puedes volver a ver el tutorial o salir de él usando los botones que encontrarás más abajo.</translation>
 <translation id="5776001898637896684">Extensión de conversión de texto a voz de Google Enhanced Network</translation>
+<translation id="5783252477644995371">El control facial te permite controlar el cursor con el movimiento de la cara y realizar acciones como, por ejemplo, hacer clic con el botón izquierdo del ratón mediante gestos faciales, como sonreír</translation>
 <translation id="5805940204952508776">Toca con dos dedos</translation>
 <translation id="5819072574982403430">Elemento de árbol</translation>
 <translation id="5822819874379903994">Turquesa oscuro</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Blanco navajo</translation>
 <translation id="7095834689119144465">Edita solo texto numérico</translation>
 <translation id="7096001299300236431">Anterior archivo multimedia</translation>
+<translation id="7096668131290451939">Pulsa Escape de nuevo para salir del modo Aprendizaje</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">decir palabras</translation>
 <translation id="7137397390322864165">Salmón</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">No hay ninguna casilla posterior</translation>
 <translation id="8473540203671727883">Enunciar el texto que está debajo del ratón</translation>
 <translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox habla</translation>
-<translation id="8476508772960940536">vista general de la ventana</translation>
 <translation id="8480873377842220259">Ahora vas a aprender algunas combinaciones de teclas básicas para desplazarte. Para desplazarte por la pantalla, mantén pulsada la tecla de búsqueda y pulsa las teclas de flecha. Para continuar, pulsa la tecla de búsqueda + flecha hacia la derecha.</translation>
 <translation id="8503360654911991865">Disminuye granularidad de navegación</translation>
 <translation id="8520472399088452386">Botón de control numérico</translation>

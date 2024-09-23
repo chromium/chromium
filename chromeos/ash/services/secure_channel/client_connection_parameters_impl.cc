@@ -83,7 +83,7 @@ void ClientConnectionParametersImpl::OnConnectionDelegateRemoteDisconnected() {
 
 void ClientConnectionParametersImpl::UpdateBleDiscoveryState(
     mojom::DiscoveryResult discovery_state,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   secure_channel_structured_metrics_logger_remote_->LogDiscoveryAttempt(
       discovery_state, potential_error_code);
 }

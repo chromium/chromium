@@ -36,9 +36,8 @@ class PolicyLoggerTest : public PlatformTest {
   // Clears the logs list and resets the deletion flag before the test and its
   // tasks are deleted. This is important to prevent tests from affecting each
   // other's results.
-  void TearDown() override {
-    policy::PolicyLogger::GetInstance()->ResetLoggerAfterTest();
-    PlatformTest::TearDown();
+  void SetUp() override {
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

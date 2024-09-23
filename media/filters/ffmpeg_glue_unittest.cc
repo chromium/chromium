@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/ffmpeg_glue.h"
 
 #include <stdint.h>
@@ -88,8 +93,8 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(
-        data_->data(), data_->data_size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
+                                                      data_->size(), false);
     glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);
@@ -321,14 +326,6 @@ TEST_F(FFmpegGlueContainerTest, AAC) {
   InitializeAndOpen("sfx.adts");
   ExpectContainer(container_names::MediaContainerName::kContainerAAC);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(FFmpegGlueContainerTest, AVI) {
-  base::test::ScopedFeatureList scoped_enable(kCrOSLegacyMediaFormats);
-  InitializeAndOpen("bear.avi");
-  ExpectContainer(container_names::MediaContainerName::kContainerAVI);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.

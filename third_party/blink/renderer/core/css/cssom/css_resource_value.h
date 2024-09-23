@@ -30,7 +30,7 @@ class CORE_EXPORT CSSResourceValue : public CSSStyleValue {
       case ResourceStatus::kDecodeError:
         return "error";
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
     }
   }

@@ -26,6 +26,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
@@ -82,12 +84,12 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       program_name_(program_name),
       initiating_origin_(initiating_origin),
       initiator_document_(std::move(initiator_document)) {
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringFUTF16(
                      IDS_EXTERNAL_PROTOCOL_OK_BUTTON_TEXT, program_name_));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_CANCEL_BUTTON_TEXT));
 
   SetAcceptCallback(base::BindOnce(&ExternalProtocolDialog::OnDialogAccepted,
@@ -98,16 +100,18 @@ ExternalProtocolDialog::ExternalProtocolDialog(
   SetCloseCallback(base::BindOnce(
       &ExternalProtocolHandler::RecordHandleStateMetrics,
       false /* checkbox_selected */, ExternalProtocolHandler::BLOCK));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
-  message_box_view_ =
-      new views::MessageBoxView(GetMessageTextForOrigin(initiating_origin_));
+  message_box_view_ = AddChildView(std::make_unique<views::MessageBoxView>(
+      GetMessageTextForOrigin(initiating_origin_)));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText));
+  gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText);
+  dialog_insets.set_left(0);
+  set_margins(dialog_insets);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -136,11 +140,6 @@ ExternalProtocolDialog::ExternalProtocolDialog(
 }
 
 ExternalProtocolDialog::~ExternalProtocolDialog() = default;
-
-gfx::Size ExternalProtocolDialog::CalculatePreferredSize() const {
-  constexpr int kDialogContentWidth = 400;
-  return gfx::Size(kDialogContentWidth, GetHeightForWidth(kDialogContentWidth));
-}
 
 bool ExternalProtocolDialog::ShouldShowCloseButton() const {
   return false;
@@ -175,18 +174,6 @@ void ExternalProtocolDialog::OnDialogAccepted() {
 
   ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
       url_, web_contents_.get(), initiator_document_);
-}
-
-views::View* ExternalProtocolDialog::GetContentsView() {
-  return message_box_view_;
-}
-
-views::Widget* ExternalProtocolDialog::GetWidget() {
-  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
-}
-
-const views::Widget* ExternalProtocolDialog::GetWidget() const {
-  return message_box_view_ ? message_box_view_->GetWidget() : nullptr;
 }
 
 void ExternalProtocolDialog::SetRememberSelectionCheckboxCheckedForTesting(

@@ -10,6 +10,7 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -28,7 +29,9 @@ public class ChildAccountService {
     @VisibleForTesting
     @CalledByNative
     static void reauthenticateChildAccount(
-            WindowAndroid windowAndroid, String accountName, final long nativeOnFailureCallback) {
+            WindowAndroid windowAndroid,
+            @JniType("std::string") String accountName,
+            final long nativeOnFailureCallback) {
         ThreadUtils.assertOnUiThread();
         final Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {

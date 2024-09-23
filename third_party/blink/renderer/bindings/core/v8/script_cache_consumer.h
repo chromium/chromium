@@ -56,6 +56,15 @@ class CORE_EXPORT ScriptCacheConsumer final
                       const String& script_url_string,
                       uint64_t script_resource_identifier);
 
+  // Construct a cache consumer for the given CachedMetadata, the completed
+  // consume task, corresponding to the given URL and resource ID.
+  ScriptCacheConsumer(v8::Isolate* isolate,
+                      scoped_refptr<CachedMetadata> cached_metadata,
+                      std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+                          completed_consume_task,
+                      const String& script_url_string,
+                      uint64_t script_resource_identifier);
+
   // Notify this cache consumer that the corresponding resource has completed.
   //
   // If the resource calls this, it expects this consumer to call

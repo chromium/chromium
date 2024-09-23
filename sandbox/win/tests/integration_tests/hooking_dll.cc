@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdio.h>
 #include <windows.h>
+
+#include <stdio.h>
 
 #define BUILDING_DLL
 #include "hooking_dll.h"

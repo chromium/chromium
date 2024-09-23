@@ -6,18 +6,17 @@
 #define CC_TREES_LAYER_TREE_HOST_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/time/time.h"
+#include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-
-namespace gfx {
-struct PresentationFeedback;
-}
 
 namespace viz {
 struct BeginFrameArgs;
@@ -26,7 +25,6 @@ struct BeginFrameArgs;
 namespace cc {
 struct BeginMainFrameMetrics;
 struct CommitState;
-struct WebVitalMetrics;
 
 struct ApplyViewportChangesArgs {
   // Scroll offset delta of the inner (visual) viewport.
@@ -90,7 +88,7 @@ struct PaintBenchmarkResult {
 // maintains a pipeline of frames, it can be ambiguous which frame the callback
 // is associated with. We rely on `source_frame_number` to tie the callback to
 // its associated frame. See LayerTreeHost::SourceFrameNumber for details.
-class LayerTreeHostClient {
+class CC_EXPORT LayerTreeHostClient {
  public:
   virtual void WillBeginMainFrame() = 0;
   // Marks finishing compositing-related tasks on the main thread. In threaded
@@ -178,11 +176,10 @@ class LayerTreeHostClient {
                          base::TimeTicks commit_start_time,
                          base::TimeTicks commit_finish_time) = 0;
   virtual void DidCommitAndDrawFrame(int source_frame_number) = 0;
-  virtual void DidReceiveCompositorFrameAck() = 0;
   virtual void DidCompletePageScaleAnimation(int source_frame_number) = 0;
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) = 0;
+      const viz::FrameTimingDetails& frame_timing_details) = 0;
   // Mark the frame start and end time for UMA and UKM metrics that require
   // the time from the start of BeginMainFrame to the Commit, or early out.
   virtual void RecordStartOfFrameMetrics() = 0;
@@ -203,11 +200,21 @@ class LayerTreeHostClient {
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() = 0;
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
 
-  // Should only be implemented by Blink.
-  virtual std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() = 0;
-
   virtual void RunPaintBenchmark(int repeat_count,
                                  PaintBenchmarkResult& result) {}
+
+  // Return a string that is the paused debugger message for the heads-up
+  // display overlay.
+  virtual std::string GetPausedDebuggerLocalizedMessage();
+
+  // This is an inaccurate signal that has been used to represent that content
+  // was displayed. This actually maps to the removal of backpressure by the
+  // GPU. This can be signalled when the GPU attempts to Draw; when a submitted
+  // frame, that has not drawn, is being replaced by a newer one; or merged with
+  // future OnBeginFrames.
+  //
+  // To determine when presentation occurred see `DidPresentCompositorFrame`.
+  virtual void DidReceiveCompositorFrameAckDeprecatedForCompositor() {}
 
  protected:
   virtual ~LayerTreeHostClient() = default;

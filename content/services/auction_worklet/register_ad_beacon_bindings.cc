@@ -9,11 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "url/gurl.h"
@@ -26,8 +28,9 @@
 
 namespace auction_worklet {
 
-RegisterAdBeaconBindings::RegisterAdBeaconBindings(AuctionV8Helper* v8_helper)
-    : v8_helper_(v8_helper) {}
+RegisterAdBeaconBindings::RegisterAdBeaconBindings(AuctionV8Helper* v8_helper,
+                                                   AuctionV8Logger* v8_logger)
+    : v8_helper_(v8_helper), v8_logger_(v8_logger) {}
 
 RegisterAdBeaconBindings::~RegisterAdBeaconBindings() = default;
 
@@ -94,6 +97,7 @@ void RegisterAdBeaconBindings::RegisterAdBeacon(
           v8_helper->CreateUtf8String(error_msg).ToLocalChecked()));
       return;
     }
+
     GURL url(url_string);
     if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
       std::string error_msg =
@@ -108,6 +112,19 @@ void RegisterAdBeaconBindings::RegisterAdBeacon(
           v8_helper->CreateUtf8String(error_msg).ToLocalChecked()));
       return;
     }
+
+    // There's no spec for max URL length, so don't throw in that case. Instead,
+    // ignore the report URL empty and display a warning.
+    if (url.spec().size() > url::kMaxURLChars) {
+      // Don't print out full URL in this case, since it will fill the entire
+      // console.
+      bindings->v8_logger_->LogConsoleWarning(
+          base::StringPrintf("registerAdBeacon(): passed URL of length %" PRIuS
+                             " but accepts URLs of at most length %" PRIuS ".",
+                             url.spec().size(), url::kMaxURLChars));
+      continue;
+    }
+
     ad_beacon_list.emplace_back(std::move(key_string), std::move(url));
   }
   base::flat_map<std::string, GURL> ad_beacon_map(std::move(ad_beacon_list));

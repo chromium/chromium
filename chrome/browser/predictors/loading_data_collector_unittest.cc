@@ -22,6 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
+using testing::ElementsAre;
+using testing::Eq;
+using testing::Key;
 using testing::StrictMock;
 
 namespace predictors {
@@ -37,7 +41,9 @@ NavigationId GetNextId() {
 
 class LoadingDataCollectorTest : public testing::Test {
  public:
-  LoadingDataCollectorTest() : profile_(std::make_unique<TestingProfile>()) {
+  LoadingDataCollectorTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        profile_(std::make_unique<TestingProfile>()) {
     LoadingPredictorConfig config;
     PopulateTestConfig(&config);
     mock_predictor_ =
@@ -61,133 +67,169 @@ class LoadingDataCollectorTest : public testing::Test {
 };
 
 TEST_F(LoadingDataCollectorTest, HandledResourceTypes) {
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kStyle, "bogus/mime-type"));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kStyle, ""));
-  EXPECT_FALSE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_FALSE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kWorker, "text/css"));
-  EXPECT_FALSE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_FALSE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kWorker, ""));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, "text/css"));
-  EXPECT_FALSE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_FALSE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, "bogus/mime-type"));
-  EXPECT_FALSE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_FALSE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, ""));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, "application/font-woff"));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, "font/woff2"));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kEmpty, "application/javascript"));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kDocument, "text/html"));
-  EXPECT_TRUE(LoadingDataCollector::IsHandledResourceType(
+  EXPECT_TRUE(PageRequestSummary::IsHandledResourceType(
       network::mojom::RequestDestination::kDocument, ""));
 }
 
 TEST_F(LoadingDataCollectorTest, ShouldRecordMainFrameLoad) {
+  using Result = PageRequestSummary::ShouldRecordResourceLoadResult;
+  collector_->RecordStartNavigation(GetNextId(), ukm::SourceId(),
+                                    GURL("https://irrelevant.com"),
+                                    base::TimeTicks::Now());
+  auto* page_request_summary =
+      collector_->inflight_navigations_.begin()->second.get();
+
   auto http_request = CreateResourceLoadInfo("http://www.google.com");
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*http_request),
+            Result::kYes);
 
   auto https_request = CreateResourceLoadInfo("https://www.google.com");
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*https_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*https_request),
+            Result::kYes);
 
   auto file_request = CreateResourceLoadInfo("file://www.google.com");
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*file_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*file_request),
+            Result::kNo);
 
   auto https_request_with_port =
       CreateResourceLoadInfo("https://www.google.com:666");
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*https_request_with_port));
+  EXPECT_EQ(
+      page_request_summary->ShouldRecordResourceLoad(*https_request_with_port),
+      Result::kNo);
 }
 
-// Resource loaded after FCP event is recorded by default.
-TEST_F(LoadingDataCollectorTest, ShouldRecordSubresourceLoadAfterFCP) {
+TEST_F(LoadingDataCollectorTest, ShouldRecordSubresourceLoadAfterLoadComplete) {
   auto navigation_id = GetNextId();
   GURL url("http://www.google.com");
 
   collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
                                     base::TimeTicks::Now());
-  collector_->RecordFirstContentfulPaint(navigation_id, base::TimeTicks::Now());
+  auto* page_request_summary =
+      collector_->inflight_navigations_.begin()->second.get();
 
-  // Protocol.
+  EXPECT_CALL(*mock_predictor_, RecordPageRequestSummaryProxy(_));
+  collector_->RecordMainFrameLoadComplete(navigation_id);
+
   auto http_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_image_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*http_image_request),
+            PageRequestSummary::ShouldRecordResourceLoadResult::kLowPriority);
 }
 
 TEST_F(LoadingDataCollectorTest, ShouldRecordSubresourceLoad) {
+  using Result = PageRequestSummary::ShouldRecordResourceLoadResult;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kLoadingOnlyLearnHighPriorityResources);
+
+  collector_->RecordStartNavigation(GetNextId(), ukm::SourceId(),
+                                    GURL("https://irrelevant.com"),
+                                    base::TimeTicks::Now());
+  auto* page_request_summary =
+      collector_->inflight_navigations_.begin()->second.get();
 
   // Protocol.
   auto low_priority_http_image_request = CreateLowPriorityResourceLoadInfo(
       "http://www.google.com/cat.png",
       network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(*low_priority_http_image_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(
+                *low_priority_http_image_request),
+            Result::kLowPriority);
 
   auto http_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*http_image_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*http_image_request),
+            Result::kYes);
 
   auto https_image_request =
       CreateResourceLoadInfo("https://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*https_image_request));
+  EXPECT_EQ(
+      page_request_summary->ShouldRecordResourceLoad(*https_image_request),
+      Result::kYes);
 
   auto https_image_request_with_port =
       CreateResourceLoadInfo("https://www.google.com:666/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(*https_image_request_with_port));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(
+                *https_image_request_with_port),
+            Result::kNo);
 
   auto file_image_request =
       CreateResourceLoadInfo("file://www.google.com/cat.png",
                              network::mojom::RequestDestination::kImage);
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*file_image_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*file_image_request),
+            Result::kNo);
 
   // Request destination.
   auto sub_frame_request =
       CreateResourceLoadInfo("http://www.google.com/frame.html",
                              network::mojom::RequestDestination::kIframe);
-  EXPECT_FALSE(collector_->ShouldRecordResourceLoad(*sub_frame_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*sub_frame_request),
+            Result::kNo);
 
   auto font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kFont);
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*font_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(*font_request),
+            Result::kYes);
 
   // From MIME Type.
   auto prefetch_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_image_request->mime_type = "image/png";
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*prefetch_image_request));
+  EXPECT_EQ(
+      page_request_summary->ShouldRecordResourceLoad(*prefetch_image_request),
+      Result::kYes);
 
   auto prefetch_unknown_image_request =
       CreateResourceLoadInfo("http://www.google.com/cat.png",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_unknown_image_request->mime_type = "image/my-wonderful-format";
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(*prefetch_unknown_image_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(
+                *prefetch_unknown_image_request),
+            Result::kNo);
 
   auto prefetch_font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_font_request->mime_type = "font/woff";
-  EXPECT_TRUE(collector_->ShouldRecordResourceLoad(*prefetch_font_request));
+  EXPECT_EQ(
+      page_request_summary->ShouldRecordResourceLoad(*prefetch_font_request),
+      Result::kYes);
 
   auto prefetch_unknown_font_request =
       CreateResourceLoadInfo("http://www.google.com/comic-sans-ms.woff",
                              network::mojom::RequestDestination::kEmpty);
   prefetch_unknown_font_request->mime_type = "font/woff-woff";
-  EXPECT_FALSE(
-      collector_->ShouldRecordResourceLoad(*prefetch_unknown_font_request));
+  EXPECT_EQ(page_request_summary->ShouldRecordResourceLoad(
+                *prefetch_unknown_font_request),
+            Result::kNo);
 }
 
 // Single navigation that will be recorded. Will check for duplicate
@@ -198,7 +240,7 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
 
   collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
                                     base::TimeTicks::Now());
-  collector_->RecordFinishNavigation(navigation_id, url, url,
+  collector_->RecordFinishNavigation(navigation_id, url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
   auto* page_request_summary =
@@ -283,10 +325,38 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
                                           "http://www.google.com", resources);
   EXPECT_FALSE(summary.origins.empty());
 
-  EXPECT_CALL(*mock_predictor_,
-              RecordPageRequestSummaryProxy(testing::Pointee(summary)));
+  EXPECT_CALL(*mock_predictor_, RecordPageRequestSummaryProxy(summary));
 
-  collector_->RecordMainFrameLoadComplete(navigation_id, std::nullopt);
+  collector_->RecordMainFrameLoadComplete(navigation_id);
+
+  resources.clear();
+  resources.push_back(
+      CreateResourceLoadInfo("http://static.google.com/style-3.css",
+                             network::mojom::RequestDestination::kStyle));
+  collector_->RecordResourceLoadComplete(navigation_id, *resources.back());
+  resources.push_back(CreateResourceLoadInfoWithRedirects(
+      {"http://reader.google.com/style2.css",
+       "http://dev.null.google.com/style2.css"},
+      network::mojom::RequestDestination::kStyle));
+  collector_->RecordResourceLoadComplete(navigation_id, *resources.back());
+
+  // Prefetches/preconnects seen after the load event should be ignored and not
+  // recorded.
+  collector_->RecordPrefetchInitiated(navigation_id,
+                                      GURL("http://google.com/style3.css"));
+  EXPECT_FALSE(base::Contains(page_request_summary->prefetch_urls,
+                              GURL("http://google.com/style3.css")));
+  collector_->RecordPreconnectInitiated(
+      navigation_id, GURL("https://external.resource.com/style.css"));
+  EXPECT_FALSE(base::Contains(
+      page_request_summary->preconnect_origins,
+      url::Origin::Create(GURL("https://external.resource.com/style.css"))));
+
+  for (const auto& resource_load_info : resources) {
+    summary.UpdateOrAddResource(*resource_load_info);
+  }
+
+  EXPECT_EQ(*page_request_summary, summary);
 }
 
 TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
@@ -302,7 +372,7 @@ TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
        "https://facebook.com/google"});
 
   GURL new_url("https://facebook.com/google");
-  collector_->RecordFinishNavigation(navigation_id, url, new_url,
+  collector_->RecordFinishNavigation(navigation_id, new_url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
   EXPECT_EQ(url, collector_->inflight_navigations_[navigation_id]->initial_url);
@@ -312,10 +382,10 @@ TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
   resources.push_back(std::move(main_frame));
   EXPECT_CALL(
       *mock_predictor_,
-      RecordPageRequestSummaryProxy(testing::Pointee(CreatePageRequestSummary(
-          "https://facebook.com/google", "http://fb.com/google", resources))));
+      RecordPageRequestSummaryProxy(CreatePageRequestSummary(
+          "https://facebook.com/google", "http://fb.com/google", resources)));
 
-  collector_->RecordMainFrameLoadComplete(navigation_id, std::nullopt);
+  collector_->RecordMainFrameLoadComplete(navigation_id);
 }
 
 // Tests that RecordNavigationFinish without the corresponding
@@ -329,7 +399,7 @@ TEST_F(LoadingDataCollectorTest, RecordStartNavigationMissing) {
                                     base::TimeTicks::Now());
 
   // collector_->RecordStartNavigtion(navigation_id) is missing.
-  collector_->RecordFinishNavigation(navigation_id, url, new_url,
+  collector_->RecordFinishNavigation(navigation_id, new_url,
                                      /* is_error_page */ false);
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
   EXPECT_EQ(url, collector_->inflight_navigations_[navigation_id]->initial_url);
@@ -342,12 +412,17 @@ TEST_F(LoadingDataCollectorTest, RecordFailedNavigation) {
   collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
                                     base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
-  collector_->RecordFinishNavigation(navigation_id, url, url,
+  collector_->RecordFinishNavigation(navigation_id, url,
                                      /* is_error_page */ true);
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 }
 
 TEST_F(LoadingDataCollectorTest, ManyNavigations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kLoadingPredictorTableConfig,
+      {{"max_navigation_lifetime_seconds", "60"}});
+
   auto navigation_id1 = GetNextId();
   auto navigation_id2 = GetNextId();
   auto navigation_id3 = GetNextId();
@@ -358,37 +433,36 @@ TEST_F(LoadingDataCollectorTest, ManyNavigations) {
   collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url1,
                                     base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
   collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url2,
                                     base::TimeTicks::Now());
+
   EXPECT_EQ(2U, collector_->inflight_navigations_.size());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
   collector_->RecordStartNavigation(navigation_id3, ukm::SourceId(), url3,
                                     base::TimeTicks::Now());
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
-  // Insert another with same navigation id. It should replace.
-  GURL url4("http://www.nike.com");
-  collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url4,
+  task_environment_.FastForwardBy(base::Seconds(51));
+  EXPECT_THAT(collector_->inflight_navigations_,
+              ElementsAre(Key(navigation_id1), Key(navigation_id2),
+                          Key(navigation_id3)));
+
+  collector_->RecordFinishNavigation(navigation_id1, url1,
+                                     /*is_error_page=*/false);
+
+  GURL url4("http://www.google.com");
+  auto navigation_id4 = GetNextId();
+  // Adding this should cause the second navigation to be cleared. The first
+  // navigation is kept because it has committed. #3 and #4 have not expired
+  // yet.
+  collector_->RecordStartNavigation(navigation_id4, ukm::SourceId(), url4,
                                     base::TimeTicks::Now());
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  GURL url5("http://www.google.com");
-  // Change this creation time so that it will go away on the next insert.
-  collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url5,
-                                    base::TimeTicks::Now() - base::Days(1));
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  auto navigation_id6 = GetNextId();
-  GURL url6("http://www.shoes.com");
-  collector_->RecordStartNavigation(navigation_id6, ukm::SourceId(), url6,
-                                    base::TimeTicks::Now());
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id1) !=
-              collector_->inflight_navigations_.end());
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id3) !=
-              collector_->inflight_navigations_.end());
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id6) !=
-              collector_->inflight_navigations_.end());
+  EXPECT_THAT(collector_->inflight_navigations_,
+              ElementsAre(Key(navigation_id1), Key(navigation_id3),
+                          Key(navigation_id4)));
 }
 
 TEST_F(LoadingDataCollectorTest, RecordResourceLoadComplete) {
@@ -434,6 +508,33 @@ TEST_F(LoadingDataCollectorTest, RecordPrefetchInitiatedNoInflightNavigation) {
   auto navigation_id = GetNextId();
   collector_->RecordPrefetchInitiated(navigation_id,
                                       GURL("http://google.com/style1.css"));
+  EXPECT_TRUE(collector_->inflight_navigations_.empty());
+}
+
+TEST_F(LoadingDataCollectorTest, RecordPageDestroyed) {
+  auto navigation_id = GetNextId();
+  const GURL& url = GURL("https://google.com");
+
+  collector_->RecordStartNavigation(navigation_id, ukm::SourceId(), url,
+                                    base::TimeTicks::Now());
+  EXPECT_FALSE(collector_->inflight_navigations_.empty());
+
+  collector_->RecordFinishNavigation(navigation_id, url,
+                                     /*is_error_page=*/false);
+  EXPECT_TRUE(collector_->inflight_navigations_[navigation_id]
+                  ->navigation_committed.has_value());
+
+  EXPECT_CALL(*mock_predictor_,
+              RecordPageRequestSummaryProxy(CreatePageRequestSummary(
+                  "https://google.com", "https://google.com", {})));
+  collector_->RecordMainFrameLoadComplete(navigation_id);
+
+  // PageRequestSummary for page should still be kept alive after loading
+  // finishes.
+  EXPECT_FALSE(collector_->inflight_navigations_.empty());
+
+  collector_->RecordPageDestroyed(navigation_id, std::nullopt);
+  // PageRequestSummary should be cleared up after the page is destroyed.
   EXPECT_TRUE(collector_->inflight_navigations_.empty());
 }
 

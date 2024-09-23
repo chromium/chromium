@@ -29,12 +29,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 
 namespace blink {
@@ -103,6 +103,8 @@ class CORE_EXPORT HTMLInputElement
   // stepUp()/stepDown() for user-interaction.
   bool IsSteppable() const;
 
+  // Returns true if the type is button, reset, submit, or image.
+  bool IsButton() const;
   // Returns true if the type is button, reset, or submit.
   bool IsTextButton() const;
   // Returns true if the type is email, number, password, search, tel, text,
@@ -272,8 +274,13 @@ class CORE_EXPORT HTMLInputElement
 
   bool WillRespondToMouseClickEvents() override;
 
-  HTMLElement* list() const;
+  // Returns the DataList element associated via the list attribute, if any.
+  // Resolves the reference target if necessary. This element may be inside a
+  // shadow root, and should not be returned to JavaScript.
   HTMLDataListElement* DataList() const;
+  // For JavaScript binding, return the DataList element without resolving the
+  // reference target, to avoid exposing shadow root content to JavaScript.
+  HTMLElement* listForBinding() const;
   bool HasValidDataListOptions() const;
   void ListAttributeTargetChanged();
   // Associated <datalist> options which match to the current INPUT value.
@@ -337,12 +344,6 @@ class CORE_EXPORT HTMLInputElement
   bool ShouldDrawCapsLockIndicator() const;
   void SetShouldRevealPassword(bool value);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
-  void SetShouldShowStrongPasswordLabel(bool value) {
-    should_show_strong_password_label_ = value;
-  }
-  bool ShouldShowStrongPasswordLabel() const {
-    return should_show_strong_password_label_;
-  }
 #if BUILDFLAG(IS_ANDROID)
   bool IsLastInputElementInForm();
   void DispatchSimulatedEnter();
@@ -385,11 +386,15 @@ class CORE_EXPORT HTMLInputElement
 
   ShadowRoot* EnsureShadowSubtree();
 
-  bool HandleInvokeInternal(HTMLElement& invoker,
-                            AtomicString& action) override;
+  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool HandleCommandInternal(HTMLElement& invoker,
+                             CommandEventType command) override;
+
+  void SetFocused(bool is_focused, mojom::blink::FocusType) override;
 
  protected:
   void DefaultEventHandler(Event&) override;
+  bool IsInnerEditorValueEmpty() const final;
 
  private:
   enum AutoCompleteSetting { kUninitialized, kOn, kOff };
@@ -426,6 +431,7 @@ class CORE_EXPORT HTMLInputElement
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) final;
 
+  void DidRecalcStyle(const StyleRecalcChange) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const final;
   void CollectStyleForPresentationAttribute(const QualifiedName&,
@@ -456,8 +462,8 @@ class CORE_EXPORT HTMLInputElement
   bool TooLong(const String&, NeedsToCheckDirtyFlag) const;
   bool TooShort(const String&, NeedsToCheckDirtyFlag) const;
 
-  TextControlInnerEditorElement* EnsureInnerEditorElement() const final;
-  void UpdatePlaceholderText() final;
+  void CreateInnerEditorElementIfNecessary() const final;
+  HTMLElement* UpdatePlaceholderText() final;
   void HandleBlurEvent() final;
   void DispatchFocusInEvent(const AtomicString& event_type,
                             Element* old_focused_element,
@@ -480,8 +486,6 @@ class CORE_EXPORT HTMLInputElement
 
   void AddToRadioButtonGroup();
   void RemoveFromRadioButtonGroup();
-  const ComputedStyle* CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
   void AdjustStyle(ComputedStyleBuilder&) override;
 
   void MaybeReportPiiMetrics();
@@ -507,7 +511,7 @@ class CORE_EXPORT HTMLInputElement
   unsigned needs_to_update_view_value_ : 1;
   unsigned is_placeholder_visible_ : 1;
   unsigned has_been_password_field_ : 1;
-  unsigned should_show_strong_password_label_ : 1;
+  unsigned scheduled_create_shadow_tree_ : 1;
   Member<InputType> input_type_;
   Member<InputTypeView> input_type_view_;
   // The ImageLoader must be owned by this element because the loader code

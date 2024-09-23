@@ -15,9 +15,8 @@
 
 enum class Feature {
   NS = 0,
-  NC = 1,
-  NP = 2,
-  FP = 3,
+  NEARBY_INFRA = 1,
+  FP = 2,
 };
 
 // Contains logs specific to Nearby Sharing. This buffer has a maximum size

@@ -47,7 +47,7 @@ FaviconServiceImpl::FaviconServiceImpl(
     history::HistoryService* history_service)
     : favicon_client_(std::move(favicon_client)),
       history_service_(history_service) {
-  // TODO(https://crbug.com/1024959): convert to DCHECK once crash is resolved.
+  // TODO(crbug.com/40658964): convert to DCHECK once crash is resolved.
   CHECK(history_service_);
 }
 
@@ -197,7 +197,7 @@ FaviconServiceImpl::GetLargestRawFaviconForID(
     favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) {
   TRACE_EVENT0("browser", "FaviconServiceImpl::GetLargestRawFaviconForID");
-  // Use 0 as |desired_size| to get the largest bitmap for |favicon_id| without
+  // Use 0 as `desired_size` to get the largest bitmap for `favicon_id` without
   // any resizing.
   int desired_size = 0;
   favicon_base::FaviconResultsCallback callback_runner =

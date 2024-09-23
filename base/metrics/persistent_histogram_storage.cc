@@ -4,6 +4,9 @@
 
 #include "base/metrics/persistent_histogram_storage.h"
 
+#include <cinttypes>
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
@@ -62,7 +65,7 @@ void* AllocateLocalMemory(size_t size) {
 namespace base {
 
 PersistentHistogramStorage::PersistentHistogramStorage(
-    StringPiece allocator_name,
+    std::string_view allocator_name,
     StorageDirManagement storage_dir_management)
     : storage_dir_management_(storage_dir_management) {
   DCHECK(!allocator_name.empty());
@@ -127,24 +130,18 @@ PersistentHistogramStorage::~PersistentHistogramStorage() {
       break;
   }
 
-  // Save data using the current time as the filename. The actual filename
-  // doesn't matter (so long as it ends with the correct extension) but this
-  // works as well as anything.
-  //
-  // NOTE: Cannot use `UnlocalizedTimeFormatWithPattern()` here since `//base`
-  // cannot depend on `//base:i18n`.
-  Time::Exploded exploded;
-  Time::Now().LocalExplode(&exploded);
+  // Save data using the process ID and microseconds since Windows Epoch for the
+  // filename with the correct extension. Using this format prevents collisions
+  // between multiple processes using the same provider name.
   const FilePath file_path =
       storage_dir
-          .AppendASCII(StringPrintf("%04d%02d%02d%02d%02d%02d", exploded.year,
-                                    exploded.month, exploded.day_of_month,
-                                    exploded.hour, exploded.minute,
-                                    exploded.second))
+          .AppendASCII(StringPrintf(
+              "%" CrPRIdPid "_%" PRId64, GetCurrentProcId(),
+              Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()))
           .AddExtension(PersistentMemoryAllocator::kFileExtension);
 
-  StringPiece contents(static_cast<const char*>(allocator->data()),
-                       allocator->used());
+  std::string_view contents(static_cast<const char*>(allocator->data()),
+                            allocator->used());
   if (!ImportantFileWriter::WriteFileAtomically(file_path, contents)) {
     LOG(ERROR) << "Persistent histograms fail to write to file: "
                << file_path.value();

@@ -24,7 +24,7 @@ void FakeUserEventService::RecordUserEvent(
   recorded_user_events_.push_back(specifics);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeUserEventService::GetControllerDelegate() {
   return fake_controller_delegate_.GetWeakPtr();
 }

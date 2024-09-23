@@ -75,8 +75,9 @@ void PasswordManagerClientHelper::OnCredentialsChosen(
   std::move(callback).Run(form);
   // If a site gets back a credential some navigations are likely to occur. They
   // shouldn't trigger the autofill password manager.
-  if (form)
+  if (form) {
     delegate_->GetPasswordManager()->DropFormManagers();
+  }
   if (form && one_local_credential) {
     if (ShouldPromptToEnableAutoSignIn()) {
       delegate_->PromptUserToEnableAutosignin();
@@ -108,8 +109,9 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PasswordFeatureManager* feature_manager =
       delegate_->GetPasswordFeatureManager();
-  if (!feature_manager->ShouldShowAccountStorageBubbleUi())
+  if (!feature_manager->ShouldShowAccountStorageBubbleUi()) {
     return false;
+  }
   if (!feature_manager->IsOptedInForAccountStorage()) {
     return false;
   }
@@ -117,10 +119,12 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
       PasswordForm::Store::kProfileStore) {
     return false;
   }
-  if (!submitted_manager.IsMovableToAccountStore())
+  if (!submitted_manager.IsMovableToAccountStore()) {
     return false;
-  if (delegate_->IsOffTheRecord())
+  }
+  if (delegate_->IsOffTheRecord()) {
     return false;
+  }
   // It's not useful to store the password for the primary account inside
   // that same account.
   if (IsPrimaryAccountSignIn(

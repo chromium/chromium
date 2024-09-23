@@ -33,7 +33,7 @@ class TokenManagedProfileCreationDelegate
 
  private:
   const std::string enrollment_token_;
-  std::unique_ptr<signin_util::CookiesMover> cookies_mover_ = nullptr;
+  std::unique_ptr<signin_util::CookiesMover> cookies_mover_;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_TOKEN_MANAGED_PROFILE_CREATION_DELEGATE_H_

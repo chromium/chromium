@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/video_transformation.h"
 
 #include <math.h>
@@ -9,6 +14,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace media {
@@ -32,7 +38,7 @@ std::string VideoRotationToString(VideoRotation rotation) {
     case VIDEO_ROTATION_270:
       return "270°";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator==(const struct VideoTransformation& first,
@@ -69,10 +75,9 @@ VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
     return;
   }
 
-  double angle =
-      acos(FixedToFloatingPoint<16>(matrix64[0])) * 180 / base::kPiDouble;
+  double angle = base::RadToDeg(acos(FixedToFloatingPoint<16>(matrix64[0])));
   double check_angle =
-      asin(FixedToFloatingPoint<16>(matrix64[1])) * 180 / base::kPiDouble;
+      base::RadToDeg(asin(FixedToFloatingPoint<16>(matrix64[1])));
   double offset = abs(abs(angle) - abs(check_angle));
   while (offset >= 180.0)
     offset -= 180.0;

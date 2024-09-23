@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "The local files migration dialog is ash-chrome only")
+
+mojom("mojo_bindings") {
+  sources = [ "local_files_migration.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}
+
+static_library("skyvault") {
+  sources = [
+    "local_files_migration_dialog.cc",
+    "local_files_migration_dialog.h",
+    "local_files_migration_page_handler.cc",
+    "local_files_migration_page_handler.h",
+    "local_files_migration_ui.cc",
+    "local_files_migration_ui.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/skyvault:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//content/public/browser",
+    "//ui/base:types",
+    "//ui/gfx",
+    "//ui/web_dialogs",
+    "//ui/webui",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/skyvault" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "local_files_migration_dialog_browsertest.cc" ]
+
+  deps = [
+    ":skyvault",
+    "//base/test:test_support",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}

@@ -159,7 +159,6 @@ MojoResult MessagePipeDispatcher::WriteMessage(
     }
 
     NOTREACHED();
-    return MOJO_RESULT_UNKNOWN;
   }
 
   // We may need to update anyone watching our signals in case we just exceeded
@@ -182,7 +181,6 @@ MojoResult MessagePipeDispatcher::ReadMessage(
       return MOJO_RESULT_INVALID_ARGUMENT;
 
     NOTREACHED();
-    return MOJO_RESULT_UNKNOWN;
   }
 
   if (!*message) {

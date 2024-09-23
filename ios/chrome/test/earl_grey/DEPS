@@ -2,6 +2,7 @@ specific_include_rules = {
   # To compile base::Feature under EG2
   "chrome_earl_grey_app_interface\.mm":[
    "+components/autofill/core/common/autofill_features.h",
+   "+components/safe_browsing/core/common/features.h",
    "+components/search_engines/template_url_service.h",
    "+components/password_manager/core/common/password_manager_features.h",
    "+components/payments/core/features.h",
@@ -16,6 +17,7 @@ specific_include_rules = {
 
   "chrome_earl_grey\.h": [
     "+third_party/metrics_proto",
+    "+ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
   ],
 
   "chrome_matchers_app_interface\.mm":[
@@ -33,14 +35,21 @@ specific_include_rules = {
     "+ios/third_party/edo",
   ],
 
+  "chrome_earl_grey\.mm": [
+    "+ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h",
+  ],
+
   "chrome_test_case_app_interface\.mm":[
    "+components/feature_engagement/public/feature_constants.h",
    "+components/feature_engagement/public/tracker.h",
   ],
 
   "eg_tests_hook\.mm": [
+   "+components/saved_tab_groups/fake_tab_group_sync_service.h",
+   "+components/saved_tab_groups/tab_group_sync_coordinator_impl.h",
    "+components/signin/internal/identity_manager",
    "+components/password_manager/ios",
    "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
+   "+components/plus_addresses/fake_plus_address_service.h"
   ],
 }

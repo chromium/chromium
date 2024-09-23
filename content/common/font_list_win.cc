@@ -4,8 +4,9 @@
 
 #include "content/common/font_list.h"
 
-#include <dwrite.h>
 #include <windows.h>
+
+#include <dwrite.h>
 #include <wrl/client.h>
 
 #include <string>

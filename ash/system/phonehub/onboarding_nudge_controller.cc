@@ -78,14 +78,15 @@ void OnboardingNudgeController::ShowNudgeIfNeeded() {
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
                                   nudge_text, anchored_view_};
   nudge_data.anchored_to_shelf = true;
-  nudge_data.hover_state_change_callback =
+  nudge_data.hover_changed_callback =
       base::BindRepeating(&OnboardingNudgeController::OnNudgeHoverStateChanged,
-                          base::Unretained(this));
-  nudge_data.click_callback = base::BindRepeating(
-      &OnboardingNudgeController::OnNudgeClicked, base::Unretained(this));
+                          weak_ptr_factory_.GetWeakPtr());
+  nudge_data.click_callback =
+      base::BindRepeating(&OnboardingNudgeController::OnNudgeClicked,
+                          weak_ptr_factory_.GetWeakPtr());
   nudge_data.dismiss_callback = stop_animation_callback_.Then(
       base::BindRepeating(&OnboardingNudgeController::OnNudgeDismissed,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
   if (AnchoredNudgeManager::Get()->IsNudgeShown(kPhoneHubNudgeId)) {

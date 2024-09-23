@@ -84,7 +84,7 @@ AndroidActivityType ToProtobufActivityType(int32_t type) {
     case 4:
       return AndroidActivityType::WEB_APK;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AndroidActivityType::TABBED;
   }
 }

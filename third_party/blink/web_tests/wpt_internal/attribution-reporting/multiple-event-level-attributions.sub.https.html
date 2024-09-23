@@ -10,11 +10,11 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
-      source_event_id: generateSourceEventId(),
-      debug_reporting: true,
-      destination: 'https://{{host}}',
-    };
-  await registerAttributionSrc({
+    source_event_id: generateSourceEventId(),
+    debug_reporting: true,
+    destination: 'https://{{host}}',
+  };
+  registerAttributionSrc({
     cookie: attributionDebugCookie,
     source,
     method: 'a',
@@ -48,7 +48,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(reports[1].trigger_data, '4');
   assert_equals(reports[2].trigger_data, '5');
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         trigger_data: '7'

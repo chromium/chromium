@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base {
@@ -59,7 +59,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
   bool is_running_in_vm() const { return is_running_in_vm_; }
 
   // Armv8.5-A extensions for control flow and memory safety.
-#if defined(ARCH_CPU_ARM_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY)
   bool has_mte() const { return has_mte_; }
   bool has_bti() const { return has_bti_; }
 #else
@@ -67,7 +67,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
   constexpr bool has_bti() const { return false; }
 #endif
 
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
   // Memory protection key support for user-mode pages
   bool has_pku() const { return has_pku_; }
 #else
@@ -93,11 +93,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
   bool has_fma3_ = false;
   bool has_avx2_ = false;
   bool has_aesni_ = false;
-#if defined(ARCH_CPU_ARM_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY)
   bool has_mte_ = false;  // Armv8.5-A MTE (Memory Taggging Extension)
   bool has_bti_ = false;  // Armv8.5-A BTI (Branch Target Identification)
 #endif
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
   bool has_pku_ = false;
 #endif
   bool has_non_stop_time_stamp_counter_ = false;
@@ -106,4 +106,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_

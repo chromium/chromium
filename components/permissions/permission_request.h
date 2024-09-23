@@ -151,6 +151,9 @@ class PermissionRequest {
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;
 
+  // Returns the position of the element that caused the prompt to open.
+  std::optional<gfx::Rect> GetAnchorElementPosition() const;
+
   // Returns true if the request has two origins and should use the two origin
   // prompt. Returns false otherwise.
   bool ShouldUseTwoOriginPrompt() const;
@@ -183,8 +186,10 @@ class PermissionRequest {
   // request types.
   PermissionRequestGestureType GetGestureType() const;
 
-  const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds() const;
-  const std::vector<std::string>& GetRequestedVideoCaptureDeviceIds() const;
+  virtual const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()
+      const;
+  virtual const std::vector<std::string>& GetRequestedVideoCaptureDeviceIds()
+      const;
 
   // Used on Android to determine what Android OS permissions are needed for
   // this permission request.

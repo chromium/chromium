@@ -28,7 +28,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -58,7 +58,7 @@ public class ShareIntentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShareHelper.setLastShareComponentName(
-                            Profile.getLastUsedRegularProfile(), target);
+                            ProfileManager.getLastUsedRegularProfile(), target);
                     mActivityTestRule
                             .getActivity()
                             .onMenuOrKeyboardAction(R.id.direct_share_menu_id, true);

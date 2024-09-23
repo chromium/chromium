@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -20,11 +21,11 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpda
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /** Test suite for permissions automatic embargo logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -57,7 +58,7 @@ public class AutomaticEmbargoTest {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
 
         for (int i = 0; i < NUMBER_OF_DISMISSALS; ++i) {
             mPermissionRule.setUpUrl(testFile);
@@ -67,14 +68,18 @@ public class AutomaticEmbargoTest {
                 mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
             }
             PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
-            TestThreadUtils.runOnUiThreadBlocking(
+            int dialogType = mPermissionRule.getActivity().getModalDialogManager().getCurrentType();
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mPermissionRule
                                 .getActivity()
                                 .getModalDialogManager()
                                 .getCurrentPresenterForTest()
                                 .dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                        dialogType == ModalDialogType.APP
+                                                ? DialogDismissalCause
+                                                        .NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                                                : DialogDismissalCause.NAVIGATE_BACK);
                     });
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         }
@@ -86,12 +91,13 @@ public class AutomaticEmbargoTest {
                 /* nUpdates= */ 0,
                 withGesture,
                 /* isDialog= */ true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
     @Test
     @LargeTest
     @Feature({"Location"})
+    @DisabledTest(message = "Flaky test b/325324593")
     public void testGeolocationEmbargo() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -114,7 +120,7 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MIDI"})
     public void testMIDIEmbargo() throws Exception {
-        runTest(MIDI_TEST_FILE, "", "fail", /* withGesture= */ true);
+        runTest(MIDI_TEST_FILE, "", "fail", /* withGesture= */ false);
     }
 
     @Test

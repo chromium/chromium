@@ -1,0 +1,48 @@
+Test CSS.forcePseudoStates method for specific pseudo states
+States before forcing pseudo states:
+
+States for div:
+--enabled-applied='false'
+--disabled-applied='false'
+--valid-applied='false'
+--invalid-applied='false'
+--user-valid-applied='false'
+--user-invalid-applied='false'
+--required-applied='false'
+--optional-applied='false'
+--read-only-applied='true'
+--read-write-applied='false'
+--in-range-applied='false'
+--out-of-range-applied='false'
+--checked-applied='false'
+--indeterminate-applied='false'
+--placeholder-shown-applied='false'
+--autofill-applied='false'
+
+States for editableDiv:
+--read-only-applied='false'
+
+States after forcing pseudo states:
+
+States for div:
+--enabled-applied='true'
+--disabled-applied='true'
+--valid-applied='true'
+--invalid-applied='true'
+--user-valid-applied='true'
+--user-invalid-applied='true'
+--required-applied='true'
+--optional-applied='true'
+--read-only-applied='true'
+--read-write-applied='true'
+--in-range-applied='true'
+--out-of-range-applied='true'
+--checked-applied='true'
+--indeterminate-applied='true'
+--placeholder-shown-applied='true'
+--autofill-applied='true'
+
+States for editableDiv:
+--read-only-applied='true'
+Didn't fail after disabling the CSS agent (https://crbug.com/1123526).
+

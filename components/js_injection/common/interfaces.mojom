@@ -10,13 +10,18 @@ import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 
 // JsObject struct represents a JavaScript object we will inject in the main
-// JavaScript world of a frame. |js_object_name| will be used as the name
-// of the JavaScript object. We will inject the object if the frame's origin
-// matches |origin_matcher|. |js_to_browser_messaging| will be used for that
-// JavaScript object to send message back to browser side.
+// JavaScript world of a frame. |js_object_name| will be used as the name of the
+// JavaScript object. We will inject the object if the frame's origin matches
+// |origin_matcher|. |js_to_browser_messaging| will be used for that JavaScript
+// object to send message back to browser side. |browser_to_js_factory| is used
+// when the kLazyBindJsInjection feature is enabled to request a
+// BrowserToJsMessaging pipe from the renderer when needed. If this is not set,
+// SetBrowserToJsMessaging() must be called from the renderer to pass the pipe.
 struct JsObject {
   mojo_base.mojom.String16 js_object_name;
   pending_associated_remote<JsToBrowserMessaging> js_to_browser_messaging;
+  pending_associated_receiver<BrowserToJsMessagingFactory>
+      browser_to_js_factory;
   js_injection.mojom.OriginMatcher origin_matcher;
 };
 
@@ -36,7 +41,7 @@ struct JsWebMessageArrayBufferValue {
   // If is_resizable_by_user_javascript is false, then max_byte_length is
   // unused.
   //
-  // TODO(crbug.com/657632): Use a wrapped uint64 or uint64? once supported.
+  // TODO(crbug.com/40489779): Use a wrapped uint64 or uint64? once supported.
   bool is_resizable_by_user_javascript = false;
   uint64 max_byte_length = 0;
 };
@@ -62,6 +67,19 @@ interface JsToBrowserMessaging {
     pending_associated_remote<BrowserToJsMessaging> browser_to_js_messaging);
 };
 
+// Client interface to send batch messages related to JsObject.
+interface JsObjectsClient {
+  // Notifies the browser that the window object has been cleared for the frame.
+  OnWindowObjectCleared();
+};
+
+// Allows lazily binding the BrowserToJsMessaging pipe.
+interface BrowserToJsMessagingFactory {
+  // Sends a new BrowsertoJsMessaging pipe to the renderer.
+  SendBrowserToJsMessaging(
+    pending_associated_receiver<BrowserToJsMessaging> browser_to_js_messaging);
+};
+
 // For the browser to reply back to injected JavaScript object. Implemented by
 // the renderer.
 interface BrowserToJsMessaging {
@@ -73,7 +91,8 @@ interface BrowserToJsMessaging {
 interface JsCommunication {
   // Called from browser, to tell renderer that if we need to inject
   // JavaScript objects to the frame based on the |js_objects| array.
-  SetJsObjects(array<js_injection.mojom.JsObject> js_objects);
+  SetJsObjects(array<js_injection.mojom.JsObject> js_objects,
+               pending_associated_remote<JsObjectsClient> client);
 
   // Called from browser, to add a script for a frame to run at document start
   // stage. The script will run only if the frame's origin matches any of the

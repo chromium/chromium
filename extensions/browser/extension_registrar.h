@@ -16,6 +16,7 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace base {
 class FilePath;
@@ -170,7 +171,8 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // root scope.
   void UnregisterServiceWorkerWithRootScope(const Extension* extension);
   void NotifyServiceWorkerUnregistered(const ExtensionId& extension_id,
-                                       bool success);
+                                       bool worker_previously_registered,
+                                       blink::ServiceWorkerStatusCode status);
 
   // Given an extension that was disabled for reloading, completes the reload
   // by replacing the old extension with the new version and enabling it.
@@ -181,7 +183,8 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void MaybeSpinUpLazyContext(const Extension* extension, bool is_newly_added);
 
   // ProcessManagerObserver overrides
-  void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
+  void OnStartedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 

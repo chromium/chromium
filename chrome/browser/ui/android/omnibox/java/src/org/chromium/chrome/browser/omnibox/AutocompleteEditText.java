@@ -12,19 +12,20 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.ui.text.EmptyTextWatcher;
+
+import java.util.Optional;
 
 /** An {@link EditText} that shows autocomplete text at the end. */
 public class AutocompleteEditText extends VerticallyFixedEditText
@@ -94,9 +95,8 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     private void ensureModel() {
         if (mModel != null) return;
 
-        mModel = new SpannableAutocompleteEditTextModel(this);
+        mModel = new SpannableAutocompleteEditTextModel(this, getContext());
         mModel.setIgnoreTextChangeFromAutocomplete(true);
-        mModel.setLayoutDirectionIsLtr(getLayoutDirection() != LAYOUT_DIRECTION_RTL);
         mModel.onFocusChanged(hasFocus());
         mModel.onSetText(getText());
         mModel.onTextChanged(getText(), 0, 0, getText().length());
@@ -131,6 +131,16 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     public String getTextWithAutocomplete() {
         if (mModel == null) return "";
         return mModel.getTextWithAutocomplete();
+    }
+
+    /**
+     * @return Additional text presented in the omnibox, indicating the destination of the default
+     *     match.
+     */
+    @VisibleForTesting
+    public Optional<String> getAdditionalText() {
+        if (mModel == null) return Optional.empty();
+        return mModel.getAdditionalText();
     }
 
     /**
@@ -200,11 +210,18 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      *
      * @param userText user The text entered by the user.
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
+     * @param additionalText This string is displayed adjacent to the omnibox if this match is the
+     *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
-    public void setAutocompleteText(CharSequence userText, CharSequence inlineAutocompleteText) {
+    public void setAutocompleteText(
+            @NonNull CharSequence userText,
+            @Nullable CharSequence inlineAutocompleteText,
+            Optional<String> additionalText) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
         if (!emptyAutocomplete) mDisableTextScrollingFromAutocomplete = true;
-        if (mModel != null) mModel.setAutocompleteText(userText, inlineAutocompleteText);
+        if (mModel != null) {
+            mModel.setAutocompleteText(userText, inlineAutocompleteText, additionalText);
+        }
     }
 
     /**
@@ -212,8 +229,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      * displayed.
      */
     public int getAutocompleteLength() {
-        if (mModel == null) return 0;
-        return mModel.getAutocompleteText().length();
+        return mModel == null ? 0 : mModel.getAutocompleteTextLength();
     }
 
     @Override
@@ -236,10 +252,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
         if (DEBUG) Log.i(TAG, "setText -- text: %s", text);
         mDisableTextScrollingFromAutocomplete = false;
 
-        // Certain OEM implementations of setText trigger disk reads. https://crbug.com/633298
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            super.setText(text, type);
-        }
+        super.setText(text, type);
         if (mModel != null) mModel.onSetText(text);
     }
 
@@ -263,15 +276,6 @@ public class AutocompleteEditText extends VerticallyFixedEditText
                         || (mModel != null && mModel.shouldIgnoreAccessibilityEvent()))
                 && (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED
                         || event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
-    }
-
-    @Override
-    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-        // Certain OEM implementations of onInitializeAccessibilityNodeInfo trigger disk reads
-        // to access the clipboard.  crbug.com/640993
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            super.onInitializeAccessibilityNodeInfo(info);
-        }
     }
 
     @VisibleForTesting
@@ -344,14 +348,6 @@ public class AutocompleteEditText extends VerticallyFixedEditText
 
     @Override
     public void onUpdateSelectionForTesting(int selStart, int selEnd) {}
-
-    @Override
-    public void onRtlPropertiesChanged(int layoutDirection) {
-        super.onRtlPropertiesChanged(layoutDirection);
-        if (mModel != null) {
-            mModel.setLayoutDirectionIsLtr(layoutDirection != LAYOUT_DIRECTION_RTL);
-        }
-    }
 
     @Override
     public String getKeyboardPackageName() {

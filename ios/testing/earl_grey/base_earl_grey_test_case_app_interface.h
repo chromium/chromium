@@ -23,7 +23,7 @@
 + (void)disableFastAnimation;
 
 // Force the keyboard to be in process until iOS17 typing is fixed.
-// TODO(crbug.com/1454516): Remove this.
+// TODO(crbug.com/40916974): Remove this.
 + (void)swizzleKeyboardOOP;
 
 // Calls _terminateWithStatus and exit. This causes UIKit to call

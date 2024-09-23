@@ -411,6 +411,14 @@ document.addEventListener('DOMContentLoaded', function() {
   assert(refreshProcessInfoButton);
   refreshProcessInfoButton.addEventListener('click', loadProcessCountInfo);
 
+  // Get the ProcessPerSite mode and populate it.
+  pageHandler.getProcessPerSiteMode().then((response) => {
+    const sharingMode =
+        document.querySelector<HTMLElement>('#process-per-site-mode');
+    assert(sharingMode);
+    sharingMode.innerText = response.mode;
+  });
+
   // Get the Site Isolation mode and populate it.
   pageHandler.getIsolationMode().then((response) => {
     const isolationMode =

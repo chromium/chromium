@@ -203,23 +203,28 @@ std::string GetFamilyNameFromTypeface(sk_sp<SkTypeface> typeface) {
 }
 
 // Returns an autoreleased font of a specified system font type.
-CTFontRef SystemFontForConstructorOfType(PlatformFontMac::SystemFontType type) {
+CTFontRef SystemFontForConstructorOfType(
+    PlatformFontMac::SystemFontType type,
+    int font_size = PlatformFontMac::kDefaultFontSize) {
   NSFont* font = nil;
   switch (type) {
     case PlatformFontMac::SystemFontType::kGeneral: {
-      font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+      if (font_size == PlatformFontMac::kDefaultFontSize) {
+        font_size = NSFont.systemFontSize;
+      }
+      font = [NSFont systemFontOfSize:font_size];
       break;
     }
     case PlatformFontMac::SystemFontType::kMenu: {
-      font = [NSFont menuFontOfSize:0];
+      font = [NSFont menuFontOfSize:font_size];
       break;
     }
     case PlatformFontMac::SystemFontType::kToolTip: {
-      font = [NSFont toolTipsFontOfSize:0];
+      font = [NSFont toolTipsFontOfSize:font_size];
       break;
     }
     default: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 
@@ -254,8 +259,6 @@ SystemFontTypeFromUndocumentedCTFontRefInternals(CTFontRef font) {
   }
 }
 
-#if DCHECK_IS_ON()
-
 const std::set<std::string>& SystemFontNames() {
   static const base::NoDestructor<std::set<std::string>> names([] {
     std::set<std::string> names;
@@ -270,16 +273,15 @@ const std::set<std::string>& SystemFontNames() {
   return *names;
 }
 
-#endif  // DCHECK_IS_ON()
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontMac, public:
 
-PlatformFontMac::PlatformFontMac(SystemFontType system_font_type)
-    : PlatformFontMac(SystemFontForConstructorOfType(system_font_type),
-                      system_font_type) {}
+PlatformFontMac::PlatformFontMac(SystemFontType system_font_type, int font_size)
+    : PlatformFontMac(
+          SystemFontForConstructorOfType(system_font_type, font_size),
+          system_font_type) {}
 
 PlatformFontMac::PlatformFontMac(CTFontRef ct_font)
     : PlatformFontMac(ct_font, std::nullopt) {
@@ -449,6 +451,12 @@ PlatformFontMac::PlatformFontMac(CTFontRef ct_font,
       system_font_type_(system_font_type),
       font_spec_(spec) {
 #if DCHECK_IS_ON()
+  // If system_font_type.has_value(), `ct_font` is a system font that was
+  // passed in from the correct constructor. If system_font_type.has_value() is
+  // false, we expect that `ct_font` is *not* a system font. We enforce this
+  // expectation by checking for spec.name in the list of system font names.
+  // So, if system_font_type.has_value(), or `spec.name` does not appear in the
+  // list of system font names, we're in good shape.
   DCHECK(system_font_type.has_value() ||
          SystemFontNames().count(spec.name) == 0)
       << "Do not pass a system font (" << spec.name << ") to PlatformFontMac; "
@@ -483,8 +491,9 @@ void PlatformFontMac::CalculateMetricsAndInitRenderParams() {
   render_params_ = gfx::GetFontRenderParams(query, nullptr);
 }
 
+// static
 base::apple::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
-    FontSpec font_spec) const {
+    FontSpec font_spec) {
   // One might think that a font descriptor with the NSFontWeightTrait/
   // kCTFontWeightTrait trait could be used to look up a font with a specific
   // weight. That doesn't work, though. You can ask a font for its weight, but
@@ -559,7 +568,30 @@ PlatformFont* PlatformFont::CreateFromCTFont(CTFontRef ct_font) {
 // static
 PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
                                                   int font_size) {
-  return new PlatformFontMac(font_name, font_size);
+  if (!SystemFontNames().count(font_name)) {
+    return new PlatformFontMac(font_name, font_size);
+  }
+
+  // `font_name` is the name of a system font. Use the APIs Apple dictates to
+  // construct a system font instance. At least as of macOS 15, the family
+  // names for menuFontOfSize: and toolTipsFontOfSize: are the same as the
+  // system font. If font_name matches the system font name, make sure we
+  // construct it using SystemFontType::kGeneral.
+  if (font_name ==
+      base::SysNSStringToUTF8(
+          [NSFont systemFontOfSize:NSFont.systemFontSize].familyName)) {
+    return new PlatformFontMac(PlatformFontMac::SystemFontType::kGeneral,
+                               font_size);
+  }
+
+  if (font_name ==
+      base::SysNSStringToUTF8([NSFont menuFontOfSize:0].familyName)) {
+    return new PlatformFontMac(PlatformFontMac::SystemFontType::kMenu,
+                               font_size);
+  }
+
+  return new PlatformFontMac(PlatformFontMac::SystemFontType::kToolTip,
+                             font_size);
 }
 
 // static

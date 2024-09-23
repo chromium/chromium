@@ -18,16 +18,3 @@ source_set("feed_core_common") {
     "//components/feed:feature_list",
   ]
 }
-
-source_set("feed_core_common_unit_tests") {
-  testonly = true
-  sources = [ "pref_names_unittest.cc" ]
-
-  # public_deps = [ ":test_helpers" ]
-  deps = [
-    ":feed_core_common",
-    "//base",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-  ]
-}

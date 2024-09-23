@@ -10,9 +10,10 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -24,7 +25,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -63,15 +63,14 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Browser* browser,
     content::WebContents* web_contents,
     const Extension* extension,
-    SidePanelRegistry* registry)
+    SidePanelRegistry* registry,
+    bool for_tab)
     : profile_(profile),
       browser_(browser),
       web_contents_(web_contents),
       extension_(extension),
-      registry_(registry) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration));
-
+      registry_(registry),
+      for_tab_(for_tab) {
   // Only one of `browser` or `web_contents` should be defined when constructing
   // this class.
   DCHECK(browser != nullptr ^ web_contents != nullptr);
@@ -85,9 +84,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     scoped_service_observation_.Observe(service);
     LoadExtensionIcon();
     if (IsGlobalCoordinator()) {
-      if (features::IsSidePanelPinningEnabled()) {
-        UpdateActionItemIcon();
-      }
+      UpdateActionItemIcon();
       browser_->tab_strip_model()->AddObserver(this);
     }
 
@@ -103,9 +100,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   }
 }
 
-ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
-  DeregisterEntry();
-}
+ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() = default;
 
 content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {
@@ -278,8 +273,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // is always deregistered when this class is destroyed, so CreateView can't be
   // called after the destruction of `this`.
   registry_->Register(std::make_unique<SidePanelEntry>(
-      GetEntryKey(), base::UTF8ToUTF16(extension_->short_name()),
-      ui::ImageModel::FromImage(extension_icon_->image()),
+      GetEntryKey(),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
                           base::Unretained(this))));
 }
@@ -315,6 +309,7 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
   auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
   extension_view->SetVisible(true);
 
+  scoped_view_observation_.Reset();
   scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
 }
@@ -325,22 +320,18 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   Browser* browser = GetBrowser();
   DCHECK(browser);
 
-  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  auto* coordinator = browser->GetFeatures().side_panel_coordinator();
 
   // If the SidePanelEntry for this extension is showing when window.close() is
   // called, close the side panel. Otherwise, clear the entry's cached view.
   SidePanelEntry* entry = GetEntry();
   DCHECK(entry);
 
-  if (coordinator->IsSidePanelEntryShowing(entry)) {
+  if (coordinator->IsSidePanelEntryShowing(entry->key(), for_tab_)) {
     coordinator->Close();
   } else {
     entry->ClearCachedView();
   }
-
-  // Closing the panel or removing the view should synchronously result in
-  // the extension view being destroyed, which destroys `host_`.
-  DCHECK(!host_);
 }
 
 void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
@@ -353,7 +344,7 @@ void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
   if (side_panel_url_ != host_contents->GetLastCommittedURL()) {
     // Since the navigation happens automatically when the URL is changed from
     // an API call, this counts as a top level navigation.
-    // TODO(crbug.com/1378048): Investigate if LoadURLWithParams() is needed
+    // TODO(crbug.com/40243760): Investigate if LoadURLWithParams() is needed
     // here, and which params should be used.
     host_contents->GetController().LoadURL(side_panel_url_, content::Referrer(),
                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
@@ -371,10 +362,10 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
       /*observer=*/nullptr);
 
   // Triggers actual image loading with all supported scale factors.
-  // TODO(crbug.com/1442996): This is a temporary fix since the combobox and its
-  // drop down menu currently do not automatically get an image's representation
-  // when they are shown. Remove this when the aforementioend crbug has been
-  // fixed.
+  // TODO(crbug.com/40910886): This is a temporary fix since the combobox and
+  // its drop down menu currently do not automatically get an image's
+  // representation when they are shown. Remove this when the aforementioend
+  // crbug has been fixed.
   extension_icon_->image_skia().EnsureRepsForSupportedScales();
 }
 
@@ -383,7 +374,7 @@ void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   std::optional<actions::ActionId> extension_action_id =
       actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  BrowserActions* browser_actions = browser_->browser_actions();
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       extension_action_id.value(), browser_actions->root_action_item());
   if (action_item) {

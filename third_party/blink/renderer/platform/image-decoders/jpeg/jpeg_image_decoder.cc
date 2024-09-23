@@ -35,17 +35,22 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
 #include <limits>
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
-#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
@@ -460,15 +465,9 @@ class JPEGImageReader final {
         jpeg_calc_output_dimensions(&info_);
         decoder_->SetDecodedSize(info_.output_width, info_.output_height);
 
-        DecodedImageMetaData metadata;
-        if (sk_sp<SkData> exif_data =
-                metadata_decoder_->getExifMetadata(/*copyData=*/false)) {
-          base::span<const uint8_t> exif_span(exif_data->bytes(),
-                                              exif_data->size());
-          ReadExif(exif_span, metadata);
-        }
-        decoder_->ApplyMetadata(
-            metadata, gfx::Size(info_.output_width, info_.output_height));
+        decoder_->ApplyExifMetadata(
+            metadata_decoder_->getExifMetadata(/*copyData=*/false).get(),
+            gfx::Size(info_.output_width, info_.output_height));
 
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {
@@ -478,7 +477,7 @@ class JPEGImageReader final {
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
             std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
-                profile_data->bytes(), profile_data->size());
+                base::span(profile_data->bytes(), profile_data->size()));
             if (profile) {
               uint32_t data_color_space =
                   profile->GetProfile()->data_color_space;
@@ -759,7 +758,7 @@ class JPEGImageReader final {
   // we set to next_input_byte. libjpeg will update next_input_byte when it
   // has found the next restart position, so if it no longer matches this
   // value, we know we've reached the next restart position.
-  const JOCTET* last_set_byte_;
+  raw_ptr<const JOCTET> last_set_byte_;
 
   jpeg_decompress_struct info_;
   decoder_error_mgr err_;
@@ -821,11 +820,13 @@ void term_source(j_decompress_ptr jd) {
 
 JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
                                    ColorBehavior color_behavior,
+                                   cc::AuxImage aux_image,
                                    wtf_size_t max_decoded_bytes,
                                    wtf_size_t offset)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
+                   aux_image,
                    max_decoded_bytes),
       offset_(offset) {}
 
@@ -854,6 +855,27 @@ bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
 }
 
 void JPEGImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
+  // If we are decoding the gainmap image, replace `data` with the subset of
+  // `data` that corresponds to the gainmap image itself. This strategy is
+  // used because the underlying decoder is unaware of gainmap metadata, and
+  // because the gainmap image itself is is a self-contained JPEG image (see
+  // multi-picture format, also known as CIPA DC-007). This is in contrast with
+  // other decoders (e.g AVIF), which are aware of gainmap metadata.
+  if (data && aux_image_ == cc::AuxImage::kGainmap) {
+    sk_sp<SkData> base_image_data = data->GetAsSkData();
+    DCHECK(base_image_data);
+    SkGainmapInfo gainmap_info;
+    sk_sp<SkData> gainmap_image_data;
+    auto base_metadata_decoder = SkJpegMetadataDecoder::Make(base_image_data);
+    if (!base_metadata_decoder->findGainmapImage(
+            base_image_data, gainmap_image_data, gainmap_info)) {
+      SetFailed();
+      return;
+    }
+    data = SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
+    data_ = data;
+  }
+
   if (reader_) {
     reader_->SetData(std::move(data));
 
@@ -980,14 +1002,11 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
     return false;
   }
 
-  // Extract the SkGainmapInfo and the encoded gainmap image and return them.
-  // TODO(https://crbug.com/1404000): Express `data_` as an SkStream, to avoid
-  // making extra copies.
+  // TODO(crbug.com/356827770): This function will be removed once all decoders
+  // rely on ImageDecoder::aux_image_ to decode the gainmap, instead of
+  // extracting gainmap data.
   sk_sp<SkData> base_image_data = data_->GetAsSkData();
   DCHECK(base_image_data);
-  // TODO(https://crbug.com/1404000): Rather than extract an SkData, extract
-  // the offsets and sizes of the subsets of `base_image_data`, and reference
-  // these directly.
   sk_sp<SkData> gainmap_image_data;
   SkGainmapInfo gainmap_info;
   if (!metadata_decoder->findGainmapImage(base_image_data, gainmap_image_data,
@@ -995,8 +1014,7 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
     return false;
   }
   out_gainmap_info = gainmap_info;
-  out_gainmap_data =
-      SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
+  out_gainmap_data = data_;
   return true;
 }
 
@@ -1237,7 +1255,7 @@ bool JPEGImageDecoder::OutputScanlines() {
     case JCS_CMYK:
       return OutputRows<JCS_CMYK>(reader_.get(), buffer);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return SetFailed();

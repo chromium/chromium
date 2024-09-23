@@ -9,6 +9,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -37,10 +38,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -130,17 +134,19 @@ class NavigationFinishObserver : public WebContentsObserver {
 // SubresourceFilterBrowserTest is necessary to test ad-tagging related
 // behaviors.
 class OpenerHeuristicBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest {
+    : public subresource_filter::SubresourceFilterBrowserTest,
+      public content::TestDevToolsProtocolClient {
  public:
   void SetUp() override {
     tpcd_heuristics_grants_params_["TpcdReadHeuristicsGrants"] = "true";
 
     feature_list_.InitWithFeaturesAndParameters(
         {{content_settings::features::kTpcdHeuristicsGrants,
-          tpcd_heuristics_grants_params_}},
-        // Disable tracking protection by default to test third-party cookie
-        // behavior for PostPopupCookieAccess events.
-        {content_settings::features::kTrackingProtection3pcd});
+          tpcd_heuristics_grants_params_},
+         {network::features::kSkipTpcdMitigationsForAds,
+          {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}},
+         {content_settings::features::kTrackingProtection3pcd, {}}},
+        {});
 
     OpenerHeuristicTabHelper::SetClockForTesting(&clock_);
     PlatformBrowserTest::SetUp();
@@ -155,13 +161,21 @@ class OpenerHeuristicBrowserTest
     SubresourceFilterBrowserTest::SetUpOnMainThread();
 
     // These rules apply an ad-tagging param to scripts in ad_script.js,
-    // including `windowOpenFromAdScript`.
+    // and to cookies marked with the `isad=1` param value.
     SetRulesetWithRules(
-        {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+        {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
+         subresource_filter::testing::CreateSuffixRule("isad=1")});
 
-    DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
+    DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
+
+    // Open and reset DevTools.
+    AttachToWebContents(chrome_test_utils::GetActiveWebContents(this));
+    SendCommandSync("Audits.enable");
+    ClearNotifications();
   }
+
+  void TearDownOnMainThread() override { DetachProtocolClient(); }
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -171,8 +185,8 @@ class OpenerHeuristicBrowserTest
     return OpenerHeuristicTabHelper::FromWebContents(GetActiveWebContents());
   }
 
-  DIPSService* GetDipsService() {
-    return DIPSService::Get(GetActiveWebContents()->GetBrowserContext());
+  DIPSServiceImpl* GetDipsService() {
+    return DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext());
   }
 
   void RecordInteraction(const GURL& url, base::Time time) {
@@ -288,6 +302,39 @@ class OpenerHeuristicBrowserTest
   base::FieldTrialParams tpcd_heuristics_grants_params_;
   base::SimpleTestClock clock_;
   base::test::ScopedFeatureList feature_list_;
+
+ protected:
+  void WaitForCookieIssueAndCheck(std::string_view third_party_site,
+                                  std::string_view warning) {
+    auto is_cookie_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "CookieIssue";
+    };
+
+    // Wait for notification of a Cookie Issue.
+    base::Value::Dict params = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
+
+    std::string partial_expected =
+        content::JsReplace(R"({
+            "cookie": {
+               "domain": $1,
+               "name": "name",
+               "path": "/"
+            },
+            "cookieWarningReasons": [ $2 ],
+            "operation": "ReadCookie",
+         })",
+                           third_party_site, warning);
+
+    // Find relevant fields from cookieIssueDetails
+    ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
+                testing::Pointee(base::test::DictionaryHasValues(
+                    base::test::ParseJsonDict(partial_expected))));
+
+    ClearNotifications();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -295,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_FALSE(GetTabHelper()->popup_observer_for_testing());
 }
 
-// TODO(crbug.com/1465642): Test is flaky on Android.
+// TODO(crbug.com/40276065): Test is flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PopupsWithOpenerHavePopupState \
   DISABLED_PopupsWithOpenerHavePopupState
@@ -319,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
 
-// TODO(https://crbug.com/1469394): Flaky on android.
+// TODO(crbug.com/40925352): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PopupsWithoutOpenerDoNotHavePopupState \
   DISABLED_PopupsWithoutOpenerDoNotHavePopupState
@@ -344,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
 }
 
-// TODO(crbug.com/1469394): Flaky on android.
+// TODO(crbug.com/40925352): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_NewTabURLsHavePopupState DISABLED_NewTabURLsHavePopupState
 #else
@@ -557,27 +604,28 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
   // heuristic, if the feature is enabled.
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(initial_url, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
-                                     : CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      cookie_settings->GetThirdPartyCookieAllowMechanism(
-          initial_url, opener_url, net::CookieSettingOverrides(), nullptr),
-      GetParam().write_grant_enabled
-          ? content_settings::CookieSettingsBase::
-                ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics
-          : content_settings::CookieSettingsBase::
-                ThirdPartyCookieAllowMechanism::kNone);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                initial_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
+                                           : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetThirdPartyCookieAllowMechanism(
+                initial_url, net::SiteForCookies::FromUrl(opener_url),
+                opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam().write_grant_enabled
+                ? content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics
+                : content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kNone);
 
   // Cookie access was NOT granted for the site that the popup redirected to.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                final_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                final_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
-// TODO(crbug.com/1506932) Flaky on mac.
+// TODO(crbug.com/40947612) Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
   DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
@@ -602,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                popup_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             should_cookies_be_blocked ? CONTENT_SETTING_BLOCK
                                       : CONTENT_SETTING_ALLOW);
 }
@@ -612,7 +661,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kAccessGrantTestCases));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1457925): Test is flaky on Android.
+// TODO(crbug.com/40918571): Test is flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PopupPastInteractionIsReported_ServerRedirect \
   DISABLED_PopupPastInteractionIsReported_ServerRedirect
@@ -643,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ElementsAre(Pair("HoursSinceLastInteraction", 3)));
 }
 
-// TODO(crbug.com/1485029): Flaky on Android.
+// TODO(crbug.com/40282438): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PopupPastInteractionIsReported_ClientRedirect \
   DISABLED_PopupPastInteractionIsReported_ClientRedirect
@@ -705,6 +754,8 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetThirdPartyCookieSetting(opener_url, CONTENT_SETTING_ALLOW);
 
   // Initialize interaction and popup.
   RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
@@ -749,23 +800,26 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   // Add a cookie access by popup_url on opener_url.
   ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
                                   "sub.b.test",
-                                  /*is_secure_cookie_set=*/true));
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/true));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
-      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+      https_server.GetURL("sub.b.test", "/favicon/icon.png?isad=1"));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
   auto access_entries = ukm_recorder.GetEntries(
       "OpenerHeuristic.PostPopupCookieAccess",
-      {"AccessId", "AccessSucceeded", "HoursSincePopupOpened"});
+      {"AccessId", "AccessSucceeded", "IsAdTagged", "HoursSincePopupOpened"});
   ASSERT_EQ(access_entries.size(), 1u);
   EXPECT_EQ(
       ukm_recorder.GetSourceForSourceId(access_entries[0].source_id)->url(),
       opener_url);
   EXPECT_EQ(access_entries[0].metrics["AccessId"], access_id);
   EXPECT_EQ(access_entries[0].metrics["AccessSucceeded"], true);
+  EXPECT_EQ(access_entries[0].metrics["IsAdTagged"],
+            static_cast<int32_t>(OptionalBool::kTrue));
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
 }
 
@@ -849,14 +903,15 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   // Cookie access was NOT granted for the initial URL (that the user didn't
   // interact with).
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(initial_url, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                initial_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
   // Cookie access WAS granted for the interacted-with URL (if the feature was
   // enabled).
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                final_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                final_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK);
 }
@@ -879,7 +934,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                popup_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             should_cookies_be_blocked ? CONTENT_SETTING_BLOCK
                                       : CONTENT_SETTING_ALLOW);
 }
@@ -964,6 +1020,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL popup_url_2 =
       embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
   GURL popup_url_3 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetThirdPartyCookieSetting(opener_url, CONTENT_SETTING_ALLOW);
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
@@ -1011,7 +1069,8 @@ IN_PROC_BROWSER_TEST_F(
   // Add a cookie access by popup_url on opener_url.
   ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
                                   "sub.b.test",
-                                  /*is_secure_cookie_set=*/true));
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
   CreateImageAndWaitForCookieAccess(
       GetActiveWebContents(),
@@ -1021,14 +1080,57 @@ IN_PROC_BROWSER_TEST_F(
   // Assert that the UKM event for the PostPopupCookieAccess was recorded.
   auto access_entries = ukm_recorder.GetEntries(
       "OpenerHeuristic.PostPopupCookieAccess",
-      {"AccessId", "AccessSucceeded", "HoursSincePopupOpened"});
+      {"AccessId", "AccessSucceeded", "IsAdTagged", "HoursSincePopupOpened"});
   ASSERT_EQ(access_entries.size(), 1u);
   EXPECT_EQ(
       ukm_recorder.GetSourceForSourceId(access_entries[0].source_id)->url(),
       opener_url);
   EXPECT_EQ(access_entries[0].metrics["AccessId"], access_id);
   EXPECT_EQ(access_entries[0].metrics["AccessSucceeded"], true);
+  EXPECT_EQ(access_entries[0].metrics["IsAdTagged"],
+            static_cast<int32_t>(OptionalBool::kFalse));
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
+  // We will host an "image" on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL opener_url = https_server.GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = https_server.GetURL("c.test", "/title1.html");
+  GURL popup_url_2 =
+      https_server.GetURL("b.test", "/server-redirect?title1.html");
+  GURL popup_url_3 = https_server.GetURL("b.test", "/title1.html");
+
+  // Initialize popup and interaction.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(popup_url_1));
+
+  clock_.Advance(base::Minutes(1));
+  ASSERT_TRUE(content::NavigateToURL(popup, popup_url_2, popup_url_3));
+
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(popup);
+
+  // Add a cookie access by popup_url on opener_url.
+  ASSERT_TRUE(NavigateToSetCookie(GetActiveWebContents(), &https_server,
+                                  "sub.b.test",
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+
+  CreateImageAndWaitForCookieAccess(
+      GetActiveWebContents(),
+      https_server.GetURL("sub.b.test", "/favicon/icon.png"));
+
+  // CookieIssue was fired since it was exempt from blocking
+  WaitForCookieIssueAndCheck("sub.b.test", "WarnThirdPartyCookieHeuristic");
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -1159,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
   EXPECT_NE(popup_id, popup_id2);
 }
 
-// TODO(crbug.com/1511706): Flaky on mac.
+// TODO(crbug.com/41484288): Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TopLevel_PastInteraction_AdTagged \
   DISABLED_TopLevel_PastInteraction_AdTagged
@@ -1308,36 +1410,36 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
   // popup_url_2.
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_1, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_2, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_1, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_2, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
 
   // Expect that a cookie access grant is backfilled for popup_url_3 when the
   // experiment is enabled.
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
 
   // Expect that the cookie access grant applies to other URLs with the same
   // eTLD+1.
   GURL popup_url_3a =
       embedded_test_server()->GetURL("www.d.test", "/favicon.png");
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3a, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3a, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   GURL popup_url_3b =
       embedded_test_server()->GetURL("corp.d.test", "/title1.html");
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3b, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3b, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] html5lib_webkit02.html 6e33515b4dc011dd390d433a6358bf68b786b1fd
+  assert_equals: expected "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <b>\\n|       <em>\\n|         <foo>\\n|           <foo>\\n|             <foo>\\n|     <aside>\\n|       <b>" but got "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <b>\\n|       <em>\\n|         <foo>\\n|           <foo>\\n|             <foo>\\n|     <aside>\\n|       <em>\\n|         <b>"
+Harness: the test ran to completion.
+

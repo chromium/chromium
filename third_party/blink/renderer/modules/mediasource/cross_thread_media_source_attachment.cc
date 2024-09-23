@@ -398,7 +398,8 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
     case TrackAddRemovalType::kAudio: {
       auto* audio_track =
           MakeGarbageCollected<AudioTrack>(atomic_id, atomic_kind, atomic_label,
-                                           atomic_language, enable_or_select);
+                                           atomic_language, enable_or_select,
+                                           /*exclusive=*/false);
       attached_element_->audioTracks().Add(audio_track);
       break;
     }
@@ -476,7 +477,7 @@ bool CrossThreadMediaSourceAttachment::RunExclusively(
 
 void CrossThreadMediaSourceAttachment::Unregister() {
   // MSE-in-Worker does NOT use object URLs, so this should not be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 MediaSourceTracer*

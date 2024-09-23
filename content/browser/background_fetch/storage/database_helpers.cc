@@ -34,7 +34,8 @@ std::string PendingRequestKeyPrefix(const std::string& unique_id) {
 }
 
 std::string PendingRequestKey(const std::string& unique_id, int request_index) {
-  return PendingRequestKeyPrefix(unique_id) + std::to_string(request_index);
+  return PendingRequestKeyPrefix(unique_id) +
+         base::NumberToString(request_index);
 }
 
 std::string ActiveRequestKeyPrefix(const std::string& unique_id) {
@@ -42,7 +43,8 @@ std::string ActiveRequestKeyPrefix(const std::string& unique_id) {
 }
 
 std::string ActiveRequestKey(const std::string& unique_id, int request_index) {
-  return ActiveRequestKeyPrefix(unique_id) + std::to_string(request_index);
+  return ActiveRequestKeyPrefix(unique_id) +
+         base::NumberToString(request_index);
 }
 
 std::string CompletedRequestKeyPrefix(const std::string& unique_id) {
@@ -51,7 +53,8 @@ std::string CompletedRequestKeyPrefix(const std::string& unique_id) {
 
 std::string CompletedRequestKey(const std::string& unique_id,
                                 int request_index) {
-  return CompletedRequestKeyPrefix(unique_id) + std::to_string(request_index);
+  return CompletedRequestKeyPrefix(unique_id) +
+         base::NumberToString(request_index);
 }
 
 std::string StorageVersionKey(const std::string& unique_id) {
@@ -93,7 +96,7 @@ DatabaseStatus ToDatabaseStatus(blink::ServiceWorkerStatusCode status) {
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DatabaseStatus::kFailed;
 }
 
@@ -119,7 +122,7 @@ bool ToBackgroundFetchRegistration(
       registration_data->result = blink::mojom::BackgroundFetchResult::SUCCESS;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   bool did_convert = MojoFailureReasonFromRegistrationProto(
@@ -211,7 +214,7 @@ GURL RemoveUniqueParamFromCacheURL(const GURL& url,
   else if (split.size() == 2u)
     replacements.SetQueryStr(split[0]);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return url.ReplaceComponents(replacements);
 }

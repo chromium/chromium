@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--TODO:  Update to match the specs"-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/google_bottom_bar_background_color">
+
+  <LinearLayout
+      android:id="@+id/bottom_bar_searchbox_container"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:paddingStart="@dimen/google_bottom_bar_padding"
+      android:paddingEnd="@dimen/google_bottom_bar_padding"
+      android:paddingTop="@dimen/google_bottom_bar_searchbox_top_margin"/>
+
+  <LinearLayout
+      android:id="@+id/bottom_bar_buttons_container"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/google_bottom_bar_buttons_container_height"/>
+</LinearLayout>

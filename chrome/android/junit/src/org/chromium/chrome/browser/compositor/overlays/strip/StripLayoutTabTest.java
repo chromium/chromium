@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -16,14 +18,11 @@ import androidx.test.core.app.ApplicationProvider;
 import com.google.android.material.color.MaterialColors;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +35,6 @@ import org.chromium.ui.util.ColorUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutTabTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static final String TAG = "StripLayoutTabTest";
 
@@ -55,7 +53,6 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
     public void testGetTint() {
         @ColorInt int expectedColor;
 
@@ -112,10 +109,7 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING,
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING})
     public void testGetTint_Startup() {
         @ColorInt int expectedColor;
 
@@ -170,6 +164,60 @@ public class StripLayoutTabTest {
                 "Incognito dividers use the baseline color.",
                 expectedColor,
                 mIncognitoTab.getDividerTint());
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleChanged() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", "Foo", resId);
+        assertTrue(
+                "New titles should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Bar", resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_ResourceIdChanged() {
+        final String title = "Tab 1";
+        mNormalTab.setAccessibilityDescription("", title, 1);
+        assertTrue(
+                "New resource IDs should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(title, 2));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleAndResourceIdChanged() {
+        mNormalTab.setAccessibilityDescription("", "Tab 1", 1);
+        assertTrue(
+                "A new title and resource ID should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Foo", 2));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleAndResourceIdUnchanged() {
+        final String title = "Tab 1";
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", title, resId);
+        assertFalse(
+                "An identical title and resource ID should not result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(title, resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_NullInitialTitle() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", null, resId);
+        assertTrue(
+                "Going from a null to non-null title should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Bar", resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_NullNewTitle() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", "Foo", resId);
+        assertTrue(
+                "Going from a non-null to null title should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(null, resId));
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {

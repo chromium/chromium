@@ -4,10 +4,6 @@
 
 #include "media/gpu/windows/supported_profile_helpers.h"
 
-#include <d3d12video.h>
-#include <d3d9.h>
-#include <dxva2api.h>
-
 #include <algorithm>
 #include <memory>
 
@@ -15,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/gpu/windows/av1_guids.h"
 
 namespace media {
@@ -71,8 +68,7 @@ class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
 
 class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
  public:
-  explicit D3D12VideoDeviceWrapper(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device)
+  explicit D3D12VideoDeviceWrapper(ComD3D12VideoDevice video_device)
       : video_device_(video_device) {
     CHECK(video_device);
   }
@@ -113,7 +109,7 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
   }
 
  private:
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device_;
+  ComD3D12VideoDevice video_device_;
 };
 
 // Windows Media Foundation H.264 decoding does not support decoding videos
@@ -359,9 +355,15 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     if (!workarounds.disable_accelerated_hevc_decode &&
         base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+      // Per DirectX Video Acceleration Specification for High Efficiency Video
+      // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
+      // main still picture profile.
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
-        supported_resolutions[HEVCPROFILE_MAIN] = GetResolutionsForGUID(
+        auto supported_resolution = GetResolutionsForGUID(
             video_device_wrapper, profile_id, kModernResolutions);
+        supported_resolutions[HEVCPROFILE_MAIN] = supported_resolution;
+        supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] =
+            supported_resolution;
         continue;
       }
       // For range extensions only test main10_422 with P010, and apply
@@ -392,7 +394,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  ComD3D11VideoDevice video_device;
   std::unique_ptr<D3D11VideoDeviceWrapper> video_device_wrapper;
   if (device && SUCCEEDED(device.As(&video_device))) {
     video_device_wrapper =
@@ -403,9 +405,9 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
 }
 
 SupportedResolutionRangeMap GetSupportedD3D12VideoDecoderResolutions(
-    Microsoft::WRL::ComPtr<ID3D12Device> device,
+    ComD3D12Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device;
+  ComD3D12VideoDevice video_device;
   std::unique_ptr<D3D12VideoDeviceWrapper> video_device_wrapper;
   if (device && SUCCEEDED(device.As(&video_device))) {
     video_device_wrapper =

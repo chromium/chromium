@@ -18,7 +18,7 @@
 
 namespace ash {
 
-// TODO(crbug.com/1189945): Rename and move to more generic location.
+// TODO(crbug.com/40173943): Rename and move to more generic location.
 // A wrapper around a `gfx::ImageSkia` that supports dynamic updates.
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
  public:
@@ -95,6 +95,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // loaded image representations - it assumes that the file contents remained
   // the same, and old representations are thus still valid.
   void UpdateBackingFilePath(const base::FilePath& file_path);
+
+  // Whether the image currently uses the placeholder image skia. True if no
+  // bitmaps have been successfully resolved.
+  bool UsingPlaceholder() const;
 
   // Fires the image invalidation timer if it's currently running.
   bool FireInvalidateTimerForTesting();

@@ -258,10 +258,10 @@ void WebrtcVideoEncoderGpu::Core::Encode(
 
   // H264 encoder on Windows uses NV12 so convert here.
   libyuv::ARGBToNV12(frame->data(), frame->stride(),
-                     video_frame->writable_data(VideoFrame::kYPlane),
-                     video_frame->stride(VideoFrame::kYPlane),
-                     video_frame->writable_data(VideoFrame::kUVPlane),
-                     video_frame->stride(VideoFrame::kUVPlane),
+                     video_frame->writable_data(VideoFrame::Plane::kY),
+                     video_frame->stride(VideoFrame::Plane::kY),
+                     video_frame->writable_data(VideoFrame::Plane::kUV),
+                     video_frame->stride(VideoFrame::Plane::kUV),
                      video_frame->visible_rect().width(),
                      video_frame->visible_rect().height());
 
@@ -275,8 +275,7 @@ void WebrtcVideoEncoderGpu::Core::Encode(
     uint32_t bitrate_bps =
         checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps,
-        absl::nullopt);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps, std::nullopt);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }
@@ -286,7 +285,7 @@ void WebrtcVideoEncoderGpu::Core::RequireBitstreamBuffers(
     const gfx::Size& input_coded_size,
     size_t output_buffer_size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(state_ == INITIALIZING);
+  CHECK(state_ == INITIALIZING);
 
   input_coded_size_ = input_coded_size;
   output_buffer_size_ = output_buffer_size;
@@ -318,7 +317,7 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
 
   auto encoded_frame = std::make_unique<EncodedFrame>();
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
-  DCHECK(output_buffer->IsValid());
+  CHECK(output_buffer->IsValid());
   base::span<uint8_t> data_span =
       output_buffer->mapping.GetMemoryAsSpan<uint8_t>(
           metadata.payload_size_bytes);
@@ -334,7 +333,7 @@ void WebrtcVideoEncoderGpu::Core::BitstreamBufferReady(
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 
   auto callback_it = callbacks_.find(metadata.timestamp);
-  DCHECK(callback_it != callbacks_.end())
+  CHECK(callback_it != callbacks_.end())
       << "Callback not found for timestamp " << metadata.timestamp;
   std::move(std::get<1>(*callback_it))
       .Run(EncodeResult::SUCCEEDED, std::move(encoded_frame));
@@ -369,7 +368,10 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
-      input_format, input_visible_size_, codec_profile_, initial_bitrate);
+      input_format, input_visible_size_, codec_profile_, initial_bitrate,
+      kTargetFrameRate,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
           config, this, gpu::GpuPreferences(), CreateGpuWorkarounds(),

@@ -8,7 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
-import("//components/metrics/generate_histograms_variants_allowlist.gni")
+import("//components/metrics/generate_allowlist_from_histograms_file.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
@@ -25,6 +25,7 @@ aggregate_vector_icons("views_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
+    "arrow_drop_down.icon",
     "checkbox_active.icon",
     "checkbox_check_cr2023.icon",
     "checkbox_normal.icon",
@@ -42,7 +43,6 @@ aggregate_vector_icons("views_vector_icons") {
     "linux_high_density.icon",
     "linux_low_density.icon",
     "menu_check.icon",
-    "menu_drop_arrow.icon",
     "menu_radio_empty.icon",
     "menu_radio_selected.icon",
     "new_incognito_window.icon",
@@ -58,9 +58,10 @@ aggregate_vector_icons("views_vector_icons") {
   ]
 }
 
-generate_histograms_variants_allowlist("bubble_histograms_variant") {
+generate_allowlist_from_histograms_file("bubble_histograms_variant") {
   namespace = "views_metrics"
   input_xml_file = "//tools/metrics/histograms/metadata/views/histograms.xml"
+  tag = "variant"
   output_file = "bubble_histograms_variant.h"
   allow_list_name = "BubbleName"
 }
@@ -78,12 +79,12 @@ component("views") {
 
   public = [
     "accessibility/accessibility_paint_checks.h",
+    "accessibility/atomic_view_ax_tree_manager.h",
     "accessibility/ax_event_manager.h",
     "accessibility/ax_event_observer.h",
     "accessibility/ax_virtual_view.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
-    "accessibility/views_ax_tree_manager.h",
     "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "actions/action_view_controller.h",
@@ -125,6 +126,7 @@ component("views") {
     "bubble/bubble_border_arrow_utils.h",
     "bubble/bubble_dialog_delegate_view.h",
     "bubble/bubble_dialog_model_host.h",
+    "bubble/bubble_dialog_utils.h",
     "bubble/bubble_frame_view.h",
     "bubble/info_bubble.h",
     "bubble/tooltip_icon.h",
@@ -134,6 +136,7 @@ component("views") {
     "context_menu_controller.h",
     "controls/animated_image_view.h",
     "controls/badge.h",
+    "controls/bulleted_label_list/bulleted_label_list_view.h",
     "controls/button/button.h",
     "controls/button/button_controller.h",
     "controls/button/button_controller_delegate.h",
@@ -144,6 +147,7 @@ component("views") {
     "controls/button/label_button_border.h",
     "controls/button/label_button_image_container.h",
     "controls/button/md_text_button.h",
+    "controls/button/md_text_button_with_down_arrow.h",
     "controls/button/menu_button.h",
     "controls/button/menu_button_controller.h",
     "controls/button/radio_button.h",
@@ -234,6 +238,7 @@ component("views") {
     "layout/animating_layout_manager.h",
     "layout/box_layout.h",
     "layout/box_layout_view.h",
+    "layout/delegating_layout_manager.h",
     "layout/fill_layout.h",
     "layout/flex_layout.h",
     "layout/flex_layout_types.h",
@@ -273,6 +278,7 @@ component("views") {
     "view_model.h",
     "view_model_utils.h",
     "view_observer.h",
+    "view_shadow.h",
     "view_targeter.h",
     "view_targeter_delegate.h",
     "view_tracker.h",
@@ -320,6 +326,7 @@ component("views") {
 
   sources = [
     "accessibility/accessibility_paint_checks.cc",
+    "accessibility/atomic_view_ax_tree_manager.cc",
     "accessibility/ax_event_manager.cc",
     "accessibility/ax_event_observer.cc",
     "accessibility/ax_virtual_view.cc",
@@ -361,6 +368,7 @@ component("views") {
     "bubble/bubble_border_arrow_utils.cc",
     "bubble/bubble_dialog_delegate_view.cc",
     "bubble/bubble_dialog_model_host.cc",
+    "bubble/bubble_dialog_utils.cc",
     "bubble/bubble_frame_view.cc",
     "bubble/footnote_container_view.cc",
     "bubble/info_bubble.cc",
@@ -370,6 +378,7 @@ component("views") {
     "context_menu_controller.cc",
     "controls/animated_image_view.cc",
     "controls/badge.cc",
+    "controls/bulleted_label_list/bulleted_label_list_view.cc",
     "controls/button/button.cc",
     "controls/button/button_controller.cc",
     "controls/button/checkbox.cc",
@@ -379,6 +388,7 @@ component("views") {
     "controls/button/label_button_border.cc",
     "controls/button/label_button_image_container.cc",
     "controls/button/md_text_button.cc",
+    "controls/button/md_text_button_with_down_arrow.cc",
     "controls/button/menu_button.cc",
     "controls/button/menu_button_controller.cc",
     "controls/button/radio_button.cc",
@@ -455,6 +465,7 @@ component("views") {
     "layout/animating_layout_manager.cc",
     "layout/box_layout.cc",
     "layout/box_layout_view.cc",
+    "layout/delegating_layout_manager.cc",
     "layout/fill_layout.cc",
     "layout/flex_layout.cc",
     "layout/flex_layout_types.cc",
@@ -486,6 +497,7 @@ component("views") {
     "view_constants.cc",
     "view_model.cc",
     "view_model_utils.cc",
+    "view_shadow.cc",
     "view_targeter.cc",
     "view_targeter_delegate.cc",
     "view_tracker.cc",
@@ -525,7 +537,7 @@ component("views") {
   # Other targets in this file (e.g. tests) get access to the internal headers.
   friend = [ ":*" ]
 
-  # Internal sources. TODO(https://crbug.com/871123): Move more headers from
+  # Internal sources. TODO(crbug.com/41406123): Move more headers from
   # public into this list, along with the implementation file.
   sources += [
     "controls/button/label_button_label.cc",
@@ -545,7 +557,6 @@ component("views") {
 
   deps = [
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/paint",
     "//components/url_formatter",
@@ -559,6 +570,7 @@ component("views") {
     "//ui/base/emoji",
     "//ui/color",
     "//ui/color:mixers",
+    "//ui/compositor_extra",
     "//ui/display",
     "//ui/gfx:native_widget_types",
     "//ui/latency",
@@ -589,6 +601,8 @@ component("views") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/base/metadata",
+    "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",
@@ -732,7 +746,7 @@ component("views") {
       "win/fullscreen_handler.cc",
       "win/hwnd_message_handler.cc",
       "win/hwnd_message_handler_headless.cc",
-      "win/hwnd_util_aurawin.cc",
+      "win/hwnd_util.cc",
       "win/pen_event_processor.cc",
       "win/pen_id_handler.cc",
       "win/scoped_enable_unadjusted_mouse_events_win.cc",
@@ -814,10 +828,7 @@ component("views") {
       "windows_stationarity_monitor_aura.cc",
     ]
     if (!is_chromeos_ash) {
-      sources += [
-        "accessibility/views_ax_tree_manager.cc",
-        "accessibility/widget_ax_tree_id_map.cc",
-      ]
+      sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
     }
     if (is_chromeos_lacros) {
       public += [ "corewm/tooltip_lacros.h" ]
@@ -902,7 +913,6 @@ component("views") {
       if (is_chromeos_lacros) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
         sources += [
-          # TODO: do we need one for lacros?
           "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.h",
@@ -943,8 +953,6 @@ component("views") {
 
   if (has_native_accessibility) {
     sources += [
-      "accessibility/atomic_view_ax_tree_manager.cc",
-      "accessibility/atomic_view_ax_tree_manager.h",
       "accessibility/view_ax_platform_node_delegate.cc",
       "accessibility/view_ax_platform_node_delegate.h",
     ]
@@ -1038,6 +1046,8 @@ source_set("test_support") {
     "interaction/interactive_views_test_internal.cc",
     "interaction/interactive_views_test_internal.h",
     "interaction/polling_view_observer.h",
+    "interaction/view_focus_observer.cc",
+    "interaction/view_focus_observer.h",
     "interaction/widget_focus_observer.cc",
     "interaction/widget_focus_observer.h",
     "layout/animating_layout_manager_test_util.cc",
@@ -1092,8 +1102,12 @@ source_set("test_support") {
     "test/views_test_helper.h",
     "test/views_test_utils.cc",
     "test/views_test_utils.h",
+    "test/widget_activation_waiter.cc",
+    "test/widget_activation_waiter.h",
     "test/widget_animation_waiter.cc",
     "test/widget_animation_waiter.h",
+    "test/widget_show_state_waiter.cc",
+    "test/widget_show_state_waiter.h",
     "test/widget_test.cc",
     "test/widget_test.h",
     "test/widget_test_api.cc",
@@ -1137,6 +1151,8 @@ source_set("test_support") {
   public_deps = [
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   if (is_win) {
@@ -1147,12 +1163,6 @@ source_set("test_support") {
       "win/test_support/fake_ipen_device.h",
       "win/test_support/fake_ipen_device_statics.cc",
       "win/test_support/fake_ipen_device_statics.h",
-      "win/test_support/fake_ipen_pointer_point_statics.cc",
-      "win/test_support/fake_ipen_pointer_point_statics.h",
-      "win/test_support/fake_ipointer_point.cc",
-      "win/test_support/fake_ipointer_point.h",
-      "win/test_support/fake_ipointer_point_properties.cc",
-      "win/test_support/fake_ipointer_point_properties.h",
     ]
   }
   if (is_mac) {
@@ -1259,6 +1269,7 @@ test("views_unittests") {
     "controls/combobox/combobox_unittest.cc",
     "controls/editable_combobox/editable_combobox_unittest.cc",
     "controls/editable_combobox/editable_password_combobox_unittest.cc",
+    "controls/focus_ring_unittest.cc",
     "controls/image_view_unittest.cc",
     "controls/label_unittest.cc",
     "controls/link_fragment_unittest.cc",
@@ -1300,6 +1311,8 @@ test("views_unittests") {
     "interaction/interaction_sequence_views_unittest.cc",
     "interaction/interaction_test_util_views_unittest.cc",
     "interaction/interactive_views_test_unittest.cc",
+    "interaction/view_focus_observer_unittest.cc",
+    "interaction/widget_focus_observer_unittest.cc",
     "layout/animating_layout_manager_unittest.cc",
     "layout/box_layout_unittest.cc",
     "layout/box_layout_view_unittest.cc",
@@ -1321,6 +1334,7 @@ test("views_unittests") {
     "test/widget_test_unittest.cc",
     "view_model_unittest.cc",
     "view_model_utils_unittest.cc",
+    "view_shadow_unittest.cc",
     "view_targeter_unittest.cc",
     "view_tracker_unittest.cc",
     "view_unittest.cc",
@@ -1368,9 +1382,11 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/mojom:mojom",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor:test_support",
+    "//ui/compositor_extra",
     "//ui/display:test_support",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
@@ -1431,12 +1447,9 @@ test("views_unittests") {
   if (has_native_accessibility) {
     sources += [
       "accessibility/ax_virtual_view_unittest.cc",
+      "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
     ]
-
-    if (use_aura) {
-      sources += [ "accessibility/views_ax_tree_manager_unittest.cc" ]
-    }
   }
 
   if (skia_support_skottie) {
@@ -1528,6 +1541,9 @@ test("views_unittests") {
         sources += [
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
         ]
+        if (is_linux || is_chromeos) {
+          deps += [ "//ui/platform_window/stub:stub" ]
+        }
       }
       if (is_linux || is_chromeos) {
         sources += [ "widget/desktop_aura/desktop_window_tree_host_platform_impl_unittest.cc" ]
@@ -1604,6 +1620,8 @@ source_set("views_interactive_ui_tests") {
     "//ui/resources:ui_test_pak",
     "//ui/strings",
   ]
+
+  public_deps = [ "//ui/base/mojom:mojom" ]
 
   if (is_win) {
     sources += [ "accessibility/ax_system_caret_win_interactive_uitest.cc" ]

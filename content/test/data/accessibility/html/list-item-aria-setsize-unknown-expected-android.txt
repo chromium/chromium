@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView collection hierarchical item_count=8 row_count=8 column_count=1
+++++android.view.View collection_item name='Level 1, item 5 of set size unknown' item_index=4 row_index=4 row_span=1 column_span=1
+++++android.view.View collection_item item_index=5 row_index=5 row_span=1 column_span=1
+++++++android.widget.TextView name='Level 1, item 6 of set size unknown'
+++++++android.widget.ListView collection hierarchical item_count=7 row_count=7 column_count=1
+++++++++android.view.View collection_item name='Level 2, item 6 of set size unknown' item_index=5 row_index=5 row_span=1 column_span=1
+++++++++android.view.View collection_item name='Level 2, item 7 of set size unknown' item_index=6 row_index=6 row_span=1 column_span=1
+++++android.view.View collection_item name='Level 1, item 7 of set size 2' item_index=6 row_index=6 row_span=1 column_span=1
+++++android.view.View collection_item name='Level 1, item 8 of set size 3' item_index=7 row_index=7 row_span=1 column_span=1

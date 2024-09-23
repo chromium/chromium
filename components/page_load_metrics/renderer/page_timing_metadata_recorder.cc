@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
+
 #include <cstdint>
+#include <string_view>
 
 namespace page_load_metrics {
 namespace {
@@ -42,28 +44,19 @@ void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
   UpdateFirstInputDelayMetadata(timing.first_input_timestamp,
                                 timing.first_input_delay);
   UpdateLargestContentfulPaintMetadata(timing.navigation_start,
-                                       timing.frame_largest_contentful_paint,
-                                       timing.document_token);
+                                       timing.frame_largest_contentful_paint);
   timing_ = timing;
 }
 
 void PageTimingMetadataRecorder::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
-    base::StringPiece name,
+    std::string_view name,
     int64_t key,
     int64_t value,
     base::SampleMetadataScope scope) {
   base::ApplyMetadataToPastSamples(period_start, period_end, name, key, value,
                                    scope);
-}
-
-void PageTimingMetadataRecorder::AddProfileMetadata(
-    base::StringPiece name,
-    int64_t key,
-    int64_t value,
-    base::SampleMetadataScope scope) {
-  base::AddProfileMetadata(name, key, value, scope);
 }
 
 void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
@@ -129,31 +122,46 @@ void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
       base::SampleMetadataScope::kProcess);
 }
 
-void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
-    const std::optional<base::TimeTicks>& navigation_start,
-    const std::optional<base::TimeTicks>& largest_contentful_paint,
-    const std::optional<blink::DocumentToken>& document_token) {
-  const bool should_apply_global_lcp_metadata =
-      navigation_start.has_value() && document_token.has_value() &&
-      (timing_.navigation_start != navigation_start ||
-       timing_.document_token != document_token);
-
-  // Document token and navigation start TimeTicks are passed to browser
-  // process, where global LCP value is available.
-  if (should_apply_global_lcp_metadata) {
-    AddProfileMetadata(
-        "Internal.LargestContentfulPaint.NavigationStart",
-        /* key= */ instance_id_,
-        /* value= */ navigation_start->since_origin().InMilliseconds(),
-        base::SampleMetadataScope::kProcess);
-
-    AddProfileMetadata(
-        "Internal.LargestContentfulPaint.DocumentToken",
-        /* key= */ instance_id_,
-        /* value= */ blink::DocumentToken::Hasher()(*document_token),
-        base::SampleMetadataScope::kProcess);
+void PageTimingMetadataRecorder::AddInteractionDurationAfterQueueingMetadata(
+    const base::TimeTicks interaction_start,
+    const base::TimeTicks interaction_queued_main_thread,
+    const base::TimeTicks interaction_commit_finish,
+    const base::TimeTicks interaction_end) {
+  // Fallback to presentation time if commit finish timestamp is not available.
+  // This could happen if features::kNonBlockingCommit is disabled or when an
+  // interaction does not need a next paint.
+  base::TimeTicks commit_finish_time_with_fallback;
+  if (interaction_commit_finish == base::TimeTicks()) {
+    commit_finish_time_with_fallback = interaction_end;
+  } else {
+    commit_finish_time_with_fallback = interaction_commit_finish;
   }
 
+  // Safe check that start < queued < commit < end.
+  if (!IsTimeTicksRangeSensible(interaction_start,
+                                interaction_queued_main_thread) ||
+      !IsTimeTicksRangeSensible(interaction_queued_main_thread,
+                                commit_finish_time_with_fallback) ||
+      !IsTimeTicksRangeSensible(commit_finish_time_with_fallback,
+                                interaction_end)) {
+    return;
+  }
+
+  ApplyMetadataToPastSamples(
+      interaction_queued_main_thread, commit_finish_time_with_fallback,
+      "Blink.Responsiveness.UserInteraction."
+      "MaxEventDurationFromQueuedToCommitFinish",
+      /* key=*/
+      CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
+      /* value=*/
+      (commit_finish_time_with_fallback - interaction_queued_main_thread)
+          .InMilliseconds(),
+      base::SampleMetadataScope::kThread);
+}
+
+void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
+    const std::optional<base::TimeTicks>& navigation_start,
+    const std::optional<base::TimeTicks>& largest_contentful_paint) {
   // Local LCP can get updated multiple times (mostly < 10 times) during a page
   // load. For a given `name_hash` and `key`, when applying on new LCP range,
   // the metadata tag on old overlapping ranges will be removed.

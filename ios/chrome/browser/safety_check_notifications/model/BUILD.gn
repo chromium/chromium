@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("notification_client") {
+  sources = [
+    "safety_check_notification_client.h",
+    "safety_check_notification_client.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:constants",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/safety_check_notifications/utils",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_notification_client_unittest.mm" ]
+  deps = [
+    ":notification_client",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/upgrade/model:public",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
+    "//ios/web/public/",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}

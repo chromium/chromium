@@ -20,25 +20,15 @@ class ResizedAvatarCacheTest : public PlatformTest {
     PlatformTest::SetUp();
     resized_avatar_cache_ = [[ResizedAvatarCache alloc]
         initWithIdentityAvatarSize:IdentityAvatarSize::TableViewIcon];
-    identity1_ =
-        CreateSystemIdentity(@"Test Name1", @"gaiaID1", @"test1@email.com");
-    identity2_ =
-        CreateSystemIdentity(@"Test Name2", @"gaiaID2", @"test2@email.com");
+    identity1_ = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager()->AddIdentity(identity1_);
+    identity2_ = [FakeSystemIdentity fakeIdentity2];
+    fake_system_identity_manager()->AddIdentity(identity2_);
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
     return FakeSystemIdentityManager::FromSystemIdentityManager(
         GetApplicationContext()->GetSystemIdentityManager());
-  }
-
-  id<SystemIdentity> CreateSystemIdentity(NSString* name,
-                                          NSString* gaia_id,
-                                          NSString* email) {
-    id<SystemIdentity> identity = [FakeSystemIdentity identityWithEmail:email
-                                                                 gaiaID:gaia_id
-                                                                   name:name];
-    fake_system_identity_manager()->AddIdentity(identity);
-    return identity;
   }
 
   base::test::TaskEnvironment task_environment_;

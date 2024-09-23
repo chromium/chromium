@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/color_enhancement/color_enhancement_controller.h"
+
 #include <memory>
 
 #include "ash/shell.h"
 #include "cc/paint/filter_operation.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/matrix3_f.h"
 
@@ -160,10 +167,44 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionCorrectionType type,
          MatrixProduct(correction_matrix, simulation_matrix);
 }
 
+void UpdateNotificationFlashMatrix(const SkColor& original_color,
+                                   cc::FilterOperation::Matrix* matrix) {
+  SkScalar hsv[3];
+  SkColorToHSV(original_color, hsv);
+
+  // We use 30% of the original color, similar to Android's
+  // packages/apps/Settings/res/values/colors.xml.
+  hsv[1] *= 0.3;
+
+  const SkColor color = SkHSVToColor(hsv);
+  const float r = SkColorGetR(color);
+  const float g = SkColorGetG(color);
+  const float b = SkColorGetB(color);
+  // `matrix` represents a 5x4 matrix where the top 4x4 matrix is
+  // r, g, b and alpha. If we were not mutating the color, this 4x4
+  // should be the identity. When adding a tint, set r, g and b
+  // based on the desired tint color.
+  (*matrix)[0] = r / 255.0;
+  (*matrix)[6] = g / 255.0;
+  (*matrix)[12] = b / 255.0;
+}
+
 }  // namespace
 
 ColorEnhancementController::ColorEnhancementController() {
   Shell::Get()->AddShellObserver(this);
+
+  // Initialize the notification flash matrix with zeros.
+  notification_flash_matrix_ = std::make_unique<cc::FilterOperation::Matrix>();
+  for (int i = 0; i < 19; i++) {
+    (*notification_flash_matrix_)[i] = 0;
+  }
+
+  // `notification_flash_matrix_` represents a 5x4 matrix where the top 4x4
+  // matrix is r, g, b and alpha. Use the identity to keep color the same;
+  // update r, g and b dynamically when the tint changes.
+  (*notification_flash_matrix_)[0] = (*notification_flash_matrix_)[6] =
+      (*notification_flash_matrix_)[12] = (*notification_flash_matrix_)[18] = 1;
 }
 
 ColorEnhancementController::~ColorEnhancementController() {
@@ -225,6 +266,21 @@ void ColorEnhancementController::SetColorVisionCorrectionFilter(
         (*cvd_correction_matrix_)[index] = 1;
       }
     }
+  }
+}
+
+void ColorEnhancementController::FlashScreenForNotification(
+    bool show_flash,
+    const SkColor& color) {
+  if (!show_flash) {
+    UpdateAllDisplays();
+    return;
+  }
+
+  UpdateNotificationFlashMatrix(color, notification_flash_matrix_.get());
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    ui::Layer* layer = root_window->layer();
+    layer->SetLayerCustomColorMatrix(*notification_flash_matrix_);
   }
 }
 

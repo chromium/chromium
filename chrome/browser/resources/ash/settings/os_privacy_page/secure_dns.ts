@@ -16,20 +16,20 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
-import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import './secure_dns_dialog.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -39,7 +39,6 @@ import {SecureDnsInputElement} from './secure_dns_input.js';
 
 export interface SettingsSecureDnsElement {
   $: {
-    privacyPolicy: HTMLElement,
     secureDnsInput: SecureDnsInputElement,
     secureDnsInputContainer: HTMLElement,
     resolverSelect: HTMLSelectElement,
@@ -145,6 +144,29 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         computed: 'computeShouldShowDialogWhenDisablingDns_(' +
             'isDeprecateDnsDialogEnabled_, isRevampWayfindingEnabled_)',
       },
+
+      /**
+       * Boolean to make network default description visible if user selects
+       * Automatic option in DNS dropdown.
+       */
+      showNetworkDefaultDescription_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Boolean to make privacy policy description visible if user selects a
+       * Secure option in DNS dropdown.
+       */
+      showPrivacyPolicyDescription_: {
+        type: Boolean,
+        value: false,
+      },
+
+      networkDefaultAriaDescribedBy_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -160,6 +182,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private isRevampWayfindingEnabled_: boolean;
   private isDeprecateDnsDialogEnabled_: boolean;
   private shouldShowDialogWhenDisablingDns_: boolean;
+  private showNetworkDefaultDescription_: boolean;
+  private showPrivacyPolicyDescription_: boolean;
+  private networkDefaultAriaDescribedBy_: string|null;
+
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -191,6 +217,21 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     });
   }
 
+  private setDropdownDescriptionVisibility_(
+      networkDefault: boolean, privacyPolicy: boolean): void {
+    this.showNetworkDefaultDescription_ = networkDefault;
+    this.showPrivacyPolicyDescription_ = privacyPolicy;
+
+    this.networkDefaultAriaDescribedBy_ =
+        networkDefault ? 'networkDefaultDescription' : null;
+  }
+
+  // Hide DNS dropdown description strings.
+  private hideDropdownDescriptions_(): void {
+    this.setDropdownDescriptionVisibility_(
+        /*networkDefault=*/ false, /*privacyPolicy=*/ false);
+  }
+
   /**
    * Update the UI representation to match the underlying host resolver
    * configuration.
@@ -204,6 +245,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
         break;
       case SecureDnsMode.OFF:
         this.set('secureDnsToggle_.value', false);
+        this.hideDropdownDescriptions_();
         break;
       default:
         assertNotReached('Received unknown secure DNS mode');
@@ -333,11 +375,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // hashed with a salt and hex encoded), then the message will contain the
     // template URI for display in which the identifiers are shown in plain
     // text.
-    let secureDescription = loadTimeData.getString('secureDnsDescription');
-    if (this.isRevampWayfindingEnabled_) {
-      secureDescription =
-          loadTimeData.getString('secureDnsOsSettingsDescription');
-    }
+    let secureDescription =
+        loadTimeData.getString('secureDnsOsSettingsDescription');
 
     if (setting.dohWithIdentifiersActive) {
       secureDescription = loadTimeData.substituteString(
@@ -400,11 +439,14 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     switch (mode) {
       case SecureDnsMode.AUTOMATIC:
         selectValue = SecureDnsResolverType.AUTOMATIC;
+        this.setDropdownDescriptionVisibility_(
+            /*networkDefault=*/ true, /*privacyPolicy=*/ false);
         break;
       case SecureDnsMode.SECURE:
         if (index === -1) {
           selectValue = SecureDnsResolverType.CUSTOM;
           hideCustomEntry = false;
+          this.hideDropdownDescriptions_();
         } else {
           selectValue = index.toString();
         }
@@ -427,24 +469,21 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   }
 
   /**
-   * Displays the privacy policy string if the policy URL is specified,
-   * otherwise hides it.
+   * Displays the privacy policy string if the policy URL is specified.
    * @param policy The privacy policy URL.
    */
   private updatePrivacyPolicyLine_(policy: string): void {
-    // If the selected item is the custom resolver option, hide the privacy
-    // policy line.
+    // There is no privacy policy description for the custom resolver and
+    // automatic options.
     if (!policy) {
-      this.$.privacyPolicy.style.display = 'none';
       return;
     }
 
-    // Otherwise, display the corresponding privacy policy.
-    this.$.privacyPolicy.style.display = 'block';
-
-    this.privacyPolicyString_ = sanitizeInnerHtml(loadTimeData.substituteString(
-        loadTimeData.getString('secureDnsSecureDropdownModePrivacyPolicy'),
-        policy));
+    // Display the corresponding privacy policy.
+    this.privacyPolicyString_ = this.i18nAdvanced(
+        'secureDnsSecureDropdownModePrivacyPolicy', {substitutions: [policy]});
+    this.setDropdownDescriptionVisibility_(
+        /*networkDefault=*/ false, /*privacyPolicy=*/ true);
   }
 
   /**

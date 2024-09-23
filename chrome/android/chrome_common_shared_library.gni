@@ -20,7 +20,7 @@ declare_args() {
   # This is not permanently enabled for Trichrome because it shares its native
   # library with Monochrome.
   # Restricted to official builds to avoid turning off is_high_end_android
-  # explicitly on all relevant non-official bots. TODO(crbug.com/1515925):
+  # explicitly on all relevant non-official bots. TODO(crbug.com/41488915):
   # Always use RELR when Android O (and O_MR1) is no longer supported.
   use_relr_relocations = is_high_end_android && is_official_build
 }
@@ -102,14 +102,6 @@ template("chrome_common_shared_library") {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
-
-    # Compress sections to stay under 4gb hard limit on 32-bit current_cpu.
-    # https://crbug.com/1449278
-    if (symbol_level == 2 && !use_debug_fission &&
-        (current_cpu == "arm" || current_cpu == "x86")) {
-      configs += [ "//build/config:compress_debug_sections" ]
-    }
-
     configs += [ "//build/config/compiler:chrome_orderfile_config" ]
 
     # Use a dynamically-generated linker script.
@@ -185,7 +177,7 @@ template("chrome_common_shared_library") {
       invoker.define_unwind_table_target) {
     _library_target = ":$target_name"
 
-    # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+    # TODO(crbug.com/40833600): Remove generation of v1 unwind asset when
     # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroid`.
     unwind_table_v1("${target_name}_unwind_table_v1") {
       library_target = _library_target

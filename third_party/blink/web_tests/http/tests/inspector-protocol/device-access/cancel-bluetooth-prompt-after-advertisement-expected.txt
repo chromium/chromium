@@ -16,7 +16,7 @@ cancelPrompt: {
 }
 navigator.bluetooth.requestDevice: {
     className : DOMException
-    description : DOMException: User cancelled the requestDevice() chooser.
+    description : NotFoundError: User cancelled the requestDevice() chooser.
     objectId : <string>
     subtype : error
     type : object

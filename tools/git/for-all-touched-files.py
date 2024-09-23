@@ -41,7 +41,8 @@ def GitShell(args, ignore_return=False):
   job = subprocess.Popen(args,
                          shell=True,
                          stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
+                         stderr=subprocess.STDOUT,
+                         text=True)
   (out, err) = job.communicate()
   if job.returncode != 0 and not ignore_return:
     print(out)

@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -342,7 +342,7 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::ReadFiles() {
   return files;
 }
 
-String SystemClipboard::ReadCustomData(const String& type) {
+String SystemClipboard::ReadDataTransferCustomData(const String& type) {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
     return String();
 
@@ -351,7 +351,7 @@ String SystemClipboard::ReadCustomData(const String& type) {
   }
 
   String data;
-  clipboard_->ReadCustomData(buffer_, NonNullString(type), &data);
+  clipboard_->ReadDataTransferCustomData(buffer_, NonNullString(type), &data);
   if (snapshot_) {
     snapshot_->SetCustomData(buffer_, type, data);
   }
@@ -371,9 +371,9 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   // a type. This prevents stomping on clipboard contents that might have been
   // written by extension functions such as chrome.bookmarkManagerPrivate.copy.
   //
-  // TODO(slangley): Use a mojo struct to send web_drag_data and allow receiving
-  // side to extract the data required.
-  // TODO(dcheng): Properly support text/uri-list here.
+  // TODO(crbug.com/332555471): Use a mojo struct to send web_drag_data and
+  // allow receiving side to extract the data required.
+  // TODO(crbug.com/332571415): Properly support text/uri-list here.
   HashMap<String, String> custom_data;
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
@@ -389,7 +389,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
     }
   }
   if (!custom_data.empty()) {
-    clipboard_->WriteCustomData(std::move(custom_data));
+    clipboard_->WriteDataTransferCustomData(std::move(custom_data));
   }
 }
 
@@ -419,9 +419,9 @@ void SystemClipboard::ReadAvailableCustomAndStandardFormats(
 void SystemClipboard::ReadUnsanitizedCustomFormat(
     const String& type,
     mojom::blink::ClipboardHost::ReadUnsanitizedCustomFormatCallback callback) {
-  // TODO(ansollan): Add test coverage for all functions with this check in
-  // |SystemClipboard| and consider if it's appropriate to throw exceptions or
-  // reject promises if the context is detached.
+  // TODO(crbug.com/332555472): Add test coverage for all functions with this
+  //  check in `SystemClipboard` and consider if it's appropriate to throw
+  // exceptions or reject promises if the context is detached.
   if (!clipboard_.is_bound())
     return;
   // The format size restriction is added in `ClipboardItem::supports`.

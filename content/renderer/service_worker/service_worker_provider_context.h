@@ -157,7 +157,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   // ServiceWorkerClient from the system (thus allowing unregistration/update to
   // occur and ensuring the Clients API doesn't return the client).
   //
-  // TODO(https://crbug.com/931497): Remove this weird partially destroyed
+  // TODO(crbug.com/41441021): Remove this weird partially destroyed
   // state.
   void OnNetworkProviderDestroyed();
 
@@ -294,8 +294,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type_ =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
-  blink::mojom::ServiceWorkerFetchHandlerType effective_fetch_handler_type_ =
-      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
   bool need_router_evaluate_ = false;
 
   blink::mojom::ServiceWorkerFetchHandlerBypassOption
@@ -305,7 +303,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   std::optional<std::string> sha256_script_checksum_;
 
   std::optional<blink::ServiceWorkerRouterRules> router_rules_;
-  // TODO(crbug.com/1501047): It may be better to make this an optional, so it
+  // TODO(crbug.com/40941292): It may be better to make this an optional, so it
   // is possible to distinguish between unset and kStopped, which are not really
   // equivalent.
   blink::EmbeddedWorkerStatus initial_running_status_ =

@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -110,7 +109,8 @@ void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type,
     IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount,
                        num_samples);
   } else {
-    NOTREACHED() << "Unexpected Chrome OS crash type " << crash_type;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected Chrome OS crash type " << crash_type;
   }
 
   // Wake up metrics logs sending if necessary now that new

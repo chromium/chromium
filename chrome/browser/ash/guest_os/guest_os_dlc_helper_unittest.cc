@@ -41,7 +41,7 @@ TEST_F(GuestOsDlcInstallationTest, AlreadyInstalled) {
   dlcservice::DlcState state;
   state.set_id("test-dlc");
   state.set_state(dlcservice::DlcState::INSTALLED);
-  FakeDlcserviceClient()->set_dlc_state(state);
+  FakeDlcserviceClient()->set_dlc_state("test-dlc", state);
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
   GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
                                       base::DoNothing());
@@ -55,7 +55,7 @@ TEST_F(GuestOsDlcInstallationTest, AlreadyInstalling) {
   dlcservice::DlcState state;
   state.set_id("test-dlc");
   state.set_state(dlcservice::DlcState::INSTALLING);
-  FakeDlcserviceClient()->set_dlc_state(state);
+  FakeDlcserviceClient()->set_dlc_state("test-dlc", state);
   FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
   GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
                                       base::DoNothing());
@@ -65,7 +65,7 @@ TEST_F(GuestOsDlcInstallationTest, AlreadyInstalling) {
   EXPECT_FALSE(result.IsReady());
 
   state.set_state(dlcservice::DlcState::INSTALLED);
-  FakeDlcserviceClient()->set_dlc_state(state);
+  FakeDlcserviceClient()->set_dlc_state("test-dlc", state);
 
   // Eventually the install completes.
   task_environment_.FastForwardBy(base::Seconds(10));

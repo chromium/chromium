@@ -1,6 +1,4 @@
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
+import("//build/config/features.gni")
 
 static_library("page_info") {
   sources = [
@@ -59,8 +57,18 @@ static_library("page_info") {
   }
 }
 
-if (is_android) {
-  java_cpp_enum("page_info_action_javagen") {
-    sources = [ "page_info.h" ]
-  }
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "page_info_ui_unittest.cc" ]
+
+  deps = [
+    ":page_info",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/strings:components_strings_grit",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
 }

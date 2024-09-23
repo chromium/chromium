@@ -565,7 +565,7 @@ class ArscResTablePackage(ArscChunk):
           self.key_pool = chunk
           self.key_pool.role = 'keys'
         else:
-          logging.warn('Unexpected string pool at %08X.' % t.address)
+          logging.warning('Unexpected string pool at %08X.' % t.address)
       cur_addr = chunk.end_addr
 
   def __str__(self):

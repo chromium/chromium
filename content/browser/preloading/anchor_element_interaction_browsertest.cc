@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -74,7 +76,7 @@ class AnchorElementInteractionBrowserTest : public ContentBrowserTest {
 
 struct TestScriptOptions {
   gfx::Rect link_area;
-  base::StringPiece eagerness = "conservative";
+  std::string_view eagerness = "conservative";
 };
 
 std::string MakeTestScript(const TestScriptOptions& options = {}) {

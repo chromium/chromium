@@ -92,7 +92,7 @@ Member<const CSSValue>& StyleRuleCounterStyle::GetDescriptorReference(
     case AtRuleDescriptorID::SpeakAs:
       return speak_as_;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return speak_as_;
   }
 }

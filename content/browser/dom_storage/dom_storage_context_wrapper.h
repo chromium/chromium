@@ -81,15 +81,19 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   storage::mojom::SessionStorageControl* GetSessionStorageControl();
   storage::mojom::LocalStorageControl* GetLocalStorageControl();
 
+  void PerformLocalStorageCleanup(base::OnceClosure callback);
+  void PerformSessionStorageCleanup(base::OnceClosure callback);
+
+  using GetSessionStorageUsageCallback =
+      base::OnceCallback<void(const std::vector<SessionStorageUsageInfo>&)>;
+  void GetSessionStorageUsage(GetSessionStorageUsageCallback callback);
+
   // DOMStorageContext implementation.
   void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) override;
-  void GetSessionStorageUsage(GetSessionStorageUsageCallback callback) override;
   void DeleteLocalStorage(const blink::StorageKey& storage_key,
                           base::OnceClosure callback) override;
-  void PerformLocalStorageCleanup(base::OnceClosure callback) override;
   void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
                             base::OnceClosure callback) override;
-  void PerformSessionStorageCleanup(base::OnceClosure callback) override;
   scoped_refptr<SessionStorageNamespace> RecreateSessionStorage(
       const std::string& namespace_id) override;
   void StartScavengingUnusedSessionStorage() override;

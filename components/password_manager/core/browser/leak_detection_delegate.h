@@ -44,7 +44,8 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
 #endif  // defined(UNIT_TEST)
 
   void StartLeakCheck(LeakDetectionInitiator initiator,
-                      const PasswordForm& credentials);
+                      const PasswordForm& credentials,
+                      const GURL& form_url);
 
  private:
   // LeakDetectionDelegateInterface:

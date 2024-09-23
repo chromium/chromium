@@ -18,8 +18,8 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 
 namespace cc {
 namespace {
@@ -35,7 +35,8 @@ UIResourceBitmap::UIResourceFormat SkColorTypeToUIResourceFormat(
       format = UIResourceBitmap::ALPHA_8;
       break;
     default:
-      NOTREACHED() << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
       break;
   }
   return format;

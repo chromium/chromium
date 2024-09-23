@@ -13,7 +13,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
-import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -40,7 +38,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -48,8 +45,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.common.AwFeatures;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -58,6 +53,7 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -68,7 +64,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -109,7 +104,6 @@ public class AwContentsTest extends AwParameterizedTest {
     }
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
@@ -119,7 +113,7 @@ public class AwContentsTest extends AwParameterizedTest {
     public void testCreateDestroy() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         // NOTE this test runs on UI thread, so we cannot call any async methods.
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .createAwTestContainerView(mContentsClient)
@@ -190,7 +184,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testWebViewApisFailGracefullyAfterDestruction() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -264,7 +258,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testGoBackGoForwardWithoutSessionHistory() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -285,7 +279,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testBackgroundColorInDarkMode() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -738,8 +732,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     private @RendererPriority int getRendererPriorityOnUiThread(final AwContents awContents)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.getEffectivePriorityForTesting());
+        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getEffectivePriorityForTesting());
     }
 
     private void setRendererPriorityOnUiThread(
@@ -747,7 +740,7 @@ public class AwContentsTest extends AwParameterizedTest {
             final @RendererPriority int priority,
             final boolean waivedWhenNotVisible)
             throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.setRendererPriorityPolicy(priority, waivedWhenNotVisible));
     }
 
@@ -851,14 +844,14 @@ public class AwContentsTest extends AwParameterizedTest {
                         .getAwContents();
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
 
-        mActivityTestRule.runOnUiThread(() -> awContents.onPause());
+        ThreadUtils.runOnUiThreadBlocking(() -> awContents.onPause());
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
 
         setRendererPriorityOnUiThread(
                 awContents, RendererPriority.HIGH, /* waivedWhenNotVisible= */ true);
         Assert.assertEquals(RendererPriority.WAIVED, getRendererPriorityOnUiThread(awContents));
 
-        mActivityTestRule.runOnUiThread(() -> awContents.onResume());
+        ThreadUtils.runOnUiThreadBlocking(() -> awContents.onResume());
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
     }
 
@@ -868,7 +861,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @OnlyRunIn(MULTI_PROCESS)
     public void testPauseDestroyResume() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents;
                     awContents =
@@ -888,7 +881,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     private AwRenderProcess getRenderProcessOnUiThread(final AwContents awContents)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+        return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
     }
 
     @Test
@@ -944,7 +937,7 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Run javascript navigation immediately, without waiting for the completion of
                     // data URL.
@@ -1010,7 +1003,7 @@ public class AwContentsTest extends AwParameterizedTest {
                 mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We specifically call AwContents.evaluateJavaScript() rather than the
                     // AwActivityTestRule helper methods to make sure we're using the same code path
@@ -1025,7 +1018,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Verify the callback actually contains the execution result.
         final SettableFuture<String> jsResult = SettableFuture.create();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We specifically call AwContents.evaluateJavaScript() rather than the
                     // AwActivityTestRule helper methods to make sure we're using the same code path
@@ -1058,15 +1051,14 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // "about:safe-browsing" will be rewritten by
                     // components.url_formatter.UrlFormatter.fixupUrl into
                     // "chrome://safe-browsing/".
                     //
                     // Note that chrome://safe-browsing/ is one of very few chrome://... URLs that
-                    // work
-                    // in Android WebView.  In particular, chrome://version/ wouldn't work.
+                    // work in Android WebView.  In particular, chrome://version/ wouldn't work.
                     awContents.loadUrl("about:safe-browsing");
                 });
 
@@ -1210,7 +1202,7 @@ public class AwContentsTest extends AwParameterizedTest {
         String expectedUrl =
                 encodeOctothorpes
                         ? "data:text/html,<html>test%23foo</html>"
-                        : "data:text/html,<html>test#foo</html>";
+                        : "data:text/html,<html>test#foo%3C/html%3E";
         Assert.assertEquals(expectedUrl, awContents.getLastCommittedUrl());
 
         // A URL with many '#' characters.
@@ -1223,7 +1215,7 @@ public class AwContentsTest extends AwParameterizedTest {
         expectedUrl =
                 encodeOctothorpes
                         ? "data:text/html,<html>test%23foo%23bar%23</html>"
-                        : "data:text/html,<html>test#foo#bar#</html>";
+                        : "data:text/html,<html>test#foo#bar#%3C/html%3E";
         Assert.assertEquals(expectedUrl, awContents.getLastCommittedUrl());
 
         // An already encoded '#' character.
@@ -1494,7 +1486,7 @@ public class AwContentsTest extends AwParameterizedTest {
         // Until AW gets site isolation, ordinary web content should not be
         // locked to origin.
         boolean isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> rendererProcess1.isProcessLockedToSiteForTesting());
         Assert.assertFalse("Initial renderer process should not be locked", isLocked);
         mActivityTestRule.loadUrlSync(
@@ -1504,7 +1496,7 @@ public class AwContentsTest extends AwParameterizedTest {
         Assert.assertNotEquals(rendererProcess1, webuiProcess);
         // WebUI pages should be locked to origin even on AW.
         isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> webuiProcess.isProcessLockedToSiteForTesting());
         Assert.assertTrue("WebUI process should be locked", isLocked);
         mActivityTestRule.loadUrlSync(
@@ -1513,7 +1505,7 @@ public class AwContentsTest extends AwParameterizedTest {
         Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertNotEquals(rendererProcess2, webuiProcess);
         isLocked =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> rendererProcess2.isProcessLockedToSiteForTesting());
         Assert.assertFalse("Final renderer process should not be locked", isLocked);
     }
@@ -1582,8 +1574,8 @@ public class AwContentsTest extends AwParameterizedTest {
             // Main frame has green color at the top half, and iframe in the bottom half.
             final String pageHtml =
                     "<html><body><div"
-                            + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
-                            + " style=\"width:100%;height:50%;\" src=\""
+                        + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
+                        + " style=\"width:100%;height:50%;\" src=\""
                             + iframePath
                             + "\"></iframe>"
                             + "</body></html>";
@@ -1611,7 +1603,7 @@ public class AwContentsTest extends AwParameterizedTest {
             assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
 
             // Click iframe to navigate. This exercises hit testing code paths.
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         int width = testView.getWidth();
                         int height = testView.getHeight();
@@ -1674,7 +1666,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackground() throws Throwable {
         mActivityTestRule.startBrowserProcess();
 
@@ -1687,7 +1678,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1718,7 +1709,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Rendering still works.
         doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
@@ -1727,7 +1718,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackgroundMultipleTransitions() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1740,7 +1730,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1787,59 +1777,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testDoeNotClearDrawFunctorInBackground() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-
-                    // Background cleanup task is posted even when the feature is disabled.
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
-                    // But the functor is not cleared.
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-
-        // Rendering still works.
-        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearFunctorOnBackgroundMemorySignal() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1852,7 +1789,7 @@ public class AwContentsTest extends AwParameterizedTest {
         doHardwareRenderingSmokeTest(testView);
         Assert.assertTrue(awContents.hasDrawFunctor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
@@ -1883,64 +1820,9 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Rendering still works.
         doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testMetricsRecordingIsThrottled() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-
-                    // Not required to happen in background, but this is how the notification is
-                    // dispatched in real code.
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-                    awContents.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(2, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    postTask.fastForwardBy(
-                            AwContents.FUNCTOR_RECLAIM_DELAY_MS
-                                    - AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-
-                    // Metrics are not recorded this time, not enough time has passed.
-                    histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectNoRecords(AwContents.PSS_HISTOGRAM)
-                                    .expectNoRecords(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
                 });
     }
 
@@ -1961,75 +1843,12 @@ public class AwContentsTest extends AwParameterizedTest {
         final AwContents awContents = testView.getAwContents();
 
         // Frame metrics listener is detached when AwContents becomes invisible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     awContents.onWindowVisibilityChanged(View.INVISIBLE);
                 });
 
         Assert.assertFalse(testView.isBackedByHardwareView());
-    }
-
-    private static final class InjectingPlatformServiceBridge extends PlatformServiceBridge {
-        private static final String DEMO_JAVASCRIPT =
-                """
-            function injectionDemo() {
-              return "injected";
-            }
-            """;
-
-        @Override
-        public void injectPlatformJsInterfaces(
-                @NonNull Context context, @NonNull AwContentsWrapper receiver) {
-            receiver.addDocumentStartJavaScript(DEMO_JAVASCRIPT, new String[] {"*"});
-        }
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
-    public void testPlatformJsInjectedIfEnabled() throws Exception {
-        mActivityTestRule.startBrowserProcess();
-
-        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
-        PlatformServiceBridge.injectInstance(bridge);
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-
-        String result =
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents, mContentsClient, "injectionDemo();");
-        Assert.assertEquals("\"injected\"", result);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
-    public void testPlatformJsNotInjectedIfDisabled() throws Exception {
-        mActivityTestRule.startBrowserProcess();
-
-        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
-        PlatformServiceBridge.injectInstance(bridge);
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-
-        String result =
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents,
-                        mContentsClient,
-                        "window.injectionDemo ? 'exists unexpectedly' : 'does not exist';");
-        Assert.assertEquals("\"does not exist\"", result);
     }
 
     @Test

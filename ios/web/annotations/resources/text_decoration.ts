@@ -43,6 +43,15 @@ function createChromeAnnotation(
   return element;
 }
 
+// Creates a <span>> with a single space. Attaches `id` and `type`.
+function createSpace(id: number, type: string): HTMLElementWithSymbolIndex {
+  const element = document.createElement('span') as HTMLElementWithSymbolIndex;
+  element[annotationUniqueId] = id;
+  element[annotationType] = type;
+  element.textContent = ' ';
+  return element;
+}
+
 // Returns `true` if given `node` is either an original node or a replacement
 // node.
 function isDecorationNode(node: NodeWithSymbolIndex): boolean {
@@ -129,6 +138,10 @@ class TextDecoration {
         if (parentNode && id) {
           parentNode.replaceChild(textNode, replacement);
           textNode[replacementNodeDecorationId] = id;
+          // The node has been replace. Remove the symbols so it is not
+          // considered as a replacement node in observers anymore..
+          delete replacement[replacementNodeDecorationId];
+          delete replacement[originalNodeDecorationId];
         }
         this.replacements[i] = textNode;
       }
@@ -189,6 +202,7 @@ export {
   annotationFullText,
   annotationExternalData,
   createChromeAnnotation,
+  createSpace,
   isDecorationNode,
   TextDecoration,
 }

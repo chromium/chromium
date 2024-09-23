@@ -119,7 +119,7 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
 
   DCHECK(is_timeline_active || state_.Read(*this) == State::kRemoved);
 
-  // TODO(https://crbug.com/1011138): Initialize current_time to null if the
+  // TODO(crbug.com/40651525): Initialize current_time to null if the
   // timeline is inactive. It might be inactive here when state is
   // State::REMOVED.
   std::optional<base::TimeDelta> current_time =
@@ -132,7 +132,7 @@ void WorkletAnimation::UpdateInputState(MutatorInputState* input_state,
   if (!is_timeline_active)
     current_time = last_current_time_.Read(*this);
 
-  // TODO(https://crbug.com/1011138): Do not early exit if state is
+  // TODO(crbug.com/40651525): Do not early exit if state is
   // State::REMOVED. The animation must be removed in this case.
   if (!current_time)
     return;

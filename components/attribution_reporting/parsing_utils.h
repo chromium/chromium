@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <concepts>
@@ -13,11 +14,10 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class TimeDelta;
@@ -25,20 +25,18 @@ class TimeDelta;
 
 namespace attribution_reporting {
 
-enum class AggregationKeyPieceError {
-  kWrongType,
-  kWrongFormat,
+class SuitableOrigin;
+
+struct ParseError {
+  friend bool operator==(ParseError, ParseError) = default;
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<absl::uint128, AggregationKeyPieceError>
-ParseAggregationKeyPiece(const base::Value&);
+base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
+    const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::string HexEncodeAggregationKey(absl::uint128);
-
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-bool AggregationKeyIdHasValidLength(const std::string& key);
 
 template <typename T>
   requires(std::integral<T>)
@@ -47,17 +45,16 @@ constexpr T ValueOrZero(std::optional<T> value) {
 }
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<uint64_t>, absl::monostate> ParseUint64(
+base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
     const base::Value::Dict&,
     std::string_view key);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<int64_t>, absl::monostate> ParseInt64(
+base::expected<std::optional<int64_t>, ParseError> ParseInt64(
     const base::Value::Dict&,
     std::string_view key);
 
-base::expected<int64_t, absl::monostate> ParsePriority(
-    const base::Value::Dict&);
+base::expected<int64_t, ParseError> ParsePriority(const base::Value::Dict&);
 
 // Returns `debug_key` value as we do not need to fail the source registration
 // if the value is invalid, see
@@ -68,12 +65,27 @@ std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 // invalid, returns true otherwise.
 [[nodiscard]] bool ParseDebugReporting(const base::Value::Dict& dict);
 
-base::expected<std::optional<uint64_t>, absl::monostate> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
     const base::Value::Dict&);
 
-base::expected<base::TimeDelta, mojom::SourceRegistrationError>
-ParseLegacyDuration(const base::Value& value,
-                    mojom::SourceRegistrationError error);
+// The given value must be a non-negative `int`, or a non-negative `double`
+// without a fractional part, or a string containing a base-10-formatted
+// unsigned 64-bit integer. That value is interpreted as a number of seconds
+// clamped to the given range.
+base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+    const base::Value&,
+    base::TimeDelta clamp_min,
+    base::TimeDelta clamp_max);
+
+// The given value must be an `int` or a `double` without a fractional part.
+// That value is interpreted as a number of seconds. The only clamping applied
+// is that of `base::TimeDelta` itself, which only affects extremely large
+// `double` values that for the purposes of Attribution Reporting are
+// effectively infinity and will be clamped or tolerated properly elsewhere.
+base::expected<base::TimeDelta, ParseError> ParseDuration(const base::Value&);
+
+base::expected<std::optional<SuitableOrigin>, ParseError>
+ParseAggregationCoordinator(const base::Value::Dict&);
 
 void SerializeUint64(base::Value::Dict&, std::string_view key, uint64_t value);
 
@@ -92,12 +104,27 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  std::string_view key,
                                  base::TimeDelta value);
 
-base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
-    const base::Value&,
-    mojom::SourceRegistrationError wrong_type_error,
-    mojom::SourceRegistrationError out_of_range_error);
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<int, ParseError> ParseInt(const base::Value&);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<uint32_t, ParseError> ParsePositiveUint32(const base::Value&);
 
 base::Value Uint32ToJson(uint32_t);
+
+enum class StringSetError {
+  kWrongType,
+  kStringTooLong,
+  kSetTooLong,
+};
+
+base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
+    base::Value::List,
+    size_t max_string_size,
+    size_t max_set_size);
 
 }  // namespace attribution_reporting
 

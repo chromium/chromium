@@ -1,10 +1,9 @@
-<rdar://problem/6904941> and https://bugs.webkit.org/show_bug.cgi?id=25300
-
-This tests to see what WebKit does with javascript urls of the form "javascript://".
-On the one hand, these are detected as hierarchical urls and usually marked invalid.
-On the other hand, the contents after "javascript:" are valid javascript code - a comment - that should be executed.
-If you click the link below and WebKit navigates - probably to an error page - then we're marking it as an invalid hierarchical URL and not trying to execute it.
-Instead, clicking it should appear to do nothing and you should remain at this page.
+This tests to see what Chromium does with invalid javascript urls of the form "javascript://".
+These should be detected as hierarchical, but invalid urls if the host part includes spaces.
+JavaScript execution nor navigation should not happen and you should remain at this page.
+On the other hand, if the contents after "javascript:" are considered valid javascript code, a comment, that may be executed and you should remain at this page too.
+See wpt/url/javascript-urls.window.js, which tests whether javascript code is executed or not.
+If you click the link below and Chromium tries to navigate - probably to an error page - then the test failed.
 In DumpRenderTree, if the custom policy delegate indicates that a load was attempted, then the test failed.
 
 Click me to test

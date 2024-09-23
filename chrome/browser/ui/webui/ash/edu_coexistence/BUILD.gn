@@ -1,0 +1,67 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash)
+
+static_library("edu_coexistence") {
+  sources = [
+    "edu_coexistence_login_handler.cc",
+    "edu_coexistence_login_handler.h",
+    "edu_coexistence_state_tracker.cc",
+    "edu_coexistence_state_tracker.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:channel_info",
+    "//chrome/common:non_code_constants",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/signin/public/base",
+    "//google_apis",
+    "//net",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/account_manager" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "edu_coexistence_login_handler_browsertest.cc" ]
+
+  deps = [
+    ":edu_coexistence",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//google_apis",
+  ]
+}

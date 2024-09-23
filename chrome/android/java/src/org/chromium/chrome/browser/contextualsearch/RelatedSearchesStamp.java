@@ -94,15 +94,19 @@ class RelatedSearchesStamp {
     */
 
     /**
-     * Gets the runtime processing stamp for Related Searches. This typically gets the value from
-     * a param from a Field Trial Feature.
+     * Gets the runtime processing stamp for Related Searches. This typically gets the value from a
+     * param from a Field Trial Feature.
+     *
      * @param basePageLanguage The language of the page, to check for server support.
-     * @return A {@code String} whose value describes the schema version and current processing
-     *         of Related Searches, or an empty string if the user is not qualified to request
-     *         Related Searches or the feature is not enabled.
+     * @return A {@code String} whose value describes the schema version and current processing of
+     *     Related Searches, or an empty string if the user is not qualified to request Related
+     *     Searches or the feature is not enabled.
      */
     String getRelatedSearchesStamp(String basePageLanguage) {
-        if (!isQualifiedForRelatedSearches(basePageLanguage)) return "";
+        if (!isQualifiedForRelatedSearches(basePageLanguage)
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_SWITCH)) {
+            return "";
+        }
 
         boolean isLanguageRestricted = !TextUtils.isEmpty(getAllowedLanguages());
         return buildRelatedSearchesStamp(isLanguageRestricted);

@@ -9,9 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/rtl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -70,7 +74,6 @@ class ButtonPlaceholder : public views::View, public views::ViewObserver {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  int GetHeightForWidth(int width) const override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -128,19 +131,6 @@ void ButtonPlaceholder::OnViewBoundsChanged(View* observed_view) {
   }
 }
 
-int ButtonPlaceholder::GetHeightForWidth(int width) const {
-  // The parent for this view (the row's content view) and the placeholder
-  // button uses a `BoxLayout` for its `LayoutManager`. Internally `BoxLayout`
-  // uses `GetHeightForWidth` on each child to define their height when the
-  // orientation is not `kVertical`. Finally these children uses
-  // `BoxLayout::GetPreferredSizeForChildWidth` to tell their parent their
-  // height, however they only return a non 0 value if they have visible
-  // children. This is not the case here because the button is at first no
-  // visible. Therefore we override GetHeightForWidth to return the preferred
-  // height regardless of children being visible or not.
-  return GetPreferredSize().height();
-}
-
 BEGIN_METADATA(ButtonPlaceholder)
 END_METADATA
 
@@ -153,29 +143,43 @@ PopupRowWithButtonView::PopupRowWithButtonView(
     int line_number,
     std::unique_ptr<PopupRowContentView> content_view,
     std::unique_ptr<views::ImageButton> button,
-    ButtonBehavior button_behavior)
+    ButtonVisibility button_visibility,
+    ButtonSelectBehavior button_select_behavior)
     : PopupRowView(a11y_selection_delegate,
                    selection_delegate,
                    controller,
                    line_number,
                    std::move(content_view)),
-      button_behavior_(button_behavior) {
-  CHECK(button);
+      button_visibility_(button_visibility),
+      button_select_behavior_(button_select_behavior) {
+  auto* content_layout =
+      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
+  // A spacer between the other children of the content view and the button.
+  // We do not use between child spacing since because the content view may
+  // have multiple children that we do not wish to affect.
+  const int spacer_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  content_layout->SetFlexForView(
+      GetContentView().AddChildView(
+          views::Builder<views::View>()
+              .SetPreferredSize(gfx::Size(spacer_width, 1))
+              .Build()),
+      0,
+      /*use_min_size=*/true);
 
+  CHECK(button);
   button_placeholder_ =
       GetContentView().AddChildView(std::make_unique<ButtonPlaceholder>(this));
   button_placeholder_->SetLayoutManager(std::make_unique<views::BoxLayout>());
   button_placeholder_->SetPreferredSize(button->GetPreferredSize());
   button_ = button_placeholder_->AddChildView(std::move(button));
   button_->SetVisible(ShouldButtonBeVisible());
-  button_->GetViewAccessibility().OverrideIsIgnored(true);
+  button_->GetViewAccessibility().SetIsIgnored(true);
   button_->SetButtonController(std::make_unique<ButtonController>(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
-
-  static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager())
-      ->SetFlexForView(button_placeholder_, 0);
+  content_layout->SetFlexForView(button_placeholder_, 0);
 }
 
 PopupRowWithButtonView::~PopupRowWithButtonView() = default;
@@ -201,7 +205,7 @@ void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
 }
 
 bool PopupRowWithButtonView::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   switch (event.windows_key_code) {
     // When pressing left arrow key (LTR):
     // 1. Set button as not focused.
@@ -278,16 +282,17 @@ void PopupRowWithButtonView::UpdateFocusedPartAndSelectedSuggestion(
   focused_part_ = part;
   if (focused_part_ == RowWithButtonPart::kContent) {
     controller()->SelectSuggestion(line_number());
-  } else {
+  } else if (button_select_behavior_ ==
+             ButtonSelectBehavior::kUnselectSuggestion) {
     controller()->UnselectSuggestion();
   }
 }
 
 bool PopupRowWithButtonView::ShouldButtonBeVisible() const {
-  switch (button_behavior_) {
-    case ButtonBehavior::kShowOnHoverOrSelect:
+  switch (button_visibility_) {
+    case ButtonVisibility::kShowOnHoverOrSelect:
       return GetSelectedCell() == CellType::kContent;
-    case ButtonBehavior::kShowAlways:
+    case ButtonVisibility::kShowAlways:
       return true;
   }
 }

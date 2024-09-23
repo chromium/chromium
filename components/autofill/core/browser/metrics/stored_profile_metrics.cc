@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include <functional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -13,7 +15,7 @@
 
 namespace autofill::autofill_metrics {
 
-void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
+void LogStoredProfileCountStatistics(AutofillProfileRecordTypeCategory category,
                                      const StoredProfileCounts& counts) {
   const std::string kSuffix = GetProfileCategorySuffix(category);
 
@@ -34,19 +36,21 @@ void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
       100 * used / counts.total);
 }
 
-void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
-                                      size_t days) {
+void LogStoredProfileDaysSinceLastUse(
+    AutofillProfileRecordTypeCategory category,
+    size_t days) {
   base::UmaHistogramCounts1000(
       base::StrCat({"Autofill.DaysSinceLastUse.StoredProfile.",
                     GetProfileCategorySuffix(category)}),
       days);
 }
 
-void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
+void LogStoredProfileMetrics(
+    const std::vector<const AutofillProfile*>& profiles) {
   const base::Time now = AutofillClock::Now();
   // Counts stored profile metrics for all profile of the given `category` and
   // emits UMA metrics for them.
-  auto count_and_log = [&](AutofillProfileSourceCategory category) {
+  auto count_and_log = [&](AutofillProfileRecordTypeCategory category) {
     StoredProfileCounts counts;
     for (const AutofillProfile* profile : profiles) {
       if (category != GetCategoryOfProfile(*profile)) {
@@ -60,34 +64,37 @@ void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
     LogStoredProfileCountStatistics(category, counts);
   };
 
-  count_and_log(AutofillProfileSourceCategory::kLocalOrSyncable);
-  count_and_log(AutofillProfileSourceCategory::kAccountChrome);
-  count_and_log(AutofillProfileSourceCategory::kAccountNonChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kLocalOrSyncable);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountNonChrome);
+  base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
+                             profiles.size());
 }
 
-void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
-                                    std::string_view app_locale) {
-  // Place all `kLocalOrSyncable` profiles before all `kAccount` profiles.
-  std::vector<AutofillProfile*>::iterator begin_account_profiles =
-      base::ranges::partition(profiles, [](AutofillProfile* profile) {
-        return profile->source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
+void LogLocalProfileSupersetMetrics(
+    std::vector<const AutofillProfile*> profiles,
+    std::string_view app_locale) {
+  // Place all local profiles before all account profiles.
+  std::vector<const AutofillProfile*>::iterator begin_account_profiles =
+      base::ranges::partition(profiles,
+                              std::not_fn(&AutofillProfile::IsAccountProfile));
   // Determines if a given `profile` is a strict superset of any account
   // profile.
-  auto is_account_superset = [&, comparator = AutofillProfileComparator(
-                                     app_locale)](AutofillProfile* profile) {
-    return base::ranges::any_of(begin_account_profiles, profiles.end(),
-                                [&](AutofillProfile* account_profile) {
-                                  return profile->IsStrictSupersetOf(
-                                      comparator, *account_profile);
-                                });
+  auto is_account_superset = [&, comparator =
+                                     AutofillProfileComparator(app_locale)](
+                                 const AutofillProfile* profile) {
+    return std::ranges::any_of(begin_account_profiles, profiles.end(),
+                               [&](const AutofillProfile* account_profile) {
+                                 return profile->IsStrictSupersetOf(
+                                     comparator, *account_profile);
+                               });
   };
   // Count the number of local profiles which are a superset of some account
   // profile.
   base::UmaHistogramCounts100(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup",
       base::ranges::count_if(profiles.begin(), begin_account_profiles,
-                             [&](AutofillProfile* local_profile) {
+                             [&](const AutofillProfile* local_profile) {
                                return is_account_superset(local_profile);
                              }));
 }

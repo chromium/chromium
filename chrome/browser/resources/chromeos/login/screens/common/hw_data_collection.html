@@ -18,7 +18,7 @@ found in the LICENSE file.
     cursor: pointer;
   }
 </style>
-<oobe-adaptive-dialog id="dialog" role="dialog">
+<oobe-adaptive-dialog id="dialog" role="dialog" for-step="overview">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'HWDataCollectionTitle')]]</h1>
   <div slot="content" class="flex layout vertical center-justified">
@@ -36,7 +36,8 @@ found in the LICENSE file.
     </div>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="acceptButton" on-click="onAcceptButtonClicked_"
-        inverse text-key="HWDataCollectionNextButton"></oobe-text-button>
+    <oobe-text-button id="acceptButton" class="focus-on-show"
+        on-click="onAcceptButtonClicked_" inverse
+        text-key="HWDataCollectionNextButton"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

@@ -167,7 +167,7 @@ class TestPixmap : public gfx::NativePixmap {
       std::vector<gfx::GpuFence> release_fences) override {
     return true;
   }
-  gfx::NativePixmapHandle ExportHandle() override {
+  gfx::NativePixmapHandle ExportHandle() const override {
     return gfx::NativePixmapHandle();
   }
 
@@ -233,7 +233,6 @@ std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
   };
 }
 

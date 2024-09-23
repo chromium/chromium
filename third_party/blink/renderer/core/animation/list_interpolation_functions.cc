@@ -186,7 +186,7 @@ PairwiseInterpolationValue ListInterpolationFunctions::MaybeMergeSingles(
           end_non_interpolable_list
               ? end_non_interpolable_list->Get(i % end_non_interpolable_length)
               : nullptr);
-      PairwiseInterpolationValue result = merge_single_item_conversions.Run(
+      PairwiseInterpolationValue result = merge_single_item_conversions(
           std::move(start_merge), std::move(end_merge));
       if (!result)
         return nullptr;
@@ -299,8 +299,8 @@ static bool InterpolableListsAreCompatible(
             ListInterpolationFunctions::LengthMatchingStrategy::
                 kLowestCommonMultiple ||
         (i < a.length() && i < b.length())) {
-      if (!interpolable_values_are_compatible.Run(a.Get(i % a.length()),
-                                                  b.Get(i % b.length()))) {
+      if (!interpolable_values_are_compatible(a.Get(i % a.length()),
+                                              b.Get(i % b.length()))) {
         return false;
       }
     }
@@ -320,8 +320,8 @@ static bool NonInterpolableListsAreCompatible(
             ListInterpolationFunctions::LengthMatchingStrategy::
                 kLowestCommonMultiple ||
         (i < a.length() && i < b.length())) {
-      if (!non_interpolable_values_are_compatible.Run(a.Get(i % a.length()),
-                                                      b.Get(i % b.length()))) {
+      if (!non_interpolable_values_are_compatible(a.Get(i % a.length()),
+                                                  b.Get(i % b.length()))) {
         return false;
       }
     }
@@ -407,9 +407,9 @@ void ListInterpolationFunctions::Composite(
 
     for (wtf_size_t i = 0; i < final_length; i++) {
       UnderlyingItemValue underlying_item(underlying_value_owner, builder, i);
-      composite_item.Run(underlying_item, underlying_fraction,
-                         *interpolable_list.Get(i % value_length),
-                         non_interpolable_list.Get(i % value_length));
+      composite_item(underlying_item, underlying_fraction,
+                     *interpolable_list.Get(i % value_length),
+                     non_interpolable_list.Get(i % value_length));
     }
   } else {
     DCHECK(length_matching_strategy == LengthMatchingStrategy::kPadToLargest ||
@@ -427,9 +427,8 @@ void ListInterpolationFunctions::Composite(
 
     for (wtf_size_t i = 0; i < value_length; i++) {
       UnderlyingItemValue underlying_item(underlying_value_owner, builder, i);
-      composite_item.Run(underlying_item, underlying_fraction,
-                         *interpolable_list.Get(i),
-                         non_interpolable_list.Get(i));
+      composite_item(underlying_item, underlying_fraction,
+                     *interpolable_list.Get(i), non_interpolable_list.Get(i));
     }
     for (wtf_size_t i = value_length; i < final_length; i++) {
       underlying_interpolable_list.GetMutable(i)->Scale(underlying_fraction);

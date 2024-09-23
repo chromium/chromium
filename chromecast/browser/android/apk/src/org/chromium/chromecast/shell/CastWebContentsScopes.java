@@ -63,16 +63,19 @@ class CastWebContentsScopes {
             Supplier<WindowAndroid> windowFactory, @ColorInt int backgroundColor) {
         return (WebContents webContents) -> {
             WindowAndroid window = windowFactory.get();
-            ContentViewRenderView contentViewRenderView = new ContentViewRenderView(context) {
-                @Override
-                protected void onReadyToRender() {
-                    setOverlayVideoMode(true);
-                }
-            };
+            ContentViewRenderView contentViewRenderView =
+                    new ContentViewRenderView(context) {
+                        @Override
+                        protected void onReadyToRender() {
+                            setOverlayVideoMode(true);
+                        }
+                    };
             contentViewRenderView.onNativeLibraryLoaded(window);
             contentViewRenderView.setSurfaceViewBackgroundColor(backgroundColor);
-            FrameLayout.LayoutParams matchParent = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams matchParent =
+                    new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT);
 
             // Use a slightly smaller layout as a mitigation for b/245596038 until the
             // Android-level fix is available.
@@ -80,8 +83,7 @@ class CastWebContentsScopes {
             talkbackFixLayout.setMargins(0, 0, 1, 1);
             layout.addView(contentViewRenderView, talkbackFixLayout);
 
-            ContentView contentView = ContentView.createContentView(
-                    context, null /* eventOffsetHandler */, webContents);
+            ContentView contentView = ContentView.createContentView(context, webContents);
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
 
             // Enable display of current webContents.
@@ -107,8 +109,7 @@ class CastWebContentsScopes {
     public static Observer<WebContents> withoutLayout(Context context) {
         return (WebContents webContents) -> {
             WindowAndroid window = new WindowAndroid(context);
-            ContentView contentView = ContentView.createContentView(
-                    context, null /* eventOffsetHandler */, webContents);
+            ContentView contentView = ContentView.createContentView(context, webContents);
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
             // Enable display of current webContents.
             webContents.onShow();

@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 namespace cssvalue {
 
@@ -33,7 +37,7 @@ class CSSGridAutoRepeatValue : public CSSValueList {
     DCHECK(id == CSSValueID::kAutoFill || id == CSSValueID::kAutoFit);
   }
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
   bool Equals(const CSSGridAutoRepeatValue&) const;
 
   CSSValueID AutoRepeatID() const { return auto_repeat_id_; }

@@ -48,8 +48,8 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
     did_not_produce_frame_ = true;
   }
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const gpu::Mailbox& id) override {}
-  void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {}
+                               const viz::SharedBitmapId& id) override {}
+  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override {}

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 
 namespace password_manager {
 class AffiliatedGroup;
@@ -51,9 +51,8 @@ class Browser;
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;
 
-// Determine if we need to setup a cancel button on the navigation's left bar
-// button.
-@property(nonatomic) BOOL showCancelButton;
+// Whether the coordinator's view controller should be opened in edit mode.
+@property(nonatomic, assign) BOOL openInEditMode;
 
 @end
 

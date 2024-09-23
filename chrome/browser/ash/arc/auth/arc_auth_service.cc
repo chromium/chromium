@@ -185,7 +185,7 @@ std::string GetAccountName(Profile* profile) {
     case mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT:
       return std::string();
     case mojom::ChromeAccountType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -243,8 +243,7 @@ ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
   ArcSessionManager::Get()->AddObserver(this);
   identity_manager_->AddObserver(this);
 
-  if (ash::IsAccountManagerAvailable(profile_) &&
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (ash::IsAccountManagerAvailable(profile_) && AreAccountsRestricted()) {
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile_);
 
@@ -331,7 +330,7 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
 
   // Re-auth shouldn't be triggered for non-Gaia device local accounts.
   if (!user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount()) {
-    NOTREACHED() << "Shouldn't re-auth for non-Gaia accounts";
+    NOTREACHED_IN_MIGRATION() << "Shouldn't re-auth for non-Gaia accounts";
     return;
   }
 
@@ -406,7 +405,8 @@ void ArcAuthService::ReportManagementChangeStatus(
                                    weak_ptr_factory_.GetWeakPtr()));
       break;
     case mojom::ManagementChangeStatus::INVALID_MANAGEMENT_STATE:
-      NOTREACHED() << "Invalid status of management transition: " << status;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid status of management transition: " << status;
   }
 }
 
@@ -517,6 +517,8 @@ void ArcAuthService::HandleAddAccountRequest() {
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
+  // TODO(b/326488045) Update Settings path to kPeopleSectionPath when Settings
+  // revamp is launched.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
 }
@@ -533,8 +535,8 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // Should be consistent with OnAccountAvailableInArc.
-  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
+  if (AreAccountsRestricted()) {
     return;
   }
 
@@ -544,8 +546,8 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
 void ArcAuthService::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
   // Should be consistent with OnAccountUnavailableInArc.
-  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
+  if (AreAccountsRestricted()) {
     return;
   }
 
@@ -557,7 +559,7 @@ void ArcAuthService::OnExtendedAccountInfoRemoved(
 void ArcAuthService::OnAccountAvailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
   CoreAccountInfo account_info =
@@ -578,7 +580,7 @@ void ArcAuthService::OnAccountAvailableInArc(
 void ArcAuthService::OnAccountUnavailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
   DCHECK(!IsPrimaryGaiaAccount(account.key.id()));
@@ -771,7 +773,7 @@ void ArcAuthService::DeletePendingTokenRequest(ArcFetcherBase* fetcher) {
 
   // We should not have received a call to delete a |fetcher| that was not in
   // |pending_token_requests_|.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ArcAuthService::SetURLLoaderFactoryForTesting(
@@ -815,7 +817,7 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
   VLOG(1) << "Pushing accounts to ARC "
           << (filter_primary_account ? "without primary account"
                                      : "with primary account");
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreAccountsRestricted()) {
     VLOG(1) << "Using AccountAppsAvailability to get available accounts";
     account_apps_availability_->GetAccountsAvailableInArc(
         base::BindOnce(&ArcAuthService::CompleteAccountsPushToArc,
@@ -837,7 +839,7 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
 void ArcAuthService::CompleteAccountsPushToArc(
     bool filter_primary_account,
     const base::flat_set<account_manager::Account>& accounts) {
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
 
   std::vector<mojom::ArcAccountInfoPtr> arc_accounts =
       std::vector<mojom::ArcAccountInfoPtr>();
@@ -891,6 +893,11 @@ void ArcAuthService::OnMainAccountResolutionStatus(
 // static
 void ArcAuthService::EnsureFactoryBuilt() {
   ArcAuthServiceFactory::GetInstance();
+}
+
+bool ArcAuthService::AreAccountsRestricted() {
+  return ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+         ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
 }
 
 }  // namespace arc

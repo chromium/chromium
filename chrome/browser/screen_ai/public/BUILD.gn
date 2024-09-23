@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("optical_character_recognizer") {
+  sources = [
+    "optical_character_recognizer.cc",
+    "optical_character_recognizer.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//content/public/browser",
+    "//services/screen_ai/public/mojom",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/fake_optical_character_recognizer.cc",
+    "test/fake_optical_character_recognizer.h",
+  ]
+
+  deps = [ "//base" ]
+  public_deps = [ ":optical_character_recognizer" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}

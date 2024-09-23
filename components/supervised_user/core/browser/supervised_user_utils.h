@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_UTILS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_UTILS_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
+#include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/proto/families_common.pb.h"
 
 class GURL;
 class PrefService;
@@ -21,10 +23,15 @@ namespace supervised_user {
 enum class FilteringBehaviorReason {
   DEFAULT = 0,
   ASYNC_CHECKER = 1,
-  // Deprecated, DENYLIST = 2,
-  MANUAL = 3,
-  ALLOWLIST = 4,
-  NOT_SIGNED_IN = 5,
+  MANUAL = 2,
+};
+
+// Details degarding how a particular filtering classification was arrived at.
+struct FilteringBehaviorDetails {
+  FilteringBehaviorReason reason;
+
+  // The following field only applies if `reason` is `ASYNC_CHECKER`.
+  safe_search_api::ClassificationDetails classification_details;
 };
 
 // A Java counterpart will be generated for this enum.
@@ -52,8 +59,16 @@ enum class FirstTimeInterstitialBannerState : int {
   kUnknown = 2,
 };
 
-// Converts FilteringBehaviorReason enum to string format.
-std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);
+// Whether the migration of existing extensions to parent-approved needs to be
+// executed, when the feature
+// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` becomes enabled.
+enum class LocallyParentApprovedExtensionsMigrationState : int {
+  kNeedToRun = 0,
+  kComplete = 1,
+};
+
+// Converts FamilyRole enum to string format.
+std::string FamilyRoleToString(kidsmanagement::FamilyRole role);
 
 // Strips user-specific tokens in a URL to generalize it.
 GURL NormalizeUrl(const GURL& url);
@@ -67,6 +82,21 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service);
 // Returns true if one or more histograms were emitted.
 bool EmitLogRecordHistograms(
     const std::vector<FamilyLinkUserLogRecord>& records);
+
+// Url formatter helper.
+// Decisions on how to format the url depend on the filtering reason,
+// the manual parental url block-list.
+class UrlFormatter {
+ public:
+  UrlFormatter(const SupervisedUserURLFilter& supervised_user_url_filter,
+               FilteringBehaviorReason filtering_behavior_reason);
+  ~UrlFormatter();
+  GURL FormatUrl(const GURL& url) const;
+
+ private:
+  const raw_ref<const SupervisedUserURLFilter> supervised_user_url_filter_;
+  const FilteringBehaviorReason filtering_behavior_reason_;
+};
 
 }  // namespace supervised_user
 

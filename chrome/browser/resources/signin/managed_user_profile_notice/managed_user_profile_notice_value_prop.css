@@ -1,0 +1,90 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  width: 64vw;
+}
+
+main {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding-inline: var(--tangible-sync-style-banner-width);
+  margin-inline: auto;
+  width: 368px;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle {
+  text-align: center;
+}
+
+#product-logo {
+  height: 34px;
+  margin-block-end: 16px;
+  width: 34px;
+}
+
+.pill {
+  align-items: center;
+  background-color: var(--md-background-color);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  height: 64px;
+  padding: 12px;
+}
+
+.pill .avatar {
+  flex: 0 0 40px;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+}
+
+.pill .text-container {
+  flex: 1 1 auto;
+  padding-inline-end: 12px;
+}
+
+.pill .icon {
+  flex: 0 0 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.account-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+  text-overflow: ellipsis;
+}
+
+.email {
+  font-size: 0.75rem;
+  margin: 0;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pill {
+    background-color: var(--cr-fallback-color-surface);
+  }
+}

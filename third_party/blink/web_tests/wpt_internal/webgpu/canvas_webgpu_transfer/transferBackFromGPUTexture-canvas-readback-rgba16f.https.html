@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-canvas-readback</h1>
+
+<p>transferBackFromGPUTexture() should preserve texture changes on the 2D
+canvas.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferBackFromGPUTexture_canvas_readback(
+                 adapterInfo,
+                 device,
+                 document.getElementById('c'),
+                 {colorSpace: 'srgb', pixelFormat: 'float16'});
+    });
+  },
+  'transferBackFromGPUTexture() should preserve texture changes on an RGB16F ' +
+  'canvas.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferBackFromGPUTexture_canvas_readback(
+                 adapterInfo,
+                 device,
+                 new OffscreenCanvas(50, 50),
+                 {colorSpace: 'srgb', pixelFormat: 'float16'});
+    });
+  },
+  'transferBackFromGPUTexture() should preserve texture changes on an RGB16F ' +
+  'offscreen canvas.'
+);
+
+</script>

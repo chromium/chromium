@@ -1,0 +1,93 @@
+This is a testharness.js-based test.
+[FAIL] averagePool2d float32 4D constant tensor all positive default options
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor all positive default options
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor all negative default options
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -49.21875 should be close enough to expected -49.258975982666016 by the acceptable 27 ULP distance, but they have 10545 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.windowDimensions
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 43.4375 should be close enough to expected 43.46498107910156 by the acceptable 11 ULP distance, but they have 7204 ULP distance expected true got false
+[FAIL] global averagePool2d float32 4D tensor all positive options.windowDimensions
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.padding
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 52.40625 should be close enough to expected 52.43666076660156 by the acceptable 27 ULP distance, but they have 7972 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.strides
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 43.4375 should be close enough to expected 43.46498107910156 by the acceptable 11 ULP distance, but they have 7204 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] averagePool2d float32 4D tensor options.layout=nchw
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] global averagePool2d float32 4D tensor options.layout=nhwc and options.windowDimensions
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 47.25 should be close enough to expected 47.26926803588867 by the acceptable 27 ULP distance, but they have 5051 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
+[FAIL] averagePool2d float32 4D tensor options.dilations with options.strides
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 42.90625 should be close enough to expected 42.940242767333984 by the acceptable 11 ULP distance, but they have 8911 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D constant tensor all positive default options
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 288.75 should be close enough to expected 289.01953125 by the acceptable 27 ULP distance, but they have 8832 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor default all positive options
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 288.75 should be close enough to expected 289.01953125 by the acceptable 27 ULP distance, but they have 8832 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor default all negative options
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 298.75 should be close enough to expected 298.928955078125 by the acceptable 27 ULP distance, but they have 5864 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.windowDimensions
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 194.375 should be close enough to expected 194.45481872558594 by the acceptable 11 ULP distance, but they have 5231 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.padding
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 254.625 should be close enough to expected 254.81358337402344 by the acceptable 27 ULP distance, but they have 12359 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.strides
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 194.375 should be close enough to expected 194.45481872558594 by the acceptable 11 ULP distance, but they have 5231 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] l2Pool2d float32 4D tensor options.layout=nchw
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 288.75 should be close enough to expected 289.01953125 by the acceptable 27 ULP distance, but they have 8832 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.layout=nhwc
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 288.75 should be close enough to expected 289.01953125 by the acceptable 27 ULP distance, but they have 8832 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 171.375 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 8595 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 171.375 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 8595 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.dilations with options.strides
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 120.125 should be close enough to expected 120.20333862304688 by the acceptable 11 ULP distance, but they have 10268 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.windowDimensions
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.padding
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.strides
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] maxPool2d float32 4D tensor options.layout=nchw
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.layout=nhwc
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
+[FAIL] maxPool2d float32 4D tensor options.dilations with options.strides
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 60.875 should be close enough to expected 60.896095275878906 by the acceptable 0 ULP distance, but they have 5530 ULP distance expected true got false
+Harness: the test ran to completion.
+

@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -58,26 +57,9 @@ network::SimpleURLLoader::BodyAsStringCallbackDeprecated RunOnUIThread(
 // static
 IOThreadSharedURLLoaderFactoryOwner::IOThreadSharedURLLoaderFactoryOwnerPtr
 IOThreadSharedURLLoaderFactoryOwner::Create(
-    URLLoaderFactoryGetter* url_loader_factory_getter) {
-  return IOThreadSharedURLLoaderFactoryOwnerPtr(
-      new IOThreadSharedURLLoaderFactoryOwner(url_loader_factory_getter));
-}
-
-// static
-IOThreadSharedURLLoaderFactoryOwner::IOThreadSharedURLLoaderFactoryOwnerPtr
-IOThreadSharedURLLoaderFactoryOwner::Create(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> info) {
   return IOThreadSharedURLLoaderFactoryOwnerPtr(
       new IOThreadSharedURLLoaderFactoryOwner(std::move(info)));
-}
-
-IOThreadSharedURLLoaderFactoryOwner::IOThreadSharedURLLoaderFactoryOwner(
-    URLLoaderFactoryGetter* url_loader_factory_getter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  InitializeSharedFactoryOnIOThread(
-      base::BindOnce(&URLLoaderFactoryGetter::GetNetworkFactory,
-                     base::Unretained(url_loader_factory_getter)),
-      &shared_url_loader_factory_);
 }
 
 IOThreadSharedURLLoaderFactoryOwner::IOThreadSharedURLLoaderFactoryOwner(

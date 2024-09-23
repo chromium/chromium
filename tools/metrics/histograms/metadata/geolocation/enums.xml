@@ -36,66 +36,62 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="GeolocationAuthorizationAction">
-  <int value="0" label="Location authorized"/>
-  <int value="1" label="Location permanently denied (Don't Allow)"/>
-  <int value="2" label="Location denied at this prompt (Not Now)"/>
+<enum name="CoreLocationErrorCode">
+  <int value="0" label="kCLErrorLocationUnknown"/>
+  <int value="1" label="kCLErrorDenied"/>
+  <int value="2" label="kCLErrorNetwork"/>
+  <int value="3" label="kCLErrorHeadingFailure"/>
+  <int value="4" label="kCLErrorRegionMonitoringDenied"/>
+  <int value="5" label="kCLErrorRegionMonitoringFailure"/>
+  <int value="6" label="kCLErrorRegionMonitoringSetupDelayed"/>
+  <int value="7" label="kCLErrorRegionMonitoringResponseDelayed"/>
+  <int value="8" label="kCLErrorGeocodeFoundNoResult"/>
+  <int value="9" label="kCLErrorGeocodeFoundPartialResult"/>
+  <int value="10" label="kCLErrorGeocodeCanceled"/>
+  <int value="11" label="kCLErrorDeferredFailed"/>
+  <int value="12" label="kCLErrorDeferredNotUpdatingLocation"/>
+  <int value="13" label="kCLErrorDeferredAccuracyTooLow"/>
+  <int value="14" label="kCLErrorDeferredDistanceFiltered"/>
+  <int value="15" label="kCLErrorDeferredCanceled"/>
+  <int value="16" label="kCLErrorRangingUnavailable"/>
+  <int value="17" label="kCLErrorRangingFailure"/>
+  <int value="18" label="kCLErrorPromptDeclined"/>
+  <int value="19" label="kCLErrorHistoricalLocationError"/>
 </enum>
 
-<enum name="GeolocationHeaderPermissionState">
-  <int value="0" label="Location mode unknown"/>
-  <int value="1" label="High acc., app allowed, domain allowed, location sent"/>
-  <int value="2"
-      label="High acc., app allowed, domain allowed, location not sent"/>
-  <int value="3" label="High acc., app allowed, domain prompt, location sent"/>
-  <int value="4"
-      label="High acc., app allowed, domain prompt, location not sent"/>
-  <int value="5" label="High acc., app allowed, domain denied"/>
-  <int value="6" label="High acc., app prompt, domain allowed"/>
-  <int value="7" label="High acc., app prompt, domain prompt"/>
-  <int value="8" label="High acc., app prompt, domain denied"/>
-  <int value="9" label="High acc., app denied, domain allowed"/>
-  <int value="10" label="High acc., app denied, domain prompt"/>
-  <int value="11" label="High acc., app denied, domain denied"/>
-  <int value="12"
-      label="Battery sav., app allowed, domain allowed, location sent"/>
-  <int value="13"
-      label="Battery sav., app allowed, domain allowed, location not sent"/>
-  <int value="14"
-      label="Battery sav., app allowed, domain prompt, location sent"/>
-  <int value="15"
-      label="Battery sav., app allowed, domain prompt, location not sent"/>
-  <int value="16" label="Battery sav., app allowed, domain denied"/>
-  <int value="17" label="Battery sav., app prompt, domain allowed"/>
-  <int value="18" label="Battery sav., app prompt, domain prompt"/>
-  <int value="19" label="Battery sav., app prompt, domain denied"/>
-  <int value="20" label="Battery sav., app denied, domain allowed"/>
-  <int value="21" label="Battery sav., app denied, domain prompt"/>
-  <int value="22" label="Battery sav., app denied, domain denied"/>
-  <int value="23" label="GPS only, app allowed, domain allowed, location sent"/>
-  <int value="24"
-      label="GPS only, app allowed, domain allowed, location not sent"/>
-  <int value="25" label="GPS only, app allowed, domain prompt, location sent"/>
-  <int value="26"
-      label="GPS only, app allowed, domain prompt, location not sent"/>
-  <int value="27" label="GPS only, app allowed, domain denied"/>
-  <int value="28" label="GPS only, app prompt, domain allowed"/>
-  <int value="29" label="GPS only, app prompt, domain prompt"/>
-  <int value="30" label="GPS only, app prompt, domain denied"/>
-  <int value="31" label="GPS only, app denied, domain allowed"/>
-  <int value="32" label="GPS only, app denied, domain prompt"/>
-  <int value="33" label="GPS only, app denied, domain denied"/>
-  <int value="34" label="Location off, app allowed, domain allowed"/>
-  <int value="35" label="Location off, app allowed, domain prompt"/>
-  <int value="36" label="Location off, app allowed, domain denied"/>
-  <int value="37" label="Location off, app prompt, domain allowed"/>
-  <int value="38" label="Location off, app prompt, domain prompt"/>
-  <int value="39" label="Location off, app prompt, domain denied"/>
-  <int value="40" label="Location off, app denied, domain allowed"/>
-  <int value="41" label="Location off, app denied, domain prompt"/>
-  <int value="42" label="Location off, app denied, domain denied"/>
-  <int value="43" label="Unsuitable URL"/>
-  <int value="44" label="Not using HTTPS"/>
+<enum name="GeolocationClientId">
+  <int value="0" label="kForTesting"/>
+  <int value="1" label="kGeolocationServiceImpl"/>
+  <int value="2" label="kGeoLanguageProvider"/>
+  <int value="3" label="kFingerprintDataLoader"/>
+</enum>
+
+<enum name="GeolocationIOSAuthorizationStatus">
+  <int value="0" label="Not determined"/>
+  <int value="1" label="Restricted (user cannot grant permission)"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Authorized always"/>
+  <int value="4" label="Authorized when in-use"/>
+</enum>
+
+<enum name="LocationProviderManagerMode">
+  <int value="0" label="kNetworkOnly"/>
+  <int value="1" label="kPlatformOnly"/>
+  <int value="2" label="kCustomOnly"/>
+  <int value="3" label="kHybridPlatform"/>
+  <int value="4" label="kHybridFallbackNetwork"/>
+</enum>
+
+<enum name="LocationProviderManagerSource">
+  <int value="0" label="kNetworkProvider"/>
+  <int value="1" label="kPlatformProvider"/>
+  <int value="2" label="kCustomProvider"/>
+</enum>
+
+<enum name="LocationSystemPermissionStatus">
+  <int value="0" label="kNotDetermined"/>
+  <int value="1" label="kDenied"/>
+  <int value="2" label="kAllowed"/>
 </enum>
 
 <enum name="NetworkLocationRequestEvent">
@@ -106,6 +102,31 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="RESPONSE_EMPTY"/>
   <int value="5" label="RESPONSE_MALFORMED"/>
   <int value="6" label="RESPONSE_INVALID_FIX"/>
+</enum>
+
+<enum name="NetworkLocationRequestSource">
+  <int value="0" label="kNetworkLocationProvider"/>
+  <int value="1" label="kPublicIpAddressGeolocator"/>
+  <int value="2" label="kSimpleGeolocationProvider"/>
+</enum>
+
+<enum name="WindowsDevicesGeolocationPositionSource">
+  <int value="0" label="PositionSource_Cellular"/>
+  <int value="1" label="PositionSource_Satellite"/>
+  <int value="2" label="PositionSource_WiFi"/>
+  <int value="3" label="PositionSource_IPAddress"/>
+  <int value="4" label="PositionSource_Unknown"/>
+  <int value="5" label="PositionSource_Default"/>
+  <int value="6" label="PositionSource_Obfuscated"/>
+</enum>
+
+<enum name="WindowsDevicesGeolocationPositionStatus">
+  <int value="0" label="PositionStatus_Ready"/>
+  <int value="1" label="PositionStatus_Initializing"/>
+  <int value="2" label="PositionStatus_NoData"/>
+  <int value="3" label="PositionStatus_Disabled"/>
+  <int value="4" label="PositionStatus_NotInitialized"/>
+  <int value="5" label="PositionStatus_NotAvailable"/>
 </enum>
 
 </enums>

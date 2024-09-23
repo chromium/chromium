@@ -11,13 +11,11 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_allocator_dump.h"
+#include "components/viz/common/resources/shared_bitmap_id.h"
 #include "components/viz/common/viz_common_export.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace viz {
-using SharedBitmapId = gpu::Mailbox;
-
 struct SharedBitmapIdHash {
   size_t operator()(const SharedBitmapId& id) const {
     return base::FastHash(base::as_bytes(base::make_span(id.name)));

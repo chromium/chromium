@@ -139,6 +139,7 @@ TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
   const auto a_result = a.result();
   EXPECT_OK(a_result) << a_result;
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
 }
 
@@ -155,6 +156,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
 
   std::optional<base::Value> value_result =
       base::JSONReader::Read(test_storage_module()->record().data());
@@ -174,6 +176,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
 
   test::TestMessage result_message;
   ASSERT_TRUE(
@@ -274,6 +277,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
   EXPECT_OK(b_result) << b_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
 
   test::TestMessage result_message;
   ASSERT_TRUE(
@@ -299,6 +303,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().reserved_space(),
               Eq(kReservedSpace));
 
@@ -326,6 +331,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSource) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
   EXPECT_THAT(test_storage_module()->record().source_info().source(),
               Eq(source_info.source()));
@@ -355,6 +361,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSourceVersion) {
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
   EXPECT_THAT(test_storage_module()->record().source_info().source(),
               Eq(source_info.source()));
@@ -479,6 +486,7 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
 }
 
@@ -532,6 +540,7 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
 }
 
@@ -570,6 +579,7 @@ TEST_F(ReportQueueImplTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
   EXPECT_THAT(test_storage_module()->record().reserved_space(),
               Eq(kReservedSpace));
@@ -608,6 +618,7 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
   // Let everything ongoing to finish.
   task_environment_.RunUntilIdle();
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
   EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
   EXPECT_THAT(test_storage_module()->record().source_info().source(),
@@ -649,6 +660,7 @@ TEST_F(ReportQueueImplTest,
   // Let everything ongoing to finish.
   task_environment_.RunUntilIdle();
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
   EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
   EXPECT_THAT(test_storage_module()->record().reserved_space(), Eq(0L));
   EXPECT_THAT(test_storage_module()->record().source_info().source(),

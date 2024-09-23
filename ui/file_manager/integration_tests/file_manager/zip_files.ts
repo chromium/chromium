@@ -4,20 +4,14 @@
 
 import {addEntries, ENTRIES, expectHistogramTotalCount, getCaller, pending, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ZIP_ENTRY_SET, COMPLEX_ZIP_ENTRY_SET} from './test_data.js';
 
-/**
- * The name of the UMA to track the zip creation time.
- * @const {string}
- */
+/** The name of the UMA to track the zip creation time. */
 const ZipCreationTimeHistogramName = 'FileBrowser.ZipTask.Time';
 
-/**
- * The name of the UMA to track extract archive status.
- * @const {string}
- */
+/** The name of the UMA to track extract archive status. */
 const ExtractArchiveStatusHistogramName = 'FileBrowser.ExtractTask.Status';
 
 /**
@@ -46,7 +40,7 @@ export async function zipFileOpenDownloads() {
   });
 
   // Open Files app on Downloads containing a zip file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the zip file.
@@ -74,7 +68,7 @@ export async function zipNotifyFileTasks() {
   });
 
   // Open Files app on Downloads containing a zip file.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Open the zip file.
@@ -97,8 +91,8 @@ export async function zipFileOpenDrive() {
   });
 
   // Open Files app on Drive containing a zip file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.zipArchive]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.zipArchive]);
 
   // Select the zip file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
@@ -125,14 +119,14 @@ export async function zipFileOpenUsb() {
   });
 
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful]);
 
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Add zip file to the USB volume.
@@ -172,8 +166,8 @@ function getZipSelectionFileListRowEntries() {
  */
 export async function zipCreateFileDownloads() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
@@ -206,8 +200,8 @@ export async function zipCreateFileDownloads() {
  */
 export async function zipCreateFileDrive() {
   // Open Files app on Drive containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.photos]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.photos]);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
@@ -240,7 +234,7 @@ export async function zipCreateFileDrive() {
  */
 export async function zipCreateFileDriveOffice() {
   // Open Files app on Drive containing ENTRIES.photos and ENTRIES.docxFile.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.photos, ENTRIES.docxFile]);
 
   // Select the files.
@@ -278,8 +272,8 @@ export async function zipCreateFileDriveOffice() {
  */
 export async function zipDoesntCreateFileEncrypted() {
   // Open Files app on Drive containing a test CSE file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   // Select the file.
   await remoteCall.waitAndClickElement(
@@ -306,14 +300,14 @@ export async function zipDoesntCreateFileEncrypted() {
  */
 export async function zipCreateFileUsb() {
   // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful]);
 
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Add ENTRIES.photos to the USB volume.
@@ -356,15 +350,9 @@ export async function zipExtractShowPanel() {
   const entry = ENTRIES.zipArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -382,11 +370,19 @@ export async function zipExtractShowPanel() {
   await remoteCall.callRemoteTestUtil(
       'progressCenterNeverNotifyCompleted', appId, []);
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   const extract = '[command="#extract-all"]';
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/Downloads/' + targetDirectoryName);
 
   // Check that the error appears in the feedback panel.
   const caller = getCaller();
@@ -416,24 +412,9 @@ export async function zipExtractShowPanel() {
 export async function zipExtractShowMultiPanel() {
   const entries = COMPLEX_ZIP_ENTRY_SET;
 
-  // Make sure the test extension handles the new window creation(s) properly.
-  let entry = entries[2]!;  // ENTRIES.zipArchive.
-  let targetDirectoryName = entry.nameText.split('.')[0]!;
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-  entry = entries[3]!;  // ENTRIES.zipSJISArchive.
-  targetDirectoryName = entry.nameText.split('.')[0]!;
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Select two ZIP files.
   await remoteCall.waitAndClickElement(
@@ -459,6 +440,9 @@ export async function zipExtractShowMultiPanel() {
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // We don't verify that two new Files app windows have opened because there is
+  // a race setting appId when opening multiple windows at the same time.
 
   // Check that the error appears in the feedback panel.
   const caller = getCaller();
@@ -488,7 +472,8 @@ export async function zipExtractSelectionMenus() {
   const entries = BASIC_ZIP_ENTRY_SET;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
 
   // Select the first file (ENTRIES.hello).
   await remoteCall.waitUntilSelected(appId, entries[0]!.nameText);
@@ -599,15 +584,9 @@ export async function zipExtractCheckContent() {
   const entry = ENTRIES.zipArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -621,11 +600,19 @@ export async function zipExtractCheckContent() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   const extract = '[command="#extract-all"]';
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/Downloads/' + targetDirectoryName);
 
   const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
@@ -653,12 +640,9 @@ export async function zipExtractCheckDuplicates() {
   const entry = ENTRIES.zipArchive;
   const directory = entry.nameText.split('.')[0];
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage(
-      {name: 'expectFileTask', fileNames: [directory], openType: 'launch'});
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -672,19 +656,23 @@ export async function zipExtractCheckDuplicates() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   const extract = '[command="#extract-all"]';
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
 
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/Downloads/' + directory);
+
   let directoryQuery = '#file-list [file-name="' + directory + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
-
-  // Prepare for the second window being opened.
-  await sendTestMessage(
-      {name: 'expectFileTask', fileNames: [directory], openType: 'launch'});
 
   // Right-click the selected file.
   chrome.test.assertTrue(
@@ -695,10 +683,18 @@ export async function zipExtractCheckDuplicates() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the second new app window opens.
+  const waitForWindowPromise2 = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // Check: The second new window has navigated to the second unzipped folder.
+  const newAppId2 = await waitForWindowPromise2;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId2, '/My files/Downloads/' + directory + ' (1)');
 
   directoryQuery = '#file-list [file-name="' + directory + ' (1)"]';
   // Check: the duplicate named extract directory should appear.
@@ -726,15 +722,9 @@ export async function zipExtractCheckEncodings() {
   const entry = ENTRIES.zipSJISArchive;
   const targetDirectoryName = entry.nameText.split('.')[0];
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -748,11 +738,19 @@ export async function zipExtractCheckEncodings() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   const extract = '[command="#extract-all"]';
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/Downloads/' + targetDirectoryName);
 
   const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
@@ -779,7 +777,8 @@ export async function zipExtractA11y() {
   const entry = ENTRIES.zipArchive;
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -806,7 +805,8 @@ export async function zipExtractNotEnoughSpace() {
   const entry = ENTRIES.zipExtArchive;  // 120TB fake archive.
 
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -854,18 +854,12 @@ export async function zipExtractFromReadOnly() {
   const entry = ENTRIES.readOnlyZipFile;
   const targetDirectoryName = entry.nameText.split('.')[0];
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Open files app.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Navigate to Shared with me.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
@@ -889,11 +883,19 @@ export async function zipExtractFromReadOnly() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   const extract = '[command="#extract-all"]';
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
       'fakeMouseClick failed');
+
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/' + targetDirectoryName);
 
   // Navigate to My Files.
   await directoryTree.navigateToPath('/My files');
@@ -912,4 +914,41 @@ export async function zipExtractFromReadOnly() {
   await remoteCall.waitForElement(appId, '#file-list [file-name="folder"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
+}
+
+/**
+ * Tests ZIP mounting can be closed from the "Close" context menu item.
+ */
+export async function zipCloseFromContextMenu() {
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [ENTRIES.zipArchive.targetPath],
+    openType: 'launch',
+  });
+
+  // Open Files app on Downloads containing a zip file.
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
+
+  // Select the zip file.
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
+
+  // Press the Enter key.
+  await remoteCall.fakeKeyDown(
+      appId, '#file-list', 'Enter', false, false, false);
+
+  // Check: the zip mount should show on the directory tree.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.waitForSelectedItemByLabel(ENTRIES.zipArchive.nameText);
+
+  // Trigger context menu event by long pressing.
+  await directoryTree.longPressItemByLabel(ENTRIES.zipArchive.nameText);
+
+  // Wait and click "Close" context menu.
+  await remoteCall.waitForElement(appId, '#roots-context-menu:not([hidden])');
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#unmount"]:not([hidden]):not([disabled])');
+
+  // Check: the zip mount should disappear from the directory tree.
+  await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
 }

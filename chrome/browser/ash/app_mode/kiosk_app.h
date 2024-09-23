@@ -30,7 +30,7 @@ class KioskApp {
   KioskApp& operator=(KioskApp&&);
 
   // The Kiosk id used to identify the app, and determine its type.
-  KioskAppId id() const { return id_; }
+  const KioskAppId& id() const { return id_; }
   // The application name as displayed in the UI.
   std::string_view name() const { return name_; }
   // The application icon as displayed in the UI.

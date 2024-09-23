@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -45,7 +46,9 @@ source_set("platform_apps") {
 
   public_deps = [
     "//apps",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/platform_apps/api:api_registration",
+    "//chrome/browser/profiles:profile_attributes",
     "//chrome/common/apps/platform_apps/api",
   ]
 
@@ -56,8 +59,9 @@ source_set("platform_apps") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/sharing/proto:proto",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",
@@ -67,6 +71,7 @@ source_set("platform_apps") {
     "//components/no_state_prefetch/browser",
     "//components/pref_registry",
     "//components/services/app_service",
+    "//components/sharing_message/proto",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser",
@@ -77,9 +82,22 @@ source_set("platform_apps") {
     "//ui/gfx",
   ]
 
+  allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+
   if (is_mac) {
     deps += [ "//chrome/browser/apps/app_shim" ]
   }
 
-  allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/ui/ash/keyboard",
+    ]
+
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ui/ash/keyboard",
+    ]
+  }
 }

@@ -148,6 +148,7 @@ class EditorViewController : public PaymentRequestSheetController,
   bool ValidateInputFields();
 
   // PaymentRequestSheetController:
+  void Stop() override;
   std::u16string GetPrimaryButtonLabel() override;
   ButtonCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
@@ -206,6 +207,10 @@ class EditorViewController : public PaymentRequestSheetController,
 
   void SaveButtonPressed(const ui::Event& event);
 
+  // Resets all the (raw) pointers to views that the controller keeps. It also
+  // resets the controllers of the `text_fields_` to nullptr.
+  void ClearViewPointers();
+
   // Used to remember the association between the input field UI element and the
   // original field definition. The ValidatingTextfield* and ValidatingCombobox*
   // are owned by their parent view, this only keeps a reference that is good as
@@ -216,7 +221,7 @@ class EditorViewController : public PaymentRequestSheetController,
   ErrorLabelMap error_labels_;
 
   // The input field view in the editor used to set the initial focus.
-  raw_ptr<views::View, DanglingUntriaged> initial_focus_field_view_;
+  raw_ptr<views::View> initial_focus_field_view_ = nullptr;
 
   // Identifies where to go back when the editing completes successfully.
   BackNavigationType back_navigation_type_;

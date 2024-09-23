@@ -4,9 +4,10 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {PolicyErrorType, ProgressCenterItem, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
+import type {ProgressCenterItem} from '../../../common/js/progress_center_common.js';
+import {PolicyErrorType, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
 import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
-import {DisplayPanel} from '../../elements/xf_display_panel.js';
+import type {DisplayPanel} from '../../elements/xf_display_panel.js';
 import {PanelType, type UserData} from '../../elements/xf_panel_item.js';
 
 /**

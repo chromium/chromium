@@ -5,7 +5,11 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 
 #include <string>
+#include <vector>
 
+#include "chrome/updater/constants.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -183,6 +187,113 @@ TEST_P(UpdaterL10NUtilGetLocalizedStringF, TestCases) {
   EXPECT_EQ(GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE, L"5555",
                                 GetParam().lang),
             GetParam().expected_localized_string);
+}
+
+struct GetLocalizedMetainstallerErrorStringTestCase {
+  const DWORD exit_code;
+  const DWORD windows_error;
+  const std::wstring expected_string;
+};
+
+class GetLocalizedMetainstallerErrorStringTest
+    : public ::testing::TestWithParam<
+          GetLocalizedMetainstallerErrorStringTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    GetLocalizedMetainstallerErrorStringTestCases,
+    GetLocalizedMetainstallerErrorStringTest,
+    ::testing::ValuesIn(std::vector<
+                        GetLocalizedMetainstallerErrorStringTestCase>{
+        {TEMP_DIR_FAILED, ERROR_ACCESS_DENIED,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"TEMP_DIR_FAILED",
+                                 GetTextForSystemError(ERROR_ACCESS_DENIED)})},
+        {UNPACKING_FAILED, ERROR_HANDLE_DISK_FULL,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{
+                 L"UNPACKING_FAILED",
+                 GetTextForSystemError(ERROR_HANDLE_DISK_FULL)})},
+        {GENERIC_INITIALIZATION_FAILURE, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"GENERIC_INITIALIZATION_FAILURE", {}})},
+        {COMMAND_STRING_OVERFLOW, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"COMMAND_STRING_OVERFLOW", {}})},
+        {WAIT_FOR_PROCESS_FAILED, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"WAIT_FOR_PROCESS_FAILED", {}})},
+        {PATH_STRING_OVERFLOW, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{L"PATH_STRING_OVERFLOW",
+                                                       {}})},
+        {UNABLE_TO_GET_WORK_DIRECTORY, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNABLE_TO_GET_WORK_DIRECTORY", {}})},
+        {UNABLE_TO_EXTRACT_ARCHIVE, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNABLE_TO_EXTRACT_ARCHIVE", {}})},
+        {UNEXPECTED_ELEVATION_LOOP, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNEXPECTED_ELEVATION_LOOP", {}})},
+        {UNEXPECTED_DE_ELEVATION_LOOP, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNEXPECTED_DE_ELEVATION_LOOP", {}})},
+        {UNEXPECTED_ELEVATION_LOOP_SILENT, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"UNEXPECTED_ELEVATION_LOOP_SILENT",
+                                 {}})},
+        {UNABLE_TO_SET_DIRECTORY_ACL, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNABLE_TO_SET_DIRECTORY_ACL", {}})},
+        {INVALID_OPTION, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{L"INVALID_OPTION", {}})},
+        {FAILED_TO_DE_ELEVATE_METAINSTALLER, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"FAILED_TO_DE_ELEVATE_METAINSTALLER",
+                                 {}})},
+        {RUN_SETUP_FAILED_FILE_NOT_FOUND, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"RUN_SETUP_FAILED_FILE_NOT_FOUND",
+                                 {}})},
+        {RUN_SETUP_FAILED_PATH_NOT_FOUND, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"RUN_SETUP_FAILED_PATH_NOT_FOUND",
+                                 {}})},
+        {RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, 0,
+         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                             std::vector<std::wstring>{
+                                 L"RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS",
+                                 {}})},
+        {UNABLE_TO_GET_EXE_PATH, 0,
+         GetLocalizedStringF(
+             IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+             std::vector<std::wstring>{L"UNABLE_TO_GET_EXE_PATH", {}})},
+        {UNSUPPORTED_WINDOWS_VERSION, 0,
+         GetLocalizedString(IDS_UPDATER_OS_NOT_SUPPORTED_BASE)},
+        {FAILED_TO_ELEVATE_METAINSTALLER, ERROR_CANCELLED,
+         GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
+                             GetTextForSystemError(ERROR_CANCELLED))},
+    }));
+
+TEST_P(GetLocalizedMetainstallerErrorStringTest, TestCases) {
+  ASSERT_EQ(GetLocalizedMetainstallerErrorString(GetParam().exit_code,
+                                                 GetParam().windows_error),
+            GetParam().expected_string);
 }
 
 }  // namespace updater

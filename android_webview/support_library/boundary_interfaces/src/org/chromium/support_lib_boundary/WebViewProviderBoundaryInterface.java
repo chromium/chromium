@@ -43,5 +43,9 @@ public interface WebViewProviderBoundaryInterface {
 
     void setProfile(String profileName);
 
+    void setAudioMuted(boolean muted);
+
+    boolean isAudioMuted();
+
     /* Profile */ InvocationHandler getProfile();
 }

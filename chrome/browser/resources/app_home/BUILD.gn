@@ -4,24 +4,31 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(!is_android)
-assert(!is_chromeos)
+assert(is_win || is_mac || is_linux)
 
 build_webui("build") {
   grd_prefix = "app_home"
 
   static_files = [ "app_home.html" ]
 
-  web_component_files = [
-    "app_list.ts",
-    "app_item.ts",
-    "deprecated_apps_link.ts",
+  non_web_component_files = [
+    "app_home_empty_page.html.ts",
     "app_home_empty_page.ts",
+    "app_home_utils.ts",
+    "app_item.html.ts",
+    "app_item.ts",
+    "app_list.html.ts",
+    "app_list.ts",
+    "browser_proxy.ts",
+    "deprecated_apps_link.html.ts",
+    "deprecated_apps_link.ts",
   ]
 
-  non_web_component_files = [
-    "browser_proxy.ts",
-    "app_home_utils.ts",
+  css_files = [
+    "app_home_empty_page.css",
+    "app_item.css",
+    "app_list.css",
+    "deprecated_apps_link.css",
   ]
 
   mojo_files_deps = [
@@ -33,12 +40,14 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/web_applications/mojom/user_display_mode.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/app_home/app_home.mojom-webui.ts",
   ]
+
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  webui_context_type = "trusted"
 }

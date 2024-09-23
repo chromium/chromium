@@ -6,19 +6,20 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/NavigationPredictorBridge_jni.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NavigationPredictorBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 
-static void JNI_NavigationPredictorBridge_OnColdStart(JNIEnv* env) {
+static void JNI_NavigationPredictorBridge_OnColdStart(JNIEnv* env,
+                                                      Profile* profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
+      NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
   if (!navigation_predictor_service)
     return;
   navigation_predictor_service->search_engine_preconnector()
@@ -26,10 +27,11 @@ static void JNI_NavigationPredictorBridge_OnColdStart(JNIEnv* env) {
           /*with_startup_delay=*/true);
 }
 
-static void JNI_NavigationPredictorBridge_OnActivityWarmResumed(JNIEnv* env) {
+static void JNI_NavigationPredictorBridge_OnActivityWarmResumed(
+    JNIEnv* env,
+    Profile* profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
+      NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
   if (!navigation_predictor_service)
     return;
   navigation_predictor_service->search_engine_preconnector()
@@ -37,10 +39,10 @@ static void JNI_NavigationPredictorBridge_OnActivityWarmResumed(JNIEnv* env) {
           /*with_startup_delay=*/false);
 }
 
-static void JNI_NavigationPredictorBridge_OnPause(JNIEnv* env) {
+static void JNI_NavigationPredictorBridge_OnPause(JNIEnv* env,
+                                                  Profile* profile) {
   NavigationPredictorKeyedService* navigation_predictor_service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
+      NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
   if (!navigation_predictor_service)
     return;
   navigation_predictor_service->search_engine_preconnector()

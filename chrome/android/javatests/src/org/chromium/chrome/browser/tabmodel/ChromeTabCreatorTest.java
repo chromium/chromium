@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -71,7 +71,7 @@ public class ChromeTabCreatorTest {
     public void testCreateNewTabInBackgroundLowEnd() throws ExecutionException {
         final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         final Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Tab>() {
                             @Override
                             public Tab call() {
@@ -95,12 +95,11 @@ public class ChromeTabCreatorTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        TestThreadUtils.runOnUiThreadBlocking(
+                        ThreadUtils.runOnUiThreadBlocking(
                                 () -> {
                                     TabModelUtils.setIndex(
                                             sActivityTestRule.getActivity().getCurrentTabModel(),
-                                            indexOf(bgTab),
-                                            false);
+                                            indexOf(bgTab));
                                 });
                     }
                 });
@@ -115,7 +114,7 @@ public class ChromeTabCreatorTest {
     public void testCreateNewTabInBackground() throws ExecutionException {
         final Tab fgTab = sActivityTestRule.getActivity().getActivityTab();
         Tab bgTab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Tab>() {
                             @Override
                             public Tab call() {
@@ -147,12 +146,13 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabTakesSpareWebContents() throws Throwable {
-        sActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
                         Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
-                        WarmupManager.getInstance().createSpareWebContents();
+                        WarmupManager.getInstance()
+                                .createSpareWebContents(sActivityTestRule.getProfile(false));
                         Assert.assertTrue(WarmupManager.getInstance().hasSpareWebContents());
                         sActivityTestRule
                                 .getActivity()
@@ -171,7 +171,7 @@ public class ChromeTabCreatorTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCreateNewTabTakesPositonIndex() throws Throwable {
-        sActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -204,6 +204,50 @@ public class ChromeTabCreatorTest {
                                 2 == indexOf(tabOne));
                     }
                 });
+    }
+
+    /** Verify that tabs opened in background when launch type is FROM_SYNC_BACKGROUND. */
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabWithSyncBackgroundFrozen() throws ExecutionException {
+        final String url = mTestServer.getURL(TEST_PATH);
+        final String title = "BAR";
+        final Tab bgTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Tab tab =
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getCurrentTabCreator()
+                                            .createNewTab(
+                                                    new LoadUrlParams(url),
+                                                    title,
+                                                    TabLaunchType.FROM_SYNC_BACKGROUND,
+                                                    null,
+                                                    TabModel.INVALID_TAB_INDEX);
+                            return tab;
+                        });
+        Assert.assertEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
+
+        // Verify that the background tab is not loading.
+        Assert.assertFalse(bgTab.isLoading());
+
+        // Switch tabs and verify that the tab is loaded as it gets foregrounded.
+        Runnable loadPage =
+                () -> {
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                TabModelUtils.setIndex(
+                                        sActivityTestRule.getActivity().getCurrentTabModel(),
+                                        indexOf(bgTab));
+                            });
+                };
+        ChromeTabUtils.waitForTabPageLoaded(bgTab, url, loadPage);
+        Assert.assertNotNull(bgTab.getView());
+
+        // Title should change when the page loads.
+        Assert.assertNotEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
     }
 
     private Intent createIntent(int tabIndex) {

@@ -5,6 +5,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -70,6 +71,18 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           data:
             "A protocol buffer with usage statistics and crash related data."
           destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-02-15"
+          user_data {
+            type: BIRTH_DATE
+            type: GENDER
+            type: HW_OS_INFO
+            type: OTHER
+          }
+          internal {
+            contacts {
+              owners: "//components/metrics/OWNERS"
+            }
+          }
         }
         policy {
           cookies_allowed: NO
@@ -111,6 +124,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated App Identifiers."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
@@ -161,6 +187,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated URLs."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
@@ -213,6 +252,19 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         data:
           "A protocol buffer with usage statistics and associated URLs."
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-02-15"
+        user_data {
+          type: BIRTH_DATE
+          type: GENDER
+          type: HW_OS_INFO
+          type: SENSITIVE_URL
+          type: OTHER
+        }
+        internal {
+          contacts {
+            owners: "//components/metrics/OWNERS"
+          }
+        }
       }
       policy {
         cookies_allowed: NO
@@ -254,11 +306,11 @@ bool EncryptString(const std::string& plaintext, std::string* encrypted) {
   if (!encrypted_messages::EncryptSerializedMessage(
           kServerPublicKey, kServerPublicKeyVersion, kEncryptedMessageLabel,
           plaintext, &encrypted_message)) {
-    NOTREACHED() << "Error encrypting string.";
+    NOTREACHED_IN_MIGRATION() << "Error encrypting string.";
     return false;
   }
   if (!encrypted_message.SerializeToString(encrypted)) {
-    NOTREACHED() << "Error serializing encrypted string.";
+    NOTREACHED_IN_MIGRATION() << "Error serializing encrypted string.";
     return false;
   }
   return true;
@@ -333,7 +385,7 @@ namespace metrics {
 NetMetricsLogUploader::NetMetricsLogUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete)
     : NetMetricsLogUploader(url_loader_factory,
@@ -347,7 +399,7 @@ NetMetricsLogUploader::NetMetricsLogUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete)
     : url_loader_factory_(std::move(url_loader_factory)),
@@ -478,7 +530,7 @@ void NetMetricsLogUploader::HTTPFallbackAborted() {
   // attempt retransmission.
   bool force_discard =
       server_url_.is_empty() && insecure_server_url_.is_empty();
-  base::StringPiece force_discard_reason =
+  std::string_view force_discard_reason =
       force_discard ? kNoUploadUrlsReasonMsg : "";
   on_upload_complete_.Run(/*response_code=*/0, net::ERR_FAILED,
                           /*was_https=*/false, force_discard,
@@ -502,7 +554,7 @@ void NetMetricsLogUploader::OnURLLoadComplete(
   // retransmission.
   bool force_discard =
       server_url_.is_empty() && insecure_server_url_.is_empty();
-  base::StringPiece force_discard_reason =
+  std::string_view force_discard_reason =
       force_discard ? kNoUploadUrlsReasonMsg : "";
   on_upload_complete_.Run(response_code, error_code, was_https, force_discard,
                           force_discard_reason);

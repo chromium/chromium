@@ -13,10 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
@@ -155,20 +158,41 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
         header_names::kAccessControlRequestPrivateNetwork, "true");
   }
 
-  // Copy the client security state as well, if set in the request's trusted
-  // params. Note that the we clone the pointer unconditionally if the original
-  // request has trusted params, but that the cloned pointer may be null. It is
-  // unclear whether it is safe to copy all the trusted params, so we only copy
-  // what we need for PNA.
-  //
-  // This is useful when the client security state is not specified through the
-  // URL loader factory params, typically when a single URL loader factory is
-  // shared by a few different client contexts. This is the case for
-  // navigations and interest group auctions.
   if (request.trusted_params.has_value()) {
     preflight_request->trusted_params = ResourceRequest::TrustedParams();
+
+    // Copy the client security state as well, if set in the request's trusted
+    // params. Note that we clone the pointer unconditionally if the original
+    // request has trusted params, but that the cloned pointer may be null. It
+    // is unclear whether it is safe to copy all the trusted params, so we only
+    // copy what we need for PNA.
+    //
+    // This is useful when the client security state is not specified through
+    // the URL loader factory params, typically when a single URL loader factory
+    // is shared by a few different client contexts. This is the case for
+    // navigations and interest group auctions.
     preflight_request->trusted_params->client_security_state =
         request.trusted_params->client_security_state.Clone();
+
+    // The preflight should use an IsolationInfo corresponding to that of the
+    // request (if available) but with `IsolationInfo::RequestType::kOther`
+    // since the preflights themselves are not considered navigations, and with
+    // an empty `net::SiteForCookies()` since cookies aren't sent with these
+    // requests.
+    if (!request.trusted_params->isolation_info.IsEmpty()) {
+      preflight_request->trusted_params->isolation_info =
+          net::IsolationInfo::Create(
+              net::IsolationInfo::RequestType::kOther,
+              *request.trusted_params->isolation_info.top_frame_origin(),
+              *request.trusted_params->isolation_info.frame_origin(),
+              net::SiteForCookies(),
+              request.trusted_params->isolation_info.nonce());
+      // Ensure consistency of this IsolationInfo's SiteForCookies with the
+      // SiteForCookies in the request.
+      CHECK(preflight_request->site_for_cookies.IsEquivalent(
+          preflight_request->trusted_params->isolation_info
+              .site_for_cookies()));
+    }
   }
 
   DCHECK(request.request_initiator);
@@ -181,11 +205,11 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   // emulation override is applied on a higher level (renderer or browser),
   // so copy User-Agent from the original request, if present.
   // TODO(caseq, morlovich): do the same for client hints.
-  std::string user_agent;
-  if (request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent,
-                                &user_agent)) {
+  std::optional<std::string> user_agent =
+      request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent);
+  if (user_agent) {
     preflight_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                         user_agent);
+                                         *user_agent);
   }
 
   // Additional headers that the algorithm in the spec does not require, but
@@ -262,7 +286,7 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
       case mojom::CorsError::kInvalidAllowCredentials:
         return mojom::CorsError::kPreflightInvalidAllowCredentials;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   cors_result.error().cors_error =
@@ -529,7 +553,7 @@ class PreflightController::PreflightLoader final {
 
     // Avoid overwriting if `CheckPreflightResult()` succeeds, just in case
     // there was a PNA warning in `detected_error_status`.
-    // TODO(https://crbug.com/1268378): Simplify this by always overwriting
+    // TODO(crbug.com/40204695): Simplify this by always overwriting
     // `detected_error_status` once preflights are always enforced.
     if (check_error_status.has_value()) {
       net_error = net::ERR_FAILED;
@@ -563,7 +587,7 @@ class PreflightController::PreflightLoader final {
     std::optional<std::string> name =
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceName);
 
-    // TODO(https://crbug.com/1455395): `target_ip_address_space` should be
+    // TODO(crbug.com/40272755): `target_ip_address_space` should be
     // checked in `CorsURLLoaderFactory`. Remove the following bit after that.
     if (!url_loader_network_service_observer_ ||
         original_request_.target_ip_address_space ==
@@ -813,7 +837,7 @@ void PreflightController::ClearCorsPreflightCache(
 
 void PreflightController::RemoveLoader(PreflightLoader* loader) {
   auto it = loaders_.find(loader);
-  DCHECK(it != loaders_.end());
+  CHECK(it != loaders_.end(), base::NotFatalUntil::M130);
   loaders_.erase(it);
 }
 

@@ -66,6 +66,7 @@ static_library("test_support") {
     "//components/webrtc:thread_wrapper",
     "//google_apis",
     "//remoting/base:authorization",
+    "//remoting/base:errors",
     "//remoting/base:test_support",
     "//services/network:network_service",
     "//services/network/public/mojom",
@@ -127,6 +128,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
     deps = [
       ":fake_connection_event_logger",
       "//base/test:test_support",
+      "//remoting/base:session_policies",
       "//remoting/protocol:protocol",
       "//remoting/protocol:test_support",
       "//third_party/webrtc_overrides:webrtc_component",
@@ -214,6 +216,7 @@ executable("ftl_signaling_playground") {
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:errors",
     "//remoting/base:logging",
     "//remoting/signaling",
     "//services/network:network_service",

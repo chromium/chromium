@@ -27,7 +27,7 @@ void CrosapiTtsEngineDelegateAsh::GetVoices(
     std::vector<content::VoiceData>* out_voices) {
   bool is_primary_profile = ash::ProfileHelper::IsPrimaryProfile(
       Profile::FromBrowserContext(browser_context));
-  // TODO(crbug.com/1251979): Support secondary profile when it becomes
+  // TODO(crbug.com/40792881): Support secondary profile when it becomes
   // available to Lacros.
   DCHECK(is_primary_profile);
   crosapi::TtsAsh* tts_ash =

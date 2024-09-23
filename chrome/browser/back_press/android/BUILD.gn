@@ -27,6 +27,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//ui/android:ui_java",
   ]
 }
 

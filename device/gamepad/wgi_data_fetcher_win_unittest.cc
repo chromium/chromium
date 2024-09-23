@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
 #include <Windows.Gaming.Input.h>
@@ -352,7 +357,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
              {BUTTON_INDEX_META + 4,
               ABI::Windows::Gaming::Input::GamepadButtons_Paddle4}});
 
-    const auto* button_bit_mask =
+    const auto button_bit_mask =
         kCanonicalButtonBitMaskMapping.find(canonical_button_index);
     if (button_bit_mask == kCanonicalButtonBitMaskMapping.end()) {
       ADD_FAILURE() << "Unsupported CanonicalButtonIndex value: "

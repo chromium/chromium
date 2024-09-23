@@ -21,10 +21,12 @@ import re
 import time
 import json
 from threading import Thread, Lock
+
 sys.path.append(os.path.abspath("./third_party/blink/tools"))
 sys.path.append(os.path.abspath("./"))
 # Chromium check
-NOT_CHROME_ERROR = 'You must be in the chromium src directory to run this command.'
+NOT_CHROME_ERROR = (
+    'You must be in the chromium src directory to run this command.')
 try:
   file = open('./DIR_METADATA', 'r')
   if not 'project: "chromium"' in file.read():
@@ -42,21 +44,22 @@ DIR_METADATA = 'DIR_METADATA'
 COMMON_METADATA = 'COMMON_METADATA'
 OWNERS = 'OWNERS'
 TEST_NAME_REGEX = re.compile(
-    r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,\s*'?([a-zA-Z][a-zA-Z0-9_]*)'?",
-    re.MULTILINE)
+    r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,"
+    "\s*'?([a-zA-Z][a-zA-Z0-9_]*)'?", re.MULTILINE)
 TEST_SUITE_REGEX = re.compile(
     r'TEST_SUITE(_[FP])?\(\s*([a-zA-Z][a-zA-Z0-9]*),\s*([a-zA-Z][a-zA-Z0-9]*),',
     re.MULTILINE)
 
 parser = argparse.ArgumentParser(
     "Determines test suites for given directories and components")
-parser.add_argument('-c',
-                    '--components',
-                    nargs='+',
-                    # TODO: Adjust to buganizer once the
-                    # coverage team updates the tool
-                    help='A monorail component to collect suites for',
-                    default=[])
+parser.add_argument(
+    '-c',
+    '--components',
+    nargs='+',
+    # TODO: Adjust to buganizer once the
+    # coverage team updates the tool
+    help='A monorail component to collect suites for',
+    default=[])
 parser.add_argument(
     '-d',
     '--dirs',
@@ -82,6 +85,7 @@ args = parser.parse_args()
 
 
 class ThreadManager(int):
+
   def __init__(self, max_threads):
     self.num_threads = 0
     self.max_threads = max_threads
@@ -108,6 +112,7 @@ class ThreadManager(int):
 
 
 class TestFinder(argparse.Namespace):
+
   def __init__(self, args):
     self.host = Host()
     self.component_map = dict()
@@ -176,7 +181,7 @@ class TestFinder(argparse.Namespace):
         # Check for disabled and maybe tests
         if m[2] != None and m[2].startswith('DISABLED'):
           disabled = self.disabled_tests.get(relPath)
-          self.total_disabled+=1
+          self.total_disabled += 1
           if disabled == None:
             disabled = []
             self.disabled_tests[relPath] = disabled
@@ -254,12 +259,14 @@ class TestFinder(argparse.Namespace):
           tests_for_comp = list()
           self.component_map[component] = tests_for_comp
         self.get_test_suites_for_dir(cur_dir, tests_for_comp)
-    # Even if the dir didn't have a component we still need to check it's subdirs.
+    # Even if the dir didn't have a component,
+    #   we still need to check it's subdirs.
     _, sub_dirs = self.get_items_in_dir(cur_dir)
     for sub_dir in sub_dirs:
       # skip hidden directories
       if not self.is_hidden(sub_dir) and not self.is_output_dir(sub_dir):
-        common_component_to_pass = component if using_common_metadata else common_component
+        common_component_to_pass = (component if using_common_metadata else
+                                    common_component)
         if not self.dir_thread_manager.run(self.build_component_map,
                                            (sub_dir, common_component_to_pass)):
           self.build_component_map(sub_dir, common_component_to_pass)

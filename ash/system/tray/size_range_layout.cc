@@ -54,18 +54,12 @@ void SizeRangeLayout::SetMaxSize(const gfx::Size& size) {
   min_size_.SetToMin(max_size_);
 }
 
-gfx::Size SizeRangeLayout::CalculatePreferredSize() const {
-  gfx::Size preferred_size = GetLayoutManager()->GetPreferredSize(this);
+gfx::Size SizeRangeLayout::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
   ClampSizeToRange(&preferred_size);
   return preferred_size;
-}
-
-int SizeRangeLayout::GetHeightForWidth(int width) const {
-  const int height =
-      GetLayoutManager()->GetPreferredHeightForWidth(this, width);
-  gfx::Size size(0, height);
-  ClampSizeToRange(&size);
-  return size.height();
 }
 
 void SizeRangeLayout::ChildPreferredSizeChanged(View* child) {

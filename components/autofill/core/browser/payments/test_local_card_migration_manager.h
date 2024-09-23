@@ -10,21 +10,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 
 namespace autofill {
 
-class AutofillClient;
-class AutofillDriver;
-
 class TestLocalCardMigrationManager : public LocalCardMigrationManager {
  public:
-  TestLocalCardMigrationManager(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      TestPersonalDataManager* personal_data_manager);
+  using LocalCardMigrationManager::LocalCardMigrationManager;
 
   TestLocalCardMigrationManager(const TestLocalCardMigrationManager&) = delete;
   TestLocalCardMigrationManager& operator=(
@@ -63,7 +55,7 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
  private:
   void OnDidGetUploadDetails(
       bool is_from_settings_page,
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_bin_ranges) override;
@@ -73,8 +65,6 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
   bool intermediate_prompt_was_shown_ = false;
 
   bool main_prompt_was_shown_ = false;
-
-  raw_ptr<TestPersonalDataManager> personal_data_manager_;
 };
 
 }  // namespace autofill

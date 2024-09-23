@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
@@ -49,6 +50,10 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       int32_t http_status_code,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key)
       override;
+
+  void OnEarlyHintsResponse(
+      const std::string& devtools_request_id,
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override;
 
   void OnPrivateNetworkRequest(
       const std::optional<std::string>& devtools_request_id,
@@ -104,6 +109,13 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                const std::optional<std::string>& bundle_request_devtools_id),
               (override));
 
+  MOCK_METHOD(void,
+              OnSharedDictionaryError,
+              (const std::string& devtool_request_id,
+               const GURL& url,
+               network::mojom::SharedDictionaryError error),
+              (override));
+
   void OnCorsError(const std::optional<std::string>& devtool_request_id,
                    const std::optional<::url::Origin>& initiator_origin,
                    mojom::ClientSecurityStatePtr client_security_state,
@@ -112,7 +124,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                    bool is_warning) override;
 
   MOCK_METHOD(void,
-              OnCorbError,
+              OnOrbError,
               (const std::optional<std::string>& devtools_request_id,
                const GURL& url),
               (override));
@@ -123,6 +135,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void WaitUntilRawRequest(size_t goal);
   void WaitUntilPrivateNetworkRequest();
   void WaitUntilCorsError();
+  void WaitUntilEarlyHints();
 
   const net::CookieAndLineAccessResultList& raw_response_cookies() const {
     return raw_response_cookies_;
@@ -204,6 +217,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     return preflight_status_;
   }
 
+  const std::vector<network::mojom::HttpRawHeaderPairPtr>& early_hint_headers()
+      const {
+    return early_hints_headers_;
+  }
+
  private:
   net::CookieAndLineAccessResultList raw_response_cookies_;
   base::OnceClosure wait_for_raw_response_;
@@ -232,6 +250,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   mojo::ReceiverSet<mojom::DevToolsObserver> receivers_;
 
   std::optional<net::CookiePartitionKey> response_cookie_partition_key_;
+
+  base::RunLoop wait_for_early_hints_;
+  std::vector<network::mojom::HttpRawHeaderPairPtr> early_hints_headers_;
 };
 
 }  // namespace network

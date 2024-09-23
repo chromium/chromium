@@ -45,16 +45,23 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
     virtual ~LocationDelegate();
   };
 
-  // Starts dragging |data|. Whereas, |operations| is a bitmask of
+  // Starts dragging `data`. Whereas, `operations` is a bitmask of
   // DragDropTypes::DragOperation values, which defines possible operations for
   // the drag source. The destination sets the resulting operation when the drop
-  // action is performed. |source| indicates the source event type triggering
-  // the drag, and |can_grab_pointer| indicates whether the implementation can
-  // grab the mouse pointer (some platforms may need this).In progress updates
-  // on the drag operation come back through the |location_delegate| on the
+  // action is performed. `source` indicates the source event type triggering
+  // the drag, and `can_grab_pointer` indicates whether the implementation can
+  // grab the mouse pointer (some platforms may need this). In progress updates
+  // on the drag operation come back through the `location_delegate` on the
   // platform that chrome needs manages a drag image). This can be null if the
-  // platform manages a drag image. |drag_finished_callback| is called when drag
-  // operation finishes.
+  // platform manages a drag image. `drag_started_callback` is called after the
+  // request to start the drag was sent to the OS (see below for details), and
+  // `drag_finished_callback` is called when drag operation finishes. These
+  // callbacks are necessary because of the nested message loop (see below).
+  //
+  // `drag_started_callback` is called if and only if the drag actually starts.
+  // If initialization fails and the drag doesn't start, it will not be called.
+  // Also note that it might be called even when this method returns false if
+  // the drag does start but is cancelled later on.
   //
   // This method runs a nested message loop, returning when the drag operation
   // is done. Care must be taken when calling this as it's entirely possible
@@ -67,6 +74,7 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
                          mojom::DragEventSource source,
                          gfx::NativeCursor cursor,
                          bool can_grab_pointer,
+                         base::OnceClosure drag_started_callback,
                          DragFinishedCallback drag_finished_callback,
                          LocationDelegate* location_delegate) = 0;
 

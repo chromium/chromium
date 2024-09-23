@@ -29,7 +29,8 @@ class WebrtcVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   ~WebrtcVideoEncoderFactory() override;
 
   // webrtc::VideoEncoderFactory interface.
-  std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
+  std::unique_ptr<webrtc::VideoEncoder> Create(
+      const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override;
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
 

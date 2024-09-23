@@ -23,7 +23,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
@@ -33,7 +33,6 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -53,7 +52,6 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -65,13 +63,12 @@
 #import "ios/chrome/browser/passwords/model/notify_auto_signin_view_controller.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/passwords_account_storage_notice_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -135,7 +132,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 // Hides auto sign-in notification. Removes the view from superview and destroys
 // the controller.
-// TODO(crbug.com/435048): Animate disappearance.
+// TODO(crbug.com/40394758): Animate disappearance.
 - (void)hideAutosigninNotification;
 
 @end
@@ -298,17 +295,17 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)showSavePasswordInfoBar:
             (std::unique_ptr<PasswordFormManagerForUI>)formToSave
                          manual:(BOOL)manual {
-  [self maybeShowAccountStorageNoticeBeforeInfobar:std::move(formToSave)
-                                            manual:manual
-                                       infobarType:PasswordInfoBarType::SAVE];
+  [self showInfoBarForForm:std::move(formToSave)
+               infoBarType:PasswordInfoBarType::SAVE
+                    manual:manual];
 }
 
 - (void)showUpdatePasswordInfoBar:
             (std::unique_ptr<PasswordFormManagerForUI>)formToUpdate
                            manual:(BOOL)manual {
-  [self maybeShowAccountStorageNoticeBeforeInfobar:std::move(formToUpdate)
-                                            manual:manual
-                                       infobarType:PasswordInfoBarType::UPDATE];
+  [self showInfoBarForForm:std::move(formToUpdate)
+               infoBarType:PasswordInfoBarType::UPDATE
+                    manual:manual];
 }
 
 - (void)removePasswordInfoBarManualFallback:(BOOL)manual {
@@ -317,7 +314,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.
-// TODO(crbug.com/435048): Animate appearance.
+// TODO(crbug.com/40394758): Animate appearance.
 - (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
   if (!_webState) {
     return;
@@ -483,7 +480,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       }
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          accountToStorePassword,
+          form->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
+              ? accountToStorePassword
+              : std::nullopt,
           /*password_update=*/true, accountStorageUserState, std::move(form),
           self.dispatcher);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
@@ -503,62 +502,22 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   self.notifyAutoSigninViewController = nil;
 }
 
-- (void)maybeShowAccountStorageNoticeBeforeInfobar:
-            (std::unique_ptr<PasswordFormManagerForUI>)form
-                                            manual:(BOOL)manual
-                                       infobarType:
-                                           (PasswordInfoBarType)infobarType {
-  // Ignore manual saves/updates (they are infrequent enough that we don't care,
-  // this is an FYI not a consent).
-  if (manual || ![self shouldShowAccountStorageNotice]) {
-    [self showInfoBarForForm:std::move(form)
-                 infoBarType:infobarType
-                      manual:manual];
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  __block std::unique_ptr<PasswordFormManagerForUI> blockForm = std::move(form);
-  const auto entryPoint =
-      infobarType == PasswordInfoBarType::SAVE
-          ? PasswordsAccountStorageNoticeEntryPoint::kSave
-          : PasswordsAccountStorageNoticeEntryPoint::kUpdate;
-  [self showAccountStorageNoticeAndMarkShown:entryPoint
-                                  completion:^{
-                                    // No need to handle opt-outs here, the
-                                    // infobar adapts the strings.
-                                    [weakSelf
-                                        showInfoBarForForm:std::move(blockForm)
-                                               infoBarType:infobarType
-                                                    manual:manual];
-                                  }];
-}
-
-- (void)showAccountStorageNoticeAndMarkShown:
-            (PasswordsAccountStorageNoticeEntryPoint)entryPoint
-                                  completion:(void (^)())completion {
-  CHECK([self shouldShowAccountStorageNotice]);
-  self.browserState->GetPrefs()->SetBoolean(
-      password_manager::prefs::kAccountStorageNoticeShown, true);
-  [HandlerForProtocol(self.dispatcher, PasswordsAccountStorageNoticeCommands)
-      showPasswordsAccountStorageNoticeForEntryPoint:entryPoint
-                                    dismissalHandler:completion];
-}
-
 #pragma mark - SharedPasswordControllerDelegate
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
+                         proactive:(BOOL)proactive
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
   [self.passwordSuggestionDispatcher
       showPasswordSuggestion:generatedPotentialPassword
+                   proactive:proactive
+                    webState:_webState
              decisionHandler:decisionHandler];
 }
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
-  if (suggestion.popupItemId ==
-      autofill::PopupItemId::kAllSavedPasswordsEntry) {
+  if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry) {
     // Navigate to the settings list.
     [self.delegate displaySavedPasswordList];
   }
@@ -574,6 +533,18 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   }
 }
 
+- (void)attachListenersForPasswordGenerationBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                                             forFrameId:
+                                                 (const std::string&)frameId {
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->AttachPasswordGenerationListeners(rendererIds,
+                                                            frameId);
+  }
+}
+
 - (void)detachListenersForBottomSheet:(const std::string&)frameId {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);
@@ -581,21 +552,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     bottomSheetTabHelper->DetachPasswordListeners(frameId,
                                                   /*refocus = */ false);
   }
-}
-
-- (BOOL)shouldShowAccountStorageNotice {
-  return _passwordManagerClient->GetPasswordFeatureManager()
-             ->IsOptedInForAccountStorage() &&
-         !self.browserState->GetPrefs()->GetBoolean(
-             password_manager::prefs::kAccountStorageNoticeShown) &&
-         !base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos);
-}
-
-- (void)showAccountStorageNotice:(void (^)())completion {
-  [self showAccountStorageNoticeAndMarkShown:
-            PasswordsAccountStorageNoticeEntryPoint::kFill
-                                  completion:completion];
 }
 
 @end

@@ -264,7 +264,7 @@ void KioskExternalUpdater::ProcessParsedManifest(
     if (KioskChromeAppManager::Get()->GetApp(app_id, &app)) {
       update.app_name = app.name;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     update.external_crx = extensions::CRXFileInfo(
         external_update_path_.AppendASCII(*external_crx_str),

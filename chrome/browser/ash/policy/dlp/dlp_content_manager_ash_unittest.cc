@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
@@ -30,12 +31,12 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -157,7 +158,15 @@ class DlpContentManagerAshTest : public testing::Test {
   ~DlpContentManagerAshTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
-    return content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    // `DlpContentTabHelper` is responsible for clearing a destroyed
+    // `WebContents` from `DlpContentManager`'s list of `WebContents`;
+    // instantiate it here to make sure that cleanup happens even in unit
+    // tests.
+    DlpContentTabHelper::MaybeCreateForWebContents(web_contents.get());
+    CHECK(DlpContentTabHelper::FromWebContents(web_contents.get()));
+    return web_contents;
   }
 
   void SetUp() override {
@@ -165,6 +174,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
     ASSERT_TRUE(profile_manager_.SetUp());
     LoginFakeUser();
+    SetReportQueueForReportingManager();
+    SetupDlpRulesManager();
 
     EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
         .WillRepeatedly(::testing::Return(true));
@@ -373,8 +384,6 @@ TEST_F(DlpContentManagerAshTest,
 }
 
 TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -458,8 +467,6 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -508,8 +515,6 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
 
 TEST_F(DlpContentManagerAshTest,
        PrivacyScreenNotEnforcedAndReportedOnUnsupportedDevice) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(::testing::Return(src_pattern));
@@ -538,8 +543,6 @@ TEST_F(DlpContentManagerAshTest,
 TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   const GURL kSrcUrl = GURL("https://example.com/");
   const GURL kGoogleUrl = GURL("https://google.com/");
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   // Return |kSrcPattern| for reporting for both |kSrcUrl| and |kGoogleUrl|.
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
@@ -633,8 +636,6 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   // Needs to be set because CheckPrintingRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -690,8 +691,6 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   // The warning should be shown only once.
@@ -773,8 +772,6 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   // If the user cancels, the warning can be shown again for the same contents.
@@ -850,8 +847,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   // Needs to be set because CheckCaptureModeInitRestriction() will show the
   // blocked notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -899,8 +894,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -957,8 +950,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);
@@ -1017,8 +1008,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
   // Needs to be set because CheckScreenshotRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -1069,8 +1058,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -1118,8 +1105,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);
@@ -1179,8 +1164,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
   // Needs to be set because CheckScreenShareRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -1239,8 +1222,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -1295,8 +1276,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);

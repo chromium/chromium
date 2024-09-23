@@ -5,9 +5,9 @@
 #include "components/metrics/field_trials_provider.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -29,7 +29,7 @@ void WriteFieldTrials(const std::vector<ActiveGroupId>& field_trial_ids,
 }  // namespace
 
 FieldTrialsProvider::FieldTrialsProvider(SyntheticTrialRegistry* registry,
-                                         base::StringPiece suffix)
+                                         std::string_view suffix)
     : registry_(registry), suffix_(suffix) {}
 FieldTrialsProvider::~FieldTrialsProvider() = default;
 
@@ -43,15 +43,15 @@ void FieldTrialsProvider::GetFieldTrialIds(
 void FieldTrialsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   // ProvideSystemProfileMetricsWithLogCreationTime() should be called instead.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
     base::TimeTicks log_creation_time,
     metrics::SystemProfileProto* system_profile_proto) {
-  // TODO(crbug/1090497): Maybe call ProvideCurrentSessionData() instead from
-  // places in which ProvideSystemProfileMetricsWithLogCreationTime() is called,
-  // e.g. startup_data.cc and background_tracing_metrics_provider.cc.
+  // TODO(crbug.com/40697205): Maybe call ProvideCurrentSessionData() instead
+  // from places in which ProvideSystemProfileMetricsWithLogCreationTime() is
+  // called, e.g. startup_data.cc and background_tracing_metrics_provider.cc.
 
   log_creation_time_ = log_creation_time;
 
@@ -59,7 +59,7 @@ void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
   if (!version.empty())
     system_profile_proto->set_variations_seed_version(version);
 
-  // TODO(crbug/1090098): Determine whether this can be deleted.
+  // TODO(crbug.com/40133600): Determine whether this can be deleted.
   GetAndWriteFieldTrials(system_profile_proto);
 }
 

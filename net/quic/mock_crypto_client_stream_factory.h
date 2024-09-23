@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_FACTORY_H_
 #define NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_FACTORY_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -56,15 +57,23 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
     return streams_;
   }
 
-  // Sets initial config for new sessions.
+  // Sets initial config for new sessions with no matching server_id.
   void SetConfig(const quic::QuicConfig& config);
+
+  // Sets the initial config for a new session with the given server_id,
+  // overriding any existing setting.
+  void SetConfigForServerId(const quic::QuicServerId& server_id,
+                            const quic::QuicConfig& config);
 
  private:
   MockCryptoClientStream::HandshakeMode handshake_mode_ =
       MockCryptoClientStream::CONFIRM_HANDSHAKE;
   std::vector<base::WeakPtr<MockCryptoClientStream>> streams_;
-  base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
+  base::queue<raw_ptr<const ProofVerifyDetailsChromium, CtnExperimental>>
+      proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
+  std::map<quic::QuicServerId, std::unique_ptr<quic::QuicConfig>>
+      config_for_server_;
   bool use_mock_crypter_ = false;
 };
 

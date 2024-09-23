@@ -1,0 +1,11 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// See components/viz/common/resources/shared_bitmap_id.h
+struct SharedBitmapId {
+  // The length must match that used in the C++ struct.
+  array<uint8, 16> name;
+};

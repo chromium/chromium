@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<translation id="1088086359088493902">வினாடிகள்</translation>
-<translation id="1142001580032786438">வாரத் தேர்வுக் கருவியைக் காட்டும்</translation>
+<translation id="1012241361789814178">வேறொரு பக்கத்தில் பிழைதிருத்தி இடைநிறுத்தபட்டுள்ளது, அதற்குச் செல்ல கிளிக் செய்யவும்.</translation>
 <translation id="1171774979989969504">ஒரு மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1306460908038601864">முடக்கு</translation>
 <translation id="1311894908970423688">மதிப்பு <ph name="VALUE_DATE_OR_TIME" /> என இருக்க வேண்டும்.</translation>
-<translation id="1480676835519562650">பலவற்றைத் தேர்ந்தெடுக்கலாம், <ph name="SELECTED" />/<ph name="COUNT" /> தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1637811476055996098">ஃபைல்களைத் தேர்வுசெய்க</translation>
-<translation id="1681022320378710418">தற்போதைய நேரம்</translation>
-<translation id="1727839386348365796">ஐ-டிராப்பர்</translation>
+<translation id="1680090928918677457">கேமராவைப் பயன்படுத்து</translation>
 <translation id="1729654308190250600">காலி அல்லாத மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
 <translation id="1758486001363313524">மற்றவை…</translation>
-<translation id="1787192514241997742">மொத்த நேரம்: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">கேமரா அணுகலை வழங்கு</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">தொலைநிலைச் சாதனத்தில் இயக்கு</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">மதிப்பு <ph name="MAXIMUM_DATE_OR_TIME" /> அல்லது அதற்கு முன்பு இருக்க வேண்டும்.</translation>
-<translation id="1946271899482435442">தேதித் தேர்வுக் கருவியைக் காட்டும்</translation>
 <translation id="1993104285338243655">பிரதிபலித்தலுக்கு மாற்றியது</translation>
-<translation id="2031987842108996681">சிவப்பு சேனல்</translation>
 <translation id="2060505056492490888"><ph name="INVALIDDOMAIN" /> இல் தவறான இடத்தில் '<ph name="DOT" />' பயன்படுத்தபட்டுள்ளது.</translation>
 <translation id="2068711044993563745">அதிகபட்ச மதிப்பைவிட (<ph name="MAXIMUM" />) குறைந்தபட்ச மதிப்பு (<ph name="MINIMUM" />) குறைவாக இருக்க வேண்டும்.</translation>
 <translation id="2148716181193084225">இன்று</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
 <translation id="2353297238722298836">கேமராவும் மைக்ரோஃபோனும் அனுமதிக்கப்பட்டன</translation>
-<translation id="2393030564806080191">ஹெக்சாடெசிமல் வண்ண மதிப்பு</translation>
-<translation id="2398813069815436052">உரையாடல் திறக்கப்பட்டது.</translation>
-<translation id="245932805758469625">மீதமுள்ள வீடியோவின் வினாடிகள்</translation>
-<translation id="248395913932153421">நாள்</translation>
 <translation id="2507943997699731163">இந்தப் புலத்தை நிரப்புக.</translation>
-<translation id="2530182415807757784">பலவற்றைத் தேர்ந்தெடுக்கலாம், எதுவும் தேர்ந்தெடுக்கப்படவில்லை.</translation>
-<translation id="2561842179657104141">மேலும் மீடியா கட்டுப்பாடுகளைக் காட்டு</translation>
-<translation id="2572483411312390101">இயக்கு</translation>
 <translation id="2613802280814924224">சரியான மதிப்பை உள்ளிடவும்.  <ph name="VALID_VALUE" /> என்பது நெருக்கமாக உள்ள சரியான மதிப்பாகும்.</translation>
-<translation id="2634240155926812724">பச்சை சேனல்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
-<translation id="2723001399770238859">ஆடியோ</translation>
 <translation id="2746543609216772311">மதிப்பானது <ph name="MINIMUM_DATE_OR_TIME" /> அல்லது அதற்குப் பின்பு இருக்க வேண்டும்.</translation>
 <translation id="2761667185364618470">தொடர விரும்பினால், இந்தப் பெட்டியைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="2908441821576996758">காற்புள்ளியால் பிரிக்கப்பட்ட மின்னஞ்சல் முகவரிகளின் பட்டியலை உள்ளிடுக.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> மெ.பை</translation>
-<translation id="3053226512517284904">ஆடியோ விளக்கங்கள் மெனுவைக் காட்டும்</translation>
 <translation id="3075154866155599887">சரியான மதிப்பை உள்ளிடவும். இந்தப் புலம் முழுமையற்றதாக உள்ளது அல்லது தவறான தேதியைக் கொண்டுள்ளது.</translation>
 <translation id="310520048233152454">URL ஐ உள்ளிடுக.</translation>
-<translation id="3220661731597678625">தற்போதைய படிநிலை</translation>
 <translation id="3321030238473337787">பிளேபேக் வேகம்</translation>
-<translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
-<translation id="3377518164566272702">மைக்ரோஃபோன் மற்றும் கேமரா அணுகலை வழங்கு</translation>
 <translation id="3450233048674729344">மதிப்பானது கண்டிப்பாக <ph name="MAXIMUM" /> ஐ விடக்குறைவாக அல்லது அதற்குச் சமமாக இருக்க வேண்டும்.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">’பிக்ச்சர்-இன்-பிக்ச்சரில்' இருந்து வெளியேறு</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து வரும் பகுதியில் '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
-<translation id="4103419683916926126">மில்லிவினாடிகள்</translation>
-<translation id="4201051445878709314">முந்தைய மாதத்தைக் காட்டு</translation>
 <translation id="4360991593054037559">சரியான மதிப்பை உள்ளிடவும். <ph name="VALID_VALUE_LOW" /> மற்றும் <ph name="VALID_VALUE_HIGHER" /> ஆகியவை மிக நெருக்கமான சரியான இரண்டு மதிப்புகளாகும்.</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4663373278480897665">கேமரா அனுமதிக்கப்பட்டது</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ஐத் தொடரும் பகுதியில், '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="4718048029184481307">’பிக்ச்சர்-இன்-பிக்ச்சர்' பயன்முறையில் பிளே ஆகிறது</translation>
-<translation id="4748357248530471599">டிஸ்ப்ளே கட்அவுட் முழுத்திரை நிலைமாற்ற பட்டன்</translation>
-<translation id="4763480195061959176">வீடியோ</translation>
 <translation id="4792862212177489858">இருப்பிடத்தைப் பகிர்</translation>
 <translation id="4812940957355064477">எண்ணை உள்ளிடுக.</translation>
-<translation id="4912200001568447310">தற்போதைய மதிப்பு</translation>
-<translation id="4915360478455618802">நேரத் தேர்வுக் கருவியைக் காட்டும்</translation>
-<translation id="4924138096460353083">தீர்மானிக்க முடியாத நிலை</translation>
-<translation id="4950364064308314478">உள்ளூர் தேதி மற்றும் நேரத் தேர்வுக் கருவியைக் காட்டும்</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="49269513399674318">மைக்ரோஃபோனைப் பயன்படுத்து</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="4992066212339426712">ஒலி இயக்கு</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து ஒரு பகுதியை உள்ளிடவும். '<ph name="INVALIDADDRESS" />' முழுமைப்பெறாமல் உள்ளது.</translation>
-<translation id="5037575921016181960">வலிமையான கடவுச்சொல்</translation>
-<translation id="5090250355906949916">வீடியோ நேர ஸ்க்ரப்பர்</translation>
-<translation id="509897012892853729">நீல சேனல்</translation>
-<translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5164977714490026579">மதிப்பானது, கண்டிப்பாக <ph name="MINIMUM" /> ஐ விட அதிகமாக அல்லது அதற்குச் சமமாக இருக்க வேண்டும்.</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">விருப்பங்களுக்குச் செல்லும்</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> பெ.பை</translation>
-<translation id="5272594226096532950">தேர்ந்தெடுக்கப்படவில்லை. குழுவில், <ph name="COUNT" /> விருப்பங்களில் <ph name="INDEX" />வது</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து ஒரு பகுதியை உள்ளிடவும். '<ph name="INVALIDADDRESS" />' முழுமைப் பெறாமல் உள்ளது.</translation>
 <translation id="5334352251556557839">மீடியாவை இயக்க முடியவில்லை.</translation>
 <translation id="537648784377940524">குறைந்தபட்சத் தேதி (<ph name="MIN_DATE_OR_TIME" />) முதலிலும் அதிகபட்சத் தேதி (<ph name="MAX_DATE_OR_TIME" />) அடுத்தும் வர வேண்டும்.</translation>
-<translation id="5378437566635403538">விரிவாக்கப்பட்டது, உரையாடல் திறக்கப்பட்டது.</translation>
-<translation id="5425179576310518467">தற்போதைய தேதி</translation>
 <translation id="5466621249238537318">ஒன்று அல்லது அதற்குமேற்பட்ட ஃபைல்களைத் தேர்ந்தெடுங்கள்.</translation>
-<translation id="5468998798572797635">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="5514612371225420585">உங்கள் சாதனத்தில் உள்ள ஃபைல்</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">அலைபரப்பு</translation>
-<translation id="5546461542133609677">ஒலி இயக்கு</translation>
 <translation id="5630795885300617244">10வி தவிர்க்க, இடது அல்லது வலதுபுறம் இருமுறை தட்டவும்</translation>
-<translation id="5677946354068040947">கூடுதல் விருப்பங்கள் பட்டன்</translation>
 <translation id="57838592816432529">ஒலியடக்கு</translation>
-<translation id="5786442179789148008">பிளேபேக் வேகத்திற்கான மெனுவைக் காட்டும்</translation>
-<translation id="5787939484346677755">விரிவாக்கப்பட்டது, தன்னிரப்பி விருப்பங்கள் உள்ளன.</translation>
-<translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5888666972993069672">இப்போது <ph name="DEVICE_FRIENDLY_NAME" />க்கு அனுப்புகிறது</translation>
-<translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="5966707198760109579">வாரம்</translation>
 <translation id="5985507339671257014">0.5</translation>
-<translation id="6011459053400940133">ஒலியளவு ஸ்லைடர்</translation>
-<translation id="6015796118275082299">ஆண்டு</translation>
-<translation id="6165053282446038410">விரிவாக்கப்பட்டது, <ph name="COUNT" /> தன்னிரப்பி விருப்பங்கள் உள்ளன.</translation>
-<translation id="6212595056017402527">தற்போதைய பக்கம்</translation>
-<translation id="6281588256137006900">உரையின் தெரிவுநிலை</translation>
 <translation id="6310801910862476708">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறையிலிருந்து வெளியேறு</translation>
-<translation id="6398862346408813489">மாதம் தேர்ந்தெடுப்புப் பலகத்தைக் காட்டு</translation>
-<translation id="6404546809543547843">ஆடியோ நேர ஸ்கிரப்பர்</translation>
-<translation id="6443871981718447451">விவரிப்பு சப்டைட்டில்கள் மெனுவைக் காட்டும்</translation>
 <translation id="6484738902856791350">பிரெட்டி பிரிண்ட்</translation>
 <translation id="6550675742724504774">விருப்பத்தேர்வுகள்</translation>
-<translation id="6572309429103589720">இலக்கணப்பிழை</translation>
-<translation id="658823671542763450">முழுத்திரைக்குச் செல்</translation>
-<translation id="6606094904835912297">சிஸ்டம் வண்ணங்கள்</translation>
 <translation id="6643016212128521049">அழி</translation>
 <translation id="668171684555832681">மற்றவை…</translation>
 <translation id="6709093583001123835">மதிப்பு <ph name="VALUE" /> என இருக்க வேண்டும்.</translation>
 <translation id="6709570249143506788">மோசமான வீடியோவின் தரம்</translation>
-<translation id="6719914554879143100">தேர்ந்தெடுக்கப்பட்டுள்ளது. குழுவில், <ph name="COUNT" /> விருப்பங்களில் <ph name="INDEX" />வது</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6820355525329141109">செருகுநிரல் ஏற்றப்படவில்லை.</translation>
-<translation id="6831465880655513317">சேச்சுரேஷனையும் உரையின் தெரிவுநிலையையும் தேர்ந்தெடுப்பதற்கான இரு பரிமாண ஸ்லைடரைக் கொண்ட வண்ணத் தட்டு</translation>
-<translation id="6843725295806269523">ஒலியடக்கு</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6941933287844615239">மீடியாவைப் பதிவிறக்கு</translation>
-<translation id="698788488269350478">விரிவாக்கப்பட்டது.</translation>
 <translation id="6989848892321993519">இந்த உரையில் <ph name="MIN_CHARACTERS" /> அல்லது அதற்கு மேற்பட்ட எழுத்துக்குறிகளைப் பயன்படுத்தவும் (தற்போது 1 எழுத்துக்குறியைப் பயன்படுத்துகிறீர்கள்).</translation>
 <translation id="7080893216867146095">இருப்பிடப் பகிர்வு அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="709897737746224366">கோரிய வடிவமைப்பில் தருக.</translation>
-<translation id="7102274145889307184">தற்போதைய இருப்பிடம்</translation>
+<translation id="7134810312945846184">மைக்ரோஃபோனையும் கேமராவையும் பயன்படுத்து</translation>
 <translation id="7263440858009898357">பட்டியலிலிருந்து ஒரு உருப்படியைத் தேர்ந்தெடுங்கள்.</translation>
-<translation id="7320576522385648310">ஏற்றுகிறது</translation>
-<translation id="7341556277900466204">வண்ணத் தட்டு</translation>
 <translation id="7364796246159120393">ஃபைலைத் தேர்வு செய்க</translation>
 <translation id="739024184232394898">மற்றவை…</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> டெ.பை</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
-<translation id="7673697353781729403">மணிநேரம்</translation>
 <translation id="7750228210027921155">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
-<translation id="775297008183122718">தவறான உள்ளீடு</translation>
 <translation id="7782515065589691344">1.25</translation>
-<translation id="7789962463072032349">இடைநிறுத்து</translation>
-<translation id="7852167693871241274">வண்ணச் சாயல் ஸ்லைடர்</translation>
 <translation id="7888071071722539607">மின்னஞ்சல் முகவரியில் '<ph name="ATSIGN" />' ஐச் சேர்க்கவும். '<ph name="ATSIGN" />' இல் '<ph name="INVALIDADDRESS" />' இல்லை.</translation>
 <translation id="795667975304826397">எந்த ஃபைலும் தேர்ந்தெடுக்கப்படவில்லை</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="8117451130807776954">இந்த வாரம்</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
-<translation id="8261464734335370856">எழுத்துப்பிழை</translation>
 <translation id="8284326494547611709">வசனங்கள்</translation>
 <translation id="835897206747267392">செல்லாத மதிப்பு.</translation>
 <translation id="839593075537728968">நேரமானது <ph name="MINIMUM_TIME" />-<ph name="MAXIMUM_TIME" />க்கு இடையில் இருக்க வேண்டும்</translation>
-<translation id="8403857369060869934">முடிவடைந்த நேரம்: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் </translation>
 <translation id="8451268428117625855">ஒரு ஃபைலை தேர்ந்தெடுக்கவும்.</translation>
-<translation id="8534579021159131403">நிமிடங்கள்</translation>
-<translation id="8541249477527128034">மீடியா கட்டுப்பாடு</translation>
-<translation id="8613126697340063924">தொலைநிலை இயக்கத்தைக் கட்டுப்படுத்தவும்</translation>
-<translation id="8634971699417195529">மாதத் தேர்வுக் கருவியைக் காட்டும்</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">வரி மடிப்பு</translation>
 <translation id="8750798805984357768">தயவுசெய்து இந்த விருப்பங்களில் ஒன்றைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="8845239796550121995">டிவிக்கு அனுப்புகிறது</translation>
 <translation id="8875657656876809964">வீடியோ இயக்கப் பிழை</translation>
-<translation id="8889402386540077796">நிறச்சாயல்</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> கி.பை.</translation>
-<translation id="894736920926684893">வடிவமைப்பை நிலைமாற்றும்</translation>
-<translation id="8987927404178983737">மாதம்</translation>
-<translation id="901493112792887934">நடப்பு நேரம் வினாடிகளில்</translation>
-<translation id="9093215626363556771">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறையிலிருந்து வெளியேறும்</translation>
 <translation id="9132465097189459683">மற்றவை…</translation>
-<translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> அன்று தொடங்குவது</translation>
 <translation id="916607977885256133">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
-<translation id="918430632320614861">மைக்ரோஃபோன் அணுகலை வழங்கு</translation>
-<translation id="945780513535800434">சில மட்டுமே தேர்ந்தெடுக்கப்பட்டுள்ளன</translation>
-<translation id="954003015749068518">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறைக்குச் செல்லும்</translation>
 </translationbundle>

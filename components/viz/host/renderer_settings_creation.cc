@@ -69,6 +69,11 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  renderer_settings.occlusion_culler_settings.quad_split_limit =
+      features::DrawQuadSplitLimit();
+#endif
+
 #if BUILDFLAG(IS_OZONE)
   if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
     renderer_settings.overlay_strategies = ParseOverlayStrategies(

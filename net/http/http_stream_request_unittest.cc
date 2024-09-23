@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "net/base/features.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_factory_job_controller.h"
@@ -22,6 +24,13 @@ namespace net {
 
 // Make sure that Request passes on its priority updates to its jobs.
 TEST(HttpStreamRequestTest, SetPriority) {
+  // Explicitly disable HappyEyeballsV3 because this test depends on
+  // HttpStreamFactory::Job, which isn't used by HappyEyeballsV3.
+  // HttpStreamPoolAttemptManagerTest.SetPriority covers updating priority
+  // for in-flight connection attempts.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kHappyEyeballsV3);
+
   base::test::TaskEnvironment task_environment;
 
   SequencedSocketData data;
@@ -68,4 +77,5 @@ TEST(HttpStreamRequestTest, SetPriority) {
   EXPECT_TRUE(data.AllReadDataConsumed());
   EXPECT_TRUE(data.AllWriteDataConsumed());
 }
+
 }  // namespace net

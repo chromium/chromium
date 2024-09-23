@@ -28,12 +28,8 @@ static_library("webui") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-static_library("url_constants") {
-  sources = [
-    "url_constants.cc",
-    "url_constants.h",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+source_set("url_constants") {
+  sources = [ "url_constants.h" ]
 }
 
 mojom("mojo_bindings") {

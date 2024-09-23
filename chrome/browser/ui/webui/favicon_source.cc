@@ -16,7 +16,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -79,7 +79,7 @@ std::string FaviconSource::GetSource() {
     case chrome::FaviconUrlFormat::kFavicon2:
       return chrome::kChromeUIFavicon2Host;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -156,8 +156,6 @@ void FaviconSource::StartDataRequest(
         !ParseHistoryUiOrigin(GetUnsafeRequestOrigin(wc_getter),
                               &parsed_history_ui_origin)) {
       // Request from local storage only.
-      // TODO(victorvianna): Expose fallback_to_host in FaviconRequestHandler
-      // API and move the explanatory comment for |fallback_to_host| here.
       const bool fallback_to_host = true;
       favicon_service->GetRawFaviconForPageURL(
           page_url, {favicon_base::IconType::kFavicon}, desired_size_in_pixel,
@@ -218,7 +216,7 @@ bool FaviconSource::ShouldServiceRequest(
 
 ui::NativeTheme* FaviconSource::GetNativeTheme(
     const content::WebContents::Getter& wc_getter) {
-  return webui::GetNativeTheme(wc_getter.Run());
+  return webui::GetNativeThemeDeprecated(wc_getter.Run());
 }
 
 void FaviconSource::OnFaviconDataAvailable(

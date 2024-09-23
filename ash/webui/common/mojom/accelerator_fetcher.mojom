@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.common.mojom;
+
+import "ash/public/mojom/accelerator_info.mojom";
+import "ash/public/mojom/accelerator_actions.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
+
+// Interface for observing accelerator changes and notifying the frontend
+// to update the shortcut accelerator displays.
+// Browser process handles tracking of the accelerators and updates with
+// the AcceleratorFetcherObserver if users modify them such as via the Key
+// Shortcuts app, change language layouts, or plug/unplug keyboards,the Browser
+// process will send new updated accelerators as messages to the renderer
+// as receiver.
+interface AcceleratorFetcherObserver {
+  // Notifies AcceleratorFetcherObserver with array of accelerators when the
+  // accelerator actionId is updated or the frontend element is first added to
+  // the observers.
+  OnAcceleratorsUpdated(ash.mojom.AcceleratorAction actionId,
+      array<ash.mojom.StandardAcceleratorProperties> accelerators);
+};
+
+// Interface for fetching and configuring shortcut accelerators for an
+// accelerator action.
+// The front pages initialize the AcceleratorFetcher to fetch accelerators
+// for each AcceleratorAction as messages, and to set up observers for any
+// accelerator updates.
+interface AcceleratorFetcher {
+  // Registers an observer which is notified every time accelerators changed.
+  ObserveAcceleratorChanges(
+      array<ash.mojom.AcceleratorAction> actionIds,
+      pending_remote<AcceleratorFetcherObserver> observer);
+  // Returns the meta key to display in the UI to represent the overall current
+  // keyboard situation. This will only return either Launcher, Search, or
+  // LauncherRefresh.
+  GetMetaKeyToDisplay() => (ui.mojom.MetaKey meta_key);
+};

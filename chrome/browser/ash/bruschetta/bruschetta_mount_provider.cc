@@ -30,7 +30,7 @@ std::string BruschettaMountProvider::DisplayName() {
                                   prefs::PolicyEnabledState::BLOCKED);
   if (!config.has_value() || !config.value()) {
     // If the config doesn't exist this provider should have been removed.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

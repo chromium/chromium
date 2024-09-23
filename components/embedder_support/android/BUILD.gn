@@ -76,7 +76,7 @@ android_library("util_java") {
 }
 
 # Intentionally separate to keep dependencies of content view small.
-# TODO(crbug.com/1493531): Remove this library.
+# TODO(crbug.com/40075084): Remove this library.
 android_library("embedder_util_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/util/TouchEventFilter.java" ]
 
@@ -89,6 +89,8 @@ static_library("util") {
     "util/android_stream_reader_url_loader.h",
     "util/cdn_utils.cc",
     "util/cdn_utils.h",
+    "util/features.cc",
+    "util/features.h",
     "util/input_stream.cc",
     "util/input_stream.h",
     "util/input_stream_reader.cc",
@@ -145,6 +147,8 @@ android_library("content_view_java") {
   deps = [
     ":embedder_util_java",
     "//base:base_java",
+    "//build/android:build_java",
+    "//components/android_autofill/browser:features_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/accessibility:ax_base_java",
@@ -180,8 +184,8 @@ java_strings_grd("web_contents_delegate_strings_grd") {
 
 static_library("web_contents_delegate") {
   sources = [
-    "delegate/color_chooser_android.cc",
-    "delegate/color_chooser_android.h",
+    "delegate/color_picker_bridge.cc",
+    "delegate/color_picker_bridge.h",
     "delegate/web_contents_delegate_android.cc",
     "delegate/web_contents_delegate_android.h",
   ]
@@ -189,6 +193,7 @@ static_library("web_contents_delegate") {
   deps = [
     ":web_contents_delegate_jni_headers",
     "//base",
+    "//components/input",
     "//content/public/browser",
     "//content/public/common",
     "//net",
@@ -209,10 +214,11 @@ android_resources("web_contents_delegate_java_resources") {
     "java/res/drawable/color_button_background.xml",
     "java/res/drawable/color_picker_border.xml",
     "java/res/layout/color_picker_advanced_component.xml",
-    "java/res/layout/color_picker_dialog_content.xml",
-    "java/res/layout/color_picker_dialog_title.xml",
+    "java/res/layout/color_picker_dialog_view.xml",
+    "java/res/layout/color_picker_suggestion_view.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
   ]
   deps = [ ":web_contents_delegate_strings_grd" ]
 }
@@ -223,7 +229,9 @@ android_library("web_contents_delegate_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -234,13 +242,16 @@ android_library("web_contents_delegate_java") {
 
   srcjar_deps = [ ":web_contents_delegate_jni_headers" ]
   sources = [
-    "java/src/org/chromium/components/embedder_support/delegate/ColorChooserAndroid.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvanced.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerAdvancedComponent.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerDialog.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSimple.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerCoordinator.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogView.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerProperties.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSuggestionProperties.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerSuggestionsView.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerViewBinder.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestionListAdapter.java",
     "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
@@ -248,7 +259,7 @@ android_library("web_contents_delegate_java") {
 
 generate_jni("web_contents_delegate_jni_headers") {
   sources = [
-    "java/src/org/chromium/components/embedder_support/delegate/ColorChooserAndroid.java",
+    "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -257,6 +268,7 @@ static_library("context_menu") {
   sources = [
     "contextmenu/context_menu_builder.cc",
     "contextmenu/context_menu_builder.h",
+    "contextmenu/context_menu_image_format.h",
   ]
   deps = [
     ":context_menu_jni_headers",
@@ -271,6 +283,10 @@ generate_jni("context_menu_jni_headers") {
   sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
 }
 
+java_cpp_enum("context_menu_image_format_enum_javagen") {
+  sources = [ "contextmenu/context_menu_image_format.h" ]
+}
+
 android_library("context_menu_java") {
   deps = [
     "//base:base_java",
@@ -282,8 +298,20 @@ android_library("context_menu_java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":context_menu_jni_headers" ]
-  sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
+  srcjar_deps = [
+    ":context_menu_image_format_enum_javagen",
+    ":context_menu_jni_headers",
+  ]
+  sources = [
+    "java/src/org/chromium/components/embedder_support/contextmenu/ChipDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ChipRenderParams.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuItemDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuNativeDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulator.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulatorFactory.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUi.java",
+  ]
 }
 
 android_library("native_java_unittests_java") {

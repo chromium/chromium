@@ -6,8 +6,10 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_CONTENT_BROWSER_CLIENT_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -100,6 +102,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       override;
   base::OnceClosure SelectClientCertificate(
       content::BrowserContext* browser_context,
+      int process_id,
       content::WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,
@@ -128,7 +131,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const content::SocketPermissionRequest* params) override;
   bool IsPepperVpnProviderAPIAllowed(content::BrowserContext* browser_context,
                                      const GURL& url) override;
-  content::TracingDelegate* GetTracingDelegate() override;
+  std::unique_ptr<content::TracingDelegate> CreateTracingDelegate() override;
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
@@ -160,24 +163,26 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
-      absl::optional<int64_t> navigation_id) override;
+      content::FrameTreeNodeId frame_tree_node_id,
+      std::optional<int64_t> navigation_id) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottlesForKeepAlive(
       const network::ResourceRequest& request,
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      int frame_tree_node_id) override;
-  bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id) override;
+  bool ShouldOverrideUrlLoading(content::FrameTreeNodeId frame_tree_node_id,
                                 bool browser_initiated,
                                 const GURL& gurl,
                                 const std::string& request_method,
                                 bool has_user_gesture,
                                 bool is_redirect,
                                 bool is_outermost_main_frame,
+                                bool is_prerendering,
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
-  bool CreateThreadPool(base::StringPiece name) override;
+  bool ShouldAllowSameSiteRenderFrameHostChange(
+      const content::RenderFrameHost& rfh) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
@@ -191,7 +196,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool HandleExternalProtocol(
       const GURL& url,
       content::WebContents::Getter web_contents_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::NavigationUIData* navigation_data,
       bool is_primary_main_frame,
       bool is_in_fenced_frame_tree,
@@ -214,6 +219,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::SiteIsolationMode site_isolation_mode) override;
   bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
                                const GURL& effective_url) override;
+  bool ShouldEnforceNewCanCommitUrlChecks() override;
   size_t GetMaxRendererProcessCountOverride() override;
   void WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
@@ -221,6 +227,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
+      const net::IsolationInfo& isolation_info,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       network::URLLoaderFactoryBuilder& factory_builder,
@@ -254,6 +261,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       override;
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
+  void LogWebDXFeatureForCurrentPage(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::WebDXFeature feature) override;
   PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
@@ -267,7 +277,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   void OnDisplayInsecureContent(content::WebContents* web_contents) override;
   network::mojom::AttributionSupport GetAttributionSupport(
       AttributionReportingOsApiState state,
-      content::WebContents* web_contents) override;
+      bool client_os_disabled) override;
   // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context.
   // For WebView Browser Attribution is explicitly disabled.
@@ -279,20 +289,20 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin,
       bool* can_bypass) override;
-  bool ShouldUseOsWebSourceAttributionReporting(
-      content::RenderFrameHost* rfh) override;
-  bool ShouldUseOsWebTriggerAttributionReporting(
-      content::RenderFrameHost* rfh) override;
+  AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
+      content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
   bool WillProvidePublicFirstPartySets() override;
+  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
+                                 content::WebContents* web_contents,
+                                 const GURL& url,
+                                 const blink::StorageKey& storage_key) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
   }
-
-  static void DisableCreatingThreadPool();
 
  private:
   scoped_refptr<safe_browsing::UrlCheckerDelegate>

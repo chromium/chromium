@@ -13,17 +13,21 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/preferences.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
+#include "chrome/browser/ash/preferences/preferences.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 namespace system {
@@ -64,7 +68,7 @@ ServiceConfiguration GetServiceConfigurationFromAutomaticDetectionPolicy() {
       return SHOULD_START;
   }
   // Default for unknown policy value.
-  NOTREACHED() << "Unrecognized policy value: " << policy_value;
+  NOTREACHED_IN_MIGRATION() << "Unrecognized policy value: " << policy_value;
   return SHOULD_STOP;
 }
 
@@ -138,7 +142,8 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 }  // anonymous namespace.
 
 TimeZoneResolverManager::TimeZoneResolverManager(
-    SimpleGeolocationProvider* const geolocation_provider)
+    SimpleGeolocationProvider* geolocation_provider,
+    session_manager::SessionManager* session_manager)
     : geolocation_provider_(geolocation_provider) {
   switch (g_browser_process->local_state()->GetInitializationStatus()) {
     case PrefService::INITIALIZATION_STATUS_SUCCESS:
@@ -159,6 +164,7 @@ TimeZoneResolverManager::TimeZoneResolverManager(
                           base::Unretained(this)));
 
   geolocation_provider_->AddObserver(this);
+  session_observation_.Observe(session_manager);
 }
 
 TimeZoneResolverManager::~TimeZoneResolverManager() {
@@ -270,10 +276,37 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting() {
   return policy_value;
 }
 
+void TimeZoneResolverManager::OnUserProfileLoaded(const AccountId& account_id) {
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  system::UpdateSystemTimezone(profile);
+
+  auto* user_manager = user_manager::UserManager::Get();
+  const auto* user = user_manager->FindUser(account_id);
+  if (!user) {
+    return;
+  }
+
+  // In Multi-Profile mode only primary user settings are in effect.
+  if (user != user_manager->GetPrimaryUser()) {
+    return;
+  }
+
+  if (!user_manager->IsUserLoggedIn()) {
+    return;
+  }
+
+  // Timezone auto refresh is disabled for Guest and OffTheRecord
+  // users, but enabled for Kiosk mode.
+  if (user_manager->IsLoggedInAsGuest() || profile->IsOffTheRecord()) {
+    GetResolver()->Stop();
+    return;
+  }
+  UpdateTimezoneResolver();
+}
+
 void TimeZoneResolverManager::UpdateTimezoneResolver() {
   initialized_ = true;
-  TimeZoneResolver* resolver =
-      g_browser_process->platform_part()->GetTimezoneResolver();
+  TimeZoneResolver* resolver = GetResolver();
   // Local state becomes initialized when policy data is loaded,
   // and we need policies to decide whether resolver can be started.
   if (!local_state_initialized_) {
@@ -334,6 +367,18 @@ bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
   return result == SHOULD_START;
 }
 
+ash::TimeZoneResolver* TimeZoneResolverManager::GetResolver() {
+  if (!timezone_resolver_.get()) {
+    timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
+        this, geolocation_provider_,
+        g_browser_process->shared_url_loader_factory(),
+        base::BindRepeating(&ash::system::ApplyTimeZone),
+        base::BindRepeating(&ash::DelayNetworkCall),
+        g_browser_process->local_state());
+  }
+  return timezone_resolver_.get();
+}
+
 void TimeZoneResolverManager::OnLocalStateInitialized(bool initialized) {
   local_state_initialized_ = initialized;
   if (initialized_)
@@ -380,7 +425,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
       case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
         return TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return TimeZoneResolveMethod::DISABLED;
     }
   }

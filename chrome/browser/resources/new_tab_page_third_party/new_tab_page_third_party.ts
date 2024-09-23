@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -24,7 +25,8 @@ callbackRouter.setTheme.addListener((theme: Theme) => {
   style.backgroundPosition = theme.backgroundPosition;
   style.setProperty('--ntp-theme-text-color', skColorToRgba(theme.textColor));
 
-  const mostVisitedElement = document.querySelector('cr-most-visited')!;
-  mostVisitedElement.set('theme', theme.mostVisited);
+  const mostVisitedElement = document.querySelector('cr-most-visited');
+  assert(mostVisitedElement);
+  mostVisitedElement.theme = theme.mostVisited;
 });
 handler.updateTheme();

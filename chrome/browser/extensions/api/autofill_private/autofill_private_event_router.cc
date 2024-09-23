@@ -14,12 +14,13 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace extensions {
@@ -46,42 +47,43 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
   if (!event_router_)
     return;
 
-  personal_data_ = autofill::PersonalDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(context_));
-  if (!personal_data_)
-    return;
-
-  personal_data_->AddObserver(this);
+  personal_data_ =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(context_);
+  if (personal_data_) {
+    pdm_observer_.Observe(personal_data_);
+  }
+  if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context_))) {
+    sync_observer_.Observe(sync);
+  }
 }
 
+AutofillPrivateEventRouter::~AutofillPrivateEventRouter() = default;
+
 void AutofillPrivateEventRouter::Shutdown() {
-  if (personal_data_)
-    personal_data_->RemoveObserver(this);
+  pdm_observer_.Reset();
+  sync_observer_.Reset();
 }
 
 void AutofillPrivateEventRouter::RebindPersonalDataManagerForTesting(
     autofill::PersonalDataManager* personal_data) {
-  if (personal_data_) {
-    personal_data_->RemoveObserver(this);
-  }
+  pdm_observer_.Reset();
   personal_data_ = personal_data;
   if (personal_data_) {
-    personal_data_->AddObserver(this);
+    pdm_observer_.Observe(personal_data_);
   }
 }
 
 void AutofillPrivateEventRouter::UnbindPersonalDataManagerForTesting() {
-  if (personal_data_) {
-    personal_data_->RemoveObserver(this);
-    personal_data_ = nullptr;
-  }
+  pdm_observer_.Reset();
+  personal_data_ = nullptr;
 }
 
 void AutofillPrivateEventRouter::OnPersonalDataChanged() {
   BroadcastCurrentData();
 }
 
-void AutofillPrivateEventRouter::OnPersonalDataSyncStateChanged() {
+void AutofillPrivateEventRouter::OnStateChanged(syncer::SyncService*) {
   BroadcastCurrentData();
 }
 

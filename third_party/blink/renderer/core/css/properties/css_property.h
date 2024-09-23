@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -22,6 +28,16 @@ class ComputedStyle;
 class CrossThreadStyleValue;
 class ExecutionContext;
 class LayoutObject;
+
+// Determines how far to process a value requested from a computed style.
+enum class CSSValuePhase {
+  // The value inherited to child elements.
+  // https://www.w3.org/TR/css-cascade-3/#computed
+  kComputedValue,
+  // The value returned from getComputedStyle().
+  // https://www.w3.org/TR/cssom-1/#resolved-values
+  kResolvedValue
+};
 
 // For use in Get(Un)VisitedProperty(), although you could probably
 // use them yourself if you wanted to; contains a mapping from each
@@ -90,16 +106,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForFormattedText() const {
-    return flags_ & kValidForFormattedText;
-  }
-  bool IsValidForFormattedTextRun() const {
-    return flags_ & kValidForFormattedTextRun;
-  }
   bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
-  bool IsValidForPositionFallback() const {
-    return flags_ & kValidForPositionFallback;
-  }
+  bool IsValidForPositionTry() const { return flags_ & kValidForPositionTry; }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
@@ -124,31 +132,32 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
       const LayoutObject*,
-      bool allow_visited_style) const {
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const {
     return nullptr;
   }
   const CSSValue* CSSValueFromComputedStyle(const ComputedStyle&,
                                             const LayoutObject*,
-                                            bool allow_visited_style) const;
+                                            bool allow_visited_style,
+                                            CSSValuePhase) const;
   std::unique_ptr<CrossThreadStyleValue> CrossThreadStyleValueFromComputedStyle(
       const ComputedStyle& computed_style,
       const LayoutObject* layout_object,
-      bool allow_visited_style) const;
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const;
 
   const CSSProperty& ResolveDirectionAwareProperty(
-      TextDirection direction,
-      WritingMode writing_mode) const {
+      WritingDirectionMode writing_direction) const {
     if (!IsInLogicalPropertyGroup()) {
       // Avoid the potentially expensive virtual function call.
       return *this;
     } else {
-      return ResolveDirectionAwarePropertyInternal(direction, writing_mode);
+      return ResolveDirectionAwarePropertyInternal(writing_direction);
     }
   }
 
   virtual const CSSProperty& ResolveDirectionAwarePropertyInternal(
-      TextDirection,
-      WritingMode) const {
+      WritingDirectionMode) const {
     return *this;
   }
   virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
@@ -174,7 +183,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     }
   }
 
-  virtual const CSSProperty* SurrogateFor(TextDirection, WritingMode) const {
+  virtual const CSSProperty* SurrogateFor(WritingDirectionMode) const {
     return nullptr;
   }
 
@@ -235,23 +244,24 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kSupportsIncrementalStyle = 1 << 23,
     // See idempotent in css_properties.json5.
     kIdempotent = 1 << 24,
-    // Set if the css property can apply to the experiemental canvas
-    // formatted text API to render multiline text in canvas.
-    // https://github.com/WICG/canvas-formatted-text
-    kValidForFormattedText = 1 << 25,
-    kValidForFormattedTextRun = 1 << 26,
     // See overlapping in css_properties.json5.
-    kOverlapping = 1 << 27,
+    kOverlapping = 1 << 25,
     // See legacy_overlapping in css_properties.json5.
-    kLegacyOverlapping = 1 << 28,
+    kLegacyOverlapping = 1 << 26,
     // See valid_for_keyframes in css_properties.json5
-    kValidForKeyframe = 1 << 29,
-    // See valid_for_position_fallback in css_properties.json5
-    kValidForPositionFallback = 1 << 30,
+    kValidForKeyframe = 1 << 27,
+    // See valid_for_position_try in css_properties.json5
+    kValidForPositionTry = 1 << 28,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1ull << 31,
+    kValidForHighlight = 1ull << 29,
     // See accepts_numeric_literal in css_properties.json5.
-    kAcceptsNumericLiteral = 1ull << 32,
+    kAcceptsNumericLiteral = 1ull << 30,
+    // See valid_for_permission_element in css_properties.json5
+    kValidForPermissionElement = 1ull << 31,
+    // See valid_for_limited_page_context in css_properties.json5
+    kValidForLimitedPageContext = 1ull << 32,
+    // See valid_for_page_context in css_properties.json5
+    kValidForPageContext = 1ull << 33,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

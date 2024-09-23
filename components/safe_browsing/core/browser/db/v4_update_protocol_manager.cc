@@ -27,6 +27,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
+using enum safe_browsing::ExtendedReportingLevel;
 
 namespace {
 
@@ -87,8 +88,10 @@ ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
       return ChromeClientInfo::EXTENDED;
     case SBER_LEVEL_SCOUT:
       return ChromeClientInfo::SCOUT;
+    case SBER_LEVEL_ENHANCED_PROTECTION:
+      return ChromeClientInfo::ENHANCED_PROTECTION;
     default:
-      NOTREACHED() << "Unexpected reporting_level!";
+      NOTREACHED_IN_MIGRATION() << "Unexpected reporting_level!";
       return ChromeClientInfo::UNSPECIFIED;
   }
 }

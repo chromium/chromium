@@ -4,6 +4,9 @@
 
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,6 +15,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -29,10 +34,6 @@ int OAuth2AccessTokenManager::max_fetch_retry_num_ = 5;
 OAuth2AccessTokenManager::Delegate::Delegate() = default;
 
 OAuth2AccessTokenManager::Delegate::~Delegate() = default;
-
-bool OAuth2AccessTokenManager::Delegate::FixRequestErrorIfPossible() {
-  return false;
-}
 
 scoped_refptr<network::SharedURLLoaderFactory>
 OAuth2AccessTokenManager::Delegate::GetURLLoaderFactory() const {
@@ -78,10 +79,11 @@ void OAuth2AccessTokenManager::RequestImpl::InformConsumer(
     const GoogleServiceAuthError& error,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error.state() == GoogleServiceAuthError::NONE)
+  if (error.state() == GoogleServiceAuthError::NONE) {
     consumer_->OnGetTokenSuccess(this, token_response);
-  else
+  } else {
     consumer_->OnGetTokenFailure(this, error);
+  }
 }
 
 OAuth2AccessTokenManager::RequestParameters::RequestParameters(
@@ -97,15 +99,17 @@ OAuth2AccessTokenManager::RequestParameters::~RequestParameters() {}
 
 bool OAuth2AccessTokenManager::RequestParameters::operator<(
     const RequestParameters& p) const {
-  if (client_id < p.client_id)
+  if (client_id < p.client_id) {
     return true;
-  else if (p.client_id < client_id)
+  } else if (p.client_id < client_id) {
     return false;
+  }
 
-  if (account_id < p.account_id)
+  if (account_id < p.account_id) {
     return true;
-  else if (p.account_id < account_id)
+  } else if (p.account_id < account_id) {
     return false;
+  }
 
   return scopes < p.scopes;
 }
@@ -131,9 +135,6 @@ bool OAuth2AccessTokenManager::RequestParameters::operator<(
 // completes fetching.
 //
 // The waiting requests are taken as weak pointers and they can be deleted.
-// They will be called back with the result when either the Fetcher completes
-// fetching or is destroyed, whichever comes first. In the latter case, the
-// waiting requests will be called back with an error.
 //
 // The OAuth2AccessTokenManager and the waiting requests will never be called
 // back on the same turn of the message loop as when the fetcher is started,
@@ -169,14 +170,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
     return waiting_requests_;
   }
 
-  void Cancel();
-
-  const ScopeSet& GetScopeSet() const;
-  const std::string& GetClientId() const;
-  const CoreAccountId& GetAccountId() const;
-
-  // The error result from this fetcher.
-  const GoogleServiceAuthError& error() const { return error_; }
+  std::vector<base::WeakPtr<RequestImpl>> TakeWaitingRequests();
 
  protected:
   // OAuth2AccessTokenConsumer
@@ -195,9 +189,9 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
           const std::string& consumer_name,
           base::WeakPtr<RequestImpl> waiting_request);
   void Start();
-  void InformWaitingRequests();
-  void InformWaitingRequestsAndDelete();
-  bool ShouldRetry(const GoogleServiceAuthError& error) const;
+  void InformFetchCompleted(
+      base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                     GoogleServiceAuthError> response);
   int64_t ComputeExponentialBackOffMilliseconds(int retry_num);
 
   // Attempts to retry the fetch if possible.  This is possible if the retry
@@ -205,12 +199,7 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   // and false otherwise.
   bool RetryIfPossible(const GoogleServiceAuthError& error);
 
-  // |oauth2_access_token_manager_| remains valid for the life of this
-  // Fetcher, since this Fetcher is destructed in the dtor of the
-  // OAuth2AccessTokenManager or is scheduled for deletion at the end of
-  // OnGetTokenFailure/OnGetTokenSuccess (whichever comes first).
-  const raw_ptr<OAuth2AccessTokenManager, AcrossTasksDanglingUntriaged>
-      oauth2_access_token_manager_;
+  const raw_ptr<OAuth2AccessTokenManager> oauth2_access_token_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const CoreAccountId account_id_;
   const ScopeSet scopes_;
@@ -226,18 +215,9 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   bool seen_token_binding_challenge_ = false;
   std::string token_binding_challenge_;
 
-  // Variables that store fetch results.
-  // Initialized to be GoogleServiceAuthError::SERVICE_UNAVAILABLE to handle
-  // destruction.
-  GoogleServiceAuthError error_;
-  OAuth2AccessTokenConsumer::TokenResponse token_response_;
-
   // OAuth2 client id and secret.
   std::string client_id_;
   std::string client_secret_;
-
-  // Ensures that the fetcher is deleted only once.
-  bool scheduled_for_deletion_ = false;
 };
 
 // static
@@ -275,7 +255,6 @@ OAuth2AccessTokenManager::Fetcher::Fetcher(
       scopes_(scopes),
       consumer_name_(consumer_name),
       retry_number_(0),
-      error_(GoogleServiceAuthError::SERVICE_UNAVAILABLE),
       client_id_(client_id),
       client_secret_(client_secret) {
   DCHECK(oauth2_access_token_manager_);
@@ -283,9 +262,11 @@ OAuth2AccessTokenManager::Fetcher::Fetcher(
 }
 
 OAuth2AccessTokenManager::Fetcher::~Fetcher() {
-  // Inform the waiting requests if it has not done so.
-  if (waiting_requests_.size())
-    InformWaitingRequests();
+  // waiting requests should have been consumed.
+  CHECK(waiting_requests_.empty());
+  if (fetcher_) {
+    fetcher_->CancelRequest();
+  }
 }
 
 void OAuth2AccessTokenManager::Fetcher::Start() {
@@ -303,35 +284,31 @@ void OAuth2AccessTokenManager::Fetcher::Start() {
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   CHECK(fetcher_);
+  OAuth2AccessTokenConsumer::TokenResponse fetcher_token_response =
+      token_response;
   fetcher_.reset();
 
   RecordOAuth2TokenFetchResult(GoogleServiceAuthError::NONE);
-
-  // Fetch completes.
-  error_ = GoogleServiceAuthError::AuthErrorNone();
-  token_response_ = token_response;
 
   // Delegates may override this method to skip caching in some cases, but
   // we still inform all waiting Consumers of a successful token fetch below.
   // This is intentional -- some consumers may need the token for cleanup
   // tasks. https://chromiumcodereview.appspot.com/11312124/
-  oauth2_access_token_manager_->RegisterTokenResponse(client_id_, account_id_,
-                                                      scopes_, token_response_);
-  InformWaitingRequestsAndDelete();
+  InformFetchCompleted(fetcher_token_response);
 }
 
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   CHECK(fetcher_);
+  GoogleServiceAuthError fetcher_error = error;
   fetcher_.reset();
 
-  if (ShouldRetry(error) && RetryIfPossible(error))
+  if (fetcher_error.IsTransientError() && RetryIfPossible(fetcher_error)) {
     return;
+  }
 
-  RecordOAuth2TokenFetchResult(error.state());
-
-  error_ = error;
-  InformWaitingRequestsAndDelete();
+  RecordOAuth2TokenFetchResult(fetcher_error.state());
+  InformFetchCompleted(base::unexpected(fetcher_error));
 }
 
 std::string OAuth2AccessTokenManager::Fetcher::GetConsumerName() const {
@@ -379,32 +356,19 @@ bool OAuth2AccessTokenManager::Fetcher::RetryIfPossible(
   return false;
 }
 
-bool OAuth2AccessTokenManager::Fetcher::ShouldRetry(
-    const GoogleServiceAuthError& error) const {
-  // Give the delegate a chance to correct the error first. This is a best
-  // effort only.
-  return error.IsTransientError() || oauth2_access_token_manager_->GetDelegate()
-                                         ->FixRequestErrorIfPossible();
+void OAuth2AccessTokenManager::Fetcher::InformFetchCompleted(
+    base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                   GoogleServiceAuthError> response) {
+  oauth2_access_token_manager_->OnFetchComplete(client_id_, account_id_,
+                                                scopes_, response);
+  // `this` might be deleted.
 }
 
-void OAuth2AccessTokenManager::Fetcher::InformWaitingRequests() {
-  for (const base::WeakPtr<RequestImpl>& request : waiting_requests_) {
-    if (request)
-      request->InformConsumer(error_, token_response_);
-  }
-  waiting_requests_.clear();
-}
-
-void OAuth2AccessTokenManager::Fetcher::InformWaitingRequestsAndDelete() {
-  CHECK(!scheduled_for_deletion_);
-  scheduled_for_deletion_ = true;
-
-  // Deregisters itself from the manager to prevent more waiting requests to
-  // be added when it calls back the waiting requests.
-  oauth2_access_token_manager_->OnFetchComplete(this);
-  InformWaitingRequests();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+std::vector<base::WeakPtr<OAuth2AccessTokenManager::RequestImpl>>
+OAuth2AccessTokenManager::Fetcher::TakeWaitingRequests() {
+  std::vector<base::WeakPtr<RequestImpl>> requests;
+  std::swap(requests, waiting_requests_);
+  return requests;
 }
 
 void OAuth2AccessTokenManager::Fetcher::AddWaitingRequest(
@@ -416,28 +380,6 @@ size_t OAuth2AccessTokenManager::Fetcher::GetWaitingRequestCount() const {
   return waiting_requests_.size();
 }
 
-void OAuth2AccessTokenManager::Fetcher::Cancel() {
-  if (fetcher_)
-    fetcher_->CancelRequest();
-  fetcher_.reset();
-  retry_timer_.Stop();
-  error_ = GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-  InformWaitingRequestsAndDelete();
-}
-
-const OAuth2AccessTokenManager::ScopeSet&
-OAuth2AccessTokenManager::Fetcher::GetScopeSet() const {
-  return scopes_;
-}
-
-const std::string& OAuth2AccessTokenManager::Fetcher::GetClientId() const {
-  return client_id_;
-}
-
-const CoreAccountId& OAuth2AccessTokenManager::Fetcher::GetAccountId() const {
-  return account_id_;
-}
-
 OAuth2AccessTokenManager::OAuth2AccessTokenManager(
     OAuth2AccessTokenManager::Delegate* delegate)
     : delegate_(delegate) {
@@ -446,8 +388,8 @@ OAuth2AccessTokenManager::OAuth2AccessTokenManager(
 
 OAuth2AccessTokenManager::~OAuth2AccessTokenManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Release all the pending fetchers.
-  pending_fetchers_.clear();
+  CancelAllRequests(
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
 }
 
 OAuth2AccessTokenManager::Delegate* OAuth2AccessTokenManager::GetDelegate() {
@@ -527,39 +469,19 @@ void OAuth2AccessTokenManager::FetchOAuth2Token(
       consumer_name, request->AsWeakPtr());
 }
 
-void OAuth2AccessTokenManager::RegisterTokenResponse(
-    const std::string& client_id,
-    const CoreAccountId& account_id,
-    const ScopeSet& scopes,
-    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  token_cache_[RequestParameters(client_id, account_id, scopes)] =
-      token_response;
-}
-
 const OAuth2AccessTokenConsumer::TokenResponse*
 OAuth2AccessTokenManager::GetCachedTokenResponse(
     const RequestParameters& request_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TokenCache::iterator token_iterator = token_cache_.find(request_parameters);
-  if (token_iterator == token_cache_.end())
+  if (token_iterator == token_cache_.end()) {
     return nullptr;
+  }
   if (token_iterator->second.expiration_time <= base::Time::Now()) {
     token_cache_.erase(token_iterator);
     return nullptr;
   }
   return &token_iterator->second;
-}
-
-void OAuth2AccessTokenManager::ClearCache() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& entry : token_cache_) {
-    for (auto& observer : diagnostics_observer_list_)
-      observer.OnAccessTokenRemoved(entry.first.account_id, entry.first.scopes);
-  }
-
-  token_cache_.clear();
 }
 
 void OAuth2AccessTokenManager::ClearCacheForAccount(
@@ -569,8 +491,9 @@ void OAuth2AccessTokenManager::ClearCacheForAccount(
        iter != token_cache_.end();
        /* iter incremented in body */) {
     if (iter->first.account_id == account_id) {
-      for (auto& observer : diagnostics_observer_list_)
+      for (auto& observer : diagnostics_observer_list_) {
         observer.OnAccessTokenRemoved(account_id, iter->first.scopes);
+      }
       token_cache_.erase(iter++);
     } else {
       ++iter;
@@ -578,21 +501,39 @@ void OAuth2AccessTokenManager::ClearCacheForAccount(
   }
 }
 
-void OAuth2AccessTokenManager::CancelAllRequests() {
-  std::vector<Fetcher*> fetchers_to_cancel;
-  for (const auto& pending_fetcher : pending_fetchers_)
-    fetchers_to_cancel.push_back(pending_fetcher.second.get());
-  CancelFetchers(fetchers_to_cancel);
+void OAuth2AccessTokenManager::CancelAllRequests(
+    const GoogleServiceAuthError& error) {
+  // Match all requests.
+  CancelRequestIfMatch(
+      error, base::BindRepeating(
+                 [](const RequestParameters& params) -> bool { return true; }));
 }
 
 void OAuth2AccessTokenManager::CancelRequestsForAccount(
-    const CoreAccountId& account_id) {
-  std::vector<Fetcher*> fetchers_to_cancel;
-  for (const auto& pending_fetcher : pending_fetchers_) {
-    if (pending_fetcher.first.account_id == account_id)
-      fetchers_to_cancel.push_back(pending_fetcher.second.get());
+    const CoreAccountId& account_id,
+    const GoogleServiceAuthError& error) {
+  CancelRequestIfMatch(error, base::BindRepeating(
+                                  [](const CoreAccountId& account_id,
+                                     const RequestParameters& params) -> bool {
+                                    return params.account_id == account_id;
+                                  },
+                                  account_id));
+}
+
+void OAuth2AccessTokenManager::CancelRequestIfMatch(
+    const GoogleServiceAuthError& error,
+    base::RepeatingCallback<bool(const RequestParameters&)> match_request) {
+  for (auto it = pending_fetchers_.begin(); it != pending_fetchers_.end();) {
+    if (match_request.Run(it->first)) {
+      RequestParameters request_parameters = it->first;
+      auto waiting_requests = it->second->TakeWaitingRequests();
+      it = pending_fetchers_.erase(it);
+      ProcessOnFetchComplete(request_parameters, base::unexpected(error),
+                             waiting_requests);
+    } else {
+      ++it;
+    }
   }
-  CancelFetchers(fetchers_to_cancel);
 }
 
 void OAuth2AccessTokenManager::InvalidateAccessToken(
@@ -660,8 +601,9 @@ OAuth2AccessTokenManager::StartRequestForClientWithContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<RequestImpl> request(new RequestImpl(account_id, consumer));
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observer_list_) {
     observer.OnAccessTokenRequested(account_id, consumer->id(), scopes);
+  }
 
   if (!delegate_->HasRefreshToken(account_id)) {
     GoogleServiceAuthError error(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
@@ -734,7 +676,11 @@ bool OAuth2AccessTokenManager::RemoveCachedTokenResponse(
 }
 
 void OAuth2AccessTokenManager::OnFetchComplete(
-    OAuth2AccessTokenManager::Fetcher* fetcher) {
+    const std::string& client_id,
+    const CoreAccountId& account_id,
+    const ScopeSet& scopes,
+    base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                   GoogleServiceAuthError> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Note |fetcher| is recorded in |pending_fetcher_| mapped from its
@@ -765,37 +711,49 @@ void OAuth2AccessTokenManager::OnFetchComplete(
   // Then by (2), |fetcher| is recorded in |pending_fetchers_|.
   // Then by (3), |fetcher_| is mapped from its combination of client ID,
   // account ID, and scope set.
-  RequestParameters request_param(
-      fetcher->GetClientId(), fetcher->GetAccountId(), fetcher->GetScopeSet());
+  RequestParameters request_parameters(client_id, account_id, scopes);
+  auto iter = pending_fetchers_.find(request_parameters);
+  CHECK(iter != pending_fetchers_.end());
 
-  auto iter = pending_fetchers_.find(request_param);
-  DCHECK(iter != pending_fetchers_.end());
-  DCHECK_EQ(fetcher, iter->second.get());
-
-  // The Fetcher deletes itself.
-  iter->second.release();
+  auto waiting_requests = iter->second->TakeWaitingRequests();
   pending_fetchers_.erase(iter);
+  ProcessOnFetchComplete(request_parameters, response, waiting_requests);
+}
 
-  // `delegate_` might cancel all pending fetchers, so it's important to call it
-  // only after `fetcher` was removed from the map. See
-  // https://crbug.com/1186630.
-  delegate_->OnAccessTokenFetched(fetcher->GetAccountId(), fetcher->error());
+void OAuth2AccessTokenManager::ProcessOnFetchComplete(
+    const RequestParameters& request_parameters,
+    base::expected<OAuth2AccessTokenConsumer::TokenResponse,
+                   GoogleServiceAuthError> response,
+    const std::vector<base::WeakPtr<OAuth2AccessTokenManager::RequestImpl>>&
+        waiting_requests) {
+  GoogleServiceAuthError error;
+  OAuth2AccessTokenConsumer::TokenResponse token_response;
+  if (response.has_value()) {
+    token_response = std::move(response).value();
+    token_cache_[request_parameters] = token_response;
+    error = GoogleServiceAuthError::AuthErrorNone();
+  } else {
+    error = std::move(response).error();
+  }
+
+  delegate_->OnAccessTokenFetched(request_parameters.account_id, error);
 
   const OAuth2AccessTokenConsumer::TokenResponse* entry =
-      GetCachedTokenResponse(request_param);
-  for (const base::WeakPtr<RequestImpl>& req : fetcher->waiting_requests()) {
+      GetCachedTokenResponse(request_parameters);
+  for (const base::WeakPtr<RequestImpl>& req : waiting_requests) {
     if (req) {
       for (auto& observer : diagnostics_observer_list_) {
         observer.OnFetchAccessTokenComplete(
-            req->GetAccountId(), req->GetConsumerId(), fetcher->GetScopeSet(),
-            fetcher->error(), entry ? entry->expiration_time : base::Time());
+            request_parameters.account_id, req->GetConsumerId(),
+            request_parameters.scopes, error,
+            entry ? entry->expiration_time : base::Time());
       }
     }
   }
-}
 
-void OAuth2AccessTokenManager::CancelFetchers(
-    std::vector<Fetcher*> fetchers_to_cancel) {
-  for (Fetcher* pending_fetcher : fetchers_to_cancel)
-    pending_fetcher->Cancel();
+  for (const base::WeakPtr<RequestImpl>& request : waiting_requests) {
+    if (request) {
+      request->InformConsumer(error, token_response);
+    }
+  }
 }

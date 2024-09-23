@@ -7,14 +7,17 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -25,8 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
-#import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinatee.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 
 @interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
@@ -76,6 +78,8 @@
   ToolbarType _steadyStateOmniboxPosition;
   /// Whether the omnibox focusing should happen with animation.
   BOOL _enableAnimationsForOmniboxFocus;
+  //// Indicates whether the focus came from a tap on the NTP's fakebox.
+  BOOL _focusedFromFakebox;
   /// Indicates whether the fakebox was pinned on last signal to focus from
   /// the fakebox.
   BOOL _fakeboxPinned;
@@ -120,21 +124,18 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
-  PrefService* originalPrefs =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState()->GetPrefs();
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
     deviceSwitcherResult =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browser->GetBrowserState());
+            GetDispatcherForProfile(browser->GetProfile());
   }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
                isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
-  self.toolbarMediator.originalPrefService = originalPrefs;
 
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
@@ -147,6 +148,8 @@
       self.locationBarCoordinator.toolbarOmniboxConsumer;
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
+  self.primaryToolbarCoordinator.toolbarHeightDelegate =
+      self.toolbarHeightDelegate;
   [self.primaryToolbarCoordinator start];
   self.secondaryToolbarCoordinator.toolbarHeightDelegate =
       self.toolbarHeightDelegate;
@@ -160,7 +163,7 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [self.toolbarMediator setInitialOmniboxPosition];
   } else {
     [self.primaryToolbarCoordinator
@@ -200,7 +203,6 @@
   [self.toolbarMediator disconnect];
   self.toolbarMediator.omniboxConsumer = nil;
   self.toolbarMediator.delegate = nil;
-  self.toolbarMediator.originalPrefService = nullptr;
   self.toolbarMediator.deviceSwitcherResultDispatcher = nullptr;
   self.toolbarMediator = nil;
 
@@ -295,7 +297,7 @@
   [self.toolbarMediator locationBarFocusChangedTo:focused];
 
   // Disable toolbar animations when focusing the omnibox on secondary toolbar.
-  // TODO(crbug.com/1462889): Add animation in OmniboxFocusOrchestrator if
+  // TODO(crbug.com/40275116): Add animation in OmniboxFocusOrchestrator if
   // needed.
   BOOL animateTransition = _enableAnimationsForOmniboxFocus &&
                            _steadyStateOmniboxPosition == ToolbarType::kPrimary;
@@ -328,8 +330,7 @@
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
-    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
+    // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
     // zero. This is a temporary fix for the pdf bug.
     return 1.0;
   }
@@ -339,13 +340,6 @@
 }
 
 - (CGFloat)expandedPrimaryToolbarHeight {
-  if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
-    // TODO(crbug.com/1473629): Find out why primary toolbar height cannot be
-    // zero. This is a temporary fix for the pdf bug.
-    return 1.0;
-  }
-
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
   if (!IsSplitToolbarMode(self.traitEnvironment)) {
@@ -357,7 +351,6 @@
 
 - (CGFloat)collapsedSecondaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     return ToolbarCollapsedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
@@ -371,7 +364,6 @@
   CGFloat height =
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
   if (_omniboxPosition == ToolbarType::kSecondary) {
-    CHECK(IsBottomOmniboxSteadyStateEnabled());
     height += ToolbarExpandedHeight(
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
@@ -393,7 +385,8 @@
   }
 }
 
-- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned {
+- (void)focusOmniboxFromFakebox:(BOOL)fromFakebox pinned:(BOOL)pinned {
+  _focusedFromFakebox = fromFakebox;
   _fakeboxPinned = pinned;
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
@@ -439,6 +432,12 @@
 - (void)updateUIForIPHDismissed {
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
+  }
+}
+
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
+    [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];
   }
 }
 
@@ -553,18 +552,22 @@
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
   _omniboxPosition = toolbarType;
+  OmniboxPositionBrowserAgent* positionBrowserAgent =
+      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
   switch (toolbarType) {
     case ToolbarType::kPrimary:
       [self.primaryToolbarCoordinator
           setLocationBarViewController:self.locationBarCoordinator
                                            .locationBarViewController];
       [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
+      positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(false);
       break;
     case ToolbarType::kSecondary:
       [self.secondaryToolbarCoordinator
           setLocationBarViewController:self.locationBarCoordinator
                                            .locationBarViewController];
       [self.primaryToolbarCoordinator setLocationBarViewController:nil];
+      positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(true);
       break;
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];
@@ -610,7 +613,8 @@
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
   if (self.browser->GetBrowserState()->IsOffTheRecord() ||
       !IsSplitToolbarMode(self.traitEnvironment)) {
-    return OmniboxFocusTrigger::kOther;
+    return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                               : OmniboxFocusTrigger::kOther;
   }
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
@@ -625,7 +629,8 @@
     return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedLargeFakebox
                           : OmniboxFocusTrigger::kUnpinnedLargeFakebox;
   }
-  return OmniboxFocusTrigger::kPinnedFakebox;
+  return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
+                        : OmniboxFocusTrigger::kUnpinnedFakebox;
 }
 
 - (void)focusTransitionDidComplete:(BOOL)focused
@@ -635,7 +640,7 @@
     // display depends on the location of the share button to anchor the IPH,
     // doing it in the middle of the animtion will lead to the anchoring point
     // being off.
-    [_helpHandler presentShareButtonHelpBubbleIfEligible];
+    [_helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
     _showShareButtonIPHOnNextLocationBarUnfocus = NO;
   }
   if (completion) {

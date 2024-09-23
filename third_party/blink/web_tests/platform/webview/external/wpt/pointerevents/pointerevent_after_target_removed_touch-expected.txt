@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] mouse events from touch received before/after child removal at mousedown
+  assert_equals: events received expected "mouseover@child,mouseenter@parent,mouseenter@child,mousedown@child,(child-removed),mouseover@parent,mouseup@parent,mousedown@parent,mouseup@parent,mouseout@parent,mouseleave@parent" but got "mouseover@child,mouseenter@parent,mouseenter@child,mousedown@child,(child-removed),mouseover@parent,mouseup@parent,mouseout@parent,mouseleave@parent,mouseover@parent,mouseenter@parent,mousedown@parent,mouseup@parent,mouseout@parent,mouseleave@parent"
+[FAIL] mouse events from touch received before/after child removal at mouseup
+  assert_equals: events received expected "mouseover@child,mouseenter@parent,mouseenter@child,mousedown@child,mouseup@child,(child-removed),mouseover@parent,mousedown@parent,mouseup@parent,mouseout@parent,mouseleave@parent" but got "mouseover@child,mouseenter@parent,mouseenter@child,mousedown@child,mouseup@child,(child-removed),mouseleave@parent,mouseover@parent,mouseenter@parent,mousedown@parent,mouseup@parent,mouseout@parent,mouseleave@parent"
+Harness: the test ran to completion.

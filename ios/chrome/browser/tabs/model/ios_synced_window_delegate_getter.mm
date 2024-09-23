@@ -20,7 +20,8 @@ IOSSyncedWindowDelegatesGetter::~IOSSyncedWindowDelegatesGetter() {}
 IOSSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 IOSSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
-  for (Browser* browser : browser_list_->AllRegularBrowsers()) {
+  for (Browser* browser : browser_list_->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     sync_sessions::SyncedWindowDelegate* synced_window_delegate =
         SyncedWindowDelegateBrowserAgent::FromBrowser(browser);
     synced_window_delegates[synced_window_delegate->GetSessionId()] =
@@ -31,7 +32,8 @@ IOSSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 
 const sync_sessions::SyncedWindowDelegate*
 IOSSyncedWindowDelegatesGetter::FindById(SessionID session_id) {
-  for (Browser* browser : browser_list_->AllRegularBrowsers()) {
+  for (Browser* browser : browser_list_->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     sync_sessions::SyncedWindowDelegate* synced_window_delegate =
         SyncedWindowDelegateBrowserAgent::FromBrowser(browser);
     if (synced_window_delegate->GetSessionId() == session_id) {

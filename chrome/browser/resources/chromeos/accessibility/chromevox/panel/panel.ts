@@ -5,13 +5,13 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {BrowserUtil} from '/common/browser_util.js';
 import {constants} from '/common/constants.js';
 import {LocalStorage} from '/common/local_storage.js';
 
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -76,7 +76,8 @@ export class Panel implements PanelInterface {
     document.addEventListener(
         'keydown', (event: KeyboardEvent) => this.onKeyDown_(event), false);
     document.addEventListener(
-        'mouseup', (event: MouseEvent) => this.onMouseUp_(event), false);
+        'mouseup', (event: MouseEvent) => this.menuManager_.onMouseUp(event),
+        false);
     window.addEventListener(
         'storage', (event: StorageEvent) => this.onStorageChanged_(event),
         false);
@@ -393,57 +394,6 @@ export class Panel implements PanelInterface {
     }
   }
 
-  /** Sets the index of the current active menu to be 0. */
-  private scrollToTop_(): void {
-    // TODO(b/314203187): Not nulls asserted, check that this is correct.
-    this.menuManager_.activeMenu!.scrollToTop();
-  }
-
-  /** Sets the index of the current active menu to be the last index. */
-  private scrollToBottom_(): void {
-    // TODO(b/314203187): Not nulls asserted, check that this is correct.
-    this.menuManager_.activeMenu!.scrollToBottom();
-  }
-
-  /**
-   * Advance the index of the current active menu item by |delta|.
-   * @param delta The number to add to the active menu item index.
-   */
-  private advanceItemBy_(delta: number): void {
-    if (this.menuManager_.activeMenu) {
-      this.menuManager_.activeMenu.advanceItemBy(delta);
-    }
-  }
-
-  /**
-   * Called when the user releases the mouse button. If it's anywhere other
-   * than on the menus button, close the menus and return focus to the page,
-   * and if the mouse was released over a menu item, execute that item's
-   * callback.
-   */
-  private onMouseUp_(event: Event): void {
-    if (!this.menuManager_.activeMenu) {
-      return;
-    }
-
-    let target = event.target as HTMLElement | null;
-    while (target && !target.classList.contains('menu-item')) {
-      // Allow the user to click and release on the menu button and leave
-      // the menu button.
-      if (target.id === 'menus_button') {
-        return;
-      }
-
-      target = target.parentElement;
-    }
-
-    if (target && this.menuManager_.activeMenu) {
-      this.pendingCallback_ =
-          this.menuManager_.activeMenu.getCallbackForElement(target);
-    }
-    this.closeMenusAndRestoreFocus();
-  }
-
   /**
    * Called when a key is pressed. Handle arrow keys to navigate the menus,
    * Esc to close, and Enter/Space to activate an item.
@@ -455,78 +405,8 @@ export class Panel implements PanelInterface {
       return;
     }
 
-    if (!this.menuManager_.activeMenu) {
+    if (!this.menuManager_.onKeyDown(event)) {
       return;
-    }
-
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
-      return;
-    }
-
-    // We need special logic for navigating the search bar.
-    // If left/right arrow are pressed, we should adjust the search bar's
-    // cursor. We only want to advance the active menu if we are at the
-    // beginning/end of the search bar's contents.
-    if (this.menuManager_.searchMenu &&
-        event.target === this.menuManager_.searchMenu.searchBar) {
-      switch (event.key) {
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          if (event.target.hasOwnProperty('value')) {
-            const target = event.target as unknown as {
-              value: string,
-              selectionStart: number,
-            };
-            const cursorIndex = target.selectionStart +
-                (event.key === 'ArrowRight' ? 1 : -1);
-            const queryLength = target.value.length;
-            if (cursorIndex >= 0 && cursorIndex <= queryLength) {
-              return;
-            }
-          }
-          break;
-        case ' ':
-          return;
-      }
-    }
-
-    switch (event.key) {
-      case 'ArrowLeft':
-        this.menuManager_.advanceActiveMenuBy(-1);
-        break;
-      case 'ArrowRight':
-        this.menuManager_.advanceActiveMenuBy(1);
-        break;
-      case 'ArrowUp':
-        this.advanceItemBy_(-1);
-        break;
-      case 'ArrowDown':
-        this.advanceItemBy_(1);
-        break;
-      case 'Escape':
-        this.closeMenusAndRestoreFocus();
-        break;
-      case 'PageUp':
-        this.advanceItemBy_(10);
-        break;
-      case 'PageDown':
-        this.advanceItemBy_(-10);
-        break;
-      case 'Home':
-        this.scrollToTop_();
-        break;
-      case 'End':
-        this.scrollToBottom_();
-        break;
-      case 'Enter':
-      case ' ':
-        this.pendingCallback_ =
-            this.menuManager_.getCallbackForCurrentItem() as AsyncCallback;
-        this.closeMenusAndRestoreFocus();
-        break;
-      default:
-        // Don't mark this event as handled.
-        return;
     }
 
     event.preventDefault();
@@ -562,8 +442,6 @@ export class Panel implements PanelInterface {
 
     // Make sure we're not in full-screen mode.
     this.setMode(PanelMode.COLLAPSED);
-
-    this.menuManager_.activeMenu = null;
 
     await BackgroundBridge.PanelBackground.waitForPanelCollapse();
 
@@ -632,7 +510,6 @@ export class Panel implements PanelInterface {
     this.tutorial_ = tutorialElement;
 
     // Add listeners. These are custom events fired from custom components.
-    const backgroundPage = chrome.extension.getBackgroundPage();
 
     const elementInPage = $('chromevox-tutorial');
     if (!elementInPage) {
@@ -641,32 +518,31 @@ export class Panel implements PanelInterface {
 
     elementInPage.addEventListener('closetutorial', async _evt => {
       // Ensure ForcedActionPath is destroyed before closing tutorial.
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.stopListening();
       this.onCloseTutorial_();
     });
     elementInPage.addEventListener('startinteractivemode', async evt => {
       const actions = (evt as CustomEvent).detail.actions;
-      await BackgroundBridge.ForcedActionPath.create(actions);
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.listenFor(actions);
+      await BackgroundBridge.ForcedActionPath.stopListening();
       const tutorial = this.tutorial_ as {showNextLesson: VoidFunction};
       if (this.tutorial_ && tutorial.showNextLesson) {
         tutorial.showNextLesson();
       }
     });
-    elementInPage
-        .addEventListener('stopinteractivemode', async _evt => {
-          await BackgroundBridge.ForcedActionPath.destroy();
-        });
+    elementInPage.addEventListener('stopinteractivemode', async _evt => {
+      await BackgroundBridge.ForcedActionPath.stopListening();
+    });
     elementInPage.addEventListener('requestfullydescribe', _evt => {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
     });
     elementInPage.addEventListener('requestearcon', evt => {
       const earconId = (evt as CustomEvent).detail.earconId;
-      backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
+      BackgroundBridge.Earcons.playEarcon(earconId);
     });
     elementInPage.addEventListener('cancelearcon', evt => {
       const earconId = (evt as CustomEvent).detail.earconId;
-      backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
+      BackgroundBridge.Earcons.cancelEarcon(earconId);
     });
     elementInPage.addEventListener('readyfortesting', () => {
       this.tutorialReadyForTesting_ ||= true;
@@ -674,7 +550,7 @@ export class Panel implements PanelInterface {
     elementInPage.addEventListener('openUrl', async evt => {
       const url = (evt as CustomEvent).detail.url;
       // Ensure ForcedActionPath is destroyed before closing tutorial.
-      await BackgroundBridge.ForcedActionPath.destroy();
+      await BackgroundBridge.ForcedActionPath.stopListening();
       this.onCloseTutorial_();
       BrowserUtil.openBrowserUrl(url);
     });

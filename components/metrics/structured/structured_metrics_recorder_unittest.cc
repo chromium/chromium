@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -111,19 +112,29 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
-}  // namespace
-
-class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
+class TestSMRecorder : public StructuredMetricsRecorder {
  public:
-  TestStructuredMetricsRecorder(const base::FilePath& device_key_path,
-                                const base::FilePath& profile_key_path)
+  TestSMRecorder(const base::FilePath& device_key_path,
+                 const base::FilePath& profile_key_path)
       : StructuredMetricsRecorder(
             std::make_unique<TestKeyDataProvider>(device_key_path,
                                                   profile_key_path),
-            std::make_unique<TestEventStorage>()) {}
+            std::make_unique<TestEventStorage>()) {
+    test_key_data_provider_ =
+        static_cast<TestKeyDataProvider*>(key_data_provider());
+  }
 
-  using StructuredMetricsRecorder::StructuredMetricsRecorder;
+  void OnProfileAdded(const base::FilePath& profile_path) {
+    test_key_data_provider_->OnProfileAdded(profile_path);
+  }
+
+ private:
+  ~TestSMRecorder() override = default;
+
+  raw_ptr<TestKeyDataProvider> test_key_data_provider_;
 };
+
+}  // namespace
 
 class StructuredMetricsRecorderTest : public testing::Test {
  protected:
@@ -225,8 +236,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // user logging in.
   void Init() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -239,8 +250,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Enables recording without adding a profile.
   void InitWithoutLogin() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -249,8 +260,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Sets up StructuredMetricsRecorder.
   void InitWithoutEnabling() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
   }
 
   bool is_initialized() { return recorder_->IsInitialized(); }
@@ -275,6 +286,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   StructuredDataProto GetEventMetrics() {
     ChromeUserMetricsExtension uma_proto;
     recorder_->ProvideEventMetrics(uma_proto);
+    recorder_->ProvideLogMetadata(uma_proto);
     Wait();
     return uma_proto.structured_data();
   }
@@ -285,7 +297,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestStructuredMetricsRecorder> recorder_;
+  scoped_refptr<TestSMRecorder> recorder_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
@@ -828,20 +840,21 @@ TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
   constexpr std::string_view kMetricOneName = "TestMetricOne";
   constexpr std::string_view kMetricTwoName = "TestMetricTwo";
 
-  validator::Validators* validators = validator::Validators::Get();
+  const validator::Validators* validators = validator::Validators::Get();
 
   ASSERT_EQ(validators->GetProjectName(kProjectOneHash), kProjectName);
 
-  auto project_validator = validators->GetProjectValidator(kProjectName);
-  ASSERT_TRUE(project_validator.has_value());
+  const auto* project_validator = validators->GetProjectValidator(kProjectName);
+  ASSERT_NE(project_validator, nullptr);
 
-  ASSERT_EQ((*project_validator)->GetEventName(kEventOneHash), kEventName);
+  ASSERT_EQ(project_validator->GetEventName(kEventOneHash), kEventName);
 
-  auto event_validator = (*project_validator)->GetEventValidator(kEventName);
-  ASSERT_TRUE(event_validator.has_value());
+  const auto* event_validator =
+      project_validator->GetEventValidator(kEventName);
+  ASSERT_NE(event_validator, nullptr);
 
-  ASSERT_EQ((*event_validator)->GetMetricName(kMetricOneHash), kMetricOneName);
-  ASSERT_EQ((*event_validator)->GetMetricName(kMetricTwoHash), kMetricTwoName);
+  ASSERT_EQ(event_validator->GetMetricName(kMetricOneHash), kMetricOneName);
+  ASSERT_EQ(event_validator->GetMetricName(kMetricTwoHash), kMetricTwoName);
 }
 
 class TestWatcher : public StructuredMetricsRecorder::Observer {

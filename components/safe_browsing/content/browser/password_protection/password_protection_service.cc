@@ -77,7 +77,8 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
   ReusedPasswordAccountType reused_password_account_type =
       GetPasswordProtectionReusedPasswordAccountType(password_type, username);
-
+  bool can_show_interstitial =
+      CanShowInterstitial(reused_password_account_type, main_frame_url);
   if (IsSupportedPasswordTypeForPinging(password_type)) {
     if (CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                     main_frame_url, reused_password_account_type)) {
@@ -92,13 +93,21 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
           trigger_type, main_frame_url, reused_password_account_type);
       LogNoPingingReason(trigger_type, reason, reused_password_account_type);
 
+// Disabled on Android, because enterprise reporting extension is not supported.
+#if !BUILDFLAG(IS_ANDROID)
+      if (reason == RequestOutcome::PASSWORD_ALERT_MODE) {
+        MaybeReportPasswordReuseDetected(
+            main_frame_url, username, password_type, /*is_phishing_url=*/false,
+            can_show_interstitial);
+      }
+#endif
       if (reused_password_account_type.is_account_syncing())
         MaybeLogPasswordReuseLookupEvent(web_contents, reason, password_type,
                                          nullptr);
     }
   }
 
-  if (CanShowInterstitial(reused_password_account_type, main_frame_url)) {
+  if (can_show_interstitial) {
     LogPasswordAlertModeOutcome(RequestOutcome::SUCCEEDED,
                                 reused_password_account_type);
     username_for_last_shown_warning_ = username;

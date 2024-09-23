@@ -54,9 +54,7 @@ class StyleAdjuster {
                                          Element* element,
                                          bool is_svg_root);
   static void AdjustOverflow(ComputedStyleBuilder&, Element* element);
-  static void AdjustForForcedColorsMode(ComputedStyleBuilder&, Element* element);
-  static void AdjustForPrefersDefaultScrollbarStyles(Element* element,
-                                                     ComputedStyleBuilder&);
+  static void AdjustForForcedColorsMode(ComputedStyleBuilder&, Document&);
   static void AdjustForSVGTextElement(ComputedStyleBuilder&);
 };
 

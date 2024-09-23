@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <atomic>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -19,7 +20,6 @@
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -39,8 +39,6 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   TaskQueueSelector(const TaskQueueSelector&) = delete;
   TaskQueueSelector& operator=(const TaskQueueSelector&) = delete;
   ~TaskQueueSelector() override;
-
-  static void InitializeFeatures();
 
   // Called to register a queue that can be selected. This function is called
   // on the main thread.
@@ -88,7 +86,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   // Returns the priority of the most important pending task if one exists.
   // O(1).
-  absl::optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
+  std::optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
       SelectTaskOption option = SelectTaskOption::kDefault) const;
 
   // WorkQueueSets::Observer implementation:
@@ -111,10 +109,6 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   // This method will force select an immediate task if those are being
   // starved by delayed tasks.
   void SetImmediateStarvationCountForTest(int immediate_starvation_count);
-
-  // Maximum number of delayed tasks tasks which can be run while there's a
-  // waiting non-delayed task.
-  static const int kDefaultMaxDelayedStarvationTasks = 3;
 
   // Tracks which priorities are currently active, meaning there are pending
   // runnable tasks with that priority. Because there are only a handful of
@@ -146,14 +140,14 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   /*
    * SetOperation is used to configure ChooseWithPriority() and must have:
    *
-   * static absl::optional<WorkQueueAndTaskOrder>
+   * static std::optional<WorkQueueAndTaskOrder>
    * GetWithPriority(const WorkQueueSets& sets,
    *                 TaskQueue::QueuePriority priority);
    */
 
   // The default
   struct SetOperationOldest {
-    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
+    static std::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
         TaskQueue::QueuePriority priority) {
       return sets.GetOldestQueueAndTaskOrderInSet(priority);
@@ -162,7 +156,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
 #if DCHECK_IS_ON()
   struct SetOperationRandom {
-    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
+    static std::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
         TaskQueue::QueuePriority priority) {
       return sets.GetRandomQueueAndTaskOrderInSet(priority);
@@ -172,8 +166,12 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   template <typename SetOperation>
   WorkQueue* ChooseWithPriority(TaskQueue::QueuePriority priority) const {
+    // Maximum number of delayed tasks tasks which can be run while there's a
+    // waiting non-delayed task.
+    static const int kMaxDelayedStarvationTasks = 3;
+
     // Select an immediate work queue if we are starving immediate tasks.
-    if (immediate_starvation_count_ >= g_max_delayed_starvation_tasks) {
+    if (immediate_starvation_count_ >= kMaxDelayedStarvationTasks) {
       WorkQueue* queue =
           ChooseImmediateOnlyWithPriority<SetOperation>(priority);
       if (queue)

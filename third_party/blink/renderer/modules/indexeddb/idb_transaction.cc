@@ -581,7 +581,7 @@ mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
     return mojom::blink::IDBTransactionMode::ReadWrite;
   if (mode_string == indexed_db_names::kVersionchange)
     return mojom::blink::IDBTransactionMode::VersionChange;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::blink::IDBTransactionMode::ReadOnly;
 }
 
@@ -597,7 +597,7 @@ const String& IDBTransaction::mode() const {
       return indexed_db_names::kVersionchange;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return indexed_db_names::kReadonly;
 }
 
@@ -613,7 +613,7 @@ const String& IDBTransaction::durability() const {
       return indexed_db_names::kRelaxed;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DOMStringList* IDBTransaction::objectStoreNames() const {
@@ -639,7 +639,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
   switch (state_) {
     case kActive:
       // Callers should check !IsActive() before calling.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case kInactive:
       return IDBDatabase::kTransactionInactiveErrorMessage;
@@ -648,7 +648,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
     case kFinished:
       return IDBDatabase::kTransactionFinishedErrorMessage;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

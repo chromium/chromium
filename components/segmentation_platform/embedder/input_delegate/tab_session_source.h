@@ -27,6 +27,7 @@ class TabSessionSource : public InputDelegate {
   // Input index: The type of last transition: `ui::PageTransition`.
   static constexpr int kInputLastTransitionType = 3;
   // Input index: The number navigations with a password field in the tab.
+  // Removed 06/2024.
   static constexpr int kInputPasswordFieldCount = 4;
   // Input index: The tab's rank when sorted by modification time across all
   // other tabs in the same session.

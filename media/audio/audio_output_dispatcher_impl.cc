@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_logging.h"
@@ -103,7 +104,7 @@ bool AudioOutputDispatcherImpl::StartStream(
 void AudioOutputDispatcherImpl::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
   auto it = proxy_to_physical_map_.find(stream_proxy);
-  DCHECK(it != proxy_to_physical_map_.end());
+  CHECK(it != proxy_to_physical_map_.end(), base::NotFatalUntil::M130);
   StopPhysicalStream(it->second);
   proxy_to_physical_map_.erase(it);
   ++idle_proxies_;
@@ -190,7 +191,7 @@ void AudioOutputDispatcherImpl::CloseIdleStreams(size_t keep_alive) {
     stream->Close();
 
     auto it = audio_logs_.find(stream);
-    DCHECK(it != audio_logs_.end());
+    CHECK(it != audio_logs_.end(), base::NotFatalUntil::M130);
     it->second->OnClosed();
     audio_logs_.erase(it);
   }

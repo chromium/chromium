@@ -1,9 +1,9 @@
 ----- tests for getting a targetWindow's functions which have custom overrides.  The desired  behavior is for the targetWindow to return the built-in function, not the override -----
 
 PASS: canGet('targetWindow.focus') should be 'true' and is.
-PASS: targetWindow.focus.name should be '' and is.
+PASS: toString('targetWindow.focus') should be 'function focus() { [native code] }' and is.
 PASS: canGet('targetWindow.blur') should be 'true' and is.
-PASS: targetWindow.blur.name should be '' and is.
+PASS: toString('targetWindow.blur') should be 'function blur() { [native code] }' and is.
 PASS: canGet('targetWindow.close') should be 'true' and is.
-PASS: targetWindow.close.name should be '' and is.
+PASS: toString('targetWindow.close') should be 'function close() { [native code] }' and is.
 

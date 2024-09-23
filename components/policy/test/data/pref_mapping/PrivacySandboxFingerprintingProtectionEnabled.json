@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+	"pref_name": "tracking_protection.fingerprinting_protection_enabled",
+	"default_value": false,
+	"values_to_test": [
+	    true,
+	    false
+	]
+    }
+  }
+]

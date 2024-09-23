@@ -1,0 +1,28 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: inline-block;
+}
+
+:host ::slotted(*) {
+  padding: var(--cr-radio-group-item-padding, 12px);
+}
+
+:host([disabled]) {
+  cursor: initial;
+  pointer-events: none;
+  user-select: none;
+}
+
+:host([disabled]) ::slotted(*) {
+  opacity: var(--cr-disabled-opacity);
+}
+

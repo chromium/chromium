@@ -1,0 +1,99 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "credential_provider_promo_coordinator.h",
+    "credential_provider_promo_coordinator.mm",
+    "credential_provider_promo_display_handler.h",
+    "credential_provider_promo_display_handler.mm",
+    "credential_provider_promo_mediator.h",
+    "credential_provider_promo_mediator.mm",
+    "credential_provider_promo_metrics.h",
+    "credential_provider_promo_metrics.mm",
+    "credential_provider_promo_scene_agent.h",
+    "credential_provider_promo_scene_agent.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "credential_provider_promo_constants.h",
+    "credential_provider_promo_consumer.h",
+    "credential_provider_promo_view_controller.h",
+    "credential_provider_promo_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_provider_promo/ui_bundled/resources:animation_files",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+
+    # TODO(crbug.com/40255443): uncomment once Lottie framework is added.
+    # "//ios/third_party/lottie",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "credential_provider_promo_coordinator_unittest.mm",
+    "credential_provider_promo_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":ui",
+    "//base",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

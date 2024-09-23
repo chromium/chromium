@@ -12,9 +12,6 @@ BLINK_WEB_TESTS = os.path.join(SRC, 'third_party', 'blink', 'web_tests')
 BLINK_WEB_EXPOSED_TESTS = os.path.join(BLINK_WEB_TESTS, 'webexposed')
 BLINK_INTERFACES_PATH = os.path.join(BLINK_WEB_EXPOSED_TESTS,
                                      'global-interface-listing-expected.txt')
-BLINK_PLATFORM_INTERFACES_PATH = os.path.join(
-    BLINK_WEB_EXPOSED_TESTS,
-    'global-interface-listing-platform-specific-expected.txt')
 NOT_WEBVIEW_EXPOSED_PATH = os.path.join(os.path.dirname(__file__),
                                         'not-webview-exposed.txt')
 NOT_WEBVIEW_EXPOSED_REPO_RELPATH = (
@@ -95,14 +92,10 @@ def main():
   error_msg = ''
 
   with open(NOT_WEBVIEW_EXPOSED_PATH) as excluded_interfaces_obj, \
-      open(BLINK_INTERFACES_PATH) as blink_interfaces_obj, \
-      open(BLINK_PLATFORM_INTERFACES_PATH) as blink_platform_interfaces_obj:
+      open(BLINK_INTERFACES_PATH) as blink_interfaces_obj:
 
     excluded_interfaces = build_interfaces_map(excluded_interfaces_obj)
-    blink_platform_interfaces = build_interfaces_map(
-        blink_platform_interfaces_obj)
-    blink_interfaces = build_interfaces_map(blink_interfaces_obj,
-                                            blink_platform_interfaces)
+    blink_interfaces = build_interfaces_map(blink_interfaces_obj)
 
     # Check that all not WebView exposed interfaces and properties are in the
     # set of blink interfaces and properties.

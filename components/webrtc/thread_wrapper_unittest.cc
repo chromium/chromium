@@ -201,7 +201,7 @@ INSTANTIATE_TEST_SUITE_P(
 class ThreadWrapperTaskQueueFactory : public TaskQueueFactory {
  public:
   std::unique_ptr<TaskQueueBase, TaskQueueDeleter> CreateTaskQueue(
-      absl::string_view name,
+      std::string_view name,
       Priority priority) const override {
     std::unique_ptr<rtc::Thread> thread = rtc::Thread::Create();
     thread->Start();

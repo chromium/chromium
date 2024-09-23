@@ -41,6 +41,8 @@ class TestCookieManager : public network::mojom::CookieManager {
                      DeleteCookiesCallback callback) override {}
   void DeleteSessionOnlyCookies(
       DeleteSessionOnlyCookiesCallback callback) override {}
+  void DeleteStaleSessionOnlyCookies(
+      DeleteStaleSessionOnlyCookiesCallback callback) override {}
   void AddCookieChangeListener(
       const GURL& url,
       const std::optional<std::string>& name,
@@ -61,7 +63,6 @@ class TestCookieManager : public network::mojom::CookieManager {
       SetContentSettingsCallback callback) override {}
   void SetForceKeepSessionState() override {}
   void BlockThirdPartyCookies(bool block) override {}
-  void BlockTruncatedCookies(bool block) override {}
   void SetMitigationsEnabledFor3pcd(bool enable) override {}
   void SetTrackingProtectionEnabledFor3pcd(bool enable) override {}
   void SetPreCommitCallbackDelayForTesting(base::TimeDelta delay) override {}

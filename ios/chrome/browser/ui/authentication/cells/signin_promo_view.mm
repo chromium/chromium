@@ -11,6 +11,7 @@
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
@@ -68,8 +69,8 @@ const PromoStyleValues kCompactVerticalStyle = {
     42.0,  // kButtonTitleHorizontalContentInset
     9.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
-    -8.0,  // kCloseButtonTrailingMargin
-    8.0,   // kCloseButtonTopMargin
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
     12.0,  // kMainPromoSubViewSpacing
     5.0,   // kButtonStackViewSubViewSpacing
 };
@@ -96,16 +97,12 @@ constexpr CGFloat kStackViewHorizontalPadding = 16.0;
 // Non-profile icon background corner radius.
 constexpr CGFloat kNonProfileIconCornerRadius = 14;
 // Size for the close button width and height.
-constexpr CGFloat kCloseButtonWidthHeight = 24;
+constexpr CGFloat kCloseButtonWidthHeight = 16;
 // Sizes of the signin promo image.
 constexpr CGFloat kProfileImageHeightWidth = 32.0;
 constexpr CGFloat kProfileImageCompactHeightWidth = 48.0;
 constexpr CGFloat kNonProfileLogoImageCompactHeightWidth = 34.0;
 constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
-// Size of the font for the headline.
-constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
-// Constant for the size of the compact style text.
-constexpr CGFloat kCompactStyleTextSize = 15.0;
 }
 
 @interface SigninPromoView ()
@@ -231,8 +228,13 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     [_closeButton addTarget:self
                      action:@selector(onCloseButtonAction:)
            forControlEvents:UIControlEventTouchUpInside];
-    [_closeButton setImage:[UIImage imageNamed:@"signin_promo_close_gray"]
-                  forState:UIControlStateNormal];
+    UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+        configurationWithPointSize:kCloseButtonWidthHeight
+                            weight:UIImageSymbolWeightSemibold];
+    UIImage* closeButtonImage =
+        DefaultSymbolWithConfiguration(@"xmark", config);
+    [_closeButton setImage:closeButtonImage forState:UIControlStateNormal];
+    _closeButton.tintColor = [UIColor colorNamed:kTextTertiaryColor];
     _closeButton.hidden = YES;
     _closeButton.pointerInteractionEnabled = YES;
     [self addSubview:_closeButton];
@@ -277,7 +279,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       break;
     case SigninPromoViewStyleOnlyButton:
       // This style has no image.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   DCHECK_EQ(kProfileImageHeightWidth, image.size.height);
   DCHECK_EQ(kProfileImageHeightWidth, image.size.width);
@@ -302,11 +304,6 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.imageView.image = nil;
       self.imageView.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor];
-      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
-      // promo after experiment.
-      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
-        self.imageView.backgroundColor = [UIColor colorNamed:kGrey100Color];
-      }
       self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
 
       logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -330,7 +327,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     }
     case SigninPromoViewStyleOnlyButton:
       // This style has no image.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -378,6 +375,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
 // Configures primary button with a standard font.
 - (void)configurePrimaryButtonWithTitle:(NSString*)title {
+  CHECK_GT(title.length, 0ul, base::NotFatalUntil::M135);
   // Declaring variables that are used throughout different switch cases.
   UIFont* font;
   NSAttributedString* attributedTitle;
@@ -387,8 +385,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   // Customize UIButton based on SigninPromoViewStyle.
   switch (self.promoViewStyle) {
     case SigninPromoViewStyleCompactVertical:
-      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-          fontWithSize:kSignInPromoHeadlineFontSize];
+      font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       attributes = @{NSFontAttributeName : font};
       attributedTitle = [[NSAttributedString alloc] initWithString:title
                                                         attributes:attributes];
@@ -410,14 +407,12 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 #pragma mark - NSObject(Accessibility)
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@ %@", self.textLabel.text,
-                       [self.primaryButton titleForState:UIControlStateNormal]];
-  ;
+  return [NSString stringWithFormat:@"%@ %@", self.textLabel.text,
+                                    [self primaryButtonTitle]];
 }
 
 - (BOOL)accessibilityActivate {
@@ -452,6 +447,20 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     [actions addObject:closeCustomAction];
   }
   return actions;
+}
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  // The name for Voice Control includes only
+  // `self.primaryButton.titleLabel.text`.
+  NSString* buttonTitle = [self primaryButtonTitle];
+  if (!buttonTitle) {
+    // TODO(crbug.com/365995361): At M135, this `if` can be removed.
+    // Before M135, the CHECK in `-[SigninPromoView primaryButtonTitle]` is
+    // non fatal if the title was not set. So to avoid a fatal exception,
+    // this `if` is required.
+    return @[];
+  }
+  return @[ buttonTitle ];
 }
 
 #pragma mark - Setters
@@ -573,6 +582,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
 #pragma mark - Private
 
+// Returns the primary button title.
+- (NSString*)primaryButtonTitle {
+  NSString* buttonTitle = self.primaryButton.configuration.title;
+  // The primary button should always be set.
+  CHECK_GT(buttonTitle.length, 0ul, base::NotFatalUntil::M135);
+  return buttonTitle;
+}
+
 // Updates layout for current layout style.
 - (void)updateLayoutForStyle {
   NSArray<NSLayoutConstraint*>* constraintsToActivate;
@@ -637,8 +654,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
       // Configures fonts for the compact horizontal layout.
       self.textLabel.font =
-          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-              fontWithSize:kCompactStyleTextSize];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
 
       // In the Compact Horizontal style, the primary button is plain.
@@ -676,17 +692,10 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.imageView.hidden = NO;
 
       self.textLabel.font =
-          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-              fontWithSize:kCompactStyleTextSize];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
       self.primaryButton.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
-      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
-      // promo after experiment.
-      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
-        self.primaryButton.backgroundColor =
-            [UIColor colorNamed:kBlueHaloColor];
-      }
       self.primaryButton.layer.cornerRadius =
           kCompactVerticalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
@@ -750,12 +759,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 // Updates promo for no accounts mode.
 - (void)activateNoAccountsMode {
   DCHECK_EQ(self.mode, SigninPromoViewModeNoAccounts);
-  UIImage* logo = nil;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
-  logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   DCHECK(logo);
   self.imageView.image = logo;
   self.secondaryButton.hidden = YES;

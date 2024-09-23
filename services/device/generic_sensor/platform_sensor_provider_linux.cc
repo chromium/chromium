@@ -38,9 +38,12 @@ PlatformSensorProviderLinux::PlatformSensorProviderLinux()
 
 PlatformSensorProviderLinux::~PlatformSensorProviderLinux() = default;
 
+base::WeakPtr<PlatformSensorProvider> PlatformSensorProviderLinux::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PlatformSensorProviderLinux::CreateSensorInternal(
     mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
     CreateSensorCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -53,16 +56,15 @@ void PlatformSensorProviderLinux::CreateSensorInternal(
                      // PlatformSensorProviderLinux is deleted.
                      base::Unretained(sensor_device_manager_.get())),
       base::BindOnce(&PlatformSensorProviderLinux::DidEnumerateSensors,
-                     weak_ptr_factory_.GetWeakPtr(), type, reading_buffer,
+                     weak_ptr_factory_.GetWeakPtr(), type,
                      std::move(callback)));
 }
 
 void PlatformSensorProviderLinux::DidEnumerateSensors(
     mojom::SensorType type,
-    SensorReadingSharedBuffer* reading_buffer,
     CreateSensorCallback callback) {
   if (IsFusionSensorType(type)) {
-    CreateFusionSensor(type, reading_buffer, std::move(callback));
+    CreateFusionSensor(type, std::move(callback));
     return;
   }
 
@@ -73,7 +75,8 @@ void PlatformSensorProviderLinux::DidEnumerateSensors(
   }
 
   std::move(callback).Run(base::MakeRefCounted<PlatformSensorLinux>(
-      type, reading_buffer, this, sensor_device));
+      type, GetSensorReadingSharedBufferForType(type), AsWeakPtr(),
+      sensor_device));
 }
 
 void PlatformSensorProviderLinux::FreeResources() {

@@ -8,9 +8,9 @@
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
 SaveAddressProfileInfobarModalInteractionHandler::
     SaveAddressProfileInfobarModalInteractionHandler() = default;
@@ -29,19 +29,6 @@ void SaveAddressProfileInfobarModalInteractionHandler::InfobarVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
   GetInfoBarDelegate(infobar)->set_is_infobar_visible(visible);
-}
-
-void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
-    InfoBarIOS* infobar,
-    NSDictionary* profileData) {
-  for (NSNumber* key in profileData) {
-    autofill::FieldType type =
-        AutofillTypeFromAutofillUIType((AutofillUIType)[key intValue]);
-    std::u16string data = base::SysNSStringToUTF16(profileData[key]);
-    GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
-  }
-  GetInfoBarDelegate(infobar)->EditAccepted();
-  infobar->set_accepted(true);
 }
 
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(

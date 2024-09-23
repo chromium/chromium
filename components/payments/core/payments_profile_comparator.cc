@@ -157,7 +157,7 @@ PaymentsProfileComparator::FilterProfilesForShipping(
                GetShippingCompletenessScore(p2);
       });
 
-  // TODO(crbug.com/722949): Remove profiles with no relevant information, or
+  // TODO(crbug.com/40520855): Remove profiles with no relevant information, or
   // which are subsets of more-complete profiles.
 
   return processed;
@@ -228,15 +228,14 @@ PaymentsProfileComparator::ComputeMissingFields(
   const std::string country =
       autofill::data_util::GetCountryCodeWithFallback(profile, app_locale());
 
-  std::u16string phone = profile.GetInfo(
-      autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER), app_locale());
+  std::u16string phone =
+      profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, app_locale());
   std::u16string intl_phone = base::UTF8ToUTF16("+" + base::UTF16ToUTF8(phone));
   if (!(autofill::IsPossiblePhoneNumber(phone, country) ||
         autofill::IsPossiblePhoneNumber(intl_phone, country)))
     missing |= kPhone;
 
-  std::u16string email = profile.GetInfo(
-      autofill::AutofillType(autofill::EMAIL_ADDRESS), app_locale());
+  std::u16string email = profile.GetInfo(autofill::EMAIL_ADDRESS, app_locale());
   if (!autofill::IsValidEmailAddress(email))
     missing |= kEmail;
 
@@ -289,7 +288,8 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case 0:
-      NOTREACHED() << "Title should not be requested if no fields are missing";
+      NOTREACHED_IN_MIGRATION()
+          << "Title should not be requested if no fields are missing";
       return std::u16string();
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_NAME);

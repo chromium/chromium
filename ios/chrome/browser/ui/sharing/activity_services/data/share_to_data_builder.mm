@@ -9,7 +9,7 @@
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -24,8 +24,6 @@
 #import "url/gurl.h"
 
 namespace activity_services {
-
-// TODO(crbug.com/1468530): Adopt consistent casing in these functions.
 
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url) {
@@ -74,12 +72,8 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
       SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
-  // When there are no device-level accounts, it's only possible to show the
-  // promo UI if IsConsistencyNewAccountInterfaceEnabled() is true.
   BOOL can_send_tab_to_self =
       account_manager_service &&
-      (account_manager_service->HasIdentities() ||
-       IsConsistencyNewAccountInterfaceEnabled()) &&
       send_tab_to_self_service &&
       send_tab_to_self_service->GetEntryPointDisplayReason(final_url_to_share);
 
@@ -96,25 +90,25 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                   linkMetadata:nil];
 }
 
-ShareToData* ShareToDataForURL(const GURL& URL,
+ShareToData* ShareToDataForURL(const GURL& url,
                                NSString* title,
-                               NSString* additionalText,
-                               LPLinkMetadata* linkMetadata) {
-  return [[ShareToData alloc] initWithShareURL:URL
-                                    visibleURL:URL
+                               NSString* additional_text,
+                               LPLinkMetadata* link_metadata) {
+  return [[ShareToData alloc] initWithShareURL:url
+                                    visibleURL:url
                                          title:title
-                                additionalText:additionalText
+                                additionalText:additional_text
                                isOriginalTitle:YES
                                isPagePrintable:NO
                               isPageSearchable:NO
                               canSendTabToSelf:NO
                                      userAgent:web::UserAgentType::NONE
                             thumbnailGenerator:nil
-                                  linkMetadata:linkMetadata];
+                                  linkMetadata:link_metadata];
 }
 
-ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle) {
-  return ShareToDataForURL(URLWithTitle.URL, URLWithTitle.title, nil, nil);
+ShareToData* ShareToDataForURLWithTitle(URLWithTitle* url_with_title) {
+  return ShareToDataForURL(url_with_title.URL, url_with_title.title, nil, nil);
 }
 
 }  // namespace activity_services

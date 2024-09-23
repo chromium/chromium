@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/usb/usb_device_handle_usbfs.h"
 
 #include <linux/usb/ch9.h>
-
 #include <linux/usbdevice_fs.h>
 #include <sys/ioctl.h>
 
@@ -19,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
@@ -52,7 +57,7 @@ uint8_t ConvertEndpointDirection(UsbTransferDirection direction) {
     case UsbTransferDirection::OUTBOUND:
       return USB_DIR_OUT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -67,7 +72,7 @@ uint8_t ConvertRequestType(UsbControlTransferType request_type) {
     case UsbControlTransferType::RESERVED:
       return USB_TYPE_RESERVED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -82,7 +87,7 @@ uint8_t ConvertRecipient(UsbControlTransferRecipient recipient) {
     case UsbControlTransferRecipient::OTHER:
       return USB_RECIP_OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -96,16 +101,18 @@ scoped_refptr<base::RefCountedBytes> BuildControlTransferBuffer(
     scoped_refptr<base::RefCountedBytes> original_buffer) {
   auto new_buffer = base::MakeRefCounted<base::RefCountedBytes>(
       original_buffer->size() + sizeof(usb_ctrlrequest));
-  usb_ctrlrequest* setup = new_buffer->front_as<usb_ctrlrequest>();
-  setup->bRequestType = ConvertEndpointDirection(direction) |
-                        ConvertRequestType(request_type) |
-                        ConvertRecipient(recipient);
-  setup->bRequest = request;
-  setup->wValue = value;
-  setup->wIndex = index;
-  setup->wLength = original_buffer->size();
-  memcpy(new_buffer->front() + sizeof(usb_ctrlrequest),
-         original_buffer->front(), original_buffer->size());
+  usb_ctrlrequest setup;
+  setup.bRequestType = ConvertEndpointDirection(direction) |
+                       ConvertRequestType(request_type) |
+                       ConvertRecipient(recipient);
+  setup.bRequest = request;
+  setup.wValue = value;
+  setup.wIndex = index;
+  setup.wLength = original_buffer->size();
+  auto [setup_span, remain] =
+      base::span(new_buffer->as_vector()).split_at<sizeof(setup)>();
+  setup_span.copy_from(base::byte_span_from_ref(setup));
+  remain.copy_from(base::span(*original_buffer));
   return new_buffer;
 }
 
@@ -120,7 +127,7 @@ uint8_t ConvertTransferType(UsbTransferType type) {
     case UsbTransferType::INTERRUPT:
       return USBDEVFS_URB_TYPE_INTERRUPT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -373,19 +380,19 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::
 }
 
 UsbDeviceHandleUsbfs::Transfer::Transfer(
-    scoped_refptr<base::RefCountedBytes> buffer,
+    scoped_refptr<base::RefCountedBytes> in_buffer,
     TransferCallback callback)
-    : buffer(buffer), callback(std::move(callback)) {
+    : buffer(std::move(in_buffer)), callback(std::move(callback)) {
   urb.usercontext = this;
-  urb.buffer = buffer->front();
+  urb.buffer = buffer->as_vector().data();
 }
 
 UsbDeviceHandleUsbfs::Transfer::Transfer(
-    scoped_refptr<base::RefCountedBytes> buffer,
+    scoped_refptr<base::RefCountedBytes> in_buffer,
     IsochronousTransferCallback callback)
-    : buffer(buffer), isoc_callback(std::move(callback)) {
+    : buffer(std::move(in_buffer)), isoc_callback(std::move(callback)) {
   urb.usercontext = this;
-  urb.buffer = buffer->front();
+  urb.buffer = buffer->as_vector().data();
 }
 
 UsbDeviceHandleUsbfs::Transfer::~Transfer() = default;
@@ -624,8 +631,9 @@ void UsbDeviceHandleUsbfs::ControlTransfer(
       direction, request_type, recipient, request, value, index, buffer);
   transfer->urb.type = USBDEVFS_URB_TYPE_CONTROL;
   transfer->urb.endpoint = 0;
-  transfer->urb.buffer = transfer->control_transfer_buffer->front();
-  transfer->urb.buffer_length = transfer->control_transfer_buffer->size();
+  transfer->urb.buffer = transfer->control_transfer_buffer->as_vector().data();
+  transfer->urb.buffer_length =
+      transfer->control_transfer_buffer->as_vector().size();
 
   // USBDEVFS_SUBMITURB appears to be non-blocking as completion is reported
   // by USBDEVFS_REAPURBNDELAY.
@@ -807,7 +815,7 @@ void UsbDeviceHandleUsbfs::ReleaseInterfaceComplete(int interface_number,
   }
 
   auto it = interfaces_.find(interface_number);
-  DCHECK(it != interfaces_.end());
+  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
   interfaces_.erase(it);
   if (device_) {
     // Only refresh endpoints if a device is still attached.
@@ -917,9 +925,11 @@ void UsbDeviceHandleUsbfs::TransferComplete(
     if (transfer->urb.status == 0 &&
         transfer->urb.type == USBDEVFS_URB_TYPE_CONTROL) {
       // Copy the result of the control transfer back into the original buffer.
-      memcpy(transfer->buffer->front(),
-             transfer->control_transfer_buffer->front() + 8,
-             transfer->urb.actual_length);
+      const auto actual_length =
+          base::checked_cast<size_t>(transfer->urb.actual_length);
+      base::span(transfer->buffer->as_vector())
+          .copy_prefix_from(base::span(*transfer->control_transfer_buffer)
+                                .subspan(8u, actual_length));
     }
 
     transfer->RunCallback(ConvertTransferResult(-transfer->urb.status),
@@ -988,7 +998,7 @@ UsbDeviceHandleUsbfs::RemoveFromTransferList(Transfer* transfer_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = base::ranges::find(transfers_, transfer_ptr,
                                &std::unique_ptr<Transfer>::get);
-  DCHECK(it != transfers_.end());
+  CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<Transfer> transfer = std::move(*it);
   transfers_.erase(it);
   return transfer;

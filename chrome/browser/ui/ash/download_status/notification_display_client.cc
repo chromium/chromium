@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -30,6 +29,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "components/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,8 +144,14 @@ const char* GetMetricString(CommandType command) {
   switch (command) {
     case CommandType::kCancel:
       return "DownloadNotificationV2.Button_Cancel";
+    case CommandType::kCopyToClipboard:
+      return "DownloadNotificationV2.Button_CopyToClipboard";
+    case CommandType::kEditWithMediaApp:
+      return "DownloadNotificationV2.Button_EditWithMediaApp";
     case CommandType::kOpenFile:
       return "DownloadNotificationV2.Click_Completed";
+    case CommandType::kOpenWithMediaApp:
+      return "DownloadNotificationV2.Button_OpenWithMediaApp";
     case CommandType::kPause:
       return "DownloadNotificationV2.Button_Pause";
     case CommandType::kResume:
@@ -154,6 +160,8 @@ const char* GetMetricString(CommandType command) {
       return "DownloadNotificationV2.Click_InProgress";
     case CommandType::kShowInFolder:
       return "DownloadNotificationV2.Button_ShowInFolder";
+    case CommandType::kViewDetailsInBrowser:
+      return "DownloadNotificationV2.Button_ViewDetailsInBrowser";
   }
 }
 
@@ -165,9 +173,13 @@ bool IsBodyClickCommandType(CommandType command) {
     case CommandType::kShowInBrowser:
       return true;
     case CommandType::kCancel:
+    case CommandType::kCopyToClipboard:
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp:
     case CommandType::kPause:
     case CommandType::kResume:
     case CommandType::kShowInFolder:
+    case CommandType::kViewDetailsInBrowser:
       return false;
   }
 }
@@ -177,9 +189,13 @@ bool IsBodyClickCommandType(CommandType command) {
 bool IsButtonClickCommandType(CommandType command) {
   switch (command) {
     case CommandType::kCancel:
+    case CommandType::kCopyToClipboard:
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp:
     case CommandType::kPause:
     case CommandType::kResume:
     case CommandType::kShowInFolder:
+    case CommandType::kViewDetailsInBrowser:
       return true;
     case CommandType::kOpenFile:
     case CommandType::kShowInBrowser:
@@ -272,9 +288,7 @@ gfx::Image GetNotificationImage(const gfx::ImageSkia& original_image) {
 }  // namespace
 
 NotificationDisplayClient::NotificationDisplayClient(Profile* profile)
-    : DisplayClient(profile) {
-  CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
-}
+    : DisplayClient(profile) {}
 
 NotificationDisplayClient::~NotificationDisplayClient() = default;
 
@@ -303,7 +317,8 @@ void NotificationDisplayClient::AddOrUpdate(
   rich_notification_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
   rich_notification_data.should_make_spoken_feedback_for_popup_updates = false;
-  rich_notification_data.vector_small_image = &kNotificationDownloadIcon;
+  rich_notification_data.vector_small_image =
+      &vector_icons::kNotificationDownloadIcon;
 
   const Progress& progress = display_metadata.progress;
   if (const std::optional<int> progress_value =
@@ -342,7 +357,7 @@ void NotificationDisplayClient::AddOrUpdate(
 
   if (const gfx::ImageSkia& image = display_metadata.image;
       !image.isNull() && !image.size().IsEmpty()) {
-    notification.set_image(GetNotificationImage(image));
+    notification.SetImage(GetNotificationImage(image));
     notification.set_image_path(display_metadata.file_path);
   }
 

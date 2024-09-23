@@ -14,8 +14,6 @@ they claim to be. We also block text/plain documents when their body looks like
 one of the blocklisted content types.</p>
 
 <script>
-var pathPrefix = "http://bar.com/site_isolation/";
-
 // To be called from the browsertest via EvalJs().
 // |rangeHeader| is an optional parameter for specifying a range request header
 // value (e.g., "bytes=10-20").
@@ -34,7 +32,7 @@ function sendRequest(resourceUrl, rangeHeader) {
         resolve(wasBlocked);
       }
     }
-    xhr.open('GET', pathPrefix + resourceUrl);
+    xhr.open('GET', resourceUrl);
     if (rangeHeader) {
       xhr.setRequestHeader("Range", rangeHeader);
     }

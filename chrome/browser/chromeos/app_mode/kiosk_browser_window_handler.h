@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_
 
+#include <map>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -63,6 +66,9 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   void HandleNewBrowserWindow(Browser* browser);
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
+  void CloseBrowserWindowsIf(base::FunctionRef<bool(const Browser&)> filter);
+  void CloseBrowserAndSetTimer(Browser* browser);
+  void OnCloseBrowserTimeout();
   void CloseAllUnexpectedBrowserWindows();
 
   // BrowserListObserver
@@ -106,6 +112,12 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
 
   // Provides access to app session related policies.
   KioskPolicies kiosk_policies_;
+
+  // Map that keeps track of all unexpected browser windows until they are
+  // confirmed to be closed via `OnBrowserRemoved`. If they did not get closed
+  // before the timer fires, we will crash as we consider the kiosk session
+  // compromised.
+  std::map<Browser*, base::OneShotTimer> closing_browsers_;
 
   base::WeakPtrFactory<KioskBrowserWindowHandler> weak_ptr_factory_{this};
 };

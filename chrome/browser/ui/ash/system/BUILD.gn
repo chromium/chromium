@@ -1,0 +1,141 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("system") {
+  sources = [
+    "system_tray_client_impl.cc",
+    "system_tray_client_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/eol",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/chromeos/extensions/vpn_provider",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/bluetooth",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/browser/ui/webui/ash/set_time",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/phonehub",
+    "//components/access_code_cast/common:metrics",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//ui/events",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/eol",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ui/ash/login",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_tray_client_impl_unittest.cc" ]
+
+  deps = [
+    ":system",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "system_tray_client_impl_browsertest.cc",
+    "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
+  ]
+
+  deps = [
+    ":system",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/cast_config",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
+    "//chromeos/ash/components/settings",
+    "//chromeos/strings",
+    "//components/account_id",
+    "//components/media_router/browser",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common",
+    "//components/media_router/common:test_support",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/events:test_support",
+    "//ui/message_center",
+    "//url",
+  ]
+}

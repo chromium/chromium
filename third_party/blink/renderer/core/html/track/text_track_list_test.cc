@@ -20,7 +20,7 @@ TEST(TextTrackListTest, InvalidateTrackIndexes) {
       MakeGarbageCollected<HTMLVideoElement>(
           std::make_unique<DummyPageHolder>()->GetDocument()));
   const size_t kNumTextTracks = 4;
-  TextTrack* text_tracks[kNumTextTracks];
+  std::array<TextTrack*, kNumTextTracks> text_tracks;
   for (size_t i = 0; i < kNumTextTracks; ++i) {
     text_tracks[i] = MakeGarbageCollected<TextTrack>(
         AtomicString("subtitles"), g_empty_atom, g_empty_atom, *list->Owner());

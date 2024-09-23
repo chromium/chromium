@@ -1,0 +1,132 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package kidsmanagement;
+
+import "families_common.proto";
+import "permissions_common.proto";
+
+// These mirror the definitions at go/chrome-kids-management-messages (Googlers
+// only).
+
+message ListMembersRequest {
+  // If set to true, returns an empty response (no members field set) instead of
+  // throwing NOT_FOUND errors when the authenticated user has no family.
+  optional bool allow_empty_family = 4;
+}
+
+message ListMembersResponse {
+  // List of family members from the family requested. Required.
+  // Contains at least the Head of Household.
+  // Throws an exception and fails if the user is not in any family.
+  repeated FamilyMember members = 1;
+}
+
+message ClassifyUrlRequest {
+  // The URL to be classified.
+  optional string url = 3;
+
+  // region_code is a 2-letter ISO 3166-1 code.
+  // When set, uses specific logic to classify URLs for that region.
+  optional string region_code = 4;
+}
+
+message ClassifyUrlResponse {
+  enum DisplayClassification {
+    UNKNOWN_DISPLAY_CLASSIFICATION = 0;
+
+    // Allow url to be displayed
+    ALLOWED = 1;
+
+    // Block url and allow kid to request parent for permission
+    RESTRICTED = 2;
+  }
+
+  optional DisplayClassification display_classification = 2;
+}
+
+message CreatePermissionRequestResponse {
+  optional PermissionRequest permission_request = 2;
+}
+
+message PermissionRequest {
+  // The unique ID of the permission request. The ID is assigned on creation
+  // on the server-side. This is a base64Url representation of the
+  // PermissionRequestId proto.
+  optional string id = 1;
+
+  optional FamilyEventType event_type = 10;
+
+  // The target object of the permission.
+  optional string object_ref = 4;
+
+  // The current state of the request.
+  optional PermissionRequestState state = 5;
+}
+
+// An enum indicating how a website exception applies on top of the filter
+// level.
+enum ExceptionType {
+  EXCEPTION_TYPE_UNSPECIFIED = 0;
+  // A website of this type is always allowed, regardless of the filter level.
+  ALLOW = 1;
+  // A website of this type is always blocked, regardless of the filter level.
+  BLOCK = 2;
+}
+// A website exception, applied on top of the filter level.
+message WebsiteException {
+  // A pattern to match websites against.
+  // It should be either a domain, like "www.google.com" or a keyword surrounded
+  // by periods and *s, like "*.google.*".
+  optional string pattern = 1;
+  // The type of the exception.
+  optional ExceptionType exception_type = 2;
+  // Icon for the URL pattern, may be present on RPC responses.
+  optional string icon_url = 3;
+}
+
+// An enum indicating which level of filter to apply.
+// Exceptions always bypass the filter level.
+enum FilterLevel {
+  FILTER_LEVEL_UNSPECIFIED = 0;
+  // All websites are allowed by default.
+  ALLOW_BY_DEFAULT = 1;
+  // Websites approved by Safe Sites are allowed by default.
+  SAFE_SITES = 2;
+  // No websites are allowed by default.
+  BLOCK_BY_DEFAULT = 3;
+}
+
+message DefineChromeTestStateRequest {
+  // Identifies subject of this request.
+  optional string child_id = 1;
+
+  // Empty message has "do not change" semantics. Use
+  // ResetChromeDefaultTestStateRequest to reset to defaults.
+  optional UrlFilteringSettings url_filtering_settings = 2;
+
+  message UrlFilteringSettings {
+    // Filter level to apply. If absent, the permission won't change.
+    optional FilterLevel filter_level = 1;
+
+    // Website exceptions to be added in the exception list on top of the filter
+    // level
+    repeated WebsiteException exceptions = 2;
+
+    // Whether websites can request child sensitive information such as access
+    // to their camera, microphone and location.
+    optional bool websites_can_request_permissions = 3;
+
+    // Whether cookies can be blocked by the child.
+    optional bool can_block_cookies = 4;
+
+    // Whether child can add extensions on Chrome.
+    optional bool can_add_extensions = 5;
+  }
+}
+
+message ResetChromeTestStateRequest {
+  // Identifies subject of this request.
+  optional string child_id = 1;
+}

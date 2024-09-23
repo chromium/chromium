@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš teikėjo „<ph name="VENDOR_ID" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nepavyko pakeisti CRX failo. Patikrinkite, ar failas naudojamas.</translation>
 <translation id="3163201441334626963">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
-<translation id="3369521687965833290">Nepavyksta išpakuoti plėtinio. Kad būtų galima saugiai išpakuoti plėtinį, turi būti nurodytas kelias į profilio katalogą, kuris turi prasidėti disko vardu ir kuriame negali būti sujungimo, įrengimo taško ar virtualiojo katalogo.</translation>
 <translation id="3393440416772303020">„<ph name="PRODUCT_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privačiojo rakto įvesties vertė turi būti galiojantis kelias.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Šio įrenginio administratorius reikalauja, kad „<ph name="EXTENSION_NAME" />“ plėtinys būtų įdiegtas. Jo negalima pašalinti.</translation>
 <translation id="6027032947578871493">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš „<ph name="VENDOR_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
-<translation id="6143635259298204954">Nepavyksta išpakuoti plėtinio. Kad būtų galima saugiai išpakuoti plėtinį, turi būti nurodytas kelias į profilio katalogą, kuriame nebūtų virtualiojo katalogo. Nėra tokio tipo jūsų profilio kelio.</translation>
 <translation id="6322279351188361895">Nepavyko nuskaityti privačiojo rakto.</translation>
 <translation id="6391538222494443604">Turi būti įvesties katalogas.</translation>
 <translation id="641087317769093025">Nepavyko išarchyvuoti plėtinio</translation>

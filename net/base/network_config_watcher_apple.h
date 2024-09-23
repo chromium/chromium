@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "net/base/net_export.h"
 
 namespace base {
 class Thread;
@@ -18,7 +19,7 @@ class Thread;
 namespace net {
 
 // Helper class for watching the Mac OS system network settings.
-class NetworkConfigWatcherApple {
+class NET_EXPORT_PRIVATE NetworkConfigWatcherApple {
  public:
   // NOTE: The lifetime of Delegate is expected to exceed the lifetime of
   // NetworkConfigWatcherApple.
@@ -38,17 +39,24 @@ class NetworkConfigWatcherApple {
     // Called to register the notification keys on |store|.
     // Implementors are expected to call SCDynamicStoreSetNotificationKeys().
     // Will be called on the notifier thread.
-    virtual void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) = 0;
+    virtual void SetDynamicStoreNotificationKeys(
+        base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store) = 0;
 
     // Called when one of the notification keys has changed.
     // Will be called on the notifier thread.
     virtual void OnNetworkConfigChange(CFArrayRef changed_keys) = 0;
+
+    // Called when `this` is being destructed.
+    // Will be called on the notifier thread.
+    virtual void CleanUpOnNotifierThread() = 0;
   };
 
   explicit NetworkConfigWatcherApple(Delegate* delegate);
   NetworkConfigWatcherApple(const NetworkConfigWatcherApple&) = delete;
   NetworkConfigWatcherApple& operator=(const NetworkConfigWatcherApple&) = delete;
   ~NetworkConfigWatcherApple();
+
+  base::Thread* GetNotifierThreadForTest();
 
  private:
   // The thread used to listen for notifications.  This relays the notification

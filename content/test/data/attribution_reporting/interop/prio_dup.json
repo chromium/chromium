@@ -1,0 +1,111 @@
+{
+  "description": "Event-level priority/deduplication interaction",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "max_event_level_reports": 1
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "priority": "100",
+                    "deduplication_key": "1001"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "timestamp": "2",
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2",
+                    "priority": "200",
+                    "deduplication_key": "1002"
+                  }
+                ]
+              }
+            }
+          },
+          // Deduplicated even though the report associated with the original
+          // attribution that caused dedup key 1001 to be stored was replaced at
+          // timestamp 2.
+          {
+            "timestamp": "3",
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3",
+                    "priority": "300",
+                    "deduplication_key": "1001"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "0",
+              "source_site": "https://source.test"
+           },
+           "type": "trigger-event-deduplicated"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "randomized_trigger_rate": 0.0000208,
+           "scheduled_report_time": "172800",
+           "source_event_id": "0",
+           "source_type": "navigation",
+           "trigger_data": "2"
+        },
+        "report_time": "172800000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

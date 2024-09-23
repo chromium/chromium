@@ -4,10 +4,12 @@
 
 'use strict';
 
-chrome.runtime.getBackgroundClient().then(function(client) {
-  client.postMessage('success');
-}).catch(function(error) {
-  // This test passes, so logic never reaches here... but it would still be
-  // nice to signal failure to the test. Unfortunately, without any extension
-  // page to bounce off, we can't.
-});
+(async () => {
+  let foundClients =
+      await clients.matchAll({includeUncontrolled: true, type: 'window'});
+  let background =
+      foundClients.find((client) => {
+        return new URL(client.url).pathname == '/background.html';
+      });
+  background.postMessage('success');
+})();

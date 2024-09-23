@@ -1,8 +1,7 @@
+# Unless you want a specific reviewer's expertise, send to the email below.
+chrome-dev-infra-reviewers@google.com
 # This is reserved for people that are comfortable with Chromium builders
 # and understand the implications of changing their configurations.
-
-set noparent
-
 bpastene@chromium.org
 estaab@chromium.org
 gatong@chromium.org
@@ -10,7 +9,6 @@ gbeaty@chromium.org
 guterman@google.com
 hypan@google.com
 kimstephanie@google.com
-linxinan@chromium.org
 morawand@google.com
 sshrimp@google.com
 svenzheng@chromium.org
@@ -23,10 +21,9 @@ ynovikov@chromium.org
 hans@chromium.org
 thakis@chromium.org
 
-# For goma/reclient/siso bot related changes.
+# For reclient/siso bot related changes.
 tikuta@chromium.org
 
 # Specific OWNERS to review changes to the non-inclusive terms PRESUBMIT checks
 per-file inclusive_language_presubmit_exempt_dirs.txt=*
 per-file update_inclusive_language_presubmit_exempt_dirs.sh=efoo@chromium.org
-per-file update_inclusive_language_presubmit_exempt_dirs.sh=seanmccullough@chromium.org

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/test/bind.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,9 +17,10 @@ namespace performance_manager {
 namespace {
 
 class FakePageNodeDecoratorData
-    : public NodeAttachedDataImpl<FakePageNodeDecoratorData> {
+    : public ExternalNodeAttachedDataImpl<FakePageNodeDecoratorData> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
+  explicit FakePageNodeDecoratorData(const PageNodeImpl* page_node) {}
+
   FakePageNodeDecoratorData() = default;
   ~FakePageNodeDecoratorData() override = default;
   FakePageNodeDecoratorData(const FakePageNodeDecoratorData& other) = delete;
@@ -39,11 +40,6 @@ class FakePageNodeDecoratorData
  private:
   base::OnceClosure closure_to_call_;
   int expected_value_;
-
-  friend class ::performance_manager::NodeAttachedDataImpl<
-      FakePageNodeDecoratorData>;
-
-  explicit FakePageNodeDecoratorData(const PageNodeImpl* page_node) {}
 };
 
 class DecoratorsUtilsTest : public PerformanceManagerTestHarness {

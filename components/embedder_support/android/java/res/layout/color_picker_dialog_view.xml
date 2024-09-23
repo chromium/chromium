@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright 2024 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:fadeScrollbars="false">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+    <org.chromium.components.embedder_support.delegate.ColorPickerSuggestionsView
+        android:id="@+id/color_picker_suggestions_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:horizontalSpacing="8dp"
+        android:verticalSpacing="8dp"
+        android:visibility="gone" />
+
+    <org.chromium.components.embedder_support.delegate.ColorPickerAdvanced
+        android:id="@+id/color_picker_custom_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="20dp"
+          android:layout_toStartOf="@id/color_picker_dialog_chosen_color_container">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/color_picker_view_switcher_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:gravity="center_vertical"
+            style="@style/TextButton"
+            android:layout_marginStart="11dp" />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/color_picker_dialog_chosen_color_container"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_alignParentEnd="true" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="150dp"
+            android:text="@string/color_picker_label_chosen_color"
+            android:importantForAccessibility="no"
+            style="@style/TextAppearance.TextLarge.Primary.Baseline" />
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/color_picker_border"
+            android:layout_gravity="center"
+            android:importantForAccessibility="noHideDescendants"
+            android:layout_marginEnd="13dp"
+            android:layout_marginStart="8dp"
+            android:padding="6dp" >
+
+          <View
+              android:id="@+id/color_picker_dialog_chosen_color_view"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent" />
+
+        </FrameLayout>
+
+      </LinearLayout>
+
+    </RelativeLayout>
+
+  </LinearLayout>
+
+</ScrollView>

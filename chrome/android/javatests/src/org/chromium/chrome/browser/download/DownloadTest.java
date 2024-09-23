@@ -23,9 +23,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -35,8 +35,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -55,7 +53,6 @@ import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -88,8 +85,6 @@ public class DownloadTest {
     private static final String SUPERBO_CONTENTS = "plain text response from a POST";
 
     private static EmbeddedTestServer sTestServer;
-
-    @Mock private static AutocompleteController sACController;
 
     private static final String TEST_DOWNLOAD_DIRECTORY = "/chrome/test/data/android/download/";
 
@@ -229,7 +224,6 @@ public class DownloadTest {
 
     @BeforeClass
     public static void beforeClass() {
-        AutocompleteControllerProvider.setControllerForTesting(sACController);
         Looper.prepare();
         sTestServer = sDownloadTestRule.getTestServer();
         DownloadNotificationService.setInstanceForTests(new MockNotificationService());
@@ -329,7 +323,7 @@ public class DownloadTest {
         final TabModel model = sDownloadTestRule.getActivity().getCurrentTabModel();
         final int count = model.getCount();
         final Tab newTab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url, PageTransition.LINK),
@@ -375,7 +369,7 @@ public class DownloadTest {
         try {
             final DownloadManagerRequestInterceptorForTest interceptor =
                     new DownloadManagerRequestInterceptorForTest();
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () ->
                             DownloadManagerService.getDownloadManagerService()
                                     .setDownloadManagerRequestInterceptor(interceptor));

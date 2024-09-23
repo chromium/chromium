@@ -9,7 +9,6 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -19,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
@@ -47,7 +47,7 @@ const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
     case PHONE_HOME_WHOLE_NUMBER:
       return vector_icons::kCallIcon;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -147,14 +147,14 @@ void AddValuesRow(views::TableLayoutView* layout_view,
 // Returns true if there is there is at least one entry in `diff` with
 // non-empty second value.
 bool HasNonEmptySecondValues(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return !entry.second_value.empty();
   });
 }
 
 // Returns true if there is an entry coressponding to type ADDRESS_HOME_ADDRESS.
 bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
-  return base::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
+  return std::ranges::any_of(diff, [](const ProfileValueDifference& entry) {
     return entry.type == ADDRESS_HOME_ADDRESS;
   });
 }
@@ -162,34 +162,28 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
+    std::unique_ptr<UpdateAddressBubbleController> controller,
     views::View* anchor_view,
-    content::WebContents* web_contents,
-    SaveUpdateAddressProfileBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller) {
-  // Since this is an update prompt, original profile must be set. Otherwise, it
-  // would have been a save prompt.
-  DCHECK(controller_->GetOriginalProfile());
-
+    content::WebContents* web_contents)
+    : AddressBubbleBaseView(anchor_view, web_contents),
+      controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
 
   SetAcceptCallback(base::BindOnce(
-      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-      std::nullopt));
+      &UpdateAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
+      AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt));
   SetCancelCallback(base::BindOnce(
-      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-      std::nullopt));
+      &UpdateAddressBubbleController::OnUserDecision,
+      base::Unretained(controller_.get()),
+      AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
 
@@ -204,11 +198,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
                                   0));
 
   std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
-      controller_->GetProfileToSave(), *controller_->GetOriginalProfile(),
+      controller_->GetProfileToSave(), controller_->GetOriginalProfile(),
       g_browser_process->GetApplicationLocale());
 
   std::u16string subtitle = GetProfileDescription(
-      *controller_->GetOriginalProfile(),
+      controller_->GetOriginalProfile(),
       g_browser_process->GetApplicationLocale(),
       /*include_address_and_contacts=*/!HasAddressEntry(profile_diff));
   if (!subtitle.empty()) {
@@ -255,9 +249,8 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       main_content_view, profile_diff,
       /*show_row_label=*/has_non_empty_original_values,
       /*edit_button_callback=*/
-      base::BindRepeating(
-          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-          base::Unretained(controller_)));
+      base::BindRepeating(&UpdateAddressBubbleController::OnEditButtonClicked,
+                          base::Unretained(controller_.get())));
 
   if (has_non_empty_original_values) {
     main_content_view->AddPaddingRow(
@@ -285,6 +278,8 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       layout_provider->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
 }
+
+UpdateAddressProfileView::~UpdateAddressProfileView() = default;
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
   return true;

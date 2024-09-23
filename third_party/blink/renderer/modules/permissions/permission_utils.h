@@ -16,10 +16,13 @@ class ExecutionContext;
 class ExceptionState;
 class ScriptState;
 class ScriptValue;
+class V8PermissionState;
 
 void ConnectToPermissionService(
     ExecutionContext*,
     mojo::PendingReceiver<mojom::blink::PermissionService>);
+
+V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus);
 
 String PermissionStatusToString(mojom::blink::PermissionStatus);
 
@@ -38,6 +41,9 @@ mojom::blink::PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
 
 mojom::blink::PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
     bool pan_tilt_zoom);
+
+mojom::blink::PermissionDescriptorPtr CreateFullscreenPermissionDescriptor(
+    bool allow_without_user_gesture);
 
 // Parses the raw permission dictionary and returns the Mojo
 // PermissionDescriptor if parsing was successful. If an exception occurs, it

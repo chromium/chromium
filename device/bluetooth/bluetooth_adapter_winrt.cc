@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -24,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -107,7 +105,7 @@ using Microsoft::WRL::ComPtr;
 
 // Query string for powered Bluetooth radios. GUID Reference:
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/guid-bthport-device-interface
-// TODO(https://crbug.com/821766): Consider adding WindowsCreateStringReference
+// TODO(crbug.com/40567018): Consider adding WindowsCreateStringReference
 // to base::win::ScopedHString to avoid allocating memory for this string.
 constexpr wchar_t kPoweredRadiosAqsFilter[] =
     L"System.Devices.InterfaceClassGuid:=\"{0850302A-B344-4fda-9BE9-"
@@ -127,7 +125,7 @@ constexpr const char* ToCString(RadioAccessStatus access_status) {
       return "RadioAccessStatus::DeniedBySystem";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1369,7 +1367,7 @@ void BluetoothAdapterWinrt::OnRegisterAdvertisement(
     CreateAdvertisementCallback callback) {
   DCHECK(base::Contains(pending_advertisements_, advertisement));
   auto wrapped_advertisement = base::WrapRefCounted(advertisement);
-  base::Erase(pending_advertisements_, advertisement);
+  std::erase(pending_advertisements_, advertisement);
   std::move(callback).Run(std::move(wrapped_advertisement));
 }
 
@@ -1379,7 +1377,7 @@ void BluetoothAdapterWinrt::OnRegisterAdvertisementError(
     BluetoothAdvertisement::ErrorCode error_code) {
   // Note: We are not DCHECKing that |pending_advertisements_| contains
   // |advertisement|, as this method might be invoked during destruction.
-  base::Erase(pending_advertisements_, advertisement);
+  std::erase(pending_advertisements_, advertisement);
   std::move(error_callback).Run(error_code);
 }
 

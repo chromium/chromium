@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DownloadManagerSaveToDriveSettings": 0
+        },
+        "prefs": {
+          "ios.save_to_drive.download_manager_policy": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DownloadManagerSaveToDriveSettings": 1
+        },
+        "prefs": {
+          "ios.save_to_drive.download_manager_policy": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

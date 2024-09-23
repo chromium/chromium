@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate") {
+  sources = [
+    "translate_infobar_modal_overlay_coordinator.h",
+    "translate_infobar_modal_overlay_coordinator.mm",
+    "translate_infobar_modal_overlay_mediator.h",
+    "translate_infobar_modal_overlay_mediator.mm",
+    "translate_infobar_modal_overlay_mediator_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/translate/model:public",
+    "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "translate_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":translate",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//components/translate/core/browser:browser",
+    "//components/translate/core/browser:test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/translate/model:test_support",
+    "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
+    "//ios/chrome/browser/ui/infobars/modals/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

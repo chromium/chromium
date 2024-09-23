@@ -28,6 +28,7 @@ Reasons:
                 siteForCookies : https://firstparty.test/
             }
         }
+        issueId : <string>
     }
 }
 

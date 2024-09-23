@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents.h"
 
 class DeviceLockBridge;
@@ -19,7 +19,8 @@ namespace autofill {
 class AutofillSaveIbanDelegate {
  public:
   explicit AutofillSaveIbanDelegate(
-      AutofillClient::SaveIbanPromptCallback save_iban_callback,
+      payments::PaymentsAutofillClient::SaveIbanPromptCallback
+          save_iban_callback,
       content::WebContents* web_contents);
 
   ~AutofillSaveIbanDelegate();
@@ -44,7 +45,7 @@ class AutofillSaveIbanDelegate {
 
   // The callback to run once the user makes a decision with respect to the
   // IBAN offer-to-save prompt.
-  AutofillClient::SaveIbanPromptCallback save_iban_callback_;
+  payments::PaymentsAutofillClient::SaveIbanPromptCallback save_iban_callback_;
 
   // Callback to run immediately after `save_iban_callback_`. An example of a
   // callback is cleaning up pointers to delegates that have their lifecycle

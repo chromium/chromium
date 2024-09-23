@@ -16,6 +16,10 @@ namespace aura {
 class Window;
 }
 
+namespace base {
+class FilePath;
+}
+
 namespace ui {
 class OSExchangeData;
 }
@@ -94,7 +98,7 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when an accelerator is used to open the file manager.
   virtual void OpenFileManager() = 0;
 
-  // Opens File Manager in the My files/Downloads folder.
+  // Opens File Manager in the MyFiles/Downloads folder.
   virtual void OpenDownloadsFolder() = 0;
 
   // Invoked when the user opens Crosh.
@@ -108,9 +112,6 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
 
   // Invoked when the user uses Shift+Ctrl+T to restore the closed tab.
   virtual void RestoreTab() = 0;
-
-  // Show the keyboard shortcut viewer.
-  virtual void ShowKeyboardShortcutViewer() = 0;
 
   // Show the shortcut customization app.
   virtual void ShowShortcutCustomizationApp() = 0;
@@ -129,6 +130,12 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
 
   // Show the Personalization hub.
   virtual void OpenPersonalizationHub() = 0;
+
+  // Shows the a captive portal signin window.
+  virtual void OpenCaptivePortalSignin(const GURL& url) = 0;
+
+  // Opens a file on the local file system (which may be DriveFS).
+  virtual void OpenFile(const base::FilePath& file_path) = 0;
 
  protected:
   NewWindowDelegate();

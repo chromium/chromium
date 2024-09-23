@@ -47,6 +47,7 @@ Need tests for (likely not a complete list):
 * adAuctionConfig passed to reportResult().
 * Component auctions.
   * Including cross-origin sellers.
+  * Timeouts (seller timeout, buyer timeout, reporting timeout).
 * browserSignals fields in scoring/bidding methods.
 * In reporting methods, browserSignals fields: topLevelSeller,
     componentSeller, modifiedBid, adCost, madeHighestScoringOtherBid
@@ -78,7 +79,14 @@ Need tests for (likely not a complete list):
       origins, and between generateBid() and reportWin().
 * Test Content-Type headers allowed in responess for script/wasm/JSON fetches.
 * Test WASM support, updating createBiddingWasmHelperURL().
-
+* Remaining interest group updates.
+    * Check that an update with one valid field and one invalid one fails.
+    * Test that an update works if owner and/or name match those in the interest group.
+    * Test updating the update URL and bidding script URL so they are all the
+      same origin (requires updating test fixture to handle multiple updates).
+    * Test when Ads is null.
+    * Test updating a cross origin interest group.
+    * Test fields that are updatable but do not make it to 'generateBid'.
 If possible:
 * Aggregate reporting.
 * Join/leave permission delegation via .well-known files
@@ -88,3 +96,6 @@ If possible:
 * Signals request batching. This is an optional feature, so can't require it,
     but maybe a test where batching could be used, and make sure things work,
     whether batching is used or not?
+* reporting timeout being 0.
+* Test input with invalid https origin in web platform tests for both trusted bidding
+  and scoring signals coordinators.

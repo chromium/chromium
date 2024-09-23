@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -49,6 +48,8 @@ struct FieldDescription {
   bool is_visible = true;
   std::optional<std::u16string> label;
   std::optional<std::u16string> name;
+  std::optional<std::u16string> name_attribute;
+  std::optional<std::u16string> id_attribute;
   std::optional<std::u16string> value;
   std::optional<std::u16string> placeholder;
   std::optional<uint64_t> max_length;
@@ -90,7 +91,6 @@ struct TestFormFlags {
   bool should_be_queried = false;
   bool should_be_uploaded = false;
   bool has_author_specified_types = false;
-  bool has_author_specified_upi_vpa_hint = false;
   // The implicit default value `std::nullopt` means no checking.
   std::optional<bool> is_complete_credit_card_form;
   std::optional<int> field_count;
@@ -133,6 +133,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd);
 
 // Creates a FormData to be fed to the parser.
 FormData GetFormData(const FormDescription& test_form_attributes);
+
+// Creates a FormData with `field_types`.
+FormData GetFormData(const std::vector<FieldType>& field_types);
 
 // Extracts the heuristic types from the form description. If the heuristic type
 // is not explicitly set for a given field it is extracted from the field's

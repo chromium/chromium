@@ -13,16 +13,19 @@
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
 class BrowserWindow;
 class Profile;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -46,7 +49,7 @@ class BrowserCommandController : public CommandUpdater,
   // should not be sent to the renderer or |event| was triggered by a key that
   // we never want to send to the renderer.
   bool IsReservedCommandOrKey(int command_id,
-                              const content::NativeWebKeyboardEvent& event);
+                              const input::NativeWebKeyboardEvent& event);
 
   // Notifies the controller that state has changed in one of the following
   // areas and it should update command states.
@@ -94,8 +97,9 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserCommandControllerBrowserTest,
-                           LockedFullscreen);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  friend class BrowserCommandControllerBrowserTestLockedFullscreen;
+#endif
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -120,9 +124,6 @@ class BrowserCommandController : public CommandUpdater,
   // Returns true if the location bar is shown or is currently hidden, but can
   // be shown. Used for updating window command states only.
   bool IsShowingLocationBar();
-
-  // Returns true if the browser window is for a web app or custom tab.
-  bool IsWebAppOrCustomTab() const;
 
   // Initialize state for all browser commands.
   void InitCommandState();
@@ -205,6 +206,21 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands that depend on the state of the tab strip model.
   void UpdateCommandsForTabStripStateChanged();
 
+  // Returns the relevant action for the current browser for a given
+  // `action_id`.
+  actions::ActionItem* FindAction(actions::ActionId action_id);
+
+  // Updates the enabled status for both `command_id` and `action_id`, given
+  // that it exists.
+  void UpdateCommandAndActionEnabled(int command_id,
+                                     actions::ActionId action_id,
+                                     bool enabled);
+
+  // Helper method to show the customize chrome sidepanel and optionally scroll
+  // to a specific section.
+  void ShowCustomizeChromeSidePanel(
+      std::optional<CustomizeChromeSection> section = std::nullopt);
+
   inline BrowserWindow* window();
   inline Profile* profile();
 
@@ -218,6 +234,11 @@ class BrowserCommandController : public CommandUpdater,
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
+
+  // If the Customize Chrome side panel is shown, determines which section to
+  // display.
+  CustomizeChromeSection customize_chrome_section_ =
+      CustomizeChromeSection::kUnspecified;
 };
 
 }  // namespace chrome

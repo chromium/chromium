@@ -44,4 +44,4 @@ class IOSContentRendererClient : public content::ContentRendererClient {
 
 }  // namespace web
 
-#endif  // IOS_WEB_CONTENT_RENDERER_IOS_CONTENT_RENDERER_CLIENT_H_
+#endif  // IOS_WEB_CONTENT_INIT_IOS_CONTENT_RENDERER_CLIENT_H_

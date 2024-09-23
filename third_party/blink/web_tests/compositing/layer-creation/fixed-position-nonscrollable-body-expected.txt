@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",

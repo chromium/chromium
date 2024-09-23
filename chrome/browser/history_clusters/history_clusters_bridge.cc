@@ -11,11 +11,12 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
-#include "chrome/browser/history_clusters/jni_headers/HistoryClustersBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/history_clusters/jni_headers/HistoryClustersBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -28,29 +29,6 @@ const char kHistoryClustersBridgeKey[] = "history-clusters-bridge";
 
 namespace history_clusters {
 
-static ScopedJavaLocalRef<jobject> JNI_HistoryClustersBridge_GetForProfile(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  DCHECK(profile);
-
-  HistoryClustersService* history_clusters_service =
-      HistoryClustersServiceFactory::GetForBrowserContext(profile);
-
-  if (history_clusters_service == nullptr)
-    return ScopedJavaLocalRef<jobject>();
-
-  HistoryClustersBridge* bridge = static_cast<HistoryClustersBridge*>(
-      history_clusters_service->GetUserData(kHistoryClustersBridgeKey));
-  if (!bridge) {
-    bridge = new HistoryClustersBridge(env, history_clusters_service);
-    history_clusters_service->SetUserData(kHistoryClustersBridgeKey,
-                                          base::WrapUnique(bridge));
-  }
-
-  return ScopedJavaLocalRef<jobject>(bridge->java_ref());
-}
-
 HistoryClustersBridge::HistoryClustersBridge(
     JNIEnv* env,
     HistoryClustersService* history_clusters_service)
@@ -61,37 +39,6 @@ HistoryClustersBridge::HistoryClustersBridge(
 }
 
 HistoryClustersBridge::~HistoryClustersBridge() = default;
-
-void HistoryClustersBridge::QueryClusters(JNIEnv* env,
-                                          const JavaRef<jobject>& j_this,
-                                          const JavaRef<jstring>& j_query,
-                                          const JavaRef<jobject>& j_callback) {
-  query_task_tracker_.TryCancelAll();
-  // The Android history clusters UI doesn't support also showing ungrouped
-  // history inline, so there's no reason to pass in `history_service`.
-  query_clusters_state_ = std::make_unique<QueryClustersState>(
-      history_clusters_service_->GetWeakPtr(), /*history_service=*/nullptr,
-      base::android::ConvertJavaStringToUTF8(env, j_query));
-  LoadMoreClusters(env, j_this, j_query, j_callback);
-}
-
-void HistoryClustersBridge::LoadMoreClusters(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_this,
-    const JavaRef<jstring>& j_query,
-    const JavaRef<jobject>& j_callback) {
-  const std::string& query =
-      base::android::ConvertJavaStringToUTF8(env, j_query);
-  if (query_clusters_state_) {
-    DCHECK_EQ(query, query_clusters_state_->query());
-    QueryClustersState::ResultCallback callback =
-        base::BindOnce(&HistoryClustersBridge::ClustersQueryDone,
-                       weak_ptr_factory_.GetWeakPtr(), env,
-                       ScopedJavaGlobalRef<jobject>(j_this),
-                       ScopedJavaGlobalRef<jobject>(j_callback));
-    query_clusters_state_->LoadNextBatchOfClusters(std::move(callback));
-  }
-}
 
 void HistoryClustersBridge::ClustersQueryDone(
     JNIEnv* env,
@@ -144,7 +91,7 @@ void HistoryClustersBridge::ClustersQueryDone(
                   env, visit.annotated_visit.url_row.url()),
               visit.annotated_visit.visit_row.visit_time.ToInternalValue(),
               base::android::ToJavaLongArray(env, duplicated_visit_timestamps),
-              url::GURLAndroid::ToJavaArrayOfGURLs(env, duplicated_visit_urls));
+              duplicated_visit_urls);
       cluster_visits.push_back(j_cluster_visit);
     }
     base::Time visit_time;

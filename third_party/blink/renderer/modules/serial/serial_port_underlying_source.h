@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/device/public/mojom/serial.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
@@ -15,7 +16,6 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromiseResolver;
 class SerialPort;
 
 class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
@@ -26,10 +26,11 @@ class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
                              mojo::ScopedDataPipeConsumerHandle);
 
   // UnderlyingByteSourceBase
-  ScriptPromise Pull(ReadableByteStreamController* controller,
-                     ExceptionState&) override;
-  ScriptPromise Cancel(ExceptionState&) override;
-  ScriptPromise Cancel(v8::Local<v8::Value> reason, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState&) override;
   ScriptState* GetScriptState() override;
 
   void ContextDestroyed() override;
@@ -43,7 +44,7 @@ class SerialPortUnderlyingSource : public UnderlyingByteSourceBase,
   void ReadDataOrArmWatcher();
 
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
-  void OnFlush(ScriptPromiseResolver*);
+  void OnFlush(ScriptPromiseResolver<IDLUndefined>*);
   void PipeClosed();
   void Close();
 

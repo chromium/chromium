@@ -54,6 +54,9 @@ class ASH_EXPORT ColorEnhancementController : public ShellObserver {
   void SetColorVisionCorrectionFilter(ColorVisionCorrectionType type,
                                       float severity);
 
+  // Flashes the display when a notification occurs..
+  void FlashScreenForNotification(bool show_flash, const SkColor& color);
+
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
 
@@ -76,6 +79,9 @@ class ASH_EXPORT ColorEnhancementController : public ShellObserver {
 
   // Color correction matrix.
   std::unique_ptr<cc::FilterOperation::Matrix> cvd_correction_matrix_;
+
+  // Flash screen color.
+  std::unique_ptr<cc::FilterOperation::Matrix> notification_flash_matrix_;
 };
 
 }  // namespace ash

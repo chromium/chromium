@@ -5,10 +5,12 @@
 /**
  * @fileoverview Contains the rules for output based on type information.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
 import {OutputRoleInfo} from './output_role_info.js';
-import {OutputCustomEvent, OutputEventType, OutputFormatType, OutputNavigationType} from './output_types.js';
+import {OutputCustomEvent, OutputFormatType, OutputNavigationType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
@@ -248,7 +250,7 @@ OutputRule.RULES = {
           $description $restriction`,
     },
     [AbstractRole.LIST]: {
-      startOf: `$nameFromNode $role @@list_with_items($setSize)
+      startOf: `$nameFromNode $role $if($setSize, @@list_with_items($setSize))
           $restriction $description`,
       endOf: `@end_of_container($role) @@list_nested_level($listNestedLevel)`,
     },
@@ -293,8 +295,7 @@ OutputRule.RULES = {
           $node(tableCellColumnHeaders) $roleDescription $state $description`,
       braille: `$state
           $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
-          $description
-          $if($selected, @aria_selected_true)`,
+          $description`,
     },
     [RoleType.CHECK_BOX]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
@@ -318,6 +319,20 @@ OutputRule.RULES = {
     [RoleType.GRID]: {
       speak: `$name $node(activeDescendant) $role $state $restriction
           $description`,
+    },
+    [RoleType.GRID_CELL]: {
+      enter: {
+        speak: `$cellIndexText $node(tableCellColumnHeaders) $nameFromNode
+            $roleDescription $state`,
+        braille: `$state $cellIndexText $node(tableCellColumnHeaders)
+            $nameFromNode $roleDescription`,
+      },
+      speak: `$nameFromNode $descendants $cellIndexText
+          $node(tableCellColumnHeaders) $roleDescription $state $description`,
+      braille: `$state
+          $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
+          $description
+          $if($selected, @aria_selected_true)`,
     },
     [RoleType.GROUP]: {
       enter: `$nameFromNode $roleDescription $state $restriction $description`,
@@ -393,12 +408,12 @@ OutputRule.RULES = {
           @describe_index($posInSet, $setSize)`,
     },
     [RoleType.MENU_LIST_OPTION]: {
-      speak: `$name $role @describe_index($posInSet, $setSize) $state
-          $nif($selected, @aria_selected_false)
-          $restriction $description`,
-      braille: `$name $role @describe_index($posInSet, $setSize) $state
-          $if($selected, @aria_selected_true, @aria_selected_false)
-          $restriction $description`,
+      speak: `$state $name $role @describe_index($posInSet, $setSize)
+          $description $restriction
+          $nif($selected, @aria_selected_false)`,
+      braille: `$state $name $role @describe_index($posInSet, $setSize)
+          $description $restriction
+          $if($selected, @aria_selected_true, @aria_selected_false)`,
     },
     [RoleType.PARAGRAPH]: {speak: `$nameOrDescendants $roleDescription`},
     [RoleType.RADIO_BUTTON]: {
@@ -488,15 +503,10 @@ OutputRule.RULES = {
   [EventType.MENU_END]: {
     [CustomRole.DEFAULT]: {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`},
   },
-  [EventType.MENU_LIST_VALUE_CHANGED]: {
-    [CustomRole.DEFAULT]: {
-      speak: `$value $name
-          $find({"state": {"selected": true, "invisible": false}},
-          @describe_index($posInSet, $setSize)) `,
-    },
-  },
   [EventType.ALERT]: {
     [CustomRole.DEFAULT]:
         {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`},
   },
 };
+
+TestImportManager.exportForTesting(OutputRule);

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/web_contents_observer.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -10,17 +12,21 @@
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -45,7 +51,6 @@ class WebContentsObserverBrowserTest : public ContentBrowserTest {
   // Some platforms are flaky due to relatively slow loading interacting
   // with deferred commits.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
@@ -241,6 +246,8 @@ class CookieTracker : public WebContentsObserver {
     std::string cookie_name;
     std::string cookie_value;
 
+    net::CookieAccessResult cookie_access_result;
+
     friend std::ostream& operator<<(std::ostream& o,
                                     const CookieAccessDescription& d) {
       o << (d.type == CookieAccessDetails::Type::kRead ? "read" : "change");
@@ -261,34 +268,30 @@ class CookieTracker : public WebContentsObserver {
           o << ")";
           break;
       }
+      o << " access_result=";
+      net::PrintTo(d.cookie_access_result, &o);
       return o;
     }
 
-   private:
-    auto comparison_key() const {
-      return std::tie(type, url, first_party_url, cookie_name, cookie_value,
-                      frame_id, navigation_id);
-    }
-
    public:
-    bool operator==(const CookieAccessDescription& other) const {
-      return comparison_key() == other.comparison_key();
-    }
+    bool operator==(const CookieAccessDescription&) const = default;
   };
 
   void OnCookiesAccessed(NavigationHandle* navigation,
                          const CookieAccessDetails& details) override {
-    for (const auto& cookie : details.cookie_list) {
-      for (size_t i = 0; i < details.count; ++i) {
-        cookie_accesses_.push_back({details.type,
-                                    ContextType::kNavigation,
-                                    {},
-                                    navigation->GetNavigationId(),
-                                    details.url,
-                                    details.first_party_url,
-                                    cookie.Name(),
-                                    cookie.Value()});
-      }
+    for (const auto& cookie_with_access_result :
+         details.cookie_access_result_list) {
+      cookie_accesses_.push_back({
+          details.type,
+          ContextType::kNavigation,
+          {},
+          navigation->GetNavigationId(),
+          details.url,
+          details.first_party_url,
+          cookie_with_access_result.cookie.Name(),
+          cookie_with_access_result.cookie.Value(),
+          cookie_with_access_result.access_result,
+      });
     }
 
     QuitIfReady();
@@ -296,18 +299,19 @@ class CookieTracker : public WebContentsObserver {
 
   void OnCookiesAccessed(RenderFrameHost* rfh,
                          const CookieAccessDetails& details) override {
-    for (const auto& cookie : details.cookie_list) {
-      for (size_t i = 0; i < details.count; ++i) {
-        cookie_accesses_.push_back(
-            {details.type,
-             ContextType::kFrame,
-             {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
-             -1,
-             details.url,
-             details.first_party_url,
-             cookie.Name(),
-             cookie.Value()});
-      }
+    for (const auto& cookie_with_access_result :
+         details.cookie_access_result_list) {
+      cookie_accesses_.push_back({
+          details.type,
+          ContextType::kFrame,
+          {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
+          -1,
+          details.url,
+          details.first_party_url,
+          cookie_with_access_result.cookie.Name(),
+          cookie_with_access_result.cookie.Value(),
+          cookie_with_access_result.access_result,
+      });
     }
 
     QuitIfReady();
@@ -373,9 +377,42 @@ class CookieTracker : public WebContentsObserver {
 
 using CookieAccess = CookieTracker::CookieAccessDescription;
 
+// Helper for checking CookieAccess.
+MATCHER_P9(MatchesCookieAccess,
+           type,
+           context_type,
+           frame_id,
+           navigation_id,
+           url,
+           first_party_url,
+           cookie_name,
+           cookie_value,
+           cookie_access_result,
+           "") {
+  const CookieAccess& cookie_access = arg;
+  return testing::ExplainMatchResult(type, cookie_access.type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(context_type, cookie_access.context_type,
+                                     result_listener) &&
+         testing::ExplainMatchResult(frame_id, cookie_access.frame_id,
+                                     result_listener) &&
+         testing::ExplainMatchResult(navigation_id, cookie_access.navigation_id,
+                                     result_listener) &&
+         testing::ExplainMatchResult(url, cookie_access.url, result_listener) &&
+         testing::ExplainMatchResult(
+             first_party_url, cookie_access.first_party_url, result_listener) &&
+         testing::ExplainMatchResult(cookie_name, cookie_access.cookie_name,
+                                     result_listener) &&
+         testing::ExplainMatchResult(cookie_value, cookie_access.cookie_value,
+                                     result_listener) &&
+         testing::ExplainMatchResult(cookie_access_result,
+                                     cookie_access.cookie_access_result,
+                                     result_listener);
+}
+
 }  // namespace
 
-// TODO(https://crbug.com/1288573): Flaky on Windows, Mac, and Android.
+// TODO(crbug.com/40211581): Flaky on Windows, Mac, and Android.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CookieCallbacks_MainFrame DISABLED_CookieCallbacks_MainFrame
 #else
@@ -395,16 +432,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url1));
   cookie_tracker.WaitForCookies(1);
 
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{CookieAccessDetails::Type::kChange,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(0),
-                                        url1,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"}));
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kChange,
+                  ContextType::kNavigation,
+                  {},
+                  cookie_tracker.navigation_id(0),
+                  url1,
+                  first_party_url,
+                  "foo",
+                  "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Navigate to |url2| on the same site. Given that we have set a cookie
@@ -413,20 +454,24 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url2));
   cookie_tracker.WaitForCookies(1);
 
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{CookieAccessDetails::Type::kRead,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(1),
-                                        url2,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"}));
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kRead,
+                  ContextType::kNavigation,
+                  {},
+                  cookie_tracker.navigation_id(1),
+                  url2,
+                  first_party_url,
+                  "foo",
+                  "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
-// TODO(https://crbug.com/1288573): Flaky on Mac and Android and Win.
+// TODO(crbug.com/40211581): Flaky on Mac and Android and Win.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CookieCallbacks_MainFrameRedirect \
   DISABLED_CookieCallbacks_MainFrameRedirect
@@ -452,24 +497,33 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url1, url1_after_redirect));
 
   cookie_tracker.WaitForCookies(2);
-  EXPECT_THAT(cookie_tracker.cookie_accesses(),
-              testing::UnorderedElementsAre(
-                  CookieAccess{CookieAccessDetails::Type::kChange,
-                               ContextType::kNavigation,
-                               {},
-                               cookie_tracker.navigation_id(0),
-                               url1,
-                               first_party_url,
-                               "foo",
-                               "bar"},
-                  CookieAccess{CookieAccessDetails::Type::kRead,
-                               ContextType::kNavigation,
-                               {},
-                               cookie_tracker.navigation_id(0),
-                               url1_after_redirect,
-                               first_party_url,
-                               "foo",
-                               "bar"}));
+  EXPECT_THAT(
+      cookie_tracker.cookie_accesses(),
+      testing::UnorderedElementsAre(
+          CookieAccess{CookieAccessDetails::Type::kChange,
+                       ContextType::kNavigation,
+                       {},
+                       cookie_tracker.navigation_id(0),
+                       url1,
+                       first_party_url,
+                       "foo",
+                       "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)},
+          CookieAccess{CookieAccessDetails::Type::kRead,
+                       ContextType::kNavigation,
+                       {},
+                       cookie_tracker.navigation_id(0),
+                       url1_after_redirect,
+                       first_party_url,
+                       "foo",
+                       "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Navigate to another url on the same site and expect a notification about
@@ -477,20 +531,24 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), url2));
 
   cookie_tracker.WaitForCookies(1);
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{CookieAccessDetails::Type::kRead,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(1),
-                                        url2,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"}));
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kRead,
+                  ContextType::kNavigation,
+                  {},
+                  cookie_tracker.navigation_id(1),
+                  url2,
+                  first_party_url,
+                  "foo",
+                  "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
-// TODO(https://crbug.com/1288573): Flaky on Mac, Android and Windows.
+// TODO(crbug.com/40211581): Flaky on Mac, Android and Windows.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_CookieCallbacks_Subframe DISABLED_CookieCallbacks_Subframe
 #else
@@ -516,16 +574,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
 
   cookie_tracker.WaitForCookies(1);
   // Navigations are: main frame (0), subframe (1).
-  EXPECT_THAT(
-      cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{CookieAccessDetails::Type::kChange,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(1),
-                                        url1_subframe,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"}));
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kChange,
+                  ContextType::kNavigation,
+                  {},
+                  cookie_tracker.navigation_id(1),
+                  url1_subframe,
+                  first_party_url,
+                  "foo",
+                  "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   EXPECT_TRUE(NavigateToURL(web_contents(), url2));
@@ -536,27 +598,36 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   // Navigations are: main frame (2), subframe (3).
   EXPECT_THAT(
       cookie_tracker.cookie_accesses(),
-      testing::ElementsAre(CookieAccess{CookieAccessDetails::Type::kRead,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(2),
-                                        url2,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"},
-                           CookieAccess{CookieAccessDetails::Type::kRead,
-                                        ContextType::kNavigation,
-                                        {},
-                                        cookie_tracker.navigation_id(3),
-                                        url2_subframe,
-                                        first_party_url,
-                                        "foo",
-                                        "bar"}));
+      testing::ElementsAre(
+          CookieAccess{CookieAccessDetails::Type::kRead,
+                       ContextType::kNavigation,
+                       {},
+                       cookie_tracker.navigation_id(2),
+                       url2,
+                       first_party_url,
+                       "foo",
+                       "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)},
+          CookieAccess{CookieAccessDetails::Type::kRead,
+                       ContextType::kNavigation,
+                       {},
+                       cookie_tracker.navigation_id(3),
+                       url2_subframe,
+                       first_party_url,
+                       "foo",
+                       "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
-// TODO(https://crbug.com/1288573): Flaky on Mac.
-// TODO(https://crbug.com/1426973): Fix on android and enable it.
+// TODO(crbug.com/40211581): Flaky on Mac.
+// TODO(crbug.com/40899619): Fix on android and enable it.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CookieCallbacks_Subresource DISABLED_CookieCallbacks_Subresource
 #else
@@ -582,10 +653,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   // fetched.
   cookie_tracker.WaitForCookies(1);
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
-              testing::ElementsAre(
-                  CookieAccess{CookieAccessDetails::Type::kChange,
-                               ContextType::kFrame, cookie_tracker.frame_id(0),
-                               -1, url1_image, first_party_url, "foo", "bar"}));
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kChange, ContextType::kFrame,
+                  cookie_tracker.frame_id(0), -1, url1_image, first_party_url,
+                  "foo", "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   // 2) Load a page with subresource. Both the page and the resource should get
@@ -606,10 +681,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        url2,
                        first_party_url,
                        "foo",
-                       "bar"},
+                       "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)},
           CookieAccess{CookieAccessDetails::Type::kRead, ContextType::kFrame,
                        cookie_tracker.frame_id(frame_id_index), -1, url2_image,
-                       first_party_url, "foo", "bar"}));
+                       first_party_url, "foo", "bar",
+                       net::CookieAccessResult(
+                           net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+                           net::CookieInclusionStatus(),
+                           net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 }
 
@@ -624,21 +707,110 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), "document.cookie='foo=bar'"));
 
   cookie_tracker.WaitForCookies(1);
-  EXPECT_THAT(cookie_tracker.cookie_accesses(),
-              testing::ElementsAre(
-                  CookieAccess{CookieAccessDetails::Type::kChange,
-                               ContextType::kFrame, cookie_tracker.frame_id(0),
-                               -1, url1, first_party_url, "foo", "bar"}));
+  EXPECT_THAT(
+      cookie_tracker.cookie_accesses(),
+      testing::ElementsAre(CookieAccess{
+          CookieAccessDetails::Type::kChange, ContextType::kFrame,
+          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
+          net::CookieAccessResult(
+              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+              net::CookieInclusionStatus(),
+              net::CookieAccessSemantics::NONLEGACY, false)}));
   cookie_tracker.cookie_accesses().clear();
 
   EXPECT_EQ("foo=bar", EvalJs(web_contents(), "document.cookie"));
 
   cookie_tracker.WaitForCookies(1);
+  EXPECT_THAT(
+      cookie_tracker.cookie_accesses(),
+      testing::ElementsAre(CookieAccess{
+          CookieAccessDetails::Type::kRead, ContextType::kFrame,
+          cookie_tracker.frame_id(0), -1, url1, first_party_url, "foo", "bar",
+          net::CookieAccessResult(
+              net::CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
+              net::CookieInclusionStatus(),
+              net::CookieAccessSemantics::NONLEGACY, false)}));
+  cookie_tracker.cookie_accesses().clear();
+}
+
+class WebContentsObserverBrowserTestWithTPCD
+    : public WebContentsObserverBrowserTest {
+ public:
+  WebContentsObserverBrowserTestWithTPCD() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kForceThirdPartyCookieBlocking);
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTestWithTPCD,
+                       CookieCallbacks_BlockedAccessStatusForwarded) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kForceThirdPartyCookieBlocking));
+  CookieTracker cookie_tracker(web_contents());
+
+  // 1) Set a cookie on |url_a|.
+  GURL url_a(embedded_https_test_server().GetURL("a.test", "/"));
+  GURL url_a_check_cookie(
+      embedded_https_test_server().GetURL("a.test", "/title1.html"));
+  content::SetCookie(web_contents()->GetBrowserContext(), url_a,
+                     "foo=bar;SameSite=None;Secure");
+  EXPECT_TRUE(NavigateToURL(web_contents(), url_a_check_cookie));
+  cookie_tracker.WaitForCookies(1);
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(CookieAccess{
+                  CookieAccessDetails::Type::kRead,
+                  ContextType::kNavigation,
+                  {},
+                  cookie_tracker.navigation_id(0),
+                  url_a_check_cookie,
+                  url_a,
+                  "foo",
+                  "bar",
+                  net::CookieAccessResult(
+                      net::CookieEffectiveSameSite::NO_RESTRICTION,
+                      net::CookieInclusionStatus(),
+                      net::CookieAccessSemantics::NONLEGACY, true)}));
+  cookie_tracker.cookie_accesses().clear();
+
+  // 2) Navigate to |url_b_cross_site|. This page should load b.test(a.test)
+  // frames, which should block the cookie from a.test and we should be notified
+  // about the cookie exclusion.
+  GURL url_b(embedded_https_test_server().GetURL("b.test", "/"));
+  GURL url_b_cross_site(embedded_https_test_server().GetURL(
+      "b.test", "/cross_site_iframe_factory.html?b.test(a.test)"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url_b_cross_site));
+  cookie_tracker.WaitForCookies(2);
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
-                  CookieAccess{CookieAccessDetails::Type::kRead,
-                               ContextType::kFrame, cookie_tracker.frame_id(0),
-                               -1, url1, first_party_url, "foo", "bar"}));
+                  MatchesCookieAccess(
+                      CookieAccessDetails::Type::kRead, testing::_, testing::_,
+                      testing::_, testing::_, testing::_, "foo", "bar",
+                      net::CookieAccessResult(
+                          net::CookieEffectiveSameSite::NO_RESTRICTION,
+                          net::CookieInclusionStatus(
+                              net::CookieInclusionStatus::ExclusionReason::
+                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
+                          net::CookieAccessSemantics::NONLEGACY, true)),
+                  MatchesCookieAccess(
+                      CookieAccessDetails::Type::kRead, testing::_, testing::_,
+                      testing::_, testing::_, testing::_, "foo", "bar",
+                      net::CookieAccessResult(
+                          net::CookieEffectiveSameSite::NO_RESTRICTION,
+                          net::CookieInclusionStatus(
+                              net::CookieInclusionStatus::ExclusionReason::
+                                  EXCLUDE_THIRD_PARTY_PHASEOUT),
+                          net::CookieAccessSemantics::NONLEGACY, true))));
   cookie_tracker.cookie_accesses().clear();
 }
 

@@ -28,7 +28,9 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/ownership/owner_settings_service.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +47,7 @@ const char kUserAllowlist[] = "*@allowlist-domain.com";
 const char kOther[] = "other";
 
 const char kListStr1[] = "abcdef1234";
+const char kListStr2[] = "xyz,.[];'";
 
 void OnPrefChanged(const std::string& /* setting */) {}
 
@@ -168,6 +171,11 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     return *settings;
   }
 
+  void AddObserverForSetting(const std::string& setting) const {
+    service_->AddObserver(static_cast<DeviceSettingsProvider*>(
+        CrosSettings::Get()->GetProvider(setting)));
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged> service_ = nullptr;
@@ -178,7 +186,30 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
+  TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
+  TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
+  TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
+
+  EXPECT_LE(1, histogram_tester_.GetBucketCount(
+                   kOwnerKeyHistogramName,
+                   OwnerKeyUmaEvent::kStartSigningPolicySuccess));
+  EXPECT_LE(
+      1, histogram_tester_.GetBucketCount(
+             kOwnerKeyHistogramName, OwnerKeyUmaEvent::kSignedPolicySuccess));
+  EXPECT_LE(
+      1, histogram_tester_.GetBucketCount(
+             kOwnerKeyHistogramName, OwnerKeyUmaEvent::kStoredPolicySuccess));
+}
+
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
+
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
@@ -331,9 +362,41 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
-// Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
-// signature is correct.
-TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
+TEST_F(OwnerSettingsServiceAshTest, DeviceExtendedAutoUpdateEnabledSetValue) {
+  device_policy_->payload().clear_deviceextendedautoupdateenabled();
+  ASSERT_FALSE(device_policy_->payload().has_deviceextendedautoupdateenabled());
+
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
+      kDeviceExtendedAutoUpdateEnabled, base::Value(true),
+      device_policy_->payload());
+
+  EXPECT_TRUE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+}
+
+TEST_F(OwnerSettingsServiceAshTest,
+       DeviceExtendedAutoUpdateEnabledSetValueWithPreviouslySet) {
+  device_policy_->payload()
+      .mutable_deviceextendedautoupdateenabled()
+      ->set_value(false);
+  ASSERT_FALSE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
+      kDeviceExtendedAutoUpdateEnabled, base::Value(true),
+      device_policy_->payload());
+
+  EXPECT_TRUE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+}
+
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA1
+// and that the signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_username("username0");
 
@@ -351,10 +414,46 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
   EXPECT_TRUE(signed_policy);
 
   crypto::SignatureVerifier signature_verifier;
-  EXPECT_TRUE(signature_verifier.VerifyInit(
+  ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
       base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
       pub_key->data()));
+  signature_verifier.VerifyUpdate(
+      base::as_bytes(base::make_span(signed_policy->policy_data())));
+  EXPECT_TRUE(signature_verifier.VerifyFinal());
+}
+
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA256
+// and that the signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
+
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("username0");
+
+  base::test::TestFuture<
+      scoped_refptr<ownership::PublicKey>,
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>>
+      result_waiter;
+  EXPECT_TRUE(service_->AssembleAndSignPolicyAsync(
+      base::SequencedTaskRunner::GetCurrentDefault().get(), std::move(policy),
+      result_waiter.GetCallback()));
+
+  auto pub_key = result_waiter.Get<scoped_refptr<ownership::PublicKey>>();
+  const auto& signed_policy =
+      result_waiter
+          .Get<std::unique_ptr<enterprise_management::PolicyFetchResponse>>();
+  ASSERT_TRUE(signed_policy);
+
+  crypto::SignatureVerifier signature_verifier;
+  ASSERT_TRUE(signature_verifier.VerifyInit(
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      pub_key->data()));
+  signature_verifier.VerifyUpdate(
+      base::as_bytes(base::make_span(signed_policy->policy_data())));
+  EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
 // Test that OwnerSettingsServiceAsh correctly fails when it cannot sign
@@ -390,6 +489,7 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicyFailure) {
 // Testing list operations.
 
 TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
+  AddObserverForSetting(kFeatureFlags);
   EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
   EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
@@ -398,10 +498,76 @@ TEST_F(OwnerSettingsServiceAshTest, RemoveNonExistentElement) {
 
 // Append 1 item to an empty list.
 TEST_F(OwnerSettingsServiceAshTest, AppendList) {
+  AddObserverForSetting(kFeatureFlags);
   EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
   auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to a list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append the same item two times.
+TEST_F(OwnerSettingsServiceAshTest, AppendSameItemTwiceToList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2).Append(kListStr2);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Remove and append 1 item to an empty list.
+TEST_F(OwnerSettingsServiceAshTest, RemoveAndAppendList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append and remove the same item.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove1) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+}
+
+// Append and remove different items.
+TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove2) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr2)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr1);
+  EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
+}
+
+// Append two item to and remove the first from the list.
+TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
+  AddObserverForSetting(kFeatureFlags);
+  EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
+  EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
+  EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
+  FlushDeviceSettings();
+  auto expected_list = base::Value::List().Append(kListStr2);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 

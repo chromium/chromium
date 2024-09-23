@@ -1,0 +1,3 @@
+include_rules = [
+ "+components/user_manager/user_manager.h",
+]

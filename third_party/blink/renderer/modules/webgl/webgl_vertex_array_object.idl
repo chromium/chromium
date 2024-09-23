@@ -6,5 +6,5 @@
 
 [
     Exposed=(Window,Worker)
-] interface WebGLVertexArrayObject {
+] interface WebGLVertexArrayObject : WebGLObject {
 };

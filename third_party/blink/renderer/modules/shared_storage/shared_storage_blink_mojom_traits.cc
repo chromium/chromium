@@ -13,7 +13,7 @@ bool StructTraits<blink::mojom::SharedStorageKeyArgumentDataView, WTF::String>::
   // There is no need to convert `SharedStorageKeyArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
   // validate its length.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -25,7 +25,7 @@ bool StructTraits<
   // There is no need to convert `SharedStorageValueArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
   // validate its length.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

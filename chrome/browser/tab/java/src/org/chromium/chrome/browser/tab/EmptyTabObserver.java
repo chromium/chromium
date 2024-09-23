@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -133,6 +135,9 @@ public class EmptyTabObserver implements TabObserver {
     public void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive) {}
 
     @Override
+    public void onNavigationEntriesAppended(Tab tab) {}
+
+    @Override
     public void onNavigationEntriesDeleted(Tab tab) {}
 
     @Override
@@ -151,6 +156,16 @@ public class EmptyTabObserver implements TabObserver {
             int bottomControlsMinHeightOffsetY) {}
 
     @Override
+    public void onBrowserControlsConstraintsChanged(
+            Tab tab,
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            @BrowserControlsState int constraints) {}
+
+    @Override
+    public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {}
+
+    @Override
     public void onContentViewScrollingStateChanged(boolean scrolling) {}
 
     @Override
@@ -164,4 +179,10 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
+
+    @Override
+    public void onGestureBegin() {}
+
+    @Override
+    public void onGestureEnd() {}
 }

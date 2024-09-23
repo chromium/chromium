@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_params.h"
@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -131,7 +132,7 @@ void SubApps::OnConnectionError() {
   service_.reset();
 }
 
-ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
+ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     ScriptState* script_state,
     const HeapVector<std::pair<String, Member<SubAppsAddParams>>>&
         sub_apps_to_add,
@@ -140,31 +141,36 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
 
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+    return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
-  // TODO(crbug.com/1326843): Maybe we don't need user activation if
-  // the right policy is set.
-  if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
+  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
+  bool needsUserActivation =
+      frame->GetSettings()
+          ->GetRequireTransientActivationAndAuthorizationForSubAppsAPI();
+
+  // We don't need user activation if the right policy is set.
+  if (needsUserActivation &&
+      !LocalFrame::ConsumeTransientUserActivation(frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Unable to add sub-app. This API can only be called shortly after a "
         "user activation.");
-    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+    return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  // TODO(crbug.com/1326843): Maybe we don't need to limit add() if the
-  // right policy is set, we mainly want to avoid overwhelming the user with
-  // a permissions prompt that lists dozens of apps to install.
-  if (sub_apps_to_add.size() > kMaximumNumberOfSubappsPerAddCall) {
+  // We don't need to limit add() if the right policy is set, we mainly want to
+  // avoid overwhelming the user with a permissions prompt that lists dozens of
+  // apps to install.
+  if (needsUserActivation &&
+      sub_apps_to_add.size() > kMaximumNumberOfSubappsPerAddCall) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "Unable to add sub-apps. The maximum number of apps added per call "
         "is " +
             String::Number(kMaximumNumberOfSubappsPerAddCall) + ", but " +
             String::Number(sub_apps_to_add.size()) + " were provided.");
-    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+    return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   // Check that the arguments are root-relative paths.
@@ -174,18 +180,18 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
-      return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+      return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
     }
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLRecord<IDLString, V8SubAppsResultCode>>>(
+      ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>>(
       script_state);
   GetService()->Add(
       AddOptionsToMojo(std::move(sub_apps_to_add)),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolverTyped<
-                 IDLRecord<IDLString, V8SubAppsResultCode>>* resolver,
+          [](ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>*
+                 resolver,
              Vector<SubAppsServiceAddResultPtr> results_mojo) {
             for (const auto& add_result : results_mojo) {
               if (add_result->result_code ==
@@ -200,18 +206,18 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>> SubApps::list(
+ScriptPromise<IDLRecord<IDLString, SubAppsListResult>> SubApps::list(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>>();
+    return ScriptPromise<IDLRecord<IDLString, SubAppsListResult>>();
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLRecord<IDLString, SubAppsListResult>>>(
+      ScriptPromiseResolver<IDLRecord<IDLString, SubAppsListResult>>>(
       script_state);
   GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-      [](ScriptPromiseResolverTyped<IDLRecord<IDLString, SubAppsListResult>>*
+      [](ScriptPromiseResolver<IDLRecord<IDLString, SubAppsListResult>>*
              resolver,
          SubAppsServiceListResultPtr result) {
         if (result->result_code == SubAppsServiceResultCode::kSuccess) {
@@ -229,12 +235,12 @@ ScriptPromiseTyped<IDLRecord<IDLString, SubAppsListResult>> SubApps::list(
   return resolver->Promise();
 }
 
-ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::remove(
+ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::remove(
     ScriptState* script_state,
     const Vector<String>& manifest_id_paths,
     ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
-    return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+    return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
   // Check that the arguments are root-relative paths.
@@ -243,18 +249,18 @@ ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::remove(
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
-      return ScriptPromiseTyped<IDLRecord<IDLString, V8SubAppsResultCode>>();
+      return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
     }
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLRecord<IDLString, V8SubAppsResultCode>>>(
+      ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>>(
       script_state);
   GetService()->Remove(
       manifest_id_paths,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolverTyped<
-                 IDLRecord<IDLString, V8SubAppsResultCode>>* resolver,
+          [](ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>*
+                 resolver,
              Vector<SubAppsServiceRemoveResultPtr> results_mojo) {
             for (const auto& remove_result : results_mojo) {
               if (remove_result->result_code ==

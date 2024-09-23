@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer.h"
@@ -15,10 +16,12 @@
 
 namespace cc {
 
-// Generic scrollbar layer for cases not covered by PaintedOverlayScrollbarLayer
-// or SolidColorScrollbarLayer. This is not used for CSS-styled scrollbars. In
-// practice, this is used for overlay and non-overlay scrollbars on MacOS, as
-// well as non-overlay scrollbars on Win/Linux.
+// Generic scrollbar layer for cases not covered by NinPatchThumbScrollbarLayer
+// or SolidColorScrollbarLayer. This is not used for legacy webkit custom
+// scrollbars. In practice, this is used for
+// - overlay and non-overlay scrollbars on MacOS,
+// - non-overlay aura scrollbars on non-MacOS desktop platforms,
+// - overlay and non-overlay fluent scrollbars on non-MacOS desktop platforms.
 class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  public:
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -51,9 +54,10 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   ~PaintedScrollbarLayer() override;
 
   // For unit tests
-  UIResourceId track_resource_id() {
-    if (const auto* track_resource = track_resource_.Read(*this))
-      return track_resource->id();
+  UIResourceId track_and_buttons_resource_id() {
+    if (const auto* resource = track_and_buttons_resource_.Read(*this)) {
+      return resource->id();
+    }
     return 0;
   }
   UIResourceId thumb_resource_id() {
@@ -62,10 +66,12 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
     return 0;
   }
   bool UpdateInternalContentScale();
-  bool UpdateThumbAndTrackGeometry();
+  bool UpdateGeometry();
 
  private:
   gfx::Size LayerSizeToContentSize(const gfx::Size& layer_size) const;
+  bool UpdateThumbIfNeeded();
+  bool UpdateTrackAndButtonsIfNeeded();
 
   template <typename T>
   bool UpdateProperty(T value, T* prop) {
@@ -79,7 +85,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   UIResourceBitmap RasterizeScrollbarPart(
       const gfx::Size& size,
       const gfx::Size& requested_content_size,
-      ScrollbarPart part);
+      base::FunctionRef<void(PaintCanvas&)> paint_function);
 
   ProtectedSequenceForbidden<scoped_refptr<Scrollbar>> scrollbar_;
   ProtectedSequenceReadable<ElementId> scroll_element_id_;
@@ -87,7 +93,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   ProtectedSequenceReadable<float> internal_contents_scale_;
   ProtectedSequenceReadable<gfx::Size> internal_content_bounds_;
 
-  // Snapshot of properties taken in UpdateThumbAndTrackGeometry and used in
+  // Snapshot of properties taken in UpdateGeometry and used in
   // PushPropertiesTo.
   ProtectedSequenceReadable<gfx::Size> thumb_size_;
   ProtectedSequenceReadable<gfx::Rect> track_rect_;
@@ -96,11 +102,17 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   ProtectedSequenceReadable<float> painted_opacity_;
   ProtectedSequenceReadable<bool> has_thumb_;
   ProtectedSequenceReadable<bool> jump_on_track_click_;
+  ProtectedSequenceReadable<std::optional<SkColor4f>> thumb_color_;
+  ProtectedSequenceReadable<gfx::Rect> track_and_buttons_aperture_;
 
   const bool supports_drag_snap_back_;
   const bool is_overlay_;
+  const bool is_web_test_;
+  const bool uses_nine_patch_track_and_buttons_;
+  const bool uses_solid_color_thumb_;
 
-  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> track_resource_;
+  ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>>
+      track_and_buttons_resource_;
   ProtectedSequenceReadable<std::unique_ptr<ScopedUIResource>> thumb_resource_;
 };
 

@@ -28,7 +28,6 @@ class UsbConnectionTrackerFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedBaseFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
-  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CONNECTION_TRACKER_FACTORY_H_

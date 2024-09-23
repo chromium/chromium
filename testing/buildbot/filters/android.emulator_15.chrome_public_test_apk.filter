@@ -1,0 +1,33 @@
+# crbug.com/350394860
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testActionButtonBadRatio
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
+-org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCCT_AppIDNullShowDialog
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
+
+# crbug.com/326040498
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther
+
+# crbug.com/350395970
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabForUnknownApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabWithNewTabExtra
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
+
+# crbug.com/351025215
+-org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
+
+# crbug.com/355058571
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
+
+# crbug.com/356175432
+-org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInTab

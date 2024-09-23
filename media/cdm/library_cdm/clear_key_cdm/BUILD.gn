@@ -38,7 +38,7 @@ loadable_module("clear_key_cdm_bin") {
     "//url",
   ]
 
-  # TODO(crbug.com/169203): Convert this to use media::FFmpegAudioDecoder.
+  # TODO(crbug.com/40298390): Convert this to use media::FFmpegAudioDecoder.
   if (media_use_ffmpeg) {
     sources += [
       "ffmpeg_cdm_audio_decoder.cc",

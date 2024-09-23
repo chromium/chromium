@@ -13,8 +13,8 @@ ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
 ServerDeviceInfoMatchChecker::~ServerDeviceInfoMatchChecker() = default;
 
 void ServerDeviceInfoMatchChecker::OnCommit(
-    syncer::ModelTypeSet committed_model_types) {
-  if (committed_model_types.Has(syncer::DEVICE_INFO)) {
+    syncer::DataTypeSet committed_data_types) {
+  if (committed_data_types.Has(syncer::DEVICE_INFO)) {
     CheckExitCondition();
   }
 }
@@ -22,7 +22,7 @@ void ServerDeviceInfoMatchChecker::OnCommit(
 bool ServerDeviceInfoMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for server DeviceInfo to match: ";
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
 
   testing::StringMatchResultListener result_listener;
   const bool matches =

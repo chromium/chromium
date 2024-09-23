@@ -50,8 +50,7 @@ class CC_PAINT_EXPORT PaintRecord {
   int num_slow_paths_up_to_min_for_MSAA() const {
     return buffer_->num_slow_paths_up_to_min_for_MSAA();
   }
-  bool HasNonAAPaint() const { return buffer_->HasNonAAPaint(); }
-  bool HasDiscardableImages() const { return buffer_->HasDiscardableImages(); }
+  bool has_non_aa_paint() const { return buffer_->has_non_aa_paint(); }
   bool has_draw_ops() const { return buffer_->has_draw_ops(); }
   bool has_draw_text_ops() const { return buffer_->has_draw_text_ops(); }
   bool has_save_layer_ops() const { return buffer_->has_save_layer_ops(); }
@@ -60,6 +59,12 @@ class CC_PAINT_EXPORT PaintRecord {
   }
   bool has_effects_preventing_lcd_text_for_save_layer_alpha() const {
     return buffer_->has_effects_preventing_lcd_text_for_save_layer_alpha();
+  }
+  bool has_discardable_images() const {
+    return buffer_->has_discardable_images();
+  }
+  gfx::ContentColorUsage content_color_usage() const {
+    return buffer_->content_color_usage();
   }
   const PaintOp& GetFirstOp() const { return buffer_->GetFirstOp(); }
 
@@ -75,15 +80,14 @@ class CC_PAINT_EXPORT PaintRecord {
   sk_sp<SkPicture> ToSkPicture(
       const SkRect& bounds,
       ImageProvider* image_provider = nullptr,
-      PlaybackParams::CustomDataRasterCallback callback =
-          PlaybackParams::CustomDataRasterCallback(),
-      PlaybackParams::ConvertOpCallback convert_op_callback =
-          PlaybackParams::ConvertOpCallback()) const;
+      const PlaybackCallbacks& callbacks = PlaybackCallbacks()) const;
 
   // Replays the paint record into the canvas.
   void Playback(SkCanvas* canvas) const { buffer_->Playback(canvas); }
-  void Playback(SkCanvas* canvas, const PlaybackParams& params) const {
-    buffer_->Playback(canvas, params);
+  void Playback(SkCanvas* canvas,
+                const PlaybackParams& params,
+                bool local_ctm = true) const {
+    buffer_->Playback(canvas, params, local_ctm);
   }
 
   // STL-like container support:

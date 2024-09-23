@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(
     EscapeClosesDialogTest) {
   WaitForDialogToLoad();
   views::Widget::Widgets all_widgets = views::test::WidgetTest::GetAllWidgets();
-  ui::KeyEvent escape_key_event(ui::EventType::ET_KEY_PRESSED,
+  ui::KeyEvent escape_key_event(ui::EventType::kKeyPressed,
                                 ui::KeyboardCode::VKEY_ESCAPE,
                                 ui::DomCode::ESCAPE, 0);
   (*all_widgets.begin())->OnKeyEvent(&escape_key_event);

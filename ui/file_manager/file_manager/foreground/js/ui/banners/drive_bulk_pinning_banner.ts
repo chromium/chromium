@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
-import {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
+import type {XfBulkPinningDialog} from '../../../../widgets/xf_bulk_pinning_dialog.js';
 
 import {getTemplate} from './drive_bulk_pinning_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';

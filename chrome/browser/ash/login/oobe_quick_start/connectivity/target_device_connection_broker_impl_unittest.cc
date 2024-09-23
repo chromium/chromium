@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <array>
@@ -20,9 +25,11 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/nearby/fake_quick_start_connectivity_service.h"
-#include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
-#include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connection.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -165,8 +172,7 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
 
   void StartAdvertising(base::OnceCallback<void()> callback,
                         base::OnceCallback<void()> error_callback,
-                        const AdvertisingId& advertising_id,
-                        bool use_pin_authentication) override {
+                        const AdvertisingId& advertising_id) override {
     ++start_advertising_call_count_;
     if (should_succeed_on_start_) {
       std::move(callback).Run();
@@ -389,6 +395,8 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
   raw_ptr<FakeConnection::Factory> connection_factory_ = nullptr;
   base::HistogramTester histogram_tester_;
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
       std::make_unique<FakeQuickStartDecoder>();
@@ -647,7 +655,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_EQ(PowerLevel::kHighPower,
+  EXPECT_EQ(NearbyConnectionsManager::PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_TRUE(start_advertising_callback_success_);
@@ -759,12 +767,12 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_TRUE(connection());
 
   connection()->Close(
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError);
 
   ASSERT_TRUE(connection_lifecycle_listener_.connection_closed_);
   ASSERT_EQ(
       connection_lifecycle_listener_.connection_closed_reason_,
-      TargetDeviceConnectionBroker::ConnectionClosedReason::kConnectionLost);
+      TargetDeviceConnectionBroker::ConnectionClosedReason::kUnknownError);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
@@ -784,7 +792,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   // begin Nearby Connections advertising without ever Fast Pair advertising.
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_EQ(PowerLevel::kHighPower,
+  EXPECT_EQ(NearbyConnectionsManager::PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_TRUE(start_advertising_callback_success_);

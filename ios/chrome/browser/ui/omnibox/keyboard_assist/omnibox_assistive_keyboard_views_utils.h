@@ -9,8 +9,6 @@
 
 // The accessibility identifier for the Voice Search button.
 extern NSString* const kVoiceSearchInputAccessoryViewID;
-// Height and width for the paste button.
-extern CGFloat const kPasteButtonSize;
 extern CGFloat const kOmniboxAssistiveKeyboardSymbolPointSize;
 
 @protocol OmniboxAssistiveKeyboardDelegate;
@@ -24,10 +22,5 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     id<OmniboxAssistiveKeyboardDelegate> delegate,
     id<UIPasteConfigurationSupporting> pasteTarget,
     bool useLens);
-
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-UIPasteControl* OmniboxAssistiveKeyboardPasteControl(
-    id<UIPasteConfigurationSupporting> pasteTarget) API_AVAILABLE(ios(16));
-#endif  // defined(__IPHONE_16_0)
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_KEYBOARD_ASSIST_OMNIBOX_ASSISTIVE_KEYBOARD_VIEWS_UTILS_H_

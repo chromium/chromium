@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/global_routing_id.h"
 #include "printing/print_settings.h"
 
@@ -24,10 +25,6 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include <optional>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -136,7 +133,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // since Cancel() calls Stop(). See WARNING above for Stop().
   virtual void Cancel();
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Cleanup a printing job after content analysis denies printing.  Performs
   // any extra cleanup for this particular case that can't be safely done from
   // within Cancel().

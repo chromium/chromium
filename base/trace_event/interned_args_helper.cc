@@ -112,11 +112,10 @@ void InternedMapping::Add(perfetto::EventContext* ctx,
 }
 
 // static
-absl::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
+std::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
     perfetto::EventContext* ctx,
     uintptr_t address) {
   auto* index_for_field = GetOrCreateIndexForField(ctx->GetIncrementalState());
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ModuleCacheForTracing* module_cache = static_cast<ModuleCacheForTracing*>(
       ctx->GetTlsUserData(kModuleCacheForTracingKey));
   if (!module_cache) {
@@ -126,12 +125,8 @@ absl::optional<size_t> InternedUnsymbolizedSourceLocation::Get(
   }
   const base::ModuleCache::Module* module =
       module_cache->GetModuleCache().GetModuleForAddress(address);
-#else
-  const base::ModuleCache::Module* module =
-      index_for_field->module_cache_.GetModuleForAddress(address);
-#endif
   if (!module) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t iid;
   if (index_for_field->index_.LookUpOrInsert(&iid, address)) {

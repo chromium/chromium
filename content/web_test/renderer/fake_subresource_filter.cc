@@ -4,6 +4,8 @@
 
 #include "content/web_test/renderer/fake_subresource_filter.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -40,7 +42,7 @@ FakeSubresourceFilter::GetLoadPolicyForWebTransportConnect(
 blink::WebDocumentSubresourceFilter::LoadPolicy
 FakeSubresourceFilter::GetLoadPolicyImpl(const blink::WebURL& url) {
   GURL gurl(url);
-  base::StringPiece path(gurl.path_piece());
+  std::string_view path(gurl.path_piece());
 
   // Allows things not listed in |disallowed_path_suffixes_|.
   if (base::ranges::none_of(

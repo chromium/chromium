@@ -6,10 +6,14 @@
 
 #include <cstdint>
 #include <optional>
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
@@ -27,6 +31,8 @@ using ::testing::Invoke;
 namespace {
 const char kFakeDeviceIdForTesting[] = "0123";
 const char kFakeDeviceNameForTesting[] = "Fake Device";
+const char kFakeInternalDeviceIdForTesting[] = "4567";
+const char kFakeInternalDeviceNameForTesting[] = "Fake Internal Device";
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
@@ -35,15 +41,19 @@ const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeSha256ForTesting[] =
     "3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f";
-const uint64_t kFakeReportFlagForTesting = 1llu << 8;
+const uint64_t kFakeReportFlagForTesting = ash::kTrustedReportsReleaseFlag;
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
+const char kFlagsKey[] = "Flags";
 const char kVersionKey[] = "Version";
 const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
 const char kUriKey[] = "Uri";
 const char kChecksumKey[] = "Checksum";
 const char kTrustFlagsKey[] = "TrustFlags";
+const char kFakeRemoteIdForTesting[] = "test-remote";
+const base::File::Flags kReadOnly =
+    base::File::Flags(base::File::FLAG_OPEN | base::File::FLAG_READ);
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -62,7 +72,6 @@ class MockObserver : public ash::FwupdClient::Observer {
               OnUpdateListResponse,
               (const std::string& device_id, ash::FwupdUpdateList* updates),
               (override));
-  MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
   MOCK_METHOD(void,
               OnPropertiesChangedResponse,
               (ash::FwupdProperties * properties),
@@ -95,7 +104,7 @@ class FwupdClientTest : public testing::Test {
     EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
-    expected_properties_ = std::make_unique<FwupdProperties>(
+    expected_properties_ = std::make_unique<FwupdDbusProperties>(
         bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
         base::DoNothing());
 
@@ -177,6 +186,11 @@ class FwupdClientTest : public testing::Test {
     dict_writer.AppendVariantOfString(checksum);
     device_array_writer.CloseContainer(&dict_writer);
 
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
@@ -217,6 +231,110 @@ class FwupdClientTest : public testing::Test {
     device_array_writer.CloseContainer(&dict_writer);
     SetExpectedChecksum(kFakeSha256ForTesting);
 
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    response_array_writer.CloseContainer(&device_array_writer);
+    response_writer.CloseContainer(&response_array_writer);
+
+    return response;
+  }
+
+  std::unique_ptr<dbus::Response>
+  CreateOneUpdateResponseWithNoTrustedReports() {
+    auto response = dbus::Response::CreateEmpty();
+
+    dbus::MessageWriter response_writer(response.get());
+    dbus::MessageWriter response_array_writer(nullptr);
+    dbus::MessageWriter device_array_writer(nullptr);
+    dbus::MessageWriter dict_writer(nullptr);
+
+    // The response is an array of arrays of dictionaries. Each dictionary is
+    // one update description.
+    response_writer.OpenArray("a{sv}", &response_array_writer);
+    response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kDescriptionKey);
+    dict_writer.AppendVariantOfString(kFakeUpdateDescriptionForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+    SetExpectedDescription(kFakeUpdateDescriptionForTesting);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kVersionKey);
+    dict_writer.AppendVariantOfString(kFakeUpdateVersionForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kPriorityKey);
+    dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kUriKey);
+    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kChecksumKey);
+    dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+    SetExpectedChecksum(kFakeSha256ForTesting);
+
+    response_array_writer.CloseContainer(&device_array_writer);
+    response_writer.CloseContainer(&response_array_writer);
+
+    return response;
+  }
+
+  std::unique_ptr<dbus::Response> CreateCheckDevicesResponse() {
+    // Create a response simulation that contains two device descriptions.
+    auto response = dbus::Response::CreateEmpty();
+
+    dbus::MessageWriter response_writer(response.get());
+    dbus::MessageWriter response_array_writer(nullptr);
+    dbus::MessageWriter device_array_writer(nullptr);
+    dbus::MessageWriter dict_writer(nullptr);
+
+    // The response is an array of arrays of dictionaries. Each dictionary is
+    // one device description.
+    response_writer.OpenArray("a{sv}", &response_array_writer);
+
+    // Add external device.
+    response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kNameKey);
+    dict_writer.AppendVariantOfString(kFakeDeviceNameForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kIdKey);
+    dict_writer.AppendVariantOfString(kFakeDeviceIdForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    response_array_writer.CloseContainer(&device_array_writer);
+
+    // Add internal device.
+    response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kNameKey);
+    dict_writer.AppendVariantOfString(kFakeInternalDeviceNameForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kIdKey);
+    dict_writer.AppendVariantOfString(kFakeInternalDeviceIdForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kFlagsKey);
+    dict_writer.AppendVariantOfUint64(kInternalDeviceFlag);
+    device_array_writer.CloseContainer(&dict_writer);
+
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
@@ -224,27 +342,44 @@ class FwupdClientTest : public testing::Test {
   }
 
   void CheckDevices(FwupdDeviceList* devices) {
-    CHECK_EQ(kFakeDeviceNameForTesting, (*devices)[0].device_name);
-    CHECK_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
+    run_loop_.Quit();
+
+    FwupdDeviceList expected_devices = {
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting)};
+    EXPECT_EQ(*devices, expected_devices);
+  }
+
+  void CheckDevicesWithInternal(FwupdDeviceList* devices) {
+    run_loop_.Quit();
+
+    FwupdDeviceList expected_devices = {
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting),
+        FwupdDevice(kFakeInternalDeviceIdForTesting,
+                    kFakeInternalDeviceNameForTesting),
+    };
+    EXPECT_EQ(*devices, expected_devices);
   }
 
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
+    run_loop_.Quit();
+
+    EXPECT_EQ(expect_no_updates_, updates->empty());
+
     if (updates->empty()) {
-      EXPECT_TRUE(expect_no_updates_);
       return;
     }
 
-    CHECK_EQ(kFakeDeviceIdForTesting, device_id);
-    CHECK_EQ(kFakeUpdateVersionForTesting, (*updates)[0].version);
-    CHECK_EQ(expected_description_, (*updates)[0].description);
+    EXPECT_EQ(kFakeDeviceIdForTesting, device_id);
+    EXPECT_EQ(kFakeUpdateVersionForTesting, (*updates)[0].version);
+    EXPECT_EQ(expected_description_, (*updates)[0].description);
     // This value is returned by DBus as a uint32_t and is added to a dictionary
     // that doesn't support unsigned numbers. So it needs to be casted to int.
-    CHECK_EQ(expected_priority_, (*updates)[0].priority);
-    CHECK_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
-    CHECK_EQ(expected_checksum_, (*updates)[0].checksum);
+    EXPECT_EQ(expected_priority_, (*updates)[0].priority);
+    EXPECT_EQ(kFakeUpdateUriForTesting, (*updates)[0].filepath.value());
+    EXPECT_EQ(expected_checksum_, (*updates)[0].checksum);
   }
 
-  void CheckInstallState(bool success) { CHECK_EQ(install_success_, success); }
+  void CheckInstallState(bool success) { EXPECT_EQ(install_success_, success); }
 
   void SetInstallState(bool success) { install_success_ = success; }
 
@@ -263,14 +398,13 @@ class FwupdClientTest : public testing::Test {
   void SetExpectNoUpdates(bool no_updates) { expect_no_updates_ = no_updates; }
 
   void CheckPropertyChanged(FwupdProperties* properties) {
-    if (properties->percentage.is_valid()) {
-      CHECK_EQ(expected_properties_->percentage.value(),
-               properties->percentage.value());
+    if (properties->IsPercentageValid()) {
+      EXPECT_EQ(expected_properties_->GetPercentage(),
+                properties->GetPercentage());
     }
 
-    if (properties->status.is_valid()) {
-      CHECK_EQ(expected_properties_->status.value(),
-               properties->status.value());
+    if (properties->IsStatusValid()) {
+      EXPECT_EQ(expected_properties_->GetStatus(), properties->GetStatus());
     }
   }
 
@@ -341,6 +475,10 @@ class FwupdClientTest : public testing::Test {
   int expected_priority_ = kFakeUpdatePriorityForTesting;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ protected:
+  // This field must come after |task_environment_|.
+  base::RunLoop run_loop_;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -361,37 +499,35 @@ TEST_F(FwupdClientTest, RequestDevices) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
-  // Create a response simulation that contains one device description.
-  auto response = dbus::Response::CreateEmpty();
-
-  dbus::MessageWriter response_writer(response.get());
-  dbus::MessageWriter response_array_writer(nullptr);
-  dbus::MessageWriter device_array_writer(nullptr);
-  dbus::MessageWriter dict_writer(nullptr);
-
-  // The response is an array of arrays of dictionaries. Each dictionary is one
-  // device description.
-  response_writer.OpenArray("a{sv}", &response_array_writer);
-  response_array_writer.OpenArray("{sv}", &device_array_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kNameKey);
-  dict_writer.AppendVariantOfString(kFakeDeviceNameForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  device_array_writer.OpenDictEntry(&dict_writer);
-  dict_writer.AppendString(kIdKey);
-  dict_writer.AppendVariantOfString(kFakeDeviceIdForTesting);
-  device_array_writer.CloseContainer(&dict_writer);
-
-  response_array_writer.CloseContainer(&device_array_writer);
-  response_writer.CloseContainer(&response_array_writer);
-
-  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+  AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
 
   fwupd_client_->RequestDevices();
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
+}
+
+TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
+  // The observer will check that the device description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnDeviceListResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevicesWithInternal));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  fwupd_client_->RequestDevices();
+
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, RequestUpgrades) {
@@ -457,7 +593,7 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
@@ -506,6 +642,11 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
   device_array_writer.CloseContainer(&dict_writer);
   SetExpectedChecksum(kFakeSha256ForTesting);
 
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kTrustFlagsKey);
+  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
   response_array_writer.CloseContainer(&device_array_writer);
   response_writer.CloseContainer(&response_array_writer);
 
@@ -516,7 +657,7 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, TwoChecksumAvailable) {
@@ -540,7 +681,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailable) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
@@ -564,7 +705,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, MissingChecksum) {
@@ -585,7 +726,7 @@ TEST_F(FwupdClientTest, MissingChecksum) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, BadFormatChecksum) {
@@ -608,7 +749,7 @@ TEST_F(FwupdClientTest, BadFormatChecksum) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
@@ -629,18 +770,83 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
-TEST_F(FwupdClientTest, Install) {
+// Test that updates lacking the trusted report flag are excluded.
+TEST_F(FwupdClientTest, NoTrustedReports) {
   // The observer will check that the update description is parsed and passed
   // correctly.
   MockObserver observer;
-  EXPECT_CALL(observer, OnInstallResponse(_))
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
       .Times(1)
-      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckInstallState));
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);
 
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(
+      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+  SetExpectNoUpdates(/*expect_no_updates=*/true);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
+// Test that updates lacking the trusted report flag are allowed if the
+// UpstreamTrustedReportsFirmware is disabled.
+TEST_F(FwupdClientTest, UpstreamTrustedReportsFirmwareDisabled) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(
+      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+
+  DisableFeatureFlag(features::kUpstreamTrustedReportsFirmware);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
+// Test that updates lacking the trusted report flag are allowed if
+// Flex firmware updates are enabled.
+TEST_F(FwupdClientTest, NoTrustedReportsFlexEnabled) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(
+      CreateOneUpdateResponseWithNoTrustedReports(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  run_loop_.Run();
+}
+
+TEST_F(FwupdClientTest, Install) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
@@ -656,18 +862,30 @@ TEST_F(FwupdClientTest, Install) {
 
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
-  fwupd_client_->InstallUpdate(kFakeDeviceIdForTesting, base::ScopedFD(0),
-                               std::map<std::string, bool>());
+  // Create a file descriptor to pass to InstallUpdate. The file itself
+  // is unimportant.
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+  auto file_descriptor = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  fwupd_client_->InstallUpdate(
+      kFakeDeviceIdForTesting, std::move(file_descriptor),
+      std::map<std::string, bool>(),
+      base::BindLambdaForTesting([&](FwupdDbusResult result) {
+        EXPECT_EQ(result, FwupdDbusResult::kSuccess);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(FwupdClientTest, PropertiesChanged) {
   const uint32_t expected_percentage = 50u;
   const uint32_t expected_status = 1u;
 
-  expected_properties_->percentage.ReplaceValue(expected_percentage);
-  expected_properties_->status.ReplaceValue(expected_status);
+  expected_properties_->SetPercentage(expected_percentage);
+  expected_properties_->SetStatus(expected_status);
 
   MockObserver observer;
   EXPECT_CALL(observer, OnPropertiesChangedResponse(_))
@@ -675,8 +893,8 @@ TEST_F(FwupdClientTest, PropertiesChanged) {
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckPropertyChanged));
   fwupd_client_->AddObserver(&observer);
 
-  GetProperties()->percentage.ReplaceValue(expected_percentage);
-  GetProperties()->status.ReplaceValue(expected_status);
+  GetProperties()->SetPercentage(expected_percentage);
+  GetProperties()->SetStatus(expected_status);
 }
 
 TEST_F(FwupdClientTest, NoDescription) {
@@ -697,7 +915,7 @@ TEST_F(FwupdClientTest, NoDescription) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
@@ -726,8 +944,6 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
     return feature_flag_arguments;
   };
 
-  const uint64_t kRequestsFeatureFlag = 1llu << 4;
-
   EXPECT_CALL(
       *proxy_,
       DoCallMethodWithErrorResponse(
@@ -747,7 +963,7 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
 
 struct FwupdClientTest_DeviceRequestParam {
   std::string device_request_id_key;
-  int expected_index_of_request_id;
+  uint32_t expected_index_of_request_id;
 };
 
 class FwupdClientTest_DeviceRequest
@@ -815,28 +1031,49 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
   writer.CloseContainer(&sub_writer);
 
   MockObserver observer;
-  auto GetRequestId = [](FwupdRequest request) -> std::optional<uint32_t> {
-    return request.id;
-  };
-  auto GetRequestKind = [](FwupdRequest request) -> std::optional<uint32_t> {
-    return request.kind;
-  };
-  EXPECT_CALL(
-      observer,
-      OnDeviceRequestResponse(testing::AllOf(
-          // Ensure that the resulting observer is triggered with the
-          // correctly-parsed DeviceRequestId.
-          testing::ResultOf(
-              "Request ID", GetRequestId,
-              testing::Eq(GetParam().expected_index_of_request_id)),
-          testing::ResultOf("Request Kind", GetRequestKind, testing::Eq(2)))))
-      .Times(1);
+  EXPECT_CALL(observer, OnDeviceRequestResponse(_))
+      .WillOnce(Invoke([&](FwupdRequest req) {
+        EXPECT_EQ(req.id, GetParam().expected_index_of_request_id);
+        EXPECT_EQ(req.kind, 2u);
+        run_loop_.Quit();
+      }));
 
   fwupd_client_->AddObserver(&observer);
 
   EmitSignal(kFwupdDeviceRequestReceivedSignalName, signal);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
+}
+
+TEST_F(FwupdClientTest, UpdateMetadata) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  auto response = dbus::Response::CreateEmpty();
+
+  dbus::MessageWriter response_writer(response.get());
+
+  const bool update_success = true;
+  response_writer.AppendBool(update_success);
+
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  // Create two file descriptors to pass to UpdateMetadata. The file
+  // itself is unimportant.
+  base::ScopedTempFile temp_file;
+  ASSERT_TRUE(temp_file.Create());
+  auto data_file = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
+  auto sig_file = base::ScopedFD(
+      base::File(temp_file.path(), kReadOnly).TakePlatformFile());
+
+  fwupd_client_->UpdateMetadata(
+      kFakeRemoteIdForTesting, std::move(data_file), std::move(sig_file),
+      base::BindLambdaForTesting([&](FwupdDbusResult result) {
+        EXPECT_EQ(result, FwupdDbusResult::kSuccess);
+        run_loop_.Quit();
+      }));
+  run_loop_.Run();
 }
 
 }  // namespace ash

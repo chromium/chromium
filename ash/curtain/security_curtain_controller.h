@@ -15,14 +15,7 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace ash::curtain {
-
-enum class FilterResult { kKeepEvent, kSuppressEvent };
-using EventFilter = base::RepeatingCallback<FilterResult(const ui::Event&)>;
 
 using ViewFactory = base::RepeatingCallback<std::unique_ptr<views::View>()>;
 
@@ -38,17 +31,13 @@ class ASH_EXPORT SecurityCurtainController {
   // tweak the behavior of the security curtain.
   struct InitParams {
     InitParams();
-    InitParams(EventFilter event_filter, ViewFactory curtain_factory);
+    explicit InitParams(ViewFactory curtain_factory);
 
     InitParams(const InitParams&);
     InitParams& operator=(const InitParams&);
     InitParams(InitParams&&);
     InitParams& operator=(InitParams&&);
     ~InitParams();
-
-    // Filter to specify which input `ui::Event`s should or should not be
-    // suppressed. If unspecified all input events will be suppressed.
-    EventFilter event_filter;
 
     // Factory that creates the view that will be shown as the curtain overlay.
     // Will be invoked multiple times, once for each monitor.
@@ -60,6 +49,10 @@ class ASH_EXPORT SecurityCurtainController {
 
     bool mute_audio_input = true;
     bool disable_camera_access = true;
+
+    // Disables all input devices (mouse, keyboard, touch, ...) while the
+    // security curtain is showing.
+    bool disable_input_devices = true;
   };
 
   virtual ~SecurityCurtainController() = default;

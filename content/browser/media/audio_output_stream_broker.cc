@@ -175,11 +175,11 @@ void AudioOutputStreamBroker::ObserverBindingLost(
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "ObserverBindingLost", this,
                                       "reset reason", reason);
   if (reason > static_cast<uint32_t>(DisconnectReason::kMaxValue))
-    NOTREACHED() << "Invalid reason: " << reason;
+    NOTREACHED_IN_MIGRATION() << "Invalid reason: " << reason;
 
   DisconnectReason reason_enum = static_cast<DisconnectReason>(reason);
 
-  // TODO(https://crbug.com/787806): Don't propagate errors if we can retry
+  // TODO(crbug.com/40551225): Don't propagate errors if we can retry
   // instead.
   client_.ResetWithReason(
       static_cast<uint32_t>(DisconnectReason::kPlatformError), std::string());

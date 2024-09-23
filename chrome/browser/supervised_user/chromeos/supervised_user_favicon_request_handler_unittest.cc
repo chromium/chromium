@@ -46,11 +46,11 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
   // the cache. One before the network request where the icon is not yet in the
   // cache and one afterwards, when the icon should be present in the cache.
   EXPECT_CALL(large_icon_service,
-              GetLargeIconImageOrFallbackStyleForPageUrl(page_url, _, _, _, _))
+              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _))
       .Times(2);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _));
+                  page_url, _, _, _));
   // Confirm that the icon was retrieved from the cache.
   EXPECT_CALL(large_icon_service,
               TouchIconFromGoogleServer(large_icon_service.kIconUrl));
@@ -61,8 +61,8 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
                      base::Unretained(this), &run_loop));
   run_loop.Run();
 
-  EXPECT_EQ(handler.GetFaviconOrFallback().bitmap(),
-            large_icon_service.favicon().bitmap());
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(handler.GetFaviconOrFallback(),
+                                         large_icon_service.favicon()));
   histogram_tester.ExpectUniqueSample(
       SupervisedUserFaviconRequestHandler::
           GetFaviconAvailabilityHistogramForTesting(),
@@ -79,11 +79,11 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
   // Confirm that the icon was retrieved from the cache on the first attempt
   // and no network request was made.
   EXPECT_CALL(large_icon_service,
-              GetLargeIconImageOrFallbackStyleForPageUrl(page_url, _, _, _, _))
+              GetLargeIconRawBitmapForPageUrl(page_url, _, _, _, _, _))
       .Times(1);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _))
+                  page_url, _, _, _))
       .Times(0);
   // Confirm that the icon was retrieved from the cache.
   EXPECT_CALL(large_icon_service,
@@ -95,8 +95,8 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
                      base::Unretained(this), &run_loop));
   run_loop.Run();
 
-  EXPECT_EQ(handler.GetFaviconOrFallback().bitmap(),
-            large_icon_service.favicon().bitmap());
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(handler.GetFaviconOrFallback(),
+                                         large_icon_service.favicon()));
   histogram_tester.ExpectUniqueSample(
       SupervisedUserFaviconRequestHandler::
           GetFaviconAvailabilityHistogramForTesting(),
@@ -117,7 +117,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetFallbackFavicon) {
       .Times(0);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _))
+                  page_url, _, _, _))
       .Times(0);
   EXPECT_CALL(large_icon_service,
               TouchIconFromGoogleServer(large_icon_service.kIconUrl))

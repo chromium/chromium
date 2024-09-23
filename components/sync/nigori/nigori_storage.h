@@ -7,7 +7,9 @@
 
 #include <optional>
 
-#include "components/sync/protocol/nigori_local_data.pb.h"
+namespace sync_pb {
+class NigoriLocalData;
+}  // namespace sync_pb
 
 namespace syncer {
 

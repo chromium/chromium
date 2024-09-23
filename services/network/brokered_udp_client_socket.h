@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   BrokeredUdpClientSocket& operator=(const BrokeredUdpClientSocket&) = delete;
 
   // DatagramClientSocket implementation.
-  // TODO(https://crbug.com/1444811): Remove Connect, ConnectUsingNetwork, and
+  // TODO(crbug.com/40267879): Remove Connect, ConnectUsingNetwork, and
   // ConnectUsingDefaultNetwork once consumers have been migrated to only call
   // Connect*Async methods.
   int Connect(const net::IPEndPoint& address) override;

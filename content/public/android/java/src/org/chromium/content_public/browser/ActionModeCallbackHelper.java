@@ -78,8 +78,8 @@ public abstract class ActionModeCallbackHelper {
     ;
 
     /**
-     * @return {@code true} if action mode is started and in proper working state.
-     *     if null, action mode was not started or is in finished, destroyed state.
+     * @return {@code true} if selection action mode is started and in proper working state. if
+     *     null, it was not started or is in finished, destroyed state.
      */
     public abstract boolean isActionModeValid();
 

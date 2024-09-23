@@ -24,15 +24,25 @@ class EntityChange {
       EntityData data);
   static std::unique_ptr<EntityChange> CreateDelete(
       const std::string& storage_key);
+  static std::unique_ptr<EntityChange> CreateDeletedCollaborationMembership(
+      const std::string& storage_key);
 
   EntityChange(const EntityChange&) = delete;
   EntityChange& operator=(const EntityChange&) = delete;
 
   virtual ~EntityChange();
 
-  std::string storage_key() const { return storage_key_; }
+  const std::string& storage_key() const { return storage_key_; }
   ChangeType type() const { return type_; }
   const EntityData& data() const { return data_; }
+
+  // Returns whether the `ACTION_DELETE` change is created due to deleted
+  // membership in a collaboration. Only relevant for data types using
+  // collaborations and may only be true for `ACTION_DELETE` (meaningless
+  // otherwise).
+  bool is_deleted_collaboration_membership() const {
+    return is_deleted_collaboration_membership_;
+  }
 
  private:
   EntityChange(const std::string& storage_key,
@@ -41,6 +51,7 @@ class EntityChange {
 
   std::string storage_key_;
   ChangeType type_;
+  bool is_deleted_collaboration_membership_ = false;
   EntityData data_;
 };
 

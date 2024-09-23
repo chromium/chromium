@@ -37,12 +37,13 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void OpenDiagnostics() override;
   void OpenGetHelp() override;
   void RestoreTab() override;
-  void ShowKeyboardShortcutViewer() override;
   void ShowShortcutCustomizationApp() override;
   void ShowTaskManager() override;
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
   void OpenPersonalizationHub() override;
+  void OpenCaptivePortalSignin(const GURL& url) override;
+  void OpenFile(const base::FilePath& file_path) override;
 };
 
 // NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.

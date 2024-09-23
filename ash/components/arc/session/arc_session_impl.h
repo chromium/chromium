@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/arc_session.h"
+#include "ash/components/arc/session/mojo_invitation_manager.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -135,7 +136,8 @@ class ArcSessionImpl : public ArcSession,
    public:
     // Used for ConnectMojo completion callback.
     using ConnectMojoCallback =
-        base::OnceCallback<void(std::unique_ptr<mojom::ArcBridgeHost>)>;
+        base::OnceCallback<void(std::unique_ptr<mojom::ArcBridgeHost>,
+                                std::unique_ptr<MojoInvitationManager>)>;
     using CreateSocketCallback = base::OnceCallback<void(base::ScopedFD)>;
 
     virtual ~Delegate() = default;
@@ -225,7 +227,9 @@ class ArcSessionImpl : public ArcSession,
 
   // Called when Mojo connection is established (or canceled during the
   // connect.)
-  void OnMojoConnected(std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host);
+  void OnMojoConnected(
+      std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host,
+      std::unique_ptr<MojoInvitationManager> invitation_manager);
 
   // Request to stop ARC instance via DBus. Also backs up the ARC
   // bug report if |should_backup_log| is set to true.
@@ -284,6 +288,23 @@ class ArcSessionImpl : public ArcSession,
 
   // Mojo endpoint.
   std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host_;
+
+  // Handles sending a Mojo invitation to ARCVM.
+  //
+  // If required (i.e. if ipcz is enabled in Ash Chrome), it also launches
+  // an instance of Mojo Proxy to act as a translation layer between ipcz
+  // and Mojo legacy protocol.
+  //
+  // It is instantiated in a background thread by `ArcSessionImpl::Delegate` as
+  // part of the connection procedure (specifically, in `ConnectMojoInternal`).
+  //
+  // Once the connection is established, the delegate callback
+  // `ArcSessionImpl::OnMojoConnected` receives the instance and assigns it to
+  // this member, conceptually binding it to the UI/main thread.
+  //
+  // The instance is destroyed on ARC's shutdown (`OnStopped`).
+  // On destruction, it posts a task to collect the Mojo Proxy process, if any.
+  std::unique_ptr<MojoInvitationManager> mojo_invitation_manager_;
 
   int lcd_density_ = 0;
   const raw_ptr<ash::SchedulerConfigurationManagerBase>

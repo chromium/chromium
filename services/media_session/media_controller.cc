@@ -4,17 +4,27 @@
 
 #include "services/media_session/media_controller.h"
 
+#include <optional>
 #include <set>
+#include <variant>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
+#include "services/media_session/public/cpp/chapter_information.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
+#include "services/media_session/public/mojom/media_session.mojom-shared.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace media_session {
+
+namespace {
+using ChapterMap = base::flat_map<int, std::vector<MediaImage>>;
+using ImagesVariant = std::variant<std::vector<MediaImage>, ChapterMap>;
+}  // namespace
 
 // ImageObserverHolder will hold each mojo image observer with the image
 // size and type preferences it specified when the observer was added.
@@ -26,7 +36,7 @@ class MediaController::ImageObserverHolder {
       int minimum_size_px,
       int desired_size_px,
       mojo::PendingRemote<mojom::MediaControllerImageObserver> observer,
-      const std::vector<MediaImage>& current_images)
+      const ImagesVariant& current_images)
       : manager_(minimum_size_px, desired_size_px),
         owner_(owner),
         type_(type),
@@ -39,7 +49,17 @@ class MediaController::ImageObserverHolder {
         &MediaController::CleanupImageObservers, base::Unretained(owner_)));
 
     // Flush the observer with the latest state.
-    ImagesChanged(current_images);
+    if (type == mojom::MediaSessionImageType::kChapter) {
+      CHECK(std::holds_alternative<ChapterMap>(current_images));
+      UpdateChapterSize(std::get<ChapterMap>(current_images));
+      for (auto& chapter_images : std::get<ChapterMap>(current_images)) {
+        ImagesChanged(chapter_images.second, chapter_images.first);
+      }
+    } else {
+      CHECK(std::holds_alternative<std::vector<MediaImage>>(current_images));
+      ImagesChanged(std::get<std::vector<MediaImage>>(current_images),
+                    std::nullopt);
+    }
   }
 
   ImageObserverHolder(const ImageObserverHolder&) = delete;
@@ -51,13 +71,18 @@ class MediaController::ImageObserverHolder {
 
   mojom::MediaSessionImageType type() const { return type_; }
 
-  void ImagesChanged(const std::vector<MediaImage>& images) {
+  void UpdateChapterSize(const ChapterMap& images) {
+    chapter_size_ = static_cast<int>(images.size());
+  }
+
+  void ImagesChanged(const std::vector<MediaImage>& images,
+                     const std::optional<int>& chapter_index) {
     std::optional<MediaImage> image = manager_.SelectImage(images);
 
     // If we could not find an image then we should call with an empty image to
     // flush the observer.
     if (!image) {
-      ClearImage();
+      ClearImage(chapter_index);
       return;
     }
 
@@ -65,21 +90,53 @@ class MediaController::ImageObserverHolder {
     owner_->session_->GetMediaImageBitmap(
         *image, minimum_size_px_, desired_size_px_,
         base::BindOnce(&MediaController::ImageObserverHolder::OnImage,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), chapter_index));
   }
 
-  void ClearImage() {
+  void ClearImage(const std::optional<int>& chapter_index) {
     // If the last thing we sent was a ClearImage, don't send another one. If we
     // haven't sent anything before, then send a ClearImage.
-    if (!did_send_image_last_.value_or(true))
+    auto index = chapter_index.value_or(-1);
+    auto it = did_send_image_last_.find(index);
+    if (it != did_send_image_last_.end() && !it->second) {
       return;
-    did_send_image_last_ = false;
+    }
+    did_send_image_last_[index] = false;
+    if (type_ == mojom::MediaSessionImageType::kChapter) {
+      observer_->MediaControllerChapterImageChanged(chapter_index.value(),
+                                                    SkBitmap());
+      return;
+    }
     observer_->MediaControllerImageChanged(type_, SkBitmap());
   }
 
+  void ClearAllChapterImage() {
+    if (type_ != mojom::MediaSessionImageType::kChapter) {
+      return;
+    }
+
+    for (int index = 0; index < chapter_size_; index++) {
+      // If the last thing we sent was a ClearImage for this index, don't send
+      // another one. If we haven't sent anything before, then send a
+      // ClearImage.
+      auto it = did_send_image_last_.find(index);
+      if (it != did_send_image_last_.end() && !it->second) {
+        continue;
+      }
+      did_send_image_last_[index] = false;
+      observer_->MediaControllerChapterImageChanged(index, SkBitmap());
+    }
+  }
+
  private:
-  void OnImage(const SkBitmap& image) {
-    did_send_image_last_ = true;
+  void OnImage(const std::optional<int>& chapter_index, const SkBitmap& image) {
+    auto index = chapter_index.value_or(-1);
+    did_send_image_last_[index] = true;
+    if (type_ == mojom::MediaSessionImageType::kChapter) {
+      observer_->MediaControllerChapterImageChanged(chapter_index.value(),
+                                                    image);
+      return;
+    }
     observer_->MediaControllerImageChanged(type_, image);
   }
 
@@ -95,9 +152,14 @@ class MediaController::ImageObserverHolder {
 
   mojo::Remote<mojom::MediaControllerImageObserver> observer_;
 
-  // Whether the last information sent to the observer was an image.
-  // Empty if we have not yet sent anything.
-  std::optional<bool> did_send_image_last_;
+  // Whether the last information sent to the observer was an image for the
+  // chapter index.  If the image type is not chapter, it will use the default
+  // index -1. Empty at the index if we have not yet sent anything.
+  base::flat_map<int, bool> did_send_image_last_;
+
+  // The size of the chapter list. This will be used to clear all the chapter
+  // images in this holder.
+  int chapter_size_ = 0;
 
   base::WeakPtrFactory<ImageObserverHolder> weak_ptr_factory_{this};
 };
@@ -183,6 +245,38 @@ void MediaController::MediaSessionMetadataChanged(
     observer->MediaSessionMetadataChanged(metadata);
 
   session_metadata_ = metadata;
+
+  if (!metadata.has_value()) {
+    return;
+  }
+
+  // Removes the chapter image metadata from the last media and sets the new
+  // ones.
+  chapter_images_.clear();
+  for (int index = 0;
+       index < static_cast<int>(metadata.value().chapters.size()); index++) {
+    chapter_images_[index] = metadata.value().chapters[index].artwork();
+  }
+
+  for (auto& holder : image_observers_) {
+    if (holder->type() != mojom::MediaSessionImageType::kChapter) {
+      continue;
+    }
+
+    holder->UpdateChapterSize(chapter_images_);
+    for (int index = 0;
+         index < static_cast<int>(metadata.value().chapters.size()); index++) {
+      auto it = chapter_images_.find(index);
+
+      if (it == chapter_images_.end()) {
+        // No image of this chapter is available from the session so we should
+        // clear any image the observers might have.
+        holder->ClearImage(index);
+      } else {
+        holder->ImagesChanged(it->second, index);
+      }
+    }
+  }
 }
 
 void MediaController::MediaSessionActionsChanged(
@@ -223,14 +317,17 @@ void MediaController::MediaSessionImagesChanged(
   session_images_ = images;
 
   for (auto& holder : image_observers_) {
+    if (holder->type() == mojom::MediaSessionImageType::kChapter) {
+      continue;
+    }
     auto it = session_images_.find(holder->type());
 
     if (it == session_images_.end()) {
-      // No image of this type is available from the session so we should clear
-      // any image the observers might have.
-      holder->ClearImage();
+      // No image is available from the session so we should clear any image the
+      // observers might have.
+      holder->ClearImage(std::nullopt);
     } else if (base::Contains(types_changed, holder->type())) {
-      holder->ImagesChanged(it->second);
+      holder->ImagesChanged(it->second, std::nullopt);
     }
   }
 }
@@ -271,11 +368,20 @@ void MediaController::ObserveImages(
     mojo::PendingRemote<mojom::MediaControllerImageObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (type == mojom::MediaSessionImageType::kChapter) {
+    image_observers_.push_back(std::make_unique<ImageObserverHolder>(
+        this, type, minimum_size_px, desired_size_px, std::move(observer),
+        chapter_images_));
+
+    return;
+  }
   auto it = session_images_.find(type);
+  auto images =
+      it == session_images_.end() ? std::vector<MediaImage>() : it->second;
 
   image_observers_.push_back(std::make_unique<ImageObserverHolder>(
       this, type, minimum_size_px, desired_size_px, std::move(observer),
-      it == session_images_.end() ? std::vector<MediaImage>() : it->second));
+      images));
 }
 
 void MediaController::SeekTo(base::TimeDelta seek_time) {
@@ -402,8 +508,13 @@ void MediaController::ClearMediaSession() {
     observer->MediaSessionPositionChanged(std::nullopt);
   }
 
-  for (auto& holder : image_observers_)
-    holder->ClearImage();
+  for (auto& holder : image_observers_) {
+    if (holder->type() == mojom::MediaSessionImageType::kChapter) {
+      holder->ClearAllChapterImage();
+    } else {
+      holder->ClearImage(std::nullopt);
+    }
+  }
 }
 
 void MediaController::BindToInterface(
@@ -417,7 +528,7 @@ void MediaController::FlushForTesting() {
 }
 
 void MediaController::CleanupImageObservers() {
-  base::EraseIf(image_observers_,
+  std::erase_if(image_observers_,
                 [](const auto& holder) { return !holder->is_valid(); });
 }
 

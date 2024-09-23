@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 
 namespace web_app {
@@ -25,8 +26,8 @@ IsolatedWebAppInstallerModel::ConfirmInstallationDialog::
     ~ConfirmInstallationDialog() = default;
 
 IsolatedWebAppInstallerModel::IsolatedWebAppInstallerModel(
-    const base::FilePath& bundle_path)
-    : bundle_path_(bundle_path), step_(Step::kNone) {}
+    const IwaSourceBundleWithMode& source)
+    : source_(source), step_(Step::kNone) {}
 
 void IsolatedWebAppInstallerModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -41,9 +42,7 @@ IsolatedWebAppInstallerModel::~IsolatedWebAppInstallerModel() = default;
 void IsolatedWebAppInstallerModel::SetStep(Step step) {
   step_ = step;
 
-  for (Observer& observer : observers_) {
-    observer.OnStepChanged();
-  }
+  observers_.Notify(&Observer::OnStepChanged);
 }
 
 void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
@@ -54,9 +53,7 @@ void IsolatedWebAppInstallerModel::SetSignedWebBundleMetadata(
 void IsolatedWebAppInstallerModel::SetDialog(std::optional<Dialog> dialog) {
   dialog_ = dialog;
 
-  for (Observer& observer : observers_) {
-    observer.OnChildDialogChanged();
-  }
+  observers_.Notify(&Observer::OnChildDialogChanged);
 }
 
 }  // namespace web_app

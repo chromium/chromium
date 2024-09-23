@@ -4,13 +4,15 @@
 
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -20,14 +22,16 @@ namespace password_manager {
 
 namespace {
 
+using affiliations::FacetBrandingInfo;
+using affiliations::FacetURI;
+using affiliations::GroupedFacets;
+
 constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
 constexpr char kFallbackIconQueryParams[] =
     "client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,URL,"
     "TOP_DOMAIN&size=32&url=";
 constexpr char kDefaultAndroidIcon[] =
     "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
-
-
 
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential,
@@ -40,8 +44,8 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     branding_info.icon_url = GURL(kDefaultAndroidIcon);
     return branding_info;
   }
-  std::string group_name =
-      GetExtendedTopLevelDomain(credential.GetURL(), psl_extensions);
+  std::string group_name = affiliations::GetExtendedTopLevelDomain(
+      credential.GetURL(), psl_extensions);
   if (group_name.empty()) {
     group_name =
         credential.GetURL().is_valid()
@@ -52,9 +56,10 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
   branding_info.name = group_name;
 
   GURL::Replacements replacements;
-  std::string query = kFallbackIconQueryParams +
-                      base::EscapeQueryParamValue(credential.GetURL().spec(),
-                                                  /*use_plus=*/false);
+  std::string query =
+      kFallbackIconQueryParams +
+      base::EscapeQueryParamValue(credential.GetURL().possibly_invalid_spec(),
+                                  /*use_plus=*/false);
   replacements.SetQueryStr(query);
   branding_info.icon_url =
       GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);
@@ -71,7 +76,7 @@ std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
            base::UTF16ToUTF8(credential.password);
 
     key += kSortKeyPartsSeparator;
-    if (!credential.federation_origin.opaque()) {
+    if (credential.federation_origin.IsValid()) {
       key += credential.federation_origin.host();
     } else {
       key += kSortKeyPartsSeparator;
@@ -84,12 +89,54 @@ std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
   return key;
 }
 
+// Presents a sorted view of a span of `PasskeyCredential`s, ordered by
+// increasing user name.
+class SortedPasskeysView {
+ public:
+  class iterator {
+   public:
+    iterator(size_t i, const SortedPasskeysView* sorted)
+        : i_(i), sorted_(sorted) {}
+    void operator++() { i_++; }
+    bool operator!=(const iterator& other) const {
+      return i_ != other.i_ || sorted_ != other.sorted_;
+    }
+    const PasskeyCredential& operator*() {
+      return sorted_->passkeys_[sorted_->sorted_indexes_[i_]];
+    }
+
+   private:
+    size_t i_ = 0;
+    const raw_ptr<const SortedPasskeysView> sorted_;
+  };
+
+  explicit SortedPasskeysView(
+      const base::span<const PasskeyCredential>& passkeys)
+      : passkeys_(passkeys) {
+    sorted_indexes_.reserve(passkeys_.size());
+    for (size_t i = 0; i < passkeys_.size(); i++) {
+      sorted_indexes_.push_back(i);
+    }
+    base::ranges::sort(sorted_indexes_, [this](size_t a, size_t b) {
+      return passkeys_[a].username() < passkeys_[b].username();
+    });
+  }
+
+  iterator begin() const { return iterator(0, this); }
+  iterator end() const { return iterator(passkeys_.size(), this); }
+
+ private:
+  const base::span<const PasskeyCredential> passkeys_;
+  std::vector<size_t> sorted_indexes_;
+};
+
 }  // namespace
 
 PasswordsGrouper::Credentials::Credentials() = default;
 PasswordsGrouper::Credentials::~Credentials() = default;
 
-PasswordsGrouper::PasswordsGrouper(AffiliationService* affiliation_service)
+PasswordsGrouper::PasswordsGrouper(
+    affiliations::AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {
   DCHECK(affiliation_service_);
   affiliation_service_->GetPSLExtensions(
@@ -118,16 +165,18 @@ void PasswordsGrouper::GroupCredentials(std::vector<PasswordForm> forms,
         FacetURI::FromPotentiallyInvalidSpec(GetFacetRepresentation(passkey)));
   }
 
-  AffiliationService::GroupsCallback group_callback = base::BindOnce(
-      &PasswordsGrouper::GroupPasswordsImpl, weak_ptr_factory_.GetWeakPtr(),
-      std::move(forms), std::move(passkeys));
+  affiliations::AffiliationService::GroupsCallback group_callback =
+      base::BindOnce(&PasswordsGrouper::GroupPasswordsImpl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(forms),
+                     std::move(passkeys));
 
   // Before grouping passwords merge related groups. After grouping is finished
   // invoke |callback|.
   affiliation_service_->GetGroupingInfo(
-      std::move(facets), base::BindOnce(&MergeRelatedGroups, psl_extensions_)
-                             .Then(std::move(group_callback))
-                             .Then(std::move(callback)));
+      std::move(facets),
+      base::BindOnce(&affiliations::MergeRelatedGroups, psl_extensions_)
+          .Then(std::move(group_callback))
+          .Then(std::move(callback)));
 }
 
 std::vector<AffiliatedGroup>
@@ -140,7 +189,7 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
     for (auto const& [username_password_key, forms] : affiliated_group.forms) {
       credentials.emplace_back(forms);
     }
-    for (auto const& passkey : affiliated_group.passkeys) {
+    for (auto const& passkey : SortedPasskeysView(affiliated_group.passkeys)) {
       credentials.emplace_back(passkey);
     }
 
@@ -161,10 +210,10 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   // Sort affiliated groups.
   std::sort(affiliated_groups.begin(), affiliated_groups.end(),
             [](AffiliatedGroup& lhs, AffiliatedGroup& rhs) {
-              base::StringPiece lhs_name(lhs.GetDisplayName()),
+              std::string_view lhs_name(lhs.GetDisplayName()),
                   rhs_name(rhs.GetDisplayName());
               size_t separator_length =
-                  base::StringPiece(url::kStandardSchemeSeparator).size();
+                  std::string_view(url::kStandardSchemeSeparator).size();
 
               size_t position = lhs_name.find(url::kStandardSchemeSeparator);
               if (position != std::string::npos) {
@@ -190,7 +239,8 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
          affiliated_credentials.forms) {
       credentials.emplace_back(forms);
     }
-    for (const auto& passkey : affiliated_credentials.passkeys) {
+    for (const auto& passkey :
+         SortedPasskeysView(affiliated_credentials.passkeys)) {
       credentials.emplace_back(passkey);
     }
   }
@@ -330,7 +380,7 @@ PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
 
   for (const GroupedFacets& grouped_facets : groups) {
     GroupId unique_group_id(group_id_int);
-    for (const Facet& facet : grouped_facets.facets) {
+    for (const affiliations::Facet& facet : grouped_facets.facets) {
       std::string facet_uri_str = facet.uri.potentially_invalid_spec();
       map_facet_to_group_id[facet_uri_str] = unique_group_id;
 

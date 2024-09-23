@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "android_channel": "stable",
+    "chrome_pgo_phase": 0,
     "debuggable_apks": false,
     "ffmpeg_branding": "Chrome",
     "is_high_end_android_secondary_toolchain": false,

@@ -32,21 +32,39 @@ message VaultParameters {
   bytes vault_handle = 4;
 }
 
-message Vault {
-  VaultParameters vault_parameters = 2;
-  bytes vault_metadata = 3;
-  bytes recovery_key = 4;
-  repeated ApplicationKey application_keys = 5;
+message VaultMetadata {
+  // Lock screen type.
+  enum LskfType {
+    LSKF_TYPE_UNSPECIFIED = 0;
+    PIN = 1;
+    PASSWORD = 2;
+  }
+  LskfType lskf_type = 1;
+
+  enum HashType {
+    HASH_TYPE_UNSPECIFIED = 0;
+    SCRYPT = 3;
+    PBKDF2_AES256_1234 = 4;
+    SHA256_TOP_HALF = 5;
+  }
+  HashType hash_type = 4;
+  bytes hash_salt = 5;
+  int32 hash_difficulty = 6;
+  bytes cert_path = 7;
 }
 
 message ChromeOsMetadata {
   bytes device_id = 1;
-  string chrome_os_version = 2;
 }
 
-message UpdateVaultRequest {
-  Vault vault = 3;
-  oneof os_metadata {
-    ChromeOsMetadata chrome_os_metadata = 7;
+message Vault {
+  VaultParameters vault_parameters = 2;
+  // This contains a serialized VaultMetadata proto.
+  bytes vault_metadata = 3;
+  bytes recovery_key = 4;
+  repeated ApplicationKey application_keys = 5;
+
+  oneof platform_metadata {
+    ChromeOsMetadata chrome_os_metadata = 11;
   }
 }

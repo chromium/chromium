@@ -25,6 +25,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -187,7 +188,7 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
     case ui::NativeTheme::kPressed:
       return Button::STATE_PRESSED;
     case ui::NativeTheme::kNumStates:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return Button::STATE_NORMAL;
 }
@@ -199,8 +200,9 @@ void Button::SetTooltipText(const std::u16string& tooltip_text) {
     return;
   }
 
-  if (GetAccessibleName().empty() || GetAccessibleName() == tooltip_text_) {
-    SetAccessibleName(tooltip_text);
+  if (GetViewAccessibility().GetCachedName().empty() ||
+      GetViewAccessibility().GetCachedName() == tooltip_text_) {
+    GetViewAccessibility().SetName(tooltip_text);
   }
 
   tooltip_text_ = tooltip_text;
@@ -257,6 +259,10 @@ void Button::SetState(ButtonState state) {
 
   ButtonState old_state = state_;
   state_ = state;
+
+  GetViewAccessibility().SetIsEnabled(state_ != STATE_DISABLED);
+  GetViewAccessibility().SetIsHovered(state_ == STATE_HOVERED);
+  UpdateAccessibleCheckedState();
   StateChanged(old_state);
   OnPropertyChanged(&state_, kPropertyEffectsPaint);
 }
@@ -409,13 +415,18 @@ Button::ScopedAnchorHighlight Button::AddAnchorHighlight() {
   if (0 == anchor_count_++) {
     SetHighlighted(true);
   }
-
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
   return ScopedAnchorHighlight(GetWeakPtr());
 }
 
 base::CallbackListSubscription Button::AddStateChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&state_, std::move(callback));
+}
+
+base::CallbackListSubscription Button::AddAnchorCountChangedCallback(
+    base::RepeatingCallback<void(size_t)> callback) {
+  return anchor_count_changed_callbacks_.Add(std::move(callback));
 }
 
 Button::KeyClickAction Button::GetKeyClickActionForEvent(
@@ -435,6 +446,7 @@ Button::KeyClickAction Button::GetKeyClickActionForEvent(
 void Button::SetButtonController(
     std::unique_ptr<ButtonController> button_controller) {
   button_controller_ = std::move(button_controller);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 gfx::Point Button::GetMenuPosition() const {
@@ -603,32 +615,6 @@ void Button::OnPaint(gfx::Canvas* canvas) {
   Painter::PaintFocusPainter(this, canvas, focus_painter_.get());
 }
 
-void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  if (!GetEnabled())
-    node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
-
-  switch (state_) {
-    case STATE_HOVERED:
-      node_data->AddState(ax::mojom::State::kHovered);
-      break;
-    case STATE_PRESSED:
-      node_data->SetCheckedState(ax::mojom::CheckedState::kTrue);
-      break;
-    case STATE_DISABLED:
-      node_data->SetRestriction(ax::mojom::Restriction::kDisabled);
-      break;
-    case STATE_NORMAL:
-    case STATE_COUNT:
-      // No additional accessibility node_data set for this button node_data.
-      break;
-  }
-  if (GetEnabled())
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
-
-  button_controller_->UpdateAccessibleNodeData(node_data);
-}
-
 void Button::VisibilityChanged(View* starting_from, bool visible) {
   View::VisibilityChanged(starting_from, visible);
   if (state_ == STATE_DISABLED) {
@@ -703,7 +689,8 @@ Button::Button(PressedCallback callback)
   // if one hasn't been set.
   InkDrop::Get(ink_drop_view_)->SetBaseColor(gfx::kPlaceholderColor);
 
-  SetAccessibilityProperties(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Button::RequestFocusFromEvent() {
@@ -806,11 +793,40 @@ void Button::OnEnabledChanged() {
     SetState(STATE_DISABLED);
     InkDrop::Get(ink_drop_view_)->GetInkDrop()->SetHovered(false);
   }
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Button::ReleaseAnchorHighlight() {
   if (0 == --anchor_count_) {
     SetHighlighted(false);
+  }
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
+}
+
+void Button::UpdateAccessibleCheckedState() {
+  switch (state_) {
+    case STATE_PRESSED:
+      GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kTrue);
+      break;
+    default:
+      GetViewAccessibility().RemoveCheckedState();
+      break;
+  }
+}
+
+void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {
+  default_action_verb_ = verb;
+}
+
+void Button::UpdateAccessibleDefaultActionVerb() {
+  if (GetEnabled()) {
+    GetViewAccessibility().SetDefaultActionVerb(default_action_verb_);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
+
+  if (button_controller_) {
+    button_controller_->UpdateButtonAccessibleDefaultActionVerb();
   }
 }
 

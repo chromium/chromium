@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include "base/base64.h"
@@ -343,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 
 // Flaky on windows and WebRTC's frame_analyzer doesn't build from a Chromium's
 // component build.
-// TODO(crbug.com/1008766): re-enable when flakiness is investigated, diagnosed
+// TODO(crbug.com/40100787): re-enable when flakiness is investigated, diagnosed
 // and resolved.
 #if BUILDFLAG(IS_WIN) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityVp9 DISABLED_MANUAL_TestVideoQualityVp9

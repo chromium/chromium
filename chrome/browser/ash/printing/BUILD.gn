@@ -1,0 +1,264 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("printing") {
+  sources = [
+    "automatic_usb_printer_configurer.cc",
+    "automatic_usb_printer_configurer.h",
+    "cups_print_job.cc",
+    "cups_print_job.h",
+    "cups_print_job_manager.cc",
+    "cups_print_job_manager.h",
+    "cups_print_job_manager_factory.cc",
+    "cups_print_job_manager_factory.h",
+    "cups_print_job_notification.cc",
+    "cups_print_job_notification.h",
+    "cups_print_job_notification_manager.cc",
+    "cups_print_job_notification_manager.h",
+    "cups_print_job_notification_utils.cc",
+    "cups_print_job_notification_utils.h",
+    "cups_printer_status_creator.cc",
+    "cups_printer_status_creator.h",
+    "cups_printers_manager.cc",
+    "cups_printers_manager.h",
+    "cups_printers_manager_factory.cc",
+    "cups_printers_manager_factory.h",
+    "cups_printers_manager_proxy.cc",
+    "cups_printers_manager_proxy.h",
+    "fake_cups_print_job_manager.cc",
+    "fake_cups_print_job_manager.h",
+    "ipp_client_info_calculator.cc",
+    "ipp_client_info_calculator.h",
+    "ppd_provider_factory.cc",
+    "ppd_provider_factory.h",
+    "ppd_resolution_state.cc",
+    "ppd_resolution_state.h",
+    "ppd_resolution_tracker.cc",
+    "ppd_resolution_tracker.h",
+    "print_server.cc",
+    "print_server.h",
+    "print_servers_manager.cc",
+    "print_servers_manager.h",
+    "printer_authenticator.cc",
+    "printer_authenticator.h",
+    "printer_configurer.cc",
+    "printer_configurer.h",
+    "printer_detector.h",
+    "printer_event_tracker.cc",
+    "printer_event_tracker.h",
+    "printer_event_tracker_factory.cc",
+    "printer_event_tracker_factory.h",
+    "printer_info.h",
+    "printer_installation_manager.h",
+    "printer_metrics_provider.cc",
+    "printer_metrics_provider.h",
+    "printer_setup_util.cc",
+    "printer_setup_util.h",
+    "printers_map.cc",
+    "printers_map.h",
+    "printers_sync_bridge.cc",
+    "printers_sync_bridge.h",
+    "server_printers_fetcher.cc",
+    "server_printers_fetcher.h",
+    "server_printers_provider.cc",
+    "server_printers_provider.h",
+    "specifics_translation.cc",
+    "specifics_translation.h",
+    "synced_printers_manager.cc",
+    "synced_printers_manager.h",
+    "synced_printers_manager_factory.cc",
+    "synced_printers_manager_factory.h",
+    "usb_printer_detector.cc",
+    "usb_printer_detector.h",
+    "usb_printer_notification.cc",
+    "usb_printer_notification.h",
+    "usb_printer_notification_controller.cc",
+    "usb_printer_notification_controller.h",
+    "usb_printer_util.cc",
+    "usb_printer_util.h",
+    "zeroconf_printer_detector.cc",
+    "zeroconf_printer_detector.h",
+  ]
+
+  if (use_cups) {
+    sources += [
+      "cups_print_job_manager_impl.cc",
+      "cups_print_job_manager_utils.cc",
+      "cups_print_job_manager_utils.h",
+      "cups_proxy_service_delegate_impl.cc",
+      "cups_proxy_service_delegate_impl.h",
+      "cups_proxy_service_manager.cc",
+      "cups_proxy_service_manager.h",
+      "cups_proxy_service_manager_factory.cc",
+      "cups_proxy_service_manager_factory.h",
+      "printer_info_cups.cc",
+    ]
+  } else {
+    sources += [
+      "fake_cups_print_job_manager_factory.cc",
+      "printer_info_stub.cc",
+    ]
+  }
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
+    "//chrome/browser/ash/printing/oauth2",
+    "//chrome/browser/ash/printing/print_management",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/sync:factories",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cups_proxy",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/printscanmgr",
+    "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/components/settings",
+    "//chromeos/printing",
+    "//chromeos/services/network_config/public/cpp",
+    "//components/device_event_log",
+    "//components/pref_registry",
+    "//printing/backend",
+    "//third_party/libipp",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+  ]
+
+  if (use_cups) {
+    deps += [
+      "//chrome/browser/chromeos/printing",
+      "//chrome/services/cups_proxy",
+    ]
+  }
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos:chromeos_export",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/print_management",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_cups_printers_manager.cc",
+    "fake_cups_printers_manager.h",
+    "test_cups_print_job_manager.cc",
+    "test_cups_print_job_manager.h",
+  ]
+
+  deps = [ "//testing/gtest" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/printing",
+    "//chromeos/printing",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "automatic_usb_printer_configurer_unittest.cc",
+    "cups_print_job_notification_manager_unittest.cc",
+    "cups_print_job_notification_unittest.cc",
+    "cups_printer_status_creator_unittest.cc",
+    "cups_printers_manager_unittest.cc",
+    "ipp_client_info_calculator_unittest.cc",
+    "ppd_resolution_state_unittest.cc",
+    "ppd_resolution_tracker_unittest.cc",
+    "print_servers_manager_unittest.cc",
+    "printer_authenticator_unittest.cc",
+    "printer_event_tracker_unittest.cc",
+    "printers_map_unittest.cc",
+    "printers_sync_bridge_unittest.cc",
+    "server_printers_provider_unittest.cc",
+    "specifics_translation_unittest.cc",
+    "synced_printers_manager_unittest.cc",
+    "usb_printer_detector_unittest.cc",
+    "usb_printer_util_unittest.cc",
+    "zeroconf_printer_detector_unittest.cc",
+  ]
+
+  deps = [
+    ":printing",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
+    "//chrome/browser/ash/printing/oauth2",
+    "//chrome/browser/ash/printing/oauth2:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/printscanmgr",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/libipp",
+  ]
+
+  if (use_cups) {
+    sources += [ "cups_print_job_manager_utils_unittest.cc" ]
+    deps += [
+      "//printing:printing_base",
+      "//printing/backend",
+    ]
+  }
+}
+
+fuzzer_test("zeroconf_printer_detector_fuzzer") {
+  sources = [ "zeroconf_printer_detector_fuzzer.cc" ]
+  deps = [
+    ":printing",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/exo/wayland:test_controller_stub",
+    "//components/exo/wayland:ui_controls_protocol_stub",
+  ]
+}

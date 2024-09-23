@@ -21,6 +21,8 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/label.h"
@@ -37,13 +39,13 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     VirtualCardEnrollBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 controller->GetUiModel().accept_action_text);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 controller->GetUiModel().cancel_action_text);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetUiModel().accept_action_text());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller->GetUiModel().cancel_action_text());
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
   SetAcceptCallbackWithClose(base::BindRepeating(
@@ -108,7 +110,7 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetUiModel().window_title
+  return controller_ ? controller_->GetUiModel().window_title()
                      : std::u16string();
 }
 
@@ -133,7 +135,7 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   // If applicable, add the explanation label.  Appears above the card
   // info.
-  std::u16string explanation = controller_->GetUiModel().explanatory_message;
+  std::u16string explanation = controller_->GetUiModel().explanatory_message();
   if (!explanation.empty()) {
     auto* const explanation_label =
         AddChildView(std::make_unique<views::StyledLabel>());
@@ -148,11 +150,11 @@ void VirtualCardEnrollBubbleViews::Init() {
             weak_ptr_factory_.GetWeakPtr()));
 
     uint32_t offset = explanation.length() -
-                      controller_->GetUiModel().learn_more_link_text.length();
+                      controller_->GetUiModel().learn_more_link_text().length();
     explanation_label->AddStyleRange(
         gfx::Range(
             offset,
-            offset + controller_->GetUiModel().learn_more_link_text.length()),
+            offset + controller_->GetUiModel().learn_more_link_text().length()),
         style_info);
   }
 
@@ -165,7 +167,7 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::MainAxisAlignment::kStart);
 
   const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
-      controller_->GetUiModel().enrollment_fields;
+      controller_->GetUiModel().enrollment_fields();
 
   CreditCard card = virtual_card_enrollment_fields.credit_card;
 
@@ -223,9 +225,9 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
   const LegalMessageLines google_legal_message =
-      controller_->GetUiModel().enrollment_fields.google_legal_message;
+      controller_->GetUiModel().enrollment_fields().google_legal_message;
   const LegalMessageLines issuser_legal_message =
-      controller_->GetUiModel().enrollment_fields.issuer_legal_message;
+      controller_->GetUiModel().enrollment_fields().issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
@@ -254,10 +256,10 @@ VirtualCardEnrollBubbleViews::CreateLoadingProgressRow() {
   // visible after the user accepts virtual card enrollment.
   progress_loading_row->SetVisible(false);
 
-  progress_loading_row->SetOrientation(
-      views::BoxLayout::Orientation::kHorizontal);
   progress_loading_row->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
+  progress_loading_row->SetInsideBorderInsets(gfx::Insets::TLBR(10, 0, 0, 30));
+
   loading_throbber_ =
       progress_loading_row->AddChildView(std::make_unique<views::Throbber>());
   loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
@@ -273,9 +275,14 @@ void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
   if (loading_progress_row_ == nullptr) {
     return;
   }
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+
   loading_throbber_->Start();
   loading_progress_row_->SetVisible(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  loading_throbber_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
+
   DialogModelChanged();
 }
 

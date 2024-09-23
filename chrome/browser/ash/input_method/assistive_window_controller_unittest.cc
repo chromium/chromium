@@ -6,12 +6,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
-#include "chrome/browser/ash/input_method/ui/announcement_view.h"
-#include "chrome/browser/ash/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ui/ash/input_method/announcement_view.h"
+#include "chrome/browser/ui/ash/input_method/suggestion_details.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -80,8 +82,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         delegate_.get(), profile_.get(), announcement_view_.get());
     IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
-    // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
-    // SuggestionWindowView's implementation.
+    // TODO(crbug.com/40138718): Create MockSuggestionWindowView to be
+    // independent of SuggestionWindowView's implementation.
     static_cast<views::TestViewsDelegate*>(views::ViewsDelegate::GetInstance())
         ->set_layout_provider(ChromeLayoutProvider::CreateLayoutProvider());
   }
@@ -116,6 +118,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void WaitForSuggestionWindowDelay() {
@@ -124,6 +128,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;

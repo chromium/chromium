@@ -128,7 +128,8 @@ void TabIconView::PaintFavicon(gfx::Canvas* canvas,
                        dest_h, true);
 }
 
-gfx::Size TabIconView::CalculatePreferredSize() const {
+gfx::Size TabIconView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize);
 }
 
@@ -150,5 +151,5 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
   PaintFavicon(canvas, DefaultFavicon::GetInstance().icon());
 }
 
-BEGIN_METADATA(TabIconView, views::MenuButton)
+BEGIN_METADATA(TabIconView)
 END_METADATA

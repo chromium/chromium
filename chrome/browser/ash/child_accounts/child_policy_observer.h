@@ -56,6 +56,7 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   // policy::CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
   void OnPolicyRefreshed(bool success) override;
+  std::string_view name() const override;
 
   // Requests notification when policy is ready. Passed |on_policy_ready| will
   // be invoked when initial policy refresh is finished. Information about

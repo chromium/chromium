@@ -26,8 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SRC_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SRC_VALUE_H_
 
-#include <utility>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -47,11 +45,9 @@ class ExecutionContext;
 
 class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
  public:
-  static CSSFontFaceSrcValue* Create(
-      cssvalue::CSSURIValue* src_value,
-      scoped_refptr<const DOMWrapperWorld> world) {
-    return MakeGarbageCollected<CSSFontFaceSrcValue>(src_value,
-                                                     std::move(world));
+  static CSSFontFaceSrcValue* Create(cssvalue::CSSURIValue* src_value,
+                                     const DOMWrapperWorld* world) {
+    return MakeGarbageCollected<CSSFontFaceSrcValue>(src_value, world);
   }
   static CSSFontFaceSrcValue* CreateLocal(const String& local_resource) {
     return MakeGarbageCollected<CSSFontFaceSrcValue>(local_resource);
@@ -60,10 +56,8 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   explicit CSSFontFaceSrcValue(const String& local_resource)
       : CSSValue(kFontFaceSrcClass), local_resource_(local_resource) {}
   CSSFontFaceSrcValue(cssvalue::CSSURIValue* src_value,
-                      scoped_refptr<const DOMWrapperWorld> world)
-      : CSSValue(kFontFaceSrcClass),
-        src_value_(src_value),
-        world_(std::move(world)) {}
+                      const DOMWrapperWorld* world)
+      : CSSValue(kFontFaceSrcClass), src_value_(src_value), world_(world) {}
 
   // Returns the local() resource name. Only usable if IsLocal() returns true.
   const String& LocalResource() const { return local_resource_; }
@@ -109,7 +103,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   Member<cssvalue::CSSURIValue> src_value_;  // Non-null if remote (src()).
   String local_resource_;                    // Non-null if local (local()).
   String format_;
-  const scoped_refptr<const DOMWrapperWorld> world_;
+  const Member<const DOMWrapperWorld> world_;
   mutable Member<FontResource> fetched_;
 };
 

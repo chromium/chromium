@@ -7,7 +7,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -31,7 +31,7 @@ const char kAudioFocusTestPageURL[] =
 
 // WebAppAudioFocusBrowserTest test that PWAs have separate audio
 // focus from the rest of the browser.
-class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
+class WebAppAudioFocusBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppAudioFocusBrowserTest() = default;
   ~WebAppAudioFocusBrowserTest() override = default;
@@ -43,7 +43,7 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
          media_session::features::kAudioFocusSessionGrouping},
         {});
 
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   bool IsPaused(content::WebContents* web_contents) {
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
 
   // Navigate away and check that the group id is still the same because we are
   // part of the same window.
-  // TODO(https://crbug.com/1204391): Understand why this returns false.
+  // TODO(crbug.com/40180004): Understand why this returns false.
   ASSERT_FALSE(
       NavigateInRenderer(web_contents, GURL("https://www.example.com")));
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));

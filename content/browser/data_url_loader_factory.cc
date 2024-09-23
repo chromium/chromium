@@ -4,6 +4,8 @@
 
 #include "content/browser/data_url_loader_factory.h"
 
+#include <string_view>
+
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -98,7 +100,7 @@ void DataURLLoaderFactory::CreateLoaderAndStart(
       std::make_unique<mojo::DataPipeProducer>(std::move(producer));
 
   mojo::DataPipeProducer* producer_ptr = write_data->producer.get();
-  base::StringPiece string_piece(write_data->data);
+  std::string_view string_piece(write_data->data);
 
   producer_ptr->Write(
       std::make_unique<mojo::StringDataSource>(

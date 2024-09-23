@@ -86,7 +86,6 @@ class FakeDisplaySnapshot : public DisplaySnapshot {
         const gfx::HDRStaticMetadata& hdr_static_metadata);
     Builder& SetVariableRefreshRateState(
         VariableRefreshRateState variable_refresh_rate_state);
-    Builder& SetVsyncRateMin(const std::optional<uint16_t>& vsync_rate_min);
 
    private:
     // Returns a display mode with |size|. If there is no existing mode, insert
@@ -117,8 +116,8 @@ class FakeDisplaySnapshot : public DisplaySnapshot {
     raw_ptr<const DisplayMode> current_mode_ = nullptr;
     raw_ptr<const DisplayMode> native_mode_ = nullptr;
     DisplaySnapshot::ColorInfo color_info_;
-    VariableRefreshRateState variable_refresh_rate_state_ = kVrrNotCapable;
-    std::optional<uint16_t> vsync_rate_min_ = std::nullopt;
+    VariableRefreshRateState variable_refresh_rate_state_ =
+        VariableRefreshRateState::kVrrNotCapable;
   };
 
   FakeDisplaySnapshot(int64_t display_id,
@@ -143,7 +142,6 @@ class FakeDisplaySnapshot : public DisplaySnapshot {
                       const gfx::Size& maximum_cursor_size,
                       const DisplaySnapshot::ColorInfo& color_info,
                       VariableRefreshRateState variable_refresh_rate_state,
-                      const std::optional<uint16_t>& vsync_rate_min,
                       const DrmFormatsAndModifiers& drm_formats_and_modifiers);
 
   FakeDisplaySnapshot(const FakeDisplaySnapshot&) = delete;

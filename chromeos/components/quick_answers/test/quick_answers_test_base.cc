@@ -11,9 +11,14 @@ QuickAnswersTestBase::~QuickAnswersTestBase() = default;
 void QuickAnswersTestBase::SetUp() {
   testing::Test::SetUp();
 
-  DCHECK(!QuickAnswersState::Get());
+  CHECK(!QuickAnswersState::Get());
 
-  fake_quick_answers_state_ = std::make_unique<FakeQuickAnswersState>();
+  fake_quick_answers_state_.emplace();
+
+  // Default values of intent eligibilities are true.
+  fake_quick_answers_state_->SetDefinitionEligible(true);
+  fake_quick_answers_state_->SetTranslationEligible(true);
+  fake_quick_answers_state_->SetUnitConversionEligible(true);
 }
 
 void QuickAnswersTestBase::TearDown() {

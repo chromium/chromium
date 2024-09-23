@@ -62,8 +62,6 @@ const char* StatusCodeToString(StatusCode code) {
       return "chrome not reachable";
     case kDisconnected:
       return "disconnected";
-    case kForbidden:
-      return "forbidden";
     case kTabCrashed:
       return "tab crashed";
     case kNoSuchCookie:
@@ -78,6 +76,10 @@ const char* StatusCodeToString(StatusCode code) {
       return "no such shadow root";
     case kDetachedShadowRoot:
       return "detached shadow root";
+    case kNavigationDetectedByRemoteEnd:
+      return "navigation detected by remote end";
+    case kTestError:
+      return "test error";
     default:
       return "<unknown>";
   }

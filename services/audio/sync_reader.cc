@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -99,8 +100,8 @@ SyncReader::SyncReader(
   shared_memory_mapping_ = shared_memory_region_.Map();
   if (shared_memory_region_.IsValid() && shared_memory_mapping_.IsValid() &&
       base::CancelableSyncSocket::CreatePair(&socket_, foreign_socket)) {
-    auto* const buffer = reinterpret_cast<media::AudioOutputBuffer*>(
-        shared_memory_mapping_.memory());
+    auto* const buffer =
+        shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
     output_bus_ = media::AudioBus::WrapMemory(params, buffer->audio);
     output_bus_->Zero();
     output_bus_->set_is_bitstream_format(params.IsBitstreamFormat());
@@ -140,8 +141,8 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   // We don't send arguments over the socket since sending more than 4
   // bytes might lead to being descheduled. The reading side will zero
   // them when consumed.
-  auto* const buffer = reinterpret_cast<media::AudioOutputBuffer*>(
-      shared_memory_mapping_.memory());
+  auto* const buffer =
+      shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
   // Increase the number of skipped frames stored in shared memory.
   buffer->params.delay_us = delay.InMicroseconds();
   buffer->params.delay_timestamp_us =
@@ -164,7 +165,7 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     control_signal = std::numeric_limits<uint32_t>::max();
   }
 
-  size_t sent_bytes = socket_.Send(&control_signal, sizeof(control_signal));
+  size_t sent_bytes = socket_.Send(base::byte_span_from_ref(control_signal));
   if (sent_bytes != sizeof(control_signal)) {
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.
@@ -215,8 +216,8 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
 
   if (output_bus_->is_bitstream_format()) {
     // For bitstream formats, we need the real data size and PCM frame count.
-    auto* const buffer = reinterpret_cast<media::AudioOutputBuffer*>(
-        shared_memory_mapping_.memory());
+    auto* const buffer =
+        shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
     uint32_t data_size = buffer->params.bitstream_data_size;
     uint32_t bitstream_frames = buffer->params.bitstream_frames;
     // |bitstream_frames| is cast to int below, so it must fit.
@@ -266,7 +267,7 @@ bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
   uint32_t renderer_buffer_index = 0;
   while (timeout.InMicroseconds() > 0) {
     bytes_received = socket_.ReceiveWithTimeout(
-        &renderer_buffer_index, sizeof(renderer_buffer_index), timeout);
+        base::byte_span_from_ref(renderer_buffer_index), timeout);
     if (bytes_received != sizeof(renderer_buffer_index)) {
       bytes_received = 0;
       break;

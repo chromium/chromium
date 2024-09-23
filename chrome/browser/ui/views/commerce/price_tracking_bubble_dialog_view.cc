@@ -17,6 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -53,7 +54,8 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   SetProperty(views::kElementIdentifierKey, kPriceTrackingBubbleDialogId);
   SetShowCloseButton(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
@@ -63,10 +65,10 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE_FIRST_RUN));
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACK_PRICE_DIALOG_ACTION_BUTTON));
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON));
     SetAcceptCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnAccepted,
@@ -82,10 +84,10 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   } else if (type == PriceTrackingBubbleDialogView::Type::TYPE_NORMAL) {
     SetTitle(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE));
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON));
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+    SetButtonLabel(ui::mojom::DialogButton::kCancel,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON));
     SetAcceptCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnAccepted,

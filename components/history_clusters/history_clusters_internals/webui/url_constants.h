@@ -8,7 +8,8 @@
 namespace history_clusters_internals {
 
 // The host of the history clusters internals page URL.
-extern const char kChromeUIHistoryClustersInternalsHost[];
+inline constexpr char kChromeUIHistoryClustersInternalsHost[] =
+    "history-clusters-internals";
 
 }  // namespace history_clusters_internals
 

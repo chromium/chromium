@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -71,7 +71,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
 
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     WebNavigationBrowserAgent::CreateForBrowser(test_browser_.get());
 
@@ -136,6 +136,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   // observers when web_state_list_ gets dealloc.
   ~AdaptiveToolbarMediatorTest() override {
     ios::provider::test::SetVoiceSearchEnabled(false);
+
+    ClipboardRecentContent::SetInstance(nullptr);
 
     [mediator_ disconnect];
   }

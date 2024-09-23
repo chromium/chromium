@@ -76,7 +76,7 @@ It may also be necessary to run the revision's version of
 Since build tools change over time, you may need to build using older versions
 of tools like Visual Studio.
 
-You may also need to disable goma (if enabled).
+You may also need to disable reclient (if enabled).
 
 ## Get back to trunk
 

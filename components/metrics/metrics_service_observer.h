@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 
 namespace metrics {
@@ -89,13 +89,13 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
 
   // MetricsLogsEventManager::Observer:
   void OnLogCreated(
-      base::StringPiece log_hash,
-      base::StringPiece log_data,
-      base::StringPiece log_timestamp,
+      std::string_view log_hash,
+      std::string_view log_data,
+      std::string_view log_timestamp,
       metrics::MetricsLogsEventManager::CreateReason reason) override;
   void OnLogEvent(MetricsLogsEventManager::LogEvent event,
-                  base::StringPiece log_hash,
-                  base::StringPiece message) override;
+                  std::string_view log_hash,
+                  std::string_view message) override;
   void OnLogType(std::optional<MetricsLog::LogType> log_type) override;
 
   // Exports |logs_| to a JSON string and writes it to |json_output|. If
@@ -147,7 +147,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
  private:
   // Returns the Log object from |logs_| with the given |log_hash| if one
   // exists. Returns nullptr otherwise.
-  Log* GetLogFromHash(base::StringPiece log_hash);
+  Log* GetLogFromHash(std::string_view log_hash);
 
   // The type of service this observer is observing. This has no impact on how
   // the logs are stored. This is only used when exporting the logs (see
@@ -160,7 +160,7 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
 
   // An overlay on |logs_| that allows for a log to be located based on its
   // hash.
-  base::flat_map<base::StringPiece, Log*> indexed_logs_;
+  base::flat_map<std::string_view, Log*> indexed_logs_;
 
   // Keeps track of the type of UMA logs (ongoing, stability, independent) that
   // are being created. This should only be set for UMA logs, since the concept

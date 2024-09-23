@@ -1,8 +1,0 @@
-This is a wdspec test.
-[FAIL] test_request_response_phases[phases1-responseStarted]
-  asyncio.exceptions.TimeoutError
-[FAIL] test_not_listening_to_phase_event[beforeRequestSent]
-  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: The user aborted a request.
-[FAIL] test_not_listening_to_phase_event[responseStarted]
-  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: The user aborted a request.
-Harness: the test ran to completion.

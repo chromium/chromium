@@ -21,6 +21,8 @@
     BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #include "ui/views/test/test_desktop_screen_ozone.h"
+#elif BUILDFLAG(IS_WIN)
+#include "ui/views/widget/desktop_aura/desktop_screen_win.h"
 #endif
 
 namespace views::test {
@@ -68,62 +70,74 @@ WidgetTest::WidgetTest(
 
 WidgetTest::~WidgetTest() = default;
 
-Widget* WidgetTest::CreateTopLevelPlatformWidget() {
-  Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+Widget* WidgetTest::CreateTopLevelPlatformWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
-Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget() {
-  Widget* widget = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   params.native_widget = CreatePlatformDesktopNativeWidgetImpl(
-      widget, kStubCapture, base::DoNothing());
+      widget.get(), kStubCapture, base::DoNothing());
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 #endif
 
-Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget() {
-  Widget* widget = new Widget;
+Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 
 Widget* WidgetTest::CreateChildPlatformWidget(
-    gfx::NativeView parent_native_view) {
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_CONTROL);
+    gfx::NativeView parent_native_view,
+    Widget::InitParams::Ownership ownership) {
+  Widget::InitParams params =
+      CreateParams(ownership, Widget::InitParams::TYPE_CONTROL);
   params.parent = parent_native_view;
-  Widget* child = new Widget;
+  auto child = std::make_unique<Widget>();
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(child, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(child.get(), kStubCapture, nullptr);
   child->Init(std::move(params));
   child->SetContentsView(std::make_unique<View>());
-  return child;
+  return child.release();
 }
 
-Widget* WidgetTest::CreateTopLevelNativeWidget() {
-  Widget* toplevel = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+Widget* WidgetTest::CreateTopLevelNativeWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto toplevel = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   toplevel->Init(std::move(params));
-  return toplevel;
+  return toplevel.release();
 }
 
-Widget* WidgetTest::CreateChildNativeWidgetWithParent(Widget* parent) {
-  Widget* child = new Widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_CONTROL);
+Widget* WidgetTest::CreateChildNativeWidgetWithParent(
+    Widget* parent,
+    Widget::InitParams::Ownership ownership) {
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams params =
+      CreateParams(ownership, Widget::InitParams::TYPE_CONTROL);
   params.parent = parent->GetNativeView();
   child->Init(std::move(params));
   child->SetContentsView(std::make_unique<View>());
-  return child;
+  return child.release();
 }
 
 View* WidgetTest::GetMousePressedHandler(views::internal::RootView* root_view) {
@@ -154,12 +168,14 @@ void DesktopWidgetTestInteractive::SetUp() {
 #if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   screen_ = views::test::TestDesktopScreenOzone::Create();
+#elif BUILDFLAG(IS_WIN)
+  screen_ = std::make_unique<views::DesktopScreenWin>();
 #endif
   DesktopWidgetTest::SetUp();
 }
 
 #if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 void DesktopWidgetTestInteractive::TearDown() {
   DesktopWidgetTest::TearDown();
   screen_.reset();
@@ -170,8 +186,12 @@ TestDesktopWidgetDelegate::TestDesktopWidgetDelegate()
     : TestDesktopWidgetDelegate(nullptr) {}
 
 TestDesktopWidgetDelegate::TestDesktopWidgetDelegate(Widget* widget)
-    : widget_(widget ? widget : new Widget) {
+    : widget_(widget) {
   SetFocusTraversesOut(true);
+  if (!widget_) {
+    owned_widget_ = std::make_unique<Widget>();
+    widget_ = owned_widget_.get();
+  }
 }
 
 TestDesktopWidgetDelegate::~TestDesktopWidgetDelegate() {
@@ -212,55 +232,21 @@ bool TestDesktopWidgetDelegate::OnCloseRequested(
 }
 
 TestInitialFocusWidgetDelegate::TestInitialFocusWidgetDelegate(
-    gfx::NativeWindow context)
-    : view_(new View) {
-  view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+    gfx::NativeWindow context) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.context = context;
   params.delegate = this;
   GetWidget()->Init(std::move(params));
-  GetWidget()->GetContentsView()->AddChildView(view_.get());
+  view_ =
+      GetWidget()->GetContentsView()->AddChildView(std::make_unique<View>());
+  view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
 
 TestInitialFocusWidgetDelegate::~TestInitialFocusWidgetDelegate() = default;
 
 View* TestInitialFocusWidgetDelegate::GetInitiallyFocusedView() {
   return view_;
-}
-
-WidgetActivationWaiter::WidgetActivationWaiter(Widget* widget, bool active)
-    : active_(active) {
-  if (active == widget->IsActive()) {
-    observed_ = true;
-    return;
-  }
-  widget_observation_.Observe(widget);
-}
-
-WidgetActivationWaiter::~WidgetActivationWaiter() = default;
-
-void WidgetActivationWaiter::Wait() {
-  if (!observed_) {
-#if BUILDFLAG(IS_MAC)
-    // Some tests waiting on widget creation + activation are flaky due to
-    // timeout. crbug.com/1327590.
-    const base::test::ScopedRunLoopTimeout increased_run_timeout(
-        FROM_HERE, TestTimeouts::action_max_timeout());
-#endif
-    run_loop_.Run();
-  }
-}
-
-void WidgetActivationWaiter::OnWidgetActivationChanged(Widget* widget,
-                                                       bool active) {
-  if (active_ != active)
-    return;
-
-  observed_ = true;
-  widget_observation_.Reset();
-  if (run_loop_.running())
-    run_loop_.Quit();
 }
 
 WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) {

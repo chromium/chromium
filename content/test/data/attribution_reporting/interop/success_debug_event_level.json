@@ -6,8 +6,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -27,8 +26,7 @@
         "timestamp": "1",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -47,8 +45,7 @@
         "timestamp": "2",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -67,7 +64,6 @@
       {
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -91,7 +87,6 @@
       {
         "timestamp": "2000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -114,7 +109,6 @@
       {
         "timestamp": "3000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -137,7 +131,6 @@
       {
         "timestamp": "4000",
         "registration_request": {
-          "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -161,7 +154,6 @@
       {
         "timestamp": "5000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
         "responses": [
@@ -184,7 +176,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": {
@@ -221,8 +212,7 @@
           "scheduled_report_time": "172800",
           "source_event_id": "123",
           "source_type": "navigation",
-          "trigger_data": "6",
-          "source_debug_key": "111"
+          "trigger_data": "6"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800000"
@@ -234,8 +224,7 @@
           "scheduled_report_time": "172800",
           "source_event_id": "123",
           "source_type": "navigation",
-          "trigger_data": "5",
-          "source_debug_key": "111"
+          "trigger_data": "5"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800000"
@@ -247,8 +236,7 @@
           "scheduled_report_time": "172800",
           "source_event_id": "456",
           "source_type": "navigation",
-          "trigger_data": "4",
-          "trigger_debug_key": "555"
+          "trigger_data": "4"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800001"
@@ -260,8 +248,7 @@
           "scheduled_report_time": "172800",
           "source_event_id": "789",
           "source_type": "navigation",
-          "trigger_data": "3",
-          "trigger_debug_key": "666"
+          "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "172800002"

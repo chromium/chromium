@@ -32,17 +32,17 @@ void PostCallback(const scoped_refptr<base::TaskRunner>& task_runner,
   task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), error));
 }
 
-// Clears the disk_cache::Backend on the IO thread and deletes |backend|.
-void DoomHttpCache(std::unique_ptr<disk_cache::Backend*> backend,
-                   const scoped_refptr<base::TaskRunner>& client_task_runner,
+// Clears the disk_cache::Backend on the IO thread.
+void DoomHttpCache(const scoped_refptr<base::TaskRunner>& client_task_runner,
                    const base::Time& delete_begin,
                    const base::Time& delete_end,
                    net::CompletionOnceCallback callback,
-                   int error) {
-  // |*backend| may be null in case of error.
-  if (*backend) {
+                   net::HttpCache::GetBackendResult backend_result) {
+  auto [error, backend] = backend_result;
+  // `backend` may be null in case of error.
+  if (backend) {
     auto callback_pair = base::SplitOnceCallback(std::move(callback));
-    const int rv = (*backend)->DoomEntriesBetween(
+    const int rv = backend->DoomEntriesBetween(
         delete_begin, delete_end,
         base::BindOnce(&PostCallback, client_task_runner,
                        std::move(callback_pair.first)));
@@ -74,20 +74,16 @@ void ClearHttpCacheOnIOThread(
       ->ClearCachedStatesInCryptoConfig(
           base::RepeatingCallback<bool(const GURL&)>());
 
-  std::unique_ptr<disk_cache::Backend*> backend(
-      new disk_cache::Backend*(nullptr));
-  disk_cache::Backend** backend_ptr = backend.get();
-
   auto doom_callback_pair = base::SplitOnceCallback(
-      base::BindOnce(&DoomHttpCache, std::move(backend), client_task_runner,
-                     delete_begin, delete_end, std::move(callback)));
+      base::BindOnce(&DoomHttpCache, client_task_runner, delete_begin,
+                     delete_end, std::move(callback)));
 
-  const int rv =
-      http_cache->GetBackend(backend_ptr, std::move(doom_callback_pair.first));
-  if (rv != net::ERR_IO_PENDING) {
+  net::HttpCache::GetBackendResult result =
+      http_cache->GetBackend(std::move(doom_callback_pair.first));
+  if (result.first != net::ERR_IO_PENDING) {
     // GetBackend doesn't call the callback if it completes synchronously, so
     // call it directly here.
-    std::move(doom_callback_pair.second).Run(rv);
+    std::move(doom_callback_pair.second).Run(result);
   }
 }
 

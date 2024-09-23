@@ -71,8 +71,11 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
-        CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB,
         CustomTabsFeature.EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE,
+        CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING,
+        CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR,
+        CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS,
+        CustomTabsFeature.EXTRA_NETWORK,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -132,11 +135,14 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ACTIVITY_SIDE_SHEET_POSITION = 50;
         int EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR = 51;
         int EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION = 52;
-        int EXTRA_ENABLE_PAGE_INSIGHTS_HUB = 53;
         int EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE = 54;
+        int EXTRA_ENABLE_EPHEMERAL_BROWSING = 55;
+        int EXTRA_ENABLE_GOOGLE_BOTTOM_BAR = 56;
+        int EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS = 57;
+        int EXTRA_NETWORK = 58;
 
         /** Total count of entries. */
-        int COUNT = 55;
+        int COUNT = 59;
     }
 
     // Whether flag-enabled or not.

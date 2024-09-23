@@ -199,8 +199,8 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
   void EndTest() { run_loop_->Quit(); }
 
  private:
-  raw_ptr<FakeLayerTreeViewDelegate, ExperimentalRenderer> delegate_;
-  raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_ = nullptr;
+  raw_ptr<FakeLayerTreeViewDelegate> delegate_;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
   int expected_successes_ = 0;
   int expected_requests_ = 0;
   FailureMode failure_mode_ = kNoFailure;
@@ -314,7 +314,7 @@ class VisibilityTestLayerTreeView : public LayerTreeView {
 
  private:
   int num_requests_sent_ = 0;
-  raw_ptr<base::RunLoop, ExperimentalRenderer> run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 };
 
 TEST(LayerTreeViewTest, VisibilityTest) {
@@ -384,9 +384,11 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   // Register a callback for frame 1.
   base::TimeTicks callback_timestamp;
   layer_tree_view.AddPresentationCallback(
-      1, base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        callback_timestamp = timestamp;
-      }));
+      1, base::BindLambdaForTesting(
+             [&](const viz::FrameTimingDetails& frame_timing_details) {
+               callback_timestamp =
+                   frame_timing_details.presentation_feedback.timestamp;
+             }));
 
   // Respond with a failed presentation feedback for frame 1 and verify that the
   // callback is not called
@@ -394,7 +396,9 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
       base::TimeTicks::Now() + base::Microseconds(2);
   gfx::PresentationFeedback fail_feedback(fail_timestamp, base::TimeDelta(),
                                           gfx::PresentationFeedback::kFailure);
-  layer_tree_view.DidPresentCompositorFrame(1, fail_feedback);
+  viz::FrameTimingDetails frame_timing_details;
+  frame_timing_details.presentation_feedback = fail_feedback;
+  layer_tree_view.DidPresentCompositorFrame(1, frame_timing_details);
   EXPECT_TRUE(callback_timestamp.is_null());
 
   // Respond with a successful presentation feedback for frame 2 and verify that
@@ -403,7 +407,9 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   base::TimeTicks success_timestamp = fail_timestamp + base::Microseconds(3);
   gfx::PresentationFeedback success_feedback(success_timestamp,
                                              base::TimeDelta(), 0);
-  layer_tree_view.DidPresentCompositorFrame(2, success_feedback);
+  viz::FrameTimingDetails frame_timing_details2;
+  frame_timing_details2.presentation_feedback = success_feedback;
+  layer_tree_view.DidPresentCompositorFrame(2, frame_timing_details2);
   EXPECT_FALSE(callback_timestamp.is_null());
   EXPECT_NE(callback_timestamp, fail_timestamp);
   EXPECT_EQ(callback_timestamp, success_timestamp);

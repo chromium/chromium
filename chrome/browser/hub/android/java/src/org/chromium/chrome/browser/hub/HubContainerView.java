@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 /** Container view for the Hub. */
 public class HubContainerView extends FrameLayout implements RunOnNextLayout {
+    private static final String TAG = "HubContainerView";
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
     /** Default {@link FrameLayout} constructor. */
@@ -31,5 +34,13 @@ public class HubContainerView extends FrameLayout implements RunOnNextLayout {
     @Override
     public void runOnNextLayoutRunnables() {
         mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        super.onTouchEvent(motionEvent);
+        // Prevent touch events from "falling through" to views below. See b/337616153.
+        return true;
     }
 }

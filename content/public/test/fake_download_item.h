@@ -95,6 +95,7 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetHash() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
+  download::DownloadItemRenameHandler* GetRenameHandler() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
   bool IsMustDownload() override;
@@ -110,6 +111,7 @@ class FakeDownloadItem : public download::DownloadItem {
   bool AllDataSaved() const override;
   const std::vector<download::DownloadItem::ReceivedSlice>& GetReceivedSlices()
       const override;
+  int64_t GetUploadedBytes() const override;
   bool CanShowInFolder() override;
   bool CanOpenDownload() override;
   bool ShouldOpenFileBasedOnExtension() override;
@@ -129,8 +131,7 @@ class FakeDownloadItem : public download::DownloadItem {
       download::DownloadInterruptReason reason) override;
   void ValidateDangerousDownload() override;
   void ValidateInsecureDownload() override;
-  void StealDangerousDownload(bool delete_file_afterward,
-                              AcquireFileCallback callback) override;
+  void CopyDownload(AcquireFileCallback callback) override;
   void Rename(const base::FilePath& name,
               RenameDownloadCallback callback) override;
   void OnAsyncScanningCompleted(
@@ -195,6 +196,7 @@ class FakeDownloadItem : public download::DownloadItem {
   download::DownloadInterruptReason last_reason_ =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
   int64_t received_bytes_ = 0;
+  int64_t uploaded_bytes_ = 0;
   int64_t total_bytes_ = 0;
   bool is_transient_ = false;
   bool is_parallel_download_ = false;

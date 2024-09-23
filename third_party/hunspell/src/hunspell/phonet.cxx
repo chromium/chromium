@@ -254,8 +254,7 @@ std::string phonet(const std::string& inword, phonetable& parms) {
       } /**  end of while (parms.rules[n][0] == c)  **/
     }   /**  end of if (n >= 0)  **/
     if (z0 == 0) {
-      if (k && !p0 && target.size() < len && c != '\0' &&
-          (1 || target.empty() || target[target.size()-1] != c)) {
+      if (k && !p0 && target.size() < len && c != '\0') {
         /**  condense only double letters  **/
         target.push_back(c);
         /// printf("\n setting \n");

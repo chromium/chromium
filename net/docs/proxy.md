@@ -86,7 +86,6 @@ Chrome supports these proxy server schemes:
 * [HTTPS](#HTTPS-proxy-scheme)
 * [SOCKSv4](#SOCKSv4-proxy-scheme)
 * [SOCKSv5](#SOCKSv5-proxy-scheme)
-* [QUIC](#QUIC-proxy-scheme)
 
 ### DIRECT proxy scheme
 
@@ -201,26 +200,6 @@ tunnel web traffic to a remote host over SSH.
 
 In Chrome SOCKSv5 is only used to proxy TCP-based URL requests. It cannot be
 used to relay UDP traffic.
-
-### QUIC proxy scheme
-
-* Default (UDP) port: 443
-* Example identifier (PAC): `QUIC proxy:8080`
-* Example identifier (URI): `quic://proxy:8080`
-
-A QUIC proxy uses QUIC (UDP) as the underlying transport, but otherwise
-behaves as an HTTP proxy. It has similar properties to an [HTTPS
-proxy](#HTTPS-proxy-scheme), in that the connection to the proxy server
-is secure, and connection limits are less restrictive.
-
-Support for QUIC proxies in Chrome is currently experimental and not
-ready for production use. In particular, sending https:// and wss://
-URLs through a QUIC proxy is [disabled by
-default](https://bugs.chromium.org/p/chromium/issues/detail?id=969859).
-
-Another caveat is that QUIC does not currently support
-client certificates since it does not use a TLS
-handshake. This may change in future versions.
 
 ## Manual proxy settings
 

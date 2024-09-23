@@ -17,9 +17,9 @@ class CORE_EXPORT MathPaddedLayoutAlgorithm
  public:
   explicit MathPaddedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() final;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
  private:
   LayoutUnit RequestedLSpace() const;

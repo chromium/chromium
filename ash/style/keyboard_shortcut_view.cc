@@ -28,7 +28,7 @@ KeyboardShortcutView::KeyboardShortcutView(
     auto icon_view = std::make_unique<SearchResultInlineIconView>(
         /*use_modified_styling=*/true, /*is_first_key=*/i == 0);
     icon_view->SetCanProcessEventsWithinSubtree(false);
-    icon_view->GetViewAccessibility().OverrideIsIgnored(true);
+    icon_view->GetViewAccessibility().SetIsIgnored(true);
     icon_view->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,

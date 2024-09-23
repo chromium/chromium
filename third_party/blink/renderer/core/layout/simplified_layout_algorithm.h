@@ -47,10 +47,10 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
   // Attempt to perform simplified layout on all children and return a new
   // result. If nullptr is returned, it means that simplified layout isn't
   // possible.
-  const LayoutResult* Layout() override;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
-    NOTREACHED();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
+    NOTREACHED_IN_MIGRATION();
     return MinMaxSizesResult();
   }
 

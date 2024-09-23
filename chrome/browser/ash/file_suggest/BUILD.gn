@@ -1,0 +1,139 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("file_suggest") {
+  sources = [
+    "drive_file_suggestion_provider.cc",
+    "drive_file_suggestion_provider.h",
+    "drive_recent_file_suggestion_provider.cc",
+    "drive_recent_file_suggestion_provider.h",
+    "file_suggest_keyed_service.cc",
+    "file_suggest_keyed_service.h",
+    "file_suggest_keyed_service_factory.cc",
+    "file_suggest_keyed_service_factory.h",
+    "file_suggest_util.cc",
+    "file_suggest_util.h",
+    "file_suggestion_provider.cc",
+    "file_suggestion_provider.h",
+    "item_suggest_cache.cc",
+    "item_suggest_cache.h",
+    "local_file_suggestion_provider.cc",
+    "local_file_suggestion_provider.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/ash/app_list/search/ranking:proto",
+    "//chrome/browser/ash/app_list/search/util",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/drivefs",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//components/drive",
+    "//components/google/core/common",
+    "//components/prefs",
+    "//components/prefs",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//storage/browser",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/ranking",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "file_suggest_test_util.cc",
+    "file_suggest_test_util.h",
+    "mock_file_suggest_keyed_service.cc",
+    "mock_file_suggest_keyed_service.h",
+    "mock_file_suggest_keyed_service_observer.cc",
+    "mock_file_suggest_keyed_service_observer.h",
+  ]
+
+  deps = [
+    ":file_suggest",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "drive_recent_file_suggestion_provider_unittest.cc",
+    "file_suggest_keyed_service_unittest.cc",
+    "item_suggest_cache_unittest.cc",
+    "local_file_suggestion_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":file_suggest",
+    ":test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//components/drive",
+    "//components/prefs",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "file_suggest_keyed_service_browsertest.cc" ]
+
+  deps = [
+    ":file_suggest",
+    ":test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/drivefs",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+  ]
+}

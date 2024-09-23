@@ -8,17 +8,18 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <tuple>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
@@ -40,60 +41,27 @@ using CookieAndLineAccessResultList =
     std::vector<CookieAndLineWithAccessResult>;
 using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
-struct NET_EXPORT CookieAccessParams {
-  CookieAccessParams() = delete;
-  CookieAccessParams(CookieAccessSemantics access_semantics,
-                     bool delegate_treats_url_as_trustworthy);
-
-  // |access_semantics| is the access mode of the cookie access check.
-  CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
-  // |delegate_treats_url_as_trustworthy| should be true iff the
-  // CookieAccessDelegate has authorized access to secure cookies from URLs
-  // which might not otherwise be able to do so.
-  bool delegate_treats_url_as_trustworthy = false;
-};
-
-class NET_EXPORT CanonicalCookie {
+// Represents a real/concrete cookie, which may be sent on requests or set by a
+// response if the request context and attributes allow it.
+class NET_EXPORT CanonicalCookie : public CookieBase {
  public:
-  // StrictlyUniqueCookieKey always populates the cookie's source scheme and
-  // source port.
-  using StrictlyUniqueCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                             /*name=*/std::string,
-                                             /*domain=*/std::string,
-                                             /*path=*/std::string,
-                                             CookieSourceScheme,
-                                             /*source_port=*/int>;
-
-  // Conditionally populates the source scheme and source port depending on the
-  // state of their associated feature.
-  using UniqueCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                     /*name=*/std::string,
-                                     /*domain=*/std::string,
-                                     /*path=*/std::string,
-                                     std::optional<CookieSourceScheme>,
-                                     /*source_port=*/std::optional<int>>;
-
-  // Same as UniqueCookieKey but for use with Domain cookies, which do not
-  // consider the source_port.
-  using UniqueDomainCookieKey = std::tuple<std::optional<CookiePartitionKey>,
-                                           /*name=*/std::string,
-                                           /*domain=*/std::string,
-                                           /*path=*/std::string,
-                                           std::optional<CookieSourceScheme>>;
-
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
   CanonicalCookie(CanonicalCookie&& other);
   CanonicalCookie& operator=(const CanonicalCookie& other);
   CanonicalCookie& operator=(CanonicalCookie&& other);
-  ~CanonicalCookie();
+  ~CanonicalCookie() override;
 
   // This constructor does not validate or canonicalize their inputs;
   // the resulting CanonicalCookies should not be relied on to be canonical
   // unless the caller has done appropriate validation and canonicalization
   // themselves.
-  // NOTE: Prefer using CreateSanitizedCookie() over directly using this
-  // constructor.
+  //
+  // NOTE: Prefer using Create, CreateSanitizedCookie, or FromStorage (depending
+  // on the use case) over directly using this constructor.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   CanonicalCookie(base::PassKey<CanonicalCookie>,
                   std::string name,
                   std::string value,
@@ -108,20 +76,21 @@ class NET_EXPORT CanonicalCookie {
                   CookieSameSite same_site,
                   CookiePriority priority,
                   std::optional<CookiePartitionKey> partition_key,
-                  CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-                  int source_port = url::PORT_UNSPECIFIED);
+                  CookieSourceScheme scheme_secure,
+                  int source_port,
+                  CookieSourceType source_type);
 
-  // Creates a new |CanonicalCookie| from the |cookie_line| and the
-  // |creation_time|.  Canonicalizes inputs.  May return nullptr if
-  // an attribute value is invalid.  |url| must be valid.  |creation_time| may
-  // not be null. Sets optional |status| to the relevant CookieInclusionStatus
-  // if provided.  |server_time| indicates what the server sending us the Cookie
+  // Creates a new `CanonicalCookie` from the `cookie_line` and the
+  // `creation_time`.  Canonicalizes inputs.  May return nullptr if
+  // an attribute value is invalid.  `url` must be valid.  `creation_time` may
+  // not be null. Sets optional `status` to the relevant CookieInclusionStatus
+  // if provided.  `server_time` indicates what the server sending us the Cookie
   // thought the current time was when the cookie was produced.  This is used to
   // adjust for clock skew between server and host.
   //
   // SameSite and HttpOnly related parameters are not checked here,
   // so creation of CanonicalCookies with e.g. SameSite=Strict from a cross-site
-  // context is allowed. Create() also does not check whether |url| has a secure
+  // context is allowed. Create() also does not check whether `url` has a secure
   // scheme if attempting to create a Secure cookie. The Secure, SameSite, and
   // HttpOnly related parameters should be checked when setting the cookie in
   // the CookieStore.
@@ -135,25 +104,27 @@ class NET_EXPORT CanonicalCookie {
   // will be unpartitioned even when the cookie line has the Partitioned
   // attribute.
   //
-  // The `block_truncated` argument indicates whether the '\0', '\n', and '\r'
-  // characters should cause the cookie to fail to be created if present
-  // (instead of truncating `cookie_line` at the first occurrence).
+  // If a cookie is returned, `cookie->IsCanonical()` will be true.
   //
-  // If a cookie is returned, |cookie->IsCanonical()| will be true.
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
       const std::string& cookie_line,
       const base::Time& creation_time,
       std::optional<base::Time> server_time,
       std::optional<CookiePartitionKey> cookie_partition_key,
-      bool block_truncated = true,
-      CookieInclusionStatus* status = nullptr);
+      CookieSourceType source_type,
+      CookieInclusionStatus* status);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
   // context of the passed URL.  Returns a null unique pointer if the inputs
   // cannot be sanitized.  If `status` is provided it will have any relevant
   // CookieInclusionStatus rejection reasons set. If a cookie is created,
   // `cookie->IsCanonical()` will be true.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> CreateSanitizedCookie(
       const GURL& url,
       const std::string& name,
@@ -168,7 +139,7 @@ class NET_EXPORT CanonicalCookie {
       CookieSameSite same_site,
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key,
-      CookieInclusionStatus* status = nullptr);
+      CookieInclusionStatus* status);
 
   // FromStorage is a factory method which is meant for creating a new
   // CanonicalCookie using properties of a previously existing cookie
@@ -177,6 +148,9 @@ class NET_EXPORT CanonicalCookie {
   // already in the store.
   // Returns nullptr if the resulting cookie is not canonical,
   // i.e. cc->IsCanonical() returns false.
+  //
+  // NOTE: Do not add any defaults to this constructor, we want every caller to
+  // understand and choose their inputs.
   static std::unique_ptr<CanonicalCookie> FromStorage(
       std::string name,
       std::string value,
@@ -192,10 +166,12 @@ class NET_EXPORT CanonicalCookie {
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
-      int source_port);
+      int source_port,
+      CookieSourceType source_type);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
-  // for tests. This factory should NOT be used in production.
+  // for tests. Use this only if you want to bypass parameter validation to
+  // create a cookie that otherwise shouldn't be possible to store.
   static std::unique_ptr<CanonicalCookie> CreateUnsafeCookieForTesting(
       const std::string& name,
       const std::string& value,
@@ -211,7 +187,18 @@ class NET_EXPORT CanonicalCookie {
       CookiePriority priority,
       std::optional<CookiePartitionKey> partition_key = std::nullopt,
       CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-      int source_port = url::PORT_UNSPECIFIED);
+      int source_port = url::PORT_UNSPECIFIED,
+      CookieSourceType source_type = CookieSourceType::kUnknown);
+
+  // Like Create but with some more friendly defaults for use in tests.
+  static std::unique_ptr<CanonicalCookie> CreateForTesting(
+      const GURL& url,
+      const std::string& cookie_line,
+      const base::Time& creation_time,
+      std::optional<base::Time> server_time = std::nullopt,
+      std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt,
+      CookieSourceType source_type = CookieSourceType::kUnknown,
+      CookieInclusionStatus* status = nullptr);
 
   bool operator<(const CanonicalCookie& other) const {
     // Use the cookie properties that uniquely identify a cookie to determine
@@ -223,60 +210,14 @@ class NET_EXPORT CanonicalCookie {
     return IsEquivalent(other);
   }
 
-  const std::string& Name() const { return name_; }
+  // See CookieBase for other accessors.
   const std::string& Value() const { return value_; }
-  // We represent the cookie's host-only-flag as the absence of a leading dot in
-  // Domain(). See IsDomainCookie() and IsHostCookie() below.
-  // If you want the "cookie's domain" as described in RFC 6265bis, use
-  // DomainWithoutDot().
-  const std::string& Domain() const { return domain_; }
-  const std::string& Path() const { return path_; }
-  const base::Time& CreationDate() const { return creation_date_; }
   const base::Time& ExpiryDate() const { return expiry_date_; }
   const base::Time& LastAccessDate() const { return last_access_date_; }
   const base::Time& LastUpdateDate() const { return last_update_date_; }
   bool IsPersistent() const { return !expiry_date_.is_null(); }
-  bool SecureAttribute() const { return secure_; }
-  bool IsHttpOnly() const { return httponly_; }
-  CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }
-  bool IsPartitioned() const { return partition_key_.has_value(); }
-  const std::optional<CookiePartitionKey>& PartitionKey() const {
-    return partition_key_;
-  }
-
-  // Returns an enum indicating the scheme of the origin that
-  // set this cookie. This is not part of the cookie spec but is being used to
-  // collect metrics for a potential change to the cookie spec
-  // (https://tools.ietf.org/html/draft-west-cookie-incrementalism-01#section-3.4)
-  CookieSourceScheme SourceScheme() const { return source_scheme_; }
-  // Returns the port of the origin that originally set this cookie (the
-  // source port). This is not part of the cookie spec but is being used to
-  // collect metrics for a potential change to the cookie spec.
-  int SourcePort() const { return source_port_; }
-  bool IsDomainCookie() const {
-    return !domain_.empty() && domain_[0] == '.'; }
-  bool IsHostCookie() const { return !IsDomainCookie(); }
-
-  // Returns whether this cookie is Partitioned and its partition key matches a
-  // a same-site context by checking if the cookies domain site is the same as
-  // the partition key's site.
-  // This function should not be used for third-party cookie blocking
-  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
-  // These functions are for recording metrics about partitioned cookie usage.
-  // Returns false if the cookie has no partition key.
-  bool IsFirstPartyPartitioned() const;
-
-  // Returns whether the cookie is partitioned in a third-party context.
-  // This function should not be used for third-party cookie blocking
-  // enforcement-related decisions. That logic should rely on `IsPartitioned`.
-  // These functions are for recording metrics about partitioned cookie usage.
-  // Returns false if the cookie has no partition key.
-  bool IsThirdPartyPartitioned() const;
-
-  // Returns the cookie's domain, with the leading dot removed, if present.
-  // This corresponds to the "cookie's domain" as described in RFC 6265bis.
-  std::string DomainWithoutDot() const;
+  CookieSourceType SourceType() const { return source_type_; }
 
   bool IsExpired(const base::Time& current) const {
     return !expiry_date_.is_null() && current >= expiry_date_;
@@ -310,23 +251,6 @@ class NET_EXPORT CanonicalCookie {
     // Is domain cookie
     return UniqueDomainKey() == ecc.UniqueDomainKey();
   }
-
-  StrictlyUniqueCookieKey StrictlyUniqueKey() const {
-    return std::make_tuple(partition_key_, name_, domain_, path_,
-                           source_scheme_, source_port_);
-  }
-
-  // Returns a key such that two cookies with the same UniqueKey() are
-  // guaranteed to be equivalent in the sense of IsEquivalent().
-  // The `partition_key_` field will always be nullopt when partitioned cookies
-  // are not enabled.
-  // The source_scheme and source_port fields depend on whether or not their
-  // associated features are enabled.
-  UniqueCookieKey UniqueKey() const;
-
-  // Same as UniqueKey() except it does not contain a source_port field. For use
-  // with Domain cookies, which do not consider the source_port.
-  UniqueDomainCookieKey UniqueDomainKey() const;
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
   // to support the stricter 'Secure' behaviors specified in Step 12 of
@@ -367,101 +291,14 @@ class NET_EXPORT CanonicalCookie {
       const CanonicalCookie& secure_cookie) const;
 
   // Returns true if the |other| cookie's data members (instance variables)
-  // match, for comparing cookies in colletions.
-  bool HasEquivalentDataMembers(const CanonicalCookie& other) const {
-    return creation_date_ == other.creation_date_ &&
-           last_access_date_ == other.last_access_date_ &&
-           expiry_date_ == other.expiry_date_ && secure_ == other.secure_ &&
-           httponly_ == other.httponly_ && same_site_ == other.same_site_ &&
-           priority_ == other.priority_ &&
-           partition_key_ == other.partition_key_ && name_ == other.name_ &&
-           value_ == other.value_ && domain_ == other.domain_ &&
-           path_ == other.path_ &&
-           last_update_date_ == other.last_update_date_ &&
-           source_scheme_ == other.source_scheme_ &&
-           source_port_ == other.source_port_;
-  }
-
-  // Similar to operator<, but considers all data members.
-  bool DataMembersPrecede(const CanonicalCookie& other) const {
-    auto f = [](const CanonicalCookie& c) {
-      return std::tie(c.creation_date_, c.last_access_date_, c.expiry_date_,
-                      c.secure_, c.httponly_, c.same_site_, c.priority_,
-                      c.partition_key_, c.name_, c.value_, c.domain_, c.path_,
-                      c.last_update_date_, c.source_scheme_, c.source_port_);
-    };
-    return f(*this) < f(other);
-  }
-
-  void SetSourceScheme(CookieSourceScheme source_scheme) {
-    source_scheme_ = source_scheme;
-  }
-
-  // Set the source port value. Performs a range check and sets the port to
-  // url::PORT_INVALID if value isn't in [0,65535] or url::PORT_UNSPECIFIED.
-  void SetSourcePort(int port);
+  // match, for comparing cookies in collections.
+  bool HasEquivalentDataMembers(const CanonicalCookie& other) const;
 
   void SetLastAccessDate(const base::Time& date) {
     last_access_date_ = date;
   }
-  void SetCreationDate(const base::Time& date) { creation_date_ = date; }
-
-  // Returns true if the given |url_path| path-matches this cookie's cookie-path
-  // as described in section 5.1.4 in RFC 6265. This returns true if |path_| and
-  // |url_path| are identical, or if |url_path| is a subdirectory of |path_|.
-  bool IsOnPath(const std::string& url_path) const;
-
-  // This returns true if this cookie's |domain_| indicates that it can be
-  // accessed by |host|.
-  //
-  // In the case where |domain_| has no leading dot, this is a host cookie and
-  // will only domain match if |host| is identical to |domain_|.
-  //
-  // In the case where |domain_| has a leading dot, this is a domain cookie. It
-  // will match |host| if |domain_| is a suffix of |host|, or if |domain_| is
-  // exactly equal to |host| plus a leading dot.
-  //
-  // Note that this isn't quite the same as the "domain-match" algorithm in RFC
-  // 6265bis, since our implementation uses the presence of a leading dot in the
-  // |domain_| string in place of the spec's host-only-flag. That is, if
-  // |domain_| has no leading dot, then we only consider it matching if |host|
-  // is identical (which reflects the intended behavior when the cookie has a
-  // host-only-flag), whereas the RFC also treats them as domain-matching if
-  // |domain_| is a subdomain of |host|.
-  bool IsDomainMatch(const std::string& host) const;
-
-  // Returns if the cookie should be included (and if not, why) for the given
-  // request |url| using the CookieInclusionStatus enum. HTTP only cookies can
-  // be filter by using appropriate cookie |options|.
-  //
-  // PLEASE NOTE that this method does not check whether a cookie is expired or
-  // not!
-  CookieAccessResult IncludeForRequestURL(
-      const GURL& url,
-      const CookieOptions& options,
-      const CookieAccessParams& params) const;
-
-  // Returns if the cookie with given attributes can be set in context described
-  // by |options| and |params|, and if no, describes why.
-  //
-  // |cookie_access_result| is an optional input status, to allow for status
-  // chaining from callers. It helps callers provide the status of a
-  // canonical cookie that may have warnings associated with it.
-  CookieAccessResult IsSetPermittedInContext(
-      const GURL& source_url,
-      const CookieOptions& options,
-      const CookieAccessParams& params,
-      const std::vector<std::string>& cookieable_schemes,
-      const std::optional<CookieAccessResult>& cookie_access_result =
-          std::nullopt) const;
 
   std::string DebugString() const;
-
-  // Returns the canonical path based on the specified url and path attribute
-  // value. Note that this method does not enforce character set or size
-  // checks on `path_string`.
-  static std::string CanonPathWithString(const GURL& url,
-                                         const std::string& path_string);
 
   // Returns a "null" time if expiration was unspecified or invalid.
   static base::Time ParseExpiration(const ParsedCookie& pc,
@@ -508,7 +345,7 @@ class NET_EXPORT CanonicalCookie {
   //
   // A cookie is considered canonical by this function if-and-only-if:
   // * It is considered canonical by IsCanonical()
-  // * TODO(crbug.com/1244172): Add exceptions once IsCanonical() starts
+  // * TODO(crbug.com/40787717): Add exceptions once IsCanonical() starts
   // enforcing them.
   bool IsCanonicalForFromStorage() const;
 
@@ -537,59 +374,11 @@ class NET_EXPORT CanonicalCookie {
  private:
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest,
                            TestGetAndAdjustPortForTrustworthyUrls);
-  FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
 
-  // The special cookie prefixes as defined in
-  // https://tools.ietf.org/html/draft-west-cookie-prefixes
-  //
-  // This enum is being histogrammed; do not reorder or remove values.
-  enum CookiePrefix {
-    COOKIE_PREFIX_NONE = 0,
-    COOKIE_PREFIX_SECURE,
-    COOKIE_PREFIX_HOST,
-    COOKIE_PREFIX_LAST
-  };
-
-  // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-  // applies to the given cookie |name|.
-  static CookiePrefix GetCookiePrefix(const std::string& name) {
-    return GetCookiePrefix(name,
-                           base::FeatureList::IsEnabled(
-                               net::features::kCaseInsensitiveCookiePrefix));
-  }
-
-  // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
-  // applies to the given cookie |name|. If `check_insensitively` is true then
-  // the string comparison will be performed case insensitively.
-  static CookiePrefix GetCookiePrefix(const std::string& name,
-                                      bool check_insensitively);
   // Records histograms to measure how often cookie prefixes appear in
   // the wild and how often they would be blocked.
-  static void RecordCookiePrefixMetrics(CookiePrefix prefix_case_sensitive,
-                                        CookiePrefix prefix_case_insensitive,
-                                        bool is_insensitive_prefix_valid);
-  // Returns true if a prefixed cookie does not violate any of the rules
-  // for that cookie.
-  static bool IsCookiePrefixValid(CookiePrefix prefix,
-                                  const GURL& url,
-                                  const ParsedCookie& parsed_cookie);
-  static bool IsCookiePrefixValid(CookiePrefix prefix,
-                                  const GURL& url,
-                                  bool secure,
-                                  const std::string& domain,
-                                  const std::string& path);
-
-  // Returns the effective SameSite mode to apply to this cookie. Depends on the
-  // value of the given SameSite attribute and the access semantics of the
-  // cookie.
-  // Note: If you are converting to a different representation of a cookie, you
-  // probably want to use SameSite() instead of this method. Otherwise, if you
-  // are considering using this method, consider whether you should use
-  // IncludeForRequestURL() or IsSetPermittedInContext() instead of doing the
-  // SameSite computation yourself.
-  CookieEffectiveSameSite GetEffectiveSameSite(
-      CookieAccessSemantics access_semantics) const;
+  static void RecordCookiePrefixMetrics(CookiePrefix prefix);
 
   // Returns the appropriate port value for the given `source_url` depending on
   // if the url is considered trustworthy or not.
@@ -605,49 +394,30 @@ class NET_EXPORT CanonicalCookie {
                                                 bool url_is_trustworthy);
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
-  static bool HasHiddenPrefixName(const base::StringPiece cookie_value);
+  static bool HasHiddenPrefixName(const std::string_view cookie_value);
 
-  // Returns whether the cookie was created at most |age_threshold| ago.
-  bool IsRecentlyCreated(base::TimeDelta age_threshold) const;
-
-  // Returns true iff the cookie is a partitioned cookie with a nonce or that
-  // does not violate the semantics of the Partitioned attribute:
-  // - Must have the Secure attribute OR the cookie partition contains a nonce.
-  static bool IsCookiePartitionedValid(const GURL& url,
-                                       const ParsedCookie& parsed_cookie,
-                                       bool partition_has_nonce);
-  static bool IsCookiePartitionedValid(const GURL& url,
-                                       bool secure,
-                                       bool is_partitioned,
-                                       bool partition_has_nonce);
+  // CookieBase:
+  base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;
+  void PostIncludeForRequestURL(
+      const CookieAccessResult& access_result,
+      const CookieOptions& options_used,
+      CookieOptions::SameSiteCookieContext::ContextType
+          cookie_inclusion_context_used) const override;
+  void PostIsSetPermittedInContext(
+      const CookieAccessResult& access_result,
+      const CookieOptions& options_used) const override;
 
   // Keep defaults here in sync with
   // services/network/public/interfaces/cookie_manager.mojom.
-  std::string name_;
+  // These are the fields specific to CanonicalCookie. See CookieBase for other
+  // data fields.
+  // If adding more data fields, please also adjust GetAllDataMembersAsTuple().
   std::string value_;
-  std::string domain_;
-  std::string path_;
-  base::Time creation_date_;
   base::Time expiry_date_;
   base::Time last_access_date_;
   base::Time last_update_date_;
-  bool secure_{false};
-  bool httponly_{false};
-  CookieSameSite same_site_{CookieSameSite::NO_RESTRICTION};
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
-  // This will be std::nullopt for all cookies not set with the Partitioned
-  // attribute or without a nonce. If the value is non-null, then the cookie
-  // will only be delivered when the top-frame site matches the partition key
-  // and the nonce (if present). If the partition key is non-null and opaque,
-  // this means the Partitioned cookie was created on an opaque origin or with
-  // a nonce.
-  std::optional<CookiePartitionKey> partition_key_;
-  CookieSourceScheme source_scheme_{CookieSourceScheme::kUnset};
-  // This can be [0,65535], PORT_UNSPECIFIED, or PORT_INVALID.
-  // PORT_UNSPECIFIED is used for cookies which already existed in the cookie
-  // store prior to this change and therefore their port is unknown.
-  // PORT_INVALID is an error for when an out of range port is provided.
-  int source_port_{url::PORT_UNSPECIFIED};
+  CookieSourceType source_type_{CookieSourceType::kUnknown};
 };
 
 // Used to pass excluded cookie information when it's possible that the

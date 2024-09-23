@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style type="text/css">
+* {
+  appearance:inherit;
+}
+.CLASS2 {
+  word-break:break-all;
+}
+.CLASS12 {
+  -webkit-perspective:8;
+  appearance:checkbox;
+}
+*:first-of-type{
+  -webkit-column-count:256;
+}
+</style>
+<button>
+<div class="CLASS12">
+<ruby class="CLASS2">
+<i>
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AxBxC
+</i><rt class>
+<rtc>
+<rt>
+<textarea rows="1">body
+</textarea>
+<script>
+test(() => {
+}, 'Pass if no crash');
+</script>

@@ -14,6 +14,8 @@
 namespace tracing {
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BASE_DECLARE_FEATURE(kFieldTracing);
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+BASE_DECLARE_FEATURE(kTracingTriggers);
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
@@ -61,17 +63,40 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupBackgroundTracingFromCommandLine();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool SetBackgroundTracingOutputFile();
+bool SetupPresetTracingFromFieldTrial();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-bool HasBackgroundTracingOutputFile();
+bool SetupFieldTracingFromFieldTrial();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool SetupSystemTracingFromFieldTrial();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool SetBackgroundTracingOutputPath();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool HasBackgroundTracingOutputPath();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
+GetTracingTriggerRulesConfig();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool ShouldAnonymizeFieldTracing();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool ShouldTraceStartup();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetPresetTracingConfig();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool IsFieldTracingEnabled();

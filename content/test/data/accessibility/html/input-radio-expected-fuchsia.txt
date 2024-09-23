@@ -13,14 +13,14 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio3' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++++STATIC_TEXT hidden label='Radio3'
+++++++++++STATIC_TEXT hidden
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio4' actions='{DEFAULT}' checked_state='CHECKED'
-++++++++++STATIC_TEXT hidden label='Radio4'
+++++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio5' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++++STATIC_TEXT hidden label='Radio5'
+++++++++++STATIC_TEXT hidden
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio6' actions='{DEFAULT}' checked_state='CHECKED'
-++++++++++STATIC_TEXT hidden label='Radio6'
+++++++++++STATIC_TEXT hidden

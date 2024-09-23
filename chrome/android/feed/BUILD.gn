@@ -4,7 +4,6 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/common/features.gni")
-import("//components/feed/features.gni")
 
 android_resources("chrome_feed_java_resources") {
   sources = [

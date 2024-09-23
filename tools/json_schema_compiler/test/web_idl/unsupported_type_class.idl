@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which is invalid as it uses a type class we don't
+// support in the schema compiler yet.
+interface TestWebIdl {
+  static boolean supportedType();
+  static any unsupportedType();
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

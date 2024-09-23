@@ -15,21 +15,26 @@ import '../settings_shared.css.js';
 import './customize_button_row.js';
 import './key_combination_input_dialog.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
+import {ReorderButtonEvent, ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
 import {getTemplate} from './customize_buttons_subsection.html.js';
 import {DragAndDropManager, OnDropCallback} from './drag_and_drop_manager.js';
-import {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
+import {ActionChoice, ButtonRemapping, MetaKey} from './input_device_settings_types.js';
 import {KeyCombinationInputDialogElement} from './key_combination_input_dialog.js';
+
+const MAX_INPUT_LENGTH = 32;
 
 export interface CustomizeButtonsSubsectionElement {
   $: {
     keyCombinationInputDialog: KeyCombinationInputDialogElement,
     subsection: HTMLDivElement,
+    renamingDialog: CrDialogElement,
   };
 }
 
@@ -37,6 +42,7 @@ declare global {
   interface HTMLElementEventMap {
     'show-renaming-dialog': ShowRenamingDialogEvent;
     'show-key-combination-dialog': ShowKeyCustomizationDialogEvent;
+    'reorder-button': ReorderButtonEvent;
   }
 }
 
@@ -68,11 +74,6 @@ export class CustomizeButtonsSubsectionElement extends
         type: Object,
       },
 
-      shouldShowRenamingDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
       selectedButtonName_: {
         type: String,
         value: '',
@@ -99,23 +100,28 @@ export class CustomizeButtonsSubsectionElement extends
         value: false,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
+      metaKey: Object,
+
+      /** Used to reference the maxInputLength constant in HTML. */
+      maxInputLength: {
+        type: Number,
+        value: MAX_INPUT_LENGTH,
+        readOnly: true,
       },
     };
   }
 
   buttonRemappingList: ButtonRemapping[];
   actionList: ActionChoice[];
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   private selectedButton_: ButtonRemapping;
   private selectedButtonIndex_: number;
-  private shouldShowRenamingDialog_: boolean;
   private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
   private buttonNameInvalid_: boolean;
   private isSaveButtonDisabled_: boolean;
   private duplicateButtonName_: boolean;
+  private readonly maxInputLength: number;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -125,12 +131,23 @@ export class CustomizeButtonsSubsectionElement extends
     this.dragAndDropManager.init(this, this.onDrop_.bind(this));
     this.addEventListener(
         'key-combination-dialog-close', this.onKeyCombinationDialogClose_);
+    this.addEventListener('reorder-button', (e: ReorderButtonEvent) => {
+      this.onDrop_(e.detail.originIndex, e.detail.destinationIndex);
+    });
   }
 
   override disconnectedCallback(): void {
+    super.disconnectedCallback();
     this.dragAndDropManager.destroy();
+    this.removeEventListener('show-renaming-dialog', this.showRenamingDialog_);
+    this.removeEventListener(
+        'show-key-combination-dialog', this.showKeyCombinationDialog_);
+    this.dragAndDropManager.init(this, this.onDrop_.bind(this));
     this.removeEventListener(
         'key-combination-dialog-close', this.onKeyCombinationDialogClose_);
+    this.removeEventListener('reorder-button', (e: ReorderButtonEvent) => {
+      this.onDrop_(e.detail.originIndex, e.detail.destinationIndex);
+    });
   }
 
   private showRenamingDialog_(e: ShowRenamingDialogEvent): void {
@@ -140,7 +157,7 @@ export class CustomizeButtonsSubsectionElement extends
     this.buttonNameInvalid_ = false;
     this.isSaveButtonDisabled_ = false;
     this.duplicateButtonName_ = false;
-    this.shouldShowRenamingDialog_ = true;
+    this.$.renamingDialog.showModal();
   }
 
   /**
@@ -163,7 +180,7 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private cancelRenamingDialogClicked_(): void {
-    this.shouldShowRenamingDialog_ = false;
+    this.$.renamingDialog.close();
   }
 
   private saveRenamingDialogClicked_(): void {
@@ -178,7 +195,7 @@ export class CustomizeButtonsSubsectionElement extends
     }
 
     this.updateButtonName_();
-    this.shouldShowRenamingDialog_ = false;
+    this.$.renamingDialog.close();
   }
 
   private onKeyDownInRenamingDialog_(event: KeyboardEvent): void {
@@ -243,6 +260,17 @@ export class CustomizeButtonsSubsectionElement extends
         this.splice('buttonRemappingList', originIndex, 1);
         // Add item at destination index
         this.splice('buttonRemappingList', destinationIndex, 0, movedItem);
+
+        // Announce which row the item moved to.
+        getAnnouncerInstance().announce(this.i18n(
+            'buttonReorderingAriaAnnouncement', destinationIndex + 1));
+
+        // Focus the dropdown element for where this button is moving so focus
+        // moves with the element.
+        const buttonRows =
+            this.$.subsection.querySelectorAll('customize-button-row');
+        assert(!!buttonRows && buttonRows.length > destinationIndex);
+        buttonRows[destinationIndex].focusReorderingButton();
 
         this.dispatchEvent(new CustomEvent('button-remapping-changed', {
           bubbles: true,

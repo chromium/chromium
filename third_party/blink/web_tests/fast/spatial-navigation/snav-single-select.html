@@ -1,95 +1,62 @@
-<html>
-  <!--
-    This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select element.
+<!DOCTYPE html>
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
+      <td style="vertical-align: top; text-align: center;"><select id="start"><option>1</option><option>2</option><option>3</option></select></td>
+      <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select element.<br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Focus moves away from select in 4 different directions to neighbor nodes and back.<br>
+</p>
 
-    * Pre-conditions:
-    1) DRT support for SNav enable/disable.
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "8"],
+    ["Up", "start"],
+    ["Up", "2"],
+    ["Down", "start"],
+    ["Right", "6"],
+    ["Left", "start"],
+    ["Left", "4"],
+    ["Right", "start"],
+    ["Space", "start"],
+    ["Down", "start"],
+    ["Up", "start"],
+    ["Space", "start"],
+    ["Down", "8"]
+  ];
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Focus moves away from select in 4 different directions to neighbor nodes and back.
-  -->
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap, true, postFocusMoveCheck);
 
-    var resultMap = [
-      ["Down", "8"],
-      ["Up", "start"],
-      ["Up", "2"],
-      ["Down", "start"],
-      ["Right", "6"],
-      ["Left", "start"],
-      ["Left", "4"],
-      ["Right", "start"],
-      ["Space", "start"],
-      ["Down", "start"],
-      ["Up", "start"],
-      ["Space", "start"],
-      ["Down", "8"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, additionalTest);
-    }
-
-    function additionalTest()
-    {
-      document.getElementById("start").focus();
-      shouldBe("gFocusedDocument.getElementById(\"start\").selectedIndex", "0");
-      eventSender.keyDown(" ");
-      eventSender.keyDown("ArrowDown");
-      shouldBe("gFocusedDocument.getElementById(\"start\").selectedIndex", "1");
-      eventSender.keyDown("ArrowUp");
-      shouldBe("gFocusedDocument.getElementById(\"start\").selectedIndex", "0");
-
-      testCompleted();
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-      <tbody>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
-          <td style="vertical-align: top; text-align: center;"><select id="start"><option>1</option><option>2</option><option>3</option></select></td>
-          <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="console"></div>
-  </body>
-</html>
-
+  function postFocusMoveCheck() {
+    const start = document.getElementById("start");
+    start.focus();
+    assert_equals(start.selectedIndex, 0);
+    eventSender.keyDown(" ");
+    eventSender.keyDown("ArrowDown");
+    assert_equals(start.selectedIndex, 1);
+    eventSender.keyDown("ArrowUp");
+    assert_equals(start.selectedIndex, 0);
+  }
+</script>

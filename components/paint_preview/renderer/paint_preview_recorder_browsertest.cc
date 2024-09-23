@@ -61,9 +61,9 @@ class PaintPreviewRecorderRenderViewTest
  public:
   PaintPreviewRecorderRenderViewTest() {
     std::vector<base::test::FeatureRef> enabled;
-    // TODO(crbug/1022398): This is required to bypass a seemingly unrelated
-    // DCHECK for |use_overlay_scrollbars_| in NativeThemeAura on ChromeOS when
-    // painting scrollbars when first calling LoadHTML().
+    // TODO(crbug.com/40106592): This is required to bypass a seemingly
+    // unrelated DCHECK for |use_overlay_scrollbars_| in NativeThemeAura on
+    // ChromeOS when painting scrollbars when first calling LoadHTML().
     feature_list_.InitAndDisableFeature(features::kOverlayScrollbar);
     blink::WebTestingSupport::SaveRuntimeFeatures();
     blink::WebRuntimeFeatures::EnableFeatureFromString(kCompositeAfterPaint,

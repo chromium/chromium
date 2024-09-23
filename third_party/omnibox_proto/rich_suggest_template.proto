@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'RichSuggestTemplateProto';
+
+package omnibox;
+
+import "rich_answer_template.proto";
+
+message RichSuggestTemplate {
+  oneof template {
+    RichAnswerTemplate rich_answer_template = 1;
+  }
+}

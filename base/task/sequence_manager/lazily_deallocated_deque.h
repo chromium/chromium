@@ -19,6 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -315,7 +316,7 @@ class LazilyDeallocatedDeque {
     size_t front_index_ = 0;
     size_t back_index_ = 0;
     std::unique_ptr<char[]> backing_store_;
-    base::span<T> data_;
+    base::raw_span<T> data_;
     std::unique_ptr<Ring> next_ = nullptr;
   };
 

@@ -5,9 +5,10 @@
 #ifndef BASE_PROCESS_PROCESS_H_
 #define BASE_PROCESS_PROCESS_H_
 
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -43,6 +44,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
 // is unchanged, since background process is under the spell of the background
 // CPU c-group (via cgroup.procs).
 BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
+
+class ProcessPriorityDelegate;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -201,13 +204,14 @@ class BASE_EXPORT Process {
     // to the user. Lowest priority.
     kBestEffort,
 
-    // The process contributes to content that is visible to the user. High
-    // priority.
+    // The process contributes to content that is visible to the user, but the
+    // work don't have significant performance or latency requirement, so it can
+    // run in energy efficient manner. Moderate priority.
     kUserVisible,
 
     // The process contributes to content that is of the utmost importance to
     // the user, like producing audible content, or visible content in the
-    // focused window. Highest priority.
+    // main frame. High priority.
     kUserBlocking,
   };
 
@@ -252,6 +256,10 @@ class BASE_EXPORT Process {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Sets a delegate which handles process priority changes. This
+  // must be externally synchronized with any call to base::Process methods.
+  static void SetProcessPriorityDelegate(ProcessPriorityDelegate* delegate);
+
   // Exposes OneGroupPerRendererEnabled() to unit tests.
   static bool OneGroupPerRendererEnabledForTesting();
 
@@ -260,17 +268,49 @@ class BASE_EXPORT Process {
   // browser process.
   static void CleanUpStaleProcessStates();
 
-  // Initializes the process's priority. If OneGroupPerRenderer is enabled, it
-  // creates a unique cgroup for the process. This should be called before
-  // SetPriority(). This is a no-op if the Process is not valid or if it has
-  // already been called.
+  // Initializes the process's priority.
+  //
+  // This should be called before SetPriority().
+  //
+  // If SchedQoSOnResourcedForChrome is enabled, this creates a cache entry for
+  // the process priority. The returned `base::Process::PriorityEntry` should be
+  // freed when the process is terminated so that the cached entry is freed from
+  // the internal map.
+  //
+  // If OneGroupPerRenderer is enabled, it also creates a unique cgroup for the
+  // process.
+  // This is a no-op if the Process is not valid or if it has already been
+  // called.
   void InitializePriority();
+
+  // Clears the entities initialized by InitializePriority().
+  //
+  // This is no-op if SchedQoSOnResourcedForChrome is disabled.
+  void ForgetPriority();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
   // Sets the priority of the current process to its default value.
   static void SetCurrentTaskDefaultRole();
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  using TerminateCallback = bool (*)(ProcessHandle handle);
+  using WaitForExitCallback = bool (*)(ProcessHandle handle,
+                                       int* exit_code,
+                                       base::TimeDelta timeout);
+  // Function ptrs to implement termination without polluting //base with
+  // BrowserEngineKit APIs.
+  static void SetTerminationHooks(TerminateCallback terminate_callback,
+                                  WaitForExitCallback wait_callback);
+#if TARGET_OS_SIMULATOR
+  // Methods for supporting both "content processes" and traditional
+  // forked processes. For non-simulator builds on iOS every process would
+  // be a "content process" so we don't need the conditionals.
+  void SetIsContentProcess();
+  bool IsContentProcess() const;
+#endif
+#endif
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -287,6 +327,13 @@ class BASE_EXPORT Process {
   static void CleanUpProcessScheduled(Process process, int remaining_retries);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
+  bool TerminateInternal(int exit_code, bool wait) const;
+  bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
+                                  int* exit_code,
+                                  base::TimeDelta timeout) const;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle process_;
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -297,6 +344,14 @@ class BASE_EXPORT Process {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   bool is_current_process_;
+#endif
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+  // A flag indicating that this is a "content process". iOS does not support
+  // generic process invocation but it does support some types of well defined
+  // processes. These types of processes are defined at the //content layer so
+  // for termination we defer to some globally initialized callbacks.
+  bool content_process_ = false;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -313,7 +368,7 @@ class BASE_EXPORT Process {
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
 BASE_EXPORT Process::Priority GetProcessPriorityCGroup(
-    const StringPiece& cgroup_contents);
+    std::string_view cgroup_contents);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

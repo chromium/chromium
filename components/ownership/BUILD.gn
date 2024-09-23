@@ -6,46 +6,46 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//crypto/features.gni")
 
-if (is_chromeos_ash) {
-  component("ownership") {
-    sources = [
-      "mock_owner_key_util.cc",
-      "mock_owner_key_util.h",
-      "owner_key_util.cc",
-      "owner_key_util.h",
-      "owner_key_util_impl.cc",
-      "owner_key_util_impl.h",
-      "owner_settings_service.cc",
-      "owner_settings_service.h",
-    ]
+assert(is_chromeos_ash)
 
-    defines = [ "OWNERSHIP_IMPLEMENTATION" ]
+component("ownership") {
+  sources = [
+    "mock_owner_key_util.cc",
+    "mock_owner_key_util.h",
+    "owner_key_util.cc",
+    "owner_key_util.h",
+    "owner_key_util_impl.cc",
+    "owner_key_util_impl.h",
+    "owner_settings_service.cc",
+    "owner_settings_service.h",
+  ]
 
-    public_deps = [ "//components/policy/proto" ]
+  defines = [ "OWNERSHIP_IMPLEMENTATION" ]
 
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//components/keyed_service/core",
-      "//components/policy:generated",
-      "//components/policy/core/common",
-      "//components/policy/proto",
-      "//crypto",
-    ]
+  public_deps = [ "//components/policy/proto" ]
 
-    if (use_nss_certs) {
-      public_configs = [ "//build/config/linux/nss" ]
-    }
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/core",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//crypto",
+  ]
+
+  if (use_nss_certs) {
+    public_configs = [ "//build/config/linux/nss" ]
   }
+}
 
-  source_set("unit_tests") {
-    testonly = true
-    sources = [ "owner_key_util_impl_unittest.cc" ]
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "owner_key_util_impl_unittest.cc" ]
 
-    deps = [
-      ":ownership",
-      "//base",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":ownership",
+    "//base",
+    "//testing/gtest",
+  ]
 }

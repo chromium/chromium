@@ -1,0 +1,89 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles">
+  .perk-icon {
+    height: 48px;
+    width: 48px;
+  }
+  #perk-illustration {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .illustration {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  p {
+    margin-top: 0px;
+  }
+</style>
+<oobe-loading-dialog id="progressDialog" for-step="loading"
+    title-key="perksLoading" role="dialog">
+    <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
+<oobe-adaptive-dialog id="perkDiscovery" for-step="overview"
+    role="dialog"
+    aria-label$="[[getCurrentPerkTitle(currentPerk)]]">
+    <template is="dom-repeat" rendered-item-count="{{itemIconsRendered}}"
+        items="{{perksList}}">
+          <webview
+            slot="icon"
+            role="img"
+            hidden="[[isElementHidden(currentPerk, index)]]"
+            class="perk-icon"
+            src="[[item.iconUrl]]"
+            aria-hidden="true"
+            tabindex="-1">
+          </webview>
+    </template>
+  <h1 slot="title">
+    [[getCurrentPerkTitle(currentPerk)]]
+  </h1>
+  <div slot="subtitle">
+    <p>
+      [[getCurrentPerkSubtitle(currentPerk)]]
+    </p>
+    <p>
+      [[getCurrentPerkAdditionalText(currentPerk)]]
+    </p>
+  </div>
+  <div slot="content" id="perk-illustration" aria-hidden="true"
+        class="flex layout vertical center center-justified">
+    <template is="dom-repeat" items="{{perksList}}"
+            rendered-item-count="{{itemIllustrationsRendered}}">
+      <webview
+        role="img"
+        hidden="[[isElementHidden(currentPerk, index)]]"
+        class="illustration"
+        src="[[item.illustrationUrl]]"
+        aria-hidden="true"
+        tabindex="-1">
+      </webview>
+    </template>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" on-click="onBackClicked"
+        hidden="[[!canGoBack(currentPerk)]]">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button  on-click="onNotInterestedClicked"
+            id="perk-skip-button">
+       <div slot="text">
+            [[getCurrentPerkSecondaryButtonLabel(currentPerk)]]
+        </div>
+    </oobe-text-button>
+    <oobe-text-button inverse on-click="onInterestedClicked"
+            id="perk-next-button" class="focus-on-show">
+        <div slot="text">
+            [[getCurrentPerkPrimaryButtonLabel(currentPerk)]]
+        </div>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

@@ -20,7 +20,6 @@ EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
       return arc::mojom::ChangeType::DELETED;
   }
   NOTREACHED();
-  return arc::mojom::ChangeType::CHANGED;
 }
 
 // static
@@ -36,7 +35,6 @@ bool EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/lock.h"
-#include "chrome/updater/splash_screen.h"
 
 namespace base {
 class Version;
@@ -32,8 +31,9 @@ class UpdateService;
 class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
-  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>(
-      scoped_refptr<UpdateService> update_service)>;
+  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>()>;
+  virtual void Initialize() = 0;
+
   virtual void InstallApp(const std::string& app_id,
                           const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
@@ -41,6 +41,10 @@ class AppInstallController
   virtual void InstallAppOffline(const std::string& app_id,
                                  const std::string& app_name,
                                  base::OnceCallback<void(int)> callback) = 0;
+  virtual void Exit(int exit_code) = 0;
+
+  virtual void set_update_service(
+      scoped_refptr<UpdateService> update_service) = 0;
 
  protected:
   virtual ~AppInstallController() = default;
@@ -49,15 +53,16 @@ class AppInstallController
   friend class base::RefCountedThreadSafe<AppInstallController>;
 };
 
-// Sets the updater up, shows up a splash screen, then installs an application
-// while displaying the UI progress window.
+// Sets the updater up then installs an application while displaying the UI
+// progress window.
 class AppInstall : public App {
  public:
-  AppInstall(SplashScreen::Maker splash_screen_maker,
-             AppInstallController::Maker app_install_controller_maker);
+  explicit AppInstall(AppInstallController::Maker app_install_controller_maker);
 
  private:
   ~AppInstall() override;
+
+  void Shutdown(int exit_code);
 
   // Overrides for App.
   [[nodiscard]] int Initialize() override;
@@ -78,8 +83,7 @@ class AppInstall : public App {
 
   void RegisterUpdater();
 
-  // Handles the --tag and --app-id command line arguments, and triggers
-  // installing of the corresponding application if either argument is present.
+  // Installs an application if the `app_id_` is valid.
   void MaybeInstallApp();
 
   // Bound to the main sequence.
@@ -93,15 +97,8 @@ class AppInstall : public App {
   std::string app_id_;
   std::string app_name_;
 
-  // Creates instances of |SplashScreen|.
-  SplashScreen::Maker splash_screen_maker_;
-
   // Creates instances of |AppInstallController|.
   AppInstallController::Maker app_install_controller_maker_;
-
-  // The splash screen has a fading effect. That means that the splash screen
-  // needs to be alive for a while, until the fading effect is over.
-  std::unique_ptr<SplashScreen> splash_screen_;
 
   scoped_refptr<AppInstallController> app_install_controller_;
 

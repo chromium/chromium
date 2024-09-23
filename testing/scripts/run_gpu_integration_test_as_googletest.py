@@ -2,7 +2,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs an isolate bundled Telemetry GPU integration test.
 
 If optional argument --isolated-script-test-output=[FILENAME] is passed
@@ -19,15 +18,10 @@ invoke an arbitrary executable.
 """
 
 import json
-import os
 import sys
 
+import common
 import gpu_integration_test_adapter
-
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
 
 
 def main():
@@ -45,8 +39,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

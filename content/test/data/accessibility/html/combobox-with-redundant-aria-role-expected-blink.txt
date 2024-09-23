@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed role='combobox' value='Option 1'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='Option 1' selected=true
+++++++++++menuListOption invisible name='Option 2' selected=false
+++++++++++menuListOption invisible name='Option 3' selected=false

@@ -15,7 +15,6 @@
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
-
 class AXPlatformTreeManager;
 
 // This class has two distinct event recording code paths. When we are
@@ -24,7 +23,7 @@ class AXPlatformTreeManager;
 // ATK doesn't support intercepting events from other processes, if we have a
 // non-zero PID or an accessibility application name pattern, we use AT-SPI2
 // directly to intercept events.
-// TODO(crbug.com/1133330) AT-SPI2 should be capable of intercepting events
+// TODO(crbug.com/40722484) AT-SPI2 should be capable of intercepting events
 // in-process as well, thus it should be possible to remove the ATK code path
 // entirely.
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux

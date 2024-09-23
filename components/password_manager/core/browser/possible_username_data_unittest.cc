@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -32,15 +33,17 @@ class IsPossibleUsernameValidTest : public testing::Test {
       /*is_likely_otp=*/false};
 };
 
-// Check that if more than |kPossibleUsernameExpirationTimeout| time has
-// passed since the last change of |possible_username_data_|, then it is stale.
+// Checks that `possible_username_data_` becomes stale over some time.
 TEST_F(IsPossibleUsernameValidTest, IsPossibleUsernameStale) {
   EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward for a little less than expiration time, but not
   // exactly to not flake the test.
-  task_environment_.FastForwardBy(kPossibleUsernameExpirationTimeout -
-                                  base::Seconds(3));
+  task_environment_.FastForwardBy(
+      base::FeatureList::IsEnabled(
+          features::kUsernameFirstFlowWithIntermediateValues)
+          ? base::Minutes(features::kSingleUsernameTimeToLive.Get())
+          : kPossibleUsernameExpirationTimeout - base::Seconds(3));
   EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward more until the data becomes stale.

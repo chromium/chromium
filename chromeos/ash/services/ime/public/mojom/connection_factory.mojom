@@ -33,11 +33,9 @@ interface ConnectionFactory {
     pending_associated_remote<InputMethodHost> input_method_host,
     [MinVersion=2] InputMethodSettings? settings)
     => (bool success);
-  // Sets up a connection to a JapaneseDecoder interface which allows access to
-  // thes Japanese decoder's settings information. The implementation of this
-  // will be located inside of the ImeShared lib. Once the data has been
-  // migrated, we can deprecate / delete this interface.
-  [MinVersion=3] ConnectToJapaneseDecoder@1(
-    pending_associated_receiver<JapaneseDecoder> japanese_decoder)
+
+  // This holds a Japanese related function that was never used.
+  [MinVersion=3] Unused@1(
+    pending_associated_receiver<JpUnused> unused)
     => (bool success);
 };

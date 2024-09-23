@@ -168,3 +168,24 @@ fuzzer_test("webcrypto_rsa_import_key_spki_fuzzer") {
     "//third_party/blink/public:blink_headers",
   ]
 }
+
+test("webcrypto_testing_fuzzer") {
+  fuzztests = [
+    "WebCryptoFuzzer.ImportKeyFuzzer",
+    "WebCryptoFuzzer.EncryptFuzzer",
+    "WebCryptoFuzzer.DecryptFuzzer",
+    "WebCryptoFuzzer.DigestFuzzer",
+    "WebCryptoFuzzer.SignFuzzer",
+    "WebCryptoFuzzer.VerifyFuzzer",
+    "WebCryptoFuzzer.DeriveBitsFuzzer",
+  ]
+  sources = [ "webcrypto_fuzzer.cc" ]
+  deps = [
+    ":webcrypto",
+    "//base",
+    "//crypto",
+    "//mojo/core/embedder",
+    "//third_party/blink/public:blink",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}

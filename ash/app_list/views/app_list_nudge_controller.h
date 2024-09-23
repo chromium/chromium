@@ -30,6 +30,8 @@ class ASH_EXPORT AppListNudgeController {
     kPrivacyNotice,
     // A nudge in app list that guide users to reorder apps using context menu.
     kReorderNudge,
+    // A nudge in app list that notifies user that they are in a tutorial view.
+    kTutorialNudge,
   };
 
   AppListNudgeController();

@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import androidx.annotation.CallSuper;
+import androidx.test.InstrumentationRegistry;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -23,14 +24,25 @@ import java.util.List;
  * single-process mode on L-N and multi-process (AKA sandboxed renderer) mode on O+, this test
  * runner defaults to duplicating each test in both modes.
  *
- * <p>
- * Tests can instead be run in either single or multi-process only with {@link OnlyRunIn}. This can
- * be done if the test case needs this for correctness or to save infrastructure resources for tests
- * which exercise code which cannot depend on single vs. multi process.
+ * <p>Tests can instead be run in single and/or multi process modes with {@link OnlyRunIn}:
+ *
+ * <ul>
+ *   <li>SINGLE_PROCESS | MULTI_PROCESS: Run test only in single or multi process mode. This should
+ *       only be used if the test case needs this for correctness.
+ *   <li>EITHER_PROCESS: Run test in either single or multi process mode. This can be used to save
+ *       infrastructure resources if the code being tested does not depend on the renderer process
+ *       so the test will not benefit from duplication
+ *   <li>SINGLE_AND_MULTI_PROCESS: Run test in both single and multi process modes.
+ * </ul>
  */
 public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     // This should match the definition in Android test runner scripts: bit.ly/3ynoREM
     private static final String MULTIPROCESS_TEST_NAME_SUFFIX = "__multiprocess_mode";
+
+    // Accepted choices are "single" or "multiple", indicating that only tests
+    // runnable in the specified process mode should run once in the specified mode.
+    // The argument works at listing test stage in `List(...)`.
+    private static final String PROCESS_MODE_FLAG = "AwJUnit4ClassRunner.ProcessMode";
 
     private final TestHook mWebViewMultiProcessHook =
             (targetContext, testMethod) -> {
@@ -77,21 +89,40 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
 
     @Override
     protected List<FrameworkMethod> getChildren() {
-        List<FrameworkMethod> result = new ArrayList<>();
+        String processModeToExecute =
+                InstrumentationRegistry.getArguments().getString(PROCESS_MODE_FLAG);
+        boolean runSingleProcess =
+                (processModeToExecute == null || "single".equals(processModeToExecute));
+        boolean runMultiProcess =
+                (processModeToExecute == null || "multiple".equals(processModeToExecute));
+        if (!runSingleProcess && !runMultiProcess) {
+            throw new IllegalArgumentException(
+                    "'AwJUnit4ClassRunner.ProcessMode' value should be 'single' or 'multiple'.");
+        }
+        List<FrameworkMethod> singleProcessResults = new ArrayList<>();
+        List<FrameworkMethod> multiProcessResults = new ArrayList<>();
         for (FrameworkMethod method : computeTestMethods()) {
             switch (processModeForMethod(method)) {
                 case SINGLE_PROCESS:
-                    result.add(method);
+                    singleProcessResults.add(method);
                     break;
                 case MULTI_PROCESS:
-                    result.add(new WebViewMultiProcessFrameworkMethod(method));
+                case EITHER_PROCESS:
+                    multiProcessResults.add(new WebViewMultiProcessFrameworkMethod(method));
                     break;
                 case SINGLE_AND_MULTI_PROCESS:
                 default:
-                    result.add(new WebViewMultiProcessFrameworkMethod(method));
-                    result.add(method);
+                    multiProcessResults.add(new WebViewMultiProcessFrameworkMethod(method));
+                    singleProcessResults.add(method);
                     break;
             }
+        }
+        List<FrameworkMethod> result = new ArrayList<>();
+        if (runSingleProcess) {
+            result.addAll(singleProcessResults);
+        }
+        if (runMultiProcess) {
+            result.addAll(multiProcessResults);
         }
         return result;
     }

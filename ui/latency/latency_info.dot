@@ -7,17 +7,11 @@ digraph LatencyInfo {
   {
     node[style="dotted,rounded"];
 
-    end_to_end_metrics
-      [label="\
-Event.Latency.EndToEnd.KeyPress\n\
-Event.Latency.EndToEnd.TouchpadPinch2\n"];
     scroll_to_schedule_metrics
       [label="\
 UKM: Event.<scroll_name>.<input_modality>.TimeToHandled\n"];
     scroll_to_gpu_swap_metrics
       [label="\
-Event.Latency.<scroll_name>.TimeToScrollUpdateSwapBegin2\n\
-Event.Latency.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin4\n\
 UKM: Event.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin\n"]
   }
 

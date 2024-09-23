@@ -18,7 +18,7 @@ void RecordContentSettingsHistogram(const std::string& name,
                                     ContentSettingsType content_setting);
 
 // Records an active expiry of an expired content setting in UMA.
-void RecordActiveExpiryEvent(HostContentSettingsMap::ProviderType provider_type,
+void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,
                              ContentSettingsType content_setting_type);
 
 }  // namespace content_settings_uma_util

@@ -16,7 +16,7 @@
 @class UIImage;
 @class NSData;
 #else
-// TODO(https://crbug.com/1433041): Remove this.
+// TODO(crbug.com/40264240): Remove this.
 class UIImage;
 #endif
 
@@ -28,7 +28,7 @@ SK_API SkBitmap CGImageToSkBitmap(CGImageRef image,
                                   bool is_opaque);
 
 // Given an SkBitmap and a color space, return an autoreleased UIImage.
-// TODO(https://crbug.com/1433041): Restrict this to Objective-C callers.
+// TODO(crbug.com/40264240): Restrict this to Objective-C callers.
 SK_API UIImage* SkBitmapToUIImageWithColorSpace(const SkBitmap& skia_bitmap,
                                                 CGFloat scale,
                                                 CGColorSpaceRef color_space);

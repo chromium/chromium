@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
       "bounds": [150, 150]
     },
     {
@@ -18,24 +18,24 @@
       "backgroundColor": "#000000"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
       "bounds": [150, 150],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) PRE id='layers'",
+      "name": "LayoutBlockFlow (children-inline) PRE id='layers'",
       "position": [8, 8],
       "bounds": [784, 16],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='indicator box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='indicator box'",
       "position": [0, 250],
       "bounds": [100, 100],
       "contentsOpaque": true,

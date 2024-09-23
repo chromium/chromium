@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -27,6 +27,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   explicit TestSyncUserSettings(TestSyncService* service);
   ~TestSyncUserSettings() override;
 
+  // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -38,6 +39,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   bool IsTypeManagedByCustodian(UserSelectableType type) const override;
+  SyncUserSettings::UserSelectableTypePrefState GetTypePrefStateForAccount(
+      UserSelectableType type) const override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   int GetNumberOfAccountsWithPasswordsSelected() const override;
 #endif
@@ -46,10 +49,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
-#if BUILDFLAG(IS_IOS)
-  void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
-#endif  // BUILDFLAG(IS_IOS)
-  ModelTypeSet GetPreferredDataTypes() const;
+  DataTypeSet GetPreferredDataTypes() const;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,7 +69,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
-  syncer::ModelTypeSet GetEncryptedDataTypes() const override;
+  syncer::DataTypeSet GetAllEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
@@ -88,6 +88,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   std::unique_ptr<Nigori> GetExplicitPassphraseDecryptionNigoriKey()
       const override;
 
+  void SetRegisteredSelectableTypes(UserSelectableTypeSet types);
   void SetInitialSyncFeatureSetupComplete();
   void ClearInitialSyncFeatureSetupComplete();
   void SetTypeIsManaged(UserSelectableType type, bool managed);
@@ -95,23 +96,32 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
 #endif
   void SetCustomPassphraseAllowed(bool allowed);
-  void SetPassphraseRequired(bool required);
-  void SetPassphraseRequiredForPreferredDataTypes(bool required);
+  void SetPassphraseRequired();
+  void SetPassphraseRequired(const std::string& required_passphrase);
   void SetTrustedVaultKeyRequired(bool required);
-  void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
+  void SetPassphraseType(PassphraseType type);
+  void SetExplicitPassphraseTime(base::Time t);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSyncFeatureDisabledViaDashboard(bool disabled_via_dashboard);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  const std::string& GetEncryptionPassphrase() const;
+
  private:
+  bool IsEncryptedDatatypePreferred() const;
+
   const raw_ptr<TestSyncService> service_;
+
+  UserSelectableTypeSet registered_selectable_types_ =
+      UserSelectableTypeSet::All();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  UserSelectableOsTypeSet selected_os_types_;
+  UserSelectableOsTypeSet selected_os_types_ = UserSelectableOsTypeSet::All();
   UserSelectableOsTypeSet managed_os_types_;
 #endif
-  UserSelectableTypeSet selected_types_;
+  UserSelectableTypeSet selected_types_ = UserSelectableTypeSet::All();
   UserSelectableTypeSet managed_types_;
 
   bool initial_sync_feature_setup_complete_ = true;
@@ -120,12 +130,13 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool sync_all_os_types_enabled_ = true;
 #endif
 
+  bool custom_passphrase_allowed_ = true;
   bool passphrase_required_ = false;
-  bool passphrase_required_for_preferred_data_types_ = false;
   bool trusted_vault_key_required_ = false;
-  bool trusted_vault_key_required_for_preferred_data_types_ = false;
   bool trusted_vault_recoverability_degraded_ = false;
-  bool using_explicit_passphrase_ = false;
+  PassphraseType passphrase_type_ = PassphraseType::kKeystorePassphrase;
+  base::Time explicit_passphrase_time_;
+  std::string encryption_passphrase_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool sync_feature_disabled_via_dashboard_ = false;

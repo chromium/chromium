@@ -4,14 +4,13 @@
 
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 
-#include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "components/crash/content/browser/process_exit_reason_from_system_android.h"
 
 namespace crash_reporter {
@@ -41,7 +40,7 @@ void ReportCrashCount(CrashMetricsReporter::ProcessedCrashCounts crash_type,
 void RecordSystemExitReason(
     base::ProcessHandle pid,
     const CrashMetricsReporter::ReportedCrashTypeSet& reported_counts) {
-  base::StringPiece suffix;
+  std::string_view suffix;
   if (reported_counts.count(CrashMetricsReporter::ProcessedCrashCounts::
                                 kRendererForegroundVisibleSubframeOom) > 0) {
     suffix = "VisibleSubframeOom";
@@ -177,7 +176,12 @@ void CrashMetricsReporter::ChildProcessExited(
         case base::android::ChildBindingState::UNBOUND:
           break;
         case base::android::ChildBindingState::WAIVED:
-          if (!intentional_kill && !info.normal_termination) {
+          if (intentional_kill || info.normal_termination) {
+            ReportCrashCount(
+                ProcessedCrashCounts::
+                    kRendererForegroundInvisibleWithWaivedBindingKilled,
+                &reported_counts);
+          } else {
             ReportCrashCount(
                 ProcessedCrashCounts::
                     kRendererForegroundInvisibleWithWaivedBindingOom,

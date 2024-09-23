@@ -9,10 +9,11 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
+
+class AddressDataManager;
 
 // Checks the country-specific import requirements of the `profile` by ensuring
 // that certain types have a non-empty value. For each requirement the function
@@ -43,7 +44,13 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 // complete profiles are migrated and this method does not check for the
 // completeness of the `profile`.
 bool IsEligibleForMigrationToAccount(
-    const PersonalDataManager& personal_data_manager,
+    const AddressDataManager& address_data_manager,
+    const AutofillProfile& profile);
+
+// Returns true if the profile is eligible to be migrated to the Account. Does
+// not check if the user is eligible for account storage.
+bool IsProfileEligibleForMigrationToAccount(
+    const AddressDataManager& address_data_manager,
     const AutofillProfile& profile);
 }  //  namespace autofill
 

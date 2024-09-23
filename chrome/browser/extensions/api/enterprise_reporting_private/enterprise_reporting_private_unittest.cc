@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 #include <tuple>
 
@@ -18,12 +23,12 @@
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,6 +36,7 @@
 #include "components/component_updater/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -49,9 +55,10 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <netfw.h>
 #include <shlobj.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/test/test_reg_util_win.h"
@@ -573,15 +580,14 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 
-  if (safe_browsing_enabled) {
-    if (safe_browsing_enhanced_enabled)
-      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kEnhanced,
-                info.safe_browsing_protection_level);
-    else
-      EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
-                info.safe_browsing_protection_level);
-  } else {
+  if (!safe_browsing_enabled) {
     EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kDisabled,
+              info.safe_browsing_protection_level);
+  } else if (safe_browsing_enhanced_enabled) {
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kEnhanced,
+              info.safe_browsing_protection_level);
+  } else {
+    EXPECT_EQ(enterprise_reporting_private::SafeBrowsingLevel::kStandard,
               info.safe_browsing_protection_level);
   }
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
@@ -654,7 +660,7 @@ class EnterpriseReportingPrivateGetContextPasswordProtectionWarningTrigger
           kPhishingReuse:
         return safe_browsing::PHISHING_REUSE;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX;
     }
   }
@@ -782,7 +788,7 @@ TEST_P(EnterpriseReportingPrivateGetContextOSFirewallLinuxTest, Test) {
                       "#ENABLED=yes\nLOGLEVEL=yes\nENABLED=yesno\n");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   enterprise_signals::ScopedUfwConfigPathForTesting scoped_path(
@@ -949,7 +955,7 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
         return extensions::api::enterprise_reporting_private::SettingValue::
             kEnabled;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return extensions::api::enterprise_reporting_private::SettingValue::
             kUnknown;
     }
@@ -1011,11 +1017,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-      url_check_enabled() ? safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
-                          : safe_browsing::REAL_TIME_CHECK_DISABLED);
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      url_check_enabled()
+          ? enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
+          : enterprise_connectors::REAL_TIME_CHECK_DISABLED);
   profile()->GetPrefs()->SetInteger(
-      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 

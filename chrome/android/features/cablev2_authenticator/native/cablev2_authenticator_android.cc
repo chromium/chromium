@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
@@ -31,19 +36,17 @@
 // These "headers" actually contain several function definitions and thus can
 // only be included once across Chromium.
 #include "base/time/time.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/cablev2_authenticator/jni_headers/BLEAdvert_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/CableAuthenticator_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/USBHandler_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfByteArray;
 using base::android::ToJavaByteArray;
-using base::android::ToJavaIntArray;
 
 namespace {
 
@@ -249,7 +252,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         blink::mojom::PublicKeyCredentialCreationOptions::Serialize(&params);
 
     Java_CableAuthenticator_makeCredential(env_, cable_authenticator_,
-                                           ToJavaByteArray(env_, params_bytes));
+                                           params_bytes);
   }
 
   void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
@@ -263,15 +266,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     std::vector<uint8_t> params_bytes =
         blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&params);
 
-    ScopedJavaLocalRef<jbyteArray> tunnel_id;
-    if (global_data.server_link_tunnel_id.has_value()) {
-      tunnel_id = ToJavaByteArray(env_, *global_data.server_link_tunnel_id);
-    }
-
     RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionStarted);
     Java_CableAuthenticator_getAssertion(env_, cable_authenticator_,
-                                         ToJavaByteArray(env_, params_bytes),
-                                         tunnel_id);
+                                         params_bytes);
   }
 
   void OnStatus(Status status) override {
@@ -364,6 +361,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         case Error::NO_SCREENLOCK:
         case Error::NO_BLUETOOTH_PERMISSION:
         case Error::QR_URI_ERROR:
+        case Error::INVALID_JSON:
           result = CableV2MobileResult::kInternalError;
           break;
       }
@@ -439,8 +437,9 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     Java_USBHandler_startReading(env_, usb_device_);
   }
 
-  void Write(std::vector<uint8_t> data) override {
-    Java_USBHandler_write(env_, usb_device_, ToJavaByteArray(env_, data));
+  void Write(device::cablev2::PayloadType payload_type,
+             std::vector<uint8_t> data) override {
+    Java_USBHandler_write(env_, usb_device_, data);
   }
 
  private:
@@ -448,7 +447,9 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     if (!data) {
       callback_.Run(Disconnected::kDisconnected);
     } else {
-      callback_.Run(device::fido_parsing_utils::Materialize(*data));
+      callback_.Run(
+          std::make_pair(device::cablev2::PayloadType::kCTAP,
+                         device::fido_parsing_utils::Materialize(*data)));
     }
   }
 
@@ -463,17 +464,15 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 // These functions are the entry points for CableAuthenticator.java and
 // BLEHandler.java calling into C++.
 
-static void JNI_CableAuthenticator_Setup(
-    JNIEnv* env,
-    jlong registration_long,
-    jlong network_context_long,
-    const JavaParamRef<jbyteArray>& secret) {
+static void JNI_CableAuthenticator_Setup(JNIEnv* env,
+                                         jlong registration_long,
+                                         jlong network_context_long,
+                                         std::vector<uint8_t>& root_secret) {
   GlobalData& global_data = GetGlobalData();
 
   // The root_secret may not be provided when triggered for server-link. It
   // won't be used in that case either, but we need to be able to grab it if
   // setup() is called called for a different type of exchange.
-  std::vector<uint8_t> root_secret = JavaByteArrayToByteVector(env, secret);
   if (!root_secret.empty() && !global_data.root_secret) {
     global_data.root_secret.emplace();
     CHECK_EQ(global_data.root_secret->size(), root_secret.size());
@@ -529,13 +528,12 @@ static jlong JNI_CableAuthenticator_StartUSB(
 static jlong JNI_CableAuthenticator_StartQR(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jstring>& authenticator_name,
-    const JavaParamRef<jstring>& qr_uri,
+    std::string& authenticator_name,
+    std::string& qr_string,
     jboolean link) {
   GlobalData& global_data = GetGlobalData();
   RecordEvent(&global_data, CableV2MobileEvent::kQRRead);
 
-  const std::string& qr_string = ConvertJavaStringToUTF8(qr_uri);
   std::optional<device::cablev2::qr::Components> decoded_qr(
       device::cablev2::qr::Parse(qr_string));
   if (!decoded_qr) {
@@ -554,12 +552,11 @@ static jlong JNI_CableAuthenticator_StartQR(
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
+      device::cablev2::authenticator::TransactFromQRCodeDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,
-          ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
-          decoded_qr->peer_identity,
+          authenticator_name, decoded_qr->secret, decoded_qr->peer_identity,
           link ? global_data.registration->contact_id() : std::nullopt);
 
   return ++global_data.instance_num;
@@ -568,10 +565,7 @@ static jlong JNI_CableAuthenticator_StartQR(
 std::tuple<std::array<uint8_t, device::kP256X962Length>,
            std::array<uint8_t, device::cablev2::kQRSecretSize>,
            std::array<uint8_t, device::cablev2::kTunnelIdSize>>
-ParseServerLinkData(JNIEnv* env,
-                    const JavaParamRef<jbyteArray>& server_link_data_java) {
-  const std::vector<uint8_t> server_link_data =
-      JavaByteArrayToByteVector(env, server_link_data_java);
+ParseServerLinkData(std::vector<uint8_t>& server_link_data) {
   // validateServerLinkData should have been called to check this already.
   CHECK_EQ(server_link_data.size(),
            device::kP256X962Length + device::cablev2::kQRSecretSize);
@@ -595,10 +589,10 @@ ParseServerLinkData(JNIEnv* env,
 static jlong JNI_CableAuthenticator_StartServerLink(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jbyteArray>& server_link_data_java) {
+    std::vector<uint8_t>& server_link_data) {
   GlobalData& global_data = GetGlobalData();
 
-  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
+  auto server_link_values = ParseServerLinkData(server_link_data);
   auto peer_identity = std::get<0>(server_link_values);
   auto qr_secret = std::get<1>(server_link_values);
   global_data.server_link_tunnel_id = std::get<2>(server_link_values);
@@ -612,7 +606,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   RecordEvent(&global_data, CableV2MobileEvent::kServerLink);
 
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
+      device::cablev2::authenticator::TransactFromQRCodeDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, dummy_root_secret,
@@ -624,13 +618,13 @@ static jlong JNI_CableAuthenticator_StartServerLink(
 static jlong JNI_CableAuthenticator_StartCloudMessage(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jbyteArray>& serialized_event) {
+    std::vector<uint8_t>& serialized_event) {
   GlobalData& global_data = GetGlobalData();
   RecordEvent(&global_data, CableV2MobileEvent::kCloudMessage);
 
   auto event =
       device::cablev2::authenticator::Registration::Event::FromSerialized(
-          JavaByteArrayToByteVector(env, serialized_event));
+          serialized_event);
   if (!event) {
     LOG(ERROR) << "Failed to parse event";
     return 0;
@@ -646,7 +640,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
   global_data.current_transaction =
-      device::cablev2::authenticator::TransactFromFCM(
+      device::cablev2::authenticator::TransactFromFCMDeprecated(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, *global_data.root_secret,
@@ -665,8 +659,7 @@ static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
 
 static int JNI_CableAuthenticator_ValidateServerLinkData(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& jdata) {
-  std::vector<uint8_t> data = JavaByteArrayToByteVector(env, jdata);
+    std::vector<uint8_t>& data) {
   if (data.size() != device::kP256X962Length + device::cablev2::kQRSecretSize) {
     RecordResult(nullptr, CableV2MobileResult::kInvalidServerLink);
     return static_cast<int>(device::cablev2::authenticator::Platform::Error::
@@ -688,10 +681,8 @@ static int JNI_CableAuthenticator_ValidateServerLinkData(
   return 0;
 }
 
-static int JNI_CableAuthenticator_ValidateQRURI(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& qr_uri) {
-  const std::string& qr_string = ConvertJavaStringToUTF8(qr_uri);
+static int JNI_CableAuthenticator_ValidateQRURI(JNIEnv* env,
+                                                std::string& qr_string) {
   if (!device::cablev2::qr::Parse(qr_string)) {
     RecordResult(nullptr, CableV2MobileResult::kInvalidQR);
     return static_cast<int>(
@@ -714,7 +705,7 @@ static void JNI_CableAuthenticator_OnActivityStop(JNIEnv* env,
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jattestation_object,
+    std::vector<uint8_t>& attestation_object,
     jboolean prf_enabled) {
   GlobalData& global_data = GetGlobalData();
 
@@ -724,9 +715,7 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
   auto callback = std::move(*global_data.pending_make_credential_callback);
   global_data.pending_make_credential_callback.reset();
 
-  std::move(callback).Run(ctap_status,
-                          JavaByteArrayToByteVector(env, jattestation_object),
-                          prf_enabled);
+  std::move(callback).Run(ctap_status, attestation_object, prf_enabled);
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(

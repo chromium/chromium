@@ -54,9 +54,8 @@ def _IsValidPrimaryOwnerEmail(owner_tag_text):
           or owner_tag_text.endswith('@google.com'))
 
 
-def _IsEmailOrPlaceholder(is_first_owner, owner_tag_text, histogram_name,
-                          is_obsolete):
-  """Returns true if owner_tag_text is an email or the placeholder text.
+def _IsEmail(is_first_owner, owner_tag_text, histogram_name):
+  """Returns true if owner_tag_text is an email.
 
   Also, for histograms that are not obsolete, verifies that a histogram's first
   owner tag contains a valid primary owner.
@@ -66,16 +65,13 @@ def _IsEmailOrPlaceholder(is_first_owner, owner_tag_text, histogram_name,
     owner_tag_text: The text of the owner tag being checked, e.g.
       'julie@google.com' or 'src/ios/net/cookies/OWNERS'.
     histogram_name: The string name of the histogram.
-    is_obsolete: True if the histogram is obsolete.
 
   Raises:
     Error: Raised if (A) the text is from the first owner tag, (B) the histogram
     is not obsolete, and (C) the text is not a valid primary owner.
   """
   is_email = re.match(_EMAIL_PATTERN, owner_tag_text)
-  is_placeholder = owner_tag_text == extract_histograms.OWNER_PLACEHOLDER
-  should_check_owner_email = (is_first_owner and not is_obsolete
-                              and not is_placeholder)
+  should_check_owner_email = is_first_owner
 
   if should_check_owner_email and not _IsValidPrimaryOwnerEmail(owner_tag_text):
     raise Error(
@@ -84,7 +80,7 @@ def _IsEmailOrPlaceholder(is_first_owner, owner_tag_text, histogram_name,
         'manually update the histogram with a valid primary owner.'.format(
             histogram_name))
 
-  return is_email or is_placeholder
+  return is_email
 
 
 def _IsWellFormattedFilePath(path):
@@ -207,14 +203,9 @@ def _ComponentFromDirmd(json_data, subpath):
     json_data: json object output from dirmd.
     subpath: The subpath for the directory being queried, e.g. src/storage'.
   """
-  dirmd = json_data.get('dirs', {}).get(subpath, {})
-  # If a public Buganizer component is listed, return its component ID.
-  if buganizer_component := dirmd.get('buganizerPublic',
-                                      {}).get('componentId', ''):
-    return buganizer_component
-  # If no component exists for the directory, or if METADATA migration is
-  # incomplete there will be no component information.
-  return dirmd.get('monorail', {}).get('component', '')
+  return json_data.get('dirs', {}).get(subpath,
+                                       {}).get('buganizerPublic',
+                                               {}).get('componentId', '')
 
 
 # Memoize decorator from: https://stackoverflow.com/a/1988826
@@ -228,48 +219,6 @@ class Memoize:
     if not args in self.memo:
       self.memo[args] = self.f(*args)
     return self.memo[args]
-
-
-@Memoize
-def _ExtractComponentViaDirmd(path):
-  """Returns the component for Buganizer issues at the given path.
-
-  Examples are '1287811' for Buganizer and 'UI>Shell>Launcher' for Monorail.
-
-  Uses dirmd in third_party/depot_tools to parse metadata and walk parent
-  directories up to the top level of the repo.
-
-  Returns a Monorail component if no Buganizer component can be extracted.
-
-  Returns an empty string if no component can be extracted.
-
-  Args:
-    path: The path to a directory to query, e.g. 'src/storage'.
-  """
-  # Verify that the paths are absolute and the root is a parent of the
-  # passed in path.
-  root_path = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
-  path = os.path.abspath(path)
-  if not path.startswith(root_path):
-    raise Error('Path {} is not a subpath of the root path {}.'.format(
-        path, root_path))
-  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
-  dirmd_exe = 'dirmd'
-  if sys.platform == 'win32':
-    dirmd_exe = 'dirmd.bat'
-  dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
-                              ['third_party', 'depot_tools', dirmd_exe]))
-  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
-  dirmd = subprocess.Popen(
-      dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  if dirmd.wait() != 0:
-    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
-                dirmd.stderr.read().decode('utf-8'))
-  json_out = json.load(dirmd.stdout)
-  # On Windows, dirmd output still uses Unix path separators.
-  if sys.platform == 'win32':
-    subpath = subpath.replace('\\', '/')
-  return _ComponentFromDirmd(json_out, subpath)
 
 
 def _MakeOwners(document, path, emails_with_dom_elements):
@@ -296,7 +245,7 @@ def _MakeOwners(document, path, emails_with_dom_elements):
     A collection of DOM Elements made from owners in the given OWNERS file.
   """
   owner_elements = []
-  # TODO(crbug.com/987709): An OWNERS file API would be ideal.
+  # TODO(crbug.com/41472818): An OWNERS file API would be ideal.
   emails_from_owners_file = _ExtractEmailAddressesFromOWNERS(path)
   if not emails_from_owners_file:
     raise Error('No emails could be derived from {}.'.format(path))
@@ -335,6 +284,47 @@ def _UpdateHistogramOwners(histogram, owner_to_replace, owners_to_add):
     else:
       _AddTextNodeWithNewLineAndIndent(histogram, node_after_owners_file)
       histogram.insertBefore(owner_to_add, node_after_owners_file)
+
+
+@Memoize
+def ExtractComponentViaDirmd(path):
+  """Returns the component for Buganizer issues at the given path.
+
+  Examples are '1287811' and '1456399'.
+
+  Uses dirmd in third_party/depot_tools to parse metadata and walk parent
+  directories up to the top level of the repo.
+
+  Returns an empty string if no component can be extracted.
+
+  Args:
+    path: The path to a directory to query, e.g. 'src/storage'.
+  """
+  # Verify that the paths are absolute and the root is a parent of the
+  # passed in path.
+  root_path = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
+  path = os.path.abspath(path)
+  if not path.startswith(root_path):
+    raise Error('Path {} is not a subpath of the root path {}.'.format(
+        path, root_path))
+  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
+  dirmd_exe = 'dirmd'
+  if sys.platform == 'win32':
+    dirmd_exe = 'dirmd.bat'
+  dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
+                              ['third_party', 'depot_tools', dirmd_exe]))
+  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
+  dirmd = subprocess.Popen(dirmd_command,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+  if dirmd.wait() != 0:
+    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
+                dirmd.stderr.read().decode('utf-8'))
+  json_out = json.load(dirmd.stdout)
+  # On Windows, dirmd output still uses Unix path separators.
+  if sys.platform == 'win32':
+    subpath = subpath.replace('\\', '/')
+  return _ComponentFromDirmd(json_out, subpath)
 
 
 def AddHistogramComponent(histogram, component):
@@ -393,9 +383,7 @@ def ExpandHistogramsOWNERS(histograms):
     for index, owner in enumerate(owners):
       owner_text = owner.childNodes[0].data.strip()
       name = histogram.getAttribute('name')
-      obsolete_tags = [tag for tag in iter_matches(histogram, 'obsolete', 1)]
-      is_obsolete = len(obsolete_tags) > 0
-      if _IsEmailOrPlaceholder(index == 0, owner_text, name, is_obsolete):
+      if _IsEmail(index == 0, owner_text, name):
         continue
 
       path = _GetOwnersFilePath(owner_text)
@@ -409,7 +397,7 @@ def ExpandHistogramsOWNERS(histograms):
 
       _UpdateHistogramOwners(histogram, owner, owners_to_add)
 
-      component = _ExtractComponentViaDirmd(os.path.dirname(path))
+      component = ExtractComponentViaDirmd(os.path.dirname(path))
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
         AddHistogramComponent(histogram, component)

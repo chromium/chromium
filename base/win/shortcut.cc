@@ -5,6 +5,7 @@
 #include "base/win/shortcut.h"
 
 #include <objbase.h>
+
 #include <propkey.h>
 #include <shlobj.h>
 #include <wrl/client.h>
@@ -86,7 +87,6 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
   if (operation != ShortcutOperation::kUpdateExisting &&
       !(properties.options & ShortcutProperties::PROPERTIES_TARGET)) {
     NOTREACHED();
-    return false;
   }
 
   bool shortcut_existed = PathExists(shortcut_path);
@@ -297,7 +297,6 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           break;
         default:
           NOTREACHED() << "Unexpected variant type: " << pv_app_id.get().vt;
-          return false;
       }
     }
 
@@ -316,7 +315,6 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
           break;
         default:
           NOTREACHED() << "Unexpected variant type: " << pv_dual_mode.get().vt;
-          return false;
       }
     }
 
@@ -338,7 +336,6 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
         default:
           NOTREACHED() << "Unexpected variant type: "
                        << pv_toast_activator_clsid.get().vt;
-          return false;
       }
     }
   }

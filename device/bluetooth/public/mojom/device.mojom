@@ -22,7 +22,7 @@ import "device/bluetooth/public/mojom/uuid.mojom";
 // contains additional properties pertaining to the characteristic.
 // The properties |RELIABLE_WRITE| and |WRITABLE_AUXILIARIES| are retrieved from
 // that characteristic.
-// TODO(crbug.com/684168): Remove assignment of values when this is automated.
+// TODO(crbug.com/40502994): Remove assignment of values when this is automated.
 enum Property {
   NONE = 0,
   BROADCAST = 1,
@@ -41,6 +41,10 @@ enum Property {
   WRITE_ENCRYPTED_AUTHENTICATED = 8192
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the NearbyConnectionsGattResult enum in
+// src/tools/metrics/metadata/nearby/enums.xml.
 enum GattResult {
   SUCCESS,
   UNKNOWN,
@@ -56,7 +60,7 @@ enum GattResult {
   DESCRIPTOR_NOT_FOUND,
 };
 
-// TODO(crbug.com/657632): Remove when numerical values can be optional.
+// TODO(crbug.com/40489779): Remove when numerical values can be optional.
 struct RSSIWrapper {
   int8 value;
 };
@@ -89,7 +93,12 @@ struct ServiceInfo {
 struct CharacteristicInfo {
   string id;
   UUID uuid;
+
+  // Bitmask of characteristic properties.
   uint32 properties;
+
+  // Bitmask of characteristic permissions.
+  uint32 permissions;
 
   // Important: this blob is arbitrary and untrusted. Please refer to the note
   // on "The Rule of 2" at the top of this file.

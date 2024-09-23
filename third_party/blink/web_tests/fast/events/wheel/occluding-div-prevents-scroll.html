@@ -1,0 +1,43 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src='../../../resources/gesture-util.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<style>
+.scroll {
+  overflow: auto;
+  width: 100px;
+  height: 100px;
+  will-change: transform;
+}
+
+.scrolled-content {
+  width: 50px;
+  height: 1000px;
+  background-image: linear-gradient(green, red);
+}
+
+#overlap {
+  height: 100px;
+  width: 110px;
+  /* transform places div over top of scroller */
+  transform: translateY(-100px);
+}
+</style>
+It should not be possible to scroll this content since a div occludes the
+scroll container: <br>
+<div id="scroller" class="scroll">
+  <div class="scrolled-content"></div>
+</div>
+<div id="overlap"></div>
+<script>
+  promise_test(async t => {
+    await waitForCompositorReady();
+    const wheelPromise = waitForEvent(document, 'wheel');
+    await wheelScroll(50, 50, 0, 100, /*scrollEventListener=*/ null);
+    await wheelPromise;
+    assert_equals(document.getElementById('scroller').scrollTop, 0);
+  }, 'Occluding div prevents scroll');
+</script>

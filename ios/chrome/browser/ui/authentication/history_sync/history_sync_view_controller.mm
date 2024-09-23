@@ -4,8 +4,16 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 
+#import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -20,8 +28,12 @@
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.headerImageType = PromoStyleImageType::kAvatar;
-  self.headerBackgroundImage =
-      [UIImage imageNamed:@"history_sync_opt_in_background"];
+  if (IsNewSyncOptInIllustration()) {
+    self.headerBackgroundImage = [UIImage imageNamed:@"sync_opt_in_background"];
+  } else {
+    self.headerBackgroundImage =
+        [UIImage imageNamed:@"history_sync_opt_in_background"];
+  }
   self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
   self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
   self.primaryActionString =
@@ -29,6 +41,25 @@
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SECONDARY_ACTION);
   [super viewDidLoad];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    // Hide the buttons, title, and subtitle only if button visibility has not
+    // been updated.
+    if (self.actionButtonsVisibility == ActionButtonsVisibility::kDefault) {
+      self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
+    }
+  } else if (base::FeatureList::GetInstance() &&
+             base::FeatureList::GetInstance()->IsFeatureOverridden(
+                 switches::kMinorModeRestrictionsForHistorySyncOptIn.name)) {
+    // Record button type metrics when the feature is overriden to be disabled.
+    base::UmaHistogramEnumeration(
+        "Signin.SyncButtons.Shown",
+        signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted);
+  }
 }
 
 #pragma mark - HistorySyncConsumer
@@ -44,6 +75,38 @@
 
 - (void)setFooterText:(NSString*)text {
   self.disclaimerText = text;
+}
+
+- (void)displayButtonsWithRestrictionCapability:
+    (signin::Tribool)canShowUnrestrictedViewCapability {
+  if (base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    // Show action buttons and record button metrics.
+    signin_metrics::SyncButtonsType buttonType;
+    switch (canShowUnrestrictedViewCapability) {
+      case signin::Tribool::kUnknown:
+        self.actionButtonsVisibility =
+            ActionButtonsVisibility::kEquallyWeightedButtonShown;
+        buttonType = signin_metrics::SyncButtonsType::
+            kHistorySyncEqualWeightedFromDeadline;
+        break;
+      case signin::Tribool::kFalse:
+        self.actionButtonsVisibility =
+            ActionButtonsVisibility::kEquallyWeightedButtonShown;
+        buttonType = signin_metrics::SyncButtonsType::
+            kHistorySyncEqualWeightedFromCapability;
+        break;
+      case signin::Tribool::kTrue:
+        self.actionButtonsVisibility =
+            ActionButtonsVisibility::kRegularButtonsShown;
+        buttonType =
+            signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
+        break;
+      default:
+        NOTREACHED();
+    }
+    base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
+  }
 }
 
 @end

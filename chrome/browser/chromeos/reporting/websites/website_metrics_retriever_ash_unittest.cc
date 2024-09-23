@@ -65,8 +65,10 @@ TEST_F(WebsiteMetricsRetrieverAshTest,
       app_platform_metrics_service));
 
   // Simulate init and verify callback is triggered with initialized component.
-  app_platform_metrics_service->Start(app_service_proxy_->AppRegistryCache(),
-                                      app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(initialized_website_metrics,
               Eq(app_platform_metrics_service->WebsiteMetrics()));
   EXPECT_FALSE(website_metrics_retriever_->IsObservingSourceForTest(
@@ -78,8 +80,10 @@ TEST_F(WebsiteMetricsRetrieverAshTest, ReturnWebsiteMetricsIfInitialized) {
   // scenario.
   auto* const app_platform_metrics_service =
       app_service_proxy_->AppPlatformMetricsService();
-  app_platform_metrics_service->Start(app_service_proxy_->AppRegistryCache(),
-                                      app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(app_platform_metrics_service->WebsiteMetrics(), NotNull());
 
   // Verify retriever returns initialized component without observing init.
@@ -121,8 +125,10 @@ TEST_F(WebsiteMetricsRetrieverAshTest,
 
   // Simulate init and verify both callbacks are triggered with initialized
   // component.
-  app_platform_metrics_service->Start(app_service_proxy_->AppRegistryCache(),
-                                      app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(initialized_website_metrics_1,
               Eq(app_platform_metrics_service->WebsiteMetrics()));
   ASSERT_THAT(initialized_website_metrics_2,

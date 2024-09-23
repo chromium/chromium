@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -98,18 +101,11 @@ sharesheet::SharesheetResult ShowBubble(const std::string& window_id,
   crosapi::SharesheetAsh* const sharesheet_ash =
       crosapi::CrosapiManager::Get()->crosapi_ash()->sharesheet_ash();
   sharesheet_ash->MaybeSetProfile(profile);
-  sharesheet::SharesheetResult result =
-      sharesheet::SharesheetResult::kErrorAlreadyOpen;
-  base::RunLoop run_loop;
-  sharesheet_ash->ShowBubble(
-      window_id, sharesheet::LaunchSource::kWebShare, std::move(intent),
-      base::BindLambdaForTesting(
-          [&result, &run_loop](sharesheet::SharesheetResult sharesheet_result) {
-            result = sharesheet_result;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  return result;
+
+  base::test::TestFuture<sharesheet::SharesheetResult> future;
+  sharesheet_ash->ShowBubble(window_id, sharesheet::LaunchSource::kWebShare,
+                             std::move(intent), future.GetCallback());
+  return future.Get();
 }
 
 }  // namespace
@@ -119,6 +115,8 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
   SharesheetAshBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   ~SharesheetAshBrowserTest() override = default;
 
@@ -135,7 +133,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
     // The Sample System Web App will be automatically selected from the
     // Sharesheet bubble.
     sharesheet::SharesheetService::SetSelectedAppForTesting(
-        base::UTF8ToUTF16(base::StringPiece{web_app::kSampleSystemWebAppId}));
+        base::UTF8ToUTF16(std::string_view{web_app::kSampleSystemWebAppId}));
 
     ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
   }
@@ -145,6 +143,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Success) {

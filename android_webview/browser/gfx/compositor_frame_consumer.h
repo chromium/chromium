@@ -8,6 +8,7 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -40,7 +41,8 @@ class CompositorFrameConsumer {
       ParentCompositorDrawConstraints* constraints,
       viz::FrameSinkId* frame_sink_id,
       viz::FrameTimingDetailsMap* timing_details,
-      uint32_t* frame_token) = 0;
+      uint32_t* frame_token,
+      base::TimeDelta* preferred_frame_interval) = 0;
   virtual ChildFrameQueue PassUncommittedFrameOnUI() = 0;
 
  protected:

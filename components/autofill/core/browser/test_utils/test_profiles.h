@@ -38,7 +38,8 @@ void SetProfileObservedTestValues(AutofillProfile* profile,
 
 // A standard AutofillProfile. All subsequent profiles are defined with respect
 // to this one.
-AutofillProfile StandardProfile();
+AutofillProfile StandardProfile(
+    AddressCountryCode country_code = AddressCountryCode("US"));
 
 // This profile is similar to the standard profile defined above.
 // Here, the verification status for the name is 'only' observed. When merged

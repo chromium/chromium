@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/conflicts/conflicts_data_fetcher.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -64,7 +65,7 @@ constexpr char kAllowedSameDirectory[] =
     "Allowed - In executable directory (dev builds only)";
 #endif
 
-void AppendString(base::StringPiece input, std::string* output) {
+void AppendString(std::string_view input, std::string* output) {
   if (!output->empty())
     *output += ", ";
   output->append(input);
@@ -102,7 +103,7 @@ std::string GetBlockingDecisionString(
   // startup.
   switch (blocking_state.blocking_decision) {
     case BlockingDecision::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case BlockingDecision::kNotLoaded:
       return kNotLoaded;
@@ -173,7 +174,7 @@ std::string GetModuleWarningDecisionString(
       return "Incompatible";
     case WarningDecision::kAddedToBlocklist:
     case WarningDecision::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -272,7 +273,7 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
 
   // The above 3 cases are the only possible reasons why the manager wouldn't
   // exist.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kFeatureDisabled;
 }
 #endif

@@ -144,28 +144,21 @@ public class VideoFullscreenOrientationLockTest {
 
         // Leave fullscreen by clicking back on the button.
         // Use a loop to retry due to fullscreen re-layout.
-        int i = 0;
-        AssertionError lastException = null;
-        while (i < 10) {
+        Exception lastException = null;
+        for (int i = 0; i < 10; ++i) {
             Thread.sleep(100);
-            ++i;
-
             if (!clickFullscreenButton()) {
                 continue;
             }
-            AssertionError exception = null;
             try {
                 waitForContentsFullscreenState(false);
                 waitUntilUnlocked();
-            } catch (AssertionError e) {
-                exception = e;
+                return;
+            } catch (CriteriaHelper.TimeoutException e) {
+                lastException = e;
             }
-            lastException = exception;
-            if (lastException == null) break;
         }
-        if (lastException != null) throw lastException;
-        // Ensure clickFullscreenButton doesn't fail repeatedly.
-        Assert.assertTrue(i < 10);
+        throw lastException;
     }
 
     @Test

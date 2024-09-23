@@ -8,13 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "partition_alloc/page_allocator.h"
 
 namespace base::subtle {
 
@@ -180,7 +180,7 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
-  // TODO(crbug.com/210609): NaCl forces us to round up 64k here, wasting 32k
+  // TODO(crbug.com/40307662): NaCl forces us to round up 64k here, wasting 32k
   // per mapping on average.
   static const size_t kSectionSize = 65536;
   if (size == 0) {

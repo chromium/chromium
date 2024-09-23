@@ -21,17 +21,21 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "ui/base/l10n/time_format.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 
@@ -55,12 +59,6 @@ constexpr double kAverageSpeedDropBound = 1e-8;
 constexpr base::TimeDelta kMinimumIntervalLengthForProgressUpdate =
     base::Milliseconds(100);
 constexpr base::TimeDelta kMaximumEstimatedRemainingTime = base::Days(1);
-
-constexpr char kUserActionSkip[] = "skip";
-constexpr char kUserActionUpdate[] = "update";
-constexpr char kUserActionResume[] = "resume";
-constexpr char kUserActionFinish[] = "finish";
-constexpr char kUserActionReport[] = "report";
 
 constexpr int kMinDiskSpaceForUmaCustomCountsInGB = 1;
 constexpr int kMaxDiskSpaceForUmaCustomCountsInGB = 512;
@@ -213,6 +211,7 @@ ArcVmDataMigrationScreen::ArcVmDataMigrationScreen(
     base::WeakPtr<ArcVmDataMigrationScreenView> view)
     : BaseScreen(ArcVmDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       view_(std::move(view)) {
   DCHECK(view_);
@@ -223,6 +222,13 @@ ArcVmDataMigrationScreen::~ArcVmDataMigrationScreen() = default;
 void ArcVmDataMigrationScreen::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
+}
+
+void ArcVmDataMigrationScreen::SetRemoteForTesting(
+    mojo::PendingRemote<screens_login::mojom::ArcVmDataMigrationPage>
+        pending_page) {
+  GetRemote()->reset();
+  GetRemote()->Bind(std::move(pending_page));
 }
 
 void ArcVmDataMigrationScreen::ShowImpl() {
@@ -256,7 +262,7 @@ void ArcVmDataMigrationScreen::ShowImpl() {
       resuming_ = true;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -272,24 +278,6 @@ void ArcVmDataMigrationScreen::HideImpl() {
   GetWakeLock()->CancelWakeLock();
   if (scoped_screen_lock_blocker_) {
     scoped_screen_lock_blocker_.reset();
-  }
-}
-
-void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  VLOG(1) << "User action: action_id=" << action_id;
-  if (action_id == kUserActionSkip) {
-    HandleSkip();
-  } else if (action_id == kUserActionUpdate) {
-    HandleUpdate();
-  } else if (action_id == kUserActionResume) {
-    HandleResume();
-  } else if (action_id == kUserActionFinish) {
-    HandleFinish();
-  } else if (action_id == kUserActionReport) {
-    HandleReport();
-  } else {
-    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -321,7 +309,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
       CheckBatteryState();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -389,18 +377,20 @@ void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
   ReportDesiredDiskImageSize(disk_size_, has_enough_free_disk_space);
   ReportRequiredFreeDiskSpace(required_free_disk_space,
                               has_enough_free_disk_space);
-  if (!has_enough_free_disk_space) {
-    view_->SetRequiredFreeDiskSpace(required_free_disk_space);
+  if (!has_enough_free_disk_space && GetRemote()->is_bound()) {
+    (*GetRemote())->SetRequiredFreeDiskSpace(required_free_disk_space);
     // Update the UI to show the low disk space warning and return, because the
     // user cannot free up the disk space while in the screen, and thus there is
     // no point in reporting the battery state in this case.
-    DCHECK_EQ(current_ui_state_,
-              ArcVmDataMigrationScreenView::UIState::kLoading);
+    DCHECK_EQ(
+        current_ui_state_,
+        screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kLoading);
     ReportEvent(ArcVmDataMigrationScreenEvent::kWelcomeScreenShown, resuming_);
     ReportInitialState(
         ArcVmDataMigrationScreenInitialState::kNotEnoughFreeDiskSpace,
         resuming_);
-    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+    UpdateUIState(
+        screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
     return;
   }
 
@@ -408,11 +398,11 @@ void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
 }
 
 void ArcVmDataMigrationScreen::CheckBatteryState() {
-  if (!view_) {
+  if (!GetRemote()->is_bound()) {
     return;
   }
 
-  view_->SetMinimumBatteryPercent(kMinimumBatteryPercent);
+  (*GetRemote())->SetMinimumBatteryPercent(kMinimumBatteryPercent);
 
   // Request PowerManager to report the battery status updates. The UI will be
   // updated on PowerChanged().
@@ -445,14 +435,15 @@ void ArcVmDataMigrationScreen::PowerChanged(
                  << "is_connected_to_charger_ = " << is_connected_to_charger_;
   }
 
-  if (!view_) {
+  if (!GetRemote()->is_bound()) {
     return;
   }
   bool has_enough_battery = battery_percent_ >= kMinimumBatteryPercent;
-  view_->SetBatteryState(has_enough_battery, is_connected_to_charger_);
+  (*GetRemote())->SetBatteryState(has_enough_battery, is_connected_to_charger_);
 
   if (update_button_pressed_ ||
-      current_ui_state_ != ArcVmDataMigrationScreenView::UIState::kLoading) {
+      current_ui_state_ != screens_login::mojom::ArcVmDataMigrationPage::
+                               ArcVmUIState::kLoading) {
     // No need to update the UI state if this is not the initial loading screen.
     return;
   }
@@ -469,10 +460,12 @@ void ArcVmDataMigrationScreen::PowerChanged(
 
   if (resuming_) {
     ReportEvent(ArcVmDataMigrationScreenEvent::kResumeScreenShown, resuming_);
-    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kResume);
+    UpdateUIState(
+        screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kResume);
   } else {
     ReportEvent(ArcVmDataMigrationScreenEvent::kWelcomeScreenShown, resuming_);
-    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+    UpdateUIState(
+        screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kWelcome);
   }
 }
 
@@ -569,7 +562,8 @@ void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
   DCHECK(!migration_progress_observation_.IsObserving());
   migration_progress_observation_.Observe(ArcVmDataMigratorClient::Get());
   ReportEvent(ArcVmDataMigrationScreenEvent::kProgressScreenShown, resuming_);
-  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kProgress);
+  UpdateUIState(
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kProgress);
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               arc::ArcVmDataMigrationStatus::kStarted);
 
@@ -618,7 +612,8 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       ReportBatteryConsumption(
           std::max(0.0, battery_percent_on_migration_start_ -
                             lowest_battery_percent_during_migration_));
-      UpdateUIState(ArcVmDataMigrationScreenView::UIState::kSuccess);
+      UpdateUIState(
+          screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kSuccess);
       return;
     case arc::data_migrator::DATA_MIGRATION_FAILED:
       LOG(ERROR) << "ARCVM /data migration failed";
@@ -626,7 +621,7 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       RemoveArcDataAndShowFailureScreen();
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -662,13 +657,18 @@ void ArcVmDataMigrationScreen::UpdateProgressBar(uint64_t current_bytes,
   double estimated_remaining_time_in_millis =
       (total_bytes - current_bytes) / average_speed_;
 
-  if (!view_) {
+  if (!GetRemote()->is_bound()) {
     return;
   }
-  view_->SetMigrationProgress(100.0 * current_bytes / total_bytes);
-  view_->SetEstimatedRemainingTime(base::Milliseconds(static_cast<int64_t>(
-      std::round(std::min(estimated_remaining_time_in_millis,
-                          kMaximumEstimatedRemainingTime.InMillisecondsF())))));
+  (*GetRemote())->SetMigrationProgress(100.0 * current_bytes / total_bytes);
+  base::TimeDelta remaining_time_delta =
+      base::Milliseconds(static_cast<int64_t>(std::round(
+          std::min(estimated_remaining_time_in_millis,
+                   kMaximumEstimatedRemainingTime.InMillisecondsF()))));
+  std::u16string remaining_time_string = ui::TimeFormat::Simple(
+      ui::TimeFormat::FORMAT_REMAINING, ui::TimeFormat::LENGTH_SHORT,
+      remaining_time_delta);
+  (*GetRemote())->SetEstimatedRemainingTime(remaining_time_string);
 }
 
 void ArcVmDataMigrationScreen::RemoveArcDataAndShowFailureScreen() {
@@ -705,24 +705,25 @@ void ArcVmDataMigrationScreen::OnArcDataRemoved(bool success) {
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               arc::ArcVmDataMigrationStatus::kFinished);
   ReportEvent(ArcVmDataMigrationScreenEvent::kFailureScreenShown, resuming_);
-  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kFailure);
+  UpdateUIState(
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kFailure);
 }
 
 void ArcVmDataMigrationScreen::UpdateUIState(
-    ArcVmDataMigrationScreenView::UIState state) {
+    screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_ui_state_ = state;
-  if (view_) {
-    view_->SetUIState(state);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetUIState(state);
   }
 }
 
-void ArcVmDataMigrationScreen::HandleSkip() {
+void ArcVmDataMigrationScreen::OnSkipClicked() {
   ReportEvent(ArcVmDataMigrationScreenEvent::kSkipButtonClicked, resuming_);
   chrome::AttemptRelaunch();
 }
 
-void ArcVmDataMigrationScreen::HandleUpdate() {
+void ArcVmDataMigrationScreen::OnUpdateClicked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (update_button_pressed_) {
     return;
@@ -731,7 +732,8 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
   battery_percent_on_migration_start_ = battery_percent_;
   lowest_battery_percent_during_migration_ = battery_percent_;
   ReportEvent(ArcVmDataMigrationScreenEvent::kUpdateButtonClicked, resuming_);
-  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kLoading);
+  UpdateUIState(
+      screens_login::mojom::ArcVmDataMigrationPage::ArcVmUIState::kLoading);
   if (resuming_) {
     TriggerMigration();
   } else {
@@ -739,17 +741,17 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
   }
 }
 
-void ArcVmDataMigrationScreen::HandleResume() {
+void ArcVmDataMigrationScreen::OnResumeClicked() {
   DCHECK(resuming_);
-  HandleUpdate();
+  OnUpdateClicked();
 }
 
-void ArcVmDataMigrationScreen::HandleFinish() {
+void ArcVmDataMigrationScreen::OnFinishClicked() {
   ReportEvent(ArcVmDataMigrationScreenEvent::kFinishButtonClicked, resuming_);
   chrome::AttemptRelaunch();
 }
 
-void ArcVmDataMigrationScreen::HandleReport() {
+void ArcVmDataMigrationScreen::OnReportClicked() {
   ReportEvent(ArcVmDataMigrationScreenEvent::kReportButtonClicked, resuming_);
   const int64_t unique_identifier =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();

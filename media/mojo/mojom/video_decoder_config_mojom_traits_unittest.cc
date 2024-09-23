@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/mojo/mojom/video_decoder_config_mojom_traits.h"
 
 #include <utility>
@@ -58,6 +63,26 @@ TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Encrypted) {
                            VideoColorSpace(), kNoTransformation, kCodedSize,
                            kVisibleRect, kNaturalSize, EmptyExtraData(),
                            EncryptionScheme::kCenc);
+  std::vector<uint8_t> data =
+      media::mojom::VideoDecoderConfig::Serialize(&input);
+  VideoDecoderConfig output;
+  EXPECT_TRUE(
+      media::mojom::VideoDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(output.Matches(input));
+}
+
+TEST(VideoDecoderConfigStructTraitsTest,
+     ConvertVideoDecoderConfig_AspectRatio) {
+  VideoDecoderConfig input(
+      VideoCodec::kVP8, VP8PROFILE_ANY,
+      VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                      VideoColorSpace::TransferID::SMPTEST2084,
+                      VideoColorSpace::MatrixID::BT2020_CL,
+                      gfx::ColorSpace::RangeID::LIMITED),
+      kNoTransformation, kCodedSize, kVisibleRect, kNaturalSize,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  input.set_aspect_ratio(VideoAspectRatio::DAR(3, 1));
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);
   VideoDecoderConfig output;

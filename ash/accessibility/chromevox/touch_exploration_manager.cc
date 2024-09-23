@@ -148,23 +148,6 @@ void TouchExplorationManager::OnDisplayMetricsChanged(
     UpdateTouchExplorationState();
 }
 
-void TouchExplorationManager::OnTwoFingerTouchStart() {
-  GetA11yController()->OnTwoFingerTouchStart();
-}
-
-void TouchExplorationManager::OnTwoFingerTouchStop() {
-  // Can be null during shutdown.
-  if (AccessibilityController* controller = GetA11yController()) {
-    controller->OnTwoFingerTouchStop();
-  }
-}
-
-void TouchExplorationManager::PlaySpokenFeedbackToggleCountdown(
-    int tick_count) {
-  if (GetA11yController()->ShouldToggleSpokenFeedbackViaTouch())
-    GetA11yController()->PlaySpokenFeedbackToggleCountdown(tick_count);
-}
-
 void TouchExplorationManager::PlayTouchTypeEarcon() {
   GetA11yController()->PlayEarcon(Sound::kTouchType);
 }

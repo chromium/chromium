@@ -39,26 +39,26 @@ PlatformSharedMemoryRegion::PassPlatformHandle() {
   return std::move(handle_);
 }
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
+std::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     uint64_t offset,
     size_t size,
     SharedMemoryMapper* mapper) const {
   if (!IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (size == 0)
-    return absl::nullopt;
+    return std::nullopt;
 
   size_t end_byte;
   if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // TODO(dcheng): Presumably the actual size of the mapping is rounded to
   // `SysInfo::VMAllocationGranularity()`. Should this accounting be done with
   // that in mind?
   if (!SharedMemorySecurityPolicy::AcquireReservationForMapping(size)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!mapper)

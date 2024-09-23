@@ -75,7 +75,7 @@ def ProcessResults(options, is_unittest=False):
 
   test_results = _LoadTestResults(options.intermediate_dir)
   if not test_results:
-    # TODO(crbug.com/981349): Make sure that no one is expecting Results
+    # TODO(crbug.com/40634925): Make sure that no one is expecting Results
     # Processor to output results in the case of empty input
     # and make this an error.
     logging.warning('No test results to process.')
@@ -126,10 +126,15 @@ def ProcessResults(options, is_unittest=False):
 
     print('View results at file://', output_file, sep='')
 
-  if options.fetch_device_data:
-    PullDeviceArtifacts(options)
+  exit_code = GenerateExitCode(test_results)
 
-  return GenerateExitCode(test_results)
+  if options.fetch_device_data:
+    if options.fetch_device_data_on_success and exit_code != 0:
+      logging.warning('Not fetching device data due to non zero exit code.')
+    else:
+      PullDeviceArtifacts(options)
+
+  return exit_code
 
 
 def _AmortizeProcessingDuration(processing_duration, test_results):
@@ -249,7 +254,7 @@ def ConvertProtoTraces(test_result, trace_processor_path):
   artifacts = test_result.get('outputArtifacts', {})
   proto_traces = [name for name in artifacts if _IsProtoTrace(name)]
 
-  # TODO(crbug.com/990304): After implementation of TBMv3-style clock sync,
+  # TODO(crbug.com/40638725): After implementation of TBMv3-style clock sync,
   # it will be possible to convert the aggregated proto trace, not
   # individual ones.
   for proto_trace_name in proto_traces:
@@ -343,7 +348,7 @@ def UploadArtifacts(test_result, upload_bucket, run_identifier):
   """
   artifacts = test_result.get('outputArtifacts', {})
   for name, artifact in artifacts.items():
-    # TODO(crbug.com/981349): Think of a more general way to
+    # TODO(crbug.com/40634925): Think of a more general way to
     # specify which artifacts deserve uploading.
     if name in [DIAGNOSTICS_NAME, MEASUREMENTS_NAME]:
       continue
@@ -492,11 +497,15 @@ def PullDeviceArtifacts(options):
     return
 
   if platform == 'android':
+    logging.info('Getting devices...')
     devices = adb_wrapper.AdbWrapper.Devices()
+    logging.info('Found devices: %s', ', '.join(str(d) for d in devices))
     # Each docker host in chrome-swarming has one device attached, so we'll use
     # the first AdbWrapper instance as the assumed attached device in question
     utils = device_utils.DeviceUtils(devices[0])
+    logging.info('Pulling files from %s to %s', device_path, local_path)
     utils.PullFile(device_path, local_path)
+    logging.info('Finished pulling files.')
   elif platform == 'chromeos':
     logging.warning('Searching for devices')
     # Each docker host in chrome-swarming should only have one local device.

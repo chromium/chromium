@@ -6,6 +6,7 @@
 #define UI_DISPLAY_WIN_DISPLAY_INFO_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include "ui/display/display.h"
@@ -27,7 +28,8 @@ class DISPLAY_EXPORT DisplayInfo final {
   DisplayInfo(const DisplayInfo& other);
   ~DisplayInfo();
 
-  static int64_t DeviceIdFromDeviceName(const wchar_t* device_name);
+  // Derives a display ID using monitor information.
+  static int64_t DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor);
 
   int64_t id() const { return id_; }
   const gfx::Rect& screen_rect() const { return screen_rect_; }
@@ -41,6 +43,7 @@ class DISPLAY_EXPORT DisplayInfo final {
     return output_technology_;
   }
   const std::string& label() const { return label_; }
+  const std::wstring& device_name() const { return device_name_; }
 
   bool operator==(const DisplayInfo& rhs) const;
   bool operator!=(const DisplayInfo& rhs) const { return !(*this == rhs); }
@@ -63,6 +66,8 @@ class DISPLAY_EXPORT DisplayInfo final {
   gfx::Vector2dF pixels_per_inch_;
   DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology_;
   std::string label_;
+  // The MONITORINFOEX::szDevice device name representing the display.
+  std::wstring device_name_;
 };
 
 }  // namespace display::win::internal

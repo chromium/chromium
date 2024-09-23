@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import type {ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import type {XfBreadcrumb} from '../../widgets/xf_breadcrumb.js';
@@ -23,7 +24,7 @@ interface ExecutedTask {
 }
 
 // A function that has been replaced by a Fake.
-type FakedFunction = (...args: any[]) => void;
+type FakedFunction = (...args: any[]) => (void|Promise<unknown>);
 
 /**
  * Sanitizes the formatted date. Replaces unusual space with normal space.
@@ -412,33 +413,54 @@ const foregroundReplacedObjects:
 
 /**
  * A factory that returns a fake (aka function) that returns a static value.
- * Used to force an API to return always the same value.
+ * Used to force a callback-based API to return always the same value.
  */
-const staticFakeFactory =
-    (attrName: string, staticValue: unknown): ((_args: unknown[]) => void) => {
-      const fake = (...args: any[]) => {
-        setTimeout(() => {
-          // Find the first callback.
-          for (const arg of args) {
-            if (typeof arg === 'function') {
-              console.warn(`staticFake for ${attrName} value: ${staticValue}`);
-              return arg(staticValue);
-            }
-          }
-          throw new Error(`Couldn't find callback for ${attrName}`);
-        }, 0);
-      };
-      return fake;
-    };
+function staticFakeFactory(
+    attrName: string, staticValue: unknown): FakedFunction {
+  return (...args: unknown[]) => {
+    // This code is executed when the production code calls the function that
+    // has been replaced by the test.
+    // `args` is the arguments provided by the production code.
+    setTimeout(() => {
+      // Find the first callback.
+      for (const arg of args) {
+        if (typeof arg === 'function') {
+          console.warn(`staticFake for ${attrName} value: ${staticValue}`);
+          return arg(staticValue);
+        }
+      }
+      throw new Error(`Couldn't find callback for ${attrName}`);
+    }, 0);
+  };
+}
+
+/**
+ * A factory that returns an async function (aka a Promise) that returns a
+ * static value. Used to force a promise-based API to return always the same
+ * value.
+ */
+function staticPromiseFakeFactory(
+    attrName: string, staticValue: unknown): FakedFunction {
+  return async (..._args: unknown[]) => {
+    // This code is executed when the production code calls the function that
+    // has been replaced by the test.
+    // `args` is the arguments provided by the production code.
+    console.warn(
+        `staticPromiseFake for "${attrName}" returning value: ${staticValue}`);
+    return staticValue;
+  };
+}
 
 /**
  * Registry of available fakes, it maps the an string ID to a factory
  * function which returns the actual fake used to replace an implementation.
  *
  */
-const fakes: Record<string, (...args: any[]) => FakedFunction> = {
+const fakes = {
   'static_fake': staticFakeFactory,
+  'static_promise_fake': staticPromiseFakeFactory,
 };
+type FakeId = keyof typeof fakes;
 
 /**
  * Class holds the information for applying and restoring fakes.
@@ -496,7 +518,7 @@ class PrepareFake {
    *     e.g.: static return value.
    */
   constructor(
-      private attrName_: string, private fakeId_: string,
+      private attrName_: string, private fakeId_: keyof typeof fakes,
       private context_: Object, ...args: unknown[]) {
     this.args_ = args;
   }
@@ -532,10 +554,11 @@ class PrepareFake {
     }
 
     this.saveOriginal_(contentWindow);
-    this.parentObject_[this.leafAttrName_] = (...args: unknown[]) => {
-      this.fake_!(...args);
+    this.parentObject_[this.leafAttrName_] = async (...args: unknown[]) => {
+      const result = await this.fake_!(...args);
       this.callCounter++;
       this.calledArgs.push([...args]);
+      return result;
     };
   }
 
@@ -576,7 +599,7 @@ class PrepareFake {
    * Constructs the fake.
    */
   private buildFake_() {
-    const factory = fakes[this.fakeId_];
+    const factory: (...args: any[]) => FakedFunction = fakes[this.fakeId_];
     if (!factory) {
       throw new Error(`Failed to find the fake factory for ${this.fakeId_}`);
     }
@@ -625,11 +648,11 @@ class PrepareFake {
  * 'other value'].
  */
 test.util.sync.foregroundFake =
-    (contentWindow: Window, fakeData: Record<string, unknown[]>) => {
+    (contentWindow: Window, fakeData: Record<string, [FakeId, unknown[]]>) => {
       const entries = Object.entries(fakeData);
       for (const [path, mockValue] of entries) {
-        const fakeId = mockValue[0] as string;
-        const fakeArgs = mockValue[1] as unknown[] || [];
+        const fakeId = mockValue[0];
+        const fakeArgs = mockValue[1] || [];
         const fake = new PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
         fake.prepare();
         fake.replace(contentWindow);

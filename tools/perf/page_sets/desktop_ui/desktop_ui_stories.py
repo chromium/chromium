@@ -5,7 +5,7 @@
 from telemetry import story
 from page_sets.desktop_ui import \
     new_tab_page_story, omnibox_story, \
-    side_search_story, tab_search_story, webui_tab_strip_story
+    tab_search_story, webui_tab_strip_story
 from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
 
@@ -47,11 +47,6 @@ class DesktopUIStorySet(story.StorySet):
       new_tab_page_story.NewTabPageStoryLoading,
   ]
 
-  SIDE_SEARCH_STORIES = [
-      side_search_story.SideSearchStoryMeasureMemory,
-      side_search_story.SideSearchStoryNavigation,
-  ]
-
   def __init__(self, exhaustive=False):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
@@ -87,8 +82,3 @@ class DesktopUIStorySet(story.StorySet):
               '--enable-features=%s' % ','.join(features),
               '--signed-out-ntp-modules',
           ]))
-
-    for cls in self.SIDE_SEARCH_STORIES:
-      self.AddStory(cls(self, [
-          '--enable-features=SideSearch',
-      ]))

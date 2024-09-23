@@ -74,6 +74,7 @@ class MockImageDecoder : public ImageDecoder {
       : ImageDecoder(kAlphaPremultiplied,
                      ImageDecoder::kDefaultBitDepth,
                      ColorBehavior::kTransformToSRGB,
+                     cc::AuxImage::kDefault,
                      ImageDecoder::kNoDecodedImageByteLimit),
         client_(client) {}
 
@@ -142,7 +143,7 @@ class MockImageDecoder : public ImageDecoder {
     frame_buffer_cache_[index].SetHasAlpha(false);
   }
 
-  raw_ptr<MockImageDecoderClient, ExperimentalRenderer> client_;
+  raw_ptr<MockImageDecoderClient> client_;
 };
 
 class MockImageDecoderFactory : public ImageDecoderFactory {
@@ -172,7 +173,7 @@ class MockImageDecoderFactory : public ImageDecoderFactory {
                           const gfx::Size& decoded_size)
       : client_(client), decoded_size_(decoded_size) {}
 
-  raw_ptr<MockImageDecoderClient, ExperimentalRenderer> client_;
+  raw_ptr<MockImageDecoderClient> client_;
   gfx::Size decoded_size_;
 };
 

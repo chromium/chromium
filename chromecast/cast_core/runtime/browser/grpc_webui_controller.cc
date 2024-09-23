@@ -57,7 +57,8 @@ GrpcWebUIController::GrpcWebUIController(
       browser_context_(web_contents_->GetBrowserContext()) {
   DCHECK(web_contents_);
   DCHECK(browser_context_);
-  webui->SetBindings(content::BINDINGS_POLICY_WEB_UI);
+  webui->SetBindings(
+      content::BindingsPolicySet({content::BindingsPolicyValue::kWebUi}));
   auto cast_resources = std::make_unique<GrpcResourceDataSource>(
       host, true /* for_webui */, core_app_service_stub);
   if (host == kCastWebUIHomeHost) {

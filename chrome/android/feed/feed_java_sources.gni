@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/feed/features.gni")
-
 feed_deps = [
   "//chrome/android/feed:chrome_feed_java_resources",
   "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -24,6 +22,7 @@ feed_deps = [
 ]
 
 feed_java_sources = [
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedItemDecoration.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HasContentListener.java",
@@ -34,6 +33,7 @@ feed_java_sources = [
 feed_srcjar_deps = []
 
 feed_junit_test_java_sources = [
+  "junit/src/org/chromium/chrome/browser/feed/FeedItemDecorationTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
 ]

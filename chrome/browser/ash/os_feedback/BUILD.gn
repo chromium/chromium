@@ -1,0 +1,123 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("os_feedback") {
+  sources = [
+    "chrome_os_feedback_delegate.cc",
+    "chrome_os_feedback_delegate.h",
+    "os_feedback_screenshot_manager.cc",
+    "os_feedback_screenshot_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/os_feedback_ui",
+    "//ash/webui/os_feedback_ui/backend",
+    "//ash/webui/os_feedback_ui/mojom",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/system_logs",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/common",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//components/feedback",
+    "//components/feedback/content",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//mojo/public/cpp/base",
+    "//net",
+    "//ui/aura",
+    "//ui/gfx",
+    "//ui/snapshot",
+    "//ui/web_dialogs",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/system_logs",
+    "//chrome/browser/ash/system_web_apps/apps",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_feedback_screenshot_manager_unittest.cc" ]
+
+  deps = [
+    ":os_feedback",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "chrome_os_feedback_delegate_browsertest.cc" ]
+
+  deps = [
+    ":os_feedback",
+    "//ash/constants",
+    "//ash/webui/help_app_ui",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/os_feedback_dialog",
+    "//chrome/test:test_support",
+    "//components/feedback",
+    "//components/feedback/content",
+    "//components/feedback/content:factory",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "os_feedback_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//components/feedback",
+      "//ui/base",
+      "//ui/events",
+    ]
+  }
+}

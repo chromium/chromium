@@ -1,0 +1,48 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash, "Nearby Share is CrOS only")
+
+build_webui("build") {
+  grd_prefix = "nearby_share_dialog"
+
+  static_files = [ "nearby_share_dialog.html" ]
+
+  web_component_files = [
+    "app.ts",
+    "nearby_confirmation_page.ts",
+    "nearby_discovery_page.ts",
+  ]
+
+  non_web_component_files = [ "discovery_manager.ts" ]
+
+  ts_deps = [
+    "./shared:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/material_web_components:library",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_path_mappings =
+      [ "/shared/*|" +
+        rebase_path("$target_gen_dir/shared/tsc/*", target_gen_dir) ]
+
+  extra_grdp_files = [
+    "$target_gen_dir/shared/nearby_share_json_resources.grdp",
+    "$target_gen_dir/shared/resources.grdp",
+  ]
+  extra_grdp_deps = [
+    "shared:build_grdp",
+    "shared:build_json_grdp",
+  ]
+
+  webui_context_type = "trusted"
+}

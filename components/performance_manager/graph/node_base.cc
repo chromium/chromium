@@ -13,7 +13,7 @@ namespace performance_manager {
 const uintptr_t NodeBase::kNodeBaseType =
     reinterpret_cast<uintptr_t>(&kNodeBaseType);
 
-NodeBase::NodeBase(NodeTypeEnum node_type) : type_(node_type) {}
+NodeBase::NodeBase() = default;
 
 NodeBase::~NodeBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -11,24 +11,23 @@ import re
 import subprocess
 import sys
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import exe_util
 import main_program
 import test_results
 
 
 def _format_test_name(test_executable_name, test_case_name):
-    assert "//" not in test_executable_name
-    assert "/" not in test_case_name
-    test_case_name = "/".join(test_case_name.split("::"))
-    return "{}//{}".format(test_executable_name, test_case_name)
+    assert '//' not in test_executable_name
+    assert '/' not in test_case_name
+    test_case_name = '/'.join(test_case_name.split('::'))
+    return '{}//{}'.format(test_executable_name, test_case_name)
 
 
 def _parse_test_name(test_name):
-    assert "//" in test_name
-    assert "::" not in test_name
-    test_executable_name, test_case_name = test_name.split("//", 1)
-    test_case_name = "::".join(test_case_name.split("/"))
+    assert '//' in test_name
+    assert '::' not in test_name
+    test_executable_name, test_case_name = test_name.split('//', 1)
+    test_case_name = '::'.join(test_case_name.split('/'))
     return test_executable_name, test_case_name
 
 
@@ -54,7 +53,7 @@ def _scrape_test_list(output, test_executable_name):
             continue
         else:
             raise ValueError(
-                "Unexpected format of a list of tests: {}".format(output))
+                'Unexpected format of a list of tests: {}'.format(output))
     test_names = [
         _format_test_name(test_executable_name, test_case_name)
         for test_case_name in test_case_names
@@ -154,9 +153,9 @@ class _TestExecutableWrapper:
         ]
         args.extend(list_of_tests_to_run)
 
-        print("Running tests from {}...".format(self._name_of_test_executable))
+        print('Running tests from {}...'.format(self._name_of_test_executable))
         output = exe_util.run_and_tee_output(args)
-        print("Running tests from {}... DONE.".format(
+        print('Running tests from {}... DONE.'.format(
             self._name_of_test_executable))
         print()
 

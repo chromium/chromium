@@ -31,7 +31,7 @@ bool DocumentVideoPictureInPicture::pictureInPictureEnabled(
 }
 
 // static
-ScriptPromise DocumentVideoPictureInPicture::exitPictureInPicture(
+ScriptPromise<IDLUndefined> DocumentVideoPictureInPicture::exitPictureInPicture(
     ScriptState* script_state,
     Document& document,
     ExceptionState& exception_state) {
@@ -42,12 +42,12 @@ ScriptPromise DocumentVideoPictureInPicture::exitPictureInPicture(
   if (!picture_in_picture_element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kNoPictureInPictureElement);
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   DCHECK(IsA<HTMLVideoElement>(picture_in_picture_element));
   controller.ExitPictureInPicture(

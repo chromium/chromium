@@ -175,14 +175,7 @@ TEST_P(ContentCaptureReceiverTest, MultipleConsumers) {
   EXPECT_EQ(consumer(), provider()->GetConsumersForTesting()[0]);
 }
 
-// TODO(https://crbug.com/1010179): Fix flakes on win-rel and re-enable this
-// test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DidCaptureContentWithUpdate DISABLED_DidCaptureContentWithUpdate
-#else
-#define MAYBE_DidCaptureContentWithUpdate DidCaptureContentWithUpdate
-#endif
-TEST_P(ContentCaptureReceiverTest, MAYBE_DidCaptureContentWithUpdate) {
+TEST_P(ContentCaptureReceiverTest, DidCaptureContentWithUpdate) {
   main_frame_sender()->DidCaptureContent(helper()->test_data(),
                                          true /* first_data */);
   // Verifies to get test_data() with correct frame content id.
@@ -203,14 +196,7 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_DidCaptureContentWithUpdate) {
             consumer()->captured_data());
 }
 
-// TODO(https://crbug.com/1011204): Fix flakes on win-rel and re-enable this
-// test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DidUpdateContent DISABLED_DidUpdateContent
-#else
-#define MAYBE_DidUpdateContent DidUpdateContent
-#endif
-TEST_P(ContentCaptureReceiverTest, MAYBE_DidUpdateContent) {
+TEST_P(ContentCaptureReceiverTest, DidUpdateContent) {
   main_frame_sender()->DidCaptureContent(helper()->test_data(),
                                          true /* first_data */);
   EXPECT_TRUE(consumer()->parent_session().empty());
@@ -363,15 +349,7 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   EXPECT_EQ(title2, consumer()->updated_title());
 }
 
-// TODO(https://crbug.com/1010416): Fix flakes on win-rel and re-enable this
-// test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ChildFrameCaptureContentFirst \
-  DISABLED_ChildFrameCaptureContentFirst
-#else
-#define MAYBE_ChildFrameCaptureContentFirst ChildFrameCaptureContentFirst
-#endif
-TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
+TEST_P(ContentCaptureReceiverTest, ChildFrameCaptureContentFirst) {
   // This test performs navigations, expecting the frames to be destroyed.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
@@ -586,16 +564,8 @@ class ContentCaptureReceiverMultipleFrameTest
   ContentCaptureTestHelper helper_;
 };
 
-// TODO(https://crbug.com/1010417): Fix flakes on win-rel and re-enable this
-// test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ReceiverCreatedForExistingFrame \
-  DISABLED_ReceiverCreatedForExistingFrame
-#else
-#define MAYBE_ReceiverCreatedForExistingFrame ReceiverCreatedForExistingFrame
-#endif
 TEST_F(ContentCaptureReceiverMultipleFrameTest,
-       MAYBE_ReceiverCreatedForExistingFrame) {
+       ReceiverCreatedForExistingFrame) {
   EXPECT_EQ(2u, provider()->GetFrameMapSizeForTesting());
 }
 

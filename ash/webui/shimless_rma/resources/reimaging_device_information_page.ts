@@ -16,7 +16,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_device_information_page.html.js';
 import {FeatureLevel, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
-import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEnabled, isSkuDescriptionEnabled} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -216,10 +216,7 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalSkuAndSkuList();
     this.getOriginalCustomLabelAndCustomLabelList();
     this.getOriginalDramPartNumber();
-
-    if (isComplianceCheckEnabled()) {
-      this.getOriginalFeatureLevel();
-    }
+    this.getOriginalFeatureLevel();
 
     focusPageTitle(this);
   }
@@ -285,10 +282,8 @@ export class ReimagingDeviceInformationPage extends
           return this.shimlessRmaService.getSkuDescriptionList();
         })
         .then((result: {skuDescriptions: string[]}) => {
-          // The SKU description list can be empty if the backend disables this
-          // feature.
-          if (isSkuDescriptionEnabled() &&
-              this.skus.length === result.skuDescriptions.length) {
+          // The SKU description list can be empty.
+          if (this.skus.length === result.skuDescriptions.length) {
             this.skus = this.skus.map(
                 (sku, index) => `${sku}: ${result.skuDescriptions[index]}`);
           }
@@ -468,8 +463,7 @@ export class ReimagingDeviceInformationPage extends
   }
 
   private shouldShowComplianceSection(): boolean {
-    return isComplianceCheckEnabled() &&
-        this.featureLevel !== FeatureLevel.kRmadFeatureLevelUnsupported;
+    return this.featureLevel !== FeatureLevel.kRmadFeatureLevelUnsupported;
   }
 
   private isComplianceStatusKnown(): boolean {

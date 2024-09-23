@@ -6,9 +6,9 @@
 #define CONTENT_BROWSER_MOJO_BINDER_POLICY_MAP_IMPL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 
@@ -74,10 +74,10 @@ class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
 
  private:
   // MojoBinderPolicyMap implementation:
-  void SetPolicyByName(const base::StringPiece& name,
+  void SetPolicyByName(const std::string_view& name,
                        MojoBinderAssociatedPolicy policy) override;
 
-  void SetPolicyByName(const base::StringPiece& name,
+  void SetPolicyByName(const std::string_view& name,
                        MojoBinderNonAssociatedPolicy policy) override;
 
   base::flat_map<std::string, MojoBinderNonAssociatedPolicy>

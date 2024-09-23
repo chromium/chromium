@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 
 #include <stddef.h>
@@ -61,17 +66,21 @@
 #include <windows.h>
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// If a font name in prefs default values starts with a comma, consider it's a
+// comma-separated font list and resolve it to the first available font.
+#define PREFS_FONT_LIST 1
+#include "ui/gfx/font_list.h"
+#else
+#define PREFS_FONT_LIST 0
+#endif
+
 using blink::web_pref::WebPreferences;
 using content::WebContents;
 
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-// Unlocalizes the minimum font size setting. crbug.com/1469490.
-BASE_FEATURE(kUnlocalizeMinimumFontSize,
-             "UnlocalizeMinimumFontSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Registers a preference under the path |pref_name| for each script used for
 // per-script font prefs.
 // For example, for WEBKIT_WEBPREFS_FONTS_SERIF ("fonts.serif"):
@@ -274,7 +283,8 @@ void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
   else if (generic_family == "math")
     map = &prefs->math_font_family_map;
   else
-    NOTREACHED() << "Unknown generic font family: " << generic_family;
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown generic font family: " << generic_family;
   (*map)[script] = base::UTF8ToUTF16(pref_value);
 }
 
@@ -366,6 +376,8 @@ void PrefsTabHelper::RegisterProfilePrefs(
       prefs::kEnableReferrers,
       !base::FeatureList::IsEnabled(features::kNoReferrers));
   registry->RegisterBooleanPref(prefs::kEnableEncryptedMedia, true);
+  registry->RegisterStringPref(prefs::kPrefixedVideoFullscreenApiAvailability,
+                               "runtime-enabled");
   registry->RegisterBooleanPref(prefs::kScrollToTextFragmentEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor, 1.0);
@@ -418,8 +430,17 @@ void PrefsTabHelper::RegisterProfilePrefs(
     // prefs (e.g., via the extensions workflow), or the problem turns out to
     // not be really critical after all.
     if (browser_script != pref_script) {
-      registry->RegisterStringPref(pref.pref_name,
-                                   l10n_util::GetStringUTF8(pref.resource_id));
+      std::string value = l10n_util::GetStringUTF8(pref.resource_id);
+#if PREFS_FONT_LIST
+      if (value.starts_with(',')) {
+        value = gfx::FontList::FirstAvailableOrFirst(value);
+      }
+#else   // !PREFS_FONT_LIST
+      DCHECK(!value.starts_with(','))
+          << "This platform doesn't support default font lists. "
+          << pref.pref_name << "=" << value;
+#endif  // PREFS_FONT_LIST
+      registry->RegisterStringPref(pref.pref_name, value);
       fonts_with_defaults.insert(pref.pref_name);
     }
   }
@@ -430,16 +451,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(prefs::kWebKitDefaultFontSize, 16);
   registry->RegisterIntegerPref(prefs::kWebKitDefaultFixedFontSize, 13);
-  if (base::FeatureList::IsEnabled(kUnlocalizeMinimumFontSize)) {
-    registry->RegisterIntegerPref(prefs::kWebKitMinimumFontSize, 0);
-  } else {
-    // TODO(crbug.com/1432798): When the feature is stabilized and cleaning up,
-    // make sure to remove all `IDS_MINIMUM_FONT_SIZE`. `kWebKitMinimumFontSize`
-    // helping the readability is no longer needed, but it's still important for
-    // accessibility. See the design doc linked from crbug.com/1432798.
-    RegisterLocalizedFontPref(registry, prefs::kWebKitMinimumFontSize,
-                              IDS_MINIMUM_FONT_SIZE);
-  }
+  registry->RegisterIntegerPref(prefs::kWebKitMinimumFontSize, 0);
   RegisterLocalizedFontPref(registry, prefs::kWebKitMinimumLogicalFontSize,
                             IDS_MINIMUM_LOGICAL_FONT_SIZE);
 #endif

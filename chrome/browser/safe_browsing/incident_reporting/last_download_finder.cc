@@ -242,8 +242,6 @@ void PopulateNonBinaryDetailsFromRow(
 
 LastDownloadFinder::~LastDownloadFinder() {
   g_browser_process->profile_manager()->RemoveObserver(this);
-  for (const auto& state : profile_states_)
-    state.first->RemoveObserver(this);
 }
 
 // static
@@ -254,8 +252,9 @@ std::unique_ptr<LastDownloadFinder> LastDownloadFinder::Create(
       base::WrapUnique(new LastDownloadFinder(
           std::move(download_details_getter), std::move(callback))));
   // Return NULL if there is no work to do.
-  if (finder->profile_states_.empty())
+  if (finder->pending_profiles_.empty()) {
     return nullptr;
+  }
   return finder;
 }
 
@@ -276,35 +275,50 @@ LastDownloadFinder::LastDownloadFinder(
   g_browser_process->profile_manager()->AddObserver(this);
 }
 
+LastDownloadFinder::PendingProfileData::PendingProfileData(
+    LastDownloadFinder* finder,
+    Profile* profile,
+    State state)
+    : state(state), observation(finder) {
+  observation.Observe(profile);
+}
+
+LastDownloadFinder::PendingProfileData::~PendingProfileData() = default;
+
+// static
+LastDownloadFinder::ProfileKey LastDownloadFinder::KeyForProfile(
+    Profile* profile) {
+  return ProfileKey(reinterpret_cast<std::uintptr_t>(profile));
+}
+
 void LastDownloadFinder::SearchInProfile(Profile* profile) {
   // Do not look in OTR profiles or in profiles that do not participate in
   // safe browsing extended reporting.
   if (!IncidentReportingService::IsEnabledForProfile(profile))
     return;
 
-  // Exit early if already processing this profile. This could happen if, for
-  // example, OnProfileAdded is called after construction while waiting for
-  // OnHistoryServiceLoaded.
-  if (profile_states_.count(profile))
+  // Try to initiate a metadata search.
+  ProfileKey profile_key = KeyForProfile(profile);
+  auto [iter, inserted] = pending_profiles_.try_emplace(
+      profile_key, this, profile, PendingProfileData::WAITING_FOR_METADATA);
+
+  // If the profile was already being processed, do nothing.
+  if (!inserted) {
     return;
-
-  profile->AddObserver(this);
-
-  // Initiate a metadata search. As with IncidentReportingService, it's assumed
-  // that all passed profiles will outlive |this|.
-  profile_states_[profile] = WAITING_FOR_METADATA;
+  }
   download_details_getter_.Run(
       profile, base::BindOnce(&LastDownloadFinder::OnMetadataQuery,
-                              weak_ptr_factory_.GetWeakPtr(), profile));
+                              weak_ptr_factory_.GetWeakPtr(), profile_key));
 }
 
 void LastDownloadFinder::OnMetadataQuery(
-    Profile* profile,
+    ProfileKey profile_key,
     std::unique_ptr<ClientIncidentReport_DownloadDetails> details) {
-  auto iter = profile_states_.find(profile);
+  auto iter = pending_profiles_.find(profile_key);
   // Early-exit if the search for this profile was abandoned.
-  if (iter == profile_states_.end())
+  if (iter == pending_profiles_.end()) {
     return;
+  }
 
   if (details) {
     if (IsMostInterestingBinary(*details, details_.get(),
@@ -312,14 +326,14 @@ void LastDownloadFinder::OnMetadataQuery(
       details_ = std::move(details);
       most_recent_binary_row_.end_time = base::Time();
     }
-    iter->second = WAITING_FOR_NON_BINARY_HISTORY;
+    iter->second.state = PendingProfileData::WAITING_FOR_NON_BINARY_HISTORY;
   } else {
-    iter->second = WAITING_FOR_HISTORY;
+    iter->second.state = PendingProfileData::WAITING_FOR_HISTORY;
   }
 
   // Initiate a history search
   history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
+      HistoryServiceFactory::GetForProfile(iter->second.profile(),
                                            ServiceAccessType::IMPLICIT_ACCESS);
   // No history service is returned for profiles that do not save history.
   if (!history_service) {
@@ -329,7 +343,7 @@ void LastDownloadFinder::OnMetadataQuery(
   if (history_service->BackendLoaded()) {
     history_service->QueryDownloads(
         base::BindOnce(&LastDownloadFinder::OnDownloadQuery,
-                       weak_ptr_factory_.GetWeakPtr(), profile));
+                       weak_ptr_factory_.GetWeakPtr(), profile_key));
   } else {
     // else wait until history is loaded.
     history_service_observations_.AddObservation(history_service);
@@ -337,15 +351,16 @@ void LastDownloadFinder::OnMetadataQuery(
 }
 
 void LastDownloadFinder::OnDownloadQuery(
-    Profile* profile,
+    ProfileKey profile_key,
     std::vector<history::DownloadRow> downloads) {
   // Early-exit if the history search for this profile was abandoned.
-  auto iter = profile_states_.find(profile);
-  if (iter == profile_states_.end())
+  auto iter = pending_profiles_.find(profile_key);
+  if (iter == pending_profiles_.end()) {
     return;
+  }
 
   // Don't overwrite the download from metadata if it came from this profile.
-  if (iter->second == WAITING_FOR_HISTORY) {
+  if (iter->second.state == PendingProfileData::WAITING_FOR_HISTORY) {
     // Find the most recent from this profile and use it if it's better than
     // anything else found so far.
     const history::DownloadRow* profile_best_binary =
@@ -370,19 +385,19 @@ void LastDownloadFinder::OnDownloadQuery(
 }
 
 void LastDownloadFinder::RemoveProfileAndReportIfDone(
-    std::map<Profile*, ProfileWaitState>::iterator iter) {
-  DCHECK(iter != profile_states_.end());
-  iter->first->RemoveObserver(this);
-  profile_states_.erase(iter);
+    PendingProfilesMap::iterator iter) {
+  CHECK(iter != pending_profiles_.end());
+  pending_profiles_.erase(iter);
 
   // Finish processing if all results are in.
-  if (profile_states_.empty())
+  if (pending_profiles_.empty()) {
     ReportResults();
+  }
   // Do not touch this LastDownloadFinder after reporting results.
 }
 
 void LastDownloadFinder::ReportResults() {
-  DCHECK(profile_states_.empty());
+  CHECK(pending_profiles_.empty());
 
   std::unique_ptr<ClientIncidentReport_DownloadDetails> binary_details;
   std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
@@ -414,25 +429,27 @@ void LastDownloadFinder::OnProfileAdded(Profile* profile) {
 }
 
 void LastDownloadFinder::OnProfileWillBeDestroyed(Profile* profile) {
-  // |profile| may not be present in the set of profiles.
-  auto iter = profile_states_.find(profile);
-  DCHECK(iter != profile_states_.end());
+  // If a Profile is about to be destroyed while we are observing it, the
+  // `profile` must be present in the map of pending queries.
+  auto iter = pending_profiles_.find(KeyForProfile(profile));
+  CHECK(iter != pending_profiles_.end());
   RemoveProfileAndReportIfDone(iter);
 }
 
 void LastDownloadFinder::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
-  for (const auto& pair : profile_states_) {
+  for (auto& [profile_key, profile_data] : pending_profiles_) {
     history::HistoryService* hs = HistoryServiceFactory::GetForProfileIfExists(
-        pair.first, ServiceAccessType::EXPLICIT_ACCESS);
+        profile_data.profile(), ServiceAccessType::EXPLICIT_ACCESS);
     if (hs == history_service) {
       // Start the query in the history service if the finder was waiting for
       // the service to load.
-      if (pair.second == WAITING_FOR_HISTORY ||
-          pair.second == WAITING_FOR_NON_BINARY_HISTORY) {
+      if (profile_data.state == PendingProfileData::WAITING_FOR_HISTORY ||
+          profile_data.state ==
+              PendingProfileData::WAITING_FOR_NON_BINARY_HISTORY) {
         history_service->QueryDownloads(
             base::BindOnce(&LastDownloadFinder::OnDownloadQuery,
-                           weak_ptr_factory_.GetWeakPtr(), pair.first));
+                           weak_ptr_factory_.GetWeakPtr(), profile_key));
       }
       return;
     }

@@ -40,8 +40,8 @@ export enum TroubleshootingState {
 const NetworkCardElementBase = I18nMixin(PolymerElement);
 
 export class NetworkCardElement extends NetworkCardElementBase {
-  static get is(): string {
-    return 'network-card';
+  static get is(): 'network-card' {
+    return 'network-card' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -342,11 +342,27 @@ export class NetworkCardElement extends NetworkCardElementBase {
       this.timerId = -1;
     }
   }
+
+  getTimerIdForTesting(): number {
+    return this.timerId;
+  }
+
+  setTimeoutInMsForTesting(timeout: number): void {
+    this.timeoutInMs = timeout;
+  }
+
+  getTimeoutInMsForTesting(): number {
+    return this.timeoutInMs;
+  }
+
+  getUnableToObtainIpAddressForTesting(): boolean {
+    return this.unableToObtainIpAddress;
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'network-card': NetworkCardElement;
+    [NetworkCardElement.is]: NetworkCardElement;
   }
 }
 

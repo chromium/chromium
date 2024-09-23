@@ -7,8 +7,10 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -25,7 +27,7 @@ namespace {
 // Defines necessary types for the rationalization logic, meaning that fields of
 // `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
 // is present.
-// TODO(crbug.com/1311937) Cleanup when launched.
+// TODO(crbug.com/40220393) Cleanup when launched.
 FieldTypeSet GetNecessaryTypesFor(FieldType type) {
   switch (type) {
     case PHONE_HOME_COUNTRY_CODE: {
@@ -101,14 +103,15 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
       field->SetHtmlType(type, field->html_mode());
     };
     // Some of the following rationalization operates only on text fields.
-    bool is_text_field = field->IsTextInputElement() ||
-                         field->form_control_type == FormControlType::kTextArea;
+    bool is_text_field =
+        field->IsTextInputElement() ||
+        field->form_control_type() == FormControlType::kTextArea;
     switch (field->html_type()) {
       case HtmlFieldType::kAdditionalName:
         if (!is_text_field) {
           continue;
         }
-        if (field->max_length == 1) {
+        if (field->max_length() == 1) {
           set_html_type(HtmlFieldType::kAdditionalNameInitial);
         }
         break;
@@ -138,9 +141,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                             ? HtmlFieldType::kCreditCardExpDate4DigitYear
                             : HtmlFieldType::kCreditCardExpDate2DigitYear);
         } else {
-          if (field->max_length == 5) {
+          if (field->max_length() == 5) {
             set_html_type(HtmlFieldType::kCreditCardExpDate2DigitYear);
-          } else if (field->max_length == 7) {
+          } else if (field->max_length() == 7) {
             set_html_type(HtmlFieldType::kCreditCardExpDate4DigitYear);
           }
         }
@@ -173,9 +176,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
                             ? HtmlFieldType::kCreditCardExp4DigitYear
                             : HtmlFieldType::kCreditCardExp2DigitYear);
         } else {
-          if (field->max_length == 2) {
+          if (field->max_length() == 2) {
             set_html_type(HtmlFieldType::kCreditCardExp2DigitYear);
-          } else if (field->max_length == 4) {
+          } else if (field->max_length() == 4) {
             set_html_type(HtmlFieldType::kCreditCardExp4DigitYear);
           }
         }
@@ -189,7 +192,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
 void FormStructureRationalizer::RationalizeContentEditables(
     LogManager* log_manager) {
   for (const auto& field : *fields_) {
-    if (field->form_control_type == FormControlType::kContentEditable) {
+    if (field->form_control_type() == FormControlType::kContentEditable) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
     }
   }
@@ -434,7 +437,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     const url::Origin& main_origin,
     LogManager* log_manager) {
   auto is_in_subframe = [&main_origin](const FormFieldData& field) {
-    return field.origin != main_origin;
+    return field.origin() != main_origin;
   };
   auto rationalize = [&](FieldType relevant_type) {
     auto is_relevant = [relevant_type](const AutofillField& field) {
@@ -446,7 +449,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     // If a relevant field exists in a sub-frame, we can ignore the
     // corresponding field in the main frame as it is probably a
     // misclassification.
-    if (base::ranges::any_of(*fields_, is_relevant_in_subframe)) {
+    if (std::ranges::any_of(*fields_, is_relevant_in_subframe)) {
       for (auto& field : *fields_) {
         if (is_relevant(*field) && !is_in_subframe(*field)) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -489,16 +492,17 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   auto may_be_group = [](Group group) {
     DCHECK_GE(group.size(), 1u);
     DCHECK(
-        base::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
+        std::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
           return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
         }));
     size_t last = group.size() - 1;
-    return group[0]->max_length <= kMaxGroupElementLength &&
+    return group[0]->max_length() <= kMaxGroupElementLength &&
            group[last]->ComputedType().GetStorableType() ==
                CREDIT_CARD_NUMBER &&
            group[last]->renderer_form_id() == group[0]->renderer_form_id() &&
            group[last]->IsFocusable() == group[0]->IsFocusable() &&
-           (last == 0 || group[last - 1]->max_length == group[0]->max_length);
+           (last == 0 ||
+            group[last - 1]->max_length() == group[0]->max_length());
   };
 
   // `has_reasonable_length({f, f + N + 1})` is true iff
@@ -509,16 +513,17 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // 2. there are at least 2 non-overflow fields.
   auto has_reasonable_length = [](Group group) {
     DCHECK(!group.empty());
-    DCHECK(base::ranges::all_of(group.first(group.size() - 1),
-                                [group](const auto& f) {
-                                  return f->max_length == group[0]->max_length;
-                                }));
+    DCHECK(std::ranges::all_of(
+        group.first(group.size() - 1), [group](const auto& f) {
+          return f->max_length() == group[0]->max_length();
+        }));
     size_t size = group.size();
     size_t last = group.size() - 1;
-    bool last_is_overflow = group[last]->max_length > kMaxGroupElementLength;
-    size_t length = group[0]->max_length * (size - 1) + group[last]->max_length;
+    bool last_is_overflow = group[last]->max_length() > kMaxGroupElementLength;
+    size_t length =
+        group[0]->max_length() * (size - 1) + group[last]->max_length();
     size_t length_without_overflow =
-        length - last_is_overflow * group[last]->max_length;
+        length - last_is_overflow * group[last]->max_length();
     return length >= kMinValidCardNumberSize &&
            length_without_overflow <= kMaxValidCardNumberSize &&
            size >= 2 + last_is_overflow;
@@ -543,11 +548,13 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
       begin = end + 1;
       continue;
     }
-    if (has_reasonable_length({begin, end})) {
+    // SAFETY: The iterators are from the same container.
+    Group fields = Group(UNSAFE_BUFFERS({begin, end}));
+    if (has_reasonable_length(fields)) {
       size_t offset = 0;
-      for (auto& field : Group{begin, end}) {
+      for (auto& field : fields) {
         field->set_credit_card_number_offset(offset);
-        offset += field->max_length;
+        offset += field->max_length();
       }
     }
     DCHECK(begin != end);
@@ -567,7 +574,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     AutofillField& previous_field = **(field - 1);
     if (previous_field.ComputedType().GetStorableType() !=
             ADDRESS_HOME_STREET_ADDRESS ||
-        previous_field.section != (*field)->section ||
+        previous_field.section() != (*field)->section() ||
         previous_field.server_type_prediction_is_override()) {
       continue;
     }
@@ -581,9 +588,7 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 
 void FormStructureRationalizer::RationalizeBetweenStreetFields(
     LogManager* log_manager) {
-  if (fields_->size() < 2 ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
+  if (fields_->size() < 2) {
     return;
   }
   for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {
@@ -665,8 +670,9 @@ void FormStructureRationalizer::RationalizePhoneNumbersInSection(
     const Section& section) {
   std::vector<AutofillField*> fields;
   for (const auto& field : *fields_) {
-    if (field->section != section)
+    if (field->section() != section) {
       continue;
+    }
     fields.push_back(field.get());
   }
   rationalization_util::RationalizePhoneNumberFields(fields);
@@ -736,7 +742,7 @@ void FormStructureRationalizer::RationalizeAddressLineFields(
               << "ADDRESS_HOME_LINE3";
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       ++nb_address_rationalized;
@@ -834,7 +840,8 @@ bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
         GroupTypeOfFieldType(
             (*fields_)[field_index]->Type().GetStorableType()) ==
             FieldTypeGroup::kAddress &&
-        (*fields_)[field_index]->section == (*fields_)[upper_index]->section) {
+        (*fields_)[field_index]->section() ==
+            (*fields_)[upper_index]->section()) {
       return false;
     }
   }
@@ -865,8 +872,9 @@ void FormStructureRationalizer::RationalizeAddressStateCountry(
     // state and country. No rationalization needed.
     if (!sections_of_state_indexes->IsFinished() &&
         !sections_of_country_indexes->IsFinished() &&
-        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section ==
-            (*fields_)[sections_of_country_indexes->CurrentIndex()]->section) {
+        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section() ==
+            (*fields_)[sections_of_country_indexes->CurrentIndex()]
+                ->section()) {
       sections_of_state_indexes->WalkForwardToTheNextSection();
       sections_of_country_indexes->WalkForwardToTheNextSection();
       continue;
@@ -950,7 +958,8 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
   // sectioned_field_indexes_by_type[|type|] is predicted by server as |type|.
   // Example: sectioned_field_indexes_by_type[FULL_NAME] is a sectioned fields
   // indexes of fields whose types are predicted as FULL_NAME by the server.
-  SectionedFieldsIndexes sectioned_field_indexes_by_type[MAX_VALID_FIELD_TYPE];
+  std::array<SectionedFieldsIndexes, MAX_VALID_FIELD_TYPE>
+      sectioned_field_indexes_by_type;
 
   for (size_t i = 0; i < fields_->size(); ++i) {
     const AutofillField& field = *(*fields_)[i];
@@ -971,7 +980,7 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
                   .Empty() ||
               (*fields_)[sectioned_field_indexes_by_type[current_type]
                              .LastFieldIndex()]
-                      ->section != field.section);
+                      ->section() != field.section());
     }
   }
 
@@ -1029,12 +1038,13 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  std::optional<PatternSource> pattern_source = GetActivePatternSource();
-  if (!pattern_source.has_value()) {
-    pattern_source = PatternSource::kLegacy;
-  }
-
-  ParsingContext context(client_country, language_code, *pattern_source);
+  ParsingContext context(client_country, language_code,
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+                         PatternFile::kDefault,
+#else
+                         PatternFile::kLegacy,
+#endif
+                         GetActiveRegexFeatures());
 
   rationalization::ApplyRationalizationEngineRules(context, *fields_,
                                                    log_manager);

@@ -599,7 +599,7 @@ def CreateRJavaFiles(srcjar_dir,
   else:
     # Create a unique name using srcjar_out. Underscores are added to ensure
     # no reserved keywords are used for directory names.
-    root_r_java_package = re.sub('[^\w\.]', '', srcjar_out.replace('/', '._'))
+    root_r_java_package = re.sub(r'[^\w\.]', '', srcjar_out.replace('/', '._'))
 
   root_r_java_dir = os.path.join(srcjar_dir, *root_r_java_package.split('.'))
   build_utils.MakeDirectory(root_r_java_dir)
@@ -966,12 +966,12 @@ def ParseAndroidResourceStringsFromXml(xml_data):
   result = {}
 
   # Find <resources> start tag and extract namespaces from it.
-  m = re.search('<resources([^>]*)>', xml_data, re.MULTILINE)
+  m = re.search(r'<resources([^>]*)>', xml_data, re.MULTILINE)
   if not m:
     raise Exception('<resources> start tag expected: ' + xml_data)
   input_data = xml_data[m.end():]
   resource_attrs = m.group(1)
-  re_namespace = re.compile('\s*(xmlns:(\w+)="([^"]+)")')
+  re_namespace = re.compile(r'\s*(xmlns:(\w+)="([^"]+)")')
   namespaces = {}
   while resource_attrs:
     m = re_namespace.match(resource_attrs)
@@ -981,8 +981,9 @@ def ParseAndroidResourceStringsFromXml(xml_data):
     resource_attrs = resource_attrs[m.end(1):]
 
   # Find each string element now.
-  re_string_element_start = re.compile('<string ([^>]* )?name="([^">]+)"[^>]*>')
-  re_string_element_end = re.compile('</string>')
+  re_string_element_start = re.compile(
+      r'<string ([^>]* )?name="([^">]+)"[^>]*>')
+  re_string_element_end = re.compile(r'</string>')
   while input_data:
     m = re_string_element_start.search(input_data)
     if not m:

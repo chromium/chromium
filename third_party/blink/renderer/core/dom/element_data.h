@@ -57,11 +57,15 @@ class ElementData : public GarbageCollected<ElementData> {
   void FinalizeGarbageCollectedObject();
 
   void ClearClass() const { class_names_.Clear(); }
-  void SetClass(const AtomicString& class_name, bool should_fold_case) const {
-    AtomicString lower_class_name;
-    if (should_fold_case && !class_name.IsLowerASCII())
-      lower_class_name = class_name.LowerASCII();
-    class_names_.Set(lower_class_name ? lower_class_name : class_name);
+  void SetClass(const AtomicString& class_names) const {
+    DCHECK(!class_names.empty());
+    class_names_.Set(class_names);
+  }
+  void SetClassFoldingCase(const AtomicString& class_names) const {
+    if (class_names.IsLowerASCII()) {
+      return SetClass(class_names);
+    }
+    return SetClass(class_names.LowerASCII());
   }
   const SpaceSplitString& ClassNames() const { return class_names_; }
 

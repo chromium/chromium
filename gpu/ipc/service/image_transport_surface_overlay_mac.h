@@ -31,21 +31,19 @@ class CALayerTreeCoordinator;
 struct CARendererLayerParams;
 }
 
-namespace gl {
-class GLFence;
-}
-
 namespace gpu {
 
 class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
-  ImageTransportSurfaceOverlayMacEGL();
+  ImageTransportSurfaceOverlayMacEGL(
+      DawnContextProvider* dawn_context_provider);
 
   // Presenter implementation
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
@@ -54,9 +52,10 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
+
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
 
-  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
+  void SetMaxPendingSwaps(int max_pending_swaps) override;
 
 #if BUILDFLAG(IS_MAC)
   // GLSurface override
@@ -71,24 +70,17 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   gfx::SwapResult SwapBuffersInternal(
       gl::GLSurface::SwapCompletionCallback completion_callback,
       gl::GLSurface::PresentationCallback presentation_callback);
-  void ApplyBackpressure();
+
   void BufferPresented(gl::GLSurface::PresentationCallback callback,
                        const gfx::PresentationFeedback& feedback);
-  void PopulateCALayerParameters();
 
-  const bool use_remote_layer_api_;
-  CAContext* __strong ca_context_;
+  void CommitPresentedFrameToCA();
+
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;
 
-  gfx::Size pixel_size_;
-  float scale_factor_;
-  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
-
-  // A GLFence marking the end of the previous frame, used for applying
-  // backpressure.
-  uint64_t previous_frame_fence_ = 0;
-
 #if BUILDFLAG(IS_MAC)
+  // The expected display time from CVDisplayLinkCallback for the frame being
+  // committed.
   base::TimeTicks GetDisplaytime(base::TimeTicks latch_time);
 
   // CGDirectDisplayID of the current monitor used for Creating CVDisplayLink.
@@ -102,13 +94,10 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
 
   // Ensure vsync_callback_mac_ is still alive in the case of frame rate
   // throttling such as 30 fps video playback.
+  // With a reduced frame rate from 60 fps to 30 fps, we skip every other
+  // VSyncCallback. To prevent VSyncCallback from being turning on and off, this
+  // keep_alive_counter is added.
   constexpr static int kMaxKeepAliveCounter = 8;
-
-  // The timetick when the GPU has finished completing all the drawing commands
-  base::TimeTicks ready_timestamp_;
-  // The timetick when CATransaction Commits and CoreAnimation latches the
-  // frame.
-  base::TimeTicks latch_timestamp_;
 
   // Parameters from CVDisplayLinkCallback
   base::TimeTicks current_display_time_;
@@ -116,12 +105,9 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   base::TimeDelta frame_interval_;
 #endif
 
-  SwapCompletionCallback completion_callback_;
-  PresentationCallback presentation_callback_;
-  // The number of CALayerTree that is committed but not yet populated. This
-  // number is increased in Present() and decreased in
-  // PopulateCALayerParameters();
-  int num_committed_ca_layer_trees_ = 0;
+  int cap_max_pending_swaps_ = 1;
+
+  raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
 
   base::WeakPtrFactory<ImageTransportSurfaceOverlayMacEGL> weak_ptr_factory_;
 };

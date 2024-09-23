@@ -49,7 +49,6 @@ UnionTraits<mojo_base::mojom::BigBufferDataView, mojo_base::BigBuffer>::GetTag(
   }
 
   NOTREACHED();
-  return mojo_base::mojom::BigBufferDataView::Tag::kBytes;
 }
 
 // static
@@ -114,7 +113,6 @@ mojo_base::mojom::BigBufferDataView::Tag UnionTraits<
   }
 
   NOTREACHED();
-  return mojo_base::mojom::BigBufferDataView::Tag::kBytes;
 }
 
 // static

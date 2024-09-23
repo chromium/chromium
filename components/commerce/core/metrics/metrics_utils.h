@@ -11,6 +11,8 @@
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class GURL;
+
 namespace commerce {
 class AccountChecker;
 }  // namespace commerce
@@ -67,12 +69,30 @@ enum class ShoppingFeatureIneligibilityReason {
   kMaxValue = kParentalControls
 };
 
+// The possible actions that user can take on a shopping page. These must be
+// kept in sync with Shopping.ShoppingActions in ukm.xml.
+enum class ShoppingAction {
+  kDiscountCopied = 0,
+  kDiscountOpened = 1,
+  kPriceInsightsOpened = 2,
+  kPriceTracked = 3,
+};
+
+// Shopping features that are contextual. These must be kept in sync with the
+// values in enums.xml.
+enum class ShoppingContextualFeature {
+  kPriceTracking = 0,
+  kPriceInsights = 1,
+  kDiscounts = 2,
+};
+
 // Record the state of a PDP for a navigation.
 void RecordPDPMetrics(optimization_guide::OptimizationGuideDecision decision,
                       const optimization_guide::OptimizationMetadata& metadata,
                       PrefService* pref_service,
                       bool is_off_the_record,
-                      bool is_shopping_list_eligible);
+                      bool is_shopping_list_eligible,
+                      const GURL& url);
 
 // Record how a PDP was detected.
 void RecordPDPStateWithLocalMeta(bool detected_by_server,
@@ -84,6 +104,10 @@ void RecordShoppingListIneligibilityReasons(PrefService* pref_service,
                                             AccountChecker* account_checker,
                                             bool is_off_the_record,
                                             bool supported_country);
+
+// Record UKM for shopping actions that users take.
+void RecordShoppingActionUKM(ukm::SourceId ukm_source_id,
+                             ShoppingAction action);
 
 }  // namespace commerce::metrics
 

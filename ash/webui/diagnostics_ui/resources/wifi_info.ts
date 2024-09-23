@@ -27,8 +27,8 @@ const WifiInfoElementBase = I18nMixin(PolymerElement);
 
 
 export class WifiInfoElement extends WifiInfoElementBase {
-  static get is(): string {
-    return 'wifi-info';
+  static get is(): 'wifi-info' {
+    return 'wifi-info' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -107,7 +107,7 @@ export class WifiInfoElement extends WifiInfoElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'wifi-info': WifiInfoElement;
+    [WifiInfoElement.is]: WifiInfoElement;
   }
 }
 

@@ -29,7 +29,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_class_properties.h"
@@ -39,6 +38,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
@@ -63,8 +63,7 @@ StarView::StarView(CommandUpdater* command_updater,
   SetID(VIEW_ID_STAR_BUTTON);
   SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
-  SetAccessibilityProperties(/*role*/ std::nullopt,
-                             l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
 }
 
 StarView::~StarView() = default;
@@ -114,12 +113,8 @@ views::BubbleDialogDelegate* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
                        : omnibox::kStarChromeRefreshIcon;
-  }
-
-  return GetActive() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
 }
 
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {

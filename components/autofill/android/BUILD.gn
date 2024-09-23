@@ -68,6 +68,8 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-hdpi/troy_metadata_card.png",
     "payments/java/res/drawable-hdpi/unionpay_card.png",
     "payments/java/res/drawable-hdpi/unionpay_metadata_card.png",
+    "payments/java/res/drawable-hdpi/verve_card.png",
+    "payments/java/res/drawable-hdpi/verve_metadata_card.png",
     "payments/java/res/drawable-hdpi/visa_metadata_card.png",
     "payments/java/res/drawable-mdpi/amex_card.png",
     "payments/java/res/drawable-mdpi/amex_metadata_card.png",
@@ -86,6 +88,8 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-mdpi/troy_metadata_card.png",
     "payments/java/res/drawable-mdpi/unionpay_card.png",
     "payments/java/res/drawable-mdpi/unionpay_metadata_card.png",
+    "payments/java/res/drawable-mdpi/verve_card.png",
+    "payments/java/res/drawable-mdpi/verve_metadata_card.png",
     "payments/java/res/drawable-mdpi/visa_metadata_card.png",
     "payments/java/res/drawable-xhdpi/amex_card.png",
     "payments/java/res/drawable-xhdpi/amex_metadata_card.png",
@@ -104,6 +108,8 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xhdpi/troy_metadata_card.png",
     "payments/java/res/drawable-xhdpi/unionpay_card.png",
     "payments/java/res/drawable-xhdpi/unionpay_metadata_card.png",
+    "payments/java/res/drawable-xhdpi/verve_card.png",
+    "payments/java/res/drawable-xhdpi/verve_metadata_card.png",
     "payments/java/res/drawable-xhdpi/visa_metadata_card.png",
     "payments/java/res/drawable-xxhdpi/amex_card.png",
     "payments/java/res/drawable-xxhdpi/amex_metadata_card.png",
@@ -122,6 +128,8 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxhdpi/troy_metadata_card.png",
     "payments/java/res/drawable-xxhdpi/unionpay_card.png",
     "payments/java/res/drawable-xxhdpi/unionpay_metadata_card.png",
+    "payments/java/res/drawable-xxhdpi/verve_card.png",
+    "payments/java/res/drawable-xxhdpi/verve_metadata_card.png",
     "payments/java/res/drawable-xxhdpi/visa_metadata_card.png",
     "payments/java/res/drawable-xxxhdpi/amex_card.png",
     "payments/java/res/drawable-xxxhdpi/amex_metadata_card.png",
@@ -140,9 +148,12 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxxhdpi/troy_metadata_card.png",
     "payments/java/res/drawable-xxxhdpi/unionpay_card.png",
     "payments/java/res/drawable-xxxhdpi/unionpay_metadata_card.png",
+    "payments/java/res/drawable-xxxhdpi/verve_card.png",
+    "payments/java/res/drawable-xxxhdpi/verve_metadata_card.png",
     "payments/java/res/drawable-xxxhdpi/visa_metadata_card.png",
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
+    "payments/java/res/drawable/iban_icon.xml",
     "payments/java/res/drawable/ic_credit_card_black.xml",
     "payments/java/res/drawable/ic_credit_card_primary.xml",
     "payments/java/res/drawable/ic_offer_tag.xml",
@@ -175,9 +186,17 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",
     "../core/browser/payments/card_unmask_challenge_option.h",
+    "../core/browser/ui/autofill_image_fetcher_base.h",
     "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
-    "../core/browser/ui/popup_item_ids.h",
     "../core/browser/ui/suggestion.h",
+    "../core/browser/ui/suggestion_type.h",
+  ]
+}
+
+java_cpp_enum("payments_autofill_core_browser_java_enums") {
+  sources = [
+    "../core/browser/data_model/bank_account.h",
+    "../core/browser/data_model/payment_instrument.h",
   ]
 }
 
@@ -189,6 +208,12 @@ java_cpp_features("java_features_srcjar") {
   ]
   template =
       "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
+}
+
+java_cpp_strings("java_switches_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/autofill/core/common/autofill_switches.cc" ]
+  template = "java_templates/AutofillSwitches.java.tmpl"
 }
 
 # We intentionally do not include :autofill_payments_java_resources not to
@@ -228,12 +253,16 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
-  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 # A minimal library used to expose autofill features to webview.
 android_library("autofill_features_java") {
   srcjar_deps = [ ":java_features_srcjar" ]
+}
+
+# A minimal library used to expose autofill switches to java.
+android_library("autofill_switches_java") {
+  srcjar_deps = [ ":java_switches_srcjar" ]
 }
 
 # A library containing the minimal deps for payments, so that ui_java_resources
@@ -243,41 +272,55 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/Completable.java",
     "java/src/org/chromium/components/autofill/EditableOption.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
+    "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
   deps = [
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//url:gurl_java",
   ]
-  srcjar_deps = [ ":payments_jni_headers" ]
+  srcjar_deps = [
+    ":payments_autofill_core_browser_java_enums",
+    ":payments_jni_headers",
+  ]
 }
 
 robolectric_library("payments_autofill_junit_tests") {
   sources = [
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/BankAccountTest.java",
     "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
     "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
   ]
   deps = [
     ":payments_autofill_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//url:url_java",
   ]
 }
 
 generate_jni("payments_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
+    "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
-  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 static_library("payments_autofill_cc") {

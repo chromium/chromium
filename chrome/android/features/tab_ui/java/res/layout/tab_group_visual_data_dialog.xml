@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false">
+
+        <LinearLayout
+            android:id="@+id/visual_data_dialog_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp" >
+
+            <androidx.appcompat.widget.DialogTitle
+                android:id="@+id/visual_data_dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:accessibilityHeading="true"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+            <TextView
+                android:id="@+id/visual_data_dialog_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingLeft="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:paddingRight="@dimen/tab_group_visual_data_dialog_margin_padding"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone" />
+
+            <include
+              layout="@layout/tab_group_visual_data_text_input_layout" />
+        </LinearLayout>
+</ScrollView>

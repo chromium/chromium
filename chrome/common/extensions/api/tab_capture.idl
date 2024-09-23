@@ -101,7 +101,7 @@ namespace tabCapture {
     // tab capture that would prevent a new tab capture from succeeding (or
     // to prevent redundant requests for the same tab).
     // |callback| : Callback invoked with CaptureInfo[] for captured tabs.
-    [supportsPromises] static void getCapturedTabs(
+    static void getCapturedTabs(
         GetCapturedTabsCallback callback);
 
     // Creates a stream ID to capture the target tab.
@@ -114,7 +114,7 @@ namespace tabCapture {
     // <code>getUserMedia()</code> API to generate a media stream that
     // corresponds to the target tab. The created <code>streamId</code> can
     // only be used once and expires after a few seconds if it is not used.
-    [supportsPromises] static void getMediaStreamId(
+    static void getMediaStreamId(
         optional GetMediaStreamOptions options,
         GetMediaStreamIdCallback callback);
   };

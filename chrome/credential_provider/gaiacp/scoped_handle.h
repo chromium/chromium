@@ -6,6 +6,7 @@
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_SCOPED_HANDLE_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include "base/win/scoped_handle.h"

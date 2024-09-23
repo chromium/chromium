@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -40,9 +41,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "AuctionDownloader"
           description:
-            "Requests FLEDGE script or JSON file for running an ad auction."
+            "Requests Protected Audiences script or JSON file for running an "
+            "ad auction."
           trigger:
-            "Requested when running a FLEDGE auction."
+            "Requested when running a Protected Audiences auction."
           data: "URL associated with an interest group or seller."
           destination: WEBSITE
           user_data: {
@@ -58,44 +60,67 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests cannot be disabled."
-          policy_exception_justification:
-            "These requests triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 const char kWebAssemblyMime[] = "application/wasm";
+const char kAdAuctionTrustedSignalsMime[] =
+    "message/ad-auction-trusted-signals-response";
+
+// If `url` is too long to reasonably use as part of an error message, returns a
+// truncated copy of it. Otherwise, returns the entire URL as a string.
+std::string TruncateUrlIfNeededForError(const GURL& url) {
+  if (url.spec().size() <= AuctionDownloader::kMaxErrorUrlLength) {
+    // This does duplicate the URL unnecessarily, but since this is only done on
+    // error, not a major concern.
+    return url.spec();
+  }
+
+  return url.spec().substr(0, AuctionDownloader::kMaxErrorUrlLength - 3) +
+         "...";
+}
 
 // Returns the MIME type string to send for the Accept header for `mime_type`.
 // These are the official IANA MIME type strings, though other MIME type strings
 // are allows in the response.
-base::StringPiece MimeTypeToString(AuctionDownloader::MimeType mime_type) {
+std::string_view MimeTypeToString(AuctionDownloader::MimeType mime_type) {
   switch (mime_type) {
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
+      return std::string_view(kAdAuctionTrustedSignalsMime);
     case AuctionDownloader::MimeType::kJavascript:
-      return base::StringPiece("application/javascript");
+      return std::string_view("application/javascript");
     case AuctionDownloader::MimeType::kJson:
-      return base::StringPiece("application/json");
+      return std::string_view("application/json");
     case AuctionDownloader::MimeType::kWebAssembly:
-      return base::StringPiece(kWebAssemblyMime);
+      return std::string_view(kWebAssemblyMime);
   }
 }
 
 // Checks if `response_info` is consistent with `mime_type`.
 bool MimeTypeIsConsistent(
     AuctionDownloader::MimeType mime_type,
-    const network::mojom::URLResponseHead* response_info) {
+    const network::mojom::URLResponseHead& response_info) {
   switch (mime_type) {
+    case AuctionDownloader::MimeType::kAdAuctionTrustedSignals:
+      return response_info.mime_type == kAdAuctionTrustedSignalsMime;
     case AuctionDownloader::MimeType::kJavascript:
       // ResponseInfo's `mime_type` is always lowercase.
-      return blink::IsSupportedJavascriptMimeType(response_info->mime_type);
+      return blink::IsSupportedJavascriptMimeType(response_info.mime_type);
     case AuctionDownloader::MimeType::kJson:
       // ResponseInfo's `mime_type` is always lowercase.
-      return blink::IsJSONMimeType(response_info->mime_type);
+      return blink::IsJSONMimeType(response_info.mime_type);
     case AuctionDownloader::MimeType::kWebAssembly: {
       std::string raw_content_type;
       // Here we use the headers directly, not the parsed mimetype, since we
       // much check there are no parameters whatsoever. Ref.
       // https://webassembly.github.io/spec/web-api/#streaming-modules
-      if (!response_info->headers->GetNormalizedHeader(
+      if (!response_info.headers->GetNormalizedHeader(
               net::HttpRequestHeaders::kContentType, &raw_content_type)) {
         return false;
       }
@@ -107,7 +132,7 @@ bool MimeTypeIsConsistent(
 
 // Checks if `charset` is a valid charset, in lowercase ASCII. Takes `body` as
 // well, to ensure it uses the specified charset.
-bool IsAllowedCharset(base::StringPiece charset, const std::string& body) {
+bool IsAllowedCharset(std::string_view charset, const std::string& body) {
   if (charset == "utf-8" || charset.empty()) {
     return base::IsStringUTF8(body);
   } else if (charset == "us-ascii") {
@@ -161,11 +186,15 @@ AuctionDownloader::AuctionDownloader(
     const GURL& source_url,
     DownloadMode download_mode,
     MimeType mime_type,
+    std::optional<std::string> post_body,
+    std::optional<std::string> content_type,
+    ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
     : source_url_(source_url),
       mime_type_(mime_type),
       request_id_(base::UnguessableToken::Create().ToString()),
+      response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
       network_events_delegate_(std::move(network_events_delegate)) {
   DCHECK(auction_downloader_callback_);
@@ -179,12 +208,24 @@ AuctionDownloader::AuctionDownloader(
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       MimeTypeToString(mime_type_));
 
+  if (post_body.has_value()) {
+    resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  }
+
   if (network_events_delegate_ != nullptr) {
     network_events_delegate_->OnNetworkSendRequest(*resource_request);
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
+
+  if (post_body.has_value()) {
+    // Although content type header is not required in POST request, but we
+    // should have one.
+    CHECK(content_type.has_value());
+    simple_url_loader_->AttachStringForUpload(std::move(post_body).value(),
+                                              std::move(content_type).value());
+  }
 
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
       "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
@@ -196,6 +237,7 @@ AuctionDownloader::AuctionDownloader(
         // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
         // TODO: Import the enum strings directly
         dict.Add("resourceType", "Other");
+        dict.Add("fetchPriorityHint", "auto");
       });
 
   // Abort on redirects.
@@ -238,8 +280,6 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   DCHECK(auction_downloader_callback_);
 
   auto simple_url_loader = std::move(simple_url_loader_);
-  std::string allow_fledge;
-  std::string auction_allowed;
   network::URLLoaderCompletionStatus completion_status =
       network::URLLoaderCompletionStatus(simple_url_loader->NetError());
 
@@ -247,61 +287,43 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
     completion_status = simple_url_loader->CompletionStatus().value();
   }
 
-  if (network_events_delegate_ != nullptr) {
-    network_events_delegate_->OnNetworkRequestComplete(completion_status);
-  }
-
   if (!body) {
-    std::string error_msg;
-    if (simple_url_loader->ResponseInfo() &&
-        simple_url_loader->ResponseInfo()->headers &&
-        simple_url_loader->ResponseInfo()->headers->response_code() / 100 !=
-            2) {
-      int status = simple_url_loader->ResponseInfo()->headers->response_code();
-      error_msg = base::StringPrintf(
-          "Failed to load %s HTTP status = %d %s.", source_url_.spec().c_str(),
-          status,
-          simple_url_loader->ResponseInfo()->headers->GetStatusText().c_str());
-    } else {
-      error_msg = base::StringPrintf(
-          "Failed to load %s error = %s.", source_url_.spec().c_str(),
-          net::ErrorToString(simple_url_loader->NetError()).c_str());
-    }
-    TraceResult(/*failure=*/true, /*completion_time=*/base::TimeTicks(),
-                /*encoded_data_length=*/0,
-                /*decoded_body_length=*/0);
-    std::move(auction_downloader_callback_)
-        .Run(/*body=*/nullptr, /*headers=*/nullptr, error_msg);
+    FailRequest(std::move(completion_status),
+                base::StringPrintf(
+                    "Failed to load %s error = %s.",
+                    // Avoid large error messages. This is actually needed for a
+                    // browser test, since some tests output error messages to
+                    // the console, and tests are reported as failing on the
+                    // bots when they produce too much output.
+                    TruncateUrlIfNeededForError(source_url_).c_str(),
+                    net::ErrorToString(simple_url_loader->NetError()).c_str()));
     return;
   }
 
   // Everything below is a network success even if it's a semantic failure.
+
+  // OnNetworkRequestComplete in the !body case was handled by FailRequest,
+  // when there is a body we handle it here.
+  if (network_events_delegate_ != nullptr) {
+    network_events_delegate_->OnNetworkRequestComplete(completion_status);
+  }
+
   TraceResult(/*failure=*/false,
               simple_url_loader->CompletionStatus()->completion_time,
               simple_url_loader->ResponseInfo()->encoded_data_length,
               /*decoded_body_length=*/body->size());
 
-  if (!simple_url_loader->ResponseInfo()->headers ||
-      ((!simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
-            "X-Allow-FLEDGE", &allow_fledge) ||
-        !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) &&
-       (!simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
-            "Ad-Auction-Allowed", &auction_allowed) ||
-        !base::EqualsCaseInsensitiveASCII(auction_allowed, "true")))) {
-    std::move(auction_downloader_callback_)
-        .Run(/*body=*/nullptr, /*headers=*/nullptr,
-             base::StringPrintf(
-                 "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
-                 "(or the deprecated X-Allow-FLEDGE: true).",
-                 source_url_.spec().c_str()));
-  } else if (!MimeTypeIsConsistent(mime_type_,
-                                   simple_url_loader->ResponseInfo())) {
+  // Most checks happened already in OnResponseStarted, but the charset check
+  // is dependent on the body and the mimetype check looks at the same header
+  // so it's done at the same time.
+  if (!MimeTypeIsConsistent(mime_type_, *simple_url_loader->ResponseInfo())) {
     std::move(auction_downloader_callback_)
         .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
-  } else if ((mime_type_ != MimeType::kWebAssembly) &&
+  } else if ((mime_type_ != MimeType::kWebAssembly &&
+              mime_type_ != MimeType::kAdAuctionTrustedSignals) &&
              !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)
@@ -325,17 +347,9 @@ void AuctionDownloader::OnRedirect(
     std::vector<std::string>* removed_headers) {
   DCHECK(auction_downloader_callback_);
 
-  // Need to cancel the load, to prevent the request from continuing.
-  simple_url_loader_.reset();
-
-  TraceResult(/*failure=*/true, /*completion_time=*/base::TimeTicks(),
-              /*encoded_data_length=*/0,
-              /*decoded_body_length=*/0);
-
-  std::move(auction_downloader_callback_)
-      .Run(/*body=*/nullptr, /*headers=*/nullptr,
-           base::StringPrintf("Unexpected redirect on %s.",
-                              source_url_.spec().c_str()));
+  FailRequest(network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+              base::StringPrintf("Unexpected redirect on %s.",
+                                 source_url_.spec().c_str()));
 }
 
 void AuctionDownloader::OnResponseStarted(
@@ -401,6 +415,52 @@ void AuctionDownloader::OnResponseStarted(
           WriteTraceTiming(response_head.load_timing, dict.AddItem("timing"));
         }
       });
+
+  if (response_head.headers &&
+      response_head.headers->response_code() / 100 != 2) {
+    int status = response_head.headers->response_code();
+    FailRequest(
+        network::URLLoaderCompletionStatus(net::ERR_HTTP_RESPONSE_CODE_FAILURE),
+        base::StringPrintf("Failed to load %s HTTP status = %d %s.",
+                           source_url_.spec().c_str(), status,
+                           response_head.headers->GetStatusText().c_str()));
+    return;
+  }
+
+  std::string allow_fledge;
+  std::string auction_allowed;
+  if (!response_head.headers ||
+      ((!response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE",
+                                                    &allow_fledge) ||
+        !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) &&
+       (!response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed",
+                                                    &auction_allowed) ||
+        !base::EqualsCaseInsensitiveASCII(auction_allowed, "true")))) {
+    FailRequest(
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+        base::StringPrintf(
+            "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
+            "(or the deprecated X-Allow-FLEDGE: true).",
+            source_url_.spec().c_str()));
+    return;
+  }
+
+  if (response_started_callback_) {
+    std::move(response_started_callback_).Run(response_head);
+  }
+}
+
+void AuctionDownloader::FailRequest(network::URLLoaderCompletionStatus status,
+                                    std::string error_string) {
+  simple_url_loader_.reset();
+  TraceResult(/*failure=*/true, /*completion_time=*/base::TimeTicks(),
+              /*encoded_data_length=*/0,
+              /*decoded_body_length=*/0);
+  if (network_events_delegate_ != nullptr) {
+    network_events_delegate_->OnNetworkRequestComplete(std::move(status));
+  }
+  std::move(auction_downloader_callback_)
+      .Run(/*body=*/nullptr, /*headers=*/nullptr, std::move(error_string));
 }
 
 void AuctionDownloader::TraceResult(bool failure,

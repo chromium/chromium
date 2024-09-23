@@ -8,9 +8,9 @@
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -75,9 +75,9 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   }
 
  private:
-  void QueueAndNotify(std::initializer_list<
-                          std::pair<base::StringPiece, base::StringPiece>> body,
-                      bool report_only);
+  void QueueAndNotify(
+      std::initializer_list<std::pair<std::string_view, std::string_view>> body,
+      bool report_only);
 
   base::WeakPtr<StoragePartition> storage_partition_;
 

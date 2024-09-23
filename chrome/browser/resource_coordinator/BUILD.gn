@@ -21,3 +21,9 @@ source_set("tab_manager_features") {
     "//chrome/common:chrome_features",
   ]
 }
+
+source_set("tab_lifecycle_observer") {
+  sources = [ "tab_lifecycle_observer.h" ]
+
+  public_deps = [ "//chrome/browser/resource_coordinator:mojo_bindings" ]
+}

@@ -77,7 +77,7 @@ class OffscreenDocumentManager : public KeyedService,
     // support creating a document with multiple reasons.
     std::vector<std::unique_ptr<OffscreenDocumentLifetimeEnforcer>> enforcers;
 
-    // TODO(https://crbug.com/1339382): This will need more fields to include
+    // TODO(crbug.com/40849649): This will need more fields to include
     // attributes like the associated reason and justification for the
     // document.
   };

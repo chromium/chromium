@@ -78,12 +78,10 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
     ~NodeMoveObserver() override;
 
     void BookmarkModelChanged() override;
-    void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
+    void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                            size_t index,
                            bool newly_added) override;
-    void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* old_parent,
+    void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* new_parent,
                            size_t new_index) override;
@@ -101,8 +99,7 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_{nullptr};
 
   // A list of providers of a save location for a given URL.
-  std::vector<raw_ptr<SuggestedSaveLocationProvider, VectorExperimental>>
-      save_location_providers_;
+  std::vector<raw_ptr<SuggestedSaveLocationProvider>> save_location_providers_;
 
   // The UUID of the last folder that was suggested.
   base::Uuid last_suggested_folder_uuid_;

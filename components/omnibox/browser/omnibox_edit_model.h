@@ -42,11 +42,11 @@ class OmniboxEditModel {
     State(bool user_input_in_progress,
           const std::u16string& user_text,
           const std::u16string& keyword,
+          const std::u16string& keyword_placeholder,
           bool is_keyword_hint,
           metrics::OmniboxEventProto::KeywordModeEntryMethod
               keyword_mode_entry_method,
           OmniboxFocusState focus_state,
-          OmniboxFocusSource focus_source,
           const AutocompleteInput& autocomplete_input);
     State(const State& other);
     ~State();
@@ -55,11 +55,11 @@ class OmniboxEditModel {
     bool user_input_in_progress;
     const std::u16string user_text;
     const std::u16string keyword;
+    const std::u16string keyword_placeholder;
     const bool is_keyword_hint;
     metrics::OmniboxEventProto::KeywordModeEntryMethod
         keyword_mode_entry_method;
     OmniboxFocusState focus_state;
-    OmniboxFocusSource focus_source;
     const AutocompleteInput autocomplete_input;
   };
 
@@ -155,7 +155,8 @@ class OmniboxEditModel {
   std::u16string GetPermanentDisplayText() const;
 
   // Sets the user_text_ to |text|. Also enters user-input-in-progress mode.
-  void SetUserText(const std::u16string& text);
+  // Virtual for testing.
+  virtual void SetUserText(const std::u16string& text);
 
   // If the omnibox is currently displaying elided text, this method will
   // restore the full URL into the user text. After unelision, this selects-all,
@@ -214,14 +215,12 @@ class OmniboxEditModel {
     return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
   }
 
-  OmniboxFocusSource focus_source() const { return focus_source_; }
-  void set_focus_source(OmniboxFocusSource focus_source) {
-    focus_source_ = focus_source;
-  }
-
-  // Accessors for keyword-related state (see comments on keyword_ and
-  // is_keyword_hint_).
+  // Accessors for keyword-related state (see comments on `keyword_`,
+  // `keyword_placeholder_` and `is_keyword_hint_`).
   const std::u16string& keyword() const { return keyword_; }
+  const std::u16string& keyword_placeholder() const {
+    return keyword_placeholder_;
+  }
   bool is_keyword_hint() const { return is_keyword_hint_; }
   bool is_keyword_selected() const {
     return !is_keyword_hint_ && !keyword_.empty();
@@ -307,6 +306,13 @@ class OmniboxEditModel {
   // entering keyword mode on a match somewhere down the list.
   bool OnSpacePressed();
 
+  // Checks for special input conditions to accelerate keyword mode entry
+  // for starter pack '@' keywords. Returns true if keyword mode was
+  // entered; returns false if feature is disabled or special input
+  // conditions were not detected, in which case this is a no-op.
+  bool MaybeAccelerateKeywordSelection(const std::u16string& input_text,
+                                       char16_t ch);
+
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
   // efficiently. Specifically, it's invoked for temporary text, autocompletion,
@@ -336,6 +342,7 @@ class OmniboxEditModel {
                                   const std::u16string& inline_autocompletion,
                                   const std::u16string& prefix_autocompletion,
                                   const std::u16string& keyword,
+                                  const std::u16string& keyword_placeholder,
                                   bool is_keyword_hint,
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
@@ -367,9 +374,6 @@ class OmniboxEditModel {
   // Reverts the edit box from a temporary text back to the original user text.
   // Also resets the popup to the initial state.
   void RevertTemporaryTextAndPopup();
-
-  // Returns whether to prevent elision of the display URL.
-  bool ShouldPreventElision() const;
 
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
@@ -423,6 +427,13 @@ class OmniboxEditModel {
       bool include_positional_info,
       int* label_prefix_length = nullptr);
 
+  // The IPH message that sometimes appears at the bottom of the Omnibox is
+  // informational only and cannot be selected/focused. Its a11y label therefore
+  // has to be read at the end of the last suggestion.  Returns the label for
+  // the IPH row if the current selection is the one right before the IPH row.
+  // Otherwise, returns an empty string.
+  std::u16string MaybeGetPopupAccessibilityLabelForIPHSuggestion();
+
   // Invoked any time the result set of the controller changes.
   // TODO(orinj): This method seems like a good candidate for removal; it is
   // preserved here only to prevent possible behavior change while refactoring.
@@ -458,7 +469,8 @@ class OmniboxEditModel {
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.
-  virtual PrefService* GetPrefService() const;
+  virtual PrefService* GetPrefService();
+  virtual const PrefService* GetPrefService() const;
 
  private:
   friend class OmniboxControllerTest;
@@ -531,6 +543,11 @@ class OmniboxEditModel {
                  const std::u16string& pasted_text,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
+  // Updates the feedback type on the match at the given index and schedules a
+  // repaint to update the suggestion view. On negative feedback, also shows the
+  // feedback form.
+  void UpdateFeedbackOnMatch(size_t match_index, FeedbackType feedback_type);
+
   // An internal method to set the user text. Notably, this differs from
   // SetUserText because it does not change the user-input-in-progress state.
   void InternalSetUserText(const std::u16string& text);
@@ -601,11 +618,6 @@ class OmniboxEditModel {
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 
-  // Used to keep track whether the input currently in progress originated by
-  // focusing in the Omnibox, Fakebox or Search button. This will be INVALID if
-  // no input is in progress or the Omnibox is not focused.
-  OmniboxFocusSource focus_source_ = OmniboxFocusSource::INVALID;
-
   // Display-only text representing the current page. This could either:
   //  - The same as |url_for_editing_| if Steady State Elisions is OFF.
   //  - A simplified version of |url_for_editing_| with some destructive
@@ -642,12 +654,6 @@ class OmniboxEditModel {
 
   // We keep track of when the user last focused on the omnibox.
   base::TimeTicks last_omnibox_focus_;
-
-  // Whether any user input has occurred since focusing on the omnibox. This is
-  // used along with |last_omnibox_focus_| to calculate the time between a user
-  // focusing on the omnibox and editing. It is initialized to true since
-  // there was no focus event.
-  bool user_input_since_focus_;
 
   // Indicates whether the current interaction with the Omnibox resulted in
   // navigation (true), or user leaving the omnibox without taking any action
@@ -724,6 +730,10 @@ class OmniboxEditModel {
   // can show a hint to press <tab>).  This is the keyword in either case;
   // is_keyword_hint_ (below) distinguishes the two cases.
   std::u16string keyword_;
+
+  // The placeholder text displayed for the keyword the user has selected.
+  // Usually empty. Only used when the user input is empty.
+  std::u16string keyword_placeholder_;
 
   // True if the keyword associated with this match is merely a hint, i.e. the
   // user hasn't actually selected a keyword yet.  When this is true, we can use

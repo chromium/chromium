@@ -38,6 +38,8 @@ public class ImageDescriptionsDialog
         implements ModalDialogProperties.Controller, RadioGroup.OnCheckedChangeListener {
     // Please treat this list as append only and keep it in sync with
     // AccessibilityImageLabelModeAndroid in enums.xml
+    //
+    // LINT.IfChange(ImageDescriptionsDialogAction)
     @IntDef({
         ImageDescriptionsDialogAction.ENABLED,
         ImageDescriptionsDialogAction.ENABLED_ONLY_ON_WIFI,
@@ -53,6 +55,8 @@ public class ImageDescriptionsDialog
         int CANCEL = 4;
         int NUM_ENTRIES = 5;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityImageLabelModeAndroid)
 
     private ImageDescriptionsControllerDelegate mControllerDelegate;
 

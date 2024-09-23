@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
-#include "chrome/android/chrome_test_util_jni/CustomTabsTestUtils_jni.h"
 #include "components/variations/variations_ids_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_test_util_jni/CustomTabsTestUtils_jni.h"
 
 namespace customtabs {
 

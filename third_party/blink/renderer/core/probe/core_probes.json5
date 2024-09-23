@@ -4,6 +4,9 @@
     export_symbol: "CORE_EXPORT",
     include_path: "third_party/blink/renderer/core/inspector",
     includes: [
+      "base/containers/span_or_size.h",
+      "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h",
+      "third_party/blink/public/web/web_media_inspector.h",
       "third_party/blink/renderer/core/animation/animation.h",
       "third_party/blink/renderer/core/core_probe_sink.h",
       "third_party/blink/renderer/core/dom/character_data.h",
@@ -14,7 +17,6 @@
       "third_party/blink/renderer/core/page/chrome_client.h",
       "third_party/blink/renderer/core/probe/core_probes.h",
       "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h",
-      "third_party/blink/public/web/web_media_inspector.h",
     ],
   },
   observers: {
@@ -54,7 +56,7 @@
     },
     InspectorAnimationAgent: {
       probes: [
-        "AnimationPlayStateChanged",
+        "AnimationUpdated",
         "DidClearDocumentOfWindowObject",
         "DidCreateAnimation",
       ]
@@ -95,6 +97,7 @@
         "FrameDocumentUpdated",
         "FrameOwnerContentUpdated",
         "NodeCreated",
+        "UpdateScrollableFlag",
         "PseudoElementCreated",
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",
@@ -235,6 +238,7 @@
         "FrameAttachedToParent",
         "FrameClearedScheduledNavigation",
         "FrameDetachedFromParent",
+        "FrameSubtreeWillBeDetached",
         "FrameRequestedNavigation",
         "FrameScheduledNavigation",
         "FrameStoppedLoading",

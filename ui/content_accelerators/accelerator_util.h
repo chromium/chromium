@@ -5,14 +5,14 @@
 #ifndef UI_CONTENT_ACCELERATORS_ACCELERATOR_UTIL_H_
 #define UI_CONTENT_ACCELERATORS_ACCELERATOR_UTIL_H_
 
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
 
 // Returns |event| as a ui::Accelerator.
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event);
+    const input::NativeWebKeyboardEvent& event);
 
 }  // namespace ui
 

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -25,6 +27,10 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
                        {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                         u"FOCUSED_BUTTON_ACTION"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP,
+                        u"FOCUSED_BUTTON_THUMBS_UP"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN,
+                        u"FOCUSED_BUTTON_THUMBS_DOWN"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 
@@ -52,8 +58,9 @@ std::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
     OmniboxPopupSelection>::FromString(const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (values.size() != 2)
+  if (values.size() != 2) {
     return std::nullopt;
+  }
   // TODO(pkasting): This should be size_t, but for some reason that won't link
   // on Mac.
   const std::optional<uint32_t> line =
@@ -87,14 +94,16 @@ void OmniboxRowView::ShowHeader(const std::u16string& header_text,
 }
 
 void OmniboxRowView::HideHeader() {
-  if (header_view_)
+  if (header_view_) {
     header_view_->SetVisible(false);
+  }
 }
 
 void OmniboxRowView::OnSelectionStateChanged() {
   result_view_->OnSelectionStateChanged();
-  if (header_view_ && header_view_->GetVisible())
+  if (header_view_ && header_view_->GetVisible()) {
     header_view_->UpdateUI();
+  }
 }
 
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
@@ -108,16 +117,12 @@ views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
 }
 
 gfx::Insets OmniboxRowView::GetInsets() const {
-  const int right_inset =
-      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() ? 16 : 0;
-  // A visible header means this is the start of a new section. Give the section
-  // that just ended an extra 4dp of padding. https://crbug.com/1076646
-  if (line_ != 0 && header_view_ && header_view_->GetVisible() &&
-      !OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()) {
-    return gfx::Insets::TLBR(4, 0, 0, right_inset);
+  if (result_view_->GetThemeState() == OmniboxPartState::IPH) {
+    int LRInsets = OmniboxMatchCellView::kIphOffset;
+    return gfx::Insets::TLBR(8, LRInsets, 8, LRInsets);
   }
 
-  return gfx::Insets::TLBR(0, 0, 0, right_inset);
+  return gfx::Insets::TLBR(0, 0, 0, 16);
 }
 
 BEGIN_METADATA(OmniboxRowView)

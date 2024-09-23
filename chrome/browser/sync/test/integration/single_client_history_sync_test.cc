@@ -20,8 +20,8 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -139,7 +139,7 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
 class SingleClientHistorySyncTest : public SyncTest {
  public:
   SingleClientHistorySyncTest() : SyncTest(SINGLE_CLIENT) {
-    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
     features_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   WaitForServerHistory(UnorderedElementsAre(UrlIs(synced_url)));
 }
 
-// TODO(crbug.com/1373448): EnterSyncPausedStateForPrimaryAccount is currently
+// TODO(crbug.com/40871747): EnterSyncPausedStateForPrimaryAccount is currently
 // not supported on Android. Enable this test once it is.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DoesNotUploadWhilePaused) {
@@ -889,32 +889,54 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOff) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Before Sync gets enabled, one URL exists locally, one remotely.
+  // Before Sync gets enabled, one URL exists locally, one remotely, and one
+  // redirect chain consisting of 3 URLs also remotely.
   const GURL url_local("https://www.url-local.com");
+
   const GURL url_remote("https://www.url-remote.com");
+  const GURL url_remote_chain1("https://www.url-remote1.com");
+  const GURL url_remote_chain2("https://www.url-remote2.com");
+  const GURL url_remote_chain3("https://www.url-remote3.com");
 
   history_helper::AddUrlToHistory(/*index=*/0, url_local);
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
 
-  // Turn on Sync - this will cause the remote URL to get downloaded.
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
+                      {url_remote_chain1, url_remote_chain2, url_remote_chain3},
+                      {101, 102, 103})));
+
+  // Turn on Sync - this will cause the remote URLs to get downloaded.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain1, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain2, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain3, &row));
 
   // Turn Sync off by removing the primary account.
   GetClient(0)->SignOutPrimaryAccount();
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::DISABLED);
 
-  // This should have triggered the deletion of foreign history (but left
-  // local history alone).
+  // This should have triggered the deletion of foreign history, both the
+  // individual visit and the redirect chain (but left local history alone).
   EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
   EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain1, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain2, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain3, &row));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
@@ -957,6 +979,59 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // local history alone).
   EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
   EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DoesNotDuplicateEntriesWhenTurningSyncOffAndOnAgain) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // One URL exists on the server already.
+  const GURL url_other_client("https://www.other-client.com");
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
+                      url_other_client)));
+
+  // Turn on Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // After Sync was enabled, navigate somewhere, and make sure this arrives on
+  // the server.
+  GURL url_this_client =
+      embedded_test_server()->GetURL("this-client.com", "/sync/simple.html");
+  NavigateToURL(url_this_client);
+  ASSERT_TRUE(WaitForServerHistory(UnorderedElementsAre(
+      UrlIs(url_other_client.spec()), UrlIs(url_this_client.spec()))));
+
+  // Turn Sync off by removing the primary account.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // The visit that happened on this device is still here.
+  history::URLRow row;
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_this_client, &row));
+  ASSERT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
+  // ..but the remote visit isn't
+  ASSERT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_other_client, &row));
+
+  // Turn Sync back on.
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::HISTORY));
+
+  // Wait for the remote data to be re-downloaded.
+  ASSERT_TRUE(
+      WaitForLocalHistory({{url_other_client, UnorderedElementsAre(_)}}));
+
+  // Sanity check: The remote URL came back.
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_other_client, &row));
+  // There should still be only a single visit for the synced URL.
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_this_client, &row));
+  EXPECT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1002,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
   SignInAndSetAccountInfo(/*is_managed=*/true);
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Empty());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().empty());
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 }
 

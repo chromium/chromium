@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -38,7 +39,7 @@ namespace {
 // HTML and the embedded PDF. Must limit information shared with the PDF plugin
 // process through this response.
 std::string GenerateResponse(const PdfStreamDelegate::StreamInfo& stream_info) {
-  // TODO(crbug.com/1228987): This script in this response is never executed
+  // TODO(crbug.com/40189769): This script in this response is never executed
   // when JavaScript is blocked throughout the browser (set in
   // chrome://settings/content/javascript). A permanent solution would likely
   // have to hook into postMessage() natively.
@@ -71,7 +72,7 @@ $3
 </script>
 )";
 
-  // TODO(crbug.com/1252096): We should load the injected scripts as network
+  // TODO(crbug.com/40792950): We should load the injected scripts as network
   // resources instead. Until then, feel free to raise this limit as necessary.
   if (stream_info.injected_script)
     DCHECK_LE(stream_info.injected_script->size(), 16'384u);
@@ -92,7 +93,9 @@ $3
 PluginResponseWriter::PluginResponseWriter(
     const PdfStreamDelegate::StreamInfo& stream_info,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client)
-    : body_(GenerateResponse(stream_info)), client_(std::move(client)) {}
+    : body_(GenerateResponse(stream_info)),
+      client_(std::move(client)),
+      require_corp_(stream_info.require_corp) {}
 
 PluginResponseWriter::~PluginResponseWriter() = default;
 
@@ -100,6 +103,14 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   auto response = network::mojom::URLResponseHead::New();
   response->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  // Allow the PDF plugin to be embedded in cross-origin sites if the original
+  // PDF has a COEP: require-corp header.
+  if (chrome_pdf::features::IsOopifPdfEnabled() && require_corp_) {
+    response->headers->AddHeader("Cross-Origin-Embedder-Policy",
+                                 "require-corp");
+    response->headers->AddHeader("Cross-Origin-Resource-Policy",
+                                 "cross-origin");
+  }
   response->mime_type = "text/html";
 
   mojo::ScopedDataPipeProducerHandle producer;

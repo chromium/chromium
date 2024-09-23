@@ -1,0 +1,43 @@
+# crbug.com/343821809
+-org.chromium.net.AndroidProxySelectorTest.*
+
+# crbug.com/343808767
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputCopy
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputCut
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputPaste
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPasswordCopy
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPasswordCut
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPasswordPaste
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPlainTextCopy
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarPlainTextCut
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCopy
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCut
+-org.chromium.content.browser.ContentTextSelectionTest.testCorrectPasteMenuItemsAddedWhenThereIsNoSelection
+-org.chromium.content.browser.ContentTextSelectionTest.testCorrectSelectionMenuItemsAddedForInputSelection
+
+# crbug.com/343821701
+-org.chromium.content.browser.input.ImeTest.testImeCopy
+-org.chromium.content.browser.input.ImeTest.testImeCut
+-org.chromium.content.browser.input.ImeTest.testImePaste
+-org.chromium.content.browser.input.ImeTest.testKeyboardNotDismissedAfterCopySelection
+
+# crbug.com/343810189
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testDeleteGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testDeleteRangeGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testInsertGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testJoinOrSplitGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testRemoveSpaceGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testSelectGesture
+-org.chromium.content.browser.input.StylusGestureEndToEndTest.testSelectRangeGesture
+
+# crbug.com/1294427
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
+
+# crbug.com/354765949
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUp
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpPrivilegedProcess
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashAfterUse
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testWarmUpProcessCrashBeforeUse
+-org.chromium.content.browser.ChildProcessLauncherHelperTest.testLauncherCleanup

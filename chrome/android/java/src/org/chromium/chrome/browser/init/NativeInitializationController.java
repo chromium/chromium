@@ -36,6 +36,7 @@ class NativeInitializationController {
     private boolean mHasDoneFirstDraw;
     private boolean mHasSignaledLibraryLoaded;
     private boolean mInitializationComplete;
+    private boolean mOnTopResumedPending;
 
     /**
      * This class encapsulates a call to onActivityResult that has to be deferred because the native
@@ -141,6 +142,11 @@ class NativeInitializationController {
             mOnResumePending = false;
             onResume();
         }
+
+        if (mOnTopResumedPending) {
+            mOnTopResumedPending = false;
+            onTopResumedActivityChanged(true);
+        }
     }
 
     /** Called when an activity gets an onStart call and is done with java only tasks. */
@@ -158,6 +164,21 @@ class NativeInitializationController {
             mActivityDelegate.onResumeWithNative();
         } else {
             mOnResumePending = true;
+        }
+    }
+
+    /**
+     * Called when activity gets or loses the top resumed position in the system.
+     *
+     * @param isTopResumedActivity {@code true} if it's the topmost resumed activity in the system,
+     *     {@code false} otherwise. A call with this as {@code true} will always be followed by
+     *     another one with {@code false}.
+     */
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        if (mInitializationComplete) {
+            mActivityDelegate.onTopResumedActivityChangedWithNative(isTopResumedActivity);
+        } else {
+            mOnTopResumedPending = isTopResumedActivity;
         }
     }
 

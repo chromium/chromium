@@ -32,7 +32,8 @@ enum class VideoCaptureApi {
   ANDROID_API2_LIMITED = 10,
   FUCHSIA_CAMERA3 = 11,
   VIRTUAL_DEVICE = 12,
-  kMaxValue = VIRTUAL_DEVICE,
+  WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE = 13,
+  kMaxValue = WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
 };
 
 // Represents capture device's support for different controls.

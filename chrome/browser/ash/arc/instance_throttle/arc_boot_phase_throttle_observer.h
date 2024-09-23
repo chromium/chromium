@@ -12,8 +12,8 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace content {
 class BrowserContext;

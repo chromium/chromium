@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [185, 185],
       "drawsContent": false,
       "transform": 1
@@ -33,27 +33,27 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow DIV",
+      "name": "Scroll corner of LayoutBlockFlow DIV",
       "position": [185, 185],
       "bounds": [15, 15],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [300, 300],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV",
+      "name": "LayoutBlockFlow (relative positioned) DIV",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "position": [100, 100],
       "bounds": [200, 200],
       "contentsOpaque": true,

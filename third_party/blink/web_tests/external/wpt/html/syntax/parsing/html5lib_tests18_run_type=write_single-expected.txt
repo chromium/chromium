@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] html5lib_tests18.html e4eb33f77ae641718853d2cfddbdb2eece6b266b
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       \\"X\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <plaintext>\\n|         \\"</plaintext>X\\""
+[FAIL] html5lib_tests18.html 53ce5b102579af9830bf561b634af681bbdb5dfd
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       \\"a\\"\\n|     <table>\\n|       <caption>\\n|         \\"b\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <plaintext>\\n|         \\"a<caption>b\\"\\n|     <table>"
+Harness: the test ran to completion.
+

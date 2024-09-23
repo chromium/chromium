@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("font_settings") {
+  sources = [
+    "font_settings_api.cc",
+    "font_settings_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//chrome/browser:font_pref",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//extensions/common/api",
+  ]
+}

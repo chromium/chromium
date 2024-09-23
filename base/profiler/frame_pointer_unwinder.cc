@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/profiler/frame_pointer_unwinder.h"
 
 #include "base/check_op.h"
@@ -51,9 +56,11 @@ bool FramePointerUnwinder::CanUnwindFrom(const Frame& current_frame) const {
   return current_frame.module && current_frame.module->IsNative();
 }
 
-UnwindResult FramePointerUnwinder::TryUnwind(RegisterContext* thread_context,
-                                             uintptr_t stack_top,
-                                             std::vector<Frame>* stack) {
+UnwindResult FramePointerUnwinder::TryUnwind(
+    UnwinderStateCapture* capture_state,
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) {
   // We expect the frame corresponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);
@@ -109,7 +116,6 @@ UnwindResult FramePointerUnwinder::TryUnwind(RegisterContext* thread_context,
   }
 
   NOTREACHED();
-  return UnwindResult::kCompleted;
 }
 
 }  // namespace base

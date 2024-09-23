@@ -1,0 +1,62 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+static_library("browser") {
+  sources = [
+    "autofill_prediction_improvements_annotation_prompt_strike_database.h",
+    "autofill_prediction_improvements_client.h",
+    "autofill_prediction_improvements_features.cc",
+    "autofill_prediction_improvements_features.h",
+    "autofill_prediction_improvements_filling_engine.h",
+    "autofill_prediction_improvements_filling_engine_impl.cc",
+    "autofill_prediction_improvements_filling_engine_impl.h",
+    "autofill_prediction_improvements_manager.cc",
+    "autofill_prediction_improvements_manager.h",
+    "autofill_prediction_improvements_utils.cc",
+    "autofill_prediction_improvements_utils.h",
+    "autofill_prediction_improvements_value_filter.cc",
+    "autofill_prediction_improvements_value_filter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/strings",
+    "//components/user_annotations",
+    "//components/user_annotations:user_annotations",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_prediction_improvements_filling_engine_impl_unittest.cc",
+    "autofill_prediction_improvements_manager_test_api.h",
+    "autofill_prediction_improvements_manager_unittest.cc",
+    "autofill_prediction_improvements_utils_unittest.cc",
+    "autofill_prediction_improvements_value_filter_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/user_annotations:test_support",
+    "//components/user_annotations:user_annotations",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

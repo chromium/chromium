@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
 namespace ash {
@@ -70,11 +70,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     // required before an old container is safe to use.
     virtual void OnLxdContainerStarting(
         const vm_tools::cicerone::LxdContainerStartingSignal& signal) {}
-
-    // OnLxdContainerStopping is signaled from Cicerone when async container
-    // stop is used.
-    virtual void OnLxdContainerStopping(
-        const vm_tools::cicerone::LxdContainerStoppingSignal& signal) {}
 
     // OnExportLxdContainerProgress is signalled from Cicerone while a container
     // is being exported via ExportLxdContainer.
@@ -170,9 +165,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
 
   // This should be true prior to calling StartLxdContainer in async mode.
   virtual bool IsLxdContainerStartingSignalConnected() = 0;
-
-  // This should be true prior to calling StopLxdContainer in async mode.
-  virtual bool IsLxdContainerStoppingSignalConnected() = 0;
 
   // This should be true prior to calling ExportLxdContainer.
   virtual bool IsExportLxdContainerProgressSignalConnected() = 0;

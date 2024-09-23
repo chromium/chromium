@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/vr/openxr/test/openxr_test_helper.h"
 
 #include <cmath>
@@ -13,7 +18,6 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
@@ -126,7 +130,7 @@ void OpenXrTestHelper::Reset() {
 }
 
 void OpenXrTestHelper::TestFailure() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
@@ -344,7 +348,7 @@ XrSpace OpenXrTestHelper::CreateReferenceSpace(XrReferenceSpaceType type) {
       reference_spaces_[cur_space] = kUnboundedReferenceSpacePath;
       break;
     default:
-      NOTREACHED() << "Unsupported XrReferenceSpaceType: " << type;
+      NOTREACHED_IN_MIGRATION() << "Unsupported XrReferenceSpaceType: " << type;
   }
   return cur_space;
 }
@@ -440,6 +444,32 @@ XrPath OpenXrTestHelper::GetCurrentInteractionProfile() {
   return GetPath(interaction_profile_);
 }
 
+XrHandTrackerEXT OpenXrTestHelper::CreateHandTracker(XrHandEXT hand) {
+  switch (hand) {
+    case XR_HAND_LEFT_EXT:
+      DCHECK_EQ(left_hand_, static_cast<XrHandTrackerEXT>(XR_NULL_HANDLE));
+      left_hand_ = TreatIntegerAsHandle<XrHandTrackerEXT>(++next_handle_);
+      return left_hand_;
+    case XR_HAND_RIGHT_EXT:
+      DCHECK_EQ(right_hand_, static_cast<XrHandTrackerEXT>(XR_NULL_HANDLE));
+      right_hand_ = TreatIntegerAsHandle<XrHandTrackerEXT>(++next_handle_);
+      return right_hand_;
+    default:
+      NOTREACHED();
+  }
+}
+
+XrResult OpenXrTestHelper::DestroyHandTracker(XrHandTrackerEXT hand_tracker) {
+  RETURN_IF_XR_FAILED(ValidateHandTracker(hand_tracker));
+  if (left_hand_ == hand_tracker) {
+    left_hand_ = XR_NULL_HANDLE;
+  } else if (right_hand_ == hand_tracker) {
+    right_hand_ = XR_NULL_HANDLE;
+  }
+
+  return XR_SUCCESS;
+}
+
 device::OpenXrViewConfiguration& OpenXrTestHelper::GetViewConfigInfo(
     XrViewConfigurationType view_config) {
   const auto& primary_config = primary_configs_supported_.find(view_config);
@@ -449,7 +479,7 @@ device::OpenXrViewConfiguration& OpenXrTestHelper::GetViewConfigInfo(
 
   const auto& secondary_config = secondary_configs_supported_.find(view_config);
   // The view configuration type should have been validated by the caller.
-  DCHECK(secondary_config != secondary_configs_supported_.end());
+  CHECK(secondary_config != secondary_configs_supported_.end());
 
   return secondary_config->second;
 }
@@ -614,7 +644,7 @@ void OpenXrTestHelper::ReinitializeTextures() {
   // view configuration.
   const auto primary =
       primary_configs_supported_.find(view_configs_enabled_[0]);
-  DCHECK(primary != primary_configs_supported_.end());
+  CHECK(primary != primary_configs_supported_.end());
   AddDimensions(primary->second, total_width, total_height);
 
   // Add secondary views
@@ -624,7 +654,7 @@ void OpenXrTestHelper::ReinitializeTextures() {
            primary_configs_supported_.end());
     const auto secondary =
         secondary_configs_supported_.find(view_configs_enabled_[i]);
-    DCHECK(secondary != secondary_configs_supported_.end());
+    CHECK(secondary != secondary_configs_supported_.end());
     if (secondary->second.Active()) {
       AddDimensions(secondary->second, total_width, total_height);
     }
@@ -735,8 +765,8 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
             PathContainsString(path_string, "/squeeze") ||
             PathContainsString(path_string, "/force") ||
             PathContainsString(path_string, "/value"))) {
-        NOTREACHED() << "Found path with unsupported float action: "
-                     << path_string;
+        NOTREACHED_IN_MIGRATION()
+            << "Found path with unsupported float action: " << path_string;
       }
       float_action_states_[action].isActive = data.is_valid;
       break;
@@ -773,7 +803,8 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
       } else if (PathContainsString(path_string, "/grasp_ext/")) {
         button_id = device::kGrip;
       } else {
-        NOTREACHED() << "Unrecognized boolean button: " << path_string;
+        NOTREACHED_IN_MIGRATION()
+            << "Unrecognized boolean button: " << path_string;
       }
       uint64_t button_mask = XrButtonMaskFromId(button_id);
 
@@ -795,8 +826,9 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
         boolean_action_states_[action].currentState =
             button_supported && touched;
       } else {
-        NOTREACHED() << "Boolean actions only supports path string ends with "
-                        "value, click, or touch";
+        NOTREACHED_IN_MIGRATION()
+            << "Boolean actions only supports path string ends with "
+               "value, click, or touch";
       }
       break;
     }
@@ -807,8 +839,9 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
       } else if (PathContainsString(path_string, "/thumbstick")) {
         button_id = device::kAxisThumbstick;
       } else {
-        NOTREACHED() << "Path is " << path_string
-                     << "But only Trackpad and thumbstick has 2d vector action";
+        NOTREACHED_IN_MIGRATION()
+            << "Path is " << path_string
+            << "But only Trackpad and thumbstick has 2d vector action";
       }
       uint64_t axis_mask = XrAxisOffsetFromId(button_id);
       v2f_action_states_[action].currentState.x = data.axis_data[axis_mask].x;
@@ -905,7 +938,8 @@ void OpenXrTestHelper::UpdateEventQueue() {
         interaction_profile_changed->session = session_;
         event_queue_.push(event_data);
       } else if (data.type != device_test::mojom::EventType::kNoEvent) {
-        NOTREACHED() << "Event changed event type not implemented for test";
+        NOTREACHED_IN_MIGRATION()
+            << "Event changed event type not implemented for test";
       }
     } while (data.type != device_test::mojom::EventType::kNoEvent);
   }
@@ -949,7 +983,9 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
   } else if (PathContainsString(path_string, "/user/hand/right/")) {
     role = device::kControllerRoleRight;
   } else {
-    NOTREACHED() << "Currently Path should belong to either left or right";
+    NOTREACHED_IN_MIGRATION()
+        << "Currently Path should belong to either left or right, received: "
+        << path_string;
   }
   device::ControllerFrameData data;
   for (uint32_t i = 0; i < data_arr_.size(); i++) {
@@ -1000,16 +1036,59 @@ void OpenXrTestHelper::UpdateInteractionProfile(
       interaction_profile_ = device::kExtHandInteractionProfilePath;
       break;
     case device::mojom::OpenXrInteractionProfileType::kInvalid:
-    case device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures:
     case device::mojom::OpenXrInteractionProfileType::kMetaHandAim:
-      NOTREACHED() << "Invalid EventData interaction_profile type";
+      NOTREACHED_IN_MIGRATION() << "Invalid EventData interaction_profile type";
       break;
   }
 }
 
-void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
-  DCHECK_NE(pose, nullptr);
-  *pose = device::PoseIdentity();
+void OpenXrTestHelper::LocateJoints(
+    XrHandTrackerEXT hand_tracker,
+    const XrHandJointsLocateInfoEXT* locate_info,
+    XrHandJointLocationsEXT* locations) {
+  DCHECK_NE(locations, nullptr);
+  locations->isActive = false;
+  std::string controller_string =
+      left_hand_ == hand_tracker ? "/user/hand/left/" : "/user/hand/right/";
+  const auto& controller =
+      GetControllerDataFromPath(std::move(controller_string));
+  if (!controller.has_hand_data) {
+    return;
+  }
+
+  // Our test/mojom interface sends the "palm" joint separate from the rest of
+  // the finger joints, and thus sends one less joint than we need to populate.
+  if (std::size(controller.hand_data) + 1 > locations->jointCount) {
+    return;
+  }
+
+  base::span<XrHandJointLocationEXT> out_locations{locations->jointLocations,
+                                                   locations->jointCount};
+  if (controller.pose_data.is_valid) {
+    auto& palm_location = out_locations[0];
+    palm_location.locationFlags = kValidTrackedPoseFlags;
+    palm_location.radius = 1.0f;
+    palm_location.pose = device::GfxTransformToXrPose(
+        PoseFrameDataToTransform(controller.pose_data));
+  }
+  for (const auto& data : controller.hand_data) {
+    if (!data.mojo_from_joint) {
+      // If we're missing the pose, don't fill in any data about this joint.
+      continue;
+    }
+    // The OpenXR joints and mojom joints have the same base number offset by 1.
+    auto& joint_location = out_locations[static_cast<uint32_t>(data.joint) + 1];
+    joint_location.locationFlags = kValidTrackedPoseFlags;
+    joint_location.radius = data.radius;
+    joint_location.pose =
+        device::GfxTransformToXrPose(data.mojo_from_joint.value());
+  }
+
+  locations->isActive = true;
+}
+
+std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
+    XrSpace space) {
   std::optional<gfx::Transform> transform = std::nullopt;
 
   if (reference_spaces_.count(space) == 1) {
@@ -1022,7 +1101,7 @@ void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
       // This locate space call wants the transform of the head pose.
       transform = GetPose();
     } else {
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Only locate reference space for local and view are implemented";
     }
   } else if (action_spaces_.count(space) == 1) {
@@ -1037,23 +1116,20 @@ void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
       transform = PoseFrameDataToTransform(data.pose_data);
     }
   } else {
-    NOTREACHED() << "Locate Space only supports reference space or action "
-                    "space for controller";
+    NOTREACHED_IN_MIGRATION()
+        << "Locate Space only supports reference space or action "
+           "space for controller";
   }
 
-  if (transform) {
-    std::optional<gfx::DecomposedTransform> decomposed_transform =
-        transform->Decompose();
-    DCHECK(decomposed_transform);
+  return transform;
+}
 
-    pose->orientation.x = decomposed_transform->quaternion.x();
-    pose->orientation.y = decomposed_transform->quaternion.y();
-    pose->orientation.z = decomposed_transform->quaternion.z();
-    pose->orientation.w = decomposed_transform->quaternion.w();
-
-    pose->position.x = decomposed_transform->translate[0];
-    pose->position.y = decomposed_transform->translate[1];
-    pose->position.z = decomposed_transform->translate[2];
+void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
+  DCHECK_NE(pose, nullptr);
+  if (auto transform = GetTransformForSpace(space); transform) {
+    *pose = device::GfxTransformToXrPose(transform.value());
+  } else {
+    *pose = device::PoseIdentity();
   }
 }
 
@@ -1194,6 +1270,15 @@ XrResult OpenXrTestHelper::ValidateActionSpaceCreateInfo(
             XR_ERROR_VALIDATION_FAILURE,
             "ValidateActionSpaceCreateInfo subactionPath != XR_NULL_PATH");
   RETURN_IF_XR_FAILED(ValidateXrPosefIsIdentity(create_info.poseInActionSpace));
+  return XR_SUCCESS;
+}
+
+XrResult OpenXrTestHelper::ValidateHandTracker(
+    XrHandTrackerEXT hand_tracker) const {
+  RETURN_IF(left_hand_ == XR_NULL_HANDLE && right_hand_ == XR_NULL_HANDLE,
+            XR_ERROR_HANDLE_INVALID, "No Hand Tracker has been created");
+  RETURN_IF(left_hand_ != hand_tracker && right_hand_ != hand_tracker,
+            XR_ERROR_HANDLE_INVALID, "Hand Tracker invalid");
   return XR_SUCCESS;
 }
 

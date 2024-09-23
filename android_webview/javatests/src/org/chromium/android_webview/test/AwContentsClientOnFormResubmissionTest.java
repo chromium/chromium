@@ -20,6 +20,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -149,7 +150,7 @@ public class AwContentsClientOnFormResubmissionTest extends AwParameterizedTest 
         TestAwContentsClient.OnFormResubmissionHelper onFormResubmissionHelper =
                 mContentsClient.getOnFormResubmissionHelper();
         // Run reload on UI thread.
-        mActivityTestRule.runOnUiThread(() -> mAwContents.getNavigationController().reload(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getNavigationController().reload(true));
         // Load another url to cancel form resubmission.
         mActivityTestRule.loadUrlSync(
                 mAwContents, onPageFinishedHelper, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);

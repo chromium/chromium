@@ -32,12 +32,4 @@ namespace blink {
 LayoutIFrame::LayoutIFrame(HTMLFrameOwnerElement* element)
     : LayoutEmbeddedContent(element) {}
 
-void LayoutIFrame::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-
-  ClearScrollableOverflow();
-  ClearNeedsLayout();
-}
-
 }  // namespace blink

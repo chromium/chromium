@@ -9,5 +9,5 @@
     [CallWith=ExecutionContext] constructor(DOMString type, optional BeforeInstallPromptEventInit eventInitDict = {});
     [HighEntropy=Direct, Measure] readonly attribute FrozenArray<DOMString> platforms;
     [CallWith=ScriptState, RaisesException] readonly attribute Promise<AppBannerPromptResult> userChoice;
-    [CallWith=ScriptState, RaisesException] Promise<void> prompt();
+    [CallWith=ScriptState, RaisesException] Promise<AppBannerPromptResult> prompt();
 };

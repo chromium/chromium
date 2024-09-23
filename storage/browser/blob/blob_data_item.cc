@@ -294,7 +294,6 @@ bool operator==(const BlobDataItem& a, const BlobDataItem& b) {
       return a.data_handle() == b.data_handle();
   }
   NOTREACHED();
-  return false;
 }
 
 bool operator!=(const BlobDataItem& a, const BlobDataItem& b) {

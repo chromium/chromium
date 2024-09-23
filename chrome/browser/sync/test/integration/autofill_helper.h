@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,7 +18,6 @@
 namespace autofill {
 class AutocompleteKey;
 class AutofillProfile;
-class AutofillType;
 class CreditCard;
 class PersonalDataManager;
 
@@ -69,15 +69,15 @@ void RemoveProfile(int profile, const std::string& guid);
 // to |type| and |value| with the verification status |status|.
 void UpdateProfile(int profile,
                    const std::string& guid,
-                   const autofill::AutofillType& type,
+                   autofill::FieldType type,
                    const std::u16string& value,
                    autofill::VerificationStatus status =
                        autofill::VerificationStatus::kObserved);
 
 // Gets all the Autofill profiles in the PersonalDataManager of sync profile
 // |profile|.
-[[nodiscard]] std::vector<autofill::AutofillProfile*> GetAllAutoFillProfiles(
-    int profile);
+[[nodiscard]] std::vector<const autofill::AutofillProfile*>
+GetAllAutoFillProfiles(int profile);
 
 // Returns the number of autofill profiles contained by sync profile
 // |profile|.
@@ -113,7 +113,7 @@ class AutocompleteKeysChecker : public MultiClientStatusChangeChecker {
 
 // Checker to block until autofill profiles match on both profiles.
 class AutofillProfileChecker : public StatusChangeChecker,
-                               public autofill::PersonalDataManagerObserver {
+                               public autofill::AddressDataManager::Observer {
  public:
   AutofillProfileChecker(int profile_a,
                          int profile_b,
@@ -124,8 +124,8 @@ class AutofillProfileChecker : public StatusChangeChecker,
   bool Wait() override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // autofill::PersonalDataManager implementation.
-  void OnPersonalDataChanged() override;
+  // autofill::AddressDataManager::Observer implementation.
+  void OnAddressDataChanged() override;
 
  private:
   const int profile_a_;

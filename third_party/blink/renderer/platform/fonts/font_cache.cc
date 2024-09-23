@@ -34,11 +34,14 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/strings/escape.h"
+#include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
@@ -46,6 +49,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data_cache.h"
@@ -54,7 +58,10 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/font_list.h"
@@ -66,6 +73,7 @@
 namespace blink {
 
 const char kColorEmojiLocale[] = "und-Zsye";
+const char kMonoEmojiLocale[] = "und-Zsym";
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
@@ -87,10 +95,7 @@ FontCache& FontCache::Get() {
   return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache()
-    : font_manager_(sk_ref_sp(static_font_manager_)),
-      font_platform_data_cache_(FontPlatformDataCache::Create()),
-      font_data_cache_(FontDataCache::Create()) {
+FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
 #if BUILDFLAG(IS_WIN)
   if (!font_manager_ || should_use_test_font_mgr) {
     // This code path is only for unit tests. This SkFontMgr does not work in
@@ -116,12 +121,14 @@ FontCache::~FontCache() = default;
 
 void FontCache::Trace(Visitor* visitor) const {
   visitor->Trace(font_cache_clients_);
-  visitor->Trace(font_fallback_map_);
+  visitor->Trace(font_platform_data_cache_);
   visitor->Trace(fallback_list_shaper_cache_);
+  visitor->Trace(font_data_cache_);
+  visitor->Trace(font_fallback_map_);
 }
 
 #if !BUILDFLAG(IS_MAC)
-FontPlatformData* FontCache::SystemFontPlatformData(
+const FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
@@ -136,7 +143,7 @@ FontPlatformData* FontCache::SystemFontPlatformData(
 }
 #endif
 
-FontPlatformData* FontCache::GetFontPlatformData(
+const FontPlatformData* FontCache::GetFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     AlternateFontName alternate_font_name) {
@@ -154,7 +161,7 @@ FontPlatformData* FontCache::GetFontPlatformData(
   }
 #endif
 
-  return font_platform_data_cache_->GetOrCreateFontPlatformData(
+  return font_platform_data_cache_.GetOrCreateFontPlatformData(
       this, font_description, creation_params, alternate_font_name);
 }
 
@@ -176,34 +183,26 @@ void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   Get().InvalidateShapeCache();
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetFontData(
+const SimpleFontData* FontCache::GetFontData(
     const FontDescription& font_description,
     const AtomicString& family,
-    AlternateFontName altername_font_name,
-    ShouldRetain should_retain) {
-  if (FontPlatformData* platform_data = GetFontPlatformData(
+    AlternateFontName altername_font_name) {
+  if (const FontPlatformData* platform_data = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(
               AdjustFamilyNameToAvoidUnsupportedFonts(family)),
           altername_font_name)) {
     return FontDataFromFontPlatformData(
-        platform_data, should_retain, font_description.SubpixelAscentDescent());
+        platform_data, font_description.SubpixelAscentDescent());
   }
 
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::FontDataFromFontPlatformData(
+const SimpleFontData* FontCache::FontDataFromFontPlatformData(
     const FontPlatformData* platform_data,
-    ShouldRetain should_retain,
     bool subpixel_ascent_descent) {
-#if DCHECK_IS_ON()
-  if (should_retain == kDoNotRetain)
-    DCHECK(purge_prevent_count_);
-#endif
-
-  return font_data_cache_->Get(platform_data, should_retain,
-                               subpixel_ascent_descent);
+  return font_data_cache_.Get(platform_data, subpixel_ascent_descent);
 }
 
 bool FontCache::IsPlatformFamilyMatchAvailable(
@@ -232,15 +231,7 @@ String FontCache::FirstAvailableOrFirst(const String& families) {
       gfx::FontList::FirstAvailableOrFirst(families.Utf8().c_str()));
 }
 
-SimpleFontData* FontCache::GetNonRetainedLastResortFallbackFont(
-    const FontDescription& font_description) {
-  auto font = GetLastResortFallbackFont(font_description, kDoNotRetain);
-  if (font)
-    font->AddRef();
-  return font.get();
-}
-
-scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
+const SimpleFontData* FontCache::FallbackFontForCharacter(
     const FontDescription& description,
     UChar32 lookup_char,
     const SimpleFontData* font_data_to_substitute,
@@ -257,19 +248,10 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
       Character::IsNonCharacter(lookup_char))
     return nullptr;
   base::ElapsedTimer timer;
-  scoped_refptr<SimpleFontData> result = PlatformFallbackFontForCharacter(
+  const SimpleFontData* result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);
   FontPerformance::AddSystemFallbackFontTime(timer.Elapsed());
   return result;
-}
-
-void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
-  font_data_cache_->Release(font_data);
-}
-
-void FontCache::PurgePlatformFontDataCache() {
-  TRACE_EVENT0("fonts,ui", "FontCache::PurgePlatformFontDataCache");
-  font_platform_data_cache_->Purge(*font_data_cache_);
 }
 
 void FontCache::PurgeFallbackListShaperCache() {
@@ -283,17 +265,13 @@ void FontCache::InvalidateShapeCache() {
   PurgeFallbackListShaperCache();
 }
 
-void FontCache::Purge(PurgeSeverity purge_severity) {
+void FontCache::Purge() {
   // Ideally we should never be forcing the purge while the
   // FontCachePurgePreventer is in scope, but we call purge() at any timing
   // via MemoryPressureListenerRegistry.
   if (purge_prevent_count_)
     return;
 
-  if (!font_data_cache_->Purge(purge_severity))
-    return;
-
-  PurgePlatformFontDataCache();
   PurgeFallbackListShaperCache();
 }
 
@@ -309,14 +287,15 @@ uint16_t FontCache::Generation() {
 
 void FontCache::Invalidate() {
   TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
-  font_platform_data_cache_->Clear();
+  font_platform_data_cache_.Clear();
+  font_data_cache_.Clear();
   generation_++;
 
   for (const auto& client : font_cache_clients_) {
     client->FontCacheInvalidated();
   }
 
-  Purge(kForcePurge);
+  Purge();
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
@@ -347,16 +326,6 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   base::debug::Alias(&num_families);
 
   CHECK(false);
-}
-
-void FontCache::DumpFontPlatformDataCache(
-    base::trace_event::ProcessMemoryDump* memory_dump) {
-  DCHECK(IsMainThread());
-  base::trace_event::MemoryAllocatorDump* dump =
-      memory_dump->CreateAllocatorDump("font_caches/font_platform_data_cache");
-  dump->AddScalar("size", "bytes", font_platform_data_cache_->ByteSize());
-  memory_dump->AddSuballocation(dump->guid(),
-                                WTF::Partitions::kAllocatedObjectPoolName);
 }
 
 void FontCache::DumpShapeResultCache(
@@ -403,10 +372,96 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
   if (content_locale)
     result.push_back(content_locale->LocaleForSkFontMgr());
 
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     result.push_back(kColorEmojiLocale);
+  } else if (IsTextPresentationEmoji(fallback_priority)) {
+    result.push_back(kMonoEmojiLocale);
+  }
   return result;
 }
+
+// TODO(crbug/342967843): In WebTest, Fuchsia initializes fonts by calling
+// `skia::InitializeSkFontMgrForTest();` expecting that other code doesn't
+// initialize SkFontMgr beforehand. But `FontCache::MaybePreloadSystemFonts()`
+// breaks this expectation. So we don't provide
+// `FontCache::MaybePreloadSystemFonts()` feature for Fuchsia for now.
+#if BUILDFLAG(IS_FUCHSIA)
+// static
+void FontCache::MaybePreloadSystemFonts() {}
+#else
+// static
+void FontCache::MaybePreloadSystemFonts() {
+  static bool initialized = false;
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+  CHECK(IsMainThread());
+
+  if (!base::FeatureList::IsEnabled(features::kPreloadSystemFonts)) {
+    return;
+  }
+
+  const int kPhysicalMemoryGB =
+      base::SysInfo::AmountOfPhysicalMemoryMB() / 1024;
+
+  if (kPhysicalMemoryGB < features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
+    return;
+  }
+
+  std::unique_ptr<JSONArray> targets =
+      JSONArray::From(ParseJSON(String::FromUTF8(
+          base::UnescapeURLComponent(features::kPreloadSystemFontsTargets.Get(),
+                                     base::UnescapeRule::SPACES))));
+
+  if (!targets) {
+    return;
+  }
+
+  const LayoutLocale& locale = LayoutLocale::GetDefault();
+
+  for (wtf_size_t i = 0; i < targets->size(); ++i) {
+    JSONObject* target = JSONObject::Cast(targets->at(i));
+    bool success = true;
+    String family;
+    success &= target->GetString("family", &family);
+    int weight;
+    success &= target->GetInteger("weight", &weight);
+    double specified_size;
+    success &= target->GetDouble("size", &specified_size);
+    double computed_size;
+    success &= target->GetDouble("csize", &computed_size);
+    String text;
+    success &= target->GetString("text", &text);
+    if (success) {
+      TRACE_EVENT("fonts", "PreloadSystemFonts", "family", family, "weight",
+                  weight, "specified_size", specified_size, "computed_size",
+                  computed_size, "text", text);
+      FontDescription font_description;
+      const AtomicString family_atomic_string(family);
+      FontFamily font_family(family_atomic_string,
+                             FontFamily::Type::kFamilyName);
+      font_description.SetFamily(font_family);
+      font_description.SetWeight(FontSelectionValue(weight));
+      font_description.SetLocale(&locale);
+      font_description.SetSpecifiedSize(
+          base::saturated_cast<float>(specified_size));
+      font_description.SetComputedSize(
+          base::saturated_cast<float>(computed_size));
+      font_description.SetGenericFamily(FontDescription::kSansSerifFamily);
+      const SimpleFontData* simple_font_data =
+          FontCache::Get().GetFontData(font_description, AtomicString(family));
+      if (simple_font_data) {
+        for (UChar32 c : text) {
+          Glyph glyph = simple_font_data->GlyphForCharacter(c);
+          std::ignore = simple_font_data->BoundsForGlyph(glyph);
+        }
+      }
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 FontFallbackMap& FontCache::GetFontFallbackMap() {
   if (!font_fallback_map_) {

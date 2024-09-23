@@ -20,6 +20,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ui {
@@ -51,6 +52,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // responsible for interfacing with toolkits to display them. This provides a
 // separation of concerns where a DialogModel only needs to be concerned with
 // what goes into a dialog, not how it shows.
+//
+// DialogModel is supported in views, and android. See
+// //ui/android/modal_dialog_wrapper.h for limitations of android support.
 //
 // Example usage (with views as an example DialogModelHost implementation). Note
 // that visual presentation (except order of elements) is entirely up to
@@ -138,7 +142,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     std::u16string label_;
     const std::optional<ButtonStyle> style_;
-    const bool is_enabled_;
+    bool is_enabled_;
     // The button callback gets called when the button is activated. Whether
     // that happens on key-press, release, etc. is implementation (and platform)
     // dependent.
@@ -332,6 +336,16 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a title item. See DialogModel::AddTitleItem().
+    // TODO(pengchaocai): Refactor this method once dialog_model supports
+    // multiple DialogModelSection, when the title would be an optional member
+    // of DialogModelSection.
+    Builder& AddTitleItem(std::u16string label,
+                          ElementIdentifier id = ElementIdentifier()) {
+      model_->AddTitleItem(std::move(label), id);
+      return *this;
+    }
+
     // Adds a separator. See DialogModel::AddSeparator().
     Builder& AddSeparator() {
       model_->AddSeparator();
@@ -348,6 +362,24 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a password field. See DialogModel::AddPasswordField().
+    Builder& AddPasswordField(ElementIdentifier id,
+                              std::u16string label,
+                              std::u16string accessible_text,
+                              std::u16string incorrect_password_text,
+                              const DialogModelPasswordField::Params& params =
+                                  DialogModelPasswordField::Params()) {
+      model_->AddPasswordField(id, std::move(label), std::move(accessible_text),
+                               std::move(incorrect_password_text), params);
+      return *this;
+    }
+
+    // Sets the footnote. See DialogModel::SetFootnote().
+    Builder& SetFootnote(const DialogModelLabel& label) {
+      model_->SetFootnote(label);
+      return *this;
+    }
+
     // Adds a custom field. See DialogModel::AddCustomField().
     Builder& AddCustomField(
         std::unique_ptr<DialogModelCustomField::Field> field,
@@ -358,7 +390,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     // Overrides default button. Can only be called once. The new default button
     // must exist.
-    Builder& OverrideDefaultButton(DialogButton button);
+    Builder& OverrideDefaultButton(mojom::DialogButton button);
 
     // Sets which field should be initially focused in the dialog model. Must be
     // called after that field has been added. Can only be called once.
@@ -421,6 +453,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                           std::move(callback), params);
   }
 
+  // Adds a title item at the end of the dialog model.
+  // TODO(pengchaocai): Refactor this method once dialog_model supports multiple
+  // DialogModelSection, when the title would be an optional member of
+  // DialogModelSection and explicitly adding it might not be needed.
+  void AddTitleItem(std::u16string label,
+                    ElementIdentifier id = ElementIdentifier()) {
+    contents_.AddTitleItem(std::move(label), id);
+  }
+
   // Adds a separator at the end of the dialog model.
   void AddSeparator() { contents_.AddSeparator(); }
 
@@ -431,6 +472,25 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                     const DialogModelTextfield::Params& params =
                         DialogModelTextfield::Params()) {
     contents_.AddTextfield(id, std::move(label), std::move(text), params);
+  }
+
+  // Adds a labeled password field at the end of the dialog model.
+  void AddPasswordField(ElementIdentifier id,
+                        std::u16string label,
+                        std::u16string accessible_text,
+                        std::u16string incorrect_password_text,
+                        const DialogModelPasswordField::Params& params =
+                            DialogModelField::Params()) {
+    contents_.AddPasswordField(id, std::move(label), std::move(accessible_text),
+                               std::move(incorrect_password_text), params);
+  }
+
+  // Sets the footnote.
+  void SetFootnote(const DialogModelLabel& label) {
+    // It's not supported to set a footnote while the dialog is already showing.
+    CHECK(!host_);
+
+    footnote_label_.emplace(label);
   }
 
   // Adds a custom field at the end of the dialog model. This is used to inject
@@ -460,6 +520,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id) {
     return contents_.GetTextfieldByUniqueId(id);
   }
+  DialogModelPasswordField* GetPasswordFieldByUniqueId(ElementIdentifier id) {
+    return contents_.GetPasswordFieldByUniqueId(id);
+  }
   Button* GetButtonByUniqueId(ElementIdentifier id);
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
@@ -474,6 +537,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void SetVisible(ElementIdentifier id, bool visible);
 
   void SetButtonLabel(Button* button, const std::u16string& label);
+
+  void SetButtonEnabled(Button* button, bool enabled);
 
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {
@@ -519,7 +584,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return dark_mode_banner_;
   }
 
-  const std::optional<DialogButton>& override_default_button(
+  const std::optional<mojom::DialogButton>& override_default_button(
       base::PassKey<DialogModelHost>) const {
     return override_default_button_;
   }
@@ -548,6 +613,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelLabel::TextReplacement* extra_link(
       base::PassKey<DialogModelHost>) {
     return extra_link_.has_value() ? &extra_link_.value() : nullptr;
+  }
+
+  const std::optional<DialogModelLabel>& footnote_label() const {
+    return footnote_label_;
   }
 
   bool close_on_deactivate(base::PassKey<DialogModelHost>) const {
@@ -586,7 +655,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   ImageModel banner_;
   ImageModel dark_mode_banner_;
 
-  std::optional<DialogButton> override_default_button_;
+  std::optional<mojom::DialogButton> override_default_button_;
   DialogModelSection contents_;
   ElementIdentifier initially_focused_field_;
   bool is_alert_dialog_ = false;
@@ -595,6 +664,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::optional<Button> cancel_button_;
   std::optional<Button> extra_button_;
   std::optional<DialogModelLabel::TextReplacement> extra_link_;
+  std::optional<DialogModelLabel> footnote_label_;
 
   ButtonCallbackVariant accept_action_callback_;
   ButtonCallbackVariant cancel_action_callback_;

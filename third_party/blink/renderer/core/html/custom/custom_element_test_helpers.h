@@ -116,42 +116,47 @@ class TestCustomElementDefinition : public CustomElementDefinition {
   bool HasFormStateRestoreCallback() const override { return false; }
 
   void RunConnectedCallback(Element&) override {
-    NOTREACHED() << "definition does not have connected callback";
+    NOTREACHED_IN_MIGRATION() << "definition does not have connected callback";
   }
 
   void RunDisconnectedCallback(Element&) override {
-    NOTREACHED() << "definition does not have disconnected callback";
+    NOTREACHED_IN_MIGRATION()
+        << "definition does not have disconnected callback";
   }
 
   void RunAdoptedCallback(Element&,
                           Document& old_owner,
                           Document& new_owner) override {
-    NOTREACHED() << "definition does not have adopted callback";
+    NOTREACHED_IN_MIGRATION() << "definition does not have adopted callback";
   }
 
   void RunAttributeChangedCallback(Element&,
                                    const QualifiedName&,
                                    const AtomicString& old_value,
                                    const AtomicString& new_value) override {
-    NOTREACHED() << "definition does not have attribute changed callback";
+    NOTREACHED_IN_MIGRATION()
+        << "definition does not have attribute changed callback";
   }
   void RunFormAssociatedCallback(Element& element,
                                  HTMLFormElement* nullable_form) override {
-    NOTREACHED() << "definition does not have formAssociatedCallback";
+    NOTREACHED_IN_MIGRATION()
+        << "definition does not have formAssociatedCallback";
   }
 
   void RunFormResetCallback(Element& element) override {
-    NOTREACHED() << "definition does not have formResetCallback";
+    NOTREACHED_IN_MIGRATION() << "definition does not have formResetCallback";
   }
 
   void RunFormDisabledCallback(Element& element, bool is_disabled) override {
-    NOTREACHED() << "definition does not have disabledStateChangedCallback";
+    NOTREACHED_IN_MIGRATION()
+        << "definition does not have disabledStateChangedCallback";
   }
 
   void RunFormStateRestoreCallback(Element& element,
                                    const V8ControlValue* value,
                                    const String& mode) override {
-    NOTREACHED() << "definition does not have restoreValueCallback";
+    NOTREACHED_IN_MIGRATION()
+        << "definition does not have restoreValueCallback";
   }
 
  private:

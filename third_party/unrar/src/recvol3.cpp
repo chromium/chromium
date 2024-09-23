@@ -23,12 +23,6 @@ class RSEncode // Encode or decode data area, one object per one thread.
 
 
 #ifdef RAR_SMP
-THREAD_PROC(RSEncodeThread)
-{
-  RSEncode *rs=(RSEncode *)Data;
-  rs->EncodeBuf();
-}
-
 THREAD_PROC(RSDecodeThread)
 {
   RSEncode *rs=(RSEncode *)Data;
@@ -36,7 +30,7 @@ THREAD_PROC(RSDecodeThread)
 }
 #endif
 
-RecVolumes3::RecVolumes3(RAROptions *Cmd,bool TestOnly)
+RecVolumes3::RecVolumes3(CommandData *Cmd,bool TestOnly)
 {
   memset(SrcFile,0,sizeof(SrcFile));
   if (TestOnly)
@@ -47,8 +41,7 @@ RecVolumes3::RecVolumes3(RAROptions *Cmd,bool TestOnly)
   }
   else
   {
-    Buf.Alloc(TotalBufferSize);
-    memset(SrcFile,0,sizeof(SrcFile));
+    Buf.resize(TotalBufferSize);
 #ifdef RAR_SMP
     RSThreadPool=new ThreadPool(Cmd->Threads);
 #endif
@@ -68,30 +61,16 @@ RecVolumes3::~RecVolumes3()
 
 
 
-void RSEncode::EncodeBuf()
-{
-  for (int BufPos=BufStart;BufPos<BufEnd;BufPos++)
-  {
-    byte Data[256],Code[256];
-    for (int I=0;I<FileNumber;I++)
-      Data[I]=Buf[I*RecBufferSize+BufPos];
-    RSC.Encode(Data,FileNumber,Code);
-    for (int I=0;I<RecVolNumber;I++)
-      OutBuf[I*RecBufferSize+BufPos]=Code[I];
-  }
-}
-
-
 // Check for names like arc5_3_1.rev created by RAR 3.0.
-static bool IsNewStyleRev(const wchar *Name)
+static bool IsNewStyleRev(const std::wstring &Name)
 {
-  wchar *Ext=GetExt(Name);
-  if (Ext==NULL)
+  size_t ExtPos=GetExtPos(Name);
+  if (ExtPos==std::wstring::npos || ExtPos==0)
     return true;
   int DigitGroup=0;
-  for (Ext--;Ext>Name;Ext--)
-    if (!IsDigit(*Ext))
-      if (*Ext=='_' && IsDigit(*(Ext-1)))
+  for (ExtPos--;ExtPos>0;ExtPos--)
+    if (!IsDigit(Name[ExtPos]))
+      if (Name[ExtPos]=='_' && IsDigit(Name[ExtPos-1]))
         DigitGroup++;
       else
         break;
@@ -99,19 +78,19 @@ static bool IsNewStyleRev(const wchar *Name)
 }
 
 
-bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
+bool RecVolumes3::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
 {
-  wchar ArcName[NM];
-  wcsncpyz(ArcName,Name,ASIZE(ArcName));
-  wchar *Ext=GetExt(ArcName);
+  std::wstring ArcName=Name;
   bool NewStyle=false; // New style .rev volumes are supported since RAR 3.10.
-  bool RevName=Ext!=NULL && wcsicomp(Ext,L".rev")==0;
+  bool RevName=CmpExt(ArcName,L"rev");
   if (RevName)
   {
     NewStyle=IsNewStyleRev(ArcName);
-    while (Ext>ArcName+1 && (IsDigit(*(Ext-1)) || *(Ext-1)=='_'))
-      Ext--;
-    wcsncpyz(Ext,L"*.*",ASIZE(ArcName)-(Ext-ArcName));
+  
+    size_t ExtPos=GetExtPos(ArcName);
+    while (ExtPos>1 && (IsDigit(ArcName[ExtPos-1]) || ArcName[ExtPos-1]=='_'))
+      ExtPos--;
+    ArcName.replace(ExtPos,std::wstring::npos,L"*.*");
     
     FindFile Find;
     Find.SetMask(ArcName);
@@ -121,7 +100,7 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       Archive Arc(Cmd);
       if (Arc.WOpen(fd.Name) && Arc.IsArchive(true))
       {
-        wcsncpyz(ArcName,fd.Name,ASIZE(ArcName));
+        ArcName=fd.Name;
         break;
       }
     }
@@ -138,11 +117,10 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
   bool NewNumbering=Arc.NewNumbering;
   Arc.Close();
 
-  wchar *VolNumStart=VolNameToFirstName(ArcName,ArcName,ASIZE(ArcName),NewNumbering);
-  wchar RecVolMask[NM];
-  wcsncpyz(RecVolMask,ArcName,ASIZE(RecVolMask));
-  size_t BaseNamePartLength=VolNumStart-ArcName;
-  wcsncpyz(RecVolMask+BaseNamePartLength,L"*.rev",ASIZE(RecVolMask)-BaseNamePartLength);
+  size_t VolNumStart=VolNameToFirstName(ArcName,ArcName,NewNumbering);
+  std::wstring RecVolMask=ArcName;
+  RecVolMask.replace(VolNumStart,std::wstring::npos,L"*.rev");
+  size_t BaseNamePartLength=VolNumStart;
 
   int64 RecFileSize=0;
 
@@ -155,25 +133,25 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
   Find.SetMask(RecVolMask);
   FindData RecData;
   int FileNumber=0,RecVolNumber=0,FoundRecVolumes=0,MissingVolumes=0;
-  wchar PrevName[NM];
+  std::wstring PrevName;
   while (Find.Next(&RecData))
   {
-    wchar *CurName=RecData.Name;
+    std::wstring CurName=RecData.Name;
     int P[3];
     if (!RevName && !NewStyle)
     {
       NewStyle=true;
 
-      wchar *Dot=GetExt(CurName);
-      if (Dot!=NULL)
+      size_t DotPos=GetExtPos(CurName);
+      if (DotPos!=std::wstring::npos)
       {
-        int LineCount=0;
-        Dot--;
-        while (Dot>CurName && *Dot!='.')
+        uint LineCount=0;
+        DotPos--;
+        while (DotPos>0 && CurName[DotPos]!='.')
         {
-          if (*Dot=='_')
+          if (CurName[DotPos]=='_')
             LineCount++;
-          Dot--;
+          DotPos--;
         }
         if (LineCount==2)
           NewStyle=false;
@@ -209,24 +187,24 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
     }
     else
     {
-      wchar *Dot=GetExt(CurName);
-      if (Dot==NULL)
+      size_t DotPos=GetExtPos(CurName);
+      if (DotPos==std::wstring::npos)
         continue;
       bool WrongParam=false;
       for (size_t I=0;I<ASIZE(P);I++)
       {
         do
         {
-          Dot--;
-        } while (IsDigit(*Dot) && Dot>=CurName+BaseNamePartLength);
-        P[I]=atoiw(Dot+1);
+          DotPos--;
+        } while (IsDigit(CurName[DotPos]) && DotPos>=BaseNamePartLength);
+        P[I]=atoiw(&CurName[DotPos+1]);
         if (P[I]==0 || P[I]>255)
           WrongParam=true;
       }
       if (WrongParam)
         continue;
     }
-    if (P[1]+P[2]>255)
+    if (P[0]<=0 || P[1]<=0 || P[2]<=0 || P[1]+P[2]>255 || P[0]+P[2]-1>255)
       continue;
     if (RecVolNumber!=0 && RecVolNumber!=P[1] || FileNumber!=0 && FileNumber!=P[2])
     {
@@ -235,10 +213,17 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
     }
     RecVolNumber=P[1];
     FileNumber=P[2];
-    wcsncpyz(PrevName,CurName,ASIZE(PrevName));
+    PrevName=CurName;
     File *NewFile=new File;
     NewFile->TOpen(CurName);
-    SrcFile[FileNumber+P[0]-1]=NewFile;
+
+    // This check is redundant taking into account P[I]>255 and P[0]+P[2]-1>255
+    // checks above. Still we keep it here for better clarity and security.
+    int SrcPos=FileNumber+P[0]-1;
+    if (SrcPos<0 || SrcPos>=ASIZE(SrcFile))
+      continue;
+    SrcFile[SrcPos]=NewFile;
+
     FoundRecVolumes++;
 
     if (RecFileSize==0)
@@ -249,11 +234,9 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
   if (FoundRecVolumes==0)
     return false;
 
-  bool WriteFlags[256];
-  memset(WriteFlags,0,sizeof(WriteFlags));
+  bool WriteFlags[256]{};
 
-  wchar LastVolName[NM];
-  *LastVolName=0;
+  std::wstring LastVolName;
 
   for (int CurArcNum=0;CurArcNum<FileNumber;CurArcNum++)
   {
@@ -289,9 +272,7 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       if (!ValidVolume)
       {
         NewFile->Close();
-        wchar NewName[NM];
-        wcsncpyz(NewName,ArcName,ASIZE(NewName));
-        wcsncatz(NewName,L".bad",ASIZE(NewName));
+        std::wstring NewName=ArcName+L".bad";
 
         uiMsg(UIMSG_BADARCHIVE,ArcName);
         uiMsg(UIMSG_RENAMING,ArcName,NewName);
@@ -322,13 +303,13 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       MissingVolumes++;
 
       if (CurArcNum==FileNumber-1)
-        wcsncpyz(LastVolName,ArcName,ASIZE(LastVolName));
+        LastVolName=ArcName;
 
       uiMsg(UIMSG_MISSINGVOL,ArcName);
       uiMsg(UIEVENT_NEWARCHIVE,ArcName);
     }
     SrcFile[CurArcNum]=(File*)NewFile;
-    NextVolumeName(ArcName,ASIZE(ArcName),!NewNumbering);
+    NextVolumeName(ArcName,!NewNumbering);
   }
 
   uiMsg(UIMSG_RECVOLMISSING,MissingVolumes);
@@ -453,7 +434,7 @@ bool RecVolumes3::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       CurFile->Close();
       SrcFile[I]=NULL;
     }
-  if (*LastVolName!=0)
+  if (!LastVolName.empty())
   {
     // Truncate the last volume to its real size.
     Archive Arc(Cmd);
@@ -497,7 +478,7 @@ void RSEncode::DecodeBuf()
 }
 
 
-void RecVolumes3::Test(RAROptions *Cmd,const wchar *Name)
+void RecVolumes3::Test(CommandData *Cmd,const std::wstring &Name)
 {
   if (!IsNewStyleRev(Name)) // RAR 3.0 name#_#_#.rev do not include CRC32.
   {
@@ -505,8 +486,7 @@ void RecVolumes3::Test(RAROptions *Cmd,const wchar *Name)
     return;
   }
 
-  wchar VolName[NM];
-  wcsncpyz(VolName,Name,ASIZE(VolName));
+  std::wstring VolName=Name;
 
   while (FileExist(VolName))
   {
@@ -518,7 +498,7 @@ void RecVolumes3::Test(RAROptions *Cmd,const wchar *Name)
     }
     if (!uiStartFileExtract(VolName,false,true,false))
       return;
-    mprintf(St(MExtrTestFile),VolName);
+    mprintf(St(MExtrTestFile),VolName.c_str());
     mprintf(L"     ");
     CurFile.Seek(0,SEEK_END);
     int64 Length=CurFile.Tell();
@@ -539,6 +519,6 @@ void RecVolumes3::Test(RAROptions *Cmd,const wchar *Name)
       ErrHandler.SetErrorCode(RARX_CRC);
     }
 
-    NextVolumeName(VolName,ASIZE(VolName),false);
+    NextVolumeName(VolName,false);
   }
 }

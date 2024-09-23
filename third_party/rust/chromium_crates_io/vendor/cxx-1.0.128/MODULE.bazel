@@ -1,0 +1,15 @@
+module(name = "cxx.rs")
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "rules_rust", version = "0.49.3")
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    versions = ["1.80.1"],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains("@rust_toolchains//:all")
+
+crate_repositories = use_extension("//tools/bazel:extension.bzl", "crate_repositories")
+use_repo(crate_repositories, "crates.io")

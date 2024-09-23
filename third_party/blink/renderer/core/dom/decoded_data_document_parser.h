@@ -40,7 +40,7 @@ class CORE_EXPORT DecodedDataDocumentParser : public DocumentParser {
   virtual bool WellFormed() const { return true; }
 
   // The below functions are used by DocumentWriter (the loader).
-  void AppendBytes(const char* bytes, size_t length) override;
+  void AppendBytes(base::span<const uint8_t> bytes) override;
   virtual void Flush();
   bool NeedsDecoder() const final { return needs_decoder_; }
   void SetDecoder(std::unique_ptr<TextResourceDecoder>) override;

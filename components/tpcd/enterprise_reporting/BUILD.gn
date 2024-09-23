@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("enterprise_reporting") {
+  sources = [
+    "enterprise_reporting_tab_helper.cc",
+    "enterprise_reporting_tab_helper.h",
+  ]
+
+  deps = [
+    "//content/public/browser",
+    "//services/network:network_service",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enterprise_reporting_tab_helper_unittest.cc" ]
+
+  deps = [
+    ":enterprise_reporting",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

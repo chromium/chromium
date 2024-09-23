@@ -16,13 +16,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -42,12 +43,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace autofill {
 
 namespace {
 
 using ::base::UTF8ToUTF16;
+using ::testing::_;
+using ::testing::AssertionResult;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -55,15 +59,46 @@ using ::testing::IsEmpty;
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 
-}  // namespace
-
 class AutocompleteTest : public InProcessBrowserTest {
+ public:
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    explicit TestAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
+
+    TestAutofillManagerWaiter& text_field_change_waiter() {
+      return text_field_change_waiter_;
+    }
+    TestAutofillManagerWaiter& forms_seen_waiter() {
+      return forms_seen_waiter_;
+    }
+    TestAutofillManagerWaiter& form_submitted_waiter() {
+      return form_submitted_waiter_;
+    }
+
+   private:
+    TestAutofillManagerWaiter text_field_change_waiter_{
+        *this,
+        {AutofillManagerEvent::kTextFieldDidChange}};
+    TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {AutofillManagerEvent::kFormsSeen}};
+    TestAutofillManagerWaiter form_submitted_waiter_{
+        *this,
+        {AutofillManagerEvent::kFormSubmitted}};
+  };
+
+  TestAutofillManager* autofill_manager() {
+    return autofill_manager(web_contents()->GetPrimaryMainFrame());
+  }
+
+  TestAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
+  }
+
  protected:
   void SetUpOnMainThread() override {
     active_browser_ = browser();
-
-    // Don't want Keychain coming up on Mac.
-    test::DisableSystemServices(pref_service());
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -75,13 +110,12 @@ class AutocompleteTest : public InProcessBrowserTest {
     // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+    ContentAutofillDriver::GetForRenderFrameHost(
+        web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
-        .HideAutofillPopup(PopupHidingReason::kTabGone);
+        .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
     active_browser_ = nullptr;
-    test::ReenableSystemServices();
   }
 
   // Necessary to avoid flakiness or failure due to input arriving
@@ -104,31 +138,33 @@ class AutocompleteTest : public InProcessBrowserTest {
 
   // Fills in the default input with |value|, submits the form and waits
   // for the value to have been saved in the DB or skipped, via observers.
-  void FillInputAndSubmit(const std::string& value, bool should_skip_save) {
-    const char js_format[] =
-        "document.getElementById('%s').value = '%s';"
-        "document.onclick = function() {"
-        "  document.getElementById('testform').submit();"
-        "};";
-
-    const std::string js = base::StringPrintf(
-        js_format, kDefaultAutocompleteInputId, value.c_str());
-
+  void FillInputAndSubmit(const std::string& value) {
+    const std::string js =
+        base::StringPrintf(R"(document.getElementById('%s').focus();
+           document.onclick = function() {
+             document.getElementById('testform').submit();
+           };)",
+                           kDefaultAutocompleteInputId);
     ASSERT_TRUE(content::ExecJs(web_contents(), js));
+
+    for (const char c : value) {
+      ui::DomKey key = ui::DomKey::FromCharacter(c);
+      ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
+      ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
+      content::SimulateKeyPress(web_contents(), key, code, key_code, false,
+                                false, false, false);
+      ASSERT_TRUE(autofill_manager()->text_field_change_waiter().Wait(1));
+    }
 
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
-    TestAutofillManagerWaiter waiter(manager(),
-                                     {AutofillManagerEvent::kFormSubmitted});
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-    ASSERT_TRUE(waiter.Wait(1));
+    ASSERT_TRUE(autofill_manager()->form_submitted_waiter().Wait(1));
 
-    if (!should_skip_save) {
-      // Wait for data to have been saved in the DB.
-      WaitForPendingDBTasks(*GetWebDataService());
-    }
+    // Wait for data to have been saved in the DB.
+    WaitForPendingDBTasks(*GetWebDataService());
   }
 
   // The retention policy clean-up is run once per major version during
@@ -150,12 +186,6 @@ class AutocompleteTest : public InProcessBrowserTest {
     return AutocompleteHistoryManagerFactory::GetForProfile(current_profile());
   }
 
-  AutofillManager& manager() {
-    return ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-        ->GetAutofillManager();
-  }
-
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
   std::vector<Suggestion> GetAutocompleteSuggestions(
@@ -166,9 +196,11 @@ class AutocompleteTest : public InProcessBrowserTest {
     std::vector<Suggestion> suggestions;
     EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
+        /*form_structure=*/nullptr,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        manager().client(), callback.Get(), SuggestionsContext()));
+        /*autofill_field=*/nullptr, autofill_manager()->client(),
+        callback.Get()));
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());
@@ -189,6 +221,7 @@ class AutocompleteTest : public InProcessBrowserTest {
   Profile* current_profile() { return active_browser_->profile(); }
 
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   raw_ptr<Browser> active_browser_ = nullptr;
 };
 
@@ -197,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/false);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+  FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
@@ -211,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::OFF_THE_RECORD);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/true);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+  FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
               IsEmpty());
 }
@@ -224,7 +259,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/true);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+  FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
               IsEmpty());
 }
@@ -236,6 +272,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
   // Navigate to a file and wait, this will make sure we instantiate
   // AutocompleteHistoryManager.
   NavigateToFile(kSimpleFormFileName);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
 
   // The checkup is executed asynchronously on startup and may not have
   // finished, yet.
@@ -257,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/false);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+  FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
@@ -281,7 +319,8 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/false);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+  FillInputAndSubmit(test_value);
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
@@ -296,5 +335,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
+
+}  // namespace
 
 }  // namespace autofill

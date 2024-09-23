@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_HEADLESS_HEADLESS_MODE_PROTOCOL_BROWSERTEST_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/headless/headless_mode_devtooled_browsertest.h"
 
@@ -23,7 +23,7 @@ class HeadlessModeProtocolBrowserTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  void RunTestScript(base::StringPiece script_name);
+  void RunTestScript(std::string_view script_name);
 
   // Implement this for tests that need to pass extra parameters to
   // JavaScript code.

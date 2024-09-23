@@ -157,6 +157,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
 
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) final;
@@ -190,6 +192,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
                        SMILTime time,
                        SMILTimeOrigin origin);
   void InstanceListChanged();
+  void IntervalStateChanged();
 
   // This represents conditions on elements begin or end list that need to be
   // resolved on runtime, for example
@@ -305,6 +308,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
   bool interval_has_changed_;
   bool instance_lists_have_changed_;
+  bool interval_needs_revalidation_;
   bool is_notifying_dependents_;
 
   friend class ConditionEventListener;

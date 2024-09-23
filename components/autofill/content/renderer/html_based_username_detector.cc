@@ -5,12 +5,14 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,7 +46,7 @@ constexpr int kMinimumWordLength = 4;
 // For each group the set of short tokens (tokens shorter than
 // |kMinimumWordLength|) is computed as well.
 struct UsernameFieldData {
-  WebInputElement input_element;
+  FieldRendererId renderer_id;
   std::u16string developer_value;
   base::flat_set<std::u16string> developer_short_tokens;
   std::u16string user_value;
@@ -61,10 +63,8 @@ struct UsernameFieldData {
 // "Non-latin" translations are the translations of the words that have custom,
 // country specific characters.
 struct CategoryOfWords {
-  const std::u16string_view* latin_dictionary;
-  const size_t latin_dictionary_size;
-  const std::u16string_view* non_latin_dictionary;
-  const size_t non_latin_dictionary_size;
+  const base::span<const std::u16string_view> latin_dictionary;
+  const base::span<const std::u16string_view> non_latin_dictionary;
 };
 
 // 1. Removes delimiters from |raw_value| and appends the remainder to
@@ -100,53 +100,28 @@ void AppendValueAndShortTokens(
 
 // For the given |input_element|, compute developer and user value, along with
 // sets of short tokens, and returns it.
-UsernameFieldData ComputeUsernameFieldData(
-    const blink::WebInputElement& input_element,
-    const FormFieldData& field) {
+UsernameFieldData ComputeUsernameFieldData(const FormFieldData& field) {
   UsernameFieldData field_data;
-  field_data.input_element = input_element;
+  field_data.renderer_id = field.renderer_id();
 
-  AppendValueAndShortTokens(field.name, &field_data.developer_value,
+  AppendValueAndShortTokens(field.name(), &field_data.developer_value,
                             &field_data.developer_short_tokens);
-  AppendValueAndShortTokens(field.id_attribute, &field_data.developer_value,
+  AppendValueAndShortTokens(field.id_attribute(), &field_data.developer_value,
                             &field_data.developer_short_tokens);
-  AppendValueAndShortTokens(field.label, &field_data.user_value,
+  AppendValueAndShortTokens(field.label(), &field_data.user_value,
                             &field_data.user_short_tokens);
   return field_data;
 }
 
-// For the fields of the given form (all_control_elements), computes
-// |UsernameFieldData| needed by the detector.
 void InferUsernameFieldData(
-    const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     std::vector<UsernameFieldData>* possible_usernames_data) {
-  // |all_control_elements| and |form_data.fields| may have different set of
-  // fields. Match them based on |WebInputElement.NameForAutofill| and
-  // |FormFieldData.name|.
-  size_t next_element_range_begin = 0;
-
-  for (const blink::WebFormControlElement& control_element :
-       all_control_elements) {
-    const WebInputElement input_element =
-        control_element.DynamicTo<WebInputElement>();
-    if (input_element.IsNull() || input_element.IsPasswordFieldForAutofill())
+  for (const FormFieldData& field : form_data.fields()) {
+    if (field.name().empty() &&
+        field.form_control_type() == FormControlType::kInputPassword) {
       continue;
-    const std::u16string element_name = input_element.NameForAutofill().Utf16();
-    for (size_t i = next_element_range_begin; i < form_data.fields.size();
-         ++i) {
-      const FormFieldData& field_data = form_data.fields[i];
-      if (input_element.NameForAutofill().IsEmpty())
-        continue;
-
-      // Find matching field data and web input element.
-      if (field_data.name == element_name) {
-        next_element_range_begin = i + 1;
-        possible_usernames_data->push_back(
-            ComputeUsernameFieldData(input_element, field_data));
-        break;
-      }
     }
+    possible_usernames_data->push_back(ComputeUsernameFieldData(field));
   }
 }
 
@@ -155,17 +130,16 @@ void InferUsernameFieldData(
 bool CheckFieldWithDictionary(
     const std::u16string& value,
     const base::flat_set<std::u16string>& short_tokens,
-    const std::u16string_view* dictionary,
-    const size_t& dictionary_size) {
-  for (size_t i = 0; i < dictionary_size; ++i) {
-    if (dictionary[i].length() < kMinimumWordLength) {
+    base::span<const std::u16string_view> dictionary) {
+  for (std::u16string_view word : dictionary) {
+    if (word.length() < kMinimumWordLength) {
       // Treat short words by looking them up in the tokens set.
-      if (short_tokens.find(dictionary[i]) != short_tokens.end()) {
+      if (short_tokens.find(word) != short_tokens.end()) {
         return true;
       }
     } else {
       // Treat long words by looking them up as a substring in |value|.
-      if (value.find(dictionary[i]) != std::string::npos) {
+      if (value.find(word) != std::string::npos) {
         return true;
       }
     }
@@ -180,28 +154,25 @@ bool ContainsWordFromCategory(const UsernameFieldData& possible_username,
   // For user value, search in latin and non-latin dictionaries, because this
   // value is user visible. For developer value, only look up in latin
   /// dictionaries.
-  return CheckFieldWithDictionary(
-             possible_username.user_value, possible_username.user_short_tokens,
-             category.latin_dictionary, category.latin_dictionary_size) ||
+  return CheckFieldWithDictionary(possible_username.user_value,
+                                  possible_username.user_short_tokens,
+                                  category.latin_dictionary) ||
          CheckFieldWithDictionary(possible_username.user_value,
                                   possible_username.user_short_tokens,
-                                  category.non_latin_dictionary,
-                                  category.non_latin_dictionary_size) ||
+                                  category.non_latin_dictionary) ||
          CheckFieldWithDictionary(possible_username.developer_value,
                                   possible_username.developer_short_tokens,
-                                  category.latin_dictionary,
-                                  category.latin_dictionary_size);
+                                  category.latin_dictionary);
 }
 
 // Remove from |possible_usernames_data| the elements that definitely cannot be
 // usernames, because their computed values contain at least one negative word.
 void RemoveFieldsWithNegativeWords(
     std::vector<UsernameFieldData>* possible_usernames_data) {
-  static const CategoryOfWords kNegativeCategory = {
-      kNegativeLatin, kNegativeLatinSize, kNegativeNonLatin,
-      kNegativeNonLatinSize};
+  static constexpr CategoryOfWords kNegativeCategory = {kNegativeLatin,
+                                                        kNegativeNonLatin};
 
-  base::EraseIf(
+  std::erase_if(
       *possible_usernames_data, [](const UsernameFieldData& possible_username) {
         return ContainsWordFromCategory(possible_username, kNegativeCategory);
       });
@@ -223,8 +194,7 @@ void FindWordsFromCategoryInForm(
   for (const UsernameFieldData& field_data : possible_usernames_data) {
     if (ContainsWordFromCategory(field_data, category)) {
       if (fields_found == 0) {
-        chosen_field_renderer_id =
-            form_util::GetFieldRendererId(field_data.input_element);
+        chosen_field_renderer_id = field_data.renderer_id;
       }
       fields_found++;
     }
@@ -238,31 +208,24 @@ void FindWordsFromCategoryInForm(
 // Find username elements if there is no cached result for the given form and
 // add them to |username_predictions| in the order of decreasing reliability.
 void FindUsernameFieldInternal(
-    const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     std::vector<FieldRendererId>* username_predictions) {
   DCHECK(username_predictions);
   DCHECK(username_predictions->empty());
 
-  static const CategoryOfWords kUsernameCategory = {
-      kUsernameLatin, kUsernameLatinSize, kUsernameNonLatin,
-      kUsernameNonLatinSize};
-  static const CategoryOfWords kUserCategory = {
-      kUserLatin, kUserLatinSize, kUserNonLatin, kUserNonLatinSize};
-  static const CategoryOfWords kTechnicalCategory = {
-      kTechnicalWords, kTechnicalWordsSize, nullptr, 0};
-  static const CategoryOfWords kWeakCategory = {kWeakWords, kWeakWordsSize,
-                                                nullptr, 0};
+  static constexpr CategoryOfWords kUsernameCategory = {kUsernameLatin,
+                                                        kUsernameLatin};
+  static constexpr CategoryOfWords kUserCategory = {kUserLatin, kUserNonLatin};
+  static constexpr CategoryOfWords kTechnicalCategory = {kTechnicalWords, {}};
+  static constexpr CategoryOfWords kWeakCategory = {kWeakWords, {}};
   // These categories contain words that point to username field.
   // Order of categories is vital: the detector searches for words in descending
   // order of probability to point to a username field.
-  static const CategoryOfWords kPositiveCategories[] = {
-      kUsernameCategory, kUserCategory, kTechnicalCategory, kWeakCategory};
-
+  static constexpr auto kPositiveCategories = std::to_array<CategoryOfWords>(
+      {kUsernameCategory, kUserCategory, kTechnicalCategory, kWeakCategory});
   std::vector<UsernameFieldData> possible_usernames_data;
 
-  InferUsernameFieldData(all_control_elements, form_data,
-                         &possible_usernames_data);
+  InferUsernameFieldData(form_data, &possible_usernames_data);
   RemoveFieldsWithNegativeWords(&possible_usernames_data);
 
   // These are the searches performed by the username detector.
@@ -275,23 +238,18 @@ void FindUsernameFieldInternal(
 }  // namespace
 
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
-    const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache,
-    const WebFormElement& form) {
+    UsernameDetectorCache* username_detector_cache) {
   // The cache will store the object referenced in the return value, so it must
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
-  DCHECK(!all_control_elements.empty());
-
   auto [form_position, cache_miss] = username_detector_cache->emplace(
-      form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
+      form_data.renderer_id(), std::vector<FieldRendererId>());
 
   if (cache_miss) {
     std::vector<FieldRendererId> username_predictions;
-    FindUsernameFieldInternal(all_control_elements, form_data,
-                              &username_predictions);
+    FindUsernameFieldInternal(form_data, &username_predictions);
     if (!username_predictions.empty())
       form_position->second = std::move(username_predictions);
   }

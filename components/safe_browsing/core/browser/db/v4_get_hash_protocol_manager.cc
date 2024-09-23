@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -800,7 +801,8 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
     int response_code,
     const std::string& data) {
   auto it = pending_hash_requests_.find(url_loader);
-  DCHECK(it != pending_hash_requests_.end()) << "Request not found";
+  CHECK(it != pending_hash_requests_.end(), base::NotFatalUntil::M130)
+      << "Request not found";
   RecordHttpResponseOrErrorCode("SafeBrowsing.V4GetHash.Network.Result",
                                 net_error, response_code);
 

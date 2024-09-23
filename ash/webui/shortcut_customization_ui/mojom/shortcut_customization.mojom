@@ -9,6 +9,7 @@ import "ash/public/mojom/accelerator_info.mojom";
 import "ash/public/mojom/accelerator_keys.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
 
 // A struct that is returned from modifying an accelerator. It contains
 // an optional field for the accelerator name if the action has a conflict with
@@ -120,9 +121,10 @@ interface AcceleratorConfigurationProvider {
   // (default value is true for non-managed users).
   IsCustomizationAllowedByPolicy() => (bool is_customization_allowed_by_policy);
 
-  // True if the keyboard has a launcher button.
-  // False if the keyboard has a search button.
-  HasLauncherButton() => (bool has_launcher_button);
+  // Returns the meta key to display in the UI to represent the overall current
+  // keyboard situation. This will only return either Launcher, Search, or
+  // LauncherRefresh.
+  GetMetaKeyToDisplay() => (ui.mojom.MetaKey meta_key);
 
   // Checks if the `accelerator` from `action_id` is used by another
   // accelerator. If an error is found with the input accelerator, return

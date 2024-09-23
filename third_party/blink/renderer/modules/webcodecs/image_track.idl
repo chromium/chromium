@@ -5,6 +5,7 @@
 // https://github.com/WICG/web-codecs
 
 [
+    SecureContext,
     Exposed=(Window,DedicatedWorker)
 ] interface ImageTrack {
   // The number of frames in the image.

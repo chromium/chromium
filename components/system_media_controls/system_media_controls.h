@@ -8,8 +8,13 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+namespace remote_cocoa {
+class ApplicationHost;
+}
 
 namespace system_media_controls {
 
@@ -28,10 +33,15 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
     kStopped,
   };
 
-  // |window| used by Windows OS for web app (dPWA) connections.
+#if BUILDFLAG(IS_MAC)
+  static std::unique_ptr<SystemMediaControls> Create(
+      remote_cocoa::ApplicationHost* application_host);
+#else
+  // `window` used by Windows OS for web app (dPWA) connections.
   static std::unique_ptr<SystemMediaControls> Create(
       const std::string& product_name,
       int window = -1);
+#endif  // BUILDFLAG(IS_MAC)
 
   virtual ~SystemMediaControls() = default;
 
@@ -61,6 +71,13 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
   virtual void ClearThumbnail() = 0;
   virtual void ClearMetadata() = 0;
   virtual void UpdateDisplay() = 0;
+
+  // Helpers for testing only.
+  static void SetVisibilityChangedCallbackForTesting(
+      base::RepeatingCallback<void(bool)>*);
+  virtual bool GetVisibilityForTesting() const = 0;
+  virtual void SetOnBridgeCreatedCallbackForTesting(
+      base::RepeatingCallback<void()>) {}
 };
 
 }  // namespace system_media_controls

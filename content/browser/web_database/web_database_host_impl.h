@@ -51,9 +51,6 @@ class CONTENT_EXPORT WebDatabaseHostImpl
                   DeleteFileCallback callback) override;
   void GetFileAttributes(const std::u16string& vfs_file_name,
                          GetFileAttributesCallback callback) override;
-  void SetFileSize(const std::u16string& vfs_file_name,
-                   int64_t expected_size,
-                   SetFileSizeCallback callback) override;
   void GetSpaceAvailable(const url::Origin& origin,
                          GetSpaceAvailableCallback callback) override;
   void Opened(const url::Origin& origin,
@@ -100,10 +97,6 @@ class CONTENT_EXPORT WebDatabaseHostImpl
 
   void GetFileAttributesValidated(const std::u16string& vfs_file_name,
                                   GetFileAttributesCallback callback);
-
-  void SetFileSizeValidated(const std::u16string& vfs_file_name,
-                            int64_t expected_size,
-                            SetFileSizeCallback callback);
 
   void GetSpaceAvailableValidated(const url::Origin& origin,
                                   GetSpaceAvailableCallback callback);

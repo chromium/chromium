@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_UTIL_IMAGE_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_UTIL_IMAGE_UTIL_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace gfx {
 class ImageSkia;
@@ -14,7 +15,7 @@ class ImageSkia;
 
 namespace webui {
 std::string MakeDataURIForImage(base::span<const uint8_t> image_data,
-                                base::StringPiece mime_subtype);
+                                std::string_view mime_subtype);
 
 std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor);
 }  // namespace webui

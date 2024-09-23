@@ -15,10 +15,21 @@ proto_library("optimization_guide_proto") {
     "autofill_field_classification_model_metadata.proto",
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
+    "descriptors.proto",
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/default.proto",
+    "features/forms_annotations.proto",
+    "features/forms_predictions.proto",
+    "features/history_answer.proto",
+    "features/history_query.proto",
+    "features/history_search_strings.proto",
+    "features/model_prototyping.proto",
+    "features/product_specifications.proto",
+    "features/prompt_api.proto",
+    "features/summarize.proto",
     "features/tab_organization.proto",
+    "features/text_safety.proto",
     "features/wallpaper_search.proto",
     "hint_cache.proto",
     "hints.proto",
@@ -26,16 +37,20 @@ proto_library("optimization_guide_proto") {
     "model_execution.proto",
     "model_quality_metadata.proto",
     "model_quality_service.proto",
+    "model_validation.proto",
     "models.proto",
     "on_device_base_model_metadata.proto",
+    "on_device_model_execution_config.proto",
     "on_device_tail_suggest_model_metadata.proto",
     "page_entities_metadata.proto",
-    "page_entities_model_metadata.proto",
     "page_topics_model_metadata.proto",
     "page_topics_override_list.proto",
+    "parser_kind.proto",
     "push_notification.proto",
+    "redaction.proto",
     "salient_image_metadata.proto",
     "string_value.proto",
+    "substitution.proto",
     "text_safety_model_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
@@ -79,5 +94,45 @@ proto_library("string_value_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "string_value.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("tab_organization_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/tab_organization.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "tab_organization.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("history_answer_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/history_answer.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "history_answer.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("summarize_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/summarize.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "summarize.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("prompt_api_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/prompt_api.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "prompt_api.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
 }

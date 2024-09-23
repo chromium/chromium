@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/content_setting_site_row_view.h"
 
 #include <memory>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -15,7 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -60,17 +61,16 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  if (features::IsChromeRefresh2023()) {
-    title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
+  title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
 
   toggle_button_ = AddChildView(std::make_unique<views::ToggleButton>(
       base::BindRepeating(&ContentSettingSiteRowView::OnToggleButtonPressed,
                           base::Unretained(this))));
   toggle_button_->SetIsOn(allowed);
-  toggle_button_->SetAccessibleName(title);
+  toggle_button_->GetViewAccessibility().SetName(title);
 
   layout->SetInteriorMargin(ChromeLayoutProvider::Get()->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON));
@@ -84,8 +84,7 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   if (favicon_result.is_valid()) {
     favicon_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
-                                         favicon_result.bitmap_data->size())));
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(
         kGlobeIcon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE)));

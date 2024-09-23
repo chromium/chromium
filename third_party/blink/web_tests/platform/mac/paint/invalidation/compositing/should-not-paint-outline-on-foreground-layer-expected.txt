@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [300, 300],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [285, 285],
       "drawsContent": false,
       "transform": 1
@@ -33,31 +33,31 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow DIV id='container'",
+      "name": "Scroll corner of LayoutBlockFlow DIV id='container'",
       "position": [285, 285],
       "bounds": [15, 15],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [3000, 3000],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [3000, 3000],
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "position": [-10, -10],
       "bounds": [320, 320],
       "transform": 1

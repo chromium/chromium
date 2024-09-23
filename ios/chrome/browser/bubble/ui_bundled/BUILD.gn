@@ -1,0 +1,139 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "bubble_presenter.h",
+    "bubble_presenter.mm",
+    "bubble_presenter_coordinator.h",
+    "bubble_presenter_coordinator.mm",
+    "bubble_presenter_delegate.h",
+    "bubble_view_controller_presenter+Testing.h",
+    "bubble_view_controller_presenter.h",
+    "bubble_view_controller_presenter.mm",
+  ]
+  public_deps = [ ":constants" ]
+  deps = [
+    ":bubble_view",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled/gesture_iph",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/iph_for_new_chrome_user/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//net",
+    "//ui/base",
+  ]
+}
+
+source_set("bubble_view") {
+  sources = [
+    "bubble_util.h",
+    "bubble_util.mm",
+    "bubble_view.h",
+    "bubble_view.mm",
+    "bubble_view_controller.h",
+    "bubble_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "bubble_constants.h",
+    "bubble_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bubble_unittest_util.h",
+    "bubble_unittest_util.mm",
+    "bubble_util_unittest.mm",
+    "bubble_view_controller_presenter_unittest.mm",
+    "bubble_view_controller_unittest.mm",
+    "bubble_view_unittest.mm",
+  ]
+  deps = [
+    ":bubble_view",
+    ":ui_bundled",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//testing/gtest",
+  ]
+  frameworks = [ "CoreGraphics.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "bubble_presenter_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:test_utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

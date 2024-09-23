@@ -14,12 +14,6 @@ source_set("attribution") {
   sources = [
     "attribution_request_helper.cc",
     "attribution_request_helper.h",
-    "attribution_verification_mediator.cc",
-    "attribution_verification_mediator.h",
-    "attribution_verification_mediator_metrics_recorder.cc",
-    "attribution_verification_mediator_metrics_recorder.h",
-    "boringssl_verification_cryptographer.cc",
-    "boringssl_verification_cryptographer.h",
     "request_headers_internal.cc",
     "request_headers_internal.h",
   ]
@@ -28,7 +22,6 @@ source_set("attribution") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//services/network/trust_tokens",
     "//url",
   ]
 }
@@ -40,11 +33,6 @@ source_set("tests") {
 
   sources = [
     "attribution_request_helper_unittest.cc",
-    "attribution_test_utils.cc",
-    "attribution_test_utils.h",
-    "attribution_verification_mediator_metrics_recorder_unittest.cc",
-    "attribution_verification_mediator_unittest.cc",
-    "boringssl_verification_cryptographer_unittest.cc",
     "request_headers_internal_unittest.cc",
   ]
 
@@ -55,8 +43,6 @@ source_set("tests") {
     "//net:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//services/network/trust_tokens",
-    "//services/network/trust_tokens:test_support",
     "//testing/gtest",
     "//url",
   ]

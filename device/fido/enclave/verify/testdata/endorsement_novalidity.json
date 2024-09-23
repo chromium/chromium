@@ -1,0 +1,24 @@
+{
+    "_type": "https://in-toto.io/Statement/v1",
+    "predicateType": "https://github.com/project-oak/transparent-release/claim/v1",
+    "subject": [
+        {
+            "name": "oak_containers_stage1",
+            "digest": {
+                "psha2": "020000293b52d03b784e9f9fde1b266d89f807615334cd84f3f5197f734645af318aad024000",
+                "sha1": "9d0b72e3a22b5508ea80c177752ad51e3acbdc29",
+                "sha256": "18c34d8cc737fb5709a99acb073cdc5ed8a404503f626cea6e0bad0a406002fc",
+                "sha512": "5030cbebe5f38ba5a6746b9682c6be568c4ab2aa36dfbffddbd9483f7c5f8d346fa82322846ef11c2e367d4040a6f04bf93e2ae3f6d521015f14198167b1bbe6",
+                "sha3_512": "8330aaa7da27336f2026827be3750b6d97ea5ba81590d1fac9ef5edc83078e53ac512d45f0c0cd611eb2b37ce836757fd91f9a82edb859592e71a83503cc6bda",
+                "sha3_384": "b92d75bfccd2347a38b3be2740c3f2cd032b7234b2d0f90cbbe39c7da08af5fdf3168b2fdaa64a9cbd491ffd1db14b4b",
+                "sha3_256": "20e3e6d0a3d8367bd68f4be91ac3edd61b2a1781e89f1ca4fd755f79d47e16d5",
+                "sha3_224": "436ee703a6327746726e382650f46fe8fb518c6c5c21b9e6524e9e41",
+                "sha384": "2236eff6a8ae3ae24dfb0c423fb3f5878b57510ac6c39ac4c4374c36f96541b5451953785594657deff7a31202e7f4ef"
+            }
+        }
+    ],
+    "predicate": {
+        "claimType": "https://github.com/project-oak/transparent-release/endorsement/v2",
+        "issuedOn": "2024-02-28T09:47:12.067000Z"
+    }
+}

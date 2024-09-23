@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -99,15 +100,13 @@ void PopulatePackedListModule(
   // Hash the basename.
   const std::string module_basename = base::UTF16ToUTF8(
       base::i18n::ToLower(module_key.module_path.BaseName().AsUTF16Unsafe()));
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_basename.data()),
-                      module_basename.length(),
-                      &packed_list_module->basename_hash[0]);
+  base::span(packed_list_module->basename_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_basename)));
 
   // Hash the code id.
   const std::string module_code_id = GenerateCodeId(module_key);
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_code_id.data()),
-                      module_code_id.length(),
-                      &packed_list_module->code_id_hash[0]);
+  base::span(packed_list_module->code_id_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_code_id)));
 
   packed_list_module->time_date_stamp =
       CalculateTimeDateStamp(base::Time::Now());
@@ -138,7 +137,7 @@ bool ShouldInsertInBlocklistCache(ModuleBlockingDecision blocking_decision) {
       return true;
   }
 
-  NOTREACHED() << static_cast<int>(blocking_decision);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(blocking_decision);
   return false;
 }
 
@@ -263,7 +262,7 @@ const ModuleBlocklistCacheUpdater::ModuleBlockingState&
 ModuleBlocklistCacheUpdater::GetModuleBlockingState(
     const ModuleInfoKey& module_key) const {
   auto it = module_blocking_states_.find(module_key);
-  DCHECK(it != module_blocking_states_.end());
+  CHECK(it != module_blocking_states_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

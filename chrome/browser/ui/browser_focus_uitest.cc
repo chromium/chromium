@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include "base/files/file_util.h"
@@ -29,6 +34,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -53,10 +59,15 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/scoped_feature_list.h"
 #endif
 
 namespace {
@@ -134,6 +145,72 @@ const int kActionDelayMs = 500;
 const char kSimplePage[] = "/focus/page_with_focus.html";
 const char kStealFocusPage[] = "/focus/page_steals_focus.html";
 const char kTypicalPage[] = "/focus/typical_page.html";
+
+class BrowserFocusBasicTest : public InProcessBrowserTest {
+ public:
+  BrowserFocusBasicTest() {
+    // interactive_ui_tests set `ui_test_utils::BringBrowserWindowToFront()` for
+    // the setup function, which interferes with what the test wants to test so
+    // unset it.
+    set_global_browser_set_up_function(nullptr);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    // For CHROME_HEADLESS, which is currently used for browser tests, native
+    // window occlusion is turned off. Turn it on to match the production
+    // environment.
+    base::FieldTrialParams field_trial_params{
+        { features::kApplyNativeOcclusionToCompositorType.name,
+          features::kApplyNativeOcclusionToCompositorTypeRelease }};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kApplyNativeOcclusionToCompositor, field_trial_params},
+         { features::kAlwaysTrackNativeWindowOcclusionForTest,
+           {} }},
+        /*disabled_features=*/{});
+#endif
+  }
+
+  views::Widget* GetWidgetForBrowser(Browser* browser) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK(browser_view);
+    views::Widget* widget = browser_view->GetWidget();
+    CHECK(widget);
+    return widget;
+  }
+
+  bool IsBrowserActive(Browser* browser) {
+    return GetWidgetForBrowser(browser)->IsActive();
+  }
+
+ private:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+};
+
+// A basic test to check that a newly opened browser window has focus and the
+// focus is on the omnibox.
+IN_PROC_BROWSER_TEST_F(BrowserFocusBasicTest, BrowserFocusedOnCreation) {
+  // Ensure that the initialization of the browser window is completed.
+  ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser()).Wait();
+  // Widget activation happens asynchronously after window creation on some
+  // platforms like Linux so absorb the difference by waiting for the
+  // activation.
+  views::test::WaitForWidgetActive(GetWidgetForBrowser(browser()), true);
+  // Check that when a browser is created, it's active.
+  EXPECT_TRUE(IsBrowserActive(browser()));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+  // Use `chrome::OpenEmptyWindow()` instead of directly creating a `Browser`
+  // instance with `Browser::Create()` and calling `BrowserView::Show()` like
+  // some tests do because this is what the production code does when opening a
+  // new window. The difference is that it makes sure that there is at least one
+  // tab on the window before calling `BrowserView::Show()`.
+  Browser* browser2 = chrome::OpenEmptyWindow(browser()->profile());
+  ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser2).Wait();
+  views::test::WaitForWidgetActive(GetWidgetForBrowser(browser2), true);
+  EXPECT_TRUE(IsBrowserActive(browser2));
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser2, VIEW_ID_OMNIBOX));
+}
 
 class BrowserFocusTest : public InProcessBrowserTest {
  public:
@@ -321,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
 
 // Tabs remember focus with find-in-page box.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocusFindInPage) {
-  // TODO(https://crbug.com/1446127): Re-enable when child widget focus manager
+  // TODO(crbug.com/40268465): Re-enable when child widget focus manager
   // relationship is fixed.
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSMajorVersion() >= 13) {
@@ -451,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
 #define MAYBE_FindFocusTest FindFocusTest
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FindFocusTest) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   const GURL url = embedded_test_server()->GetURL(kTypicalPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -756,17 +833,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 
 // Tests that the location bar is focusable when showing, which is the case in
 // popup windows.
-// TODO(crbug.com/1255472): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PopupLocationBar DISABLED_PopupLocationBar
-#else
-#define MAYBE_PopupLocationBar PopupLocationBar
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_PopupLocationBar) {
-  // TODO (crbug/1520655): Remove the skip once the test is fixed.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO(crbug.com/40794922): Flaky on Linux.
+// TODO(crbug/1520655): Broken since CR2023.
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_PopupLocationBar) {
   Browser* popup_browser = CreateBrowserForPopup(browser()->profile());
 
   // Make sure the popup is in the front. Otherwise the test is flaky.

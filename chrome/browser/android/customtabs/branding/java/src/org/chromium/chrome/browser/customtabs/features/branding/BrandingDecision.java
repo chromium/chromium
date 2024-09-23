@@ -9,12 +9,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Class used to indicate what branding decision needs to make for the embedded app.
- *
- * This is used for histograms and should therefore be treated as append-only.
- * See CustomTabsBrandingDecision in tools/metrics/histograms/enums.xml.
- */
+/** Class used to indicate what branding decision needs to make for the embedded app. */
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
     BrandingDecision.NONE,

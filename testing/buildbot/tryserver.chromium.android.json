@@ -5,9 +5,9 @@
     "gtest_tests": [
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
         "merge": {
@@ -40,16 +40,6 @@
               "caches": "android_31_google_apis_x64"
             }
           },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_heap_unittests",
@@ -57,9 +47,9 @@
       },
       {
         "args": [
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
+          "--recover-devices"
         ],
         "description": "Run with android_31_google_apis_x64",
         "merge": {
@@ -92,72 +82,10 @@
               "caches": "android_31_google_apis_x64"
             }
           },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
-        ],
-        "description": "Run with android_31_google_apis_x64",
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webkit_unit_tests_v2"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "webkit_unit_tests_v2",
-        "swarming": {
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_31_google_apis_x64",
-              "path": ".android_emulator/android_31_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_31_google_apis_x64"
-            }
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "blink_unittests_v2",
-        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
       }
     ]
   },
@@ -176,8 +104,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -194,7 +123,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -216,7 +145,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -228,7 +158,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -250,7 +180,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -262,7 +193,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -287,7 +218,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -304,7 +237,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -329,7 +262,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -346,7 +281,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -367,7 +302,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -379,7 +316,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -400,7 +337,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -412,7 +351,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -437,7 +376,9 @@
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
-          "0"
+          "0",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -449,7 +390,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -474,8 +415,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -492,7 +434,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -517,8 +459,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -535,7 +478,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -557,7 +500,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator --disable-wcg-for-test",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -569,7 +514,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -591,7 +536,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force-online-connection-state-for-indicator --disable-wcg-for-test",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -603,7 +550,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -625,7 +572,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -637,7 +585,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -659,7 +607,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -671,7 +620,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -695,7 +644,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -707,7 +657,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -732,7 +682,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -744,7 +695,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -768,7 +719,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -780,7 +732,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",
@@ -804,7 +756,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -816,7 +769,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "R",
+            "device_os": "RP1A.201105.002",
             "device_os_type": "userdebug",
             "device_type": "flame",
             "os": "Android",

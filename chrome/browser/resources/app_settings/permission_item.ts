@@ -12,26 +12,32 @@ import {AppManagementUserAction} from 'chrome://resources/cr_components/app_mana
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './permission_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import {getCss} from './permission_item.css.js';
+import {getHtml} from './permission_item.html.js';
+import type {ToggleRowElement} from './toggle_row.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-export class AppManagementPermissionItemElement extends PolymerElement {
+export class PermissionItemElement extends CrLitElement {
   static get is() {
     return 'app-management-permission-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The name of the permission, to be displayed to the user.
        */
-      permissionLabel: String,
+      permissionLabel: {type: String},
 
       /**
        * A string version of the permission type. Must be a value of the
@@ -39,109 +45,85 @@ export class AppManagementPermissionItemElement extends PolymerElement {
        */
       permissionType: {
         type: String,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      icon: String,
+      icon: {type: String},
 
       /**
        * If set to true, toggling the permission item will not set the
        * permission in the backend. Call `syncPermission()` to set the
        * permission to reflect the current UI state.
        */
-      syncPermissionManually: Boolean,
+      syncPermissionManually: {type: Boolean},
 
-      app: Object,
+      app: {type: Object},
 
       /**
        * True if the permission type is available for the app.
        */
       available_: {
         type: Boolean,
-        computed: 'isAvailable_(app, permissionType)',
-        reflectToAttribute: true,
-      },
-
-      /**
-       * True if the app is managed or is a sub app.
-       */
-      disabled_: {
-        type: Boolean,
-        computed: 'isDisabled_(app, permissionType)',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  app: App;
-  permissionLabel: string;
-  permissionType: PermissionTypeIndex;
-  icon: string;
-  private syncPermissionManually: boolean;
-  private available_: boolean;
-  private disabled_: boolean;
+  app: App = createDummyApp();
+  permissionLabel: string = '';
+  permissionType: PermissionTypeIndex = 'kUnknown';
+  icon: string = '';
+  private syncPermissionManually: boolean = false;
+  protected available_: boolean = false;
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-  override ready() {
-    super.ready();
+    if (changedProperties.has('app') ||
+        changedProperties.has('permissionType')) {
+      this.available_ = this.isAvailable_();
+    }
+  }
+
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.togglePermission_);
   }
 
-  private isAvailable_(
-      app: App|undefined,
-      permissionType: PermissionTypeIndex|undefined): boolean {
-    if (app === undefined || permissionType === undefined) {
-      return false;
-    }
-
-    return getPermission(app, permissionType) !== undefined;
+  private isAvailable_(): boolean {
+    return getPermission(this.app, this.permissionType) !== undefined;
   }
 
-  private isManaged_(app: App|undefined, permissionType: PermissionTypeIndex):
-      boolean {
-    if (app === undefined || permissionType === undefined ||
-        !this.isAvailable_(app, permissionType)) {
+  protected isManaged_(): boolean {
+    if (!this.isAvailable_()) {
       return false;
     }
 
-    const permission = getPermission(app, permissionType);
+    const permission = getPermission(this.app, this.permissionType);
     assert(permission);
     return permission.isManaged;
   }
 
-  private isDisabled_(app: App|undefined, permissionType: PermissionTypeIndex):
-      boolean {
-    if (app === undefined || permissionType === undefined) {
-      return false;
-    }
-
-    if (app.installReason === InstallReason.kSubApp) {
+  protected isDisabled_(): boolean {
+    if (this.app.installReason === InstallReason.kSubApp) {
       return true;
     }
 
-    return this.isManaged_(app, permissionType);
+    return this.isManaged_();
   }
 
-  private getValue_(
-      app: App|undefined,
-      permissionType: PermissionTypeIndex|undefined): boolean {
-    if (app === undefined || permissionType === undefined) {
-      return false;
-    }
-    return getPermissionValueBool(app, permissionType);
+  protected getValue_(): boolean {
+    return getPermissionValueBool(this.app, this.permissionType);
   }
 
   resetToggle() {
-    const currentValue = this.getValue_(this.app, this.permissionType);
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.setToggle(
-            currentValue);
+    const currentValue = this.getValue_();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.setToggle(
+        currentValue);
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private togglePermission_() {
@@ -276,9 +258,8 @@ export class AppManagementPermissionItemElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-permission-item': AppManagementPermissionItemElement;
+    'app-management-permission-item': PermissionItemElement;
   }
 }
 
-customElements.define(
-    AppManagementPermissionItemElement.is, AppManagementPermissionItemElement);
+customElements.define(PermissionItemElement.is, PermissionItemElement);

@@ -1,0 +1,126 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("intent_helper") {
+  sources = [
+    "arc_intent_helper_mojo_ash.cc",
+    "arc_intent_helper_mojo_ash.h",
+    "arc_settings_service.cc",
+    "arc_settings_service.h",
+    "chrome_arc_intent_helper_delegate.cc",
+    "chrome_arc_intent_helper_delegate.h",
+    "custom_tab_session_impl.cc",
+    "custom_tab_session_impl.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//components/arc",
+    "//components/arc/common",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/language/core/browser",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/onc",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//content/public/browser",
+    "//net",
+    "//ui/aura",
+    "//ui/base",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/paint_preview/buildflags",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_settings_service_unittest.cc" ]
+
+  deps = [
+    ":intent_helper",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/zoom",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/network",
+    "//components/arc:arc_test_support",
+    "//components/language/core/browser",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "arc_settings_service_browsertest.cc",
+    "custom_tab_session_impl_browsertest.cc",
+  ]
+
+  deps = [
+    ":intent_helper",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//components/arc:arc_test_support",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

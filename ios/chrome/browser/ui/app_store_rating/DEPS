@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
-]

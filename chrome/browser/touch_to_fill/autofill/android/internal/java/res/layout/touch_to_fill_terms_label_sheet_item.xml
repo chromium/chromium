@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+ <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/touch_to_fill_terms_label"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/ttf_for_payments_terms_label_margin_top"
+      android:layout_marginHorizontal="@dimen/ttf_for_payments_terms_label_margin_horizontal"
+      android:gravity="center"
+      android:screenReaderFocusable="true"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>

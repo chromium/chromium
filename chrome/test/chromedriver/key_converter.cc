@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/test/chromedriver/key_converter.h"
 
 #include <stddef.h>
@@ -580,7 +585,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     }
 
     // Create the key events.
-    int number_modifiers = std::size(kModifiers);
+    constexpr int number_modifiers = std::size(kModifiers);
     bool necessary_modifiers[number_modifiers];
     for (int j = 0; j < number_modifiers; ++j) {
       necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&

@@ -1,0 +1,90 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ansible") {
+  sources = [
+    "ansible_management_service.cc",
+    "ansible_management_service.h",
+    "ansible_management_service_factory.cc",
+    "ansible_management_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+
+    # TODO(crbug.com/353429421): Remove these after resolving cyclic dependency issue for
+    # obj/chrome/browser/ash/crostini/ansible/ansible/ansible_management_service_factory.o.
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+    "//chromeos/ash/components/dbus:vm_launch_proto",
+    "//chromeos/ash/components/dbus/anomaly_detector:proto",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",
+  ]
+
+  deps = [
+    "//components/prefs",
+    "//dbus",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "ansible_management_test_helper.cc",
+    "ansible_management_test_helper.h",
+    "mock_ansible_management_service.cc",
+    "mock_ansible_management_service.h",
+  ]
+
+  public_deps = [
+    ":ansible",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ansible_management_service_unittest.cc" ]
+
+  deps = [
+    ":ansible",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/crostini/ansible:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/crostini",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

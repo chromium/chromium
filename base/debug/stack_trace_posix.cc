@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/debug/stack_trace.h"
 
 #include <errno.h>
@@ -67,6 +72,7 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/debug/debugger.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -79,16 +85,15 @@
 #include "build/build_config.h"
 
 #if defined(USE_SYMBOLIZE)
-#include "base/third_party/symbolize/symbolize.h"
+#include "base/third_party/symbolize/symbolize.h"  // nogncheck
 
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
-#include "base/debug/dwarf_line_no.h"
+#include "base/debug/dwarf_line_no.h"  // nogncheck
 #endif
 
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -191,34 +196,32 @@ void OutputFrameId(size_t frame_id, BacktraceOutputHandler* handler) {
 }
 #endif  // defined(USE_SYMBOLIZE)
 
-void ProcessBacktrace(const void* const* trace,
-                      size_t size,
-                      const char* prefix_string,
+void ProcessBacktrace(span<const void* const> traces,
+                      cstring_view prefix_string,
                       BacktraceOutputHandler* handler) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
 #if defined(USE_SYMBOLIZE)
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
-  uint64_t* cu_offsets =
-      static_cast<uint64_t*>(alloca(sizeof(uint64_t) * size));
-  GetDwarfCompileUnitOffsets(trace, cu_offsets, size);
+  uint64_t cu_offsets[StackTrace::kMaxTraces] = {};
+  GetDwarfCompileUnitOffsets(traces.data(), cu_offsets, traces.size());
 #endif
 
-  for (size_t i = 0; i < size; ++i) {
-    if (prefix_string)
-      handler->HandleOutput(prefix_string);
+  for (size_t i = 0; i < traces.size(); ++i) {
+    if (!prefix_string.empty())
+      handler->HandleOutput(prefix_string.c_str());
 
     OutputFrameId(i, handler);
     handler->HandleOutput(" ");
-    OutputPointer(trace[i], handler);
+    OutputPointer(traces[i], handler);
     handler->HandleOutput(" ");
 
     char buf[1024] = {'\0'};
 
     // Subtract by one as return address of function may be in the next
     // function when a function is annotated as noreturn.
-    const void* address = static_cast<const char*>(trace[i]) - 1;
+    const void* address = static_cast<const char*>(traces[i]) - 1;
     if (google::Symbolize(const_cast<void*>(address), buf, sizeof(buf))) {
       handler->HandleOutput(buf);
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
@@ -242,18 +245,19 @@ void ProcessBacktrace(const void* const* trace,
 
   // Below part is async-signal unsafe (uses malloc), so execute it only
   // when we are not executing the signal handler.
-  if (in_signal_handler == 0 && IsValueInRangeForNumericType<int>(size)) {
+  if (in_signal_handler == 0 &&
+      IsValueInRangeForNumericType<int>(traces.size())) {
 #if defined(HAVE_DLADDR)
     Dl_info dl_info;
-    for (size_t i = 0; i < size; ++i) {
-      if (prefix_string) {
-        handler->HandleOutput(prefix_string);
+    for (size_t i = 0; i < traces.size(); ++i) {
+      if (!prefix_string.empty()) {
+        handler->HandleOutput(prefix_string.c_str());
       }
 
       OutputValue(i, handler);
       handler->HandleOutput(" ");
 
-      const bool dl_info_found = dladdr(trace[i], &dl_info) != 0;
+      const bool dl_info_found = dladdr(traces[i], &dl_info) != 0;
       if (dl_info_found) {
         const char* last_sep = strrchr(dl_info.dli_fname, '/');
         const char* basename = last_sep ? last_sep + 1 : dl_info.dli_fname;
@@ -262,20 +266,21 @@ void ProcessBacktrace(const void* const* trace,
         handler->HandleOutput("???");
       }
       handler->HandleOutput(" ");
-      OutputPointer(trace[i], handler);
+      OutputPointer(traces[i], handler);
 
       handler->HandleOutput("\n");
     }
     printed = true;
 #else   // defined(HAVE_DLADDR)
-    std::unique_ptr<char*, FreeDeleter> trace_symbols(backtrace_symbols(
-        const_cast<void* const*>(trace), static_cast<int>(size)));
+    std::unique_ptr<char*, FreeDeleter> trace_symbols(
+        backtrace_symbols(const_cast<void* const*>(traces.data()),
+                          static_cast<int>(traces.size())));
     if (trace_symbols.get()) {
-      for (size_t i = 0; i < size; ++i) {
+      for (size_t i = 0; i < traces.size(); ++i) {
         std::string trace_symbol = trace_symbols.get()[i];
         DemangleSymbols(&trace_symbol);
-        if (prefix_string)
-          handler->HandleOutput(prefix_string);
+        if (!prefix_string.empty())
+          handler->HandleOutput(prefix_string.c_str());
         handler->HandleOutput(trace_symbol.c_str());
         handler->HandleOutput("\n");
       }
@@ -286,9 +291,9 @@ void ProcessBacktrace(const void* const* trace,
   }
 
   if (!printed) {
-    for (size_t i = 0; i < size; ++i) {
+    for (const void* const trace : traces) {
       handler->HandleOutput(" [");
-      OutputPointer(trace[i], handler);
+      OutputPointer(trace, handler);
       handler->HandleOutput("]\n");
     }
   }
@@ -916,8 +921,7 @@ class SandboxSymbolizeHelper {
           if (fd >= 0) {
             modules_.emplace(region.path, base::ScopedFD(fd));
           } else {
-            LOG(WARNING) << "Failed to open file: " << region.path
-                         << "\n  Error: " << strerror(errno);
+            PLOG(WARNING) << "Failed to open file: " << region.path;
           }
         }
       }
@@ -1026,38 +1030,50 @@ bool SetStackDumpFirstChanceCallback(bool (*handler)(int, siginfo_t*, void*)) {
 }
 #endif
 
-size_t CollectStackTrace(const void** trace, size_t count) {
+size_t CollectStackTrace(span<const void*> trace) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
 #if defined(NO_UNWIND_TABLES) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // If we do not have unwind tables, then try tracing using frame pointers.
-  return base::debug::TraceStackFramePointers(trace, count, 0);
+  return base::debug::TraceStackFramePointers(trace, 0);
 #elif defined(HAVE_BACKTRACE)
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.
   return base::saturated_cast<size_t>(
-      backtrace(const_cast<void**>(trace), base::saturated_cast<int>(count)));
+      backtrace(const_cast<void**>(trace.data()),
+                base::saturated_cast<int>(trace.size())));
 #else
   return 0;
 #endif
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
+// static
+void StackTrace::PrintMessageWithPrefix(cstring_view prefix_string,
+                                        cstring_view message) {
+  // NOTE: This code MUST be async-signal safe (it's used by in-process
+  // stack dumping signal handler). NO malloc or stdio is allowed here.
+  if (!prefix_string.empty()) {
+    PrintToStderr(prefix_string.c_str());
+  }
+  PrintToStderr(message.c_str());
+}
+
+void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
 // NOTE: This code MUST be async-signal safe (it's used by in-process
 // stack dumping signal handler). NO malloc or stdio is allowed here.
-
 #if defined(HAVE_BACKTRACE)
   PrintBacktraceOutputHandler handler;
-  ProcessBacktrace(trace_, count_, prefix_string, &handler);
+  ProcessBacktrace(addresses(), prefix_string, &handler);
 #endif
 }
 
 #if defined(HAVE_BACKTRACE)
-void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
+void StackTrace::OutputToStreamWithPrefixImpl(
+    std::ostream* os,
+    cstring_view prefix_string) const {
   StreamBacktraceOutputHandler handler(os);
-  ProcessBacktrace(trace_, count_, prefix_string, &handler);
+  ProcessBacktrace(addresses(), prefix_string, &handler);
 }
 #endif
 
@@ -1127,5 +1143,4 @@ char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
 
 }  // namespace internal
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

@@ -18,7 +18,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
 
 import update_histogram_enum
-import update_use_counter_feature_enum
 
 
 USE_COUNTER_MOJOM_PATH = 'third_party/blink/public/mojom/use_counter/'\
@@ -65,19 +64,7 @@ def ReadCssProperties(filename):
 
 
 if __name__ == '__main__':
-  parser = optparse.OptionParser()
-  parser.add_option('--for-dashboard', action='store_true', dest='dashboard',
-                    default=False,
-                    help='Print enum definition formatted for use in uma.py of '
-                    'Chromium dashboard developed at '
-                    'https://github.com/GoogleChrome/chromium-dashboard')
-  options, args = parser.parse_args()
-
-  if options.dashboard:
-    enum_dict = ReadCssProperties(USE_COUNTER_MOJOM_PATH)
-    update_use_counter_feature_enum.PrintEnumForDashboard(enum_dict)
-  else:
-    update_histogram_enum.UpdateHistogramFromDict(
-        'tools/metrics/histograms/enums.xml', 'MappedCSSProperties',
-        ReadCssProperties(USE_COUNTER_MOJOM_PATH), USE_COUNTER_MOJOM_PATH,
-        os.path.basename(__file__))
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml', 'MappedCSSProperties',
+      ReadCssProperties(USE_COUNTER_MOJOM_PATH), USE_COUNTER_MOJOM_PATH,
+      os.path.basename(__file__))

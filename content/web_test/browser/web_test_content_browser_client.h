@@ -20,7 +20,9 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
@@ -162,6 +164,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
           receiver);
 
+  void BindDevicePostureProviderAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::DevicePostureProviderAutomation>
+          receiver);
+
   void BindFedCmAutomation(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::test::mojom::FederatedAuthRequestAutomation>
@@ -170,6 +177,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void BindWebSensorProviderAutomation(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::test::mojom::WebSensorProviderAutomation>
+          receiver);
+
+  void BindWebPressureManagerAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::WebPressureManagerAutomation>
           receiver);
 
   void BindWebTestControlHost(
@@ -186,6 +198,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<FakeBluetoothDelegate> fake_bluetooth_delegate_;
   std::unique_ptr<MockClipboardHost> mock_clipboard_host_;
   std::unique_ptr<MockBadgeService> mock_badge_service_;
+  mojo::UniqueReceiverSet<blink::test::mojom::DevicePostureProviderAutomation>
+      device_posture_provider_managers_;
   std::unique_ptr<WebTestSensorProviderManager> sensor_provider_manager_;
   mojo::UniqueReceiverSet<blink::test::mojom::CookieManagerAutomation>
       cookie_managers_;

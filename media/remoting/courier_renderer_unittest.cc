@@ -25,7 +25,7 @@
 #include "media/remoting/renderer_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 using openscreen::cast::RpcMessenger;
 using testing::_;
@@ -296,7 +296,7 @@ class CourierRendererTest : public testing::Test {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     RunPendingTasks();
   }

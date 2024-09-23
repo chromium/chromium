@@ -5,45 +5,49 @@
 package org.chromium.chrome.browser.prefetch.settings;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** Reads and writes preferences related to preloading. */
-// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("prefetch")
 public class PreloadPagesSettingsBridge {
     /**
+     * @param profile The {@link Profile} associated with the settings.
      * @return The current Preload Pages state (off, standard or extended).
      */
-    public static @PreloadPagesState int getState() {
-        return PreloadPagesSettingsBridgeJni.get().getState();
+    public static @PreloadPagesState int getState(Profile profile) {
+        return PreloadPagesSettingsBridgeJni.get().getState(profile);
     }
 
     /**
      * Sets the current Preload Pages state.
      *
-     * @param mode The desired new Preload Pages state.
+     * @param profile The {@link Profile} associated with the settings.
+     * @param state The desired new Preload Pages state.
      */
-    public static void setState(@PreloadPagesState int state) {
-        PreloadPagesSettingsBridgeJni.get().setState(state);
+    public static void setState(Profile profile, @PreloadPagesState int state) {
+        PreloadPagesSettingsBridgeJni.get().setState(profile, state);
     }
 
     /**
-     * Determines whether the Preload Pages state is controlled by an enterprise
-     * policy.
+     * Determines whether the Preload Pages state is controlled by an enterprise policy.
      *
+     * @param profile The {@link Profile} associated with the settings.
      * @return True if the Preload Pages state is managed.
      */
-    public static boolean isNetworkPredictionManaged() {
-        return PreloadPagesSettingsBridgeJni.get().isNetworkPredictionManaged();
+    public static boolean isNetworkPredictionManaged(Profile profile) {
+        return PreloadPagesSettingsBridgeJni.get().isNetworkPredictionManaged(profile);
     }
 
     @NativeMethods
     public interface Natives {
         @PreloadPagesState
-        int getState();
+        int getState(@JniType("Profile*") Profile profile);
 
-        void setState(@PreloadPagesState int mode);
+        void setState(@JniType("Profile*") Profile profile, @PreloadPagesState int mode);
 
-        boolean isNetworkPredictionManaged();
+        boolean isNetworkPredictionManaged(@JniType("Profile*") Profile profile);
     }
 }

@@ -25,30 +25,31 @@
 
 namespace blink {
 
-scoped_refptr<TransformOperation> SkewTransformOperation::Accumulate(
+TransformOperation* SkewTransformOperation::Accumulate(
     const TransformOperation& other) {
   DCHECK(other.CanBlendWith(*this));
   const auto& skew_other = To<SkewTransformOperation>(other);
-  return SkewTransformOperation::Create(angle_x_ + skew_other.angle_x_,
-                                        angle_y_ + skew_other.angle_y_, type_);
+  return MakeGarbageCollected<SkewTransformOperation>(
+      angle_x_ + skew_other.angle_x_, angle_y_ + skew_other.angle_y_, type_);
 }
 
-scoped_refptr<TransformOperation> SkewTransformOperation::Blend(
+TransformOperation* SkewTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
   DCHECK(!from || CanBlendWith(*from));
 
-  if (blend_to_identity)
-    return SkewTransformOperation::Create(blink::Blend(angle_x_, 0.0, progress),
-                                          blink::Blend(angle_y_, 0.0, progress),
-                                          type_);
+  if (blend_to_identity) {
+    return MakeGarbageCollected<SkewTransformOperation>(
+        blink::Blend(angle_x_, 0.0, progress),
+        blink::Blend(angle_y_, 0.0, progress), type_);
+  }
 
   const SkewTransformOperation* from_op =
       static_cast<const SkewTransformOperation*>(from);
   double from_angle_x = from_op ? from_op->angle_x_ : 0;
   double from_angle_y = from_op ? from_op->angle_y_ : 0;
-  return SkewTransformOperation::Create(
+  return MakeGarbageCollected<SkewTransformOperation>(
       blink::Blend(from_angle_x, angle_x_, progress),
       blink::Blend(from_angle_y, angle_y_, progress), type_);
 }

@@ -8,9 +8,14 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "media/base/audio_glitch_info.h"
+#include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
+#include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -68,6 +73,41 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     size_t dropped_frames = 0u;
   };
 
+  // Corresponds to the MediaStreamTrackAudioStats API.
+  // https://w3c.github.io/mediacapture-extensions/#the-mediastreamtrackaudiostats-interface
+  class PLATFORM_EXPORT AudioFrameStats {
+   public:
+    AudioFrameStats() = default;
+    AudioFrameStats(const AudioFrameStats&) = delete;
+    AudioFrameStats& operator=(const AudioFrameStats&) = delete;
+    ~AudioFrameStats() = default;
+
+    // Updates the stats with information from a new buffer.
+    void Update(const media::AudioParameters& params,
+                base::TimeTicks capture_time,
+                const media::AudioGlitchInfo& glitch_info);
+    // Absorbs stats from an object that contains stats from a more recent
+    // interval. This merges the AverageLatency, MinimumLatency and
+    // MaximumLatency information into this object, and resets it on the |from|
+    // object. |from|'s latency information interval should start where
+    // |this|'s latency information interval ends. The frame counters, frame
+    // durations, and current latency are simply copied from |from|.
+    void Absorb(AudioFrameStats& from);
+
+    // Implementations of the getters in the API.
+    uint64_t DeliveredFrames() const;
+    base::TimeDelta DeliveredFramesDuration() const;
+    uint64_t TotalFrames() const;
+    base::TimeDelta TotalFramesDuration() const;
+    base::TimeDelta Latency() const;
+    base::TimeDelta AverageLatency() const;
+    base::TimeDelta MinimumLatency() const;
+    base::TimeDelta MaximumLatency() const;
+
+   private:
+    AudioFrameStatsAccumulator accumulator_;
+  };
+
   struct CaptureHandle {
     bool IsEmpty() const { return origin.empty() && handle.empty(); }
 
@@ -110,8 +150,17 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   virtual VideoFrameStats GetVideoFrameStats() const {
     // This method is only callable on video tracks.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
+  }
+
+  // Gets the audio frame stats if the platform is an audio track. This also
+  // resets the latency information stored in the track, so that subsequent
+  // calls to TransferAudioFrameStatsTo() will return latency information for
+  // consecutive but non-overlaping intervals.
+  virtual void TransferAudioFrameStatsTo(AudioFrameStats& destination) {
+    // This method is only callable on audio tracks.
+    NOTREACHED_IN_MIGRATION();
   }
 
   virtual CaptureHandle GetCaptureHandle();
@@ -135,7 +184,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // Add an audio sink to the track. This function must only be called for audio
   // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
   // chunk of audio is delivered.
-  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
+  virtual void AddSink(WebMediaStreamAudioSink* sink) {
+    NOTREACHED_IN_MIGRATION();
+  }
   // Add a video sink to track. This function must only be called for video
   // tracks.  The |sink| will receive video track state changes on the main
   // render thread and video frames in the |callback| method on the IO-thread.
@@ -144,7 +195,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
                        const VideoCaptureDeliverFrameCB& callback,
                        MediaStreamVideoSink::IsSecure is_secure,
                        MediaStreamVideoSink::UsesAlpha uses_alpha) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

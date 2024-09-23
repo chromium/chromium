@@ -121,6 +121,10 @@ class CONTENT_EXPORT SynchronousCompositor {
   // Set the memory limit policy of this compositor.
   virtual void SetMemoryPolicy(size_t bytes_limit) = 0;
 
+  // Returns the higher of x or y scroll velocity. Only returns valid value
+  // after begin frame and before DemandDraw of a frame.
+  virtual float GetVelocityInPixelsPerSecond() = 0;
+
   // Called during renderer swap. Should push any relevant up to
   // SynchronousCompositorClient.
   virtual void DidBecomeActive() = 0;

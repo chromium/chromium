@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -33,27 +34,23 @@ class NTPTilesInternalsMessageHandlerClient {
   // False if in a browser mode (e.g. incognito) where tiles aren't supported.
   virtual bool SupportsNTPTiles() = 0;
 
-  // Returns true if the given source is enabled (even if, in practice, none of
-  // the tiles would come from it).
-  virtual bool DoesSourceExist(TileSource source) = 0;
-
   // Creates a new MostVisitedSites based on the context pf the WebUI page.
   virtual std::unique_ptr<ntp_tiles::MostVisitedSites>
   MakeMostVisitedSites() = 0;
 
   // Registers a callback in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void RegisterMessageCallback(
-      base::StringPiece message,
+      std::string_view message,
       base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
   // Invokes a function in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void CallJavascriptFunctionSpan(
-      base::StringPiece name,
+      std::string_view name,
       base::span<const base::ValueView> values) = 0;
 
   // Convenience function for CallJavascriptFunctionSpan().
   template <typename... Arg>
-  void CallJavascriptFunction(base::StringPiece name, const Arg&... arg) {
+  void CallJavascriptFunction(std::string_view name, const Arg&... arg) {
     base::ValueView args[] = {arg...};
     CallJavascriptFunctionSpan(name, args);
   }

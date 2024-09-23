@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
@@ -24,7 +25,9 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  safe_browsing::dmg::MemoryReadStream input(data, size);
+  // SAFETY: libfuzzer guarantees a valid pointer and size pair.
+  safe_browsing::dmg::MemoryReadStream input(
+      UNSAFE_BUFFERS(base::span(data, size)));
   safe_browsing::dmg::UDIFParser udif_parser(&input);
 
   if (!udif_parser.Parse())
@@ -51,8 +54,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           iterator.GetReadStream());
       size_t read_this_pass = 0;
       do {
-        if (!file->Read(buffer.data(), buffer.size(), &read_this_pass))
+        if (!file->Read(buffer, &read_this_pass)) {
           break;
+        }
       } while (read_this_pass != 0);
     }
   }

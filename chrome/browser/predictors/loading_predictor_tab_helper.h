@@ -65,10 +65,6 @@ class LoadingPredictorTabHelper
       network::mojom::RequestDestination request_destination) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
-  // Used by LoadingPredictorPageLoadMetricsObserver.
-  void RecordFirstContentfulPaint(content::RenderFrameHost* render_frame_host,
-                                  base::TimeTicks first_contentful_paint);
-
   void SetLoadingPredictorForTesting(
       base::WeakPtr<LoadingPredictor> predictor) {
     predictor_ = predictor;
@@ -104,8 +100,7 @@ class LoadingPredictorTabHelper
 
     bool has_local_preconnect_predictions_for_current_navigation_ = false;
 
-    // The optimization guide prediction for the current navigation. If set,
-    // this will be cleared on |DocumentOnLoadCompletedInPrimaryMainFrame|.
+    // The optimization guide prediction for the current navigation.
     std::optional<OptimizationGuidePrediction>
         last_optimization_guide_prediction_;
 
@@ -113,6 +108,8 @@ class LoadingPredictorTabHelper
     // order to determine the current state of the navigation.
     base::WeakPtr<DocumentPageDataHolder> document_page_data_holder_;
     base::WeakPtr<NavigationPageDataHolder> navigation_page_data_holder_;
+
+    base::WeakPtr<LoadingPredictor> predictor_;
 
    private:
     friend class base::RefCounted<PageData>;
@@ -155,6 +152,7 @@ class LoadingPredictorTabHelper
   // required to decide if it has remote predictions for the page load.
   void OnOptimizationGuideDecision(
       scoped_refptr<PageData> page_helper,
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& main_frame_url,
       bool should_add_preconnects_to_prediction,
       optimization_guide::OptimizationGuideDecision decision,

@@ -8,38 +8,34 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_statistics.h"
-#include "chrome/browser/profiles/profile_statistics_factory.h"
-#include "chrome/browser/web_data_service_factory.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/profiles/profile_statistics_common.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/credential_store.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "device/fido/cros/credential_store.h"
-#endif
-
 using browsing_data::BrowsingDataCounter;
 
 ProfileStatisticsAggregator::ProfileStatisticsAggregator(
-    Profile* profile,
+    scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
+    autofill::PersonalDataManager* personal_data_manager,
+    bookmarks::BookmarkModel* bookmark_model,
+    history::HistoryService* history_service,
+    scoped_refptr<password_manager::PasswordStoreInterface>
+        profile_password_store,
+    PrefService* pref_service,
+    std::unique_ptr<device::fido::PlatformCredentialStore>
+        platform_credential_store,
     base::OnceClosure done_callback)
-    : profile_(profile),
-      profile_path_(profile_->GetPath()),
+    : autofill_web_data_service_(std::move(autofill_web_data_service)),
+      personal_data_manager_(personal_data_manager),
+      bookmark_model_(bookmark_model),
+      history_service_(history_service),
+      profile_password_store_(profile_password_store),
+      pref_service_(pref_service),
+      platform_credential_store_(std::move(platform_credential_store)),
       done_callback_(std::move(done_callback)) {}
 
 ProfileStatisticsAggregator::~ProfileStatisticsAggregator() {}
@@ -63,51 +59,30 @@ void ProfileStatisticsAggregator::AddCounter(
 
 void ProfileStatisticsAggregator::StartAggregator() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(g_browser_process->profile_manager()->IsValidProfile(profile_));
   profile_category_stats_.clear();
 
   // Cancel tasks.
   counters_.clear();
 
   // Initiate bookmark counting.
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-  AddCounter(std::make_unique<browsing_data::BookmarkCounter>(bookmark_model));
+  AddCounter(std::make_unique<browsing_data::BookmarkCounter>(bookmark_model_));
 
   // Initiate history counting.
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
   AddCounter(std::make_unique<browsing_data::HistoryCounter>(
-      history_service,
+      history_service_,
       browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
       /*sync_service=*/nullptr));
 
-  // Initiate stored sign-in data counting
-  std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
-#if BUILDFLAG(IS_MAC)
-      std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
-          ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
-              profile_));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-      std::make_unique<
-          ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
-#else
-      nullptr;
-#endif
   // Only count local passwords.
   AddCounter(std::make_unique<browsing_data::SigninDataCounter>(
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS),
-      /*account_store=*/nullptr, profile_->GetPrefs(), /*sync_service=*/nullptr,
-      std::move(credential_store)));
+      profile_password_store_,
+      /*account_store=*/nullptr, pref_service_, /*sync_service=*/nullptr,
+      std::move(platform_credential_store_)));
 
   // Initiate autofill counting.
-  scoped_refptr<autofill::AutofillWebDataService> autofill_service =
-      WebDataServiceFactory::GetAutofillWebDataForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
-      autofill_service, /*sync_service=*/nullptr));
+      personal_data_manager_, autofill_web_data_service_,
+      /*sync_service=*/nullptr));
 }
 
 void ProfileStatisticsAggregator::OnCounterResult(
@@ -135,7 +110,7 @@ void ProfileStatisticsAggregator::OnCounterResult(
   } else if (pref_name == browsing_data::prefs::kDeleteFormData) {
     StatisticsCallback(profiles::kProfileStatisticsAutofill, count);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

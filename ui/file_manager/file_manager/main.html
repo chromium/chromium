@@ -8,6 +8,7 @@ found in the LICENSE file.
   <head>
     <title>$i18n{FILEMANAGER_APP_NAME}</title>
     <script src="chrome://file-manager/init_globals.js"></script>
+    <script type="module" src="chrome://file-manager/strings.m.js"></script>
 
     <meta charset="utf-8" name="google" value="notranslate">
     <meta charset="utf-8" name="color-scheme" content="light dark">
@@ -18,7 +19,6 @@ found in the LICENSE file.
     <link rel="stylesheet" href="chrome://theme/typography.css">
     <link rel="stylesheet" href="foreground/css/list.css">
     <link rel="stylesheet" href="foreground/css/table.css">
-    <link rel="stylesheet" href="foreground/css/tree.css">
     <link rel="stylesheet" href="foreground/css/menu.css">
     <link rel="stylesheet" href="foreground/css/combobutton.css">
     <link rel="stylesheet" href="foreground/css/file_manager.css">
@@ -325,13 +325,12 @@ found in the LICENSE file.
       <xf-splitter class="splitter" id="navigation-list-splitter">
         <div class="dialog-navigation-list" slot="splitter-before">
           <div class="dialog-navigation-list-contents" role="navigation">
-            <tree id="directory-tree" role="tree" tabindex="0" files-ng></tree>
           </div>
         </div>
         <div class="dialog-main" slot="splitter-after">
           <div class="dialog-header files-ng" role="contentinfo">
             <div id="location-breadcrumbs" class="breadcrumbs"></div>
-            <div id="read-only-indicator" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
+            <div id="read-only-indicator" role="tooltip" aria-label="$i18n{READONLY_INDICATOR_TOOLTIP}" hidden
                 has-tooltip show-card-tooltip>
               <span id="read-only-icon"></span>
               <span id="read-only-label">$i18n{READ_ONLY_LABEL}</span>

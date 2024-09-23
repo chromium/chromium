@@ -4,6 +4,8 @@
 
 #include "ui/compositor/test/test_compositor_host.h"
 
+#include <windows.h>
+
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -11,8 +13,6 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/win/window_impl.h"
-
-#include <windows.h>
 
 namespace ui {
 

@@ -34,8 +34,12 @@ void DelegatedIdpNetworkRequestManager::FetchConfig(
 void DelegatedIdpNetworkRequestManager::FetchClientMetadata(
     const GURL& endpoint,
     const std::string& client_id,
+    int rp_brand_icon_ideal_size,
+    int rp_brand_icon_minimum_size,
     FetchClientMetadataCallback callback) {
-  delegate_->FetchClientMetadata(endpoint, client_id, std::move(callback));
+  delegate_->FetchClientMetadata(endpoint, client_id, rp_brand_icon_ideal_size,
+                                 rp_brand_icon_minimum_size,
+                                 std::move(callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendAccountsRequest(
@@ -87,6 +91,12 @@ void DelegatedIdpNetworkRequestManager::SendDisconnectRequest(
     DisconnectCallback callback) {
   delegate_->SendDisconnectRequest(disconnect_url, account_hint, client_id,
                                    std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::DownloadAndDecodeImage(
+    const GURL& url,
+    ImageCallback callback) {
+  delegate_->DownloadAndDecodeImage(url, std::move(callback));
 }
 
 }  // namespace content

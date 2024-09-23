@@ -27,6 +27,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_util.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
@@ -48,85 +49,6 @@ static constexpr int kWaitKValue = 1;
 // The number of consecutive highly confident language identification events
 // required to trigger an automatic download of the missing language pack.
 static constexpr int kLanguageIdentificationEventCountThreshold = 3;
-
-// Split the transcription into sentences. Spaces are included in the preceding
-// sentence.
-std::vector<std::string> SplitSentences(const std::string& text,
-                                        const std::string& locale) {
-  std::vector<std::string> sentences;
-  UErrorCode status = U_ZERO_ERROR;
-
-  // Use icu::BreakIterator instead of base::i18n::BreakIterator to avoid flakey
-  // mid-string sentence breaks.
-  icu::BreakIterator* iter =
-      icu::BreakIterator::createSentenceInstance(locale.c_str(), status);
-
-  DCHECK(U_SUCCESS(status))
-      << "ICU could not open a break iterator: " << u_errorName(status) << " ("
-      << status << ")";
-
-  // Set the text to be analyzed.
-  icu::UnicodeString unicode_text = icu::UnicodeString::fromUTF8(text);
-  iter->setText(unicode_text);
-
-  // Iterate over the sentences.
-  int32_t start = iter->first();
-  int32_t end = iter->next();
-  while (end != icu::BreakIterator::DONE) {
-    icu::UnicodeString sentence;
-    unicode_text.extractBetween(start, end, sentence);
-    std::string sentence_string;
-    sentence.toUTF8String(sentence_string);
-    sentences.emplace_back(sentence_string);
-    start = end;
-    end = iter->next();
-  }
-
-  delete iter;
-
-  return sentences;
-}
-
-bool ContainsTrailingSpace(const std::string& str) {
-  return !str.empty() && base::IsAsciiWhitespace(str.back());
-}
-
-std::string RemoveTrailingSpace(const std::string& str) {
-  if (ContainsTrailingSpace(str)) {
-    return str.substr(0, str.length() - 1);
-  }
-
-  return str;
-}
-
-std::string RemovePunctuationToLower(std::string str) {
-  re2::RE2::GlobalReplace(&str, "[[:punct:]]", "");
-
-  return base::ToLowerASCII(str);
-}
-
-std::string GetTranslationCacheKey(const std::string& source_language,
-                                   const std::string& target_language,
-                                   const std::string& transcription) {
-  return base::StrCat({source_language, target_language, "|",
-                       RemovePunctuationToLower(transcription)});
-}
-
-bool IsIdeographicLocale(const std::string& locale) {
-  // Retrieve the script codes used by the given language from ICU. When the
-  // given language consists of two or more scripts, we just use the first
-  // script. The size of returned script codes is always < 8. Therefore, we use
-  // an array of size 8 so we can include all script codes without insufficient
-  // buffer errors.
-  UErrorCode error = U_ZERO_ERROR;
-  UScriptCode script_code[8];
-  int scripts = uscript_getCode(locale.c_str(), script_code,
-                                std::size(script_code), &error);
-
-  return U_SUCCESS(error) && scripts >= 1 &&
-         (script_code[0] == USCRIPT_HAN || script_code[0] == USCRIPT_HIRAGANA ||
-          script_code[0] == USCRIPT_YI || script_code[0] == USCRIPT_KATAKANA);
-}
 
 std::string RemoveLastKWords(const std::string& input) {
   int words_to_remove = kWaitKValue;
@@ -163,8 +85,9 @@ bool IsLanguageInstallable(const std::string& language_code) {
     }
   }
 
-  return base::Contains(speech::GetLiveCaptionEnabledLanguages(),
-                        language_code);
+  return base::Contains(
+      speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
+      language_code);
 }
 
 }  // namespace
@@ -210,8 +133,7 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
     live_caption_controller->OnAudioStreamEnd(context_.get());
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
-      characters_translated_ > 0) {
+  if (media::IsLiveTranslateEnabled() && characters_translated_ > 0) {
     base::UmaHistogramCounts10M(
         "Accessibility.LiveTranslate.CharactersTranslated",
         characters_translated_);
@@ -240,39 +162,15 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
 
   std::string target_language =
       prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+  if (media::IsLiveTranslateEnabled() &&
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(target_language) !=
           l10n_util::GetLanguage(source_language_)) {
-    std::vector<std::string> sentences =
-        SplitSentences(result.transcription, source_language_);
+    auto cache_result = translation_cache_.FindCachedTranslationOrRemaining(
+        result.transcription, source_language_, target_language);
 
-    std::string cached_translation;
-    std::string string_to_translate;
-    bool cached_translation_found = true;
-    for (const std::string& sentence : sentences) {
-      if (cached_translation_found) {
-        std::string trailing_space =
-            ContainsTrailingSpace(sentence)
-                ? sentence.substr(sentence.length() - 1, sentence.length())
-                : std::string();
-        auto translation_cache_key = GetTranslationCacheKey(
-            source_language_, target_language,
-            trailing_space.empty() ? sentence : RemoveTrailingSpace(sentence));
-        auto iter = translation_cache_.find(translation_cache_key);
-        if (iter != translation_cache_.end()) {
-          cached_translation += iter->second;
-          if (!trailing_space.empty()) {
-            cached_translation += trailing_space;
-          }
-
-          continue;
-        }
-        cached_translation_found = false;
-      }
-
-      string_to_translate = base::StrCat({string_to_translate, sentence});
-    }
+    std::string cached_translation = cache_result.second;
+    std::string string_to_translate = cache_result.first;
 
     if (!string_to_translate.empty()) {
       characters_translated_ += string_to_translate.size();
@@ -387,30 +285,19 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
   // translate ideographic punctuation marks.
   if (!IsIdeographicLocale(source_language) ||
       IsIdeographicLocale(target_language)) {
-    auto original_sentences =
-        SplitSentences(original_transcription, source_language);
-    auto translated_sentences = SplitSentences(result, target_language);
     if (is_final) {
-      translation_cache_.clear();
+      translation_cache_.Clear();
     } else {
-      if (original_sentences.size() > 1 &&
-          original_sentences.size() == translated_sentences.size()) {
-        for (size_t i = 0; i < original_sentences.size() - 1; i++) {
-          // Sentences are always cached without the trailing space.
-          std::string sentence = RemoveTrailingSpace(original_sentences[i]);
-          translation_cache_.insert(
-              {GetTranslationCacheKey(source_language, target_language,
-                                      sentence),
-               RemoveTrailingSpace(translated_sentences[i])});
-        }
-      }
+      translation_cache_.InsertIntoCache(original_transcription, result,
+                                         source_language, target_language);
     }
   } else {
     // Append a space after final results when translating from an ideographic
     // to non-ideographic locale. The Speech On-Device API (SODA) automatically
     // prepends a space to recognition events after a final event, but only for
     // non-ideographic locales.
-    // TODO(crbug.com/1426899): Consider moving this to the LiveTranslateController.
+    // TODO(crbug.com/40261536): Consider moving this to the
+    // LiveTranslateController.
     if (is_final) {
       formatted_result += " ";
     }
@@ -467,7 +354,7 @@ std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
     text = greedy_text_stabilizer_->UpdateText(text, is_final);
   }
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled()) {
     translation_characters_erased_ += input_text.length() - text.length();
     partial_result_count_++;
   }

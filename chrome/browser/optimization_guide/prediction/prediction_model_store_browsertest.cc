@@ -111,7 +111,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch(switches::kDisableCheckingUserPermissionsForTesting);
+    cmd->AppendSwitch(switches::kGoogleApiKeyConfigurationCheckOverride);
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceGetModelsURL,
         models_server_
@@ -251,7 +251,15 @@ class PredictionModelStoreBrowserTest
       const PredictionModelStoreBrowserTest&) = delete;
 };
 
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestRegularProfile) {
+// TODO(crbug.com/329617221): Test is flaky on Win, Linux, and Mac ASan bots.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
+#define MAYBE_TestRegularProfile DISABLED_TestRegularProfile
+#else
+#define MAYBE_TestRegularProfile TestRegularProfile
+#endif
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
+                       MAYBE_TestRegularProfile) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
   EXPECT_EQ(model_file_observer.optimization_target(),
@@ -271,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestRegularProfile) {
       kSuccessfulModelVersion, 1);
 }
 
-// TODO(crbug.com/1517460): Re-enable this test
+// TODO(crbug.com/41490438): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_TestIncognitoProfile DISABLED_TestIncognitoProfile
 #else

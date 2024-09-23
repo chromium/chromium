@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.net.MimeTypeFilter;
 
@@ -161,10 +160,8 @@ public class WebApkShareTargetUtil {
             String fileType;
             String fileName;
 
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                fileType = getFileTypeFromContentUri(fileUri);
-                fileName = getFileNameFromContentUri(fileUri);
-            }
+            fileType = getFileTypeFromContentUri(fileUri);
+            fileName = getFileNameFromContentUri(fileUri);
 
             if (fileType == null || fileName == null) {
                 continue;

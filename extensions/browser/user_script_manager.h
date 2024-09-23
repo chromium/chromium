@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -20,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;

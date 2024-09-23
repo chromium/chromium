@@ -22,7 +22,6 @@ bool GraphicsPropertiesShlib::IsSupported(
       return false;
     default:
       NOTREACHED();
-      return false;
   }
 }
 

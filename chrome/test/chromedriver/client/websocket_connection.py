@@ -129,7 +129,7 @@ class WebSocketConnection(object):
         else: # event
           self._events.append(msg)
         if start + timeout <= time.monotonic():
-          raise TimeoutError()
+          raise WebSocketTimeoutException()
     except InternalWebSocketConnectionClosedException:
       raise WebSocketConnectionClosedException()
     # ConnectionAbortedError occurs on Windows if the connection was closed by

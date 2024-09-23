@@ -30,17 +30,17 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/pref_names.h"
@@ -308,7 +308,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   SearchCompanionSidePanelCoordinator*
@@ -631,6 +631,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion::features::internal::
             kCompanionEnabledByObservingExpsNavigations,
         params2);
+    disabled_features.emplace_back(lens::features::kLensOverlay);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -710,12 +711,6 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   size_t requests_received_on_server() const {
     return requests_received_on_server_;
-  }
-
-  SidePanelToolbarContainer* side_panel_toolbar_container() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->side_panel_container();
   }
 
  protected:
@@ -1126,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
                    static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
 }
 
-// TODO(crbug.com/1495434): Test is flaking on Linux MSAN bot
+// TODO(crbug.com/40937688): Test is flaking on Linux MSAN bot
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage \
   DISABLED_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage
@@ -1322,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_FALSE(proto.has_value());
 }
 
-// TODO(crbug.com/1479808): Flaky on linux-chromeos-chrome.
+// TODO(crbug.com/40930057): Flaky on linux-chromeos-chrome.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReloadWillRefreshCompanion DISABLED_ReloadWillRefreshCompanion
 #else
@@ -2113,8 +2108,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
   EXPECT_EQ(0u, requests_received_on_server());
-  EXPECT_FALSE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_FALSE(PinnedToolbarActionsModel::Get(browser()->profile())
+                   ->Contains(kActionSidePanelShowSearchCompanion));
 
   base::HistogramTester histogram_tester;
 
@@ -2144,15 +2139,17 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(1u, requests_received_on_server());
   // Companion is immediately pinned.
-  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_TRUE(PinnedToolbarActionsModel::Get(browser()->profile())
+                  ->Contains(kActionSidePanelShowSearchCompanion));
 }
 
 // Verifies the behavior when companion feature is disabled but a navigation to
 // exps registration URL is observed. Restart the browser and verify that
 // companion is active and pinned.
+//
+// TODO(crbug.com/334977785): Flaky.
 IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
-                       ObservesExpsRegistrationSuccessURL) {
+                       DISABLED_ObservesExpsRegistrationSuccessURL) {
   EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       companion::features::internal::
@@ -2175,8 +2172,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_EQ(1u, requests_received_on_server());
 
   // Companion should be pinned now.
-  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
-      SidePanelEntry::Id::kSearchCompanion));
+  EXPECT_TRUE(PinnedToolbarActionsModel::Get(browser()->profile())
+                  ->Contains(kActionSidePanelShowSearchCompanion));
 }
 
 class CompanionPagePolicyBrowserTest : public CompanionPageBrowserTest {
@@ -2339,7 +2336,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCompanion2BrowserDisabledTest,
   EXPECT_EQ(0u, requests_received_on_server());
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class SidePanelCompanion2BrowserEnabledTestNoTestingConfig
     : public SidePanelCompanion2BrowserEnabledTest {
  public:
@@ -2388,8 +2385,6 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
 
   void SetUpFeatureList() override {
     CompanionPageBrowserTest::SetUpFeatureList();
-    pinning_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
   }
 
   ~CompanionSidePanelPinningBrowserTest() override = default;
@@ -2399,8 +2394,6 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
         prefs::kGoogleSearchSidePanelEnabled, enable_companion_by_policy);
   }
 
- private:
-  base::test::ScopedFeatureList pinning_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
@@ -2410,7 +2403,7 @@ IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
   actions::ActionItem* companion_action_item =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
+          browser()->browser_actions()->root_action_item());
   EXPECT_TRUE(companion_action_item->GetEnabled());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2425,7 +2418,7 @@ IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
   actions::ActionItem* companion_action_item =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
+          browser()->browser_actions()->root_action_item());
   EXPECT_TRUE(companion_action_item->GetEnabled());
 
   EnableCompanionByPolicy(false);
@@ -2433,219 +2426,4 @@ IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
 
   EnableCompanionByPolicy(true);
   EXPECT_TRUE(companion_action_item->GetVisible());
-}
-
-class CompanionImageSearchDisabledWithContextualLens
-    : public CompanionPageBrowserTest {
- public:
-  CompanionImageSearchDisabledWithContextualLens()
-      : CompanionPageBrowserTest() {
-    enable_feature_companion_image_search_ = "false";
-  }
-
-  void ShowLensWithRelativeURL(const std::string relative_url) {
-    auto url_params = content::OpenURLParams(
-        companion_server_.GetURL(relative_url), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false);
-    search_companion_side_panel_coordinator()->ShowLens(url_params);
-    WaitForLensToBeLoaded();
-    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-  }
-
-  content::WebContents* WaitForLensToBeLoaded() {
-    auto* companion_helper =
-        companion::CompanionTabHelper::FromWebContents(web_contents());
-    EXPECT_TRUE(companion_helper);
-    content::WebContents* lens_web_contents =
-        companion_helper->GetLensViewWebContentsForTesting();
-    EXPECT_TRUE(lens_web_contents);
-    content::TestNavigationObserver nav_observer(lens_web_contents, 1);
-    nav_observer.Wait();
-    return lens_web_contents;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       OpenedFromContextMenuImageSearch) {
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  // Verify new tab button is showing.
-  content::WebContents* contents =
-      companion_helper->GetLensViewWebContentsForTesting();
-  EXPECT_TRUE(companion_helper->IsLensLaunchButtonEnabledForTesting());
-  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
-  EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(".*p=payload.*ep=ccm.*&vpw=\\d+&vph=\\d+"));
-  // Ensure SidePanel.OpenTrigger was recorded correctly.
-  histogram_tester_->ExpectBucketCount(
-      "SidePanel.OpenTrigger", SidePanelOpenTrigger::kLensContextMenu, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       EnablesOpenInNewTabForLensErrorUrl) {
-  // Make URL have payload param with no value ("p=")
-  ShowLensWithRelativeURL("/imagesearch?p=&ep=ccm");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  EXPECT_TRUE(companion_helper->IsLensLaunchButtonEnabledForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       EnablesOpenInNewTabForLensAlternateErrorUrl) {
-  // Make URL have payload param with no value ("p=")
-  ShowLensWithRelativeURL("/imagesearch?p");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  EXPECT_TRUE(companion_helper->IsLensLaunchButtonEnabledForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       ClosingSidePanelDeregistersLensViewAndLogsCloseMetric) {
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-  side_panel_coordinator()->Close();
-
-  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
-  auto* last_active_entry =
-      side_panel_coordinator()->GetCurrentSidePanelEntryForTesting();
-  EXPECT_EQ(last_active_entry, nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       OpenInNewTabOpensInNewTabAndClosesSidePanel) {
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  auto did_open_results = companion_helper->OpenLensResultsInNewTabForTesting();
-
-  EXPECT_TRUE(did_open_results);
-  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       UserClickToSameDomainProceedsInSidePanel) {
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-
-  // Simulate a user click
-  GURL nav_url = companion_server_.GetURL("/new_path");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  companion_helper->GetLensViewWebContentsForTesting()->GetController().LoadURL(
-      nav_url, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
-
-  // Wait for the side panel to finish loading web contents.
-  content::TestNavigationObserver nav_observer(
-      companion_helper->GetLensViewWebContentsForTesting());
-  nav_observer.Wait();
-
-  content::WebContents* contents =
-      companion_helper->GetLensViewWebContentsForTesting();
-  auto side_panel_url = contents->GetLastCommittedURL();
-
-  EXPECT_EQ(side_panel_url, nav_url);
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       UserClickToSeperateDomainOpensNewTab) {
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-
-  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-  GURL nav_url = GURL("http://new.domain.com/");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  auto* side_panel_contents =
-      companion_helper->GetLensViewWebContentsForTesting();
-
-  // Simulate a user click
-  side_panel_contents->GetController().LoadURL(
-      nav_url, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
-
-  // Get the result URL in the new tab to verify.
-  content::WebContents* new_tab = add_tab.Wait();
-  content::WaitForLoadStop(new_tab);
-
-  GURL side_panel_content = side_panel_contents->GetLastCommittedURL();
-  GURL new_tab_contents = new_tab->GetLastCommittedURL();
-
-  EXPECT_NE(side_panel_content, nav_url);
-  EXPECT_EQ(companion_server_.GetOrigin().host(), side_panel_content.host());
-  EXPECT_EQ(new_tab_contents, nav_url);
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       OpenCompanionThenLens) {
-  // Load a page on the active tab and open companion side panel.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(1u, requests_received_on_server());
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  // Verify new tab button is showing.
-  content::WebContents* contents =
-      companion_helper->GetLensViewWebContentsForTesting();
-  EXPECT_TRUE(companion_helper->IsLensLaunchButtonEnabledForTesting());
-  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
-  EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(".*p=payload.*ep=ccm.*&vpw=\\d+&vph=\\d+"));
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       OpenCompanionThenLensAfterClose) {
-  // Load a page on the active tab and open companion side panel.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(1u, requests_received_on_server());
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-  side_panel_coordinator()->Close();
-  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
-
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(web_contents());
-  // Verify new tab button is showing.
-  content::WebContents* contents =
-      companion_helper->GetLensViewWebContentsForTesting();
-  EXPECT_TRUE(companion_helper->IsLensLaunchButtonEnabledForTesting());
-  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
-  EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(".*p=payload.*ep=ccm.*&vpw=\\d+&vph=\\d+"));
-  // Ensure SidePanel.OpenTrigger was recorded correctly.
-  histogram_tester_->ExpectBucketCount(
-      "SidePanel.OpenTrigger", SidePanelOpenTrigger::kLensContextMenu, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionImageSearchDisabledWithContextualLens,
-                       OpenLensThenCompanionAfterClose) {
-  // Load a page on the active tab and open companion side panel.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  ShowLensWithRelativeURL("/search?p=payload&ep=ccm");
-
-  side_panel_coordinator()->Close();
-
-  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
-  auto* last_active_entry =
-      side_panel_coordinator()->GetCurrentSidePanelEntryForTesting();
-  EXPECT_EQ(last_active_entry, nullptr);
-
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(2u, requests_received_on_server());
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
 }

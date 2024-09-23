@@ -4,6 +4,8 @@
 
 #include "components/user_notes/storage/user_note_database.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "sql/error_delegate_util.h"
@@ -95,7 +97,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
       DCHECK_EQ(3, statement.ColumnCount());
 
       std::string id = statement.ColumnString(0);
-      base::StringPiece string_piece(id);
+      std::string_view string_piece(id);
       uint64_t high = 0;
       uint64_t low = 0;
       if (!base::HexStringToUInt64(string_piece.substr(0, 16), &high) ||
@@ -288,7 +290,7 @@ bool UserNoteDatabase::UpdateNote(std::unique_ptr<UserNote> model,
     return false;
 
   // Only the text of the note body can be modified.
-  // TODO(crbug.com/1313967): This will need to be updated if in the future we
+  // TODO(crbug.com/40832588): This will need to be updated if in the future we
   // wish to support changing the target text.
   sql::Statement update_notes_body(db_.GetCachedStatement(
       SQL_FROM_HERE, "UPDATE notes_body SET plain_text = ? WHERE note_id = ?"));

@@ -12,6 +12,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 
@@ -43,7 +44,8 @@ void DeskTextfield::CommitChanges(views::Widget* widget) {
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-gfx::Size DeskTextfield::CalculatePreferredSize() const {
+gfx::Size DeskTextfield::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const std::u16string& text = GetText();
   int width = 0;
   int height = 0;
@@ -69,7 +71,7 @@ std::u16string DeskTextfield::GetTooltipText(const gfx::Point& p) const {
 
 void DeskTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetAccessibleName());
+  node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
 }
 
 ui::Cursor DeskTextfield::GetCursor(const ui::MouseEvent& event) {
@@ -84,10 +86,7 @@ void DeskTextfield::OnFocus() {
 void DeskTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   SystemTextfield::OnBlur();
-  // Give user indication for the quick activatable view.
-  if (!use_default_focus_manager_) {
-    SetShowBackground(true);
-  }
+
   // Avoid having the focus restored to the same DeskNameView when the desk bar
   // widget is refocused. Use a post task to avoid calling
   // `FocusManager::SetStoredFocusView()` while `FocusManager::ClearFocus()` is
@@ -112,27 +111,6 @@ void DeskTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
 void DeskTextfield::OnDragExited() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnDragExited();
-}
-
-views::View* DeskTextfield::GetView() {
-  return this;
-}
-
-void DeskTextfield::MaybeActivateFocusedView() {
-  RequestFocus();
-}
-
-void DeskTextfield::MaybeCloseFocusedView(bool primary_action) {}
-
-void DeskTextfield::MaybeSwapFocusedView(bool right) {}
-
-void DeskTextfield::OnFocusableViewFocused() {
-  SetShowFocusRing(true);
-}
-
-void DeskTextfield::OnFocusableViewBlurred() {
-  SetShowBackground(false);
-  SetShowFocusRing(false);
 }
 
 BEGIN_METADATA(DeskTextfield)

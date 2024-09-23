@@ -1,0 +1,39 @@
+caption: Block automatic fullscreen on these sites
+desc: |-
+  For security reasons, the
+  <ph name="REQUEST_FULLSCREEN_API_NAME">requestFullscreen()</ph> web API
+  requires a prior user gesture ("transient activation") to be called or will
+  otherwise fail. Users' personal settings may allow certain origins to call
+  this API without a prior user gesture, as described in
+  <ph name="AUTOMATIC_FULLSCREEN_HELP_URL">https://chromestatus.com/feature/6218822004768768</ph>.
+
+  This policy supersedes users' personal settings and blocks matching origins
+  from calling the API without a prior user gesture.
+
+  For detailed information on valid url patterns, please see
+  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+  Origins matching both blocked and allowed policy patterns will be blocked.
+  Origins not specified by policy nor user settings will require a prior user
+  gesture to call this API.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- file://third_party/blink/renderer/core/fullscreen/OWNERS
+- msw@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:124-
+- chrome_os:124-
+tags: []
+type: list

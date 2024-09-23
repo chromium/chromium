@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "media/parsers/vp9_parser.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {

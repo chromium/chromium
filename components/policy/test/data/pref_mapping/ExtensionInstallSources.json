@@ -16,7 +16,11 @@
           ]
         },
         "prefs": {
-          "extensions.allowed_install_sites": {}
+          "extensions.allowed_install_sites": {
+            "value": [
+              "https://www.corp.monkey.net/*"
+            ]
+          }
         }
       }
     ]

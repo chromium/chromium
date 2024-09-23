@@ -27,6 +27,11 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_filter_primitive.h"
 
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_diffuse_lighting_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_drop_shadow_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_flood_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_specular_lighting_element.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 
 namespace blink {
@@ -86,9 +91,11 @@ void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutSVGFilterPrimitive::UpdateLayout() {
+SVGLayoutResult LayoutSVGFilterPrimitive::UpdateSVGLayout(
+    const SVGLayoutInfo&) {
   NOT_DESTROYED();
   ClearNeedsLayout();
+  return {};
 }
 
 }  // namespace blink

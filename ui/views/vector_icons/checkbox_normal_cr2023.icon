@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug/1399913): Remove this file and move code into checkbox_active.icon once CR2023 is live.
+// TODO(crbug.com/40062154): Remove this file and move code into checkbox_active.icon once CR2023 is live.
 
 CANVAS_DIMENSIONS, 16,
 

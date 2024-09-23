@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MESSAGING_CLIENT_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
@@ -55,6 +56,7 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                       mojom::blink::PushSubscriptionOptionsPtr options,
                       bool user_gesture,
                       std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+                      mojom::blink::ManifestRequestResult result,
                       const KURL& manifest_url,
                       mojom::blink::ManifestPtr manifest);
 

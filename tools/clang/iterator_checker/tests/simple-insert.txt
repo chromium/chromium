@@ -1,0 +1,7 @@
+simple-insert.cpp:25:7: error: [iterator-checker] Potentially invalid iterator used.
+  if (it != std::end(v)) {
+      ^
+simple-insert.cpp:36:29: error: [iterator-checker] Potentially iterator mismatch.
+  v1.insert(it, v2.begin(), v1.end());
+                            ^
+2 errors generated.

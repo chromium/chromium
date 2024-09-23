@@ -4,11 +4,14 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
@@ -25,6 +28,16 @@ namespace gl::init {
 // EGL_KHR_fence_sync extension. It's used to provide Skia ways of
 // synchronization on platforms that does not have GL fences but support EGL
 namespace {
+
+// If enabled, adds a delay to GL program link whose value is given by the
+// feature param. Used for an ablation study.
+BASE_FEATURE(kAddDelayToGLProgramLink,
+             "AddDelayToGLProgramLink",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kGLProgramLinkDelayMicroseconds{
+    &kAddDelayToGLProgramLink, /*name=*/"GLProgramLinkDelayMicroseconds",
+    /*default_value=*/1000};
+
 struct EGLFenceData {
   EGLSync sync;
   EGLDisplay display;
@@ -34,10 +47,19 @@ GLsync glFenceSyncEmulateEGL(GLenum condition, GLbitfield flags) {
   DCHECK(condition == GL_SYNC_GPU_COMMANDS_COMPLETE);
   DCHECK(flags == 0);
 
+  // Prefer EGL_ANGLE_global_fence_sync as it guarantees synchronization with
+  // past submissions from all contexts, rather than the current context.
+  gl::GLContext* context = gl::GLContext::GetCurrent();
+  gl::GLDisplayEGL* display = context ? context->GetGLDisplayEGL() : nullptr;
+  const EGLenum syncType =
+      display && display->ext->b_EGL_ANGLE_global_fence_sync
+          ? EGL_SYNC_GLOBAL_FENCE_ANGLE
+          : EGL_SYNC_FENCE_KHR;
+
   init::EGLFenceData* data = new EGLFenceData;
 
   data->display = eglGetCurrentDisplay();
-  data->sync = eglCreateSyncKHR(data->display, EGL_SYNC_FENCE_KHR, nullptr);
+  data->sync = eglCreateSyncKHR(data->display, syncType, nullptr);
 
   return reinterpret_cast<GLsync>(data);
 }
@@ -70,7 +92,7 @@ GLenum glClientWaitSyncEmulateEGL(GLsync sync,
       return GL_WAIT_FAILED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -90,7 +112,7 @@ void glWaitSyncEmulateEGL(GLsync sync, GLbitfield flags, GLuint64 timeout) {
 }
 
 GLboolean glIsSyncEmulateEGL(GLsync sync) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -151,6 +173,55 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_impl(
   } else {
     return func;
   }
+}
+
+template <typename R, typename... Args>
+GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)>
+bind_timed_compile_function(R(GL_BINDING_CALL* func)(GLuint shader, Args...),
+                            glGetShaderivProc get_shader_iv,
+                            gl::ProgressReporter* progress_reporter) {
+  // Don't wrap missing functions.
+  if (!func) {
+    return nullptr;
+  }
+
+  return [func, get_shader_iv, progress_reporter](GLuint shader,
+                                                  Args... args) -> R {
+    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrCompileShaderUs");
+
+    func(shader, args...);
+
+    GLint compile_result = 0;
+    get_shader_iv(shader, GL_COMPILE_STATUS, &compile_result);
+  };
+}
+
+template <typename R, typename... Args>
+GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)> bind_timed_link_function(
+    R(GL_BINDING_CALL* func)(GLuint program, Args...),
+    glGetProgramivProc get_program_iv,
+    gl::ProgressReporter* progress_reporter) {
+  // Don't wrap missing functions.
+  if (!func) {
+    return nullptr;
+  }
+
+  return [func, get_program_iv, progress_reporter](GLuint program,
+                                                   Args... args) -> R {
+    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrLinkProgramUs");
+
+    if (base::FeatureList::IsEnabled(kAddDelayToGLProgramLink)) {
+      base::PlatformThread::Sleep(
+          base::Microseconds(kGLProgramLinkDelayMicroseconds.Get()));
+    }
+
+    func(program, args...);
+
+    GLint compile_result = 0;
+    get_program_iv(program, GL_LINK_STATUS, &compile_result);
+  };
 }
 
 // Call can be dropped for tests that setup null draw gl bindings.
@@ -238,29 +309,20 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   gl::ProcsGL* gl = &gl::g_current_gl_driver->fn;
   gl::GLApi* api = gl::g_current_gl_context;
 
-  GrGLStandard standard =
-      version_info.is_es ? kGLES_GrGLStandard : kGL_GrGLStandard;
+  GrGLStandard standard = kGLES_GrGLStandard;
 
   // Depending on the advertised version and extensions, skia checks for
   // existence of entrypoints. However some of those we don't yet handle in
   // gl_bindings, so we need to fake the version to the maximum fully supported
-  // by the bindings (GL 4.1 or ES 3.0), and blocklist extensions that skia
-  // handles but bindings don't.
+  // by the bindings (ES 3.0), and blocklist extensions that skia handles but
+  // bindings don't.
   // TODO(piman): add bindings for missing entrypoints.
   GrGLFunction<GrGLGetStringFn> get_string;
-  const bool apply_version_override =
-      version_info.IsAtLeastGL(4, 2) || version_info.IsAtLeastGLES(3, 1);
+  const bool apply_version_override = version_info.IsAtLeastGLES(3, 1);
 
-  if (apply_version_override || version_info.IsVersionSubstituted()) {
+  if (apply_version_override) {
     GLVersionInfo::VersionStrings version;
-    if (version_info.IsVersionSubstituted()) {
-      version = version_info.GetFakeVersionStrings(version_info.major_version,
-                                                   version_info.minor_version);
-    } else if (version_info.is_es) {
-      version = version_info.GetFakeVersionStrings(3, 0);
-    } else {
-      version = version_info.GetFakeVersionStrings(4, 1);
-    }
+    version = version_info.GetFakeVersionStrings(3, 0);
 
     get_string = [version](GLenum name) {
       return GetStringHook(version.gl_version, version.glsl_version, name);
@@ -271,6 +333,12 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 
   auto get_stringi = bind_with_api(&gl::GLApi::glGetStringiFn, api);
   auto get_integerv = bind_with_api(&gl::GLApi::glGetIntegervFn, api);
+
+  auto timed_compile_shader = bind_timed_compile_function(
+      gl->glCompileShaderFn, gl->glGetShaderivFn, progress_reporter);
+
+  auto timed_link_program = bind_timed_link_function(
+      gl->glLinkProgramFn, gl->glGetProgramivFn, progress_reporter);
 
   GrGLExtensions extensions;
   if (!extensions.init(standard, get_string, get_stringi, get_integerv)) {
@@ -308,7 +376,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(ClearTexImage);
   BIND(ClearTexSubImage);
   BIND(ColorMask);
-  BIND(CompileShader, Slow);
+  functions->fCompileShader = timed_compile_shader;
   BIND(CompressedTexImage2D, Slow, NeedFlushOnMac);
   BIND(CompressedTexSubImage2D, Slow);
   BIND(CopyBufferSubData);
@@ -384,7 +452,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetUniformLocation);
   BIND(IsTexture);
   BIND(LineWidth);
-  BIND(LinkProgram, Slow);
+  functions->fLinkProgram = timed_link_program;
   BIND(MapBuffer);
 
   // GL 4.3 or GL_ARB_multi_draw_indirect or ES+GL_EXT_multi_draw_indirect
@@ -669,28 +737,15 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(WaitSync);
   BIND(DeleteSync);
 
-  if (!gl->glFenceSyncFn) {
-    // NOTE: Skia uses the same function pointers without APPLE suffix
-#if !defined(USE_EGL)
-    if (extensions.has("GL_APPLE_sync")) {
-      BIND_EXTENSION(FenceSync, FenceSyncAPPLE);
-      BIND_EXTENSION(IsSync, IsSyncAPPLE);
-      BIND_EXTENSION(ClientWaitSync, ClientWaitSyncAPPLE);
-      BIND_EXTENSION(WaitSync, WaitSyncAPPLE);
-      BIND_EXTENSION(DeleteSync, DeleteSyncAPPLE);
-    }
-#else
-    if (GetDefaultDisplayEGL()->ext->b_EGL_KHR_fence_sync) {
-      // Emulate APPLE_sync via egl
-      extensions.add("GL_APPLE_sync");
+  if (!gl->glFenceSyncFn && GetDefaultDisplayEGL()->ext->b_EGL_KHR_fence_sync) {
+    // Emulate APPLE_sync via egl
+    extensions.add("GL_APPLE_sync");
 
-      functions->fFenceSync = glFenceSyncEmulateEGL;
-      functions->fIsSync = glIsSyncEmulateEGL;
-      functions->fClientWaitSync = glClientWaitSyncEmulateEGL;
-      functions->fWaitSync = glWaitSyncEmulateEGL;
-      functions->fDeleteSync = glDeleteSyncEmulateEGL;
-    }
-#endif  // USE_EGL
+    functions->fFenceSync = glFenceSyncEmulateEGL;
+    functions->fIsSync = glIsSyncEmulateEGL;
+    functions->fClientWaitSync = glClientWaitSyncEmulateEGL;
+    functions->fWaitSync = glWaitSyncEmulateEGL;
+    functions->fDeleteSync = glDeleteSyncEmulateEGL;
   }
 
   // Skia can fall back to GL_NV_fence if GLsync objects are not available.

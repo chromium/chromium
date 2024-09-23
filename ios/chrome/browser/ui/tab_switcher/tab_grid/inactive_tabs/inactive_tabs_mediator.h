@@ -9,18 +9,20 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
 class TabsCloser;
-@class SnapshotStorage;
+@class SnapshotStorageWrapper;
 @protocol TabCollectionConsumer;
 class WebStateList;
 
 // This mediator provides data to the Inactive Tabs grid and handles
 // interactions.
-@interface InactiveTabsMediator
-    : NSObject <GridCommands, GridToolbarsConfigurationProvider>
+@interface InactiveTabsMediator : NSObject <GridCommands,
+                                            GridToolbarsConfigurationProvider,
+                                            GridViewControllerMutator>
 
 // `consumer` receives `webStateList` and Inactive Tabs info updates.
 @property(nonatomic, weak) id<TabCollectionConsumer, InactiveTabsInfoConsumer>
@@ -33,7 +35,7 @@ class WebStateList;
 // - `tabsCloser`: the object used to implement "close all" and "undo".
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-                     snapshotStorage:(SnapshotStorage*)snapshotStorage
+                     snapshotStorage:(SnapshotStorageWrapper*)snapshotStorage
                           tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser
     NS_DESIGNATED_INITIALIZER;
 

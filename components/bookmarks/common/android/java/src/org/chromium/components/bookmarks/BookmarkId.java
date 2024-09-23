@@ -13,9 +13,6 @@ import org.jni_zero.CalledByNative;
 public class BookmarkId {
     public static final int INVALID_FOLDER_ID = -2;
     public static final int INVALID_ID = -1;
-    public static final int SHOPPING_FILTER_ID = -3;
-    public static final BookmarkId SHOPPING_FOLDER =
-            new BookmarkId(SHOPPING_FILTER_ID, BookmarkType.NORMAL);
 
     private static final String LOG_TAG = "BookmarkId";
     private static final char TYPE_PARTNER = 'p';

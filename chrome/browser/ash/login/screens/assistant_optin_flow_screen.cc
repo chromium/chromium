@@ -31,12 +31,14 @@ bool g_libassistant_enabled = false;
 
 // static
 std::string AssistantOptInFlowScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 AssistantOptInFlowScreen::AssistantOptInFlowScreen(

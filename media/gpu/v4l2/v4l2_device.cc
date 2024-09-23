@@ -6,23 +6,23 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libdrm/drm_fourcc.h>
 #include <linux/media.h>
+#include <linux/videodev2.h>
 #include <poll.h>
+#include <string.h>
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <set>
 
-#include <libdrm/drm_fourcc.h>
-#include <linux/videodev2.h>
-#include <string.h>
-#include <sys/mman.h>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -33,7 +33,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "ui/gl/egl_util.h"
 
 namespace media {
 
@@ -116,7 +115,7 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   auto it = queues_.find(buf_type);
-  DCHECK(it != queues_.end());
+  CHECK(it != queues_.end(), base::NotFatalUntil::M130);
   queues_.erase(it);
 }
 
@@ -130,7 +129,7 @@ bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
     return false;
   }
 
-  if (!OpenDevicePath(path, type)) {
+  if (!OpenDevicePath(path)) {
     VLOGF(1) << "Failed opening " << path;
     return false;
   }
@@ -142,6 +141,10 @@ bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
   }
 
   return true;
+}
+
+bool V4L2Device::IsValid() {
+  return device_poll_interrupt_fd_.is_valid();
 }
 
 std::string V4L2Device::GetDriverName() {
@@ -402,70 +405,6 @@ bool V4L2Device::CanCreateEGLImageFrom(const Fourcc fourcc) const {
                         V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt()));
 }
 
-EGLImageKHR V4L2Device::CreateEGLImage(EGLDisplay egl_display,
-                                       EGLContext /* egl_context */,
-                                       GLuint texture_id,
-                                       const gfx::Size& size,
-                                       unsigned int buffer_index,
-                                       const Fourcc fourcc,
-                                       gfx::NativePixmapHandle handle) const {
-  DVLOGF(3);
-
-  if (!CanCreateEGLImageFrom(fourcc)) {
-    VLOGF(1) << "Unsupported V4L2 pixel format";
-    return EGL_NO_IMAGE_KHR;
-  }
-
-  // Number of components, as opposed to the number of V4L2 planes, which is
-  // just a buffer count.
-  const size_t num_planes = handle.planes.size();
-  DCHECK_LE(num_planes, 3u);
-
-  std::vector<EGLint> attrs;
-  attrs.push_back(EGL_WIDTH);
-  attrs.push_back(size.width());
-  attrs.push_back(EGL_HEIGHT);
-  attrs.push_back(size.height());
-  attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
-  attrs.push_back(V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt()));
-
-  for (size_t plane = 0; plane < num_planes; ++plane) {
-    attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT + plane * 3);
-    attrs.push_back(handle.planes[plane].fd.get());
-    attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT + plane * 3);
-    attrs.push_back(handle.planes[plane].offset);
-    attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT + plane * 3);
-    attrs.push_back(handle.planes[plane].stride);
-  }
-
-  attrs.push_back(EGL_NONE);
-
-  EGLImageKHR egl_image = eglCreateImageKHR(
-      egl_display, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT, NULL, &attrs[0]);
-  if (egl_image == EGL_NO_IMAGE_KHR) {
-    VLOGF(1) << "Failed creating EGL image: " << ui::GetLastEGLErrorString();
-    return egl_image;
-  }
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id);
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image);
-
-  return egl_image;
-}
-
-EGLBoolean V4L2Device::DestroyEGLImage(EGLDisplay egl_display,
-                                       EGLImageKHR egl_image) const {
-  DVLOGF(3);
-  EGLBoolean result = eglDestroyImageKHR(egl_display, egl_image);
-  if (result != EGL_TRUE) {
-    LOG(WARNING) << "Destroy EGLImage failed.";
-  }
-  return result;
-}
-
-GLenum V4L2Device::GetTextureTarget() const {
-  return GL_TEXTURE_EXTERNAL_OES;
-}
-
 std::vector<uint32_t> V4L2Device::PreferredInputFormat(Type type) const {
   if (type == Type::kEncoder) {
     return {V4L2_PIX_FMT_NV12M, V4L2_PIX_FMT_NV12};
@@ -520,7 +459,7 @@ std::vector<uint32_t> V4L2Device::GetSupportedImageProcessorPixelformats(
   Type type = Type::kImageProcessor;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -544,7 +483,7 @@ V4L2Device::GetSupportedDecodeProfiles(
   Type type = Type::kDecoder;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -565,7 +504,7 @@ V4L2Device::GetSupportedEncodeProfiles() {
   Type type = Type::kEncoder;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -664,6 +603,10 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;
+
+      profile.scalability_modes = GetSupportedScalabilityModesForV4L2Codec(
+          base::BindRepeating(&V4L2Device::Ioctl, this), video_codec_profile);
+
       profiles.push_back(profile);
 
       DVLOGF(3) << "Found encoder profile " << GetProfileName(profile.profile)
@@ -895,7 +838,7 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
   return true;
 }
 
-bool V4L2Device::OpenDevicePath(const std::string& path, Type type) {
+bool V4L2Device::OpenDevicePath(const std::string& path) {
   DCHECK(!device_fd_.is_valid());
 
   device_fd_.reset(
@@ -956,7 +899,7 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
 
   Devices devices;
   for (const auto& path : candidate_paths) {
-    if (!OpenDevicePath(path, type)) {
+    if (!OpenDevicePath(path)) {
       continue;
     }
     const auto supported_pixelformats = EnumerateSupportedPixFmts(

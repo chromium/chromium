@@ -50,10 +50,9 @@ void WebViewScriptsJavaScriptFeature::SetScripts(
   config_provider.UpdateScripts();
 }
 
-const std::vector<const WebViewScriptsJavaScriptFeature::FeatureScript>
+std::vector<WebViewScriptsJavaScriptFeature::FeatureScript>
 WebViewScriptsJavaScriptFeature::GetScripts() const {
-  std::vector<const WebViewScriptsJavaScriptFeature::FeatureScript>
-      feature_scripts;
+  std::vector<WebViewScriptsJavaScriptFeature::FeatureScript> feature_scripts;
   if (all_frames_script_) {
     feature_scripts.push_back(
         JavaScriptFeature::FeatureScript::CreateWithString(

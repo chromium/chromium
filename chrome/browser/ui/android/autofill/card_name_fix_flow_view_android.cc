@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 
-#include "chrome/android/chrome_jni_headers/AutofillNameFixFlowBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutofillNameFixFlowBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -22,12 +24,10 @@ CardNameFixFlowViewAndroid::CardNameFixFlowViewAndroid(
     content::WebContents* web_contents)
     : controller_(controller), web_contents_(web_contents) {}
 
-void CardNameFixFlowViewAndroid::OnUserAccept(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& name) {
-  controller_->OnNameAccepted(
-      base::android::ConvertJavaStringToUTF16(env, name));
+void CardNameFixFlowViewAndroid::OnUserAccept(JNIEnv* env,
+                                              const JavaParamRef<jobject>& obj,
+                                              const std::u16string& name) {
+  controller_->OnNameAccepted(name);
 }
 
 void CardNameFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
@@ -80,19 +80,10 @@ CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
 
-  ScopedJavaLocalRef<jstring> dialog_title =
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitleText());
-
-  ScopedJavaLocalRef<jstring> inferred_name =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetInferredCardholderName());
-
-  ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
-      env, controller_->GetSaveButtonLabel());
-
   return java_object_internal_ = Java_AutofillNameFixFlowBridge_create(
-             env, reinterpret_cast<intptr_t>(this), dialog_title, inferred_name,
-             confirm,
+             env, reinterpret_cast<intptr_t>(this), controller_->GetTitleText(),
+             controller_->GetInferredCardholderName(),
+             controller_->GetSaveButtonLabel(),
              ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),
              view_android->GetWindowAndroid()->GetJavaObject());
 }

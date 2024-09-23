@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
@@ -94,8 +96,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual bool ShouldWindowContentsBeTransparent() const = 0;
   virtual void FrameTypeChanged() = 0;
 
-  // Returns the Widget associated with this NativeWidget. This function is
-  // guaranteed to return non-NULL for the lifetime of the NativeWidget.
+  // Returns the Widget associated with this NativeWidget. May return nullptr
+  // for a brief period on shutdown between the `Widget`'s destruction and
+  // the native widget's destruction. The return value should be checked before
+  // use and nullptr should be gracefully handled in most cases.
   virtual Widget* GetWidget() = 0;
   virtual const Widget* GetWidget() const = 0;
 
@@ -151,8 +155,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
 
   // Retrieves the window's current restored bounds and "show" state, for
   // persisting.
-  virtual void GetWindowPlacement(gfx::Rect* bounds,
-                                  ui::WindowShowState* show_state) const = 0;
+  virtual void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const = 0;
 
   // Sets the NativeWindow title. Returns true if the title changed.
   virtual bool SetWindowTitle(const std::u16string& title) = 0;
@@ -168,7 +173,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Initializes the modal type of the window to |modal_type|. Called from
   // NativeWidgetDelegate::OnNativeWidgetCreated() before the widget is
   // initially parented.
-  virtual void InitModalType(ui::ModalType modal_type) = 0;
+  virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;
@@ -184,7 +189,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void SetShape(std::unique_ptr<Widget::ShapeRects> shape) = 0;
   virtual void Close() = 0;
   virtual void CloseNow() = 0;
-  virtual void Show(ui::WindowShowState show_state,
+  virtual void Show(ui::mojom::WindowShowState show_state,
                     const gfx::Rect& restore_bounds) = 0;
   virtual void Hide() = 0;
   virtual bool IsVisible() const = 0;
@@ -217,11 +222,11 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                               const gfx::Size& excluded_margin) = 0;
   virtual void FlashFrame(bool flash) = 0;
-  virtual void RunShellDrag(View* view,
-                            std::unique_ptr<ui::OSExchangeData> data,
+  virtual void RunShellDrag(std::unique_ptr<ui::OSExchangeData> data,
                             const gfx::Point& location,
                             int operation,
                             ui::mojom::DragEventSource source) = 0;
+  virtual void CancelShellDrag(View* view) = 0;
   virtual void SchedulePaintInRect(const gfx::Rect& rect) = 0;
   virtual void ScheduleLayout() = 0;
   virtual void SetCursor(const ui::Cursor& cursor) = 0;
@@ -248,6 +253,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Called before and after re-parenting of this or an ancestor widget.
   virtual void OnNativeViewHierarchyWillChange() = 0;
   virtual void OnNativeViewHierarchyChanged() = 0;
+  // Returns false if the setter did not use `allow` to change screenshot
+  // availability.
+  virtual bool SetAllowScreenshots(bool allow) = 0;
+  virtual bool AreScreenshotsAllowed() = 0;
 
   // Returns an internal name that matches the name of the associated Widget.
   virtual std::string GetName() const = 0;

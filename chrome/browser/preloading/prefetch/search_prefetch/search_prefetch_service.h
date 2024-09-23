@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -25,6 +24,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/preloading.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
@@ -43,12 +44,13 @@ struct ResourceRequest;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
 // Any updates to this class need to be propagated to enums.xml.
-
-// If you change this, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in
-// dashboard, or if you are not a Googler, please file an FYI bug on
-// https://crbug.new with component Internals>Preload.
+// This enum is used for UMA only. For recording a UKM PreloadingAttempt record,
+// use or introduce a corresponding enum to content::PreloadingEligibility or
+// ChromePreloadingEligibility.
+//
+// LINT.IfChange
 enum class SearchPrefetchEligibilityReason {
   // The prefetch was started.
   kPrefetchStarted = 0,
@@ -69,12 +71,23 @@ enum class SearchPrefetchEligibilityReason {
   kMaxAttemptsReached = 7,
   // A URLLoaderThrottle decided this request should not be issued.
   kThrottled = 8,
-  kMaxValue = kThrottled,
+  // The prefetch was suppressed because the network is too slow.
+  kSlowNetwork = 9,
+  kMaxValue = kSlowNetwork,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchPrefetchEligibilityReason)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
 // Any updates to this class need to be propagated to enums.xml.
+//
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
+// LINT.IfChange
 enum class SearchPrefetchServingReason {
   // The prefetch was started.
   kServed = 0,
@@ -88,24 +101,24 @@ enum class SearchPrefetchServingReason {
   kNoPrefetch = 4,
   // The prefetch for the search terms was for a different origin than the DSE.
   kPrefetchWasForDifferentOrigin = 5,
-  // The request was canceled before completion.
-  kRequestWasCancelled = 6,
+  // kRequestWasCancelled = 6,  // No longer used.
   // The request failed due to some network/service error.
   kRequestFailed = 7,
   // The request wasn't served unexpectantly.
   kNotServedOtherReason = 8,
   // The navigation was a POST request, reload or link navigation.
   kPostReloadFormOrLink = 9,
-  // A prerender navigation request has taken this response away.
-  kPrerendered = 10,
+  // kPrerendered = 10,  // No longer used.
   // The prefetch is not ready as it was in-flight.
   kRequestInFlightNotReady = 11,
   kMaxValue = kRequestInFlightNotReady,
 };
+// LINT.ThenChange()
 
 class SearchPrefetchService : public KeyedService,
                               public TemplateURLServiceObserver {
  public:
+
   struct SearchPrefetchServingReasonRecorder;
   explicit SearchPrefetchService(Profile* profile);
   ~SearchPrefetchService() override;
@@ -150,15 +163,6 @@ class SearchPrefetchService : public KeyedService,
   void OnPrerenderedRequestUsed(const GURL& canonical_search_url,
                                 const GURL& navigation_url);
 
-  // A prefetch hint can be upgraded to prerender hint. Once the upgrade
-  // happens, prerendering navigation requests reuse the prefetched response.
-  // Differing from TakePrefetchResponseFromMemoryCache, this shares a copy of
-  // the prefetched response without removing the response from MemoryCache, to
-  // stop this from starting another prefetch attempt after prerender takes the
-  // response away.
-  SearchPrefetchURLLoader::RequestHandler TakePrerenderFromMemoryCache(
-      const network::ResourceRequest& tentative_resource_request);
-
   // Creates a response reader if this instance has prefetched a response for
   // the given `tentative_resource_request`, and the caller can read the
   // response with the returned value. Returns an empty callback if the response
@@ -169,6 +173,12 @@ class SearchPrefetchService : public KeyedService,
   // Reports the status of a prefetch for a given search suggestion URL.
   std::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       const GURL& canonical_search_url);
+
+  // Given the canonical_search_url, returns the corresponding url that is sent
+  // to the network.
+  // TODO(crbug.com/345275145): Prerender should not rely on this to get the
+  // real url. Refactor the test code and then remove this method.
+  GURL GetRealPrefetchUrlForTesting(const GURL& canonical_search_url);
 
   // Calls |LoadFromPrefs()|.
   bool LoadFromPrefsForTesting();
@@ -208,6 +218,7 @@ class SearchPrefetchService : public KeyedService,
 
  private:
   friend class PrerenderOmniboxSearchSuggestionBrowserTest;
+  friend class SearchPrefetchServiceEnabledBrowserTest;
 
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url,
@@ -255,6 +266,10 @@ class SearchPrefetchService : public KeyedService,
                                        TemplateURLService* template_url_service,
                                        const GURL& canonical_search_url);
 
+  // Preloads the compression dictionaries in the network service.
+  void MaybePreloadDictionary(const AutocompleteResult& result);
+  void DeletePreloadedDictionaries();
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
@@ -269,10 +284,6 @@ class SearchPrefetchService : public KeyedService,
   // The current state of the DSE.
   std::optional<TemplateURLData> template_url_service_data_;
 
-  // A subscription to the omnibox log service to track when a navigation is
-  // about to happen.
-  base::CallbackListSubscription omnibox_subscription_;
-
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       observer_{this};
 
@@ -282,6 +293,10 @@ class SearchPrefetchService : public KeyedService,
   // served from cache. The value is the prefetch URL in cache and the latest
   // serving time of the response.
   std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
+
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      preloaded_shared_dictionaries_handle_;
+  base::OneShotTimer preloaded_shared_dictionaries_expiry_timer_;
 
   base::WeakPtrFactory<SearchPrefetchService> weak_factory_{this};
 };

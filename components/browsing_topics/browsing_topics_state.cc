@@ -148,6 +148,9 @@ std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
   DCHECK(loaded_);
 
   epochs_.push_back(std::move(epoch_topics));
+  epochs_.back().ScheduleExpiration(base::BindOnce(
+      &BrowsingTopicsState::OnEpochExpired, weak_ptr_factory_.GetWeakPtr(),
+      epochs_.back().calculation_time()));
 
   // Remove the epoch data that is no longer useful.
   std::optional<EpochTopics> removed_epoch_topics;
@@ -163,12 +166,42 @@ std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
   return removed_epoch_topics;
 }
 
-void BrowsingTopicsState::UpdateNextScheduledCalculationTime() {
-  DCHECK(loaded_);
+void BrowsingTopicsState::ScheduleEpochsExpiration() {
+  base::Time expired_calculation_time =
+      base::Time::Now() -
+      blink::features::kBrowsingTopicsEpochRetentionDuration.Get();
 
-  next_scheduled_calculation_time_ =
-      base::Time::Now() +
-      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+  // Remove expired epochs synchronously.
+  base::EraseIf(epochs_, [&expired_calculation_time](const EpochTopics& epoch) {
+    return epoch.calculation_time() <= expired_calculation_time;
+  });
+
+  for (EpochTopics& epoch : epochs_) {
+    epoch.ScheduleExpiration(base::BindOnce(
+        &BrowsingTopicsState::OnEpochExpired, weak_ptr_factory_.GetWeakPtr(),
+        epoch.calculation_time()));
+  }
+
+  ScheduleSave();
+}
+
+void BrowsingTopicsState::OnEpochExpired(base::Time calculation_time) {
+  // Remove all epochs associated with the given calculation_time.
+  // Though calculation times are typically unique, this handles potential
+  // duplicates.
+  base::EraseIf(epochs_, [&calculation_time](const EpochTopics& epoch) {
+    return epoch.calculation_time() == calculation_time;
+  });
+
+  ScheduleSave();
+}
+
+void BrowsingTopicsState::UpdateNextScheduledCalculationTime(
+    base::TimeDelta delay) {
+  DCHECK(loaded_);
+  DCHECK(!delay.is_negative());
+
+  next_scheduled_calculation_time_ = base::Time::Now() + delay;
 
   ScheduleSave();
 }

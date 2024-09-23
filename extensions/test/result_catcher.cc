@@ -33,7 +33,7 @@ bool ResultCatcher::GetNextResult() {
     return ret;
   }
 
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED();
   return false;
 }
 

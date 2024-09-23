@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -157,8 +162,7 @@ void AccessibilityFocusRingLayer::OnPaintLayer(
 void AccessibilityFocusRingLayer::DrawSolidFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
-  if (!has_custom_color())
-    NOTREACHED();
+  CHECK(has_custom_color());
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -176,8 +180,7 @@ void AccessibilityFocusRingLayer::DrawSolidFocusRing(
 void AccessibilityFocusRingLayer::DrawDashedFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
-  if (!has_custom_color())
-    NOTREACHED();
+  CHECK(has_custom_color());
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -190,7 +193,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
 
   SkScalar intervals[] = {kDashLengthDip, kGapLengthDip};
   int intervals_length = 2;
-  flags.setPathEffect(SkDashPathEffect::Make(intervals, intervals_length, 0));
+  flags.setPathEffect(cc::PathEffect::MakeDash(intervals, intervals_length, 0));
   flags.setColor(secondary_color_);
 
   path = MakePath(ring_, kDefaultStrokeWidth, offset);
@@ -199,8 +202,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
 
 void AccessibilityFocusRingLayer::DrawGlowFocusRing(ui::PaintRecorder& recorder,
                                                     cc::PaintFlags& flags) {
-  if (!has_custom_color())
-    NOTREACHED();
+  CHECK(has_custom_color());
   SkColor base_color = custom_color();
 
   SkPath path;

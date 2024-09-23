@@ -33,6 +33,15 @@
             "default_value": {}
           }
         }
+      },
+      {
+        "note": "no policies set",
+        "policies": {},
+        "prefs": {
+          "bruschetta.installer_configuration": {
+            "default_value": {}
+          }
+        }
       }
     ]
   }

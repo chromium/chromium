@@ -5,11 +5,9 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_LAZY_FILLER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_LAZY_FILLER_H_
 
-#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-function-callback.h"
@@ -69,7 +67,7 @@ class LazyFiller {
                         v8::Local<v8::Value> result);
 
   bool DefineLazyAttribute(v8::Local<v8::Object> object,
-                           base::StringPiece name,
+                           std::string_view name,
                            v8::AccessorNameGetterCallback getter);
 
   // `lazy_filler_template` is used to construct an internal v8 object with a
@@ -79,7 +77,7 @@ class LazyFiller {
   bool DefineLazyAttributeWithMetadata(
       v8::Local<v8::Object> object,
       v8::Local<v8::Value> metadata,
-      base::StringPiece name,
+      std::string_view name,
       v8::AccessorNameGetterCallback getter,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 

@@ -9,6 +9,7 @@ build_webui_tests("build") {
     "no_logs_test.ts",
     "with_log_test.ts",
     "utils.ts",
+    "field_trials_test.ts",
   ]
 
   ts_path_mappings =

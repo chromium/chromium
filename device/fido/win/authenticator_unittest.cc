@@ -5,14 +5,16 @@
 #include "device/fido/win/authenticator.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
-#include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
@@ -20,9 +22,9 @@
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "device/fido/test_callback_receiver.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,20 +32,20 @@
 namespace device {
 namespace {
 
-using MakeCredentialCallbackReceiver = test::StatusAndValueCallbackReceiver<
-    CtapDeviceResponseCode,
-    std::optional<AuthenticatorMakeCredentialResponse>>;
+using MakeCredentialFuture =
+    base::test::TestFuture<MakeCredentialStatus,
+                           std::optional<AuthenticatorMakeCredentialResponse>>;
 
-using GetAssertionCallbackReceiver = test::StatusAndValueCallbackReceiver<
-    CtapDeviceResponseCode,
-    std::vector<AuthenticatorGetAssertionResponse>>;
+using GetAssertionFuture =
+    base::test::TestFuture<GetAssertionStatus,
+                           std::vector<AuthenticatorGetAssertionResponse>>;
 
-using GetCredentialCallbackReceiver =
-    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
-                               FidoRequestHandlerBase::RecognizedCredential>;
+using GetCredentialFuture =
+    base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
+                           FidoRequestHandlerBase::RecognizedCredential>;
 
-using EnumeratePlatformCredentialsCallbackReceiver =
-    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>;
+using EnumeratePlatformCredentialsFuture =
+    base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>>;
 
 const std::vector<uint8_t> kCredentialId = {1, 2, 3, 4};
 const std::vector<uint8_t> kCredentialId2 = {9, 0, 1, 2};
@@ -89,17 +91,17 @@ TEST_F(WinAuthenticatorTest,
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
       AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_EQ(
-      std::get<1>(*callback.result()),
+      std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   EXPECT_FALSE(fake_webauthn_api_->last_get_credentials_options()
                    ->bBrowserInPrivateMode);
@@ -114,10 +116,10 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   CtapGetAssertionOptions options;
   options.is_off_the_record_context = true;
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), std::move(options), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), std::move(options), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(fake_webauthn_api_->last_get_credentials_options()
                   ->bBrowserInPrivateMode);
 }
@@ -127,15 +129,15 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
 // discovery.
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(
-      std::get<1>(*callback.result()),
+      std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
@@ -143,14 +145,14 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_UnknownError) {
   fake_webauthn_api_->set_hresult(ERROR_NOT_SUPPORTED);
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_EQ(std::get<1>(*callback.result()),
+  EXPECT_EQ(std::get<1>(future.Get()),
             FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
@@ -163,16 +165,16 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
       AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_EQ(std::get<1>(*callback.result()),
+  EXPECT_EQ(std::get<1>(future.Get()),
             FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
@@ -191,16 +193,16 @@ TEST_F(WinAuthenticatorTest,
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId);
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
   DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
       AuthenticatorType::kWinNative, kRpId, kCredentialId, user1);
-  EXPECT_THAT(std::get<0>(*callback.result()), testing::ElementsAre(expected));
+  EXPECT_THAT(std::get<0>(future.Get()), testing::ElementsAre(expected));
   EXPECT_EQ(
-      std::get<1>(*callback.result()),
+      std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
 }
 
@@ -216,15 +218,15 @@ TEST_F(WinAuthenticatorTest,
 
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   request.allow_list.emplace_back(CredentialType::kPublicKey, kCredentialId2);
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(
-      std::get<1>(*callback.result()),
+      std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
@@ -244,15 +246,15 @@ TEST_F(WinAuthenticatorTest,
                            FidoTransportProtocol::kHybrid};
   request.allow_list.emplace_back(std::move(credential));
 
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(
-      std::get<1>(*callback.result()),
+      std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
@@ -272,14 +274,14 @@ TEST_F(WinAuthenticatorTest,
                            FidoTransportProtocol::kHybrid};
   request.allow_list.emplace_back(std::move(credential));
 
-  GetCredentialCallbackReceiver callback;
+  GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
-      std::move(request), CtapGetAssertionOptions(), callback.callback());
-  callback.WaitForCallback();
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  EXPECT_EQ(std::get<0>(*callback.result()),
+  EXPECT_EQ(std::get<0>(future.Get()),
             std::vector<DiscoverableCredentialMetadata>{});
-  EXPECT_EQ(std::get<1>(*callback.result()),
+  EXPECT_EQ(std::get<1>(future.Get()),
             FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
@@ -289,16 +291,15 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
   fake_webauthn_api_->set_supports_silent_discovery(false);
 
-  test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>
-      callback;
+  base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
   WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
-      fake_webauthn_api_.get(), callback.callback());
+      fake_webauthn_api_.get(), future.GetCallback());
 
-  while (!callback.was_called()) {
+  while (!future.IsReady()) {
     base::RunLoop().RunUntilIdle();
   }
 
-  EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
@@ -307,17 +308,15 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user);
   fake_webauthn_api_->set_supports_silent_discovery(true);
 
-  test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>>
-      callback;
+  base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>> future;
   WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
-      fake_webauthn_api_.get(), callback.callback());
+      fake_webauthn_api_.get(), future.GetCallback());
 
-  while (!callback.was_called()) {
+  while (!future.IsReady()) {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::vector<DiscoverableCredentialMetadata> creds =
-      std::move(std::get<0>(callback.TakeResult()));
+  std::vector<DiscoverableCredentialMetadata> creds = future.Take();
   ASSERT_EQ(creds.size(), 1u);
   const DiscoverableCredentialMetadata& cred = creds[0];
   EXPECT_EQ(cred.source, AuthenticatorType::kWinNative);
@@ -331,7 +330,7 @@ TEST_F(WinAuthenticatorTest, IsConditionalMediationAvailable) {
   for (bool silent_discovery : {false, true}) {
     SCOPED_TRACE(silent_discovery);
     fake_webauthn_api_->set_supports_silent_discovery(silent_discovery);
-    test::TestCallbackReceiver<bool> callback;
+    base::test::TestFuture<bool> future;
     base::RunLoop run_loop;
     WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
         fake_webauthn_api_.get(),
@@ -388,12 +387,13 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
         PublicKeyCredentialParams({{CredentialType::kPublicKey, -257}}));
     MakeCredentialOptions options;
     options.large_blob_support = test_case.requirement;
-    MakeCredentialCallbackReceiver callback;
+    MakeCredentialFuture future;
     authenticator_->MakeCredential(std::move(request), options,
-                                   callback.callback());
-    callback.WaitForCallback();
-    ASSERT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_EQ(callback.value()->large_blob_type.has_value(), test_case.result);
+                                   future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(std::get<0>(future.Get()), MakeCredentialStatus::kSuccess);
+    EXPECT_EQ(std::get<1>(future.Get())->large_blob_type.has_value(),
+              test_case.result);
   }
 }
 
@@ -413,13 +413,13 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlobAttachmentUndefined) {
       WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM);
   MakeCredentialOptions options;
   options.large_blob_support = LargeBlobSupport::kRequired;
-  MakeCredentialCallbackReceiver callback;
+  MakeCredentialFuture future;
   authenticator_->MakeCredential(std::move(request), options,
-                                 callback.callback());
-  callback.WaitForCallback();
-  ASSERT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-  EXPECT_TRUE(callback.value()->large_blob_type.has_value());
-  EXPECT_NE(*callback.value()->transport_used,
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  ASSERT_EQ(std::get<0>(future.Get()), MakeCredentialStatus::kSuccess);
+  EXPECT_TRUE(std::get<1>(future.Get())->large_blob_type.has_value());
+  EXPECT_NE(std::get<1>(future.Get())->transport_used,
             FidoTransportProtocol::kInternal);
 }
 
@@ -434,24 +434,24 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobNotSupported) {
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_read = true;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
   }
   {
     // Write large blob.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_write = kLargeBlob;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
 }
 
@@ -468,24 +468,24 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobError) {
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_read = true;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
   }
   {
     // Write large blob.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_write = kLargeBlob;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
 }
 
@@ -500,40 +500,40 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_read = true;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
-    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
   {
     // Write large blob.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_write = kLargeBlob;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_FALSE(callback.value().at(0).large_blob.has_value());
-    EXPECT_TRUE(callback.value().at(0).large_blob_written);
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob.has_value());
+    EXPECT_TRUE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
   {
     // Read the large blob that was just written.
     CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
     CtapGetAssertionOptions options;
     options.large_blob_read = true;
-    GetAssertionCallbackReceiver callback;
+    GetAssertionFuture future;
     authenticator_->GetAssertion(std::move(request), std::move(options),
-                                 callback.callback());
-    callback.WaitForCallback();
-    EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_TRUE(callback.value().at(0).large_blob.has_value());
-    EXPECT_EQ(*callback.value().at(0).large_blob, kLargeBlob);
-    EXPECT_FALSE(callback.value().at(0).large_blob_written);
+                                 future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(std::get<0>(future.Get()), GetAssertionStatus::kSuccess);
+    EXPECT_TRUE(std::get<1>(future.Get()).at(0).large_blob.has_value());
+    EXPECT_EQ(*std::get<1>(future.Get()).at(0).large_blob, kLargeBlob);
+    EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
 }
 

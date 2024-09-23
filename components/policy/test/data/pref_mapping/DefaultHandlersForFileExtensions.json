@@ -53,6 +53,24 @@
                 "pptx"
               ],
               "policy_id": "VirtualTask/microsoft-office"
+            },
+            {
+              "file_extensions": [
+                "iwaproxy"
+              ],
+              "policy_id": "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac"
+            },
+            {
+              "file_extensions": [
+                "iwasigned"
+              ],
+              "policy_id": "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"
+            },
+            {
+              "file_extensions": [
+                "invalid_iwa_id_will_be_filtered"
+              ],
+              "policy_id": "phngluimglwnafhcthulhurlyehwgahnaglfhtagniacthulhufhtagn"
             }
           ]
         },
@@ -65,7 +83,9 @@
               ".maps": "https://google.com/maps",
               ".pdf": "pnomlkjighijklmnopabcdefghijklff",
               ".pptx": "VirtualTask/microsoft-office",
-              ".proj": "projector"
+              ".proj": "projector",
+              ".iwaproxy": "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac",
+              ".iwasigned": "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"
             }
           }
         }

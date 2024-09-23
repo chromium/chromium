@@ -1,0 +1,112 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("auto_screen_brightness") {
+  sources = [
+    "adapter.cc",
+    "adapter.h",
+    "als_reader.cc",
+    "als_reader.h",
+    "als_samples.cc",
+    "als_samples.h",
+    "brightness_monitor.h",
+    "brightness_monitor_impl.cc",
+    "brightness_monitor_impl.h",
+    "controller.cc",
+    "controller.h",
+    "fake_brightness_monitor.cc",
+    "fake_brightness_monitor.h",
+    "fake_light_provider.cc",
+    "fake_light_provider.h",
+    "fake_model_config_loader.cc",
+    "fake_model_config_loader.h",
+    "fake_observer.cc",
+    "fake_observer.h",
+    "gaussian_trainer.cc",
+    "gaussian_trainer.h",
+    "light_provider_mojo.cc",
+    "light_provider_mojo.h",
+    "light_samples_observer.cc",
+    "light_samples_observer.h",
+    "metrics_reporter.cc",
+    "metrics_reporter.h",
+    "model_config.cc",
+    "model_config.h",
+    "model_config_loader.h",
+    "model_config_loader_impl.cc",
+    "model_config_loader_impl.h",
+    "modeller.h",
+    "modeller_impl.cc",
+    "modeller_impl.h",
+    "monotone_cubic_spline.cc",
+    "monotone_cubic_spline.h",
+    "trainer.h",
+    "utils.cc",
+    "utils.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/components/sensors",
+    "//chromeos/components/sensors",
+    "//chromeos/components/sensors/mojom",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//ui/events",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "adapter_unittest.cc",
+    "als_reader_unittest.cc",
+    "als_samples_unittest.cc",
+    "brightness_monitor_impl_unittest.cc",
+    "gaussian_trainer_unittest.cc",
+    "light_provider_mojo_unittest.cc",
+    "light_samples_observer_unittest.cc",
+    "metrics_reporter_unittest.cc",
+    "model_config_loader_impl_unittest.cc",
+    "modeller_impl_unittest.cc",
+    "monotone_cubic_spline_unittest.cc",
+  ]
+
+  deps = [
+    ":auto_screen_brightness",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/components/sensors",
+    "//chromeos/components/sensors:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/metrics",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

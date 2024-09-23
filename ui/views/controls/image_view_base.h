@@ -45,14 +45,15 @@ class VIEWS_EXPORT ImageViewBase : public View {
   Alignment GetVerticalAlignment() const;
 
   // Set the tooltip text.
-  void SetTooltipText(const std::u16string& tooltip);
+  virtual void SetTooltipText(const std::u16string& tooltip);
   const std::u16string& GetTooltipText() const;
 
   // Overridden from View:
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void PreferredSizeChanged() override;

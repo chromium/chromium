@@ -32,7 +32,7 @@ class CardNameFixFlowViewAndroid : public CardNameFixFlowView {
 
   void OnUserAccept(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
-                    const base::android::JavaParamRef<jstring>& name);
+                    const std::u16string& name);
   void OnUserDismiss(JNIEnv* env);
   void PromptDismissed(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);

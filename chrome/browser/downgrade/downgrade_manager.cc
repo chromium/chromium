@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -231,7 +232,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
 void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   DCHECK_NE(type_, Type::kAdministrativeWipe);
-  const base::StringPiece version(PRODUCT_VERSION);
+  const std::string_view version(PRODUCT_VERSION);
   base::WriteFile(GetLastVersionFile(user_data_dir), version);
 }
 

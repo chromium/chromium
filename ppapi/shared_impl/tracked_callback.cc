@@ -242,10 +242,7 @@ void TrackedCallback::MarkAsCompletedWithLock() {
 
 void TrackedCallback::PostRunWithLock(int32_t result) {
   lock_.AssertAcquired();
-  if (completed_) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!completed_);
   if (result == PP_ERROR_ABORTED)
     aborted_ = true;
   // We might abort when there's already a scheduled callback, but callers
@@ -283,7 +280,6 @@ void TrackedCallback::SignalBlockingCallback(int32_t result) {
     // well before this. Otherwise, this callback was not created as a
     // blocking callback. Either way, there's some internal error.
     NOTREACHED();
-    return;
   }
   result_for_blocked_callback_ = result;
   // Retain ourselves, since MarkAsCompleted will remove us from the

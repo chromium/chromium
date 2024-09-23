@@ -20,11 +20,14 @@ namespace blink {
 class PLATFORM_EXPORT StaticDataNavigationBodyLoader
     : public WebNavigationBodyLoader {
  public:
+  static std::unique_ptr<StaticDataNavigationBodyLoader> CreateWithData(
+      scoped_refptr<SharedBuffer> data);
+
   StaticDataNavigationBodyLoader();
   ~StaticDataNavigationBodyLoader() override;
 
-  void Write(const char* data, size_t size);
-  void Write(const SharedBuffer&);
+  void Write(base::span<const char> data);
+
   void Finish();
 
   void SetDefersLoading(LoaderFreezeMode) override;
@@ -35,8 +38,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Continue();
 
   scoped_refptr<SharedBuffer> data_;
-  raw_ptr<WebNavigationBodyLoader::Client, ExperimentalRenderer> client_ =
-      nullptr;
+  raw_ptr<WebNavigationBodyLoader::Client> client_ = nullptr;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   bool sent_all_data_ = false;
   bool received_all_data_ = false;

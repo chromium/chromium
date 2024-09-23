@@ -1,0 +1,9 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("icon_type") {
+  sources = [ "page_action_icon_type.h" ]
+}

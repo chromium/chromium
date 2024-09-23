@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include <utility>
@@ -70,12 +75,12 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
       AXNodeID node_id,
       int start_offset,
       int end_offset,
-      ui::AXClippingBehavior clipping_behavior,
+      AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) override {
     AXPlatformNodeDelegate* delegate = host_->GetDelegate(tree_id, node_id);
     DCHECK(delegate);
     return delegate->GetInnerTextRangeBoundsRect(
-        start_offset, end_offset, ui::AXCoordinateSystem::kScreenPhysicalPixels,
+        start_offset, end_offset, AXCoordinateSystem::kScreenPhysicalPixels,
         clipping_behavior, offscreen_result);
   }
 
@@ -84,9 +89,9 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
                           AXOffscreenResult* offscreen_result) override {
     AXPlatformNodeDelegate* delegate = host_->GetDelegate(tree_id, node_id);
     DCHECK(delegate);
-    return delegate->GetBoundsRect(
-        ui::AXCoordinateSystem::kScreenPhysicalPixels,
-        ui::AXClippingBehavior::kClipped, offscreen_result);
+    return delegate->GetBoundsRect(AXCoordinateSystem::kScreenPhysicalPixels,
+                                   AXClippingBehavior::kClipped,
+                                   offscreen_result);
   }
 
  private:
@@ -522,7 +527,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   size_t find_length;
   if (base::i18n::StringSearch(search_string, text_range, &find_start,
                                &find_length, !ignore_case, !backwards)) {
-    // TODO(https://crbug.com/1023599): There is a known issue here related to
+    // TODO(crbug.com/40658243): There is a known issue here related to
     // text searches of a |string| starting and ending with a "\n", e.g.
     // "\nsometext" or "sometext\n" if the newline is computed from a line
     // breaking object. FindText() is rarely called, and when it is, it's not to
@@ -548,12 +553,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     DCHECK(start_offset <= end_offset && end_offset <= max_end_offset);
 
     AXPositionInstance start =
-        ui::AXNodePosition::CreateTextPosition(
-            *anchor, start_offset, ax::mojom::TextAffinity::kDownstream)
+        AXNodePosition::CreateTextPosition(*anchor, start_offset,
+                                           ax::mojom::TextAffinity::kDownstream)
             ->AsLeafTextPosition();
     AXPositionInstance end =
-        ui::AXNodePosition::CreateTextPosition(
-            *anchor, end_offset, ax::mojom::TextAffinity::kDownstream)
+        AXNodePosition::CreateTextPosition(*anchor, end_offset,
+                                           ax::mojom::TextAffinity::kDownstream)
             ->AsLeafTextPosition();
 
     CreateTextRangeProvider(start->Clone(), end->Clone(), result);
@@ -991,7 +996,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
   DCHECK(!selection_end->IsNullPosition());
   DCHECK_EQ(selection_start->tree_id(), selection_end->tree_id());
 
-  // TODO(crbug.com/1124051): Blink does not support selection on the list
+  // TODO(crbug.com/40717049): Blink does not support selection on the list
   // markers. So if |selection_start| or |selection_end| are in list markers, we
   // don't perform selection and return success. Remove this check once this bug
   // is fixed.
@@ -1536,7 +1541,7 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetRootDelegate(
-    const ui::AXTreeID tree_id) {
+    const AXTreeID tree_id) {
   const AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
   DCHECK(ax_tree_manager);
   AXNode* root_node = ax_tree_manager->GetRoot();

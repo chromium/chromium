@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/resource_coordinator/decision_details.h"
 
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -69,7 +74,7 @@ void PopulateSuccessReason(
       ukm->SetSuccessHeuristic(1);
       break;
     case DecisionSuccessReason::MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -156,7 +161,7 @@ void PopulateFailureReason(
       ukm->SetFailureLivePictureInPicture(1);
       break;
     case DecisionFailureReason::MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

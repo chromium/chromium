@@ -52,18 +52,17 @@ class ParentAccessControllerImplTest : public LoginTestBase {
   }
 
   void TearDown() override {
-    LoginTestBase::TearDown();
-
     // If the test did not explicitly dismissed the widget, destroy it now.
     PinRequestWidget* pin_request_widget = PinRequestWidget::Get();
     if (pin_request_widget)
       pin_request_widget->Close(false /* validation success */);
+    LoginTestBase::TearDown();
   }
 
   // Simulates mouse press event on a |button|.
   void SimulateButtonPress(views::Button* button) {
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(button).NotifyClick(event);
   }
 

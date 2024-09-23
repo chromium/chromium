@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_action_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,19 +57,20 @@ std::string AccessibleNameForView(views::View* view) {
 
 void Click(views::Button* button) {
   button->OnMousePressed(
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(1, 1), gfx::Point(0, 0),
-                     base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
-                     ui::EF_LEFT_MOUSE_BUTTON));
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(1, 1),
+                     gfx::Point(0, 0), base::TimeTicks::Now(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   button->OnMouseReleased(
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(1, 1), gfx::Point(0, 0),
-                     base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
-                     ui::EF_LEFT_MOUSE_BUTTON));
+      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(1, 1),
+                     gfx::Point(0, 0), base::TimeTicks::Now(),
+                     ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
 }
 
 void SendKeyPress(views::Widget* widget, ui::KeyboardCode key_code) {
-  ui::KeyEvent press(ui::ET_KEY_PRESSED, key_code, 0, base::TimeTicks::Now());
+  ui::KeyEvent press(ui::EventType::kKeyPressed, key_code, 0,
+                     base::TimeTicks::Now());
   widget->OnKeyEvent(&press);
-  ui::KeyEvent release(ui::ET_KEY_RELEASED, key_code, 0,
+  ui::KeyEvent release(ui::EventType::kKeyReleased, key_code, 0,
                        base::TimeTicks::Now());
   widget->OnKeyEvent(&release);
 }
@@ -92,7 +93,8 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    anchor_widget_ = CreateTestWidget();
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 
   void TearDown() override {
@@ -121,7 +123,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
   }
 
   std::vector<sharing_hub::SharingHubBubbleActionButton*> GetActionButtons() {
-    return base::test::ToVector(
+    return base::ToVector(
         DescendantsMatchingPredicate(
             bubble(), base::BindRepeating(&ViewHasClassName,
                                           "SharingHubBubbleActionButton")),

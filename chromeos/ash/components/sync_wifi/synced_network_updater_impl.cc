@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
-#include "components/cross_device/timer_factory/timer_factory.h"
+#include "chromeos/ash/components/timer_factory/timer_factory.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -34,7 +34,7 @@ constexpr base::TimeDelta kTimeout = base::Minutes(1);
 SyncedNetworkUpdaterImpl::SyncedNetworkUpdaterImpl(
     std::unique_ptr<PendingNetworkConfigurationTracker> tracker,
     network_config::mojom::CrosNetworkConfig* cros_network_config,
-    cross_device::TimerFactory* timer_factory,
+    ash::timer_factory::TimerFactory* timer_factory,
     SyncedNetworkMetricsLogger* metrics_logger)
     : tracker_(std::move(tracker)),
       cros_network_config_(cros_network_config),

@@ -7,39 +7,18 @@ import os
 
 from benchmarks import memory
 from contrib.shared_storage import page_set
+from contrib.shared_storage import utils
 from core import perf_benchmark
 
 from telemetry import benchmark
 from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
-# Shared-storage-related histograms to measure.
-_SHARED_STORAGE_UMA_HISTOGRAMS = [
-    "Storage.SharedStorage.Document.Timing.AddModule",
-    "Storage.SharedStorage.Document.Timing.Append",
-    "Storage.SharedStorage.Document.Timing.Clear",
-    "Storage.SharedStorage.Document.Timing.Delete",
-    "Storage.SharedStorage.Document.Timing.Run",
-    "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
-    "Storage.SharedStorage.Document.Timing.SelectURL",
-    "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
-    "Storage.SharedStorage.Document.Timing.Set",
-    "Storage.SharedStorage.Worklet.Timing.Append",
-    "Storage.SharedStorage.Worklet.Timing.Clear",
-    "Storage.SharedStorage.Worklet.Timing.Delete",
-    "Storage.SharedStorage.Worklet.Timing.Entries.Next",
-    "Storage.SharedStorage.Worklet.Timing.Get",
-    "Storage.SharedStorage.Worklet.Timing.Keys.Next",
-    "Storage.SharedStorage.Worklet.Timing.Length",
-    "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
-    "Storage.SharedStorage.Worklet.Timing.Set",
-    "Storage.SharedStorage.Worklet.Timing.Values.Next",
-]
-
 # Features to enable via command line.
 _ENABLED_FEATURES = [
     'SharedStorageAPI:ExposeDebugMessageForSettingsStatus/true',
-    'SharedStorageAPIM118', 'SharedStorageAPIM123',
+    'SharedStorageAPIM118', 'SharedStorageAPIM125',
+    'SharedStorageAPIEnableWALForDatabase',
     'FencedFrames:implementation_type/mparch', 'FencedFramesDefaultMode',
     'PrivacySandboxAdsAPIsOverride', 'DefaultAllowPrivacySandboxAttestations'
 ]
@@ -61,35 +40,41 @@ _TRACE_BUFFER_SIZE = 2**32 - 1
 _SHUTDOWN_TIMEOUT = 90
 
 class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
-  URL = 'file://fresh_with_worklet.html'
+  SIZE = 0
   verbose_cpu_metrics = False
   verbose_memory_metrics = False
   iterations = _DEFAULT_NUM_ITERATIONS
   verbosity = 0
+  xvfb_process = None
 
   options = {'pageset_repeat': _DEFAULT_NUM_REPEAT}
 
+  @property
+  def URL(self):
+    return "file://setup_worklet_and_db.html?size=%s" % self.SIZE
+
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--user-agent',
-                      action='store',
-                      type='string',
-                      default='desktop',
-                      help="Options are 'desktop' (the default) and 'mobile'.")
-    parser.add_option('--verbose-cpu-metrics',
-                      action='store_true',
-                      help='Enables non-UMA CPU metrics.')
-    parser.add_option('--verbose-memory-metrics',
-                      action='store_true',
-                      help='Enables non-UMA memory metrics.')
-    iter_help = ('Number of times (default %d, max %d)' %
-                 (_DEFAULT_NUM_ITERATIONS, _MAX_NUM_ITERATIONS))
-    iter_help += ' to repeat action for each story run.'
-    parser.add_option('--iterations',
-                      action='store',
-                      type='int',
-                      default=_DEFAULT_NUM_ITERATIONS,
-                      help=iter_help)
+    parser.add_argument('--xvfb',
+                        action='store_true',
+                        default=False,
+                        help='Run with Xvfb server if possible.')
+    parser.add_argument(
+        '--user-agent',
+        default='desktop',
+        help='Options are "desktop" (the default) and "mobile".')
+    parser.add_argument('--verbose-cpu-metrics',
+                        action='store_true',
+                        help='Enables non-UMA CPU metrics.')
+    parser.add_argument('--verbose-memory-metrics',
+                        action='store_true',
+                        help='Enables non-UMA memory metrics.')
+    iter_help = (f'Number of times (default {_DEFAULT_NUM_ITERATIONS}, max '
+                 f'{_MAX_NUM_ITERATIONS}) to repeat action for each story run.')
+    parser.add_argument('--iterations',
+                        type=int,
+                        default=_DEFAULT_NUM_ITERATIONS,
+                        help=iter_help)
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -102,16 +87,21 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
       logging.warning('The maximum allowed number of iterations is 10. ' +
                       'Increase pageset_repeat instead.')
       cls.iterations = _MAX_NUM_ITERATIONS
+    if args.xvfb and utils.ShouldStartXvfb():
+      cls.xvfb_process = utils.StartXvfb()
 
   def SetExtraBrowserOptions(self, options):
     # `options` is an instance of `browser_options.BrowserOptions`.
     if self.verbose_memory_metrics:
       memory.SetExtraBrowserOptionsForMemoryMeasurement(options)
 
-    options.AppendExtraBrowserArgs([
+    extra_args = [
         '--enable-features=' + ','.join(_ENABLED_FEATURES),
         '--enable-privacy-sandbox-ads-apis'
-    ])
+    ]
+    if self.xvfb_process:
+      extra_args.append('--disable-gpu')
+    options.AppendExtraBrowserArgs(extra_args)
 
     # Increase the default shutdown timeout due to some long-running tests.
     os.environ['CHROME_SHUTDOWN_TIMEOUT'] = str(_SHUTDOWN_TIMEOUT)
@@ -143,7 +133,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     tbm_options.config.chrome_trace_config.SetTraceBufferSizeInKb(
         _TRACE_BUFFER_SIZE)
 
-    for histogram in _SHARED_STORAGE_UMA_HISTOGRAMS:
+    for histogram in utils.GetSharedStorageUmaHistograms():
       tbm_options.config.chrome_trace_config.EnableUMAHistograms(histogram)
 
     tbm_options.AddTimelineBasedMetric('umaMetric')
@@ -155,17 +145,19 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     # `options` is an instance of `timeline_based_measurement.Options`.
     return page_set.SharedStorageStorySet(
         url=self.URL,
+        size=self.SIZE,
         enable_memory_metric=self.verbose_memory_metrics,
         user_agent=options.user_agent,
         iterations=self.iterations,
-        verbosity=self.verbosity)
+        verbosity=self.verbosity,
+        xvfb_process=self.xvfb_process)
 
 
 @benchmark.Info(emails=['cammie@chromium.org'],
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfFreshDB(SharedStoragePerfBase):
-  URL = "file://fresh_with_worklet.html"
+  SIZE = 0
 
   @classmethod
   def Name(cls):
@@ -176,7 +168,7 @@ class SharedStoragePerfFreshDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfSmallDB(SharedStoragePerfBase):
-  URL = "file://small_with_worklet.html"
+  SIZE = 10
 
   @classmethod
   def Name(cls):
@@ -187,7 +179,7 @@ class SharedStoragePerfSmallDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfMediumDB(SharedStoragePerfBase):
-  URL = "file://medium_with_worklet.html"
+  SIZE = 1000
 
   @classmethod
   def Name(cls):
@@ -198,7 +190,9 @@ class SharedStoragePerfMediumDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfLargeDB(SharedStoragePerfBase):
-  URL = "file://large_with_worklet.html"
+  # TODO(cammie): Update the size for 'shared_storage.large' to 10000 when
+  # M124 reaches stable (and with it the change in quota enfocrement).
+  SIZE = 9000
 
   @classmethod
   def Name(cls):

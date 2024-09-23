@@ -7,7 +7,7 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/shared_dictionary_isolation_key.mojom-shared.h"
 #include "url/origin.h"
 

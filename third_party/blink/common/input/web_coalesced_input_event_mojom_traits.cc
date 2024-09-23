@@ -108,9 +108,9 @@ bool StructTraits<blink::mojom::EventDataView,
     key_event->dom_key = key_data->dom_key;
     key_event->is_system_key = key_data->is_system_key;
     key_event->is_browser_shortcut = key_data->is_browser_shortcut;
-    base::u16cstrlcpy(key_event->text, key_data->text.c_str(),
+    base::u16cstrlcpy(key_event->text.data(), key_data->text.c_str(),
                       blink::WebKeyboardEvent::kTextLengthCap);
-    base::u16cstrlcpy(key_event->unmodified_text,
+    base::u16cstrlcpy(key_event->unmodified_text.data(),
                       key_data->unmodified_text.c_str(),
                       blink::WebKeyboardEvent::kTextLengthCap);
   } else if (blink::WebInputEvent::IsGestureEventType(type)) {
@@ -210,12 +210,6 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->delta_units;
           gesture_event->data.scroll_update.inertial_phase =
               gesture_data->scroll_data->inertial_phase;
-          if (gesture_data->scroll_data->update_details) {
-            gesture_event->data.scroll_update.velocity_x =
-                gesture_data->scroll_data->update_details->velocity_x;
-            gesture_event->data.scroll_update.velocity_y =
-                gesture_data->scroll_data->update_details->velocity_y;
-          }
           break;
       }
     }
@@ -364,7 +358,7 @@ bool StructTraits<blink::mojom::EventDataView,
   ui::EventLatencyMetadata event_latency_metadata;
   if (!event.ReadEventLatencyMetadata(&event_latency_metadata)) {
     return false;
-  };
+  }
   input_event->GetModifiableEventLatencyMetadata() =
       std::move(event_latency_metadata);
   ui::LatencyInfo latency_info;
@@ -384,15 +378,15 @@ StructTraits<blink::mojom::EventDataView,
     return nullptr;
   const blink::WebKeyboardEvent* key_event =
       static_cast<const blink::WebKeyboardEvent*>(event->EventPointer());
-  // Assure char16_t[N] filds are null-terminated before converting
+  // Assure std::array<char16_t, N> fields are nul-terminated before converting
   // them to std::u16string.
   CHECK(base::Contains(key_event->text, 0));
   CHECK(base::Contains(key_event->unmodified_text, 0));
   return blink::mojom::KeyData::New(
       key_event->dom_key, key_event->dom_code, key_event->windows_key_code,
       key_event->native_key_code, key_event->is_system_key,
-      key_event->is_browser_shortcut, key_event->text,
-      key_event->unmodified_text);
+      key_event->is_browser_shortcut, key_event->text.data(),
+      key_event->unmodified_text.data());
 }
 
 // static
@@ -492,23 +486,20 @@ StructTraits<blink::mojom::EventDataView,
           gesture_event->data.scroll_begin.inertial_phase,
           gesture_event->data.scroll_begin.synthetic,
           gesture_event->data.scroll_begin.pointer_count,
-          gesture_event->data.scroll_begin.cursor_control, nullptr);
+          gesture_event->data.scroll_begin.cursor_control);
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           0, 0, gesture_event->data.scroll_end.delta_units, false,
           gesture_event->data.scroll_end.inertial_phase,
-          gesture_event->data.scroll_end.synthetic, 0, false, nullptr);
+          gesture_event->data.scroll_end.synthetic, 0, false);
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
           gesture_event->data.scroll_update.delta_x,
           gesture_event->data.scroll_update.delta_y,
           gesture_event->data.scroll_update.delta_units, false,
-          gesture_event->data.scroll_update.inertial_phase, false, 0, false,
-          blink::mojom::ScrollUpdate::New(
-              gesture_event->data.scroll_update.velocity_x,
-              gesture_event->data.scroll_update.velocity_y));
+          gesture_event->data.scroll_update.inertial_phase, false, 0, false);
       break;
     case blink::WebInputEvent::Type::kGestureFlingStart:
       gesture_data->fling_data = blink::mojom::FlingData::New(

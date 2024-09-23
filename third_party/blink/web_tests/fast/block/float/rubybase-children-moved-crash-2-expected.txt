@@ -1,3 +1,4 @@
+CONSOLE MESSAGE: `float` property is not supported correctly inside an element with `display: ruby` or `display: ruby-text`.
 crbug.com/683104: Passes if it does not crash.
 
  Text 

@@ -26,10 +26,42 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BooleanFocusedTab">
+  <int value="0" label="Not Focused"/>
+  <int value="1" label="Focused"/>
+</enum>
+
+<enum name="BooleanHasTitle">
+  <int value="0" label="Empty title"/>
+  <int value="1" label="Non-empty title"/>
+</enum>
+
 <enum name="BooleanOverlap">
   <int value="0" label="No overlap"/>
   <int value="1" label="Overlapped"/>
 </enum>
+
+<enum name="BooleanProtectedTab">
+  <int value="0" label="Not Protected"/>
+  <int value="1" label="Protected"/>
+</enum>
+
+<!-- LINT.IfChange(DeviceType) -->
+
+<enum name="DeviceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Windows"/>
+  <int value="3" label="Mac"/>
+  <int value="4" label="Linux"/>
+  <int value="5" label="Chrome OS"/>
+  <int value="6" label="Android Phone"/>
+  <int value="7" label="Android Tablet"/>
+  <int value="8" label="IOS Phone"/>
+  <int value="9" label="IOS Tablet"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger.h:DeviceType) -->
 
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
@@ -50,6 +82,30 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="NotFound"/>
   <int value="1" label="Found"/>
 </enum>
+
+<!-- LINT.IfChange(GroupCloseReason) -->
+
+<enum name="GroupCloseReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Closed by user"/>
+  <int value="2" label="Deleted by user"/>
+  <int value="3" label="Deleted from sync"/>
+  <int value="4" label="Cleaned up on startup"/>
+  <int value="5" label="Cleaned up on last instance closure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:ClosingSource) -->
+
+<!-- LINT.IfChange(GroupOpenReason) -->
+
+<enum name="GroupOpenReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Opened from revisit UI"/>
+  <int value="2" label="Auto-opened from sync"/>
+  <int value="3" label="Opened from Tab or Session Restore"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:OpeningSource) -->
 
 <enum name="HistoricalSaverCloseType">
   <int value="0" label="Tab"/>
@@ -96,6 +152,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Learn more clicked"/>
 </enum>
 
+<!-- LINT.IfChange(SavedTabGroupSyncBridge.MigrationResult) -->
+
+<enum name="SavedTabGroupSyncBridge.MigrationResult">
+  <int value="0" label="Store creation failed"/>
+  <int value="1" label="Store load started"/>
+  <int value="2" label="Store load failed"/>
+  <int value="3" label="Store load completed"/>
+  <int value="4" label="Specifics to data migration started"/>
+  <int value="5"
+      label="Specifics to data migration parse failed at least once"/>
+  <int value="6" label="Specifics to data migration write failed"/>
+  <int value="7" label="Specifics to data migration success"/>
+  <int value="8" label="Specifics to data migration already complete"/>
+  <int value="9" label="Shared pref migration started"/>
+  <int value="10" label="Shared pref migration parse failed at least once"/>
+  <int value="11" label="Shared pref migration at least one entry migrated"/>
+  <int value="12" label="Shared pref migration write failed"/>
+  <int value="13" label="Shared pref migration success"/>
+  <int value="14" label="Read all metadata failed"/>
+  <int value="15" label="Read all metadata success"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/stats.h:MigrationResult) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>
@@ -107,16 +187,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not loaded on creation"/>
 </enum>
 
-<enum name="TabManagerTabRankerResult">
-  <int value="0" label="Success">Tab score was calculated successfully.</int>
-  <int value="1" label="Preprocessor initialization failed">
-    The ExamplePreprocessorConfig could not be loaded or parsed.
-  </int>
-  <int value="2" label="Preprocessor other error">
-    The ExamplePreprocessor returned an error other than, or in addition to, the
-    kNoFeatureIndexFound error.
-  </int>
+<!-- LINT.IfChange(TabGroupEvent) -->
+
+<enum name="TabGroupEvent">
+  <int value="0" label="Tab group created"/>
+  <int value="1" label="Tab group removed"/>
+  <int value="2" label="Tab group opened"/>
+  <int value="3" label="Tab group closed"/>
+  <int value="4" label="Tab group visuals changed"/>
+  <int value="5" label="Tab group tabs reordered"/>
+  <int value="6" label="Tab added"/>
+  <int value="7" label="Tab removed"/>
+  <int value="8" label="Tab navigated"/>
+  <int value="9" label="Tab selected"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:TabGroupEvent) -->
 
 <enum name="TabOrganizationTriggerOutcome">
   <int value="0" label="Accepted">User clicked through the nudge UI.</int>
@@ -174,6 +260,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User opened the Tab Search UI via touch gesture"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchPosition) -->
+
+<enum name="TabSearchPosition">
+  <int value="0" label="Leading"/>
+  <int value="1" label="Trailing"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/tab_strip_region_view.h:TabSearchPositionEnum) -->
+
 <enum name="TabSearchRecentlyClosedItemOpenAction">
   <int value="0"
       label="Opened a recently closed item from an unfiltered item list"/>
@@ -195,6 +290,13 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="Failure Unknown Reason"/>
   <int value="2" label="Failure IndexOutOfBoundsException"/>
+  <int value="3" label="Failure IllegalArgumentException"/>
+</enum>
+
+<enum name="TabStateRestoreMethod">
+  <int value="0" label="FlatBuffer Schema"/>
+  <int value="1" label="Legacy hand written Schema"/>
+  <int value="2" label="Failed to restore TabState"/>
 </enum>
 
 <enum name="TabStatus">

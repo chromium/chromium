@@ -4,20 +4,23 @@
 
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/ash/login/ui/signin_ui.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/ash/login/login_display_host_webui.h"
+#include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/version/version_loader.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
@@ -110,7 +113,9 @@ void SetCookieForPartition(
   const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
+      net::CookieSourceType::kOther,
+      /*status=*/nullptr));
   if (!cc)
     return;
 
@@ -162,7 +167,7 @@ ChallengeResponseKeyOrError ExtractClientCertificates(
   return challenge_response_key;
 }
 
-void BuildUserContextForGaiaSignIn(
+std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     user_manager::UserType user_type,
     const AccountId& account_id,
     bool using_saml,
@@ -170,9 +175,10 @@ void BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const std::optional<ChallengeResponseKey> challenge_response_key,
-    UserContext* user_context) {
-  *user_context = UserContext(user_type, account_id);
+    const std::optional<ChallengeResponseKey>& challenge_response_key) {
+  std::unique_ptr<UserContext> user_context =
+      std::make_unique<UserContext>(user_type, account_id);
+
   if (using_saml && challenge_response_key.has_value()) {
     user_context->GetMutableChallengeResponseKeys()->push_back(
         challenge_response_key.value());
@@ -183,8 +189,7 @@ void BuildUserContextForGaiaSignIn(
     if (using_saml) {
       user_context->SetSamlPassword(SamlPassword{password});
     } else {
-      if (!features::AreLocalPasswordsEnabledForConsumers() ||
-          !password.empty()) {
+      if (!password.empty()) {
         user_context->SetGaiaPassword(GaiaPassword{password});
       }
     }
@@ -203,6 +208,8 @@ void BuildUserContextForGaiaSignIn(
   if (sync_trusted_vault_keys.has_value()) {
     user_context->SetSyncTrustedVaultKeys(*sync_trusted_vault_keys);
   }
+
+  return user_context;
 }
 
 AccountId GetAccountId(const std::string& authenticated_email,
@@ -241,10 +248,12 @@ bool IsFamilyLinkAllowed() {
 GaiaCookieRetriever::GaiaCookieRetriever(
     std::string signin_partition_name,
     login::SigninPartitionManager* signin_partition_manager,
-    OnCookieTimeoutCallback on_cookie_timeout_callback)
+    OnCookieTimeoutCallback on_cookie_timeout_callback,
+    bool allow_empty_auth_code_for_testing)
     : signin_partition_name_(signin_partition_name),
       signin_partition_manager_(signin_partition_manager),
-      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)) {}
+      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)),
+      allow_empty_auth_code_for_testing_(allow_empty_auth_code_for_testing) {}
 
 GaiaCookieRetriever::~GaiaCookieRetriever() = default;
 
@@ -311,8 +320,12 @@ void GaiaCookieRetriever::OnGetCookieListResponse(
       cookie_data.rapt = cookie.Value();
   }
 
-  if (cookie_data.auth_code.empty()) {
+  if (cookie_data.auth_code.empty() && !allow_empty_auth_code_for_testing_) {
     // Will try again from onCookieChange.
+
+    // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's
+    // preserved in the logs.
+    LOG(WARNING) << "OAuth cookie empty, still waiting";
     return;
   }
 

@@ -91,7 +91,7 @@ svg-root{
     "nodeHeight": "380",
     "isKeyboardFocusable": false,
     "accessibleName": "",
-    "accessibleRole": "",
+    "accessibleRole": "image",
     "layoutObjectName": "LayoutSVGRoot",
     "showAccessibilityInfo": true
   }

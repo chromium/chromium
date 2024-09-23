@@ -12,7 +12,6 @@ include_rules = [
   "+services/network/test",
   "+sql",
   "+third_party/skia",
-  "+third_party/sqlite",
   "+ui/base",
   "+ui/gfx",
 ]

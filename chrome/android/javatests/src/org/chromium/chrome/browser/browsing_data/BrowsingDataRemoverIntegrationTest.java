@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -23,7 +24,7 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BrowsingDataRemoverIntegrationTest {
+    private static final String TEST_PATH = "/chrome/test/data/android/about.html";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -62,7 +65,8 @@ public class BrowsingDataRemoverIntegrationTest {
     /**
      * Tests that web apps are unregistered after clearing with the "cookies and site data" option.
      * TODO(msramek): Expose more granular datatypes to the Java code, so we can directly test
-     * BrowsingDataRemover::RemoveDataMask::REMOVE_WEBAPP_DATA instead of BrowsingDataType.COOKIES.
+     * BrowsingDataRemover::RemoveDataMask::REMOVE_WEBAPP_DATA instead of
+     * BrowsingDataType.SITE_DATA.
      */
     @Test
     @MediumTest
@@ -80,7 +84,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         CallbackHelper dataClearedExcludingDomainHelper = new CallbackHelper();
         // Clear cookies and site data excluding the registrable domain "google.com".
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingDataExcludingDomains(
@@ -90,14 +94,14 @@ public class BrowsingDataRemoverIntegrationTest {
                                             dataClearedExcludingDomainHelper.notifyCalled();
                                         }
                                     },
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME,
                                     new String[] {"google.com"},
                                     new int[] {1},
                                     new String[0],
                                     new int[0]);
                 });
-        dataClearedExcludingDomainHelper.waitForFirst();
+        dataClearedExcludingDomainHelper.waitForOnly();
 
         // The last two webapps should have been unregistered.
         Assert.assertEquals(
@@ -106,7 +110,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         CallbackHelper dataClearedNoUrlFilterHelper = new CallbackHelper();
         // Clear cookies and site data with no url filter.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
@@ -116,10 +120,10 @@ public class BrowsingDataRemoverIntegrationTest {
                                             dataClearedNoUrlFilterHelper.notifyCalled();
                                         }
                                     },
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME);
                 });
-        dataClearedNoUrlFilterHelper.waitForFirst();
+        dataClearedNoUrlFilterHelper.waitForOnly();
 
         // All webapps should have been unregistered.
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
@@ -141,7 +145,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         Assert.assertTrue(mStore.getRelationships().contains(relationship));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .clearBrowsingData(
@@ -152,5 +156,31 @@ public class BrowsingDataRemoverIntegrationTest {
 
         callbackHelper.waitForCallback(0);
         Assert.assertTrue(mStore.getRelationships().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testClearingTabs() throws TimeoutException {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        String testUrl = testServer.getURL(TEST_PATH);
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
+                            .clearBrowsingData(
+                                    callbackHelper::notifyCalled,
+                                    new int[] {BrowsingDataType.TABS},
+                                    TimePeriod.ALL_TIME);
+                });
+
+        callbackHelper.waitForCallback(0);
+
+        Assert.assertEquals(0, mActivityTestRule.tabsCount(/* incognito= */ false));
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ true));
     }
 }

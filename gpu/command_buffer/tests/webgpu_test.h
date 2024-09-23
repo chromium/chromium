@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_TESTS_WEBGPU_TEST_H_
 
 #include <dawn/webgpu_cpp.h>
+#include <dawn/webgpu_cpp_print.h>
 
 #include <memory>
 
@@ -81,7 +82,13 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
-  static std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
+  bool IsUsingFallbackAdapter() {
+    wgpu::AdapterInfo adapter_info = {};
+    adapter_.GetInfo(&adapter_info);
+    return adapter_info.adapterType == wgpu::AdapterType::CPU;
+  }
+
+  static std::map<std::pair<WGPUDevice, wgpu::ErrorType>, /* matched */ bool>
       s_expected_errors;
 
   wgpu::Instance instance_ = nullptr;

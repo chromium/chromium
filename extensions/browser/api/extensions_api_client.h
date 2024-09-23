@@ -130,6 +130,7 @@ class ExtensionsAPIClient {
   virtual void OpenFileUrl(const GURL& file_url,
                            content::BrowserContext* browser_context);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Creates the AppViewGuestDelegate.
   virtual AppViewGuestDelegate* CreateAppViewGuestDelegate() const;
 
@@ -156,6 +157,7 @@ class ExtensionsAPIClient {
   virtual WebViewPermissionHelperDelegate*
   CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns an interface for requesting consent for file system API. The caller

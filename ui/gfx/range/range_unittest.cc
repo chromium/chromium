@@ -197,6 +197,22 @@ TYPED_TEST(RangeTest, SetReversedRange) {
   EXPECT_EQ(25U, r.GetMax());
 }
 
+TYPED_TEST(RangeTest, MatchDirection) {
+  TypeParam r(20, 10);
+  EXPECT_TRUE(r.is_reversed());
+  EXPECT_EQ(20U, r.start());
+  EXPECT_EQ(10U, r.end());
+  EXPECT_EQ(10U, r.length());
+  EXPECT_TRUE(r.IsValid());
+
+  r.MatchDirection(TypeParam(10, 20));
+  EXPECT_FALSE(r.is_reversed());
+  EXPECT_EQ(10U, r.start());
+  EXPECT_EQ(20U, r.end());
+  EXPECT_EQ(10U, r.length());
+  EXPECT_TRUE(r.IsValid());
+}
+
 TYPED_TEST(RangeTest, ContainAndIntersect) {
   {
     SCOPED_TRACE("contain and intersect");

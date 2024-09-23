@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] TCP candidate aimed at port 8001 accepted
+  promise_test: Unhandled rejection with value: undefined
+[FAIL] TCP addIceCandidate aimed at port 8001 accepted
+  promise_test: Unhandled rejection with value: undefined
+Harness: the test ran to completion.
+

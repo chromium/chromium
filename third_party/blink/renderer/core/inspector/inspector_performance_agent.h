@@ -50,7 +50,7 @@ class CORE_EXPORT InspectorPerformanceAgent final
           out_result) override;
 
   // PerformanceMetrics probes implementation.
-  void ConsoleTimeStamp(const String& title);
+  void ConsoleTimeStamp(v8::Isolate* isolate, v8::Local<v8::String> label);
   void Will(const probe::CallFunction&);
   void Did(const probe::CallFunction&);
   void Will(const probe::ExecuteScript&);

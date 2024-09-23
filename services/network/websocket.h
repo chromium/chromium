@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "services/network/network_service.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       const url::Origin& origin,
@@ -94,6 +95,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // |url|. This decision is based on the |options_| and |origin_| this
   // WebSocket was created with.
   bool AllowCookies(const GURL& url) const;
+
+  // Returns if the nonce from |isolation_info_| matches |nonce|, which
+  // originates from a fenced frame whose network access is being revoked.
+  bool RevokeIfNonceMatches(const base::UnguessableToken& nonce);
 
   // These methods are called by the network delegate to forward these events to
   // the |header_client_|.
@@ -148,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   void AddChannel(const GURL& socket_url,
                   const std::vector<std::string>& requested_protocols,
                   const net::SiteForCookies& site_for_cookies,
-                  bool has_storage_access,
+                  net::StorageAccessApiStatus storage_access_api_status,
                   const net::IsolationInfo& isolation_info,
                   std::vector<mojom::HttpHeaderPtr> additional_headers);
   void OnSSLCertificateErrorResponse(
@@ -228,6 +233,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // For 3rd-party cookie permission checking.
   net::SiteForCookies site_for_cookies_;
 
+  // Used by RevokeIfNonceMatches() for handling network revocation.
+  const net::IsolationInfo isolation_info_;
+
   bool handshake_succeeded_ = false;
   const HasRawHeadersAccess has_raw_headers_access_;
 
@@ -244,12 +252,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   mojo::SimpleWatcher readable_watcher_;
   base::queue<DataFrame> pending_send_data_frames_;
   bool blocked_on_websocket_channel_ = false;
-
-  // True if we should preserve the old behaviour where <=64KB messages were
-  // never fragmented.
-  // TODO(ricea): Remove the flag once we know whether we really need this or
-  // not. See https://crbug.com/1086273.
-  const bool reassemble_short_messages_;
 
   // Temporary buffer for storage of short messages that have been fragmented by
   // the data pipe. Only messages that are actually fragmented are copied into

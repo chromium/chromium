@@ -64,7 +64,7 @@ class BinarySizeDifferTest(unittest.TestCase):
     packages[name] = new_package
 
   def testComputePackageDiffs(self):
-    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
     if os.name == 'nt':
       return

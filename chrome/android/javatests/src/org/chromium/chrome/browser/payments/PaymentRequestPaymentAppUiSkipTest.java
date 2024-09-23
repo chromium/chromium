@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.payments.Event;
+import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
 
 import java.util.concurrent.TimeoutException;
@@ -121,16 +121,13 @@ public class PaymentRequestPaymentAppUiSkipTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events",
-                        Event.REQUEST_METHOD_OTHER
-                                | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                                | Event.SKIPPED_SHOW
-                                | Event.AVAILABLE_METHOD_OTHER
-                                | Event.SELECTED_OTHER
-                                | Event.PAY_CLICKED
-                                | Event.RECEIVED_INSTRUMENT_DETAILS
-                                | Event.COMPLETED));
+                        "PaymentRequest.Events2",
+                        Event2.REQUEST_METHOD_OTHER
+                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                | Event2.SKIPPED_SHOW
+                                | Event2.SELECTED_OTHER
+                                | Event2.PAY_CLICKED
+                                | Event2.COMPLETED));
     }
 
     /** Two payments apps with the same payment method name should not skip payments UI. */
@@ -156,15 +153,12 @@ public class PaymentRequestPaymentAppUiSkipTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events",
-                        Event.REQUEST_METHOD_OTHER
-                                | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                                | Event.SHOWN
-                                | Event.AVAILABLE_METHOD_OTHER
-                                | Event.SELECTED_OTHER
-                                | Event.PAY_CLICKED
-                                | Event.RECEIVED_INSTRUMENT_DETAILS
-                                | Event.COMPLETED));
+                        "PaymentRequest.Events2",
+                        Event2.REQUEST_METHOD_OTHER
+                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                | Event2.SHOWN
+                                | Event2.SELECTED_OTHER
+                                | Event2.PAY_CLICKED
+                                | Event2.COMPLETED));
     }
 }

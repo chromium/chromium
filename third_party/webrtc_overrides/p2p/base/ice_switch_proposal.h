@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_SWITCH_PROPOSAL_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_SWITCH_PROPOSAL_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
@@ -64,10 +64,10 @@ class RTC_EXPORT IceSwitchProposal : public IceProposal {
   // The reason for which this switch is proposed.
   IceSwitchReason reason() const { return reason_; }
   // The connection that the ICE transport will switch to.
-  absl::optional<const IceConnection> connection() const { return connection_; }
+  std::optional<const IceConnection> connection() const { return connection_; }
   // An optional event describing when the next check will be performed to
   // switch to a new connection.
-  absl::optional<IceRecheckEvent> recheck_event() const {
+  std::optional<IceRecheckEvent> recheck_event() const {
     return recheck_event_;
   }
   // Connections for which some learnt state should be reset.
@@ -85,8 +85,8 @@ class RTC_EXPORT IceSwitchProposal : public IceProposal {
 
  private:
   IceSwitchReason reason_;
-  absl::optional<IceConnection> connection_;
-  absl::optional<IceRecheckEvent> recheck_event_;
+  std::optional<IceConnection> connection_;
+  std::optional<IceRecheckEvent> recheck_event_;
   std::vector<IceConnection> connections_to_forget_state_on_;
 };
 

@@ -26,16 +26,24 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- NOTE: Please also keep in line with components/visitedlink/browser/visitedlink_writer.cc:AddFingerprint. -->
+
+<!-- LINT.IfChange(AddFingerprint) -->
+
 <enum name="AddFingerprint">
   <int value="0" label="NewVisit"/>
   <int value="1" label="AlreadyVisited"/>
   <int value="2" label="TableError"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
+
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>
   <int value="1" label="Queried"/>
 </enum>
+
+<!-- LINT.IfChange(BrowsingDataRemoverTasks) -->
 
 <enum name="BrowsingDataRemoverTasks">
   <int value="1" label="kSynchronous"/>
@@ -57,15 +65,19 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="kSharedDictionary"/>
 </enum>
 
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.Task) -->
+
+<!-- LINT.IfChange(ChromeBrowsingDataRemoverTasks) -->
+
 <enum name="ChromeBrowsingDataRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kHistory"/>
-  <int value="3" label="kHostNameResolution"/>
+  <int value="3" label="(Obsolete) kHostNameResolution"/>
   <int value="4" label="kNaclCache"/>
   <int value="5" label="kPnaclCache"/>
   <int value="6" label="kAutofillData"/>
   <int value="7" label="kAutofillOrigins"/>
-  <int value="8" label="kPluginData"/>
+  <int value="8" label="(Obsolete) kPluginData"/>
   <int value="9" label="kFlashLsoHelper"/>
   <int value="10" label="kDomainReliability"/>
   <int value="11" label="(Obsolete) kNetworkPredictor"/>
@@ -74,38 +86,41 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="kCookies"/>
   <int value="15" label="kPasswords"/>
   <int value="16" label="kHttpAuthCache"/>
-  <int value="17" label="kDisableAutoSignin"/>
+  <int value="17" label="kDisableAutoSigninForProfilePasswords"/>
   <int value="18" label="kPasswordsStatistics"/>
-  <int value="19" label="kKeywordsModel"/>
+  <int value="19" label="(Obsolete) kKeywordsModel"/>
   <int value="20" label="kReportingCache"/>
   <int value="21" label="kNetworkErrorLogging"/>
-  <int value="22" label="kFlashDeauthorization"/>
+  <int value="22" label="(Obsolete) kFlashDeauthorization"/>
   <int value="23" label="kOfflinePages"/>
   <int value="24" label="kPrecache"/>
-  <int value="25" label="kExploreSites"/>
-  <int value="26" label="kLegacyStrikes"/>
+  <int value="25" label="(Obsolete) kExploreSites"/>
+  <int value="26" label="(Obsolete) kLegacyStrikes"/>
   <int value="27" label="kWebrtcEventLogs"/>
   <int value="28" label="kCdmLicenses"/>
   <int value="29" label="kHostCache"/>
   <int value="30" label="kTpmAttestationKeys"/>
-  <int value="31" label="kStrikes"/>
+  <int value="31" label="(Obsolete) kStrikes"/>
   <int value="32"
       label="(Obsolete) kLeakedCredentials. Use kCompromisedCredentials
              instead. This expired 2019-11."/>
   <int value="33" label="(Obsolete) kFieldInfo. Deprecated in M117"/>
-  <int value="34" label="kCompromisedCredentials"/>
+  <int value="34" label="(Obsolete) kCompromisedCredentials"/>
   <int value="35" label="kUserDataSnapshot"/>
-  <int value="36" label="kMediaFeeds"/>
+  <int value="36" label="(Obsolete) kMediaFeeds"/>
   <int value="37" label="kAccountPasswords"/>
   <int value="38" label="kAccountPasswordsSynced"/>
-  <int value="39" label="kAccountCompromisedCredentials"/>
+  <int value="39" label="(Obsolete) kAccountCompromisedCredentials"/>
   <int value="40" label="kFaviconCacheExpiration"/>
   <int value="41" label="kSecurePaymentConfirmationInstruments"/>
   <int value="42" label="kWebAppHistory"/>
   <int value="43" label="kWebAuthnCredentials"/>
   <int value="44" label="kWebrtcVideoPerfHistory"/>
   <int value="45" label="kMediaDeviceSalts"/>
+  <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
 </enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
 <enum name="ClearBrowsingDataTab">
   <int value="0" label="Basic"/>
@@ -132,6 +147,72 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="EmbeddingsExtractionCancelled">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TabHelper.DidFinishLoad"/>
+  <int value="2" label="TabHelper.ExtractPassages.Url"/>
+  <int value="3" label="TabHelper.ExtractPassages.Reschedule"/>
+  <int value="4" label="TabHelper.ExtractPassagesWithHistoryData.Results"/>
+  <int value="5" label="TabHelper.ExtractPassagesWithHistoryData.Time"/>
+  <int value="6" label="TabHelper.ExtractPassagesWithHistoryData.Guid"/>
+  <int value="7" label="Service.RetrievePassages"/>
+  <int value="8" label="Service.RetrievePassagesWithUrlData"/>
+</enum>
+
+<enum name="EmbeddingsModelInfoStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model info is valid"/>
+  <int value="2" label="Model info is empty"/>
+  <int value="3" label="Model info does not contain model metadata"/>
+  <int value="4" label="Model info has invalid model metadata"/>
+  <int value="5" label="Model info has invalid data for additional files"/>
+</enum>
+
+<enum name="EmbeddingsQueryFiltered">
+  <int value="0" label="Not filtered"/>
+  <int value="1" label="Filtered non-ASCII"/>
+  <int value="2" label="Filtered phrase match"/>
+  <int value="3" label="Filtered term match"/>
+  <int value="4" label="Filtered one-word hash match"/>
+  <int value="5" label="Filtered two-word hash match"/>
+</enum>
+
+<enum name="EmbeddingsUserActions">
+  <int value="0" label="Non-empty query History search"/>
+  <int value="1" label="Embeddings search"/>
+  <int value="2" label="Embeddings non-empty results shown"/>
+  <int value="3" label="Embeddings result clicked"/>
+</enum>
+
+<enum name="HistoryClustersInitialState">
+  <summary>
+    The initial state that describes how an interaction with the
+    HistoryClusters, or Journeys, UI was started.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="kDirectNavigation">
+    The UI was reached via direct navigation, like the user typing the WebUI URL
+    in the omnibox.
+  </int>
+  <int value="2" label="kIndirectNavigation">
+    The UI was reached via indirect navigation, e.g. clicking on the omnibox
+    action chip.
+  </int>
+  <int value="3" label="kSameDocument">
+    The UI was reached via same-document navigation, like the user visiting
+    History first, and then clicking the Journeys Tab. This also includes other
+    edge cases, like if the user clicked over from 'Tabs on other devices'.
+  </int>
+  <int value="4" label="kSidePanelFromOmnibox">
+    The Side Panel HistoryClusters UI was opened from the omnibox. Technically
+    this COULD be logged as kIndirectNavigation, but we want to be able to
+    distinguish between Side Panel and History WebUI initializations.
+  </int>
+  <int value="5" label="kSidePanelFromToolbarButton">
+    The Side Panel HistoryClusters UI was opened from side panel toolbar button.
+  </int>
+</enum>
+
 <enum name="HistoryInitStep">
   <int value="0" label="Open"/>
   <int value="1" label="Transaction begin"/>
@@ -150,6 +231,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Synced Tabs"/>
   <int value="4" label="Signin Promo"/>
   <int value="5" label="Journeys"/>
+  <int value="6" label="ProductSpecificationsLists"/>
+</enum>
+
+<enum name="HistoryResultType">
+  <int value="0"
+      label="Traditional history search result (reverse chronological list)"/>
+  <int value="1" label="Grouped history search result"/>
+  <int value="2" label="Embeddings search result"/>
 </enum>
 
 <enum name="OtherSessionsActions">
@@ -174,6 +263,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="ManualSubframe"/>
 </enum>
 
+<!-- LINT.IfChange(StoragePartitionRemoverTasks) -->
+
 <enum name="StoragePartitionRemoverTasks">
   <int value="1" label="kSynchronous"/>
   <int value="2" label="kCookies"/>
@@ -188,7 +279,10 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kGpuCache"/>
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
+  <int value="14" label="kCdmStorage"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
 
 </enums>
 

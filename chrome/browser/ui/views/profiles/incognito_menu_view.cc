@@ -37,7 +37,8 @@ IncognitoMenuView::IncognitoMenuView(views::Button* anchor_button,
                                      Browser* browser)
     : ProfileMenuViewBase(anchor_button, browser) {
   DCHECK(browser->profile()->IsIncognitoProfile());
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
+  GetViewAccessibility().SetName(GetAccessibleWindowTitle(),
+                                 ax::mojom::NameFrom::kAttribute);
 
   base::RecordAction(base::UserMetricsAction("IncognitoMenu_Show"));
 }

@@ -60,30 +60,6 @@ TEST_F(DownloadControllerImplTest, FromBrowserState) {
   ASSERT_EQ(first_call_controller, second_call_controller);
 }
 
-// Tests that DownloadController::CreateDownloadTask calls
-// DownloadControllerDelegate::OnDownloadCreated.
-TEST_F(DownloadControllerImplTest, OnDownloadCreated) {
-  NSString* identifier = [NSUUID UUID].UUIDString;
-  GURL url("https://download.test");
-  download_controller_->CreateDownloadTask(&web_state_, identifier, url,
-                                           @"POST", kContentDisposition,
-                                           /*total_bytes=*/-1, kMimeType);
-
-  ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
-  DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
-  EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
-  EXPECT_NSEQ(identifier, task->GetIdentifier());
-  EXPECT_EQ(url, task->GetOriginalUrl());
-  EXPECT_NSEQ(@"POST", task->GetHttpMethod());
-  EXPECT_FALSE(task->IsDone());
-  EXPECT_EQ(0, task->GetErrorCode());
-  EXPECT_EQ(-1, task->GetTotalBytes());
-  EXPECT_EQ(-1, task->GetPercentComplete());
-  EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
-  EXPECT_EQ(kMimeType, task->GetMimeType());
-  EXPECT_EQ(base::FilePath(kTestFileName), task->GenerateFileName());
-}
-
 // Tests that DownloadController::CreateNativeDownloadTask calls
 // DownloadControllerDelegate::OnDownloadCreated.
 TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
@@ -120,9 +96,16 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
 TEST_F(DownloadControllerImplTest, NullDelegate) {
   download_controller_->SetDelegate(nullptr);
   GURL url("https://download.test");
-  download_controller_->CreateDownloadTask(
+
+  WKDownload* fake_download = nil;
+  id<DownloadNativeTaskBridgeDelegate> fake_delegate = nil;
+  FakeNativeTaskBridge* fake_task_bridge =
+      [[FakeNativeTaskBridge alloc] initWithDownload:fake_download
+                                            delegate:fake_delegate];
+
+  download_controller_->CreateNativeDownloadTask(
       &web_state_, [NSUUID UUID].UUIDString, url, @"GET", kContentDisposition,
-      /*total_bytes=*/-1, kMimeType);
+      /*total_bytes=*/-1, kMimeType, fake_task_bridge);
 }
 
 }  // namespace web

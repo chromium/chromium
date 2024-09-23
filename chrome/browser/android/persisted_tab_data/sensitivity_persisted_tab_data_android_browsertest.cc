@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/optimization_guide/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -21,15 +21,15 @@ namespace {
 const char kSensitiveRelUrl[] = "/android/sensitive.html";
 const char kNonSensitiveRelUrl[] = "/android/hello.html";
 const char kNonSensitiveRelUrl2[] = "/android/second.html";
-const optimization_guide::PageContentAnnotationsResult kSensitiveResult =
-    optimization_guide::PageContentAnnotationsResult::
+const page_content_annotations::PageContentAnnotationsResult kSensitiveResult =
+    page_content_annotations::PageContentAnnotationsResult::
         CreateContentVisibilityScoreResult(0.1);
-const optimization_guide::PageContentAnnotationsResult kNonSensitiveResult =
-    optimization_guide::PageContentAnnotationsResult::
-        CreateContentVisibilityScoreResult(0.7);
-const optimization_guide::PageContentAnnotationsResult kNonSensitiveResult2 =
-    optimization_guide::PageContentAnnotationsResult::
-        CreateContentVisibilityScoreResult(0.8);
+const page_content_annotations::PageContentAnnotationsResult
+    kNonSensitiveResult = page_content_annotations::
+        PageContentAnnotationsResult::CreateContentVisibilityScoreResult(0.7);
+const page_content_annotations::PageContentAnnotationsResult
+    kNonSensitiveResult2 = page_content_annotations::
+        PageContentAnnotationsResult::CreateContentVisibilityScoreResult(0.8);
 }  // namespace
 
 class SensitivityPersistedTabDataAndroidBrowserTest

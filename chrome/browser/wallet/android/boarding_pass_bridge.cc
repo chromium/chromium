@@ -7,8 +7,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/wallet/android/boarding_pass_detector.h"
-#include "chrome/browser/wallet/android/jni_headers/BoardingPassBridge_jni.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/wallet/android/jni_headers/BoardingPassBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

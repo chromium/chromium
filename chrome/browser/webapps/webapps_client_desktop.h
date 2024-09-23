@@ -29,8 +29,13 @@ class WebappsClientDesktop : public ChromeWebappsClient {
                                        InstallTrigger trigger) override;
   AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) override;
-
-  bool IsWebAppConsideredFullyInstalled(
+  // Allows installation if there is no app controlling the start_url. If there
+  // is, will still allow installation if:
+  // - The manifest_id matches the existing installation, and the existing
+  //   installation has the user display mode as kBrowser. (this allows us to
+  //   upgrade to a standalone experience through a reinstall).
+  // - The controlling app is a DIY app.
+  bool DoesNewWebAppConflictWithExistingInstallation(
       content::BrowserContext* browsing_context,
       const GURL& start_url,
       const ManifestId& manifest_id) const override;
@@ -41,6 +46,10 @@ class WebappsClientDesktop : public ChromeWebappsClient {
       const GURL& site_url) const override;
   bool IsAppFullyInstalledForSiteUrl(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
+  bool IsUrlControlledBySeenManifest(content::BrowserContext* browsing_context,
+                                     const GURL& site_url) const override;
+  void OnManifestSeen(content::BrowserContext* browsing_context,
+                      const blink::mojom::Manifest& manifest) const override;
   void SaveInstallationIgnoredForMl(content::BrowserContext* browsing_context,
                                     const GURL& manifest_id) const override;
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,
@@ -53,6 +62,8 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   segmentation_platform::SegmentationPlatformService*
   GetSegmentationPlatformService(
       content::BrowserContext* browsing_context) const override;
+  std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) override;
 
  private:
   friend base::NoDestructor<WebappsClientDesktop>;

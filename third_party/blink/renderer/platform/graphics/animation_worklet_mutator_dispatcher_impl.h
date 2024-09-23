@@ -138,7 +138,7 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
 
   // The MutatorClient owns (std::unique_ptr) us, so this pointer is
   // valid as long as this class exists.
-  raw_ptr<MutatorClient, ExperimentalRenderer> client_;
+  raw_ptr<MutatorClient> client_;
 
   // Map of mutator scope IDs to mutator input. The Mutate methods safeguards
   // against concurrent calls (important once async mutations are introduced) by

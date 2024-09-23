@@ -35,6 +35,11 @@ void MultiDeviceSetupScreenHandler::Show() {
   FireWebUIListenerWhenAllowed("multidevice_setup.initializeSetupFlow");
 }
 
+base::WeakPtr<MultiDeviceSetupScreenView>
+MultiDeviceSetupScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void MultiDeviceSetupScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
   dict->Set("wifiSyncEnabled",

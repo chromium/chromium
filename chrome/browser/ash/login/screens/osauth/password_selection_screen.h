@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_PASSWORD_SELECTION_SCREEN_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
-#include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 
 namespace ash {
@@ -51,6 +54,7 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
  protected:
   // BaseScreen:
   void ShowImpl() override;
+  void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   bool MaybeSkip(WizardContext& context) override;
 
@@ -64,6 +68,7 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
 
   // Values obtained from UserContext in `InspectContext`
   bool has_online_password_ = false;
+  bool is_shown_ = false;
   AuthFactorsConfiguration auth_factors_config_;
 
   base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;

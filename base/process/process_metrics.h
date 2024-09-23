@@ -12,13 +12,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -47,9 +48,6 @@
 
 namespace base {
 
-// Full declaration is in process_metrics_iocounters.h.
-struct IoCounters;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Minor and major page fault counts since the process creation.
 // Both counts are process-wide, and exclude child processes.
@@ -65,6 +63,16 @@ struct PageFaultCounts {
 
 // Convert a POSIX timeval to microseconds.
 BASE_EXPORT int64_t TimeValToMicroseconds(const struct timeval& tv);
+
+enum class ProcessCPUUsageError {
+  // The OS returned an error while measuring the CPU usage. The possible causes
+  // vary by platform.
+  kSystemError,
+
+  // Process CPU usage couldn't be measured because the process wasn't running.
+  // Some platforms may return kSystemError instead in this situation.
+  kProcessNotFound,
+};
 
 // Provides performance metrics for a specified process (CPU usage and IO
 // counters). Use CreateCurrentProcessMetrics() to get an instance for the
@@ -127,40 +135,16 @@ class BASE_EXPORT ProcessMetrics {
   [[nodiscard]] double GetPlatformIndependentCPUUsage(TimeDelta cumulative_cpu);
 
   // Same as the above, but automatically calls GetCumulativeCPUUsage() to
-  // determine the current cumulative CPU.
-  [[nodiscard]] double GetPlatformIndependentCPUUsage();
+  // determine the current cumulative CPU. Returns nullopt if
+  // GetCumulativeCPUUsage() fails.
+  base::expected<double, ProcessCPUUsageError> GetPlatformIndependentCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since
-  // process start. In case of multi-core processors, a process can consume CPU
-  // at a rate higher than wall-clock time, e.g. two cores at full utilization
-  // will result in a time delta of 2 seconds/per 1 wall-clock second.
-  [[nodiscard]] TimeDelta GetCumulativeCPUUsage();
-
-#if BUILDFLAG(IS_WIN)
-  // TODO(pmonette): Remove the precise version of the CPU usage functions once
-  // we're validated that they are indeed better than the regular version above
-  // and that they can replace the old implementation.
-
-  // Returns the percentage of time spent executing, across all threads of the
-  // process, in the interval since the last time the method was called, using
-  // the current |cumulative_cpu|.
-  //
-  // Same as GetPlatformIndependentCPUUSage() but implemented using
-  // `QueryProcessCycleTime` for higher precision.
-  [[nodiscard]] double GetPreciseCPUUsage(TimeDelta cumulative_cpu);
-
-  // Same as the above, but automatically calls GetPreciseCumulativeCPUUsage()
-  // to determine the current cumulative CPU.
-  [[nodiscard]] double GetPreciseCPUUsage();
-
-  // Returns the cumulative CPU usage across all threads of the process since
-  // process start. In case of multi-core processors, a process can consume CPU
-  // at a rate higher than wall-clock time, e.g. two cores at full utilization
-  // will result in a time delta of 2 seconds/per 1 wall-clock second.
-  //
-  // This is implemented using `QueryProcessCycleTime` for higher precision.
-  [[nodiscard]] TimeDelta GetPreciseCumulativeCPUUsage();
-#endif  // BUILDFLAG(IS_WIN)
+  // process start, or nullopt on error. In case of multi-core processors, a
+  // process can consume CPU at a rate higher than wall-clock time, e.g. two
+  // cores at full utilization will result in a time delta of 2 seconds/per 1
+  // wall-clock second.
+  base::expected<TimeDelta, ProcessCPUUsageError> GetCumulativeCPUUsage();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
@@ -197,17 +181,6 @@ class BASE_EXPORT ProcessMetrics {
   // auto-refresh), place interconnects into lower-power states etc"
   int GetPackageIdleWakeupsPerSecond();
 #endif
-
-  // Retrieves accounting information for all I/O operations performed by the
-  // process.
-  // If IO information is retrieved successfully, the function returns true
-  // and fills in the IO_COUNTERS passed in. The function returns false
-  // otherwise.
-  bool GetIOCounters(IoCounters* io_counters) const;
-
-  // Returns the cumulative disk usage in bytes across all threads of the
-  // process since process start.
-  uint64_t GetCumulativeDiskUsageInBytes();
 
 #if BUILDFLAG(IS_POSIX)
   // Returns the number of file descriptors currently open by the process, or
@@ -264,11 +237,6 @@ class BASE_EXPORT ProcessMetrics {
   TimeTicks last_cpu_time_;
 #if !BUILDFLAG(IS_FREEBSD) || !BUILDFLAG(IS_POSIX)
   TimeDelta last_cumulative_cpu_;
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  TimeTicks last_cpu_time_for_precise_cpu_usage_;
-  TimeDelta last_precise_cumulative_cpu_;
 #endif
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
@@ -404,7 +372,7 @@ BASE_EXPORT bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo);
 // Parse the data found in /proc/<pid>/stat and return the sum of the
 // CPU-related ticks.  Returns -1 on parse error.
 // Exposed for testing.
-BASE_EXPORT int ParseProcStatCPU(StringPiece input);
+BASE_EXPORT int ParseProcStatCPU(std::string_view input);
 
 // Get the number of threads of |process| as available in /proc/<pid>/stat.
 // This should be used with care as no synchronization with running threads is
@@ -418,7 +386,7 @@ BASE_EXPORT extern const char kProcSelfExe[];
 // Parses a string containing the contents of /proc/meminfo
 // returns true on success or false for a parsing error
 // Exposed for testing.
-BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
+BASE_EXPORT bool ParseProcMeminfo(std::string_view input,
                                   SystemMemoryInfoKB* meminfo);
 
 // Returns the memory committed by the system in KBytes, as from
@@ -445,7 +413,7 @@ BASE_EXPORT bool GetVmStatInfo(VmStatInfo* vmstat);
 // Parses a string containing the contents of /proc/vmstat
 // returns true on success or false for a parsing error
 // Exposed for testing.
-BASE_EXPORT bool ParseProcVmstat(StringPiece input, VmStatInfo* vmstat);
+BASE_EXPORT bool ParseProcVmstat(std::string_view input, VmStatInfo* vmstat);
 
 // Data from /proc/diskstats about system-wide disk I/O.
 struct BASE_EXPORT SystemDiskInfo {
@@ -472,7 +440,7 @@ struct BASE_EXPORT SystemDiskInfo {
 // Checks whether the candidate string is a valid disk name, [hsv]d[a-z]+
 // for a generic disk or mmcblk[0-9]+ for the MMC case.
 // Names of disk partitions (e.g. sda1) are not valid.
-BASE_EXPORT bool IsValidDiskName(StringPiece candidate);
+BASE_EXPORT bool IsValidDiskName(std::string_view candidate);
 
 // Retrieves data from /proc/diskstats about system-wide disk I/O.
 // Fills in the provided |diskinfo| structure. Returns true on success.
@@ -509,13 +477,14 @@ struct BASE_EXPORT SwapInfo {
 // This should be used for the new ZRAM sysfs interfaces.
 // Returns true on success or false for a parsing error.
 // Exposed for testing.
-BASE_EXPORT bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info);
+BASE_EXPORT bool ParseZramMmStat(std::string_view mm_stat_data,
+                                 SwapInfo* swap_info);
 
 // Parses a string containing the contents of /sys/block/zram0/stat
 // This should be used for the new ZRAM sysfs interfaces.
 // Returns true on success or false for a parsing error.
 // Exposed for testing.
-BASE_EXPORT bool ParseZramStat(StringPiece stat_data, SwapInfo* swap_info);
+BASE_EXPORT bool ParseZramStat(std::string_view stat_data, SwapInfo* swap_info);
 
 // In ChromeOS, reads files from /sys/block/zram0 that contain ZRAM usage data.
 // Fills in the provided |swap_data| structure.

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -315,9 +314,11 @@ void BrowserCompositorMac::InvalidateLocalSurfaceIdOnEviction() {
   dfh_local_surface_id_allocator_.Invalidate();
 }
 
-std::vector<viz::SurfaceId>
+viz::FrameEvictorClient::EvictIds
 BrowserCompositorMac::CollectSurfaceIdsForEviction() {
-  return client_->CollectSurfaceIdsForEviction();
+  viz::FrameEvictorClient::EvictIds ids;
+  ids.embedded_ids = client_->CollectSurfaceIdsForEviction();
+  return ids;
 }
 
 bool BrowserCompositorMac::ShouldShowStaleContentOnEviction() {

@@ -23,6 +23,7 @@ constexpr const char kUserActionSelect[] = "choobeSelect";
 
 // static
 std::string ChoobeScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::SELECTED:
       return "Selected";
@@ -31,6 +32,7 @@ std::string ChoobeScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ChoobeScreen::ChoobeScreen(base::WeakPtr<ChoobeScreenView> view,

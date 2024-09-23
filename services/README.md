@@ -202,7 +202,7 @@ actually required as part of the service implementation. For example
 ## Adding a New Service
 
 Please start a thread on
-[services-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/services-dev)
+[services-dev@chromium.org](https://groups.google.com/a/chromium.org/g/services-dev)
 if you want to propose the introduction of a new service.
 
 If you are servicifying an existing Chromium feature, please check out
@@ -214,10 +214,10 @@ Here are some other external documents that aren't quite fully captured by any
 documents in the Chromium tree. Beware of obsolete information:
 
 - [High-level Design Doc](https://docs.google.com/document/d/15I7sQyQo6zsqXVNAlVd520tdGaS8FCicZHrN0yRu-oU)
-- [Servicification Homepage](https://sites.google.com/a/chromium.org/dev/servicification)
+- [Servicification Homepage](https://www.chromium.org/servicification/)
 
 ## Additional Support
 
 You can always post to
-[services-dev@chromium.org](https://groups.google.com/a/chromium.org/forum#!forum/services-dev)
+[services-dev@chromium.org](https://groups.google.com/a/chromium.org/g/services-dev)
 with questions or concerns about anything related to service development.

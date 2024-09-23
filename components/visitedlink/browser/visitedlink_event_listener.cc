@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -26,6 +29,21 @@ constexpr int kCommitIntervalMs = 100;
 // Size of the buffer after which individual link updates deemed not warranted
 // and the overall update should be used instead.
 const unsigned kVisitedLinkBufferThreshold = 50;
+
+// A helper function to obtain the relevant origin salt from the
+// PartitionedVisitedLinkWriter while checking for null values as necessary.
+uint64_t OriginSaltHelper(
+    raw_ptr<visitedlink::PartitionedVisitedLinkWriter> partitioned_writer,
+    const url::Origin& origin) {
+  // Ensure that we have not severed our owner relationship.
+  DCHECK(partitioned_writer);
+  const std::optional<uint64_t> salt =
+      partitioned_writer->GetOrAddOriginSalt(origin);
+  // The table should not be able to enter build mode again after we
+  // have called Init(). Thus, all salts should have a value.
+  DCHECK(salt.has_value());
+  return salt.value();
+}
 
 }  // namespace
 
@@ -109,6 +127,19 @@ class VisitedLinkUpdater {
     pending_.clear();
   }
 
+  // Inform our corresponding VisitedLinkReader instance of updated <origin,
+  // salt> pairs.
+  void UpdateOriginSalts(
+      const base::flat_map<url::Origin, uint64_t>& updated_salts) {
+    base::UmaHistogramCounts1M(
+        "History.VisitedLinks.NumSaltsForNavigationsDuringBuild",
+        updated_salts.size());
+    if (updated_salts.empty()) {
+      return;
+    }
+    sink_->UpdateOriginSalts(updated_salts);
+  }
+
  private:
   bool reset_needed_;
   bool invalidate_hashes_;
@@ -120,6 +151,13 @@ class VisitedLinkUpdater {
 VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context)
     : coalesce_timer_(&default_coalesce_timer_),
+      browser_context_(browser_context) {}
+
+VisitedLinkEventListener::VisitedLinkEventListener(
+    content::BrowserContext* browser_context,
+    PartitionedVisitedLinkWriter* partitioned_writer)
+    : coalesce_timer_(&default_coalesce_timer_),
+      partitioned_writer_(partitioned_writer),
       browser_context_(browser_context) {}
 
 VisitedLinkEventListener::~VisitedLinkEventListener() {
@@ -164,6 +202,60 @@ void VisitedLinkEventListener::Reset(bool invalidate_hashes) {
   for (auto i = updaters_.begin(); i != updaters_.end(); ++i) {
     i->second->AddReset(invalidate_hashes);
     i->second->Update();
+  }
+}
+
+// TODO(crbug.com/349610460): Consider the performance of this
+// function when a restore is performed on a large number of tabs. We are most
+// interested in considering this when the profile has a large number of
+// :visited links it must pull from the VisitedLinkDatabase to build the
+// PartitionedVisitedLink hashtable on the DB thread.
+//
+// TODO(crbug.com/349618663): consider BFCache restores for redirect chains
+// that took place during table build and how they recover their salts.
+void VisitedLinkEventListener::UpdateOriginSalts() {
+  // Iterate through each of our VisitedLinkUpdaters and obtain the
+  // corresponding RenderProcessHost.
+  for (const auto& [id, updater] : updaters_) {
+    std::vector<std::pair<url::Origin, uint64_t>> updated_salts;
+    // Go through each of the RenderFrameHosts within this RenderProcessHost,
+    // which will allow us to determine all of the navigations that took place
+    // during hashtable build on the DB thread. NOTE: ForEachRenderFrameHost()
+    // skips any RFHs in a kSpeculative state. This is okay as we are only
+    // interesting in RFHs which are in a kPendingCommit or kActive state.
+    content::RenderProcessHost::FromID(id)->ForEachRenderFrameHost(
+        [this, &updated_salts](content::RenderFrameHost* rfh) {
+          std::vector<base::SafeRef<content::NavigationHandle>> pending =
+              rfh->GetPendingCommitCrossDocumentNavigations();
+          if (pending.empty()) {
+            // If there are no pending cross-document commits, we can determine
+            // the origin to be committed, determine its per-origin salt, and
+            // store it.
+            const url::Origin origin = rfh->GetLastCommittedOrigin();
+            updated_salts.emplace_back(
+                origin, OriginSaltHelper(partitioned_writer_, origin));
+          } else {
+            // If there is a pending cross-document commit, we don't want to
+            // send the old salt to the renderer. So we obtain the pending
+            // cross-document navigation handles.
+            for (base::SafeRef<content::NavigationHandle> handle : pending) {
+              // Determine the cross-document origin to be committed.
+              const std::optional<url::Origin> origin =
+                  handle->GetOriginToCommit();
+              if (!origin.has_value()) {
+                continue;
+              }
+              // Determine the per-origin salt and store it.
+              updated_salts.emplace_back(
+                  origin.value(),
+                  OriginSaltHelper(partitioned_writer_, origin.value()));
+            }
+          }
+        });
+    // Give the VisitedLinkUpdater our list of per-origin salts for
+    // navigations that took place during hashtable build on the DB thread.
+    const base::flat_map updated_salts_flat_map(updated_salts);
+    updater->UpdateOriginSalts(updated_salts_flat_map);
   }
 }
 

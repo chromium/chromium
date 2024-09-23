@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] The Float16Array interface object should be exposed.
+  assert_own_property: expected property "Float16Array" missing
+Harness: the test ran to completion.
+

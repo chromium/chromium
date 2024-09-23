@@ -9,8 +9,10 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
@@ -43,6 +45,34 @@ using TreeEdgesList =
 // all countries.
 constexpr FieldTypeSet kAddressComputedTypes = {
     ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+
+std::u16string GetFormattingExpressionOverrides(
+    FieldType field_type,
+    AddressCountryCode country_code) {
+  // The list of countries for which the street location is composed of the
+  // house number followed by the street name. The default value returned by the
+  // formatting API is the opposite (i.e. street name followed by house number).
+  static constexpr auto kHouseNumberFirstCountriesSet =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"AU", "CA", "CN", "FR", "IE", "IL", "MY", "NZ", "PK", "PH", "SA",
+           "SG", "LK", "TH", "GB", "US", "VN", "ZA"});
+
+  if (field_type == ADDRESS_HOME_STREET_LOCATION) {
+    if (base::Contains(kHouseNumberFirstCountriesSet, country_code.value())) {
+      return u"${ADDRESS_HOME_HOUSE_NUMBER;;} ${ADDRESS_HOME_STREET_NAME;;}";
+    }
+  }
+
+  if (field_type == ADDRESS_HOME_STREET_ADDRESS &&
+      country_code.value() == "ES") {
+    // TODO(crbug.com/40275657): Remove once an address model for Spain is
+    // introduced.
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}";
+  }
+
+  return u"";
+}
 
 // Returns an instance of the `AddressComponent` implementation that matches
 // the corresponding FieldType if exists. Otherwise, returns a default
@@ -104,6 +134,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_LINE3:
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
@@ -172,10 +203,11 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case IMPROVED_PREDICTION:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<SynthesizedAddressComponent> BuildSynthesizedNode(
@@ -247,7 +279,7 @@ TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
         ->second;
   }
 
-  auto* it = kAutofillModelRules.find(country_code.value());
+  auto it = kAutofillModelRules.find(country_code.value());
 
   // If the entry is not defined, use the legacy rules.
   return it == kAutofillModelRules.end()
@@ -293,13 +325,12 @@ bool IsSynthesizedType(FieldType field_type, AddressCountryCode country_code) {
 
 std::u16string GetFormattingExpression(FieldType field_type,
                                        AddressCountryCode country_code) {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
-      GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kAddress) {
     // If `country_code` is specified, return the corresponding formatting
     // expression if they exist. Note that it should not fallback to a legacy
     // expression, as these ones refer to a different hierarchy.
     if (IsCustomHierarchyAvailableForCountry(country_code)) {
-      auto* it =
+      auto it =
           kAutofillFormattingRulesMap.find({country_code.value(), field_type});
 
       return it != kAutofillFormattingRulesMap.end()
@@ -307,8 +338,13 @@ std::u16string GetFormattingExpression(FieldType field_type,
                  : u"";
     }
 
+    if (std::u16string format_override =
+            GetFormattingExpressionOverrides(field_type, country_code);
+        !format_override.empty()) {
+      return format_override;
+    }
     // Otherwise return a legacy formatting expression that exists.
-    auto* legacy_it = kAutofillFormattingRulesMap.find(
+    auto legacy_it = kAutofillFormattingRulesMap.find(
         {kLegacyHierarchyCountryCode.value(), field_type});
     return legacy_it != kAutofillFormattingRulesMap.end()
                ? std::u16string(legacy_it->second)
@@ -333,7 +369,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
           ? country_code
           : kLegacyHierarchyCountryCode;
 
-  auto* it = kAutofillParsingRulesMap.find(
+  auto it = kAutofillParsingRulesMap.find(
       {country_code_for_parsing.value(), field_type});
   return it != kAutofillParsingRulesMap.end() ? it->second->Parse(value)
                                               : std::nullopt;
@@ -342,7 +378,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
 std::optional<std::u16string_view> GetStopwordsExpression(
     FieldType field_type,
     AddressCountryCode country_code) {
-  auto* it = kAutofillModelStopwords.find({country_code.value(), field_type});
+  auto it = kAutofillModelStopwords.find({country_code.value(), field_type});
   if (it == kAutofillModelStopwords.end()) {
     return std::nullopt;
   }
@@ -359,8 +395,8 @@ bool IsTypeEnabledForCountry(FieldType field_type,
     return true;
   }
 
-  auto* it = kAutofillModelRules.find(country_code.value());
-  return base::ranges::any_of(
+  auto it = kAutofillModelRules.find(country_code.value());
+  return std::ranges::any_of(
       it->second, [field_type](const FieldTypeDescription& description) {
         return description.field_type == field_type ||
                base::Contains(description.children, field_type);
@@ -368,8 +404,17 @@ bool IsTypeEnabledForCountry(FieldType field_type,
 }
 
 bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
-  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode ||
-      !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("AU") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseAUAddressModel)) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("CA") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseCAAddressModel)) {
     return false;
   }
 
@@ -378,8 +423,23 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
+  if (country_code == AddressCountryCode("FR") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseFRAddressModel)) {
+    return false;
+  }
+
   if (country_code == AddressCountryCode("IN") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("IT") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseITAddressModel)) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("PL") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
     return false;
   }
 

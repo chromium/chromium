@@ -38,6 +38,7 @@ class ArcNotificationDelegate : public message_center::NotificationDelegate {
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override;
   void SettingsClick() override;
+  void DisableNotification() override;
   void ExpandStateChanged(bool expanded) override;
   void SnoozeButtonClicked() override;
   message_center::NotificationDelegate* GetDelegateForParentCopy() override;

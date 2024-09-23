@@ -59,8 +59,8 @@ class StoragePartitionConfig;
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
-// TODO(crbug.com/668114): BrowsingDataRemover does not currently support plugin
-// data deletion. Use PluginDataRemover instead.
+// TODO(crbug.com/40495069): BrowsingDataRemover does not currently support
+// plugin data deletion. Use PluginDataRemover instead.
 class BrowsingDataRemover {
  public:
   // Mask used for Remove.
@@ -102,7 +102,7 @@ class BrowsingDataRemover {
   // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
   // deleting COOKIES, BrowsingDataRemover should skip
   // storage backends whose deletion would cause closing network connections.
-  // TODO(crbug.com/798760): Remove when fixed.
+  // TODO(crbug.com/41363015): Remove when fixed.
   static constexpr DataType DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15;
 
   // Trust Token API (https://github.com/wicg/trust-token-api) persistent
@@ -146,9 +146,14 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
 
+  // Permissions granted by Related Website Sets
+  // (https://github.com/WICG/first-party-sets).
+  static constexpr DataType DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS = 1
+                                                                         << 24;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =

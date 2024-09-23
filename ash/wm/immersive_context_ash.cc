@@ -14,14 +14,12 @@
 
 namespace ash {
 
-using ::chromeos::ImmersiveFullscreenController;
-
 ImmersiveContextAsh::ImmersiveContextAsh() = default;
 
 ImmersiveContextAsh::~ImmersiveContextAsh() = default;
 
 void ImmersiveContextAsh::OnEnteringOrExitingImmersive(
-    ImmersiveFullscreenController* controller,
+    chromeos::ImmersiveFullscreenController* controller,
     bool entering) {
   aura::Window* window = controller->widget()->GetNativeWindow();
   WindowState* window_state = WindowState::Get(window);

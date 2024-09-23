@@ -1,0 +1,110 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../demo.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=demo
+ * #css_wrapper_metadata_end */
+
+.demos {
+  align-items: center;
+  border: var(--cr-hairline);
+  display: flex;
+  height: 150px;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+}
+
+.min-max-anchor {
+  position: absolute;
+  margin: 0;
+}
+
+.min-max-anchor.top-left {
+  top: 16px;
+  left: 16px;
+}
+
+.min-max-anchor.top-right {
+  top: 16px;
+  right: 16px;
+}
+
+.min-max-anchor.bottom-left {
+  bottom: 16px;
+  left: 16px;
+}
+
+.min-max-anchor.bottom-right {
+  bottom: 16px;
+  right: 16px;
+}
+
+#anchorAlignmentDemoOptions {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-block-end: 4px;
+}
+
+.anchor-alignment-option {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+#anchorAlignmentDemo {
+  width: 200px;
+  height: 100px;
+  display: flex;
+  position: relative;
+  border: dashed 1px var(--cr-primary-text-color);
+  white-space: nowrap;
+  padding: 16px;
+}
+
+.anchor-alignment-label {
+  position: absolute;
+  font-size: 11px;
+  text-align: center;
+  width: fit-content;
+  height: fit-content;
+  font-style: italic;
+  padding: 2px;
+}
+
+.anchor-alignment-label.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.anchor-alignment-label.start-y {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.anchor-alignment-label.end-y {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.anchor-alignment-label.start-x {
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+}
+
+.anchor-alignment-label.end-x {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+}

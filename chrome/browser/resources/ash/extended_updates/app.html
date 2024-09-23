@@ -1,0 +1,172 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles cr-shared-style">
+  /* Main dialog container styles. */
+  :host-context([orientation=vertical]) {
+    --oobe-adaptive-dialog-header-top-padding: 0px;
+  }
+
+  #extendedUpdatesDialog {
+    --oobe-adaptive-dialog-icon-size: 40px;
+
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  .dialog-icon {
+    color: var(--cros-sys-primary);
+  }
+
+  #dialogContent {
+    border-radius: 16px;
+  }
+
+  #dialogHeading {
+    font: var(--cros-display-3_regular-font);
+  }
+
+  .dialog-description {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-1-font);
+    margin: 0;
+  }
+
+  #dialogDescriptionFirst {
+    margin-bottom: 12px;
+  }
+
+  .detail-card {
+    --iron-icon-width: 32px;
+
+    align-items: start;
+    background-color: var(--cros-sys-base_elevated);
+    display: flex;
+    flex-direction: row;
+    padding: 18px 60px 18px 20px;
+  }
+
+  #securityCard {
+    border-radius: 16px 16px 2px 2px;
+    margin-bottom: 1px;
+  }
+
+  #androidCard {
+    border-radius: 2px 2px 16px 16px;
+  }
+
+  .detail-description {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+    margin: 0;
+  }
+
+  .detail-icon {
+    color: var(--cros-sys-primary);
+    flex-shrink: 0;
+    height: 32px;
+    margin-right: 20px;
+    width: 32px;
+  }
+
+  #cancelButton {
+    margin-right: 8px;
+  }
+
+  /* Confirmation popup styles. */
+
+  #popupDialog {
+    --cr-dialog-width: 368px;
+    --cr-primary-text-color: var(--cros-sys-on_surface);
+    --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+  }
+
+  #popupTitle {
+    font: var(--cros-display-7-font);
+  }
+
+  #popupDescription {
+    font: var(--cros-body-1-font);
+  }
+
+  #popupCancelButton {
+    margin-right: 8px;
+  }
+
+</style>
+
+<!-- TODO(b/335461104): Split into smaller components. -->
+<oobe-adaptive-dialog id="extendedUpdatesDialog" role="dialog">
+  <iron-icon class="dialog-icon" icon="extended-updates-icons40:chrome"
+    slot="icon" aria-hidden="true">
+  </iron-icon>
+  <h1 id="dialogHeading" slot="title">$i18n{dialogHeading}</h1>
+  <div slot="subtitle">
+    <p id="dialogDescriptionFirst" class="dialog-description">
+      $i18n{dialogDescriptionP1}
+    </p>
+    <p id="dialogDescriptionSecond" class="dialog-description">
+      <localized-link localized-string="$i18n{dialogDescriptionP2}">
+      </localized-link>
+    </p>
+  </div>
+  <div id="dialogContent" slot="content" class="landscape-vertical-centered">
+    <div id="detailsCard">
+      <div id="securityCard" class="detail-card">
+        <iron-icon icon="extended-updates-icons32:checked"
+          class="dialog-icon detail-icon" aria-hidden="true">
+        </iron-icon>
+        <h2 id="securityDescription" class="detail-description">
+          $i18n{securityDescription}
+        </h2>
+      </div>
+      <div id="androidCard" class="detail-card">
+        <iron-icon icon="extended-updates-icons32:removed"
+          class="dialog-icon detail-icon" aria-hidden="true">
+        </iron-icon>
+        <div id="androidCardContent">
+          <h2 id="androidDescription" class="detail-description">
+            $i18n{androidDescription}
+          </h2>
+          <android-apps-list apps="[[apps]]"></android-apps-list>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div slot="bottom-buttons" class="bottom-buttons-container">
+    <cros-button
+      id="cancelButton" label="$i18n{cancelButton}" button-style="secondary"
+      on-click="onCancelButtonClick_"></cros-button>
+    <cros-button
+      id="enableButton" label="$i18n{enableButton}" button-style="primary"
+      on-click="onEnableButtonClick_"></cros-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<template is="dom-if" if="[[showPopup_]]" restamp>
+  <!-- TODO(b/332618847): Convert to <cros-dialog> once available. -->
+  <cr-dialog
+    id="popupDialog" show-on-attach hide-backdrop$="[[shouldHideBackdrop_]]"
+  >
+    <div id="popupTitle" slot="title">$i18n{popupTitle}</div>
+    <div id="popupDescription" slot="body">
+      $i18n{popupDescription}
+    </div>
+    <div id="popupActions" slot="button-container">
+      <cros-button
+        id="popupCancelButton"
+        label="$i18n{cancelButton}"
+        button-style="secondary"
+        on-click="onPopupCancelButtonClick_">
+      </cros-button>
+      <cros-button
+        id="popupConfirmButton"
+        label="$i18n{popupConfirmButton}"
+        button-style="primary"
+        on-click="onPopupConfirmButtonClick_">
+      </cros-button>
+    </div>
+  </cr-dialog>
+</template>

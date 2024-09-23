@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] abort after connect should do nothing
-  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
-Harness: the test ran to completion.
-

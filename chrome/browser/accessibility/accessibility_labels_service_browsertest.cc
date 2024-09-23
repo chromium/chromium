@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -103,6 +103,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, NewWebContents) {
 
   chrome::NewTab(browser());
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  // Wait for ChromeVox to attach to the new tab if needed.
+  if (!web_contents->GetAccessibilityMode().has_mode(
+          ui::AXMode::kScreenReader)) {
+    content::AccessibilityNotificationWaiter waiter(web_contents);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kLabelImages));
 
@@ -173,4 +179,50 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
   // Reset state.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsEnabled, false);
+}
+
+// Turning on the preference while a screenreader is present should enable the
+// feature for existing tabs.
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
+                       PRE_EnabledByPreference) {
+  EnableScreenReader(true);
+
+  // The preference is not yet set, so the feature is off.
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityImageLabelsEnabled, true);
+
+  // Now the feature is on.
+  EXPECT_TRUE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
+}
+
+// When the preference is present at startup, the feature should become enabled
+// when a screenreader is discovered.
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest, EnabledByPreference) {
+  // The preference was set for the profile by PRE_EnabledByPreference.
+  ASSERT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityImageLabelsEnabled));
+
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // If the test is run without --force-renderer-accessibility, then no screen
+  // reader should have been detected yet, and the feature should be off.
+  if (!content::BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityMode()
+           .has_mode(ui::AXMode::kScreenReader)) {
+    EXPECT_FALSE(web_contents->GetAccessibilityMode().has_mode(
+        ui::AXMode::kLabelImages));
+
+    EnableScreenReader(true);
+  }
+
+  // Now the feature is on.
+  EXPECT_TRUE(
+      web_contents->GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages));
 }

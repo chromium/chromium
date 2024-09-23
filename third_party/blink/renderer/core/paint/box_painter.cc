@@ -43,7 +43,7 @@ void BoxPainter::RecordScrollHitTestData(
 
   // If an object is not visible, it does not scroll.
   const ComputedStyle& style = layout_box_.StyleRef();
-  if (style.Visibility() != EVisibility::kVisible) {
+  if (style.UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -57,9 +57,9 @@ void BoxPainter::RecordScrollHitTestData(
   // (which marks a region where composited scroll is not allowed) so
   // that we fall back to main thread hit testing for the entire box.
   //
-  // Note that if it is visibility: hidden, then the style.Visibility()
+  // Note that if it is visibility: hidden, then the style.UsedVisibility()
   // check above will fail and we will already have returned.
-  if (!RuntimeEnabledFeatures::HitTestTransparencyEnabled() &&
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
       !style.VisibleToHitTesting()) {
     auto& paint_controller = paint_info.context.GetPaintController();
     paint_controller.RecordScrollHitTestData(
@@ -93,10 +93,14 @@ void BoxPainter::RecordScrollHitTestData(
         << border_box_properties.Clip().ToTreeString().Utf8()
         << current_properties.Clip().ToTreeString().Utf8();
 #endif
+    gfx::Rect cull_rect = fragment->GetContentsCullRect().Rect();
+    if (cull_rect.Contains(properties->Scroll()->ContentsRect())) {
+      cull_rect = CullRect::Infinite().Rect();
+    }
     paint_controller.RecordScrollHitTestData(
         background_client, DisplayItem::kScrollHitTest,
         properties->ScrollTranslation(), VisualRect(fragment->PaintOffset()),
-        hit_test_opaqueness);
+        hit_test_opaqueness, cull_rect);
   }
 
   if (hit_test_opaqueness != cc::HitTestOpaqueness::kTransparent) {
@@ -108,7 +112,7 @@ void BoxPainter::RecordScrollHitTestData(
 
 gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(!layout_box_.VisualRectRespectsVisibility() ||
-         layout_box_.StyleRef().Visibility() == EVisibility::kVisible);
+         layout_box_.StyleRef().UsedVisibility() == EVisibility::kVisible);
   PhysicalRect rect = layout_box_.SelfVisualOverflowRect();
   rect.Move(paint_offset);
   return ToEnclosingRect(rect);

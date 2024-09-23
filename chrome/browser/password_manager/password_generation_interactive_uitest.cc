@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -41,10 +43,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
-
 namespace {
 
 enum ReturnCodes {  // Possible results of the JavaScript code.
@@ -60,13 +58,6 @@ class PasswordGenerationInteractiveTest
  public:
   void SetUpOnMainThread() override {
     PasswordManagerBrowserTestBase::SetUpOnMainThread();
-    // Disable Autofill requesting access to AddressBook data. This will cause
-    // the tests to hang on Mac.
-    autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
-#endif
 
     // Set observer for popup.
     ChromePasswordManagerClient* client =
@@ -86,8 +77,6 @@ class PasswordGenerationInteractiveTest
     // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     PasswordManagerBrowserTestBase::TearDownOnMainThread();
-
-    autofill::test::ReenableSystemServices();
   }
 
   // Waits until the value of the field with id |field_id| becomes non-empty.
@@ -169,7 +158,7 @@ class PasswordGenerationInteractiveTest
   }
 
   void SendKeyToPopup(ui::KeyboardCode key) {
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -179,6 +168,16 @@ class PasswordGenerationInteractiveTest
         ->GetRenderViewHost()
         ->GetWidget()
         ->ForwardKeyboardEvent(event);
+  }
+
+  void NavigateToAndAcceptSuggestedPassword() {
+    SendKeyToPopup(ui::VKEY_DOWN);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordGenerationSoftNudge)) {
+      // With the feature enabled, cancel button is the first focusable element.
+      SendKeyToPopup(ui::VKEY_DOWN);
+    }
+    SendKeyToPopup(ui::VKEY_RETURN);
   }
 
   bool GenerationPopupShowing() {
@@ -198,8 +197,9 @@ class PasswordGenerationInteractiveTest
   }
 
   void WaitForGenerationPopupShowing() {
-    if (GenerationPopupShowing())
+    if (GenerationPopupShowing()) {
       return;
+    }
     observer_.WaitForStatusChange();
     EXPECT_TRUE(GenerationPopupShowing());
   }
@@ -220,6 +220,17 @@ class PasswordGenerationInteractiveTest
 // tabs to allow waiting for an Autofill popup to open.
 class PasswordGenerationAutofillPopupInteractiveTest
     : public PasswordGenerationInteractiveTest {
+ public:
+  PasswordGenerationAutofillPopupInteractiveTest() {
+    // TODO(crbug.com/41492898): This class contains one test
+    // (HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration)
+    // checking that the autofill popup with suggestions should be displayed
+    // (and generation popup hidden) on field focus. Make sure it works with the
+    // nudge popup as well.
+    scoped_feature_list_.InitAndDisableFeature(
+        password_manager::features::kPasswordGenerationSoftNudge);
+  }
+
  protected:
   ObservingAutofillClient& autofill_client() {
     return *autofill_client_injector_[WebContents()];
@@ -228,6 +239,7 @@ class PasswordGenerationAutofillPopupInteractiveTest
  private:
   autofill::TestAutofillClientInjector<ObservingAutofillClient>
       autofill_client_injector_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -235,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   FocusPasswordField();
   WaitForGenerationPopupShowing();
   base::HistogramTester histogram_tester;
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Selecting the password should fill the field and move focus to the
   // submit button.
@@ -251,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // The metrics are recorded when the form manager is destroyed. Closing the
   // tab enforces it.
+  ClearWebContentsPtr();
   CloseAllBrowsers();
   histogram_tester.ExpectUniqueSample(
       "PasswordGeneration.UserDecision",
@@ -263,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        PopupShownAutomaticallyAndPasswordErased) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Wait until the password is filled.
   WaitForNonEmptyFieldValue("password_field");
@@ -298,8 +309,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       autofill::ContentAutofillClient::FromWebContents(WebContents()));
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Wait until the password is filled.
   WaitForNonEmptyFieldValue("password_field");
@@ -453,8 +463,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   FocusPasswordField();
   WaitForGenerationPopupShowing();
-  SendKeyToPopup(ui::VKEY_DOWN);
-  SendKeyToPopup(ui::VKEY_RETURN);
+  NavigateToAndAcceptSuggestedPassword();
 
   // Change username.
   FocusUsernameField();
@@ -527,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
 
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
   // Loads a page in the prerender.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
   // It should keep the current popup controller since the prerenedering should
   // not affect the current page.

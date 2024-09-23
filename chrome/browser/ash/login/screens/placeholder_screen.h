@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,11 @@ class PlaceholderScreen : public BaseScreen {
  public:
   using TView = PlaceholderScreenView;
 
-  enum class Result { kNext = 0, kBack, kNotApplicable };
+  enum class Result {
+    kNext = 0,
+    kBack,
+    kNotApplicable
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -33,6 +37,14 @@ class PlaceholderScreen : public BaseScreen {
   PlaceholderScreen& operator=(const PlaceholderScreen&) = delete;
 
   ~PlaceholderScreen() override;
+
+  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
 
   static std::string GetResultString(Result result);
 

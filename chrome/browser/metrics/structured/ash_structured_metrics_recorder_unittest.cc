@@ -4,21 +4,25 @@
 
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -38,6 +42,8 @@ constexpr uint64_t kProjectThreeHash = UINT64_C(10860358748803291132);
 constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 // The name hash of "CrOSEvents"
 constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
+// The name has for "SequencedTestProject"
+constexpr uint64_t kSequencedTestProjectHash = UINT64_C(7434962983641669694);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -79,7 +85,7 @@ EventsProto MakeExternalEventProto(const std::vector<uint64_t>& ids) {
   EventsProto proto;
 
   for (const auto id : ids) {
-    auto* event = proto.add_non_uma_events();
+    auto* event = proto.add_events();
     event->set_profile_event_id(id);
   }
 
@@ -119,14 +125,25 @@ class TestSystemProfileProvider : public metrics::MetricsProvider {
 
 class AshStructuredMetricsRecorderTest : public testing::Test {
  public:
+  AshStructuredMetricsRecorderTest()
+      : task_environment_(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  AshStructuredMetricsRecorderTest(const AshStructuredMetricsRecorderTest&) =
+      delete;
+  AshStructuredMetricsRecorderTest& operator=(
+      const AshStructuredMetricsRecorderTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_manager_.SetUp(temp_dir_.GetPath()));
 
     // Fixed paths to store keys for test.
     device_key_path_ =
         temp_dir_.GetPath().Append("structured_metrics").Append("device_keys");
     profile_key_path_ =
-        temp_dir_.GetPath().Append("structured_metrics").Append("keys");
+        GetProfilePath().Append("structured_metrics").Append("keys");
 
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
@@ -136,7 +153,10 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
     task_environment_.AdvanceClock(base::Days(1000));
   }
 
-  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
+  void TearDown() override {
+    StructuredMetricsClient::Get()->UnsetDelegate();
+    profile_manager_.DeleteAllTestingProfiles();
+  }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
@@ -176,6 +196,14 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
 
   base::FilePath DeviceKeyFilePath() { return device_key_path_; }
 
+  base::FilePath GetProfilePath() {
+    // u-p1@test-hash is the directory name generated for user p1. This name
+    // seems to be consistent. If it changes, update the directory name. It is
+    // done this way so the directory can be pre-populated with key data such
+    // that it can be used in the remaining tests.
+    return profile_manager_.profiles_dir().Append("u-p1@test-hash");
+  }
+
   base::FilePath PreLoginEventPath() {
     return TempDirPath()
         .Append(FILE_PATH_LITERAL("structured_metrics"))
@@ -204,6 +232,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   ChromeUserMetricsExtension GetUmaProto() {
     ChromeUserMetricsExtension uma_proto;
     recorder_->ProvideEventMetrics(uma_proto);
+    recorder_->ProvideLogMetadata(uma_proto);
     Wait();
     return uma_proto;
   }
@@ -220,13 +249,14 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   void Init() {
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-    recorder_ = base::WrapUnique(new AshStructuredMetricsRecorder(
+    recorder_ = base::WrapRefCounted(new AshStructuredMetricsRecorder(
         std::make_unique<KeyDataProviderAsh>(DeviceKeyFilePath(),
                                              base::Seconds(0)),
         std::make_unique<AshEventStorage>(base::Seconds(0),
                                           PreLoginEventPath()),
         system_profile_provider_.get()));
-    recorder_->OnProfileAdded(TempDirPath());
+
+    profile_manager_.CreateTestingProfile("p1");
     OnRecordingEnabled();
   }
 
@@ -237,18 +267,17 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
-  std::unique_ptr<AshStructuredMetricsRecorder> recorder_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<AshStructuredMetricsRecorder> recorder_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+  raw_ptr<TestingProfile> test_profile_;
 
  private:
   TestRecorder test_recorder_;
 
+  TestingProfileManager profile_manager_;
   base::FilePath device_key_path_;
   base::FilePath profile_key_path_;
 };
@@ -398,34 +427,63 @@ TEST_F(AshStructuredMetricsRecorderTest, EventSequenceLogging) {
   Wait();
 
   const int test_time = 50;
+  const int test_time2 = 60;
   const double test_metric = 1.0;
+  const double test_metric2 = 2.0;
 
   events::v2::cr_os_events::Test1 test_event;
   EXPECT_TRUE(test_event.IsEventSequenceType());
   test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
   test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
+
+  events::v2::sequenced_test_project::Test1 test_event2;
+  EXPECT_TRUE(test_event2.IsEventSequenceType());
+  test_event2.SetEventSequenceMetadata(Event::EventSequenceMetadata(2));
+  test_event2.SetRecordedTimeSinceBoot(base::Milliseconds(test_time2));
+
   StructuredMetricsClient::Record(
       std::move(test_event.SetMetric1(test_metric)));
+  StructuredMetricsClient::Record(
+      std::move(test_event2.SetMetric1(test_metric2)));
 
   const auto data = GetEventMetrics();
-  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events_size(), 2);
+  {
+    const auto& event = data.events(0);
+    EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
 
-  const auto& event = data.events(0);
-  EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
+    // Sequence events should have both a device and user project id.
+    EXPECT_TRUE(event.has_device_project_id());
+    EXPECT_TRUE(event.has_user_project_id());
 
-  // Sequence events should have both a device and user project id.
-  EXPECT_TRUE(event.has_device_project_id());
-  EXPECT_TRUE(event.has_user_project_id());
+    // Verify that event sequence metadata has been serialized correctly.
+    const auto& event_metadata = event.event_sequence_metadata();
+    EXPECT_EQ(event_metadata.reset_counter(), 1);
+    EXPECT_TRUE(event_metadata.has_event_unique_id());
+    EXPECT_EQ(event_metadata.system_uptime(), test_time);
 
-  // Verify that event sequence metadata has been serialized correctly.
-  const auto& event_metadata = event.event_sequence_metadata();
-  EXPECT_EQ(event_metadata.reset_counter(), 1);
-  EXPECT_TRUE(event_metadata.has_event_unique_id());
-  EXPECT_EQ(event_metadata.system_uptime(), test_time);
+    ASSERT_EQ(event.metrics_size(), 1);
+    const auto& metric = event.metrics(0);
+    EXPECT_EQ(metric.value_double(), test_metric);
+  }
+  {
+    const auto& event = data.events(1);
+    EXPECT_EQ(event.project_name_hash(), kSequencedTestProjectHash);
 
-  ASSERT_EQ(event.metrics_size(), 1);
-  const auto& metric = event.metrics(0);
-  EXPECT_EQ(metric.value_double(), 1.0);
+    // Sequence events should have both a device and user project id.
+    EXPECT_TRUE(event.has_device_project_id());
+    EXPECT_TRUE(event.has_user_project_id());
+
+    // Verify that event sequence metadata has been serialized correctly.
+    const auto& event_metadata = event.event_sequence_metadata();
+    EXPECT_EQ(event_metadata.reset_counter(), 2);
+    EXPECT_TRUE(event_metadata.has_event_unique_id());
+    EXPECT_EQ(event_metadata.system_uptime(), test_time2);
+
+    ASSERT_EQ(event.metrics_size(), 1);
+    const auto& metric = event.metrics(0);
+    EXPECT_EQ(metric.value_double(), test_metric2);
+  }
 
   ExpectNoErrors();
 }

@@ -54,9 +54,11 @@ namespace {
                ::component_testing::Protocol{"fuchsia.memorypressure.Provider"},
                ::component_testing::Protocol{"fuchsia.process.Launcher"},
                ::component_testing::Protocol{"fuchsia.sysmem.Allocator"},
+               ::component_testing::Protocol{"fuchsia.sysmem2.Allocator"},
                // Optional capabilities offered to web-instance.cm:
                ::component_testing::Protocol{"fuchsia.camera3.DeviceWatcher"},
                ::component_testing::Protocol{"fuchsia.media.ProfileProvider"},
+               ::component_testing::Protocol{"fuchsia.scheduler.RoleManager"},
                ::component_testing::Protocol{"fuchsia.settings.Display"},
                ::component_testing::Protocol{
                    "fuchsia.tracing.perfetto.ProducerConnector"},

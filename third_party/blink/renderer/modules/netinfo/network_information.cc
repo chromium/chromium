@@ -45,7 +45,7 @@ String ConnectionTypeToString(WebConnectionType type) {
     case kWebConnectionTypeUnknown:
       return "unknown";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "none";
 }
 

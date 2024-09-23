@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_IMPL_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,6 +17,7 @@
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
@@ -67,10 +70,11 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   [[nodiscard]] bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api_for_budgeting,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
+      size_t filtering_id_max_bytes,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
@@ -112,7 +116,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api_for_budgeting,
       PrivateAggregationBudgeter::BudgetDeniedBehavior budget_denied_behavior,
       PrivateAggregationBudgeter::RequestResult request_result);
 
@@ -120,7 +124,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationHost::ReportRequestGenerator report_request_generator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
-      PrivateAggregationBudgetKey::Api api_for_budgeting);
+      PrivateAggregationCallerApi api_for_budgeting);
 
   virtual void OnBudgeterGetAllDataKeysReturned(
       base::OnceCallback<void(std::set<DataKey>)> callback,

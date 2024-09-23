@@ -32,6 +32,10 @@
 //
 //   echo "This is not an exe" > file.exe
 //   7z a -p encrypted.7z file.exe  # Provided 1234 as the password
+//
+//   echo "This is not an exe" > file.exe
+//   7z a  -mhe=on -p encrypted_header.7z file.exe
+//   Provided 1234 as the password
 
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
@@ -397,6 +401,18 @@ TEST(SevenZipReaderTest, UnencryptedFile) {
       SevenZipReader::Create(std::move(file), delegate);
   ASSERT_TRUE(reader);
   reader->Extract();
+}
+
+TEST(SevenZipReaderTest, EncryptedHeaders) {
+  base::File file = OpenTestFile(FILE_PATH_LITERAL("encrypted_header.7z"));
+  ASSERT_TRUE(file.IsValid());
+
+  StrictMock<MockSevenZipDelegate> delegate;
+  EXPECT_CALL(delegate, OnOpenError(Result::kEncryptedHeaders));
+  EXPECT_CALL(delegate, OnTempFileRequest())
+      .WillOnce(Return(ByMove(OpenTemporaryFile())));
+
+  EXPECT_EQ(SevenZipReader::Create(std::move(file), delegate), nullptr);
 }
 
 }  // namespace seven_zip

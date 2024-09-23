@@ -8,14 +8,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed red'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed red'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='absoluteDiv' class='absolute green'",
+      "name": "LayoutBlockFlow (positioned) DIV id='absoluteDiv' class='absolute green'",
       "position": [150, 1050],
       "bounds": [150, 150],
       "contentsOpaque": true,

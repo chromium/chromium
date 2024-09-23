@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
@@ -64,6 +65,7 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
@@ -83,7 +85,9 @@
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -201,6 +205,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Backdrop;
     case kPseudoIdSelection:
       return protocol::DOM::PseudoTypeEnum::Selection;
+    case kPseudoIdSearchText:
+      return protocol::DOM::PseudoTypeEnum::SearchText;
     case kPseudoIdTargetText:
       return protocol::DOM::PseudoTypeEnum::TargetText;
     case kPseudoIdSpellingError:
@@ -223,10 +229,34 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ScrollbarTrackPiece;
     case kPseudoIdScrollbarCorner:
       return protocol::DOM::PseudoTypeEnum::ScrollbarCorner;
+    case kPseudoIdScrollMarker:
+      return protocol::DOM::PseudoTypeEnum::ScrollMarker;
+    case kPseudoIdScrollMarkerGroup:
+    case kPseudoIdScrollMarkerGroupAfter:
+    case kPseudoIdScrollMarkerGroupBefore:
+      return protocol::DOM::PseudoTypeEnum::ScrollMarkerGroup;
+    case kPseudoIdScrollNextButton:
+      return protocol::DOM::PseudoTypeEnum::ScrollNextButton;
+    case kPseudoIdScrollPrevButton:
+      return protocol::DOM::PseudoTypeEnum::ScrollPrevButton;
+    case kPseudoIdColumn:
+      return protocol::DOM::PseudoTypeEnum::Column;
     case kPseudoIdResizer:
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:
       return protocol::DOM::PseudoTypeEnum::InputListButton;
+    case kPseudoIdPlaceholder:
+      return protocol::DOM::PseudoTypeEnum::Placeholder;
+    case kPseudoIdFileSelectorButton:
+      return protocol::DOM::PseudoTypeEnum::FileSelectorButton;
+    case kPseudoIdDetailsContent:
+      return protocol::DOM::PseudoTypeEnum::DetailsContent;
+    case kPseudoIdSelectFallbackButton:
+      return protocol::DOM::PseudoTypeEnum::SelectFallbackButton;
+    case kPseudoIdSelectFallbackButtonText:
+      return protocol::DOM::PseudoTypeEnum::SelectFallbackButtonText;
+    case kPseudoIdPickerSelect:
+      return protocol::DOM::PseudoTypeEnum::Picker;
     case kPseudoIdViewTransition:
       return protocol::DOM::PseudoTypeEnum::ViewTransition;
     case kPseudoIdViewTransitionGroup:
@@ -237,8 +267,13 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
     case kPseudoIdViewTransitionOld:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
+    case kPseudoIdColumnScrollMarker:
+      // Not reachable, since it's an internal representation of
+      // ::column::scroll-marker and won't be exposed to devtools
+      NOTREACHED_NORETURN();
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
+    case kPseudoIdInvalid:
       CHECK(false);
       return "";
   }
@@ -1545,8 +1580,8 @@ protocol::Response InspectorDOMAgent::getNodeForLocation(
       optional_include_user_agent_shadow_dom.value_or(false);
   Document* document = inspected_frames_->Root()->GetDocument();
   PhysicalOffset document_point(
-      LayoutUnit(x * inspected_frames_->Root()->PageZoomFactor()),
-      LayoutUnit(y * inspected_frames_->Root()->PageZoomFactor()));
+      LayoutUnit(x * inspected_frames_->Root()->LayoutZoomFactor()),
+      LayoutUnit(y * inspected_frames_->Root()->LayoutZoomFactor()));
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
       HitTestRequest::kAllowChildFrameContent;
@@ -1639,29 +1674,29 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   if (!response.IsSuccess())
     return response;
 
-  PhysicalAxes physical = kPhysicalAxisNone;
+  PhysicalAxes physical = kPhysicalAxesNone;
   // TODO(crbug.com/1378237): Need to keep the broken behavior of querying the
   // inline-axis by default to avoid even worse behavior before devtools-
-  // frontend catches up. Change value here to kLogicalAxisNone.
-  LogicalAxes logical = kLogicalAxisInline;
+  // frontend catches up. Change value here to kLogicalAxesNone.
+  LogicalAxes logical = kLogicalAxesInline;
 
   if (physical_axes.has_value()) {
     if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Horizontal) {
-      physical = kPhysicalAxisHorizontal;
+      physical = kPhysicalAxesHorizontal;
     } else if (physical_axes.value() ==
                protocol::DOM::PhysicalAxesEnum::Vertical) {
-      physical = kPhysicalAxisVertical;
+      physical = kPhysicalAxesVertical;
     } else if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Both) {
-      physical = kPhysicalAxisBoth;
+      physical = kPhysicalAxesBoth;
     }
   }
   if (logical_axes.has_value()) {
     if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Inline) {
-      logical = kLogicalAxisInline;
+      logical = kLogicalAxesInline;
     } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Block) {
-      logical = kLogicalAxisBlock;
+      logical = kLogicalAxesBlock;
     } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Both) {
-      logical = kLogicalAxisBoth;
+      logical = kLogicalAxesBoth;
     }
   }
 
@@ -1695,6 +1730,74 @@ protocol::Response InspectorDOMAgent::getQueryingDescendantsForContainer(
     (*node_ids)->push_back(id);
   }
 
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorDOMAgent::getElementByRelation(
+    int node_id,
+    const String& relation,
+    int* related_element_id) {
+  *related_element_id = 0;
+  Node* node = nullptr;
+  protocol::Response response = AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Element* element = nullptr;
+  if (relation == protocol::DOM::GetElementByRelation::RelationEnum::PopoverTarget) {
+      if (auto* invoker = DynamicTo<HTMLFormControlElement>(node)) {
+        element = invoker->popoverTargetElement().popover;
+      }
+  }
+
+  if (element) {
+    *related_element_id = PushNodePathToFrontend(element);
+  }
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorDOMAgent::getAnchorElement(
+    int node_id,
+    protocol::Maybe<String> anchor_specifier,
+    int* anchor_element_id) {
+  *anchor_element_id = 0;
+  Node* node = nullptr;
+  protocol::Response response = AssertNode(node_id, node);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  const LayoutObject* querying_object = node->GetLayoutObject();
+  if (!querying_object) {
+    return protocol::Response::ServerError(
+        "No layout object for node, perhaps orphan or hidden node");
+  }
+
+  const auto* box = DynamicTo<LayoutBox>(querying_object);
+  if (!box || !box->Container()) {
+    return protocol::Response::ServerError(
+        "The box or the container of the box does not exist");
+  }
+
+  const LayoutObject* target_object;
+  if (anchor_specifier.has_value()) {
+    target_object = box->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
+        AtomicString(anchor_specifier.value()),
+        &querying_object->GetDocument()));
+  } else {
+    const ComputedStyle& style = box->StyleRef();
+    target_object = style.PositionAnchor()
+                        ? box->FindTargetAnchor(*style.PositionAnchor())
+                        : box->AcceptableImplicitAnchor();
+  }
+
+  if (target_object) {
+    Element* element = DynamicTo<Element>(target_object->GetNode());
+    if (element) {
+      *anchor_element_id = PushNodePathToFrontend(element);
+    }
+  }
   return protocol::Response::Success();
 }
 
@@ -1765,15 +1868,15 @@ String InspectorDOMAgent::DocumentBaseURLString(Document* document) {
 // static
 protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
     ShadowRoot* shadow_root) {
-  switch (shadow_root->GetType()) {
-    case ShadowRootType::kUserAgent:
+  switch (shadow_root->GetMode()) {
+    case ShadowRootMode::kUserAgent:
       return protocol::DOM::ShadowRootTypeEnum::UserAgent;
-    case ShadowRootType::kOpen:
+    case ShadowRootMode::kOpen:
       return protocol::DOM::ShadowRootTypeEnum::Open;
-    case ShadowRootType::kClosed:
+    case ShadowRootMode::kClosed:
       return protocol::DOM::ShadowRootTypeEnum::Closed;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::DOM::ShadowRootTypeEnum::UserAgent;
 }
 
@@ -1788,7 +1891,7 @@ InspectorDOMAgent::GetDocumentCompatibilityMode(Document* document) {
     case Document::CompatibilityMode::kNoQuirksMode:
       return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
 }
 
@@ -1878,8 +1981,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       }
     }
 
-    if (element->GetPseudoId()) {
-      value->setPseudoType(ProtocolPseudoElementType(element->GetPseudoId()));
+    if (element->IsPseudoElement()) {
+      value->setPseudoType(
+          ProtocolPseudoElementType(element->GetPseudoIdForStyling()));
       if (auto tag = To<PseudoElement>(element)->view_transition_name())
         value->setPseudoIdentifier(tag);
     } else {
@@ -1931,7 +2035,9 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
         depth)  // Push children along with shadow in any case.
       value->setChildren(std::move(children));
   }
-
+  if (isNodeScrollable(node)) {
+    value->setIsScrollable(true);
+  }
   return value;
 }
 
@@ -2334,6 +2440,13 @@ void InspectorDOMAgent::DidInvalidateStyleAttr(Node* node) {
   RevalidateTask()->ScheduleStyleAttrRevalidationFor(To<Element>(node));
 }
 
+bool InspectorDOMAgent::isNodeScrollable(Node* node) {
+  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
+    return box->IsUserScrollable();
+  }
+  return false;
+}
+
 void InspectorDOMAgent::DidPushShadowRoot(Element* host, ShadowRoot* root) {
   if (!host->ownerDocument())
     return;
@@ -2397,8 +2510,10 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   if (!parent)
     return;
-  if (!PseudoElement::IsWebExposed(pseudo_element->GetPseudoId(), parent))
+  if (!PseudoElement::IsWebExposed(pseudo_element->GetPseudoIdForStyling(),
+                                   parent)) {
     return;
+  }
   int parent_id = BoundNodeId(parent);
   if (!parent_id)
     return;
@@ -2445,7 +2560,21 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
   }
 }
 
-static ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
+void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
+  if (!node) {
+    return;
+  }
+  int nodeId = BoundNodeId(node);
+  // If node is not mapped yet -> ignore the event.
+  if (!nodeId) {
+    return;
+  }
+  GetFrontend()->scrollableFlagUpdated(nodeId, isNodeScrollable(node));
+}
+
+namespace {
+
+ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
   auto* element = DynamicTo<Element>(node);
   if (!element)
     return nullptr;
@@ -2456,11 +2585,21 @@ static ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
   return nullptr;
 }
 
+Document* DocumentForFrameOwner(Node* node) {
+  if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
+    return owner->contentDocument();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 Node* InspectorDOMAgent::NodeForPath(const String& path) {
   // The path is of form "1,HTML,2,BODY,1,DIV" (<index> and <nodeName>
   // interleaved).  <index> may also be "a" (author shadow root) or "u"
   // (user-agent shadow root), in which case <nodeName> MUST be
   // "#document-fragment".
+  // The first component after an iframe will always be "d,#document".
   if (!document_)
     return nullptr;
 
@@ -2477,15 +2616,19 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
     String& index_value = path_tokens[i];
     wtf_size_t child_number = index_value.ToUInt(&success);
     Node* child;
+    String child_name = path_tokens[i + 1];
     if (!success) {
-      child = ShadowRootForNode(node, index_value);
+      if (index_value == "d") {
+        child = DocumentForFrameOwner(node);
+      } else {
+        child = ShadowRootForNode(node, index_value);
+      }
     } else {
       if (child_number >= InnerChildNodeCount(node, include_whitespace))
         return nullptr;
 
       child = InnerFirstChild(node, include_whitespace);
     }
-    String child_name = path_tokens[i + 1];
     for (wtf_size_t j = 0; child && j < child_number; ++j)
       child = InnerNextSibling(child, include_whitespace);
 
@@ -2624,7 +2767,7 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, rect_to_scroll,
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic,
           true /* make_visible_in_visual_viewport */,
@@ -2696,6 +2839,66 @@ protocol::Response InspectorDOMAgent::getFileInfo(const String& object_id,
   }
 
   *path = file->GetPath();
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorDOMAgent::getDetachedDomNodes(
+    std::unique_ptr<protocol::Array<protocol::DOM::DetachedElementInfo>>*
+        detached_nodes) {
+  *detached_nodes =
+      std::make_unique<protocol::Array<protocol::DOM::DetachedElementInfo>>();
+  v8::HandleScope handles(isolate_);
+  std::map<DOMNodeId, size_t> seen_ids;
+
+  for (v8::Local<v8::Value> data :
+       isolate_->GetHeapProfiler()->GetDetachedJSWrapperObjects()) {
+    Node* node = V8Node::ToWrappable(isolate_, data);
+    if (!node) {
+      continue;
+    }
+
+    // It's possible to obtain nodes that come from a different document / page
+    // / frame. We want to ensure that the nodes we get are not from an
+    // inspected frame. This works around a crash in the front end when nodes
+    // are created in the inspector overlay.
+    Document& document = node->GetDocument();
+    if (!document.GetFrame() ||
+        !inspected_frames_->Contains(document.GetFrame())) {
+      continue;
+    }
+
+    Node* parent = node;
+    // Obtain Top Most Node
+    while (parent->parentNode()) {
+      parent = parent->parentNode();
+    }
+
+    // It is possible to get multiple child nodes from V8 that are in the same
+    // detached tree. In this case, we can see the top level node multiple
+    // times. We don't want to return the same tree more than once, so we record
+    // the ID and skip to avoid duplicate returns. We do want to return the ID
+    // of the retained object `node`.
+    blink::DOMNodeId parent_id = parent->GetDomNodeId();
+    if (seen_ids.contains(parent_id)) {
+      size_t parent_index = seen_ids[parent_id];
+      (**detached_nodes)[parent_index]->getRetainedNodeIds()->emplace_back(
+          node->GetDomNodeId());
+      continue;
+    }
+    // Remember where the top-level node resides in the detached_nodes array
+    seen_ids[parent_id] = (*detached_nodes)->size();
+
+    auto children = std::make_unique<protocol::Array<blink::DOMNodeId>>();
+    children->emplace_back(node->GetDomNodeId());
+    std::unique_ptr<protocol::DOM::DetachedElementInfo> value =
+        protocol::DOM::DetachedElementInfo::create()
+            .setTreeNode(BuildObjectForNode(
+                parent, -1, true, document_node_to_id_map_.Get(), nullptr))
+            .setRetainedNodeIds(std::move(children))
+            .build();
+
+    (*detached_nodes)->emplace_back(std::move(value));
+  }
   return protocol::Response::Success();
 }
 

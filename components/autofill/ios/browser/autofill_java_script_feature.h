@@ -7,11 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/functional/callback.h"
-#include "base/no_destructor.h"
-#include "base/values.h"
-#include "components/autofill/core/common/unique_ids.h"
+#import "base/functional/callback.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 namespace web {
 class WebFrame;
@@ -31,7 +32,6 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // `required_fields_count` fields are extracted. `callback` is called
   // with the JSON string of forms of a web page.  `callback` cannot be nil.
   void FetchForms(web::WebFrame* frame,
-                  NSUInteger required_fields_count,
                   base::OnceCallback<void(NSString*)> callback);
 
   // Fills `data` into the active form field in `frame`, then executes the
@@ -76,6 +76,14 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
 
   // Marks up the form with autofill field prediction data (diagnostic tool).
   void FillPredictionData(web::WebFrame* frame, base::Value::Dict data);
+
+  // web::JavaScriptFeature:
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
+
+ protected:
+  // web::JavaScriptFeature:
+  void ScriptMessageReceived(web::WebState* web_state,
+                             const web::ScriptMessage& message) override;
 
  private:
   friend class base::NoDestructor<AutofillJavaScriptFeature>;

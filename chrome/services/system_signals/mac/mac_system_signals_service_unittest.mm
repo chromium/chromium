@@ -40,8 +40,9 @@ class MacSystemSignalsServiceTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockFileSystemService, DanglingUntriaged> file_system_service_;
   std::unique_ptr<MacSystemSignalsService> mac_system_signals_service_;
+  // Owned by mac_system_signals_service_.
+  raw_ptr<MockFileSystemService> file_system_service_;
 };
 
 // Tests that GetFileSystemSignals forwards the signal collection to

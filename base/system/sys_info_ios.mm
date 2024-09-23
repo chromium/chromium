@@ -13,6 +13,7 @@
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/sysctl.h"
@@ -23,6 +24,16 @@
 #include "build/build_config.h"
 
 namespace base {
+
+#if BUILDFLAG(IS_IOS)
+namespace {
+// Accessor for storage of overridden HardwareModelName.
+std::string& GetHardwareModelNameStorage() {
+  static base::NoDestructor<std::string> instance;
+  return *instance;
+}
+}  // namespace
+#endif
 
 // static
 std::string SysInfo::OperatingSystemName() {
@@ -80,9 +91,18 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 std::string SysInfo::GetIOSBuildNumber() {
-  absl::optional<std::string> build_number =
+  std::optional<std::string> build_number =
       StringSysctl({CTL_KERN, KERN_OSVERSION});
   return build_number.value();
+}
+
+// static
+void SysInfo::OverrideHardwareModelName(std::string name) {
+  // Normally, HardwareModelName() should not be called before overriding the
+  // value, but StartCrashController(), which eventually calls
+  // HardwareModelName(), is called before overriding the name.
+  CHECK(!name.empty());
+  GetHardwareModelNameStorage() = std::move(name);
 }
 
 // static
@@ -94,7 +114,6 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
     NOTREACHED();
-    return 0;
   }
   DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
   return hostinfo.max_mem;
@@ -136,6 +155,10 @@ std::string SysInfo::HardwareModelName() {
   }
   return base::StringPrintf("iOS Simulator (%s)", model);
 #else
+  const std::string& override = GetHardwareModelNameStorage();
+  if (!override.empty()) {
+    return override;
+  }
   // Note: This uses "hw.machine" instead of "hw.model" like the Mac code,
   // because "hw.model" doesn't always return the right string on some devices.
   return StringSysctl({CTL_HW, HW_MACHINE}).value_or(std::string{});

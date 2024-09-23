@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 #define CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,13 +85,11 @@ class PasswordCheckManager
   // Called by java to update the given compromised `credential` and set its
   // password to `new_password`.
   void UpdateCredential(const password_manager::CredentialUIEntry& credential,
-                        base::StringPiece new_password);
+                        std::string_view new_password);
 
   // Called by java to launch the edit credential UI for `credential`.
-  void OnEditCredential(
-      const password_manager::CredentialUIEntry& credential,
-      const base::android::JavaParamRef<jobject>& context,
-      const base::android::JavaParamRef<jobject>& settings_launcher);
+  void OnEditCredential(const password_manager::CredentialUIEntry& credential,
+                        const base::android::JavaParamRef<jobject>& context);
 
   // Called by java to remove the given compromised `credential` and trigger a
   // UI update on completion.
@@ -217,13 +216,7 @@ class PasswordCheckManager
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_{
-      &saved_passwords_presenter_,
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS)};
+      &saved_passwords_presenter_};
 
   // Adapter used to start, monitor and stop a bulk leak check.
   password_manager::BulkLeakCheckServiceAdapter

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.language;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +17,12 @@ public class FakeLanguageBridgeJni implements LanguageBridge.Natives {
         mULPLanguages = new ArrayList<String>();
     }
 
-    public void setULPLanguages(List languageCodes) {
+    public void setULPLanguages(List<String> languageCodes) {
         mULPLanguages = new ArrayList<>(languageCodes);
     }
 
     @Override
-    public String[] getULPFromPreference() {
-        return mULPLanguages.toArray(new String[mULPLanguages.size()]);
+    public List<String> getULPFromPreference(Profile profile) {
+        return mULPLanguages;
     }
 }

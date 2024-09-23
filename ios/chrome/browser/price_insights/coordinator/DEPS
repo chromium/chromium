@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/ui/price_notifications",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/commerce/model",
+  "+ios/chrome/browser/contextual_panel/coordinator",
+  "+ios/chrome/browser/contextual_panel/utils",
+]

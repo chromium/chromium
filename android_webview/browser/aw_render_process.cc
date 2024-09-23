@@ -4,12 +4,15 @@
 
 #include "android_webview/browser/aw_render_process.h"
 
-#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_proxy.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
 
 using base::android::AttachCurrentThread;
 using content::BrowserThread;
@@ -19,6 +22,11 @@ using content::RenderProcessHost;
 namespace android_webview {
 
 const void* const kAwRenderProcessKey = &kAwRenderProcessKey;
+
+// A user data key to keep track of whether a render view has been created in
+// this RPH. This can't be stored in AwRenderProcess since that object may be
+// deleted if the OS process dies.
+const void* const kAwRenderViewReadyKey = &kAwRenderViewReadyKey;
 
 // static
 AwRenderProcess* AwRenderProcess::GetInstanceForRenderProcessHost(
@@ -45,8 +53,7 @@ AwRenderProcess::AwRenderProcess(RenderProcessHost* render_process_host)
   if (render_process_host_->IsReady()) {
     Ready();
   }
-  render_process_host_->GetChannel()->GetRemoteAssociatedInterface(
-      &renderer_remote_);
+  GetRendererRemote();
   render_process_host->AddObserver(this);
 }
 
@@ -58,11 +65,22 @@ AwRenderProcess::~AwRenderProcess() {
 }
 
 void AwRenderProcess::ClearCache() {
-  renderer_remote_->ClearCache();
+  GetRendererRemote()->ClearCache();
 }
 
 void AwRenderProcess::SetJsOnlineProperty(bool network_up) {
-  renderer_remote_->SetJsOnlineProperty(network_up);
+  GetRendererRemote()->SetJsOnlineProperty(network_up);
+}
+
+// static
+void AwRenderProcess::SetRenderViewReady(content::RenderProcessHost* host) {
+  host->SetUserData(kAwRenderViewReadyKey,
+                    std::make_unique<base::SupportsUserData::Data>());
+}
+
+// static
+bool AwRenderProcess::IsUnused(content::RenderProcessHost* host) {
+  return host->IsUnused() && !host->GetUserData(kAwRenderViewReadyKey);
 }
 
 void AwRenderProcess::Ready() {
@@ -75,6 +93,15 @@ void AwRenderProcess::Ready() {
 void AwRenderProcess::Cleanup() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // If the process was never used, keep the same Java object to satisfy CTS
+  // tests.
+  if (base::FeatureList::IsEnabled(
+          features::kCreateSpareRendererOnBrowserContextCreation) &&
+      IsUnused(render_process_host_)) {
+    renderer_remote_.reset();
+    return;
+  }
+
   render_process_host_->RemoveObserver(this);
   render_process_host_->RemoveUserData(kAwRenderProcessKey);
   // |this| is now deleted.
@@ -85,7 +112,21 @@ bool AwRenderProcess::TerminateChildProcess(
     const base::android::JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  return render_process_host_->Shutdown(0);
+  bool result = render_process_host_->Shutdown(0);
+
+  // If the process has never been used, this is the spare render process.
+  // Treat this as if it never existed since it's an internal performance
+  // optimization.
+  if (base::FeatureList::IsEnabled(
+          features::kCreateSpareRendererOnBrowserContextCreation) &&
+      result && IsUnused(render_process_host_)) {
+    // Use fast shutdown for the unused process to allow loadUrl() calls to work
+    // immediately after the terminate call.
+    render_process_host_->FastShutdownIfPossible();
+    return false;
+  }
+
+  return result;
 }
 
 bool AwRenderProcess::IsProcessLockedToSiteForTesting(
@@ -114,6 +155,15 @@ void AwRenderProcess::RenderProcessExited(
   DCHECK(host == render_process_host_);
 
   Cleanup();
+}
+
+mojom::Renderer* AwRenderProcess::GetRendererRemote() {
+  if (!renderer_remote_) {
+    render_process_host_->GetChannel()->GetRemoteAssociatedInterface(
+        &renderer_remote_);
+    renderer_remote_.reset_on_disconnect();
+  }
+  return renderer_remote_.get();
 }
 
 }  // namespace android_webview

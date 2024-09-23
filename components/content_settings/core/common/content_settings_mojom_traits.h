@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
@@ -88,16 +89,6 @@ struct EnumTraits<content_settings::mojom::ContentSetting, ContentSetting> {
 };
 
 template <>
-struct EnumTraits<content_settings::mojom::SessionModel,
-                  content_settings::SessionModel> {
-  static content_settings::mojom::SessionModel ToMojom(
-      content_settings::SessionModel model);
-
-  static bool FromMojom(content_settings::mojom::SessionModel model,
-                        content_settings::SessionModel* out);
-};
-
-template <>
 struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
                     content_settings::RuleMetaData> {
   static const base::Time& last_modified(
@@ -118,7 +109,7 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.expiration_;
   }
 
-  static const content_settings::SessionModel& session_model(
+  static const content_settings::mojom::SessionModel& session_model(
       const content_settings::RuleMetaData& r) {
     return r.session_model_;
   }
@@ -131,6 +122,16 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
   static const content_settings::mojom::TpcdMetadataRuleSource&
   tpcd_metadata_rule_source(const content_settings::RuleMetaData& r) {
     return r.tpcd_metadata_rule_source_;
+  }
+
+  static const content_settings::mojom::TpcdMetadataCohort&
+  tpcd_metadata_cohort(const content_settings::RuleMetaData& r) {
+    return r.tpcd_metadata_cohort_;
+  }
+
+  static bool decided_by_related_website_sets(
+      const content_settings::RuleMetaData& r) {
+    return r.decided_by_related_website_sets_;
   }
 
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,
@@ -161,7 +162,8 @@ struct StructTraits<
     return r.metadata;
   }
 
-  static const std::string& source(const ContentSettingPatternSource& r) {
+  static content_settings::ProviderType source(
+      const ContentSettingPatternSource& r) {
     return r.source;
   }
 
@@ -178,29 +180,9 @@ template <>
 struct StructTraits<
     content_settings::mojom::RendererContentSettingRulesDataView,
     RendererContentSettingRules> {
-  static const std::vector<ContentSettingPatternSource>& image_rules(
-      const RendererContentSettingRules& r) {
-    return r.image_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>& script_rules(
-      const RendererContentSettingRules& r) {
-    return r.script_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>& popup_redirect_rules(
-      const RendererContentSettingRules& r) {
-    return r.popup_redirect_rules;
-  }
-
   static const std::vector<ContentSettingPatternSource>& mixed_content_rules(
       const RendererContentSettingRules& r) {
     return r.mixed_content_rules;
-  }
-
-  static const std::vector<ContentSettingPatternSource>&
-  auto_dark_content_rules(const RendererContentSettingRules& r) {
-    return r.auto_dark_content_rules;
   }
 
   static bool Read(

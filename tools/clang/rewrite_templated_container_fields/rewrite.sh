@@ -6,7 +6,7 @@
 # IMPORTANT! Before running this script you have to perform these steps:
 # 1. Run `mkdir ~/scratch`
 # 2. Run `gn args out/{your_out_dir}` and set the following options:
-#   use_goma = false
+#   use_remoteexec = false
 #   # this can be skipped if you do this in build/config/clang/clang.gni
 #   clang_use_chrome_plugins = false
 #
@@ -17,15 +17,13 @@
 # https://docs.google.com/document/d/1chTvr3fSofQNV_PDPEHRyUgcJCQBgTDOOBriW9gIm9M/edit?ts=5e9549a2#heading=h.fjdnrdg1gcty
 
 set -e  # makes the script quit on any command failure
+set -u  # unset variables are quit-worthy errors
 
 OUT_DIR="out/rewrite"
 if [ "$1" != "" ]
 then
   OUT_DIR="$1"
 fi
-
-SCRIPT_PATH=$(realpath $0)
-REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
 
 COMPILE_DIRS=.
 EDIT_DIRS=.

@@ -48,7 +48,6 @@ EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
       return MojomWallpaperLayout::kTile;
     case ash::WallpaperLayout::NUM_WALLPAPER_LAYOUT:
       NOTREACHED();
-      return MojomWallpaperLayout::kCenter;
   }
 }
 
@@ -70,7 +69,6 @@ bool EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
@@ -102,7 +100,6 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
       return MojomWallpaperType::kSeaPen;
     case ash::WallpaperType::kCount:
       NOTREACHED();
-      return MojomWallpaperType::kDefault;
   }
 }
 
@@ -148,7 +145,6 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 MojomOnlineImageType
@@ -194,7 +190,6 @@ bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 const std::string&
@@ -396,7 +391,6 @@ bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 MojomAmbientUiVisibility
@@ -432,7 +426,6 @@ bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 SkColor

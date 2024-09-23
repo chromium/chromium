@@ -2,32 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/prediction/one_euro_filter.h"
+
 #include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/prediction/input_filter_unittest_helpers.h"
-#include "ui/base/prediction/one_euro_filter.h"
 #include "ui/base/prediction/prediction_unittest_helpers.h"
-
 namespace ui {
 namespace test {
 
-class OneEuroFilterTest : public InputFilterTest {
+class OneEuroFilterTest : public testing::Test {
  public:
-  explicit OneEuroFilterTest() {}
+  explicit OneEuroFilterTest() = default;
+  ~OneEuroFilterTest() override = default;
 
   OneEuroFilterTest(const OneEuroFilterTest&) = delete;
   OneEuroFilterTest& operator=(const OneEuroFilterTest&) = delete;
 
   void SetUp() override { filter_ = std::make_unique<OneEuroFilter>(1, 1); }
+
+ protected:
+  std::unique_ptr<InputFilter> filter_;
 };
-
-TEST_F(OneEuroFilterTest, TestClone) {
-  TestCloneFilter();
-}
-
-TEST_F(OneEuroFilterTest, TestReset) {
-  TestResetFilter();
-}
 
 // Check if sending values between 0 and 1 keeps filtered values between 0 and 1
 TEST_F(OneEuroFilterTest, filteringValues) {

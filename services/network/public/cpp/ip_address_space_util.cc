@@ -15,6 +15,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -246,6 +247,19 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       Entry(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kPrivate),
       // IPv4 Link-local (RFC 3927): 169.254.0.0/16
       Entry(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kPrivate),
+      // IPv4 Null IP (RFC 5735): 0.0.0.0/32 is "this host on this network".
+      // Other addresses in 0.0.0.0/8 may refer to "specified hosts on this
+      // network". This is somewhat under-defined for the purposes of assigning
+      // local vs private address space but we assign 0.0.0.0/32 to "local" and
+      // the rest of the block to "private". Note that this mapping can be
+      // overridden by a killswitch feature flag in IPAddressToIPAddressSpace()
+      // since these addresses were previously treated as public. See
+      // https://crbug.com/40058874.
+      //
+      // TODO(https://crbug.com/40058874): decide if we should do the same for
+      // the all-zero IPv6 address.
+      Entry(IPAddress(0, 0, 0, 0), 32, IPAddressSpace::kLocal),
+      Entry(IPAddress(0, 0, 0, 0), 8, IPAddressSpace::kPrivate),
   }));
   return *kMap;
 }
@@ -253,6 +267,17 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
 }  // namespace
 
 IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
+  // The null IP block (0.0.0.0/8) was previously treated as public, but this
+  // was a loophole in Private Network Access and thus these addresses are now
+  // mapped to the local/private address space instead. This feature is a
+  // killswitch for this behavior to revert these addresses to the public
+  // address space.
+  if (base::FeatureList::IsEnabled(
+          network::features::kTreatNullIPAsPublicAddressSpace) &&
+      address.IsIPv4() &&
+      IPAddressMatchesPrefix(address, IPAddress(0, 0, 0, 0), 8)) {
+    return IPAddressSpace::kPublic;
+  }
   return NonPublicAddressSpaceMap().Apply(address).value_or(
       IPAddressSpace::kPublic);
 }
@@ -317,40 +342,18 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
   return CollapseUnknown(lhs) < CollapseUnknown(rhs);
 }
 
-namespace {
-
-// Helper for CalculateClientAddressSpace() with the same arguments.
-//
-// If the response was fetched via service workers, returns the last URL in the
-// list. Otherwise returns `request_url`.
-//
-// See: https://fetch.spec.whatwg.org/#concept-response-url-list
-const GURL& ResponseUrl(
-    const GURL& request_url,
-    std::optional<CalculateClientAddressSpaceParams> params) {
-  if (params.has_value() && !params->url_list_via_service_worker->empty()) {
-    return params.value().url_list_via_service_worker->back();
-  }
-  return request_url;
-}
-
-}  // namespace
-
-CalculateClientAddressSpaceParams::CalculateClientAddressSpaceParams(
-    const std::vector<GURL>& url_list_via_service_worker,
-    const mojom::ParsedHeadersPtr& parsed_headers,
-    const net::IPEndPoint& remote_endpoint)
-    : url_list_via_service_worker(url_list_via_service_worker),
-      parsed_headers(parsed_headers),
-      remote_endpoint(remote_endpoint) {}
-
 CalculateClientAddressSpaceParams::~CalculateClientAddressSpaceParams() =
     default;
 
 mojom::IPAddressSpace CalculateClientAddressSpace(
     const GURL& url,
     std::optional<CalculateClientAddressSpaceParams> params) {
-  if (ResponseUrl(url, params).SchemeIsFile()) {
+  if (params.has_value() &&
+      params->client_address_space_inherited_from_service_worker.has_value()) {
+    return *params->client_address_space_inherited_from_service_worker;
+  }
+
+  if (url.SchemeIsFile()) {
     // See: https://wicg.github.io/cors-rfc1918/#file-url.
     return mojom::IPAddressSpace::kLocal;
   }

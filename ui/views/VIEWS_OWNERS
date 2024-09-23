@@ -1,0 +1,37 @@
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chromium-ui-views-reviews@google.com rather than to specific individuals.
+# These CLs will be automatically reassigned to a reviewer within about
+# 5 minutes. This approach helps our team to load-balance incoming reviews.
+# Googlers can read more about this at go/gwsq-gerrit.
+
+dayeung@chromium.org
+dfried@chromium.org
+ellyjones@chromium.org
+josephjoopark@chromium.org
+kerenzhu@chromium.org
+kylixrd@chromium.org
+msw@chromium.org
+pbos@chromium.org
+pkasting@chromium.org
+robliao@chromium.org
+sky@chromium.org
+tluk@chromium.org
+
+# For accessibility-related changes.
+dpranke@google.com
+
+# Prefer avi@, ellyjones@, or lgrey@ for mac specific changes.
+per-file *_mac.*=avi@chromium.org
+per-file *_cocoa.*=avi@chromium.org
+per-file *.mm=avi@chromium.org
+
+per-file *_mac.*=lgrey@chromium.org
+per-file *_cocoa.*=lgrey@chromium.org
+per-file *.mm=lgrey@chromium.org
+
+per-file *_win.*=davidbienvenu@chromium.org
+
+per-file *_headless.*=kvitekp@chromium.org
+
+# If you're doing structural changes get a review from one of the OWNERS.
+per-file BUILD.gn=*

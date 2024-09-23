@@ -5,10 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLIPBOARD_TYPES_H_
 #define CONTENT_PUBLIC_BROWSER_CLIPBOARD_TYPES_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -22,27 +24,53 @@ class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 
-// Structure of data pasted from clipboard.
+// Structure of data pasted from clipboard, to be used by scanning code to
+// determine if it should be allowed to be pasted.
 struct CONTENT_EXPORT ClipboardPasteData {
-  ClipboardPasteData(std::string text,
-                     std::string image,
-                     std::vector<base::FilePath> file_paths);
   ClipboardPasteData();
   ClipboardPasteData(const ClipboardPasteData&);
+  ClipboardPasteData& operator=(const ClipboardPasteData&);
   ClipboardPasteData(ClipboardPasteData&&);
   ClipboardPasteData& operator=(ClipboardPasteData&&);
-  bool empty();
   ~ClipboardPasteData();
 
-  // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
-  std::string text;
+  // Returns true if all the filds in the struct are null/empty.
+  bool empty() const;
 
-  // Binary image data to scan, such as png (here we assume the data
-  // struct holds one image only).
-  std::string image;
+  // Returns the sum of the size of all fields except `file_paths`.
+  // Since the meaning of that size could be ambiguous given the differences
+  // between what fields actually represent, this should only be used when only
+  // one field has been populated.
+  size_t size() const;
+
+  // Override the members of `this` with non-empty members in `other`. This is
+  // used to merge `ClipboardPasteData` objects representing a single type of
+  // clipboard data into one representing all of them.
+  void Merge(ClipboardPasteData other);
+
+  // UTF-16 encoded plain text data to scan.
+  std::u16string text;
+
+  // UTF-16 encoded HTML data to scan.
+  std::u16string html;
+
+  // UTF-16 encoded SVG data to scan.
+  std::u16string svg;
+
+  // UTF-8 encoded RTF data to scan.
+  std::string rtf;
+
+  // PNG bytes to scan.
+  std::vector<uint8_t> png;
+
+  // Bitmap to scan.
+  SkBitmap bitmap;
 
   // A list of full file paths to scan.
   std::vector<base::FilePath> file_paths;
+
+  // Custom data to scan, keyed by type.
+  base::flat_map<std::u16string, std::u16string> custom_data;
 };
 
 // Class representing an endpoint tied to a clipboard interaction. This can

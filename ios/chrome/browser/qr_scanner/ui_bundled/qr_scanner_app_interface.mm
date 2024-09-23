@@ -7,17 +7,16 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/search_engines/template_url_service.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/ui/scanner/camera_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -35,9 +34,8 @@ using scanner::CameraState;
 @implementation QRScannerAppInterface
 
 + (UIViewController*)currentBrowserViewController {
-  MainController* mainController = chrome_test_util::GetMainController();
-  return mainController.browserProviderInterface.mainBrowserProvider
-      .viewController;
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
+  return sceneState.browserProviderInterface.mainBrowserProvider.viewController;
 }
 
 + (NSString*)closeIconAccessibilityLabel {
@@ -54,33 +52,6 @@ using scanner::CameraState;
       };
 
   return swizzleCameraControllerBlock;
-}
-
-#pragma mark Search engine override
-
-+ (void)overrideSearchEngine:(NSString*)templateURL {
-  TemplateURLData data;
-  data.SetShortName(u"testSearchEngine");
-  data.SetKeyword(u"testSearchEngine");
-  GURL searchableURL(base::SysNSStringToUTF8(templateURL));
-  data.SetURL(searchableURL.possibly_invalid_spec());
-  data.favicon_url = TemplateURL::GenerateFaviconURL(searchableURL);
-  data.last_visited = base::Time::Now();
-
-  TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
-  TemplateURL* url = service->Add(std::make_unique<TemplateURL>(data));
-  service->SetUserSelectedDefaultSearchProvider(url);
-}
-
-+ (void)resetSearchEngine {
-  TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
-
-  TemplateURL* templateURL = service->GetTemplateURLForHost("google.com");
-  service->SetUserSelectedDefaultSearchProvider(templateURL);
 }
 
 #pragma mark Mocking and Expectations

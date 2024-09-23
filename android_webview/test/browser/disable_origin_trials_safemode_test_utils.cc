@@ -1,9 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "android_webview/test/webview_instrumentation_test_native_jni/DisableOriginTrialsSafeModeTestUtils_jni.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "content/public/common/content_client.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/test/webview_instrumentation_test_native_jni/DisableOriginTrialsSafeModeTestUtils_jni.h"
 
 namespace android_webview {
 

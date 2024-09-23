@@ -11,6 +11,7 @@ mojom_component("mojom") {
   sources = [
     "drivefs.mojom",
     "fake_drivefs_launcher.mojom",
+    "notifications.mojom",
   ]
 
   public_deps = [

@@ -5,9 +5,11 @@
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
@@ -201,7 +203,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
       continue;
 
     auto state = request_state_.find(id);
-    DCHECK(state != request_state_.end());
+    CHECK(state != request_state_.end(), base::NotFatalUntil::M130);
 
     session.Set("name", BuildNameString(state->second, info->name));
     session.Set("owner", info->owner);
@@ -216,7 +218,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
 }
 
 void MediaInternalsAudioFocusHelper::SerializeAndSendUpdate(
-    base::StringPiece function,
+    std::string_view function,
     const base::Value::Dict& value) {
   base::ValueView args[] = {value};
   return MediaInternals::GetInstance()->SendUpdate(
@@ -307,7 +309,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
               result.append(kMediaSessionHasAudioVideo);
               break;
             case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
           }
         });

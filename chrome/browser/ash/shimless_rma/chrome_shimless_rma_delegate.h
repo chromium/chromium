@@ -12,12 +12,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace extensions {
+class Extension;
+}  // namespace extensions
 
 namespace ash::shimless_rma {
 
@@ -44,20 +46,17 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
       PrepareDiagnosticsAppBrowserContextCallback callback) override;
   bool IsChromeOSSystemExtensionProvider(
       const std::string& manufacturer) override;
+  void ProcessMediaAccessRequest(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback,
+      const extensions::Extension* extension) override;
+  base::WeakPtr<ShimlessRmaDelegate> GetWeakPtr() override;
 
   void SetDiagnosticsAppProfileHelperDelegateForTesting(
       DiagnosticsAppProfileHelperDelegate* delegate);
 
  private:
-  void OnQrCodeGenerated(
-      base::OnceCallback<void(const std::string& qr_code_image)> callback,
-      const qrcode_generator::mojom::GenerateQRCodeResponsePtr response);
-
-  // TODO(https://crbug.com/1431991): Remove this field once there is no
-  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
-  // `QRImageGenerator` class.
-  std::unique_ptr<qrcode_generator::QRImageGenerator> qrcode_service_;
-
   DiagnosticsAppProfileHelperDelegate diagnostics_app_profile_helper_delegete_;
   raw_ptr<DiagnosticsAppProfileHelperDelegate>
       diagnostics_app_profile_helper_delegete_ptr_{

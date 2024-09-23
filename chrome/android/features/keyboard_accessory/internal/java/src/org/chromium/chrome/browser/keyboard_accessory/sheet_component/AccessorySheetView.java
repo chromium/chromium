@@ -8,6 +8,7 @@ import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -19,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /** Displays the data provided by the {@link AccessorySheetViewBinder}. */
@@ -35,6 +37,21 @@ class AccessorySheetView extends LinearLayout {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            return super.onInterceptTouchEvent(event);
+        }
+        final boolean isObscured =
+                (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
+                        || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;
+        if (isObscured) {
+            return true;
+        }
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mViewPager = findViewById(R.id.keyboard_accessory_sheet);
@@ -46,6 +63,14 @@ class AccessorySheetView extends LinearLayout {
         mSheetTitle = findViewById(R.id.sheet_title);
         findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
         findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);
+
+        // Set listener's to touch/click events so they are not propagated to the page below.
+        setOnTouchListener(
+                (view, motionEvent) -> {
+                    performClick(); // Setting a touch listener requires this call which is a NoOp.
+                    // Return that the motionEvent was consumed and needs no further handling.
+                    return true;
+                });
 
         // Ensure that sub components of the sheet use the RTL direction:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;

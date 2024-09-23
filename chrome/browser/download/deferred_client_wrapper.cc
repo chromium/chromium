@@ -185,7 +185,7 @@ void DeferredClientWrapper::RunDeferredClosures(bool force_inflate) {
 #else
     // For platforms that do not implement reduced mode (i.e. non-android), the
     // wrapped client should have been inflated in the constructor.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 }

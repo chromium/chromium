@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_
+#ifndef PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_
+#define PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_
+
+#include <optional>
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Struct intended to be used with designated initializers and passed
 // to the `CountersMatch()` matcher.
@@ -17,16 +18,16 @@
 // that would prohibit designated initiaizers.
 template <int IGNORE>
 struct CountingRawPtrExpectationTemplate {
-  absl::optional<int> wrap_raw_ptr_cnt;
-  absl::optional<int> release_wrapped_ptr_cnt;
-  absl::optional<int> get_for_dereference_cnt;
-  absl::optional<int> get_for_extraction_cnt;
-  absl::optional<int> get_for_comparison_cnt;
-  absl::optional<int> wrapped_ptr_swap_cnt;
-  absl::optional<int> wrapped_ptr_less_cnt;
-  absl::optional<int> pointer_to_member_operator_cnt;
-  absl::optional<int> wrap_raw_ptr_for_dup_cnt;
-  absl::optional<int> get_for_duplication_cnt;
+  std::optional<int> wrap_raw_ptr_cnt;
+  std::optional<int> release_wrapped_ptr_cnt;
+  std::optional<int> get_for_dereference_cnt;
+  std::optional<int> get_for_extraction_cnt;
+  std::optional<int> get_for_comparison_cnt;
+  std::optional<int> wrapped_ptr_swap_cnt;
+  std::optional<int> wrapped_ptr_less_cnt;
+  std::optional<int> pointer_to_member_operator_cnt;
+  std::optional<int> wrap_raw_ptr_for_dup_cnt;
+  std::optional<int> get_for_duplication_cnt;
 };
 using CountingRawPtrExpectations = CountingRawPtrExpectationTemplate<0>;
 
@@ -77,4 +78,4 @@ MATCHER(CountersMatch, "counting impl has specified counters") {
 #undef REPORT_UNEQUAL_RAW_PTR_COUNTERS
 #undef REPORT_UNEQUAL_RAW_PTR_COUNTER
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_
+#endif  // PARTITION_ALLOC_POINTERS_RAW_PTR_TEST_SUPPORT_H_

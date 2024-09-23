@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
+    "external_app_dialog.cc",
+    "external_app_dialog.h",
     "shimless_rma_delegate.cc",
     "shimless_rma_delegate.h",
     "shimless_rma_service.cc",
@@ -21,8 +23,8 @@ static_library("backend") {
   deps = [
     "//ash",
     "//ash/public/cpp:cpp",
-    "//ash/webui/shimless_rma/3p_diagnostics",
     "//ash/webui/shimless_rma/mojom",
+    "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
@@ -35,7 +37,16 @@ static_library("backend") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/version",
+    "//components/input",
+    "//components/permissions:permissions",
     "//components/qr_code_generator",
+    "//content/public/browser",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
+    "//url",
   ]
 }
 
@@ -55,7 +66,6 @@ source_set("unit_tests") {
     "//ash",
     "//ash:test_support",
     "//ash/public/cpp:cpp",
-    "//ash/webui/shimless_rma/3p_diagnostics",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//base/test:test_support",
@@ -65,10 +75,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/update_engine:update_engine",
     "//chromeos/ash/components/login/login_state:login_state",
-    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/dbus/power",

@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-// DELETE LATER
-#include "base/logging.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,6 +37,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -204,6 +201,11 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
+  if (chrome::IsSavedTabGroupsEnabled(profile_) &&
+      tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+    AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
+                    IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
+  }
   AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
                   IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
   AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
@@ -262,7 +264,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       RecordBookmarkEdited(opened_from_);
 
       if (selection_.size() != 1) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
 
@@ -315,7 +317,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       bookmarks::ScopedGroupBookmarkActions group_remove(model_);
       for (const bookmarks::BookmarkNode* node : selection_) {
-        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
+        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                       FROM_HERE);
       }
       selection_.clear();
       break;
@@ -369,6 +372,16 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
     }
 
+    case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS: {
+      base::RecordAction(base::UserMetricsAction(
+          "BookmarkBar_ContextMenu_ToggleShowSavedTabGroups"));
+      PrefService* prefs = profile_->GetPrefs();
+      prefs->SetBoolean(
+          bookmarks::prefs::kShowTabGroupsInBookmarkBar,
+          !prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar));
+      break;
+    }
+
     case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS: {
       PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
@@ -392,12 +405,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CUT:
       bookmarks::CopyToClipboard(model_, selection_, true,
-                                 bookmarks::metrics::BookmarkEditSource::kUser);
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_COPY:
       bookmarks::CopyToClipboard(model_, selection_, false,
-                                 bookmarks::metrics::BookmarkEditSource::kUser);
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_PASTE: {
@@ -412,7 +427,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // It's possible executing the command resulted in deleting |this|.
@@ -447,7 +462,7 @@ std::u16string BookmarkContextMenuController::GetLabelForCommandId(
                                       managed->managed_node()->GetTitle());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -458,6 +473,9 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     return prefs->GetBoolean(
         bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS) {
+    return prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   }
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);

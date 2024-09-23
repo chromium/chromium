@@ -4,45 +4,27 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("policy") {
   output_name = "chromeos_ash_components_policy"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
-  public_deps = [
-    "//components/policy/proto",
-    "//third_party/abseil-cpp:absl",
-  ]
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//third_party/icu",
-  ]
-  sources = [
-    "weekly_time/time_utils.cc",
-    "weekly_time/time_utils.h",
-    "weekly_time/weekly_time.cc",
-    "weekly_time/weekly_time.h",
-    "weekly_time/weekly_time_interval.cc",
-    "weekly_time/weekly_time_interval.h",
-  ]
+  public = []
+
+  sources = []
+
+  public_deps = [ "restriction_schedule" ]
+
+  deps = []
 }
 
 source_set("unit_tests") {
   testonly = true
+
   deps = [
-    ":policy",
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//components/policy/proto",
-    "//testing/gtest",
-    "//third_party/icu",
-  ]
-  sources = [
-    "weekly_time/time_utils_unittest.cc",
-    "weekly_time/weekly_time_interval_unittest.cc",
-    "weekly_time/weekly_time_unittest.cc",
+    "restriction_schedule:unit_tests",
+    "weekly_time:unit_tests",
+    "weekly_time:unit_tests_checked",
   ]
 }

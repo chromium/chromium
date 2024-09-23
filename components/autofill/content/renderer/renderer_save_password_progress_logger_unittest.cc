@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 const char kTestText[] = "test";
@@ -102,8 +101,6 @@ class TestLogger : public RendererSavePasswordProgressLogger {
   using RendererSavePasswordProgressLogger::SendLog;
 };
 
-}  // namespace
-
 TEST(RendererSavePasswordProgressLoggerTest, SendLog) {
   base::test::SingleThreadTaskEnvironment task_environment;
   FakeContentPasswordManagerDriver fake_driver;
@@ -118,4 +115,5 @@ TEST(RendererSavePasswordProgressLoggerTest, SendLog) {
   EXPECT_EQ(kTestText, sent_log);
 }
 
+}  // namespace
 }  // namespace autofill

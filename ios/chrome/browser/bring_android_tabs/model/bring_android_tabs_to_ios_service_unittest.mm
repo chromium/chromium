@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 
+#import <numeric>
+
 #import "base/i18n/number_formatting.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -33,9 +35,9 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -117,7 +119,7 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   MOCK_METHOD(base::CallbackListSubscription,
               SubscribeToForeignSessionsChanged,
               (const base::RepeatingClosure&));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
 };
@@ -135,12 +137,11 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     create_duplicates_ = false;
   }
 
-  MOCK_METHOD(
-      bool,
-      GetAllForeignSessions,
-      (std::vector<
-          vector_experimental_raw_ptr<const sync_sessions::SyncedSession>>*),
-      (override));
+  MOCK_METHOD(bool,
+              GetAllForeignSessions,
+              ((std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                    VectorExperimental>>*)),
+              (override));
 
   MOCK_METHOD(bool,
               GetForeignSessionTabs,
@@ -249,8 +250,8 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     FirstRun::RemoveSentinel();
     FirstRun::ClearStateForTesting();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -354,7 +355,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<bring_android_tabs::MockOpenTabsUIDelegate> open_ui_delegate_;
   std::unique_ptr<BringAndroidTabsToIOSService> bring_android_tabs_service_;

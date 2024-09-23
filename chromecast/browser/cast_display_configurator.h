@@ -12,18 +12,14 @@
 #include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_color_management.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/display/types/native_display_observer.h"
 
 namespace display {
-class DisplayMode;
 class DisplaySnapshot;
-}  // namespace display
 
-namespace gfx {
-class Point;
-}  // namespace gfx
+struct DisplayConfigurationParams;
+}  // namespace display
 
 namespace chromecast {
 class CastScreen;
@@ -74,10 +70,9 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
       bool force_initial_configure,
       const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
           displays);
-  void OnDisplayConfigured(display::DisplaySnapshot* display,
-                           const display::DisplayMode* mode,
-                           const gfx::Point& origin,
-                           bool statuses);
+  void OnDisplayConfigured(
+      const std::vector<display::DisplayConfigurationParams>& request_results,
+      bool statuses);
   void UpdateScreen(int64_t display_id,
                     const gfx::Rect& bounds,
                     float device_scale_factor,

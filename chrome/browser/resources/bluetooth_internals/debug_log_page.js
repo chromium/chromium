@@ -32,13 +32,21 @@ export class DebugLogPage extends Page {
     this.debugContainer_ =
         /** @type {!HTMLDivElement} */ ($('debug-container'));
 
-    bluetoothInternalsHandler.getDebugLogsChangeHandler().then((params) => {
-      if (params.handler) {
-        this.setUpInput(params.handler, params.initialToggleValue);
-      } else {
-        this.debugContainer_.textContent = LOGS_NOT_SUPPORTED_STRING;
-      }
-    });
+    this.bluetoothInternalsHandler_ = bluetoothInternalsHandler;
+    this.btsnoopInterface_ = null;
+
+    // <if expr="chromeos_ash">
+    this.prepareBtsnoopTemplate();
+    // </if>
+
+    this.bluetoothInternalsHandler_.getDebugLogsChangeHandler().then(
+        (params) => {
+          if (params.handler) {
+            this.setUpInput(params.handler, params.initialToggleValue);
+          } else {
+            this.debugContainer_.textContent = LOGS_NOT_SUPPORTED_STRING;
+          }
+        });
   }
 
   /**
@@ -57,8 +65,69 @@ export class DebugLogPage extends Page {
     this.debugContainer_.appendChild(this.inputElement_);
   }
 
+  setUpBtmonButton() {
+    const elem = /** @type {!HTMLInputElement} */ ($('btmon-start-btn'));
+    elem.addEventListener('click', this.onStartBtsnoopClick.bind(this));
+    this.setBtmonButtonText('Start logging');
+  }
+
+  setBtmonButtonText(text) {
+    const elem = /** @type {!HTMLInputElement} */ ($('btmon-start-btn'));
+    elem.textContent = text;
+  }
+
+  setBtmonStatusText(text) {
+    const elem = /** @type {!HTMLDivElement} */ ($('btmon-status-bar'));
+    elem.textContent = text;
+  }
+
   onToggleChange() {
     this.debugLogsChangeHandler_.changeDebugLogsState(
         this.inputElement_.checked);
+  }
+
+  onStartBtsnoopClick() {
+    this.btsnoopInterface_ ? this.onStopBtsnoop() : this.onStartBtsnoop();
+  }
+
+  async onStartBtsnoop() {
+    const {btsnoop: btsnoopInterface} =
+        await this.bluetoothInternalsHandler_.startBtsnoop();
+    if (btsnoopInterface != null) {
+      this.setBtmonStatusText('Logging is ongoing.');
+      this.setBtmonButtonText('Stop logging');
+      this.btsnoopInterface_ = btsnoopInterface;
+    } else {
+      this.setBtmonStatusText('Fail to start logging.');
+      this.btsnoopInterface_ = null;
+    }
+  }
+
+  async onStopBtsnoop() {
+    if (!this.btsnoopInterface_) {
+      return;
+    }
+
+    const {success} = await this.btsnoopInterface_.stop();
+    if (success) {
+      this.setBtmonStatusText(
+          'Logging is stopped. Log is saved to Downloads as capture.btsnoop.');
+    } else {
+      this.setBtmonStatusText('Fail to save debug log.');
+    }
+    this.setBtmonButtonText('Start logging');
+    this.btsnoopInterface_ = null;
+  }
+
+  async prepareBtsnoopTemplate() {
+    const {enabled} =
+        await this.bluetoothInternalsHandler_.isBtsnoopFeatureEnabled();
+    if (!enabled) {
+      return;
+    }
+
+    this.pageDiv.appendChild(
+        document.importNode($('btsnoop-template').content, true /* deep */));
+    this.setUpBtmonButton();
   }
 }

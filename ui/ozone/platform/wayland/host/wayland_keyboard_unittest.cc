@@ -116,7 +116,7 @@ TEST_F(WaylandKeyboardTest, Keypress) {
 
   auto* key_event = event->AsKeyEvent();
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
-  EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
+  EXPECT_EQ(EventType::kKeyPressed, key_event->type());
 
   // The window no longer has keyboard focus, and the below should not result in
   // receiving more events.  The expectation set in the beginning of the test
@@ -175,7 +175,7 @@ TEST_F(WaylandKeyboardTest, ControlShiftModifiers) {
 
   EXPECT_EQ(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, key_event->flags());
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
-  EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
+  EXPECT_EQ(EventType::kKeyPressed, key_event->type());
 }
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -223,7 +223,7 @@ TEST_F(WaylandKeyboardTest, CapsLockModifier) {
 
   EXPECT_EQ(ui::EF_CAPS_LOCK_ON, key_event->flags());
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
-  EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
+  EXPECT_EQ(EventType::kKeyPressed, key_event->type());
 }
 #endif
 
@@ -264,7 +264,7 @@ TEST_F(WaylandKeyboardTest, EventAutoRepeat) {
   const auto press_timestamp = events[0]->time_stamp();
 
   auto check_repeat_event = [](const Event& event) {
-    EXPECT_EQ(ET_KEY_PRESSED, event.type());
+    EXPECT_EQ(EventType::kKeyPressed, event.type());
     EXPECT_TRUE(event.flags() & EF_IS_REPEAT);
     EXPECT_EQ(KeyboardCode::VKEY_A, event.AsKeyEvent()->key_code());
   };
@@ -319,7 +319,7 @@ TEST_F(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
 
   // Check the first key repeating event.
   const auto& first_repeat_event = *events[1];
-  EXPECT_EQ(ET_KEY_PRESSED, first_repeat_event.type());
+  EXPECT_EQ(EventType::kKeyPressed, first_repeat_event.type());
   EXPECT_TRUE(first_repeat_event.flags() & EF_IS_REPEAT);
   EXPECT_EQ(KeyboardCode::VKEY_A, first_repeat_event.AsKeyEvent()->key_code());
 
@@ -412,7 +412,7 @@ TEST_F(WaylandKeyboardTest, NoEventAutoRepeatForModifiers) {
     // Ensure that 4 consecutive auto-repeat key press events are dispatched,
     // with the proper modifier key.
     auto check_repeat_event = [&values](const Event& event) {
-      EXPECT_EQ(ET_KEY_PRESSED, event.type());
+      EXPECT_EQ(EventType::kKeyPressed, event.type());
       EXPECT_TRUE(event.flags() & (EF_IS_REPEAT | values.modifier));
       EXPECT_EQ(KeyboardCode::VKEY_A, event.AsKeyEvent()->key_code());
     };

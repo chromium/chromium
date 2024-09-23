@@ -10,10 +10,13 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -24,6 +27,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener,
                 CustomDividerFragment,
+                SettingsPage,
                 ProfileDependentSetting {
     public static final String IMAGE_DESCRIPTIONS = "image_descriptions_switch";
     public static final String IMAGE_DESCRIPTIONS_DATA_POLICY = "image_descriptions_data_policy";
@@ -35,12 +39,18 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     private boolean mIsEnabled;
     private boolean mOnlyOnWifi;
     private Profile mProfile;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle(R.string.image_descriptions_settings_title);
+        mPageTitle.set(getString(R.string.image_descriptions_settings_title));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

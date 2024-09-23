@@ -96,7 +96,7 @@ class WebCryptoImpl : public blink::WebCrypto {
   void DeriveBits(
       const blink::WebCryptoAlgorithm& algorithm,
       const blink::WebCryptoKey& base_key,
-      unsigned int length_bits,
+      std::optional<unsigned int> length_bits,
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 

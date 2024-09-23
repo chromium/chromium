@@ -110,7 +110,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
                 hasCloseButton);
         mToolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
-        // TODO(crbug.com/881037): Pass the visible group to the toolbar during initialization.
+        // TODO(crbug.com/41412009): Pass the visible group to the toolbar during initialization.
         mToolbar.initializeSearchView(
                 mSearchDelegate, R.string.download_manager_search, R.id.search_menu_id);
 

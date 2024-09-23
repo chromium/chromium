@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView
+        <org.chromium.chrome.browser.tab_ui.TabThumbnailView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_hover_card_thumbnail_height"

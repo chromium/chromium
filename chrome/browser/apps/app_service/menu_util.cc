@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/menu_util.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
@@ -174,7 +175,7 @@ void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
     case apps::MenuItemType::kRadio:
     case apps::MenuItemType::kSeparator:
     case apps::MenuItemType::kPublisherCommand:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -196,12 +197,12 @@ void PopulateItemFromMenuItem(const apps::MenuItemPtr& item,
     case apps::MenuItemType::kCommand:
     case apps::MenuItemType::kRadio:
     case apps::MenuItemType::kSubmenu:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
 
-base::StringPiece MenuTypeToString(MenuType menu_type) {
+std::string_view MenuTypeToString(MenuType menu_type) {
   switch (menu_type) {
     case MenuType::kShelf:
       return "shelf";
@@ -210,7 +211,7 @@ base::StringPiece MenuTypeToString(MenuType menu_type) {
   }
 }
 
-MenuType MenuTypeFromString(base::StringPiece menu_type) {
+MenuType MenuTypeFromString(std::string_view menu_type) {
   if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf")) {
     return MenuType::kShelf;
   }
@@ -267,7 +268,7 @@ uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id) {
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

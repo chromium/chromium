@@ -41,8 +41,8 @@ FieldType FieldCandidates::BestHeuristicType() const {
     type_scores[field_candidate.type] += field_candidate.score;
   }
 
-  const auto* best_type_iter = base::ranges::max_element(type_scores);
-  const size_t index = std::distance(type_scores.cbegin(), best_type_iter);
+  const auto best_type_iter = base::ranges::max_element(type_scores);
+  const size_t index = std::distance(type_scores.begin(), best_type_iter);
 
   return ToSafeFieldType(index, NO_SERVER_DATA);
 }

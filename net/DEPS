@@ -1,5 +1,6 @@
 include_rules = [
   "+components/miracle_parameter",
+  "+components/network_time/time_tracker",
   "+crypto",
   "+net/net_jni_headers",
   "+third_party/apple_apsl",
@@ -60,10 +61,15 @@ specific_include_rules = {
     "+third_party/zstd",
   ],
 
+  "cookie_partition_key\.(cc|h)": [
+    "+mojo/public/cpp/bindings/default_construct_tag.h",
+  ],
+
   # Dependencies specific for fuzz targets and other fuzzing-related code.
   ".*fuzz.*": [
     "+third_party/fuzztest",
     "+third_party/libprotobuf-mutator",  # This is needed for LPM-based fuzzers.
+    "+third_party/icu/fuzzers/fuzzer_utils.h"
   ]
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -56,7 +57,7 @@ void GlobalShortcutListener::UnregisterAccelerator(
 
   auto it = accelerator_map_.find(accelerator);
   // We should never get asked to unregister something that we didn't register.
-  DCHECK(it != accelerator_map_.end());
+  CHECK(it != accelerator_map_.end(), base::NotFatalUntil::M130);
   // The caller should call this function with the right observer.
   DCHECK(it->second == observer);
 
@@ -111,7 +112,7 @@ void GlobalShortcutListener::NotifyKeyPressed(
   if (iter == accelerator_map_.end()) {
     // This should never occur, because if it does, we have failed to unregister
     // or failed to clean up the map after unregistering the shortcut.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;  // No-one is listening to this key.
   }
 

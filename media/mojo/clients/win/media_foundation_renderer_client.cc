@@ -151,8 +151,8 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererClient::SetLatencyHint(
-    std::optional<base::TimeDelta> /*latency_hint*/) {
-  NOTIMPLEMENTED() << "Latency hint not supported in MediaFoundationRenderer";
+    std::optional<base::TimeDelta> latency_hint) {
+  mojo_renderer_->SetLatencyHint(latency_hint);
 }
 
 void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {
@@ -315,14 +315,14 @@ scoped_refptr<VideoFrame> MediaFoundationRendererClient::Render(
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(callback, weak_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/1298093): Need to report underflow when we don't have a
+  // TODO(crbug.com/40822735): Need to report underflow when we don't have a
   // frame ready for presentation by calling OnBufferingStateChange
 
   return next_video_frame_;
 }
 
 void MediaFoundationRendererClient::OnFrameDropped() {
-  // TODO(crbug.com/1298093): Need to notify when frames were not presented.
+  // TODO(crbug.com/40822735): Need to notify when frames were not presented.
   return;
 }
 
@@ -545,6 +545,15 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
     REPORT_ERROR_REASON(kOnDCompSurfaceHandleSetError);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    return;
+  }
+
+  // Ensure `SwapChainPresenter::PresentDCOMPSurface()` is invoked to add video
+  // into DCOMP visual tree since `DCOMPTexture::SetDCOMPSurfaceHandle()`
+  // has just succeeded.
+  if (dcomp_video_frame_ && !IsFrameServerMode()) {
+    sink_->PaintSingleFrame(dcomp_video_frame_,
+                            /*repaint_duplicate_frame=*/true);
   }
 }
 

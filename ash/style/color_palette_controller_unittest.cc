@@ -12,6 +12,7 @@
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -611,6 +612,17 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
                                   SkColorSetRGB(0x74, 0xd5, 0xe4)),
                            Sample(style::mojom::ColorScheme::kExpressive,
                                   SkColorSetRGB(0xc8, 0xbf, 0xff))));
+}
+
+TEST_F(ColorPaletteControllerTest, OneNotificationOnActiveUserChange) {
+  TestObserver observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  SimulateUserLogin(kAccountId);
+
+  EXPECT_EQ(1, observer.call_count());
 }
 
 class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {

@@ -58,8 +58,8 @@ class PaymentsNetworkInterfaceBase {
   // denotes incognito mode.
   PaymentsNetworkInterfaceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* const identity_manager,
-      AccountInfoGetter* const account_info_getter,
+      signin::IdentityManager* identity_manager,
+      AccountInfoGetter* account_info_getter,
       bool is_off_the_record = false);
 
   PaymentsNetworkInterfaceBase(const PaymentsNetworkInterfaceBase&) = delete;
@@ -119,7 +119,7 @@ class PaymentsNetworkInterfaceBase {
   std::string access_token_;
 
   // Denotes incognito mode.
-  // TODO(crbug.com/1409158): Remove this variable, as it should not be the
+  // TODO(crbug.com/40888896): Remove this variable, as it should not be the
   // PaymentsNetworkInterface's responsibility to check if the user is off the
   // record. The sole responsibility of the PaymentsNetworkInterface is to send
   // requests to the Google Payments server.

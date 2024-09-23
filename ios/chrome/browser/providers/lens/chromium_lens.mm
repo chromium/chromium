@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import <ostream>
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace ios {
@@ -34,6 +36,14 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
   return nil;
 }
 
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    UIImage* snapshot,
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems) {
+  // Lens is not supported in Chromium.
+  return nil;
+}
+
 bool IsLensSupported() {
   // Lens is not supported in Chromium.
   return false;
@@ -50,7 +60,7 @@ std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
 
 void GenerateLensLoadParamsAsync(LensQuery* query,
                                  LensWebParamsCallback completion) {
-  NOTREACHED() << "Lens is not supported.";
+  NOTREACHED_IN_MIGRATION() << "Lens is not supported.";
 }
 
 }  // namespace provider

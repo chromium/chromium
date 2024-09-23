@@ -53,56 +53,10 @@ source_set("symbols") {
     ":buildflags",
     "//base",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/symbols/resources:arrow_clockwise",
-    "//ios/chrome/browser/shared/ui/symbols/resources:arrow_triangle_slash_circlepath",
-    "//ios/chrome/browser/shared/ui/symbols/resources:bottom_omnibox_option",
-    "//ios/chrome/browser/shared/ui/symbols/resources:camera",
-    "//ios/chrome/browser/shared/ui/symbols/resources:camera_fill",
-    "//ios/chrome/browser/shared/ui/symbols/resources:camera_lens",
-    "//ios/chrome/browser/shared/ui/symbols/resources:checkerboard_shield",
-    "//ios/chrome/browser/shared/ui/symbols/resources:checkermark_shield",
-    "//ios/chrome/browser/shared/ui/symbols/resources:chrome_product",
-    "//ios/chrome/browser/shared/ui/symbols/resources:cloud_and_arrow_up",
-    "//ios/chrome/browser/shared/ui/symbols/resources:cloud_slash",
-    "//ios/chrome/browser/shared/ui/symbols/resources:custom_platter_filled_bottom_and_arrow_down_iphone",
-    "//ios/chrome/browser/shared/ui/symbols/resources:custom_platter_filled_top_and_arrow_up_iphone",
-    "//ios/chrome/browser/shared/ui/symbols/resources:dangerous_omnibox",
-    "//ios/chrome/browser/shared/ui/symbols/resources:dino",
-    "//ios/chrome/browser/shared/ui/symbols/resources:folder_badge_arrow_forward",
-    "//ios/chrome/browser/shared/ui/symbols/resources:incognito",
-    "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill",
-    "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill_ios14",
-    "//ios/chrome/browser/shared/ui/symbols/resources:language",
-    "//ios/chrome/browser/shared/ui/symbols/resources:laptopcomputer_and_phone",
-    "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_and_arrow_up",
-    "//ios/chrome/browser/shared/ui/symbols/resources:legacy_cloud_slash",
-    "//ios/chrome/browser/shared/ui/symbols/resources:line_downtrend",
-    "//ios/chrome/browser/shared/ui/symbols/resources:line_uptrend",
-    "//ios/chrome/browser/shared/ui/symbols/resources:location",
-    "//ios/chrome/browser/shared/ui/symbols/resources:location.fill",
-    "//ios/chrome/browser/shared/ui/symbols/resources:multicolor_chromeball",
-    "//ios/chrome/browser/shared/ui/symbols/resources:password",
-    "//ios/chrome/browser/shared/ui/symbols/resources:password_manager",
-    "//ios/chrome/browser/shared/ui/symbols/resources:photo_badge_magnifyingglass",
-    "//ios/chrome/browser/shared/ui/symbols/resources:photo_badge_plus",
-    "//ios/chrome/browser/shared/ui/symbols/resources:plus_circle_fill",
-    "//ios/chrome/browser/shared/ui/symbols/resources:popup_badge_minus",
-    "//ios/chrome/browser/shared/ui/symbols/resources:shield",
-    "//ios/chrome/browser/shared/ui/symbols/resources:square_bullet_square",
-    "//ios/chrome/browser/shared/ui/symbols/resources:square_number",
-    "//ios/chrome/browser/shared/ui/symbols/resources:top_omnibox_option",
-    "//ios/chrome/browser/shared/ui/symbols/resources:translate",
-    "//ios/chrome/browser/shared/ui/symbols/resources:tuner",
+    "//ios/chrome/browser/shared/ui/symbols/resources",
     "//ios/chrome/common/ui/colors",
     ios_branded_icons,
   ]
-
-  # This icon uses template format version 4 but catalyst only currently supports version 3. See details in crbug.com/1392708#c28.
-  if (target_environment != "catalyst") {
-    deps += [
-      "//ios/chrome/browser/shared/ui/symbols/resources:multicolor_password",
-    ]
-  }
 }
 
 source_set("symbols_views") {
@@ -129,7 +83,7 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(crbug.com/734054): remove this target when the downstream repository
+# TODO(crbug.com/41325811): remove this target when the downstream repository
 # has been fixed to directly depends on the individual targets.
 group("assets") {
   deps = [
@@ -142,5 +96,5 @@ group("assets") {
 }
 
 group("branded") {
-  # Empty in the non-branded repo.
+  deps = [ "//ios/chrome/browser/shared/ui/symbols/resources:branded_assets" ]
 }

@@ -7,10 +7,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -32,6 +32,12 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "extensions/common/constants.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -143,7 +149,7 @@ class Handler : public content::WebContentsObserver {
 
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
-    int erased_count = base::Erase(pending_render_frames_, render_frame_host);
+    int erased_count = std::erase(pending_render_frames_, render_frame_host);
     DCHECK_LE(erased_count, 1);
     if (erased_count == 0)
       return;
@@ -162,6 +168,22 @@ class Handler : public content::WebContentsObserver {
     if (content::WebContents::FromRenderFrameHost(frame) != web_contents()) {
       return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
     }
+
+#if BUILDFLAG(ENABLE_PDF)
+    if (chrome_pdf::features::IsOopifPdfEnabled()) {
+      // Don't expose any child frames of the PDF extension frame, such as the
+      // PDF content frame.
+      content::RenderFrameHost* parent = frame->GetParent();
+      if (parent) {
+        const url::Origin& origin = parent->GetLastCommittedOrigin();
+        if (origin.scheme() == extensions::kExtensionScheme &&
+            origin.host() == extension_misc::kPdfExtensionId) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
     if (!frame->IsRenderFrameLive() ||
         base::Contains(pending_render_frames_, frame)) {
       return content::RenderFrameHost::FrameIterationAction::kContinue;
@@ -177,9 +199,9 @@ class Handler : public content::WebContentsObserver {
     // Preallocate the results to hold the initial `frame_id` and `document_id`.
     // As the primary main frame uses a magic number 0 for the `frame_id`, it
     // can be changed if the primary page is changed. It happens on pre-rendered
-    // page activation or portal page activation on MPArch. The `document_id`
-    // can be stale if navigation happens and the same renderer is reused in the
-    // case, e.g. navigation from about:blank, or same-origin navigation.
+    // page activation on MPArch. The `document_id` can be stale if navigation
+    // happens and the same renderer is reused in the case, e.g. navigation from
+    // about:blank, or same-origin navigation.
     ScriptExecutor::FrameResult result;
     result.frame_id = frame_id;
     result.document_id = ExtensionApiFrameIdMap::GetDocumentId(frame);
@@ -268,7 +290,7 @@ class Handler : public content::WebContentsObserver {
       return;
 
     DCHECK(!pending_render_frames_.empty());
-    size_t erased = base::Erase(pending_render_frames_, render_frame_host);
+    size_t erased = std::erase(pending_render_frames_, render_frame_host);
     DCHECK_EQ(1u, erased);
 
     // TODO(devlin): Do we need to trust the renderer for the URL here? Is there

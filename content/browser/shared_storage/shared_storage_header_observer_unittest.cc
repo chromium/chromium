@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -154,7 +155,8 @@ class MockContentBrowserClient : public ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) override {
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) override {
     if (bypass_shared_storage_allowed_count_ > 0) {
       bypass_shared_storage_allowed_count_--;
       return true;
@@ -162,7 +164,7 @@ class MockContentBrowserClient : public ContentBrowserClient {
 
     return ContentBrowserClient::IsSharedStorageAllowed(
         browser_context, rfh, top_frame_origin, accessing_origin,
-        out_debug_message);
+        out_debug_message, out_block_is_site_setting_specific);
   }
 
   void set_bypass_shared_storage_allowed_count(int count) {
@@ -260,7 +262,7 @@ class SharedStorageHeaderObserverTest
       case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
         return ContextType::kRenderFrameHostContext;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -343,7 +345,7 @@ class SharedStorageHeaderObserverTest
         }
         return handle_for_null_rfh_.get();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -470,8 +472,8 @@ class SharedStorageHeaderObserverTest
   void RunHeaderReceived(const url::Origin& request_origin,
                          std::vector<OperationPtr> operations) {
     base::RunLoop loop;
-    base::OnceCallback<void(base::StringPiece error)> bad_message_callback =
-        base::BindLambdaForTesting([&](base::StringPiece error) {
+    base::OnceCallback<void(std::string_view error)> bad_message_callback =
+        base::BindLambdaForTesting([&](std::string_view error) {
           LOG(ERROR) << error;
           std::move(loop.QuitClosure()).Run();
         });
@@ -507,7 +509,7 @@ class SharedStorageHeaderObserverTest
         default:
           LOG(ERROR)
               << "Encountered unexpectedly deferred shared storage operations";
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       commit_loop.Run();
     }
@@ -593,7 +595,7 @@ auto describe_test_case_type = [](const auto& info) {
     case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
       return "NullRFH";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 };
 
@@ -833,7 +835,7 @@ TEST_P(SharedStorageHeaderObserverTest, SkipInvalidParams) {
   set_bypass_shared_storage_allowed_count(1);
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
-  const std::string kLong(1025, 'x');
+  const std::string kLong(2621441, 'x');
 
   std::vector<OperationPtr> operations = MakeOperationVector({
       std::make_tuple(OperationType::kClear, /*key*/ std::nullopt,

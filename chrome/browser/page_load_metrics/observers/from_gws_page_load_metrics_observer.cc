@@ -287,7 +287,7 @@ void LogProvisionalAborts(const page_load_metrics::PageAbortInfo& abort_info) {
           abort_info.time_to_abort);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -623,8 +623,11 @@ bool FromGWSPageLoadMetricsLogger::ShouldLogPostCommitMetrics(const GURL& url) {
   // these cases are relatively uncommon, and we run the risk of logging metrics
   // for some search redirector URLs. Thus we choose the more conservative
   // approach of ignoring all urls on known search hostnames.
-  if (page_load_metrics::IsGoogleSearchHostname(url))
+  //
+  // The one exception is /maps, which we want to be sure to log stats for.
+  if (page_load_metrics::IsProbablyGoogleSearchUrl(url)) {
     return false;
+  }
 
   if (IsSidePanelInitiatedNavigation())
     return ShouldLogSidePanelMetrics();

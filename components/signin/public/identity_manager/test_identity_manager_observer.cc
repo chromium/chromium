@@ -144,7 +144,8 @@ void TestIdentityManagerObserver::OnRefreshTokenRemovedForAccount(
 
 void TestIdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   account_from_error_state_of_refresh_token_updated_callback_ = account_info;
   error_from_error_state_of_refresh_token_updated_callback_ = error;
   if (on_error_state_of_refresh_token_updated_callback_)

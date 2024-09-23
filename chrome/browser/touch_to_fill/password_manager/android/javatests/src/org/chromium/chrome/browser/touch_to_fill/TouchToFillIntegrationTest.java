@@ -13,8 +13,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.annotation.SuppressLint;
 import android.view.View;
@@ -86,7 +86,7 @@ public class TouchToFillIntegrationTest {
     @Before
     public void setUp() throws InterruptedException {
         sExampleUrl = new GURL("https://www.example.xyz");
-        // TODO(https://crbug.com/783819): Migrate Credential to GURL.
+        // TODO(crbug.com/40549331): Migrate Credential to GURL.
         sAna =
                 new Credential(
                         "Ana",
@@ -118,6 +118,7 @@ public class TouchToFillIntegrationTest {
                                     mActivityTestRule.getActivity().getWindowAndroid());
                     mTouchToFill.initialize(
                             mActivityTestRule.getActivity(),
+                            mActivityTestRule.getProfile(false),
                             mBottomSheetController,
                             mMockBridge,
                             mMockFocusHelper);

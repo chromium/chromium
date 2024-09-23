@@ -19,8 +19,9 @@ GeneratedCode::~GeneratedCode() = default;
 GeneratedCode::GeneratedCode(GeneratedCode&&) = default;
 GeneratedCode& GeneratedCode::operator=(GeneratedCode&&) = default;
 
-std::optional<GeneratedCode> Generate(base::span<const uint8_t> in,
-                                      std::optional<int> min_version) {
+base::expected<GeneratedCode, Error> GenerateCode(
+    base::span<const uint8_t> in,
+    std::optional<int> min_version) {
   rust::Slice<const uint8_t> rs_in = base::SpanToRustSlice(in);
 
   // `min_version` might come from a fuzzer and therefore we use a lenient
@@ -30,11 +31,12 @@ std::optional<GeneratedCode> Generate(base::span<const uint8_t> in,
 
   std::vector<uint8_t> result_pixels;
   size_t result_width = 0;
+  Error result_error = Error::kUnknownError;
   bool result_is_success = generate_qr_code_using_rust(
-      rs_in, rs_min_version, result_pixels, result_width);
+      rs_in, rs_min_version, result_pixels, result_width, result_error);
 
   if (!result_is_success) {
-    return std::nullopt;
+    return base::unexpected(result_error);
   }
   GeneratedCode code;
   code.data = std::move(result_pixels);

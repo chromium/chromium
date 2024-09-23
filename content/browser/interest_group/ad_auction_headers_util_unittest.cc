@@ -6,10 +6,10 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -39,7 +39,7 @@ constexpr char kLegitimateAdAuctionResponse[] =
 constexpr char kLegitimateAdAuctionSignals[] =
     R"([{"adSlot":"slot1", "sellerSignals":{"signal1":"value1"}}])";
 
-std::string Base64UrlDecode(base::StringPiece input) {
+std::string Base64UrlDecode(std::string_view input) {
   std::string bytes;
   CHECK(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::IGNORE_PADDING, &bytes));
@@ -217,8 +217,7 @@ class IsAdAuctionHeadersEligibleForNavigationTest
  public:
   IsAdAuctionHeadersEligibleForNavigationTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage,
-                              features::kEnableUpdatingUserBiddingSignals},
+        /*enabled_features=*/{blink::features::kInterestGroupStorage},
         /*disabled_features=*/{});
   }
 
@@ -350,8 +349,7 @@ class ProcessAdAuctionResponseHeadersTest : public RenderViewHostTestHarness {
   ProcessAdAuctionResponseHeadersTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledgeBiddingAndAuctionServer,
-                              blink::features::kAdAuctionSignals,
-                              blink::features::kFledgeNegativeTargeting},
+                              blink::features::kAdAuctionSignals},
         /*disabled_features=*/{});
   }
 

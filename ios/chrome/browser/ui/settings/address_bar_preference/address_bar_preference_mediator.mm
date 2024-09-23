@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -17,12 +18,12 @@
 
 @implementation AddressBarPreferenceMediator
 
-- (instancetype)initWithOriginalPrefService:(PrefService*)originalPrefService {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:originalPrefService
-                                              prefName:prefs::kBottomOmnibox];
+    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()
+                   prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
   }
   return self;

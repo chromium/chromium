@@ -32,7 +32,7 @@ constexpr char kAirpodsNameSubstring[] = "AirPods";  // crbug.com/1163072
 // both microphone and speakers.  "... Stereo" is another special profile
 // which supports higher quality audio. Windows 11 merges the two to avoid
 // confusing the user.
-// TODO(crbug.com/1412400): The strings are localized by the OS which
+// TODO(crbug.com/40255253): The strings are localized by the OS which
 // should be taken into account.
 constexpr char kProfileNameHandsFree[] = "Hands-Free AG Audio";
 constexpr char kProfileNameStereo[] = "Stereo";
@@ -91,7 +91,7 @@ std::string AudioDeviceDescription::GetCommunicationsDeviceName() {
   // is deprecated.
   return "";
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -150,11 +150,13 @@ AudioDeviceDescription& AudioDeviceDescription::operator=(
 AudioDeviceDescription::AudioDeviceDescription(std::string device_name,
                                                std::string unique_id,
                                                std::string group_id,
-                                               bool is_system_default)
+                                               bool is_system_default,
+                                               bool is_communications_device)
     : device_name(device_name),
       unique_id(unique_id),
       group_id(group_id),
-      is_system_default(is_system_default) {}
+      is_system_default(is_system_default),
+      is_communications_device(is_communications_device) {}
 
 bool AudioDeviceDescription::operator==(
     const AudioDeviceDescription& other) const {

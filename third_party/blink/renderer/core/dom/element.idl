@@ -44,7 +44,7 @@ dictionary CheckVisibilityOptions {
 
     [Affects=Nothing] boolean hasAttributes();
     [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
-    [Affects=Nothing] sequence<DOMString> getAttributeNames();
+    [Affects=Nothing, ImplementedAs=getAttributeNamesForBindings] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
     [RaisesException, CEReactions] void setAttribute(DOMString name, DOMString value);
@@ -101,20 +101,20 @@ dictionary CheckVisibilityOptions {
     [CEReactions, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
     // https://github.com/whatwg/html/pull/9538
-    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(DOMString html);
+    [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html);
 
     // Declarative Shadow DOM getInnerHTML() function. This version should be
     // considered deprecated, as we work to standardize the version below,
     // getHTML().
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] DOMString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
     // Declarative Shadow DOM getHTML() function.
-    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException, RuntimeEnabled=ElementGetHTML] HTMLString getHTML(optional GetHTMLOptions options = {});
+    [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
     // https://github.com/w3c/pointerlock/pull/49
-    [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] any requestPointerLock(optional PointerLockOptions options = {});
+    [MeasureAs=ElementRequestPointerLock, CallWith=ScriptState, RaisesException] Promise<undefined> requestPointerLock(optional PointerLockOptions options = {});
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
@@ -141,9 +141,10 @@ dictionary CheckVisibilityOptions {
     readonly attribute long clientLeft;
     readonly attribute long clientWidth;
     readonly attribute long clientHeight;
+    [RuntimeEnabled=StandardizedBrowserZoom] readonly attribute double currentCSSZoom;
 
     // Used by both Anchor Positioning and Popover
-    [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;
+    [CEReactions,RuntimeEnabled=HTMLAnchorAttribute,ImplementedAs=anchorElementForBinding] attribute Element? anchorElement;
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
@@ -155,9 +156,9 @@ dictionary CheckVisibilityOptions {
     // Accessibility Object Model
     [RuntimeEnabled=AccessibilityObjectModel] readonly attribute AccessibleNode? accessibleNode;
 
-    // Confirmation of Action API
+    // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
-    [RuntimeEnabled=ConfirmationOfAction] void ariaNotify(HTMLString announcement, optional AriaNotificationOptions options = {});
+    [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
     // Event handler attributes
     attribute EventHandler onbeforecopy;

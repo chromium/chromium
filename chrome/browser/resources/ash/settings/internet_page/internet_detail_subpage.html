@@ -319,7 +319,14 @@
           on-click="onApnRowClicked_"
           role-description="$i18n{subpageArrowRoleDescription}"
           warning$="[[showRestrictedConnectivity_(managedProperties_,
-              deviceState_)]]">
+              deviceState_)]]"
+          disabled="[[disabled_]]">
+        <template is="dom-if" if="[[isApnManaged_(globalPolicy)]]">
+          <cr-policy-indicator id="apnManagedIcon"
+              indicator-type="devicePolicy"
+              icon-aria-label="$i18n{internetApnPageTitle}">
+          </cr-policy-indicator>
+        </template>
       </cr-link-row>
     </template>
   </template>
@@ -346,6 +353,7 @@
                               deviceState_)]]">
     <!-- Advanced toggle. -->
     <cr-expand-button
+        id="advancedSectionToggle"
         aria-label="$i18n{networkSectionAdvancedA11yLabel}"
         class="settings-box"
         expanded="{{advancedExpanded_}}">
@@ -420,7 +428,8 @@
     </iron-collapse>
   </template>
 
-  <template is="dom-if" if="[[showDataUsage_(managedProperties_)]]">
+  <template is="dom-if" if="[[showDataUsage_(managedProperties_,
+      trafficCountersAvailable_)]]">
     <!-- Data usage toggle. -->
     <cr-expand-button
         aria-label="$i18n{TrafficCountersDataUsageLabel}"
@@ -432,7 +441,10 @@
     <!-- Data usage section -->
     <iron-collapse opened="[[dataUsageExpanded_]]">
       <settings-traffic-counters id="settingsTrafficCounters"
-          guid="[[guid]]">
+          guid="[[guid]]"
+          managed-properties="[[managedProperties_]]"
+          on-reset-day-changed="computeTrafficCountersAvailable_"
+          on-reset-data-usage-button-clicked="computeTrafficCountersAvailable_">
       </settings-traffic-counters>
     </iron-collapse>
   </template>
@@ -523,6 +535,7 @@
         globalPolicy, managedNetworkAvailable)]]">
       <!-- Proxy toggle -->
       <cr-expand-button
+          id="proxySectionToggle"
           aria-label="$i18n{networkSectionProxyExpandA11yLabel}"
           class="settings-box"
           expanded="{{proxyExpanded_}}">

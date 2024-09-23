@@ -57,12 +57,13 @@ void AppendFileHandler(web_app::WebAppInstallInfo& info,
 }  // namespace
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(kChromeUIFileManagerURL);
+  GURL start_url(kChromeUIFileManagerURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"icon16.png", 16, IDR_FILE_MANAGER_ICON_16},
           {"icon32.png", 32, IDR_FILE_MANAGER_ICON_32},
@@ -82,9 +83,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
-  // NOTE: when adding new formats to the extension list below, don't
-  // forget to also update file_manager/manifest.json.
 
   // Add File Handlers. NOTE: Order of handlers matters.
   // Archives:
@@ -125,24 +123,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
 
-  // Office Docs - Web Drive:
-  AppendFileHandler(*info,
-                    ::file_manager::file_tasks::kActionIdWebDriveOfficeWord,
-                    {"doc", "docx"});
-  AppendFileHandler(*info,
-                    ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel,
-                    {"xls", "xlsm", "xlsx"});
-  AppendFileHandler(
-      *info, ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint,
-      {"ppt", "pptx"});
-
-  // Office Docs - Microsoft 365: Alongside Web Drive, Files app has Microsoft
-  // 365 as a second file handler for Office files, (action ID:
-  // `::file_manager::file_tasks::kActionIdOpenInOffice`). However, the app
-  // service doesn't handle registering the same app twice to handle the same
-  // files in two different ways. Hence, file_tasks is responsible for adding
-  // this "open-in-office" file handler manually, when relevant.
-
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
   AppendFileHandler(
@@ -154,9 +134,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "install-linux-package", {"deb"});
   AppendFileHandler(*info, "import-crostini-image", {"tini"});
 
-  // For File Picker and Save As dialogs:
-  AppendFileHandler(*info, "select", {"*"});
-  AppendFileHandler(*info, "open", {"*"});
   return info;
 }
 

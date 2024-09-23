@@ -9,15 +9,14 @@
 #include <algorithm>
 #include <limits>
 #include <set>
-#include <string_view>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -34,19 +33,16 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
-using url_matcher::URLMatcher;
-using url_matcher::URLMatcherCondition;
-using url_matcher::URLMatcherConditionFactory;
-using url_matcher::URLMatcherConditionSet;
-using url_matcher::URLMatcherPortFilter;
-using url_matcher::URLMatcherSchemeFilter;
-using url_matcher::URLQueryElementMatcherCondition;
+#if BUILDFLAG(IS_IOS)
+#include <string_view>
+
+#include "base/strings/string_util.h"
+#endif
 
 namespace policy {
 
-using url_matcher::util::CreateConditionSet;
+using url_matcher::URLMatcher;
 using url_matcher::util::FilterComponents;
-using url_matcher::util::FilterToComponents;
 
 namespace {
 
@@ -124,6 +120,56 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
   return false;
 }
 
+bool IsWildcardBlocklist(const FilterComponents& filter) {
+  return !filter.allow && filter.IsWildcard();
+}
+
+// Determines if the left-hand side `lhs` filter takes precedence over the
+// right-hand side `rhs` filter. Returns true if `lhs` takes precedence over
+// `rhs`, false otherwise.
+bool FilterTakesPrecedence(const FilterComponents& lhs,
+                           const FilterComponents& rhs) {
+  // The "*" wildcard in the blocklist is the lowest priority filter.
+  if (IsWildcardBlocklist(rhs)) {
+    return true;
+  }
+
+  if (IsWildcardBlocklist(lhs)) {
+    return false;
+  }
+
+  if (lhs.match_subdomains && !rhs.match_subdomains) {
+    return false;
+  }
+  if (!lhs.match_subdomains && rhs.match_subdomains) {
+    return true;
+  }
+
+  const size_t host_length = lhs.host.length();
+  const size_t other_host_length = rhs.host.length();
+  if (host_length != other_host_length) {
+    return host_length > other_host_length;
+  }
+
+  const size_t path_length = lhs.path.length();
+  const size_t other_path_length = rhs.path.length();
+  if (path_length != other_path_length) {
+    return path_length > other_path_length;
+  }
+
+  if (lhs.number_of_url_matching_conditions !=
+      rhs.number_of_url_matching_conditions) {
+    return lhs.number_of_url_matching_conditions >
+           rhs.number_of_url_matching_conditions;
+  }
+
+  if (lhs.allow && !rhs.allow) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // BlocklistSource implementation that blocks URLs, domains and schemes
@@ -176,13 +222,13 @@ URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 URLBlocklist::~URLBlocklist() = default;
 
 void URLBlocklist::Block(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), false, &id_, filters,
-                                &filters_);
+  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/false, &id_,
+                                filters, &filters_);
 }
 
 void URLBlocklist::Allow(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), true, &id_, filters,
-                                &filters_);
+  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/true, &id_,
+                                filters, &filters_);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {
@@ -192,67 +238,39 @@ bool URLBlocklist::IsURLBlocked(const GURL& url) const {
 
 URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
     const GURL& url) const {
-  std::set<base::MatcherStringPattern::ID> matching_ids =
-      url_matcher_->MatchURL(url);
-
-  const FilterComponents* max = nullptr;
-  for (auto id = matching_ids.begin(); id != matching_ids.end(); ++id) {
-    auto it = filters_.find(*id);
-    DCHECK(it != filters_.end());
-    const FilterComponents& filter = it->second;
-    if (!max || FilterTakesPrecedence(filter, *max))
-      max = &filter;
-  }
-
+  const FilterComponents* highest_priority_filter =
+      GetHighestPriorityFilterFor(url);
   // Default neutral.
-  if (!max)
+  if (!highest_priority_filter) {
     return URLBlocklist::URLBlocklistState::URL_NEUTRAL_STATE;
+  }
 
   // Some of the internal Chrome URLs are not affected by the "*" in the
   // blocklist. Note that the "*" is the lowest priority filter possible, so
   // any higher priority filter will be applied first.
-  if (!max->allow && max->IsWildcard() && BypassBlocklistWildcardForURL(url))
+  if (IsWildcardBlocklist(*highest_priority_filter) &&
+      BypassBlocklistWildcardForURL(url)) {
     return URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
+  }
 
-  return max->allow ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
-                    : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  return highest_priority_filter->allow
+             ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
+             : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
 
-size_t URLBlocklist::Size() const {
-  return filters_.size();
-}
-
-// static
-bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
-                                         const FilterComponents& rhs) {
-  // The "*" wildcard in the blocklist is the lowest priority filter.
-  if (!rhs.allow && rhs.IsWildcard())
-    return true;
-
-  if (lhs.match_subdomains && !rhs.match_subdomains)
-    return false;
-  if (!lhs.match_subdomains && rhs.match_subdomains)
-    return true;
-
-  size_t host_length = lhs.host.length();
-  size_t other_host_length = rhs.host.length();
-  if (host_length != other_host_length)
-    return host_length > other_host_length;
-
-  size_t path_length = lhs.path.length();
-  size_t other_path_length = rhs.path.length();
-  if (path_length != other_path_length)
-    return path_length > other_path_length;
-
-  if (lhs.number_of_url_matching_conditions !=
-      rhs.number_of_url_matching_conditions)
-    return lhs.number_of_url_matching_conditions >
-           rhs.number_of_url_matching_conditions;
-
-  if (lhs.allow && !rhs.allow)
-    return true;
-
-  return false;
+const FilterComponents* URLBlocklist::GetHighestPriorityFilterFor(
+    const GURL& url) const {
+  const FilterComponents* highest_priority_filter = nullptr;
+  for (const auto& pattern_id : url_matcher_->MatchURL(url)) {
+    const auto it = filters_.find(pattern_id);
+    CHECK(it != filters_.end(), base::NotFatalUntil::M130);
+    const FilterComponents& filter = it->second;
+    if (!highest_priority_filter ||
+        FilterTakesPrecedence(filter, *highest_priority_filter)) {
+      highest_priority_filter = &filter;
+    }
+  }
+  return highest_priority_filter;
 }
 
 URLBlocklistManager::URLBlocklistManager(

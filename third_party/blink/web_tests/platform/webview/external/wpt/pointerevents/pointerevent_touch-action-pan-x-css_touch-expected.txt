@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] touch-action attribute test
+  assert_not_equals: scroll x offset should not be 0 in the end of the test got disallowed value 0
+Harness: the test ran to completion.

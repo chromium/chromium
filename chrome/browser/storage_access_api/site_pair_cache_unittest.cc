@@ -4,6 +4,8 @@
 
 #include "chrome/browser/storage_access_api/site_pair_cache.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +23,7 @@ constexpr char kIPv4Addr[] = "127.0.0.1";
 constexpr char kIPv6Addr[] = "::1";
 constexpr char kLocalhost[] = "localhost";
 
-url::Origin OriginFromHost(base::StringPiece host) {
+url::Origin OriginFromHost(std::string_view host) {
   return url::Origin::Create(GURL(base::StrCat({"https://", host})));
 }
 

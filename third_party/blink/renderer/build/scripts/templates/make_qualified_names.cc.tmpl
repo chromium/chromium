@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 namespace {{cpp_namespace}} {
@@ -55,7 +56,6 @@ std::unique_ptr<const QualifiedName*[]> GetAttrs() {
 void Init() {
   struct NameEntry {
     const char* name;
-    unsigned hash;
     unsigned char length;
     unsigned char is_tag;
     unsigned char is_attr;
@@ -70,7 +70,7 @@ void Init() {
   {% set attrnames = attrs|map(attribute='name')|list() %}
   static const NameEntry kNames[] = {
   {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
-    { "{{name}}", {{name.original|hash}}, {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
+    { "{{name}}", {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
   {% endfor %}
   };
 
@@ -79,7 +79,7 @@ void Init() {
   {% endif %}
   size_t attr_i = 0;
   for (size_t i = 0; i < std::size(kNames); ++i) {
-    StringImpl* impl = StringImpl::CreateStatic(kNames[i].name, kNames[i].length, kNames[i].hash);
+    StringImpl* impl = StringImpl::CreateStatic(kNames[i].name, kNames[i].length);
     {% if tags %}
     if (kNames[i].is_tag) {
       void* address = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage) + tag_i;

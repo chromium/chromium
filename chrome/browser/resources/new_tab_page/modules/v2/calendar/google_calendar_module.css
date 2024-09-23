@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+ntp-module-header-v2 {
+  background-color: var(--color-new-tab-page-module-background);
+  margin: 8px;
+}
+
+@media (forced-colors: active) {
+  /* Set outline since background isn't visible in hcm */
+  ntp-module-header-v2 {
+    border-radius: var(--ntp-module-item-border-radius);
+    outline: var(--cr-border-hcm);
+  }
+}

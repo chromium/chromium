@@ -61,3 +61,6 @@ subblocks.
 issue in nonembedded android component_updater.
 - Removing logs to reduce chromium binary size.
 - Fixed missing cstring includes for memcpy calls.
+- Using base::numerics to do big endian conversion in puffpatch.cc.
+- Updated puffdiff.cc to use spans for endian conversion and memcpy.
+- Replaced LOG with VLOG to avoid unnecessary logging unless logging is enabled.

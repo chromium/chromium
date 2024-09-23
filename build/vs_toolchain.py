@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2022 17.4 with 10.0.22621.0 SDK with ARM64 libraries and UWP support.
+# VS 2022 17.9.2 with 10.0.22621.2428 SDK with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
 #
@@ -39,7 +39,7 @@ from gn_helpers import ToGNString
 #   Maps between Visual Studio version and MSVC toolset
 # * MSVS_VERSIONS in this file
 #   Records the packaged and default version of Visual Studio
-TOOLCHAIN_HASH = '27370823e7'
+TOOLCHAIN_HASH = '7393122652'
 SDK_VERSION = '10.0.22621.0'
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -554,11 +554,56 @@ def SetEnvironmentAndGetSDKDir():
   return NormalizePath(os.environ['WINDOWSSDKDIR'])
 
 
+def SDKIncludesIDCompositionDevice4():
+  """Returns true if the selected Windows SDK includes the declaration for the
+    IDCompositionDevice4 interface. This is essentially the equivalent checking
+    if a (non-preview) SDK version >=10.0.22621.2428.
+
+    We cannot check for this SDK version directly since it installs to a folder
+    with the minor version set to 0 (i.e. 10.0.22621.0) and the
+    IDCompositionDevice4 interface was added in a servicing release which did
+    not increment the major version.
+
+    There doesn't seem to be a straightforward and cross-platform way to get the
+    minor version of an installed SDK directory. To work around this, we look
+    for the GUID declaring the interface which implies the SDK version and
+    ensures the interface itself is present."""
+  win_sdk_dir = SetEnvironmentAndGetSDKDir()
+  if not win_sdk_dir:
+    return False
+
+  # Skip this check if we know the major version definitely includes
+  # IDCompositionDevice4.
+  if int(SDK_VERSION.split('.')[2]) > 22621:
+    return True
+
+  dcomp_header_path = os.path.join(win_sdk_dir, 'Include', SDK_VERSION, 'um',
+                                   'dcomp.h')
+  DECLARE_DEVICE4_LINE = ('DECLARE_INTERFACE_IID_('
+                          'IDCompositionDevice4, IDCompositionDevice3, '
+                          '"85FC5CCA-2DA6-494C-86B6-4A775C049B8A")')
+  with open(dcomp_header_path) as f:
+    for line in f.readlines():
+      if line.rstrip() == DECLARE_DEVICE4_LINE:
+        return True
+
+  return False
+
+
 def GetToolchainDir():
   """Gets location information about the current toolchain (must have been
   previously updated by 'update'). This is used for the GN build."""
   runtime_dll_dirs = SetEnvironmentAndGetRuntimeDllDirs()
   win_sdk_dir = SetEnvironmentAndGetSDKDir()
+  version_as_year = GetVisualStudioVersion()
+
+  if not SDKIncludesIDCompositionDevice4():
+    print(
+        'Windows SDK >= 10.0.22621.2428 required. You can get it by updating '
+        f'Visual Studio {version_as_year} using the Visual Studio Installer.',
+        file=sys.stderr,
+    )
+    return 1
 
   print('''vs_path = %s
 sdk_version = %s
@@ -568,7 +613,7 @@ wdk_dir = %s
 runtime_dirs = %s
 ''' % (ToGNString(NormalizePath(
       os.environ['GYP_MSVS_OVERRIDE_PATH'])), ToGNString(SDK_VERSION),
-       ToGNString(win_sdk_dir), ToGNString(GetVisualStudioVersion()),
+       ToGNString(win_sdk_dir), ToGNString(version_as_year),
        ToGNString(NormalizePath(os.environ.get('WDK_DIR', ''))),
        ToGNString(os.path.pathsep.join(runtime_dll_dirs or ['None']))))
 

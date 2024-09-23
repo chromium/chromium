@@ -1,0 +1,39 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module related_website_sets.mojom;
+
+// This enum should match //net/first_party_sets/first_party_set_entry.h.
+enum SiteType {
+    kPrimary,
+    kAssociated,
+    kService,
+};
+
+struct Member {
+    string site;
+    SiteType type;
+};
+
+struct RelatedWebsiteSet {
+    string primary_site;
+    array<Member> member_sites;
+    bool managed_by_enterprise;
+};
+
+union GetRelatedWebsiteSetsResponse {
+  // Implies success
+  array<RelatedWebsiteSet> related_website_sets;
+
+  // Implies failure
+  string error_message;
+};
+
+// Provides access to browser-side related website sets data for
+// chrome://privacy-sandbox-internals/related-website-sets
+interface RelatedWebsiteSetsPageHandler {
+    // Get the list of all related website sets
+    // If no related website sets gathered pass error message to callback function
+    GetRelatedWebsiteSets() => (
+        GetRelatedWebsiteSetsResponse related_website_sets_info);
+};

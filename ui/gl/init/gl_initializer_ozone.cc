@@ -33,7 +33,7 @@ GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
     case kGLImplementationStubGL:
       return GetDisplayEGL(gpu_preference);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -56,7 +56,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

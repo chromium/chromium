@@ -7,13 +7,15 @@ package org.chromium.chrome.browser.browsing_data;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 
 /**
- * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and
- * ClearBrowsingDataFragment (Java UI).
+ * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and ClearBrowsingDataFragment
+ * (Java UI).
  */
 public final class BrowsingDataBridge {
     private static ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
@@ -71,17 +73,17 @@ public final class BrowsingDataBridge {
         if (sProfileMap == null) {
             sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
-        return sProfileMap.getForProfile(profile, () -> new BrowsingDataBridge(profile));
+        return sProfileMap.getForProfile(profile, BrowsingDataBridge::new);
     }
 
     /**
-     * Clear the specified types of browsing data asynchronously.
-     * |listener| is an object to be notified when clearing completes.
-     * It can be null, but many operations (e.g. navigation) are
+     * Clear the specified types of browsing data asynchronously. |listener| is an object to be
+     * notified when clearing completes. It can be null, but many operations (e.g. navigation) are
      * ill-advised while browsing data is being cleared.
+     *
      * @param listener A listener to call back when the clearing is finished.
-     * @param dataTypes An array of browsing data types to delete, represented as values from
-     *                  the shared enum {@link BrowsingDataType}.
+     * @param dataTypes An array of browsing data types to delete, represented as values from the
+     *     shared enum {@link BrowsingDataType}.
      * @param timePeriod The time period for which to delete the data.
      */
     public void clearBrowsingData(
@@ -264,6 +266,22 @@ public final class BrowsingDataBridge {
                 .setLastClearBrowsingDataTab(BrowsingDataBridge.this, mProfile, tabIndex);
     }
 
+    /**
+     * Builds the `BrowsingDataModel` from disk and returns the object async.
+     *
+     * @param callback Callback runs with the BrowsingDataModel object when the model is built.
+     */
+    public static void buildBrowsingDataModelFromDisk(
+            Profile profile, Callback<BrowsingDataModel> callback) {
+        BrowsingDataBridgeJni.get().buildBrowsingDataModelFromDisk(profile, callback);
+    }
+
+    @CalledByNative
+    private static void onBrowsingDataModelBuilt(
+            Callback<BrowsingDataModel> callback, long nativeBrowsingDataModel) {
+        callback.onResult(new BrowsingDataModel(nativeBrowsingDataModel));
+    }
+
     @NativeMethods
     public interface Natives {
         void clearBrowsingData(
@@ -310,5 +328,7 @@ public final class BrowsingDataBridge {
         int getLastClearBrowsingDataTab(BrowsingDataBridge caller, Profile profile);
 
         void setLastClearBrowsingDataTab(BrowsingDataBridge caller, Profile profile, int lastTab);
+
+        void buildBrowsingDataModelFromDisk(Profile profile, Callback<BrowsingDataModel> callback);
     }
 }

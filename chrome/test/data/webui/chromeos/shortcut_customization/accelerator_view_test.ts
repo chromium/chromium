@@ -597,8 +597,8 @@ suite('acceleratorViewTest', function() {
 
     const viewContainer =
         viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    // The icon name is 'overview' in keyToIconNameMap.
-    const regex = /^(search|launcher) alt shift overview$/;
+    // The icon label is 'show windows'.
+    const regex = /^(search|launcher) alt shift show windows$/;
     assertTrue(!!viewContainer.ariaLabel);
     assertTrue(regex.test(viewContainer.ariaLabel));
   });

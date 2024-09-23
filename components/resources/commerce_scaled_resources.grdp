@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <structure type="chrome_scaled_image" name="IDR_COMMERCE_PRODUCT_SPECIFICATIONS_FAVICON" file="commerce/product_specifications_favicon.png" />
+</grit-part>

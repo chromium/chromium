@@ -257,16 +257,16 @@ void LogVpnResult(const std::string& provider,
                   bool* failed_to_log_result) {
   ASSERT_NE(failed_to_log_result, nullptr);
 
-// Emitting a metric for an unknown VPN provider will always cause a NOTREACHED
-// to be hit. This can cause a CHECK to fail, depending on the build flags. We
-// catch any failing CHECK below by asserting that we will crash when emitting.
-#if DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+// Emitting a metric for an unknown VPN provider will always cause a
+// DUMP_WILL_BE_NOTREACHED() to be hit. This is fatal outside official builds,
+// so make sure that we die in those configurations.
+#if !defined(OFFICIAL_BUILD)
   if (provider == kTestUnknownVpn) {
     ASSERT_DEATH({ func.Run(); }, "");
     *failed_to_log_result = true;
     return;
   }
-#endif  // DCHECK_IS_ON() && !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+#endif  // !defined(OFFICIAL_BUILD)
   func.Run();
 }
 
@@ -965,6 +965,29 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
       NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
       /*shill_error=*/ShillConnectResult::kUnknown);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
+                                      0);
+  histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
+                                       ShillConnectResult::kUnknown, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiOpenConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
+      0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
+      ShillConnectResult::kUnknown, 0);
+
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateFailure));
+  base::RunLoop().RunUntilIdle();
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
+      /*shill_error=*/ShillConnectResult::kUnknown);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
                                       1);
   histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
                                        ShillConnectResult::kUnknown, 1);
@@ -973,11 +996,6 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
   histogram_tester_->ExpectBucketCount(
       kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
       1);
-  histogram_tester_->ExpectTotalCount(
-      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
-  histogram_tester_->ExpectBucketCount(
-      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
-      ShillConnectResult::kUnknown, 0);
 }
 
 TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
@@ -1049,14 +1067,32 @@ TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
       NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
       /*shill_error=*/ShillConnectResult::kUnknown);
   histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
-                                      1);
+                                      0);
   histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
-                                       ShillConnectResult::kUnknown, 1);
+                                       ShillConnectResult::kUnknown, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiOpenConnectionStateShillErrorHistogram, 0);
   histogram_tester_->ExpectBucketCount(
       kWifiOpenConnectionStateShillErrorHistogram, ShillConnectResult::kUnknown,
       0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram, 0);
+  histogram_tester_->ExpectBucketCount(
+      kWifiPasswordProtectedConnectionStateShillErrorHistogram,
+      ShillConnectResult::kUnknown, 0);
+
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateFailure));
+  base::RunLoop().RunUntilIdle();
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction,
+      /*shill_error=*/ShillConnectResult::kUnknown);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateShillErrorHistogram,
+                                      1);
+  histogram_tester_->ExpectBucketCount(kWifiConnectionStateShillErrorHistogram,
+                                       ShillConnectResult::kUnknown, 1);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectionStateShillErrorHistogram, 1);
   histogram_tester_->ExpectBucketCount(

@@ -55,7 +55,7 @@ int HttpResponseBodyDrainer::DoLoop(int result) {
         rv = DoDrainResponseBodyComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }

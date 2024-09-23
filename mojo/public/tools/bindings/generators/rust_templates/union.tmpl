@@ -1,0 +1,44 @@
+{% macro declare_union(union) -%}
+
+#[derive(Debug)]
+pub enum {{union.name}} {
+{%- for field in union.fields %}
+    r#{{field.name}}({{field.kind|rust_field_type}}),
+{%- endfor %}
+}
+
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(C)]
+pub struct {{union.name}}_Data {
+    size: u32,
+    tag: {{union.name}}_Tag,
+    inner: {{union.name}}_Inner,
+}
+
+// All unions have a predefined size in the wire format. Assert it's correct.
+static_assertions::const_assert_eq!(
+    bindings::data::UNION_DATA_SIZE,
+    std::mem::size_of::<{{union.name}}_Data>()
+);
+
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(transparent)]
+pub struct {{union.name}}_Tag(u32);
+
+impl {{union.name}}_Tag {
+{%- for field in union.fields %}
+    pub const r#{{field.name|to_upper_snake_case}}: Self = Self({{loop.index0}});
+{%- endfor %}
+}
+
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(transparent)]
+pub struct {{union.name}}_Inner(u64);
+
+// All unions have a predefined size in the wire format. Assert it's correct.
+static_assertions::const_assert_eq!(
+    bindings::data::UNION_INNER_SIZE,
+    std::mem::size_of::<{{union.name}}_Inner>()
+);
+
+{%- endmacro %}

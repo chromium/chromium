@@ -4,9 +4,9 @@
 
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -21,6 +21,7 @@ constexpr char kFieldsParameterName[] = "fields";
 constexpr char kMaxResultsParameterName[] = "maxResults";
 constexpr char kPageTokenParameterName[] = "pageToken";
 constexpr char kPreviousTaskParameterName[] = "previous";
+constexpr char kShowAssignedParameterName[] = "showAssigned";
 constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
@@ -29,8 +30,11 @@ constexpr char kTaskListsListRequestedFields[] =
 
 constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
-    "kind,items(id,title,status,parent,position,due,links(type),notes,updated),"
-    "nextPageToken";
+    "kind,items(id,title,status,parent,position,due,links(type),notes,updated,"
+    "webViewLink),nextPageToken";
+constexpr char kTasksListRequestedFieldsWithAssignmentInfo[] =
+    "kind,items(id,title,status,parent,position,due,links(type),notes,updated,"
+    "webViewLink,assignmentInfo(surfaceType)),nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
 
@@ -59,15 +63,26 @@ GURL GetListTaskListsUrl(std::optional<int> max_results,
 
 GURL GetListTasksUrl(const std::string& task_list_id,
                      bool include_completed,
+                     bool include_assigned,
                      std::optional<int> max_results,
                      const std::string& page_token) {
   CHECK(!task_list_id.empty());
   GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
       kTasksListUrlTemplate, {task_list_id}, nullptr));
-  url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
-                                           kTasksListRequestedFields);
   url = net::AppendOrReplaceQueryParameter(
-      url, kShowCompletedParameterName, include_completed ? "true" : "false");
+      url, kFieldsParameterName,
+      include_assigned ? kTasksListRequestedFieldsWithAssignmentInfo
+                       : kTasksListRequestedFields);
+  if (!include_completed) {
+    // The default is `true`.
+    url = net::AppendOrReplaceQueryParameter(url, kShowCompletedParameterName,
+                                             "false");
+  }
+  if (include_assigned) {
+    // The default is `false`.
+    url = net::AppendOrReplaceQueryParameter(url, kShowAssignedParameterName,
+                                             "true");
+  }
   if (max_results.has_value()) {
     url = net::AppendOrReplaceQueryParameter(
         url, kMaxResultsParameterName,

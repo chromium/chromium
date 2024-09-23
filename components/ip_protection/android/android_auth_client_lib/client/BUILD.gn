@@ -1,0 +1,29 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("ip_protection_auth_client_java") {
+  sources = [
+    "java/src/org/chromium/components/ip_protection_auth/BindCallbackListener.java",
+    "java/src/org/chromium/components/ip_protection_auth/ByteArrayCallbackListener.java",
+    "java/src/org/chromium/components/ip_protection_auth/IpProtectionAuthClient.java",
+    "java/src/org/chromium/components/ip_protection_auth/IpProtectionAuthServiceCallback.java",
+    "java/src/org/chromium/components/ip_protection_auth/IpProtectionByteArrayCallback.java",
+  ]
+  srcjar_deps = [ "//components/ip_protection/android/android_auth_client_lib/cpp:jni_headers" ]
+  deps = [
+    "//base:base_java",
+    "//components/ip_protection:get_proxy_config_proto_java",
+    "//components/ip_protection/android/android_auth_client_lib/common/aidl:ip_protection_aidl_java",
+    "//components/ip_protection/android/android_auth_client_lib/common/proto:ip_protection_auth_proto_java",
+    "//net/third_party/quiche:blind_sign_auth_proto_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}

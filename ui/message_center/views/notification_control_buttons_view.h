@@ -23,9 +23,9 @@ class MessageView;
 
 class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
     : public views::View {
- public:
-  METADATA_HEADER(NotificationControlButtonsView);
+  METADATA_HEADER(NotificationControlButtonsView, views::View)
 
+ public:
   explicit NotificationControlButtonsView(MessageView* message_view = nullptr);
   NotificationControlButtonsView(const NotificationControlButtonsView&) =
       delete;

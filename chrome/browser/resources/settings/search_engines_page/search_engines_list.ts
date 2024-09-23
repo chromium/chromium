@@ -7,6 +7,7 @@
  * list of search engines.
  */
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import './search_engine_entry.js';
@@ -44,11 +45,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       collapseList: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true,
-      },
-
-      nameColumnHeader: {
-        type: String,
         reflectToAttribute: true,
       },
 
@@ -104,7 +100,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  nameColumnHeader: string;
   expandListText: string;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;

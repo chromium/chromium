@@ -48,13 +48,13 @@ class IOSWebMessageHost : public js_injection::WebMessageHost {
       return;
     }
 
-    // TODO(crbug.com/1423527): Move this parsing to the renderer process.
+    // TODO(crbug.com/40260088): Move this parsing to the renderer process.
     std::optional<base::Value> message_value =
         base::JSONReader::Read(base::UTF16ToUTF8(*received_message));
     if (!message_value) {
       return;
     }
-    // TODO(crbug.com/1423527): Determine whether the user has interacted with
+    // TODO(crbug.com/40260088): Determine whether the user has interacted with
     // the source page.
     bool is_user_interacting = false;
     ScriptMessage script_message(

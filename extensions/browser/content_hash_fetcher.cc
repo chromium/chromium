@@ -16,7 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_hash.h"
-#include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/verified_contents.h"
 #include "extensions/common/extension.h"

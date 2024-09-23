@@ -7,12 +7,12 @@
 #include <jni.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -61,7 +61,7 @@ class AttributionInputEventTrackerAndroidTest
  protected:
   // The Java strings are used as standins for the input events.
   base::android::ScopedJavaLocalRef<jstring> GetJavaString(
-      base::StringPiece str) {
+      std::string_view str) {
     return base::android::ConvertUTF8ToJavaString(env_, str);
   }
 
@@ -76,18 +76,31 @@ class AttributionInputEventTrackerAndroidTest
 };
 
 TEST_F(AttributionInputEventTrackerAndroidTest, EventExpiryApplied) {
-  EXPECT_TRUE(input_event_tracker_->GetMostRecentEvent().is_null());
+  AttributionInputEventTrackerAndroid::InputEvent input1 =
+      input_event_tracker_->GetMostRecentEvent();
+  EXPECT_TRUE(input1.event.is_null());
+  EXPECT_FALSE(input1.id.has_value());
 
   base::android::ScopedJavaLocalRef<jstring> str = GetJavaString("str");
   OnTouchEvent(CreateTouchEventAt(100.f, 100.f, str.obj()));
-  EXPECT_TRUE(IsSameObject(input_event_tracker_->GetMostRecentEvent(), str));
+  AttributionInputEventTrackerAndroid::InputEvent input2 =
+      input_event_tracker_->GetMostRecentEvent();
+  EXPECT_TRUE(IsSameObject(input2.event, str));
+  EXPECT_TRUE(input2.id.has_value());
+  EXPECT_GE(input2.id, 1u);
 
   task_environment()->FastForwardBy(
       AttributionInputEventTrackerAndroid::kEventExpiry);
-  EXPECT_TRUE(IsSameObject(input_event_tracker_->GetMostRecentEvent(), str));
+
+  AttributionInputEventTrackerAndroid::InputEvent input3 =
+      input_event_tracker_->GetMostRecentEvent();
+  EXPECT_TRUE(IsSameObject(input3.event, str));
+  EXPECT_EQ(input2.id, input3.id);
 
   task_environment()->FastForwardBy(base::Milliseconds(1));
-  EXPECT_TRUE(input_event_tracker_->GetMostRecentEvent().is_null());
+  AttributionInputEventTrackerAndroid::InputEvent input4 =
+      input_event_tracker_->GetMostRecentEvent();
+  EXPECT_TRUE(input4.event.is_null());
 }
 
 }  // namespace content

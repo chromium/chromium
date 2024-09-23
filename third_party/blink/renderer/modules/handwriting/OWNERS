@@ -1,6 +1,4 @@
 amoylan@chromium.org
-glenrob@chromium.org
-mgiuca@chromium.org
 qjw@chromium.org
 
 per-file *_type_converter*.*=set noparent

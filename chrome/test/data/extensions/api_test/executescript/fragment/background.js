@@ -44,7 +44,7 @@ function runTests() {
     // know the onload has fired. Then we navigate to a fragment, and try
     // running chrome.tabs.executeScript.
     function test1() {
-      chrome.extension.onRequest.addListener(function(req, sender) {
+      chrome.runtime.onMessage.addListener(function(req, sender) {
         chrome.test.log("got request: " + JSON.stringify(req));
         if (req == "content_script") {
           navigate_to_fragment(sender.tab, do_execute);

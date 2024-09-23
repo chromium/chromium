@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] CSSKeyframesRule interface: attribute length
-  assert_true: The prototype object must have a property "length" expected true got false
-[FAIL] CSSKeyframesRule interface: keyframes must inherit property "length" with the proper type
-  assert_inherits: property "length" not found in prototype chain
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute onanimationcancel
   assert_true: The prototype object must have a property "onanimationcancel" expected true got false
 [FAIL] Window interface: attribute onanimationcancel

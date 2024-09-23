@@ -65,6 +65,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
     private static final String NOTO_COLOR_EMOJI_COMPAT = "noto color emoji compat";
+    private static final String GOOGLE_SANS_FLEX = "google sans flex regular";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
@@ -112,10 +113,11 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * "preloaded_fonts" AndroidManifest directive, and have not previously failed a programmatic
      * font fetch request.
      *
-     * TODO(crbug.com/1111148): Ensure the font preload by manifest XML is also done for WebView.
+     * <p>TODO(crbug.com/40142462): Ensure the font preload by manifest XML is also done for
+     * WebView.
      *
      * @param callback The callback to be called with the list of fonts expected (but not
-     *         guaranteed) to be available. The list is sorted in ascending order.
+     *     guaranteed) to be available. The list is sorted in ascending order.
      */
     @Override
     public void getUniqueNameLookupTable(GetUniqueNameLookupTable_Response callback) {
@@ -143,7 +145,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
                     RecordHistogram.recordTimesHistogram(
@@ -161,7 +163,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     HashMap<String, ReadOnlyFile> result = new HashMap<>();
                     // Make a copy of mExpectedFonts because it may be modified.
@@ -315,6 +317,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         map.put(GOOGLE_SANS_MEDIUM, createFontQuery("Google Sans", 500));
         map.put(GOOGLE_SANS_BOLD, createFontQuery("Google Sans", 700));
         map.put(NOTO_COLOR_EMOJI_COMPAT, createFontQuery("Noto Color Emoji Compat", 400));
+        map.put(GOOGLE_SANS_FLEX, createFontQuery("Google Sans Flex", 400));
         return map;
     }
 

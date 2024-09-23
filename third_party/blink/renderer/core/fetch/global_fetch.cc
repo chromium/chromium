@@ -67,17 +67,17 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
                 ? MakeGarbageCollected<FetchLaterManager>(execution_context)
                 : nullptr) {}
 
-  ScriptPromise Fetch(ScriptState* script_state,
-                      const V8RequestInfo* input,
-                      const RequestInit* init,
-                      ExceptionState& exception_state) override {
+  ScriptPromise<Response> Fetch(ScriptState* script_state,
+                                const V8RequestInfo* input,
+                                const RequestInit* init,
+                                ExceptionState& exception_state) override {
     fetch_count_ += 1;
 
     ExecutionContext* execution_context = fetch_manager_->GetExecutionContext();
     if (!script_state->ContextIsValid() || !execution_context) {
       // TODO(yhirano): Should this be moved to bindings?
       exception_state.ThrowTypeError("The global scope is shutting down.");
-      return ScriptPromise();
+      return EmptyPromise();
     }
 
     // "Let |r| be the associated request of the result of invoking the
@@ -85,16 +85,24 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     // arguments. If this throws an exception, reject |p| with it."
     Request* r = Request::Create(script_state, input, init, exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return EmptyPromise();
 
     probe::WillSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
     FetchRequestData* request_data =
         r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(execution_context, request_data);
+
+    // Even if this was checked at the beginning of the function, it might
+    // have been set to nullptr during Request::Create.
+    if (!fetch_manager_->GetExecutionContext()) {
+      exception_state.ThrowTypeError("The global scope is shutting down.");
+      return EmptyPromise();
+    }
+
     auto promise = fetch_manager_->Fetch(script_state, request_data,
                                          r->signal(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return EmptyPromise();
 
     return promise;
   }
@@ -115,16 +123,10 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return nullptr;
     }
 
-    // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
+    // https://whatpr.org/fetch/1647.html#dom-global-fetch-later
     // Run the fetchLater(input, init) method steps:
 
-    // 1. If the user-agent has determined that deferred fetching is not
-    // allowed in this context, then throw a NotAllowedError.
-    // TODO(crbug.com/1465781): Define Permissions-Policy to allow disabling
-    // this feature. It should be enabled by default:
-    // https://github.com/WICG/pending-beacon/issues/77.
-
-    // 2. Let `r` be the result of invoking the initial value of Request as
+    // 1. Let `r` be the result of invoking the initial value of Request as
     // constructor with `input` and `init` as arguments. This may throw an
     // exception.
     Request* r =
@@ -138,7 +140,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     FetchRequestData* request_data =
         r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(ec, request_data);
-    // 6. If init is given and init ["activateAfter"] exists, then set
+    // 5. If init is given and init ["activateAfter"] exists, then set
     // `activate_after` to init ["activateAfter"].
     std::optional<DOMHighResTimeStamp> activate_after =
         (init->hasActivateAfter() ? std::make_optional(init->activateAfter())
@@ -181,7 +183,7 @@ FetchLaterResult* GlobalFetch::ScopedFetcher::FetchLater(
     const V8RequestInfo* input,
     const DeferredRequestInit* init,
     ExceptionState& exception_state) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
@@ -204,25 +206,25 @@ GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
 
 void GlobalFetch::ScopedFetcher::Trace(Visitor* visitor) const {}
 
-ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
-                                 LocalDOMWindow& window,
-                                 const V8RequestInfo* input,
-                                 const RequestInit* init,
-                                 ExceptionState& exception_state) {
+ScriptPromise<Response> GlobalFetch::fetch(ScriptState* script_state,
+                                           LocalDOMWindow& window,
+                                           const V8RequestInfo* input,
+                                           const RequestInit* init,
+                                           ExceptionState& exception_state) {
   UseCounter::Count(window.GetExecutionContext(), WebFeature::kFetch);
   if (!window.GetFrame()) {
     exception_state.ThrowTypeError("The global scope is shutting down.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   return ScopedFetcher::From(window)->Fetch(script_state, input, init,
                                             exception_state);
 }
 
-ScriptPromise GlobalFetch::fetch(ScriptState* script_state,
-                                 WorkerGlobalScope& worker,
-                                 const V8RequestInfo* input,
-                                 const RequestInit* init,
-                                 ExceptionState& exception_state) {
+ScriptPromise<Response> GlobalFetch::fetch(ScriptState* script_state,
+                                           WorkerGlobalScope& worker,
+                                           const V8RequestInfo* input,
+                                           const RequestInit* init,
+                                           ExceptionState& exception_state) {
   UseCounter::Count(worker.GetExecutionContext(), WebFeature::kFetch);
   return ScopedFetcher::From(worker)->Fetch(script_state, input, init,
                                             exception_state);

@@ -60,8 +60,6 @@ class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
 
-enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED };
-
 // CloudPolicyManager specialization for device policy in Ash.
 class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
                                     public user_manager::UserManager::Observer {
@@ -103,9 +101,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   // Pref registration helper.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Returns the mode for using zero-touch enrollment.
-  static ZeroTouchEnrollmentMode GetZeroTouchEnrollmentMode();
 
   // Starts the connection via |client_to_connect|.
   void StartConnection(std::unique_ptr<CloudPolicyClient> client_to_connect,
@@ -160,7 +155,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Called when UserManager is created.
   void OnUserManagerCreated(user_manager::UserManager* user_manager);
   // Called just before UserManager is destroyed.
-  void OnUserManagerWillBeDestroyed(user_manager::UserManager* user_manager);
+  void OnUserManagerWillBeDestroyed();
 
   // user_manager::UserManager::Observer:
   void OnUserToBeRemoved(const AccountId& account_id) override;
@@ -168,6 +163,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
                      user_manager::UserRemovalReason reason) override;
 
   HeartbeatScheduler* GetHeartbeatSchedulerForTesting() const;
+
+  reporting::OsUpdatesReporter* GetOsUpdatesReporter() const;
+
+  reporting::MetricReportingManager* GetMetricReportingManager();
 
  protected:
   // Object that monitors managed session related events used by reporting

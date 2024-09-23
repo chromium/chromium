@@ -1,6 +1,11 @@
 include_rules = [
+  "+chromeos/startup",
+  "+components/account_id",
+  "+components/user_manager",
+  "+google_apis",
   "+ui/base",
   "+ui/chromeos",
+  "+ui/color",
   "+ui/gfx",
   "+ui/views",
 ]

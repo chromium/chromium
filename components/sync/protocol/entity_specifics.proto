@@ -21,7 +21,10 @@ import "components/sync/protocol/autofill_offer_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
+import "components/sync/protocol/collaboration_group_specifics.proto";
+import "components/sync/protocol/product_comparison_specifics.proto";
 import "components/sync/protocol/contact_info_specifics.proto";
+import "components/sync/protocol/cookie_specifics.proto";
 import "components/sync/protocol/device_info_specifics.proto";
 import "components/sync/protocol/dictionary_specifics.proto";
 import "components/sync/protocol/experiments_specifics.proto";
@@ -38,6 +41,8 @@ import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
 import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
+import "components/sync/protocol/plus_address_setting_specifics.proto";
+import "components/sync/protocol/plus_address_specifics.proto";
 import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
@@ -48,7 +53,6 @@ import "components/sync/protocol/saved_tab_group_specifics.proto";
 import "components/sync/protocol/search_engine_specifics.proto";
 import "components/sync/protocol/security_event_specifics.proto";
 import "components/sync/protocol/send_tab_to_self_specifics.proto";
-import "components/sync/protocol/segmentation_specifics.proto";
 import "components/sync/protocol/session_specifics.proto";
 import "components/sync/protocol/shared_tab_group_data_specifics.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
@@ -103,7 +107,6 @@ message EntitySpecifics {
     AutofillSpecifics autofill = 31729;
     BookmarkSpecifics bookmark = 32904;
     PreferenceSpecifics preference = 37702;
-    TypedUrlSpecifics typed_url = 40781;
     ThemeSpecifics theme = 41210;
     PasswordSpecifics password = 45873;
     NigoriSpecifics nigori = 47745;
@@ -143,7 +146,6 @@ message EntitySpecifics {
     SavedTabGroupSpecifics saved_tab_group = 1004874;
     AutofillWalletUsageSpecifics autofill_wallet_usage = 1033580;
     ContactInfoSpecifics contact_info = 1034378;
-    SegmentationSpecifics segmentation = 1026052;
     PowerBookmarkSpecifics power_bookmark = 1073150;
     IncomingPasswordSharingInvitationSpecifics
         incoming_password_sharing_invitation = 1141935;
@@ -151,9 +153,17 @@ message EntitySpecifics {
         outgoing_password_sharing_invitation = 1142081;
     AutofillWalletCredentialSpecifics autofill_wallet_credential = 1164238;
     SharedTabGroupDataSpecifics shared_tab_group_data = 1239418;
+    CollaborationGroupSpecifics collaboration_group = 1259076;
+    ProductComparisonSpecifics product_comparison = 1329438;
+    PlusAddressSpecifics plus_address = 1267844;
+    CookieSpecifics cookie = 1281100;
+    PlusAddressSettingSpecifics plus_address_setting = 1303742;
+    // When adding a new type, follow the docs below and keep this comment as
+    // the last entry.
+    // https://www.chromium.org/developers/design-documents/sync/integration-checklist/
 
     // No-longer-supported data types, in various stages of removal.
-    // TODO(crbug.com/1395003): Eventually, these should all become "reserved"
+    // TODO(crbug.com/40881888): Eventually, these should all become "reserved"
     // fields, or at least use "EmptySpecifics". But some of them are still
     // needed by the server, e.g. to support older clients.
     EmptySpecifics app_notification = 45184 [deprecated = true];
@@ -166,6 +176,7 @@ message EntitySpecifics {
     ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
         [deprecated = true];
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
+    TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
   reserved 218175;
   reserved "wifi_credential";
@@ -173,6 +184,8 @@ message EntitySpecifics {
   reserved "article";
   reserved 545005;
   reserved "mountain_share";
+  reserved 1026052;
+  reserved "segmentation";
 }
 
 message EmptySpecifics {}

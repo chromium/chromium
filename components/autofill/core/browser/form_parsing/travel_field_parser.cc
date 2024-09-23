@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -13,9 +14,9 @@
 namespace autofill {
 
 namespace {
-base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+  return GetMatchPatterns(name, context.page_language, context.pattern_file);
 }
 }  // namespace
 
@@ -39,15 +40,14 @@ std::unique_ptr<FormFieldParser> TravelFieldParser::Parse(
       GetMatchPatterns("FLIGHT", context);
 
   auto travel_field = std::make_unique<TravelFieldParser>();
-  if (ParseField(context, scanner, kPassportRe, passport_patterns,
-                 &travel_field->passport_, "kPassportRe") ||
-      ParseField(context, scanner, kTravelOriginRe, travel_origin_patterns,
-                 &travel_field->origin_, "kTravelOriginRe") ||
-      ParseField(context, scanner, kTravelDestinationRe,
-                 travel_destination_patterns, &travel_field->destination_,
-                 "kTravelDestinationRe") ||
-      ParseField(context, scanner, kFlightRe, flight_patterns,
-                 &travel_field->flight_, "kFlightRe")) {
+  if (ParseField(context, scanner, passport_patterns, &travel_field->passport_,
+                 "PASSPORT") ||
+      ParseField(context, scanner, travel_origin_patterns,
+                 &travel_field->origin_, "TRAVEL_ORIGIN") ||
+      ParseField(context, scanner, travel_destination_patterns,
+                 &travel_field->destination_, "TRAVEL_DESTINATION") ||
+      ParseField(context, scanner, flight_patterns, &travel_field->flight_,
+                 "FLIGHT")) {
     // If any regex matches, then we found a travel field.
     return std::move(travel_field);
   }

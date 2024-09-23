@@ -31,60 +31,22 @@ namespace ash::nearby::presence {
 }
 
 NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
-    NearbyPresenceService::IdentityType identity_type) {
+    ::nearby::internal::IdentityType identity_type) {
   switch (identity_type) {
-    case NearbyPresenceService::IdentityType::kUnspecified:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return NearbyPresenceService::PresenceIdentityType::
           kIdentityTypeUnspecified;
-    case NearbyPresenceService::IdentityType::kPrivate:
-      return NearbyPresenceService::PresenceIdentityType::kIdentityTypePrivate;
-    case NearbyPresenceService::IdentityType::kTrusted:
-      return NearbyPresenceService::PresenceIdentityType::kIdentityTypeTrusted;
-    case NearbyPresenceService::IdentityType::kPublic:
-      return NearbyPresenceService::PresenceIdentityType::kIdentityTypePublic;
-    case NearbyPresenceService::IdentityType::kProvisioned:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP:
       return NearbyPresenceService::PresenceIdentityType::
-          kIdentityTypeProvisioned;
-  }
-}
-
-NearbyPresenceService::StatusCode ConvertToPresenceStatus(
-    mojo_base::mojom::AbslStatusCode status_code) {
-  switch (status_code) {
-    case mojo_base::mojom::AbslStatusCode::kOk:
-      return NearbyPresenceService::StatusCode::kAbslOk;
-    case mojo_base::mojom::AbslStatusCode::kCancelled:
-      return NearbyPresenceService::StatusCode::kAbslCancelled;
-    case mojo_base::mojom::AbslStatusCode::kUnknown:
-      return NearbyPresenceService::StatusCode::kAbslUnknown;
-    case mojo_base::mojom::AbslStatusCode::kInvalidArgument:
-      return NearbyPresenceService::StatusCode::kAbslInvalidArgument;
-    case mojo_base::mojom::AbslStatusCode::kDeadlineExceeded:
-      return NearbyPresenceService::StatusCode::kAbslDeadlineExceeded;
-    case mojo_base::mojom::AbslStatusCode::kNotFound:
-      return NearbyPresenceService::StatusCode::kAbslNotFound;
-    case mojo_base::mojom::AbslStatusCode::kAlreadyExists:
-      return NearbyPresenceService::StatusCode::kAbslAlreadyExists;
-    case mojo_base::mojom::AbslStatusCode::kPermissionDenied:
-      return NearbyPresenceService::StatusCode::kAbslPermissionDenied;
-    case mojo_base::mojom::AbslStatusCode::kResourceExhausted:
-      return NearbyPresenceService::StatusCode::kAbslResourceExhausted;
-    case mojo_base::mojom::AbslStatusCode::kFailedPrecondition:
-      return NearbyPresenceService::StatusCode::kAbslFailedPrecondition;
-    case mojo_base::mojom::AbslStatusCode::kAborted:
-      return NearbyPresenceService::StatusCode::kAbslAborted;
-    case mojo_base::mojom::AbslStatusCode::kOutOfRange:
-      return NearbyPresenceService::StatusCode::kAbslOutOfRange;
-    case mojo_base::mojom::AbslStatusCode::kUnimplemented:
-      return NearbyPresenceService::StatusCode::kAbslUnimplemented;
-    case mojo_base::mojom::AbslStatusCode::kInternal:
-      return NearbyPresenceService::StatusCode::kAbslInternal;
-    case mojo_base::mojom::AbslStatusCode::kUnavailable:
-      return NearbyPresenceService::StatusCode::kAbslUnavailable;
-    case mojo_base::mojom::AbslStatusCode::kDataLoss:
-      return NearbyPresenceService::StatusCode::kAbslDataLoss;
-    case mojo_base::mojom::AbslStatusCode::kUnauthenticated:
-      return NearbyPresenceService::StatusCode::kAbslUnauthenticated;
+          kIdentityTypePrivateGroup;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
+      return NearbyPresenceService::PresenceIdentityType::
+          kIdentityTypeContactsGroup;
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
+      return NearbyPresenceService::PresenceIdentityType::kIdentityTypePublic;
+    default:
+      return NearbyPresenceService::PresenceIdentityType::
+          kIdentityTypeUnspecified;
   }
 }
 

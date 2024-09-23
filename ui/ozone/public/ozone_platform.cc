@@ -43,9 +43,13 @@ void EnsureInstance() {
 
 }  // namespace
 
-OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest
+OzonePlatform::PlatformRuntimeProperties::SupportsForTest
     OzonePlatform::PlatformRuntimeProperties::override_supports_ssd_for_test =
-        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest::kNotSet;
+        OzonePlatform::PlatformRuntimeProperties::SupportsForTest::kNotSet;
+
+OzonePlatform::PlatformRuntimeProperties::SupportsForTest OzonePlatform::
+    PlatformRuntimeProperties::override_supports_per_window_scaling_for_test =
+        OzonePlatform::PlatformRuntimeProperties::SupportsForTest::kNotSet;
 
 OzonePlatform::PlatformProperties::PlatformProperties() = default;
 OzonePlatform::PlatformProperties::~PlatformProperties() = default;
@@ -144,10 +148,6 @@ bool OzonePlatform::IsNativePixmapConfigSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) const {
   // Platform that support NativePixmap must override this method.
-  return false;
-}
-
-bool OzonePlatform::IsWindowCompositingSupported() const {
   return false;
 }
 

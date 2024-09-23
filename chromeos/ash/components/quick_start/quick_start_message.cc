@@ -57,29 +57,9 @@ bool IsMessagePayloadBase64Encoded(
 }  // namespace
 
 namespace ash::quick_start {
-
-// static
-bool QuickStartMessage::enable_sandbox_checks_ = true;
-
-// static
-void QuickStartMessage::DisableSandboxCheckForTesting() {
-  enable_sandbox_checks_ = false;
-}
-
 // static
 base::expected<std::unique_ptr<QuickStartMessage>, QuickStartMessage::ReadError>
 QuickStartMessage::ReadMessage(std::vector<uint8_t> data) {
-  /*
-    Since this code could handle untrusted data, it is important this
-    runs only from a strongly sandboxed process (i.e. not the browser process).
-
-    This check forces this to hold true. For testing, the
-    DisableSandboxCheckForTesting function can be used to override this
-    - but that method cannot be called from production code.
-  */
-  if (enable_sandbox_checks_) {
-    CHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
-  }
   std::string str_data(data.begin(), data.end());
   std::optional<base::Value> data_value = base::JSONReader::Read(str_data);
   if (!data_value.has_value()) {

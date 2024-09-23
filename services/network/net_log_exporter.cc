@@ -72,8 +72,9 @@ void NetLogExporter::Start(base::File destination,
         // Note: this a static method which takes a weak pointer as an argument,
         // so it will run if |this| is deleted.
         base::BindOnce(&NetLogExporter::StartWithScratchDirOrCleanup,
-                       AsWeakPtr(), std::move(extra_constants), capture_mode,
-                       max_file_size, std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(extra_constants), capture_mode, max_file_size,
+                       std::move(callback)));
   } else {
     StartWithScratchDir(std::move(extra_constants), capture_mode, max_file_size,
                         std::move(callback), base::FilePath());

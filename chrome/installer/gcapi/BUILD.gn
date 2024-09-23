@@ -51,7 +51,7 @@ source_set("lib") {
     "//base",
     "//chrome/installer/launcher_support",
     "//chrome/installer/util:constants",
-    "//google_update",
+    "//chrome/updater/app/server/win:updater_legacy_idl",
   ]
 }
 

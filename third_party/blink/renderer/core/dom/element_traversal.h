@@ -133,9 +133,8 @@ class Traversal {
   static ElementType* FirstWithin(const ContainerNode&, MatchFunc);
 
   static ElementType* InclusiveFirstWithin(Node& current) {
-    if (IsElementOfType<const ElementType>(current))
-      return To<ElementType>(&current);
-    return FirstWithin(current);
+    auto* first = DynamicTo<ElementType>(current);
+    return first ? first : FirstWithin(current);
   }
 
   static ElementType* LastWithin(const ContainerNode& current) {
@@ -146,7 +145,7 @@ class Traversal {
   }
   template <class MatchFunc>
   static ElementType* LastWithin(const ContainerNode&, MatchFunc);
-  static ElementType* LastWithinOrSelf(ElementType&);
+  static const ElementType* LastWithinOrSelf(const ElementType&);
 
   // Pre-order traversal skipping non-element nodes.
   static ElementType* Next(const ContainerNode& current) {
@@ -292,10 +291,12 @@ template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::FirstChildTemplate(
     NodeType& current) {
-  Node* node = current.firstChild();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = node->nextSibling();
-  return To<ElementType>(node);
+  for (Node* node = current.firstChild(); node; node = node->nextSibling()) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -311,18 +312,22 @@ inline ElementType* Traversal<ElementType>::FirstChild(
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::FirstAncestor(const Node& current) {
-  ContainerNode* ancestor = current.parentNode();
-  while (ancestor && !IsElementOfType<const ElementType>(*ancestor))
-    ancestor = ancestor->parentNode();
-  return To<ElementType>(ancestor);
+  for (ContainerNode* ancestor = current.parentNode(); ancestor;
+       ancestor = ancestor->parentNode()) {
+    if (auto* element = DynamicTo<ElementType>(*ancestor)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::FirstAncestorOrSelfTemplate(
     NodeType& current) {
-  if (IsElementOfType<const ElementType>(current))
-    return &To<ElementType>(current);
+  if (auto* element = DynamicTo<ElementType>(current)) {
+    return element;
+  }
   return FirstAncestor(current);
 }
 
@@ -330,10 +335,12 @@ template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::LastChildTemplate(
     NodeType& current) {
-  Node* node = current.lastChild();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = node->previousSibling();
-  return To<ElementType>(node);
+  for (Node* node = current.lastChild(); node; node = node->previousSibling()) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -351,10 +358,13 @@ template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::FirstWithinTemplate(
     NodeType& current) {
-  Node* node = current.firstChild();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Next(*node, &current);
-  return To<ElementType>(node);
+  for (Node* node = current.firstChild(); node;
+       node = NodeTraversal::Next(*node, &current)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -372,10 +382,13 @@ template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::LastWithinTemplate(
     NodeType& current) {
-  Node* node = NodeTraversal::LastWithin(current);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Previous(*node, &current);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::LastWithin(current); node;
+       node = NodeTraversal::Previous(*node, &current)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -390,20 +403,24 @@ inline ElementType* Traversal<ElementType>::LastWithin(
 }
 
 template <class ElementType>
-inline ElementType* Traversal<ElementType>::LastWithinOrSelf(
-    ElementType& current) {
-  if (ElementType* last_descendant = LastWithin(current))
+inline const ElementType* Traversal<ElementType>::LastWithinOrSelf(
+    const ElementType& current) {
+  if (auto* last_descendant = LastWithin(current)) {
     return last_descendant;
+  }
   return &current;
 }
 
 template <class ElementType>
 template <class NodeType>
 inline ElementType* Traversal<ElementType>::NextTemplate(NodeType& current) {
-  Node* node = NodeTraversal::Next(current);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Next(*node);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::Next(current); node;
+       node = NodeTraversal::Next(*node)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -411,10 +428,13 @@ template <class NodeType>
 inline ElementType* Traversal<ElementType>::NextTemplate(
     NodeType& current,
     const Node* stay_within) {
-  Node* node = NodeTraversal::Next(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Next(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::Next(current, stay_within); node;
+       node = NodeTraversal::Next(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -430,19 +450,25 @@ inline ElementType* Traversal<ElementType>::Next(const ContainerNode& current,
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::Previous(const Node& current) {
-  Node* node = NodeTraversal::Previous(current);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Previous(*node);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::Previous(current); node;
+       node = NodeTraversal::Previous(*node)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::Previous(const Node& current,
                                                      const Node* stay_within) {
-  Node* node = NodeTraversal::Previous(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::Previous(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::Previous(current, stay_within); node;
+       node = NodeTraversal::Previous(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -460,70 +486,93 @@ inline ElementType* Traversal<ElementType>::Previous(
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::NextSkippingChildren(
     const Node& current) {
-  Node* node = NodeTraversal::NextSkippingChildren(current);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::NextSkippingChildren(*node);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::NextSkippingChildren(current); node;
+       node = NodeTraversal::NextSkippingChildren(*node)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::NextSkippingChildren(
     const Node& current,
     const Node* stay_within) {
-  Node* node = NodeTraversal::NextSkippingChildren(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::NextSkippingChildren(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::NextSkippingChildren(current, stay_within);
+       node; node = NodeTraversal::NextSkippingChildren(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::PreviousIncludingPseudo(
     const Node& current,
     const Node* stay_within) {
-  Node* node = NodeTraversal::PreviousIncludingPseudo(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::PreviousIncludingPseudo(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node =
+           NodeTraversal::PreviousIncludingPseudo(current, stay_within);
+       node;
+       node = NodeTraversal::PreviousIncludingPseudo(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::NextIncludingPseudo(
     const Node& current,
     const Node* stay_within) {
-  Node* node = NodeTraversal::NextIncludingPseudo(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = NodeTraversal::NextIncludingPseudo(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::NextIncludingPseudo(current, stay_within);
+       node; node = NodeTraversal::NextIncludingPseudo(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::NextIncludingPseudoSkippingChildren(
     const Node& current,
     const Node* stay_within) {
-  Node* node =
-      NodeTraversal::NextIncludingPseudoSkippingChildren(current, stay_within);
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node =
-        NodeTraversal::NextIncludingPseudoSkippingChildren(*node, stay_within);
-  return To<ElementType>(node);
+  for (Node* node = NodeTraversal::NextIncludingPseudoSkippingChildren(
+           current, stay_within);
+       node; node = NodeTraversal::NextIncludingPseudoSkippingChildren(
+                 *node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::PseudoAwarePreviousSibling(
     const Node& current) {
-  Node* node = current.PseudoAwarePreviousSibling();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = node->PseudoAwarePreviousSibling();
-  return To<ElementType>(node);
+  for (Node* node = current.PseudoAwarePreviousSibling(); node;
+       node = node->PseudoAwarePreviousSibling()) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::PreviousSibling(
     const Node& current) {
-  Node* node = current.previousSibling();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = node->previousSibling();
-  return To<ElementType>(node);
+  for (Node* node = current.previousSibling(); node;
+       node = node->previousSibling()) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>
@@ -539,10 +588,12 @@ inline ElementType* Traversal<ElementType>::PreviousSibling(
 
 template <class ElementType>
 inline ElementType* Traversal<ElementType>::NextSibling(const Node& current) {
-  Node* node = current.nextSibling();
-  while (node && !IsElementOfType<const ElementType>(*node))
-    node = node->nextSibling();
-  return To<ElementType>(node);
+  for (Node* node = current.nextSibling(); node; node = node->nextSibling()) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 template <class ElementType>

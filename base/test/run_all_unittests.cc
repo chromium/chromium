@@ -13,6 +13,10 @@
 #include "base/win/com_init_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/process/set_process_title_linux.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -66,6 +70,11 @@ class BaseUnittestSuite : public TestSuite {
 }  // namespace base
 
 int main(int argc, char** argv) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // For setproctitle unit tests.
+  setproctitle_init(const_cast<const char**>(argv));
+#endif
+
   base::BaseUnittestSuite test_suite(argc, argv);
   return base::LaunchUnitTests(
       argc, argv,

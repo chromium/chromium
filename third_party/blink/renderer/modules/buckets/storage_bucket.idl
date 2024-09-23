@@ -18,7 +18,7 @@
 
   [CallWith=ScriptState, RuntimeEnabled=StorageBucketsDurability, Measure] Promise<StorageBucketDurability> durability();
 
-  [CallWith=ScriptState, Measure] Promise<void> setExpires(DOMHighResTimeStamp expires);
+  [CallWith=ScriptState, Measure] Promise<undefined> setExpires(DOMHighResTimeStamp expires);
   [CallWith=ScriptState, Measure] Promise<DOMHighResTimeStamp?> expires();
 
   [SameObject, Measure] readonly attribute IDBFactory indexedDB;

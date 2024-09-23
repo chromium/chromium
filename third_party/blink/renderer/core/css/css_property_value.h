@@ -94,6 +94,7 @@ class CORE_EXPORT CSSPropertyValue {
   bool IsSetFromShorthand() const { return metadata_.is_set_from_shorthand_; }
   CSSPropertyID ShorthandID() const { return metadata_.ShorthandID(); }
   bool IsImportant() const { return metadata_.important_; }
+  void SetImportant() { metadata_.important_ = true; }
   CSSPropertyName Name() const { return metadata_.Name(); }
 
   const CSSValue* Value() const { return value_.Get(); }

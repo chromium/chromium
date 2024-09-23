@@ -48,10 +48,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-arm64-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "gpu-try-android-m-nexus-5x-64",
           "group": "tryserver.chromium.android"
         }
@@ -60,9 +56,18 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -72,6 +77,9 @@
     ]
   },
   "builder_group": "chromium.gpu",
+  "gardener_rotations": [
+    "chromium.gpu"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromium.gpu"

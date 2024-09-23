@@ -4,6 +4,7 @@
 
 #include "net/socket/transport_client_socket_pool.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -17,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -354,7 +356,7 @@ int TransportClientSocketPool::RequestSockets(
     if (!base::Contains(group_map_, group_id)) {
       // Unexpected.  The group should only be getting deleted on synchronous
       // error.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       deleted_group = true;
       break;
     }
@@ -370,7 +372,7 @@ int TransportClientSocketPool::RequestSockets(
 
   // Currently we don't handle preconnect errors. So this method returns OK even
   // if failed to preconnect.
-  // TODO(crbug.com/1330235): Consider support error handlings when needed.
+  // TODO(crbug.com/40843081): Consider support error handlings when needed.
   if (pending_connect_job_count == 0)
     return OK;
   for (int i = 0; i < num_sockets - pending_connect_job_count; ++i) {
@@ -483,10 +485,10 @@ int TransportClientSocketPool::RequestSocketInternal(
       handle->SetAdditionalErrorState(connect_job.get());
     std::unique_ptr<StreamSocket> socket = connect_job->PassSocket();
     if (socket) {
-      HandOutSocket(std::move(socket), ClientSocketHandle::UNUSED,
+      HandOutSocket(std::move(socket),
+                    StreamSocketHandle::SocketReuseType::kUnused,
                     connect_job->connect_timing(), handle,
-                    base::TimeDelta() /* idle_time */, group,
-                    request.net_log());
+                    /*time_idle=*/base::TimeDelta(), group, request.net_log());
     }
   }
   if (group->IsEmpty())
@@ -543,8 +545,9 @@ bool TransportClientSocketPool::AssignIdleSocketToRequest(
     // treating as UNUSED rather than UNUSED_IDLE. This will avoid
     // HttpNetworkTransaction retrying on some errors.
     ClientSocketHandle::SocketReuseType reuse_type =
-        socket->WasEverUsed() ? ClientSocketHandle::REUSED_IDLE
-                              : ClientSocketHandle::UNUSED_IDLE;
+        socket->WasEverUsed()
+            ? StreamSocketHandle::SocketReuseType::kReusedIdle
+            : StreamSocketHandle::SocketReuseType::kUnusedIdle;
 
     HandOutSocket(std::move(socket), reuse_type,
                   LoadTimingInfo::ConnectTiming(), request.handle(), idle_time,
@@ -675,7 +678,7 @@ LoadState TransportClientSocketPool::GetLoadState(
     // TODO(mmenke):  This is actually reached in the wild, for unknown reasons.
     // Would be great to understand why, and if it's a bug, fix it.  If not,
     // should have a test for that case.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return LOAD_STATE_IDLE;
   }
 
@@ -829,7 +832,7 @@ void TransportClientSocketPool::OnSSLConfigChanged(
   CheckForStalledSocketGroups();
 }
 
-// TODO(crbug.com/1206799): Get `server` as SchemeHostPort?
+// TODO(crbug.com/40181080): Get `server` as SchemeHostPort?
 void TransportClientSocketPool::OnSSLConfigForServersChanged(
     const base::flat_set<HostPortPair>& servers) {
   // Current time value. Retrieving it once at the function start rather than
@@ -1019,7 +1022,7 @@ void TransportClientSocketPool::ReleaseSocket(
   group->DecrementActiveSocketCount();
 
   bool can_resuse_socket = false;
-  base::StringPiece not_reusable_reason;
+  std::string_view not_reusable_reason;
   if (!socket->IsConnectedAndIdle()) {
     if (!socket->IsConnected()) {
       not_reusable_reason = kClosedConnectionReturnedToPool;
@@ -1056,8 +1059,8 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
   // Loop until there's nothing more to do.
   while (true) {
     // If we have idle sockets, see if we can give one to the top-stalled group.
-    GroupId top_group_id;
     Group* top_group = nullptr;
+    GroupId top_group_id;
     if (!FindTopStalledGroup(&top_group, &top_group_id))
       return;
 
@@ -1082,7 +1085,8 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
 // insertion order).
 bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
                                                     GroupId* group_id) const {
-  CHECK((group && group_id) || (!group && !group_id));
+  CHECK(group);
+  CHECK(group_id);
   Group* top_group = nullptr;
   const GroupId* top_group_id = nullptr;
   bool has_stalled_group = false;
@@ -1091,8 +1095,6 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
     if (!curr_group->has_unbound_requests())
       continue;
     if (curr_group->CanUseAdditionalSocketSlot(max_sockets_per_group_)) {
-      if (!group)
-        return true;
       has_stalled_group = true;
       bool has_higher_priority =
           !top_group ||
@@ -1105,7 +1107,6 @@ bool TransportClientSocketPool::FindTopStalledGroup(Group** group,
   }
 
   if (top_group) {
-    CHECK(group);
     *group = top_group;
     *group_id = *top_group_id;
   } else {
@@ -1193,7 +1194,7 @@ void TransportClientSocketPool::HandOutSocket(
   handle->set_group_generation(group->generation());
   handle->set_connect_timing(connect_timing);
 
-  if (reuse_type == ClientSocketHandle::REUSED_IDLE) {
+  if (reuse_type == StreamSocketHandle::SocketReuseType::kReusedIdle) {
     net_log.AddEventWithIntParams(
         NetLogEventType::SOCKET_POOL_REUSED_AN_EXISTING_SOCKET, "idle_ms",
         static_cast<int>(idle_time.InMilliseconds()));
@@ -1364,7 +1365,8 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
   if (result != OK)
     request->handle()->SetAdditionalErrorState(job);
   if (job->socket()) {
-    HandOutSocket(job->PassSocket(), ClientSocketHandle::UNUSED,
+    HandOutSocket(job->PassSocket(),
+                  StreamSocketHandle::SocketReuseType::kUnused,
                   job->connect_timing(), request->handle(), base::TimeDelta(),
                   group, request->net_log());
   }
@@ -1543,7 +1545,7 @@ std::unique_ptr<ConnectJob> TransportClientSocketPool::Group::RemoveUnboundJob(
 
   // Check that |job| is in the list.
   auto it = base::ranges::find(jobs_, job, &std::unique_ptr<ConnectJob>::get);
-  DCHECK(it != jobs_.end());
+  CHECK(it != jobs_.end(), base::NotFatalUntil::M130);
 
   // Check if |job| is in the unassigned jobs list. If so, remove it.
   auto it2 = base::ranges::find(unassigned_jobs_, job);
@@ -1582,7 +1584,7 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   // If there are no more jobs pending, there is no work to do.
   // If we've done our cleanups correctly, this should not happen.
   if (jobs_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1591,7 +1593,7 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   // connection - the timeout they used is tuned for that, and tests expect that
   // behavior.
   //
-  // TODO(https://crbug.com/929814): Replace both this and the
+  // TODO(crbug.com/41440018): Replace both this and the
   // LOAD_STATE_RESOLVING_HOST check with a callback. Use the
   // LOAD_STATE_RESOLVING_HOST callback to start the timer (And invoke the
   // OnHostResolved callback of any pending requests), and the
@@ -1884,7 +1886,7 @@ void TransportClientSocketPool::Group::SetPriority(ClientSocketHandle* handle,
   }
 
   // This function must be called with a valid ClientSocketHandle.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool TransportClientSocketPool::Group::RequestWithHandleHasJobForTesting(
@@ -1901,7 +1903,7 @@ bool TransportClientSocketPool::Group::RequestWithHandleHasJobForTesting(
       return false;
     pointer = unbound_requests_.GetNextTowardsLastMin(pointer);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

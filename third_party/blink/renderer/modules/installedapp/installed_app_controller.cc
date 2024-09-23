@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -57,6 +57,7 @@ InstalledAppController::InstalledAppController(LocalDOMWindow& window)
 
 void InstalledAppController::OnGetManifestForRelatedApps(
     std::unique_ptr<AppInstalledCallbacks> callbacks,
+    mojom::blink::ManifestRequestResult result,
     const KURL& url,
     mojom::blink::ManifestPtr manifest) {
   if (!GetSupplementable()->GetFrame()) {

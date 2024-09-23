@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/usb/mojo/device_impl.h"
 
 #include <stddef.h>
@@ -18,15 +23,18 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/device/usb/mock_usb_device.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "services/device/usb/usb_descriptors.h"
@@ -46,6 +54,8 @@ using mojom::UsbTransferStatus;
 namespace usb {
 
 namespace {
+
+constexpr size_t kUsbTransferLengthLimit = 32 * 1024 * 1024;
 
 MATCHER_P(BufferSizeIs, size, "") {
   return arg->size() == size;
@@ -580,7 +590,7 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 
   device->Open(base::BindOnce(
-      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED(); }));
+      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED_IN_MIGRATION(); }));
   device.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -1202,6 +1212,158 @@ TEST_F(USBDeviceImplTest, IsochronousTransferPacketLengthsOverflow) {
   }
 
   EXPECT_CALL(mock_handle(), Close);
+}
+
+TEST_F(USBDeviceImplTest, ControlTransferInLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit + 1);
+  auto params = mojom::UsbControlTransferParams::New();
+  params->type = UsbControlTransferType::STANDARD;
+  params->recipient = UsbControlTransferRecipient::DEVICE;
+  params->request = 5;
+  params->value = 6;
+  params->index = 7;
+
+  EXPECT_CALL(mock_handle(), ControlTransferInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->ControlTransferIn(std::move(params),
+                              static_cast<uint32_t>(fake_data.size()), 0,
+                              base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit + 1),
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(USBDeviceImplTest, ControlTransferOutLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit + 1);
+  auto params = mojom::UsbControlTransferParams::New();
+  params->type = UsbControlTransferType::STANDARD;
+  params->recipient = UsbControlTransferRecipient::DEVICE;
+  params->request = 5;
+  params->value = 6;
+  params->index = 7;
+
+  EXPECT_CALL(mock_handle(), ControlTransferInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->ControlTransferOut(std::move(params), fake_data, 0,
+                               base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit + 1),
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(USBDeviceImplTest, GenericTransferInLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit + 1);
+  EXPECT_CALL(mock_handle(), GenericTransferInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->GenericTransferIn(1, fake_data.size(), 0, base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit + 1),
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(USBDeviceImplTest, GenericTransferOutLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit + 1);
+  EXPECT_CALL(mock_handle(), GenericTransferInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->GenericTransferOut(1, fake_data, 0, base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit + 1),
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(USBDeviceImplTest, IsochronousTransferInLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint32_t> fake_packet_lengths(2, kUsbTransferLengthLimit);
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit * 2);
+  EXPECT_CALL(mock_handle(), IsochronousTransferInInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->IsochronousTransferIn(1, fake_packet_lengths, 0, base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit * 2),
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(USBDeviceImplTest, IsochronousTransferOutLengthOverLimit) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  std::vector<uint32_t> fake_packet_lengths(2, kUsbTransferLengthLimit);
+  std::vector<uint8_t> fake_data(kUsbTransferLengthLimit * 2);
+  EXPECT_CALL(mock_handle(), IsochronousTransferOutInternal).Times(0);
+  EXPECT_CALL(mock_handle(), Close());
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    device->IsochronousTransferOut(1, fake_data, fake_packet_lengths, 0,
+                                   base::DoNothing());
+    EXPECT_EQ(base::StringPrintf("Transfer size %zu is over the limit.",
+                                 kUsbTransferLengthLimit * 2),
+              bad_message_observer.WaitForBadMessage());
+  }
 }
 
 class USBDeviceImplSecurityKeyTest : public USBDeviceImplTest,

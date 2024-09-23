@@ -116,6 +116,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const std::string& key_system,
       const std::string& origin_id,
       SecurityLevel security_level,
+      const std::string& message,
       CreateFetcherCB create_fetcher_cb);
 
   MediaDrmBridge(const MediaDrmBridge&) = delete;
@@ -183,6 +184,12 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // The registered callbacks will be fired on |task_runner_|. The caller
   // should make sure that the callbacks are posted to the correct thread.
   void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb);
+
+  // Sets 'property_name' with 'property_value' in MediaDrm. This can
+  // potentially throw exceptions if the property_name does not exist for the
+  // key system, or if there is an issue with the property_value.
+  bool SetPropertyStringForTesting(const std::string& property_name,
+                                   const std::string& property_value);
 
   // All the OnXxx functions below are called from Java. The implementation must
   // only do minimal work and then post tasks to avoid reentrancy issues.
@@ -271,6 +278,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
       const std::vector<uint8_t>& scheme_uuid,
       const std::string& origin_id,
       SecurityLevel security_level,
+      const std::string& message,
       bool requires_media_crypto,
       std::unique_ptr<MediaDrmStorageBridge> storage,
       CreateFetcherCB create_fetcher_cb,
@@ -298,6 +306,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   MediaDrmBridge(const std::vector<uint8_t>& scheme_uuid,
                  const std::string& origin_id,
                  SecurityLevel security_level,
+                 const std::string& message,
                  bool requires_media_crypto,
                  std::unique_ptr<MediaDrmStorageBridge> storage,
                  const CreateFetcherCB& create_fetcher_cb,

@@ -43,7 +43,7 @@ class SegmentationPlatformConfigTest : public testing::Test {
 
 TEST_F(SegmentationPlatformConfigTest, GetSegmentationPlatformConfig) {
   std::vector<std::unique_ptr<Config>> configs =
-      GetSegmentationPlatformConfig(nullptr);
+      GetSegmentationPlatformConfig(nullptr, nullptr);
   for (const auto& config : configs) {
     EXPECT_TRUE(config.get());
   }

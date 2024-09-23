@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -142,15 +143,14 @@ class ServiceWorkerContextCoreTest : public testing::Test,
     return status;
   }
 
-  ServiceWorkerContainerHost* CreateControllee() {
-    remote_endpoints_.emplace_back();
-    base::WeakPtr<ServiceWorkerContainerHost> container_host =
-        CreateContainerHostForWindow(
-            GlobalRenderFrameHostId(/*mock process_id=*/33,
-                                    /*mock frame_routing_id=*/1),
-            /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-            &remote_endpoints_.back());
-    return container_host.get();
+  ServiceWorkerClient* CreateControllee() {
+    ScopedServiceWorkerClient service_worker_client =
+        CreateServiceWorkerClient(helper_->context());
+    ServiceWorkerClient* service_worker_client_ptr =
+        service_worker_client.get();
+    service_worker_client_keep_alive_.push_back(
+        std::move(service_worker_client));
+    return service_worker_client_ptr;
   }
 
  protected:
@@ -169,7 +169,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
  private:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints_;
+  std::vector<ScopedServiceWorkerClient> service_worker_client_keep_alive_;
   GURL scope_for_wait_for_activated_;
   base::OnceClosure quit_closure_for_wait_for_activated_;
   bool is_observing_context_ = false;
@@ -271,10 +271,11 @@ TEST_F(ServiceWorkerContextCoreTest,
   RegisterServiceWorker(scope, key, options, &registration);
 
   // Add a controlled client.
-  ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope, origin, key);
-  container_host->SetControllerRegistration(registration,
-                                            /*notify_controllerchange=*/false);
+  ServiceWorkerClient* service_worker_client = CreateControllee();
+  service_worker_client->UpdateUrls(scope, origin, key);
+  service_worker_client->SetControllerRegistration(
+      registration,
+      /*notify_controllerchange=*/false);
 
   // Unregister, which will wait to clear until the controlled client unloads.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, Unregister(scope, key));

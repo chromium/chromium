@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/ipcz_driver/mojo_message.h"
 
 #include <cstddef>
@@ -20,6 +25,9 @@
 namespace mojo::core::ipcz_driver {
 
 namespace {
+
+// Growth factor for reallocations.
+constexpr int kGrowthFactor = 2;
 
 // Data pipe attachments come in two parts within a message's handle list: the
 // DataPipe object wherever it was placed by the sender, and its control portal
@@ -40,7 +48,7 @@ namespace {
 //
 // Returns true if and only if the handle list is well-formed in this regard.
 //
-// TODO(https://crbug.com/1382170): Since boxes now support application objects,
+// TODO(crbug.com/40877163): Since boxes now support application objects,
 // DataPipe can be migrated out of the driver and we can avoid this whole
 // serialization hack.
 bool FixUpDataPipeHandles(std::vector<IpczHandle>& handles) {
@@ -77,8 +85,7 @@ MojoMessage::MojoMessage() = default;
 MojoMessage::MojoMessage(std::vector<uint8_t> data,
                          std::vector<IpczHandle> handles)
     : handles_(std::move(handles)) {
-  data_storage_.reset(
-      static_cast<uint8_t*>(base::AllocNonScannable(data.size())));
+  data_storage_.reset(static_cast<uint8_t*>(operator new(data.size())));
   data_storage_size_ = data.size();
   base::ranges::copy(data, data_storage_.get());
 }
@@ -118,8 +125,7 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   // We always pass a parcel object in, so Begin/EndGet() must always succeed.
   DCHECK_EQ(result, IPCZ_RESULT_OK);
   if (num_bytes > 0) {
-    data_storage_.reset(
-        static_cast<uint8_t*>(base::AllocNonScannable(num_bytes)));
+    data_storage_.reset(static_cast<uint8_t*>(operator new(num_bytes)));
 
     // Copy into private memory, out of the potentially shared and volatile
     // `data` buffer. Note that it's fine to cast away volatility here since we
@@ -149,6 +155,26 @@ void MojoMessage::SetParcel(ScopedIpczHandle parcel) {
   }
 }
 
+MojoResult MojoMessage::ReserveCapacity(uint32_t payload_buffer_size,
+                                        uint32_t* buffer_size) {
+  DCHECK(!parcel_.is_valid());
+  if (context_ || size_committed_ || !data_.empty()) {
+    // TODO(andreaorru): support reserving additional capacity
+    // in the middle of the serialization.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+
+  data_storage_size_ = std::max(payload_buffer_size, uint32_t{kMinBufferSize});
+  DataPtr new_storage(static_cast<uint8_t*>(operator new(data_storage_size_)));
+  data_storage_ = std::move(new_storage);
+  data_ = base::make_span(data_storage_.get(), 0u);
+
+  if (buffer_size) {
+    *buffer_size = base::checked_cast<uint32_t>(data_storage_size_);
+  }
+  return MOJO_RESULT_OK;
+}
+
 MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
                                    const MojoHandle* handles,
                                    uint32_t num_handles,
@@ -165,9 +191,10 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
   const size_t required_storage_size = std::max(new_data_size, kMinBufferSize);
   if (required_storage_size > data_storage_size_) {
     const size_t copy_size = std::min(new_data_size, data_storage_size_);
-    data_storage_size_ = std::max(data_size * 2, required_storage_size);
+    data_storage_size_ =
+        std::max(data_size * kGrowthFactor, required_storage_size);
     DataPtr new_storage(
-        static_cast<uint8_t*>(base::AllocNonScannable(data_storage_size_)));
+        static_cast<uint8_t*>(operator new(data_storage_size_)));
     base::ranges::copy(base::make_span(data_storage_.get(), copy_size),
                        new_storage.get());
     data_storage_ = std::move(new_storage);
@@ -407,7 +434,7 @@ IpczResult MojoMessage::SerializeForIpczImpl(volatile void* data,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  // TODO(https://crbug.com/1451717): Do a volatile-friendly copy here.
+  // TODO(crbug.com/40270656): Do a volatile-friendly copy here.
   memcpy(const_cast<void*>(data), data_.data(), data_.size());
   for (size_t i = 0; i < handles_.size(); ++i) {
     handles[i] = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);

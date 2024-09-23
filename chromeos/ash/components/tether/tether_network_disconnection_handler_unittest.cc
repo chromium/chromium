@@ -123,7 +123,7 @@ class TetherNetworkDisconnectionHandlerTest : public testing::Test {
   }
 
   const base::test::TaskEnvironment task_environment_;
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
 
   std::string wifi_service_path_;
 

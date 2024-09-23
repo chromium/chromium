@@ -55,6 +55,12 @@ class BluetoothChooserController : public ChooserController {
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;
   void Close() override;
+  bool ShouldShowAdapterOffView() const override;
+  int GetAdapterOffMessageId() const override;
+  int GetTurnAdapterOnLinkTextMessageId() const override;
+  bool ShouldShowAdapterUnauthorizedView() const override;
+  int GetBluetoothUnauthorizedMessageId() const override;
+  int GetAuthorizeBluetoothLinkTextMessageId() const override;
 
   // Update the state of the Bluetooth adapter.
   void OnAdapterPresenceChanged(

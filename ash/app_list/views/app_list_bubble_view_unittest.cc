@@ -47,7 +47,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -191,21 +190,6 @@ class AppListBubbleViewTest : public AshTestBase {
 
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
-
-class AppListBubbleViewDragTest : public AppListBubbleViewTest,
-                                  public testing::WithParamInterface<bool> {
- public:
-  AppListBubbleViewDragTest() = default;
-  ~AppListBubbleViewDragTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor, GetParam());
-    AppListBubbleViewTest::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-INSTANTIATE_TEST_SUITE_P(All, AppListBubbleViewDragTest, testing::Bool());
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {
   ShowAppList();
@@ -421,8 +405,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
 
   // Shadow is restored - when kJelly is enabled, no shadow is expected, for
   // consistency with bubbles in system tray area.
-  EXPECT_EQ(!chromeos::features::IsJellyEnabled(),
-            !!app_list_bubble_view->view_shadow_for_test());
+  EXPECT_FALSE(app_list_bubble_view->view_shadow_for_test());
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
@@ -630,12 +613,12 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 
   // By default the assistant button is visible.
   SearchBoxView* view = GetSearchBoxView();
-  EXPECT_TRUE(view->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view->edge_button_container()->GetVisible());
   EXPECT_FALSE(view->filter_and_close_button_container()->GetVisible());
 
   // Typing text shows the close button instead.
   PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_FALSE(view->assistant_button_container()->GetVisible());
+  EXPECT_FALSE(view->edge_button_container()->GetVisible());
   EXPECT_TRUE(view->filter_and_close_button_container()->GetVisible());
 }
 
@@ -1205,7 +1188,7 @@ TEST_F(AppListBubbleViewTest, ClickOutsideFolderClosesFolder) {
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
-TEST_P(AppListBubbleViewDragTest, ReparentDragOutOfFolderClosesFolder) {
+TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
   AddFolderWithApps(3);
   ShowAppList();
 
@@ -1228,15 +1211,9 @@ TEST_P(AppListBubbleViewDragTest, ReparentDragOutOfFolderClosesFolder) {
         folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
     generator->MoveMouseTo(outside_view);
     generator->MoveMouseBy(10, 10);
-    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
     // Folder visually closed.
     EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
-    if (!GetParam()) {
-      // Folder is still "visible" because the drag has not ended for the old
-      // drag and drop flow. On drag and drop refactor, the drag ends when
-      // exiting the view.
-      EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
-    }
+    EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
   }));
   tasks.push_back(base::BindLambdaForTesting([&]() {  // End the drag.
     generator->ReleaseLeftButton();
@@ -1249,7 +1226,7 @@ TEST_P(AppListBubbleViewDragTest, ReparentDragOutOfFolderClosesFolder) {
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
-TEST_P(AppListBubbleViewDragTest, DragItemInsideFolderDoesNotSelectItem) {
+TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
   AddFolderWithApps(3);
   ShowAppList();
 
@@ -1374,33 +1351,33 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   LeftClickOn(folder_item);
 
   auto* search_box = GetSearchBoxView();
-  EXPECT_TRUE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(search_box->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(search_box->GetViewAccessibility().IsLeaf());
   auto* continue_section = GetContinueSectionView();
-  EXPECT_TRUE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(continue_section->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(continue_section->GetViewAccessibility().IsLeaf());
   auto* recent_apps = GetRecentAppsView();
-  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(recent_apps->GetViewAccessibility().IsLeaf());
   auto* toast_container = GetToastContainerView();
-  EXPECT_TRUE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(toast_container->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(toast_container->GetViewAccessibility().IsLeaf());
   auto* apps_grid = GetAppsGridView();
-  EXPECT_TRUE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(apps_grid->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(apps_grid->GetViewAccessibility().IsLeaf());
 
   // Close the folder.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  EXPECT_FALSE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(search_box->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(search_box->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(continue_section->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(continue_section->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(recent_apps->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(toast_container->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(apps_grid->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(apps_grid->GetViewAccessibility().IsLeaf());
 }
 
@@ -1571,7 +1548,7 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
   EXPECT_FALSE(gradient_mask_bounds_end.Intersects(app_view_bounds));
 }
 
-TEST_P(AppListBubbleViewDragTest, AutoScrollOnTopOfTheBubble) {
+TEST_F(AppListBubbleViewTest, AutoScrollOnTopOfTheBubble) {
   // Show an app list with enough apps to fill the page and trigger a gradient
   // at the bottom.
   const int kTotalAppItems = 50;

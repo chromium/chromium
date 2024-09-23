@@ -1,7 +1,7 @@
 {
   "description": "Set report windows for event type event-level reporting",
   "api_config": {
-    "max_event_info_gain": "6"
+    "max_event_level_channel_capacity_event": "6"
   },
   "input": {
     "registrations": [
@@ -9,8 +9,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -34,7 +33,6 @@
         // Should result in an event-level report in the first window.
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -58,7 +56,6 @@
         // Should result in an event-level report in the second window.
         "timestamp": "21601000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -82,7 +79,6 @@
         // Should not result in an event-level report.
         "timestamp": "43201000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -105,7 +101,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": {

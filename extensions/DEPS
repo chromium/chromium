@@ -38,6 +38,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
+    "+chrome/browser/profiles/profile.h",
     "+content/public/test",
   ],
 }

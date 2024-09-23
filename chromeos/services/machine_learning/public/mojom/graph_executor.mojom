@@ -20,6 +20,8 @@ import "chromeos/services/machine_learning/public/mojom/tensor.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Keep this enum in sync with MachineLearningServiceExecuteResultEvent in
+// tools/metrics/histograms/metadata/cros_ml/enums.xml.
 [Stable, Extensible]
 enum ExecuteResult {
   OK = 0,

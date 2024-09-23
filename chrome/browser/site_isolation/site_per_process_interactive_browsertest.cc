@@ -66,11 +66,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-namespace autofill {
-class AutofillPopupDelegate;
-struct Suggestion;
-}  // namespace autofill
-
 namespace {
 
 // Counts and returns the number of RenderWidgetHosts in the browser process.
@@ -294,14 +289,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 //
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1295296): Fails on Mac 10.11.
-#define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
-#else
-#define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
-#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
-                       MAYBE_SequentialFocusNavigation) {
+                       SequentialFocusNavigation) {
   GURL main_url(https_server()->GetURL(
       "a.test", GetParam() == std::string("iframe")
                     ? "/cross_site_iframe_factory.html?a.test(b.test,c.test)"
@@ -328,6 +317,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
     child1 = child_frames[0];
     child2 = child_frames[1];
   }
+
+  content::WaitForHitTestData(child1);
+  content::WaitForHitTestData(child2);
 
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
@@ -514,6 +506,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
     ASSERT_NE(nullptr, child);
   }
 
+  content::WaitForHitTestData(child);
+
   // Assign a name to each frame.  This will be sent along in test messages
   // from focus events.
   EXPECT_TRUE(ExecJs(main_frame, "window.name = 'root';"));
@@ -572,7 +566,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 //              \------------/.
 //
 // The test then presses <tab> twice to focus on elements 1 and 2.
-// TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
+// TODO(crbug.com/40276413): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
                        SequentialFocusNavigationPassThrough) {
   GURL main_url(https_server()->GetURL(
@@ -667,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 //
 // The test then presses <tab> twice to focus on elements 1 and 2, <tab> to
 // move focus to the UI, and <tab> one more time to focus on element 1 again.
-// TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
+// TODO(crbug.com/40276413): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
                        SequentialFocusWrapBackIntoChildFrame) {
   GURL main_url(https_server()->GetURL(
@@ -756,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   EXPECT_EQ("\"child3-focused-input1\"", press_tab_and_wait_for_message(false));
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
 // Ensures that renderers know to advance focus to sibling frames and parent
@@ -1248,7 +1242,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
             browser(), ui::VKEY_ESCAPE, false, false, false, false));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     WaitForMultipleFullscreenEvents(expected_events, queue);
     waiter.Wait();
@@ -1313,7 +1307,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // The test also exits fullscreen by simulating pressing ESC rather than using
 // document.webkitExitFullscreen(), which tests the browser-initiated
 // fullscreen exit path.
-// TODO(crbug.com/756338): flaky on all platforms.
+// TODO(crbug.com/40535621): flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        DISABLED_FullscreenElementInMultipleSubframes) {
   // Allow fullscreen in all iframes descending to |c_middle|.
@@ -1547,15 +1541,15 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-// Flaky on win and linux asan. See https://crbug.com/1423184
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1423184, crbug.com/327338993): Fix flaky test.
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
 #else
 #define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
   ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
-#endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) &&
-        // defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) &&
+        // defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessInteractivePDFTest,
     MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
@@ -1702,7 +1696,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
           .ExtractBool());
 }
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SitePerProcessInteractivePDFTest);
 #endif  // BUILDFLAG(ENABLE_PDF)

@@ -7,12 +7,16 @@ import "ocidl.idl";
 
 typedef enum ProtectionLevel {
   // No validation: This never validates anything.
-  NONE = 0,
+  PROTECTION_NONE = 0,
+  // This is the old path validation that used NT paths. Unsupported.
+  PROTECTION_PATH_VALIDATION_OLD = 1,
   // Path validation: This will validate that the data is being decrypted by an
   // executable whose NT path matches the executable that originally encrypted
   // it. This should only be used for executables in trusted paths e.g.
   // C:\Program Files, otherwise anyone could pretend to be your executable.
-  PATH_VALIDATION = 1,
+  PROTECTION_PATH_VALIDATION = 2,
+  // Keep at the end.
+  PROTECTION_MAX = 3,
 } ProtectionLevel;
 
 [

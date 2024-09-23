@@ -3,28 +3,37 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '../demo.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_toggle_demo.html.js';
+import {getCss} from '../demo.css.js';
 
-class CrToggleDemoElement extends PolymerElement {
+import {getHtml} from './cr_toggle_demo.html.js';
+
+export class CrToggleDemoElement extends CrLitElement {
   static get is() {
     return 'cr-toggle-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      checked_: Boolean,
+      checked_: {type: Boolean},
     };
   }
 
-  private checked_: boolean;
+  protected checked_?: boolean;
+
+  protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.checked_ = e.detail.value;
+  }
 }
 
 export const tagName = CrToggleDemoElement.is;

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -28,6 +29,7 @@
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -58,6 +60,9 @@ class InternalInputDevicesEventBlocker;
 class TabletModeObserver;
 class TabletModeWindowManager;
 
+// TODO(b/357489575): cleanup this kill-switch.
+BASE_DECLARE_FEATURE(kBlockUiTabletModeInKiosk);
+
 // When EC (Embedded Controller) cannot handle lid angle calculation,
 // TabletModeController listens to accelerometer events and automatically
 // enters and exits tablet mode when the lid is opened beyond the triggering
@@ -67,7 +72,7 @@ class ASH_EXPORT TabletModeController
       public chromeos::PowerManagerClient::Observer,
       public TabletMode,
       public ShellObserver,
-      public WindowTreeHostManager::Observer,
+      public display::DisplayManagerObserver,
       public SessionObserver,
       public ui::InputDeviceEventObserver,
       public ui::LayerAnimationObserver,
@@ -138,16 +143,17 @@ class ASH_EXPORT TabletModeController
   bool ForceUiTabletModeState(std::optional<bool> enabled) override;
   // Do NOT call this directly from unit tests. Instead, please use
   // ash::TabletModeControllerTestApi().{Enter/Leave}TabletMode().
-  // TODO(crbug.com/1502114): Move this to private.
+  // TODO(crbug.com/40942452): Move this to private.
   void SetEnabledForTest(bool enabled) override;
 
   // ShellObserver:
   void OnShellInitialized() override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus login_status) override;
   void OnChromeTerminating() override;
 
   // AccelerometerReader::Observer:
@@ -185,8 +191,6 @@ class ASH_EXPORT TabletModeController
     ++tab_drag_in_splitview_count_;
   }
 
-  // TODO(hewer): Remove this when the cue is made into a class variable for
-  // the event handler.
   TabletModeWindowManager* tablet_mode_window_manager() {
     return tablet_mode_window_manager_.get();
   }
@@ -251,15 +255,6 @@ class ASH_EXPORT TabletModeController
   enum TabletModeIntervalType {
     TABLET_MODE_INTERVAL_INACTIVE,
     TABLET_MODE_INTERVAL_ACTIVE
-  };
-
-  // Tracks whether we are in the process of entering or exiting tablet mode.
-  // Used for logging histogram metrics.
-  enum class State {
-    kInClamshellMode,
-    kEnteringTabletMode,
-    kInTabletMode,
-    kExitingTabletMode,
   };
 
   // Turn the always tablet mode window manager on or off.
@@ -421,8 +416,11 @@ class ASH_EXPORT TabletModeController
   // Source for the current time in base::TimeTicks.
   raw_ptr<const base::TickClock> tick_clock_;
 
-  // The state in which the UI mode is forced in via command-line flags, such as
-  // `--force-tablet-mode=touch_view` or `--force-tablet-mode=clamshell`.
+  // Forces the UI mode to be in tablet or clamsell state. Can be forced via:
+  //   1) command-line flags, such as `--force-tablet-mode=touch_view` or
+  //   `--force-tablet-mode=clamshell`.
+  //   2) observing `OnLoginStatusChanged`, since Ui tablet mode is blocked in
+  //   Kiosk.
   UiMode forced_ui_mode_ = UiMode::kNone;
 
   // True if the device is physically in a tablet state regardless of the UI

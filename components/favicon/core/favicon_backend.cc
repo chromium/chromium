@@ -103,7 +103,7 @@ favicon_base::FaviconRawBitmapResult FaviconBackend::GetLargestFaviconForUrl(
     required_icon_types.insert(icon_types.begin(), icon_types.end());
 
   // Find the largest bitmap for each IconType placing in
-  // |largest_favicon_bitmaps|.
+  // `largest_favicon_bitmaps`.
   std::map<favicon_base::IconType, FaviconBitmap> largest_favicon_bitmaps;
   for (std::vector<IconMapping>::const_iterator i = icon_mappings.begin();
        i != icon_mappings.end(); ++i) {
@@ -267,14 +267,14 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
       db_->GetFaviconIDForFaviconURL(icon_url, icon_type);
 
   if (!favicon_id) {
-    // There is no favicon at |icon_url|, create it.
+    // There is no favicon at `icon_url`, create it.
     favicon_id = db_->AddFavicon(icon_url, icon_type);
   }
 
   std::vector<FaviconBitmapIDSize> bitmap_id_sizes;
   db_->GetFaviconBitmapIDSizes(favicon_id, &bitmap_id_sizes);
 
-  // If there is already a favicon bitmap of |pixel_size| at |icon_url|,
+  // If there is already a favicon bitmap of `pixel_size` at `icon_url`,
   // replace it.
   bool bitmap_identical = false;
   bool replaced_bitmap = false;
@@ -290,9 +290,9 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
         bitmap_identical = true;
       } else {
         // Expire the favicon bitmap because sync can provide incorrect
-        // |bitmap_data|. See crbug.com/474421 for more details. Expiring the
+        // `bitmap_data`. See crbug.com/474421 for more details. Expiring the
         // favicon bitmap causes it to be redownloaded the next time that the
-        // user visits any page which uses |icon_url|. It also allows storing an
+        // user visits any page which uses `icon_url`. It also allows storing an
         // on-demand icon along with the icon from sync.
         db_->SetFaviconBitmap(bitmap_id_sizes[i].bitmap_id, bitmap_data,
                               base::Time());
@@ -303,7 +303,7 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
   }
 
   // Create a vector of the pixel sizes of the favicon bitmaps currently at
-  // |icon_url|.
+  // `icon_url`.
   std::vector<gfx::Size> favicon_sizes;
   for (size_t i = 0; i < bitmap_id_sizes.size(); ++i)
     favicon_sizes.push_back(bitmap_id_sizes[i].pixel_size);
@@ -314,7 +314,7 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
     db_->SetFaviconOutOfDate(favicon_id);
 
     // Delete an arbitrary favicon bitmap to avoid going over the limit of
-    // |kMaxFaviconBitmapsPerIconURL|.
+    // `kMaxFaviconBitmapsPerIconURL`.
     if (bitmap_id_sizes.size() >= kMaxFaviconBitmapsPerIconURL) {
       db_->DeleteFaviconBitmap(bitmap_id_sizes[0].bitmap_id);
       favicon_sizes.erase(favicon_sizes.begin());
@@ -322,14 +322,14 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
     // Set the new bitmap as expired because the bitmaps from sync/profile
     // import/etc. are not authoritative. Expiring the favicon bitmap causes the
     // bitmaps to be redownloaded the next time that the user visits any page
-    // which uses |icon_url|. It also allows storing an on-demand icon along
+    // which uses `icon_url`. It also allows storing an on-demand icon along
     // with the icon from sync.
     db_->AddFaviconBitmap(favicon_id, bitmap_data, FaviconBitmapType::ON_VISIT,
                           base::Time(), pixel_size);
     favicon_sizes.push_back(pixel_size);
   }
 
-  // A site may have changed the favicons that it uses for |page_url|.
+  // A site may have changed the favicons that it uses for `page_url`.
   // Example Scenario:
   //   page_url = news.google.com
   //   Initial State: www.google.com/favicon.ico 16x16, 32x32
@@ -338,7 +338,7 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
   //
   // Difficulties:
   // 1. Sync requires that a call to GetFaviconsForURL() returns the
-  //    |bitmap_data| passed into MergeFavicon().
+  //    `bitmap_data` passed into MergeFavicon().
   //    - It is invalid for the 16x16 bitmap for www.google.com/favicon.ico to
   //      stay mapped to news.google.com because it would be unclear which 16x16
   //      bitmap should be returned via GetFaviconsForURL().
@@ -348,9 +348,9 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
   //    - The 16x16 bitmap cannot be deleted from www.google.com/favicon.ico
   //
   // To resolve these problems, we copy all of the favicon bitmaps previously
-  // mapped to news.google.com (|page_url|) and add them to the favicon at
-  // news.google.com/news_specific.ico (|icon_url|). The favicon sizes for
-  // |icon_url| are set to default to indicate that |icon_url| has incomplete
+  // mapped to news.google.com (`page_url`) and add them to the favicon at
+  // news.google.com/news_specific.ico (`icon_url`). The favicon sizes for
+  // `icon_url` are set to default to indicate that `icon_url` has incomplete
   // / incorrect data.
   // Difficulty 1: All but news.google.com/news_specific.ico are unmapped from
   //              news.google.com
@@ -360,8 +360,8 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url, {icon_type}, &icon_mappings);
 
-  // Copy the favicon bitmaps mapped to |page_url| to the favicon at |icon_url|
-  // till the limit of |kMaxFaviconBitmapsPerIconURL| is reached.
+  // Copy the favicon bitmaps mapped to `page_url` to the favicon at `icon_url`
+  // till the limit of `kMaxFaviconBitmapsPerIconURL` is reached.
   bool favicon_bitmaps_copied = false;
   for (size_t i = 0; i < icon_mappings.size(); ++i) {
     if (favicon_sizes.size() >= kMaxFaviconBitmapsPerIconURL)
@@ -374,8 +374,8 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
     db_->GetFaviconBitmaps(icon_mappings[i].icon_id, &bitmaps_to_copy);
     for (size_t j = 0; j < bitmaps_to_copy.size(); ++j) {
       // Do not add a favicon bitmap at a pixel size for which there is already
-      // a favicon bitmap mapped to |icon_url|. The one there is more correct
-      // and having multiple equally sized favicon bitmaps for |page_url| is
+      // a favicon bitmap mapped to `icon_url`. The one there is more correct
+      // and having multiple equally sized favicon bitmaps for `page_url` is
       // ambiguous in terms of GetFaviconsForURL().
       if (base::Contains(favicon_sizes, bitmaps_to_copy[j].pixel_size))
         continue;
@@ -394,8 +394,8 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
   }
 
   MergeFaviconResult result;
-  // Update the favicon mappings such that only |icon_url| is mapped to
-  // |page_url|.
+  // Update the favicon mappings such that only `icon_url` is mapped to
+  // `page_url`.
   if (icon_mappings.size() != 1 || icon_mappings[0].icon_url != icon_url) {
     SetFaviconMappingsForPageAndRedirects(page_url, icon_type, favicon_id);
     result.did_page_to_icon_mapping_change = true;
@@ -410,7 +410,7 @@ std::set<GURL> FaviconBackend::CloneFaviconMappingsForPages(
     const base::flat_set<GURL>& page_urls_to_write) {
   TRACE_EVENT0("browser", "FaviconBackend::CloneFaviconMappingsForPages");
 
-  // Update mappings including redirects for each entry in |page_urls_to_write|.
+  // Update mappings including redirects for each entry in `page_urls_to_write`.
   base::flat_set<GURL> page_urls_to_update_mappings;
   for (const GURL& update_mappings_for_page : page_urls_to_write) {
     RedirectList redirects =
@@ -420,14 +420,14 @@ std::set<GURL> FaviconBackend::CloneFaviconMappingsForPages(
     page_urls_to_update_mappings.insert(redirects.begin(), redirects.end());
   }
 
-  // No need to update mapping for |page_url_to_read|, because this is where
+  // No need to update mapping for `page_url_to_read`, because this is where
   // we're getting the mappings from.
   page_urls_to_update_mappings.erase(page_url_to_read);
 
   if (page_urls_to_update_mappings.empty())
     return {};
 
-  // Get FaviconIDs for |page_url_to_read| and one of |icon_types|.
+  // Get FaviconIDs for `page_url_to_read` and one of `icon_types`.
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url_to_read, icon_types, &icon_mappings);
   if (icon_mappings.empty())
@@ -456,7 +456,7 @@ std::vector<GURL> FaviconBackend::GetFaviconUrlsForUrl(const GURL& page_url) {
 
 bool FaviconBackend::CanSetOnDemandFavicons(const GURL& page_url,
                                             favicon_base::IconType icon_type) {
-  // We allow writing an on demand favicon of type |icon_type| only if there is
+  // We allow writing an on demand favicon of type `icon_type` only if there is
   // no icon of such type in the DB (so that we never overwrite anything) and if
   // all other icons are expired. This in particular allows writing an on-demand
   // icon if there is only an icon from sync (icons from sync are immediately
@@ -529,6 +529,10 @@ SetFaviconsResult FaviconBackend::SetFavicons(
   bool favicon_created = false;
   if (!icon_id) {
     icon_id = db_->AddFavicon(icon_url, icon_type);
+    if (!icon_id) {
+      // The database write failed. Abort operation.
+      return SetFaviconsResult();
+    }
     favicon_created = true;
   }
 
@@ -556,6 +560,8 @@ FaviconBackend::FaviconBackend(std::unique_ptr<FaviconDatabase> db,
 bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
                                        const std::vector<SkBitmap>& bitmaps,
                                        FaviconBitmapType type) {
+  CHECK(icon_id);
+
   std::vector<FaviconBitmapIDSize> bitmap_id_sizes;
   db_->GetFaviconBitmapIDSizes(icon_id, &bitmap_id_sizes);
 
@@ -565,7 +571,7 @@ bool FaviconBackend::SetFaviconBitmaps(favicon_base::FaviconID icon_id,
   for (size_t i = 0; i < bitmaps.size(); ++i) {
     scoped_refptr<base::RefCountedBytes> bitmap_data(new base::RefCountedBytes);
     if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[i], false,
-                                           &bitmap_data->data())) {
+                                           &bitmap_data->as_vector())) {
       continue;
     }
     to_add.push_back(std::make_pair(
@@ -630,15 +636,15 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
                                   const favicon_base::IconTypeSet& icon_types,
                                   const std::vector<int>& desired_sizes,
                                   bool fallback_to_host) {
-  // Get FaviconIDs for |page_url| and one of |icon_types|.
+  // Get FaviconIDs for `page_url` and one of `icon_types`.
   std::vector<IconMapping> icon_mappings;
   db_->GetIconMappingsForPageURL(page_url, icon_types, &icon_mappings);
 
   if (icon_mappings.empty() && fallback_to_host &&
       page_url.SchemeIsHTTPOrHTTPS()) {
     // We didn't find any matches, and the caller requested falling back to the
-    // host of |page_url| for fuzzy matching. Query the database for a page_url
-    // that is known to exist and matches the host of |page_url|. Do this only
+    // host of `page_url` for fuzzy matching. Query the database for a page_url
+    // that is known to exist and matches the host of `page_url`. Do this only
     // if we have a HTTP/HTTPS url.
     std::optional<GURL> fallback_page_url =
         db_->FindFirstPageURLForHost(page_url, icon_types);
@@ -664,7 +670,7 @@ FaviconBackend::GetFaviconBitmapResultsForBestMatch(
     return {};
 
   // Find the FaviconID and the FaviconBitmapIDs which best match
-  // |desired_size_in_dip| and |desired_scale_factors|.
+  // `desired_size_in_dip` and `desired_scale_factors`.
   // TODO(pkotwicz): Select bitmap results from multiple favicons once
   // content::FaviconStatus supports multiple icon URLs.
   favicon_base::FaviconID best_favicon_id = 0;
@@ -674,7 +680,7 @@ FaviconBackend::GetFaviconBitmapResultsForBestMatch(
     std::vector<FaviconBitmapIDSize> bitmap_id_sizes;
     db_->GetFaviconBitmapIDSizes(candidate_favicon_ids[i], &bitmap_id_sizes);
 
-    // Build vector of gfx::Size from |bitmap_id_sizes|.
+    // Build vector of gfx::Size from `bitmap_id_sizes`.
     std::vector<gfx::Size> sizes;
     for (size_t j = 0; j < bitmap_id_sizes.size(); ++j)
       sizes.push_back(bitmap_id_sizes[j].pixel_size);
@@ -694,8 +700,8 @@ FaviconBackend::GetFaviconBitmapResultsForBestMatch(
     }
   }
 
-  // Construct FaviconRawBitmapResults from |best_favicon_id| and
-  // |best_bitmap_ids|.
+  // Construct FaviconRawBitmapResults from `best_favicon_id` and
+  // `best_bitmap_ids`.
   GURL icon_url;
   favicon_base::IconType icon_type;
   if (!db_->GetFaviconHeader(best_favicon_id, &icon_url, &icon_type))
@@ -753,10 +759,10 @@ bool FaviconBackend::SetFaviconMappingsForPage(
     favicon_base::IconType icon_type,
     favicon_base::FaviconID icon_id) {
   bool mappings_changed = false;
-  // Sets the icon mappings from |page_url| for |icon_type| to the favicon
-  // with |icon_id|. Mappings for |page_url| to favicons of type |icon_type|
-  // with FaviconID other than |icon_id| are removed. All icon mappings for
-  // |page_url| to favicons of a type equivalent to |icon_type| are removed.
+  // Sets the icon mappings from `page_url` for `icon_type` to the favicon
+  // with `icon_id`. Mappings for `page_url` to favicons of type `icon_type`
+  // with FaviconID other than `icon_id` are removed. All icon mappings for
+  // `page_url` to favicons of a type equivalent to `icon_type` are removed.
   // Remove any favicons which are orphaned as a result of the removal of the
   // icon mappings.
 

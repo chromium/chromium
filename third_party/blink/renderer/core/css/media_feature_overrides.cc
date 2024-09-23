@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
@@ -89,17 +89,15 @@ std::optional<bool> MediaFeatureOverrides::ConvertPrefersReducedTransparency(
 
 MediaQueryExpValue MediaFeatureOverrides::ParseMediaQueryValue(
     const AtomicString& feature,
-    const String& value_string) {
-  CSSTokenizer tokenizer(value_string);
-  auto [tokens, raw_offsets] = tokenizer.TokenizeToEOFWithOffsets();
-  CSSParserTokenRange range(tokens);
-  CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets), value_string);
+    const String& value_string,
+    const Document* document) {
+  CSSParserTokenStream stream(value_string);
 
   // TODO(xiaochengh): This is a fake CSSParserContext that only passes
   // down the CSSParserMode. Plumb the real CSSParserContext through, so that
   // web features can be counted correctly.
   const CSSParserContext* fake_context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+      kHTMLStandardMode, SecureContextMode::kInsecureContext, document);
 
   // MediaFeatureOverrides are used to emulate various media feature values.
   // These don't need to pass an ExecutionContext, since the parsing of
@@ -110,14 +108,16 @@ MediaQueryExpValue MediaFeatureOverrides::ParseMediaQueryValue(
   // Document to get the ExecutionContext so the extra parameter should be
   // removed.
   MediaQueryExpBounds bounds =
-      MediaQueryExp::Create(feature, range, offsets, *fake_context).Bounds();
+      MediaQueryExp::Create(feature, stream, *fake_context).Bounds();
   DCHECK(!bounds.left.IsValid());
   return bounds.right.value;
 }
 
 void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
-                                        const String& value_string) {
-  MediaQueryExpValue value = ParseMediaQueryValue(feature, value_string);
+                                        const String& value_string,
+                                        const Document* document) {
+  MediaQueryExpValue value =
+      ParseMediaQueryValue(feature, value_string, document);
 
   if (feature == media_feature_names::kColorGamutMediaFeature) {
     color_gamut_ = ConvertColorGamut(value);

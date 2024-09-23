@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
@@ -20,8 +20,7 @@ KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
 
 void KioskSessionInitializedWaiter::Wait() {
-  if (KioskChromeAppManager::Get()->kiosk_system_session() ||
-      WebKioskAppManager::Get()->kiosk_system_session()) {
+  if (KioskController::Get().GetKioskSystemSession() != nullptr) {
     return;
   }
 

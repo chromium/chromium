@@ -1,6 +1,7 @@
 import collections
 import math
 import sys
+from urllib.parse import urlparse
 
 import webdriver
 
@@ -40,7 +41,10 @@ def cleanup_session(session):
         try:
             session.window_handle
         except webdriver.NoSuchWindowException:
-            session.window_handle = session.handles[0]
+            handles = session.handles
+            if handles:
+                # Update only when there is at least one valid window left.
+                session.window_handle = handles[0]
 
     @ignore_exceptions
     def _restore_timeouts(session):
@@ -54,19 +58,10 @@ def cleanup_session(session):
         """Reset window to an acceptable size.
 
         This also includes bringing it out of maximized, minimized,
-        or fullscreened state.
+        or fullscreen state.
         """
         if session.capabilities.get("setWindowRect"):
-            # Only restore if needed to workaround a bug for Chrome:
-            # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
-            if (
-                session.capabilities.get("browserName") != "chrome" or
-                session.window.size != defaults.WINDOW_SIZE
-                or document_hidden(session)
-                or is_fullscreen(session)
-                or is_maximized(session)
-            ):
-                session.window.size = defaults.WINDOW_SIZE
+            session.window.size = defaults.WINDOW_SIZE
 
     @ignore_exceptions
     def _restore_windows(session):
@@ -250,6 +245,11 @@ def filter_supported_key_events(all_events, expected):
         events = [filter_dict(e, expected[0]) for e in events]
 
     return (events, expected)
+
+
+def get_origin_from_url(url):
+    parsed_uri = urlparse(url)
+    return '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
 
 
 def wait_for_new_handle(session, handles_before):

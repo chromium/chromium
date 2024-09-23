@@ -3,39 +3,32 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
+
 #include <optional>
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents.h"
 
 namespace password_manager {
 
-std::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile) {
-  DCHECK(profile);
-
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          SyncServiceFactory::GetForProfile(profile))) {
+std::optional<AccountInfo> GetAccountInfoForPasswordMessages(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
+  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
     return std::nullopt;
   }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
-std::string GetDisplayableAccountName(content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+std::string GetDisplayableAccountName(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
   std::optional<AccountInfo> account_info =
-      password_manager::GetAccountInfoForPasswordMessages(profile);
+      password_manager::GetAccountInfoForPasswordMessages(sync_service,
+                                                          identity_manager);
   if (!account_info.has_value()) {
     return "";
   }

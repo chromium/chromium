@@ -11,7 +11,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
-class AutofillPopupDelegate;
+class AutofillSuggestionDelegate;
 struct Suggestion;
 }
 
@@ -19,8 +19,8 @@ struct Suggestion;
 @protocol AutofillClientIOSBridge
 
 - (void)showAutofillPopup:(const std::vector<autofill::Suggestion>&)suggestions
-            popupDelegate:
-                (const base::WeakPtr<autofill::AutofillPopupDelegate>&)delegate;
+       suggestionDelegate:
+           (const base::WeakPtr<autofill::AutofillSuggestionDelegate>&)delegate;
 
 - (void)hideAutofillPopup;
 

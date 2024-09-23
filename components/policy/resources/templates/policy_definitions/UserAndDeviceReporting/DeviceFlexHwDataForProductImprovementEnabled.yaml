@@ -30,3 +30,4 @@ items:
 default: true
 example_value: true
 tags: ['google-sharing']
+generate_device_proto: False

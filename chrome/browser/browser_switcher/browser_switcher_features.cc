@@ -9,7 +9,7 @@
 // IeemSitelistParser. This makes it easy to revert the change if we break
 // a customer.
 //
-// TODO(crbug.com/1282233): Remove this flag once we're confident this
+// TODO(crbug.com/40812726): Remove this flag once we're confident this
 // doesn't break customers.
 BASE_FEATURE(kBrowserSwitcherNoneIsGreylist,
              "BrowserSwitcherNoneIsGreylist",

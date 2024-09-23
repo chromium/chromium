@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>Button</title>
+  </head>
+  <script>
+    function showText() {
+      text = document.getElementById("text");
+      text.style.display = 'block';
+    }
+  </script>
+  <body>
+    <h1>Title</h1>
+    <button id="button" onclick="showText()">Show Text</button>
+    <div id="text" style="display:none">
+      The quick brown fox jumped over the lazy dogs.
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
 #import "base/command_line.h"
 #import "base/containers/contains.h"
 #import "base/files/file.h"
@@ -25,8 +26,8 @@
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -40,24 +41,26 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -78,6 +81,7 @@
 #import "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/public/browser_state_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -126,20 +130,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::SysUTF8ToNSString(serialized_value);
 }
 
-// Returns a RepeatingClosure that will call `closure` after being called
-// exactly n time. The closure does not have to be called on a specific
-// thread or sequence.
-base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
-  return base::BindRepeating(
-      [](base::RepeatingClosure closure,
-         const std::unique_ptr<std::atomic<uint32_t>>& counter) {
-        if (!--*counter) {
-          closure.Run();
-        }
-      },
-      std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
-}
-
 }  // namespace
 
 @implementation JavaScriptExecutionResult
@@ -174,8 +164,9 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)killWebKitNetworkProcess {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  [[WKWebsiteDataStore defaultDataStore]
-      performSelector:@selector(_terminateNetworkProcess)];
+  WKWebsiteDataStore* dataStore = web::GetDataStoreForBrowserState(
+      chrome_test_util::GetOriginalBrowserState());
+  [dataStore performSelector:@selector(_terminateNetworkProcess)];
 #pragma clang diagnostic pop
 }
 
@@ -217,9 +208,9 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   base::RepeatingClosure closure =
-      ExpectNCall(otrService ? 2u : 1u, base::BindRepeating(^{
-                    dispatch_semaphore_signal(semaphore);
-                  }));
+      base::BarrierClosure(otrService ? 2u : 1u, base::BindRepeating(^{
+                             dispatch_semaphore_signal(semaphore);
+                           }));
 
   service->SaveSessions();
   service->InvokeClosureWhenBackgroundProcessingDone(closure);
@@ -819,8 +810,11 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 }
 
 + (void)stopAllWebStatesLoading {
+  if (!chrome_test_util::GetForegroundActiveScene()) {
+    return;
+  }
   WebStateList* web_state_list =
-      chrome_test_util::GetMainController()
+      chrome_test_util::GetForegroundActiveScene()
           .browserProviderInterface.currentBrowserProvider.browser
           ->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -840,7 +834,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 #pragma mark - Sync Utilities (EG2)
 
-+ (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
++ (int)numberOfSyncEntitiesWithType:(syncer::DataType)type {
   return chrome_test_util::GetNumberOfSyncEntities(type);
 }
 
@@ -880,6 +874,12 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)));
 }
 
++ (void)addHistoryServiceTypedURL:(NSString*)URL
+                   visitTimestamp:(base::Time)visitTimestamp {
+  chrome_test_util::AddTypedURLToClient(GURL(base::SysNSStringToUTF8(URL)),
+                                        visitTimestamp);
+}
+
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL {
   chrome_test_util::DeleteTypedUrlFromClient(
       GURL(base::SysNSStringToUTF8(URL)));
@@ -893,7 +893,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return success && !error;
 }
 
-+ (void)triggerSyncCycleForType:(syncer::ModelType)type {
++ (void)triggerSyncCycleForType:(syncer::DataType)type {
   chrome_test_util::TriggerSyncCycle(type);
 }
 
@@ -927,10 +927,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)deleteAutofillProfileFromFakeSyncServerWithGUID:(NSString*)GUID {
   chrome_test_util::DeleteAutofillProfileFromFakeSyncServer(
       base::SysNSStringToUTF8(GUID));
-}
-
-+ (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
-  chrome_test_util::SignInWithoutSync(identity);
 }
 
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
@@ -1031,13 +1027,13 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   std::string UTF8Name = base::SysNSStringToUTF8(name);
   NSError* __autoreleasing tempError = nil;
   bool success = chrome_test_util::VerifyNumberOfSyncEntitiesWithName(
-      (syncer::ModelType)type, UTF8Name, count, &tempError);
+      (syncer::DataType)type, UTF8Name, count, &tempError);
   NSError* error = tempError;
 
   if (!success and !error) {
     NSString* errorString =
         [NSString stringWithFormat:@"Expected %zu entities of the %d type.",
-                                   count, (syncer::ModelType)type];
+                                   count, (syncer::DataType)type];
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
 
@@ -1081,6 +1077,10 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase {
   chrome_test_util::AddBookmarkWithSyncPassphrase(
       base::SysNSStringToUTF8(syncPassphrase));
+}
+
++ (void)addSyncPassphrase:(NSString*)syncPassphrase {
+  chrome_test_util::AddSyncPassphrase(base::SysNSStringToUTF8(syncPassphrase));
 }
 
 + (BOOL)isSyncHistoryDataTypeSelected {
@@ -1188,11 +1188,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
 }
 
-+ (BOOL)isReplaceSyncWithSigninEnabled {
-  return base::FeatureList::IsEnabled(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-}
-
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       base::SysNSStringToUTF8(launchSwitch));
@@ -1200,10 +1195,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (BOOL)isCustomWebKitLoadedIfRequested {
   return IsCustomWebKitLoadedIfRequested();
-}
-
-+ (BOOL)isLoadSimulatedRequestAPIEnabled {
-  return web::features::IsLoadSimulatedRequestAPIEnabled();
 }
 
 + (BOOL)isMobileModeByDefault {
@@ -1235,8 +1226,17 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
-+ (BOOL)isBottomOmniboxSteadyStateEnabled {
-  return IsBottomOmniboxSteadyStateEnabled();
++ (BOOL)isTabGroupSyncEnabled {
+  return IsTabGroupSyncEnabled();
+}
+
++ (BOOL)isCurrentLayoutBottomOmnibox {
+  return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
+}
+
++ (BOOL)isEnhancedSafeBrowsingInfobarEnabled {
+  return base::FeatureList::IsEnabled(
+      safe_browsing::kEnhancedSafeBrowsingPromo);
 }
 
 #pragma mark - ContentSettings
@@ -1302,6 +1302,13 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   prefService->SetTime(path, value);
 }
 
++ (void)setTimeValue:(base::Time)value forUserPref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetTime(path, value);
+}
+
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName {
   std::string UTF8Value = base::SysNSStringToUTF8(value);
   std::string path = base::SysNSStringToUTF8(prefName);
@@ -1346,8 +1353,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   const PrefService::Preference* pref =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->FindPreference(
-          path);
+      GetApplicationContext()->GetLocalState()->FindPreference(path);
   return pref->IsDefaultValue();
 }
 
@@ -1364,6 +1370,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 + (void)resetBrowsingDataPrefs {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefs->ClearPref(browsing_data::prefs::kDeleteBrowsingHistory);
+  prefs->ClearPref(browsing_data::prefs::kCloseTabs);
   prefs->ClearPref(browsing_data::prefs::kDeleteCookies);
   prefs->ClearPref(browsing_data::prefs::kDeleteCache);
   prefs->ClearPref(browsing_data::prefs::kDeletePasswords);
@@ -1379,7 +1386,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 #pragma mark - Unified Consent utilities
 
 + (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled {
-  UnifiedConsentServiceFactory::GetForBrowserState(
+  UnifiedConsentServiceFactory::GetForProfile(
       chrome_test_util::GetOriginalBrowserState())
       ->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
 }
@@ -1388,7 +1395,7 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (NSInteger)registeredKeyCommandCount {
   UIViewController* browserViewController =
-      chrome_test_util::GetMainController()
+      chrome_test_util::GetForegroundActiveScene()
           .browserProviderInterface.mainBrowserProvider.viewController;
   // The BVC delegates its key commands to its next responder,
   // KeyCommandsProvider.
@@ -1552,6 +1559,23 @@ int watchRunNumber = 0;
     FirstRun::ClearStateForTesting();
     FirstRun::IsChromeFirstRun();
   }
+}
+
++ (bool)hasFirstRunSentinel {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return HasFirstRunSentinel();
+}
+
++ (void)requestTipsNotification:(TipsNotificationType)type {
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(type)
+                    trigger:nil];
+
+  [center addNotificationRequest:request withCompletionHandler:nil];
 }
 
 @end

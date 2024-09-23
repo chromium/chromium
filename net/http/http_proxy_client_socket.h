@@ -136,14 +136,16 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   // Stores the callback provided by the caller of async operations.
   CompletionOnceCallback user_callback_;
 
+  // Bogus request info. Only its url and method fields are used.
   HttpRequestInfo request_;
+
+  const std::string user_agent_;
   HttpResponseInfo response_;
 
   scoped_refptr<GrowableIOBuffer> parser_buf_;
-  std::unique_ptr<HttpStreamParser> http_stream_parser_;
   scoped_refptr<IOBuffer> drain_buf_;
-
   std::unique_ptr<StreamSocket> socket_;
+  std::unique_ptr<HttpStreamParser> http_stream_parser_;
 
   // Whether or not |socket_| has been previously used. Once auth credentials
   // are sent, set to true.

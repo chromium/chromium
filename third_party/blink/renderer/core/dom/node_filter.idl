@@ -43,5 +43,5 @@
     const unsigned long SHOW_DOCUMENT_FRAGMENT = 0x400;
     const unsigned long SHOW_NOTATION = 0x800; // historical
 
-    unsigned short acceptNode(Node node);
+    unsigned short acceptNode([NodeWrapInOwnContext] Node node);
 };

@@ -1,0 +1,131 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("note_taking") {
+  sources = [
+    "note_taking_controller_client.cc",
+    "note_taking_controller_client.h",
+    "note_taking_helper.cc",
+    "note_taking_helper.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//apps",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_metrics_constants",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/mojom:mojom_shared_cpp_sources",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//components/arc",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/display",
+    "//ui/display/util",
+    "//ui/events:event_constants",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "note_taking_helper_unittest.cc" ]
+
+  deps = [
+    ":note_taking",
+    "//ash",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/lock_screen_apps",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/disks",
+    "//components/arc:arc_test_support",
+    "//components/crx_file",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//skia:skia_core_public_headers",
+    "//testing/gtest",
+    "//ui/display:display_manager_test_api",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "note_taking_helper_browsertest.cc" ]
+
+  deps = [
+    ":note_taking",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}

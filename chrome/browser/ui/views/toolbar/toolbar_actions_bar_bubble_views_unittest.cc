@@ -15,6 +15,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -55,7 +56,8 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
 
   std::unique_ptr<views::Widget> CreateAnchorWidget() {
     std::unique_ptr<views::Widget> anchor_widget =
-        CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget->Show();
     return anchor_widget;
   }
@@ -86,7 +88,7 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
 
     ASSERT_TRUE(button);
     const gfx::Point point(10, 10);
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+    const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
     button->OnMousePressed(event);
@@ -187,7 +189,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoBodyText) {
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleDefaultDialogButtons) {
   TestToolbarActionsBarBubbleDelegate delegate(
       kHeadingText, kBodyText, kActionButtonText, kDismissButtonText);
-  delegate.set_default_dialog_button(ui::DIALOG_BUTTON_OK);
+  delegate.set_default_dialog_button(ui::mojom::DialogButton::kOk);
   ShowBubble(&delegate);
 
   ASSERT_TRUE(bubble()->GetOkButton());

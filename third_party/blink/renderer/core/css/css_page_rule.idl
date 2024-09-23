@@ -20,14 +20,9 @@
 
 // https://drafts.csswg.org/cssom/#the-csspagerule-interface
 
-// TODO(foolip): CSSPageRule should inherit from CSSGroupingRule.
-// crbug.com/496381. To internally implement this as grouping rule,
-// margin at-rules should be implemented crbug.com/320370, since the
-// spec https://drafts.csswg.org/css-page/#at-page-rule allows only
-// margin at-rules inside @page.
 [
     Exposed=Window
-] interface CSSPageRule : CSSRule {
+] interface CSSPageRule : CSSGroupingRule {
     [SetterCallWith=ExecutionContext] attribute DOMString selectorText;
     [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };

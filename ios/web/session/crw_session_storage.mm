@@ -37,14 +37,14 @@ NSString* const kLastActiveTimeKey = @"lastActiveTime";
 NSString* const kCreationTimeKey = @"creationTime";
 
 // Deprecated, used for backward compatibility.
-// TODO(crbug.com/1278308): Remove this key.
+// TODO(crbug.com/40208116): Remove this key.
 NSString* const kLastCommittedItemIndexDeprecatedKey =
     @"currentNavigationIndex";
 
 // Deprecated, used for backward compatibility for reading the stable
 // identifier from the serializable user data as it was stored by the
 // external tab helper.
-// TODO(crbug.com/1278308): Remove this key.
+// TODO(crbug.com/40208116): Remove this key.
 NSString* const kTabIdKey = @"TabId";
 }
 
@@ -152,8 +152,28 @@ NSString* const kTabIdKey = @"TabId";
           [decoder decodeIntForKey:kLastCommittedItemIndexDeprecatedKey];
     }
 
-    _itemStorages = [[NSMutableArray alloc]
-        initWithArray:[decoder decodeObjectForKey:kItemStoragesKey]];
+    // A few users are crashing because they have a corrupted session (where
+    // _itemStorages contains objects that are not CRWNavigationItemStorage).
+    // If this happens, consider that the session has no navigations instead.
+    // It will result in a tab with no navigation, which will be dropped. It
+    // is better than crashing when trying to convert the session to proto.
+    // See https://crbug.com/358616893 for details.
+    NSObject* itemStoragesObj = [decoder decodeObjectForKey:kItemStoragesKey];
+    if ([itemStoragesObj isKindOfClass:[NSArray class]]) {
+      NSArray* itemStorages =
+          base::apple::ObjCCastStrict<NSArray>(itemStoragesObj);
+      for (NSObject* item in itemStorages) {
+        if (![item isKindOfClass:[CRWNavigationItemStorage class]]) {
+          itemStorages = nil;
+          break;
+        }
+      }
+      _itemStorages =
+          [[NSMutableArray alloc] initWithArray:(itemStorages ?: @[])];
+    } else {
+      _itemStorages = [[NSMutableArray alloc] init];
+    }
+
     // Prior to M34, 0 was used as "no index" instead of -1; adjust for that.
     if (!_itemStorages.count)
       _lastCommittedItemIndex = -1;
@@ -173,7 +193,7 @@ NSString* const kTabIdKey = @"TabId";
     if (!_certPolicyCacheStorage) {
       // If the cert policy cache was not found, attempt to decode using the
       // deprecated serialization key.
-      // TODO(crbug.com/1278308): Remove this deprecated key once we remove
+      // TODO(crbug.com/40208116): Remove this deprecated key once we remove
       // support for legacy class conversions.
       _certPolicyCacheStorage = [decoder
           decodeObjectForKey:kCertificatePolicyCacheStorageDeprecatedKey];
@@ -186,7 +206,7 @@ NSString* const kTabIdKey = @"TabId";
     } else if ([userData isKindOfClass:[NSDictionary class]]) {
       // Before M99, the user data was serialized by a C++ class that did
       // serialize a NSDictionary<NSString*, id<NSCoding>>* directly.
-      // TODO(crbug.com/1278308): Remove this deprecated logic when we remove
+      // TODO(crbug.com/40208116): Remove this deprecated logic when we remove
       // support for loading legacy sessions.
       NSDictionary<NSString*, id<NSCoding>>* dictionary =
           base::apple::ObjCCastStrict<NSDictionary>(userData);
@@ -204,7 +224,7 @@ NSString* const kTabIdKey = @"TabId";
           web::GetUserAgentTypeWithDescription(userAgentDescription);
     } else {
       // Prior to M85, the UserAgent wasn't stored.
-      // TODO(crbug.com/1278308): Remove this deprecated logic when we
+      // TODO(crbug.com/40208116): Remove this deprecated logic when we
       // remove support for loading legacy sessions.
       _userAgentType = web::UserAgentType::AUTOMATIC;
     }
@@ -243,10 +263,11 @@ NSString* const kTabIdKey = @"TabId";
     // If no unique identifier was read, or it was invalid, generate a
     // new one.
     static_assert(sizeof(_uniqueIdentifier.identifier()) == sizeof(int32_t));
-    _uniqueIdentifier = web::WebStateID::FromSerializedValue(
-        [decoder decodeInt32ForKey:kUniqueIdentifierKey]);
-    if (!_uniqueIdentifier.valid()) {
-      _uniqueIdentifier = web::WebStateID::NewUnique();
+    const int32_t decodedUniqueIdentifier =
+        [decoder decodeInt32ForKey:kUniqueIdentifierKey];
+    if (web::WebStateID::IsValidValue(decodedUniqueIdentifier)) {
+      _uniqueIdentifier =
+          web::WebStateID::FromSerializedValue(decodedUniqueIdentifier);
     }
 
     if ([decoder containsValueForKey:kCreationTimeKey]) {

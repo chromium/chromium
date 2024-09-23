@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, DisabledWhenRevoked) {
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
-                       // TODO(crbug.com/1482522): Re-enable this test
+                       // TODO(crbug.com/40931527): Re-enable this test
                        DISABLED_InMemoryPurgeOnConsentRevoke) {
   auto* sm_service = GetSMService();
 
@@ -169,13 +169,13 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
 
   // Record a couple of events and verify that they are recorded.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_five::TestEventSix()
-                    .SetTestMetricSix("metric six")));
+      structured::events::v2::test_project_five::TestEventSix()
+          .SetTestMetricSix("metric six"));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
-// TODO(crbug.com/1482059): Re-enable this test
+// TODO(crbug.com/40931189): Re-enable this test
 // Only flaky on chromeos-rel.
 #if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG) && !defined(ADDRESS_SANITIZER)
 #define MAYBE_StagedLogPurgeOnConsentRevoke \
@@ -220,13 +220,13 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
 
   // Record a couple of events and verify that they are recorded.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_five::TestEventSix()
-                    .SetTestMetricSix("metric six")));
+      structured::events::v2::test_project_five::TestEventSix()
+          .SetTestMetricSix("metric six"));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -265,9 +265,9 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
 
   // Record an event inorder to build a log.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
   EXPECT_THAT(sm_service->scheduler_.get(), testing::IsNull());
 }
 
-// TODO(https://crbug.com/1513143): Flaky on linux-chromeos-rel.
+// TODO(crbug.com/41485716): Flaky on linux-chromeos-rel.
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
                        DISABLED_PurgeForceRecordedEvents) {
   // This feature is intended only for events that are recorded before user
@@ -325,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   structured_metrics_mixin_.UpdateRecordingState(false);
   WaitForConsentChanges();
 
-  structured::events::v2::test_project_seven::TestEventEight().Record();
+  structured::StructuredMetricsClient::Record(
+      structured::events::v2::test_project_seven::TestEventEight());
 
   structured_metrics_mixin_.WaitUntilEventRecorded(kProjectSevenHash,
                                                    kEventEightHash);
@@ -337,6 +338,34 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_FALSE(HasUnsentLogs());
   EXPECT_FALSE(HasStagedLog());
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, CreateLogs) {
+  auto* sm_service = GetSMService();
+  structured_metrics_mixin_.UpdateRecordingState(true);
+  WaitForConsentChanges();
+
+  structured::StructuredMetricsClient::Record(
+      structured::events::v2::test_project_seven::TestEventEight());
+
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectSevenHash,
+                                                   kEventEightHash);
+
+  // Makes sure that the logs are created without issues.
+  // Disable upload, CreateLogs: creates the logs and starts the upload process.
+  base::RunLoop run_loop;
+  sm_service->SetCreateLogsCallbackInTests(run_loop.QuitClosure());
+  sm_service->CreateLogs(
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown,
+      /*notify_scheduler=*/false);
+  run_loop.Run();
+
+  EXPECT_TRUE(HasUnsentLogs());
+
+  std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetStagedLog();
+  EXPECT_NE(uma_proto.get(), nullptr);
+
+  EXPECT_EQ(uma_proto->structured_data().events_size(), 1);
 }
 
 }  // namespace metrics

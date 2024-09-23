@@ -4,8 +4,7 @@
 
 import subprocess
 import unittest
-
-import mock
+from unittest import mock
 
 from core.services import luci_auth
 

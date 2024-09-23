@@ -51,8 +51,8 @@ _LIBS_DIR = 'libs'
 
 _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
 
-_GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'gradle_wrapper',
-                        'gradlew')
+_GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'android_build_tools',
+                        'gradle_wrapper', 'gradlew')
 
 _JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
 
@@ -348,8 +348,8 @@ def _CheckVulnerabilities(build_android_deps_dir, report_dst):
 
     try:
         logging.info('CMD: %s', ' '.join(gradle_cmd))
-        subprocess.run(gradle_cmd, check=True)
-    except subprocess.CalledProcessError:
+        RunCommand(gradle_cmd, print_stdout=True)
+    except Exception:
         report_path = os.path.join(report_dst, 'dependency-check-report.html')
         logging.error(
             textwrap.dedent("""
@@ -488,6 +488,18 @@ def _CreateAarInfos(aar_files):
             raise Exception('Command Failed: {}\n'.format(' '.join(cmd)))
 
 
+def _CopyJarFilesToCipd(android_deps_dir):
+    src_libs_dir = os.path.join(android_deps_dir, _LIBS_DIR)
+    # Match .aar and .jar
+    for src_path in FindInDirectory(src_libs_dir, '*.?ar'):
+        dst_path = os.path.join(android_deps_dir, 'cipd', _LIBS_DIR,
+                                os.path.relpath(src_path, src_libs_dir))
+        logging.debug('mv [%s -> %s]', src_path, dst_path)
+        if os.path.exists(dst_path):
+            os.unlink(dst_path)
+        shutil.move(src_path, dst_path)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -511,6 +523,11 @@ def main():
     parser.add_argument('--no-subprojects',
                         action='store_true',
                         help='Ignore subprojects.txt for faster runs.')
+    parser.add_argument('--local',
+                        help='Move .jar and .aar files to cipd/ directory '
+                        'after running (3pp bot requires this to not '
+                        'happen)',
+                        action='store_true')
     parser.add_argument('-v',
                         '--verbose',
                         dest='verbose_count',
@@ -523,6 +540,10 @@ def main():
         level=logging.WARNING - 10 * args.verbose_count,
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
+
+    if 'SWARMING_TASK_ID' not in os.environ and not args.local:
+        logging.warning(
+            'Detected not running on a bot. You probably want to use --local')
 
     if not os.path.isfile(os.path.join(args.android_deps_dir, _BUILD_GRADLE)):
         raise Exception('--android-deps-dir {} does not contain {}.'.format(
@@ -580,16 +601,21 @@ def main():
         if args.ignore_licenses:
             gradle_cmd.append('-PskipLicenses=true')
 
-        subprocess.run(gradle_cmd, check=True)
+        RunCommand(gradle_cmd, print_stdout=True)
 
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
-        gn_args = [
-            os.path.relpath(_GN_PATH, _CHROMIUM_SRC), 'format',
-            os.path.join(os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC),
-                         _BUILD_GN)
-        ]
-        RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
+        gn_path = os.path.relpath(_GN_PATH, _CHROMIUM_SRC)
+        gn_input = os.path.join(
+            os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC), _BUILD_GN)
+        gn_args = [gn_path, 'format', gn_input]
+        try:
+            RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
+        except Exception:
+            if os.path.exists(gn_input):
+                shutil.copyfile(gn_input, '/tmp/gn-format-input')
+                logging.warning('Saved GN input to /tmp/gn-format-input')
+            raise
 
         build_libs_dir = os.path.join(build_android_deps_dir, _LIBS_DIR)
         if args.override_artifact:
@@ -649,6 +675,9 @@ def main():
             CopyFileOrDirectory(src_pkg_path,
                                 dst_pkg_path,
                                 ignore_extension=".tmp")
+
+        if args.local:
+            _CopyJarFilesToCipd(args.android_deps_dir)
 
         # Useful for printing timestamp.
         logging.info('All Done.')

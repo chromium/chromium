@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_UI_MANAGER_IMPL_H_
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -87,9 +88,14 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const std::optional<webapps::AppId>& new_app_id) const override;
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
-  void ReparentAppTabToWindow(content::WebContents* contents,
-                              const webapps::AppId& app_id,
-                              bool shortcut_created) override;
+  Browser* ReparentAppTabToWindow(content::WebContents* contents,
+                                  const webapps::AppId& app_id,
+                                  bool shortcut_created) override;
+  Browser* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(content::WebContents*)> completion_callback)
+      override;
   void ShowWebAppFileLaunchDialog(
       const std::vector<base::FilePath>& file_paths,
       const webapps::AppId& app_id,
@@ -161,7 +167,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const std::string& launch_name) override;
 
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      content::WebContents* web_contents,
+      Browser* browser,
       Profile* profile,
       const std::string& app_id) override;
 

@@ -93,9 +93,7 @@ public class CronetTestUtil {
 
     static CronetEngineBuilderImpl getCronetEngineBuilderImpl(
             ExperimentalCronetEngine.Builder builder) {
-        return (CronetEngineBuilderImpl)
-                ((ExperimentalOptionsTranslatingCronetEngineBuilder) builder.getBuilderDelegate())
-                        .getDelegate();
+        return (CronetEngineBuilderImpl) builder.getBuilderDelegate();
     }
 
     /** Returns whether the device supports calling nativeGetTaggedBytes(). */

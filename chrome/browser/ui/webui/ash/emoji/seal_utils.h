@@ -14,4 +14,4 @@ class SealUtils {
 
 }  // namespace ash
 
-#endif
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_SEAL_UTILS_H_

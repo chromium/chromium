@@ -23,7 +23,7 @@ DOMException* PushError::CreateException(mojom::PushErrorType error,
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
                                                 message);
     case mojom::PushErrorType::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
                                                 message);
     case mojom::PushErrorType::NOT_ALLOWED:
@@ -36,7 +36,7 @@ DOMException* PushError::CreateException(mojom::PushErrorType error,
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, message);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 

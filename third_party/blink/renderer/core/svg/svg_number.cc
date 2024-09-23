@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -71,8 +76,8 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    return Parse(chars.data(), chars.data() + chars.size());
   });
 }
 
@@ -135,10 +140,10 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     return SVGParseStatus::kExpectedNumberOrPercentage;
 
   float number = 0;
-  SVGParsingError error =
-      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-        return ParseNumberOrPercentage(chars, chars + length, number);
-      });
+  SVGParsingError error = WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* start = chars.data();
+    return ParseNumberOrPercentage(start, start + chars.size(), number);
+  });
   if (error == SVGParseStatus::kNoError)
     value_ = number;
   return error;

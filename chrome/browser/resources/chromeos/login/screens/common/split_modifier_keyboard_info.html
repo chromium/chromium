@@ -1,0 +1,137 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles cros-color-overrides">
+
+.content-wrapper {
+  margin-top: 20px;
+}
+
+.description-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.illustration-content {
+  max-height: 232px;
+  width: 100%;
+  max-width: 500px;
+  padding-inline-start: 16px;
+  padding-inline-end: 16px;
+  margin-bottom: 15px;
+}
+
+.illustration-jelly {
+  height: auto;
+}
+
+.description-content > div {
+  display: flex;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-inline-start: 24px;
+  padding-inline-end: 24px;
+  border-bottom: 1px solid var(--cros-sys-separator);
+}
+
+.description-content > div:last-child {
+  border-bottom: none;
+}
+
+.title {
+  color: var(--oobe-header-text-color);
+  font-family: var(--cros-button-1-font-family);
+  font-size: var(--cros-button-1-font-size);
+  font-weight: var(--cros-button-1-font-weight);
+  line-height: var(--cros-button-1-line-height);
+}
+
+.subtitle {
+  color: var(--oobe-text-color);
+  font-family: var(--cros-body-2-font-family);
+  font-size: var(--cros-body-2-font-size);
+  font-weight: var(--cros-body-2-font-weight);
+  line-height: var(--cros-body-2-line-height);
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-inline-start: 16px;
+  flex-grow: 1;
+}
+
+.description-icon {
+  --iron-icon-height: 24px;
+  --iron-icon-width: 24px;
+  --iron-icon-fill-color: var(--cros-sys-primary);
+  padding: 8px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+</style>
+<oobe-adaptive-dialog id="splitModifierKeyboardInfoDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-48:keyboard"></iron-icon>
+  <h1 slot="title" aria-live="polite">
+    [[i18nDynamic(locale, 'splitModifierTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'splitModifierSubtitle')]]
+  </div>
+  <div slot="content" class="flex layout vertical center">
+    <div class="illustration-content">
+      <iron-icon icon="oobe-illos:split-modifier-keyboard-info-illo"
+          class="illustration-jelly">
+      </iron-icon>
+    </div>
+    <div class="description-content">
+      <div>
+        <iron-icon icon="oobe-24:split-modifier-description-1"
+            class="description-icon"></iron-icon>
+        <div class="text-content">
+          <span class="title"
+              role="heading"
+              aria-level="2"
+              tabindex="0">
+            [[i18nDynamic(locale, 'splitModifierFirstDescriptionTitle')]]
+          </span>
+          <span class="subtitle"
+              aria-level="2"
+              tabindex="0"
+              aria-description="[[i18nDynamic(locale, 'splitModifierFirstDescriptionAccessibility')]]">
+            [[i18nDynamic(locale, 'splitModifierFirstDescriptionText')]]
+          </span>
+        </div>
+      </div>
+      <div>
+        <iron-icon icon="oobe-24:split-modifier-description-2"
+            class="description-icon"></iron-icon>
+        <div class="text-content">
+          <span class="title"
+            role="heading"
+            aria-level="2"
+            tabindex="0">
+            [[i18nDynamic(locale, 'splitModifierSecondDescriptionTitle')]]
+          </span>
+          <span class="subtitle"
+              aria-level="2"
+              tabindex="0"
+              aria-description="[[i18nDynamic(locale, 'splitModifierSecondDescriptionAccessibility')]]">
+            [[i18nDynamic(locale, 'splitModifierSecondDescriptionText')]]
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" class="focus-on-show"
+        on-click="onNextClicked">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

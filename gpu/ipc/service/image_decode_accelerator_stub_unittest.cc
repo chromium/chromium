@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/service/image_decode_accelerator_stub.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -33,7 +35,6 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -41,6 +42,7 @@
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -64,7 +66,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
-#include "gpu/ipc/service/image_decode_accelerator_stub.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,10 +150,10 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -162,32 +163,12 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
-  }
-  std::unique_ptr<SharedImageBacking> CreateSharedImage(
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      std::string debug_label) override {
-    auto test_image_backing = std::make_unique<TestImageBacking>(
-        mailbox, viz::GetSinglePlaneSharedImageFormat(format), size,
-        color_space, surface_origin, alpha_type, usage, 0);
-
-    // If the backing is not cleared, SkiaImageRepresentation errors out
-    // when trying to create the scoped read access.
-    test_image_backing->SetCleared();
-
-    return std::move(test_image_backing);
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -196,7 +177,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(
@@ -209,7 +190,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 
     return std::move(test_image_backing);
   }
-  bool IsSupported(uint32_t usage,
+  bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,
@@ -217,6 +198,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override {
     return true;
+  }
+  SharedImageBackingType GetBackingType() override {
+    return SharedImageBackingType::kTest;
   }
 };
 
@@ -858,6 +842,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, FailedDecodes) {
 }
 
 TEST_P(ImageDecodeAcceleratorStubTest, OutOfOrderDecodeSyncTokens) {
+  sync_point_manager()->set_suppress_fatal_log_for_testing();
   {
     InSequence call_sequence;
     EXPECT_CALL(image_decode_accelerator_worker_, DoDecode(gfx::Size(100, 100)))
@@ -900,6 +885,7 @@ TEST_P(ImageDecodeAcceleratorStubTest, OutOfOrderDecodeSyncTokens) {
 }
 
 TEST_P(ImageDecodeAcceleratorStubTest, ZeroReleaseCountDecodeSyncToken) {
+  sync_point_manager()->set_suppress_fatal_log_for_testing();
   EXPECT_CALL(image_decode_accelerator_worker_, DoDecode(gfx::Size(100, 100)))
       .Times(1);
   const SyncToken decode_sync_token = SendDecodeRequest(

@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_BASE_GAIA_ID_HASH_H_
 #define COMPONENTS_SIGNIN_PUBLIC_BASE_GAIA_ID_HASH_H_
 
+#include <compare>
 #include <string>
+#include <string_view>
 
 namespace signin {
 
@@ -16,18 +18,20 @@ namespace signin {
 // be treated as a PII.
 class GaiaIdHash {
  public:
-  static GaiaIdHash FromGaiaId(const std::string& gaia_id);
+  static GaiaIdHash FromGaiaId(std::string_view gaia_id);
   // |gaia_id_hash| is a string representing the binary hash of the gaia id. If
   // the input isn't of length crypto::kSHA256Length, it returns an invalid
   // GaiaIdHash object.
-  static GaiaIdHash FromBinary(const std::string& gaia_id_hash);
+  static GaiaIdHash FromBinary(std::string gaia_id_hash);
   // If |gaia_id_base64_hash| isn't well-formed Base64 string, or doesn't decode
   // to a hash of the correct length, it returns an invalid GaiaIdHash object.
-  static GaiaIdHash FromBase64(const std::string& gaia_id_base64_hash);
+  static GaiaIdHash FromBase64(std::string_view gaia_id_base64_hash);
 
   GaiaIdHash();
   GaiaIdHash(const GaiaIdHash& other);
+  GaiaIdHash& operator=(const GaiaIdHash& form);
   GaiaIdHash(GaiaIdHash&& other);
+  GaiaIdHash& operator=(GaiaIdHash&& form);
   ~GaiaIdHash();
 
   std::string ToBinary() const;
@@ -35,14 +39,12 @@ class GaiaIdHash {
 
   bool IsValid() const;
 
-  friend bool operator<(const GaiaIdHash& lhs, const GaiaIdHash& rhs);
-  friend bool operator==(const GaiaIdHash& lhs, const GaiaIdHash& rhs);
-  friend bool operator!=(const GaiaIdHash& lhs, const GaiaIdHash& rhs);
-  GaiaIdHash& operator=(const GaiaIdHash& form);
-  GaiaIdHash& operator=(GaiaIdHash&& form);
+  friend std::strong_ordering operator<=>(const GaiaIdHash&,
+                                          const GaiaIdHash&) = default;
+  friend bool operator==(const GaiaIdHash&, const GaiaIdHash&) = default;
 
  private:
-  explicit GaiaIdHash(const std::string& gaia_id_hash);
+  explicit GaiaIdHash(std::string gaia_id_hash);
   std::string gaia_id_hash_;
 };
 

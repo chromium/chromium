@@ -46,10 +46,14 @@ void DocumentModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
+  const bool v8_compile_hints_magic_comment_runtime_enabled =
+      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+          GetExecutionContext());
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, GetExecutionContext()->GetIsolate(),
                         streaming_allowed, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer);
+                        kNoCompileHintsConsumer,
+                        v8_compile_hints_magic_comment_runtime_enabled);
 }
 
 void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
@@ -68,7 +72,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   // Check if we can use the script streamer.
   ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
+  std::tie(streamer, not_streamed_reason) = ScriptStreamer::TakeFrom(
       script_resource, mojom::blink::ScriptType::kModule);
 
   ScriptStreamer::RecordStreamingHistogram(ScriptSchedulingType::kAsync,

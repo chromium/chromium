@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Roosbruin</translation>
 <translation id="249330843868392562">Maak teks-na-spraak-instellings oop</translation>
 <translation id="2497706219848005458">Groengeel</translation>
+<translation id="2512979179176933762">wys vensters</translation>
 <translation id="2523609930580546572">ChromeVox-handleiding</translation>
 <translation id="2525706221823668172">Chromebook-sleutelbordkortpaaie</translation>
 <translation id="2553108862507765288">grammatikafout</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Jy kan ook een vinger van regs na links swiep om na die vorige item te beweeg. Probeer dit nou.</translation>
 <translation id="280499067616661124">ChromeVox vind in bladsy</translation>
-<translation id="2811019999044652585">Druk Control+Vorentoe om na ander dele van die skerm, soos nutsbalke of die stelsellaai, te spring. Die Vorentoe-sleutel is direk bokant die nommer 2-sleutel op 'n Chromebook.</translation>
 <translation id="2811204574343810641">Ry</translation>
 <translation id="2816868829355607410">Oefenarea: springopdragte</translation>
 <translation id="2841013758207633010">Tyd</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Staalblou</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Boom</translation>
+<translation id="4259220820964911921">Aktiveer gesigbeheer?</translation>
 <translation id="4271220233568730077">Volgende wiskunde</translation>
 <translation id="4275397969489577657">Aktiveer geleentheidstroomloginskrywings</translation>
 <translation id="4278486392851938658">Geen vorige besoekte skakel nie</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Indiese rooi</translation>
 <translation id="4432896207833262240">Gemerkte inhoud</translation>
 <translation id="4437615272777527928">Tik om die kieslyste te deursoek. Gebruik die op- en afpyl om deur resultate te beweeg. Gebruik die links- en regspyl om die teksinlasteken te verstel en tussen kieslyste te beweeg.</translation>
+<translation id="4453530046591759283">Druk Control+F1 om na ander dele van die skerm, soos nutsbalke of die stelsellaai, te spring. F1 is die eerste sleutel regs van die Escape-sleutel.</translation>
 <translation id="4457472090507035117">Kies huidige stem:</translation>
 <translation id="4476183483923481720">nuwe reël</translation>
 <translation id="4479068155583208887">Vlambaksteen</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Bylaag</translation>
 <translation id="5761219715606611783">Welgedaan! Jy het die basiese beginsels van die ChromeVox-raakopsies geleer. Jy kan die tutoriaal weer kyk of die knoppies hieronder gebruik om dit te verlaat.</translation>
 <translation id="5776001898637896684">Google Verbeterde Netwerk se teks-na-spraak-uitbreiding</translation>
+<translation id="5783252477644995371">Gesigbeheer gee jou skermpyltjiebeheer deur na jou gesig te wys en die vermoë om handelinge uit te voer, soos linksklik met gesiggebare soos glimlag</translation>
 <translation id="5805940204952508776">Tik met twee vingers</translation>
 <translation id="5819072574982403430">Boomitem</translation>
 <translation id="5822819874379903994">Donkerturkoois</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Navajowit</translation>
 <translation id="7095834689119144465">Wysig slegs numeriese teks</translation>
 <translation id="7096001299300236431">Vorige media</translation>
+<translation id="7096668131290451939">Druk weer Escape om uit Leermodus te gaan</translation>
 <translation id="7116595520562830928">multi-inlyn</translation>
 <translation id="712735679809149106">woordeggo</translation>
 <translation id="7137397390322864165">Salm</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Geen volgende merkblokkie nie</translation>
 <translation id="8473540203671727883">Lees teks onder die muis</translation>
 <translation id="8476408756881832830">Onderbreek terugspeling wanneer ChromeVox besig is om te praat</translation>
-<translation id="8476508772960940536">vensteroorsig</translation>
 <translation id="8480873377842220259">Jy sal nou 'n bietjie basiese navigasie leer. Jy kan Search inhou en die pylsleutels druk om op die skerm rond te beweeg. Druk Search + regspyl om voort te gaan.</translation>
 <translation id="8503360654911991865">Verminder navigasiekorrelrigheid</translation>
 <translation id="8520472399088452386">Tolknoppie</translation>

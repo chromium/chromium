@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import './xf_dlp_restriction_details_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
+import type {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
 
 const drive = chrome.fileManagerPrivate.VolumeType.DRIVE;
 const removable = chrome.fileManagerPrivate.VolumeType.REMOVABLE;

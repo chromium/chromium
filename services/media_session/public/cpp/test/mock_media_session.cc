@@ -71,6 +71,11 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
              expected_hide_metadata_ == session_info_->hide_metadata) {
     QuitWaitingIfNeeded();
     expected_hide_metadata_.reset();
+  } else if (expected_meets_visibility_threshold_.has_value() &&
+             expected_meets_visibility_threshold_ ==
+                 session_info_->meets_visibility_threshold) {
+    QuitWaitingIfNeeded();
+    expected_meets_visibility_threshold_.reset();
   } else {
     if (wanted_state_ == session_info_->state ||
         session_info_->playback_state == wanted_playback_state_ ||
@@ -290,6 +295,18 @@ base::TimeDelta MockMediaSessionMojoObserver::WaitForExpectedPositionAtLeast(
       ->GetPositionAtTime((*session_position_)->last_updated_time());
 }
 
+bool MockMediaSessionMojoObserver::WaitForMeetsVisibilityThreshold(
+    bool meets_visibility_threshold) {
+  if (session_info_ &&
+      session_info_->meets_visibility_threshold == meets_visibility_threshold) {
+    return meets_visibility_threshold;
+  }
+
+  expected_meets_visibility_threshold_ = meets_visibility_threshold;
+  StartWaiting();
+  return meets_visibility_threshold;
+}
+
 void MockMediaSessionMojoObserver::StartWaiting() {
   DCHECK(!run_loop_);
 
@@ -404,11 +421,15 @@ void MockMediaSession::ScrubTo(base::TimeDelta seek_time) {
 }
 
 void MockMediaSession::EnterPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement EnterPictureinpicture.
+  // TODO(crbug.com/40113959): Implement EnterPictureinpicture.
 }
 
 void MockMediaSession::ExitPictureInPicture() {
-  // TODO(crbug.com/1040263): Implement ExitPictureinpicture.
+  // TODO(crbug.com/40113959): Implement ExitPictureinpicture.
+}
+
+void MockMediaSession::GetVisibility(GetVisibilityCallback callback) {
+  std::move(callback).Run(false);
 }
 
 void MockMediaSession::SetIsControllable(bool value) {

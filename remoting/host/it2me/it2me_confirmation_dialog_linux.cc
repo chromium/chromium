@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/it2me/it2me_confirmation_dialog.h"
+
 #include <gtk/gtk.h>
 
 #include <memory>
@@ -13,12 +15,11 @@
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
-#include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -53,9 +54,7 @@ class It2MeConfirmationDialogLinux : public It2MeConfirmationDialog {
   // Handles user input from the dialog.
   void OnResponse(GtkDialog* dialog, int response_id);
 
-  // This field is not a raw_ptr<> because of a static_cast not related by
-  // inheritance.
-  RAW_PTR_EXCLUSION GtkWidget* confirmation_window_ = nullptr;
+  raw_ptr<GtkWidget> confirmation_window_ = nullptr;
 
   ResultCallback result_callback_;
 
@@ -108,20 +107,20 @@ void It2MeConfirmationDialogLinux::CreateWindow(
       GTK_RESPONSE_OK,
       /*next_button=*/nullptr);
 
-  gtk_dialog_set_default_response(GTK_DIALOG(confirmation_window_),
+  gtk_dialog_set_default_response(GTK_DIALOG(confirmation_window_.get()),
                                   GTK_RESPONSE_CANCEL);
 
-  gtk_window_set_resizable(GTK_WINDOW(confirmation_window_), false);
+  gtk_window_set_resizable(GTK_WINDOW(confirmation_window_.get()), false);
 
-  gtk_window_set_keep_above(GTK_WINDOW(confirmation_window_), true);
+  gtk_window_set_keep_above(GTK_WINDOW(confirmation_window_.get()), true);
 
   signal_ = ScopedGSignal(
-      GTK_DIALOG(confirmation_window_), "response",
+      GTK_DIALOG(confirmation_window_.get()), "response",
       base::BindRepeating(&It2MeConfirmationDialogLinux::OnResponse,
                           base::Unretained(this)));
 
   GtkWidget* content_area =
-      gtk_dialog_get_content_area(GTK_DIALOG(confirmation_window_));
+      gtk_dialog_get_content_area(GTK_DIALOG(confirmation_window_.get()));
 
   std::u16string dialog_text =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -146,8 +145,8 @@ void It2MeConfirmationDialogLinux::CreateWindow(
   gtk_widget_show_all(content_area);
 #endif
 
-  gtk_window_set_urgency_hint(GTK_WINDOW(confirmation_window_), true);
-  gtk_window_present(GTK_WINDOW(confirmation_window_));
+  gtk_window_set_urgency_hint(GTK_WINDOW(confirmation_window_.get()), true);
+  gtk_window_present(GTK_WINDOW(confirmation_window_.get()));
 }
 
 void It2MeConfirmationDialogLinux::OnResponse(GtkDialog* dialog,

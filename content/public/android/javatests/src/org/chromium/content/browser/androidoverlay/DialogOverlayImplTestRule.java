@@ -5,12 +5,10 @@
 package org.chromium.content.browser.androidoverlay;
 
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;
@@ -178,47 +176,37 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
     }
 
     @Override
-    public Statement apply(final Statement base, Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        launchContentShellWithUrl(getInitialUrl());
-                        waitForActiveShellToBeDoneLoading(); // Do we need this?
+    protected void before() throws Throwable {
+        super.before();
+        launchContentShellWithUrl(getInitialUrl());
+        waitForActiveShellToBeDoneLoading(); // Do we need this?
 
-                        // Fetch the routing token.
-                        mRoutingToken =
-                                TestThreadUtils.runOnUiThreadBlockingNoException(
-                                        () -> {
-                                            RenderFrameHostImpl host =
-                                                    (RenderFrameHostImpl)
-                                                            getWebContents().getMainFrame();
-                                            org.chromium.base.UnguessableToken routingToken =
-                                                    host.getAndroidOverlayRoutingToken();
-                                            UnguessableToken mojoToken = new UnguessableToken();
-                                            mojoToken.high = routingToken.getHighForSerialization();
-                                            mojoToken.low = routingToken.getLowForSerialization();
-                                            return mojoToken;
-                                        });
+        // Fetch the routing token.
+        mRoutingToken =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            RenderFrameHostImpl host =
+                                    (RenderFrameHostImpl) getWebContents().getMainFrame();
+                            org.chromium.base.UnguessableToken routingToken =
+                                    host.getAndroidOverlayRoutingToken();
+                            UnguessableToken mojoToken = new UnguessableToken();
+                            mojoToken.high = routingToken.getHighForTesting();
+                            mojoToken.low = routingToken.getLowForTesting();
+                            return mojoToken;
+                        });
 
-                        // Just delegate to |mClient| when an overlay is released.
-                        mReleasedRunnable = mClient::notifyReleased;
+        // Just delegate to |mClient| when an overlay is released.
+        mReleasedRunnable = mClient::notifyReleased;
 
-                        Callback<Boolean> overlayModeChanged =
-                                (useOverlayMode) -> mClient.onOverlayModeChanged(useOverlayMode);
+        Callback<Boolean> overlayModeChanged =
+                (useOverlayMode) -> mClient.onOverlayModeChanged(useOverlayMode);
 
-                        getActivity()
-                                .getActiveShell()
-                                .setOverayModeChangedCallbackForTesting(overlayModeChanged);
-                        base.evaluate();
-                    }
-                },
-                desc);
+        getActivity().getActiveShell().setOverayModeChangedCallbackForTesting(overlayModeChanged);
     }
 
     // Create an overlay with the given parameters and return it.
     DialogOverlayImpl createOverlay(final int x, final int y, final int width, final int height) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AndroidOverlayConfig config = new AndroidOverlayConfig();
                     config.routingToken = mRoutingToken;

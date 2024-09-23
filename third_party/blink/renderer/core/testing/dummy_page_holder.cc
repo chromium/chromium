@@ -37,7 +37,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -81,8 +80,7 @@ std::unique_ptr<DummyPageHolder> DummyPageHolder::CreateAndCommitNavigation(
       std::move(setting_overrider), clock);
   if (url.IsValid()) {
     holder->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         /*extra_data=*/nullptr);
     blink::test::RunPendingTasks();
   }
@@ -101,8 +99,9 @@ DummyPageHolder::DummyPageHolder(
                                  ->ToMainThreadScheduler()
                                  ->CreateAgentGroupScheduler()) {
   if (!chrome_client)
-    chrome_client = &GetStaticEmptyChromeClientInstance();
-  page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_);
+    chrome_client = MakeGarbageCollected<EmptyChromeClient>();
+  page_ = Page::CreateNonOrdinary(*chrome_client, *agent_group_scheduler_,
+                                  /*color_provider_colors=*/nullptr);
   Settings& settings = page_->GetSettings();
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);
@@ -125,7 +124,8 @@ DummyPageHolder::DummyPageHolder(
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       /* WindowAgentFactory* */ nullptr,
-      /* InterfaceRegistry* */ nullptr, clock);
+      /* InterfaceRegistry* */ nullptr,
+      /* BrowserInterfaceBroker */ mojo::NullRemote(), clock);
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);

@@ -24,7 +24,6 @@
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
@@ -253,9 +252,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   // Verify that the |favicon| field is properly encoded.
   const gfx::Image favicon = gfx::Image::CreateFrom1xPNGBytes(
-      reinterpret_cast<const unsigned char*>(
-          specifics.bookmark().favicon().data()),
-      specifics.bookmark().favicon().size());
+      base::as_byte_span(specifics.bookmark().favicon()));
   EXPECT_THAT(favicon.Width(), Eq(16));
   EXPECT_THAT(favicon.Height(), Eq(16));
   EXPECT_THAT(favicon.AsBitmap().getColor(1, 1), Eq(kColor));
@@ -411,7 +408,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateFolderFromSpecifics) {
   EXPECT_THAT(node->uuid(), Eq(kGuid));
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kTitle)));
   EXPECT_TRUE(node->is_folder());
-  // TODO(crbug.com/1214840): Folders should propagate the creation time into
+  // TODO(crbug.com/40769579): Folders should propagate the creation time into
   // BookmarkModel, just like non-folders.
   EXPECT_THAT(node->date_added(), Ge(kTime));
   std::string value1;

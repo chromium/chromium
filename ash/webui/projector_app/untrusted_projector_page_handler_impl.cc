@@ -65,7 +65,7 @@ std::string GetPrefName(projector::mojom::PrefsThatProjectorCanAskFor pref) {
       return ash::prefs::kProjectorGalleryOnboardingShowCount;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -21,6 +21,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -141,7 +142,7 @@ DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
 void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
   if (!new_profile) {
-    NOTREACHED() << "Error creating new profile";
+    NOTREACHED_IN_MIGRATION() << "Error creating new profile";
     if (callback_)
       std::move(callback_).Run(nullptr);
     return;
@@ -188,9 +189,26 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
   auto* accounts_mutator =
       IdentityManagerFactory::GetForProfile(source_profile_)
           ->GetAccountsMutator();
+  auto* new_profile_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
   auto* new_profile_accounts_mutator =
-      IdentityManagerFactory::GetForProfile(new_profile)->GetAccountsMutator();
+      new_profile_identity_manager->GetAccountsMutator();
   accounts_mutator->MoveAccount(new_profile_accounts_mutator, account_id_);
-  if (callback_)
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Sign in for new profiles, profile switches are expected to be already
+    // signed in.
+    if (!new_profile_identity_manager->HasPrimaryAccount(
+            signin::ConsentLevel::kSignin)) {
+      new_profile_identity_manager->GetPrimaryAccountMutator()
+          ->SetPrimaryAccount(
+              account_id_, signin::ConsentLevel::kSignin,
+              signin_metrics::AccessPoint::
+                  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE);
+    }
+  }
+
+  if (callback_) {
     std::move(callback_).Run(new_profile);
+  }
 }

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Selection range in shadow should not be as a selection range after the host is removed
+  assert_equals: Selection should not have the range in removed shadow expected 0 but got 1
+[FAIL] Selection range in shadow should not be as a selection range after the host parent is removed
+  assert_equals: Selection should not have the range in removed shadow expected 0 but got 1
+[FAIL] Selection range in shadow should not be as a selection range after the host is replaced with itself (.replaceWith)
+  assert_equals: Selection should not have the range in removed shadow expected 0 but got 1
+[FAIL] Selection range in shadow should not be as a selection range after the host is replaced with itself (.replaceChild
+  assert_equals: Selection should not have the range in removed shadow expected 0 but got 1
+Harness: the test ran to completion.
+

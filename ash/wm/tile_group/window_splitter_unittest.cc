@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_finder.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
@@ -15,11 +18,13 @@
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -103,9 +108,30 @@ class WindowSplitterTest : public AshTestBase {
         preview_count, 1);
   }
 
+  void ExpectHistogramWithIncompleteDragType(
+      const base::HistogramTester& histogram_tester) {
+    histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
+                                        DragType::kIncomplete, 1);
+    histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerSplitHistogramName, 0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  }
+
   void FastForwardPastDwellDuration() {
     task_environment()->FastForwardBy(WindowSplitter::kDwellActivationDuration +
                                       base::Milliseconds(100));
+  }
+
+  void FastForwardPastCancellationDuration() {
+    task_environment()->FastForwardBy(
+        WindowSplitter::kDwellCancellationDuration + base::Milliseconds(100));
   }
 
   // Moves the cursor back and forth across the top margin of the given window,
@@ -126,12 +152,12 @@ class WindowSplitterTest : public AshTestBase {
     right_location.Offset(WindowSplitter::kBaseTriggerMargins.right() - 10,
                           WindowSplitter::kBaseTriggerMargins.top() - 5);
 
-    // Use frequent enough updates for more accurate velocity calculation.
-    constexpr int kNumUpdates = 30;
     // Use duration much longer than dwell activation to check whether phantom
     // window is shown.
     constexpr base::TimeDelta kTotalDuration =
         WindowSplitter::kDwellActivationDuration * 3;
+    // Use frequent enough updates for more accurate velocity calculation.
+    constexpr int kNumUpdates = kTotalDuration / base::Milliseconds(30);
     constexpr base::TimeDelta kDeltaDuration = kTotalDuration / kNumUpdates;
     float dx = movement_speed * kDeltaDuration.InSecondsF();
     EXPECT_LT(dx, (right_location.x() - left_location.x()) / 2.0);
@@ -359,6 +385,38 @@ TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
                            /*preview_count=*/3);
 }
 
+TEST_F(WindowSplitterTest, DragDwellCancelPhantomWindow) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(kTopmostWindowBounds.right_center());
+    screen_location.Offset(-5, 0);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    FastForwardPastDwellDuration();
+    EXPECT_TRUE(RightHalf(kTopmostWindowBounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    FastForwardPastCancellationDuration();
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(), kTopmostWindowBounds);
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(), kDraggedWindowBounds);
+  }
+
+  ExpectHistogramWithNoSplit(histogram_tester,
+                             /*preview_count=*/1);
+}
+
 TEST_F(WindowSplitterTest, DragEnterExitMarginNoSplitBeforePhantom) {
   auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
   auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
@@ -447,7 +505,7 @@ TEST_F(WindowSplitterTest, DragLowVelocityShowPhantom) {
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
-    auto last_location = MoveCursorAcrossWindowTopMargin(
+    gfx::PointF last_location = MoveCursorAcrossWindowTopMargin(
         &splitter, topmost_window.get(),
         WindowSplitter::kDwellMaxVelocityPixelsPerSec - 10.0);
 
@@ -476,7 +534,7 @@ TEST_F(WindowSplitterTest, DragHighVelocityNoShowPhantom) {
     WindowSplitter splitter(dragged_window.get());
     EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
 
-    auto last_location = MoveCursorAcrossWindowTopMargin(
+    gfx::PointF last_location = MoveCursorAcrossWindowTopMargin(
         &splitter, topmost_window.get(),
         WindowSplitter::kDwellMaxVelocityPixelsPerSec + 30.0);
 
@@ -487,6 +545,38 @@ TEST_F(WindowSplitterTest, DragHighVelocityNoShowPhantom) {
   }
 
   ExpectHistogramWithNoSplit(histogram_tester, /*preview_count=*/0);
+}
+
+TEST_F(WindowSplitterTest, DragHighVelocityThenStopShowsPhantom) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF last_location = MoveCursorAcrossWindowTopMargin(
+        &splitter, topmost_window.get(),
+        WindowSplitter::kDwellMaxVelocityPixelsPerSec + 30.0);
+
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    FastForwardPastDwellDuration();
+    EXPECT_TRUE(TopHalf(kTopmostWindowBounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    splitter.CompleteDrag(last_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+              BottomHalf(kTopmostWindowBounds));
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+              TopHalf(kTopmostWindowBounds));
+  }
+
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kTop,
+                           /*preview_count=*/1);
 }
 
 TEST_F(WindowSplitterTest, DragWithCantSplit) {
@@ -551,18 +641,7 @@ TEST_F(WindowSplitterTest, DragDraggedWindowDestroyedBeforePhantom) {
     FastForwardPastDwellDuration();
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kIncomplete, 1);
-  histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  ExpectHistogramWithIncompleteDragType(histogram_tester);
 }
 
 TEST_F(WindowSplitterTest, DragDraggedWindowDestroyedAfterPhantom) {
@@ -591,18 +670,64 @@ TEST_F(WindowSplitterTest, DragDraggedWindowDestroyedAfterPhantom) {
     dragged_window.reset();
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kIncomplete, 1);
-  histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  ExpectHistogramWithIncompleteDragType(histogram_tester);
+}
+
+TEST_F(WindowSplitterTest, DragTopmostWindowDestroyedBeforePhantom) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  ASSERT_TRUE(topmost_window->IsVisible());
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(kTopmostWindowBounds.top_center());
+    screen_location.Offset(0, 5);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    // Top most window got destroyed during drag!
+    topmost_window.reset();
+
+    // Callback should handle top most window disappearing.
+    FastForwardPastDwellDuration();
+  }
+
+  ExpectHistogramWithIncompleteDragType(histogram_tester);
+}
+
+TEST_F(WindowSplitterTest, DragTopmostWindowDestroyedAfterPhantom) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  ASSERT_TRUE(topmost_window->IsVisible());
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Nested scope used to exercise metrics update on splitter destruction.
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(kTopmostWindowBounds.top_center());
+    screen_location.Offset(0, 5);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    FastForwardPastDwellDuration();
+    EXPECT_TRUE(TopHalf(kTopmostWindowBounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    // Top most window got destroyed during drag!
+    topmost_window.reset();
+  }
+
+  ExpectHistogramWithIncompleteDragType(histogram_tester);
 }
 
 TEST_F(WindowSplitterTest, SplitMaximizedWindow) {
@@ -752,6 +877,42 @@ TEST_F(WindowSplitterTest, DragAcrossExtendedDisplay) {
 
   ExpectHistogramWithSplit(histogram_tester, SplitRegion::kRight,
                            /*preview_count=*/1);
+}
+
+TEST_F(WindowSplitterTest, DragSplitWindowBringToTop) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+  auto occluding_window = CreateToplevelTestWindow(gfx::Rect(80, 10, 500, 350));
+
+  constexpr gfx::Point left_point(100, 40);
+  constexpr gfx::Point right_point(400, 200);
+
+  EXPECT_EQ(GetTopmostWindowAtPoint(left_point, {}), occluding_window.get());
+  EXPECT_EQ(GetTopmostWindowAtPoint(right_point, {}), occluding_window.get());
+
+  WindowSplitter splitter(dragged_window.get());
+  gfx::PointF screen_location(kTopmostWindowBounds.left_center());
+  screen_location.Offset(5, 0);
+  splitter.UpdateDrag(screen_location, /*can_split=*/true);
+  FastForwardPastDwellDuration();
+  EXPECT_TRUE(LeftHalf(kTopmostWindowBounds)
+                  .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+  splitter.CompleteDrag(screen_location);
+  EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+            RightHalf(kTopmostWindowBounds));
+  EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+            LeftHalf(kTopmostWindowBounds));
+  EXPECT_EQ(GetTopmostWindowAtPoint(left_point, {}), dragged_window.get());
+  EXPECT_EQ(GetTopmostWindowAtPoint(right_point, {}), topmost_window.get());
+  EXPECT_THAT(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
+      testing::ElementsAre(dragged_window.get(), topmost_window.get(),
+                           occluding_window.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(dragged_window.get()));
+  EXPECT_EQ(
+      aura::client::GetFocusClient(dragged_window.get())->GetFocusedWindow(),
+      dragged_window.get());
 }
 
 }  // namespace ash

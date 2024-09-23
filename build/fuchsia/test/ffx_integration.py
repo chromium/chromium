@@ -218,8 +218,10 @@ class FfxTestRunner(AbstractContextManager):
         return self._debug_data_directory
 
 
-def run_symbolizer(symbol_paths: List[str], input_fd: IO,
-                   output_fd: IO) -> subprocess.Popen:
+def run_symbolizer(symbol_paths: List[str],
+                   input_fd: IO,
+                   output_fd: IO,
+                   raw_bytes: bool = False) -> subprocess.Popen:
     """Runs symbolizer that symbolizes |input| and outputs to |output|."""
 
     symbolize_cmd = ([
@@ -228,7 +230,13 @@ def run_symbolizer(symbol_paths: List[str], input_fd: IO,
     ])
     for path in symbol_paths:
         symbolize_cmd.extend(['--ids-txt', path])
+    if raw_bytes:
+        encoding = None
+    else:
+        encoding = 'utf-8'
     return run_continuous_ffx_command(symbolize_cmd,
                                       stdin=input_fd,
                                       stdout=output_fd,
-                                      stderr=subprocess.STDOUT)
+                                      stderr=subprocess.STDOUT,
+                                      encoding=encoding,
+                                      close_fds=True)

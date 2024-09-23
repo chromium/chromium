@@ -111,7 +111,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
 
  private:
   Member<InspectedFrames> inspected_frames_;
-  raw_ptr<v8_inspector::V8InspectorSession, ExperimentalRenderer> v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession, DanglingUntriaged> v8_session_;
   InspectorAgentState::Boolean enabled_;
 };
 

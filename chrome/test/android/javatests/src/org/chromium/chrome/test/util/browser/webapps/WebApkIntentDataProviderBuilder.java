@@ -107,6 +107,7 @@ public class WebApkIntentDataProviderBuilder {
                 null,
                 mName,
                 mShortName,
+                /* hasCustomName */ false,
                 mDisplayMode,
                 ScreenOrientationLockType.DEFAULT,
                 ShortcutSource.UNKNOWN,

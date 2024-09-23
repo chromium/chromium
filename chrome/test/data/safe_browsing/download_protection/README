@@ -27,3 +27,5 @@ generated with the following commands:
 - zip -e encrypted.zip signed.exe
 - cp encrypted.zip encrypter_zip_no_extension
 - 7za a -tzip -p12345 -mem=AES256 encrypted_aes.zip signed.exe
+- zip zipfile_nested_encrypted_zip.zip encrypted.zip
+- zip zipfile_nested_encrypted_archives.zip encrypted.zip ../rar/has_exe.rar

@@ -6,13 +6,14 @@
 #define BASE_TASK_THREAD_POOL_THREAD_POOL_IMPL_H_
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
@@ -28,7 +29,6 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
@@ -48,12 +48,12 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
 
   // Creates a ThreadPoolImpl with a production TaskTracker. |histogram_label|
   // is used to label histograms. No histograms are recorded if it is empty.
-  explicit ThreadPoolImpl(StringPiece histogram_label);
+  explicit ThreadPoolImpl(std::string_view histogram_label);
 
   // For testing only. Creates a ThreadPoolImpl with a custom TaskTracker.
   // If |!use_background_threads|, background threads will run with default
   // priority.
-  ThreadPoolImpl(StringPiece histogram_label,
+  ThreadPoolImpl(std::string_view histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker,
                  bool use_background_threads = true);
 
@@ -76,6 +76,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   void EndFence() override;
   void BeginBestEffortFence() override;
   void EndBestEffortFence() override;
+  void BeginRestrictedTasks() override;
+  void EndRestrictedTasks() override;
   void BeginFizzlingBlockShutdownTasks() override;
   void EndFizzlingBlockShutdownTasks() override;
 
@@ -91,7 +93,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // immediate, nullopt if none). This is thread-safe, i.e., it's safe if tasks
   // are being posted in parallel with this call but such a situation obviously
   // results in a race as to whether this call will see the new tasks in time.
-  absl::optional<TimeTicks> NextScheduledRunTimeForTesting() const;
+  std::optional<TimeTicks> NextScheduledRunTimeForTesting() const;
 
   // Forces ripe delayed tasks to be posted (e.g. when time is mocked and
   // advances faster than the real-time delay on ServiceThread).

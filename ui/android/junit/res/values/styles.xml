@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <style name="TextAppearance.Test" parent="android:TextAppearance" tools:ignore="UnusedResources">
+      <item name="android:fontFamily">sans-serif</item>
+      <item name="android:textColor">@color/default_text_color_light</item>
+      <item name="android:textSize">@dimen/text_size_medium</item>
+  </style>
+  <style name="TextAppearance.Test.CustomFont" parent="TextAppearance.Test" tools:ignore="UnusedResources">
+      <item name="android:fontFamily">@font/custom_font</item>
+  </style>
+</resources>

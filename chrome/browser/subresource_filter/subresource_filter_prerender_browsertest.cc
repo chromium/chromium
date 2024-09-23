@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_filter/content/browser/ad_tagging_browser_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -13,6 +12,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -181,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelDisabled()));
-    const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+    const content::FrameTreeNodeId host_id =
+        prerender_helper_.AddPrerender(prerendering_url);
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
 
     // Expect that we didn't filter the script in the prerendering page since
@@ -228,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelEnabled()));
-    const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+    const content::FrameTreeNodeId host_id =
+        prerender_helper_.AddPrerender(prerendering_url);
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
 
     prerender_rfh = prerender_helper_.GetPrerenderedMainFrameHost(host_id);
@@ -288,7 +290,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Navigate to the initial URL and trigger the prerender.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerendering_url);
   RenderFrameHost* prerender_rfh =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   ASSERT_FALSE(IsDynamicScriptElementLoaded(prerender_rfh));
@@ -317,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Trigger a prerendering of title1.html.
-  const int prerender_host_id =
+  const content::FrameTreeNodeId prerender_host_id =
       prerender_helper_.AddPrerender(prerendering_url1);
 
   // Now navigate the prerendered page to a cross-site page. Ensure the
@@ -442,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   // Load the initial page and trigger a prerender.
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-    const int prerender_host_id =
+    const content::FrameTreeNodeId prerender_host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     prerender_rfh =
         prerender_helper_.GetPrerenderedMainFrameHost(prerender_host_id);
@@ -507,7 +510,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Trigger a prerender.
-    const int host_id = prerender_helper_.AddPrerender(prerender_url);
+    const content::FrameTreeNodeId host_id =
+        prerender_helper_.AddPrerender(prerender_url);
     ASSERT_TRUE(console_observer.Wait());
     RenderFrameHost* prerender_rfh =
         prerender_helper_.GetPrerenderedMainFrameHost(host_id);

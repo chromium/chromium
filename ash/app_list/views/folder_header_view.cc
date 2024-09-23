@@ -29,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -106,7 +107,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
   ~FolderNameView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kMaxFolderHeaderWidth, kFolderHeaderHeight);
   }
 
@@ -267,7 +269,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
-BEGIN_METADATA(FolderHeaderView, FolderNameView, views::Textfield)
+BEGIN_METADATA(FolderHeaderView, FolderNameView)
 END_METADATA
 
 class FolderHeaderView::FolderNameJellyView
@@ -287,7 +289,8 @@ class FolderHeaderView::FolderNameJellyView
 
   ~FolderNameJellyView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kMaxFolderHeaderWidth, kFolderHeaderHeight);
   }
 
@@ -352,7 +355,7 @@ class FolderHeaderView::FolderNameJellyView
   std::u16string starting_name_;
 };
 
-BEGIN_METADATA(FolderHeaderView, FolderNameJellyView, ash::SystemTextfield)
+BEGIN_METADATA(FolderHeaderView, FolderNameJellyView)
 END_METADATA
 
 class FolderHeaderView::FolderNameViewController
@@ -383,7 +386,7 @@ class FolderHeaderView::FolderNameViewController
       // TODO(b/323054951): Clean this code once the SystemTextfield has
       // implemented clearing focus.
       const bool should_clear_focus =
-          key_event.type() == ui::ET_KEY_PRESSED &&
+          key_event.type() == ui::EventType::kKeyPressed &&
           (key_event.key_code() == ui::VKEY_RETURN ||
            key_event.key_code() == ui::VKEY_ESCAPE);
 
@@ -414,18 +417,13 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
       delegate_(delegate),
       folder_name_visible_(true),
       is_tablet_mode_(tablet_mode) {
-  if (chromeos::features::IsJellyEnabled()) {
-    SystemTextfield* typed_folder_name_view =
-        AddChildView(std::make_unique<FolderNameJellyView>(tablet_mode));
-    folder_name_view_ = typed_folder_name_view;
-    folder_name_controller_ = std::make_unique<FolderNameViewController>(
-        typed_folder_name_view,
-        base::BindRepeating(&FolderHeaderView::UpdateFolderName,
-                            base::Unretained(this)));
-  } else {
-    folder_name_view_ = AddChildView(std::make_unique<FolderNameView>(this));
-    folder_name_view_->set_controller(this);
-  }
+  SystemTextfield* typed_folder_name_view =
+      AddChildView(std::make_unique<FolderNameJellyView>(tablet_mode));
+  folder_name_view_ = typed_folder_name_view;
+  folder_name_controller_ = std::make_unique<FolderNameViewController>(
+      typed_folder_name_view,
+      base::BindRepeating(&FolderHeaderView::UpdateFolderName,
+                          base::Unretained(this)));
   folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
 
   SetPaintToLayer();
@@ -492,7 +490,7 @@ void FolderHeaderView::UpdateFolderNameAccessibleName() {
   std::u16string accessible_name = folder_name_view_->GetText().empty()
                                        ? folder_name_placeholder_text_
                                        : std::u16string();
-  folder_name_view_->SetAccessibleName(accessible_name);
+  folder_name_view_->GetViewAccessibility().SetName(accessible_name);
 }
 
 const std::u16string& FolderHeaderView::GetFolderNameForTest() {
@@ -507,7 +505,8 @@ bool FolderHeaderView::IsFolderNameEnabledForTest() const {
   return folder_name_view_->GetEnabled();
 }
 
-gfx::Size FolderHeaderView::CalculatePreferredSize() const {
+gfx::Size FolderHeaderView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kMaxFolderHeaderWidth,
                    folder_name_view_->GetPreferredSize().height());
 }
@@ -617,7 +616,7 @@ void FolderHeaderView::UpdateFolderName(
 }
 
 bool FolderHeaderView::ShouldNameViewClearFocus(const ui::KeyEvent& key_event) {
-  return key_event.type() == ui::ET_KEY_PRESSED &&
+  return key_event.type() == ui::EventType::kKeyPressed &&
          (key_event.key_code() == ui::VKEY_RETURN ||
           key_event.key_code() == ui::VKEY_ESCAPE);
 }

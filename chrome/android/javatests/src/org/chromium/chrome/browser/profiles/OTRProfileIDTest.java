@@ -13,11 +13,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * This test class checks if OTRProfileID works correctly for regular profile, primary
@@ -42,9 +42,9 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testOTRProfileIdForRegularProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
 
                     // OTRProfileId should be null for regular profile.
                     assert profile.getOTRProfileID() == null;
@@ -54,10 +54,10 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testOTRProfileIdForPrimaryOTRProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
 
                     // OTRProfileId should not be null for primary OTR profile and it should be the
@@ -70,11 +70,11 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testOTRProfileIdForNonPrimaryOTRProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
 
@@ -88,11 +88,11 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testSerializationAndDeserialization_success() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     String serializedId = OTRProfileID.serialize(profile.getOTRProfileID());
@@ -107,11 +107,11 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testSerializationAndDeserialization_fail() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     String serializedId = OTRProfileID.serialize(profile.getOTRProfileID());
@@ -134,12 +134,12 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testSerializationAndDeserializationForTwoIdComparision() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Create first OTRProfileID and profile for TEST_OTR_PROFILE_ID_ONE
                     OTRProfileID otrProfileIDOne = new OTRProfileID(TEST_OTR_PROFILE_ID_ONE);
                     Profile profileOne =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDOne, /* createIfNeeded= */ true);
                     String serializedIdOne = OTRProfileID.serialize(profileOne.getOTRProfileID());
@@ -147,7 +147,7 @@ public class OTRProfileIDTest {
                     // Create second OTRProfileID and profile for TEST_OTR_PROFILE_ID_TWO
                     OTRProfileID otrProfileIDTwo = new OTRProfileID(TEST_OTR_PROFILE_ID_TWO);
                     Profile profileTwo =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDTwo, /* createIfNeeded= */ true);
                     String serializedIdTwo = OTRProfileID.serialize(profileTwo.getOTRProfileID());
@@ -164,7 +164,7 @@ public class OTRProfileIDTest {
     @Test
     @MediumTest
     public void testSerializationForRegularProfile() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Deserialize the profile ids from serialized version.
                     OTRProfileID deserializedNullValue = OTRProfileID.deserialize(null);
@@ -178,18 +178,18 @@ public class OTRProfileIDTest {
     @Test
     @SmallTest
     public void testOTRProfileIDsAreEqualOnJavaAndNative() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileIDJava = OTRProfileID.getPrimaryOTRProfileID();
                     OTRProfileID otrProfileIDNative = OTRProfileIDJni.get().getPrimaryID();
                     assert otrProfileIDJava.equals(otrProfileIDNative);
 
                     Profile profileJava =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDJava, /* createIfNeeded= */ true);
                     Profile profileNative =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileIDNative, /* createIfNeeded= */ true);
                     assert profileJava.equals(profileNative);

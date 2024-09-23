@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.chrome.browser.ui.system.StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
+
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,10 +82,12 @@ public class WebappSplashScreenTest {
     public void testThemeColorWhenNotSpecified() {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
 
-        // Status bar color should be white to match CCTs and WebAPK shell.
-        int expectedColor = Color.WHITE;
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        // UNDEFINED_STATUS_BAR_COLOR signals we're using the tab's theme color.
         Assert.assertEquals(
-                expectedColor, mActivityTestRule.getActivity().getWindow().getStatusBarColor());
+                UNDEFINED_STATUS_BAR_COLOR,
+                mActivityTestRule.getActivity().getBaseStatusBarColor(tab));
     }
 
     @Test
@@ -192,12 +195,11 @@ public class WebappSplashScreenTest {
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertEquals(size, splashImage.getMeasuredWidth());
         Assert.assertEquals(size, splashImage.getMeasuredHeight());
 
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(RelativeLayout.TRUE, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
@@ -229,15 +231,14 @@ public class WebappSplashScreenTest {
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertNull(splashImage);
 
         View spacer = splashScreen.findViewById(R.id.webapp_splash_space);
         Assert.assertNotNull(spacer);
 
         // The web app name is anchored to the top of the spacer.
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(0, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
@@ -254,15 +255,14 @@ public class WebappSplashScreenTest {
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertNull(splashImage);
 
         View spacer = splashScreen.findViewById(R.id.webapp_splash_space);
         Assert.assertNotNull(spacer);
 
         // The web app name is anchored to the top of the spacer.
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(0, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
@@ -274,7 +274,7 @@ public class WebappSplashScreenTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testSplashScreenWithSynchronousLayoutInflation() {
-        WebappActivity.setOverrideCoreCount(2);
+        WebappActivity.setOverrideCoreCountForTesting(2);
 
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());

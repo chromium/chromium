@@ -5,13 +5,14 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -164,6 +165,8 @@ class ProofVerifierChromiumTest : public ::testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
   TransportSecurityState transport_security_state_;
 
   std::unique_ptr<quic::ProofVerifyContext> verify_context_;
@@ -699,6 +702,26 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
       verify_context_.get(), &error_details_, &details_, &tls_alert_,
       std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
+}
+
+// Make sure that destroying ProofVerifierChromium while there's a pending
+// request doesn't result in any raw pointer warnings or other crashes.
+TEST_F(ProofVerifierChromiumTest, DestroyWithPendingRequest) {
+  MockCertVerifier dummy_verifier;
+  // In async mode, the MockCertVerifier's Request will hang onto a raw_ptr to
+  // the CertVerifyResult, just like a real Request.
+  dummy_verifier.set_async(true);
+
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
+                                       &transport_security_state_, nullptr, {},
+                                       NetworkAnonymizationKey());
+
+  auto callback = std::make_unique<DummyProofVerifierCallback>();
+  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
+      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
+      kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
+      verify_context_.get(), &error_details_, &details_, std::move(callback));
+  ASSERT_EQ(quic::QUIC_PENDING, status);
 }
 
 }  // namespace net::test

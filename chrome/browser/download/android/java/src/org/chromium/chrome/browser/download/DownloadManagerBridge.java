@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -228,16 +227,17 @@ public class DownloadManagerBridge {
         return result;
     }
 
-    /** @return The android DownloadManager's download ID for the given download. */
+    /**
+     * @return The android DownloadManager's download ID for the given download.
+     */
     public static long getDownloadIdForDownloadGuid(String downloadGuid) {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return getSharedPreferences()
-                    .getLong(downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
-        }
+        return getSharedPreferences()
+                .getLong(downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);
     }
 
     /**
      * Inserts a new download ID mapping into the SharedPreferences
+     *
      * @param downloadId system download ID from Android DownloadManager.
      * @param downloadGuid Download GUID.
      */

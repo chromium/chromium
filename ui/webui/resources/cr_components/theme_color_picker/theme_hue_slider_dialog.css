@@ -1,0 +1,114 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+dialog {
+  background: var(--color-theme-color-picker-hue-slider-dialog-background,
+      var(--cr-fallback-color-surface));
+  border: 0;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+  box-sizing: border-box;
+  color: var(--color-theme-color-picker-hue-slider-dialog-foreground,
+      var(--cr-fallback-color-on-surface));
+  height: 137px;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  padding: 20px;
+  position: absolute;
+  width: 296px;
+  z-index: 999;
+}
+
+@media (forced-colors: active) {
+  dialog {
+    border: solid 1px Highlight;
+  }
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  gap: 8px;
+}
+
+h2 {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+cr-icon-button {
+  color: var(--color-theme-color-picker-hue-slider-dialog-icon,
+      var(--cr-fallback-color-on-surface-subtle));
+  margin-inline-end: -6px;
+}
+
+cr-slider {
+  --cr-slider-active-color: transparent;
+  --cr-slider-ripple-color: var(--cr-active-background-color);
+  --cr-slider-ripple-opacity: 0;
+  --cr-slider-ripple-size: 40px;
+  --cr-slider-ripple-z-index: 0;
+  display: block;
+  height: 40px;
+  margin-block-start: 21px;
+  margin-block-end: 12px;
+  padding: 0;
+  width: 100%;
+}
+
+@media (forced-colors: active) {
+  cr-slider {
+    --cr-slider-ripple-color: Highlight;
+    forced-color-adjust: none;
+  }
+}
+
+cr-slider:focus-visible {
+  --cr-slider-ripple-opacity: 1;
+}
+
+cr-slider::part(container) {
+  background: linear-gradient(to right, var(--hue-gradient_));
+  border-radius: 4px;
+  border: 0;
+  height: 8px;
+}
+
+:host-context([dir=rtl]) cr-slider::part(container) {
+  background: linear-gradient(to left, var(--hue-gradient_));
+}
+
+cr-slider::part(knob) {
+  background: transparent;
+  box-shadow: none;
+  margin-block-start: 4px;
+}
+
+cr-slider::part(knob)::after {
+  display: block;
+  position: absolute;
+  content: '';
+  box-sizing: border-box;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  background: hsl(var(--knob-hue_), 100%, 50%);
+  border: solid 4px var(--color-theme-color-picker-hue-slider-handle, white);
+  border-radius: 50%;
+  box-shadow: var(--cr-elevation-1);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}

@@ -1,0 +1,53 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tos") {
+  sources = [
+    "tos_coordinator.h",
+    "tos_coordinator.mm",
+  ]
+  deps = [
+    ":tos_ui",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled/uma",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:terms_util",
+    "//ios/web/common:web_view_creation_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tos_ui") {
+  sources = [
+    "tos_view_controller.h",
+    "tos_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tos_unittest.mm" ]
+  deps = [
+    ":tos",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

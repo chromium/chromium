@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <if expr="not is_ios">
-    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="The entry in the suggestions dropdown that clears an auto-filled form.">
-      Clear form
-    </message>
-  </if>
-  <if expr="is_ios">
-    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form. Title-cased.">
-      Clear Form
-    </message>
-  </if>
+  <!-- TODO(crbug.com/40266549): Remove when Undo launches on iOS. -->
+  <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form. Title-cased.">
+    Clear Form
+  </message>
 
   <if expr="not is_ios">
     <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="The entry in the suggestions dropdown that undoes the last filling operation on a field.">
@@ -20,12 +14,6 @@
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that undoes the last filling operation on a field. Title-cased.">
       Undo Autofill
-    </message>
-  </if>
-
-  <if expr="is_android or is_ios">
-    <message name="IDS_AUTOFILL_REMOVE_LOCAL_COPY_BUTTON" desc="The label of the button that removes the local copy of a Wallet Credit Card." formatter_data="android_java">
-      Remove copy
     </message>
   </if>
 
@@ -99,6 +87,9 @@
   <message name="IDS_AUTOFILL_CC_UNION_PAY" desc="China UnionPay credit card name.">
     China UnionPay
   </message>
+  <message name="IDS_AUTOFILL_CC_VERVE" desc="Verve credit card name.">
+    Verve
+  </message>
   <message name="IDS_AUTOFILL_CC_VISA" desc="Visa credit card name.">
     Visa
   </message>
@@ -108,12 +99,12 @@
   <message name="IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR" desc="The separator character used in the summary of an address." formatter_data="android_java">
     , '''
   </message>
-
-  <!-- TODO(crbug.com/1451267): Make translatable once strings are finalized. -->
-  <message name="IDS_AUTOFILL_ADDRESS_TEST_DATA" desc="The text displayed as a secondary label in the test addresses devtools suggestion." translateable="false">
-    Address test data
+  <message name="IDS_AUTOFILL_DEVELOPER_TOOLS" desc="Displayed as the main text in the top level devtools suggestion.">
+    Developer tools
   </message>
-
+  <message name="IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY" desc="The text displayed as the main text in the second level popup for a devtools suggestion. Used to give developers about which countries Autofill has test addresses available.">
+    Test address by country
+  </message>
   <message name="IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT" desc="Voice over text that is read out when a test address is accepted from the subpopup." translateable="false">
     Test address from <ph name="ENTRY_VOICEOVER">$1<ex>United states</ex></ph> selected.
   </message>
@@ -121,11 +112,10 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
-  <!--TODO(crbug.com/1493361): Align with writers about related strings and remove translateable=false-->
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries." translateable="false">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY" desc="Screen reader announcement used for non-expandable Autofill popup entries.">
     You are currently on a menu
   </message>
-  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY" desc="Screen reader announcement used for virtual credit card suggestions that do not fill the web form." translateable="false">
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY" desc="Screen reader announcement used for virtual credit card suggestions that do not fill the web form.">
     Dialog with credit card details was shown
   </message>
 
@@ -137,6 +127,7 @@
     The delete address option was selected
   </message>
 
+  <!-- TODO(crbug.com/40266549): Update when Undo launches on iOS. -->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
     The autofilled info was cleared from the form
   </message>
@@ -248,6 +239,12 @@
   <message name="IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item with an account profile that was created somewhere outside Chrome (e.g. Google Pay)." formatter_data="android_java">
     You can now use addresses from your Google Account
   </message>
+  <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK" desc="IPH bubble for triggering autofill from the context menu.">
+    Right click to autofill saved info, like your name or address, on any form
+  </message>
+  <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for triggering autofill from the context menu.">
+    Right click to autofill saved info, like your name or address, on any form
+  </message>
 
   <!-- Autofill suggestion label separator -->
   <message name="IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR" desc="A separator to place between different elements of a suggestion's label. Labels sometimes have more than one type of information, such as a phone number and an email address or a street address, a phone number, and an email address. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate the parts of the label that appear on the same line, e.g. (877) 733-7699 • fanfeedback@redsox.com or 465 Huntington Ave • (617) 267-9300 • matthewt@mfa.org. A bullet • is preferred for separating the label parts; however, if the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
@@ -294,25 +291,25 @@
   <message name="IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether credit cards should be saved and forms should be autofilled with it." formatter_data="android_java">
     Fills in payment forms with your saved payment methods
   </message>
-  <message name="IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_RECORD_TYPE_NOTICE" desc="The notice/warning for the user before the address deletion." formatter_data="android_java">
     This address will be deleted from your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion (with syncing enabled)." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_RECORD_TYPE_NOTICE" desc="The notice/warning for the user before the address deletion (with syncing enabled)." formatter_data="android_java">
     This address will be deleted from this and your other signed-in devices
   </message>
-  <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_RECORD_TYPE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion." formatter_data="android_java">
     This address will be deleted from this device
   </message>
-  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be stored in their account.">
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_RECORD_TYPE_NOTICE" desc="The notice/warning message for the user that this address is going to be stored in their account.">
     In your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_RECORD_TYPE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
     You will be able to use it across Google products
   </message>
-  <message name="IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address is stored in their account." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their address is stored in their account." formatter_data="android_java">
     You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
-  <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address will be saved in their account." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE" desc="The footer message used to notify user that their address will be saved in their account." formatter_data="android_java">
     You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
@@ -332,6 +329,9 @@
       <message name="IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved addresses and Autofill preferences for addresses. Sentence-Cased." formatter_data="android_java">
         Addresses and more
       </message>
+      <message name="IDS_AUTOFILL_ADDRESSES_SETTINGS_SUBLABEL" desc="Description shown below the link to the Autofill settings page for managing addresses and more." translateable="false">
+        Phone numbers, email addresses, shipping addresses, and plus addresses
+      </message>
       <message name="IDS_AUTOFILL_PAYMENT_METHODS" desc="Title for the list of saved payment methods that can be used to fill in forms. Also used as the title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
         Payment methods
       </message>
@@ -347,40 +347,9 @@
       <message name="IDS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_DIALOG_TITLE" desc="Title of the remove address confimation dialog" formatter_data="android_java">
         Delete address
       </message>
-      <!-- WebAuthn titles -->
-      <if expr="is_macosx">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="A platform authenticator using device unlock on macOS. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking.">
-          Device unlock
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking on macOS. Sentence-Cased.">
-          Use device unlock to confirm cards faster
-        </message>
-      </if>
-      <if expr="is_win">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The product name of the authentication system on Windows. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
-          Windows Hello
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking on Windows. Sentence-Cased.">
-          Use Windows Hello to confirm cards faster
-        </message>
-      </if>
       <if expr="is_android">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The authentication mechanism on Android. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased." formatter_data="android_java">
-          Screen lock
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking for Android. Sentence-Cased." formatter_data="android_java">
-          Use screen lock to confirm cards faster
-        </message>
         <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
           Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
-        </message>
-      </if>
-      <if expr="not is_macosx and not is_win and not is_android">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
-          Biometrics
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Sentence-Cased.">
-          This feature is not available on your device
         </message>
       </if>
     </then>
@@ -400,21 +369,17 @@
     </else>
   </if>
   <if expr="is_android">
-    <!-- TODO(crbug.com/1469795): Use finalized string.-->
-    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT" desc="Title of the option to use the default Chrome autofill experience." formatter_data="android_java">
-      Default
+    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT" desc="Title of the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Autofill with Google
     </message>
-    <!-- TODO(crbug.com/1469795): Use finalized string.-->
-    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN" desc="Title of the option to use third-party autofill in Chrome." formatter_data="android_java">
-      Use other providers
+    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN" desc="Title of the option to use third-party autofill in Chrome." formatter_data="android_java">
+      Autofill using another service
     </message>
-    <!-- TODO(crbug.com/1469795): Use finalized string.-->
-    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
-      Use Google Password Manager and Chrome Autofill to save and fill passwords, passkeys, payment methods, and addresses
+    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Use Google Password Manager and Chrome Autofill to save and fill passwords, payment methods, and addresses
     </message>
-    <!-- TODO(crbug.com/1469795): Use finalized string.-->
-    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
-      Use password managers and autofill services that are turned on in Android Settings
+    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
+      To use another autofill service in Chrome, turn it on in Android settings and here
     </message>
   </if>
 
@@ -434,9 +399,6 @@
 
   <!-- Manual filling (keyboard accessory) strings -->
   <if expr="is_android">
-    <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE" desc="Title shown at the top of a sheet where users can select indiviual data pieces (e.g., the cardholder name) related to their stored payment methods (e.g., credit cards) to fill that data piece into the focused form field. Sentence-cased.">
-      Payment methods
-    </message>
     <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
       Manage payment methods
     </message>
@@ -575,6 +537,18 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?
     </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE" desc="The 'Add new address' bubble title.">
+      Fill your address with less typing
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_EDITOR_TITLE" desc="The title of the editor dialog called after the 'Add new address' prompt is accepted.">
+      Add address
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_CHROME_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be saved in Chrome (locally or syncable among Chromes on different devices).">
+      You don't have any addresses saved. Add an address to use it in Chrome.
+    </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_ACCOUNT_PROMPT_BODY_TEXT" desc="The 'Add new address' bubble body text if the address will be save in the user's Google account.">
+      You don't have any addresses saved. Add an address to use it across Google products.
+    </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
       No thanks
     </message>
@@ -590,6 +564,9 @@
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
       Update
     </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_DIALOG_OK_BUTTON_LABEL" desc="Label of the OK button in the dialog that promts the user to add a new address.">
+      Add address
+    </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
     </message>
@@ -604,6 +581,12 @@
     </message>
     <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_SUBMENU_HINT" desc="Autofill desktop popup: additional screen reader info to let the user know that the suggestion can be expanded into a sub-menu.">
       Submenu available, use <ph name="SHORTCUT">$1<ex>right key</ex></ph> to navigate to additional options.
+    </message>
+    <message name="IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD" desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears after a password save if the user is not signed in to Chrome or their sign-in credentials have expired. If the user wants to save this data to their Google Account, they can click the button at the bottom of this message. The tone should be motivating.">
+    Password saved to this device
+    </message>
+    <message name="IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD" desc="This is the body text of a confirmation message and means that the password is in an account-pending storage. In other words, it's waiting to be uploaded to the user's Google Account. It appears when the user was signed in to Chrome but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Password saved' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
+    To get this password on all your devices, verify it's you
     </message>
   </if>
 

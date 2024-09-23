@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -28,8 +28,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case BOOKMARK_BAR_HEIGHT: {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
-      const int bookmark_bar_attached_vertical_margin =
-          features::IsChromeRefresh2023() ? 6 : 4;
+      const int bookmark_bar_attached_vertical_margin = 6;
       return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
              bookmark_bar_attached_vertical_margin;
     }
@@ -38,7 +37,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case BOOKMARK_BAR_BUTTON_PADDING:
       return GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
     case BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING:
-      return features::IsChromeRefresh2023() ? 6 : 8;
+      return 6;
     case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
     case WEB_APP_PAGE_ACTION_ICON_SIZE:
@@ -53,6 +52,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 3;
     case LOCATION_BAR_CHILD_CORNER_RADIUS:
       return 12;
+    case LOCATION_BAR_CHIP_ICON_SIZE:
+      return 16;
+    case LOCATION_BAR_CHIP_PADDING:
+      return 4;
     case LOCATION_BAR_ELEMENT_PADDING:
       return touch_ui ? 3 : 2;
     case LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING:
@@ -63,27 +66,19 @@ int GetLayoutConstant(LayoutConstant constant) {
       //   constants, so instead of spreading the permutation logic here and
       //   elsewhere, it's consolidated in `Layout()` and will be moved back
       //   here once we decide on a permutation.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
+    case LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING:
+      return touch_ui ? 3 : 8;
     case LOCATION_BAR_HEIGHT:
-      if (base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateHeight) ||
-          features::GetChromeRefresh2023Level() ==
-              features::ChromeRefresh2023Level::kLevel2) {
-        return touch_ui ? 36 : 34;
-      } else {
-        return touch_ui ? 36 : 28;
-      }
+      return touch_ui ? 36 : 34;
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;
-    case LOCATION_BAR_CHIP_ICON_SIZE:
-      return 16;
     case LOCATION_BAR_LEADING_ICON_SIZE:
       return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case LOCATION_BAR_TRAILING_ICON_SIZE:
-      return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                 ? 20
-                 : GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+      return 20;
     case TAB_AFTER_TITLE_PADDING:
       return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:
@@ -92,43 +87,28 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 12 : 16;
     case TAB_CLOSE_BUTTON_SIZE:
       return touch_ui ? 24 : 16;
-    case TAB_HEIGHT: {
-      bool use_touch_padding = touch_ui && !features::IsChromeRefresh2023();
-#if BUILDFLAG(IS_CHROMEOS)
-      use_touch_padding &= !chromeos::features::IsRoundedWindowsEnabled();
-#endif
-      return (use_touch_padding ? 41 : 34) +
-             GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
-    }
+    case TAB_HEIGHT:
+      return 34 + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
     case TAB_STRIP_HEIGHT:
       return GetLayoutConstant(TAB_HEIGHT) +
              GetLayoutConstant(TAB_STRIP_PADDING);
     case TAB_STRIP_PADDING:
-      return features::IsChromeRefresh2023() ? 6 : 0;
+      return 6;
     case TAB_SEPARATOR_HEIGHT:
-      // TODO (crbug.com/1451400): ChromeRefresh2023 needs different values for
-      // this constant.
       return touch_ui ? 24 : 20;
     case TAB_PRE_TITLE_PADDING:
       return 8;
     case TAB_STACK_DISTANCE:
       return touch_ui ? 4 : 6;
-    case TABSTRIP_REGION_VIEW_CONTROL_PADDING:
-      // TODO (crbug.com/1451400): ChromeRefresh2023 needs different values for
-      // this constant.
-      return 8;
     case TABSTRIP_TOOLBAR_OVERLAP:
       // Because tab scrolling puts the tabstrip on a separate layer,
       // changing paint order, this overlap isn't compatible with scrolling.
-      if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
+      if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
         return 0;
+      }
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:
-      if (features::IsChromeRefresh2023()) {
-        return touch_ui ? 48 : 34;
-      } else {
-        return touch_ui ? 48 : 28;
-      }
+      return touch_ui ? 48 : 34;
     case TOOLBAR_DIVIDER_CORNER_RADIUS:
       return 1;
     case TOOLBAR_DIVIDER_HEIGHT:
@@ -140,27 +120,19 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TOOLBAR_ELEMENT_PADDING:
       return touch_ui ? 0 : 4;
     case TOOLBAR_ICON_DEFAULT_MARGIN:
-      if (features::IsChromeRefresh2023()) {
-        return touch_ui ? 0 : 2;
-      } else {
-        return GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
-      }
+      return touch_ui ? 0 : 2;
     case TOOLBAR_STANDARD_SPACING:
-      if (features::IsChromeRefresh2023()) {
-        return touch_ui ? 12 : 9;
-      } else {
-        return touch_ui ? 12 : 8;
-      }
+      return touch_ui ? 12 : 9;
     case PAGE_INFO_ICON_SIZE:
-      return features::IsChromeRefresh2023() ? 20 : 16;
+      return 20;
     case DOWNLOAD_ICON_SIZE:
-      return features::IsChromeRefresh2023() ? 20 : 16;
+      return 20;
     case TOOLBAR_CORNER_RADIUS:
       return 8;
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -171,12 +143,10 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       return gfx::Insets(4);
 
     case DOWNLOAD_ROW:
-      return gfx::Insets::VH(8, features::IsChromeRefresh2023() ? 20 : 16);
+      return gfx::Insets::VH(8, 20);
+
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
-      if (features::IsChromeRefresh2023()) {
-        return gfx::Insets::VH(2, 2);
-      }
-      return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
+      return gfx::Insets::VH(2, 2);
 
     case LOCATION_BAR_PAGE_INFO_ICON_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 4);
@@ -191,33 +161,28 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     }
 
     case TOOLBAR_BUTTON:
-      return gfx::Insets(touch_ui ? 12
-                                  : (features::IsChromeRefresh2023() ? 7 : 6));
+      return gfx::Insets(touch_ui ? 12 : 7);
 
     case BROWSER_APP_MENU_CHIP_PADDING:
-      if (touch_ui || !features::IsChromeRefresh2023()) {
+      if (touch_ui) {
         return GetLayoutInsets(TOOLBAR_BUTTON);
       } else {
         return gfx::Insets::TLBR(7, 4, 7, 6);
       }
 
     case AVATAR_CHIP_PADDING:
-      if (touch_ui || !features::IsChromeRefresh2023()) {
+      if (touch_ui) {
         return GetLayoutInsets(TOOLBAR_BUTTON);
       } else {
         return gfx::Insets::TLBR(7, 10, 7, 4);
       }
 
     case TOOLBAR_INTERIOR_MARGIN:
-      if (features::IsChromeRefresh2023()) {
-        return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 5);
-      } else {
-        return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
-      }
+      return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 5);
 
     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
       return gfx::Insets::VH(4, 0);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Insets();
 }

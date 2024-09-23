@@ -19,12 +19,14 @@
 #include "base/time/time.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 using aura::Window;
@@ -289,6 +291,54 @@ TEST_F(WindowAnimationsTest, CrossFadeThenRecreate) {
   tree->root()->GetAnimator()->StopAnimating();
 }
 
+namespace {
+
+// Defines an observer that would recreate the window's layer tree when the
+// opacity is set for the first time on it since the start of the observation.
+class WindowOpacityObserver : public aura::WindowObserver {
+ public:
+  explicit WindowOpacityObserver(aura::Window* window) {
+    observation_.Observe(window);
+  }
+  WindowOpacityObserver(const WindowOpacityObserver&) = delete;
+  WindowOpacityObserver& operator=(const WindowOpacityObserver&) = delete;
+  ~WindowOpacityObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowOpacitySet(aura::Window* window,
+                          ui::PropertyChangeReason reason) override {
+    // In a cross-fade animation for maximizing, the window's opacity is set to
+    // 0 first, at which point we recreate the layers, and then it's set to
+    // animate to 1, at which point we destroy the old layer tree to simulate
+    // the crash in http://b/333095196.
+    if (owner_) {
+      owner_.reset();
+    } else {
+      owner_ = wm::RecreateLayers(window);
+    }
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
+      this};
+  std::unique_ptr<ui::LayerTreeOwner> owner_;
+};
+
+}  // namespace
+
+// Regression test for http://b/333095196 where the window's layer tree is
+// recreated while in the middle of a cross fade animation.
+TEST_F(WindowAnimationsTest, RecreateLayersDuringCrossFade) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  WindowState* window_state = WindowState::Get(window.get());
+  WindowOpacityObserver observer{window.get()};
+  window_state->Maximize();
+}
+
 // Tests that if the window layer is recreated after setting the old layer's
 // animation (e.g., by `FrameHeader::FrameAnimatorView::StartAnimation`). There
 // should be no crash. Regression test for https://crbug.com/1313977.
@@ -543,6 +593,27 @@ TEST_F(WindowAnimationsTest, DISABLED_CrossFadeAnimateNewLayerOnly) {
 
   WaitForMilliseconds(300);
   EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
+}
+
+// Tests that widgets that are created minimized have the correct restore
+// bounds.
+TEST_F(WindowAnimationsTest, NoMinimizedShowAnimation) {
+  ui::ScopedAnimationDurationScaleMode animation_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  views::UniqueWidgetPtr widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
+  params.bounds = gfx::Rect(600, 400);
+
+  widget->Init(std::move(params));
+  auto* layer = widget->GetNativeWindow()->layer();
+  widget->Show();
+  // The window should have the same layer because layer animation will recreate
+  // layer.
+  EXPECT_EQ(layer, widget->GetNativeWindow()->layer());
 }
 
 }  // namespace ash

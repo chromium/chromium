@@ -5,9 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_
 #define EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_
 
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/common/api/user_scripts.h"
 
 namespace extensions {
@@ -115,6 +115,42 @@ class UserScriptsConfigureWorldFunction : public ExtensionFunction {
 
  private:
   ~UserScriptsConfigureWorldFunction() override = default;
+};
+
+class UserScriptsGetWorldConfigurationsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.getWorldConfigurations",
+                             USERSCRIPTS_GETWORLDCONFIGURATIONS)
+
+  UserScriptsGetWorldConfigurationsFunction() = default;
+  UserScriptsGetWorldConfigurationsFunction(
+      const UserScriptsGetWorldConfigurationsFunction&) = delete;
+  const UserScriptsGetWorldConfigurationsFunction& operator=(
+      const UserScriptsGetWorldConfigurationsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsGetWorldConfigurationsFunction() override = default;
+};
+
+class UserScriptsResetWorldConfigurationFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.resetWorldConfiguration",
+                             USERSCRIPTS_RESETWORLDCONFIGURATION)
+
+  UserScriptsResetWorldConfigurationFunction() = default;
+  UserScriptsResetWorldConfigurationFunction(
+      const UserScriptsResetWorldConfigurationFunction&) = delete;
+  const UserScriptsResetWorldConfigurationFunction& operator=(
+      const UserScriptsResetWorldConfigurationFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsResetWorldConfigurationFunction() override = default;
 };
 
 }  // namespace extensions

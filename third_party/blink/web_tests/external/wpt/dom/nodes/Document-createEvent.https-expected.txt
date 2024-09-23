@@ -1,13 +1,7 @@
 This is a testharness.js-based test.
-Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Should throw NOT_SUPPORTED_ERR for pluralized legacy event interface "KeyboardEvents"
   assert_throws_dom: function "function () {\n          var evt = document.createEvent(plural);\n        }" did not throw
-[FAIL] TextEvent should be an alias for CompositionEvent.
-  assert_equals: expected object "[object CompositionEvent]" but got object "[object TextEvent]"
-[FAIL] textevent should be an alias for CompositionEvent.
-  assert_equals: expected object "[object CompositionEvent]" but got object "[object TextEvent]"
-[FAIL] TEXTEVENT should be an alias for CompositionEvent.
-  assert_equals: expected object "[object CompositionEvent]" but got object "[object TextEvent]"
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "AnimationEvent"
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "CloseEvent"
@@ -16,10 +10,6 @@ Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "IDBVersionChangeEvent"
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
-[FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "MutationEvent"
-  assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
-[FAIL] Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "MutationEvents"
-  assert_throws_dom: function "function () {\n        var evt = document.createEvent(eventInterface + "s");\n      }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "PageTransitionEvent"
   assert_throws_dom: function "function () {\n      var evt = document.createEvent(eventInterface);\n    }" did not throw
 [FAIL] Should throw NOT_SUPPORTED_ERR for non-legacy event interface "PopStateEvent"

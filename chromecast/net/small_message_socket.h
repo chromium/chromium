@@ -7,16 +7,16 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/io_buffer.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
 namespace net {
-class GrowableIOBuffer;
-class IOBuffer;
 class Socket;
 }  // namespace net
 
@@ -88,6 +88,9 @@ class SmallMessageSocket {
   // then call Send() to send the finished message.
   // If nullptr is returned, then OnSendUnblocked() will be called once sending
   // is possible again.
+  //
+  // TODO(crbug.com/40284755): This method should return a span of size
+  // `message_size` instead of a pointer.
   void* PrepareSend(size_t message_size);
   void Send();
 
@@ -103,11 +106,12 @@ class SmallMessageSocket {
   // size.
   static size_t SizeDataBytes(size_t message_size);
 
-  // Writes the necessary |message_size| information into ptr. This can be used
-  // to prepare a buffer for SendBuffer(). Note that if |message_size| is
+  // Writes the necessary |message_size| information into `buf`. This can be
+  // used to prepare a buffer for SendBuffer(). Note that if `message_size` is
   // greater than or equal to 0xffff, the message size data will take up 6
-  // bytes. Returns the number of bytes written (= SizeDataBytes(message_size)).
-  static size_t WriteSizeData(char* ptr, size_t message_size);
+  // bytes, and the `buf` will need to be large enough. Returns the number of
+  // bytes written (= SizeDataBytes(message_size)).
+  static size_t WriteSizeData(base::span<uint8_t> buf, size_t message_size);
 
   // Reads the message size from a |ptr| which contains |bytes_read| of data.
   // Returns |false| if there was not enough data to read a valid size.
@@ -129,7 +133,48 @@ class SmallMessageSocket {
   void ReceiveMessagesSynchronously();
 
  private:
-  class BufferWrapper;
+  friend class SmallMessageSocketTest;
+
+  // This class wraps the IOBuffer and controls its range to point into
+  // `buffer_` but allowing it to be a subset of `buffer_` that can shrink as
+  // bytes are consumed from the front. The base IOBuffer is passed in from
+  // SetUnderlyingBuffer.
+  class BufferWrapper : public net::IOBuffer {
+   public:
+    BufferWrapper();
+
+    // Set the base buffer. `capacity` is the total size of `base`.
+    void SetUnderlyingBuffer(scoped_refptr<net::IOBuffer> base,
+                             size_t capacity);
+    scoped_refptr<net::IOBuffer> TakeUnderlyingBuffer();
+    void ClearUnderlyingBuffer();
+
+    // Offset the next available bytes in the buffer.
+    void DidConsume(size_t bytes);
+
+    // A pointer to the very start of the buffer. The `span()` returned will
+    // move as DidConsume() is called and moves the start of the buffer forward.
+    // But this will always return the absolute beginning of the buffer.
+    // TODO(328018028): This should return a span.
+    char* StartOfBuffer() const;
+
+    size_t used() const { return used_; }
+    size_t capacity() const { return capacity_; }
+
+    base::span<const uint8_t> used_span() const;
+
+   private:
+    ~BufferWrapper() override;
+
+    // The buffer that actually holds the memory.
+    scoped_refptr<net::IOBuffer> buffer_;
+
+    // Size of the used bytes in previous operations.
+    size_t used_ = 0;
+
+    // Total size of `buffer_`.
+    size_t capacity_ = 0;
+  };
 
   void OnWriteComplete(int result);
   bool HandleWriteResult(int result);
@@ -140,7 +185,7 @@ class SmallMessageSocket {
   bool HandleReadResult(int result);
   bool HandleCompletedMessages();
   bool HandleCompletedMessageBuffers();
-  void ActivateBufferPool(char* current_data, size_t current_size);
+  void ActivateBufferPool(base::span<const uint8_t> current_data);
 
   Delegate* const delegate_;
   const std::unique_ptr<net::Socket> socket_;

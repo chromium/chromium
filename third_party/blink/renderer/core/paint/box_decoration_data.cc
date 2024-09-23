@@ -9,7 +9,7 @@
 namespace blink {
 
 bool BoxDecorationData::BorderObscuresBackgroundEdge() const {
-  BorderEdge edges[4];
+  BorderEdgeArray edges;
   style_.GetBorderEdgeInfo(edges);
 
   for (auto& edge : edges) {

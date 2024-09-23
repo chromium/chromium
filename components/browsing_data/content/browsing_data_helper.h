@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "components/browsing_data/content/browsing_data_model.h"
-#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
 class GURL;
@@ -33,7 +32,7 @@ class NoStatePrefetchManager;
 
 namespace browsing_data {
 
-// TODO(crbug.com/668114): DEPRECATED. Remove these functions.
+// TODO(crbug.com/40495069): DEPRECATED. Remove these functions.
 // The primary functionality of testing origin type masks has moved to
 // Remover. The secondary functionality of recognizing web schemes
 // storing browsing data has moved to url::GetWebStorageSchemes();
@@ -93,13 +92,10 @@ void RemoveFederatedSiteSettingsData(
     HostContentSettingsMap::PatternSourcePredicate pattern_predicate,
     HostContentSettingsMap* host_content_settings_map);
 
-int GetUniqueHostCount(
-    const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
-    const BrowsingDataModel& browsing_data_model);
+int GetUniqueHostCount(const BrowsingDataModel& browsing_data_model);
 
 int GetUniqueThirdPartyCookiesHostCount(
     const GURL& first_party_url,
-    const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
     const BrowsingDataModel& browsing_data_model);
 
 }  // namespace browsing_data

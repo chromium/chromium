@@ -1,0 +1,25 @@
+error[E0277]: the trait bound `Dst: AsBytes` is not satisfied
+  --> tests/ui-stable/transmute-mut-dst-not-asbytes.rs:24:36
+   |
+24 | const DST_NOT_AS_BYTES: &mut Dst = transmute_mut!(&mut Src);
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^
+   |                                    |
+   |                                    the trait `AsBytes` is not implemented for `Dst`
+   |                                    required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `AsBytes`:
+             ()
+             F32<O>
+             F64<O>
+             I128<O>
+             I16<O>
+             I32<O>
+             I64<O>
+             ManuallyDrop<T>
+           and $N others
+note: required by a bound in `AssertDstIsAsBytes`
+  --> tests/ui-stable/transmute-mut-dst-not-asbytes.rs:24:36
+   |
+24 | const DST_NOT_AS_BYTES: &mut Dst = transmute_mut!(&mut Src);
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertDstIsAsBytes`
+   = note: this error originates in the macro `transmute_mut` (in Nightly builds, run with -Z macro-backtrace for more info)

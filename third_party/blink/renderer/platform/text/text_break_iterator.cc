@@ -21,11 +21,18 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 #include <unicode/uchar.h>
 #include <unicode/uvernum.h>
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/break_iterator_data_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -111,6 +118,9 @@ static const UChar kAsciiLineBreakTableLastChar = 127;
 
 #define F 0xFF
 
+// Check if the generated table match the `kAsciiLineBreakTable` table.
+#define CHECK_ASCII_LINE_BRAEK_TABLE 0
+
 // Line breaking table for printable ASCII characters. Line breaking
 // opportunities in this table are as below:
 // - before opening punctuations such as '(', '<', '[', '{' after certain
@@ -160,6 +170,24 @@ static const unsigned char kAsciiLineBreakTable[][(kAsciiLineBreakTableLastChar 
     { B(0, 0, 0, 0, 0, 0, 0, 0), B(0, 0, 0, 0, 0, 0, 0, 0), 0, B(0, 0, 0, 0, 0, 0, 0, 0), 0, 0, 0, B(0, 0, 0, 0, 0, 0, 0, 0), 0, 0, 0, B(0, 0, 0, 0, 0, 0, 0, 0) }, // DEL
 };
 // clang-format on
+
+#if CHECK_ASCII_LINE_BRAEK_TABLE
+void CheckAsciiLineBreakTable() {
+  for (UChar ch2 = kAsciiLineBreakTableFirstChar;
+       ch2 <= kAsciiLineBreakTableLastChar; ++ch2) {
+    for (UChar ch1 = kAsciiLineBreakTableFirstChar;
+         ch1 <= kAsciiLineBreakTableLastChar; ++ch1) {
+      const UChar i2 = ch2 - kAsciiLineBreakTableFirstChar;
+      const bool ascii =
+          kAsciiLineBreakTable[ch1 - kAsciiLineBreakTableFirstChar][i2 / 8] &
+          (1 << (i2 % 8));
+      const bool fast = GetFastLineBreak(ch1, ch2);
+      CHECK_EQ(ascii, fast)
+          << String::Format("%02X/%02X (%c/%c)", ch1, ch2, ch1, ch2);
+    }
+  }
+}
+#endif  // CHECK_ASCII_LINE_BRAEK_TABLE
 
 #define BA_LB_COUNT U_LB_COUNT
 // Line breaking table for CSS word-break: break-all. This table differs from
@@ -238,29 +266,6 @@ static_assert(std::size(kAsciiLineBreakTable) ==
 static_assert(std::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
               "breakAllLineBreakClassTable should be consistent");
 
-static inline bool ShouldBreakAfter(UChar last_ch, UChar ch, UChar next_ch) {
-  // Don't allow line breaking between '-' and a digit if the '-' may mean a
-  // minus sign in the context, while allow breaking in 'ABCD-1234' and
-  // '1234-5678' which may be in long URLs.
-  if (ch == '-' && IsASCIIDigit(next_ch))
-    return IsASCIIAlphanumeric(last_ch);
-
-  // If both ch and nextCh are ASCII characters, use a lookup table for enhanced
-  // speed and for compatibility with other browsers (see comments for
-  // asciiLineBreakTable for details).
-  if (ch >= kAsciiLineBreakTableFirstChar &&
-      ch <= kAsciiLineBreakTableLastChar &&
-      next_ch >= kAsciiLineBreakTableFirstChar &&
-      next_ch <= kAsciiLineBreakTableLastChar) {
-    const unsigned char* table_row =
-        kAsciiLineBreakTable[ch - kAsciiLineBreakTableFirstChar];
-    int next_ch_index = next_ch - kAsciiLineBreakTableFirstChar;
-    return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8));
-  }
-  // Otherwise defer to the Unicode algorithm by returning false.
-  return false;
-}
-
 static inline ULineBreak LineBreakPropertyValue(UChar last_ch, UChar ch) {
   if (ch == '+')  // IE tailors '+' to AL-like class when break-all is enabled.
     return U_LB_ALPHABETIC;
@@ -297,11 +302,9 @@ static inline bool ShouldKeepAfterKeepAll(UChar last_ch,
          !WTF::unicode::HasLineBreakingPropertyComplexContext(next_ch);
 }
 
-inline bool NeedsLineBreakIterator(UChar ch) {
-  return ch > kAsciiLineBreakTableLastChar && ch != kNoBreakSpaceCharacter;
-}
+enum class FastBreakResult : uint8_t { kNoBreak, kCanBreak, kUnknown };
 
-template <typename CharacterType>
+template <typename CharacterType, bool use_fast_table>
 struct LazyLineBreakIterator::Context {
   STACK_ALLOCATED();
 
@@ -317,30 +320,104 @@ struct LazyLineBreakIterator::Context {
     bool is_space = false;
   };
 
-  Context(const CharacterType* str, int len, unsigned start_offset, int index) {
-    CHECK_GE(index, 0);
-    DCHECK_GE(static_cast<unsigned>(index), start_offset);
+  Context(const CharacterType* str,
+          unsigned len,
+          unsigned start_offset,
+          unsigned index) {
+    DCHECK_GE(index, start_offset);
     CHECK_LE(index, len);
-    if (index > 0) {
+    if (index > start_offset) {
       last = ContextChar(str[index - 1]);
-      if (index > 1) {
+      if (index > start_offset + 1) {
         last_last_ch = str[index - 2];
       }
     }
   }
 
-  bool Fetch(const CharacterType* str, int len, int index) {
-    if (UNLIKELY(index >= len)) {
+  bool Fetch(const CharacterType* str, unsigned len, unsigned index) {
+    if (index >= len) [[unlikely]] {
       return false;
     }
     current = ContextChar(str[index]);
     return true;
   }
 
-  void Advance(int& index) {
+  void Advance(unsigned& index) {
     ++index;
     last_last_ch = last.ch;
     last = current;
+  }
+
+  FastBreakResult ShouldBreakFast(bool disable_soft_hyphen) const {
+#if CHECK_ASCII_LINE_BRAEK_TABLE
+    DEFINE_STATIC_LOCAL(bool, is_check_done, (false));
+    if (!is_check_done) {
+      is_check_done = true;
+      CheckAsciiLineBreakTable();
+      LOG(INFO) << "CheckAsciiLineBreakTable() completed.";
+    }
+#endif  // CHECK_ASCII_LINE_BRAEK_TABLE
+
+    const UChar last_ch = last.ch;
+    const UChar ch = current.ch;
+    static_assert(kFastLineBreakMinChar == kAsciiLineBreakTableFirstChar);
+    if (last_ch < kFastLineBreakMinChar || ch < kFastLineBreakMinChar)
+        [[unlikely]] {
+      return FastBreakResult::kNoBreak;
+    }
+
+    // Don't allow line breaking between '-' and a digit if the '-' may mean a
+    // minus sign in the context, while allow breaking in 'ABCD-1234' and
+    // '1234-5678' which may be in long URLs.
+    static_assert('-' >= kFastLineBreakMinChar);
+    if (last_ch == '-' && IsASCIIDigit(ch)) {
+      return IsASCIIAlphanumeric(last_last_ch) ? FastBreakResult::kCanBreak
+                                               : FastBreakResult::kNoBreak;
+    }
+
+    if constexpr (!use_fast_table) {
+      // If both `last_ch` and `ch` are ASCII characters, use a lookup table for
+      // enhanced speed and for compatibility with other browsers (see comments
+      // for asciiLineBreakTable for details).
+      if (last_ch <= kAsciiLineBreakTableLastChar &&
+          ch <= kAsciiLineBreakTableLastChar) {
+        const unsigned char* table_row =
+            kAsciiLineBreakTable[last_ch - kAsciiLineBreakTableFirstChar];
+        const unsigned ch_index = ch - kAsciiLineBreakTableFirstChar;
+        return table_row[ch_index / 8] & (1 << (ch_index % 8))
+                   ? FastBreakResult::kCanBreak
+                   : FastBreakResult::kNoBreak;
+      }
+
+      if ((ch == kNoBreakSpaceCharacter &&
+           last_ch <= kAsciiLineBreakTableLastChar) ||
+          (last_ch == kNoBreakSpaceCharacter &&
+           ch <= kAsciiLineBreakTableLastChar)) {
+        return FastBreakResult::kNoBreak;
+      }
+
+      // Otherwise defer to the Unicode algorithm.
+      return FastBreakResult::kUnknown;
+    }
+
+    // If both characters are in the fast line break table, use it for enhanced
+    // speed. For ASCII characters, it is also for compatibility. The table is
+    // generated at the build time, see the `LineBreakData` class.
+    if (last_ch <= kFastLineBreakMaxChar && ch <= kFastLineBreakMaxChar) {
+      if (!GetFastLineBreak(last_ch, ch)) {
+        return FastBreakResult::kNoBreak;
+      }
+      static_assert(kSoftHyphenCharacter <= kFastLineBreakMaxChar);
+      if (disable_soft_hyphen && last_ch == kSoftHyphenCharacter) [[unlikely]] {
+        return FastBreakResult::kNoBreak;
+      }
+      return FastBreakResult::kCanBreak;
+    }
+
+    // Otherwise defer to the Unicode algorithm.
+    static_assert(kNoBreakSpaceCharacter <= kFastLineBreakMaxChar,
+                  "Include NBSP for the performance.");
+    return FastBreakResult::kUnknown;
   }
 
   ContextChar current;
@@ -349,20 +426,36 @@ struct LazyLineBreakIterator::Context {
 };
 
 template <typename CharacterType,
-          LineBreakType lineBreakType,
+          LineBreakType line_break_type,
           BreakSpaceType break_space>
-inline int LazyLineBreakIterator::NextBreakablePosition(
-    int pos,
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
     const CharacterType* str,
-    int len) const {
-  Context<CharacterType> context(str, len, start_offset_, pos);
-  int next_break = -1;
+    unsigned len) const {
+  if (RuntimeEnabledFeatures::BreakIteratorDataGeneratorEnabled()) {
+    return NextBreakablePosition<CharacterType, line_break_type, break_space,
+                                 /*use_fast_table*/ true>(pos, str, len);
+  }
+  return NextBreakablePosition<CharacterType, line_break_type, break_space,
+                               /*use_fast_table*/ false>(pos, str, len);
+}
+
+template <typename CharacterType,
+          LineBreakType line_break_type,
+          BreakSpaceType break_space,
+          bool use_fast_table>
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
+    const CharacterType* str,
+    unsigned len) const {
+  Context<CharacterType, use_fast_table> context(str, len, start_offset_, pos);
+  unsigned next_break = 0;
   ULineBreak last_line_break;
-  if (lineBreakType == LineBreakType::kBreakAll) {
+  if constexpr (line_break_type == LineBreakType::kBreakAll) {
     last_line_break =
         LineBreakPropertyValue(context.last_last_ch, context.last.ch);
   }
-  for (int i = pos; context.Fetch(str, len, i); context.Advance(i)) {
+  for (unsigned i = pos; context.Fetch(str, len, i); context.Advance(i)) {
     switch (break_space) {
       case BreakSpaceType::kAfterSpaceRun:
         if (context.current.is_space) {
@@ -374,69 +467,77 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         break;
       case BreakSpaceType::kAfterEverySpace:
         if (context.last.is_space ||
-            IsOtherSpaceSeparator<CharacterType>(context.last.ch)) {
+            Character::IsOtherSpaceSeparator(context.last.ch)) {
           return i;
         }
         if ((context.current.is_space ||
-             IsOtherSpaceSeparator<CharacterType>(context.current.ch)) &&
+             Character::IsOtherSpaceSeparator(context.current.ch)) &&
             i + 1 < len) {
           return i + 1;
         }
         break;
     }
 
-    if (ShouldBreakAfter(context.last_last_ch, context.last.ch,
-                         context.current.ch)) {
+    const FastBreakResult fast_break_result =
+        context.ShouldBreakFast(disable_soft_hyphen_);
+    if (fast_break_result == FastBreakResult::kCanBreak) {
       return i;
     }
 
-    if (lineBreakType == LineBreakType::kBreakAll &&
-        !U16_IS_LEAD(context.current.ch)) {
-      ULineBreak line_break =
-          LineBreakPropertyValue(context.last.ch, context.current.ch);
-      if (ShouldBreakAfterBreakAll(last_line_break, line_break))
-        return i > pos && U16_IS_TRAIL(context.current.ch) ? i - 1 : i;
-      if (line_break != U_LB_COMBINING_MARK)
-        last_line_break = line_break;
+    if constexpr (line_break_type == LineBreakType::kBreakAll) {
+      if (!U16_IS_LEAD(context.current.ch)) {
+        ULineBreak line_break =
+            LineBreakPropertyValue(context.last.ch, context.current.ch);
+        if (ShouldBreakAfterBreakAll(last_line_break, line_break)) {
+          return i > pos && U16_IS_TRAIL(context.current.ch) ? i - 1 : i;
+        }
+        if (line_break != U_LB_COMBINING_MARK) {
+          last_line_break = line_break;
+        }
+      }
+    } else if constexpr (line_break_type == LineBreakType::kKeepAll) {
+      if (ShouldKeepAfterKeepAll(context.last_last_ch, context.last.ch,
+                                 context.current.ch)) {
+        // word-break:keep-all prevents breaks between East Asian ideographic.
+        continue;
+      }
     }
 
-    if (lineBreakType == LineBreakType::kKeepAll &&
-        ShouldKeepAfterKeepAll(context.last_last_ch, context.last.ch,
-                               context.current.ch)) {
-      // word-break:keep-all prevents breaks between East Asian ideographic.
+    if (fast_break_result == FastBreakResult::kNoBreak) {
       continue;
     }
 
-    if (NeedsLineBreakIterator(context.current.ch) ||
-        NeedsLineBreakIterator(context.last.ch)) {
-      if (next_break < i) {
-        // Don't break if positioned at start of primary context.
-        if (i) {
-          if (TextBreakIterator* break_iterator = GetIterator()) {
-            next_break = i - 1;
-            for (;;) {
-              // Adjust the offset by |start_offset_| because |break_iterator|
-              // has text after |start_offset_|.
-              // TODO(crbug.com/1500931): `+1` below shouldn't be there, but it
-              // was so before and removing it hits. This is to be investigated.
-              DCHECK_GE(next_break + 1u, start_offset_);
-              next_break =
-                  break_iterator->following(next_break - start_offset_);
-              if (next_break >= 0) {
-                next_break = next_break + start_offset_;
-                if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
-                    UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
-                  continue;
-                }
-              }
-              break;
-            }
-          }
+    if (next_break < i || !next_break) {
+      // Don't break if positioned at start of primary context.
+      if (i <= start_offset_) [[unlikely]] {
+        continue;
+      }
+      TextBreakIterator* break_iterator = GetIterator();
+      if (!break_iterator) [[unlikely]] {
+        continue;
+      }
+      next_break = i - 1;
+      for (;;) {
+        // Adjust the offset by |start_offset_| because |break_iterator|
+        // has text after |start_offset_|.
+        DCHECK_GE(next_break, start_offset_);
+        const int32_t following = break_iterator->following(
+            static_cast<int32_t>(next_break - start_offset_));
+        if (following < 0) [[unlikely]] {
+          DCHECK_EQ(following, icu::BreakIterator::DONE);
+          next_break = len;
+          break;
         }
+        next_break = following + start_offset_;
+        if (disable_soft_hyphen_ && next_break > 0 &&
+            str[next_break - 1] == kSoftHyphenCharacter) [[unlikely]] {
+          continue;
+        }
+        break;
       }
-      if (i == next_break && !context.last.is_space) {
-        return i;
-      }
+    }
+    if (i == next_break && !context.last.is_space) {
+      return i;
     }
   }
 
@@ -444,10 +545,10 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
 }
 
 template <typename CharacterType, LineBreakType lineBreakType>
-inline int LazyLineBreakIterator::NextBreakablePosition(
-    int pos,
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
     const CharacterType* str,
-    int len) const {
+    unsigned len) const {
   switch (break_space_) {
     case BreakSpaceType::kAfterSpaceRun:
       return NextBreakablePosition<CharacterType, lineBreakType,
@@ -458,16 +559,18 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
                                    BreakSpaceType::kAfterEverySpace>(pos, str,
                                                                      len);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NextBreakablePosition<CharacterType, lineBreakType,
                                BreakSpaceType::kAfterSpaceRun>(pos, str, len);
 }
 
 template <LineBreakType lineBreakType>
-inline int LazyLineBreakIterator::NextBreakablePosition(int pos,
-                                                        int len) const {
-  if (UNLIKELY(string_.IsNull()))
+inline unsigned LazyLineBreakIterator::NextBreakablePosition(
+    unsigned pos,
+    unsigned len) const {
+  if (string_.IsNull()) [[unlikely]] {
     return 0;
+  }
   if (string_.Is8Bit()) {
     return NextBreakablePosition<LChar, lineBreakType>(
         pos, string_.Characters8(), len);
@@ -476,18 +579,21 @@ inline int LazyLineBreakIterator::NextBreakablePosition(int pos,
       pos, string_.Characters16(), len);
 }
 
-int LazyLineBreakIterator::NextBreakablePositionBreakCharacter(int pos) const {
+unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
+    unsigned pos) const {
   DCHECK_LE(start_offset_, string_.length());
   NonSharedCharacterBreakIterator iterator(StringView(string_, start_offset_));
-  DCHECK_GE(pos, 0);
-  DCHECK_GE(static_cast<unsigned>(pos), start_offset_);
+  DCHECK_GE(pos, start_offset_);
   pos -= start_offset_;
-  int next = iterator.Following(std::max(pos - 1, 0));
+  // `- 1` because the `Following()` returns the next opportunity after the
+  // given `offset`.
+  int32_t next =
+      iterator.Following(static_cast<int32_t>(pos > 0 ? pos - 1 : 0));
   return next != kTextBreakDone ? next + start_offset_ : string_.length();
 }
 
-int LazyLineBreakIterator::NextBreakablePosition(int pos,
-                                                 int len) const {
+unsigned LazyLineBreakIterator::NextBreakablePosition(unsigned pos,
+                                                      unsigned len) const {
   switch (break_type_) {
     case LineBreakType::kNormal:
     case LineBreakType::kPhrase:
@@ -499,24 +605,20 @@ int LazyLineBreakIterator::NextBreakablePosition(int pos,
     case LineBreakType::kBreakCharacter:
       return NextBreakablePositionBreakCharacter(pos);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NextBreakablePosition<LineBreakType::kNormal>(pos, len);
 }
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset) const {
   DCHECK_LE(offset, string_.length());
-  int next_break = NextBreakablePosition(offset, string_.length());
-  DCHECK_GE(next_break, 0);
-  return next_break;
+  return NextBreakablePosition(offset, string_.length());
 }
 
 unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset,
                                                      unsigned len) const {
-  DCHECK_LE(offset, string_.length());
+  DCHECK_LE(offset, len);
   DCHECK_LE(len, string_.length());
-  int next_break = NextBreakablePosition(offset, len);
-  DCHECK_GE(next_break, 0);
-  return next_break;
+  return NextBreakablePosition(offset, len);
 }
 
 unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
@@ -525,10 +627,10 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
   // +2 to ensure at least one code point is included.
   unsigned end = std::min(pos + 2, string_.length());
   while (pos > min) {
-    int next_break = NextBreakablePosition(pos, end);
-    DCHECK_GE(next_break, 0);
-    if (static_cast<unsigned>(next_break) == pos)
+    unsigned next_break = NextBreakablePosition(pos, end);
+    if (next_break == pos) {
       return next_break;
+    }
 
     // There's no break opportunities at |pos| or after.
     end = pos;
@@ -553,7 +655,7 @@ std::ostream& operator<<(std::ostream& ostream, LineBreakType line_break_type) {
     case LineBreakType::kPhrase:
       return ostream << "Phrase";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ostream << "LineBreakType::" << static_cast<int>(line_break_type);
 }
 
@@ -564,7 +666,7 @@ std::ostream& operator<<(std::ostream& ostream, BreakSpaceType break_space) {
     case BreakSpaceType::kAfterEverySpace:
       return ostream << "kAfterEverySpace";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ostream << "BreakSpaceType::" << static_cast<int>(break_space);
 }
 

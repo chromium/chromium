@@ -41,7 +41,8 @@ using AssistantOnboardingSuggestionViewTest = AshTestBase;
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->SetDarkModeEnabledForTest(false);
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   AssistantOnboardingSuggestionView* suggestion_view_0 =
       CreateSuggestionViewAt(0, widget.get());

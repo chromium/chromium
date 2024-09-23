@@ -6,6 +6,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -74,7 +75,7 @@ class PortForwardingTest: public InProcessBrowserTest {
     void set_run_loop(base::RunLoop* loop) { loop_ = loop; }
 
    private:
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
     bool skip_empty_devices_;
     raw_ptr<base::RunLoop> loop_;
   };

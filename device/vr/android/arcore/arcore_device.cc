@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/numerics/math_constants.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -279,7 +278,7 @@ void ArCoreDevice::OnSessionEnded() {
   // case the GL thread hadn't completed, or had initialized partially, to
   // ensure consistent state.
 
-  // TODO(https://crbug.com/849568): Instead of splitting the initialization
+  // TODO(crbug.com/41392761): Instead of splitting the initialization
   // of this class between construction and RequestSession, perform all the
   // initialization at once on the first successful RequestSession call.
 

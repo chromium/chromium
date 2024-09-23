@@ -12,6 +12,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/channel_layout.h"
 #include "media/base/fake_audio_renderer_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +90,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource {
       last_format_ = format;
     }
 
-    MediaStreamAudioSource::DeliverDataToTracks(data, reference_time);
+    MediaStreamAudioSource::DeliverDataToTracks(data, reference_time, {});
   }
 
  private:
@@ -214,7 +215,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
 
   void OnRenderError() {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {
@@ -236,7 +237,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
   int total_frames_captured_ = 0;
   int frames_captured_since_last_reconfig_ = 0;
 
-  raw_ptr<FakeMediaStreamAudioSource, ExperimentalRenderer> fake_source_;
+  raw_ptr<FakeMediaStreamAudioSource> fake_source_;
 };
 
 TEST_P(TrackAudioRendererTest, SingleCapture) {

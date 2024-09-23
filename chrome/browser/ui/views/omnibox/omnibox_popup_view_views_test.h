@@ -101,8 +101,6 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
 
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;
-  base::test::ScopedFeatureList feature_list_{
-      omnibox::kOmniboxKeywordModeRefresh};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_

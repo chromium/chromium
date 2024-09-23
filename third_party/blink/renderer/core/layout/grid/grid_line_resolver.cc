@@ -208,22 +208,17 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
   // to be in area defined by `subgridded_columns` and `subgridded_rows`.
   auto ClampSubgridAreas = [](NamedGridAreaMap& subgrid_map,
                               const NamedGridAreaMap& style_map,
-                              GridArea subgrid_span) -> void {
-    const wtf_size_t subgrid_column_span =
-        subgrid_span.columns.IsTranslatedDefinite()
-            ? subgrid_span.columns.IntegerSpan()
-            : 1;
-    const wtf_size_t subgrid_row_span = subgrid_span.rows.IsTranslatedDefinite()
-                                            ? subgrid_span.rows.IntegerSpan()
-                                            : 1;
+                              const GridArea& subgrid_span) {
     for (const auto& pair : style_map) {
-      auto position = pair.value;
+      auto clamped_area = pair.value;
 
-      position.columns.Intersect(0, subgrid_column_span);
-      position.rows.Intersect(0, subgrid_row_span);
-
-      GridArea clamped_area(position.rows, position.columns);
-      subgrid_map.Set(pair.key, clamped_area);
+      if (subgrid_span.columns.IsTranslatedDefinite()) {
+        clamped_area.columns.Intersect(0, subgrid_span.columns.IntegerSpan());
+      }
+      if (subgrid_span.rows.IsTranslatedDefinite()) {
+        clamped_area.rows.Intersect(0, subgrid_span.rows.IntegerSpan());
+      }
+      subgrid_map.Set(pair.key, std::move(clamped_area));
     }
   };
 
@@ -236,20 +231,17 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
   auto MergeAndClampGridAreasWithParent =
       [](NamedGridAreaMap& subgrid_map, const NamedGridAreaMap& parent_map,
          GridArea subgrid_span, bool is_parallel_to_parent) -> void {
+    const bool has_subgridded_columns =
+        subgrid_span.columns.IsTranslatedDefinite();
+    const bool has_subgridded_rows = subgrid_span.rows.IsTranslatedDefinite();
     wtf_size_t subgrid_column_start_line =
-        subgrid_span.columns.IsTranslatedDefinite()
-            ? subgrid_span.columns.StartLine()
-            : 0;
-    wtf_size_t subgrid_row_start_line = subgrid_span.rows.IsTranslatedDefinite()
-                                            ? subgrid_span.rows.StartLine()
-                                            : 0;
+        has_subgridded_columns ? subgrid_span.columns.StartLine() : 0;
+    wtf_size_t subgrid_row_start_line =
+        has_subgridded_rows ? subgrid_span.rows.StartLine() : 0;
     wtf_size_t subgrid_column_end_line =
-        subgrid_span.columns.IsTranslatedDefinite()
-            ? subgrid_span.columns.EndLine()
-            : 1;
-    wtf_size_t subgrid_row_end_line = subgrid_span.rows.IsTranslatedDefinite()
-                                          ? subgrid_span.rows.EndLine()
-                                          : 1;
+        has_subgridded_columns ? subgrid_span.columns.EndLine() : 1;
+    wtf_size_t subgrid_row_end_line =
+        has_subgridded_rows ? subgrid_span.rows.EndLine() : 1;
     for (const auto& pair : parent_map) {
       auto position = pair.value;
       DCHECK(position.columns.IsTranslatedDefinite());
@@ -267,12 +259,12 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       // https://www.w3.org/TR/css-grid-2/#subgrid-area-inheritance
       //
       // Discard grid areas that don't intersect the subgrid at all.
-      if (subgrid_span.rows.IsTranslatedDefinite() &&
-          !subgrid_span.rows.Intersects(position.rows)) {
-        continue;
-      }
-      if (subgrid_span.columns.IsTranslatedDefinite() &&
-          !subgrid_span.columns.Intersects(position.columns)) {
+      const bool rows_intersect =
+          has_subgridded_rows && subgrid_span.rows.Intersects(position.rows);
+      const bool columns_intersect =
+          has_subgridded_columns &&
+          subgrid_span.columns.Intersects(position.columns);
+      if (!rows_intersect && !columns_intersect) {
         continue;
       }
 
@@ -362,9 +354,8 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
                       subgrid_area);
   }
 
-  std::optional<NamedGridAreaMap> parent_areas =
-      parent_line_resolver.NamedAreasMap();
-  if (parent_line_resolver.NamedAreasMap()) {
+  if (const NamedGridAreaMap* parent_areas =
+          parent_line_resolver.NamedAreasMap()) {
     // If the subgrid doesn't have any grid areas defined, emplace an empty one.
     // We still need to call `MergeAndClampGridAreasWithParent` to copy and
     // clamp the parent's map to the subgrid range.
@@ -650,14 +641,14 @@ const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(
              : ComputedGridTrackList(track_direction).named_grid_lines;
 }
 
-std::optional<NamedGridAreaMap> GridLineResolver::NamedAreasMap() const {
+const NamedGridAreaMap* GridLineResolver::NamedAreasMap() const {
   if (subgrid_merged_named_areas_) {
-    return *subgrid_merged_named_areas_;
+    return &subgrid_merged_named_areas_.value();
   }
   if (auto& areas = style_->GridTemplateAreas()) {
-    return areas->named_areas;
+    return &areas->named_areas;
   }
-  return std::nullopt;
+  return nullptr;
 }
 
 const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(
@@ -815,10 +806,10 @@ int GridLineResolver::ResolveGridPosition(const GridPosition& position,
     case kSpanPosition:
       // 'auto' and span depend on the opposite position for resolution (e.g.
       // grid-row: auto / 1 or grid-column: span 3 / "myHeader").
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

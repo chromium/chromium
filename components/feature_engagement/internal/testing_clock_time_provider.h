@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_TESTING_CLOCK_TIME_PROVIDER_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_TESTING_CLOCK_TIME_PROVIDER_H_
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/internal/time_provider.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 class Clock;
@@ -20,8 +20,7 @@ namespace feature_engagement {
 class TestingClockTimeProvider : public TimeProvider {
  public:
   // The passed in clock must outlive this class.
-  TestingClockTimeProvider(const base::Clock& clock
-                               ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  TestingClockTimeProvider(const base::Clock& clock LIFETIME_BOUND,
                            base::Time initial_now);
 
   TestingClockTimeProvider(const TestingClockTimeProvider&) = delete;

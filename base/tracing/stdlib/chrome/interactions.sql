@@ -7,6 +7,7 @@
 -- Currently we only track Chrome page loads and their associated metrics.
 
 INCLUDE PERFETTO MODULE chrome.page_loads;
+INCLUDE PERFETTO MODULE chrome.scroll_interactions;
 INCLUDE PERFETTO MODULE chrome.startups;
 INCLUDE PERFETTO MODULE chrome.web_content_interactions;
 
@@ -55,4 +56,12 @@ SELECT
   'InteractionToFirstPaint' AS name,
   ts,
   dur
-FROM chrome_web_content_interactions;
+FROM chrome_web_content_interactions
+UNION ALL
+SELECT
+  id AS scoped_id,
+  'chrome_scroll_interactions' AS type,
+  'Scroll' AS name,
+  ts,
+  dur
+FROM chrome_scroll_interactions;

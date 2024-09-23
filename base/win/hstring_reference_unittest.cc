@@ -35,8 +35,8 @@ TEST(HStringReferenceTest, Init) {
   EXPECT_EQ(empty_string.Get(), nullptr);
   VerifyHSTRINGEquals(empty_string.Get(), kEmptyString);
 
-  // Passing a zero length and null string should also return a null HSTRING.
-  const HStringReference null_string(nullptr, 0);
+  // Passing a null string should also return a null HSTRING.
+  const HStringReference null_string(nullptr);
   EXPECT_EQ(null_string.Get(), nullptr);
   VerifyHSTRINGEquals(null_string.Get(), kEmptyString);
 }

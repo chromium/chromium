@@ -126,7 +126,8 @@ class LocalSessionEventHandlerImplTest : public testing::Test {
 
   void InitHandler() {
     handler_ = std::make_unique<LocalSessionEventHandlerImpl>(
-        &mock_delegate_, &mock_sync_sessions_client_, &session_tracker_);
+        &mock_delegate_, &mock_sync_sessions_client_, &session_tracker_,
+        /*is_new_session=*/true);
     window_getter_.router()->StartRoutingTo(handler_.get());
   }
 
@@ -806,9 +807,6 @@ TEST_F(LocalSessionEventHandlerImplTest, ShouldRemoveAllTabsOnEmptyWindow) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(LocalSessionEventHandlerImplTest, LoadPlaceholderTabFromDisk) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(syncer::kRestoreSyncedPlaceholderTabs);
-
   // Mimic the user opening a tab that is initially a placeholder tab.
   TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
   PlaceholderTabDelegate placeholder_tab(

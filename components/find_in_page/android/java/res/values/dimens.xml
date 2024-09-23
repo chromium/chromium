@@ -9,7 +9,7 @@ found in the LICENSE file.
     <dimen name="find_result_bar_touch_width">68dp</dimen>
     <dimen name="find_result_bar_draw_width">46dp</dimen>
     <dimen name="find_result_bar_separator_width">1dp</dimen>
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <dimen tools:ignore="PxUsage" name="find_result_bar_result_min_height">8px</dimen>
     <dimen tools:ignore="PxUsage" name="find_result_bar_active_min_height">16px</dimen>
     <dimen tools:ignore="PxUsage" name="find_result_bar_vertical_padding">8px</dimen>

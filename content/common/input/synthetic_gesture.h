@@ -70,6 +70,8 @@ class CONTENT_EXPORT SyntheticGesture {
   void DidQueue(base::WeakPtr<SyntheticGestureController> controller);
 
   bool IsFromDevToolsDebugger() const;
+  float GetVsyncOffsetMs() const;
+  content::mojom::InputEventPattern InputEventPattern() const;
 
  protected:
   // This is null until the gesture is queued with a controller. It must be set

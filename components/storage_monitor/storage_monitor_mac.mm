@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
@@ -70,8 +69,7 @@ StorageInfo BuildStorageInfo(
 
   CFURLRef url = base::apple::GetValueFromDictionary<CFURLRef>(
       dict, kDADiskDescriptionVolumePathKey);
-  base::FilePath location =
-      base::apple::NSURLToFilePath(base::apple::CFToNSPtrCast(url));
+  base::FilePath location = base::apple::CFURLToFilePath(url);
   CFNumberRef size_number = base::apple::GetValueFromDictionary<CFNumberRef>(
       dict, kDADiskDescriptionMediaSizeKey);
   uint64_t size_in_bytes = 0;

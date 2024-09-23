@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -189,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(LacrosAppsPublisherTest, NoRequestAccessingForWebApp) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("app.com", "/ssl/google.html");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   web_app_info->scope = url;
   auto app_id = web_app::test::InstallWebApp(browser()->profile(),
                                              std::move(web_app_info));

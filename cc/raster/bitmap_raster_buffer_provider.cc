@@ -91,13 +91,6 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         pixels_, format, resource_size_, stride, raster_source,
         raster_full_rect, playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
-
-    auto shared_image_interface =
-        backing_->frame_sink->shared_image_interface();
-    if (backing_->shared_image && shared_image_interface) {
-      backing_->mailbox_sync_token =
-          shared_image_interface->GenVerifiedSyncToken();
-    }
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
@@ -142,12 +135,12 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     auto sii = frame_sink_->shared_image_interface();
     if (sii) {
       auto shared_image_mapping = sii->CreateSharedImage(
-          viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider");
+          {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "BitmapRasterBufferProvider"});
       backing->shared_image = std::move(shared_image_mapping.shared_image);
-      backing->mapping = std::move(shared_image_mapping.mapping);
       CHECK(backing->shared_image);
+      backing->mapping = std::move(shared_image_mapping.mapping);
+      backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
     } else {
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       base::MappedReadOnlyRegion shm =

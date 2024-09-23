@@ -14,7 +14,7 @@
 namespace syncer {
 
 UploadState GetUploadToGoogleState(const SyncService* sync_service,
-                                   ModelType type) {
+                                   DataType type) {
   // Without a SyncService, or in local-sync mode, there's no upload to Google.
   if (!sync_service || sync_service->IsLocalSyncEnabled()) {
     return UploadState::NOT_ACTIVE;
@@ -25,13 +25,13 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
     return UploadState::NOT_ACTIVE;
   }
 
-  // If the given ModelType is encrypted with a custom passphrase, we also
+  // If the given DataType is encrypted with a custom passphrase, we also
   // consider uploading inactive, since Google can't read the data.
   // Note that encryption is tricky: Some data types (e.g. PASSWORDS) are always
   // encrypted, but not necessarily with a custom passphrase. On the other hand,
   // some data types are never encrypted (e.g. DEVICE_INFO), even if the
   // "encrypt everything" setting is enabled.
-  if (sync_service->GetUserSettings()->GetEncryptedDataTypes().Has(type) &&
+  if (sync_service->GetUserSettings()->GetAllEncryptedDataTypes().Has(type) &&
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return UploadState::NOT_ACTIVE;
   }
@@ -63,14 +63,14 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
       if (!sync_service->GetActiveDataTypes().Has(type)) {
         return UploadState::NOT_ACTIVE;
       }
-      // TODO(crbug.com/831579): We only know if the refresh token is actually
+      // TODO(crbug.com/41382444): We only know if the refresh token is actually
       // valid (no auth error) after we've tried talking to the Sync server.
       if (!sync_service->HasCompletedSyncCycle()) {
         return UploadState::INITIALIZING;
       }
       return UploadState::ACTIVE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UploadState::NOT_ACTIVE;
 }
 
@@ -96,9 +96,9 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
     return false;
   }
 
-  const ModelTypeSet encrypted_types =
-      service->GetUserSettings()->GetEncryptedDataTypes();
-  if (Intersection(service->GetActiveDataTypes(), encrypted_types).Empty()) {
+  const DataTypeSet encrypted_types =
+      service->GetUserSettings()->GetAllEncryptedDataTypes();
+  if (Intersection(service->GetActiveDataTypes(), encrypted_types).empty()) {
     // No point in offering the user a new encryption method if they are not
     // syncing any encrypted types.
     return false;

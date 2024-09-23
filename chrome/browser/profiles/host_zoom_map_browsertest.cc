@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Regression test for crbug.com/364399.
 IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
-  const double default_zoom_level = blink::PageZoomFactorToZoomLevel(1.5);
+  const double default_zoom_level = blink::ZoomFactorToZoomLevel(1.5);
 
   const char kTestURLTemplate1[] = "http://host1:%u/";
   const char kTestURLTemplate2[] = "http://host2:%u/";
@@ -292,26 +292,26 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest, ToggleDefaultZoomLevel) {
   SetDefaultZoomLevel(default_zoom_level);
   observer.BlockUntilZoomLevelForHostHasChanged(test_url1.host());
   EXPECT_TRUE(
-      blink::PageZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url1)));
+      blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url1)));
 
   GURL test_url2 = ConstructTestServerURL(kTestURLTemplate2);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(
-      blink::PageZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
+      blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   zoom::PageZoom::Zoom(web_contents, content::PAGE_ZOOM_OUT);
   observer.BlockUntilZoomLevelForHostHasChanged(test_url2.host());
   EXPECT_FALSE(
-      blink::PageZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
+      blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
 
   zoom::PageZoom::Zoom(web_contents, content::PAGE_ZOOM_IN);
   observer.BlockUntilZoomLevelForHostHasChanged(test_url2.host());
   EXPECT_TRUE(
-      blink::PageZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
+      blink::ZoomValuesEqual(default_zoom_level, GetZoomLevel(test_url2)));
 
   // Now both tabs should be at the default zoom level, so there should not be
   // any per-host values saved either to Pref, or internally in HostZoomMap.

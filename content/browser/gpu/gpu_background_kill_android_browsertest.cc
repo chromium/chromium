@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 
+#include "base/run_loop.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
@@ -44,7 +45,7 @@ class GpuKillBackgroundTest : public ContentBrowserTest {
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
 };
 
-// TODO(crbug.com/1471932): Flaky.
+// TODO(crbug.com/40926381): Flaky.
 IN_PROC_BROWSER_TEST_F(GpuKillBackgroundTest, DISABLED_Simple) {
   ASSERT_FALSE(IsChannelEstablished());
 

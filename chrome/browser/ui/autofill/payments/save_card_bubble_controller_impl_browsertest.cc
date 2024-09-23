@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +61,9 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    // Ensure that the browser window is active.
+    CHECK(ui_test_utils::BringBrowserWindowToFront(browser()));
+
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -68,17 +73,18 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     controller_ = SaveCardBubbleControllerImpl::FromWebContents(web_contents);
     CHECK(controller_);
 
-    AutofillClient::SaveCreditCardOptions options =
-        AutofillClient::SaveCreditCardOptions()
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_should_request_name_from_user(
                 name.find("WithCardholderNameTextfield") != std::string::npos)
             .with_should_request_expiration_date_from_user(
                 name.find("WithCardExpirationDateDropDownBox") !=
                 std::string::npos)
-            .with_card_save_type(
-                name.find("CvcSave") != std::string::npos
-                    ? AutofillClient::CardSaveType::kCvcSaveOnly
-                    : AutofillClient::CardSaveType::kCardSaveOnly)
+            .with_card_save_type(name.find("CvcSave") != std::string::npos
+                                     ? payments::PaymentsAutofillClient::
+                                           CardSaveType::kCvcSaveOnly
+                                     : payments::PaymentsAutofillClient::
+                                           CardSaveType::kCardSaveOnly)
             .with_show_prompt(true);
 
     BubbleType bubble_type = BubbleType::INACTIVE;
@@ -178,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
 }
 
 // Invokes a sign-in promo bubble.
-// TODO(crbug.com/855186): This browsertest isn't emulating the environment
+// TODO(crbug.com/40581833): This browsertest isn't emulating the environment
 //   quite correctly; disabling test for now until cause is found.
 /*
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_Promo) {

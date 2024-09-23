@@ -27,6 +27,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "chromium_with_telemetry_dependencies",
                   "use_clang_coverage",
                   "reclient_test"
                 ],
@@ -55,9 +56,19 @@
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
+      "RBE_compression_threshold": "0",
       "RBE_exec_timeout": "2m"
     },
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted-test"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

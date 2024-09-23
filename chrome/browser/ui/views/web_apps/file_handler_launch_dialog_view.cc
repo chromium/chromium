@@ -18,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -48,10 +49,10 @@ FileHandlerLaunchDialogView::FileHandlerLaunchDialogView(
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_WEB_APP_FILE_HANDLING_POSITIVE_BUTTON));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_WEB_APP_FILE_HANDLING_NEGATIVE_BUTTON));
 }
 

@@ -5,6 +5,7 @@
 #include "components/sync/model/syncable_service_based_bridge.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,13 +18,14 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
@@ -76,7 +78,7 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
     case EntityChange::ACTION_UPDATE:
       return SyncChange::ACTION_UPDATE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SyncChange::ACTION_UPDATE;
 }
 
@@ -84,19 +86,18 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
 // parameter is first for binding purposes.
 std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
     SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(in_memory_store);
   DCHECK(in_memory_store->empty());
   DCHECK(record_list);
 
-  for (const ModelTypeStore::Record& record : *record_list) {
+  for (const DataTypeStore::Record& record : *record_list) {
     sync_pb::PersistedEntityData persisted_entity;
     if (!persisted_entity.ParseFromString(record.value)) {
       return ModelError(FROM_HERE, "Failed deserializing data.");
     }
 
-    in_memory_store->emplace(record.id,
-                             std::move(*persisted_entity.mutable_specifics()));
+    in_memory_store->emplace(record.id, std::move(persisted_entity));
   }
 
   return std::nullopt;
@@ -107,12 +108,12 @@ std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
 class LocalChangeProcessor : public SyncChangeProcessor {
  public:
   LocalChangeProcessor(
-      ModelType type,
+      DataType type,
       const base::RepeatingCallback<void(const std::optional<ModelError>&)>&
           error_callback,
-      ModelTypeStore* store,
+      DataTypeStore* store,
       SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
-      ModelTypeChangeProcessor* other)
+      DataTypeLocalChangeProcessor* other)
       : type_(type),
         error_callback_(error_callback),
         store_(store),
@@ -138,7 +139,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
       return processor_error;
     }
 
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
 
     for (const SyncChange& change : change_list) {
@@ -157,9 +158,10 @@ class LocalChangeProcessor : public SyncChangeProcessor {
           const std::string storage_key = client_tag_hash.value();
           DCHECK(!storage_key.empty());
 
-          (*in_memory_store_)[storage_key] = change.sync_data().GetSpecifics();
           sync_pb::PersistedEntityData persisted_entity =
               CreatePersistedFromLocalData(change.sync_data());
+
+          (*in_memory_store_)[storage_key] = persisted_entity;
           batch->WriteData(storage_key, persisted_entity.SerializeAsString());
 
           other_->Put(storage_key,
@@ -185,7 +187,8 @@ class LocalChangeProcessor : public SyncChangeProcessor {
             batch->GetMetadataChangeList()->ClearMetadata(storage_key);
             other_->UntrackEntityForStorageKey(storage_key);
           } else {
-            other_->Delete(storage_key, batch->GetMetadataChangeList());
+            other_->Delete(storage_key, DeletionOrigin::Unspecified(),
+                           batch->GetMetadataChangeList());
           }
 
           in_memory_store_->erase(storage_key);
@@ -202,24 +205,24 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   }
 
  private:
-  const ModelType type_;
+  const DataType type_;
   const base::RepeatingCallback<void(const std::optional<ModelError>&)>
       error_callback_;
-  const raw_ptr<ModelTypeStore> store_;
+  const raw_ptr<DataTypeStore> store_;
   const raw_ptr<SyncableServiceBasedBridge::InMemoryStore, DanglingUntriaged>
       in_memory_store_;
-  const raw_ptr<ModelTypeChangeProcessor> other_;
+  const raw_ptr<DataTypeLocalChangeProcessor> other_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
 
 SyncableServiceBasedBridge::SyncableServiceBasedBridge(
-    ModelType type,
-    OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    DataType type,
+    OnceDataTypeStoreFactory store_factory,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     SyncableService* syncable_service)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       type_(type),
       syncable_service_(syncable_service) {
   DCHECK(syncable_service_);
@@ -233,6 +236,8 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
 
 SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("sync",
+               "SyncableServiceBasedBridge::~SyncableServiceBasedBridge");
   // Inform the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.
   if (syncable_service_started_) {
@@ -243,7 +248,7 @@ SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
 std::unique_ptr<MetadataChangeList>
 SyncableServiceBasedBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
@@ -283,35 +288,48 @@ SyncableServiceBasedBridge::ApplyIncrementalSyncChanges(
   return syncable_service_->ProcessSyncChanges(FROM_HERE, sync_change_list);
 }
 
-void SyncableServiceBasedBridge::GetData(StorageKeyList storage_keys,
-                                         DataCallback callback) {
+std::unique_ptr<DataBatch> SyncableServiceBasedBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store_);
-  store_->ReadData(
-      storage_keys,
-      base::BindOnce(&SyncableServiceBasedBridge::OnReadDataForProcessor,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  auto batch = std::make_unique<MutableDataBatch>();
+  for (const std::string& storage_key : storage_keys) {
+    auto it = in_memory_store_.find(storage_key);
+    if (it != in_memory_store_.end()) {
+      // Note that client tag hash is used as storage key too.
+      batch->Put(storage_key,
+                 ConvertPersistedToEntityData(
+                     ClientTagHash::FromHashed(it->first), it->second));
+    }
+  }
+  return batch;
 }
 
-void SyncableServiceBasedBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<DataBatch>
+SyncableServiceBasedBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store_);
-  store_->ReadAllData(
-      base::BindOnce(&SyncableServiceBasedBridge::OnReadAllDataForProcessor,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  auto batch = std::make_unique<MutableDataBatch>();
+  for (const auto& [storage_key, persisted_entity_data] : in_memory_store_) {
+    // Note that client tag hash is used as storage key too.
+    batch->Put(storage_key, ConvertPersistedToEntityData(
+                                ClientTagHash::FromHashed(storage_key),
+                                persisted_entity_data));
+  }
+  return batch;
 }
 
 std::string SyncableServiceBasedBridge::GetClientTag(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetClientTag().
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetStorageKey().
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -364,10 +382,10 @@ size_t SyncableServiceBasedBridge::EstimateSyncOverheadMemoryUsage() const {
 // static
 std::unique_ptr<SyncChangeProcessor>
 SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
-    ModelType type,
-    ModelTypeStore* store,
+    DataType type,
+    DataTypeStore* store,
     InMemoryStore* in_memory_store,
-    ModelTypeChangeProcessor* other) {
+    DataTypeLocalChangeProcessor* other) {
   return std::make_unique<LocalChangeProcessor>(
       type, /*error_callback=*/base::DoNothing(), store, in_memory_store,
       other);
@@ -375,7 +393,7 @@ SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
 
 void SyncableServiceBasedBridge::OnStoreCreated(
     const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore> store) {
+    std::unique_ptr<DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -442,7 +460,7 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
   // scratch, which will cause the eventual refetching of all entities from the
   // server.
   if (!IsInitialSyncDone(
-          metadata_batch->GetModelTypeState().initial_sync_state()) &&
+          metadata_batch->GetDataTypeState().initial_sync_state()) &&
       !in_memory_store_.empty()) {
     in_memory_store_.clear();
     store_->DeleteAllDataAndMetadata(base::DoNothing());
@@ -461,10 +479,10 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
     if (auto error = StartSyncableService()) {
       change_processor()->ReportError(*error);
     } else {
-      // Using the same range as Sync.ModelTypeConfigurationTime.* metric.
+      // Using the same range as Sync.DataTypeConfigurationTime.* metric.
       base::UmaHistogramCustomTimes(
           base::StringPrintf("Sync.SyncableServiceStartTime.%s",
-                             ModelTypeToHistogramSuffix(type_)),
+                             DataTypeToHistogramSuffix(type_)),
           base::Time::Now() - init_start_time_,
           /*min=*/base::Milliseconds(1),
           /*max=*/base::Seconds(60), /*buckets=*/50);
@@ -481,10 +499,11 @@ std::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
   // this function is reached only if sync is starting already.
   SyncDataList initial_sync_data;
   initial_sync_data.reserve(in_memory_store_.size());
-  for (const auto& [storage_key, specifics] : in_memory_store_) {
+  for (const auto& [storage_key, persisted_entity_data] : in_memory_store_) {
     // Note that client tag hash is used as storage key too.
-    initial_sync_data.push_back(SyncData::CreateRemoteData(
-        std::move(specifics), ClientTagHash::FromHashed(storage_key)));
+    initial_sync_data.push_back(
+        SyncData::CreateRemoteData(persisted_entity_data.specifics(),
+                                   ClientTagHash::FromHashed(storage_key)));
   }
 
   auto error_callback =
@@ -508,8 +527,7 @@ std::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
 SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
     std::unique_ptr<MetadataChangeList> initial_metadata_change_list,
     EntityChangeList input_entity_change_list) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   batch->TakeMetadataChangesFrom(std::move(initial_metadata_change_list));
 
   SyncChangeList output_sync_change_list;
@@ -520,12 +538,13 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
       case EntityChange::ACTION_DELETE: {
         const std::string& storage_key = change->storage_key();
         DCHECK_NE(0U, in_memory_store_.count(storage_key));
-        DVLOG(1) << ModelTypeToDebugString(type_)
+        DVLOG(1) << DataTypeToDebugString(type_)
                  << ": Processing deletion with storage key: " << storage_key;
         output_sync_change_list.emplace_back(
             FROM_HERE, SyncChange::ACTION_DELETE,
-            SyncData::CreateRemoteData(in_memory_store_[storage_key],
-                                       ClientTagHash::FromHashed(storage_key)));
+            SyncData::CreateRemoteData(
+                in_memory_store_[storage_key].specifics(),
+                ClientTagHash::FromHashed(storage_key)));
 
         // For tombstones, there is no actual data, which means no client tag
         // hash either, but the processor provides the storage key.
@@ -546,7 +565,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
 
       case EntityChange::ACTION_UPDATE: {
         const std::string& storage_key = change->data().client_tag_hash.value();
-        DVLOG(1) << ModelTypeToDebugString(type_)
+        DVLOG(1) << DataTypeToDebugString(type_)
                  << ": Processing add/update with key: " << storage_key;
 
         output_sync_change_list.emplace_back(
@@ -554,10 +573,11 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
             SyncData::CreateRemoteData(change->data().specifics,
                                        change->data().client_tag_hash));
 
-        batch->WriteData(
-            storage_key,
-            CreatePersistedFromRemoteData(change->data()).SerializeAsString());
-        in_memory_store_[storage_key] = change->data().specifics;
+        sync_pb::PersistedEntityData persisted_entity_data =
+            CreatePersistedFromRemoteData(change->data());
+        batch->WriteData(storage_key,
+                         persisted_entity_data.SerializeAsString());
+        in_memory_store_[storage_key] = std::move(persisted_entity_data);
         break;
       }
     }
@@ -569,42 +589,6 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
                      weak_ptr_factory_.GetWeakPtr()));
 
   return output_sync_change_list;
-}
-
-void SyncableServiceBasedBridge::OnReadDataForProcessor(
-    DataCallback callback,
-    const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list,
-    std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
-  OnReadAllDataForProcessor(std::move(callback), error, std::move(record_list));
-}
-
-void SyncableServiceBasedBridge::OnReadAllDataForProcessor(
-    DataCallback callback,
-    const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (error) {
-    change_processor()->ReportError(*error);
-    return;
-  }
-
-  auto batch = std::make_unique<MutableDataBatch>();
-  for (const ModelTypeStore::Record& record : *record_list) {
-    sync_pb::PersistedEntityData persisted_entity;
-    if (record.id.empty() || !persisted_entity.ParseFromString(record.value)) {
-      change_processor()->ReportError(
-          {FROM_HERE, "Failed deserializing data."});
-      return;
-    }
-
-    // Note that client tag hash is used as storage key too.
-    batch->Put(record.id, ConvertPersistedToEntityData(
-                              ClientTagHash::FromHashed(record.id),
-                              std::move(persisted_entity)));
-  }
-  std::move(callback).Run(std::move(batch));
 }
 
 void SyncableServiceBasedBridge::ReportErrorIfSet(

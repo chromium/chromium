@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,19 +29,34 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillVcnEnrollBottomSheetContentTest {
+    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING
+        = "robolectric.useRealScrolling";
+
     private View mContentView;
     private ScrollView mScrollView;
     private boolean mDismissed;
     private AutofillVcnEnrollBottomSheetContent mContent;
+    private boolean mIsRealScrollingEnabled;
 
     @Before
     public void setUp() {
+        mIsRealScrollingEnabled = Boolean.parseBoolean(
+            System.getProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING));
+        // Disable Robolectric's real scrolling for legacy compatibility.
+        // We need to remove it after migrating tests to real scrolling.
+        System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING, "false");
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mContentView = new View(activity);
         mScrollView = new ScrollView(activity);
         mDismissed = false;
         mContent =
                 new AutofillVcnEnrollBottomSheetContent(mContentView, mScrollView, this::onDismiss);
+    }
+
+    @After
+    public void tearDown() {
+        System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING,
+            mIsRealScrollingEnabled ? "true" : "false");
     }
 
     private void onDismiss() {
@@ -92,7 +108,7 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
     }
 
     @Test
-    public void testBottomSheetAccessibilityContentDescriotion() {
+    public void testBottomSheetAccessibilityContentDescription() {
         assertThat(
                 mContent.getSheetContentDescriptionStringId(),
                 equalTo(R.string.autofill_virtual_card_enroll_content_description));

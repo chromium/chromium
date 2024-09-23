@@ -222,12 +222,6 @@ std::vector<raw_ptr<UiElement, VectorExperimental>>& UiScene::GetAllElements() {
   return all_elements_;
 }
 
-UiScene::Elements UiScene::GetElementsToHitTest() {
-  return GetVisibleElementsWithPredicate(
-      root_element_.get(),
-      [](UiElement* element) { return element->IsHitTestable(); });
-}
-
 UiScene::MutableElements UiScene::GetVisibleElementsMutable() {
   return GetVisibleElementsWithPredicateMutable(
       root_element_.get(), [](UiElement* element) { return true; });

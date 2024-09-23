@@ -8,34 +8,52 @@
 #include <memory>
 #include <string>
 
-#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
 
 class MockAutofillSaveCardInfoBarDelegateMobile
-    : public autofill::AutofillSaveCardInfoBarDelegateMobile {
+    : public autofill::AutofillSaveCardInfoBarDelegateIOS {
  public:
   MockAutofillSaveCardInfoBarDelegateMobile(
-      autofill::AutofillClient::SaveCreditCardOptions options,
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const autofill::CreditCard& card,
-      absl::variant<autofill::AutofillClient::LocalSaveCardPromptCallback,
-                    autofill::AutofillClient::UploadSaveCardPromptCallback>
-          callback,
+      absl::variant<autofill::payments::PaymentsAutofillClient::
+                        LocalSaveCardPromptCallback,
+                    autofill::payments::PaymentsAutofillClient::
+                        UploadSaveCardPromptCallback> callback,
       const autofill::LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
-  MOCK_METHOD3(UpdateAndAccept,
-               bool(std::u16string cardholder_name,
-                    std::u16string expiration_date_month,
-                    std::u16string expiration_date_year));
-  MOCK_METHOD1(OnLegalMessageLinkClicked, void(GURL url));
-  MOCK_METHOD0(InfoBarDismissed, void());
+  MOCK_METHOD(bool,
+              UpdateAndAccept,
+              (std::u16string cardholder_name,
+               std::u16string expiration_date_month,
+               std::u16string expiration_date_year),
+              (override));
+  MOCK_METHOD(void, OnLegalMessageLinkClicked, (GURL url), (override));
+  MOCK_METHOD(void, InfoBarDismissed, (), (override));
+  MOCK_METHOD(void,
+              CreditCardUploadCompleted,
+              (bool card_saved,
+               std::optional<autofill::payments::PaymentsAutofillClient::
+                                 OnConfirmationClosedCallback>
+                   on_confirmation_closed_callback),
+              (override));
+  MOCK_METHOD(void, OnConfirmationClosed, (), (override));
+  MOCK_METHOD(bool, IsCreditCardUploadComplete, (), (override));
+  MOCK_METHOD(void,
+              SetCreditCardUploadCompletionCallback,
+              (base::OnceCallback<void(bool card_saved)>
+                   credit_card_upload_completion_callback),
+              (override));
+  MOCK_METHOD(void, SetInfobarIsPresenting, (bool is_presenting), (override));
 };
 
 class MockAutofillSaveCardInfoBarDelegateMobileFactory {

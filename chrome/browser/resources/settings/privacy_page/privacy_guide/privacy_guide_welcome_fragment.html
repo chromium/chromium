@@ -16,6 +16,7 @@
 
   .footer {
     align-items: center;
+    animation: fade-in var(--privacy-guide-animation-duration);
     bottom: calc(-1 * var(--privacy-guide-footer-total-height));
     display: flex;
     justify-content: flex-end;
@@ -24,12 +25,8 @@
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
 
-  :host-context([is-privacy-guide-v2]) picture {
+  picture {
     animation: fade-in 1500ms, slide-in 300ms;
-  }
-
-  :host-context([is-privacy-guide-v2]) .footer {
-    animation: fade-in var(--privacy-guide-animation-duration);
   }
 </style>
 <div class="headline-container">

@@ -211,7 +211,7 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
       const base::TimeTicks& last_active) {
     auto contents = CreateTestWebContents();
     auto* tester = content::WebContentsTester::For(contents.get());
-    tester->SetLastActiveTime(last_active);
+    tester->SetLastActiveTimeTicks(last_active);
 
 #if !BUILDFLAG(IS_ANDROID)
     tester->NavigateAndCommit(url);

@@ -5,9 +5,8 @@ package org.chromium.chrome.browser.feed.signinbottomsheet;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -16,13 +15,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
@@ -45,7 +44,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             BottomSheetController controller,
             Profile profile,
-            @Nullable AccountPickerBottomSheetStrings bottomSheetStrings,
+            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @Nullable Runnable onSigninSuccessCallback,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
@@ -56,16 +55,31 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
         mSigninAccessPoint = signinAccessPoint;
-        mBottomSheetStrings =
-                bottomSheetStrings != null ? bottomSheetStrings : new BottomSheetStrings();
+        mBottomSheetStrings = bottomSheetStrings;
     }
 
+    /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public void destroy() {}
+    public void onAccountPickerDestroy() {}
 
+    /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public void signIn(
-            CoreAccountInfo accountInfo, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+    public boolean canHandleAddAccount() {
+        return false;
+    }
+
+    /** Implements {@link AccountPickerDelegate}. */
+    @Override
+    public void addAccount() {
+        // TODO(b/326019991): Remove this exception along with the delegate implementation once
+        // all bottom sheet entry points will be started from `SigninAndHistorySyncActivity`.
+        throw new UnsupportedOperationException(
+                "SigninBottomSheetCoordinator.addAccount() should never be called.");
+    }
+
+    /** Implements {@link AccountPickerDelegate}. */
+    @Override
+    public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
         SigninManager.SignInCallback callback =
                 new SigninManager.SignInCallback() {
                     @Override
@@ -84,13 +98,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         RecordHistogram.recordBooleanHistogram(
                                 "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
                                 false);
-                        // onSignInErrorCallback is called by the WebSigninBridge which is
-                        // not implemented in this signin flow as we do not need to wait for
-                        // cookies to propagate before proceeding with the Feed refresh.
-                        // Instead of calling AccountPickerBottomSheetMediator.onSigninFailed()
-                        // from the signin bridge we directly perform the creation of the "try
-                        // again" bottom sheet view:
-                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+                        mediator.switchToTryAgainView();
                     }
                 };
 
@@ -102,9 +110,22 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         }
     }
 
+    /** Implements {@link AccountPickerDelegate}. */
     @Override
-    public @EntryPoint int getEntryPoint() {
-        return EntryPoint.FEED_ACTION;
+    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+        mSigninManager.isAccountManaged(accountInfo, callback);
+    }
+
+    /** Implements {@link AccountPickerDelegate}. */
+    @Override
+    public void setUserAcceptedAccountManagement(boolean confirmed) {
+        mSigninManager.setUserAcceptedAccountManagement(confirmed);
+    }
+
+    /** Implements {@link AccountPickerDelegate}. */
+    @Override
+    public String extractDomainName(String accountEmail) {
+        return mSigninManager.extractDomainName(accountEmail);
     }
 
     public void show() {
@@ -114,7 +135,10 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         mController,
                         this,
                         mBottomSheetStrings,
-                        mDeviceLockActivityLauncher);
+                        mDeviceLockActivityLauncher,
+                        AccountPickerLaunchMode.DEFAULT,
+                        /* isWebSignin= */ false,
+                        mSigninAccessPoint);
     }
 
     private void makeSigninNotAllowedToast() {
@@ -134,35 +158,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         return mAccountPickerBottomSheetCoordinator.getBottomSheetViewForTesting();
     }
 
-    @VisibleForTesting
-    public void setAccountPickerBottomSheetCoordinator(
-            AccountPickerBottomSheetCoordinator accountPickerBottomSheetCoordinator) {
-        this.mAccountPickerBottomSheetCoordinator = accountPickerBottomSheetCoordinator;
-    }
-
     public void setToastOverrideForTesting() {
         this.mSetTestToast = true;
-    }
-
-    /** Stores bottom sheet strings for signin from back of card entry point */
-    public static class BottomSheetStrings implements AccountPickerBottomSheetStrings {
-        /** Returns the title string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getTitle() {
-            return R.string.signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin;
-        }
-
-        /** Returns the subtitle string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getSubtitle() {
-            return R.string
-                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin;
-        }
-
-        /** Returns the cancel button string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getDismissButton() {
-            return R.string.close;
-        }
     }
 }

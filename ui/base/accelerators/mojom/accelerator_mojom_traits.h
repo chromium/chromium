@@ -24,7 +24,6 @@ struct EnumTraits<ui::mojom::AcceleratorKeyState, ui::Accelerator::KeyState> {
         return ui::mojom::AcceleratorKeyState::RELEASED;
     }
     NOTREACHED();
-    return ui::mojom::AcceleratorKeyState::PRESSED;
   }
 
   static bool FromMojom(ui::mojom::AcceleratorKeyState input,
@@ -38,7 +37,6 @@ struct EnumTraits<ui::mojom::AcceleratorKeyState, ui::Accelerator::KeyState> {
         return true;
     }
     NOTREACHED();
-    return false;
   }
 };
 

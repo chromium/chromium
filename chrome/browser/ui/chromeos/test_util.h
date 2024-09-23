@@ -7,6 +7,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window.h"
@@ -27,14 +28,14 @@ class Widget;
 //
 // (*) Typically, these tests are built into the `browser_tests` target for Ash,
 // and into the `lacros_chrome_browsertests` target for Lacros.
-class ChromeOSBrowserUITest : public InProcessBrowserTest {
+class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
  public:
   ChromeOSBrowserUITest() = default;
   ChromeOSBrowserUITest(const ChromeOSBrowserUITest&) = delete;
   ChromeOSBrowserUITest& operator=(const ChromeOSBrowserUITest&) = delete;
   ~ChromeOSBrowserUITest() override = default;
 
-  // InProcessBrowserTest:
+  // MixinBasedInProcessBrowserTest:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
   void TearDownOnMainThread() override;
 

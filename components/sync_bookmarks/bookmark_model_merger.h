@@ -33,7 +33,7 @@ class SyncedBookmarkTracker;
 // Responsible for merging local and remote bookmark models when bookmark sync
 // is enabled for the first time by the user (i.e. no sync metadata exists
 // locally), so we need a best-effort merge based on similarity. It is used by
-// the BookmarkModelTypeProcessor().
+// the BookmarkDataTypeProcessor().
 class BookmarkModelMerger {
  public:
   // |bookmark_model|, |favicon_service| and |bookmark_tracker| must not be

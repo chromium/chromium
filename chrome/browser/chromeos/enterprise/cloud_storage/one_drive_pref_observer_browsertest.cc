@@ -34,6 +34,10 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif
+
 using extensions::api::odfs_config_private::Mount;
 using testing::ElementsAreArray;
 
@@ -134,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
   ASSERT_NE(crosapi::browser_util::IsLacrosEnabled(),
             OneDrivePrefObserverServiceExists());
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

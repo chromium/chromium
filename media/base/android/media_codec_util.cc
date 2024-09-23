@@ -16,11 +16,13 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/media_codec_bridge.h"
-#include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
-#include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 #include "media/base/video_codecs.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
+#include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -114,14 +116,12 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
 std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec,
                                                    SampleFormat sample_format) {
   // Passthrough is possible for some bitstream formats.
-  const bool is_passthrough = sample_format == kSampleFormatDts ||
-                              sample_format == kSampleFormatDtsxP2 ||
-                              sample_format == kSampleFormatAc3 ||
-                              sample_format == kSampleFormatEac3 ||
-                              sample_format == kSampleFormatMpegHAudio;
-
-  if (IsPassthroughAudioFormat(codec) || is_passthrough)
+  if (sample_format == kSampleFormatDts ||
+      sample_format == kSampleFormatDtsxP2 ||
+      sample_format == kSampleFormatAc3 || sample_format == kSampleFormatEac3 ||
+      sample_format == kSampleFormatMpegHAudio) {
     return kBitstreamAudioMimeType;
+  }
 
   switch (codec) {
     case AudioCodec::kMP3:
@@ -272,20 +272,6 @@ bool MediaCodecUtil::IsSetOutputSurfaceSupported() {
 }
 
 // static
-bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
-  switch (codec) {
-    case AudioCodec::kAC3:
-    case AudioCodec::kEAC3:
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSXP2:
-    case AudioCodec::kMpegHAudio:
-      return true;
-    default:
-      return false;
-  }
-}
-
-// static
 std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     std::string_view name,
     std::optional<int> host_sdk_int) {
@@ -310,6 +296,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
   using base::android::SDK_VERSION_Q;
   using base::android::SDK_VERSION_R;
   using base::android::SDK_VERSION_Sv2;
+  using base::android::SDK_VERSION_U;
   constexpr CodecAlignment kCodecAlignmentMap[] = {
       // Codec2 software decoders.
       {"c2.android.avc", gfx::Size(128, 2), SDK_VERSION_Sv2},
@@ -324,6 +311,7 @@ std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
       {"omx.google.(h264|hevc|vp8|vp9)", gfx::Size(2, 2)},
 
       // Google AV1 hardware decoder.
+      {"c2.google.av1", gfx::Size(64, 16), SDK_VERSION_U},
       {"c2.google.av1", gfx::Size(64, 8)},
 
       // Qualcomm

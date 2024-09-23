@@ -61,11 +61,8 @@ std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     SigninClient* client,
     AccountTrackerService* account_tracker_service,
     ProfileOAuth2TokenService* token_service) {
-  std::unique_ptr<PrimaryAccountManager> primary_account_manager;
-  primary_account_manager = std::make_unique<PrimaryAccountManager>(
-      client, token_service, account_tracker_service);
-  primary_account_manager->Initialize();
-  return primary_account_manager;
+  return std::make_unique<PrimaryAccountManager>(client, token_service,
+                                                 account_tracker_service);
 }
 
 std::unique_ptr<AccountsMutator> BuildAccountsMutator(
@@ -205,9 +202,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS)
   init_params.account_manager_facade = params->account_manager_facade;
 #endif
-#if BUILDFLAG(IS_IOS)
-  init_params.should_verify_scope_access = params->should_verify_scope_access;
-#endif
+  init_params.require_sync_consent_for_scope_verification =
+      params->require_sync_consent_for_scope_verification;
 
   return init_params;
 }

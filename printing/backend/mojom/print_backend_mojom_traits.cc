@@ -182,7 +182,6 @@ EnumTraits<printing::mojom::AdvancedCapabilityType,
       return printing::mojom::AdvancedCapabilityType::kString;
   }
   NOTREACHED();
-  return printing::mojom::AdvancedCapabilityType::kString;
 }
 
 // static
@@ -205,7 +204,6 @@ bool EnumTraits<printing::mojom::AdvancedCapabilityType,
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static

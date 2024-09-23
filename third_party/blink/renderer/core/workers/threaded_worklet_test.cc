@@ -53,7 +53,7 @@ class ThreadedWorkletObjectProxyForTest final
   }
 
  private:
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1>
       reported_features_;
 };
 
@@ -70,8 +70,6 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
     DCHECK(worklet_thread_holder);
     return *worklet_thread_holder->GetThread();
   }
-
-  void ClearWorkerBackingThread() override {}
 
   static void EnsureSharedBackingThread() {
     DCHECK(IsMainThread());
@@ -252,8 +250,7 @@ class ThreadedWorkletTest : public testing::Test {
     page_ = std::make_unique<DummyPageHolder>();
     KURL url("https://example.com/");
     page_->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());

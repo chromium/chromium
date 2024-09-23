@@ -10,21 +10,15 @@ import '//resources/ash/common/cr_elements/icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
-import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from './behaviors/oobe_scrollable_behavior.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
+import {OobeScrollableMixin} from './mixins/oobe_scrollable_mixin.js';
 import {getTemplate} from './oobe_apps_list.html.js';
 
 const MAX_IMG_LOADING_TIME_SEC = 7;
 
-const OobeAppsListBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, OobeScrollableBehavior], PolymerElement) as {
-      new (): PolymerElement
-          & OobeI18nBehaviorInterface
-          & OobeScrollableBehaviorInterface,
-    };
+const OobeAppsListBase = OobeI18nMixin(OobeScrollableMixin(PolymerElement));
 
 export class OobeAppsList extends OobeAppsListBase {
   static get is() {

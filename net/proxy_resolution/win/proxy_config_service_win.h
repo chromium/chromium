@@ -6,6 +6,7 @@
 #define NET_PROXY_RESOLUTION_WIN_PROXY_CONFIG_SERVICE_WIN_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <memory>

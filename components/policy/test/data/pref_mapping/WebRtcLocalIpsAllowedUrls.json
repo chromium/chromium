@@ -17,7 +17,12 @@
           ]
         },
         "prefs": {
-          "webrtc.local_ips_allowed_urls": {}
+          "webrtc.local_ips_allowed_urls": {
+            "value": [
+              "https://www.example.com",
+              "*example.com*"
+            ]
+          }
         }
       }
     ]

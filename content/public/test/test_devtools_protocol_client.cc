@@ -5,6 +5,7 @@
 #include "content/public/test/test_devtools_protocol_client.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/json/json_reader.h"
@@ -152,8 +153,8 @@ void TestDevToolsProtocolClient::RunLoopUpdatingQuitClosure() {
 void TestDevToolsProtocolClient::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
-  base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
-                                message.size());
+  std::string_view message_str(reinterpret_cast<const char*>(message.data()),
+                               message.size());
   base::Value parsed = *base::JSONReader::Read(message_str);
   if (std::optional<int> id = parsed.GetDict().FindInt("id")) {
     received_responses_count_++;
@@ -182,7 +183,7 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
 void TestDevToolsProtocolClient::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
   if (!agent_host_can_close_)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 bool TestDevToolsProtocolClient::AllowUnsafeOperations() {
@@ -199,6 +200,11 @@ bool TestDevToolsProtocolClient::MayReadLocalFiles() {
 
 bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
   return may_write_local_files_;
+}
+
+bool TestDevToolsProtocolClient::MayAttachToURL(const GURL& url,
+                                                bool is_webui) {
+  return not_attachable_hosts_.find(url.host()) == not_attachable_hosts_.end();
 }
 
 std::optional<url::Origin>

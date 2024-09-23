@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 
 #include <string>
@@ -17,7 +22,6 @@
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources_map.h"
@@ -37,7 +41,7 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : TopChromeWebUIController(web_ui),
       webui_load_timer_(web_ui->GetWebContents(),
                         "ReadingList.WebUI.LoadDocumentTime",
                         "ReadingList.WebUI.LoadCompletedTime") {
@@ -69,8 +73,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   source->AddBoolean(
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
-
-  webui::SetupChromeRefresh2023(source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

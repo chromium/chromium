@@ -23,7 +23,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/isolation_info.h"
@@ -337,10 +336,9 @@ void KAnonymityServiceClient::JoinSetSendRequest(
     OHTTPKeyAndExpiration ohttp_key,
     KeyAndNonUniqueUserId key_and_id) {
   RecordJoinSetAction(KAnonymityServiceJoinSetAction::kSendJoinSetRequest);
-  std::string hashed_id = crypto::SHA256HashString(join_queue_.front()->id);
   std::string encoded_id;
-  base::Base64UrlEncode(hashed_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_id);
+  base::Base64UrlEncode(join_queue_.front()->id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_id);
 
   network::mojom::ObliviousHttpRequestPtr request =
       network::mojom::ObliviousHttpRequest::New();
@@ -551,8 +549,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
 
   base::Value::List request_hashes;
   for (const auto& id : query_queue_.front()->ids) {
-    std::string hashed_id = crypto::SHA256HashString(id);
-    request_hashes.Append(base::Base64Encode(hashed_id));
+    request_hashes.Append(base::Base64Encode(id));
   }
   base::Value::Dict sets_for_type;
   sets_for_type.Set("type", kKAnonType);
@@ -694,8 +691,7 @@ void KAnonymityServiceClient::QuerySetsOnParsedResponse(
   std::vector<bool> output;
   output.reserve(query_queue_.front()->ids.size());
   for (const auto& id : query_queue_.front()->ids) {
-    std::string hashed_id = crypto::SHA256HashString(id);
-    output.push_back(k_anon_set.contains(hashed_id));
+    output.push_back(k_anon_set.contains(id));
   }
 
   // Only record latency for successful requests.

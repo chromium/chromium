@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -322,7 +322,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
 
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
     const unsigned char kData[] = {12, 11, 99};
-    return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
+    return base::MakeRefCounted<base::RefCountedBytes>(kData);
   }
 
   // Find the url of the active tab of the browser if any.

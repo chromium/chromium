@@ -24,6 +24,10 @@ namespace net {
 class HttpResponseHeaders;
 }
 
+namespace url {
+class Origin;
+}
+
 class GURL;
 
 // Utility functions for handling Chrome/Gaia headers during signin process.
@@ -82,6 +86,7 @@ class ResponseAdapter {
   virtual bool IsOutermostMainFrame() const = 0;
   virtual GURL GetUrl() const = 0;
   virtual std::optional<url::Origin> GetRequestInitiator() const = 0;
+  virtual const url::Origin* GetRequestTopFrameOrigin() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
 

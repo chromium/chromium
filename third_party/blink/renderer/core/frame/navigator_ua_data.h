@@ -17,6 +17,7 @@ namespace blink {
 
 class NavigatorUABrandVersion;
 class ScriptState;
+class UADataValues;
 
 class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,13 +38,14 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   void SetUAFullVersion(const String& uaFullVersion);
   void SetBitness(const String& bitness);
   void SetWoW64(bool wow64);
-  void SetFormFactor(Vector<String> form_factor);
+  void SetFormFactors(Vector<String> form_factors);
 
   // IDL implementation
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
   bool mobile() const;
   const String& platform() const;
-  ScriptPromise getHighEntropyValues(ScriptState*, Vector<String>&) const;
+  ScriptPromise<UADataValues> getHighEntropyValues(ScriptState*,
+                                                   Vector<String>&) const;
   ScriptValue toJSON(ScriptState*) const;
 
   void Trace(Visitor* visitor) const final;
@@ -60,7 +62,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   String ua_full_version_;
   String bitness_;
   bool is_wow64_ = false;
-  Vector<String> form_factor_;
+  Vector<String> form_factors_;
 
   void AddBrandVersion(const String& brand, const String& version);
   void AddBrandFullVersion(const String& brand, const String& version);

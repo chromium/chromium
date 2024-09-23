@@ -34,7 +34,7 @@ union GetBrowsingTopicsResult {
 // The `BrowsingTopicsDocumentService` provides a method to request the
 // browsing topics. It is a per-document interface hosted in the browser
 // process. Communication is only allowed in the outermost page and when the
-// page is active (not in fenced frames, prerendered pages, portals, etc.), and
+// page is active (not in fenced frames, prerendered pages, etc.), and
 // this restriction is enforced on both sides of the mojom boundary for
 // subconditions where there are equivalent renderer/browser checks and no
 // racing is possible; otherwise, this is only checked on the browser side.

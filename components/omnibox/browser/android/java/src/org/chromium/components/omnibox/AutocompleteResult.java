@@ -49,10 +49,6 @@ public class AutocompleteResult {
         int GET_MATCHING_TAB = 7;
     }
 
-    /** An empty, initialized AutocompleteResult object. */
-    public static final AutocompleteResult EMPTY_RESULT =
-            new AutocompleteResult(0, Collections.emptyList(), null);
-
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
 
@@ -137,7 +133,6 @@ public class AutocompleteResult {
         return result;
     }
 
-    @CalledByNative
     private void updateMatches(@NonNull AutocompleteMatch[] suggestions) {
         mSuggestions.clear();
         Collections.addAll(mSuggestions, suggestions);
@@ -207,40 +202,22 @@ public class AutocompleteResult {
     }
 
     /**
-     * Group native suggestions in specified range by Search vs URL.
+     * This is a counterpart of native AutocompleteResult#default_match.
      *
-     * @param firstIndex Index of the first suggestion for grouping.
-     * @param lastIndex Index of the last suggestion for grouping.
+     * @return The default match if it exists, or nullptr otherwise.
      */
-    public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
-        if (mNativeAutocompleteResult != 0) {
-            if (!verifyCoherency(
-                    NO_SUGGESTION_INDEX, VerificationPoint.GROUP_BY_SEARCH_VS_URL_BEFORE)) {
-                // This may trigger if the Native (C++) object got updated and we haven't had a
-                // chance to reflect this update here. When this happens, do not rearrange the
-                // order of suggestions and wait for a corresponding update.
-                // Need to identify whether this issue is anything larger than just background
-                // update.
-                assert false : "Pre-group verification failed. Please report.";
-                return;
-            }
-            AutocompleteResultJni.get()
-                    .groupSuggestionsBySearchVsURL(
-                            mNativeAutocompleteResult, firstIndex, lastIndex);
-            // Verify that the Native AutocompleteResult update has been properly
-            // reflected on the Java part.
-            assert verifyCoherency(
-                            NO_SUGGESTION_INDEX, VerificationPoint.GROUP_BY_SEARCH_VS_URL_AFTER)
-                    : "Post-group verification failed";
+    @Nullable
+    public AutocompleteMatch getDefaultMatch() {
+        if (mSuggestions.size() > 0 && mSuggestions.get(0).allowedToBeDefaultMatch()) {
+            return mSuggestions.get(0);
         }
+
+        return null;
     }
 
     @NativeMethods
     interface Natives {
-        void groupSuggestionsBySearchVsURL(
-                long nativeAutocompleteResult, int firstIndex, int lastIndex);
-
         boolean verifyCoherency(
-                long nativeAutocompleteResult, long[] matches, long suggestionIndex, int origin);
+                long nativeAutocompleteResult, long[] matches, int suggestionIndex, int origin);
     }
 }

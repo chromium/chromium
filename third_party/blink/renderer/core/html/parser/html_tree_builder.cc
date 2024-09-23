@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 
 #include <memory>
@@ -37,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
@@ -179,7 +185,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     ++current_;
     for (; current_ != end_; ++current_) {
       const UChar ch = characters_[current_];
-      if (LIKELY(ch == ' ')) {
+      if (ch == ' ') [[likely]] {
         continue;
       } else if (IsHTMLSpecialWhitespace(ch)) {
         whitespace_mode = WhitespaceMode::kAllWhitespace;
@@ -203,8 +209,8 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   }
 
   void GiveRemainingTo(StringBuilder& recipient) {
-    WTF::VisitCharacters(characters_, [&](const auto* chars, unsigned length) {
-      recipient.Append(chars + current_, end_ - current_);
+    WTF::VisitCharacters(characters_, [&](auto chars) {
+      recipient.Append(chars.data() + current_, end_ - current_);
     });
     current_ = end_;
   }
@@ -432,7 +438,7 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
     case HTMLToken::kCharacter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HTMLToken::DOCTYPE:
       ProcessDoctypeToken(token);
@@ -920,17 +926,36 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       }
       break;
     case HTMLTag::kSelect:
+      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+          tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "A <select> tag was parsed within another <select> tag and was converted into </select><select>. Please add the missing </select> end tag.");
+        // Don't allow nested <select>s. This is the exact same logic as
+        // <button>s.
+        ParseError(token);
+        ProcessFakeEndTag(HTMLTag::kSelect);
+        ProcessStartTag(token);
+        break;
+      }
       tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertHTMLElement(token);
       frameset_ok_ = false;
-      if (GetInsertionMode() == kInTableMode ||
-          GetInsertionMode() == kInCaptionMode ||
-          GetInsertionMode() == kInColumnGroupMode ||
-          GetInsertionMode() == kInTableBodyMode ||
-          GetInsertionMode() == kInRowMode || GetInsertionMode() == kInCellMode)
-        SetInsertionMode(kInSelectInTableMode);
-      else
-        SetInsertionMode(kInSelectMode);
+      // When SelectParserRelaxation is enabled, we don't want to enter
+      // InSelectMode or InSelectInTableMode.
+      if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+        if (GetInsertionMode() == kInTableMode ||
+            GetInsertionMode() == kInCaptionMode ||
+            GetInsertionMode() == kInColumnGroupMode ||
+            GetInsertionMode() == kInTableBodyMode ||
+            GetInsertionMode() == kInRowMode ||
+            GetInsertionMode() == kInCellMode) {
+          SetInsertionMode(kInSelectInTableMode);
+        } else {
+          SetInsertionMode(kInSelectMode);
+        }
+      }
       break;
     case HTMLTag::kOptgroup:
     case HTMLTag::kOption:
@@ -973,8 +998,9 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kTr:
       ParseError(token);
       break;
-    case HTMLTag::kPermission:
-      if (RuntimeEnabledFeatures::PermissionElementEnabled()) {
+    case HTMLTag::kPermissionOrUnknown:
+      if (RuntimeEnabledFeatures::PermissionElementEnabled(
+              tree_.OwnerDocumentForCurrentNode().GetExecutionContext())) {
         tree_.ReconstructTheActiveFormattingElements();
         tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
         frameset_ok_ = false;
@@ -994,12 +1020,9 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
         tree_.InsertForeignElement(token, svg_names::kNamespaceURI);
       } else {
         tree_.ReconstructTheActiveFormattingElements();
-        if (RuntimeEnabledFeatures::
-                FlushParserBeforeCreatingCustomElementsEnabled()) {
-          // Flush before creating custom elements. NOTE: Flush() can cause any
-          // queued tasks to execute, possibly re-entering the parser.
-          tree_.Flush();
-        }
+        // Flush before creating custom elements. NOTE: Flush() can cause any
+        // queued tasks to execute, possibly re-entering the parser.
+        tree_.Flush();
         tree_.InsertHTMLElement(token);
       }
       break;
@@ -1007,38 +1030,24 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
 }
 
 namespace {
-DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
-    AtomicHTMLToken* token,
-    const Document& document,
-    bool include_shadow_roots) {
-  Attribute* type_attribute =
+String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
+                                          const Document& document,
+                                          bool include_shadow_roots) {
+  Attribute* mode_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
-  if (!type_attribute) {
-    return DeclarativeShadowRootType::kNone;
-  }
-  String shadow_mode = type_attribute->Value();
-
-  if (include_shadow_roots) {
-    if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-      return DeclarativeShadowRootType::kOpen;
-    } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-      return DeclarativeShadowRootType::kClosed;
-    }
+  if (!mode_attribute) {
+    return String();
   }
   if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "Found declarative shadowrootmode attribute on a template, but "
-        "declarative Shadow DOM has not been enabled by includeShadowRoots."));
-  } else {
-    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid declarative shadowrootmode attribute value \"" + shadow_mode +
-            "\". Valid values include \"open\" and \"closed\"."));
+        "declarative Shadow DOM is not being parsed. Use setHTMLUnsafe() "
+        "or parseHTMLUnsafe() instead."));
+    return String();
   }
-  return DeclarativeShadowRootType::kNone;
+  return mode_attribute->Value();
 }
 }  // namespace
 
@@ -1046,7 +1055,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
   tree_.InsertHTMLTemplateElement(
       token,
-      DeclarativeShadowRootTypeFromToken(
+      DeclarativeShadowRootModeFromToken(
           token, tree_.OwnerDocumentForCurrentNode(), include_shadow_roots_));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
@@ -1463,31 +1472,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       }
       ParseError(token);
       break;
-    case kInButtonInSelectMode:
-    case kInDatalistInSelectMode:
-      switch (tag) {
-        case HTMLTag::kSelect: {
-          // Don't allow <select> within <select> even if there is a <button> or
-          // <datalist> in between. To match the other branch for <select> in
-          // <select>, add a </select> instead of a <select>. ProcessEndTag()
-          // will also end all tags within the currently open <select>.
-          ParseError(token);
-          AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
-          ProcessEndTag(&end_select);
-          break;
-        }
-        case HTMLTag::kButton:
-        case HTMLTag::kDatalist:
-          // Don't allow nesting of buttons or datalists in this mode because
-          // when we end these tags we go back to kInSelectMode.
-          // TODO(crbug.com/1511354): Try removing this when kButton and
-          // kDatalist are handled in ResetInsertionModeAppropriately
-          break;
-        default:
-          ProcessStartTagForInBody(token);
-          break;
-      }
-      break;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -1530,9 +1514,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           tree_.InsertHTMLElement(token);
           return;
         case HTMLTag::kHr:
-          if (!RuntimeEnabledFeatures::SelectHrEnabled()) {
-            break;
-          }
           if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption)) {
             AtomicHTMLToken end_option(HTMLToken::kEndTag, HTMLTag::kOption);
             ProcessEndTag(&end_option);
@@ -1545,22 +1526,44 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
           return;
         case HTMLTag::kSelect: {
+        tree_.OpenElements()->TopNode()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "A <select> tag was parsed within another <select> tag and was converted into </select>. This behavior will change in a future browser version. Please add the missing </select> end tag.");
           ParseError(token);
           AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
           ProcessEndTag(&end_select);
           return;
         }
         case HTMLTag::kInput:
+          // TODO(crbug.com/1511354): Remove this UseCounter when the
+          // SelectParserRelaxation/CustomizableSelect flags are removed.
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kHTMLInputInSelect);
+          [[fallthrough]];
         case HTMLTag::kKeygen:
         case HTMLTag::kTextarea: {
-          ParseError(token);
-          if (!tree_.OpenElements()->InSelectScope(HTMLTag::kSelect)) {
-            DCHECK(IsParsingFragment());
-            return;
+          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+            ProcessStartTagForInBody(token);
+          } else {
+            ParseError(token);
+            if (!tree_.OpenElements()->InSelectScope(HTMLTag::kSelect)) {
+              DCHECK(IsParsingFragment());
+              return;
+            }
+            AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
+            ProcessEndTag(&end_select);
+            ProcessStartTag(token);
+
+            tree_.OpenElements()->TopNode()->AddConsoleMessage(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "A " + token->GetName() +
+                    " tag was parsed inside of a <select> which caused a "
+                    "</select> to be inserted before this tag. "
+                    "This is not valid HTML and the behavior may be changed in "
+                    "future versions of chrome.");
           }
-          AtomicHTMLToken end_select(HTMLToken::kEndTag, HTMLTag::kSelect);
-          ProcessEndTag(&end_select);
-          ProcessStartTag(token);
           return;
         }
         case HTMLTag::kScript: {
@@ -1572,34 +1575,39 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           ProcessTemplateStartTag(token);
           return;
         case HTMLTag::kButton:
-          // TODO(crbug.com/1511354): Add console warnings for this and the
-          // datalist branch when the flag is disabled once we're certain that
-          // we are shipping with <button> and <datalist>.
-          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
-                            WebFeature::kHTMLButtonInSelect);
-          // TODO(crbug.com/1511354): Consider adding support for stylable
-          // select in <table>s and remove this kInSelectMode check and the one
-          // in the kDatalist case.
-          if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
-              GetInsertionMode() == kInSelectMode) {
-            SetInsertionMode(kInButtonInSelectMode);
-            ProcessStartTagForInBody(token);
-            return;
+          if (!RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+            // TODO(crbug.com/1511354): Remove this UseCounter when the
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kHTMLButtonInSelect);
           }
-          break;
+          [[fallthrough]];
         case HTMLTag::kDatalist:
-          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
-                            WebFeature::kHTMLDatalistInSelect);
-          if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
-              GetInsertionMode() == kInSelectMode) {
-            SetInsertionMode(kInDatalistInSelectMode);
-            ProcessStartTagForInBody(token);
-            return;
+          if (tag == HTMLTag::kDatalist &&
+              !RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+            // TODO(crbug.com/1511354): Remove this UseCounter when the
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kHTMLDatalistInSelect);
           }
-          break;
+          [[fallthrough]];
         default:
-          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
-                            WebFeature::kSelectParserDroppedTag);
+          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+            ProcessStartTagForInBody(token);
+          } else {
+            // TODO(crbug.com/1511354): Remove this UseCounter when the
+            // SelectParserRelaxation/CustomizableSelect flags are removed.
+            UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                              WebFeature::kSelectParserDroppedTag);
+            tree_.OpenElements()->TopNode()->AddConsoleMessage(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "A " + token->GetName() +
+                    " tag was parsed inside of a <select> which was not "
+                    "inserted into the document. This is not valid HTML and "
+                    "the behavior may be changed in future versions of "
+                    "chrome.");
+          }
           break;
       }
       break;
@@ -1608,7 +1616,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTag(token);
       break;
     case kTextMode:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case kTemplateContentsMode:
       switch (tag) {
@@ -1836,6 +1844,9 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
         case HTMLTag::kTemplate:
           return SetInsertionMode(template_insertion_modes_.back());
         case HTMLTag::kSelect:
+          if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+            break;
+          }
           if (!last) {
             while (item->GetNode() != tree_.OpenElements()->RootNode() &&
                    !item->MatchesHTMLTag(HTMLTag::kTemplate)) {
@@ -1845,9 +1856,6 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
             }
           }
           return SetInsertionMode(kInSelectMode);
-        // TODO(crbug.com/1511354): Consider adding cases for kButton and
-        // kDatalist here to reset the insertion mode to kInButtonInSelectMode
-        // and kInDatalistInSelectMode
         case HTMLTag::kTd:
         case HTMLTag::kTh:
           return SetInsertionMode(kInCellMode);
@@ -2046,6 +2054,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kSearch:
     case HTMLTag::kSection:
     case HTMLTag::kSummary:
+    case HTMLTag::kSelect:
     case HTMLTag::kUl:
       if (!tree_.OpenElements()->InScope(tag)) {
         ParseError(token);
@@ -2428,38 +2437,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
     case kAfterAfterFramesetMode:
       ParseError(token);
       break;
-    case kInButtonInSelectMode:
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      switch (tag) {
-        case HTMLTag::kSelect:
-          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
-          ResetInsertionModeAppropriately();
-          return;
-        default:
-          break;
-      }
-      // TODO(crbug.com/1511354): We need to review which end tags cause which
-      // elements to close once there's a reviewed HTML PR for styleable select.
-      ProcessEndTagForInBody(token);
-      if (tag == HTMLTag::kButton) {
-        ResetInsertionModeAppropriately();
-      }
-      return;
-    case kInDatalistInSelectMode:
-      switch (tag) {
-        case HTMLTag::kSelect:
-          SetInsertionMode(kInSelectMode);
-          tree_.OpenElements()->PopUntilPopped(HTMLTag::kSelect);
-          ResetInsertionModeAppropriately();
-          return;
-        default:
-          break;
-      }
-      ProcessEndTagForInBody(token);
-      if (tag == HTMLTag::kDatalist) {
-        ResetInsertionModeAppropriately();
-      }
-      return;
     case kInSelectInTableMode:
       switch (tag) {
         case HTMLTag::kCaption:
@@ -2479,6 +2456,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       }
       [[fallthrough]];
     case kInSelectMode:
+      CHECK(!RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
       switch (tag) {
         case HTMLTag::kOptgroup:
           if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption) &&
@@ -2631,8 +2609,6 @@ ReprocessBuffer:
     case kInBodyMode:
     case kInCaptionMode:
     case kTemplateContentsMode:
-    case kInDatalistInSelectMode:
-    case kInButtonInSelectMode:
     case kInCellMode: {
       ProcessCharacterBufferForInBody(buffer);
       break;
@@ -2799,8 +2775,6 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInFramesetMode:
     case kInTableMode:
     case kInTableBodyMode:
-    case kInButtonInSelectMode:
-    case kInDatalistInSelectMode:
     case kInSelectInTableMode:
     case kInSelectMode:
       if (tree_.CurrentNode() != tree_.OpenElements()->RootNode())
@@ -3006,7 +2980,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
 
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HTMLToken::DOCTYPE:
     // TODO(crbug.com/1453291) This needs to be expanded to properly handle
@@ -3082,6 +3056,16 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
         AdjustSVGAttributes(token);
       }
       AdjustForeignAttributes(token);
+
+      if (tag == HTMLTag::kScript && token->SelfClosing() &&
+          current_namespace == svg_names::kNamespaceURI) {
+        token->SetSelfClosingToFalse();
+        tree_.InsertForeignElement(token, current_namespace);
+        AtomicHTMLToken fake_token(HTMLToken::kEndTag, HTMLTag::kScript);
+        ProcessTokenInForeignContent(&fake_token);
+        return;
+      }
+
       tree_.InsertForeignElement(token, current_namespace);
       break;
     }
@@ -3132,7 +3116,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       break;
     case HTMLToken::kCharacter:
     case HTMLToken::kEndOfFile:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -3175,8 +3159,6 @@ const char* HTMLTreeBuilder::ToString(HTMLTreeBuilder::InsertionMode mode) {
     DEFINE_STRINGIFY(kInCellMode)
     DEFINE_STRINGIFY(kInSelectMode)
     DEFINE_STRINGIFY(kInSelectInTableMode)
-    DEFINE_STRINGIFY(kInButtonInSelectMode)
-    DEFINE_STRINGIFY(kInDatalistInSelectMode)
     DEFINE_STRINGIFY(kAfterBodyMode)
     DEFINE_STRINGIFY(kInFramesetMode)
     DEFINE_STRINGIFY(kAfterFramesetMode)

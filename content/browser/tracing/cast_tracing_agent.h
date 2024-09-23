@@ -13,7 +13,7 @@
 
 namespace content {
 
-// TODO(crbug.com/839086): Remove once we have replaced the legacy tracing
+// TODO(crbug.com/41386726): Remove once we have replaced the legacy tracing
 // service with perfetto.
 class CastTracingAgent : public tracing::BaseAgent {
  public:

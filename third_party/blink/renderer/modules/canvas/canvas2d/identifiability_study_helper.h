@@ -7,12 +7,24 @@
 
 #include <stdint.h>
 
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include <array>
+#include <initializer_list>
+
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -104,7 +116,7 @@ class IdentifiabilityStudyHelper final {
   // avoid unnecessary copies of parameters and hashing when GetToken() won't be
   // called.
   ALWAYS_INLINE bool ShouldUpdateBuilder() {
-    if (LIKELY(!is_canvas_type_allowed_)) {
+    if (!is_canvas_type_allowed_) [[likely]] {
       return false;
     }
     if (!execution_context_ ||
@@ -120,12 +132,17 @@ class IdentifiabilityStudyHelper final {
   // the internal digest based on the series of digestable parameters.
   template <typename... Ts>
   void UpdateBuilder(Ts... tokens) {
-    AddTokens(tokens...);
+    AddTokens({tokens...});
     operation_count_++;
   }
 
   // Returns an IdentifiableToken representing the internal computed digest.
-  IdentifiableToken GetToken() const { return builder_.GetToken(); }
+  IdentifiableToken GetToken() const {
+    if (position_ == 0) {
+      return chaining_value_;
+    }
+    return DigestPartialData();
+  }
 
   [[nodiscard]] bool encountered_skipped_ops() const {
     return encountered_skipped_ops_;
@@ -174,13 +191,11 @@ class IdentifiabilityStudyHelper final {
   void Trace(Visitor* visitor) const;
 
  private:
-  // Note that primitives are implicitly converted to IdentifiableTokens
-  template <typename... Ts>
-  void AddTokens(IdentifiableToken token, Ts... args) {
-    builder_.AddToken(token);
-    AddTokens(args...);
-  }
-  void AddTokens() {}
+  // Note that primitives are implicitly converted to IdentifiableTokens.
+  void MODULES_EXPORT
+  AddTokens(std::initializer_list<IdentifiableToken> tokens);
+
+  uint64_t MODULES_EXPORT DigestPartialData() const;
 
   const bool is_canvas_type_allowed_ =
       IdentifiabilityStudySettings::Get()->ShouldSampleType(
@@ -190,7 +205,6 @@ class IdentifiabilityStudyHelper final {
 
   static MODULES_EXPORT int max_operations_;
 
-  IdentifiableTokenBuilder builder_;
   int operation_count_ = 0;
 
   // If true, at least one op was skipped completely, for performance reasons.
@@ -206,6 +220,10 @@ class IdentifiabilityStudyHelper final {
   // drawn to the canvas have their width, height, etc. digested, but not the
   // image contents, for performance and complexity reasons.
   bool encountered_partially_digested_image_ = false;
+
+  std::array<int64_t, 8> partial_;
+  int position_ = 0;
+  uint64_t chaining_value_ = IdentifiableTokenBuilder::kChainingValueSeed;
 };
 
 }  // namespace blink

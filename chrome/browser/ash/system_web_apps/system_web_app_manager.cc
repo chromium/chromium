@@ -34,11 +34,11 @@
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
+#include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/crosh_system_web_app_info.h"
@@ -47,7 +47,9 @@
 #include "chrome/browser/ash/system_web_apps/apps/eche_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/file_manager_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/firmware_update_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/graduation_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/mall_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_feedback_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
@@ -57,6 +59,8 @@
 #include "chrome/browser/ash/system_web_apps/apps/print_management_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/print_preview_cros_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/recorder_app/recorder_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/sanitize_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/scanning_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/shimless_rma_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/shortcut_customization_system_web_app_info.h"
@@ -76,11 +80,13 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -105,13 +111,9 @@ const constexpr char kIconsFixedOnReinstallMetricName[] =
 
 namespace {
 
-// Number of attempts to install a given version & locale of the SWAs before
-// bailing out.
-const int kInstallFailureAttempts = 3;
-
 SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
-  // TODO(crbug.com/1051229): Currently unused, will be hooked up
+  // TODO(crbug.com/40118385): Currently unused, will be hooked up
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
   info_vec.push_back(std::make_unique<CameraSystemAppDelegate>(profile));
@@ -145,6 +147,26 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
   info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
+  if (ash::boca_util::IsEnabled()) {
+    info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
+  }
+  info_vec.push_back(std::make_unique<MallSystemAppDelegate>(profile));
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
+  }
+
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
+  }
+
+  if (base::FeatureList::IsEnabled(ash::features::kConch)) {
+    info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
+  }
+
+  if (features::IsGraduationEnabled()) {
+    info_vec.push_back(
+        std::make_unique<graduation::GraduationAppDelegate>(profile));
+  }
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
@@ -257,8 +279,9 @@ SystemWebAppManager::~SystemWebAppManager() {
   // SystemWebAppManager lifetime matches WebAppProvider lifetime (see
   // BrowserContextDependencyManager) but we reset pointers to
   // system_app_delegates_ for integrity with DCHECKs.
-  if (provider_->is_registry_ready())
+  if (provider_->is_registry_ready()) {
     ConnectProviderToSystemWebAppDelegateMap(nullptr);
+  }
 }
 
 // static
@@ -281,14 +304,16 @@ SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
 
   web_app::WebAppProvider* provider =
       SystemWebAppManager::GetWebAppProvider(profile);
-  if (!provider)
+  if (!provider) {
     return nullptr;
+  }
 
   SystemWebAppManager* swa_manager = Get(profile);
   DCHECK(swa_manager);
 
-  if (provider->on_registry_ready().is_signaled())
+  if (provider->on_registry_ready().is_signaled()) {
     return swa_manager;
+  }
 
   base::RunLoop run_loop;
   provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
@@ -307,13 +332,15 @@ void SystemWebAppManager::StopBackgroundTasksForTesting() {
 }
 
 bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
-  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
+  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
     return true;
+  }
 
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type);
-  if (!delegate)
+  if (!delegate) {
     return false;
+  }
 
   return delegate->IsAppEnabled();
 }
@@ -346,7 +373,7 @@ void SystemWebAppManager::Start() {
       const auto& scheme = origin_to_trial_names.first.scheme();
       DCHECK(scheme == content::kChromeUIScheme ||
              scheme == content::kChromeUIUntrustedScheme);
-      // TODO(https://crbug.com/1043843): Find some ways to validate supplied
+      // TODO(crbug.com/40115403): Find some ways to validate supplied
       // origin trial names. Ideally, construct them from some static const
       // char*.
     }
@@ -401,8 +428,9 @@ void SystemWebAppManager::Shutdown() {
   shutting_down_ = true;
   StopBackgroundTasks();
 
-  // Icon check might be in progress, we need to cancel it.
-  icon_checker_->StopCheck();
+  // Icon check might be in progress, destroying the icon_checker_ ensures that
+  // any pending callbacks are dropped.
+  icon_checker_.reset();
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
@@ -421,7 +449,7 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
     // and violates the expectation (in web app system) that there can be only
     // one in-flight synchronize request for each app install source.
     //
-    // TODO(https://crbug.com/1400853): Ensure browsertests sets up system apps
+    // TODO(crbug.com/40250473): Ensure browsertests sets up system apps
     // before SystemWebAppManager::Start(). Then, remove this method (or
     // restrict its use to system web app feature test that needs to simulate
     // system restart).
@@ -443,16 +471,18 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
 
 std::optional<webapps::AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemWebAppType type) const {
-  if (!provider_->is_registry_ready())
+  if (!provider_->is_registry_ready()) {
     return std::nullopt;
+  }
   return web_app::GetAppIdForSystemApp(provider_->registrar_unsafe(),
                                        system_app_delegates_, type);
 }
 
 std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     const webapps::AppId& app_id) const {
-  if (!provider_->is_registry_ready())
+  if (!provider_->is_registry_ready()) {
     return std::nullopt;
+  }
   return web_app::GetSystemAppTypeForAppId(provider_->registrar_unsafe(),
                                            system_app_delegates_, app_id);
 }
@@ -487,8 +517,9 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
   const auto& origin_to_origin_trials = system_app->GetEnabledOriginTrials();
   auto iter_trials = origin_to_origin_trials.find(url::Origin::Create(url));
 
-  if (iter_trials == origin_to_origin_trials.end())
+  if (iter_trials == origin_to_origin_trials.end()) {
     return nullptr;
+  }
 
   return &iter_trials->second;
 }
@@ -498,12 +529,14 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   // Perform tab-specific setup when a navigation in a System Web App is about
   // to be committed.
-  if (!IsSystemWebApp(app_id))
+  if (!IsSystemWebApp(app_id)) {
     return;
+  }
 
   // No need to setup origin trials for intra-document navigation.
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   const std::optional<SystemWebAppType> type = GetSystemAppTypeForAppId(app_id);
   // This function should only be called when an navigation happens inside a
@@ -522,26 +555,31 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
 
 std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
     const GURL& url) const {
-  if (!HasSystemWebAppScheme(url))
+  if (!HasSystemWebAppScheme(url)) {
     return std::nullopt;
+  }
 
-  if (!provider_->is_registry_ready())
+  if (!provider_->is_registry_ready()) {
     return std::nullopt;
+  }
 
   std::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindAppWithUrlInScope(url);
-  if (!app_id.has_value())
+  if (!app_id.has_value()) {
     return std::nullopt;
+  }
 
   std::optional<SystemWebAppType> type =
       GetSystemAppTypeForAppId(app_id.value());
-  if (!type.has_value())
+  if (!type.has_value()) {
     return std::nullopt;
+  }
 
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type.value());
-  if (!delegate)
+  if (!delegate) {
     return std::nullopt;
+  }
 
   return type;
 }
@@ -555,8 +593,9 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
 
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type.value());
-  if (!delegate->ShouldCaptureNavigations())
+  if (!delegate->ShouldCaptureNavigations()) {
     return std::nullopt;
+  }
 
   // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
   // move this into the camera one.
@@ -564,8 +603,10 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
     GURL::Replacements replacements;
     replacements.ClearQuery();
     replacements.ClearRef();
-    if (url.ReplaceComponents(replacements).spec() != kChromeUICameraAppMainURL)
+    if (url.ReplaceComponents(replacements).spec() !=
+        kChromeUICameraAppMainURL) {
       return std::nullopt;
+    }
   }
 
   return type;
@@ -678,7 +719,7 @@ void SystemWebAppManager::OnAppsSynchronized(
     const base::TimeTicks& install_start_time,
     std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
         install_results,
-    std::map<GURL, bool> uninstall_results) {
+    std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
   const base::TimeDelta install_duration =
       base::TimeTicks::Now() - install_start_time;
 
@@ -691,8 +732,9 @@ void SystemWebAppManager::OnAppsSynchronized(
 
   // Report install duration only if the install pipeline actually installs
   // all the apps (e.g. on version upgrade).
-  if (did_force_install_apps)
+  if (did_force_install_apps) {
     RecordSystemWebAppInstallDuration(install_duration);
+  }
 
   RecordSystemWebAppInstallResults(install_results);
 
@@ -769,14 +811,17 @@ void SystemWebAppManager::OnIconCheckResult(
 }
 
 bool SystemWebAppManager::ShouldForceInstallApps() const {
-  if (base::FeatureList::IsEnabled(features::kAlwaysReinstallSystemWebApps))
+  if (base::FeatureList::IsEnabled(features::kAlwaysReinstallSystemWebApps)) {
     return true;
+  }
 
-  if (update_policy_ == UpdatePolicy::kAlwaysUpdate)
+  if (update_policy_ == UpdatePolicy::kAlwaysUpdate) {
     return true;
+  }
 
-  if (PreviousSessionHadBrokenIcons())
+  if (PreviousSessionHadBrokenIcons()) {
     return true;
+  }
 
   base::Version current_installed_version(
       pref_service_->GetString(prefs::kSystemWebAppLastUpdateVersion));
@@ -803,10 +848,9 @@ void SystemWebAppManager::UpdateLastAttemptedInfo() {
   const std::string& last_attempted_locale(
       pref_service_->GetString(prefs::kSystemWebAppLastAttemptedLocale));
 
-  const bool is_retry = (last_attempted_version.IsValid() &&
-                         last_attempted_version == CurrentVersion() &&
-                         last_attempted_locale == CurrentLocale()) ||
-                        PreviousSessionHadBrokenIcons();
+  const bool is_retry = last_attempted_version.IsValid() &&
+                        last_attempted_version == CurrentVersion() &&
+                        last_attempted_locale == CurrentLocale();
 
   if (!is_retry) {
     pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
@@ -835,7 +879,7 @@ bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
 
 void SystemWebAppManager::ConnectProviderToSystemWebAppDelegateMap(
     const SystemWebAppDelegateMap* system_web_apps_delegate_map) const {
-  // TODO(crbug.com/1377190): Consider DCHECKing that provider_ is ready.
+  // TODO(crbug.com/40243506): Consider DCHECKing that provider_ is ready.
   provider_->manifest_update_manager().SetSystemWebAppDelegateMap(
       system_web_apps_delegate_map);
   provider_->policy_manager().SetSystemWebAppDelegateMap(

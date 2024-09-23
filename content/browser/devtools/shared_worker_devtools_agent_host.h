@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/public/browser/shared_worker_instance.h"
@@ -77,7 +78,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
     WORKER_TERMINATED,
   };
   WorkerState state_;
-  SharedWorkerHost* worker_host_;
+  raw_ptr<SharedWorkerHost> worker_host_;
   base::UnguessableToken devtools_worker_token_;
   SharedWorkerInstance instance_;
 };

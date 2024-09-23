@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.angle builder group."""
 
-load("//lib/builders.star", "cpu", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -17,9 +17,10 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.gpu.SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -31,9 +32,9 @@ try_.builder(
     executable = "recipe:angle_chromium_trybot",
     mirrors = [
         "ci/android-angle-chromium-arm64-builder",
-        "ci/android-angle-chromium-arm64-nexus5x",
+        "ci/android-angle-chromium-arm64-pixel2",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -42,6 +43,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 try_.builder(
@@ -50,7 +52,7 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-angle-builder",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -70,7 +72,7 @@ try_.builder(
         "ci/linux-angle-chromium-intel",
         "ci/linux-angle-chromium-nvidia",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -89,7 +91,7 @@ try_.builder(
         "ci/mac-angle-chromium-builder",
         "ci/mac-angle-chromium-intel",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -111,7 +113,7 @@ try_.builder(
         "ci/win10-angle-chromium-x64-intel",
         "ci/win10-angle-chromium-x64-nvidia",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -129,7 +131,7 @@ try_.builder(
     mirrors = [
         "ci/win-angle-chromium-x86-builder",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
         retry_failed_shards = False,

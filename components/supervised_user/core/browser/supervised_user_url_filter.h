@@ -26,8 +26,9 @@
 class GURL;
 class PrefService;
 
-// Callback type for additional url validations.
-typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
+namespace version_info {
+enum class Channel;
+}
 
 namespace supervised_user {
 
@@ -88,7 +89,9 @@ class SupervisedUserURLFilter {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual std::string GetCountryCode() = 0;
+    // Returns true if the webstore extension URL is eligible for downloading
+    // for a supervised user.
+    virtual bool SupportsWebstoreURL(const GURL& url) const = 0;
   };
 
   using FilteringBehaviorCallback =
@@ -98,21 +101,16 @@ class SupervisedUserURLFilter {
 
   class Observer {
    public:
-    // Called whenever the allowlists are updated. This does *not* include
-    // SetManualHosts/SetManualURLs.
-    virtual void OnSiteListUpdated() = 0;
     // Called whenever a check started via
     // GetFilteringBehaviorForURLWithAsyncChecks completes.
-    virtual void OnURLChecked(const GURL& url,
-                              FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain) {}
+    virtual void OnURLChecked(
+        const GURL& url,
+        FilteringBehavior behavior,
+        supervised_user::FilteringBehaviorDetails details) {}
   };
 
-  SupervisedUserURLFilter(
-      PrefService& user_prefs,
-      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
-      ValidateURLSupportCallback check_webstore_url_callback);
+  SupervisedUserURLFilter(PrefService& user_prefs,
+                          std::unique_ptr<Delegate> delegate);
 
   virtual ~SupervisedUserURLFilter();
 
@@ -141,11 +139,6 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
-  // Returns the string equivalent of a Web Filter type. This is a user-visible
-  // string included in the user feedback log.
-  static std::string WebFilterTypeToDisplayString(
-      WebFilterType web_filter_type);
-
   // Records the metrics on navigation loaded after completing a filtering
   // event.
   static void RecordFilterResultEvent(FilteringBehavior behavior,
@@ -170,10 +163,10 @@ class SupervisedUserURLFilter {
   // Returns true if |callback| was called synchronously. If
   // |skip_manual_parent_filter| is set to true, it only uses the asynchronous
   // safe search checks.
-  bool GetFilteringBehaviorForURLWithAsyncChecks(
+  virtual bool GetFilteringBehaviorForURLWithAsyncChecks(
       const GURL& url,
       FilteringBehaviorCallback callback,
-      bool skip_manual_parent_filter = false);
+      bool skip_manual_parent_filter);
 
   // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
   bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
@@ -220,8 +213,11 @@ class SupervisedUserURLFilter {
   void SetFilterInitialized(bool is_filter_initialized);
 
   // Sets safe_search_api::URLCheckerClient for SafeSites classification.
-  void SetURLCheckerClientForTesting(
+  void SetURLCheckerClient(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
+
+  // Checks if an exact match for a host exists in the host blocklist.
+  bool IsHostInBlocklist(const std::string& host) const;
 
  private:
   friend class SupervisedUserURLFilterTest;
@@ -256,7 +252,7 @@ class SupervisedUserURLFilter {
   void CheckCallback(FilteringBehaviorCallback callback,
                      const GURL& url,
                      safe_search_api::Classification classification,
-                     bool uncertain) const;
+                     safe_search_api::ClassificationDetails details) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -272,15 +268,13 @@ class SupervisedUserURLFilter {
 
   const raw_ref<PrefService> user_prefs_;
 
-  std::unique_ptr<Delegate> service_delegate_;
+  std::unique_ptr<Delegate> delegate_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   bool is_filter_initialized_ = false;
-
-  ValidateURLSupportCallback check_webstore_url_callback_;
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };

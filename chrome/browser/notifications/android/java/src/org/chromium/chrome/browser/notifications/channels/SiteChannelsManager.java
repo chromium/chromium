@@ -48,9 +48,12 @@ public class SiteChannelsManager {
     }
 
     /**
-     * Creates a channel for the given origin, unless a channel for this origin already exists. The
-     * channel will appear within the Sites channel group, with default importance, or no importance
-     * if created as blocked.
+     * Creates a channel for the given origin. Don't call this if the channel for the origin already
+     * exists, as the returned SiteChannel might not have the same description or importance as
+     * expected. See:
+     * https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannel(android.app.NotificationChannel).
+     * The newly created channel will appear within the Sites channel group, with default
+     * importance, or no importance if created as blocked.
      *
      * @param origin The site origin, to be used as the channel's user-visible name.
      * @param creationTime A string representing the time of channel creation.
@@ -58,10 +61,8 @@ public class SiteChannelsManager {
      * @return The channel created for the given origin.
      */
     public SiteChannel createSiteChannel(String origin, long creationTime, boolean enabled) {
-        SiteChannel preexistingChannel = getSiteChannelForOrigin(origin);
-        if (preexistingChannel != null) {
-            return preexistingChannel;
-        }
+        assert getSiteChannelForOrigin(origin) == null;
+
         // Channel group must be created before the channel.
         NotificationChannelGroup channelGroup =
                 ChromeChannelDefinitions.getInstance()
@@ -93,13 +94,10 @@ public class SiteChannelsManager {
 
     /** Deletes all site channels. */
     public void deleteAllSiteChannels() {
-        List<NotificationChannel> channels = mNotificationManager.getNotificationChannels();
-        for (NotificationChannel channel : channels) {
-            String channelId = channel.getId();
-            if (isValidSiteChannelId(channelId)) {
-                mNotificationManager.deleteNotificationChannel(channelId);
-            }
-        }
+        mNotificationManager.deleteAllNotificationChannels(
+                channelId -> {
+                    return isValidSiteChannelId(channelId);
+                });
     }
 
     /** Deletes the channel associated with this channel ID. */
@@ -183,7 +181,7 @@ public class SiteChannelsManager {
     public String getChannelIdForOrigin(String origin) {
         SiteChannel channel = getSiteChannelForOrigin(origin);
         // Fall back to generic Sites channel if a channel for this origin doesn't exist.
-        // TODO(crbug.com/802380) Stop using this channel as a fallback and fully deprecate it.
+        // TODO(crbug.com/40558363) Stop using this channel as a fallback and fully deprecate it.
         boolean fallbackToSitesChannel = channel == null;
         if (fallbackToSitesChannel) {
             RecordHistogram.recordBooleanHistogram("Notifications.Android.SitesChannel", true);

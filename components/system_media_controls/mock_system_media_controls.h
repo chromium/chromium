@@ -43,6 +43,9 @@ class MockSystemMediaControls : public SystemMediaControls {
   MOCK_METHOD0(ClearThumbnail, void());
   MOCK_METHOD0(ClearMetadata, void());
   MOCK_METHOD0(UpdateDisplay, void());
+  MOCK_CONST_METHOD0(GetVisibilityForTesting, bool());
+  MOCK_METHOD1(SetOnBridgeCreatedCallbackForTesting,
+               void(base::RepeatingCallback<void()>));
 };
 
 }  // namespace testing

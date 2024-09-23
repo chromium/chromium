@@ -23,6 +23,7 @@ AwGLSurface::AwGLSurface(gl::GLDisplayEGL* display,
       wrapped_surface_(std::move(surface)) {}
 
 AwGLSurface::~AwGLSurface() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

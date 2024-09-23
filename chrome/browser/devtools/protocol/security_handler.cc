@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/security_state/content/content_utils.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -50,11 +50,11 @@ std::string SecurityLevelToProtocolSecurityState(
     case security_state::DANGEROUS:
       return protocol::Security::SecurityStateEnum::InsecureBroken;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return protocol::Security::SecurityStateEnum::Neutral;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Security::SecurityStateEnum::Neutral;
 }
 
@@ -166,9 +166,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
 }
 
 std::unique_ptr<protocol::Security::VisibleSecurityState>
-CreateVisibleSecurityState(content::WebContents* web_contents) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
+CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
   DCHECK(helper);
   auto state = helper->GetVisibleSecurityState();
   std::string security_state =
@@ -270,6 +268,10 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
   if (!enabled_)
     return;
 
-  auto visible_security_state = CreateVisibleSecurityState(web_contents());
+  SecurityStateTabHelper* helper = web_contents() ? SecurityStateTabHelper::FromWebContents(web_contents()) : nullptr;
+  if (!helper)
+    return;
+
+  auto visible_security_state = CreateVisibleSecurityState(helper);
   frontend_->VisibleSecurityStateChanged(std::move(visible_security_state));
 }

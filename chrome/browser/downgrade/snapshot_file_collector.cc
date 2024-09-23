@@ -10,6 +10,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/affiliations/core/browser/affiliation_constants.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/history/core/browser/history_constants.h"
@@ -98,7 +99,7 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
                           chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS,
                           SnapshotItemId::kAccountBookmarks),
       // Tab Restore and sessions
-      // TODO(crbug.com/1103458): Remove legacy snapshots in M89
+      // TODO(crbug.com/40704630): Remove legacy snapshots in M89
       SnapshotItemDetails(
           base::FilePath(sessions::kLegacyCurrentTabSessionFileName),
           SnapshotItemDetails::ItemType::kFile,
@@ -119,7 +120,7 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
                           SnapshotItemId::kGAIAPicture),
       // Password / Autofill
       SnapshotItemDetails(
-          base::FilePath(password_manager::kAffiliationDatabaseFileName),
+          base::FilePath(affiliations::kAffiliationDatabaseFileName),
           SnapshotItemDetails::ItemType::kFile,
           chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
               chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,

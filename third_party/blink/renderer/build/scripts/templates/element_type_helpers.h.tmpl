@@ -18,14 +18,6 @@ class Document;
 {% for tag in tags|sort(attribute='name') if not tag.multipleTagNames and not tag.noTypeHelpers %}
 class {{tag.interface}};
 template <>
-inline bool IsElementOfType<const {{tag.interface}}>(const Node& node) {
-  return IsA<{{tag.interface}}>(node);
-}
-template <>
-inline bool IsElementOfType<const {{tag.interface}}>(const {{namespace}}Element& element) {
-  return IsA<{{tag.interface}}>(element);
-}
-template <>
 struct DowncastTraits<{{tag.interface}}> {
   static bool AllowFrom(const Element& element) {
     {% if tag.runtimeEnabled %}
@@ -37,6 +29,10 @@ struct DowncastTraits<{{tag.interface}}> {
     {% endif %}
     return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
   }
+  // Force this helper to only be instantiated when used. Otherwise, the
+  // `IsA<...>` calls will always trigger a build failure since
+  // {{tag.interface}} is forward declared and not included.
+  template <typename T = {{tag.interface}}>
   static bool AllowFrom(const Node& node) {
     // UnsafeTo<> is safe because Is*Element(), by definition, only returns
     // true if `node` is derived from `Element`.

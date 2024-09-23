@@ -106,7 +106,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithDefaultState) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -135,7 +136,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithRunningState) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kRunning];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -165,7 +167,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSinglePasswordsIssue) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -194,7 +197,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleSafeBrowsingIssue) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -223,7 +227,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithSingleUpdateChromeIssue) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -254,7 +259,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndUpdateChromeIssues) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -284,7 +290,8 @@ TEST_F(SafetyCheckViewTest, DisplaysModuleWithPasswordAndSafeBrowsingIssues) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 
@@ -314,7 +321,8 @@ TEST_F(SafetyCheckViewTest,
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kDefault];
 
-  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state];
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
 
   [_superview addSubview:view];
 

@@ -40,7 +40,7 @@ export class StorageAndPowerSettingsCardElement extends
       shouldShowStorageRow_: {
         type: Boolean,
         value: () => {
-          // TODO(crbug.com/868747): Show an explanatory message instead.
+          // TODO(crbug.com/40587075): Show an explanatory message instead.
           return !loadTimeData.getBoolean('isDemoSession');
         },
         readOnly: true,

@@ -9,7 +9,9 @@
           "PowerManagementUsesAudioActivity": true
         },
         "prefs": {
-          "power.use_audio_activity": {}
+          "power.use_audio_activity": {
+            "value": true
+          }
         }
       }
     ]

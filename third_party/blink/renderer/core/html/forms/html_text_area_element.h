@@ -75,6 +75,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   String DefaultToolTip() const override;
 
+  void SetFocused(bool is_focused, mojom::blink::FocusType) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, SanitizeUserInputValue);
 
@@ -83,7 +85,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool AreAuthorShadowsAllowed() const override { return false; }
 
-  void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*) const;
+  void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*);
   static String SanitizeUserInputValue(const String&, unsigned max_length);
   void UpdateValue();
   void SetNonDirtyValue(const String&, TextControlSetValueSelection);
@@ -96,8 +98,9 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void SetPlaceholderVisibility(bool) override;
   bool SupportsPlaceholder() const override { return true; }
   String GetPlaceholderValue() const final;
-  void UpdatePlaceholderText() override;
-  TextControlInnerEditorElement* EnsureInnerEditorElement() const final;
+  HTMLElement* UpdatePlaceholderText() override;
+  bool IsInnerEditorValueEmpty() const final;
+  void CreateInnerEditorElementIfNecessary() const final;
 
   bool IsOptionalFormControl() const override {
     return !IsRequiredFormControl();

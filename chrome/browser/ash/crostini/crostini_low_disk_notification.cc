@@ -12,11 +12,11 @@
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,7 +52,7 @@ CrostiniLowDiskNotification::~CrostiniLowDiskNotification() {
 void CrostiniLowDiskNotification::OnLowDiskSpaceTriggered(
     const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {
   if (signal.vm_name() != kCrostiniDefaultVmName) {
-    // TODO(crbug/1189009): Support VMs with different names
+    // TODO(crbug.com/40755190): Support VMs with different names
     return;
   }
   ShowNotificationIfAppropriate(signal.free_bytes());

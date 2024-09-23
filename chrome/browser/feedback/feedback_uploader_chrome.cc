@@ -118,7 +118,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
 
   access_token_.clear();
 
-  // TODO(crbug.com/849591): Instead of getting the IdentityManager from the
+  // TODO(crbug.com/40579328): Instead of getting the IdentityManager from the
   // profile, we should pass the IdentityManager to FeedbackUploaderChrome's
   // ctor.
   Profile* profile = Profile::FromBrowserContext(context_);

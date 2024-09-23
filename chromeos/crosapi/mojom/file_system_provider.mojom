@@ -103,13 +103,21 @@ enum FSPChangeType {
 };
 
 [Stable]
+struct CloudFileInfo {
+  string? version_tag@0;
+};
+
+[Stable]
 struct FSPChange {
+  // Next MinVersion: 2
   FSPChangeType type@0;
   mojo_base.mojom.FilePath path@1;
+  [MinVersion=1] CloudFileInfo? cloud_file_info@2;
 };
 
 [Stable, Extensible]
 enum FSPOperationResponse {
+  // Next MinVersion: 2
   [Default] kUnknown,
   kUnmountSuccess,
   kGetEntryMetadataSuccess,
@@ -118,6 +126,7 @@ enum FSPOperationResponse {
   kReadFileSuccess,
   kGenericSuccess,
   kGenericFailure,
+  [MinVersion=1] kOpenFileSuccess,
 };
 
 [Stable, Extensible]
@@ -233,6 +242,15 @@ interface FileSystemProviderService {
   [MinVersion=3]
   OperationFinished@9(FSPOperationResponse response,
       FileSystemId file_system_id, int64 request_id,
+      mojo_base.mojom.ListValue args) => (string error);
+  // Handles return the success callback from the `OpenFile` method after the
+  // optional metadata dictionary support was added.
+  // The underlying functionality behaves similarly to the `OperationFinished`
+  // method above, however, having it as an interface method enables validating
+  // whether the remote version supports the callback or not.
+  [MinVersion=6]
+  OpenFileFinishedSuccessfully@12(FileSystemId file_system_id,
+      int64 request_id,
       mojo_base.mojom.ListValue args) => (string error);
 
   // The following function represents responses from the Extension after

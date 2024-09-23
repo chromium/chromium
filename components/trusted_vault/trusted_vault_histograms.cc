@@ -22,6 +22,10 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
       return std::string();
     case TrustedVaultURLFetchReasonForUMA::kRegisterDevice:
       return "RegisterDevice";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterLockScreenKnowledgeFactor:
+      return "RegisterLockScreenKnowledgeFactor";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterGpmPin:
+      return "RegisterGooglePasswordManagerPIN";
     case TrustedVaultURLFetchReasonForUMA::
         kRegisterUnspecifiedAuthenticationFactor:
       return "RegisterUnspecifiedAuthenticationFactor";
@@ -32,9 +36,11 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
     case TrustedVaultURLFetchReasonForUMA::
         kDownloadAuthenticationFactorsRegistrationState:
       return "DownloadAuthenticationFactorsRegistrationState";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterICloudKeychain:
+      return "RegisterICloudKeychain";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
@@ -44,7 +50,7 @@ std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
       return "UpdateRecoveryKeyStore";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -69,13 +75,13 @@ SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
     case SecurityDomainId::kPasskeys:
       return SecurityDomainIdOrInvalidForUma::kPasskeys;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason) {
-  // TODO(crbug.com/1423343): eventually histograms under
+  // TODO(crbug.com/40897451): eventually histograms under
   // components/trusted_vault should start using their own prefix instead of
   // "Sync." and migrated to the dedicated histograms.xml file.
   base::UmaHistogramEnumeration(

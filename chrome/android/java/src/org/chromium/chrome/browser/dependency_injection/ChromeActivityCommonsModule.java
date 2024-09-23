@@ -6,15 +6,12 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,15 +27,16 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
@@ -74,13 +72,12 @@ public class ChromeActivityCommonsModule {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabCreator> mTabCreatorSupplier;
-    private final Supplier<Boolean> mIsPromotableToTabSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final Supplier<ActivityTabStartupMetricsTracker>
-            mActivityTabStartupMetricsTrackerSupplier;
+    private final Supplier<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTrackerSupplier;
+    private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
@@ -111,12 +108,12 @@ public class ChromeActivityCommonsModule {
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 TabCreatorManager tabCreatorManager,
                 Supplier<TabCreator> tabCreatorSupplier,
-                Supplier<Boolean> isPromotableToTabSupplier,
                 StatusBarColorController statusBarColorController,
                 ScreenOrientationProvider screenOrientationProvider,
                 Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-                Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
+                Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
+                Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
                 CompositorViewHolder.Initializer compositorViewHolderInitializer,
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -146,12 +143,12 @@ public class ChromeActivityCommonsModule {
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabCreatorManager tabCreatorManager,
             Supplier<TabCreator> tabCreatorSupplier,
-            Supplier<Boolean> isPromotableToTabSupplier,
             StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
+            Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
+            Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -178,12 +175,12 @@ public class ChromeActivityCommonsModule {
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabCreatorManager = tabCreatorManager;
         mTabCreatorSupplier = tabCreatorSupplier;
-        mIsPromotableToTabSupplier = isPromotableToTabSupplier;
         mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
         mNotificationManagerProxySupplier = notificationManagerProxySupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mActivityTabStartupMetricsTrackerSupplier = activityTabStartupMetricsTrackerSupplier;
+        mLegacyTabStartupMetricsTrackerSupplier = legacyTabStartupMetricsTrackerSupplier;
+        mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
@@ -252,12 +249,6 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    @Named(DECOR_VIEW)
-    public View provideDecorView() {
-        return mActivity.getWindow().getDecorView();
-    }
-
-    @Provides
     public Resources provideResources() {
         return mActivity.getResources();
     }
@@ -318,12 +309,6 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN)
-    public boolean provideIsPromotableToTab() {
-        return !mIsPromotableToTabSupplier.get();
-    }
-
-    @Provides
     public StatusBarColorController provideStatusBarColorController() {
         return mStatusBarColorController;
     }
@@ -344,8 +329,13 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public ActivityTabStartupMetricsTracker provideActivityTabStartupMetricsTracker() {
-        return mActivityTabStartupMetricsTrackerSupplier.get();
+    public LegacyTabStartupMetricsTracker provideLegacyTabStartupMetricsTracker() {
+        return mLegacyTabStartupMetricsTrackerSupplier.get();
+    }
+
+    @Provides
+    public StartupMetricsTracker provideStartupMetricsTracker() {
+        return mStartupMetricsTrackerSupplier.get();
     }
 
     @Provides

@@ -60,9 +60,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
 
   // ax::mojom::AutomationClient:
   void Enable(EnableCallback callback) override;
-  void Disable();
-  void EnableTree(const ui::AXTreeID& tree_id);
-  void PerformAction(const ui::AXActionData& data);
+  void Disable() override;
+  void EnableChildTree(const ui::AXTreeID& tree_id) override;
+  void PerformAction(const ui::AXActionData& data) override;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void BindAccessibilityFileLoader(
@@ -126,6 +126,11 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetAutomationBoundClosure(base::OnceClosure closure);
   bool AutomationIsBound() const;
 
+  // Runs only once per PerformAction call. This is necessary because we want to
+  // check the parameters for each AXActionData.
+  void SetPerformActionCalledCallback(
+      base::OnceCallback<void(const ui::AXActionData&)> callback);
+
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void RequestScrollableBoundsForPoint(const gfx::Point& point);
   void SetScrollableBoundsForPointFoundCallback(
@@ -168,15 +173,22 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
                                const std::vector<ui::AXTreeUpdate>& updates,
                                const gfx::Point& mouse_location,
                                const std::vector<ui::AXEvent>& events);
+  void SendTreeDestroyedEvent(const ui::AXTreeID& tree_id);
+  void SendActionResult(const ui::AXActionData& data, bool result);
 
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  uint32_t num_disable_called() const { return num_disable_called_; }
+
  private:
   raw_ptr<mojom::AccessibilityService, DanglingUntriaged> service_;
   base::OnceClosure automation_bound_closure_;
+  base::OnceCallback<void(const ui::AXActionData&)>
+      perform_action_called_callback_;
+  uint32_t num_disable_called_ = 0;
 
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;

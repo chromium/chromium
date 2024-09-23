@@ -25,8 +25,9 @@ ExtensionFunction::ResponseAction CommandLinePrivateHasSwitchFunction::Run() {
       command_line_private::HasSwitch::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->name.empty())
+  if (params->name.empty()) {
     return RespondNow(Error(kEmptySwitchName));
+  }
 
   return RespondNow(
       ArgumentList(command_line_private::HasSwitch::Results::Create(

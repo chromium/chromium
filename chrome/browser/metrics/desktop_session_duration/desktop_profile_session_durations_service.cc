@@ -5,7 +5,9 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service.h"
 
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 namespace metrics {
 
@@ -52,8 +54,17 @@ void DesktopProfileSessionDurationsService::Shutdown() {
   sync_metrics_recorder_.reset();
 }
 
-bool DesktopProfileSessionDurationsService::IsSignedIn() const {
-  return sync_metrics_recorder_->IsSignedIn();
+signin_metrics::SingleProfileSigninStatus
+DesktopProfileSessionDurationsService::GetSigninStatus() const {
+  switch (sync_metrics_recorder_->GetSigninStatus()) {
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedIn:
+      return signin_metrics::SingleProfileSigninStatus::kSignedIn;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::
+        kSignedInWithError:
+      return signin_metrics::SingleProfileSigninStatus::kSignedInWithError;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedOut:
+      return signin_metrics::SingleProfileSigninStatus::kSignedOut;
+  }
 }
 
 bool DesktopProfileSessionDurationsService::IsSyncing() const {

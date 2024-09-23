@@ -14,8 +14,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -67,16 +65,18 @@ public class ConfirmSyncDataStateMachine
     }
 
     /**
-     * Callback for completion of the {@link ConfirmSyncDataStateMachine}.
-     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
+     * Callback for completion of the {@link ConfirmSyncDataStateMachine}. TODO(crbug.com/40159777):
+     * Change this method to package internal after modularization
      */
     public interface Listener {
         /**
-         * The state machine has completed and the state is done, or all necessary
-         * confirmations were given and the sign-in flow can proceed.
+         * The state machine has completed and the state is done, or all necessary confirmations
+         * were given and the sign-in flow can proceed.
+         *
          * @param wipeData Whether the user requested that existing data should be wiped.
+         * @param acceptedAccountManagement Whether the user accepted account management.
          */
-        void onConfirm(boolean wipeData);
+        void onConfirm(boolean wipeData, boolean acceptedAccountManagement);
 
         /**
          * The state machine is cancelled or the user cancels the sign-in process
@@ -89,6 +89,7 @@ public class ConfirmSyncDataStateMachine
 
     private static final int ACCOUNT_CHECK_TIMEOUT_MS = 30000;
 
+    private final Profile mProfile;
     private final Listener mListener;
     private final @Nullable String mOldAccountName;
     private final String mNewAccountName;
@@ -101,12 +102,15 @@ public class ConfirmSyncDataStateMachine
 
     /**
      * Create and run state machine, displaying the appropriate dialogs.
+     *
+     * @param profile The {@link Profile} associated with the sync data.
+     * @param delegate the delegate responsible of showing dialogs
      * @param oldAccountName the name of the last signed in account or null
      * @param newAccountName the name of the account user is signing in with
      * @param listener the listener to receive the result of this state machine
-     * @param delegate the delegate responsible of showing dialogs
      */
     public ConfirmSyncDataStateMachine(
+            Profile profile,
             ConfirmSyncDataStateMachineDelegate delegate,
             @Nullable String oldAccountName,
             String newAccountName,
@@ -114,6 +118,7 @@ public class ConfirmSyncDataStateMachine
         ThreadUtils.assertOnUiThread();
         assert !TextUtils.isEmpty(newAccountName) : "New account name must be provided.";
 
+        mProfile = profile;
         mDelegate = delegate;
         mOldAccountName = oldAccountName;
         mNewAccountName = newAccountName;
@@ -177,7 +182,7 @@ public class ConfirmSyncDataStateMachine
                 break;
             case State.AFTER_NEW_ACCOUNT_DIALOG:
                 mState = State.DONE;
-                mListener.onConfirm(mWipeData);
+                mListener.onConfirm(mWipeData, mNewAccountManaged);
                 break;
             case State.DONE:
                 throw new IllegalStateException("Can't progress from DONE state!");
@@ -186,7 +191,7 @@ public class ConfirmSyncDataStateMachine
 
     private void requestNewAccountManagementStatus() {
         IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .getSigninManager(mProfile)
                 .isAccountManaged(mNewAccountName, this::setIsNewAccountManaged);
     }
 
@@ -203,21 +208,16 @@ public class ConfirmSyncDataStateMachine
         assert mNewAccountManaged != null;
         assert mState == State.AFTER_NEW_ACCOUNT_DIALOG;
 
-        SigninManager signinManager =
-                IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile());
-        // If ENTERPRISE_POLICY_ON_SIGNIN is enabled, signin will already show the account
-        // management dialog before the confirm sync screen is shown, so we shouldn't show it
-        // again.
-        if (mNewAccountManaged
-                && (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                        || !signinManager.getUserAcceptedAccountManagement())) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        // Signin will already have show the account management dialog before the confirm sync
+        // screen is shown, so we shouldn't show it again.
+        if (mNewAccountManaged && !signinManager.getUserAcceptedAccountManagement()) {
             // Show 'logging into managed account' dialog
             // This will call back into onConfirm on success.
             mDelegate.showSignInToManagedAccountDialog(
                     this,
                     IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(mProfile)
                             .extractDomainName(mNewAccountName));
         } else {
             mDelegate.dismissAllDialogs();

@@ -152,7 +152,7 @@ enum OptimizationTarget {
   // Target for determining the UI visibility of a page.
   OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
   // Target for determining topics present on a page.
-  // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
+  // TODO(crbug.com/40204121): Remove PAGE_TOPICS in favor of this target.
   OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
   // Target for segmentation: Determine users with low engagement with chrome.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
@@ -212,6 +212,24 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER = 41;
   // Target to support running Compose On-Device.
   OPTIMIZATION_TARGET_COMPOSE = 42;
+  // Target for generating passage embeddings.
+  OPTIMIZATION_TARGET_PASSAGE_EMBEDDER = 43;
+  // Target for breaking up sentences into phrases.
+  OPTIMIZATION_TARGET_PHRASE_SEGMENTATION = 44;
+  // Target to determine whether to show promotion for Compose.
+  OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
+  // Target for ranking URL visits used in visit resumption features.
+  OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
+  // Target for background segmentation of video frames.
+  OPTIMIZATION_TARGET_CAMERA_BACKGROUND_SEGMENTATION = 47;
+  // Target for History search model.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_SEARCH = 48;
+  // Target for Prompt API feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API = 49;
+  // Target for metrics based segmentation clustering.
+  OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING = 50;
+  // Target for Summarize API feature config.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE = 51;
 }
 
 // The model engine versions that can be used to do model inference.
@@ -258,6 +276,14 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_14_1 = 14;
   // A model using only operations that are supported by 2.16.0.
   MODEL_ENGINE_VERSION_TFLITE_2_16 = 15;
+  // A model using only operations that are supported by 2.16.0. This raises the
+  // max_version for FULLY_CONNECTED to version 12.
+  MODEL_ENGINE_VERSION_TFLITE_2_16_1 = 16;
+  // A model using only operations that are supported by 2.17, and adds int8
+  // quantization support in the seq_flow_lite custom ops.
+  MODEL_ENGINE_VERSION_TFLITE_2_17 = 17;
+  // A model using only operations that are supported by 2.18.
+  MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
 }
 
 // The set of parameters that the server can use to vary the served model for

@@ -10,14 +10,13 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "storage/browser/database/database_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -49,10 +48,17 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
   EXPECT_FALSE(base::PathExists(inactive_path));
 }
 
-TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
+// TODO(crbug/333756088): Enable for Android when WebSQL has been removed from
+// Android WebView.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebSQLCleanup DISABLED_WebSQLCleanup
+#else
+#define MAYBE_WebSQLCleanup WebSQLCleanup
+#endif
+TEST(StoragePartitionImplMapTest, MAYBE_WebSQLCleanup) {
   BrowserTaskEnvironment task_environment;
   TestBrowserContext browser_context;
-  base::FilePath appcache_path;
+  base::FilePath websql_path;
 
   const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
       &browser_context, "foo", /*partition_name=*/"", /*in_memory=*/false);
@@ -64,28 +70,29 @@ TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
     StoragePartitionImplMap map(&browser_context);
 
     auto* partition = map.Get(kOnDiskConfig, true);
-    appcache_path = partition->GetPath().Append(kAppCacheDirname);
+    websql_path = partition->GetPath().Append(storage::kDatabaseDirectoryName);
 
     task_environment.RunUntilIdle();
 
     partition->OnBrowserContextWillBeDestroyed();
   }
 
-  // Create an AppCache directory that would have existed.
-  EXPECT_FALSE(base::PathExists(appcache_path));
-  EXPECT_TRUE(base::CreateDirectory(appcache_path));
+  // Create an WebSQL directory that would have existed.
+  EXPECT_FALSE(base::PathExists(websql_path));
+  EXPECT_TRUE(base::CreateDirectory(websql_path));
 
   {
     StoragePartitionImplMap map(&browser_context);
     auto* partition = map.Get(kOnDiskConfig, true);
 
-    ASSERT_EQ(appcache_path, partition->GetPath().Append(kAppCacheDirname));
+    ASSERT_EQ(websql_path,
+              partition->GetPath().Append(storage::kDatabaseDirectoryName));
 
     task_environment.RunUntilIdle();
 
-    // Verify that creating this partition deletes any AppCache directory it may
+    // Verify that creating this partition deletes any WebSQL directory it may
     // have had.
-    EXPECT_FALSE(base::PathExists(appcache_path));
+    EXPECT_FALSE(base::PathExists(websql_path));
 
     partition->OnBrowserContextWillBeDestroyed();
   }

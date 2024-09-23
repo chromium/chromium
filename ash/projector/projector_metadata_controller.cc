@@ -4,7 +4,6 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metadata_model.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
@@ -53,9 +52,7 @@ void ProjectorMetadataController::OnRecordingStarted() {
   metadata_ = std::make_unique<ProjectorMetadata>();
   metadata_->SetCaptionLanguage(
       GetFormattedLangauge(icu::Locale::getDefault()));
-  if (ash::features::IsProjectorV2Enabled()) {
-    metadata_->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
-  }
+  metadata_->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 }
 
 void ProjectorMetadataController::RecordTranscription(
@@ -83,10 +80,8 @@ void ProjectorMetadataController::RecordKeyIdea() {
 void ProjectorMetadataController::SaveMetadata(
     const base::FilePath& video_file_path) {
   DCHECK(metadata_);
-  // TODO(b/200330118): Finalize on the metadata file naming convention.
-  const base::FilePath path = video_file_path.AddExtension(
-      ash::features::IsProjectorV2Enabled() ? kProjectorV2MetadataFileExtension
-                                            : kProjectorMetadataFileExtension);
+  const base::FilePath path =
+      video_file_path.AddExtension(kProjectorV2MetadataFileExtension);
 
   // Save metadata.
   auto metadata_str = metadata_->Serialize();

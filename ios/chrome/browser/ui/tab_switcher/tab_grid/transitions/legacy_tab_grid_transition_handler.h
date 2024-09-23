@@ -25,10 +25,12 @@
 
 // Starts the transition from the `browser` to the `tabGrid`. Assumes that the
 // `browser` is currently a child ViewController of the `tabGrid`. The active
-// page of the `tabGrid` for the transition is `activePage`. Calls `completion`
-// when the transition finishes.
+// page of the `tabGrid` for the transition is `activePage`. `toTabGroup`
+// represents if the TabGrid should open a TabGroup. Calls `completion` when the
+// transition finishes.
 - (void)transitionFromBrowser:(UIViewController*)browser
                     toTabGrid:(UIViewController*)tabGrid
+                   toTabGroup:(BOOL)toTabGroup
                    activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion;
 

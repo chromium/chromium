@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/mac/channel_layout_util_mac.h"
 
 #include <memory>
@@ -179,7 +184,20 @@ bool AudioChannelLayoutToChannelLayout(const AudioChannelLayout& input_layout,
   }
   CHECK_GT(static_cast<int>(channel_count), 0);
 
-  for (int i = 0; i < ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+  std::vector<Channels> channels_to_match;
+  for (UInt32 i = 0; i < channel_count; i++) {
+    Channels channel;
+    auto channelLabel =
+        tag == kAudioChannelLayoutTag_UseChannelDescriptions
+            ? input_layout.mChannelDescriptions[i].mChannelLabel
+            : new_layout.layout()->mChannelDescriptions[i].mChannelLabel;
+    if (!AudioChannelLabelToChannel(channelLabel, &channel)) {
+      return false;
+    }
+    channels_to_match.push_back(channel);
+  }
+
+  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout layout = static_cast<ChannelLayout>(i);
     if (static_cast<UInt32>(ChannelLayoutToChannelCount(layout)) !=
         channel_count) {
@@ -187,16 +205,7 @@ bool AudioChannelLayoutToChannelLayout(const AudioChannelLayout& input_layout,
     }
 
     bool matched = true;
-    for (UInt32 j = 0; j < channel_count; j++) {
-      Channels channel;
-      auto channelLabel =
-          tag == kAudioChannelLayoutTag_UseChannelDescriptions
-              ? input_layout.mChannelDescriptions[j].mChannelLabel
-              : new_layout.layout()->mChannelDescriptions[j].mChannelLabel;
-      if (!AudioChannelLabelToChannel(channelLabel, &channel)) {
-        matched = false;
-        break;
-      }
+    for (const auto& channel : channels_to_match) {
       auto channel_order = ChannelOrder(layout, channel);
       if (channel_order == -1) {
         matched = false;

@@ -1,0 +1,65 @@
+[
+  {
+    "os": [
+      "android",
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "certificates.ca_certificates_with_constraints",
+      "default_value": [],
+      "values_to_test": [
+        // One cert
+        [
+          {
+            "certificate": "cert1",
+            "constraints": {
+              "permitted_dns_names": [
+                "dns1"
+              ],
+              "permitted_cidrs": [
+                "cidr1"
+              ]
+            }
+          }
+        ],
+        // Multiple certs
+        [
+          {
+            "certificate": "cert1",
+            "constraints": {
+              "permitted_dns_names": [
+                "dns1"
+              ],
+              "permitted_cidrs": [
+                "cidr1"
+              ]
+            }
+          },
+          {
+            "certificate": "cert2",
+            "constraints": {
+              "permitted_cidrs": [
+                "cidr2",
+                "cidr34",
+                "cidr545"
+              ]
+            }
+          },
+          {
+            "certificate": "cert3",
+            "constraints": {
+              "permitted_dns_names": [
+                "dns4",
+                "dns8"
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

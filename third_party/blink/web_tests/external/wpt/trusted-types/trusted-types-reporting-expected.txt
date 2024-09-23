@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Trusted Type violation report: sample for script innerText assignment
+  assert_true: expected "HTMLElement innerText|2+2;" to include "HTMLScriptElement innerText|2+2;". expected true got false
+[FAIL] Trusted Type violation report: sample for SVGScriptElement href assignment
+  assert_true: expected "SVGAnimatedString baseVal|" to include "SVGScriptElement href". expected true got false
+[FAIL] Trusted Type violation report: sample for SVGScriptElement href assignment by setAttribute
+  assert_true: expected "Element setAttribute|test" to include "SVGScriptElement href". expected true got false
+[FAIL] Trusted Type violation report: large values should be handled sanely.
+  assert_true: expected "HTMLElement innerText|abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" to include "HTMLScriptElement innerText|abbb". expected true got false
+Harness: the test ran to completion.
+

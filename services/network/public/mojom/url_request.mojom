@@ -27,6 +27,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -73,6 +74,12 @@ struct TrustedUrlRequestParams {
   // sites. If needed, the caller can add the cookies back in the call to
   // FollowRedirect().
   bool allow_cookies_from_browser;
+
+  // Specifies that the response head should include request cookies which were
+  // sent, including cookies added by the browser. Clients which set this flag
+  // should take care to remove them if they forward the response head to a
+  // client which should not be able to see them.
+  bool include_request_cookies_with_response = false;
 
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
@@ -147,7 +154,7 @@ struct URLRequest {
   // third-party context when it otherwise wouldn't be able to.
   // https://crbug.com/1060631 will move the SFC computation into the browser
   // process to prevent this.
-  // TODO(https://crbug.com/1060631): Remove this message after the fix is
+  // TODO(crbug.com/40122112): Remove this message after the fix is
   // landed.
   SiteForCookies site_for_cookies;
 
@@ -170,7 +177,7 @@ struct URLRequest {
   //
   // [1]: https://fetch.spec.whatwg.org/#concept-request-origin
   //
-  // |request_initiator| should be omitted (i.e. set to absl::nullopt) for
+  // |request_initiator| should be omitted (i.e. set to std::nullopt) for
   // browser-initiated requests (e.g. navigations initiated via omnibox or
   // bookmarks, internal subresource requests like fetching the SafeBrowsing
   // data, etc.).  Various security features may treat browser-initiated
@@ -182,9 +189,9 @@ struct URLRequest {
   // not enforce |request_initiator_origin_lock| and instead rely on the
   // factory user to ensure that a valid, non-nullopt |request_initiator| is
   // provided.  Failure to provide a correct, verified |request_initiator| may
-  // lead to bypasses of CORS, CORB, SameSite cookies and other HTTP security
+  // lead to bypasses of CORS, ORB, SameSite cookies and other HTTP security
   // features.  An untrustworthy process (e.g. a renderer or a utility process)
-  // should not be able to trigger or influence requests with a absl::nullopt
+  // should not be able to trigger or influence requests with a std::nullopt
   // |request_initiator|).
   //
   // See also:
@@ -259,7 +266,7 @@ struct URLRequest {
   // What this resource load is for (main frame, sub-frame, sub-resource,
   // object).
   // Note: this is an enum of type blink::mojom::ResourceType.
-  // TODO(https://crbug.com/1059639): remove this in favor of `destination`.
+  // TODO(crbug.com/40121693): remove this in favor of `destination`.
   int32 resource_type;
 
   // The priority of this request determined by Blink.
@@ -285,11 +292,8 @@ struct URLRequest {
   // about this.
   bool skip_service_worker;
 
-  // If true then the request continues even if it's blocked by CORB.
-  bool corb_detachable = false;
-
   // https://fetch.spec.whatwg.org/#concept-request-mode
-  // Used mainly by CORS handling (out-of-blink CORS), CORB, Service Worker.
+  // Used mainly by CORS handling (out-of-blink CORS), ORB, Service Worker.
   // CORS handling needs a proper origin (including a unique opaque origin).
   // Hence a request with kSameOrigin, kCors, or kCorsWithForcedPreflight should
   // have a non-null request_initiator.
@@ -306,7 +310,7 @@ struct URLRequest {
   // This member must be kFollow as long as |mode| is kNoCors.
   RedirectMode redirect_mode;
 
-  // The integrity used in Fetch API.
+  // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
   // https://fetch.spec.whatwg.org/#concept-request-destination
@@ -515,7 +519,7 @@ struct URLRequest {
   // compromised renderer would be able to access unpartitioned cookies. But by
   // assumption, the browser process has already determined that this access is
   // ok.
-  bool has_storage_access;
+  StorageAccessApiStatus storage_access_api_status;
 
  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;
@@ -525,13 +529,6 @@ struct URLRequest {
   // the request is made.
   AttributionReportingEligibility attribution_reporting_eligibility =
     AttributionReportingEligibility.kUnset;
-
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled.
-  //
-  // TODO(https://crbug.com/1443602): Get rid of this with proper OT
-  // infrastructure support in the network service.
-  AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
 
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
@@ -543,14 +540,9 @@ struct URLRequest {
 
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
-  // TODO(crbug.com/1413922): Remove this flag when we launch
+  // TODO(crbug.com/40255884): Remove this flag when we launch
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
-
-  // Indicates where the original ResourceRequest is created.
-  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
-  [EnableIf=is_android]
-  string created_location;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

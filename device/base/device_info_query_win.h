@@ -6,6 +6,7 @@
 #define DEVICE_BASE_DEVICE_INFO_QUERY_WIN_H_
 
 #include <windows.h>
+
 #include <setupapi.h>
 
 #include <string>

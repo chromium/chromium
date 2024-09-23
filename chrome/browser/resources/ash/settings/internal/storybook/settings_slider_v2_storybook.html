@@ -1,0 +1,49 @@
+<style include="storybook-styles">
+</style>
+
+<h2>With ticks</h2>
+<settings-slider-v2
+    value="[[sliderValueWithTicks_]]"
+    ticks="[[ticks_]]"
+    on-change="onTicksSliderChange_"
+    disabled="[[disabled_]]"
+    aria-label="A11y label"
+    aria-description="A11y description">
+</settings-slider-v2>
+<cr-checkbox checked="{{disabled_}}">Disabled</cr-checkbox>
+<code>
+  <div>Value: [[sliderValueWithTicks_]]</div>
+</code>
+
+<h2>With ticks, hide markers</h2>
+<settings-slider-v2
+    value="[[sliderValueWithTicks_]]"
+    ticks="[[ticks_]]"
+    hide-markers
+    on-change="onTicksSliderChange_">
+</settings-slider-v2>
+<code>
+  <div>Value: [[sliderValueWithTicks_]]</div>
+</code>
+
+<h2>With scale</h2>
+<settings-slider-v2
+    value="[[sliderValueWithScale_]]"
+    scale="10"
+    min="0"
+    max="10"
+    min-label="min"
+    max-label="max"
+    hide-label="[[hideLabel_]]"
+    on-change="onScaleSliderChange_">
+</settings-slider-v2>
+<cr-checkbox checked="{{hideLabel_}}">Hide labels</cr-checkbox>
+<code>
+  <div>Value: [[sliderValueWithScale_]]</div>
+</code>
+
+<h2>Managed (via pref)</h2>
+<settings-slider-v2
+    pref="[[virtualManagedPref_]]"
+    ticks="[[ticks_]]">
+</settings-slider-v2>

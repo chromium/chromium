@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/uuid.h"
 #include "content/common/frame.mojom.h"
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -21,6 +22,14 @@ namespace content {
 
 NavigationClient::NavigationClient(RenderFrameImpl* render_frame)
     : render_frame_(render_frame) {}
+
+NavigationClient::NavigationClient(
+    RenderFrameImpl* render_frame,
+    blink::mojom::BeginNavigationParamsPtr begin_params,
+    blink::mojom::CommonNavigationParamsPtr common_params)
+    : render_frame_(render_frame),
+      begin_params_(std::move(begin_params)),
+      common_params_(std::move(common_params)) {}
 
 NavigationClient::~NavigationClient() {}
 
@@ -43,6 +52,7 @@ void NavigationClient::CommitNavigation(
         fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
+    const base::Uuid& base_auction_nonce,
     const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -53,7 +63,7 @@ void NavigationClient::CommitNavigation(
     CommitNavigationCallback callback) {
   DCHECK(blink::IsRequestDestinationFrame(common_params->request_destination));
 
-  // TODO(https://crbug.com/1467502): The reset should be done when the
+  // TODO(crbug.com/40276805): The reset should be done when the
   // navigation did commit (meaning at a later stage). This is not currently
   // possible because of race conditions leading to the early deletion of
   // NavigationRequest would unexpectedly abort the ongoing navigation. Remove
@@ -68,7 +78,7 @@ void NavigationClient::CommitNavigation(
       std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory),
       std::move(fetch_later_loader_factory), document_token,
-      devtools_navigation_token, permissions_policy,
+      devtools_navigation_token, base_auction_nonce, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(code_cache_host_for_background), std::move(cookie_manager_info),
       std::move(storage_info), std::move(callback));
@@ -128,7 +138,26 @@ void NavigationClient::SetUpRendererInitiatedNavigation(
 
 void NavigationClient::ResetWithoutCancelling() {
   navigation_client_receiver_.ResetWithReason(
-      mojom::NavigationClient::kResetForSwap, "");
+      base::to_underlying(
+          mojom::NavigationClientDisconnectReason::kResetForSwap),
+      "");
+}
+
+void NavigationClient::ResetForNewNavigation(bool is_duplicate_navigation) {
+  navigation_client_receiver_.ResetWithReason(
+      base::to_underlying(is_duplicate_navigation
+                              ? mojom::NavigationClientDisconnectReason::
+                                    kResetForDuplicateNavigation
+                              : mojom::NavigationClientDisconnectReason::
+                                    kResetForNewNavigation),
+      "");
+}
+
+void NavigationClient::ResetForAbort() {
+  navigation_client_receiver_.ResetWithReason(
+      base::to_underlying(
+          mojom::NavigationClientDisconnectReason::kResetForAbort),
+      "");
 }
 
 void NavigationClient::NotifyNavigationCancellationWindowEnded() {

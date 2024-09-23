@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,7 +23,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -26,6 +31,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -82,7 +88,7 @@ class InlineNodeForTest : public InlineNode {
   void SegmentText() {
     InlineNodeData* data = MutableData();
     data->is_bidi_enabled_ = true;
-    InlineNode::SegmentText(data);
+    InlineNode::SegmentText(data, nullptr);
   }
 
   void CollectInlines() { InlineNode::CollectInlines(MutableData()); }
@@ -93,7 +99,7 @@ class InlineNodeTest : public RenderingTest {
  protected:
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
-    layout_block_flow_ = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId(id));
+    layout_block_flow_ = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     layout_object_ = layout_block_flow_->FirstChild();
   }
 
@@ -105,7 +111,7 @@ class InlineNodeTest : public RenderingTest {
   }
 
   InlineNodeForTest CreateInlineNode(
-      LayoutNGBlockFlow* layout_block_flow = nullptr) {
+      LayoutBlockFlow* layout_block_flow = nullptr) {
     if (layout_block_flow)
       layout_block_flow_ = layout_block_flow;
     if (!layout_block_flow_)
@@ -175,7 +181,7 @@ class InlineNodeTest : public RenderingTest {
                      AtomicString("Google Sans"));
   }
 
-  Persistent<LayoutNGBlockFlow> layout_block_flow_;
+  Persistent<LayoutBlockFlow> layout_block_flow_;
   Persistent<LayoutObject> layout_object_;
   FontCachePurgePreventer purge_preventer_;
 };
@@ -265,7 +271,17 @@ TEST_F(InlineNodeTest, CollectInlinesUTF16) {
   SetupHtml("t", u"<div id=t>Hello \u3042</div>");
   InlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  // |CollectInlines()| sets |IsBidiEnabled()| for any UTF-16 strings.
+  EXPECT_FALSE(node.IsBidiEnabled());
+  node.SegmentText();
+  EXPECT_FALSE(node.IsBidiEnabled());
+}
+
+TEST_F(InlineNodeTest, CollectInlinesMaybeRtl) {
+  // U+10000 "LINEAR B SYLLABLE B008 A" is strong LTR.
+  SetupHtml("t", u"<div id=t>Hello \U00010000</div>");
+  InlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  // |CollectInlines()| sets |IsBidiEnabled()| for any surrogate pairs.
   EXPECT_TRUE(node.IsBidiEnabled());
   // |SegmentText()| analyzes the string and resets |IsBidiEnabled()| if all
   // characters are LTR.
@@ -336,7 +352,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -372,7 +388,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineNewline) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -387,7 +403,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineWBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a\u200Bz", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -486,80 +502,99 @@ TEST_F(InlineNodeTest, SegmentBidiIsolate) {
   TEST_ITEM_OFFSET_DIR(items[8], 22u, 28u, TextDirection::kLtr);
 }
 
-TEST_F(InlineNodeTest, MinMaxSizes) {
-  LoadAhem();
-  SetupHtml("t", "<div id=t style='font:10px Ahem'>AB CDEF</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(40, sizes.min_size);
-  EXPECT_EQ(70, sizes.max_size);
+struct MinMaxData {
+  const char* content;
+  int min_max[2];
+  const char* target_style = "";
+  const char* style = "";
+  const char* lang = nullptr;
+} min_max_data[] = {
+    {"AB CDEF", {40, 70}},
+    // Element boundary is at the middle of a word.
+    {"A B<span>C D</span>", {20, 60}},
+    // A close tag after a forced break.
+    {"<span>12<br></span>", {80, 80}, "", "span { border: 30px solid blue; }"},
+    // `pre-wrap` with trailing spaces.
+    {"12345 6789 ", {50, 110}, "white-space: pre-wrap;"},
+    // `word-break: break-word` can break a space run.
+    {"M):\n<span>    </span>p",
+     {10, 90},
+     "white-space: pre-wrap; word-break: break-word;",
+     "span { font-size: 200%; }"},
+    // Tabulation characters with `break-word`.
+    {"&#9;&#9;<span>X</span>",
+     {10, 170},
+     "white-space: pre-wrap; word-break: break-word;"},
+    // Soft Hyphens.
+    {"abcd&shy;ef xx", {50, 90}},
+    {"abcd&shy;ef xx", {60, 90}, "hyphens: none;"},
+    {"abcd&shy; ef xx", {50, 100}, "hyphens: none;"},
+    // Hyphenations.
+    {"zz hyphenation xx", {50, 170}, "hyphens: auto;", "", "en-us"},
+    // Atomic inlines.
+    {"Hello <img>.", {50, 80}, "", "img { width: 1em; }"},
+    {"Hello <img>.", {50, 120}, "", "img { width: 5em; }"},
+    {"Hello <img>.", {60, 130}, "", "img { width: 6em; }"},
+    // `text-indent`.
+    {"6 12345 12", {60, 150}, "text-indent: 5em"},
+    {"6 1234567 12", {70, 170}, "text-indent: 5em"},
+    // `text-indent` with hyphenations.
+    // The "hy-" with the indent should be longest.
+    {"hyphenation a", {60, 160}, "hyphens: auto; text-indent: 3em", "", "en"},
+    {"hhhhh a", {80, 100}, "hyphens: auto; text-indent: 3em", "", "en"},
+    // Negative `text-indent`.
+    {"43210123 1234 12", {40, 110}, "text-indent: -5em"},
+    {"4321012345 1234 12", {50, 130}, "text-indent: -5em"},
+    {"432 012 1", {30, 40}, "text-indent: -5em"},
+    {"432 01 12", {20, 40}, "text-indent: -5em"},
+    // Floats.
+    {"XXX <div id=left></div> XXXX",
+     {50, 130},
+     "",
+     "#left { float: left; width: 50px; }"},
+    // Floats with clearances.
+    {"XXX <div id=left></div><div id=right></div><div id=left></div> XXX",
+     {50, 160},
+     "",
+     "#left { float: left; width: 40px; }"
+     "#right { float: right; clear: left; width: 50px; }"},
+};
+
+std::ostream& operator<<(std::ostream& os, const MinMaxData& data) {
+  return os << data.content << std::endl << data.style;
 }
 
-TEST_F(InlineNodeTest, MinMaxSizesElementBoundary) {
-  LoadAhem();
-  SetupHtml("t", "<div id=t style='font:10px Ahem'>A B<span>C D</span></div>");
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  // |min_content| should be the width of "BC" because there is an element
-  // boundary between "B" and "C" but no break opportunities.
-  EXPECT_EQ(20, sizes.min_size);
-  EXPECT_EQ(60, sizes.max_size);
-}
+class MinMaxTest : public InlineNodeTest,
+                   public testing::WithParamInterface<MinMaxData> {};
 
-TEST_F(InlineNodeTest, MinMaxSizesFloats) {
+INSTANTIATE_TEST_SUITE_P(InlineNodeTest,
+                         MinMaxTest,
+                         testing::ValuesIn(min_max_data));
+
+TEST_P(MinMaxTest, Data) {
+  const MinMaxData& data = GetParam();
   LoadAhem();
-  SetupHtml("t", R"HTML(
+  StringBuilder html;
+  html.AppendFormat(R"HTML("
+    <!DOCTYPE html>
     <style>
-      #left { float: left; width: 50px; }
+    #target { font: 10px Ahem;%s }
+    %s
     </style>
-    <div id=t style="font: 10px Ahem">
-      XXX <div id="left"></div> XXXX
-    </div>
-  )HTML");
-
+    <div id="target")HTML",
+                    data.target_style, data.style);
+  if (data.lang) {
+    html.AppendFormat(" lang='%s'", data.lang);
+    LayoutLocale::SetHyphenationForTesting(AtomicString(data.lang),
+                                           MockHyphenation::Create());
+  }
+  html.AppendFormat(">%s</div>", data.content);
+  SetupHtml("target", html.ToString());
   InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-
-  EXPECT_EQ(50, sizes.min_size);
-  EXPECT_EQ(130, sizes.max_size);
-}
-
-TEST_F(InlineNodeTest, MinMaxSizesCloseTagAfterForcedBreak) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-      span { border: 30px solid blue; }
-    </style>
-    <div id=t style="font: 10px Ahem">
-      <span>12<br></span>
-    </div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  // The right border of the `</span>` is included in the line even if it
-  // appears after `<br>`. crbug.com/991320.
-  EXPECT_EQ(80, sizes.min_size);
-  EXPECT_EQ(80, sizes.max_size);
-}
-
-TEST_F(InlineNodeTest, MinMaxSizesFloatsClearance) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-      #left { float: left; width: 40px; }
-      #right { float: right; clear: left; width: 50px; }
-    </style>
-    <div id=t style="font: 10px Ahem">
-      XXX <div id="left"></div><div id="right"></div><div id="left"></div> XXX
-    </div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-
-  EXPECT_EQ(50, sizes.min_size);
-  EXPECT_EQ(160, sizes.max_size);
+  const MinMaxSizes actual_sizes = ComputeMinMaxSizes(node);
+  const MinMaxSizes expected_sizezs{LayoutUnit(data.min_max[0]),
+                                    LayoutUnit(data.min_max[1])};
+  EXPECT_EQ(actual_sizes, expected_sizezs);
 }
 
 // For http://crbug.com/1112560
@@ -585,25 +620,6 @@ TEST_F(InlineNodeTest, MinMaxSizesSaturated) {
   // Note: |sizes.max_size.Round()| isn't |LayoutUnit::Max()| on some platform.
 }
 
-TEST_F(InlineNodeTest, MinMaxSizesTabulationWithBreakWord) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-    #t {
-      font: 10px Ahem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    </style>
-    <div id=t>&#9;&#9;<span>X</span></div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(10, sizes.min_size);
-  EXPECT_EQ(170, sizes.max_size);
-}
-
 // For http://crbug.com/1116713
 TEST_F(InlineNodeTest, MinMaxSizesNeedsLayout) {
   LoadAhem();
@@ -627,10 +643,7 @@ TEST_F(InlineNodeTest, AssociatedItemsWithControlItem) {
   SetBodyInnerHTML(
       "<pre id=t style='-webkit-rtl-ordering:visual'>ab\nde</pre>");
   auto* const layout_text =
-      To<LayoutText>(GetDocument()
-                         .getElementById(AtomicString("t"))
-                         ->firstChild()
-                         ->GetLayoutObject());
+      To<LayoutText>(GetElementById("t")->firstChild()->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
   Vector<const InlineItem*> items;
   for (const InlineItem& item : layout_text->InlineItems()) {
@@ -673,6 +686,20 @@ TEST_F(InlineNodeTest, NeedsCollectInlinesOnSetText) {
   Element* next = GetElementById("next");
   EXPECT_FALSE(previous->GetLayoutObject()->NeedsCollectInlines());
   EXPECT_FALSE(next->GetLayoutObject()->NeedsCollectInlines());
+}
+
+// crbug.com/325306591
+// We had a crash in OffsetMapping building during SetTextWithOffset().
+TEST_F(InlineNodeTest, SetTextWithOffsetWithTextTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="text-transform:uppercase">&#xdf;X</div>)HTML");
+
+  Element* container = GetElementById("container");
+  auto* text = To<Text>(container->firstChild());
+
+  text->deleteData(1, 1, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash in InlineItemsBuilder.
 }
 
 struct StyleChangeData {
@@ -1206,7 +1233,7 @@ TEST_F(InlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // but there are some clients (e.g., Scroll Anchor) who try to read
   // associated fragments.
   //
-  // NGPaintFragment is owned by LayoutNGBlockFlow. Because the original owner
+  // NGPaintFragment is owned by LayoutBlockFlow. Because the original owner
   // no longer has an inline formatting context, the NGPaintFragment subtree is
   // destroyed, and should not be accessible.
   GetDocument().UpdateStyleAndLayoutTree();
@@ -1505,7 +1532,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafe) {
       <span>A</span>V
     </p>
   )HTML");
-  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("p"));
   const InlineNodeData* data = block_flow->GetInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;
@@ -1534,7 +1561,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafeRtl) {
       <span>A</span>V
     </p>
   )HTML");
-  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("p"));
   const InlineNodeData* data = block_flow->GetInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;

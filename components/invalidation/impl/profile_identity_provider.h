@@ -37,13 +37,9 @@ class ProfileIdentityProvider : public IdentityProvider,
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
-  void OnRefreshTokenRemovedForAccount(
-      const CoreAccountId& account_id) override;
 
  private:
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  CoreAccountId active_account_id_;
 };
 
 }  // namespace invalidation

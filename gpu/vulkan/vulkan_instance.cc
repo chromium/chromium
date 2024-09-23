@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/vulkan/vulkan_instance.h"
 
 #include <vector>
@@ -323,7 +328,8 @@ bool VulkanInstance::CollectBasicInfo(
     result = vkEnumerateInstanceExtensionProperties(
         layer_name, &num_instance_exts, nullptr);
     if (VK_SUCCESS != result) {
-      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties(" << layer_name
+      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties("
+                 << (layer_name ? layer_name : "nullptr")
                  << ") failed: " << result;
       return false;
     }
@@ -336,7 +342,8 @@ bool VulkanInstance::CollectBasicInfo(
         layer_name, &num_instance_exts,
         &vulkan_info_.instance_extensions.data()[previous_extension_count]);
     if (VK_SUCCESS != result) {
-      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties(" << layer_name
+      LOG(ERROR) << "vkEnumerateInstanceExtensionProperties("
+                 << (layer_name ? layer_name : "nullptr")
                  << ") failed: " << result;
       return false;
     }

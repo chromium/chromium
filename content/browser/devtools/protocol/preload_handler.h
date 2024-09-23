@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/preload.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -61,8 +62,9 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
                    RenderFrameHostImpl* frame_host) override;
 
   void SendInitialPreloadEnabledState();
+  void SendCurrentPreloadStatus();
 
-  RenderFrameHostImpl* host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> host_ = nullptr;
 
   bool enabled_ = false;
 

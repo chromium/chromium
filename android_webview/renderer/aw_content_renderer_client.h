@@ -53,11 +53,17 @@ class AwContentRendererClient : public content::ContentRendererClient,
                             alternative_error_page_info,
                         std::string* error_html) override;
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin) override;
   bool IsLinkVisited(uint64_t link_hash) override;
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
-  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
-  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
-  CreateWebSocketHandshakeThrottleProvider() override;
+  std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
+      content::RenderFrame* render_frame,
+      media::GetSupportedKeySystemsCB cb) override;
   bool HandleNavigation(content::RenderFrame* render_frame,
                         blink::WebFrame* frame,
                         const blink::WebURLRequest& request,

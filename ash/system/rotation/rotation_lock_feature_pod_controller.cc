@@ -47,7 +47,6 @@ std::unique_ptr<FeatureTile> RotationLockFeaturePodController::CreateTile(
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
-  tile_->SetID(VIEW_ID_FEATURE_TILE_AUTOROTATE);
 
   // The tile label is always "Auto rotate" and there is no sub-label when the
   // tile is `TileType::kPrimary`.

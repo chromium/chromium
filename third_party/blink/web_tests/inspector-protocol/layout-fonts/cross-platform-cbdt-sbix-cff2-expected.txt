@@ -1,13 +1,13 @@
 abcdefghijklmnopqrstuvwxyz
 #cff2_support__should_be_using_adobe_variable_font_protoptype_only:
-"Adobe Variable Font Prototype" : 26
+"Adobe Variable Font Prototype (Fontations)" : 26
 
 
 #sbix_support__should_be_using_chromacheck_only:
-"PixelAmbacht ChromaCheck" : 7
+"PixelAmbacht ChromaCheck (Fontations)" : 7
 
 
 #cbdt_support__should_be_using_notocoloremoji_only:
-"ChromaCheck CBDT" : 7
+"ChromaCheck CBDT (Fontations)" : 7
 
 

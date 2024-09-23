@@ -9,11 +9,18 @@ found in the LICENSE file.
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.cronet_sample_apk.tests">
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
     <application>
-        <uses-library android:name="android.test.runner" />
+        <!--
+          Run the real telemetry code in test/sample code to improve
+          coverage
+        -->
+        <service
+          android:name="android.net.http.MetaDataHolder"
+          android:enabled="false" android:exported="false">
+            <meta-data
+              android:name="android.net.http.EnableTelemetry"
+              android:value="true" />
+        </service>
     </application>
     <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
         android:targetPackage="org.chromium.cronet_sample_apk"

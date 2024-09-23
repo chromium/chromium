@@ -56,6 +56,10 @@ class AwGLSurface : public gl::GLSurfaceEGL {
 
   bool is_angle() { return is_angle_; }
 
+  scoped_refptr<gl::GLSurface> wrapped_surface() const {
+    return wrapped_surface_;
+  }
+
  protected:
   ~AwGLSurface() override;
 

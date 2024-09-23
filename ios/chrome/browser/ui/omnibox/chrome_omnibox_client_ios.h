@@ -5,18 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_
 
-#include <memory>
-#include <unordered_map>
+#import <memory>
+#import <unordered_map>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_client.h"
-#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/memory/weak_ptr.h"
+#import "base/scoped_multi_source_observation.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_client.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/web/public/web_state_observer.h"
 
-class ChromeBrowserState;
 class WebLocationBar;
 namespace feature_engagement {
 class Tracker;
@@ -48,6 +48,7 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
   bool IsDefaultSearchProviderEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
+  const PrefService* GetPrefs() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
@@ -58,6 +59,14 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      bool is_prefetch) const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   bool ProcessExtensionKeyword(const std::u16string& text,
                                const TemplateURL* template_url,
                                const AutocompleteMatch& match,
@@ -86,7 +95,6 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
-  LocationBarModel* GetLocationBarModel() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // web::WebStateObserver.

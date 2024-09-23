@@ -202,8 +202,7 @@ void LzwPixelColorIndicesWriter::FlushStreamBufferToFile() {
   DCHECK(!byte_stream_buffer_.empty());
 
   gif_file_writer_->WriteByte(byte_stream_buffer_.size());
-  gif_file_writer_->WriteBuffer(byte_stream_buffer_.data(),
-                                byte_stream_buffer_.size());
+  gif_file_writer_->WriteBuffer(byte_stream_buffer_);
   byte_stream_buffer_.clear();
 }
 

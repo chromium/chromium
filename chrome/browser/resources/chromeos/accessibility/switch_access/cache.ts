@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 type AutomationNode = chrome.automation.AutomationNode;
 type CacheMap = Map<AutomationNode, boolean>;
 
@@ -16,3 +18,5 @@ export class SACache {
   readonly isGroup: CacheMap = new Map();
   readonly isInterestingSubtree: CacheMap = new Map();
 }
+
+TestImportManager.exportForTesting(SACache);

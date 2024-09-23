@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
@@ -24,37 +25,6 @@
 namespace gpu {
 
 namespace {
-// Converts a value that is aligned with glTexImage{2|3}D's |internalformat|
-// parameter to the value that is correspondingly aligned with
-// glTexImage{2|3}D's |format| parameter. |internalformat| is mostly an unsized
-// format that can be used both as internal format and data format. However,
-// GL_EXT_texture_norm16 follows ES3 semantics and only exposes a sized
-// internalformat.
-unsigned GetDataFormatFromInternalFormat(unsigned internalformat) {
-  switch (internalformat) {
-    case GL_R16_EXT:
-      return GL_RED_EXT;
-    case GL_RG16_EXT:
-      return GL_RG_EXT;
-    case GL_RGB10_A2_EXT:
-      return GL_RGBA;
-    case GL_RGB_YCRCB_420_CHROMIUM:
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCBCR_P010_CHROMIUM:
-      return GL_RGB;
-    case GL_RGBA16F_EXT:
-      return GL_RGBA;
-    case GL_RED:
-    case GL_RG:
-    case GL_RGB:
-    case GL_RGBA:
-    case GL_BGRA_EXT:
-      return internalformat;
-    default:
-      NOTREACHED();
-      return GL_NONE;
-  }
-}
 
 // Returns BufferFormat for given `format` and `plane_index`.
 gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
@@ -72,7 +42,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
       return num_channels == 2 ? gfx::BufferFormat::RG_1616
                                : gfx::BufferFormat::R_16;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::BufferFormat::RGBA_8888;
 }
 
@@ -81,7 +51,6 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
   DCHECK(format.IsValidPlaneIndex(plane_index));
   switch (format.plane_config()) {
     case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       switch (plane_index) {
         case 0:
           return gfx::BufferPlane::Y;
@@ -89,6 +58,15 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
           return gfx::BufferPlane::U;
         case 2:
           return gfx::BufferPlane::V;
+      }
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      switch (plane_index) {
+        case 0:
+          return gfx::BufferPlane::Y;
+        case 1:
+          return gfx::BufferPlane::V;
+        case 2:
+          return gfx::BufferPlane::U;
       }
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
       switch (plane_index) {
@@ -118,7 +96,7 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
           return gfx::BufferPlane::A;
       }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::BufferPlane::DEFAULT;
 }
 
@@ -139,10 +117,17 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
     LOG(FATAL) << "Failed to get GLOzone.";
   }
 
-  target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format,
-                                                           buffer_plane)
-               ? GL_TEXTURE_2D
-               : gpu::GetPlatformSpecificTextureTarget();
+  // The target should be GL_TEXTURE_2D unless external sampling is being
+  // used, which in this context is equivalent to the passed-in buffer format
+  // being multiplanar (if using per-plane sampling of a multiplanar texture,
+  // the buffer format passed in here must be the single-planar format of the
+  // plane).
+  if (gfx::BufferFormatIsMultiplanar(buffer_format)) {
+    CHECK_EQ(buffer_plane, gfx::BufferPlane::DEFAULT);
+    target = GL_TEXTURE_EXTERNAL_OES;
+  } else {
+    target = GL_TEXTURE_2D;
+  }
 
   gl::GLApi* api = gl::g_current_gl_context;
   DCHECK(api);
@@ -172,19 +157,16 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
 scoped_refptr<OzoneImageGLTexturesHolder>
 OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
     SharedImageBacking* backing,
-    scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferPlane plane,
-    bool is_passthrough) {
+    scoped_refptr<gfx::NativePixmap> pixmap) {
   scoped_refptr<OzoneImageGLTexturesHolder> holder =
-      base::WrapRefCounted(new OzoneImageGLTexturesHolder(is_passthrough));
-  if (!holder->Initialize(backing, std::move(pixmap), plane)) {
+      base::WrapRefCounted(new OzoneImageGLTexturesHolder());
+  if (!holder->Initialize(backing, std::move(pixmap))) {
     holder.reset();
   }
   return holder;
 }
 
-OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder(bool is_passthrough)
-    : is_passthrough_(is_passthrough) {}
+OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder() = default;
 
 OzoneImageGLTexturesHolder::~OzoneImageGLTexturesHolder() = default;
 
@@ -194,7 +176,7 @@ void OzoneImageGLTexturesHolder::MarkContextLost() {
   }
 
   context_lost_ = true;
-  for (auto& texture : textures_passthrough_) {
+  for (auto& texture : textures_) {
     texture->MarkContextLost();
   }
 }
@@ -216,51 +198,30 @@ size_t OzoneImageGLTexturesHolder::GetCacheCount() const {
 }
 
 void OzoneImageGLTexturesHolder::DestroyTextures() {
-  textures_passthrough_.clear();
   textures_.clear();
   bindings_.clear();
 }
 
 size_t OzoneImageGLTexturesHolder::GetNumberOfTextures() const {
-  if (is_passthrough_) {
-    DCHECK(textures_.empty());
-    return textures_passthrough_.size();
-  }
-  DCHECK(textures_passthrough_.empty());
   return textures_.size();
 }
 
 bool OzoneImageGLTexturesHolder::Initialize(
     SharedImageBacking* backing,
-    scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferPlane plane) {
+    scoped_refptr<gfx::NativePixmap> pixmap) {
   DCHECK(backing && pixmap);
   const viz::SharedImageFormat format = backing->format();
-  if (format.is_single_plane()) {
-    // Initialize the holder with a single texture with format and size of the
-    // backing. For legacy multiplanar formats, the plane must be DEFAULT.
-    auto size = backing->size();
-    auto buffer_format = ToBufferFormat(format);
-    if (format.IsLegacyMultiplanar()) {
-      DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
-    }
-    auto buffer_plane = plane;
-    return CreateAndStoreTexture(backing, std::move(pixmap), buffer_format,
-                                 buffer_plane, size);
-  } else if (format.PrefersExternalSampler()) {
+  if (format.is_single_plane() || format.PrefersExternalSampler()) {
     // Initialize the holder with a single texture with format of the
     // NativePixmap, size of the backing and DEFAULT plane.
     auto size = backing->size();
     auto buffer_format = pixmap->GetBufferFormat();
-    DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
-    auto buffer_plane = plane;
     return CreateAndStoreTexture(backing, std::move(pixmap), buffer_format,
-                                 buffer_plane, size);
+                                 gfx::BufferPlane::DEFAULT, size);
   } else {
     // Initialize the holder with N textures with format using
     // GetBufferFormatForPlane(), size using GetPlaneSize() and plane using
     // GetBufferPlane()
-    DCHECK_EQ(plane, gfx::BufferPlane::DEFAULT);
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
       auto size = format.GetPlaneSize(plane_index, backing->size());
@@ -290,28 +251,10 @@ bool OzoneImageGLTexturesHolder::CreateAndStoreTexture(
     return false;
   }
 
-  if (is_passthrough()) {
-    textures_passthrough_.emplace_back(
-        base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-            gl_texture_service_id, target));
-  } else {
-    gles2::Texture* texture =
-        gles2::CreateGLES2TextureWithLightRef(gl_texture_service_id, target);
+  textures_.push_back(base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
+      gl_texture_service_id, target));
 
-    // TODO(crbug.com/1468989): Make sure these match with corresponding formats
-    // from ToGLFormatDesc{ExternalSampler}.
-    GLuint internal_format = np_gl_binding->GetInternalFormat();
-    GLenum gl_format = GetDataFormatFromInternalFormat(internal_format);
-    GLenum gl_type = np_gl_binding->GetDataType();
-    texture->SetLevelInfo(target, 0, internal_format, backing->size().width(),
-                          backing->size().height(), 1, 0, gl_format, gl_type,
-                          backing->ClearedRect());
-    texture->SetImmutable(true, true);
-
-    textures_.emplace_back(texture);
-  }
-
-  bindings_.emplace_back(std::move(np_gl_binding));
+  bindings_.push_back(std::move(np_gl_binding));
   return true;
 }
 

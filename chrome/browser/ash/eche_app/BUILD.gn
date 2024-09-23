@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("eche_app") {
+  sources = [
+    "app_id.h",
+    "eche_app_accessibility_provider_proxy.cc",
+    "eche_app_accessibility_provider_proxy.h",
+    "eche_app_manager_factory.cc",
+    "eche_app_manager_factory.h",
+    "eche_app_notification_controller.cc",
+    "eche_app_notification_controller.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/eche_app_ui",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/profiles:profile",
+    "//ui/gfx",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/eche_app_ui:system_info_provider",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/secure_channel",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/common:channel_info",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/services/secure_channel",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
+    "//chromeos/ash/services/secure_channel/public/cpp/shared",
+    "//chromeos/strings",
+    "//chromeos/strings:strings_grit",
+    "//components/account_id",
+    "//components/pref_registry",
+    "//components/user_manager",
+    "//components/version_info:channel",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "eche_app_accessibility_provider_proxy_browsertest.cc" ]
+
+  deps = [
+    ":eche_app",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "eche_app_manager_factory_unittest.cc",
+    "eche_app_notification_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":eche_app",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp:test_support",
+    "//ash/webui/eche_app_ui",
+    "//ash/webui/eche_app_ui:system_info_provider",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//testing/gmock",
+    "//ui/gfx:test_support",
+  ]
+}

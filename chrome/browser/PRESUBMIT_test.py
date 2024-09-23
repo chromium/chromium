@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 import os.path
-import subprocess
 import sys
 import unittest
 
@@ -12,12 +11,13 @@ import PRESUBMIT
 
 file_dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(file_dir_path, '..', '..'))
-from PRESUBMIT_test_mocks import MockFile, MockAffectedFile
+from PRESUBMIT_test_mocks import MockAffectedFile
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 _VALID_DEP = "+third_party/blink/public/platform/web_something.h,"
 _INVALID_DEP = "+third_party/blink/public/web/web_something.h,"
 _INVALID_DEP2 = "+third_party/blink/public/web/web_nothing.h,"
+
 
 class BlinkPublicWebUnwantedDependenciesTest(unittest.TestCase):
   def makeInputApi(self, files):
@@ -81,7 +81,7 @@ class BlinkPublicWebUnwantedDependenciesTest(unittest.TestCase):
     self.assertEqual([], warnings)
 
 
-class InteractiveUiTestLibIndluceTest(unittest.TestCase):
+class InteractiveUiTestLibIncludeTest(unittest.TestCase):
   def testAdditionOfUnwantedDependency(self):
     lines = ['#include "ui/base/test/ui_controls.h"',
              '#include "ui/base/test/foo.h"',
@@ -92,12 +92,133 @@ class InteractiveUiTestLibIndluceTest(unittest.TestCase):
       MockAffectedFile('foo_browsertest.cc', lines),
       MockAffectedFile('foo_interactive_browsertest.cc', lines),
       MockAffectedFile('foo_unittest.cc', lines) ]
-    mock_output_api = MockOutputApi();
+    mock_output_api = MockOutputApi()
     errors = PRESUBMIT._CheckNoInteractiveUiTestLibInNonInteractiveUiTest(
         mock_input_api, mock_output_api)
     self.assertEqual(1, len(errors))
     # 2 lines from 2 files.
     self.assertEqual(4, len(errors[0].items))
+
+
+class CheckBuildFilesForIndirectAshSourcesTest(unittest.TestCase):
+  MESSAGE = "Indirect sources detected."
+
+  def testScope(self):
+    """We only complain for changes to BUILD.gn under certain directories."""
+
+    new_contents = [
+        'source_set("foo") {',
+        '  sources = [ "a/b.cc" ]',
+        '}',
+    ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ash/build.cc', new_contents),
+        MockAffectedFile('chrome/browser/ash/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ashley/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/chromeos/a/b/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/resources/ash/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ui/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ui/ash/foo/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ui/chromeos/BUILD.gn', new_contents),
+        MockAffectedFile('chrome/browser/ui/webui/ash/BUILD.gn', new_contents),
+    ]
+
+    results = PRESUBMIT._CheckBuildFilesForIndirectAshSources(mock_input_api,
+                                                              mock_output_api)
+
+    for result in results:
+      self.assertEqual(result.message, self.MESSAGE)
+
+    self.assertCountEqual(
+        [r.items for r in results],
+        [["chrome/browser/ash/BUILD.gn"],
+         ["chrome/browser/chromeos/a/b/BUILD.gn"],
+         ["chrome/browser/ui/ash/foo/BUILD.gn"],
+         ["chrome/browser/ui/chromeos/BUILD.gn"],
+         ["chrome/browser/ui/webui/ash/BUILD.gn"]])
+
+  def testComplexFormatting(self):
+    new_contents = [
+        'source_set("foo") {',
+        '  sources = [ "../0", "a/1",]',
+        '\tsources += ["a/2" ]',
+        'sources += [ # bla',
+        '   "a/3",',
+        '  ]',
+        '   # sources = ["a/b"]',
+        'sources += # bla',
+        '    ["a/4"]#bla',
+        '}',
+        'static_library("bar"){',
+        ' deps = []',
+        ' sources = []',
+        ' if (something) {',
+        '   sources += [',
+        '',
+        '     "a/5", "ab", "a/6","a/7",# "a/b"',
+        '     "a/8"]',
+        '   sources',
+        '     += [ "a/9" ]}',
+        '}',
+    ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('chrome/browser/ash/BUILD.gn', new_contents),
+    ]
+
+    results = PRESUBMIT._CheckBuildFilesForIndirectAshSources(mock_input_api,
+                                                              mock_output_api)
+
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].message, self.MESSAGE)
+    self.assertEqual(results[0].items, ["chrome/browser/ash/BUILD.gn"])
+    self.assertEqual(
+        [s.lstrip() for s in results[0].long_text.splitlines()[1:]],
+        ['../0', 'a/1', 'a/2', 'a/3', 'a/4', 'a/5', 'a/6', 'a/7', 'a/8', 'a/9'])
+
+  def testModifications(self):
+    old_contents = [
+        'source_set("foo") {',
+        '  sources = ["x/y", "a/b"]',
+        '}',
+    ]
+    new_contents_good = [
+        'source_set("foo") {',
+        '  sources = ["x/y", "ab"]',
+        '}',
+    ]
+    new_contents_bad = [
+        'source_set("foo") {',
+        '  sources = ["x/y", "a/b", "a/c"]',
+        '}',
+    ]
+
+    mock_output_api = MockOutputApi()
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('chrome/browser/ash/BUILD.gn',
+                         new_contents_bad, old_contents),
+        MockAffectedFile('chrome/browser/chromeos/BUILD.gn',
+                         new_contents_good, old_contents),
+    ]
+
+    results = PRESUBMIT._CheckBuildFilesForIndirectAshSources(mock_input_api,
+                                                              mock_output_api)
+
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].message, self.MESSAGE)
+    self.assertEqual(results[0].items, ["chrome/browser/ash/BUILD.gn"])
+    self.assertEqual(
+        [s.lstrip() for s in results[0].long_text.splitlines()[1:]],
+        ['a/c'])
+
 
 if __name__ == '__main__':
   unittest.main()

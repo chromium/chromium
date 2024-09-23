@@ -30,7 +30,8 @@ int AddOpacityTransition(Animation* target,
                          float start_opacity,
                          float end_opacity,
                          bool use_timing_function,
-                         int id) {
+                         int id,
+                         std::optional<int> group_id) {
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
       gfx::KeyframedFloatAnimationCurve::Create());
 
@@ -45,7 +46,8 @@ int AddOpacityTransition(Animation* target,
                                                 end_opacity, nullptr));
 
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-      std::move(curve), id, AnimationIdProvider::NextGroupId(),
+      std::move(curve), id,
+      group_id ? *group_id : AnimationIdProvider::NextGroupId(),
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   keyframe_model->set_needs_synchronized_start_time(true);
 
@@ -195,6 +197,12 @@ float FakeFloatAnimationCurve::GetValue(base::TimeDelta now) const {
   return 0.0f;
 }
 
+float FakeFloatAnimationCurve::GetTransformedValue(
+    base::TimeDelta now,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(now);
+}
+
 std::unique_ptr<gfx::AnimationCurve> FakeFloatAnimationCurve::Clone() const {
   return base::WrapUnique(new FakeFloatAnimationCurve);
 }
@@ -211,6 +219,11 @@ base::TimeDelta FakeTransformTransition::Duration() const {
 gfx::TransformOperations FakeTransformTransition::GetValue(
     base::TimeDelta time) const {
   return gfx::TransformOperations();
+}
+gfx::TransformOperations FakeTransformTransition::GetTransformedValue(
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(time);
 }
 
 bool FakeTransformTransition::PreservesAxisAlignment() const {
@@ -238,6 +251,12 @@ base::TimeDelta FakeFloatTransition::Duration() const {
 float FakeFloatTransition::GetValue(base::TimeDelta time) const {
   const double progress = std::min(time / duration_, 1.0);
   return (1.0 - progress) * from_ + progress * to_;
+}
+
+float FakeFloatTransition::GetTransformedValue(
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(time);
 }
 
 std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
@@ -291,10 +310,11 @@ int AddOpacityTransitionToAnimation(Animation* animation,
                                     float start_opacity,
                                     float end_opacity,
                                     bool use_timing_function,
-                                    std::optional<int> id) {
+                                    std::optional<int> id,
+                                    std::optional<int> group_id) {
   return AddOpacityTransition(
       animation, duration, start_opacity, end_opacity, use_timing_function,
-      id ? *id : AnimationIdProvider::NextKeyframeModelId());
+      id ? *id : AnimationIdProvider::NextKeyframeModelId(), group_id);
 }
 
 int AddAnimatedFilterToAnimation(Animation* animation,
@@ -455,6 +475,28 @@ int AddOpacityTransitionToElementWithAnimation(
   return AddOpacityTransitionToAnimation(animation.get(), duration,
                                          start_opacity, end_opacity,
                                          use_timing_function);
+}
+
+scoped_refptr<Animation> CancelAndReplaceAnimation(Animation& animation) {
+  int id = animation.id();
+  AnimationTimeline* timeline = animation.animation_timeline();
+  ElementId element_id = animation.element_id();
+
+  // Cancel the main thread side animation.
+  for (auto& keyframe_model : animation.keyframe_effect()->keyframe_models()) {
+    animation.RemoveKeyframeModel(keyframe_model->id());
+  }
+  animation.set_animation_delegate(nullptr);
+  if (timeline) {
+    timeline->DetachAnimation(&animation);
+  }
+
+  auto replacing_animation = Animation::Create(id);
+  replacing_animation->set_is_replacement();
+
+  timeline->AttachAnimation(replacing_animation);
+  replacing_animation->AttachElement(element_id);
+  return replacing_animation;
 }
 
 }  // namespace cc

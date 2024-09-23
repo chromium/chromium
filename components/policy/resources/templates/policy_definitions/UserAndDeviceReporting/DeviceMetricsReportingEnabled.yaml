@@ -16,7 +16,7 @@ items:
 - caption: Never send metrics to Google
   value: false
 owners:
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 - lbaraz@chromium.org
 - zmin@chromium.org
 schema:
@@ -27,3 +27,4 @@ tags:
 - admin-sharing
 - google-sharing
 type: main
+generate_device_proto: False

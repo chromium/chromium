@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/gamepad/gamepad_platform_data_fetcher_android.h"
 
 #include <stddef.h>
@@ -19,8 +24,10 @@
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/haptic_gamepad_android.h"
-#include "device/gamepad/jni_headers/GamepadList_jni.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "device/gamepad/jni_headers/GamepadList_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;

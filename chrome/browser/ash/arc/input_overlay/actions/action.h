@@ -8,11 +8,11 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
@@ -43,7 +43,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 // }
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const base::StringPiece key_name);
+    const std::string_view key_name);
 
 // Return true if the `input_element` is bound.
 bool IsInputBound(const InputElement& input_element);

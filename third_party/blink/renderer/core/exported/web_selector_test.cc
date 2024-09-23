@@ -29,13 +29,14 @@
  */
 
 #include "third_party/blink/public/web/web_selector.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(WebSelectorTest, Canonicalizes) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("h1, h2[style=\"foobar\"] span",
             CanonicalizeSelector("h1,h2[style='foobar']    span").Utf8());
   EXPECT_EQ("h1, h2[style=\"foobar\"] span",
@@ -43,12 +44,14 @@ TEST(WebSelectorTest, Canonicalizes) {
 }
 
 TEST(WebSelectorTest, Checks) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ("", CanonicalizeSelector("h1..h2").Utf8());
   EXPECT_EQ("",
             CanonicalizeSelector("h1..h2", kWebSelectorTypeCompound).Utf8());
 }
 
 TEST(WebSelectorTest, Restricts) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(
       "", CanonicalizeSelector("h1 span,h2", kWebSelectorTypeCompound).Utf8());
   EXPECT_EQ("h1, h2[style=\"foobar\"].cls",

@@ -5,13 +5,14 @@
 #ifndef CC_SLIM_FRAME_DATA_H_
 #define CC_SLIM_FRAME_DATA_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/slim/damage_data.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 
@@ -40,6 +41,7 @@ struct FrameData {
   SimpleEnclosedRegion occlusion_in_target;
   RenderPassDamageData render_pass_damage;
   gfx::MaskFilterInfo mask_filter_info_in_target;
+  viz::OffsetTag offset_tag;
 
   FrameDamageData current_frame_damage;
   bool subtree_property_changed_from_parent = false;

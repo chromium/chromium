@@ -21,11 +21,12 @@ class MockEnableAdbSideloadingScreen : public EnableAdbSideloadingScreen {
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
+  MOCK_METHOD(void, OnUserAction, (const base::Value::List&));
 
   void ExitScreen();
 };
 
-class MockEnableAdbSideloadingScreenView
+class MockEnableAdbSideloadingScreenView final
     : public EnableAdbSideloadingScreenView {
  public:
   MockEnableAdbSideloadingScreenView();
@@ -33,6 +34,13 @@ class MockEnableAdbSideloadingScreenView
 
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, SetScreenState, (UIState value));
+
+  base::WeakPtr<EnableAdbSideloadingScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<EnableAdbSideloadingScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

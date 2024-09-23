@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/utf_string_conversions.h"
+
+#include <string_view>
 #include <tuple>
 
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 
 std::string output_std_string;
 std::wstring output_std_wstring;
@@ -13,8 +15,8 @@ std::u16string output_string16;
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece string_piece_input(reinterpret_cast<const char*>(data),
-                                       size);
+  std::string_view string_piece_input(reinterpret_cast<const char*>(data),
+                                      size);
 
   std::ignore = base::UTF8ToWide(string_piece_input);
   base::UTF8ToWide(reinterpret_cast<const char*>(data), size,
@@ -25,7 +27,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Test for char16_t.
   if (size % 2 == 0) {
-    base::StringPiece16 string_piece_input16(
+    std::u16string_view string_piece_input16(
         reinterpret_cast<const char16_t*>(data), size / 2);
     std::ignore = base::UTF16ToWide(output_string16);
     base::UTF16ToWide(reinterpret_cast<const char16_t*>(data), size / 2,
@@ -50,7 +52,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // failures.
   if (base::IsStringASCII(string_piece_input)) {
     output_string16 = base::ASCIIToUTF16(string_piece_input);
-    base::StringPiece16 string_piece_input16(output_string16);
+    std::u16string_view string_piece_input16(output_string16);
     std::ignore = base::UTF16ToASCII(string_piece_input16);
   }
 

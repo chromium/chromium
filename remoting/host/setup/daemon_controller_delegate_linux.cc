@@ -5,9 +5,10 @@
 #include "remoting/host/setup/daemon_controller_delegate_linux.h"
 
 #include <unistd.h>
-#include <utility>
 
 #include <optional>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"

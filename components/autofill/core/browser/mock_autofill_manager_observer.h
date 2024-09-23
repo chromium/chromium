@@ -23,19 +23,27 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
       delete;
   ~MockAutofillManagerObserver() override;
 
-  MOCK_METHOD(void, OnAutofillManagerDestroyed, (AutofillManager&), (override));
-  MOCK_METHOD(void, OnAutofillManagerReset, (AutofillManager&), (override));
+  MOCK_METHOD(void,
+              OnAutofillManagerStateChanged,
+              (AutofillManager&,
+               AutofillManager::LifecycleState,
+               AutofillManager::LifecycleState),
+              (override));
 
   MOCK_METHOD(void, OnBeforeLanguageDetermined, (AutofillManager&), (override));
   MOCK_METHOD(void, OnAfterLanguageDetermined, (AutofillManager&), (override));
 
   MOCK_METHOD(void,
               OnBeforeFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
+              (AutofillManager&,
+               base::span<const FormGlobalId>,
+               base::span<const FormGlobalId>),
               (override));
   MOCK_METHOD(void,
               OnAfterFormsSeen,
-              (AutofillManager&, base::span<const FormGlobalId>),
+              (AutofillManager&,
+               base::span<const FormGlobalId>,
+               base::span<const FormGlobalId>),
               (override));
 
   MOCK_METHOD(void,
@@ -85,6 +93,15 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
+              OnBeforeFocusOnFormField,
+              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (override));
+  MOCK_METHOD(void,
+              OnAfterFocusOnFormField,
+              (AutofillManager&, FormGlobalId, FieldGlobalId),
+              (override));
+
+  MOCK_METHOD(void,
               OnBeforeJavaScriptChangedAutofilledValue,
               (AutofillManager&, FormGlobalId, FieldGlobalId),
               (override));
@@ -119,7 +136,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
 
   MOCK_METHOD(void,
               OnFormSubmitted,
-              (AutofillManager&, FormGlobalId),
+              (AutofillManager&, const FormData&),
               (override));
 };
 

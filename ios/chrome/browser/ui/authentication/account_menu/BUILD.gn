@@ -1,0 +1,164 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("account_menu") {
+  sources = [
+    "account_menu_coordinator.h",
+    "account_menu_coordinator.mm",
+    "account_menu_coordinator_delegate.h",
+    "account_menu_mediator.h",
+    "account_menu_mediator.mm",
+    "account_menu_mediator_delegate.h",
+  ]
+  deps = [
+    ":account_menu_ui",
+    ":constants",
+    "//base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication:authentication",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/google_services",
+    "//ios/chrome/browser/ui/settings/google_services/manage_accounts",
+    "//ios/chrome/browser/ui/settings/sync",
+    "//ios/third_party/material_components_ios",
+  ]
+}
+
+source_set("account_menu_ui") {
+  sources = [
+    "account_menu_consumer.h",
+    "account_menu_data_source.h",
+    "account_menu_mutator.h",
+    "account_menu_view_controller.h",
+    "account_menu_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
+}
+
+source_set("constants") {
+  sources = [
+    "account_menu_constants.h",
+    "account_menu_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_menu_coordinator_unittests.mm",
+    "account_menu_mediator_unittests.mm",
+    "account_menu_view_controller_unittests.mm",
+  ]
+  deps = [
+    ":account_menu",
+    ":account_menu_ui",
+    "//base",
+    "//components/sync:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/sync",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "account_menu_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/settings/google_services/manage_accounts:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base:base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

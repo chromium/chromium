@@ -53,8 +53,8 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
       return kAuthenticationErrorCategoryUserCancellationErrors;
   }
 
-  NOTREACHED() << "unexpected error: "
-               << base::SysNSStringToUTF8([error description]);
+  NOTREACHED_IN_MIGRATION()
+      << "unexpected error: " << base::SysNSStringToUTF8([error description]);
 }
 
 // Helper function converting the result of fetching the access token from

@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/media/media_license_manager.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
@@ -11,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
@@ -109,7 +114,7 @@ class MediaLicenseManagerTest : public testing::Test {
   // `expected_data`.
   void ExpectFileContents(
       const mojo::AssociatedRemote<media::mojom::CdmFile>& cdm_file,
-      const base::StringPiece expected_data) {
+      const std::string_view expected_data) {
     base::test::TestFuture<media::mojom::CdmFile::Status, std::vector<uint8_t>>
         future;
     cdm_file->Read(future.GetCallback<media::mojom::CdmFile::Status,
@@ -118,8 +123,8 @@ class MediaLicenseManagerTest : public testing::Test {
     media::mojom::CdmFile::Status status = future.Get<0>();
     auto data = future.Get<1>();
     EXPECT_EQ(status, media::mojom::CdmFile::Status::kSuccess);
-    EXPECT_EQ(base::StringPiece(reinterpret_cast<const char*>(data.data()),
-                                data.size()),
+    EXPECT_EQ(std::string_view(reinterpret_cast<const char*>(data.data()),
+                               data.size()),
               expected_data);
   }
 

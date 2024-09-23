@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "cros_events_processor.h"
 
 namespace metrics::structured::cros_event {
 

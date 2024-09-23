@@ -1,0 +1,124 @@
+{
+  "description": "OS debug reports",
+  "api_config": {
+    "needs_cross_app_web": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-OS-Source": "!"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-OS-Trigger": "!"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-OS-Source": "\"https://reporter1.test/x\", 123, \"https://reporter2.test/y\";debug-reporting"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-OS-Trigger": "\"https://reporter1.test/x\", 456, \"https://reporter2.test/y\";debug-reporting"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+          "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-OS-Source",
+            "value": "!"
+          },
+          "type": "header-parsing-error"
+        }],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+          "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-OS-Trigger",
+            "value": "!"
+          },
+          "type": "header-parsing-error"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "registration_url": "https://reporter2.test/y"
+           },
+           "type": "os-source-delegated"
+        }],
+        "report_time": "2",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "registration_url": "https://reporter2.test/y"
+           },
+           "type": "os-trigger-delegated"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

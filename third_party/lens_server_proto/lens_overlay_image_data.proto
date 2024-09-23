@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_geometry.proto";
+
+// Data representing image. Contains image bytes or image retrieval identifier.
+message ImageData {
+  // Image payload to process. This contains image bytes.
+  ImagePayload payload = 1;
+
+  // Required. Context of the given image.
+  ImageMetadata image_metadata = 3;
+
+  // The bounds of significant regions in the image.
+  repeated Geometry significant_regions = 4;
+
+  reserved 2;
+}
+
+message ImagePayload {
+  // Required. Image byte array.
+  bytes image_bytes = 1;
+
+  reserved 2;
+}
+
+message ImageMetadata {
+  // Required. Image width in pixels. Should reflect the actual size of
+  // image_bytes.
+  int32 width = 1;
+
+  // Required. Image height in pixels. Should reflect the actual size of
+  // image_bytes.
+  int32 height = 2;
+
+  reserved 6;
+}

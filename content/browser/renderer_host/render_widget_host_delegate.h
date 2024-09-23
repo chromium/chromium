@@ -14,15 +14,19 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/viz/common/vertical_scroll_direction.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
@@ -37,18 +41,24 @@ class Rect;
 class Size;
 }  // namespace gfx
 
+namespace input {
+struct NativeWebKeyboardEvent;
+class RenderWidgetHostInputEventRouter;
+}  // namespace input
+
+namespace ui {
+class Compositor;
+class BrowserAccessibilityManager;
+}  // namespace ui
+
 namespace content {
 
-class BrowserAccessibilityManager;
 class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
-class DevicePostureProviderImpl;
-class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
 class VisibleTimeRequestTrigger;
 enum class KeyboardEventProcessingResult;
-struct NativeWebKeyboardEvent;
 
 //
 // RenderWidgetHostDelegate
@@ -94,7 +104,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // event before sending it to the renderer. See enum for details on return
   // value.
   virtual KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
@@ -104,7 +114,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
   // event (used for keyboard shortcuts).
-  virtual bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event);
+  virtual bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified mouse wheel event.  Returns true if the browser has handled
@@ -117,6 +127,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
                                     const blink::WebInputEvent& event) {}
 
   // Asks whether the page is in a state of ignoring input events.
+  virtual bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event);
   virtual bool ShouldIgnoreInputEvents();
 
   // Callback to give the browser a chance to handle the specified gesture
@@ -125,11 +136,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event);
 
   // Get the root BrowserAccessibilityManager for this frame tree.
-  virtual BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
+  virtual ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
 
   // Get the root BrowserAccessibilityManager for this frame tree,
   // or create it if it doesn't exist.
-  virtual BrowserAccessibilityManager*
+  virtual ui::BrowserAccessibilityManager*
   GetOrCreateRootBrowserAccessibilityManager();
 
   // Send OS Cut/Copy/Paste actions to the focused frame.
@@ -160,7 +171,13 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}
 
-  virtual RenderWidgetHostInputEventRouter* GetInputEventRouter();
+  virtual input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
+
+  virtual void GetRenderWidgetHostAtPointAsynchronously(
+      RenderWidgetHostViewBase* root_view,
+      const gfx::PointF& point,
+      base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                              std::optional<gfx::PointF>)> callback) {}
 
   // Get the focused RenderWidgetHost associated with |receiving_widget|. A
   // RenderWidgetHostView, upon receiving a keyboard event, will pass its
@@ -210,10 +227,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual blink::mojom::DisplayMode GetDisplayMode() const;
 
   // Returns the window show state.
-  virtual ui::WindowShowState GetWindowShowState();
+  virtual ui::mojom::WindowShowState GetWindowShowState();
 
   // Returns the device posture provider tracking the device posture.
-  virtual DevicePostureProviderImpl* GetDevicePostureProvider();
+  virtual blink::mojom::DevicePostureProvider* GetDevicePostureProvider();
 
   // Returns whether the window can be resized or not. Defaults to true for
   // desktopOSs and false for mobileOSs.
@@ -277,6 +294,13 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // the WebContents.
   virtual VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() = 0;
 
+  // Returns the delegated ink point renderer associated with this WebContents
+  // for dispatching delegated ink points to viz. This also attempts to setup
+  // mojo connection using |compositor|, if the DelegatedInkPointRenderer
+  // interface is not bound.
+  virtual gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
+      ui::Compositor* compositor);
+
   // Inner WebContents Helpers -------------------------------------------------
   //
   // These functions are helpers in managing a hierarchy of WebContents
@@ -312,9 +336,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void OnVerticalScrollDirectionChanged(
       viz::VerticalScrollDirection scroll_direction) {}
 
-  // Returns true if the delegate is a portal.
-  virtual bool IsPortal();
-
   // Notify the delegate that the screen orientation has been changed.
   virtual void DidChangeScreenOrientation() {}
 
@@ -330,6 +351,13 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // keyboard or 0 if the virtual keyboard is hidden or in a mode that doesn't
   // resize the view.
   virtual int GetVirtualKeyboardResizeHeight();
+
+  // Returns false if it's a private window, and text entered into this page
+  // shouldn't be used to improve typing suggestions for the user.
+  virtual bool ShouldDoLearning();
+
+  // Notifies when an input event is ignored.
+  virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

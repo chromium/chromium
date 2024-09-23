@@ -23,19 +23,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Optional;
@@ -78,7 +78,7 @@ public class SendTabToSelfCoordinatorTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
-                                    Profile.getLastUsedRegularProfile(), HTTP_URL.getSpec())
+                                    ProfileManager.getLastUsedRegularProfile(), HTTP_URL.getSpec())
                             .equals(Optional.of(EntryPointDisplayReason.OFFER_FEATURE));
                 });
 
@@ -89,7 +89,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    // TODO(crbug.com/1302062): Flaky on Nexus 5x (bullhead).
+    // TODO(crbug.com/40825119): Flaky on Nexus 5x (bullhead).
     @DisableIf.Build(hardware_is = "bullhead")
     public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.
@@ -99,7 +99,7 @@ public class SendTabToSelfCoordinatorTest {
         // Check the promo is displayed, in particular the sign-in button.
         waitForViewShown(R.id.account_picker_continue_as_button);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getBottomSheetView()
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -112,7 +112,7 @@ public class SendTabToSelfCoordinatorTest {
     private void buildAndShowCoordinator() {
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();
         WindowAndroid windowAndroid = activity.getWindowAndroid();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SendTabToSelfCoordinator coordinator =
                             new SendTabToSelfCoordinator(
@@ -121,7 +121,7 @@ public class SendTabToSelfCoordinatorTest {
                                     HTTP_URL.getSpec(),
                                     "Page",
                                     BottomSheetControllerProvider.from(windowAndroid),
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     mDeviceLockActivityLauncher);
                     coordinator.show();
                 });
@@ -129,7 +129,7 @@ public class SendTabToSelfCoordinatorTest {
 
     private View getBottomSheetView() {
         WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return BottomSheetControllerProvider.from(windowAndroid)
                             .getCurrentSheetContent()

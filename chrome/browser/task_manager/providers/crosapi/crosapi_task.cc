@@ -85,7 +85,7 @@ int64_t CrosapiTask::GetCumulativeNetworkUsage() const {
 }
 
 bool CrosapiTask::ReportsWebCacheStats() const {
-  return mojo_task_->web_cache_stats ? true : false;
+  return !!mojo_task_->web_cache_stats;
 }
 
 blink::WebCacheResourceTypeStats CrosapiTask::GetWebCacheStats() const {

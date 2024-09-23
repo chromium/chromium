@@ -57,7 +57,9 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
     return std::move(mock_color_chooser_);
   }
 
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   std::unique_ptr<MockColorChooser> mock_color_chooser_;

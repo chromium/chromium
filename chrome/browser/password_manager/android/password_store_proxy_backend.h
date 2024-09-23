@@ -33,8 +33,7 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   PasswordStoreProxyBackend(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs,
-      IsAccountStore is_account_store);
+      PrefService* prefs);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
   PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
@@ -69,15 +68,18 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
                      PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
                         PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginAsync(const PasswordForm& form,
+  void RemoveLoginAsync(const base::Location& location,
+                        const PasswordForm& form,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
+      const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
       PasswordChangesOrErrorReply callback) override;
@@ -85,11 +87,15 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  void RecordAddLoginAsyncCalledFromTheStore() override;
+  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Forwards the (possible) forms changes caused by a remote event to the
@@ -99,34 +105,14 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
       RemoteChangesReceived remote_form_changes_received,
       std::optional<PasswordStoreChangeList> changes);
 
-  // Helper used to determine main *and* fallback backends.
-  // The account store doesn't use any fallback backend.
-  // The profile store only uses the built-in backend as a fallback
-  // if it's being used for synced passwords (pre store split).
+  // Helper used to determine on which backend to run operations.
   bool UsesAndroidBackendAsMainBackend();
 
-  // Determines whether the account store should use the Android backend
-  // or the built-in backend as the main backend.
-  bool UsesAndroidBackendAsMainBackendForAccount();
-
-  // Determines whether the profile store should use the Android backend
-  // or the built-in backend as the main backend.
-  bool UsesAndroidBackendAsMainBackendForProfile();
-
-  // Retries to execute operation on |built_in_backend| in case of an
-  // unrecoverable error inside |android_backend|. |retry_callback| is the
-  // pending operation with binded parameters, |result_callback| is the original
-  // operation callback.
-  // |ResultT| is the resulting type of the backend operation that will be
-  // passed to the result callback. Could be either |LoginsResultOrError| or
-  // |PasswordChangesOrError|.
-  template <typename ResultT>
-  void MaybeFallbackOnOperation(
-      base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
-          retry_callback,
-      const base::StrongAlias<struct MethodNameTag, std::string>& method_name,
-      base::OnceCallback<void(ResultT)> result_callback,
-      ResultT result);
+  // Clears all passwords from `built_in_backend_` if all conditions bellow are
+  // satisfied:
+  // - Password sync is enabled
+  // - initial UPM migration was finished and there was no unenrollment
+  void MaybeClearBuiltInBackend();
 
   PasswordStoreBackend* main_backend();
   PasswordStoreBackend* shadow_backend();
@@ -136,7 +122,6 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   raw_ptr<PrefService> const prefs_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
-  IsAccountStore is_account_store_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
 

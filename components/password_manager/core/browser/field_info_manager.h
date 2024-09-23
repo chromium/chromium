@@ -95,7 +95,7 @@ class FieldInfoManager : public KeyedService {
   // Deletes the oldest field info entry.
   void ClearOldestFieldInfoEntry();
 
-  // TODO(crbug/1468297): Reset the cache after a save prompt is accepted.
+  // TODO(crbug.com/40277063): Reset the cache after a save prompt is accepted.
   std::deque<FieldInfoEntry> field_info_cache_;
 
   // Task runner used for evicting field info entries after timeout.

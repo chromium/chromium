@@ -164,7 +164,7 @@ WebRTCInternals* WebRTCInternals::CreateSingletonInstance() {
 }
 
 WebRTCInternals* WebRTCInternals::GetInstance() {
-  // TODO(crbug.com/1322082): DCHECK calling from UI thread.
+  // TODO(crbug.com/40837773): DCHECK calling from UI thread.
   // Currently, some unit tests call this from outside of the UI thread,
   // but that's not a real issue as these tests neglect setting
   // `g_webrtc_internals` to begin with, and therefore just ignore it.
@@ -552,8 +552,7 @@ void WebRTCInternals::EnableAudioDebugRecordings(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       audio_debug_recordings_file_path_, nullptr, 0,
-      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow(),
-      nullptr);
+      base::FilePath::StringType(), web_contents->GetTopLevelNativeWindow());
 #endif
 }
 
@@ -607,7 +606,7 @@ void WebRTCInternals::EnableLocalEventLogRecordings(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       event_log_recordings_file_path_, nullptr, 0, FILE_PATH_LITERAL(""),
-      web_contents->GetTopLevelNativeWindow(), nullptr);
+      web_contents->GetTopLevelNativeWindow());
 #endif
 }
 
@@ -666,8 +665,7 @@ void WebRTCInternals::RenderProcessExited(
 }
 
 void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
-                                   int /* unused_index */,
-                                   void* /*unused_params */) {
+                                   int /* unused_index */) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs: {
@@ -684,11 +682,13 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       EnableAudioDebugRecordingsOnAllRenderProcessHosts();
       break;
     }
-    default: { NOTREACHED(); }
+    default: {
+      NOTREACHED_IN_MIGRATION();
+    }
   }
 }
 
-void WebRTCInternals::FileSelectionCanceled(void* params) {
+void WebRTCInternals::FileSelectionCanceled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (selection_type_) {
     case SelectionType::kRtcEventLogs:
@@ -700,7 +700,7 @@ void WebRTCInternals::FileSelectionCanceled(void* params) {
                  base::Value());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   select_file_dialog_ = nullptr;
 }

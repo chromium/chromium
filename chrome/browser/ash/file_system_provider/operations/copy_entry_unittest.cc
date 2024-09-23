@@ -39,11 +39,11 @@ class FileSystemProviderOperationsCopyEntryTest : public testing::Test {
   ~FileSystemProviderOperationsCopyEntryTest() override = default;
 
   void SetUp() override {
-    MountOptions mount_options(kFileSystemId, "" /* display_name */);
+    MountOptions mount_options(kFileSystemId, /*display_name=*/"");
     mount_options.writable = true;
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, mount_options, base::FilePath(), false /* configurable */,
-        true /* watchable */, extensions::SOURCE_FILE, IconSet());
+        kExtensionId, mount_options, base::FilePath(), /*configurable=*/false,
+        /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -52,7 +52,7 @@ class FileSystemProviderOperationsCopyEntryTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute) {
   using extensions::api::file_system_provider::CopyEntryRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CopyEntry copy_entry(&dispatcher, file_system_info_,
@@ -82,7 +82,7 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   CopyEntry copy_entry(&dispatcher, file_system_info_,
@@ -93,13 +93,13 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute_ReadOnly) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   const ProvidedFileSystemInfo read_only_file_system_info(
-      kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-      base::FilePath() /* mount_path */, false /* configurable */,
-      true /* watchable */, extensions::SOURCE_FILE, IconSet());
+      kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+      /*mount_path=*/base::FilePath(), /*configurable=*/false,
+      /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
 
   CopyEntry copy_entry(&dispatcher, read_only_file_system_info,
                        base::FilePath(kSourcePath), base::FilePath(kTargetPath),
@@ -109,7 +109,7 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, Execute_ReadOnly) {
 }
 
 TEST_F(FileSystemProviderOperationsCopyEntryTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CopyEntry copy_entry(&dispatcher, file_system_info_,
@@ -118,13 +118,13 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, OnSuccess) {
 
   EXPECT_TRUE(copy_entry.Execute(kRequestId));
 
-  copy_entry.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  copy_entry.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsCopyEntryTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CopyEntry copy_entry(&dispatcher, file_system_info_,

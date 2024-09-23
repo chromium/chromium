@@ -9,7 +9,6 @@
     "symbol_level": 0,
     "target_cpu": "x64",
     "target_os": "android",
-    "use_perfetto_client_library": true,
     "use_remoteexec": true,
     "use_siso": true
   }

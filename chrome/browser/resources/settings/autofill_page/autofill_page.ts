@@ -9,7 +9,8 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
@@ -18,9 +19,11 @@ import '../internal/icons.html.js';
 // </if>
 // <if expr="not _google_chrome">
 import '../icons.html.js';
+
 // </if>
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -33,7 +36,8 @@ import {Router} from '../router.js';
 import {getTemplate} from './autofill_page.html.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
 
-const SettingsAutofillPageElementBase = PrefsMixin(BaseMixin(PolymerElement));
+const SettingsAutofillPageElementBase =
+    PrefsMixin(I18nMixin(BaseMixin(PolymerElement)));
 
 export interface SettingsAutofillPageElement {
   $: {
@@ -69,9 +73,25 @@ export class SettingsAutofillPageElement extends
           return map;
         },
       },
-      isPlusAddressSettingEnabled_: {
+
+      plusAddressIcon_: {
+        type: String,
+        value() {
+          // <if expr="_google_chrome">
+          return 'settings-internal:plus-address-logo-medium';
+          // </if>
+          // <if expr="not _google_chrome">
+          return 'settings:email';
+          // </if>
+        },
+      },
+
+      autofillPredictionImprovementsEnabled_: {
         type: Boolean,
-        value: () => !!loadTimeData.getString('plusAddressManagementUrl'),
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillPredictionImprovementsEnabled');
+        },
       },
     };
   }
@@ -105,6 +125,22 @@ export class SettingsAutofillPageElement extends
   private onPlusAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('plusAddressManagementUrl'));
+  }
+
+  /**
+   * Shows the prediction improvements settings sub page.
+   */
+  private onAutofillPredictionImprovementsClick_() {
+    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
+  }
+
+  /**
+   * @returns the sublabel of the address entry.
+   */
+  private addressesSublabel_() {
+    return loadTimeData.getBoolean('plusAddressEnabled') ?
+        this.i18n('addressesSublabel') :
+        '';
   }
 }
 

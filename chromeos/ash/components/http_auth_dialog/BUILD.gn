@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("http_auth_dialog") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG_IMPL" ]
+
+  sources = [
+    "http_auth_dialog.cc",
+    "http_auth_dialog.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//components/constrained_window",
+    "//components/strings:components_strings_grit",
+    "//components/url_formatter",
+    "//components/web_modal",
+    "//services/network/public/cpp",
+    "//ui/base",
+  ]
+}

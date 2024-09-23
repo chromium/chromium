@@ -22,26 +22,26 @@ TEST(TimeDeltaFromStringTest, ParseTimeDeltaTest) {
   EXPECT_EQ(TimeDeltaFromString("inf"), TimeDelta::Max());
   EXPECT_EQ(TimeDeltaFromString("+inf"), TimeDelta::Max());
   EXPECT_EQ(TimeDeltaFromString("-inf"), TimeDelta::Min());
-  EXPECT_EQ(TimeDeltaFromString("infBlah"), absl::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("infBlah"), std::nullopt);
 
   // Illegal input forms.
-  EXPECT_EQ(TimeDeltaFromString(""), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("0.0"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString(".0"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("."), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("01"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("1"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("-1"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("2"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("2 s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString(".s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("-.s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString(" 2s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("2s "), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString(" 2s "), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("2mt"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("1e3s"), absl::nullopt);
+  EXPECT_EQ(TimeDeltaFromString(""), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("0.0"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString(".0"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("."), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("01"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("1"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("-1"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("2"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("2 s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString(".s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("-.s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString(" 2s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("2s "), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString(" 2s "), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("2mt"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("1e3s"), std::nullopt);
 
   // One unit type.
   EXPECT_EQ(TimeDeltaFromString("1ns"), Nanoseconds(1));
@@ -59,7 +59,7 @@ TEST(TimeDeltaFromStringTest, ParseTimeDeltaTest) {
             Microseconds(-9223372036854775807));
 
   // Overflow count. Note the "93" at the beginning (instead of "92").
-  EXPECT_EQ(TimeDeltaFromString("9323372036854775807us"), absl::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("9323372036854775807us"), std::nullopt);
   // Overflow overall duration.
   EXPECT_EQ(TimeDeltaFromString("9323372036854s"), TimeDelta::Max());
   EXPECT_EQ(TimeDeltaFromString("-9323372036854s"), TimeDelta::Min());
@@ -99,9 +99,9 @@ TEST(TimeDeltaFromStringTest, ParseTimeDeltaTest) {
   EXPECT_EQ(TimeDeltaFromString("-1d"), Days(-1));
 
   EXPECT_EQ(TimeDeltaFromString("-1h2s"), -(Hours(1) + Seconds(2)));
-  EXPECT_EQ(TimeDeltaFromString("1h-2s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("-1h-2s"), absl::nullopt);
-  EXPECT_EQ(TimeDeltaFromString("-1h -2s"), absl::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("1h-2s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("-1h-2s"), std::nullopt);
+  EXPECT_EQ(TimeDeltaFromString("-1h -2s"), std::nullopt);
 }
 
 }  // namespace

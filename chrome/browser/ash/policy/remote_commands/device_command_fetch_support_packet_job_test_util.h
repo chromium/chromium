@@ -42,8 +42,7 @@ struct SessionInfo {
 //     "issueCaseId": "issue_case_id",
 //     "issueDescription": "issue description",
 //     "requestedDataCollectors": [<requested data collectors>],
-//     "requestedPiiTypes": [],
-//     "requesterMetadata": "obfuscated123"
+//     "requestedPiiTypes": []
 //   }
 // }
 base::Value::Dict GetFetchSupportPacketCommandPayloadDict(

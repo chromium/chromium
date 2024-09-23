@@ -10,11 +10,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/nearby/internal/proto/metadata.pb.h"
+#include "third_party/nearby/src/presence/presence_device.h"
 
 namespace ash::nearby::presence {
+
+class NearbyPresenceConnectionsManager;
 
 // This service implements Nearby Presence on top of the Nearby Presence .mojom
 // interface.
@@ -25,14 +29,6 @@ class NearbyPresenceService {
 
   NearbyPresenceService();
   virtual ~NearbyPresenceService();
-
-  enum class IdentityType {
-    kUnspecified,
-    kPrivate,
-    kTrusted,
-    kPublic,
-    kProvisioned
-  };
 
   enum class Action {
     kActiveUnlock = 8,
@@ -46,72 +42,13 @@ class NearbyPresenceService {
     kLast
   };
 
-  // This is a super set of the absl status code found in
-  // //mojo/public/mojom/base/absl_status.mojom with the only difference being
-  // the addition of kFailedToStartProcess. Any updates to absl_status should be
-  // reflected here.
-  enum class StatusCode {
-    kAbslOk = 0,
-    kAbslCancelled = 1,
-    kAbslUnknown = 2,
-    kAbslInvalidArgument = 3,
-    kAbslDeadlineExceeded = 4,
-    kAbslNotFound = 5,
-    kAbslAlreadyExists = 6,
-    kAbslPermissionDenied = 7,
-    kAbslResourceExhausted = 8,
-    kAbslFailedPrecondition = 9,
-    kAbslAborted = 10,
-    kAbslOutOfRange = 11,
-    kAbslUnimplemented = 12,
-    kAbslInternal = 13,
-    kAbslUnavailable = 14,
-    kAbslDataLoss = 15,
-    kAbslUnauthenticated = 16,
-    kFailedToStartProcess = 17,
-  };
-
-  // TODO(b/276642472): Move PresenceDevice into its own class and file, to
-  // inherit from the upcoming Nearby Connections Device class.
-  class PresenceDevice {
-   public:
-    PresenceDevice(::nearby::internal::Metadata metadata,
-                   std::optional<std::string> stable_device_id,
-                   std::string endpoint_id,
-                   std::vector<Action> actions,
-                   int rssi);
-
-    PresenceDevice(const PresenceDevice&);
-    PresenceDevice& operator=(const PresenceDevice&);
-    ~PresenceDevice();
-
-    ::nearby::internal::Metadata GetMetadata() const { return metadata_; }
-    ::nearby::internal::DeviceType GetType() const {
-      return metadata_.device_type();
-    }
-
-    const std::optional<std::string> GetStableId() const {
-      return stable_device_id_;
-    }
-    const std::string& GetEndpointId() const { return endpoint_id_; }
-    const std::string& GetName() const { return metadata_.device_name(); }
-    const std::vector<Action> GetActions() const { return actions_; }
-    int GetRssi() const { return rssi_; }
-
-   private:
-    ::nearby::internal::Metadata metadata_;
-    std::optional<std::string> stable_device_id_;
-    std::string endpoint_id_;
-    std::vector<Action> actions_;
-    int rssi_;
-  };
-
   struct ScanFilter {
-    ScanFilter(IdentityType identity_type, const std::vector<Action>& actions);
+    ScanFilter(::nearby::internal::IdentityType identity_type,
+               const std::vector<Action>& actions);
     ScanFilter(const ScanFilter&);
     ~ScanFilter();
 
-    IdentityType identity_type_;
+    ::nearby::internal::IdentityType identity_type_;
     std::vector<Action> actions_;
   };
 
@@ -120,9 +57,12 @@ class NearbyPresenceService {
     ScanDelegate();
     virtual ~ScanDelegate();
 
-    virtual void OnPresenceDeviceFound(PresenceDevice presence_device) = 0;
-    virtual void OnPresenceDeviceChanged(PresenceDevice presence_device) = 0;
-    virtual void OnPresenceDeviceLost(PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceFound(
+        ::nearby::presence::PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceChanged(
+        ::nearby::presence::PresenceDevice presence_device) = 0;
+    virtual void OnPresenceDeviceLost(
+        ::nearby::presence::PresenceDevice presence_device) = 0;
     virtual void OnScanSessionInvalidated() = 0;
   };
 
@@ -141,7 +81,7 @@ class NearbyPresenceService {
   virtual void StartScan(
       ScanFilter scan_filter,
       ScanDelegate* scan_delegate,
-      base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
+      base::OnceCallback<void(std::unique_ptr<ScanSession>, enums::StatusCode)>
           on_start_scan_callback) = 0;
 
   virtual void Initialize(base::OnceClosure on_initialized_callback) = 0;
@@ -153,7 +93,15 @@ class NearbyPresenceService {
   //     2. Downloading remote devices' credentials from the NP server and
   //        saving them to the NP library.
   virtual void UpdateCredentials() = 0;
+
+  virtual std::unique_ptr<NearbyPresenceConnectionsManager>
+  CreateNearbyPresenceConnectionsManager() = 0;
 };
+
+// TODO(b/342473553): Migrate this function and implementation to
+// //chromeos/ash/components/nearby/presence/enums.
+std::ostream& operator<<(std::ostream& stream,
+                         const enums::StatusCode status_code);
 
 }  // namespace ash::nearby::presence
 

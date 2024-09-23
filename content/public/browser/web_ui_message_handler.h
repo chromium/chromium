@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_WEB_UI_MESSAGE_HANDLER_H_
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
@@ -56,7 +57,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   void AllowJavascript();
 
   // This is where subclasses specify which messages they'd like to handle and
-  // perform any additional initialization.. At this point web_ui() will return
+  // perform any additional initialization. At this point web_ui() will return
   // the associated WebUI object.
   virtual void RegisterMessages() = 0;
 
@@ -88,8 +89,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // Helper method for notifying Javascript listeners added with
   // cr.addWebUIListener() (defined in cr.js).
   template <typename... Values>
-  void FireWebUIListener(base::StringPiece event_name,
-                         const Values&... values) {
+  void FireWebUIListener(std::string_view event_name, const Values&... values) {
     // cr.webUIListenerCallback is a global JS function exposed from cr.js.
     CallJavascriptFunction("cr.webUIListenerCallback", base::Value(event_name),
                            values...);
@@ -102,7 +102,7 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // All function names in WebUI must consist of only ASCII characters.
   // These functions will crash if JavaScript is not currently allowed.
   template <typename... Values>
-  void CallJavascriptFunction(base::StringPiece function_name,
+  void CallJavascriptFunction(std::string_view function_name,
                               const Values&... values) {
     CHECK(IsJavascriptAllowed()) << "Cannot CallJavascriptFunction before "
                                     "explicitly allowing JavaScript.";

@@ -333,7 +333,7 @@ const CGFloat kSymbolSize = 15;
       _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -27,6 +27,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
@@ -37,7 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -98,7 +99,8 @@ CloneAndSplitOutGenerator(const AggregatableReportRequest& request) {
                  contributions) {
             // Handle null reports
             if (contributions.empty()) {
-              contributions.emplace_back(/*bucket=*/0, /*value=*/0);
+              contributions.emplace_back(/*bucket=*/0, /*value=*/0,
+                                         /*filtering_id=*/std::nullopt);
             }
             EXPECT_EQ(contributions, clone.payload_contents().contributions);
             return clone;
@@ -153,7 +155,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregatableReportRequest expected_request =
@@ -170,13 +172,15 @@ TEST_F(PrivateAggregationManagerImplTest,
   {
     testing::InSequence seq;
     EXPECT_CALL(checkpoint, Call(0));
-    EXPECT_CALL(*budgeter_,
-                ConsumeBudget(
-                    expected_request.payload_contents().contributions[0].value,
-                    example_key, _))
+    EXPECT_CALL(
+        *budgeter_,
+        ConsumeBudget(
+            expected_request.payload_contents().contributions[0].value,
+            example_key,
+            expected_request.payload_contents().contributions[0].value, _))
         .WillOnce(Invoke(
             [&checkpoint](
-                int, const PrivateAggregationBudgetKey&,
+                int, const PrivateAggregationBudgetKey&, int,
                 base::OnceCallback<void(
                     PrivateAggregationBudgeter::RequestResult)> on_done) {
               checkpoint.Call(1);
@@ -217,7 +221,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregatableReportRequest example_request =
@@ -225,12 +229,18 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                            /*value=*/100),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                            /*value=*/5),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                            /*value=*/20)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/100,
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/5,
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/456,
+          /*value=*/20,
+          /*filtering_id=*/std::nullopt)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -242,10 +252,11 @@ TEST_F(PrivateAggregationManagerImplTest,
     testing::InSequence seq;
 
     EXPECT_CALL(checkpoint, Call(0));
-    EXPECT_CALL(*budgeter_, ConsumeBudget(/*budget=*/125, example_key, _))
+    EXPECT_CALL(*budgeter_, ConsumeBudget(/*budget=*/125, example_key,
+                                          /*minimum_histogram_value=*/5, _))
         .WillOnce(Invoke(
             [&checkpoint](
-                int, const PrivateAggregationBudgetKey&,
+                int, const PrivateAggregationBudgetKey&, int,
                 base::OnceCallback<void(
                     PrivateAggregationBudgeter::RequestResult)> on_done) {
               checkpoint.Call(1);
@@ -286,7 +297,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregatableReportRequest expected_request =
@@ -298,13 +309,15 @@ TEST_F(PrivateAggregationManagerImplTest,
     testing::InSequence seq;
 
     EXPECT_CALL(checkpoint, Call(0));
-    EXPECT_CALL(*budgeter_,
-                ConsumeBudget(
-                    expected_request.payload_contents().contributions[0].value,
-                    example_key, _))
+    EXPECT_CALL(
+        *budgeter_,
+        ConsumeBudget(
+            expected_request.payload_contents().contributions[0].value,
+            example_key,
+            expected_request.payload_contents().contributions[0].value, _))
         .WillOnce(Invoke(
             [&checkpoint](
-                int, const PrivateAggregationBudgetKey&,
+                int, const PrivateAggregationBudgetKey&, int,
                 base::OnceCallback<void(
                     PrivateAggregationBudgeter::RequestResult)> on_done) {
               checkpoint.Call(1);
@@ -341,7 +354,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregatableReportRequest example_request =
@@ -351,9 +364,12 @@ TEST_F(PrivateAggregationManagerImplTest,
   payload_contents.contributions = {
       blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
-          /*value=*/std::numeric_limits<int>::max()),
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                            /*value=*/1)};
+          /*value=*/std::numeric_limits<int>::max(),
+          /*filtering_id=*/std::nullopt),
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/456,
+          /*value=*/1,
+          /*filtering_id=*/std::nullopt)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -390,16 +406,18 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_debug_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
+          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(standard_request.has_value());
@@ -408,9 +426,11 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_CALL(
       *budgeter_,
       ConsumeBudget(standard_request->payload_contents().contributions[0].value,
-                    example_key, _))
+                    example_key,
+                    standard_request->payload_contents().contributions[0].value,
+                    _))
       .WillOnce(Invoke(
-          [](int, const PrivateAggregationBudgetKey&,
+          [](int, const PrivateAggregationBudgetKey&, int,
              base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
                  on_done) {
             std::move(on_done).Run(
@@ -457,18 +477,20 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path",
           /*debug_key=*/std::nullopt,
           /*additional_fields=*/{{"context_id", "example_context_id"}});
   std::optional<AggregatableReportRequest> expected_debug_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
+          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience",
           /*debug_key=*/std::nullopt,
@@ -479,8 +501,10 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_CALL(
       *budgeter_,
       ConsumeBudget(standard_request->payload_contents().contributions[0].value,
-                    example_key, _))
-      .WillOnce(base::test::RunOnceCallback<2>(
+                    example_key,
+                    standard_request->payload_contents().contributions[0].value,
+                    _))
+      .WillOnce(base::test::RunOnceCallback<3>(
           PrivateAggregationBudgeter::RequestResult::kApproved));
   EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
       .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
@@ -522,27 +546,28 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   ASSERT_TRUE(standard_request.has_value());
 
   PrivateAggregationBudgetKey protected_audience_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
   PrivateAggregationBudgetKey shared_storage_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kSharedStorage)
+          PrivateAggregationCallerApi::kSharedStorage)
           .value();
 
   Checkpoint checkpoint;
   {
     testing::InSequence seq;
 
-    EXPECT_CALL(*budgeter_, ConsumeBudget(_, protected_audience_key, _))
+    EXPECT_CALL(*budgeter_, ConsumeBudget(_, protected_audience_key, _, _))
         .WillOnce(
-            Invoke([](int, const PrivateAggregationBudgetKey&,
+            Invoke([](int, const PrivateAggregationBudgetKey&, int,
                       base::OnceCallback<void(
                           PrivateAggregationBudgeter::RequestResult)> on_done) {
               std::move(on_done).Run(
@@ -561,9 +586,9 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
 
     EXPECT_CALL(checkpoint, Call(1));
 
-    EXPECT_CALL(*budgeter_, ConsumeBudget(_, shared_storage_key, _))
+    EXPECT_CALL(*budgeter_, ConsumeBudget(_, shared_storage_key, _, _))
         .WillOnce(
-            Invoke([](int, const PrivateAggregationBudgetKey&,
+            Invoke([](int, const PrivateAggregationBudgetKey&, int,
                       base::OnceCallback<void(
                           PrivateAggregationBudgeter::RequestResult)> on_done) {
               std::move(on_done).Run(
@@ -618,21 +643,24 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   std::optional<AggregatableReportRequest> standard_request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   ASSERT_TRUE(standard_request.has_value());
 
   EXPECT_CALL(
       *budgeter_,
       ConsumeBudget(standard_request->payload_contents().contributions[0].value,
-                    example_key, _))
+                    example_key,
+                    standard_request->payload_contents().contributions[0].value,
+                    _))
       .WillOnce(Invoke(
-          [](int, const PrivateAggregationBudgetKey&,
+          [](int, const PrivateAggregationBudgetKey&, int,
              base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
                  on_done) {
             std::move(on_done).Run(
@@ -657,9 +685,6 @@ TEST_F(PrivateAggregationManagerImplTest,
 
 TEST_F(PrivateAggregationManagerImplTest,
        BudgetDeniedWithSendNullReportBehavior_RequestSent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kPrivateAggregationApiBundledEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -671,33 +696,38 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregationServicePayloadContents null_payload =
       example_request.payload_contents();
   null_payload.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                            /*value=*/0)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/0,
+          /*value=*/0,
+          /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(
           null_payload, shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_null_debug_request =
       AggregatableReportRequest::Create(
           null_payload, std::move(shared_info),
+          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(null_request.has_value());
   ASSERT_TRUE(expected_null_debug_request.has_value());
 
-  EXPECT_CALL(
-      *budgeter_,
-      ConsumeBudget(example_request.payload_contents().contributions[0].value,
-                    example_key, _))
+  EXPECT_CALL(*budgeter_,
+              ConsumeBudget(
+                  example_request.payload_contents().contributions[0].value,
+                  example_key,
+                  example_request.payload_contents().contributions[0].value, _))
       .WillOnce(Invoke(
-          [](int, const PrivateAggregationBudgetKey&,
+          [](int, const PrivateAggregationBudgetKey&, int,
              base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
                  on_done) {
             std::move(on_done).Run(PrivateAggregationBudgeter::RequestResult::
@@ -709,7 +739,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(Invoke([&expected_null_debug_request](
                            AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-            report_request, expected_null_debug_request.value()));
+            expected_null_debug_request.value(), report_request));
       }));
 
   // Triggers the standard (non-debug) report.
@@ -717,7 +747,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(
           Invoke([&null_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-                report_request, null_request.value()));
+                null_request.value(), report_request));
           }));
 
   auto [generator, null_contributions] =
@@ -737,71 +767,8 @@ TEST_F(PrivateAggregationManagerImplTest,
       1);
 }
 
-TEST_F(
-    PrivateAggregationManagerImplTest,
-    BudgetDeniedWithSendNullReportBehaviorButFeatureParamDisabled_RequestNotSent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kPrivateAggregationApiBundledEnhancements);
-  base::HistogramTester histogram;
-
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregatableReportSharedInfo shared_info =
-      example_request.shared_info().Clone();
-  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
-
-  PrivateAggregationBudgetKey example_key =
-      PrivateAggregationBudgetKey::Create(
-          example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
-          .value();
-
-  std::optional<AggregatableReportRequest> standard_request =
-      AggregatableReportRequest::Create(
-          example_request.payload_contents(), shared_info.Clone(),
-          /*reporting_path=*/"/example-reporting-path");
-  ASSERT_TRUE(standard_request.has_value());
-
-  EXPECT_CALL(
-      *budgeter_,
-      ConsumeBudget(standard_request->payload_contents().contributions[0].value,
-                    example_key, _))
-      .WillOnce(Invoke(
-          [](int, const PrivateAggregationBudgetKey&,
-             base::OnceCallback<void(PrivateAggregationBudgeter::RequestResult)>
-                 on_done) {
-            std::move(on_done).Run(PrivateAggregationBudgeter::RequestResult::
-                                       kInsufficientLargerScopeBudget);
-          }));
-  EXPECT_CALL(*aggregation_service_, AssembleAndSendReport).Times(0);
-  EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
-
-  auto [generator, contributions] =
-      CloneAndSplitOutGenerator(standard_request.value());
-  manager_.OnReportRequestDetailsReceivedFromHost(
-      std::move(generator), std::move(contributions), example_key,
-      BudgetDeniedBehavior::kSendNullReport);
-
-  histogram.ExpectUniqueSample(
-      kBudgeterResultHistogram,
-      PrivateAggregationBudgeter::RequestResult::kInsufficientLargerScopeBudget,
-      1);
-
-  // The disabled feature does not interfere with the histogram, only the report
-  // being sent.
-  histogram.ExpectUniqueSample(
-      kManagerResultHistogram,
-      PrivateAggregationManagerImpl::RequestResult::
-          kSentButContributionsClearedDueToBudgetDenial,
-      1);
-}
-
 TEST_F(PrivateAggregationManagerImplTest,
        NoContributions_BudgetNotCheckedButNullReportSent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kPrivateAggregationApiBundledEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -813,22 +780,26 @@ TEST_F(PrivateAggregationManagerImplTest,
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::Create(
           example_request.shared_info().reporting_origin, kExampleTime,
-          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          PrivateAggregationCallerApi::kProtectedAudience)
           .value();
 
   AggregationServicePayloadContents null_payload =
       example_request.payload_contents();
   null_payload.contributions = {
-      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/0,
-                                                            /*value=*/0)};
+      blink::mojom::AggregatableReportHistogramContribution(
+          /*bucket=*/0,
+          /*value=*/0,
+          /*filtering_id=*/std::nullopt)};
 
   std::optional<AggregatableReportRequest> null_request =
       AggregatableReportRequest::Create(
           null_payload, shared_info.Clone(),
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
           /*reporting_path=*/"/example-reporting-path");
   std::optional<AggregatableReportRequest> expected_null_debug_request =
       AggregatableReportRequest::Create(
           null_payload, std::move(shared_info),
+          AggregatableReportRequest::DelayType::Unscheduled,
           /*reporting_path=*/
           "/.well-known/private-aggregation/debug/report-protected-audience");
   ASSERT_TRUE(null_request.has_value());
@@ -841,7 +812,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(Invoke([&expected_null_debug_request](
                            AggregatableReportRequest report_request) {
         EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-            report_request, expected_null_debug_request.value()));
+            expected_null_debug_request.value(), report_request));
       }));
 
   // Triggers the standard (non-debug) report.
@@ -849,7 +820,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       .WillOnce(
           Invoke([&null_request](AggregatableReportRequest report_request) {
             EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-                report_request, null_request.value()));
+                null_request.value(), report_request));
           }));
 
   auto [generator, null_contributions] =
@@ -876,69 +847,87 @@ TEST_F(PrivateAggregationManagerImplTest,
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                          PrivateAggregationCallerApi::kProtectedAudience,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), _))
+                          testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      PrivateAggregationCallerApi::kProtectedAudience,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kSharedStorage,
+                          PrivateAggregationCallerApi::kSharedStorage,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(std::nullopt), _))
+                          testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kSharedStorage,
+      PrivateAggregationCallerApi::kSharedStorage,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
       /*aggregation_coordinator_origin=*/std::nullopt,
-      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
-
-  EXPECT_CALL(
-      *host_,
-      BindNewReceiver(example_origin, example_main_frame_origin,
-                      PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                      testing::Eq("example_context_id"),
-                      testing::Eq(std::nullopt), testing::Eq(std::nullopt), _))
-      .WillOnce(Return(true));
-  EXPECT_TRUE(manager_.BindNewReceiver(
-      example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      "example_context_id", /*timeout=*/std::nullopt,
-      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_,
               BindNewReceiver(example_origin, example_main_frame_origin,
-                              PrivateAggregationBudgetKey::Api::kSharedStorage,
+                              PrivateAggregationCallerApi::kProtectedAudience,
                               testing::Eq("example_context_id"),
-                              testing::Eq(base::Seconds(5)),
-                              testing::Eq(std::nullopt), _))
+                              testing::Eq(std::nullopt),
+                              testing::Eq(std::nullopt), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kSharedStorage, "example_context_id",
+      PrivateAggregationCallerApi::kProtectedAudience, "example_context_id",
+      /*timeout=*/std::nullopt,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_,
+              BindNewReceiver(example_origin, example_main_frame_origin,
+                              PrivateAggregationCallerApi::kSharedStorage,
+                              testing::Eq("example_context_id"),
+                              testing::Eq(base::Seconds(5)),
+                              testing::Eq(std::nullopt), 1, _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationCallerApi::kSharedStorage, "example_context_id",
       /*timeout=*/base::Seconds(5),
       /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/1,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                          PrivateAggregationCallerApi::kProtectedAudience,
                           testing::Eq(std::nullopt), testing::Eq(std::nullopt),
-                          testing::Eq(example_coordinator_origin), _))
+                          testing::Eq(example_coordinator_origin), 1, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      PrivateAggregationCallerApi::kProtectedAudience,
       /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-      example_coordinator_origin,
+      example_coordinator_origin, /*filtering_id_max_bytes=*/1,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_, BindNewReceiver(
+                          example_origin, example_main_frame_origin,
+                          PrivateAggregationCallerApi::kProtectedAudience,
+                          testing::Eq(std::nullopt), testing::Eq(std::nullopt),
+                          testing::Eq(std::nullopt), 8, _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationCallerApi::kProtectedAudience,
+      /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*filtering_id_max_bytes=*/8,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 

@@ -98,7 +98,7 @@ TEST_F(TypingCommandTest,
   TypingCommand::InsertText(
       GetDocument(), " ", 0,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
-  EXPECT_EQ("<div contenteditable>^<h1></h1>|</div>",
+  EXPECT_EQ("<div contenteditable><h1>\xC2\xA0|</h1></div>",
             GetSelectionTextFromBody());
 }
 
@@ -119,13 +119,10 @@ TEST_F(TypingCommandTest, ForwardDeleteInvalidatesSelection) {
   TypingCommand::ForwardDeleteKeyPressed(GetDocument(), &editing_state);
 
   EXPECT_EQ(
-      "<blockquote>|</blockquote>"
-      "<q>"
-      "<table contenteditable=\"false\">"
-      "<colgroup width=\"-1\"></colgroup>"
-      "</table>\n"
-      "<svg></svg>"
-      "</q>",
+      "<blockquote>"
+      "<q>|<br></q>"
+      "</blockquote>"
+      "<q>\n<svg></svg></q>",
       GetSelectionTextFromBody());
 }
 

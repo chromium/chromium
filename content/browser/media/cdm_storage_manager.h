@@ -16,6 +16,8 @@
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/cdm_storage_database.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/cdm_storage_data_model.h"
+#include "content/public/browser/storage_partition.h"
 #include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,7 +25,8 @@
 
 namespace content {
 
-class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
+class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
+                                         public CdmStorageDataModel {
  public:
   explicit CdmStorageManager(const base::FilePath& path);
   CdmStorageManager(const CdmStorageManager&) = delete;
@@ -32,6 +35,14 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
 
   // media::mojom::CdmStorage implementation.
   void Open(const std::string& file_name, OpenCallback callback) final;
+
+  // CdmStorageDataModel implementation.
+  void GetUsagePerAllStorageKeys(
+      base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback,
+      base::Time begin,
+      base::Time end) final;
+  void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
+                               base::OnceCallback<void(bool)> callback) final;
 
   void OpenCdmStorage(const CdmStorageBindingContext& binding_context,
                       mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
@@ -67,14 +78,12 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                   const std::string& file_name,
                   base::OnceCallback<void(bool)> callback);
 
-  void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
-                               const base::Time begin,
-                               const base::Time end,
-                               base::OnceCallback<void(bool)> callback);
-
-  void DeleteDataForTimeFrame(const base::Time begin,
-                              const base::Time end,
-                              base::OnceCallback<void(bool)> callback);
+  void DeleteData(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_matcher,
+      const blink::StorageKey& storage_key,
+      const base::Time begin,
+      const base::Time end,
+      base::OnceCallback<void(bool)> callback);
 
   void OnFileReceiverDisconnect(const std::string& name,
                                 const media::CdmType& cdm_type,
@@ -113,15 +122,9 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
 
   void DidGetSize(base::OnceCallback<void(uint64_t)> callback,
                   const std::string& operation,
-                  absl::optional<uint64_t> size);
-
-  void DidDelete(base::OnceCallback<void(bool)> callback,
-                 const std::string& operation,
-                 bool success);
+                  std::optional<uint64_t> size);
 
   void ReportDatabaseOpenError(CdmStorageOpenError error);
-
-  std::string GetHistogramName(const std::string& operation);
 
   const base::FilePath path_;
 

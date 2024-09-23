@@ -11,10 +11,6 @@
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_service_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/debug/structured/structured_metrics_utils.h"
-#endif
-
 MetricsInternalsHandler::MetricsInternalsHandler() {
   if (!ShouldUseMetricsServiceObserver()) {
     uma_log_observer_ = std::make_unique<metrics::MetricsServiceObserver>(
@@ -22,13 +18,6 @@ MetricsInternalsHandler::MetricsInternalsHandler() {
     g_browser_process->metrics_service()->AddLogsObserver(
         uma_log_observer_.get());
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  structured_metrics_debug_provider_ =
-      std::make_unique<metrics::structured::StructuredMetricsDebugProvider>(
-          g_browser_process->GetMetricsServicesManager()
-              ->GetStructuredMetricsService());
-#endif
 }
 
 MetricsInternalsHandler::~MetricsInternalsHandler() {
@@ -68,19 +57,6 @@ void MetricsInternalsHandler::RegisterMessages() {
       base::BindRepeating(
           &MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver,
           base::Unretained(this)));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      "fetchStructuredMetricsEvents",
-      base::BindRepeating(
-          &MetricsInternalsHandler::HandleFetchStructuredMetricsEvents,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "fetchStructuredMetricsSummary",
-      base::BindRepeating(
-          &MetricsInternalsHandler::HandleFetchStructuredMetricsSummary,
-          base::Unretained(this)));
-#endif
 }
 
 bool MetricsInternalsHandler::ShouldUseMetricsServiceObserver() {
@@ -139,24 +115,3 @@ void MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver(
 void MetricsInternalsHandler::OnUmaLogCreatedOrEvent() {
   FireWebUIListener("uma-log-created-or-event");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void MetricsInternalsHandler::HandleFetchStructuredMetricsEvents(
-    const base::Value::List& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(
-      callback_id, structured_metrics_debug_provider_->events().Clone());
-}
-
-void MetricsInternalsHandler::HandleFetchStructuredMetricsSummary(
-    const base::Value::List& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id,
-                            metrics::structured::GetStructuredMetricsSummary(
-                                g_browser_process->GetMetricsServicesManager()
-                                    ->GetStructuredMetricsService()));
-}
-
-#endif

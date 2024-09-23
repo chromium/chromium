@@ -1,0 +1,111 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(enterprise_data_controls)
+
+source_set("features") {
+  sources = [ "features.cc" ]
+  public = [ "features.h" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("browser") {
+  sources = [
+    "action_context.cc",
+    "action_context.h",
+    "conditions/and_condition.cc",
+    "conditions/and_condition.h",
+    "conditions/attributes_condition.cc",
+    "conditions/attributes_condition.h",
+    "conditions/condition.h",
+    "conditions/not_condition.cc",
+    "conditions/not_condition.h",
+    "conditions/or_condition.cc",
+    "conditions/or_condition.h",
+    "data_controls_dialog.cc",
+    "data_controls_dialog.h",
+    "data_controls_dialog_factory.cc",
+    "data_controls_dialog_factory.h",
+    "data_controls_policy_handler.cc",
+    "data_controls_policy_handler.h",
+    "dlp_histogram_helper.cc",
+    "dlp_histogram_helper.h",
+    "dlp_rules_manager_base.h",
+    "prefs.cc",
+    "prefs.h",
+    "rule.cc",
+    "rule.h",
+    "verdict.cc",
+    "verdict.h",
+  ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//components/enterprise/buildflags",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/strings",
+    "//components/url_matcher",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "component.cc",
+      "component.h",
+    ]
+    deps += [ "//chromeos/dbus/dlp:dlp_proto" ]
+  }
+
+  if (use_blink) {
+    deps += [ "//content/public/browser/" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+  public_deps = [
+    ":browser",
+    ":features",
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "conditions/and_condition_unittest.cc",
+    "conditions/attributes_condition_unittest.cc",
+    "conditions/not_condition_unittest.cc",
+    "conditions/or_condition_unittest.cc",
+    "rule_unittest.cc",
+    "verdict_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("dlp_policy_event_proto") {
+  sources = [ "dlp_policy_event.proto" ]
+}

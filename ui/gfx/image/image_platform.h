@@ -49,7 +49,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
 
 NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 
-// TODO(https://crbug.com/1495334): Remove callers to this function.
+// TODO(crbug.com/40286491): Remove callers to this function.
 inline NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps,
                                CGColorSpaceRef color_space) {
   return NSImageFromPNG(image_png_reps);

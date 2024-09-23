@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] UserActivation interface: existence and properties of interface object
+  assert_false: expected false got true
+[FAIL] PromiseRejectionEvent interface: attribute promise
+  assert_throws_js: getting property on prototype object must throw TypeError function "function () { [native code] }" did not throw
+[FAIL] MessagePort interface: attribute onclose
+  assert_true: The prototype object must have a property "onclose" expected true got false
+[FAIL] WorkerGlobalScope interface: attribute onoffline
+  assert_true: The prototype object must have a property "onoffline" expected true got false
+[FAIL] WorkerGlobalScope interface: attribute ononline
+  assert_true: The prototype object must have a property "ononline" expected true got false
+[FAIL] WorkerGlobalScope interface: self must inherit property "onoffline" with the proper type
+  assert_inherits: property "onoffline" not found in prototype chain
+[FAIL] WorkerGlobalScope interface: self must inherit property "ononline" with the proper type
+  assert_inherits: property "ononline" not found in prototype chain
+[FAIL] Worker interface: attribute onmessageerror
+  assert_true: The prototype object must have a property "onmessageerror" expected true got false
+Harness: the test ran to completion.

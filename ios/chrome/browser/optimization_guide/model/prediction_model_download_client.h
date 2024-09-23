@@ -6,9 +6,8 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/download/public/background_service/client.h"
-
-class ChromeBrowserState;
+#import "components/download/public/background_service/client.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace download {
 struct CompletionInfo;

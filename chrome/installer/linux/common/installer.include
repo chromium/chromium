@@ -170,7 +170,7 @@ stage_install_common() {
   # V8 snapshot files; Necessary when the GN v8_use_external_startup_data flag
   # is true.
   # Use v8_context_snapshot.bin instead of snapshot_blob.bin if it is available.
-  # TODO(crbug.com/764576): Unship snapshot_blob.bin on ChromeOS and drop this branch
+  # TODO(crbug.com/40539769): Unship snapshot_blob.bin on ChromeOS and drop this branch
   if [ -f "${OUTPUTDIR}/v8_context_snapshot.bin" ]; then
     install -m 644 "${OUTPUTDIR}/v8_context_snapshot.bin" "${STAGEDIR}/${INSTALLDIR}/"
   else
@@ -192,11 +192,18 @@ stage_install_common() {
     cp -a '{}' "${STAGEDIR}/${INSTALLDIR}/locales/" \;
   find "${STAGEDIR}/${INSTALLDIR}/locales" -type f -exec chmod 644 '{}' \;
 
-  # TODO(https://crbug.com/1077934): The below conditions check for the
+  # TODO(crbug.com/40688962): The below conditions check for the
   # existence of files to determine if they should be copied to the staging
   # directory.  However, these may be stale if the build config no longer
   # builds these files.  The build config should be obtained from gn rather than
   # guessed based on the presence of files.
+
+  # Privacy Sandbox Attestation
+  if [ -f "${OUTPUTDIR}/PrivacySandboxAttestationsPreloaded/manifest.json" ]; then
+    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/PrivacySandboxAttestationsPreloaded/"
+    install -m 644 "${OUTPUTDIR}/PrivacySandboxAttestationsPreloaded/manifest.json" "${STAGEDIR}/${INSTALLDIR}/PrivacySandboxAttestationsPreloaded/"
+    install -m 644 "${OUTPUTDIR}/PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat" "${STAGEDIR}/${INSTALLDIR}/PrivacySandboxAttestationsPreloaded/"
+  fi
 
   # MEI Preload
   if [ -f "${OUTPUTDIR}/MEIPreload/manifest.json" ]; then
@@ -300,6 +307,8 @@ stage_install_common() {
       icon_regex=".*product_logo_[0-9]\+_beta\."
     elif [ "$CHANNEL" = "unstable" ]; then
       icon_regex=".*product_logo_[0-9]\+_dev\."
+    elif [ "$CHANNEL" = "canary" ]; then
+      icon_regex=".*product_logo_[0-9]\+_canary\."
     fi
   fi
   LOGO_RESOURCES_PNG=$(find "${OUTPUTDIR}/installer/theme/" \
@@ -386,6 +395,18 @@ stage_install_common() {
     exit 1
   fi
 
+  # official build should not relax permission check.
+  on_cog=
+  if [ "$IS_OFFICIAL_BUILD" -eq 0 ]; then
+    # on Cog, permission is always 0664 or 0775
+    case "$(pwd)" in
+    /google/cog/cloud/*)
+       on_cog=1
+       echo "INFO: build on Cog. relax permission for group writable" 1>&2
+       ;;
+    esac
+  fi
+
   # Verify file permissions.
   for file in $(find "${STAGEDIR}" -mindepth 1); do
     local actual_perms=$(stat -c "%a" "${file}")
@@ -423,9 +444,25 @@ stage_install_common() {
       local expected_perms=644
     fi
     if [ ${expected_perms} -ne ${actual_perms} ]; then
-      echo Expected permissions on ${base_name} to be \
-        ${expected_perms}, but they were ${actual_perms} 1>&2
-      exit 1
+      if [ -z "$on_cog" ]; then
+        echo Expected permissions on ${base_name} to be \
+          ${expected_perms}, but they were ${actual_perms} 1>&2
+        exit 1
+      fi
+      local relaxed_expected_perms=${expected_perms}
+
+      case ${expected_perms} in
+      4755) relaxed_expected_perms=775 ;;
+      644) relaxed_expected_perms=664   ;;
+      755) relaxed_expected_perms=775  ;;
+      esac
+
+      if [ ${relaxed_expected_perms} -ne ${actual_perms} ]; then
+        echo Expected permissions on ${base_name} to be \
+          ${expected_perms} or ${relaxed_expected_perms}, \
+          but they were ${actual_perms} 1>&2
+        exit 1
+      fi
     fi
   done
 }

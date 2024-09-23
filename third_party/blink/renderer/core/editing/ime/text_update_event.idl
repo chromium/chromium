@@ -12,8 +12,7 @@
 // https://w3c.github.io/edit-context/#textupdateevent
 
 [
-    Exposed=Window,
-    RuntimeEnabled=EditContext
+  Exposed=Window
 ] interface TextUpdateEvent : Event {
     constructor(DOMString type, optional TextUpdateEventInit options = {});
     readonly attribute unsigned long updateRangeStart;

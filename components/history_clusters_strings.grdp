@@ -12,24 +12,10 @@
   <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history clusters page">
     Are you sure you want to delete these pages from your history?
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'."
-    formatter_data="android_java">
-    Turn off Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn on the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'."
-    formatter_data="android_java">
-    Turn on Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'." formatter_data="android_java">
-    Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user." formatter_data="android_java">
+  <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user.">
     By group
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user." formatter_data="android_java">
-    List
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user." formatter_data="android_java">
+  <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
     By date
   </message>
   <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS" desc="The header used for Journeys that are anchored by search terms. The header is just the search terms in locale-specific quotation marks.">
@@ -66,8 +52,7 @@
     Grouped history
   </message>
   </if>
-  <message name="IDS_HISTORY_CLUSTERS_OPEN_ALL_IN_TABGROUP" desc="Label of the item in drop-down menu that allows the user to open a group of urls in a tab group."
-    formatter_data="android_java">
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_ALL_IN_TABGROUP" desc="Label of the item in drop-down menu that allows the user to open a group of urls in a tab group.">
     Open all in new tab group
   </message>
   <message name="IDS_HISTORY_CLUSTERS_OPEN_INCOGNITO" desc="Label of the item in drop-down menu that allows the user to open a link in an incognito window.">
@@ -97,9 +82,6 @@
   <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
     Saved in tab group
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_SEARCH_PROMPT" desc="A placeholder for the search bar in the side panel.">
-    Search Journeys
-  </message>
   <message name="IDS_HISTORY_CLUSTERS_CUT" desc="Label of the item in drop-down menu that allows the user to cut the searchbox query">
     Cut
   </message>
@@ -115,14 +97,7 @@
   <message name="IDS_HISTORY_CLUSTERS_SHOW_LESS_BUTTON_LABEL" desc="A label for the button that collapses the view showing fewer history items.">
     Show less
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items." formatter_data="android_java">
+  <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items.">
     Show more
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_SEARCH_YOUR_JOURNEYS" desc="A label for the hint text for the search box in Chrome Journeys." formatter_data="android_java">
-    Search your Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_N_MATCHES" desc="A label for the number of matching clusters for a given label." formatter_data="android_java">
-   {NUM_MATCHES, plural,
-        =1 {# match} other {# matches}}
   </message>
 </grit-part>

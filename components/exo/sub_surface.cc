@@ -37,6 +37,11 @@ SubSurface::~SubSurface() {
   }
   if (parent_)
     parent_->RemoveSurfaceObserver(this);
+
+  // Destroying a sub-surface takes effect immediately.
+  if (surface_ && parent_ && !surface_->is_augmented()) {
+    parent_->OnSubSurfaceCommit();
+  }
 }
 
 void SubSurface::SetPosition(const gfx::PointF& position) {
@@ -47,16 +52,6 @@ void SubSurface::SetPosition(const gfx::PointF& position) {
     return;
 
   parent_->SetSubSurfacePosition(surface_, position);
-}
-
-void SubSurface::SetClipRect(const std::optional<gfx::RectF>& clip_rect) {
-  TRACE_EVENT1("exo", "SubSurface::SetClipRect", "clip_rect",
-               (clip_rect ? clip_rect->ToString() : "nullopt"));
-
-  if (!parent_ || !surface_)
-    return;
-
-  surface_->SetClipRectOnParentSurface(clip_rect);
 }
 
 void SubSurface::SetTransform(const gfx::Transform& transform) {
@@ -103,7 +98,7 @@ void SubSurface::SetCommitBehavior(bool synchronized) {
   TRACE_EVENT1("exo", "SubSurface::SetCommitBehavior", "synchronized",
                synchronized);
 
-  is_synchronized_ = synchronized;
+  is_synchronized_ = surface_->is_augmented() || synchronized;
 }
 
 std::unique_ptr<base::trace_event::TracedValue> SubSurface::AsTracedValue()

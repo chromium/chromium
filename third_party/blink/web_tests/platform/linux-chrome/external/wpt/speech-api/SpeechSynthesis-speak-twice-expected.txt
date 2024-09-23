@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Using the same SpeechSynthesisUtterance twice for speechSynthesis.speak()
-  assert_unreached: error event Reached unreachable code
-Harness: the test ran to completion.

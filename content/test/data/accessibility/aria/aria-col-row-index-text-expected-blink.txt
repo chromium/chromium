@@ -1,0 +1,71 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++table ariaColumnCount=5 ariaRowCount=6
+++++++++rowGroup
+++++++++++row ariaCellRowIndexText='Alpha' ariaCellRowIndex=2
+++++++++++++columnHeader name='rowAlpha colheaderA' ariaCellColumnIndexText='A' ariaCellColumnIndex=2 ariaCellRowIndex=2
+++++++++++++++staticText name='rowAlpha colheaderA'
+++++++++++++++++inlineTextBox name='rowAlpha colheaderA'
+++++++++++++columnHeader name='rowAlpha colheaderB' ariaCellColumnIndexText='B' ariaCellColumnIndex=3 ariaCellRowIndex=2
+++++++++++++++staticText name='rowAlpha colheaderB'
+++++++++++++++++inlineTextBox name='rowAlpha colheaderB'
+++++++++++++columnHeader name='rowAlpha colheaderC' ariaCellColumnIndexText='C' ariaCellColumnIndex=4 ariaCellRowIndex=2
+++++++++++++++staticText name='rowAlpha colheaderC'
+++++++++++++++++inlineTextBox name='rowAlpha colheaderC'
+++++++++++++columnHeader name='rowAlpha colheaderD' ariaCellColumnIndexText='D' ariaCellColumnIndex=5 ariaCellRowIndex=2
+++++++++++++++staticText name='rowAlpha colheaderD'
+++++++++++++++++inlineTextBox name='rowAlpha colheaderD'
+++++++++rowGroup
+++++++++++row ariaCellRowIndexText='Beta' ariaCellRowIndex=3
+++++++++++++cell name='rowBeta colA' ariaCellColumnIndexText='A' ariaCellColumnIndex=2 ariaCellRowIndex=3
+++++++++++++++staticText name='rowBeta colA'
+++++++++++++++++inlineTextBox name='rowBeta colA'
+++++++++++++cell name='rowBeta colB' ariaCellColumnIndexText='B' ariaCellColumnIndex=3 ariaCellRowIndex=3
+++++++++++++++staticText name='rowBeta colB'
+++++++++++++++++inlineTextBox name='rowBeta colB'
+++++++++++++cell name='rowBeta colC' ariaCellColumnIndexText='C' ariaCellColumnIndex=4 ariaCellRowIndex=3
+++++++++++++++staticText name='rowBeta colC'
+++++++++++++++++inlineTextBox name='rowBeta colC'
+++++++++++++cell name='rowBeta colD' ariaCellColumnIndexText='D' ariaCellColumnIndex=5 ariaCellRowIndex=3
+++++++++++++++staticText name='rowBeta colD'
+++++++++++++++++inlineTextBox name='rowBeta colD'
+++++++++++row ariaCellRowIndexText='Gamma' ariaCellRowIndex=4
+++++++++++++cell name='rowGamma colA' ariaCellColumnIndexText='A' ariaCellColumnIndex=2 ariaCellRowIndex=4
+++++++++++++++staticText name='rowGamma colA'
+++++++++++++++++inlineTextBox name='rowGamma colA'
+++++++++++++cell name='rowGamma colB' ariaCellColumnIndexText='B' ariaCellColumnIndex=3 ariaCellRowIndex=4
+++++++++++++++staticText name='rowGamma colB'
+++++++++++++++++inlineTextBox name='rowGamma colB'
+++++++++++++cell name='rowGamma colC' ariaCellColumnIndexText='C' ariaCellColumnIndex=4 ariaCellRowIndex=4
+++++++++++++++staticText name='rowGamma colC'
+++++++++++++++++inlineTextBox name='rowGamma colC'
+++++++++++++cell name='rowGamma colD' ariaCellColumnIndexText='D' ariaCellColumnIndex=5 ariaCellRowIndex=4
+++++++++++++++staticText name='rowGamma colD'
+++++++++++++++++inlineTextBox name='rowGamma colD'
+++++++++++row ariaCellRowIndexText='Delta' ariaCellRowIndex=5
+++++++++++++cell name='rowDelta colA' ariaCellColumnIndexText='A' ariaCellColumnIndex=2 ariaCellRowIndex=5
+++++++++++++++staticText name='rowDelta colA'
+++++++++++++++++inlineTextBox name='rowDelta colA'
+++++++++++++cell name='rowDelta colB' ariaCellColumnIndexText='B' ariaCellColumnIndex=3 ariaCellRowIndex=5
+++++++++++++++staticText name='rowDelta colB'
+++++++++++++++++inlineTextBox name='rowDelta colB'
+++++++++++++cell name='rowDelta colC' ariaCellColumnIndexText='C' ariaCellColumnIndex=4 ariaCellRowIndex=5
+++++++++++++++staticText name='rowDelta colC'
+++++++++++++++++inlineTextBox name='rowDelta colC'
+++++++++++++cell name='rowDelta colD' ariaCellColumnIndexText='D' ariaCellColumnIndex=5 ariaCellRowIndex=5
+++++++++++++++staticText name='rowDelta colD'
+++++++++++++++++inlineTextBox name='rowDelta colD'
+++++++++++row ariaCellRowIndexText='Epsilon' ariaCellRowIndex=6
+++++++++++++cell name='rowEpsilon colA' ariaCellColumnIndexText='A' ariaCellColumnIndex=2 ariaCellRowIndex=6
+++++++++++++++staticText name='rowEpsilon colA'
+++++++++++++++++inlineTextBox name='rowEpsilon colA'
+++++++++++++cell name='rowEpsilon colB' ariaCellColumnIndexText='B' ariaCellColumnIndex=3 ariaCellRowIndex=6
+++++++++++++++staticText name='rowEpsilon colB'
+++++++++++++++++inlineTextBox name='rowEpsilon colB'
+++++++++++++cell name='rowEpsilon colC' ariaCellColumnIndexText='C' ariaCellColumnIndex=4 ariaCellRowIndex=6
+++++++++++++++staticText name='rowEpsilon colC'
+++++++++++++++++inlineTextBox name='rowEpsilon colC'
+++++++++++++cell name='rowEpsilon colD' ariaCellColumnIndexText='D' ariaCellColumnIndex=5 ariaCellRowIndex=6
+++++++++++++++staticText name='rowEpsilon colD'
+++++++++++++++++inlineTextBox name='rowEpsilon colD'

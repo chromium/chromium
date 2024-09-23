@@ -5,8 +5,6 @@
 #ifndef MEDIA_BASE_CDM_FACTORY_H_
 #define MEDIA_BASE_CDM_FACTORY_H_
 
-#include <string>
-
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
 
@@ -16,11 +14,42 @@ class Origin;
 
 namespace media {
 
-// Callback used when CDM is created. |error_message| only used if
-// ContentDecryptionModule is null (i.e. CDM can't be created).
+// CDM creation status.
+// These are reported to UMA server. Do not renumber or reuse values.
+enum class CreateCdmStatus {
+  kSuccess,                    // Succeeded
+  kUnknownError,               // Unknown error.
+  kCdmCreationAborted,         // CDM creation aborted.
+  kLoadCdmFailed,              // Failed to load the CDM.
+  kCreateCdmFuncNotAvailable,  // CreateCdmFunc not available.
+  kCdmHelperCreationFailed,    // CDM helper creation failed.
+  kGetCdmPrefDataFailed,       // Failed to get the CDM preference data.
+  kGetCdmOriginIdFailed,       // Failed to get the CDM origin ID.
+  kInitCdmFailed,              // Failed to initialize CDM.
+  kCdmFactoryCreationFailed,   // CDM Factory creation failed.
+  kCdmNotSupported,            // CDM not supported.
+  kInvalidCdmConfig,  // Invalid CdmConfig. e.g. MediaFoundationService requires
+                      // both distinctive identifier and persistent state.
+  kUnsupportedKeySystem,  // Unsupported key system.
+  kDisconnectionError,    // Disconnection error. The remote process dropped the
+                          // callback. e.g. in case of crash.
+  kNotAllowedOnUniqueOrigin,         // EME use is not allowed on unique
+                                     // origins.
+  kMediaDrmBridgeCreationFailed,     // MediaDrmBridge creation failed.
+  kMediaCryptoNotAvailable,          // MediaCrypto not available.
+  kNoMoreInstances,                  // CrOs: Only one instance allowed.
+  kInsufficientGpuResources,         // CrOs: Insufficient GPU memory
+                                     // available.
+  kCrOsVerifiedAccessDisabled,       // CrOs: Verified Access is disabled.
+  kCrOsRemoteFactoryCreationFailed,  // CrOs: Remote factory creation failed.
+  kMaxValue = kCrOsRemoteFactoryCreationFailed,
+};
+
+// Callback used when CDM is created. |status| tells the detailed reason why CDM
+// can't be created if ContentDecryptionModule is null.
 using CdmCreatedCB =
     base::OnceCallback<void(const scoped_refptr<ContentDecryptionModule>&,
-                            const std::string& error_message)>;
+                            CreateCdmStatus status)>;
 
 struct CdmConfig;
 

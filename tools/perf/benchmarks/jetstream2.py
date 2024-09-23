@@ -27,16 +27,15 @@ import page_sets
 from benchmarks import press
 
 
-class _JetStream2Base(press._PressBenchmark):  # pylint: disable=protected-access
+class _JetStream2Base(press._PressBenchmark):  # pylint:disable=protected-access
   """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
 
   Run all the JetStream 2 benchmarks by default.
   """
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--test-list',
-                      type="string",
-                      help="Only run specific tests, separated by commas.")
+    parser.add_argument('--test-list',
+                        help='Only run specific tests, separated by commas.')
 
 
 @benchmark.Info(
@@ -85,14 +84,14 @@ class JetStream2(_JetStream2Base):
     emails=['omerkatz@chromium.org'],
     component='Blink>JavaScript>GarbageCollection',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
-class JetStream2NoMinorMS(JetStream2):
+class JetStream2MinorMS(JetStream2):
   """Latest JetStream2 without the MinorMS flag.
 
   Shows the performance with Scavenger young generation GC in V8.
   """
   @classmethod
   def Name(cls):
-    return 'jetstream2-nominorms'
+    return 'jetstream2-minorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')

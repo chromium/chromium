@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
+
 #include <windows.h>
 
 #include <sddl.h>  // For ConvertSidToStringSid()
@@ -28,7 +30,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
@@ -1451,7 +1452,7 @@ TEST_P(GcpGaiaCredentialBaseCloudMappingTest,
   // No new user is created.
   EXPECT_EQ(1ul, fake_os_user_manager()->GetUserCount());
 
-  // TODO(crbug.com/976406): Set the error message appropriately for failure
+  // TODO(crbug.com/40632675): Set the error message appropriately for failure
   // scenarios.
   ASSERT_EQ(S_OK, FinishLogonProcess(
                       /*expected_success=*/false,
@@ -1703,8 +1704,16 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
 // This is the success scenario where all preconditions are met in the
 // AD login scenario. The user is successfully logged in.
+// TODO(crbug.com/327170900): Test is flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_GetSerialization_WithADSuccessScenario \
+  DISABLED_GetSerialization_WithADSuccessScenario
+#else
+#define MAYBE_GetSerialization_WithADSuccessScenario \
+  GetSerialization_WithADSuccessScenario
+#endif
 TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
-       GetSerialization_WithADSuccessScenario) {
+       MAYBE_GetSerialization_WithADSuccessScenario) {
   // Add the user as a domain joined user.
   const wchar_t user_name[] = L"ad_user";
   const wchar_t domain_name[] = L"ad_domain";

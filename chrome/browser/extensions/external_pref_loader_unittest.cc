@@ -135,7 +135,7 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
 
   // Initially CanSyncFeatureStart() returns true, returning false will let
   // |loader| proceed.
-  sync_service()->SetHasSyncConsent(false);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());
   sync_service()->FireOnStateChanged();
   run_loop.Run();

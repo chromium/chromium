@@ -4,21 +4,18 @@
 
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 source_set("renderer") {
   sources = [
     "activity_log_converter_strategy.cc",
     "activity_log_converter_strategy.h",
-    "api/app_window_custom_bindings.cc",
-    "api/app_window_custom_bindings.h",
-    "api/automation/automation_api_converters.cc",
-    "api/automation/automation_api_converters.h",
-    "api/automation/automation_internal_custom_bindings.cc",
-    "api/automation/automation_internal_custom_bindings.h",
     "api/context_menus_custom_bindings.cc",
     "api/context_menus_custom_bindings.h",
+    "api/core_extensions_renderer_api_provider.cc",
+    "api/core_extensions_renderer_api_provider.h",
     "api/declarative_content_hooks_delegate.cc",
     "api/declarative_content_hooks_delegate.h",
     "api/dom_hooks_delegate.cc",
@@ -110,8 +107,6 @@ source_set("renderer") {
     "content_watcher.h",
     "dispatcher.cc",
     "dispatcher.h",
-    "dispatcher_delegate.cc",
-    "dispatcher_delegate.h",
     "dom_activity_logger.cc",
     "dom_activity_logger.h",
     "extension_frame_helper.cc",
@@ -143,14 +138,6 @@ source_set("renderer") {
     "gc_callback.h",
     "get_script_context.cc",
     "get_script_context.h",
-    "guest_view/guest_view_internal_custom_bindings.cc",
-    "guest_view/guest_view_internal_custom_bindings.h",
-    "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
-    "guest_view/mime_handler_view/mime_handler_view_container_manager.h",
-    "guest_view/mime_handler_view/mime_handler_view_frame_container.cc",
-    "guest_view/mime_handler_view/mime_handler_view_frame_container.h",
-    "guest_view/mime_handler_view/post_message_support.cc",
-    "guest_view/mime_handler_view/post_message_support.h",
     "id_generator_custom_bindings.cc",
     "id_generator_custom_bindings.h",
     "injection_host.cc",
@@ -185,6 +172,8 @@ source_set("renderer") {
     "renderer_frame_context_data.h",
     "resource_bundle_source_map.cc",
     "resource_bundle_source_map.h",
+    "resource_request_policy.cc",
+    "resource_request_policy.h",
     "runtime_custom_bindings.cc",
     "runtime_custom_bindings.h",
     "safe_builtins.cc",
@@ -217,8 +206,6 @@ source_set("renderer") {
     "storage_area.h",
     "test_features_native_handler.cc",
     "test_features_native_handler.h",
-    "test_native_handler.cc",
-    "test_native_handler.h",
     "trace_util.h",
     "user_gestures_native_handler.cc",
     "user_gestures_native_handler.h",
@@ -235,8 +222,6 @@ source_set("renderer") {
     "v8_helpers.h",
     "v8_schema_registry.cc",
     "v8_schema_registry.h",
-    "wake_event_page.cc",
-    "wake_event_page.h",
     "web_ui_injection_host.cc",
     "web_ui_injection_host.h",
     "worker_script_context_set.cc",
@@ -253,12 +238,10 @@ source_set("renderer") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//chrome:resources",
     "//components/crx_file",
-    "//components/guest_view/common",
-    "//components/guest_view/common:mojom",
-    "//components/guest_view/renderer",
     "//components/version_info",
     "//content:content_resources",
     "//content/public/renderer",
@@ -268,19 +251,63 @@ source_set("renderer") {
     "//extensions/common/api",
     "//gin",
     "//mojo/public/js:resources",
+    "//pdf:buildflags",
     "//services/accessibility/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia",
     "//storage/common",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:compression_utils",
+    "//ui/strings:auto_image_annotation_strings_grit",
   ]
 
-  # Temporarily allow crash_key; see https://crbug.com/1034755
-  deps += [ "//components/crash/core/common:crash_key" ]
+  # TODO(https://crbug.com/356905053): The following files don't compile
+  # cleanly with the experimental desktop-android build. Either make them
+  # compile, or determine they should not be included and place them under a
+  # more appropriate if-block.
+  if (enable_extensions) {
+    sources += [
+      "api/automation/automation_api_converters.cc",
+      "api/automation/automation_api_converters.h",
+      "api/automation/automation_internal_custom_bindings.cc",
+      "api/automation/automation_internal_custom_bindings.h",
+    ]
+  }
+
+  if (enable_pdf) {
+    deps += [
+      "//components/pdf/common:util",
+      "//pdf:features",
+    ]
+  }
+
+  if (enable_guest_view) {
+    sources += [
+      "guest_view/guest_view_internal_custom_bindings.cc",
+      "guest_view/guest_view_internal_custom_bindings.h",
+      "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
+      "guest_view/mime_handler_view/mime_handler_view_container_manager.h",
+      "guest_view/mime_handler_view/mime_handler_view_frame_container.cc",
+      "guest_view/mime_handler_view/mime_handler_view_frame_container.h",
+      "guest_view/mime_handler_view/post_message_support.cc",
+      "guest_view/mime_handler_view/post_message_support.h",
+    ]
+
+    deps += [
+      "//components/guest_view/common",
+      "//components/guest_view/common:mojom",
+      "//components/guest_view/renderer",
+    ]
+  }
+
+  if (enable_platform_apps) {
+    sources += [
+      "api/app_window_custom_bindings.cc",
+      "api/app_window_custom_bindings.h",
+    ]
+  }
 }
 
 static_library("unit_test_support") {
@@ -330,14 +357,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_log_converter_strategy_unittest.cc",
-    "api/automation/automation_internal_custom_bindings_unittests.cc",
-    "api/feedback_private_hooks_delegate_unittest.cc",
-    "api/i18n_hooks_delegate_unittest.cc",
-    "api/messaging/gin_port_unittest.cc",
-    "api/messaging/messaging_util_unittest.cc",
-    "api/messaging/native_renderer_messaging_service_unittest.cc",
-    "api/messaging/one_time_message_handler_unittest.cc",
-    "api/runtime_hooks_delegate_unittest.cc",
     "api_activity_logger_unittest.cc",
     "bindings/api_binding_bridge_unittest.cc",
     "bindings/api_binding_hooks_test_delegate.cc",
@@ -357,7 +376,6 @@ source_set("unit_tests") {
     "bindings/argument_spec_builder.h",
     "bindings/argument_spec_unittest.cc",
     "bindings/binding_access_checker_unittest.cc",
-    "bindings/declarative_event_unittest.cc",
     "bindings/event_emitter_unittest.cc",
     "bindings/exception_handler_unittest.cc",
     "bindings/listener_tracker_unittest.cc",
@@ -373,12 +391,10 @@ source_set("unit_tests") {
     "module_system_test.cc",
     "module_system_test.h",
     "module_system_unittest.cc",
-    "native_extension_bindings_system_unittest.cc",
     "safe_builtins_unittest.cc",
     "scoped_web_frame.cc",
     "scoped_web_frame.h",
     "script_context_set_unittest.cc",
-    "storage_area_unittest.cc",
     "utils_unittest.cc",
   ]
 
@@ -403,24 +419,45 @@ source_set("unit_tests") {
     "//third_party/blink/public:blink",
     "//ui/base",
   ]
+
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build when the related extensions APIs are enabled.
+  if (enable_extensions) {
+    sources += [
+      "api/automation/automation_internal_custom_bindings_unittests.cc",
+      "api/feedback_private_hooks_delegate_unittest.cc",
+      "api/i18n_hooks_delegate_unittest.cc",
+      "api/messaging/gin_port_unittest.cc",
+      "api/messaging/messaging_util_unittest.cc",
+      "api/messaging/native_renderer_messaging_service_unittest.cc",
+      "api/messaging/one_time_message_handler_unittest.cc",
+      "api/runtime_hooks_delegate_unittest.cc",
+      "bindings/declarative_event_unittest.cc",
+      "native_extension_bindings_system_unittest.cc",
+      "storage_area_unittest.cc",
+    ]
+  }
 }
 
-source_set("browser_tests") {
-  testonly = true
-  sources = [ "script_context_browsertest.cc" ]
+if (enable_extensions) {
+  # Browser tests are not currently supported in desktop-android builds.
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "script_context_browsertest.cc" ]
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
-    ":renderer",
-    "//base",
-    "//content/public/renderer",
-    "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//extensions/shell:app_shell_lib",
-    "//extensions/shell:browser_tests",
-    "//third_party/blink/public:blink",
-    "//url",
-  ]
+    deps = [
+      ":renderer",
+      "//base",
+      "//content/public/renderer",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//extensions/common",
+      "//extensions/shell:app_shell_lib",
+      "//extensions/shell:browser_tests",
+      "//third_party/blink/public:blink",
+      "//url",
+    ]
+  }
 }

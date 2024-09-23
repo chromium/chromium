@@ -5,6 +5,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 
 #include "base/files/file_path.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -13,7 +14,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -130,7 +131,6 @@ class TestEntryBuilder {
   std::optional<base::FilePath> distilation_path_;
 };
 
-// TODO(crbug.com/1510547): Add test coverage for GetAccountModelIfSyncing.
 class DualReadingListModelTest : public testing::Test {
  public:
   DualReadingListModelTest() = default;
@@ -195,11 +195,11 @@ class DualReadingListModelTest : public testing::Test {
   bool TriggerAccountStorageLoadCompletionSignedInSyncDisabled(
       std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries;
     for (auto entry_builder : initial_account_entries_builders) {
@@ -214,11 +214,11 @@ class DualReadingListModelTest : public testing::Test {
       std::vector<TestEntryBuilder> initial_local_entries_builders = {},
       std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
     for (auto entry_builder : initial_local_entries_builders) {
@@ -249,11 +249,11 @@ class DualReadingListModelTest : public testing::Test {
     ResetStorage();
 
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries;
     for (auto entry_builder : initial_syncable_entries_builders) {
@@ -305,7 +305,7 @@ TEST_F(DualReadingListModelTest, ModelLoadFailure) {
 
 TEST_F(DualReadingListModelTest, MetaDataClearedBeforeModelLoaded) {
   ResetStorage();
-  static_cast<syncer::ClientTagBasedModelTypeProcessor*>(
+  static_cast<syncer::ClientTagBasedDataTypeProcessor*>(
       account_model_ptr_->GetSyncBridgeForTest()->change_processor())
       ->ClearMetadataIfStopped();
 
@@ -656,7 +656,7 @@ TEST_F(DualReadingListModelTest, DeleteAllEntries) {
         .RetiresOnSaturation();
   }
 
-  EXPECT_TRUE(dual_model_->DeleteAllEntries());
+  EXPECT_TRUE(dual_model_->DeleteAllEntries(FROM_HERE));
 
   EXPECT_THAT(dual_model_->GetEntryByURL(local_url), IsNull());
   EXPECT_THAT(dual_model_->GetEntryByURL(account_url), IsNull());
@@ -822,7 +822,7 @@ TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry).Times(0);
   EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -842,7 +842,7 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -862,7 +862,7 @@ TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -883,7 +883,7 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -965,7 +965,7 @@ TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrlFromTheLocalModel) {
   EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
 }
@@ -984,7 +984,7 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromTheLocalModel) {
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), NotNull());
   EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
@@ -2286,7 +2286,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2311,7 +2311,7 @@ TEST_F(DualReadingListModelTest, ShouldMaintainCountsWhenRemoveLocalReadEntry) {
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2338,7 +2338,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2365,7 +2365,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2393,7 +2393,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2422,7 +2422,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->RemoveEntryByURL(kUrl);
+  dual_model_->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2626,7 +2626,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2652,7 +2652,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2680,7 +2680,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/0ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
                                             /*unread_size=*/0ul));
@@ -2711,7 +2711,7 @@ TEST_F(DualReadingListModelTest,
                                               /*unread_size=*/1ul),
                              _));
 
-  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl);
+  dual_model_->GetLocalOrSyncableModel()->RemoveEntryByURL(kUrl, FROM_HERE);
 
   EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
                                             /*unread_size=*/1ul));
@@ -3982,6 +3982,18 @@ TEST_F(
 
   base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
   EXPECT_THAT(keys, ::testing::IsEmpty());
+}
+
+TEST_F(DualReadingListModelTest,
+       GetAccountModelIfSyncingShouldNotReturnNullWhenSignedInSyncDisabled) {
+  ResetStorageAndMimicSignedInSyncDisabled();
+  ASSERT_THAT(dual_model_->GetAccountModelIfSyncing(), NotNull());
+}
+
+TEST_F(DualReadingListModelTest,
+       GetAccountModelIfSyncingShouldReturnNullWhenSignedOut) {
+  ResetStorageAndMimicSignedOut();
+  ASSERT_THAT(dual_model_->GetAccountModelIfSyncing(), IsNull());
 }
 
 }  // namespace

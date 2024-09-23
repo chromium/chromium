@@ -12,24 +12,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/win/test_support/fake_ipen_device.h"
 #include "ui/views/win/test_support/fake_ipen_device_statics.h"
-#include "ui/views/win/test_support/fake_ipen_pointer_point_statics.h"
-#include "ui/views/win/test_support/fake_ipointer_point.h"
-#include "ui/views/win/test_support/fake_ipointer_point_properties.h"
 
 namespace views {
 
 using ABI::Windows::Devices::Input::IPenDeviceStatics;
 using ABI::Windows::UI::Input::IPointerPointStatics;
 
-constexpr int kPenId0 = 0;
-constexpr int kPenId1 = 1;
-constexpr int kPenId2 = 2;
-
 constexpr int kPointerId1 = 1111;
 constexpr int kPointerId2 = 2222;
 constexpr int kPointerId3 = 3333;
 constexpr int kPointerId4 = 4444;
-constexpr int kPointerId5 = 5555;
 
 class PenIdHandlerTest : public ::testing::Test {
  public:
@@ -56,7 +48,6 @@ void PenIdHandlerTest::SetUp() {
 
 void PenIdHandlerTest::TearDown() {
   FakeIPenDeviceStatics::GetInstance()->SimulateAllPenDevicesRemoved();
-  FakeIPenPointerPointStatics::GetInstance()->ClearPointerPointsMap();
 }
 // Tests TryGetPenUniqueId for devices that have a guid. The unique guid should
 // be correctly maped to a unique pen id, which is the value that is returned
@@ -65,7 +56,7 @@ TEST_F(PenIdHandlerTest, GetGuidMapping) {
   Microsoft::WRL::ComPtr<FakeIPenDeviceStatics> pen_device_statics =
       FakeIPenDeviceStatics::GetInstance();
   views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
-      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
+      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr);
   PenIdHandler pen_id_handler;
 
   // Make sure Get GUID works correctly.
@@ -95,80 +86,13 @@ TEST_F(PenIdHandlerTest, GetGuidMapping) {
   EXPECT_EQ(id, pen_id_handler.TryGetPenUniqueId(kPointerId4));
 }
 
-// Tests TryGetPenUniqueId for devices that don't have a guid, but do have
-// a transducer id. Makes sure the correct TransducerId is returned given a
-// pointer id.
-TEST_F(PenIdHandlerTest, GetTransducerIdMapping) {
-  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
-      nullptr,
-      &views::FakeIPenPointerPointStatics::FakeIPenPointerPointStaticsComPtr);
-  PenIdHandler pen_id_handler;
-
-  Microsoft::WRL::ComPtr<FakeIPenPointerPointStatics> pointer_point_statics =
-      FakeIPenPointerPointStatics::GetInstance();
-
-  // Make sure Get GUID works correctly.
-
-  const auto p1 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ false,
-      /*tsn*/ 100,
-      /*tvid*/ 1);
-  const auto p2 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ false,
-      /*tsn*/ 200,
-      /*tvid*/ 1);
-  const auto p3 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ false,
-      /*tsn*/ 100,
-      /*tvid*/ 2);
-  const auto p4 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ false,
-      /*tsn*/ 100,
-      /*tvid*/ 1);
-
-  pointer_point_statics->AddPointerPoint(kPointerId1, p1);
-  pointer_point_statics->AddPointerPoint(kPointerId2, p2);
-  pointer_point_statics->AddPointerPoint(kPointerId3, p3);
-  pointer_point_statics->AddPointerPoint(kPointerId4, p4);
-
-  std::optional<int32_t> id = pen_id_handler.TryGetPenUniqueId(kPointerId1);
-  EXPECT_EQ(id, kPenId0);
-
-  // Different serial number to previous should return a new unique id.
-  id = pen_id_handler.TryGetPenUniqueId(kPointerId2);
-  EXPECT_EQ(id, kPenId1);
-
-  // Same serial number but different vendor id should result in a different
-  // returned unique id.
-  id = pen_id_handler.TryGetPenUniqueId(kPointerId3);
-  EXPECT_EQ(id, kPenId2);
-
-  // Persisted id should be returned if transducer id is recognized.
-  id = pen_id_handler.TryGetPenUniqueId(kPointerId4);
-  EXPECT_EQ(id, kPenId0);
-
-  // Unrecognized id should return a null optional.
-  id = pen_id_handler.TryGetPenUniqueId(kPointerId5);
-  EXPECT_EQ(id, std::nullopt);
-}
-
 // Simulate statics not being set. This should result in TryGetGuid returning
-// std::nullopt and TryGetTransducerId returning an invalid Transducer ID.
+// std::nullopt.
 // Ultimately TryGetPenUniqueId should return null.
 TEST_F(PenIdHandlerTest, PenDeviceStaticsFailedToSet) {
-  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(nullptr, nullptr);
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(nullptr);
   PenIdHandler pen_id_handler;
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), std::nullopt);
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),
-            PenIdHandler::TransducerId());
   EXPECT_EQ(pen_id_handler.TryGetPenUniqueId(kPointerId1), std::nullopt);
 }
 
@@ -177,7 +101,7 @@ TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
   Microsoft::WRL::ComPtr<FakeIPenDeviceStatics> pen_device_statics =
       FakeIPenDeviceStatics::GetInstance();
   views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
-      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
+      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr);
   PenIdHandler pen_id_handler;
 
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), std::nullopt);
@@ -186,54 +110,6 @@ TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
   const auto fake_pen_device = Microsoft::WRL::Make<FakeIPenDevice>();
   pen_device_statics->SimulatePenEventGenerated(kPointerId1, fake_pen_device);
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), fake_pen_device->GetGuid());
-}
-
-TEST_F(PenIdHandlerTest, TryGetTransducerIdHandlesErrors) {
-  Microsoft::WRL::ComPtr<FakeIPenPointerPointStatics> pointer_point_statics =
-      FakeIPenPointerPointStatics::GetInstance();
-  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
-      nullptr,
-      &views::FakeIPenPointerPointStatics::FakeIPenPointerPointStaticsComPtr);
-  PenIdHandler pen_id_handler;
-
-  // No current point found.
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),
-            PenIdHandler::TransducerId());
-
-  // Current point found but point->GetProperties throws error.
-  const auto p = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ true);
-  pointer_point_statics->AddPointerPoint(kPointerId1, p);
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),
-            PenIdHandler::TransducerId());
-
-  // has usage throws error.
-  const auto p1 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ true);
-  pointer_point_statics->AddPointerPoint(kPointerId2, p1);
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId2),
-            PenIdHandler::TransducerId());
-
-  // get usage throws error.
-  const auto p2 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ true);
-  pointer_point_statics->AddPointerPoint(kPointerId3, p2);
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId3),
-            PenIdHandler::TransducerId());
-
-  // Entire pipeline works correctly.
-  const auto p3 = Microsoft::WRL::Make<FakeIPointerPoint>(
-      /*getProperties throw error*/ false,
-      /*has usage error*/ false,
-      /*get usage error*/ false,
-      /*tsn*/ 100,
-      /*tvid*/ 200);
-  pointer_point_statics->AddPointerPoint(kPointerId4, p3);
-  EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId4),
-            (PenIdHandler::TransducerId{/*tsn*/ 100, /*tvid*/ 200}));
 }
 
 }  // namespace views

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-shared.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -41,8 +42,7 @@ DisallowActivationReasonId ConvertToDisallowActivationReasonId(
 
 // The class will only provide the default result and the client will be
 // considered active. It should be used when the client doesn't have an
-// associated RenderFrameHost, as is the case for shared worker or service
-// worker.
+// associated document, as is the case for shared worker or service worker.
 class NoDocumentIndexedDBClientStateChecker
     : public storage::mojom::IndexedDBClientStateChecker {
  public:
@@ -73,11 +73,10 @@ class NoDocumentIndexedDBClientStateChecker
   mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
 };
 
-// This class should be used when the client has a RenderFrameHost associated so
-// the client checks are performed based on the document held by the
-// RenderFrameHost.
-// This class extends `DocumentUserData` because a document has one client per
-// IndexedDB connection to a database.
+// This class should be used when the client has an associated document. The
+// client checks are performed based on the document. This class extends
+// `DocumentUserData` because a document has one client per IndexedDB connection
+// to a database.
 class DocumentIndexedDBClientStateChecker final
     : public DocumentUserData<DocumentIndexedDBClientStateChecker>,
       public storage::mojom::IndexedDBClientStateChecker,
@@ -148,8 +147,6 @@ class DocumentIndexedDBClientStateChecker final
     Bind(std::move(receiver));
   }
 
-  const base::UnguessableToken token() { return token_; }
-
  private:
   // Keep the association between the receiver and the feature handle it
   // registered.
@@ -169,15 +166,10 @@ class DocumentIndexedDBClientStateChecker final
   };
 
   explicit DocumentIndexedDBClientStateChecker(RenderFrameHost* rfh)
-      : DocumentUserData(rfh), token_(base::UnguessableToken::Create()) {}
+      : DocumentUserData(rfh) {}
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
-
-  // This token uniquely identifies `this`/the "client" to the other side of the
-  // Mojo connection. It's used to prevent IDB code from over-zealously
-  // disallowing BFCache for a render frame based on its own activity.
-  base::UnguessableToken token_;
 
   mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBClientKeepActive,
@@ -190,28 +182,36 @@ class DocumentIndexedDBClientStateChecker final
 DOCUMENT_USER_DATA_KEY_IMPL(DocumentIndexedDBClientStateChecker);
 
 // static
-std::tuple<mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
-           base::UnguessableToken>
+mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
 IndexedDBClientStateCheckerFactory::InitializePendingRemote(
-    const GlobalRenderFrameHostId& rfh_id) {
+    const storage::BucketClientInfo& client_info) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
-  if (RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id)) {
-    auto* checker =
-        DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh);
-    checker->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
-    return {std::move(client_state_checker_remote), checker->token()};
+  if (client_info.document_token) {
+    RenderFrameHost* rfh = RenderFrameHostImpl::FromDocumentToken(
+        client_info.process_id, client_info.document_token.value());
+    CHECK(rfh);
+    DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh)
+        ->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+  } else {
+    if (client_info.context_token.Is<blink::SharedWorkerToken>() ||
+        client_info.context_token.Is<blink::ServiceWorkerToken>()) {
+      // Use a default checker instance for valid clients that have no
+      // associated document. See comments on
+      // `NoDocumentIndexedDBClientStateChecker`.
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
+          client_state_checker_remote.InitWithNewPipeAndPassReceiver());
+    } else if (client_info.context_token.Is<blink::DedicatedWorkerToken>()) {
+      // The rare case of a dedicated worker not having an associated document
+      // can occur when the worker has outlived the parent RFH. See code comment
+      // on `DedicatedWorkerHost`. We will not bind the remote in this case.
+    } else {
+      // No other client type is expected.
+      NOTREACHED_NORETURN();
+    }
   }
-
-  // If the `rfh` is null, it means there is actually no valid
-  // `RenderFrameHost` associated with the client. We should use a default
-  // checker instance for it.
-  // See comments from `NoDocumentIndexedDBClientStateChecker`.
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
-      client_state_checker_remote.InitWithNewPipeAndPassReceiver());
-  return {std::move(client_state_checker_remote),
-          base::UnguessableToken::Create()};
+  return client_state_checker_remote;
 }
 
 // static

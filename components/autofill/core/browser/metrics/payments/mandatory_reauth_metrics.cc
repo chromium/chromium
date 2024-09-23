@@ -34,6 +34,23 @@ std::string_view GetSourceForOptInOrOptOutEvent(
   }
 }
 
+std::string GetHistogramStringForNonInteractivePaymentMethodType(
+    NonInteractivePaymentMethodType type) {
+  switch (type) {
+    case NonInteractivePaymentMethodType::kLocalCard:
+      return "LocalCard";
+    case NonInteractivePaymentMethodType::kFullServerCard:
+    case NonInteractivePaymentMethodType::kMaskedServerCard:
+      return "ServerCard";
+    case NonInteractivePaymentMethodType::kVirtualCard:
+      return "VirtualCard";
+    case NonInteractivePaymentMethodType::kLocalIban:
+      return "LocalIban";
+    case NonInteractivePaymentMethodType::kServerIban:
+      return "ServerIban";
+  }
+}
+
 }  // namespace
 
 void LogMandatoryReauthOfferOptInDecision(
@@ -94,12 +111,13 @@ void LogMandatoryReauthSettingsPageDeleteCardEvent(
 }
 
 void LogMandatoryReauthCheckoutFlowUsageEvent(
-    CreditCard::RecordType card_type,
+    NonInteractivePaymentMethodType non_interactive_payment_method_type,
     payments::MandatoryReauthAuthenticationMethod authentication_method,
     MandatoryReauthAuthenticationFlowEvent event) {
   std::string histogram_name =
-      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage" +
-      AutofillMetrics::GetHistogramStringForCardType(card_type);
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+      GetHistogramStringForNonInteractivePaymentMethodType(
+          non_interactive_payment_method_type);
   switch (authentication_method) {
     case payments::MandatoryReauthAuthenticationMethod::kUnknown:
       histogram_name += ".UnknownMethod";

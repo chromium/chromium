@@ -24,7 +24,7 @@ sync_file_system::ServiceStatus SyncServiceStateToExtensionEnum(
     case ::sync_file_system::SYNC_SERVICE_DISABLED:
       return sync_file_system::ServiceStatus::kDisabled;
   }
-  NOTREACHED() << "Invalid state: " << state;
+  NOTREACHED_IN_MIGRATION() << "Invalid state: " << state;
   return sync_file_system::ServiceStatus::kNone;
 }
 
@@ -40,7 +40,7 @@ sync_file_system::FileStatus SyncFileStatusToExtensionEnum(
     case ::sync_file_system::SYNC_FILE_STATUS_UNKNOWN:
       return sync_file_system::FileStatus::kNone;
   }
-  NOTREACHED() << "Invalid status: " << status;
+  NOTREACHED_IN_MIGRATION() << "Invalid status: " << status;
   return sync_file_system::FileStatus::kNone;
 }
 
@@ -56,7 +56,7 @@ sync_file_system::SyncAction SyncActionToExtensionEnum(
     case ::sync_file_system::SYNC_ACTION_NONE:
       return sync_file_system::SyncAction::kNone;
   }
-  NOTREACHED() << "Invalid action: " << action;
+  NOTREACHED_IN_MIGRATION() << "Invalid action: " << action;
   return sync_file_system::SyncAction::kNone;
 }
 
@@ -70,7 +70,7 @@ sync_file_system::SyncDirection SyncDirectionToExtensionEnum(
     case ::sync_file_system::SYNC_DIRECTION_NONE:
       return sync_file_system::SyncDirection::kNone;
   }
-  NOTREACHED() << "Invalid direction: " << direction;
+  NOTREACHED_IN_MIGRATION() << "Invalid direction: " << direction;
   return sync_file_system::SyncDirection::kNone;
 }
 
@@ -85,7 +85,8 @@ ExtensionEnumToConflictResolutionPolicy(
     case sync_file_system::ConflictResolutionPolicy::kManual:
       return ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MANUAL;
   }
-  NOTREACHED() << "Invalid conflict resolution policy: " << ToString(policy);
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid conflict resolution policy: " << ToString(policy);
   return ::sync_file_system::CONFLICT_RESOLUTION_POLICY_UNKNOWN;
 }
 
@@ -100,10 +101,10 @@ ConflictResolutionPolicyToExtensionEnum(
     case ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MANUAL:
       return sync_file_system::ConflictResolutionPolicy::kManual;
     case ::sync_file_system::CONFLICT_RESOLUTION_POLICY_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return sync_file_system::ConflictResolutionPolicy::kNone;
   }
-  NOTREACHED() << "Invalid conflict resolution policy: " << policy;
+  NOTREACHED_IN_MIGRATION() << "Invalid conflict resolution policy: " << policy;
   return sync_file_system::ConflictResolutionPolicy::kNone;
 }
 

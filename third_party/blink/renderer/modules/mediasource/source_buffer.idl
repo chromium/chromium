@@ -81,7 +81,7 @@ enum AppendMode {
         RaisesException,
         RuntimeEnabled=MediaSourceExtensionsForWebCodecs,
         Measure
-    ] Promise<void> appendEncodedChunks(EncodedChunks chunks);
+    ] Promise<undefined> appendEncodedChunks(EncodedChunks chunks);
 
     // Abort the current segment append sequence.
     [RaisesException] void abort();

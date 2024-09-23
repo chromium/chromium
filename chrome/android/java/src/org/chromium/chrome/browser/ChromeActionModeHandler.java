@@ -59,6 +59,7 @@ public class ChromeActionModeHandler {
      * @param activityTabProvider {@link ActivityTabProvider} instance.
      * @param actionBarObserver observer called when the contextual action bar's visibility has
      *     changed.
+     * @param showWebSearch Whether 'Web Search' option will be shown.
      * @param searchCallback Callback to run when search action is selected in the action mode.
      * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be
      *     notified when a share action is performed.
@@ -66,6 +67,7 @@ public class ChromeActionModeHandler {
     public ChromeActionModeHandler(
             ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback,
+            boolean showWebSearch,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Supplier<ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
@@ -77,6 +79,7 @@ public class ChromeActionModeHandler {
                                     mActiveTab,
                                     webContents,
                                     searchCallback,
+                                    showWebSearch,
                                     shareDelegateSupplier,
                                     readAloudControllerSupplier));
                     spc.setDropdownMenuDelegate(new ChromeSelectionDropdownMenuDelegate());
@@ -114,6 +117,7 @@ public class ChromeActionModeHandler {
         private final Tab mTab;
         private final ActionModeCallbackHelper mHelper;
         private final Callback<String> mSearchCallback;
+        private final boolean mShowWebSearch;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
         private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
@@ -124,10 +128,12 @@ public class ChromeActionModeHandler {
                 Tab tab,
                 WebContents webContents,
                 Callback<String> searchCallback,
+                boolean showWebSearch,
                 Supplier<ShareDelegate> shareDelegateSupplier,
                 Supplier<ReadAloudController> readAloudControllerSupplier) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
+            mShowWebSearch = showWebSearch;
             mSearchCallback = searchCallback;
             mShareDelegateSupplier = shareDelegateSupplier;
             mReadAloudControllerSupplier = readAloudControllerSupplier;
@@ -148,7 +154,7 @@ public class ChromeActionModeHandler {
                             | ActionModeCallbackHelper.MENU_ITEM_SHARE;
             // Disable options that expose additional Chrome functionality prior to the FRE being
             // completed (i.e. creation of a new tab).
-            if (FirstRunStatus.getFirstRunFlowComplete()) {
+            if (FirstRunStatus.getFirstRunFlowComplete() && mShowWebSearch) {
                 allowedActionModes |= ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH;
             }
             mHelper.setAllowedMenuItems(allowedActionModes);
@@ -190,7 +196,8 @@ public class ChromeActionModeHandler {
                             .getDimensionPixelSize(R.dimen.iph_shared_highlighting_padding_top);
             Rect anchorRect = new Rect(view.getWidth() / 2, padding, view.getWidth() / 2, padding);
             UserEducationHelper mUserEducationHelper =
-                    new UserEducationHelper(TabUtils.getActivity(mTab), new Handler());
+                    new UserEducationHelper(
+                            TabUtils.getActivity(mTab), mTab.getProfile(), new Handler());
             mUserEducationHelper.requestShowIPH(
                     new IPHCommandBuilder(
                                     view.getResources(),

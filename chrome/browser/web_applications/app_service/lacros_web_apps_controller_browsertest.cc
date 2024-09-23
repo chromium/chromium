@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,9 +29,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -46,7 +44,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -226,7 +224,7 @@ crosapi::mojom::AppController& AsAppController(
 
 }  // namespace
 
-class LacrosWebAppsControllerBrowserTest : public WebAppControllerBrowserTest {
+class LacrosWebAppsControllerBrowserTest : public WebAppBrowserTestBase {
  public:
   LacrosWebAppsControllerBrowserTest() = default;
   ~LacrosWebAppsControllerBrowserTest() override = default;
@@ -314,8 +312,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
   webapps::AppId app_id;
   {
     const std::u16string original_description = u"Original Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = original_description;
     web_app_info->description = original_description;
@@ -328,8 +326,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
 
   {
     const std::u16string updated_description = u"Updated Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = updated_description;
     web_app_info->description = updated_description;
@@ -337,11 +335,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
     base::RunLoop run_loop;
     provider().install_finalizer().FinalizeUpdate(
         *web_app_info,
-        base::BindLambdaForTesting([&run_loop](const webapps::AppId& app_id,
-                                               webapps::InstallResultCode code,
-                                               OsHooksErrors os_hooks_errors) {
+        base::BindLambdaForTesting([&run_loop](
+                                       const webapps::AppId& app_id,
+                                       webapps::InstallResultCode code) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
-          EXPECT_TRUE(os_hooks_errors.none());
           run_loop.Quit();
         }));
 
@@ -361,8 +358,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   webapps::AppId app_id;
   {
     const std::u16string description = u"Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
     web_app_info->scope = app_url;
     web_app_info->title = description;
     web_app_info->description = description;
@@ -433,9 +430,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
 
   // Install an additional app from a different host.
   {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = GURL("https://example.com:8080/");
-    web_app_info->scope = web_app_info->start_url;
+    auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com:8080/"));
+    web_app_info->scope = web_app_info->start_url();
     web_app_info->title = u"Unrelated Web App";
     InstallWebApp(std::move(web_app_info));
   }
@@ -554,6 +551,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   const GURL app_url =
       embedded_test_server()->GetURL("/web_apps/file_handler_index.html");
   webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  ASSERT_FALSE(app_id.empty());
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id), app_url);
 
   MockAppPublisher mock_app_publisher(profile());
@@ -733,6 +731,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 
   auto id = *menu_items->items[5]->id;
 
+  ui_test_utils::BrowserChangeObserver new_app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   base::test::TestFuture<::crosapi::mojom::LaunchResultPtr>
       launch_result_future;
   AsAppController(lacros_web_apps_controller)
@@ -740,6 +740,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                                  launch_result_future.GetCallback());
   // TODO: handle return value.
   std::ignore = launch_result_future.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_app_browser_observer.Wait());
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()
@@ -836,10 +837,11 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
   webapps::AppId app2_id;
   {
     const std::u16string description = u"Uninstalled Web App";
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url =
+    GURL start_url =
         embedded_test_server()->GetURL("app.site.com", "/simple.html");
-    web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
     web_app_info->title = description;
     web_app_info->description = description;
     app2_id = InstallWebApp(std::move(web_app_info));
@@ -1085,19 +1087,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   auto app_id = InstallWebAppFromManifest(
       browser(),
       embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
-
-  // Have to call it explicitly due to usage of
-  // OsIntegrationManager::ScopedSuppressForTesting
-  base::RunLoop run_loop;
-  provider()
-      .os_integration_manager()
-      .file_handler_manager()
-      .EnableAndRegisterOsFileHandlers(
-          app_id, base::BindLambdaForTesting([&](Result result) {
-            EXPECT_EQ(result, Result::kOk);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  ASSERT_FALSE(app_id.empty());
 
   MockAppPublisher mock_app_publisher(profile());
   LacrosWebAppsController lacros_web_apps_controller(profile());

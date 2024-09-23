@@ -1,0 +1,127 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/webnn/public/mojom/context_properties_mojom_traits.h"
+
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_context_properties.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+TEST(ContextPropertiesMojomTraitsTest, Basic) {
+  webnn::ContextProperties input(
+      webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kChannelsFirst,
+      {webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kUint64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kUint8},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kUint64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32,
+        webnn::OperandDataType::kInt64},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kUint8},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+       {webnn::OperandDataType::kUint8},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kFloat32},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kUint32},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint32},
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kUint8},
+       {webnn::OperandDataType::kUint8},
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32}});
+
+  webnn::ContextProperties output(
+      webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(
+          input, output));
+  EXPECT_EQ(input, output);
+}

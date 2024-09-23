@@ -10,6 +10,8 @@
 
 using base::android::JavaParamRef;
 
+class Profile;
+
 // A task managing the background activity of the offline page prefetcher.
 class ProxyNativeTask {
  public:
@@ -27,14 +29,13 @@ class ProxyNativeTask {
                                         const JavaParamRef<jobject>& jcaller,
                                         const JavaParamRef<jobject>& jkey);
 
-  void StartBackgroundTaskWithFullBrowser(
-      JNIEnv* env,
-      const JavaParamRef<jobject>& jcaller,
-      const JavaParamRef<jobject>& jprofile);
+  void StartBackgroundTaskWithFullBrowser(JNIEnv* env,
+                                          const JavaParamRef<jobject>& jcaller,
+                                          Profile* profile);
 
   void OnFullBrowserLoaded(JNIEnv* env,
                            const JavaParamRef<jobject>& jcaller,
-                           const JavaParamRef<jobject>& jprofile);
+                           Profile* profile);
 
   jboolean StopBackgroundTask(JNIEnv* env,
                               const JavaParamRef<jobject>& jcaller);

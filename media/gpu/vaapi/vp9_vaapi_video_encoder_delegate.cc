@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 
 #include <algorithm>
@@ -53,8 +58,8 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
   return std::size(kQuantizerToQindex) - 1;
 }
 
-// TODO(crbug.com/752720): remove this in favor of std::gcd if c++17 is enabled
-// to use.
+// TODO(crbug.com/40533712): remove this in favor of std::gcd if c++17 is
+// enabled to use.
 int GCD(int a, int b) {
   return a == 0 ? b : GCD(b % a, a);
 }
@@ -302,7 +307,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
   }
 
   if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
-    DVLOGF(1) << "Invalid configuraiton. VBR is not supported for VP9.";
+    DVLOGF(1) << "Invalid configuration. VBR is not supported for VP9.";
     return false;
   }
 
@@ -381,9 +386,7 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
 
   DCHECK(!pending_update_rates_);
   pending_update_rates_ =
-      std::make_pair(initial_bitrate_allocation,
-                     config.initial_framerate.value_or(
-                         VideoEncodeAccelerator::kDefaultFramerate));
+      std::make_pair(initial_bitrate_allocation, config.framerate);
 
   return ApplyPendingUpdateRates();
 }
@@ -415,6 +418,10 @@ VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
       // This is EncodeJob on the bottom spatial layer for the next frame.
       dropped_superframe_timestamp_.reset();
     }
+
+    // For non dropped frame, the spatial layer index filled by |svc_layers|
+    // is the same as one in |encode_job|.
+    CHECK_EQ(svc_layers_->spatial_idx(), encode_job.spatial_index());
 
     // If keyframe is requested, then reset |svc_layers_|.
     // Note that a frame must not be dropped on key frame.
@@ -471,21 +478,15 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
     const EncodeJob& encode_job,
     size_t payload_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto metadata =
-      VaapiVideoEncoderDelegate::GetMetadata(encode_job, payload_size);
-  if (metadata.dropped_frame()) {
-    // BitstreamBufferMetadata should not have a codec specific metadata,
-    // when a frame is dropped.
-    return metadata;
-  }
-
+  CHECK(!encode_job.IsFrameDropped());
+  CHECK_NE(payload_size, 0u);
+  BitstreamBufferMetadata metadata(
+      payload_size, encode_job.IsKeyframeRequested(), encode_job.timestamp());
   auto picture = GetVP9Picture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
   CHECK_EQ(metadata.key_frame, picture->frame_hdr->IsKeyframe());
-  DCHECK_EQ(GetSVCLayerResolutions().size() - 1 ==
-                (metadata.vp9 ? metadata.vp9->spatial_idx : 0),
-            metadata.end_of_picture);
+  CHECK_EQ(metadata.end_of_picture(), encode_job.end_of_picture());
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_hdr->quant_params.base_q_idx);
   return metadata;
@@ -522,6 +523,7 @@ void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
             << ", temporal_idx="
             << (metadata.vp9 ? metadata.vp9->temporal_idx : 0)
             << ", encoded chunk size=" << metadata.payload_size_bytes;
+  CHECK_NE(metadata.payload_size_bytes, 0u);
   rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
@@ -646,7 +648,7 @@ Vp9FrameHeader VP9VaapiVideoEncoderDelegate::GetDefaultFrameHeader(
     const bool keyframe) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Vp9FrameHeader hdr{};
+  Vp9FrameHeader hdr;
   DCHECK(!visible_size_.IsEmpty());
   hdr.frame_width = visible_size_.width();
   hdr.frame_height = visible_size_.height();
@@ -772,7 +774,7 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   VAEncSequenceParameterBufferVP9 seq_param = {};
 
   const auto& frame_header = pic->frame_hdr;
-  // TODO(crbug.com/811912): Double check whether the
+  // TODO(crbug.com/41370458): Double check whether the
   // max_frame_width or max_frame_height affects any of the memory
   // allocation and tighten these values based on that.
   constexpr gfx::Size kMaxFrameSize(4096, 4096);
@@ -788,14 +790,13 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.frame_width_dst = frame_header->render_width;
   pic_param.frame_height_dst = frame_header->render_height;
 
-  pic_param.reconstructed_frame = pic->AsVaapiVP9Picture()->GetVASurfaceID();
+  pic_param.reconstructed_frame = pic->AsVaapiVP9Picture()->va_surface_id();
   DCHECK_NE(pic_param.reconstructed_frame, VA_INVALID_ID);
 
   for (size_t i = 0; i < kVp9NumRefFrames; i++) {
     auto ref_pic = ref_frames.GetFrame(i);
     pic_param.reference_frames[i] =
-        ref_pic ? ref_pic->AsVaapiVP9Picture()->GetVASurfaceID()
-                : VA_INVALID_ID;
+        ref_pic ? ref_pic->AsVaapiVP9Picture()->va_surface_id() : VA_INVALID_ID;
   }
 
   pic_param.coded_buf = job.coded_buffer_id();

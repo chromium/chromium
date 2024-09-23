@@ -5,11 +5,13 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
-#include "components/permissions/android/core_jni/PermissionUtil_jni.h"
-#include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/core_jni/PermissionUtil_jni.h"
+#include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
 
 namespace permissions {
 
@@ -144,7 +146,7 @@ void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
-  // TODO(crbug.com/1412290): Pass the callback from native layer.
+  // TODO(crbug.com/40255210): Pass the callback from native layer.
   return Java_PermissionUtil_requestSystemPermissionsForBluetooth(
       env, window_android->GetJavaObject(), nullptr);
 }

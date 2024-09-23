@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
 });
 
-var iframeUrl = chrome.extension.getURL('iframe.html');
+var iframeUrl = chrome.runtime.getURL('iframe.html');
 var injectIframe =
     'var iframe = document.createElement("iframe");\n' +
     'iframe.src = "' + iframeUrl + '";\n' +

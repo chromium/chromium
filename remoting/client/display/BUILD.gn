@@ -35,12 +35,11 @@ source_set("display") {
     "//base",
     "//remoting/base",
     "//remoting/client/ui:ui_manipulation",
+    "//third_party/angle:includes",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
-
-  public_configs = [ "//third_party/khronos:khronos_headers" ]
 
   if (is_android) {
     libs = [ "GLESv2" ]
@@ -62,7 +61,7 @@ source_set("display") {
       "OpenGLES.framework",
     ]
 
-    # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+    # TODO(crbug.com/40589733) fix for OpenGLES deprecation.
     defines = [ "GLES_SILENCE_DEPRECATION" ]
   }
 

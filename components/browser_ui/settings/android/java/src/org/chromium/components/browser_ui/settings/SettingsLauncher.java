@@ -24,7 +24,11 @@ public interface SettingsLauncher {
         SettingsFragment.PAYMENT_METHODS,
         SettingsFragment.SAFETY_CHECK,
         SettingsFragment.SITE,
-        SettingsFragment.ACCESSIBILITY
+        SettingsFragment.ACCESSIBILITY,
+        SettingsFragment.PASSWORDS,
+        SettingsFragment.GOOGLE_SERVICES,
+        SettingsFragment.MANAGE_SYNC,
+        SettingsFragment.FINANCIAL_ACCOUNTS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SettingsFragment {
@@ -42,6 +46,14 @@ public interface SettingsLauncher {
         int SITE = 5;
         /// Accessibility settings.
         int ACCESSIBILITY = 6;
+        /// Password settings.
+        int PASSWORDS = 7;
+        /// Google services.
+        int GOOGLE_SERVICES = 8;
+        /// Manage sync.
+        int MANAGE_SYNC = 9;
+        /// Financial accounts.
+        int FINANCIAL_ACCOUNTS = 10;
     }
 
     /**
@@ -85,18 +97,32 @@ public interface SettingsLauncher {
      * Creates an intent for launching a Settings Activity with the specified fragment.
      *
      * @param context The current Activity, or an application context if no Activity is available.
-     * @param fragmentName The name of the fragment to show, or null to show the default fragment.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
      */
-    Intent createSettingsActivityIntent(Context context, @Nullable String fragmentName);
+    Intent createSettingsActivityIntent(
+            Context context, @Nullable Class<? extends Fragment> fragment);
 
     /**
      * Creates an intent for launching a Settings Activity with the specified fragment and
      * arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
-     * @param fragmentName The name of the fragment to show, or null to show the default fragment.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
      * @param fragmentArgs A bundle of additional fragment arguments.
      */
     Intent createSettingsActivityIntent(
-            Context context, @Nullable String fragmentName, @Nullable Bundle fragmentArgs);
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs);
+
+    /**
+     * Creates an intent for launching a Settings Activity with the specified fragment and
+     * arguments.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     */
+    Intent createSettingsActivityIntent(
+            Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs);
 }

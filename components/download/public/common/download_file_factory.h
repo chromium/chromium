@@ -28,6 +28,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileFactory {
       const base::FilePath& default_downloads_directory,
       std::unique_ptr<InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<DownloadDestinationObserver> observer);
 };
 

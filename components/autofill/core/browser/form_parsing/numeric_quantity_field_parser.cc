@@ -17,18 +17,11 @@ std::unique_ptr<FormFieldParser> NumericQuantityFieldParser::Parse(
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> quantity_patterns = GetMatchPatterns(
-      "NUMERIC_QUANTITY", context.page_language, context.pattern_source);
-
-  if (ParseFieldSpecifics(
-          context, scanner, kNumericQuantityRe,
-          kDefaultMatchParamsWith<
-              FormControlType::kInputNumber, FormControlType::kSelectOne,
-              FormControlType::kSelectList, FormControlType::kTextArea,
-              FormControlType::kInputSearch>,
-          quantity_patterns, &field, "kNumericQuantityRe")) {
+      "NUMERIC_QUANTITY", context.page_language, context.pattern_file);
+  if (ParseField(context, scanner, quantity_patterns, &field,
+                 "NUMERIC_QUANTITY")) {
     return base::WrapUnique(new NumericQuantityFieldParser(field));
   }
-
   return nullptr;
 }
 

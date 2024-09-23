@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #root1, #root2 {
+        width: 100%;
+        padding: 5px;
+    }
+    .child {
+        border: 1px solid black;
+        height: 10px;
+        width: 10px;
+        margin: -1px;
+        display: inline-block;
+    }
+  </style>
+  <script src="../resources/runner.js"></script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+
+<script>
+var isDone = false;
+var startTime;
+
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
+var container = document.getElementById('container');
+generateAllContent();
+
+function runTest() {
+  if (startTime) {
+    PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+    PerfTestRunner.addRunTestEndMarker();
+  }
+  if (!isDone) {
+    PerfTestRunner.addRunTestStartMarker();
+    startTime = PerfTestRunner.now();
+
+    toggleDisplay();
+
+    // Re-run the same test.
+    // Wait to allow the asynchronous accessibility code that's
+    // covered by traceEventsToMeasure to have a chance to run.
+    setTimeout(runTest, 2500);
+  }
+}
+
+function generateAllContent() {
+  const root1 = container.appendChild(document.createElement('div'));
+  root1.id = 'root1';
+
+  const root2 = container.appendChild(document.createElement('div'));
+  root2.id = 'root2';
+
+  for (let i = 0; i < 50; i++) {
+    const child1 = generateNodes(12, "blue");
+    root1.appendChild(child1);
+    const child2 = generateNodes(12, "green");
+    root2.appendChild(child2);
+  }
+}
+
+// Recursively add layers of descendants.
+function generateNodes(depth, color) {
+  if (depth === 0)
+    return;
+
+  const node = document.createElement("div");
+  node.className = "child";
+  node.style.backgroundColor = color;
+  depth--;
+  const child = generateNodes(depth, color);
+  if(child) {
+    node.appendChild(child);
+  }
+  return node;
+}
+
+function toggleDisplay(text) {
+  window.hideTop = !window.hideTop;
+  document.getElementById("root1").setAttribute('aria-hidden', window.hideTop);
+  document.getElementById("root2").setAttribute('aria-hidden', !window.hideTop);
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+  description: 'Test accessibility performance when toggling display:none/block on large subtrees.',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 6,
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+    'TotalAccessibilityCleanLayoutLifecycleStages',
+    'ProcessDeferredUpdatesLifecycleStage',
+    'FinalizingTreeLifecycleStage',
+    'SerializeLifecycleStage',
+    'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    'BrowserAccessibilityManager::OnAccessibilityEvents',
+    'SerializeLocationChanges',
+    "BrowserAccessibilityManager::OnLocationChanges"
+  ]
+});
+</script>
+
+</html>

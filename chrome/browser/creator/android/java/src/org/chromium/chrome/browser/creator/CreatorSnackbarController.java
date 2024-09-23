@@ -65,7 +65,7 @@ public class CreatorSnackbarController {
                             Snackbar.UMA_CREATOR_FOLLOW_FAILURE);
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
-        snackbar.setAction(mContext.getString(R.string.dismiss), null);
+        snackbar.setAction(mContext.getString(R.string.chrome_dismiss), null);
         snackbar.setSingleLine(false);
         mSnackbarManager.showSnackbar(snackbar);
     }
@@ -98,7 +98,7 @@ public class CreatorSnackbarController {
                             Snackbar.UMA_CREATOR_UNFOLLOW_FAILURE);
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
-        snackbar.setAction(mContext.getString(R.string.dismiss), null);
+        snackbar.setAction(mContext.getString(R.string.chrome_dismiss), null);
         snackbar.setSingleLine(false);
         mSnackbarManager.showSnackbar(snackbar);
     }

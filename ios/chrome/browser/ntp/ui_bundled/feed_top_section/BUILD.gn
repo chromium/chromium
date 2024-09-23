@@ -1,0 +1,115 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "notifications_promo_view_constants.h",
+    "notifications_promo_view_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("feed_top_section") {
+  sources = [
+    "feed_top_section_consumer.h",
+    "feed_top_section_coordinator.h",
+    "feed_top_section_coordinator.mm",
+    "feed_top_section_mediator.h",
+    "feed_top_section_mediator.mm",
+    "feed_top_section_view_controller.h",
+    "feed_top_section_view_controller.mm",
+    "feed_top_section_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    ":feed_top_section_promos_ui",
+    "//base",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
+    "//ios/chrome/browser/ui/push_notification:presenters",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("feed_top_section_promos_ui") {
+  sources = [
+    "feed_top_section_mutator.h",
+    "notifications_promo_view.h",
+    "notifications_promo_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ntp/ui_bundled/feed_top_section/resources",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feed_top_section_mediator+testing.h",
+    "feed_top_section_mediator_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":feed_top_section",
+    ":feed_top_section_promos_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:prefs",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

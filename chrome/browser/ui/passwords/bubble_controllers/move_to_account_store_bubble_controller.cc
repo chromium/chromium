@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_util.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -57,11 +57,8 @@ void MoveToAccountStoreBubbleController::OnFaviconReady(
 }
 
 std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kButterOnDesktopFollowup)
-             ? l10n_util::GetStringUTF16(
-                   IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE)
-             : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE);
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE);
 }
 
 void MoveToAccountStoreBubbleController::AcceptMove() {
@@ -84,12 +81,14 @@ void MoveToAccountStoreBubbleController::RejectMove() {
 }
 
 gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
-  if (!GetProfile())
+  if (!GetProfile()) {
     return gfx::Image();
+  }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
-  if (!identity_manager)
+  if (!identity_manager) {
     return gfx::Image();
+  }
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   DCHECK(!primary_account_info.IsEmpty());
@@ -121,13 +120,14 @@ std::u16string MoveToAccountStoreBubbleController::GetProfileEmail() const {
 
 void MoveToAccountStoreBubbleController::ReportInteractions() {
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   metrics_util::LogMoveUIDismissalReason(
       dismissal_reason_,
       password_manager::features_util::ComputePasswordAccountStorageUserState(
           profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile)));
-  // TODO(crbug.com/1063852): Consider recording UKM here, via:
+  // TODO(crbug.com/40123455): Consider recording UKM here, via:
   // metrics_recorder_->RecordUIDismissalReason(dismissal_reason_)
 }

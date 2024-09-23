@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("usb") {
+  sources = [
+    "cros_usb_detector.cc",
+    "cros_usb_detector.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/vm_plugin_dispatcher",
+    "//chromeos/ash/components/disks",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom:usb",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/constants",
+    "//components/vector_icons",
+    "//services/device/public/cpp/usb",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/settings/pages/crostini" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "cros_usb_detector_unittest.cc" ]
+
+  deps = [
+    ":usb",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/plugin_vm:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/disks:test_support",
+  ]
+}

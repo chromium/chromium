@@ -15,8 +15,7 @@ namespace blink {
 
 class AudioNode;
 
-class IIRFilterHandler : public AudioBasicProcessorHandler,
-                         public base::SupportsWeakPtr<IIRFilterHandler> {
+class IIRFilterHandler final : public AudioBasicProcessorHandler {
  public:
   static scoped_refptr<IIRFilterHandler> Create(
       AudioNode&,
@@ -42,6 +41,8 @@ class IIRFilterHandler : public AudioBasicProcessorHandler,
   bool did_warn_bad_filter_state_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<IIRFilterHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

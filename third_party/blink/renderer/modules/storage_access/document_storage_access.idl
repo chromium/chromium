@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[
-    ImplementedAs=DocumentStorageAccess,
-    RuntimeEnabled=StorageAccessAPIBeyondCookies
-] partial interface Document {
+[ImplementedAs=DocumentStorageAccess]
+partial interface Document {
+    [
+        CallWith=ScriptState,
+        NewObject,
+        MeasureAs=StorageAccessAPI_HasStorageAccess_Method
+    ] Promise<boolean> hasStorageAccess();
+    [
+        CallWith=ScriptState,
+        NewObject,
+        MeasureAs=StorageAccessAPI_requestStorageAccess_Method
+    ] Promise<undefined> requestStorageAccess();
     [
         CallWith=ScriptState,
         NewObject,
@@ -16,4 +24,9 @@
         NewObject,
         MeasureAs=StorageAccessAPI_hasUnpartitionedCookieAccess
     ] Promise<boolean> hasUnpartitionedCookieAccess();
+    [
+        CallWith=ScriptState,
+        NewObject,
+        MeasureAs=StorageAccessAPI_requestStorageAccessFor_Method
+    ] Promise<undefined> requestStorageAccessFor(USVString requestedOrigin);
 };

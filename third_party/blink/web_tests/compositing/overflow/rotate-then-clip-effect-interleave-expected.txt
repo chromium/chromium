@@ -7,19 +7,19 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [240, 240],
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [400, 400],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "position": [20, 0],
       "bounds": [400, 100],
       "contentsOpaque": true,
@@ -27,7 +27,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV",
+      "name": "LayoutBlockFlow (relative positioned) DIV",
       "bounds": [100, 400],
       "contentsOpaque": true,
       "backgroundColor": "#FF00FF",

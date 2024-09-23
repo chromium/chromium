@@ -1,0 +1,58 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/policy/reporting",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/app_mode",
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/login/app_mode",
+  "+chrome/browser/ash/login/lock",
+  "+chrome/browser/ash/login/session",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/net/network_diagnostics",
+  "+chrome/browser/ash/net/network_health",
+  "+chrome/browser/ash/policy/affiliation",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/status_collector",
+  "+chrome/browser/ash/policy/test_support",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/chromeos/reporting",
+  "+chrome/browser/extensions/browsertest_util.h",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sessions",
+  # TODO: b/335799773 - We can remove this dependency once support tool files
+  # have been separated from //chrome/browser/support_tool.
+  "+chrome/browser/support_tool",
+  "+chrome/browser/sync",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/web_applications/test",
+  "+chrome/browser/upgrade_detector",
+  "+chrome/browser/web_applications/mojom",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/user_display_mode.h",
+  "+chrome/browser/web_applications/web_app_install_info.h",
+  "+chrome/common/channel_info.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/test/base",
+]

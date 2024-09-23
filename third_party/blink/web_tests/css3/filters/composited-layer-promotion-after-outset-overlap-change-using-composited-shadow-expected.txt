@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
@@ -35,14 +35,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
+      "name": "LayoutBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
       "position": [100, 100],
       "bounds": [200, 200]
     }

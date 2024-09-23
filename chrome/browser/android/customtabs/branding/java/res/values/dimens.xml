@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <dimen name="custom_tabs_toolbar_branding_icon_width">44dp</dimen>
+  <dimen name="custom_tabs_toolbar_branding_icon_start_padding">16dp</dimen>
+  <dimen name="custom_tabs_toolbar_branding_icon_end_padding">12dp</dimen>
+</resources>

@@ -9,14 +9,14 @@
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
-import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+import {DateTimeBrowserProxy, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {getTemplate} from './timezone_selector.html.js';
 
 const TimezoneSelectorElementBase = PrefsMixin(PolymerElement);
@@ -48,6 +48,7 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
       shouldDisableTimeZoneGeoSelector: {
         type: Boolean,
         notify: true,
+        value: false,
       },
 
       /**
@@ -84,6 +85,13 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
   private timeZoneList_: DropdownMenuOptionList;
   private getTimeZonesRequestSent_: boolean;
 
+  /**
+   * Returns the browser proxy page handler (to invoke functions).
+   */
+  get pageHandler(): DateTimePageHandlerRemote {
+    return DateTimeBrowserProxy.getInstance().handler;
+  }
+
   constructor() {
     super();
 
@@ -104,7 +112,8 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
    * Fetches the list of time zones if necessary.
    * @param perUserTimeZoneMode Expected value of per-user time zone.
    */
-  private maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean): void {
+  private async maybeGetTimeZoneList_(perUserTimeZoneMode?: boolean):
+      Promise<void> {
     if (typeof (perUserTimeZoneMode) !== 'undefined') {
       /* This method is called as observer. Skip if if current mode does not
        * match expected.
@@ -138,14 +147,12 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
     // Setting several preferences at once will trigger several
     // |maybeGetTimeZoneList_| calls, which we don't want.
     this.getTimeZonesRequestSent_ = true;
-    TimeZoneBrowserProxyImpl.getInstance()
-        .getTimeZones()
-        .then(timezones => {
-          this.setTimeZoneList_(timezones);
-        })
-        .finally(() => {
-          this.getTimeZonesRequestSent_ = false;
-        });
+    try {
+      const {timezones} = await this.pageHandler.getTimezones();
+      this.setTimeZoneList_(timezones);
+    } finally {
+      this.getTimeZonesRequestSent_ = false;
+    }
   }
 
   /**
@@ -190,13 +197,15 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
   }
 
   /**
-   * Computes visibility of user timezone preference.
+   * Computes whether user timezone selector should be disabled. Returns `true`
+   * if auto detect is on or it's waiting for 'access-code-validation-complete'
+   * for child account.
    */
-  private isUserTimeZoneSelectorHidden_(
-      prefUserTimezone: chrome.settingsPrivate.PrefObject|null,
-      prefResolveOnOffValue: boolean): boolean {
-    return (prefUserTimezone && prefUserTimezone.controlledBy != null) ||
-        prefResolveOnOffValue;
+  private shouldDisableUserTimezoneSelector_(): boolean {
+    return this.getPref<boolean>(
+                   'generated.resolve_timezone_by_geolocation_on_off')
+               .value ||
+        this.shouldDisableTimeZoneGeoSelector;
   }
 }
 

@@ -7,7 +7,7 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -34,26 +34,19 @@ if (include_js2gtest_tests) {
     # build and are handled by a rule, but in the GN build they're in a
     # separate action so need to be separated out.
     sources = [
-      "../../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
-      "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
-      "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
-      "../settings/chromeos/os_settings_browsertest.js",
       "account_manager/account_manager_browsertest.js",
       "arc_account_picker/arc_account_picker_browsertest.js",
-      "ash_common/ash_common_browsertest.js",
-      "ash_common/ash_common_resources_browsertest.js",
       "ash_common/i18n_process_test.js",
       "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
       "async_gen.js",
-      "bluetooth_pairing_dialog_browsertest.js",
       "borealis_installer/borealis_installer_browsertest.js",
+      "certificate_manager_dialog_browsertest.js",
       "cloud_upload/cloud_upload_dialog_browsertest.js",
       "cloud_upload/connect_onedrive_browsertest.js",
       "cloud_upload/file_handler_page_browsertest.js",
       "cloud_upload/move_confirmation_page_browsertest.js",
-      "edu_coexistence/edu_coexistence_browsertest.js",
-      "edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
+      "cr_components_chromeos_v3_browsertest.js",
       "emoji_picker/emoji_picker_browsertest.js",
       "gaia_action_buttons/gaia_action_buttons_browsertest.js",
       "internet_config_dialog_browsertest.js",
@@ -89,8 +82,6 @@ if (include_js2gtest_tests) {
     sources = [
       "crostini_installer_browsertest.js",
       "crostini_upgrader_browsertest.js",
-      "os_feedback_ui/os_feedback_browsertest.js",
-      "shimless_rma/shimless_rma_browsertest.js",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -99,13 +90,9 @@ if (include_js2gtest_tests) {
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
-      "../nearby_share/nearby_browsertest.js",
-      "../nearby_share/shared/nearby_shared_v3_browsertest.js",
-      "diagnostics/diagnostics_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
-      "parent_access/parent_access_browsertest.js",
-      "print_management/print_management_browsertest.js",
-      "shortcut_customization/shortcut_customization_browsertest.js",
+      "nearby_share/nearby_browsertest.js",
+      "nearby_share/shared/nearby_shared_v3_browsertest.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -160,13 +147,12 @@ group("closure_compile") {
   ]
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "../tsconfig_base.json"
+  tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "bluetooth_pairing_test.js",
     "chai_assert.js",
     "cr_focus_row_behavior_test.ts",
     "crostini_installer_app_test.js",
@@ -182,42 +168,79 @@ ts_library("build_ts") {
     "test_util.js",
 
     # Subfolder files. Move these files to their dedicated ts_library()
-    # subfolder targets when migrated to TS.
+    # subfolder targets.
     "account_manager/account_migration_welcome_test.js",
     "account_manager/test_account_manager_browser_proxy.js",
     "arc_account_picker/arc_account_picker_test.js",
     "arc_account_picker/test_util.js",
+    "bluetooth/bluetooth_base_page_test.ts",
+    "bluetooth/bluetooth_battery_icon_percentage_test.ts",
+    "bluetooth/bluetooth_device_battery_info_test.ts",
+    "bluetooth/bluetooth_icon_test.ts",
+    "bluetooth/bluetooth_pairing_confirm_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_device_item_test.ts",
+    "bluetooth/bluetooth_pairing_device_selection_page_test.ts",
+    "bluetooth/bluetooth_pairing_enter_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_request_code_page_test.ts",
+    "bluetooth/bluetooth_pairing_ui_test.ts",
+    "bluetooth/bluetooth_spinner_page_test.ts",
+    "bluetooth/fake_bluetooth_config.ts",
+    "bluetooth/fake_bluetooth_discovery_delegate.ts",
+    "bluetooth/fake_device_pairing_handler.ts",
+    "bluetooth/fake_hid_preserving_bluetooth_state_controller.ts",
+    "cellular_setup/activation_code_page_test.ts",
+    "cellular_setup/base_page_test.ts",
+    "cellular_setup/button_bar_test.ts",
+    "cellular_setup/cellular_setup_test.ts",
+    "cellular_setup/confirmation_code_page_test.ts",
+    "cellular_setup/esim_flow_ui_test.ts",
+    "cellular_setup/fake_barcode_detector.ts",
+    "cellular_setup/fake_cellular_setup_delegate.ts",
+    "cellular_setup/fake_cellular_setup_remote.ts",
+    "cellular_setup/fake_esim_manager_remote.ts",
+    "cellular_setup/fake_media_devices.ts",
+    "cellular_setup/final_page_test.ts",
+    "cellular_setup/mock_metrics_private.ts",
+    "cellular_setup/profile_discovery_list_page_test.ts",
+    "cellular_setup/provisioning_page_test.ts",
+    "cellular_setup/psim_flow_ui_test.ts",
+    "cellular_setup/setup_loading_page_test.ts",
     "gaia_action_buttons/gaia_action_buttons_test.js",
+    "network/apn_list_item_test.js",
+    "network/apn_list_test.js",
+    "network/apn_selection_dialog_list_item_test.js",
+    "network/apn_selection_dialog_test.js",
+    "network/cr_policy_network_behavior_mojo_tests.js",
+    "network/cr_policy_network_indicator_mojo_tests.js",
+    "network/cr_policy_strings.js",
+    "network_health/fake_network_diagnostics_routines.ts",
+    "network_health/network_diagnostics_test.ts",
+    "network_health/network_health_test_utils.ts",
+    "network_health/routine_group_test.ts",
+    "network/network_apnlist_test.js",
+    "network/network_choose_mobile_test.js",
+    "network/network_config_element_behavior_test.js",
+    "network/network_config_input_test.js",
+    "network/network_config_select_test.js",
+    "network/network_config_test.js",
+    "network/network_config_toggle_test.js",
+    "network/network_config_vpn_test.js",
+    "network/network_config_wifi_test.js",
+    "network/network_icon_test.js",
+    "network/network_ip_config_test.js",
+    "network/network_list_item_test.js",
+    "network/network_list_test.js",
+    "network/network_nameservers_test.js",
+    "network/network_password_input_test.js",
+    "network/network_property_list_mojo_test.js",
+    "network/network_proxy_exclusions_test.js",
+    "network/network_proxy_input_test.js",
+    "network/network_proxy_test.js",
+    "network/network_select_test.js",
+    "network/network_siminfo_test.ts",
+    "network/sim_lock_dialogs_test.js",
     "set_time_dialog/set_time_dialog_test.js",
     "set_time_dialog/test_set_time_browser_proxy.js",
-    "shimless_rma/all_inputs_disabled_test.js",
-    "shimless_rma/critical_error_page_test.js",
-    "shimless_rma/fake_shimless_rma_service_test.js",
-    "shimless_rma/hardware_error_page_test.js",
-    "shimless_rma/onboarding_choose_destination_page_test.js",
-    "shimless_rma/onboarding_choose_wipe_device_page_test.js",
-    "shimless_rma/onboarding_choose_wp_disable_method_page_test.js",
-    "shimless_rma/onboarding_enter_rsu_wp_disable_code_page_test.js",
-    "shimless_rma/onboarding_landing_page_test.js",
-    "shimless_rma/onboarding_network_page_test.js",
-    "shimless_rma/onboarding_select_components_page_test.js",
-    "shimless_rma/onboarding_update_page_test.js",
-    "shimless_rma/onboarding_wait_for_manual_wp_disable_page_test.js",
-    "shimless_rma/onboarding_wp_disable_complete_page_test.js",
-    "shimless_rma/reboot_page_test.js",
-    "shimless_rma/reimaging_calibration_failed_page_test.js",
-    "shimless_rma/reimaging_calibration_run_page_test.js",
-    "shimless_rma/reimaging_calibration_setup_page_test.js",
-    "shimless_rma/reimaging_device_information_page_test.js",
-    "shimless_rma/reimaging_firmware_update_page_test.js",
-    "shimless_rma/reimaging_provisioning_page_test.js",
-    "shimless_rma/repair_component_chip_test.js",
-    "shimless_rma/shimless_3p_diag_test.js",
-    "shimless_rma/shimless_rma_app_test.js",
-    "shimless_rma/wrapup_finalize_page_test.js",
-    "shimless_rma/wrapup_repair_complete_page_test.js",
-    "shimless_rma/wrapup_restock_page_test.js",
-    "shimless_rma/wrapup_wait_for_manual_wp_enable_page_test.js",
     "sys_internals/all_tests.js",
     "sys_internals/api_test.js",
     "sys_internals/line_chart/data_series_test.js",
@@ -231,6 +254,16 @@ ts_library("build_ts") {
     "sys_internals/page_switch_test.js",
     "sys_internals/page_unit_test.js",
     "sys_internals/test_util.js",
+    "traffic_counters/traffic_counters_test.ts",
+  ]
+
+  definitions = [
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+    "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
 
   path_mappings = [
@@ -250,11 +283,12 @@ ts_library("build_ts") {
 
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cellular_setup:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/chromeos/internet_config_dialog:build_ts",
     "//chrome/browser/resources/chromeos/internet_detail_dialog:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -297,6 +331,14 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
 
   deps = [ ":build_ts" ]
+
+  # Add local test files.
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "multidevice_setup/integration_test.js",
+    "multidevice_setup/setup_succeeded_page_test.js",
+    "multidevice_setup/start_setup_page_test.js",
+  ]
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])

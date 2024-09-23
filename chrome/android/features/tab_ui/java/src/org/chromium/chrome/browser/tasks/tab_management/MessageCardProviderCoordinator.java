@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +26,15 @@ public class MessageCardProviderCoordinator {
 
     MessageCardProviderCoordinator(
             Context context,
-            Supplier<Boolean> isIncognitoSupplier,
+            Supplier<Profile> profileSupplier,
             MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mMediator =
-                new MessageCardProviderMediator(
-                        context, isIncognitoSupplier, uiDismissActionProvider);
+                new MessageCardProviderMediator(context, profileSupplier, uiDismissActionProvider);
     }
 
     /**
-     * Subscribes to a {@link MessageService} to get any message changes. @see
-     * MessageObserver.
+     * Subscribes to a {@link MessageService} to get any message changes. @see MessageObserver.
+     *
      * @param service The {@link MessageService} to subscribe.
      */
     public void subscribeMessageService(MessageService service) {

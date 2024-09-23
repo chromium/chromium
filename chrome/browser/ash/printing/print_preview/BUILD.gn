@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("print_preview") {
+  sources = [
+    "print_preview_dialog_controller_cros.cc",
+    "print_preview_dialog_controller_cros.h",
+    "print_preview_webcontents_adapter_ash.cc",
+    "print_preview_webcontents_adapter_ash.h",
+  ]
+
+  deps = [ "//components/device_event_log" ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/print_preview_cros",
+    "//chromeos/crosapi/mojom",
+    "//components/printing/common:mojo_interfaces",
+    "//mojo/public/cpp/bindings",
+
+    # TODO(crbug.com/354110515): Use targets having headers included from
+    # chrome/browser/ash/printing/print_preview/print_preview_dialog_controller_cros.h
+    # instead after fixing cyclic dependency.
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "print_preview_dialog_controller_cros_unittest.cc" ]
+
+  deps = [
+    ":print_preview",
+    "//chrome/browser/ui/webui/ash/print_preview_cros",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/views:test_support",
+  ]
+}

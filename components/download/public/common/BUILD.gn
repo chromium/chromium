@@ -26,6 +26,7 @@ component("public") {
     "download_destination_observer.h",
     "download_features.cc",
     "download_features.h",
+    "download_file.cc",
     "download_file.h",
     "download_file_factory.h",
     "download_file_impl.h",
@@ -38,6 +39,7 @@ component("public") {
     "download_item_factory.h",
     "download_item_impl.h",
     "download_item_impl_delegate.h",
+    "download_item_rename_handler.h",
     "download_job.h",
     "download_job_factory.h",
     "download_path_reservation_tracker.h",
@@ -55,7 +57,6 @@ component("public") {
     "download_ukm_helper.h",
     "download_url_parameters.cc",
     "download_url_parameters.h",
-    "download_utils.cc",
     "download_utils.h",
     "in_progress_download_manager.h",
     "input_stream.cc",
@@ -82,8 +83,10 @@ component("public") {
     "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
+    "//components/keyed_service/core",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
   ]
@@ -97,7 +100,6 @@ component("public") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
-    "//storage/browser",
     "//ui/base",
   ]
 

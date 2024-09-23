@@ -1,0 +1,9 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that should be passed to html_to_wrapper().
+file_suggestion_v2_web_component_files =
+    [ "modules/v2/file_suggestion/module.ts" ]
+
+file_suggestion_v2_css_files = [ "modules/v2/file_suggestion/module.css" ]

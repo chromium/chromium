@@ -1,0 +1,78 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("psm") {
+  sources = [
+    "construct_rlwe_id.cc",
+    "construct_rlwe_id.h",
+    "fake_rlwe_dmserver_client.cc",
+    "fake_rlwe_dmserver_client.h",
+    "rlwe_dmserver_client.h",
+    "rlwe_dmserver_client_impl.cc",
+    "rlwe_dmserver_client_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto:",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "rlwe_test_support.cc",
+    "rlwe_test_support.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/proto:",
+    "//components/policy/test_support",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "construct_rlwe_id_unittest.cc",
+    "rlwe_dmserver_client_impl_unittest.cc",
+    "rlwe_test_support_unittest.cc",
+  ]
+
+  deps = [
+    ":psm",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}

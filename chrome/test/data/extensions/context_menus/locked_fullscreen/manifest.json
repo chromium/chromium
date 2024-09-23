@@ -1,0 +1,12 @@
+{
+  "name": "Context Menus Test Extension",
+  "description": "Tests context menu enabled state in locked fullscreen",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": [
+    "contextMenus"
+  ],
+  "background": {
+    "service_worker": "test.js"
+  }
+}

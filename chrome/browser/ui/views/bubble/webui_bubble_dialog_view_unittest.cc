@@ -13,15 +13,24 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
 class TestWebUIContentsWrapper : public WebUIContentsWrapper {
  public:
-  explicit TestWebUIContentsWrapper(Profile* profile)
-      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
+  explicit TestWebUIContentsWrapper(Profile* profile,
+                                    bool supports_draggable_regions = false)
+      : WebUIContentsWrapper(GURL(""),
+                             profile,
+                             0,
+                             true,
+                             true,
+                             supports_draggable_regions,
+                             "Test") {}
   void ReloadWebContents() override {}
 
   base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
@@ -36,7 +45,8 @@ class TestWebUIContentsWrapper : public WebUIContentsWrapper {
 namespace views {
 namespace test {
 
-class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
+class WebUIBubbleDialogViewTest : public ChromeViewsTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   WebUIBubbleDialogViewTest() = default;
   WebUIBubbleDialogViewTest(const WebUIBubbleDialogViewTest&) = delete;
@@ -49,11 +59,12 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
 
-    anchor_widget_ = std::make_unique<Widget>();
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-    anchor_widget_->Init(std::move(params));
-    contents_wrapper_ =
-        std::make_unique<TestWebUIContentsWrapper>(profile_.get());
+    anchor_widget_ =
+        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         Widget::InitParams::TYPE_WINDOW);
+    anchor_widget_->Show();
+    contents_wrapper_ = std::make_unique<TestWebUIContentsWrapper>(
+        profile_.get(), /*supports_draggable_regions=*/GetParam());
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
         anchor_widget_->GetContentsView(), contents_wrapper_->GetWeakPtr());
@@ -84,7 +95,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
   raw_ptr<WebUIBubbleDialogView, DanglingUntriaged> bubble_view_ = nullptr;
 };
 
-TEST_F(WebUIBubbleDialogViewTest, BubbleRespondsToWebViewPreferredSizeChanges) {
+TEST_P(WebUIBubbleDialogViewTest, BubbleRespondsToWebViewPreferredSizeChanges) {
   constexpr gfx::Size web_view_initial_size(100, 100);
   bubble_dialog_view()->ResizeDueToAutoResize(nullptr, web_view_initial_size);
   const gfx::Size widget_initial_size =
@@ -107,7 +118,7 @@ TEST_F(WebUIBubbleDialogViewTest, BubbleRespondsToWebViewPreferredSizeChanges) {
   EXPECT_GE(widget_final_size.height(), web_view_final_size.height());
 }
 
-TEST_F(WebUIBubbleDialogViewTest, ClearContentsWrapper) {
+TEST_P(WebUIBubbleDialogViewTest, ClearContentsWrapper) {
   EXPECT_NE(nullptr, contents_wrapper());
   EXPECT_NE(nullptr, web_view()->web_contents());
   EXPECT_EQ(bubble_dialog_view(), contents_wrapper()->GetHost().get());
@@ -118,7 +129,7 @@ TEST_F(WebUIBubbleDialogViewTest, ClearContentsWrapper) {
   EXPECT_EQ(nullptr, web_view()->web_contents());
 }
 
-TEST_F(WebUIBubbleDialogViewTest, CloseUIClearsContentsWrapper) {
+TEST_P(WebUIBubbleDialogViewTest, CloseUIClearsContentsWrapper) {
   EXPECT_NE(nullptr, contents_wrapper());
   EXPECT_NE(nullptr, web_view()->web_contents());
   EXPECT_EQ(bubble_dialog_view(), contents_wrapper()->GetHost().get());
@@ -130,9 +141,11 @@ TEST_F(WebUIBubbleDialogViewTest, CloseUIClearsContentsWrapper) {
   EXPECT_EQ(nullptr, web_view()->web_contents());
 }
 
-TEST_F(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
+TEST_P(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
   UniqueWidgetPtr anchor_widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   anchor_widget->Init(std::move(params));
   auto profile = std::make_unique<TestingProfile>();
   auto contents_wrapper =
@@ -141,15 +154,19 @@ TEST_F(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
       anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+  auto* bubble_dialog_ptr = bubble_dialog.get();
+  BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
 
-  EXPECT_EQ(bubble_dialog->GetAnchorRect(), anchor);
+  EXPECT_EQ(bubble_dialog_ptr->GetAnchorRect(), anchor);
 
   anchor_widget->CloseNow();
 }
 
-TEST_F(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
+TEST_P(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
   UniqueWidgetPtr anchor_widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params =
+      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   anchor_widget->Init(std::move(params));
   auto profile = std::make_unique<TestingProfile>();
   auto contents_wrapper =
@@ -161,6 +178,68 @@ TEST_F(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
 
   contents_wrapper.reset();
 }
+
+TEST_P(WebUIBubbleDialogViewTest, DraggableRegionIsReflectedInHitTest) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "Only applicable to draggable bubbles, skipping.";
+  }
+
+  // Create the WebUI bubble with an appropriate size.
+  bubble_dialog_view()->ResizeDueToAutoResize(nullptr, {400, 400});
+
+  // Perform a hittest with no draggable regions set.
+  EXPECT_EQ(HTCLIENT, bubble_widget()->GetNonClientComponent({50, 50}));
+
+  // Set the draggable region and assert the draggable region is reported as
+  // part of the non client area.
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  auto region_rect = blink::mojom::DraggableRegion::New();
+  region_rect->bounds = {10, 10, 100, 100};
+  region_rect->draggable = true;
+  regions.push_back(std::move(region_rect));
+  contents_wrapper()->DraggableRegionsChanged(
+      regions, contents_wrapper()->web_contents());
+  EXPECT_EQ(HTCAPTION, bubble_widget()->GetNonClientComponent({50, 50}));
+}
+
+TEST_P(WebUIBubbleDialogViewTest, DraggableBubbleRetainsBoundsWhenVisible) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "Only applicable to draggable bubbles, skipping.";
+  }
+
+  // Resize the bubble. The dialog will initially be positioned relative to the
+  // anchor.
+  EXPECT_FALSE(bubble_widget()->IsVisible());
+  bubble_dialog_view()->ResizeDueToAutoResize(nullptr, {400, 400});
+  const gfx::Rect initial_bounds = bubble_widget()->GetWindowBoundsInScreen();
+
+  // Show the bubble and reposition the bubble on screen, it should translate
+  // correctly.
+  bubble_widget()->Show();
+  EXPECT_TRUE(bubble_widget()->IsVisible());
+  constexpr gfx::Vector2d kMoveVector = {100, 100};
+  bubble_widget()->SetBounds(initial_bounds + kMoveVector);
+  const gfx::Rect new_bounds_pre_resize =
+      bubble_widget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(initial_bounds + kMoveVector, new_bounds_pre_resize);
+
+  // Update the bubble size. The bubble's size should update but it should
+  // remain at its new position.
+  bubble_dialog_view()->ResizeDueToAutoResize(nullptr, {500, 500});
+  const gfx::Rect new_bounds_post_resize =
+      bubble_widget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(new_bounds_pre_resize.origin(), new_bounds_post_resize.origin());
+  EXPECT_NE(initial_bounds.size(), new_bounds_post_resize.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUIBubbleDialogViewTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<
+                             WebUIBubbleDialogViewTest::ParamType>& info) {
+                           return info.param ? "DraggableRegionsEnabled"
+                                             : "DraggableRegionsDisabled";
+                         });
 
 }  // namespace test
 }  // namespace views

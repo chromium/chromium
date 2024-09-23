@@ -54,27 +54,27 @@ class I420FrameAdapter : public webrtc::I420BufferInterface {
   int height() const override { return frame_->visible_rect().height(); }
 
   const uint8_t* DataY() const override {
-    return frame_->visible_data(media::VideoFrame::kYPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kY);
   }
 
   const uint8_t* DataU() const override {
-    return frame_->visible_data(media::VideoFrame::kUPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kU);
   }
 
   const uint8_t* DataV() const override {
-    return frame_->visible_data(media::VideoFrame::kVPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kV);
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::kYPlane);
+    return frame_->stride(media::VideoFrame::Plane::kY);
   }
 
   int StrideU() const override {
-    return frame_->stride(media::VideoFrame::kUPlane);
+    return frame_->stride(media::VideoFrame::Plane::kU);
   }
 
   int StrideV() const override {
-    return frame_->stride(media::VideoFrame::kVPlane);
+    return frame_->stride(media::VideoFrame::Plane::kV);
   }
 
  protected:
@@ -93,35 +93,35 @@ class I420AFrameAdapter : public webrtc::I420ABufferInterface {
   int height() const override { return frame_->visible_rect().height(); }
 
   const uint8_t* DataY() const override {
-    return frame_->visible_data(media::VideoFrame::kYPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kY);
   }
 
   const uint8_t* DataU() const override {
-    return frame_->visible_data(media::VideoFrame::kUPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kU);
   }
 
   const uint8_t* DataV() const override {
-    return frame_->visible_data(media::VideoFrame::kVPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kV);
   }
 
   const uint8_t* DataA() const override {
-    return frame_->visible_data(media::VideoFrame::kAPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kA);
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::kYPlane);
+    return frame_->stride(media::VideoFrame::Plane::kY);
   }
 
   int StrideU() const override {
-    return frame_->stride(media::VideoFrame::kUPlane);
+    return frame_->stride(media::VideoFrame::Plane::kU);
   }
 
   int StrideV() const override {
-    return frame_->stride(media::VideoFrame::kVPlane);
+    return frame_->stride(media::VideoFrame::Plane::kV);
   }
 
   int StrideA() const override {
-    return frame_->stride(media::VideoFrame::kAPlane);
+    return frame_->stride(media::VideoFrame::Plane::kA);
   }
 
  protected:
@@ -140,19 +140,19 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
   int height() const override { return frame_->visible_rect().height(); }
 
   const uint8_t* DataY() const override {
-    return frame_->visible_data(media::VideoFrame::kYPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kY);
   }
 
   const uint8_t* DataUV() const override {
-    return frame_->visible_data(media::VideoFrame::kUVPlane);
+    return frame_->visible_data(media::VideoFrame::Plane::kUV);
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::kYPlane);
+    return frame_->stride(media::VideoFrame::Plane::kY);
   }
 
   int StrideUV() const override {
-    return frame_->stride(media::VideoFrame::kUVPlane);
+    return frame_->stride(media::VideoFrame::Plane::kUV);
   }
 
   rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
@@ -183,7 +183,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
       return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
           new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -445,7 +445,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
   if (!video_frame) {
@@ -454,7 +454,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
   // The bind ensures that we keep a reference to the underlying buffer.
   video_frame->AddDestructionObserver(
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          [](const scoped_refptr<rtc::RefCountInterface>&) {},
+          [](const scoped_refptr<webrtc::RefCountInterface>&) {},
           scoped_refptr<webrtc::VideoFrameBuffer>(buffer.get()))));
   return video_frame;
 }

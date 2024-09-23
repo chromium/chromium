@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/demuxer.h"
+#include "net/storage_access_api/status.h"
 
 namespace media {
 
@@ -18,19 +19,19 @@ MediaUrlDemuxer::MediaUrlDemuxer(
     const GURL& media_url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    bool has_storage_access,
+    net::StorageAccessApiStatus storage_access_api_status,
     bool allow_credentials,
     bool is_hls)
-    : params_{media_url,          site_for_cookies,  top_frame_origin,
-              has_storage_access, allow_credentials, is_hls},
+    : params_{media_url,         site_for_cookies,
+              top_frame_origin,  storage_access_api_status,
+              allow_credentials, is_hls},
       task_runner_(task_runner) {}
 
 MediaUrlDemuxer::~MediaUrlDemuxer() = default;
 
 // Should never be called since MediaResource::Type is URL.
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-MediaUrlDemuxer::GetAllStreams() {
-  NOTREACHED_NORETURN();
+std::vector<DemuxerStream*> MediaUrlDemuxer::GetAllStreams() {
+  NOTREACHED();
 }
 
 const MediaUrlParams& MediaUrlDemuxer::GetMediaUrlParams() const {
@@ -57,7 +58,7 @@ void MediaUrlDemuxer::ForwardDurationChangeToDemuxerHost(
 }
 
 void MediaUrlDemuxer::SetHeaders(
-    const base::flat_map<std::string, std::string>& headers) {
+    base::flat_map<std::string, std::string> headers) {
   params_.headers = std::move(headers);
 }
 
@@ -110,9 +111,8 @@ void MediaUrlDemuxer::OnEnabledAudioTracksChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  // TODO(tmathmeyer): potentially support track changes for this renderer.
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::AUDIO, streams);
+  std::move(change_completed_cb).Run(streams);
   DLOG(WARNING) << "Track changes are not supported.";
 }
 
@@ -120,9 +120,8 @@ void MediaUrlDemuxer::OnSelectedVideoTrackChanged(
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  // TODO(tmathmeyer): potentially support track changes for this renderer.
   std::vector<DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(DemuxerStream::VIDEO, streams);
+  std::move(change_completed_cb).Run(streams);
   DLOG(WARNING) << "Track changes are not supported.";
 }
 

@@ -1,0 +1,9 @@
+CONSOLE ERROR: Uncaught (in promise) [object Object]
+Tests that we do not crash when rejecting a promise with a gin wrapper.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

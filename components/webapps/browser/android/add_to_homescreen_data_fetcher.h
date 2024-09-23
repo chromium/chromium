@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace favicon_base {
-struct FaviconRawBitmapResult;
-}
-
 namespace webapps {
 
 class InstallableManager;
@@ -37,9 +33,10 @@ class AddToHomescreenDataFetcher {
    public:
     // Called when the homescreen icon title (and possibly information from the
     // web manifest) is available.
-    virtual void OnUserTitleAvailable(const std::u16string& title,
-                                      const GURL& url,
-                                      bool is_webapk_compatible) = 0;
+    virtual void OnUserTitleAvailable(
+        const std::u16string& title,
+        const GURL& url,
+        AddToHomescreenParams::AppType app_type) = 0;
 
     // Called when all the data needed to prompt the user to add to home screen
     // is available.
@@ -92,12 +89,7 @@ class AddToHomescreenDataFetcher {
 
   // Called when installable check failed on any step and continue with the add
   // shortcut flow.
-  void PrepareToAddShortcut(bool fetch_favicon);
-
-  // Grabs the favicon for the current URL.
-  void FetchFavicon();
-  void OnFaviconFetched(
-      const favicon_base::FaviconRawBitmapResult& bitmap_result);
+  void PrepareToAddShortcut();
 
   // Creates an icon to display to the user to confirm the add to home screen
   // from the given |base_icon|. If |use_for_launcher| is true, the created icon

@@ -13,7 +13,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ExtensionsCodeSectionElement} from './code_section.js';
+import type {CodeSectionElement} from './code_section.js';
 import {getTemplate} from './load_error.html.js';
 
 export interface LoadErrorDelegate {
@@ -25,7 +25,7 @@ export interface LoadErrorDelegate {
 
 export interface ExtensionsLoadErrorElement {
   $: {
-    code: ExtensionsCodeSectionElement,
+    code: CodeSectionElement,
     dialog: CrDialogElement,
   };
 }

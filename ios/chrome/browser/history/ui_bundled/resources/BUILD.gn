@@ -1,0 +1,15 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/history_empty.imageset/Contents.json",
+    "Assets.xcassets/history_empty.imageset/history_empty.pdf",
+    "Assets.xcassets/history_empty.imageset/history_empty_dark.pdf",
+  ]
+}

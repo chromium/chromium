@@ -48,7 +48,7 @@ void TextFragmentAnchorTestBase::RunAsyncMatchingTasks() {
   if (enable_virtual_time_) {
     test::RunPendingTasks();
   } else {
-    task_environment()->FastForwardUntilNoTasksRemain();
+    task_environment().FastForwardUntilNoTasksRemain();
   }
 }
 
@@ -78,7 +78,7 @@ void TextFragmentAnchorTestBase::RunUntilTextFragmentFinalization() {
     if (enable_virtual_time_) {
       test::RunDelayedTasks(TextFragmentAnchor::PostLoadTaskTimeout());
     } else {
-      task_environment()->FastForwardBy(
+      task_environment().FastForwardBy(
           TextFragmentAnchor::PostLoadTaskTimeout());
     }
     // PostLoadTask schedules a new frame to perform the final text search.

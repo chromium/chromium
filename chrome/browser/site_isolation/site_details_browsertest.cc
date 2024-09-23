@@ -28,7 +28,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/metrics_service.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -411,8 +410,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
   // four processes already in the BrowsingInstance.
   GURL dcbae_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?d(c(b(a(e))))");
-  ui_test_utils::UrlLoadObserver load_complete(
-      dcbae_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver load_complete(dcbae_url);
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
   ASSERT_TRUE(
       content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -440,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
                   ElementsAre(Bucket(12, 1), Bucket(29, 1), Bucket(68, 1))));
 }
 
-// TODO(crbug.com/671891): This test is flaky.
+// TODO(crbug.com/40496888): This test is flaky.
 IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
   // We start on "about:blank", which should be credited with a process in this
   // case.
@@ -709,8 +707,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest,
   // BrowsingInstance.
   GURL dcbae_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?d(c(b(j(k))))");
-  ui_test_utils::UrlLoadObserver load_complete(
-      dcbae_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver load_complete(dcbae_url);
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_TRUE(
       content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -848,7 +845,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSiteDetailsBrowserTest,
 
   // Load a page in the prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   EXPECT_FALSE(host_observer.was_activated());
 

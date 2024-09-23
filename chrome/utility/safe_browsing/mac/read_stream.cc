@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -16,18 +17,18 @@
 namespace safe_browsing {
 namespace dmg {
 
-bool ReadStream::ReadExact(uint8_t* data, size_t size) {
+bool ReadStream::ReadExact(base::span<uint8_t> buffer) {
   size_t bytes_read = 0;
-  return Read(data, size, &bytes_read) && bytes_read == size;
+  return Read(buffer, &bytes_read) && bytes_read == buffer.size();
 }
 
 FileReadStream::FileReadStream(int fd) : fd_(fd) {}
 
 FileReadStream::~FileReadStream() {}
 
-bool FileReadStream::Read(uint8_t* data, size_t size, size_t* bytes_read) {
+bool FileReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   *bytes_read = 0;
-  ssize_t signed_bytes_read = HANDLE_EINTR(read(fd_, data, size));
+  ssize_t signed_bytes_read = HANDLE_EINTR(read(fd_, buf.data(), buf.size()));
   if (signed_bytes_read < 0)
     return false;
   *bytes_read = signed_bytes_read;
@@ -38,23 +39,21 @@ off_t FileReadStream::Seek(off_t offset, int whence) {
   return lseek(fd_, offset, whence);
 }
 
-MemoryReadStream::MemoryReadStream(const uint8_t* data, size_t size)
-    : data_(data), size_(size), offset_(0) {}
+MemoryReadStream::MemoryReadStream(base::span<const uint8_t> byte_buf)
+    : byte_buf_(byte_buf), offset_(0) {}
 
 MemoryReadStream::~MemoryReadStream() {}
 
-bool MemoryReadStream::Read(uint8_t* data, size_t size, size_t* bytes_read) {
+bool MemoryReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   *bytes_read = 0;
 
-  if (data_ == nullptr)
-    return false;
-
-  size_t bytes_remaining = size_ - offset_;
-  if (bytes_remaining == 0)
+  size_t bytes_remaining = byte_buf_.size() - offset_;
+  if (bytes_remaining == 0) {
     return true;
+  }
 
-  *bytes_read = std::min(size, bytes_remaining);
-  memcpy(data, data_ + offset_, *bytes_read);
+  *bytes_read = std::min(buf.size(), bytes_remaining);
+  buf.first(*bytes_read).copy_from(byte_buf_.subspan(offset_, *bytes_read));
   offset_ += *bytes_read;
   return true;
 }
@@ -68,40 +67,42 @@ off_t MemoryReadStream::Seek(off_t offset, int whence) {
       offset_ += offset;
       break;
     case SEEK_END:
-      offset_ = size_ + offset;
+      offset_ = byte_buf_.size() + offset;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return -1;
   }
-  if (static_cast<size_t>(offset_) >= size_)
-    offset_ = size_;
+  if (static_cast<size_t>(offset_) >= byte_buf_.size()) {
+    offset_ = byte_buf_.size();
+  }
   return offset_;
 }
 
-bool ReadEntireStream(ReadStream* stream, std::vector<uint8_t>* data) {
-  DCHECK(data->empty());
-  uint8_t buffer[1024];
+std::optional<std::vector<uint8_t>> ReadEntireStream(ReadStream& stream) {
+  std::vector<uint8_t> data;
+  std::array<uint8_t, 1024> buffer;
   size_t bytes_read = 0;
   do {
-    if (!stream->Read(buffer, sizeof(buffer), &bytes_read))
-      return false;
+    if (!stream.Read(buffer, &bytes_read)) {
+      return std::nullopt;
+    }
 
-    data->insert(data->end(), buffer, &buffer[bytes_read]);
+    data.insert(data.end(), buffer.begin(), buffer.begin() + bytes_read);
   } while (bytes_read != 0);
 
-  return true;
+  return data;
 }
 
-bool CopyStreamToFile(ReadStream* source, base::File& dest) {
+bool CopyStreamToFile(ReadStream& source, base::File& dest) {
   dest.Seek(base::File::Whence::FROM_BEGIN, 0);
-  uint8_t buffer[1024];
+  std::array<uint8_t, 1024> buffer;
   size_t bytes_read = 0;
   do {
-    if (!source->Read(buffer, sizeof(buffer), &bytes_read)) {
+    if (!source.Read(buffer, &bytes_read)) {
       return false;
     }
-    if (!dest.WriteAtCurrentPosAndCheck(base::make_span(buffer, bytes_read))) {
+    if (!dest.WriteAtCurrentPosAndCheck(base::span(buffer).first(bytes_read))) {
       return false;
     }
   } while (bytes_read > 0);

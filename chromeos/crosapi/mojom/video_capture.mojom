@@ -62,7 +62,7 @@ union VideoBufferHandle {
 
   GpuMemoryBufferHandle gpu_memory_buffer_handle@1;
 
-  // TODO(https://crbug.com/1261313): Until unions truly support versioning, we
+  // TODO(crbug.com/40202148): Until unions truly support versioning, we
   // don't have a way to check this/it ends up ignored. Currently this is only
   // set by code in ash to be read by lacros, which is strictly guaranteed to be
   // flowing from an older version to a newer version, so this is fine. It can
@@ -141,7 +141,7 @@ interface VideoFrameHandler {
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
 
   // Deprecated in favor of OnFrameReadyInBuffer() without `scaled_buffers`.
-  // TODO(https://crbug.com/1496825): Delete when safe to do so.
+  // TODO(crbug.com/40938620): Delete when safe to do so.
   DEPRECATED_OnFrameReadyInBuffer@1(ReadyFrameInBuffer buffer,
                                     array<ReadyFrameInBuffer> scaled_buffers);
   [MinVersion=13]

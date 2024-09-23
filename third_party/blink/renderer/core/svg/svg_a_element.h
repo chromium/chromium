@@ -37,6 +37,9 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   explicit SVGAElement(Document&);
 
+  Element* interestTargetElement() override;
+  AtomicString interestAction() const override;
+
   void Trace(Visitor*) const override;
 
  private:
@@ -51,8 +54,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   bool IsLiveLink() const override { return IsLink(); }
 
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const final;
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =
                                UpdateBehavior::kStyleAndLayout) const override;

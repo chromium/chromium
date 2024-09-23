@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/test/launcher/test_launcher.h"
 
 #include <stdio.h>
@@ -42,7 +47,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
@@ -79,9 +84,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/strings/string_util_win.h"
-
 #include <windows.h>
+
+#include "base/strings/string_util_win.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef GetCommandLine
@@ -689,6 +694,11 @@ ChildProcessResults DoLaunchChildTestProcess(
 
   LaunchOptions options;
 
+#if BUILDFLAG(IS_IOS)
+  // We need to allow XPC to start extension processes so magically we set this
+  // flag to 1.
+  options.environment.emplace("XPC_FLAGS", "1");
+#endif
   // Tell the child process to use its designated temporary directory.
   if (!process_temp_dir.empty())
     SetTemporaryDirectory(process_temp_dir, &options.environment);
@@ -952,8 +962,7 @@ int CountItemsInDirectory(const FilePath& dir) {
 
 // Truncates a snippet in the middle to the given byte limit. byte_limit should
 // be at least 30.
-std::string TruncateSnippet(const base::StringPiece snippet,
-                            size_t byte_limit) {
+std::string TruncateSnippet(const std::string_view snippet, size_t byte_limit) {
   if (snippet.length() <= byte_limit) {
     return std::string(snippet);
   }
@@ -1355,7 +1364,7 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
     print_snippet = false;
   }
   if (print_snippet) {
-    std::vector<base::StringPiece> snippet_lines =
+    std::vector<std::string_view> snippet_lines =
         SplitStringPiece(result.output_snippet, "\n", base::KEEP_WHITESPACE,
                          base::SPLIT_WANT_ALL);
     if (snippet_lines.size() > kOutputSnippetLinesLimit) {
@@ -2010,8 +2019,8 @@ std::vector<std::string> TestLauncher::CollectTests() {
   // To support RTS(regression test selection), which may have 100,000 or
   // more exact gtest filter, we first split filter into exact filter
   // and wildcards filter, then exact filter can match faster.
-  std::vector<StringPiece> positive_wildcards_filter;
-  std::unordered_set<StringPiece> positive_exact_filter;
+  std::vector<std::string_view> positive_wildcards_filter;
+  std::unordered_set<std::string_view> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
   std::unordered_set<std::string> enforced_positive_tests;
   for (const std::string& filter : positive_test_filter_) {
@@ -2022,8 +2031,8 @@ std::vector<std::string> TestLauncher::CollectTests() {
     }
   }
 
-  std::vector<StringPiece> negative_wildcards_filter;
-  std::unordered_set<StringPiece> negative_exact_filter;
+  std::vector<std::string_view> negative_wildcards_filter;
+  std::unordered_set<std::string_view> negative_exact_filter;
   negative_exact_filter.reserve(negative_test_filter_.size());
   for (const std::string& filter : negative_test_filter_) {
     if (filter.find('*') != std::string::npos) {
@@ -2048,7 +2057,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
         enforced_positive_tests.insert(prefix_stripped_name);
       }
       if (!found) {
-        for (const StringPiece& filter : positive_wildcards_filter) {
+        for (std::string_view filter : positive_wildcards_filter) {
           if (MatchPattern(test_name, filter) ||
               MatchPattern(prefix_stripped_name, filter)) {
             found = true;
@@ -2068,7 +2077,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
     }
 
     bool excluded = false;
-    for (const StringPiece& filter : negative_wildcards_filter) {
+    for (std::string_view filter : negative_wildcards_filter) {
       if (MatchPattern(test_name, filter) ||
           MatchPattern(prefix_stripped_name, filter)) {
         excluded = true;
@@ -2376,7 +2385,7 @@ std::string GetTestOutputSnippet(const TestResult& result,
   return snippet;
 }
 
-std::string TruncateSnippetFocused(const base::StringPiece snippet,
+std::string TruncateSnippetFocused(const std::string_view snippet,
                                    size_t byte_limit) {
   // Find the start of anything that looks like a fatal log message.
   // We want to preferentially preserve these from truncation as we

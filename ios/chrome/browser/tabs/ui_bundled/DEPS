@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/bubble/ui_bundled",
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/ui/tab_switcher",
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/web_state_list/model",
+]

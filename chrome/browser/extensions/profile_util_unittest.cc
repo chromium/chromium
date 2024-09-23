@@ -48,7 +48,7 @@ TEST_F(ProfileUtilUnitTest, ProfileCannotUseNonComponentExtensions_GuestUser) {
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
 }
 
-// TODO(crbug.com/1383740): Test a signin, lockscreen, or lockscreen app
+// TODO(crbug.com/40878021): Test a signin, lockscreen, or lockscreen app
 // profile. `FakeChromeUserManager` doesn't have one currently. Worst case could
 // mock the `Profile` path to do this.
 TEST_F(ProfileUtilUnitTest,
@@ -66,14 +66,6 @@ TEST_F(ProfileUtilUnitTest,
        ProfileCannotUseNonComponentExtensions_WebKioskAppUser) {
   ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
       GetFakeUserManager()->AddWebKioskAppUser(account_id_), account_id_));
-
-  EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
-}
-
-TEST_F(ProfileUtilUnitTest,
-       ProfileCannotUseNonComponentExtensions_ArcKioskAppUser) {
-  ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
-      GetFakeUserManager()->AddArcKioskAppUser(account_id_), account_id_));
 
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(testing_profile()));
 }

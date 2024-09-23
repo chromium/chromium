@@ -15,7 +15,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
@@ -26,11 +25,13 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
@@ -192,12 +193,13 @@ class PDFExtensionPrintingTest
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
   }
   bool UseOopif() const override { return std::get<1>(GetParam()); }
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
         PDFExtensionTestBase::GetEnabledFeatures();
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
-      enabled.push_back(printing::features::kEnableOopPrintDrivers);
+      enabled.push_back({printing::features::kEnableOopPrintDrivers, {}});
     }
 #endif
     return enabled;
@@ -323,49 +325,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintCommand) {
   print_observer.WaitUntilPreviewIsReady();
 }
 
-// TODO(crbug.com/1488085): Test is flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
-  DISABLED_ContextMenuPrintCommandExtensionMainFrame
-#else
-#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
-  ContextMenuPrintCommandExtensionMainFrame
-#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
-                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
+                       ContextMenuPrintCommandExtensionMainFrame) {
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
-  ASSERT_TRUE(extension_host);
-
-  // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(extension_host);
-
-  // Executes the print command as soon as the context menu is shown.
-  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
-
-  printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
-  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
-  print_observer.WaitUntilPreviewIsReady();
-  menu_interceptor.Wait();
-}
-
-// TODO(crbug.com/1344508): Test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(
-    PDFExtensionPrintingTest,
-    DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-
-  content::WebContents* contents = GetActiveWebContents();
-  content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -380,23 +343,43 @@ IN_PROC_BROWSER_TEST_P(
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   SimulateMouseClickAt(extension_host, embedder_web_contents,
                        blink::WebInputEvent::kNoModifiers,
-                       blink::WebMouseEvent::Button::kLeft, {1, 1});
-  extension_host->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
+  print_observer.WaitUntilPreviewIsReady();
+  menu_interceptor.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
+                       ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
+  ASSERT_TRUE(extension_host);
+
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(extension_host);
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
+  SimulateMouseClickAt(extension_host, embedder_web_contents,
+                       blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
   print_observer.WaitUntilPreviewIsReady();
   menu_interceptor.Wait();
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        ContextMenuPrintCommandPluginFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -416,17 +399,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   menu_interceptor.Wait();
 }
 
-// TODO(crbug.com/1330032): Fix flakiness.
+// TODO(crbug.com/40842943): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -447,10 +429,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, PrintButton) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(GetActiveWebContents());
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
 
   printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
@@ -487,9 +467,14 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   }
 };
 
-// TODO(https://crbug.com/1488085): Test is flaky.
-// Note that MAYBE_ContextMenuPrintCommandExtensionMainFrame is already
-// defined above.
+// TODO(crbug.com/40283511): Test is flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  DISABLED_ContextMenuPrintCommandExtensionMainFrame
+#else
+#define MAYBE_ContextMenuPrintCommandExtensionMainFrame \
+  ContextMenuPrintCommandExtensionMainFrame
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
                        MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -498,14 +483,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
       .WillOnce(base::test::RunOnceCallback<1>());
 #endif
 
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-
-  content::WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
-      pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
-  content::RenderFrameHost* plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(contents);
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(extension_host);
+
+  content::RenderFrameHost* plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
   ASSERT_TRUE(plugin_frame);
 
   content::WebContents* embedder_web_contents = GetEmbedderWebContents();
@@ -519,8 +502,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
 
   SetupPrintViewManagerForJobMonitoring(plugin_frame);
   SetInputFocusOnPlugin(extension_host, embedder_web_contents);
-  plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  SimulateMouseClickAt(plugin_frame, embedder_web_contents,
+                       blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kRight, {1, 1});
   menu_interceptor.Wait();
   WaitForPrintJobDestruction();
 }

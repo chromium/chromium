@@ -53,13 +53,10 @@ namespace ash::personalization_app {
 
 namespace {
 
-// Width and height of the preview images without Jelly.
-constexpr int kBannerWidthPx = 160;
-constexpr int kBannerHeightPx = 160;
-// When Jelly is enabled, the max possible preview image container is 460x290.
+// The max possible preview image container is 460x290.
 // Double the fetched image W/H to stay sharp when scaled down.
-constexpr int kJellyBannerWidthPx = 920;
-constexpr int kJellyBannerHeightPx = 580;
+constexpr int kBannerWidthPx = 920;
+constexpr int kBannerHeightPx = 580;
 
 constexpr int kMaxRetries = 3;
 
@@ -164,11 +161,21 @@ bool PersonalizationAppAmbientProviderImpl::
   }
 }
 
+bool PersonalizationAppAmbientProviderImpl::IsGeolocationUserModifiable() {
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
+  return pref_service->IsUserModifiablePreference(
+      prefs::kUserGeolocationAccessLevel);
+}
+
 void PersonalizationAppAmbientProviderImpl::
     NotifyGeolocationPermissionChanged() {
-  CHECK(ambient_observer_remote_.is_bound());
+  if (!ambient_observer_remote_.is_bound()) {
+    return;
+  }
+
   ambient_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
-      IsGeolocationEnabledForSystemServices());
+      IsGeolocationEnabledForSystemServices(), IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
@@ -190,9 +197,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   OnAmbientUiSettingsChanged();
 
   // Call it once to get the current ambient duration settings.
-  if (ash::features::IsScreenSaverDurationEnabled()) {
-    OnScreenSaverDurationChanged();
-  }
+  OnScreenSaverDurationChanged();
 
   ResetLocalSettings();
 }
@@ -455,16 +460,12 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   // Empty the WebUI store so it doesn't show the previously selected albums'
   // previews.
   OnPreviewsFetched(std::vector<GURL>());
-  if (features::IsPersonalizationJellyEnabled() ||
-      GetCurrentTopicSource() == mojom::TopicSource::kGooglePhotos ||
-      GetCurrentTopicSource() == mojom::TopicSource::kVideo) {
-    if (is_updating_backend_) {
-      // Once settings updated, fetch preview images.
-      needs_update_previews_ = true;
-    } else {
-      // Fetch preview images if settings have been updated.
-      FetchPreviewImages();
-    }
+  if (is_updating_backend_) {
+    // Once settings updated, fetch preview images.
+    needs_update_previews_ = true;
+  } else {
+    // Fetch preview images if settings have been updated.
+    FetchPreviewImages();
   }
 
   ambient_observer_remote_->OnTopicSourceChanged(GetCurrentTopicSource());
@@ -692,10 +693,7 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
     return;
   }
 
-  const gfx::Size image_size =
-      features::IsPersonalizationJellyEnabled()
-          ? gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx)
-          : gfx::Size(kBannerWidthPx, kBannerHeightPx);
+  const gfx::Size image_size = gfx::Size(kBannerWidthPx, kBannerHeightPx);
   ash::AmbientBackendController::Get()->FetchPreviewImages(
       image_size,
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
@@ -775,6 +773,11 @@ void PersonalizationAppAmbientProviderImpl::
     IsGeolocationEnabledForSystemServices(
         IsGeolocationEnabledForSystemServicesCallback callback) {
   std::move(callback).Run(IsGeolocationEnabledForSystemServices());
+}
+
+void PersonalizationAppAmbientProviderImpl::IsGeolocationUserModifiable(
+    IsGeolocationUserModifiableCallback callback) {
+  std::move(callback).Run(IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppAmbientProviderImpl::

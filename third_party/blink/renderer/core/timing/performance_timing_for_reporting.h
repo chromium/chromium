@@ -158,15 +158,16 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // available.
   std::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
+  // The name and startTime of the user timing mark.
+  std::optional<std::tuple<AtomicString, base::TimeDelta>>
+  CustomUserTimingMark() const;
+
   uint64_t ParseStart() const;
   uint64_t ParseStop() const;
   uint64_t ParseBlockedOnScriptLoadDuration() const;
   uint64_t ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
   uint64_t ParseBlockedOnScriptExecutionDuration() const;
   uint64_t ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
-
-  // The time of the first paint after a portal activation.
-  std::optional<base::TimeTicks> LastPortalActivatedPaint() const;
 
   // The start time of the prerender activation navigation.
   std::optional<base::TimeDelta> PrerenderActivationStart() const;

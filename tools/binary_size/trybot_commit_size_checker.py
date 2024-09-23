@@ -44,6 +44,8 @@ import models
 import native_disassembly
 
 _RESOURCE_SIZES_LOG = 'resource_sizes_log'
+_RESOURCE_SIZES_64_LOG = 'resource_sizes_64_log'
+_MAIN_LOG_NAMES = (_RESOURCE_SIZES_LOG, _RESOURCE_SIZES_64_LOG)
 _BASE_RESOURCE_SIZES_LOG = 'base_resource_sizes_log'
 _MUTABLE_CONSTANTS_LOG = 'mutable_contstants_log'
 _FOR_TESTING_LOG = 'for_test_log'
@@ -98,7 +100,7 @@ class _SizeDelta(collections.namedtuple(
 
 # See https://crbug.com/1426694
 def _MaxSizeIncrease(author, subject):
-  if 'AFDO' in subject:
+  if 'AFDO' in subject or 'PGO Profile' in subject:
     return 1024 * 1024
   if 'Update V8' in subject:
     return 100 * 1024
@@ -141,8 +143,8 @@ def _CreateMethodCountDelta(symbols, max_increase):
   symbols = symbols.WhereIsOnDemand(False)
   method_symbols = symbols.WhereInSection(models.SECTION_DEX_METHOD)
   method_lines, net_method_added = _SymbolDiffHelper('Methods', method_symbols)
-  class_symbols = symbols.WhereInSection(
-      models.SECTION_DEX).WhereNameMatches('#').Inverted()
+  class_symbols = symbols.WhereInSection(models.SECTION_DEX).Filter(
+      lambda s: not s.IsStringLiteral() and '#' not in s.name)
   class_lines, _ = _SymbolDiffHelper('Classes', class_symbols)
   lines = []
   if class_lines:
@@ -156,7 +158,8 @@ def _CreateMethodCountDelta(symbols, max_increase):
 
 
 def _CreateResourceSizesDelta(before_dir, after_dir, max_increase):
-  sizes_diff = diagnose_bloat.ResourceSizesDiff()
+  sizes_diff = diagnose_bloat.ResourceSizesDiff(
+      filename='resource_sizes_32.json')
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   return sizes_diff.Summary(), _SizeDelta('Normalized APK Size', 'bytes',
@@ -165,12 +168,24 @@ def _CreateResourceSizesDelta(before_dir, after_dir, max_increase):
 
 
 def _CreateBaseModuleResourceSizesDelta(before_dir, after_dir, max_increase):
-  sizes_diff = diagnose_bloat.ResourceSizesDiff(include_sections=['base'])
+  sizes_diff = diagnose_bloat.ResourceSizesDiff(
+      filename='resource_sizes_32.json', include_sections=['base'])
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   return sizes_diff.DetailedResults(), _SizeDelta(
       'Base Module Size', 'bytes', max_increase,
       sizes_diff.CombinedSizeChangeForSection('base'))
+
+
+def _CreateResourceSizes64Delta(before_dir, after_dir, max_increase):
+  sizes_diff = diagnose_bloat.ResourceSizesDiff(
+      filename='resource_sizes_64.json')
+  sizes_diff.ProduceDiff(before_dir, after_dir)
+
+  # Allow 4x growth of arm64 before blocking CLs.
+  return sizes_diff.Summary(), _SizeDelta('Normalized APK Size (arm64)',
+                                          'bytes', max_increase * 4,
+                                          sizes_diff.summary_stat.value)
 
 
 def _CreateSupersizeDiff(before_size_path, after_size_path, review_subject,
@@ -263,26 +278,25 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
 def _GenerateBinarySizePluginDetails(metrics):
   binary_size_listings = []
   for delta, log_name in metrics:
-    # Only show the base module delta if it is significant.
-    if (log_name == _BASE_RESOURCE_SIZES_LOG and delta.IsAllowable()
-        and not delta.IsLargeImprovement()):
-      continue
+    # Give more friendly names to Normalized APK Size metrics.
+    name = delta.name
+    if log_name == _RESOURCE_SIZES_LOG:
+      # The Gerrit plugin looks for this name to put it in the summary.
+      name = 'Android Binary Size'
+    elif log_name == _RESOURCE_SIZES_64_LOG:
+      name = 'Android Binary Size (arm64 high end) (TrichromeLibrary64.apk)'
     listing = {
-        'name': delta.name,
+        'name': name,
         'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
         'limit': '{} {}'.format(_FormatNumber(delta.expected), delta.units),
         'log_name': log_name,
         'allowed': delta.IsAllowable(),
         'large_improvement': delta.IsLargeImprovement(),
     }
-    if log_name == _RESOURCE_SIZES_LOG:
-      listing['name'] = 'Android Binary Size'
-      binary_size_listings.insert(0, listing)
-      continue
-    # The main 'binary size' delta is always shown even if unchanged.
-    if delta.actual == 0:
-      continue
-    binary_size_listings.append(listing)
+    # Always show the Normalized APK Size.
+    if log_name in _MAIN_LOG_NAMES or delta.actual != 0:
+      binary_size_listings.append(listing)
+  binary_size_listings.sort(key=lambda x: x['name'])
 
   binary_size_extras = [
       {
@@ -302,7 +316,7 @@ def _FormatNumber(number):
   return '{:+,}'.format(number)
 
 
-# TODO(https://crbug.com/1414410): If missing and file is x32y, return xy; else
+# TODO(crbug.com/40256106): If missing and file is x32y, return xy; else
 # return original filename. Basically allows comparing x_32 targets with x
 # targets built under 32bit target_cpu without failing the script due to
 # different file names. Remove once migration is complete.
@@ -430,6 +444,15 @@ def main():
   size_deltas.add(base_resource_sizes_delta)
   metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
 
+  config_64 = config.get('to_resource_sizes_py_64')
+  if config_64:
+    logging.info('Creating 64-bit sizes diff')
+    resource_sizes_64_lines, resource_sizes_64_delta = (
+        _CreateResourceSizes64Delta(args.before_dir, args.after_dir,
+                                    max_size_increase))
+    size_deltas.add(resource_sizes_64_delta)
+    metrics.add((resource_sizes_64_delta, _RESOURCE_SIZES_64_LOG))
+
   logging.info('Adding disassembly to dex symbols')
   dex_disassembly.AddDisassembly(delta_size_info, before_path_resolver,
                                  after_path_resolver)
@@ -465,7 +488,7 @@ To understand what those checks are and how to pass them, see:
   summary = '<br>' + checks_text.replace('\n', '<br>')
   links_json = [
       {
-          'name': 'Binary Size Details',
+          'name': 'Binary Size Details (arm32)',
           'lines': resource_sizes_lines + see_docs_lines,
           'log_name': _RESOURCE_SIZES_LOG,
       },
@@ -498,6 +521,14 @@ To understand what those checks are and how to pass them, see:
           'url': _HTML_REPORT_URL,
       },
   ]
+  if config_64:
+    links_json[2:2] = [
+        {
+            'name': 'Binary Size Details (arm64)',
+            'lines': resource_sizes_64_lines + see_docs_lines,
+            'log_name': _RESOURCE_SIZES_64_LOG,
+        },
+    ]
   # Remove empty diffs (Mutable Constants, Dex Method, ...).
   links_json = [o for o in links_json if o.get('lines') or o.get('url')]
 

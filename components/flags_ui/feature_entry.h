@@ -149,8 +149,7 @@ struct FeatureEntry {
     // get translated. The other parts here use ids for historical reasons and
     // can realistically also be moved to direct description_texts.
     const char* description_text;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope, #constexpr-var-initializer
+    // RAW_PTR_EXCLUSION: #global-scope
     RAW_PTR_EXCLUSION const FeatureParam* params;
     int num_params;
     // A variation id number in the format of
@@ -236,6 +235,10 @@ struct FeatureEntry {
     // This describes the options if type is MULTI_VALUE.
     base::span<const Choice> choices;
   };
+
+  // This describes the links to be rendered as <a> in the chrome://flags
+  // page.
+  base::span<const char* const> links;
 
   // Check whether internal |name| matches this FeatureEntry. Depending on the
   // type of entry, this compared it to either |internal_name| or the values

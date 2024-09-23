@@ -126,7 +126,7 @@ public class GlobalAppLocaleController {
         }
         // Because of an Android bug with {@link Context#createConfigurationContext} the deprecated
         // method {@link Resources#updateConfiguration} is used. (crbug.com/1075390#c20).
-        // TODO(crbug.com/1136096): Use #createConfigurationContext once that method is fixed.
+        // TODO(crbug.com/40152130): Use #createConfigurationContext once that method is fixed.
         resources.updateConfiguration(config, resources.getDisplayMetrics());
         // Update default locales so {@links LocaleList#getDefault} returns the correct value.
         LocaleUtils.setDefaultLocalesFromConfiguration(config);

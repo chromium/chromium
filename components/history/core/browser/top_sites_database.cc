@@ -105,49 +105,6 @@ void FixTopSitesTable(sql::Database& db) {
   }
 }
 
-// Recover the database to the extent possible, then fixup any broken
-// constraints.
-void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
-  // NOTE(shess): If the version changes, review this code.
-  static_assert(kVersionNumber == 5);
-
-  std::unique_ptr<sql::Recovery> recovery =
-      sql::Recovery::BeginRecoverDatabase(db, db_path);
-  if (!recovery) {
-    return;
-  }
-
-  // If the [meta] table does not exist, or the [version] key cannot be found,
-  // then the schema is indeterminate.  The only plausible approach would be to
-  // validate that the schema contains all of the tables and indices and columns
-  // expected, but that complexity may not be warranted, this case has only been
-  // seen for a few thousand database files.
-  int version = 0;
-  if (!recovery->SetupMeta() || !recovery->GetMetaVersionNumber(&version)) {
-    sql::Recovery::Unrecoverable(std::move(recovery));
-    return;
-  }
-
-  // In this case the next open will clear the database anyhow.
-  if (version <= kDeprecatedVersionNumber) {
-    sql::Recovery::Unrecoverable(std::move(recovery));
-    return;
-  }
-
-  // TODO(shess): Consider marking corrupt databases from the future
-  // Unrecoverable(), since this histogram value has never been seen.  OTOH,
-  // this may be too risky, because if future code was correlated with
-  // corruption then rollback would be a sensible response.
-  if (version > kVersionNumber) {
-    sql::Recovery::Rollback(std::move(recovery));
-    return;
-  }
-
-  FixTopSitesTable(*recovery->db());
-
-  std::ignore = sql::Recovery::Recovered(std::move(recovery));
-}
-
 }  // namespace
 
 void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
@@ -156,21 +113,9 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  // TODO(https://crbug.com/1513464): Simplify this code as soon as we're
-  // confident that we can remove sql::Recovery.
-  if (base::FeatureList::IsEnabled(
-          kTopSitesDatabaseUseBuiltInRecoveryIfSupported) &&
-      sql::BuiltInRecovery::ShouldAttemptRecovery(db_.get(), extended_error)) {
-    bool recovery_was_attempted = sql::BuiltInRecovery::RecoverIfPossible(
-        db_.get(), extended_error,
-        sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-        &kTopSitesDatabaseUseBuiltInRecoveryIfSupported);
-    if (!recovery_was_attempted) {
-      LOG(ERROR)
-          << "Recovery should have been attempted if the checks above passed.";
-      base::debug::DumpWithoutCrashing();
-      return;
-    }
+  if (sql::Recovery::RecoverIfPossible(
+          db_.get(), extended_error,
+          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 
@@ -189,31 +134,10 @@ void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
     // `FixTopSitesTable()` every time the database is opened, but in most cases
     // that would be a (possibly expensive) no-op.
     needs_fixing_up_ = true;
-
-    // Signal the test-expectation framework that the error was handled.
-    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
-    return;
   }
 
-  if (sql::Recovery::ShouldRecover(extended_error)) {
-    // Prevent reentrant calls.
-    db_->reset_error_callback();
-
-    // After this call, the `db` handle is poisoned so that future calls will
-    // return errors until the handle is re-opened.
-    RecoverAndFixup(db_.get(), db_path);
-
-    // The DLOG(FATAL) below is intended to draw immediate attention to errors
-    // in newly-written code.  Database corruption is generally a result of OS
-    // or hardware issues, not coding errors at the client level, so displaying
-    // the error would probably lead to confusion.  The ignored call signals the
-    // test-expectation framework that the error was handled.
-    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
-    return;
-  }
-
-  if (!sql::Database::IsExpectedSqliteError(extended_error))
-    DLOG(FATAL) << db_->GetErrorMessage();
+  // Signal the test-expectation framework that the error was handled.
+  std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
 }
 
 // static
@@ -301,9 +225,9 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 
   // Clear databases which are too old to process.
   DCHECK_LT(kDeprecatedVersionNumber, kVersionNumber);
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kVersionNumber)) {
+          kVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     return false;
   }
 
@@ -333,9 +257,6 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 
   // Attempt to fix up the table if recovery was attempted when opening.
   if (needs_fixing_up_) {
-    CHECK(base::FeatureList::IsEnabled(
-        kTopSitesDatabaseUseBuiltInRecoveryIfSupported));
-
     FixTopSitesTable(*db_);
     needs_fixing_up_ = false;
   }

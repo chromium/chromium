@@ -31,6 +31,7 @@ class ScopedTextShadowPainter {
       context_->EndLayer();
     }
   }
+  bool HasEffectiveShadow() const { return context_; }
 
  private:
   void ApplyShadowList(GraphicsContext&, const TextPaintStyle&);
@@ -49,7 +50,9 @@ void PaintWithTextShadow(PaintProc paint_proc,
                          const TextPaintStyle& text_style) {
   if (text_style.shadow) {
     ScopedTextShadowPainter shadow_painter(context, text_style);
-    paint_proc(TextShadowPaintPhase::kShadow);
+    if (shadow_painter.HasEffectiveShadow()) {
+      paint_proc(TextShadowPaintPhase::kShadow);
+    }
   }
   paint_proc(TextShadowPaintPhase::kForeground);
 }

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -24,12 +25,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
-#include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/standalone_browser/fake_migration_progress_tracker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -63,11 +64,12 @@ std::string_view GetBothChromesExtensionId() {
   return extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()[0];
 }
 
-constexpr syncer::ModelType kAshSyncDataType =
-    browser_data_migrator_util::kAshOnlySyncDataTypes[0];
-constexpr syncer::ModelType kLacrosSyncDataType = syncer::ModelType::WEB_APPS;
-static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
-                              kLacrosSyncDataType));
+constexpr syncer::DataType kAshSyncDataType =
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration[0];
+constexpr syncer::DataType kLacrosSyncDataType = syncer::DataType::WEB_APPS;
+static_assert(!base::Contains(
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration,
+    kLacrosSyncDataType));
 
 constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;
@@ -429,7 +431,7 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   ASSERT_TRUE(base::WriteFile(
       original_profile_dir_2.Append(browser_data_migrator_util::kLacrosDir)
           .Append(chrome::kFirstRunSentinel),
-      base::StringPiece()));
+      std::string_view()));
   MoveMigrator::TaskResult result_2 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_2);
   ASSERT_EQ(result_2.status, MoveMigrator::TaskStatus::kSucceeded);
@@ -476,8 +478,9 @@ TEST(MoveMigratorTest, SetupLacrosDir) {
   const base::FilePath original_profile_dir = scoped_temp_dir.GetPath();
   SetUpProfileDirectory(original_profile_dir);
 
-  std::unique_ptr<MigrationProgressTracker> progress_tracker =
-      std::make_unique<FakeMigrationProgressTracker>();
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker =
+          std::make_unique<standalone_browser::FakeMigrationProgressTracker>();
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
       base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 
@@ -689,8 +692,9 @@ class MoveMigratorMigrateTest : public ::testing::Test {
 
     SetUpProfileDirectory(original_profile_dir_);
 
-    std::unique_ptr<MigrationProgressTracker> progress_tracker =
-        std::make_unique<FakeMigrationProgressTracker>();
+    std::unique_ptr<standalone_browser::MigrationProgressTracker>
+        progress_tracker = std::make_unique<
+            standalone_browser::FakeMigrationProgressTracker>();
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
         base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 
@@ -946,7 +950,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1055,7 +1059,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1164,7 +1168,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(
       base::CopyDirectory(original_profile_dir_.Append(kSharedProtoDBPath),

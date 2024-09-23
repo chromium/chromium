@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/startup_information_helper.h"
 
 #include <Windows.h>
@@ -66,14 +71,18 @@ void StartupInformationHelper::AddInheritedHandle(HANDLE handle) {
   }
 }
 
-void StartupInformationHelper::SetAppContainer(
-    scoped_refptr<AppContainer> container) {
+void StartupInformationHelper::SetAppContainer(AppContainer* container) {
   // LowPrivilegeAppContainer only supported for Windows 10+
   DCHECK(!container->GetEnableLowPrivilegeAppContainer() ||
          base::win::GetVersion() >= base::win::Version::WIN10_RS1);
 
-  app_container_ = container;
-  security_capabilities_ = app_container_->GetSecurityCapabilities();
+  if (container->GetAppContainerType() == AppContainerType::kLowbox) {
+    return;
+  }
+
+  enable_low_privilege_app_container_ =
+      container->GetEnableLowPrivilegeAppContainer();
+  security_capabilities_ = container->GetSecurityCapabilities();
 }
 
 void StartupInformationHelper::AddJobToAssociate(HANDLE job_handle) {
@@ -94,11 +103,12 @@ DWORD StartupInformationHelper::CountAttributes() {
   if (!inherited_handle_list_.empty())
     ++attribute_count;
 
-  if (app_container_ &&
-      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
+  if (security_capabilities_) {
     ++attribute_count;
-    if (app_container_->GetEnableLowPrivilegeAppContainer())
-      ++attribute_count;
+  }
+
+  if (enable_low_privilege_app_container_) {
+    ++attribute_count;
   }
 
   if (!job_handle_list_.empty())
@@ -169,25 +179,25 @@ bool StartupInformationHelper::BuildStartupInformation() {
     expected_attributes--;
   }
 
-  if (app_container_ &&
-      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
+  if (security_capabilities_) {
     if (!startup_info_.UpdateProcThreadAttribute(
             PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
             security_capabilities_.get(), sizeof(SECURITY_CAPABILITIES))) {
       return false;
     }
     expected_attributes--;
-    if (app_container_->GetEnableLowPrivilegeAppContainer()) {
-      all_applications_package_policy_ =
-          PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
-      if (!startup_info_.UpdateProcThreadAttribute(
-              PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY,
-              &all_applications_package_policy_,
-              sizeof(all_applications_package_policy_))) {
-        return false;
-      }
-      expected_attributes--;
+  }
+
+  if (enable_low_privilege_app_container_) {
+    all_applications_package_policy_ =
+        PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
+    if (!startup_info_.UpdateProcThreadAttribute(
+            PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY,
+            &all_applications_package_policy_,
+            sizeof(all_applications_package_policy_))) {
+      return false;
     }
+    expected_attributes--;
   }
 
   CHECK(expected_attributes == 0);

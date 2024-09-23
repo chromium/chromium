@@ -1,0 +1,33 @@
+<style include="healthd-internals-shared cr-shared-style">
+  #mainCard {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    margin: 0 auto;
+    margin-block-end: 36px;
+    max-width: 600px;
+    color: var(--cr-primary-text-color);
+  }
+
+  #expandedContent {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  pre {
+    margin: 0px;
+    color: var(--cr-primary-text-color);
+  }
+</style>
+<div id="mainCard">
+  <template is="dom-repeat" items="[[displayedInfoList]]">
+    <cr-expand-button class="cr-row first" expanded="{{item.isExpanded}}">
+      [[item.infoHeader]]
+    </cr-expand-button>
+    <iron-collapse id="expandedContent" opened="[[item.isExpanded]]">
+      <div class="cr-padded-text hr">
+        <pre>[[item.detailedInfo]]</pre>
+      </div>
+    </iron-collapse>
+  </template>
+</div>

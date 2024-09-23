@@ -79,7 +79,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     }
   } else if (item().type == ash::TYPE_BROWSER_SHORTCUT ||
              item().type == ash::TYPE_UNPINNED_BROWSER_SHORTCUT) {
-    // TODO(crbug.com/1198190): Consider how to support Lacros.
+    // TODO(crbug.com/40177234): Consider how to support Lacros.
     // Lacros is provided from AppService, so here is not reached.
     AddContextMenuOption(menu_model.get(), ash::APP_CONTEXT_MENU_NEW_WINDOW,
                          IDS_APP_LIST_NEW_WINDOW);
@@ -149,7 +149,7 @@ bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
       [[fallthrough]];
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
@@ -215,7 +215,7 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
       [[fallthrough]];
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       ash::NewWindowDelegate::GetInstance()->NewWindow(

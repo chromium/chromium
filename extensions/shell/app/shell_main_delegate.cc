@@ -58,8 +58,9 @@ base::FilePath GetDataPath() {
   // earlier, instead of reading the switch both here and in
   // ShellBrowserContext::InitWhileIOAllowed().
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kContentShellDataPath))
-    return cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
+  if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
+    return cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
+  }
 
   base::FilePath data_dir;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

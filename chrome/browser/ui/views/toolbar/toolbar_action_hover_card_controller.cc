@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -48,8 +49,9 @@ class ToolbarActionHoverCardController::EventSniffer
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this,
         controller_->extensions_container_->GetWidget()->GetNativeWindow(),
-        {ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED, ui::ET_MOUSE_PRESSED,
-         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END});
+        {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
+         ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
+         ui::EventType::kGestureBegin, ui::EventType::kGestureEnd});
   }
 
   ~EventSniffer() override = default;
@@ -100,7 +102,7 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
     return;
   }
 
-  // TODO(crbug.com/1351778): Check if we need to handle never displaying a
+  // TODO(crbug.com/40857356): Check if we need to handle never displaying a
   // hover card for a toolbar action that is closing (pin was removed).
 
   // Update this ASAP so that if we try to fade-in and we have the wrong target
@@ -200,12 +202,25 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
   content::WebContents* web_contents = action_view->GetCurrentWebContents();
   DCHECK(web_contents);
 
-  // If the hover card is transitioning between tabs, we need to do a
+  // If the hover card is transitioning between extensions, we need to do a
   // cross-fade.
-  if (hover_card_->GetAnchorView() != action_view)
+  if (hover_card_->GetAnchorView() != action_view) {
     hover_card_->SetTextFade(0.0);
+  }
 
-  hover_card_->UpdateCardContent(action_view->view_controller(), web_contents);
+  std::u16string extension_name =
+      action_view->view_controller()->GetActionName();
+  std::u16string action_title =
+      action_view->view_controller()->GetActionTitle(web_contents);
+  // Hover card only uses the action title when it's different than the
+  // extension name.
+  action_title =
+      extension_name == action_title ? std::u16string() : action_title;
+  ToolbarActionViewController::HoverCardState state =
+      action_view->view_controller()->GetHoverCardState(web_contents);
+
+  hover_card_->UpdateCardContent(extension_name, action_title, state,
+                                 web_contents);
 }
 
 void ToolbarActionHoverCardController::CreateHoverCard(
@@ -247,7 +262,7 @@ void ToolbarActionHoverCardController::ShowHoverCard(
   CreateHoverCard(target_action_view_);
   UpdateHoverCardContent(target_action_view_);
   slide_animator_->UpdateTargetBounds();
-  // TODO(crbug.com/1351778): Do we need to fix widget stack order? Revisit
+  // TODO(crbug.com/40857356): Do we need to fix widget stack order? Revisit
   // this, specially after adding IPH.
 
   if (!is_initial || !UseAnimations()) {
@@ -293,7 +308,7 @@ bool ToolbarActionHoverCardController::ShouldShowImmediately(
                                   elapsed_time <= kShowWithoutDelayTimeBuffer;
   // Hover cards should be shown without delay if triggered within the time
   // buffer.
-  // TODO(crbug.com/1351778): Should hover cards be shown if the action view
+  // TODO(crbug.com/40857356): Should hover cards be shown if the action view
   // is keyboard focused?
   return within_delay_time_buffer;
 }
@@ -308,8 +323,8 @@ const views::View* ToolbarActionHoverCardController::GetTargetAnchorView()
 }
 
 bool ToolbarActionHoverCardController::TargetActionViewIsValid() const {
-  // TODO(crbug.com/1351778): Explore more conditions where an action view is no
-  // longer valid.
+  // TODO(crbug.com/40857356): Explore more conditions where an action view is
+  // no longer valid.
   return target_action_view_ && target_action_view_->GetVisible();
 }
 

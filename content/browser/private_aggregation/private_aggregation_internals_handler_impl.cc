@@ -15,14 +15,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/browser/private_aggregation/private_aggregation_internals.mojom.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -32,13 +31,15 @@ namespace content {
 namespace {
 
 AggregationService* GetAggregationService(WebContents* web_contents) {
+  CHECK(web_contents);
   return AggregationService::GetService(web_contents->GetBrowserContext());
 }
 
 PrivateAggregationManager* GetPrivateAggregationManager(
     WebContents* web_contents) {
+  CHECK(web_contents);
   BrowserContext* browser_context = web_contents->GetBrowserContext();
-  DCHECK_NE(browser_context, nullptr);
+  CHECK(browser_context);
   return PrivateAggregationManager::GetManager(*browser_context);
 }
 
@@ -72,7 +73,7 @@ CreateWebUIAggregatableReport(
 
     constexpr char kAggregationServicePayloadsKey[] =
         "aggregation_service_payloads";
-    DCHECK(!report_body.Find(kAggregationServicePayloadsKey));
+    CHECK(!report_body.Find(kAggregationServicePayloadsKey));
     report_body.Set(kAggregationServicePayloadsKey,
                     "Not generated prior to send");
   }
@@ -80,7 +81,7 @@ CreateWebUIAggregatableReport(
   std::string output_json;
   bool success = base::JSONWriter::WriteWithOptions(
       report_body, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output_json);
-  DCHECK(success);
+  CHECK(success);
 
   base::Time report_time =
       actual_report_time.value_or(request.shared_info().scheduled_report_time);
@@ -121,7 +122,7 @@ PrivateAggregationInternalsHandlerImpl::PrivateAggregationInternalsHandlerImpl(
     : web_ui_(web_ui),
       observer_(std::move(observer)),
       handler_(this, std::move(handler)) {
-  DCHECK(web_ui);
+  CHECK(web_ui);
   if (AggregationService* aggregation_service =
           GetAggregationService(web_ui_->GetWebContents())) {
     aggregation_service_observer_.Observe(aggregation_service);

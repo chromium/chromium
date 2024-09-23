@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 
+#import <optional>
 #import <vector>
 
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -18,14 +18,17 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -36,33 +39,6 @@ namespace {
 class IOSChromeSafetyCheckManagerTest : public PlatformTest {
  public:
   void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* registry = pref_service_->registry();
-
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
-
-    local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* local_registry = local_pref_service_->registry();
-
-    local_registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
-                                     base::Time(), PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerPasswordCheckResult,
-        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerUpdateCheckResult,
-        NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
-        NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterIntegerPref(
-        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-        -1);
-
     TestChromeBrowserState::Builder builder;
 
     builder.AddTestingFactory(
@@ -71,35 +47,30 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_ = builder.Build();
-    TestingApplicationContext::GetGlobal()->SetLocalState(
-        local_pref_service_.get());
+    ChromeBrowserState* browser_state =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    password_check_manager_ =
-        IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-            browser_state_.get());
+    pref_service_ = browser_state->GetPrefs();
 
-    safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), local_pref_service_.get(), password_check_manager_,
-        base::SequencedTaskRunner::GetCurrentDefault());
+    local_pref_service_ =
+        TestingApplicationContext::GetGlobal()->GetLocalState();
+
+    safety_check_manager_ =
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
   }
 
   void TearDown() override {
     safety_check_manager_->StopSafetyCheck();
-    safety_check_manager_->Shutdown();
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> local_pref_service_;
 };
 
 std::vector<password_manager::CredentialUIEntry>
@@ -186,27 +157,6 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kUnsafe);
-}
-
-// Tests the Safe Browsing Check state is `kManaged` when Safe Browsing is
-// enabled, and managed.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       SafeBrowsingManagedAndEnabledReturnsManagedState) {
-  pref_service_->SetManagedPref(prefs::kSafeBrowsingEnabled, base::Value(true));
-
-  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-            SafeBrowsingSafetyCheckState::kManaged);
-}
-
-// Tests the Safe Browsing Check state is `kManaged` when Safe Browsing is
-// disabled, and managed.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       SafeBrowsingManagedAndDisabledReturnsManagedState) {
-  pref_service_->SetManagedPref(prefs::kSafeBrowsingEnabled,
-                                base::Value(false));
-
-  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-            SafeBrowsingSafetyCheckState::kManaged);
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
@@ -351,6 +301,14 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateIdle) {
                 PasswordCheckState::kIdle, populated_credentials_list,
                 PasswordSafetyCheckState::kRunning),
             PasswordSafetyCheckState::kSafe);
+  EXPECT_EQ(CalculatePasswordSafetyCheckState(PasswordCheckState::kIdle,
+                                              populated_credentials_list,
+                                              PasswordSafetyCheckState::kError),
+            PasswordSafetyCheckState::kError);
+  EXPECT_EQ(CalculatePasswordSafetyCheckState(PasswordCheckState::kIdle,
+                                              empty_credentials_list,
+                                              PasswordSafetyCheckState::kError),
+            PasswordSafetyCheckState::kError);
 }
 
 // Tests an Omaha response that exceeds `kOmahaNetworkWaitTime` wait time is
@@ -386,7 +344,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
-  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(UpdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -412,7 +370,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppOutdated) {
 
   task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
 
-  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -478,12 +436,15 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   safety_check_manager_->StopSafetyCheck();
 
-  task_environment_.RunUntilIdle();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
-            PasswordSafetyCheckState::kDisabled);
+            PasswordSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kSafe);
   EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),
@@ -511,7 +472,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   // `kUpToDate`. However, this call should be ignored because the Safety
   // Check was cancelled, reverting the check state `kDefault`, and ignoring the
   // future update below.
-  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(UpdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -540,7 +501,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   // `kOmahaError`. However, this call should be ignored because the Safety
   // Check was cancelled, reverting the check state `kDefault`, and ignoring the
   // future error below.
-  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+  safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
 
   task_environment_.RunUntilIdle();
 
@@ -579,6 +540,108 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
             PasswordSafetyCheckState::kDefault);
+}
+
+// Tests updating the insecure password counts results in the values being
+// stored in Prefs.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       SettingInsecurePasswordCountsWritesToPrefs) {
+  password_manager::InsecurePasswordCounts pref_counts =
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  password_manager::InsecurePasswordCounts expected_pref_counts = {
+      /* compromised */
+      0,
+      /* dismissed */
+      0,
+      /* reused */
+      0,
+      /* weak */
+      0};
+
+  EXPECT_EQ(pref_counts, expected_pref_counts);
+
+  password_manager::InsecurePasswordCounts counts = {/* compromised */
+                                                     1,
+                                                     /* dismissed */
+                                                     2,
+                                                     /* reused */
+                                                     3,
+                                                     /* weak */
+                                                     4};
+
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), counts);
+
+  password_manager::InsecurePasswordCounts updated_pref_counts =
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  EXPECT_EQ(updated_pref_counts, counts);
+}
+
+// Tests cancelling a currently running Safety Check check ignores an
+// incoming insecure password counts change.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       StoppingRunningPasswordCheckIgnoresInsecurePasswordCountsChange) {
+  base::Value::Dict insecure_password_counts;
+  insecure_password_counts.Set(kSafetyCheckCompromisedPasswordsCountKey, 1);
+  insecure_password_counts.Set(kSafetyCheckDismissedPasswordsCountKey, 2);
+  insecure_password_counts.Set(kSafetyCheckReusedPasswordsCountKey, 3);
+  insecure_password_counts.Set(kSafetyCheckWeakPasswordsCountKey, 4);
+  pref_service_->SetDict(prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+                         std::move(insecure_password_counts));
+
+  safety_check_manager_->RestorePreviousSafetyCheckStateForTesting();
+
+  password_manager::InsecurePasswordCounts expected = {
+      /* compromised */ 1, /* dismissed */ 2, /* reused */ 3,
+      /* weak */ 4};
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  safety_check_manager_->StartSafetyCheck();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kRunning);
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kRunning);
+
+  safety_check_manager_->StopSafetyCheck();
+
+  EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
+            PasswordSafetyCheckState::kDefault);
+
+  // NOTE: Normally this call would change the Password check state to
+  // `kError` due to the quota limit being reached. However, this call should be
+  // ignored because the Password check was cancelled, reverting the check state
+  // `kDefault`, and ignoring the future update below.
+  safety_check_manager_->PasswordCheckStatusChangedForTesting(
+      PasswordCheckState::kQuotaLimit);
+
+  password_manager::InsecurePasswordCounts updated = {
+      /* compromised */ 5, /* dismissed */ 5, /* reused */ 5,
+      /* weak */ 5};
+
+  // NOTE: Normally this call would change the insecure password counts to
+  // `updated`. However, this call should be ignored because the Password check
+  // was cancelled, reverting the counts to their previous state.
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(updated);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), expected);
+
+  // Verify the Prefs for insecure password counts haven't changed.
+  password_manager::InsecurePasswordCounts stored_counts =
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
+          prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
+
+  EXPECT_EQ(stored_counts, expected);
 }
 
 // Tests cancelling a currently running Safety Check check correctly ignores an
@@ -830,7 +893,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, FindsSafeBrowsingSafetyCheckFromName) {
 // Tests `RestorePreviousSafetyCheckState()` correctly loads previous Safety
 // Check states from Prefs.
 TEST_F(IOSChromeSafetyCheckManagerTest, LoadsPreviousCheckStatesFromPrefs) {
-  local_pref_service_->SetString(
+  pref_service_->SetString(
       prefs::kIosSafetyCheckManagerPasswordCheckResult,
       NameForSafetyCheckState(PasswordSafetyCheckState::kError));
   local_pref_service_->SetString(
@@ -854,7 +917,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, LoadsPreviousCheckStatesFromPrefs) {
 // Check states from Prefs. and ignores running states.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        LoadsPreviousCheckStatesFromPrefsButIgnoresRunningStates) {
-  local_pref_service_->SetString(
+  pref_service_->SetString(
       prefs::kIosSafetyCheckManagerPasswordCheckResult,
       NameForSafetyCheckState(PasswordSafetyCheckState::kRunning));
   local_pref_service_->SetString(
@@ -872,4 +935,78 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             UpdateChromeSafetyCheckState::kOutOfDate);
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kDefault);
+}
+
+// Tests `DictToInsecurePasswordCounts()` correctly converts a Dict to insecure
+// password counts.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       ConvertsDictionaryToInsecurePasswordCounts) {
+  base::Value::Dict dict_without_duplicate_keys;
+  dict_without_duplicate_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
+  dict_without_duplicate_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
+  dict_without_duplicate_keys.Set(kSafetyCheckReusedPasswordsCountKey, 5);
+  dict_without_duplicate_keys.Set(kSafetyCheckWeakPasswordsCountKey, 6);
+
+  password_manager::InsecurePasswordCounts
+      expected_counts_without_duplicate_keys = {
+          /* compromised */ 3, /* dismissed */ 4, /* reused */ 5, /* weak */ 6};
+
+  EXPECT_EQ(expected_counts_without_duplicate_keys,
+            DictToInsecurePasswordCounts(dict_without_duplicate_keys));
+
+  base::Value::Dict dict_with_missing_keys;
+  dict_with_missing_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
+  dict_with_missing_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
+  dict_with_missing_keys.Set(kSafetyCheckWeakPasswordsCountKey, 6);
+
+  password_manager::InsecurePasswordCounts expected_counts_with_missing_keys = {
+      /* compromised */ 3, /* dismissed */ 4, /* reused */ 0, /* weak */ 6};
+
+  EXPECT_EQ(expected_counts_with_missing_keys,
+            DictToInsecurePasswordCounts(dict_with_missing_keys));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns true if the Safety
+// Check has never been run before.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       AllowsAutorunWhenNoPreviousCheckExists) {
+  EXPECT_TRUE(CanAutomaticallyRunSafetyCheck(std::nullopt));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns true if a previous
+// check exists and is sufficiently old.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       AllowsAutorunWhenPreviousCheckIsTooOld) {
+  base::Time sufficiently_old_previous_check_time =
+      base::Time::Now() - (kSafetyCheckAutorunDelay + base::Days(7));
+
+  EXPECT_TRUE(
+      CanAutomaticallyRunSafetyCheck(sufficiently_old_previous_check_time));
+}
+
+// Tests `CanAutomaticallyRunSafetyCheck()` correctly returns false if the
+// previous Safety Check run occurred too recently.
+TEST_F(IOSChromeSafetyCheckManagerTest,
+       PreventsAutorunWhenPreviousCheckIsTooRecent) {
+  base::Time recent_previous_check_time =
+      base::Time::Now() - (kSafetyCheckAutorunDelay - base::Minutes(30));
+
+  EXPECT_FALSE(CanAutomaticallyRunSafetyCheck(recent_previous_check_time));
+}
+
+// Tests `GetLatestSafetyCheckRunTimeAcrossAllEntrypoints()` correctly returns
+// the latest run time across all Safety Check entry points.
+TEST_F(IOSChromeSafetyCheckManagerTest, ReturnsLatestSafetyCheckRunTime) {
+  base::Time now = base::Time::Now();
+  base::Time yesterday = now - base::Days(1);
+  base::Time one_week_ago = now - base::Days(7);
+
+  local_pref_service_->SetTime(prefs::kIosSafetyCheckManagerLastRunTime,
+                               yesterday);
+  local_pref_service_->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
+                               one_week_ago);
+
+  EXPECT_EQ(GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(local_pref_service_)
+                .value(),
+            yesterday);
 }

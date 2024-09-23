@@ -22,7 +22,6 @@ namespace password_manager {
 // Used unless `kUsernameFirstFlowWithIntermediateValues` feature is turned on.
 constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 
-
 // Contains information to uniquely identify the field that is considered to be
 // username in Username First Flow.
 struct PossibleUsernameFieldIdentifier {

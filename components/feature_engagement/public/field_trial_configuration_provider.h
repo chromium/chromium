@@ -17,8 +17,7 @@ namespace feature_engagement {
 // should only fill in configurations for which there are not active field
 // trials.
 //
-// This provider does not override valid configurations, and won't do anything
-// if the "UseClientConfigIPH" flag is set.
+// This provider does not override valid configurations.
 class FieldTrialConfigurationProvider : public ConfigurationProvider {
  public:
   FieldTrialConfigurationProvider();

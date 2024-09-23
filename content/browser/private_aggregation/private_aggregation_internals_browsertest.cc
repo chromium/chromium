@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
-
 #include <memory>
 #include <optional>
-#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,11 +16,13 @@
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -36,10 +36,10 @@ namespace {
 using GetPendingReportsCallback = base::OnceCallback<void(
     std::vector<AggregationServiceStorage::RequestAndId>)>;
 
-constexpr char kPrivateAggregationInternalsUrl[] =
+constexpr std::string_view kPrivateAggregationInternalsUrl =
     "chrome://private-aggregation-internals/";
 
-const std::u16string kCompleteTitle = u"Complete";
+constexpr std::u16string_view kCompleteTitle = u"Complete";
 
 class PrivateAggregationInternalsWebUiBrowserTest : public ContentBrowserTest {
  public:
@@ -67,15 +67,15 @@ class PrivateAggregationInternalsWebUiBrowserTest : public ContentBrowserTest {
   // Executing javascript in the WebUI requires using an isolated world in which
   // to execute the script because WebUI has a default CSP policy denying
   // "eval()", which is what EvalJs uses under the hood.
-  bool ExecJsInWebUI(const std::string& script) {
+  bool ExecJsInWebUI(std::string_view script) {
     return ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), script,
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
   // Registers a mutation observer that sets the window title to `title` when
   // the report table is empty.
-  void SetTitleOnReportsTableEmpty(const std::u16string& title) {
-    static constexpr char kObserveEmptyReportsTableScript[] = R"(
+  void SetTitleOnReportsTableEmpty(std::u16string_view title) {
+    static constexpr std::string_view kObserveEmptyReportsTableScript = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
@@ -185,13 +185,13 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       AggregationServiceObserver::ReportStatus::kFailedToSend);
 
   {
-    static constexpr char wait_script[] = R"(
+    static constexpr std::string_view wait_script = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const cell = (a, b) => table.children[a]?.children[b]?.textContent;
       const obs = new MutationObserver((_, obs) => {
         const kExpectedBodyStr =
-          '[ {  "bucket": {   "high": "0",   "low": "123"  },  "value": 456 }]';
+          '[ {  "bucket": "123",  "value": 456 }]';
         if (table.children.length === 4 &&
             cell(0, 1) === 'Pending' &&
             cell(0, 2) === 'https://reporting.example/example-path' &&
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   }
 
   {
-    static constexpr char wait_script[] = R"(
+    static constexpr std::string_view wait_script = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const cell = (a, b) => table.children[a]?.children[b]?.textContent;
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       });
       obs.observe(table, {'childList': true});)";
 
-    const std::u16string kCompleteTitle2 = u"Complete2";
+    const std::u16string_view kCompleteTitle2 = u"Complete2";
     EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle2)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   }
 
   {
-    static constexpr char wait_script[] = R"(
+    static constexpr std::string_view wait_script = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const cell = (a, b) => table.children[a]?.children[b]?.textContent;
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       });
       obs.observe(table, {'childList': true});)";
 
-    const std::u16string kCompleteTitle3 = u"Complete3";
+    const std::u16string_view kCompleteTitle3 = u"Complete3";
     EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle3)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
                   testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
 
-  static constexpr char wait_script[] = R"(
+  static constexpr std::string_view wait_script = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the send reports button and expect that the report table is emptied.
-  const std::u16string kSentTitle = u"Sent";
+  constexpr std::u16string_view kSentTitle = u"Sent";
   TitleWatcher sent_title_watcher(shell()->web_contents(), kSentTitle);
   SetTitleOnReportsTableEmpty(kSentTitle);
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       .WillOnce(base::test::RunOnceCallback<3>());
 
   // Verify both rows get rendered.
-  static constexpr char wait_script[] = R"(
+  static constexpr std::string_view wait_script = R"(
       const table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear-data button and expect that the report table is emptied.
-  const std::u16string kDeleteTitle = u"Delete";
+  constexpr std::u16string_view kDeleteTitle = u"Delete";
   TitleWatcher delete_title_watcher(shell()->web_contents(), kDeleteTitle);
   SetTitleOnReportsTableEmpty(kDeleteTitle);
 

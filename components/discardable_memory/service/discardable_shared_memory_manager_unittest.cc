@@ -97,12 +97,12 @@ TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
   bool rv = memory.Map(kDataSize);
   ASSERT_TRUE(rv);
 
-  memcpy(memory.memory(), data, kDataSize);
+  memory.memory().copy_from(data);
   memory.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   memory.Unlock(0, 0);
 
   ASSERT_EQ(base::DiscardableSharedMemory::SUCCESS, memory.Lock(0, 0));
-  EXPECT_EQ(memcmp(data, memory.memory(), kDataSize), 0);
+  EXPECT_EQ(data, memory.memory());
   memory.Unlock(0, 0);
 }
 

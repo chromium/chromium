@@ -1,0 +1,236 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("demo_mode") {
+  sources = [
+    "demo_components.cc",
+    "demo_components.h",
+    "demo_mode_dimensions.cc",
+    "demo_mode_dimensions.h",
+    "demo_mode_window_closer.cc",
+    "demo_mode_window_closer.h",
+    "demo_session.cc",
+    "demo_session.h",
+    "demo_setup_controller.cc",
+    "demo_setup_controller.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/dbus/power",
+    "//components/component_updater/ash",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//extensions/browser",
+    "//ui/base",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base:i18n",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/system",
+    "//chromeos/constants",
+    "//components/language/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/user_manager:common",
+    "//components/variations",
+    "//content/public/browser",
+    "//extensions/common",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/icu:icui18n",
+    "//third_party/icu:icui18n_hidden_visibility",
+    "//third_party/icu:icuuc_public",
+    "//third_party/re2",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/policy/enrollment",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "demo_mode_test_helper.cc",
+    "demo_mode_test_helper.h",
+    "demo_mode_test_utils.cc",
+    "demo_mode_test_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/test:test_support",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/enrollment:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/install_attributes",
+    "//components/component_updater/ash:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//testing/gmock",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "demo_session_browsertest.cc",
+    "demo_setup_browsertest.cc",
+  ]
+
+  deps = [
+    ":demo_mode",
+    ":test_support",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:main_extra_parts",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/growth",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/system",
+    "//chromeos/constants",
+    "//chromeos/dbus/power",
+    "//components/component_updater/ash:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/variations",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "demo_components_unittest.cc",
+    "demo_mode_dimensions_unittest.cc",
+    "demo_session_unittest.cc",
+    "demo_setup_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":demo_mode",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/enrollment:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash/wallpaper:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/system",
+    "//chromeos/constants",
+    "//components/component_updater/ash:test_support",
+    "//components/language/core/browser",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser/updater",
+    "//extensions/browser/updater:test_support",
+    "//extensions/common",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

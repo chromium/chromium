@@ -63,7 +63,7 @@ class SmartCardPermissionUiTest : public InteractiveBrowserTest {
   auto PressButtonAndWaitResult(ui::ElementIdentifier button_id, bool granted) {
     return Steps(PollState(kPermissionDecision,
                            [this]() { return permission_decision(); }),
-                 FlushEvents(), PressButton(button_id),
+                 PressButton(button_id),
                  Log("Wait for the prompt to be hidden."),
                  WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
                  Log("Wait for the permission decision."),

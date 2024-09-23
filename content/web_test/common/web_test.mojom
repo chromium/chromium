@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -13,6 +14,7 @@ import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct WebTestRunTestConfiguration {
   // The current working directory.
@@ -43,8 +45,9 @@ struct WebTestRendererDumpResult {
   // Audio dump.
   array<uint8>? audio;
 
-  // Layout dump.
-  string? layout;
+  // Layout dump. A ByteString rather than a string because the layout dump can
+  // be supplied by the test and may contain non-UTF8 encoded text.
+  mojo_base.mojom.ByteString? layout;
 
   // Image dump.
   skia.mojom.BitmapN32? pixels;
@@ -203,9 +206,14 @@ interface WebTestControlHost {
   // avoid having them closed at the end of the test before the leak checker.
   CheckForLeakedWindows();
 
-  // Show or hide the window. This mimics the user switching tabs in a
+  // Show or hide the primary window. This mimics the user switching tabs in a
   // multi-tab window, or occluding the window.
   SetMainWindowHidden(bool hidden);
+
+  // Show or hide the window hosting the frame corresponding to `frame_token`.
+  // This mimics the user switching tabs in a multi-tab window, or occluding the
+  // window.
+  SetFrameWindowHidden(blink.mojom.LocalFrameToken frame_token, bool hidden);
 
   // Trigger a GoToOffset navigation on the main WebView.
   GoToOffset(int32 offset);
@@ -335,6 +343,20 @@ interface WebTestControlHost {
 
   // Set Accept Languages via RendererPreferences on the WebContents.
   SetAcceptLanguages(string accept_languages);
+
+  // Enumeration of possible values for automated operation modes in APIs
+  enum AutoResponseMode {
+    kNone = 0,
+    kAutoAccept = 1,
+    kAutoReject = 2,
+  };
+
+  // This method implements the Set RPH Registration Mode WebDriver extension
+  // command.
+  // https://html.spec.whatwg.org/#set-rph-registration-mode
+  // Emulates the ChromeDrivers's SetRPHRegistrationMode method, implemented
+  // via CDP
+  SetRegisterProtocolHandlerMode(AutoResponseMode mode);
 
   // Enable Auto Resize mode. This will cause a layout of the content and
   // the new size will be determined by the renderer after it dispatches

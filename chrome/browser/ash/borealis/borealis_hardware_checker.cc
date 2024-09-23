@@ -60,55 +60,12 @@ std::string GetBoardName() {
   return pieces[0];
 }
 
-// Returns the model name of this device (either from its CustomizationId or by
-// parsing its hardware class). Returns "" if it fails.
-std::string GetModelName() {
-  ash::system::StatisticsProvider* statistics_provider =
-      ash::system::StatisticsProvider::GetInstance();
-  if (const std::optional<base::StringPiece> ret =
-          statistics_provider->GetMachineStatistic(
-              ash::system::kCustomizationIdKey)) {
-    return std::string(ret.value());
-  }
-  LOG(WARNING)
-      << "CustomizationId unavailable, attempting to parse hardware class";
-
-  // As a fallback when the CustomizationId is not available, we try to parse it
-  // out of the hardware class. If The hardware class is unavailable, all bets
-  // are off.
-  const std::optional<base::StringPiece> hardware_class_statistic =
-      statistics_provider->GetMachineStatistic(ash::system::kHardwareClassKey);
-  if (!hardware_class_statistic) {
-    return "";
-  }
-
-  // Hardware classes for the "modelname" model might look like this:
-  //
-  //    MODELNAME-FFFF DEAD-BEEF-HEX-JUNK
-  //
-  // (or "unknown" if we can't find it). So we only care about converting the
-  // stuff before the first "-" into lowercase.
-  //
-  // Naively searching for the first hyphen is fine until we start caring about
-  // models with hyphens in the name.
-  base::StringPiece hardware_class = hardware_class_statistic.value();
-  size_t hyphen_pos = hardware_class.find('-');
-  if (hyphen_pos != std::string::npos) {
-    hardware_class = hardware_class.substr(0, hyphen_pos);
-  }
-  return base::ToLowerASCII(hardware_class);
-}
-
 bool IsBoard(const std::string& board) {
   return GetBoardName() == board;
 }
 
 bool BoardIn(const base::flat_set<std::string>& boards) {
   return boards.contains(GetBoardName());
-}
-
-bool ModelIn(const base::flat_set<std::string>& models) {
-  return models.contains(GetModelName());
 }
 
 bool CpuRegexMatches(const std::string& cpu_regex) {
@@ -132,16 +89,13 @@ bool InTargetSegment() {
 }
 
 bool Check() {
-  if (IsBoard("hatch")) {
+  if (BoardIn({"hatch", "drallion", "puff"})) {
     return HasSufficientHardware(kIntelCpuRegex);
   }
   if (IsBoard("volteer")) {
-    bool valid_model =
-        ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
-                 "drobit", "lillipup", "delbing", "eldrid", "chronicler"});
-    return HasSufficientHardware(kIntelCpuRegex) && valid_model;
+    return HasSufficientHardware(kIntelCpuRegex);
   }
-  if (BoardIn({"brya", "adlrvp", "brask"})) {
+  if (BoardIn({"brya", "adlrvp", "brask", "brox"})) {
     return HasSufficientHardware(kIntelCpuRegex);
   }
   if (BoardIn({"guybrush", "majolica"})) {

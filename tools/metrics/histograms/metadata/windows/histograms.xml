@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
-    expires_after="2024-07-15">
+    expires_after="2025-03-02">
   <owner>ajgo@chromium.org</owner>
   <owner>brucedawson@chromium.org</owner>
   <summary>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -56,8 +56,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.DisplayIdFromDeviceId" enum="DisplayIdResult"
+    expires_after="2025-05-31">
+  <owner>msw@google.com</owner>
+  <owner>btriebw@google.com</owner>
+  <summary>
+    Records the result of deriving a display ID from DISPLAY_DEVICE::DeviceId.
+    Recorded once for each monitor detected by the OS during startup of chrome
+    and after any monitor topology changes (addition/removal) thereafter.
+  </summary>
+</histogram>
+
+<histogram name="Windows.DisplayIdFromDeviceKey" enum="DisplayIdResult"
+    expires_after="2025-05-31">
+  <owner>msw@google.com</owner>
+  <owner>btriebw@google.com</owner>
+  <summary>
+    Records the result of deriving a display ID from DISPLAY_DEVICE::DeviceKey.
+    Recorded once for each monitor detected by the OS during startup of chrome
+    and after any monitor topology changes (addition/removal) thereafter.
+  </summary>
+</histogram>
+
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
-    expires_after="2024-07-14">
+    expires_after="2025-01-26">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -80,8 +102,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Windows.FeatureNotificationsSettingChange"
+    enum="BooleanEnabled" expires_after="2025-07-14">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    Reported when the user toggles the feature notifications setting in Chrome's
+    System settings. Its value represents what the setting was changed to.
+  </summary>
+</histogram>
+
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -90,8 +122,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.HasThreadTicks" enum="Boolean"
+    expires_after="2025-02-23">
+  <owner>olivierli@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The value of ThreadTicks::IsSupported(). Reported once per browser session,
+    on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2024-07-21">
+    expires_after="2025-02-10">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -102,7 +144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2024-08-04">
+    expires_after="2025-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
@@ -139,15 +181,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
-    expires_after="2024-04-28">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
+<histogram name="Windows.LegacyDisplayIdAlgorithm" enum="UsedDisplayIdFallback"
+    expires_after="2025-03-02">
+  <owner>btriebw@google.com</owner>
+  <owner>msw@google.com</owner>
   <summary>
-    Whether or not the taskbar shortcut Chrome was launched from was pinned by
-    the installer. Recorded when Chrome is launched from the taskbar, and the
-    install was done after the installer started pinning Chrome to the taskbar
-    for Windows 10+.
+    Records when a monitor is missing DISPLAYCONFIG_PATH_INFO to derive a
+    display ID and instead used the fallback legacy algorithm. Recorded once for
+    each monitor detected by the OS during startup of chrome and after any
+    monitor topology changes (addition/removal) thereafter.
   </summary>
 </histogram>
 
@@ -210,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2024-08-04">
+    expires_after="2025-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
@@ -223,13 +265,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2024-06-01">
+    enum="BooleanEnabled" expires_after="2025-06-01">
   <owner>rkc@chromium.org</owner>
   <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether virtualization has been enabled in the system firmware. Logged
     shortly after startup. This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.TimeInSelectFileDialog" units="ms"
+    expires_after="2025-02-10">
+  <owner>fdoray@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Duration of a call to ui::ExecuteSelectFile. This includes the time to
+    open/close the file select dialog and the time spent by the user in it.
+    Eliminating hangs that occur when opening the file select dialog should move
+    this metric. Reported every time ui::ExecuteSelectFile is called via
+    UtilWinImpl::CallExecuteSelectFile.
   </summary>
 </histogram>
 

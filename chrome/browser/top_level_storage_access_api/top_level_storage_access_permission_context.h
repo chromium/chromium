@@ -45,7 +45,11 @@ enum class TopLevelStorageAccessRequestOutcome {
   // The user has already been asked and made a choice (and was not asked
   // again).
   // kReusedPreviousDecision = 7,  // Unused
-  kMaxValue = kDeniedByPrerequisites,
+
+  // The request was denied by cookie settings
+  kDeniedByCookieSettings = 8,
+
+  kMaxValue = kDeniedByCookieSettings,
 };
 
 class TopLevelStorageAccessPermissionContext

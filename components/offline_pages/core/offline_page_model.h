@@ -129,7 +129,7 @@ class OfflinePageModel :
   //   // Callback is of type SavePageCallback.
   //   model->SavePage(url, std::move(archiver), std::move(callback));
   //
-  // TODO(https://crbug.com/849424): This method's implementation shouldn't
+  // TODO(crbug.com/41392683): This method's implementation shouldn't
   // take ownership of OfflinePageArchiver.
   virtual void SavePage(const SavePageParams& save_page_params,
                         std::unique_ptr<OfflinePageArchiver> archiver,
@@ -192,7 +192,7 @@ class OfflinePageModel :
   // includes putting it in a public directory, updating the system download
   // manager, if any, and updating the offline page model database.
   //
-  // TODO(https://crbug.com/849424): This method's implementation shouldn't
+  // TODO(crbug.com/41392683): This method's implementation shouldn't
   // take ownership of OfflinePageArchiver.
   virtual void PublishInternalArchive(
       const OfflinePageItem& offline_page,

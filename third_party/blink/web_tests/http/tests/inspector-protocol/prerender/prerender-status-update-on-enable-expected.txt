@@ -1,0 +1,28 @@
+
+Running test: testReady
+Test that a status update is sent for a completed prerender on enable
+{
+    key : {
+        action : Prerender
+        loaderId : <string>
+        url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+    }
+    status : Ready
+}
+
+Running test: testFailure
+Test that a status update is sent for a completed prerender on enable
+{
+    key : {
+        action : Prerender
+        loaderId : <string>
+        url : http://127.0.0.1:8000/echo?status=204
+    }
+    prerenderStatus : NavigationBadHttpStatus
+    status : Failure
+}
+
+Running test: testCandidateRemovedAfterFailure
+Test that a status update is sent for a completed prerender on enable
+No status update received after Preload domain is re-enabled.
+

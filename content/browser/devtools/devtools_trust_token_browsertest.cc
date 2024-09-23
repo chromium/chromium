@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -182,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
 
   // 3) Request and redeem a token, then use the redeemed token in a Signing
   // request.
-  auto execute_op_via_iframe = [&](base::StringPiece path,
-                                   base::StringPiece trust_token) {
+  auto execute_op_via_iframe = [&](std::string_view path,
+                                   std::string_view trust_token) {
     // It's important to set the trust token arguments before updating src, as
     // the latter triggers a load.
     EXPECT_TRUE(ExecJs(

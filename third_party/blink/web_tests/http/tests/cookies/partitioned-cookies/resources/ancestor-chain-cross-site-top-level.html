@@ -1,0 +1,18 @@
+<!doctype html>
+<head>
+<title>Test partitioned cookies ancestor chain: top level cross-site </title>
+<script src="/resources/testharness.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+</head>
+<script>
+    //Redirect the page back to the same-site.
+    const params = new URLSearchParams(new URL(window.location.href).search);
+    const hostName = params.get('host');
+    const siteDir = "/cookies/partitioned-cookies/";
+    // Use redirect-and-append-cookie-header.php to make the http cookie
+    // headers available on the redirect.
+    const sameSiteUrl = new URL(siteDir + "resources/redirect-and-append-cookie-header.php?"
+        + "location="+ siteDir + "ancestor-chain-top-level-redirect.https.html"+"?redirect=true",
+        `https://${hostName}:${window.location.port}`);
+    window.location=sameSiteUrl.href;
+</script>

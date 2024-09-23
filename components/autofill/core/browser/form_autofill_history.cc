@@ -17,12 +17,14 @@ FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::u16string field_value,
     bool field_is_autofilled,
     std::optional<std::string> field_autofill_source_profile_guid,
-    std::optional<FieldType> field_autofilled_type)
+    std::optional<FieldType> field_autofilled_type,
+    FillingProduct field_filling_product)
     : value(field_value),
       is_autofilled(field_is_autofilled),
       autofill_source_profile_guid(
           std::move(field_autofill_source_profile_guid)),
-      autofilled_type(std::move(field_autofilled_type)) {}
+      autofilled_type(std::move(field_autofilled_type)),
+      filling_product(field_filling_product) {}
 
 FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;
 
@@ -77,9 +79,10 @@ void FormAutofillHistory::AddFormFillEntry(
                  .field_filling_entries
                  .emplace(field->global_id(),
                           FieldFillingEntry(
-                              field->value, field->is_autofilled,
+                              field->value(), field->is_autofilled(),
                               autofill_field->autofill_source_profile_guid(),
-                              autofill_field->autofilled_type()))
+                              autofill_field->autofilled_type(),
+                              autofill_field->filling_product()))
                  .second;
   }
   // Drop the last history entry while the history size exceeds the limit.

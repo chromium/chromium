@@ -10,10 +10,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/policy/core/common/management/management_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -120,7 +121,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
     return;
   }
 
-  // TODO(crbug.com/891905): Centralize powerwash restriction checks.
+  // TODO(crbug.com/40596547): Centralize powerwash restriction checks.
   bool allow_powerwash =
       !policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
@@ -143,22 +144,51 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
 void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
     const base::Value::List& args) {
   AllowJavascript();
+  CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
+  CHECK(args[1].is_bool());
+  const bool is_version_update = args[1].GetBool();
+
   size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
   base::Value description;
-  if (incognito_count > 0) {
+
+  // The caller can specify if this is a confirmation dialog for browser version
+  // update relaunch.
+  if (is_version_update) {
+    // The dialog description informs about a browser update after relaunch and
+    // warns about incognito windows closure if any is open.
+    description = base::Value(l10n_util::GetPluralStringFUTF16(
+        IDS_UPDATE_RECOMMENDED, incognito_count));
+  } else if (incognito_count > 0) {
+    // The dialog description warns about incognito windows being closed after
+    // relaunch.
     description = base::Value(l10n_util::GetPluralStringFUTF16(
         IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY, incognito_count));
   }
+
   ResolveJavascriptCallback(callback_id, description);
 }
 
 void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
     const base::Value::List& args) {
   AllowJavascript();
+  CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
-  base::Value result = base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
-  ResolveJavascriptCallback(callback_id, result);
+  CHECK(args[1].is_bool());
+  const bool alwaysShowDialog = args[1].GetBool();
+
+  // The caller can specify if the dialog should always be shown for a given
+  // case by passing alwaysShowDialog parameter.
+  if (alwaysShowDialog) {
+    // Always show a confirmation dialog before the restart.
+    ResolveJavascriptCallback(callback_id, true);
+  } else {
+    // Show a confirmation dialog before the restart if there is an incognito
+    // window open.
+    base::Value result =
+        base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
+    ResolveJavascriptCallback(callback_id, result);
+  }
 }
 #endif
 

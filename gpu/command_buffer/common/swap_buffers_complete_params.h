@@ -5,9 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 #define GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/ca_layer_params.h"
@@ -30,11 +30,6 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
   // buffer. The renderer can use it as hint for minimizing drawing area for the
   // next frame.
   std::optional<gfx::Rect> frame_buffer_damage_area;
-
-  // The mailbox corresponding to the primary plane that was just swapped to
-  // the front buffer. The overlay processor can use it to extract the buffer
-  // for page flip tests.
-  Mailbox primary_plane_mailbox;
 
   // Used only on macOS, to allow the browser hosted NSWindow to display
   // content populated in the GPU process.

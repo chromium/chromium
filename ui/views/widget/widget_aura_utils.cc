@@ -25,7 +25,7 @@ aura::client::WindowType GetAuraWindowTypeForWidgetType(
     case Widget::InitParams::TYPE_TOOLTIP:
       return aura::client::WINDOW_TYPE_TOOLTIP;
     default:
-      NOTREACHED_NORETURN() << "Unhandled widget type " << type;
+      NOTREACHED() << "Unhandled widget type " << type;
   }
 }
 

@@ -14,8 +14,9 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_dark_mode.h"
 #include "android_webview/browser/aw_user_agent_metadata.h"
+#include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
-#include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
@@ -27,6 +28,7 @@
 #include "base/supports_user_data.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/viz/common/features.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
@@ -40,6 +42,9 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwSettings_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -98,7 +103,7 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
 };
 
 AwSettings::AwSettings(JNIEnv* env,
-                       jobject obj,
+                       const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
@@ -138,6 +143,14 @@ AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
 
 AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
   return attribution_behavior_;
+}
+
+bool AwSettings::IsPrerender2Allowed() {
+  return (speculative_loading_allowed_flags_ & PRERENDER_ENABLED);
+}
+
+bool AwSettings::IsBackForwardCacheEnabled() {
+  return bfcache_enabled_in_java_settings_;
 }
 
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
@@ -203,6 +216,7 @@ void AwSettings::UpdateEverything() {
 
 void AwSettings::UpdateEverythingLocked(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj) {
+  base::AutoReset<bool> auto_reset(&in_update_everything_locked_, true);
   UpdateInitialPageScaleLocked(env, obj);
   UpdateWebkitPreferencesLocked(env, obj);
   UpdateUserAgentLocked(env, obj);
@@ -215,6 +229,9 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
   UpdateAttributionBehaviorLocked(env, obj);
+  UpdateSpeculativeLoadingAllowedLocked(env, obj);
+  UpdateBackForwardCacheEnabledLocked(env, obj);
+  UpdateGeolocationEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -306,6 +323,7 @@ void AwSettings::UpdateInitialPageScaleLocked(
     float dip_scale =
         static_cast<float>(Java_AwSettings_getDIPScaleLocked(env, obj));
     rvhe->SetInitialPageScale(initial_page_scale_percent / dip_scale / 100.0f);
+    initial_page_scale_is_non_default_ = true;
   }
 }
 
@@ -425,6 +443,100 @@ void AwSettings::UpdateAttributionBehaviorLocked(
        attribution_behavior_ == AwSettings::AttributionBehavior::DISABLED)) {
     web_contents()->UpdateAttributionSupportRenderer();
   }
+}
+
+void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  SpeculativeLoadingAllowedFlags previous = speculative_loading_allowed_flags_;
+  speculative_loading_allowed_flags_ =
+      static_cast<SpeculativeLoadingAllowedFlags>(
+          Java_AwSettings_getSpeculativeLoadingAllowed(env, obj));
+
+  if (!in_update_everything_locked_) {
+    // The setting was explicitly updated, since this is not part of the
+    // UpdateEverythingLocked call. Register a synthetic field trial so that
+    // even if we do experiments that are not run via Finch, we can still
+    // identify the "Prerender enabled" vs "Prerender disabled" groups for UMA
+    // and crash comparison. Note that we only register when the setting was
+    // explicitly updated, to exclude cases that are not part of any experiment
+    // groups at all (e.g. when we're on a version of the WebView embedder that
+    // doesn't have the experiment at all).
+    static constexpr char kPrerenderTrial[] = "WebViewPrerenderSynthetic";
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        AwMetricsServiceClient::GetInstance()->GetMetricsService(),
+        kPrerenderTrial,
+        (speculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)
+            ? "Enabled"
+            : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kNextLog);
+  }
+
+  if (previous == speculative_loading_allowed_flags_) {
+    return;
+  }
+
+  if (!web_contents()) {
+    // No need to cancel preloading entries if the WebContents that host them
+    // doesn't exist.
+    return;
+  }
+
+  // TODO(crbug.com/339561855): Clear navigational prefetches when
+  // preloading is disabled.
+
+  if ((previous & AwSettings::PRERENDER_ENABLED) &&
+      !(speculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
+    web_contents()->CancelAllPrerendering();
+  }
+}
+
+void AwSettings::UpdateBackForwardCacheEnabledLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  bool bfcache_enabled_by_feature_flag =
+      base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
+  bool previous_enabled =
+      bfcache_enabled_in_java_settings_ || bfcache_enabled_by_feature_flag;
+  bfcache_enabled_in_java_settings_ =
+      Java_AwSettings_getBackForwardCacheEnabled(env, obj);
+  bool current_enabled =
+      bfcache_enabled_in_java_settings_ || bfcache_enabled_by_feature_flag;
+
+  if (!current_enabled && previous_enabled && web_contents()) {
+    AwContents* contents = AwContents::FromWebContents(web_contents());
+    contents->FlushBackForwardCache(
+        env, static_cast<int>(content::BackForwardCache::NotRestoredReason::
+                                  kWebViewSettingsChanged));
+  }
+
+  if (!in_update_everything_locked_) {
+    // The setting was explicitly updated, since this is not part of the
+    // UpdateEverythingLocked call. Register a synthetic field trial so that
+    // even if we do experiments that are not run via Finch, we can still
+    // identify the "BFCache enabled" vs "BFCache disabled" groups for UMA and
+    // crash comparison. Note that we only register when the setting was
+    // explicitly updated, to exclude cases that are not part of any experiment
+    // groups at all (e.g. when we're on a version of the WebView embedder that
+    // doesn't have the experiment at all).
+    static constexpr char kBackForwardCacheTrial[] =
+        "WebViewBackForwardCacheSynthetic";
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        AwMetricsServiceClient::GetInstance()->GetMetricsService(),
+        kBackForwardCacheTrial,
+        bfcache_enabled_in_java_settings_ ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kNextLog);
+  }
+}
+
+void AwSettings::UpdateGeolocationEnabledLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents()) {
+    return;
+  }
+
+  geolocation_enabled_ = Java_AwSettings_getGeolocationEnabled(env, obj);
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,
@@ -563,6 +675,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->initialize_at_minimum_page_scale =
       Java_AwSettings_getLoadWithOverviewModeLocked(env, obj);
 
+  initial_page_scale_is_non_default_ |=
+      (web_prefs->initialize_at_minimum_page_scale);
+
   web_prefs->autoplay_policy =
       Java_AwSettings_getMediaPlaybackRequiresUserGestureLocked(env, obj)
           ? blink::mojom::AutoplayPolicy::kUserGestureRequired
@@ -645,8 +760,10 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
         Java_AwSettings_isAlgorithmicDarkeningAllowedLocked(env, obj));
   }
 
-  // WebView does not support WebAuthn yet. See crbug.com/1284805.
   web_prefs->disable_webauthn = true;
+  if (Java_AwSettings_getWebauthnSupportLocked(env, obj) != 0) {
+    web_prefs->disable_webauthn = false;
+  }
 }
 
 bool AwSettings::IsForceDarkApplied(JNIEnv* env,
@@ -663,6 +780,11 @@ bool AwSettings::PrefersDarkFromTheme(JNIEnv* env,
     return aw_dark_mode->prefers_dark_from_theme();
   }
   return false;
+}
+
+base::android::ScopedJavaLocalRef<jobject> AwSettings::GetJavaObject() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return aw_settings_.get(env);
 }
 
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
@@ -708,6 +830,21 @@ static jlong JNI_AwSettings_Init(JNIEnv* env,
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);
   return reinterpret_cast<intptr_t>(settings);
+}
+
+static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  base::android::ScopedJavaLocalRef<jobject> jaw_settings;
+
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  AwSettings* aw_settings =
+      web_contents ? AwSettings::FromWebContents(web_contents) : nullptr;
+  if (aw_settings) {
+    jaw_settings = aw_settings->GetJavaObject();
+  }
+  return jaw_settings;
 }
 
 static ScopedJavaLocalRef<jstring> JNI_AwSettings_GetDefaultUserAgent(

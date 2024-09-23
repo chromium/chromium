@@ -26,21 +26,27 @@ enum class Error {
 // the enums below; the order must be kept stable.
 enum class ErrorCategory {
   kNone = 0,
-  kDownload,
-  kUnpack,
-  kInstall,
-  kService,  // Runtime errors which occur in the service itself.
-  kUpdateCheck,
+  kDownload = 1,
+  kUnpack = 2,
+  kInstall = 3,
+  kService = 4,  // Runtime errors which occur in the service itself.
+  kUpdateCheck = 5,
+  // kUnknown = 6, defined in `updater_service.mojom`.
+  kInstaller = 7,
 };
 
-// These errors are returned with the |kNetworkError| error category. This
-// category could include other errors such as the errors defined by
-// the Chrome net stack.
+// These errors are returned with the `kDownload` error category. This category
+// could include other errors such as the errors defined by the Chrome net
+// stack.
 enum class CrxDownloaderError {
   NONE = 0,
   NO_URL = 10,
   NO_HASH = 11,
   BAD_HASH = 12,  // The downloaded file fails the hash verification.
+  DISK_FULL = 13,
+  CANCELLED = 14,
+  NO_DOWNLOAD_DIR = 15,
+
   // The Windows BITS queue contains to many update client jobs. The value is
   // chosen so that it can be reported as a custom COM error on this platform.
   BITS_TOO_MANY_JOBS = 0x0200,
@@ -136,6 +142,12 @@ enum class ProtocolError : int {
   NO_HASH = -10011,
   UNSUPPORTED_PROTOCOL = -10012,
   INTERNAL = -10013,
+};
+
+struct CategorizedError {
+  ErrorCategory category_ = ErrorCategory::kNone;
+  int code_ = 0;
+  int extra_ = 0;
 };
 
 }  // namespace update_client

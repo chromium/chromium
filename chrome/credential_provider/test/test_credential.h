@@ -5,9 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 #define CHROME_CREDENTIAL_PROVIDER_TEST_TEST_CREDENTIAL_H_
 
-#include "base/win/atl.h"
-
-#include <atlcomcli.h>
 #include <credentialprovider.h>
 
 #include <memory>
@@ -16,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/win/atl.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"

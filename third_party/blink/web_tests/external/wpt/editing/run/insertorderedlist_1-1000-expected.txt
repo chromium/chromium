@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 235 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") after
@@ -178,8 +178,6 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo</ol>[bar]<ol><li>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol>" but got "<ol><li>foo<br></li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><ol><li>[foo]</ol></ol>" queryCommandValue("insertorderedlist") after
@@ -221,25 +219,21 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li><div>[foo]</div>bar<li>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<li>bar<br></li><ol><li>baz</li></ol></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo<li>bar</li><ol><li>baz</li></ol></li><li>quz</li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><li>baz<br></li></li><li>quz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo<ol><li>bar</li></ol><li>baz</li></li><li>quz</li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><ol><li>baz</li></ol><li>quz</li></ol>" but got "<ol><li>foo</li><li>bar<br></li><ol><li>baz</li></ol><li>quz</li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol><li>baz</li><li>quz</li></ol>" but got "<ol><li>foo</li><ol><li>bar</li></ol><li>baz<br></li><li>quz</li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>" queryCommandValue("insertorderedlist") after
@@ -293,37 +287,37 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><div>quz</div>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><div>quz</div>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><p>quz</p>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol><p>quz</p>" but got "<ol><li>foo<ol><li>bar</li><li>baz</li></ol></li></ol>quz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><div>quz</div>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><div>quz</div>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><p>quz</p>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol><p>quz</p>" but got "<ol><li>foo</li><ol><li>bar</li><li>baz</li></ol></ol>quz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><div>bar</div><div>baz</div>" but got "<ol><li>foo</li></ol>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><div>bar</div><div>baz</div>" but got "<ol><li>foo</li></ol>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p><p>baz</p>" but got "<ol><li>foo</li></ol>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li></ol><p>bar</p><p>baz</p>" but got "<ol><li>foo</li></ol>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<li>[bar<li>baz]</ol>" queryCommandValue("insertorderedlist") after
@@ -349,7 +343,7 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo<li>bar<br></li></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><div>baz</div>" but got "<ol><li>foo<li>bar</li></li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("insertorderedlist") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("insertorderedlist") before
@@ -359,7 +353,7 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo<li>bar<br></li></li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li></ol><p>baz</p>" but got "<ol><li>foo<li>bar</li></li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandState("insertorderedlist") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>" queryCommandValue("insertorderedlist") before
@@ -385,37 +379,37 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><ol><li>bar</li></ol><li>baz</li></ol>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo]<ol><li>bar</ol>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar<br></li>baz</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><li>bar</li><li>baz</li></ol>" but got "<ol><li>foo<li>bar</li>baz</li></ol>"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["insertorderedlist",""]] "<ol><li>foo<ol><li>[bar]</ol>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><div>baz</div>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><div>baz</div>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><p>baz</p>" but got "foo<ol><li>bar</li></ol>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo</li><ol><li>bar</li></ol></ol><p>baz</p>" but got "foo<ol><li>bar</li></ol>baz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "true"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>foo<ol><li>bar</ol>[baz]</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandState("insertorderedlist") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertorderedlist") before
@@ -425,7 +419,7 @@ Found 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["defaultparagraphseparator","div"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br>baz<br>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><ol><li>bar</li><li>baz</li></ol>" but got "foo<br>bar<br>baz"
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandState("insertorderedlist") before
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["defaultparagraphseparator","p"],["insertorderedlist",""]] "<ol><li>[foo<ol><li>bar]</ol>baz</ol>" queryCommandValue("insertorderedlist") before

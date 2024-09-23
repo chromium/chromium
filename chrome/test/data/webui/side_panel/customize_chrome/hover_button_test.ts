@@ -6,13 +6,14 @@ import 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
 
 import type {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HoverButtonTest', () => {
   let hoverButtonElement: HoverButtonElement;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     hoverButtonElement =
         document.createElement('customize-chrome-hover-button');
@@ -24,6 +25,7 @@ suite('HoverButtonTest', () => {
       async () => {
         // Act.
         hoverButtonElement.label = 'foo';
+        await microtasksFinished();
 
         // Assert.
         const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(
@@ -41,6 +43,7 @@ suite('HoverButtonTest', () => {
         // Act.
         hoverButtonElement.label = 'foo';
         hoverButtonElement.labelDescription = 'bar';
+        await microtasksFinished();
 
         // Assert.
         const buttonLabel = hoverButtonElement.shadowRoot!.querySelector(
@@ -68,5 +71,36 @@ suite('HoverButtonTest', () => {
       keyDownOn(hoverButtonElement, 0, [], ' ');
     });
     assertTrue(clickEventHappened);
+  });
+
+  test('icon shows', () => {
+    // Set --cr-icon-image variable. In prod code this is done in a parent
+    // element.
+    const crIconImage = 'url("chrome://resources/images/open_in_new.svg")';
+    hoverButtonElement.style.setProperty('--cr-icon-image', crIconImage);
+
+    // Assert that icon is visible.
+    const icon = hoverButtonElement.shadowRoot!.querySelector<HTMLElement>(
+        '#icon.cr-icon');
+    assertTrue(!!icon);
+    assertTrue(isVisible(icon));
+
+    // Assert that `--cr-icon-image` propagates to the icon's `mask-image`
+    // property.
+    const maskImageProperty = icon.computedStyleMap().get('mask-image');
+    assertTrue(!!maskImageProperty);
+    assertEquals(crIconImage, maskImageProperty.toString());
+  });
+
+  test('focus transfers to inner button', () => {
+    assertNotEquals(
+        hoverButtonElement.shadowRoot!.activeElement,
+        hoverButtonElement.$.hoverButton);
+
+    hoverButtonElement.focus();
+
+    assertEquals(
+        hoverButtonElement.shadowRoot!.activeElement,
+        hoverButtonElement.$.hoverButton);
   });
 });

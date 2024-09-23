@@ -206,7 +206,7 @@ void FlatlandWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
 }
 
 gfx::Rect FlatlandWindow::GetBoundsInDIP() const {
-  // TODO(crbug.com/1382849): Remove the hardcoded values and return
+  // TODO(crbug.com/42050542): Remove the hardcoded values and return
   // |logical_size_|.
   return platform_window_delegate_->ConvertRectToDIP(bounds_);
 }
@@ -291,7 +291,7 @@ PlatformWindowState FlatlandWindow::GetPlatformWindowState() const {
   if (!is_view_attached_)
     return PlatformWindowState::kMinimized;
 
-  // TODO(crbug.com/1241868): We cannot tell what portion of the screen is
+  // TODO(crbug.com/42050332): We cannot tell what portion of the screen is
   // occupied by the View, so report is as maximized to reduce the space used
   // by any browser chrome.
   return PlatformWindowState::kMaximized;

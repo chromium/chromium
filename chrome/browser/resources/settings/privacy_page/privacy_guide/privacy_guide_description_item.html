@@ -5,7 +5,7 @@
     padding-inline-end: 12px;
   }
 
-  iron-icon {
+  cr-icon {
     --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
         var(--google-grey-700));
     display: flex;
@@ -16,14 +16,14 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    iron-icon {
+    cr-icon {
       --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
           var(--google-grey-500));
     }
   }
 </style>
 <div id="descriptionItemWrapper">
-  <iron-icon icon="[[icon]]" aria-hidden="true"></iron-icon>
+  <cr-icon icon="[[icon]]" aria-hidden="true"></cr-icon>
   <div class="secondary">
     <div inner-h-t-m-l="[[sanitizeInnerHtml_(labelHtml)]]"></div>
     [[label]]

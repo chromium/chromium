@@ -57,7 +57,7 @@ class SuffixTree {
   USING_FAST_MALLOC(SuffixTree);
 
  public:
-  SuffixTree(const String& text, unsigned depth) : depth_(depth), leaf_(true) {
+  SuffixTree(const String& text, unsigned depth) : leaf_(true), depth_(depth) {
     Build(text);
   }
   SuffixTree(const SuffixTree&) = delete;
@@ -128,13 +128,13 @@ class SuffixTree {
     }
   }
 
-  Node root_;
-  unsigned depth_;
-
   // Instead of allocating a fresh empty leaf node for ever leaf in the tree
   // (there can be a lot of these), we alias all the leaves to this "static"
   // leaf node.
   Node leaf_;
+
+  Node root_;
+  unsigned depth_;
 };
 
 }  // namespace blink

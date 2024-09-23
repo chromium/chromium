@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/ssl_errors/error_info.h"
 
 #include <stddef.h>
@@ -176,13 +181,20 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_CERTIFICATE_TRANSPARENCY_REQUIRED_DESCRIPTION);
       break;
+    case CERT_NON_UNIQUE_NAME:
+      details =
+          l10n_util::GetStringFUTF16(IDS_CERT_ERROR_NON_UNIQUE_NAME_DETAILS,
+                                     UTF8ToUTF16(request_url.host()));
+      short_description =
+          l10n_util::GetStringUTF16(IDS_CERT_ERROR_NON_UNIQUE_NAME_DESCRIPTION);
+      break;
     case UNKNOWN:
       details = l10n_util::GetStringUTF16(IDS_CERT_ERROR_UNKNOWN_ERROR_DETAILS);
       short_description =
           l10n_util::GetStringUTF16(IDS_CERT_ERROR_UNKNOWN_ERROR_DESCRIPTION);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ErrorInfo(details, short_description);
 }
@@ -210,6 +222,8 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_INVALID;
     case net::ERR_CERT_WEAK_SIGNATURE_ALGORITHM:
       return CERT_WEAK_SIGNATURE_ALGORITHM;
+    case net::ERR_CERT_NON_UNIQUE_NAME:
+      return CERT_NON_UNIQUE_NAME;
     case net::ERR_CERT_WEAK_KEY:
       return CERT_WEAK_KEY;
     case net::ERR_CERT_NAME_CONSTRAINT_VIOLATION:
@@ -225,7 +239,7 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return UNKNOWN;
   }
 }
@@ -245,6 +259,7 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_REVOKED,
       net::CERT_STATUS_INVALID,
       net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM,
+      net::CERT_STATUS_NON_UNIQUE_NAME,
       net::CERT_STATUS_WEAK_KEY,
       net::CERT_STATUS_NAME_CONSTRAINT_VIOLATION,
       net::CERT_STATUS_VALIDITY_TOO_LONG,
@@ -262,6 +277,7 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERT_REVOKED,
       CERT_INVALID,
       CERT_WEAK_SIGNATURE_ALGORITHM,
+      CERT_NON_UNIQUE_NAME,
       CERT_WEAK_KEY,
       CERT_NAME_CONSTRAINT_VIOLATION,
       CERT_VALIDITY_TOO_LONG,

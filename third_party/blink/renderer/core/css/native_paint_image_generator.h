@@ -22,6 +22,11 @@ class CORE_EXPORT NativePaintImageGenerator
   virtual void Shutdown() = 0;
 
   virtual void Trace(Visitor* visitor) const {}
+
+  static bool NativePaintWorkletAnimationsEnabled() {
+    return RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
+           RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled();
+  }
 };
 
 }  // namespace blink

@@ -38,7 +38,7 @@ std::string EventTypeToString(ServiceWorkerMetrics::EventType event) {
     case ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_SUCCESS:
       return "BackgroundFetchSuccessEvent";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -99,7 +99,7 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchCompletionEvent(
                                        std::move(finished_closure));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BackgroundFetchEventDispatcher::DispatchBackgroundFetchAbortEvent(

@@ -16,34 +16,44 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   ~FakeTrustedVaultClientBackend() final;
 
   // TrustedVaultClientBackend implementation.
-  void AddObserver(Observer* observer) final;
-  void RemoveObserver(Observer* observer) final;
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 KeyFetchedCallback callback) final;
+                 trusted_vault::SecurityDomainId security_domain_id,
+                 KeyFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            base::OnceClosure callback) final;
+                            trusted_vault::SecurityDomainId security_domain_id,
+                            base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback) final;
-  void Reauthentication(id<SystemIdentity> identity,
-                        UIViewController* presenting_view_controller,
-                        CompletionBlock callback) final;
-  void FixDegradedRecoverability(id<SystemIdentity> identity,
-                                 UIViewController* presenting_view_controller,
-                                 CompletionBlock callback) final;
-  void CancelDialog(BOOL animated, ProceduralBlock callback) final;
+      trusted_vault::SecurityDomainId security_domain_id,
+      base::OnceCallback<void(bool)> completion) final;
+  CancelDialogCallback Reauthentication(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion) final;
+  CancelDialogCallback FixDegradedRecoverability(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      base::OnceCallback<void(bool)> callback) final;
+                      trusted_vault::SecurityDomainId security_domain_id,
+                      base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
-                               GetPublicKeyCallback callback) final;
+                               GetPublicKeyCallback completion) final;
 
   // Simulates user cancelling the reauth dialog.
   void SimulateUserCancel();
 
  private:
+  // Dismisses the `view_controller_`.
+  void InternalCancelDialog(BOOL animated, ProceduralBlock callback);
+
   FakeTrustedVaultClientBackendViewController* view_controller_ = nil;
+
+  base::WeakPtrFactory<FakeTrustedVaultClientBackend> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_SIGNIN_FAKE_TRUSTED_VAULT_CLIENT_BACKEND_H_

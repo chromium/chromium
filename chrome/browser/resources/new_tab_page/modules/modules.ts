@@ -13,7 +13,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import type {ModuleIdName} from '../new_tab_page.mojom-webui.js';
-import {OptInStatus} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import type {Module} from './module_descriptor.js';
@@ -38,9 +37,6 @@ export interface ModulesElement {
     removeModuleToast: CrToastElement,
     removeModuleToastMessage: HTMLElement,
     undoRemoveModuleButton: HTMLElement,
-    removeModuleFreToast: CrToastElement,
-    removeModuleFreToastMessage: HTMLElement,
-    undoRemoveModuleFreButton: HTMLElement,
   };
 }
 
@@ -70,31 +66,6 @@ export class ModulesElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
         reflectToAttribute: true,
-      },
-
-      moduleImpressionDetected_: Boolean,
-
-      modulesFreRemoved_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * When the first run experience (FRE) is disabled and modules are
-       * enabled, we show the modules without a FRE.
-       */
-      modulesFreShown: {
-        type: Boolean,
-        computed:
-            `computeModulesFreShown_(modulesLoaded_, modulesFreVisible_, modulesShownToUser)`,
-        observer: 'onModulesFreShownChange_',
-        notify: true,
-        reflectToAttribute: true,
-      },
-
-      modulesFreVisible_: {
-        type: Boolean,
-        value: false,
       },
 
       modulesLoaded_: Boolean,
@@ -129,18 +100,13 @@ export class ModulesElement extends PolymerElement {
   private dismissedModules_: string[];
   private disabledModules_: {all: boolean, ids: string[]};
   private dragEnabled_: boolean;
-  private moduleImpressionDetected_: boolean;
   private modulesIdNames_: ModuleIdName[];
-  private modulesFreRemoved_: boolean;
-  private modulesFreShown: boolean;
-  private modulesFreVisible_: boolean;
   private modulesLoaded_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
   private modulesShownToUser: boolean;
   private modulesVisibilityDetermined_: boolean;
   private removedModuleData_: {message: string, undo?: () => void}|null;
   private setDisabledModulesListenerId_: number|null = null;
-  private setModulesFreVisibilityListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -152,14 +118,7 @@ export class ModulesElement extends PolymerElement {
                   this.disabledModules_ = {all, ids};
                   this.modulesVisibilityDetermined_ = true;
                 });
-    this.setModulesFreVisibilityListenerId_ =
-        NewTabPageProxy.getInstance()
-            .callbackRouter.setModulesFreVisibility.addListener(
-                (visible: boolean) => {
-                  this.modulesFreVisible_ = visible;
-                });
     NewTabPageProxy.getInstance().handler.updateDisabledModules();
-    NewTabPageProxy.getInstance().handler.updateModulesFreVisibility();
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
   }
 
@@ -168,9 +127,6 @@ export class ModulesElement extends PolymerElement {
     assert(this.setDisabledModulesListenerId_);
     NewTabPageProxy.getInstance().callbackRouter.removeListener(
         this.setDisabledModulesListenerId_);
-    assert(this.setModulesFreVisibilityListenerId_);
-    NewTabPageProxy.getInstance().callbackRouter.removeListener(
-        this.setModulesFreVisibilityListenerId_);
     this.eventTracker_.removeAll();
   }
 
@@ -191,7 +147,6 @@ export class ModulesElement extends PolymerElement {
   }
 
   private async renderModules_(): Promise<void> {
-    this.moduleImpressionDetected_ = false;
     this.modulesIdNames_ =
         (await NewTabPageProxy.getInstance().handler.getModulesIdNames()).data;
     const modules =
@@ -218,20 +173,6 @@ export class ModulesElement extends PolymerElement {
                       'dismiss-module', e => this.onDismissModule_(e));
                   moduleWrapper.addEventListener(
                       'disable-module', e => this.onDisableModule_(e));
-                  moduleWrapper.addEventListener('detect-impression', () => {
-                    if (!this.moduleImpressionDetected_) {
-                      // Executed the first time a module impression is
-                      // detected.
-                      NewTabPageProxy.getInstance()
-                          .handler.incrementModulesShownCount();
-                      if (this.modulesFreShown) {
-                        chrome.metricsPrivate.recordBoolean(
-                            `NewTabPage.Modules.FreImpression`,
-                            this.modulesFreShown);
-                      }
-                    }
-                    this.moduleImpressionDetected_ = true;
-                  });
 
                   const moduleContainer =
                       this.ownerDocument.createElement('div');
@@ -273,7 +214,6 @@ export class ModulesElement extends PolymerElement {
     // </if>
     if (ctrlKeyPressed && e.key === 'z') {
       this.onUndoRemoveModuleButtonClick_();
-      this.onUndoRemoveModuleFreButtonClick_();
     }
   }
 
@@ -373,10 +313,6 @@ export class ModulesElement extends PolymerElement {
     this.$.removeModuleToast.hide();
 
     this.removedModuleData_ = null;
-
-    // Prevent user from resurfacing FRE when they are undoing removal of
-    // module.
-    this.modulesFreRemoved_ = false;
   }
 
   /**
@@ -394,63 +330,9 @@ export class ModulesElement extends PolymerElement {
     this.appendModuleContainers_(moduleContainers);
   }
 
-  private computeModulesFreShown_(): boolean {
-    return loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
-        this.modulesLoaded_ && this.modulesFreVisible_ &&
-        this.modulesShownToUser;
-  }
-
-  private onModulesFreShownChange_() {
-    chrome.metricsPrivate.recordBoolean(
-        `NewTabPage.Modules.FreLoaded`, this.modulesFreShown);
-  }
-
   private onCustomizeModuleFre_() {
     this.dispatchEvent(
         new Event('customize-module', {bubbles: true, composed: true}));
-  }
-
-  private hideFre_() {
-    NewTabPageProxy.getInstance().handler.setModulesFreVisible(false);
-  }
-
-  private onModulesFreOptIn_() {
-    this.hideFre_();
-
-    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
-        OptInStatus.kExplicitOptIn);
-  }
-
-  private onModulesFreOptOut_() {
-    this.hideFre_();
-    NewTabPageProxy.getInstance().handler.setModulesVisible(false);
-
-    // Hide remove module toast in case user removed a module before opting out
-    // of fre.
-    this.$.removeModuleToast.hide();
-
-    // Any module the user removed before opting out of the FRE should not be
-    // restored if FRE opt out is undone.
-    this.removedModuleData_ = null;
-
-    this.modulesFreRemoved_ = true;
-
-    // Notify the user
-    this.$.removeModuleFreToast.show();
-
-    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
-        OptInStatus.kOptOut);
-  }
-
-  private onUndoRemoveModuleFreButtonClick_() {
-    if (!this.modulesFreRemoved_) {
-      return;
-    }
-
-    NewTabPageProxy.getInstance().handler.setModulesFreVisible(true);
-    NewTabPageProxy.getInstance().handler.setModulesVisible(true);
-    this.$.removeModuleFreToast.hide();
-    this.modulesFreRemoved_ = false;
   }
 
   /**

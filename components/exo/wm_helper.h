@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/display/window_tree_host_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace aura {
 class Window;
@@ -180,9 +180,9 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
   void AddTabletModeObserver(ash::TabletModeObserver* observer);
   void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
   void AddDisplayConfigurationObserver(
-      ash::WindowTreeHostManager::Observer* observer);
+      display::DisplayManagerObserver* observer);
   void RemoveDisplayConfigurationObserver(
-      ash::WindowTreeHostManager::Observer* observer);
+      display::DisplayManagerObserver* observer);
   void AddFrameThrottlingObserver();
   void RemoveFrameThrottlingObserver();
 

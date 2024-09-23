@@ -30,7 +30,7 @@ gfx::mojom::RRectFType GfxRRectFTypeToMojo(gfx::RRectF::Type type) {
     case gfx::RRectF::Type::kComplex:
       return gfx::mojom::RRectFType::kComplex;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::mojom::RRectFType::kEmpty;
 }
 
@@ -49,7 +49,7 @@ gfx::RRectF::Type MojoRRectFTypeToGfx(gfx::mojom::RRectFType type) {
     case gfx::mojom::RRectFType::kComplex:
       return gfx::RRectF::Type::kComplex;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::RRectF::Type::kEmpty;
 }
 

@@ -4,17 +4,14 @@
 
 #include "ash/wm/window_mini_view_header_view.h"
 
-#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -23,9 +20,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
+
 namespace {
 
 // The font delta of the window title.
@@ -108,25 +105,22 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 }
 
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
+  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysHeader,
-      GetHeaderRoundedCorners(window_mini_view_->source_window())));
+      header_view_rounded_corners_.value_or(
+          gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0))));
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
     gfx::RoundedCornersF& header_view_rounded_corners) {
   header_view_rounded_corners_ = header_view_rounded_corners;
+  RefreshHeaderViewRoundedCorners();
 }
 
 void WindowMiniViewHeaderView::ResetRoundedCorners() {
   header_view_rounded_corners_.reset();
-}
-
-gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
-    aura::Window* window) const {
-  return header_view_rounded_corners_.value_or(
-      gfx::RoundedCornersF(kWindowMiniViewHeaderCornerRadius,
-                           kWindowMiniViewHeaderCornerRadius, 0, 0));
+  RefreshHeaderViewRoundedCorners();
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView)

@@ -7,6 +7,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 blink_modules_sources("file_system_access") {
   sources = [
     "allow_shared_buffer_source_util.h",
+    "bucket_file_system_agent.cc",
+    "bucket_file_system_agent.h",
+    "bucket_file_system_builder.cc",
+    "bucket_file_system_builder.h",
     "data_transfer_item_file_system_access.cc",
     "data_transfer_item_file_system_access.h",
     "file_system_access_capacity_tracker.cc",
@@ -28,6 +32,10 @@ blink_modules_sources("file_system_access") {
     "file_system_file_handle.h",
     "file_system_handle.cc",
     "file_system_handle.h",
+    "file_system_observation.cc",
+    "file_system_observation.h",
+    "file_system_observation_collection.cc",
+    "file_system_observation_collection.h",
     "file_system_observer.cc",
     "file_system_observer.h",
     "file_system_sync_access_handle.cc",
@@ -43,6 +51,7 @@ blink_modules_sources("file_system_access") {
   ]
 
   deps = [
+    "//components/services/storage/public/cpp/buckets",
     "//third_party/blink/renderer/modules/permissions:permissions",
     "//third_party/blink/renderer/platform",
   ]

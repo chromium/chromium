@@ -11,10 +11,12 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_admin_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
@@ -33,6 +35,7 @@
 #include "device/bluetooth/floss/floss_logging_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
+#include "floss_dbus_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/floss/floss_admin_client.h"
@@ -50,6 +53,8 @@ static bool g_using_floss_dbus_manager_for_testing = false;
 
 // Wait 2s for clients to become ready before timing out.
 const int FlossDBusManager::kClientReadyTimeoutMs = 2000;
+// Wait 10s for bluetooth service to become ready before timing out.
+const int FlossDBusManager::kWaitServiceTimeoutMs = 10000;
 
 FlossDBusManager::ClientInitializer::ClientInitializer(
     base::OnceClosure on_ready,
@@ -73,19 +78,25 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
 
   CHECK(GetSystemBus()) << "Can't initialize real clients without DBus.";
 
-  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
-                               dbus::kObjectManagerGetManagedObjects);
+  BLUETOOTH_LOG(EVENT) << "FlossDBusManager checking for object manager";
 
-  VLOG(1) << "FlossDBusManager checking for object manager";
-  // Sets up callbacks checking for object manager support. Object manager is
-  // registered on the root object "/"
+#if BUILDFLAG(IS_CHROMEOS)
+  // Floss is always available on ChromeOS but could not yet be available right
+  // after boot. Always init the manager client here, which allows
+  // |BluetoothAdapterFloss| to register its observers right now. The client
+  // will be init-ed later by |WaitForServiceToBeAvailable|.
+  object_manager_supported_ = true;
+  object_manager_support_known_ = true;
+  mgmt_client_present_ = true;
+  client_bundle_ = std::make_unique<FlossClientBundle>(/*use_stubs=*/false);
+  instance_created_time_ = base::Time::Now();
+#endif
+
+  // Wait for the Floss Manager to be available
   GetSystemBus()
       ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
-      ->CallMethodWithErrorCallback(
-          &method_call, kDBusTimeoutMs,
-          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+      ->WaitForServiceToBeAvailable(
+          base::BindOnce(&FlossDBusManager::OnManagerServiceAvailable,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -343,10 +354,11 @@ bool FlossDBusManager::CallWhenObjectManagerSupportIsKnown(
 }
 
 void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
-  DVLOG(1) << "Floss Bluetooth supported. Initializing clients.";
   object_manager_supported_ = true;
 
-  client_bundle_ = std::make_unique<FlossClientBundle>(/*use_stubs=*/false);
+  if (!client_bundle_) {
+    client_bundle_ = std::make_unique<FlossClientBundle>(/*use_stubs=*/false);
+  }
 
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
@@ -369,9 +381,44 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   object_manager_->RegisterInterface(kSocketManagerInterface, this);
 }
 
+void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
+  BLUETOOTH_LOG(EVENT) << "Floss Manager is available: " << is_available;
+  if (!is_available) {
+#if BUILDFLAG(IS_CHROMEOS)
+    device::RecordFlossManagerClientInit(
+        false, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    if (!object_manager_support_known_) {
+      object_manager_support_known_ = true;
+      if (object_manager_support_known_callback_) {
+        std::move(object_manager_support_known_callback_).Run();
+      }
+    }
+    return;
+  }
+
+  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
+                               dbus::kObjectManagerGetManagedObjects);
+
+  // Sets up callbacks checking for object manager support. Object manager is
+  // registered on the root object "/"
+  GetSystemBus()
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
+      ->CallMethodWithErrorCallback(
+          &method_call, kDBusTimeoutMs,
+          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FlossDBusManager::OnObjectManagerNotSupported(
     dbus::ErrorResponse* response) {
-  DVLOG(1) << "Floss Bluetooth not supported.";
+  BLUETOOTH_LOG(ERROR) << "Floss Bluetooth not supported.";
+#if BUILDFLAG(IS_CHROMEOS)
+  device::RecordFlossManagerClientInit(
+      false, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
@@ -385,7 +432,10 @@ void FlossDBusManager::OnObjectManagerNotSupported(
 void FlossDBusManager::OnManagerClientInitComplete() {
   mgmt_client_present_ = client_bundle_->manager_client()->IsInitialized();
   DVLOG(1) << "Floss manager client initialized: " << mgmt_client_present_;
-
+#if BUILDFLAG(IS_CHROMEOS)
+  device::RecordFlossManagerClientInit(
+      mgmt_client_present_, base::Time::Now() - instance_created_time_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
     std::move(object_manager_support_known_callback_).Run();
@@ -409,6 +459,10 @@ bool FlossDBusManager::HasActiveAdapter() const {
 
 int FlossDBusManager::GetActiveAdapter() const {
   return active_adapter_;
+}
+
+bool FlossDBusManager::AreClientsReady() const {
+  return client_on_ready_ && client_on_ready_->Finished();
 }
 
 FlossAdapterClient* FlossDBusManager::GetAdapterClient() {

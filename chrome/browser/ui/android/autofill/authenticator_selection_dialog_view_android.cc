@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "chrome/browser/ui/android/autofill/internal/jni_headers/AuthenticatorSelectionDialogBridge_jni.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller.h"
@@ -20,6 +19,9 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/autofill/internal/jni_headers/AuthenticatorSelectionDialogBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;

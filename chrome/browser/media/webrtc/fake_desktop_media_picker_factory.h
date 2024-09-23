@@ -19,7 +19,7 @@ class FakeDesktopMediaPicker;
 // Used in tests to supply fake picker.
 class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
  public:
-  // TODO(crbug.com/1179665): Make this less error prone - use WithX() methods.
+  // TODO(crbug.com/40169647): Make this less error prone - use WithX() methods.
   struct TestFlags {
     bool expect_screens = false;
     bool expect_windows = false;

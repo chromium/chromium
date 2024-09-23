@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="96dp"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  tools:ignore="UnusedResources">
+
+  <include layout="@layout/tab_group_favicon_cluster" />
+
+  <Space
+    android:layout_width="16dp"
+    android:layout_height="match_parent" />
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <View
+        android:id="@+id/tab_group_color"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:background="@drawable/tab_group_dialog_color_icon" />
+
+      <Space
+        android:layout_width="8dp"
+        android:layout_height="wrap_content" />
+
+      <TextView
+        android:id="@+id/tab_group_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    </LinearLayout>
+
+    <Space
+      android:layout_width="match_parent"
+      android:layout_height="8dp" />
+
+    <TextView
+      android:id="@+id/tab_group_subtitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:scrollHorizontally="true"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+  </LinearLayout>
+
+  <Space
+    android:layout_width="14dp"
+    android:layout_height="match_parent" />
+
+  <FrameLayout
+    android:id="@+id/image_tiles_container"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_weight="0"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/tab_group_share_tiles_padding"
+    android:visibility="gone">
+  </FrameLayout>
+
+  <Space
+    android:layout_width="14dp"
+    android:layout_height="match_parent" />
+
+  <org.chromium.ui.listmenu.ListMenuButton
+    android:id="@+id/more"
+    android:layout_width="@dimen/min_touch_target_size"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:src="@drawable/ic_more_vert_24dp"
+    app:tint="@color/default_icon_color_tint_list" />
+
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView>

@@ -13,17 +13,13 @@ declare_args() {
   # Enables printing support.
   enable_printing = !is_ios && !is_castos && !is_cast_android
 
-  # TODO(crbug.com/1432082): iOS blink port only enables printing_tests to run
+  # TODO(crbug.com/40263786): iOS blink port only enables printing_tests to run
   # unit tests and web tests for now because the port does not enable the
   # printing feature yet.
   enable_printing_tests = is_ios && use_blink
 }
 
 declare_args() {
-  # TODO(awscreen)  Safety net to avoid revert for a flag rename which affects
-  # many locations.  Remove this once `enable_printing` has landed.
-  enable_basic_printing = enable_printing
-
   # Enables printing with print preview.
   # Print preview requires PDF per //printing/BUILD.gn.
   # The is_android condition is currently redundant but left for clarity.
@@ -45,10 +41,6 @@ declare_args() {
   # based on `enable_print_preview`; this feature could still be appropriate
   # for some build configurations which explicitly disable print preview.
   enable_oop_printing = enable_printing && !is_android && !is_fuchsia
-
-  # Enable snapshotting a page when printing for its content to be analyzed for
-  # sensitive content by enterprise users.
-  enable_print_content_analysis = is_chromeos || is_win || is_linux || is_mac
 }
 
 declare_args() {
@@ -57,7 +49,7 @@ declare_args() {
   # Enables the printing system dialog being invoked from out-of-process for
   # platforms that support printing, have a system dialog, and which can invoke
   # that system print dialog from a process other than the browser process.
-  # TODO(crbug.com/809738)  Determine if Linux Wayland can be made to have a
+  # TODO(crbug.com/40561724)  Determine if Linux Wayland can be made to have a
   # system dialog be modal against an application window in the browser process.
   enable_oop_basic_print_dialog = enable_oop_printing && is_win
 
@@ -70,6 +62,6 @@ declare_args() {
 
 declare_args() {
   # Enables the CUPS IPP printing backend.
-  # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
-  use_cups_ipp = use_cups && !is_linux
+  # TODO(crbug.com/41003486): Remove this after CUPS PPD API calls are removed.
+  use_cups_ipp = use_cups
 }

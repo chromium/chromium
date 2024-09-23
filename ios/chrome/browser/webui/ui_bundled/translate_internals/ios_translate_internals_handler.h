@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_TRANSLATE_INTERNALS_IOS_TRANSLATE_INTERNALS_HANDLER_H_
 
 #include <string>
+#include <string_view>
 
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -37,9 +38,9 @@ class IOSTranslateInternalsHandler
   // translate::TranslateInternalsHandler.
   translate::TranslateClient* GetTranslateClient() override;
   variations::VariationsService* GetVariationsService() override;
-  void RegisterMessageCallback(base::StringPiece message,
+  void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
-  void CallJavascriptFunction(base::StringPiece function_name,
+  void CallJavascriptFunction(std::string_view function_name,
                               base::span<const base::ValueView> args) override;
 
   // web::WebUIIOSMessageHandler.

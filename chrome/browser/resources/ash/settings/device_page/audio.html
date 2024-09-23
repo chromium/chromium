@@ -191,8 +191,29 @@
         </cr-slider>
       </div>
     </div>
+    <div id="audioInputStyleTransferSubsection" class="settings-box"
+        hidden="[[!isStyleTransferSupported_]]"
+        on-click="onStyleTransferRowClicked_" actionable-row>
+      <div id="audioInputStyleTransferLabel"
+          class="settings-box-text start" aria-hidden="true">
+        $i18n{audioInputStyleTransferTitle}
+        <div class="secondary">
+          <localized-link
+              on-link-clicked="onStyleTransferLearnMoreLinkClicked_"
+              id="styleTransferSecondary"
+              localized-string="$i18n{audioInputStyleTransferDescription}">
+          </localized-link>
+        </div>
+      </div>
+      <cr-toggle id="audioInputStyleTransferToggle"
+          checked="{{isStyleTransferEnabled_}}"
+          aria-labelledby="audioInputStyleTransferLabel"
+          on-change="toggleStyleTransferEnabled_">
+      </cr-toggle>
+    </div>
     <div id="audioInputNoiseCancellationSubsection" class="settings-box"
-        hidden="[[!isNoiseCancellationSupported_]]">
+        hidden="[[!isNoiseCancellationSupported_]]"
+        on-click="onNoiseCancellationRowClicked_" actionable-row>
       <div id="audioInputNoiseCancellationLabel"
           class="settings-box-text start" aria-hidden="true">
         $i18n{audioInputNoiseCancellationTitle}
@@ -210,6 +231,21 @@
       </div>
       <cr-toggle id="audioInputAllowAGCToggle"
           checked="{{isAllowAGCEnabled}}">
+      </cr-toggle>
+    </div>
+    <div id="audioInputHfpMicSrSubsection" class="settings-box"
+        hidden="[[!showHfpMicSr]]">
+      <div id="audioInputHfpMicSrLabel"
+          class="settings-box-text start" aria-hidden="true">
+        $i18n{audioHfpMicSrTitle}
+        <div class="secondary">
+          $i18n{audioHfpMicSrDescription}
+        </div>
+      </div>
+      <cr-toggle id="audioInputHfpMicSrToggle"
+          checked="{{isHfpMicSrEnabled}}"
+          aria-labelledby="audioInputHfpMicSrLabel"
+          on-change="toggleHfpMicSrEnabled_">
       </cr-toggle>
     </div>
   </div>
@@ -230,7 +266,8 @@
         deep-link-focus-id$="[[Setting.kChargingSounds]]"
         hidden$="[[powerSoundsHidden_]]">
     </settings-toggle-button>
-    <div class="settings-box start-padding continuation">
+    <div class="settings-box start-padding continuation"
+        on-click="onDeviceStartupSoundRowClicked_" actionable-row>
       <div id="deviceStartupSoundEnabledLabel"
           class="start settings-box-text">
         $i18n{deviceStartupSoundLabel}

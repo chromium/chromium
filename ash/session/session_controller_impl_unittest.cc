@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -60,6 +61,7 @@ class TestSessionObserver : public SessionObserver {
   }
 
   void OnFirstSessionStarted() override { first_session_started_ = true; }
+  void OnFirstSessionReady() override { ++first_session_ready_count_; }
 
   void OnSessionStateChanged(SessionState state) override { state_ = state; }
 
@@ -80,6 +82,7 @@ class TestSessionObserver : public SessionObserver {
   SessionState state() const { return state_; }
   const AccountId& active_account_id() const { return active_account_id_; }
   bool first_session_started() const { return first_session_started_; }
+  int first_session_ready_count() const { return first_session_ready_count_; }
   const std::vector<AccountId>& user_session_account_ids() const {
     return user_session_account_ids_;
   }
@@ -93,6 +96,7 @@ class TestSessionObserver : public SessionObserver {
   SessionState state_ = SessionState::UNKNOWN;
   AccountId active_account_id_;
   bool first_session_started_ = false;
+  int first_session_ready_count_ = 0;
   std::vector<AccountId> user_session_account_ids_;
   raw_ptr<PrefService> last_user_pref_service_ = nullptr;
   int user_prefs_changed_count_ = 0;
@@ -182,7 +186,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   void CreateFullscreenWindow() {
     window_ = CreateTestWindow();
     window_->SetProperty(aura::client::kShowStateKey,
-                         ui::SHOW_STATE_FULLSCREEN);
+                         ui::mojom::WindowShowState::kFullscreen);
     window_state_ = WindowState::Get(window_.get());
   }
 
@@ -229,7 +233,7 @@ TEST_F(SessionControllerImplTest, SimpleSessionInfo) {
   EXPECT_TRUE(controller()->IsRunningInAppMode());
 }
 
-TEST_F(SessionControllerImplTest, OnFirstSessionStarted) {
+TEST_F(SessionControllerImplTest, FirstSession) {
   // Simulate chrome starting a user session.
   SessionInfo info;
   FillDefaultSessionInfo(&info);
@@ -239,6 +243,11 @@ TEST_F(SessionControllerImplTest, OnFirstSessionStarted) {
 
   // Observer is notified.
   EXPECT_TRUE(observer()->first_session_started());
+
+  EXPECT_EQ(0, observer()->first_session_ready_count());
+  // Simulate post login tasks finish.
+  controller()->NotifyFirstSessionReady();
+  EXPECT_EQ(1, observer()->first_session_ready_count());
 }
 
 // Tests that the CanLockScreen is only true with an active user session.
@@ -351,7 +360,6 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::UserType::kPublicAccount, LoginStatus::PUBLIC},
       {user_manager::UserType::kKioskApp, LoginStatus::KIOSK_APP},
       {user_manager::UserType::kChild, LoginStatus::CHILD},
-      {user_manager::UserType::kArcKioskApp, LoginStatus::KIOSK_APP},
       {user_manager::UserType::kWebKioskApp, LoginStatus::KIOSK_APP}
   };
 
@@ -1007,7 +1015,8 @@ using SessionControllerImplUnblockTest = NoSessionAshTestBase;
 
 TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
   EXPECT_TRUE(Shell::Get()->session_controller()->IsUserSessionBlocked());
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // |widget| should not be active as it is blocked by SessionControllerImpl.
   EXPECT_FALSE(widget->IsActive());
   SimulateUserLogin("user@test.com");

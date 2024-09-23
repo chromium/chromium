@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/gpu/gpu_internals_ui.h"
 
 #include <stddef.h>
@@ -85,28 +90,6 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
   source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
 }
 
-#if BUILDFLAG(IS_WIN)
-// Output DxDiagNode tree as nested array of {description,value} pairs
-base::Value::List DxDiagNodeToList(const gpu::DxDiagNode& node) {
-  base::Value::List list;
-  for (std::map<std::string, std::string>::const_iterator it =
-      node.values.begin();
-      it != node.values.end();
-      ++it) {
-    list.Append(display::BuildGpuInfoEntry(it->first, it->second));
-  }
-
-  for (std::map<std::string, gpu::DxDiagNode>::const_iterator it =
-      node.children.begin();
-      it != node.children.end();
-      ++it) {
-    base::Value sublist(DxDiagNodeToList(it->second));
-    list.Append(display::BuildGpuInfoEntry(it->first, std::move(sublist)));
-  }
-  return list;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
   if (!gpu.vendor_string.empty())
@@ -140,7 +123,6 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
 base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
                                   const gpu::GpuFeatureInfo& gpu_feature_info,
                                   const gfx::GpuExtraInfo& gpu_extra_info) {
-  const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
   base::Value::List basic_info;
   basic_info.Append(display::BuildGpuInfoEntry(
       "Initialization time",
@@ -158,6 +140,11 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
     basic_info.Append(display::BuildGpuInfoEntry(
         base::StringPrintf("GPU%d", static_cast<int>(i + 1)),
         GPUDeviceToString(gpu_info.secondary_gpus[i])));
+  }
+  for (size_t i = 0; i < gpu_info.npus.size(); ++i) {
+    basic_info.Append(display::BuildGpuInfoEntry(
+        base::StringPrintf("NPU%d", static_cast<int>(i)),
+        GPUDeviceToString(gpu_info.npus[i])));
   }
   basic_info.Append(
       display::BuildGpuInfoEntry("Optimus", base::Value(gpu_info.optimus)));
@@ -187,6 +174,9 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       "RGB10A2 overlay support",
       gpu::OverlaySupportToString(
           gpu_info.overlay_info.rgb10a2_overlay_support)));
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "P010 overlay support",
+      gpu::OverlaySupportToString(gpu_info.overlay_info.p010_overlay_support)));
 
   std::vector<gfx::PhysicalDisplaySize> display_sizes =
       gfx::GetPhysicalSizeForDisplays();
@@ -204,6 +194,10 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
   }
 
   basic_info.Append(display::BuildGpuInfoEntry(
+      "DirectML feature level",
+      gpu::DirectMLFeatureLevelToString(gpu_info.directml_feature_level)));
+
+  basic_info.Append(display::BuildGpuInfoEntry(
       "Driver D3D12 feature level",
       gpu::D3DFeatureLevelToString(gpu_info.d3d12_feature_level)));
 
@@ -212,9 +206,6 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       gpu::VulkanVersionToString(gpu_info.vulkan_version)));
 #endif
 
-  basic_info.Append(display::BuildGpuInfoEntry(
-      "GPU CUDA compute capability major version",
-      base::Value(active_gpu.cuda_compute_capability_major)));
   basic_info.Append(display::BuildGpuInfoEntry("Pixel shader version",
                                                gpu_info.pixel_shader_version));
   basic_info.Append(display::BuildGpuInfoEntry("Vertex shader version",
@@ -315,13 +306,6 @@ base::Value::Dict GetGpuInfo() {
   base::Value::List basic_info =
       GetBasicGpuInfo(gpu_info, gpu_feature_info, gpu_extra_info);
   info.Set("basicInfo", std::move(basic_info));
-
-#if BUILDFLAG(IS_WIN)
-  base::Value::List dx_info;
-  if (gpu_info.dx_diagnostics.children.size())
-    dx_info = DxDiagNodeToList(gpu_info.dx_diagnostics);
-  info.Set("diagnostics", std::move(dx_info));
-#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gpu_info.vulkan_info) {
@@ -458,7 +442,7 @@ const char* D3dFeatureLevelToString(D3D_FEATURE_LEVEL level) {
     case D3D_FEATURE_LEVEL_12_2:
       return "12_2";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -472,7 +456,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
     case gpu::HasDiscreteGpu::kYes:
       return "yes";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -632,7 +616,7 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
     case gpu::VVCPROFILE_MAIN16_444_STILL_PICTURE:
       return "vvc profile main16 444 stillpicture";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -804,10 +788,9 @@ void GpuMessageHandler::HandleGetGpuInfo(const base::Value::List& args) {
 
   // Tell GpuDataManager it should have full GpuInfo. If the
   // Gpu process has not run yet, this will trigger its launch.
-  GpuDataManagerImpl::GetInstance()
-      ->RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
-          GpuDataManagerImpl::kGpuInfoRequestAll,
-          /*delayed=*/false);
+  GpuDataManagerImpl::GetInstance()->RequestDx12VulkanVideoGpuInfoIfNeeded(
+      GpuDataManagerImpl::kGpuInfoRequestAll,
+      /*delayed=*/false);
 
   // Send current snapshot of gpu info. Any future updates will be communicated
   // via the OnGpuInfoUpdate() callback.

@@ -171,7 +171,7 @@ void MessageChannel::SetReadOnlyProperty(PP_Var key, PP_Var value) {
   if (key_string) {
     internal_named_properties_[key_string->value()] = ScopedPPVar(value);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -284,7 +284,7 @@ void MessageChannel::PostMessageToNative(gin::Arguments* args) {
 
   v8::Local<v8::Value> message_data;
   if (!args->GetNext(&message_data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   EnqueuePluginMessage(args->isolate(), message_data);
@@ -303,7 +303,7 @@ void MessageChannel::PostBlockingMessageToNative(gin::Arguments* args) {
 
   v8::Local<v8::Value> message_data;
   if (!args->GetNext(&message_data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (plugin_message_queue_state_ == WAITING_TO_START) {

@@ -5,7 +5,9 @@
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 
 #include <vector>
+
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -804,10 +806,9 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     mojo::ScopedDataPipeProducerHandle producer;
     EXPECT_EQ(MOJO_RESULT_OK,
               mojo::CreateDataPipe(&options, producer, consumer));
-    uint32_t bytes_written = body_from_net.size();
     EXPECT_EQ(MOJO_RESULT_OK,
-              producer->WriteData(body_from_net.data(), &bytes_written,
-                                  MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+              producer->WriteAllData(base::as_byte_span(body_from_net)));
+    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
     request->client->OnReceiveResponse(std::move(head), std::move(consumer),
                                        std::nullopt);
   }
@@ -977,9 +978,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest, ScriptType_Classic_Main) {
 
   const network::ResourceRequest* request = nullptr;
   ASSERT_TRUE(loader_factory->IsPending(kScriptURL, &request));
-  std::string header;
-  EXPECT_TRUE(request->headers.GetHeader("Service-Worker", &header));
-  EXPECT_EQ("script", header);
+  EXPECT_EQ("script", request->headers.GetHeader("Service-Worker"));
   EXPECT_EQ(request->mode, network::mojom::RequestMode::kSameOrigin);
   EXPECT_EQ(request->credentials_mode,
             network::mojom::CredentialsMode::kSameOrigin);
@@ -1013,8 +1012,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
 
   const network::ResourceRequest* request = nullptr;
   ASSERT_TRUE(loader_factory->IsPending(kImportedScriptURL, &request));
-  std::string header;
-  EXPECT_FALSE(request->headers.GetHeader("Service-Worker", &header));
+  EXPECT_EQ(request->headers.GetHeader("Service-Worker"), std::nullopt);
   EXPECT_EQ(request->mode, network::mojom::RequestMode::kNoCors);
   EXPECT_EQ(request->credentials_mode,
             network::mojom::CredentialsMode::kInclude);
@@ -1045,9 +1043,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest, ScriptType_Module_Main) {
 
   const network::ResourceRequest* request = nullptr;
   ASSERT_TRUE(loader_factory->IsPending(kScriptURL, &request));
-  std::string header;
-  EXPECT_TRUE(request->headers.GetHeader("Service-Worker", &header));
-  EXPECT_EQ("script", header);
+  EXPECT_EQ("script", request->headers.GetHeader("Service-Worker"));
   EXPECT_EQ(request->mode, network::mojom::RequestMode::kSameOrigin);
   EXPECT_EQ(request->credentials_mode, network::mojom::CredentialsMode::kOmit);
   EXPECT_EQ(request->destination,
@@ -1080,8 +1076,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
 
   const network::ResourceRequest* request = nullptr;
   ASSERT_TRUE(loader_factory->IsPending(kImportedScriptURL, &request));
-  std::string header;
-  EXPECT_FALSE(request->headers.GetHeader("Service-Worker", &header));
+  EXPECT_EQ(request->headers.GetHeader("Service-Worker"), std::nullopt);
   EXPECT_EQ(request->mode, network::mojom::RequestMode::kCors);
   EXPECT_EQ(request->credentials_mode, network::mojom::CredentialsMode::kOmit);
   EXPECT_EQ(request->destination,

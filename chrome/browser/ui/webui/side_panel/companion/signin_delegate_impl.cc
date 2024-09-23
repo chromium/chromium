@@ -11,7 +11,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -95,7 +95,7 @@ void SigninDelegateImpl::OpenUrlInBrowser(const GURL& url, bool use_new_tab) {
                                     : WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                 /*is_renderer_initiated*/ false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 bool SigninDelegateImpl::ShouldShowRegionSearchIPH() {

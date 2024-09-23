@@ -15,8 +15,9 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/display/manager/display_configurator.h"
 
 namespace arc {
 class ArcBridgeService;
@@ -26,6 +27,7 @@ class ArcBridgeService;
 class ArcIdleManager : public KeyedService,
                        public ArcPowerBridge::Observer,
                        public ash::ThrottleService,
+                       public display::DisplayConfigurator::Observer,
                        public ConnectionObserver<mojom::PowerInstance> {
  public:
   class Delegate {
@@ -82,8 +84,12 @@ class ArcIdleManager : public KeyedService,
   // This is the main idle toggle.
   void ThrottleInstance(bool should_idle) override;
 
+  // DisplayConfigurator::Observer:
+  void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
+
  private:
   void LogScreenOffTimer(bool toggle_timer);
+  void RequestDozeWithoutMetrics(bool enabled);
   void RequestDoze(bool enabled);
 
   bool first_idle_happened_ = false;
@@ -101,6 +107,20 @@ class ArcIdleManager : public KeyedService,
 
   base::ScopedObservation<ArcPowerBridge, ArcPowerBridge::Observer>
       powerbridge_observation_{this};
+
+  // During review, the team considered whether this notification
+  // should come from ArcDisplayPowerObserver to preserve the wall
+  // of abstraction between ArcIdleManager and its observers.
+  // We decided this direct approach was the better way to go, as
+  // the display state change triggers immediate configuration requests
+  // in ArcIdleManager, and we already have a precedent for this
+  // in OnVmMresumed().
+  // In the future, if this pattern repeats frequently, may consider
+  // refactoring.
+  base::ScopedObservation<display::DisplayConfigurator,
+                          display::DisplayConfigurator::Observer>
+      display_observation_{this};
+
   base::WeakPtrFactory<ArcIdleManager> weak_ptr_factory_{this};
 };
 

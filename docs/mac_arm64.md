@@ -5,7 +5,7 @@ The short summary is that almost everything works, without needing Rosetta.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
-that builds for Arm. It cross-builds on an Intel machine.
+that builds for Arm. It cross-builds on an x86-64 machine.
 
 There's a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel)
@@ -89,7 +89,7 @@ It's possible to build _on_ an arm Mac, without Rosetta. This
 configuration is covered by a [main waterfall
 bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel).
 
-Checking out and building (with goma too) should just work.
+Checking out and building (with reclient too) should just work.
 You should be able to run `fetch chromium` normally, and then build, using
 `gn`, `ninja` etc like normal.
 

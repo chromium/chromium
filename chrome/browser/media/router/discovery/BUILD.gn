@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(!is_android)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 static_library("discovery") {
   inputs = [ "$root_gen_dir/chrome/grit/generated_resources.h" ]
@@ -91,10 +92,6 @@ static_library("discovery") {
 
   if (is_posix) {
     sources += [ "discovery_network_list_posix.cc" ]
-  }
-
-  if (is_fuchsia) {
-    sources += [ "discovery_network_list_fuchsia.cc" ]
   }
 
   if (is_mac) {

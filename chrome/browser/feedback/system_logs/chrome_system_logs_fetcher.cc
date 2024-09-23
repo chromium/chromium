@@ -14,6 +14,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
+#include "components/supervised_user/core/common/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ash/system_logs/device_data_manager_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/input_event_converter_log_source.h"
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
+#include "chrome/browser/ash/system_logs/keyboard_info_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
@@ -43,6 +45,13 @@
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#endif
+
 namespace system_logs {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -53,7 +62,8 @@ constexpr char kLacrosUserLogKey[] = "lacros_user_log";
 }  // namespace
 #endif
 
-SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
+SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
+                                                bool scrub_data) {
   SystemLogsFetcher* fetcher = new SystemLogsFetcher(
       scrub_data, extension_misc::kBuiltInFirstPartyExtensionIds);
 
@@ -61,6 +71,17 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   fetcher->AddSource(std::make_unique<CrashIdsSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
   fetcher->AddSource(std::make_unique<PerformanceLogSource>());
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  // Identity manager is not available for Guest profile in ChromeOS ash.
+  if (identity_manager) {
+    fetcher->AddSource(std::make_unique<FamilyInfoLogSource>(
+        identity_manager, profile->GetURLLoaderFactory(),
+        *profile->GetPrefs()));
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These sources rely on scrubbing in SystemLogsFetcher.
@@ -83,6 +104,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
 
   fetcher->AddSource(std::make_unique<VirtualKeyboardLogSource>());
   fetcher->AddSource(std::make_unique<AppServiceLogSource>());
+  fetcher->AddSource(std::make_unique<KeyboardInfoLogSource>());
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   fetcher->AddSource(std::make_unique<RevenLogSource>());
 #endif
@@ -93,8 +115,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   // Add CrosapiSystemLogSource to get lacros system information log data
   // if Lacros is running and the crosapi version supports the Lacros remote
   // data source.
-  if (crosapi::BrowserManager::Get()->IsRunning() &&
-      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
     fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
   }
 #endif

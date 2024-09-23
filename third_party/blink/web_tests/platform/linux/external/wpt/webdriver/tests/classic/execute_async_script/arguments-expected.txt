@@ -1,0 +1,30 @@
+This is a wdspec test.
+[FAIL] test_no_such_shadow_root_with_unknown_id
+  AssertionError: assert 'no such element' == 'no such shadow root'
+[FAIL] test_invalid_argument_for_window_with_invalid_type[None-frame]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[None-window]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[False-frame]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[False-window]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[42-frame]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[42-window]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[value3-frame]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[value3-window]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[value4-frame]
+  assert 200 == 400
+[FAIL] test_invalid_argument_for_window_with_invalid_type[value4-window]
+  assert 200 == 400
+[FAIL] test_no_such_window_for_window_with_invalid_value
+  AssertionError: javascript error (500): javascript error: circular reference
+[FAIL] test_element_reference[frame]
+  AssertionError: javascript error (500): javascript error: circular reference
+[FAIL] test_element_reference[window]
+  AssertionError: javascript error (500): javascript error: circular reference
+Harness: the test ran to completion.

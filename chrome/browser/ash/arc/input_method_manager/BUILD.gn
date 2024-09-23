@@ -1,0 +1,84 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("input_method_manager") {
+  sources = [
+    "arc_input_method_manager_bridge.h",
+    "arc_input_method_manager_bridge_impl.cc",
+    "arc_input_method_manager_bridge_impl.h",
+    "arc_input_method_manager_service.cc",
+    "arc_input_method_manager_service.h",
+    "arc_input_method_state.cc",
+    "arc_input_method_state.h",
+    "input_connection_impl.cc",
+    "input_connection_impl.h",
+    "input_method_prefs.cc",
+    "input_method_prefs.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/common:constants",
+    "//chromeos/ash/services/ime/public/mojom",
+    "//components/crx_file",
+    "//components/keyed_service/content",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/display",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_input_method_manager_service_unittest.cc",
+    "arc_input_method_state_unittest.cc",
+    "input_connection_impl_unittest.cc",
+    "input_method_prefs_unittest.cc",
+    "test_input_method_manager_bridge.cc",
+    "test_input_method_manager_bridge.h",
+  ]
+
+  deps = [
+    ":input_method_manager",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/keyboard:ash_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/services/ime/public/cpp:structs",
+    "//chromeos/ui/base",
+    "//components/crx_file",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base",
+    "//ui/display:test_support",
+    "//ui/views",
+  ]
+}

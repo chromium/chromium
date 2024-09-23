@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  files = [
+    "about_sys_test.ts",
+    "test_about_sys_browser_proxy.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://system/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/about_sys/tsc/*",
+                    target_gen_dir) ]
+  ts_deps = [
+    "//chrome/browser/resources/about_sys:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

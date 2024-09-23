@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/history_embeddings/history_embeddings_features.h",
+  "+components/optimization_guide",
+  "+third_party/tflite_support",
+  "+third_party/sentencepiece/src/src",
+]

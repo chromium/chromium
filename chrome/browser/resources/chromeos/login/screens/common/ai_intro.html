@@ -1,0 +1,79 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles cros-color-overrides">
+  .slide-view {
+    border: 1px solid var(--google-grey-200);
+    border-radius: 16px;
+    height: 380px;
+    margin: auto;
+    overflow: hidden;
+    width: 380px;
+  }
+  :host-context(.jelly-enabled) .slide-view {
+    border: none;
+    border-radius: 20px;
+    height: 360px;
+  }
+
+  div[slot="subtitle"] p {
+    margin-top: 0;
+  }
+</style>
+<oobe-adaptive-dialog id="aiIntroDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-48:spark"></iron-icon>
+  <h1 slot="title" aria-live="polite">
+    [[i18nDynamic(locale, 'aiIntroScreenTitle')]]
+  </h1>
+  <div slot="subtitle" inner-h-t-m-l="[[i18nAdvancedDynamic(locale,
+      'aiIntroScreenSubtitle')]]">
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <oobe-carousel class="slide-view"
+        auto-transition="[[autoTransition]]"
+        slide-label="slideLabel"
+        selected-button-label="slideSelectedButtonLabel"
+        unselected-button-label="slideUnselectedButtonLabel">
+        <oobe-slide slot="slides">
+          <iron-icon slot="slide-img" icon="oobe-illos:ai-write"
+              class="illustration-jelly">
+          </iron-icon>
+          <div slot="title">
+            [[i18nDynamic(locale, 'slideWriteTitle')]]
+          </div>
+          <div slot="text">
+            [[i18nDynamic(locale, 'slideWriteText')]]
+          </div>
+        </oobe-slide>
+        <oobe-slide slot="slides">
+          <iron-icon slot="slide-img" icon="oobe-illos:ai-wallpaper"
+              class="illustration-jelly">
+          </iron-icon>
+          <div slot="title">
+            [[i18nDynamic(locale, 'slideWallpaperTitle')]]
+          </div>
+          <div slot="text">
+            [[i18nDynamic(locale, 'slideWallpaperText')]]
+          </div>
+        </oobe-slide>
+        <oobe-slide slot="slides">
+          <iron-icon slot="slide-img" icon="oobe-illos:ai-background"
+              class="illustration-jelly">
+          </iron-icon>
+          <div slot="title">
+            [[i18nDynamic(locale, 'slideBackgroundTitle')]]
+          </div>
+          <div slot="text">
+            [[i18nDynamic(locale, 'slideBackgroundText')]]
+          </div>
+        </oobe-slide>
+    </oobe-carousel>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" class="focus-on-show"
+        on-click="onNextClicked">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

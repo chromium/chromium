@@ -149,8 +149,8 @@ public interface Tab extends TabLifecycle {
     GURL getUrl();
 
     /**
-     * @return Original url of the tab without any Chrome feature modifications applied
-     *         (e.g. reader mode).
+     * @return Original url of the tab without any Chrome feature modifications applied (e.g. reader
+     *     mode).
      */
     GURL getOriginalUrl();
 
@@ -197,14 +197,35 @@ public interface Tab extends TabLifecycle {
     int getThemeColor();
 
     /**
+     * @return The background color for the current webpage.
+     */
+    int getBackgroundColor();
+
+    /**
      * @return {@code true} if the theme color from contents is valid and can be used for theming.
      */
     boolean isThemingAllowed();
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
      * @return {@code true} if the Tab is in incognito mode.
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
+    @Deprecated
     boolean isIncognito();
+
+    /**
+     * @return {@code true} if the Tab is in an off-the-record profile.
+     * @see {@link Profile#isOffTheRecord()}
+     */
+    boolean isOffTheRecord();
+
+    /**
+     * @return {@code true} if the Tab is in Incognito branded profile.
+     * @see {@link Profile#isIncognitoBranded()}
+     */
+    boolean isIncognitoBranded();
 
     /**
      * @return Whether the {@link Tab} is currently showing an error page.
@@ -241,9 +262,22 @@ public interface Tab extends TabLifecycle {
     LoadUrlResult loadUrl(LoadUrlParams params);
 
     /**
-     * Loads the tab if it's not loaded (e.g. because it was killed in background).
-     * This will trigger a regular load for tabs with pending lazy first load (tabs opened in
-     * background on low-memory devices).
+     * Freezes the tabs and stores the URL in the tab's WebContentsState. If the tab is already
+     * frozen this method still appends the navigation entry, but skips the process of freezing the
+     * tab.
+     *
+     * @param params Parameters describing the url load. Note that it is important to set correct
+     *     page transition as it is used for ranking URLs in the history so the omnibox can report
+     *     suggestions correctly.
+     * @param title The title of the tab to use on UI surfaces before it is navigated to.
+     */
+    void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title);
+
+    /**
+     * Loads the tab if it's not loaded (e.g. because it was killed in background). This will
+     * trigger a regular load for tabs with pending lazy first load (tabs opened in background on
+     * low-memory devices).
+     *
      * @param caller The caller of this method.
      * @return true iff the Tab handled the request.
      */
@@ -313,7 +347,13 @@ public interface Tab extends TabLifecycle {
      */
     int getParentId();
 
-    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
+    /**
+     * Set the parent identifier for the {@link Tab}. This method is only used as a temporary
+     * workaround for invalid parent ids being present in the tab state file.
+     */
+    void setParentId(int parentId);
+
+    // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
      * getTabGroupId()} as part of https://crbug.com/1523745.
@@ -362,13 +402,24 @@ public interface Tab extends TabLifecycle {
      */
     long getLastNavigationCommittedTimestampMillis();
 
-    /**
-     * @return launch type at creation
-     */
-    @Nullable
+    /** Returns launch type at creation. May be {@link TabLaunchType.UNSET} if unknown. */
     @TabLaunchType
-    Integer getTabLaunchTypeAtCreation();
+    int getTabLaunchTypeAtCreation();
 
     /** Sets the TabLaunchType for tabs launched with an unset launch type. */
     void setTabLaunchType(@TabLaunchType int launchType);
+
+    /** Update the title for the current page if changed. */
+    void updateTitle();
+
+    /**
+     * @return True if the back forward transition is in progress, including web page and native
+     *     page transitions.
+     */
+    boolean isDisplayingBackForwardAnimation();
+
+    /**
+     * @return True if we have a WebContents that's navigated to a trusted origin of a TWA.
+     */
+    boolean isTrustedWebActivity();
 }

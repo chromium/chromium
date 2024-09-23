@@ -5,15 +5,16 @@
 #ifndef CHROMEOS_CROSAPI_CPP_CHANNEL_TO_ENUM_H_
 #define CHROMEOS_CROSAPI_CPP_CHANNEL_TO_ENUM_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/version_info/channel.h"
 
 namespace crosapi {
 
 COMPONENT_EXPORT(CROSAPI)
-version_info::Channel ChannelToEnum(base::StringPiece channel);
+version_info::Channel ChannelToEnum(std::string_view channel);
 
 }  // namespace crosapi
 

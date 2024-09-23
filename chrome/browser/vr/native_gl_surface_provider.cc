@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/native_gl_surface_provider.h"
 
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"

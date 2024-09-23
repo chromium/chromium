@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -35,6 +36,10 @@ class SwitchAccessBackButtonBubbleControllerTest : public AshTestBase {
         ->accessibility_controller()
         ->GetSwitchAccessBubbleControllerForTest()
         ->back_button_controller_.get();
+  }
+
+  SwitchAccessBackButtonView* GetBackButton() {
+    return GetBubbleController()->back_button_view_;
   }
 
   void ShowBackButton(const gfx::Rect& anchor_rect) {
@@ -99,6 +104,16 @@ TEST_F(SwitchAccessBackButtonBubbleControllerTest, AdjustAnchorRect) {
                           display_bounds.bottom() - 10, 10, 10);
   ShowBackButton(anchor_rect);
   EXPECT_TRUE(display_bounds.Contains(GetBackButtonBounds()));
+}
+
+TEST_F(SwitchAccessBackButtonBubbleControllerTest,
+       SwitchAccessBackButtonViewAccessibleProperties) {
+  gfx::Rect anchor_rect(100, 100, 50, 50);
+  ShowBackButton(anchor_rect);
+  ui::AXNodeData data;
+
+  GetBackButton()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kButton, data.role);
 }
 
 }  // namespace ash

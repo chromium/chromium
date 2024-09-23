@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -33,7 +33,7 @@ class FileSystemDispatcher::WriteListener
   void ResultsRetrieved(
       Vector<filesystem::mojom::blink::DirectoryEntryPtr> entries,
       bool has_more) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ErrorOccurred(base::File::Error error_code) override {
@@ -70,7 +70,9 @@ class FileSystemDispatcher::ReadDirectoryListener
     callbacks_->DidFail(error_code);
   }
 
-  void DidWrite(int64_t byte_count, bool complete) override { NOTREACHED(); }
+  void DidWrite(int64_t byte_count, bool complete) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
  private:
   std::unique_ptr<EntriesCallbacks> callbacks_;

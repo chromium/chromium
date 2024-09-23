@@ -5,12 +5,12 @@
 #ifndef BASE_WIN_SID_H_
 #define BASE_WIN_SID_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::win {
 
@@ -75,10 +75,10 @@ class BASE_EXPORT Sid {
   static Sid FromKnownSid(WellKnownSid type);
 
   // Create a Sid from a SDDL format string, such as S-1-1-0.
-  static absl::optional<Sid> FromSddlString(const std::wstring& sddl_sid);
+  static std::optional<Sid> FromSddlString(const std::wstring& sddl_sid);
 
   // Create a Sid from a PSID pointer.
-  static absl::optional<Sid> FromPSID(const PSID sid);
+  static std::optional<Sid> FromPSID(const PSID sid);
 
   // Generate a random SID value.
   static Sid GenerateRandomSid();
@@ -87,7 +87,7 @@ class BASE_EXPORT Sid {
   static Sid FromIntegrityLevel(DWORD integrity_level);
 
   // Create a vector of SIDs from a vector of SDDL format strings.
-  static absl::optional<std::vector<Sid>> FromSddlStringVector(
+  static std::optional<std::vector<Sid>> FromSddlStringVector(
       const std::vector<std::wstring>& sddl_sids);
 
   // Create a vector of SIDs from a vector of capability names.
@@ -117,7 +117,7 @@ class BASE_EXPORT Sid {
   PSID GetPSID() const;
 
   // Converts the SID to a SDDL format string.
-  absl::optional<std::wstring> ToSddlString() const;
+  std::optional<std::wstring> ToSddlString() const;
 
   // Make a clone of the current Sid object.
   Sid Clone() const;

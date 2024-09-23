@@ -381,11 +381,8 @@ std::unique_ptr<Render::QueryPictFormatsReply> detail::ReadReply<
   auto& num_visuals = (*reply).num_visuals;
   uint32_t num_subpixel{};
   auto& formats = (*reply).formats;
-  size_t formats_len = formats.size();
   auto& screens = (*reply).screens;
-  size_t screens_len = screens.size();
   auto& subpixels = (*reply).subpixels;
-  size_t subpixels_len = subpixels.size();
 
   // response_type
   uint8_t response_type;
@@ -493,7 +490,6 @@ std::unique_ptr<Render::QueryPictFormatsReply> detail::ReadReply<
       uint32_t num_depths{};
       auto& fallback = screens_elem.fallback;
       auto& depths = screens_elem.depths;
-      size_t depths_len = depths.size();
 
       // num_depths
       Read(&num_depths, &buf);
@@ -509,7 +505,6 @@ std::unique_ptr<Render::QueryPictFormatsReply> detail::ReadReply<
           auto& depth = depths_elem.depth;
           uint16_t num_visuals{};
           auto& visuals = depths_elem.visuals;
-          size_t visuals_len = visuals.size();
 
           // depth
           Read(&depth, &buf);
@@ -604,7 +599,6 @@ std::unique_ptr<Render::QueryPictIndexValuesReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   uint32_t num_values{};
   auto& values = (*reply).values;
-  size_t values_len = values.size();
 
   // response_type
   uint8_t response_type;
@@ -2382,9 +2376,7 @@ std::unique_ptr<Render::QueryFiltersReply> detail::ReadReply<
   uint32_t num_aliases{};
   uint32_t num_filters{};
   auto& aliases = (*reply).aliases;
-  size_t aliases_len = aliases.size();
   auto& filters = (*reply).filters;
-  size_t filters_len = filters.size();
 
   // response_type
   uint8_t response_type;

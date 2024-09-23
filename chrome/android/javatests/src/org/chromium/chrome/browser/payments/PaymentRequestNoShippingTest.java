@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -22,8 +23,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.payments.Event;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.payments.Event2;
 
 import java.util.concurrent.TimeoutException;
 
@@ -129,7 +129,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on "Continue"
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -149,7 +149,7 @@ public class PaymentRequestNoShippingTest {
         // must-call-complete timer, however the back button cancellation then tears down the
         // PaymentRequest state - including setting the must-call-complete timer to failed.
         //
-        // TODO(crbug.com/1375286): Avoid ending up in this state.
+        // TODO(crbug.com/40872814): Avoid ending up in this state.
         Assert.assertEquals(
                 "\"Failed to execute 'complete' on 'PaymentResponse': "
                         + "Timed out after 60 seconds, complete() called too late\"",
@@ -171,7 +171,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on [X].
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -205,7 +205,7 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly press on [X] and then dismiss.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -244,15 +244,13 @@ public class PaymentRequestNoShippingTest {
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
 
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 }

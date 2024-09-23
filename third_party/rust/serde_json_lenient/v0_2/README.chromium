@@ -1,0 +1,9 @@
+Name: serde_json_lenient
+URL: https://crates.io/crates/serde_json_lenient
+Description: A lenient JSON serialization file format
+Version: 0.2.1
+Security Critical: yes
+Shipped: yes
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/LICENSE-APACHE
+Revision: 0dc4b4dc302f3e636c66e2661d46caf7b0394c67

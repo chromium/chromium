@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/bookmarks/browser/titled_url_index.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,7 +77,7 @@ class TestTitledUrlNode : public TitledUrlNode {
 
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
 
-  std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
+  std::vector<std::u16string_view> GetTitledUrlNodeAncestorTitles()
       const override {
     return {ancestor_title_};
   }
@@ -184,9 +189,9 @@ class TitledUrlIndexTest : public testing::Test {
 
   void ExtractMatchPositions(const std::string& string,
                              TitledUrlMatch::MatchPositions* matches) {
-    for (const base::StringPiece& match : base::SplitStringPiece(
+    for (std::string_view match : base::SplitStringPiece(
              string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      std::vector<base::StringPiece> chunks = base::SplitStringPiece(
+      std::vector<std::string_view> chunks = base::SplitStringPiece(
           match, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(2U, chunks.size());
       matches->push_back(TitledUrlMatch::MatchPosition());
@@ -418,6 +423,45 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingWithURLs) {
     ExpectMatches(test_data.query, query_parser::MatchingAlgorithm::DEFAULT,
                   expected);
   }
+}
+
+TEST_F(TitledUrlIndexTest, GetResultsMatchingWithSymbols) {
+  auto does_query_match_title = [&](std::string query, std::string title) {
+    ResetNodes();
+    AddNode(title, kAboutBlankURL);
+    size_t num_matches = GetResultsMatching(query, 10).size();
+    EXPECT_LE(num_matches, 1u);
+    return num_matches > 0;
+  };
+
+  // Symbols should act as word breaks and don't need to match between the query
+  // and title.
+  EXPECT_TRUE(does_query_match_title("abc@xyz", "xyz@abc"));
+  EXPECT_TRUE(does_query_match_title("abc&xyz", "xyz&abc"));
+  EXPECT_TRUE(does_query_match_title("abc@xyz", "xyz abc"));
+  EXPECT_TRUE(does_query_match_title("abc xyz", "xyz@abc"));
+
+  // Treating symbols as word breaks doesn't mean simply pretending they're not
+  // there.
+  EXPECT_FALSE(does_query_match_title("xyz@abc", "xyzabc"));
+  EXPECT_FALSE(does_query_match_title("xyzabc", "xyz@abc"));
+
+  // '@' as the first character of the query should be treated special since it
+  // indicates the user likely wants search scope.
+  EXPECT_FALSE(does_query_match_title("@abc", "@abc"));
+  // Other symbols shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("&abc", "@abc"));
+  // '@' as the first character of the node shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("abc", "@abc"));
+  // '@' in other locations in the query shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("abc @abc", "@abc"));
+  // '@' followed by other symbols shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("@ abc", "@abc"));
+  EXPECT_TRUE(does_query_match_title("@@abc", "@abc"));
+  EXPECT_TRUE(does_query_match_title("@&abc", "@abc"));
+
+  // '@' input or title shouldn't crash.
+  EXPECT_FALSE(does_query_match_title("@", "@"));
 }
 
 TEST_F(TitledUrlIndexTest, Normalization) {

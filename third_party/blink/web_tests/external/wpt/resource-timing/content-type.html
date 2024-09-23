@@ -42,11 +42,10 @@ const run_test_cross_origin = (loader, contentType) => {
 }
 
 const resource_loaders_and_types = [
-  [load.font, ["font/woff", "font/otf"]],
   [load.image, ["image/png", "image/jpg"]],
-  [load.script, ["application/javascript", "text/javascript"]],
+  [load.script, ["text/javascript"]],
   [load.stylesheet, ["text/css"]],
-  [load.xhr_async, ["application/x-gzip", "application/pdf"]],
+  [load.xhr_async, ["image/png", "image/jpg"]],
   [load.iframe, ["text/html"]]
 ];
 
@@ -77,7 +76,7 @@ const run_test_cross_origin_allow_origin = (loader_with_attr,contentType) => {
 
 const resource_loaders_with_attrs_and_types = [
   [load.image_with_attrs, ["image/gif", "image/jpeg"]],
-  [load.script_with_attrs, ["application/javascript", "text/javascript"]],
+  [load.script_with_attrs, ["text/javascript"]],
   [load.stylesheet_with_attrs, ["text/css"]],
 ]
 
@@ -112,6 +111,16 @@ attribute_test(
             `content-type should be exposed for iframes having only same origin redirects`);
 });
 
+// Content-type for iframes is not exposed if any redirect is not same origin.
+var finalDestUrl = `${SAME_ORIGIN}/resource-timing/resources/content-type.py?content_type=text/html`;
+var interimDestUrl = `${REMOTE_ORIGIN}/resource-timing/resources/resources/redirect-cors.py?location=` + encodeURIComponent(finalDestUrl);
+var destUrl = `${SAME_ORIGIN}/resource-timing/resources/redirect-cors.py?location=` + encodeURIComponent(interimDestUrl);
+attribute_test(
+    load.iframe, new URL(destUrl),
+    entry => {
+        assert_equals(entry.contentType, "",
+            `content-type should not be exposed for iframes with any non-same-origin redirect`);
+});
 </script>
 </body>
 </html>

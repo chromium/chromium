@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] sub float32 1D constant tensors
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual 122.6875 should be close enough to expected 122.72087097167969 by the acceptable 1 ULP distance, but they have 4374 ULP distance expected true got false
+[FAIL] sub float32 broadcast 1D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual -170.5 should be close enough to expected -170.641845703125 by the acceptable 1 ULP distance, but they have 9296 ULP distance expected true got false
+[FAIL] sub float32 broadcast 2D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual 62.78125 should be close enough to expected 62.82989501953125 by the acceptable 1 ULP distance, but they have 12752 ULP distance expected true got false
+[FAIL] sub float32 broadcast 4D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual -170.5 should be close enough to expected -170.641845703125 by the acceptable 1 ULP distance, but they have 9296 ULP distance expected true got false
+Harness: the test ran to completion.
+

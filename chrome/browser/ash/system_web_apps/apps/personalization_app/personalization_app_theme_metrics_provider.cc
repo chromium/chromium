@@ -45,8 +45,7 @@ constexpr auto kSkColorToStaticColor =
 }  // namespace
 
 bool PersonalizationAppThemeMetricsProvider::ProvideHistograms() {
-  if (!ash::features::IsPersonalizationJellyEnabled() ||
-      !ash::Shell::HasInstance()) {
+  if (!ash::Shell::HasInstance()) {
     return false;
   }
 

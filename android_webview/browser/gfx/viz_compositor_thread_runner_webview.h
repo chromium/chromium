@@ -21,6 +21,7 @@ class Location;
 namespace viz {
 class FrameSinkManagerImpl;
 class ServerSharedBitmapManager;
+class SharedImageInterfaceProvider;
 }  // namespace viz
 
 namespace android_webview {
@@ -50,6 +51,9 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
 
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
 
+  // Must be called on Viz thread.
+  base::flat_set<base::PlatformThreadId> GetThreadIds() const;
+
   // Must be called from the TaskQueueWebView thread. |task| is allowed to call
   // TaskQueueWebView::ScheduleTask.
   void ScheduleOnVizAndBlock(base::OnceClosure task);
@@ -66,6 +70,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
+  void SetIOThreadId(base::PlatformThreadId io_thread_id) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
                               viz::GpuServiceImpl* gpu_service) override;
 
@@ -78,15 +83,21 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
   void InitFrameSinkManagerOnViz();
   void BindFrameSinkManagerOnViz(viz::mojom::FrameSinkManagerParamsPtr params,
                                  viz::GpuServiceImpl* gpu_service_impl);
+  void SetIOThreadIdOnViz(base::PlatformThreadId io_thread_id,
+                          base::WaitableEvent* event);
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
+
+  std::unique_ptr<viz::SharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
   // Only accessed on |viz_task_runner_|.
   THREAD_CHECKER(viz_thread_checker_);
   std::unique_ptr<viz::ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   raw_ptr<viz::GpuServiceImpl> gpu_service_impl_ = nullptr;
+  base::flat_set<base::PlatformThreadId> thread_ids_;
 };
 
 }  // namespace android_webview

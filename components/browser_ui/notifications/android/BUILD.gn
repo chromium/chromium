@@ -3,9 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxy.java",
+    "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxyImpl.java",
+    "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxy.java",
+    "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxyFactory.java",
     "java/src/org/chromium/components/browser_ui/notifications/ForegroundServiceUtils.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationManagerProxyImpl.java",
@@ -16,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperStandardBuilder.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingIntentProvider.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingNotificationTask.java",
+    "java/src/org/chromium/components/browser_ui/notifications/StatusBarNotificationAdaptor.java",
     "java/src/org/chromium/components/browser_ui/notifications/ThrottlingNotificationScheduler.java",
     "java/src/org/chromium/components/browser_ui/notifications/channels/ChannelDefinitions.java",
     "java/src/org/chromium/components/browser_ui/notifications/channels/ChannelsInitializer.java",
@@ -23,9 +29,11 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_media_media_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 }
@@ -36,6 +44,7 @@ android_library("test_support_java") {
   sources = [ "java/src/org/chromium/components/browser_ui/notifications/MockNotificationManagerProxy.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

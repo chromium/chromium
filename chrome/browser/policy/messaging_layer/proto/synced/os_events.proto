@@ -59,4 +59,7 @@ message OsEventsRecord {
   }
 
   optional OsOperationType os_operation_type = 10;
+
+  // The event based log upload ID related to this event.
+  optional string log_upload_id = 11;
 }

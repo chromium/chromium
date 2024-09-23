@@ -72,7 +72,7 @@ void SVGTransformTearOff::setMatrix(SVGMatrixTearOff* matrix,
     return;
   }
   Target()->SetMatrix(matrix->Value());
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGTransformTearOff::setTranslate(float tx,
@@ -83,7 +83,7 @@ void SVGTransformTearOff::setTranslate(float tx,
     return;
   }
   Target()->SetTranslate(tx, ty);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGTransformTearOff::setScale(float sx,
@@ -94,7 +94,7 @@ void SVGTransformTearOff::setScale(float sx,
     return;
   }
   Target()->SetScale(sx, sy);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGTransformTearOff::setRotate(float angle,
@@ -106,7 +106,7 @@ void SVGTransformTearOff::setRotate(float angle,
     return;
   }
   Target()->SetRotate(angle, cx, cy);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGTransformTearOff::setSkewX(float x, ExceptionState& exception_state) {
@@ -115,7 +115,7 @@ void SVGTransformTearOff::setSkewX(float x, ExceptionState& exception_state) {
     return;
   }
   Target()->SetSkewX(x);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGTransformTearOff::setSkewY(float y, ExceptionState& exception_state) {
@@ -124,7 +124,7 @@ void SVGTransformTearOff::setSkewY(float y, ExceptionState& exception_state) {
     return;
   }
   Target()->SetSkewY(y);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 }  // namespace blink

@@ -57,7 +57,7 @@ GLint WebGLSync::GetCachedResult(GLenum pname) {
       return 0;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

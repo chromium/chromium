@@ -17,6 +17,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -99,7 +100,8 @@ TEST_F(AppListPresenterImplTest,
   for (int id : AppListPresenterImpl::kIdsOfContainersThatWontHideAppList) {
     // Create a widget with a specific container id and make sure that the
     // kHomeLauncher background is still shown.
-    std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
+    std::unique_ptr<views::Widget> widget = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr, id);
 
     EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
               shelf_layout_manager->shelf_background_type())

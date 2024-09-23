@@ -86,7 +86,7 @@ class ControllerClient {
 
   // Close the error and go back to the previous page. This applies to
   // situations where navigation is blocked before committing.
-  // TODO(crbug.com/928901) - rename this to NavigateAway or similar.
+  // TODO(crbug.com/41439461) - rename this to NavigateAway or similar.
   virtual void GoBack() = 0;
   // Whether it is possible to go 'Back to safety'.
   virtual bool CanGoBack() = 0;

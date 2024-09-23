@@ -1,0 +1,26 @@
+In file included from ptrs_to_traceable_class.cpp:5:
+./ptrs_to_traceable_class.h:27:1: warning: [blink-gc] Class 'OffGCedHeap' contains invalid fields.
+class OffGCedHeap {
+^
+./ptrs_to_traceable_class.h:36:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
+  Traceable* raw_ptr;
+  ^
+./ptrs_to_traceable_class.h:37:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
+  Traceable& ref_ptr;
+  ^
+./ptrs_to_traceable_class.h:38:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
+  std::unique_ptr<Traceable> unique;
+  ^
+./ptrs_to_traceable_class.h:41:1: warning: [blink-gc] Class 'OnGCedHeap' contains invalid fields.
+class OnGCedHeap : public GarbageCollected<OnGCedHeap> {
+^
+./ptrs_to_traceable_class.h:50:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
+  Traceable* raw_ptr;
+  ^
+./ptrs_to_traceable_class.h:51:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
+  Traceable& ref_ptr;
+  ^
+./ptrs_to_traceable_class.h:52:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
+  std::unique_ptr<Traceable> unique;
+  ^
+2 warnings generated.

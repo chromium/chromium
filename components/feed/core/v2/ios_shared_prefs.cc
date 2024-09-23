@@ -10,6 +10,11 @@
 namespace feed {
 namespace prefs {
 
+namespace {
+const char kNameKey[] = "name";
+const char kIdKey[] = "id";
+}  // namespace
+
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value) {
   pref_service.SetBoolean(feed::prefs::kLastFetchHadNoticeCard, value);
 }
@@ -53,24 +58,58 @@ void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
   for (const auto& exp : experiments) {
     base::Value::List list;
     for (auto elem : exp.second) {
-      list.Append(elem);
+      base::Value::Dict group_dict;
+      group_dict.Set(kNameKey, elem.name);
+      group_dict.Set(kIdKey, elem.experiment_id);
+      list.Append(std::move(group_dict));
     }
     dict.Set(exp.first, std::move(list));
   }
-  pref_service.SetDict(kExperimentsV2, std::move(dict));
+  pref_service.SetDict(kExperimentsV3, std::move(dict));
 }
 
 Experiments GetExperiments(PrefService& pref_service) {
-  const auto& dict = pref_service.GetDict(kExperimentsV2);
+  const auto& dict = pref_service.GetDict(kExperimentsV3);
   Experiments experiments;
   for (auto kv : dict) {
-    std::vector<std::string> vect;
+    std::vector<ExperimentGroup> vect;
     for (const auto& v : kv.second.GetList()) {
-      vect.push_back(v.GetString());
+      ExperimentGroup group;
+      auto* group_dict = v.GetIfDict();
+      if (group_dict) {
+        const std::string* name = group_dict->FindString(kNameKey);
+        if (!name) {
+          continue;
+        }
+        group.name = *name;
+        group.experiment_id = group_dict->FindInt(kIdKey).value_or(0);
+      }
+      vect.push_back(group);
     }
     experiments[kv.first] = vect;
   }
   return experiments;
+}
+
+void MigrateObsoleteFeedExperimentPref_Jun_2024(PrefService* prefs) {
+  const base::Value* val =
+      prefs->GetUserPrefValue(prefs::kExperimentsV2Deprecated);
+  const base::Value::Dict* old = val ? val->GetIfDict() : nullptr;
+  if (old) {
+    Experiments experiments;
+    for (const auto kv : *old) {
+      std::vector<ExperimentGroup> vect;
+      for (const auto& v : kv.second.GetList()) {
+        ExperimentGroup group;
+        group.name = v.GetString();
+        group.experiment_id = 0;
+        vect.push_back(group);
+      }
+      experiments[kv.first] = vect;
+    }
+    SetExperiments(experiments, *prefs);
+  }
+  prefs->ClearPref(prefs::kExperimentsV2Deprecated);
 }
 
 }  // namespace prefs

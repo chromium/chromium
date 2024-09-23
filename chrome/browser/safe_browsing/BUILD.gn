@@ -18,20 +18,27 @@ static_library("safe_browsing") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = []
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  allow_circular_includes_from = []
 
   deps = [
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/browser_sync",
     "//components/enterprise:enterprise",
+    "//components/enterprise/buildflags",
     "//components/enterprise/common:strings",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/no_state_prefetch/browser",
@@ -71,7 +78,17 @@ static_library("safe_browsing") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/browser/password_manager/android:utils" ]
+    deps += [
+      "//chrome/browser/password_manager/android:utils",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/file_manager" ]
+
+    allow_circular_includes_from += [ "//chrome/browser/ash/file_manager" ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -92,6 +109,8 @@ static_library("safe_browsing") {
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.h",
+      "chrome_safe_browsing_local_state_delegate.cc",
+      "chrome_safe_browsing_local_state_delegate.h",
       "chrome_ui_manager_delegate.cc",
       "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.cc",
@@ -140,10 +159,12 @@ static_library("safe_browsing") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
+      "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
+      "//components/enterprise/common/proto:connectors_proto",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",
       "//components/password_manager/content/browser",
@@ -165,7 +186,6 @@ static_library("safe_browsing") {
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
-      "//components/safe_browsing/core/browser/db:metadata_proto",
       "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/password_protection:password_reuse_detection_manager_client",
       "//components/safe_browsing/core/browser/realtime:policy_engine",
@@ -181,6 +201,7 @@ static_library("safe_browsing") {
       "//components/unified_consent",
       "//components/variations/service",
       "//components/version_info",
+      "//components/webdata/common",
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
@@ -206,6 +227,8 @@ static_library("safe_browsing") {
         "cloud_content_scanning/cloud_binary_upload_service_factory.h",
         "cloud_content_scanning/connector_data_pipe_getter.cc",
         "cloud_content_scanning/connector_data_pipe_getter.h",
+        "cloud_content_scanning/connector_upload_request.cc",
+        "cloud_content_scanning/connector_upload_request.h",
         "cloud_content_scanning/deep_scanning_utils.cc",
         "cloud_content_scanning/deep_scanning_utils.h",
         "cloud_content_scanning/file_analysis_request.cc",
@@ -214,6 +237,8 @@ static_library("safe_browsing") {
         "cloud_content_scanning/file_opening_job.h",
         "cloud_content_scanning/multipart_uploader.cc",
         "cloud_content_scanning/multipart_uploader.h",
+        "cloud_content_scanning/resumable_uploader.cc",
+        "cloud_content_scanning/resumable_uploader.h",
         "download_protection/check_client_download_request.cc",
         "download_protection/check_client_download_request.h",
         "download_protection/check_client_download_request_base.cc",
@@ -248,10 +273,16 @@ static_library("safe_browsing") {
         "extension_telemetry/cookies_get_signal.h",
         "extension_telemetry/cookies_get_signal_processor.cc",
         "extension_telemetry/cookies_get_signal_processor.h",
+        "extension_telemetry/declarative_net_request_action_signal.cc",
+        "extension_telemetry/declarative_net_request_action_signal.h",
+        "extension_telemetry/declarative_net_request_action_signal_processor.cc",
+        "extension_telemetry/declarative_net_request_action_signal_processor.h",
         "extension_telemetry/declarative_net_request_signal.cc",
         "extension_telemetry/declarative_net_request_signal.h",
         "extension_telemetry/declarative_net_request_signal_processor.cc",
         "extension_telemetry/declarative_net_request_signal_processor.h",
+        "extension_telemetry/extension_js_callstacks.cc",
+        "extension_telemetry/extension_js_callstacks.h",
         "extension_telemetry/extension_signal.h",
         "extension_telemetry/extension_signal_processor.h",
         "extension_telemetry/extension_signal_util.cc",
@@ -350,18 +381,14 @@ static_library("safe_browsing") {
         ]
       }
 
-      if (is_linux || is_win) {
-        sources += [
-          "download_protection/document_analysis_service.cc",
-          "download_protection/document_analysis_service.h",
-        ]
-      }
       deps += [
         ":advanced_protection",
         ":verdict_cache_manager_factory",
         "//build:branding_buildflags",
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons:vector_icons",
+        "//chrome/browser/enterprise/connectors/analysis:features",
+        "//chrome/browser/ui/hats",
         "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
@@ -369,6 +396,7 @@ static_library("safe_browsing") {
         "//chrome/services/file_util/public/cpp",
         "//components/content_settings/core/browser",
         "//components/enterprise/common/proto:connectors_proto",
+        "//components/enterprise/connectors/core",
         "//components/file_access",
         "//components/gcm_driver",
         "//components/gcm_driver/instance_id",
@@ -381,9 +409,9 @@ static_library("safe_browsing") {
         "//components/safe_browsing/core/browser/db",
         "//components/safe_browsing/core/browser/db:v4_store",
         "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
-        "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
         "//components/safe_browsing/core/browser/realtime:policy_engine",
         "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+        "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
         "//components/safe_browsing/core/common/proto:client_model_proto",
         "//components/safe_browsing/core/common/proto:csd_proto",
         "//components/safe_browsing/core/common/proto:realtimeapi_proto",
@@ -404,12 +432,6 @@ static_library("safe_browsing") {
           "//chrome/common:version_header",
         ]
       }
-      if (is_linux || is_win) {
-        deps += [
-          "//chrome/common/safe_browsing:document_analyzer_results",
-          "//chrome/services/file_util/public/mojom",
-        ]
-      }
       if (is_chromeos_ash) {
         deps += [
           "//ash/constants:constants",
@@ -424,6 +446,9 @@ static_library("safe_browsing") {
           "//chromeos/components/mgs:mgs",
           "//chromeos/crosapi/cpp:cpp",
         ]
+      }
+      if (!is_android) {
+        deps += [ "//chrome/browser/ui:browser_list" ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {
@@ -442,6 +467,10 @@ static_library("safe_browsing") {
           "//components/messages/android:android",
           "//components/safe_browsing/android:remote_database_manager",
           "//ui/android:android",
+
+          # TODO(crbug.com/41437292): Use //chrome/browser after fixing cyclic
+          # dependency.
+          "//chrome/browser/page_info:page_info_buildflags",
         ]
       }
       deps += [
@@ -465,6 +494,7 @@ source_set("verdict_cache_manager_factory") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/history/core/browser",

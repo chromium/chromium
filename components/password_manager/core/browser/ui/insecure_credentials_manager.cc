@@ -8,6 +8,7 @@
 #include <iterator>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -68,12 +69,8 @@ bool ChangeRequiresRerunningWeakCheck(const PasswordStoreChange& change) {
 }  // namespace
 
 InsecureCredentialsManager::InsecureCredentialsManager(
-    SavedPasswordsPresenter* presenter,
-    scoped_refptr<PasswordStoreInterface> profile_store,
-    scoped_refptr<PasswordStoreInterface> account_store)
-    : presenter_(presenter),
-      profile_store_(std::move(profile_store)),
-      account_store_(std::move(account_store)) {
+    SavedPasswordsPresenter* presenter)
+    : presenter_(presenter) {
   observed_saved_password_presenter_.Observe(presenter_.get());
 }
 
@@ -158,7 +155,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
 
 #if BUILDFLAG(IS_ANDROID)
   // Otherwise erase entries which aren't leaked and phished.
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return !IsCompromised(credential);
   });
   return credentials;
@@ -180,7 +177,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
     }
   }
 
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return credential.password_issues.empty();
   });
   return credentials;
@@ -261,11 +258,6 @@ void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {
   for (auto& observer : observers_) {
     observer.OnInsecureCredentialsChanged();
   }
-}
-
-PasswordStoreInterface& InsecureCredentialsManager::GetStoreFor(
-    const PasswordForm& form) {
-  return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
 
 }  // namespace password_manager

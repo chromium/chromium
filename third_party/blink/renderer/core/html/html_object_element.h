@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
 
@@ -94,8 +96,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   };
   void RenderFallbackContent(ErrorEventPolicy should_dispatch_error_event);
 
-  static bool IsClassOf(const FrameOwner& owner);
-
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
@@ -147,6 +147,25 @@ const HTMLObjectElement* ToHTMLObjectElementFromListedElement(
     const ListedElement*);
 const HTMLObjectElement& ToHTMLObjectElementFromListedElement(
     const ListedElement&);
+
+template <>
+struct DowncastTraits<HTMLObjectElement> {
+  static bool AllowFrom(const HTMLFrameOwnerElement& element) {
+    return element.HasTagName(html_names::kObjectTag);
+  }
+  static bool AllowFrom(const FrameOwner& owner) {
+    return IsA<HTMLObjectElement>(DynamicTo<HTMLFrameOwnerElement>(owner));
+  }
+  static bool AllowFrom(const Element& element) {
+    return element.HasTagName(html_names::kObjectTag);
+  }
+  static bool AllowFrom(const Node& node) {
+    // UnsafeTo<> is safe because Is*Element(), by definition, only returns
+    // true if `node` is derived from `Element`.
+    return node.IsHTMLElement() &&
+           IsA<HTMLObjectElement>(UnsafeTo<HTMLElement>(node));
+  }
+};
 
 }  // namespace blink
 

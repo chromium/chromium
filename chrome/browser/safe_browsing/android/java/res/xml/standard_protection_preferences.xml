@@ -13,20 +13,6 @@ found in the LICENSE file.
         android:title="@string/safe_browsing_standard_protection_subtitle"
         app:allowDividerBelow="false" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="bullet_one"
-        android:summary="@string/safe_browsing_standard_protection_bullet_one"
-        android:icon="@drawable/ic_security_grey"
-        app:iconTint="@color/default_icon_color_tint_list"
-        app:allowDividerBelow="false" />
-
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="bullet_two"
-        android:summary="@string/safe_browsing_standard_protection_bullet_two"
-        android:icon="@drawable/ic_data_viz_grey"
-        app:iconTint="@color/default_icon_color_tint_list"
-        app:allowDividerBelow="false" />
-
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="extended_reporting"
         android:title="@string/safe_browsing_standard_protection_extended_reporting_title"
@@ -37,6 +23,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="password_leak_detection"
         android:title="@string/passwords_leak_detection_switch_title"
+        android:summary="@string/passwords_leak_detection_switch_summary"
         android:persistent="false"
         app:allowDividerBelow="false" />
 </PreferenceScreen>

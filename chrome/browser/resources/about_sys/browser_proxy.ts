@@ -9,12 +9,13 @@ export interface SystemLog {
   statValue: string;
 }
 
-interface BrowserProxy {
+export interface BrowserProxy {
   requestSystemInfo(): Promise<SystemLog[]>;
 
+  // <if expr="chromeos_ash">
   isLacrosEnabled(): Promise<boolean>;
-
   openLacrosSystemPage(): void;
+  // </if>
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -22,20 +23,22 @@ export class BrowserProxyImpl implements BrowserProxy {
     return sendWithPromise('requestSystemInfo');
   }
 
-  static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxyImpl());
-  }
-
-  static setInstance(obj: BrowserProxy) {
-    instance = obj;
-  }
-
+  // <if expr="chromeos_ash">
   isLacrosEnabled() {
     return sendWithPromise('isLacrosEnabled');
   }
 
   openLacrosSystemPage() {
     chrome.send('openLacrosSystemPage');
+  }
+  // </if>
+
+  static getInstance(): BrowserProxy {
+    return instance || (instance = new BrowserProxyImpl());
+  }
+
+  static setInstance(obj: BrowserProxy) {
+    instance = obj;
   }
 }
 

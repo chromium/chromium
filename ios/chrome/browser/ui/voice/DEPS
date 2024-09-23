@@ -1,0 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/voice/ui_bundled/text_to_speech_notification_handler.h",
+  "+ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h",
+  "+ios/chrome/browser/voice/ui_bundled/text_to_speech_player.h",
+  "+ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h",
+  "+ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h",
+  "+ios/chrome/browser/voice/ui_bundled/text_to_speech_player+subclassing.h",
+]
+

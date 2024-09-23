@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -66,7 +67,7 @@ using ImmersiveModeBrowserViewTestNoWebUiTabStrip =
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1255304): Reveal does not end until mouse is moved. Find out
+// TODO(crbug.com/40199989): Reveal does not end until mouse is moved. Find out
 // if this is a product or test issue and fix it.
 #define MAYBE_ImmersiveFullscreen DISABLED_ImmersiveFullscreen
 #else
@@ -246,6 +247,10 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Open a new app window.
   Browser* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->profile());
+  // TODO(neis): Move this into the CreateBrowser* functions.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser()).Wait();
+#endif
 
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser);
   chromeos::ImmersiveFullscreenControllerTestApi(
@@ -291,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // Also test that the immersive mode is disabled afterwards (and the shelf is
 // hidden, and the fullscreen control popup doesn't show up).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1508249): Reenable test when bug is fixed.
+// TODO(crbug.com/40948963): Reenable test when bug is fixed.
 #define MAYBE_RegularToLockedFullscreenDisablesImmersive \
   DISABLED_RegularToLockedFullscreenDisablesImmersive
 #else
@@ -317,8 +322,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_FALSE(IsShelfVisible());
 
   // Make sure the fullscreen control popup doesn't show up.
-  ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
-                            base::TimeTicks(), 0, 0);
+  ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
+                            gfx::Point(), base::TimeTicks(), 0, 0);
   ASSERT_TRUE(browser_view->fullscreen_control_host_for_test());
   browser_view->fullscreen_control_host_for_test()->OnMouseEvent(mouse_move);
   EXPECT_FALSE(browser_view->fullscreen_control_host_for_test()->IsVisible());
@@ -344,15 +349,15 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1466385): Enable this assertion once the bug is fixed (at
+  // TODO(crbug.com/40276379): Enable this assertion once the bug is fixed (at
   // the moment PinWindow returns too early).
 #else
   EXPECT_FALSE(IsShelfVisible());
 #endif
 
   // Make sure the fullscreen control popup doesn't show up.
-  ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
-                            base::TimeTicks(), 0, 0);
+  ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
+                            gfx::Point(), base::TimeTicks(), 0, 0);
   ASSERT_TRUE(browser_view->fullscreen_control_host_for_test());
   browser_view->fullscreen_control_host_for_test()->OnMouseEvent(mouse_move);
   EXPECT_FALSE(browser_view->fullscreen_control_host_for_test()->IsVisible());

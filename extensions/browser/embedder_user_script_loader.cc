@@ -10,17 +10,22 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
-#include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
 #include "extensions/browser/url_fetcher.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
+#include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
+#endif
 
 namespace {
 
@@ -88,7 +93,7 @@ void EmbedderUserScriptLoader::LoadScripts(
     }
 
     auto iter = script_render_info_map_.find(script->id());
-    DCHECK(iter != script_render_info_map_.end());
+    CHECK(iter != script_render_info_map_.end(), base::NotFatalUntil::M130);
     int render_process_id = iter->second.render_process_id;
     int render_frame_id = iter->second.render_frame_id;
 
@@ -123,13 +128,18 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
     std::unique_ptr<extensions::URLFetcher> fetcher;
     switch (host_id_.type) {
       case extensions::mojom::HostID::HostType::kWebUi:
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
         fetcher = std::make_unique<extensions::WebUIURLFetcher>(
             render_process_id, render_frame_id, content->url(),
             base::BindOnce(
                 &EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete,
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
+#else
+        NOTREACHED();
+#endif
       case extensions::mojom::HostID::HostType::kControlledFrameEmbedder:
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
         fetcher = std::make_unique<
             extensions::ControlledFrameEmbedderURLFetcher>(
             render_process_id, render_frame_id, content->url(),
@@ -137,8 +147,11 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
                 &EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete,
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
-      case extensions::mojom::HostID::HostType::kExtensions:
+#else
         NOTREACHED();
+#endif
+      case extensions::mojom::HostID::HostType::kExtensions:
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     fetchers_.push_back(std::move(fetcher));

@@ -58,13 +58,11 @@ MediaToolbarButtonView::MediaToolbarButtonView(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
-  SetVectorIcons(features::IsChromeRefresh2023()
-                     ? kMediaToolbarButtonChromeRefreshIcon
-                     : kMediaToolbarButtonIcon,
+  SetVectorIcons(kMediaToolbarButtonChromeRefreshIcon,
                  kMediaToolbarButtonTouchIcon);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT));
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   SetProperty(views::kElementIdentifierKey, kToolbarMediaButtonElementId);
 
   // We start hidden and only show once |controller_| tells us to.
@@ -96,16 +94,14 @@ void MediaToolbarButtonView::Show() {
   SetVisible(true);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonShown();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonShown);
 }
 
 void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonHidden();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonHidden);
 }
 
 void MediaToolbarButtonView::Enable() {
@@ -120,8 +116,7 @@ void MediaToolbarButtonView::Enable() {
           feature_engagement::kIPHLiveCaptionFeature);
   }
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonEnabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
 }
 
 void MediaToolbarButtonView::Disable() {
@@ -129,8 +124,7 @@ void MediaToolbarButtonView::Disable() {
 
   ClosePromoBubble();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonDisabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
@@ -157,9 +151,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   } else {
     MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
     ClosePromoBubble();
-
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
+    observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }
 }
 

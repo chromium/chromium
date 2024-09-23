@@ -26,7 +26,7 @@ AtomicString WebSchedulingPriorityToString(WebSchedulingPriority priority) {
       return AtomicString(kBackgroundPriorityKeyword);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_atom;
 }
 
@@ -38,7 +38,7 @@ WebSchedulingPriority WebSchedulingPriorityFromString(
     return WebSchedulingPriority::kUserVisiblePriority;
   if (priority == kBackgroundPriorityKeyword)
     return WebSchedulingPriority::kBackgroundPriority;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebSchedulingPriority::kUserVisiblePriority;
 }
 

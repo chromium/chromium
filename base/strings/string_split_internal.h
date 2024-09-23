@@ -5,9 +5,9 @@
 #ifndef BASE_STRINGS_STRING_SPLIT_INTERNAL_H_
 #define BASE_STRINGS_STRING_SPLIT_INTERNAL_H_
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -19,16 +19,16 @@ template <typename CharT>
 std::basic_string_view<CharT> WhitespaceForType();
 
 template <>
-inline StringPiece16 WhitespaceForType<char16_t>() {
+inline std::u16string_view WhitespaceForType<char16_t>() {
   return kWhitespaceUTF16;
 }
 template <>
-inline StringPiece WhitespaceForType<char>() {
+inline std::string_view WhitespaceForType<char>() {
   return kWhitespaceASCII;
 }
 
 // General string splitter template. Can take 8- or 16-bit input, can produce
-// the corresponding string or StringPiece output.
+// the corresponding string or std::string_view output.
 template <typename OutputStringType,
           typename T,
           typename CharT = typename T::value_type>

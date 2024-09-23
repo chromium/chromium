@@ -24,18 +24,18 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,20 +45,20 @@ using base::ScopedTempDir;
 using base::Time;
 using base::UTF8ToUTF16;
 using sync_pb::AutofillSpecifics;
+using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
-using sync_pb::ModelTypeState;
 using syncer::DataBatch;
+using syncer::DataType;
+using syncer::DataTypeLocalChangeProcessor;
+using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::HasInitialSyncDone;
 using syncer::IsEmptyMetadataBatch;
 using syncer::KeyAndData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelError;
-using syncer::ModelType;
-using syncer::ModelTypeChangeProcessor;
-using syncer::ModelTypeSyncBridge;
 using testing::_;
 using testing::IsEmpty;
 using testing::Not;
@@ -66,7 +66,6 @@ using testing::Return;
 using testing::SizeIs;
 
 namespace autofill {
-
 namespace {
 
 const char kNameFormat[] = "name %d";
@@ -140,8 +139,6 @@ AutocompleteEntry CreateAutocompleteEntry(
   return AutocompleteEntry(key, date_created, date_last_used);
 }
 
-}  // namespace
-
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
   AutocompleteSyncBridgeTest() = default;
@@ -163,9 +160,8 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
@@ -186,15 +182,15 @@ class AutocompleteSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -293,13 +289,12 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   void VerifyAllData(const std::vector<AutofillSpecifics>& expected) {
-    bridge()->GetAllDataForDebugging(
-        base::BindOnce(&VerifyDataBatch, ExpectedMap(expected)));
+    VerifyDataBatch(ExpectedMap(expected), bridge()->GetAllDataForDebugging());
   }
 
   AutocompleteSyncBridge* bridge() { return bridge_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -318,8 +313,8 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
 };
 
 TEST_F(AutocompleteSyncBridgeTest, GetClientTag) {
@@ -399,7 +394,7 @@ TEST_F(AutocompleteSyncBridgeTest, GetStorageKeyRespectsNullCharacter) {
 
 // The storage key should never accidentally change for existing data. This
 // would cause lookups to fail and either lose or duplicate user data. It should
-// be possible for the model type to migrate storage key formats, but doing so
+// be possible for the data type to migrate storage key formats, but doing so
 // would need to be done very carefully.
 TEST_F(AutocompleteSyncBridgeTest, GetStorageKeyFixed) {
   EXPECT_EQ("\n\x6name 1\x12\avalue 1", GetStorageKey(CreateSpecifics(1)));
@@ -413,25 +408,25 @@ TEST_F(AutocompleteSyncBridgeTest, GetStorageKeyFixed) {
   EXPECT_EQ("\n\x3\xEC\xA4\x91\x12\x2\xD0\x80", GetStorageKey(specifics));
 }
 
-TEST_F(AutocompleteSyncBridgeTest, GetData) {
+TEST_F(AutocompleteSyncBridgeTest, GetDataForCommit) {
   const AutofillSpecifics specifics1 = CreateSpecifics(1);
   const AutofillSpecifics specifics2 = CreateSpecifics(2);
   const AutofillSpecifics specifics3 = CreateSpecifics(3);
   SaveSpecificsToTable({specifics1, specifics2, specifics3});
-  bridge()->GetData(
-      {GetStorageKey(specifics1), GetStorageKey(specifics3)},
-      base::BindOnce(&VerifyDataBatch, ExpectedMap({specifics1, specifics3})));
+  VerifyDataBatch(ExpectedMap({specifics1, specifics3}),
+                  bridge()->GetDataForCommit(
+                      {GetStorageKey(specifics1), GetStorageKey(specifics3)}));
 }
 
-TEST_F(AutocompleteSyncBridgeTest, GetDataNotExist) {
+TEST_F(AutocompleteSyncBridgeTest, GetDataForCommitNotExist) {
   const AutofillSpecifics specifics1 = CreateSpecifics(1);
   const AutofillSpecifics specifics2 = CreateSpecifics(2);
   const AutofillSpecifics specifics3 = CreateSpecifics(3);
   SaveSpecificsToTable({specifics1, specifics2});
-  bridge()->GetData(
-      {GetStorageKey(specifics1), GetStorageKey(specifics2),
-       GetStorageKey(specifics3)},
-      base::BindOnce(&VerifyDataBatch, ExpectedMap({specifics1, specifics2})));
+  VerifyDataBatch(ExpectedMap({specifics1, specifics2}),
+                  bridge()->GetDataForCommit({GetStorageKey(specifics1),
+                                              GetStorageKey(specifics2),
+                                              GetStorageKey(specifics3)}));
 }
 
 TEST_F(AutocompleteSyncBridgeTest, GetAllData) {
@@ -636,7 +631,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryDeleted) {
       CreateAutocompleteEntry(deleted_specifics);
   const std::string storage_key = GetStorageKey(deleted_specifics);
 
-  EXPECT_CALL(mock_processor(), Delete(storage_key, _));
+  EXPECT_CALL(mock_processor(), Delete(storage_key, _, _));
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
@@ -679,11 +674,11 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
 }
 
 TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
-  ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  EXPECT_TRUE(sync_metadata_table()->UpdateModelTypeState(syncer::AUTOFILL,
-                                                          model_type_state));
+  DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_TRUE(sync_metadata_table()->UpdateDataTypeState(syncer::AUTOFILL,
+                                                         data_type_state));
   EXPECT_TRUE(sync_metadata_table()->UpdateEntityMetadata(
       syncer::AUTOFILL, "key", EntityMetadata()));
 
@@ -703,7 +698,7 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataReportsErrorForMissingDB) {
 TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataEmpty) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  // The bridge should still commit the model type state change.
+  // The bridge should still commit the data type state change.
   EXPECT_CALL(*backend(), CommitChanges());
 
   StartSyncing(/*remote_data=*/std::vector<AutofillSpecifics>());
@@ -797,4 +792,5 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataMixed) {
   VerifyAllData({local1, remote2, specifics3, merged4});
 }
 
+}  // namespace
 }  // namespace autofill

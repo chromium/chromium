@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "content/browser/android/java/jni_reflect.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/browser/reflection_jni_headers/Object_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -98,14 +99,15 @@ const JavaMethod* GinJavaBoundObject::FindMethod(
 }
 
 bool GinJavaBoundObject::IsObjectGetClassMethod(const JavaMethod* method) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   EnsureMethodsAreSetUp();
   // As java.lang.Object.getClass is declared to be final, it is sufficient to
   // compare methodIDs.
   JNIEnv* env = AttachCurrentThread();
   jmethodID get_class_method_id =
       base::android::MethodID::LazyGet<base::android::MethodID::TYPE_INSTANCE>(
-          env, java_lang_Object_clazz(env), "getClass", "()Ljava/lang/Class;",
-          &JNI_Object::g_java_lang_Object_getClass0);
+          env, jni_zero::g_object_class, "getClass", "()Ljava/lang/Class;",
+          &cached_method_id);
   return method->id() == get_class_method_id;
 }
 

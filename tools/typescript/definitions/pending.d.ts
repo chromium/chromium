@@ -66,3 +66,17 @@ interface DetectedBarcode {
 type BarcodeFormat =
     'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
     'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
+
+
+// TODO(b/338624981): This should be exported in mediapipe's vision.d.ts.
+/** A two-dimensional matrix. */
+declare interface Matrix {
+  /** The number of rows. */
+  rows: number;
+
+  /** The number of columns. */
+  columns: number;
+
+  /** The values as a flattened one-dimensional array. */
+  data: number[];
+}

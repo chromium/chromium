@@ -110,8 +110,8 @@ suite('HeaderTest', function() {
 
   // Tests that enterprise badge shows up if any setting is managed.
   test('EnterprisePolicy', function() {
-    assertTrue(header.shadowRoot!.querySelector('iron-icon')!.hidden);
+    assertTrue(header.shadowRoot!.querySelector('cr-icon')!.hidden);
     header.managed = true;
-    assertFalse(header.shadowRoot!.querySelector('iron-icon')!.hidden);
+    assertFalse(header.shadowRoot!.querySelector('cr-icon')!.hidden);
   });
 });

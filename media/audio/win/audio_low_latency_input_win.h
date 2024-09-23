@@ -152,7 +152,7 @@ class MEDIA_EXPORT WASAPIAudioInputStream
  private:
   class DataDiscontinuityReporter;
 
-  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   // DelegateSimpleThread::Delegate implementation.
   void Run() override;

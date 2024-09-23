@@ -501,9 +501,13 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
   for (const auto& test_case : kTestCases) {
     WebURLRequest request;
     request.SetUrl(GURL(test_case.original));
-    GetMainRenderFrame()->WillSendRequest(
-        request, blink::WebLocalFrameClient::ForRedirect(false));
-    EXPECT_EQ(test_case.transformed, request.Url().GetString().Utf8());
+    std::optional<blink::WebURL> updated =
+        GetMainRenderFrame()->WillSendRequest(
+            request.Url(), request.RequestorOrigin(), request.SiteForCookies(),
+            blink::WebLocalFrameClient::ForRedirect(false), blink::WebURL());
+    EXPECT_EQ(test_case.transformed, updated.has_value()
+                                         ? updated->GetString().Utf8()
+                                         : request.Url().GetString().Utf8());
   }
 }
 
@@ -662,7 +666,7 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
   void RequestTestInterfaceOnFrameEvent(const std::string& event) {
     mojo::Remote<mojom::FrameHostTestInterface> remote;
     blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
     remote->Ping(
         !document.IsNull() ? GURL(document.Url()) : GURL(kNoDocumentMarkerURL),
@@ -828,9 +832,8 @@ class ScopedNewFrameInterfaceProviderExerciser {
     EXPECT_TRUE(frame->GetWebFrame()->GetCurrentHistoryItem().IsNull());
   }
 
-  raw_ptr<FrameCreationObservingRendererClient, ExperimentalRenderer>
-      frame_creation_observer_;
-  raw_ptr<TestRenderFrame, ExperimentalRenderer> frame_ = nullptr;
+  raw_ptr<FrameCreationObservingRendererClient> frame_creation_observer_;
+  raw_ptr<TestRenderFrame> frame_ = nullptr;
   std::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
@@ -923,8 +926,8 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
 
  private:
   // Owned by RenderViewTest.
-  raw_ptr<FrameCreationObservingRendererClient, ExperimentalRenderer>
-      frame_creation_observer_ = nullptr;
+  raw_ptr<FrameCreationObservingRendererClient> frame_creation_observer_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -941,7 +944,7 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
   ASSERT_NO_FATAL_FAILURE(
       child_frame_exerciser.ExpectNewFrameAndWaitForLoad(child_frame_url));
 
-  // TODO(https://crbug.com/792410): It is unfortunate how many internal
+  // TODO(crbug.com/40553427): It is unfortunate how many internal
   // details of frame/document creation this encodes. Need to decouple.
   const GURL initial_empty_url(kAboutBlankURL);
   ExpectPendingInterfaceReceiversFromSources(
@@ -949,7 +952,7 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
           .browser_interface_broker_receiver_for_initial_empty_document(),
       {{initial_empty_url, kFrameEventDidCreateNewFrame},
        {child_frame_url, kFrameEventReadyToCommitNavigation},
-       // TODO(https://crbug.com/555773): It seems strange that the new
+       // TODO(crbug.com/40444754): It seems strange that the new
        // document is created and DidCreateNewDocument is invoked *before* the
        // provisional load would have even committed.
        {child_frame_url, kFrameEventDidCreateNewDocument}});
@@ -986,7 +989,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
   // InitializeCoreFrame, and there is already a document when
   // RenderFrameCreated is invoked.
   //
-  // TODO(https://crbug.com/792410): It is unfortunate how many internal
+  // TODO(crbug.com/40553427): It is unfortunate how many internal
   // details of frame/document creation this encodes. Need to decouple.
   const GURL initial_empty_url;
   ExpectPendingInterfaceReceiversFromSources(
@@ -1024,7 +1027,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
 // go through the normal commit pipeline. If we were to give javascript: urls
 // their own DocumentLoader in blink and model them as a real navigation, we
 // should add a test case here.
-// TODO(crbug.com/718652): when all clients are converted to use
+// TODO(crbug.com/40519010): when all clients are converted to use
 // BrowserInterfaceBroker, PendingReceiver<InterfaceProvider>-related code will
 // be removed.
 TEST_F(RenderFrameRemoteInterfacesTest,
@@ -1200,7 +1203,104 @@ void NavigateAndWait(content::TestRenderFrame* frame,
   waiter.Wait();
 }
 
+class FakeContentSettingsClient : public blink::WebContentSettingsClient {
+ public:
+  explicit FakeContentSettingsClient(content::RenderFrame* render_frame)
+      : render_frame_(render_frame) {
+    render_frame_->GetWebFrame()->SetContentSettingsClient(this);
+  }
+
+  ~FakeContentSettingsClient() override {
+    render_frame_->GetWebFrame()->SetContentSettingsClient(nullptr);
+  }
+
+  // blink::WebContentSettingsClient implementation.
+  void DidNotAllowImage() override { ++did_not_allow_image_count_; }
+  void DidNotAllowScript() override { ++did_not_allow_script_count_; }
+
+  int did_not_allow_image_count_ = 0;
+  int did_not_allow_script_count_ = 0;
+  raw_ptr<content::RenderFrame> render_frame_;
+};
+
 }  // namespace
+
+// Checks that when images are blocked, the ContentSettingsAgent receives a
+// callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackImageBlocked) {
+  // Create a fake content settings client to track image blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
+
+  // Navigate to a URL that consists of a red square.
+  std::string data_url_contents =
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAQMAAAD+JxcgAAAAA1BMVEX/"
+      "AAAZ4gk3AAAAC0lEQVR4AWMYSAAAAH0AAVFwgb4AAAAASUVORK5CYII=";
+
+  auto common_params = blink::CreateCommonNavigationParams();
+  common_params->url = GURL(data_url_contents);
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  commit_params->content_settings->allow_image = false;
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+
+  EXPECT_EQ(1, fake_content_settings_client.did_not_allow_image_count_);
+}
+
+// Checks that when script is blocked, the ContentSettingsAgent receives a
+// callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptBlocked) {
+  // Create a fake content settings client to track script blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
+
+  // Navigate to a URL with script disabled.
+  auto common_params = GetCommonParamsForContentSettingsTest();
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  commit_params->content_settings->allow_script = false;
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+  EXPECT_TRUE(HasText(GetMainFrame(), "JS_DISABLED"));
+  EXPECT_FALSE(HasText(GetMainFrame(), "JS_ENABLED"));
+
+  EXPECT_EQ(1, fake_content_settings_client.did_not_allow_script_count_);
+}
+
+// Checks that when script is allowed, the ContentSettingsAgent does not receive
+// a callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptAllowed) {
+  // Create a fake content settings client to track script blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client(GetMainRenderFrame());
+
+  // Navigate to a URL with script enabled.
+  auto common_params = GetCommonParamsForContentSettingsTest();
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+  // Verify that the script was not blocked.
+  EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
+  EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
+
+  // Verify there was no script blocked callback.
+  EXPECT_EQ(0, fake_content_settings_client.did_not_allow_script_count_);
+}
 
 // Regression test for crbug.com/232410: Load a page with JS blocked. Then,
 // allow JS and reload the page. In each case, only one of noscript or script
@@ -1255,7 +1355,8 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
       blink::kWebStandardCommit,
       /*is_synchronously_committed=*/true,
       blink::mojom::SameDocumentNavigationType::kFragment,
-      /*is_client_redirect=*/false);
+      /*is_client_redirect=*/false,
+      /*screenshot_destination=*/std::nullopt);
 
   // Verify that the script was not blocked.
   EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
@@ -1265,8 +1366,11 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
 class RenderFrameImplMojoJsTest : public RenderViewTest {
  public:
   RenderFrameImplMojoJsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableMojoJSProtectedMemory);
+    // An empty scoped feature list is used here to make sure that the feature
+    // list can be (re)initialized in the death test successfully, otherwise a
+    // CHECK will hit when tracing tries to reinitiailize in the same process.
+    // This is an unfortunate quirk of how death tests work for browser tests.
+    scoped_feature_list_.InitWithFeatures({}, {});
   }
 
   void SetUp() override {
@@ -1328,10 +1432,10 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies enabling MojoJS bindings via allowing the
-// BINDINGS_POLICY_MOJO_WEB_UI binding.
+// Verifies enabling MojoJS bindings.
 TEST_F(RenderFrameImplMojoJsTest, AllowMojoWebUIBindings) {
-  GetMainRenderFrame()->AllowBindings(BINDINGS_POLICY_MOJO_WEB_UI);
+  GetMainRenderFrame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}).ToEnumBitmask());
   LoadHTML(kSimpleScriptHtml);
 
   // Expect no crash and MojoJs bindings are enabled in the context.
@@ -1367,9 +1471,10 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
-        GetMainRenderFrame()->enabled_bindings_ |= BINDINGS_POLICY_MOJO_WEB_UI;
+        GetMainRenderFrame()->enabled_bindings_.Put(
+            BindingsPolicyValue::kMojoWebUi);
 
         LoadHTML(kSimpleScriptHtml);
       },
@@ -1383,7 +1488,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnableMojoJsBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->enable_mojo_js_bindings_ = true;
 
@@ -1399,7 +1504,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, MojoJsInterfaceBrokerTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->mojo_js_interface_broker_ =
             TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote();
@@ -1417,8 +1522,8 @@ TEST_F(RenderFrameImplMojoJsDeathTest,
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(ContextFeatureSettingsEnableMojoJsTampered(),
-                    "Check failed: \\*mojo_js_allowed_");
+  EXPECT_CHECK_DEATH_WITH(ContextFeatureSettingsEnableMojoJsTampered(),
+                          "Check failed: \\*mojo_js_allowed_");
 }
 #endif  //  BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

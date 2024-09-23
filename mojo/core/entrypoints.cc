@@ -23,7 +23,6 @@ extern "C" {
 
 MojoResult MojoInitializeImpl(const struct MojoInitializeOptions* options) {
   NOTREACHED() << "Do not call MojoInitialize() as a Mojo Core embedder!";
-  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 MojoTimeTicks MojoGetTimeTicksNowImpl() {
@@ -80,6 +79,13 @@ MojoResult MojoSerializeMessageImpl(
     MojoMessageHandle message,
     const MojoSerializeMessageOptions* options) {
   return g_core->SerializeMessage(message, options);
+}
+
+MojoResult MojoReserveMessageCapacityImpl(MojoMessageHandle message,
+                                          uint32_t payload_buffer_size,
+                                          uint32_t* buffer_size) {
+  return g_core->ReserveMessageCapacity(message, payload_buffer_size,
+                                        buffer_size);
 }
 
 MojoResult MojoAppendMessageDataImpl(
@@ -348,7 +354,6 @@ MojoResult MojoQueryQuotaImpl(MojoHandle handle,
 
 MojoResult MojoShutdownImpl(const MojoShutdownOptions* options) {
   NOTREACHED() << "Do not call MojoShutdown() as a Mojo Core embedder!";
-  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 MojoResult MojoSetDefaultProcessErrorHandlerImpl(
@@ -404,7 +409,8 @@ MojoSystemThunks2 g_thunks = {sizeof(g_thunks),
                               MojoSetQuotaImpl,
                               MojoQueryQuotaImpl,
                               MojoShutdownImpl,
-                              MojoSetDefaultProcessErrorHandlerImpl};
+                              MojoSetDefaultProcessErrorHandlerImpl,
+                              MojoReserveMessageCapacityImpl};
 
 }  // namespace
 

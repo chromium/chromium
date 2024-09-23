@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+
+source_set("routines") {
+  sources = [
+    "routine_control.cc",
+    "routine_control.h",
+    "routine_converters.cc",
+    "routine_converters.h",
+    "routine_events_forwarder.cc",
+    "routine_events_forwarder.h",
+    "telemetry_diagnostic_routine_service_ash.cc",
+    "telemetry_diagnostic_routine_service_ash.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/telemetry_extension/common",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "routine_converters_unittest.cc",
+    "telemetry_diagnostic_routine_service_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":routines",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+}

@@ -23,6 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
 #include <memory>
@@ -314,7 +319,7 @@ void NetworkStateNotifier::NotifyObserverOnTaskRunner(
           state.save_data);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -326,7 +331,7 @@ NetworkStateNotifier::ObserverListMap& NetworkStateNotifier::GetObserverMapFor(
     case ObserverType::kOnLineState:
       return on_line_state_observers_;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return connection_observers_;
   }
 }

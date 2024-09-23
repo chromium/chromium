@@ -11,6 +11,7 @@ build_webui("build") {
   web_component_files = [ "vc_tray_tester.ts" ]
 
   html_to_wrapper_template = "native"
+  webui_context_type = "trusted"
 
   ts_deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",

@@ -7,16 +7,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -38,7 +38,7 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
 
   auto expect = [&](HighlightPainter::Case expected, unsigned line) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
-    const auto& block_flow = To<LayoutNGBlockFlow>(body);
+    const auto& block_flow = To<LayoutBlockFlow>(body);
     InlinePaintContext inline_context{};
     InlineCursor cursor{block_flow};
     cursor.MoveToFirstLine();
@@ -59,10 +59,12 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
         selection = &*maybe_selection;
     }
 
-    GraphicsContext graphics_context{RootPaintController()};
-    PaintInfo paint_info{graphics_context, cull_rect, PaintPhase::kForeground};
+    PaintController controller;
+    GraphicsContext graphics_context(controller);
+    PaintInfo paint_info(graphics_context, cull_rect, PaintPhase::kForeground,
+                         /*descendant_painting_blocked=*/false);
     TextPaintStyle text_style =
-        TextPainterBase::TextPaintingStyle(GetDocument(), style, paint_info);
+        TextPainter::TextPaintingStyle(GetDocument(), style, paint_info);
     if (selection) {
       selection->ComputeSelectionStyle(GetDocument(), style,
                                        text_item.GetLayoutObject()->GetNode(),
@@ -71,15 +73,16 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
     LineRelativeRect rotated_rect =
         LineRelativeRect::CreateFromLineBox(physical_rect, true);
     TextPainter text_painter(
-        graphics_context, text_item.ScaledFont(), rect,
+        graphics_context, /*svg_context_paints*/ nullptr,
+        text_item.ScaledFont(), rect,
         LineRelativeOffset::CreateFromBoxOrigin(physical_offset), true);
     TextDecorationPainter decoration_painter(text_painter, &inline_context,
                                              paint_info, style, text_style,
                                              rotated_rect, selection);
     HighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
-        decoration_painter, paint_info, cursor, text_item, {}, physical_offset,
-        style, text_style, selection, false);
+        decoration_painter, paint_info, cursor, text_item, physical_offset,
+        style, text_style, selection);
 
     EXPECT_EQ(highlight_painter.PaintCase(), expected)
         << "(line " << line << ")";

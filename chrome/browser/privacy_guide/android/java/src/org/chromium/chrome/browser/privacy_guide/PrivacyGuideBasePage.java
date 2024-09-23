@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import androidx.fragment.app.Fragment;
 
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 
 /** Handles common dependencies for pages of the Privacy Guide. */
 public abstract class PrivacyGuideBasePage extends Fragment implements ProfileDependentSetting {
     private Profile mProfile;
+    private PrivacySandboxBridge mPrivacySandboxBridge;
 
     /** Return the profile associated with this page. */
     public Profile getProfile() {
@@ -21,5 +23,14 @@ public abstract class PrivacyGuideBasePage extends Fragment implements ProfileDe
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+        mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
+    }
+
+    /**
+     * Return the {@link PrivacySandboxBridge} associated with the value set in {@link
+     * #setProfile(Profile)}.
+     */
+    public PrivacySandboxBridge getPrivacySandboxBridge() {
+        return mPrivacySandboxBridge;
     }
 }

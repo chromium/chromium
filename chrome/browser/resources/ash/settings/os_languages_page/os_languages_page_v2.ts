@@ -22,7 +22,7 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -259,7 +259,8 @@ export class OsSettingsLanguagesPageV2Element extends
   private onTranslateCheckboxChange_(e: CustomEvent<boolean>): void {
     // Safety: This method is only called from a 'change' event from a
     // <cr-checkbox>, so the event target must be a <cr-checkbox>.
-    if ((e.target! as CrCheckboxElement).checked) {
+    const checked = (e.target as CrCheckboxElement).checked;
+    if (checked) {
       this.languageHelper.enableTranslateLanguage(
           // Safety: This method is only called from the action menu, which only
           // appears when `onDotsClick_()` is called, so `this.detailLanguage_`
@@ -272,11 +273,10 @@ export class OsSettingsLanguagesPageV2Element extends
           // should always be defined here.
           this.detailLanguage_!.state.language.code);
     }
-    this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
-        // Safety: This method is only called from a 'change' event from a
-        // <cr-checkbox>, so the event target must be a <cr-checkbox>.
-        (e.target! as CrCheckboxElement).checked);
-    recordSettingChange();
+    this.languagesMetricsProxy_.recordTranslateCheckboxChanged(checked);
+    recordSettingChange(
+        checked ? Setting.kEnableTranslateLanguage :
+                  Setting.kDisableTranslateLanguage);
     this.closeMenuSoon_();
   }
 
@@ -330,7 +330,7 @@ export class OsSettingsLanguagesPageV2Element extends
         // appears when `onDotsClick_()` is called, so `this.detailLanguage_`
         // should always be defined here.
         this.detailLanguage_!.state.language.code);
-    recordSettingChange();
+    recordSettingChange(Setting.kMoveLanguageToFront);
   }
 
   /**
@@ -344,7 +344,7 @@ export class OsSettingsLanguagesPageV2Element extends
         // should always be defined here.
         this.detailLanguage_!.state.language.code,
         /*upDirection=*/ true);
-    recordSettingChange();
+    recordSettingChange(Setting.kMoveLanguageUp);
   }
 
   /**
@@ -358,7 +358,7 @@ export class OsSettingsLanguagesPageV2Element extends
         // should always be defined here.
         this.detailLanguage_!.state.language.code,
         /*upDirection=*/ false);
-    recordSettingChange();
+    recordSettingChange(Setting.kMoveLanguageDown);
   }
 
   /**
@@ -371,7 +371,7 @@ export class OsSettingsLanguagesPageV2Element extends
         // appears when `onDotsClick_()` is called, so `this.detailLanguage_`
         // should always be defined here.
         this.detailLanguage_!.state.language.code);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveLanguage);
   }
 
   private onDotsClick_(e: DomRepeatEvent<LanguageState>): void {

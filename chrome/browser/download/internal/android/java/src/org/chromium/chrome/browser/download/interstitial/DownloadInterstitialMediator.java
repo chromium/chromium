@@ -362,13 +362,13 @@ class DownloadInterstitialMediator {
     @VisibleForTesting
     static class UmaHelper {
         /**
-         * Used for logging UMA metrics about what actions the user is taking within the
-         * download interstitial.
+         * Used for logging UMA metrics about what actions the user is taking within the download
+         * interstitial.
          *
-         * Must stay up to date with DownloadInterstitialUIAction in
+         * <p>Must stay up to date with DownloadInterstitialUIAction in
          * tools/metrics/histograms/enums.xml
          */
-        // TODO(crbug.com/1300585) Remove NUM_ENTRIES from the IntDef.
+        // TODO(crbug.com/40824284) Remove NUM_ENTRIES from the IntDef.
         @IntDef({
             Action.INITIATED,
             Action.COMPLETED,

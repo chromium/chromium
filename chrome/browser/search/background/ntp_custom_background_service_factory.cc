@@ -6,7 +6,9 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -29,10 +31,16 @@ NtpCustomBackgroundServiceFactory::NtpCustomBackgroundServiceFactory()
           "NtpCustomBackgroundService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
+  DependsOn(ThemeServiceFactory::GetInstance());
+  DependsOn(NtpBackgroundServiceFactory::GetInstance());
+}
 
 NtpCustomBackgroundServiceFactory::~NtpCustomBackgroundServiceFactory() =
     default;
@@ -42,4 +50,16 @@ NtpCustomBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<NtpCustomBackgroundService>(
       Profile::FromBrowserContext(context));
+}
+
+bool NtpCustomBackgroundServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  // Any time the theme changes, the NtpCustomBackgroundService must observe the
+  // change to react accordingly.
+  // To ensure this, we:
+  //   (1) register the factory in ChromeBrowserMainExtraPartsProfiles::
+  //   EnsureBrowserContextKeyedServiceFactoriesBuilt
+  //   (2) Always construct the service alongside the browser context.
+  //   (3) Add a dependency on ThemeServiceFactory.
+  return true;
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleIdentifier</key>
+	<string>codes.vapor.gn.xcode</string>
+	<key>CFBundleName</key>
+	<string>GN Xcode Plug-in</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>DVTPlugInCompatibilityUUIDs</key>
+	<array>
+		<string>8A66E736-A720-4B3C-92F1-33D9962C69DF</string>
+		<string>65C57D32-1E9B-44B8-8C04-A27BA7AAE2C4</string>
+		<string>DA4FDFD8-C509-4D8B-8B55-84A7B66AE701</string>
+		<string>E0A62D1F-3C18-4D74-BFE5-A4167D643966</string>
+		<string>DFFB3951-EB0A-4C09-9DAC-5F2D28CC839C</string>
+		<string>CA351AD8-3176-41CB-875C-42A05C7CDEC7</string>
+		<string>DF11C142-1584-4A99-87AC-1925D5F5652A</string>
+		<string>89CB8A86-8683-4928-AF66-11A6CE26A829</string>
+		<string>C3998872-68CC-42C2-847C-B44D96AB2691</string>
+		<string>B395D63E-9166-4CD6-9287-6889D507AD6A</string>
+		<string>EE23884D-A5C0-4163-94CF-DBBF3A5ED8D6</string>
+		<string>426A087B-D3AA-431A-AFDF-F135EC00DE1C</string>
+		<string>8B9F56A7-4D8B-41AA-A65D-D4906CDF1539</string>
+		<string>D7881182-AD00-4C36-A94D-F45FC9B0CF85</string>
+		<string>72F7D751-F810-43B8-A53F-1F1DFD74FC54</string>
+		<string>B89EAABF-783E-4EBF-80D4-A9EAC69F77F2</string>
+		<string>2FD51EF8-522D-4532-9698-980C4C497FD1</string>
+		<string>92CB09D8-3B74-4EF7-849C-99816039F0E7</string>
+		<string>A74FBA51-FFEA-4409-B976-6FC3225A6F64</string>
+		<string>BAB79788-ACEE-4291-826B-EC4667A6BEC5</string>
+		<string>C80A9C11-3902-4885-944E-A035869BA910</string>
+		<string>50AF8560-5AB3-4A69-80A4-0A6182870912</string>
+		<string>6C8909A0-F208-4C21-9224-504F9A70056E</string>
+		<string>DF12405B-55B4-4E00-8029-6AEFA7DBAD0F</string>
+		<string>3928AC50-EA32-404F-9CAF-49710A35483C</string>
+		<string>2F1A5FFF-BFEB-4498-B2AC-1296A7454F81</string>
+		<string>F56A1938-53DE-493D-9D64-87EE6C415E4D</string>
+		<string>8BAA96B4-5225-471B-B124-D32A349B8106</string>
+		<string>7A3A18B7-4C08-46F0-A96A-AB686D315DF0</string>
+		<string>BD431FF2-C78B-4953-A3A9-0E42593C2D32</string>
+		<string>EFD92DF8-D0A2-4C92-B6E3-9B3CD7E8DC19</string>
+		<string>AF3613FA-81D9-4A8B-8204-9912665677FA</string>
+		<string>B8A1C62D-289E-476A-B0CD-B16ADBDD8395</string>
+		<string>C91F3560-00E7-4749-8E3F-4D83B1496051</string>
+	</array>
+	<key>XCPluginHasUI</key>
+	<false/>
+</dict>
+</plist>

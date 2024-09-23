@@ -68,7 +68,7 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
     case ash::AppListSearchResultType::kAppShortcutV2:
       return "App shortcut V2";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
@@ -165,8 +165,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "DRIVE_SEARCH";
     case ash::SearchResultType::HELP_APP_UPDATES:
       return "HELP_APP_UPDATES";
-    case ash::SearchResultType::HELP_APP_DISCOVER:
-      return "HELP_APP_DISCOVER";
+    case ash::SearchResultType::HELP_APP_DISCOVER_DEPRECATED:
+      return "HELP_APP_DISCOVER_DEPRECATED";
     case ash::SearchResultType::KEYBOARD_SHORTCUT:
       return "KEYBOARD_SHORTCUT";
     case ash::SearchResultType::OPEN_TAB:
@@ -188,7 +188,7 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
     case ash::SearchResultType::APP_SHORTCUTS_V2:
       return "APP_SHORTCUTS_V2";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::string DisplayTypeToString(
@@ -208,7 +208,7 @@ std::string DisplayTypeToString(
     case ash::SearchResultDisplayType::kImage:
       return "Image";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ash::AppListSearchControlCategory MapSearchCategoryToControlCategory(
@@ -238,7 +238,7 @@ ash::AppListSearchControlCategory MapSearchCategoryToControlCategory(
     case SearchCategory::kSystemInfoCard:
       return ash::AppListSearchControlCategory::kCannotToggle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace app_list

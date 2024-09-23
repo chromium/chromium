@@ -4,11 +4,13 @@
 
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
 import("//third_party/dawn/scripts/dawn_features.gni")
+import("//ui/gl/features.gni")
 
 declare_args() {
   subpixel_font_rendering_disabled = false
@@ -28,6 +30,8 @@ component("service") {
     "gpu_channel_manager.cc",
     "gpu_channel_manager.h",
     "gpu_channel_manager_delegate.h",
+    "gpu_channel_shared_image_interface.cc",
+    "gpu_channel_shared_image_interface.h",
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",
@@ -39,7 +43,6 @@ component("service") {
     "image_decode_accelerator_stub.h",
     "image_decode_accelerator_worker.h",
     "image_transport_surface.h",
-    "image_transport_surface_delegate.h",
     "raster_command_buffer_stub.cc",
     "raster_command_buffer_stub.h",
     "shared_image_stub.cc",
@@ -71,7 +74,6 @@ component("service") {
     "//url",
   ]
   deps = [
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
 
     # crbug.com/799267: crash_key needs to be added explicitly for Windows and
@@ -140,8 +142,6 @@ component("service") {
   }
   if (is_android) {
     sources += [
-      "gpu_memory_buffer_factory_android_hardware_buffer.cc",
-      "gpu_memory_buffer_factory_android_hardware_buffer.h",
       "image_transport_surface_android.cc",
       "stream_texture_android.cc",
       "stream_texture_android.h",
@@ -164,6 +164,16 @@ component("service") {
   }
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]
+  }
+
+  if (use_dawn || skia_use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
+  }
+  if (skia_use_dawn) {
+    deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
 }
 

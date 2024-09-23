@@ -20,6 +20,7 @@
 namespace gpu {
 class SharedImageManager;
 class SyncPointManager;
+class Scheduler;
 }
 
 namespace viz {
@@ -33,7 +34,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   explicit DisplayResourceProviderSoftware(
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
-      gpu::SyncPointManager* sync_point_manager);
+      gpu::SyncPointManager* sync_point_manager,
+      gpu::Scheduler* scheduler);
   ~DisplayResourceProviderSoftware() override;
 
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
@@ -58,6 +60,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     sk_sp<SkImage> sk_image_;
   };
 
+  // Waits on the SyncToken and returns MemoryImageRepresentation of the
+  // SharedImage pointed by mailbox.
+  std::unique_ptr<gpu::MemoryImageRepresentation> GetSharedImageRepresentation(
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token);
+
  private:
   // These functions are used by ScopedReadLockSkImage to lock and unlock
   // resources.
@@ -78,6 +86,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  const raw_ptr<gpu::Scheduler> gpu_scheduler_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
 
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;

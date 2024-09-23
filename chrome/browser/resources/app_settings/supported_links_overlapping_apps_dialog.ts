@@ -2,63 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists} from 'chrome://resources/cr_components/app_management/util.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './supported_links_overlapping_apps_dialog.html.js';
+import {getCss} from './app_management_shared_style.css.js';
+import {getHtml} from './supported_links_overlapping_apps_dialog.html.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
+export interface SupportedLinksOverlappingAppsDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
-    I18nMixin(PolymerElement);
+const SupportedLinksOverlappingAppsDialogElementBase =
+    I18nMixinLit(CrLitElement);
 
-export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
-    AppManagementSupportedLinksOverlappingAppsDialogElementBase {
+export class SupportedLinksOverlappingAppsDialogElement extends
+    SupportedLinksOverlappingAppsDialogElementBase {
   static get is() {
     return 'app-management-supported-links-overlapping-apps-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      app: Object,
-
-      apps: {
-        type: Object,
-      },
-
-      overlappingAppIds: {
-        type: Array,
-      },
+      app: {type: Object},
+      apps: {type: Object},
+      overlappingAppIds: {type: Array},
     };
   }
 
-  app: App;
-  overlappingAppIds: string[];
-  apps: AppMap;
+  app: App = createDummyApp();
+  overlappingAppIds: string[] = [];
+  apps: AppMap = {};
 
-  private getBodyText_(apps: AppMap): string {
+  protected getBodyText_(): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {
-      return apps[appId]!.title!;
+      return this.apps[appId]!.title!;
     });
 
     const appTitle = castExists(this.app.title);
 
     switch (appNames.length) {
       case 1:
+        assert(appNames[0]);
         return this.i18n(
             'appManagementIntentOverlapDialogText1App', appTitle, appNames[0]);
       case 2:
@@ -82,11 +85,11 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private onChangeClick_(): void {
+  protected onChangeClick_(): void {
     this.$.dialog.close();
   }
 
-  private onCancelClick_(): void {
+  protected onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 }
@@ -94,10 +97,10 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'app-management-supported-links-overlapping-apps-dialog':
-        AppManagementSupportedLinksOverlappingAppsDialogElement;
+        SupportedLinksOverlappingAppsDialogElement;
   }
 }
 
 customElements.define(
-    AppManagementSupportedLinksOverlappingAppsDialogElement.is,
-    AppManagementSupportedLinksOverlappingAppsDialogElement);
+    SupportedLinksOverlappingAppsDialogElement.is,
+    SupportedLinksOverlappingAppsDialogElement);

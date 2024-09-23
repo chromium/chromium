@@ -4,6 +4,12 @@
 
 let transition = null;
 
+addEventListener('pagereveal', e => {
+  if (e.viewTransition) {
+    _transitionDidStart(e.viewTransition);
+  }
+});
+
 // Allow tests to control when the transition starts. Tests call
 // startTransitionAnimation() to complete the author DOM callback and allow the
 // view-transition to start the animation.
@@ -52,13 +58,21 @@ function createTransition() {
   if (updateDOM == null)
     throw new Error('Test must set an updateDOM function');
 
-  transition = document.startViewTransition(() => {
+  let t = document.startViewTransition(() => {
     updateDOM();
 
     readyToStartResolve();
 
     return startPromise;
   });
+
+  _transitionDidStart(t);
+}
+
+// Lets the harness know about an active transition. This will cause its
+// animations to be initially paused.
+function _transitionDidStart(t) {
+  transition = t;
 
   // Initially pause the animation at the old state so the test can take a
   // screenshot. Tests can then use moveAnimationToNewState() to play the

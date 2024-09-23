@@ -4,8 +4,9 @@
 
 #include "tools/win/chromeexts/commands/hwnd_command.h"
 
-#include <dbgeng.h>
 #include <windows.h>
+
+#include <dbgeng.h>
 
 #include "base/strings/utf_string_conversions.h"
 

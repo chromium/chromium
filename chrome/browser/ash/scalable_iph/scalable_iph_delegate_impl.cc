@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
 
 #include <memory>
+#include <string_view>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
@@ -23,8 +25,8 @@
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/notification_center/message_view_factory.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/notreached.h"
@@ -43,8 +45,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -55,6 +55,8 @@
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/variations/service/variations_service.h"
+#include "net/base/url_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -62,6 +64,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
+#include "url/url_canon_stdstring.h"
 
 #if BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
 #include "chrome/grit/preinstalled_web_apps_resources.h"  // nogncheck
@@ -94,6 +97,31 @@ constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kButtonIndex = 0;
 constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(60, 60);
 constexpr char kHelpAppPerksUrl[] = "chrome://help-app/offers";
+
+constexpr std::string_view kChromebookPerksUrl =
+    "https://www.google.com/chromebook/perks/";
+constexpr std::string_view kChromebookPerksUrlQueryNameId = "id";
+
+constexpr auto kIdsOfPerksMinecraftRealms2023 =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{"us", "minecraft.realms.2023"},
+         {"gb", "minecraft.uk.2023"},
+         {"ca", "minecraft.realms.ca.2023"},
+         {"au", "minecraft.realms.au.2023"}});
+
+std::string GetCountryCode() {
+  return g_browser_process->variations_service()->GetStoredPermanentCountry();
+}
+
+GURL GetPerksMinecraftRealmsUrl(std::string_view country_code) {
+  const auto it = kIdsOfPerksMinecraftRealms2023.find(country_code);
+  if (it == kIdsOfPerksMinecraftRealms2023.end()) {
+    return GURL();
+  }
+
+  return net::AppendQueryParameter(GURL(kChromebookPerksUrl),
+                                   kChromebookPerksUrlQueryNameId, it->second);
+}
 
 const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   static const base::NoDestructor<base::flat_map<ActionType, std::string>>
@@ -203,7 +231,7 @@ int GetResourceId(BubbleIcon icon) {
     case BubbleIcon::kGooglePhotosIcon:
       return IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_120_PNG;
     case BubbleIcon::kNoIcon:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #else
   return IDR_PRODUCT_LOGO_128;
@@ -328,22 +356,26 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
   synced_printers_manager_observer_.Observe(synced_printers_manager_);
   MaybeNotifyHasSavedPrinters();
 
-  DCHECK(ash::Shell::Get()->system_tray_model()->phone_hub_manager())
-      << "PhoneHubManager is expected to be initialized at a specific timing. "
-         "See a comment in "
-         "PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext. Below "
-         "PhoneHubManagerFactory::GetForProfile will lazy create a "
-         "PhoneHubManager. It should be fine as ScalableIph is also "
-         "initialized at the same timing. But it's ideal if PhoneHubManager is "
-         "created at the intended initialization timing instead of our call, "
-         "i.e. PhoneHubManager should be already created at this point.";
-  phonehub::PhoneHubManager* phone_hub_manager =
-      phonehub::PhoneHubManagerFactory::GetForProfile(profile);
-  CHECK(phone_hub_manager);
-  feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
-  CHECK(feature_status_provider_);
-  feature_status_provider_observer_.Observe(feature_status_provider_);
-  MaybeNotifyPhoneHubOnboardingEligibility();
+  if (features::IsCrossDeviceFeatureSuiteAllowed()) {
+    DCHECK(ash::Shell::Get()->system_tray_model()->phone_hub_manager())
+        << "PhoneHubManager is expected to be initialized at a specific "
+           "timing. "
+           "See a comment in "
+           "PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext. Below "
+           "PhoneHubManagerFactory::GetForProfile will lazy create a "
+           "PhoneHubManager. It should be fine as ScalableIph is also "
+           "initialized at the same timing. But it's ideal if PhoneHubManager "
+           "is "
+           "created at the intended initialization timing instead of our call, "
+           "i.e. PhoneHubManager should be already created at this point.";
+    phonehub::PhoneHubManager* phone_hub_manager =
+        phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+    CHECK(phone_hub_manager);
+    feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
+    CHECK(feature_status_provider_);
+    feature_status_provider_observer_.Observe(feature_status_provider_);
+    MaybeNotifyPhoneHubOnboardingEligibility();
+  }
 }
 
 // Remember NOT to interact with `iph_session` from the destructor. See the
@@ -356,9 +388,15 @@ ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
       kWallpaperNotificationType);
 }
 
-void ScalableIphDelegateImpl::ShowBubble(
+bool ScalableIphDelegateImpl::ShowBubble(
     const scalable_iph::ScalableIphDelegate::BubbleParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
+  if (!IsEligibleAction(params.button.action.action_type)) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Specified action is not eligible -> Not showing a bubble.";
+    return false;
+  }
+
   // TODO(b/323426306): move this out to //ash/scalable_iph.
   SCALABLE_IPH_LOG(GetLogger()) << "Show bubble: " << params;
 
@@ -385,7 +423,7 @@ void ScalableIphDelegateImpl::ShowBubble(
           << params.anchor_view_app_id << " -> Not showing a bubble.";
       bubble_iph_session_.reset();
       bubble_id_ = "";
-      return;
+      return false;
     }
   }
 
@@ -426,12 +464,21 @@ void ScalableIphDelegateImpl::ShowBubble(
     resized_image.EnsureRepsForSupportedScales();
     nudge_data.image_model = ui::ImageModel::FromImageSkia(resized_image);
   }
+
   ash::AnchoredNudgeManager::Get()->Show(nudge_data);
+
+  return true;
 }
 
-void ScalableIphDelegateImpl::ShowNotification(
+bool ScalableIphDelegateImpl::ShowNotification(
     const NotificationParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
+  if (!IsEligibleAction(params.button.action.action_type)) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Specified action is not eligible -> Not showing a notification.";
+    return false;
+  }
+
   // TODO(b/323426306): move this out to //ash/scalable_iph.
   SCALABLE_IPH_LOG(GetLogger()) << "Show notification: " << params;
 
@@ -479,6 +526,8 @@ void ScalableIphDelegateImpl::ShowNotification(
   }
 
   AddOrReplaceNotification(std::move(notification));
+
+  return true;
 }
 
 void ScalableIphDelegateImpl::AddObserver(DelegateObserver* observer) {
@@ -631,6 +680,20 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
                         GetLogger());
       break;
     }
+    case ActionType::kOpenChromebookPerksMinecraftRealms2023: {
+      GURL perks_url = GetPerksMinecraftRealmsUrl(GetCountryCode());
+
+      CHECK(!perks_url.is_empty())
+          << "No perks url found for " << GetCountryCode()
+          << ". Unable to perform an action. This must not happen as "
+             "eligibility of an action must be checked by `IsEligibleAction` "
+             "before showing it in a UI.";
+      CHECK(perks_url.is_valid())
+          << "Invalid url is provided. Url is managed on the client side. We "
+             "use CHECK as this is a client side invariant.";
+      OpenUrlForProfile(profile_, perks_url, GetLogger());
+      break;
+    }
     case ActionType::kOpenLauncher:
     case ActionType::kInvalid: {
       DLOG(WARNING)
@@ -705,6 +768,20 @@ void ScalableIphDelegateImpl::SetFakeFeatureStatusProviderForTesting(
   feature_status_provider_observer_.Reset();
   feature_status_provider_observer_.Observe(feature_status_provider_);
   MaybeNotifyPhoneHubOnboardingEligibility();
+}
+
+bool ScalableIphDelegateImpl::IsEligibleAction(
+    scalable_iph::ActionType action_type) {
+  if (action_type ==
+      scalable_iph::ActionType::kOpenChromebookPerksMinecraftRealms2023) {
+    GURL perks_url = GetPerksMinecraftRealmsUrl(GetCountryCode());
+    if (perks_url.is_empty()) {
+      SCALABLE_IPH_LOG(GetLogger())
+          << action_type << " is not eligible for " << GetCountryCode();
+      return false;
+    }
+  }
+  return true;
 }
 
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {

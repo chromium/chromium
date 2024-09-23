@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/java/gin_java_bridge_value_converter.h"
 
 #include <stddef.h>
@@ -39,7 +44,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
   void TearDown() override { context_.Reset(); }
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

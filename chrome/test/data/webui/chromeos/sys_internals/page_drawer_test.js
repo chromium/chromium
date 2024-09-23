@@ -5,6 +5,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.js';
 import {closeDrawer, initialize, openDrawer, promiseResolvers} from 'chrome://sys-internals/index.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('Page_Drawer', function() {
   suiteSetup('Wait for the page initialize.', function() {

@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -25,7 +26,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,7 +62,7 @@ public class MultiWindowTestHelper {
         // Get the class name to use for the second ChromeTabbedActivity. This step is important
         // for initializing things in MultiWindowUtils.java.
         Class<? extends Activity> secondActivityClass =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MultiWindowUtils.getInstance()
                                         .getOpenInOtherWindowActivity(activity));
@@ -123,7 +123,7 @@ public class MultiWindowTestHelper {
 
     /** Moves the given activity to the foreground so it can receive user input. */
     public static void moveActivityToFront(final Activity activity) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Context context = ContextUtils.getApplicationContext();
                     ActivityManager activityManager =

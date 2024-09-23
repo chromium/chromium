@@ -10,9 +10,11 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
-#include "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestContextTest_jni.h"
 #include "components/cronet/url_request_context_config.h"
 #include "components/cronet/version.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestContextTest_jni.h"
 
 using base::android::JavaParamRef;
 

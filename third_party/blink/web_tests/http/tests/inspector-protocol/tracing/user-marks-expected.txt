@@ -37,7 +37,17 @@ Got a performance mark event:
 Object: {
 	args: {
 		data: {
+			detail: string
 			navigationId: string
+			stackTrace: [
+				{
+					columnNumber: number
+					functionName: string
+					lineNumber: number
+					scriptId: string
+					url: string
+				}
+			]
 			startTime: number
 		}
 	}
@@ -49,9 +59,18 @@ Object: {
 	tid: number
 	ts: number
 }
-Got user timings events:
+Got performance measure event:
 Object: {
 	args: {
+		stackTrace: [
+			{
+				columnNumber: number
+				functionName: string
+				lineNumber: number
+				scriptId: string
+				url: string
+			}
+		]
 		startTime: number
 	}
 	cat: string

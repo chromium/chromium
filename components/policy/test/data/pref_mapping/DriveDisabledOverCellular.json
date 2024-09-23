@@ -3,35 +3,13 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "gdata.cellular.disabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DriveDisabledOverCellular": false
-        },
-        "prefs": {
-          "gdata.cellular.disabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DriveDisabledOverCellular": true
-        },
-        "prefs": {
-          "gdata.cellular.disabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "gdata.cellular.disabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

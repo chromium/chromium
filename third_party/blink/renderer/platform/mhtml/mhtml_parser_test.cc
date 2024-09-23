@@ -18,8 +18,8 @@ namespace {
 std::string GetResourceData(
     const HeapVector<Member<ArchiveResource>>& resources,
     size_t index) {
-  return std::string(resources[index]->Data()->Data(),
-                     resources[index]->Data()->size());
+  Vector<char> flatten_data = resources[index]->Data()->CopyAs<Vector<char>>();
+  return std::string(base::as_string_view(flatten_data));
 }
 
 }  // namespace

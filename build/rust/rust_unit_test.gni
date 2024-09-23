@@ -69,7 +69,7 @@ template("rust_unit_test") {
   # not a requirement for rustc. The reason is to ensure that tools
   # such as `gn deps` give the correct answer, and thus we trigger
   # the right test suites etc. on code change.
-  # TODO(crbug.com/1256930) - verify this is correct
+  # TODO(crbug.com/40200431) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
   _exe_target_name = target_name + "_exe"
@@ -86,11 +86,6 @@ template("rust_unit_test") {
     _env_out_dir = target_gen_dir
   }
 
-  # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
-  # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source
-  # sets.
-  # This is important in cases where Rust tests may depend upon C/C++
-  # dependencies.
   executable(_exe_target_name) {
     testonly = true
     forward_variables_from(invoker,

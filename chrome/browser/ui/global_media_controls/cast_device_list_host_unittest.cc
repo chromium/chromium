@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
+#include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -75,20 +77,25 @@ class CastDeviceListHostTest : public testing::Test {
     testing::Test::SetUp();
     auto dialog_controller = std::make_unique<MockCastDialogController>();
     dialog_controller_ = dialog_controller.get();
-    host_ = CreateHost(std::move(dialog_controller), &client_receiver_);
+    host_ = CreateHost(std::move(dialog_controller), mock_client_.PassRemote());
   }
 
   MOCK_METHOD(void, OnMediaRemotingRequested, ());
   MOCK_METHOD(void, HideMediaDialog, ());
   MOCK_METHOD(void, OnSinksDiscoveredCallback, ());
 
+  const global_media_controls::test::MockDeviceListClient& mock_client() {
+    return mock_client_;
+  }
+
+  void FlushForTesting() { mock_client_.FlushForTesting(); }
+
  protected:
   std::unique_ptr<CastDeviceListHost> CreateHost(
       std::unique_ptr<media_router::CastDialogController> dialog_controller,
-      mojo::PendingReceiver<mojom::DeviceListClient>* client_receiver) {
+      mojo::PendingRemote<mojom::DeviceListClient> cleint_remote) {
     return std::make_unique<CastDeviceListHost>(
-        std::move(dialog_controller),
-        client_receiver->InitWithNewPipeAndPassRemote(),
+        std::move(dialog_controller), std::move(cleint_remote),
         base::BindRepeating(&CastDeviceListHostTest::OnMediaRemotingRequested,
                             base::Unretained(this)),
         base::BindRepeating(&CastDeviceListHostTest::HideMediaDialog,
@@ -100,7 +107,7 @@ class CastDeviceListHostTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<CastDeviceListHost> host_;
   raw_ptr<MockCastDialogController> dialog_controller_ = nullptr;
-  mojo::PendingReceiver<mojom::DeviceListClient> client_receiver_;
+  global_media_controls::test::MockDeviceListClient mock_client_;
 };
 
 TEST_F(CastDeviceListHostTest, StartPresentation) {
@@ -164,12 +171,29 @@ TEST_F(CastDeviceListHostTest, StartAudioTabMirroring) {
 
 TEST_F(CastDeviceListHostTest, OnSinksDiscovered) {
   EXPECT_CALL(*this, OnSinksDiscoveredCallback());
+  EXPECT_CALL(mock_client(), OnDevicesUpdated);
   UIMediaSink sink = CreateMediaSink();
   sink.cast_modes = {media_router::MediaCastMode::REMOTE_PLAYBACK};
   host_->OnModelUpdated({CreateModelWithSinks({sink})});
+  FlushForTesting();
 
   EXPECT_CALL(*this, OnSinksDiscoveredCallback()).Times(0);
+  EXPECT_CALL(mock_client(), OnDevicesUpdated);
   host_->OnModelUpdated({CreateModelWithSinks({})});
+  FlushForTesting();
+}
+
+TEST_F(CastDeviceListHostTest, OnDiscoveryPermissionRejected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  EXPECT_CALL(*this, OnSinksDiscoveredCallback()).Times(0);
+  EXPECT_CALL(mock_client(), OnPermissionRejected);
+  CastDialogModel model = CreateModelWithSinks({CreateMediaSink()});
+  model.set_is_permission_rejected(true);
+  host_->OnModelUpdated(model);
+  FlushForTesting();
 }
 
 TEST_F(CastDeviceListHostTest, HideMediaDialogCallback) {
@@ -197,7 +221,8 @@ TEST_F(CastDeviceListHostTest, SelectingDeviceClearsIssue) {
   auto sink = CreateMediaSink();
   media_router::IssueInfo issue_info(
       "Issue Title", media_router::IssueInfo::Severity::WARNING, sink.id);
-  media_router::Issue issue(issue_info);
+  media_router::Issue issue(
+      media_router::Issue::CreateIssueWithIssueInfo(issue_info));
   sink.issue = issue;
   host_->OnModelUpdated(CreateModelWithSinks({sink}));
 
@@ -210,8 +235,9 @@ TEST_F(CastDeviceListHostTest, SelectingDeviceClearsIssue) {
 
 TEST_F(CastDeviceListHostTest, GetId) {
   mojo::PendingReceiver<mojom::DeviceListClient> client_receiver;
-  std::unique_ptr<CastDeviceListHost> host2 = CreateHost(
-      std::make_unique<MockCastDialogController>(), &client_receiver);
+  std::unique_ptr<CastDeviceListHost> host2 =
+      CreateHost(std::make_unique<MockCastDialogController>(),
+                 client_receiver.InitWithNewPipeAndPassRemote());
   // IDs should be unique.
   EXPECT_NE(host_->id(), host2->id());
 }

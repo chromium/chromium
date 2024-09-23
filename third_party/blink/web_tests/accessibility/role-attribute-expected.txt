@@ -67,7 +67,7 @@ AXRole: AXGenericContainer
                 AXRole: AXListBoxOption "Implicit Option 1"
                 AXRole: AXListBoxOption "Implicit Option 2"
         AXRole: AXGroup
-            AXRole: AXMenuListPopup
+            AXRole: AXGenericContainer
                 AXRole: AXTextField "Explicit dropdown 1"
                 AXRole: AXTextField "Explicit dropdown 2"
         AXRole: AXComboBoxSelect

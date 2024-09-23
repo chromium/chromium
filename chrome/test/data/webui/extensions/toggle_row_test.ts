@@ -5,7 +5,7 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {getTrustedHTML} from 'chrome://extensions/extensions.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

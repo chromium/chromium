@@ -18,22 +18,10 @@
 #include "ui/display/screen.h"
 
 namespace ash {
-namespace {
-
-constexpr const char kUserActionExitPressed[] = "exit";
-constexpr const char kUserActionSkip[] = "skip";
-constexpr const char kUserActionGesturePageChange[] = "gesture-page-change";
-
-// The name used for each page on the gesture navigation screen.
-constexpr const char kGestureIntroPage[] = "gestureIntro";
-constexpr const char kGestureHomePage[] = "gestureHome";
-constexpr const char kGestureOverviewPage[] = "gestureOverview";
-constexpr const char kGestureBackPage[] = "gestureBack";
-
-}  // namespace
 
 // static
 std::string GestureNavigationScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
@@ -42,6 +30,7 @@ std::string GestureNavigationScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GestureNavigationScreen::GestureNavigationScreen(
@@ -49,18 +38,13 @@ GestureNavigationScreen::GestureNavigationScreen(
     const ScreenExitCallback& exit_callback)
     : BaseScreen(GestureNavigationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
 }
 
 GestureNavigationScreen::~GestureNavigationScreen() = default;
-
-void GestureNavigationScreen::GesturePageChange(const std::string& new_page) {
-  page_times_[current_page_] += base::TimeTicks::Now() - start_time_;
-  start_time_ = base::TimeTicks::Now();
-  current_page_ = new_page;
-}
 
 bool GestureNavigationScreen::MaybeSkip(WizardContext& context) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -89,7 +73,7 @@ bool GestureNavigationScreen::MaybeSkip(WizardContext& context) {
 void GestureNavigationScreen::ShowImpl() {
   // Begin keeping track of current page and start time for the page shown time
   // metrics.
-  current_page_ = kGestureIntroPage;
+  current_page_ = GesturePages::kIntro;
   start_time_ = base::TimeTicks::Now();
   context()->is_gesture_navigation_screen_was_shown = true;
   if (view_) {
@@ -99,37 +83,32 @@ void GestureNavigationScreen::ShowImpl() {
 
 void GestureNavigationScreen::HideImpl() {}
 
-void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionExitPressed) {
-    RecordPageShownTimeMetrics();
-    exit_callback_.Run(Result::NEXT);
-    return;
-  }
-  if (action_id == kUserActionSkip) {
-    exit_callback_.Run(Result::SKIP);
-    return;
-  }
-  if (action_id == kUserActionGesturePageChange) {
-    CHECK_EQ(args.size(), 2u);
-    const std::string& new_page = args[1].GetString();
-    GesturePageChange(new_page);
-    return;
-  }
-  BaseScreen::OnUserAction(args);
+void GestureNavigationScreen::OnPageChange(GesturePages new_page) {
+  page_times_[current_page_] += base::TimeTicks::Now() - start_time_;
+  start_time_ = base::TimeTicks::Now();
+  current_page_ = new_page;
+}
+
+void GestureNavigationScreen::OnSkipClicked() {
+  exit_callback_.Run(Result::SKIP);
+}
+
+void GestureNavigationScreen::OnExitClicked() {
+  RecordPageShownTimeMetrics();
+  exit_callback_.Run(Result::NEXT);
 }
 
 void GestureNavigationScreen::RecordPageShownTimeMetrics() {
   page_times_[current_page_] += base::TimeTicks::Now() - start_time_;
 
   UmaHistogramMediumTimes("OOBE.GestureNavigationScreen.PageShownTime.Intro",
-                          page_times_[kGestureIntroPage]);
+                          page_times_[GesturePages::kIntro]);
   UmaHistogramMediumTimes("OOBE.GestureNavigationScreen.PageShownTime.Home",
-                          page_times_[kGestureHomePage]);
+                          page_times_[GesturePages::kHome]);
   UmaHistogramMediumTimes("OOBE.GestureNavigationScreen.PageShownTime.Overview",
-                          page_times_[kGestureOverviewPage]);
+                          page_times_[GesturePages::kOverview]);
   UmaHistogramMediumTimes("OOBE.GestureNavigationScreen.PageShownTime.Back",
-                          page_times_[kGestureBackPage]);
+                          page_times_[GesturePages::kBack]);
 }
 
 }  // namespace ash

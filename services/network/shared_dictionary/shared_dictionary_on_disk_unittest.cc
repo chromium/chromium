@@ -89,9 +89,12 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
         return net::ERR_IO_PENDING;
       });
 
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id*/ "", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id*/ "", disk_cache_key_token, *disk_cache,
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
   EXPECT_EQ(expected_size, dictionary->size());
   EXPECT_EQ(hash, dictionary->hash());
 
@@ -153,9 +156,12 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
         return disk_cache::EntryResult::MakeOpened(entry.release());
       });
 
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -211,9 +217,12 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
         return base::checked_cast<int>(expected_size);
       });
 
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -266,9 +275,12 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
         return disk_cache::EntryResult::MakeOpened(entry.release());
       });
 
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
-      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
+      /*disk_cache_error_callback=*/base::BindOnce([]() {
+        NOTREACHED_IN_MIGRATION();
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   // ReadAll() synchronously returns OK.
   EXPECT_EQ(net::OK, dictionary->ReadAll(base::BindLambdaForTesting(
@@ -295,11 +307,12 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
             dictionary->ReadAll(base::BindLambdaForTesting([&](int rv) {
@@ -334,11 +347,12 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id*/ "", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id*/ "", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   EXPECT_EQ(net::ERR_FAILED, dictionary->ReadAll(base::BindLambdaForTesting(
                                  [&](int rv) { ASSERT_TRUE(false); })));
@@ -381,11 +395,12 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadDataFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -441,11 +456,12 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadDataFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -498,11 +514,12 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadDataFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,
@@ -553,11 +570,12 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadDataFailure) {
       });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   // ReadAll() synchronously returns ERR_FAILED.
   EXPECT_EQ(net::ERR_FAILED, dictionary->ReadAll(base::BindLambdaForTesting(
@@ -590,11 +608,12 @@ TEST(SharedDictionaryOnDiskTest, UnexpectedDataSize) {
   });
 
   bool disk_cache_error_callback_called = false;
-  auto dictionary = std::make_unique<SharedDictionaryOnDisk>(
-      expected_size, hash, /*id=*/"", disk_cache_key_token, disk_cache.get(),
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
       /*disk_cache_error_callback=*/base::BindLambdaForTesting([&]() {
         disk_cache_error_callback_called = true;
-      }));
+      }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
 
   bool read_all_finished = false;
   EXPECT_EQ(net::ERR_IO_PENDING,

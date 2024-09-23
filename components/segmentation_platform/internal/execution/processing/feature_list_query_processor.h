@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -119,6 +120,7 @@ class FeatureListQueryProcessor {
 
   // Helper function to create an UmaProcessor.
   std::unique_ptr<UmaFeatureProcessor> GetUmaFeatureProcessor(
+      UkmDataManager* ukm_data_manager,
       base::flat_map<FeatureIndex, Data>&& uma_features,
       FeatureProcessorState& feature_processor_state,
       bool is_output);

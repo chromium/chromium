@@ -5,11 +5,11 @@
 #include "chromeos/printing/printer_configuration.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chromeos/printing/printing_constants.h"
@@ -57,13 +57,13 @@ std::string ToString(PrinterClass pclass) {
     case PrinterClass::kSaved:
       return "Saved";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
   static constexpr auto kKnownSchemes =
-      base::MakeFixedFlatSet<base::StringPiece>(
+      base::MakeFixedFlatSet<std::string_view>(
           {"http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"});
   static const std::string kPrefix = "Malformed printer URI: ";
 
@@ -160,7 +160,8 @@ bool Printer::RequiresDriverlessUsb() const {
   // TODO(b/184293121): Replace this list with more generic logic after general
   // IPP-USB evaluation is complete.
   static constexpr auto kDriverlessUsbMakeModels =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
+          "epson et-5180 series",    // b/319373509
           "epson et-8550 series",    // b/301387697
           "epson wf-110 series",     // b/287159028
           "hp deskjet 4100 series",  // b/279387801

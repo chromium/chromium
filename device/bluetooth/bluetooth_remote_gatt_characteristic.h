@@ -134,7 +134,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   virtual void StartNotifySession(NotifySessionCallback callback,
                                   ErrorCallback error_callback);
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/849359): This method should also be implemented on
+  // TODO(crbug.com/40579213): This method should also be implemented on
   // Android and Windows.
   // macOS does not support specifying a notification type. According to macOS
   // documentation if the characteristic supports both notify and indicate, only
@@ -196,7 +196,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 #if BUILDFLAG(IS_CHROMEOS)
   // |notification_type| specifies the type of notifications that will be
   // enabled: notifications or indications.
-  // TODO(https://crbug.com/849359): This method should also be implemented on
+  // TODO(crbug.com/40579213): This method should also be implemented on
   // Android and Windows.
   virtual void SubscribeToNotifications(
       BluetoothRemoteGattDescriptor* ccc_descriptor,

@@ -19,8 +19,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -184,10 +185,10 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
   void UninstallParentAppBySource(WebAppManagement::Type source) {
     base::test::TestFuture<void> uninstall_future;
-    provider().scheduler().RemoveInstallSource(
+    provider().scheduler().RemoveInstallManagementMaybeUninstall(
         parent_app_id_, source, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          EXPECT_EQ(code, webapps::UninstallResultCode::kInstallSourceRemoved);
           uninstall_future.SetValue();
         }));
     ASSERT_TRUE(uninstall_future.Wait())
@@ -343,7 +344,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
       GenerateSubAppIdFromPath(kSub1, iwa_frame, parent_manifest_id());
 
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id));
-  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(sub_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      sub_app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(
       DisplayMode::kStandalone,
       provider().registrar_unsafe().GetAppEffectiveDisplayMode(sub_app_id));

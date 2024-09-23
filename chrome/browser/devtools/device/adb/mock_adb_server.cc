@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -292,7 +300,6 @@ SimpleHttpServer::Connection::~Connection() {
 
 void SimpleHttpServer::Connection::Send(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const char* data = message.c_str();
   int size = message.size();
 
   if ((output_buffer_->offset() + bytes_to_write_ + size) >
@@ -303,13 +310,15 @@ void SimpleHttpServer::Connection::Send(const std::string& message) {
       int new_size = std::max(output_buffer_->capacity() * 2, size * 2);
       output_buffer_->SetCapacity(new_size);
     }
-    memmove(output_buffer_->StartOfBuffer(),
-            output_buffer_->data(),
-            bytes_to_write_);
+    size_t old_offset = output_buffer_->offset();
     output_buffer_->set_offset(0);
+    output_buffer_->span().copy_prefix_from(
+        output_buffer_->span().subspan(old_offset, bytes_to_write_));
   }
 
-  memcpy(output_buffer_->data() + bytes_to_write_, data, size);
+  output_buffer_->span()
+      .subspan(bytes_to_write_, size)
+      .copy_from(base::as_byte_span(message));
   bytes_to_write_ += size;
 
   if (bytes_to_write_ == size)
@@ -344,13 +353,15 @@ void SimpleHttpServer::Connection::OnDataRead(int count) {
   int bytes_processed;
 
   do {
-    char* data = input_buffer_->StartOfBuffer();
-    int data_size = input_buffer_->offset();
-    bytes_processed = parser_->Consume(data, data_size);
+    base::span<uint8_t> data_buffer = input_buffer_->span_before_offset();
+    base::span<char> data_chars = base::as_writable_chars(data_buffer);
+    bytes_processed = parser_->Consume(data_chars.data(), data_chars.size());
 
     if (bytes_processed) {
-      memmove(data, data + bytes_processed, data_size - bytes_processed);
-      input_buffer_->set_offset(data_size - bytes_processed);
+      const size_t unprocessed_size = data_buffer.size() - bytes_processed;
+      input_buffer_->everything().copy_prefix_from(
+          data_buffer.subspan(bytes_processed));
+      input_buffer_->set_offset(unprocessed_size);
     }
   } while (bytes_processed);
   // Posting to avoid deep recursion in case of synchronous IO
@@ -549,7 +560,7 @@ void MockAndroidConnection::Receive(const std::string& data) {
     return;
 
   std::string request(request_.substr(0, request_end_pos));
-  std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       request, "\r\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   CHECK_GE(2U, lines.size());
   std::vector<std::string> tokens = base::SplitString(
@@ -568,14 +579,14 @@ void MockAndroidConnection::Receive(const std::string& data) {
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromePages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "chrome_devtools_remote_1002") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleChromeBetaVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromeBetaPages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (base::StartsWith(socket_name_, "noprocess_devtools_remote",
                               base::CompareCase::SENSITIVE)) {
     if (path == kJsonVersionPath)
@@ -583,23 +594,23 @@ void MockAndroidConnection::Receive(const std::string& data) {
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse("[]");
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "webview_devtools_remote_2425") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleWebViewVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleWebViewPages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "node_devtools_remote") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleNodeVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleNodePage);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else {
-    NOTREACHED() << "Unknown socket " << socket_name_;
+    NOTREACHED_IN_MIGRATION() << "Unknown socket " << socket_name_;
   }
 }
 
@@ -632,12 +643,12 @@ void MockAndroidConnection::ProcessCommand(const std::string& command) {
         result += line.substr(sizeof(kEchoCommandPrefix) - 1);
         result += "\r\n";
       } else {
-        NOTREACHED() << "Unknown shell command - " << command;
+        NOTREACHED_IN_MIGRATION() << "Unknown shell command - " << command;
       }
     }
     delegate_->SendSuccess(result);
   } else {
-    NOTREACHED() << "Unknown command - " << command;
+    NOTREACHED_IN_MIGRATION() << "Unknown command - " << command;
   }
   delegate_->Close();
 }

@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("commerce") {
+  sources = [
+    "browser_utils.h",
+    "shopping_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "browser_utils.cc",
+    "shopping_service_factory.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":commerce",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//chrome/browser/sync:sync",
+    "//components/commerce/content/browser:browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/leveldb_proto",
+    "//components/prefs:prefs",
+    "//components/variations/service:service",
+    "//content/public/browser",
+    "//url:url",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui:ui",
+      "//components/commerce/core:discounts_db_content_proto",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "browser_utils_unittest.cc" ]
+  deps = [
+    ":commerce",
+    "//chrome/test:test_support",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+  ]
+}

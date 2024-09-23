@@ -4,9 +4,9 @@
 
 #include "cc/metrics/compositor_timing_history.h"
 
-#include "base/logging.h"
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
@@ -22,25 +22,11 @@ class TestCompositorTimingHistory : public CompositorTimingHistory {
  public:
   TestCompositorTimingHistory(CompositorTimingHistoryTest* test,
                               RenderingStatsInstrumentation* rendering_stats)
-      : CompositorTimingHistory(false, RENDERER_UMA, rendering_stats),
-        test_(test) {}
+      : CompositorTimingHistory(RENDERER_UMA, rendering_stats), test_(test) {}
 
   TestCompositorTimingHistory(const TestCompositorTimingHistory&) = delete;
   TestCompositorTimingHistory& operator=(const TestCompositorTimingHistory&) =
       delete;
-
-  const RollingTimeDeltaHistory& bmf_start_to_ready_to_commit_critical_history()
-      const {
-    return bmf_start_to_ready_to_commit_critical_history_;
-  }
-  const RollingTimeDeltaHistory&
-  bmf_start_to_ready_to_commit_not_critical_history() const {
-    return bmf_start_to_ready_to_commit_not_critical_history_;
-  }
-  const RollingTimeDeltaHistory& bmf_queue_to_activate_critical_history()
-      const {
-    return bmf_queue_to_activate_critical_history_;
-  }
 
  protected:
   base::TimeTicks Now() const override;
@@ -51,8 +37,7 @@ class TestCompositorTimingHistory : public CompositorTimingHistory {
 class CompositorTimingHistoryTest : public testing::Test {
  public:
   CompositorTimingHistoryTest()
-      : feature_list(features::kDurationEstimatesInCompositorTimingHistory),
-        rendering_stats_(RenderingStatsInstrumentation::Create()),
+      : rendering_stats_(RenderingStatsInstrumentation::Create()),
         timing_history_(this, rendering_stats_.get()) {
     AdvanceNowBy(base::Milliseconds(1));
     timing_history_.SetRecordingEnabled(true);
@@ -63,7 +48,6 @@ class CompositorTimingHistoryTest : public testing::Test {
   base::TimeTicks Now() { return now_; }
 
  protected:
-  base::test::ScopedFeatureList feature_list;
   std::unique_ptr<RenderingStatsInstrumentation> rendering_stats_;
   TestCompositorTimingHistory timing_history_;
   base::TimeTicks now_;
@@ -92,9 +76,6 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
   base::TimeDelta begin_main_frame_queue_duration = base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
       base::Milliseconds(1);
-  base::TimeDelta prepare_tiles_duration = base::Milliseconds(2);
-  base::TimeDelta prepare_tiles_end_to_ready_to_activate_duration =
-      base::Milliseconds(1);
   base::TimeDelta commit_to_ready_to_activate_duration = base::Milliseconds(3);
   base::TimeDelta commit_duration = base::Milliseconds(1);
   base::TimeDelta activate_duration = base::Milliseconds(4);
@@ -108,10 +89,7 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
   timing_history_.WillCommit();
   AdvanceNowBy(commit_duration);
   timing_history_.DidCommit();
-  timing_history_.WillPrepareTiles();
-  AdvanceNowBy(prepare_tiles_duration);
-  timing_history_.DidPrepareTiles();
-  AdvanceNowBy(prepare_tiles_end_to_ready_to_activate_duration);
+  AdvanceNowBy(commit_to_ready_to_activate_duration);
   timing_history_.ReadyToActivate();
   // Do not count idle time between notification and actual activation.
   AdvanceNowBy(one_second);
@@ -135,8 +113,6 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_Commit) {
   EXPECT_EQ(commit_duration, timing_history_.CommitDurationEstimate());
   EXPECT_EQ(commit_to_ready_to_activate_duration,
             timing_history_.CommitToReadyToActivateDurationEstimate());
-  EXPECT_EQ(prepare_tiles_duration,
-            timing_history_.PrepareTilesDurationEstimate());
   EXPECT_EQ(activate_duration, timing_history_.ActivateDurationEstimate());
   EXPECT_EQ(draw_duration, timing_history_.DrawDurationEstimate());
 }
@@ -147,9 +123,7 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
   base::TimeDelta begin_main_frame_queue_duration = base::Milliseconds(1);
   base::TimeDelta begin_main_frame_start_to_ready_to_commit_duration =
       base::Milliseconds(1);
-  base::TimeDelta prepare_tiles_duration = base::Milliseconds(2);
-  base::TimeDelta prepare_tiles_end_to_ready_to_activate_duration =
-      base::Milliseconds(1);
+  base::TimeDelta commit_to_ready_to_activate_duration = base::Milliseconds(2);
   base::TimeDelta activate_duration = base::Milliseconds(4);
   base::TimeDelta draw_duration = base::Milliseconds(5);
 
@@ -160,10 +134,7 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
   AdvanceNowBy(begin_main_frame_start_to_ready_to_commit_duration);
   // BeginMainFrameAborted counts as a commit complete.
   timing_history_.BeginMainFrameAborted();
-  timing_history_.WillPrepareTiles();
-  AdvanceNowBy(prepare_tiles_duration);
-  timing_history_.DidPrepareTiles();
-  AdvanceNowBy(prepare_tiles_end_to_ready_to_activate_duration);
+  AdvanceNowBy(commit_to_ready_to_activate_duration);
   // Do not count idle time between notification and actual activation.
   AdvanceNowBy(one_second);
   timing_history_.WillActivate();
@@ -180,8 +151,6 @@ TEST_F(CompositorTimingHistoryTest, AllSequential_BeginMainFrameAborted) {
   EXPECT_EQ(begin_main_frame_queue_duration,
             timing_history_.BeginMainFrameQueueDurationNotCriticalEstimate());
 
-  EXPECT_EQ(prepare_tiles_duration,
-            timing_history_.PrepareTilesDurationEstimate());
   EXPECT_EQ(activate_duration, timing_history_.ActivateDurationEstimate());
   EXPECT_EQ(draw_duration, timing_history_.DrawDurationEstimate());
 }
@@ -291,191 +260,6 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrames_NewCriticalSlower) {
             timing_history_.BeginMainFrameQueueDurationCriticalEstimate());
   EXPECT_EQ(begin_main_frame_queue_duration_critical,
             timing_history_.BeginMainFrameQueueDurationNotCriticalEstimate());
-}
-
-TEST_F(CompositorTimingHistoryTest, BeginMainFrameToActivateDuration) {
-  viz::BeginFrameArgs args_ = GetFakeBeginFrameArg(true);
-  timing_history_.WillBeginMainFrame(args_);
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(2));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(3));
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(4));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(5));
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(6));
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(7));
-  timing_history_.DidActivate();
-  EXPECT_EQ(
-      1u,
-      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
-  EXPECT_EQ(
-      base::Milliseconds(1 + 2 + 3 + 4 + 5 + 6 + 7),
-      timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
-}
-
-TEST_F(CompositorTimingHistoryTest, OnCriticalPath) {
-  viz::BeginFrameArgs bmf_args = GetFakeBeginFrameArg(true);
-  timing_history_.WillBeginMainFrame(bmf_args);
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // The previous frame should still be treated as on_critical_path
-  bmf_args = GetFakeBeginFrameArg(false);
-  timing_history_.WillBeginMainFrame(bmf_args);
-
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidActivate();
-
-  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
-                    .sample_count());
-  EXPECT_EQ(base::Milliseconds(2),
-            timing_history_.bmf_start_to_ready_to_commit_critical_history()
-                .Percentile(0.));
-  EXPECT_EQ(0u,
-            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
-                .sample_count());
-  EXPECT_EQ(
-      1u,
-      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
-  EXPECT_EQ(
-      base::Milliseconds(7),
-      timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
-
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // The previous frame should still be treated as not on_critical_path
-  bmf_args = GetFakeBeginFrameArg(true);
-  timing_history_.WillBeginMainFrame(bmf_args);
-  timing_history_.DidActivate();
-
-  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
-                    .sample_count());
-  EXPECT_EQ(1u,
-            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
-                .sample_count());
-  EXPECT_EQ(
-      1u,
-      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
-}
-
-TEST_F(CompositorTimingHistoryTest, BeginMainFrameQueueDuration) {
-  viz::BeginFrameArgs args_ = GetFakeBeginFrameArg(true);
-  timing_history_.WillBeginMainFrame(args_);
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(2));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(3));
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(4));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(5));
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(6));
-  timing_history_.WillBeginMainFrame(args_);
-  AdvanceNowBy(base::Milliseconds(7));
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(8));
-  timing_history_.BeginMainFrameAborted();
-  AdvanceNowBy(base::Milliseconds(9));
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(10));
-  timing_history_.DidActivate();
-  EXPECT_EQ(
-      1u,
-      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
-  // The bmf queueing duration should be 1ms, not the 7ms for the aborted frame.
-  EXPECT_EQ(
-      base::Milliseconds(1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10),
-      timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
-}
-
-TEST_F(CompositorTimingHistoryTest, MainFrameBeforeCommit) {
-  // Start first BMF
-  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(true));
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Start second BMF
-  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(false));
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Advance first BMF
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Second BMF ready to commit
-  timing_history_.BeginMainFrameStarted(Now());
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.NotifyReadyToCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Start third BMF and abort it
-  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(false));
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.BeginMainFrameAborted();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Activate first tree
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Commit and activate second tree
-  timing_history_.WillCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidCommit();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.ReadyToActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.WillActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-  timing_history_.DidActivate();
-  AdvanceNowBy(base::Milliseconds(1));
-
-  // Should have one critical and one not-critical frame sample.
-  EXPECT_EQ(
-      1u,
-      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
-  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
-                    .sample_count());
-  EXPECT_EQ(1u,
-            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
-                .sample_count());
 }
 
 }  // namespace

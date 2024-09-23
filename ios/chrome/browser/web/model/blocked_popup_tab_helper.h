@@ -5,16 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_
 
-#include <vector>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "ios/web/public/navigation/referrer.h"
-#import "ios/web/public/web_state_user_data.h"
-#include "url/gurl.h"
-
-class ChromeBrowserState;
+#import "base/scoped_observation.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/web/public/lazy_web_state_user_data.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "url/gurl.h"
 
 namespace infobars {
 class InfoBar;
@@ -28,7 +27,7 @@ class WebState;
 // allowing the user to add an exception and navigate to the site.
 class BlockedPopupTabHelper
     : public infobars::InfoBarManager::Observer,
-      public web::WebStateUserData<BlockedPopupTabHelper> {
+      public web::LazyWebStateUserData<BlockedPopupTabHelper> {
  public:
   explicit BlockedPopupTabHelper(web::WebState* web_state);
 
@@ -61,7 +60,7 @@ class BlockedPopupTabHelper
   };
 
  private:
-  friend class web::WebStateUserData<BlockedPopupTabHelper>;
+  friend class web::LazyWebStateUserData<BlockedPopupTabHelper>;
 
   friend class BlockedPopupTabHelperTest;
 
@@ -69,8 +68,8 @@ class BlockedPopupTabHelper
   // existing infobar with the updated count.
   void ShowInfoBar();
 
-  // Returns BrowserState for the WebState that this object is attached to.
-  ChromeBrowserState* GetBrowserState() const;
+  // Returns the profile for the WebState that this object is attached to.
+  ProfileIOS* GetProfile() const;
 
   // Registers this object as an observer for the InfoBarManager associated with
   // `web_state_`.  Does nothing if already registered.

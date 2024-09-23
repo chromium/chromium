@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -40,7 +41,7 @@
 
 using leveldb_env::DBTracker;
 
-namespace content {
+namespace content::indexed_db {
 
 namespace {
 
@@ -124,8 +125,9 @@ leveldb::Status TransactionalLevelDBDatabase::Get(std::string_view key,
     *found = true;
     return s;
   }
-  if (LIKELY(s.IsNotFound()))
+  if (s.IsNotFound()) [[likely]] {
     return leveldb::Status::OK();
+  }
   return s;
 }
 
@@ -275,8 +277,8 @@ void TransactionalLevelDBDatabase::EvictAllIterators() {
   if (db_only_loaded_iterators_.empty())
     return;
   is_evicting_all_loaded_iterators_ = true;
-  base::flat_set<TransactionalLevelDBIterator*> to_be_evicted =
-      std::move(db_only_loaded_iterators_);
+  base::flat_set<raw_ptr<TransactionalLevelDBIterator, CtnExperimental>>
+      to_be_evicted = std::move(db_only_loaded_iterators_);
   for (TransactionalLevelDBIterator* iter : to_be_evicted) {
     iter->EvictLevelDBIterator();
   }
@@ -324,4 +326,4 @@ void TransactionalLevelDBDatabase::OnIteratorDestroyed(
   iterator_lru_.Erase(lru_iterator);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -11,15 +11,13 @@
 
 namespace blink {
 
-class XRSession;
-class XRProjectionLayerInit;
 class XRRigidTransform;
 
-class XRProjectionLayer final : public XRCompositionLayer {
+class XRProjectionLayer : public XRCompositionLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRProjectionLayer(XRSession* session, const XRProjectionLayerInit* init);
+  explicit XRProjectionLayer(XRGraphicsBinding* binding);
   ~XRProjectionLayer() override = default;
 
   uint16_t textureWidth() const;

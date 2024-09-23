@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 
 #include <memory>
@@ -137,11 +142,6 @@ MockGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
 bool MockGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
     bool for_media_stream) const {
   return false;
-}
-
-unsigned MockGpuVideoAcceleratorFactories::ImageTextureTarget(
-    gfx::BufferFormat format) {
-  return GL_TEXTURE_2D;
 }
 
 }  // namespace media

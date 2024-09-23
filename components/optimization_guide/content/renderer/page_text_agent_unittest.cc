@@ -4,11 +4,12 @@
 
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 
-#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -81,7 +82,8 @@ TEST_F(PageTextAgentTest, IncreasesMax) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(u"abc");
+  std::move(callback).Run(
+      base::MakeRefCounted<const base::RefCountedString16>(u"abc"));
   RunUntilIdle();
 
   EXPECT_EQ(u"abc", consumer.text());
@@ -113,7 +115,8 @@ TEST_F(PageTextAgentTest, MaxStaysSame) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(u"abc");
+  std::move(callback).Run(
+      base::MakeRefCounted<const base::RefCountedString16>(u"abc"));
   RunUntilIdle();
 
   EXPECT_EQ(u"abc", consumer.text());
@@ -145,7 +148,8 @@ TEST_F(PageTextAgentTest, FinishedLoading) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(u"abc");
+  std::move(callback).Run(
+      base::MakeRefCounted<const base::RefCountedString16>(u"abc"));
   RunUntilIdle();
 
   EXPECT_EQ(u"abc", consumer.text());
@@ -178,7 +182,8 @@ TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
   EXPECT_EQ(1234U, other_size);
 
   std::u16string text(1 << 16, 'a');
-  std::move(callback).Run(text);
+  std::move(callback).Run(
+      base::MakeRefCounted<const base::RefCountedString16>(text));
   RunUntilIdle();
 
   EXPECT_EQ(text, consumer.text());
@@ -212,7 +217,8 @@ TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
   EXPECT_EQ(1234U, other_size);
 
   std::u16string text((1 << 15) + 3, 'a');
-  std::move(callback).Run(text);
+  std::move(callback).Run(
+      base::MakeRefCounted<const base::RefCountedString16>(text));
   RunUntilIdle();
 
   EXPECT_EQ(text, consumer.text());

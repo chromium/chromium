@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -30,7 +31,6 @@
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -73,7 +73,7 @@ class MockTokenValidator : public TrialTokenValidator {
     const OriginInfo origin;
     Vector<OriginInfo> third_party_origin_info;
     const base::Time current_time;
-    ValidationParams(base::StringPiece token_param,
+    ValidationParams(std::string_view token_param,
                      const OriginInfo& origin_info,
                      base::span<const OriginInfo> scripts,
                      base::Time time)
@@ -88,7 +88,7 @@ class MockTokenValidator : public TrialTokenValidator {
   ~MockTokenValidator() override = default;
 
   TrialTokenResult ValidateTokenAndTrialWithOriginInfo(
-      base::StringPiece token,
+      std::string_view token,
       const OriginInfo& origin,
       base::span<const OriginInfo> third_party_origin_info,
       base::Time current_time) const override {
@@ -258,7 +258,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(validation_params[0].origin.is_secure);
 
   EXPECT_EQ(2ul, validation_params[0].third_party_origin_info.size());
-  TrialTokenValidator::OriginInfo* unrelated_info = base::ranges::find_if(
+  auto unrelated_info = base::ranges::find_if(
       validation_params[0].third_party_origin_info,
       [](const TrialTokenValidator::OriginInfo& item) {
         return item.origin.IsSameOriginWith(GURL(kUnrelatedSecureOrigin));
@@ -266,7 +266,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   ASSERT_NE(validation_params[0].third_party_origin_info.end(), unrelated_info);
   EXPECT_TRUE(unrelated_info->is_secure);
 
-  TrialTokenValidator::OriginInfo* insecure_origin_info =
+  auto insecure_origin_info =
       base::ranges::find_if(validation_params[0].third_party_origin_info,
                             [](const TrialTokenValidator::OriginInfo& item) {
                               return item.origin.IsSameOriginWith(

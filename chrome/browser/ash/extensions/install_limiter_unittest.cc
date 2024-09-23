@@ -120,7 +120,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
 
     ExtensionServiceInitParams params;
     params.enable_install_limiter = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
 
     install_limiter_ = InstallLimiter::Get(profile());
 

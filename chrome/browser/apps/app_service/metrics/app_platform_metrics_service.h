@@ -69,7 +69,8 @@ class AppPlatformMetricsService {
 
   // Start the timer and check if a new day has arrived.
   void Start(AppRegistryCache& app_registry_cache,
-             InstanceRegistry& instance_registry);
+             InstanceRegistry& instance_registry,
+             apps::AppCapabilityAccessCache& app_capability_access_cache);
 
   apps::AppPlatformMetrics* AppPlatformMetrics() {
     return app_platform_app_metrics_.get();

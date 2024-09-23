@@ -104,7 +104,16 @@ bool InitializeCrashpadWithDllEmbeddedHandler(
 
 // Returns the CrashpadClient for this process. This will lazily create it if
 // it does not already exist. This is called as part of InitializeCrashpad.
+// This code is not MT-safe
 crashpad::CrashpadClient& GetCrashpadClient();
+
+// In case GetCrashpadClient() was called and so constructed a new
+// CrashpadClient instance then calling this method destroys that object,
+// otherwise it does nothing.
+// This method is useful when the CrashpadClient need to be explicitly removed,
+// like when the crashpad is being used from a dynamically loaded DLL.
+// This code is not MT-safe
+void DestroyCrashpadClient();
 
 // ChromeOS has its own, OS-level consent system; Chrome does not maintain a
 // separate Upload Consent on ChromeOS.
@@ -163,7 +172,10 @@ bool ProcessExternalDump(
     const std::string& source_name,
     base::span<const uint8_t> dump_data,
     const std::map<std::string, std::string>& override_annotations = {});
-#endif
+
+// "platform", used to determine device_model, can be overridden.
+void OverridePlatformValue(const std::string& platform_value);
+#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
@@ -193,7 +205,7 @@ base::FilePath::StringType::const_pointer GetCrashpadDatabasePathImpl();
 // The implementation function for ClearReportsBetween.
 void ClearReportsBetweenImpl(time_t begin, time_t end);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 // Called late in shutdown to remove the file that tells ChromeOS's
 // crash_reporter "This browser process has crashpad initialized; you don't
 // need to handle the crash reports coming from the kernel".

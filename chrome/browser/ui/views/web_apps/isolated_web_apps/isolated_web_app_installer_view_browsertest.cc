@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,17 +23,19 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -89,8 +90,8 @@ SignedWebBundleMetadata CreateTestMetadata() {
   AddGeneratedIcon(&icons.any, 32, SK_ColorBLUE);
   return SignedWebBundleMetadata::CreateForTesting(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateRandomForDevelopment()),
-      DevModeBundle(base::FilePath()), u"Test Isolated Web App",
+          web_package::SignedWebBundleId::CreateRandomForProxyMode()),
+      IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
       base::Version("0.0.1"), icons);
 }
 
@@ -149,9 +150,9 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
     // is more predictable than activated dialog.
     widget->Deactivate();
     widget->GetFocusManager()->ClearFocus();
-    base::ScopedClosureRunner unblock_close(
-        base::BindOnce(&views::Widget::SetBlockCloseForTesting,
-                       base::Unretained(widget), false));
+    absl::Cleanup unblock_close = [widget] {
+      widget->SetBlockCloseForTesting(false);
+    };
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
@@ -211,7 +212,11 @@ class IsolatedWebAppInstallerViewUiPixelTest
  public:
   IsolatedWebAppInstallerViewUiPixelTest()
       : NamedWidgetUiPixelTest(GetParam().use_dark_theme,
-                               GetParam().use_right_to_left_language) {}
+                               GetParam().use_right_to_left_language) {
+    feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
+        {});
+  }
 
   ~IsolatedWebAppInstallerViewUiPixelTest() override = default;
 
@@ -267,7 +272,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
+  base::test::ScopedFeatureList feature_list_;
   base::test::TestFuture<void> on_complete_future;
   raw_ptr<views::Widget> widget_;
 };

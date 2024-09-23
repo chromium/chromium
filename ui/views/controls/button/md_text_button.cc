@@ -58,16 +58,11 @@ MdTextButton::MdTextButton(
       [](MdTextButton* host) { return host->GetHoverColor(host->GetStyle()); },
       this));
 
-  if (features::IsChromeRefresh2023()) {
-    constexpr int kImageSpacing = 8;
-    SetImageLabelSpacing(kImageSpacing);
-    // Highlight button colors already have opacity applied.
-    // Set the opacity to 1 so the two values do not compound.
-    InkDrop::Get(this)->SetHighlightOpacity(1);
-  } else {
-    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        ShapeContextTokens::kButtonRadius));
-  }
+  constexpr int kImageSpacing = 8;
+  SetImageLabelSpacing(kImageSpacing);
+  // Highlight button colors already have opacity applied.
+  // Set the opacity to 1 so the two values do not compound.
+  InkDrop::Get(this)->SetHighlightOpacity(1);
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -105,7 +100,22 @@ ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
 }
 
-void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
+void MdTextButton::SetBgColorIdOverride(
+    const std::optional<ui::ColorId> color_id) {
+  CHECK(!bg_color_override_.has_value());
+
+  if (color_id == bg_color_id_override_) {
+    return;
+  }
+  bg_color_id_override_ = color_id;
+  UpdateColors();
+  OnPropertyChanged(&bg_color_id_override_, kPropertyEffectsNone);
+}
+
+void MdTextButton::SetBgColorOverrideDeprecated(
+    const std::optional<SkColor>& color) {
+  CHECK(!bg_color_id_override_.has_value());
+
   if (color == bg_color_override_)
     return;
   bg_color_override_ = color;
@@ -113,17 +123,33 @@ void MdTextButton::SetBgColorOverride(const std::optional<SkColor>& color) {
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-std::optional<SkColor> MdTextButton::GetBgColorOverride() const {
+std::optional<SkColor> MdTextButton::GetBgColorOverrideDeprecated() const {
   return bg_color_override_;
+}
+
+std::optional<ui::ColorId> MdTextButton::GetBgColorIdOverride() const {
+  return bg_color_id_override_;
+}
+
+void MdTextButton::SetStrokeColorIdOverride(
+    const std::optional<ui::ColorId> color_id) {
+  if (color_id == stroke_color_id_override_) {
+    return;
+  }
+  stroke_color_id_override_ = color_id;
+  UpdateColors();
+  OnPropertyChanged(&stroke_color_id_override_, kPropertyEffectsNone);
+}
+
+std::optional<ui::ColorId> MdTextButton::GetStrokeColorIdOverride() const {
+  return stroke_color_id_override_;
 }
 
 void MdTextButton::SetCornerRadius(std::optional<float> radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
-  LabelButton::SetFocusRingCornerRadius(GetCornerRadiusValue());
-  // UpdateColors also updates the background border radius.
-  UpdateColors();
+  OnCornerRadiusValueChanged();
   OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
@@ -132,7 +158,8 @@ std::optional<float> MdTextButton::GetCornerRadius() const {
 }
 
 float MdTextButton::GetCornerRadiusValue() const {
-  return corner_radius_.value_or(0);
+  return corner_radius_.value_or(LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kButtonRadius, size()));
 }
 
 void MdTextButton::OnThemeChanged() {
@@ -145,8 +172,9 @@ void MdTextButton::StateChanged(ButtonState old_state) {
   UpdateColors();
 }
 
-void MdTextButton::SetImageModel(ButtonState for_state,
-                                 const ui::ImageModel& image_model) {
+void MdTextButton::SetImageModel(
+    ButtonState for_state,
+    const std::optional<ui::ImageModel>& image_model) {
   LabelButton::SetImageModel(for_state, image_model);
   UpdatePadding();
 }
@@ -164,13 +192,8 @@ void MdTextButton::OnBlur() {
 void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   LabelButton::OnBoundsChanged(previous_bounds);
 
-  // A fully rounded corner radius is calculated based on the size of the
-  // button. To avoid overriding a custom corner radius, make sure the default
-  // radius is only called once by checking if the value already exists.
-  if (!corner_radius_) {
-    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        ShapeContextTokens::kButtonRadius, size()));
-  }
+  // A fully rounded corner radius is calculated based on the button size.
+  OnCornerRadiusValueChanged();
 }
 
 void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
@@ -215,7 +238,7 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
   int target_height = LayoutProvider::GetControlHeightForFont(
       label()->GetTextContext(), style::STYLE_PRIMARY, label()->font_list());
 
-  int label_height = label()->GetPreferredSize().height();
+  int label_height = label()->GetPreferredSize({}).height();
   DCHECK_GE(target_height, label_height);
   int top_padding = (target_height - label_height) / 2;
   int bottom_padding = (target_height - label_height + 1) / 2;
@@ -226,7 +249,7 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
   int right_padding = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_BUTTON_HORIZONTAL_PADDING);
   int left_padding = right_padding;
-  if (HasImage(GetVisualState()) && features::IsChromeRefresh2023()) {
+  if (HasImage(GetVisualState())) {
     constexpr int kLeftPadding = 12;
     left_padding = kLeftPadding;
   }
@@ -245,20 +268,18 @@ void MdTextButton::UpdateTextColor() {
     text_style = style::STYLE_DIALOG_BUTTON_TONAL;
   }
 
-  const ui::ColorProvider* color_provider = GetColorProvider();
   const auto& typography_provider = TypographyProvider::Get();
-  SkColor enabled_text_color = color_provider->GetColor(
-      typography_provider.GetColorId(label()->GetTextContext(), text_style));
   const auto colors = explicitly_set_colors();
-  LabelButton::SetEnabledTextColors(enabled_text_color);
+  LabelButton::SetEnabledTextColorIds(
+      typography_provider.GetColorId(label()->GetTextContext(), text_style));
   // Disabled buttons need the disabled color explicitly set.
   // This ensures that label()->GetEnabledColor() returns the correct color as
-  // the basis for calculating the stroke color. enabled_text_color isn't used
-  // since a descendant could have overridden the label enabled color.
+  // the basis for calculating the stroke color. enabled text color id isn't
+  // used since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
-    LabelButton::SetTextColor(
-        STATE_DISABLED, color_provider->GetColor(typography_provider.GetColorId(
-                            label()->GetTextContext(), style::STYLE_DISABLED)));
+    LabelButton::SetTextColorId(
+        STATE_DISABLED, typography_provider.GetColorId(
+                            label()->GetTextContext(), style::STYLE_DISABLED));
   }
   set_explicitly_set_colors(colors);
 }
@@ -268,7 +289,9 @@ void MdTextButton::UpdateBackgroundColor() {
   const ui::ColorProvider* color_provider = GetColorProvider();
   SkColor bg_color = color_provider->GetColor(ui::kColorButtonBackground);
 
-  if (bg_color_override_) {
+  if (bg_color_id_override_) {
+    bg_color = color_provider->GetColor(bg_color_id_override_.value());
+  } else if (bg_color_override_) {
     bg_color = *bg_color_override_;
   } else if (style_ == ui::ButtonStyle::kProminent) {
     bg_color = color_provider->GetColor(
@@ -294,28 +317,31 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SkColor stroke_color = color_provider->GetColor(
       is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
-  if (style_ == ui::ButtonStyle::kProminent ||
-      style_ == ui::ButtonStyle::kText || style_ == ui::ButtonStyle::kTonal) {
+  if (stroke_color_id_override_.has_value()) {
+    stroke_color = color_provider->GetColor(stroke_color_id_override_.value());
+  } else if (style_ == ui::ButtonStyle::kProminent ||
+             style_ == ui::ButtonStyle::kText ||
+             style_ == ui::ButtonStyle::kTonal) {
     stroke_color = SK_ColorTRANSPARENT;
   }
 
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateRoundRectWith1PxBorderPainter(
           bg_color, stroke_color, GetCornerRadiusValue(), SkBlendMode::kSrcOver,
-          true /* antialias */,
-          features::IsChromeRefresh2023() /* should_border_scale */)));
+          true /* antialias */, true /* should_border_scale */)));
 }
 
 void MdTextButton::UpdateIconColor() {
-  if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
-      HasImage(ButtonState::STATE_NORMAL)) {
-    auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
-    if (image_model.IsVectorIcon()) {
-      LabelButton::SetImageModel(ButtonState::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     *image_model.GetVectorIcon().vector_icon(),
-                                     LabelButton::GetCurrentTextColor(),
-                                     image_model.GetVectorIcon().icon_size()));
+  if (use_text_color_for_icon_ && HasImage(ButtonState::STATE_NORMAL)) {
+    const std::optional<ui::ImageModel>& image_model =
+        GetImageModel(ButtonState::STATE_NORMAL);
+    if (image_model.has_value() && image_model->IsVectorIcon()) {
+      LabelButton::SetImageModel(
+          ButtonState::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(
+              *image_model->GetVectorIcon().vector_icon(),
+              LabelButton::GetCurrentTextColor(),
+              image_model->GetVectorIcon().icon_size()));
     }
   }
 }
@@ -330,10 +356,6 @@ void MdTextButton::UpdateColors() {
 }
 
 SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
-  if (!features::IsChromeRefresh2023()) {
-    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
-  }
-
   switch (button_style) {
     case ui::ButtonStyle::kProminent:
       return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
@@ -343,6 +365,12 @@ SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
     default:
       return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
   }
+}
+
+void MdTextButton::OnCornerRadiusValueChanged() {
+  LabelButton::SetFocusRingCornerRadius(GetCornerRadiusValue());
+  // UpdateColors also updates the background border radius.
+  UpdateColors();
 }
 
 std::unique_ptr<ActionViewInterface> MdTextButton::GetActionViewInterface() {
@@ -363,7 +391,8 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 
 BEGIN_METADATA(MdTextButton)
 ADD_PROPERTY_METADATA(std::optional<float>, CornerRadius)
-ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(std::optional<SkColor>, BgColorOverrideDeprecated)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BgColorIdOverride)
 ADD_PROPERTY_METADATA(std::optional<gfx::Insets>, CustomPadding)
 ADD_PROPERTY_METADATA(ui::ButtonStyle, Style)
 END_METADATA

@@ -1,9 +1,11 @@
 """Cleans up PRs that correspond to abandoned CLs in Gerrit."""
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
 
-from blinkpy.w3c.gerrit import GerritError
+from blinkpy.w3c.gerrit import GerritAPI, GerritError, GerritNotFoundError
+from blinkpy.w3c.wpt_github import PullRequest
 
 _log = logging.getLogger(__name__)
 
@@ -18,38 +20,46 @@ class PrCleanupTool(object):
             "Close exported PRs where the corresponding CLs have been abandoned."
         )
         pull_requests = self.retrieve_provisioned_prs(wpt_github)
-        past = datetime.utcnow() - timedelta(days=14)
         for pull_request in pull_requests:
             if pull_request.state != 'open':
                 continue
             change_id = wpt_github.extract_metadata('Change-Id: ',
                                                     pull_request.body)
+            maybe_cleanup_reason = self._cleanup_reason(gerrit, change_id)
 
-            if not change_id:
-                continue
-
-            try:
-                cl = gerrit.query_cl(change_id)
-            except GerritError as e:
-                _log.error('Could not query change_id %s: %s', change_id,
-                           str(e))
-                continue
-
-            cl_status = cl.status
-            if cl_status == 'ABANDONED' and cl.updated < past:
-                comment = 'Close this PR because the Chromium CL has been abandoned.'
-                self.log_affected_pr_details(wpt_github, pull_request, comment)
+            if maybe_cleanup_reason:
+                self.log_affected_pr_details(wpt_github, pull_request,
+                                             maybe_cleanup_reason)
                 self.close_pr_and_delete_branch(wpt_github,
-                                                pull_request.number, comment)
-            elif cl_status == 'MERGED' and (not cl.is_exportable()):
-                comment = 'Close this PR because the Chromium CL does not have exportable changes.'
-                self.log_affected_pr_details(wpt_github, pull_request, comment)
-                self.close_pr_and_delete_branch(wpt_github,
-                                                pull_request.number, comment)
+                                                pull_request.number,
+                                                maybe_cleanup_reason)
 
         return True
 
-    def retrieve_provisioned_prs(self, wpt_github):
+    def _cleanup_reason(self, gerrit: GerritAPI,
+                        change_id: Optional[str]) -> Optional[str]:
+        """Get a human-readable comment describing why a PR will be closed.
+
+        Returns `None` if the PR should not be closed.
+        """
+        if not change_id:
+            return None
+        try:
+            cl = gerrit.query_cl(change_id)
+        except GerritNotFoundError:
+            return 'Close this PR because the corresponding CL has been deleted.'
+        except GerritError as e:
+            _log.error('Could not query change_id %s: %s', change_id, str(e))
+            return None
+        cl_status = cl.status
+        expiration = datetime.now(timezone.utc) - timedelta(days=14)
+        if cl_status == 'ABANDONED' and cl.updated < expiration:
+            return 'Close this PR because the Chromium CL has been abandoned.'
+        elif cl_status == 'MERGED' and not cl.is_exportable():
+            return 'Close this PR because the Chromium CL does not have exportable changes.'
+        return None
+
+    def retrieve_provisioned_prs(self, wpt_github) -> List[PullRequest]:
         """Retrieves last 1000 PRs with 'do not merge' label."""
         return wpt_github.all_provisional_pull_requests()
 

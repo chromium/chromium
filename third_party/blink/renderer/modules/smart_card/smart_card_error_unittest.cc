@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
+#include "base/memory/raw_ref.h"
 #include "services/device/public/mojom/smart_card.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -21,12 +22,12 @@ class PromiseRejectedFunction : public ScriptFunction::Callable {
   explicit PromiseRejectedFunction(bool& result) : result_(result) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    result_ = true;
+    *result_ = true;
     return ScriptValue();
   }
 
  private:
-  bool& result_;
+  const raw_ref<bool> result_;
 };
 
 TEST(SmartCardError, RejectWithoutScriptStateScope) {
@@ -40,15 +41,15 @@ TEST(SmartCardError, RejectWithoutScriptStateScope) {
   ScriptState* script_state =
       ToScriptStateForMainWorld(page_holder->GetDocument().GetFrame());
 
-  ScriptPromiseResolver* resolver = nullptr;
+  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
   bool rejected = false;
   {
     ScriptState::Scope script_state_scope(script_state);
 
-    resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+    resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
         script_state, exception_state.GetContext());
 
-    ScriptPromise promise = resolver->Promise();
+    auto promise = resolver->Promise();
     promise.Then(nullptr,
                  MakeGarbageCollected<ScriptFunction>(
                      script_state,

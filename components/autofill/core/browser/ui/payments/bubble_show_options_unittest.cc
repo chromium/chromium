@@ -19,7 +19,7 @@ class BubbleShowOptionsTest : public testing::Test {
     VirtualCardManualFallbackBubbleOptions options;
     options.masked_card_name = u"Visa";
     options.masked_card_number_last_four = u"**** 1234";
-    options.virtual_card = test::GetFullServerCard();
+    options.virtual_card = test::GetVirtualCard();
     options.virtual_card_cvc = u"123";
     options.card_image = gfx::test::CreateImage(40, 24);
     return options;

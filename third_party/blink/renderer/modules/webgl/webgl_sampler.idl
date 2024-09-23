@@ -6,5 +6,5 @@
 
 [
     Exposed=(Window,Worker)
-] interface WebGLSampler {
+] interface WebGLSampler : WebGLObject {
 };

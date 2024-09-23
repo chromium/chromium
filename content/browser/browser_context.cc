@@ -35,6 +35,7 @@
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/media/browser_feature_provider.h"
 #include "content/browser/push_messaging/push_messaging_router.h"
 #include "content/browser/site_info.h"
@@ -56,7 +57,6 @@
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -252,13 +252,6 @@ void BrowserContext::EnsureResourceContextInitialized() {
 void BrowserContext::SaveSessionState() {
   StoragePartition* storage_partition = GetDefaultStoragePartition();
 
-  storage::DatabaseTracker* database_tracker =
-      storage_partition->GetDatabaseTracker();
-  database_tracker->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&storage::DatabaseTracker::SetForceKeepSessionState,
-                     base::WrapRefCounted(database_tracker)));
-
   storage_partition->GetCookieManagerForBrowserProcess()
       ->SetForceKeepSessionState();
 
@@ -267,8 +260,7 @@ void BrowserContext::SaveSessionState() {
           storage_partition->GetDOMStorageContext());
   dom_storage_context_proxy->SetForceKeepSessionState();
 
-  auto& indexed_db_control = storage_partition->GetIndexedDBControl();
-  indexed_db_control.SetForceKeepSessionState();
+  storage_partition->GetIndexedDBControl().SetForceKeepSessionState();
 }
 
 void BrowserContext::SetDownloadManagerForTesting(
@@ -335,7 +327,7 @@ base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
 // how the //content layer interacts with a BrowserContext.  The code below
 // provides default implementations where appropriate.
 //
-// TODO(https://crbug.com/1179776): Migrate method definitions from this
+// TODO(crbug.com/40169693): Migrate method definitions from this
 // section into a separate BrowserContextDelegate class and a separate
 // browser_context_delegate.cc source file.
 
@@ -383,17 +375,17 @@ BrowserContext::CreateVideoDecodePerfHistory() {
 
 FederatedIdentityApiPermissionContextDelegate*
 BrowserContext::GetFederatedIdentityApiPermissionContext() {
-  return nullptr;
+  return impl()->GetFederatedPermissionContext();
 }
 
 FederatedIdentityAutoReauthnPermissionContextDelegate*
 BrowserContext::GetFederatedIdentityAutoReauthnPermissionContext() {
-  return nullptr;
+  return impl()->GetFederatedPermissionContext();
 }
 
 FederatedIdentityPermissionContextDelegate*
 BrowserContext::GetFederatedIdentityPermissionContext() {
-  return nullptr;
+  return impl()->GetFederatedPermissionContext();
 }
 
 KAnonymityServiceDelegate* BrowserContext::GetKAnonymityServiceDelegate() {

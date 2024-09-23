@@ -1,0 +1,62 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("profiles") {
+  sources = [
+    "browser_context_helper_delegate_impl.cc",
+    "browser_context_helper_delegate_impl.h",
+    "profile_helper.cc",
+    "profile_helper.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/user_manager",
+  ]
+}
+
+static_library("signin_profile_handler") {
+  sources = [
+    "signin_profile_handler.cc",
+    "signin_profile_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/crx_file",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+
+  # Entry points to call SigninProfileHandler.
+  # TODO: remove the dependencies.
+  deps += [
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/ash/login",
+  ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/ash/login",
+  ]
+}

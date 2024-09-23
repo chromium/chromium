@@ -4,6 +4,8 @@
 
 #include "net/test/cert_test_util.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -17,7 +19,7 @@
 namespace net {
 
 CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
-                                              base::StringPiece cert_file,
+                                              std::string_view cert_file,
                                               int format) {
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
@@ -46,7 +48,7 @@ CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
 
 scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file,
+    std::string_view cert_file,
     int format) {
   CertificateList certs = CreateCertificateListFromFile(
       certs_dir, cert_file, format);
@@ -79,7 +81,7 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
 
 scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
-    base::StringPiece cert_file) {
+    std::string_view cert_file) {
   return ImportCertFromFile(certs_dir.AppendASCII(cert_file));
 }
 

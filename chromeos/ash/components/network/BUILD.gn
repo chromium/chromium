@@ -104,6 +104,8 @@ component("network") {
     "ephemeral_network_configuration_handler.h",
     "ephemeral_network_policies_enablement_handler.cc",
     "ephemeral_network_policies_enablement_handler.h",
+    "fake_network_state_handler.cc",
+    "fake_network_state_handler.h",
     "fast_transition_observer.cc",
     "fast_transition_observer.h",
     "geolocation_handler.cc",
@@ -143,6 +145,8 @@ component("network") {
     "network_cert_loader.h",
     "network_certificate_handler.cc",
     "network_certificate_handler.h",
+    "network_config.cc",
+    "network_config.h",
     "network_configuration_handler.cc",
     "network_configuration_handler.h",
     "network_configuration_observer.cc",
@@ -216,6 +220,8 @@ component("network") {
     "text_message_provider.cc",
     "text_message_provider.h",
     "text_message_suppression_state.h",
+    "traffic_counters_handler.cc",
+    "traffic_counters_handler.h",
   ]
 }
 
@@ -328,7 +334,6 @@ source_set("unit_tests") {
   sources = [
     "auto_connect_handler_unittest.cc",
     "cellular_connection_handler_unittest.cc",
-    "cellular_esim_installer_legacy_unittest.cc",
     "cellular_esim_installer_unittest.cc",
     "cellular_esim_profile_handler_impl_unittest.cc",
     "cellular_esim_profile_unittest.cc",
@@ -336,7 +341,6 @@ source_set("unit_tests") {
     "cellular_esim_uninstall_handler_unittest.cc",
     "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
-    "cellular_policy_handler_legacy_unittest.cc",
     "cellular_policy_handler_unittest.cc",
     "cellular_utils_unittest.cc",
     "certificate_helper_unittest.cc",
@@ -351,6 +355,7 @@ source_set("unit_tests") {
     "hotspot_allowed_flag_handler_unittest.cc",
     "hotspot_capabilities_provider_unittest.cc",
     "hotspot_configuration_handler_unittest.cc",
+    "hotspot_controller_concurrency_api_unittest.cc",
     "hotspot_controller_unittest.cc",
     "hotspot_enabled_state_notifier_unittest.cc",
     "hotspot_state_handler_unittest.cc",
@@ -358,6 +363,7 @@ source_set("unit_tests") {
     "managed_network_configuration_handler_unittest.cc",
     "network_3gpp_handler_unittest.cc",
     "network_cert_loader_unittest.cc",
+    "network_config_unittest.cc",
     "network_configuration_handler_unittest.cc",
     "network_connect_unittest.cc",
     "network_connection_handler_impl_unittest.cc",
@@ -380,5 +386,6 @@ source_set("unit_tests") {
     "system_token_cert_db_storage_unittest.cc",
     "technology_state_controller_unittest.cc",
     "text_message_provider_unittest.cc",
+    "traffic_counters_handler_unittest.cc",
   ]
 }

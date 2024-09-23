@@ -1,3 +1,13 @@
+/*
+ *  Copyright (c) 2024 The WebM project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 // This file is generated. Do not edit.
 #ifndef VPX_DSP_RTCD_H_
 #define VPX_DSP_RTCD_H_
@@ -3744,7 +3754,30 @@ void vpx_highbd_convolve8_neon(const uint16_t* src,
                                int w,
                                int h,
                                int bd);
-#define vpx_highbd_convolve8 vpx_highbd_convolve8_neon
+void vpx_highbd_convolve8_sve2(const uint16_t* src,
+                               ptrdiff_t src_stride,
+                               uint16_t* dst,
+                               ptrdiff_t dst_stride,
+                               const InterpKernel* filter,
+                               int x0_q4,
+                               int x_step_q4,
+                               int y0_q4,
+                               int y_step_q4,
+                               int w,
+                               int h,
+                               int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8)(const uint16_t* src,
+                                         ptrdiff_t src_stride,
+                                         uint16_t* dst,
+                                         ptrdiff_t dst_stride,
+                                         const InterpKernel* filter,
+                                         int x0_q4,
+                                         int x_step_q4,
+                                         int y0_q4,
+                                         int y_step_q4,
+                                         int w,
+                                         int h,
+                                         int bd);
 
 void vpx_highbd_convolve8_avg_c(const uint16_t* src,
                                 ptrdiff_t src_stride,
@@ -3770,7 +3803,30 @@ void vpx_highbd_convolve8_avg_neon(const uint16_t* src,
                                    int w,
                                    int h,
                                    int bd);
-#define vpx_highbd_convolve8_avg vpx_highbd_convolve8_avg_neon
+void vpx_highbd_convolve8_avg_sve2(const uint16_t* src,
+                                   ptrdiff_t src_stride,
+                                   uint16_t* dst,
+                                   ptrdiff_t dst_stride,
+                                   const InterpKernel* filter,
+                                   int x0_q4,
+                                   int x_step_q4,
+                                   int y0_q4,
+                                   int y_step_q4,
+                                   int w,
+                                   int h,
+                                   int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_avg)(const uint16_t* src,
+                                             ptrdiff_t src_stride,
+                                             uint16_t* dst,
+                                             ptrdiff_t dst_stride,
+                                             const InterpKernel* filter,
+                                             int x0_q4,
+                                             int x_step_q4,
+                                             int y0_q4,
+                                             int y_step_q4,
+                                             int w,
+                                             int h,
+                                             int bd);
 
 void vpx_highbd_convolve8_avg_horiz_c(const uint16_t* src,
                                       ptrdiff_t src_stride,
@@ -3796,7 +3852,30 @@ void vpx_highbd_convolve8_avg_horiz_neon(const uint16_t* src,
                                          int w,
                                          int h,
                                          int bd);
-#define vpx_highbd_convolve8_avg_horiz vpx_highbd_convolve8_avg_horiz_neon
+void vpx_highbd_convolve8_avg_horiz_sve(const uint16_t* src,
+                                        ptrdiff_t src_stride,
+                                        uint16_t* dst,
+                                        ptrdiff_t dst_stride,
+                                        const InterpKernel* filter,
+                                        int x0_q4,
+                                        int x_step_q4,
+                                        int y0_q4,
+                                        int y_step_q4,
+                                        int w,
+                                        int h,
+                                        int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_avg_horiz)(const uint16_t* src,
+                                                   ptrdiff_t src_stride,
+                                                   uint16_t* dst,
+                                                   ptrdiff_t dst_stride,
+                                                   const InterpKernel* filter,
+                                                   int x0_q4,
+                                                   int x_step_q4,
+                                                   int y0_q4,
+                                                   int y_step_q4,
+                                                   int w,
+                                                   int h,
+                                                   int bd);
 
 void vpx_highbd_convolve8_avg_vert_c(const uint16_t* src,
                                      ptrdiff_t src_stride,
@@ -3822,7 +3901,30 @@ void vpx_highbd_convolve8_avg_vert_neon(const uint16_t* src,
                                         int w,
                                         int h,
                                         int bd);
-#define vpx_highbd_convolve8_avg_vert vpx_highbd_convolve8_avg_vert_neon
+void vpx_highbd_convolve8_avg_vert_sve2(const uint16_t* src,
+                                        ptrdiff_t src_stride,
+                                        uint16_t* dst,
+                                        ptrdiff_t dst_stride,
+                                        const InterpKernel* filter,
+                                        int x0_q4,
+                                        int x_step_q4,
+                                        int y0_q4,
+                                        int y_step_q4,
+                                        int w,
+                                        int h,
+                                        int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_avg_vert)(const uint16_t* src,
+                                                  ptrdiff_t src_stride,
+                                                  uint16_t* dst,
+                                                  ptrdiff_t dst_stride,
+                                                  const InterpKernel* filter,
+                                                  int x0_q4,
+                                                  int x_step_q4,
+                                                  int y0_q4,
+                                                  int y_step_q4,
+                                                  int w,
+                                                  int h,
+                                                  int bd);
 
 void vpx_highbd_convolve8_horiz_c(const uint16_t* src,
                                   ptrdiff_t src_stride,
@@ -3848,7 +3950,30 @@ void vpx_highbd_convolve8_horiz_neon(const uint16_t* src,
                                      int w,
                                      int h,
                                      int bd);
-#define vpx_highbd_convolve8_horiz vpx_highbd_convolve8_horiz_neon
+void vpx_highbd_convolve8_horiz_sve(const uint16_t* src,
+                                    ptrdiff_t src_stride,
+                                    uint16_t* dst,
+                                    ptrdiff_t dst_stride,
+                                    const InterpKernel* filter,
+                                    int x0_q4,
+                                    int x_step_q4,
+                                    int y0_q4,
+                                    int y_step_q4,
+                                    int w,
+                                    int h,
+                                    int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_horiz)(const uint16_t* src,
+                                               ptrdiff_t src_stride,
+                                               uint16_t* dst,
+                                               ptrdiff_t dst_stride,
+                                               const InterpKernel* filter,
+                                               int x0_q4,
+                                               int x_step_q4,
+                                               int y0_q4,
+                                               int y_step_q4,
+                                               int w,
+                                               int h,
+                                               int bd);
 
 void vpx_highbd_convolve8_vert_c(const uint16_t* src,
                                  ptrdiff_t src_stride,
@@ -3874,7 +3999,30 @@ void vpx_highbd_convolve8_vert_neon(const uint16_t* src,
                                     int w,
                                     int h,
                                     int bd);
-#define vpx_highbd_convolve8_vert vpx_highbd_convolve8_vert_neon
+void vpx_highbd_convolve8_vert_sve2(const uint16_t* src,
+                                    ptrdiff_t src_stride,
+                                    uint16_t* dst,
+                                    ptrdiff_t dst_stride,
+                                    const InterpKernel* filter,
+                                    int x0_q4,
+                                    int x_step_q4,
+                                    int y0_q4,
+                                    int y_step_q4,
+                                    int w,
+                                    int h,
+                                    int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_vert)(const uint16_t* src,
+                                              ptrdiff_t src_stride,
+                                              uint16_t* dst,
+                                              ptrdiff_t dst_stride,
+                                              const InterpKernel* filter,
+                                              int x0_q4,
+                                              int x_step_q4,
+                                              int y0_q4,
+                                              int y_step_q4,
+                                              int w,
+                                              int h,
+                                              int bd);
 
 void vpx_highbd_convolve_avg_c(const uint16_t* src,
                                ptrdiff_t src_stride,
@@ -8533,6 +8681,30 @@ static void setup_rtcd_internal(void) {
   if (flags & HAS_SVE) {
     vpx_highbd_8_variance8x8 = vpx_highbd_8_variance8x8_sve;
   }
+  vpx_highbd_convolve8 = vpx_highbd_convolve8_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8 = vpx_highbd_convolve8_sve2;
+  }
+  vpx_highbd_convolve8_avg = vpx_highbd_convolve8_avg_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8_avg = vpx_highbd_convolve8_avg_sve2;
+  }
+  vpx_highbd_convolve8_avg_horiz = vpx_highbd_convolve8_avg_horiz_neon;
+  if (flags & HAS_SVE) {
+    vpx_highbd_convolve8_avg_horiz = vpx_highbd_convolve8_avg_horiz_sve;
+  }
+  vpx_highbd_convolve8_avg_vert = vpx_highbd_convolve8_avg_vert_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8_avg_vert = vpx_highbd_convolve8_avg_vert_sve2;
+  }
+  vpx_highbd_convolve8_horiz = vpx_highbd_convolve8_horiz_neon;
+  if (flags & HAS_SVE) {
+    vpx_highbd_convolve8_horiz = vpx_highbd_convolve8_horiz_sve;
+  }
+  vpx_highbd_convolve8_vert = vpx_highbd_convolve8_vert_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8_vert = vpx_highbd_convolve8_vert_sve2;
+  }
   vpx_mse16x16 = vpx_mse16x16_neon;
   if (flags & HAS_NEON_DOTPROD) {
     vpx_mse16x16 = vpx_mse16x16_neon_dotprod;
@@ -8776,4 +8948,4 @@ static void setup_rtcd_internal(void) {
 }  // extern "C"
 #endif
 
-#endif
+#endif  // VPX_DSP_RTCD_H_

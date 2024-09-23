@@ -808,8 +808,9 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
   EXPECT_TRUE(SetDisplayLayout(layout));
   EXPECT_EQ(gfx::Size(650, 743),
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
-  EXPECT_EQ(displays[2].id,
-            std::to_string(ash::Shell::Get()
+  EXPECT_EQ(
+      displays[2].id,
+      base::NumberToString(ash::Shell::Get()
                                ->display_configuration_controller()
                                ->GetPrimaryMirroringDisplayForUnifiedDesktop()
                                .id()));

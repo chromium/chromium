@@ -26,14 +26,6 @@ void RecordInitializationStatus(bool successful) {
 
 }  // namespace
 
-// When enabled, prefer to use the new recovery module to recover the
-// `BrowsingTopicsSiteDataStorage` database. See https://crbug.com/1385500 for
-// details. This is a kill switch and is not intended to be used in a field
-// trial.
-BASE_FEATURE(kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported,
-             "BrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BrowsingTopicsSiteDataStorage::BrowsingTopicsSiteDataStorage(
     const base::FilePath& path_to_database)
     : path_to_database_(path_to_database) {
@@ -260,12 +252,16 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
     return false;
   }
 
-  // TODO(yaoxia): measure metrics for the DB file size to have some idea if it
-  // gets too big.
-
   if (!InitializeTables()) {
     HandleInitializationFailure();
     return false;
+  }
+
+  int64_t file_size = 0L;
+  if (base::GetFileSize(path_to_database_, &file_size)) {
+    int64_t file_size_kb = file_size / 1024;
+    base::UmaHistogramCounts1M("BrowsingTopics.SiteDataStorage.FileSize.KB",
+                               file_size_kb);
   }
 
   db_init_status_ = InitStatus::kSuccess;
@@ -351,10 +347,9 @@ void BrowsingTopicsSiteDataStorage::DatabaseErrorCallback(
     sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
-  if (sql::BuiltInRecovery::RecoverIfPossible(
+  if (sql::Recovery::RecoverIfPossible(
           db_.get(), extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-          &kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported)) {
+          sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

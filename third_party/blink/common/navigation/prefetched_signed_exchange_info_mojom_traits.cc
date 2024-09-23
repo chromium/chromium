@@ -16,7 +16,7 @@ bool StructTraits<blink::mojom::SHA256HashValueDataView, net::SHA256HashValue>::
     return false;
 
   if (data.size() != sizeof(out->data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

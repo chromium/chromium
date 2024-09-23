@@ -29,16 +29,17 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) ResourceSizes {
 
   // Dies with a CRASH() if the width can not be represented as a positive
   // number of bytes.
+  // WARNING: The `format` must be single planar.
   template <typename T>
   static T CheckedWidthInBytes(int width, SharedImageFormat format);
   // Dies with a CRASH() if the size can not be represented as a positive
   // number of bytes.
   // WARNING: The `format` must be single planar.
-  // TODO(hitawala): Add multiplanar format support.
   template <typename T>
   static T CheckedSizeInBytes(const gfx::Size& size, SharedImageFormat format);
   // Returns the width in bytes but may overflow or return 0. Only do this for
   // computing widths for sizes that have already been checked.
+  // WARNING: The `format` must be single planar.
   template <typename T>
   static T UncheckedWidthInBytes(int width, SharedImageFormat format);
 

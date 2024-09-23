@@ -62,7 +62,6 @@ class MODULES_EXPORT ServiceWorkerThread final : public WorkerThread {
   WorkerBackingThread& GetWorkerBackingThread() override {
     return *worker_backing_thread_;
   }
-  void ClearWorkerBackingThread() override;
   void TerminateForTesting() override;
 
  private:

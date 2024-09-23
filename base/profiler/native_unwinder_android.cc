@@ -9,12 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
-
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/profiler/module_cache.h"
@@ -22,6 +18,10 @@
 #include "base/profiler/native_unwinder_android_memory_regions_map_impl.h"
 #include "base/profiler/profile_builder.h"
 #include "build/build_config.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm.h"
@@ -36,27 +36,15 @@ namespace {
 
 class NonElfModule : public ModuleCache::Module {
  public:
-  explicit NonElfModule(unwindstack::MapInfo* map_info,
-                        bool is_java_name_hashing_enabled)
+  explicit NonElfModule(unwindstack::MapInfo* map_info)
       : start_(map_info->start()),
         size_(map_info->end() - start_),
-        map_info_name_(map_info->name()),
-        is_java_name_hashing_enabled_(is_java_name_hashing_enabled) {}
+        map_info_name_(map_info->name()) {}
   ~NonElfModule() override = default;
 
   uintptr_t GetBaseAddress() const override { return start_; }
 
-  std::string GetId() const override {
-    // We provide a non-empty string only if Java name hashing is enabled, to
-    // allow us to easily filter out the results from outside the experiment.
-    if (is_java_name_hashing_enabled_) {
-      // Synthetic build id to use for DEX files that provide hashed function
-      // names rather than instruction pointers.
-      return "44444444BC18564712E780518FB3032B999";
-    } else {
-      return "";
-    }
-  }
+  std::string GetId() const override { return ""; }
 
   FilePath GetDebugBasename() const override {
     return FilePath(map_info_name_);
@@ -72,7 +60,6 @@ class NonElfModule : public ModuleCache::Module {
   const uintptr_t start_;
   const size_t size_;
   const std::string map_info_name_;
-  const bool is_java_name_hashing_enabled_;
 };
 
 std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
@@ -85,7 +72,6 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
       reinterpret_cast<void*>(&thread_context->regs[0])));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
   NOTREACHED();
-  return nullptr;
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
@@ -139,10 +125,8 @@ NativeUnwinderAndroid::CreateMemoryRegionsMap(bool use_updatable_maps) {
 
 NativeUnwinderAndroid::NativeUnwinderAndroid(
     uintptr_t exclude_module_with_base_address,
-    NativeUnwinderAndroidMapDelegate* map_delegate,
-    bool is_java_name_hashing_enabled)
-    : is_java_name_hashing_enabled_(is_java_name_hashing_enabled),
-      exclude_module_with_base_address_(exclude_module_with_base_address),
+    NativeUnwinderAndroidMapDelegate* map_delegate)
+    : exclude_module_with_base_address_(exclude_module_with_base_address),
       map_delegate_(map_delegate),
       memory_regions_map_(
           static_cast<NativeUnwinderAndroidMemoryRegionsMapImpl*>(
@@ -168,9 +152,11 @@ bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
              exclude_module_with_base_address_;
 }
 
-UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
-                                              uintptr_t stack_top,
-                                              std::vector<Frame>* stack) {
+UnwindResult NativeUnwinderAndroid::TryUnwind(
+    UnwinderStateCapture* capture_state,
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) {
   auto regs = CreateFromRegisterContext(thread_context);
   DCHECK(regs);
   unwindstack::ArchEnum arch = regs->Arch();
@@ -260,8 +246,7 @@ NativeUnwinderAndroid::TryCreateModuleForAddress(uintptr_t address) {
       map_info->flags() & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
     return nullptr;
   }
-  return std::make_unique<NonElfModule>(map_info,
-                                        is_java_name_hashing_enabled_);
+  return std::make_unique<NonElfModule>(map_info);
 }
 
 unwindstack::DexFiles* NativeUnwinderAndroid::GetOrCreateDexFiles(
@@ -286,25 +271,13 @@ void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
     unwindstack::MapInfo* map_info =
         memory_regions_map_->maps()->Find(dex_pc).get();
     if (map_info) {
-      auto new_module = std::make_unique<NonElfModule>(
-          map_info, is_java_name_hashing_enabled_);
+      auto new_module = std::make_unique<NonElfModule>(map_info);
       module = new_module.get();
       module_cache()->AddCustomNativeModule(std::move(new_module));
     }
   }
 
-  if (is_java_name_hashing_enabled_) {
-    unwindstack::SharedString function_name;
-    uint64_t function_offset = 0;
-    GetOrCreateDexFiles(arch)->GetFunctionName(
-        memory_regions_map_->maps(), dex_pc, &function_name, &function_offset);
-    stack->emplace_back(
-        HashMetricNameAs32Bits(static_cast<const std::string&>(function_name)),
-        module);
-
-  } else {
     stack->emplace_back(dex_pc, module);
-  }
 }
 
 }  // namespace base

@@ -1,0 +1,50 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash)
+build_webui("build") {
+  grd_prefix = "nearby_internals"
+
+  static_files = [ "index.html" ]
+
+  web_component_files = [
+    "contact_object.ts",
+    "contact_tab.ts",
+    "cross_device_internals.ts",
+    "http_message_object.ts",
+    "http_tab.ts",
+    "log_object.ts",
+    "logging_tab.ts",
+    "log_types.ts",
+    "ui_trigger_list_object.ts",
+    "np_list_object.ts",
+    "ui_trigger_tab.ts",
+    "nearby_internals.ts",
+  ]
+  non_web_component_files = [
+    "nearby_contact_browser_proxy.ts",
+    "nearby_http_browser_proxy.ts",
+    "cross_device_logs_browser_proxy.ts",
+    "nearby_presence_browser_proxy.ts",
+    "nearby_prefs_browser_proxy.ts",
+    "nearby_ui_trigger_browser_proxy.ts",
+    "types.ts",
+  ]
+
+  css_files = [ "shared_style.css" ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

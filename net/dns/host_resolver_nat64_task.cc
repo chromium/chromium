@@ -5,6 +5,7 @@
 #include "net/dns/host_resolver_nat64_task.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -25,7 +26,7 @@
 namespace net {
 
 HostResolverNat64Task::HostResolverNat64Task(
-    base::StringPiece hostname,
+    std::string_view hostname,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveContext* resolve_context,
@@ -79,7 +80,7 @@ int HostResolverNat64Task::DoLoop(int result) {
         rv = DoSynthesizeToIpv6();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         rv = ERR_FAILED;
         break;
     }

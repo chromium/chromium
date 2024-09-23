@@ -106,8 +106,8 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Checks whether this is a cloud (DM server) managed enterprise device.
   bool IsCloudManaged() const;
 
-  // Checks whether this is a consumer kiosk enabled device.
-  bool IsConsumerKioskDeviceWithAutoLaunch();
+  // Whether the device is set up to run demo sessions.
+  bool IsDeviceInDemoMode() const;
 
   // Return the mode the device was enrolled to. The return value for devices
   // that are not locked yet is DEVICE_MODE_UNKNOWN.
@@ -154,6 +154,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest, DeviceLockedFromOlderVersion);
   FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest, Init);
   FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest, InitForConsumerKiosk);
+  FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest, InitForEnterpriseDemo);
   FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest, LockCanonicalize);
   FRIEND_TEST_ALL_PREFIXES(InstallAttributesTest,
                            VerifyFakeInstallAttributesCache);
@@ -162,7 +163,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   static const char kConsumerDeviceMode[];
   static const char kEnterpriseDeviceMode[];
   static const char kLegacyRetailDeviceMode[];
-  static const char kConsumerKioskDeviceMode[];
+  static const char kLegacyConsumerKioskDeviceMode[];
   static const char kDemoDeviceMode[];
 
   // Field names in the lockbox.

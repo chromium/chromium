@@ -4,12 +4,12 @@
 
 #include "net/base/platform_mime_util.h"
 
+#include <windows.h>
+
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
-
-#include <windows.h>
 
 namespace net {
 

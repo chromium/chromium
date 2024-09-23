@@ -114,7 +114,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   v8::Isolate* isolate_;
 
   Member<ScriptState> script_state_;
-  scoped_refptr<DOMWrapperWorld> world_;
+  Member<DOMWrapperWorld> world_;
 
   // Keeps the error message for `eval()` on JavaScript until Initialize().
   String disable_eval_pending_;

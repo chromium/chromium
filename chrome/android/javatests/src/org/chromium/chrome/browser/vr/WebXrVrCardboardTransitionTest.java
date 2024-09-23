@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.vr;
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_CHECK_INTERVAL_SHORT_MS;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import androidx.test.filters.MediumTest;
 
@@ -17,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
@@ -33,7 +32,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.webxr.CardboardUtils;
 import org.chromium.components.webxr.XrSessionCoordinator;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -71,7 +69,6 @@ public class WebXrVrCardboardTransitionTest {
     /** Tests that WebXR is not exposed if the flag is not on. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"disable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrDisabledWithoutFlagSet() {
@@ -84,7 +81,6 @@ public class WebXrVrCardboardTransitionTest {
     /** Tests that the omnibox reappears after exiting an immersive session. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
@@ -116,7 +112,6 @@ public class WebXrVrCardboardTransitionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWindowRafStopsFiringWhilePresenting_WebXr() throws InterruptedException {
@@ -133,7 +128,6 @@ public class WebXrVrCardboardTransitionTest {
     /** Tests that window.rAF continues to fire when we have a non-immersive session. */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWindowRafFiresDuringNonImmersiveSession() {
@@ -149,7 +143,6 @@ public class WebXrVrCardboardTransitionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @DisabledTest(message = "https://crbug.com/1229236")
@@ -170,9 +163,8 @@ public class WebXrVrCardboardTransitionTest {
      */
     @Test
     @MediumTest
-    @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
-    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // TODO(crbug.com/40791908): Re-enable this test on all activity types once
     // WAA/CCT versions no longer fail consistently.
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
@@ -190,7 +182,7 @@ public class WebXrVrCardboardTransitionTest {
 
     /** Forces Chrome out of VR mode. */
     private static void forceExitVr() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     XrSessionCoordinator.endActiveSession();
                 });

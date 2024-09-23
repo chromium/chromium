@@ -11,6 +11,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 // Generates UMA metric to track the duration of tab switching from when the
@@ -36,8 +40,8 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       delete;
   ~ContentToVisibleTimeReporter();
 
-  using SuccessfulPresentationTimeCallback =
-      base::OnceCallback<void(base::TimeTicks presentation_timestamp)>;
+  using SuccessfulPresentationTimeCallback = base::OnceCallback<void(
+      const viz::FrameTimingDetails& frame_timing_details)>;
 
   // Invoked when the tab associated with this recorder is shown. Returns a
   // callback to invoke the next time a frame is presented for this tab.
@@ -67,6 +71,12 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
                                       bool show_reason_tab_switching,
                                       bool show_reason_bfcache_restore,
                                       base::TimeTicks presentation_timestamp);
+
+  void RecordHistogramsAndTraceEventsWithFrameTimingDetails(
+      TabSwitchResult tab_switch_result,
+      bool show_reason_tab_switching,
+      bool show_reason_bfcache_restore,
+      const viz::FrameTimingDetails& frame_timing_details);
 
   // Saves the given `state` and `has_saved_frames`, and invalidates all
   // existing callbacks that might reference the old state.

@@ -49,12 +49,12 @@ String MediaDeviceInfo::kind() const {
   switch (device_type_) {
     case mojom::blink::MediaDeviceType::kMediaAudioInput:
       return "audioinput";
-    case mojom::blink::MediaDeviceType::kMediaAudioOuput:
+    case mojom::blink::MediaDeviceType::kMediaAudioOutput:
       return "audiooutput";
     case mojom::blink::MediaDeviceType::kMediaVideoInput:
       return "videoinput";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }

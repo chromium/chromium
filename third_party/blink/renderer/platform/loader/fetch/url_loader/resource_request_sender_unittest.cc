@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_url_loader_factory_for_background_thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -71,14 +73,15 @@ static constexpr char kTestData[] = "Hello world";
 constexpr size_t kDataPipeCapacity = 4096;
 
 std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
-  char buffer[kDataPipeCapacity];
-  uint32_t read_bytes = kDataPipeCapacity;
-  MojoResult result =
-      (*handle)->ReadData(buffer, &read_bytes, MOJO_READ_DATA_FLAG_NONE);
+  std::string buffer(kDataPipeCapacity, '\0');
+  size_t actually_read_bytes = 0;
+  MojoResult result = (*handle)->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                          base::as_writable_byte_span(buffer),
+                                          actually_read_bytes);
   if (result != MOJO_RESULT_OK) {
     return "";
   }
-  return std::string(buffer, read_bytes);
+  return buffer.substr(0, actually_read_bytes);
 }
 
 // Returns a fake TimeTicks based on the given microsecond offset.
@@ -327,7 +330,7 @@ class ResourceRequestSenderTest : public testing::Test,
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  protected:
@@ -1669,74 +1672,6 @@ TEST_F(ResourceRequestSenderTest, KeepaliveRequest) {
   EXPECT_TRUE(mock_client_->received_response());
 }
 
-class BackgroundThreadURLLoaderFactory
-    : public network::SharedURLLoaderFactory {
- public:
-  using LoadStartCallback = base::OnceCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoader>,
-      mojo::PendingRemote<network::mojom::URLLoaderClient>)>;
-
-  // This SharedURLLoaderFactory is cloned and passed to the background thread
-  // via PendingFactory. `load_start_callback` will be called in the background
-  // thread.
-  explicit BackgroundThreadURLLoaderFactory(
-      LoadStartCallback load_start_callback)
-      : load_start_callback_(std::move(load_start_callback)) {}
-  BackgroundThreadURLLoaderFactory(const BackgroundThreadURLLoaderFactory&) =
-      delete;
-  BackgroundThreadURLLoaderFactory& operator=(
-      const BackgroundThreadURLLoaderFactory&) = delete;
-  ~BackgroundThreadURLLoaderFactory() override = default;
-
-  // network::SharedURLLoaderFactory:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    CHECK(load_start_callback_);
-    std::move(load_start_callback_).Run(std::move(loader), std::move(client));
-  }
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    // Pass |this| as the receiver context to make sure this object stays alive
-    // while it still has receivers.
-    receivers_.Add(this, std::move(receiver), this);
-  }
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    CHECK(load_start_callback_);
-    return std::make_unique<PendingFactory>(std::move(load_start_callback_));
-  }
-
- private:
-  class PendingFactory : public network::PendingSharedURLLoaderFactory {
-   public:
-    explicit PendingFactory(LoadStartCallback load_start_callback)
-        : load_start_callback_(std::move(load_start_callback)) {}
-    PendingFactory(const PendingFactory&) = delete;
-    PendingFactory& operator=(const PendingFactory&) = delete;
-    ~PendingFactory() override = default;
-
-   protected:
-    scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
-      CHECK(load_start_callback_);
-      return base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
-          std::move(load_start_callback_));
-    }
-
-   private:
-    LoadStartCallback load_start_callback_;
-  };
-
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                    scoped_refptr<BackgroundThreadURLLoaderFactory>>
-      receivers_;
-  LoadStartCallback load_start_callback_;
-};
-
 class ResourceRequestSenderSyncTest : public testing::Test {
  public:
   explicit ResourceRequestSenderSyncTest() = default;
@@ -1777,7 +1712,8 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRequest) {
   scoped_refptr<MockRequestClient> mock_client =
       base::MakeRefCounted<MockRequestClient>();
   auto loader_factory =
-      base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(base::BindOnce(
+      base::MakeRefCounted<
+          FakeURLLoaderFactoryForBackgroundThread>(base::BindOnce(
           [](mojo::PendingReceiver<network::mojom::URLLoader> loader,
              mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
             mojo::MakeSelfOwnedReceiver(std::make_unique<MockLoader>(),
@@ -1811,10 +1747,10 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirect) {
         std::move(callback).Run({}, {});
       }));
 
-  auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
-      base::BindOnce([](mojo::PendingReceiver<network::mojom::URLLoader> loader,
-                        mojo::PendingRemote<network::mojom::URLLoaderClient>
-                            client) {
+  auto loader_factory = base::MakeRefCounted<
+      FakeURLLoaderFactoryForBackgroundThread>(base::BindOnce(
+      [](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+         mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
         std::unique_ptr<MockLoader> mock_loader =
             std::make_unique<MockLoader>();
         MockLoader* mock_loader_prt = mock_loader.get();
@@ -1875,10 +1811,10 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithRemovedHeaders) {
         std::move(callback).Run({"Foo-Bar", "Hoge-Piyo"}, {});
       }));
 
-  auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
-      base::BindOnce([](mojo::PendingReceiver<network::mojom::URLLoader> loader,
-                        mojo::PendingRemote<network::mojom::URLLoaderClient>
-                            client) {
+  auto loader_factory = base::MakeRefCounted<
+      FakeURLLoaderFactoryForBackgroundThread>(base::BindOnce(
+      [](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+         mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
         std::unique_ptr<MockLoader> mock_loader =
             std::make_unique<MockLoader>();
         MockLoader* mock_loader_prt = mock_loader.get();
@@ -1942,10 +1878,10 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithModifiedHeaders) {
         std::move(callback).Run({}, std::move(modified_headers));
       }));
 
-  auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
-      base::BindOnce([](mojo::PendingReceiver<network::mojom::URLLoader> loader,
-                        mojo::PendingRemote<network::mojom::URLLoaderClient>
-                            client) {
+  auto loader_factory = base::MakeRefCounted<
+      FakeURLLoaderFactoryForBackgroundThread>(base::BindOnce(
+      [](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+         mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
         std::unique_ptr<MockLoader> mock_loader =
             std::make_unique<MockLoader>();
         MockLoader* mock_loader_prt = mock_loader.get();
@@ -2007,7 +1943,8 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectCancel) {
       }));
 
   auto loader_factory =
-      base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(base::BindOnce(
+      base::MakeRefCounted<
+          FakeURLLoaderFactoryForBackgroundThread>(base::BindOnce(
           [](mojo::PendingReceiver<network::mojom::URLLoader> loader,
              mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
             std::unique_ptr<MockLoader> mock_loader =

@@ -11,17 +11,20 @@ import android.view.MenuItem;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.SettingsPage;
+
 /**
  * Base structure to be shared by fragments displaying: saved credentials to be edited, saved
  * federated credentials and sites blocklisted for saving by the user.
  */
-public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat {
+public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat
+        implements SettingsPage {
     ComponentStateDelegate mComponentStateDelegate;
     UiActionHandler mUiActionHandler;
 
     /**
      * To be implemented by classes which need to know about the fragment's state
-     * TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
+     * TODO(crbug.com/40749164): The coordinator should be made a LifecycleObserver instead.
      */
     interface ComponentStateDelegate {
         /** Called when the fragment is started. */

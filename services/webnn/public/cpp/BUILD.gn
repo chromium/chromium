@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("cpp") {
+  sources = [
+    "context_properties.cc",
+    "context_properties.h",
+    "data_type_limits.cc",
+    "data_type_limits.h",
+    "graph_validation_utils.cc",
+    "graph_validation_utils.h",
+    "ml_tensor_usage.h",
+    "operand_descriptor.cc",
+    "operand_descriptor.h",
+    "supported_data_types.h",
+    "webnn_errors.cc",
+    "webnn_errors.h",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
+}

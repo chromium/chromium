@@ -4,6 +4,7 @@
 
 #include "remoting/host/linux/x11_util.h"
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -15,16 +16,6 @@
 #include "ui/gfx/x/xtest.h"
 
 namespace remoting {
-
-ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
-    : connection_(connection) {
-  connection_->GrabServer();
-}
-
-ScopedXGrabServer::~ScopedXGrabServer() {
-  connection_->UngrabServer();
-  connection_->Flush();
-}
 
 bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore) {
   if (!connection->xtest().present()) {
@@ -169,13 +160,14 @@ void SetOutputPhysicalSizeInMM(x11::Connection* connection,
       .format = 32,
       .mode = x11::PropMode::Replace,
       .num_units = 1,
-      .data = base::MakeRefCounted<base::RefCountedStaticMemory>(&width_32, 4),
+      .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+          base::byte_span_from_ref(width_32)),
   };
   connection->randr().ChangeOutputProperty(request).Sync();
 
   request.property = height_mm_atom;
-  request.data =
-      base::MakeRefCounted<base::RefCountedStaticMemory>(&height_32, 4);
+  request.data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+      base::byte_span_from_ref(height_32));
   connection->randr().ChangeOutputProperty(request).Sync();
 }
 

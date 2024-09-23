@@ -2,10 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 
 component("manta") {
   sources = [
+    "anchovy/anchovy_proto_helper.cc",
+    "anchovy/anchovy_proto_helper.h",
+    "anchovy/anchovy_provider.cc",
+    "anchovy/anchovy_provider.h",
+    "anchovy/anchovy_requests.cc",
+    "anchovy/anchovy_requests.h",
+    "base_provider.cc",
+    "base_provider.h",
     "features.cc",
     "features.h",
     "manta_service.cc",
@@ -13,37 +22,68 @@ component("manta") {
     "manta_service_callbacks.cc",
     "manta_service_callbacks.h",
     "manta_status.h",
-    "orca_provider.cc",
-    "orca_provider.h",
-    "snapper_provider.cc",
-    "snapper_provider.h",
+    "provider_params.h",
   ]
 
   defines = [ "IS_MANTA_IMPL" ]
 
-  public_deps = [ "//base" ]
-
   deps = [
     "proto",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/account_id:account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//net",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "mahi_provider.cc",
+      "mahi_provider.h",
+      "orca_provider.cc",
+      "orca_provider.h",
+      "snapper_provider.cc",
+      "snapper_provider.h",
+      "sparky/sparky_context.cc",
+      "sparky/sparky_context.h",
+      "sparky/sparky_delegate.cc",
+      "sparky/sparky_delegate.h",
+      "sparky/sparky_provider.cc",
+      "sparky/sparky_provider.h",
+      "sparky/sparky_util.cc",
+      "sparky/sparky_util.h",
+      "sparky/system_info_delegate.cc",
+      "sparky/system_info_delegate.h",
+    ]
+    deps += [ "//chromeos/constants:constants" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "orca_provider_unittest.cc",
-    "snapper_provider_unittest.cc",
+    "base_provider_test_helper.cc",
+    "base_provider_test_helper.h",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "orca_provider_unittest.cc",
+      "snapper_provider_unittest.cc",
+      "sparky/sparky_provider_unittest.cc",
+      "sparky/sparky_util_unittest.cc",
+    ]
+  }
 
   deps = [
     ":manta",
     "proto",
+    "//base",
     "//base/test:test_support",
+    "//components/endpoint_fetcher",
     "//components/signin/public/identity_manager:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

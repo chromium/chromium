@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/webrtc/thread_wrapper.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
@@ -30,6 +32,7 @@
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
@@ -72,6 +75,11 @@ const char* SignalStrategyErrorToString(SignalStrategy::Error error) {
       return "PROTOCOL_ERROR";
   }
   return "";
+}
+
+// Stub used for Me2MeHostAuthenticatorFactory::CheckAccessPermissionCallback.
+bool CheckAccessPermission(std::string_view user_email) {
+  return true;
 }
 
 }  // namespace
@@ -155,9 +163,11 @@ void FtlSignalingPlayground::AcceptIncoming(base::OnceClosure on_done) {
                                ? cmd->GetSwitchValueASCII(kSwitchNameHostOwner)
                                : user_email;
   HOST_LOG << "Using host owner: " << host_owner;
-  auto factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-      host_owner, cert, key_pair,
-      /* domain_list */ {}, pin_hash, /* pairing_registry */ {});
+  auto auth_config =
+      std::make_unique<protocol::HostAuthenticationConfig>(cert, key_pair);
+  auth_config->AddSharedSecretAuth(pin_hash);
+  auto factory = std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+      base::BindRepeating(&CheckAccessPermission), std::move(auth_config));
   session_manager_->set_authenticator_factory(std::move(factory));
   HOST_LOG << "Waiting for incoming session...";
   session_manager_->AcceptIncoming(base::BindRepeating(
@@ -254,7 +264,7 @@ void FtlSignalingPlayground::InitializeTransport() {
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
       url_loader_factory_owner_->GetURLLoaderFactory(), nullptr,
-      network_settings, transport_role_);
+      transport_role_);
   auto close_callback =
       base::BindOnce(&FtlSignalingPlayground::AsyncTearDownAndRunCallback,
                      base::Unretained(this));
@@ -336,7 +346,8 @@ void FtlSignalingPlayground::OnSessionStateChange(
 
     case protocol::Session::CLOSED:
     case protocol::Session::FAILED:
-      LOG(ERROR) << "Session failed/closed. Error: " << session_->error();
+      LOG(ERROR) << "Session failed/closed. Error: "
+                 << ErrorCodeToString(session_->error());
       break;
   }
 

@@ -19,7 +19,7 @@
 // No need to bind the callback to the current loop if we are on the audio
 // thread. However, the client still expects to receive the reply
 // asynchronously, so we always post the helper function, which will
-// syncronously call the (bound to current loop or not) callback. Thus the
+// synchronously call the (bound to current loop or not) callback. Thus the
 // client always receives the callback on the thread it accesses AudioSystem on.
 
 namespace media {

@@ -18,6 +18,10 @@ per-file autotest.py=agrieve@chromium.org
 per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
+per-file bisect*.py=wnwen@chromium.org
+per-file bisect*.py=kuanhuang@chromium.org
+per-file bisect*.py=svenzheng@chromium.org
+
 per-file check_git_config.py=iannucci@chromium.org
 
 per-file check_grd_for_unused_strings.py=estade@chromium.org
@@ -27,6 +31,8 @@ per-file gyp-explain.py=thakis@chromium.org
 per-file include_tracer.py=thakis@chromium.org
 
 per-file ipc_messages_log.py=yfriedman@chromium.org
+
+per-file mojo_messages_log.py=awillia@chromium.org
 
 per-file roll_webgl_conformance.py=bajones@chromium.org
 per-file roll_webgl_conformance.py=kbr@chromium.org

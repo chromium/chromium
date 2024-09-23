@@ -24,26 +24,57 @@ double MaybeGetRatio(double value1, double value2) {
 int GetFormulaMessageId(bool is_multiply, bool is_approximate) {
   if (is_multiply) {
     if (is_approximate) {
-      return IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT;
+      return IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_MULTIPLICATION_FORMULA_TEXT;
     }
 
-    return IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT;
+    return IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_MULTIPLICATION_FORMULA_TEXT;
   }
 
   if (is_approximate) {
-    return IDS_QUICK_ANSWERS_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT;
+    return IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_APPROXIMATE_DIVISION_FORMULA_TEXT;
   }
 
-  return IDS_QUICK_ANSWERS_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT;
+  return IDS_RICH_ANSWERS_VIEW_UNIT_CONVERSION_EXACT_DIVISION_FORMULA_TEXT;
 }
 
 }  // namespace
 
 namespace quick_answers {
 
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type) {
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      return quick_answers::Intent::kDefinition;
+    case IntentType::kTranslation:
+      return quick_answers::Intent::kTranslation;
+    case IntentType::kUnit:
+      return quick_answers::Intent::kUnitConversion;
+    case IntentType::kUnknown:
+      return std::nullopt;
+  }
+
+  CHECK(false) << "Invalid intent type enum value provided";
+}
+
 PhoneticsInfo::PhoneticsInfo() = default;
 PhoneticsInfo::PhoneticsInfo(const PhoneticsInfo&) = default;
 PhoneticsInfo::~PhoneticsInfo() = default;
+
+bool PhoneticsInfo::PhoneticsInfoAvailable() const {
+  return AudioUrlAvailable() || TtsAudioAvailable();
+}
+
+bool PhoneticsInfo::AudioUrlAvailable() const {
+  return !phonetics_audio.is_empty();
+}
+
+bool PhoneticsInfo::TtsAudioAvailable() const {
+  if (!tts_audio_enabled) {
+    return false;
+  }
+
+  return !query_text.empty() && !locale.empty();
+}
 
 QuickAnswer::QuickAnswer() = default;
 QuickAnswer::~QuickAnswer() = default;
@@ -234,6 +265,18 @@ UnitConversionResult::~UnitConversionResult() = default;
 
 StructuredResult::StructuredResult() = default;
 StructuredResult::~StructuredResult() = default;
+ResultType StructuredResult::GetResultType() const {
+  if (translation_result) {
+    return ResultType::kTranslationResult;
+  }
+  if (definition_result) {
+    return ResultType::kDefinitionResult;
+  }
+  if (unit_conversion_result) {
+    return ResultType::kUnitConversionResult;
+  }
+  return ResultType::kNoResult;
+}
 
 QuickAnswersSession::QuickAnswersSession() = default;
 QuickAnswersSession::~QuickAnswersSession() = default;

@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="true"
-            style="@style/FilledButton.Flat"
+            style="@style/FilledButton"
             android:text="@string/folder_picker_move_here" />
     </LinearLayout>
 

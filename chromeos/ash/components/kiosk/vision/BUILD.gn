@@ -1,0 +1,105 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos_ash)
+
+component("vision") {
+  defines = [ "IS_KIOSK_VISION_IMPL" ]
+  sources = [
+    "internals_page_processor.cc",
+    "internals_page_processor.h",
+    "kiosk_vision.cc",
+    "kiosk_vision.h",
+    "telemetry_processor.cc",
+    "telemetry_processor.h",
+  ]
+  public_deps = [ ":vision_prefs" ]
+  deps = [
+    ":internal",
+    "//base",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/kiosk/vision/webui:mojo_bindings",
+    "//components/capture_mode",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//content/public/browser",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//mojo/public/cpp/bindings",
+    "//services/video_capture/public/mojom",
+  ]
+}
+
+source_set("vision_prefs") {
+  sources = [ "pref_names.h" ]
+}
+
+source_set("internal") {
+  visibility = [ ":*" ]
+  sources = [
+    "internal/camera_service_connector.cc",
+    "internal/camera_service_connector.h",
+    "internal/detection_observer.cc",
+    "internal/detection_observer.h",
+    "internal/detection_processor.h",
+    "internal/pref_observer.cc",
+    "internal/pref_observer.h",
+    "internal/retry_timer.cc",
+    "internal/retry_timer.h",
+  ]
+  deps = [
+    ":vision_prefs",
+    "//base",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//components/capture_mode",
+    "//components/prefs:prefs",
+    "//content/public/browser",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "internal/fake_cros_camera_service.cc",
+    "internal/fake_cros_camera_service.h",
+    "kiosk_vision_unittest.cc",
+    "telemetry_processor_unittest.cc",
+  ]
+  deps = [
+    ":internal",
+    ":vision",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//components/media_effects/test:test_support",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//services/video_capture/public/cpp:mocks",
+    "//testing/gtest",
+  ]
+}
+
+test("kiosk_vision_unit_tests") {
+  testonly = true
+  sources = [ "//chromeos/test/run_all_unittests.cc" ]
+  deps = [
+    ":unit_tests",
+    ":vision",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+}

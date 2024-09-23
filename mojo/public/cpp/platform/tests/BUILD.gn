@@ -7,8 +7,13 @@ source_set("tests") {
 
   sources = [ "platform_handle_unittest.cc" ]
 
+  if (is_android) {
+    sources += [ "../binder_exchange_unittest.cc" ]
+  }
+
   deps = [
     "//base",
+    "//base/test:test_support",
     "//mojo/public/c/system",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
@@ -17,9 +22,6 @@ source_set("tests") {
 
   if (is_win || is_mac || (is_posix && !is_nacl && !is_ios)) {
     sources += [ "platform_channel_server_unittest.cc" ]
-    deps += [
-      "//base/test:test_support",
-      "//mojo/core/embedder",
-    ]
+    deps += [ "//mojo/core/embedder" ]
   }
 }

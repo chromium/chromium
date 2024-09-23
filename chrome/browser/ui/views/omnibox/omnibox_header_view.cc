@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -48,9 +47,7 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view,
           views::BoxLayout::Orientation::kHorizontal));
   // This is the designer-provided spacing that matches the NTP Realbox.
   // TODO(khalidpeer): Update this spacing for realbox per CR23 guidelines.
-  const int spacing_between_label_and_icon =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() ? 0 : 8;
-  layout->set_between_child_spacing(spacing_between_label_and_icon);
+  layout->set_between_child_spacing(0);
 
   header_label_ = AddChildView(std::make_unique<views::Label>());
   header_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -79,6 +76,8 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view,
           base::Unretained(this)));
   views::FocusRing::Get(header_toggle_button_)
       ->SetOutsetFocusRingDisabled(true);
+
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void OmniboxHeaderView::SetHeader(const std::u16string& header_text,
@@ -89,17 +88,14 @@ void OmniboxHeaderView::SetHeader(const std::u16string& header_text,
   // it seems like an open question what should happen for non-Latin locales.
   // Moreover, it seems unusual to do case conversion in Views in general.
   std::u16string header_str = header_text_;
-  if (!OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()) {
     header_str = base::i18n::ToUpper(header_str);
-  }
   header_label_->SetText(header_str);
   header_toggle_button_->SetToggled(is_suggestion_group_hidden);
 }
 
 gfx::Insets OmniboxHeaderView::GetInsets() const {
   // Makes the header height roughly the same as the single-line row height.
-  const int vertical =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() ? 8 : 6;
+  const int vertical = 8;
 
   // Aligns the header text with the icons of ordinary matches. The assumed
   // small icon width here is lame, but necessary, since it's not explicitly
@@ -139,17 +135,6 @@ void OmniboxHeaderView::OnThemeChanged() {
   UpdateUI();
 }
 
-void OmniboxHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Hidden OmniboxHeaderView instances are not associated with any group ID, so
-  // they are neither collapsed or expanded.s
-  if (!GetVisible()) {
-    return;
-  }
-
-  node_data->AddState(suggestion_group_hidden_ ? ax::mojom::State::kCollapsed
-                                               : ax::mojom::State::kExpanded);
-}
-
 void OmniboxHeaderView::UpdateUI() {
   OmniboxPartState part_state = OmniboxPartState::NORMAL;
   if (popup_view_->model()->GetPopupSelection() == GetHeaderSelection()) {
@@ -173,25 +158,18 @@ void OmniboxHeaderView::UpdateUI() {
 
   int dip_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
   const gfx::ImageSkia arrow_down = gfx::CreateVectorIcon(
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()
-          ? omnibox::kArrowDownChromeRefreshIcon
-          : omnibox::kChevronIcon,
-      dip_size, icon_color);
-  const ui::ImageModel arrow_up =
-      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()
-          ? ui::ImageModel::FromVectorIcon(omnibox::kArrowUpChromeRefreshIcon,
-                                           icon_color, dip_size)
-          : ui::ImageModel::FromImageSkia(
-                gfx::ImageSkiaOperations::CreateRotatedImage(
-                    arrow_down, SkBitmapOperations::ROTATION_180_CW));
+      omnibox::kArrowDownChromeRefreshIcon, dip_size, icon_color);
+  const ui::ImageModel arrow_up = ui::ImageModel::FromVectorIcon(
+      omnibox::kArrowUpChromeRefreshIcon, icon_color, dip_size);
 
   // The "untoggled" button state corresponds with the group being shown.
   // The button's action is therefore to Hide the group, when clicked.
   header_toggle_button_->SetImageModel(views::Button::STATE_NORMAL, arrow_up);
   header_toggle_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON));
-  header_toggle_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON, header_text_));
+  header_toggle_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON,
+                                 header_text_));
 
   // The "toggled" button state corresponds with the group being hidden.
   // The button's action is therefore to Show the group, when clicked.
@@ -203,13 +181,6 @@ void OmniboxHeaderView::UpdateUI() {
       IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON, header_text_));
 
   views::FocusRing::Get(header_toggle_button_)->SchedulePaint();
-
-  // It's a little hokey that we're stealing the logic for the background
-  // color from OmniboxResultView. If we start doing this is more than just
-  // one place, we should introduce a more elegant abstraction here.
-  if (!OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()) {
-    SetBackground(OmniboxResultView::GetPopupCellBackground(this, part_state));
-  }
 }
 
 void OmniboxHeaderView::HeaderToggleButtonPressed() {
@@ -221,7 +192,7 @@ void OmniboxHeaderView::SetSuggestionGroupVisibility(
     bool suggestion_group_hidden) {
   suggestion_group_hidden_ = suggestion_group_hidden;
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
 
   // Because this view doesn't have true focus (it stays on the textfield),
   // we also need to manually announce state changes.
@@ -237,6 +208,21 @@ void OmniboxHeaderView::SetSuggestionGroupVisibility(
 OmniboxPopupSelection OmniboxHeaderView::GetHeaderSelection() const {
   return OmniboxPopupSelection(model_index_,
                                OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
+}
+
+void OmniboxHeaderView::UpdateExpandedCollapsedAccessibleState() const {
+  // Hidden OmniboxHeaderView instances are not associated with any group ID, so
+  // they are neither collapsed or expanded.
+  if (!GetVisible()) {
+    GetViewAccessibility().RemoveExpandCollapseState();
+    return;
+  }
+
+  if (suggestion_group_hidden_) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().SetIsExpanded();
+  }
 }
 
 BEGIN_METADATA(OmniboxHeaderView)

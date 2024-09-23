@@ -4,15 +4,12 @@
 
 #include "components/omnibox/browser/document_suggestions_service.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,7 +53,7 @@ class DocumentSuggestionsServiceTest : public testing::Test {
             shared_url_loader_factory_)) {
     // Set up identity manager.
     identity_test_env_.SetPrimaryAccount("foo@gmail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
     identity_test_env_.SetRefreshTokenForPrimaryAccount();
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 

@@ -257,7 +257,7 @@
 }
 
 - (void)configureScannerWithSession:(AVCaptureSession*)session {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)startReceivingNotifications {
@@ -366,7 +366,7 @@
             setCameraState:scanner::CAMERA_UNAVAILABLE_DUE_TO_SYSTEM_PRESSURE];
         break;
       case AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   });

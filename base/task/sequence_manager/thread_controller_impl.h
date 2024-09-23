@@ -37,7 +37,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   ThreadControllerImpl& operator=(const ThreadControllerImpl&) = delete;
   ~ThreadControllerImpl() override;
 
-  // TODO(https://crbug.com/948051): replace |funneled_sequence_manager| with
+  // TODO(crbug.com/40620995): replace |funneled_sequence_manager| with
   // |funneled_task_runner| when we sort out the workers
   static std::unique_ptr<ThreadControllerImpl> Create(
       SequenceManagerImpl* funneled_sequence_manager,
@@ -49,7 +49,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void ScheduleWork() override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
-                            absl::optional<WakeUp> wake_up) override;
+                            std::optional<WakeUp> wake_up) override;
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
@@ -57,7 +57,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void RestoreDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
-  void SetTaskExecutionAllowed(bool allowed) override;
+  void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

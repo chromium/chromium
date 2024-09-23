@@ -4,12 +4,14 @@
 
 #include "chrome/browser/sync/glue/web_contents_state_synced_tab_delegate.h"
 
+#include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+
 namespace browser_sync {
 
 WebContentsStateSyncedTabDelegate::WebContentsStateSyncedTabDelegate(
-    TabAndroid* tab_android,
+    TabAndroidDataProvider* tab_android_data_provider,
     std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer)
-    : tab_android_(tab_android),
+    : tab_android_data_provider_(tab_android_data_provider),
       web_contents_buffer_(std::move(web_contents_byte_buffer)) {
   web_contents_ = WebContentsState::RestoreContentsFromByteBuffer(
       web_contents_buffer_.get(), /*initially_hidden=*/true,
@@ -25,10 +27,10 @@ WebContentsStateSyncedTabDelegate::~WebContentsStateSyncedTabDelegate() =
 
 std::unique_ptr<WebContentsStateSyncedTabDelegate>
 WebContentsStateSyncedTabDelegate::Create(
-    TabAndroid* tab_android,
+    TabAndroidDataProvider* tab_android_data_provider,
     std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer) {
   auto tab_delegate = base::WrapUnique(new WebContentsStateSyncedTabDelegate(
-      tab_android, std::move(web_contents_byte_buffer)));
+      tab_android_data_provider, std::move(web_contents_byte_buffer)));
 
   // If the retrieved web contents of the newly created delegate is still null,
   // indicate for an early exit in the AssociatePlaceholderTab snapshot catch.
@@ -39,12 +41,12 @@ WebContentsStateSyncedTabDelegate::Create(
 }
 
 SessionID WebContentsStateSyncedTabDelegate::GetWindowId() const {
-  return tab_android_->window_id();
+  return tab_android_data_provider_->GetWindowId();
 }
 
 SessionID WebContentsStateSyncedTabDelegate::GetSessionId() const {
   return browser_sync::SyncedTabDelegateAndroid::SessionIdFromAndroidId(
-      tab_android_->GetAndroidId());
+      tab_android_data_provider_->GetAndroidId());
 }
 
 bool WebContentsStateSyncedTabDelegate::IsPlaceholderTab() const {
@@ -63,9 +65,11 @@ bool WebContentsStateSyncedTabDelegate::HasWebContents() const {
 }
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
-WebContentsStateSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
-  NOTREACHED() << "CreatePlaceholderTabSyncedTabDelegate should be called only "
-                  "via the SyncedTabDelegateAndroid implementation.";
+WebContentsStateSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    sync_sessions::SyncSessionsClient* sessions_client) {
+  NOTREACHED_IN_MIGRATION()
+      << "ReadPlaceholderTabSnapshotIfItShouldSync should be called only "
+         "via the SyncedTabDelegateAndroid implementation.";
   return nullptr;
 }
 

@@ -72,16 +72,7 @@ bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,
 }
 
 void WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
-    return;
-  }
-
-  base::test::TestFuture<void> result;
-  CHECK(proxy->OnReady());
-  proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
-  CHECK(result.Wait());
-#endif
+  // TODO(b/329521029): Remove once all tests that used this are reverted.
 }
 
 }  // namespace apps

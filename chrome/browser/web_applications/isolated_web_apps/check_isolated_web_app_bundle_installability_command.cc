@@ -12,7 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -55,12 +55,11 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
     return;
   }
 
-  const std::optional<WebApp::IsolationData>& isolation_data =
-      app->isolation_data();
+  const std::optional<IsolationData>& isolation_data = app->isolation_data();
   // If there is an app with the same app ID, it must be an IWA.
   CHECK(isolation_data.has_value());
 
-  base::Version installed_version = isolation_data.value().version;
+  base::Version installed_version = isolation_data->version();
   bool is_dev_mode_install = IsIwaDevModeEnabled(profile_);
 
   if (is_dev_mode_install && bundle_metadata_.version() < installed_version) {
@@ -106,7 +105,7 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::ReportResult(
            installed_version->GetString()});
       break;
     case IsolatedInstallabilityCheckResult::kShutdown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   GetMutableDebugValue().Set("result", message);

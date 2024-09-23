@@ -1,5 +1,5 @@
 <style include="cr-shared-style shared-style">
-  iron-icon {
+  cr-icon {
     --iron-icon-height: var(--cr-icon-size);
     --iron-icon-width: var(--cr-icon-size);
   }
@@ -43,7 +43,7 @@
   <a id="linkIconButton" aria-label="$i18n{permissionsLearnMoreLabel}"
       href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
       on-click="onLearnMoreClick_">
-    <iron-icon icon="cr:help-outline"></iron-icon>
+    <cr-icon icon="cr:help-outline"></cr-icon>
   </a>
 </div>
 <div class="toggle-section">
@@ -57,7 +57,7 @@
         href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
         on-click="onLearnMoreClick_"
         hidden$="[[!enableEnhancedSiteControls]]">
-      <iron-icon icon="cr:help-outline"></iron-icon>
+      <cr-icon icon="cr:help-outline"></cr-icon>
     </a>
   </extensions-toggle-row>
 </div>

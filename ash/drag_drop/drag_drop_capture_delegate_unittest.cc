@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -60,8 +61,9 @@ class TestWindowDelegate : public aura::test::TestWindowDelegate {
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) final {
     motion_event.OnTouch(*event);
-    if (event->type() == ui::ET_TOUCH_CANCELLED)
+    if (event->type() == ui::EventType::kTouchCancelled) {
       touch_cancel_received = true;
+    }
   }
 
   ui::MotionEventAura motion_event;
@@ -107,7 +109,7 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow) {
   EXPECT_TRUE(drag_drop_capture_delegate_->capture_window()->HasCapture());
   EXPECT_TRUE(source_window_delegate.touch_cancel_received);
 
-  ui::GestureEventDetails event_details(ui::ET_GESTURE_SCROLL_UPDATE);
+  ui::GestureEventDetails event_details(ui::EventType::kGestureScrollUpdate);
   ui::GestureEvent gesture_event(0, 0, 0, ui::EventTimeForNow(), event_details);
   ui::Event::DispatcherApi(&gesture_event)
       .set_target(drag_drop_capture_delegate_->capture_window());
@@ -153,6 +155,26 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow2) {
             ui::MotionEvent::Action::CANCEL);
 
   drag_drop_controller->DragCancel();
+}
+
+TEST_F(DragDropCaptureDelegateTest, ReleaseCapture) {
+  TestWindowDelegate source_window_delegate;
+
+  auto source_window = base::WrapUnique(CreateTestWindowInShellWithDelegate(
+      &source_window_delegate, -1, gfx::Rect(0, 0, 100, 100)));
+  source_window->Show();
+  EXPECT_FALSE(source_window_delegate.touch_cancel_received);
+
+  drag_drop_capture_delegate_->TakeCapture(
+      source_window->GetRootWindow(), source_window.get(),
+      base::BindLambdaForTesting([]() {}),
+      ui::TransferTouchesBehavior::kCancel);
+
+  EXPECT_TRUE(ash::window_util::GetCaptureWindow());
+
+  drag_drop_capture_delegate_->ReleaseCapture();
+
+  EXPECT_FALSE(ash::window_util::GetCaptureWindow());
 }
 
 }  // namespace ash

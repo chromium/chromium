@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Geolocation API (https://w3c.github.io/geolocation-api/)
+// Source: Geolocation (https://w3c.github.io/geolocation/)
 
 partial interface Navigator {
   [SameObject] readonly attribute Geolocation geolocation;
@@ -42,6 +42,7 @@ dictionary PositionOptions {
 interface GeolocationPosition {
   readonly attribute GeolocationCoordinates coords;
   readonly attribute EpochTimeStamp timestamp;
+  [Default] object toJSON();
 };
 
 [Exposed=Window, SecureContext]
@@ -53,6 +54,7 @@ interface GeolocationCoordinates {
   readonly attribute double? altitudeAccuracy;
   readonly attribute double? heading;
   readonly attribute double? speed;
+  [Default] object toJSON();
 };
 
 [Exposed=Window]

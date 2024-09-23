@@ -19,8 +19,6 @@ suite('SafetyHubEntryPoint', function() {
   let browserProxy: TestSafetyHubBrowserProxy;
   let page: SettingsSafetyHubEntryPointElement;
 
-  const subheader = 'Passwords, extensions';
-
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-safety-hub-entry-point');
@@ -38,14 +36,15 @@ suite('SafetyHubEntryPoint', function() {
   });
 
   test('Safety Hub has recommendations', async function() {
-    browserProxy.setSafetyHubHasRecommendations(true);
-    browserProxy.setSafetyHubEntryPointSubheader(subheader);
+    const header = 'Chrome found some safety recommendations for your review';
+    const subheader = 'Passwords, extensions';
+
+    browserProxy.setSafetyHubEntryPointData(
+        {'hasRecommendations': true, 'header': header, 'subheader': subheader});
     await createPage();
 
     assertTrue(page.$.module.hasAttribute('header'));
-    assertEquals(
-        page.$.module.getAttribute('header')!.trim(),
-        page.i18n('safetyHubEntryPointHeader'));
+    assertEquals(page.$.module.getAttribute('header')!.trim(), header);
     assertTrue(page.$.module.hasAttribute('subheader'));
     assertEquals(page.$.module.getAttribute('subheader')!.trim(), subheader);
     assertTrue(page.$.module.hasAttribute('header-icon-color'));
@@ -59,16 +58,19 @@ suite('SafetyHubEntryPoint', function() {
   });
 
   test('Safety Hub has no recommendations', async function() {
-    browserProxy.setSafetyHubHasRecommendations(false);
-    browserProxy.setSafetyHubEntryPointSubheader(
-        page.i18n('safetyHubEntryPointNothingToDo'));
+    const header = '';
+    const subheader = page.i18n('safetyHubEntryPointNothingToDo');
+
+    browserProxy.setSafetyHubEntryPointData({
+      'hasRecommendations': false,
+      'header': '',
+      'subheader': page.i18n('safetyHubEntryPointNothingToDo'),
+    });
     await createPage();
 
-    assertEquals(page.$.module.getAttribute('header')!.trim(), '');
+    assertEquals(page.$.module.getAttribute('header')!.trim(), header);
     assertTrue(page.$.module.hasAttribute('subheader'));
-    assertEquals(
-        page.$.module.getAttribute('subheader')!.trim(),
-        page.i18n('safetyHubEntryPointNothingToDo'));
+    assertEquals(page.$.module.getAttribute('subheader')!.trim(), subheader);
     assertTrue(page.$.module.hasAttribute('header-icon-color'));
     assertEquals(page.$.module.getAttribute('header-icon-color')!.trim(), '');
 

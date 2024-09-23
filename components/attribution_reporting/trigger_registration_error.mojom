@@ -6,46 +6,53 @@ module attribution_reporting.mojom;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(TriggerRegistrationError)
 enum TriggerRegistrationError {
   kInvalidJson = 0,
   kRootWrongType = 1,
 
   kFiltersWrongType = 2,
-  kFiltersListWrongType = 5,
-  kFiltersValueWrongType = 7,
-  kFiltersUsingReservedKey = 36,
+  kFiltersValueInvalid = 3,
+  kFiltersLookbackWindowValueInvalid = 4,
+  kFiltersUsingReservedKey = 5,
+  kFiltersListValueInvalid = 6,
+  kFiltersListLookbackWindowValueInvalid = 7,
+  kFiltersListUsingReservedKey = 8,
 
   kAggregatableValuesWrongType = 9,
-  kAggregatableValuesKeyTooLong = 11,
-  kAggregatableValuesValueWrongType = 12,
-  kAggregatableValuesValueOutOfRange = 13,
+  kAggregatableValuesKeyTooLong = 10,
+  kAggregatableValuesListValuesFieldMissing = 11,
+  kAggregatableValuesValueInvalid = 12,
+  kAggregatableValuesListKeyTooLong = 13,
+  kAggregatableValuesListValueInvalid = 14,
 
-  kAggregatableTriggerDataListWrongType = 14,
-  kAggregatableTriggerDataWrongType = 16,
-  kAggregatableTriggerDataKeyPieceMissing = 17,
-  kAggregatableTriggerDataKeyPieceWrongType = 18,
-  kAggregatableTriggerDataKeyPieceWrongFormat = 19,
-  kAggregatableTriggerDataSourceKeysWrongType = 20,
-  kAggregatableTriggerDataSourceKeysKeyWrongType = 22,
-  kAggregatableTriggerDataSourceKeysKeyTooLong = 23,
+  kAggregatableTriggerDataWrongType = 15,
+  kAggregatableTriggerDataKeyPieceMissing = 16,
+  kAggregatableTriggerDataSourceKeysInvalid = 17,
+  kAggregatableTriggerDataKeyPieceInvalid = 18,
 
-  kEventTriggerDataListWrongType = 24,
-  kEventTriggerDataValueInvalid = 25,
-  kEventTriggerDataWrongType = 26,
+  kEventTriggerDataWrongType = 19,
+  kEventTriggerDataValueInvalid = 20,
+  kEventPriorityValueInvalid = 21,
+  kEventDedupKeyValueInvalid = 22,
 
-  kEventPriorityValueInvalid = 27,
-  kEventDedupKeyValueInvalid = 28,
+  kAggregationCoordinatorValueInvalid = 23,
 
-  kAggregationCoordinatorWrongType = 29,
-  kAggregationCoordinatorUnknownValue = 30,
+  kAggregatableDedupKeyValueInvalid = 24,
+  kAggregatableDedupKeyWrongType = 25,
 
-  kAggregatableDedupKeyListWrongType = 31,
-  kAggregatableDedupKeyValueInvalid = 32,
-  kAggregatableDedupKeyWrongType = 33,
+  kAggregatableSourceRegistrationTimeValueInvalid = 26,
 
-  kAggregatableSourceRegistrationTimeWrongType = 34,
-  kAggregatableSourceRegistrationTimeUnknownValue = 35,
+  kTriggerContextIdInvalidValue = 27,
+  kTriggerContextIdInvalidSourceRegistrationTimeConfig = 28,
 
-  kTriggerContextIdInvalidValue = 37,
-  kTriggerContextIdInvalidSourceRegistrationTimeConfig = 38,
+  kEventValueInvalid = 29,
+
+  kAggregatableFilteringIdMaxBytesInvalidValue = 30,
+  kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig = 31,
+
+  kAttributionScopesInvalid = 32,
+  kAttributionScopesValueInvalid = 33,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionTriggerRegistrationError)

@@ -26,12 +26,6 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type);
 CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     SBThreatType threat_type);
 
-// Helper function that converts mojom::RequestDestination to
-// CSBRR::UrlRequestDestination.
-CSBRR::UrlRequestDestination
-GetUrlRequestDestinationFromMojomRequestDestination(
-    network::mojom::RequestDestination request_destination);
-
 // Helper function that converts SecurityInterstitialCommand to CSBRR
 // SecurityInterstitialInteraction.
 CSBRR::InterstitialInteraction::SecurityInterstitialInteraction

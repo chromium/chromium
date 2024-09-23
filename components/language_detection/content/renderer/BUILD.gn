@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+static_library("renderer") {
+  sources = [
+    "language_detection_agent.cc",
+    "language_detection_agent.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/language_detection/content/common",
+    "//components/language_detection/core",
+    "//components/language_detection/core:language_detection",
+    "//content/public/renderer",
+  ]
+
+  public_deps = [ "//third_party/blink/public:blink_headers" ]
+}

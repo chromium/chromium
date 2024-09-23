@@ -5,11 +5,11 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {convertEntryToFileData} from '../../state/ducks/all_entries.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 
-import {entryDebugString, isDescendantEntry, isEntryInsideDrive, isEntryInsideMyDrive, readEntriesRecursively} from './entry_utils.js';
+import {entryDebugString, isDescendantEntry, isEntryInsideMyDrive, isInsideDrive, readEntriesRecursively} from './entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
 import {RootType, VolumeType} from './volume_manager_types.js';
@@ -74,13 +74,13 @@ export function testInsideMyDriveAndInsideDrive() {
   assertTrue(
       isEntryInsideMyDrive(myDrivesFolder1FileData), 'My Drives folder1');
   // insideDrive
-  assertTrue(isEntryInsideDrive(driveRootFileData), 'Drive root');
-  assertTrue(isEntryInsideDrive(myDrivesFileData), 'My Drives root');
-  assertTrue(isEntryInsideDrive(teamDrivesFileData), 'Team Drives root');
-  assertTrue(isEntryInsideDrive(computersFileData), 'Computers root');
-  assertFalse(isEntryInsideDrive(myFilesFileData), 'MyFiles root');
+  assertTrue(isInsideDrive(driveRootFileData), 'Drive root');
+  assertTrue(isInsideDrive(myDrivesFileData), 'My Drives root');
+  assertTrue(isInsideDrive(teamDrivesFileData), 'Team Drives root');
+  assertTrue(isInsideDrive(computersFileData), 'Computers root');
+  assertFalse(isInsideDrive(myFilesFileData), 'MyFiles root');
   assertFalse(isEntryInsideMyDrive(myFilesFolder1FileData), 'MyFiles folder1');
-  assertTrue(isEntryInsideDrive(myDrivesFolder1FileData), 'My Drives folder1');
+  assertTrue(isInsideDrive(myDrivesFolder1FileData), 'My Drives folder1');
 }
 
 

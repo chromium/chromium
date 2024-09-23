@@ -21,6 +21,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 
 #include "third_party/blink/renderer/core/core_export.h"
@@ -53,11 +58,12 @@ AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(
     const CSSPropertyValue* properties,
     unsigned count,
-    CSSParserMode css_parser_mode) {
+    CSSParserMode css_parser_mode,
+    bool contains_cursor_hand) {
   DCHECK_LE(count, static_cast<unsigned>(kMaxArraySize));
   return MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
       AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(count),
-      properties, count, css_parser_mode);
+      properties, count, css_parser_mode, contains_cursor_hand);
 }
 
 ImmutableCSSPropertyValueSet* CSSPropertyValueSet::ImmutableCopyIfNeeded()
@@ -93,8 +99,9 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
 ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     const CSSPropertyValue* properties,
     unsigned length,
-    CSSParserMode css_parser_mode)
-    : CSSPropertyValueSet(css_parser_mode, length) {
+    CSSParserMode css_parser_mode,
+    bool contains_query_hand)
+    : CSSPropertyValueSet(css_parser_mode, length, contains_query_hand) {
   CSSPropertyValueMetadata* metadata_array =
       const_cast<CSSPropertyValueMetadata*>(MetadataArray());
   Member<const CSSValue>* value_array =
@@ -296,7 +303,7 @@ bool MutableCSSPropertyValueSet::RemoveShorthandProperty(
     return false;
   }
 
-  return RemovePropertiesInSet(shorthand.properties(), shorthand.length());
+  return RemovePropertiesInSet(shorthand.properties());
 }
 
 bool MutableCSSPropertyValueSet::RemovePropertyAtIndex(int property_index,
@@ -363,12 +370,13 @@ bool CSSPropertyValueSet::PropertyIsImportantWithHint(
 bool CSSPropertyValueSet::ShorthandIsImportant(
     CSSPropertyID property_id) const {
   StylePropertyShorthand shorthand = shorthandForProperty(property_id);
-  if (!shorthand.length()) {
+  const StylePropertyShorthand::Properties longhands = shorthand.properties();
+  if (longhands.empty()) {
     return false;
   }
 
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    if (!PropertyIsImportant(shorthand.properties()[i]->PropertyID())) {
+  for (const CSSProperty* const longhand : longhands) {
+    if (!PropertyIsImportant(longhand->PropertyID())) {
       return false;
     }
   }
@@ -456,12 +464,12 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
     return;
   }
 
-  RemovePropertiesInSet(shorthand.properties(), shorthand.length());
+  RemovePropertiesInSet(shorthand.properties());
 
   // The simple shorthand expansion below doesn't work for `white-space`.
   DCHECK_NE(property_id, CSSPropertyID::kWhiteSpace);
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    CSSPropertyName longhand_name(shorthand.properties()[i]->PropertyID());
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    CSSPropertyName longhand_name(longhand->PropertyID());
     property_vector_.push_back(
         CSSPropertyValue(longhand_name, value, important));
   }
@@ -479,7 +487,7 @@ MutableCSSPropertyValueSet::FindInsertionPointForID(CSSPropertyID property_id) {
     if (prop.IsInLogicalPropertyGroup()) {
       DCHECK(property_vector_.Contains(*to_replace));
       int to_replace_index =
-          static_cast<int>(to_replace - property_vector_.begin());
+          static_cast<int>(to_replace - property_vector_.data());
       for (int n = property_vector_.size() - 1; n > to_replace_index; --n) {
         if (prop.IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
                 PropertyAt(n).Id())) {
@@ -608,11 +616,10 @@ void MutableCSSPropertyValueSet::Clear() {
   may_have_logical_properties_ = false;
 }
 
-inline bool ContainsId(const CSSProperty* const set[],
-                       unsigned length,
+inline bool ContainsId(const base::span<const CSSProperty* const>& set,
                        CSSPropertyID id) {
-  for (unsigned i = 0; i < length; ++i) {
-    if (set[i]->IDEquals(id)) {
+  for (const CSSProperty* const property : set) {
+    if (property->IDEquals(id)) {
       return true;
     }
   }
@@ -620,8 +627,7 @@ inline bool ContainsId(const CSSProperty* const set[],
 }
 
 bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
-    const CSSProperty* const set[],
-    unsigned length) {
+    base::span<const CSSProperty* const> set) {
   if (property_vector_.empty()) {
     return false;
   }
@@ -631,7 +637,7 @@ bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
   unsigned new_index = 0;
   for (unsigned old_index = 0; old_index < old_size; ++old_index) {
     const CSSPropertyValue& property = properties[old_index];
-    if (ContainsId(set, length, property.Id())) {
+    if (ContainsId(set, property.Id())) {
       continue;
     }
     // Modify property_vector_ in-place since this method is

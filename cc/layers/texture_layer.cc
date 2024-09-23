@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -79,14 +79,6 @@ void TextureLayer::SetUV(const gfx::PointF& top_left,
   SetNeedsCommit();
 }
 
-void TextureLayer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  if (hdr_metadata_.Read(*this) == hdr_metadata) {
-    return;
-  }
-  hdr_metadata_.Write(*this) = hdr_metadata;
-  SetNeedsCommit();
-}
-
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
   if (premultiplied_alpha_.Read(*this) == premultiplied_alpha)
     return;
@@ -112,13 +104,12 @@ void TextureLayer::SetTransferableResourceInternal(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback,
     bool requires_commit) {
-  DCHECK(resource.mailbox_holder.mailbox.IsZero() ||
-         !resource_holder_.Read(*this) ||
+  DCHECK(resource.is_empty() || !resource_holder_.Read(*this) ||
          resource != resource_holder_.Read(*this)->resource());
-  DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
+  DCHECK_EQ(resource.is_empty(), !release_callback);
 
-  // If we never commited the mailbox, we need to release it here.
-  if (!resource.mailbox_holder.mailbox.IsZero()) {
+  // If we never committed the resource, we need to release it here.
+  if (!resource.is_empty()) {
     resource_holder_.Write(*this) = TransferableResourceHolder::Create(
         resource, std::move(release_callback));
   } else {
@@ -177,9 +168,24 @@ bool TextureLayer::HasDrawableContent() const {
 }
 
 bool TextureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
-  // TODO(https://crbug.com/1450807): Only return true if the contents of the
-  // video are HDR.
-  return true;
+  if (!resource_holder_.Read(*this)) {
+    return false;
+  }
+
+  // If the HDR headroom is changed, then tonemapped resources will need to
+  // re-draw.
+  const auto& resource = resource_holder_.Read(*this)->resource();
+  if (resource.color_space.IsToneMappedByDefault()) {
+    return true;
+  }
+
+  // Extended range content also needs to be re-composited to limit itself to
+  // the new headroom.
+  if (resource.hdr_metadata.extended_range.has_value()) {
+    return true;
+  }
+
+  return false;
 }
 
 bool TextureLayer::Update() {
@@ -227,7 +233,6 @@ void TextureLayer::PushPropertiesTo(
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));
   texture_layer->SetBlendBackgroundColor(blend_background_color_.Read(*this));
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_.Read(*this));
-  texture_layer->SetHdrMetadata(hdr_metadata_.Read(*this));
   if (needs_set_resource_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
@@ -264,7 +269,7 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
   DCHECK(!base::Contains(to_register_bitmaps_.Read(*this), id));
   DCHECK(!base::Contains(registered_bitmaps_.Read(*this), id));
   to_register_bitmaps_.Write(*this)[id] = std::move(bitmap);
-  base::Erase(to_unregister_bitmap_ids_.Write(*this), id);
+  std::erase(to_unregister_bitmap_ids_.Write(*this), id);
 
   // This does not SetNeedsCommit() to be as lazy as possible.
   // Notifying a SharedBitmapId is not needed until it is used,
@@ -296,7 +301,7 @@ TextureLayer::TransferableResourceHolder::TransferableResourceHolder(
     viz::ReleaseCallback release_callback)
     : resource_(resource),
       release_callback_(std::move(release_callback)),
-      sync_token_(resource.mailbox_holder.sync_token) {}
+      sync_token_(resource.sync_token()) {}
 
 TextureLayer::TransferableResourceHolder::~TransferableResourceHolder() {
   if (release_callback_) {

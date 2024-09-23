@@ -63,40 +63,38 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           bool is_encrypted,
                                           bool is_directory,
                                           bool contents_valid,
+                                          bool is_top_level,
                                           ArchiveAnalyzerResults* results) {
+  results->encryption_info.is_encrypted |= is_encrypted;
+  if (is_top_level) {
+    results->encryption_info.is_top_level_encrypted |= is_encrypted;
+  }
+
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
       new BinaryFeatureExtractor());
   bool current_entry_is_executable;
 #if BUILDFLAG(IS_MAC)
   uint32_t magic;
-  file->Read(0, reinterpret_cast<char*>(&magic), sizeof(uint32_t));
+  file->Read(0, base::byte_span_from_ref(magic));
 
-  char dmg_header[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
-  file->Read(0, dmg_header,
-             DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
+  uint8_t dmg_header[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
+  file->Read(0, dmg_header);
 
   bool is_checked =
       FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path) &&
       !is_directory;
   current_entry_is_executable =
       is_checked || MachOImageReader::IsMachOMagicValue(magic) ||
-      DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
-          base::span<const uint8_t>(
-              reinterpret_cast<const uint8_t*>(dmg_header),
-              DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize));
+      DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(dmg_header);
 
   // We can skip checking the trailer if we already know the file is executable.
   if (!current_entry_is_executable) {
-    char trailer[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
+    uint8_t trailer[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
     file->Seek(base::File::Whence::FROM_END,
                DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
-    file->ReadAtCurrentPos(trailer,
-                           DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
+    file->ReadAtCurrentPos(trailer);
     current_entry_is_executable =
-        DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
-            base::span<const uint8_t>(
-                reinterpret_cast<const uint8_t*>(trailer),
-                DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize));
+        DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(trailer);
   }
 
 #else
@@ -174,23 +172,28 @@ void SetLengthAndDigestForContainedFile(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
 
   const size_t kReadBufferSize = 4096;
-  char block[kReadBufferSize];
+  uint8_t block[kReadBufferSize];
 
-  int bytes_read_previously = 0;
+  size_t bytes_read_previously = 0;
   temp_file->Seek(base::File::Whence::FROM_BEGIN, 0);
   while (true) {
-    int bytes_read_now = temp_file->ReadAtCurrentPos(block, kReadBufferSize);
+    std::optional<size_t> bytes_read_now =
+        temp_file->ReadAtCurrentPos(base::span(block));
 
-    if (bytes_read_now > file_length - bytes_read_previously) {
-      bytes_read_now = file_length - bytes_read_previously;
-    }
-
-    if (bytes_read_now <= 0) {
+    if (!bytes_read_now) {
       break;
     }
 
-    hasher->Update(block, bytes_read_now);
-    bytes_read_previously += bytes_read_now;
+    if (*bytes_read_now > file_length - bytes_read_previously) {
+      bytes_read_now = file_length - bytes_read_previously;
+    }
+
+    if (*bytes_read_now <= 0) {
+      break;
+    }
+
+    hasher->Update(base::make_span(block).first(*bytes_read_now));
+    bytes_read_previously += *bytes_read_now;
   }
 
   uint8_t digest[crypto::kSHA256Length];

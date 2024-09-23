@@ -4,12 +4,13 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 
-import {MetadataItem, type MetadataKey} from './metadata_item.js';
+import type {MetadataItem} from './metadata_item.js';
+import {type MetadataKey} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
 import {MetadataProvider} from './metadata_provider.js';
-import {MetadataRequest} from './metadata_request.js';
+import type {MetadataRequest} from './metadata_request.js';
 
 /**
  * Mock metadata provider that doesn't actually do anything just so

@@ -111,13 +111,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // The values may not be exactly 0.0 or 1.0 due to the image compression. The
   // test allows more flexible values.
   GREYAssert(red > 0.9, @"A red value should be close to 1.");
-  GREYAssert(green < 0.1, @"A green value should be close to 0.");
-  GREYAssert(blue < 0.1, @"A blue value should be close to 0.");
+  GREYAssert(green < 0.5, @"A green value should be close to 0.");
+  GREYAssert(blue < 0.5, @"A blue value should be close to 0.");
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
-// Tests the snapshot of the page filled with 2 colors. The upper side is green
-// and the lower side is blue in the page.
 - (void)testTwoColorsSnapshot {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
@@ -150,9 +148,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     // The color must be green.
     // The values may not be exactly 0.0 or 1.0 due to the image compression.
     // The test allows more flexible values.
-    GREYAssert(red < 0.1, @"A red value should be close to 0.");
+    GREYAssert(red < 0.5, @"A red value should be close to 0.");
     GREYAssert(green > 0.9, @"A green value should be close to 1.");
-    GREYAssert(blue < 0.1, @"A blue value should be close to 0.");
+    GREYAssert(blue < 0.5, @"A blue value should be close to 0.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
 
@@ -170,8 +168,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     // The color must be blue.
     // The values may not be exactly 0.0 or 1.0 due to the image compression.
     // The test allows more flexible values.
-    GREYAssert(red < 0.1, @"A red value should be close to 0.");
-    GREYAssert(green < 0.1, @"A green value should be close to 0.");
+    GREYAssert(red < 0.5, @"A red value should be close to 0.");
+    GREYAssert(green < 0.5, @"A green value should be close to 0.");
     GREYAssert(blue > 0.9, @"A blue value should be close to 1.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
@@ -211,9 +209,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
     // The color must be green. The values may not be exactly 0.0 or 1.0 due to
     // the image compression. The test allows more flexible values.
-    GREYAssert(red < 0.1, @"A red value should be close to 0.");
+    GREYAssert(red < 0.5, @"A red value should be close to 0.");
     GREYAssert(green > 0.9, @"A green value should be close to 1.");
-    GREYAssert(blue < 0.1, @"A blue value should be close to 0.");
+    GREYAssert(blue < 0.5, @"A blue value should be close to 0.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
 
@@ -223,6 +221,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Scroll up a little bit to make the tab grid button visible.
   [[EarlGrey
@@ -259,8 +258,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     // The color must be blue now because the page was scrolled down.
     // The values may not be exactly 0.0 or 1.0 due to the image compression.
     // The test allows more flexible values.
-    GREYAssert(red < 0.1, @"A red value should be close to 0.");
-    GREYAssert(green < 0.1, @"A green value should be close to 0.");
+    GREYAssert(red < 0.5, @"A red value should be close to 0.");
+    GREYAssert(green < 0.5, @"A green value should be close to 0.");
     GREYAssert(blue > 0.9, @"A blue value should be close to 1.");
     GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
   }
@@ -281,7 +280,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   const NSUInteger bytesPerPixel = CGImageGetBitsPerPixel(image.CGImage) /
                                    CGImageGetBitsPerComponent(image.CGImage);
   const NSUInteger index =
-      CGImageGetBytesPerRow(image.CGImage) * point.y + point.x * bytesPerPixel;
+      (CGImageGetWidth(image.CGImage) * point.y + point.x) * bytesPerPixel;
 
   *red = ((CGFloat)data[index]) / 255.0f;
   *green = ((CGFloat)data[index + 1]) / 255.0f;

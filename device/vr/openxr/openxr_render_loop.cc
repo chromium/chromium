@@ -19,21 +19,15 @@
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/stage_utils.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <d3d11_4.h>
-
-#include "device/vr/windows/d3d11_texture_helper.h"
-#endif
 
 namespace {
 // Number of frames to use for sliding averages for pose timings,
@@ -108,9 +102,7 @@ void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   overlay_visible_ = false;
   overlay_receiver_.reset();
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(false, false);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(false, false);
 
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
@@ -176,7 +168,7 @@ void OpenXrRenderLoop::GetFrameData(
   pending_frame_->webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
 
-  // TODO(https://crbug.com/1218135): The lack of frame_data_ here indicates
+  // TODO(crbug.com/40771470): The lack of frame_data_ here indicates
   // that we probably should have deferred this call, but it matches the
   // behavior from before the stage parameters were updated in this function and
   // avoids a crash. Likely the deferral above should check if we're awaiting
@@ -207,16 +199,6 @@ void OpenXrRenderLoop::GetFrameData(
   }
 }
 
-void OpenXrRenderLoop::RequestOverlay(
-    mojo::PendingReceiver<mojom::ImmersiveOverlay> receiver) {
-  overlay_receiver_.reset();
-  overlay_receiver_.Bind(std::move(receiver));
-
-  // WebXR is visible and overlay hidden by default until the overlay overrides
-  // this.
-  SetOverlayAndWebXRVisibility(false, true);
-}
-
 void OpenXrRenderLoop::RequestSession(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
@@ -225,24 +207,10 @@ void OpenXrRenderLoop::RequestSession(
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
+  request_session_callback_ =
+      base::BindPostTask(main_thread_task_runner_, std::move(callback));
 
-  EnableSupportedFeatures(options->required_features,
-                          options->optional_features);
-
-  // Call OpenXrRenderLoop::StartRuntime. Upon completion, this function will
-  // invoke the provided start_runtime_callback.
-  // OpenXrRenderLoop::StartRuntimeFinish. We setup BindOnce such that all of
-  // the parameters give to us here in OpenXrRenderLoop::RequestSession are
-  // passed through to StartRuntimeFinish so that it can finish the job.
-  StartRuntime(base::BindOnce(&OpenXrRenderLoop::StartRuntimeFinish,
-                              base::Unretained(this),
-                              std::move(on_visibility_state_changed),
-                              std::move(options), std::move(callback)));
-}
-
-bool OpenXrRenderLoop::IsFeatureEnabled(
-    device::mojom::XRSessionFeature feature) const {
-  return base::Contains(enabled_features_, feature);
+  StartRuntime(std::move(on_visibility_state_changed), std::move(options));
 }
 
 void OpenXrRenderLoop::SetVisibilityState(
@@ -282,11 +250,8 @@ void OpenXrRenderLoop::SubmitFrameWithTextureHandle(
     return;
   }
 
-  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
-                                              ? texture_handle.TakeHandle()
-                                              : base::win::ScopedHandle();
-  texture_helper_.SetSourceTexture(std::move(scoped_handle), sync_token,
-                                   left_webxr_bounds_, right_webxr_bounds_);
+  graphics_binding_->SetWebXrTexture(std::move(texture_handle), sync_token,
+                                     left_webxr_bounds_, right_webxr_bounds_);
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
@@ -342,13 +307,11 @@ void OpenXrRenderLoop::StartRuntimeFinish(
     base::RepeatingCallback<void(mojom::XRVisibilityState)>
         on_visibility_state_changed,
     mojom::XRRuntimeSessionOptionsPtr options,
-    RequestSessionCallback callback,
     bool success) {
   if (!success) {
     TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
                          TRACE_EVENT_SCOPE_THREAD);
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false, nullptr));
+    MaybeRejectSessionCallback();
     return;
   }
 
@@ -393,25 +356,35 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
 
+  const auto& enabled_features = openxr_->GetEnabledFeatures();
   session->enabled_features.insert(session->enabled_features.end(),
-                                   enabled_features_.begin(),
-                                   enabled_features_.end());
+                                   enabled_features.begin(),
+                                   enabled_features.end());
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->enable_anti_aliasing =
       openxr_->CanEnableAntiAliasing();
   session->device_config->views = openxr_->GetDefaultViews();
+  if (auto* depth = openxr_->GetDepthSensor(); depth) {
+    session->device_config->depth_configuration = depth->GetDepthConfig();
+  }
+
   session->enviroment_blend_mode =
       openxr_->PickEnvironmentBlendModeForSession(options->mode);
   session->interaction_mode = device::mojom::XRInteractionMode::kWorldSpace;
 
-  main_thread_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));
+  mojo::PendingRemote<mojom::ImmersiveOverlay> overlay_remote;
+
+  overlay_receiver_.reset();
+  overlay_remote = overlay_receiver_.BindNewPipeAndPassRemote();
+
+  CHECK(request_session_callback_);
+  std::move(request_session_callback_)
+      .Run(true, std::move(session), std::move(overlay_remote));
   is_presenting_ = true;
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible_, overlay_visible_);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(overlay_visible_,
+                                                  webxr_visible_);
 }
 
 void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
@@ -433,8 +406,6 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
     return;
   }
 
-  // TODO(https://crbug.com/1454950): Unify OpenXr Rendering paths.
-#if BUILDFLAG(IS_WIN)
   bool copy_successful = false;
   bool has_webxr_content = pending_frame_->webxr_submitted_ && webxr_visible_;
   bool has_overlay_content =
@@ -444,14 +415,10 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit() {
   // Tell texture helper to composite, then grab the output texture, and submit.
   // If we submitted, set up the next frame, and send outstanding pose requests.
   if (can_submit) {
-    copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      texture_helper_.CompositeToBackBuffer();
+    copy_successful = graphics_binding_->Render(context_provider_);
   } else {
-    texture_helper_.CleanupNoSubmit();
+    graphics_binding_->CleanupWithoutSubmit();
   }
-#elif BUILDFLAG(IS_ANDROID)
-  bool copy_successful = true;
-#endif
 
   // A copy can only be successful if we actually tried to submit.
   if (copy_successful) {
@@ -531,13 +498,6 @@ void OpenXrRenderLoop::SubmitFrameMissing(int16_t frame_index,
     pending_frame_->waiting_for_webxr_ = false;
   }
   webxr_has_pose_ = false;
-#if (BUILDFLAG(IS_ANDROID))
-  // We haven't finished the rendering path on Android yet so are just calling
-  // this to ensure that the page stays un-stuck while we aren't actually
-  // rendering anything.
-  // TODO(alcooper): Clean this up.
-  pending_frame_->webxr_submitted_ = true;
-#endif
   MaybeCompositeAndSubmit();
 }
 
@@ -552,7 +512,8 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
   left_webxr_bounds_ = left_bounds;
   right_webxr_bounds_ = right_bounds;
 
-  // Swap top/bottom to account for differences between D3D and GL coordinates.
+  // Swap top/bottom to account for differences between mojom and GL
+  // coordinates.
   left_webxr_bounds_.set_y(
       1 - (left_webxr_bounds_.y() + left_webxr_bounds_.height()));
   right_webxr_bounds_.set_y(
@@ -565,7 +526,7 @@ void OpenXrRenderLoop::UpdateLayerBounds(int16_t frame_id,
 
 void OpenXrRenderLoop::SubmitOverlayTexture(
     int16_t frame_id,
-    mojo::PlatformHandle texture_handle,
+    gfx::GpuMemoryBufferHandle texture,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
@@ -584,14 +545,12 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
 
   pending_frame_->waiting_for_overlay_ = false;
 
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetOverlayTexture(texture_handle.TakeHandle(), sync_token,
-                                    left_bounds, right_bounds);
+  graphics_binding_->SetOverlayTexture(std::move(texture), sync_token,
+                                       left_bounds, right_bounds);
   pending_frame_->overlay_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();
-#endif
 }
 
 void OpenXrRenderLoop::RequestNextOverlayPose(
@@ -624,10 +583,8 @@ void OpenXrRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
         pending_frame_->waiting_for_overlay_ && overlay_visible;
   }
 
-  // Update texture helper.
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetSourceAndOverlayVisible(webxr_visible, overlay_visible);
-#endif
+  graphics_binding_->SetOverlayAndWebXrVisibility(overlay_visible,
+                                                  webxr_visible);
 
   // Maybe composite and submit if we have a pending that is now valid to
   // submit.
@@ -670,53 +627,58 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     return frame_data;
   }
 
-  // TODO(https://crbug.com/1441072): Make SwapchainInfo purely internal to the
+  // TODO(crbug.com/40909689): Make SwapchainInfo purely internal to the
   // graphics bindings so that this isn't necessary here.
   const auto& swap_chain_info = graphics_binding_->GetActiveSwapchainImage();
   if (swap_chain_info.shared_image) {
-    frame_data->buffer_holder = swap_chain_info.GetMailboxHolder();
+    frame_data->buffer_shared_image = swap_chain_info.shared_image->Export();
+    frame_data->buffer_sync_token = swap_chain_info.sync_token;
   }
 
-  frame_data->time_delta =
-      base::Nanoseconds(openxr_->GetPredictedDisplayTime());
+  const XrTime frame_time = openxr_->GetPredictedDisplayTime();
+
+  frame_data->time_delta = base::Nanoseconds(frame_time);
   frame_data->views = openxr_->GetViews();
   frame_data->input_state = openxr_->GetInputState();
 
   frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 
-  if (openxr_->StageParametersEnabled()) {
-    UpdateStageParameters();
-  }
+  UpdateStageParameters();
 
   if (openxr_->HasFrameState()) {
-    if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
-      OpenXrAnchorManager* anchor_manager =
-          openxr_->GetOrCreateAnchorManager(*extension_helper_);
+    OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
 
-      if (anchor_manager) {
-        frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
-            openxr_.get(), current_stage_parameters_,
-            frame_data->input_state.value(),
-            openxr_->GetPredictedDisplayTime());
-      }
+    if (anchor_manager) {
+      frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
+          openxr_.get(), current_stage_parameters_,
+          frame_data->input_state.value(), frame_time);
+    }
+
+    OpenXrLightEstimator* light_estimator = openxr_->GetLightEstimator();
+
+    if (light_estimator) {
+      frame_data->light_estimation_data =
+          light_estimator->GetLightEstimate(frame_time);
     }
   }
 
-  if (IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST) &&
-      frame_data->mojo_from_viewer->position &&
+  OpenXRSceneUnderstandingManager* scene_understanding_manager =
+      openxr_->GetSceneUnderstandingManager();
+
+  if (scene_understanding_manager && frame_data->mojo_from_viewer->position &&
       frame_data->mojo_from_viewer->orientation) {
-    OpenXRSceneUnderstandingManager* scene_understanding_manager =
-        openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
-    if (scene_understanding_manager) {
-      scene_understanding_manager->OnFrameUpdate(
-          openxr_->GetPredictedDisplayTime());
-      device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
-                                    *frame_data->mojo_from_viewer->orientation);
-      // Get results for hit test subscriptions.
-      frame_data->hit_test_subscription_results =
-          scene_understanding_manager->GetHitTestResults(
-              mojo_from_viewer.ToTransform(), frame_data->input_state.value());
-    }
+    scene_understanding_manager->OnFrameUpdate(frame_time);
+    device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
+                                  *frame_data->mojo_from_viewer->orientation);
+    // Get results for hit test subscriptions.
+    frame_data->hit_test_subscription_results =
+        scene_understanding_manager->GetHitTestResults(
+            mojo_from_viewer.ToTransform(), frame_data->input_state.value());
+  }
+
+  OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
+  if (depth_sensor) {
+    depth_sensor->PopulateDepthData(frame_time, frame_data->views);
   }
 
   return frame_data;
@@ -728,17 +690,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 // until the Viz context provider is fully started before running
 // start_runtime_callback.
 void OpenXrRenderLoop::StartRuntime(
-    StartRuntimeCallback start_runtime_callback) {
+    base::RepeatingCallback<void(mojom::XRVisibilityState)>
+        on_visibility_state_changed,
+    mojom::XRRuntimeSessionOptionsPtr options) {
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
 
-  // TODO(https://crbug.com/1454938): Make the Windows Graphics Binding own the
-  // texture helper rather than need it passed in.
-#if BUILDFLAG(IS_WIN)
-  graphics_binding_ = platform_helper_->GetGraphicsBinding(&texture_helper_);
-#elif BUILDFLAG(IS_ANDROID)
   graphics_binding_ = platform_helper_->GetGraphicsBinding();
-#endif
 
   if (!graphics_binding_) {
     DVLOG(1) << "Could not create graphics binding";
@@ -747,28 +705,30 @@ void OpenXrRenderLoop::StartRuntime(
     // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
     StopRuntime();
-    std::move(start_runtime_callback).Run(false);
+    MaybeRejectSessionCallback();
     return;
   }
 
   openxr_ = OpenXrApiWrapper::Create(instance_, graphics_binding_.get());
   if (!openxr_) {
     DVLOG(1) << __func__ << " Could not create OpenXrApiWrapper";
-    std::move(start_runtime_callback).Run(false);
+    MaybeRejectSessionCallback();
     return;
   }
 
   SessionStartedCallback on_session_started_callback = base::BindOnce(
       &OpenXrRenderLoop::OnOpenXrSessionStarted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(start_runtime_callback));
+      std::move(on_visibility_state_changed));
   SessionEndedCallback on_session_ended_callback = base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
-  VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
-      &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr());
-  if (XR_FAILED(openxr_->InitSession(enabled_features_, *extension_helper_,
-                                     std::move(on_session_started_callback),
-                                     std::move(on_session_ended_callback),
-                                     std::move(on_visibility_state_changed)))) {
+  VisibilityChangedCallback on_visibility_state_changed_callback =
+      base::BindRepeating(&OpenXrRenderLoop::SetVisibilityState,
+                          weak_ptr_factory_.GetWeakPtr());
+  if (XR_FAILED(openxr_->InitSession(
+          std::move(options), *extension_helper_,
+          std::move(on_session_started_callback),
+          std::move(on_session_ended_callback),
+          std::move(on_visibility_state_changed_callback)))) {
     DVLOG(1) << __func__ << " InitSession Failed";
     // We aren't actually presenting yet; so ExitPresent won't clean us up.
     // Still call it to log the failure reason; but also explicitly call
@@ -778,8 +738,17 @@ void OpenXrRenderLoop::StartRuntime(
   }
 }
 
+void OpenXrRenderLoop::MaybeRejectSessionCallback() {
+  if (request_session_callback_) {
+    std::move(request_session_callback_)
+        .Run(false, nullptr, mojo::PendingRemote<mojom::ImmersiveOverlay>());
+  }
+}
+
 void OpenXrRenderLoop::OnOpenXrSessionStarted(
-    StartRuntimeCallback start_runtime_callback,
+    base::RepeatingCallback<void(mojom::XRVisibilityState)>
+        on_visibility_state_changed,
+    mojom::XRRuntimeSessionOptionsPtr options,
     XrResult result) {
   DVLOG(1) << __func__ << " Result: " << result;
   if (XR_FAILED(result)) {
@@ -796,56 +765,30 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
                                            weak_ptr_factory_.GetWeakPtr()));
 
     // Technically until the StopRuntime task is called we can't service another
-    // session request, which theoretically could come in once we run this
-    // callback. Post a task to run it so that it runs after StopRuntime to
-    // avoid this potential (albeit unlikely) race.
+    // session request, which theoretically could come in once we reject the
+    // session callback. Post a task to run it so that it runs after StopRuntime
+    // to avoid this potential (albeit unlikely) race.
+    // `MaybeRejectSessionCallback` will ensure it's run on the appropriate
+    // thread. base::Unretained is safe here since we own and ensure the
+    // task_runner() stops before destruction.
     task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](StartRuntimeCallback start_runtime_callback) {
-                         std::move(start_runtime_callback).Run(false);
-                       },
-                       std::move(start_runtime_callback)));
+        FROM_HERE, base::BindOnce(&OpenXrRenderLoop::MaybeRejectSessionCallback,
+                                  base::Unretained(this)));
+
     return;
   }
 
-  StartContextProviderIfNeeded(std::move(start_runtime_callback));
+  StartContextProviderIfNeeded(base::BindOnce(
+      &OpenXrRenderLoop::StartRuntimeFinish, weak_ptr_factory_.GetWeakPtr(),
+      std::move(on_visibility_state_changed), std::move(options)));
 }
 
 void OpenXrRenderLoop::StopRuntime() {
   openxr_ = nullptr;
-  // Need to destroy the graphics binding *after* the OpenXrApiWrapper, which
-  // depends on it; but *before* the texture helper on which it depends.
+  // Need to destroy the graphics binding after the OpenXrApiWrapper, which
+  // depends on it.
   graphics_binding_.reset();
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.Reset();
-#endif
   context_provider_.reset();
-}
-
-void OpenXrRenderLoop::EnableSupportedFeatures(
-    const std::vector<device::mojom::XRSessionFeature>& required_features,
-    const std::vector<device::mojom::XRSessionFeature>& optional_features) {
-  enabled_features_.clear();
-  // `OpenXRDevice::RequestSession` validates that we can support all required
-  // features so that it can reject the session early, so we assume that all
-  // required features are enabled. Looping through and doing this string
-  // comparison again can be redundant, but this will help potentially catch
-  // a developer error.
-#if DCHECK_IS_ON()
-  CHECK(base::ranges::all_of(
-      required_features, [this](device::mojom::XRSessionFeature feature) {
-        return extension_helper_->IsFeatureSupported(feature);
-      }));
-#endif
-  base::ranges::copy(
-      required_features,
-      std::inserter(enabled_features_, enabled_features_.begin()));
-  base::ranges::copy_if(
-      optional_features,
-      std::inserter(enabled_features_, enabled_features_.begin()),
-      [this](device::mojom::XRSessionFeature feature) {
-        return extension_helper_->IsFeatureSupported(feature);
-      });
 }
 
 bool OpenXrRenderLoop::HasSessionEnded() {
@@ -862,7 +805,7 @@ void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   CHECK(!graphics_binding_->IsUsingSharedImages());
   DCHECK(BUILDFLAG(IS_ANDROID));
-  // TODO(https://crbug.com/1454942): Support non-shared buffer mode.
+  // TODO(crbug.com/40917172): Support non-shared buffer mode.
   SubmitFrameMissing(frame_index, mailbox.sync_token);
 }
 
@@ -894,13 +837,12 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     return;
   }
 
-  // TODO(https://crbug.com/1454950): Unify OpenXr Rendering paths.
+  // TODO(crbug.com/40917174): Unify OpenXr Rendering paths.
 #if BUILDFLAG(IS_WIN)
   SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle(),
                                gpu::SyncToken());
 #elif BUILDFLAG(IS_ANDROID)
   MarkFrameSubmitted(frame_index);
-  graphics_binding_->Render();
   MaybeCompositeAndSubmit();
 #endif
 
@@ -918,9 +860,12 @@ void OpenXrRenderLoop::UpdateStageParameters() {
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
         mojom::VRStageParameters::New();
-    // mojo_from_local is identity, as is stage_from_floor, so we can directly
-    // assign local_from_stage and mojo_from_floor.
-    stage_parameters->mojo_from_floor = local_from_stage;
+    // mojo_from_local is currently identity.
+    gfx::Transform mojo_from_local;
+    // stage_from_floor is identity.
+    gfx::Transform stage_from_floor;
+    stage_parameters->mojo_from_floor =
+        mojo_from_local * local_from_stage * stage_from_floor;
     stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {
@@ -947,7 +892,7 @@ void OpenXrRenderLoop::SubscribeToHitTest(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -980,7 +925,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
            << ", ray direction=" << ray->direction.ToString();
 
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
 
   if (!scene_understanding_manager) {
     std::move(callback).Run(
@@ -1006,7 +951,7 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
 void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
   DVLOG(2) << __func__;
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
-      openxr_->GetOrCreateSceneUnderstandingManager(*extension_helper_);
+      openxr_->GetSceneUnderstandingManager();
   if (scene_understanding_manager)
     scene_understanding_manager->UnsubscribeFromHitTest(
         HitTestSubscriptionId(subscription_id));
@@ -1016,8 +961,7 @@ void OpenXrRenderLoop::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
     CreateAnchorCallback callback) {
-  OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(*extension_helper_);
+  OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
     return;
   }
@@ -1036,21 +980,15 @@ void OpenXrRenderLoop::CreatePlaneAnchor(
 }
 
 void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
-  OpenXrAnchorManager* anchor_manager =
-      openxr_->GetOrCreateAnchorManager(*extension_helper_);
+  OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
     return;
   }
   anchor_manager->DetachAnchor(AnchorId(anchor_id));
 }
 
-gpu::gles2::GLES2Interface* OpenXrRenderLoop::GetContextGL() {
-  DCHECK(context_provider_);
-  return context_provider_->ContextGL();
-}
-
 void OpenXrRenderLoop::StartContextProviderIfNeeded(
-    StartRuntimeCallback start_runtime_callback) {
+    ContextProviderAcquiredCallback callback) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(context_provider_, nullptr);
   // We could arrive here in scenarios where we've shutdown the render loop or
@@ -1058,9 +996,9 @@ void OpenXrRenderLoop::StartContextProviderIfNeeded(
   // If openxr_ has been torn down the context provider is unnecessary as
   // there is nothing to connect to the GPU process.
   if (openxr_) {
-    auto created_callback = base::BindOnce(
-        &OpenXrRenderLoop::OnContextProviderCreated,
-        weak_ptr_factory_.GetWeakPtr(), std::move(start_runtime_callback));
+    auto created_callback =
+        base::BindOnce(&OpenXrRenderLoop::OnContextProviderCreated,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
     main_thread_task_runner_->PostTask(
         FROM_HERE,
@@ -1118,7 +1056,7 @@ void OpenXrRenderLoop::OnContextLostCallback(
 // start_runtime_callback, passing true on successful call to
 // BindToCurrentSequence and false if not.
 void OpenXrRenderLoop::OnContextProviderCreated(
-    StartRuntimeCallback start_runtime_callback,
+    ContextProviderAcquiredCallback start_runtime_callback,
     scoped_refptr<viz::ContextProvider> context_provider) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(context_provider_, nullptr);

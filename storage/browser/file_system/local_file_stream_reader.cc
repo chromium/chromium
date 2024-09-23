@@ -158,6 +158,11 @@ void LocalFileStreamReader::DidOpenFileStream(
     std::move(callback_).Run(result);
     return;
   }
+  // Avoid seek if possible since it fails on android for virtual content-uris.
+  if (initial_offset_ == 0) {
+    std::move(callback_).Run(net::OK);
+    return;
+  }
   result = stream_impl_->Seek(
       initial_offset_, base::BindOnce(&LocalFileStreamReader::DidSeekFileStream,
                                       weak_factory_.GetWeakPtr()));

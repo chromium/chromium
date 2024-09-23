@@ -66,7 +66,7 @@ class CORE_EXPORT SerializedScriptValueFactory {
  private:
   static SerializedScriptValueFactory& Instance() {
     if (!instance_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       instance_ = new SerializedScriptValueFactory;
     }
     return *instance_;

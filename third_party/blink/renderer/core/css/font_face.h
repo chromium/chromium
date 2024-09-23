@@ -53,7 +53,9 @@ class CSSValue;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class Document;
+class CSSLengthResolver;
 class ExceptionState;
+class MediaValues;
 class FontFaceDescriptors;
 class StyleRuleFontFace;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
@@ -114,11 +116,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setSizeAdjust(ExecutionContext*, const String&, ExceptionState&);
 
   String status() const;
-  ScriptPromiseTyped<FontFace> loaded(ScriptState* script_state) {
+  ScriptPromise<FontFace> loaded(ScriptState* script_state) {
     return FontStatusPromise(script_state);
   }
 
-  ScriptPromiseTyped<FontFace> load(ScriptState*);
+  ScriptPromise<FontFace> load(ScriptState*);
 
   LoadStatusType LoadStatus() const { return status_; }
   void SetLoadStatus(LoadStatusType);
@@ -162,6 +164,8 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
   bool IsUserStyle() const { return is_user_style_; }
 
+  const CSSLengthResolver& EnsureLengthResolver() const;
+
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -185,7 +189,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
-  ScriptPromiseTyped<FontFace> FontStatusPromise(ScriptState*);
+  ScriptPromise<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
   using LoadedProperty = ScriptPromiseProperty<FontFace, DOMException>;
@@ -215,6 +219,9 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   // Note that we will also need to distinguish font faces in different tree
   // scopes when we allow @font-face in shadow DOM. See crbug.com/336876.
   bool is_user_style_ = false;
+
+  // Global media values to resolve calc().
+  mutable Member<const MediaValues> media_values_;
 };
 
 using FontFaceArray = HeapVector<Member<FontFace>>;

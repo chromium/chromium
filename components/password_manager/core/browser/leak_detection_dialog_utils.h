@@ -156,10 +156,10 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckup>
   }
 
   std::u16string GetDescription() const override {
-      return l10n_util::GetStringUTF16(
-          UsesPasswordManagerGoogleBranding()
-              ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-              : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
+    return l10n_util::GetStringUTF16(
+        UsesPasswordManagerGoogleBranding()
+            ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+            : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   }
 
   std::u16string GetTitle() const override {
@@ -189,10 +189,10 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kChange>
   }
 
   std::u16string GetDescription() const override {
-      return l10n_util::GetStringUTF16(
-          UsesPasswordManagerGoogleBranding()
-              ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
-              : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
+    return l10n_util::GetStringUTF16(
+        UsesPasswordManagerGoogleBranding()
+            ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
+            : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
   }
 
   std::u16string GetTitle() const override {
@@ -222,10 +222,10 @@ class LeakDialogTraitsImp<metrics_util::LeakDialogType::kCheckupAndChange>
   }
 
   std::u16string GetDescription() const override {
-      return l10n_util::GetStringUTF16(
-          UsesPasswordManagerGoogleBranding()
-              ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-              : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
+    return l10n_util::GetStringUTF16(
+        UsesPasswordManagerGoogleBranding()
+            ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
+            : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
   }
 
   std::u16string GetTitle() const override {

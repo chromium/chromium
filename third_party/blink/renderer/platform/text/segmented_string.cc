@@ -17,6 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 
 namespace blink {
@@ -177,10 +182,10 @@ String SegmentedString::ToString() const {
   return result.ToString();
 }
 
-void SegmentedString::Advance(unsigned count, UChar* consumed_characters) {
-  SECURITY_DCHECK(count <= length());
-  for (unsigned i = 0; i < count; ++i) {
-    consumed_characters[i] = CurrentChar();
+void SegmentedString::AdvanceAndCollect(base::span<UChar> characters) {
+  CHECK_LE(characters.size(), length());
+  for (size_t i = 0; i < characters.size(); ++i) {
+    characters[i] = CurrentChar();
     Advance();
   }
 }

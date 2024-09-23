@@ -10,18 +10,18 @@
 
 import './privacy_hub_app_permission_row.js';
 
-import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {MediaDevicesProxy} from '../common/media_devices_proxy.js';
 import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 
-import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {getTemplate} from './privacy_hub_camera_subpage.html.js';
@@ -238,8 +238,8 @@ export class SettingsPrivacyHubCameraSubpage extends
   private computeCameraAccessStateText_(): string {
     if (this.isCameraAllowed_()) {
       return this.cameraFallbackMechanismEnabled_ ?
-          this.i18n('cameraToggleFallbackSubtext') :
-          this.i18n('cameraToggleSubtext');
+          this.i18n('privacyHubCameraSubpageCameraToggleFallbackSubtext') :
+          this.i18n('privacyHubCameraSubpageCameraToggleSubtext');
     } else {
       return this.i18n('privacyHubCameraAccessBlockedText');
     }

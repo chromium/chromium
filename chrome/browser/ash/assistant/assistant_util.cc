@@ -57,7 +57,6 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
       return AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION;
 
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE;
 
@@ -67,7 +66,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       // This method should only be called for disallowed user types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
   }
 }

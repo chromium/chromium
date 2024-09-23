@@ -61,7 +61,6 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   animation_container->AddChildView(std::move(image_view));
 
   auto ring_progress_bar = std::make_unique<RingProgressBar>();
-  ring_progress_bar_ = ring_progress_bar.get();
   ring_progress_bar->SetPreferredSize(gfx::Size(kRingSize, kRingSize));
   ring_progress_bar->SetValue(initial, target);
   animation_container->AddChildView(std::move(ring_progress_bar));

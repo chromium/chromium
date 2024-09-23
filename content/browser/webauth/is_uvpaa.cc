@@ -46,12 +46,10 @@ void IsUVPlatformAuthenticatorAvailable(
 
 #elif BUILDFLAG(IS_WIN)
 void IsUVPlatformAuthenticatorAvailable(
-    bool is_off_the_record,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::WinWebAuthnApiAuthenticator::
       IsUserVerifyingPlatformAuthenticatorAvailable(
-          is_off_the_record, device::WinWebAuthnApi::GetDefault(),
-          std::move(callback));
+          device::WinWebAuthnApi::GetDefault(), std::move(callback));
 }
 
 #elif BUILDFLAG(IS_CHROMEOS)

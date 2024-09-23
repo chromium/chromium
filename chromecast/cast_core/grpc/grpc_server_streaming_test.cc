@@ -6,6 +6,8 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,10 +25,10 @@ namespace utils {
 namespace {
 
 using ::cast::test::StatusIs;
+using ::testing::IsNull;
 
 const auto kEventTimeout = base::Seconds(1);
 const auto kServerStopTimeout = base::Seconds(1);
-const auto kServerManualStopTimeout = base::Milliseconds(100);
 
 class GrpcServerStreamingTest : public ::testing::Test {
  protected:
@@ -51,17 +53,17 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallSucceeds) {
   const int kMaxResponseCount = base::RandInt(10, 300);
   int server_response_count = 0;
   auto writes_available_callback = base::BindLambdaForTesting(
-      [&](GrpcStatusOr<ServerStreamingServiceHandler::StreamingCall::Reactor*>
-              reactor) {
-        CU_CHECK_OK(reactor);
+      [&](grpc::Status status,
+          ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
+        CU_CHECK_OK(status);
         if (server_response_count < kMaxResponseCount) {
           TestResponse response;
           response.set_bar(
               base::StringPrintf("test_bar%d", ++server_response_count));
-          reactor.value()->Write(std::move(response));
+          reactor->Write(std::move(response));
         } else {
           LOG(INFO) << "Writing finished";
-          reactor.value()->Write(grpc::Status::OK);
+          reactor->Write(grpc::Status::OK);
         }
       });
   auto call_handler = base::BindLambdaForTesting(
@@ -134,52 +136,49 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallFailsRightAway) {
 
 TEST_F(GrpcServerStreamingTest, ServerStreamingCallCancelledIfServerIsStopped) {
   GrpcServer server;
-  base::WaitableEvent server_stopped_event;
   server.SetHandler<ServerStreamingServiceHandler::StreamingCall>(
       base::BindLambdaForTesting(
           [&](TestRequest request,
               ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
-            // Stop the server to trigger call cancellation.
-            server.Stop(kServerManualStopTimeout.InMilliseconds(),
-                        base::BindLambdaForTesting(
-                            [&]() { server_stopped_event.Signal(); }));
+            reactor->Write(grpc::Status::OK);
           }));
   ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   ServerStreamingServiceStub stub(endpoint_);
   auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
   call.request().set_foo("test_foo");
-  base::WaitableEvent response_received_event;
+  base::WaitableEvent response_received_event{
+      base::WaitableEvent::ResetPolicy::AUTOMATIC};
   std::move(call).InvokeAsync(base::BindLambdaForTesting(
+      [&](GrpcStatusOr<TestResponse> response, bool done) {
+        CU_ASSERT_OK(response);
+        response_received_event.Signal();
+      }));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  test::StopGrpcServer(server, kServerStopTimeout);
+
+  auto call1 = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
+  std::move(call1).InvokeAsync(base::BindLambdaForTesting(
       [&](GrpcStatusOr<TestResponse> response, bool done) {
         ASSERT_THAT(response, StatusIs(grpc::StatusCode::UNAVAILABLE));
         response_received_event.Signal();
       }));
   ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
-
-  // Need to wait for server to fully stop.
-  ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
 }
 
-// Cancelling a streaming call from the client side results in a race condition
-// between two threads, one deletes the ClientContext while the other releases
-// the mutex in that ClientContext. Problem is not always manifested as it's a
-// timing issue between scheduled threads in the EventManager. Hence, the tsan
-// config is disabled for this test.
-#ifndef THREAD_SANITIZER
-
-// TODO(b/259123902): Enable as gRPC framework is synced.
-TEST_F(GrpcServerStreamingTest, DISABLED_ServerStreamingCallIsCancelledByClient) {
+TEST_F(GrpcServerStreamingTest, ServerStreamingCallIsCancelledByClient) {
   base::WaitableEvent server_aborted_event;
   auto writes_available_callback = base::BindLambdaForTesting(
-      [&](GrpcStatusOr<ServerStreamingServiceHandler::StreamingCall::Reactor*>
-              reactor) {
+      [&](grpc::Status status,
+          ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
         // The write callback can be called at any point in time with
         // ABORTED error, so ignore the success call.
-        if (reactor.ok()) {
+        if (status.ok()) {
           return;
         }
-        ASSERT_THAT(reactor, StatusIs(grpc::StatusCode::ABORTED));
+        ASSERT_THAT(status, StatusIs(grpc::StatusCode::ABORTED));
+        ASSERT_THAT(reactor, IsNull());
         server_aborted_event.Signal();
       });
   auto call_handler = base::BindLambdaForTesting(
@@ -231,7 +230,52 @@ TEST_F(GrpcServerStreamingTest, DISABLED_ServerStreamingCallIsCancelledByClient)
   task_environment_.RunUntilIdle();
 }
 
-#endif  // THREAD_SANITIZER
+TEST_F(GrpcServerStreamingTest,
+       ServerStreamingCallIsCancelledByClientInActiveReactor) {
+  GrpcServer server;
+
+  base::WaitableEvent server_request_received;
+  ServerStreamingServiceHandler::StreamingCall::Reactor* cancelled_reactor;
+  server.SetHandler<ServerStreamingServiceHandler::StreamingCall>(
+      base::BindLambdaForTesting(
+          [&](TestRequest request,
+              ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
+            cancelled_reactor = reactor;
+            server_request_received.Signal();
+          }));
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
+
+  base::WaitableEvent response_received_event;
+  ServerStreamingServiceStub stub(endpoint_);
+  auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
+  auto context = std::move(call).InvokeAsync(base::BindLambdaForTesting(
+      [&](GrpcStatusOr<TestResponse> response, bool done) {
+        ASSERT_THAT(response, StatusIs(grpc::StatusCode::CANCELLED));
+        response_received_event.Signal();
+      }));
+
+  // Wait for server to receive the request.
+  ASSERT_TRUE(server_request_received.TimedWait(kEventTimeout));
+
+  // Cancel the client call and wait for server and client to get the
+  // notification.
+  context.Cancel();
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  // Try to write a response with the reactor, and expect the ABORTED error.
+  base::WaitableEvent reactor_aborted;
+  cancelled_reactor->SetWritesAvailableCallback(base::BindLambdaForTesting(
+      [&](grpc::Status status,
+          ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
+        ASSERT_THAT(reactor, IsNull());
+        ASSERT_THAT(status, StatusIs(grpc::StatusCode::ABORTED));
+        reactor_aborted.Signal();
+      }));
+  ASSERT_TRUE(reactor_aborted.TimedWait(kEventTimeout));
+
+  cancelled_reactor->Write(TestResponse());
+  test::StopGrpcServer(server, kServerStopTimeout);
+}
 
 }  // namespace
 }  // namespace utils

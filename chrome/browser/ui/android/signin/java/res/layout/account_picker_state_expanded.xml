@@ -13,16 +13,13 @@ found in the LICENSE file.
 
     <include layout="@layout/account_picker_bottom_sheet_header" />
 
-    <View
-        style="@style/HorizontalDivider"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/account_picker_account_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:requiresFadingEdge="vertical"
         android:scrollbars="vertical"
         android:scrollbarStyle="outsideOverlay" />

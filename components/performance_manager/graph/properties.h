@@ -53,8 +53,9 @@ class ObservedPropertyImpl {
       // If your code is blowing up here see the class comment!
       DCHECK(node->CanSetAndNotifyProperty());
       value_ = std::forward<U>(value);
-      for (auto* observer : node->GetObservers())
-        ((observer)->*(NotifyFunctionPtr))(node);
+      for (auto& observer : node->GetObservers()) {
+        (observer.*NotifyFunctionPtr)(node);
+      }
     }
 
     // Sets the property without sending a notification.
@@ -96,8 +97,9 @@ class ObservedPropertyImpl {
       if (value_ == value)
         return false;
       value_ = std::forward<U>(value);
-      for (auto* observer : node->GetObservers())
-        ((observer)->*(NotifyFunctionPtr))(node);
+      for (auto& observer : node->GetObservers()) {
+        (observer.*NotifyFunctionPtr)(node);
+      }
       return true;
     }
 
@@ -144,8 +146,9 @@ class ObservedPropertyImpl {
         return false;
       PropertyType previous_value = std::move(value_);
       value_ = std::forward<U>(value);
-      for (auto* observer : node->GetObservers())
-        ((observer)->*(NotifyFunctionPtr))(node, previous_value);
+      for (auto& observer : node->GetObservers()) {
+        (observer.*NotifyFunctionPtr)(node, previous_value);
+      }
       return true;
     }
 

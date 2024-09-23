@@ -102,7 +102,7 @@ TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
       Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
                 Field(&ProgressStatus::sources, IsEmpty()),
                 Field(&ProgressStatus::outputs,
-                      EntryStatusPaths(ContainerEq(trash_subdirectories))))))
+                      EntryStatusPaths(ContainerEq(trash_directories))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   EmptyTrashIOTask task(kTestStorageKey, profile_.get(), file_system_context_,
@@ -110,15 +110,9 @@ TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 
-  // Ensure the trash parent paths still exist, e.g. ~/MyFiles/.Trash
-  for (const auto& directory_path : trash_directories) {
-    ASSERT_TRUE(base::PathExists(directory_path));
-  }
-
-  // Ensure the subdirectories in the trash folder are removed, e.g.
-  // ~/MyFiles/.Trash/{files,info}
-  for (const auto& subdirectory_path : trash_subdirectories) {
-    ASSERT_FALSE(base::PathExists(subdirectory_path));
+  // Ensure the trash directories (e.g. ~/MyFiles/.Trash) are removed.
+  for (const auto& dir : trash_directories) {
+    ASSERT_FALSE(base::PathExists(dir));
   }
 }
 

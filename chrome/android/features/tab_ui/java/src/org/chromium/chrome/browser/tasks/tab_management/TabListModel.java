@@ -8,8 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.NEW_TAB_TILE_DEPRECATED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
@@ -19,7 +17,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridView.AnimationStatus;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -39,13 +37,11 @@ class TabListModel extends ModelList {
     /** Required properties for each {@link PropertyModel} managed by this {@link ModelList}. */
     static class CardProperties {
         /** Supported Model type within this ModelList. */
-        @IntDef({TAB, MESSAGE, NEW_TAB_TILE_DEPRECATED, OTHERS})
+        @IntDef({TAB, MESSAGE})
         @Retention(RetentionPolicy.SOURCE)
         public @interface ModelType {
             int TAB = 0;
             int MESSAGE = 1;
-            int NEW_TAB_TILE_DEPRECATED = 2;
-            int OTHERS = 3;
         }
 
         /** This corresponds to {@link CardProperties.ModelType}*/
@@ -71,6 +67,26 @@ class TabListModel extends ModelList {
 
     /**
      * Find the Nth TAB card in the {@link TabListModel}.
+     *
+     * @param n N of the Nth TAB card.
+     * @return The index of Nth TAB card in the {@link TabListModel} or TabModel.INVALID_TAB_INDEX
+     *     if not enough tabs exist.
+     */
+    public int indexOfNthTabCardOrInvalid(int n) {
+        if (n < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                if (tabCount++ == n) return i;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Find the Nth TAB card in the {@link TabListModel}.
+     *
      * @param n N of the Nth TAB card.
      * @return The index of Nth TAB card in the {@link TabListModel}.
      */
@@ -90,8 +106,26 @@ class TabListModel extends ModelList {
         return lastTabIndex + 1;
     }
 
+    /** Returns the filter index of a tab from its view index. */
+    public int indexOfTabCardsOrInvalid(int viewIndex) {
+        if (viewIndex < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            boolean isTab = model.get(CARD_TYPE) == TAB;
+            if (viewIndex == i) {
+                return isTab ? tabCount : TabModel.INVALID_TAB_INDEX;
+            }
+            if (isTab) {
+                tabCount++;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
     /**
      * Get the number of TAB cards before the given index in TabListModel.
+     *
      * @param index The given index in TabListModel.
      * @return The number of TAB cards before the given index.
      */
@@ -130,28 +164,8 @@ class TabListModel extends ModelList {
     }
 
     /**
-     * Gets the new position of the Tab with {@link tabId} from a sorted list with MRU order.
-     * @param tabId The id of the Tab to insert into the list.
-     */
-    public int getNewPositionInMruOrderList(int tabId) {
-        long timestamp = PseudoTab.fromTabId(tabId).getTimestampMillis();
-        int pos = 0;
-        while (pos < size()) {
-            PropertyModel model = get(pos).model;
-            if (model.get(CARD_TYPE) != TAB
-                    || (PseudoTab.fromTabId(model.get(TabProperties.TAB_ID)).getTimestampMillis()
-                                    - timestamp
-                            >= 0)) {
-                pos++;
-            } else {
-                break;
-            }
-        }
-        return pos;
-    }
-
-    /**
      * Get the index that matches a message item that has the given message type.
+     *
      * @param messageType The message type to match.
      * @return The index within the model.
      */
@@ -260,8 +274,8 @@ class TabListModel extends ModelList {
 
         int status =
                 isSelected
-                        ? ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN
-                        : ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_OUT;
+                        ? AnimationStatus.SELECTED_CARD_ZOOM_IN
+                        : AnimationStatus.SELECTED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
@@ -283,8 +297,8 @@ class TabListModel extends ModelList {
 
         int status =
                 isHovered
-                        ? ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN
-                        : ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT;
+                        ? AnimationStatus.HOVERED_CARD_ZOOM_IN
+                        : AnimationStatus.HOVERED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);

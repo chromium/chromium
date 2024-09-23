@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/pin_internal.h"
 
 #include <string>
@@ -176,14 +181,13 @@ class ProtocolV2 : public ProtocolV1 {
   // GetHMACSubKey returns the HMAC-key portion of the shared secret.
   static base::span<const uint8_t, kHMACKeyLength> GetHMACSubKey(
       base::span<const uint8_t, kSharedKeyLength> shared_key) {
-    CHECK_EQ(shared_key.size(), kSharedKeyLength);
-    return base::make_span<kHMACKeyLength>(shared_key.first(kHMACKeyLength));
+    return shared_key.first<kHMACKeyLength>();
   }
 
   // GetAESSubKey returns the HMAC-key portion of the shared secret.
   static base::span<const uint8_t, kAESKeyLength> GetAESSubKey(
       base::span<const uint8_t, kSharedKeyLength> shared_key) {
-    return base::make_span<kAESKeyLength>(shared_key.subspan(kHMACKeyLength));
+    return shared_key.last<kAESKeyLength>();
   }
 
   std::vector<uint8_t> Encrypt(
@@ -192,7 +196,7 @@ class ProtocolV2 : public ProtocolV1 {
     DCHECK_EQ(plaintext.size() % AES_BLOCK_SIZE, 0u);
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
-        GetAESSubKey(base::make_span<kSharedKeyLength>(shared_key));
+        GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
 
     std::vector<uint8_t> result(AES_BLOCK_SIZE + plaintext.size());
     const base::span<uint8_t> iv =
@@ -219,7 +223,7 @@ class ProtocolV2 : public ProtocolV1 {
     DCHECK_EQ(input.size() % AES_BLOCK_SIZE, 0u);
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
-        GetAESSubKey(base::make_span<kSharedKeyLength>(shared_key));
+        GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
     const base::span<const uint8_t> iv = input.first<AES_BLOCK_SIZE>();
     const base::span<const uint8_t> ciphertext =
         input.subspan<AES_BLOCK_SIZE>();
@@ -247,8 +251,8 @@ class ProtocolV2 : public ProtocolV1 {
            key.size() == kPINUVAuthTokenLength);
     const base::span<const uint8_t, kHMACKeyLength> hmac_key =
         (key.size() == kSharedKeyLength
-             ? GetHMACSubKey(base::make_span<kSharedKeyLength>(key))
-             : base::make_span<kPINUVAuthTokenLength>(key));
+             ? GetHMACSubKey(*key.to_fixed_extent<kSharedKeyLength>())
+             : *key.to_fixed_extent<kPINUVAuthTokenLength>());
 
     std::vector<uint8_t> pin_auth(SHA256_DIGEST_LENGTH);
     unsigned hmac_bytes;

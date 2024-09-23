@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -25,13 +26,14 @@ import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /** Bridge for the virtual card enrollment bottom sheet. */
 @JNINamespace("autofill")
@@ -53,26 +55,24 @@ import java.util.LinkedList;
      * Requests to show the bottom sheet. Called via JNI from C++.
      *
      * @param nativeAutofillVcnEnrollBottomSheetBridge The native pointer to the C++ bridge that
-     *                                                 receives callbacks.
+     *     receives callbacks.
      * @param webContents The web contents where the bottom sheet should show.
      * @param messageText The prompt message for the bottom sheet, e.g., "Make it more secure with a
-     *                    virtual card next time?"
+     *     virtual card next time?"
      * @param descriptionText A text that describes what a virtual card does, e.g., "A virtual card
-     *                        hides your actual card..." and so on. This text includes a "learn
-     *                        more" link text.
+     *     hides your actual card..." and so on. This text includes a "learn more" link text.
      * @param learnMoreLinkText The text of the "learn more" link in descriptionText.
      * @param cardContainerAccessibilityDescription The accessibility description for the UI element
-     *                                              that contains the issuer icon, card label, and
-     *                                              card description.
+     *     that contains the issuer icon, card label, and card description.
      * @param issuerIconBitmap The icon for the card. For example, could be an American Express
-     *                         logo.
+     *     logo.
      * @param cardLabel The label for the card, e.g., "Amex ****1234".
      * @param cardDescription The description of the card, e.g., "Virtual Card".
      * @param googleLegalMessages Legal messages from Google Pay.
      * @param issuerLegalMessages Legal messages from the issuer bank.
      * @param acceptButtonLabel The label for the button that enrolls a virtual card.
      * @param cancelButtonLabel The label for the button that cancels enrollment.
-     *
+     * @param loadingDescription The description for the loading view.
      * @return True if shown.
      */
     @CalledByNative
@@ -80,17 +80,18 @@ import java.util.LinkedList;
     boolean requestShowContent(
             long nativeAutofillVcnEnrollBottomSheetBridge,
             WebContents webContents,
-            String messageText,
-            String descriptionText,
-            String learnMoreLinkText,
-            String cardContainerAccessibilityDescription,
+            @JniType("std::u16string") String messageText,
+            @JniType("std::u16string") String descriptionText,
+            @JniType("std::u16string") String learnMoreLinkText,
+            @JniType("std::u16string") String cardContainerAccessibilityDescription,
             Bitmap issuerIconBitmap,
-            String cardLabel,
-            String cardDescription,
-            LinkedList<LegalMessageLine> googleLegalMessages,
-            LinkedList<LegalMessageLine> issuerLegalMessages,
-            String acceptButtonLabel,
-            String cancelButtonLabel) {
+            @JniType("std::u16string") String cardLabel,
+            @JniType("std::u16string") String cardDescription,
+            @JniType("std::vector") List<LegalMessageLine> googleLegalMessages,
+            @JniType("std::vector") List<LegalMessageLine> issuerLegalMessages,
+            @JniType("std::u16string") String acceptButtonLabel,
+            @JniType("std::u16string") String cancelButtonLabel,
+            @JniType("std::u16string") String loadingDescription) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -103,7 +104,7 @@ import java.util.LinkedList;
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
         AutofillUiUtils.CardIconSpecs cardIconSpecs =
-                AutofillUiUtils.CardIconSpecs.create(mContext, AutofillUiUtils.CardIconSize.LARGE);
+                AutofillUiUtils.CardIconSpecs.create(mContext, ImageSize.LARGE);
 
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS)
@@ -151,7 +152,11 @@ import java.util.LinkedList;
                                 acceptButtonLabel)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
-                                cancelButtonLabel);
+                                cancelButtonLabel)
+                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false)
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION,
+                                loadingDescription);
 
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(
@@ -224,6 +229,10 @@ import java.util.LinkedList;
         if (mCoordinator == null) return;
         mCoordinator.hide();
         mCoordinator = null;
+    }
+
+    AutofillVcnEnrollBottomSheetCoordinator getCoordinatorForTesting() {
+        return mCoordinator;
     }
 
     @NativeMethods

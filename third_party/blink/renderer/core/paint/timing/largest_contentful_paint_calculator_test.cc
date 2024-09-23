@@ -80,9 +80,8 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     // vector of 0s to the image. This is used for bits-per-pixel
     // calculations.
     if (bytes > 0) {
-      Vector<char> img_data(bytes);
       scoped_refptr<SharedBuffer> shared_buffer =
-          SharedBuffer::AdoptVector(img_data);
+          SharedBuffer::Create(Vector<char>(bytes));
       original_image_data->SetData(shared_buffer, /*all_data_received=*/true);
     }
     ImageResourceContent* original_image_content =

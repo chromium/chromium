@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/windows/d3d11_h265_accelerator.h"
 
 #include <algorithm>
@@ -52,7 +57,9 @@ D3D11H265Picture::~D3D11H265Picture() {
 
 D3D11H265Accelerator::D3D11H265Accelerator(D3D11VideoDecoderClient* client,
                                            MediaLog* media_log)
-    : D3DAccelerator(client, media_log) {}
+    : media_log_(media_log->Clone()), client_(client) {
+  DCHECK(client_);
+}
 
 D3D11H265Accelerator::~D3D11H265Accelerator() {}
 
@@ -85,7 +92,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     return H265DecoderStatus::kFail;
   }
 
-  if (!video_decoder_wrapper_->WaitForFrameBegins(d3d11_pic->picture.get())) {
+  if (!client_->GetWrapper()->WaitForFrameBegins(d3d11_pic->picture.get())) {
     return H265DecoderStatus::kFail;
   }
 
@@ -437,7 +444,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  if (!video_decoder_wrapper_->HasPendingBuffer(
+  if (!client_->GetWrapper()->HasPendingBuffer(
           D3DVideoDecoderWrapper::BufferType::kPictureParameters)) {
     DXVA_PicParams_HEVC_Rext pic_param = {};
 
@@ -466,14 +473,14 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     size_t pic_params_size = is_rext_ ? sizeof(DXVA_PicParams_HEVC_Rext)
                                       : sizeof(DXVA_PicParams_HEVC);
     auto params_buffer =
-        video_decoder_wrapper_->GetPictureParametersBuffer(pic_params_size);
+        client_->GetWrapper()->GetPictureParametersBuffer(pic_params_size);
     // For 420 content the driver may only allow main part picture parameters.
     if (is_rext_ && params_buffer.size() < sizeof(DXVA_PicParams_HEVC_Rext)) {
       pic_params_size = sizeof(DXVA_PicParams_HEVC);
     }
     if (params_buffer.size() < pic_params_size) {
-      RecordFailure("Insufficient picture parameter buffer size",
-                    D3D11StatusCode::kGetPicParamBufferFailed);
+      MEDIA_LOG(ERROR, media_log_)
+          << "Insufficient picture parameter buffer size";
       return H265DecoderStatus::kFail;
     }
 
@@ -488,7 +495,7 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
   // pps->scaling_list_enabled is true. See section 4.2
   // of DXVA spec for HEVC.
   if (use_scaling_lists_ &&
-      !video_decoder_wrapper_->HasPendingBuffer(
+      !client_->GetWrapper()->HasPendingBuffer(
           D3DVideoDecoderWrapper::BufferType::kInverseQuantizationMatrix)) {
     DXVA_Qmatrix_HEVC iq_matrix = {};
     const H265ScalingListData* scaling_lists =
@@ -537,11 +544,10 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
         scaling_lists->scaling_list_dc_coef_32x32[3];
 
     auto iq_matrix_buffer =
-        video_decoder_wrapper_->GetInverseQuantizationMatrixBuffer(
+        client_->GetWrapper()->GetInverseQuantizationMatrixBuffer(
             sizeof(iq_matrix));
     if (iq_matrix_buffer.size() < sizeof(iq_matrix)) {
-      RecordFailure("Insufficient quant buffer size",
-                    D3D11StatusCode::kGetQuantBufferFailed);
+      MEDIA_LOG(ERROR, media_log_) << "Insufficient quant buffer size";
       return H265DecoderStatus::kFail;
     }
 
@@ -553,11 +559,11 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
   }
 
   CHECK_GT(current_frame_size_, 0u);
-  video_decoder_wrapper_->GetBitstreamBuffer(current_frame_size_);
+  client_->GetWrapper()->GetBitstreamBuffer(current_frame_size_);
 
   constexpr uint8_t kStartCode[] = {0, 0, 1};
   bool ok =
-      video_decoder_wrapper_
+      client_->GetWrapper()
           ->AppendBitstreamAndSliceDataWithStartCode<DXVA_Slice_HEVC_Short>(
               {data, size}, kStartCode);
 
@@ -566,16 +572,16 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
 
 H265DecoderStatus D3D11H265Accelerator::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
-  return video_decoder_wrapper_->SubmitSlice() &&
-                 video_decoder_wrapper_->SubmitDecode()
+  return client_->GetWrapper()->SubmitSlice() &&
+                 client_->GetWrapper()->SubmitDecode()
              ? H265DecoderStatus::kOk
              : H265DecoderStatus::kFail;
 }
 
 void D3D11H265Accelerator::Reset() {
   current_frame_size_ = 0;
-  if (video_decoder_wrapper_) {
-    video_decoder_wrapper_->Reset();
+  if (client_->GetWrapper()) {
+    client_->GetWrapper()->Reset();
   }
 }
 

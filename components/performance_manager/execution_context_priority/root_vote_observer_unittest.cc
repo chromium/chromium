@@ -29,25 +29,16 @@ class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
       delete;
   ~LenientMockFrameNodeObserver() override = default;
 
-  MOCK_METHOD2(OnPriorityAndReasonChanged,
-               void(const FrameNode*, const PriorityAndReason&));
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const FrameNode*, const PriorityAndReason&),
+              (override));
 };
 
 using MockFrameNodeObserver =
     ::testing::StrictMock<LenientMockFrameNodeObserver>;
 
-class RootVoteObserverTest : public GraphTestHarness {
- public:
-  using Super = GraphTestHarness;
-
-  RootVoteObserverTest() = default;
-  ~RootVoteObserverTest() override = default;
-
-  void SetUp() override {
-    GetGraphFeatures().EnableExecutionContextRegistry();
-    Super::SetUp();
-  }
-};
+using RootVoteObserverTest = GraphTestHarness;
 
 }  // namespace
 

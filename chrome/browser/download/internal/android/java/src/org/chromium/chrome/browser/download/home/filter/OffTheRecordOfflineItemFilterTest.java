@@ -23,6 +23,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.OTRProfileIDJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -45,7 +46,7 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Before
     public void setup() {
-        Profile.setLastUsedProfileForTesting(mRegularProfile);
+        ProfileManager.setLastUsedProfileForTesting(mRegularProfile);
         mMocker.mock(OTRProfileIDJni.TEST_HOOKS, mOTRProfileIDNatives);
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(true);
     }

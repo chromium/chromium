@@ -6,7 +6,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
@@ -14,6 +14,8 @@
 namespace password_manager {
 
 namespace {
+
+using affiliations::FacetURI;
 
 constexpr char kPlayStoreAppPrefix[] =
     "https://play.google.com/store/apps/details?id=";
@@ -76,10 +78,12 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
 
   facets.push_back(std::move(facet));
 
-  if (form.IsUsingAccountStore())
+  if (form.IsUsingAccountStore()) {
     stored_in.insert(PasswordForm::Store::kAccountStore);
-  if (form.IsUsingProfileStore())
+  }
+  if (form.IsUsingProfileStore()) {
     stored_in.insert(PasswordForm::Store::kProfileStore);
+  }
 }
 
 CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
@@ -112,17 +116,20 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
 
     facets.push_back(std::move(facet));
 
-    if (form.IsUsingAccountStore())
+    if (form.IsUsingAccountStore()) {
       stored_in.insert(PasswordForm::Store::kAccountStore);
-    if (form.IsUsingProfileStore())
+    }
+    if (form.IsUsingProfileStore()) {
       stored_in.insert(PasswordForm::Store::kProfileStore);
+    }
   }
 }
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
     : passkey_credential_id(passkey.credential_id()),
       username(base::UTF8ToUTF16(passkey.username())),
-      user_display_name(base::UTF8ToUTF16(passkey.display_name())) {
+      user_display_name(base::UTF8ToUTF16(passkey.display_name())),
+      creation_time(passkey.creation_time()) {
   CHECK(!passkey.credential_id().empty());
   CredentialFacet facet;
   facet.url = GURL(base::StrCat(
@@ -141,7 +148,7 @@ CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
   CredentialFacet facet;
   facet.url = csv_password.GetURL().value();
   facet.signon_realm =
-      IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
+      affiliations::IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
           ? csv_password.GetURL().value().spec()
           : GetSignonRealm(csv_password.GetURL().value());
   facets.push_back(std::move(facet));
@@ -242,9 +249,8 @@ CredentialUIEntry::GetAffiliatedDomains() const {
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
     domain.signon_realm = facet.signon_realm;
-    password_manager::FacetURI facet_uri =
-        password_manager::FacetURI::FromPotentiallyInvalidSpec(
-            facet.signon_realm);
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(facet.signon_realm);
     if (facet_uri.IsValidAndroidFacetURI()) {
       domain.name = facet.display_name.empty()
                         ? facet_uri.GetAndroidPackageDisplayName()
@@ -254,10 +260,12 @@ CredentialUIEntry::GetAffiliatedDomains() const {
               ? GURL(kPlayStoreAppPrefix + facet_uri.android_package_name())
               : GURL(facet.affiliated_web_realm);
     } else {
-      domain.name = GetOrigin(url::Origin::Create(facet.url));
       domain.url = facet.url;
+      std::string origin = GetOrigin(url::Origin::Create(facet.url));
+      domain.name =
+          origin.empty() ? domain.url.possibly_invalid_spec() : origin;
     }
-    if (unique_urls.insert(domain.url.spec()).second) {
+    if (unique_urls.insert(domain.url.possibly_invalid_spec()).second) {
       domains.push_back(std::move(domain));
     }
   }
@@ -291,7 +299,7 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
            kSortKeyPartsSeparator + base::UTF16ToUTF8(credential.password);
 
     key += kSortKeyPartsSeparator;
-    if (!credential.federation_origin.opaque()) {
+    if (credential.federation_origin.IsValid()) {
       key += credential.federation_origin.host();
     }
   }

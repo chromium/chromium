@@ -72,6 +72,13 @@ enum WebBluetoothResult {
   CONNECT_ALREADY_CONNECTED,
   CONNECT_ALREADY_EXISTS,
   CONNECT_NOT_CONNECTED,
+  CONNECT_NON_AUTH_TIMEOUT,
+  CONNECT_NO_MEMORY,
+  CONNECT_JNI_ENVIRONMENT,
+  CONNECT_JNI_THREAD_ATTACH,
+  CONNECT_WAKELOCK,
+  CONNECT_UNEXPECTED_STATE,
+  CONNECT_SOCKET_ERROR,
   // NotFoundError:
   NO_BLUETOOTH_ADAPTER,
   CHOSEN_DEVICE_VANISHED,
@@ -193,7 +200,7 @@ struct WebBluetoothAdvertisingEvent {
   uint8 tx_power;
   bool rssi_is_set;
   uint8 rssi;
-  map<uint16, array<uint8>> manufacturer_data;
+  map<WebBluetoothCompany, array<uint8>> manufacturer_data;
   map<bluetooth.mojom.UUID, array<uint8>> service_data;
 };
 

@@ -5,23 +5,19 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_CREDIT_CARD_SAVE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_CREDIT_CARD_SAVE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
 class AutofillClient;
-class AutofillDriver;
-class PersonalDataManager;
 
 class TestCreditCardSaveManager : public CreditCardSaveManager {
  public:
-  TestCreditCardSaveManager(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      PersonalDataManager* personal_data_manager);
+  explicit TestCreditCardSaveManager(AutofillClient* client);
 
   TestCreditCardSaveManager(const TestCreditCardSaveManager&) = delete;
   TestCreditCardSaveManager& operator=(const TestCreditCardSaveManager&) =
@@ -57,37 +53,23 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
   payments::PaymentsNetworkInterface::UploadCardRequestDetails*
   upload_request();
 
- private:
+  void InitVirtualCardEnroll(
+      const CreditCard& credit_card,
+      std::optional<payments::PaymentsNetworkInterface::
+                        GetDetailsForEnrollmentResponseDetails>
+          get_details_for_enrollment_response_details);
+
   void OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details) override;
 
+ private:
   bool credit_card_upload_enabled_ = false;
   bool credit_card_was_uploaded_ = false;
   bool cvc_local_save_started_ = false;
   bool cvc_upload_save_started_ = false;
   bool card_local_save_started_ = false;
-
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           OnDidUploadCard_VirtualCardEnrollment);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
-                           UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      OnDidUploadCard_FallbackToLocalSaveOnServerUploadFailure);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerWithLocalSaveFallbackTest,
-      OnDidUploadCard_SkipLocalSaveIfMissingExpirationDate);
-  FRIEND_TEST_ALL_PREFIXES(SaveCvcTest, OnDidUploadCard_SaveServerCvc);
 };
 
 }  // namespace autofill

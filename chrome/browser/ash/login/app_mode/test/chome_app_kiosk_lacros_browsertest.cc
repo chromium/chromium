@@ -4,6 +4,8 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -63,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
     return;
   }
   NewAuraWindowWatcher watcher;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
 
   aura::Window* window = watcher.WaitForWindow();
   KioskSessionInitializedWaiter().Wait();
@@ -80,8 +81,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
   histogram.ExpectTotalCount(kLaunchErrorHistogramName, 0);
 
   SetTestApp(kTestNonKioskEnabledApp);
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
 
   // App launch should be canceled, and kiosk session stopped.
   base::test::TestFuture<void> waiter;
@@ -110,8 +110,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest,
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kNotKioskEnabled);
 
   NewAuraWindowWatcher watcher;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
 
   watcher.WaitForWindow();
   KioskSessionInitializedWaiter().Wait();

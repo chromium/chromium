@@ -55,8 +55,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/download/database/proto:download_entry_proto",
     "//components/download/database/proto:download_source_proto",
+    "//components/download/public/common:public",
     "//components/leveldb_proto:test_support",
-    "//content/test:test_support",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

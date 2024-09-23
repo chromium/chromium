@@ -19,15 +19,10 @@ namespace ui {
 
 ColorProvider::ColorProvider() = default;
 
-ColorProvider::ColorProvider(ColorProvider&&) = default;
-
-ColorProvider& ColorProvider::operator=(ColorProvider&&) = default;
-
 ColorProvider::~ColorProvider() = default;
 
 ColorMixer& ColorProvider::AddMixer() {
-  DCHECK(!color_map_);
-
+  color_map_.clear();
   mixers_.emplace_after(
       first_postprocessing_mixer_,
       base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
@@ -39,8 +34,7 @@ ColorMixer& ColorProvider::AddMixer() {
 }
 
 ColorMixer& ColorProvider::AddPostprocessingMixer() {
-  DCHECK(!color_map_);
-
+  color_map_.clear();
   if (first_postprocessing_mixer_ == mixers_.before_begin()) {
     // The first postprocessing mixer points to the last regular mixer.
     auto previous_mixer_getter = base::BindRepeating(
@@ -58,58 +52,36 @@ ColorMixer& ColorProvider::AddPostprocessingMixer() {
 }
 
 SkColor ColorProvider::GetColor(ColorId id) const {
-  CHECK(color_map_);
-  auto i = color_map_->find(id);
-  return i == color_map_->end() ? gfx::kPlaceholderColor : i->second;
-}
-
-void ColorProvider::GenerateColorMap() {
-  // This should only be called to generate the `color_map_` once.
-  DCHECK(!color_map_);
-
-  if (mixers_.empty())
-    DVLOG(2) << "ColorProvider::GenerateColorMap: No mixers defined!";
-
-  // Iterate over associated mixers and extract the ColorIds defined for this
-  // provider.
-  std::set<ColorId> color_ids;
-  for (const auto& mixer : mixers_) {
-    const auto mixer_color_ids = mixer.GetDefinedColorIds();
-    color_ids.insert(mixer_color_ids.begin(), mixer_color_ids.end());
+  auto i = color_map_.find(id);
+  if (i == color_map_.end()) {
+    if (mixers_.empty()) {
+      DVLOG(2) << "ColorProvider::GetColor: No mixers defined!";
+      return gfx::kPlaceholderColor;
+    }
+    DVLOG(2) << "ColorProvider::GetColor: Computing color for ColorId: "
+             << ColorIdName(id);
+    const SkColor color = mixers_.front().GetResultColor(id);
+    if (color == gfx::kPlaceholderColor) {
+      return gfx::kPlaceholderColor;
+    }
+    i = color_map_.insert({id, color}).first;
   }
 
-  // Iterate through all defined ColorIds and seed the `color_map` with the
-  // computed values. Use a std::map rather than a base::flat_map since it has
-  // frequent inserts and could grow very large.
-  std::map<ColorId, SkColor> color_map;
-  for (const auto& color_id : color_ids) {
-    SkColor resulting_color = mixers_.front().GetResultColor(color_id);
-    DVLOG(2) << "GenerateColorMap:"
-             << " Color Id: " << ColorIdName(color_id)
-             << " Resulting Color: " << SkColorName(resulting_color);
-    color_map.insert({color_id, resulting_color});
-  }
-
-  // Construct the color_map_.
-  color_map_ = ColorMap(color_map.begin(), color_map.end());
-
-  // Clear away all associated mixers as these are no longer needed.
-  mixers_.clear();
-  first_postprocessing_mixer_ = mixers_.before_begin();
-}
-
-bool ColorProvider::IsColorMapEmpty() const {
-  DCHECK(color_map_);
-  return color_map_->empty();
+  DVLOG(2) << "ColorProvider::GetColor: ColorId: " << ColorIdName(id)
+           << " Value: " << SkColorName(i->second);
+  return i->second;
 }
 
 void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {
-  if (color_map_) {
-    (*color_map_)[id] = color;
-  } else {
-    if (mixers_.empty())
-      AddMixer();
-    (*std::next(first_postprocessing_mixer_, 1))[id] = {color};
+  color_map_[id] = color;
+}
+
+void ColorProvider::GenerateColorMapForTesting() {
+  for (const auto& mixer : mixers_) {
+    const auto mixer_color_ids = mixer.GetDefinedColorIds();
+    for (const auto color_id : mixer_color_ids) {
+      GetColor(color_id);
+    }
   }
 }
 

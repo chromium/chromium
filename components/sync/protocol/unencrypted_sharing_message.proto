@@ -1,0 +1,71 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+package sync_pb;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message for sending between devices in Sharing. Messages defined here should
+// be set to the unencrypted_payload field of SharingMessageSpecifics.
+message UnencryptedSharingMessage {
+  // Identifier of sender.
+  optional string sender_guid = 1;
+
+  // Payload of the message, contains one of the messages below.
+  oneof payload {
+    SendTabToSelfPush send_tab_message = 2;
+  }
+
+  // The name of the device sending this message.
+  optional string sender_device_name = 3;
+}
+
+message SendTabToSelfPush {
+  // Required. Notification title text to display.
+  optional string title = 1;
+
+  // Required. Actual body text to display.
+  optional string text = 2;
+
+  message Image {
+    // Required. URL of this image resource. FIFE hosted URLs are preferred.
+    optional string url = 1;
+
+    // Optional. Alternate text to display if the image cannot be found and for
+    // accessibility reasons.
+    optional string alt_text = 2;
+  }
+
+  // Optional. An icon to be displayed alongside the notification, or a series
+  // of icons to be put in a collage. If no icon is specified, the frontend
+  // will display a generic icon image.
+  repeated Image icon = 3;
+
+  // Optional. A small app icon to display in certain notification views. This
+  // field can be omitted in favor of using a favicon specified in the
+  // chrome_chime client config. If this field is omitted and the client config
+  // favicon is unspecified, no icon is displayed.
+  optional Image favicon = 4;
+
+  // Required. A URL that will be visited when clicking on this notification.
+  optional string destination_url = 5;
+
+  // Placeholder title. Will be used if payload is not properly assembled on
+  // receiving device. Will not get encrypted by Chime.
+  optional string placeholder_title = 6;
+
+  // Placeholder body. Will be used if payload is not properly assembled on
+  // receiving device. Will not get encrypted by Chime.
+  optional string placeholder_body = 7;
+
+  // Unique identifier of the associated SendTabToSelfEntry. Will be used to
+  // dismiss the entry upon push notification interaction.
+  optional string entry_unique_guid = 8;
+}

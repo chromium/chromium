@@ -1,0 +1,160 @@
+<!doctype html>
+<head>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<meta name="help" href="https://github.com/WICG/CHIPS#chips-cookies-having-independent-partitioned-state">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<title>Test partitioned cookie behavior in parallel embeds</title>
+</head>
+<body>
+<script>
+
+function cookiePresent(cookieName, frame) {
+  return frame.contentDocument.cookie.includes(cookieName) &&
+      frame.contentWindow.location.href.includes(cookieName);
+}
+
+function iframeHost(iframe){
+  iframeUrl = new URL(iframe.src);
+  return iframeUrl.hostname;
+}
+
+function waitForFramesToLoad(iframe1, parallelFrame) {
+    return new Promise((resolve) => {
+      let iframe1Loaded = false;
+      let parallelFrameLoaded = false;
+
+      iframe1.onload = () => {
+        iframe1Loaded = true;
+        if (parallelFrameLoaded) {
+          resolve();
+        }
+      };
+
+      parallelFrame.onload = () => {
+        parallelFrameLoaded = true;
+        if (iframe1Loaded) {
+          resolve();
+        }
+      };
+    });
+  }
+
+promise_test(async () => {
+  //Add partitioned cookie to top-level site.
+  const partitionedCookie = "ancestor=chain";
+  const partitionedCookieAttributes =
+      "; Secure; Path=/; SameSite=None; Partitioned";
+  const partitionedCookieLine =
+      partitionedCookie + partitionedCookieAttributes;
+
+  document.cookie = partitionedCookieLine;
+  assert_true(document.cookie.includes(partitionedCookie));
+
+  const sameSiteHost = window.location.hostname;
+  const resourceDir = "/cookies/partitioned-cookies/resources/";
+  const crossSiteUrl = new URL(
+    resourceDir + "ancestor-chain-empty-embed.html",
+    `https://${TEST_HOST}:${window.location.port}`);
+  const sameSiteUrl = new URL(
+      resourceDir + "ancestor-chain-empty-embed.html",
+    `https://${sameSiteHost}:${window.location.port}`);
+
+  // Create two cross-site iframes and wait for them to load.
+  const iframe = document.createElement("iframe");
+  const parallelFrame = document.createElement("iframe");
+
+  iframe.src = crossSiteUrl.href;
+  parallelFrame.src = crossSiteUrl.href;
+
+  //Get promise before appendChild to ensure load events are not missed.
+  var FrameLoadPromise = waitForFramesToLoad(iframe, parallelFrame);
+
+  document.body.appendChild(iframe);
+  document.body.appendChild(parallelFrame);
+
+  await FrameLoadPromise;
+
+  // Confirm that both iframes are cross-site.
+  assert_not_equals(sameSiteHost, iframeHost(iframe));
+  assert_not_equals(sameSiteHost, iframeHost(parallelFrame));
+
+  //Get promise before changing src to ensure load events are not missed.
+  FrameLoadPromise = waitForFramesToLoad(iframe, parallelFrame);
+
+  // Initiate the redirect from cross-site to same-site through
+  // redirect-and-append-cookie-header.php
+  iframe.src = resourceDir+
+    "redirect-and-append-cookie-header.php?location="
+    + sameSiteUrl.href;
+  parallelFrame.src = resourceDir+
+    "redirect-and-append-cookie-header.php?location="
+    + sameSiteUrl.href;
+
+  await FrameLoadPromise;
+
+  // Confirm that the iframes are now same-site.
+  assert_equals(sameSiteHost, iframeHost(iframe));
+  assert_equals(sameSiteHost, iframeHost(parallelFrame));
+
+  // Confirm that the cookie was in http header of the redirect requests
+  assert_true(cookiePresent(partitionedCookie, iframe));
+  assert_true(cookiePresent(partitionedCookie, parallelFrame));
+
+}, "Partitioned cookies are sent in parallel embedded cross-site to same-site redirects");
+
+promise_test(async t => {
+  //Add partitioned cookie to top-level site.
+  const partitionedCookie = "ancestor=chain";
+  const partitionedCookieAttributes =
+      "; Secure; Path=/; SameSite=None; Partitioned";
+  const partitionedCookieLine =
+      partitionedCookie + partitionedCookieAttributes;
+
+  document.cookie = partitionedCookieLine;
+
+  assert_true(document.cookie.includes(partitionedCookie));
+  const resourceDir = "/cookies/partitioned-cookies/resources/";
+  const embedUrl = new URL(resourceDir +
+    "ancestor-chain-same-site-to-cross-site-embed.html",
+    `https://${TEST_HOST}:${window.location.port}`);
+  const parallelEmbedUrl = new URL(resourceDir +
+    "ancestor-chain-cross-site-parallel-embed.html",
+    `https://${TEST_HOST}:${window.location.port}`);
+  const redirectUrl = new URL(resourceDir +
+    "redirect-and-append-cookie-header.php?" + "location=" + embedUrl,
+    `https://${TEST_HOST}:${window.location.port}`);
+
+  const iframe = document.createElement("iframe");
+  const parallelFrame = document.createElement("iframe");
+
+  iframe.src = resourceDir + "ancestor-chain-empty-embed.html";
+  parallelFrame.src = resourceDir + "ancestor-chain-empty-embed.html";
+
+  //Get promise before appendChild to ensure load events are not missed.
+  const FrameLoadPromise = waitForFramesToLoad(iframe, parallelFrame);
+
+  document.body.appendChild(iframe);
+  document.body.appendChild(parallelFrame);
+
+  await FrameLoadPromise;
+
+  // Confirm that the iframe is same-site to the top-level site.
+  assert_equals(window.location.hostname, iframeHost(iframe));
+  assert_equals(window.location.hostname, iframeHost(parallelFrame));
+
+  iframe.src = redirectUrl;
+  parallelFrame.src = parallelEmbedUrl;
+
+  // Confirm that the iframe is cross-site to the top-level site.
+  assert_not_equals(window.location.hostname, iframeHost(iframe));
+  assert_not_equals(window.location.hostname, iframeHost(parallelFrame));
+
+  fetch_tests_from_window(iframe.contentWindow);
+  fetch_tests_from_window(parallelFrame.contentWindow);
+}, "Partitioned cookies are not sent in parallel embedded same-site to cross-site redirects");
+
+</script>
+</body>

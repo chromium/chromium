@@ -92,6 +92,8 @@ extern const base::FilePath::CharType kJumpListIconDirname[];
 // directory names
 #if BUILDFLAG(IS_WIN)
 extern const wchar_t kUserDataDirname[];
+#elif BUILDFLAG(IS_ANDROID)
+extern const base::FilePath::CharType kOTRTempStateDirname[];
 #endif
 
 // Fraction of the soft process limit that can be consumed by extensions, before

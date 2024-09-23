@@ -1,0 +1,28 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("wrapper") {
+  crate_root = "lib.rs"
+  allow_unsafe = true
+  sources = [
+    "lib.rs",
+    "visitor.rs",
+  ]
+
+  cxx_bindings = [ "lib.rs" ]
+
+  public_deps = [ ":wrapper_functions" ]
+  deps = [
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json_lenient/v0_2:lib",
+  ]
+}
+
+source_set("wrapper_functions") {
+  visibility = [ ":*" ]
+  deps = [ "//build/rust:cxx_cppdeps" ]
+  sources = [ "functions.h" ]
+}

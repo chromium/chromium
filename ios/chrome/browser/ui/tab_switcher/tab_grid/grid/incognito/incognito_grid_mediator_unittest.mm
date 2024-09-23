@@ -8,9 +8,10 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
@@ -23,7 +24,8 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mediator_ = [[IncognitoGridMediator alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mediator_ = [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
@@ -33,13 +35,14 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
   void TearDown() override {
     // Forces the IncognitoGridMediator to removes its Observer from
     // WebStateList before the Browser is destroyed.
-    mediator_.browser = nullptr;
+    [mediator_ disconnect];
     mediator_ = nil;
     GridMediatorTestClass::TearDown();
   }
 
  protected:
   IncognitoGridMediator* mediator_;
+  TabGridModeHolder* mode_holder_;
 };
 
 // Tests that the WebStateList and consumer's list are empty when
@@ -52,14 +55,18 @@ TEST_F(IncognitoGridMediatorTest, CloseAllItemsCommand) {
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.
-TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
+// TODO(crbug.com/361080595): Flaky on various bots.
+TEST_F(IncognitoGridMediatorTest, DISABLED_OpenNewTab_OpenIfAllowedByPolicy) {
+  // Disconnect the existing mediator first as we will re-create it.
+  [mediator_ disconnect];
+
   // IncognitoModePrefs::kEnabled Means that users may open pages in both
   // Incognito mode and normal mode
   browser_state_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kEnabled)));
-  mediator_ = [[IncognitoGridMediator alloc] init];
+  mediator_ = [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
   mediator_.consumer = consumer_;
   mediator_.browser = browser_.get();
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
@@ -78,7 +85,7 @@ TEST_F(IncognitoGridMediatorTest, OpenNewTab_OpenIfAllowedByPolicy) {
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
-  mediator_ = [[IncognitoGridMediator alloc] init];
+  mediator_ = [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
   mediator_.consumer = consumer_;
   mediator_.browser = browser_.get();
   EXPECT_EQ(4, browser_->GetWebStateList()->count());
@@ -97,7 +104,6 @@ TEST_F(IncognitoGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
 
   EXPECT_EQ(TabGridPageIncognitoTabs,
             fake_toolbars_mediator_.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

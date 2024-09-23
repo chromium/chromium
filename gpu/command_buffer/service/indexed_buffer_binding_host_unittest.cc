@@ -37,7 +37,7 @@ class IndexedBufferBindingHostTest : public GpuServiceTest {
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUpWithGLVersion("4.1", "");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0", "");
   }
 
   void TearDown() override {

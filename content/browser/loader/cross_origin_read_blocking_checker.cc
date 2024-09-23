@@ -4,12 +4,14 @@
 
 #include "content/browser/loader/cross_origin_read_blocking_checker.h"
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
-#include "services/network/public/cpp/corb/corb_api.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -51,8 +53,9 @@ class CrossOriginReadBlockingChecker::BlobIOState {
   void DidCalculateSize(int result) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     size_t buf_size = net::kMaxBytesToSniff;
-    if (buf_size > blob_reader_->total_size())
+    if (buf_size > blob_reader_->total_size()) {
       buf_size = blob_reader_->total_size();
+    }
     buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(buf_size);
     int bytes_read;
     const storage::BlobReader::Status status = blob_reader_->Read(
@@ -97,25 +100,25 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     const network::ResourceRequest& request,
     const network::mojom::URLResponseHead& response,
     const storage::BlobDataHandle& blob_data_handle,
-    network::corb::PerFactoryState& corb_state,
+    network::orb::PerFactoryState* orb_state,
     base::OnceCallback<void(Result)> callback)
     : callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
 
-  corb_analyzer_ = network::corb::ResponseAnalyzer::Create(corb_state);
+  orb_analyzer_ = network::orb::ResponseAnalyzer::Create(orb_state);
   auto decision =
-      corb_analyzer_->Init(request.url, request.request_initiator, request.mode,
-                           request.destination, response);
+      orb_analyzer_->Init(request.url, request.request_initiator, request.mode,
+                          request.destination, response);
   switch (decision) {
-    case network::corb::ResponseAnalyzer::Decision::kBlock:
+    case network::orb::ResponseAnalyzer::Decision::kBlock:
       OnBlocked();
       return;
 
-    case network::corb::ResponseAnalyzer::Decision::kAllow:
+    case network::orb::ResponseAnalyzer::Decision::kAllow:
       OnAllowed();
       return;
 
-    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+    case network::orb::ResponseAnalyzer::Decision::kSniffMore:
       blob_io_state_ = std::make_unique<BlobIOState>(
           weak_factory_.GetWeakPtr(),
           std::make_unique<storage::BlobDataHandle>(blob_data_handle));
@@ -126,7 +129,7 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
                                     base::Unretained(blob_io_state_.get())));
       return;
   }
-  NOTREACHED();  // Unrecognized `decision` value?
+  NOTREACHED_IN_MIGRATION();  // Unrecognized `decision` value?
 }
 
 CrossOriginReadBlockingChecker::~CrossOriginReadBlockingChecker() {
@@ -142,7 +145,7 @@ void CrossOriginReadBlockingChecker::OnAllowed() {
 }
 
 void CrossOriginReadBlockingChecker::OnBlocked() {
-  std::move(callback_).Run(corb_analyzer_->ShouldReportBlockedResponse()
+  std::move(callback_).Run(orb_analyzer_->ShouldReportBlockedResponse()
                                ? Result::kBlocked_ShouldReport
                                : Result::kBlocked_ShouldNotReport);
 }
@@ -161,37 +164,37 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     return;
   }
 
-  base::StringPiece data(buffer->data(), bytes_read);
-  network::corb::ResponseAnalyzer::Decision corb_decision =
-      corb_analyzer_->Sniff(data);
+  std::string_view data(buffer->data(), bytes_read);
+  network::orb::ResponseAnalyzer::Decision orb_decision =
+      orb_analyzer_->Sniff(data);
 
   // At OnReadComplete we are out of data, so fall back to
-  // HandleEndOfSniffableResponseBody if no allow/block `corb_decision` has been
+  // HandleEndOfSniffableResponseBody if no allow/block `orb_decision` has been
   // reached yet.
-  if (corb_decision == network::corb::ResponseAnalyzer::Decision::kSniffMore) {
-    corb_decision = corb_analyzer_->HandleEndOfSniffableResponseBody();
-    DCHECK_NE(network::corb::ResponseAnalyzer::Decision::kSniffMore,
-              corb_decision);
+  if (orb_decision == network::orb::ResponseAnalyzer::Decision::kSniffMore) {
+    orb_decision = orb_analyzer_->HandleEndOfSniffableResponseBody();
+    DCHECK_NE(network::orb::ResponseAnalyzer::Decision::kSniffMore,
+              orb_decision);
   }
 
-  switch (corb_decision) {
-    case network::corb::ResponseAnalyzer::Decision::kBlock:
+  switch (orb_decision) {
+    case network::orb::ResponseAnalyzer::Decision::kBlock:
       OnBlocked();
       return;
 
-    case network::corb::ResponseAnalyzer::Decision::kAllow:
+    case network::orb::ResponseAnalyzer::Decision::kAllow:
       OnAllowed();
       return;
 
-    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+    case network::orb::ResponseAnalyzer::Decision::kSniffMore:
       // This should be impossible after going through
       // HandleEndOfSniffableResponseBody above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // Fall back to blocking after encountering an unexpected or unrecognized
-  // `corb_decision` in the `switch` statement above.
-  NOTREACHED();
+  // `orb_decision` in the `switch` statement above.
+  NOTREACHED_IN_MIGRATION();
   OnBlocked();
 }
 

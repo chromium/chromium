@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] deprecatedRenderURLReplacements missing start percent is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements single percents is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] deprecatedRenderURLReplacements without end percents is invalid.
+  assert_true: did not get expected error type: [object FencedFrameConfig] expected true got false
+[FAIL] sellerRealTimeReportingConfig has no type
+  assert_true: did not get expected error: [object FencedFrameConfig] expected true got false
+Harness: the test ran to completion.
+

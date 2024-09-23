@@ -23,11 +23,6 @@ class MockPolicyContainerHost final : public blink::mojom::PolicyContainerHost {
               AddContentSecurityPolicies,
               (std::vector<network::mojom::ContentSecurityPolicyPtr>),
               (override));
-  MOCK_METHOD(
-      void,
-      IssueKeepAliveHandle,
-      (mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>),
-      (override));
   MockPolicyContainerHost();
   ~MockPolicyContainerHost() override;
 

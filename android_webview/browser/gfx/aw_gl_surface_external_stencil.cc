@@ -163,7 +163,9 @@ AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil(
     bool is_angle)
     : AwGLSurface(display, is_angle) {}
 
-AwGLSurfaceExternalStencil::~AwGLSurfaceExternalStencil() = default;
+AwGLSurfaceExternalStencil::~AwGLSurfaceExternalStencil() {
+  InvalidateWeakPtrs();
+}
 
 unsigned int AwGLSurfaceExternalStencil::GetBackingFramebufferObject() {
   const auto& stencil_state =

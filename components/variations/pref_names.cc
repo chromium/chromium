@@ -114,8 +114,12 @@ const char kVariationsSafeSeedLocale[] = "variations_safe_seed_locale";
 const char kVariationsSafeSeedMilestone[] = "variations_safe_seed_milestone";
 
 // The seed that is used to randomize the limited entropy synthetic trial.
+// Previously this was called "variations_limited_entropy_synthetic_trial_seed".
+// It was renamed to fix an imbalance in the `LimitedEntropySyntheticTrial`.
+// TODO(crbug.com/40948861): Remove both this and the old pref value after the
+// synthetic trial wraps up.
 const char kVariationsLimitedEntropySyntheticTrialSeed[] =
-    "variations_limited_entropy_synthetic_trial_seed";
+    "variations_limited_entropy_synthetic_trial_seed_v2";
 
 // A saved copy of |kVariationsPermanentConsistencyCountry|. The saved value is
 // the most recent value that was successfully used by the VariationsService for

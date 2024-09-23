@@ -85,7 +85,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
       std::optional<base::TimeDelta> local_time) override;
 
   scoped_refptr<cc::Animation> animation_;
-  raw_ptr<CompositorAnimationDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<CompositorAnimationDelegate> delegate_;
 };
 
 }  // namespace blink

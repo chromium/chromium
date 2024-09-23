@@ -7,6 +7,8 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_request_event_init.h"
@@ -23,10 +25,11 @@ class AtomicString;
 namespace blink {
 
 class ExceptionState;
+class PaymentRequestDetailsUpdate;
 class RespondWithObserver;
-class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
+class ServiceWorkerWindowClient;
 
 class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   DEFINE_WRAPPERTYPEINFO();
@@ -67,21 +70,21 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   std::optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
       const;
 
-  ScriptPromise openWindow(ScriptState*, const String& url);
-  ScriptPromise changePaymentMethod(ScriptState*,
-                                    const String& method_name,
-                                    ExceptionState& exception_state);
-  ScriptPromise changePaymentMethod(ScriptState*,
-                                    const String& method_name,
-                                    const ScriptValue& method_details,
-                                    ExceptionState& exception_state);
-  ScriptPromise changeShippingAddress(ScriptState*,
-                                      AddressInit*,
-                                      ExceptionState&);
-  ScriptPromise changeShippingOption(ScriptState*,
-                                     const String& shipping_option_id,
-                                     ExceptionState&);
-  void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
+  ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> openWindow(
+      ScriptState*,
+      const String& url);
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changePaymentMethod(
+      ScriptState*,
+      const String& method_name,
+      const ScriptValue& method_details,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>>
+  changeShippingAddress(ScriptState*, AddressInit*, ExceptionState&);
+  ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changeShippingOption(
+      ScriptState*,
+      const String& shipping_option_id,
+      ExceptionState&);
+  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -100,7 +103,8 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   Member<const PaymentOptions> payment_options_;
   HeapVector<Member<PaymentShippingOption>> shipping_options_;
 
-  Member<ScriptPromiseResolver> change_payment_request_details_resolver_;
+  Member<ScriptPromiseResolver<IDLNullable<PaymentRequestDetailsUpdate>>>
+      change_payment_request_details_resolver_;
   Member<RespondWithObserver> observer_;
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost>
       payment_handler_host_;

@@ -68,7 +68,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // current browser instance or false if the remote process should handle it
   // (i.e., because the current process is shutting down).
   static bool ProcessSingletonNotificationCallback(
-      const base::CommandLine& command_line,
+      base::CommandLine command_line,
       const base::FilePath& current_directory);
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 

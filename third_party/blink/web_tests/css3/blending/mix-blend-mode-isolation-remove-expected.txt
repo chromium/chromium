@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='accelerated-stacking-context'",
+      "name": "LayoutBlockFlow DIV class='accelerated-stacking-context'",
       "bounds": [784, 90],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV id='intermediary' class='accelerated-no-stacking-context'",
+      "name": "LayoutBlockFlow (children-inline) DIV id='intermediary' class='accelerated-no-stacking-context'",
       "bounds": [784, 90],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",

@@ -34,7 +34,7 @@ const reservedSystemMessages = [[0xf4], [0xf5]];
 const systemExclusiveMessages = [[0xf0, 0xf7], [0xf0, 0x00, 0xf7]];
 
 promise_test(async _ => {
-  await test_driver.set_permission({name: 'midi'}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   const access = await navigator.requestMIDIAccess();
   const output = access.outputs.values().next().value;
 

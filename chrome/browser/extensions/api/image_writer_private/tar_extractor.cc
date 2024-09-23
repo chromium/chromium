@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 
 #include <utility>
@@ -32,14 +37,16 @@ bool TarExtractor::IsTarFile(const base::FilePath& image_path) {
                                       base::File::FLAG_READ |
                                       base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                       base::File::FLAG_WIN_SHARE_DELETE);
-  if (!src_file.IsValid())
+  if (!src_file.IsValid()) {
     return false;
+  }
 
   // Tar header record is always 512 bytes, so if the file is shorter than that,
   // it's not tar.
   char header[512] = {};
-  if (src_file.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header))
+  if (src_file.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header)) {
     return false;
+  }
 
   return std::equal(kExpectedMagic, kExpectedMagic + sizeof(kExpectedMagic),
                     header + kMagicOffset);

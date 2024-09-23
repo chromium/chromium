@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"

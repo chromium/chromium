@@ -6,13 +6,13 @@
 #define COMPONENTS_FEED_CORE_V2_FEED_NETWORK_IMPL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/types.h"
@@ -26,9 +26,6 @@ class IdentityManager;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-namespace supervised_user {
-class GetDiscoverFeedRequest;
-}  // namespace supervised_user
 
 namespace feed {
 constexpr base::TimeDelta kAccessTokenFetchTimeout = base::Seconds(10);
@@ -67,16 +64,10 @@ class FeedNetworkImpl : public FeedNetwork {
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
-  void SendKidFriendlyApiRequest(
-      const supervised_user::GetDiscoverFeedRequest& request,
-      const AccountInfo& account_info,
-      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback)
-      override;
-
   void SendDiscoverApiRequest(
       NetworkRequestType request_type,
-      base::StringPiece api_path,
-      base::StringPiece method,
+      std::string_view api_path,
+      std::string_view method,
       std::string request_bytes,
       const AccountInfo& account_info,
       std::optional<RequestMetadata> request_metadata,
@@ -84,7 +75,7 @@ class FeedNetworkImpl : public FeedNetwork {
 
   void SendAsyncDataRequest(
       const GURL& url,
-      base::StringPiece request_method,
+      std::string_view request_method,
       net::HttpRequestHeaders request_headers,
       std::string request_body,
       const AccountInfo& account_info,
@@ -100,7 +91,7 @@ class FeedNetworkImpl : public FeedNetwork {
   // an error, including non-protocol errors. The contents of |request_body|
   // will be gzipped.
   void Send(const GURL& url,
-            base::StringPiece request_method,
+            std::string_view request_method,
             std::string request_body,
             bool allow_bless_auth,
             const AccountInfo& account_info,

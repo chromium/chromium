@@ -83,6 +83,13 @@ class ScanIntegrationTest : public AshIntegrationTest {
       "scan-done-section",
   };
 
+  const DeepQuery kShowInFolderQuery =
+      kScanDoneSectionQuery + "#showInFolderButton";
+
+  const DeepQuery kFileListQuery{
+      "#file-list",
+  };
+
   auto LaunchScanningApp() {
     return Do([&]() { CreateBrowserWindow(GURL(kScanningUrl)); });
   }
@@ -96,6 +103,28 @@ class ScanIntegrationTest : public AshIntegrationTest {
     // Only one file should exist in the temp directory.
     CHECK(e.Next().empty());
     return file;
+  }
+
+  auto WaitForFilesToLoad(const ui::ElementIdentifier& element_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFilesLoaded);
+
+    WebContentsInteractionTestUtil::StateChange state_change;
+    state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+        kExistsAndConditionTrue;
+    state_change.where = kFileListQuery;
+    state_change.test_function = "e => e.querySelectorAll('li').length > 0";
+    state_change.event = kFilesLoaded;
+    return WaitForStateChange(element_id, state_change);
+  }
+
+  // Use JS to find the scanned file in the Files app.
+  auto VerifyScannedPdfInFilesApp(const ui::ElementIdentifier& element_id) {
+    return CheckJsResultAt(
+        element_id, kFileListQuery,
+        "e => { const files = Array.from(e.querySelectorAll('.entry-name')); "
+        "const pdfIndex = files.findIndex(row => { const pattern = "
+        "/^scan_.*\\.pdf$/i; return pattern.test(row.innerText)}); return "
+        "pdfIndex !== -1; }");
   }
 };
 
@@ -112,6 +141,7 @@ IN_PROC_BROWSER_TEST_F(ScanIntegrationTest, ScanWithDefaultSettings) {
   // Ensure the Scanning system web app (SWA) is installed.
   InstallSystemApps();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kScanAppWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFilesAppId);
   base::ScopedAllowBlockingForTesting allow_io;
 
   LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
@@ -127,7 +157,15 @@ IN_PROC_BROWSER_TEST_F(ScanIntegrationTest, ScanWithDefaultSettings) {
       InAnyContext(EnsurePresent(kScanAppWebContentsId, kScanButtonQuery)),
       ExecuteJsAt(kScanAppWebContentsId, kScanButtonQuery, kClickFn),
       WaitForElementExists(kScanAppWebContentsId, kScanDoneSectionQuery),
-      FlushEvents());
+      WaitForElementExists(kScanAppWebContentsId, kShowInFolderQuery),
+      InstrumentNextTab(kFilesAppId, AnyBrowser()),
+      Log("Clicking the Show in Folder button"),
+      ClickElement(kScanAppWebContentsId, kShowInFolderQuery),
+      WaitForShow(kFilesAppId),
+      Log("Waiting for files to load in the File app"),
+      WaitForFilesToLoad(kFilesAppId),
+      Log("Verifying the scanned PDF is available"),
+      VerifyScannedPdfInFilesApp(kFilesAppId));
   // PDFs do not have stable contents (e.g. metadata changes), so do not
   // compare to a golden file. If the file was written, we assume its
   // contents are valid.

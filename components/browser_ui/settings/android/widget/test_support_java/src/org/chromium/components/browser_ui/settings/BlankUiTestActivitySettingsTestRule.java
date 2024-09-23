@@ -13,10 +13,10 @@ import androidx.preference.PreferenceScreen;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Facilitates testing of Fragments/Settings using the BlankUiTestActivity */
@@ -64,7 +64,7 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
         if (getActivity() == null) launchActivity(null);
 
         PreferenceFragmentCompat preference =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceFragmentCompat fragment =
                                     (PreferenceFragmentCompat)
@@ -92,7 +92,7 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
     public void launchPreference(PreferenceFragmentCompat preference) {
         if (getActivity() == null) launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPreferenceFragment = preference;
                     getActivity()
@@ -108,7 +108,7 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
                     Criteria.checkThat(
                             mPreferenceFragment.getPreferenceScreen(), Matchers.notNullValue());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPreferenceScreen = mPreferenceFragment.getPreferenceScreen();
                 });

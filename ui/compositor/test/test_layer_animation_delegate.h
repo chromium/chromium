@@ -40,13 +40,6 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   // PropertyChangeReason.
   void ExpectLastPropertyChangeReason(PropertyChangeReason reason);
 
-  // Sets the current frame number to be returned by GetFrameNumber. This can be
-  // used to simulate receiving acks of frame submission, in order to test
-  // advancing of animations. It can also be used to simulate the availability
-  // of the frame number when Layer is attached to, or detached from a frame
-  // number source, i.e. Compositor.
-  void SetFrameNumber(std::optional<int> frame_number);
-
   // Implementation of LayerAnimationDelegate
   void SetBoundsFromAnimation(const gfx::Rect& bounds,
                               PropertyChangeReason reason) override;
@@ -85,7 +78,6 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   ui::Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;
   LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() override;
-  std::optional<int> GetFrameNumber() const override;
   float GetRefreshRate() const override;
 
  private:
@@ -108,7 +100,6 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   gfx::RoundedCornersF rounded_corners_;
   gfx::LinearGradient gradient_mask_;
   scoped_refptr<cc::Layer> cc_layer_;
-  std::optional<int> frame_number_;
 
   // Allow copy and assign.
 };

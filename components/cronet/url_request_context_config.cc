@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -269,7 +268,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<double> network_thread_priority)
+    std::optional<int> network_thread_priority)
     : enable_quic(enable_quic),
       enable_spdy(enable_spdy),
       enable_brotli(enable_brotli),
@@ -309,7 +308,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<double> network_thread_priority) {
+    std::optional<int> network_thread_priority) {
   std::optional<base::Value::Dict> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {
@@ -731,8 +730,8 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 
     if (!is_network_bound) {
       std::unique_ptr<net::HostResolver> host_resolver;
-      // TODO(crbug.com/934402): Consider using a shared HostResolverManager for
-      // Cronet HostResolvers.
+      // TODO(crbug.com/40614970): Consider using a shared HostResolverManager
+      // for Cronet HostResolvers.
       if (stale_dns_enable) {
         DCHECK(!disable_ipv6_on_wifi);
         host_resolver = std::make_unique<StaleHostResolver>(

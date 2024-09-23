@@ -5,13 +5,15 @@
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/test/run_until.h"
-#include "base/test/to_vector.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -24,6 +26,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace web_app {
@@ -100,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       return base::Contains(open_urls, parent_app_settings_url);
     })) << "Timeout waiting for settings page at "
         << parent_app_settings_url << " to open in Ash. Open Ash windows:\n"
-        << base::JoinString(base::test::ToVector(open_urls, &GURL::spec), "\n");
+        << base::JoinString(base::ToVector(open_urls, &GURL::spec), "\n");
   } else {
     bool open;
     waiter.CheckAtLeastOneAshBrowserWindowOpen(&open);

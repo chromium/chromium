@@ -21,8 +21,7 @@
 namespace device {
 
 // This class provides information and notifications about
-// connected/disconnected input/HID devices. This class is *NOT*
-// thread-safe and all methods must be called from the FILE thread.
+// connected/disconnected input/HID devices.
 class InputServiceLinux : public mojom::InputDeviceManager {
  public:
   using DeviceMap = std::map<std::string, mojom::InputDeviceInfoPtr>;
@@ -59,17 +58,14 @@ class InputServiceLinux : public mojom::InputDeviceManager {
       mojo::PendingAssociatedRemote<mojom::InputDeviceManagerClient> client,
       GetDevicesCallback callback) override;
   void GetDevices(GetDevicesCallback callback) override;
-
- protected:
   void AddDevice(mojom::InputDeviceInfoPtr info);
   void RemoveDevice(const std::string& id);
 
-  bool CalledOnValidThread() const;
-
+ protected:
   DeviceMap devices_;
 
  private:
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   mojo::ReceiverSet<mojom::InputDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::InputDeviceManagerClient> clients_;
 };

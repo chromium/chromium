@@ -19,10 +19,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -41,11 +41,9 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -125,7 +123,10 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
   AttributionInputEvent input;
 #if BUILDFLAG(IS_ANDROID)
   if (input_event_tracker_android_) {
-    input.input_event = input_event_tracker_android_->GetMostRecentEvent();
+    AttributionInputEventTrackerAndroid::InputEvent input_event =
+        input_event_tracker_android_->GetMostRecentEvent();
+    input.input_event = std::move(input_event.event);
+    input.input_event_id = input_event.id;
   }
 #endif
   return input;
@@ -134,7 +135,7 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   const auto& impression = navigation_handle->GetImpression();
 
-  // TODO(crbug.com/1428315): Consider checking for navigations taking place in
+  // TODO(crbug.com/40262156): Consider checking for navigations taking place in
   // a prerendered main frame.
 
   // Impression navigations need to navigate the primary main frame to be valid.
@@ -172,11 +173,10 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   auto* navigation_request = static_cast<NavigationRequest*>(navigation_handle);
 
-  suitable_context->data_host_manager()->NotifyNavigationRegistrationStarted(
-      impression->attribution_src_token, suitable_context->last_input_event(),
-      suitable_context->context_origin(),
-      suitable_context->is_nested_within_fenced_frame(),
-      suitable_context->root_render_frame_id(),
+  AttributionDataHostManager* manager = suitable_context->data_host_manager();
+  manager->NotifyNavigationRegistrationStarted(
+      *std::move(suitable_context), impression->attribution_src_token,
+
       navigation_handle->GetNavigationId(),
       // The devtools_navigation_token is going to be used as the
       // navigation's request devtools inspector ID if there is an enabled
@@ -264,8 +264,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   bool had_header =
       attribution_manager->GetDataHostManager()
           ->NotifyNavigationRegistrationData(impression->attribution_src_token,
-                                             headers, std::move(reporting_url),
-                                             impression->runtime_features);
+                                             headers, std::move(reporting_url));
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();
@@ -273,20 +272,20 @@ void AttributionHost::NotifyNavigationRegistrationData(
 }
 
 void AttributionHost::RegisterDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     attribution_reporting::mojom::RegistrationEligibility
-        registration_eligibility) {
+        registration_eligibility,
+    bool is_for_background_requests) {
   auto suitable_context = AttributionSuitableContext::Create(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
   if (!suitable_context.has_value()) {
     return;
   }
 
-  suitable_context->data_host_manager()->RegisterDataHost(
-      std::move(data_host), suitable_context->context_origin(),
-      suitable_context->is_nested_within_fenced_frame(),
-      registration_eligibility, suitable_context->root_render_frame_id(),
-      suitable_context->last_navigation_id());
+  AttributionDataHostManager* manager = suitable_context->data_host_manager();
+  manager->RegisterDataHost(std::move(data_host), *std::move(suitable_context),
+                            registration_eligibility,
+                            is_for_background_requests);
 }
 
 void AttributionHost::NotifyNavigationWithBackgroundRegistrationsWillStart(
@@ -310,7 +309,7 @@ void AttributionHost::NotifyNavigationWithBackgroundRegistrationsWillStart(
 }
 
 void AttributionHost::RegisterNavigationDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token) {
   auto suitable_context = AttributionSuitableContext::Create(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
@@ -340,33 +339,6 @@ void AttributionHost::BindReceiver(
     return;
   }
   attribution_host->receivers_.Bind(rfh, std::move(receiver));
-}
-
-bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
-    BeaconId beacon_id,
-    std::optional<int64_t> navigation_id,
-    RenderFrameHostImpl* initiator_frame_host,
-    std::string devtools_request_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionFencedFrameReportingBeacon)) {
-    return false;
-  }
-
-  auto suitable_context =
-      AttributionSuitableContext::Create(initiator_frame_host);
-  if (!suitable_context.has_value()) {
-    return false;
-  }
-
-  suitable_context->data_host_manager()
-      ->NotifyFencedFrameReportingBeaconStarted(
-          beacon_id, navigation_id, suitable_context->context_origin(),
-          suitable_context->is_nested_within_fenced_frame(),
-          navigation_id.has_value() ? suitable_context->last_input_event()
-                                    : AttributionInputEvent(),
-          suitable_context->root_render_frame_id(),
-          std::move(devtools_request_id));
-  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

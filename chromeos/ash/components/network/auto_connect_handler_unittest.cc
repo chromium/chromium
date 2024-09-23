@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
@@ -112,8 +113,19 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       CellularConnectionHandler* cellular_connection_handler) override {}
 
+  void OnAutoConnectedInitiated(int auto_connect_reasons) override {
+    ++num_auto_connect_events_;
+    auto_connect_reasons_ = auto_connect_reasons;
+  }
+
+  int num_auto_connect_events() { return num_auto_connect_events_; }
+
+  int auto_connect_reasons() { return auto_connect_reasons_; }
+
  private:
   base::RepeatingCallback<void(const std::string&)> disconnect_handler_;
+  int num_auto_connect_events_ = 0;
+  int auto_connect_reasons_ = 0;
 };
 
 }  // namespace
@@ -180,6 +192,7 @@ class AutoConnectHandlerTest : public testing::Test {
   void TearDown() override {
     auto_connect_handler_->RemoveObserver(test_observer_.get());
     auto_connect_handler_.reset();
+    test_network_connection_handler_.reset();
     client_cert_resolver_.reset();
     managed_config_handler_.reset();
     network_profile_handler_.reset();
@@ -286,7 +299,8 @@ class AutoConnectHandlerTest : public testing::Test {
   NetworkStateTestHelper& helper() { return helper_; }
 
   base::test::TaskEnvironment task_environment_;
-  NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
+  base::test::ScopedFeatureList scoped_feature_list_;
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<NetworkConfigurationHandler> network_config_handler_;
@@ -400,9 +414,13 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertLoading) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
                 AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
             test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_network_connection_handler_->auto_connect_reasons());
 }
 
 TEST_F(AutoConnectHandlerTest, ReconnectOnCertPatternResolved) {
@@ -423,10 +441,15 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertPatternResolved) {
   SetupUserPolicy(kPolicyCertPattern);
   StartNetworkCertLoader();
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
                 AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
                 AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED,
             test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
+                AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED,
+            test_network_connection_handler_->auto_connect_reasons());
 
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
@@ -443,10 +466,15 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertPatternResolved) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
   EXPECT_EQ(2, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(2, test_network_connection_handler_->num_auto_connect_events());
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
                 AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
                 AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED,
             test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED |
+                AutoConnectHandler::AUTO_CONNECT_REASON_CERTIFICATE_RESOLVED,
+            test_network_connection_handler_->auto_connect_reasons());
 }
 
 // Ensure that resolving of certificate patterns only triggers a reconnect if at
@@ -481,9 +509,13 @@ TEST_F(AutoConnectHandlerTest, NoReconnectIfNoCertResolved) {
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
                 AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
             test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN |
+                AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED,
+            test_network_connection_handler_->auto_connect_reasons());
 }
 
 TEST_F(AutoConnectHandlerTest, DisconnectOnPolicyLoading) {
@@ -545,6 +577,7 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnDevicePolicyApplied) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
 }
 
 TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyApplied) {
@@ -574,6 +607,7 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyApplied) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
 }
 
 TEST_F(AutoConnectHandlerTest,
@@ -641,8 +675,11 @@ TEST_F(AutoConnectHandlerTest, ReconnectAfterLogin) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
+  EXPECT_EQ(1, test_network_connection_handler_->num_auto_connect_events());
   EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN,
             test_observer_->auto_connect_reasons());
+  EXPECT_EQ(AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN,
+            test_network_connection_handler_->auto_connect_reasons());
 }
 
 TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
@@ -678,6 +715,8 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
 
 TEST_F(AutoConnectHandlerTest,
        DisableCellularAutoConnectOnAllowOnlyPolicyNetworksAutoconnect) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histogram_tester;
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);
@@ -727,6 +766,8 @@ TEST_F(AutoConnectHandlerTest,
 
 TEST_F(AutoConnectHandlerTest,
        DisconnectCellularOnPolicyLoadingAllowOnlyPolicyCellularNetworks) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histogram_tester;
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);

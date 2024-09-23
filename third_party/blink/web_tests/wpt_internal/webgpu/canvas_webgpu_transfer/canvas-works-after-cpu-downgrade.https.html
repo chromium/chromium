@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Canvas2D WebGPU Transfer: canvas-works-after-cpu-downgrade</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: canvas-works-after-cpu-downgrade</h1>
+
+<p>WebGPU access should work normally on a canvas which has been downgraded to
+CPU, transparently bringing it back to the GPU.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+// Note that only HTMLCanvasElement-based canvases are automatically downgraded
+// to CPU rendering, so we don't have a matching OffscreenCanvas test here.
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_canvas_works_after_cpu_downgrade(adapterInfo,
+                                            device,
+                                            document.getElementById('c'));
+    });
+  }, 'WebGPU access should work on a canvas downgraded to CPU.'
+);
+
+</script>

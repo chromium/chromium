@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/raw_video.h"
 
 #include "base/files/file_util.h"
@@ -20,12 +25,13 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/offloading_video_decoder.h"
-#include "media/filters/vp9_parser.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/gpu/test/video_frame_helpers.h"
+#include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ffmpeg/libavformat/avformat.h"
 #include "third_party/ffmpeg/libavutil/avutil.h"
@@ -49,9 +55,15 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedFile(size_t size) {
   }
   auto mmapped_file = std::make_unique<base::MemoryMappedFile>();
   bool success = mmapped_file->Initialize(
-      base::File(tmp_file_path,
-                 base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                     base::File::FLAG_WRITE | base::File::FLAG_APPEND),
+      base::File(
+          tmp_file_path, base::File::FLAG_CREATE_ALWAYS |
+                             base::File::FLAG_READ | base::File::FLAG_WRITE
+// On Windows FLAG_CREATE_ALWAYS will require FLAG_WRITE, and FLAG_APPEND
+// must not be specified.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+                             | base::File::FLAG_APPEND
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+          ),
       base::MemoryMappedFile::Region{0, size},
       base::MemoryMappedFile::READ_WRITE_EXTEND);
   base::DeleteFile(tmp_file_path);
@@ -201,7 +213,7 @@ class RawVideo::VP9Decoder {
     for (size_t i = before_keyframe_index; i < next_keyframe_index; ++i) {
       base::span<const uint8_t> chunk = vp9_data_->chunks[i];
       vpx_decoder_->Decode(
-          DecoderBuffer::CopyFrom(chunk.data(), chunk.size()),
+          DecoderBuffer::CopyFrom(chunk),
           base::BindOnce([](DecoderStatus* out_status,
                             DecoderStatus status) { *out_status = status; },
                          &decode_status));
@@ -317,25 +329,26 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
   uint8_t* const vp9_data = vp9_data_mmap_file->data();
   size_t vp9_data_size = 0;
-  AVPacket packet = {};
+  auto packet = ScopedAVPacket::Allocate();
   size_t num_packets = 0;
   Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
   std::vector<size_t> keyframe_indices;
   std::vector<base::span<const uint8_t>> vp9_data_chunks(num_read_frames);
-  while (av_read_frame(glue.format_context(), &packet) >= 0 &&
+  while (av_read_frame(glue.format_context(), packet.get()) >= 0 &&
          num_packets < num_read_frames) {
-    if (base::checked_cast<size_t>(packet.stream_index) ==
+    if (base::checked_cast<size_t>(packet->stream_index) ==
         (*vp9_stream_index)) {
-      LOG_ASSERT(vp9_data_size + packet.size <= vp9_data_mmap_file->length())
+      LOG_ASSERT(vp9_data_size + packet->size <= vp9_data_mmap_file->length())
           << "The vp9 data size must be less than webm file size";
-      std::memcpy(vp9_data + vp9_data_size, packet.data, packet.size);
+      std::memcpy(vp9_data + vp9_data_size, packet->data, packet->size);
       vp9_data_chunks[num_packets] = base::span<const uint8_t>(
-          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet.size));
-      vp9_data_size += packet.size;
+          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet->size));
+      vp9_data_size += packet->size;
 
       Vp9FrameHeader header;
       gfx::Size allocate_size;
-      vp9_parser.SetStream(packet.data, packet.size, /*stream_config=*/nullptr);
+      vp9_parser.SetStream(packet->data, packet->size,
+                           /*stream_config=*/nullptr);
       if (vp9_parser.ParseNextFrame(&header, &allocate_size, nullptr) ==
           Vp9Parser::kInvalidStream) {
         LOG(ERROR) << "Failed parsing vp9 data";
@@ -346,7 +359,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
       }
       num_packets++;
     }
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
   }
   CHECK_EQ(num_read_frames, num_packets);
   CHECK(!keyframe_indices.empty());

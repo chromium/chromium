@@ -299,6 +299,15 @@ test_blob(function() {
 });
 test_blob(function() {
   return new Blob([
+    new Float16Array([2.65625, 58.59375])
+  ]);
+}, {
+  expected: "PASS",
+  type: "",
+  desc: "Passing a Float16Array as element of the blobParts array should work."
+});
+test_blob(function() {
+  return new Blob([
     // 0x535 3415053534150
     // 0x535 = 0b010100110101 -> Sign = +, Exponent = 1333 - 1023 = 310
     // 0x13415053534150 * 2**(-52)

@@ -29,10 +29,18 @@ namespace autofill {
 class AutofillWebDataService;
 }  // namespace autofill
 
+namespace plus_addresses {
+class PlusAddressWebDataService;
+}  // namespace plus_addresses
+
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace os_crypt_async {
+class OSCryptAsync;
+}
 
 // WebDataServiceWrapper is a KeyedService that owns multiple WebDataServices
 // so that they can be associated with a context.
@@ -46,6 +54,7 @@ class WebDataServiceWrapper : public KeyedService {
     ERROR_LOADING_TOKEN,
     ERROR_LOADING_PASSWORD,
     ERROR_LOADING_PAYMENT_MANIFEST,
+    ERROR_LOADING_PLUS_ADDRESS,
   };
 
   // Shows an error message if a loading error occurs.
@@ -65,7 +74,8 @@ class WebDataServiceWrapper : public KeyedService {
       const base::FilePath& context_path,
       const std::string& application_locale,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
-      const ShowErrorCallback& show_error_callback);
+      const ShowErrorCallback& show_error_callback,
+      os_crypt_async::OSCryptAsync* os_crypt);
 
   WebDataServiceWrapper(const WebDataServiceWrapper&) = delete;
   WebDataServiceWrapper& operator=(const WebDataServiceWrapper&) = delete;
@@ -75,15 +85,15 @@ class WebDataServiceWrapper : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // Create the various types of service instances.  These methods are virtual
-  // for testing purpose.
-  virtual scoped_refptr<autofill::AutofillWebDataService>
-  GetProfileAutofillWebData();
-  virtual scoped_refptr<autofill::AutofillWebDataService>
-  GetAccountAutofillWebData();
-  virtual scoped_refptr<KeywordWebDataService> GetKeywordWebData();
-  virtual scoped_refptr<TokenWebData> GetTokenWebData();
+  // Access the various types of service instances.
+  scoped_refptr<autofill::AutofillWebDataService> GetProfileAutofillWebData();
+  scoped_refptr<autofill::AutofillWebDataService> GetAccountAutofillWebData();
+  scoped_refptr<KeywordWebDataService> GetKeywordWebData();
+  scoped_refptr<plus_addresses::PlusAddressWebDataService>
+  GetPlusAddressWebData();
+  scoped_refptr<TokenWebData> GetTokenWebData();
 #if BUILDFLAG(USE_BLINK)
+  // Virtual for testing.
   virtual scoped_refptr<payments::PaymentManifestWebDataService>
   GetPaymentManifestWebData();
 #endif
@@ -99,6 +109,8 @@ class WebDataServiceWrapper : public KeyedService {
   scoped_refptr<autofill::AutofillWebDataService> profile_autofill_web_data_;
   scoped_refptr<autofill::AutofillWebDataService> account_autofill_web_data_;
   scoped_refptr<KeywordWebDataService> keyword_web_data_;
+  scoped_refptr<plus_addresses::PlusAddressWebDataService>
+      plus_address_web_data_;
   scoped_refptr<TokenWebData> token_web_data_;
 
 #if BUILDFLAG(USE_BLINK)

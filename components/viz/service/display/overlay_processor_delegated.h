@@ -8,18 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
-#include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
+#include "components/viz/service/display/overlay_processor_delegated_support.h"
 #include "components/viz/service/display/overlay_processor_ozone.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/ipc/common/surface_handle.h"
 
-#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
 namespace viz {
@@ -68,35 +64,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   gfx::RectF GetUnassignedDamage() const override;
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. For some cases in
-  // |OverlayCandidate::CandidateStatus| feed into this enum but neither is a
-  // perfect subset of the other.
-  enum class DelegationStatus {
-    kFullDelegation = 0,
-    kCompositedOther = 1,
-    kCompositedNotAxisAligned = 2,
-    kCompositedCheckOverlayFail = 3,
-    kCompositedNotOverlay = 4,
-    kCompositedTooManyQuads = 5,
-    kCompositedBackdropFilter = 6,
-    kCompositedCopyRequest = 7,
-    kCompositedHas3dTransform = 8,
-    kCompositedHas2dShear = 9,
-    kCompositedHas2dRotation = 10,
-    kCompositedFeatureDisabled = 11,
-    kCompositedCandidateFailed = 12,
-    kCompositedCandidateBlending = 13,
-    kCompositedCandidateQuadMaterial = 14,
-    kCompositedCandidateBufferFormat = 15,
-    kCompositedCandidateNearFilter = 16,
-    kCompositedCandidateNotSharedImage = 17,
-    kCompositedCandidateMaskFilter = 18,
-    kCompositedCandidateTransformCantClip = 19,
-    kCompositedCandidateRpdqWithTransform = 20,
-    kMaxValue = kCompositedCandidateRpdqWithTransform
-  };
-
   gfx::RectF GetPrimaryPlaneDisplayRect(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane*
           primary_plane);
@@ -112,7 +79,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,

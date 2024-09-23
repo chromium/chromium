@@ -41,7 +41,7 @@ namespace {
 // |kJwkEncUsage| and |kJwkSigUsage| are a superset of the possible meanings of
 // JWK's {"use":"enc"}, and {"use":"sig"} respectively.
 //
-// TODO(https://crbug.com/1136147): Remove these masks,
+// TODO(crbug.com/40724054): Remove these masks,
 // as they are not consistent with the Web Crypto
 // processing model for JWK. In particular,
 // intersecting the usages after processing the JWK

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -615,6 +620,10 @@ void ShillToONCTranslator::TranslateApnProperties() {
   TranslateWithTableAndSet(shill::kApnIpTypeProperty,
                            kApnIpTypeTranslationTable,
                            ::onc::cellular_apn::kIpType);
+
+  TranslateWithTableAndSet(shill::kApnSourceProperty,
+                           kApnSourceTranslationTable,
+                           ::onc::cellular_apn::kSource);
 
   const std::string shill_apn_types =
       FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnTypesProperty);

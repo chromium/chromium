@@ -11,8 +11,13 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
+
+import androidx.annotation.ColorInt;
 
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.FadingShadow;
+import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
 
@@ -20,6 +25,7 @@ import org.chromium.ui.base.ViewUtils;
 public class IncognitoNewTabPageView extends FrameLayout {
     private IncognitoNewTabPageManager mManager;
     private boolean mFirstShow = true;
+    private FadingShadowView mFadingShadowBottom;
     private NewTabPageScrollView mScrollView;
     private IncognitoDescriptionView mDescriptionView;
 
@@ -39,9 +45,6 @@ public class IncognitoNewTabPageView extends FrameLayout {
 
         /** Tells the caller whether a new snapshot is required or not. */
         boolean shouldCaptureThumbnail();
-
-        /** Whether the new version of the Incognito NTP should be shown. */
-        boolean shouldShowRevampedIncognitoNtp();
 
         /** Whether to show the tracking protection UI on the NTP. */
         boolean shouldShowTrackingProtectionNtp();
@@ -65,24 +68,31 @@ public class IncognitoNewTabPageView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mScrollView = (NewTabPageScrollView) findViewById(R.id.ntp_scrollview);
-        mScrollView.setBackgroundColor(getContext().getColor(R.color.ntp_bg_incognito));
+        @ColorInt int bgColor = getContext().getColor(R.color.ntp_bg_incognito);
+        mScrollView = findViewById(R.id.ntp_scrollview);
+        mScrollView.setBackgroundColor(bgColor);
         setContentDescription(
                 getResources().getText(R.string.accessibility_new_incognito_tab_page));
 
         // FOCUS_BEFORE_DESCENDANTS is needed to support keyboard shortcuts. Otherwise, pressing
         // any shortcut causes the UrlBar to be focused. See ViewRootImpl.leaveTouchMode().
         mScrollView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+        mFadingShadowBottom = findViewById(R.id.shadow_bottom);
+        mFadingShadowBottom.init(bgColor, FadingShadow.POSITION_BOTTOM);
+        mScrollView.setOnScrollChangeListener(
+                new OnScrollChangeListener() {
+                    @Override
+                    public void onScrollChange(
+                            View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                        mFadingShadowBottom.setVisibility(
+                                mScrollView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
+                    }
+                });
     }
 
     private void inflateConditionalLayouts() {
         ViewStub viewStub = findViewById(R.id.incognito_description_layout_stub);
-        if (mManager.shouldShowRevampedIncognitoNtp()) {
-            viewStub.setLayoutResource(R.layout.revamped_incognito_description_layout);
-        } else {
-            viewStub.setLayoutResource(R.layout.incognito_description_layout);
-        }
-
+        viewStub.setLayoutResource(R.layout.incognito_description_layout);
         mDescriptionView = (IncognitoDescriptionView) viewStub.inflate();
         mDescriptionView.setLearnMoreOnclickListener(
                 new OnClickListener() {
@@ -96,15 +106,9 @@ public class IncognitoNewTabPageView extends FrameLayout {
         ViewStub cardStub = findViewById(R.id.cookie_card_stub);
         if (cardStub == null) return;
         if (mManager.shouldShowTrackingProtectionNtp()) {
-            cardStub.setLayoutResource(
-                    mManager.shouldShowRevampedIncognitoNtp()
-                            ? R.layout.revamped_incognito_tracking_protection_card
-                            : R.layout.incognito_tracking_protection_card);
+            cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
         } else {
-            cardStub.setLayoutResource(
-                    mManager.shouldShowRevampedIncognitoNtp()
-                            ? R.layout.revamped_incognito_cookie_controls_card
-                            : R.layout.incognito_cookie_controls_card);
+            cardStub.setLayoutResource(R.layout.incognito_cookie_controls_card);
         }
         cardStub.inflate();
         mDescriptionView.formatTrackingProtectionText(getContext(), this);
@@ -136,8 +140,15 @@ public class IncognitoNewTabPageView extends FrameLayout {
     }
 
     /**
+     * @return The ScrollView of within the page. Used for padding when drawing edge to edge.
+     */
+    ScrollView getScrollView() {
+        return mScrollView;
+    }
+
+    /**
      * @see org.chromium.chrome.browser.compositor.layouts.content.
-     *         InvalidationAwareThumbnailProvider#shouldCaptureThumbnail()
+     *     InvalidationAwareThumbnailProvider#shouldCaptureThumbnail()
      */
     boolean shouldCaptureThumbnail() {
         if (getWidth() == 0 || getHeight() == 0) return false;

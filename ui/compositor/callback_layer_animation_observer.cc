@@ -43,16 +43,7 @@ CallbackLayerAnimationObserver::~CallbackLayerAnimationObserver() = default;
 
 void CallbackLayerAnimationObserver::SetActive() {
   active_ = true;
-
-  base::WeakPtr<CallbackLayerAnimationObserver> weak_this =
-      weak_factory_.GetWeakPtr();
-
-  CheckAllSequencesStarted();
-
-  if (!weak_this)
-    return;
-
-  CheckAllSequencesCompleted();
+  CheckAllSequencesStartedAndCompleted();
 }
 
 void CallbackLayerAnimationObserver::OnLayerAnimationStarted(
@@ -93,12 +84,25 @@ void CallbackLayerAnimationObserver::OnDetachedFromSequence(
     ui::LayerAnimationSequence* sequence) {
   CHECK_LT(detached_sequence_count_, attached_sequence_count_);
   ++detached_sequence_count_;
-  CheckAllSequencesStarted();
-  CheckAllSequencesCompleted();
+  CheckAllSequencesStartedAndCompleted();
 }
 
 int CallbackLayerAnimationObserver::GetNumSequencesCompleted() {
   return aborted_count_ + successful_count_;
+}
+
+void CallbackLayerAnimationObserver::CheckAllSequencesStartedAndCompleted() {
+  base::WeakPtr<CallbackLayerAnimationObserver> weak_this =
+      weak_factory_.GetWeakPtr();
+
+  CheckAllSequencesStarted();
+
+  // The started callback may have deleted the observer.
+  if (!weak_this) {
+    return;
+  }
+
+  CheckAllSequencesCompleted();
 }
 
 void CallbackLayerAnimationObserver::CheckAllSequencesStarted() {

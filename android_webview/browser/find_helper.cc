@@ -39,7 +39,8 @@ void FindHelper::FindAllAsync(const std::u16string& search_string) {
   options->match_case = false;
   options->new_session = true;
 
-  web_contents_->Find(current_request_id_, search_string, std::move(options));
+  web_contents_->Find(current_request_id_, search_string, std::move(options),
+                      /*skip_delay=*/false);
 }
 
 void FindHelper::HandleFindReply(int request_id,
@@ -67,7 +68,7 @@ void FindHelper::FindNext(bool forward) {
   options->new_session = false;
 
   web_contents_->Find(current_request_id_, last_search_string_,
-                      std::move(options));
+                      std::move(options), /*skip_delay=*/false);
 }
 
 void FindHelper::ClearMatches() {
@@ -118,12 +119,10 @@ void FindHelper::NotifyResults(int active_ordinal,
   // Safeguard in case of errors to prevent reporting -1 to the API listeners.
   if (match_count == -1) {
     NOTREACHED();
-    match_count = 0;
   }
 
   if (active_ordinal == -1) {
     NOTREACHED();
-    active_ordinal = 0;
   }
 
   // WebView.FindListener active match ordinals are 0-based while WebKit sends

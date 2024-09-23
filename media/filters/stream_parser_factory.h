@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"
@@ -21,8 +21,19 @@ namespace media {
 class AudioDecoderConfig;
 class VideoDecoderConfig;
 
+// These entries represent mime types which can be created with a "relaxed"
+// parser, which is one which does not verify expected codecs, and instead
+// discovered all available ones.
+enum class RelaxedParserSupportedType {
+  kMP2T,
+  kMP4,
+  kAAC,
+};
+
 class MEDIA_EXPORT StreamParserFactory {
  public:
+  // Types of parsers supported for non-strict parsing.
+
   // Checks to see if the specified |type| and |codecs| list are supported.
   // Returns one of the following SupportsType values:
   // kNotSupported indicates definitive lack of support.
@@ -31,7 +42,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // supported for the mime type.
   // kMaybeSupported indicates the mime type is supported, but the mime type
   // requires a codecs parameter that is missing.
-  static SupportsType IsTypeSupported(base::StringPiece type,
+  static SupportsType IsTypeSupported(std::string_view type,
                                       base::span<const std::string> codecs);
 
   // Creates a new StreamParser object if the specified |type| and |codecs| list
@@ -55,7 +66,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // error should occur for unsupported or invalid decoder configs during
   // attempted decode.
   static std::unique_ptr<StreamParser> Create(
-      base::StringPiece type,
+      std::string_view type,
       base::span<const std::string> codecs,
       MediaLog* media_log);
   static std::unique_ptr<StreamParser> Create(
@@ -67,9 +78,11 @@ class MEDIA_EXPORT StreamParserFactory {
   // file. This parser won't log to media log because failure to parse is not
   // itself an error in hls media playback. This function may return null if
   // the mime type isn't supported.
-  static std::unique_ptr<StreamParser> CreateHLSProbeParser(
-      std::string_view mime,
-      base::span<const std::string> codecs);
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  static std::unique_ptr<StreamParser> CreateRelaxedParser(
+      RelaxedParserSupportedType mime);
+#endif
 };
 
 }  // namespace media

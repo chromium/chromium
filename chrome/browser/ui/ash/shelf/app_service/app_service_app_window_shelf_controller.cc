@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -46,6 +46,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -55,6 +57,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
@@ -206,9 +209,9 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   // shelf then it is added to a shelf by `ASAWSC::OnWindowVisibilityChanged()`
   // but when the window is created as a minimized window there is no change in
   // visible state and it is not added to the shelf. Hence, when a widget has a
-  // `initial_show_state_` as ui::SHOW_STATE_MINIMIZED, it should add itself to
-  // a shelf during initialization. The below code is applicable only for Lacros
-  // browser app.
+  // `initial_show_state_` as ui::mojom::WindowShowState::kMinimized, it should
+  // add itself to a shelf during initialization. The below code is applicable
+  // only for Lacros browser app.
   auto shelf_id = GetShelfId(window);
   if (!shelf_id.IsNull() &&
       GetAppType(shelf_id.app_id) == apps::AppType::kStandaloneBrowser &&
@@ -289,6 +292,10 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
                                             shelf_id.launch_id, state);
 
+  if (crostini_tracker_) {
+    crostini_tracker_->OnWindowVisibilityChanged(window, shelf_id.app_id);
+  }
+
   // Only register the visible non-browser |window| for the active user.
   if (!visible || shelf_id.app_id == app_constants::kChromeAppId ||
       !proxy_->InstanceRegistry().Exists(window)) {
@@ -296,9 +303,6 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   }
 
   RegisterWindow(window, shelf_id);
-
-  if (crostini_tracker_)
-    crostini_tracker_->OnWindowVisibilityChanged(window, shelf_id.app_id);
 
   // This will match both the Plugin VM App window and installer.
   if (shelf_id.app_id == plugin_vm::kPluginVmShelfAppId) {
@@ -410,8 +414,8 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const std::string& app_id = update.AppId();
     if (GetAppType(app_id) == apps::AppType::kCrostini ||
         guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
-      window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(ash::AppType::CROSTINI_APP));
+      window->SetProperty(chromeos::kAppTypeKey,
+                          chromeos::AppType::CROSTINI_APP);
     }
     window->SetProperty(ash::kAppIDKey, update.AppId());
     window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
@@ -590,7 +594,7 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     // Set fullscreen properties.
     exo::SetShellUseImmersiveForFullscreen(window, false);
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
-  } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+  } else if (ash::borealis::IsBorealisWindow(window)) {
     window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
     window->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
     window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
@@ -695,9 +699,9 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
     return ash::ShelfID(app_constants::kLacrosAppId);
 
   std::string shelf_app_id;
-  if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+  if (ash::borealis::IsBorealisWindow(window)) {
     for (Profile* profile : profile_list_) {
-      shelf_app_id = borealis::BorealisService::GetForProfile(profile)
+      shelf_app_id = borealis::BorealisServiceFactory::GetForProfile(profile)
                          ->WindowManager()
                          .GetShelfAppId(window);
       if (!shelf_app_id.empty()) {

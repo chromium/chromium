@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
@@ -194,7 +200,7 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 void FirstPartySetsComponentInstallerPolicy::WriteComponentForTesting(
     base::Version version,
     const base::FilePath& install_dir,
-    base::StringPiece contents) {
+    std::string_view contents) {
   CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
 
   GetConfigPathInstance() =

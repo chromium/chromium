@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
+
 #include <memory>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -124,7 +126,7 @@ bool HasValidEntry(const base::Value::List* list) {
 
 void CompareStringKeys(const base::Value::Dict& expected,
                        const base::Value::Dict& actual,
-                       base::StringPiece key) {
+                       std::string_view key) {
   EXPECT_EQ(*expected.FindString(key), *actual.FindString(key));
 }
 

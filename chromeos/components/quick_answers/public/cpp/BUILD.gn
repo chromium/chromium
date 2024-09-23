@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(b/340628526): Make this component to avoid having multiple QuickAnswersState.
 source_set("cpp") {
   sources = [
     "controller/quick_answers_controller.cc",
@@ -15,7 +16,10 @@ source_set("cpp") {
   ]
 
   deps = [
+    ":constants",
     "//base",
+    "//chromeos/components/kiosk",
+    "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/quick_answers/public/mojom",
     "//chromeos/constants:constants",
@@ -35,4 +39,13 @@ source_set("prefs") {
   ]
 
   deps = [ "//components/prefs" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  deps = [ "//ui/views" ]
 }

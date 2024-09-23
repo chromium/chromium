@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,31 +30,35 @@
 #include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -67,7 +72,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -124,22 +128,17 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
 
 namespace developer = api::developer_private;
 
 namespace {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kCannotUpdateChildAccountProfileSettingsError[] =
     "Cannot change settings for a child account profile.";
-#endif
 const char kNoSuchExtensionError[] = "No such extension.";
 const char kRequiresUserGestureError[] =
     "This action requires a user gesture.";
@@ -174,6 +173,12 @@ const char kFailToUninstallEnterpriseOrComponentExtensions[] =
 const char kFailToUninstallNoneExistentExtensions[] =
     "Cannot uninstall non-existent extensions in your list.";
 const char kUserCancelledError[] = "User cancelled uninstall";
+const char kNoExtensionError[] = "Extension with ID '*' doesn't exist.";
+const char kExtensionNotAffectedByMV2Deprecation[] =
+    "Extension with ID '*' is not affected by the MV2 deprecation.";
+const char kCannotRepairNonWebstoreExtension[] =
+    "Cannot repair an extension that is not installed from the Chrome Web "
+    "Store.";
 
 const char kUnpackedAppsFolder[] = "apps_target";
 const char kManifestFile[] = "manifest.json";
@@ -458,12 +463,8 @@ DeveloperPrivateAPI::GetFactoryInstance() {
 std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   info->is_child_account =
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
-#else
-  info->is_child_account = false;
-#endif
+      supervised_user::AreExtensionsPermissionsEnabled(profile);
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
@@ -476,6 +477,10 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
   info->can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
           ->HasAllowlistedExtension();
+  info->is_mv2_deprecation_notice_dismissed =
+      ManifestV2ExperimentManager::Get(profile)
+          ->DidUserAcknowledgeNoticeGlobally();
+
   return info;
 }
 
@@ -527,6 +532,14 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   // callback on destruction.
   pref_change_registrar_.Add(
       prefs::kExtensionsUIDeveloperMode,
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationWarningAcknowledgedGloballyPref.name,
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
 }
@@ -619,13 +632,13 @@ void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
                             extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerRegistered(
+void DeveloperPrivateEventRouter::OnStartedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
                             worker_id.extension_id);
 }
 
-void DeveloperPrivateEventRouter::OnServiceWorkerUnregistered(
+void DeveloperPrivateEventRouter::OnStoppedTrackingServiceWorkerInstance(
     const WorkerId& worker_id) {
   BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);
@@ -712,7 +725,7 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
 void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
   // Currently, only enabled extensions are considered since they are the only
   // ones that have extension actions.
-  // TODO(crbug.com/1477884): Since pinned info is stored as a pref, include
+  // TODO(crbug.com/40280426): Since pinned info is stored as a pref, include
   // disabled extensions in this event as well.
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();
@@ -1051,13 +1064,15 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   if (update.in_developer_mode) {
     Profile* profile = Profile::FromBrowserContext(browser_context());
     CHECK(profile);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    if (supervised_user::AreExtensionsPermissionsEnabled(
-            *profile->GetPrefs())) {
+    if (supervised_user::AreExtensionsPermissionsEnabled(profile)) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     }
-#endif
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
+  }
+
+  if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
+    ManifestV2ExperimentManager::Get(browser_context())
+        ->MarkNoticeAsAcknowledgedGlobally();
   }
 
   return RespondNow(NoArguments());
@@ -1119,7 +1134,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
         modifier.SetWithholdHostPermissions(false);
         break;
       case developer::HostAccess::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   if (update.show_access_requests_in_toolbar) {
@@ -1127,10 +1142,12 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
         .SetShowAccessRequestsInToolbar(
             extension->id(), *update.show_access_requests_in_toolbar);
   }
-  if (update.acknowledge_safety_check_warning) {
+  if (update.acknowledge_safety_check_warning_reason !=
+      developer_private::SafetyCheckWarningReason::kNone) {
     ExtensionPrefs::Get(browser_context())
-        ->SetBooleanPref(extension->id(), kPrefAcknowledgeSafetyCheckWarning,
-                         *update.acknowledge_safety_check_warning);
+        ->SetIntegerPref(
+            extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,
+            static_cast<int>(update.acknowledge_safety_check_warning_reason));
     DeveloperPrivateEventRouter* event_router =
         DeveloperPrivateAPI::Get(browser_context())
             ->developer_private_event_router();
@@ -1257,6 +1274,14 @@ void DeveloperPrivateReloadFunction::ClearObservers() {
 
 DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() {}
 
+DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
   std::optional<developer::LoadUnpacked::Params> params =
       developer::LoadUnpacked::Params::Create(args());
@@ -1267,13 +1292,10 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())) {
+  if (profile && supervised_user::AreExtensionsPermissionsEnabled(profile)) {
     return RespondNow(
         Error("Child account users cannot load unpacked extensions."));
   }
-#endif
   PrefService* prefs = profile->GetPrefs();
   if (!prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
     return RespondNow(
@@ -1295,10 +1317,12 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
     base::FilePath path =
         api->GetUnpackedPath(web_contents, *params->options->retry_guid);
-    if (path.empty())
+    if (path.empty()) {
       return RespondNow(Error("Invalid retry id"));
-    AddRef();  // Balanced in FileSelected.
-    FileSelected(path);
+    }
+
+    AddRef();  // Balanced in Finish.
+    StartFileLoad(path);
     return RespondLater();
   }
 
@@ -1306,52 +1330,94 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
       *params->options->use_dragged_path) {
     DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
     base::FilePath path = api->GetDraggedPath(web_contents);
-    if (path.empty())
+    if (path.empty()) {
       return RespondNow(Error("No dragged path"));
-    AddRef();  // Balanced in FileSelected.
-    FileSelected(path);
+    }
+
+    AddRef();  // Balanced in Finish.
+    StartFileLoad(path);
     return RespondLater();
   }
 
-  if (!ShowPicker(ui::SelectFileDialog::SELECT_EXISTING_FOLDER,
-                  l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY),
-                  ui::SelectFileDialog::FileTypeInfo(),
-                  0 /* file_type_index */)) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
-
-  AddRef();  // Balanced in FileSelected / FileSelectionCanceled.
+  ShowSelectFileDialog();
+  AddRef();  // Balanced in Finish.
   return RespondLater();
 }
 
+void DeveloperPrivateLoadUnpackedFunction::ShowSelectFileDialog() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Start or cancel the file load without showing the select file dialog for
+  // tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    return;
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  CHECK(web_contents);
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+
+  ui::SelectFileDialog::Type file_type =
+      ui::SelectFileDialog::SELECT_EXISTING_FOLDER;
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY);
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  auto file_type_info = ui::SelectFileDialog::FileTypeInfo();
+  int file_type_index = 0;
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
+
+  select_file_dialog_->SelectFile(file_type, title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+}
+
 void DeveloperPrivateLoadUnpackedFunction::FileSelected(
-    const base::FilePath& path) {
+    const ui::SelectedFileInfo& file,
+    int index) {
+  select_file_dialog_.reset();
+  StartFileLoad(file.path());
+}
+
+void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
+  select_file_dialog_.reset();
+  // This isn't really an error, but we should keep it like this for
+  // backward compatibility.
+  Finish(Error(kFileSelectionCanceled));
+}
+
+void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
+    const base::FilePath file_path) {
   scoped_refptr<UnpackedInstaller> installer(
       UnpackedInstaller::Create(GetExtensionService(browser_context())));
   installer->set_be_noisy_on_failure(!fail_quietly_);
   installer->set_completion_callback(base::BindOnce(
       &DeveloperPrivateLoadUnpackedFunction::OnLoadComplete, this));
-  installer->Load(path);
+  installer->Load(file_path);
 
   retry_guid_ = DeveloperPrivateAPI::Get(browser_context())
-                  ->AddUnpackedPath(GetSenderWebContents(), path);
-
-  Release();  // Balanced in Run().
-}
-
-void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
-  // This isn't really an error, but we should keep it like this for
-  // backward compatability.
-  Respond(Error(kFileSelectionCanceled));
-  Release();  // Balanced in Run().
+                    ->AddUnpackedPath(GetSenderWebContents(), file_path);
 }
 
 void DeveloperPrivateLoadUnpackedFunction::OnLoadComplete(
     const Extension* extension,
     const base::FilePath& file_path,
     const std::string& error) {
-  if (extension || !populate_error_) {
-    Respond(extension ? NoArguments() : Error(error));
+  if (extension) {
+    Finish(NoArguments());
+    return;
+  }
+
+  if (!populate_error_) {
+    Finish(Error(error));
     return;
   }
 
@@ -1367,9 +1433,15 @@ void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     size_t line_number,
     const std::string& manifest) {
   DCHECK(!retry_guid_.empty());
-  Respond(WithArguments(
+  Finish(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid_)
           .ToValue()));
+}
+
+void DeveloperPrivateLoadUnpackedFunction::Finish(
+    ResponseValue response_value) {
+  Respond(std::move(response_value));
+  Release();  // Balanced in Run().
 }
 
 DeveloperPrivateInstallDroppedFileFunction::
@@ -1467,28 +1539,6 @@ void DeveloperPrivateNotifyDragInstallInProgressFunction::SetDropPathForTesting(
   g_drop_path_for_testing = file_path;
 }
 
-bool DeveloperPrivateChooseEntryFunction::ShowPicker(
-    ui::SelectFileDialog::Type picker_type,
-    const std::u16string& select_title,
-    const ui::SelectFileDialog::FileTypeInfo& info,
-    int file_type_index) {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents)
-    return false;
-
-  // The entry picker will hold a reference to this function instance,
-  // and subsequent sending of the function response) until the user has
-  // selected a file or cancelled the picker. At that point, the picker will
-  // delete itself.
-  new EntryPicker(
-      this, web_contents, picker_type,
-      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory(),
-      select_title, info, file_type_index);
-  return true;
-}
-
-DeveloperPrivateChooseEntryFunction::~DeveloperPrivateChooseEntryFunction() {}
-
 void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
     const base::FilePath& crx_file,
     const base::FilePath& pem_file) {
@@ -1566,8 +1616,6 @@ DeveloperPrivatePackDirectoryFunction::DeveloperPrivatePackDirectoryFunction() {
 
 DeveloperPrivatePackDirectoryFunction::
 ~DeveloperPrivatePackDirectoryFunction() {}
-
-DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   // In theory `extension()` can be null when an ExtensionFunction is invoked
@@ -1801,18 +1849,47 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 DeveloperPrivateLoadDirectoryFunction::~DeveloperPrivateLoadDirectoryFunction()
     {}
 
+DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() {}
+
+DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
 ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   std::optional<developer::ChoosePath::Params> params =
       developer::ChoosePath::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_FOLDER;
-  ui::SelectFileDialog::FileTypeInfo info;
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
+  }
+
+  // Start or cancel the file selection without showing the select file dialog
+  // for tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    CHECK(did_respond());
+    return AlreadyResponded();
+  }
+
+  ui::SelectFileDialog::Type file_type = ui::SelectFileDialog::SELECT_FOLDER;
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  std::u16string select_title;
 
   if (params->select_type == developer::SelectType::kFile) {
-    type = ui::SelectFileDialog::SELECT_OPEN_FILE;
+    file_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
   }
-  std::u16string select_title;
 
   int file_type_index = 0;
   if (params->file_type == developer::FileType::kLoad) {
@@ -1820,32 +1897,35 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   } else if (params->file_type == developer::FileType::kPem) {
     select_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
-    info.extensions.push_back(std::vector<base::FilePath::StringType>(
-        1, FILE_PATH_LITERAL("pem")));
-    info.extension_description_overrides.push_back(
+    file_type_info.extensions.emplace_back(1, FILE_PATH_LITERAL("pem"));
+    file_type_info.extension_description_overrides.push_back(
         l10n_util::GetStringUTF16(
             IDS_EXTENSION_PACK_DIALOG_KEY_FILE_TYPE_DESCRIPTION));
-    info.include_all_files = true;
+    file_type_info.include_all_files = true;
     file_type_index = 1;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  if (!ShowPicker(
-           type,
-           select_title,
-           info,
-           file_type_index)) {
-    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
-  }
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
 
-  AddRef();  // Balanced by FileSelected / FileSelectionCanceled.
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+  select_file_dialog_->SelectFile(file_type, select_title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+
+  AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
   return RespondLater();
 }
 
 void DeveloperPrivateChoosePathFunction::FileSelected(
-    const base::FilePath& path) {
-  Respond(WithArguments(path.LossyDisplayName()));
+    const ui::SelectedFileInfo& file,
+    int index) {
+  Respond(WithArguments(file.path().LossyDisplayName()));
   Release();
 }
 
@@ -1856,18 +1936,11 @@ void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
   Release();
 }
 
-DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
-
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   return RespondNow(WithArguments(
-      profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())));
-#else
-  return RespondNow(WithArguments(false));
-#endif
+      profile && supervised_user::AreExtensionsPermissionsEnabled(profile)));
 }
 
 DeveloperPrivateIsProfileManagedFunction::
@@ -2058,8 +2131,8 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
   int type = -1;
   if (properties.type != developer::ErrorType::kNone) {
     type = properties.type == developer::ErrorType::kManifest
-               ? ExtensionError::MANIFEST_ERROR
-               : ExtensionError::RUNTIME_ERROR;
+               ? static_cast<int>(ExtensionError::Type::kManifestError)
+               : static_cast<int>(ExtensionError::Type::kRuntimeError);
   }
   std::set<int> error_ids;
   if (properties.error_ids) {
@@ -2103,6 +2176,12 @@ DeveloperPrivateRepairExtensionFunction::Run() {
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents)
     return RespondNow(Error(kCouldNotFindWebContentsError));
+
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context());
+  if (!extension_management->UpdatesFromWebstore(*extension)) {
+    return RespondNow(Error(kCannotRepairNonWebstoreExtension));
+  }
 
   auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
       web_contents, params->extension_id,
@@ -2337,7 +2416,7 @@ DeveloperPrivateAddUserSpecifiedSitesFunction::Run() {
       return RespondNow(
           Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
     case developer::SiteSet::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return RespondNow(NoArguments());
@@ -2376,7 +2455,7 @@ DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
       return RespondNow(
           Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
     case developer::SiteSet::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return RespondNow(NoArguments());
@@ -2513,7 +2592,7 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
     // have access to any sites that match `site_pattern`.
     developer::HostAccess host_access = developer::HostAccess::kOnClick;
 
-    // TODO(crbug.com/1472899): Add a version of CanUserSelectSiteAccess to
+    // TODO(crbug.com/40278776): Add a version of CanUserSelectSiteAccess to
     // PermissionsManager which takes in a URLPattern.
     bool can_request_all_sites =
         granted_permissions->ShouldWarnAllHosts(kIncludeApiPermissions) ||
@@ -2617,7 +2696,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
         done_callback.Run();
         break;
       case developer::HostAccess::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -2734,6 +2813,122 @@ DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
       ->DismissActiveNotificationOfModule(
           safety_hub::SafetyHubModuleType::EXTENSIONS);
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() = default;
+DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    ~DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() =
+        default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
+  std::optional<developer::DismissMv2DeprecationNoticeForExtension::Params>
+      params =
+          developer::DismissMv2DeprecationNoticeForExtension::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  extension_id_ = std::move(params->extension_id);
+
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+
+  // Extension must be affected by the MV2 deprecation.
+  const Extension* extension =
+      ExtensionRegistry::Get(browser_context())
+          ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
+  if (!extension) {
+    return RespondNow(Error(
+        ErrorUtils::FormatErrorMessage(kNoExtensionError, extension_id_)));
+  }
+  if (!experiment_manager->IsExtensionAffected(*extension)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kExtensionNotAffectedByMV2Deprecation, extension_id_)));
+  }
+
+  MV2ExperimentStage experiment_stage =
+      experiment_manager->GetCurrentExperimentStage();
+  switch (experiment_stage) {
+    case MV2ExperimentStage::kNone:
+      NOTREACHED();
+
+    case MV2ExperimentStage::kWarning: {
+      // Immediately dismiss the notice.
+      DismissExtensionNotice();
+      return RespondNow(NoArguments());
+    }
+
+    case MV2ExperimentStage::kDisableWithReEnable: {
+      // Prompt for user confirmation before dismissing the notice.
+      if (accept_bubble_for_testing_.has_value()) {
+        if (*accept_bubble_for_testing_) {
+          OnDialogAccepted();
+        } else {
+          OnDialogCancelled();
+        }
+        return AlreadyResponded();
+      }
+
+      Browser* browser = chrome::FindLastActiveWithProfile(
+          Profile::FromBrowserContext(browser_context()));
+      if (!browser) {
+        return RespondNow(Error(kCouldNotFindWebContentsError));
+      }
+
+      ShowMv2DeprecationKeepDialog(
+          browser, *extension,
+          base::BindOnce(
+              &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+                  OnDialogAccepted,
+              this),
+          base::BindOnce(
+              &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+                  OnDialogCancelled,
+              this));
+
+      return RespondLater();
+    }
+
+    case MV2ExperimentStage::kUnsupported:
+      // TODO(https://crbug.com/367395349): Add handling for the kUnsupported
+      // experiment stage.
+      NOTREACHED();
+  }
+}
+
+void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    DismissExtensionNotice() {
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  experiment_manager->MarkNoticeAsAcknowledged(extension_id_);
+
+  // There isn't a separate observer for the MV2 acknowledged state changing,
+  // but this is the only place it's changed. Just fire the event directly.
+  DeveloperPrivateEventRouter* event_router =
+      DeveloperPrivateAPI::Get(browser_context())
+          ->developer_private_event_router();
+  if (event_router) {
+    event_router->OnExtensionConfigurationChanged(extension_id_);
+  }
+}
+
+void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    OnDialogAccepted() {
+  if (!browser_context()) {
+    return;
+  }
+
+  DismissExtensionNotice();
+  Respond(NoArguments());
+}
+
+void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
+    OnDialogCancelled() {
+  if (!browser_context()) {
+    return;
+  }
+
+  Respond(NoArguments());
 }
 
 }  // namespace api

@@ -10,6 +10,7 @@
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 @class UNUserNotificationCenter;
+@class UNNotificationSettings;
 
 namespace mac_notifications {
 
@@ -20,8 +21,8 @@ namespace mac_notifications {
 void LogUNNotificationRequestPermissionResult(
     mojom::RequestPermissionResult result);
 
-// Requests and log the current notifications settings and permissions.
-void LogUNNotificationSettings(UNUserNotificationCenter* center);
+// Logs the current notifications settings and permissions.
+void LogUNNotificationSettings(UNNotificationSettings* settings);
 
 }  // namespace mac_notifications
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/ssl/ssl_platform_key_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -90,7 +95,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
   ~SSLPlatformKeySecKey() override = default;
 
   std::string GetProviderName() override {
-    // TODO(https://crbug.com/900721): Is there a more descriptive name to
+    // TODO(crbug.com/41423739): Is there a more descriptive name to
     // return?
     return "SecKey";
   }
@@ -194,6 +199,20 @@ scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
 
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), key),
+      GetSSLPlatformKeyTaskRunner());
+}
+
+scoped_refptr<SSLPrivateKey> WrapUnexportableKey(
+    const crypto::UnexportableSigningKey& unexportable_key) {
+  bssl::UniquePtr<EVP_PKEY> pubkey =
+      ParseSpki(unexportable_key.GetSubjectPublicKeyInfo());
+  if (!pubkey) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<ThreadedSSLPrivateKey>(
+      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey),
+                                             unexportable_key.GetSecKeyRef()),
       GetSSLPlatformKeyTaskRunner());
 }
 

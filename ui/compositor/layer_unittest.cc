@@ -404,7 +404,9 @@ class TestCompositorObserver : public CompositorObserver {
     started_ = true;
   }
 
-  void OnCompositingEnded(Compositor* compositor) override { ended_ = true; }
+  void OnCompositingAckDeprecated(Compositor* compositor) override {
+    ended_ = true;
+  }
 
   bool committed_ = false;
   bool started_ = false;
@@ -589,9 +591,8 @@ TEST(LayerStandaloneTest, ReleaseMailboxOnDestruction) {
 
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   layer->SetTransferableResource(resource,
                                  base::BindOnce(ReturnMailbox, &callback_run),
                                  gfx::Size(10, 10));
@@ -1123,9 +1124,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   bool callback1_run = false;
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback1_run),
                               gfx::Size(10, 10));
@@ -1149,9 +1149,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
 
   bool callback2_run = false;
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback2_run),
                               gfx::Size(10, 10));
@@ -1176,9 +1175,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   // Back to a texture, without changing the bounds of the layer or the texture.
   bool callback3_run = false;
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   l1->SetTransferableResource(resource,
                               base::BindOnce(ReturnMailbox, &callback3_run),
                               gfx::Size(10, 10));
@@ -1524,9 +1522,8 @@ TEST_F(LayerWithNullDelegateTest, EmptyDamagedRect) {
   std::unique_ptr<Layer> root = CreateLayer(LAYER_SOLID_COLOR);
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   root->SetTransferableResource(resource, std::move(callback),
                                 gfx::Size(10, 10));
   compositor()->SetRootLayer(root.get());
@@ -1612,6 +1609,44 @@ TEST_F(LayerWithNullDelegateTest, AlwaysSendsMaskDamagedRects) {
   EXPECT_EQ(mask->damaged_region_for_testing().bounds(), invalid_rect);
   root->SendDamagedRects();
   EXPECT_EQ(mask->damaged_region_for_testing().bounds(), gfx::Rect());
+}
+
+// Tests that mask layer could be set to different layers and released
+// without leaving dangling references.
+TEST_F(LayerWithNullDelegateTest, ReusedMaskLayer) {
+  gfx::Rect bound(gfx::Rect(2, 2));
+  std::unique_ptr<Layer> root = CreateTextureRootLayer(bound);
+
+  std::unique_ptr<Layer> l1 = CreateTextureLayer(bound);
+  root->Add(l1.get());
+  std::unique_ptr<Layer> l2 = CreateTextureLayer(bound);
+  root->Add(l2.get());
+
+  {
+    std::unique_ptr<Layer> mask = CreateTextureLayer(bound);
+    // Set `mask` to `l1`, then `l2`.
+    l1->SetMaskLayer(mask.get());
+    EXPECT_EQ(mask.get(), l1->layer_mask_layer());
+    EXPECT_EQ(l1.get(), mask->layer_mask_back_link());
+
+    l2->SetMaskLayer(mask.get());
+    EXPECT_EQ(mask.get(), l2->layer_mask_layer());
+    EXPECT_EQ(l2.get(), mask->layer_mask_back_link());
+
+    // After setting `mask` to `l2`, `l1` should no longer reference it.
+    ASSERT_EQ(nullptr, l1->layer_mask_layer());
+
+    // Release `mask`.
+    mask.reset();
+  }
+
+  // `l2' should no longer references `mask` either.
+  ASSERT_EQ(nullptr, l2->layer_mask_layer());
+
+  // There should be no use-after-free crashes.
+  root->SendDamagedRects();
+  l1->SendDamagedRects();
+  l2->SendDamagedRects();
 }
 
 // Verifies that when a layer is reflecting other layers, mirror counts of
@@ -1999,7 +2034,7 @@ TEST_F(LayerWithRealCompositorTest, ModifyHierarchy) {
                              cc::AlphaDiscardingExactPixelComparator()));
 }
 
-// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
 #else
@@ -2055,7 +2090,7 @@ TEST_F(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
   EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, fuzzy_comparator));
 }
 
-// TODO(crbug.com/1476969): Flaky on fuchsia-arm64 builds. Re-enable this test.
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_BackgroundBlurChangeDeviceScale \
   DISABLED_BackgroundBlurChangeDeviceScale
@@ -2458,9 +2493,8 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
 
   constexpr gfx::Size size(64, 64);
   auto resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   bool release_callback_run = false;
 
   layer->SetTransferableResource(
@@ -2488,9 +2522,8 @@ TEST_F(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(mirror->has_external_content());
 
   resource = viz::TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, viz::SinglePlaneFormat::kRGBA_8888,
-      false /* is_overlay_candidate */);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
   release_callback_run = false;
 
   // Setting a transferable resource on the source layer should set it on the

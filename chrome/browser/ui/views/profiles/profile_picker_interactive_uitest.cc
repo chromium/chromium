@@ -6,16 +6,22 @@
 
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -36,9 +42,13 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPickerWebContentsId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
 
 const WebContentsInteractionTestUtil::DeepQuery kSignInButton = {
     "profile-picker-app", "profile-type-choice", "#signInButton"};
+const WebContentsInteractionTestUtil::DeepQuery kContinueWithoutAccountButton =
+    {"profile-picker-app", "profile-type-choice", "#notNowButton"};
 const WebContentsInteractionTestUtil::DeepQuery kAddProfileButton = {
     "profile-picker-app", "profile-picker-main-view", "#addProfile"};
 
@@ -90,7 +100,13 @@ class ProfilePickerInteractiveUiTest
     : public InteractiveBrowserTest,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
-  ProfilePickerInteractiveUiTest() = default;
+  ProfilePickerInteractiveUiTest() {
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
+  }
+
   ~ProfilePickerInteractiveUiTest() override = default;
 
   void ShowAndFocusPicker(ProfilePicker::EntryPoint entry_point,
@@ -150,6 +166,99 @@ class ProfilePickerInteractiveUiTest
     state_change.event = kUrlEntryMatchesEvent;
     return state_change;
   }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+
+    // Change the country to belgium because the search engine choice screen
+    // is only displayed for EEA countries.
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+  }
+
+  const base::HistogramTester& HistogramTester() const {
+    return histogram_tester_;
+  }
+
+  const base::UserActionTester& UserActionTester() const {
+    return user_action_tester_;
+  }
+
+  auto WaitForButtonEnabled(const ui::ElementIdentifier web_contents_id,
+                            const DeepQuery& button_query) {
+    StateChange button_enabled;
+    button_enabled.event = kButtonEnabled;
+    button_enabled.where = button_query;
+    button_enabled.type = StateChange::Type::kExistsAndConditionTrue;
+    button_enabled.test_function = "(btn) => !btn.disabled";
+    return WaitForStateChange(web_contents_id, button_enabled);
+  }
+
+  auto WaitForButtonDisabled(const ui::ElementIdentifier web_contents_id,
+                             const DeepQuery& button_query) {
+    StateChange button_disabled;
+    button_disabled.event = kButtonDisabled;
+    button_disabled.where = button_query;
+    button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
+    button_disabled.test_function = "(btn) => btn.disabled";
+    return WaitForStateChange(web_contents_id, button_disabled);
+  }
+
+  auto PressJsButton(const ui::ElementIdentifier web_contents_id,
+                     const DeepQuery& button_query) {
+    // This can close/navigate the current page, so don't wait for success.
+    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
+                       ExecuteJsMode::kFireAndForget);
+  }
+
+  auto CompleteSearchEngineChoiceStep() {
+    const WebContentsInteractionTestUtil::DeepQuery
+        kSearchEngineChoiceActionButton{"search-engine-choice-app",
+                                        "#actionButton"};
+    const DeepQuery first_search_engine = {"search-engine-choice-app",
+                                           "cr-radio-button"};
+    const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
+                                           "#choiceList"};
+
+    return Steps(
+        WaitForWebContentsNavigation(
+            kPickerWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+
+        Do([&] {
+          HistogramTester().ExpectBucketCount(
+              search_engines::kSearchEngineChoiceScreenEventsHistogram,
+              search_engines::SearchEngineChoiceScreenEvents::
+                  kProfileCreationChoiceScreenWasDisplayed,
+              1);
+          EXPECT_EQ(UserActionTester().GetActionCount(
+                        "SearchEngineChoiceScreenShown"),
+                    1);
+        }),
+
+        // Click on "More" to scroll to the bottom of the search engine list.
+        PressJsButton(kPickerWebContentsId, kSearchEngineChoiceActionButton),
+
+        // The button should become disabled because we didn't make a choice.
+        WaitForButtonDisabled(kPickerWebContentsId,
+                              kSearchEngineChoiceActionButton),
+
+        PressJsButton(kPickerWebContentsId, first_search_engine),
+        WaitForButtonEnabled(kPickerWebContentsId,
+                             kSearchEngineChoiceActionButton),
+        PressJsButton(kPickerWebContentsId, kSearchEngineChoiceActionButton));
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
+  base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Checks that the main picker view can be closed with keyboard shortcut.
@@ -227,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Note: The widget/view is destroyed asynchronously, we need to flush the
       // message loops to be able to reliably check the global state.
-      FlushEvents(), CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
+      CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
 }
 
 // Checks that both the signin web view and the main picker view are able to
@@ -275,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate again back with the keyboard.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue()),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue())),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -283,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse()));
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -316,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate back with the keyboard.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue()),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue())),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -324,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse()));
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
@@ -353,8 +462,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate back with the keyboard.
       SendAccelerator(kPickerWebContentsId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue(),
-                  /*check_description=*/"HasPendingNav"),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue(),
+                               /*check_description=*/"HasPendingNav")),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -362,7 +471,49 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse())
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
+}
 
-  );
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ContinueWithoutAccount) {
+  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
+                     GURL("chrome://profile-picker"));
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kPickerWebContentsId, web_view()),
+      WaitForWebContentsReady(kPickerWebContentsId,
+                              GURL("chrome://profile-picker")),
+      CheckResult(GetNavState(), Eq(NavState{.entry_count = 1,
+                                             .last_committed_entry_index = 0})),
+
+      // Advance to the profile type choice screen.
+      EnsurePresent(kPickerWebContentsId, kAddProfileButton),
+      PressJsButton(kPickerWebContentsId, kAddProfileButton)
+          .SetMustRemainVisible(false),
+      WaitForStateChange(
+          kPickerWebContentsId,
+          UrlEntryMatches(GURL("chrome://profile-picker/new-profile"))),
+      CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
+                                             .last_committed_entry_index = 1})),
+
+      // Advance to the post signed out flow
+      WaitForStateChange(kPickerWebContentsId,
+                         Exists(kContinueWithoutAccountButton)),
+      PressJsButton(kPickerWebContentsId, kContinueWithoutAccountButton)
+          .SetMustRemainVisible(false),
+
+      CompleteSearchEngineChoiceStep());
+
+  WaitForPickerClosed();
+
+  HistogramTester().ExpectUniqueSample(
+      "Profile.AddNewUser", ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL, 1);
+
+  HistogramTester().ExpectBucketCount(
+      search_engines::kSearchEngineChoiceScreenEventsHistogram,
+      search_engines::SearchEngineChoiceScreenEvents::
+          kProfileCreationDefaultWasSet,
+      1);
 }

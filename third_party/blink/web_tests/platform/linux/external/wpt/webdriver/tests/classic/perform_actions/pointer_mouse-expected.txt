@@ -1,0 +1,20 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
+[FAIL] test_click_element_in_shadow_tree[outer-closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_click_element_in_shadow_tree[inner-closed]
+  webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
+[FAIL] test_move_to_position_in_viewport[default value]
+  AssertionError: assert 1 == 0
+[FAIL] test_move_to_origin_position_within_frame[viewport]
+  assert 0 == 1
+[FAIL] test_move_to_origin_position_within_frame[pointer]
+  assert 0 == 1
+[FAIL] test_drag_and_drop_with_draggable_element[0]
+  AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
+[FAIL] test_drag_and_drop_with_draggable_element[300]
+  AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
+[FAIL] test_drag_and_drop_with_draggable_element[800]
+  AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
+Harness: the test ran to completion.

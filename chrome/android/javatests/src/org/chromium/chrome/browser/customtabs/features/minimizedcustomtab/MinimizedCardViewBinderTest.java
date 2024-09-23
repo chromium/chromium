@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -24,15 +25,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -59,7 +61,7 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     float density = getActivity().getResources().getDisplayMetrics().density;
                     int height = Math.round(HEIGHT_DP * density);
@@ -88,7 +90,7 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testTitleUrlFavicon() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(MinimizedCardProperties.TITLE, SHORT_TITLE);
                     mModel.set(MinimizedCardProperties.URL, SHORT_URL);
@@ -105,7 +107,7 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testTitleUrlFaviconLong() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(MinimizedCardProperties.TITLE, LONG_TITLE);
                     mModel.set(MinimizedCardProperties.URL, LONG_URL);
@@ -115,6 +117,23 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
         onView(withId(R.id.title)).check(matches(withText(LONG_TITLE)));
         assertEquals(1, mTitle.getLineCount());
         onView(withId(R.id.url)).check(matches(withText(LONG_URL)));
+        assertEquals(1, mUrl.getLineCount());
+        onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
+        assertEquals(favicon, ((RoundedBitmapDrawable) mFavicon.getDrawable()).getBitmap());
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyTitle() {
+        var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(MinimizedCardProperties.URL, SHORT_URL);
+                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
+                });
+
+        onView(withId(R.id.title)).check(matches(withEffectiveVisibility(Visibility.GONE)));
+        onView(withId(R.id.url)).check(matches(withText(SHORT_URL)));
         assertEquals(1, mUrl.getLineCount());
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
         assertEquals(favicon, ((RoundedBitmapDrawable) mFavicon.getDrawable()).getBitmap());

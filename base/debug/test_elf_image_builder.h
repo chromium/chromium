@@ -8,13 +8,13 @@
 #include <elf.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if __SIZEOF_POINTER__ == 4
 using Addr = Elf32_Addr;
@@ -79,12 +79,12 @@ class TestElfImageBuilder {
 
   // Add a PT_NOTE segment with the specified state.
   TestElfImageBuilder& AddNoteSegment(Word type,
-                                      StringPiece name,
+                                      std::string_view name,
                                       span<const uint8_t> desc);
 
   // Adds a DT_SONAME dynamic section and the necessary state to support it. May
   // be invoked at most once.
-  TestElfImageBuilder& AddSoName(StringPiece soname);
+  TestElfImageBuilder& AddSoName(std::string_view soname);
 
   TestElfImage Build();
 
@@ -121,7 +121,7 @@ class TestElfImageBuilder {
   const MappingType mapping_type_;
   std::vector<std::vector<uint8_t>> note_contents_;
   std::vector<LoadSegment> load_segments_;
-  absl::optional<std::string> soname_;
+  std::optional<std::string> soname_;
 };
 
 }  // namespace base

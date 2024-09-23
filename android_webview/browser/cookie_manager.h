@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "android_webview/browser/aw_cookie_access_policy.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
@@ -183,6 +184,10 @@ class CookieManager {
 
   base::FilePath GetCookieStorePath();
 
+  AwCookieAccessPolicy* cookie_access_policy() {
+    return &cookie_access_policy_;
+  }
+
  private:
   // Returns the CookieStore, creating it if necessary. This must only be called
   // on the CookieStore TaskRunner.
@@ -299,6 +304,10 @@ class CookieManager {
   // note in SetMojoCookieManager(). Must only be accessed on
   // |cookie_store_task_runner_|.
   bool setting_new_mojo_cookie_manager_;
+
+  // The cookie access policy is responsible for configuring when WebView allows
+  // cookies both globally, and per request.
+  AwCookieAccessPolicy cookie_access_policy_;
 
   // |tasks_| is a queue we manage, to allow us to delay tasks until after
   // SetMojoCookieManager()'s work is done. This is modified on different

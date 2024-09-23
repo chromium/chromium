@@ -104,11 +104,25 @@
           "description": "The extension has been blacklisted."
         }, {
           "name": "custodian_approval_required",
-          "description": "The extension cannot be enabled due to lack of custodian approval for child users."
+          "description": "The existing extension cannot be enabled due to lack of custodian approval for supervised users."
+        }, {
+          "name": "custodian_approval_required_for_installation",
+          "description": "The extension cannot be installed without getting custodian approval for supervised users."
         }, {
           "name": "force_installed",
           "description": "The extension is force installed or recommended by policy."
+        }, {
+          "name": "deprecated_manifest_version",
+          "description": "The extension uses a deprecated manifest version that is no longer supported by Chrome."
+        }, {
+          "name": "corrupted",
+          "description": "The extension has been installed already but it's corrupted."
         }]
+      },
+      {
+        "id": "MV2DeprecationStatus",
+        "type": "string",
+        "enum": ["inactive", "warning", "soft_disable", "hard_disable"]
       }
     ],
     "functions": [
@@ -350,6 +364,35 @@
           "parameters": [
             { "name": "status", "$ref": "ExtensionInstallStatus" }
           ]
+        }
+      },
+      {
+        "name": "getFullChromeVersion",
+        "description": "Returns the full version number, e.g. '123.0.6312.112'.",
+        "parameters" : [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "info",
+              "type": "object",
+              "properties": {
+                "version_number": { "type": "string" }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "getMV2DeprecationStatus",
+        "description": "Returns the current state of the MV2 deprecation experiments.",
+        "parameters" : [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [{
+            "name": "status",
+            "$ref": "MV2DeprecationStatus"
+          }]
         }
       }
     ]

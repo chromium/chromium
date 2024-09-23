@@ -29,7 +29,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -40,15 +39,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.content_public.browser.WebContents;
@@ -56,14 +52,12 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link StripTabDragShadowView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
 public class StripTabDragShadowViewUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Captor private ArgumentCaptor<FaviconImageCallback> mGetFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
@@ -186,11 +180,7 @@ public class StripTabDragShadowViewUnitTest {
 
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID),
-                        any(Size.class),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(true),
-                        eq(true));
+                        eq(TAB_ID), any(Size.class), mGetThumbnailCallbackCaptor.capture());
 
         mGetThumbnailCallbackCaptor.getValue().onResult(mMockThumbnailBitmap);
         assertEquals(
@@ -204,11 +194,7 @@ public class StripTabDragShadowViewUnitTest {
         mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID),
-                        any(Size.class),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(true),
-                        eq(true));
+                        eq(TAB_ID), any(Size.class), mGetThumbnailCallbackCaptor.capture());
 
         mGetThumbnailCallbackCaptor.getValue().onResult(null);
         assertEquals(

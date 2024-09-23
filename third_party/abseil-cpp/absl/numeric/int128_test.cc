@@ -25,6 +25,7 @@
 #include "absl/base/internal/cycleclock.h"
 #include "absl/hash/hash_testing.h"
 #include "absl/meta/type_traits.h"
+#include "absl/types/compare.h"
 
 #define MAKE_INT128(HI, LO) absl::MakeInt128(static_cast<int64_t>(HI), LO)
 
@@ -231,8 +232,6 @@ TEST(Uint128, AllTests) {
   EXPECT_EQ(two, -((-one) - 1));
   EXPECT_EQ(absl::Uint128Max(), -one);
   EXPECT_EQ(zero, -zero);
-
-  EXPECT_EQ(absl::Uint128Max(), absl::kuint128max);
 }
 
 TEST(Int128, RightShiftOfNegativeNumbers) {
@@ -786,6 +785,13 @@ TEST(Int128, ComparisonTest) {
     EXPECT_FALSE(pair.smaller >= pair.larger);  // NOLINT(readability/check)
     EXPECT_TRUE(pair.smaller >= pair.smaller);  // NOLINT(readability/check)
     EXPECT_TRUE(pair.larger >= pair.larger);    // NOLINT(readability/check)
+
+#ifdef __cpp_impl_three_way_comparison
+    EXPECT_EQ(pair.smaller <=> pair.larger, absl::strong_ordering::less);
+    EXPECT_EQ(pair.larger <=> pair.smaller, absl::strong_ordering::greater);
+    EXPECT_EQ(pair.smaller <=> pair.smaller, absl::strong_ordering::equal);
+    EXPECT_EQ(pair.larger <=> pair.larger, absl::strong_ordering::equal);
+#endif
   }
 }
 

@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.os.ParcelFileDescriptor;
 
@@ -30,10 +30,12 @@ import java.util.Collections;
  * they don't actually launch any services or other components.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class CrashReceiverServiceTest {
-    /** Ensure that the minidump copying doesn't trigger when we pass it invalid file descriptors. */
+    /**
+     * Ensure that the minidump copying doesn't trigger when we pass it invalid file descriptors.
+     */
     @Test
     @MediumTest
     public void testCopyingAbortsForInvalidFds() {

@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc_test_support") {
+  testonly = true
+
+  public_configs = [ "//build/config/linux/dbus" ]
+
+  sources = [
+    "arc_data_removed_waiter.cc",
+    "arc_data_removed_waiter.h",
+    "test_arc_session_manager.cc",
+    "test_arc_session_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/arc/session",
+  ]
+}

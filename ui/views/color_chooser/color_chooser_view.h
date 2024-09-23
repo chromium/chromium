@@ -33,8 +33,7 @@ class SelectedColorPatchView;
 //
 // All public methods on ColorChooser are safe to call before, during, or after
 // the existence of the corresponding Widget/Views/etc.
-class VIEWS_EXPORT ColorChooser : public TextfieldController,
-                                  public base::SupportsWeakPtr<ColorChooser> {
+class VIEWS_EXPORT ColorChooser final : public TextfieldController {
  public:
   ColorChooser(ColorChooserListener* listener, SkColor initial_color);
   ~ColorChooser() override;
@@ -81,26 +80,27 @@ class VIEWS_EXPORT ColorChooser : public TextfieldController,
   void OnSaturationValueChosen(SkScalar saturation, SkScalar value);
 
   // The current color in HSV coordinate.
-  SkScalar hsv_[3];
+  std::array<SkScalar, 3> hsv_;
 
   raw_ptr<ColorChooserListener> listener_;
   ViewTracker tracker_;
 
   // Child views. These are owned as part of the normal views hierarchy.
   // The view of hue chooser.
-  raw_ptr<HueView, DanglingUntriaged> hue_ = nullptr;
+  raw_ptr<HueView> hue_ = nullptr;
 
   // The view of saturation/value choosing area.
-  raw_ptr<SaturationValueView, DanglingUntriaged> saturation_value_ = nullptr;
+  raw_ptr<SaturationValueView> saturation_value_ = nullptr;
 
   // The rectangle to denote the selected color.
-  raw_ptr<SelectedColorPatchView, DanglingUntriaged> selected_color_patch_ =
-      nullptr;
+  raw_ptr<SelectedColorPatchView> selected_color_patch_ = nullptr;
 
   // The textfield to write the color explicitly.
-  raw_ptr<Textfield, DanglingUntriaged> textfield_ = nullptr;
+  raw_ptr<Textfield> textfield_ = nullptr;
 
   SkColor initial_color_;
+
+  base::WeakPtrFactory<ColorChooser> weak_ptr_factory_{this};
 };
 
 }  // namespace views

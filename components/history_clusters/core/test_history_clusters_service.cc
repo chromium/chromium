@@ -11,7 +11,6 @@ namespace history_clusters {
 TestHistoryClustersService::TestHistoryClustersService()
     : HistoryClustersService("en-US",
                              /*history_service=*/nullptr,
-                             /*entity_metadata_provider=*/nullptr,
                              /*url_loader_factory=*/nullptr,
                              /*engagement_score_provider=*/nullptr,
                              /*template_url_service=*/nullptr,

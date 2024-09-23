@@ -18,7 +18,6 @@ static_library("renderer") {
     "form_tracker.h",
     "html_based_username_detector.cc",
     "html_based_username_detector.h",
-    "html_based_username_detector_vocabulary.cc",
     "html_based_username_detector_vocabulary.h",
     "page_form_analyser_logger.cc",
     "page_form_analyser_logger.h",
@@ -36,13 +35,15 @@ static_library("renderer") {
     "renderer_save_password_progress_logger.h",
     "suggestion_properties.cc",
     "suggestion_properties.h",
+    "timing.cc",
+    "timing.h",
   ]
 
   deps = [
     "//base",
     "//base:i18n",
     "//components/autofill/content/common/mojom",
-    "//components/autofill/core/common",
+    "//components/autofill/core/common:autofill_regex",
     "//components/password_manager/core/common:common",
     "//components/safe_browsing:buildflags",
     "//components/strings",
@@ -132,6 +133,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//content/public/renderer",
     "//google_apis:google_apis",
     "//testing/gmock",

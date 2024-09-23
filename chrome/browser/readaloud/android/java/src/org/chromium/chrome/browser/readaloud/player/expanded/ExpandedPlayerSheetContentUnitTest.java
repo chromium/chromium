@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -242,7 +243,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showOptionsMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
+        verify(mBottomSheetController).requestShowContent(mOptionsMenu, false);
     }
 
     @Test
@@ -250,7 +251,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showSpeedMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
+        verify(mBottomSheetController).requestShowContent(mSpeedMenu, false);
     }
 
     @Test
@@ -263,5 +264,13 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Test
     public void testCanSuppressInAnyState() {
         assertTrue(mContent.canSuppressInAnyState());
+    }
+
+    @Test
+    public void testGetVerticalScrollOffset() {
+        ScrollView scrollView = mContentView.findViewById(R.id.scroll_view);
+        scrollView.setPadding(0, 100, 0, 100);
+        scrollView.scrollTo(0, 100);
+        assertEquals(100, mContent.getVerticalScrollOffset());
     }
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
-<translation id="101606685846791463">清除瀏覽器快取, 刪除瀏覽器快取, 清除歷史記錄, 刪除歷史記錄, 清除 cookie, 刪除 cookie, 清除瀏覽記錄, 刪除瀏覽記錄, 清除瀏覽器記錄, 刪除瀏覽器記錄, 清除紀錄, 刪除紀錄, 清除瀏覽紀錄, 刪除瀏覽紀錄, 清除瀏覽器紀錄</translation>
 <translation id="132297926492792130">控制 google 帳戶, 控制我的 google 帳戶, 修正 google 帳戶, 修正我的 google 帳戶, 管理 google 帳戶, 管理我的 google 帳戶, 控制 google 帳號, 控制我的 google 帳號, 修正 google 帳號, 修正我的 google 帳號, 管理 google 帳號, 管理我的 google 帳號</translation>
 <translation id="1455865776268085776">進入無痕模式, 啟動無痕模式, 新增無痕視窗, 打開無痕視窗, 新無痕視窗, 新增無痕視窗, 打開無痕視窗, 新無痕視窗, 新增無痕分頁, 開啟無痕分頁, 打開無痕分頁, 新無痕分頁</translation>
 <translation id="1545931455576308147">分享這個頁面, 分享這個分頁</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">新增地址, 變更地址, 變更運送地址, 變更送貨地址, 變更收貨地址, 變更收件地址, 編輯運送地址, 編輯送貨地址, 編輯收貨地址, 編輯收件地址, 管理地址, 管理運送地址, 管理送貨地址, 管理收貨地址, 管理收件地址</translation>
 <translation id="7242693601647412075">管理安全設定, 管理安全性設定</translation>
 <translation id="7441773108452086364">變更 gmail 密碼, 變更我的 gmail 密碼, google 密碼變更, gmail 密碼變更, 變更 google 密碼, 變更我的 google 密碼, 重設 gmail 帳戶密碼, 重設 google 帳戶密碼, 變更 google 帳號密碼, 變更 gmail 帳號密碼, 重設 gmail 帳號密碼, 重設 google 帳號密碼</translation>
+<translation id="7469628627013714019">清除瀏覽器快取, 刪除瀏覽器快取, 清除歷史記錄, 刪除歷史記錄, 清除 cookie, 刪除 cookie, 清除瀏覽記錄, 刪除瀏覽記錄, 清除瀏覽器記錄, 刪除瀏覽器記錄, 清除紀錄, 刪除紀錄, 清除瀏覽紀錄, 刪除瀏覽紀錄, 清除瀏覽器紀錄, 刪除瀏覽器紀錄</translation>
 <translation id="7660956169713698963">自訂 chrome 作業系統無障礙功能, 管理無障礙設定</translation>
 <translation id="7700496593710078083">查看 chrome 歷史記錄, 檢視瀏覽記錄</translation>
 <translation id="7739523284295786564">管理 chrome 下載內容, 查看下載內容</translation>

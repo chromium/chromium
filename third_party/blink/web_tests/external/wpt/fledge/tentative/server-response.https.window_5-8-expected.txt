@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - fault inject at CBOR
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - fault inject at gzip
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - fault inject at framing
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - fault inject at encryption
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

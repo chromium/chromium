@@ -36,15 +36,15 @@ class VR_UI_EXPORT Text : public TexturedElement {
 
   ~Text() override;
 
-  // TODO(https://crbug.com/913607): Make this part of the constructor.
+  // TODO(crbug.com/41430992): Make this part of the constructor.
   void SetText(const std::u16string& text);
 
   // SetSize() should not be called on the Text element, because the element
   // updates its size according to text layout.
-  // TODO(https://crbug.com/913607): Make this part of the constructor.
+  // TODO(crbug.com/41430992): Make this part of the constructor.
   void SetFieldWidth(float width);
 
-  // TODO(https://crbug.com/913607): Make this part of the constructor.
+  // TODO(crbug.com/41430992): Make this part of the constructor.
   virtual void SetColor(SkColor color);
 
   const std::vector<std::unique_ptr<gfx::RenderText>>& LinesForTest();

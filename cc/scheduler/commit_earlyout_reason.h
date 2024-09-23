@@ -28,7 +28,7 @@ inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
     case CommitEarlyOutReason::kFinishedNoUpdates:
       return "CommitEarlyOutReason::kFinishedNoUpdates";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 

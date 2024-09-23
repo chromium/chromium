@@ -9,12 +9,7 @@ import static android.os.Build.VERSION_CODES.N_MR1;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUND;
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
@@ -26,6 +21,7 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
 import android.widget.FrameLayout;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -36,31 +32,23 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -69,19 +57,18 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -89,7 +76,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelD
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
@@ -97,7 +83,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION)
 public class LayoutManagerTest implements MockTabModelDelegate {
     private static final String TAG = "LayoutManagerTest";
 
@@ -105,29 +90,12 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
-
-    @Mock private StartSurface mStartSurface;
-
-    @Mock private TabSwitcher mTabSwitcher;
-
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
-
-    @Mock private TabSwitcher.TabListDelegate mTabListDelegate;
-    @Mock private TabSwitcher.Controller mTabSwitcherController;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-
-    @Captor private ArgumentCaptor<TabSwitcherViewObserver> mTabSwitcherViewObserverArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<TabSwitcher.TabSwitcherViewObserver>
-            mRefactorTabSwitcherViewObserverArgumentCaptor;
-
-    private long mLastDownTime;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private TabModelSelector mTabModelSelector;
-    private Supplier<StartSurface> mStartSurfaceSupplier;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
-    private boolean mIsStartSurfaceRefactorEnabled;
+    private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private LayoutManagerChrome mManager;
     private LayoutManagerChromePhone mManagerPhone;
 
@@ -161,7 +129,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void setAccessibilityEnabledForTesting(Boolean value) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(value));
     }
 
@@ -208,34 +176,26 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
-        if (mIsStartSurfaceRefactorEnabled) {
-            when(mTabSwitcher.getController()).thenReturn(mTabSwitcherController);
-            when(mTabSwitcher.getTabListDelegate()).thenReturn(mTabListDelegate);
-            when(mTabSwitcher.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
-        } else {
-            when(mStartSurface.getGridTabListDelegate()).thenReturn(mTabListDelegate);
-        }
-        when(mStartSurface.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
-
         mTabModelSelector =
                 new MockTabModelSelector(
-                        Profile.getLastUsedRegularProfile(),
-                        Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                        ProfileManager.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
                         standardTabCount,
                         incognitoTabCount,
                         this);
         if (standardIndexSelected != TabModel.INVALID_TAB_INDEX) {
-            TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected, false);
+            TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected);
         }
         if (incognitoIndexSelected != TabModel.INVALID_TAB_INDEX) {
-            TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected, false);
+            TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
         Assert.assertNotNull(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
-        TabContentManager tabContentManager = new TabContentManager(context, null, false, null);
+        TabContentManager tabContentManager =
+                new TabContentManager(context, null, false, null, mTabWindowManager);
         tabContentManager.initWithNative();
 
         // Build a fake content container
@@ -251,53 +211,17 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 new LayoutManagerChromePhone(
                         layoutManagerHost,
                         container,
-                        mStartSurfaceSupplier,
                         mTabSwitcherSupplier,
-                        mBrowserControlsStateProvider,
+                        mTabModelSelectorSupplier,
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
-                        () -> {
-                            mTabSwitcherSupplier.set(mTabSwitcher);
-                            return container;
-                        },
                         mHubLayoutDependencyHolder);
-
-        setUpLayouts();
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);
         mManager.init(mTabModelSelector, null, null, null, mTopUiThemeColorProvider);
         initializeMotionEvent();
-    }
-
-    private void setUpLayouts() {
-        if (!mIsStartSurfaceRefactorEnabled) {
-            verify(mStartSurface)
-                    .addTabSwitcherViewObserver(mTabSwitcherViewObserverArgumentCaptor.capture());
-            doAnswer(
-                            (Answer<Void>)
-                                    invocation -> {
-                                        mTabSwitcherViewObserverArgumentCaptor
-                                                .getValue()
-                                                .finishedShowing();
-                                        simulateTime(mManager, 1000);
-                                        return null;
-                                    })
-                    .when(mStartSurface)
-                    .showOverview(anyBoolean());
-
-            doAnswer(
-                            (Answer<Void>)
-                                    invocation -> {
-                                        mTabSwitcherViewObserverArgumentCaptor
-                                                .getValue()
-                                                .finishedHiding();
-                                        return null;
-                                    })
-                    .when(mStartSurface)
-                    .hideTabSwitcherView(anyBoolean());
-        }
     }
 
     @Test
@@ -426,30 +350,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
-    public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
-        verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
-    @Feature({"Android-TabSwitcher"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.ANDROID_HUB})
-    public void testTabSwitcherLayout_Enabled_LowEndPhone() throws Exception {
-        verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-    @Feature({"Android-TabSwitcher"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-    @EnableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testHubTabSwitcherLayout_Enabled() throws Exception {
         launchedChromeAndEnterTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(LayoutType.TAB_SWITCHER, getActiveLayout().getLayoutType());
                 });
@@ -458,7 +361,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         showTabSwitcherLayout();
     }
 
-    // TODO(crbug.com/1108496): Update the test to use assertThat for better failure message.
+    // TODO(crbug.com/40141330): Update the test to use assertThat for better failure message.
     @Test
     @MediumTest
     public void testLayoutObserverNotification_ShowAndHide_ToolbarSwipe() throws TimeoutException {
@@ -473,7 +376,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 startedHidingCallback,
                 finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     performToolbarSideSwipe(ScrollDirection.RIGHT);
                     Assert.assertEquals(
@@ -487,7 +390,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         finishedShowingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TOOLBAR_SWIPE, finishedShowingCallback.layoutType);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     finishToolbarSideSwipe();
                     Assert.assertEquals(
@@ -524,7 +427,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 startedHidingCallback,
                 finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.showLayout(LayoutType.TAB_SWITCHER, true);
 
@@ -540,7 +443,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         // initialization. Because LayoutManager does not explicitly hide the old layout when a new
         // layout is forced to show, the callCount for |finishedShowingCallback|,
         // |startedHidingCallback|, and |finishedHidingCallback| are still 0.
-        // TODO(crbug.com/1108496): update the callCount when LayoutManager explicitly hide the old
+        // TODO(crbug.com/40141330): update the callCount when LayoutManager explicitly hide the old
         // layout.
         startedShowingCallback.waitForCallback(1);
         Assert.assertEquals(LayoutType.TAB_SWITCHER, startedShowingCallback.layoutType);
@@ -548,7 +451,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         finishedShowingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TAB_SWITCHER, finishedShowingCallback.layoutType);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.showLayout(LayoutType.BROWSING, true);
                     Assert.assertTrue(
@@ -586,7 +489,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 startedHidingCallback,
                 finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = createTab(123, false);
                     mTabModelSelector
@@ -628,7 +531,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                             && mManagerPhone.getActiveLayout().isStartingToHide();
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Simulate hiding animation.
                     Assert.assertTrue(
@@ -667,7 +570,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             LayoutObserverCallbackHelper startedHidingCallback,
             LayoutObserverCallbackHelper finishedHidingCallback)
             throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initializeLayoutManagerPhone(2, 0);
                     mManager.addObserver(
@@ -718,51 +621,17 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         MockitoAnnotations.initMocks(this);
 
         // Load the browser process.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mIsStartSurfaceRefactorEnabled =
-                            ReturnToChromeUtil.isStartSurfaceRefactorEnabled(
-                                    ApplicationProvider.getApplicationContext());
-                });
-
-        mStartSurfaceSupplier = () -> mStartSurface;
+        mTabModelSelectorSupplier = () -> mTabModelSelector;
     }
 
     @After
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
-    }
-
-    private void verifyTabSwitcherLayoutEnable(
-            @TabListCoordinator.TabListMode int expectedTabListMode) {
-        launchedChromeAndEnterTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Layout activeLayout = getActiveLayout();
-                    Assert.assertEquals(LayoutType.TAB_SWITCHER, activeLayout.getLayoutType());
-                    int tabListMode;
-                    if (mIsStartSurfaceRefactorEnabled) {
-                        tabListMode =
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getTabSwitcherForTesting()
-                                        .getTabListDelegate()
-                                        .getListModeForTesting();
-                    } else {
-                        tabListMode =
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getStartSurface()
-                                        .getGridTabListDelegate()
-                                        .getListModeForTesting();
-                    }
-                    Assert.assertEquals(expectedTabListMode, tabListMode);
-                });
     }
 
     private void launchedChromeAndEnterTabSwitcher() {
@@ -861,7 +730,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void observeLayoutManager(List<LayoutStateLayoutType> observationSequence) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LayoutManagerChrome layoutManagerChrome = getLayoutManagerChrome();
                     Assert.assertNotNull(
@@ -901,7 +770,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Override
     public MockTab createTab(int id, boolean incognito) {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return MockTab.createAndInitialize(
                 id, incognito ? profile.getPrimaryOTRProfile(true) : profile);
     }

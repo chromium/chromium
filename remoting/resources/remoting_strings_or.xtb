@@ -27,7 +27,6 @@
 <translation id="2329392777730037872">କ୍ଲାଏଣ୍ଟରେ <ph name="URL" /> ଖୋଲିବା ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2366718077645204424">ହୋଷ୍ଟ ପାଖରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ। ଏହା ସମ୍ଭବତଃ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‍ୱାର୍କର କନଫିଗ୍‌ରେସନ୍ କାରଣରୁ ହୋଇଛି।</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ଶେଷଥର<ph name="RELATIVE_TIMESTAMP" /> ଅନ୍‌ଲାଇନ୍‌ରେ ଦେଖାଯାଇଥିଲେ।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />କୁ ’ଆକ୍ସେସିବିଲିଟୀ’ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ସହ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="2540992418118313681">ଆପଣ ଦେଖିବା ଏବଂ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଏହି କମ୍ପ୍ୟୁଟରକୁ ଅନ୍ୟ ଜଣେ ୟୁଜର ସହ ସେୟାର କରିବାକୁ ଚାହିଁବେ?</translation>
@@ -52,7 +51,6 @@
 <translation id="3423542133075182604">ସୁରକ୍ଷା କୀ ରିମୋଟିଂ ପ୍ରକ୍ରିୟା</translation>
 <translation id="3581045510967524389">ନେଟ୍‌ୱର୍କ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର ଡିଭାଇସ୍ ଅନ୍‌ଲାଇନ୍ ଥିବା ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="3596628256176442606">ଏହି ସେବା Chromoting କ୍ଲାଏଣ୍ଟମାନଙ୍କ ଠାରୁ ଇନ୍‌କମିଂ ସଂଯୋଗ ସକ୍ଷମ କରେ।</translation>
-<translation id="369442766917958684">ଅଫ୍‍ଲାଇନ୍ ଅଛି।</translation>
 <translation id="3695446226812920698">କିପରି ହେବ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="3776024066357219166">ଆପଣଙ୍କର Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍‌ର ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଛି।</translation>
 <translation id="3858860766373142691">ନାମ</translation>
@@ -74,7 +72,7 @@
 <translation id="4405930547258349619">କୋର୍ ଲାଇବ୍ରେରୀ</translation>
 <translation id="443560535555262820">ଆକ୍ସେସିବିଲିଟୀ ପସନ୍ଦଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
-<translation id="4513946894732546136">Feedback</translation>
+<translation id="4513946894732546136">ମତାମତ</translation>
 <translation id="4563926062592110512">କ୍ଲାଏଣ୍ଟ ବିଚ୍ଛିନ୍ନ ହୋଇଛନ୍ତି: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />କୁ ସଠିକ୍ ଭାବରେ କନଫିଗର୍ କରାଯାଇନାହିଁ। ଦୟାକରି ଏକ ଭିନ୍ନ ଡିଫଲ୍ଟ ୱେବ୍ ବ୍ରାଉଜର୍ ବାଛି, URL ଫରୱାର୍ଡିଂକୁ ପୁଣି ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="4635770493235256822">ରିମୋଟ୍‌ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
@@ -83,7 +81,7 @@
 <translation id="4741792197137897469">ପ୍ରମାଣିକରଣ ବିଫଳ ହୋ‍ଇଛି। ଦୟାକରି, ପୁଣି Chromeରେ ସାଇନ୍‌ ଇନ୍‍ କରନ୍ତୁ।</translation>
 <translation id="4784508858340177375">X ସର୍ଭର୍ କ୍ରାସ୍ ହୋଇଛି କିମ୍ବା ଆରମ୍ଭ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4798680868612952294">ମାଉସ୍ ବିକଳ୍ପ</translation>
-<translation id="4804818685124855865">ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
+<translation id="4804818685124855865">ଡିସକନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4808503597364150972"><ph name="HOSTNAME" /> ନିମନ୍ତେ ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ।</translation>
 <translation id="4812684235631257312">ହୋଷ୍ଟ</translation>
 <translation id="4867841927763172006">ପ୍ରିଣ୍ଟସ୍କ୍ରିନ୍‌ ପଠାନ୍ତୁ</translation>
@@ -104,7 +102,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ଆପଣଙ୍କର ଡେସ୍କଟପ ବର୍ତ୍ତମାନ <ph name="USER" />ଙ୍କ ସହ ସେୟାର କରାଯାଇଛି।</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
 <translation id="579702532610384533">ପୁନଃସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5810269635982033450">ଏକ ଟ୍ରାକ୍‌ପ୍ୟାଡ୍ ଭଳି ସ୍କ୍ରିନ୍ କାର୍ଯ୍ୟ କରେ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଦେଖିବା ଏବଂ ଆପଣଙ୍କ କୀବୋର୍ଡ ଓ ମାଉସକୁ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଆକ୍ସେସର ଅନୁରୋଧ କରିଛନ୍ତି। ଯଦି ଆପଣ ଏହି ଅନୁରୋଧ ପାଇବାକୁ ଆଶା କରୁନାହାଁନ୍ତି, ତେବେ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''କୁ ଦବାନ୍ତୁ। ନଚେତ ସଂଯୋଗଟି ପ୍ରସ୍ତୁତ ହେଲେ ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''କୁ ଚୟନ କରନ୍ତୁ।</translation>

@@ -8,19 +8,13 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_version_info.h"
 
 namespace gpu {
 namespace gles2 {
 
 class ShaderTranslatorTest : public testing::Test {
  public:
-  ShaderTranslatorTest() {
-    shader_output_language_ =
-        ShaderTranslator::GetShaderOutputLanguageForContext(
-            gl::GLVersionInfo("2.0", "", gfx::ExtensionSet()));
-  }
-
+  ShaderTranslatorTest() = default;
   ~ShaderTranslatorTest() override = default;
 
  protected:
@@ -37,11 +31,11 @@ class ShaderTranslatorTest : public testing::Test {
     fragment_translator_ = new ShaderTranslator();
 
     ASSERT_TRUE(vertex_translator_->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
-                                         &resources, shader_output_language_,
-                                         {}, false));
+                                         &resources, SH_ESSL_OUTPUT, {},
+                                         false));
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC,
-                                           &resources, shader_output_language_,
-                                           {}, false));
+                                           &resources, SH_ESSL_OUTPUT, {},
+                                           false));
 #endif  //  BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   }
   void TearDown() override {
@@ -51,17 +45,11 @@ class ShaderTranslatorTest : public testing::Test {
 
   scoped_refptr<ShaderTranslator> vertex_translator_;
   scoped_refptr<ShaderTranslator> fragment_translator_;
-  ShShaderOutput shader_output_language_;
 };
 
 class ES3ShaderTranslatorTest : public testing::Test {
  public:
-  ES3ShaderTranslatorTest() {
-    shader_output_language_ =
-        ShaderTranslator::GetShaderOutputLanguageForContext(
-            gl::GLVersionInfo("3.0", "", gfx::ExtensionSet()));
-  }
-
+  ES3ShaderTranslatorTest() = default;
   ~ES3ShaderTranslatorTest() override = default;
 
  protected:
@@ -78,11 +66,11 @@ class ES3ShaderTranslatorTest : public testing::Test {
     fragment_translator_ = new ShaderTranslator();
 
     ASSERT_TRUE(vertex_translator_->Init(GL_VERTEX_SHADER, SH_GLES3_SPEC,
-                                         &resources, shader_output_language_,
-                                         {}, false));
+                                         &resources, SH_ESSL_OUTPUT, {},
+                                         false));
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES3_SPEC,
-                                           &resources, shader_output_language_,
-                                           {}, false));
+                                           &resources, SH_ESSL_OUTPUT, {},
+                                           false));
 #endif  //  BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   }
   void TearDown() override {
@@ -92,7 +80,6 @@ class ES3ShaderTranslatorTest : public testing::Test {
 
   scoped_refptr<ShaderTranslator> vertex_translator_;
   scoped_refptr<ShaderTranslator> fragment_translator_;
-  ShShaderOutput shader_output_language_;
 };
 
 TEST_F(ShaderTranslatorTest, ValidVertexShader) {
@@ -519,9 +506,6 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
       "  gl_Position = vPosition;\n"
       "}";
 
-  gl::GLVersionInfo output_context_version(testing::get<0>(GetParam()), "",
-                                           gfx::ExtensionSet());
-
   scoped_refptr<ShaderTranslator> translator = new ShaderTranslator();
   ShBuiltInResources resources;
   sh::InitBuiltInResources(&resources);
@@ -529,11 +513,8 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
   ShCompileOptions compile_options{};
   compile_options.objectCode = true;
 
-  ShShaderOutput shader_output_language =
-      ShaderTranslator::GetShaderOutputLanguageForContext(
-          output_context_version);
   ASSERT_TRUE(translator->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC, &resources,
-                               shader_output_language, compile_options, false));
+                               SH_ESSL_OUTPUT, compile_options, false));
 
   std::string translated_source;
   int shader_version;
@@ -562,45 +543,6 @@ testing::tuple<const char*, const char*> make_gl_glsl_tuple(
   return testing::make_tuple(gl_version, glsl_version_directive);
 }
 }
-
-// Test data for the above test. OpenGL specifications specify a
-// certain version of GLSL to be guaranteed to be supported. Test
-// that ShaderTranslator produces a GLSL shader with the exact
-// specified GLSL version for each known OpenGL version.
-INSTANTIATE_TEST_SUITE_P(
-    KnownOpenGLContexts,
-    ShaderTranslatorOutputVersionTest,
-    testing::Values(make_gl_glsl_tuple("4.5", "#version 450\n"),
-                    make_gl_glsl_tuple("4.4", "#version 440\n"),
-                    make_gl_glsl_tuple("4.3", "#version 430\n"),
-                    make_gl_glsl_tuple("4.2", "#version 420\n"),
-                    make_gl_glsl_tuple("4.1", "#version 410\n"),
-                    make_gl_glsl_tuple("4.0", "#version 400\n"),
-                    make_gl_glsl_tuple("3.3", "#version 330\n"),
-                    make_gl_glsl_tuple("3.2", "#version 150\n"),
-                    make_gl_glsl_tuple("3.1", ""),
-                    make_gl_glsl_tuple("3.0", "")));
-
-// Test data for the above test. Check that early OpenGL contexts get
-// GLSL compatibility profile shader, e.g. shader has no #version
-// directive. Also check that future version 3.3+ OpenGL contexts get
-// similar shader. We do not expect that future 3.3+ specs contain
-// the "all eariler GLSL versions" clause, since 3.3 did not contain
-// it either.
-INSTANTIATE_TEST_SUITE_P(OldOrUnknownOpenGLContexts,
-                         ShaderTranslatorOutputVersionTest,
-                         testing::Values(make_gl_glsl_tuple("3.4", ""),
-                                         make_gl_glsl_tuple("2.0", "")));
-
-// Test data for the above test. Cases for the future OpenGL versions. The
-// code assumes that the future OpenGL specs specify the clause that all
-// earlier GLSL versions are supported. We select the highest GLSL
-// version known at the time of writing.
-INSTANTIATE_TEST_SUITE_P(
-    BackwardsCompatibleFutureOpenGLContexts,
-    ShaderTranslatorOutputVersionTest,
-    testing::Values(make_gl_glsl_tuple("5.0", "#version 450\n"),
-                    make_gl_glsl_tuple("4.6", "#version 450\n")));
 
 // Test data for the above test. Check that for the OpenGL ES output
 // contexts, the shader is such that GLSL 1.0 is used. The translator

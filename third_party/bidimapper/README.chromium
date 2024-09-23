@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/cefbaa5e7ee4dade7f51daa9c73ddbaff6c12868.zip
-Version: N/A
-Date: 2024-02-01
-Revision: cefbaa5e7ee4dade7f51daa9c73ddbaff6c12868
-SHA-512: 6fb504b214706e2f2e5865e4cee69db6f982d9a82ceedaf74532eafd471a5e6f68edaf10ddbbb58ba895078148baa27dcd79c6ccffe35bc9de9e8492281c5b37
+URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-0.7.1.tgz
+Version: 0.7.1
+Date: 2024-09-16
+Revision: e4fb8d2e023b5a1f360a8b07bad6ea1b1edcf376
+SHA-512: 0da1ed9138792298fe8bfc7a49504e56c3f66146695fc34a5b369b0864d7a6713285303f311b965ef6297067ef387e0af63246060759c6362885ad22adb44c0c
 License: Apache 2.0
 License File: LICENSE
 Shipped: yes
@@ -15,19 +15,43 @@ Description:
 WebDriver BiDi implementation for ChromeDriver.
 The software is compiled into mapper.js script that is uploaded by ChromeDriver into the Chrome browser.
 
-Steps to build:
-Assume the git-revision-full-sha1 is the wanted revision.
-It can be found in the upstream repo: https://github.com/GoogleChromeLabs/chromium-bidi/commits/main.
+Steps to roll:
+Find the needed revision in the project release list: https://github.com/GoogleChromeLabs/chromium-bidi/releases.
+Roll the BiDiMapper to the needed version:
 
 ```bash
-cd directory-of-this-README.chromium
-./pull.sh git-revision-full-sha1
-./build.sh
+roll_bidimapper --version=<your-version>
 ```
 
-The file README.chromium will be updated by build.sh
+If you omit the `--version` parameter the latest available version will be pulled from NPM.
+
+The file README.chromium will be updated by roll_bidimapper
 
 Local Modifications:
 Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
+
+The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/e4fb8d2e023b5a1f360a8b07bad6ea1b1edcf376.zip
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: mitt
+URL: https://github.com/developit/mitt
+Version: 3.0.1
+License: MIT
+Revision: b240473b5707857ba2c6a8e6d707c28d1e39da49
+Security Critical: no
+Shipped: yes
+License File: licenses/LICENSE.mitt
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: zod
+URL: https://zod.dev
+Version: 3.23.8
+License: MIT
+Revision: ca42965df46b2f7e2747db29c40a26bcb32a51d5
+Security Critical: no
+Shipped: yes
+License File: licenses/LICENSE.zod

@@ -11,8 +11,8 @@ import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 
 import java.io.File;
 
@@ -45,7 +45,7 @@ public abstract class IntentHelper {
             // up to be shared that way with a <paths> meta-data element, just use a file Uri
             // instead.
             try {
-                fileUri = ContentUriUtils.getContentUriFromFile(fileIn);
+                fileUri = FileProviderUtils.getContentUriFromFile(fileIn);
             } catch (IllegalArgumentException ex) {
                 fileUri = Uri.fromFile(fileIn);
             }

@@ -17,9 +17,9 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
   return false;
 }
 
-absl::optional<ThreadPriorityForTest>
+std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 }  // namespace internal
 

@@ -9,16 +9,17 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #define FPL FILE_PATH_LITERAL
 
@@ -211,7 +212,7 @@ class OpenFileTest : public OsValidationTest,
  private:
   struct BitAndName {
     DWORD bit;
-    StringPiece name;
+    std::string_view name;
   };
 
   // Appends the names of the bits present in |bitfield| to |result| based on
@@ -317,8 +318,7 @@ TEST_P(OpenFileTest, MapThenDelete) {
   auto* view = ::MapViewOfFile(mapping.get(), FILE_MAP_READ, 0, 0, 0);
   result = ::GetLastError();
   ASSERT_NE(view, nullptr) << result;
-  ScopedClosureRunner unmapper(
-      BindOnce([](const void* view) { ::UnmapViewOfFile(view); }, view));
+  absl::Cleanup unmapper = [view] { ::UnmapViewOfFile(view); };
 
   // Mapped files cannot be deleted under any circumstances.
   EXPECT_EQ(::DeleteFileW(temp_file_path().value().c_str()), 0);

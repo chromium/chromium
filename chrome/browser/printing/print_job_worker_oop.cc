@@ -5,6 +5,7 @@
 #include "chrome/browser/printing/print_job_worker_oop.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -12,11 +13,12 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/printing/prefs_util.h"
+#include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -117,7 +119,7 @@ void PrintJobWorkerOop::Cancel() {
   PrintJobWorkerOop::OnCancel();
 }
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void PrintJobWorkerOop::CleanupAfterContentAnalysisDenial() {
   PrintJobWorker::CleanupAfterContentAnalysisDenial();
   UnregisterServiceManagerClient();
@@ -175,7 +177,7 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
                                        base::RetainedRef(page)));
 
   ++pages_printed_count_;
-  if (pages_printed_count_ == document_oop_->page_count()) {
+  if (pages_printed_count_ == document_oop_->expected_page_count()) {
     // The last page has printed, can proceed to document done processing.
     VLOG(1) << "All pages printed for document";
     SendDocumentDone();
@@ -201,7 +203,7 @@ void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
                                           mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(pages_printed_count_, document_oop_->page_count());
+  DCHECK_EQ(pages_printed_count_, document_oop_->expected_page_count());
 #endif
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Error completing printing via service for document "

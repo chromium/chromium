@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/quic/quic_server_info.h"
 
 namespace net {
@@ -22,6 +23,7 @@ class NET_EXPORT_PRIVATE PropertiesBasedQuicServerInfo : public QuicServerInfo {
  public:
   PropertiesBasedQuicServerInfo(
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key,
       HttpServerProperties* http_server_properties);
 
@@ -36,6 +38,7 @@ class NET_EXPORT_PRIVATE PropertiesBasedQuicServerInfo : public QuicServerInfo {
   void Persist() override;
 
  private:
+  const PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   const NetworkAnonymizationKey network_anonymization_key_;
   const raw_ptr<HttpServerProperties> http_server_properties_;
 };

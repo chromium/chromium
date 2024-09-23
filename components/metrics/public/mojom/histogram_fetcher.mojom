@@ -1,0 +1,47 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module metrics.mojom;
+
+import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If you add any entries to this enum,
+// you must also update the corresponding enum UmaChildPingStatus at
+// tools/metrics/histograms/enums.xml.
+enum UmaChildPingStatus {
+  BROWSER_SENT_IPC = 0,
+  CHILD_RECEIVED_IPC = 1,
+  BROWSER_REPLY_CALLBACK = 2,
+};
+
+enum UmaPingCallSource {
+  PERIODIC,
+  SHARED_MEMORY_SET_UP,
+};
+
+// Used to 1) pass a shared memory segment where the child process will store
+// histograms, and 2) create a ChildHistogramFetcher so that the child process
+// can report to the browser process the histograms that could not be stored on
+// the shared memory (e.g. they were emitted before it was set up).
+interface ChildHistogramFetcherFactory {
+  // Creates a ChildHistogram interface that uses shared memory buffer to
+  // store histograms that are to be reported by the browser process to UMA.
+  CreateFetcher(
+      mojo_base.mojom.UnsafeSharedMemoryRegion? shared_memory,
+      pending_receiver<ChildHistogramFetcher> child_histogram_fetcher);
+};
+
+// Used by the browser process to request non-persistent histograms (i.e., not
+// on the shared memory) from a child process.
+interface ChildHistogramFetcher {
+  // Send to all the child processes to send back histogram data.
+  GetChildNonPersistentHistogramData()
+      => (array<mojo_base.mojom.ByteString> deltas);
+
+  // Ping-pong mechanism to quantify child process histogram losses. See
+  // implementation and call site for details.
+  Ping(UmaPingCallSource call_source) => ();
+};

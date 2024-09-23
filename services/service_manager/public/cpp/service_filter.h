@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP_TYPES) ServiceFilter {
   ServiceFilter(const ServiceFilter&);
   ServiceFilter(ServiceFilter&&);
 
-  // TODO(https://crbug.com/902590): Remove this constructor.
+  // TODO(crbug.com/41424827): Remove this constructor.
   //
   // NOTE: This is intentionally an implicit constructor to avoid a high volume
   // of global churn as |Connector.BindInterface()| is migrated from taking an

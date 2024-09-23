@@ -16,7 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.base.Log;
 
-// TODO(https://crbug.com/1400720): This class has no use now, so we can get rid of it.
+// TODO(crbug.com/40883889): This class has no use now, so we can get rid of it.
 /**
  * A subclass of AppCompatImageView to add workarounds for bugs in Android Framework and Support
  * Library.

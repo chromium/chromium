@@ -63,13 +63,31 @@ std::vector<Slot> BuildSchedule(const base::Time now,
   //
   // `end_time` must first be shifted by a whole number of days such that
   // `end_time` <= `now` < `end_time + kOneDay`.
+  //
+  // Example with `schedule_type` == `kSunsetToSunrise`:
+  // Start (sunset): 6:00 PM, End (sunrise): 6:00 AM, Now: 3:00 AM
+  //
+  //                                    3:00    6:00             18:00
+  // <---------------------------------- + ----- + --------------- + ----->
+  //                                     |       |                 |
+  //                                    now   end_time        start_time
   const base::TimeDelta amount_to_advance_end_time =
       (now - end_time).FloorToMultiple(kOneDay);
   end_time += amount_to_advance_end_time;
+  //    6:00                            3:00                    18:00
+  // <-- + ----------------------------- + ---------------------- + ----->
+  //     |                               |                        |
+  //  end_time                           now                  start_time
+  // (previous day)
 
   // Shift `start_time` such that
   // `end_time` <= `start_time` < `end_time + kOneDay`.
   start_time = ShiftWithinOneDayFrom(end_time, start_time);
+  //    6:00               18:00        3:00    6:00
+  // <-- + ----------------- + --------- + ----- + ---------------------->
+  //     |                   |           |       |
+  //  end_time          start_time      now   end_time
+  // (previous day)                          (current day)
 
   std::vector<Slot> schedule;
   switch (schedule_type) {
@@ -91,8 +109,12 @@ std::vector<Slot> BuildSchedule(const base::Time now,
     case ScheduleType::kNone:
       NOTREACHED() << "kNone ScheduleType does not support any automatic "
                       "feature changes";
-      break;
   }
+  //    6:00 10:00   16:00 18:00         3:00    6:00
+  // <-- + --- + ----- + --- + ---------- + ----- + ---------------------->
+  //     |     |       |     |            |       |
+  //  end_time morning late sunset       now   end_time
+  // (previous day)  afternoon               (current day)
   DVLOG(1) << "Schedule: " << ToString(schedule);
   return schedule;
 }
@@ -146,7 +168,6 @@ Position GetCurrentPosition(const base::Time now,
   NOTREACHED() << "Failed to find ScheduleCheckpoint for now=" << now
                << " schedule:\n"
                << ToString(schedule);
-  return Position();
 }
 
 base::Time ShiftWithinOneDayFrom(const base::Time origin,

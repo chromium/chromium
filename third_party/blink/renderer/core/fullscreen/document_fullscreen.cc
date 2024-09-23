@@ -37,7 +37,7 @@ Element* DocumentFullscreen::fullscreenElement(Document& document) {
   return Fullscreen::FullscreenElementForBindingFrom(document);
 }
 
-ScriptPromise DocumentFullscreen::exitFullscreen(
+ScriptPromise<IDLUndefined> DocumentFullscreen::exitFullscreen(
     ScriptState* script_state,
     Document& document,
     ExceptionState& exception_state) {
@@ -45,7 +45,7 @@ ScriptPromise DocumentFullscreen::exitFullscreen(
 }
 
 void DocumentFullscreen::webkitExitFullscreen(Document& document) {
-  ScriptPromise promise = Fullscreen::ExitFullscreen(document);
+  auto promise = Fullscreen::ExitFullscreen(document);
   DCHECK(promise.IsEmpty());
 }
 

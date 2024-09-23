@@ -29,8 +29,13 @@ bool IsBackgroundTracingCommandLine() {
   return false;
 }
 
-AwTracingDelegate::AwTracingDelegate() {}
-AwTracingDelegate::~AwTracingDelegate() {}
+AwTracingDelegate::AwTracingDelegate()
+    : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
+          AwBrowserProcess::GetInstance()->local_state())) {}
+AwTracingDelegate::AwTracingDelegate(
+    std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager)
+    : state_manager_(std::move(state_manager)) {}
+AwTracingDelegate::~AwTracingDelegate() = default;
 
 // static
 void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -60,18 +65,8 @@ bool AwTracingDelegate::IsAllowedToStartScenario() const {
 
 bool AwTracingDelegate::OnBackgroundTracingActive(
     bool requires_anonymized_data) {
-  // We call Initialize() only when a tracing scenario tries to start, and
-  // unless this happens we never save state. In particular, if the background
-  // tracing experiment is disabled, Initialize() will never be called, and we
-  // will thus not save state. This means that when we save the background
-  // tracing session state for one session, and then later read the state in a
-  // future session, there might have been sessions between these two where
-  // tracing was disabled. Therefore, the return value of
-  // DidLastSessionEndUnexpectedly() might not be for the directly preceding
-  // session, but instead it is the previous session where tracing was enabled.
   tracing::BackgroundTracingStateManager& state =
       tracing::BackgroundTracingStateManager::GetInstance();
-  state.Initialize(AwBrowserProcess::GetInstance()->local_state());
 
   if (!IsAllowedToStartScenario()) {
     return false;
@@ -86,12 +81,6 @@ bool AwTracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
       tracing::BackgroundTracingStateManager::GetInstance();
   state.OnTracingStopped();
   return true;
-}
-
-std::optional<base::Value::Dict> AwTracingDelegate::GenerateMetadataDict() {
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("revision", version_info::GetLastChange());
-  return metadata_dict;
 }
 
 }  // namespace android_webview

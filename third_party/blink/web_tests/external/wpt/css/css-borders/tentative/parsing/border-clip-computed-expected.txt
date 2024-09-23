@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Property border-clip value 'normal'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '10px'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '10%'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '0'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '1fr'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '10px 10%'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-clip value '10px 1em 10% 1fr 2fr'
+  assert_true: border-clip doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

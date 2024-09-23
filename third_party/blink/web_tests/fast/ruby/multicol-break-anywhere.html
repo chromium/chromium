@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/ahem.js"></script>
+<style>
+.mc {
+  font: 16px/1 Ahem;
+  columns: 0.8em;
+  orphans: 1;
+  widows: 1;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+</style>
+<div class="mc"><ruby>AB CD<rt></rt></ruby>
+</div>
+<script>
+test(() => {
+  assert_equals(document.querySelector('ruby').getClientRects().length, 2);
+  // The test passes if no crashes.
+}, 'crbug.com/342460084: A crash test for a ruby broken by overflow-wrap:break-word');
+</script>

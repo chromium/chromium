@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <style>
+      #scroller {
+        scroll-snap-type: y proximity;
+        height: 300px;
+        width: 200px;
+        border: solid 1px black;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        position: relative;
+      }
+      .snaparea {
+        scroll-snap-align: start;
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        position: absolute;
+        /*
+          third_party/blink/renderer/core/page/scrolling/snap_coordinator.cc
+          defines kProximityRatio as 1/3.
+          This test tests that there is no crash due to a snap area at a
+          distance of exactly the proximity range (1/3 of the container's
+          height, i.e. 100px since the container has height 300px).
+        */
+        top: 100px;
+      }
+      .space {
+        height: 200vh;
+        width: 200vw;
+      }
+    </style>
+    <div id="scroller">
+      <div class="space"></div>
+      <div class="snaparea"></div>
+    </div>
+    <p>This test passes if it doesn't crash</p>
+    <script>
+      if (window.testRunner)
+            testRunner.dumpAsText();
+    </script>
+  </body>
+</html>

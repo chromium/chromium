@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Phase latency metadata for the Lens Overlay.
+message LensOverlayPhaseLatenciesMetadata {
+  enum ImageType {
+    UNKNOWN = 0;
+    JPEG = 1;
+    PNG = 2;
+    WEBP = 3;
+  }
+
+  // Represents a single point in time during the image preprocessing flow.
+  message Phase {
+    reserved 1, 2;
+
+    // Data specific for each PhaseType. These should only be populated for
+    // "_END" PhaseTypes.
+    oneof phase_data {
+      // Data specifically only relevant for IMAGE_DOWNSCALE_END PhaseType.
+      ImageDownscaleData image_downscale_data = 3;
+
+      // Data specifically only relevant for IMAGE_ENCODE_END PhaseType.
+      ImageEncodeData image_encode_data = 4;
+    }
+
+    message ImageDownscaleData {
+      // The size of the original image, in pixels.
+      int64 original_image_size = 1;
+
+      // The size of the downscaled image, in pixels.
+      int64 downscaled_image_size = 2;
+    }
+
+    message ImageEncodeData {
+      // The type of the original Image. This only applies to IMAGE_ENCODE_END
+      // PhaseTypes
+      ImageType original_image_type = 1;
+
+      // The bytes size of the encoded image.
+      int64 encoded_image_size_bytes = 2;
+    }
+  }
+
+  repeated Phase phase = 1;
+}

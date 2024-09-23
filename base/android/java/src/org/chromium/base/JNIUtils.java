@@ -6,8 +6,6 @@ package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
 
-import java.util.Map;
-
 /** This class provides JNI-related methods to the native library. */
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
@@ -44,18 +42,5 @@ public class JNIUtils {
      */
     public static void setClassLoader(ClassLoader classLoader) {
         sJniClassLoader = classLoader;
-    }
-
-    /** Helper to convert from java maps to two arrays for JNI. */
-    public static <K, V> void splitMap(Map<K, V> map, K[] outKeys, V[] outValues) {
-        assert map.size() == outKeys.length;
-        assert outValues.length == outKeys.length;
-
-        int i = 0;
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            outKeys[i] = entry.getKey();
-            outValues[i] = entry.getValue();
-            i++;
-        }
     }
 }

@@ -9,3 +9,12 @@ proto_library("proto") {
 
   sources = [ "client_context.proto" ]
 }
+
+proto_library("test_proto") {
+  proto_in_dir = "//"
+  testonly = true
+
+  sources = [ "test_request.proto" ]
+
+  link_deps = [ ":proto" ]
+}

@@ -1,0 +1,86 @@
+<style include="settings-shared">
+  #errorDiv {
+    align-items: center;
+    color: var(--cros-text-color-alert);
+    display: flex;
+    flex-direction: row;
+    /* This max-width matches the width of the PIN input field. */
+    max-width: 200px;
+    /* Enough height for two rows. */
+    min-height: 48px;
+  }
+
+  /* Hide this using visibility: hidden instead of hidden so that the
+     dialog does not resize when there are no problems to display. */
+  #errorDiv[invisible] {
+    visibility: hidden;
+  }
+
+  #errorIcon {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    display: inline-block;
+    margin-inline-start: 8px;
+  }
+
+  #forgotPinLink {
+    margin-inline-start: 12px;
+    margin-top: 6px;
+  }
+
+  cr-dialog [slot=button-container] {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: var(--cr-dialog-button-container-padding-bottom, 16px);
+    padding-inline-end:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    padding-inline-start:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    padding-top: var(--cr-dialog-button-container-padding-top, 16px);
+  }
+
+  cr-dialog::part(dialog) {
+    /* Make sure pin dialog is usable for small window sizes. */
+    max-width: 100%;
+  }
+
+  #pinKeyboardDiv {
+    justify-content: center;
+  }
+</style>
+<cr-dialog id="dialog" on-close="close" close-text="$i18n{close}">
+  <div slot="title">$i18n{appParentalControlsAccessDialogTitle}</div>
+  <div slot="body">
+    <div id="pinKeyboardDiv" class="settings-box continuation">
+      <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+          on-submit="onPinSubmit_" value="{{pinValue_}}"
+          disabled="[[isVerificationPending_]]"
+          aria-label="$i18n{appParentalControlsAccessDialogTitle}"
+          has-error="[[showError_]]"
+          enable-placeholder>
+        <div id="errorDiv" invisible$="[[!showError_]]">
+          <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+          <span id="errorMessage">
+            $i18n{appParentalControlsPinIncorrectErrorText}
+          </span>
+        </div>
+      </pin-keyboard>
+    </div>
+  </div>
+  <div slot="button-container">
+    <a id="forgotPinLink" href="$i18n{appParentalControlsLearnMoreUrl}"
+        target="_blank" on-click="onForgotPinClick_">
+      $i18n{appParentalControlsForgotPinLinkName}
+    </a>
+    <div>
+      <cr-button class="cancel-button" on-click="onCancelClick_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button class="action-button" on-click="onPinSubmit_"
+          disabled="[[!enableSubmit_]]">
+        $i18n{confirm}
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>

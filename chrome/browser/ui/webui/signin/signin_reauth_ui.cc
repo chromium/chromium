@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -44,7 +45,7 @@ namespace {
 std::string GetAccountImageURL(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // The current version of the reauth only supports the primary account.
-  // TODO(crbug.com/1083429): generalize for arbitrary accounts by passing an
+  // TODO(crbug.com/40131388): generalize for arbitrary accounts by passing an
   // account id as a method parameter.
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -106,6 +107,8 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
       {"signin_reauth_app.html.js",
        IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_HTML_JS},
+      {"signin_reauth_app.css.js",
+       IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_CSS_JS},
       {"signin_reauth_browser_proxy.js",
        IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_BROWSER_PROXY_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
@@ -121,8 +124,6 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
                               IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
-
-  webui::SetupChromeRefresh2023(source);
 
   signin_metrics::ReauthAccessPoint access_point =
       GetReauthAccessPointForReauthConfirmationURL(
@@ -151,7 +152,7 @@ void SigninReauthUI::InitializeMessageHandlerWithReauthController(
 }
 
 void SigninReauthUI::AddStringResource(content::WebUIDataSource* source,
-                                       base::StringPiece name,
+                                       std::string_view name,
                                        int ids) {
   source->AddLocalizedString(name, ids);
 

@@ -22,6 +22,8 @@ namespace {
 // Default delimiter to use between the hostname and the supplemental URL text
 // if text is specified but not the delimiter.
 const char kDefaultSupplementalURLTextDelimiter[] = "•";
+// The max number of lines for the cell title label.
+const int kMaxNumberOfLinesForCellTitleLabel = 2;
 }  // namespace
 
 #pragma mark - TableViewURLItem
@@ -167,7 +169,9 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     // Set font sizes using dynamic type.
     _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
-    _titleLabel.numberOfLines = 0;
+    // Sometimes a very long url is used as the cell title, so be sure it will
+    // not stretch the cell to an unlimited number of lines.
+    _titleLabel.numberOfLines = kMaxNumberOfLinesForCellTitleLabel;
     _URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _URLLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

@@ -8,7 +8,7 @@
   const tracingHelper = new TracingHelper(testRunner, session);
 
   await tracingHelper.startTracing(
-      '__metadata,disabled-by-default-devtools.timeline');
+      '__metadata,disabled-by-default-devtools.timeline,devtools.timeline');
 
   // Wait for trace events.
   await session.evaluateAsync(`
@@ -22,7 +22,7 @@
     })();
     `);
   await tracingHelper.stopTracing(
-      /__metadata|disabled-by-default-devtools.timeline/);
+      /__metadata|disabled-by-default-devtools.timeline|devtools.timeline/);
 
   const tracingSessionIdForWorker =
       tracingHelper.findEvent('TracingSessionIdForWorker', Phase.INSTANT);
@@ -42,5 +42,41 @@
     testRunner.log('Data was found for worker.');
   }
 
+  let matchingScheduleTraceIds = new Set();
+  const schedulePostMessageEvents =
+      tracingHelper.findEvents('SchedulePostMessage', Phase.INSTANT);
+  testRunner.log(`Found ${
+      schedulePostMessageEvents.length} SchedulePostMessage events in total`);
+
+  schedulePostMessageEvents?.forEach(event => {
+    testRunner.log('Got SchedulePostMessage event:');
+    tracingHelper.logEventShape(event.args?.data);
+    matchingScheduleTraceIds.add(event.args?.data?.traceId);
+  });
+
+  const handlePostMessageEvents =
+      tracingHelper.findEvents('HandlePostMessage', Phase.COMPLETE);
+  testRunner.log(`Found ${
+      handlePostMessageEvents.length} HandlePostMessage events in total`);
+
+  let matchingHandlerTraceIds = new Set();
+  handlePostMessageEvents?.forEach(event => {
+    testRunner.log('Got HandlePostMessage event:');
+    tracingHelper.logEventShape(event.args?.data);
+    matchingHandlerTraceIds.add(event.args?.data?.traceId);
+  });
+
+  if (matchingHandlerTraceIds.size  !== matchingScheduleTraceIds.size) {
+    testRunner.log(`Set containing Trace Ids for HandlePostMessage and SchedulePostMessage events should be the same length`);
+  }
+
+  matchingScheduleTraceIds.forEach(traceId => {
+    if (matchingHandlerTraceIds.has(traceId)) {
+      testRunner.log(
+          'SchedulePostMessage and HandlePostMessage trace events are correctly linked');
+    } else {
+      testRunner.log(`Non-matching id: ${traceId} - SchedulePostMessage and HandlePostMessage trace events are incorrectly linked`);
+    }
+  });
   testRunner.completeTest();
 });

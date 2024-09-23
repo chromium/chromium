@@ -7,6 +7,7 @@
 
 #include <array>
 #include <iterator>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
@@ -37,12 +38,12 @@ static constexpr struct TrialToFeature {
 
 } // namespace
 
-bool origin_trials::IsTrialValid(base::StringPiece trial_name) {
+bool origin_trials::IsTrialValid(std::string_view trial_name) {
   return base::Contains(kTrialToFeaturesMap, trial_name,
                         &TrialToFeature::trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForInsecureContext(base::StringPiece trial_name) {
+bool origin_trials::IsTrialEnabledForInsecureContext(std::string_view trial_name) {
   static const char* const kEnabledForInsecureContext[] = {
   {% for trial in origin_trial_features|selectattr('origin_trial_allows_insecure')|map(attribute='origin_trial_feature_name')|unique %}
       "{{trial}}",
@@ -51,7 +52,7 @@ bool origin_trials::IsTrialEnabledForInsecureContext(base::StringPiece trial_nam
   return base::Contains(kEnabledForInsecureContext, trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForThirdPartyOrigins(base::StringPiece trial_name) {
+bool origin_trials::IsTrialEnabledForThirdPartyOrigins(std::string_view trial_name) {
   static const char* const kEnabledForThirdPartyOrigins[] = {
   {% for trial in origin_trial_features|selectattr('origin_trial_allows_third_party')|map(attribute='origin_trial_feature_name')|unique %}
       "{{trial}}",
@@ -60,7 +61,7 @@ bool origin_trials::IsTrialEnabledForThirdPartyOrigins(base::StringPiece trial_n
   return base::Contains(kEnabledForThirdPartyOrigins, trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(base::StringPiece trial_name) {
+bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(std::string_view trial_name) {
   // Select all features that represent origin trials and have
   // browser_process_read_write_access enabled. Determine if that list of
   // features contains the  `trial_name` provided.
@@ -74,7 +75,7 @@ bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(base::StringPiece 
   return base::Contains(kEnabledForBrowserProcessReadWriteAccess, trial_name);
 }
 
-bool origin_trials::IsDeprecationTrial(base::StringPiece trial_name) {
+bool origin_trials::IsDeprecationTrial(std::string_view trial_name) {
   for (auto feature : FeaturesForTrial(trial_name)) {
     if (GetTrialType(feature) == OriginTrialType::kDeprecation) {
       return true;
@@ -96,7 +97,7 @@ OriginTrialType origin_trials::GetTrialType(mojom::OriginTrialFeature feature) {
 
 
 base::span<const mojom::OriginTrialFeature> origin_trials::FeaturesForTrial(
-    base::StringPiece trial_name) {
+    std::string_view trial_name) {
   auto it = base::ranges::find(kTrialToFeaturesMap, trial_name,
                                &TrialToFeature::trial_name);
   DCHECK(it != std::end(kTrialToFeaturesMap));

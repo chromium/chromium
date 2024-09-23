@@ -304,8 +304,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   // Set a discard padding equivalent to half of the buffer.
   time_info.discard_padding = std::make_pair(kDuration / 2, base::TimeDelta());
 
-  // All of the first buffer should be discarded, half from the inital delay and
-  // another half from the front discard padding.
+  // All of the first buffer should be discarded, half from the initial delay
+  // and another half from the front discard padding.
   //
   //    Encoded                   Discard Delay
   //   |--------|     |---------|     |----|

@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 
 namespace gfx {
@@ -17,6 +17,7 @@ class Rect;
 
 namespace ash {
 
+class ScopedSessionRefresher;
 class ScreenManager;
 
 // OOBE screen to add EDU account as a secondary account when the user is a
@@ -54,6 +55,9 @@ class EduCoexistenceLoginScreen : public BaseScreen,
 
   ScreenExitCallback exit_callback_;
   std::unique_ptr<InlineLoginDialogOnboarding::Delegate> dialog_delegate_;
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::ScopedObservation<LoginDisplayHost, LoginDisplayHost::Observer>
       observed_login_display_host_{this};

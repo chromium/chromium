@@ -3,29 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AllowedInputMethods": [
-            "xkb:us::en"
-          ]
-        },
-        "prefs": {
-          "settings.language.allowed_input_methods": {
-            "value": [
-              "xkb:us::en"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "settings.language.allowed_input_methods": {
-            "default_value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.language.allowed_input_methods",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "xkb:us::en"
+        ]
+      ]
+    }
   }
 ]

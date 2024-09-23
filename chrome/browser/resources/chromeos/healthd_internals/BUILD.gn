@@ -13,12 +13,46 @@ build_webui("build") {
 
   css_files = [ "healthd_internals_shared.css" ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "info_card/info_card.ts",
+    "info_card/cpu_card.ts",
+    "info_card/fan_card.ts",
+    "info_card/memory_card.ts",
+    "info_card/power_card.ts",
+    "info_card/thermal_card.ts",
+    "line_chart/line_chart.ts",
+    "line_chart/menu.ts",
+    "line_chart/scrollbar.ts",
+    "pages/generic_chart.ts",
+    "pages/process.ts",
+    "pages/telemetry.ts",
+    "settings/config_slider.ts",
+    "settings/settings_dialog.ts",
+  ]
+
+  non_web_component_files = [
+    "constants.ts",
+    "cpu_usage_helper.ts",
+    "data_manager.ts",
+    "externs.ts",
+    "line_chart/configs.ts",
+    "line_chart/utils/canvas_drawer.ts",
+    "line_chart/utils/data_series.ts",
+    "line_chart/utils/unit_label.ts",
+    "pages/utils/page_interface.ts",
+    "pages/utils/ui_update_helper.ts",
+  ]
+
+  ts_composite = true
 
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

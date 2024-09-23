@@ -13,10 +13,6 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/angle/include/GLSLANG/ShaderLang.h"
 
-namespace gl {
-struct GLVersionInfo;
-}
-
 namespace gpu {
 namespace gles2 {
 
@@ -91,10 +87,6 @@ class GPU_GLES2_EXPORT ShaderTranslator : public ShaderTranslatorInterface {
   };
 
   ShaderTranslator();
-
-  // Return shader output lanaguage type based on the context version.
-  static ShShaderOutput GetShaderOutputLanguageForContext(
-      const gl::GLVersionInfo& context_version);
 
   // Overridden from ShaderTranslatorInterface.
   bool Init(sh::GLenum shader_type,

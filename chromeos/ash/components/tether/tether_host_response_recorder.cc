@@ -11,9 +11,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 void TetherHostResponseRecorder::RegisterPrefs(
@@ -44,8 +42,8 @@ void TetherHostResponseRecorder::RemoveObserver(Observer* observer) {
 }
 
 void TetherHostResponseRecorder::RecordSuccessfulTetherAvailabilityResponse(
-    multidevice::RemoteDeviceRef remote_device) {
-  AddRecentResponse(remote_device.GetDeviceId(),
+    const std::string& device_id) {
+  AddRecentResponse(device_id,
                     prefs::kMostRecentTetherAvailablilityResponderIds);
 }
 
@@ -55,8 +53,8 @@ TetherHostResponseRecorder::GetPreviouslyAvailableHostIds() const {
 }
 
 void TetherHostResponseRecorder::RecordSuccessfulConnectTetheringResponse(
-    multidevice::RemoteDeviceRef remote_device) {
-  if (AddRecentResponse(remote_device.GetDeviceId(),
+    const std::string& device_id) {
+  if (AddRecentResponse(device_id,
                         prefs::kMostRecentConnectTetheringResponderIds)) {
     NotifyObserversPreviouslyConnectedHostIdsChanged();
   }
@@ -118,6 +116,4 @@ std::vector<std::string> TetherHostResponseRecorder::GetDeviceIdsForPref(
   return device_ids;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

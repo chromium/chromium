@@ -19,7 +19,8 @@ class MerchantTrustSignalsStorageFactory {
 
     MerchantTrustSignalsStorageFactory(ObservableSupplier<Profile> profileSupplier) {
         if (sProfileToStorage == null) {
-            // TODO(1422789): MerchantTrustSignalsEventStorage has a native counterpart that is
+            // TODO(crbug.com/40259781): MerchantTrustSignalsEventStorage has a native counterpart
+            // that is
             //     never destroyed. So, this will leak native objects anytime a profile is
             //     destroyed, which is infrequent given the single profile app behavior. To fix
             //     this, add a cleanup/destroy method to MerchantTrustSignalsEventStorage and
@@ -39,8 +40,7 @@ class MerchantTrustSignalsStorageFactory {
             return null;
         }
 
-        return sProfileToStorage.getForProfile(
-                profile, () -> new MerchantTrustSignalsEventStorage(profile));
+        return sProfileToStorage.getForProfile(profile, MerchantTrustSignalsEventStorage::new);
     }
 
     /**

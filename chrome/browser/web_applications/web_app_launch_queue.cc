@@ -72,7 +72,7 @@ class EntriesBuilder {
     content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateFileEntryFromPath(
-        context_, path_type, entry_path,
+        context_, path_type, entry_path, base::FilePath(),
         content::FileSystemAccessEntryFactory::UserAction::kSave));
   }
 
@@ -81,7 +81,7 @@ class EntriesBuilder {
     content::FileSystemAccessEntryFactory::PathType path_type =
         MaybeRemapPath(&entry_path);
     entries_.push_back(entry_factory_->CreateDirectoryEntryFromPath(
-        context_, path_type, entry_path,
+        context_, path_type, entry_path, base::FilePath(),
         content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
 
@@ -95,8 +95,8 @@ class EntriesBuilder {
   content::FileSystemAccessEntryFactory::BindingContext context_;
 };
 
-// TODO(crbug.com/1179530): Add Lacros support.
-// TODO(crbug.com/1179530): Consider adding an {extension, pwa} enum to
+// TODO(crbug.com/40169582): Add Lacros support.
+// TODO(crbug.com/40169582): Consider adding an {extension, pwa} enum to
 // `launch_params` instead of checking the scheme specifically for extensions?
 bool IsExtensionURL(const GURL& gurl) {
   return gurl.SchemeIs(extensions::kExtensionScheme);

@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -63,12 +64,13 @@ public class DeviceLockCoordinatorTest {
         }
     }
 
-    // TODO(crbug.com/1432028): Add more tests, particularly render tests, once flow is finalized
+    // TODO(crbug.com/40902690): Add more tests, particularly render tests, once flow is finalized
     @Test
     @SmallTest
     public void testDeviceLockCoordinator_simpleTest() {
         DeviceLockCoordinator deviceLockCoordinator =
-                new DeviceLockCoordinator(mMockDelegate, null, null, mActivity, null);
+                new DeviceLockCoordinator(
+                        mMockDelegate, null, (ReauthenticatorBridge) null, mActivity, null);
         assertNotEquals(deviceLockCoordinator, null);
         verify(mMockDelegate, times(1)).setView(any());
 

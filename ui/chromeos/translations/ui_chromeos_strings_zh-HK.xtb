@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主機</translation>
 <translation id="3104793765551262433">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，管理員封鎖咗呢個網絡，詳情</translation>
-<translation id="3113153474486991170">無法由此位置開啟「<ph name="PATH" />」。請將檔案複製至「我的檔案」以便開啟。</translation>
 <translation id="3113592018909187986">您還可嘗試 1 次。除非您設定新 PIN，否則將無法使用此網絡。</translation>
 <translation id="3124404833828281817">發白日夢的人</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
+<translation id="3702842351052426940">你的 SIM 卡或 eSIM 設定檔可能已停用。請更換 SIM 卡或切換 eSIM 設定檔。</translation>
 <translation id="3722341589402358578">發生錯誤，部分項目可能未移至垃圾桶。</translation>
 <translation id="3726463242007121105">這部裝置所用的檔案系統不受支援，因此系統無法開啟這部裝置。</translation>
 <translation id="3727148787322499904">變更此設定將會影響所有共用網絡</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">管理員已強制執行此 Proxy</translation>
 <translation id="3830674330436234648">無法播放</translation>
 <translation id="383652340667548381">塞爾維亞語</translation>
+<translation id="3839045880592694915">流動網絡供應商不允許連接你的數據機，請聯絡流動網絡供應商查詢詳情。</translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3851491607336266896">已連線，但連接性受限</translation>
 <translation id="3855472144336161447">德文 Neo 2 鍵盤</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3866249974567520381">描述</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">最近開啟的 Microsoft 檔案已移動至 OneDrive</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4017788180641807848">英文 (美國)，Workman 鍵盤</translation>
-<translation id="4019998208269143058">固定至快速檔案</translation>
 <translation id="4040753847560036377">PUK 不正確</translation>
 <translation id="4057991113334098539">正在啟用…</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
+<translation id="4101601646343868113">登入流動網絡，確認流動數據計劃生效中</translation>
 <translation id="4124731372776320263">正在同步 1 個雲端硬碟檔案</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">泰米爾文 (Tamil99 鍵盤)</translation>
 <translation id="5633226425545095130">此項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="5649768706273821470">收聽</translation>
+<translation id="5650895901941743674">檢查你的 APN 設定</translation>
 <translation id="5669691691057771421">輸入新的 PIN</translation>
 <translation id="5678784840044122290">此 Linux 應用程式將可在終端機上使用，其圖示可能在啟動器中顯示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法中斷與封存或虛擬磁碟的連線<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，連接</translation>
 <translation id="6269630227984243955">馬來文</translation>
 <translation id="6271903698064569429">由於「<ph name="SHARED_DRIVE_NAME" />」的儲存空間不足，因此無法上載檔案。</translation>
+<translation id="6279140785485544797">你的流動數據計劃可能已過期，請聯絡流動網絡供應商尋求支援。</translation>
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
 <translation id="6295542640242147836">鎖定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 無效</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> 封存檔案</translation>
 <translation id="6321303798550928047">揮手</translation>
 <translation id="6327785803543103246">Web Proxy Autodiscovery</translation>
-<translation id="6337014272874260727">從快速檔案中取消固定</translation>
 <translation id="6339145975392024142">美式國際鍵盤 (PC)</translation>
 <translation id="6356685157277930264">檔案意見視窗</translation>
 <translation id="6358884629796491903">龍</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">目前嘅目錄</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6755827872271341378">ChromeOS Flex 裝置</translation>
+<translation id="6777029074498310250">詳情請瀏覽 <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6794539005637808366">您可還原這些項目，或將這些項目拖曳至垃圾桶以外的新資料夾</translation>
 <translation id="6795884519221689054">熊貓</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">泰米爾文 (InScript 鍵盤)</translation>
 <translation id="7088615885725309056">舊的</translation>
 <translation id="7103992300314999525">馬其頓文</translation>
+<translation id="7104338189998813914">存取 OneDrive 帳戶時發生問題</translation>
 <translation id="7106346894903675391">購買更多儲存空間…</translation>
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」- 搜尋雲端硬碟</translation>
 <translation id="7135561821015524160">卡納達文 (拼音)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">請稍候片刻</translation>
 <translation id="7600126690270271294">塞爾維亞文</translation>
 <translation id="7603724359189955920">網格</translation>
+<translation id="7624010287655004652">已由其他流動服務供應商鎖定</translation>
 <translation id="7627790789328695202">糟糕！已存在名為 <ph name="FILE_NAME" /> 的檔案。請重新命名檔案並再試一次。</translation>
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>
 <translation id="7649070708921625228">說明</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">檔案清單改咗做縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 映像檔案</translation>
 <translation id="8609695766746872526">冰島文</translation>
+<translation id="8630384863424041081">輸入流動網絡供應商提供的 SIM 卡 PIN 或預設 PIN。請聯絡流動網絡供應商尋求支援。</translation>
 <translation id="863903787380594467">PIN 不正確。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>
 <translation id="8656407365183407932">必須移除離線檔案</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">這是機密檔案，因此受管理員政策限制。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8713112442029511308">馬爾他文</translation>
-<translation id="8714138378966541668">已由供應商鎖定</translation>
 <translation id="8714406895390098252">單車</translation>
 <translation id="8719721339511222681">揀咗 <ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克羅地亞文</translation>

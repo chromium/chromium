@@ -6,11 +6,11 @@
 #define UI_SHELL_DIALOGS_FAKE_SELECT_FILE_DIALOG_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
@@ -75,7 +75,6 @@ class FakeSelectFileDialog : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
@@ -93,10 +92,13 @@ class FakeSelectFileDialog : public SelectFileDialog {
   // Calls the |FileSelected()| method on listener(). |filter_text| selects
   // which file extension filter to report.
   [[nodiscard]] bool CallFileSelected(const base::FilePath& file_path,
-                                      base::StringPiece filter_text);
+                                      std::string_view filter_text);
 
   // Calls the |MultiFilesSelected()| method on listener().
   void CallMultiFilesSelected(const std::vector<base::FilePath>& file_path);
+
+  // Calls the |FileSelectionCanceled()| method on listener().
+  void CallFileSelectionCanceled();
 
   base::WeakPtr<FakeSelectFileDialog> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -109,7 +111,6 @@ class FakeSelectFileDialog : public SelectFileDialog {
   std::u16string title_;
   FileTypeInfo file_types_;
   std::string default_extension_;
-  raw_ptr<void, DanglingUntriaged> params_;
   raw_ptr<const GURL, DanglingUntriaged> caller_;
   base::WeakPtrFactory<FakeSelectFileDialog> weak_ptr_factory_{this};
 };

@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -46,12 +47,15 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
     gfx::NativeView parent_window,
     PageInfoBubbleViewBase::BubbleType type,
     content::WebContents* web_contents)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT),
+    : BubbleDialogDelegateView(anchor_view,
+                               views::BubbleBorder::TOP_LEFT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               /*autosize=*/false),
       content::WebContentsObserver(web_contents) {
   g_shown_bubble_type = type;
   g_page_info_bubble = this;
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
 
   set_parent_window(parent_window);

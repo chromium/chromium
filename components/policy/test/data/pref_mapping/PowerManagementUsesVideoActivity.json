@@ -9,7 +9,9 @@
           "PowerManagementUsesVideoActivity": true
         },
         "prefs": {
-          "power.use_video_activity": {}
+          "power.use_video_activity": {
+            "value": true
+          }
         }
       }
     ]

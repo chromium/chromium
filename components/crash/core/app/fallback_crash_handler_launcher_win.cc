@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/crash/core/app/fallback_crash_handler_launcher_win.h"
 
 #include "base/check_op.h"
@@ -110,14 +115,14 @@ DWORD FallbackCrashHandlerLauncher::LaunchAndWaitForHandler(
   if (error != WAIT_OBJECT_0) {
     // This should never happen, barring handle abuse.
     // TODO(siggi): Record an UMA metric here.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     error = GetLastError();
   } else {
     // On successful wait, return the exit code of the fallback crash handler
     // process.
     if (!GetExitCodeProcess(process_info.hProcess, &error)) {
       // This should never happen, barring handle abuse.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       error = GetLastError();
     }
   }

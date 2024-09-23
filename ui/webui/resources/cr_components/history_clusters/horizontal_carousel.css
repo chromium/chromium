@@ -1,0 +1,99 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./history_clusters_shared_style.css.js
+ * #scheme=relative
+ * #include=history-clusters-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-icon-button-margin-start: 0px;
+  --gradient-start: 64px;
+  --horizontal-carousel-button-center:
+          calc(var(--horizontal-carousel-button-size) / 2
+          + var(--horizontal-carousel-button-margin));
+  /* 16px cluster padding - 2px margin */
+  --horizontal-carousel-button-margin: 14px;
+  --horizontal-carousel-button-size: 28px;
+
+  display: flex;
+  isolation: isolate;
+  position: relative;
+}
+
+.carousel-button,
+.hover-layer {
+  border-radius: 50%;
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-button {
+  --cr-icon-button-size: var(--horizontal-carousel-button-size);
+  background-color: var(--color-button-background-tonal);
+  margin: 0;
+  /* Set z-index so the buttons hide the overflowing text that have z-index
+     of 0. */
+  z-index: 1;
+}
+
+:host(:hover) .carousel-button {
+  display: block;
+}
+
+.hover-layer {
+  background: var(--cr-hover-background-color);
+  height: var(--horizontal-carousel-button-size);
+  width: var(--horizontal-carousel-button-size);
+  pointer-events: none;
+  z-index: 2;
+}
+
+#backButton, #backHoverLayer {
+  left: var(--horizontal-carousel-button-margin);
+}
+
+#forwardButton, #forwardHoverLayer {
+  right: var(--horizontal-carousel-button-margin);
+}
+
+#backButton:hover ~ #backHoverLayer,
+#forwardButton:hover ~ #forwardHoverLayer {
+  display: block;
+}
+
+:host([show-back-button_]:hover)
+    #carouselContainer {
+  -webkit-mask-image: linear-gradient(to right,
+      transparent var(--horizontal-carousel-button-center),
+    black var(--gradient-start));
+}
+
+:host([show-forward-button_]:hover)
+    #carouselContainer {
+  -webkit-mask-image: linear-gradient(to right,
+    black calc(100% - var(--gradient-start)),
+      transparent  calc(100% - var(--horizontal-carousel-button-center)));
+}
+
+:host([show-back-button_][show-forward-button_]:hover)
+    #carouselContainer {
+  -webkit-mask-image: linear-gradient(to right,
+      transparent var(--horizontal-carousel-button-center),
+      black var(--gradient-start),
+      black calc(100% - var(--gradient-start)),
+      transparent calc(100% - var(--horizontal-carousel-button-center)));
+}
+
+#carouselContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: 0;
+  padding: 2px; /* To account for 2px focus outline on pills */
+  overflow-x: hidden;
+}

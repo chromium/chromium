@@ -31,7 +31,6 @@ class EmbeddingTokenBrowserTest : public ContentBrowserTest {
             /*ignore_outstanding_network_request=*/false),
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
 
-    ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
   }
 

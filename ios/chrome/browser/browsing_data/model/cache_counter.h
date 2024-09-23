@@ -6,10 +6,9 @@
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_CACHE_COUNTER_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/browsing_data/core/counters/browsing_data_counter.h"
-
-class ChromeBrowserState;
+#import "base/memory/weak_ptr.h"
+#import "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // CacheCounter is a BrowsingDataCounter used to compute the cache size.
 class CacheCounter : public browsing_data::BrowsingDataCounter {

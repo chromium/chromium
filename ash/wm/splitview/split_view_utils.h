@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -26,6 +27,8 @@ class Layer;
 }  // namespace ui
 
 namespace ash {
+
+class SplitViewOverviewSession;
 
 // Enum of the different splitview mode animations. Sorted by property
 // (opacity/transform) and then alphabetically.
@@ -127,13 +130,24 @@ void DoSplitviewClipRectAnimation(
     const gfx::Rect& target_clip_rect,
     std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
 
-// Returns whether `window`'s state type is actually in the left or top position
-// based on whether the display is in primary screen orientation.
-// TODO(sophiewen): Consolidate with `IsPhysicalLeftOrTop(SnapPostiion)`.
-bool IsPhysicalLeftOrTop(aura::Window* window);
+// Returns the `SplitViewOverviewSession` for the root window of `window`.
+ASH_EXPORT SplitViewOverviewSession* GetSplitViewOverviewSession(
+    aura::Window* window);
+
+// Returns true if `window` is currently snapped.
+bool IsSnapped(aura::Window* window);
 
 // Returns the length of the window according to the screen orientation.
-int GetWindowLength(aura::Window* window, bool horizontal);
+ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
+
+// Returns the corresponding `chromeos::WindowStateType` for the given
+// `snap_position`.
+chromeos::WindowStateType GetWindowStateTypeFromSnapPosition(
+    SnapPosition snap_position);
+
+// Returns the corresponding `SnapPosition` for the given
+// `chromeos::WindowStateType`, which must be snapped.
+SnapPosition ToSnapPosition(chromeos::WindowStateType type);
 
 // Transforms `window` based on whether it is the primary or secondary window
 // and its distance from `divider_position` during split view resizing.
@@ -203,14 +217,19 @@ ASH_EXPORT bool IsLayoutHorizontal(const display::Display& display);
 ASH_EXPORT bool IsLayoutPrimary(aura::Window* window);
 ASH_EXPORT bool IsLayoutPrimary(const display::Display& display);
 
-// Returns true if |position| actually signifies a left or top position,
-// according to the return values of |IsLayoutHorizontal| and
-// |IsLayoutPrimary|. Physical position refers to the position of the window
+// Returns true if `position` actually signifies a left or top position,
+// according to the return values of `IsLayoutHorizontal` and
+// `IsLayoutPrimary`. Physical position refers to the position of the window
 // on the display that is held upward.
-ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
-                                    aura::Window* window);
-ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
-                                    const display::Display& display);
+ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
+                                      aura::Window* window);
+ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
+                                      const display::Display& display);
+
+// Returns whether `window`'s snap position is actually in the left or top
+// position based on whether the display is in primary screen orientation, where
+// `window` must be snapped.
+ASH_EXPORT bool IsPhysicallyLeftOrTop(aura::Window* window);
 
 // Returns the maximum value of the `divider_position_`, which is the width of
 // the current display's work area bounds in landscape orientation, or height
@@ -218,13 +237,14 @@ ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
 int GetDividerPositionUpperLimit(aura::Window* root_window);
 
 // Returns the minimum length of the window according to the screen orientation.
-int GetMinimumWindowLength(aura::Window* window, bool horizontal);
+ASH_EXPORT int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 
 // Returns the target divider position for `root_window` for `snap_ratio` at
-// `snap_position`. If `account_for_divider_width` is true, it will subtract the
-// split view divider width.
-int CalculateDividerPosition(SnapPosition snap_position,
-                             aura::Window* root_window,
+// `snap_position`, clamped between 0 and the upper limit of `root_window`.
+// `account_for_divider_width` will decide whether the divider shorter side
+// width will be subtracted or not.
+int CalculateDividerPosition(aura::Window* root_window,
+                             SnapPosition snap_position,
                              float snap_ratio,
                              bool account_for_divider_width);
 
@@ -233,33 +253,86 @@ int CalculateDividerPosition(SnapPosition snap_position,
 // the work area length - window length if it is physically right or bottom. If
 // `account_for_divider_width` is true, it will also subtract
 // `kSplitviewDividerShortSideLength / 2` from the window length if is
-// physically left or top, or add `kSplitviewDividerShortSideLength / 2` to the
-// window length if it is physically right or bottom.
+// physically left or top, or `kSplitviewDividerShortSideLength` to `window`
+// length if it is physically right or bottom.
 int GetEquivalentDividerPosition(aura::Window* window,
                                  bool account_for_divider_width);
 
 // Returns the bounds of a snapped window at `snap_position`, where
-// `divider_position` is the end of the primary window width, `divider_width` is
-// the width of the split view divider if any exists, and
-// `is_resizing_with_divider`, if true and in tablet mode, will determine the
-// bounds based on the window's minimum size.
+// `divider_position` is the end of the primary window width.
+// `account_for_divider_width` will decide whether the window bounds need to
+// shrink to make room for the divider or not. `window_for_minimum_size` will be
+// taken into consideration for the calculation while `is_resizing_with_divider`
+// is false.
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* root_window,
     aura::Window* window_for_minimum_size,
+    bool account_for_divider_width,
     int divider_position,
-    int divider_width,
     bool is_resizing_with_divider);
 
-// Returns the opposite snap type of a snapped `window`. This will be
-// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
-// if `window` is `kPrimarySnapped`.
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
+// Returns the snap type of the window's `state_type`, which must be snapped.
+// `snap_type` is guaranteed to be snapped already.
+SnapViewType ToSnapViewType(chromeos::WindowStateType state_type);
+chromeos::WindowStateType ToWindowStateType(SnapViewType snap_type);
+
+// Returns the opposite snap type of `window`, where `window` must be snapped.
+// `snap_type` is guaranteed to be snapped already.
+SnapViewType GetOppositeSnapType(SnapViewType snap_type);
+SnapViewType GetOppositeSnapType(aura::Window* window);
+
+// Returns true if `snap_action_source` can be start faster split screen set up.
+ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
+    WindowSnapActionSource snap_action_source);
+
+// Returns true if `window` should be *excluded* from the occluded window check,
+// e.g. if it is not visible or minimized or when it is a float or pip window.
+// If this is true, `window` will be ignored when determining whether to show
+// partial overview or consider the window for snap to replace.
+bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
+                                    const aura::Window* target_root);
+
+// Returns the set of windows which can be cycled through in the stacking order
+// of the children of the active desk container of `root`. Note this excludes
+// windows on other containers, e.g. always-on-top windows and floated windows.
+aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root);
+
+// Returns the window that is fully visible (without occlusion) on the
+// `target_root` and with the given `snap_type`, excluding `window_to_ignore`.
+// Returns nullptr if no such window exists.
+aura::Window* GetTopmostVisibleWindowOfSnapType(aura::Window* window_to_ignore,
+                                                aura::Window* target_root,
+                                                SnapViewType snap_type);
+
+// Returns the window that is fully visible (without occlusion) and snapped to
+// the opposite side of the given `window` on the same root window. Returns
+// nullptr if no such window exists.
+aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window);
+
+// Given the windows `to_be_snapped` and `opposite_snapped`, returns the snap
+// ratio gap or overlap that would be created by snapping them on opposite sides
+// of each other.
+ASH_EXPORT float GetSnapRatioGap(aura::Window* to_be_snapped,
+                                 aura::Window* opposite_snapped);
+
+// Given the windows `to_be_snapped` and `opposite_snapped`, returns true if the
+// snap ratio gap or overlap between them is within the snap ratio threshold for
+// auto-group and snap-to-replace.
+bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
+                                   aura::Window* opposite_snapped);
+
+// Given `to_be_snapped_window`, the `target_root` it is being dragged to, and
+// target `snap_type`, returns the auto-snap ratio for `to_be_snapped_window`
+// that will be used if it can be added to a snap group.
+float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
+                       aura::Window* target_root,
+                       SnapViewType snap_type);
 
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is
 // used to filter out some unwanted snap sources.
-bool ShouldConsiderWindowForFasterSplitView(
+bool ShouldConsiderWindowForSplitViewSetupView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source);
 
@@ -272,11 +345,22 @@ bool CanStartSplitViewOverviewSessionInClamshell(
 // Returns true if the snap group is enabled in clamshell mode. The
 // `split_view_divider_` will show to indicate that the two windows are in a
 // snap-group state.
-bool IsSnapGroupEnabledInClamshellMode();
+ASH_EXPORT bool IsSnapGroupEnabledInClamshellMode();
 
 // Gets the expected window component for a window in split view, depending on
 // current screen orientation for resizing purpose.
 int GetWindowComponentForResize(aura::Window* window);
+
+// Returns true if the split view divider exits which should be taken into
+// consideration when calculating the snap ratio.
+// TODO(b/329326366): Remove this API and have clients call
+// `UpdateSnappedBounds()` directly.
+bool ShouldConsiderDivider(aura::Window* window);
+
+// Returns true if the minimum size of `window1` and `window2` and the divider
+// width can fit in the work area. The windows should belong to the same root
+// window.
+bool CanWindowsFitInWorkArea(aura::Window* window1, aura::Window* window2);
 
 // Builds the full histogram that records whether the window layout completes on
 // `SplitViewOverviewSession` exit. The full histogram is shown in the example
@@ -294,6 +378,13 @@ ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram();
 // |------------prefix----------|-snap_action_source-|-root_word-|--ui_mode--|
 // "Ash.SplitViewOverviewSession.DragWindowEdgeToSnap.ExitPoint.ClamshellMode".
 ASH_EXPORT std::string BuildSplitViewOverviewExitPointHistogramName(
+    WindowSnapActionSource snap_action_source);
+
+// Builds the full histogram that records the pref value when a window is
+// snapped.
+// |----------prefix---------|-snap_action_source-|
+// "Ash.SnapWindowSuggestions.DragWindowEdgeToSnap".
+ASH_EXPORT std::string BuildSnapWindowSuggestionsHistogramName(
     WindowSnapActionSource snap_action_source);
 
 }  // namespace ash

@@ -78,16 +78,15 @@ class VaapiVideoEncoderDelegate {
   // memory for output, etc.) as needed.
   class EncodeJob {
    public:
-    // Creates an EncodeJob to encode |input_frame|, which will be executed by
-    // calling ExecuteSetupCallbacks() in VaapiVideoEncoderDelegate::Encode().
+    // Creates an EncodeJob to encode the va surface associated with
+    // |input_surface_id|, which will be executed by
+    // VaapiVideoEncoderDelegate::Encode().
     // If |keyframe| is true, requests this job to produce a keyframe.
+    // |picture| is for a reconstructed frame and the encoded chunk is written
+    // into the buffer of |coded_buffer|.
     EncodeJob(bool keyframe,
               base::TimeDelta timestamp,
-              bool end_of_picture,
-              VASurfaceID input_surface_id);
-    // Constructor for VA-API.
-    EncodeJob(bool keyframe,
-              base::TimeDelta timestamp,
+              uint8_t spatial_index,
               bool end_of_picture,
               VASurfaceID input_surface_id,
               scoped_refptr<CodecPicture> picture,
@@ -115,8 +114,10 @@ class VaapiVideoEncoderDelegate {
     bool IsFrameDropped() const { return !coded_buffer_; }
 
     base::TimeDelta timestamp() const;
+    uint8_t spatial_index() const;
     // This is a frame in the top spatial layer.
     bool end_of_picture() const;
+    uint8_t spatial_idx() const;
 
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
@@ -127,6 +128,7 @@ class VaapiVideoEncoderDelegate {
     bool keyframe_;
     // |timestamp_| to be added to the produced encoded chunk.
     const base::TimeDelta timestamp_;
+    const uint8_t spatial_index_ = 0;
     const bool end_of_picture_;
 
     // VA-API specific members.
@@ -193,9 +195,6 @@ class VaapiVideoEncoderDelegate {
     kDrop,     // Encode job is dropped. An returned encoded chunk is empty.
   };
 
-  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
-                                              size_t payload_size);
-
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   base::RepeatingClosure error_cb_;
@@ -203,6 +202,9 @@ class VaapiVideoEncoderDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
+                                              size_t payload_size) = 0;
+
   // Prepares a new |encode_job| to be executed in Accelerator. Returns
   // kSuccess on success, and kFail on failure.
   virtual PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) = 0;
@@ -210,8 +212,10 @@ class VaapiVideoEncoderDelegate {
   // Notifies the encoded chunk size in bytes with layers info through
   // BitstreamBufferMetadata to update a bitrate controller in
   // VaapiVideoEncoderDelegate. This should be called only if constant
-  // quantization encoding is used, which currently is true for VP8 and VP9.
-  virtual void BitrateControlUpdate(const BitstreamBufferMetadata& metadata);
+  // quantization encoding is used, which currently is true for VP8, VP9, H264
+  // and AV1.
+  virtual void BitrateControlUpdate(
+      const BitstreamBufferMetadata& metadata) = 0;
 };
 }  // namespace media
 

@@ -1,0 +1,66 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("users_private") {
+  sources = [
+    "users_private_api.cc",
+    "users_private_api.h",
+    "users_private_delegate.cc",
+    "users_private_delegate.h",
+    "users_private_delegate_factory.cc",
+    "users_private_delegate_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/settings",
+    "//components/keyed_service/core",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//extensions/browser",
+    "//extensions/common",
+    "//google_apis",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "users_private_apitest.cc" ]
+
+  deps = [
+    ":users_private",
+    "//base",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/keyed_service/core",
+    "//components/ownership",
+    "//components/prefs",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//crypto",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}

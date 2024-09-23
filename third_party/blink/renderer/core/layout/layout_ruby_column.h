@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_COLUMN_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
@@ -18,7 +18,7 @@ class LayoutRubyText;
 // https://drafts.csswg.org/css-ruby-1/#ruby-columns
 //
 // See layout_ruby.h for further comments on the structure
-class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyColumn final : public LayoutBlockFlow {
  public:
   explicit LayoutRubyColumn();
   ~LayoutRubyColumn() override;

@@ -5,10 +5,12 @@
 #ifndef SANDBOX_WIN_SRC_IPC_TAGS_H_
 #define SANDBOX_WIN_SRC_IPC_TAGS_H_
 
+#include <cstdint>
+
 namespace sandbox {
 
-enum class IpcTag {
-  UNUSED = 0,
+enum class IpcTag : uint32_t {
+  UNUSED,
   PING1,  // Takes a cookie in parameters and returns the cookie
           // multiplied by 2 and the tick_count. Used for testing only.
   PING2,  // Takes an in/out cookie in parameters and modify the cookie
@@ -25,13 +27,12 @@ enum class IpcTag {
   USER_REGISTERCLASSW,
   CREATETHREAD,
   NTCREATESECTION,
-  LAST
+  kMaxValue = NTCREATESECTION,
 };
 
-constexpr size_t kMaxServiceCount = 64;
-constexpr size_t kMaxIpcTag = static_cast<size_t>(IpcTag::LAST);
-static_assert(kMaxIpcTag <= kMaxServiceCount, "kMaxServiceCount is too low");
-
+// The number of IpcTag services that are defined.
+inline constexpr size_t kSandboxIpcCount =
+    static_cast<size_t>(IpcTag::kMaxValue) + 1;
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_IPC_TAGS_H_

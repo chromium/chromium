@@ -310,7 +310,7 @@ void Location::SetLocation(const String& url,
       LocalFrame::HasTransientUserActivation(incumbent_window->GetFrame()));
 
   FrameLoadRequest request(incumbent_window, resource_request);
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
   WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
   if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;

@@ -65,6 +65,23 @@ class SafeBrowsingService
                    web::WebState* web_state,
                    SafeBrowsingClient* client) = 0;
 
+  // Creates a SafeBrowsingUrlCheckerImpl that can be used for async checks.
+  virtual std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
+  CreateAsyncChecker(network::mojom::RequestDestination request_destination,
+                     web::WebState* web_state,
+                     SafeBrowsingClient* client) = 0;
+
+  // Creates a SafeBrowsingUrlCheckerImpl that can be used for sync checks which
+  // handles checks not related to real time.
+  virtual std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
+  CreateSyncChecker(network::mojom::RequestDestination request_destination,
+                    web::WebState* web_state,
+                    SafeBrowsingClient* client) = 0;
+
+  // Checks if async check should be created.
+  virtual bool ShouldCreateAsyncChecker(web::WebState* web_state,
+                                        SafeBrowsingClient* client) = 0;
+
   // Returns true if `url` has a scheme that is handled by Safe Browsing.
   virtual bool CanCheckUrl(const GURL& url) const = 0;
 

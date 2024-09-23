@@ -5,3 +5,9 @@ include_rules = [
   "+components/optimization_guide/core/optimization_guide_features.h",
 ]
 
+specific_include_rules = {
+  "pre_sandbox_init\.cc": [
+    "+chromeos/ash/components/dbus",
+    "+chromeos/dbus/init",
+  ],
+}

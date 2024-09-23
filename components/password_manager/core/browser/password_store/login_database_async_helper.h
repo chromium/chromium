@@ -9,39 +9,55 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
+namespace base {
+class Location;
+}  // namespace base
+
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
+
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
 
 namespace password_manager {
 
 class LoginDatabase;
 class PasswordSyncBridge;
-class UnsyncedCredentialsDeletionNotifier;
 
 struct InteractionsStats;
 
 // Class which interacts directly with LoginDatabase. It is also responsible to
 // sync passwords. Works only on background sequence.
-class LoginDatabaseAsyncHelper : private PasswordStoreSync {
+class LoginDatabaseAsyncHelper : public PasswordStoreSync {
  public:
   LoginDatabaseAsyncHelper(
       std::unique_ptr<LoginDatabase> login_db,
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier,
+      UnsyncedCredentialsDeletionNotifier notifier,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior);
 
   ~LoginDatabaseAsyncHelper() override;
 
-  // Opens |login_db_| and creates sync bridges.
+  // Called soon after constructor but on the background sequence.
+  void CreateSyncBackend();
+
+  // Opens |login_db_|. CreateSyncBackend() must have been called before.
   bool Initialize(
-      PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
-      base::RepeatingClosure sync_enabled_or_disabled_cb);
+      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
+                                   bool)> remote_form_changes_received,
+      base::RepeatingClosure sync_enabled_or_disabled_cb,
+      base::RepeatingCallback<void(password_manager::IsAccountStore)>
+          on_undecryptable_passwords_removed,
+      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
   LoginsResultOrError GetAllLogins();
@@ -52,10 +68,14 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
 
   PasswordChangesOrError AddLogin(const PasswordForm& form);
   PasswordChangesOrError UpdateLogin(const PasswordForm& form);
-  PasswordChangesOrError RemoveLogin(const PasswordForm& form);
-  PasswordChangesOrError RemoveLoginsCreatedBetween(base::Time delete_begin,
-                                                    base::Time delete_end);
+  PasswordChangesOrError RemoveLogin(const base::Location& location,
+                                     const PasswordForm& form);
+  PasswordChangesOrError RemoveLoginsCreatedBetween(
+      const base::Location& location,
+      base::Time delete_begin,
+      base::Time delete_end);
   PasswordChangesOrError RemoveLoginsByURLAndTime(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
@@ -73,8 +93,14 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
       base::Time delete_end);
 
   // Instantiates a proxy controller delegate to react to sync events.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
+
+  // `clearing_undecryptable_passwords`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balaced. This method will be deleted
+  // after a successful rollout.
+  void SetClearingUndecryptablePasswordsCb(
+      base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords);
 
  private:
   // Implements PasswordStoreSync interface.
@@ -100,6 +126,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   bool IsAccountStore() const override;
   bool DeleteAndRecreateDatabaseFile() override;
   DatabaseCleanupResult DeleteUndecryptableCredentials() override;
+  std::optional<bool> WereUndecryptableLoginsDeleted() const override;
+  void ClearWereUndecryptableLoginsDeleted() override;
 
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddCredentialError* error);
@@ -130,12 +158,12 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   // Whenever 'password_sync_bridge_' receive remote changes this callback is
   // used to notify PasswordStore observers about them. Called on a main
   // sequence from the 'NotifyLoginsChanged'.
-  PasswordStoreBackend::RemoteChangesReceived
+  // The bool indicates that the received changes are for the account store.
+  base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  UnsyncedCredentialsDeletionNotifier deletion_notifier_;
 
   // A list of callbacks that should be run once all pending deletions have been
   // sent to the Sync server. Note that the vector itself lives on the

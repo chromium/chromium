@@ -29,6 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_INLINE_HEADERS_H_
 
@@ -79,7 +84,7 @@ struct ShapeResult::RunInfo final
         direction_(other.direction_),
         canvas_rotation_(other.canvas_rotation_) {}
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(font_data_); }
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
@@ -126,16 +131,17 @@ struct ShapeResult::RunInfo final
     auto glyphs = FindGlyphDataRange(start, end);
     unsigned number_of_glyphs =
         static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
-    if (UNLIKELY(!number_of_glyphs))
+    if (!number_of_glyphs) [[unlikely]] {
       return nullptr;
+    }
 
     auto* run = MakeGarbageCollected<RunInfo>(
-        font_data_.get(), direction_, canvas_rotation_, script_,
+        font_data_.Get(), direction_, canvas_rotation_, script_,
         start_index_ + start, number_of_glyphs, number_of_characters);
 
     run->glyph_data_.CopyFromRange(glyphs);
 
-    float total_advance = 0;
+    InlineLayoutUnit total_advance;
     for (HarfBuzzRunGlyphData& glyph_data : run->glyph_data_) {
       glyph_data.character_index -= start;
       total_advance += glyph_data.advance;
@@ -154,12 +160,12 @@ struct ShapeResult::RunInfo final
       return nullptr;
     DCHECK_LT(start_index_, other.start_index_);
     auto* run = MakeGarbageCollected<RunInfo>(
-        font_data_.get(), direction_, canvas_rotation_, script_, start_index_,
+        font_data_.Get(), direction_, canvas_rotation_, script_, start_index_,
         glyph_data_.size() + other.glyph_data_.size(),
         num_characters_ + other.num_characters_);
     // Note: We populate |graphemes_| on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
-    if (UNLIKELY(IsRtl())) {
+    if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
       auto* const end = run->glyph_data_.begin() + other.glyph_data_.size();
       for (auto* it = run->glyph_data_.begin(); it < end; ++it)
@@ -374,7 +380,7 @@ struct ShapeResult::RunInfo final
   }
 
   GlyphDataCollection glyph_data_;
-  scoped_refptr<SimpleFontData> font_data_;
+  Member<SimpleFontData> font_data_;
 
   // graphemes_[i] is the number of graphemes up to (and including) the ith
   // character in the run.

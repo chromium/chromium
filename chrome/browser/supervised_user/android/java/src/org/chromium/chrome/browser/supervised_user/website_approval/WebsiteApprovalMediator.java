@@ -66,7 +66,7 @@ class WebsiteApprovalMediator {
                         identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (childEmail == null) {
             // This is an unexpected window condition: there is no signed in account.
-            // TODO(crbug.com/1330900): dismiss the bottom sheet.
+            // TODO(crbug.com/40843544): dismiss the bottom sheet.
             return;
         }
         AccountInfo childAccountInfo =

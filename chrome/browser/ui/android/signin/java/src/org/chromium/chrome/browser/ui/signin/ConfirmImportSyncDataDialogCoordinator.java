@@ -10,13 +10,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -64,27 +63,34 @@ public class ConfirmImportSyncDataDialogCoordinator {
             ModalDialogManager dialogManager,
             Listener listener,
             String currentAccountName,
-            String newAccountName) {
+            String newAccountName,
+            boolean isCurrentAccountManaged,
+            boolean usesSplitStoresAndUPMForLocal) {
         this(
                 context,
                 dialogManager,
                 listener,
                 currentAccountName,
                 newAccountName,
-                AccountEmailDomainDisplayability::checkIfDisplayableEmailAddress);
+                AccountEmailDisplayHook::canHaveEmailAddressDisplayed,
+                isCurrentAccountManaged,
+                usesSplitStoresAndUPMForLocal);
     }
 
     /**
      * Creates a new instance of ConfirmImportSyncDataDialogCoordinator and shows a dialog that
-     * gives the user the option to merge data between the account they are attempting to sign in
-     * to and the account they are currently signed into, or to keep the data separate. This dialog
-     * is shown before signing out the current sync account.
-     * @param context                           Context to create the view.
-     * @param listener                          Callback to be called if the user completes the
-     *                                          dialog (as opposed to hitting cancel).
-     * @param currentAccountName                The current sync account name.
-     * @param newAccountName                    The potential next sync account name.
-     * @param checkIfDisplayableEmailAddress    Predicate testing if an email is displayable.
+     * gives the user the option to merge data between the account they are attempting to sign in to
+     * and the account they are currently signed into, or to keep the data separate. This dialog is
+     * shown before signing out the current sync account.
+     *
+     * @param context Context to create the view.
+     * @param listener Callback to be called if the user completes the dialog (as opposed to hitting
+     *     cancel).
+     * @param currentAccountName The current sync account name.
+     * @param newAccountName The potential next sync account name.
+     * @param checkIfDisplayableEmailAddress Predicate testing if an email is displayable.
+     * @param isCurrentAccountManaged Whether the current account is a managed account.
+     * @param usesSplitStoresAndUPMForLocal See password_manager::UsesSplitStoresAndUPMForLocal().
      */
     @MainThread
     public ConfirmImportSyncDataDialogCoordinator(
@@ -93,7 +99,9 @@ public class ConfirmImportSyncDataDialogCoordinator {
             Listener listener,
             String currentAccountName,
             String newAccountName,
-            Predicate<String> checkIfDisplayableEmailAddress) {
+            Predicate<String> checkIfDisplayableEmailAddress,
+            boolean isCurrentAccountManaged,
+            boolean usesSplitStoresAndUPMForLocal) {
         mCheckIfDisplayableEmailAddress = checkIfDisplayableEmailAddress;
 
         mListener = listener;
@@ -104,11 +112,6 @@ public class ConfirmImportSyncDataDialogCoordinator {
         mKeepSeparateOption =
                 mConfirmImportSyncDataView.findViewById(R.id.sync_keep_separate_choice);
 
-        boolean isCurrentAccountManaged =
-                IdentityServicesProvider.get()
-                                .getSigninManager(Profile.getLastUsedRegularProfile())
-                                .getManagementDomain()
-                        != null;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
@@ -129,7 +132,11 @@ public class ConfirmImportSyncDataDialogCoordinator {
         mDialogManager = dialogManager;
 
         setUpConfirmImportSyncDataView(
-                context, currentAccountName, newAccountName, isCurrentAccountManaged);
+                context,
+                currentAccountName,
+                newAccountName,
+                isCurrentAccountManaged,
+                usesSplitStoresAndUPMForLocal);
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
@@ -174,16 +181,26 @@ public class ConfirmImportSyncDataDialogCoordinator {
             Context context,
             String currentAccountName,
             String newAccountName,
-            boolean isCurrentAccountManaged) {
+            boolean isCurrentAccountManaged,
+            boolean usesSplitStoresAndUPMForLocal) {
         TextView prompt = mConfirmImportSyncDataView.findViewById(R.id.sync_import_data_prompt);
 
-        if (!mCheckIfDisplayableEmailAddress.test(currentAccountName)) {
-            final String defaultAccountName =
-                    context.getString(R.string.default_google_account_username);
-            prompt.setText(context.getString(R.string.sync_import_data_prompt, defaultAccountName));
-        } else {
-            prompt.setText(context.getString(R.string.sync_import_data_prompt, currentAccountName));
-        }
+        // The "Combine my data" option only applies to passwords if `usesSplitStoresAndUPMForLocal`
+        // is false. Otherwise, don't mention "passwords" in the text. Similarly, "Keep my data
+        // separate" only needs to delete local passwords if `usesSplitStoresAndUPMForLocal` is
+        // false.
+        // TODO(crbug.com/325620996): Plumb the fact that passwords should not be deleted to both
+        // the Java and C++ backends, rather than special casing all around.
+        @StringRes
+        int promptText =
+                usesSplitStoresAndUPMForLocal
+                        ? R.string.sync_import_data_prompt_without_passwords
+                        : R.string.sync_import_data_prompt;
+        String displayedAccount =
+                mCheckIfDisplayableEmailAddress.test(currentAccountName)
+                        ? currentAccountName
+                        : context.getString(R.string.default_google_account_username);
+        prompt.setText(context.getString(promptText, displayedAccount));
 
         mConfirmImportOption.setDescriptionText(
                 context.getString(R.string.sync_import_existing_data_subtext, newAccountName));

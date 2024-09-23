@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This API is used to forward requests to conduct Magic Boost opt-in flow
+// from Lacros (Client) to the actual implementation in Ash-Chrome.
+// Next Method ID: 2
+// Next MinVersion: 4
+[Stable, Uuid="7045789d-b1df-422c-a9c2-39990e977b2b"]
+interface MagicBoostController {
+  // Specifies which action to complete after the opt-in flow has been
+  // completed, transitioning from the opt-in experience to the main feature.
+  [Stable, Extensible]
+  enum TransitionAction {
+    // Default option. Not do anything.
+    [Default] kDoNothing = 0,
+
+    // Show the editor panel after completing the opt-in flow.
+    kShowEditorPanel,
+
+    // Show the Mahi panel after completing the opt-in flow.
+    [MinVersion=3] kShowHmrPanel,
+  };
+
+  // Specifies which features are the opt in ones.
+  [Stable, Extensible]
+  enum OptInFeatures {
+    // Default option. Only opt in HMR.
+    [Default] kHmrOnly = 0,
+
+    // Opt in both Orca and HMR features.
+    kOrcaAndHmr,
+  };
+
+  // Shows the disclaimer UI in the given `display_id`.
+  ShowDisclaimerUi@0(
+    int64 display_id,
+    TransitionAction action,
+    [MinVersion=2] OptInFeatures opt_in_features);
+
+  // Closes the disclaimer UI.
+  [MinVersion=1] CloseDisclaimerUi@1();
+};

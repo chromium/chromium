@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("osauth") {
+  sources = [
+    "apply_online_password_screen_handler.cc",
+    "apply_online_password_screen_handler.h",
+    "factor_setup_success_screen_handler.cc",
+    "factor_setup_success_screen_handler.h",
+    "local_data_loss_warning_screen_handler.cc",
+    "local_data_loss_warning_screen_handler.h",
+    "osauth_error_screen_handler.cc",
+    "osauth_error_screen_handler.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
+    "//components/login",
+    "//ui/chromeos",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
+  ]
+}

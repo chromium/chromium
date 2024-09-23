@@ -31,8 +31,9 @@ class FakeBrowserState final : public BrowserState {
       network::mojom::NetworkContextParams* params) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
+  const std::string& GetWebKitStorageID() const override;
 
-  // Sets a SharedURLLoaderFactory for test.
+  // Sets a SharedURLLoaderFactory for testing.
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
@@ -41,6 +42,9 @@ class FakeBrowserState final : public BrowserState {
 
   // This must be called before the first GetRequestContext() call.
   void SetCookieStore(std::unique_ptr<net::CookieStore> cookie_store);
+
+  // Sets an identifier used to access the WebKit storage for testing.
+  void SetWebKitStorageID(std::string uuid);
 
  private:
   scoped_refptr<net::URLRequestContextGetter> request_context_;
@@ -52,6 +56,9 @@ class FakeBrowserState final : public BrowserState {
       test_shared_url_loader_factory_;
 
   std::unique_ptr<net::CookieStore> cookie_store_;
+
+  // Empty by default.
+  std::string storage_uuid_;
 };
 }  // namespace web
 

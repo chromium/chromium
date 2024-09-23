@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
@@ -43,29 +44,11 @@ ash::LoggedInUserMixin::LogInType GetPrimaryLogInType(
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent:
       return ash::LoggedInUserMixin::LogInType::kChild;
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome:
+      return ash::LoggedInUserMixin::LogInType::kManaged;
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser:
     case FamilyUserMetricsProvider::FamilyUserLogSegment::kOther:
-      return ash::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kConsumer;
   }
-}
-
-// Returns the account id for the primary test account for logging in.
-std::optional<AccountId> GetPrimaryAccountId(
-    FamilyUserMetricsProvider::FamilyUserLogSegment log_segment) {
-  if (log_segment ==
-      FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome) {
-    // To distinguish K-12 EDU users from Enterprise users in ChromeOS, we use a
-    // PolicyData field. Fetching policy is skipped for obviously consumer
-    // users, who have an @gmail.com e-mail, for example (see comments in
-    // fake_gaia_mixin.h). Since we need policies for this test, we must use an
-    // e-mail address that has an enterprise domain. Of all the user categories,
-    // kStudentAtHome is the only one with an enterprise managed primary
-    // account.
-    return AccountId::FromUserEmailGaiaId(
-        FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
-  }
-  // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
-  return std::nullopt;
 }
 
 void ProvideHistograms() {
@@ -94,10 +77,8 @@ class FamilyUserMetricsProviderTest
 
     if (GetFamilyUserLogSegment() ==
         FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome) {
-      logged_in_user_mixin_.GetUserPolicyMixin()
-          ->RequestPolicyUpdate()
-          ->policy_data()
-          ->set_metrics_log_segment(enterprise_management::PolicyData::K12);
+      logged_in_user_mixin_.GetEmbeddedPolicyTestServerMixin()
+          ->SetMetricsLogSegment(enterprise_management::PolicyData::K12);
     }
   }
 
@@ -108,15 +89,8 @@ class FamilyUserMetricsProviderTest
   }
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetPrimaryLogInType(GetFamilyUserLogSegment()),
-      embedded_test_server(), this,
-      /*should_launch_browser=*/true,
-      GetPrimaryAccountId(GetFamilyUserLogSegment()),
-      /*include_initial_user=*/true,
-      // Don't use EmbeddedPolicyTestServer because it does not support
-      // customizing PolicyData.
-      // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
-      /*use_embedded_policy_server=*/false};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      GetPrimaryLogInType(GetFamilyUserLogSegment())};
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
@@ -236,8 +210,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(), this};
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
+      ash::LoggedInUserMixin::LogInType::kConsumer};
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };

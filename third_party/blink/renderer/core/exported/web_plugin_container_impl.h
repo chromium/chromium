@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -141,7 +142,7 @@ class CORE_EXPORT WebPluginContainerImpl final
                                  int index,
                                  bool final_update) override;
   float PageScaleFactor() override;
-  float PageZoomFactor() override;
+  float LayoutZoomFactor() override;
   void SetCcLayer(cc::Layer*) override;
   void RequestFullscreen() override;
   bool IsFullscreenElement() const override;
@@ -160,10 +161,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   bool GetPrintPresetOptionsFromDocument(WebPrintPresetOptions*) const;
   // Sets up printing at the specified WebPrintParams. Returns the number of
   // pages to be printed at these settings.
-  int PrintBegin(const WebPrintParams&) const;
-  // Prints the page specified by pageNumber (0-based index) into the supplied
-  // canvas.
-  void PrintPage(int page_number, GraphicsContext&);
+  int PrintBegin(const WebPrintParams& print_params) const;
+  // Prints the page specified by `page_index`  into the supplied canvas.
+  void PrintPage(int page_index, GraphicsContext& gc);
   // Ends the print operation.
   void PrintEnd();
 
@@ -176,7 +176,7 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   // Resource load events for the plugin's source data:
   void DidReceiveResponse(const ResourceResponse&);
-  void DidReceiveData(const char* data, size_t data_length);
+  void DidReceiveData(base::span<const char> data);
   void DidFinishLoading();
   void DidFailLoading(const ResourceError&);
 

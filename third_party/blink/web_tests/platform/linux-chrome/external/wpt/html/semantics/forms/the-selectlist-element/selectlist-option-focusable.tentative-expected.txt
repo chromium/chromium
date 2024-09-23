@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Validate <option> is focusable when is a descendant of <selectlist>
-  assert_equals: expected "two" but got "one"
-Harness: the test ran to completion.

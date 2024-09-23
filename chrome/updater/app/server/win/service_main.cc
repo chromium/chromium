@@ -36,9 +36,6 @@ HRESULT RunWakeTask() {
       base::CommandLine::ForCurrentProcess()->GetProgram());
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
   run_updater_wake_command.AppendSwitch(kSystemSwitch);
-  run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
-  run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                             kLoggingModuleSwitchValue);
   VLOG(2) << "Launching Wake command: "
           << run_updater_wake_command.GetCommandLineString();
 
@@ -94,7 +91,8 @@ ServiceMain::ServiceMain() {
 }
 
 ServiceMain::~ServiceMain() {
-  NOTREACHED();  // The instance of this class is a leaky singleton.
+  NOTREACHED_IN_MIGRATION();  // The instance of this class is a leaky
+                              // singleton.
 }
 
 int ServiceMain::RunAsService() {
@@ -158,7 +156,7 @@ void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
 }
 
 void ServiceMain::SetServiceStatus(DWORD state) {
-  ::InterlockedExchange(&service_status_.dwCurrentState, state);
+  service_status_.dwCurrentState = state;
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 

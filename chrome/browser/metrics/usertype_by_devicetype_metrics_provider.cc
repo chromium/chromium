@@ -126,7 +126,7 @@ UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
     case em::PolicyData::ENTERPRISE:
       return UserSegment::kEnterprise;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UserSegment::kUnmanaged;
 }
 

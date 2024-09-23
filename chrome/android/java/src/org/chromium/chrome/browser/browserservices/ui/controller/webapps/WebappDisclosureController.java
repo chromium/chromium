@@ -104,7 +104,7 @@ public class WebappDisclosureController extends DisclosureController {
 
     @Override
     protected boolean isFirstTime() {
-        // TODO(crbug.com/1128675): isFirstTime is used for showing notification disclosure for
+        // TODO(crbug.com/40149064): isFirstTime is used for showing notification disclosure for
         // TWAs, not used in Webapk for now.
         return false;
     }

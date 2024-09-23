@@ -22,6 +22,38 @@ NSData* ToNSData(base::span<const uint8_t> data) {
   return [NSData dataWithBytes:data.data() length:data.size()];
 }
 
+API_AVAILABLE(macos(15.0))
+ASAuthorizationPublicKeyCredentialPRFAssertionInputValues* ToInputValues(
+    const device::PRFInput& input) {
+  NSData* first = ToNSData(input.salt1);
+  NSData* second = nil;
+  if (input.salt2) {
+    second = ToNSData(*input.salt2);
+  }
+  return [[ASAuthorizationPublicKeyCredentialPRFAssertionInputValues alloc]
+      initWithSaltInput1:first
+              saltInput2:second];
+}
+
+API_AVAILABLE(macos(15.0))
+NSDictionary<NSData*,
+             ASAuthorizationPublicKeyCredentialPRFAssertionInputValues*>*
+ToPerCredValues(base::span<const device::PRFInput> inputs) {
+  NSMutableDictionary<
+      NSData*, ASAuthorizationPublicKeyCredentialPRFAssertionInputValues*>*
+      ret = [NSMutableDictionary dictionary];
+
+  for (const device::PRFInput& input : inputs) {
+    // The first element may not have a credential_id
+    if (!input.credential_id) {
+      continue;
+    }
+    [ret setObject:ToInputValues(input) forKey:ToNSData(*input.credential_id)];
+  }
+
+  return ret;
+}
+
 }  // namespace
 
 // ICloudKeychainPresentationDelegate simply returns an `NSWindow` when asked by
@@ -282,6 +314,17 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
       create_request.displayName =
           base::SysUTF8ToNSString(*request.user.display_name);
     }
+    if (@available(macOS 15.0, *)) {
+      if (request.prf && !request.prf_input) {
+        create_request.prf =
+            [ASAuthorizationPublicKeyCredentialPRFRegistrationInput
+                checkForSupport];
+      } else if (request.prf_input) {
+        create_request.prf =
+            [[ASAuthorizationPublicKeyCredentialPRFRegistrationInput alloc]
+                initWithInputValues:ToInputValues(*request.prf_input)];
+      }
+    }
 
     create_controller_ = [[ICloudKeychainCreateController alloc]
         initWithAuthorizationRequests:@[ create_request ]];
@@ -326,6 +369,19 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
     get_request.allowedCredentials = allowedCredentials;
     [get_request setShouldShowHybridTransport:false];
     get_request.userVerificationPreference = Convert(request.user_verification);
+    if (@available(macOS 15.0, *)) {
+      if (!request.prf_inputs.empty()) {
+        ASAuthorizationPublicKeyCredentialPRFAssertionInputValues*
+            default_values = nil;
+        if (!request.prf_inputs[0].credential_id) {
+          default_values = ToInputValues(request.prf_inputs[0]);
+        }
+        get_request.prf =
+            [[ASAuthorizationPublicKeyCredentialPRFAssertionInput alloc]
+                     initWithInputValues:default_values
+                perCredentialInputValues:ToPerCredValues(request.prf_inputs)];
+      }
+    }
     get_controller_ = [[ICloudKeychainGetController alloc]
         initWithAuthorizationRequests:@[ get_request ]];
     [get_controller_ setRequest:std::move(request)];

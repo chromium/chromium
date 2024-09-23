@@ -5,7 +5,19 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NET_EXPORT_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NET_EXPORT_UI_H_
 
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class NetExportUI;
+
+class NetExportUIConfig : public content::DefaultWebUIConfig<NetExportUI> {
+ public:
+  NetExportUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUINetExportHost) {}
+};
 
 // The C++ back-end for the chrome://net-export webui page.
 class NetExportUI : public content::WebUIController {

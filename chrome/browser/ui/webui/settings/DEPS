@@ -2,6 +2,7 @@ include_rules = [
   "+components/device_reauth",
   "+components/live_caption",
   "+content/public/browser/tts_controller.h",
+  "+services/cert_verifier/public/mojom",
 ]
 
 specific_include_rules = {

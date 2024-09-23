@@ -7,18 +7,18 @@
  * 'privacy-guide-cookies-fragment' is the fragment in a privacy
  * guide card that contains the cookie settings and their descriptions.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import './privacy_guide_description_item.js';
 import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_radio_group.js';
 import '../../privacy_page/collapse_radio_button.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
+import {CookieControlsMode} from '../../site_settings/constants.js';
 
 import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
 
@@ -44,12 +44,10 @@ export class PrivacyGuideCookiesFragmentElement extends
         notify: true,
       },
 
-      /**
-       * Primary cookie control states for use in bindings.
-       */
-      cookiePrimarySettingEnum_: {
+      /** Cookie control modes for use in bindings. */
+      cookieControlsModeEnum_: {
         type: Object,
-        value: CookiePrimarySetting,
+        value: CookieControlsMode,
       },
     };
   }
@@ -75,8 +73,8 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   private onViewEnterStart_() {
     this.startStateBlock3PIncognito_ =
-        this.getPref('generated.cookie_primary_setting').value ===
-        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+        this.getPref('profile.cookie_controls_mode').value ===
+        CookieControlsMode.INCOGNITO_ONLY;
     this.metricsBrowserProxy_
         .recordPrivacyGuideStepsEligibleAndReachedHistogram(
             PrivacyGuideStepsEligibleAndReached.COOKIES_REACHED);
@@ -84,8 +82,8 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   private onViewExitFinish_() {
     const endStateBlock3PIncognito =
-        this.getPref('generated.cookie_primary_setting').value ===
-        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+        this.getPref('profile.cookie_controls_mode').value ===
+        CookieControlsMode.INCOGNITO_ONLY;
 
     let state: PrivacyGuideSettingsStates|null = null;
     if (this.startStateBlock3PIncognito_) {

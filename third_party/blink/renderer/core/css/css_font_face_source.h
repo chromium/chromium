@@ -30,7 +30,9 @@
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -69,8 +71,8 @@ class CORE_EXPORT CSSFontFaceSource
     return nullptr;
   }
 
-  scoped_refptr<SimpleFontData> GetFontData(const FontDescription&,
-                                            const FontSelectionCapabilities&);
+  const SimpleFontData* GetFontData(const FontDescription&,
+                                    const FontSelectionCapabilities&);
 
   // TODO(https://crbug.com/947461): IsLocalFontAvailable must not have a
   // FontDescription argument.
@@ -91,28 +93,29 @@ class CORE_EXPORT CSSFontFaceSource
   virtual bool HadBlankText() { return false; }
   virtual void PaintRequested() {}
 
-  virtual void Trace(Visitor* visitor) const {}
+  virtual void Trace(Visitor* visitor) const {
+    visitor->Trace(font_data_table_);
+  }
 
  protected:
   CSSFontFaceSource() = default;
-  virtual scoped_refptr<SimpleFontData> CreateFontData(
+  virtual const SimpleFontData* CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) = 0;
-  void PruneTable();
+
+  void ClearTable() { font_data_table_.clear(); }
 
   // Report the font lookup for metrics collection. Only used for local font
   // face sources currently.
   virtual void ReportFontLookup(const FontDescription& font_description,
-                                SimpleFontData* font_data,
+                                const SimpleFontData* font_data,
                                 bool is_loading_fallback = false) {}
 
  private:
-  void PruneOldestIfNeeded();
-  using FontDataTable = HashMap<FontCacheKey, scoped_refptr<SimpleFontData>>;
-  using FontCacheKeyAgeList = LinkedHashSet<FontCacheKey>;
+  using FontDataTable =
+      HeapHashMap<FontCacheKey, WeakMember<const SimpleFontData>>;
 
   FontDataTable font_data_table_;
-  FontCacheKeyAgeList font_cache_key_age;
 };
 
 }  // namespace blink

@@ -16,6 +16,7 @@ source_set("internals") {
     "../:shopping_service",
     "//base",
     "//components/bookmarks/browser:browser",
+    "//components/commerce/core/product_specifications:product_specifications",
     "//components/payments/core:core",
     "//components/power_bookmarks/core:core",
     "//components/prefs",

@@ -156,7 +156,7 @@ int GetDaysInMonthInEpochYear(UCalendarMonths month) {
     case UCAL_UNDECIMBER:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 

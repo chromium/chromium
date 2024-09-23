@@ -6,4 +6,12 @@
     ImplementedAs=InternalsAccessibility
 ] partial interface Internals {
     unsigned long numberOfLiveAXObjects();
+
+    // Get the computed accessible label of the given element.
+    // See https://w3c.github.io/webdriver/#dfn-get-computed-label
+    DOMString getComputedLabel(Element element);
+
+    // Get the computed accessible role of the given element.
+    // See https://w3c.github.io/webdriver/#dfn-get-computed-role
+    DOMString getComputedRole(Element element);
 };

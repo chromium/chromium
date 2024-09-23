@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/logging.h"
 
 #ifdef BASE_CHECK_H_
@@ -19,6 +24,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -33,14 +39,14 @@
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
+#include "base/scoped_clear_last_error.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -54,6 +60,7 @@
 #include "base/vlog.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if !BUILDFLAG(IS_NACL)
@@ -66,8 +73,9 @@
 #endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
-#include <io.h>
 #include <windows.h>
+
+#include <io.h>
 
 #include "base/win/win_util.h"
 
@@ -537,7 +545,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   }
 #endif
 
-  // ignore file options unless logging to file is set.
+  // Ignore file options unless logging to file is set.
   if ((g_logging_destination & LOG_TO_FILE) == 0)
     return true;
 
@@ -549,15 +557,16 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   // default log file will re-initialize to the new options.
   CloseLogFileUnlocked();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   if (settings.log_file) {
-    DCHECK(!settings.log_file_path);
+    CHECK(settings.log_file_path.empty(), base::NotFatalUntil::M127);
     g_log_file = settings.log_file;
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 
-  DCHECK(settings.log_file_path) << "LOG_TO_FILE set but no log_file_path!";
+  CHECK(!settings.log_file_path.empty(), base::NotFatalUntil::M127)
+      << "LOG_TO_FILE set but no log_file_path!";
 
   if (!g_log_file_name)
     g_log_file_name = new PathString();
@@ -614,9 +623,8 @@ int GetVlogLevelHelper(const char* file, size_t N) {
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
   VlogInfo* vlog_info = GetVlogInfo();
-  return vlog_info ?
-      vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
-      GetVlogVerbosity();
+  return vlog_info ? vlog_info->GetVlogLevel(std::string_view(file, N - 1))
+                   : GetVlogVerbosity();
 }
 
 void SetLogItems(bool enable_process_id, bool enable_thread_id,
@@ -635,6 +643,30 @@ void SetLogPrefix(const char* prefix) {
 
 void SetShowErrorDialogs(bool enable_dialogs) {
   show_error_dialogs = enable_dialogs;
+}
+
+namespace {
+
+[[noreturn]] void AbslAbortHook(const char* file,
+                                int line,
+                                const char* buf_start,
+                                const char* prefix_end,
+                                const char* buf_end) {
+  // This simulates a CHECK(false) at file:line instead of here. This is used
+  // instead of base::ImmediateCrash() to give better error messages locally
+  // (printed stack for one).
+  LogMessageFatal(file, line, LOGGING_FATAL).stream()
+      << "Check failed: false. " << prefix_end;
+}
+
+}  // namespace
+
+void RegisterAbslAbortHook() {
+  // TODO(pbos): Update this to not rely on a _internal namespace once there's
+  // a public API in absl::.
+  // Note: If this fails to compile because of an absl roll, this is fair to
+  // remove if you file a crbug.com/new and assign it to pbos@.
+  ::absl::raw_log_internal::RegisterAbortHook(&AbslAbortHook);
 }
 
 ScopedLogAssertHandler::ScopedLogAssertHandler(
@@ -696,13 +728,14 @@ LogMessage::~LogMessage() {
 }
 
 void LogMessage::Flush() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
-  // Include a stack trace on a fatal, unless running within a death test proc
-  // or a debugger is attached.
-  if (severity_ == LOGGING_FATAL && !::base::internal::InDeathTestChild() &&
-      !base::debug::BeingDebugged()) {
+  // Include a stack trace on a fatal, unless a debugger is attached.
+  if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
     stack_trace.OutputToStream(&stream_);
@@ -872,7 +905,7 @@ void LogMessage::Flush() {
     // LogMessage() will silently drop the message if the logger is not valid.
     // Skip the final character of |str_newline|, since LogMessage() will add
     // a newline.
-    const auto message = base::StringPiece(str_newline).substr(message_start_);
+    const auto message = std::string_view(str_newline).substr(message_start_);
     GetScopedFxLogger().LogMessage(file_, static_cast<uint32_t>(line_),
                                    message.substr(0, message.size() - 1),
                                    LogSeverityToFuchsiaLogSeverity(severity_));
@@ -929,10 +962,14 @@ std::string LogMessage::BuildCrashString() const {
 
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
-  base::StringPiece filename(file);
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
+  std::string_view filename(file);
   size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != base::StringPiece::npos)
+  if (last_slash_pos != std::string_view::npos) {
     filename.remove_prefix(last_slash_pos + 1);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
@@ -1008,11 +1045,11 @@ void LogMessage::HandleFatal(size_t stack_start,
         GetLogAssertHandlerStack().top();
 
     if (log_assert_handler) {
+      auto newline_view = std::string_view(str_newline);
       log_assert_handler.Run(
           file_, line_,
-          base::StringPiece(str_newline.c_str() + message_start_,
-                            stack_start - message_start_),
-          base::StringPiece(str_newline.c_str() + stack_start));
+          newline_view.substr(message_start_, stack_start - message_start_),
+          newline_view.substr(stack_start));
     }
   } else {
     // Don't use the string with the newline, get a fresh version to send to
@@ -1029,7 +1066,7 @@ void LogMessage::HandleFatal(size_t stack_start,
 #endif
 
     // Crash the process to generate a dump.
-    // TODO(crbug.com/1409729): Move ImmediateCrash() to an absl::Cleanup to
+    // TODO(crbug.com/40254046): Move ImmediateCrash() to an absl::Cleanup to
     // make sure it runs unconditionally. Currently LogAssertHandlers can abort
     // a FATAL message and tests rely on this. HandleFatal() should be
     // [[noreturn]].
@@ -1092,6 +1129,9 @@ Win32ErrorLogMessage::~Win32ErrorLogMessage() {
 }
 
 void Win32ErrorLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
@@ -1117,6 +1157,9 @@ ErrnoLogMessage::~ErrnoLogMessage() {
 }
 
 void ErrnoLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << SystemErrorCodeToString(err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
@@ -1158,6 +1201,24 @@ FILE* DuplicateLogFILE() {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+HANDLE DuplicateLogFileHandle() {
+  // `g_log_file` should only be valid, or nullptr, but be very careful that we
+  // do not duplicate INVALID_HANDLE_VALUE as it aliases the process handle.
+  if (!(g_logging_destination & LOG_TO_FILE) || !g_log_file ||
+      g_log_file == INVALID_HANDLE_VALUE) {
+    return nullptr;
+  }
+  HANDLE duplicate = nullptr;
+  if (!::DuplicateHandle(::GetCurrentProcess(), g_log_file,
+                         ::GetCurrentProcess(), &duplicate, 0,
+                         /*bInheritHandle=*/TRUE, DUPLICATE_SAME_ACCESS)) {
+    return nullptr;
+  }
+  return duplicate;
+}
+#endif
+
 // Used for testing. Declared in test/scoped_logging_settings.h.
 ScopedLoggingSettings::ScopedLoggingSettings()
     : min_log_level_(g_min_log_level),
@@ -1171,8 +1232,10 @@ ScopedLoggingSettings::ScopedLoggingSettings()
       enable_tickcount_(g_log_tickcount),
       log_prefix_(g_log_prefix),
       message_handler_(g_log_message_handler) {
-  if (g_log_file_name)
-    log_file_name_ = std::make_unique<PathString>(*g_log_file_name);
+  if (g_log_file_name) {
+    log_file_name_ = *g_log_file_name;
+  }
+
   // Duplicating |g_log_file| is complex & unnecessary for this test helpers'
   // use-cases, and so long as |g_log_file_name| is set, it will be re-opened
   // automatically anyway, when required, so just close the existing one.
@@ -1185,11 +1248,10 @@ ScopedLoggingSettings::ScopedLoggingSettings()
 ScopedLoggingSettings::~ScopedLoggingSettings() {
   // Re-initialize logging via the normal path. This will clean up old file
   // name and handle state, including re-initializing the VLOG internal state.
-  CHECK(InitLogging({
-    .logging_dest = logging_destination_,
-    .log_file_path = log_file_name_ ? log_file_name_->data() : nullptr,
+  CHECK(InitLogging({.logging_dest = logging_destination_,
+                     .log_file_path = log_file_name_,
 #if BUILDFLAG(IS_CHROMEOS)
-    .log_format = log_format_
+                     .log_format = log_format_
 #endif
   })) << "~ScopedLoggingSettings() failed to restore settings.";
 

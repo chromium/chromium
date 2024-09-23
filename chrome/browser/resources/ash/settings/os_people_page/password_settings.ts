@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AuthFactor, AuthFactorConfig, FactorObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -41,12 +42,12 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
         value: false,
       },
 
-      // The purpose of this attribute is to allow us to observe when it
-      // changes, i.e., when the user selects a different password type.
-      selectedPasswordType_: {
-        type: String,
-        value: null,
-        observer: 'onSelectedPasswordTypeChanged_',
+      changePasswordFactorSetupEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
+        },
+        readOnly: true,
       },
     };
   }
@@ -54,12 +55,12 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
   authToken: string|null;
   private hasGaiaPassword_: boolean;
   private hasLocalPassword_: boolean;
-  private selectedPasswordType_: PasswordType|null;
+  private changePasswordFactorSetupEnabled_: boolean;
 
   override ready(): void {
     super.ready();
     // Register observer for auth factor updates.
-    // TODO(crbug/1321440): Are we leaking |this| here because we never remove
+    // TODO(crbug.com/40223898): Are we leaking |this| here because we never remove
     // the observer? We could close the pipe with |$.close()|, but not clear
     // whether that removes all references to |receiver| and then eventually to
     // |this|.
@@ -98,8 +99,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
     this.hasGaiaPassword_ = hasGaiaPassword;
     this.hasLocalPassword_ = hasLocalPassword;
-
-    this.selectedPasswordType_ = this.passwordType_();
   }
 
   private hasPassword_(): boolean {
@@ -129,26 +128,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     return null;
   }
 
-  private onSelectedPasswordTypeChanged_(): void {
-    // Check if the selected value is really a valid |PasswordType|. Recall
-    // that typescript's type system is unsound, so this fails at runtime if a
-    // |name| attribute of a select element in the template has a value that is
-    // not listed in |PasswordType|.
-    assert(
-        this.selectedPasswordType_ === null ||
-        Object.values(PasswordType).includes(this.selectedPasswordType_));
-
-    // The `selectedPasswordType_` must always match the actually
-    // configured `passwordType_`, so immediately switch back to it.
-    //
-    // TODO(b/290916811): However, we should now start changing the actually
-    // configured password type, e.g. switch from local to Gaia password, which
-    // will eventually result into an auth factor change notification and
-    // updatePasswordState_ being called, which then sets
-    // `selectedPasswordType_`.
-    this.selectedPasswordType_ = this.passwordType_();
-  }
-
   private setLocalPasswordDialog(): SettingsSetLocalPasswordDialogElement {
     const el = this.shadowRoot!.getElementById('setLocalPasswordDialog');
     assert(el instanceof SettingsSetLocalPasswordDialogElement);
@@ -157,6 +136,10 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
   private openSetLocalPasswordDialog_(): void {
     this.setLocalPasswordDialog().showModal();
+  }
+
+  private canSwitchLocalPassword_(): boolean {
+    return this.hasGaiaPassword_ && this.changePasswordFactorSetupEnabled_;
   }
 }
 

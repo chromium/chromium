@@ -7,15 +7,16 @@
  * 'site-list-entry' shows an Allowed and Blocked site for a given category.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -37,7 +38,7 @@ export interface SiteListEntryElement {
 }
 
 const SiteListEntryElementBase =
-    FocusRowMixin(BaseMixin(SiteSettingsMixin(PolymerElement)));
+    FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
 
 export class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
@@ -115,7 +116,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     const indicator =
         this.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assert(!!indicator);
-    // The tooltip text is used by an paper-tooltip contained inside the
+    // The tooltip text is used by an cr-tooltip contained inside the
     // cr-policy-pref-indicator. This text is needed here to send up to the
     // common tooltip component.
     const text = indicator.indicatorTooltip;
@@ -124,7 +125,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
 
   private onShowIncognitoTooltip_() {
     const tooltip = this.shadowRoot!.querySelector('#incognitoTooltip');
-    // The tooltip text is used by an paper-tooltip contained inside the
+    // The tooltip text is used by an cr-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
     // component.
@@ -185,8 +186,9 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    */
   private computeDisplayName_(): string {
     if (this.model.embeddingOrigin &&
-        this.model.category === ContentSettingsTypes.COOKIES &&
-        this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) {
+        ((this.model.category === ContentSettingsTypes.COOKIES &&
+          this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) ||
+         this.model.category === ContentSettingsTypes.TRACKING_PROTECTION)) {
       return this.model.embeddingOrigin;
     }
     return this.model.displayName;
@@ -214,7 +216,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     let description = '';
 
     // If a description has been set by the handler, have it override others.
-    // TODO(crbug.com/1467504): Move all possible descriptions in to this
+    // TODO(crbug.com/40276807): Move all possible descriptions in to this
     // field C++ side so this function can be greatly simplified.
     if (this.model.description) {
       description = this.model.description;
@@ -232,12 +234,11 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
           description = loadTimeData.getString(
               'siteSettingsCookiesThirdPartyExceptionLabel');
         }
-      } else {
+      } else if (
+          this.model.category !== ContentSettingsTypes.TRACKING_PROTECTION) {
         description = loadTimeData.getStringF(
             'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
       }
-    } else if (this.model.category === ContentSettingsTypes.GEOLOCATION) {
-      description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
     try {
@@ -258,6 +259,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   private onResetButtonClick_() {
+    this.fire('site-list-entry-reset-click');
+
     // Use the appropriate method to reset a chooser exception.
     if (this.chooserType !== ChooserType.NONE && this.chooserObject !== null) {
       this.browserProxy.resetChooserExceptionForSite(
@@ -289,6 +292,11 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
       this.allowNavigateToSiteDetail_ = valid;
     });
+  }
+
+  private getActionMenuButtonLabel_() {
+    return this.i18n(
+        'siteDataPageAddSiteContextMenuLabel', this.computeDisplayName_());
   }
 }
 

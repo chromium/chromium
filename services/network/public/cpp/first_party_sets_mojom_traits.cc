@@ -59,7 +59,7 @@ EnumTraits<network::mojom::SiteType, net::SiteType>::ToMojom(
     case net::SiteType::kService:
       return network::mojom::SiteType::kService;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::SiteType::kPrimary;
 }
 

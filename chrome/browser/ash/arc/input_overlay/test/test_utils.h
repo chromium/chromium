@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_TEST_UTILS_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,6 +24,10 @@ class Window;
 namespace base::test {
 class TaskEnvironment;
 }  // namespace base::test
+
+namespace ukm {
+class TestAutoSetUkmRecorder;
+}  // namespace ukm
 
 namespace views {
 class Widget;
@@ -68,6 +74,44 @@ void SimulatedAppInstalled(base::test::TaskEnvironment* task_environment,
 // - "Unassigned joystick" or "Unassigned button" if `key_string` is empty.
 std::u16string GetControlName(ActionType action_type,
                               std::u16string key_string);
+
+// Verifies UKM event entry size of EditingListFunctionTriggered is
+// `expected_entry_size` and the last entry matches
+// `expect_histograms_value`.
+void VerifyEditingListFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    int64_t expect_histograms_value);
+
+// Verifies UKM event entry size of ButtonOptionsMenuFunctionTriggered is
+// `expected_entry_size` and the entry of `index` matches
+// `expect_histograms_value`.
+void VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    size_t index,
+    int64_t expect_histograms_value);
+
+// Increases the value for `key` by one. If there is no `key`, set the value
+// to 1.
+template <typename T>
+void MapIncreaseValueByOne(std::map<T, int>& map, T key) {
+  auto it = map.find(key);
+  if (it == map.end()) {
+    map[key] = 1;
+  } else {
+    map[key]++;
+  }
+}
+
+template <typename T>
+void VerifyHistogramValues(const base::HistogramTester& histograms,
+                           const std::string& histogram_name,
+                           const std::map<T, int>& histogram_values) {
+  for (const auto& value : histogram_values) {
+    histograms.ExpectBucketCount(histogram_name, value.first, value.second);
+  }
+}
 
 }  // namespace arc::input_overlay
 

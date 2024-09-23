@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -19,15 +18,18 @@ namespace ios {
 class SearchEngineChoiceServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
+  static search_engines::SearchEngineChoiceService* GetForBrowserState(
+      ProfileIOS* profile);
+
+  static search_engines::SearchEngineChoiceService* GetForProfile(
+      ProfileIOS* profile);
+  static SearchEngineChoiceServiceFactory* GetInstance();
+
   SearchEngineChoiceServiceFactory(const SearchEngineChoiceServiceFactory&) =
       delete;
   SearchEngineChoiceServiceFactory& operator=(
       const SearchEngineChoiceServiceFactory&) = delete;
-
-  static search_engines::SearchEngineChoiceService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
-  static SearchEngineChoiceServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
@@ -37,6 +39,8 @@ class SearchEngineChoiceServiceFactory
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      web::BrowserState* context) const override;
+  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -27,7 +26,7 @@ import org.chromium.ui.util.TokenHolder;
 public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
         implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
-    @VisibleForTesting static final long MINIMUM_SHOW_DURATION_MS = 3000;
+    @VisibleForTesting public static final long MINIMUM_SHOW_DURATION_MS = 3000;
 
     private static boolean sDisableOverridesForTesting;
 
@@ -60,7 +59,6 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)) {
             return;
         }
-        if (mHandler.hasMessages(0)) return; // Messages sent via post/postDelayed have what=0
 
         long currentShowingTime = SystemClock.uptimeMillis() - mCurrentShowingStartTime;
         if (currentShowingTime >= MINIMUM_SHOW_DURATION_MS) return;
@@ -73,19 +71,19 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
 
     /** Trigger a temporary showing of the browser controls. */
     public void showControlsTransient() {
-        if (!mTokenHolder.hasTokens()) mCurrentShowingStartTime = SystemClock.uptimeMillis();
+        mCurrentShowingStartTime = SystemClock.uptimeMillis();
         ensureControlsVisibleForMinDuration();
     }
 
     /**
      * Trigger a permanent showing of the browser controls until requested otherwise.
      *
-     * @return The token that determines whether the requester still needs persistent controls to
-     *         be present on the screen.
+     * @return The token that determines whether the requester still needs persistent controls to be
+     *     present on the screen.
      * @see #releasePersistentShowingToken(int)
      */
     public int showControlsPersistent() {
-        if (!mTokenHolder.hasTokens()) mCurrentShowingStartTime = SystemClock.uptimeMillis();
+        mCurrentShowingStartTime = SystemClock.uptimeMillis();
         return mTokenHolder.acquireToken();
     }
 
@@ -115,10 +113,8 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
             // there wasn't any significant change to the screen. They should unlock as soon as the
             // capture logic thinks it's safe to do so. Long term this can probably be removed for
             // all.
-            boolean useSuppression =
-                    (FeatureList.isInitialized()
-                            && ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
+            boolean useSuppression = ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
+
             if (!useSuppression) {
                 ensureControlsVisibleForMinDuration();
             }
@@ -129,7 +125,8 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
     private @BrowserControlsState int calculateVisibilityConstraints() {
         if (mPersistentFullscreenMode.get()) {
             return BrowserControlsState.HIDDEN;
-        } else if (mTokenHolder.hasTokens() && !sDisableOverridesForTesting) {
+        } else if (ChromeFeatureList.sToolbarScrollAblation.isEnabled()
+                || (mTokenHolder.hasTokens() && !sDisableOverridesForTesting)) {
             return BrowserControlsState.SHOWN;
         }
         return BrowserControlsState.BOTH;

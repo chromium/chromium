@@ -5,6 +5,7 @@
 #include "components/domain_reliability/config.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -47,7 +48,7 @@ DomainReliabilityConfig::~DomainReliabilityConfig() {}
 
 // static
 std::unique_ptr<const DomainReliabilityConfig>
-DomainReliabilityConfig::FromJSON(const base::StringPiece& json) {
+DomainReliabilityConfig::FromJSON(std::string_view json) {
   std::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
     return nullptr;

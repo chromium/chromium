@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -364,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
   EXPECT_FALSE(GetLinkCapturingInfoBar(web_contents.get()));
 }
 
-// TODO(https://crbug.com/1492121): Flaky on all platforms.
+// TODO(crbug.com/40936015): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        DISABLED_InfoBarHiddenAfterDismissals) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -448,8 +449,8 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   views::test::ButtonTestApi test_api(
       web_app::GetIntentPickerButtonAtIndex(index));
   test_api.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   web_app::intent_picker_bubble()->AcceptDialog();
 
   Browser* app_browser = browser_added_waiter.Wait();

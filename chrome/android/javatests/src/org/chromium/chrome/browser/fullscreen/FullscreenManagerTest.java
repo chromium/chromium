@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -54,7 +55,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -150,14 +150,17 @@ public class FullscreenManagerTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests());
     }
 
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION})
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testTogglePersistentFullscreenLegacy() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -177,7 +180,10 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION})
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testTogglePersistentFullscreen() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -199,7 +205,8 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     public void testBackPressExitPersistentFullscreenLegacy() {
         testBackPressExitPersistentFullscreenInternal(false);
@@ -209,7 +216,10 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testBackPressExitPersistentFullscreen() {
         testBackPressExitPersistentFullscreenInternal(true);
     }
@@ -218,8 +228,10 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
-    @DisabledTest(message = "crbug.com/1489541")
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testBackPressExitPersistentFullscreen_backGestureRefactorLegacy() {
         testBackPressExitPersistentFullscreenInternal(false);
     }
@@ -229,7 +241,8 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @EnableFeatures({
         ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisabledTest(message = "crbug.com/1489541")
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
@@ -249,7 +262,10 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testDelayedPersistentFullscreenLegacy() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -275,7 +291,10 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testDelayedPersistentFullscreen() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -300,11 +319,11 @@ public class FullscreenManagerTest {
 
     private boolean getPersistentFullscreenMode() {
         boolean b1 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         mActivityTestRule.getActivity().getFullscreenManager()
                                 ::getPersistentFullscreenMode);
         Boolean b2 =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         mActivityTestRule
                                         .getActivity()
                                         .getFullscreenManager()
@@ -339,7 +358,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testPersistentFullscreenChangingUiFlags() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -371,7 +393,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testFullscreenOptionsUpdatedCorrectlyLegacy() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -415,7 +440,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testFullscreenOptionsUpdatedCorrectly() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -459,8 +487,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/1046749")
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testExitPersistentFullscreenAllowsManualFullscreenLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -492,7 +522,10 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/1046749")
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testExitPersistentFullscreenAllowsManualFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -523,7 +556,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testManualHidingShowingBrowserControlsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
@@ -547,7 +583,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testManualHidingShowingBrowserControls() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
@@ -570,7 +609,10 @@ public class FullscreenManagerTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testHidingBrowserControlsPreservesScrollOffsetLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);
@@ -615,7 +657,10 @@ public class FullscreenManagerTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);
@@ -661,8 +706,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "Flaky. crbug.com/936252")
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testManualFullscreenDisabledForChromePagesLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         // The credits page was chosen as it is a chrome:// page that is long and would support
@@ -697,8 +744,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "Flaky. crbug.com/936252")
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testManualFullscreenDisabledForChromePages() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         // The credits page was chosen as it is a chrome:// page that is long and would support
@@ -734,7 +783,10 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testControlsShownOnUnresponsiveRendererLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
@@ -763,7 +815,10 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testControlsShownOnUnresponsiveRenderer() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
@@ -791,8 +846,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "https://crbug.com/1099447")
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherModeLegacy()
             throws Exception {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -821,8 +878,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "https://crbug.com/1099447")
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherMode()
             throws Exception {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -851,7 +910,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testEnterPendingPersistentFullscreenLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -874,7 +936,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testEnterPendingPersistentFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -897,7 +962,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testBrowserControlsShownWhenInputIsFocusedLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE);
@@ -933,7 +1001,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE);
@@ -969,8 +1040,10 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/979189")
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testPersistentFullscreenWithOptionsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_WITH_OPTIONS_TEST_PAGE);
@@ -989,7 +1062,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar not hidden.",
@@ -1012,7 +1085,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar hidden.",
@@ -1030,7 +1103,10 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/979189")
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testPersistentFullscreenWithOptions() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_WITH_OPTIONS_TEST_PAGE);
@@ -1049,7 +1125,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar not hidden.",
@@ -1072,7 +1148,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Navigation bar hidden.",
@@ -1091,7 +1167,8 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisabledTest(message = "https://crbug.com/1469553")
     public void testFullscreenExitWithSelectionPopPresentLegacy() throws InterruptedException {
@@ -1106,7 +1183,7 @@ public class FullscreenManagerTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Sometimes text bubble is shown and consumes the back press event.
                     BackPressManager backPressManager =
@@ -1117,7 +1194,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });
@@ -1127,7 +1204,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
         Assert.assertTrue(controller.isSelectActionBarShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -1142,7 +1219,10 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     @DisabledTest(message = "https://crbug.com/1469553")
     public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
@@ -1156,7 +1236,7 @@ public class FullscreenManagerTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Sometimes text bubble is shown and consumes the back press event.
                     BackPressManager backPressManager =
@@ -1167,7 +1247,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });
@@ -1177,7 +1257,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
         Assert.assertTrue(controller.isSelectActionBarShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -1192,7 +1272,11 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
+    @DisabledTest(message = "b/352829204 - flaky test")
     public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactorLegacy()
             throws InterruptedException {
         testFullscreenExitWithSelectionPopPresentLegacy();
@@ -1203,8 +1287,10 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @EnableFeatures({
         ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisabledTest(message = "b/326041467 - flaky test")
     public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
             throws InterruptedException {
         testFullscreenExitWithSelectionPopPresent();
@@ -1233,7 +1319,10 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testFullscreenPageHeightLegacy() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, false);
         Assert.assertTrue(getPersistentFullscreenMode());
@@ -1250,7 +1339,10 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @EnableFeatures({
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+    })
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, true);
         Assert.assertTrue(getPersistentFullscreenMode());

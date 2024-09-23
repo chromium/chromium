@@ -1,0 +1,293 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("app_restore") {
+  sources = [
+    "app_launch_handler.cc",
+    "app_launch_handler.h",
+    "app_restore_arc_task_handler.cc",
+    "app_restore_arc_task_handler.h",
+    "app_restore_arc_task_handler_factory.cc",
+    "app_restore_arc_task_handler_factory.h",
+    "arc_app_queue_restore_handler.cc",
+    "arc_app_queue_restore_handler.h",
+    "arc_app_single_restore_handler.cc",
+    "arc_app_single_restore_handler.h",
+    "arc_ghost_window_delegate.cc",
+    "arc_ghost_window_delegate.h",
+    "arc_ghost_window_handler.cc",
+    "arc_ghost_window_handler.h",
+    "arc_ghost_window_shell_surface.cc",
+    "arc_ghost_window_shell_surface.h",
+    "arc_ghost_window_view.cc",
+    "arc_ghost_window_view.h",
+    "arc_window_utils.cc",
+    "arc_window_utils.h",
+    "full_restore_app_launch_handler.cc",
+    "full_restore_app_launch_handler.h",
+    "full_restore_data_handler.cc",
+    "full_restore_data_handler.h",
+    "full_restore_prefs.cc",
+    "full_restore_prefs.h",
+    "full_restore_service.cc",
+    "full_restore_service.h",
+    "full_restore_service_factory.cc",
+    "full_restore_service_factory.h",
+    "new_user_restore_pref_handler.cc",
+    "new_user_restore_pref_handler.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/scheduler_config",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:buildflags",
+    "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/ui/base",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/sessions",
+    "//components/sync_preferences",
+    "//mojo/public/cpp/bindings",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//ui/views",
+    "//ui/wm/public",
+  ]
+
+  deps = [
+    "//apps",
+    "//ash",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_features",
+    "//ash/components/arc:arc_metrics_constants",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//ash/webui/settings/public/constants:mojom_shared",
+    "//ash/webui/settings/public/constants:mojom_shared_cpp_sources",
+    "//chrome/app:branded_strings",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/full_restore",
+    "//chrome/browser/web_applications",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/constants",
+    "//chromeos/ui/frame",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/pref_registry",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//extensions/browser",
+    "//extensions/common",
+    "//skia",
+    "//ui/chromeos",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events:event_constants",
+    "//ui/gfx",
+    "//ui/gfx:color_utils",
+    "//ui/wm",
+
+    # TODO(crbug.com/353449958): Use //chrome/browser/ui instead after fixing cyclic
+    # dependency from
+    # obj/chrome/browser/ash/app_restore/app_restore/arc_app_queue_restore_handler.o.
+    "//chrome/browser/apps/app_preload_service/proto",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "app_restore_arc_test_helper.cc",
+    "app_restore_arc_test_helper.h",
+    "app_restore_test_util.cc",
+    "app_restore_test_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/shelf/app_service",
+    "//components/app_restore",
+    "//components/exo",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "full_restore_app_launch_handler_browsertest.cc",
+    "full_restore_policy_browsertest.cc",
+    "informed_restore_browsertest.cc",
+  ]
+
+  deps = [
+    ":app_restore",
+    ":test_support",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/device_scheduled_reboot",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/base/ash/util:test_support",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/compositor",
+    "//ui/display/types",
+    "//ui/events:test_support",
+    "//ui/message_center/public/cpp",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//ui/wm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_app_single_restore_handler_unittest.cc",
+    "arc_ghost_window_handler_unittest.cc",
+    "arc_ghost_window_view_unittest.cc",
+    "arc_window_utils_unittest.cc",
+    "full_restore_prefs_unittest.cc",
+    "full_restore_service_unittest.cc",
+  ]
+
+  deps = [
+    ":app_restore",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc:arc_features",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/ui/base",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/pref_registry",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/message_center/public/cpp",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

@@ -10,12 +10,14 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/i18n/rtl.h"
-#include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/range/range.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -87,18 +89,13 @@ bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
 
   view_android->SetAnchorRect(view, controller_->element_bounds());
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> help =
-      base::android::ConvertUTF16ToJavaString(env, controller_->HelpText());
 
-  Java_PasswordGenerationPopupBridge_show(env, java_object_,
-                                          base::i18n::IsRTL(), help);
+  Java_PasswordGenerationPopupBridge_show(
+      env, java_object_, base::i18n::IsRTL(), controller_->HelpText());
   return true;
 }
 
 void PasswordGenerationEditingPopupViewAndroid::PasswordSelectionUpdated() {}
-
-void PasswordGenerationEditingPopupViewAndroid::EditPasswordSelectionUpdated() {
-}
 
 void PasswordGenerationEditingPopupViewAndroid::
     NudgePasswordSelectionUpdated() {}

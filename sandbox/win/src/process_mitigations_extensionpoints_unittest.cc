@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/win/src/process_mitigations.h"
-
 #include <windows.h>
 
 #include <psapi.h>
@@ -12,6 +10,7 @@
 #include "base/win/registry.h"
 #include "base/win/startup_information.h"
 #include "base/win/win_util.h"
+#include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/hooking_dll.h"
 #include "sandbox/win/tests/integration_tests/hooking_win_proc.h"

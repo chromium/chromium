@@ -79,7 +79,7 @@ struct PageSizeMargins {
 enum PageOrientation { kUpright, kRotateLeft, kRotateRight };
 
 // Describes whether to reduce/enlarge/retain the print contents to fit the
-// printable area. (This is used only by plugin printing).
+// printable area.
 enum PrintScalingOption {
   // Prints the upper left of a page without scaling. Crop the page contents
   // that don't fit on the paper.
@@ -92,6 +92,10 @@ enum PrintScalingOption {
   kSourceSize,
   // Reduces or enlarges each page to fit the selected printer paper size.
   kFitToPaper,
+  // Center each page on paper. If the page is larger than the selected printer
+  // paper size, it will be scaled down to fit. Note that the page will never be
+  // scaled *up*. If it's not larger than the paper, it will just be centered.
+  kCenterShrinkToFitPaper,
 };
 
 // Document type that Skia graphics library generates.
@@ -110,12 +114,21 @@ enum MetafileDataType {
   kPDF,
   [EnableIf=is_win]
   kEMF,
+  [EnableIf=is_win]
+  kPostScriptEmf,
+};
+
+// What kind of document outline to generate.
+enum GenerateDocumentOutline {
+  kNone,
+  kFromAccessibilityTreeHeaders,
 };
 
 // What kind of margins to use.
+[Stable, Extensible]
 enum MarginType {
   // Default varies depending on headers being enabled or not
-  kDefaultMargins,
+  [Default] kDefaultMargins,
   kNoMargins,
   kPrintableAreaMargins,
   kCustomMargins,

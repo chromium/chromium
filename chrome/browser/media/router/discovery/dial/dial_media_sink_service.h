@@ -37,16 +37,26 @@ class DialMediaSinkService {
 
   virtual ~DialMediaSinkService();
 
-  // Starts discovery of DIAL sinks. Can only be called once.
-  // |sink_discovery_cb|: Callback to invoke on UI thread when the list of
+  // Initialize the `DialDiscoveryServiceImpl` for discovery of DIAL sinks but
+  // device discovery isn't started until `StartDialDiscovery()` is called. Can
+  // only be called once.
+  // `sink_discovery_cb`: Callback to invoke on UI thread when the list of
   // discovered sinks has been updated.
   // Marked virtual for tests.
-  virtual void Start(const OnSinksDiscoveredCallback& sink_discovery_cb);
+  virtual void Initialize(const OnSinksDiscoveredCallback& sink_discovery_cb);
 
+  // Sets up network service for discovery and starts periodic discovery timer.
+  // Might be called multiple times and no-op if discovery has started.
+  void StartDiscovery();
+
+  // Starts a new round of discovery cycle. No-op if `StartDialDiscovery()`
+  // hasn't been called before.
   virtual void DiscoverSinksNow();
 
-  // Returns a raw pointer to |impl_|. This method is only valid to call after
-  // |Start()| has been called. Always returns non-null.
+  bool DiscoveryStarted() const { return discovery_started_; }
+
+  // Returns a raw pointer to `impl_`. This method is only valid to call after
+  // `Initialize()` has been called. Always returns non-null.
   DialMediaSinkServiceImpl* impl() {
     DCHECK(impl_);
     return impl_.get();
@@ -64,6 +74,8 @@ class DialMediaSinkService {
   // Created on the UI thread, used and destroyed on its
   // SequencedTaskRunner.
   std::unique_ptr<DialMediaSinkServiceImpl, base::OnTaskRunnerDeleter> impl_;
+
+  bool discovery_started_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaSinkService> weak_ptr_factory_{this};

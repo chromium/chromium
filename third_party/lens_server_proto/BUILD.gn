@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+_proto_files = [
+  "lens_overlay_client_context.proto",
+  "lens_overlay_client_logs.proto",
+  "lens_overlay_client_platform.proto",
+  "lens_overlay_cluster_info.proto",
+  "lens_overlay_deep_gleam_data.proto",
+  "lens_overlay_filters.proto",
+  "lens_overlay_geometry.proto",
+  "lens_overlay_image_crop.proto",
+  "lens_overlay_image_data.proto",
+  "lens_overlay_interaction_request_metadata.proto",
+  "lens_overlay_knowledge_intent_query.proto",
+  "lens_overlay_knowledge_query.proto",
+  "lens_overlay_message_set.proto",
+  "lens_overlay_overlay_object.proto",
+  "lens_overlay_payload.proto",
+  "lens_overlay_phase_latencies_metadata.proto",
+  "lens_overlay_platform.proto",
+  "lens_overlay_polygon.proto",
+  "lens_overlay_request_id.proto",
+  "lens_overlay_selection_type.proto",
+  "lens_overlay_server.proto",
+  "lens_overlay_service_deps.proto",
+  "lens_overlay_stickiness_signals.proto",
+  "lens_overlay_surface.proto",
+  "lens_overlay_text.proto",
+  "lens_overlay_text_query.proto",
+  "lens_overlay_translate_stickiness_signals.proto",
+  "lens_overlay_video_context_input_params.proto",
+  "lens_overlay_video_params.proto",
+  "lens_overlay_visual_search_interaction_data.proto",
+  "lens_overlay_visual_search_interaction_log_data.proto",
+]
+
+proto_library("lens_overlay_proto") {
+  sources = _proto_files
+  proto_in_dir = "."
+}

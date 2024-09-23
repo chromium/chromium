@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  resources_package =
+      "org.chromium.chrome.browser.ui.android.digital_credentials"
+  deps = [
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  srcjar_deps = [
+    ":java_enums_srcjar",
+    ":jni_headers",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/digital_credentials/DigitalIdentitySafetyInterstitialBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/android/digital_credentials/DigitalIdentitySafetyInterstitialController.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/digital_credentials/DigitalIdentitySafetyInterstitialBridge.java" ]
+}
+
+java_cpp_enum("java_enums_srcjar") {
+  sources = [ "//chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h" ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/digital_credentials/DigitalIdentitySafetyInterstitialIntegrationTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/webid:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+    "//url:gurl_java",
+  ]
+}

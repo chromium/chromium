@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "crypto/signature_verifier.h"
 
 #include <stddef.h>
@@ -381,7 +386,7 @@ TEST(SignatureVerifierTest, VerifyRSAPSS) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
                                   kPSSSignatureGood, kPSSPublicKey));
   for (uint8_t b : kPSSMessage) {
-    verifier.VerifyUpdate(base::make_span(&b, 1u));
+    verifier.VerifyUpdate(base::span_from_ref(b));
   }
   EXPECT_TRUE(verifier.VerifyFinal());
 

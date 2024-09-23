@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] .flexbox 11
-  assert_equals: \n<div class="flexbox">\n      <div class="spacer"></div>\n      <input type="text" class="test3" data-expected-height="140">\n    </div>\nheight expected 140 but got 100
-Harness: the test ran to completion.
-

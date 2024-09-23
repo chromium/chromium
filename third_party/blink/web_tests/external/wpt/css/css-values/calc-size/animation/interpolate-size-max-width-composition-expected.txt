@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Compositing: property <max-width> underlying [100px] from add [100px] to add [fit-content] at (-0.3) should be [calc-size(fit-content, 230px + size * -0.3)]
+  assert_equals: expected "calc - size ( fit - content , 230px + size * - 0.3 ) " but got "calc - size ( fit - content , 100px + 130px + size * - 0.3 ) "
+[FAIL] Compositing: property <max-width> underlying [100px] from add [100px] to add [fit-content] at (0) should be [calc-size(fit-content, 200px + size * 0)]
+  assert_equals: expected "calc - size ( fit - content , 200px + size * 0 ) " but got "calc - size ( fit - content , 100px + 100px + size * 0 ) "
+[FAIL] Compositing: property <max-width> underlying [100px] from add [100px] to add [fit-content] at (0.5) should be [calc-size(fit-content, 150px + size * 0.5)]
+  assert_equals: expected "calc - size ( fit - content , 150px + size * 0.5 ) " but got "calc - size ( fit - content , 100px + 50px + size * 0.5 ) "
+[FAIL] Compositing: property <max-width> underlying [100px] from add [100px] to add [fit-content] at (1) should be [calc-size(fit-content, 100px + size * 1)]
+  assert_equals: expected "calc - size ( fit - content , 100px + size * 1 ) " but got "calc - size ( fit - content , 100px + 0px + size * 1 ) "
+[FAIL] Compositing: property <max-width> underlying [100px] from add [100px] to add [fit-content] at (1.5) should be [calc-size(fit-content, 50px + size * 1.5)]
+  assert_equals: expected "calc - size ( fit - content , 50px + size * 1.5 ) " but got "calc - size ( fit - content , 100px - 50px + size * 1.5 ) "
+Harness: the test ran to completion.
+

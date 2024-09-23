@@ -28,9 +28,11 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request_base.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -72,6 +74,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:
     case DownloadCheckResult::UNCOMMON:
+    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
       if (reason == REASON_DOWNLOAD_DANGEROUS) {
         callback.Run(DownloadCheckResult::DANGEROUS);
       } else if (reason == REASON_DOWNLOAD_DANGEROUS_HOST) {
@@ -95,14 +98,42 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
-    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
+    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       callback.Run(deep_scan_result);
       return;
   }
 
   // This function should always run |callback| and return before reaching this.
   CHECK(false);
+}
+
+bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
+  switch (result) {
+    case DownloadCheckResult::DANGEROUS_HOST:
+    case DownloadCheckResult::DANGEROUS:
+    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
+    case DownloadCheckResult::POTENTIALLY_UNWANTED:
+    case DownloadCheckResult::UNCOMMON:
+    case DownloadCheckResult::UNKNOWN:
+      return true;
+
+    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+    case DownloadCheckResult::DEEP_SCANNED_SAFE:
+    case DownloadCheckResult::DEEP_SCANNED_FAILED:
+    case DownloadCheckResult::SAFE:
+    case DownloadCheckResult::PROMPT_FOR_SCANNING:
+    case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
+    case DownloadCheckResult::ASYNC_SCANNING:
+    case DownloadCheckResult::ASYNC_LOCAL_PASSWORD_SCANNING:
+    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+    case DownloadCheckResult::BLOCKED_TOO_LARGE:
+    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
+    case DownloadCheckResult::BLOCKED_SCAN_FAILED:
+      return false;
+  }
 }
 
 }  // namespace
@@ -180,7 +211,7 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
     *reason = REASON_UNSUPPORTED_URL_SCHEME;
     return false;
   }
-  // TODO(crbug.com/814813): Remove duplicated counting of REMOTE_FILE
+  // TODO(crbug.com/41372015): Remove duplicated counting of REMOTE_FILE
   // and LOCAL_FILE in SBClientDownload.UnsupportedScheme.*.
   if (final_url.SchemeIsFile()) {
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
@@ -239,13 +270,24 @@ void CheckClientDownloadRequest::SetDownloadProtectionData(
                                                        tailored_verdict);
 }
 
-void CheckClientDownloadRequest::MaybeStorePingsForDownload(
+void CheckClientDownloadRequest::MaybeBeginFeedbackForDownload(
     DownloadCheckResult result,
     bool upload_requested,
     const std::string& request_data,
     const std::string& response_body) {
-  DownloadFeedbackService::MaybeStorePingsForDownload(
-      result, upload_requested, item_, request_data, response_body);
+  if (!upload_requested) {
+    return;
+  }
+
+  if (item_->GetReceivedBytes() > DownloadFeedback::kMaxUploadSize) {
+    return;
+  }
+
+  if (ShouldUploadToDownloadFeedback(result) && !item_->IsInsecure()) {
+    Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+    service()->MaybeBeginFeedbackForDownload(profile, item_, request_data,
+                                             response_body);
+  }
 }
 
 void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {
@@ -255,7 +297,7 @@ void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {
 
   base::UmaHistogramBoolean("SBClientDownload.ServerRequestsDeepScanningPrompt",
                             did_prompt);
-  if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
     base::UmaHistogramBoolean(
         "SBClientDownload.ServerRequestsDeepScanningPromptPasswordProtected",
         did_prompt);
@@ -309,12 +351,13 @@ void CheckClientDownloadRequest::UploadBinary(
       reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
-        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
         std::move(settings), /*password=*/std::nullopt);
   } else {
     service()->UploadForDeepScanning(
-        item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        result, std::move(settings), /*password=*/std::nullopt);
+        item_, callback_,
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
+        std::move(settings), /*password=*/std::nullopt);
   }
 }
 
@@ -341,6 +384,28 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
     return false;
   }
   return advanced_protection_status_manager->IsUnderAdvancedProtection();
+}
+
+bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
+    bool server_requests_prompt) const {
+  if (!ShouldPromptForDeepScanning(server_requests_prompt)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  if (!IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
@@ -382,7 +447,7 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
-  if (!DownloadItemWarningData::IsEncryptedArchive(item_)) {
+  if (!DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
     return false;
   }
 
@@ -410,7 +475,7 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kEncryptedArchivesMetadata);
+  return true;
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {

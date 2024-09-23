@@ -10,6 +10,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/fpromise/promise.h>
 #include <map>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -91,11 +92,11 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
   FuchsiaCdmManagerTest() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   std::unique_ptr<FuchsiaCdmManager> CreateFuchsiaCdmManager(
-      std::vector<base::StringPiece> key_systems,
+      std::vector<std::string_view> key_systems,
       std::optional<uint64_t> cdm_data_quota_bytes = std::nullopt) {
     FuchsiaCdmManager::CreateKeySystemCallbackMap create_key_system_callbacks;
 
-    for (const base::StringPiece& name : key_systems) {
+    for (const std::string_view& name : key_systems) {
       MockKeySystem& key_system = mock_key_systems_[name];
       create_key_system_callbacks.emplace(
           name, base::BindRepeating(&MockKeySystem::AddBinding,
@@ -107,9 +108,9 @@ class FuchsiaCdmManagerTest : public ::testing::Test {
   }
 
  protected:
-  using MockKeySystemMap = std::map<base::StringPiece, MockKeySystem>;
+  using MockKeySystemMap = std::map<std::string_view, MockKeySystem>;
 
-  MockKeySystem& mock_key_system(const base::StringPiece& key_system_name) {
+  MockKeySystem& mock_key_system(const std::string_view& key_system_name) {
     return mock_key_systems_[key_system_name];
   }
 
@@ -303,8 +304,8 @@ TEST_F(FuchsiaCdmManagerTest, DifferentOriginDoNotShareDataStore) {
 }
 
 void CreateDummyCdmDirectory(const base::FilePath& cdm_data_path,
-                             base::StringPiece origin,
-                             base::StringPiece key_system,
+                             std::string_view origin,
+                             std::string_view key_system,
                              uint64_t size) {
   const base::FilePath path = cdm_data_path.Append(origin).Append(key_system);
   CHECK(base::CreateDirectory(path));

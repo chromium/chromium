@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 
 #import <Foundation/Foundation.h>
+#include <bsm/libbsm.h>
 #include <unistd.h>
 
 #include "base/check_op.h"
@@ -99,18 +100,19 @@ void AppShimListener::InitOnBackgroundThread() {
 }
 
 void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
-                                        base::ProcessId peer_pid) {
-  // TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
+                                        audit_token_t audit_token) {
+  // TODO(crbug.com/40674145): Remove NSLog logging, and move to an
   // internal debugging URL.
-  NSLog(@"AppShim: Connection received from pid %d", peer_pid);
+  NSLog(@"AppShim: Connection received from pid %d",
+        audit_token_to_pid(audit_token));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&AppShimHostBootstrap::CreateForChannelAndPeerID,
-                     std::move(endpoint), peer_pid));
+      base::BindOnce(&AppShimHostBootstrap::CreateForChannelAndPeerAuditToken,
+                     std::move(endpoint), audit_token));
 }
 
 void AppShimListener::OnServerChannelCreateError() {
-  // TODO(https://crbug.com/272577): Set a timeout and attempt to reconstruct
+  // TODO(crbug.com/41035623): Set a timeout and attempt to reconstruct
   // the channel. Until cases where the error could occur are better known,
   // just reset the acceptor to allow failure to be communicated via the test
   // API.

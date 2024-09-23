@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_delegate.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -84,6 +84,24 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   void VerifyFailed(const ExtensionId& extension_id,
                     ContentVerifyJob::FailureReason reason) override;
   void Shutdown() override;
+
+  // A helper class to allow tests to provide their own `VerifyInfo` for
+  // different extensions. The included callback will be called for each check
+  // of `GetVerifyInfo()`.
+  class GetVerifyInfoTestOverride {
+   public:
+    using VerifyInfoCallback =
+        base::RepeatingCallback<VerifyInfo(const Extension& extension)>;
+
+    explicit GetVerifyInfoTestOverride(VerifyInfoCallback callback);
+    GetVerifyInfoTestOverride(const GetVerifyInfoTestOverride&) = delete;
+    GetVerifyInfoTestOverride& operator=(const GetVerifyInfoTestOverride&) =
+        delete;
+    ~GetVerifyInfoTestOverride();
+
+   private:
+    VerifyInfoCallback callback_;
+  };
 
  private:
   // Returns true iff |extension| is considered extension from Chrome Web Store

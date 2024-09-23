@@ -31,7 +31,7 @@ std::string BackgroundDownloadClientToString(DownloadClient client) {
     case DownloadClient::BOUNDARY:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

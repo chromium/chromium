@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/autofill",
+  "+components/password_manager",
+  "+content/public/browser",
+  "+content/public/test",
+]
+
+specific_include_rules = {
+  '.*\.java': [
+    "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java",
+    "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
+    "+ui/android/java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
+  ],
+  '.*Test.*\.java': [
+    "+chrome/test/android/javatests/src/org/chromium/chrome/test",
+    "+net/test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
+  ],
+}

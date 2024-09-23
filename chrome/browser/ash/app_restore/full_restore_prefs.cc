@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -22,6 +23,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  if (features::IsForestFeatureEnabled()) {
+    registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, true);
+    registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
+    registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
+                               base::Time());
+    registry->RegisterStringPref(prefs::kInformedRestoreLastVersion,
+                                 std::string());
+  }
 }
 
 bool HasRestorePref(PrefService* prefs) {

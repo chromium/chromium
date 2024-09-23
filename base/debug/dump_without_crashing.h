@@ -78,7 +78,7 @@ NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashingWithUniqueId(
 // Sets a function that'll be invoked to dump the current process when
 // DumpWithoutCrashing* is called. May be called with null to remove a
 // previously set function.
-BASE_EXPORT void SetDumpWithoutCrashingFunction(void (CDECL *function)());
+BASE_EXPORT void SetDumpWithoutCrashingFunction(void (*function)());
 
 // Clear both maps used to throttle calls to DumpWithoutCrashing for testing.
 BASE_EXPORT void ClearMapsForTesting();

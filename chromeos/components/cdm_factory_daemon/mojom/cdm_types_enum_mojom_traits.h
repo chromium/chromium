@@ -34,7 +34,7 @@ struct EnumTraits<chromeos::cdm::mojom::CdmMessageType,
         return chromeos::cdm::mojom::CdmMessageType::INDIVIDUALIZATION_REQUEST;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chromeos::cdm::mojom::CdmMessageType::LICENSE_REQUEST;
   }
 
@@ -57,7 +57,7 @@ struct EnumTraits<chromeos::cdm::mojom::CdmMessageType,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -74,7 +74,7 @@ struct EnumTraits<chromeos::cdm::mojom::CdmSessionType,
         return chromeos::cdm::mojom::CdmSessionType::kPersistentLicense;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chromeos::cdm::mojom::CdmSessionType::kTemporary;
   }
 
@@ -91,7 +91,7 @@ struct EnumTraits<chromeos::cdm::mojom::CdmSessionType,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -112,7 +112,7 @@ struct EnumTraits<chromeos::cdm::mojom::EmeInitDataType,
         return chromeos::cdm::mojom::EmeInitDataType::UNKNOWN;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chromeos::cdm::mojom::EmeInitDataType::UNKNOWN;
   }
 
@@ -135,7 +135,7 @@ struct EnumTraits<chromeos::cdm::mojom::EmeInitDataType,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -166,7 +166,7 @@ struct EnumTraits<chromeos::cdm::mojom::HdcpVersion, ::media::HdcpVersion> {
         return chromeos::cdm::mojom::HdcpVersion::kHdcpVersion2_3;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chromeos::cdm::mojom::HdcpVersion::kHdcpVersionNone;
   }
 
@@ -207,7 +207,7 @@ struct EnumTraits<chromeos::cdm::mojom::HdcpVersion, ::media::HdcpVersion> {
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -228,7 +228,7 @@ struct EnumTraits<chromeos::cdm::mojom::PromiseException,
         return chromeos::cdm::mojom::PromiseException::NOT_SUPPORTED_ERROR;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chromeos::cdm::mojom::PromiseException::INVALID_STATE_ERROR;
   }
 
@@ -251,7 +251,7 @@ struct EnumTraits<chromeos::cdm::mojom::PromiseException,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

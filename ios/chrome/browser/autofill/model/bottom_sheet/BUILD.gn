@@ -23,11 +23,12 @@ source_set("bottom_sheet") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
@@ -38,12 +39,28 @@ source_set("bottom_sheet") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_bottom_sheet_observer_bridge_unittest.mm" ]
+  sources = [
+    "autofill_bottom_sheet_observer_bridge_unittest.mm",
+    "autofill_bottom_sheet_tab_helper_unittest.mm",
+  ]
   deps = [
     ":bottom_sheet",
+    "//base/test:test_support",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//components/infobars/core",
+    "//components/password_manager/core/browser/features:password_features",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

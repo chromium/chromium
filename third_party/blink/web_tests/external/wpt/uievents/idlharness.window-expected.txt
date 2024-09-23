@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] MutationEvent interface: operation initMutationEvent(DOMString, optional boolean, optional boolean, optional Node?, optional DOMString, optional DOMString, optional DOMString, optional unsigned short)
-  assert_equals: property has wrong .length expected 1 but got 0
-Harness: the test ran to completion.
-

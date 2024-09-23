@@ -353,13 +353,13 @@ inline void ModelPPM::UpdateModel()
     else 
     {
       cf=4+(cf >= 9*sf)+(cf >= 12*sf)+(cf >= 15*sf);
-      pc->U.SummFreq += cf;
+      pc->U.SummFreq += (ushort)cf;
     }
     p=pc->U.Stats+ns1;
     p->Successor=Successor;
     p->Symbol = fs.Symbol;
-    p->Freq = cf;
-    pc->NumStats=++ns1;
+    p->Freq = (byte)cf;
+    pc->NumStats=(ushort)++ns1;
   }
   MaxContext=MinContext=fs.Successor;
   return;
@@ -546,15 +546,17 @@ inline bool RARPPM_CONTEXT::decodeSymbol2(ModelPPM *Model)
     Model->Coder.SubRange.LowCount=HiCnt;
     Model->Coder.SubRange.HighCount=Model->Coder.SubRange.scale;
     i=NumStats-Model->NumMasked;
-    pps--;
+
+    // 2022.12.02: we removed pps-- here and changed the code below to avoid
+    // "array subscript -1 is outside array bounds" warning in some compilers.
     do 
     { 
-      pps++;
       if (pps>=ps+ASIZE(ps)) // Extra safety check.
         return false;
       Model->CharMask[(*pps)->Symbol]=Model->EscCount; 
+      pps++;
     } while ( --i );
-    psee2c->Summ += Model->Coder.SubRange.scale;
+    psee2c->Summ += (ushort)Model->Coder.SubRange.scale;
     Model->NumMasked = NumStats;
   }
   return true;

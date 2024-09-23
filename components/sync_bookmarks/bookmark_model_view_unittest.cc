@@ -53,7 +53,7 @@ class BookmarkModelViewTest : public testing::Test {
   ~BookmarkModelViewTest() override = default;
 
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::BookmarkNode> managed_node_;
 };
@@ -150,6 +150,61 @@ TEST_F(BookmarkModelViewTest, ShouldGetNodeByUuid) {
   // `folder2` should only be exposed in `view2`.
   EXPECT_THAT(view1.GetNodeByUuid(folder2->uuid()), IsNull());
   EXPECT_THAT(view2.GetNodeByUuid(folder2->uuid()), Eq(folder2));
+}
+
+TEST_F(BookmarkModelViewTest, ShouldRemoveAllLocalOrSyncableNodes) {
+  // Add two local bookmarks.
+  model_->AddFolder(/*parent=*/model_->bookmark_bar_node(), /*index=*/0,
+                    u"Title 1");
+  model_->AddFolder(/*parent=*/model_->bookmark_bar_node(), /*index=*/1,
+                    u"Title 2");
+
+  // Add two account bookmarks.
+  model_->AddFolder(/*parent=*/model_->account_bookmark_bar_node(), /*index=*/0,
+                    u"Title 3");
+  model_->AddFolder(/*parent=*/model_->account_bookmark_bar_node(), /*index=*/1,
+                    u"Title 4");
+
+  ASSERT_THAT(model_->bookmark_bar_node()->children().size(), Eq(2));
+  ASSERT_THAT(model_->account_bookmark_bar_node()->children().size(), Eq(2));
+
+  BookmarkModelViewUsingLocalOrSyncableNodes view1(model_.get());
+  BookmarkModelViewUsingAccountNodes view2(model_.get());
+
+  view1.RemoveAllSyncableNodes();
+
+  // Only local-or-syncable nodes should have been removed.
+  EXPECT_THAT(model_->bookmark_bar_node()->children().size(), Eq(0));
+  ASSERT_THAT(model_->account_bookmark_bar_node(), NotNull());
+  EXPECT_THAT(model_->account_bookmark_bar_node()->children().size(), Eq(2));
+}
+
+TEST_F(BookmarkModelViewTest, ShouldRemoveAllAccountNodes) {
+  // Add two local bookmarks.
+  model_->AddFolder(/*parent=*/model_->bookmark_bar_node(), /*index=*/0,
+                    u"Title 1");
+  model_->AddFolder(/*parent=*/model_->bookmark_bar_node(), /*index=*/1,
+                    u"Title 2");
+
+  // Add two account bookmarks.
+  model_->AddFolder(/*parent=*/model_->account_bookmark_bar_node(), /*index=*/0,
+                    u"Title 3");
+  model_->AddFolder(/*parent=*/model_->account_bookmark_bar_node(), /*index=*/1,
+                    u"Title 4");
+
+  ASSERT_THAT(model_->bookmark_bar_node()->children().size(), Eq(2));
+  ASSERT_THAT(model_->account_bookmark_bar_node()->children().size(), Eq(2));
+
+  BookmarkModelViewUsingLocalOrSyncableNodes view1(model_.get());
+  BookmarkModelViewUsingAccountNodes view2(model_.get());
+
+  view2.RemoveAllSyncableNodes();
+
+  // Only account nodes should have been removed.
+  EXPECT_THAT(model_->bookmark_bar_node()->children().size(), Eq(2));
+  EXPECT_THAT(model_->account_bookmark_bar_node(), IsNull());
+  EXPECT_THAT(model_->account_mobile_node(), IsNull());
+  EXPECT_THAT(model_->account_other_node(), IsNull());
 }
 
 }  // namespace

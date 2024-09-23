@@ -58,6 +58,12 @@ class PasswordsClientUIDelegate {
   // back to manage or inactive state.
   virtual void OnHideManualFallbackForSaving() = 0;
 
+  // Called by user's explicit action to show the details of a credential, e.g.
+  // by choosing the "View details" option for a manual fallback password
+  // suggestion.
+  virtual void OnOpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) = 0;
+
   // Called when the site asks user to choose from credentials. This triggers
   // the UI to prompt the user. |local_credentials| shouldn't be empty. |origin|
   // is a URL of the site that requested a credential.
@@ -92,11 +98,9 @@ class PasswordsClientUIDelegate {
   // the manage password icon. |federated_matches| contain the matching stored
   // federated credentials to display in the UI.
   virtual void OnPasswordAutofilled(
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& password_forms,
+      base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>* federated_matches) = 0;
+      base::span<const password_manager::PasswordForm> federated_matches) = 0;
 
   // Called when user credentials were leaked. This triggers the UI to prompt
   // the user whether they would like to check their passwords.
@@ -118,6 +122,23 @@ class PasswordsClientUIDelegate {
   // Called when trying to access saved passwords when keychain is not
   // available.
   virtual void OnKeychainError() = 0;
+
+  // Called when a passkey has just been saved to display a confirmation of that
+  // to the user. If GPM pin was created in the same flow, then the confirmation
+  // of that is also displayed in the title.
+  virtual void OnPasskeySaved(bool gpm_pin_created) = 0;
+
+  // Called when a passkey has just been deleted to display a confirmation of
+  // that to the user.
+  virtual void OnPasskeyDeleted() = 0;
+
+  // Called when a passkey has just been updated to display a confirmation of
+  // that to the user.
+  virtual void OnPasskeyUpdated() = 0;
+
+  // Called when a passkey has just been deleted because it was not present on
+  // an all accepted credentials report.
+  virtual void OnPasskeyNotAccepted() = 0;
 
  protected:
   virtual ~PasswordsClientUIDelegate() = default;

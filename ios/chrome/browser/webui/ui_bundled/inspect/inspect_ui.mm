@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -91,7 +91,7 @@ InspectDOMHandler::~InspectDOMHandler() {
 
 void InspectDOMHandler::HandleSetLoggingEnabled(const base::Value::List& args) {
   if (args.size() != 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -99,7 +99,7 @@ void InspectDOMHandler::HandleSetLoggingEnabled(const base::Value::List& args) {
   if (args[0].is_bool()) {
     enabled = args[0].GetBool();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   SetLoggingEnabled(enabled);
@@ -112,11 +112,9 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
 
   logging_enabled_ = enabled;
 
-  web::BrowserState* browser_state = web_ui()->GetWebState()->GetBrowserState();
-
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   JavaScriptConsoleFeature* feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
 
   feature->SetDelegate(enabled ? this : nullptr);
 }
@@ -167,7 +165,7 @@ InspectUI::InspectUI(web::WebUIIOS* web_ui, const std::string& host)
 
   web_ui->AddMessageHandler(std::make_unique<InspectDOMHandler>());
 
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateInspectUIHTMLSource());
 }
 

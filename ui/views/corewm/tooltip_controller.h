@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -82,7 +83,7 @@ class VIEWS_EXPORT TooltipController
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnCancelMode(ui::CancelModeEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // Overridden from aura::client::CursorClientObserver.
   void OnCursorVisibilityChanged(bool is_visible) override;
@@ -201,9 +202,9 @@ class VIEWS_EXPORT TooltipController
   // tooltip's show timer from being restarted on each event.
   bool is_duplicate_pen_hover_event_ = false;
   // The last tooltip text that was shown when the pen was hovering.
-  // TODO(crbug.com/1383844): Replace this with a unique tooltip identifier when
-  // one is implemented. For now, the tooltip text is the closest thing to a
-  // tooltip identifier there is.
+  // TODO(crbug.com/40246278): Replace this with a unique tooltip identifier
+  // when one is implemented. For now, the tooltip text is the closest thing to
+  // a tooltip identifier there is.
   std::u16string last_pen_tooltip_text_;
 
   // Whether tooltips can be displayed or not.

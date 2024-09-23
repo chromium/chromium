@@ -21,6 +21,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MismatchedIndicesHandler.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCloseType.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManagerSupplier.java",
@@ -40,7 +42,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserver.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java",
@@ -48,10 +49,12 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
@@ -69,9 +72,9 @@ android_library_factory("factory_java") {
 
 robolectric_library("junit") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelTabObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
   ]
@@ -89,6 +92,7 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group:java",
+    "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -97,5 +101,6 @@ robolectric_library("junit") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

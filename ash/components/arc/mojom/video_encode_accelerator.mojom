@@ -71,9 +71,11 @@ struct VideoEncodeAcceleratorConfig {
   VideoPixelFormat input_format;
   Size input_visible_size;
   VideoCodecProfile output_profile;
+  // TODO(b/325160191): Sync mojom files in ARC/ARCVM side and remove these
+  // variables.
   uint32 initial_bitrate_deprecated;
   uint32 initial_framerate;
-  bool has_initial_framerate;
+  bool has_initial_framerate_deprecated;
   uint8 h264_output_level;
   bool has_h264_output_level;
   [MinVersion=1] VideoFrameStorageType storage_type;

@@ -6,7 +6,8 @@ import("//build/config/android/rules.gni")
 
 unwind_table_asset_v1_filename = "unwind_cfi_32"
 
-_dump_syms_target = "//third_party/breakpad:dump_syms($host_toolchain)"
+_dump_syms_target =
+    "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
 _dump_syms = get_label_info(_dump_syms_target, "root_out_dir") + "/dump_syms"
 
 template("unwind_table_v1") {

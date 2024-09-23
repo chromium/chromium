@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_file_io_test.h"
 
 #include <algorithm>
@@ -594,7 +599,7 @@ bool FileIOTest::IsResult(const TestStep& test_step) {
     case ACTION_CLOSE:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
@@ -654,7 +659,7 @@ void FileIOTest::RunNextStep() {
         file_io_stack_.pop();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

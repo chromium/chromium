@@ -8,9 +8,9 @@
 #include <resolv.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/scoped_res_state.h"

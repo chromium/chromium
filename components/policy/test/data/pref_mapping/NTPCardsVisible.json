@@ -14,7 +14,9 @@
           "NTPCardsVisible": false
         },
         "prefs": {
-          "NewTabPage.ModulesVisible": {}
+          "NewTabPage.ModulesVisible": {
+            "value": false
+          }
         }
       }
     ]

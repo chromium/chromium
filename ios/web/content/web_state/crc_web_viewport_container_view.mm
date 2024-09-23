@@ -22,7 +22,7 @@
 
 - (id)init {
   if ((self = [super init])) {
-    // TODO(crbug.com/1456195): `updateMinViewportInsets` is not called when
+    // TODO(crbug.com/40272999): `updateMinViewportInsets` is not called when
     // FullscreenSmoothScrollingDefault is disabled, so we populate them here.
     // We cannot load them from FullscreenController because that would make
     // this code dependant on UI. Rather we will need to propagated the values

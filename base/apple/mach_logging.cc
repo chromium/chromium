@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/immediate_crash.h"
+#include "base/scoped_clear_last_error.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
@@ -46,6 +47,9 @@ MachLogMessage::~MachLogMessage() {
 }
 
 void MachLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << mach_error_string(mach_err_)
            << FormatMachErrorNumber(mach_err_);
 }
@@ -69,6 +73,9 @@ BootstrapLogMessage::~BootstrapLogMessage() {
 }
 
 void BootstrapLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << bootstrap_strerror(bootstrap_err_);
 
   switch (bootstrap_err_) {

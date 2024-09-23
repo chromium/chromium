@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 15
+// Next min version: 16
 
 module cros.mojom;
 
@@ -62,6 +62,101 @@ enum CameraAutoFramingState {
   ON_MULTI = 2,
 };
 
+// Interface called by CrosCameraService to notify Chrome of Kiosk Vision
+// events. The data being transferred and the processes involved are trusted.
+//
+// Next method ID: 3
+interface KioskVisionObserver {
+  // Notifies the observer that a new detection has happened.
+  OnFrameProcessed@0(KioskVisionDetection detection);
+
+  // Notifies the observer that a track has completed. Emitted when a previously
+  // detected person goes undetected long enough and the tracker forgets them.
+  OnTrackCompleted@1(KioskVisionTrack track);
+
+  // Notifies the observer that an error has happened.
+  OnError@2(KioskVisionError error);
+};
+
+// Output detection of the Kiosk Vision graph.
+struct KioskVisionDetection {
+  // The timestamp in microseconds of this detection.
+  int64 timestamp_in_us;
+  // The persons detected.
+  array<KioskVisionAppearance> appearances;
+};
+
+// A track is the full sequence of appearances of a given person.
+struct KioskVisionTrack {
+  // The ID of the person in this track.
+  int32 person_id;
+  // The timestamp in microseconds for when this track started.
+  int64 start_timestamp_in_us;
+  // The timestamp in microseconds for when this track ended.
+  int64 end_timestamp_in_us;
+  // The appearances in this track. Must be non-empty. All appearances must have
+  // the same `person_id`. Appearances are sorted by `timestamp_in_us`.
+  array<KioskVisionAppearance> appearances;
+};
+
+// An appearance represents one person in a detection set.
+struct KioskVisionAppearance {
+  // The timestamp in microseconds of this appearance.
+  int64 timestamp_in_us;
+  // The tracking ID of this person.
+  int32 person_id;
+  // The face detection of this person.  At least one of `body` and `face` must
+  // be present.
+  KioskVisionFaceDetection? face;
+  // The detection of this person. At least one of `body` and `face` must be
+  // present.
+  KioskVisionBodyDetection? body;
+};
+
+// The face angles of a person detected.
+struct KioskVisionFaceDetection {
+  // The confidence level of this detection. Value in the [0,1] interval.
+  double confidence;
+  // The roll angle of this face in the [-180, 180] interval.
+  float roll;
+  // The pan angle of this face in the [-180, 180] interval.
+  float pan;
+  // The tilt angle of this face in the [-180, 180] interval.
+  float tilt;
+  // The bounding box of this face.
+  KioskVisionBoundingBox box;
+};
+
+// The body description of a detected person.
+struct KioskVisionBodyDetection {
+  // The confidence level of this detection. Value in the [0,1] interval.
+  double confidence;
+  // The bounding box of this body.
+  KioskVisionBoundingBox box;
+};
+
+// Describes the size and coordinates of a bounding box.
+struct KioskVisionBoundingBox {
+  // The x of the top-left point of the bounding box.
+  int32 x;
+  // The y of the top-left point of the bounding box.
+  int32 y;
+  // The width of the bounding box.
+  int32 width;
+  // The height of the bounding box.
+  int32 height;
+};
+
+// Describes errors that may happen when running the Kiosk Vision feature.
+[Extensible]
+enum KioskVisionError {
+  [Default] UNKNOWN = 0,
+  // E.g. failed to open the shared library from the DLC path.
+  DLC_ERROR = 1,
+  // E.g. failed to start or run the ML model.
+  MODEL_ERROR = 2,
+};
+
 // The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
 // waits for the server and the clients to register.  There can only be one
 // server registered, with multiple clients requesting connections to the
@@ -85,7 +180,7 @@ interface CameraHalDispatcher {
 // observers for any changes on the server side, for example when a
 // CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 4
+// Next method ID: 5
 interface CrosCameraServiceObserver {
   // Fired when a CameraHalClient opens or closes a camera device. When a
   // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
@@ -104,12 +199,15 @@ interface CrosCameraServiceObserver {
 
   // Fired when the camera effect is changed.
   [MinVersion=14] CameraEffectChange@3(EffectsConfig config);
+
+  // Fired when the auto framing state is changed.
+  [MinVersion=15] AutoFramingStateChange@4(CameraAutoFramingState state);
 };
 
 // A client can request the CrosCameraService service from Mojo Service Manager
 // and get the camera module or set/get the camera states.
 //
-// Next method ID: 8
+// Next method ID: 9
 interface CrosCameraService {
   // A caller calls GetCameraModule to create a new Mojo channel to the camera
   // HAL v3 adapter.
@@ -137,4 +235,10 @@ interface CrosCameraService {
   // Add an obersever which observes the event of the camera service.
   AddCrosCameraServiceObserver@7(
       pending_remote<CrosCameraServiceObserver> observer);
+
+  // Start and observe Kiosk Vision detections. There is no separate "stop"
+  // method. The feature should remain active for the lifetime of the
+  // connection to the observer remote.
+  StartKioskVisionDetection@8(
+      string dlc_path, pending_remote<KioskVisionObserver> observer);
 };

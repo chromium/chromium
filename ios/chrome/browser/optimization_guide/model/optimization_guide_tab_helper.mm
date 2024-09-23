@@ -9,7 +9,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
 
@@ -37,7 +37,7 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
 
 OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)
     : optimization_guide_service_(
-          OptimizationGuideServiceFactory::GetForBrowserState(
+          OptimizationGuideServiceFactory::GetForProfile(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))) {
   DCHECK(web_state);

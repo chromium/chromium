@@ -13,10 +13,10 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +51,7 @@ class MockPasswordReceiverService : public PasswordReceiverService {
   MOCK_METHOD(void,
               ProcessIncomingSharingInvitation,
               (sync_pb::IncomingPasswordSharingInvitationSpecifics));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
   MOCK_METHOD(void, OnSyncServiceInitialized, (syncer::SyncService*));
@@ -69,18 +69,22 @@ sync_pb::IncomingPasswordSharingInvitationSpecifics MakeSpecifics() {
       ->mutable_user_display_info()
       ->set_profile_image_url(kSenderProfileImageUrl);
 
-  sync_pb::PasswordSharingInvitationData::PasswordData* mutable_password_data =
-      specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
-  mutable_password_data->set_password_value(kPasswordValue);
-  mutable_password_data->set_scheme(
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      mutable_password_group_data =
+          specifics.mutable_client_only_unencrypted_data()
+              ->mutable_password_group_data();
+  mutable_password_group_data->set_password_value(kPasswordValue);
+  mutable_password_group_data->set_username_value(kUsernameValue);
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      group_element_data = mutable_password_group_data->add_element_data();
+  group_element_data->set_scheme(
       static_cast<int>(password_manager::PasswordForm::Scheme::kHtml));
-  mutable_password_data->set_signon_realm(kSignonRealm);
-  mutable_password_data->set_origin(kOrigin);
-  mutable_password_data->set_username_element(kUsernameElement);
-  mutable_password_data->set_username_value(kUsernameValue);
-  mutable_password_data->set_password_element(kPasswordElement);
-  mutable_password_data->set_display_name(kPasswordDisplayName);
-  mutable_password_data->set_avatar_url(kPasswordAvatarUrl);
+  group_element_data->set_signon_realm(kSignonRealm);
+  group_element_data->set_origin(kOrigin);
+  group_element_data->set_username_element(kUsernameElement);
+  group_element_data->set_password_element(kPasswordElement);
+  group_element_data->set_display_name(kPasswordDisplayName);
+  group_element_data->set_avatar_url(kPasswordAvatarUrl);
 
   return specifics;
 }
@@ -108,7 +112,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
  public:
   IncomingPasswordSharingInvitationSyncBridgeTest()
       : sync_metadata_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(*mock_processor(), ModelReadyToSync)
         .WillByDefault(
             Invoke(this, &IncomingPasswordSharingInvitationSyncBridgeTest::
@@ -127,7 +131,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<IncomingPasswordSharingInvitationSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
             sync_metadata_store_.get()));
     bridge_->SetPasswordReceiverService(&mock_password_receiver_service_);
 
@@ -140,7 +144,8 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
   mock_password_receiver_service() {
     return &mock_password_receiver_service_;
   }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &mock_processor_;
   }
   IncomingPasswordSharingInvitationSyncBridge* bridge() {
@@ -154,13 +159,13 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
     }
   }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   testing::NiceMock<MockPasswordReceiverService>
       mock_password_receiver_service_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::DataTypeStore> sync_metadata_store_;
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> bridge_;
 
   // Called if present on ModelReadyToSync() call for |mock_processor_|.
@@ -187,23 +192,28 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
 
   EXPECT_CALL(*mock_processor(),
-              Delete(entity_changes.front()->storage_key(), _));
+              Delete(entity_changes.front()->storage_key(), _, _));
   bridge()->ApplyIncrementalSyncChanges(std::move(metadata_changes),
                                         std::move(entity_changes));
 
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      received_credentials =
-          received_invitation.client_only_unencrypted_data().password_data();
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      received_credentials = received_invitation.client_only_unencrypted_data()
+                                 .password_group_data();
   EXPECT_EQ(received_credentials.password_value(), kPasswordValue);
-  EXPECT_EQ(static_cast<PasswordForm::Scheme>(received_credentials.scheme()),
-            password_manager::PasswordForm::Scheme::kHtml);
-  EXPECT_EQ(received_credentials.signon_realm(), kSignonRealm);
-  EXPECT_EQ(received_credentials.origin(), kOrigin);
-  EXPECT_EQ(received_credentials.username_element(), kUsernameElement);
   EXPECT_EQ(received_credentials.username_value(), kUsernameValue);
-  EXPECT_EQ(received_credentials.password_element(), kPasswordElement);
-  EXPECT_EQ(received_credentials.display_name(), kPasswordDisplayName);
-  EXPECT_EQ(received_credentials.avatar_url(), kPasswordAvatarUrl);
+  EXPECT_EQ(static_cast<PasswordForm::Scheme>(
+                received_credentials.element_data(0).scheme()),
+            password_manager::PasswordForm::Scheme::kHtml);
+  EXPECT_EQ(received_credentials.element_data(0).signon_realm(), kSignonRealm);
+  EXPECT_EQ(received_credentials.element_data(0).origin(), kOrigin);
+  EXPECT_EQ(received_credentials.element_data(0).username_element(),
+            kUsernameElement);
+  EXPECT_EQ(received_credentials.element_data(0).password_element(),
+            kPasswordElement);
+  EXPECT_EQ(received_credentials.element_data(0).display_name(),
+            kPasswordDisplayName);
+  EXPECT_EQ(received_credentials.element_data(0).avatar_url(),
+            kPasswordAvatarUrl);
 
   EXPECT_EQ(received_invitation.sender_info().user_display_info().email(),
             kSenderEmail);
@@ -229,14 +239,14 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
 
   EXPECT_CALL(*mock_processor(),
-              Delete(entity_changes.front()->storage_key(), _));
+              Delete(entity_changes.front()->storage_key(), _, _));
   bridge()->MergeFullSyncData(std::move(metadata_changes),
                               std::move(entity_changes));
 
   // Check only password value for sanity, the other fields are covered by other
   // tests.
   EXPECT_EQ(received_invitation.client_only_unencrypted_data()
-                .password_data()
+                .password_group_data()
                 .password_value(),
             kPasswordValue);
 }
@@ -259,10 +269,10 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   // Simulate the initial sync merge.
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
+  metadata_changes->UpdateDataTypeState(data_type_state);
   bridge()->MergeFullSyncData(std::move(metadata_changes),
                               syncer::EntityChangeList());
 

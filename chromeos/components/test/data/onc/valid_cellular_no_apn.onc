@@ -1,0 +1,22 @@
+{
+  "GlobalNetworkConfiguration": {
+    "AllowAPNModification": true,
+    "AllowCellularHotspot": true,
+    "AllowCellularSimLock": true,
+    "AllowOnlyPolicyCellularNetworks": false,
+    "AllowOnlyPolicyNetworksToAutoconnect": false
+  },
+  "NetworkConfigurations": [
+    {
+      "Cellular": {
+        "Recommended": [
+          "AllowRoaming"
+        ],
+        "SMDPAddress": "LPA:1$SMDP.GSMA.COM$00000-00000-00000-000-0001",
+      },
+      "GUID": "test-Cellular",
+      "Name": "test",
+      "Type": "Cellular"
+    }
+  ]
+}

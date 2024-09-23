@@ -31,6 +31,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/common/color_parser.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -69,6 +70,10 @@ constexpr char kNoActiveWindowFound[] =
     "Could not find an active browser window.";
 constexpr char kNoActivePopup[] =
     "Extension does not have a popup on the active tab.";
+constexpr char kOpenPopupInactiveWindow[] =
+    "Cannot show popup for an inactive window. To show the popup for this "
+    "window, first call `chrome.windows.update` with `focused` set to "
+    "true.";
 
 bool g_report_error_for_invisible_icon = false;
 
@@ -227,15 +232,15 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
   events::HistogramValue histogram_value = events::UNKNOWN;
   const char* event_name = nullptr;
   switch (extension_action.action_type()) {
-    case ActionInfo::TYPE_ACTION:
+    case ActionInfo::Type::kAction:
       histogram_value = events::ACTION_ON_CLICKED;
       event_name = "action.onClicked";
       break;
-    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::Type::kBrowser:
       histogram_value = events::BROWSER_ACTION_ON_CLICKED;
       event_name = "browserAction.onClicked";
       break;
-    case ActionInfo::TYPE_PAGE:
+    case ActionInfo::Type::kPage:
       histogram_value = events::PAGE_ACTION_ON_CLICKED;
       event_name = "pageAction.onClicked";
       break;
@@ -244,8 +249,8 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
   if (event_name) {
     base::Value::List args;
     // The action APIs (browserAction, pageAction, action) are only available
-    // to blessed extension contexts. As such, we deterministically know that
-    // the right context type here is blessed.
+    // to privileged extension contexts. As such, we deterministically know that
+    // the right context type here is privileged.
     constexpr mojom::ContextType context_type =
         mojom::ContextType::kPrivilegedExtension;
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
@@ -312,6 +317,21 @@ void ExtensionActionAPI::Shutdown() {
     observer.OnExtensionActionAPIShuttingDown();
 }
 
+void ExtensionActionAPI::OnActionPinnedStateChanged(
+    const ExtensionId& extension_id,
+    bool is_pinned) {
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
+  base::Value::List args;
+  base::Value::Dict change;
+  change.Set("isOnToolbar", is_pinned);
+  args.Append(std::move(change));
+  DispatchEventToExtension(browser_context_, extension_id,
+                           events::ACTION_ON_USER_SETTINGS_CHANGED,
+                           "action.onUserSettingsChanged", std::move(args));
+}
+
 //
 // ExtensionActionFunction
 //
@@ -352,7 +372,7 @@ ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
   } else {
     // Page actions do not have a default tabId.
     EXTENSION_FUNCTION_VALIDATE(extension_action_->action_type() !=
-                                ActionInfo::TYPE_PAGE);
+                                ActionInfo::Type::kPage);
   }
   return RunExtensionAction();
 }
@@ -568,9 +588,10 @@ ExtensionActionGetPopupFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  declarative_net_request::PrefsHelper helper(
+      *ExtensionPrefs::Get(browser_context()));
   bool is_dnr_action_count_active =
-      prefs->GetDNRUseActionCountAsBadgeText(extension_id()) &&
+      helper.GetUseActionCountAsBadgeText(extension_id()) &&
       !extension_action_->HasBadgeText(tab_id_);
 
   // Ensure that the placeholder string is returned if this extension is
@@ -623,15 +644,15 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   // This API is only available to extensions with the "action" key in the
   // manifest, so they should always have an action.
   DCHECK(action);
-  DCHECK_EQ(ActionInfo::TYPE_ACTION, action->action_type());
+  DCHECK_EQ(ActionInfo::Type::kAction, action->action_type());
 
   const bool is_pinned =
       ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))
           ->IsActionPinned(extension_id());
 
-  // TODO(devlin): Today, no action APIs are compiled. Unfortunately, this
-  // means we miss out on the compiled types, which would be rather helpful
-  // here.
+  // TODO(crbug.com/360916928): Today, no action APIs are compiled.
+  // Unfortunately, this means we miss out on the compiled types, which would be
+  // rather helpful here.
   base::Value::Dict ui_settings;
   ui_settings.Set("isOnToolbar", is_pinned);
 
@@ -642,13 +663,14 @@ ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
 ActionOpenPopupFunction::~ActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
-  // Unfortunately, the action API types aren't compiled. However, the bindings
-  // should still valid the form of the arguments.
+  // TODO(crbug.com/360916928): Unfortunately, the action API types aren't
+  // compiled. However, the bindings should still valid the form of the
+  // arguments.
   EXTENSION_FUNCTION_VALIDATE(args().size() == 1u);
   EXTENSION_FUNCTION_VALIDATE(extension());
   const base::Value& options = args()[0];
 
-  // TODO(https://crbug.com/1245093): Support specifying the tab ID? This is
+  // TODO(crbug.com/40057101): Support specifying the tab ID? This is
   // kind of racy (because really what the extension probably cares about is
   // the document ID; tab ID persists across pages, whereas document ID would
   // detect things like navigations).
@@ -670,13 +692,20 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     if (!browser)
       error = kNoActiveWindowFound;
   } else {
-    browser = ExtensionTabUtil::GetBrowserInProfileWithId(
-        profile, window_id, include_incognito_information(), &error);
+    if (WindowController* controller =
+            ExtensionTabUtil::GetControllerInProfileWithId(
+                profile, window_id, include_incognito_information(), &error)) {
+      browser = controller->GetBrowser();
+    }
   }
 
   if (!browser) {
     DCHECK(!error.empty());
     return RespondNow(Error(std::move(error)));
+  }
+
+  if (!browser->window()->IsActive()) {
+    return RespondNow(Error(kOpenPopupInactiveWindow));
   }
 
   if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))
@@ -699,7 +728,7 @@ void ActionOpenPopupFunction::OnShowPopupComplete(ExtensionHost* popup_host) {
   DCHECK(!did_respond());
 
   if (popup_host) {
-    // TODO(https://crbug.com/1245093): Return the tab for which the extension
+    // TODO(crbug.com/40057101): Return the tab for which the extension
     // popup was shown?
     DCHECK(popup_host->document_element_available());
     Respond(NoArguments());

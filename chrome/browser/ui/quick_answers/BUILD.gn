@@ -12,8 +12,6 @@ source_set("quick_answers") {
     "quick_answers_controller_impl.h",
     "quick_answers_ui_controller.cc",
     "quick_answers_ui_controller.h",
-    "read_write_cards_manager_impl.cc",
-    "read_write_cards_manager_impl.h",
     "ui/quick_answers_text_label.cc",
     "ui/quick_answers_text_label.h",
     "ui/quick_answers_util.cc",
@@ -22,8 +20,6 @@ source_set("quick_answers") {
     "ui/quick_answers_view.h",
     "ui/rich_answers_definition_view.cc",
     "ui/rich_answers_definition_view.h",
-    "ui/rich_answers_pre_target_handler.cc",
-    "ui/rich_answers_pre_target_handler.h",
     "ui/rich_answers_translation_view.cc",
     "ui/rich_answers_translation_view.h",
     "ui/rich_answers_unit_conversion_view.cc",
@@ -36,24 +32,31 @@ source_set("quick_answers") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/views/editor_menu",
+    "//chrome/browser/ui/quick_answers/ui:loading_view",
+    "//chrome/browser/ui/quick_answers/ui:quick_answers_stage_button",
+    "//chrome/browser/ui/quick_answers/ui:result_view",
+    "//chrome/browser/ui/quick_answers/ui:retry_view",
+    "//chrome/browser/ui/quick_answers/ui:typography",
     "//chrome/browser/ui/views/editor_menu:utils",
-    "//chrome/browser/ui/views/mahi",
-    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//content/public/browser",
-    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/views/controls/webview",
     "//ui/wm",
   ]

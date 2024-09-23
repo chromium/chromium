@@ -32,6 +32,10 @@ void HWDataCollectionScreenHandler::Show(bool enabled) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<HWDataCollectionView> HWDataCollectionScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void HWDataCollectionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->AddF("HWDataCollectionTitle", IDS_HW_DATA_COLLECTION_TITLE,

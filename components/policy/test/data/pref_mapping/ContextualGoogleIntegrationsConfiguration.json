@@ -1,0 +1,260 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "default",
+        "policies": {},
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=default + invalid type",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": 123
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=false + invalid type",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": false,
+          "ContextualGoogleIntegrationsConfiguration": 123
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=true + invalid type",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": true,
+          "ContextualGoogleIntegrationsConfiguration": 123
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "default_value": [
+              "GoogleCalendar",
+              "GoogleClassroom",
+              "GoogleTasks",
+              "ChromeSync",
+              "GoogleDrive",
+              "Weather"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=default + invalid type of integration",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            123
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=false + invalid type of integration",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": false,
+          "ContextualGoogleIntegrationsConfiguration": [
+            123
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=true + invalid type of integration",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": true,
+          "ContextualGoogleIntegrationsConfiguration": [
+            123
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=default + unknown integration",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "Unknown",
+            "GoogleTasks"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=false + unknown integration",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": false,
+          "ContextualGoogleIntegrationsConfiguration": [
+            "Unknown",
+            "GoogleTasks"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "ContextualGoogleIntegrationsEnabled=true + unknown integration",
+        "policies": {
+          "ContextualGoogleIntegrationsEnabled": true,
+          "ContextualGoogleIntegrationsConfiguration": [
+            "Unknown",
+            "GoogleTasks"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "GoogleCalendar only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleCalendar"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleCalendar"
+            ]
+          }
+        }
+      },
+      {
+        "note": "GoogleClassroom only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleClassroom"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleClassroom"
+            ]
+          }
+        }
+      },
+      {
+        "note": "GoogleTasks only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleTasks"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleTasks"
+            ]
+          }
+        }
+      },
+      {
+        "note": "ChromeSync only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "ChromeSync"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "ChromeSync"
+            ]
+          }
+        }
+      },
+      {
+        "note": "GoogleDrive only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "GoogleDrive"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "GoogleDrive"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Weather only",
+        "policies": {
+          "ContextualGoogleIntegrationsConfiguration": [
+            "Weather"
+          ]
+        },
+        "prefs": {
+          "ash.contextual_google_integrations_configuration": {
+            "value": [
+              "Weather"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

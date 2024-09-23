@@ -147,7 +147,7 @@ void LocalToRemoteSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
     missing_entries = path;
   } else if (active_ancestor_path != path) {
     if (!active_ancestor_path.AppendRelativePath(path, &missing_entries)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       token->RecordLog(
           base::StringPrintf("Detected invalid ancestor: %" PRFilePath,
                              active_ancestor_path.value().c_str()));
@@ -256,7 +256,7 @@ void LocalToRemoteSyncer::MoveToBackground(
   if (remote_file_tracker_) {
     if (!GetKnownChangeID(metadata_database(), remote_file_tracker_->file_id(),
                           &remote_file_change_id_)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
       return;
     }
@@ -351,7 +351,7 @@ void LocalToRemoteSyncer::HandleConflict(std::unique_ptr<SyncTaskToken> token) {
   FileMetadata remote_file_metadata;
   if (!metadata_database()->FindFileByFileID(remote_file_tracker_->file_id(),
                                              &remote_file_metadata)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::CreateRemoteFolder,
                                     weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
@@ -450,7 +450,7 @@ void LocalToRemoteSyncer::DeleteRemoteFile(
 
   switch (remote_file_tracker_->synced_details().file_kind()) {
     case FILE_KIND_UNSUPPORTED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       file_type_ = SYNC_FILE_TYPE_UNKNOWN;
       break;
     case FILE_KIND_FILE:
@@ -545,7 +545,7 @@ void LocalToRemoteSyncer::DidUploadExistingFile(
   }
 
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -560,7 +560,7 @@ void LocalToRemoteSyncer::DidUploadExistingFile(
   FileMetadata file;
   if (!metadata_database()->FindFileByFileID(remote_file_tracker_->file_id(),
                                              &file)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -612,7 +612,7 @@ void LocalToRemoteSyncer::DidGetRemoteMetadata(
   }
 
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -652,7 +652,7 @@ void LocalToRemoteSyncer::DidUploadNewFile(
   }
 
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -712,7 +712,7 @@ void LocalToRemoteSyncer::DidCreateRemoteFolder(
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
   return;
 }

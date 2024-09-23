@@ -5,11 +5,13 @@
 #include "media/cdm/fuchsia/fuchsia_cdm.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
 #include "media/base/callback_registry.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"
 
 #define REJECT_PROMISE_AND_RETURN_IF_BAD_CDM(promise, cdm)         \
@@ -49,8 +51,8 @@ fuchsia::media::drm::LicenseServerMessage CreateLicenseServerMessage(
     const std::vector<uint8_t>& response) {
   fuchsia::media::drm::LicenseServerMessage message;
   message.message = base::MemBufferFromString(
-      base::StringPiece(reinterpret_cast<const char*>(response.data()),
-                        response.size()),
+      std::string_view(reinterpret_cast<const char*>(response.data()),
+                       response.size()),
       "cr-drm-license-server-message");
   return message;
 }
@@ -109,7 +111,7 @@ CdmPromise::Exception ToCdmPromiseException(fuchsia::media::drm::Error error) {
 
     case fuchsia::media::drm::Error::NOT_PROVISIONED:
       // FuchsiaCdmManager is supposed to provision CDM.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case fuchsia::media::drm::Error::INTERNAL:
       DLOG(ERROR) << "CDM failed due to an internal error.";
@@ -306,8 +308,7 @@ FuchsiaCdm::FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
     // If the channel closed prior to invoking the ready_cb_, we should invoke
     // it here with failure.
     if (ready_cb_) {
-      std::move(ready_cb_).Run(
-          false, "ContentDecryptionModule closed prior to being ready");
+      std::move(ready_cb_).Run(false, CreateCdmStatus::kDisconnectionError);
     }
   });
 }
@@ -405,7 +406,7 @@ void FuchsiaCdm::CreateSessionAndGenerateRequest(
 
 void FuchsiaCdm::OnProvisioned() {
   if (ready_cb_) {
-    std::move(ready_cb_).Run(true, "");
+    std::move(ready_cb_).Run(true, CreateCdmStatus::kSuccess);
   }
 }
 

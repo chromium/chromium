@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 
 class Status;
@@ -24,11 +25,13 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string& SessionId() const override;
   const std::string& TunnelSessionId() const override;
   Status SetTunnelSessionId(std::string session_id) override;
-  Status StartBidiServer(std::string bidi_mapper_script,
-                         const base::Value::Dict& mapper_options) override;
+  Status StartBidiServer(std::string bidi_mapper_script) override;
   bool IsNull() const override;
   bool WasCrashed() override;
   bool IsConnected() const override;
+  bool IsDialogOpen() const override;
+  bool AutoAcceptsBeforeunload() const override;
+  void SetAutoAcceptBeforeunload(bool value) override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
@@ -67,23 +70,27 @@ class StubDevToolsClient : public DevToolsClient {
                               DevToolsClient* client) override;
   void UnregisterSessionHandler(const std::string& session_id) override;
   Status OnConnected() override;
-  Status ProcessEvent(const InspectorEvent& event) override;
-  Status ProcessCommandResponse(
-      const InspectorCommandResponse& response) override;
+  Status ProcessEvent(InspectorEvent event) override;
+  Status ProcessCommandResponse(InspectorCommandResponse response) override;
   int NextMessageId() const override;
   int AdvanceNextMessageId() override;
   Status ProcessNextMessage(int expected_id,
                             bool log_timeout,
                             const Timeout& timeout,
                             DevToolsClient* caller) override;
+  Status GetDialogMessage(std::string& message) const override;
+  Status GetTypeOfDialog(std::string& type) const override;
+  Status HandleDialog(bool accept,
+                      const std::optional<std::string>& text) override;
 
  protected:
   const std::string id_;
   std::string session_id_;
   std::string tunnel_session_id_;
-  std::list<DevToolsEventListener*> listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>> listeners_;
   raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
+  bool autoaccept_beforeunload_ = false;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_DEVTOOLS_CLIENT_H_

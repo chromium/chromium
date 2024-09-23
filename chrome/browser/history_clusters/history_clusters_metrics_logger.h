@@ -84,6 +84,9 @@ class HistoryClustersMetricsLogger
   void RecordClusterAction(ClusterAction cluster_action,
                            uint32_t cluster_index);
 
+  // Called when the UI becomes visible.
+  void WasShown();
+
  private:
   // Whether the journeys interaction captured by |this| is considered a
   // successful outcome.
@@ -96,6 +99,10 @@ class HistoryClustersMetricsLogger
   // The initial state of how this interaction with the HistoryClusters UI was
   // started.
   std::optional<HistoryClustersInitialState> initial_state_;
+
+  // True if the the HistoryClusters UI is ever shown. This can be false for the
+  // entire lifetime of HistoryClusters UI if it is preloaded but never shown.
+  bool is_ever_shown_ = false;
 
   // The number of queries made on the tracker history clusters event. Only
   // queries containing a string should be counted.

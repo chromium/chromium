@@ -9,47 +9,42 @@
 
 namespace autofill {
 
-namespace {
-
-FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
-  switch (group) {
-    case FieldTypeGroup::kName:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
-    case FieldTypeGroup::kAddress:
-    case FieldTypeGroup::kCompany:
-      return GetAddressFieldsForGroupFilling();
-    case FieldTypeGroup::kPhone:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
-    case FieldTypeGroup::kEmail:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kCreditCard:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kIban:
-      // If `group` is not one of the groups we offer group filling for
-      // (name, address and phone field), we default back to fill full form
-      // behaviour/pre-granular filling.
-      return kAllFieldTypes;
-  }
-}
-
-}  // namespace
-
-AutofillFillingMethod GetFillingMethodFromTargetedFields(
+FillingMethod GetFillingMethodFromTargetedFields(
     const FieldTypeSet& targeted_field_types) {
   if (targeted_field_types == kAllFieldTypes) {
-    return AutofillFillingMethod::kFullForm;
+    return FillingMethod::kFullForm;
   }
-  if (AreFieldsGranularFillingGroup(targeted_field_types)) {
-    return AutofillFillingMethod::kGroupFilling;
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kName)) {
+    return FillingMethod::kGroupFillingName;
+  }
+  if (targeted_field_types == GetAddressFieldsForGroupFilling()) {
+    return FillingMethod::kGroupFillingAddress;
+  }
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kEmail)) {
+    return FillingMethod::kGroupFillingEmail;
+  }
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone)) {
+    return FillingMethod::kGroupFillingPhoneNumber;
   }
   if (targeted_field_types.size() == 1) {
-    return AutofillFillingMethod::kFieldByFieldFilling;
+    return FillingMethod::kFieldByFieldFilling;
   }
-  return AutofillFillingMethod::kNone;
+  return FillingMethod::kNone;
+}
+
+FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kFillFullAddress:
+      return FillingMethod::kGroupFillingAddress;
+    case SuggestionType::kFillFullName:
+      return FillingMethod::kGroupFillingName;
+    case SuggestionType::kFillFullPhoneNumber:
+      return FillingMethod::kGroupFillingPhoneNumber;
+    case SuggestionType::kFillFullEmail:
+      return FillingMethod::kGroupFillingEmail;
+    default:
+      NOTREACHED();  // Unrelated SuggestionTypes.
+  }
 }
 
 FieldTypeSet GetAddressFieldsForGroupFilling() {
@@ -65,21 +60,23 @@ bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types) {
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
 }
 
-FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const FieldTypeSet& last_targeted_field_types,
-    FieldType triggering_field_type) {
-  switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
-    case AutofillFillingMethod::kGroupFilling:
-      return GetServerFieldsForFieldGroup(
-          GroupTypeOfFieldType(triggering_field_type));
-    case AutofillFillingMethod::kFullForm:
+FieldTypeSet GetTargetFieldTypesFromFillingMethod(
+    FillingMethod filling_method) {
+  switch (filling_method) {
+    case FillingMethod::kFullForm:
       return kAllFieldTypes;
-    case AutofillFillingMethod::kFieldByFieldFilling:
-      return {triggering_field_type};
-    case AutofillFillingMethod::kNone:
-      break;
+    case FillingMethod::kGroupFillingName:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
+    case FillingMethod::kGroupFillingAddress:
+      return GetAddressFieldsForGroupFilling();
+    case FillingMethod::kGroupFillingEmail:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
+    case FillingMethod::kGroupFillingPhoneNumber:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
+    case FillingMethod::kFieldByFieldFilling:
+    case FillingMethod::kNone:
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace autofill

@@ -68,7 +68,7 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
     case PaintInvalidationReason::kFullLayer:
       return "full layer";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

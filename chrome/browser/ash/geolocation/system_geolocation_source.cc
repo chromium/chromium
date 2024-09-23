@@ -13,13 +13,16 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -39,9 +42,9 @@ SystemGeolocationSource::SystemGeolocationSource()
 SystemGeolocationSource::~SystemGeolocationSource() = default;
 
 // static
-std::unique_ptr<device::GeolocationManager>
-SystemGeolocationSource::CreateGeolocationManagerOnAsh() {
-  return std::make_unique<device::GeolocationManager>(
+std::unique_ptr<device::GeolocationSystemPermissionManager>
+SystemGeolocationSource::CreateGeolocationSystemPermissionManagerOnAsh() {
+  return std::make_unique<device::GeolocationSystemPermissionManager>(
       std::make_unique<SystemGeolocationSource>());
 }
 
@@ -54,7 +57,9 @@ void SystemGeolocationSource::RegisterPermissionUpdateCallback(
 }
 
 void SystemGeolocationSource::OpenSystemPermissionSetting() {
-  Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath);
 }
 
 void SystemGeolocationSource::OnActiveUserPrefServiceChanged(
@@ -78,8 +83,7 @@ void SystemGeolocationSource::OnPrefChanged(const std::string& pref_name) {
   device::LocationSystemPermissionStatus status =
       device::LocationSystemPermissionStatus::kNotDetermined;
 
-  if (ash::features::IsCrosPrivacyHubEnabled() &&
-      ash::features::IsCrosPrivacyHubLocationEnabled()) {
+  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     PrefService* pref_service = pref_change_registrar_->prefs();
     if (pref_service) {
       status = (static_cast<GeolocationAccessLevel>(pref_service->GetInteger(

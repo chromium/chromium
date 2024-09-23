@@ -178,10 +178,10 @@ std::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
   switch (type) {
-    case ui::ET_MOUSE_PRESSED:
-    case ui::ET_TOUCH_PRESSED:
-    case ui::ET_GESTURE_TAP:
-    case ui::ET_GESTURE_DOUBLE_TAP:
+    case ui::EventType::kMousePressed:
+    case ui::EventType::kTouchPressed:
+    case ui::EventType::kGestureTap:
+    case ui::EventType::kGestureDoubleTap:
       return true;
     default:
       return false;
@@ -340,7 +340,7 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN: {
+      case ui::EventType::kGestureScrollBegin: {
         // Only treat this scroll as drag-to-open if the y component is
         // larger. Otherwise, leave the event unhandled. Horizontal
         // scrolls are used in the toolbar, e.g. for text scrolling in
@@ -354,23 +354,23 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
         }
         break;
       }
-      case ui::ET_GESTURE_SCROLL_UPDATE:
+      case ui::EventType::kGestureScrollUpdate:
         if (drag_in_progress_) {
           container_->UpdateHeightForDragToOpen(event->details().scroll_y());
           event->SetHandled();
         }
         break;
-      case ui::ET_GESTURE_SCROLL_END:
+      case ui::EventType::kGestureScrollEnd:
         if (drag_in_progress_) {
           container_->EndDragToOpen();
           event->SetHandled();
           drag_in_progress_ = false;
         }
         break;
-      case ui::ET_GESTURE_SWIPE: {
+      case ui::EventType::kGestureSwipe: {
         // If a touch is released at high velocity, the scroll gesture
-        // is "converted" to a swipe gesture. ET_GESTURE_END is still
-        // sent after. From logging, it seems like ET_GESTURE_SCROLL_END
+        // is "converted" to a swipe gesture. EventType::kGestureEnd is still
+        // sent after. From logging, it seems like EventType::kGestureScrollEnd
         // is sometimes also sent after this. It will be ignored here
         // since |drag_in_progress_| is set to false.
         const auto direction = DragDirectionFromSwipe(event);
@@ -392,7 +392,7 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
         event->SetHandled();
         drag_in_progress_ = false;
       } break;
-      case ui::ET_GESTURE_END:
+      case ui::EventType::kGestureEnd:
         if (drag_in_progress_) {
           // If an unsupported gesture is sent, ensure that we still
           // finish the drag on gesture end. Otherwise, the container
@@ -443,7 +443,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
   view_observations_.AddObservation(tab_contents_container_.get());
   view_observations_.AddObservation(top_container_.get());
 
-  // TODO(crbug.com/1010589) WebContents are initially assumed to be visible by
+  // TODO(crbug.com/40651211) WebContents are initially assumed to be visible by
   // default unless explicitly hidden. The WebContents need to be set to hidden
   // so that the visibility state of the document in JavaScript is correctly
   // initially set to 'hidden', and the 'visibilitychange' events correctly get
@@ -469,7 +469,7 @@ WebUITabStripContainerView::~WebUITabStripContainerView() {
   DeinitializeWebView();
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
-  delete tab_counter_;
+  tab_counter_.ClearAndDelete();
 }
 
 // static
@@ -505,25 +505,27 @@ void WebUITabStripContainerView::GetDropFormatsForView(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   *formats |= ui::OSExchangeData::PICKLED_DATA;
-  format_types->insert(ui::ClipboardFormatType::WebCustomDataType());
+  format_types->insert(ui::ClipboardFormatType::DataTransferCustomType());
 }
 
 // static
 bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
-  base::Pickle pickle;
-  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle)) {
-    if (std::optional<std::u16string> result =
-            ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
-        result && !result->empty()) {
-      return true;
-    }
+  std::optional<base::Pickle> pickle =
+      data.GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());
+  if (!pickle.has_value()) {
+    return false;
+  }
 
-    if (std::optional<std::u16string> result =
-            ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
-        result && !result->empty()) {
-      return true;
-    }
+  if (std::optional<std::u16string> result =
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabIdDataType);
+      result && !result->empty()) {
+    return true;
+  }
+
+  if (std::optional<std::u16string> result =
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabGroupIdDataType);
+      result && !result->empty()) {
+    return true;
   }
 
   return false;
@@ -816,18 +818,25 @@ SkColor WebUITabStripContainerView::GetColorProviderColor(
   return GetColorProvider()->GetColor(id);
 }
 
-int WebUITabStripContainerView::GetHeightForWidth(int w) const {
+gfx::Size WebUITabStripContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   DCHECK(!(animation_.is_animating() && current_drag_height_));
+  gfx::Size preferred_size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
 
   // Note that preferred size is automatically calculated by the layout.
   if (animation_.is_animating()) {
-    return gfx::Tween::LinearIntValueBetween(animation_.GetCurrentValue(), 0,
-                                             GetPreferredSize().height());
+    preferred_size.set_height(gfx::Tween::LinearIntValueBetween(
+        animation_.GetCurrentValue(), 0, preferred_size.height()));
+    return preferred_size;
   }
-  if (current_drag_height_)
-    return std::round(*current_drag_height_);
 
-  return GetVisible() ? GetPreferredSize().height() : 0;
+  if (current_drag_height_) {
+    preferred_size.set_height(std::round(*current_drag_height_));
+    return preferred_size;
+  }
+
+  return GetVisible() ? preferred_size : gfx::Size();
 }
 
 gfx::Size WebUITabStripContainerView::FlexRule(

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -76,7 +77,8 @@ void CopyToClipboard(
     BookmarkModel* model,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
     bool remove_nodes,
-    metrics::BookmarkEditSource source);
+    metrics::BookmarkEditSource source,
+    bool is_off_the_record);
 
 // Pastes from the clipboard. The new nodes are added to |parent|, unless
 // |parent| is null in which case this does nothing. The nodes are inserted
@@ -113,10 +115,10 @@ void GetMostRecentlyUsedEntries(BookmarkModel* model,
 // Returns up to |max_count| bookmarks from |model| whose url or title contain
 // the text |query.word_phrase_query| and exactly match |query.url| and
 // |query.title|, for all of the preceding fields that are not NULL.
-void GetBookmarksMatchingProperties(BookmarkModel* model,
-                                    const QueryFields& query,
-                                    size_t max_count,
-                                    std::vector<const BookmarkNode*>* nodes);
+std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
+    BookmarkModel* model,
+    const QueryFields& query,
+    size_t max_count);
 
 // Parses the provided query and returns a vector of query words.
 std::vector<std::u16string> ParseBookmarkQuery(
@@ -146,7 +148,8 @@ const BookmarkNode* GetParentForNewNodes(
 
 // Deletes the bookmark folders for the given list of |ids|.
 void DeleteBookmarkFolders(BookmarkModel* model,
-                           const std::vector<int64_t>& ids);
+                           const std::vector<int64_t>& ids,
+                           const base::Location& location);
 
 // If there are no user bookmarks for url, a bookmark is created.
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
@@ -155,7 +158,9 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const BookmarkNode* parent = nullptr);
 
 // Removes all bookmarks for the given |url|.
-void RemoveAllBookmarks(BookmarkModel* model, const GURL& url);
+void RemoveAllBookmarks(BookmarkModel* model,
+                        const GURL& url,
+                        const base::Location& location);
 
 // Truncates an overly-long URL, unescapes it and interprets the
 // characters as UTF-8 (both via url_formatter::FormatUrl()), and

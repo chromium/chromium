@@ -61,6 +61,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
                         const std::string& raw_device_id) override {}
   void OnSetMute(int player_id, bool mute) override {}
   void OnRequestMediaRemoting(int player_id) override {}
+  void OnRequestVisibility(
+      int player_id,
+      RequestVisibilityCallback request_visibility_callback) override {}
 
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
@@ -71,8 +74,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  bool HasSufficientlyVisibleVideo(int player_id) const override {
+    return false;
+  }
+
   bool HasAudio(int player_id) const override { return true; }
   bool HasVideo(int player_id) const override { return false; }
+  bool IsPaused(int player_id) const override { return false; }
 
   std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
 
@@ -103,8 +111,7 @@ void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
 
 char kSetUpMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
-    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });\n"
-    "navigator.mediaSession.setActionHandler(\"seekforward\", _ => {});";
+    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });";
 
 char kSetUpWebRTCMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
@@ -122,7 +129,6 @@ const int kPlayerId = 0;
 class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaSession");
   }
@@ -164,6 +170,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kSeekForward);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekBackward);
 
     observer.WaitForExpectedActions(expected_actions);
   }
@@ -178,6 +186,10 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekForward);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekBackward);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kToggleMicrophone);
     expected_actions.insert(
@@ -208,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 // side.
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // crbug.com/927234.
 #define MAYBE_ResetServiceWhenNavigatingAway \
   DISABLED_ResetServiceWhenNavigatingAway
@@ -225,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
   EXPECT_TRUE(GetService()->metadata());
-  EXPECT_EQ(1u, GetService()->actions().size());
+  EXPECT_EQ(0u, GetService()->actions().size());
 
   // Start a non-same-page navigation and check the playback state, metadata,
   // actions are reset.
@@ -252,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
   EXPECT_TRUE(GetService()->metadata());
-  EXPECT_EQ(1u, GetService()->actions().size());
+  EXPECT_EQ(0u, GetService()->actions().size());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,

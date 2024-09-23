@@ -101,6 +101,13 @@ class ScalableIph : public KeyedService,
     kGameWindowOpened,
   };
 
+  // Returns true if any iph feature flag is enabled. Otherwise false.
+  static bool IsAnyIphFeatureEnabled();
+
+  // Force enable `IsAnyIphFeatureEnabled` check for testing. Note that no
+  // actual iph feature flag gets enabled by this.
+  static void ForceEnableIphFeatureForTesting();
+
   ScalableIph(feature_engagement::Tracker* tracker,
               std::unique_ptr<ScalableIphDelegate> delegate,
               std::unique_ptr<Logger> logger);
@@ -162,6 +169,9 @@ class ScalableIph : public KeyedService,
 
   // Returns true if the help app should be pinned to the bottom shelf.
   bool ShouldPinHelpAppToShelf();
+
+  static const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+  GetFeatureListConstantForTesting();
 
  private:
   void EnsureTimerStarted();

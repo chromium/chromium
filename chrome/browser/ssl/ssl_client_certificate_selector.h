@@ -20,8 +20,6 @@ namespace net {
 class SSLCertRequestInfo;
 }
 
-namespace chrome {
-
 // Opens a constrained SSL client certificate selection dialog under |parent|,
 // offering certificates in |client_certs| for the host specified by
 // |cert_request_info|. When the user has made a selection, the dialog will
@@ -47,7 +45,5 @@ using ShowSSLClientCertificateSelectorTestingHook =
 // the hook and switch back to the default implementation.
 void SetShowSSLClientCertificateSelectorHookForTest(
     ShowSSLClientCertificateSelectorTestingHook hook);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_SSL_SSL_CLIENT_CERTIFICATE_SELECTOR_H_

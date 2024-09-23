@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_protocol_error.h"
@@ -56,7 +56,7 @@ struct SyncStatus {
   int num_commits_total = 0;
 
   // Encryption related.
-  ModelTypeSet encrypted_types;
+  DataTypeSet encrypted_types;
   bool cryptographer_can_encrypt = false;
   bool crypto_has_pending_keys = false;
   bool has_keystore_key = false;
@@ -65,15 +65,15 @@ struct SyncStatus {
   sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 
   // Per-datatype throttled status.
-  ModelTypeSet throttled_types;
+  DataTypeSet throttled_types;
 
   // Per-datatype backed off status.
-  ModelTypeSet backed_off_types;
+  DataTypeSet backed_off_types;
 
   std::string cache_guid;
 
   // Data types having pending invalidations.
-  ModelTypeSet invalidated_data_types;
+  DataTypeSet invalidated_data_types;
 
   // Time of next retry if sync scheduler is throttled or in backoff.
   base::Time retry_time;

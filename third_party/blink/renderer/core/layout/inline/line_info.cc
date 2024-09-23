@@ -2,15 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
+
+namespace {
+inline bool IsHangingSpace(UChar c) {
+  return c == kSpaceCharacter || Character::IsOtherSpaceSeparator(c);
+}
+
+wtf_size_t GlyphCount(const InlineItemResult& item_result) {
+  if (item_result.shape_result) {
+    return item_result.shape_result->NumGlyphs();
+  } else if (item_result.layout_result) {
+    return 1;
+  } else if (item_result.IsRubyColumn()) {
+    wtf_size_t count = 0;
+    for (const auto& nested_result :
+         item_result.ruby_column->base_line.Results()) {
+      count += GlyphCount(nested_result);
+    }
+    return count;
+  }
+  return 0;
+}
+
+}  // namespace
+
+void LineInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(results_);
+  visitor->Trace(items_data_);
+  visitor->Trace(line_style_);
+  visitor->Trace(break_token_);
+  visitor->Trace(parallel_flow_break_tokens_);
+  visitor->Trace(block_in_inline_layout_result_);
+}
 
 void LineInfo::Reset() {
   items_data_ = nullptr;
@@ -51,7 +89,8 @@ void LineInfo::Reset() {
   needs_accurate_end_position_ = false;
   is_ruby_base_ = false;
   is_ruby_text_ = false;
-  may_have_text_combine_item_ = false;
+  may_have_text_combine_or_ruby_item_ = false;
+  may_have_ruby_overhang_ = false;
   allow_hang_for_alignment_ = false;
 }
 
@@ -63,8 +102,10 @@ void LineInfo::SetLineStyle(const InlineNode& node,
   const LayoutBox* box = node.GetLayoutBox();
   line_style_ = box->Style(use_first_line_style_);
   needs_accurate_end_position_ = ComputeNeedsAccurateEndPosition();
-  is_ruby_base_ = box->IsRubyBase();
-  is_ruby_text_ = box->IsRubyText();
+  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    is_ruby_base_ = box->IsRubyBase();
+    is_ruby_text_ = box->IsRubyText();
+  }
 
   // Reset block start offset related members.
   annotation_block_start_adjustment_ = LayoutUnit();
@@ -73,14 +114,25 @@ void LineInfo::SetLineStyle(const InlineNode& node,
 }
 
 ETextAlign LineInfo::GetTextAlign(bool is_last_line) const {
-  // See LayoutRubyBase::TextAlignmentForLine().
   if (is_ruby_base_)
     return ETextAlign::kJustify;
 
-  // See LayoutRubyText::TextAlignmentForLine().
-  if (is_ruby_text_ && LineStyle().GetTextAlign() ==
-                           ComputedStyleInitialValues::InitialTextAlign())
-    return ETextAlign::kJustify;
+  if (is_ruby_text_) {
+    ETextAlign text_align = LineStyle().GetTextAlign();
+    if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+      if (text_align == ComputedStyleInitialValues::InitialTextAlign()) {
+        return ETextAlign::kJustify;
+      }
+    } else {
+      ERubyAlign ruby_align = LineStyle().RubyAlign();
+      if ((ruby_align == ERubyAlign::kSpaceAround &&
+           (text_align == ComputedStyleInitialValues::InitialTextAlign() ||
+            text_align == ETextAlign::kJustify)) ||
+          ruby_align == ERubyAlign::kSpaceBetween) {
+        return ETextAlign::kJustify;
+      }
+    }
+  }
 
   return LineStyle().GetTextAlign(is_last_line);
 }
@@ -137,26 +189,82 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
   return false;
 }
 
+unsigned LineInfo::InflowStartOffset() const {
+  for (const auto& item_result : Results()) {
+    const InlineItem& item = *item_result.item;
+    if ((item.Type() == InlineItem::kText ||
+         item.Type() == InlineItem::kControl ||
+         item.Type() == InlineItem::kAtomicInline) &&
+        item.Length() > 0) {
+      return item_result.StartOffset();
+    } else if (item_result.IsRubyColumn()) {
+      const LineInfo& base_line = item_result.ruby_column->base_line;
+      unsigned start_offset = base_line.InflowStartOffset();
+      if (start_offset != base_line.EndTextOffset()) {
+        return start_offset;
+      }
+    }
+  }
+  return EndTextOffset();
+}
+
 InlineItemTextIndex LineInfo::End() const {
-  return GetBreakToken() ? GetBreakToken()->Start() : ItemsData().End();
+  if (GetBreakToken()) {
+    return GetBreakToken()->Start();
+  }
+  if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
+    return {end_item_index_, ItemsData().items[end_item_index_].StartOffset()};
+  }
+  return ItemsData().End();
 }
 
 unsigned LineInfo::EndTextOffset() const {
-  return GetBreakToken() ? GetBreakToken()->StartTextOffset()
-                         : ItemsData().text_content.length();
+  if (GetBreakToken()) {
+    return GetBreakToken()->StartTextOffset();
+  }
+  if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
+    return ItemsData().items[end_item_index_].StartOffset();
+  }
+  return ItemsData().text_content.length();
 }
 
-unsigned LineInfo::InflowEndOffset() const {
+unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
+    if (skip_forced_break) {
+      if (item.Type() == InlineItem::kControl &&
+          ItemsData().text_content[item.StartOffset()] == kNewlineCharacter) {
+        continue;
+      } else if (item.Type() == InlineItem::kText && item.Length() == 0) {
+        continue;
+      }
+    }
     if (item.Type() == InlineItem::kText ||
         item.Type() == InlineItem::kControl ||
         item.Type() == InlineItem::kAtomicInline) {
       return item_result.EndOffset();
+    } else if (item_result.IsRubyColumn()) {
+      const LineInfo& base_line = item_result.ruby_column->base_line;
+      unsigned end_offset =
+          base_line.InflowEndOffsetInternal(skip_forced_break);
+      if (end_offset != base_line.StartOffset()) {
+        return end_offset;
+      }
     }
   }
   return StartOffset();
+}
+
+bool LineInfo::GlyphCountIsGreaterThan(wtf_size_t limit) const {
+  wtf_size_t count = 0;
+  for (const auto& item_result : Results()) {
+    count += GlyphCount(item_result);
+    if (count > limit) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool LineInfo::ShouldHangTrailingSpaces() const {
@@ -185,7 +293,7 @@ bool LineInfo::ShouldHangTrailingSpaces() const {
     case ETextAlign::kWebkitRight:
       return IsRtl(BaseDirection());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool LineInfo::IsHyphenated() const {
@@ -205,33 +313,8 @@ void LineInfo::UpdateTextAlign() {
     allow_hang_for_alignment_ = true;
 
     if (HasTrailingSpaces()) {
-      bool should_hang;
-      bool hang_is_conditional = false;
-      switch (line_style_->GetWhiteSpaceCollapse()) {
-        case WhiteSpaceCollapse::kCollapse:
-        case WhiteSpaceCollapse::kPreserveBreaks:
-          should_hang = true;
-          break;
-        case WhiteSpaceCollapse::kPreserve:
-          should_hang = line_style_->ShouldWrapLine();
-          hang_is_conditional = HasForcedBreak() || IsLastLine();
-          break;
-        case WhiteSpaceCollapse::kBreakSpaces:
-          should_hang = false;
-      }
-
-      if (should_hang) {
-        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-
-        // Conditional hang: only the part of the trailing spaces that overflow
-        // the line actually hang.
-        // https://drafts.csswg.org/css-text-4/#conditionally-hang
-        if (hang_is_conditional) {
-          hang_width_ = std::min(hang_width_, Width() - available_width_)
-                            .ClampNegativeToZero();
-        }
-        return;
-      }
+      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+      return;
     }
 
     hang_width_ = LayoutUnit();
@@ -274,53 +357,104 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
            item.Type() != InlineItem::kOutOfFlowPositioned &&
            item.Type() != InlineItem::kBidiControl);
 
-    if (item.Type() == InlineItem::kControl ||
-        item_result.has_only_pre_wrap_trailing_spaces) {
-      trailing_spaces_width += item_result.inline_size;
-      continue;
-    }
+    LayoutUnit trailing_item_width;
+    bool will_continue = false;
 
-    // The last text item may contain trailing spaces if this is a last line,
-    // has a forced break, or is 'white-space: pre'.
     unsigned end_offset = item_result.EndOffset();
     DCHECK(end_offset);
-    if (item.Type() == InlineItem::kText) {
+
+    if (item.Type() == InlineItem::kControl ||
+        item_result.has_only_pre_wrap_trailing_spaces) {
+      trailing_item_width = item_result.inline_size;
+      will_continue = true;
+    } else if (item.Type() == InlineItem::kText) {
+      // The last text item may contain trailing spaces if this is a last line,
+      // has a forced break, or is 'white-space: pre'.
+
       if (!item_result.Length()) {
+        DCHECK(!item_result.inline_size);
         continue;  // Skip empty items. See `LineBreaker::HandleEmptyText`.
       }
       const String& text = items_data_->text_content;
-      if (end_offset && text[end_offset - 1] == kSpaceCharacter) {
+      if (end_offset && IsHangingSpace(text[end_offset - 1])) {
         do {
           --end_offset;
         } while (end_offset > item_result.StartOffset() &&
-                 text[end_offset - 1] == kSpaceCharacter);
+                 IsHangingSpace(text[end_offset - 1]));
 
         // If all characters in this item_result are spaces, check next item.
         if (end_offset == item_result.StartOffset()) {
-          trailing_spaces_width += item_result.inline_size;
-          continue;
+          trailing_item_width = item_result.inline_size;
+          will_continue = true;
+        } else {
+          // To compute the accurate width, we need to reshape if |end_offset|
+          // is not safe-to-break. We avoid reshaping in this case because the
+          // cost is high and the difference is subtle for the purpose of this
+          // function.
+          // TODO(kojii): Compute this without |CreateShapeResult|.
+          DCHECK_EQ(item.Direction(), BaseDirection());
+          ShapeResult* shape_result =
+              item_result.shape_result->CreateShapeResult();
+          float end_position = shape_result->PositionForOffset(
+              end_offset - shape_result->StartIndex());
+          if (IsRtl(BaseDirection())) {
+            trailing_item_width = LayoutUnit(end_position);
+          } else {
+            trailing_item_width =
+                LayoutUnit(shape_result->Width() - end_position);
+          }
         }
-
-        // To compute the accurate width, we need to reshape if |end_offset| is
-        // not safe-to-break. We avoid reshaping in this case because the cost
-        // is high and the difference is subtle for the purpose of this
-        // function.
-        // TODO(kojii): Compute this without |CreateShapeResult|.
-        DCHECK_EQ(item.Direction(), BaseDirection());
-        ShapeResult* shape_result =
-            item_result.shape_result->CreateShapeResult();
-        float end_position = shape_result->PositionForOffset(
-            end_offset - shape_result->StartIndex());
-        if (IsRtl(BaseDirection()))
-          trailing_spaces_width += end_position;
-        else
-          trailing_spaces_width += shape_result->Width() - end_position;
       }
     }
 
-    if (end_offset_out)
-      *end_offset_out = end_offset;
-    return trailing_spaces_width;
+    if (trailing_item_width &&
+        RuntimeEnabledFeatures::
+            HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+      switch (item.Style()->GetWhiteSpaceCollapse()) {
+        case WhiteSpaceCollapse::kCollapse:
+        case WhiteSpaceCollapse::kPreserveBreaks:
+          trailing_spaces_width += trailing_item_width;
+          break;
+        case WhiteSpaceCollapse::kPreserve:
+          if (item.Style()->ShouldWrapLine()) {
+            if (!trailing_spaces_width && (HasForcedBreak() || IsLastLine())) {
+              // Conditional hang: only the part of the trailing spaces that
+              // overflow the line actually hang.
+              // https://drafts.csswg.org/css-text-4/#conditionally-hang
+              LayoutUnit item_end = width_ - trailing_spaces_width;
+              LayoutUnit actual_hang_width =
+                  std::min(trailing_item_width, item_end - available_width_)
+                      .ClampNegativeToZero();
+              if (actual_hang_width != trailing_item_width) {
+                will_continue = false;
+              }
+              trailing_spaces_width += actual_hang_width;
+            } else {
+              trailing_spaces_width += trailing_item_width;
+            }
+            break;
+          }
+          // Cases with text-wrap other than nowrap fall are handled just like
+          // break-spaces.
+          [[fallthrough]];
+        case WhiteSpaceCollapse::kBreakSpaces:
+          // We don't hang.
+          if (will_continue) {
+            // TODO(abotella): Does this check out for RTL?
+            end_offset = item.EndOffset();
+            will_continue = false;
+          }
+      }
+    } else {
+      trailing_spaces_width += trailing_item_width;
+    }
+
+    if (!will_continue) {
+      if (end_offset_out) {
+        *end_offset_out = end_offset;
+      }
+      return trailing_spaces_width;
+    }
   }
 
   // An empty line, or only trailing spaces.
@@ -465,7 +599,7 @@ void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
                           return a->StartItemIndex() < b->StartItemIndex();
                         }));
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
-  for (auto* iter = parallel_flow_break_tokens_.begin();
+  for (auto iter = parallel_flow_break_tokens_.begin();
        iter != parallel_flow_break_tokens_.end(); ++iter) {
     const InlineBreakToken* break_token = *iter;
     DCHECK(break_token->IsInParallelBlockFlow());
@@ -482,8 +616,9 @@ std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info) {
   // Feel free to add more LineInfo members.
   ostream << "LineInfo available_width_=" << line_info.AvailableWidth()
           << " width_=" << line_info.Width() << " Results=[\n";
+  const String& text_content = line_info.ItemsData().text_content;
   for (const auto& result : line_info.Results()) {
-    ostream << "\t" << result.item->ToString() << "\n";
+    ostream << result.ToString(text_content, "\t").Utf8() << "\n";
   }
   return ostream << "]";
 }

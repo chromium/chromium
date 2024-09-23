@@ -136,6 +136,7 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
                              ->CreateImplBenchmarks()) {
     layer_tree_host_impl_->ScheduleMicroBenchmark(std::move(benchmark));
   }
+  layer_tree_host_impl_->CreatePendingTree();
   layer_tree_host_impl_->CommitComplete();
 
   // Make sure all posted messages run.

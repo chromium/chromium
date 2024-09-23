@@ -89,15 +89,16 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     delegate->GetWebUIMessageHandlers(&handlers);
   }
 
-  if (content::BINDINGS_POLICY_NONE !=
-      (web_ui_->GetBindings() & content::BINDINGS_POLICY_WEB_UI)) {
+  if (web_ui_->GetBindings().Has(content::BindingsPolicyValue::kWebUi)) {
     render_frame_host->SetWebUIProperty("dialogArguments", dialog_args);
   }
-  for (WebUIMessageHandler* handler : handlers)
+  for (WebUIMessageHandler* handler : handlers) {
     web_ui_->AddMessageHandler(base::WrapUnique(handler));
+  }
 
-  if (delegate)
+  if (delegate) {
     delegate->OnDialogShown(web_ui_);
+  }
 }
 
 void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
@@ -108,7 +109,7 @@ void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
       if (args[0].is_string())
         json_retval = args[0].GetString();
       else
-        NOTREACHED() << "Could not read JSON argument";
+        NOTREACHED_IN_MIGRATION() << "Could not read JSON argument";
     }
 
     delegate->OnDialogCloseFromWebUI(json_retval);

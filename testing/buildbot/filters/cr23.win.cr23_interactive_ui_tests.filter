@@ -1,5 +1,0 @@
-# cr2023_interactive_ui_tests that are expected to fail on win bots:
--PermissionsFlowInteractiveUITest.CameraActivityIndicatorTest
--PermissionsFlowInteractiveUITest.CameraAndMicrophoneActivityIndicatorTest
--PermissionsFlowInteractiveUITest.MicrophoneActivityIndicatorTest
--PriceTrackingIconViewInteractiveTest.EnablePriceTrackOnPress

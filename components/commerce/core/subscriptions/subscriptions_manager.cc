@@ -454,12 +454,13 @@ void SubscriptionsManager::OnUnsubscribe(
 
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  WipeStorageAndSyncSubscriptions();
+  storage_->DeleteAll();
+  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::HasRequestRunning() {
   // Reset has_request_running_ to false if the last request is stuck somewhere.
-  // TODO(crbug.com/1370703): We should still be able to get the callback when
+  // TODO(crbug.com/40241090): We should still be able to get the callback when
   // the request times out. Also we should make the callback cancelable itself
   // rather than having to wait for the next request coming.
   if (has_request_running_ &&
@@ -483,11 +484,6 @@ void SubscriptionsManager::AddObserver(SubscriptionsObserver* observer) {
 
 void SubscriptionsManager::RemoveObserver(SubscriptionsObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void SubscriptionsManager::WipeStorageAndSyncSubscriptions() {
-  storage_->DeleteAll();
-  SyncSubscriptions();
 }
 
 bool SubscriptionsManager::GetLastSyncSucceededForTesting() {

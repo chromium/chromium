@@ -8,9 +8,9 @@
 #include <vulkan/vulkan_core.h>
 
 #include <array>
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"

@@ -100,6 +100,12 @@ void FakeEventRewriterAshDelegate::NotifySixPackRewriteBlockedBySetting(
     ui::mojom::SixPackShortcutModifier active_modifier,
     int device_id) {}
 
+void FakeEventRewriterAshDelegate::NotifySixPackRewriteBlockedByFnKey(
+    ui::KeyboardCode key_code,
+    ui::mojom::SixPackShortcutModifier modifier) {}
+
+void FakeEventRewriterAshDelegate::NotifyTopRowRewriteBlockedByFnKey() {}
+
 std::optional<ui::mojom::ExtendedFkeysModifier>
 FakeEventRewriterAshDelegate::GetExtendedFkeySetting(
     int device_id,

@@ -13,10 +13,19 @@
 // push notification's `push_notification_client_id` for the
 // PushNotificationClientManager to accurately associate the notification to the
 // desired feature.
+//
+// Must be in sync with PushNotificationClientId enum in
+// tools/metrics/histograms/metadata/ios/enums.xml.
+// LINT.IfChange
 enum class PushNotificationClientId {
   kCommerce = 1,
   kContent = 2,
   kTips = 3,
+  kSports = 4,
+  kSafetyCheck = 5,
+  kSendTab = 6,
+  kMaxValue = kSendTab,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_

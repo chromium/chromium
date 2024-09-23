@@ -5,6 +5,7 @@
 module remote_cocoa.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "ui/base/ime/mojom/text_edit_commands.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
@@ -78,4 +79,12 @@ interface TextInputHost {
   [Sync]
   GetFirstRectForRange(gfx.mojom.Range requested_range) =>
       (gfx.mojom.Rect rect, gfx.mojom.Range actual_range);
+
+  // Returns true if |command| is currently allowed to be executed. Used to
+  // populate macOS menubar text edit commands in app shim applications.
+  [Sync]
+  IsTextEditCommandEnabled(ui.mojom.TextEditCommand command) => (bool enabled);
+
+  // See ui/base/ime/text_input_client.h for definition.
+  SetTextEditCommandForNextKeyEvent(ui.mojom.TextEditCommand command);
 };

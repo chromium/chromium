@@ -1,0 +1,86 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
+import("//testing/test.gni")
+
+assert(enable_pdf)
+assert(is_chromeos_ash)
+assert(enable_screen_ai_service)
+
+source_set("lib") {
+  sources = [
+    "pdf_progressive_searchifier.cc",
+    "pdf_progressive_searchifier.h",
+    "pdf_searchifier.cc",
+    "pdf_searchifier.h",
+    "pdf_service.cc",
+    "pdf_service.h",
+    "pdf_thumbnailer.cc",
+    "pdf_thumbnailer.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+  ]
+
+  deps = [
+    "//components/discardable_memory/client",
+    "//content/public/child",
+    "//content/public/utility",
+    "//pdf",
+    "//skia",
+  ]
+}
+
+source_set("pdf_progressive_searchifier_test") {
+  testonly = true
+  sources = [ "pdf_progressive_searchifier_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//skia",
+    "//testing/gtest",
+  ]
+}
+
+source_set("pdf_searchifier_test") {
+  testonly = true
+  sources = [ "pdf_searchifier_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//skia",
+    "//testing/gtest",
+  ]
+}
+
+source_set("pdf_thumbnailer_test") {
+  testonly = true
+  sources = [ "pdf_thumbnailer_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//skia",
+    "//testing/gtest",
+  ]
+}

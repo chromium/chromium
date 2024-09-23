@@ -8,9 +8,8 @@
 #define COMPONENTS_GOOGLE_CORE_COMMON_GOOGLE_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
-
-#include "base/strings/string_piece.h"
 
 class GURL;
 
@@ -45,7 +44,7 @@ extern const char kGoogleHomepageURL[];
 // True iff |str| contains a "q=" or "as_q=" query parameter with a non-empty
 // value. |str| should be a query or a hash fragment, without the ? or # (as
 // returned by GURL::query() or GURL::ref().
-bool HasGoogleSearchQueryParam(base::StringPiece str);
+bool HasGoogleSearchQueryParam(std::string_view str);
 
 // Returns the Google locale corresponding to |application_locale|.  This is
 // the same string as AppendGoogleLocaleParam adds to the URL, only without the
@@ -114,7 +113,7 @@ bool IsGoogleDomainUrl(const GURL& url,
 // will also return true for any URL whose hostname exactly matches the hostname
 // of the URL specified on the command line.  In this case,
 // |subdomain_permission| is ignored.
-bool IsGoogleHostname(base::StringPiece host,
+bool IsGoogleHostname(std::string_view host,
                       SubdomainPermission subdomain_permission);
 
 // True if |url| represents a valid Google home page URL.

@@ -104,7 +104,6 @@ export function testRescanAfterIOTaskOperationOnlyForNonWatchableVolume() {
     } as VolumeInfo;
   };
 
-  /** @type {!Array<!chrome.fileManagerPrivate.IoTaskType>} */
   const operations = [
     chrome.fileManagerPrivate.IoTaskType.COPY,
     chrome.fileManagerPrivate.IoTaskType.DELETE,

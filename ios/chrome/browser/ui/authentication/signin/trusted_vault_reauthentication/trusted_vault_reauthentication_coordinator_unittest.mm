@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-
 #import "base/test/ios/wait_util.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -34,12 +35,12 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
 
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
-    GetAnyKeyWindow().rootViewController = base_view_controller_;
+    [scoped_key_window_.Get() setRootViewController:base_view_controller_];
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -66,25 +67,30 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
+  ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_ = nil;
 };
 
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -131,19 +137,23 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
 // Opens the trusted vault reauth dialog, and simulate a user cancel.
 TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
@@ -184,19 +194,23 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
 TEST_F(TrustedVaultReauthenticationCoordinatorTest,
        TestInterruptUIShutdownNoDismiss) {
   // Create sign-in coordinator.
+  trusted_vault::SecurityDomainId securityDomainID =
+      trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
   SigninCoordinator* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
                                                              intent:
                                                                  SigninTrustedVaultDialogIntentFetchKeys
+                                                   securityDomainID:
+                                                       securityDomainID
                                                             trigger:trigger
                                                         accessPoint:
-                                                            signin_metrics::
-                                                                AccessPoint::
-                                                                    ACCESS_POINT_START_PAGE];
+                                                            accessPoint];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrPolicyStringsType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
+import type {CrPolicyStringsType} from 'chrome://resources/cr_elements/policy/cr_policy_types.js';
 
 /** @fileoverview Sets up strings used by policy indicator elements. */
 export const CrPolicyStrings: CrPolicyStringsType = {

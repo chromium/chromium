@@ -1,0 +1,90 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/origin.mojom";
+
+// These types hold IndexedDB metadata. This information is displayed in
+// chrome://indexeddb-internals for debugging.
+
+struct IdbOriginMetadata {
+  url.mojom.Origin origin;
+  array<IdbStorageKeyMetadata> storage_keys;
+};
+
+struct IdbStorageKeyMetadata {
+  network.mojom.SchemefulSite top_level_site;
+  string serialized_storage_key;
+  array<IdbBucketMetadata> buckets;
+};
+
+// IndexedDB metadata for a single Bucket.
+struct IdbBucketMetadata {
+  BucketLocator bucket_locator;
+  string name;
+  uint64 size;
+  mojo_base.mojom.Time last_modified;
+  array<mojo_base.mojom.FilePath> paths;
+  uint64 connection_count;
+  array<IdbDatabaseMetadata> databases;
+  array<BucketClientInfo> clients;
+  // For snapshot recorings, stores the number of milliseconds since the
+  // recording was started.
+  uint64 delta_recording_start_ms;
+};
+
+// Metadata for an IndexedDB database.
+struct IdbDatabaseMetadata {
+  mojo_base.mojom.String16 name;
+  uint64 connection_count;
+  uint64 active_open_delete;
+  uint64 pending_open_delete;
+  array<IdbTransactionMetadata> transactions;
+};
+
+// Metadata for a transaction of an IndexedDB database.
+struct IdbTransactionMetadata{
+  IdbTransactionMode mode;
+  IdbTransactionState state;
+  int64 tid;
+  int32 connection_id;
+  string client_token;
+  double age;
+  double runtime;
+  double tasks_scheduled;
+  double tasks_completed;
+  array<mojo_base.mojom.String16> scope;
+  // Stores how long the transaction was in each observed state.
+  // Only populated when snapshot recording mode was enabled.
+  array<IdbTransactionMetadataStateHistory> state_history;
+};
+
+struct IdbTransactionMetadataStateHistory {
+  IdbTransactionState state;
+  // Length of time (ms) the transaction was in the specified state.
+  double duration;
+};
+
+// The mode the transaction is running in.
+enum IdbTransactionMode {
+  kReadOnly = 0,
+  kReadWrite = 1,
+  kVersionChange = 2,
+};
+
+// The execution state of the transaction.
+enum IdbTransactionState {
+  kBlocked = 0,
+  kRunning = 1,
+  kStarted = 2,
+  kCommitting = 3,
+  kFinished = 4,
+};

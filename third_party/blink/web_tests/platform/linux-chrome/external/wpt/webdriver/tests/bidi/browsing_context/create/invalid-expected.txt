@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_params_user_context_invalid_value_with_ref_context
-  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchUserContextException'>
-Harness: the test ran to completion.

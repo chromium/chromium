@@ -1,0 +1,202 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(!is_android)
+
+source_set("shortcuts") {
+  public = [ "shortcut_icon_generator.h" ]
+  sources = [ "shortcut_icon_generator.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    "//chrome/app/resources:platform_locale_settings",
+    "//components/url_formatter",
+    "//net",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+
+  if (!is_chromeos) {
+    public += [ "create_shortcut_for_current_web_contents_task.h" ]
+
+    sources += [
+      "create_shortcut_for_current_web_contents_task.cc",
+      "document_icon_fetcher_task.cc",
+      "document_icon_fetcher_task.h",
+      "icon_badging.cc",
+      "icon_badging.h",
+      "shortcut_creator.cc",
+      "shortcut_creator.h",
+    ]
+
+    deps += [
+      "//base",
+      "//base/version_info:channel",
+      "//build:branding_buildflags",
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:channel_info",
+      "//chrome/common:chrome_features",
+      "//components/webapps/common",
+      "//components/webapps/common:mojo_bindings",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//skia",
+      "//third_party/blink/public/common",
+      "//url",
+    ]
+  }
+
+  if (is_win) {
+    public += [ "platform_util_win.h" ]
+    sources += [
+      "platform_util_win.cc",
+      "shortcut_creator_win.cc",
+    ]
+    deps += [ "//chrome/common:non_code_constants" ]
+  }
+
+  friend = [
+    ":browser_tests",
+    ":test_support",
+    ":unit_tests",
+  ]
+
+  if (is_mac) {
+    public += [
+      "chrome_webloc_file.h",
+      "platform_util_mac.h",
+    ]
+    sources += [
+      "chrome_webloc_file.mm",
+      "platform_util_mac.mm",
+      "shortcut_creator_mac.mm",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "linux_xdg_wrapper.h",
+      "linux_xdg_wrapper_impl.cc",
+      "linux_xdg_wrapper_impl.h",
+      "shortcut_creator_linux.cc",
+      "shortcut_creator_linux.h",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [
+    "image_test_utils.h",
+    "shortcut_creation_test_support.h",
+  ]
+  sources = [ "image_test_utils.cc" ]
+  public_deps = [
+    ":shortcuts",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//url",
+  ]
+  deps = [ "//ui/gfx/codec" ]
+
+  if (is_linux) {
+    public += [
+      "fake_linux_xdg_wrapper.h",
+      "shortcut_creation_test_support_linux.h",
+    ]
+    sources += [
+      "fake_linux_xdg_wrapper.cc",
+      "shortcut_creation_test_support_linux.cc",
+    ]
+    deps += [ "//chrome/browser" ]
+  }
+  if (is_mac) {
+    sources += [ "shortcut_creation_test_support_mac.mm" ]
+  }
+  if (is_win) {
+    sources += [ "shortcut_creation_test_support_win.cc" ]
+    deps += [ "//chrome/browser" ]
+  }
+}
+
+if (!is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+
+    sources = [
+      "document_icon_fetcher_browsertest.cc",
+      "shortcut_creation_browsertest.cc",
+      "shortcut_launch_browsertest.cc",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":shortcuts",
+      ":test_support",
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//skia",
+      "//testing/gtest",
+      "//ui/gfx:test_support",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "shortcut_icon_generator_unittest.cc" ]
+  if (!is_chromeos) {
+    sources += [ "icon_badging_unittest.cc" ]
+  }
+
+  deps = [
+    ":shortcuts",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/common:chrome_features",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+    "//url",
+  ]
+
+  if (is_win) {
+    sources += [ "shortcut_creator_win_unittest.cc" ]
+    deps += [ "//chrome/browser:browser" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "chrome_webloc_file_unittest.mm",
+      "platform_util_mac_unittest.mm",
+      "shortcut_creator_mac_unittest.mm",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "shortcut_creation_test_support_linux_unittest.cc",
+      "shortcut_creator_linux_unittest.cc",
+    ]
+  }
+}

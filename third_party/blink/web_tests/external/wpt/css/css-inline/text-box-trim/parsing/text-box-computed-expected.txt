@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Property text-box value 'ideographic'
+  assert_true: 'ideographic' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'cap ideographic none'
+  assert_true: 'cap ideographic none' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'ideographic none'
+  assert_true: 'ideographic none' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'trim-start ideographic ideographic'
+  assert_true: 'trim-start ideographic ideographic' is a supported value for text-box. expected true got false
+[FAIL] Property text-box value 'trim-start ideographic-ink ideographic-ink'
+  assert_true: 'trim-start ideographic-ink ideographic-ink' is a supported value for text-box. expected true got false
+Harness: the test ran to completion.
+

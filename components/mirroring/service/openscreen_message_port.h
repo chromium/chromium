@@ -6,9 +6,9 @@
 #define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_MESSAGE_PORT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,8 +24,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenMessagePort final
  public:
   // In Chrome the source and destination are fixed for a given message port.
   OpenscreenMessagePort(
-      base::StringPiece source_id,
-      base::StringPiece destination_id,
+      std::string_view source_id,
+      std::string_view destination_id,
       mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
       mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel);
 
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenMessagePort final
   // mojom::CastMessageChannel implementation (inbound messages).
   void OnMessage(mojom::CastMessagePtr message) override;
 
-  const base::StringPiece source_id_;
+  const std::string_view source_id_;
   const std::string destination_id_;
   const mojo::Remote<mojom::CastMessageChannel> outbound_channel_;
   const mojo::Receiver<mojom::CastMessageChannel> inbound_channel_;

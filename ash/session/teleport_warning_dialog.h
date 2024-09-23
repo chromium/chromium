@@ -33,7 +33,8 @@ class TeleportWarningDialog : public views::DialogDelegateView {
   static void Show(OnAcceptCallback callback);
 
   // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   void InitDialog();

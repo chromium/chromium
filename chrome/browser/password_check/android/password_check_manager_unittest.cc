@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -30,6 +31,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -100,24 +102,28 @@ BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
     Profile* profile) {
   return BulkLeakCheckServiceFactory::GetInstance()
       ->SetTestingSubclassFactoryAndUse(
-          profile, base::BindLambdaForTesting([=](content::BrowserContext*) {
-            return std::make_unique<BulkLeakCheckService>(
-                identity_manager,
-                base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-          }));
+          profile, base::BindOnce(
+                       [](signin::IdentityManager* identity_manager,
+                          content::BrowserContext*) {
+                         return std::make_unique<BulkLeakCheckService>(
+                             identity_manager,
+                             base::MakeRefCounted<
+                                 network::TestSharedURLLoaderFactory>());
+                       },
+                       base::Unretained(identity_manager)));
 }
 
 syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
   return SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      profile, base::BindLambdaForTesting([](content::BrowserContext*) {
+      profile, base::BindOnce([](content::BrowserContext*) {
         return std::make_unique<syncer::TestSyncService>();
       }));
 }
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password = kPassword1,
-                               base::StringPiece16 username_element = u"") {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view username,
+                               std::u16string_view password = kPassword1,
+                               std::u16string_view username_element = u"") {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
@@ -127,14 +133,14 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   return form;
 }
 
-std::string MakeAndroidRealm(base::StringPiece package_name) {
+std::string MakeAndroidRealm(std::string_view package_name) {
   return base::StrCat({"android://hash@", package_name});
 }
 PasswordForm MakeSavedAndroidPassword(
-    base::StringPiece package_name,
-    base::StringPiece16 username,
-    base::StringPiece app_display_name = "",
-    base::StringPiece affiliated_web_realm = "") {
+    std::string_view package_name,
+    std::u16string_view username,
+    std::string_view app_display_name = "",
+    std::string_view affiliated_web_realm = "") {
   PasswordForm form;
   form.signon_realm = MakeAndroidRealm(package_name);
   form.username_value = std::u16string(username);
@@ -257,7 +263,8 @@ TEST_F(PasswordCheckManagerTest, OnCompromisedCredentialsChanged) {
 }
 
 TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged(_))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_observer(), OnSavedPasswordsFetched(1));
@@ -329,7 +336,8 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -375,7 +383,8 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStruct) {
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   InitializeManager();
 
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));

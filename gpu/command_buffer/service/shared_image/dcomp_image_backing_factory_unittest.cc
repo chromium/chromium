@@ -20,8 +20,8 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -42,11 +42,11 @@ namespace gpu {
 
 namespace {
 
-constexpr uint32_t kDXGISwapChainUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                         SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                         SHARED_IMAGE_USAGE_SCANOUT;
+constexpr SharedImageUsageSet kDXGISwapChainUsage =
+    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN;
 
-constexpr uint32_t kDCompSurfaceUsage =
+constexpr SharedImageUsageSet kDCompSurfaceUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT |
     SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
 
@@ -101,7 +101,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
   std::unique_ptr<DCompImageBackingFactory> shared_image_factory_;
 
   void RunDXGISwapChainAlphaTest(bool has_alpha) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
+    Mailbox mailbox = Mailbox::Generate();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
             mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -173,7 +173,8 @@ TEST_F(DCompImageBackingFactoryTest, HDR10Support) {
 }
 
 TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
-  uint32_t valid_usages[2] = {kDCompSurfaceUsage, kDXGISwapChainUsage};
+  SharedImageUsageSet valid_usages[2] = {kDCompSurfaceUsage,
+                                         kDXGISwapChainUsage};
 
   viz::SharedImageFormat valid_formats[5] = {
       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
@@ -196,7 +197,7 @@ TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
 // Test that |asyncRescaleAndReadPixels| works on a DXGI swap chain-backed
 // SharedImage for CopyOutput support.
 TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -253,7 +254,7 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
 // that we correctly restore the previous current surface after we're done
 // drawing.
 TEST_F(DCompImageBackingFactoryTest, DCompSurfaceRestoresGLSurfaceAfterDraw) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -292,7 +293,7 @@ TEST_F(DCompImageBackingFactoryTest, DCompSurfaceRestoresGLSurfaceAfterDraw) {
 // changes). This test ensures that this value changes after draws.
 TEST_F(DCompImageBackingFactoryTest,
        DCompSurfaceMultipleDrawsIncrementSurfaceSerial) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -377,7 +378,7 @@ class DCompImageBackingFactoryBufferCountTest
 };
 
 TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
@@ -537,19 +538,19 @@ class DCompImageBackingFactoryVisualTreeTest
 
   // Create a backing, fill |draw_area| with |draw_color|, and schedule the
   // overlay
-  void ScheduleImageWithOneDraw(uint32_t usage,
+  void ScheduleImageWithOneDraw(gpu::SharedImageUsageSet usage,
                                 viz::SharedImageFormat format,
                                 const gfx::ColorSpace& color_space,
                                 bool has_alpha,
                                 const gfx::Rect& draw_area,
                                 SkColor draw_color) {
-    Mailbox mailbox = Mailbox::GenerateForSharedImage();
+    Mailbox mailbox = Mailbox::Generate();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
             mailbox, format, nullptr, window_size_, color_space,
             kTopLeft_GrSurfaceOrigin,
-            has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType, usage,
-            "TestLabel", false);
+            has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
+            SharedImageUsageSet(usage), "TestLabel", false);
     ASSERT_NE(nullptr, backing);
     std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
         shared_image_manager_.Register(std::move(backing),
@@ -577,7 +578,7 @@ class DCompImageBackingFactoryVisualTreeTest
 
   // Runs a sanity check test that verifies backings with different color spaces
   // are valid and contain the values we expect.
-  void RunFormatAndColorSpaceTest(uint32_t usage,
+  void RunFormatAndColorSpaceTest(gpu::SharedImageUsageSet usage,
                                   viz::SharedImageFormat format,
                                   gfx::ColorSpace color_space,
                                   bool has_alpha,
@@ -615,7 +616,7 @@ class DCompImageBackingFactoryVisualTreeTest
   // from an uninitialized portion of a SharedImage. Incomplete draws still can
   // happen in valid scenarios, however. E.g. if a client over-allocates the
   // backing, but only reads from the part it draws to.
-  void RunIncompleteFirstDrawTest(uint32_t usage) {
+  void RunIncompleteFirstDrawTest(gpu::SharedImageUsageSet usage) {
     // First draw does not cover full surface
     const SkColor expected_color = SK_ColorGREEN;
     ScheduleImageWithOneDraw(usage, viz::SinglePlaneFormat::kRGBA_8888,
@@ -807,7 +808,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainBackingCanDrawMultipleTimes) {
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
           mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,

@@ -16,7 +16,6 @@ namespace {
 
 const CGFloat kCountWidth = 20;
 const CGFloat kCountBorderWidth = 24;
-const CGFloat kIconSize = 56;
 
 }  // namespace
 
@@ -32,10 +31,9 @@ const CGFloat kIconSize = 56;
 
     [self.imageContainerView addSubview:_iconView];
     AddSameConstraints(self.imageContainerView, _iconView);
-    CGFloat iconSize =
-        IsMagicStackEnabled() ? kMagicStackImageContainerWidth : kIconSize;
     [NSLayoutConstraint activateConstraints:@[
-      [_iconView.widthAnchor constraintEqualToConstant:iconSize],
+      [_iconView.widthAnchor
+          constraintEqualToConstant:kMagicStackImageContainerWidth],
       [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
     ]];
 
@@ -57,13 +55,18 @@ const CGFloat kIconSize = 56;
   return self;
 }
 
+- (void)shortcutsItemConfigDidChange:
+    (ContentSuggestionsMostVisitedActionItem*)config {
+  if (config.index != _config.index) {
+    return;
+  }
+  [self updateConfiguration:config];
+}
+
 - (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config {
   _config = config;
   self.titleLabel.text = config.title;
-  if (IsMagicStackEnabled()) {
-    // When in the Magic Stack, a smaller preferred font is desired.
     self.titleLabel.font = [self titleLabelFont];
-  }
   self.accessibilityTraits =
       UIAccessibilityTraitButton | config.accessibilityTraits;
   self.accessibilityLabel = config.accessibilityLabel.length
@@ -128,9 +131,8 @@ const CGFloat kIconSize = 56;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (IsMagicStackEnabled() &&
-      previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory) {
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
     self.titleLabel.font = [self titleLabelFont];
   }
 }

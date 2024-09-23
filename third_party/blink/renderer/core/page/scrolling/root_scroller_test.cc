@@ -152,6 +152,16 @@ class RootScrollerTest : public testing::Test,
     create_widget_callback_ = create_widget_callback;
   }
 
+  bool UsesCompositedScrolling(
+      const PaintLayerScrollableArea* scrollable_area) {
+    auto* property_trees =
+        MainFrameView()->RootCcLayer()->layer_tree_host()->property_trees();
+    auto* scroll_node =
+        property_trees->scroll_tree_mutable().FindNodeFromElementId(
+            scrollable_area->GetScrollElementId());
+    return scroll_node->is_composited;
+  }
+
  protected:
   WebViewImpl* InitializeInternal(const String& url) {
     helper_ = std::make_unique<frame_test_helpers::WebViewHelper>(
@@ -489,18 +499,18 @@ TEST_F(RootScrollerTest, AlwaysCreateCompositedScrollingLayers) {
       MainFrame()->GetDocument()->getElementById(AtomicString("container"));
 
   PaintLayerScrollableArea* container_scroller = GetScrollableArea(*container);
-  ASSERT_FALSE(container_scroller->UsesCompositedScrolling());
+  ASSERT_FALSE(UsesCompositedScrolling(container_scroller));
 
   ExecuteScript("document.querySelector('#container').style.width = '100%'");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  ASSERT_TRUE(container_scroller->UsesCompositedScrolling());
+  ASSERT_TRUE(UsesCompositedScrolling(container_scroller));
 
   ExecuteScript("document.querySelector('#container').style.width = '98%'");
   ASSERT_EQ(MainFrame()->GetDocument(),
             EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  EXPECT_FALSE(container_scroller->UsesCompositedScrolling());
+  EXPECT_FALSE(UsesCompositedScrolling(container_scroller));
 }
 
 // Make sure that if an effective root scroller becomes a remote frame, it's
@@ -1984,9 +1994,10 @@ TEST_F(ImplicitRootScrollerSimTest, ScrollRestorationIgnoresImplicit) {
   GetDocument()
       .View()
       ->GetScrollableArea()
-      ->SetPendingHistoryRestoreScrollOffset(view_state, true);
+      ->SetPendingHistoryRestoreScrollOffset(
+          view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->LayoutViewport()->SetPendingHistoryRestoreScrollOffset(
-      view_state, true);
+      view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->ScheduleAnimation();
 
   Compositor().BeginFrame();
@@ -2079,7 +2090,7 @@ TEST_F(ImplicitRootScrollerSimTest,
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
   EXPECT_EQ(To<LayoutBox>(container->GetLayoutObject())->Size().height, 600);
-  WebView().SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  WebView().MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
   WebView().GetPage()->GetBrowserControls().SetShownRatio(0, 0);
   WebView().ResizeWithBrowserControls(gfx::Size(800, 650), 50, 50, false);
   Compositor().BeginFrame();
@@ -2373,22 +2384,22 @@ TEST_F(ImplicitRootScrollerSimTest, BottomFixedAffectedByTopControls) {
       To<HTMLFrameOwnerElement>(container1)->contentDocument();
   Document* child2_document =
       To<HTMLFrameOwnerElement>(container2)->contentDocument();
-  LayoutObject* fixed =
+  LayoutObject* fixed_layout =
       GetDocument().getElementById(AtomicString("fixed"))->GetLayoutObject();
-  LayoutObject* fixed1 =
+  LayoutObject* fixed_layout1 =
       child1_document->getElementById(AtomicString("fixed"))->GetLayoutObject();
-  LayoutObject* fixed2 =
+  LayoutObject* fixed_layout2 =
       child2_document->getElementById(AtomicString("fixed"))->GetLayoutObject();
 
-  EXPECT_TRUE(fixed->FirstFragment()
+  EXPECT_TRUE(fixed_layout->FirstFragment()
                   .PaintProperties()
                   ->PaintOffsetTranslation()
                   ->IsAffectedByOuterViewportBoundsDelta());
-  EXPECT_TRUE(fixed1->FirstFragment()
+  EXPECT_TRUE(fixed_layout1->FirstFragment()
                   .PaintProperties()
                   ->PaintOffsetTranslation()
                   ->IsAffectedByOuterViewportBoundsDelta());
-  EXPECT_FALSE(fixed2->FirstFragment()
+  EXPECT_FALSE(fixed_layout2->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation()
                    ->IsAffectedByOuterViewportBoundsDelta());

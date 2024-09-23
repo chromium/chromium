@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -47,6 +48,9 @@ void GetOrderOfViewsWithLayers(
     const std::map<views::View*, aura::Window*>& hosts,
     std::vector<views::View*>* order) {
   DCHECK(view);
+  SCOPED_CRASH_KEY_STRING64("GetOrderOfViewsWithLayers", "view_name",
+                            view->GetObjectName());
+
   DCHECK(parent_layer);
   DCHECK(order);
   if (view->layer() && view->layer()->parent() == parent_layer) {
@@ -125,8 +129,8 @@ void WindowReorderer::AssociationObserver::OnWindowDestroying(
 }
 
 WindowReorderer::WindowReorderer(aura::Window* parent_window, View* root_view)
-    : root_view_(root_view),
-      association_observer_(new AssociationObserver(this)) {
+    : association_observer_(new AssociationObserver(this)) {
+  view_observation_.Observe(root_view);
   parent_window_observation_.Observe(parent_window);
   for (aura::Window* window : parent_window->children()) {
     association_observer_->StartObserving(window);
@@ -137,7 +141,8 @@ WindowReorderer::WindowReorderer(aura::Window* parent_window, View* root_view)
 WindowReorderer::~WindowReorderer() = default;
 
 void WindowReorderer::ReorderChildWindows() {
-  if (!parent_window_observation_.IsObserving()) {
+  if (!parent_window_observation_.IsObserving() ||
+      !view_observation_.IsObserving()) {
     return;
   }
 
@@ -154,8 +159,9 @@ void WindowReorderer::ReorderChildWindows() {
 
   // Compute the desired z-order of the layers based on the order of the views
   // with layers and views with associated windows in the view tree.
+  View* root_view = view_observation_.GetSource();
   std::vector<View*> view_with_layer_order;
-  GetOrderOfViewsWithLayers(root_view_, parent_window.layer(), hosted_windows,
+  GetOrderOfViewsWithLayers(root_view, parent_window.layer(), hosted_windows,
                             &view_with_layer_order);
 
   std::vector<ui::Layer*> children_layer_order;
@@ -201,9 +207,13 @@ void WindowReorderer::OnWillRemoveWindow(aura::Window* window) {
 }
 
 void WindowReorderer::OnWindowDestroying(aura::Window* window) {
-  root_view_ = nullptr;
   parent_window_observation_.Reset();
   association_observer_.reset();
+}
+
+void WindowReorderer::OnViewIsDeleting(View* observed_view) {
+  DCHECK(view_observation_.IsObservingSource(observed_view));
+  view_observation_.Reset();
 }
 
 }  // namespace views

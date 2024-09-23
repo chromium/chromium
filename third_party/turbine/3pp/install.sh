@@ -11,10 +11,10 @@ PREFIX="$1"
 DEPS_PREFIX="$2"
 
 # Verify mvn works
-JAVA_HOME=$DEPS_PREFIX/current mvn -v
+JAVA_HOME=$DEPS_PREFIX mvn -v
 
 # Build
-JAVA_HOME=$DEPS_PREFIX/current mvn package -DskipTests=true -q -f pom.xml
+JAVA_HOME=$DEPS_PREFIX mvn package -DskipTests=true -q -f pom.xml
 cp target/turbine-HEAD-SNAPSHOT-all-deps.jar turbine.jar
 
 mkdir -p $PREFIX/

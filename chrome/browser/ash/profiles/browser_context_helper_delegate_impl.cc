@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 
 namespace ash {
 
@@ -21,6 +22,24 @@ BrowserContextHelperDelegateImpl::GetBrowserContextByPath(
   if (!profile_manager)
     return nullptr;
   return profile_manager->GetProfileByPath(path);
+}
+
+content::BrowserContext*
+BrowserContextHelperDelegateImpl::GetBrowserContextByAccountId(
+    const AccountId& account_id) {
+  // profile_manager can be null in unit tests.
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return nullptr;
+  }
+
+  for (auto* profile : profile_manager->GetLoadedProfiles()) {
+    auto* annotated_id = AnnotatedAccountId::Get(profile);
+    if (annotated_id && *annotated_id == account_id) {
+      return profile;
+    }
+  }
+  return nullptr;
 }
 
 content::BrowserContext*

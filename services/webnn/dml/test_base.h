@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_DML_TEST_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // GTEST_SKIP() will let method return directly.
@@ -15,10 +16,6 @@
       GTEST_SKIP() << #condition; \
   } while (0)
 
-namespace gl {
-class GLDisplay;
-}
-
 namespace webnn::dml {
 
 bool UseGPUInTests();
@@ -26,14 +23,9 @@ bool UseGPUInTests();
 class TestBase : public testing::Test {
  public:
   void SetUp() override;
-  void TearDown() override;
-
-  // Initializing the GL display is required for querying D3D11 device by
-  // gl::QueryD3D11DeviceObjectFromANGLE().
-  bool InitializeGLDisplay();
 
  private:
-  raw_ptr<gl::GLDisplay> display_ = nullptr;
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace webnn::dml

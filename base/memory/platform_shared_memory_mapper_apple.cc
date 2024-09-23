@@ -4,14 +4,15 @@
 
 #include "base/memory/platform_shared_memory_mapper.h"
 
-#include "base/logging.h"
-
 #include <mach/vm_map.h>
+
 #include "base/apple/mach_logging.h"
+#include "base/containers/span.h"
+#include "base/logging.h"
 
 namespace base {
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -29,10 +30,13 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
                             VM_INHERIT_NONE);
   if (kr != KERN_SUCCESS) {
     MACH_DLOG(ERROR, kr) << "vm_map";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return make_span(reinterpret_cast<uint8_t*>(address), size);
+  // SAFETY: vm_map() maps a memory segment of `size` bytes. Since
+  // `VM_FLAGS_ANYWHERE` is used, the address will be chosen by vm_map() and
+  // returned in `address`.
+  return UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(address), size));
 }
 
 void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {

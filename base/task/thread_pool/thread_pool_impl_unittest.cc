@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/task/thread_pool/thread_pool_impl.h"
 
 #include <stddef.h>
@@ -964,7 +969,7 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   thread_pool_->Shutdown();
 
   constexpr char kByte = '!';
-  ASSERT_TRUE(WriteFileDescriptor(pipes[1], as_bytes(make_span(&kByte, 1u))));
+  ASSERT_TRUE(WriteFileDescriptor(pipes[1], byte_span_from_ref(kByte)));
 
   // Give a chance for the file watcher to fire before closing the handles.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());

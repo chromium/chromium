@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector_statics.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -46,10 +46,11 @@ void BarcodeDetectorStatics::CreateBarcodeDetection(
   service_->CreateBarcodeDetection(std::move(receiver), std::move(options));
 }
 
-ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>>
+ScriptPromise<IDLSequence<V8BarcodeFormat>>
 BarcodeDetectorStatics::EnumerateSupportedFormats(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>>(
+          script_state);
   auto promise = resolver->Promise();
   get_supported_format_requests_.insert(resolver);
   EnsureServiceConnection();
@@ -80,7 +81,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
 }
 
 void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
-    ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>* resolver,
+    ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>* resolver,
     const Vector<shape_detection::mojom::blink::BarcodeFormat>& formats) {
   DCHECK(get_supported_format_requests_.Contains(resolver));
   get_supported_format_requests_.erase(resolver);
@@ -107,7 +108,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
 void BarcodeDetectorStatics::OnConnectionError() {
   service_.reset();
 
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>>>
       resolvers;
   resolvers.swap(get_supported_format_requests_);
   for (const auto& resolver : resolvers) {

@@ -35,14 +35,13 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(ScreenshotSyncIntegrationTest, cls).AddCommandlineArgs(parser)
-    parser.add_option(
+    parser.add_argument(
         '--dont-restore-color-profile-after-test',
-        dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help="(Mainly on Mac) don't restore the system's original color "
-        'profile after the test completes; leave the system using the sRGB '
-        'color profile. See http://crbug.com/784456.')
+        help=("(Mainly on Mac) don't restore the system's original color "
+              'profile after the test completes; leave the system using the '
+              'sRGB color profile. See http://crbug.com/784456.'))
 
   @classmethod
   def SetUpProcess(cls) -> None:

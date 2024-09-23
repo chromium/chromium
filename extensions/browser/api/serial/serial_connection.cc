@@ -312,12 +312,15 @@ void SerialConnection::OnSendError(device::mojom::SerialSendError error) {
   send_pipe_watcher_.Cancel();
   send_pipe_.reset();
 
+  // Invoking `send_complete_` may free `this`.
+  size_t bytes_written = bytes_written_;
+  bytes_written_ = 0;
+
   if (send_complete_) {
     // Respond the send request with bytes written currently.
     std::move(send_complete_)
-        .Run(bytes_written_, ConvertSendErrorFromMojo(error));
+        .Run(bytes_written, ConvertSendErrorFromMojo(error));
   }
-  bytes_written_ = 0;
 }
 
 void SerialConnection::OnOpen(
@@ -366,10 +369,8 @@ void SerialConnection::OnReadPipeReadableOrClosed(
     return;
 
   DCHECK(receive_pipe_);
-  const void* buffer;
-  uint32_t read_bytes;
-  result = receive_pipe_->BeginReadData(&buffer, &read_bytes,
-                                        MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  result = receive_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     receive_pipe_watcher_.ArmOrNotify();
     return;
@@ -379,9 +380,8 @@ void SerialConnection::OnReadPipeReadableOrClosed(
     OnReadPipeClosed();
     return;
   }
-  const char* char_buffer = static_cast<const char*>(buffer);
-  std::vector<uint8_t> data(char_buffer, char_buffer + read_bytes);
-  result = receive_pipe_->EndReadData(read_bytes);
+  std::vector<uint8_t> data(buffer.begin(), buffer.end());
+  result = receive_pipe_->EndReadData(buffer.size());
   DCHECK_EQ(MOJO_RESULT_OK, result);
 
   // Reset the timeout timer and arm the watcher in preparation for the next
@@ -552,11 +552,15 @@ void SerialConnection::OnSendTimeout() {
   DCHECK(serial_port_);
   if (send_complete_) {
     send_pipe_watcher_.Cancel();
-    // Respond the send request with bytes_written
-    // without closing the data pipe.
-    std::move(send_complete_)
-        .Run(bytes_written_, api::serial::SendError::kTimeout);
+
+    // Invoking `send_complete_` may free `this`.
+    size_t bytes_written = bytes_written_;
     bytes_written_ = 0;
+
+    // Respond the send request with bytes_written without closing the data
+    // pipe.
+    std::move(send_complete_)
+        .Run(bytes_written, api::serial::SendError::kTimeout);
   }
 }
 
@@ -574,9 +578,9 @@ void SerialConnection::OnSendPipeWritableOrClosed(
   }
 
   DCHECK(send_pipe_);
-  uint32_t num_bytes = data_to_send_.size();
-  result = send_pipe_->WriteData(data_to_send_.data(), &num_bytes,
-                                 MOJO_WRITE_DATA_FLAG_NONE);
+  size_t actually_sent_bytes = 0;
+  result = send_pipe_->WriteData(data_to_send_, MOJO_WRITE_DATA_FLAG_NONE,
+                                 actually_sent_bytes);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     send_pipe_watcher_.ArmOrNotify();
     return;
@@ -589,8 +593,9 @@ void SerialConnection::OnSendPipeWritableOrClosed(
   }
 
   // For result == MOJO_RESULT_OK case.
-  data_to_send_.erase(data_to_send_.begin(), data_to_send_.begin() + num_bytes);
-  bytes_written_ += num_bytes;
+  data_to_send_.erase(data_to_send_.begin(),
+                      data_to_send_.begin() + actually_sent_bytes);
+  bytes_written_ += actually_sent_bytes;
 
   if (data_to_send_.empty()) {
     send_timeout_task_.Cancel();

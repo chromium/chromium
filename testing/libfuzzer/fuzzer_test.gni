@@ -32,6 +32,9 @@ import("//testing/test.gni")
 # - seed_corpus_deps - dependencies for generating the seed corpus.
 # - grammar_options - defines a grammar used by a grammar based mutator.
 # - exclude_main - if you're going to provide your own 'main' function
+# - high_end_job_required - whether the fuzzer requires bigger machines to run.
+#   Optional argument.
+# - is_fuzzilli_compatible - whether the fuzzer is compatible with fuzzilli.
 #
 # If use_libfuzzer gn flag is defined, then proper fuzzer would be build.
 # Without use_libfuzzer or use_afl a unit-test style binary would be built on
@@ -42,7 +45,21 @@ import("//testing/test.gni")
 # config (.options file) file would be generated or modified in root output
 # dir (next to test).
 template("fuzzer_test") {
-  if (!disable_libfuzzer && use_fuzzing_engine) {
+  _high_end_job_required = false
+  if (defined(invoker.high_end_job_required)) {
+    _high_end_job_required = invoker.high_end_job_required
+  }
+
+  # If the job is a high_end job and that we are currently building a high_end
+  # target, we should compile this fuzzer_test in. Otherwise, for now, we just
+  # compile everything in.
+  # TODO(crbug.com/333831251): Once CF supports high end jobs, do not compile
+  # high end targets except for high end jobs.
+  _should_build = (_high_end_job_required || !high_end_fuzzer_targets) &&
+                  !disable_libfuzzer && use_fuzzing_engine &&
+                  ((defined(invoker.is_fuzzilli_compatible) &&
+                    invoker.is_fuzzilli_compatible) || !use_fuzzilli)
+  if (_should_build) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 
     test_deps = []
@@ -119,6 +136,8 @@ template("fuzzer_test") {
         supporting_file_test_deps += [ ":" + target_name + "_dict_copy" ]
       }
 
+      fuzzer_name = target_name
+
       # Generate .options file.
       config_file_name = target_name + ".options"
       action(config_file_name) {
@@ -131,9 +150,11 @@ template("fuzzer_test") {
         if (defined(invoker.dict)) {
           args += [
             "--dict",
-            rebase_path("$root_build_dir/" + invoker.target_name + ".dict",
+            rebase_path("$root_build_dir/" + fuzzer_name + ".dict",
                         root_build_dir),
           ]
+        } else {
+          not_needed([ "fuzzer_name" ])
         }
 
         if (defined(invoker.libfuzzer_options)) {
@@ -236,7 +257,7 @@ template("fuzzer_test") {
               target_name + "_codesign_supporting_files_" + _deps_type_label
           action_foreach(_codesign_action_name) {
             testonly = true
-            script = "//build/config/ios/codesign.py"
+            script = "//build/config/apple/codesign.py"
             sources = _files_to_sign
             _codesign_output_path =
                 "${root_build_dir}/codesign/{{source_file_part}}"
@@ -311,6 +332,12 @@ template("fuzzer_test") {
     # noop on unsupported platforms.
     # mark attributes as used.
     not_needed(invoker, "*")
+    not_needed(invoker,
+               [
+                 "deps",
+                 "seed_corpus",
+                 "sources",
+               ])
 
     group(target_name) {
     }

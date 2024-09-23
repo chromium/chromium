@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 
-#include "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 class Browser;
 class BrowsingDataRemover;
 enum class BrowsingDataRemoveMask;
-class ChromeBrowserState;
 
 @class ActionSheetCoordinator;
 @class BrowsingDataCounterWrapperProducer;

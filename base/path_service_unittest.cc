@@ -20,6 +20,8 @@
 #include "testing/platform_test.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include "base/win/windows_version.h"
 #endif
 
@@ -120,7 +122,7 @@ TEST_F(PathServiceTest, Get) {
 #if BUILDFLAG(IS_ANDROID)
   // The following keys are not intended to be implemented on Android (see
   // crbug.com/1257402). Current implementation is described before each key.
-  // TODO(crbug.com/1257402): Remove the definition of these keys on Android
+  // TODO(crbug.com/40796336): Remove the definition of these keys on Android
   // or at least fix the behavior of DIR_HOME.
   constexpr std::array kUnsupportedKeys = {
       // Though DIR_HOME is not intended to be supported, PathProviderPosix
@@ -132,7 +134,7 @@ TEST_F(PathServiceTest, Get) {
       DIR_USER_DESKTOP};
 #elif BUILDFLAG(IS_FUCHSIA)
   constexpr std::array kUnsupportedKeys = {
-      // TODO(crbug.com/1231928): Implement DIR_USER_DESKTOP.
+      // TODO(crbug.com/42050322): Implement DIR_USER_DESKTOP.
       DIR_USER_DESKTOP};
 #else
   constexpr std::array<BasePathKey, 0> kUnsupportedKeys = {};
@@ -144,7 +146,12 @@ TEST_F(PathServiceTest, Get) {
   }
 #if BUILDFLAG(IS_WIN)
   for (int key = PATH_WIN_START + 1; key < PATH_WIN_END; ++key) {
-    EXPECT_PRED1(ReturnsValidPath, key);
+    if (key == DIR_SYSTEM_TEMP) {
+      EXPECT_PRED1(::IsUserAnAdmin() ? &ReturnsValidPath : &ReturnsInvalidPath,
+                   key);
+    } else {
+      EXPECT_PRED1(ReturnsValidPath, key);
+    }
   }
 #elif BUILDFLAG(IS_MAC)
   for (int key = PATH_MAC_START + 1; key < PATH_MAC_END; ++key) {
@@ -334,6 +341,22 @@ TEST_F(PathServiceTest, GetProgramFiles) {
         FILE_PATH_LITERAL("C:\\Program Files"));
   }
 #endif  // defined(_WIN64)
+}
+
+TEST_F(PathServiceTest, GetSystemTemp) {
+  FilePath secure_system_temp;
+
+  EXPECT_EQ(PathService::Get(DIR_SYSTEM_TEMP, &secure_system_temp),
+            ::IsUserAnAdmin());
+  if (!secure_system_temp.empty()) {
+    FilePath dir_windows;
+    ASSERT_TRUE(PathService::Get(DIR_WINDOWS, &dir_windows));
+    FilePath dir_program_files;
+    ASSERT_TRUE(PathService::Get(DIR_PROGRAM_FILES, &dir_program_files));
+
+    ASSERT_TRUE((dir_windows.AppendASCII("SystemTemp") == secure_system_temp) ||
+                (dir_program_files == secure_system_temp));
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 

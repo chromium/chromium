@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/metrics/model/constants.h",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+]

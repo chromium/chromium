@@ -24,12 +24,8 @@ bool ScrollNode::operator==(const ScrollNode& other) const = default;
 void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);
   value->SetInteger("parent_id", parent_id);
-  value->SetBoolean("scrollable", scrollable);
   MathUtil::AddToTracedValue("container_bounds", container_bounds, value);
   MathUtil::AddToTracedValue("bounds", bounds, value);
-  MathUtil::AddToTracedValue("offset_to_transform_parent",
-                             offset_to_transform_parent, value);
-  value->SetBoolean("should_flatten", should_flatten);
   value->SetBoolean("user_scrollable_horizontal", user_scrollable_horizontal);
   value->SetBoolean("user_scrollable_vertical", user_scrollable_vertical);
 

@@ -11,25 +11,16 @@
 
   #show-more-container {
     align-items: center;
+    margin-inline-end: 20px;
     /** Height of iron list row entry. */
     min-height: var(--cr-section-min-height);
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) #show-more-container {
-    margin-inline-end: 20px;
   }
 
   /** Border line that is the same size as a list entry's border. */
   #show-more-line-separator {
     border-bottom: var(--cr-separator-line);
-    margin-inline-end: 20px;
-    margin-inline-start: 60px;
-    position: relative;
-    width: 596px;
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) #show-more-line-separator {
     margin-inline: 0;
+    position: relative;
     width: auto;
   }
 
@@ -41,7 +32,7 @@
     flex: 1;
   }
 
-  :host([is-printer-settings-revamp-enabled_]) .list-frame {
+  .list-frame {
     padding-inline: 0;
   }
 </style>

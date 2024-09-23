@@ -72,8 +72,8 @@ enum SECItemType {
 
 struct SECItem {
   SECItemType type;
-  // This field is not a raw_ptr<> because non Windows platforms uses SECItem
-  // from seccomon.h which is not in this repo and doesn't use raw_ptr<>.
+  // RAW_PTR_EXCLUSION: Non-Windows platforms use SECItem from seccomon.h, which
+  // is not in this repo and doesn't use raw_ptr<>.
   RAW_PTR_EXCLUSION unsigned char* data;
   unsigned int len;
 };

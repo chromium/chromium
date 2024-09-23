@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Synced devices for tab restoration available to be changed on touch. Navigate to review or restore selected tabs for the current device on touch. Keyboard hidden.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Open <ph name="TABS_COUNT_ONE" /> tab}other{Open <ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="4509609396389120020">Get tabs from other devices</translation>
+<translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4811934403802581334">All selected tabs from the currently selected device will be restored.</translation>
 <translation id="5336031759968328813">Review all tabs</translation>
 <translation id="5494920125229734069">Select all</translation>

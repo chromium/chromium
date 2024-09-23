@@ -12,15 +12,15 @@ found in the LICENSE file.
     android:viewportHeight="100.0">
     <path
         android:name="circle"
-        android:fillColor="@color/modern_grey_400"
+        android:fillColor="@color/baseline_neutral_60"
         android:pathData="M 20,60 c 0,-11 9,-20 20,-20 l0, 20 l20,0 c 0,11 -9,20 -20,20 c -11,0 -20,-9 -20,-20"/>
     <path
         android:name="square"
-        android:fillColor="@color/modern_grey_400"
+        android:fillColor="@color/baseline_neutral_60"
         android:pathData="M 40,40 l0,-15 l35,0 l0,35 l-15,0 c 0,-11 -9,-20 -20,-20 C"/>
     <path
         android:name="arc"
-        android:fillColor="@color/modern_grey_400"
+        android:fillColor="@color/baseline_neutral_60"
         android:fillAlpha="0"
         android:pathData="M 40,60 l 0,-20 c 11,0 20,9 20,20"/>
 </vector>

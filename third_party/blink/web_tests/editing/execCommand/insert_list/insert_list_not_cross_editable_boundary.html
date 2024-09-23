@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+test(() => assert_selection(
+  [
+    '<div>',
+      '<div contenteditable="true" style="display: inline-block;">t|his </div>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable="true">after</span>',
+    '</div>',
+  ],
+  'insertOrderedList',
+  [
+    '<div>',
+      '<div contenteditable="true" style="display: inline-block;">',
+        '<ol><li>|this </li></ol></div>',
+      '<a contenteditable="false">link</a>',
+      '<span contenteditable="true">after</span>',
+    '</div>',
+  ]),
+  'InsertOrderedList should not cross editable boundary.');
+</script>

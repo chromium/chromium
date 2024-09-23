@@ -6,6 +6,7 @@ module device.mojom;
 
 import "services/network/public/mojom/mutable_partial_network_traffic_annotation_tag.mojom";
 import "services/device/public/mojom/geolocation.mojom";
+import "services/device/public/mojom/geolocation_client_id.mojom";
 
 // Provides a coarse-grained device.mojom.Geolocation which, subject to
 // case-by-case privacy review, may be able to operate without explicit user
@@ -13,6 +14,10 @@ import "services/device/public/mojom/geolocation.mojom";
 //
 // WARNING: DO NOT USE WITHOUT PRIVACY REVIEW.
 interface PublicIpAddressGeolocationProvider {
+  // Creates a Geolocation instance bound to `receiver`. `tag` is the network
+  // traffic annotation to attach to network requests made by the provider.
+  // `client_id` identifies the location client for metrics.
   CreateGeolocation(network.mojom.MutablePartialNetworkTrafficAnnotationTag tag,
-                    pending_receiver<Geolocation> receiver);
+                    pending_receiver<Geolocation> receiver,
+                    GeolocationClientId client_id);
 };

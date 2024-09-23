@@ -7,6 +7,10 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 
 {
+  "about_page": {
+    "channel": "stable",
+    "extension_types": ["shared_module"]
+  },
   "action_handlers": {
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -38,6 +42,10 @@
   "app.background": {
     "channel": "stable",
     "extension_types": ["platform_app"]
+  },
+  "author": {
+    "channel": "stable",
+    "extension_types": "all"
   },
   "automation": {
     // This is a private API which, for historical reasons, does not include
@@ -109,6 +117,10 @@
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
+  "commands": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
+  },
   "content_capabilities": [{
     "channel": "stable",
     "extension_types": ["extension"],
@@ -161,6 +173,24 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "event_rules": {
+    "channel": "stable",
+    // "event_rules" does not grant any capabilities, it's just
+    // an optimisation for any API which uses events, so it's safe
+    // to expose to all extension types.
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "hosted_app",
+      "shared_module",
+      "theme"
+    ]
+  },
+  "export": {
+    "channel": "stable",
+    "extension_types": ["shared_module"]
+  },
   "externally_connectable": [{
     "channel": "stable",
     "extension_types": [
@@ -176,7 +206,7 @@
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Badge Based Auth Extension
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Identity Card Connector
     ]
   }],
   "file_handlers": [
@@ -200,6 +230,10 @@
       "platforms": ["chromeos", "lacros"]
     }
   ],
+  "homepage_url": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "host_permissions": [{
     "channel": "stable",
     "extension_types": ["extension"],
@@ -214,6 +248,20 @@
   "icons": {
     "channel": "stable",
     "extension_types": "all"
+  },
+  "input_components": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "import": {
+    "channel": "stable",
+    "extension_types": "all"
+  },
+  "icon_variants": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3,
+    "feature_flag": "ExtensionIconVariants"
   },
   "incognito": [
     {
@@ -351,9 +399,23 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  "options_page": {
+    "channel": "stable",
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "hosted_app",
+      "chromeos_system_extension"
+    ]
+  },
   "options_ui": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "page_action": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "max_manifest_version": 2
   },
   "permissions": {
     "channel": "stable",
@@ -370,11 +432,21 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
+  "requirements": {
+    "channel": "stable",
+    "extension_types": [
+      "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+    ]
+  },
   "sandbox": {
     "channel": "stable",
     "extension_types": [
       "extension", "platform_app", "legacy_packaged_app"
     ]
+  },
+  "short_name": {
+    "channel": "stable",
+    "extension_types": "all"
   },
   "sockets": [
     {
@@ -397,8 +469,13 @@
     }
   ],
   "trial_tokens": {
-    "channel": "canary",
-    "extension_types": ["extension"]
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
+  "update_url": {
+    "channel": "stable",
+    "extension_types": "all"
   },
   "usb_printers": {
     "channel": "stable",

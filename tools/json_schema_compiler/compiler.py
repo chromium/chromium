@@ -101,12 +101,10 @@ def GenerateSchema(
 
   # Construct the type generator with all the namespaces in this model.
   schema_dir = os.path.dirname(os.path.relpath(file_paths[0], root))
-  namespace_resolver = NamespaceResolver(
-      root, schema_dir, include_rules, cpp_namespace_pattern
-  )
-  type_generator = CppTypeGenerator(
-      api_model, namespace_resolver, default_namespace
-  )
+  namespace_resolver = NamespaceResolver(root, schema_dir, include_rules,
+                                         cpp_namespace_pattern)
+  type_generator = CppTypeGenerator(api_model, namespace_resolver,
+                                    default_namespace)
   if generator_name in ('cpp-bundle-registration', 'cpp-bundle-schema'):
     cpp_bundle_generator = CppBundleGenerator(
         root,
@@ -187,12 +185,11 @@ if __name__ == '__main__':
       default='.',
       help=(
           'logical include root directory. Path to schema files from specified'
-          ' dir will be the include path.'
-      ),
+          ' dir will be the include path.'),
   )
-  parser.add_option(
-      '-d', '--destdir', help='root directory to output generated files.'
-  )
+  parser.add_option('-d',
+                    '--destdir',
+                    help='root directory to output generated files.')
   parser.add_option(
       '-n',
       '--namespace',
@@ -203,11 +200,9 @@ if __name__ == '__main__':
       '-b',
       '--bundle-name',
       default='',
-      help=(
-          'A string to prepend to generated bundle class names, so that '
-          'multiple bundle rules can be used without conflicting. '
-          'Only used with one of the cpp-bundle generators.'
-      ),
+      help=('A string to prepend to generated bundle class names, so that '
+            'multiple bundle rules can be used without conflicting. '
+            'Only used with one of the cpp-bundle generators.'),
   )
   parser.add_option(
       '-g',
@@ -216,9 +211,7 @@ if __name__ == '__main__':
       choices=GENERATORS,
       help=(
           'The generator to use to build the output code. Supported values are'
-          ' %s'
-      )
-      % GENERATORS,
+          ' %s') % GENERATORS,
   )
   parser.add_option(
       '-i',
@@ -229,11 +222,9 @@ if __name__ == '__main__':
   parser.add_option(
       '-I',
       '--include-rules',
-      help=(
-          'A list of paths to include when searching for referenced objects,'
-          " with the namespace separated by a ':'. Example: "
-          '/foo/bar:Foo::Bar::%(namespace)s'
-      ),
+      help=('A list of paths to include when searching for referenced objects,'
+            " with the namespace separated by a ':'. Example: "
+            '/foo/bar:Foo::Bar::%(namespace)s'),
   )
 
   (opts, file_paths) = parser.parse_args()
@@ -242,28 +233,23 @@ if __name__ == '__main__':
     sys.exit(0)  # This is OK as a no-op
 
   # Unless in bundle mode, only one file should be specified.
-  if (
-      opts.generator not in ('cpp-bundle-registration', 'cpp-bundle-schema')
-      and len(file_paths) > 1
-  ):
+  if (opts.generator not in ('cpp-bundle-registration', 'cpp-bundle-schema')
+      and len(file_paths) > 1):
     # TODO(sashab): Could also just use file_paths[0] here and not complain.
     raise Exception(
-        'Unless in bundle mode, only one file can be specified at a time.'
-    )
+        'Unless in bundle mode, only one file can be specified at a time.')
 
   def split_path_and_namespace(path_and_namespace):
     if ':' not in path_and_namespace:
       raise ValueError(
           'Invalid include rule "%s". Rules must be of the form path:namespace'
-          % path_and_namespace
-      )
+          % path_and_namespace)
     return path_and_namespace.split(':', 1)
 
   include_rules = []
   if opts.include_rules:
     include_rules = list(
-        map(split_path_and_namespace, shlex.split(opts.include_rules))
-    )
+        map(split_path_and_namespace, shlex.split(opts.include_rules)))
 
   result = GenerateSchema(
       opts.generator,

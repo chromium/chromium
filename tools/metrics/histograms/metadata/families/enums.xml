@@ -40,6 +40,58 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has conflict"/>
 </enum>
 
+<!-- LINT.IfChange(ClassifyUrlThrottleStatus) -->
+
+<enum name="ClassifyUrlThrottleStatus">
+  <summary>Defines throttle interaction type with the navigation flow.</summary>
+  <int value="0" label="Continue">
+    The classification result is not needed yet so the throttle continues.
+  </int>
+  <int value="1" label="Proceed">
+    The classification is completed and allows the throttle to proceed with the
+    navigation.
+  </int>
+  <int value="2" label="Defer">
+    The classification result is needed. Navigation is deferred to allow
+    classification to complete.
+  </int>
+  <int value="3" label="DeferAndScheduleInterstitial">
+    The classification is completed and requires the throttle to show an
+    interstitial. Navigation is deferred to show the interstitial.
+  </int>
+  <int value="4" label="Cancel">
+    The classification not needed because the throttle can't proceed.
+  </int>
+  <int value="5" label="Resume">
+    The classification is completed after the throttle called &quot;Defer&quot;,
+    and now the navigation can proceed.
+  </int>
+  <int value="6" label="Cancel deferred navigation">
+    The classification is completed after the throttle called &quot;Defer&quot;,
+    and now the navigation must show the interstitial.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.h:ClassifyUrlThrottleStatus) -->
+
+<!-- LINT.IfChange(FamilyInfoLogSourceFetchStatus) -->
+
+<enum name="FamilyInfoLogSourceFetchStatus">
+  <int value="0" label="Ok">
+    Recorded when a successful response is received from the fetch.
+  </int>
+  <int value="1" label="Failure response">
+    Recorded when an unsuccessful completion is signaled by the fetcher. This
+    corresponds to the non-successful response codes in the
+    SupervisedUserProtoFetcherStatus enum.
+  </int>
+  <int value="2" label="Timeout">
+    Recorded when no completion is signaled by the fetcher within a timeout.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h:FetchStatus) -->
+
 <enum name="FamilyLinkFilteringSubdomainConflictType">
   <int value="0" label="Only trivial subdomain conflict">
     Recorded when, for an input host, the matching conflicting entries from the
@@ -173,6 +225,23 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(FamilyLinkUserReauthenticationInterstitialState) -->
+
+<enum name="FamilyLinkUserReauthenticationInterstitialState">
+  <int value="0" label="InterstitialShown">
+    Recorded when the re-authentication interstitial is displayed.
+  </int>
+  <int value="1" label="ReauthenticationStarted">
+    The user initiates re-authentication from the interstitial.
+  </int>
+  <int value="2" label="ReauthenticationCompleted">
+    The user successfully re-authenticates and can continue navigation, and
+    vice-versa for failed reauthentication.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_verification_page.h:FamilyLinkUserReauthenticationInterstitialState) -->
+
 <enum name="FamilyLinkWebFilterType">
   <int value="0" label="Allow All Sites"/>
   <int value="1" label="Try To Block Mature Sites"/>
@@ -214,6 +283,58 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Regular user added"/>
 </enum>
 
+<enum name="OnDeviceControlsAppRemoval">
+  <int value="0" label="Oldest uninstalled blocked app removed">
+    Recorded when the oldest uninstalled blocked app was successfully removed.
+  </int>
+  <int value="1" label="Oldest uninstalled blocked app not found">
+    Recorded when the oldest uninstalled blocked app failed to be removed
+    because it was not found.
+  </int>
+</enum>
+
+<enum name="OnDeviceControlsBlockAppAction">
+  <int value="0" label="Block app">
+    Recorded when a user has blocked an app with on-device controls.
+  </int>
+  <int value="1" label="Unblock app">
+    Recorded when a user has unblocked an app with on-device controls.
+  </int>
+  <int value="2" label="Uninstall blocked app">
+    Recorded when a user has uninstalled an app that is blocked with on-device
+    controls.
+  </int>
+  <int value="3" label="Block app error">
+    Recorded when attempting to block an already-blocked app.
+  </int>
+  <int value="4" label="Unblock app error">
+    Recorded when attempting to unblock an unblocked app.
+  </int>
+  <int value="5" label="Unblock all apps">
+    Recorded when a user has unblocked all apps with on-device controls.
+  </int>
+</enum>
+
+<enum name="OnDeviceControlsBlockedAppDialog">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Existing dialog replaced"/>
+</enum>
+
+<enum name="OnDeviceControlsDialogAction">
+  <int value="0" label="Dialog opened">
+    Recorded when the user opens the dialog.
+  </int>
+  <int value="1" label="Dialog flow completed">
+    Recorded when the user completes the dialog flow.
+  </int>
+</enum>
+
+<enum name="OnDeviceControlsPinDialogError">
+  <int value="0" label="Invalid PIN format on setup"/>
+  <int value="1" label="Incorrect PIN on verification"/>
+  <int value="2" label="Forgot PIN link clicked"/>
+</enum>
+
 <enum name="ParentAccessCodeAction">
   <summary>Action resulting from parent access code dialog</summary>
   <int value="0" label="Validation success"/>
@@ -250,14 +371,39 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Requests Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserExtension2) -->
+
 <enum name="SupervisedUserExtension2">
   <summary>
     Tracks the state of a supervised user trying to install an extension.
   </summary>
-  <int value="0" label="Extension Approval Granted"/>
-  <int value="1" label="Permissions Increase Granted"/>
-  <int value="2" label="Extension Approval Removed"/>
+  <int value="0" label="Extension Approval Granted">
+    Incremented when the custodian explicitly grants approval to install an
+    extension for the first time. This is not output if the parent configuration
+    is set to not require approvals.
+  </int>
+  <int value="1" label="Permissions Increase Granted">
+    Incremeted when the custodian approves a newer version of an existing
+    extension with increased permissions.
+  </int>
+  <int value="2" label="Extension Approval Removed">
+    Incremented when the supervised user removes an extension (which removes the
+    previously granted custodian approval).
+  </int>
+  <int value="3" label="Extension Approval Granted by Default">
+    Incremented when the supervised user installs an extension, and the parent
+    configuration is set to not require approvals. The approval is therefore
+    granted implicitly.
+  </int>
+  <int value="4" label="Local Extension Approval Granted">
+    Incremented when an extension is marked as approved only on this device.
+    This happens on Windows/Mac/Linux when a supervised user had
+    previously-installed extensions, and the
+    SkipParentApprovalToInstallExtensions feature is first released.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:UmaExtensionState) -->
 
 <enum name="SupervisedUserExtensionEnablement">
   <summary>
@@ -268,14 +414,44 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Enable attempt failed"/>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserExtensionInstallDialog) -->
+
 <enum name="SupervisedUserExtensionInstallDialog">
   <summary>
     Tracks the actions of a supervised user on the Extension Install Dialog.
   </summary>
   <int value="0" label="Opened"/>
-  <int value="1" label="Asked Parent"/>
+  <int value="1" label="Asked Parent (Deprecated)"/>
   <int value="2" label="Child Canceled"/>
+  <int value="3" label="Child Accepted"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ExtensionInstallDialogState) -->
+
+<!-- LINT.IfChange(SupervisedUserExtensionParentApprovalEntryPoint) -->
+
+<enum name="SupervisedUserExtensionParentApprovalEntryPoint">
+  <summary>
+    Tracks the different user flows that lead to displaying the Extension parent
+    approval dialog.
+  </summary>
+  <int value="0" label="Installed from Webstore">
+    The approval dialog is shown during a new extension installation from the
+    Webstore.
+  </int>
+  <int value="1" label="Enabled from extensions management page">
+    The approval dialog is shown when the user tries to enable an extension from
+    the extesnion management page.
+  </int>
+  <int value="2"
+      label="Enabled a disabled or terminated extension via the extension
+             enable flow">
+    The approval dialog is shown when the user tries to enable an disabled or
+    terminated via the extension enable flow.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//extensions/browser/supervised_user_extensions_delegate.h:SupervisedUserExtensionParentApprovalEntryPoint) -->
 
 <enum name="SupervisedUserFaviconAvailability">
   <int value="0" label="Favicon Available"/>
@@ -301,6 +477,28 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SupervisedUserImplicitParentApprovalGrantEntryPoint) -->
+
+<enum name="SupervisedUserImplicitParentApprovalGrantEntryPoint">
+  <summary>
+    Tracks the different user flows that lead to granting an automatic parent
+    approval to an extension for a supervised user.
+  </summary>
+  <int value="0"
+      label="Parent configuration Extensions switch is flipped to enabled">
+    Recorded when an extension that did not have parent approval is granted it,
+    when the Family Link &quot;Extensions&quot; toggle is flipped to On. In this
+    mode no explicit parental approval is required.
+  </int>
+  <int value="1" label="New extension is installed">
+    Recorded when an extension is granted parent approval at the time of its
+    installation, when it is installed under the &quot;Extensions&quot; toggle
+    set to On. In this mode no explicit parental approval is required.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h:ImplicitExtensionApprovalEntryPoint) -->
+
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>
     Tracks the actions of a parent on the Parent Permission Dialog.
@@ -310,7 +508,40 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Parent Canceled"/>
   <int value="3" label="Failed"/>
   <int value="4" label="No Parent Error"/>
+  <int value="5" label="Incorrect Parent Password Error"/>
 </enum>
+
+<!-- LINT.IfChange(SupervisedUserProtoFetcherStatus) -->
+
+<enum name="SupervisedUserProtoFetcherStatus">
+  <int value="0" label="NoError">
+    The overall request was successul.
+
+    If this endpoint uses BestEffort credentials mode, it is possible there was
+    an access token error, in which case the separate {RequestType}.AuthError
+    histogram is also output (but not the AuthError bucket of this histogram).
+  </int>
+  <int value="1" label="AuthError">
+    The request failed due to an error fetching the access token. The
+    {RequestType}.AuthError histogram contains more fine-grained error details.
+
+    This value is not output if the access token fetch failed, but the request
+    was still performed due to credentials being &quot;BestEffort&quot; on this
+    endpoint.
+  </int>
+  <int value="2" label="HttpStatusOrNetError">
+    The request was performed, but network or http returned errors.
+  </int>
+  <int value="3" label="ParseError">
+    The request was performed without error, but the response could not be
+    processed or was unexpected.
+  </int>
+  <int value="4" label="DataError">
+    The request was parsed, but did not contain all required data.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/proto_fetcher.h:State) -->
 
 <enum name="SupervisedUserSafetyFilterResult">
   <int value="100" label="LINK_ALLOWED">Link; Allowed as safe</int>
@@ -557,6 +788,25 @@ chromium-metrics-reviews@google.com.
     Other navigation; Allowed by allowlist
   </int>
 </enum>
+
+<!-- LINT.IfChange(SupervisedUserToggleState) -->
+
+<enum name="SupervisedUserToggleState">
+  <int value="0" label="Disabled">
+    There is at least one supervised profile, and all supervised profiles have
+    the toggle disabled.
+  </int>
+  <int value="1" label="Enabled">
+    There is at least one supervised profile, and all supervised profiles have
+    the toggle enabled.
+  </int>
+  <int value="2" label="Mixed">
+    There are multiple supervised profiles, some with the toggle disabled and
+    some with it enabled.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:ToggleState) -->
 
 <enum name="SupervisionStatusReportEvent">
   <summary>Events that trigger status report for supervised accounts</summary>

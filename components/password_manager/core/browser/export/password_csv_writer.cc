@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/export/csv_writer.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
@@ -26,7 +26,7 @@ std::map<std::string, std::string> PasswordFormToRecord(
     const CredentialUIEntry::DomainInfo& domain) {
   std::map<std::string, std::string> record;
   record[kTitleColumnName] = domain.name;
-  if (IsValidAndroidFacetURI(domain.signon_realm)) {
+  if (affiliations::IsValidAndroidFacetURI(domain.signon_realm)) {
     record[kUrlColumnName] = domain.signon_realm;
   } else {
     record[kUrlColumnName] = domain.url.spec();
@@ -57,15 +57,19 @@ std::string PasswordCSVWriter::SerializePasswords(
     }
   }
 
-  std::sort(records.begin(), records.end(), [&header](
-    const std::map<std::string, std::string>& lhs,
-    const std::map<std::string, std::string>& rhs) {
-      for (const std::string& headerVal : header) {
-        if (lhs.at(headerVal) < rhs.at(headerVal)) return true;
-        if (lhs.at(headerVal) > rhs.at(headerVal)) return false;
-      }
-      return false;
-  });
+  std::sort(records.begin(), records.end(),
+            [&header](const std::map<std::string, std::string>& lhs,
+                      const std::map<std::string, std::string>& rhs) {
+              for (const std::string& headerVal : header) {
+                if (lhs.at(headerVal) < rhs.at(headerVal)) {
+                  return true;
+                }
+                if (lhs.at(headerVal) > rhs.at(headerVal)) {
+                  return false;
+                }
+              }
+              return false;
+            });
 
   std::string result;
   WriteCSV(header, records, &result);

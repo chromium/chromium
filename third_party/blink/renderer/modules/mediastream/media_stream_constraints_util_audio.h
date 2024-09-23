@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_CONSTRAINTS_UTIL_AUDIO_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -77,8 +78,7 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   const media::AudioParameters& Parameters() const;
 
  private:
-  raw_ptr<blink::MediaStreamAudioSource, ExperimentalRenderer> source_ =
-      nullptr;
+  raw_ptr<blink::MediaStreamAudioSource> source_ = nullptr;
   String device_id_;
   String group_id_;
   media::AudioParameters parameters_;
@@ -166,6 +166,17 @@ MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     blink::MediaStreamAudioSource* source,
     const MediaConstraints& constraints);
+
+// Selects settings for each eligible device in `capabilities` in isolation and
+// returns them as a vector. If none of the devices are eligible, then the name
+// of one of the failed constraints is returned.
+MODULES_EXPORT base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+SelectEligibleSettingsAudioCapture(
+    const AudioDeviceCaptureCapabilities& capabilities,
+    const MediaConstraints& constraints,
+    mojom::blink::MediaStreamType stream_type,
+    bool should_disable_hardware_noise_suppression,
+    bool is_reconfiguration_allowed = false);
 
 // Return a tuple with <min,max> representing the min and max buffer sizes or
 // latencies that can be provided by the given AudioParameters. The min and max

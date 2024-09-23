@@ -30,26 +30,6 @@ void MultiUserSignInPolicyController::RegisterPrefs(
   registry->RegisterDictionaryPref(prefs::kCachedMultiProfileUserBehavior);
 }
 
-void MultiUserSignInPolicyController::Shutdown() {
-  pref_watchers_.clear();
-}
-
-std::optional<MultiUserSignInPolicy>
-MultiUserSignInPolicyController::GetPrimaryUserPolicy() const {
-  const User* user = user_manager_->GetPrimaryUser();
-  if (!user) {
-    return std::nullopt;
-  }
-
-  auto* prefs = user->GetProfilePrefs();
-  if (!prefs) {
-    return std::nullopt;
-  }
-
-  return ParseMultiUserSignInPolicyPref(
-      prefs->GetString(prefs::kMultiProfileUserBehaviorPref));
-}
-
 bool MultiUserSignInPolicyController::IsUserAllowedInSession(
     const std::string& user_email) const {
   const User* primary_user = user_manager_->GetPrimaryUser();
@@ -64,7 +44,7 @@ bool MultiUserSignInPolicyController::IsUserAllowedInSession(
     return true;
   }
 
-  auto primary_user_policy = GetPrimaryUserPolicy();
+  auto primary_user_policy = GetMultiUserSignInPolicy(primary_user);
   if (primary_user_policy == MultiUserSignInPolicy::kNotAllowed) {
     return false;
   }
@@ -89,6 +69,13 @@ void MultiUserSignInPolicyController::StartObserving(User* user) {
   pref_watchers_.push_back(std::move(registrar));
 
   OnUserPrefChanged(user);
+}
+
+void MultiUserSignInPolicyController::StopObserving(User* user) {
+  auto* prefs = user->GetProfilePrefs();
+  std::erase_if(pref_watchers_, [prefs](auto& registrar) {
+    return registrar->prefs() == prefs;
+  });
 }
 
 void MultiUserSignInPolicyController::RemoveCachedValues(

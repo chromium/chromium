@@ -75,11 +75,13 @@ mojo::PlatformHandle TransferableDirectory::TakeHandle() {
 #if !BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
 void TransferableDirectory::OpenForTransfer() {
-  NOTREACHED() << "Directory transfer not supported on this platform.";
+  NOTREACHED_IN_MIGRATION()
+      << "Directory transfer not supported on this platform.";
 }
 
 [[nodiscard]] base::OnceClosure TransferableDirectory::Mount() {
-  NOTREACHED() << "Directory transfer not supported on this platform.";
+  NOTREACHED_IN_MIGRATION()
+      << "Directory transfer not supported on this platform.";
   return {};
 }
 

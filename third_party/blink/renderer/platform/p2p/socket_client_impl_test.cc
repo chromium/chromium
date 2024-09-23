@@ -63,7 +63,8 @@ class MockDelegate : public P2PSocketClientDelegate {
               OnDataReceived,
               (const net::IPEndPoint&,
                base::span<const uint8_t>,
-               const base::TimeTicks&),
+               const base::TimeTicks&,
+               rtc::EcnMarking),
               (override));
 };
 
@@ -111,11 +112,14 @@ TEST_P(SocketClientImplParametrizedTest, OnDataReceivedCalled) {
   auto first = base::TimeTicks() + base::Microseconds(1);
   auto second = base::TimeTicks() + base::Microseconds(2);
   auto data = WTF::Vector<uint8_t>(1);
-  packets.push_back(P2PReceivedPacket::New(data, net::IPEndPoint(), first));
-  packets.push_back(P2PReceivedPacket::New(data, net::IPEndPoint(), second));
+  auto ecn = rtc::EcnMarking::kNotEct;
+  packets.push_back(
+      P2PReceivedPacket::New(data, net::IPEndPoint(), first, ecn));
+  packets.push_back(
+      P2PReceivedPacket::New(data, net::IPEndPoint(), second, ecn));
   InSequence s;
-  EXPECT_CALL(delegate_, OnDataReceived(_, _, first));
-  EXPECT_CALL(delegate_, OnDataReceived(_, _, second));
+  EXPECT_CALL(delegate_, OnDataReceived(_, _, first, ecn));
+  EXPECT_CALL(delegate_, OnDataReceived(_, _, second, ecn));
   remote_->DataReceived(std::move(packets));
   task_environment_.RunUntilIdle();
 }

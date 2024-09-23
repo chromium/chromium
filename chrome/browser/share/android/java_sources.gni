@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug/1022172): This should be a separate build target when circular
+# TODO(crbug.com/40106499): This should be a separate build target when circular
 # dependencies are removed.
 share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BaseScreenshotCoordinator.java",
@@ -10,6 +10,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ChromeProvidedSharingOptionsProviderBase.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/SaveBitmapDelegate.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ShareContentTypeHelper.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ShareMetricsUtils.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/android_share_sheet/AndroidCustomActionProvider.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/android_share_sheet/AndroidShareSheetController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
@@ -28,12 +29,23 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/ScreenshotBoundsManager.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheet.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetBinder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetContent.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetMediator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetProperties.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetView.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoBottomSheetViewBinder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingController.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingControllerImpl.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummaryButtonController.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummaryMetrics.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageSummarySharingRequest.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetContent.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetMediator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetProperties.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/page_info_sheet/feedback/FeedbackSheetViewBinder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialog.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialogTab.java",

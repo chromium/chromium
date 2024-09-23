@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/simple_test_clock.h"
+#include "base/time/clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -19,13 +20,12 @@ TestAutofillClock::TestAutofillClock(base::Time now)
 
 TestAutofillClock::TestAutofillClock(
     std::unique_ptr<base::SimpleTestClock> test_clock)
-    : test_clock_(std::move(test_clock)) {
-  AutofillClock::SetTestClock(test_clock_.get());
-}
+    : test_clock_(std::move(test_clock)),
+      previous_clock_(
+          std::exchange(AutofillClock::test_clock_, test_clock_.get())) {}
 
 TestAutofillClock::~TestAutofillClock() {
-  // Destroys the test clock and resets a normal clock.
-  AutofillClock::SetClock();
+  AutofillClock::test_clock_ = previous_clock_;
 }
 
 void TestAutofillClock::SetNow(base::Time now) {

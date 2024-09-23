@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/device_notifications/device_connection_tracker.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/vector_icon_types.h"
 
 class Profile;
 class DeviceSystemTrayIconRenderer;
@@ -24,7 +25,7 @@ class DeviceSystemTrayIcon {
   // Stage `profile` to be shown in the system tray icon.
   virtual void StageProfile(Profile* profile);
 
-  // TODO(crbug.com/1353104): Remove support for non-immediate unstage request.
+  // TODO(crbug.com/40235090): Remove support for non-immediate unstage request.
   // Unstage `profile` that is being shown in the system tray icon. The profile
   // will be removed immediately when `immediate` is true, otherwise it is
   // scheduled to be removed later.
@@ -35,7 +36,7 @@ class DeviceSystemTrayIcon {
   virtual void NotifyConnectionCountUpdated(Profile* profile);
 
   // Get the image for the status tray icon.
-  virtual gfx::ImageSkia GetIcon() = 0;
+  virtual const gfx::VectorIcon& GetIcon() = 0;
 
   // Get the label of the title of the device system tray icon.
   virtual std::u16string GetTitleLabel(size_t num_origins,

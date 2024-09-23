@@ -4,9 +4,9 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -45,7 +45,7 @@ struct TestContentSettings {
 // Helpers
 std::vector<TestContentSettings> ExtractFrom(
     const std::vector<TestIndicatorSetting>& test_indicator_settings) {
-  return base::test::ToVector(
+  return base::ToVector(
       test_indicator_settings, [](const TestIndicatorSetting& s) {
         return TestContentSettings{s.content_setting_type, s.content_setting};
       });

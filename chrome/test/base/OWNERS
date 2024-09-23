@@ -15,6 +15,5 @@ per-file *web_ui*=file://ui/webui/PLATFORM_OWNERS
 
 per-file *tracing*=file://base/trace_event/OWNERS
 
-per-file interactive_test_utils_mac.mm=tapted@chromium.org
 
 per-file *devtools*=file://chrome/browser/devtools/OWNERS

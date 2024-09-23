@@ -20,7 +20,7 @@
     const zeroMark = performance.mark('~zero');
     const zero = zeroMark.startTime;
 
-    performance.mark('@1500', {startTime: zero + 1500});
+    performance.mark('@1500', {startTime: zero + 1500, detail: {aProperty:'This is a property'}});
     performance.mark('@1200', {startTime: zero + 1200});
     performance.mark('@1000', {startTime: zero + 1000});
     performance.mark('@500', {startTime: zero + 500});
@@ -31,9 +31,13 @@
         '@1000 to @1200',
         {detail: 'its @1000 to @1200', start: '@1000', end: '@1200'});
     performance.measure('@2000 for 300', {end: zero + 2300, duration: 300});
+    // On the timeline the clearMarks() and clearMeasures() happen at time |zeroMark|.
+    performance.clearMarks('@1000');
     performance.measure(
         '@1500 for 200',
         {detail: {key: 'val', num: 123}, start: '@1500', end: zero + 1700});
+    performance.clearMeasures('@1500 for 200');
+    performance.clearMeasures();
   }
 
   await session.evaluateAsync(`(${pageFunction.toString()})();`);

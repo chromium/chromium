@@ -6,28 +6,23 @@
 
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -48,7 +43,7 @@ password_manager::AffiliatedGroup GetTestAffiliatedGroup() {
   password_manager::CredentialUIEntry credential(form);
   return password_manager::AffiliatedGroup(
       /*credentials=*/{credential},
-      /*branding=*/password_manager::FacetBrandingInfo());
+      /*branding=*/affiliations::FacetBrandingInfo());
 }
 
 // Registers a mock command handler in the dispatcher.
@@ -89,7 +84,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -104,7 +99,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after requested by the
     // coordinator. Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldReturnSynchronously = NO;
+    mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
 
     UINavigationController* navigation_controller =
@@ -129,65 +124,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
 
 #pragma mark - Tests
 
-// Tests that OnPasswordCopied will dispatch `CredentialProviderPromoCommands`.
-TEST_F(PasswordDetailsCoordinatorTest, OnPasswordCopiedTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kCredentialProviderExtensionPromo,
-      {{"enable_promo_on_password_copied", "true"}});
-
-  // Register the command handler for `CredentialProviderPromoCommands`
-  id credential_provider_promo_commands_handler_mock =
-      OCMStrictProtocolMock(@protocol(CredentialProviderPromoCommands));
-  [browser_.get()->GetCommandDispatcher()
-      startDispatchingToTarget:credential_provider_promo_commands_handler_mock
-                   forProtocol:@protocol(CredentialProviderPromoCommands)];
-
-  // Expect the call with correct trigger type.
-  [[credential_provider_promo_commands_handler_mock expect]
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 PasswordCopied];
-
-  // Call the tested function.
-  ASSERT_TRUE(
-      [coordinator_ conformsToProtocol:@protocol(PasswordDetailsHandler)]);
-  [(id<PasswordDetailsHandler>)coordinator_ onPasswordCopiedByUser];
-
-  // Verify.
-  [credential_provider_promo_commands_handler_mock verify];
-}
-
-// Tests that OnPasswordCopied will not dispatch
-// `CredentialProviderPromoCommands`.
-TEST_F(PasswordDetailsCoordinatorTest,
-       OnPasswordCopiedTestCredentialProviderPromoDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  // Enable another arm that will not lead to dispatching the
-  // CredentialProviderPromoCommands.
-  feature_list.InitAndEnableFeatureWithParameters(
-      kCredentialProviderExtensionPromo,
-      {{"enable_promo_on_password_saved", "true"}});
-
-  // Register the command handler for `CredentialProviderPromoCommands`
-  // Use `OCMStrictProtocolMock` and do not expect any so that an exception will
-  // be raised when there is any invocation.
-  id credential_provider_promo_commands_handler_mock =
-      OCMStrictProtocolMock(@protocol(CredentialProviderPromoCommands));
-  [browser_.get()->GetCommandDispatcher()
-      startDispatchingToTarget:credential_provider_promo_commands_handler_mock
-                   forProtocol:@protocol(CredentialProviderPromoCommands)];
-
-  // Call the tested function.
-  ASSERT_TRUE(
-      [coordinator_ conformsToProtocol:@protocol(PasswordDetailsHandler)]);
-  [(id<PasswordDetailsHandler>)coordinator_ onPasswordCopiedByUser];
-}
-
 // Tests Password Visit metrics are logged only once after opening the surface.
 TEST_F(PasswordDetailsCoordinatorTest, VisitMetricsAreLoggedOnlyOnce) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
   HistogramTester histogram_tester;
   CheckPasswordDetailsVisitMetricsCount(0, histogram_tester);
 

@@ -25,15 +25,6 @@ else
   [ -f "$xdg_app_dir/mimeapps.list" ] || touch "$xdg_app_dir/mimeapps.list"
 fi
 
-# Always use our versions of ffmpeg libs.
-# This also makes RPMs find the compatibly-named library symlinks.
-if [[ -n "$LD_LIBRARY_PATH" ]]; then
-  LD_LIBRARY_PATH="$HERE:$HERE/lib:$LD_LIBRARY_PATH"
-else
-  LD_LIBRARY_PATH="$HERE:$HERE/lib"
-fi
-export LD_LIBRARY_PATH
-
 export CHROME_VERSION_EXTRA="@@CHANNEL@@"
 
 # We don't want bug-buddy intercepting our crashes. http://crbug.com/24120

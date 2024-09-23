@@ -13,7 +13,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -25,12 +25,12 @@ namespace web_app {
 std::unique_ptr<InstallabilityChecker> InstallabilityChecker::CreateAndStart(
     Profile* profile,
     WebAppProvider* web_app_provider,
-    const base::FilePath& bundle_path,
+    IwaSourceBundleWithMode source,
     base::OnceCallback<void(Result)> callback) {
   std::unique_ptr<InstallabilityChecker> checker =
       base::WrapUnique(new InstallabilityChecker(profile, web_app_provider,
                                                  std::move(callback)));
-  checker->Start(bundle_path);
+  checker->Start(std::move(source));
   return checker;
 }
 
@@ -47,22 +47,21 @@ InstallabilityChecker::InstallabilityChecker(
   CHECK(web_app_provider_);
 }
 
-void InstallabilityChecker::Start(const base::FilePath& bundle_path) {
-  IsolatedWebAppLocation location = DevModeBundle{bundle_path};
-  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-      location, base::BindOnce(&InstallabilityChecker::OnLoadedUrlInfo,
-                               weak_ptr_factory_.GetWeakPtr(), location));
+void InstallabilityChecker::Start(IwaSourceBundleWithMode source) {
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+      source, base::BindOnce(&InstallabilityChecker::OnLoadedUrlInfo,
+                             weak_ptr_factory_.GetWeakPtr(), source));
 }
 
 void InstallabilityChecker::OnLoadedUrlInfo(
-    IsolatedWebAppLocation location,
+    IwaSourceBundleWithMode source,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   if (!url_info.has_value()) {
     std::move(callback_).Run(BundleInvalid{url_info.error()});
     return;
   }
   SignedWebBundleMetadata::Create(
-      profile_, web_app_provider_, url_info.value(), location,
+      profile_, web_app_provider_, url_info.value(), source,
       base::BindOnce(&InstallabilityChecker::OnLoadedMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }

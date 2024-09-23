@@ -116,7 +116,7 @@ enum MinidumpStreamType : uint32_t {
 //!     file.
 //!
 //! \sa MINIDUMP_STRING
-struct ALIGNAS(4) PACKED MinidumpUTF8String {
+struct alignas(4) PACKED MinidumpUTF8String {
   // The field names do not conform to typical style, they match the names used
   // in MINIDUMP_STRING. This makes it easier to operate on MINIDUMP_STRING (for
   // UTF-16 strings) and MinidumpUTF8String using templates.
@@ -135,7 +135,7 @@ struct ALIGNAS(4) PACKED MinidumpUTF8String {
 //! \brief A variable-length array of bytes carried within a minidump file.
 //!     The data have no intrinsic type and should be interpreted according
 //!     to their referencing context.
-struct ALIGNAS(4) PACKED MinidumpByteArray {
+struct alignas(4) PACKED MinidumpByteArray {
   //! \brief The length of the #data field.
   uint32_t length;
 
@@ -273,7 +273,7 @@ enum MinidumpOS : uint32_t {
 };
 
 //! \brief A list of ::RVA pointers.
-struct ALIGNAS(4) PACKED MinidumpRVAList {
+struct alignas(4) PACKED MinidumpRVAList {
   //! \brief The number of children present in the #children array.
   uint32_t count;
 
@@ -282,7 +282,7 @@ struct ALIGNAS(4) PACKED MinidumpRVAList {
 };
 
 //! \brief A key-value pair.
-struct ALIGNAS(4) PACKED MinidumpSimpleStringDictionaryEntry {
+struct alignas(4) PACKED MinidumpSimpleStringDictionaryEntry {
   //! \brief ::RVA of a MinidumpUTF8String containing the key of a key-value
   //!     pair.
   RVA key;
@@ -293,7 +293,7 @@ struct ALIGNAS(4) PACKED MinidumpSimpleStringDictionaryEntry {
 };
 
 //! \brief A list of key-value pairs.
-struct ALIGNAS(4) PACKED MinidumpSimpleStringDictionary {
+struct alignas(4) PACKED MinidumpSimpleStringDictionary {
   //! \brief The number of key-value pairs present.
   uint32_t count;
 
@@ -302,7 +302,7 @@ struct ALIGNAS(4) PACKED MinidumpSimpleStringDictionary {
 };
 
 //! \brief A typed annotation object.
-struct ALIGNAS(4) PACKED MinidumpAnnotation {
+struct alignas(4) PACKED MinidumpAnnotation {
   //! \brief ::RVA of a MinidumpUTF8String containing the name of the
   //!     annotation.
   RVA name;
@@ -319,7 +319,7 @@ struct ALIGNAS(4) PACKED MinidumpAnnotation {
 };
 
 //! \brief A list of annotation objects.
-struct ALIGNAS(4) PACKED MinidumpAnnotationList {
+struct alignas(4) PACKED MinidumpAnnotationList {
   //! \brief The number of annotation objects present.
   uint32_t count;
 
@@ -342,7 +342,7 @@ struct ALIGNAS(4) PACKED MinidumpAnnotationList {
 //! fields are valid or not.
 //!
 //! \sa MinidumpModuleCrashpadInfoList
-struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfo {
+struct alignas(4) PACKED MinidumpModuleCrashpadInfo {
   //! \brief The structure’s currently-defined version number.
   //!
   //! \sa version
@@ -392,7 +392,7 @@ struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfo {
 //! \brief A link between a MINIDUMP_MODULE structure and additional
 //!     Crashpad-specific information about a module carried within a minidump
 //!     file.
-struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfoLink {
+struct alignas(4) PACKED MinidumpModuleCrashpadInfoLink {
   //! \brief A link to a MINIDUMP_MODULE structure in the module list stream.
   //!
   //! This field is an index into MINIDUMP_MODULE_LIST::Modules. This field’s
@@ -419,7 +419,7 @@ struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfoLink {
 //! structure carried within the minidump file will necessarily have
 //! Crashpad-specific information provided by a MinidumpModuleCrashpadInfo
 //! structure.
-struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfoList {
+struct alignas(4) PACKED MinidumpModuleCrashpadInfoList {
   //! \brief The number of children present in the #modules array.
   uint32_t count;
 
@@ -438,7 +438,7 @@ struct ALIGNAS(4) PACKED MinidumpModuleCrashpadInfoList {
 //! structure. Revise #kVersion and document each field’s validity based on
 //! #version, so that newer parsers will be able to determine whether the added
 //! fields are valid or not.
-struct ALIGNAS(4) PACKED MinidumpCrashpadInfo {
+struct alignas(4) PACKED MinidumpCrashpadInfo {
   // UUID has a constructor, which makes it non-POD, which makes this structure
   // non-POD. In order for the default constructor to zero-initialize other
   // members, an explicit constructor must be provided.

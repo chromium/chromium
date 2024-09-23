@@ -13,10 +13,11 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
@@ -49,9 +50,10 @@ NSString* const kTableViewNavigationDismissButtonId =
 @property(nonatomic, readonly) id<ApplicationCommands> applicationHandler;
 // Dispatcher for handling Lens promo actions.
 @property(nonatomic, readonly) id<LensCommands> lensHandler;
-// Browser coordinator command handler.
-@property(nonatomic, readonly) id<BrowserCoordinatorCommands>
-    browserCoordinatorHandler;
+// Whats New commands handler.
+@property(nonatomic, readonly) id<WhatsNewCommands> whatsNewHandler;
+// Settings command handler.
+@property(nonatomic, readonly) id<SettingsCommands> settingsHandler;
 // Number of clicked items in What's New
 @property(nonatomic, assign) int clicksOnWhatsNewItemsCount;
 
@@ -81,8 +83,9 @@ NSString* const kTableViewNavigationDismissButtonId =
   self.tableViewController.actionHandler = self.mediator;
   self.mediator.consumer = self.tableViewController;
   self.mediator.applicationHandler = self.applicationHandler;
-  self.mediator.browserCoordinatorHandler = self.browserCoordinatorHandler;
+  self.mediator.whatsNewHandler = self.whatsNewHandler;
   self.mediator.lensHandler = self.lensHandler;
+  self.mediator.settingsHandler = self.settingsHandler;
 
   [self.tableViewController reloadData];
 
@@ -98,16 +101,14 @@ NSString* const kTableViewNavigationDismissButtonId =
                                         animated:YES
                                       completion:nil];
   self.whatsNewStartTime = base::TimeTicks::Now();
-  self.mediator.baseViewController = self.tableViewController;
 
   [super start];
 }
 
 - (void)stop {
-  if (self.whatsNewDetailCoordinator) {
-    [self.whatsNewDetailCoordinator stop];
-    self.whatsNewDetailCoordinator = nil;
-  }
+  [self.whatsNewDetailCoordinator stop];
+  self.whatsNewDetailCoordinator = nil;
+
   self.mediator = nil;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
@@ -124,7 +125,7 @@ NSString* const kTableViewNavigationDismissButtonId =
   [self.promosUIHandler promoWasDismissed];
 
   if (self.shouldShowBubblePromoOnDismiss) {
-    [self.browserCoordinatorHandler showWhatsNewIPH];
+    [self.whatsNewHandler showWhatsNewIPH];
   }
 
   [super stop];
@@ -167,7 +168,8 @@ NSString* const kTableViewNavigationDismissButtonId =
       initWithBaseNavigationController:self.navigationController
                                browser:self.browser
                                   item:item
-                         actionHandler:self.mediator];
+                         actionHandler:self.mediator
+                       whatsNewHandler:self.whatsNewHandler];
   [self.whatsNewDetailCoordinator start];
 }
 
@@ -181,9 +183,9 @@ NSString* const kTableViewNavigationDismissButtonId =
   return handler;
 }
 
-- (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+- (id<WhatsNewCommands>)whatsNewHandler {
+  id<WhatsNewCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), WhatsNewCommands);
   DCHECK(handler);
 
   return handler;
@@ -192,6 +194,14 @@ NSString* const kTableViewNavigationDismissButtonId =
 - (id<LensCommands>)lensHandler {
   id<LensCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  DCHECK(handler);
+
+  return handler;
+}
+
+- (id<SettingsCommands>)settingsHandler {
+  id<SettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
   DCHECK(handler);
 
   return handler;
@@ -207,7 +217,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 - (void)dismiss {
-  [self.browserCoordinatorHandler dismissWhatsNew];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 @end

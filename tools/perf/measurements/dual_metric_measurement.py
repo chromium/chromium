@@ -27,10 +27,11 @@ class DualMetricMeasurement(story_test.StoryTest):
       self._tbm_test.WillRunStory(platform, story)
 
   def Measure(self, platform, results):
-    for value in results.current_story.GetMeasurements():
-      results.AddMeasurement(**value)
     if self._enable_tracing:
       self._tbm_test.Measure(platform, results)
+    else:
+      for value in results.current_story.GetMeasurements():
+        results.AddMeasurement(**value)
 
   def DidRunStory(self, platform, results):
     if self._enable_tracing:

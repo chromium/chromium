@@ -42,9 +42,11 @@ namespace WebAppManagement {
 enum Type {
   kMinValue = 0,
   kSystem = kMinValue,
+  kIwaShimlessRma,
   // Installed by Kiosk on Chrome OS.
   kKiosk,
   kPolicy,
+  kIwaPolicy,
   // Installed by APS (App Preload Service) on ChromeOS as an OEM app.
   kOem,
   kSubApp,
@@ -54,7 +56,7 @@ enum Type {
   // user-installed apps without overlaps this is the only source that will be
   // set.
   kSync,
-  kCommandLine,
+  kIwaUserInstalled,
   // Installed by APS (App Preload Service) on ChromeOS as a default app. These
   // have the same UX as kDefault apps, but are are not managed by
   // PreinstalledWebAppManager.
@@ -71,29 +73,14 @@ enum Type {
 };
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
+
+bool IsIwaType(WebAppManagement::Type type);
+
 }  // namespace WebAppManagement
 
 using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
                                             WebAppManagement::kMinValue,
                                             WebAppManagement::kMaxValue>;
-
-// Type of OS hook.
-//
-// This enum should be zero based. It is not strongly typed enum class to
-// support implicit conversion to int. Values are also used as index in
-// OsHooksErrors and OsHooksOptions.
-namespace OsHookType {
-enum Type {
-  kShortcuts = 0,
-  kRunOnOsLogin,
-  kShortcutsMenu,
-  kUninstallationViaOsSettings,
-  kFileHandlers,
-  kProtocolHandlers,
-  kUrlHandlers,
-  kMaxValue = kUrlHandlers,
-};
-}  // namespace OsHookType
 
 // ExternallyManagedAppManager: Where an app was installed from. This affects
 // what flags will be used when installing the app.
@@ -245,14 +232,6 @@ enum class ApiApprovalState {
 
 std::ostream& operator<<(std::ostream& os, ApiApprovalState state);
 
-// State concerning whether a particular feature has been enabled at the OS
-// level. For example, with File Handling, this indicates whether an app should
-// be/has been registered with the OS to handle opening certain file types.
-enum class OsIntegrationState {
-  kEnabled = 0,
-  kDisabled = 1,
-};
-
 // TODO(b/274172447): Remove these and the manifest.h include after refactoring
 // away blink::Manifest and moving the inner classes to regular classes
 using LaunchHandler = blink::Manifest::LaunchHandler;
@@ -302,19 +281,21 @@ enum class WebAppInstallStatus : int64_t {
 
 using ResultCallback = base::OnceCallback<void(Result)>;
 
-// Convert the uninstall source to string for easy printing.
-std::string ConvertUninstallSourceToStringType(
-    const webapps::WebappUninstallSource& uninstall_source);
-
 // Management types that can be uninstalled by the user.
+// Note: These work directly with the `webapps::IsUserUninstall` function - any
+// source that returns true there can uninstall these types but not others, and
+// will CHECK-fail in RemoveWebAppJob otherwise.
+// All WebAppManagement::Types must be listed in either this constant or
+// kNotUserUninstallableSources (located in the cc file).
 constexpr WebAppManagementTypes kUserUninstallableSources = {
     WebAppManagement::kDefault,
+    WebAppManagement::kApsDefault,
     WebAppManagement::kSync,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kSubApp,
     WebAppManagement::kOem,
-    WebAppManagement::kCommandLine,
     WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kIwaUserInstalled,
 };
 
 // Management types that resulted from a user web app install.
@@ -322,8 +303,9 @@ constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kSync,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kIwaUserInstalled,
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_

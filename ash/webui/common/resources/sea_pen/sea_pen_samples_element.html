@@ -1,0 +1,70 @@
+<style include="wallpaper common sea-pen cros-button-style">
+  #grid {
+    overflow-y: auto;
+  }
+
+  wallpaper-grid-item {
+    --wallpaper-grid-item-width: 100%;
+  }
+
+  wallpaper-grid-item::part(item) {
+    border-radius: 45px;
+  }
+
+  wallpaper-grid-item::part(text) {
+    overflow: visible;
+    position: relative;
+    top: 26px;
+    white-space: normal;
+    width: calc(100% - 38px);
+  }
+
+  .container iron-icon.add-icon[icon='personalization-shared:circular-add'] {
+    --iron-icon-fill-color: white;
+    display: none;
+    /* The icon icon is 20px. Subtract half of that to center the icon. */
+    left: calc(50% - 10px);
+    pointer-events: none;
+    position: absolute;
+    top: 22px;
+  }
+
+  .container:hover iron-icon.add-icon {
+    display: block;
+  }
+
+  .container {
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
+
+  #samplePrompt {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+  }
+</style>
+<iron-list id="grid"
+    items="[[samples]]"
+    as="sample"
+    grid
+    role="listbox">
+  <template>
+    <div class="container">
+      <wallpaper-grid-item
+          on-wallpaper-grid-item-selected="onClickSample_"
+          primary-text="[[sample.prompt]]"
+          role="option"
+          src="[[sample.preview]]"
+          tabindex$="[[tabIndex]]">
+        <div id="samplePrompt" slot="text" class="primary-text">
+          [[sample.prompt]]
+        </div>
+      </wallpaper-grid-item>
+      <iron-icon class="add-icon" icon="personalization-shared:circular-add">
+    </iron-icon>
+    </div>
+  </template>
+</iron-list>

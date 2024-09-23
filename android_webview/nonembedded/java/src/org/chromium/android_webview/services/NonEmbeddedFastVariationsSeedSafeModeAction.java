@@ -9,15 +9,13 @@ import androidx.annotation.NonNull;
 import org.chromium.android_webview.common.SafeModeActionIds;
 
 /**
- * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run.
- * This is the nonembedded-process counterpart to {@link
+ * A {@link SafeModeAction} to ensure the variations seed is distributed on an app's first run. This
+ * is the nonembedded-process counterpart to {@link
  * org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction}.
  */
 public class NonEmbeddedFastVariationsSeedSafeModeAction implements NonEmbeddedSafeModeAction {
-    private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused for NonEmbedded SafeMode Actions.
     private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
-    private static boolean sScheduleForTesting;
 
     @Override
     @NonNull

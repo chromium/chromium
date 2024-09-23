@@ -1,0 +1,11 @@
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A datalist tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A div tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A input tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+This is a testharness.js-based test.
+[FAIL] UseCounter is counted when putting button in select.
+  assert_false: select parser dropped tag expected false got true
+[FAIL] UseCounter is counted when putting datalist in select.
+  assert_false: button in select expected false got true
+Harness: the test ran to completion.
+

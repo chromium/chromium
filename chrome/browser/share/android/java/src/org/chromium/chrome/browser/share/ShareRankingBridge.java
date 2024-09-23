@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -30,7 +31,7 @@ public class ShareRankingBridge {
                 .rank(
                         profile,
                         type,
-                        available.toArray(),
+                        available,
                         fold,
                         length,
                         persist,
@@ -42,9 +43,9 @@ public class ShareRankingBridge {
     @NativeMethods
     public interface Natives {
         void rank(
-                Profile profile,
-                String type,
-                Object[] available,
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String type,
+                @JniType("std::vector<std::string>") List<String> available,
                 int fold,
                 int length,
                 boolean persist,

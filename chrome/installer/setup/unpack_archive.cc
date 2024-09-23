@@ -141,7 +141,7 @@ base::expected<void, InstallStatus> UncompressAndPatchChromeArchive(
   // --- Background ---
   //   1m (50%ile) / >60m (99%ile)
   installer_state.SetStage(PATCHING);
-  if (!archive_helper->ApplyPatch()) {
+  if (!archive_helper->ApplyAndDeletePatch()) {
     installer_state.WriteInstallerResult(APPLY_DIFF_PATCH_FAILED,
                                          IDS_INSTALL_UNCOMPRESSION_FAILED_BASE,
                                          nullptr);

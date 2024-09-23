@@ -5,7 +5,6 @@
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 

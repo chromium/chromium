@@ -13,33 +13,37 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Ideally, for each of the {@link MessageType} requires a MessageService class. This is the
- * base class. All the concrete subclass should contain logic that convert the data from the
+ * Ideally, for each of the {@link MessageType} requires a MessageService class. This is the base
+ * class. All the concrete subclass should contain logic that convert the data from the
  * corresponding external service to a data structure that the TabGridMessageCardProvider
  * understands.
  */
 public class MessageService {
     @IntDef({
-        MessageType.TAB_SUGGESTION,
         MessageType.IPH,
         MessageType.PRICE_MESSAGE,
         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+        MessageType.ARCHIVED_TABS_MESSAGE,
+        MessageType.ARCHIVED_TABS_IPH_MESSAGE,
+        MessageType.COLLABORATION_ACTIVITY,
         MessageType.ALL
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int FOR_TESTING = 0;
-        int TAB_SUGGESTION = 1;
-        int IPH = 2;
-        int PRICE_MESSAGE = 3;
-        int INCOGNITO_REAUTH_PROMO_MESSAGE = 4;
-        int ALL = 5;
+        int IPH = 1;
+        int PRICE_MESSAGE = 2;
+        int INCOGNITO_REAUTH_PROMO_MESSAGE = 3;
+        int ARCHIVED_TABS_MESSAGE = 4;
+        int ARCHIVED_TABS_IPH_MESSAGE = 5;
+        int COLLABORATION_ACTIVITY = 6;
+        int ALL = 7;
     }
 
     /**
      * The reason why we disable the message in grid tab switcher and no longer show it.
      *
-     * Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
+     * <p>Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
@@ -76,13 +80,22 @@ public class MessageService {
     public interface MessageData {}
 
     /**
-     * An interface to be notified about changes to a Message.
-     * TODO(meiliang): Need to define this interface in more detail.
+     * Extends {@link MessageData} for CUSTOM_MESSAGE types which require a {@link
+     * CustomMessageCardProvider}.
+     */
+    public interface CustomMessageData extends MessageData {
+        /** Returns a provider of information used for custom messages. */
+        CustomMessageCardProvider getProvider();
+    }
+
+    /**
+     * An interface to be notified about changes to a Message. TODO(meiliang): Need to define this
+     * interface in more detail.
      */
     public interface MessageObserver {
         /**
-         * Called when a message is available.
-         * TODO(meiliang): message data is needed.
+         * Called when a message is available. TODO(meiliang): message data is needed.
+         *
          * @param type The type of the message.
          * @param data {@link MessageData} associated with the message.
          */
@@ -132,7 +145,7 @@ public class MessageService {
         }
     }
 
-    /** Notifies all {@link MessageObserver} that a message is became invalid. */
+    /** Notifies all {@link MessageObserver} that a message was invalidated. */
     public void sendInvalidNotification() {
         for (MessageObserver observer : mObservers) {
             observer.messageInvalidate(mMessageType);

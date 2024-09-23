@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <jni.h>
+
 #include <set>
 
 #include "base/android/jni_android.h"
@@ -10,10 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/not_fatal_until.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/public/android/content_jni_headers/ContentViewStaticsImpl_jni.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContentViewStaticsImpl_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
@@ -76,7 +80,7 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
  private:
   void StopWatching(content::RenderProcessHost* host) {
     auto pos = suspended_processes_.find(host->GetID());
-    DCHECK(pos != suspended_processes_.end());
+    CHECK(pos != suspended_processes_.end(), base::NotFatalUntil::M130);
     host->RemoveObserver(this);
     suspended_processes_.erase(pos);
   }

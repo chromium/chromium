@@ -105,8 +105,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
       const gfx::Rect& frame,
       const gfx::Insets& caption_button_insets);
 
-  CGFloat FullscreenBackingBarHeight() const;
-
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.
   int TopUIFullscreenYOffset() const;

@@ -4,37 +4,39 @@
 
 module network.mojom;
 
+import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
+import "services/network/public/mojom/network_annotation_monitor.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
-import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
-import "services/network/public/mojom/proxy_config.mojom";
-import "services/network/public/mojom/network_annotation_monitor.mojom";
 import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
-import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
-import "services/network/public/mojom/client_security_state.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -113,7 +115,7 @@ struct NetworkServiceParams {
 
   // The initial AddressMapOwnerLinux::AddressMap and set of online links for
   // the AddressMapCacheLinux in the network service.
-  // TODO(crbug.com/1312226): this should be non-optional once the kill switch
+  // TODO(crbug.com/40220507): this should be non-optional once the kill switch
   // is removed.
   [EnableIf=use_network_interface_change_listener]
   InitialAddressMap? initial_address_map;
@@ -218,8 +220,8 @@ interface NetworkService {
 
   // Creates a new network context with the given parameters.
   [AllowedContext=sandbox.mojom.Context.kBrowser]
-  CreateNetworkContext(pending_receiver<NetworkContext> context,
-                       NetworkContextParams params);
+  CreateNetworkContext(
+      pending_receiver<NetworkContext> context, NetworkContextParams params);
 
   // Configures whether the built-in stub host resolver is used in preference
   // over getaddrinfo. When enabled, the stub resolver will attempt to use the
@@ -312,7 +314,8 @@ interface NetworkService {
   SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
 
   // Called when the system is low on memory.
-  OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
+  OnMemoryPressure(
+      mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
 
   // Called when there is a change in the current count of peer to peer
   // connections that may require low latency.
@@ -378,10 +381,14 @@ interface NetworkService {
   // for the Privacy Proxy. Any existing NetworkContexts that are using the
   // custom proxy configs will have their configs updated.
   //
-  // |raw_mdl| contains the byte string representation of the MaskedDomainList
-  // proto. See the proto definition at
+  // `masked_domain_list` wraps a MaskedDomainList proto. See the definition at
   // //components/privacy_sandbox/masked_domain_list/masked_domain_list.proto.
-  UpdateMaskedDomainList(mojo_base.mojom.ByteString raw_mdl);
+  //
+  // |exclusion_list| contains the list of domains which should be excluded
+  // from the MDL. Subdomains of entries on this list should be excluded from
+  // the MDL as well.
+  UpdateMaskedDomainList(mojo_base.mojom.ProtoWrapper masked_domain_list,
+    array<string> exclusion_list);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when
@@ -405,14 +412,19 @@ interface NetworkService {
 
   // Set the GssapiLibraryLoadObserver for this network service.
   // Will only be notified once unless the observer is set again.
-  // TODO(crbug.com/1474362): remove this observer once GSSAPI is brokered
+  // TODO(crbug.com/40070096): remove this observer once GSSAPI is brokered
   // out of the network service.
   [EnableIf=is_linux]
   SetGssapiLibraryLoadObserver(
-    pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
+      pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
 
   // Set NetworkAnnotationMonitor remote. This allows network calls to be
   // reported via `NotifyNetworkRequestWithAnnotation`.
   SetNetworkAnnotationMonitor(
-    pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
+      pending_remote<network.mojom.NetworkAnnotationMonitor> remote);
+
+  // SetTpcdMetadataGrants syncs the TPCD Metadata Grants copy of the network
+  // service with that of the browser.
+  SetTpcdMetadataGrants(
+      array<content_settings.mojom.ContentSettingPatternSource> settings);
 };

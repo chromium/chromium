@@ -42,12 +42,12 @@ void MainThreadScrollingReason::AddToTracedValue(
   ADD_REASON(kHasBackgroundAttachmentFixedObjects,
              "Has background-attachment:fixed");
   ADD_REASON(kNotOpaqueForTextAndLCDText, "Not opaque for text and LCD text");
-  ADD_REASON(kNoScrollingLayer, "No scrolling layer");
   ADD_REASON(kPreferNonCompositedScrolling, "Prefer non-composited scrolling");
   ADD_REASON(kBackgroundNeedsRepaintOnScroll,
              "Background needs repaint on scroll");
   ADD_REASON(kScrollbarScrolling, "Scrollbar scrolling");
-  ADD_REASON(kNonFastScrollableRegion, "Non fast scrollable region");
+  ADD_REASON(kMainThreadScrollHitTestRegion,
+             "Main thread scroll hit test region");
   ADD_REASON(kFailedHitTest, "Failed hit test");
   ADD_REASON(kPopupNoThreadedInput,
              "Popup scrolling (no threaded input handler)");

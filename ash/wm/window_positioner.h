@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_POSITIONER_H_
 
 #include "ash/ash_export.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -25,9 +25,9 @@ namespace ash::window_positioner {
 // |bounds_in_out| is the saved bounds.
 ASH_EXPORT void GetBoundsAndShowStateForNewWindow(
     bool is_saved_bounds,
-    ui::WindowShowState show_state_in,
+    ui::mojom::WindowShowState show_state_in,
     gfx::Rect* bounds_in_out,
-    ui::WindowShowState* show_state_out);
+    ui::mojom::WindowShowState* show_state_out);
 
 // Check if after removal or hide of the given |removed_window| an
 // automated desktop location management can be performed and

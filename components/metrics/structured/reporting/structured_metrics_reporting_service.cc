@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
+
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_log_metrics.h"
@@ -50,7 +53,7 @@ GURL StructuredMetricsReportingService::GetInsecureUploadUrl() const {
   return client()->GetInsecureMetricsServerUrl();
 }
 
-base::StringPiece StructuredMetricsReportingService::upload_mime_type() const {
+std::string_view StructuredMetricsReportingService::upload_mime_type() const {
   return kDefaultMetricsMimeType;
 }
 
@@ -71,7 +74,7 @@ void StructuredMetricsReportingService::LogResponseOrErrorCode(
     int response_code,
     int error_code,
     bool /*was_http*/) {
-  // TODO(crbug.com/1445155) Do we assume |was_https| is always true? UMA
+  // TODO(crbug.com/40268040) Do we assume |was_https| is always true? UMA
   // doesn't but UKM does.
   if (response_code >= 0) {
     base::UmaHistogramSparse("StructuredMetrics.Reporting.HTTPResponseCode",

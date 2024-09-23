@@ -10,7 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -47,7 +47,7 @@ constexpr char kApp4InstallURL[] = "https://example_url4.com/install";
 
 }  // namespace
 
-class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
+class WebAppCleanupHandlerBrowserTest : public WebAppBrowserTestBase {
  protected:
   WebAppCleanupHandlerBrowserTest()
       : skip_preinstalled_web_app_startup_(
@@ -58,10 +58,8 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
                                GURL start_url,
                                GURL install_url,
                                webapps::WebappInstallSource install_source) {
-    auto app_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(start_url));
+    auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     app_info->title = title;
-    app_info->start_url = start_url;
     app_info->install_url = install_url;
     return test::InstallWebApp(profile(), std::move(app_info),
                                /*overwrite_existing_manifest_fields=*/false,

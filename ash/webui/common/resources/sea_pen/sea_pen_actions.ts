@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {Action} from 'chrome://resources/js/store.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {RecentSeaPenData} from './constants.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {SeaPenImageId} from './constants.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 
 /**
  * @fileoverview defines the actions to change SeaPen state.
@@ -21,27 +21,35 @@ export enum SeaPenActionName {
       'begin_load_selected_recent_sea_pen_image',
   SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
   BEGIN_SELECT_SEA_PEN_THUMBNAIL = 'begin_select_sea_pen_thumbnail',
+  CLEAR_CURRENT_SEA_PEN_QUERY = 'clear_current_sea_pen_query',
   CLEAR_SEA_PEN_THUMBNAILS = 'clear_sea_pen_thumbnails',
+  CLEAR_SEA_PEN_THUMBNAILS_LOADING = 'clear_sea_pen_thumbnails_loading',
   END_SELECT_SEA_PEN_THUMBNAIL = 'end_select_sea_pen_thumbnail',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
+  SET_CURRENT_SEA_PEN_QUERY = 'set_current_sea_pen_query',
   SET_SEA_PEN_THUMBNAILS = 'set_sea_pen_thumbnails',
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
-  SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG =
-      'set_should_show_sea_pen_terms_of_service_dialog',
+  SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG =
+      'set_should_show_sea_pen_introduction_dialog',
+  DISMISS_SEA_PEN_ERROR_ACTION = 'dismiss_sea_pen_error',
+  SET_SEA_PEN_FULLSCREEN_STATE = 'set_sea_pen_fullscreen_state',
+  SET_SEA_PEN_TEXT_QUERY_HISTORY = 'set_sea_pen_text_query_history',
 }
 
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
-    ClearSeaPenThumbnailsAction|EndSelectRecentSeaPenImageAction|
-    SetThumbnailResponseStatusCodeAction|SetSeaPenThumbnailsAction|
-    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
-    SetSelectedRecentSeaPenImageAction|BeginSelectSeaPenThumbnailAction|
-    EndSelectSeaPenThumbnailAction|
-    SetShouldShowSeaPenTermsOfServiceDialogAction;
+    ClearCurrentSeaPenQueryAction|ClearSeaPenThumbnailsAction|
+    ClearSeaPenThumbnailsLoadingAction|EndSelectRecentSeaPenImageAction|
+    SetThumbnailResponseStatusCodeAction|SetCurrentSeaPenQueryAction|
+    SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
+    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
+    BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction|
+    SetShouldShowSeaPenIntroductionDialogAction|DismissSeaPenErrorAction|
+    SetSeaPenFullscreenStateAction|SetSeaPenTextQueryHistory;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -56,10 +64,23 @@ export function beginSearchSeaPenThumbnailsAction(query: SeaPenQuery):
   };
 }
 
+export interface SetCurrentSeaPenQueryAction extends Action {
+  name: SeaPenActionName.SET_CURRENT_SEA_PEN_QUERY;
+  query: SeaPenQuery;
+}
+
+/**
+ * Sets the currently searched Sea Pen query.
+ */
+export function setCurrentSeaPenQueryAction(query: SeaPenQuery):
+    SetCurrentSeaPenQueryAction {
+  return {name: SeaPenActionName.SET_CURRENT_SEA_PEN_QUERY, query};
+}
+
 export interface SetSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS;
   query: SeaPenQuery;
-  images: SeaPenThumbnail[]|null;
+  thumbnails: SeaPenThumbnail[]|null;
 }
 
 /**
@@ -67,8 +88,8 @@ export interface SetSeaPenThumbnailsAction extends Action {
  */
 export function setSeaPenThumbnailsAction(
     query: SeaPenQuery,
-    images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
-  return {name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS, query, images};
+    thumbnails: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
+  return {name: SeaPenActionName.SET_SEA_PEN_THUMBNAILS, query, thumbnails};
 }
 
 export interface BeginLoadRecentSeaPenImagesAction extends Action {
@@ -87,13 +108,13 @@ export function beginLoadRecentSeaPenImagesAction():
 
 export interface SetRecentSeaPenImagesAction extends Action {
   name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES;
-  recentImages: FilePath[]|null;
+  recentImages: SeaPenImageId[]|null;
 }
 
 /**
  * Sets the recent sea pen images.
  */
-export function setRecentSeaPenImagesAction(recentImages: FilePath[]|
+export function setRecentSeaPenImagesAction(recentImages: SeaPenImageId[]|
                                             null): SetRecentSeaPenImagesAction {
   return {
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES,
@@ -103,58 +124,58 @@ export function setRecentSeaPenImagesAction(recentImages: FilePath[]|
 
 export interface BeginLoadRecentSeaPenImageDataAction extends Action {
   name: SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA;
-  id: string;
+  id: SeaPenImageId;
 }
 
 /**
  * Begins load the recent sea pen image data.
  */
-export function beginLoadRecentSeaPenImageDataAction(image: FilePath):
+export function beginLoadRecentSeaPenImageDataAction(id: SeaPenImageId):
     BeginLoadRecentSeaPenImageDataAction {
   return {
     name: SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA,
-    id: image.path,
+    id,
   };
 }
 
 export interface SetRecentSeaPenImageDataAction extends Action {
   name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA;
-  id: string;
-  data: RecentSeaPenData;
+  id: SeaPenImageId;
+  data: RecentSeaPenThumbnailData|null;
 }
 
 /**
  * Sets the recent sea pen image data.
  */
 export function setRecentSeaPenImageDataAction(
-    filePath: FilePath,
-    data: RecentSeaPenData): SetRecentSeaPenImageDataAction {
+    id: SeaPenImageId,
+    data: RecentSeaPenThumbnailData|null): SetRecentSeaPenImageDataAction {
   return {
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA,
-    id: filePath.path,
+    id,
     data,
   };
 }
 
 export interface BeginSelectRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE;
-  image: FilePath;
+  id: SeaPenImageId;
 }
 
 /**
  * Begins selecting a recent Sea Pen image.
  */
-export function beginSelectRecentSeaPenImageAction(image: FilePath):
+export function beginSelectRecentSeaPenImageAction(id: SeaPenImageId):
     BeginSelectRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE,
-    image: image,
+    id,
   };
 }
 
 export interface EndSelectRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE;
-  image: FilePath;
+  id: SeaPenImageId;
   success: boolean;
 }
 
@@ -162,10 +183,10 @@ export interface EndSelectRecentSeaPenImageAction extends Action {
  * Ends selecting a recent Sea Pen image.
  */
 export function endSelectRecentSeaPenImageAction(
-    image: FilePath, success: boolean): EndSelectRecentSeaPenImageAction {
+    id: SeaPenImageId, success: boolean): EndSelectRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE,
-    image,
+    id,
     success,
   };
 }
@@ -184,17 +205,31 @@ export function beginLoadSelectedRecentSeaPenImageAction():
 
 export interface SetSelectedRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE;
-  key: string|null;
+  key: SeaPenImageId|null;
 }
 
 /**
  * Sets the selected recent Sea Pen image.
+ * Key is the id of the thumbnail that was used to generate this image.
  */
-export function setSelectedRecentSeaPenImageAction(key: string|null):
+export function setSelectedRecentSeaPenImageAction(key: SeaPenImageId|null):
     SetSelectedRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE,
-    key: key,
+    key,
+  };
+}
+
+export interface SetSeaPenTextQueryHistory extends Action {
+  name: SeaPenActionName.SET_SEA_PEN_TEXT_QUERY_HISTORY;
+  history: TextQueryHistoryEntry[]|null;
+}
+
+export function setSeaPenTextQueryHistory(history: TextQueryHistoryEntry[]|
+                                          null): SetSeaPenTextQueryHistory {
+  return {
+    name: SeaPenActionName.SET_SEA_PEN_TEXT_QUERY_HISTORY,
+    history,
   };
 }
 
@@ -242,6 +277,14 @@ export function endSelectSeaPenThumbnailAction(
   };
 }
 
+export interface ClearCurrentSeaPenQueryAction extends Action {
+  name: SeaPenActionName.CLEAR_CURRENT_SEA_PEN_QUERY;
+}
+
+export function clearCurrentSeaPenQueryAction(): ClearCurrentSeaPenQueryAction {
+  return {name: SeaPenActionName.CLEAR_CURRENT_SEA_PEN_QUERY};
+}
+
 export interface ClearSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS;
 }
@@ -250,20 +293,50 @@ export function clearSeaPenThumbnailsAction(): ClearSeaPenThumbnailsAction {
   return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS};
 }
 
-export interface SetShouldShowSeaPenTermsOfServiceDialogAction extends Action {
-  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG;
+export interface ClearSeaPenThumbnailsLoadingAction extends Action {
+  name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS_LOADING;
+}
+
+export function clearSeaPenThumbnailsLoadingAction():
+    ClearSeaPenThumbnailsLoadingAction {
+  return {name: SeaPenActionName.CLEAR_SEA_PEN_THUMBNAILS_LOADING};
+}
+
+export interface SetShouldShowSeaPenIntroductionDialogAction extends Action {
+  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG;
   shouldShowDialog: boolean;
 }
 
 /**
- * Sets the boolean that determines whether to show the Sea Pen terms of service
+ * Sets the boolean that determines whether to show the Sea Pen introduction
  * dialog.
  */
-export function setShouldShowSeaPenTermsOfServiceDialogAction(
-    shouldShowDialog: boolean): SetShouldShowSeaPenTermsOfServiceDialogAction {
+export function setShouldShowSeaPenIntroductionDialogAction(
+    shouldShowDialog: boolean): SetShouldShowSeaPenIntroductionDialogAction {
   assert(typeof shouldShowDialog === 'boolean');
   return {
-    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_TERMS_OF_SERVICE_DIALOG,
+    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG,
     shouldShowDialog,
   };
+}
+
+export interface DismissSeaPenErrorAction extends Action {
+  name: SeaPenActionName.DISMISS_SEA_PEN_ERROR_ACTION;
+}
+
+export function dismissSeaPenErrorAction(): DismissSeaPenErrorAction {
+  return {name: SeaPenActionName.DISMISS_SEA_PEN_ERROR_ACTION};
+}
+
+export interface SetSeaPenFullscreenStateAction extends Action {
+  name: SeaPenActionName.SET_SEA_PEN_FULLSCREEN_STATE;
+  state: FullscreenPreviewState;
+}
+
+/**
+ * Enables/disables the fullscreen preview mode for wallpaper.
+ */
+export function setSeaPenFullscreenStateAction(state: FullscreenPreviewState):
+    SetSeaPenFullscreenStateAction {
+  return {name: SeaPenActionName.SET_SEA_PEN_FULLSCREEN_STATE, state};
 }

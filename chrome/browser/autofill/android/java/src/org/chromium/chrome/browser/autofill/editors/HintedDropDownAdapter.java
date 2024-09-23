@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.autofill.R;
 
 import java.util.List;
@@ -65,22 +64,19 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
                         : (TextView) convertView.findViewById(mTextViewResourceId);
         if (mTextView != null) {
             // Clear the possible changes for the first and last view.
-            ViewCompat.setPaddingRelative(
-                    convertView,
+            convertView.setPaddingRelative(
                     ViewCompat.getPaddingStart(convertView),
                     0,
                     ViewCompat.getPaddingEnd(convertView),
                     0);
             mTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            ApiCompatibilityUtils.setTextAppearance(
-                    mTextView, R.style.TextAppearance_TextLarge_Primary);
+            mTextView.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
         }
         convertView = super.getDropDownView(position, convertView, parent);
 
         if (position == 0) {
             // Padding at the top of the dropdown.
-            ViewCompat.setPaddingRelative(
-                    convertView,
+            convertView.setPaddingRelative(
                     ViewCompat.getPaddingStart(convertView),
                     getContext()
                             .getResources()

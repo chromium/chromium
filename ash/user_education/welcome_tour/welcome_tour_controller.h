@@ -76,6 +76,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void OnAccessibilityStatusChanged() override;
 
   // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnChromeTerminating() override;
   void OnSessionStateChanged(session_manager::SessionState) override;

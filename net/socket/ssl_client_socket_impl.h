@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -74,9 +75,9 @@ class SSLClientSocketImpl : public SSLClientSocket,
   std::vector<uint8_t> GetECHRetryConfigs() override;
 
   // SSLSocket implementation.
-  int ExportKeyingMaterial(base::StringPiece label,
+  int ExportKeyingMaterial(std::string_view label,
                            bool has_context,
-                           base::StringPiece context,
+                           std::string_view context,
                            unsigned char* out,
                            unsigned int outlen) override;
 
@@ -91,7 +92,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
   NextProto GetNegotiatedProtocol() const override;
-  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<std::string_view> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;
   void GetSSLCertRequestInfo(
@@ -202,7 +203,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
                           OpenSSLErrorInfo* info);
 
   // Wraps SSL_get0_ech_name_override. See documentation for that function.
-  base::StringPiece GetECHNameOverride() const;
+  std::string_view GetECHNameOverride() const;
 
   // Returns true if |cert| is one of the certs in |allowed_bad_certs|.
   // The expected cert status is written to |cert_status|. |*cert_status| can

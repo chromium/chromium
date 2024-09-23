@@ -50,12 +50,12 @@ class DownloadBubbleSecurityViewInfo
 
     // Controls the text color of the button. Only applied for some secondary
     // buttons.
-    absl::optional<ui::ColorId> text_color;
+    std::optional<ui::ColorId> text_color;
 
     SubpageButton(DownloadCommands::Command command,
                   std::u16string label,
                   bool is_prominent,
-                  absl::optional<ui::ColorId> text_color = absl::nullopt);
+                  std::optional<ui::ColorId> text_color = std::nullopt);
   };
 
   DownloadBubbleSecurityViewInfo();
@@ -88,7 +88,7 @@ class DownloadBubbleSecurityViewInfo
   const gfx::VectorIcon* warning_secondary_icon() const {
     return warning_secondary_icon_;
   }
-  const absl::optional<LabelWithLink>& learn_more_link() const {
+  const std::optional<LabelWithLink>& learn_more_link() const {
     return learn_more_link_;
   }
   bool has_primary_button() const { return subpage_buttons_.size() > 0; }
@@ -169,7 +169,7 @@ class DownloadBubbleSecurityViewInfo
 
   // Text with link to go at the bottom of the subpage summary, such as "Learn
   // why Chrome blocks some downloads".
-  absl::optional<LabelWithLink> learn_more_link_;
+  std::optional<LabelWithLink> learn_more_link_;
 
   // Subpage buttons
   std::vector<SubpageButton> subpage_buttons_;

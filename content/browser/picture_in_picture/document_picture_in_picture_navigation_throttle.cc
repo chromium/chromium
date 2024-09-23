@@ -54,7 +54,7 @@ DocumentPictureInPictureNavigationThrottle::
     ClosePiPWindowAndCancelNavigation() {
   // We are not allowed to synchronously close the WebContents here, so we must
   // do it asynchronously.
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&WebContents::ClosePage,
                      navigation_handle()->GetWebContents()->GetWeakPtr()));

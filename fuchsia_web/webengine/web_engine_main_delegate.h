@@ -7,10 +7,11 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/zx/channel.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "content/public/app/content_main_delegate.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 
@@ -38,6 +39,7 @@ class WEB_ENGINE_EXPORT WebEngineMainDelegate
   // ContentMainDelegate implementation.
   std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
+  std::optional<int> PreBrowserMain() override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;

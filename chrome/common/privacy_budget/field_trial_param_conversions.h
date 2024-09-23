@@ -6,13 +6,13 @@
 #define CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_
 
 #include <iterator>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -27,20 +27,20 @@ namespace privacy_budget_internal {
 // use either DecodeIdentifiabilityFieldTrialParam() or
 // EncodeIdentifiabilityFieldTrialParam().
 //
-// DecodeIdentifiabilityType(StringPiece s,V* v) decodes a element of type
-// V serialized as a string and referred to via StringPiece s and stores it in
-// *v.
-bool DecodeIdentifiabilityType(const base::StringPiece,
+// DecodeIdentifiabilityType(std::string_view s,V* v) decodes a element of type
+// V serialized as a string and referred to via std::string_view s and stores it
+// in *v.
+bool DecodeIdentifiabilityType(const std::string_view,
                                blink::IdentifiableSurface*);
-bool DecodeIdentifiabilityType(const base::StringPiece,
+bool DecodeIdentifiabilityType(const std::string_view,
                                blink::IdentifiableSurface::Type*);
-bool DecodeIdentifiabilityType(const base::StringPiece, int*);
-bool DecodeIdentifiabilityType(const base::StringPiece, uint64_t*);
-bool DecodeIdentifiabilityType(const base::StringPiece, unsigned int*);
-bool DecodeIdentifiabilityType(const base::StringPiece, double*);
-bool DecodeIdentifiabilityType(const base::StringPiece,
+bool DecodeIdentifiabilityType(const std::string_view, int*);
+bool DecodeIdentifiabilityType(const std::string_view, uint64_t*);
+bool DecodeIdentifiabilityType(const std::string_view, unsigned int*);
+bool DecodeIdentifiabilityType(const std::string_view, double*);
+bool DecodeIdentifiabilityType(const std::string_view,
                                std::vector<blink::IdentifiableSurface>*);
-bool DecodeIdentifiabilityType(const base::StringPiece, std::string*);
+bool DecodeIdentifiabilityType(const std::string_view, std::string*);
 
 // V is a std::pair<P,R> where P and R are types known to
 // DecodeIdentifiabilityType().
@@ -48,7 +48,7 @@ template <
     typename V,
     typename P = typename std::remove_const<typename V::first_type>::type,
     typename R = typename std::remove_const<typename V::second_type>::type>
-bool DecodeIdentifiabilityType(base::StringPiece s, V* result) {
+bool DecodeIdentifiabilityType(std::string_view s, V* result) {
   auto pieces =
       base::SplitStringPiece(s, ";", base::WhitespaceHandling::TRIM_WHITESPACE,
                              base::SplitResult::SPLIT_WANT_NONEMPTY);
@@ -98,9 +98,9 @@ struct SortWhenSerializing : std::false_type {};
 template <typename T,
           char Separator = ',',
           typename V = typename T::value_type,
-          bool ElementDecoder(const base::StringPiece, V*) =
+          bool ElementDecoder(const std::string_view, V*) =
               &privacy_budget_internal::DecodeIdentifiabilityType>
-T DecodeIdentifiabilityFieldTrialParam(base::StringPiece encoded_value) {
+T DecodeIdentifiabilityFieldTrialParam(std::string_view encoded_value) {
   T result;
   auto pieces =
       base::SplitStringPiece(encoded_value, std::string(1, Separator),

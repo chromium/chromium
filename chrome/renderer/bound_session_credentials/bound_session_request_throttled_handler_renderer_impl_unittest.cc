@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h"
+
 #include <algorithm>
 
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
@@ -32,7 +34,7 @@ class MockBoundSessionRequestThrottledInRendererManager
  public:
   MockBoundSessionRequestThrottledInRendererManager() {
     sequence_checker_.DetachFromSequence();
-    ON_CALL(*this, HandleRequestBlockedOnCookie(_))
+    ON_CALL(*this, HandleRequestBlockedOnCookie)
         .WillByDefault(testing::Invoke(
             this, &MockBoundSessionRequestThrottledInRendererManager::
                       HandleRequestBlockedOnCookieCalled));
@@ -40,8 +42,9 @@ class MockBoundSessionRequestThrottledInRendererManager
 
   MOCK_METHOD(void,
               HandleRequestBlockedOnCookie,
-              (BoundSessionRequestThrottledHandler::
-                   ResumeOrCancelThrottledRequestCallback callback),
+              (const GURL&,
+               BoundSessionRequestThrottledHandler::
+                   ResumeOrCancelThrottledRequestCallback),
               (override));
 
   void BindSequenceChecker() {
@@ -52,6 +55,7 @@ class MockBoundSessionRequestThrottledInRendererManager
   ~MockBoundSessionRequestThrottledInRendererManager() override = default;
 
   void HandleRequestBlockedOnCookieCalled(
+      const GURL& untrusted_request_url,
       ResumeOrCancelThrottledRequestCallback callback) {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     std::move(callback).Run(
@@ -89,7 +93,7 @@ TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
           initialize_mock_run_loop.QuitClosure()));
   initialize_mock_run_loop.Run();
 
-  EXPECT_CALL(*manager, HandleRequestBlockedOnCookie(_));
+  EXPECT_CALL(*manager, HandleRequestBlockedOnCookie);
 
   // Used to check that the callback passed to
   // `BoundSessionRequestThrottledHandlerRendererImpl` is executed on the
@@ -98,14 +102,16 @@ TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
   BoundSessionRequestThrottledHandlerRendererImpl listener(manager,
                                                             io_task_runner);
   base::RunLoop run_loop;
-  listener.HandleRequestBlockedOnCookie(base::BindOnce(
-      [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
-         UnblockAction action,
-         chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
-        EXPECT_TRUE(checker.CalledOnValidSequence());
-        std::move(callback).Run();
-      },
-      std::move(sequence_checker), run_loop.QuitClosure()));
+  listener.HandleRequestBlockedOnCookie(
+      GURL(),
+      base::BindOnce(
+          [](base::SequenceCheckerImpl checker, base::OnceClosure callback,
+             UnblockAction action,
+             chrome::mojom::ResumeBlockedRequestsTrigger resume_trigger) {
+            EXPECT_TRUE(checker.CalledOnValidSequence());
+            std::move(callback).Run();
+          },
+          std::move(sequence_checker), run_loop.QuitClosure()));
 
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(manager.get());

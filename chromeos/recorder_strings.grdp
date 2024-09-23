@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Recorder App specific strings (included from ../chromeos_strings.grd). -->
+
+<grit-part>
+  <message desc="Name of the Recorder App." name="IDS_RECORDER_APP_NAME">
+    Recorder
+  </message>
+  <message desc="Accessibility label of the button to navigate back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_ARIA_LABEL">
+    Back to main page
+  </message>
+  <message desc="Tooltip of the button to navigate back to main page." meaning="Go back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP">
+    Back
+  </message>
+  <message desc="Tooltip of the button to close the dialog." meaning="Close the dialog." name="IDS_RECORDER_CLOSE_DIALOG_BUTTON_TOOLTIP">
+    Close
+  </message>
+  <message desc="Label of the menu item to choose webm as audio format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION">
+    WEBM
+  </message>
+  <message desc="Header of the export audio section in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_HEADER">
+    Export audio
+  </message>
+  <message desc="Button to cancel exporting in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Header of the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_HEADER">
+    Export recording
+  </message>
+  <message desc="Button to start exporting in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_SAVE_BUTTON">
+    Save…
+  </message>
+  <message desc="Label of the menu item to choose txt as transcription format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_FORMAT_TXT_OPTION">
+    TXT
+  </message>
+  <message desc="Header of the export transcription section in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_HEADER">
+    Export transcript
+  </message>
+  <message desc="Tooltip of the button to send negative feedback for the output from generative AI features." name="IDS_RECORDER_GENAI_NEGATIVE_FEEDBACK_BUTTON_TOOLTIP">
+    Bad suggestion
+  </message>
+  <message desc="Tooltip of the button to send positive feedback for the output from generative AI features." name="IDS_RECORDER_GENAI_POSITIVE_FEEDBACK_BUTTON_TOOLTIP">
+    Good suggestion
+  </message>
+  <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
+    Generative AI is experimental and content may be inaccurate, misleading, or offensive.
+  </message>
+  <message desc="Error message for general error in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_GENERAL_LABEL">
+    Something went wrong
+  </message>
+  <message desc="Error message for trust and safety related error for summary generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRUST_AND_SAFETY_LABEL">
+    Can’t create summary for this content
+  </message>
+  <message desc="Error message for trust and safety related error for title suggestion generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL">
+    Can’t create recording names for this content
+  </message>
+  <message desc="Error message for too-long transcript length in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_TRANSCRIPTION_TOO_LONG_LABEL">
+    For now, a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words is not supported
+  </message>
+  <message desc="Error message for too-short transcript length in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_TRANSCRIPTION_TOO_SHORT_LABEL">
+    For now, a transcript fewer than <ph name="MIN_WORD_LENGTH">$1<ex>150</ex></ph> words is not supported
+  </message>
+  <message desc="Badge for experimental state of generative AI features." name="IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE">
+    Experiment
+  </message>
+  <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
+    Learn more
+  </message>
+  <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
+    List of audio recordings
+  </message>
+  <message desc="Accessibility label of the landmark for the recording action and settings in the main page." name="IDS_RECORDER_MAIN_RECORDING_BAR_LANDMARK_ARIA_LABEL">
+    Recording bar
+  </message>
+  <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_SEARCH_LANDMARK_ARIA_LABEL">
+    Search recording files
+  </message>
+  <message desc="Tooltip of the button to start recording." meaning="Start an audio recording session." name="IDS_RECORDER_MAIN_START_RECORD_BUTTON_TOOLTIP">
+    Record
+  </message>
+  <message desc="Nudge to start recording when there's no existing recording in main page." name="IDS_RECORDER_MAIN_START_RECORD_NUDGE">
+    Press to record
+  </message>
+  <message desc="Tooltip of the combobox to choose microphone to use in recording session." meaning="Microphone device to use in recordding session." name="IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP">
+    Mic
+  </message>
+  <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
+    Chromebook audio
+  </message>
+  <message desc="Button to enable speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_ALLOW_BUTTON">
+    Allow
+  </message>
+  <message desc="Button to defer enabling speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DEFER_BUTTON">
+    Skip
+  </message>
+  <message desc="The first item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_1">
+    Compute models of the voices detected in the recording
+  </message>
+  <message desc="The second item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_2">
+    Automatically detect distinct voices and give each speaker a generic label such as Speaker 1 and Speaker 2
+  </message>
+  <message desc="The third item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_3">
+    Compare voices throughout the recording so the transcript reflects what each speaker said and when
+  </message>
+  <message desc="Prefix of the description of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_PREFIX">
+    When you allow this, Recorder will analyze your audio recordings to:
+  </message>
+  <message desc="Suffix of the description of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_SUFFIX">
+    Voice models are stored temporarily on-device until the speaker labeling is complete. You can turn this off at any time in Settings.
+  </message>
+  <message desc="Button to disable speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DISALLOW_BUTTON">
+    Don’t allow
+  </message>
+  <message desc="Header of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_HEADER">
+    Allow Recorder to detect and label speakers?
+  </message>
+  <message desc="Link to more information about speaker label." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_LEARN_MORE_LINK">
+    Learn more about speaker labels.
+  </message>
+  <message desc="Button to disable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to defer enabling transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DEFER_BUTTON">
+    Skip
+  </message>
+  <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
+    Recorder can create transcriptions for recordings with speech.
+Download the transcription model (up to 100MB) to get these transcriptions.
+  </message>
+  <message desc="Header of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_HEADER">
+    Turn on transcription and download transcription model?
+  </message>
+  <message desc="Button to enable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_BUTTON">
+    Turn on and download
+  </message>
+  <message desc="Description of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION">
+    Automatically create transcriptions, get recording summaries using Google AI, and search audio. Create recordings even when you’re not connected to the internet.
+  </message>
+  <message desc="Header of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_HEADER">
+    Easily record and share your audio
+  </message>
+  <message desc="Button to go next in the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_NEXT_BUTTON">
+    Next
+  </message>
+  <message desc="Tooltip of the button to rewind the recording playback 10 seconds." name="IDS_RECORDER_PLAYBACK_BACKWARD_BUTTON_TOOLTIP">
+    Backward 10 seconds
+  </message>
+  <message desc="Accessibility label of the landmark for the playback controls section in the playback page." name="IDS_RECORDER_PLAYBACK_CONTROLS_LANDMARK_ARIA_LABEL">
+    Playback controls
+  </message>
+  <message desc="Tooltip of the button to forward the recording playback 10 seconds." name="IDS_RECORDER_PLAYBACK_FORWARD_BUTTON_TOOLTIP">
+    Forward 10 seconds
+  </message>
+  <message desc="Tooltip of the button to hide the recording transcript in playback page." name="IDS_RECORDER_PLAYBACK_HIDE_TRANSCRIPT_BUTTON_TOOLTIP">
+    Hide transcript
+  </message>
+  <message desc="Tooltip of the button to open the menu item listing playback options." name="IDS_RECORDER_PLAYBACK_MENU_BUTTON_TOOLTIP">
+    More options
+  </message>
+  <message desc="Label of the menu item to delete the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_DELETE_OPTION">
+    Delete
+  </message>
+  <message desc="Label of the menu item to export the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_EXPORT_OPTION">
+    Export
+  </message>
+  <message desc="Label of the menu item to show recording details in playback page." name="IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION">
+    More details
+  </message>
+  <message desc="Tooltip of the button to toggle mute on and off for the playback." meaning="Toggle mute for recording playback." name="IDS_RECORDER_PLAYBACK_MUTE_BUTTON_TOOLTIP">
+    Toggle mute
+  </message>
+  <message desc="Tooltip of the button to pause the recording playback." meaning="Pause the audio recording playback." name="IDS_RECORDER_PLAYBACK_PAUSE_BUTTON_TOOLTIP">
+    Pause
+  </message>
+  <message desc="Tooltip of the button to play the recording playback." meaning="Play the audio recording playback." name="IDS_RECORDER_PLAYBACK_PLAY_BUTTON_TOOLTIP">
+    Play
+  </message>
+  <message desc="Accessibility label for the seek slider in playback page." name="IDS_RECORDER_PLAYBACK_SEEK_SLIDER_ARIA_LABEL">
+    Seek
+  </message>
+  <message desc="Tooltip of the button to show the recording transcript in playback page." name="IDS_RECORDER_PLAYBACK_SHOW_TRANSCRIPT_BUTTON_TOOLTIP">
+    Show transcript
+  </message>
+  <message desc="Tooltip of the button to open the menu item listing playback speed." name="IDS_RECORDER_PLAYBACK_SPEED_BUTTON_TOOLTIP">
+    Playback speed
+  </message>
+  <message desc="Label of the menu item to set playback speed to normal (1.0)." name="IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION">
+    Normal
+  </message>
+  <message desc="Accessibility label of the landmark for recording transcript in playback page." meaning="Transcript of the audio recording." name="IDS_RECORDER_PLAYBACK_TRANSCRIPT_LANDMARK_ARIA_LABEL">
+    Transcript
+  </message>
+  <message desc="Accessibility label of the volume slider for the playback." meaning="Set the playback volume." name="IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL">
+    Volume
+  </message>
+  <message desc="Accessibility label of the button to open more recording options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_ARIA_LABEL">
+    More options for <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
+  <message desc="Tooltip of the button to open more record options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_TOOLTIP">
+    More options
+  </message>
+  <message desc="Accessibility label of the button to pause the recording." meaning="Pause the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PAUSE_BUTTON_ARIA_LABEL">
+    Pause <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
+  <message desc="Accessibility label of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_ARIA_LABEL">
+    Play <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>
+  </message>
+  <message desc="Tooltip of the button to play the recording." meaning="Play the audio recording." name="IDS_RECORDER_RECORDING_ITEM_PLAY_BUTTON_TOOLTIP">
+    Play
+  </message>
+  <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
+    My Recordings
+  </message>
+  <message desc="Message when there’re no recordings with the titles matching with the search keyword." name="IDS_RECORDER_RECORDING_LIST_NO_MATCH_TEXT">
+    No matching results
+  </message>
+  <message desc="Accessibility of the button to clear the text in the search box." meaning="Clear the search box." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_CLEAR_BUTTON_ARIA_LABEL">
+    Clear search
+  </message>
+  <message desc="Accessibility of the button to close the search box." meaning="Close the search box." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_CLOSE_BUTTON_ARIA_LABEL">
+    Close search
+  </message>
+  <message desc="Placeholder text on the search box used to search recordings." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_PLACEHOLDER">
+    Search recording name
+  </message>
+  <message desc="Tooltip of the button to open the search box to search recordings by title." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BUTTON_TOOLTIP">
+    Search
+  </message>
+  <message desc="Tooltip of the button to choose the recordings sort options." name="IDS_RECORDER_RECORDING_LIST_SORT_BUTTON_TOOLTIP">
+    Sort options
+  </message>
+  <message desc="Label of the menu item to sort the recordings by the recorded date." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_DATE_OPTION">
+    Date modified
+  </message>
+  <message desc="Label of the menu item to sort the recordings by the recording name alphabetically." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_NAME_OPTION">
+    Name (A to Z)
+  </message>
+  <message desc="Header of the group of recordings recorded this month." name="IDS_RECORDER_RECORDING_LIST_THIS_MONTH_HEADER">
+    This month
+  </message>
+  <message desc="Header of the group of recordings recorded today." name="IDS_RECORDER_RECORDING_LIST_TODAY_HEADER">
+    Today
+  </message>
+  <message desc="Header of the group of recordings recorded this yesterday." name="IDS_RECORDER_RECORDING_LIST_YESTERDAY_HEADER">
+    Yesterday
+  </message>
+  <message desc="Tooltip of the button to delete the ongoing recording." name="IDS_RECORDER_RECORD_DELETE_BUTTON_TOOLTIP">
+    Delete
+  </message>
+  <message desc="Button to cancel deleting recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Header of the delete recording dialog before stopping recording." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CURRENT_HEADER">
+    Delete recording?
+  </message>
+  <message desc="Button to delete recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DELETE_BUTTON">
+    Delete
+  </message>
+  <message desc="Description of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DESCRIPTION">
+    This action is permanent and can’t be undone
+  </message>
+  <message desc="Header of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_HEADER">
+    Delete recording?
+  </message>
+  <message desc="Button to cancel exiting recording in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to exit recording in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_DELETE_BUTTON">
+    Delete
+  </message>
+  <message desc="Description of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_DESCRIPTION">
+    Leaving this page will end your current recording
+  </message>
+  <message desc="Header of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_HEADER">
+    Exit recording?
+  </message>
+  <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
+    Save and exit
+  </message>
+  <message desc="Label of the recording creation date on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DATE_LABEL">
+    Date created
+  </message>
+  <message desc="Label of the recording duration on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DURATION_LABEL">
+    Duration
+  </message>
+  <message desc="Header of the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_HEADER">
+    More details
+  </message>
+  <message desc="Label of the recording file size on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_SIZE_LABEL">
+    Size
+  </message>
+  <message desc="Label of the recording title on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL">
+    Name
+  </message>
+  <message desc="Tooltip of the button to open the menu item listing recording options." name="IDS_RECORDER_RECORD_MENU_BUTTON_TOOLTIP">
+    More options
+  </message>
+  <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
+    Delete
+  </message>
+  <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
+    Create transcript
+  </message>
+  <message desc="Tooltip of the button to toggle mute on microphone on and off while recording." name="IDS_RECORDER_RECORD_MUTE_BUTTON_TOOLTIP">
+    Toggle mute on microphone
+  </message>
+  <message desc="Tooltip of the button to pause the ongoing recording." meaning="Pause the ongoing audio recording session." name="IDS_RECORDER_RECORD_PAUSE_BUTTON_TOOLTIP">
+    Pause
+  </message>
+  <message desc="Button to stop audio recording." meaning="Finish an audio recording session." name="IDS_RECORDER_RECORD_STOP_BUTTON">
+    Stop recording
+  </message>
+  <message desc="Description of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DESCRIPTION">
+    Live transcripts will be shown while you’re recording. You can turn this off at any time in Settings.
+  </message>
+  <message desc="Button to disable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DISABLE_BUTTON">
+    Don’t show again
+  </message>
+  <message desc="Button to enable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_ENABLE_BUTTON">
+    Turn on
+  </message>
+  <message desc="Header of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_HEADER">
+    Turn on transcription?
+  </message>
+  <message desc="Description when transcription is off in the transcription view while recording. The [3dot] will be replaced by an icon of the 3 dots menu." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_DESCRIPTION">
+    You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
+  </message>
+  <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
+    Transcript is off
+  </message>
+  <message desc="Tooltip of the button to show or hide the live transcription of the recording." name="IDS_RECORDER_RECORD_TRANSCRIPT_BUTTON_TOOLTIP">
+    Transcript
+  </message>
+  <message desc="Header of the settings." name="IDS_RECORDER_SETTINGS_HEADER">
+    Recorder settings
+  </message>
+  <message desc="Description of the do not disturb toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_DO_NOT_DISTURB_DESCRIPTION">
+    Silence notifications while recording
+  </message>
+  <message desc="Label of the do not disturb toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_DO_NOT_DISTURB_LABEL">
+    Do Not Disturb
+  </message>
+  <message desc="Label of the keep screen on toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_KEEP_SCREEN_ON_LABEL">
+    Keep screen on when recording
+  </message>
+  <message desc="Description of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_DESCRIPTION">
+    Currently only available in English (US)
+  </message>
+  <message desc="Label of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_LABEL">
+    Allow speaker identification
+  </message>
+  <message desc="Description of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DESCRIPTION">
+    This will take up to 2GB of storage
+  </message>
+  <message desc="Button when summary model is donwloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOADING_BUTTON">
+    Downloading…
+  </message>
+  <message desc="Description of the summary setting when summary model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Button to download summary model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Label of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LABEL">
+    Recording summary and name creation
+  </message>
+  <message desc="Link to more information about summary and name creation model." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LEARN_MORE_LINK">
+    Learn more
+  </message>
+  <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
+    Downloading…
+  </message>
+  <message desc="Description of the transcription when transcription is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Button to download transcription model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
+    Audio transcription
+  </message>
+  <message desc="Header of the general section in settings." name="IDS_RECORDER_SETTINGS_SECTION_GENERAL_HEADER">
+    General
+  </message>
+  <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
+    Transcription and summary
+  </message>
+  <message desc="Label when summary is disabled." name="IDS_RECORDER_SUMMARY_DISABLED_LABEL">
+    Summary is off
+  </message>
+  <message desc="Description of the download progress when the summary model is downloading in summary." name="IDS_RECORDER_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Status message for screen reader to update that the model finished downloading." name="IDS_RECORDER_SUMMARY_DOWNLOAD_FINISHED_STATUS_MESSAGE">
+    Model download completed
+  </message>
+  <message desc="Description of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DESCRIPTION">
+    The Gemini model requires 2GB of storage to process transcripts and create summaries
+  </message>
+  <message desc="Button to disable summary in the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DISABLE_BUTTON">
+    No thanks
+  </message>
+  <message desc="Button to download summary model in the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Header of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_HEADER">
+    Download Gemini model to summarize recordings?
+  </message>
+  <message desc="Status message for screen reader to update that the model is downloading." name="IDS_RECORDER_SUMMARY_DOWNLOAD_STARTED_STATUS_MESSAGE">
+    Model download in progress
+  </message>
+  <message desc="Status message for screen reader to update that the summary generation failed." name="IDS_RECORDER_SUMMARY_FAILED_STATUS_MESSAGE">
+    Failed to generate summary
+  </message>
+  <message desc="Status message for screen reader to update that the summary generation finished successfully." name="IDS_RECORDER_SUMMARY_FINISHED_STATUS_MESSAGE">
+    Summary generated successfully
+  </message>
+  <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
+    Summary
+  </message>
+  <message desc="Status message for screen reader to update that the summary generation has started." name="IDS_RECORDER_SUMMARY_STARTED_STATUS_MESSAGE">
+    Generating summary
+  </message>
+  <message desc="Button to cancel recording from system audio." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CANCEL_BUTTON">
+    Cancel
+  </message>
+  <message desc="Button to acknowledge recording all sounds from Chromebook." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CONSENT_BUTTON">
+    OK
+  </message>
+  <message desc="Description of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION">
+    When Chromebook audio is on, Recorder captures all audio playing on this device. Make sure you want to record all sounds.
+  </message>
+  <message desc="Header of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
+    Recording all Chromebook audio
+  </message>
+  <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
+    Rename
+  </message>
+  <message desc="Tooltip of the button to suggest the recording title." name="IDS_RECORDER_TITLE_SUGGESTION_BUTTON_TOOLTIP">
+    Create name using Google AI
+  </message>
+  <message desc="Status message for screen reader to update that the recording names generation failed." name="IDS_RECORDER_TITLE_SUGGESTION_FAILED_STATUS_MESSAGE">
+    Failed to generate recording names
+  </message>
+  <message desc="Status message for screen reader to update that the recording names generation finished successfully." name="IDS_RECORDER_TITLE_SUGGESTION_FINISHED_STATUS_MESSAGE">
+    Recording names generated successfully
+  </message>
+  <message desc="Header of title suggestion." name="IDS_RECORDER_TITLE_SUGGESTION_HEADER">
+    A few options:
+  </message>
+  <message desc="Status message for screen reader to update that the recording names generation has started." name="IDS_RECORDER_TITLE_SUGGESTION_STARTED_STATUS_MESSAGE">
+    Generating recording names
+  </message>
+  <message desc="Accessibility label for the textfield showing the recording name." meaning="Textfield for the recording name being renamed." name="IDS_RECORDER_TITLE_TEXTFIELD_ARIA_LABEL">
+    Recording name
+  </message>
+  <message desc="Button to enable autoscroll for transcription." name="IDS_RECORDER_TRANSCRIPTION_AUTOSCROLL_BUTTON">
+    Autoscroll
+  </message>
+  <message desc="Message when there’s no speech in the recording on playback." name="IDS_RECORDER_TRANSCRIPTION_NO_SPEECH_TEXT">
+    No speech detected
+  </message>
+  <message desc="Label of each different speaker in the transcription. SPEAKER_LABEL is numbered starting from 1." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_LABEL">
+    Speaker <ph name="SPEAKER_LABEL">$1<ex>2</ex></ph>
+  </message>
+  <message desc="Label of the generic speaker when speaker label is still pending in the transcription." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_PENDING_LABEL">
+    Speaker
+  </message>
+  <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
+    Listening for speech…
+  </message>
+</grit-part>

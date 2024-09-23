@@ -67,7 +67,7 @@ class OutputStreamImpl : public OutputStream {
   mojo::SimpleWatcher send_stream_watcher_;
 
   std::unique_ptr<ByteArray> pending_write_buffer_;
-  uint32_t pending_write_buffer_pos_ = 0;
+  size_t pending_write_buffer_pos_ = 0;
   bool write_success_ = false;
   base::WaitableEvent write_waitable_event_;
 };

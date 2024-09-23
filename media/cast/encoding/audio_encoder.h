@@ -19,6 +19,9 @@ class TimeTicks;
 }
 
 namespace media {
+
+enum class AudioCodec;
+
 namespace cast {
 
 class AudioEncoder {
@@ -32,7 +35,7 @@ class AudioEncoder {
                int num_channels,
                int sampling_rate,
                int bitrate,
-               Codec codec,
+               AudioCodec codec,
                FrameEncodedCallback frame_encoded_callback);
 
   AudioEncoder(const AudioEncoder&) = delete;

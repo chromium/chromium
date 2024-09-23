@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/css-page-3/#at-page-rule">
+<link rel="match" href="page-subpixel-003-print-ref.html">
+<meta name="assert" content="The square shouldn't be fuzzy, and there should be just one page.">
+<style>
+  @page {
+    size: 500px;
+    margin: 30.9px;
+  }
+  body {
+    margin: 0;
+  }
+</style>
+<!-- The page size should be at least 500px minus 2 * 30.9px. -->
+<div style="position:absolute; width:438.2px; height:438.2px;"></div>
+
+<div style="border:2px solid; width:60px; height:60px;"></div>

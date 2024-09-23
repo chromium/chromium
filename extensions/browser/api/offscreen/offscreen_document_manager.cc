@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/not_fatal_until.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -217,7 +218,7 @@ void OffscreenDocumentManager::Shutdown() {
 void OffscreenDocumentManager::CloseOffscreenDocument(
     ExtensionHost* offscreen_document) {
   auto iter = offscreen_documents_.find(offscreen_document->extension_id());
-  DCHECK(iter != offscreen_documents_.end());
+  CHECK(iter != offscreen_documents_.end(), base::NotFatalUntil::M130);
   DCHECK_EQ(iter->second.host.get(), offscreen_document);
   offscreen_documents_.erase(iter);
 }

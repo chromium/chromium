@@ -24,18 +24,17 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&BatterySaverButton::OnClicked,
                                         base::Unretained(this))),
       browser_view_(browser_view) {
-  SetVectorIcon(features::IsChromeRefresh2023() ? kBatterySaverRefreshIcon
-                                                : kBatterySaverIcon);
+  SetVectorIcon(kBatterySaverRefreshIcon);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
   // Do not flip the battery saver icon for RTL languages.
   SetFlipCanvasOnPaintForRTLUI(false);
 
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_ACCNAME));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_TOOLTIP));
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   SetProperty(views::kElementIdentifierKey,
               kToolbarBatterySaverButtonElementId);
 

@@ -4,6 +4,10 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+/* Rules in this and other mediaControls*.css files override rules from html.css
+   and other UA sheets regardless of specificity. See comment in
+   StyleResolver::MatchUARules(). */
+
 /**
  * Panel Structure
  */
@@ -22,6 +26,11 @@ video::-webkit-media-controls {
   justify-content: flex-end;
   align-items: center;
   font-size: 14px;
+
+  /* The overflow menus use anchor positioning with explicit anchor-names.
+  Ensure those names stay scoped within each media element. */
+  /* TODO(crbug.com/341741271): Put this back when anchor pos is stable. */
+  /* anchor-scope: all; */
 
   margin-top: env(safe-area-inset-top);
   margin-left: env(safe-area-inset-left);
@@ -213,6 +222,10 @@ video::-internal-media-controls-picture-in-picture-button {
 
   /* Cursor: pointer will cause a highlight when touch on it, this will disable it */
   -webkit-tap-highlight-color: transparent;
+
+  /* These buttons form the anchor for anchor positioning. */
+  /* TODO(crbug.com/341741271): Put this back when anchor pos is stable. */
+  /* anchor-name: --internal-media-control-button-anchor; */
 }
 
 /*
@@ -900,9 +913,12 @@ video::-internal-media-controls-overflow-menu-list {
   transform-origin: bottom right;
   border:0;
   padding: 0;
+  inset: auto;
   /* Anchor the popover on the bottom right corner. */
-  bottom: calc(anchor(bottom) + 4px) !important;
-  right: calc(anchor(right) + 4px) !important;
+  /* TODO(crbug.com/341741271): Put this back when anchor pos is stable. */
+  /* position-anchor: --internal-media-control-button-anchor; */
+  /* bottom: calc(anchor(bottom) + 4px) !important; */
+  /* right: calc(anchor(right) + 4px) !important; */
 }
 
 audio::-internal-media-controls-overflow-menu-list:focus,
@@ -1325,12 +1341,16 @@ video::cue(i) {
 }
 
 video::cue(rt) {
-    display: block;
+    display: ruby-text;
     font-size: 50%;
     line-height: normal;
     text-align: start;
     text-emphasis: none;
     text-indent: 0;
+}
+
+video::cue(ruby) {
+    display: ruby;
 }
 
 /*

@@ -76,7 +76,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
       results_processor.ProcessOptions(options)
 
       return_code = benchmark_class().Run(options)
-      # TODO(crbug.com/1019139): Make 111 be the exit code that means
+      # TODO(crbug.com/40105219): Make 111 be the exit code that means
       # "no stories were run.".
       if return_code in (-1, 111):
         self.skipTest('The benchmark was not run.')
@@ -108,6 +108,7 @@ _BLOCK_LIST_TEST_MODULES = {
 # The list of benchmark names to be excluded from our smoke tests.
 _BLOCK_LIST_TEST_NAMES = [
     'memory.long_running_idle_gmail_background_tbmv2',
+    'UNSCHEDULED_ad_frames.iframe',  # b/342449133
     'UNSCHEDULED_oortonline_tbmv2',
     'webrtc',  # crbug.com/932036
     'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048

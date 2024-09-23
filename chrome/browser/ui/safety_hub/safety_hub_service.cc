@@ -16,11 +16,6 @@
 SafetyHubService::Result::Result(base::Time timestamp)
     : timestamp_(timestamp) {}
 
-SafetyHubService::Result::Result(const base::Value::Dict& dict) {
-  timestamp_ =
-      base::ValueToTime(dict.Find(kSafetyHubTimestampResultKey)).value();
-}
-
 base::Value::Dict SafetyHubService::Result::BaseToDictValue() const {
   base::Value::Dict result;
   result.Set(kSafetyHubTimestampResultKey, base::TimeToValue(timestamp_));

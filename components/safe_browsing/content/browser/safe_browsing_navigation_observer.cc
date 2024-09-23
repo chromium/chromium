@@ -19,6 +19,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
+#include "url/url_constants.h"
 
 using content::WebContents;
 
@@ -133,6 +134,10 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
 
 void SafeBrowsingNavigationObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
+  // Log whether a tel scheme was observed.
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.NavigationObserver.RedirectForTelScheme",
+      navigation_handle->GetURL().SchemeIs(url::kTelScheme));
   // We should have already seen this navigation_handle in DidStartNavigation.
   if (navigation_handle_map_.find(navigation_handle) ==
       navigation_handle_map_.end()) {

@@ -4,6 +4,7 @@
 
 #include "remoting/host/policy_watcher.h"
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -13,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
@@ -158,19 +160,6 @@ class PolicyWatcherTest : public testing::Test {
     username_true_.Set(key::kRemoteAccessHostMatchUsername, true);
     username_false_.Set(key::kRemoteAccessHostMatchUsername, false);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
-    third_party_auth_partial_.Set(key::kRemoteAccessHostTokenUrl,
-                                  "https://token.com");
-    third_party_auth_partial_.Set(key::kRemoteAccessHostTokenValidationUrl,
-                                  "https://validation.com");
-    third_party_auth_full_.Merge(third_party_auth_partial_.Clone());
-    third_party_auth_full_.Set(
-        key::kRemoteAccessHostTokenValidationCertificateIssuer,
-        "certificate subject");
-    third_party_auth_cert_empty_.Merge(third_party_auth_partial_.Clone());
-    third_party_auth_cert_empty_.Set(
-        key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
-#endif
 
 #if BUILDFLAG(IS_WIN)
     remote_assistance_uiaccess_true_.Set(
@@ -293,9 +282,6 @@ class PolicyWatcherTest : public testing::Test {
   base::Value::Dict curtain_false_;
   base::Value::Dict username_true_;
   base::Value::Dict username_false_;
-  base::Value::Dict third_party_auth_full_;
-  base::Value::Dict third_party_auth_partial_;
-  base::Value::Dict third_party_auth_cert_empty_;
   base::Value::Dict remote_assistance_uiaccess_true_;
   base::Value::Dict remote_assistance_uiaccess_false_;
   base::Value::Dict deprecated_policies_;
@@ -323,9 +309,6 @@ class PolicyWatcherTest : public testing::Test {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     dict.Set(key::kRemoteAccessHostRequireCurtain, false);
-    dict.Set(key::kRemoteAccessHostTokenUrl, "");
-    dict.Set(key::kRemoteAccessHostTokenValidationUrl, "");
-    dict.Set(key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
     dict.Set(key::kRemoteAccessHostAllowClientPairing, true);
     dict.Set(key::kRemoteAccessHostAllowGnubbyAuth, true);
     dict.Set(key::kRemoteAccessHostAllowFileTransfer, true);
@@ -333,6 +316,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.Set(key::kRemoteAccessHostEnableUserInterface, true);
     dict.Set(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
     dict.Set(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
+    dict.Set(key::kRemoteAccessHostAllowPinAuthentication, base::Value());
 #endif
 #if BUILDFLAG(IS_WIN)
     dict.Set(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance, false);
@@ -655,38 +639,6 @@ TEST_F(PolicyWatcherTest, MatchUsername) {
   SetPolicies(username_false_);
 }
 #endif
-
-TEST_F(PolicyWatcherTest, ThirdPartyAuthFull) {
-  testing::InSequence sequence;
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_full_)));
-
-  SetPolicies(empty_);
-  StartWatching();
-  SetPolicies(third_party_auth_full_);
-}
-
-// This test verifies what happens when only 1 out of 3 third-party auth
-// policies changes.  Without the other 2 policy values such policy values
-// combination is invalid (i.e. cannot have TokenUrl without
-// TokenValidationUrl) and can trigger OnPolicyError unless PolicyWatcher
-// implementation is careful around this scenario.
-TEST_F(PolicyWatcherTest, ThirdPartyAuthPartialToFull) {
-  testing::InSequence sequence;
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_cert_empty_)));
-  EXPECT_CALL(mock_policy_callback_,
-              OnPolicyUpdatePtr(IsPolicies(&third_party_auth_full_)));
-
-  SetPolicies(empty_);
-  StartWatching();
-  SetPolicies(third_party_auth_partial_);
-  SetPolicies(third_party_auth_full_);
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PolicyWatcherTest, UdpPortRange) {
@@ -712,8 +664,20 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   // are kept in-sync.
 
   std::map<std::string, base::Value::Type> expected_schema;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::flat_set<std::string> policies_with_no_default_values;
+#else
+  base::flat_set<std::string> policies_with_no_default_values = {
+      policy::key::kRemoteAccessHostAllowPinAuthentication};
+#endif
   for (auto i : GetDefaultValues()) {
-    expected_schema[i.first] = i.second.type();
+    if (policies_with_no_default_values.contains(i.first)) {
+      // This policy has no default value, so we need to explicitly set the
+      // expected type.
+      expected_schema[i.first] = base::Value::Type::BOOLEAN;
+    } else {
+      expected_schema[i.first] = i.second.type();
+    }
   }
 
   std::map<std::string, base::Value::Type> actual_schema;

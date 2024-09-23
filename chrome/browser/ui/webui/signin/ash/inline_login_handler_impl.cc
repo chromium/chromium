@@ -320,11 +320,19 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
 }
 
 void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
-  CHECK(!params.auth_code.empty());
-  CHECK(!params.gaia_id.empty());
-  CHECK(!params.email.empty());
+  CHECK(!params.email.empty()) << "Email cannot be empty";
+  CHECK(!params.gaia_id.empty()) << "Gaia id cannot be empty";
+  if (params.auth_code.empty()) {
+    // Authentication flow may have been completed without Gaia giving us an
+    // authorization code. Handle this gracefully.
+    // TODO(crbug/343738879): Check if we need to listen on cookie changes -
+    // like https://crrev.com/c/1972837
+    ShowSigninErrorPage(params.email, /*hosted_domain=*/std::string());
+    return;
+  }
 
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
         ->GetAccounts(base::BindOnce(
             &InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,
@@ -347,8 +355,10 @@ void InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin(
       [](const account_manager::Account& account) { return account.key.id(); });
   bool is_available_in_arc = params.is_available_in_arc;
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile->IsChild())
+  if (profile->IsChild() ||
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     is_available_in_arc = true;
+  }
 
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
       std::make_unique<SigninHelper::ArcHelper>(
@@ -408,7 +418,7 @@ void InlineLoginHandlerImpl::ShowSigninErrorPage(
   params.Set("email", email);
   params.Set("hostedDomain", hosted_domain);
   params.Set("deviceType", ui::GetChromeOSDeviceName());
-  params.Set("signinBlockedByPolicy", !hosted_domain.empty() ? true : false);
+  params.Set("signinBlockedByPolicy", !hosted_domain.empty());
 
   FireWebUIListener("show-signin-error-page", params);
 }

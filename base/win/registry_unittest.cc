@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/win/registry.h"
 
 #include <windows.h>
@@ -588,7 +593,7 @@ INSTANTIATE_TEST_SUITE_P(Recursive,
                          ::testing::Values(RegKey::RecursiveDelete(true)));
 
 // A test harness for tests that use HKLM to test WoW redirection and such.
-// TODO(https://crbug.com/377917): The tests here that write to the registry are
+// TODO(crbug.com/41110299): The tests here that write to the registry are
 // disabled because they need work to handle parallel runs of different tests.
 class RegistryTestHKLM : public ::testing::Test {
  protected:

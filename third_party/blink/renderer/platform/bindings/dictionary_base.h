@@ -17,26 +17,35 @@ class ScriptState;
 
 namespace bindings {
 
-// DictionaryBase is the common base class of all the IDL dictionary classes.
-// Most importantly this class provides a way of type dispatching (e.g. overload
-// resolutions, SFINAE technique, etc.) so that it's possible to distinguish
-// IDL dictionaries from anything else.  Also it provides a common
-// implementation of IDL dictionaries.
-class PLATFORM_EXPORT DictionaryBase : public GarbageCollected<DictionaryBase> {
+// InputDictionaryBase is the common base class for all dictionaries. The ones
+// that also support conversion to Objects are inheriting DictionaryBase. Most
+// importantly these classes provide a way to differentiate dictionary types in
+// template specializations (i.e. are being used for constraints).
+class PLATFORM_EXPORT InputDictionaryBase
+    : public GarbageCollected<InputDictionaryBase> {
  public:
-  virtual ~DictionaryBase() = default;
+  InputDictionaryBase(const InputDictionaryBase&) = delete;
+  InputDictionaryBase(const InputDictionaryBase&&) = delete;
+  InputDictionaryBase& operator=(const InputDictionaryBase&) = delete;
+  InputDictionaryBase& operator=(const InputDictionaryBase&&) = delete;
 
-  v8::Local<v8::Value> ToV8(ScriptState* script_state) const;
-
+  virtual ~InputDictionaryBase() = default;
   virtual void Trace(Visitor*) const {}
 
  protected:
-  DictionaryBase() = default;
+  InputDictionaryBase() = default;
+};
 
-  DictionaryBase(const DictionaryBase&) = delete;
-  DictionaryBase(const DictionaryBase&&) = delete;
-  DictionaryBase& operator=(const DictionaryBase&) = delete;
-  DictionaryBase& operator=(const DictionaryBase&&) = delete;
+// A dictionary that supports conversion from from and to script value.
+// See InputDictionaryBase for additional context.
+class PLATFORM_EXPORT DictionaryBase : public InputDictionaryBase {
+ public:
+  ~DictionaryBase() override = default;
+
+  v8::Local<v8::Value> ToV8(ScriptState* script_state) const;
+
+ protected:
+  DictionaryBase() = default;
 
   virtual const void* TemplateKey() const = 0;
   virtual void FillTemplateProperties(

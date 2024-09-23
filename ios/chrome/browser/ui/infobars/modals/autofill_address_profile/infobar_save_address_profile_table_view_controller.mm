@@ -9,7 +9,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -17,8 +19,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_address_profile_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
@@ -54,7 +54,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUpdatePhoneOld,
   ItemTypeAddressProfileSaveUpdateButton,
   ItemTypeAddressProfileNoThanksButton,
-  ItemTypeFooter
+  ItemTypeFooter,
+  ItemTypeNotFound
 };
 
 const CGFloat kSymbolSize = 16;
@@ -272,6 +273,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 }
 
 - (void)showEditAddressProfileModal {
+  if (base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
+  }
   [self.saveAddressProfileModalDelegate showEditView];
 }
 
@@ -303,13 +308,16 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
   for (NSNumber* type in self.profileDataDiff) {
     if ([self.profileDataDiff[type][0] length] > 0) {
+      ItemType itemType =
+          [self itemTypeForUpdateModelFromAutofillType:static_cast<
+                                                           autofill::FieldType>(
+                                                           [type intValue])
+                                                   old:NO];
+
       SettingsImageDetailTextItem* newItem =
-          [self detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                             (AutofillUIType)[type intValue]
-                                                                 update:YES
-                                                                    old:NO]
+          [self detailItemWithType:itemType
                               text:self.profileDataDiff[type][0]
-                            symbol:[self symbolForAutofillInputTypeNumber:type]
+                            symbol:[self symbolForItemType:itemType]
               imageTintColorIsGrey:NO];
       [model addItem:newItem toSectionWithIdentifier:SectionIdentifierFields];
     }
@@ -324,14 +332,16 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
         toSectionWithIdentifier:SectionIdentifierFields];
     for (NSNumber* type in self.profileDataDiff) {
       if ([self.profileDataDiff[type][1] length] > 0) {
-        SettingsImageDetailTextItem* oldItem = [self
-              detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                           (AutofillUIType)[type intValue]
-                                                               update:YES
-                                                                  old:YES]
-                            text:self.profileDataDiff[type][1]
-                          symbol:[self symbolForAutofillInputTypeNumber:type]
-            imageTintColorIsGrey:YES];
+        ItemType itemType = [self
+            itemTypeForUpdateModelFromAutofillType:static_cast<
+                                                       autofill::FieldType>(
+                                                       [type intValue])
+                                               old:YES];
+        SettingsImageDetailTextItem* oldItem =
+            [self detailItemWithType:itemType
+                                text:self.profileDataDiff[type][1]
+                              symbol:[self symbolForItemType:itemType]
+                imageTintColorIsGrey:YES];
         [model addItem:oldItem toSectionWithIdentifier:SectionIdentifierFields];
       }
     }
@@ -350,23 +360,22 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierFields];
 
-  SettingsImageDetailTextItem* addressItem = [self
-      detailItemForSaveModalWithText:self.address
-                      autofillUIType:AutofillUITypeProfileHomeAddressStreet];
+  SettingsImageDetailTextItem* addressItem =
+      [self detailItemTypeForSaveModal:ItemTypeSaveAddress
+                              withText:self.address];
   [model addItem:addressItem toSectionWithIdentifier:SectionIdentifierFields];
 
   if ([self.emailAddress length]) {
     SettingsImageDetailTextItem* emailItem =
-        [self detailItemForSaveModalWithText:self.emailAddress
-                              autofillUIType:AutofillUITypeProfileEmailAddress];
+        [self detailItemTypeForSaveModal:ItemTypeSaveEmail
+                                withText:self.emailAddress];
     [model addItem:emailItem toSectionWithIdentifier:SectionIdentifierFields];
   }
 
   if ([self.phoneNumber length]) {
     SettingsImageDetailTextItem* phoneItem =
-        [self detailItemForSaveModalWithText:self.phoneNumber
-                              autofillUIType:
-                                  AutofillUITypeProfileHomePhoneWholeNumber];
+        [self detailItemTypeForSaveModal:ItemTypeSavePhone
+                                withText:self.phoneNumber];
     [model addItem:phoneItem toSectionWithIdentifier:SectionIdentifierFields];
   }
 
@@ -386,12 +395,12 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   [model addItem:[self migrationPromptFooterItem]
       toSectionWithIdentifier:SectionIdentifierFields];
 
-  SettingsImageDetailTextItem* addressItem =
-      [self detailItemWithType:ItemTypeMigrateInAccountAddress
-                          text:self.profileDescriptionForMigrationPrompt
-                        symbol:CustomSymbolTemplateWithPointSize(
-                                   kLocationSymbol, kSymbolSize)
-          imageTintColorIsGrey:YES];
+  SettingsImageDetailTextItem* addressItem = [self
+        detailItemWithType:ItemTypeMigrateInAccountAddress
+                      text:self.profileDescriptionForMigrationPrompt
+                    symbol:
+                        [self symbolForItemType:ItemTypeMigrateInAccountAddress]
+      imageTintColorIsGrey:YES];
   [model addItem:addressItem toSectionWithIdentifier:SectionIdentifierFields];
 
   [model addItem:[self saveUpdateButton]
@@ -454,64 +463,53 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   return descriptionItem;
 }
 
-- (UIImage*)symbolForAutofillUIType:(AutofillUIType)type {
-  switch (type) {
-    case AutofillUITypeProfileFullName:
+// Return symbol based on the `itemType`.
+- (UIImage*)symbolForItemType:(ItemType)itemType {
+  switch (itemType) {
+    case ItemTypeUpdateNameNew:
+    case ItemTypeUpdateNameOld:
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
-    case AutofillUITypeAddressHomeAddress:
-    case AutofillUITypeProfileHomeAddressStreet:
+    case ItemTypeSaveAddress:
+    case ItemTypeUpdateAddressNew:
+    case ItemTypeUpdateAddressOld:
       return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
-    case AutofillUITypeProfileEmailAddress:
+    case ItemTypeSaveEmail:
+    case ItemTypeUpdateEmailNew:
+    case ItemTypeUpdateEmailOld:
       return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
-    case AutofillUITypeProfileHomePhoneWholeNumber:
+    case ItemTypeSavePhone:
+    case ItemTypeUpdatePhoneNew:
+    case ItemTypeUpdatePhoneOld:
       return DefaultSymbolTemplateWithPointSize(kPhoneFillSymbol, kSymbolSize);
+    case ItemTypeMigrateInAccountAddress:
+      return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
     default:
-      NOTREACHED();
-      return nil;
+      break;
   }
+
+  NOTREACHED_IN_MIGRATION();
+  return nil;
 }
 
-- (UIImage*)symbolForAutofillInputTypeNumber:(NSNumber*)val {
-  return [self symbolForAutofillUIType:(AutofillUIType)[val intValue]];
-}
-
-// Determines the itemType for the row based on `autofillUIType`, whether the
-// modal is for save/update address or belongs to the old/new section in case of
-// update modal.
-- (NSInteger)modalItemTypeForAutofillUIType:(AutofillUIType)autofillUIType
-                                     update:(BOOL)update
-                                        old:(BOOL)old {
-  switch (autofillUIType) {
-    case AutofillUITypeProfileHomeAddressStreet:
-    case AutofillUITypeAddressHomeAddress:
-      if (update) {
-        return old ? ItemTypeUpdateAddressOld : ItemTypeUpdateAddressNew;
-      } else {
-        return ItemTypeSaveAddress;
-      }
-    case AutofillUITypeProfileEmailAddress:
-      if (update) {
-        return old ? ItemTypeUpdateEmailOld : ItemTypeUpdateEmailNew;
-      } else {
-        return ItemTypeSaveEmail;
-      }
-    case AutofillUITypeProfileHomePhoneWholeNumber:
-      if (update) {
-        return old ? ItemTypeUpdatePhoneOld : ItemTypeUpdatePhoneNew;
-      } else {
-        return ItemTypeSavePhone;
-      }
-    case AutofillUITypeProfileFullName:
-      if (update) {
-        return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
-      } else {
-        NOTREACHED();
-        return 0;
-      }
+// Returns the item type corresponding to the `type` for the update modal view.
+- (ItemType)itemTypeForUpdateModelFromAutofillType:(autofill::FieldType)type
+                                               old:(BOOL)old {
+  switch (type) {
+    case autofill::ADDRESS_HOME_STREET_ADDRESS:
+    case autofill::ADDRESS_HOME_ADDRESS:
+      return old ? ItemTypeUpdateAddressOld : ItemTypeUpdateAddressNew;
+    case autofill::EMAIL_ADDRESS:
+      return old ? ItemTypeUpdateEmailOld : ItemTypeUpdateEmailNew;
+    case autofill::PHONE_HOME_WHOLE_NUMBER:
+      return old ? ItemTypeUpdatePhoneOld : ItemTypeUpdatePhoneNew;
+    case autofill::NAME_FULL:
+      return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
     default:
-      NOTREACHED();
-      return 0;
+      break;
   }
+
+  NOTREACHED_IN_MIGRATION();
+  return ItemTypeNotFound;
 }
 
 // Returns YES if the old section is shown in the update modal.
@@ -530,16 +528,12 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
 // Returns a `SettingsImageDetailTextItem` for the fields to be shown in the
 // save address modal.
-- (SettingsImageDetailTextItem*)
-    detailItemForSaveModalWithText:(NSString*)text
-                    autofillUIType:(AutofillUIType)autofillUIType {
-  return [self
-        detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
-                                                         update:NO
-                                                            old:NO]
-                      text:text
-                    symbol:[self symbolForAutofillUIType:autofillUIType]
-      imageTintColorIsGrey:YES];
+- (SettingsImageDetailTextItem*)detailItemTypeForSaveModal:(ItemType)itemType
+                                                  withText:(NSString*)text {
+  return [self detailItemWithType:itemType
+                             text:text
+                           symbol:[self symbolForItemType:itemType]
+             imageTintColorIsGrey:YES];
 }
 
 - (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type

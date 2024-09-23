@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -24,7 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 class GrDirectContext;
 
@@ -34,6 +37,10 @@ class PaintCanvas;
 }  // namespace cc
 
 namespace gpu {
+
+struct Mailbox;
+struct SyncToken;
+
 namespace gles2 {
 
 class GLES2Interface;
@@ -50,10 +57,12 @@ class RasterInterface;
 namespace blink {
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 
 class CanvasResourceDispatcher;
 class MemoryManagedPaintCanvas;
 class WebGraphicsContext3DProviderWrapper;
+class WebGraphicsSharedImageInterfaceProvider;
 
 // CanvasResourceProvider
 //==============================================================================
@@ -111,6 +120,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
@@ -119,12 +129,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
-      uint32_t shared_image_usage_flags,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const SkImageInfo& info,
-      uint32_t shared_image_usage_flags = 0,
+      gpu::SharedImageUsageSet shared_image_usage_flags = {},
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
@@ -161,7 +171,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void OnContextDestroyed() override;
 
   MemoryManagedPaintCanvas& Canvas(bool needs_will_draw = false);
-  void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
@@ -207,25 +216,21 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
+  virtual bool IsSharedBitmapGpuChannelLost() const;
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
                            int x,
                            int y);
 
-  virtual gpu::Mailbox GetBackingMailboxForOverwrite(
-      MailboxSyncMode sync_mode) {
-    NOTREACHED();
-    return gpu::Mailbox();
-  }
-  virtual GLenum GetBackingTextureTarget() const { return GL_TEXTURE_2D; }
-  virtual void* GetPixelBufferAddressForOverwrite() {
-    NOTREACHED();
+  virtual scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() {
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  virtual uint32_t GetSharedImageUsageFlags() const {
-    NOTREACHED();
-    return 0;
+  virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
+    NOTREACHED_IN_MIGRATION();
+    return gpu::SharedImageUsageSet();
   }
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
@@ -276,6 +281,38 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const std::optional<cc::PaintRecord>& LastRecording() {
     return last_recording_;
   }
+
+  // Given the mailbox of a SharedImage, overwrites the current image (either
+  // completely or partially) with the passed-in SharedImage. Waits on
+  // `ready_sync_token` before copying; pass SyncToken() if no sync is required.
+  // Synthesizes a new sync token in `completion_sync_token` which will satisfy
+  // after the image copy completes. In practice, this API can be used to
+  // replace a resource with the contents of an AcceleratedStaticBitmapImage or
+  // with a WebGPUMailboxTexture.
+  bool OverwriteImage(const gpu::Mailbox& shared_image_mailbox,
+                      const gfx::Rect& copy_rect,
+                      bool unpack_flip_y,
+                      bool unpack_premultiply_alpha,
+                      const gpu::SyncToken& ready_sync_token,
+                      gpu::SyncToken& completion_sync_token);
+
+  struct UnusedResource {
+    UnusedResource(base::TimeTicks last_use,
+                   scoped_refptr<CanvasResource> resource)
+        : last_use(last_use), resource(std::move(resource)) {}
+    base::TimeTicks last_use;
+    scoped_refptr<CanvasResource> resource;
+  };
+
+  // Visible for testing; should be protected.
+  const WTF::Vector<UnusedResource>& CanvasResources() const {
+    return canvas_resources_;
+  }
+  bool unused_resources_reclaim_timer_is_running_for_testing() const {
+    return unused_resources_reclaim_timer_.IsRunning();
+  }
+  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
+      base::Seconds(5);
 
  protected:
   class CanvasImageProvider;
@@ -334,6 +371,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
+  CanvasResourceHost* resource_host() { return resource_host_; }
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
@@ -358,6 +397,16 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
 
+  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
+  void MaybePostUnusedResourcesReclaimTask();
+  void ClearOldUnusedResources();
+
+  // Disables lines drawing as paths if necessary. Drawing lines as paths is
+  // only needed for ganesh.
+  void DisableLineDrawingAsPathsIfNecessary();
+
+  void ReleaseLockedImages();
+
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;
   // Note that `info_` should be const, but the relevant SkImageInfo
@@ -367,7 +416,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_ = nullptr;
+  raw_ptr<CanvasResourceHost> resource_host_ = nullptr;
   // Recording accumulating draw ops. This pointer is always valid and safe to
   // dereference.
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
@@ -379,7 +428,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
   // will only hold one CanvasResource at most.
-  WTF::Vector<scoped_refptr<CanvasResource>> canvas_resources_;
+  WTF::Vector<UnusedResource> canvas_resources_;
+  base::OneShotTimer unused_resources_reclaim_timer_;
   bool resource_recycling_enabled_ = true;
   bool is_single_buffered_ = false;
   bool oopr_uses_dmsaa_ = false;

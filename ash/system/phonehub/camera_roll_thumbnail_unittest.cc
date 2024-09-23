@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
@@ -96,7 +97,8 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
     DCHECK(!widget_);
     widget_ = new views::Widget;
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
   }
@@ -115,7 +117,7 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
         IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
         base::NumberToString16(/* index= */ 1),
         base::NumberToString16(/* camera_roll_manager_size= */ 1));
-    camera_roll_thumbnail_->SetAccessibleName(accessible_name);
+    camera_roll_thumbnail_->GetViewAccessibility().SetName(accessible_name);
     widget_->Show();
   }
 

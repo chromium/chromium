@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/video_frame_converter.h"
 
 #include "base/trace_event/trace_event.h"
@@ -34,7 +39,7 @@ scoped_refptr<VideoFrame> WrapTempFrameForABGRToARGB(
   return VideoFrame::WrapExternalData(
       override_format, tmp_frame->coded_size(), tmp_frame->visible_rect(),
       tmp_frame->natural_size(),
-      tmp_frame->writable_data(VideoFrame::kARGBPlane),
+      tmp_frame->writable_data(VideoFrame::Plane::kARGB),
       VideoFrame::AllocationSize(override_format, tmp_frame->coded_size()),
       tmp_frame->timestamp());
 }
@@ -104,7 +109,7 @@ scoped_refptr<VideoFrame> VideoFrameConverter::CreateTempFrame(
   if (tmp_frame) {
     tmp_frame->AddDestructionObserver(frame_pool_->CreateFrameCallback(fb_id));
   }
-
+  frame_pool_->ReleaseFrameBuffer(fb_id);
   return tmp_frame;
 }
 
@@ -120,9 +125,9 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
 
   // 1. Allocate scratch space for U, V planes.
   const auto u_plane_size = VideoFrame::PlaneSize(
-      PIXEL_FORMAT_I420, VideoFrame::kUPlane, frame.coded_size());
+      PIXEL_FORMAT_I420, VideoFrame::Plane::kU, frame.coded_size());
   const auto v_plane_size = VideoFrame::PlaneSize(
-      PIXEL_FORMAT_I420, VideoFrame::kVPlane, frame.coded_size());
+      PIXEL_FORMAT_I420, VideoFrame::Plane::kV, frame.coded_size());
 
   void* fb_id;
   auto* scratch_space = frame_pool_->GetFrameBuffer(
@@ -136,26 +141,26 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
   if (IsOpaque(frame.format())) {
     wrapped_frame = VideoFrame::WrapExternalYuvData(
         PIXEL_FORMAT_I420, frame.coded_size(), frame.visible_rect(),
-        frame.natural_size(), frame.stride(VideoFrame::kYPlane),
+        frame.natural_size(), frame.stride(VideoFrame::Plane::kY),
         u_plane_size.width(), v_plane_size.width(),
-        frame.data(VideoFrame::kYPlane), scratch_space,
+        frame.data(VideoFrame::Plane::kY), scratch_space,
         scratch_space + u_plane_size.GetArea(), frame.timestamp());
   } else {
     wrapped_frame = VideoFrame::WrapExternalYuvaData(
         PIXEL_FORMAT_I420A, frame.coded_size(), frame.visible_rect(),
-        frame.natural_size(), frame.stride(VideoFrame::kYPlane),
+        frame.natural_size(), frame.stride(VideoFrame::Plane::kY),
         u_plane_size.width(), v_plane_size.width(),
-        frame.stride(VideoFrame::kAPlaneTriPlanar),
-        frame.data(VideoFrame::kYPlane), scratch_space,
+        frame.stride(VideoFrame::Plane::kATriPlanar),
+        frame.data(VideoFrame::Plane::kY), scratch_space,
         scratch_space + u_plane_size.GetArea(),
-        frame.data(VideoFrame::kAPlaneTriPlanar), frame.timestamp());
+        frame.data(VideoFrame::Plane::kATriPlanar), frame.timestamp());
   }
 
   if (wrapped_frame) {
     wrapped_frame->AddDestructionObserver(
         frame_pool_->CreateFrameCallback(fb_id));
   }
-
+  frame_pool_->ReleaseFrameBuffer(fb_id);
   return wrapped_frame;
 }
 

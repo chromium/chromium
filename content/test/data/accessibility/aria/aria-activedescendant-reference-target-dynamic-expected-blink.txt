@@ -1,0 +1,89 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node' activedescendantId=menuItemCheckBox
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'
+=== Start Continuation ===
+rootWebArea name='switch-active-descendant-away'
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node'
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'
+=== Start Continuation ===
+rootWebArea name='switch-active-descendant-back'
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node' activedescendantId=menuItemCheckBox
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'
+=== Start Continuation ===
+rootWebArea name='switch-referenced-element-id-away'
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node' activedescendantId=genericContainer
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'
+=== Start Continuation ===
+rootWebArea name='switch-referenced-element-id-back'
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node' activedescendantId=menuItemCheckBox
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'
+=== Start Continuation ===
+rootWebArea name='switch-reference-target'
+++genericContainer ignored
+++++genericContainer
+++++++menu name='parent node' activedescendantId=menuItemRadio
+++++++++menuItem name='Inactive descendant'
+++++++++++staticText name='Inactive descendant'
+++++++++++++inlineTextBox name='Inactive descendant'
+++++++++genericContainer
+++++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++++staticText name='Active descendant'
+++++++++++++++inlineTextBox name='Active descendant'
+++++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++++staticText name='Other descendant'
+++++++++++++++inlineTextBox name='Other descendant'

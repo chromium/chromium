@@ -20,10 +20,10 @@ bool CanSendHistoryData(syncer::SyncService* sync_service) {
   // SESSIONS and HISTORY both contain history-like data, so it's sufficient if
   // either of them is being uploaded.
   return syncer::GetUploadToGoogleState(sync_service,
-                                        syncer::ModelType::SESSIONS) ==
+                                        syncer::DataType::SESSIONS) ==
              syncer::UploadState::ACTIVE ||
          syncer::GetUploadToGoogleState(sync_service,
-                                        syncer::ModelType::HISTORY) ==
+                                        syncer::DataType::HISTORY) ==
              syncer::UploadState::ACTIVE;
 }
 
@@ -49,9 +49,12 @@ HistoryUiFaviconRequestHandlerFactory::HistoryUiFaviconRequestHandlerFactory()
           "HistoryUiFaviconRequestHandler",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(LargeIconServiceFactory::GetInstance());

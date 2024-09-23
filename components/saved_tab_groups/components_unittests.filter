@@ -1,0 +1,15 @@
+*SavedTabGroupConversionTest.*
+*SavedTabGroupModelObserverTest.*
+*SavedTabGroupModelTest.*
+*SavedTabGroupSyncBridgeMigrationTest.*
+*SavedTabGroupSyncBridgeTest.*
+*SavedTabGroupTest.*
+*SharedTabGroupDataSyncBridgeRemoteUpdateOrderTest.*
+*SharedTabGroupDataSyncBridgeTest.*
+*SavedTabGroupsStringUtilsTest.*
+*StartupHelperTest.*
+*TabGroupSyncBridgeMediatorTest.*
+*TabGroupSyncCoordinatorTest.*
+*TabGroupSyncMetricsLoggerTest.*
+*TabGroupSyncServiceAndroidTest.*
+*TabGroupSyncServiceTest.*

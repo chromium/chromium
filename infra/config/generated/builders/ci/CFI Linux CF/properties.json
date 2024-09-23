@@ -48,9 +48,18 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -60,6 +69,9 @@
     ]
   },
   "builder_group": "chromium.clang",
+  "gardener_rotations": [
+    "chromium.clang"
+  ],
   "perf_dashboard_machine_group": "ChromiumClang",
   "recipe": "chromium",
   "sheriff_rotations": [

@@ -1,0 +1,248 @@
+{
+  "description": "Source destination limit with FIFO and destination rate-limit both hit",
+  "api_config": {
+    "needs_source_destination_limit": true,
+    "max_destinations_per_source_site_reporting_site": "1",
+    "max_destinations_per_rate_limit_window": "2",
+    "max_destinations_per_rate_limit_window_reporting_site": "2"
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination10.test"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination1.test"
+                ],
+                "source_event_id": "111",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // This source should hit both unexpired destination limit with lower
+      // priority and destination global rate-limit. Should be reported as
+      // "source-destination-limit".
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination2.test"
+                ],
+                "source_event_id": "222",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the first source is not deactivated.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // This source should hit both unexpired destination limit with fifo and
+      // destination global rate-limit. Should be reported as "source-success"
+      // (destination global rate-limit).
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination2.test"
+                ],
+                "source_event_id": "333",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was not registered.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the first source was deactivated.
+      {
+        "timestamp": "6000",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "6"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination1.test",
+            "source_event_id": "111",
+            "source_site": "https://source.test"
+          },
+          "type": "source-success"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "limit": "1",
+            "source_event_id": "222",
+            "source_site": "https://source.test"
+          },
+          "type": "source-destination-limit"
+        } ],
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "source_destination_limit": "1",
+            "source_event_id": "333",
+            "source_site": "https://source.test"
+          },
+          "type": "source-success"
+        } ],
+        "report_time": "4000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination2.test"
+          },
+          "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "5000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination1.test"
+          },
+          "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "6000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination1.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172801",
+          "source_event_id": "111",
+          "source_type": "navigation",
+          "trigger_data": "7"
+        },
+        "report_time": "172801000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

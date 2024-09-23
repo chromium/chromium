@@ -6,12 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/AutoSigninSnackbarController_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutoSigninSnackbarController_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -23,8 +25,9 @@ void ShowAutoSigninPrompt(content::WebContents* web_contents,
   JNIEnv* env = base::android::AttachCurrentThread();
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   // TODO(melandory): https://crbug.com/590838 Introduce proper fix.
-  if (tab == nullptr)
+  if (tab == nullptr) {
     return;
+  }
   ScopedJavaLocalRef<jstring> java_message =
       base::android::ConvertUTF16ToJavaString(env, message);
   Java_AutoSigninSnackbarController_showSnackbar(env, tab->GetJavaObject(),

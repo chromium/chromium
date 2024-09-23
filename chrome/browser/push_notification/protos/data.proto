@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/apps/framework/data/data.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/528833710.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Abstract class for mutation request protos to extend from. Each request proto
+// that extends from this class must use a unique field number.
+message MutateDataRequest {
+  // Use the CL # as the extension ID.
+  extensions 10000 to max;
+}
+
+// Abstract class for mutation request protos to extend from. Each request proto
+// that extends from this class must use a unique field number.
+message MutateDataResponse {
+  // Use the CL # as the extension ID.
+  extensions 10000 to max;
+}

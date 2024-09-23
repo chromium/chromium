@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  is_chrome_untrusted = true
+  files = [
+    "overlay/find_words_in_region_test.ts",
+    "overlay/object_selection_test.ts",
+    "overlay/overlay_background_scrim_test.ts",
+    "overlay/overlay_close_button_test.ts",
+    "overlay/overlay_cursor_test.ts",
+    "overlay/overlay_more_options_button_test.ts",
+    "overlay/overlay_screenshot_test.ts",
+    "overlay/overlay_theme_test.ts",
+    "overlay/post_selection_renderer_test.ts",
+    "overlay/region_selection_test.ts",
+    "overlay/selection_overlay_test.ts",
+    "overlay/test_language_browser_proxy.ts",
+    "overlay/test_overlay_browser_proxy.ts",
+    "overlay/text_selection_test.ts",
+    "overlay/cubic_bezier_test.ts",
+    "overlay/translate_button_test.ts",
+    "side_panel/results_frame_test.ts",
+    "side_panel/searchbox_back_button_test.ts",
+    "side_panel/test_side_panel_browser_proxy.ts",
+    "side_panel/error_page_test.ts",
+    "utils/object_utils.ts",
+    "utils/image_utils.ts",
+    "utils/selection_utils.ts",
+    "utils/text_utils.ts",
+  ]
+
+  ts_path_mappings = [
+    "chrome-untrusted://lens-overlay/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/overlay/tsc/*",
+                    target_gen_dir),
+    "chrome-untrusted://lens/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/lens/overlay/tsc/*",
+                    target_gen_dir),
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/lens/overlay:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

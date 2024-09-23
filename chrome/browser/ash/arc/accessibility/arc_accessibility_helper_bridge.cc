@@ -225,7 +225,7 @@ void ArcAccessibilityHelperBridge::OnAccessibilityEvent(
     case ax::android::mojom::AccessibilityFilterType::OFF:
       break;
     case ax::android::mojom::AccessibilityFilterType::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -342,7 +342,7 @@ void ArcAccessibilityHelperBridge::PopulateActionParameters(
     case ax::android::mojom::AccessibilityActionType::HIDE_TOOLTIP:
       break;
     case ax::android::mojom::AccessibilityActionType::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

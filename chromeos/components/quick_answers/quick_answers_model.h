@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image.h"
@@ -44,7 +45,6 @@ enum class LoadStatus {
 // Note: Enums labels are at |QuickAnswersResultType|.
 enum class ResultType {
   kNoResult = 0,
-  kKnowledgePanelEntityResult = 3982,
   kDefinitionResult = 5493,
   kTranslationResult = 6613,
   kUnitConversionResult = 13668,
@@ -61,6 +61,8 @@ enum class IntentType {
   kTranslation = 3,
   kMaxValue = kTranslation
 };
+
+std::optional<quick_answers::Intent> ToIntent(IntentType intent_type);
 
 enum class QuickAnswerUiElementType {
   kUnknown = 0,
@@ -124,6 +126,7 @@ struct QuickAnswerImage : public QuickAnswerUiElement {
 
 // Class to describe quick answers phonetics info.
 struct PhoneticsInfo {
+ public:
   PhoneticsInfo();
   PhoneticsInfo(const PhoneticsInfo&);
   ~PhoneticsInfo();
@@ -133,15 +136,20 @@ struct PhoneticsInfo {
 
   // Phonetics audio URL for playing pronunciation of dictionary results.
   // For other type of results the URL will be empty.
-  GURL phonetics_audio = GURL();
+  GURL phonetics_audio;
 
-  // Whether or not to use tts audio if phonetics audio is not available.
+  // Set to true if tts audio (`query_text` and `locale`) can be used.
+  // TODO(b/346794579): remove this field.
   bool tts_audio_enabled = false;
 
   // Query text and locale which will be used for tts if enabled and
   // there is no phonetics audio available.
-  std::string query_text = std::string();
-  std::string locale = std::string();
+  std::string query_text;
+  std::string locale;
+
+  bool PhoneticsInfoAvailable() const;
+  bool AudioUrlAvailable() const;
+  bool TtsAudioAvailable() const;
 };
 
 // Structure to describe a quick answer.
@@ -152,7 +160,6 @@ struct QuickAnswer {
   ResultType result_type = ResultType::kNoResult;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
-  std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;
   std::unique_ptr<QuickAnswerImage> image;
 
   PhoneticsInfo phonetics_info;
@@ -395,6 +402,8 @@ class StructuredResult {
   ~StructuredResult();
   StructuredResult(const StructuredResult&) = delete;
   StructuredResult& operator=(const StructuredResult) = delete;
+
+  ResultType GetResultType() const;
 
   // Result type specific structs must be copyable as they can be copied to
   // views.

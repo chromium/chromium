@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_loader_win.h"
 
 #include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <userenv.h>
@@ -19,11 +20,11 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/win/registry.h"
@@ -124,7 +125,7 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::BINARY:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -766,6 +767,49 @@ TEST_F(PolicyLoaderWinTest, LoadPrecedencePolicies) {
   expected.Get(chrome_ns).Set(
       key::kCloudUserPolicyOverridesCloudMachinePolicy, POLICY_LEVEL_MANDATORY,
       POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
+
+  EXPECT_TRUE(Matches(expected));
+}
+
+TEST_F(PolicyLoaderWinTest, LoadExpandSzPolicies) {
+  constexpr char kTestEnvVar[] = "TEST_ENV_VAR";
+  constexpr char kTestEnvVarValue[] = "TEST_VALUE";
+  base::ScopedEnvironmentVariableOverride scoped_env(kTestEnvVar,
+                                                     kTestEnvVarValue);
+
+  RegKey hklm_key(HKEY_LOCAL_MACHINE, kTestPolicyKey, KEY_ALL_ACCESS);
+  ASSERT_TRUE(hklm_key.Valid());
+  auto reg_value = base::UTF8ToWide(std::string("%") + kTestEnvVar + "%");
+  hklm_key.WriteValue(
+      base::UTF8ToWide(test_keys::kKeyString).c_str(), reg_value.c_str(),
+      static_cast<DWORD>(sizeof(reg_value[0]) * (reg_value.size() + 1)),
+      REG_EXPAND_SZ);
+
+  PolicyBundle expected;
+  expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(test_keys::kKeyString, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+           POLICY_SOURCE_PLATFORM, base::Value(kTestEnvVarValue), nullptr);
+
+  EXPECT_TRUE(Matches(expected));
+}
+
+// Make sure environment variables aren't expanded for REG_SZ.
+TEST_F(PolicyLoaderWinTest, LoadSzPoliciesWithEnvVar) {
+  constexpr char kTestEnvVar[] = "TEST_ENV_VAR";
+  constexpr char kTestEnvVarValue[] = "TEST_VALUE";
+  base::ScopedEnvironmentVariableOverride scoped_env(kTestEnvVar,
+                                                     kTestEnvVarValue);
+
+  RegKey hklm_key(HKEY_LOCAL_MACHINE, kTestPolicyKey, KEY_ALL_ACCESS);
+  ASSERT_TRUE(hklm_key.Valid());
+  auto reg_value = std::string("%") + kTestEnvVar + "%";
+  hklm_key.WriteValue(base::UTF8ToWide(test_keys::kKeyString).c_str(),
+                      base::UTF8ToWide(reg_value).c_str());
+
+  PolicyBundle expected;
+  expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Set(test_keys::kKeyString, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+           POLICY_SOURCE_PLATFORM, base::Value(reg_value), nullptr);
 
   EXPECT_TRUE(Matches(expected));
 }

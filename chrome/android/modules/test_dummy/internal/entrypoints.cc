@@ -4,7 +4,7 @@
 
 #include "base/android/jni_utils.h"
 #include "chrome/android/modules/test_dummy/internal/test_dummy__jni_registration_generated.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.

@@ -9,9 +9,8 @@
 #include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/test_accounts.h"
 
@@ -78,16 +77,7 @@ SupervisedUserLoginDelegate::SupervisedUserLoginDelegate() {
 void SupervisedUserLoginDelegate::DoCustomGaiaLogin(std::string& username) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Skip to login screen.
-  ash::WizardController::default_controller()->SkipToLoginForTesting();
-  ash::OobeScreenWaiter(ash::GaiaView::kScreenId).Wait();
-
-  // Wait for Gaia page to load.
-  while (!crosier::GetGaiaHost()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
-    run_loop.Run();
-  }
+  crosier::SkipToGaiaScreenAndWait();
 
   std::string child_email;
   std::string child_password;

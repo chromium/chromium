@@ -64,6 +64,16 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_data.id.global_render_frame_host_id());
   CHECK(rfh);
+  if (!rfh->IsInPrimaryMainFrame()) {
+    rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                             "requestStorageAccessFor: Only supported in "
+                             "primary top-level browsing contexts.");
+    RecordOutcomeSample(
+        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    return;
+  }
+
   if (!request_data.user_gesture ||
       !request_data.requesting_origin.is_valid() ||
       !request_data.embedding_origin.is_valid()) {
@@ -102,8 +112,22 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
       NotifyPermissionSetInternal(
           request_data.id, request_data.requesting_origin,
           request_data.embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_BLOCK,
+          /*persist=*/false, CONTENT_SETTING_BLOCK,
           TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
+      return;
+    }
+    // Determine if user specifically denied cookie access in this context.
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser_context());
+    ContentSetting cookie_setting = settings_map->GetContentSetting(
+        request_data.requesting_origin, request_data.embedding_origin,
+        ContentSettingsType::COOKIES);
+    if (cookie_setting == CONTENT_SETTING_BLOCK) {
+      NotifyPermissionSetInternal(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          /*persist=*/false, CONTENT_SETTING_BLOCK,
+          TopLevelStorageAccessRequestOutcome::kDeniedByCookieSettings);
       return;
     }
     // Since the sites are in the same First-Party Set, risk of abuse due to
@@ -118,7 +142,7 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
   NotifyPermissionSetInternal(
       request_data.id, request_data.requesting_origin,
       request_data.embedding_origin, std::move(callback),
-      /*persist=*/true, CONTENT_SETTING_BLOCK,
+      /*persist=*/false, CONTENT_SETTING_BLOCK,
       TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }
 
@@ -128,7 +152,7 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame()) {
-    // Note that portal and other main but non-outermost frames are
+    // Note that fenced frames and other main but non-outermost frames are
     // currently disallowed from queries by the PermissionService. This check
     // ensures that we do not assume that behavior, however.
     net::SchemefulSite top_level_site(
@@ -164,6 +188,11 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
   CHECK(!is_one_time);
   CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (content_setting == CONTENT_SETTING_BLOCK) {
+    CHECK(!persist);
+  }
+
   NotifyPermissionSetInternal(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting,
@@ -184,10 +213,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   RecordOutcomeSample(outcome);
 
-  const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
-  UpdateTabContext(id, requesting_origin, permission_allowed);
+  UpdateTabContext(id, requesting_origin,
+                   content_setting == CONTENT_SETTING_ALLOW);
 
-  if (!permission_allowed || !persist) {
+  if (!persist) {
     if (content_setting == CONTENT_SETTING_DEFAULT) {
       content_setting = CONTENT_SETTING_ASK;
     }
@@ -200,35 +229,26 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   CHECK(settings_map);
   CHECK(persist);
-
-  // This permission was allowed, so store it. Because this is a superset of the
-  // regular storage access permission, we also store that one.
-  const net::SchemefulSite embedding_site(embedding_origin);
-  const GURL embedding_site_as_url = embedding_site.GetURL();
-  ContentSettingsPattern secondary_site_pattern =
-      ContentSettingsPattern::CreateBuilder()
-          ->WithScheme(embedding_site_as_url.scheme())
-          ->WithDomainWildcard()
-          ->WithHost(embedding_site_as_url.host())
-          ->WithPathWildcard()
-          ->WithPortWildcard()
-          ->Build();
+  // This permission type doesn't support user prompts, so any denials are
+  // user-agent-generated. Machine-generated denials are not persisted.
+  CHECK_EQ(content_setting, CONTENT_SETTING_ALLOW);
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(
       permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
-  constraints.set_session_model(
-      content_settings::SessionModel::NonRestorableUserSession);
+  constraints.set_decided_by_related_website_sets(true);
 
+  settings_map->SetContentSettingDefaultScope(
+      requesting_origin, embedding_origin,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, content_setting,
+      constraints);
+
+  // Because this is a superset of the regular storage access permission, we
+  // also store that one.
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
-      secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_setting, constraints);
-
-  settings_map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
-      secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, constraints);
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(embedding_origin),
+      ContentSettingsType::STORAGE_ACCESS, content_setting, constraints);
 
   ContentSettingsForOneType top_level_grants =
       settings_map->GetSettingsForOneType(
@@ -236,7 +256,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   ContentSettingsForOneType storage_access_grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
-  // TODO(https://crbug.com/989663): Ensure that this update of settings doesn't
+  // TODO(crbug.com/40638427): Ensure that this update of settings doesn't
   // cause a double update with
   // ProfileNetworkContextService::OnContentSettingChanged.
 
@@ -264,5 +284,5 @@ void TopLevelStorageAccessPermissionContext::UpdateContentSetting(
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

@@ -111,9 +111,9 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
 
   void MoveToSequence(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // PrefObserver
+  // PrefObserver:
   void OnPreferenceChanged(PrefService* service,
-                           const std::string& pref_name) override;
+                           std::string_view pref_name) override;
 
   void VerifyValuePrefName() const {
     DCHECK(!pref_name_.empty());
@@ -302,7 +302,7 @@ class PrefMember : public subtle::PrefMemberBase {
 //
 // FEATURES="noclean nostrip" USE="-chrome_debug -chrome_remoting
 // -chrome_internal -chrome_pdf component_build"
-// ~/trunk/goma/goma-wrapper cros_chrome_make --board=${BOARD}
+// cros_chrome_make --board=${BOARD}
 // --install --runhooks
 
 template <>

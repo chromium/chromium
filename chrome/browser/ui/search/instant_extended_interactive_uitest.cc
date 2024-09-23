@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NoMostVisitedChangedOnTabSwitch) {
   EXPECT_EQ(1, on_most_visited_change_calls_);
 }
 
-// TODO(crbug.com/1278430): Failing on MSan.
+// TODO(crbug.com/40810214): Failing on MSan.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_NavigateBackToNTP DISABLED_NavigateBackToNTP
 #else
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, MAYBE_NavigateBackToNTP) {
   EXPECT_TRUE(search::IsInstantNTP(active_tab));
 }
 
-// TODO(crbug.com/1278430): Failing on MSan.
+// TODO(crbug.com/40810214): Failing on MSan.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_DispatchMVChangeEventWhileNavigatingBackToNTP \
   DISABLED_DispatchMVChangeEventWhileNavigatingBackToNTP

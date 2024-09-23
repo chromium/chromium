@@ -32,7 +32,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 /** Tests sharing URLs in reader mode (DOM distiller) */
-// TODO(https://crbug.com/1415082): Remove this test when share no longer depends on DOM distiller.
+// TODO(crbug.com/40256418): Remove this test when share no longer depends on DOM distiller.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ShareUrlTest {

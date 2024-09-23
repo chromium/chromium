@@ -43,7 +43,7 @@
 <translation id="134645005685694099">На устройстве недостаточно места для синхронизации файлов. Новые файлы не будут синхронизироваться автоматически.</translation>
 <translation id="1353686479385938207"><ph name="NETWORK_NAME" /> (<ph name="PROVIDER_NAME" />)</translation>
 <translation id="1358735829858566124">Этот файл или каталог непригоден для использования.</translation>
-<translation id="1363028406613469049">Трек</translation>
+<translation id="1363028406613469049">Отслеживать</translation>
 <translation id="1378727793141957596">Добро пожаловать в Google Диск!</translation>
 <translation id="1379911846207762492">Вы можете скачать файлы, чтобы работать с ними без подключения к интернету.</translation>
 <translation id="1383876407941801731">Поиск</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Устройства Chromebit</translation>
 <translation id="3085752524577180175">SOCKS-прокси</translation>
 <translation id="3104793765551262433">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
-<translation id="3113153474486991170">Не удалось открыть "<ph name="PATH" />" из этого каталога. Чтобы открыть объект, скопируйте его в каталог "Мои файлы".</translation>
 <translation id="3113592018909187986">Осталась одна попытка. Вы не сможете использовать эту сеть, пока не зададите новый PIN-код.</translation>
 <translation id="3124404833828281817">Мечтатель</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Отменить <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3691184985318546178">Сингальский</translation>
+<translation id="3702842351052426940">Возможно, произошла деактивация. Замените SIM-карту или переключитесь на другой профиль eSIM.</translation>
 <translation id="3722341589402358578">Произошла ошибка. Возможно, не все объекты были удалены.</translation>
 <translation id="3726463242007121105">Невозможно получить доступ к устройству, так как его файловая система не поддерживается.</translation>
 <translation id="3727148787322499904">Изменение этого параметра повлияет на все общие сети</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Прокси-сервер принудительно включен администратором</translation>
 <translation id="3830674330436234648">Воспроизведение невозможно</translation>
 <translation id="383652340667548381">Сербский</translation>
+<translation id="3839045880592694915">Подключение модема запрещено оператором связи. Обратитесь к нему за дополнительной информацией.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851491607336266896">Подключено с ограничениями</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Недавно открытые файлы Microsoft были перенесены на OneDrive</translation>
 <translation id="4002066346123236978">Название</translation>
 <translation id="4017788180641807848">Английский (США), раскладка Workman</translation>
-<translation id="4019998208269143058">Добавить в Быстрый доступ к файлам</translation>
 <translation id="4040753847560036377">Неверный PUK-код.</translation>
 <translation id="4057991113334098539">Активация...</translation>
 <translation id="4092890906744441904">Ирландский</translation>
+<translation id="4101601646343868113">Подключитесь к мобильной сети и подтвердите, что ваш тарифный план активен</translation>
 <translation id="4124731372776320263">Синхронизация 1 файла на Диске…</translation>
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
@@ -487,7 +487,7 @@
 <translation id="4826849268470072925">Тамильский, раскладка ITRANS</translation>
 <translation id="482932175346970750">Введите <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в адресной строке браузера.</translation>
 <translation id="4843566743023903107">Устройства Chromebase</translation>
-<translation id="4850886885716139402">Посмотреть</translation>
+<translation id="4850886885716139402">Смотреть</translation>
 <translation id="485316830061041779">Немецкий</translation>
 <translation id="4862885579661885411">Настройки приложения "Файлы"</translation>
 <translation id="4867079195717347957">Нажмите, чтобы отсортировать значения в столбце по убыванию.</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Тамильский, раскладка Tamil99</translation>
 <translation id="5633226425545095130">Если вы переместите этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Прослушать</translation>
+<translation id="5650895901941743674">проверьте настройки точки доступа.</translation>
 <translation id="5669691691057771421">Введите новый PIN-код</translation>
 <translation id="5678784840044122290">Приложение Linux будет доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не удалось отключиться от архива или электронного диска<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключение</translation>
 <translation id="6269630227984243955">Малайский</translation>
 <translation id="6271903698064569429">Не удается загрузить файлы, поскольку на общем диске "<ph name="SHARED_DRIVE_NAME" />" недостаточно свободного места.</translation>
+<translation id="6279140785485544797">Возможно, срок действия вашего тарифного плана на мобильный интернет истек. Обратитесь к оператору связи.</translation>
 <translation id="6287852322318138013">Выберите программу, в которой необходимо открыть этот файл</translation>
 <translation id="6295542640242147836">Блокировка SIM-карты</translation>
 <translation id="6296410173147755564">Недействительный PUK-код.</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Архив <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Приветствие</translation>
 <translation id="6327785803543103246">Автоматическое определение настроек прокси-сервера</translation>
-<translation id="6337014272874260727">Удалить из Быстрого доступа к файлам</translation>
 <translation id="6339145975392024142">Американская международная (ПК)</translation>
 <translation id="6356685157277930264">Окно с информацией о файлах</translation>
 <translation id="6358884629796491903">Дракон</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Текущий каталог</translation>
 <translation id="6751256176799620176">1 папка выбрана</translation>
 <translation id="6755827872271341378">Устройство с Chrome OS Flex</translation>
+<translation id="6777029074498310250">Чтобы узнать больше, перейдите на страницу <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />.</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6794539005637808366">Восстановите объект или перетащите его из корзины в новую папку.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Тамильский, раскладка InScript</translation>
 <translation id="7088615885725309056">Раньше</translation>
 <translation id="7103992300314999525">Македонский</translation>
+<translation id="7104338189998813914">Возникла проблема с доступом к вашему аккаунту OneDrive</translation>
 <translation id="7106346894903675391">Приобрести дополнительное пространство…</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;искать на Диске&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада, фонетический</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Подождите…</translation>
 <translation id="7600126690270271294">Сербский</translation>
 <translation id="7603724359189955920">Сетка</translation>
+<translation id="7624010287655004652">Заблокировано другим мобильным оператором</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" уже существует. Задайте другое название и повторите попытку.</translation>
 <translation id="7628656427739290098">Выполнено на <ph name="PERCENT" /> %.</translation>
 <translation id="7649070708921625228">Справка</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8609695766746872526">Исландский</translation>
+<translation id="8630384863424041081">Введите PIN-код SIM-карты или PIN-код по умолчанию, предоставленный оператором связи. Если вам нужна помощь, обратитесь к оператору.</translation>
 <translation id="863903787380594467">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Доступ к файлам в офлайн-режиме закрыт</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Это конфиденциальный файл, и администратор ограничил его использование</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Мальтийский</translation>
-<translation id="8714138378966541668">Есть ограничение оператора</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="872537912056138402">Хорватский</translation>

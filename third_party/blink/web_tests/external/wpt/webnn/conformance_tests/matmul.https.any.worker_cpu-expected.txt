@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] matmul float32 2D and 2D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The rank of the input must be equal to or greater than 3."
+[FAIL] matmul float32 3D and 3D (broadcast) tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+[FAIL] matmul float32 3D and 2D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+[FAIL] matmul float32 4D and 4D (broadcast) tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+[FAIL] matmul float32 4D and 3D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+[FAIL] matmul float32 5D and 5D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+[FAIL] matmul float32 5D and 2D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK can't support broadcasting for matrix multiply."
+Harness: the test ran to completion.
+

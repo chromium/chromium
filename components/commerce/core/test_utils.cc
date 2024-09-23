@@ -14,10 +14,14 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -32,9 +36,15 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     const int64_t price_micros,
     const std::string& currency_code,
     const std::optional<int64_t>& last_subscription_change_time) {
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url,
-                             nullptr, std::nullopt, std::nullopt, true);
+  // Prefer account bookmarks if available. `other_node()` is still relevant for
+  // tests that continue to exercise the legacy sync-feature-on case.
+  const bookmarks::BookmarkNode* parent =
+      (bookmark_model->account_other_node() != nullptr)
+          ? bookmark_model->account_other_node()
+          : bookmark_model->other_node();
+
+  const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
+      parent, 0, title, url, nullptr, std::nullopt, std::nullopt, true);
 
   AddProductInfoToExistingBookmark(
       bookmark_model, node, title, cluster_id, is_price_tracked, price_micros,
@@ -72,8 +82,23 @@ void AddProductInfoToExistingBookmark(
                                             std::move(meta));
 }
 
-void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kShoppingListEnabledPrefName, enabled);
+void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                         bool enabled) {
+  prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
+}
+
+void RegisterCommercePrefs(PrefRegistrySimple* registry) {
+  RegisterPrefs(registry);
+  registry->RegisterIntegerPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      0);
+}
+
+void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                       int enabled_state) {
+  prefs->SetManagedPref(
+      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+      base::Value(enabled_state));
 }
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(
@@ -118,9 +143,11 @@ DiscountInfo CreateValidDiscountInfo(const std::string& detail,
                                      const std::string& discount_code,
                                      int64_t id,
                                      bool is_merchant_wide,
-                                     double expiry_time_sec) {
+                                     double expiry_time_sec,
+                                     DiscountClusterType cluster_type) {
   DiscountInfo discount_info;
 
+  discount_info.cluster_type = cluster_type;
   discount_info.description_detail = detail;
   discount_info.terms_and_conditions.emplace(terms_and_conditions);
   discount_info.value_in_text = value_in_text;

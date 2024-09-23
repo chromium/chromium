@@ -5,8 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_INDEX_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_INDEX_BUFFER_H_
 
+#include <stdint.h>
+
+#include <utility>
+
+#include "base/memory/scoped_refptr.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 

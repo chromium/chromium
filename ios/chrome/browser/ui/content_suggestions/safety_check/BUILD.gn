@@ -4,10 +4,13 @@
 
 source_set("safety_check") {
   sources = [
+    "safety_check_audience.h",
+    "safety_check_consumer_source.h",
     "safety_check_item_icon.h",
     "safety_check_item_icon.mm",
     "safety_check_item_view.h",
     "safety_check_item_view.mm",
+    "safety_check_magic_stack_consumer.h",
     "safety_check_magic_stack_mediator.h",
     "safety_check_magic_stack_mediator.mm",
     "safety_check_state.h",
@@ -33,16 +36,20 @@ source_set("safety_check") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/safety_check/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/common",
     "//ios/chrome/common",
@@ -69,18 +76,38 @@ source_set("prefs") {
     "safety_check_prefs.h",
     "safety_check_prefs.mm",
   ]
-  deps = [ "//components/prefs" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safety_check_view_unittest.mm" ]
+  sources = [
+    "safety_check_magic_stack_mediator_unittest.mm",
+    "safety_check_view_unittest.mm",
+  ]
   deps = [
     ":constants",
+    ":prefs",
     ":safety_check",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/safety_check/model",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
     "//ui/base:test_support",
   ]
 }
@@ -94,12 +121,11 @@ source_set("eg2_tests") {
     ":prefs",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/password:features",
-    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
+    "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

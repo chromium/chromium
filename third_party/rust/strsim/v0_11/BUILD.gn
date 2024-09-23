@@ -1,0 +1,40 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "strsim"
+  epoch = "0.11"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/strsim-0.11.1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/strsim-0.11.1/src/lib.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2015"
+  cargo_pkg_version = "0.11.1"
+  cargo_pkg_authors =
+      "Danny Guo <danny@dannyguo.com>, maxbachmann <oss@maxbachmann.de>"
+  cargo_pkg_name = "strsim"
+  cargo_pkg_description = "Implementations of string similarity metrics. Includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

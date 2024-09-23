@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -44,7 +50,7 @@ const char* ButtonStyleClassFromButtonType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return "close";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -62,7 +68,7 @@ GtkStateFlags GtkStateFlagsFromButtonState(
     case ui::NavButtonProvider::ButtonState::kDisabled:
       return GTK_STATE_FLAG_INSENSITIVE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GTK_STATE_FLAG_NORMAL;
   }
 }
@@ -79,7 +85,7 @@ const char* IconNameFromButtonType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return "window-close-symbolic";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -433,16 +439,16 @@ gfx::ImageSkia NavButtonProviderGtk::GetImage(
     ui::NavButtonProvider::FrameButtonDisplayType type,
     ui::NavButtonProvider::ButtonState state) const {
   auto it = button_images_.find(type);
-  DCHECK(it != button_images_.end());
+  CHECK(it != button_images_.end(), base::NotFatalUntil::M130);
   auto it2 = it->second.find(state);
-  DCHECK(it2 != it->second.end());
+  CHECK(it2 != it->second.end(), base::NotFatalUntil::M130);
   return it2->second;
 }
 
 gfx::Insets NavButtonProviderGtk::GetNavButtonMargin(
     ui::NavButtonProvider::FrameButtonDisplayType type) const {
   auto it = button_margins_.find(type);
-  DCHECK(it != button_margins_.end());
+  CHECK(it != button_margins_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

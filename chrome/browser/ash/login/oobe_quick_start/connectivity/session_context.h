@@ -34,9 +34,14 @@ class SessionContext {
   SessionContext& operator=(const SessionContext& other);
   ~SessionContext();
 
-  // Updates session info with new random values. Used when a user exits Quick
-  // Start in case they attempt to re-enter.
-  void ResetSession();
+  // Updates session info with new random values or persisted session. Used when
+  // advertising begins, so that we have new session info when a user exits
+  // Quick Start and attempts to re-enter.
+  void FillOrResetSession();
+
+  // resets |is_resume_after_update_| to default false value. Called when an
+  // attempt to resume fails after a timeout.
+  void CancelResume();
 
   SessionId session_id() const { return session_id_; }
 
@@ -57,6 +62,10 @@ class SessionContext {
   // reboots.
   base::Value::Dict GetPrepareForUpdateInfo();
 
+  bool did_transfer_wifi() const { return did_transfer_wifi_; }
+
+  void SetDidTransferWifi(bool did_transfer_wifi);
+
  private:
   void PopulateRandomSessionContext();
   // When Quick Start is automatically resumed after the target device updates,
@@ -69,7 +78,8 @@ class SessionContext {
   AdvertisingId advertising_id_;
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
-  bool is_resume_after_update_;
+  bool is_resume_after_update_ = false;
+  bool did_transfer_wifi_ = false;
 };
 
 }  // namespace ash::quick_start

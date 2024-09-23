@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
@@ -54,11 +55,10 @@ class DummyWidgetScheduler final : public WidgetScheduler {
       WebInputEvent::Type web_input_event_type,
       const WebInputEventAttribution& web_input_event_attribution) override {}
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
-                                       WebInputEventResult result) override {}
-  void DidAnimateForInputOnCompositorThread() override {}
+                                       WebInputEventResult result,
+                                       bool frame_requested) override {}
   void DidRunBeginMainFrame() override {}
   void SetHidden(bool hidden) override {}
-  void SetHasTouchHandler(bool has_touch_handler) override {}
 };
 
 class DummyFrameScheduler : public FrameScheduler {
@@ -91,6 +91,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void SetPaused(bool) override {}
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}
   void SetCrossOriginToNearestMainFrame(bool) override {}
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   bool IsCrossOriginToNearestMainFrame() const override { return false; }
   void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }
@@ -147,6 +148,9 @@ class DummyFrameScheduler : public FrameScheduler {
   void ReportActiveSchedulerTrackedFeatures() override {}
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
     return base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
+  base::TimeDelta UnreportedTaskTime() const override {
+    return base::TimeDelta();
   }
 
  private:
@@ -244,7 +248,7 @@ class SimpleMainThread : public MainThread {
  private:
   bool IsSimpleMainThread() const override { return true; }
 
-  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_ptr_;
+  raw_ptr<ThreadScheduler> scheduler_ptr_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
 };
@@ -293,11 +297,6 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
-    return base::SingleThreadTaskRunner::GetCurrentDefault();
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
     DCHECK(WTF::IsMainThread());
     return base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -335,6 +334,10 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return nullptr;
   }
 
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override {}
+
   v8::Isolate* Isolate() override {
     return isolate_;
   }
@@ -344,12 +347,14 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   void ForEachMainThreadIsolate(
       base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override {
     if (isolate_) {
-      callback.Run(isolate_);
+      callback.Run(isolate_.get());
     }
   }
 
+  void SetRendererBackgroundedForTesting(bool) override {}
+
  private:
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
 };
 
 class DummyAgentGroupScheduler : public AgentGroupScheduler {
@@ -378,14 +383,10 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   WebThreadScheduler& GetMainThreadScheduler() override {
     return *main_thread_scheduler_;
   }
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
-      override {}
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
-    return GetEmptyBrowserInterfaceBroker();
-  }
   v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
   void AddAgent(Agent* agent) override {}
+  void OnUrgentMessageReceived() override {}
+  void OnUrgentMessageProcessed() override {}
 
  private:
   std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;

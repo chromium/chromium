@@ -74,6 +74,10 @@ void HIDDetectionScreenHandler::SetContinueButtonEnabled(bool value) {
   CallExternalAPI("setContinueButtonEnabled", value);
 }
 
+base::WeakPtr<HIDDetectionView> HIDDetectionScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void HIDDetectionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("hidDetectionContinue", IDS_HID_DETECTION_CONTINUE_BUTTON);
@@ -120,8 +124,6 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
 
 void HIDDetectionScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
-  dict->Set("enableOobeHidDetectionRevamp",
-            base::FeatureList::IsEnabled(features::kOobeHidDetectionRevamp));
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 

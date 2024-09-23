@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_SEARCH_PROVIDER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_SEARCH_PROVIDER_ASH_H_
 
+#include <memory>
 #include <string>
-#include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/search_controller_ash.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -35,12 +34,12 @@ namespace crosapi {
 //      in ash-chrome) can use the `Search` method to fetch omnibox results,
 //      which delegates to the search controller over Mojo.
 //
-//      Internally, this class implements one `SearchResultsPublisher` per
-//      search request (even though the search controller can only execute one
-//      search at a time) in order to notify old clients if their search is
-//      preempted. It's likely that this can be simplified in the future.
-class SearchProviderAsh : public mojom::SearchResultsPublisher,
-                          public mojom::SearchControllerRegistry {
+//      Internally, `SearchControllerAsh` implements one
+//      `SearchResultsPublisher` per search request (even though the search
+//      controller can only execute one search at a time) in order to notify old
+//      clients if their search is preempted. It's likely that this can be
+//      simplified in the future.
+class SearchProviderAsh : public mojom::SearchControllerRegistry {
  public:
   SearchProviderAsh();
   SearchProviderAsh(const SearchProviderAsh&) = delete;
@@ -51,41 +50,28 @@ class SearchProviderAsh : public mojom::SearchResultsPublisher,
       mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver);
 
   using SearchResultsReceivedCallback =
-      base::RepeatingCallback<void(std::vector<mojom::SearchResultPtr>)>;
-  // Sends search query to lacros. The callback will be called each time results
-  // are received from lacros via OnSearchResultsReceived().
-  // If a search query is called while there is an in-flight search query, the
-  // in-flight search query will be cancelled (from lacros side) before the new
-  // search query is executed.
-  // When lacros finishes the search, it'll terminate the connection and no more
-  // results will be sent.
-  void Search(const std::u16string& query,
-              SearchResultsReceivedCallback callback);
+      SearchControllerAsh::SearchResultsReceivedCallback;
+
+  // If non-null, this is guaranteed to be connected.
+  SearchControllerAsh* GetController();
 
   // mojom::SearchControllerRegistry overrides:
   void RegisterSearchController(
       mojo::PendingRemote<mojom::SearchController> search_controller) override;
 
-  // mojom::SearchResultsPublisher overrides:
-  void OnSearchResultsReceived(
-      mojom::SearchStatus status,
-      std::optional<std::vector<mojom::SearchResultPtr>> results) override;
-
-  bool IsSearchControllerConnected() const;
-
  private:
-  void BindPublisher(
-      SearchResultsReceivedCallback callback,
-      mojo::PendingAssociatedReceiver<mojom::SearchResultsPublisher> publisher);
+  void OnSearchControllerDisconnected(
+      base::WeakPtr<SearchControllerAsh> controller);
 
-  // Since we only need one connection to fetch the results, we'll only support
-  // one crosapi connection here.
-  mojo::Remote<mojom::SearchController> search_controller_;
+  // Constructed in `RegisterSearchController`, when lacros-chrome registers
+  // its singleton search controller.
+  // Destructed in `OnSearchControllerDisconnected`, when the remote is
+  // disconnected.
+  // If non-null, this is guaranteed to be connected (outside of
+  // `OnSearchControllerDisconnected`).
+  std::unique_ptr<SearchControllerAsh> search_controller_;
 
   mojo::ReceiverSet<mojom::SearchControllerRegistry> registry_receivers_;
-  mojo::AssociatedReceiverSet<mojom::SearchResultsPublisher,
-                              SearchResultsReceivedCallback>
-      publisher_receivers_;
 
   base::WeakPtrFactory<SearchProviderAsh> weak_factory_{this};
 };

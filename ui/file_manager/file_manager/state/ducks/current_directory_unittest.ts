@@ -5,7 +5,7 @@
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {fakeMyFilesVolumeId} from '../../background/js/mock_volume_manager.js';
-import {MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
@@ -63,6 +63,7 @@ export function testChangeDirectoryFromEmpty() {
     pathComponents: [],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -114,6 +115,7 @@ export function testChangeDirectoryTwice() {
     ],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -153,6 +155,7 @@ export function testChangeSelection() {
     ],
     content: {
       keys: [subDir.toURL(), file.toURL()],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [subDir.toURL()],
@@ -204,6 +207,7 @@ export function testChangeDirectoryContent() {
     ],
     content: {
       keys: [],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],
@@ -279,6 +283,7 @@ export function testComputeHasDlpDisabledFiles() {
     ],
     content: {
       keys: [subDir.toURL(), file.toURL()],
+      status: PropStatus.SUCCESS,
     },
     selection: {
       keys: [],

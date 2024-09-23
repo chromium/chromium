@@ -14,10 +14,10 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
 
 AppManagementShelfDelegate::AppManagementShelfDelegate(
-    AppManagementPageHandlerBase* page_handler,
+    AppManagementPageHandlerChromeOs* page_handler,
     Profile* profile)
     : page_handler_(page_handler),
       shelf_controller_helper_(

@@ -70,11 +70,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not QUIC, destination different from origin"/>
 </enum>
 
-<enum name="BodyConsumerBaseFetchCheckPoint">
-  <int value="0" label="BodyConsumerBase Constructor"/>
-  <int value="1" label="BodyConsumerBase::DidFetchDataLoadFailed"/>
-</enum>
-
 <enum name="BooleanBroken">
   <int value="0" label="Not Broken"/>
   <int value="1" label="Broken"/>
@@ -245,6 +240,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DnsHTTPAttempt"/>
 </enum>
 
+<!-- LINT.IfChange(DnsClientCapability) -->
+
+<enum name="DNS.DnsClientCapability">
+  <int value="0" label="Secure DNS disabled, insecure DNS disabled"/>
+  <int value="1" label="Secure DNS disabled, insecure DNS enabled"/>
+  <int value="2" label="Secure DNS enabled, insecure DNS disabled"/>
+  <int value="3" label="Secure DNS enabled, insecure DNS enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/net/dns/host_resolver_manager.cc:DnsClientCapability) -->
+
 <enum name="DNS.SvcbHttpsTransactionError">
   <int value="0" label="No transaction error"/>
   <int value="1" label="Insecure DNS transaction error (never task-fatal)"/>
@@ -315,6 +321,21 @@ chromium-metrics-reviews@google.com.
              nameserver"/>
 </enum>
 
+<enum name="DNS.WindowsReadSystemSettingsResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="ReadAdapterDnsAddressesFailed"/>
+  <int value="2" label="ReadPolicySearchListFailed"/>
+  <int value="3" label="ReadTcpipSearchListFailed"/>
+  <int value="4" label="ReadTcpipDomainFailed"/>
+  <int value="5" label="ReadPolicyDevolutionSettingFailed"/>
+  <int value="6" label="ReadDnscacheDevolutionSettingFailed"/>
+  <int value="7" label="ReadTcpipDevolutionSettingFailed"/>
+  <int value="8" label="ReadPolicyAppendToMultiLabelNameFailed"/>
+  <int value="9" label="ReadPrimaryDnsSuffixPathFailed"/>
+  <int value="10" label="GetNameServersFailed"/>
+  <int value="11" label="NoNameServerFound"/>
+</enum>
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>
@@ -337,13 +358,28 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="P-384"/>
   <int value="25" label="P-521"/>
   <int value="29" label="X25519"/>
+  <int value="4588" label="ML-KEM-768+X25519"/>
   <int value="16696" label="CECPQ2"/>
   <int value="25497" label="Kyber+X25519"/>
 </enum>
 
-<enum name="FetchManagerLoaderCheckPoint">
-  <int value="0" label="FetchManager::Loader Constructor"/>
-  <int value="1" label="FetchManager::Loader::Failed"/>
+<enum name="EcnPermutations">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not-ECT"/>
+  <int value="2" label="ECT(1)"/>
+  <int value="3" label="Not-ECT, ECT(1)"/>
+  <int value="4" label="ECT(0)"/>
+  <int value="5" label="Not-ECT, ECT(0)"/>
+  <int value="6" label="ECT(1), ECT(0)"/>
+  <int value="7" label="Not-ECT, ECT(1), ECT(0)"/>
+  <int value="8" label="CE"/>
+  <int value="9" label="Not-ECT, CE"/>
+  <int value="10" label="ECT(1), CE"/>
+  <int value="11" label="Not-ECT, ECT(1), CE"/>
+  <int value="12" label="ECT(0), CE"/>
+  <int value="13" label="Not-ECT, ECT(0), CE"/>
+  <int value="14" label="ECT(1), ECT(0), CE"/>
+  <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
 </enum>
 
 <enum name="Http2WireErrorCodes">
@@ -1865,21 +1901,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="64" label="SCHEME_QUIC"/>
 </enum>
 
-<enum name="PushedStreamVaryResponseHeaderValues">
-  <int value="0" label="There is no Vary header."/>
-  <int value="1" label="The value of Vary is empty."/>
-  <int value="2" label="The value of Vary is &quot;*&quot;."/>
-  <int value="3"
-      label="The value of Vary is &quot;accept-encoding&quot; (case
-             insensitive)."/>
-  <int value="4"
-      label="The value of Vary contains &quot;accept-encoding&quot; (case
-             insensitive) and some other field names as well."/>
-  <int value="5"
-      label="The value of Vary does not contain &quot;accept-encoding&quot;,
-             is not empty, and is not &quot;*&quot;."/>
-</enum>
-
 <enum name="QuicAddressMismatch">
   <int value="0" label="Address mismatch: IPv4 IPv4"/>
   <int value="1" label="Address mismatch: IPv6 IPv6"/>
@@ -2173,6 +2194,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="206" label="QUIC_INVALID_CHARACTER_IN_FIELD_VALUE"/>
 </enum>
 
+<enum name="QuicFindMatchingIpSessionResult">
+  <int value="0" label="MATCHING_IP_SESSION_FOUND"/>
+  <int value="1" label="CAN_POOL_BUT_DIFFERENT_IP"/>
+  <int value="2" label="CANNOT_POOL_WITH_EXISTING_SESSIONS"/>
+  <int value="3" label="POOLED_WITH_DIFFERENT_IP_SESSION"/>
+</enum>
+
 <enum name="QuicHandshakeFailureReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="BLACK_HOLE"/>
@@ -2236,14 +2264,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="NETWORK_DISCONNECTED"/>
   <int value="3" label="NETWORK_SOON_TO_DISCONNECT"/>
   <int value="4" label="NETWORK_IP_ADDRESS_CHANGED"/>
-</enum>
-
-<enum name="QuicProtocolErrorRetryStatus">
-  <int value="0" label="NoRetryExceededMaxRetries"/>
-  <int value="1" label="NoRetryHeaderReceived"/>
-  <int value="2" label="NoRetryNoAlternativeService"/>
-  <int value="3" label="RetryAltServiceBroken"/>
-  <int value="4" label="RetryAltServiceNotBroken"/>
 </enum>
 
 <enum name="QuicRstStreamErrorCodes">
@@ -2362,17 +2382,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="RESOLVE_SPECULATIVE_FAIL"/>
   <int value="4" label="RESOLVE_ABORT"/>
   <int value="5" label="RESOLVE_SPECULATIVE_ABORT"/>
-</enum>
-
-<enum name="RSAKeyUsage">
-  <int value="0" label="Not an RSA key"/>
-  <int value="1" label="OK (no extension)"/>
-  <int value="2" label="OK (both bits present)"/>
-  <int value="3" label="OK (digitalSignature present)"/>
-  <int value="4" label="OK (keyEncipherment present)"/>
-  <int value="5" label="Missing digitalSignature"/>
-  <int value="6" label="Missing keyEncipherment"/>
-  <int value="7" label="Error parsing certificate"/>
 </enum>
 
 <enum name="SCTOrigin">
@@ -2512,31 +2521,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="58" label="Total compressed HPACK data size exceeds limit."/>
 </enum>
 
-<enum name="SpdyPushedStreamFate">
-  <int value="0" label="TOO_MANY_PUSHED_STREAMS"/>
-  <int value="1" label="TIMEOUT"/>
-  <int value="2" label="PROMISED_STREAM_ID_PARITY_ERROR"/>
-  <int value="3" label="ASSOCIATED_STREAM_ID_PARITY_ERROR"/>
-  <int value="4" label="STREAM_ID_OUT_OF_ORDER"/>
-  <int value="5" label="GOING_AWAY"/>
-  <int value="6" label="INVALID_URL"/>
-  <int value="7" label="INACTIVE_ASSOCIATED_STREAM"/>
-  <int value="8" label="NON_HTTP_SCHEME_FROM_TRUSTED_PROXY"/>
-  <int value="9" label="NON_HTTPS_PUSHED_SCHEME"/>
-  <int value="10" label="NON_HTTPS_ASSOCIATED_SCHEME"/>
-  <int value="11" label="CERTIFICATE_MISMATCH"/>
-  <int value="12" label="DUPLICATE_URL"/>
-  <int value="13" label="CLIENT_REQUEST_NOT_RANGE"/>
-  <int value="14" label="PUSHED_REQUEST_NOT_RANGE"/>
-  <int value="15" label="RANGE_MISMATCH"/>
-  <int value="16" label="VARY_MISMATCH"/>
-  <int value="17" label="ACCEPTED_NO_VARY"/>
-  <int value="18" label="ACCEPTED_MATCHING_VARY"/>
-  <int value="19" label="PUSH_DISABLED"/>
-  <int value="20" label="ALREADY_IN_CACHE"/>
-  <int value="21" label="UNSUPPORTED_STATUS_CODE"/>
-</enum>
-
 <enum name="SpdySessionGet">
   <int value="0" label="created new"/>
   <int value="1" label="found existing"/>
@@ -2611,22 +2595,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="SSLKEYLOGFILE environment variable set"/>
 </enum>
 
-<enum name="SSLLegacyCryptoFallback">
-  <int value="0" label="No fallback used"/>
-  <int value="1" label="Used fallback and negotiated 3DES"/>
-  <int value="2" label="Used fallback and negotiated SHA-1"/>
-  <int value="3"
-      label="Used fallback and sent a certificate signed with
-             RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="4"
-      label="Used fallback, negotiated 3DES, and sent a certificate signed
-             with RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="5"
-      label="Used fallback, negotiated SHA-1, and sent a certificate signed
-             with RSASSA-PKCS1-v1_5-SHA-1"/>
-  <int value="6" label="Used fallback for unknown reason"/>
-</enum>
-
 <enum name="SSLNegotiatedAlpnProtocol">
   <int value="0" label="ALPN not used"/>
   <int value="1" label="HTTP/1.1 negotiated via ALPN"/>
@@ -2656,6 +2624,25 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Virtual"/>
   <int value="3" label="Both"/>
 </enum>
+
+<!-- LINT.IfChange(TrustTokenOperationStatus) -->
+
+<enum name="TrustTokenOperationStatus">
+  <int value="0" label="PST succeeded"/>
+  <int value="1" label="Invalid argument"/>
+  <int value="2" label="Missing issuer keys"/>
+  <int value="3" label="Failed precondition"/>
+  <int value="4" label="Resource exhausted"/>
+  <int value="5" label="PST already exists"/>
+  <int value="6" label="Resource limited"/>
+  <int value="7" label="PST unauthorized"/>
+  <int value="8" label="Bad response"/>
+  <int value="9" label="Internal error"/>
+  <int value="10" label="Unknown error"/>
+  <int value="11" label="Operation fulfilled locally"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>

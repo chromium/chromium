@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_array.h"
-#include "components/language/android/jni_headers/GeoLanguageProviderBridge_jni.h"
 #include "components/language/content/browser/geo_language_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/language/android/jni_headers/GeoLanguageProviderBridge_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;

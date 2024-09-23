@@ -20,41 +20,41 @@
     user-select: none;
   }
 
-  iron-icon {
+  cr-icon {
     height: var(--cr-icon-size);
     margin-bottom: 10px;
     width: var(--cr-icon-size);
   }
 
-  iron-icon.green {
+  cr-icon.green {
     --iron-icon-fill-color: var(--google-green-700);
   }
 
-  iron-icon.yellow {
+  cr-icon.yellow {
     --iron-icon-fill-color: var(--google-yellow-700);
   }
 
-  iron-icon.red {
+  cr-icon.red {
     --iron-icon-fill-color: var(--google-red-600);
   }
 
   @media (prefers-color-scheme: dark) {
-    iron-icon.green {
+    cr-icon.green {
       --iron-icon-fill-color: var(--google-green-300);
     }
 
-    iron-icon.yellow {
+    cr-icon.yellow {
       --iron-icon-fill-color: var(--google-yellow-300);
     }
 
-    iron-icon.red {
+    cr-icon.red {
       --iron-icon-fill-color: var(--google-red-300);
     }
   }
 </style>
 
-<iron-icon id="icon" icon$="[[getStatusIcon(data.state)]]"
+<cr-icon id="icon" icon$="[[getStatusIcon(data.state)]]"
     class$="[[getColorClass(data.state)]]">
-</iron-icon>
+</cr-icon>
 <div id="header">[[data.header]]</div>
 <div id="subheader" class="cr-secondary-text">[[data.subheader]]</div>

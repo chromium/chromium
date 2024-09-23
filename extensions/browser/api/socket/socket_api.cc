@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/socket/socket_api.h"
 
 #include <memory>
@@ -123,7 +128,8 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
   if (!net::HostStringIsLocalhost(address)) {
     net::IPEndPoint local_address;
     if (!socket->GetLocalAddress(&local_address)) {
-      NOTREACHED() << "Cannot get address of recently bound socket.";
+      NOTREACHED_IN_MIGRATION()
+          << "Cannot get address of recently bound socket.";
       Respond(ErrorWithCode(-1, kFirewallFailure));
       return;
     }
@@ -285,7 +291,7 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
       break;
     }
     case extensions::api::socket::SocketType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return RespondNow(NoArguments());
   }
 
@@ -341,7 +347,7 @@ ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
       operation_type = SocketPermissionRequest::UDP_SEND_TO;
       break;
     default:
-      NOTREACHED() << "Unknown socket type.";
+      NOTREACHED_IN_MIGRATION() << "Unknown socket type.";
       operation_type = SocketPermissionRequest::NONE;
       break;
   }
@@ -739,8 +745,9 @@ ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
                            kSocketNotFoundError));
   }
   int delay = 0;
-  if (params->delay)
+  if (params->delay) {
     delay = *params->delay;
+  }
   socket->SetKeepAlive(
       params->enable, delay,
       base::BindOnce(&SocketSetKeepAliveFunction::OnCompleted, this));
@@ -791,10 +798,11 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   api::socket::SocketInfo info;
   // This represents what we know about the socket, and does not call through
   // to the system.
-  if (socket->GetSocketType() == Socket::TYPE_TCP)
+  if (socket->GetSocketType() == Socket::TYPE_TCP) {
     info.socket_type = extensions::api::socket::SocketType::kTcp;
-  else
+  } else {
     info.socket_type = extensions::api::socket::SocketType::kUdp;
+  }
   info.connected = socket->IsConnected();
 
   // Grab the peer address as known by the OS. This and the call below will

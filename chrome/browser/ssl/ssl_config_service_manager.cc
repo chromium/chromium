@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -91,7 +92,7 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
     const std::vector<std::string>& patterns) {
   std::vector<std::string> out;
   out.reserve(patterns.size());
-  for (base::StringPiece pattern : patterns) {
+  for (std::string_view pattern : patterns) {
     std::string canon_pattern;
     url::Component canon_component;
     url::StdStringCanonOutput canon_output(&canon_pattern);
@@ -128,13 +129,13 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
   post_quantum_enabled_.Init(prefs::kPostQuantumKeyAgreementEnabled,
                              local_state, local_state_callback);
+#if BUILDFLAG(IS_CHROMEOS)
+  device_post_quantum_enabled_.Init(
+      prefs::kDevicePostQuantumKeyAgreementEnabled, local_state,
+      local_state_callback);
+#endif
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
-  insecure_hash_enabled_.Init(prefs::kInsecureHashesInTLSHandshakesEnabled,
-                              local_state, local_state_callback);
-  rsa_key_usage_for_local_anchors_enabled_.Init(
-      prefs::kRSAKeyUsageForLocalAnchorsEnabled, local_state,
-      local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -164,11 +165,11 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   // Default value for these prefs don't matter since they are only used when
   // managed.
-  registry->RegisterBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled,
-                                false);
   registry->RegisterBooleanPref(prefs::kPostQuantumKeyAgreementEnabled, false);
-  registry->RegisterBooleanPref(prefs::kRSAKeyUsageForLocalAnchorsEnabled,
-                                false);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled,
+                                true);
+#endif
 }
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
@@ -232,31 +233,19 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 
   config->ech_enabled = ech_enabled_.GetValue();
 
+  config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   if (post_quantum_enabled_.IsManaged()) {
     config->post_quantum_override = post_quantum_enabled_.GetValue()
                                         ? network::mojom::OptionalBool::kTrue
                                         : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   }
-
-  if (insecure_hash_enabled_.IsManaged()) {
-    config->insecure_hash_override = insecure_hash_enabled_.GetValue()
-                                         ? network::mojom::OptionalBool::kTrue
-                                         : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->insecure_hash_override = network::mojom::OptionalBool::kUnset;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (device_post_quantum_enabled_.IsManaged()) {
+    config->post_quantum_override = device_post_quantum_enabled_.GetValue()
+                                        ? network::mojom::OptionalBool::kTrue
+                                        : network::mojom::OptionalBool::kFalse;
   }
-
-  if (rsa_key_usage_for_local_anchors_enabled_.IsManaged()) {
-    config->rsa_key_usage_for_local_anchors_override =
-        rsa_key_usage_for_local_anchors_enabled_.GetValue()
-            ? network::mojom::OptionalBool::kTrue
-            : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->rsa_key_usage_for_local_anchors_override =
-        network::mojom::OptionalBool::kUnset;
-  }
+#endif
 
   return config;
 }

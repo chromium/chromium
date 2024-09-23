@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
@@ -20,7 +19,7 @@ namespace {
 // PlatformEventSource singleton is thread local so that different instances
 // can be used on different threads (e.g. browser thread should be able to
 // access PlatformEventSource owned by the UI Service's thread).
-ABSL_CONST_INIT thread_local PlatformEventSource* event_source = nullptr;
+constinit thread_local PlatformEventSource* event_source = nullptr;
 
 }  // namespace
 
@@ -33,6 +32,9 @@ PlatformEventSource::PlatformEventSource()
 
 PlatformEventSource::~PlatformEventSource() {
   CHECK_EQ(this, event_source);
+  for (PlatformEventObserver& observer : observers_) {
+    observer.PlatformEventSourceDestroying();
+  }
 }
 
 PlatformEventSource* PlatformEventSource::GetInstance() {

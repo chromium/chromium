@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -18,7 +17,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -43,13 +41,14 @@ class ChromePingManagerFactoryTest : public testing::Test {
                                               bool is_signed_in,
                                               bool expect_should_fetch);
   TestingProfile* SetUpProfile(bool is_enhanced_protection, bool is_signed_in);
+  bool ShouldSendPersistedReport(Profile* profile);
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
-  base::test::ScopedFeatureList feature_list_;
+  ChromePingManagerAllowerForTesting allow_ping_manager_;
 };
 
 void ChromePingManagerFactoryTest::SetUp() {
@@ -70,8 +69,6 @@ void ChromePingManagerFactoryTest::TearDown() {
     TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
   }
-
-  feature_list_.Reset();
 }
 
 TestingProfile* ChromePingManagerFactoryTest::SetUpProfile(
@@ -136,6 +133,10 @@ void ChromePingManagerFactoryTest::RunReportThreatDetailsTest() {
             PingManager::ReportThreatDetailsResult::SUCCESS);
 }
 
+bool ChromePingManagerFactoryTest::ShouldSendPersistedReport(Profile* profile) {
+  return ChromePingManagerFactory::ShouldSendPersistedReport(profile);
+}
+
 TEST_F(ChromePingManagerFactoryTest, ReportThreatDetails) {
   RunReportThreatDetailsTest();
 }
@@ -156,6 +157,28 @@ TEST_F(ChromePingManagerFactoryTest,
                                          /*is_signed_in=*/true,
                                          /*expect_should_fetch=*/false);
 }
+
+TEST_F(ChromePingManagerFactoryTest, ShouldSendPersistedReport_Yes) {
+  TestingProfile* profile =
+      SetUpProfile(/*is_enhanced_protection=*/true, /*is_signed_in=*/false);
+  EXPECT_EQ(ShouldSendPersistedReport(profile), true);
+}
+
+TEST_F(ChromePingManagerFactoryTest,
+       ShouldSendPersistedReport_NotEnhancedProtection) {
+  TestingProfile* profile =
+      SetUpProfile(/*is_enhanced_protection=*/false, /*is_signed_in=*/false);
+  EXPECT_EQ(ShouldSendPersistedReport(profile), false);
+}
+
+TEST_F(ChromePingManagerFactoryTest, ShouldSendPersistedReport_Incognito) {
+  TestingProfile* profile =
+      SetUpProfile(/*is_enhanced_protection=*/true, /*is_signed_in=*/false);
+  EXPECT_EQ(ShouldSendPersistedReport(
+                TestingProfile::Builder().BuildIncognito(profile)),
+            false);
+}
+
 TEST_F(ChromePingManagerFactoryTest, NoPingManagerForIncognito) {
   TestingProfile* profile = TestingProfile::Builder().BuildIncognito(
       profile_manager_->CreateTestingProfile("testing_profile"));

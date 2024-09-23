@@ -47,6 +47,9 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       const std::string& mime_type,
       base::OnceCallback<void()> edit_in_photos_callback) override;
+  void SubmitForm(const GURL& url,
+                  const std::vector<int8_t>& payload,
+                  const std::string& header) override;
 
  private:
   void IsFileArcWritableImpl(

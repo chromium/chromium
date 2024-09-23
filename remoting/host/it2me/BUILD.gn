@@ -33,7 +33,7 @@ source_set("helpers") {
   deps = [
     ":constants",
     "//base",
-    "//remoting/base",
+    "//remoting/base:name_value_map",
   ]
 }
 
@@ -50,7 +50,7 @@ source_set("common") {
     "reconnect_params.h",
   ]
 
-  deps = []
+  deps = [ "//remoting/base:session_policies" ]
 
   if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -42,9 +44,27 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/strings/grit/ui_strings.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/feature_list.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#endif
 
 namespace {
 const int kAvatarSize = 100;
+constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
+
+bool UseMultiscreen() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+             profile_management::features::kOidcAuthProfileManagement) ||
+         base::FeatureList::IsEnabled(
+             features::kEnterpriseUpdatedProfileCreationScreen);
+#endif
+}
 
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
@@ -81,28 +101,54 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     const AccountInfo& account_info,
-    signin::SigninChoiceCallback proceed_callback)
+    signin::SigninChoiceCallbackVariant process_user_choice_callback,
+    base::OnceClosure done_callback)
     : browser_(browser),
       type_(type),
       profile_creation_required_by_policy_(profile_creation_required_by_policy),
 #if !BUILDFLAG(IS_CHROMEOS)
       show_link_data_option_(show_link_data_option),
 #endif
-      email_(base::UTF8ToUTF16(account_info.email)),
-      domain_name_(gaia::ExtractDomainName(account_info.email)),
+      email_(type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+                 ? std::u16string()
+                 : base::UTF8ToUTF16(account_info.email)),
+      domain_name_(
+          type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
+              ? std::string()
+              : gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
-      proceed_callback_(std::move(proceed_callback)) {
-  DCHECK(proceed_callback_);
-  DCHECK(
-      browser_ ||
-      type_ !=
-          ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
+      done_callback_(std::move(done_callback)) {
+  if (std::holds_alternative<signin::SigninChoiceWithConfirmationCallback>(
+          process_user_choice_callback)) {
+    process_user_choice_with_confirmation_callback_ =
+        std::move(std::get<signin::SigninChoiceWithConfirmationCallback>(
+            process_user_choice_callback));
+    CHECK(process_user_choice_with_confirmation_callback_);
+  }
+  if (std::holds_alternative<signin::SigninChoiceCallback>(
+          process_user_choice_callback)) {
+    CHECK(std::get<signin::SigninChoiceCallback>(process_user_choice_callback));
+    process_user_choice_with_confirmation_callback_ = base::BindOnce(
+        [](signin::SigninChoiceCallback callback, signin::SigninChoice choice,
+           signin::SigninChoiceOperationDoneCallback done) {
+          std::move(callback).Run(choice);
+          std::move(done).Run(
+              signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+        },
+        std::move(std::get<signin::SigninChoiceCallback>(
+            process_user_choice_callback)));
+  }
+  CHECK(browser_ ||
+        type_ !=
+            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
   BrowserList::AddObserver(this);
 }
 
 ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
   BrowserList::RemoveObserver(this);
-  HandleCancel(base::Value::List());
+  if (!canceling_) {
+    HandleCancel(base::Value::List());
+  }
 }
 
 void ManagedUserProfileNoticeHandler::RegisterMessages() {
@@ -188,19 +234,80 @@ void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
 
 void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::Value::List& args) {
-  CHECK_EQ(1u, args.size());
-  if (proceed_callback_) {
-    bool use_existing_profile = args[0].GetIfBool().value_or(false);
-    std::move(proceed_callback_)
-        .Run(use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
-                                  : signin::SIGNIN_CHOICE_NEW_PROFILE);
+  CHECK_EQ(2u, args.size());
+  AllowJavascript();
+  bool use_existing_profile = args[1].GetIfBool().value_or(false);
+  auto result = use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
+                                     : signin::SIGNIN_CHOICE_NEW_PROFILE;
+
+  int state = args[0].GetIfInt().value_or(0);
+  CHECK_NE(state, ManagedUserProfileNoticeHandler::State::kProcessing)
+      << "User should not be able to click the proceed button while processing";
+  if (state == ManagedUserProfileNoticeHandler::State::kValueProposition &&
+      IsJavascriptAllowed()) {
+    FireWebUIListener("on-state-changed",
+                      ManagedUserProfileNoticeHandler::State::kDisclosure);
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (show_link_data_option_ &&
+      state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
+      IsJavascriptAllowed() && UseMultiscreen()) {
+    FireWebUIListener(
+        "on-state-changed",
+        ManagedUserProfileNoticeHandler::State::kUserDataHandling);
+    return;
+  }
+#endif
+  if (process_user_choice_with_confirmation_callback_ &&
+      state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
+      IsJavascriptAllowed()) {
+    if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+      processing_timer_.Start(
+          FROM_HERE, kLongProcessingThreshold,
+          base::BindOnce(&ManagedUserProfileNoticeHandler::OnLongProcessingTime,
+                         base::Unretained(this)));
+    }
+
+    FireWebUIListener("on-state-changed",
+                      ManagedUserProfileNoticeHandler::State::kProcessing);
+  }
+
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(result, base::BindOnce(
+                         &ManagedUserProfileNoticeHandler::OnUserChoiceHandled,
+                         weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  if (done_callback_) {
+    DisallowJavascript();
+    std::move(done_callback_).Run();
   }
 }
 
 void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
-  if (proceed_callback_)
-    std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
+  canceling_ = true;
+  // Move the `done_callback_` here to avoid it being potentially destroyed
+  // by `process_user_choice_with_confirmation_callback_` since it may destroy
+  // `this`.
+  if (IsJavascriptAllowed()) {
+    DisallowJavascript();
+  }
+  auto done_callback = std::move(done_callback_);
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+  }
+  if (done_callback) {
+    std::move(done_callback).Run();
+  }
+}
+
+void ManagedUserProfileNoticeHandler::OnLongProcessingTime() {
+  FireWebUIListener("on-long-processing");
 }
 
 void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
@@ -278,8 +385,9 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   std::string title =
       l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   std::string subtitle;
+  std::string email;
+  std::string account_name;
   std::string enterprise_info;
-  bool show_cancel_button = true;
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
@@ -305,12 +413,27 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
           l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
+      title =
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE);
+      dict.Set("showEnterpriseBadge", true);
+      subtitle = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_ACCOUNT_MANAGED);
+      enterprise_info = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
+      dict.Set("proceedLabel",
+               l10n_util::GetStringUTF8(
+                   profile_creation_required_by_policy_
+                       ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
+                       : IDS_APP_CONTINUE));
+      break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
               : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
-      dict.Set("showEnterpriseBadge", false);
+      dict.Set("showEnterpriseBadge",
+               !enterprise_util::IsKnownConsumerDomain(domain_name_));
       subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
                                                  entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
@@ -319,7 +442,18 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                l10n_util::GetStringUTF8(
                    profile_creation_required_by_policy_
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
-                       : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+                       : IDS_APP_CONTINUE));
+
+      AccountInfo account_info =
+          IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+              ->FindExtendedAccountInfoByAccountId(account_id_);
+      CHECK(!account_info.IsEmpty());
+      dict.Set("continueAs", l10n_util::GetStringFUTF8(
+                                 IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
+                                 base::UTF8ToUTF16(account_info.given_name)));
+      dict.Set("email", base::UTF16ToUTF8(email_));
+      dict.Set("accountName", account_info.full_name);
+
 #if !BUILDFLAG(IS_CHROMEOS)
       // We apply the checkLinkDataCheckboxByDefault to true value only if the
       // link data checkbox is visible and the policy
@@ -343,7 +477,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   dict.Set("title", title);
   dict.Set("subtitle", subtitle);
   dict.Set("enterpriseInfo", enterprise_info);
-  dict.Set("showCancelButton", show_cancel_button);
 
   return dict;
 }
@@ -370,6 +503,9 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
                ? ui::ResourceBundle::GetSharedInstance().GetImageNamed(
                      profiles::GetPlaceholderAvatarIconResourceID())
                : account_info.account_image;
+  } else if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+    icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
   }
 
   const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
@@ -387,6 +523,47 @@ ManagedUserProfileNoticeHandler::GetTypeForTesting() {
 
 void ManagedUserProfileNoticeHandler::CallProceedCallbackForTesting(
     signin::SigninChoice choice) {
-  if (proceed_callback_)
-    std::move(proceed_callback_).Run(choice);
+  if (process_user_choice_with_confirmation_callback_) {
+    std::move(process_user_choice_with_confirmation_callback_)
+        .Run(choice, base::BindOnce(
+                         &ManagedUserProfileNoticeHandler::OnUserChoiceHandled,
+                         weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
+    signin::SigninChoiceOperationResult result) {
+  if (!UseMultiscreen() && done_callback_) {
+    DisallowJavascript();
+    std::move(done_callback_).Run();
+    return;
+  }
+
+  if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+    processing_timer_.Stop();
+  }
+
+  switch (result) {
+    case signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT:
+      FireWebUIListener("on-state-changed",
+                        ManagedUserProfileNoticeHandler::State::kTimeout);
+      break;
+
+    case signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS:
+      if (done_callback_) {
+        DisallowJavascript();
+        std::move(done_callback_).Run();
+      }
+      break;
+
+    case signin::SigninChoiceOperationResult::SIGNIN_ERROR:
+      FireWebUIListener("on-state-changed",
+                        ManagedUserProfileNoticeHandler::State::kError);
+      break;
+
+    case signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS:
+      FireWebUIListener("on-state-changed",
+                        ManagedUserProfileNoticeHandler::State::kSuccess);
+      break;
+  }
 }

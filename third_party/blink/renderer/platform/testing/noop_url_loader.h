@@ -41,7 +41,7 @@ class NoopURLLoader final : public URLLoader {
 
   void Freeze(LoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {

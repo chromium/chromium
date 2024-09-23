@@ -686,7 +686,7 @@ class GTestLogParser(object):
                                           output_disabled_tests,
                                           host_test_file_path=None):
     try:
-      # TODO(crbug.com/1091345): Read the file when running on device.
+      # TODO(crbug.com/40134137): Read the file when running on device.
       # Parse compiled test file first. If output_disabled_tests is true,
       # then include disabled tests in the test results.
       if host_test_file_path is None:

@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -26,8 +27,7 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
   GeolocationSwitchInteractiveTest()
       : https_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {
-    scoped_features_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+    scoped_features_.InitWithFeatures({ash::features::kCrosPrivacyHub}, {});
   }
 
   GeolocationSwitchInteractiveTest(const GeolocationSwitchInteractiveTest&) =
@@ -84,12 +84,8 @@ class GeolocationSwitchInteractiveTest : public InteractiveBrowserTest {
           CheckJsResult(kWebContentsElementId, "geoStartWithSyncResponse",
                         "requested"),
           WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId)
-          // We need to call `FlushEvents` here before `PressButton` because a
-          // `view_` variable in PermissionRequestManager is not yet
-          // initialized.
-          ,
-          FlushEvents(),
+          WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
+
           PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
           WaitForHide(PermissionPromptBubbleBaseView::kMainViewId));
     } else {

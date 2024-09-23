@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <algorithm>
 #include <vector>
 
 void IteratorUsedAfterErase(std::vector<int>& v) {
@@ -28,4 +29,11 @@ void IteratorUsedAfterPushBack(std::vector<int>& v) {
   }
   // Invalid because we might have entered the condition block.
   ++it;
+}
+
+void IteratorsMismatched(std::vector<int>& v1, std::vector<int>& v2) {
+  auto it = std::find(std::begin(v1), std::end(v1), 3);
+
+  // Invalid because mismatched iterators.
+  v2.erase(it);
 }

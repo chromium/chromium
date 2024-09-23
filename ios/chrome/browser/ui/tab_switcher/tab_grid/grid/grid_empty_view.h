@@ -10,10 +10,15 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 // Protocol defining the interface of the view displayed when the grid is empty.
-@protocol GridEmptyView <TabGridPaging>
+@protocol GridEmptyView
 
 // Insets of the inner ScrollView.
 @property(nonatomic, assign) UIEdgeInsets scrollViewContentInsets;
+// Active page of the tab grid. The active page is the page that
+// contains the most recent active tab.
+@property(nonatomic, assign) TabGridPage activePage;
+// The current mode of the empty grid.
+@property(nonatomic, assign) TabGridMode tabGridMode;
 
 @end
 

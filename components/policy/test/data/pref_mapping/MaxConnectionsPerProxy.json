@@ -15,7 +15,8 @@
         },
         "prefs": {
           "net.max_connections_per_proxy": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 16
           }
         }
       }

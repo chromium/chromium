@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Basic NodePart parsing
+  assert_equals: There should be one NodePart expected 1 but got 0
+[FAIL] Basic AttributePart parsing with multiple attributes
+  assert_equals: Declarative AttributePart should be present: lengths differ expected 2 but got 0
+Harness: the test ran to completion.
+

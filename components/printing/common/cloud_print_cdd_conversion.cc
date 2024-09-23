@@ -41,7 +41,7 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
     case printing::mojom::DuplexMode::kShortEdge:
       return printer::DuplexType::SHORT_EDGE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return printer::DuplexType::NO_DUPLEX;
 }
@@ -59,7 +59,7 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
     case printing::AdvancedCapability::Type::kString:
       return printer::TypedValueVendorCapability::ValueType::STRING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return printer::TypedValueVendorCapability::ValueType::STRING;
 }

@@ -9,7 +9,7 @@ module media.mojom;
 // file.
 struct AudioProcessingStats {
 
-  // TODO(https://crbug.com/657632): Numeric values cannot be optional, so add
+  // TODO(crbug.com/40489779): Numeric values cannot be optional, so add
   // flags for each of them.
   bool has_echo_return_loss;
   double echo_return_loss;

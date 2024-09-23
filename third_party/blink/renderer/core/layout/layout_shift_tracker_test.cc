@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -48,9 +53,8 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
     </style>
     <div id='j'></div>
   )HTML");
-  GetDocument()
-      .getElementById(AtomicString("j"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
+  GetElementById("j")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("top: 60px"));
   SimulateInput();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.0, GetLayoutShiftTracker().Score());
@@ -80,14 +84,11 @@ TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
     </div>
   )HTML");
 
-  GetDocument()
-      .getElementById(AtomicString("B"))
-      ->setAttribute(html_names::kClassAttr, AtomicString("tr"));
+  GetElementById("B")->setAttribute(html_names::kClassAttr, AtomicString("tr"));
   GetFrameView().UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  GetDocument()
-      .getElementById(AtomicString("A"))
-      ->setAttribute(html_names::kClassAttr, AtomicString("hide"));
+  GetElementById("A")->setAttribute(html_names::kClassAttr,
+                                    AtomicString("hide"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -116,14 +117,12 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
       <option value="1">1</option>
     </select>
   )HTML");
-  auto* select =
-      To<HTMLSelectElement>(GetDocument().getElementById(AtomicString("sel")));
+  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
   DCHECK(select);
   select->Focus();
   select->SelectOptionByPopup(1);
-  GetDocument()
-      .getElementById(AtomicString("j"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
+  GetElementById("j")->setAttribute(html_names::kStyleAttr,
+                                    AtomicString("top: 60px"));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -332,6 +331,7 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
+      /*has_ua_visual_transition,=*/false,
       /*soft_navigation_heuristics_task_id=*/std::nullopt);
 
   Compositor().BeginFrame();
@@ -858,7 +858,7 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
     <div id=outer><div id=inner></div></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("outer"));
+  Element* element = GetElementById("outer");
   size_t state = 0;
   auto advance = [this, element, &state]() -> bool {
     //
@@ -920,7 +920,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
     <div id="drop" style="display: none"></div>
   )HTML");
 
-  Element* drop = GetDocument().getElementById(AtomicString("drop"));
+  Element* drop = GetElementById("drop");
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
 
@@ -929,7 +929,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  Element* comp = GetDocument().getElementById(AtomicString("comp"));
+  Element* comp = GetElementById("comp");
   comp->setAttribute(html_names::kClassAttr, AtomicString("sh"));
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -1164,9 +1164,8 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
             GetDocument().View()->LayoutViewport()->VisibleContentRect());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 100px"));
+  GetElementById("target")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("top: 100px"));
   UpdateAllLifecyclePhasesForTest();
   // 50.0: visible width
   // 100.0 + 100.0: visible height + vertical shift
@@ -1197,7 +1196,7 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
     <div class=big></div>
     <div class=big></div>
   )HTML");
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
 
   // Scroll the window which accumulates a scroll in the layout shift tracker.
   GetDocument().domWindow()->scrollBy(0, 1000);
@@ -1347,15 +1346,13 @@ TEST_F(LayoutShiftTrackerTest, AnimatingTransformCreatesLayoutShiftRoot) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  GetDocument()
-      .getElementById(AtomicString("animation"))
+  GetElementById("animation")
       ->setAttribute(html_names::kStyleAttr, AtomicString("top: 400px"));
   // `animation` creates a layout shift root, so `child`'s shift doesn't
   // include the shift of `animation`. The 2px shift is below the threshold of
   // reporting a layout shift.
-  GetDocument()
-      .getElementById(AtomicString("child"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 2px"));
+  GetElementById("child")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("top: 2px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

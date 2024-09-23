@@ -29,6 +29,7 @@ const char kMimeTypeWindowDrag[] = "chromium/x-window-drag";
 const char kMimeTypeLinuxUtf8String[] = "UTF8_STRING";
 const char kMimeTypeLinuxString[] = "STRING";
 const char kMimeTypeLinuxText[] = "TEXT";
+const char kMimeTypeLinuxSourceUrl[] = "chromium/x-source-url";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
 
@@ -39,7 +40,7 @@ const char kMimeTypeDataTransferEndpoint[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_APPLE)
-const char kMimeTypeWebCustomData[] = "chromium/x-web-custom-data";
+const char kMimeTypeDataTransferCustomData[] = "chromium/x-web-custom-data";
 const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
 #endif  // BUILDFLAG(IS_APPLE)
 

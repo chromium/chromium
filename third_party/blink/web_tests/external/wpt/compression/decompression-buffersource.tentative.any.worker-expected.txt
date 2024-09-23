@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] chunk of type Float16Array should work for deflate
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+[FAIL] chunk of type Float16Array should work for gzip
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+[FAIL] chunk of type Float16Array should work for deflate-raw
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+Harness: the test ran to completion.
+

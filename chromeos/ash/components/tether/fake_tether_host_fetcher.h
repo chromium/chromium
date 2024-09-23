@@ -7,44 +7,25 @@
 
 #include <vector>
 
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // Test double for TetherHostFetcher.
 class FakeTetherHostFetcher : public TetherHostFetcher {
  public:
   explicit FakeTetherHostFetcher(
-      const multidevice::RemoteDeviceRefList& tether_hosts);
-  FakeTetherHostFetcher();
+      std::optional<multidevice::RemoteDeviceRef> tether_host);
 
   FakeTetherHostFetcher(const FakeTetherHostFetcher&) = delete;
   FakeTetherHostFetcher& operator=(const FakeTetherHostFetcher&) = delete;
 
   ~FakeTetherHostFetcher() override;
 
-  void set_tether_hosts(const multidevice::RemoteDeviceRefList& tether_hosts) {
-    tether_hosts_ = tether_hosts;
-  }
-
-  void NotifyTetherHostsUpdated();
-
-  // TetherHostFetcher:
-  bool HasSyncedTetherHosts() override;
-  void FetchAllTetherHosts(
-      TetherHostFetcher::TetherHostListCallback callback) override;
-  void FetchTetherHost(const std::string& device_id,
-                       TetherHostFetcher::TetherHostCallback callback) override;
-
- private:
-  multidevice::RemoteDeviceRefList tether_hosts_;
+  void SetTetherHost(
+      const std::optional<multidevice::RemoteDeviceRef> tether_host);
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_TETHER_HOST_FETCHER_H_

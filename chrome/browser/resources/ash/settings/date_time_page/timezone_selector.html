@@ -3,8 +3,7 @@
     --md-select-width: 425px;
   }
   /* When per_user_timezone_enabled is true, dropdowns are start-aligned. */
-  #userTimeZoneSelector,
-  #systemTimezoneSelector {
+  #userTimeZoneSelector {
     --settings-dropdown-menu-policy-order: 1;
   }
 </style>
@@ -23,16 +22,8 @@
         pref="{{prefs.settings.timezone}}"
         label="$i18n{timeZone}"
         menu-options="[[timeZoneList_]]"
-        hidden="[[isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
-            prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
-        disabled="[[shouldDisableTimeZoneGeoSelector]]">
-    </settings-dropdown-menu>
-    <settings-dropdown-menu id="systemTimezoneSelector"
-        pref="{{prefs.cros.system.timezone}}"
-        label="$i18n{timeZone}"
-        menu-options="[[timeZoneList_]]"
-        hidden="[[!isUserTimeZoneSelectorHidden_(prefs.settings.timezone,
-            prefs.generated.resolve_timezone_by_geolocation_on_off.value)]]"
-        disabled>
+        disabled="[[shouldDisableUserTimezoneSelector_(
+          prefs.generated.resolve_timezone_by_geolocation_on_off.value,
+          shouldDisableTimeZoneGeoSelector)]]">
     </settings-dropdown-menu>
 </template>

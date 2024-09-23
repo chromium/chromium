@@ -32,15 +32,18 @@ extern const char kTranslateCompactInfobarEvent[];
 // server provided Content-Language matches to a language the model determined.
 // This enum is used for recording metrics. This enum should remain synchronized
 // with the enum "TranslateLanguageVerification" in enums.xml.
-enum LanguageVerificationType {
-  DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED,  // obsolete
-  LANGUAGE_VERIFICATION_MODEL_ONLY,
-  LANGUAGE_VERIFICATION_MODEL_UNKNOWN,
-  LANGUAGE_VERIFICATION_MODEL_AGREES,
-  LANGUAGE_VERIFICATION_MODEL_DISAGREES,
-  LANGUAGE_VERIFICATION_MODEL_OVERRIDES,
-  LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY,
-  LANGUAGE_VERIFICATION_MAX,
+enum class LanguageVerificationType {
+  // kModelDisabled = 0, -- obsolete
+  kModelOnly = 1,
+  kModelUnknown = 2,
+  kModelAgrees = 3,
+  kModelDisagrees = 4,
+  kModelOverrides = 5,
+  kModelComplementsCountry = 6,
+  kNoPageContent = 7,
+  kModelNotAvailable = 8,
+  kModelHistogramBoundary = 9,
+  kMaxValue = kModelHistogramBoundary,
 };
 
 // Enum for the Translate.CompactInfobar.Event UMA histogram.

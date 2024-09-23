@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+static_library("system_log") {
+  sources = [
+    "system_log_api.cc",
+    "system_log_api.h",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//chromeos/components/mgs",
+    "//chromeos/crosapi/mojom",
+    "//components/device_event_log",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/settings",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "system_log_apitest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/feedback:feedback_impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/device_event_log",
+    "//components/feedback",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser/api/test",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/core:test_support",
+      "//chrome/browser/ash/policy/test_support",
+      "//chromeos/ash/components/browser_context_helper",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}

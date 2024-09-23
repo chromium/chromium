@@ -33,9 +33,11 @@ class Address : public FormGroup {
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& locale,
-                        FieldTypeSet* matching_types) const override;
+  void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& locale,
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const override;
 
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting
@@ -56,6 +58,10 @@ class Address : public FormGroup {
 
   // For structured addresses, returns true if |this| is mergeable with |newer|.
   bool IsStructuredAddressMergeable(const Address& newer) const;
+  // Like `IsStructuredAddressMergeable()`, but only for the subtree
+  // corresponding to `type`.
+  bool IsStructuredAddressMergeableForType(FieldType type,
+                                           const Address& other) const;
 
   // Returns a constant reference to the structured address' root node (i.e.
   // ADDRESS_HOME_ADDRESS) from the nodes store.
@@ -68,7 +74,10 @@ class Address : public FormGroup {
   bool IsLegacyAddress() const { return is_legacy_address_; }
 
   // Returns true if the given `field_type` is part of Autofill's address
-  // model for `GetAddressCountryCode()` and is accessible via settings.
+  // model for `GetAddressCountryCode()` and is accessible via settings. Note
+  // that a field can also be settings accessible via a different field that is
+  // at a higher level in the address hierarchy tree. The function returns true
+  // in this case as well.
   bool IsAddressFieldSettingAccessible(FieldType field_type) const;
 
  private:

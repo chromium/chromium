@@ -1,30 +1,42 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip RetryOnFailure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
-# separately from other Web Tests. The WebGPU reftests use this expectations
-# file. Note, non-ref tests use a different expectations file:
-# //third_party/dawn/webgpu-cts/expectations.txt
+# separately from other Web Tests. The WebGPU tests in blink/web_tests (both
+# reftests from WebGPU CTS, and Chromium-specific tests) use this expectations
+# file. Note, *non-reftest* WebGPU CTS tests use a different harness with a
+# different expectations file: //third_party/dawn/webgpu-cts/expectations.txt
 
 # Workaround page loaded when content_shell starts, but not run as a test.
 crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.https.html [ Skip ]
 
-# STORAGE_BINDING is only support on WIN.
+# STORAGE_BINDING is only supported on Windows.
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
 
-# SharedImageBackingFactoryIOSurface takes rgba8unorm as bgra8unorm.
-# https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image_backing_factory_iosurface.mm;l=217?q=SharedImageBackingFactoryIOSurface::CreateSharedImage&ss=chromium%2Fchromium%2Fsrc
+# IOSurfaceImageBackingFactory::CreateSharedImage overrides rgba8unorm to bgra8unorm.
+# https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.mm;l=284;drc=72e88ec372c13cf0b6ee0a76fb639e2998399746
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
+
+# Mac gets invalid texture errors in SwiftShader.
+# Also, with a native GPU, sometimes R & B channels are incorrectly swapped in
+# texture readback. (Canvas readback does not exhibit this issue.)
+crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
+crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
+
+# Linux does not yet properly support readback on shared images.
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.worker.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.worker.html [ Skip ]
 
 # Test fails due to scaling precision issues
 crbug.com/1515185 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]
-
-# Reference test didn't generate pixel results
-crbug.com/1515749 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba16float_premultiplied_copy.https.html [ Failure ]
 
 # Linux/Nvidia times out for colorspace tests
 crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Skip ]
@@ -38,6 +50,3 @@ crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
-
-# "reference test didn't generate pixel results"
-crbug.com/324436420 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba16float_premultiplied_draw.https.html [ Failure ]

@@ -128,6 +128,9 @@ public interface SelectionPopupController {
     /** Sets the given {@link SelectionClient} in the selection popup controller. */
     void setSelectionClient(SelectionClient selectionClient);
 
+    /** Returns the {@link SelectionClient} in the selection popup controller. */
+    public SelectionClient getSelectionClient();
+
     /** Sets TextClassifier for Smart Text selection. */
     void setTextClassifier(TextClassifier textClassifier);
 

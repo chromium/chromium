@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "components/version_info/version_info.h"
 
@@ -57,6 +58,26 @@ bool AuthFactorCommonMetadata::operator==(
           other.chrome_version_last_updated_) &&
          (this->chromeos_version_last_updated_ ==
           other.chromeos_version_last_updated_);
+}
+
+// =============== `Factor-specific Status` ===============
+PinStatus::PinStatus() : available_at_(base::Time::Now()) {}
+
+PinStatus::PinStatus(base::TimeDelta available_in)
+    : available_at_(base::Time::Now() + available_in) {}
+
+PinStatus::PinStatus(PinStatus&&) noexcept = default;
+PinStatus& PinStatus::operator=(PinStatus&&) noexcept = default;
+PinStatus::PinStatus(const PinStatus&) = default;
+PinStatus& PinStatus::operator=(const PinStatus&) = default;
+PinStatus::~PinStatus() = default;
+
+bool PinStatus::IsLockedFactor() const {
+  return base::Time::Now() < available_at_;
+}
+
+base::Time PinStatus::AvailableAt() const {
+  return available_at_;
 }
 
 // =============== `Factor-specific Metadata` ===============
@@ -164,6 +185,15 @@ AuthFactor::AuthFactor(AuthFactorRef ref,
   CHECK_EQ(ref_.type(), AuthFactorType::kPin);
 }
 
+AuthFactor::AuthFactor(AuthFactorRef ref,
+                       AuthFactorCommonMetadata metadata,
+                       FingerprintMetadata fingerprint_metadata)
+    : ref_(std::move(ref)),
+      common_metadata_(std::move(metadata)),
+      factor_metadata_(std::move(fingerprint_metadata)) {
+  CHECK_EQ(ref_.type(), AuthFactorType::kFingerprint);
+}
+
 AuthFactor::AuthFactor(AuthFactor&&) noexcept = default;
 AuthFactor& AuthFactor::operator=(AuthFactor&&) noexcept = default;
 AuthFactor::AuthFactor(const AuthFactor&) = default;
@@ -202,6 +232,10 @@ const PasswordMetadata& AuthFactor::GetPasswordMetadata() const {
 
 const PinMetadata& AuthFactor::GetPinMetadata() const {
   return absl::get<PinMetadata>(factor_metadata_);
+}
+
+const FingerprintMetadata& AuthFactor::GetFingerprintMetadata() const {
+  return absl::get<FingerprintMetadata>(factor_metadata_);
 }
 
 }  // namespace cryptohome

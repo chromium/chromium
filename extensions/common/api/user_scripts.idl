@@ -10,7 +10,7 @@ namespace userScripts {
     // Specifies the execution environment of the DOM, which is the execution
     // environment shared with the host page's JavaScript.
     MAIN,
-    // Specifies the execution enviroment that is specific to user scripts and
+    // Specifies the execution environment that is specific to user scripts and
     // is exempt from the page's CSP.
     USER_SCRIPT
   };
@@ -65,6 +65,13 @@ namespace userScripts {
     // The JavaScript execution environment to run the script in. The default is
     // <code>`USER_SCRIPT`</code>.
     ExecutionWorld? world;
+
+    // If specified, specifies a specific user script world ID to execute in.
+    // Only valid if `world` is omitted or is `USER_SCRIPT`. If omitted, the
+    // script will execute in the default user script world.
+    // Values with leading underscores (`_`) are reserved.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] DOMString? worldId;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.
@@ -75,12 +82,19 @@ namespace userScripts {
   };
 
   // An object used to update the <code>`USER_SCRIPT`</code> world
-  // configuration. If a propertie is not specified, it will reset it to its
+  // configuration. If a property is not specified, it will reset it to its
   // default value.
   dictionary WorldProperties{
+    // Specifies the ID of the specific user script world to update.
+    // If not provided, updates the properties of the default user script world.
+    // Values with leading underscores (`_`) are reserved.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] DOMString? worldId;
+
     // Specifies the world csp. The default is the <code>`ISOLATED`</code>
     // world csp.
     DOMString? csp;
+
     // Specifies whether messaging APIs are exposed. The default is
     // <code>false</code>.
     boolean? messaging;
@@ -96,20 +110,25 @@ namespace userScripts {
 
   callback ConfigureWorldCallback = void();
 
+  callback GetAllWorldConfigurationsCallback = void(WorldProperties[] worlds);
+
+  callback ResetWorldConfigurationCallback = void();
+
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
     // |callback|: Called once scripts have been fully registered or if an error
     // has ocurred.
-    [supportsPromises] static void register(RegisteredUserScript[] scripts,
-                                            optional RegisterCallback callback);
+    static void register(
+        RegisteredUserScript[] scripts,
+        optional RegisterCallback callback);
 
     // Returns all dynamically-registered user scripts for this extension.
     // |filter|: If specified, this method returns only the user scripts that
     // match it.
     // |callback|: Called once scripts have been fully registered or if an error
     // occurs.
-    [supportsPromises] static void getScripts(
+    static void getScripts(
         optional UserScriptFilter filter,
         GetScriptsCallback callback);
 
@@ -118,7 +137,7 @@ namespace userScripts {
     // that match it.
     // |callback|: Called once scripts have been fully unregistered or if an
     // error ocurs
-    [supportsPromises] static void unregister(
+    static void unregister(
         optional UserScriptFilter filter,
         UnregisterCallback callback);
 
@@ -130,15 +149,32 @@ namespace userScripts {
     // are updated.
     // |callback|: Called once scripts have been fully updated or if an error
     // occurs.
-    [supportsPromises] static void update(
+    static void update(
         RegisteredUserScript[] scripts,
         optional UpdateCallback callback);
 
     // Configures the <code>`USER_SCRIPT`</code> execution environment.
     // |properties|: Contains the user script world configuration.
     // |callback|: Called once world hase been configured.
-    [supportsPromises] static void configureWorld(
+    static void configureWorld(
         WorldProperties properties,
         optional ConfigureWorldCallback callback);
+
+    // Retrieves all registered world configurations.
+    // |callback|: Called with the registered world configurations.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] static void getWorldConfigurations(
+        GetAllWorldConfigurationsCallback callback);
+
+    // Resets the configuration for a user script world. Any scripts that inject
+    // into the world with the specified ID will use the default world
+    // configuration.
+    // |worldId|: The ID of the user script world to reset. If omitted, resets
+    // the default world's configuration.
+    // |callback|: Called when the configuration is reset.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] static void resetWorldConfiguration(
+        optional DOMString worldId,
+        ResetWorldConfigurationCallback callback);
   };
 };

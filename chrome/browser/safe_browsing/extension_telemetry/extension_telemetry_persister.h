@@ -23,6 +23,10 @@ namespace safe_browsing {
 // important threads, the persister should be created using SequenceBound.
 class ExtensionTelemetryPersister {
  public:
+  // Indicates when the `WriteReport` function is called. Used to generate
+  // histogram suffixes.
+  enum class WriteReportTrigger { kAtWriteInterval = 0, kAtShutdown = 1 };
+
   // The `profile_path` is used to construct where the persister saves it's
   // files. The persister creates a directory under profile_path/CRX_Telemetry
   // and saves files there.
@@ -40,8 +44,10 @@ class ExtensionTelemetryPersister {
   void PersisterInit();
 
   // Writes a telemetry report to a file on disk. The filename written is not
-  // exposed to the caller and is determined by `write_index_`.
-  void WriteReport(const std::string write_string);
+  // exposed to the caller and is determined by `write_index_`. `trigger`
+  // indicates when the caller calls this function, used for logging
+  // histograms.
+  void WriteReport(const std::string write_string, WriteReportTrigger trigger);
 
   // Reads a telemetry report from a file on disk. The file is deleted
   // regardless of if the read was successful or not. The filename

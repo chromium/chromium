@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -30,10 +29,10 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -45,7 +44,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for the context menu header mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextMenuHeaderMediatorTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mocker = new JniMocker();
 
     @Rule

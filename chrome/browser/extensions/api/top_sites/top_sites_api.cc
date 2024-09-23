@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "components/history/core/browser/top_sites.h"
 
 namespace extensions {
@@ -24,8 +23,9 @@ TopSitesGetFunction::~TopSitesGetFunction() = default;
 ExtensionFunction::ResponseAction TopSitesGetFunction::Run() {
   scoped_refptr<history::TopSites> ts = TopSitesFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context()));
-  if (!ts)
+  if (!ts) {
     return RespondNow(Error(kUnknownErrorDoNotUse));
+  }
 
   ts->GetMostVisitedURLs(
       base::BindOnce(&TopSitesGetFunction::OnMostVisitedURLsAvailable, this));

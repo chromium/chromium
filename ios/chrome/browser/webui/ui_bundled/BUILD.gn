@@ -2,6 +2,8 @@
 # Use of this source code is governed by faa BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("coordinator") {
   sources = [
     "about/about_ui.cc",
@@ -43,7 +45,7 @@ source_set("coordinator") {
     "version_ui.h",
     "version_ui.mm",
   ]
-
+  public_deps = [ "//ios/web/public/webui" ]
   deps = [
     "//base",
     "//base:i18n",
@@ -84,20 +86,22 @@ source_set("coordinator") {
     "//ios/chrome/browser/ntp_tiles/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/policy/ui_bundled:user_policy_scene_agent",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/webui/model",
     "//ios/chrome/common",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
     "//net",
@@ -113,12 +117,15 @@ source_set("webui_internal") {
     "chrome_web_ui_provider.cc",
     "omaha_ui.cc",
     "omaha_ui.h",
+    "on_device_llm_internals_ui.h",
+    "on_device_llm_internals_ui.mm",
     "signin_internals_ui_ios.cc",
     "signin_internals_ui_ios.h",
   ]
   deps = [
     ":coordinator",
     "//components/commerce/ios/browser",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//components/resources",
     "//components/signin/public/identity_manager",
@@ -127,11 +134,13 @@ source_set("webui_internal") {
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/omaha/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/optimization_guide/resources:on_device_llm_buildflags",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
     "//ios/chrome/browser/webui/ui_bundled/gcm",
     "//ios/chrome/browser/webui/ui_bundled/interstitials",
     "//ios/chrome/browser/webui/ui_bundled/local_state",
@@ -145,6 +154,14 @@ source_set("webui_internal") {
     "//ios/components/webui/sync_internals",
     "//url",
   ]
+
+  if (build_with_internal_optimization_guide) {
+    deps += [
+      "//components/optimization_guide/internal:optimization_guide_internal+bundle",
+      "//components/optimization_guide/internal:optimization_guide_internal+link",
+      "//ios/chrome/browser/optimization_guide/resources:on_device_llm_bundle_data",
+    ]
+  }
 
   public_deps = [
     "//base",

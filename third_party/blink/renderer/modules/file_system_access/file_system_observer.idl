@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(https://crbug.com/1019297): Include spec link.
+// TODO(https://crbug.com/320563255): Include spec link.
 // TODO(https://crbug.com/1444874): Measure usage.
 
 [
@@ -12,14 +12,18 @@
 ] interface FileSystemObserver {
   [
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    Measure
   ] constructor(FileSystemObserverCallback callback);
 
   [
-      CallWith=ScriptState,
-      RaisesException
-  ] Promise<void> observe(FileSystemHandle handle,
+    CallWith=ScriptState,
+    RaisesException,
+    Measure
+  ] Promise<undefined> observe(FileSystemHandle handle,
                           optional FileSystemObserverObserveOptions options = {});
-  void unobserve(FileSystemHandle handle);
-  void disconnect();
+  [
+    RuntimeEnabled=FileSystemObserverUnobserve
+  ] void unobserve(FileSystemHandle handle);
+  [Measure] void disconnect();
 };

@@ -28,10 +28,13 @@ source_set("internal") {
     "download_db_cache.h",
     "download_file_factory.cc",
     "download_file_impl.cc",
+    "download_file_with_copy.cc",
+    "download_file_with_copy.h",
     "download_interrupt_reasons_impl.cc",
     "download_interrupt_reasons_utils.cc",
     "download_item_impl.cc",
     "download_item_impl_delegate.cc",
+    "download_item_rename_handler.cc",
     "download_job.cc",
     "download_job_factory.cc",
     "download_job_impl.cc",
@@ -87,7 +90,7 @@ source_set("internal") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  # TODO(crbug/1056278): Enable this on Fuchsia
+  # TODO(crbug.com/40120259): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
@@ -96,6 +99,8 @@ source_set("internal") {
     sources += [
       "android/download_collection_bridge.cc",
       "android/download_collection_bridge.h",
+      "in_memory_download_file.cc",
+      "in_memory_download_file.h",
     ]
 
     deps += [ ":jni_headers" ]
@@ -116,6 +121,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
       "android/java/src/org/chromium/components/download/DownloadDelegate.java",
+      "android/java/src/org/chromium/components/download/InMemoryDownloadFile.java",
     ]
 
     deps = [
@@ -129,7 +135,10 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [ "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
+      "android/java/src/org/chromium/components/download/InMemoryDownloadFile.java",
+    ]
   }
 }
 

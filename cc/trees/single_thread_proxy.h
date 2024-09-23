@@ -13,6 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -51,6 +53,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       LayerTreeFrameSink* layer_tree_frame_sink) override;
   void ReleaseLayerTreeFrameSink() override;
   void SetVisible(bool visible) override;
+  void SetShouldWarmUp() override;
   void SetNeedsAnimate() override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
@@ -69,6 +72,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool CommitRequested() const override;
   void Start() override;
   void Stop() override;
+  void QueueImageDecode(int request_id, const PaintImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
@@ -84,9 +88,12 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
                                    base::OnceClosure callback) override;
   double GetPercentDroppedFrames() const override;
 
-  void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                  BrowserControlsState current,
-                                  bool animate) override;
+  void UpdateBrowserControlsState(
+      BrowserControlsState constraints,
+      BrowserControlsState current,
+      bool animate,
+      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info)
+      override;
 
   // SchedulerClient implementation
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override;
@@ -99,6 +106,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
+  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;
@@ -110,6 +118,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override;
+  void OnBeginImplFrameDeadline() override;
 
   // LayerTreeHostImplClient implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
@@ -121,6 +130,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
+  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
@@ -130,13 +140,14 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
                                             base::TimeDelta delay) override;
   void DidActivateSyncTree() override;
-  void WillPrepareTiles() override;
   void DidPrepareTiles() override;
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
-  void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override;
-  void NotifyImageDecodeRequestFinished() override;
+  void SetNeedsImplSideInvalidation(
+      bool needs_first_draw_on_activation) override;
+  void NotifyImageDecodeRequestFinished(int request_id,
+                                        bool decode_succeeded) override;
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
@@ -152,6 +163,9 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) override;
   void ClearHistory() override;
+  void SetHasActiveThreadedScroll(bool is_scrolling) override;
+  void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override;
+
   size_t CommitDurationSampleCountForTesting() const override;
 
   void RequestNewLayerTreeFrameSink();

@@ -10,6 +10,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-// TODO(crbug.com/1454288): Disable this test on Mac.
+// TODO(crbug.com/40916883): Disable this test on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Sources_Enclosure DISABLED_Sources_Enclosure
 #else
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_Sources_Enclosure) {
          /*num_layout_shifts=*/2);
 }
 
-// TODO(https://crbug.com/1400401): Fix and reenable the test.
+// TODO(crbug.com/40250247): Fix and reenable the test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
   RunWPT("sources-maximpact.html");
 }
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   CheckUKMAndUMAMetricsWithValues(totalCls, cls);
 }
 
-// TODO(crbug.com/1500379): Disable this test on Win10
+// TODO(crbug.com/40940689): Disable this test on Win10
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CumulativeLayoutShift_hadRecentInput \
   DISABLED_CumulativeLayoutShift_hadRecentInput

@@ -7,6 +7,7 @@ module gpu.mojom;
 import "gpu/ipc/common/capabilities.mojom";
 import "gpu/ipc/common/context_result.mojom";
 import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
@@ -52,8 +53,6 @@ enum SchedulingPriority {
 struct ContextCreationAttribs {
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
-  // -1 if invalid or unspecified.
-  [EnableIf=is_android] bool need_alpha = false;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
@@ -138,6 +137,13 @@ interface GpuChannel {
   // GPU IO thread, which is never allowed to block.
   [Sync, NoInterrupt] Flush() => ();
 
+  // `version_buffer` is a handle to a shared memory region that only
+  // contains a single 64 bit atomic integer used as a flushed message id.
+  // The number is read from renderers and updated from the
+  // gpu process on FlushDeferredRequests.
+  [Sync, NoInterrupt] GetSharedMemoryForFlushId() =>
+    (mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer);
+
   // Tells the GPU process to create a new command buffer. A corresponding
   // CommandBufferStub is created.  If `params` provides a non-null
   // SurfaceHandle, |size| is ignored and it will render directly to the native
@@ -163,7 +169,11 @@ interface GpuChannel {
                       uint64 decode_release_count);
 
   // Sends a batch of DeferredRequests to be executed by the service.
-  FlushDeferredRequests(array<DeferredRequest> requests);
+  // `flushed_deferred_message_id` is used to update the per-channel id of
+  // messages confirmed to be flushed that's read on the client side through
+  // shared memory obtained by GetSharedMemoryForFlushId().
+  FlushDeferredRequests(array<DeferredRequest> requests,
+      uint32 flushed_deferred_message_id);
 
   // Create a GpuMemoryBuffer on IO thread. Note that this needs to be a
   // blocking call on calling client's thread in order to return the
@@ -234,8 +244,17 @@ interface GpuChannel {
   [EnableIf=is_fuchsia]
   RegisterSysmemBufferCollection(
       handle<platform> service_handle, handle<platform> sysmem_token,
-      gfx.mojom.BufferFormat format, gfx.mojom.BufferUsage usage,
+      viz.mojom.SharedImageFormat format, gfx.mojom.BufferUsage usage,
       bool register_with_image_pipe);
+
+  // Updates the contents of the GpuMemoryBuffer associated with the shared
+  // image. Necessary on platforms like Windows where we use shared memory GMBs
+  // for readback from D3D texture shared images. The copy, if successful, is
+  // complete when the callback runs.
+  [EnableIf=is_win]
+  CopyToGpuMemoryBufferAsync(
+      Mailbox mailbox, array<SyncToken> sync_token_dependencies,
+      uint64 release_count) => (bool success);
 };
 
 // Interface used to issue commands to a specific CommandBuffer instance in the
@@ -348,7 +367,7 @@ interface DCOMPTexture {
   // pattern in `StreamTexture::StartListening()` to delay notifications until
   // the client side is ready.
   //
-  // TODO(crbug.com/999747): Investigate if we can remove this by having the
+  // TODO(crbug.com/40642952): Investigate if we can remove this by having the
   // `client` as a parameter to `CreateDCOMPTexture()`.
   StartListening(pending_associated_remote<DCOMPTextureClient> client);
 
@@ -397,6 +416,11 @@ struct DeferredRequest {
   // A list of SyncTokens which must be released before the request can be
   // processed.
   array<SyncToken> sync_token_fences;
+
+  // The sync point release count that is expected to be reached after execution
+  // of this request.
+  // 0 means this request doesn't release.
+  uint64 release_count;
 };
 
 // Details of a batched request.
@@ -455,9 +479,6 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageWithBufferParams.
   CreateSharedImageWithBufferParams create_shared_image_with_buffer;
 
-  // See CreateGMBSharedImageParams.
-  CreateGMBSharedImageParams create_gmb_shared_image;
-
   // Registers a new shared memory region to share with the GPU process for
   // uploading shared image data.
   mojo_base.mojom.ReadOnlySharedMemoryRegion register_upload_buffer;
@@ -466,7 +487,6 @@ union DeferredSharedImageRequest {
   UpdateSharedImageParams update_shared_image;
 
   // See CopyToGpuMemoryBufferParams.
-  [EnableIf=is_win]
   CopyToGpuMemoryBufferParams copy_to_gpu_memory_buffer;
 
   // Destroys the shared image identified by this Mailbox.
@@ -527,36 +547,23 @@ struct SetDefaultFramebufferSharedImageParams {
   bool needs_stencil;
 };
 
+// Common params used when creating a new shared image.
+struct SharedImageInfo {
+  // Metadata about the shared image being created.
+  SharedImageMetadata meta;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+};
+
 // Creates a new shared image.
 struct CreateSharedImageParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared
@@ -565,25 +572,8 @@ struct CreateSharedImageWithDataParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // Offset from which to copy data out of the current image upload shared
   // memory region.
@@ -595,12 +585,6 @@ struct CreateSharedImageWithDataParams {
   // If `true`, this is the last usage of the current image upload shared memory
   // region, so the region can be discarded after servicing this request.
   bool done_with_shm;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Creates a new shared image with an existing GPU memory buffer.
@@ -609,72 +593,11 @@ struct CreateSharedImageWithBufferParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // A handle to the existing GPU memory buffer.
-  gfx.mojom.GpuMemoryBufferHandle buffer_handle;
-
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
-};
-
-// Creates a new shared image from an existing GPU memory buffer.
-struct CreateGMBSharedImageParams {
-  // The mailbox used to identify the shared image.
-  Mailbox mailbox;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
-
-  // Size in pixels of the GPU memory buffer.
-  gfx.mojom.Size size;
-
-  // Format of pixels in the GPU memory buffer.
-  gfx.mojom.BufferFormat format;
-
-  // Plane for which to create the shared image.
-  gfx.mojom.BufferPlane plane;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if
@@ -682,9 +605,6 @@ struct CreateGMBSharedImageParams {
 struct UpdateSharedImageParams {
   // The mailbox identifying the shared image to update.
   Mailbox mailbox;
-
-  // The fence to release once the image has been updated.
-  uint32 release_id;
 
   // An optional GpuFenceHandle for the server to wait on before updating the
   // image from whatever backs it.
@@ -697,20 +617,15 @@ struct UpdateSharedImageParams {
 struct AddReferenceToSharedImageParams {
   // The mailbox identifying the shared image to add ref.
   Mailbox mailbox;
-
-  // The fence to release once the reference has been added.
-  uint32 release_id;
 };
 
 // Updates the contents of the GpuMemoryBuffer associated with the shared image.
-// Necessary on platforms like Windows where renderer cannot create native GMBs.
-[EnableIf=is_win]
+// Necessary on platforms like Windows and Linux where renderer cannot create
+// native GMBs. The command performs synchronization with the GPU so the copy is
+// complete after the command runs.
 struct CopyToGpuMemoryBufferParams {
   // The mailbox identifying the shared image which should update its GMB.
   Mailbox mailbox;
-
-  // The fence to release once the GMB has been updated.
-  uint32 release_id;
 };
 
 [EnableIf=is_win]
@@ -734,9 +649,6 @@ struct CreateSwapChainParams {
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
 
-  // The fence to release once the swap chain is created.
-  uint32 release_id;
-
   // Which corner is considered the origin of the swap chain's buffers.
   skia.mojom.SurfaceOrigin surface_origin;
 
@@ -748,9 +660,6 @@ struct CreateSwapChainParams {
 struct PresentSwapChainParams {
   // Mailbox identifying the swap chain to present.
   Mailbox mailbox;
-
-  // The fence to release once the swap chain is presented.
-  uint32 release_id;
 };
 
 [EnableIf=is_win]

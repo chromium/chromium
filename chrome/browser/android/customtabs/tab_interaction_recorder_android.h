@@ -35,7 +35,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
 
   // AutofillManager::Observer:
   void OnFormSubmitted(autofill::AutofillManager&,
-                       autofill::FormGlobalId) override;
+                       const autofill::FormData&) override;
   void OnAfterSelectControlDidChange(autofill::AutofillManager&,
                                      autofill::FormGlobalId,
                                      autofill::FieldGlobalId) override;
@@ -47,6 +47,7 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
                                  autofill::FormGlobalId,
                                  autofill::FieldGlobalId) override;
   void OnAfterFormsSeen(autofill::AutofillManager&,
+                        base::span<const autofill::FormGlobalId>,
                         base::span<const autofill::FormGlobalId>) override;
 
  private:

@@ -1,0 +1,64 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --menu-item-margin: 12px;
+  background-color: var(--color-new-tab-page-module-item-background);
+  border-radius: var(--ntp-module-item-border-radius);
+  display: flex;
+  flex-direction: column;
+}
+
+#titleContainer {
+  align-items: center;
+  display: flex;
+  height: 20px;
+  padding: 12px 12px 8px 12px;
+}
+
+#title {
+  color: var(--color-new-tab-page-primary-foreground);
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+#headerSpacer {
+  flex-grow: 1;
+}
+
+#menuButton {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-control-background-hovered);
+  margin-inline: 0 -6px;
+}
+
+#actionMenu {
+  --cr-menu-shadow: var(--ntp-menu-shadow);
+}
+
+.action-menu-icon {
+  --cr-icon-ripple-size: 16px;
+  background-color: transparent;
+  margin-inline-start: calc(-1 * var(--menu-item-margin));
+  margin-inline-end: var(--menu-item-margin);
+}
+
+#actionMenuDivider {
+  background-color: var(--color-new-tab-page-module-context-menu-divider);
+  border: none;
+  height: 1px;
+  margin: 8px 0;
+}

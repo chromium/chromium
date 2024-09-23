@@ -1,0 +1,95 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.sp-card {
+  padding-block-end: 0;
+}
+
+sp-heading {
+  margin: 0 0 8px;
+}
+
+cr-grid {
+  --cr-column-width: 1fr;
+  --cr-grid-gap: 8px;
+  --cr-grid-width: 100%;
+  display: block;
+  padding: var(--sp-card-inline-padding);
+}
+
+.tile {
+  cursor: pointer;
+  outline-width: 0;
+  place-self: stretch;
+}
+
+:host-context(.focus-outline-visible) .tile:focus {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+.image-container {
+  border-radius: 12px;
+  overflow: hidden;
+  padding-top: 100%;
+  position: relative;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .image-container {
+    background-color: var(--google-grey-900);
+    border: 1px solid var(--google-grey-700);
+  }
+}
+
+.image-container img {
+  position: absolute;
+}
+
+.theme img {
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+#refreshDailyToggleContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: var(--sp-card-padding);
+}
+
+#refreshDailyToggleTitle {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+customize-chrome-check-mark-wrapper {
+  --customize-chrome-check-mark-wrapper-end: -4px;
+  --customize-chrome-check-mark-wrapper-size: 20px;
+  --customize-chrome-check-mark-wrapper-top: -6px;
+}
+
+customize-chrome-check-mark-wrapper[checked] .image-container {
+  padding-top: calc(100% - 4px);
+  width: calc(100% - 4px);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host-context(.focus-outline-visible) .tile:focus {
+    /* Set outline to hcm (high contrast mode) value. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+}

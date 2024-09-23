@@ -20,7 +20,7 @@
 @implementation CRWScriptMessageHandler
 
 - (instancetype)initWithCallback:(ScriptMessageCallback)callback {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _callback = callback;
   }
   return self;
@@ -48,7 +48,7 @@
 @implementation CRWScriptMessageHandlerWithReply
 
 - (instancetype)initWithCallback:(ScriptMessageWithReplyCallback)callback {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _callback = callback;
   }
   return self;

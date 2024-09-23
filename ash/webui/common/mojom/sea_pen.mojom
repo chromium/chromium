@@ -6,6 +6,7 @@ module ash.personalization_app.mojom;
 
 import "ash/webui/common/mojom/sea_pen_generated.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -19,8 +20,8 @@ struct SeaPenThumbnail {
     uint32 id;
 };
 
-// The query information that was recently used to search for Sea Pen
-// images including the visible prompt text and template title from the UI.
+// The query information that was recently used to search for SeaPen images
+// including the visible prompt text and template title from the UI.
 // The strings were translated based on the localization that the user was in
 // when they ran the query.
 struct SeaPenUserVisibleQuery {
@@ -31,7 +32,7 @@ struct SeaPenUserVisibleQuery {
   string template_title;
 };
 
-// The information needed to query template wallpapers. The possible `id` and
+// The information needed to send a template query. The possible `id` and
 // `options` values are defined in cs/ChromeOsWallpaperQueryProcessor.kt. They
 // are not controlled by the renderer. The browser is responsible for validating
 // the values.
@@ -52,6 +53,10 @@ struct SeaPenTemplateQuery {
 struct SeaPenFeedbackMetadata {
   bool is_positive;
   string log_id;
+
+  // This is the generation seed from the Manta Service to identify a
+  // SeaPenThumbnail.
+  uint32 generation_seed;
 };
 
 // A text or template query for constructing a Manta request.
@@ -63,10 +68,37 @@ union SeaPenQuery {
   SeaPenTemplateQuery template_query;
 };
 
-// Maximum allowable search text length, in bytes.
+// The information of a recent SeaPen image including the query information
+// and its creation time.
+struct RecentSeaPenImageInfo {
+  // The SeaPen query that the user used to generate the recent image.
+  SeaPenQuery query;
+
+  // Human-readable string representation of the date the image was
+  // created, e.g., "Dec 30, 2023", translated into the user's current
+  // locale. `creation_time` is null if its data has invalid time format.
+  mojo_base.mojom.String16? creation_time;
+};
+
+// The thumbnail data includes the `url` and the image information `image_info`
+// for the recent Sea Pen image.
+// `image_info` is null if the image metadata has missing or invalid data.
+struct RecentSeaPenThumbnailData {
+  url.mojom.Url url;
+  RecentSeaPenImageInfo? image_info;
+};
+
+// Represents a single entry of text query history.
+struct TextQueryHistoryEntry {
+  string query;
+
+  array<SeaPenThumbnail> thumbnails;
+};
+
+// Maximum allowable query text length, in bytes.
 // When validating length in Javascript, be careful of the difference between
 // UTF-16 (Javascript) length and UTF-8 length.
-const uint32 kMaximumSearchWallpaperTextBytes = 3000;
+const uint32 kMaximumGetSeaPenThumbnailsTextBytes = 3000;
 
 // Should match the associated enum in components/manta/manta_status.h
 enum MantaStatusCode {
@@ -85,45 +117,76 @@ enum MantaStatusCode {
   kMax = kPerUserQuotaExceeded,
 };
 
-// Provides APIs to perform wallpaper searches. Uses APIs in
-// `manta.proto` to send search requests to a server.
+// An interface to provide SeaPen updates to the renderer process, e.g. when the
+// browser process has changed wallpaper.
+interface SeaPenObserver {
+  // Called to update the renderer process when the active SeaPen image has
+  // changed. Called with null when SeaPen image is unset/removed, e.g. a
+  // different type of wallpaper has been set.
+  OnSelectedSeaPenImageChanged(uint32? id);
+
+  // Called whenever there is a change to the text query history.
+  OnTextQueryHistoryChanged(array<TextQueryHistoryEntry>? entries);
+};
+
+// Provides APIs to get thumbnails and full size images. Uses APIs in
+// `manta.proto` to send requests to a google owned server.
 // Implemented in the browser process, and called by the ChromeOS
 // Personalization App (chrome://personalization) in a renderer process.
 interface SeaPenProvider {
 
-    // Given a user text input, return a set of matching images.
-    // `images` will be null in case of an unrecoverable error, such as network
-    // failure.
-    // `images` will be empty array when the request succeeded, but no matching
-    // images were returned.
-    // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
-    SearchWallpaper(SeaPenQuery query) =>
-        (array<SeaPenThumbnail>? images, MantaStatusCode statusCode);
+    // Binds a listener to start receiving updates on SeaPen status changes.
+    SetSeaPenObserver(pending_remote<SeaPenObserver> observer);
 
-    // Select a thumbnail and set as the system wallpaper for the current user.
-    SelectSeaPenThumbnail(uint32 id) => (bool success);
+    // Given a user text input, return a set of matching thumbnails.
+    // `thumbnails` will be null in case of an unrecoverable error, such as
+    // network failure.
+    // `thumbnails` will be empty array when the request succeeded, but no
+    // matching thumbnails were returned.
+    // If `query` is of type string, it must be smaller than
+    // `kMaximumGetSeaPenThumbnailsTextBytes` bytes.
+    GetSeaPenThumbnails(SeaPenQuery query) =>
+        (array<SeaPenThumbnail>? thumbnails, MantaStatusCode statusCode);
 
-    // Sets the given Sea Pen image as the user's background.
-    SelectRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+    // Select a thumbnail for the current user.
+    // `id` must be a valid id from a previous call to `GetSeaPenThumbnails`.
+    SelectSeaPenThumbnail(uint32 id, bool preview_mode) => (bool success);
 
-    // Gets the recently used sea pen wallpapers. `images` will be empty
-    // on failure.
-    GetRecentSeaPenImages() => (array<mojo_base.mojom.FilePath> images);
+    // Gets the available previously selected SeaPen images. `ids` will be
+    // empty if no thumbnails have been previously selected, or in case of disk
+    // or other failure.
+    GetRecentSeaPenImageIds() => (array<uint32> ids);
 
-    // Fetch a thumbnail data url for the given recent sea pen image path.
-    // `url` will be empty on failure.
-    GetRecentSeaPenImageThumbnail(mojo_base.mojom.FilePath path) =>
-        (url.mojom.Url url);
+    // Sets the given SeaPen image id as the user's background. Must be a valid
+    // id from a previous call to `GetRecentSeaPenImageIds`.
+    SelectRecentSeaPenImage(uint32 id, bool preview_mode) => (bool success);
 
-    // Deletes the selected Sea Pen image from Sea Pen directory.
-    DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+    // Fetches the thumbnail data for the given recent Sea Pen image `id`.
+    // `id` must be a valid id from a previous call to
+    // `GetRecentSeaPenImageIds`.
+    // `thumbnail_data` is null if the `id` is invalid or the image fails to
+    // decode.
+    GetRecentSeaPenImageThumbnail(uint32 id) =>
+        (RecentSeaPenThumbnailData? thumbnail_data);
+
+    // Deletes the selected SeaPen image from SeaPen directory. `id` must be a
+    // valid id from a previous call to `GetRecentSeaPenImageIds`.
+    DeleteRecentSeaPenImage(uint32 id) => (bool success);
 
     // Pops up a feedback dialog when user clicks feedback buttons.
     OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
 
-    // Determines whether to show the reviewing Sea Pen terms of service dialog.
-    ShouldShowSeaPenTermsOfServiceDialog() => (bool should_show_dialog);
+    // Determines whether to show the SeaPen introduction dialog.
+    ShouldShowSeaPenIntroductionDialog() => (bool should_show_dialog);
 
-    // Called when the user accepts the terms of service for Sea Pen wallpaper.
-    HandleSeaPenTermsOfServiceAccepted();
+    // Called when the user close the introduction dialog for SeaPen feature.
+    HandleSeaPenIntroductionDialogClosed();
+
+    // Indicates whether the device is in tablet mode.
+    IsInTabletMode() => (bool tablet_mode);
+
+    // Called to force the browser window to make the native views transparent
+    // so that the user can see wallpaper in fullscreen on their desktop. Safe
+    // to call multiple times.
+    MakeTransparent();
 };

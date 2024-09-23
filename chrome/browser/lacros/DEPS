@@ -8,6 +8,7 @@ include_rules = [
   "-chrome/browser/ui/webui/signin/ash",
 
   "+chrome/browser/ui/views",
+  "+chromeos/components/magic_boost",
   "+chromeos/ui/wm",
   "+components/account_manager_core",
   "+components/arc/lacros",

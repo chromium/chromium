@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_DOM_AGENT_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "v8/include/v8-inspector.h"
+#include "v8/include/v8-profiler.h"
 
 namespace blink {
 
@@ -254,6 +256,10 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response getFileInfo(const String& object_id,
                                  String* path) override;
 
+  protocol::Response getDetachedDomNodes(
+      std::unique_ptr<protocol::Array<protocol::DOM::DetachedElementInfo>>*
+          detached_nodes) override;
+
   // Find the closest size query container ascendant for a node given an
   // optional container-name.
   protocol::Response getContainerForNode(
@@ -267,6 +273,14 @@ class CORE_EXPORT InspectorDOMAgent final
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
   static const HeapVector<Member<Element>> GetContainerQueryingDescendants(
       Element* container);
+
+  protocol::Response getElementByRelation(int node_id,
+                                          const String& relation,
+                                          int* out_node_id) override;
+
+  protocol::Response getAnchorElement(int node_id,
+                                      protocol::Maybe<String> anchor_specifier,
+                                      int* out_node_id) override;
 
   bool Enabled() const;
   IncludeWhitespaceEnum IncludeWhitespace() const;
@@ -297,6 +311,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void TopLayerElementsChanged();
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
+  void UpdateScrollableFlag(Node* node);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;
@@ -397,6 +412,8 @@ class CORE_EXPORT InspectorDOMAgent final
   void DiscardFrontendBindings();
 
   InspectorRevalidateDOMTask* RevalidateTask();
+
+  bool isNodeScrollable(Node*);
 
   v8::Isolate* isolate_;
   Member<InspectedFrames> inspected_frames_;

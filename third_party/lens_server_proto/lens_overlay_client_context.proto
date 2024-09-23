@@ -1,0 +1,70 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_filters.proto";
+import "lens_overlay_platform.proto";
+import "lens_overlay_surface.proto";
+
+// Context information of the client sending the request.
+message LensOverlayClientContext {
+  // Required. Client platform.
+  Platform platform = 1;
+
+  // Optional. Client surface.
+  Surface surface = 2;
+
+  // Required. Locale specific context.
+  LocaleContext locale_context = 4;
+
+  // Required. Name of the package which sends the request to Lens Frontend.
+  string app_id = 6;
+
+  // Filters that are enabled on the client side.
+  AppliedFilters client_filters = 17;
+
+  // The rendering context info.
+  RenderingContext rendering_context = 20;
+
+  // Logging data.
+  ClientLoggingData client_logging_data = 23;
+
+  reserved 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 22;
+}
+
+// Describes locale context.
+message LocaleContext {
+  // The BCP 47 language tag used to identify the language of the client.
+  string language = 1;
+
+  // The CLDR region tag used to identify the region of the client.
+  string region = 2;
+
+  // The CLDR time zone ID used to identify the timezone of the client.
+  string time_zone = 3;
+}
+
+// The possible rendering environments.
+enum LensRenderingEnvironment {
+  RENDERING_ENV_UNSPECIFIED = 0;
+  RENDERING_ENV_LENS_OVERLAY = 14;
+}
+
+message RenderingContext {
+  // The rendering environment.
+  LensRenderingEnvironment rendering_environment = 2;
+
+  reserved 1;
+}
+
+// Contains data that can be used for logging purposes.
+message ClientLoggingData {
+  // Whether history is enabled.
+  bool is_history_eligible = 1;
+}

@@ -4,26 +4,30 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
+import org.chromium.chrome.browser.gesturenav.NativePageBitmapCapturer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
@@ -229,7 +233,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void visibleSSLStateChanged() {
-        PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+        PolicyAuditor auditor = PolicyAuditor.maybeCreate();
         if (auditor != null) {
             auditor.notifyCertificateFailure(
                     PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
@@ -423,6 +427,31 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.getVirtualKeyboardHeight();
     }
 
+    @Override
+    public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
+        return NativePageBitmapCapturer.maybeCaptureNativeView(mTab, callback);
+    }
+
+    @Override
+    public Bitmap maybeCopyContentAreaAsBitmapSync() {
+        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab);
+    }
+
+    @Override
+    public void didBackForwardTransitionAnimationChange() {
+        mTab.handleBackForwardTransitionUiChanged();
+    }
+
+    @Override
+    public int getBackForwardTransitionFallbackUXFaviconBackgroundColor() {
+        return ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), mTab.isIncognitoBranded());
+    }
+
+    @Override
+    public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
+        return ChromeColors.getSurfaceColor(mTab.getContext(), R.dimen.default_elevation_3);
+    }
+
     void showFramebustBlockInfobarForTesting(String url) {
         TabWebContentsDelegateAndroidImplJni.get()
                 .showFramebustBlockInfoBar(mTab.getWebContents(), url);
@@ -433,10 +462,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mTab.didChangeCloseSignalInterceptStatus();
     }
 
+    @Override
+    public boolean isTrustedWebActivity(WebContents webContents) {
+        return mDelegate.isTrustedWebActivity(webContents);
+    }
+
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
 
-        void showFramebustBlockInfoBar(WebContents webContents, String url);
+        void showFramebustBlockInfoBar(
+                WebContents webContents, @JniType("std::u16string") String url);
     }
 }

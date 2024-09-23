@@ -6,6 +6,8 @@ include_rules = [
   "+gpu/command_buffer/client/gles2_interface.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
+  "+gpu/command_buffer/client/test_gpu_memory_buffer_manager.h",
+  "+gpu/command_buffer/client/test_shared_image_interface.h",
   "+gpu/command_buffer/common",
   "+gpu/command_buffer/service/gpu_switches.h",
   "+gpu/config/gpu_feature_type.h",
@@ -37,5 +39,6 @@ specific_include_rules = {
   "test_layer_tree_frame_sink\.h": [
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
     "+gpu/command_buffer/service/sync_point_manager.h",
+    "+gpu/command_buffer/service/scheduler.h",
   ],
 }

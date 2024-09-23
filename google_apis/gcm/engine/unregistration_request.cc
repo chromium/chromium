@@ -79,7 +79,6 @@ bool ShouldRetryWithStatus(UnregistrationRequest::Status status) {
       return false;
     case UnregistrationRequest::UNREGISTRATION_STATUS_COUNT:
       NOTREACHED();
-      break;
   }
   return false;
 }

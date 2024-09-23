@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_DETAILED_VIEW_H_
 
-#include <optional>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +13,10 @@
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/global_media_controls/public/views/chapter_item_view.h"
+#endif
 
 namespace views {
 class BoxLayoutView;
@@ -26,19 +28,16 @@ class Label;
 namespace media_message_center {
 class MediaNotificationContainer;
 class MediaNotificationItem;
-class MediaSquigglyProgressView;
 }  // namespace media_message_center
-
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
-
 namespace global_media_controls {
 
+class MediaActionButton;
+class MediaProgressView;
+enum class PlaybackStateChangeForDragging;
+
 namespace {
-class MediaButton;
 class MediaLabelButton;
-}
+}  // namespace
 
 // Indicates this media notification view will be displayed on which page. These
 // values are persisted to logs. Entries should not be renumbered and numeric
@@ -64,9 +63,10 @@ enum class MediaDisplayPage {
 // CrOS implementation of media notification view.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
     : public media_message_center::MediaNotificationView {
- public:
-  METADATA_HEADER(MediaItemUIDetailedView);
+  METADATA_HEADER(MediaItemUIDetailedView,
+                  media_message_center::MediaNotificationView)
 
+ public:
   MediaItemUIDetailedView(
       media_message_center::MediaNotificationContainer* container,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
@@ -76,8 +76,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
       media_message_center::MediaColorTheme theme,
       MediaDisplayPage media_display_page);
   MediaItemUIDetailedView(const MediaItemUIDetailedView&) = delete;
-  MediaItemUIDetailedView& operator=(const MediaItemUIDetailedView&) =
-      delete;
+  MediaItemUIDetailedView& operator=(const MediaItemUIDetailedView&) = delete;
   ~MediaItemUIDetailedView() override;
 
   // MediaNotificationView:
@@ -94,6 +93,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   void UpdateWithMediaPosition(
       const media_session::MediaPosition& position) override;
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
+  void UpdateWithChapterArtwork(int index,
+                                const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override {}
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override {}
   void UpdateWithMuteStatus(bool mute) override {}
@@ -103,7 +104,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
 
   // views::View:
   void AddedToWidget() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // Helper functions for testing:
@@ -114,12 +114,19 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   views::ImageView* GetChevronIconForTesting();
   views::Button* GetActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
-  media_message_center::MediaSquigglyProgressView* GetProgressViewForTesting();
+  MediaProgressView* GetProgressViewForTesting();
   media_session::MediaPosition GetPositionForTesting();
   views::Button* GetStartCastingButtonForTesting();
   MediaItemUIFooter* GetFooterForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
   views::View* GetDeviceSelectorSeparatorForTesting();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  views::Button* GetChapterListButtonForTesting();
+  views::View* GetChapterListViewForTesting();
+  views::Label* GetCurrentTimestampViewForTesting();
+  views::Label* GetTotalDurationViewForTesting();
+  base::flat_map<int, ChapterItemView*> GetChaptersForTesting();
+#endif
 
  private:
   friend class MediaItemUIDetailedViewTest;
@@ -127,29 +134,48 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Callback for a media label being pressed.
   void MediaLabelPressed(MediaLabelButton* button);
 
-  MediaButton* CreateMediaButton(views::View* parent,
-                                 int button_id,
-                                 const gfx::VectorIcon& vector_icon,
-                                 int tooltip_text_id);
+  MediaActionButton* CreateMediaActionButton(views::View* parent,
+                                             int button_id,
+                                             const gfx::VectorIcon& vector_icon,
+                                             int tooltip_text_id);
 
   void UpdateActionButtonsVisibility();
 
   // Callback for a media action button being pressed.
-  void MediaButtonPressed(views::Button* button);
+  void MediaActionButtonPressed(views::Button* button);
 
-  // Callback for the user dragging the squiggly progress view. A playing media
-  // should be temporarily paused when the user is dragging the progress line.
-  void OnProgressDragging(bool pause);
+  // Callback for when the user starts or ends dragging the progress view, and
+  // the media is playing before dragging starts. The media should be
+  // temporarily paused when the dragging starts, and resumed when the dragging
+  // ends.
+  void OnPlaybackStateChangeForProgressDrag(
+      PlaybackStateChangeForDragging change);
 
-  // Callback for when the media squiggly progress view wants to update the
-  // progress position.
+  // Callback for when the media progress view wants to update the progress
+  // position.
   void SeekTo(double seek_progress);
+
+  // Callback for when the media progress view wants to update the progress
+  // position to the given time.
+  void SeekToTimestamp(const base::TimeDelta time) const;
 
   // Callback for when the start casting button is toggled by user.
   void StartCastingButtonPressed();
 
   // Update the display states of UI elements for casting devices.
   void UpdateCastingState();
+
+  // Updates the chapter list view's chapter items with the new `metadata`.
+  void UpdateChapterListViewWithMetadata(
+      const media_session::MediaMetadata& metadata);
+
+  // Creates a control row containing a timestamp view. Returns the container
+  // for additional buttons that can be added later to the end of the same row.
+  views::View* CreateControlsRow();
+
+  // Callback for when the progress view updates the progress in UI given the
+  // new media position.
+  void OnProgressViewUpdateProgress(base::TimeDelta current_timestamp);
 
   // Raw pointer to the container holding this view. The |container_| should
   // never be nullptr.
@@ -182,15 +208,42 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<MediaLabelButton> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
-  raw_ptr<media_message_center::MediaSquigglyProgressView>
-      squiggly_progress_view_ = nullptr;
-  raw_ptr<MediaButton> play_pause_button_ = nullptr;
-  raw_ptr<MediaButton> start_casting_button_ = nullptr;
-  raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
+  raw_ptr<MediaProgressView> progress_view_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
+  raw_ptr<MediaActionButton> start_casting_button_ = nullptr;
+  raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
 
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_selector_view_separator_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Callback for when the chapter list button is clicked by user.
+  void ToggleChapterListView();
+
+  // The chapter list button, which will be built only for chrome os ash.
+  // Clicking on which will show the chapter list view.
+  raw_ptr<MediaActionButton> chapter_list_button_ = nullptr;
+
+  // The chapter list view, which will be built only for chrome os ash.
+  raw_ptr<views::View> chapter_list_view_ = nullptr;
+
+  // The current duration timestamp. It updates its text when
+  // `OnProgressViewUpdateProgress` so the timestamp can be refreshed every
+  // second.
+  raw_ptr<views::Label> current_timestamp_view_ = nullptr;
+
+  // The total duration timestamp. It updates its text when
+  // `UpdateWithMediaPosition`.
+  raw_ptr<views::Label> total_duration_view_ = nullptr;
+
+  // The current `ChapterItemView` for the chapter at the index of the chapter
+  // list.
+  base::flat_map<int, ChapterItemView*> chapters_;
+
+  base::WeakPtrFactory<MediaItemUIDetailedView> weak_factory_{this};
+#endif
 };
 
 }  // namespace global_media_controls

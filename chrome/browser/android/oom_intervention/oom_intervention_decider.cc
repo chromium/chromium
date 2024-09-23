@@ -17,7 +17,7 @@ namespace {
 const char kOomInterventionDecider[] = "oom_intervention.decider";
 
 // Deprecated: Replaced with `kBlocklist`.
-// TODO(https://crbug.com/1169828): Remove this after M92 once existing
+// TODO(crbug.com/40744119): Remove this after M92 once existing
 // clients have migrated to the new pref.
 const char kBlacklist[] = "oom_intervention.blacklist";
 // Pref path for blocklist. If a hostname is in the blocklist we never trigger

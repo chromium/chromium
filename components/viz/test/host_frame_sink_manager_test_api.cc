@@ -11,7 +11,7 @@ HostFrameSinkManagerTestApi::HostFrameSinkManagerTestApi(
     : host_frame_sink_manager_(host_frame_sink_manager) {}
 
 void HostFrameSinkManagerTestApi::SetDisplayHitTestQuery(
-    HostFrameSinkManager::DisplayHitTestQueryMap map) {
+    DisplayHitTestQueryMap map) {
   host_frame_sink_manager_->display_hit_test_query_.clear();
   host_frame_sink_manager_->display_hit_test_query_ = std::move(map);
 }

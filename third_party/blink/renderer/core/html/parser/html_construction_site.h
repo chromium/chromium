@@ -98,7 +98,6 @@ class Element;
 class HTMLFormElement;
 class HTMLParserReentryPermit;
 class PartRoot;
-enum class DeclarativeShadowRootType;
 
 class HTMLConstructionSite final {
   DISALLOW_NEW();
@@ -150,7 +149,7 @@ class HTMLConstructionSite final {
   void InsertCommentOnHTMLHtmlElement(AtomicHTMLToken*);
   void InsertDOMPart(AtomicHTMLToken*);
   void InsertHTMLElement(AtomicHTMLToken*);
-  void InsertHTMLTemplateElement(AtomicHTMLToken*, DeclarativeShadowRootType);
+  void InsertHTMLTemplateElement(AtomicHTMLToken*, String);
   void InsertSelfClosingHTMLElementDestroyingToken(AtomicHTMLToken*);
   void InsertFormattingElement(AtomicHTMLToken*);
   void InsertHTMLHeadElement(AtomicHTMLToken*);
@@ -362,7 +361,6 @@ class HTMLConstructionSite final {
     void Trace(Visitor*) const;
 
    private:
-    Member<Comment> pending_node_part_comment_node_;
     Vector<String> pending_node_part_metadata_;
     HeapVector<Member<PartRoot>> part_root_stack_;
   };

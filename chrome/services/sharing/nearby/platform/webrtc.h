@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -37,11 +37,11 @@ class WebRtcMedium : public api::WebRtcMedium {
   WebRtcMedium(
       const mojo::SharedRemote<network::mojom::P2PSocketManager>&
           socket_manager,
-      const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
+      const mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>&
           mdns_responder_factory,
-      const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+      const mojo::SharedRemote<::sharing::mojom::IceConfigFetcher>&
           ice_config_fetcher,
-      const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+      const mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>&
           webrtc_signaling_messenger,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebRtcMedium() override;
@@ -51,7 +51,7 @@ class WebRtcMedium : public api::WebRtcMedium {
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
-      absl::string_view self_id,
+      std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;
 
  private:
@@ -60,10 +60,10 @@ class WebRtcMedium : public api::WebRtcMedium {
   void OnIceServersFetched(
       webrtc::PeerConnectionObserver* observer,
       PeerConnectionCallback callback,
-      std::vector<sharing::mojom::IceServerPtr> ice_servers)
+      std::vector<::sharing::mojom::IceServerPtr> ice_servers)
       LOCKS_EXCLUDED(peer_connection_factory_lock_);
 
-  void InitWebRTCThread(rtc::Thread** thread_to_set);
+  void InitWebRTCThread(raw_ptr<rtc::Thread, DanglingUntriaged>* thread_to_set);
   void InitPeerConnectionFactory()
       EXCLUSIVE_LOCKS_REQUIRED(peer_connection_factory_lock_);
   void InitNetworkThread(base::OnceClosure complete_callback);
@@ -80,15 +80,9 @@ class WebRtcMedium : public api::WebRtcMedium {
   // These rtc::Thread* are jingle thread wrappers around the corresponding
   // base::Thread. They get cleaned up on thread shutdown so we don't need to
   // manage lifetime.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_network_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_signaling_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_worker_thread_ = nullptr;
+  raw_ptr<rtc::Thread, DanglingUntriaged> rtc_network_thread_ = nullptr;
+  raw_ptr<rtc::Thread, DanglingUntriaged> rtc_signaling_thread_ = nullptr;
+  raw_ptr<rtc::Thread, DanglingUntriaged> rtc_worker_thread_ = nullptr;
 
   // Used to guard access to peer_connection_factory_.
   base::Lock peer_connection_factory_lock_;
@@ -98,13 +92,13 @@ class WebRtcMedium : public api::WebRtcMedium {
       peer_connection_factory_ GUARDED_BY(peer_connection_factory_lock_);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
-  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory_;
-  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
-  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
+  mojo::SharedRemote<::sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
+  mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
 
-  std::unique_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
+  std::unique_ptr<::sharing::IpcPacketSocketFactory> socket_factory_;
   std::unique_ptr<rtc::NetworkManager> network_manager_;
 
   // This task runner is used to fetch ice servers and initialize the peer

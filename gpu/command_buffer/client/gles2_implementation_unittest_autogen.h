@@ -8,6 +8,11 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file is included by gles2_implementation.h to declare the
 // GL api functions.
 #ifndef GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_UNITTEST_AUTOGEN_H_
@@ -2922,17 +2927,6 @@ TEST_F(GLES2ImplementationTest, DrawBuffersEXT) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, DiscardBackbufferCHROMIUM) {
-  struct Cmds {
-    cmds::DiscardBackbufferCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init();
-
-  gl_->DiscardBackbufferCHROMIUM();
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, FlushDriverCachesCHROMIUM) {
   struct Cmds {
     cmds::FlushDriverCachesCHROMIUM cmd;
@@ -3003,55 +2997,6 @@ TEST_F(GLES2ImplementationTest, EndSharedImageAccessDirectCHROMIUM) {
   expected.cmd.Init(1);
 
   gl_->EndSharedImageAccessDirectCHROMIUM(1);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, ConvertRGBAToYUVAMailboxesINTERNAL) {
-  GLbyte data[80] = {0};
-  struct Cmds {
-    cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate cmd;
-    GLbyte data[80];
-  };
-
-  for (int jj = 0; jj < 80; ++jj) {
-    data[jj] = static_cast<GLbyte>(jj);
-  }
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, &data[0]);
-  gl_->ConvertRGBAToYUVAMailboxesINTERNAL(1, 2, 3, &data[0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, ConvertYUVAMailboxesToRGBINTERNAL) {
-  GLbyte data[144] = {0};
-  struct Cmds {
-    cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate cmd;
-    GLbyte data[144];
-  };
-
-  for (int jj = 0; jj < 144; ++jj) {
-    data[jj] = static_cast<GLbyte>(jj);
-  }
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4, 5, 6, 7, &data[0]);
-  gl_->ConvertYUVAMailboxesToRGBINTERNAL(1, 2, 3, 4, 5, 6, 7, &data[0]);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, ConvertYUVAMailboxesToTextureINTERNAL) {
-  GLbyte data[64] = {0};
-  struct Cmds {
-    cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate cmd;
-    GLbyte data[64];
-  };
-
-  for (int jj = 0; jj < 64; ++jj) {
-    data[jj] = static_cast<GLbyte>(jj);
-  }
-  Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4, 5, 6, 7, 8, true, 10, 11, 12, &data[0]);
-  gl_->ConvertYUVAMailboxesToTextureINTERNAL(1, 2, 3, 4, 5, 6, 7, 8, true, 10,
-                                             11, 12, &data[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

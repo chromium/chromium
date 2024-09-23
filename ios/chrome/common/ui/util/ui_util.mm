@@ -44,3 +44,12 @@ CGRect CGRectMakeCenteredRectInFrame(CGSize frameSize, CGSize rectSize) {
 bool AreCGFloatsEqual(CGFloat a, CGFloat b) {
   return std::fabs(a - b) <= std::numeric_limits<CGFloat>::epsilon();
 }
+
+bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment) {
+  return IsRegularXRegularSizeClass(environment.traitCollection);
+}
+
+bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
+  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
+         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
+}

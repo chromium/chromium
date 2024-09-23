@@ -208,6 +208,7 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.SCOPE, SCOPE);
         bundle.putString(WebApkMetaDataKeys.NAME, NAME);
         bundle.putString(WebApkMetaDataKeys.SHORT_NAME, SHORT_NAME);
+        bundle.putBoolean(WebApkMetaDataKeys.HAS_CUSTOM_NAME, true);
         bundle.putString(WebApkMetaDataKeys.DISPLAY_MODE, DISPLAY_MODE);
         bundle.putString(WebApkMetaDataKeys.ORIENTATION, ORIENTATION);
         bundle.putString(WebApkMetaDataKeys.THEME_COLOR, THEME_COLOR);
@@ -255,6 +256,7 @@ public class WebApkInfoTest {
         Assert.assertEquals(SCOPE, info.scopeUrl());
         Assert.assertEquals(NAME, info.name());
         Assert.assertEquals(SHORT_NAME, info.shortName());
+        Assert.assertEquals(true, info.hasCustomName());
         Assert.assertEquals(MANIFEST_ID, info.manifestId());
         Assert.assertEquals(APP_KEY, info.appKey());
         Assert.assertEquals(DisplayMode.MINIMAL_UI, info.displayMode());
@@ -938,5 +940,38 @@ public class WebApkInfoTest {
         Assert.assertEquals(ICON_URL, info.icon().iconUrl());
         Assert.assertEquals(ICON_MURMUR2_HASH, info.icon().iconHash());
         Assert.assertEquals(false, info.isIconAdaptive());
+    }
+
+    /** Test get manifestId and fallbacks */
+    @Test
+    public void testManifestIdAndFallback() {
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+            bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_ID, MANIFEST_ID);
+            WebApkTestHelper.registerWebApkWithMetaData(
+                    WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
+            Intent intent =
+                    WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+            WebappInfo info = createWebApkInfo(intent);
+            Assert.assertEquals(START_URL, info.url());
+            Assert.assertEquals(START_URL, info.manifestStartUrl());
+            Assert.assertEquals(MANIFEST_ID, info.manifestId());
+            Assert.assertEquals(MANIFEST_ID, info.manifestIdWithFallback());
+        }
+
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+            WebApkTestHelper.registerWebApkWithMetaData(
+                    WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
+            Intent intent =
+                    WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+            WebappInfo info = createWebApkInfo(intent);
+            Assert.assertEquals(START_URL, info.url());
+            Assert.assertEquals(START_URL, info.manifestStartUrl());
+            Assert.assertNull(info.manifestId());
+            Assert.assertEquals(START_URL, info.manifestIdWithFallback());
+        }
     }
 }

@@ -10,21 +10,22 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
+import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Interface for customizing text selection menu items in {@link SelectionPopupController} */
-public class AwSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
+/**
+ * The WebView delegate customizing text selection menu items in {@link SelectionPopupController}.
+ * It records webview-specific histograms and ensures the order of Samsung-specific menu entries.
+ */
+public class AwSelectionActionMenuDelegate extends AutofillSelectionActionMenuDelegate {
     private static final String TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME =
             "Android.WebView.TextSelectionMenuOrdering";
-    private AutofillSelectionMenuItemHelper mAutofillSelectionMenuItemHelper;
 
     // This should be kept in sync with the definition
     // |AndroidWebViewTextSelectionMenuOrdering| in
@@ -76,23 +77,10 @@ public class AwSelectionActionMenuDelegate implements SelectionActionMenuDelegat
 
     @NonNull
     @Override
-    public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
-        if (mAutofillSelectionMenuItemHelper != null) {
-            return mAutofillSelectionMenuItemHelper.getAdditionalItems();
-        }
-        return new ArrayList<>();
-    }
-
-    @NonNull
-    @Override
     public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
         if (SamsungSelectionActionMenuHelper.isManageAppsSupported()) {
             return SamsungSelectionActionMenuHelper.getAdditionalTextProcessingItems();
         }
         return new ArrayList<>();
-    }
-
-    public void setAutofillSelectionMenuItemHelper(AutofillSelectionMenuItemHelper provider) {
-        mAutofillSelectionMenuItemHelper = provider;
     }
 }

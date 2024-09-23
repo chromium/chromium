@@ -21,8 +21,8 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       const mojom::PlaneStridesPtr& strides) {
   std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
-    NOTREACHED() << "Unsupported VideoPixelFormat "
-                 << VideoPixelFormatToString(format);
+    NOTREACHED_IN_MIGRATION()
+        << "Unsupported VideoPixelFormat " << VideoPixelFormatToString(format);
     return false;
   }
   // There's no consumer information here to determine the precise buffer usage,
@@ -56,13 +56,13 @@ bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
 
 std::unique_ptr<VideoCaptureBufferHandle>
 GpuMemoryBufferTrackerCros::GetMemoryMappedAccess() {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return std::make_unique<NullHandle>();
 }
 
 base::UnsafeSharedMemoryRegion
 GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return base::UnsafeSharedMemoryRegion();
 }
 
@@ -95,7 +95,7 @@ uint32_t GpuMemoryBufferTrackerCros::GetMemorySizeInBytes() {
     case gfx::BufferFormat::R_8:
       return buffer_->GetSize().width() * buffer_->GetSize().height();
     default:
-      NOTREACHED() << "Unsupported gfx buffer format";
+      NOTREACHED_IN_MIGRATION() << "Unsupported gfx buffer format";
       return buffer_->GetSize().width() * buffer_->GetSize().height();
   }
 }

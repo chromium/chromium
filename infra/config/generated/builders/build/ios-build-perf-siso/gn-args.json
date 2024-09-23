@@ -1,0 +1,35 @@
+{
+  "phases": {
+    "builtin": {
+      "gn_args": {
+        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+        "enable_run_ios_unittests_with_xctest": true,
+        "is_component_build": false,
+        "is_debug": true,
+        "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_clang_coverage": true,
+        "use_reclient": false,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    },
+    "reproxy": {
+      "gn_args": {
+        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+        "enable_run_ios_unittests_with_xctest": true,
+        "is_component_build": false,
+        "is_debug": true,
+        "symbol_level": 1,
+        "target_cpu": "x64",
+        "target_environment": "simulator",
+        "target_os": "ios",
+        "use_clang_coverage": true,
+        "use_remoteexec": true,
+        "use_siso": true
+      }
+    }
+  }
+}

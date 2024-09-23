@@ -1,0 +1,36 @@
+<style include="storybook-styles">
+</style>
+
+<h2>Slider with ticks</h2>
+<settings-slider-row label="Lorem ipsum" sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display" ticks="[[ticks_]]" value="5"
+    aria-label="A11y label" aria-description="A11y description"
+    disabled="[[disabled_]]">
+</settings-slider-row>
+<cr-checkbox checked="{{disabled_}}">Disabled</cr-checkbox>
+
+<h2>Slider with ticks, hide markers</h2>
+<settings-slider-row label="Lorem ipsum" sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display" ticks="[[ticks_]]" value="5" hide-markers>
+</settings-slider-row>
+
+<h2>Mananged</h2>
+<settings-slider-row label="Lorem ipsum" ticks="[[ticks_]]"
+    pref="[[virtualManagedPref_]]">
+</settings-slider-row>
+
+<h2>Slider with scale</h2>
+<settings-slider-row label="Lorem ipsum" sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display" min="0" max="10" scale="10" min-label="min"
+    max-label="max" hide-label="[[hideLabel_]]"
+    value="[[sliderValueWithScale_]]"
+    on-change="onScaleSliderChange_"
+    update-value-instantly="[[updateValueInstantly_]]">
+</settings-slider-row>
+<cr-checkbox checked="{{hideLabel_}}">Hide labels</cr-checkbox>
+<cr-checkbox checked="{{updateValueInstantly_}}">
+  Update value instantly
+</cr-checkbox>
+<code>
+  <div>Slider value: [[sliderValueWithScale_]]</div>
+</code>

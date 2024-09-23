@@ -143,7 +143,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
         // Avoid showing the chooser when ModalDialogManager indicates that
         // tab-modal or app-modal dialogs are suspended.
-        // TODO(crbug.com/1511004): Integrate UsbChooserDialog with
+        // TODO(crbug.com/41483591): Integrate UsbChooserDialog with
         // ModalDialogManager.
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (modalDialogManager != null

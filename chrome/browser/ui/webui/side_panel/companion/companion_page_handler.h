@@ -13,7 +13,7 @@
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -83,7 +83,9 @@ class CompanionPageHandler
       const signin::PrimaryAccountChangeEvent& event) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
   // UrlKeyedDataCollectionConsentHelper::Observer overrides.
   void OnUrlKeyedDataCollectionConsentStateChanged(
@@ -188,7 +190,8 @@ class CompanionPageHandler
   std::optional<base::TimeTicks> ui_ready_for_page_content_time_;
   // Used to store the page content before the side panel is ready for it. This
   // is untrustworthy content which will be sent to the webui for processing.
-  // TODO(1493364): Use an opaque mojo type to hold this data in the browser.
+  // TODO(crbug.com/40285814): Use an opaque mojo type to hold this data in the
+  // browser.
   std::optional<std::string> inner_html_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};

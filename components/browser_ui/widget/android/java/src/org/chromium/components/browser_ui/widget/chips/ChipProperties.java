@@ -57,6 +57,10 @@ public class ChipProperties {
     /** The max width a chip's text should have in PX. Use {@link #SHOW_WHOLE_TEXT} for no limit. */
     public static final WritableIntPropertyKey TEXT_MAX_WIDTH_PX = new WritableIntPropertyKey();
 
+    // Res id for the style to apply to the primary text view of the chip.
+    public static final WritableIntPropertyKey PRIMARY_TEXT_APPEARANCE =
+            new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 APPLY_ICON_TINT,
@@ -65,6 +69,7 @@ public class ChipProperties {
                 ENABLED,
                 ICON,
                 ID,
+                PRIMARY_TEXT_APPEARANCE,
                 SELECTED,
                 TEXT,
                 TEXT_MAX_WIDTH_PX

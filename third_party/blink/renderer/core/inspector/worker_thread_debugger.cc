@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
+#include "third_party/blink/renderer/core/shadow_realm/shadow_realm_global_scope.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
@@ -80,7 +81,14 @@ void WorkerThreadDebugger::ReportConsoleMessage(
     SourceLocation* location) {
   if (!context)
     return;
-  To<WorkerOrWorkletGlobalScope>(context)
+
+  ExecutionContext* root_worker_context =
+      context->IsShadowRealmGlobalScope()
+          ? To<ShadowRealmGlobalScope>(context)
+                ->GetRootInitiatorExecutionContext()
+          : context;
+
+  To<WorkerOrWorkletGlobalScope>(root_worker_context)
       ->GetThread()
       ->GetWorkerReportingProxy()
       .ReportConsoleMessage(source, level, message, location);
@@ -253,7 +261,7 @@ void WorkerThreadDebugger::consoleClear(int context_group_id) {
 v8::MaybeLocal<v8::Value> WorkerThreadDebugger::memoryInfo(
     v8::Isolate*,
     v8::Local<v8::Context>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return v8::MaybeLocal<v8::Value>();
 }
 

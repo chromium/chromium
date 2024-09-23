@@ -43,7 +43,7 @@
 <translation id="134645005685694099">Auf deinem Gerät ist nicht genügend Speicherplatz vorhanden, um die Dateisynchronisierung aktiviert zu lassen. Neue Dateien werden nicht mehr automatisch synchronisiert.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
-<translation id="1363028406613469049">Titel</translation>
+<translation id="1363028406613469049">Verfolgen</translation>
 <translation id="1378727793141957596">Willkommen bei Google Drive!</translation>
 <translation id="1379911846207762492">Du kannst Dateien offline verfügbar machen, wenn du keine Internetverbindung hast.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
@@ -63,7 +63,7 @@
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" kann nicht umbenannt werden. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1499943022354839699">Englisch (USA) mit Dvorak-Tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Host</translation>
-<translation id="1521655867290435174">Google Tabellen</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1547964879613821194">Kanadisches Englisch</translation>
 <translation id="1556189134700913550">Auf alle anwenden</translation>
 <translation id="1561842594491319104">Chrome-Geräte</translation>
@@ -193,7 +193,7 @@
 <translation id="2500392669976258912">Gujarati (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scannen</translation>
-<translation id="252641322760726369">Berühre und halte eine Datei und tippe auf <ph name="ICON" /> und wähle „<ph name="PIN_COMMAND" />“ aus, um schnell auf die Datei in der Ablage zugreifen zu können.</translation>
+<translation id="252641322760726369">Halte eine Datei gedrückt, tippe auf <ph name="ICON" /> und wähle „<ph name="PIN_COMMAND" />“ aus, um schnell auf die Datei in der Ablage zugreifen zu können.</translation>
 <translation id="2534460670861217804">Sicherer HTTP-Proxy</translation>
 <translation id="2541377937973966830">Inhalte in diesem Ordner sind schreibgeschützt. Einige Aktionen werden nicht unterstützt.</translation>
 <translation id="2542049655219295786">Google-Tabelle</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-Host</translation>
 <translation id="3104793765551262433">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
-<translation id="3113153474486991170">„<ph name="PATH" />“ konnte an diesem Ort nicht geöffnet werden. Kopiere die Datei zum Öffnen in „Meine Dateien“.</translation>
 <translation id="3113592018909187986">Du hast noch 1 Versuch. Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst.</translation>
 <translation id="3124404833828281817">Person beim Tagträumen</translation>
 <translation id="3126026824346185272">Strg</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3691184985318546178">Singhalesisch</translation>
+<translation id="3702842351052426940">Deine SIM-Karte oder dein eSIM-Profil ist möglicherweise deaktiviert. Probiere es damit, dass du deine SIM-Karte austauschst oder das eSIM-Profil wechselst.</translation>
 <translation id="3722341589402358578">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht in den Papierkorb verschoben.</translation>
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Dieser Proxy wird von deinem Administrator erzwungen</translation>
 <translation id="3830674330436234648">Keine Wiedergabe verfügbar</translation>
 <translation id="383652340667548381">Serbisch</translation>
+<translation id="3839045880592694915">Dein Mobilfunkanbieter erlaubt keine Verbindung über dein Modem. Wenn du weitere Informationen benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="385051799172605136">Zurück</translation>
-<translation id="3851491607336266896">Verbunden, eingeschränkte Konnektivität</translation>
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Kürzlich geöffnete Microsoft-Dateien wurden in OneDrive verschoben</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Englisch (USA) mit Workman-Tastatur</translation>
-<translation id="4019998208269143058">An Schnellzugriff anpinnen</translation>
 <translation id="4040753847560036377">Falscher PUK</translation>
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
+<translation id="4101601646343868113">Melde dich in deinem Mobilfunknetz an und überprüfe, ob dein Tarif für mobile Daten aktiv ist</translation>
 <translation id="4124731372776320263">1 Drive-Datei wird synchronisiert</translation>
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil mit Tamil99-Tastatur</translation>
 <translation id="5633226425545095130">Wenn du dieses Element verschiebst, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="5649768706273821470">Anhören</translation>
+<translation id="5650895901941743674">APN‑Konfiguration prüfen</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
 <translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Verbinden</translation>
 <translation id="6269630227984243955">Malaiisch</translation>
 <translation id="6271903698064569429">Die Dateien können nicht hochgeladen werden, weil in „<ph name="SHARED_DRIVE_NAME" />“ nicht genügend Speicherplatz vorhanden ist.</translation>
+<translation id="6279140785485544797">Dein Tarif für mobile Daten ist möglicherweise abgelaufen. Wenn du weitere Unterstützung benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="6287852322318138013">App zum Öffnen der Datei auswählen</translation>
 <translation id="6295542640242147836">SIM-Karte sperren</translation>
 <translation id="6296410173147755564">Ungültiger PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-Archiv</translation>
 <translation id="6321303798550928047">Winken</translation>
 <translation id="6327785803543103246">Web-Proxy Autodiscovery</translation>
-<translation id="6337014272874260727">Von Schnellzugriff loslösen</translation>
 <translation id="6339145975392024142">US-amerikanisch (PC)</translation>
 <translation id="6356685157277930264">Feedbackfenster für "Meine Dateien"</translation>
 <translation id="6358884629796491903">Drache</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Aktuelles Verzeichnis</translation>
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6755827872271341378">Chrome OS Flex-Gerät</translation>
+<translation id="6777029074498310250">Weitere Informationen findest du unter <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6794539005637808366">Stelle das Element wieder her oder ziehe es in einen neuen Ordner außerhalb des Papierkorbs</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamil mit InScript-Tastatur</translation>
 <translation id="7088615885725309056">Älter</translation>
 <translation id="7103992300314999525">Mazedonisch</translation>
+<translation id="7104338189998813914">Beim Zugriff auf dein OneDrive-Konto ist ein Problem aufgetreten</translation>
 <translation id="7106346894903675391">Mehr Speicherplatz erwerben...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;Ablage durchsuchen&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetisch)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Einen Moment bitte</translation>
 <translation id="7600126690270271294">Serbisch</translation>
 <translation id="7603724359189955920">Gitter</translation>
+<translation id="7624010287655004652">An anderen Mobilfunkanbieter gebunden</translation>
 <translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Gib einen anderen Namen ein und versuche es erneut.</translation>
 <translation id="7628656427739290098">Zu <ph name="PERCENT" /> % abgeschlossen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
 <translation id="8609695766746872526">Isländisch</translation>
+<translation id="8630384863424041081">Gib die PIN deiner SIM‑Karte oder die Standard‑PIN ein, die du von deinem Mobilfunkanbieter erhalten hast. Wenn du weitere Unterstützung benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Deine Offlinedateien mussten entfernt werden</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Diese Datei ist vertraulich und unterliegt den Einschränkungen durch die Administratorrichtlinie.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8713112442029511308">Maltesisch</translation>
-<translation id="8714138378966541668">Vom Anbieter gesperrt</translation>
 <translation id="8714406895390098252">Fahrrad</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>

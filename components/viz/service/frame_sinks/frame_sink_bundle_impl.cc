@@ -4,12 +4,15 @@
 
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 
+#include <map>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -44,6 +47,10 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
   }
 
   bool IsEmpty() const { return frame_sinks_.empty(); }
+
+  base::WeakPtr<SinkGroup> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   void AddFrameSink(uint32_t sink_id) {
     frame_sinks_.insert(sink_id);
@@ -206,6 +213,8 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
   std::set<uint32_t> unacked_submissions_;
 
   BeginFrameArgs last_used_begin_frame_args_;
+
+  base::WeakPtrFactory<SinkGroup> weak_ptr_factory_{this};
 };
 
 FrameSinkBundleImpl::FrameSinkBundleImpl(
@@ -282,8 +291,9 @@ void FrameSinkBundleImpl::SetWantsBeginFrameAcks(uint32_t sink_id) {
 
 void FrameSinkBundleImpl::Submit(
     std::vector<mojom::BundledFrameSubmissionPtr> submissions) {
-  std::set<SinkGroup*> groups;
-  std::set<SinkGroup*> affected_groups;
+  std::map<raw_ptr<SinkGroup>, base::WeakPtr<SinkGroup>> groups;
+  std::map<raw_ptr<SinkGroup>, base::WeakPtr<SinkGroup>> affected_groups;
+
   // Count the frame submissions before processing anything. This ensures that
   // any frames submitted here will be acked together in a batch, and not acked
   // individually in case they happen to ack synchronously within
@@ -294,10 +304,10 @@ void FrameSinkBundleImpl::Submit(
   // through to the client without batching.
   for (auto& submission : submissions) {
     if (auto* group = GetSinkGroup(submission->sink_id)) {
-      groups.insert(group);
+      groups.emplace(group, group->GetWeakPtr());
       if (submission->data->is_frame()) {
         group->WillSubmitFrame(submission->sink_id);
-        affected_groups.insert(group);
+        affected_groups.emplace(group, group->GetWeakPtr());
       }
     }
   }
@@ -327,19 +337,23 @@ void FrameSinkBundleImpl::Submit(
     }
   }
 
-  for (auto* group : groups) {
-    group->DidFinishFrame();
+  for (const auto& [unsafe_group, weak_group] : groups) {
+    if (weak_group) {
+      weak_group->DidFinishFrame();
+    }
   }
 
-  for (auto* group : affected_groups) {
-    group->FlushMessages();
+  for (const auto& [unsafe_group, weak_group] : affected_groups) {
+    if (weak_group) {
+      weak_group->FlushMessages();
+    }
   }
 }
 
 void FrameSinkBundleImpl::DidAllocateSharedBitmap(
     uint32_t sink_id,
     base::ReadOnlySharedMemoryRegion region,
-    const gpu::Mailbox& id) {
+    const SharedBitmapId& id) {
   if (auto* sink = GetFrameSink(sink_id)) {
     sink->DidAllocateSharedBitmap(std::move(region), id);
   }

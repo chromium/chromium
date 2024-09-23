@@ -138,14 +138,14 @@ class VIEWS_EXPORT Combobox : public View,
   bool IsMenuRunning() const;
 
   // Overridden from View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
   bool OnKeyPressed(const ui::KeyEvent& e) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnThemeChanged() override;
 
@@ -201,6 +201,15 @@ class VIEWS_EXPORT Combobox : public View,
   PrefixSelector* GetPrefixSelector();
 
   const gfx::FontList& GetForegroundFontList() const;
+
+  // Sets the expanded/collapsed accessible state of the view.
+  void UpdateExpandedCollapsedAccessibleState() const;
+
+  // Updates the kValue attribute and triggers a kValueChanged event if
+  // selected index is changed.
+  void UpdateAccessibleValue() const;
+
+  void UpdateAccessibleDefaultActionVerb();
 
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
@@ -270,8 +279,8 @@ class VIEWS_EXPORT Combobox : public View,
   // destroyed.
   std::unique_ptr<MenuRunner> menu_runner_;
 
-  // Called to update background color and border when the combobox is
-  // enabled/disabled.
+  // Called to update background color, border and default action verb in
+  // accessibility cache when the combobox is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
 
   // When true, the size of contents is defined by the widest label in the menu.

@@ -115,8 +115,8 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  // TODO(crbug.com/776606): WKWebView doesn't fire load event for back/forward
-  // navigation.
+  // TODO(crbug.com/41350773): WKWebView doesn't fire load event for
+  // back/forward navigation.
   [self assertStatusText:@"replaceStateHashWithObject"
          withOmniboxText:replaceStateHashWithObjectOmniboxText];
 
@@ -275,8 +275,8 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
   // Go back twice (to second #string) and verify page did load.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  // TODO(crbug.com/776606): WKWebView doesn't fire load event for back/forward
-  // navigation.
+  // TODO(crbug.com/41350773): WKWebView doesn't fire load event for
+  // back/forward navigation.
   [self assertStatusText:nil withOmniboxText:pushStateHashStringOmniboxText];
 
   // Go back once (to first #string) and verify page did not load.

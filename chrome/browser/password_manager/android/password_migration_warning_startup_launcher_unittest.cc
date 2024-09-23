@@ -42,6 +42,10 @@ class PasswordMigrationWarningStartupLauncherTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     test_store_ = base::MakeRefCounted<password_manager::TestPasswordStore>();
+    profile()->GetPrefs()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
     test_store_->Init(profile()->GetPrefs(),
                       /*affiliated_match_helper=*/nullptr);
     warning_startup_launcher_ =

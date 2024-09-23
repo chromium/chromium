@@ -5,11 +5,12 @@
 #ifndef BASE_PROFILER_SAMPLE_METADATA_H_
 #define BASE_PROFILER_SAMPLE_METADATA_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/profiler/metadata_recorder.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -68,7 +69,7 @@ enum class SampleMetadataScope {
 class BASE_EXPORT SampleMetadata {
  public:
   // Set the metadata value associated with |name| to be recorded for |scope|.
-  explicit SampleMetadata(StringPiece name, SampleMetadataScope scope);
+  explicit SampleMetadata(std::string_view name, SampleMetadataScope scope);
 
   SampleMetadata(const SampleMetadata&) = default;
   ~SampleMetadata() = default;
@@ -115,7 +116,7 @@ class BASE_EXPORT SampleMetadata {
 class BASE_EXPORT ScopedSampleMetadata {
  public:
   // Set the metadata value associated with |name| for |scope|.
-  ScopedSampleMetadata(StringPiece name,
+  ScopedSampleMetadata(std::string_view name,
                        int64_t value,
                        SampleMetadataScope scope);
 
@@ -126,7 +127,7 @@ class BASE_EXPORT ScopedSampleMetadata {
   // different frames. Prefer the previous constructor if no user-defined
   // metadata is required. Note: values specified for a name and key are stored
   // separately from values specified with only a name.
-  ScopedSampleMetadata(StringPiece name,
+  ScopedSampleMetadata(std::string_view name,
                        int64_t key,
                        int64_t value,
                        SampleMetadataScope scope);
@@ -138,8 +139,8 @@ class BASE_EXPORT ScopedSampleMetadata {
 
  private:
   const uint64_t name_hash_;
-  absl::optional<int64_t> key_;
-  absl::optional<PlatformThreadId> thread_id_;
+  std::optional<int64_t> key_;
+  std::optional<PlatformThreadId> thread_id_;
 };
 
 // Applies the specified metadata to samples already recorded between
@@ -153,12 +154,12 @@ class BASE_EXPORT ScopedSampleMetadata {
 // extend before or after it. |period_end| must be <= TimeTicks::Now().
 BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
                                             TimeTicks period_end,
-                                            StringPiece name,
+                                            std::string_view name,
                                             int64_t value,
                                             SampleMetadataScope scope);
 BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
                                             TimeTicks period_end,
-                                            StringPiece name,
+                                            std::string_view name,
                                             int64_t key,
                                             int64_t value,
                                             SampleMetadataScope scope);
@@ -168,7 +169,7 @@ BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
 // earlier in time. This is probably not what you want for most use cases;
 // prefer using SampleMetadata / ScopedSampleMetadata /
 // ApplyMetadataToPastSamples instead.
-BASE_EXPORT void AddProfileMetadata(StringPiece name,
+BASE_EXPORT void AddProfileMetadata(std::string_view name,
                                     int64_t key,
                                     int64_t value,
                                     SampleMetadataScope scope);

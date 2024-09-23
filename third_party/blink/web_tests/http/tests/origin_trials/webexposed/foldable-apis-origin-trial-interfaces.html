@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 FoldableAPIs --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AwbXTS8rkMQ7E3eYhkhRbmpyRf7dkXHwlUm2DR9yt+a/4UrtCvY5QVthdGlpXnDWi/VlABqvrgXEFdASIzs2uQEAAABUeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRm9sZGFibGVBUElzIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>Foldable APIs - interfaces exposed by origin trial</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Navigator': ['devicePosture'],
+        'DevicePosture': ['type'],
+      },
+  );
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Viewport': ['segments'],
+      },
+  );
+}, "Foldables APIs related interfaces in Origin-Trial enabled document.");
+
+</script>

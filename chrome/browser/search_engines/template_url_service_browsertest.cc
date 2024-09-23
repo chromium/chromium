@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,13 +15,6 @@
 
 class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
  public:
-  TemplateURLServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
-  }
-
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
 
@@ -38,8 +30,6 @@ class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
   TemplateURLService* template_url_service() {
     return TemplateURLServiceFactory::GetForProfile(browser()->profile());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks the logic associated with changing countries when reloading the
@@ -69,8 +59,9 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
             TemplateURLPrepopulateData::yahoo_fr.keyword);
 }
 
-// TODO(crbug.com/1520740): Fails in Mac builds.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/41493716): Fails in Mac builds.
+// TODO(crbug.com/365747879): Flaky in Windows builds.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
 #else
 #define MAYBE_LoadKeywordData LoadKeywordData

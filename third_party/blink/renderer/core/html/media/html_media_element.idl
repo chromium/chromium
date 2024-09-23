@@ -72,7 +72,7 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     readonly attribute boolean ended;
     [CEReactions, Reflect] attribute boolean autoplay;
     [CEReactions, Reflect] attribute boolean loop;
-    [CallWith=ScriptState, ImplementedAs=playForBindings] Promise<void> play();
+    [CallWith=ScriptState, ImplementedAs=playForBindings] Promise<undefined> play();
     void pause();
     [RuntimeEnabled=MediaLatencyHint, CEReactions]
     attribute double latencyHint;

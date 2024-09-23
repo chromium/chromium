@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "affiliation_mixin.cc",
+    "affiliation_mixin.h",
+    "affiliation_test_helper.cc",
+    "affiliation_test_helper.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/dbus/constants",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/user_manager",
+    "//crypto",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "user_affiliation_browsertest.cc" ]
+
+  deps = [
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/install_attributes",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

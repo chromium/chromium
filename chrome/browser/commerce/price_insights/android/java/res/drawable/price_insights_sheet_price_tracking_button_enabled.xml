@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+  <item
+      android:drawable="@drawable/price_tracking_enabled_filled"
+      android:width="@dimen/price_insights_price_tracking_button_icon_size"
+      android:height="@dimen/price_insights_price_tracking_button_icon_size"
+      />
+
+</layer-list >

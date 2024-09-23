@@ -32,13 +32,12 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/status_collector/child_activity_storage.h"
-#include "chrome/browser/ash/policy/status_collector/interval_map.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -426,7 +425,7 @@ bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
   return false;
 }
 
-// TODO(https://crbug.com/1364425)
+// TODO(crbug.com/40239081)
 // Make this function fallible when the optional passed in evaluated to
 // nullptr, instead of returning a dummy string.
 void ChildStatusCollector::OnOSVersion(

@@ -12,6 +12,7 @@ component("base") {
   defines = [ "IS_CHROMEOS_UI_BASE_IMPL" ]
 
   sources = [
+    "app_types.h",
     "chromeos_ui_constants.h",
     "display_util.cc",
     "display_util.h",

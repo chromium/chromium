@@ -4,6 +4,7 @@
 
 #include "chromecast/base/android/system_time_change_notifier_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/base/jni_headers/SystemTimeChangeNotifierAndroid_jni.h"
 
 using jni_zero::JavaParamRef;

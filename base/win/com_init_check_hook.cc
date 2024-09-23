@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/win/com_init_check_hook.h"
+
+#include <objbase.h>
 
 #include <windows.h>
 
-#include <objbase.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -179,9 +185,7 @@ class HookManager {
       NOTREACHED() << "Unrecognized hotpatch function format: "
                    << FirstSevenBytesToString(
                           co_create_instance_padded_address_);
-      return;
     } else if (format == HotpatchPlaceholderFormat::EXTERNALLY_PATCHED) {
-      hotpatch_placeholder_format_ = format;
       NOTREACHED() << "CoCreateInstance appears to be previously patched. <"
                    << FirstSevenBytesToString(
                           co_create_instance_padded_address_)
@@ -189,7 +193,6 @@ class HookManager {
                    << FirstSevenBytesToString(
                           reinterpret_cast<uint32_t>(&structured_hotpatch_))
                    << ">";
-      return;
     } else if (format == HotpatchPlaceholderFormat::APPHELP_SHIM) {
       // The apphelp shim placeholder does not allocate enough bytes for a
       // trampolined jump. In this case, we skip patching.
@@ -291,12 +294,11 @@ class HookManager {
                  << FirstSevenBytesToString(
                         reinterpret_cast<uint32_t>(&structured_hotpatch_))
                  << ">";
-    return true;
   }
 
   // Indirect call to original_co_create_instance_body_function_ triggers CFI
   // so this function must have CFI disabled.
-  static DISABLE_CFI_ICALL HRESULT __stdcall DCheckedCoCreateInstance(
+  DISABLE_CFI_ICALL static HRESULT __stdcall DCheckedCoCreateInstance(
       const CLSID& rclsid,
       IUnknown* pUnkOuter,
       DWORD dwClsContext,

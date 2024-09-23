@@ -25,7 +25,7 @@ function processPaintEvents(paintEvents: PerformanceObserverEntryList,
                             observer: PerformanceObserver): void {
   for (const event of paintEvents.getEntriesByName(FIRST_CONTENTFUL_PAINT)){
     // The performance.timing.navigationStart property has been deprecated.
-    // TODO(crbug.com/1273083)
+    // TODO(crbug.com/40806748)
     const response = {
       'metric' : 'FirstContentfulPaint',
       'frameNavigationStartTime' : performance.timing.navigationStart,

@@ -39,11 +39,11 @@ class FileSystemProviderOperationsMoveEntryTest : public testing::Test {
   ~FileSystemProviderOperationsMoveEntryTest() override = default;
 
   void SetUp() override {
-    MountOptions mount_options(kFileSystemId, "" /* display_name */);
+    MountOptions mount_options(kFileSystemId, /*display_name=*/"");
     mount_options.writable = true;
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, mount_options, base::FilePath(), false /* configurable */,
-        true /* watchable */, extensions::SOURCE_FILE, IconSet());
+        kExtensionId, mount_options, base::FilePath(), /*configurable=*/false,
+        /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -52,7 +52,7 @@ class FileSystemProviderOperationsMoveEntryTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute) {
   using extensions::api::file_system_provider::MoveEntryRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   MoveEntry move_entry(&dispatcher, file_system_info_,
@@ -82,7 +82,7 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   MoveEntry move_entry(&dispatcher, file_system_info_,
@@ -93,13 +93,13 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_ReadOnly) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   const ProvidedFileSystemInfo read_only_file_system_info(
-      kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-      base::FilePath() /* mount_path */, false /* configurable */,
-      true /* watchable */, extensions::SOURCE_FILE, IconSet());
+      kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+      /*mount_path=*/base::FilePath(), /*configurable=*/false,
+      /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
 
   MoveEntry move_entry(&dispatcher, read_only_file_system_info,
                        base::FilePath(kSourcePath), base::FilePath(kTargetPath),
@@ -109,7 +109,7 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute_ReadOnly) {
 }
 
 TEST_F(FileSystemProviderOperationsMoveEntryTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   MoveEntry move_entry(&dispatcher, file_system_info_,
@@ -118,13 +118,13 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, OnSuccess) {
 
   EXPECT_TRUE(move_entry.Execute(kRequestId));
 
-  move_entry.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  move_entry.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsMoveEntryTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   MoveEntry move_entry(&dispatcher, file_system_info_,

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/inspector_cache_storage_agent.h"
 
+#include <sys/types.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -14,10 +16,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
@@ -105,7 +107,7 @@ ProtocolResponse ParseCacheId(const String& id,
   }
 
   std::optional<StorageKey> key =
-      StorageKey::Deserialize(StringUTF8Adaptor(*storage_key).AsStringPiece());
+      StorageKey::Deserialize(StringUTF8Adaptor(*storage_key).AsStringView());
   if (!key.has_value()) {
     return ProtocolResponse::ServerError("Not able to deserialize storage key");
   }
@@ -143,7 +145,7 @@ const char* CacheStorageErrorString(mojom::blink::CacheStorageError error) {
       // This function should only be called upon error.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -163,7 +165,7 @@ CachedResponseType ResponseTypeToString(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return protocol::CacheStorage::CachedResponseTypeEnum::OpaqueRedirect;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -260,7 +262,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
       requests = std::move(old_requests);
     } else {
       for (auto& request : old_requests) {
-        String urlPath(request->url.GetPath());
+        String urlPath(request->url.GetPath().ToString());
         if (!urlPath.Contains(params_.path_filter,
                               WTF::kTextCaseUnicodeInsensitive)) {
           continue;
@@ -291,6 +293,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           request->is_history_navigation, request->devtools_stack_id,
           request->trust_token_params.Clone(), request->target_address_space,
           request->attribution_reporting_eligibility,
+          request->attribution_reporting_support,
           /*service_worker_race_network_request_token=*/std::nullopt);
       cache_remote_->Match(
           std::move(request), mojom::blink::CacheQueryOptions::New(),
@@ -490,7 +493,8 @@ class CachedResponseFileReaderLoaderClient final
   void DidFinishLoading() override {
     std::unique_ptr<CachedResponse> response =
         CachedResponse::create()
-            .setBody(protocol::Binary::fromSharedBuffer(data_))
+            .setBody(protocol::Binary::fromVector(
+                std::move(data_).CopyAs<Vector<uint8_t>>()))
             .build();
     callback_wrapper_->SendSuccess(std::move(response));
     dispose();
@@ -504,9 +508,8 @@ class CachedResponseFileReaderLoaderClient final
     dispose();
   }
 
-  FileErrorCode DidReceiveData(const char* data,
-                               unsigned data_length) override {
-    data_->Append(data, data_length);
+  FileErrorCode DidReceiveData(base::span<const uint8_t> data) override {
+    data_.Append(data);
     return FileErrorCode::kOK;
   }
 
@@ -523,7 +526,6 @@ class CachedResponseFileReaderLoaderClient final
       : loader_(MakeGarbageCollected<FileReaderLoader>(this,
                                                        std::move(task_runner))),
         callback_wrapper_(callback_wrapper),
-        data_(SharedBuffer::Create()),
         keep_alive_(this) {
     loader_->Start(std::move(blob));
   }
@@ -539,7 +541,7 @@ class CachedResponseFileReaderLoaderClient final
   Member<FileReaderLoader> loader_;
   scoped_refptr<RequestCallbackWrapper<RequestCachedResponseCallback>>
       callback_wrapper_;
-  scoped_refptr<SharedBuffer> data_;
+  SegmentedBuffer data_;
   SelfKeepAlive<CachedResponseFileReaderLoaderClient> keep_alive_;
 };
 
@@ -653,7 +655,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
                       ? maybe_storage_key.value()
                       : maybe_storage_bucket.value().getStorageKey();
     std::optional<StorageKey> key =
-        StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringPiece());
+        StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringView());
     if (!key.has_value()) {
       callback->sendFailure(ProtocolResponse::InvalidParams(
           "Not able to deserialize storage key"));

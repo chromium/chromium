@@ -22,9 +22,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -35,18 +35,22 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_length_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
@@ -57,6 +61,7 @@
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -125,7 +130,7 @@ class SVGCurrentTranslateTearOff : public SVGPointTearOff {
   SVGCurrentTranslateTearOff(SVGSVGElement* context_element)
       : SVGPointTearOff(context_element->translation_, context_element) {}
 
-  void CommitChange() override {
+  void CommitChange(SVGPropertyCommitReason) override {
     DCHECK(ContextElement());
     To<SVGSVGElement>(ContextElement())->UpdateUserTransform();
   }
@@ -208,33 +213,14 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
-                                            x_->CssValue());
-  } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
-                                            y_->CssValue());
-  } else if (IsOutermostSVGSVGElement() &&
-             (property == width_ || property == height_)) {
-    // SVG allows negative numbers for these attributes but CSS doesn't allow
-    // negative <length> values for the corresponding CSS properties. So remove
-    // negative values here.
-    if (property == width_) {
-      if (const CSSValue* width = width_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                                *width);
-      }
-    } else if (property == height_) {
-      if (const CSSValue* height = height_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
-                                                *height);
-      }
-    }
-  } else {
-    SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value,
-                                                             style);
+  // We shouldn't collect style for 'width' and 'height' on inner <svg>, so
+  // bail here in that case to avoid having the generic logic in SVGElement
+  // picking it up.
+  if ((name == svg_names::kWidthAttr || name == svg_names::kHeightAttr) &&
+      !IsOutermostSVGSVGElement()) {
+    return;
   }
+  SVGGraphicsElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 
 void SVGSVGElement::SvgAttributeChanged(
@@ -258,18 +244,12 @@ void SVGSVGElement::SvgAttributeChanged(
       // be) an outermost root, so always mark presentation attributes dirty in
       // that case.
       if (!layout_object || layout_object->IsSVGRoot()) {
-        InvalidateSVGPresentationAttributeStyle();
-        SetNeedsStyleRecalc(kLocalStyleChange,
-                            StyleChangeReasonForTracing::Create(
-                                style_change_reason::kSVGContainerSizeChange));
+        UpdatePresentationAttributeStyle(attr_name);
         if (layout_object)
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
       }
     } else {
-      InvalidateSVGPresentationAttributeStyle();
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::FromAttribute(attr_name));
+      UpdatePresentationAttributeStyle(attr_name);
     }
   }
 
@@ -294,59 +274,6 @@ void SVGSVGElement::SvgAttributeChanged(
   SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
-// gfx::RectF::Intersects() does not consider horizontal or vertical lines
-// (because of IsEmpty()).
-static bool IntersectsAllowingEmpty(const gfx::RectF& r1,
-                                    const gfx::RectF& r2) {
-  return r1.x() < r2.right() && r2.x() < r1.right() && r1.y() < r2.bottom() &&
-         r2.y() < r1.bottom();
-}
-
-// One of the element types that can cause graphics to be drawn onto the target
-// canvas.  Specifically: circle, ellipse, image, line, path, polygon, polyline,
-// rect, text and use.
-static bool IsIntersectionOrEnclosureTarget(LayoutObject* layout_object) {
-  return layout_object->IsSVGShape() || layout_object->IsSVGText() ||
-         layout_object->IsSVGImage() ||
-         IsA<SVGUseElement>(*layout_object->GetNode());
-}
-
-bool SVGSVGElement::CheckIntersectionOrEnclosure(
-    const SVGElement& element,
-    const gfx::RectF& rect,
-    GeometryMatchingMode mode) const {
-  LayoutObject* layout_object = element.GetLayoutObject();
-  DCHECK(!layout_object || layout_object->Style());
-  if (!layout_object ||
-      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone)
-    return false;
-
-  if (!IsIntersectionOrEnclosureTarget(layout_object))
-    return false;
-
-  AffineTransform ctm =
-      To<SVGGraphicsElement>(element).ComputeCTM(kAncestorScope, this);
-  gfx::RectF visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
-  SVGLayoutSupport::AdjustWithClipPathAndMask(
-      *layout_object, layout_object->ObjectBoundingBox(), visual_rect);
-  gfx::RectF mapped_repaint_rect = ctm.MapRect(visual_rect);
-
-  bool result = false;
-  switch (mode) {
-    case kCheckIntersection:
-      result = IntersectsAllowingEmpty(rect, mapped_repaint_rect);
-      break;
-    case kCheckEnclosure:
-      result = rect.Contains(mapped_repaint_rect);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  return result;
-}
-
 void SVGSVGElement::DidMoveToNewDocument(Document& old_document) {
   SVGGraphicsElement::DidMoveToNewDocument(old_document);
   if (TimeContainer()->IsStarted()) {
@@ -354,60 +281,189 @@ void SVGSVGElement::DidMoveToNewDocument(Document& old_document) {
   }
 }
 
-StaticNodeList* SVGSVGElement::CollectIntersectionOrEnclosureList(
-    const gfx::RectF& rect,
-    SVGElement* reference_element,
-    GeometryMatchingMode mode) const {
-  HeapVector<Member<Node>> nodes;
+namespace {
 
-  const SVGElement* root = this;
+const SVGElement* InnermostCommonSubtreeRoot(
+    const SVGSVGElement& svg_root,
+    const SVGElement* reference_element) {
   if (reference_element) {
-    // Only the common subtree needs to be traversed.
-    if (contains(reference_element)) {
-      root = reference_element;
-    } else if (!IsDescendantOf(reference_element)) {
-      // No common subtree.
-      return StaticNodeList::Adopt(nodes);
+    // The reference element is a descendant of the <svg> element
+    // -> reference element is root of the common subtree.
+    if (svg_root.contains(reference_element)) {
+      return reference_element;
+    }
+    // The <svg> element is not a descendant of the reference element
+    // -> no common subtree.
+    if (!svg_root.IsDescendantOf(reference_element)) {
+      return nullptr;
     }
   }
+  return &svg_root;
+}
 
-  for (SVGGraphicsElement& element :
-       Traversal<SVGGraphicsElement>::DescendantsOf(*root)) {
-    if (CheckIntersectionOrEnclosure(element, rect, mode))
-      nodes.push_back(&element);
+enum class ElementResultFilter {
+  kOnlyDescendants,
+  kDescendantsOrReference,
+};
+
+HeapVector<Member<Element>> ComputeIntersectionList(
+    const SVGSVGElement& root,
+    const SVGElement* reference_element,
+    const gfx::RectF& rect,
+    ElementResultFilter filter) {
+  HeapVector<Member<Element>> elements;
+  LocalFrameView* frame_view = root.GetDocument().View();
+  if (!frame_view || !frame_view->UpdateAllLifecyclePhasesExceptPaint(
+                         DocumentUpdateReason::kJavaScript)) {
+    return elements;
+  }
+  const LayoutObject* layout_object = root.GetLayoutObject();
+  if (!layout_object) {
+    return elements;
+  }
+  const SVGElement* common_subtree_root =
+      InnermostCommonSubtreeRoot(root, reference_element);
+  if (!common_subtree_root) {
+    return elements;
   }
 
-  return StaticNodeList::Adopt(nodes);
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                         HitTestRequest::kListBased |
+                         HitTestRequest::kPenetratingList);
+  HitTestLocation location(rect.CenterPoint(), gfx::QuadF(rect));
+  HitTestResult result(request, location);
+  // Transform to the local space of `root`.
+  // We could transform the location to the space of the reference element (the
+  // common subtree), but that quickly gets quite hairy.
+  TransformedHitTestLocation local_location(
+      location, root.ComputeCTM(SVGElement::kAncestorScope, &root));
+  if (local_location) {
+    if (const auto* layout_root = DynamicTo<LayoutSVGRoot>(layout_object)) {
+      layout_root->IntersectChildren(result, *local_location);
+    } else {
+      To<LayoutSVGViewportContainer>(layout_object)
+          ->IntersectChildren(result, *local_location);
+    }
+  }
+  // Do a first pass transforming text-nodes to their parents.
+  elements = root.GetTreeScope().ElementsFromHitTestResult(result);
+  // We want all elements that are SVGGraphicsElements and descendants of the
+  // common subtree root.
+  auto partition_condition = [common_subtree_root,
+                              filter](const Member<Element>& item) {
+    if (!IsA<SVGGraphicsElement>(*item)) {
+      return false;
+    }
+    return filter == ElementResultFilter::kDescendantsOrReference
+               ? common_subtree_root->contains(item)
+               : item->IsDescendantOf(common_subtree_root);
+  };
+  auto to_remove = std::stable_partition(elements.begin(), elements.end(),
+                                         partition_condition);
+  elements.erase(to_remove, elements.end());
+  // Hit-testing traverses the tree from last to first child for each
+  // container, so the result needs to be reversed.
+  base::ranges::reverse(elements);
+  return elements;
 }
 
-StaticNodeList* SVGSVGElement::getIntersectionList(
+}  // namespace
+
+StaticNodeTypeList<Element>* SVGSVGElement::getIntersectionList(
     SVGRectTearOff* rect,
     SVGElement* reference_element) const {
-  GetDocument().UpdateStyleAndLayoutForNode(this,
-                                            DocumentUpdateReason::kJavaScript);
-
-  return CollectIntersectionOrEnclosureList(
-      rect->Target()->Rect(), reference_element, kCheckIntersection);
-}
-
-StaticNodeList* SVGSVGElement::getEnclosureList(
-    SVGRectTearOff* rect,
-    SVGElement* reference_element) const {
-  GetDocument().UpdateStyleAndLayoutForNode(this,
-                                            DocumentUpdateReason::kJavaScript);
-
-  return CollectIntersectionOrEnclosureList(rect->Target()->Rect(),
-                                            reference_element, kCheckEnclosure);
+  // https://svgwg.org/svg2-draft/struct.html#__svg__SVGSVGElement__getIntersectionList
+  HeapVector<Member<Element>> intersecting_elements =
+      ComputeIntersectionList(*this, reference_element, rect->Target()->Rect(),
+                              ElementResultFilter::kOnlyDescendants);
+  return StaticNodeTypeList<Element>::Adopt(intersecting_elements);
 }
 
 bool SVGSVGElement::checkIntersection(SVGElement* element,
                                       SVGRectTearOff* rect) const {
+  // https://svgwg.org/svg2-draft/struct.html#__svg__SVGSVGElement__checkIntersection
   DCHECK(element);
+  auto* graphics_element = DynamicTo<SVGGraphicsElement>(*element);
+  // If `element` is not an SVGGraphicsElement it can not intersect.
+  if (!graphics_element) {
+    return false;
+  }
+
+  // Collect intersecting descendants of the SVGSVGElement within `rect`.
+  HeapVector<Member<Element>> intersecting_elements =
+      ComputeIntersectionList(*this, element, rect->Target()->Rect(),
+                              ElementResultFilter::kDescendantsOrReference);
+  HeapHashSet<Member<Element>> intersecting_element_set;
+  for (const auto& intersected_element : intersecting_elements) {
+    intersecting_element_set.insert(intersected_element);
+  }
+
+  // This implements the spec section named "find the non-container graphics
+  // elements" combined with the step that checks if all such elements are also
+  // part of the intersecting descendants.
+  size_t elements_matched = 0;
+  for (SVGGraphicsElement& descendant :
+       Traversal<SVGGraphicsElement>::InclusiveDescendantsOf(
+           *graphics_element)) {
+    if (IsA<SVGGElement>(descendant) || IsA<SVGSVGElement>(descendant)) {
+      continue;
+    }
+    if (!intersecting_element_set.Contains(&descendant)) {
+      return false;
+    }
+    elements_matched++;
+  }
+  // If at least one SVGGraphicsElement matched it's an intersection.
+  return elements_matched > 0;
+}
+
+// One of the element types that can cause graphics to be drawn onto the target
+// canvas. Specifically: circle, ellipse, image, line, path, polygon, polyline,
+// rect, text and use.
+static bool IsEnclosureTarget(const LayoutObject* layout_object) {
+  if (!layout_object ||
+      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone) {
+    return false;
+  }
+  return layout_object->IsSVGShape() || layout_object->IsSVGText() ||
+         layout_object->IsSVGImage() ||
+         IsA<SVGUseElement>(*layout_object->GetNode());
+}
+
+bool SVGSVGElement::CheckEnclosure(const SVGElement& element,
+                                   const gfx::RectF& rect) const {
+  const LayoutObject* layout_object = element.GetLayoutObject();
+  if (!IsEnclosureTarget(layout_object)) {
+    return false;
+  }
+
+  AffineTransform ctm =
+      To<SVGGraphicsElement>(element).ComputeCTM(kAncestorScope, this);
+  gfx::RectF visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
+  SVGLayoutSupport::AdjustWithClipPathAndMask(
+      *layout_object, layout_object->ObjectBoundingBox(), visual_rect);
+  gfx::RectF mapped_repaint_rect = ctm.MapRect(visual_rect);
+  return rect.Contains(mapped_repaint_rect);
+}
+
+StaticNodeList* SVGSVGElement::getEnclosureList(
+    SVGRectTearOff* query_rect,
+    SVGElement* reference_element) const {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  return CheckIntersectionOrEnclosure(*element, rect->Target()->Rect(),
-                                      kCheckIntersection);
+  const gfx::RectF& rect = query_rect->Target()->Rect();
+  HeapVector<Member<Node>> nodes;
+  if (const SVGElement* root =
+          InnermostCommonSubtreeRoot(*this, reference_element)) {
+    for (SVGGraphicsElement& element :
+         Traversal<SVGGraphicsElement>::DescendantsOf(*root)) {
+      if (CheckEnclosure(element, rect)) {
+        nodes.push_back(&element);
+      }
+    }
+  }
+  return StaticNodeList::Adopt(nodes);
 }
 
 bool SVGSVGElement::checkEnclosure(SVGElement* element,
@@ -416,8 +472,7 @@ bool SVGSVGElement::checkEnclosure(SVGElement* element,
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  return CheckIntersectionOrEnclosure(*element, rect->Target()->Rect(),
-                                      kCheckEnclosure);
+  return CheckEnclosure(*element, rect->Target()->Rect());
 }
 
 void SVGSVGElement::deselectAll() {
@@ -684,16 +739,16 @@ void SVGSVGElement::SetViewSpec(const SVGViewSpec* view_spec) {
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
 }
 
-void SVGSVGElement::SetupInitialView(const String& fragment_identifier,
-                                     Element* anchor_node) {
+const SVGViewSpec* SVGSVGElement::ParseViewSpec(
+    const String& fragment_identifier,
+    Element* anchor_node) const {
   if (fragment_identifier.StartsWith("svgView(")) {
     const SVGViewSpec* view_spec =
         SVGViewSpec::CreateFromFragment(fragment_identifier);
     if (view_spec) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kSVGSVGElementFragmentSVGView);
-      SetViewSpec(view_spec);
-      return;
+      return view_spec;
     }
   }
   if (auto* svg_view_element = DynamicTo<SVGViewElement>(anchor_node)) {
@@ -706,10 +761,9 @@ void SVGSVGElement::SetupInitialView(const String& fragment_identifier,
         SVGViewSpec::CreateForViewElement(*svg_view_element);
     UseCounter::Count(GetDocument(),
                       WebFeature::kSVGSVGElementFragmentSVGViewElement);
-    SetViewSpec(view_spec);
-    return;
+    return view_spec;
   }
-  SetViewSpec(nullptr);
+  return nullptr;
 }
 
 void SVGSVGElement::FinishParsingChildren() {
@@ -769,14 +823,9 @@ void SVGSVGElement::SynchronizeAllSVGAttributes() const {
 
 void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  for (auto* property : (SVGAnimatedPropertyBase*[]){
-           x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

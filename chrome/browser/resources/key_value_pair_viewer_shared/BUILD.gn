@@ -1,0 +1,34 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "key_value_pair_viewer_shared"
+  grd_resource_path_prefix = "shared/key_value_pair_viewer"
+
+  web_component_files = [
+    "key_value_pair_viewer.ts",
+    "key_value_pair_entry.ts",
+  ]
+
+  non_web_component_files = [ "key_value_pair_parser.ts" ]
+
+  css_files = [
+    "key_value_pair_viewer.css",
+    "key_value_pair_entry.css",
+  ]
+
+  html_to_wrapper_template = "detect"
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

@@ -33,6 +33,11 @@ class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
   std::vector<int> GetAdditionalSearchTerms() const override;
   std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   bool ShouldCaptureNavigations() const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.

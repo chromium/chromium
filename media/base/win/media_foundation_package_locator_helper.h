@@ -11,7 +11,14 @@
 
 namespace media {
 
-enum class MediaFoundationCodecPackage { kAV1 = 0, kHEVC, kVP9 };
+enum class MediaFoundationCodecPackage {
+  kAV1 = 0,
+  kHEVC,
+  kVP9,
+  kDolbyVision,
+  kAC4,
+  kEAC3
+};
 
 // Locate Media Foundation based Codec Pack install paths by using Win32
 // AppModel APIs.

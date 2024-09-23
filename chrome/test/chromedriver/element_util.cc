@@ -366,21 +366,24 @@ Status FindElementCommon(int interval_ms,
       arguments.Append(CreateElement(*root_element_id));
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  int context_retry = 0;
+  Timeout timeout(session->implicit_wait);
   while (true) {
     std::unique_ptr<base::Value> temp;
     Status status = web_view->CallFunction(
         session->GetCurrentFrameId(), script, arguments, &temp);
 
-    // A NoSuchExecutionContext error can occur due to transition from
-    // in-process iFrame to OOPIF. Retry a couple of times.
-    if (status.IsError() &&
-        (status.code() != kNoSuchExecutionContext || ++context_retry > 2)) {
+    // If navigation is detected during the WebView::CallFunction call the error
+    // code will be kNoSuchExecutionContext or kNavigationDetectedByRemoteEnd.
+    // We will wait and retry again until the timeout.
+    if (status.IsError() && status.code() != kNoSuchExecutionContext &&
+        status.code() != kNavigationDetectedByRemoteEnd) {
+      if (status.code() == kJavaScriptError) {
+        status = Status{kInvalidSelector, status};
+      }
       return status;
     }
 
-    if (temp && !temp->is_none()) {
+    if (status.IsOk() && temp && !temp->is_none()) {
       if (only_one) {
         *value = std::move(temp);
         return Status(kOk);
@@ -393,7 +396,7 @@ Status FindElementCommon(int interval_ms,
       }
     }
 
-    if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
+    if (timeout.IsExpired()) {
       if (only_one) {
         return Status(kNoSuchElement,
                       "Unable to locate element: {\"method\":\"" + *strategy +
@@ -530,6 +533,33 @@ Status IsElementAttributeEqualToIgnoreCase(
   return status;
 }
 
+namespace {
+
+Status WaitElementIsDisplayed(Session* session,
+                              WebView* web_view,
+                              const std::string& element_id,
+                              base::TimeDelta timeout) {
+  bool is_displayed = false;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  while (true) {
+    Status status =
+        IsElementDisplayed(session, web_view, element_id, true, &is_displayed);
+    if (status.IsError()) {
+      return status;
+    }
+    if (is_displayed) {
+      break;
+    }
+    if (base::TimeTicks::Now() - start_time >= timeout) {
+      return Status(kElementNotVisible);
+    }
+    base::PlatformThread::Sleep(base::Milliseconds(50));
+  }
+  return Status{kOk};
+}
+
+}  // namespace
+
 Status GetElementClickableLocation(
     Session* session,
     WebView* web_view,
@@ -572,19 +602,11 @@ Status GetElementClickableLocation(
       return Status(kUnknownError, "no element reference returned by script");
     target_element_id = *maybe_target_element_id;
   }
-  bool is_displayed = false;
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  while (true) {
-    status = IsElementDisplayed(session, web_view, target_element_id, true,
-                                &is_displayed);
-    if (status.IsError())
-      return status;
-    if (is_displayed)
-      break;
-    if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
-      return Status(kElementNotVisible);
-    }
-    base::PlatformThread::Sleep(base::Milliseconds(50));
+
+  status = WaitElementIsDisplayed(session, web_view, target_element_id,
+                                  session->implicit_wait);
+  if (status.IsError()) {
+    return status;
   }
 
   WebRect rect;
@@ -598,8 +620,9 @@ Status GetElementClickableLocation(
   status = ScrollElementRegionIntoView(
       session, web_view, target_element_id, rect,
       true /* center */, element_id, location);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
   location->Offset(rect.Width() / 2, rect.Height() / 2);
   return Status(kOk);
 }
@@ -743,7 +766,8 @@ Status SetOptionElementSelected(Session* session,
                                 WebView* web_view,
                                 const std::string& element_id,
                                 bool selected) {
-  // TODO(171034): need to fix throwing error if an alert is triggered.
+  // TODO(crbug.com/40299291): need to fix throwing error if an alert is
+  // triggered.
   base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(selected);
@@ -814,9 +838,13 @@ Status ScrollElementRegionIntoView(
     return status;
 
   // If the element is in a frame, go up the frame chain (from the innermost
-  // frame up to the top-level window) and scroll each frame relative to its
+  // frame up to the web_view frame) and scroll each frame relative to its
   // parent frame, so that the region becomes visible in the parent frame.
-  for (const FrameInfo& frame : base::Reversed(session->frames)) {
+  auto frames = base::Reversed(session->frames);
+  auto end =
+      base::ranges::find(frames, web_view->GetId(), &FrameInfo::frame_id);
+  for (auto it = frames.begin(); it != end; ++it) {
+    const FrameInfo& frame = *it;
     base::Value::List args;
     args.Append(frame.chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;

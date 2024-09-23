@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -39,6 +40,36 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public void setDoNotTrack(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.ENABLE_DO_NOT_TRACK, enabled);
+    }
+
+    @Override
+    public boolean shouldDisplayIpProtection() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
+    }
+
+    @Override
+    public boolean isIpProtectionEnabled() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
+    }
+
+    @Override
+    public void setIpProtection(boolean enabled) {
+        UserPrefs.get(mProfile).setBoolean(Pref.IP_PROTECTION_ENABLED, enabled);
+    }
+
+    @Override
+    public boolean shouldDisplayFingerprintingProtection() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
+    }
+
+    @Override
+    public boolean isFingerprintingProtectionEnabled() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
+    }
+
+    @Override
+    public void setFingerprintingProtection(boolean enabled) {
+        UserPrefs.get(mProfile).setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, enabled);
     }
 
     @Override

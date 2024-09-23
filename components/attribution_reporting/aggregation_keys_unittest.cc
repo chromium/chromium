@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -46,22 +45,22 @@ TEST(AggregationKeysTest, FromJSON) {
       {
           "Not a dictionary",
           "[]",
-          ErrorIs(SourceRegistrationError::kAggregationKeysWrongType),
+          ErrorIs(SourceRegistrationError::kAggregationKeysDictInvalid),
       },
       {
           "key not a string",
           R"({"key":123})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongType),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "key doesn't start with 0x",
           R"({"key":"159"})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "Invalid key",
           R"({"key":"0xG59"})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
       {
           "One valid key",
@@ -83,7 +82,7 @@ TEST(AggregationKeysTest, FromJSON) {
       {
           "Second key invalid",
           R"({"key1":"0x159","key2":""})",
-          ErrorIs(SourceRegistrationError::kAggregationKeysValueWrongFormat),
+          ErrorIs(SourceRegistrationError::kAggregationKeysValueInvalid),
       },
   };
 
@@ -122,8 +121,9 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
       {"empty", true, 0, 0},
       {"max_keys", true, kMaxAggregationKeysPerSource, 1},
       {"too_many_keys", false, kMaxAggregationKeysPerSource + 1, 1},
-      {"max_key_size", true, 1, kMaxBytesPerAggregationKeyId},
-      {"excessive_key_size", false, 1, kMaxBytesPerAggregationKeyId + 1},
+      {"max_key_size", true, 1, AggregationKeys::kMaxBytesPerAggregationKeyId},
+      {"excessive_key_size", false, 1,
+       AggregationKeys::kMaxBytesPerAggregationKeyId + 1},
   };
 
   for (const auto& test_case : kTestCases) {

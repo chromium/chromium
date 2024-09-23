@@ -4,6 +4,9 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -119,6 +122,8 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
 }  // namespace
 
+// NotificationCounterView -----------------------------------------------------
+
 NotificationCounterView::NotificationCounterView(
     Shelf* shelf,
     NotificationIconsController* controller)
@@ -168,8 +173,10 @@ void NotificationCounterView::Update() {
   SetVisible(true);
 }
 
-std::u16string NotificationCounterView::GetAccessibleNameString() const {
-  return GetVisible() ? image_view()->GetTooltipText() : std::u16string();
+std::optional<std::u16string> NotificationCounterView::GetAccessibleNameString()
+    const {
+  return GetVisible() ? std::optional(image_view()->GetTooltipText())
+                      : std::nullopt;
 }
 
 void NotificationCounterView::HandleLocaleChange() {
@@ -192,6 +199,8 @@ void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
 BEGIN_METADATA(NotificationCounterView)
 END_METADATA
 
+// QuietModeView ---------------------------------------------------------------
+
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
   image_view()->SetTooltipText(
@@ -200,6 +209,10 @@ QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
 }
 
 QuietModeView::~QuietModeView() = default;
+
+const std::u16string& QuietModeView::GetAccessibleNameString() const {
+  return image_view()->GetTooltipText();
+}
 
 void QuietModeView::Update() {
   if (message_center::MessageCenter::Get()->IsQuietMode() &&

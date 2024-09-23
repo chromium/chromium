@@ -21,6 +21,7 @@
     // present in earlier versions of LaCros.
     ariaAttributeChangedDeprecated,
     ariaCurrentChanged,
+    ariaNotificationsPosted,
     atomicChanged,
     autoCompleteChanged,
     autocorrectionOccured,
@@ -31,7 +32,6 @@
     checkedStateChanged,
     checkedStateDescriptionChanged,
     childrenChanged,
-    classNameChanged,
     clicked,
     collapsed,
     controlsChanged,
@@ -79,7 +79,7 @@
     mediaStoppedPlaying,
     menuEnd,
     menuItemSelected,
-    menuListValueChanged,
+    menuListValueChangedDeprecated,
     menuPopupEnd,
     menuPopupStart,
     menuStart,
@@ -93,10 +93,8 @@
     nameChanged,
     objectAttributeChanged,
     orientationChanged,
-    otherAttributeChanged,
     parentChanged,
     placeholderChanged,
-    portalActivated,
     positionInSetChanged,
     rangeValueChanged,
     rangeValueMaxChanged,
@@ -170,12 +168,12 @@
     dateTime,
     definition,
     descriptionList,
-    descriptionListDetail,
-    descriptionListTerm,
+    descriptionListDetailDeprecated,
+    descriptionListTermDeprecated,
     desktop,
     details,
     dialog,
-    directory,
+    directoryDeprecated,
     disclosureTriangle,
     disclosureTriangleGrouped,
     // --------------------------------------------------------------
@@ -231,7 +229,6 @@
     figcaption,
     figure,
     footer,
-    footerAsNonLandmark,
     form,
     genericContainer,
     // --------------------------------------------------------------
@@ -243,9 +240,9 @@
     // End ARIA Graphics module roles.
     // --------------------------------------------------------------
     grid,
+    gridCell,
     group,
     header,
-    headerAsNonLandmark,
     heading,
     iframe,
     iframePresentational,
@@ -310,7 +307,7 @@
     pdfRoot,
     pluginObject,
     popUpButton,
-    portal,
+    portalDeprecated,
     preDeprecated,
     progressIndicator,
     radioButton,
@@ -327,6 +324,9 @@
     search,
     searchBox,
     section,
+    sectionFooter,
+    sectionHeader,
+    sectionWithoutName,
     slider,
     spinButton,
     splitter,
@@ -475,8 +475,11 @@
     attributeExplicitlyEmpty,
     caption,
     contents,
+    cssAltText,
     placeholder,
     popoverAttribute,
+    prohibited,
+    prohibitedAndRedundant,
     relatedElement,
     title,
     value
@@ -487,6 +490,7 @@
     attributeExplicitlyEmpty,
     buttonLabel,
     popoverAttribute,
+    prohibitedNameRepair,
     relatedElement,
     rubyAnnotation,
     summary,
@@ -584,6 +588,7 @@ enum IntentInputEventType {
   insertTranspose,
   insertReplacementText,
   insertCompositionText,
+  insertLink,
   // Deletion.
   deleteWordBackward,
   deleteWordForward,
@@ -944,6 +949,9 @@ enum PositionType {
     // The value for this node: for example the <code>value</code> attribute of
     // an <code>&lt;input&gt; element.
     DOMString? value;
+
+    // The HTML id for this element, if this node is an HTML element.
+    DOMString? htmlId;
 
     // The HTML tag for this element, if this node is an HTML element.
     DOMString? htmlTag;

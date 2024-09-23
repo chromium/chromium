@@ -74,7 +74,7 @@ class InterceptingPrefFilter : public PrefFilter {
   // PrefFilter implementation:
   void FilterOnLoad(PostFilterOnLoadCallback post_filter_on_load_callback,
                     base::Value::Dict pref_store_contents) override;
-  void FilterUpdate(const std::string& path) override {}
+  void FilterUpdate(std::string_view path) override {}
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override {
     return std::move(on_write_callback_pair_);
@@ -118,13 +118,12 @@ void InterceptingPrefFilter::ReleasePrefs() {
 
 class MockPrefStoreObserver : public PrefStore::Observer {
  public:
-  MOCK_METHOD1(OnPrefValueChanged, void (const std::string&));
-  MOCK_METHOD1(OnInitializationCompleted, void (bool));
+  MOCK_METHOD(void, OnInitializationCompleted, (bool), (override));
 };
 
 class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
  public:
-  MOCK_METHOD1(OnError, void(PersistentPrefStore::PrefReadError));
+  MOCK_METHOD(void, OnError, (PersistentPrefStore::PrefReadError), (override));
 };
 
 enum class CommitPendingWriteMode {
@@ -556,6 +555,29 @@ TEST_P(JsonPrefStoreTest, RemoveValuesByPrefix) {
   EXPECT_FALSE(pref_store->GetValue(subpref_name1, &value));
   EXPECT_FALSE(pref_store->GetValue(subpref_name2, &value));
   EXPECT_TRUE(pref_store->GetValue(other_name, &value));
+}
+
+TEST_P(JsonPrefStoreTest, HasReadErrorDelegate) {
+  base::FilePath bogus_input_file = temp_dir_.GetPath().AppendASCII("read.txt");
+  ASSERT_FALSE(PathExists(bogus_input_file));
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(bogus_input_file);
+
+  EXPECT_FALSE(pref_store->HasReadErrorDelegate());
+
+  pref_store->ReadPrefsAsync(new MockReadErrorDelegate);
+  EXPECT_TRUE(pref_store->HasReadErrorDelegate());
+}
+
+TEST_P(JsonPrefStoreTest, HasReadErrorDelegateWithNullDelegate) {
+  base::FilePath bogus_input_file = temp_dir_.GetPath().AppendASCII("read.txt");
+  ASSERT_FALSE(PathExists(bogus_input_file));
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(bogus_input_file);
+
+  EXPECT_FALSE(pref_store->HasReadErrorDelegate());
+
+  pref_store->ReadPrefsAsync(nullptr);
+  // Returns true even though no instance was passed.
+  EXPECT_TRUE(pref_store->HasReadErrorDelegate());
 }
 
 INSTANTIATE_TEST_SUITE_P(

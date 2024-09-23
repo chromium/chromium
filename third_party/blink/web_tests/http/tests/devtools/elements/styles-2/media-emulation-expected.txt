@@ -18,9 +18,9 @@ print media emulated:
 element.style { ()
 
 [expanded] 
-@media print
+@media print {
 #main { (<style>)
-    color: black;
+        color: black;
 
 [expanded] 
 #main { (<style>)

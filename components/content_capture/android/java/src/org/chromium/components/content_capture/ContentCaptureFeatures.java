@@ -24,7 +24,7 @@ public class ContentCaptureFeatures {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isEnabled();
 
         boolean shouldTriggerContentCaptureForExperiment();

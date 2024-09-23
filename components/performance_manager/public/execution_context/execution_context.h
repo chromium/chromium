@@ -56,9 +56,6 @@ class ExecutionContext {
   static const ExecutionContext* From(const FrameNode* frame_node);
   static const ExecutionContext* From(const WorkerNode* worker_node);
 
-  ExecutionContext() = default;
-  ExecutionContext(const ExecutionContext&) = delete;
-  ExecutionContext& operator=(const ExecutionContext&) = delete;
   virtual ~ExecutionContext() = default;
 
   // Returns the type of this ExecutionContext.
@@ -135,13 +132,6 @@ class ExecutionContextObserverDefaultImpl : public ExecutionContextObserver {
       const ExecutionContext* ec,
       const PriorityAndReason& previous_value) override {}
 };
-
-// Helper function for converting from a WorkerToken to an
-// ExecutionContextToken.
-// TODO(crbug.com/1126285): Get rid of this once MultiToken handles compatible
-// assignment.
-blink::ExecutionContextToken ToExecutionContextToken(
-    const blink::WorkerToken& token);
 
 }  // namespace execution_context
 }  // namespace performance_manager

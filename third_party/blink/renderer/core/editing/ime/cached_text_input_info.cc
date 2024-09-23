@@ -48,7 +48,7 @@ LayoutObject* FindLayoutObject(const ContainerNode& container) {
   }
   // Because |LayoutView| is derived from |LayoutBlockFlow|, |layout_object_|
   // should not be null.
-  NOTREACHED() << container;
+  NOTREACHED_IN_MIGRATION() << container;
   return nullptr;
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/startup.h"
 
 namespace chromeos {

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/printing/cups_print_job_manager.h"
-
 #include <cups/cups.h>
+
 #include <optional>
 #include <set>
 #include <string>
@@ -24,18 +23,19 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_utils.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/printing/printing_constants.h"
@@ -135,12 +135,12 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
   }
 
   bool SuspendPrintJob(CupsPrintJob* job) override {
-    NOTREACHED() << "Pause printer is not implemented";
+    NOTREACHED_IN_MIGRATION() << "Pause printer is not implemented";
     return false;
   }
 
   bool ResumePrintJob(CupsPrintJob* job) override {
-    NOTREACHED() << "Resume printer is not implemented";
+    NOTREACHED_IN_MIGRATION() << "Resume printer is not implemented";
     return false;
   }
 

@@ -142,7 +142,7 @@ class BASE_EXPORT TimeDelta {
 
 #if BUILDFLAG(IS_WIN)
   static TimeDelta FromQPCValue(LONGLONG qpc_value);
-  // TODO(crbug.com/989694): Avoid base::TimeDelta factory functions
+  // TODO(crbug.com/40638442): Avoid base::TimeDelta factory functions
   // based on absolute time
   static TimeDelta FromFileTime(FILETIME ft);
   static TimeDelta FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt);
@@ -173,7 +173,7 @@ class BASE_EXPORT TimeDelta {
   // large number that doesn't do this. TimeDelta math saturates at the end
   // points so adding to TimeDelta::Max() leaves the value unchanged.
   // Subtracting should leave the value unchanged but currently changes it
-  // TODO(https://crbug.com/869387).
+  // TODO(crbug.com/41405098).
   static constexpr TimeDelta Max();
 
   // Returns the minimum time delta, which should be less than than any
@@ -412,7 +412,7 @@ class TimeBase {
   static constexpr int64_t kNanosecondsPerSecond =
       kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
 
-  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
+  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
   //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
@@ -428,8 +428,8 @@ class TimeBase {
   constexpr bool is_min() const { return *this == Min(); }
   constexpr bool is_inf() const { return is_min() || is_max(); }
 
-  // Returns the maximum/minimum times, which should be greater/less than than
-  // any reasonable time with which we might compare it.
+  // Returns the maximum/minimum times, which should be non-null and
+  // greater/less than than any reasonable time with which we might compare it.
   static constexpr TimeClass Max() {
     return TimeClass(std::numeric_limits<int64_t>::max());
   }
@@ -587,7 +587,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
     bool HasValidValues() const;
   };
 
-  // TODO(https://crbug.com/1392437): Remove concept of "null" from base::Time.
+  // TODO(crbug.com/40247732): Remove concept of "null" from base::Time.
   //
   // Warning: Be careful when writing code that performs math on time values,
   // since it's possible to produce a valid "zero" result that should not be
@@ -643,8 +643,8 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // Converts time to/from a number of seconds since the Unix epoch (Jan 1,
   // 1970).
   //
-  // TODO(crbug.com/1495550): Add integral versions and use them.
-  // TODO(crbug.com/1495554): Add ...PreservingNull() versions; see comments in
+  // TODO(crbug.com/40286582): Add integral versions and use them.
+  // TODO(crbug.com/40286584): Add ...PreservingNull() versions; see comments in
   // the implementation of FromSecondsSinceUnixEpoch().
   static constexpr Time FromSecondsSinceUnixEpoch(double dt);
   constexpr double InSecondsFSinceUnixEpoch() const;
@@ -658,7 +658,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 #endif
 
   // Converts to/from a number of milliseconds since the Unix epoch.
-  // TODO(crbug.com/1495554): Add ...PreservingNull() versions; see comments in
+  // TODO(crbug.com/40286584): Add ...PreservingNull() versions; see comments in
   // the implementation of FromMillisecondsSinceUnixEpoch().
   static constexpr Time FromMillisecondsSinceUnixEpoch(int64_t dt);
   static constexpr Time FromMillisecondsSinceUnixEpoch(double dt);
@@ -680,7 +680,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // InMillisecondsFSinceUnixEpochIgnoringNull() unless you have a very good
   // reason to use InMillisecondsFSinceUnixEpoch().
   //
-  // TODO(crbug.com/1495554): Rename the no-suffix version to
+  // TODO(crbug.com/40286584): Rename the no-suffix version to
   // "...PreservingNull()" and remove the suffix from the other version, to
   // guide people to the preferable API.
   constexpr double InMillisecondsFSinceUnixEpoch() const;
@@ -1084,7 +1084,7 @@ constexpr time_t Time::ToTimeT() const {
 constexpr Time Time::FromSecondsSinceUnixEpoch(double dt) {
   // Preserve 0.
   //
-  // TODO(crbug.com/1495554): This is an unfortunate artifact of WebKit using 0
+  // TODO(crbug.com/40286584): This is an unfortunate artifact of WebKit using 0
   // to mean "no time". Add a "...PreservingNull()" version that does this,
   // convert the minimum necessary set of callers to use it, and remove the zero
   // check here.
@@ -1113,7 +1113,7 @@ constexpr Time Time::FromTimeSpec(const timespec& ts) {
 
 // static
 constexpr Time Time::FromMillisecondsSinceUnixEpoch(int64_t dt) {
-  // TODO(crbug.com/1495554): The lack of zero-preservation here doesn't match
+  // TODO(crbug.com/40286584): The lack of zero-preservation here doesn't match
   // InMillisecondsSinceUnixEpoch(), which is dangerous since it means
   // round-trips are not necessarily idempotent. Add "...PreservingNull()"
   // versions that explicitly check for zeros, convert the minimum necessary set
@@ -1214,7 +1214,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
   // Note: this conversion may be non-monotonic in relation to previously
   // obtained TimeTicks::Now() values because of the truncation (to
@@ -1253,6 +1253,14 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // realtime clock to establish a reference point.  This function will return
   // the same value for the duration of the application, but will be different
   // in future application runs.
+  // DEPRECATED:
+  // Because TimeTicks increments can get suspended on some platforms (e.g. Mac)
+  // and because this function returns a static value, this value will not get
+  // suspension time into account on those platforms.
+  // As TimeTicks is intended to be used to track a process duration and not an
+  // absolute time, if you plan to use this function, please consider using a
+  // Time instead.
+  // TODO(crbug.com/355423207): Remove function.
   static TimeTicks UnixEpoch();
 
   static void SetSharedUnixEpoch(TimeTicks);
@@ -1316,10 +1324,26 @@ class BASE_EXPORT LiveTicks : public time_internal::TimeBase<LiveTicks> {
   constexpr explicit LiveTicks(int64_t us) : TimeBase(us) {}
 };
 
+// For logging use only.
+BASE_EXPORT std::ostream& operator<<(std::ostream& os, LiveTicks live_ticks);
+
 // ThreadTicks ----------------------------------------------------------------
 
-// Represents a clock, specific to a particular thread, than runs only while the
-// thread is running.
+// Represents a thread-specific clock that runs only while the thread is
+// scheduled. This has the effect of counting time spent actually executing
+// code, but not time spent blocked (e.g. on I/O), or ready and waiting to be
+// run.
+//
+// Note: This is typically significantly more expensive than TimeTicks. For
+// instance, on Linux-based systems, it requires a true system call, whereas
+// TimeTicks::Now() calls are usually handled through the vDSO. This does not
+// matter if a couple us of overhead is not important to you, but do not call
+// this in a tight loop, or for sub-microsecond intervals.
+//
+// For instance, in 2024 on a Linux system, in a simple loop:
+// - TimeTicks::Now() takes 27ns per loop iteration
+// - ThreadTicks::Now() takes 875ns per loop iteration. Actual cost is likely
+//   higher in Chromium due to the sandbox (seccomp-BPF).
 class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
  public:
   constexpr ThreadTicks() : TimeBase(0) {}

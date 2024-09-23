@@ -4,7 +4,7 @@
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
 
-#include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -27,7 +27,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
@@ -96,8 +95,8 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   url::CanonicalizeHostVerbose(relying_party_id.data(),
                                url::Component(0, relying_party_id.size()),
                                &canon_output, &host_info);
-  const base::StringPiece canonicalized_domain(canon_output.data(),
-                                               canon_output.length());
+  const std::string_view canonicalized_domain(canon_output.data(),
+                                              canon_output.length());
   if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
       !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
     // The RP ID must look like a hostname, e.g. not an IP address.
@@ -107,7 +106,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   }
 
   constexpr char well_known_url_template[] =
-      "https://domain.com/.well-known/webauthn-origins";
+      "https://domain.com/.well-known/webauthn";
   GURL well_known_url(well_known_url_template);
   CHECK(well_known_url.is_valid());
 
@@ -150,7 +149,7 @@ blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
     const base::Value& value) {
-  // This code processes a .well-known/webauthn-origins JSON. See
+  // This code processes a .well-known/webauthn JSON. See
   // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
 
   if (!value.is_dict()) {
@@ -217,7 +216,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::RemoteValidation(
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback)
     : caller_origin_(caller_origin), callback_(std::move(callback)) {}
 
-// OnFetchComplete is called when the `.well-known/webauthn-origins` for an
+// OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
     std::unique_ptr<std::string> body) {
@@ -280,19 +279,9 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
 
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
 
-  // MakeCredential requests do not have an associated permissions policy, but
-  // are prohibited in cross-origin subframes.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-      !*is_cross_origin && type == RequestType::kMakeCredential) {
-    return blink::mojom::AuthenticatorStatus::SUCCESS;
-  }
-
   // Requests in cross-origin iframes are permitted if enabled via permissions
   // policy and for SPC requests.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-      type == RequestType::kMakeCredential &&
+  if (type == RequestType::kMakeCredential &&
       render_frame_host_->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::
               kPublicKeyCredentialsCreate)) {
@@ -308,13 +297,10 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // 'payment' permissions policy.
   if (type == RequestType::kMakePaymentCredential) {
     if (render_frame_host_->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::
+                kPublicKeyCredentialsCreate) ||
+        render_frame_host_->IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kPayment)) {
-      return blink::mojom::AuthenticatorStatus::SUCCESS;
-    } else if (base::FeatureList::IsEnabled(
-                   blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-               render_frame_host_->IsFeatureEnabled(
-                   blink::mojom::PermissionsPolicyFeature::
-                       kPublicKeyCredentialsCreate)) {
       return blink::mojom::AuthenticatorStatus::SUCCESS;
     }
   }
@@ -324,6 +310,11 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
           blink::mojom::PermissionsPolicyFeature::kPayment)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
+  // TODO(crbug.com/347727501): Add a permissions policy for report.
+  if (type == RequestType::kReport) {
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
+  }
+
   return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
 }
 

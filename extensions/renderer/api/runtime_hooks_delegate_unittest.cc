@@ -89,7 +89,10 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
   bool UseStrictIPCMessageSender() override { return true; }
 
   virtual scoped_refptr<const Extension> BuildExtension() {
-    return ExtensionBuilder("foo").Build();
+    // TODO(https://crbug.com/40804030): Update this to use MV3.
+    // SendMessageTester needs to be updated since runtime.sendMessage() now
+    // returns a promise.
+    return ExtensionBuilder("foo").SetManifestVersion(2).Build();
   }
 
   NativeRendererMessagingService* messaging_service() {
@@ -101,7 +104,7 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 
@@ -352,7 +355,7 @@ class RuntimeHooksDelegateNativeMessagingTest
   ~RuntimeHooksDelegateNativeMessagingTest() override {}
 
   scoped_refptr<const Extension> BuildExtension() override {
-    return ExtensionBuilder("foo").AddPermission("nativeMessaging").Build();
+    return ExtensionBuilder("foo").AddAPIPermission("nativeMessaging").Build();
   }
 };
 
@@ -564,7 +567,7 @@ class RuntimeHooksDelegateNativeMessagingMV3Test
   scoped_refptr<const Extension> BuildExtension() override {
     return ExtensionBuilder("foo")
         .SetManifestKey("manifest_version", 3)
-        .AddPermission("nativeMessaging")
+        .AddAPIPermission("nativeMessaging")
         .Build();
   }
 };

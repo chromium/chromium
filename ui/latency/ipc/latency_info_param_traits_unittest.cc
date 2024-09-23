@@ -16,14 +16,12 @@ namespace ui {
 TEST(LatencyInfoParamTraitsTest, Basic) {
   LatencyInfo latency;
   latency.set_trace_id(5);
-  latency.set_ukm_source_id(10);
   ASSERT_FALSE(latency.terminated());
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT);
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT);
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT);
 
   EXPECT_EQ(5, latency.trace_id());
-  EXPECT_EQ(10, latency.ukm_source_id());
   EXPECT_TRUE(latency.terminated());
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -33,7 +31,6 @@ TEST(LatencyInfoParamTraitsTest, Basic) {
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
   EXPECT_EQ(latency.trace_id(), output.trace_id());
-  EXPECT_EQ(latency.ukm_source_id(), output.ukm_source_id());
   EXPECT_EQ(latency.terminated(), output.terminated());
 
   EXPECT_TRUE(output.FindLatency(INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,

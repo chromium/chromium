@@ -65,8 +65,6 @@ PhysicalLineBoxFragment::PhysicalLineBoxFragment(
 
 PhysicalLineBoxFragment::~PhysicalLineBoxFragment() = default;
 
-void PhysicalLineBoxFragment::Dispose() {}
-
 FontHeight PhysicalLineBoxFragment::BaselineMetrics() const {
   // TODO(kojii): Computing other baseline types than the used one is not
   // implemented yet.

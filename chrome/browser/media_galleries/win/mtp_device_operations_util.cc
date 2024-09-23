@@ -5,6 +5,7 @@
 #include "chrome/browser/media_galleries/win/mtp_device_operations_util.h"
 
 #include <objbase.h>
+
 #include <portabledevice.h>
 #include <stdint.h>
 

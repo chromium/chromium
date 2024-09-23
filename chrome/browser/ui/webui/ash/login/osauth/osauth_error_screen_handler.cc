@@ -23,6 +23,10 @@ void OSAuthErrorScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<OSAuthErrorScreenView> OSAuthErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void OSAuthErrorScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("osauthRetryButton", IDS_LOGIN_GENERIC_RETRY_BUTTON);

@@ -1,0 +1,291 @@
+<style include="cr-hidden-style">
+:host {
+  display: block;
+}
+
+:host([is-empty]) {
+  display: none;
+}
+
+.card {
+  background: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+}
+
+:host([enable-answers_]) .card {
+  background: var(--cr-fallback-color-surface1);
+  border-radius: 16px;
+  box-shadow: none;
+  padding-block: 16px;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 23px 24px 13px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--cr-primary-text-color);
+}
+
+h2 cr-icon {
+  flex-shrink: 0;
+}
+
+:host([enable-answers_]) h2 {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 8px 24px;
+}
+
+:host([enable-answers_]) .answer-section {
+  margin-block-end: 16px;
+}
+
+:host([enable-answers_]) .answer {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  padding: 8px 24px;
+}
+
+.loading {
+  padding: 24px;
+  padding-block-start: 4px;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--cr-fallback-color-divider);
+  margin: 0px 24px;
+}
+
+hr:last-of-type {
+  display: none;
+}
+
+cr-url-list-item {
+  --cr-url-list-item-height: auto;
+  --cr-url-list-item-padding: 14px 24px;
+}
+
+cr-url-list-item:has(.source-passage:not([hidden])) {
+  --cr-url-list-item-padding: 14px 24px 6px;
+}
+
+hr:has(+ cr-url-list-item:hover),
+cr-url-list-item:hover + hr {
+  opacity: 0;
+}
+
+:host([enable-answers_]) .result-item {
+  align-items: center;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  gap: 16px;
+  padding: 8px 24px;
+  text-decoration: none;
+}
+
+:host([enable-answers_]) .result-image {
+  background: var(--cr-fallback-color-neutral-container);
+  border-radius: 8px;
+  flex-shrink: 0;
+  height: 58px;
+  width: 104px;
+}
+
+:host([enable-answers_]) .result-metadata {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+:host([enable-answers_]) .result-title,
+:host([enable-answers_]) .result-url {
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host([enable-answers_]) .result-title {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+:host([enable-answers_]) .result-url {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+}
+
+.time {
+  margin-inline-start: 16px;
+}
+
+:host([enable-answers_]) .time {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  line-height: 16px;
+  margin-inline-start: 0;
+}
+
+:host([enable-answers_]) .more-actions {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px 24px;
+  color: var(--cr-secondary-text-color);
+}
+
+a {
+  color: var(--cr-link-color);
+}
+
+.source-passage {
+  display: flex;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 16px;
+  padding: 6px 24px 14px;
+}
+
+.source-passage-line {
+  background: var(--cr-fallback-color-divider);
+  width: 1px;
+  margin-inline-start: 20px;
+  margin-inline-end: 36px;
+}
+</style>
+
+<template is="dom-if" if="[[!enableAnswers_]]">
+  <div id="cardWithoutAnswers" class="card">
+    <h2 class="heading results-heading">
+      <cr-icon icon="history-embeddings:heading"></cr-icon>
+      [[getHeadingText_(loading_, searchQuery)]]
+    </h2>
+
+    <div class="loading" hidden$="[[!loading_]]">
+      <cr-loading-gradient>
+        <svg width="482" height="40">
+          <clipPath>
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM55 8C55 5.79086 56.7909 4 59 4H478C480.209 4 482 5.79086 482 8V14C482 16.2091 480.209 18 478 18H59C56.7909 18 55 16.2091 55 14V8ZM55 28C55 25.7909 56.7909 24 59 24H371C373.209 24 375 25.7909 375 28V34C375 36.2091 373.209 38 371 38H59C56.7909 38 55 36.2091 55 34V28Z">
+            </path>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
+
+    <div hidden$="[[loading_]]">
+      <div class="result-items">
+        <template is="dom-repeat" items="[[searchResult_.items]]">
+          <cr-url-list-item url="[[item.url.url]]" title="[[item.title]]"
+              description="[[item.urlForDisplay]]"
+              on-click="onResultClick_" on-auxclick="onResultClick_"
+              as-anchor as-anchor-target="_blank" always-show-suffix>
+            <span class="time" slot="suffix">[[item.relativeTime]]</span>
+            <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
+                on-click="onMoreActionsClick_"
+                aria-label="[[i18n('actionMenuDescription')]]"
+                aria-description="[[item.title]]">
+            </cr-icon-button>
+            <div slot="footer" class="source-passage"
+                hidden$="[[!item.sourcePassage]]">
+              <div class="source-passage-line"></div>
+              [[item.sourcePassage]]
+            </div>
+          </cr-url-list-item>
+          <hr>
+        </template>
+      </div>
+
+      <div class="footer">
+        <div>[[i18n('historyEmbeddingsFooter')]]</div>
+        <cr-feedback-buttons
+            selected-option="[[feedbackState_]]"
+            on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+        </cr-feedback-buttons>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template is="dom-if" if="[[enableAnswers_]]">
+  <div id="cardWithAnswers" class="card">
+    <div class="answer-section"
+        hidden$="[[!hasAnswer_(loading_, searchResult_.answer)]]">
+      <h2 class="heading">[[i18n('historyEmbeddingsAnswerHeading')]]</h2>
+      <div class="answer">[[searchResult_.answer]]</div>
+    </div>
+
+    <h2 class="heading results-heading">
+      [[getHeadingText_(loading_, searchQuery)]]
+    </h2>
+    <div class="loading" hidden$="[[!loading_]]">
+      <cr-loading-gradient>
+        <svg width="482" height="40">
+          <clipPath>
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM55 8C55 5.79086 56.7909 4 59 4H478C480.209 4 482 5.79086 482 8V14C482 16.2091 480.209 18 478 18H59C56.7909 18 55 16.2091 55 14V8ZM55 28C55 25.7909 56.7909 24 59 24H371C373.209 24 375 25.7909 375 28V34C375 36.2091 373.209 38 371 38H59C56.7909 38 55 36.2091 55 34V28Z">
+            </path>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
+    <div class="result-items">
+      <template is="dom-repeat" items="[[searchResult_.items]]">
+        <a class="result-item" href="[[item.url.url]]" target="_blank"
+            on-click="onResultClick_" on-auxclick="onResultClick_">
+          <div class="result-image"></div>
+          <div class="result-metadata">
+            <div class="result-title">[[item.title]]</div>
+            <div class="result-url">[[item.urlForDisplay]]</div>
+          </div>
+          <span class="time">[[item.relativeTime]]</span>
+          <cr-icon-button class="more-actions" iron-icon="cr:more-vert"
+              on-click="onMoreActionsClick_"
+              aria-label="[[i18n('actionMenuDescription')]]"
+              aria-description="[[item.title]]">
+          </cr-icon-button>
+        </a>
+      </template>
+    </div>
+  </div>
+  <div class="footer">
+    <div>[[i18n('historyEmbeddingsFooter')]]</div>
+    <cr-feedback-buttons
+        selected-option="[[feedbackState_]]"
+        on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+    </cr-feedback-buttons>
+  </div>
+</template>
+
+<cr-lazy-render id="sharedMenu">
+  <template>
+    <cr-action-menu role-description="[[i18n('actionMenuDescription')]]">
+      <button id="moreFromSiteOption" class="dropdown-item"
+          on-click="onMoreFromSiteClick_">
+        [[i18n('moreFromSite')]]
+      </button>
+      <button id="removeFromHistoryOption"
+          class="dropdown-item" on-click="onRemoveFromHistoryClick_">
+        [[i18n('removeFromHistory')]]
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

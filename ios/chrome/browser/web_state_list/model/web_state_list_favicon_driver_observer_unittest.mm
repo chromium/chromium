@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 
 #import "components/favicon/ios/web_favicon_driver.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -56,7 +56,7 @@ class WebStateListFaviconDriverObserverTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   FakeWebStateFaviconDriverObserver* favicon_observer_;
@@ -64,7 +64,7 @@ class WebStateListFaviconDriverObserverTest : public PlatformTest {
 };
 
 WebStateListFaviconDriverObserverTest::WebStateListFaviconDriverObserverTest()
-    : browser_state_(TestChromeBrowserState::Builder().Build()),
+    : profile_(TestProfileIOS::Builder().Build()),
       web_state_list_(&web_state_list_delegate_),
       favicon_observer_([[FakeWebStateFaviconDriverObserver alloc] init]),
 
@@ -74,7 +74,7 @@ WebStateListFaviconDriverObserverTest::WebStateListFaviconDriverObserverTest()
 favicon::FaviconDriver*
 WebStateListFaviconDriverObserverTest::CreateAndInsertWebState() {
   std::unique_ptr<web::WebState> web_state =
-      web::WebState::Create(web::WebState::CreateParams(browser_state_.get()));
+      web::WebState::Create(web::WebState::CreateParams(profile_.get()));
   favicon::WebFaviconDriver::CreateForWebState(web_state.get(),
                                                /*favicon_service=*/nullptr);
 

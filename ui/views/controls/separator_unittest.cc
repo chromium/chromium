@@ -50,7 +50,7 @@ const gfx::Size SeparatorTest::kTestImageSize{24, 24};
 
 void SeparatorTest::SetUp() {
   ViewsTestBase::SetUp();
-  widget_ = CreateTestWidget();
+  widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   separator_ = widget_->SetContentsView(std::make_unique<Separator>());
   expected_foreground_color_ =
       widget_->GetColorProvider()->GetColor(kForegroundColorId);
@@ -82,7 +82,7 @@ TEST_F(SeparatorTest, GetPreferredSize_VerticalOrientation) {
   // Orientation is vertical by default.
   constexpr int kLength = 8;
   separator_->SetPreferredLength(kLength);
-  EXPECT_EQ(separator_->GetPreferredSize(),
+  EXPECT_EQ(separator_->GetPreferredSize({}),
             gfx::Size(Separator::kThickness, kLength));
 }
 
@@ -90,7 +90,7 @@ TEST_F(SeparatorTest, GetPreferredSize_HorizontalOrientation) {
   constexpr int kLength = 8;
   separator_->SetOrientation(Separator::Orientation::kHorizontal);
   separator_->SetPreferredLength(kLength);
-  EXPECT_EQ(separator_->GetPreferredSize(),
+  EXPECT_EQ(separator_->GetPreferredSize({}),
             gfx::Size(kLength, Separator::kThickness));
 }
 

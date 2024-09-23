@@ -11,93 +11,95 @@ import {BrowserProxy} from 'chrome://resources/cr_components/app_management/brow
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './file_handling_item.html.js';
-import type {AppManagementToggleRowElement} from './toggle_row.js';
+import {getCss} from './file_handling_item.css.js';
+import {getHtml} from './file_handling_item.html.js';
+import type {ToggleRowElement} from './toggle_row.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-const AppManagementFileHandlingItemBase = I18nMixin(PolymerElement);
+const FileHandlingItemBase = I18nMixinLit(CrLitElement);
 
-export class AppManagementFileHandlingItemElement extends
-    AppManagementFileHandlingItemBase {
+export class FileHandlingItemElement extends FileHandlingItemBase {
   static get is() {
     return 'app-management-file-handling-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      app: Object,
-
-      /**
-       * @type {boolean}
-       */
-      showOverflowDialog: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * @type {boolean}
-       */
+      app: {type: Object},
+      showOverflowDialog: {type: Boolean},
       hidden: {
         type: Boolean,
-        computed: 'isHidden_(app)',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  app: App;
-  showOverflowDialog: boolean;
+  app: App = createDummyApp();
+  showOverflowDialog: boolean = false;
+  override hidden: boolean = false;
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('app')) {
+      this.hidden = this.isHidden_();
+    }
+  }
+
+  override firstUpdated() {
     this.addEventListener('change', this.onChanged_);
   }
 
-  private isHidden_(app: App): boolean {
-    if (app && app.fileHandlingState) {
-      return !app.fileHandlingState.userVisibleTypes;
+  private isHidden_(): boolean {
+    if (this.app.fileHandlingState) {
+      return !this.app.fileHandlingState.userVisibleTypes;
     }
     return false;
   }
 
-  private isManaged_(app: App): boolean {
-    if (app && app.fileHandlingState) {
-      return app.fileHandlingState.isManaged;
+  protected isManaged_(): boolean {
+    if (this.app.fileHandlingState) {
+      return this.app.fileHandlingState.isManaged;
     }
     return false;
   }
 
-  private userVisibleTypes_(app: App): string {
-    if (app && app.fileHandlingState) {
-      return app.fileHandlingState.userVisibleTypes;
+  protected userVisibleTypes_(): string {
+    if (this.app.fileHandlingState) {
+      return this.app.fileHandlingState.userVisibleTypes;
     }
     return '';
   }
 
-  private userVisibleTypesLabel_(app: App): string {
-    if (app && app.fileHandlingState) {
-      return app.fileHandlingState.userVisibleTypesLabel;
+  protected userVisibleTypesLabel_(): string {
+    if (this.app.fileHandlingState) {
+      return this.app.fileHandlingState.userVisibleTypesLabel;
     }
     return '';
   }
 
-  private getLearnMoreLinkUrl_(app: App): string {
-    if (app && app.fileHandlingState && app.fileHandlingState.learnMoreUrl) {
-      return app.fileHandlingState.learnMoreUrl.url;
+  protected getLearnMoreLinkUrl_(): string {
+    if (this.app.fileHandlingState && this.app.fileHandlingState.learnMoreUrl) {
+      return this.app.fileHandlingState.learnMoreUrl.url;
     }
     return '';
   }
 
-  private onLearnMoreLinkClicked_(e: CustomEvent): void {
-    if (!this.getLearnMoreLinkUrl_(this.app)) {
+  protected onLearnMoreLinkClicked_(e: CustomEvent): void {
+    if (!this.getLearnMoreLinkUrl_()) {
       // Currently, this branch should only be used on Windows.
       e.detail.event.preventDefault();
       e.stopPropagation();
@@ -105,7 +107,7 @@ export class AppManagementFileHandlingItemElement extends
     }
   }
 
-  private launchDialog_(e: CustomEvent): void {
+  protected launchDialog_(e: CustomEvent): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();
@@ -116,28 +118,28 @@ export class AppManagementFileHandlingItemElement extends
         this.app.type, AppManagementUserAction.FILE_HANDLING_OVERFLOW_SHOWN);
   }
 
-  private onCloseButtonClicked_() {
+  protected onCloseButtonClicked_() {
     this.shadowRoot!.querySelector<CrDialogElement>('#dialog')!.close();
   }
 
-  private onDialogClose_(): void {
+  protected onDialogClose_(): void {
     this.showOverflowDialog = false;
     const toFocus = this.shadowRoot!.querySelector<HTMLElement>('#type-list');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  private getValue_(app: App): boolean {
-    if (app && app.fileHandlingState) {
-      return app.fileHandlingState.enabled;
+  protected getValue_(): boolean {
+    if (this.app.fileHandlingState) {
+      return this.app.fileHandlingState.enabled;
     }
     return false;
   }
 
   private onChanged_() {
     assert(this.app);
-    const enabled = this.shadowRoot!
-                        .querySelector<AppManagementToggleRowElement>(
+    const enabled =
+        this.shadowRoot!.querySelector<ToggleRowElement>(
                             '#toggle-row')!.isChecked();
 
     BrowserProxy.getInstance().handler.setFileHandlingEnabled(
@@ -153,10 +155,8 @@ export class AppManagementFileHandlingItemElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-file-handling-item': AppManagementFileHandlingItemElement;
+    'app-management-file-handling-item': FileHandlingItemElement;
   }
 }
 
-customElements.define(
-    AppManagementFileHandlingItemElement.is,
-    AppManagementFileHandlingItemElement);
+customElements.define(FileHandlingItemElement.is, FileHandlingItemElement);

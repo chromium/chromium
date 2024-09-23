@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ppapi/proxy/ppp_instance_proxy.h"
 
 #include <stddef.h>
@@ -9,6 +14,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_var.h"
@@ -68,10 +74,7 @@ void DidChangeView(PP_Instance instance, PP_Resource view_resource) {
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
 
   EnterResourceNoLock<PPB_View_API> enter_view(view_resource, false);
-  if (enter_view.failed()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!enter_view.failed());
 
   EnterInstanceNoLock enter_instance(instance);
   dispatcher->Send(new PpapiMsg_PPPInstance_DidChangeView(
@@ -89,7 +92,6 @@ PP_Bool HandleDocumentLoad(PP_Instance instance, PP_Resource url_loader) {
   // This should never get called. Out-of-process document loads are handled
   // specially.
   NOTREACHED();
-  return PP_FALSE;
 }
 
 static const PPP_Instance_1_1 instance_interface = {

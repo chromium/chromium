@@ -72,12 +72,7 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
   if (from_ad) {
     SetAllowed(NavigationDownloadType::kAdFrame);
     if (!has_gesture) {
-      if (base::FeatureList::IsEnabled(
-              features::kBlockingDownloadsInAdFrameWithoutUserActivation)) {
-        SetDisallowed(NavigationDownloadType::kAdFrameNoGesture);
-      } else {
-        SetAllowed(NavigationDownloadType::kAdFrameNoGesture);
-      }
+      SetDisallowed(NavigationDownloadType::kAdFrameNoGesture);
     }
   }
 }

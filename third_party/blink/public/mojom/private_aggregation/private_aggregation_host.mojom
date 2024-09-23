@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom";
+import "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom";
 
 // Wrapper to allow for a null debug key.
 // TODO(alexmt): Remove wrapper and replace with nullable uint64.

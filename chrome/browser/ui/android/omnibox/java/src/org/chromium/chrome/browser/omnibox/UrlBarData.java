@@ -64,8 +64,8 @@ public class UrlBarData {
     }
 
     /** Returns whether supplied URL should be shown in the Omnibox/Suggestions list. */
-    public static boolean shouldShowUrl(GURL gurl, boolean isIncognito) {
-        return !(NativePage.isNativePageUrl(gurl, isIncognito) || UrlUtilities.isNtpUrl(gurl));
+    public static boolean shouldShowUrl(GURL gurl, boolean isOffTheRecord) {
+        return !NativePage.isChromePageUrl(gurl, isOffTheRecord) && !UrlUtilities.isNtpUrl(gurl);
     }
 
     public static UrlBarData forUrlAndText(

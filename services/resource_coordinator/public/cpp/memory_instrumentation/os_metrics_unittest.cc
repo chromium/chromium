@@ -1,6 +1,11 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
 #include <set>
@@ -312,9 +317,10 @@ TEST(OSMetricsTest, TestWinModuleReading) {
 namespace {
 
 void CheckMachORegions(const std::vector<mojom::VmRegionPtr>& maps) {
-  uint32_t size = 100;
-  char full_path[size];
-  int result = _NSGetExecutablePath(full_path, &size);
+  constexpr uint32_t kSize = 100;
+  char full_path[kSize];
+  uint32_t buf_size = kSize;
+  int result = _NSGetExecutablePath(full_path, &buf_size);
   ASSERT_EQ(0, result);
   std::string name = basename(full_path);
 

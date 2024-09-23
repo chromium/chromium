@@ -1,0 +1,102 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+  #dialog {
+    align-items: flex-start;
+    background-color: var(--google-red-40);
+    border: none;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    /*Value is contrived from phishing interstitial:
+        font-size = [(125% * 75%) / 81.25%]
+        phishing interstitial html font-size = 125%
+        phishing interstitial body font-size = 75%
+        download interstitial body font-size = 81.25%
+    */
+    font-size: 115.38%;
+    height: 100vh;
+    justify-content: center;
+    max-height: 100vh;
+    max-width: 100vw;
+    width: 100vw;
+  }
+
+  #interstitial-wrapper {
+    max-width: 600px;
+    margin-top: 14vh;
+  }
+
+  #icon {
+    height: 72px;
+    width: 72px;
+  }
+
+  #main-message {
+    margin: 30px 0;
+  }
+
+  #title {
+    font-size: 1.6em;
+    font-weight: normal;
+    line-height: 1.25em;
+    margin-bottom: 16px;
+  }
+
+  #button-container {
+    display: flex;
+    font-size: 0.875em;
+    justify-content: space-between;
+    padding-bottom: 30px;
+  }
+
+  #backToSafetyButton {
+    background: white;
+    border: none;
+    color: var(--google-primary-40);
+  }
+
+  #backToSafetyButton:hover {
+    background: var(--google-primary-90);
+  }
+
+  #continueAnywayButton[disabled] {
+    opacity: 0.5;
+  }
+
+  .secondary-button {
+    border: 1px solid #fff;
+    background: var(--google-red-40);
+    color: white;
+  }
+
+  .secondary-button:hover {
+    background: var(--google-red-500);
+    text-decoration: none;
+  }
+
+  a,
+  cr-button,
+  cr-radio-group {
+    color: white;
+  }
+
+  cr-radio-button {
+    --cr-radio-button-checked-color: #fff;
+    --cr-radio-button-unchecked-color: #fff;
+    --cr-radio-group-item-padding: 8px;
+  }
+
+  #survey-wrapper {
+    margin-bottom: 20px;
+  }
+
+  #survey-title {
+    margin: 8px 0;
+  }

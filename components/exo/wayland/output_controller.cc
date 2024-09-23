@@ -104,7 +104,7 @@ void OutputController::OnDidProcessDisplayChanges(
   UpdateActivatedDisplayIfNecessary();
 
   // Flush updated outputs to clients immediately.
-  // TODO(crbug.com/1502682): Exo should be updated to automatically flush
+  // TODO(crbug.com/40943061): Exo should be updated to automatically flush
   // buffers at the end of task processing if necessary.
   delegate_->Flush();
 }
@@ -185,6 +185,7 @@ void OutputController::UpdateActivatedDisplayIfNecessary() {
   auto output_pair = outputs_.find(current_active_display_id);
   if (output_pair != outputs_.end()) {
     output_pair->second->SendOutputActivated();
+    aura_output_manager_v2_->SendOutputActivated(*output_pair->second);
     dispatched_activated_display_id_ = current_active_display_id;
   }
 }

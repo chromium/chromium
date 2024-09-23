@@ -55,7 +55,7 @@ DevToolsDownloadManagerDelegate* DevToolsDownloadManagerDelegate::GetInstance(
 
 void DevToolsDownloadManagerDelegate::Shutdown() {
   if (original_download_delegate_)
-    original_download_delegate_->Shutdown();
+    original_download_delegate_.ExtractAsDangling()->Shutdown();
   // Revoke any pending callbacks. download_manager_ et. al. are no longer safe
   // to access after this point.
   download_manager_ = nullptr;
@@ -146,7 +146,7 @@ void DevToolsDownloadManagerDelegate::GenerateFilename(
     base::CreateDirectory(suggested_directory);
 
   base::FilePath suggested_path(suggested_directory.Append(generated_name));
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), suggested_path));
 }
 

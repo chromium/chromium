@@ -9,18 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.ClipData;
+import android.content.ClipData.Item;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.view.DragAndDropPermissions;
@@ -28,12 +23,12 @@ import android.view.DragEvent;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -45,11 +40,12 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -63,9 +59,9 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Mock private Activity mActivity;
     @Mock private DragEvent mDragEvent;
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
-    @Mock private ActivityInfo mActivityInfo;
-    @Mock private PackageManager mPackageManager;
+    @Mock private Profile mProfile;
 
+    private Context mApplicationContext;
     private ChromeDragAndDropBrowserDelegate mDelegate;
     private FeatureList.TestValues mTestValues;
 
@@ -76,17 +72,21 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW, false);
         FeatureList.setTestValues(mTestValues);
 
-        Context mApplicationContext = Mockito.spy(ContextUtils.getApplicationContext());
-        when(mApplicationContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
+        mApplicationContext = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mApplicationContext);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         when(mActivity.requestDragAndDropPermissions(mDragEvent))
                 .thenReturn(mDragAndDropPermissions);
         when(mActivity.getApplicationContext())
                 .thenReturn(ApplicationProvider.getApplicationContext());
 
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
+    }
+
+    @After
+    public void teardown() {
+        ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(null);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                 ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
                 "true");
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
         assertFalse(
                 "SupportAnimatedImageDragShadow should be false.",
@@ -111,7 +111,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
                 ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
                 "false");
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+        mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertFalse("SupportDropInChrome should be false.", mDelegate.getSupportDropInChrome());
 
         AssertionError error = null;
@@ -130,7 +130,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Test
     @Config(sdk = 30)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PostR() {
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        MultiWindowTestUtils.enableMultiInstance();
         Intent intent =
                 mDelegate.createUrlIntent(
                         JUnitTestGURLs.EXAMPLE_URL.getSpec(), UrlIntentSource.TAB_IN_STRIP);
@@ -173,17 +173,14 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Test
     @Config(sdk = 30)
     public void testBuildClipData() {
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
-        Profile profile = mock(Profile.class);
-        Tab tab = MockTab.createAndInitialize(1, profile);
-        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
-        ClipData data = mDelegate.buildClipData(dropData);
+        MultiWindowTestUtils.enableMultiInstance();
+        var dropData = createTabDropData(1, false);
+        var data = mDelegate.buildClipData(dropData);
         assertEquals(
                 "The browser clip data is not as expected",
                 dropData.buildTabClipDataText(),
                 data.getItemAt(0).getText());
-        assertNotNull("The clip data should have intent set.", data.getItemAt(0).getIntent());
+        assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
         assertTrue(
                 "The clip data should contain chrome/tab mimetype.",
                 data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
@@ -199,34 +196,77 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
-    @Config(sdk = 30)
-    public void testBuildClipData_DisableDragToOpenNewInstance() {
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.setForTesting(true);
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
+    public void testBuildClipDataForTabDragWithItemFromBuilder() {
+        testBuildClipDataForTabDragToCreateNewInstance(true);
+    }
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
-        Profile profile = mock(Profile.class);
-        Tab tab = MockTab.createAndInitialize(1, profile);
-        ChromeDropDataAndroid dropData = new ChromeDropDataAndroid.Builder().withTab(tab).build();
-        ClipData data = mDelegate.buildClipData(dropData);
-        assertEquals(
-                "The browser clip data is not as expected",
-                dropData.buildTabClipDataText(),
-                data.getItemAt(0).getText());
-        assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
+    @Test
+    public void testBuildClipDataForTabDragWithNullItemFromBuilder() {
+        testBuildClipDataForTabDragToCreateNewInstance(false);
+    }
+
+    @Test
+    public void testBuildFlags_dropDataHasNoTab() {
+        MultiWindowTestUtils.enableMultiInstance();
+        int originalFlag = 0;
+        var dropData = new ChromeDropDataAndroid.Builder().build();
+        var flags = mDelegate.buildFlags(originalFlag, dropData);
+        assertEquals("Original flag should not be modified.", originalFlag, flags);
+    }
+
+    @Test
+    public void testBuildFlags_dropDataHasTabAndTabDragToCreateInstanceNotAllowed() {
+        MultiWindowTestUtils.enableMultiInstance();
+        int originalFlag = 0;
+        var dropData = createTabDropData(1, false);
+        var flags = mDelegate.buildFlags(originalFlag, dropData);
+        assertEquals("Original flag should not be modified.", originalFlag, flags);
+    }
+
+    @Test
+    public void testBuildFlags_dropDataHasTabAndTabDragToCreateInstanceAllowed() {
+        MultiWindowTestUtils.enableMultiInstance();
+        int originalFlag = 0;
+        var dropData = createTabDropData(1, true);
+        var flags = mDelegate.buildFlags(originalFlag, dropData);
         assertTrue(
-                "The clip data should contain chrome/tab mimetype.",
-                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
+                "Drag flags should contain DRAG_FLAG_GLOBAL_SAME_APPLICATION.",
+                (flags & (1 << 12)) != 0);
+        assertTrue(
+                "Drag flags should contain DRAG_FLAG_START_INTENT_SENDER_ON_UNHANDLED_DRAG.",
+                (flags & (1 << 13)) != 0);
+    }
 
-        assertFalse(
-                "The clip data should not contain chrome/link mimetype.",
-                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
-        assertFalse(
-                "The clip data should not contain text/plain mimetype.",
-                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
-        assertFalse(
-                "The clip data should not contain text/vnd.android.intent mimetype.",
-                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
+    private ChromeDropDataAndroid createTabDropData(
+            int tabId, boolean allowDragToCreateNewInstance) {
+        Tab tab = MockTab.createAndInitialize(tabId, mProfile);
+        return new ChromeDropDataAndroid.Builder()
+                .withTab(tab)
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
+                .build();
+    }
+
+    private void testBuildClipDataForTabDragToCreateNewInstance(boolean withItem) {
+        MultiWindowTestUtils.enableMultiInstance();
+        var tab = MockTab.createAndInitialize(1, mProfile);
+        var dropData = createTabDropData(1, true);
+        var item =
+                withItem
+                        ? new Item(
+                                DragAndDropLauncherActivity.getTabIntent(
+                                        mApplicationContext,
+                                        tab,
+                                        MultiWindowUtils.INVALID_INSTANCE_ID))
+                        : null;
+        ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(item);
+
+        var data = mDelegate.buildClipData(dropData);
+        assertNotNull("The clip data should have an intent set.", data.getItemAt(0).getIntent());
+        assertEquals(
+                "Tab id extra is incorrect.",
+                tab.getId(),
+                data.getItemAt(0)
+                        .getIntent()
+                        .getIntExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID));
     }
 }

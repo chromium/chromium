@@ -7,10 +7,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 
 /**
- * This class acts as a controller for determining where tabs should be inserted
- * into a tab strip model.
+ * This class acts as a controller for determining where tabs should be inserted into a tab strip
+ * model.
  *
- * TODO(crbug.com/1138005): Move to chrome/browser/tabmodel/internal when all usages are
+ * <p>TODO(crbug.com/40152902): Move to chrome/browser/tabmodel/internal when all usages are
  * modularized.
  */
 interface TabModelOrderController {
@@ -33,11 +33,11 @@ interface TabModelOrderController {
     int determineInsertionIndex(@TabLaunchType int type, Tab newTab);
 
     /**
-     * Determine if a launch type will result in the tab being opened in the
-     * foreground.
-     * @param type               The type of opening event.
-     * @param isNewTabIncognito  True if the new opened tab is incognito.
-     * @return                   True if the tab will be in the foreground
+     * Determine if a launch type will result in the tab being opened in the foreground.
+     *
+     * @param type The type of opening event.
+     * @param isNewTabIncognitoBranded True if the new opened tab is incognito.
+     * @return True if the tab will be in the foreground
      */
-    boolean willOpenInForeground(@TabLaunchType int type, boolean isNewTabIncognito);
+    boolean willOpenInForeground(@TabLaunchType int type, boolean isNewTabIncognitoBranded);
 }

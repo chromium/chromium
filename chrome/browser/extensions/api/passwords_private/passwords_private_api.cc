@@ -280,7 +280,7 @@ ResponseAction PasswordsPrivateSharePasswordFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  // TODO(crbug/1445526): Respond with an error if arguments are not valid
+  // TODO(crbug.com/40268194): Respond with an error if arguments are not valid
   // (password doesn't exist, auth validity expired, recipient doesn't have
   // public key or user_id).
 
@@ -403,28 +403,28 @@ ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
           GetDelegate(browser_context())->GetExportProgressStatus())));
 }
 
-// PasswordsPrivateIsOptedInForAccountStorageFunction
-ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
+// PasswordsPrivateIsAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateIsAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  return RespondNow(WithArguments(
-      GetDelegate(browser_context())->IsOptedInForAccountStorage()));
+  return RespondNow(
+      WithArguments(GetDelegate(browser_context())->IsAccountStorageEnabled()));
 }
 
-// PasswordsPrivateOptInForAccountStorageFunction
-ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
+// PasswordsPrivateSetAccountStorageEnabledFunction
+ResponseAction PasswordsPrivateSetAccountStorageEnabledFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
   auto parameters =
-      api::passwords_private::OptInForAccountStorage::Params::Create(args());
+      api::passwords_private::SetAccountStorageEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->SetAccountStorageOptIn(parameters->opt_in, GetSenderWebContents());
+      ->SetAccountStorageEnabled(parameters->enabled, GetSenderWebContents());
   return RespondNow(NoArguments());
 }
 
@@ -621,8 +621,19 @@ PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::Run() {
   }
 
   GetDelegate(browser_context())
-      ->SwitchBiometricAuthBeforeFillingState(GetSenderWebContents());
-  return RespondNow(NoArguments());
+      ->SwitchBiometricAuthBeforeFillingState(
+          GetSenderWebContents(),
+          base::BindOnce(
+              &PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::
+                  OnAuthenticationComplete,
+              this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::
+    OnAuthenticationComplete(bool result) {
+  Respond(WithArguments(result));
 }
 
 // PasswordsPrivateShowExportedFileInShellFunction
@@ -648,6 +659,92 @@ ResponseAction PasswordsPrivateShowAddShortcutDialogFunction::Run() {
 
   GetDelegate(browser_context())->ShowAddShortcutDialog(GetSenderWebContents());
   return RespondNow(NoArguments());
+}
+
+// PasswordsPrivateChangePasswordManagerPinFunction
+ResponseAction PasswordsPrivateChangePasswordManagerPinFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->ChangePasswordManagerPin(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateChangePasswordManagerPinFunction::
+                           OnPinChangeCompleted,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateChangePasswordManagerPinFunction::OnPinChangeCompleted(
+    bool success) {
+  Respond(WithArguments(success));
+}
+
+// PasswordsPrivateIsPasswordManagerPinAvailableFunction
+ResponseAction PasswordsPrivateIsPasswordManagerPinAvailableFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->IsPasswordManagerPinAvailable(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateIsPasswordManagerPinAvailableFunction::
+                           OnPasswordManagerPinAvailabilityReceived,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateIsPasswordManagerPinAvailableFunction::
+    OnPasswordManagerPinAvailabilityReceived(bool is_available) {
+  Respond(WithArguments(is_available));
+}
+
+// PasswordsPrivateDisconnectCloudAuthenticatorFunction
+ResponseAction PasswordsPrivateDisconnectCloudAuthenticatorFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->DisconnectCloudAuthenticator(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateDisconnectCloudAuthenticatorFunction::
+                           OnDisconnectCloudAuthenticatorCompleted,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateDisconnectCloudAuthenticatorFunction::
+    OnDisconnectCloudAuthenticatorCompleted(bool success) {
+  Respond(WithArguments(success));
+}
+
+// PasswordsPrivateIsConnectedToCloudAuthenticatorFunction
+ResponseAction PasswordsPrivateIsConnectedToCloudAuthenticatorFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    return RespondNow(WithArguments(
+        delegate->IsConnectedToCloudAuthenticator(GetSenderWebContents())));
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+// PasswordsPrivateDeleteAllPasswordManagerDataFunction
+ResponseAction PasswordsPrivateDeleteAllPasswordManagerDataFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->DeleteAllPasswordManagerData(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateDeleteAllPasswordManagerDataFunction::
+                           OnDeletionCompleted,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateDeleteAllPasswordManagerDataFunction::OnDeletionCompleted(
+    bool success) {
+  Respond(WithArguments(success));
 }
 
 }  // namespace extensions

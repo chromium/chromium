@@ -54,7 +54,7 @@ class CRYPTO_EXPORT ECPrivateKey {
   // Returns a copy of the object.
   std::unique_ptr<ECPrivateKey> Copy() const;
 
-  EVP_PKEY* key() { return key_.get(); }
+  EVP_PKEY* key() const { return key_.get(); }
 
   // Exports the private key to a PKCS #8 PrivateKeyInfo block.
   bool ExportPrivateKey(std::vector<uint8_t>* output) const;

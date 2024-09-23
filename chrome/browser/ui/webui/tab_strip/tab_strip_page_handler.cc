@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -70,8 +70,8 @@ namespace {
 
 // Delay in milliseconds of when the dragging UI should be shown for touch drag.
 // Note: For better user experience, this is made shorter than
-// ET_GESTURE_LONG_PRESS delay, which is too long for this case, e.g., about
-// 650ms.
+// EventType::kGestureLongPress delay, which is too long for this case, e.g.,
+// about 650ms.
 constexpr base::TimeDelta kTouchLongpressDelay = base::Milliseconds(300);
 
 class WebUIBackgroundMenuModel : public ui::SimpleMenuModel {
@@ -191,7 +191,8 @@ TabStripPageHandler::TabStripPageHandler(
   ThemeServiceFactory::GetForProfile(browser_->profile())->AddObserver(this);
 
   // Or native theme change.
-  theme_observation_.Observe(webui::GetNativeTheme(web_ui_->GetWebContents()));
+  theme_observation_.Observe(
+      webui::GetNativeThemeDeprecated(web_ui_->GetWebContents()));
 }
 
 void TabStripPageHandler::NotifyLayoutChanged() {
@@ -250,11 +251,11 @@ void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
 
 void TabStripPageHandler::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabGroupedStateChanged");
   const SessionID::id_type tab_id =
-      extensions::ExtensionTabUtil::GetTabId(contents);
+      extensions::ExtensionTabUtil::GetTabId(tab->contents());
   if (group.has_value()) {
     page_->TabGroupStateChanged(tab_id, index, group.value().ToString());
   } else {
@@ -357,7 +358,7 @@ bool TabStripPageHandler::PreHandleGestureEvent(
         // Synthesize a long press event to start the drag and drop session.
         // TODO(tluk): Replace this with a better drag and drop trigger when
         // available.
-        ui::GestureEventDetails press_details(ui::ET_GESTURE_LONG_PRESS);
+        ui::GestureEventDetails press_details(ui::EventType::kGestureLongPress);
         press_details.set_device_type(
             ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
         ui::GestureEvent press_event(
@@ -369,7 +370,8 @@ bool TabStripPageHandler::PreHandleGestureEvent(
 
         // Following the long press we need to dispatch a scroll end event to
         // ensure the gesture stream is not left in an inconsistent state.
-        ui::GestureEventDetails scroll_end_details(ui::ET_GESTURE_SCROLL_END);
+        ui::GestureEventDetails scroll_end_details(
+            ui::EventType::kGestureScrollEnd);
         scroll_end_details.set_device_type(
             ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
         ui::GestureEvent scroll_end_event(
@@ -431,7 +433,7 @@ bool TabStripPageHandler::CanDragEnter(
     content::WebContents* source,
     const content::DropData& data,
     blink::DragOperationsMask operations_allowed) {
-  // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
+  // TODO(crbug.com/40110968): Prevent dragging across Chromium instances.
   if (auto it = data.custom_data.find(kWebUITabIdDataType);
       it != data.custom_data.end()) {
     int tab_id;
@@ -515,8 +517,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->crashed = tab_renderer_data.IsCrashed();
   // TODO(johntlee): Add the rest of TabRendererData
 
-  for (const auto alert_state :
-       chrome::GetTabAlertStatesForContents(contents)) {
+  for (const auto alert_state : GetTabAlertStatesForContents(contents)) {
     tab_data->alert_states.push_back(alert_state);
   }
 
@@ -746,7 +747,7 @@ void TabStripPageHandler::ShowTabContextMenu(int32_t tab_id,
   }
 
   if (browser != browser_) {
-    // TODO(crbug.com/1141573): Investigate how a context menu is being opened
+    // TODO(crbug.com/40727240): Investigate how a context menu is being opened
     // for a tab that is no longer in the tab strip. Until then, fire a
     // tab-removed event so the tab is removed from this tab strip.
     page_->TabRemoved(tab_id);
@@ -886,7 +887,7 @@ void TabStripPageHandler::OnNativeThemeUpdated(
   // switch between light/dark mode. b) A different theme is enabled. e.g.
   // switch between GTK and classic theme on Linux. Reset observer in case b).
   ui::NativeTheme* current_theme =
-      webui::GetNativeTheme(web_ui_->GetWebContents());
+      webui::GetNativeThemeDeprecated(web_ui_->GetWebContents());
   if (observed_theme != current_theme) {
     theme_observation_.Reset();
     theme_observation_.Observe(current_theme);

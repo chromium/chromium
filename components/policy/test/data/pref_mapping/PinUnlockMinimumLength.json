@@ -9,7 +9,9 @@
           "PinUnlockMinimumLength": 4
         },
         "prefs": {
-          "pin_unlock_minimum_length": {}
+          "pin_unlock_minimum_length": {
+            "value": 4
+          }
         }
       }
     ]

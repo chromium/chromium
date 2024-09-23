@@ -12,3 +12,7 @@ per-file *challenge_response*=emaxx@chromium.org
 per-file *challenge_response*=fabiansommer@chromium.org
 per-file *security_token*=emaxx@chromium.org
 per-file *security_token*=fabiansommer@chromium.org
+
+per-file *quickstart_controller*=file://chrome/browser/ash/login/oobe_quick_start/QUICKSTART_OWNERS
+
+per-file *profile_auth_data*=file://ash/login/SAML_INTEGRATION_OWNERS

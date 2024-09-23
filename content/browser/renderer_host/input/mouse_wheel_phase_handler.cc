@@ -6,8 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/events/base_event_utils.h"
 
@@ -98,7 +98,7 @@ void MouseWheelPhaseHandler::AddPhaseIfNeededAndScheduleEndEvent(
         mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -179,11 +179,10 @@ void MouseWheelPhaseHandler::SendSyntheticWheelEventWithPhaseEnded(
       return;
 
     widget_host->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
-        host_view_, &last_mouse_wheel_event_,
-        ui::LatencyInfo(ui::SourceEventType::WHEEL));
+        host_view_, &last_mouse_wheel_event_, ui::LatencyInfo());
   } else {
-    host_view_->ProcessMouseWheelEvent(
-        last_mouse_wheel_event_, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+    host_view_->ProcessMouseWheelEvent(last_mouse_wheel_event_,
+                                       ui::LatencyInfo());
   }
 }
 

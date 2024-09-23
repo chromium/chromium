@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "price_insights_model.h",
+    "price_insights_model.mm",
+    "price_insights_model_factory.h",
+    "price_insights_model_factory.mm",
+  ]
+  deps = [
+    ":feature",
+    "//base",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions",
+    "//components/feature_engagement/public",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/price_insights/resources",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "price_insights_model_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":feature",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/feature_engagement/public",
+    "//components/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("feature") {
+  sources = [
+    "price_insights_feature.h",
+    "price_insights_feature.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}

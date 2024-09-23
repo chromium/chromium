@@ -6,8 +6,6 @@ import("//components/optimization_guide/features.gni")
 
 source_set("model") {
   sources = [
-    "otr_web_state_observer.h",
-    "otr_web_state_observer.mm",
     "segmentation_platform_config.h",
     "segmentation_platform_config.mm",
     "segmentation_platform_service_factory.h",
@@ -17,10 +15,10 @@ source_set("model") {
     ":ukm_client",
     "//base",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
+    "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",
@@ -31,15 +29,20 @@ source_set("model") {
     "//components/sync_device_info",
     "//components/ukm",
     "//components/variations",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]
   if (build_with_tflite_lib) {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
@@ -60,14 +63,49 @@ source_set("ukm_client") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("segmented_default_browser") {
+  sources = [
+    "segmented_default_browser_utils.h",
+    "segmented_default_browser_utils.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/segmentation_platform/public",
+  ]
+  deps = [
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+  ]
+}
+
+source_set("segmented_default_browser_tests") {
+  testonly = true
+  sources = [
+    "segmented_default_browser_test_utils.h",
+    "segmented_default_browser_test_utils.mm",
+  ]
+  public_deps = [
+    "//components/segmentation_platform/public",
+    "//components/sync_device_info:test_support",
+    "//testing/gmock",
+  ]
+  deps = [
+    ":segmented_default_browser",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public:test_support",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "otr_web_state_observer_unittest.mm",
     "segmentation_platform_service_factory_unittest.mm",
     "ukm_data_manager_test_utils.h",
     "ukm_data_manager_test_utils.mm",
@@ -76,6 +114,9 @@ source_set("unit_tests") {
     ":model",
     ":ukm_client",
     "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
@@ -86,11 +127,12 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
     "//components/ukm:test_support",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

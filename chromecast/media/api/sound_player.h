@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
 

@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -19,9 +20,6 @@ namespace {}  // namespace
 
 @interface LockdownModeMediator () <BooleanObserver>
 
-// User pref service.
-@property(nonatomic, assign, readonly) PrefService* userPrefService;
-
 // Preference value for the Lockdown Mode feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* lockdownModePreference;
@@ -30,13 +28,11 @@ namespace {}  // namespace
 
 @implementation LockdownModeMediator
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    DCHECK(userPrefService);
-    _userPrefService = userPrefService;
     _lockdownModePreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
+        initWithPrefService:GetApplicationContext()->GetLocalState()
                    prefName:prefs::kBrowserLockdownModeEnabled];
     _lockdownModePreference.observer = self;
   }
@@ -45,8 +41,9 @@ namespace {}  // namespace
 
 - (void)setConsumer:(id<LockdownModeConsumer>)consumer {
   _consumer = consumer;
-  [_consumer setOSLockdownModeEnabled:self.userPrefService->GetBoolean(
-                                          prefs::kOSLockdownModeEnabled)];
+  BOOL enabled = GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kOSLockdownModeEnabled);
+  [_consumer setOSLockdownModeEnabled:enabled];
   [_consumer setBrowserLockdownModeEnabled:self.lockdownModePreference.value];
 }
 

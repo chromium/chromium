@@ -77,8 +77,8 @@ testing::AssertionResult ClickIntentPickerChip(Browser* browser) {
 
   views::test::ButtonTestApi test_api(GetIntentPickerIcon(browser));
   test_api.NotifyClick(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   return testing::AssertionSuccess();
 }
 

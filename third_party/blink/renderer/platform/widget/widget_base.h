@@ -72,8 +72,10 @@ class WidgetScheduler;
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"
 // which is scaled DSF baked in.
-class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
-                                   public LayerTreeViewDelegate {
+class PLATFORM_EXPORT WidgetBase
+    : public mojom::blink::Widget,
+      public LayerTreeViewDelegate,
+      public mojom::blink::RenderInputRouterClient {
  public:
   WidgetBase(
       WidgetBaseClient* client,
@@ -122,7 +124,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   void AddPresentationCallback(
       uint32_t frame_token,
-      base::OnceCallback<void(base::TimeTicks)> callback);
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback);
+
+  void WarmUpCompositor();
 
 #if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(
@@ -130,11 +134,18 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       base::OnceCallback<void(gfx::CALayerResult)> callback);
 #endif
 
-  // mojom::blink::Widget overrides:
-  void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
+  // mojom::blink::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
       mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) override;
+  void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
+                       const gfx::Point& location) override;
+  void BindInputTargetClient(
+      mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> host)
+      override;
+
+  // mojom::blink::Widget overrides:
+  void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
   void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
@@ -148,6 +159,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
+  void SetupRenderInputRouterConnections(
+      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>
+          browser_request,
+      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> viz_request)
+      override;
 
   // LayerTreeViewDelegate overrides:
   // Applies viewport related properties during a commit from the compositor
@@ -179,7 +195,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void UpdateVisualState() override;
@@ -194,8 +209,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   cc::AnimationTimeline* ScrollAnimationTimeline() const;
   cc::LayerTreeHost* LayerTreeHost() const;
   scheduler::WidgetScheduler* WidgetScheduler();
-
-  mojom::blink::WidgetHost* GetWidgetHostRemote() { return widget_host_.get(); }
 
   // Returns if we should gather begin main frame metrics. If there is no
   // compositor thread this returns false.
@@ -248,7 +261,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       std::unique_ptr<blink::WebCoalescedInputEvent> event);
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands);
-  void SetMouseCapture(bool capture);
   void ImeSetComposition(const String& text,
                          const Vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& replacement_range,
@@ -277,7 +289,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   LCDTextPreference ComputeLCDTextPreference() const;
 
-  const viz::LocalSurfaceId& local_surface_id_from_parent() {
+  const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;
   }
 
@@ -373,12 +385,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   const display::ScreenInfo& GetScreenInfo();
 
   // Accessors for information about available screens and the current screen.
-  void set_screen_infos(const display::ScreenInfos& s) { screen_infos_ = s; }
   const display::ScreenInfos& screen_infos() const { return screen_infos_; }
-
-  const viz::LocalSurfaceId& local_surface_id_from_parent() const {
-    return local_surface_id_from_parent_;
-  }
 
   bool is_embedded() const { return is_embedded_; }
 
@@ -446,20 +453,23 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
   // Indicates this is for a child local root or a nested main frame.
-  // TODO(crbug.com/1254770): revisit this for portals.
   const bool is_embedded_ = false;
-  // Indicates that this widget is for a portal element, top level frame, or a
-  // GuestView.
+  // Indicates that this widget is for a top level frame, or a GuestView.
   const bool is_for_scalable_page_ = false;
   // Set true by initialize functions, used to check that only one is called.
   bool initialized_ = false;
 
   // The client which handles behaviour specific to the type of widget.
   // It's the owner of the widget and will outlive this class.
-  const raw_ptr<WidgetBaseClient, ExperimentalRenderer> client_;
+  const raw_ptr<WidgetBaseClient> client_;
 
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
+
+  mojo::Receiver<mojom::blink::RenderInputRouterClient> browser_input_receiver_{
+      this};
+  mojo::Receiver<mojom::blink::RenderInputRouterClient> viz_input_receiver_{
+      this};
 
   std::unique_ptr<LayerTreeView> layer_tree_view_;
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;
@@ -533,7 +543,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // It is possible that one ImeEventGuard is nested inside another
   // ImeEventGuard. We keep track of the outermost one, and update it as needed.
-  raw_ptr<ImeEventGuard, ExperimentalRenderer> ime_event_guard_ = nullptr;
+  raw_ptr<ImeEventGuard> ime_event_guard_ = nullptr;
 
   // The screen rects of the view and the window that contains it. These do not
   // include any scaling by device scale factor, so are logical pixels not
@@ -560,6 +570,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;
+
+  // The task_runner on which Widget mojo interfaces are bound.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Delayed callback to ensure we have only one delayed ScheduleAnimation()
   // call going at a time.

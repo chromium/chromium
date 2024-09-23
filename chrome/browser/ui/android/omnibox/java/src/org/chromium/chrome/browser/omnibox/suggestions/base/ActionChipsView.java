@@ -58,18 +58,17 @@ public class ActionChipsView extends RecyclerView {
         final @Px int elementSpace =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
 
-        addItemDecoration(new SpacingRecyclerViewItemDecoration(this, leadInSpace, elementSpace));
+        addItemDecoration(new SpacingRecyclerViewItemDecoration(leadInSpace, elementSpace));
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
             if (event.isShiftPressed()) {
-                mSelectionController.selectPreviousItem();
+                return mSelectionController.selectPreviousItem();
             } else {
-                mSelectionController.selectNextItem();
+                return mSelectionController.selectNextItem();
             }
-            return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
             var chip = mSelectionController.getSelectedView();
             if (chip != null) return chip.performClick();
@@ -96,5 +95,17 @@ public class ActionChipsView extends RecyclerView {
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setSelectionControllerForTesting(RecyclerViewSelectionController controller) {
         mSelectionController = controller;
+    }
+
+    public void setLeadInSpacing(int spacing) {
+        if (getItemDecorationCount() > 0) {
+            assert getItemDecorationCount() == 1 : "Expected at most 1 decoration";
+            removeItemDecorationAt(0);
+        }
+
+        addItemDecoration(
+                new SpacingRecyclerViewItemDecoration(
+                        spacing,
+                        getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing)));
     }
 }

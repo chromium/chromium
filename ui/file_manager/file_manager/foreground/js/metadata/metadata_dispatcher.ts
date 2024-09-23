@@ -5,8 +5,9 @@
 import {ExifParser} from './exif_parser.js';
 import {Id3Parser} from './id3_parser.js';
 import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
-import {ParserMetadata} from './metadata_item.js';
-import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
+import type {ParserMetadata} from './metadata_item.js';
+import type {MetadataParser} from './metadata_parser.js';
+import {type MetadataParserLogger} from './metadata_parser.js';
 import {MpegParser} from './mpeg_parser.js';
 
 // Helper function to type entries as FileEntry. We redefine it here because
@@ -85,7 +86,6 @@ class MetadataDispatcher implements MetadataParserLogger {
   private request_(fileURL: string) {
     try {
       this.processOneFile(fileURL, (metadata: ParserMetadata) => {
-        console.log(metadata);
         this.postMessage('result', [fileURL, metadata]);
       });
     } catch (ex) {

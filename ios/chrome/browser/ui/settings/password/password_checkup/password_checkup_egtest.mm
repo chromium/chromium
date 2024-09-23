@@ -5,11 +5,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -48,15 +48,6 @@ constexpr NSString* kSite3 = @"https://example3.com/";
 constexpr NSString* kReusedPassword = @"reused password";
 constexpr NSString* kSafePassword = @"s@fe pa55word!";
 constexpr NSString* kWeakPassword = @"1";
-
-#pragma mark - Password Manager matchers
-
-// Matcher for the Password Manager's view that's presented when the user
-// doesn't have any saved passwords.
-id<GREYMatcher> PasswordManagerEmptyView() {
-  return grey_text(
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE));
-}
 
 #pragma mark - Password Checkup Homepage matchers
 
@@ -282,10 +273,6 @@ NSString* LeakedPasswordDescription() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordAuthOnEntryV2);
-
   return config;
 }
 
@@ -298,7 +285,7 @@ NSString* LeakedPasswordDescription() {
           password_manager::BulkLeakCheckServiceInterface::State::kIdle];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Mock successful reauth for opening the Password Manager.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
@@ -343,8 +330,7 @@ NSString* LeakedPasswordDescription() {
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
@@ -429,9 +415,9 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the loading state of the Password Checkup Homepage.
-// TODO(crbug.com/1462095): Fix and re enable the test.
+// TODO(crbug.com/40921746): Fix and re enable the test.
 - (void)DISABLED_testPasswordCheckupHomepageLoadingState {
-  // TODO(crbug.com/1512150): Test fails on iPad.
+  // TODO(crbug.com/41484731): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }
@@ -542,6 +528,27 @@ NSString* LeakedPasswordDescription() {
                                 error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupHompageHeaderImageView()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests opening the Password Issues page.
+- (void)testOpeningPasswordIssues {
+  SaveCompromisedPasswordFormToProfileStore();
+
+  OpenPasswordCheckupHomepage(
+      /*result_state=*/PasswordCheckStateUnmutedCompromisedPasswords,
+      /*result_password_count=*/1);
+
+  // Auth should not be required to open Password Issues. The user is
+  // authenticated when opening the Password Manager page. Catch any unexpected
+  // authentication requests.
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+
+  // Open the compromised issues page.
+  [[EarlGrey selectElementWithMatcher:
+                 PasswordCheckupHomepageCompromisedPasswordsItem()]
+      performAction:grey_tap()];
+
+  VerifyCompromisedPasswordIssuesPageIsVisible(/*issue_count=*/1);
 }
 
 // Tests dismissing a compromised password warning.
@@ -688,7 +695,8 @@ NSString* LeakedPasswordDescription() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Verify that the empty view of Password Manager is now displayed.
-  [[EarlGrey selectElementWithMatcher:PasswordManagerEmptyView()]
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          PasswordManagerEmptyView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -951,8 +959,7 @@ NSString* LeakedPasswordDescription() {
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
-  [PasswordSettingsAppInterface
-      mockReauthenticationModuleShouldReturnSynchronously:NO];
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 

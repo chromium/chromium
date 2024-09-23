@@ -9,35 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "profile.managed_default_content_settings.third_party_storage_partitioning": {
-            "default_value": 0
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultThirdPartyStoragePartitioningSetting": 1
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.third_party_storage_partitioning": {
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultThirdPartyStoragePartitioningSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.third_party_storage_partitioning": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.third_party_storage_partitioning",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

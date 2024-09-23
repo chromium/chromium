@@ -1,0 +1,4 @@
+include_rules = [
+  # For blink::features::kWebUSBTransferSizeLimit.
+  "+third_party/blink/public/common/features.h",
+]

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/data_type.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -51,6 +54,12 @@ namespace signin {
 enum class ReauthResult;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+namespace {
+class NewTabWebContentsObserver;
+}
+#endif
+
 // Class responsible for showing and hiding all sign-in related UIs
 // (modal sign-in, DICE full-tab sign-in page, sync confirmation dialog, sign-in
 // error dialog, reauth prompt). Sync confirmation is used on
@@ -72,6 +81,9 @@ class SigninViewController {
   virtual ~SigninViewController();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Returns true if Chrome new tab page/blank is displayed in `contents`.
+  static bool IsNTPTab(content::WebContents* contents);
+
   // Shows the signin attached to |browser_|'s active web contents.
   // |access_point| indicates the access point used to open the Gaia sign in
   // page.
@@ -106,6 +118,20 @@ class SigninViewController {
   void ShowModalInterceptFirstRunExperienceDialog(
       const CoreAccountId& account_id,
       bool is_forced_intercept);
+
+  // Possibly show a confirmation prompt and then sign the user out, open a
+  // reauth tab, or do nothing depending on the user choice.
+  void SignoutOrReauthWithPrompt(
+      signin_metrics::AccessPoint reauth_access_point,
+      signin_metrics::ProfileSignout profile_signout_source,
+      signin_metrics::SourceForRefreshTokenOperation token_signout_source);
+
+  // Called by extensions to ask the user to sign in to chrome while they are
+  // signed in on the web only.
+  // This opens/reuses a new tab page and opens a modal dialog.
+  // Note: This should  only be called if the dialog is not already showing.
+  void MaybeShowChromeSigninDialogForExtensions(std::string_view extension_name,
+                                                base::OnceClosure on_complete);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -139,7 +165,12 @@ class SigninViewController {
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
   // of the |browser_|'s window.
-  void ShowModalSyncConfirmationDialog(bool is_signin_intercept = false);
+  // `is_signin_intercept` is true if the confirmation dialog is shown after
+  // signin intercept, which has a slightly different UI.
+  // `is_sync_promo` is true if the sync confirmation dialog is offered as an
+  // option. It is false if the user explicitly initiated the flow.
+  void ShowModalSyncConfirmationDialog(bool is_signin_intercept,
+                                       bool is_sync_promo);
 
   // Shows the modal managed user notice dialog as a browser-modal dialog on
   // top of the `browser_`'s window. `domain_name` is the domain of the
@@ -150,11 +181,19 @@ class SigninViewController {
   // otherwise the default wording will be used.
   // When `show_link_data_option` is false, the callback is called with either
   // SIGNIN_CHOICE_CANCEL or SIGNIN_CHOICE_NEW_PROFILE.
+  // `process_user_choice_callback` is the callback that handles the user
+  // choice. This callback may contain a callback to notify UI that that the
+  // operation is done. If no UI notification is required, that callback does
+  // not need to be set.
+  // `done_callback` is the callback when the flow is complete, this is
+  // where The UI cleanups should be handled.
   void ShowModalManagedUserNoticeDialog(
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      signin::SigninChoiceCallback callback);
+      signin::SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback);
 
   // Shows the modal sign-in error dialog as a browser-modal dialog on top of
   // the |browser_|'s window.
@@ -173,11 +212,19 @@ class SigninViewController {
   // Called by a `dialog_`' when it closes.
   void OnModalDialogClosed();
 
+  base::WeakPtr<SigninViewController> AsWeakPtr();
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
+                           EmailConfirmationDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            ErrorDialogDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            EnterpriseConfirmationDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
+                           EnterpriseConfirmationDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
+                           EnterpriseConfirmationCancel);
   FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
                            CloseImmediately);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
@@ -200,6 +247,21 @@ class SigninViewController {
                          signin_metrics::PromoAction promo_action,
                          const std::string& email_hint,
                          const GURL& redirect_url);
+
+  // Called by `SignoutOrReauthWithPrompt()` once the unsynced datatypes are
+  // fetched.
+  void SignoutOrReauthWithPromptWithUnsyncedDataTypes(
+      signin_metrics::AccessPoint reauth_access_point,
+      signin_metrics::ProfileSignout profile_signout_source,
+      signin_metrics::SourceForRefreshTokenOperation token_signout_source,
+      syncer::DataTypeSet unsynced_datatypes);
+
+  void ShowChromeSigninDialogForExtensions(
+      std::string_view extension_name,
+      base::OnceClosure on_complete,
+      const AccountInfo& account_info_for_promos,
+      content::WebContents* contents);
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.
@@ -217,6 +279,10 @@ class SigninViewController {
 
   // Currently displayed modal dialog, or nullptr if none is displayed.
   std::unique_ptr<SigninModalDialog> dialog_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
+#endif
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };

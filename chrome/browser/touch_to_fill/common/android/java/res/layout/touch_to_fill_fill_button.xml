@@ -20,4 +20,4 @@ found in the LICENSE file.
     android:background="@drawable/touch_to_fill_credential_background"
     android:ellipsize="end"
     android:singleLine="true"
-    style="@style/FilledButton.Flat"/>
+    style="@style/FilledButton"/>

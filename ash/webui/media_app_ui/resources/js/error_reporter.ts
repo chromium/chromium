@@ -92,8 +92,8 @@ function reportCrashError(...errors: any[]) {
     columnNumber: errorObject?.columnNumber || 0,
   };
 
-  // TODO(crbug/996088): Add useful callback when the error is reported, handle
-  // if it crashes while reporting an error.
+  // TODO(crbug.com/40641337): Add useful callback when the error is reported,
+  // handle if it crashes while reporting an error.
   chrome.crashReportPrivate.reportError(params, () => {});
 }
 

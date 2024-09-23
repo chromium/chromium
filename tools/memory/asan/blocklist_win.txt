@@ -3,6 +3,8 @@
 #
 # Please think twice before you add or remove these rules.
 
+[address]
+
 ################################################################################
 # Sandbox executes some of its code before the ASan RTL gets initialized and
 # maps shadow memory.  As a result, instrmented code tries to access unavailable

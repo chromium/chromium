@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("common") {
+  sources = [
+    "fingerprinting_protection_filter_constants.cc",
+    "fingerprinting_protection_filter_constants.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/subresource_filter/core/browser",
+  ]
+}
+
+component("features") {
+  output_name = "fingerprinting_protection_filter_features"
+  defines = [ "IS_FINGERPRINTING_PROTECTION_FILTER_FEATURES_IMPL" ]
+  sources = [
+    "fingerprinting_protection_filter_features.cc",
+    "fingerprinting_protection_filter_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/subresource_filter/core/mojom" ]
+}

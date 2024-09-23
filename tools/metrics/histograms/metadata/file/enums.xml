@@ -254,6 +254,29 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Manage Bruschetta sharing toast startup"/>
 </enum>
 
+<enum name="FileManagerNavigationSurface">
+  <summary>The UI Surface that user used to navigate to the files.</summary>
+  <int value="0" label="Physical Location">
+    User navigated directly via the volume/directory.
+  </int>
+  <int value="1" label="Search results">
+    User has searched and is acting on the search results.
+  </int>
+  <int value="2" label="Recent">User has navigated via the Recent root.</int>
+  <int value="3" label="Starred files">
+    User has navigated to Starred files or any sub-folder within it.
+  </int>
+  <int value="4" label="Screen captures view">
+    User has navigated to Screen captures view.
+  </int>
+  <int value="5" label="Drive Shared with me root">
+    User has navigated to Google Drive &quot;Shared with me&quot; root.
+  </int>
+  <int value="6" label="Drive Offline root">
+    User has navigated to Google Drive &quot;Offline&quot; root.
+  </int>
+</enum>
+
 <enum name="FileManagerNotificationType">
   <int value="0" label="DEVICE_NAVIGATION_ALLOW_APP_ACCESS"/>
   <int value="1" label="DEVICE_NAVIGATION_APPS_HAVE_ACCESS"/>
@@ -376,6 +399,55 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown Error"/>
 </enum>
 
+<enum name="FileSystemProviderExtendedODFSError">
+  <int value="0" label="OK"/>
+  <int value="1" label="FAILED"/>
+  <int value="2" label="ENTRY_NOT_FOUND"/>
+  <int value="3" label="NOT_A_FILE"/>
+  <int value="4" label="ACCESS_DENIED"/>
+  <int value="5" label="UNAUTHENTICATED"/>
+  <int value="6" label="QUOTA_EXCEEDED"/>
+  <int value="7" label="FETCH_ERROR"/>
+  <int value="8" label="HTTP_LOCKED"/>
+  <int value="9" label="NAME_ALREADY_EXISTS"/>
+  <int value="10" label="FILESYSTEM_NOT_FOUND"/>
+  <int value="11" label="FILE_NOT_OPENED"/>
+  <int value="12" label="PATH_IS_ROOT"/>
+  <int value="13" label="INVALID_PATH"/>
+  <int value="14" label="FILE_ALREADY_OPENED"/>
+  <int value="15" label="FILE_IS_OPENED_FOR_WRITE"/>
+  <int value="16" label="MISSING_URL"/>
+  <int value="17" label="MULTIPLE_ENTRIES_FOR_ACTION"/>
+  <int value="18" label="UNKNOWN_ACTION"/>
+  <int value="19" label="OFFSET_WRITE_NOT_SUPPORTED"/>
+  <int value="20" label="PENDING_CHUNKS_EMPTY"/>
+  <int value="21" label="REAUTHENTICATION_REQUIRED"/>
+  <int value="22" label="AUTHORIZE_FAILED"/>
+  <int value="23" label="RESTORE_MOUNTS_FAILED"/>
+  <int value="24" label="RESOURCE_MODIFIED"/>
+  <int value="25" label="TENANT_DOES_NOT_HAVE_SPO_LICENSE"/>
+  <int value="26" label="NO_VALID_LICENSE"/>
+  <int value="27" label="NO_MYSITE_URL"/>
+  <int value="28" label="API_NOT_FOUND"/>
+  <int value="29" label="EMPTY_PAYLOAD"/>
+  <int value="30" label="HTTP_BAD_REQUEST"/>
+  <int value="31" label="ITEM_NOT_FOUND"/>
+  <int value="32" label="HTTP_UNAUTHORIZED"/>
+  <int value="33" label="HTTP_FORBIDDEN"/>
+  <int value="34" label="HTTP_NOT_FOUND"/>
+  <int value="35" label="HTTP_CONFLICT"/>
+  <int value="36" label="HTTP_TOO_MANY_REQUESTS"/>
+  <int value="37" label="HTTP_SERVICE_UNAVAILABLE"/>
+  <int value="38" label="THROTTLING_TENANT_APPLICATION"/>
+  <int value="39" label="THROTTLING_TENANT"/>
+  <int value="40" label="THROTTLING_APPLICATION"/>
+  <int value="41" label="THROTTLING_UNKNOWN"/>
+  <int value="42" label="FROZEN_ACCOUNT"/>
+  <int value="43" label="HTTP_PRECONDITION_FAILED"/>
+  <int value="44" label="INVALID_RANGE"/>
+  <int value="45" label="UPLOADED_FRAGMENT_ALREADY_RECEIVED"/>
+</enum>
+
 <enum name="FileSystemProviderMountType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Zip Unpacker"/>
@@ -402,6 +474,25 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CompletedAfterWarning"/>
   <int value="2" label="AbortedFromNotification"/>
   <int value="3" label="AbortedInternally"/>
+</enum>
+
+<enum name="FuseboxPosixErrorCode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="EOTHER"/>
+  <int value="3" label="EFAULT"/>
+  <int value="4" label="EBUSY"/>
+  <int value="5" label="EEXIST"/>
+  <int value="6" label="ENOENT"/>
+  <int value="7" label="EACCES"/>
+  <int value="8" label="EMFILE"/>
+  <int value="9" label="ENOMEM"/>
+  <int value="10" label="ENOSPC"/>
+  <int value="11" label="ENOTDIR"/>
+  <int value="12" label="ENOTSUP"/>
+  <int value="13" label="EINVAL"/>
+  <int value="14" label="ENOTEMPTY"/>
+  <int value="15" label="EIO"/>
 </enum>
 
 <enum name="GoogleDrive.BulkPinning.MountFailureReason">
@@ -440,6 +531,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both MS365 PWA and ODFS set up"/>
 </enum>
 
+<enum name="MountStatePostRestore">
+  <int value="0" label="No mounts"/>
+  <int value="1" label="Single authenticated mount"/>
+  <int value="2" label="Single unauthenticated mount"/>
+  <int value="3" label="Single unauthenticated new mount"/>
+  <int value="4" label="Multiple mounts"/>
+  <int value="5"
+      label="Failed to restore with no Chrome mount and multiple storage
+             mounts"/>
+  <int value="6" label="Failed to restore (error thrown)"/>
+  <int value="7" label="Unknown"/>
+</enum>
+
+<enum name="MountStatePreRestore">
+  <int value="0" label="Chrome mounts: 0, Storage mounts: 0"/>
+  <int value="1" label="Chrome mounts: 0, Storage mounts: 1"/>
+  <int value="2" label="Chrome mounts: 0, Storage mounts: many"/>
+  <int value="3" label="Chrome mounts: 1, Storage mounts: 0"/>
+  <int value="4" label="Chrome mounts: 1, Storage mounts: 1"/>
+  <int value="5" label="Chrome mounts: 1, Storage mounts: many"/>
+  <int value="6" label="Chrome mounts: many, Storage mounts: 0"/>
+  <int value="7" label="Chrome mounts: many, Storage mounts: 1"/>
+  <int value="8" label="Chrome mounts: many, Storage mounts: many"/>
+</enum>
+
 <enum name="OfficeDriveOpenErrors">
   <int value="0" label="Offline"/>
   <int value="1" label="DriveFs interface not available"/>
@@ -457,6 +573,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Local file waiting for upload"/>
   <int value="14" label="Disable Drive preference set"/>
   <int value="15" label="Drive disabled for account type"/>
+  <int value="16" label="Cannot get relative path"/>
 </enum>
 
 <enum name="OfficeFileHandler">
@@ -467,7 +584,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OfficeFilesSourceVolume">
   <int value="0" label="Google Drive"/>
-  <int value="1" label="My Files"/>
+  <int value="1" label="This Chromebook"/>
   <int value="2" label="Removable Disk"/>
   <int value="3" label="Archive File"/>
   <int value="4" label="FileSystemProvider API"/>
@@ -516,6 +633,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Sync error cancelled and trashed"/>
   <int value="23" label="Upload not started: Reauthentication needed"/>
   <int value="24" label="Success after reauthentication"/>
+  <int value="25" label="File not an office file"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">
@@ -616,6 +734,17 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Failed to get authorization code: access denied"/>
   <int value="12" label="Failed to get authorization code: server error"/>
   <int value="13" label="Failed to get authorization code: developer error"/>
+  <int value="14"
+      label="Failed to get authorization code: session information not
+             sufficient"/>
+  <int value="15"
+      label="Failed to get authorization code: multi factor auth required"/>
+  <int value="16" label="Failed to get authorization code: password expired"/>
+  <int value="17" label="Failed to get authorization code: unauthorized scope"/>
+  <int value="18"
+      label="Failed to get authorization code: sign in and application access
+             required"/>
+  <int value="19" label="Failed to get authorization code: user account error"/>
 </enum>
 
 <enum name="OfficeOneDriveOpenErrors">
@@ -632,6 +761,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="getActions: no email"/>
   <int value="11" label="Conversion to ODFS URL error"/>
   <int value="12" label="Emails do not match"/>
+  <int value="13" label="Unsupported Android OneDrive location"/>
+  <int value="14" label="Invalid Android OneDrive URL"/>
 </enum>
 
 <enum name="OfficeOneDriveType">
@@ -699,6 +830,15 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Local file task"/>
   <int value="11" label="File already being uploaded"/>
   <int value="12" label="Cannot get fallback choice"/>
+  <int value="13" label="Cannot show setup dialog"/>
+  <int value="14" label="Cannot show move confirmation"/>
+  <int value="15" label="No files to open"/>
+  <int value="16" label="Selected OK at fallback"/>
+  <int value="17" label="Selected OK at fallback after open attempt"/>
+  <int value="18" label="Fallback (QuickOffice) after open attempt"/>
+  <int value="19" label="Cancelled at fallback after open attempt"/>
+  <int value="20" label="Cannot get fallback choice after open attempt"/>
+  <int value="21" label="File already being opened"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">
@@ -707,6 +847,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Multiple items with different parents"/>
   <int value="3"
       label="Multiple items with some parents removed, some still existing"/>
+</enum>
+
+<enum name="SearchRootType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Standalone"/>
+  <int value="2" label="Picker"/>
+</enum>
+
+<enum name="WebUrlFormat">
+  <int value="0" label="Missing"/>
+  <int value="1" label="Empty"/>
+  <int value="2" label="1drv.ms"/>
+  <int value="3" label="onedrive.live.com"/>
+  <int value="4" label="sharepoint.com"/>
+  <int value="5" label="Unknown"/>
+  <int value="6" label="onedrive.live.com (fixed)"/>
 </enum>
 
 <enum name="ZipFileCreator.Result">

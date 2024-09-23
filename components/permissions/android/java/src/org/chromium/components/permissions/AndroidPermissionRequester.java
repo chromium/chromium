@@ -87,7 +87,7 @@ public class AndroidPermissionRequester {
                         PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
                                 contentSettingsType));
 
-        // TODO(crbug.com/1206673): AndroidPermissionDelegate.hasPermission has side effects that
+        // TODO(crbug.com/40765216): AndroidPermissionDelegate.hasPermission has side effects that
         // allows users to recover from states where they had previously denied the permission, by
         // virtue of clearing a Chrome-side shared preference instructing Chrome not to prompt again
         // again. Ensure here that these prefs get cleared for optional permissions as well.
@@ -188,6 +188,10 @@ public class AndroidPermissionRequester {
                                         ContentSettingsType.MEDIASTREAM_CAMERA)) {
                                     deniedStringId =
                                             R.string.infobar_missing_camera_permission_text;
+                                } else if (deniedContentSettings.contains(
+                                        ContentSettingsType.HAND_TRACKING)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_hand_tracking_permission_text;
                                 } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
                                     deniedStringId =
                                             R.string.infobar_missing_ar_camera_permission_text;

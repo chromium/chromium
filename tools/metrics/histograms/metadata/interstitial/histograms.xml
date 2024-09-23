@@ -24,7 +24,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AdditionalSecurityInterstitialSBType">
   <variant name="billing." summary=""/>
-  <variant name="billing_subresource." summary=""/>
   <variant name="origin_policy." summary=""/>
 </variants>
 
@@ -44,11 +43,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SecurityInterstitialSBType">
   <variant name="harmful." summary=""/>
-  <variant name="harmful_subresource." summary=""/>
   <variant name="malware." summary=""/>
-  <variant name="malware_subresource." summary=""/>
   <variant name="phishing." summary=""/>
-  <variant name="phishing_subresource." summary=""/>
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceType">
@@ -61,10 +57,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".from_client_side_detection"
       summary="Interstitial for a resource classified as unsafe by the client
                side detection."/>
-  <variant name=".from_device"
-      summary="Interstitial for a resource classified as unsafe by the Safe
-               Browsing database via either
-               {Local,Remote}SafeBrowsingDatabaseManager."/>
   <variant name=".from_device_v4"
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing database version 4 via either
@@ -78,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="2024-09-03">
+    enum="CaptivePortalBlockingPageEvent" expires_after="2025-03-09">
   <owner>meacer@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -88,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
-    expires_after="2024-07-14">
+    expires_after="2025-01-26">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -100,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision"
-    enum="SecurityInterstitialDecision" expires_after="2024-08-11">
+    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -120,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2024-05-26">
+    enum="SecurityInterstitialInteraction" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -245,7 +237,8 @@ chromium-metrics-reviews@google.com.
     M52, social_engineering_ads* and social_engineering_landing* interstitial
     reasons are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
 
     This metric is used to populate a dashboard on go/crca-site.
     {AdditionalSecurityInterstitialSBType}
@@ -270,7 +263,9 @@ chromium-metrics-reviews@google.com.
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
+
     {AdditionalSecurityInterstitialSBType}
   </summary>
   <token key="AdditionalSecurityInterstitialSBType"
@@ -345,7 +340,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialDecision" expires_after="2024-07-23">
+    enum="SecurityInterstitialDecision" expires_after="2025-02-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -377,7 +372,8 @@ chromium-metrics-reviews@google.com.
     M52, social_engineering_ads* and social_engineering_landing* interstitial
     reasons are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    have been removed because they don't trigger interstitials.
+    have been removed because they don't trigger interstitials. As of M128,
+    logging on subresource interstitials is removed.
 
     This metric is used to populate a dashboard on go/crca-site.
     {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
@@ -395,7 +391,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}interaction{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialInteraction" expires_after="2024-07-23">
+    enum="SecurityInterstitialInteraction" expires_after="2025-02-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -436,7 +432,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}show_delay{SecurityInterstitialSBWithSourceType}"
-    units="ms" expires_after="2024-07-23">
+    units="ms" expires_after="2025-02-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -454,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TypedNavigationUpgradeThrottle.Event"
-    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2024-07-21">
+    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2024-09-22">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

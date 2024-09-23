@@ -19,10 +19,11 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
-#include <optional>
+#include "base/types/cxx23_to_underlying.h"
 
 {%- if contains_only_enums %}
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -37,9 +38,9 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-#include "{{module.path}}-features.h"
-#include "{{module.path}}-shared.h"
-#include "{{variant_path(module.path, variant)}}-forward.h"
+#include "{{module.path}}-features.h"  // IWYU pragma: export
+#include "{{module.path}}-shared.h"  // IWYU pragma: export
+#include "{{variant_path(module.path, variant)}}-forward.h"  // IWYU pragma: export
 
 {%- for import in imports %}
 {%-   if import|is_full_header_required_for_import %}
@@ -63,6 +64,7 @@
 
 {% if not disallow_interfaces and uses_interfaces -%}
 #include "mojo/public/cpp/bindings/lib/control_message_handler.h"
+#include "mojo/public/cpp/bindings/lib/message_size_estimator.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
 {%- endif %}
 

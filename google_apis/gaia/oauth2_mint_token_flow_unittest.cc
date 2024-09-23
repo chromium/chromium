@@ -22,94 +22,121 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AllOf;
 using testing::ByRef;
 using testing::Eq;
+using testing::Field;
 using testing::StrictMock;
 
 namespace {
 
 const char kValidTokenResponse[] =
-    "{"
-    "  \"token\": \"at1\","
-    "  \"issueAdvice\": \"Auto\","
-    "  \"expiresIn\": \"3600\","
-    "  \"grantedScopes\": \"http://scope1 http://scope2\""
-    "}";
+    R"({
+      "token": "at1",
+      "issueAdvice": "Auto",
+      "expiresIn": "3600",
+      "grantedScopes": "http://scope1 http://scope2"
+     })";
+
+const char kValidTokenResponseEnrcypted[] =
+    R"({
+      "token": "at1",
+      "issueAdvice": "Auto",
+      "expiresIn": "3600",
+      "grantedScopes": "http://scope1 http://scope2",
+      "tokenBindingResponse" : {
+        "directedResponse" : {}
+      }
+     })";
 
 const char kTokenResponseNoGrantedScopes[] =
-    "{"
-    "  \"token\": \"at1\","
-    "  \"issueAdvice\": \"Auto\","
-    "  \"expiresIn\": \"3600\""
-    "}";
+    R"({
+      "token": "at1",
+      "issueAdvice": "Auto",
+      "expiresIn": "3600"
+    })";
 
 const char kTokenResponseEmptyGrantedScopes[] =
-    "{"
-    "  \"token\": \"at1\","
-    "  \"issueAdvice\": \"Auto\","
-    "  \"expiresIn\": \"3600\","
-    "  \"grantedScopes\": \"\""
-    "}";
+    R"({
+      "token": "at1",
+      "issueAdvice": "Auto",
+      "expiresIn": "3600",
+      "grantedScopes": ""
+    })";
 
 const char kTokenResponseNoAccessToken[] =
-    "{"
-    "  \"issueAdvice\": \"Auto\""
-    "}";
+    R"({
+     "issueAdvice": "Auto"
+    })";
 
 const char kValidRemoteConsentResponse[] =
-    "{"
-    "  \"issueAdvice\": \"remoteConsent\","
-    "  \"resolutionData\": {"
-    "    \"resolutionApproach\": \"resolveInBrowser\","
-    "    \"resolutionUrl\": \"https://test.com/consent?param=value\","
-    "    \"browserCookies\": ["
-    "      {"
-    "        \"name\": \"test_name\","
-    "        \"value\": \"test_value\","
-    "        \"domain\": \"test.com\","
-    "        \"path\": \"/\","
-    "        \"maxAgeSeconds\": \"60\","
-    "        \"isSecure\": false,"
-    "        \"isHttpOnly\": true,"
-    "        \"sameSite\": \"none\""
-    "      },"
-    "      {"
-    "        \"name\": \"test_name2\","
-    "        \"value\": \"test_value2\","
-    "        \"domain\": \"test.com\""
-    "      }"
-    "    ]"
-    "  }"
-    "}";
+    R"({
+      "issueAdvice": "remoteConsent",
+      "resolutionData": {
+        "resolutionApproach": "resolveInBrowser",
+        "resolutionUrl": "https://test.com/consent?param=value",
+        "browserCookies": [
+          {
+            "name": "test_name",
+            "value": "test_value",
+            "domain": "test.com",
+            "path": "/",
+            "maxAgeSeconds": "60",
+            "isSecure": false,
+            "isHttpOnly": true,
+            "sameSite": "none"
+          },
+          {
+            "name": "test_name2",
+            "value": "test_value2",
+            "domain": "test.com"
+          }
+        ]
+      }
+    })";
 
 const char kInvalidRemoteConsentResponse[] =
-    "{"
-    "  \"issueAdvice\": \"remoteConsent\","
-    "  \"resolutionData\": {"
-    "    \"resolutionApproach\": \"resolveInBrowser\""
-    "  }"
-    "}";
-
-const char kTokenBindingChallengeResponse[] = R"(
-    {
-      "tokenBindingResponse" : {
-        "retryResponse" : {
-          "challenge" : "SIGN_ME"
-        }
+    R"({
+      "issueAdvice": "remoteConsent",
+      "resolutionData": {
+        "resolutionApproach": "resolveInBrowser"
       }
-    }
-  )";
+    })";
 
 constexpr std::string_view kVersion = "test_version";
 constexpr std::string_view kChannel = "test_channel";
 constexpr std::string_view kScopes[] = {"http://scope1", "http://scope2"};
 constexpr std::string_view kClientId = "client1";
+
+MATCHER_P4(HasMintTokenResult,
+           access_token,
+           granted_scopes,
+           time_to_live,
+           is_token_encrypted,
+           "") {
+  return testing::ExplainMatchResult(
+      AllOf(Field("access_token",
+                  &OAuth2MintTokenFlow::MintTokenResult::access_token,
+                  access_token),
+            Field("granted_scopes",
+                  &OAuth2MintTokenFlow::MintTokenResult::granted_scopes,
+                  granted_scopes),
+            Field("time_to_live",
+                  &OAuth2MintTokenFlow::MintTokenResult::time_to_live,
+                  time_to_live),
+            Field("is_token_encrypted",
+                  &OAuth2MintTokenFlow::MintTokenResult::is_token_encrypted,
+                  is_token_encrypted)),
+      arg, result_listener);
+}
 
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
@@ -119,29 +146,26 @@ static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
           resolution_data.url, "test_name", "test_value", "test.com", "/",
           base::Time(), base::Time(), base::Time(), false, true,
           net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_DEFAULT,
-          std::nullopt));
+          std::nullopt, /*status=*/nullptr));
   resolution_data.cookies.push_back(
       *net::CanonicalCookie::CreateSanitizedCookie(
           resolution_data.url, "test_name2", "test_value2", "test.com", "/",
           base::Time(), base::Time(), base::Time(), false, false,
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
-          std::nullopt));
+          std::nullopt, /*status=*/nullptr));
   return resolution_data;
 }
 
 class MockDelegate : public OAuth2MintTokenFlow::Delegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
-  MOCK_METHOD3(OnMintTokenSuccess,
-               void(const std::string& access_token,
-                    const std::set<std::string>& granted_scopes,
-                    int time_to_live));
+  MOCK_METHOD1(OnMintTokenSuccess,
+               void(const OAuth2MintTokenFlow::MintTokenResult& result));
   MOCK_METHOD1(OnRemoteConsentSuccess,
                void(const RemoteConsentResolutionData& resolution_data));
-  MOCK_METHOD1(OnMintTokenFailure,
-               void(const GoogleServiceAuthError& error));
+  MOCK_METHOD1(OnMintTokenFailure, void(const GoogleServiceAuthError& error));
 };
 
 class MockMintTokenFlow : public OAuth2MintTokenFlow {
@@ -162,6 +186,9 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
       const std::string& access_token) override {
     return OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(access_token);
   }
+  net::HttpRequestHeaders CreateApiCallHeaders() override {
+    return OAuth2MintTokenFlow::CreateApiCallHeaders();
+  }
 };
 
 }  // namespace
@@ -172,7 +199,6 @@ class OAuth2MintTokenFlowTest : public testing::Test {
       : head_200_(network::CreateURLResponseHead(net::HTTP_OK)) {}
   ~OAuth2MintTokenFlowTest() override {}
 
- protected:
   const network::mojom::URLResponseHeadPtr head_200_;
 
   void CreateFlow(OAuth2MintTokenFlow::Mode mode) {
@@ -233,6 +259,19 @@ class OAuth2MintTokenFlowTest : public testing::Test {
     flow_->ProcessApiCallFailure(net_error, head, std::move(body));
   }
 
+  // Expose functions publicly to the tests.
+  std::optional<OAuth2MintTokenFlow::MintTokenResult> ParseMintTokenResponse(
+      const base::Value::Dict& dict) {
+    return OAuth2MintTokenFlow::ParseMintTokenResponse(dict);
+  }
+  bool ParseRemoteConsentResponse(
+      const base::Value::Dict& dict,
+      RemoteConsentResolutionData* resolution_data) {
+    return OAuth2MintTokenFlow::ParseRemoteConsentResponse(dict,
+                                                           resolution_data);
+  }
+
+ protected:
   std::unique_ptr<MockMintTokenFlow> flow_;
   StrictMock<MockDelegate> delegate_;
   base::HistogramTester histogram_tester_;
@@ -386,6 +425,13 @@ TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {
   EXPECT_EQ(header, "Bearer test_access_token");
 }
 
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallHeaders) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
+  EXPECT_THAT(headers.GetHeader("X-OAuth-Client-ID"),
+              testing::Optional(kClientId));
+}
+
 TEST_F(OAuth2MintTokenFlowTest,
        CreateApiCallBodyClientAccessTokenFlowWithBoundOAuthToken) {
   CreateClientFlow(/*bound_oauth_token=*/std::string());
@@ -407,60 +453,51 @@ TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValueBoundOAuthToken) {
   CreateClientFlow("test_bound_oauth_token");
   std::string header =
       flow_->CreateAuthorizationHeaderValue("test_access_token");
-  EXPECT_EQ(header, "BoundOAuthToken test_bound_oauth_token");
+  EXPECT_EQ(header, "BoundOAuth test_bound_oauth_token");
 }
 
-TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
-  {  // Access token missing.
-    base::Value::Dict json =
-        base::test::ParseJsonDict(kTokenResponseNoAccessToken);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(access_token.empty());
-  }
-  {  // Granted scopes parameter is there but is empty.
-    base::Value::Dict json =
-        base::test::ParseJsonDict(kTokenResponseEmptyGrantedScopes);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(granted_scopes.empty());
-  }
-  {  // Granted scopes parameter is missing.
-    base::Value::Dict json =
-        base::test::ParseJsonDict(kTokenResponseNoGrantedScopes);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_TRUE(granted_scopes.empty());
-  }
-  {  // All good.
-    base::Value::Dict json = base::test::ParseJsonDict(kValidTokenResponse);
-    std::string access_token;
-    std::set<std::string> granted_scopes;
-    int time_to_live;
-    EXPECT_TRUE(OAuth2MintTokenFlow::ParseMintTokenResponse(
-        json, &access_token, &granted_scopes, &time_to_live));
-    EXPECT_EQ("at1", access_token);
-    EXPECT_EQ(3600, time_to_live);
-    EXPECT_EQ(std::set<std::string>({"http://scope1", "http://scope2"}),
-              granted_scopes);
-  }
+TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseAccessTokenMissing) {
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kTokenResponseNoAccessToken);
+  EXPECT_EQ(ParseMintTokenResponse(json), std::nullopt);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseEmptyGrantedScopes) {
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kTokenResponseEmptyGrantedScopes);
+  EXPECT_EQ(ParseMintTokenResponse(json), std::nullopt);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseNoGrantedScopes) {
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kTokenResponseNoGrantedScopes);
+  EXPECT_EQ(ParseMintTokenResponse(json), std::nullopt);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseGoodToken) {
+  base::Value::Dict json = base::test::ParseJsonDict(kValidTokenResponse);
+  EXPECT_THAT(
+      ParseMintTokenResponse(json),
+      testing::Optional(HasMintTokenResult(
+          "at1", std::set<std::string>({"http://scope1", "http://scope2"}),
+          base::Seconds(3600), false)));
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseEncryptedToken) {
+  base::Value::Dict json =
+      base::test::ParseJsonDict(kValidTokenResponseEnrcypted);
+  EXPECT_THAT(
+      ParseMintTokenResponse(json),
+      testing::Optional(HasMintTokenResult(
+          "at1", std::set<std::string>({"http://scope1", "http://scope2"}),
+          base::Seconds(3600), true)));
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse) {
   base::Value::Dict json =
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   RemoteConsentResolutionData resolution_data;
-  ASSERT_TRUE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  ASSERT_TRUE(ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   EXPECT_EQ(resolution_data, expected_resolution_data);
@@ -471,8 +508,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_EmptyCookies) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   json.FindListByDottedPath("resolutionData.browserCookies")->clear();
   RemoteConsentResolutionData resolution_data;
-  EXPECT_TRUE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_TRUE(ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   expected_resolution_data.cookies.clear();
@@ -484,8 +520,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoCookies) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.browserCookies"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_TRUE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_TRUE(ParseRemoteConsentResponse(json, &resolution_data));
   RemoteConsentResolutionData expected_resolution_data =
       CreateRemoteConsentResolutionData();
   expected_resolution_data.cookies.clear();
@@ -497,8 +532,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoResolutionData) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   EXPECT_TRUE(json.Remove("resolutionData"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -508,8 +542,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoUrl) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.resolutionUrl"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -520,8 +553,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadUrl) {
   EXPECT_TRUE(
       json.SetByDottedPath("resolutionData.resolutionUrl", "not-a-url"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -531,8 +563,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_NoApproach) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   EXPECT_TRUE(json.RemoveByDottedPath("resolutionData.resolutionApproach"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -543,8 +574,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadApproach) {
   EXPECT_TRUE(
       json.SetByDottedPath("resolutionData.resolutionApproach", "badApproach"));
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -560,8 +590,7 @@ TEST_F(OAuth2MintTokenFlowTest,
     ASSERT_TRUE(cookies);
     EXPECT_TRUE((*cookies)[0].GetDict().Remove(required_field));
     RemoteConsentResolutionData resolution_data;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-        json, &resolution_data));
+    EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
     EXPECT_TRUE(resolution_data.url.is_empty());
     EXPECT_TRUE(resolution_data.cookies.empty());
   }
@@ -579,8 +608,7 @@ TEST_F(OAuth2MintTokenFlowTest,
     ASSERT_TRUE(cookies);
     EXPECT_TRUE((*cookies)[0].GetDict().Remove(optional_field));
     RemoteConsentResolutionData resolution_data;
-    EXPECT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-        json, &resolution_data));
+    EXPECT_TRUE(ParseRemoteConsentResponse(json, &resolution_data));
     RemoteConsentResolutionData expected_resolution_data =
         CreateRemoteConsentResolutionData();
     EXPECT_EQ(resolution_data, expected_resolution_data);
@@ -596,8 +624,7 @@ TEST_F(OAuth2MintTokenFlowTest,
   ASSERT_TRUE(cookies);
   (*cookies)[0].GetDict().Set("maxAgeSeconds", "not-a-number");
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -607,8 +634,7 @@ TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse_BadCookieList) {
       base::test::ParseJsonDict(kValidRemoteConsentResponse);
   json.FindListByDottedPath("resolutionData.browserCookies")->Append(42);
   RemoteConsentResolutionData resolution_data;
-  EXPECT_FALSE(
-      OAuth2MintTokenFlow::ParseRemoteConsentResponse(json, &resolution_data));
+  EXPECT_FALSE(ParseRemoteConsentResponse(json, &resolution_data));
   EXPECT_TRUE(resolution_data.url.is_empty());
   EXPECT_TRUE(resolution_data.cookies.empty());
 }
@@ -644,7 +670,9 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoAccessToken) {
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodToken) {
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   std::set<std::string> granted_scopes = {"http://scope1", "http://scope2"};
-  EXPECT_CALL(delegate_, OnMintTokenSuccess("at1", granted_scopes, 3600));
+  EXPECT_CALL(delegate_,
+              OnMintTokenSuccess(HasMintTokenResult(
+                  "at1", granted_scopes, base::Seconds(3600), false)));
   ProcessApiCallSuccess(head_200_.get(),
                         std::make_unique<std::string>(kValidTokenResponse));
   histogram_tester_.ExpectUniqueSample(
@@ -674,13 +702,16 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentFailure) {
       OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure, 1);
 }
 
-TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_TokenBindingChallenge) {
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_TokenBindingChallenge) {
+  const std::string kChallenge = "SIGN_ME";
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   GoogleServiceAuthError expected_error =
-      GoogleServiceAuthError::FromTokenBindingChallenge("SIGN_ME");
+      GoogleServiceAuthError::FromTokenBindingChallenge(kChallenge);
   EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
-  ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
-                                             kTokenBindingChallengeResponse));
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED));
+  head->headers->SetHeader("X-Chrome-Auth-Token-Binding-Challenge", kChallenge);
+  ProcessApiCallFailure(net::OK, head.get(), nullptr);
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,
       OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure, 1);

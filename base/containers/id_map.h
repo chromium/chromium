@@ -178,8 +178,8 @@ class IDMap final {
     }
 
     const Iterator& operator=(const Iterator& iter) {
-      map_ = iter.map;
-      iter_ = iter.iter;
+      map_ = iter.map_;
+      iter_ = iter.iter_;
       Init();
       return *this;
     }
@@ -256,6 +256,7 @@ class IDMap final {
     using inner_iterator = typename HashTable::iterator;
     inner_iterator iter_;
 
+    KeyIterator() = default;
     KeyIterator(inner_iterator iter) : iter_(iter) {}
     KeyType operator*() const { return iter_->first; }
     KeyIterator& operator++() {

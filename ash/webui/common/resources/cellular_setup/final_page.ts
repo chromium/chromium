@@ -9,8 +9,8 @@
  */
 import './base_page.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './final_page.html.js';

@@ -17,7 +17,7 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
-            # TODO(crbug/1346396) Switch this to something more sensible once
+            # TODO(crbug.com/40232487) Switch this to something more sensible once
             # the builders are verified
             users = [
                 "gbeaty@google.com",
@@ -56,6 +56,7 @@ polymorphic.launcher(
         "ci/android-oreo-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
+        "ci/android-13-x64-rel",
     ],
 )
 
@@ -178,28 +179,9 @@ polymorphic.launcher(
     os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
-        "ci/fuchsia-fyi-arm64-dbg",
-        "ci/fuchsia-fyi-x64-dbg",
+        "ci/fuchsia-arm64-cast-receiver-rel",
+        "ci/fuchsia-x64-cast-receiver-dbg",
         "ci/fuchsia-x64-cast-receiver-rel",
-    ],
-)
-
-# A coordinator for lacros.
-polymorphic.launcher(
-    name = "lacros-coordinator",
-    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
-    # 3 AM to 11 AM UTC.
-    schedule = "0 3,5,7,9 * * *",
-    pool = ci.DEFAULT_POOL,
-    os = os.LINUX_DEFAULT,
-    runner = "reviver/runner",
-    target_builders = [
-        polymorphic.target_builder(
-            builder = "ci/linux-lacros-builder-rel",
-            testers = [
-                "ci/linux-lacros-tester-rel",
-            ],
-        ),
     ],
 )
 
@@ -219,7 +201,7 @@ builder(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
         ),
     ],
-    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # TODO(crbug.com/40232487) Remove this once the reviver service account has
     # necessary permissions
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
@@ -241,7 +223,7 @@ builder(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
         ),
     ],
-    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # TODO(crbug.com/40232487) Remove this once the reviver service account has
     # necessary permissions
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )

@@ -1,0 +1,238 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("field_trial") {
+  sources = [
+    "ios_first_run_field_trials.cc",
+    "ios_first_run_field_trials.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/ios/browser:features",
+    "//components/variations",
+    "//components/version_info",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("ui_bundled") {
+  sources = [
+    "first_run_coordinator.h",
+    "first_run_coordinator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":field_trial",
+    ":first_run_provider",
+    ":screen_delegate",
+    ":utils",
+    "//base",
+    "//base:i18n",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/docking_promo/coordinator",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled/default_browser",
+    "//ios/chrome/browser/first_run/ui_bundled/resources",
+    "//ios/chrome/browser/first_run/ui_bundled/signin",
+    "//ios/chrome/browser/first_run/ui_bundled/tos",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:terms_util",
+    "//ios/chrome/browser/ui/authentication/history_sync",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/chrome/browser/ui/search_engine_choice",
+    "//ios/chrome/browser/ui/settings/resources",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("first_run_provider") {
+  sources = [
+    "first_run_screen_provider.h",
+    "first_run_screen_provider.mm",
+  ]
+  deps = [
+    ":field_trial",
+    "//base",
+    "//components/search_engines",
+    "//components/sync/base:features",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:omnibox_position_ui",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/ui/screen:screen_provider_protected",
+    "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/chrome/browser/ui/search_engine_choice:ui_util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "first_run_util.h",
+    "first_run_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/policy/core/common:common_constants",
+    "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public/thread",
+    "//ui/gfx",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "first_run_constants.h",
+    "first_run_constants.mm",
+  ]
+}
+
+source_set("screen_delegate") {
+  sources = [ "first_run_screen_delegate.h" ]
+}
+
+source_set("interruptible_chrome_coordinator") {
+  sources = [
+    "interruptible_chrome_coordinator.h",
+    "interruptible_chrome_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "enterprise_loading_screen_egtest.mm",
+    "first_run_search_engine_choice_egtest.mm",
+    "first_run_test_case_base.h",
+    "first_run_test_case_base.mm",
+    "first_run_without_search_engine_choice_egtest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/test_support:test_support",
+    "//components/search_engines",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/ios/browser:features",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/service",
+    "//components/unified_consent",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:constants",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/browser/ui/search_engine_choice:earl_grey_ui_test_util",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "first_run_app_interface.h",
+    "first_run_app_interface.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//components/metrics",
+    "//components/prefs",
+    "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:omnibox_position_ui",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/app:test_support",
+    "//ios/third_party/earl_grey2:app_framework+link",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "first_run_app_interface.h",
+    "first_run_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}

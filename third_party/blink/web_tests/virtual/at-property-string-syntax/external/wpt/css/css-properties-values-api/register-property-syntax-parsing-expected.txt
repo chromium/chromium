@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] syntax:'<string>', initialValue:''foo bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:' 'foo bar' ' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:''foo bar' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:''"foo" bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:'"bar baz"' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:'"bar 'baz'"' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>', initialValue:'"bar 'baz'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>+', initialValue:''foo' 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>#', initialValue:''foo', 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>+ | <string>#', initialValue:''foo' 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>+ | <string>#', initialValue:' 'foo' 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>+ | <string>#', initialValue:''foo' "bar"' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string>+ | <string>#', initialValue:''foo' "bar' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string># | <string>+', initialValue:''foo', 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string># | <string>+', initialValue:''foo', 'bar' ' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string># | <string>+', initialValue:'"foo", 'bar'' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+[FAIL] syntax:'<string># | <string>+', initialValue:'"foo", 'bar' is valid
+  Failed to execute 'registerProperty' on 'CSS': The syntax provided is not a valid custom property syntax.
+Harness: the test ran to completion.
+

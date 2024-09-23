@@ -9,7 +9,7 @@
 
 namespace blink {
 
-LayoutFieldset::LayoutFieldset(Element* element) : LayoutNGBlockFlow(element) {
+LayoutFieldset::LayoutFieldset(Element* element) : LayoutBlockFlow(element) {
   SetChildrenInline(false);
 }
 
@@ -55,7 +55,7 @@ void LayoutFieldset::AddChild(LayoutObject* new_child,
   // >   element except for the rendered legend, if there is one.
 
   if (new_child->IsRenderedLegendCandidate() && !FindInFlowLegend()) {
-    LayoutNGBlockFlow::AddChild(new_child, FirstChild());
+    LayoutBlockFlow::AddChild(new_child, FirstChild());
     return;
   }
   LayoutBlock* fieldset_content = FindAnonymousFieldsetContentBox();
@@ -64,7 +64,7 @@ void LayoutFieldset::AddChild(LayoutObject* new_child,
 }
 
 void LayoutFieldset::InsertedIntoTree() {
-  LayoutNGBlockFlow::InsertedIntoTree();
+  LayoutBlockFlow::InsertedIntoTree();
 
   if (FindAnonymousFieldsetContentBox()) {
     return;
@@ -126,6 +126,8 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetPaddingBottom(StyleRef().PaddingBottom());
   child_style_builder.SetPaddingLeft(StyleRef().PaddingLeft());
 
+  child_style_builder.SetBoxDecorationBreak(StyleRef().BoxDecorationBreak());
+
   if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
     child_style_builder.SetColumnCount(StyleRef().ColumnCount());
     child_style_builder.SetColumnWidth(StyleRef().ColumnWidth());
@@ -165,8 +167,6 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
 
   // scroll-start
-  child_style_builder.SetScrollStartBlock(StyleRef().ScrollStartBlock());
-  child_style_builder.SetScrollStartInline(StyleRef().ScrollStartInline());
   child_style_builder.SetScrollStartX(StyleRef().ScrollStartX());
   child_style_builder.SetScrollStartY(StyleRef().ScrollStartY());
 }
@@ -179,7 +179,7 @@ void LayoutFieldset::InvalidatePaint(
     GetMutableForPainting().SetShouldDoFullPaintInvalidation(
         PaintInvalidationReason::kLayout);
   }
-  LayoutNGBlockFlow::InvalidatePaint(context);
+  LayoutBlockFlow::InvalidatePaint(context);
 }
 
 bool LayoutFieldset::BackgroundIsKnownToBeOpaqueInRect(
@@ -197,14 +197,14 @@ LayoutUnit LayoutFieldset::ScrollWidth() const {
   if (const auto* content = FindAnonymousFieldsetContentBox()) {
     return content->ScrollWidth();
   }
-  return LayoutNGBlockFlow::ScrollWidth();
+  return LayoutBlockFlow::ScrollWidth();
 }
 
 LayoutUnit LayoutFieldset::ScrollHeight() const {
   if (const auto* content = FindAnonymousFieldsetContentBox()) {
     return content->ScrollHeight();
   }
-  return LayoutNGBlockFlow::ScrollHeight();
+  return LayoutBlockFlow::ScrollHeight();
 }
 
 // static

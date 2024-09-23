@@ -1,4 +1,5 @@
 caption: URL for validating remote access client authentication token
+deprecated: true
 desc: |-
   Setting the policy means the remote access host uses this URL to validate authentication tokens from remote access clients to accept connections. This feature is disabled if empty or not set.
 
@@ -18,7 +19,7 @@ owners:
 schema:
   type: string
 supported_on:
-- chrome.*:28-
+- chrome.*:28-127
 tags:
 - website-sharing
 type: string

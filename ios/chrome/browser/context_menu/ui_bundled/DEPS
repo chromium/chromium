@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/photos/model",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/ui/image_util",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/ui/lens/lens_availability.h",
+  "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/web/model",
+]

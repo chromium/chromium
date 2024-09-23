@@ -38,12 +38,28 @@ DawnEGLImageRepresentation::DawnEGLImageRepresentation(
   DCHECK(device_);
 }
 
+DawnEGLImageRepresentation::DawnEGLImageRepresentation(
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
+    gl::ScopedEGLImage owned_egl_image,
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device)
+    : DawnImageRepresentation(manager, backing, tracker),
+      gl_representation_(std::move(gl_representation)),
+      owned_egl_image_(std::move(owned_egl_image)),
+      egl_image_(owned_egl_image_.get()),
+      device_(device) {
+  DCHECK(device_);
+}
+
 DawnEGLImageRepresentation::~DawnEGLImageRepresentation() {
   EndAccess();
 }
 
 wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = ToDawnFormat(format());
@@ -54,7 +70,7 @@ wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // TODO(crbug.com/1424119): once the forceReadback path is removed, determine
+  // TODO(crbug.com/40897964): once the forceReadback path is removed, determine
   // the correct set of internal usages to apply and add
   // DawnTextureInternalUsageDescriptor to the descriptor chain.
 

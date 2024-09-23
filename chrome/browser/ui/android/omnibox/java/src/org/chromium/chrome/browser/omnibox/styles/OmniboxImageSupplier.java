@@ -38,6 +38,7 @@ public class OmniboxImageSupplier {
     private @NonNull RoundedIconGenerator mIconGenerator;
     private @Nullable LargeIconBridge mIconBridge;
     private @Nullable ImageFetcher mImageFetcher;
+    private boolean mNativeInitialized;
 
     /**
      * Constructor.
@@ -77,6 +78,11 @@ public class OmniboxImageSupplier {
         }
 
         mPendingImageRequests.clear();
+    }
+
+    /** Notify OmniboxImageSupplier that certain native-requiring calls are now ready for use. */
+    public void onNativeInitialized() {
+        mNativeInitialized = true;
     }
 
     /**
@@ -136,6 +142,11 @@ public class OmniboxImageSupplier {
      * @param callback The callback that will be invoked with the result.
      */
     public void generateFavicon(@NonNull GURL url, @NonNull Callback<Bitmap> callback) {
+        if (!mNativeInitialized) {
+            callback.onResult(null);
+            return;
+        }
+
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {

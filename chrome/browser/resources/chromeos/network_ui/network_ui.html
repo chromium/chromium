@@ -10,7 +10,10 @@
   #global-policy,
   #tethering-capabilities-div,
   #tethering-status-div,
-  #tethering-config-div {
+  #tethering-config-div,
+  #wifi-direct-capabilities-div,
+  #wifi-direct-owner-info-div,
+  #wifi-direct-client-info-div {
     white-space: pre-wrap;
   }
 
@@ -186,8 +189,9 @@
       $i18n{refreshTetheringConfigButtonText}
     </cr-button>
     <cr-input id="tethering-config-input" value="{{tetheringConfigToSet_}}"
-        placeholder='Example: {"ssid": "test_ssid", "passphrase": "test_password",
- "auto_disable": true, "security": "wpa2", "band": "5GHz"}'
+        placeholder='Example: {"ssid": "test_ssid",
+"passphrase": "test_password", "auto_disable": true, "security": "wpa2",
+"band": "5GHz"}'
         type="text" on-input="validateJson_"
         error-message="Please enter valid JSON object"
         invalid="[[invalidJSON_]]">
@@ -203,13 +207,27 @@
     <cr-button class="action-button" on-click="checkTetheringReadiness_">
       $i18n{checkTetheringReadinessButtonText}
     </cr-button>
-
-    <h2>$i18n{setTetheringEnabledLabel}</h2>
-    <cr-toggle id="enable-tethering-toggle"
-          checked="{{isTetheringEnabled_}}"
-          disabled="[[tetheringChangeInProgress_]]"
-          on-change="onTetheringToggleChanged_">
-    </cr-toggle>
-    <div id="set-tethering-enabled-result"></div>
   </div>
+
+  <template is="dom-if" if="[[isWifiDirectEnabled_]]">
+    <div class="tabpanel" id="wifi-direct">
+      <h2>$i18n{wifiDirectCapabilitiesLabel}</h2>
+      <div id="wifi-direct-capabilities-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectCapabilities_">
+        $i18n{refreshWifiDirectCapabilitiesButtonText}
+      </cr-button>
+
+      <h2>$i18n{wifiDirectOwnerInfoLabel}</h2>
+      <div id="wifi-direct-owner-info-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectOwnerInfo_">
+        $i18n{refreshWifiDirectOwnerInfoButtonText}
+      </cr-button>
+
+      <h2>$i18n{wifiDirectClientInfoLabel}</h2>
+      <div id="wifi-direct-client-info-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectClientInfo_">
+        $i18n{refreshWifiDirectClientInfoButtonText}
+      </cr-button>
+    </div>
+  </template>
 </iron-pages>

@@ -10,9 +10,11 @@ config("config") {
   include_dirs = [
     "//ios/third_party/earl_grey2/src",
     "//ios/third_party/earl_grey2/src/AppFramework/Action",
+    "//ios/third_party/earl_grey2/src/AppFramework/Additions",
     "//ios/third_party/earl_grey2/src/AppFramework/Assertion",
     "//ios/third_party/earl_grey2/src/AppFramework/Config",
     "//ios/third_party/earl_grey2/src/AppFramework/Core",
+    "//ios/third_party/earl_grey2/src/AppFramework/Delegate",
     "//ios/third_party/earl_grey2/src/AppFramework/DistantObject",
     "//ios/third_party/earl_grey2/src/AppFramework/Error",
     "//ios/third_party/earl_grey2/src/AppFramework/Event",

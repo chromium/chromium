@@ -42,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #endif
 
 namespace {
@@ -52,7 +52,6 @@ uint64_t AmountOfVirtualMemory() {
   int result = getrlimit(RLIMIT_DATA, &limit);
   if (result != 0) {
     NOTREACHED();
-    return 0;
   }
   return limit.rlim_cur == RLIM_INFINITY ? 0 : limit.rlim_cur;
 }
@@ -122,7 +121,7 @@ namespace base {
 // static
 int SysInfo::NumberOfProcessors() {
 #if BUILDFLAG(IS_MAC)
-  absl::optional<int> number_of_physical_cores =
+  std::optional<int> number_of_physical_cores =
       internal::NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
   if (number_of_physical_cores.has_value()) {
     return number_of_physical_cores.value();
@@ -153,7 +152,6 @@ int SysInfo::NumberOfProcessors() {
       // `res` can be -1 if this function is invoked under the sandbox, which
       // should never happen.
       NOTREACHED();
-      return 1;
     }
 
     int num_cpus = static_cast<int>(res);
@@ -210,7 +208,6 @@ std::string SysInfo::OperatingSystemName() {
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    return std::string();
   }
   return std::string(info.sysname);
 }
@@ -222,7 +219,6 @@ std::string SysInfo::OperatingSystemVersion() {
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    return std::string();
   }
   return std::string(info.release);
 }
@@ -236,10 +232,6 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    *major_version = 0;
-    *minor_version = 0;
-    *bugfix_version = 0;
-    return;
   }
   int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
                         bugfix_version);
@@ -258,7 +250,6 @@ std::string SysInfo::OperatingSystemArchitecture() {
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    return std::string();
   }
   std::string arch(info.machine);
   if (arch == "i386" || arch == "i486" || arch == "i586" || arch == "i686") {

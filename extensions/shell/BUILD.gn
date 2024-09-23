@@ -157,6 +157,8 @@ source_set("app_shell_lib") {
     "common/shell_extensions_client.h",
     "common/switches.cc",
     "common/switches.h",
+    "renderer/api/shell_extensions_renderer_api_provider.cc",
+    "renderer/api/shell_extensions_renderer_api_provider.h",
     "renderer/shell_content_renderer_client.cc",
     "renderer/shell_content_renderer_client.h",
     "renderer/shell_extensions_renderer_client.cc",
@@ -316,6 +318,7 @@ test("app_shell_unittests") {
     "//apps",
     "//base",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//build:chromeos_buildflags",
     "//components/crx_file",
     "//components/feedback",
@@ -337,7 +340,7 @@ test("app_shell_unittests") {
 
   data_deps = [
     # "//gin", # TODO(dpranke): Either gin or v8 data is needed ...
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (use_aura) {
@@ -421,6 +424,7 @@ source_set("browser_tests") {
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/common",
+    "//extensions/renderer",
     "//ui/base",
   ]
 

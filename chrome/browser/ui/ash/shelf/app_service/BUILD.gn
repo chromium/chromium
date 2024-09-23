@@ -1,0 +1,129 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("app_service") {
+  sources = [
+    "app_service_app_window_arc_tracker.cc",
+    "app_service_app_window_arc_tracker.h",
+    "app_service_app_window_crostini_tracker.cc",
+    "app_service_app_window_crostini_tracker.h",
+    "app_service_app_window_shelf_controller.cc",
+    "app_service_app_window_shelf_controller.h",
+    "app_service_app_window_shelf_item_controller.cc",
+    "app_service_app_window_shelf_item_controller.h",
+    "app_service_instance_registry_helper.cc",
+    "app_service_instance_registry_helper.h",
+    "app_service_promise_app_shelf_context_menu.cc",
+    "app_service_promise_app_shelf_context_menu.h",
+    "app_service_shelf_context_menu.cc",
+    "app_service_shelf_context_menu.h",
+    "exo_app_type_resolver.cc",
+    "exo_app_type_resolver.h",
+    "shelf_app_service_app_updater.cc",
+    "shelf_app_service_app_updater.h",
+    "shelf_app_service_promise_app_updater.cc",
+    "shelf_app_service_promise_app_updater.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/pip",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/views/crostini",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
+    "//chrome/browser/web_applications",
+    "//chromeos/ash/components/borealis",
+    "//chromeos/crosapi/cpp:crosapi_constants",
+    "//chromeos/ui/base",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/favicon/content",
+    "//components/user_manager",
+    "//components/webapps/common",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/crostini" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "app_service_app_window_browsertest.cc",
+    "app_service_promise_app_shelf_context_menu_browsertest.cc",
+    "app_service_shelf_context_menu_browsertest.cc",
+    "web_app_shelf_browsertest.cc",
+  ]
+
+  deps = [
+    ":app_service",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base/test:test_support",
+    "//chrome/app/vector_icons",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/borealis:test_support",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/ash/shelf:test_support",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/app_constants",
+    "//components/exo",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}

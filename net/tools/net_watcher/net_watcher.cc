@@ -42,7 +42,7 @@
 
 namespace {
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX)
 // Flag to specifies which network interfaces to ignore. Interfaces should

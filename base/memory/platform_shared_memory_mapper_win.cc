@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/memory/platform_shared_memory_mapper.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/logging.h"
+#include "partition_alloc/page_allocator.h"
 
 #include <aclapi.h>
 
@@ -23,7 +28,7 @@ size_t GetMemorySectionSize(void* address) {
 }
 }  // namespace
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -41,7 +46,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
   }
   if (!address) {
     DPLOG(ERROR) << "Failed executing MapViewOfFile";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return make_span(static_cast<uint8_t*>(address),

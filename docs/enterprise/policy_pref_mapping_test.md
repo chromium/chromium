@@ -129,24 +129,22 @@ separate preferences, their default values, and that either `IdleActionAC` or
 
 ## Test format
 
-### policy_test_cases.json
+### PolicyTestCases
 
 The test cases per policy are defined in
 [//components/policy/test/data/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/components/policy/test/data/)
 (for iOS, see separate
 [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping)).
 
-These files are JSON files with the policy name as key and a `PolicyTestCase`
-(see below) as value). Each policy must have at least one meaningful test case
-per supported operating system (see `reason_for_missing_test` to bypass),
-otherwise the coverage browser test
+These files are JSON files with a list of `PolicyTestCase`s (see below) as
+value). Each policy must have at least one meaningful test case per supported
+operating system (see `reason_for_missing_test` to bypass), otherwise the coverage browser test
 `PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase` or the
 `CheckPolicyTestCases` presubmit check will fail.
 
-In case you want to add multiple `PolicyTestCase`s for a single policy (e.g.
-different tests for different operating systems), you can add more keys with the
-policy name and a custom name/comment like so
-`PolicyName.InsertTestNameOrCommentHere`.
+If your policy to pref mapping is the same on all platforms, you would typically
+have one `PolicyTestCase`. Otherwise, you would have one `PolicyTestCase` per
+group of platforms where it differs.
 
 Since the JSON format does not allow comments, you can use the `note` field
 anywhere to add further documentation.
@@ -167,6 +165,13 @@ needs to have at least one test case. Valid values are:
 - `fuchsia`
 - `ios` (tested via separate [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping))
 
+Each `PolicyTestCase` needs to either have a list of `policy_pref_mapping_tests`
+(see `PolicyPrefMappingTest` below) or a `simple_policy_pref_mapping_test` (see
+`SimplePolicyPrefMappingTest` below). For simple policy to pref mappings (one
+policy maps to one pref), you should use `SimplePolicyPrefMappingTest`, if you
+need more fancy stuff (interactions between multiple policies and prefs), you
+should use `PolicyPrefMappingTest`s instead.
+
 The boolean `official_only` field indicates whether this policy is only
 supported in official builds. Defaults to `false` if not specified.
 
@@ -179,11 +184,8 @@ recommended values and the preference(s) are checked to still be modifiable by
 the user. Use `check_for_mandatory` and `check_for_recommended` (see below) to
 trigger certain preference(s) to only be checked for certain policy levels. If
 the policy is recommendable (indicated by `can_be_recommended` in
-[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)
-then the preference mapping test should also check recommended values.
-
-The `policy_pref_mapping_tests` should be a non-empty list of
-`PolicyPrefMappingTest`s.
+PolicyName.yaml then the preference mapping test should also check recommended
+values.
 
 In case the policy's preference mapping can not be tested, the `PolicyTestCase`
 should just define a single `reason_for_missing_test_case` with a description on
@@ -224,12 +226,12 @@ Possible values are [`USE_CUPS`]. Defaults to an empty list if not specified. If
 any of the specified buildflags is not defined in the current build, the test case
 is skipped.
 
-### PolicyPrefTestCase
+### PrefTestCase
 
 #### Location
 
-Each `PolicyPrefTestCase` should define a `location` field, where the preference
-is registered. The test will fail if the preference is not registered in said
+Each `PrefTestCase` can define a `location` field, where the preference is
+registered. The test will fail if the preference is not registered in said
 location. Possible values are:
 
 - `user_profile` (default value)
@@ -244,7 +246,7 @@ Policies that map into CrosSettings can not be tested at the moment (see
 #### Expected value
 
 Each preference is also checked for its expected value. The expected value the
-preference should take on can be defined by exactly one of three ways:
+preference should take on can be defined by exactly one of two ways:
 
 - A `value` field. Use this to specify an explicit value the preference should
   take on when the `policies` are set. This also checks that the preference is
@@ -252,12 +254,6 @@ preference should take on can be defined by exactly one of three ways:
 - A `default_value` field. Use this to specify an explicit value the preference
   should take on when either no policies are set or to indicate that the
   preference should be unaffected by the `policies`.
-- Neither specifying a `value` or `default_value` field. This only works if the
-  `policies` field sets exactly one policy, in which case that policy's value is
-  used as expected preference value. This behavior is mostly for backwards
-  compatibility to ensure that existing tests with missing `value` /
-  `default_value` also perform a value check, prefer to explicitly specify the
-  expected `value`.
 
 For each preference, you can also specify `check_for_mandatory` and
 `check_for_recommended` (in combination with `can_be_recommended` from above)
@@ -266,10 +262,18 @@ behavior, e.g. setting a different preference when a policy is set as
 recommended compared to set as mandatory. In most cases, you will just need to
 use the `PolicyTestCase`'s `can_be_recommended` though.
 
+### SimplePolicyPrefMappingTest
+
+For most policies, which have a simple direct mapping from policy value to pref
+value, you can use `SimplePolicyPrefMappingTest` instead of defining multiple
+`PolicyPrefMappingTest`s. A `SimplePolicyPrefMappingTest` would then generate
+one `PolicyPrefMappingTest` for the pref's default value and one
+`PolicyPrefMappingTest` for each value in `values_to_test`.
+
 ### Full schema
 ```
-{
-  "${policy_name}[.optionalTestNameSuffix]": {
+[
+  {
     "os": array<string>, // subset of ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "ios"]
     "official_only": boolean, // optional, defaults to false
     "can_be_recommended": boolean, // optional, defaults to false
@@ -293,17 +297,31 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
         "prefs": {
           ${pref_name_1}: {
             "location": string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"
-            "value": ${expected_pref_value_1}, // This or |default_value| should be set
-            "default_value": ${expected_pref_value_1}, // This or |value| should be set
+            "value": ${expected_pref_value_1}, // This or |default_value| must be set
+            "default_value": ${expected_pref_value_1}, // This or |value| must be set
             "check_for_mandatory": boolean, // optional, defaults to true
             "check_for_recommended": boolean // optional, defaults to true
           },
           ... // 1...M prefs
         }
       }
-    ]
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": string,
+      "pref_location":  string, // optional, one of [user_profile, local_state, signin_profile], defaults to "user_profile"
+      "policy_settings": { // optional
+            "scope": string, // optional, one of [user, machine], defaults to "user"
+            "source": string, // optional, one of [enterprise_default, command_line, cloud, active_directory, local_account_override, platform, merged, cloud_from_ash], defaults to "cloud"
+      },
+      "default_value": ${expected_default_value}, // Expected pref value when policy is unset
+      "values_to_test": [
+        ${value_1},
+        ${value_2},
+        ... // 1...N values
+      ]
+    }
   },
 
   ... // test cases for other policies
-}
+]
 ```

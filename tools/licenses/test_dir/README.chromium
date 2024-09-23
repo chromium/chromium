@@ -8,7 +8,7 @@ License file: NONEXISTING-LICENSE, NOT_SHIPPED, //tools/licenses/test_dir/LICENS
 Security Critical: no
 
 Description:
-This package contains only dummy files to test the ParseDir function
+This package contains only placeholder files to test the ParseDir function
 in tools/licenses.py
 
 Local Modifications:
@@ -27,7 +27,7 @@ Shipped: yes
 Security Critical: no
 
 Description:
-This package contains only dummy files to test the ParseDir function
+This package contains only placeholder files to test the ParseDir function
 in tools/licenses.py
 
 Local Modifications:

@@ -4,20 +4,21 @@
 
 #include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
 scoped_refptr<content_settings::CookieSettings>
-CookieSettingsFactory::GetForBrowserState(ChromeBrowserState* browser_state) {
+CookieSettingsFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<content_settings::CookieSettings*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get());
+      GetInstance()->GetServiceForBrowserState(profile, true).get());
 }
 
 // static
@@ -42,7 +43,7 @@ void CookieSettingsFactory::RegisterBrowserStatePrefs(
 
 web::BrowserState* CookieSettingsFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  // The incognito browser state has its own content settings map. Therefore, it
+  // The incognito profile has its own content settings map. Therefore, it
   // should get its own CookieSettings.
   return GetBrowserStateOwnInstanceInIncognito(context);
 }
@@ -50,12 +51,13 @@ web::BrowserState* CookieSettingsFactory::GetBrowserStateToUse(
 scoped_refptr<RefcountedKeyedService>
 CookieSettingsFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return base::MakeRefCounted<content_settings::CookieSettings>(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs(), /*tracking_protection_settings=*/nullptr,
-      browser_state->IsOffTheRecord());
+      ios::HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs(), /*tracking_protection_settings=*/nullptr,
+      profile->IsOffTheRecord(),
+      content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+      /*tpcd_metadata_manager=*/nullptr);
 }
 
 }  // namespace ios

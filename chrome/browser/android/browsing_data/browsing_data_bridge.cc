@@ -20,14 +20,16 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/browsing_data/content/android/browsing_data_model_android.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -37,11 +39,14 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
+
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 using content::BrowsingDataRemover;
 
 namespace {
@@ -57,17 +62,26 @@ void OnBrowsingDataRemoverDone(const ScopedJavaGlobalRef<jobject>& callback,
 }
 
 PrefService* GetPrefService(const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   return profile->GetOriginalProfile()->GetPrefs();
 }
 
 browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
   DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LT(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::NUM_TYPES));
+  DCHECK_LE(clear_browsing_data_tab,
+            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
 
   return static_cast<browsing_data::ClearBrowsingDataTab>(
       clear_browsing_data_tab);
+}
+
+void OnBrowsingDataModelBuilt(JNIEnv* env,
+                              const ScopedJavaGlobalRef<jobject>& java_callback,
+                              std::unique_ptr<BrowsingDataModel> model) {
+  Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
+      env, java_callback,
+      reinterpret_cast<intptr_t>(
+          new BrowsingDataModelAndroid(std::move(model))));
 }
 
 }  // namespace
@@ -85,7 +99,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
     const JavaParamRef<jintArray>& jignoring_domain_reasons) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearBrowsingData");
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   BrowsingDataRemover* browsing_data_remover =
       profile->GetBrowsingDataRemover();
 
@@ -101,8 +115,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::CACHE:
         remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
-      case browsing_data::BrowsingDataType::COOKIES:
-        remove_mask |= BrowsingDataRemover::DATA_TYPE_COOKIES;
+      case browsing_data::BrowsingDataType::SITE_DATA:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         break;
       case browsing_data::BrowsingDataType::PASSWORDS:
@@ -113,9 +126,8 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::FORM_DATA:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
         break;
-      case browsing_data::BrowsingDataType::BOOKMARKS:
-        // Bookmarks are deleted separately on the Java side.
-        NOTREACHED();
+      case browsing_data::BrowsingDataType::TABS:
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_TABS;
         break;
       case browsing_data::BrowsingDataType::SITE_SETTINGS:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
@@ -123,10 +135,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::DOWNLOADS:
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
         // Only implemented on Desktop.
-        NOTREACHED();
-        [[fallthrough]];
-      case browsing_data::BrowsingDataType::NUM_TYPES:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   std::vector<std::string> excluding_domains;
@@ -184,7 +193,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
       "browsing_data",
       "BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory");
   // The one-time notice in the dialog.
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
       SyncServiceFactory::GetForProfile(profile),
       WebHistoryServiceFactory::GetForProfile(profile), chrome::GetChannel(),
@@ -197,7 +206,7 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
       important_sites =
           site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -239,7 +248,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
   GURL origin(base::android::ConvertJavaStringToUTF8(jorigin));
   CHECK(origin.is_valid());
   site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(
-      ProfileAndroid::FromProfileAndroid(jprofile), origin);
+      Profile::FromJavaObject(jprofile), origin);
 }
 
 static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
@@ -249,8 +258,8 @@ static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     jint data_type,
     jint clear_browsing_data_tab) {
   DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+  DCHECK_LE(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
 
   // If there is no corresponding preference for this |data_type|, pretend
   // that it's set to false.
@@ -274,8 +283,8 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     jint clear_browsing_data_tab,
     jboolean value) {
   DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+  DCHECK_LE(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
 
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
@@ -334,4 +343,15 @@ static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(
   DCHECK_LT(tab_index, 2);
   GetPrefService(jprofile)->SetInteger(
       browsing_data::prefs::kLastClearBrowsingDataTab, tab_index);
+}
+
+static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jobject>& java_callback) {
+  Profile* profile = Profile::FromJavaObject(jprofile);
+  BrowsingDataModel::BuildFromDisk(
+      profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
+      base::BindOnce(&OnBrowsingDataModelBuilt, env,
+                     ScopedJavaGlobalRef<jobject>(java_callback)));
 }

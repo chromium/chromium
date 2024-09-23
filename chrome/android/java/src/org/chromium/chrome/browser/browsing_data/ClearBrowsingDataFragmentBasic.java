@@ -33,7 +33,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -50,9 +50,9 @@ import java.util.List;
  */
 public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/1222076): Update when LaunchIntentDispatcher is (partially-)modularized.
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40773797): Update when LaunchIntentDispatcher is (partially-)modularized.
      */
     public interface CustomTabIntentHelper {
         /**
@@ -245,8 +245,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     private boolean isHistorySyncEnabled() {
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         return syncService != null
-                && syncService.isSyncFeatureEnabled()
-                && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
+                && syncService.getActiveDataTypes().contains(DataType.HISTORY_DELETE_DIRECTIVES);
     }
 
     @Override
@@ -255,7 +254,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     }
 
     @Override
-    protected List<Integer> getDialogOptions() {
+    protected List<Integer> getDialogOptions(Bundle fragmentArgs) {
         return Arrays.asList(
                 DialogOption.CLEAR_HISTORY,
                 DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
@@ -268,7 +267,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         RecordHistogram.recordEnumeratedHistogram(
                 "History.ClearBrowsingData.UserDeletedFromTab",
                 ClearBrowsingDataTab.BASIC,
-                ClearBrowsingDataTab.NUM_TYPES);
+                ClearBrowsingDataTab.MAX_VALUE + 1);
         RecordUserAction.record("ClearBrowsingData_BasicTab");
     }
 }

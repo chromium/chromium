@@ -25,10 +25,11 @@
 #include "net/test/test_doh_server.h"
 #include "services/network/network_service.h"
 #include "services/network/test/test_network_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-// TODO(https://crbug.com/1295770) Add tests that query a test Do53 server.
+// TODO(crbug.com/40214469) Add tests that query a test Do53 server.
 
 class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
  public:

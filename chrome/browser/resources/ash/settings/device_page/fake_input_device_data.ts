@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, ChargeState, CompanionAppState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, GraphicsTabletButtonConfig, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -48,7 +48,14 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
   {
     id: 1,
@@ -72,6 +79,11 @@ export const fakeKeyboards: Keyboard[] = [
       f11: ExtendedFkeysModifier.kAlt,
       f12: ExtendedFkeysModifier.kShift,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
     topRowActionKeys: [
       TopRowActionKey.kBack,
       TopRowActionKey.kForward,
@@ -117,7 +129,14 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
   {
     id: 9,
@@ -160,7 +179,59 @@ export const fakeKeyboards: Keyboard[] = [
         home: SixPackShortcutModifier.kAlt,
         end: SixPackShortcutModifier.kAlt,
       },
+      f11: null,
+      f12: null,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
+  },
+  {
+    id: 17,
+    deviceKey: 'test:key',
+    name: 'Split Modifier keyboard',
+    isExternal: true,
+    metaKey: MetaKey.kCommand,
+    modifierKeys: [
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
+      ModifierKey.kRightAlt,
+      ModifierKey.kFunction,
+    ],
+    topRowActionKeys: [
+      TopRowActionKey.kBack,
+      TopRowActionKey.kForward,
+      TopRowActionKey.kRefresh,
+      TopRowActionKey.kFullscreen,
+      TopRowActionKey.kOverview,
+      TopRowActionKey.kScreenBrightnessDown,
+      TopRowActionKey.kScreenBrightnessUp,
+      TopRowActionKey.kVolumeMute,
+      TopRowActionKey.kVolumeDown,
+      TopRowActionKey.kVolumeUp,
+    ],
+    settings: {
+      modifierRemappings: {
+        [ModifierKey.kControl]: ModifierKey.kCapsLock,
+        [ModifierKey.kCapsLock]: ModifierKey.kAssistant,
+      },
+      topRowAreFkeys: false,
+      suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: ExtendedFkeysModifier.kAlt,
+      f12: ExtendedFkeysModifier.kShift,
+    },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
 ];
 
@@ -199,7 +270,14 @@ export const fakeKeyboards2: Keyboard[] = [
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
   {
     id: 10,
@@ -232,7 +310,14 @@ export const fakeKeyboards2: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
 ];
 
@@ -256,6 +341,11 @@ export const fakeTouchpads: Touchpad[] = [
       hapticEnabled: false,
       simulateRightClick: SimulateRightClickModifier.kNone,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
   {
     id: 3,
@@ -276,6 +366,11 @@ export const fakeTouchpads: Touchpad[] = [
       hapticEnabled: true,
       simulateRightClick: SimulateRightClickModifier.kNone,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
 ];
 
@@ -299,6 +394,11 @@ export const fakeTouchpads2: Touchpad[] = [
       hapticEnabled: false,
       simulateRightClick: SimulateRightClickModifier.kNone,
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: null,
   },
 ];
 
@@ -368,6 +468,17 @@ export const fakeMice: Mouse[] = [
         },
       ],
     },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kAvailable,
+    },
   },
   {
     id: 5,
@@ -375,7 +486,7 @@ export const fakeMice: Mouse[] = [
     name: 'MX Anywhere 2S',
     isExternal: false,
     customizationRestriction: CustomizationRestriction.kDisableKeyEventRewrites,
-    mouseButtonConfig: MouseButtonConfig.kNoConfig,
+    mouseButtonConfig: MouseButtonConfig.kFiveKey,
     settings: {
       swapRight: false,
       sensitivity: 1,
@@ -410,6 +521,14 @@ export const fakeMice: Mouse[] = [
         },
       ],
     },
+    batteryInfo: null,
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kInstalled,
+    },
   },
 ];
 
@@ -429,6 +548,17 @@ export const fakeMice2: Mouse[] = [
       scrollSensitivity: 5,
       scrollAcceleration: true,
       buttonRemappings: [],
+    },
+    batteryInfo: {
+      chargeState: ChargeState.kCharging,
+      batteryPercentage: 10,
+    },
+    appInfo: {
+      packageId: '',
+      appName: '',
+      actionLink: '',
+      iconUrl: '',
+      state: CompanionAppState.kAvailable,
     },
   },
 ];
@@ -544,6 +674,10 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
         },
       ],
     },
+    graphicsTabletButtonConfig: GraphicsTabletButtonConfig.kNoConfig,
+    batteryInfo: null,
+    appInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
   {
     id: 16,
@@ -603,6 +737,59 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
         },
       ],
     },
+    graphicsTabletButtonConfig:
+        GraphicsTabletButtonConfig.kWacomStandardFourButtons,
+    batteryInfo: null,
+    appInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
+  },
+];
+
+export const fakeGraphicsTablets2: GraphicsTablet[] = [
+  {
+    id: 15,
+    deviceKey: 'test:key',
+    name: 'Test device without tablet buttons',
+    settings: {
+      tabletButtonRemappings: [],
+      penButtonRemappings: [
+        {
+          name: 'Undo',
+          button: {
+            vkey: Vkey.kNum2,
+          },
+          remappingAction: {
+            keyEvent: {
+              vkey: Vkey.kKeyZ,
+              domCode: 0,
+              domKey: 0,
+              modifiers: 4,
+              keyDisplay: 'z',
+            },
+          },
+        },
+        {
+          name: 'Redo',
+          button: {
+            vkey: Vkey.kNum3,
+          },
+          remappingAction: {
+            keyEvent: {
+              vkey: Vkey.kKeyZ,
+              domCode: 0,
+              domKey: 0,
+              modifiers: 6,
+              keyDisplay: 'z',
+            },
+          },
+        },
+      ],
+    },
+    graphicsTabletButtonConfig:
+        GraphicsTabletButtonConfig.kWacomStandardFourButtons,
+    batteryInfo: null,
+    appInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
 ];
 

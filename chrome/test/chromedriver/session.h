@@ -22,6 +22,7 @@
 #include "chrome/test/chromedriver/chrome/scoped_temp_dir_with_retry.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/command_listener.h"
+#include "chrome/test/chromedriver/prompt_behavior.h"
 
 // Controls whether ChromeDriver operates in W3C mode (when true) by default
 // or legacy mode (when false).
@@ -31,14 +32,6 @@ class Chrome;
 class Status;
 class WebDriverLog;
 class WebView;
-
-namespace prompt_behavior {
-static const char kAccept[] = "accept";
-static const char kAcceptAndNotify[] = "accept and notify";
-static const char kDismiss[] = "dismiss";
-static const char kDismissAndNotify[] = "dismiss and notify";
-static const char kIgnore[] = "ignore";
-}  // namespace prompt_behavior
 
 struct FrameInfo {
   FrameInfo(const std::string& parent_frame_id,
@@ -114,7 +107,7 @@ struct Session {
 
   const std::string id;
   bool w3c_compliant;
-  bool webSocketUrl = false;
+  bool web_socket_url = false;
   bool quit;
   bool detach;
   bool awaiting_bidi_response = false;
@@ -142,7 +135,7 @@ struct Session {
   base::TimeDelta implicit_wait;
   base::TimeDelta page_load_timeout;
   base::TimeDelta script_timeout;
-  std::unique_ptr<std::string> prompt_text;
+  std::optional<std::string> prompt_text;
   std::unique_ptr<Geoposition> overridden_geoposition;
   std::unique_ptr<DeviceMetrics> overridden_device_metrics;
   std::unique_ptr<NetworkConditions> overridden_network_conditions;
@@ -159,7 +152,7 @@ struct Session {
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   bool strict_file_interactability;
 
-  std::string unhandled_prompt_behavior;
+  PromptBehavior unhandled_prompt_behavior = PromptBehavior(kW3CDefault);
   int click_count;
   base::TimeTicks mouse_click_timestamp;
   std::string host;
@@ -167,17 +160,7 @@ struct Session {
  private:
   void SwitchFrameInternal(bool for_top_frame);
 
-  // TODO: for the moment being we support single connection per client
-  // In the future (2022Q4) we will probably support multiple bidi connections.
-  // In order to do that we can try either of the following approaches:
-  // * Create a separate CDP session per connection
-  // * Give some connection identifying context to the BiDiMapper.
-  //   The context will travel between the BiDiMapper and ChromeDriver.
-  // * Store an internal map between CDP command id and connection.
   std::vector<BidiConnection> bidi_connections_;
-  // If there is no active connections the messages from Chrome are accumulated
-  // in this queue until a connection is created or the queue overflows.
-  std::queue<base::Value::Dict> bidi_response_queue_;
 };
 
 Session* GetThreadLocalSession();

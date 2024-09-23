@@ -79,7 +79,7 @@ cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
 
 * Update backported methods list (used by lint):
 cd $CHROMIUM_SRC
-java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 24 > third_party/r8/backported_methods.txt
+java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
 
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
@@ -110,8 +110,8 @@ exec tools/autotest.py --out-dir out/Release <Test Here>
 You can run this script like so:
 ```
 cd $R8_REPO
-git bisect start <known_good_rev> <known_bad_rev>
-git bisect run <path_to_script.sh>
+git bisect start <known_bad_rev> <known_good_rev>
+git bisect run bash <path_to_script.sh>
 ```
 Tip: When you are done, you can delete the r8 jar and gclient sync to get back
      to ToT R8.
@@ -121,3 +121,9 @@ How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.
 * After CLs are submitted, check the bots for build breakage.
   * https://ci.chromium.org/p/r8/g/main_all/console
+
+How to check the size impact of recent R8 rolls:
+# To public APK:
+tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20
+# To internal APK:
+tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20 --internal

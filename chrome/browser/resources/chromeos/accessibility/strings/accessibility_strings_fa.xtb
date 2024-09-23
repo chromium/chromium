@@ -41,7 +41,7 @@
 برای باز کردن و رفتن به برگه جدید به‌طور خودکار، Control+T را فشار دهید. مکان‌نما در omnibox قرار خواهد گرفت. 
 برای بستن برگه، Control+W را فشار دهید. 
 برای حرکت رو به‌جلو میان برگه‌های باز، از Control+Tab استفاده کنید. 
-برای باز کردن منوی مرورگر Chrome، کلیدهای Alt+F را فشار دهید.</translation>
+برای باز کردن منو مرورگر Chrome، کلیدهای Alt+F را فشار دهید.</translation>
 <translation id="1213216066620407844">‏ChromeVox - ارائه صدا به Chrome</translation>
 <translation id="1225969361094801578">سربی تیره</translation>
 <translation id="122928249241119550">به جمله قبلی برو</translation>
@@ -57,7 +57,7 @@
 <translation id="1284576163386164372">‏همیشه می‌توانید آموزش‌های گام‌به‌گام را با باز کردن منوها با ضربه چهار انگشتی مشاهده کنید. سپس، آموزش گام‌به‌گام را در بخش «ChromeVox» فعال‌سازی کنید.</translation>
 <translation id="1291286136605998134">دکمه تغییر وضعیت</translation>
 <translation id="1299774449519412690">آبی آسمانی روشن</translation>
-<translation id="1303806948938513162">‏برای ورود به منوهای ChromeVox، با ۴ انگشت ضربه بزنید</translation>
+<translation id="1303806948938513162">‏برای ورود به منوهای ChromeVox، با ۴ انگشت تک‌ضرب بزنید</translation>
 <translation id="1313373992684326101">به بخش قبلی بروید. نمونه‌ها شامل «سینی وضعیت» و «راه‌انداز» می‌شود.</translation>
 <translation id="1315077335264761176">جهت لمس</translation>
 <translation id="1325363694295259631"><ph name="NAME" />، دکمه رادیویی گزینه منو لغو انتخاب شد</translation>
@@ -137,7 +137,7 @@
 <translation id="1829244130665387512">یافتن در صفحه</translation>
 <translation id="1834891354138622109">ستون</translation>
 <translation id="1846771122725914429">نمایشگر بریل بلوتوث</translation>
-<translation id="1852018405765032699">‏.اگر با چهار انگشت روی صفحه ضربه بزنید، می‌توانید منوهای ChromeVox را باز و بسته کنید. این منوها حاوی اطلاعات مفیدی درباره فرمان‌ها و میان‌برها هستند. وقتی منوها را باز می‌کنید، می‌توانید یک انگشتتان را تند روی صفحه بکشید تا بین موارد پیمایش کنید و برای فعال‌سازی موارد، دو ضربه بزنید. برای ادامه، با چهار انگشت روی صفحه ضربه بزنید.</translation>
+<translation id="1852018405765032699">‏.اگر با چهار انگشت روی صفحه تک‌ضرب بزنید، می‌توانید منوهای ChromeVox را باز و بسته کنید. این منوها حاوی اطلاعات مفیدی درباره فرمان‌ها و میان‌برها هستند. وقتی منوها را باز می‌کنید، می‌توانید یک انگشتتان را تند روی صفحه بکشید تا بین موارد پیمایش کنید و برای فعال‌سازی موارد، دو تک‌ضرب بزنید. برای ادامه، با چهار انگشت روی صفحه تک‌ضرب بزنید.</translation>
 <translation id="1864430479908918647">‏کلید Search+Space را فشار دهد</translation>
 <translation id="1865601187525349519">پایان نوشتار</translation>
 <translation id="1876229593313240038">doc</translation>
@@ -220,10 +220,11 @@
 <translation id="2490721194269245365">بادمجانی</translation>
 <translation id="249330843868392562">باز کردن تنظیمات نوشتار به گفتار</translation>
 <translation id="2497706219848005458">مغز پسته‌ای</translation>
+<translation id="2512979179176933762">نمایش پنجره‌ها</translation>
 <translation id="2523609930580546572">‏آموزش گام‌به‌گام ChromeVox</translation>
 <translation id="2525706221823668172">‏میان‌برهای صفحه‌کلید Chromebook</translation>
 <translation id="2553108862507765288">اشتباه دستوری</translation>
-<translation id="2556326187583116255">برای متوقف کردن گفتار فعلی، با ۲ انگشت ضربه بزنید</translation>
+<translation id="2556326187583116255">برای متوقف کردن گفتار فعلی، با ۲ انگشت تک‌ضرب بزنید</translation>
 <translation id="2573256689920773241">پیمایش پایه</translation>
 <translation id="257674075312929031">گروه</translation>
 <translation id="2582407057977008361">جدا</translation>
@@ -250,7 +251,7 @@
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">نوشتار پیشنهادی برای تبدیل</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{پرانتز باز}one{# پرانتز باز}other{# پرانتز باز}}</translation>
-<translation id="270523456882008230">نکات: برای فعال کردن مورد کنونی، با یک انگشت دوضربه بزنید.</translation>
+<translation id="270523456882008230">نکات: برای فعال کردن مورد کنونی، با یک انگشت دو تک‌ضرب بزنید.</translation>
 <translation id="2705875883745373140">فشرده نشده</translation>
 <translation id="2708078563826046398">هلویی پررنگ</translation>
 <translation id="2713444072780614174">سفید</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{#+}one{#+}other{#+}}</translation>
 <translation id="2792200646155001340">همچنین می‌توانید با یک انگشت از راست به چپ بکشید تا به مورد قبلی بروید. امتحان کنید.</translation>
 <translation id="280499067616661124">‏«پیدا کردن در صفحه» ChromeVox</translation>
-<translation id="2811019999044652585">‏برای رفتن به قسمت‌های دیگر صفحه، مثل نوارهای ابزار یا سینی سیستم، روی Control+Forward فشار دهید. در Chromebook، کلید Forward دقیقاً‌ در بالای کلید عدد ۲ قرار دارد.</translation>
 <translation id="2811204574343810641">ردیف</translation>
 <translation id="2816868829355607410">قسمت تمرین: فرمان‌های پرش</translation>
 <translation id="2841013758207633010">زمان</translation>
@@ -460,7 +460,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">پیمایش به پایین</translation>
 <translation id="4035381225449278841">بهار</translation>
-<translation id="4038098586530338813">انجام مجدد</translation>
+<translation id="4038098586530338813">ازنو انجام دادن</translation>
 <translation id="4047216625641135770">علامت</translation>
 <translation id="4047910800766704982">‏وقتی دستگاهتان آنلاین شد، می‌توانید از صدایی طبیعی و شبیه صدای انسان استفاده کنید. نوشتار برای پردازش به Google ارسال خواهد شد. هرزمان خواستید می‌توانید آن را در «تنظیمات» خاموش کنید.</translation>
 <translation id="4053520724192563562">سبز مغزپسته‌ای</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">نیلی متالیک</translation>
 <translation id="4253168017788158739">یادداشت</translation>
 <translation id="4254798249533888099">درخت</translation>
+<translation id="4259220820964911921">کنترل چهره فعال شود؟</translation>
 <translation id="4271220233568730077">عبارت ریاضی بعدی</translation>
 <translation id="4275397969489577657">فعال کردن گزارش‌گیری از جریان رویداد</translation>
 <translation id="4278486392851938658">پیوند بازدیدشده قبلی وجود ندارد</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">جگری</translation>
 <translation id="4432896207833262240">محتوای علامت‌دار</translation>
 <translation id="4437615272777527928">برای جستجو در منوها، تایپ کنید. برای جابه‌جایی بین نتایج از پیکان‌های بالا و پایین استفاده کنید. برای تنظیم کردن هشتک نوشتار و حرکت کردن بین منوها از پیکان‌های چپ و راست استفاده کنید.</translation>
+<translation id="4453530046591759283">‏برای رفتن به قسمت‌های دیگر صفحه، مثل نوارهای ابزار یا سینی سیستم، کلید «مهار+F1» را فشار دهید. کلید F1 اولین کلید در سمت راست کلید گریز است.</translation>
 <translation id="4457472090507035117">انتخاب صدای فعلی:</translation>
 <translation id="4476183483923481720">خط جدید</translation>
 <translation id="4479068155583208887">آجری</translation>
@@ -540,7 +542,7 @@
 <translation id="4617384941327705512">«حالت چسبیده هوشمند» خاموش است</translation>
 <translation id="4623097797855662355">انجامه</translation>
 <translation id="4624970070706497034">‏دیگر نمی‌توان TalkBack را در دستگاه‌های Chromebook سفارشی کرد. همچنان می‌توانید از آن استفاده کنید، اما باید از میان‌برهای صفحه‌کلید پیش‌فرض TalkBack استفاده کنید. برای دیدن میان‌برهای دردسترس، کلیدهای Search+A، و سپس K را فشار دهید. اگر همچنان می‌خواهید از TalkBack استفاده کنید، دوباره این فرمان را فشار دهید.</translation>
-<translation id="4649220074413114917">‏برای متوقف کردن گفتار فعلی، با دو انگشت روی صفحه ضربه بزنید. اگر نمی‌خواهید ChromeVox موردی را بخواند، این کار مفید است. برای ادامه، با دو انگشت روی صفحه ضربه بزنید.</translation>
+<translation id="4649220074413114917">‏برای متوقف کردن گفتار فعلی، با دو انگشت روی صفحه تک‌ضرب بزنید. اگر نمی‌خواهید ChromeVox موردی را بخواند، این کار مفید است. برای ادامه، با دو انگشت روی صفحه تک‌ضرب بزنید.</translation>
 <translation id="4661075872484491155">درخت</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4677535310137735442">رفتن به ستون بعدی</translation>
@@ -570,7 +572,7 @@
 <translation id="4844625982113518938">‏برای یاد گرفتن نام آن، کلیدی را فشار دهید. Ctrl+W حالت یادگیری را خواهد بست.</translation>
 <translation id="4846428657345567687">‏به ChromeVox خوش‌آمدید!</translation>
 <translation id="4848993367330139335">tmr</translation>
-<translation id="4854380505292502090">ابزارک رسانه قبلی وجود ندارد</translation>
+<translation id="4854380505292502090">ابزاره رسانه قبلی وجود ندارد</translation>
 <translation id="4855927945655956315">‏کلیدهای ضروری: Control</translation>
 <translation id="4862744964787595316">سیاه نیست</translation>
 <translation id="4865995900839719272">رفتن به خط قبلی</translation>
@@ -619,14 +621,14 @@
 <translation id="5140016802771803559">بنفش ربه‌کا</translation>
 <translation id="5142101052131610456">همه درس‌ها</translation>
 <translation id="5158275234811857234">جلد</translation>
-<translation id="516076699907426116">برای ادامه، با لمس کردن کاوش کنید تا دکمه «درس بعدی» را پیدا کنید. سپس برای ادامه، دو ضربه بزنید.</translation>
+<translation id="516076699907426116">برای ادامه، با لمس کردن کاوش کنید تا دکمه «درس بعدی» را پیدا کنید. سپس برای ادامه، دو تک‌ضرب بزنید.</translation>
 <translation id="5170206230005240598">زیرنویس بریل فعال شد</translation>
 <translation id="5183440668879371625">خط قبلی بریل</translation>
 <translation id="5189244881767082992">خط</translation>
 <translation id="5263034204789987535">کاهی</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">پایان</translation>
-<translation id="5290220123487191192">بیایید با چند اشاره شروع کنیم که به‌طور مرتب از آن‌ها استفاده می‌کنید. اگر به موردی رسیدید که می‌خواهید فعال‌سازی کنید، با یک انگشت دو ضربه روی صفحه بزنید. برای ادامه، اکنون دو ضربه بزنید.</translation>
+<translation id="5290220123487191192">بیایید با چند اشاره شروع کنیم که به‌طور مرتب از آن‌ها استفاده می‌کنید. اگر به موردی رسیدید که می‌خواهید فعال‌سازی کنید، با یک انگشت دو ضربه روی صفحه بزنید. برای ادامه، اکنون دو تک‌ضرب بزنید.</translation>
 <translation id="5302089807023311274">مرجع فهرست منابع</translation>
 <translation id="530391007967514163">برای پیمایش در نوشتار زیر، پرش براساس عنوان را امتحان کنید.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />، برگه</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ضمیمه</translation>
 <translation id="5761219715606611783">‏عالی بود! با اصول اولیه گزینه‌های لمسی ChromeVox آشنا شدید. می‌توانید دوباره آموزش گام‌به‌گام را طی کنید یا بااستفاده از دکمه‌های زیر، از آموزش گام‌به‌گام خارج شوید.</translation>
 <translation id="5776001898637896684">‏افزونه نوشتار به گفتار «شبکه بهبودیافته Google»</translation>
+<translation id="5783252477644995371">با کنترل چهره می‌توانید مکان‌نما را ازطریق اشاره صورت کنترل کنید و کنش‌هایی مثل کلیک چپ را با اشاره‌های چهره مثل لبخند انجام دهید</translation>
 <translation id="5805940204952508776">ضربه با دو انگشت</translation>
 <translation id="5819072574982403430">مورد درختی</translation>
 <translation id="5822819874379903994">فیروزه‌ای سیر</translation>
@@ -775,12 +778,12 @@
 <translation id="6236061028292614533">عنوان بعدی</translation>
 <translation id="6254901459154107917">کادر نوشتار قابل‌ویرایش بعدی</translation>
 <translation id="6259464875943891919">از <ph name="TYPE" /> خارج شدید.</translation>
-<translation id="6280088282605782512">دوضربه بزنید</translation>
+<translation id="6280088282605782512">دو تک‌ضرب بزنید</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">کلیدهای ضروری: «جستجو»</translation>
 <translation id="6305702903308659374">‏پخش با صدایی معمولی حتی اگر ChromeVox درحال صحبت کردن باشد</translation>
 <translation id="6307969636681130414">فشرده شده</translation>
-<translation id="6315652249189065725">باز کردن منوی میان‌برهای صفحه‌کلید</translation>
+<translation id="6315652249189065725">باز کردن منو میان‌برهای صفحه‌کلید</translation>
 <translation id="6320690422100602757">مورد بعدی فهرست وجود ندارد</translation>
 <translation id="6322856989298155004">آواها</translation>
 <translation id="6324551002951139333">اشتباه دستوری شناسایی شد</translation>
@@ -835,7 +838,7 @@
 <translation id="6759710362319508545">منابع</translation>
 <translation id="67862343314499040">بنفش</translation>
 <translation id="6786800275320335305">مقاله</translation>
-<translation id="6790781785997195160">بعدازاینکه چند بار تمرین کردید، دکمه درس بعدی را پیدا کنید. سپس برای ادامه، دو ضربه بزنید.</translation>
+<translation id="6790781785997195160">بعدازاینکه چند بار تمرین کردید، دکمه درس بعدی را پیدا کنید. سپس برای ادامه، دو تک‌ضرب بزنید.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">شیرشکری</translation>
 <translation id="6816066673340002913">نخودی</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">کرم سیر</translation>
 <translation id="7095834689119144465">فقط ویرایش عددی نوشتار</translation>
 <translation id="7096001299300236431">رسانه قبلی</translation>
+<translation id="7096668131290451939">برای خروج از «حالت یادگیری»، دوباره کلید گریز را فشار دهید</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">بازگویی کلمه</translation>
 <translation id="7137397390322864165">حنایی روشن</translation>
@@ -970,7 +974,7 @@
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">کادر ترکیبی بعدی وجود ندارد</translation>
 <translation id="7724603315864178912">برش</translation>
-<translation id="7731785449856576010">ابزارک رسانه بعدی وجود ندارد</translation>
+<translation id="7731785449856576010">ابزاره رسانه بعدی وجود ندارد</translation>
 <translation id="7735498529470878067">کاوش با لمس به شما کمک می‌کند به‌سرعت از آنچه روی صفحه است اطلاعاتی به‌دست آورید.</translation>
 <translation id="773906353055481349">‏برای پیمایش سلول‌به‌سلول، «Search+Ctrl+Alt» را به‌همراه پیکان‌ها فشار دهید</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> برای <ph name="LABEL" /></translation>
@@ -1049,7 +1053,7 @@
 <translation id="827266600368092403">شروع یا پایان انتخاب</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8276439074553447000">پرش به مورد قابل فوکوس قبلی</translation>
-<translation id="8279039817939141096">‏یکی از کلیدهای کوئرتی، کلید بریل قابل‌بازخوانی، یا اشاره لمسی را برای یادگیری عملکرد آن فشار دهید. control را با w، ‏space را با Z فشار دهید، با دو انگشت تند به چپ بکشید یا برای خروج روی escape ضربه بزنید.</translation>
+<translation id="8279039817939141096">‏یکی از کلیدهای کوئرتی، کلید بریل قابل‌بازخوانی، یا اشاره لمسی را برای یادگیری عملکرد آن فشار دهید. control را با w، ‏space را با Z فشار دهید، با دو انگشت تند به چپ بکشید یا برای خروج روی escape تک‌ضرب بزنید.</translation>
 <translation id="8283603667300770666">فیلد بعدی فرم</translation>
 <translation id="8310185481635255431">پیوند بعدی وجود ندارد</translation>
 <translation id="831207808878314375">تعریف</translation>
@@ -1064,7 +1068,7 @@
 <translation id="8428603554127842284">سطح <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
-<translation id="8448196839635577295">‏درحال حاضر تمرکزی در ChromeVox وجود ندارد. برای پیدا کردن موارد، روی کاوش ضربه بزنید.</translation>
+<translation id="8448196839635577295">‏درحال حاضر تمرکزی در ChromeVox وجود ندارد. برای پیدا کردن موارد، روی کاوش تک‌ضرب بزنید.</translation>
 <translation id="8455868257606149352">حداکثر <ph name="X" /></translation>
 <translation id="84575901236241018">کلید دسترسی دارد، <ph name="KEY" /></translation>
 <translation id="8463645336674919227">خارج شدن از اشتباه دستور زبانی</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">چارگوش انتخاب بعدی وجود ندارد</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
 <translation id="8476408756881832830">‏توقف بازپخش هنگامی که ChromeVox درحال صحبت کردن است</translation>
-<translation id="8476508772960940536">نمای کلی پنجره</translation>
 <translation id="8480873377842220259">اکنون برخی از پیمایش‌های پایه را یاد خواهید گرفت. برای حرکت در اطراف صفحه‌نمایش، می‌توانید کلید «جستجو» را نگه دارید و کلیدهای پیکان را فشار دهید. برای ادامه، کلید «جستجو» + «پیکان روبه‌راست» را فشار دهید.</translation>
 <translation id="8503360654911991865">کاهش جزئیات پیمایش</translation>
 <translation id="8520472399088452386">دکمه چرخش</translation>

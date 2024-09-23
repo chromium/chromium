@@ -3,4 +3,3 @@
 ++++[static] name='blockDisplay'
 ++[section]
 ++++[static] name='blockDisplay Hiddenfalse'
-++[section] name='blockDisplay Hiddentruefocusable' hidden:true

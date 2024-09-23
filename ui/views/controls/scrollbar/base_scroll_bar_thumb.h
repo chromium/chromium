@@ -55,11 +55,12 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
   void SetSnapBackOnDragOutside(bool value);
   bool GetSnapBackOnDragOutside() const;
 
-  // View overrides:
-  gfx::Size CalculatePreferredSize() const override = 0;
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override = 0;
 
  protected:
-  // View overrides:
+  // View:
   void OnPaint(gfx::Canvas* canvas) override = 0;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;

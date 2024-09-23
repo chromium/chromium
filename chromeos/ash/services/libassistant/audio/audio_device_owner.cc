@@ -43,7 +43,7 @@ int32_t GetBytesPerSample(const assistant_client::OutputStreamFormat& format) {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 1;
 }
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] third party iframe
+  assert_equals: should deny the permission expected "denied" but got "granted"
+Harness: the test ran to completion.
+

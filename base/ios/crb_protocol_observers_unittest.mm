@@ -284,7 +284,6 @@ TEST_F(CRBProtocolObserversTest, IgnoresDeallocedObservers) {
 
 - (instancetype)init {
   NOTREACHED();
-  return nil;
 }
 
 - (void)mutateByAddingObserver:(id<TestObserver>)observer {

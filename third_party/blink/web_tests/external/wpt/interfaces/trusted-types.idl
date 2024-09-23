@@ -7,21 +7,18 @@
 interface TrustedHTML {
   stringifier;
   DOMString toJSON();
-  static TrustedHTML fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)]
 interface TrustedScript {
   stringifier;
   DOMString toJSON();
-  static TrustedScript fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)]
 interface TrustedScriptURL {
   stringifier;
   USVString toJSON();
-  static TrustedScriptURL fromLiteral(object templateStringsArray);
 };
 
 [Exposed=(Window,Worker)] interface TrustedTypePolicyFactory {
@@ -35,12 +32,12 @@ interface TrustedScriptURL {
     DOMString? getAttributeType(
         DOMString tagName,
         DOMString attribute,
-        optional DOMString elementNs = "",
-        optional DOMString attrNs = "");
+        optional DOMString? elementNs = "",
+        optional DOMString? attrNs = "");
     DOMString? getPropertyType(
         DOMString tagName,
         DOMString property,
-        optional DOMString elementNs = "");
+        optional DOMString? elementNs = "");
     readonly attribute TrustedTypePolicy? defaultPolicy;
 };
 
@@ -61,9 +58,6 @@ callback CreateHTMLCallback = DOMString? (DOMString input, any... arguments);
 callback CreateScriptCallback = DOMString? (DOMString input, any... arguments);
 callback CreateScriptURLCallback = USVString? (DOMString input, any... arguments);
 
-typedef [StringContext=TrustedHTML] DOMString HTMLString;
-typedef [StringContext=TrustedScript] DOMString ScriptString;
-typedef [StringContext=TrustedScriptURL] USVString ScriptURLString;
 typedef (TrustedHTML or TrustedScript or TrustedScriptURL) TrustedType;
 
 partial interface mixin WindowOrWorkerGlobalScope {

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -18,6 +19,7 @@
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/socket_tag.h"
@@ -46,21 +48,24 @@ QuicSessionPoolPeer::GetCryptoConfig(
 bool QuicSessionPoolPeer::HasActiveSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
-    SessionUsage session_usage) {
+    SessionUsage session_usage,
+    bool require_dns_https_alpn) {
   return factory->HasActiveSession(
-      QuicSessionKey(server_id, proxy_chain, session_usage, SocketTag(),
-                     network_anonymization_key, SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+      QuicSessionKey(server_id, privacy_mode, proxy_chain, session_usage,
+                     SocketTag(), network_anonymization_key,
+                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
 bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
                                        const quic::QuicServerId& server_id,
+                                       PrivacyMode privacy_mode,
                                        bool require_dns_https_alpn) {
   return factory->HasActiveJob(QuicSessionKey(
-      server_id, ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       require_dns_https_alpn));
 }
 
@@ -68,25 +73,30 @@ bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* factory,
 QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     url::SchemeHostPort destination) {
-  QuicSessionKey session_key(server_id, ProxyChain::Direct(),
+  QuicSessionKey session_key(server_id, privacy_mode, ProxyChain::Direct(),
                              SessionUsage::kDestination, SocketTag(),
                              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
-  QuicSessionPool::QuicSessionAliasKey key(std::move(destination), session_key);
+  QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
-  DCHECK(key == factory->all_sessions_.begin()->second);
-  return factory->all_sessions_.begin()->first;
+  QuicChromiumClientSession* session = factory->all_sessions_.begin()->get();
+  DCHECK(key == session->session_alias_key());
+  return session;
 }
 
 QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
     QuicSessionPool* factory,
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
+    const ProxyChain& proxy_chain,
+    SessionUsage session_usage,
     bool require_dns_https_alpn) {
-  QuicSessionKey session_key(server_id, ProxyChain::Direct(),
-                             SessionUsage::kDestination, SocketTag(),
+  QuicSessionKey session_key(server_id, privacy_mode, proxy_chain,
+                             session_usage, SocketTag(),
                              network_anonymization_key, SecureDnsPolicy::kAllow,
                              require_dns_https_alpn);
   DCHECK(factory->HasActiveSession(session_key));
@@ -95,12 +105,7 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
 
 bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* factory,
                                         QuicChromiumClientSession* session) {
-  for (const auto& it : factory->all_sessions_) {
-    if (it.first == session) {
-      return true;
-    }
-  }
-  return false;
+  return base::Contains(factory->all_sessions_, session);
 }
 
 void QuicSessionPoolPeer::SetTaskRunner(

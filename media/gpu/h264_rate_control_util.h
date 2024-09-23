@@ -10,6 +10,9 @@
 
 // Utility methods used by H.264 Rate Controller and dependent classes.
 namespace media::h264_rate_control_util {
+// The maximum number of temporal layers in the stream.
+inline constexpr size_t kMaxNumTemporalLayers = 2u;
+
 // The upper and the lower bounds of QP value.
 inline constexpr uint32_t kQPMax = 51u;
 inline constexpr uint32_t kQPMin = 1u;
@@ -29,6 +32,13 @@ MEDIA_GPU_EXPORT uint32_t QStepSize2QP(float q_step);
 MEDIA_GPU_EXPORT base::TimeDelta ClampedTimestampDiff(base::TimeDelta ts_new,
                                                       base::TimeDelta ts_old);
 
+// The x value is clamped to the interval [x0, x1]. The y value is linearly
+// interpolated between the points (x0, y0) and (x1, y1).
+MEDIA_GPU_EXPORT float ClampedLinearInterpolation(float x,
+                                                  float x0,
+                                                  float x1,
+                                                  float y0,
+                                                  float y1);
 }  // namespace media::h264_rate_control_util
 
 #endif  // MEDIA_GPU_H264_RATE_CONTROL_UTIL_H_

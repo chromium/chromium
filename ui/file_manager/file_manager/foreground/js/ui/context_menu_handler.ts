@@ -42,6 +42,21 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
     return this.menu_;
   }
 
+  isMenuEvent(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'Enter':
+      case ' ':
+      case 'Escape':
+      case 'Tab':
+        return true;
+    }
+    return false;
+  }
+
   private getMenuPosition_(
       target: HTMLElement, clientX: number,
       clientY: number): {x: number, y: number} {
@@ -184,8 +199,8 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
       e.preventDefault();
 
       // If the menu is visible we let it handle all the keyboard events
-      // unless Ctrl is held down.
-    } else if (this.menu && !e.ctrlKey) {
+      // intended for the menu.
+    } else if (this.menu && this.isMenuEvent(e)) {
       this.menu.handleKeyDown(e);
       e.preventDefault();
       e.stopPropagation();
@@ -220,6 +235,11 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
   private handleContextMenuEvent_(e: MouseEvent) {
     if ((!this.menu || !this.menu.contains(e.target as Node)) &&
         (!this.hideTimestamp_ || Date.now() - this.hideTimestamp_ > 50)) {
+      // Focus the item which triggers the context menu before showing the menu,
+      // so when the menu hides, the focus can be brought back to the item.
+      if (document.activeElement !== e.currentTarget) {
+        (e.currentTarget as HTMLElement).focus();
+      }
       this.showMenu(
           e, (e.currentTarget as Element & WithContextMenu).contextMenu!);
     }

@@ -12,18 +12,16 @@ class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
 }  // namespace sync_pb
 
-// TODO(crbug.com/881289): Rename this file to model_type_util.h or something
+// TODO(crbug.com/41412176): Rename this file to data_type_util.h or something
 // else that better reflects GetUnhashedClientTagFromAutofillWalletSpecifics()
 // has nothing to do with hashes.
 
 namespace syncer {
 
-// A helper for generating the bookmark type's tag. This is required in more
-// than one place, so we define the algorithm here to make sure the
-// implementation is consistent.
-std::string GenerateSyncableBookmarkHash(
-    const std::string& originator_cache_guid,
-    const std::string& originator_client_item_id);
+class ClientTagHash;
+
+// A helper for generating the suffix for UniquePosition.
+std::string GenerateUniquePositionSuffix(const ClientTagHash& client_tag_hash);
 
 // A helper for extracting client tag out of the specifics for wallet data (as
 // client tags don't get populated by the server). This is required in more than

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -28,7 +27,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/views/views_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -36,7 +35,7 @@ namespace {
 
 // TODO(varkha): Update if native widget can be transparent on Linux.
 bool CanUseTranslucentTooltipWidget() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
   return false;
@@ -79,7 +78,7 @@ void TooltipAura::SetMaxWidth(int width) {
 
 // static
 void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
-  // TODO(crbug.com/1410707): Should adjust with actual cursor size.
+  // TODO(crbug.com/40254494): Should adjust with actual cursor size.
   anchor_point->Offset(kCursorOffsetX, kCursorOffsetY);
 }
 
@@ -105,7 +104,8 @@ const gfx::RenderText* TooltipAura::GetRenderTextForTest() const {
 
 void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
   DCHECK(widget_);
-  widget_->GetTooltipView()->GetAccessibleNodeData(node_data);
+  widget_->GetTooltipView()->GetViewAccessibility().GetAccessibleNodeData(
+      node_data);
 }
 
 gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
@@ -168,11 +168,12 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
                                       const ui::OwnedWindowAnchor& anchor) {
   DCHECK(!widget_);
   DCHECK(tooltip_window_);
-  widget_ = new TooltipWidget;
-  views::Widget::InitParams params;
+  widget_ = std::make_unique<TooltipWidget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_TOOLTIP);
   // For aura, since we set the type to TYPE_TOOLTIP, the widget will get
   // auto-parented to the right container.
-  params.type = views::Widget::InitParams::TYPE_TOOLTIP;
   params.context = tooltip_window_;
   DCHECK(params.context);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
@@ -194,9 +195,8 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
 
 void TooltipAura::DestroyWidget() {
   if (widget_) {
-    widget_->RemoveObserver(this);
     widget_->Close();
-    widget_ = nullptr;
+    widget_.reset();
   }
 }
 
@@ -222,24 +222,21 @@ void TooltipAura::Update(aura::Window* window,
   gfx::Point anchor_point = position;
   aura::client::ScreenPositionClient* screen_position_client =
       aura::client::GetScreenPositionClient(window->GetRootWindow());
+  CHECK(screen_position_client);
   screen_position_client->ConvertPointToScreen(window, &anchor_point);
 
   new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
   new_tooltip_view->SetText(tooltip_text);
   ui::OwnedWindowAnchor anchor;
-  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize(),
+  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize({}),
                                  anchor_point, trigger, &anchor);
   CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));
-  widget_->AddObserver(this);
 }
 
 void TooltipAura::Show() {
   if (widget_) {
     widget_->Show();
-
-    if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering))
-      widget_->StackAtTop();
 
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipOpened, true);
@@ -247,7 +244,7 @@ void TooltipAura::Show() {
     // Add distance between `tooltip_window_` and its toplevel window to bounds
     // to pass via NotifyTooltipShown() since client will use this bounds as
     // relative to wayland toplevel window.
-    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel
     // window when WaylandWindow on ozone becomes available.
     aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
     // `tooltip_window_`'s toplevel window may be null for testing.
@@ -255,11 +252,9 @@ void TooltipAura::Show() {
       gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
       aura::Window::ConvertRectToTarget(tooltip_window_, toplevel_window,
                                         &bounds);
-      for (auto& observer : observers_) {
-        observer.OnTooltipShown(
-            toplevel_window, widget_->GetTooltipView()->render_text()->text(),
-            bounds);
-      }
+      observers_.Notify(&wm::TooltipObserver::OnTooltipShown, toplevel_window,
+                        widget_->GetTooltipView()->render_text()->text(),
+                        bounds);
     }
   }
 }
@@ -276,13 +271,12 @@ void TooltipAura::Hide() {
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipClosed, true);
 
-    // TODO(crbug.com/1385219): Use `tooltip_window_` instead of its toplevel
+    // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel
     // window when WaylandWindow on ozone becomes available.
     aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
     // `tooltip_window_`'s toplevel window may be null for testing.
     if (toplevel_window) {
-      for (auto& observer : observers_)
-        observer.OnTooltipHidden(toplevel_window);
+      observers_.Notify(&wm::TooltipObserver::OnTooltipHidden, toplevel_window);
     }
     DestroyWidget();
   }
@@ -291,14 +285,6 @@ void TooltipAura::Hide() {
 
 bool TooltipAura::IsVisible() {
   return widget_ && widget_->IsVisible();
-}
-
-void TooltipAura::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(widget_, widget);
-  if (widget_)
-    widget_->RemoveObserver(this);
-  widget_ = nullptr;
-  tooltip_window_ = nullptr;
 }
 
 }  // namespace views::corewm

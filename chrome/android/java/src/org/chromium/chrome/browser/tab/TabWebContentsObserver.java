@@ -15,18 +15,20 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -113,7 +115,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     }
 
     public void simulateRendererKilledForTesting() {
-        if (mObserver != null) mObserver.renderProcessGone();
+        if (mObserver != null) {
+            mObserver.primaryMainFrameRenderProcessGone(TerminationStatus.PROCESS_WAS_KILLED);
+        }
     }
 
     private void showSadTab(SadTab sadTab) {
@@ -148,13 +152,15 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void renderProcessGone() {
+        public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
             Log.i(
                     TAG,
-                    "renderProcessGone() for tab id: "
+                    "primaryMainFrameRenderProcessGone() for tab id: "
                             + mTab.getId()
                             + ", already needs reload: "
-                            + Boolean.toString(mTab.needsReload()));
+                            + Boolean.toString(mTab.needsReload())
+                            + ", termination status: "
+                            + Integer.toString(terminationStatus));
             // Do nothing for subsequent calls that happen while the tab remains crashed. This
             // can occur when the tab is in the background and it shares the renderer with other
             // tabs. After the renderer crashes, the WebContents of its tabs are still around
@@ -168,7 +174,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             // content. The URL check is done in addition to the isNativePage to ensure a navigation
             // off the native page did not result in the crash.
             if (mTab.isNativePage()
-                    && NativePage.isNativePageUrl(mTab.getUrl(), mTab.isIncognito())) {
+                    && (mTab.getNativePage().getUrl().equals(mTab.getUrl().getSpec())
+                            || NativePage.isNativePageUrl(
+                                    mTab.getUrl(),
+                                    mTab.isIncognito(),
+                                    PdfUtils.shouldOpenPdfInline(mTab.isIncognito())
+                                            && PdfUtils.isDownloadedPdf(
+                                                    mTab.getUrl().getSpec())))) {
                 return;
             }
 
@@ -182,13 +194,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // The tab crashed in background or was killed by the OS out-of-memory killer.
                 mTab.setNeedsReload();
             } else {
-                // TODO(crbug.com/1074078): Remove the PostTask and call SadTab directly when
+                // TODO(crbug.com/40127852): Remove the PostTask and call SadTab directly when
                 // WebContentsObserverProxy observers' iterator concurrency issue is fixed.
                 // Showing the SadTab will cause the content view hosting WebContents to lose focus.
                 // Post the show in order to avoid immediately triggering
                 // {@link WebContentsObserver#onWebContentsLostFocus}. This will ensure all
                 // observers in {@link WebContentsObserverProxy} receive callbacks for
-                // {@link WebContentsObserver#renderProcessGone} first.
+                // {@link WebContentsObserver#primaryMainFrameRenderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
                 PostTask.postTask(TaskTraits.UI_DEFAULT, () -> showSadTab(sadTab));
                 // This is necessary to correlate histogram data with stability counts.
@@ -230,7 +242,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 String failingUrl, String description, int errorCode) {
             assert description != null;
 
-            PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+            PolicyAuditor auditor = PolicyAuditor.maybeCreate();
             if (auditor != null) {
                 auditor.notifyAuditEvent(
                         ContextUtils.getApplicationContext(),
@@ -287,10 +299,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             if (!navigation.hasCommitted()) return;
 
             mTab.updateTitle();
-            mTab.handleDidFinishNavigation(navigation.getUrl(), navigation.pageTransition());
+            mTab.handleDidFinishNavigation(
+                    navigation.getUrl(), navigation.pageTransition(), navigation.isPdf());
             mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
-            // TODO(crbug.com/1434461) remove this call. onUrlUpdated should have been called
+            // TODO(crbug.com/40264745) remove this call. onUrlUpdated should have been called
             // by NotifyNavigationStateChanged, which is always called before didFinishNavigation
             observers.rewind();
             while (observers.hasNext()) {
@@ -301,7 +314,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
             if (handler != null) handler.didStopRefreshing();
 
-            // TODO(crbug.com/1434461) add this here to clear LocationBarModel's cache for
+            // TODO(crbug.com/40264745) add this here to clear LocationBarModel's cache for
             // being in a same site navigation. Remove this call when the onUrlUpdated call
             // above is removed.
             observers.rewind();
@@ -319,6 +332,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            mTab.notifyDidFirstVisuallyNonEmptyPaint();
             while (observers.hasNext()) {
                 observers.next().didFirstVisuallyNonEmptyPaint(mTab);
             }
@@ -327,6 +341,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void didChangeThemeColor() {
             mTab.updateThemeColor(mTab.getWebContents().getThemeColor());
+        }
+
+        @Override
+        public void onBackgroundColorChanged() {
+            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                mTab.changeWebContentBackgroundColor(mTab.getWebContents().getBackgroundColor());
+            }
         }
 
         @Override

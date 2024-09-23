@@ -1,0 +1,38 @@
+<style include="settings-shared md-select">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dict-info-row {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+
+<cr-expand-button expanded="{{expanded_}}" class="cr-row">
+  [[dict.name]]
+</cr-expand-button>
+<iron-collapse class="" opened="[[expanded_]]">
+  <div class="cr-row continuation dict-info-row">
+    <cr-input value="[[dict.name]]"
+    label="Dictionary name"
+    type="text"
+    on-change="saveName_"></cr-input>
+    <cr-icon-button class="delete-icon"
+      iron-icon="cr:delete"
+      on-click="deleteDictionary_"
+      title="DeleteDictionary"></cr-icon-button>
+  </div>
+  <template is="dom-repeat" items="[[dict.entries]]" as="entry">
+    <os-japanese-dictionary-entry-row
+      dict-id="[[dict.id]]" index="[[index]]"
+      entry="[[entry]]" locally-added="[[locallyAdded_(index)]]">
+    </os-japanese-dictionary-entry-row>
+  </template>
+  <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
+    <cr-icon-button iron-icon="cr:add" on-click="addEntry_"
+      title="AddEntry">
+    </cr-icon-button>
+  </template>
+</iron-collapse>

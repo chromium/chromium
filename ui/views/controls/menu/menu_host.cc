@@ -19,6 +19,8 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/gestures/gesture_recognizer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_host_root_view.h"
@@ -124,11 +126,13 @@ MenuHost::~MenuHost() = default;
 
 void MenuHost::InitMenuHost(const InitParams& init_params) {
   TRACE_EVENT0("views", "MenuHost::InitMenuHost");
-  Widget::InitParams params(Widget::InitParams::TYPE_MENU);
+  Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_MENU);
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
+  params.name = "MenuHost";
   params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
                                      : Widget::InitParams::ShadowType::kDrop;
   params.opacity = (bubble_border ||
@@ -140,11 +144,6 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.context = init_params.context ? init_params.context->GetNativeWindow()
                                        : gfx::NativeWindow();
   params.bounds = init_params.bounds;
-
-#if BUILDFLAG(IS_OZONE)
-  params.frame_insets =
-      submenu_->GetScrollViewContainer()->outside_border_insets();
-#endif
 
 #if defined(USE_AURA)
   params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
@@ -173,7 +172,9 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
     GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](std::string histogram, base::TimeTicks menu_host_init_time,
-               base::TimeTicks presentation_time) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UMA_HISTOGRAM_TIMES(histogram,
                                   presentation_time - menu_host_init_time);
             },
@@ -353,6 +354,15 @@ void MenuHost::OnDragComplete() {
 Widget* MenuHost::GetPrimaryWindowWidget() {
   return GetOwner() ? GetOwner()->GetPrimaryWindowWidget()
                     : Widget::GetPrimaryWindowWidget();
+}
+
+gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
+#if BUILDFLAG(IS_OZONE)
+  if (submenu_) {
+    return submenu_->GetScrollViewContainer()->outside_border_insets();
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+  return gfx::Insets();
 }
 
 void MenuHost::OnWidgetDestroying(Widget* widget) {

@@ -73,12 +73,14 @@ ProgressBarDialogView::~ProgressBarDialogView() {
   RemoveAllChildViews();
 }
 
-gfx::Size ProgressBarDialogView::CalculatePreferredSize() const {
+gfx::Size ProgressBarDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 
   auto width = provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void ProgressBarDialogView::AddedToWidget() {
@@ -88,8 +90,9 @@ void ProgressBarDialogView::AddedToWidget() {
                 IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS)
           : l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS);
-  GetWidget()->GetRootView()->SetAccessibleRole(ax::mojom::Role::kDialog);
-  GetWidget()->GetRootView()->SetAccessibleName(view_name);
+  GetWidget()->GetRootView()->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kDialog);
+  GetWidget()->GetRootView()->GetViewAccessibility().SetName(view_name);
 }
 
 void ProgressBarDialogView::OnThemeChanged() {

@@ -104,8 +104,9 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertNeutral(
       To<CSSOffsetRotationNonInterpolableValue>(
           *underlying.non_interpolable_value)
           .RotationType();
-  conversion_checkers.push_back(std::make_unique<UnderlyingRotationTypeChecker>(
-      underlying_rotation_type));
+  conversion_checkers.push_back(
+      MakeGarbageCollected<UnderlyingRotationTypeChecker>(
+          underlying_rotation_type));
   return ConvertOffsetRotate(StyleOffsetRotation(0, underlying_rotation_type));
 }
 
@@ -121,7 +122,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertInherit(
   const StyleOffsetRotation& inherited_rotation =
       state.ParentStyle()->OffsetRotate();
   conversion_checkers.push_back(
-      std::make_unique<InheritedOffsetRotationChecker>(inherited_rotation));
+      MakeGarbageCollected<InheritedOffsetRotationChecker>(inherited_rotation));
   return ConvertOffsetRotate(inherited_rotation);
 }
 

@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("cloud_storage") {
+  sources = [
+    "one_drive_pref_observer.cc",
+    "one_drive_pref_observer.h",
+    "policy_utils.cc",
+    "policy_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  deps = [
+    "//chrome/browser/chromeos/extensions/odfs_config_private",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/extensions",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/constants",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/chromeos/extensions/odfs_config_private",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+  ]
+}

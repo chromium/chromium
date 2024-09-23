@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Mall is ash-chrome only")
+
+source_set("mall") {
+  sources = [
+    "mall_page_handler.cc",
+    "mall_page_handler.h",
+    "mall_ui.cc",
+    "mall_ui.h",
+    "mall_ui_delegate.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    ":url_constants",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/mall/resources",
+    "//base",
+    "//chromeos/constants/",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "mall_ui.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+
+  webui_module_path = "/"
+}
+
+source_set("url_constants") {
+  sources = [ "url_constants.h" ]
+}
+
+source_set("app_id") {
+  sources = [ "app_id.h" ]
+}

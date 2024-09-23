@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -52,6 +52,8 @@ AccountPickerConfiguration* GetAccountPickerConfiguration(
       drive::GetAccountPickerBodyText(file_name, file_size);
   accountPickerConfiguration.submitButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT);
+  accountPickerConfiguration.alwaysBounceVertical = YES;
+  accountPickerConfiguration.defaultCornerRadius = YES;
   return accountPickerConfiguration;
 }
 

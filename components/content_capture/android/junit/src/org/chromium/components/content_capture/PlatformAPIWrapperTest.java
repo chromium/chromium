@@ -139,7 +139,7 @@ public class PlatformAPIWrapperTest {
             doThrow(new RuntimeException("Shall be called from PlatformAPIWrapper."))
                     .when(mockedContentCaptureSession)
                     .setContentCaptureContext(ArgumentMatchers.any());
-            // TODO(crbug.com/1145784): Enable below once mockito support them.
+            // TODO(crbug.com/40156022): Enable below once mockito support them.
             // doThrow(new RuntimeException("Shall be called from PlatformAPIWrapper."))
             //        .when(mockedContentCaptureSession)
             //        .notifySessionPaused();

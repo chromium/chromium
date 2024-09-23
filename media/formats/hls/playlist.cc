@@ -23,7 +23,7 @@ Playlist::~Playlist() = default;
 
 // static
 ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
-    base::StringPiece source) {
+    std::string_view source) {
   std::optional<Kind> playlist_kind;
   std::optional<XVersionTag> version_tag;
 

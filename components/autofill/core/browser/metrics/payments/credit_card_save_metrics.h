@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -90,7 +90,7 @@ enum class CardUploadEnabled {
   kUsingExplicitSyncPassphrase = 5,
   kLocalSyncEnabled = 6,
   // Deprecated: kPaymentsIntegrationDisabled = 7,
-  kEmailEmpty = 8,
+  // Deprecated: kEmailEmpty = 8,
   // Deprecated: kEmailDomainNotSupported = 9,
   // Deprecated: kAutofillUpstreamDisabled = 10,
   // Deprecated: kCardUploadEnabled = 11,
@@ -205,17 +205,18 @@ void LogSaveCardPromptOfferMetric(
     SaveCardPromptOffer metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state);
 
+// `has_saved_cards` indicates that local or server cards existed before the
+// save prompt was accepted/denied.
 void LogSaveCardPromptResultMetric(
     SaveCardPromptResult metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
-    security_state::SecurityLevel security_level,
-    AutofillMetrics::PaymentsSigninState sync_state);
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+    AutofillMetrics::PaymentsSigninState sync_state,
+    bool has_saved_cards);
 
 void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
                                  bool is_uploading,
@@ -231,11 +232,27 @@ void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
 
+void LogCreditCardUploadRanLocalSaveFallbackMetric(bool new_local_card_added);
+
+void LogCreditCardUploadLoadingViewShownMetric(bool is_shown);
+
+void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
+                                                    bool is_card_uploaded);
+
+void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric);
+
+void LogCreditCardUploadConfirmationViewResultMetric(
+    SaveCardPromptResult metric,
+    bool is_card_uploaded);
+
+void LogGetCardUploadDetailsRequestLatencyMetric(base::TimeDelta duration,
+                                                 bool is_successful);
+
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,
     bool is_upload,
-    AutofillClient::SaveCreditCardOptions options);
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options);
 
 }  // namespace autofill::autofill_metrics
 

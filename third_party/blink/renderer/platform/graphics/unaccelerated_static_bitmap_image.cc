@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 #include "base/process/memory.h"
@@ -120,7 +125,7 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
     skia_image = skia_image->makeColorTypeAndColorSpace(
         static_cast<GrDirectContext*>(nullptr), color_type, color_space);
   }
-  if (UNLIKELY(!skia_image)) {
+  if (!skia_image) [[unlikely]] {
     // Null value indicates that skia failed to allocate the destination
     // bitmap.
     base::TerminateBecauseOutOfMemory(

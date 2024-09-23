@@ -24,10 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
 #include <unicode/utf16.h>
 
+#include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -156,6 +163,9 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
     } else if (ch < (UChar32)0x110000) {
       bytes_to_write = 4;
     } else {
+      // TODO(crbug.com/329702346): Surrogate pairs cannot represent codepoints
+      // higher than 0x10FFFF, so this should not be reachable.
+      DUMP_WILL_BE_CHECK(base::NotFatalUntil::M127);
       bytes_to_write = 3;
       ch = kReplacementCharacter;
     }
@@ -289,12 +299,10 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
                                     const char* source_end,
                                     UChar** target_start,
                                     UChar* target_end,
-                                    bool* source_all_ascii,
                                     bool strict) {
   ConversionResult result = kConversionOK;
   const char* source = *source_start;
   UChar* target = *target_start;
-  UChar or_all_data = 0;
   while (source < source_end) {
     int utf8_sequence_length = InlineUTF8SequenceLength(*source);
     if (source_end - source < utf8_sequence_length) {
@@ -325,10 +333,8 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
           break;
         }
         *target++ = kReplacementCharacter;
-        or_all_data |= kReplacementCharacter;
       } else {
         *target++ = static_cast<UChar>(character);  // normal case
-        or_all_data |= character;
       }
     } else if (U_IS_SUPPLEMENTARY(character)) {
       // target is a character in range 0xFFFF - 0x10FFFF
@@ -339,49 +345,46 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
       }
       *target++ = U16_LEAD(character);
       *target++ = U16_TRAIL(character);
-      or_all_data = 0xffff;
     } else {
+      // TODO(crbug.com/329702346): This should never happen;
+      // InlineUTF8SequenceLength() can never return a value higher than 4, and
+      // a 4-byte UTF-8 sequence can never encode anything higher than 0x10FFFF.
+      DUMP_WILL_BE_CHECK(base::NotFatalUntil::M127);
       if (strict) {
         source -= utf8_sequence_length;  // return to the start
         result = kSourceIllegal;
         break;  // Bail out; shouldn't continue
       } else {
         *target++ = kReplacementCharacter;
-        or_all_data |= kReplacementCharacter;
       }
     }
   }
   *source_start = source;
   *target_start = target;
 
-  if (source_all_ascii)
-    *source_all_ascii = !(or_all_data & ~0x7f);
-
   return result;
 }
 
-unsigned CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
-    const char* data,
-    const char* data_end,
-    unsigned& data_length,
-    unsigned& utf16_length) {
+unsigned CalculateStringLengthFromUTF8(const char* data,
+                                       const char*& data_end,
+                                       bool& seen_non_ascii,
+                                       bool& seen_non_latin1) {
+  seen_non_ascii = false;
+  seen_non_latin1 = false;
   if (!data)
     return 0;
 
-  StringHasher string_hasher;
-  data_length = 0;
-  utf16_length = 0;
+  unsigned utf16_length = 0;
 
   while (data < data_end || (!data_end && *data)) {
     if (IsASCII(*data)) {
-      string_hasher.AddCharacter(*data++);
-      data_length++;
+      ++data;
       utf16_length++;
       continue;
     }
 
+    seen_non_ascii = true;
     int utf8_sequence_length = InlineUTF8SequenceLengthNonASCII(*data);
-    data_length += utf8_sequence_length;
 
     if (!data_end) {
       for (int i = 1; i < utf8_sequence_length; ++i) {
@@ -399,22 +402,24 @@ unsigned CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
     UChar32 character = ReadUTF8Sequence(data, utf8_sequence_length);
     DCHECK(!IsASCII(character));
 
+    if (character > 0xff) {
+      seen_non_latin1 = true;
+    }
+
     if (U_IS_BMP(character)) {
       // UTF-16 surrogate values are illegal in UTF-32
       if (U_IS_SURROGATE(character))
         return 0;
-      string_hasher.AddCharacter(static_cast<UChar>(character));  // normal case
       utf16_length++;
     } else if (U_IS_SUPPLEMENTARY(character)) {
-      string_hasher.AddCharacters(static_cast<UChar>(U16_LEAD(character)),
-                                  static_cast<UChar>(U16_TRAIL(character)));
       utf16_length += 2;
     } else {
       return 0;
     }
   }
 
-  return string_hasher.HashWithTop8BitsMasked();
+  data_end = data;
+  return utf16_length;
 }
 
 template <typename CharType>

@@ -595,6 +595,14 @@ void RemapIllustrationColors(ui::ColorMixer& mixer) {
   mixer[ui::kColorNativeColor6] = {cros_tokens::kCrosSysIlloColor6};
   mixer[ui::kColorNativeBaseColor] = {cros_tokens::kCrosSysIlloBase};
   mixer[ui::kColorNativeSecondaryColor] = {cros_tokens::kCrosSysIlloSecondary};
+  mixer[ui::kColorNativeOnPrimaryContainerColor] = {
+      cros_tokens::kCrosSysIlloOnPrimaryContainer};
+  mixer[ui::kColorNativeAnalogColor] = {cros_tokens::kCrosSysIlloAnalog};
+  mixer[ui::kColorNativeMutedColor] = {cros_tokens::kCrosSysIlloMuted};
+  mixer[ui::kColorNativeComplementColor] = {
+      cros_tokens::kCrosSysIlloComplement};
+  mixer[ui::kColorNativeOnGradientColor] = {
+      cros_tokens::kCrosSysIlloOnGradient};
 }
 
 // Maps colors specific to gaming features. Colors are specified in
@@ -713,7 +721,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
           : kColorAshInkDrop};
 
-  mixer[ui::kColorAshSystemUIMenuSeparator] = {kColorAshSeparatorColor};
+  mixer[ui::kColorAshSystemUIMenuSeparator] = {cros_tokens::kCrosSysSeparator};
 
   mixer[kColorAshDialogBackgroundColor] =
       use_dark_color ? ui::ColorTransform(SkColorSetRGB(0x32, 0x33, 0x36))

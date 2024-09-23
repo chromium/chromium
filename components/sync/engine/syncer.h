@@ -9,9 +9,12 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/syncer_error.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+enum SyncEnums_GetUpdatesOrigin : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -23,8 +26,9 @@ class SyncCycle;
 // This enum should be in sync with SyncerErrorValues in enums.xml. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Exposed for tests.
-// TODO(crbug.com/1363089): this enum no longer corresponds to SyncerError,
+// TODO(crbug.com/40864723): this enum no longer corresponds to SyncerError,
 // modernize it.
+// LINT.IfChange(SyncerErrorValues)
 enum class SyncerErrorValueForUma {
   // Deprecated: kUnset = 0,  // Default value.
   // Deprecated: CANNOT_DO_WORK = 1,
@@ -57,6 +61,7 @@ enum class SyncerErrorValueForUma {
 
   kMaxValue = kSyncerOk,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncerErrorValues)
 
 // A Syncer provides a control interface for driving the sync cycle.  These
 // cycles consist of downloading updates, parsing the response (aka. process
@@ -85,7 +90,7 @@ class Syncer {
   // out of sync and what must be done to bring it back into sync.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool NormalSyncShare(ModelTypeSet request_types,
+  virtual bool NormalSyncShare(DataTypeSet request_types,
                                NudgeTracker* nudge_tracker,
                                SyncCycle* cycle);
 
@@ -96,8 +101,8 @@ class Syncer {
   // download.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool ConfigureSyncShare(const ModelTypeSet& request_types,
-                                  sync_pb::SyncEnums::GetUpdatesOrigin origin,
+  virtual bool ConfigureSyncShare(const DataTypeSet& request_types,
+                                  sync_pb::SyncEnums_GetUpdatesOrigin origin,
                                   SyncCycle* cycle);
 
   // Requests to download updates for the |request_types|.  For a well-behaved
@@ -106,10 +111,10 @@ class Syncer {
   // in sync despite bugs or transient failures.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool PollSyncShare(ModelTypeSet request_types, SyncCycle* cycle);
+  virtual bool PollSyncShare(DataTypeSet request_types, SyncCycle* cycle);
 
  private:
-  bool DownloadAndApplyUpdates(ModelTypeSet* request_types,
+  bool DownloadAndApplyUpdates(DataTypeSet* request_types,
                                SyncCycle* cycle,
                                const GetUpdatesDelegate& delegate);
 
@@ -117,7 +122,7 @@ class Syncer {
   // number of unsynced and ready to commit items reaches zero or an error is
   // encountered.  A request to exit early will be treated as an error and will
   // abort any blocking operations.
-  SyncerError BuildAndPostCommits(const ModelTypeSet& request_types,
+  SyncerError BuildAndPostCommits(const DataTypeSet& request_types,
                                   NudgeTracker* nudge_tracker,
                                   SyncCycle* cycle);
 
@@ -125,7 +130,7 @@ class Syncer {
   bool ExitRequested();
 
   bool HandleCycleEnd(SyncCycle* cycle,
-                      sync_pb::SyncEnums::GetUpdatesOrigin origin);
+                      sync_pb::SyncEnums_GetUpdatesOrigin origin);
 
   const raw_ptr<CancelationSignal> cancelation_signal_;
 

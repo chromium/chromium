@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -41,7 +42,8 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
     if (!process_host || process_host->AreRefCountsDisabled()) {
       return;
     }
-    process_host->IncrementKeepAliveRefCount(handle_id_);
+    static_cast<RenderProcessHostImpl*>(process_host)
+        ->IncrementKeepAliveRefCount(handle_id_);
   }
   ~KeepAliveHandleImpl() override {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
@@ -49,7 +51,8 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
     if (!process_host || process_host->AreRefCountsDisabled()) {
       return;
     }
-    process_host->DecrementKeepAliveRefCount(handle_id_);
+    static_cast<RenderProcessHostImpl*>(process_host)
+        ->DecrementKeepAliveRefCount(handle_id_);
   }
 
   KeepAliveHandleImpl(const KeepAliveHandleImpl&) = delete;

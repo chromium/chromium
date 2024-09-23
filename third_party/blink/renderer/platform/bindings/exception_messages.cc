@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -53,6 +56,47 @@ String optionalIndexProperty(const String& property) {
 }
 
 }  //  namespace
+
+String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
+                                              const String& message) {
+  const char* c = context.GetClassName();
+  const String& p = context.GetPropertyName();
+  const String& m = message;
+
+  switch (context.GetType()) {
+    case v8::ExceptionContext::kConstructor:
+      return ExceptionMessages::FailedToConstruct(c, m);
+    case v8::ExceptionContext::kOperation:
+      return ExceptionMessages::FailedToExecute(p, c, m);
+    case v8::ExceptionContext::kAttributeGet:
+      return ExceptionMessages::FailedToGet(p, c, m);
+    case v8::ExceptionContext::kAttributeSet:
+      return ExceptionMessages::FailedToSet(p, c, m);
+    case v8::ExceptionContext::kNamedEnumerator:
+      return ExceptionMessages::FailedToEnumerate(c, m);
+    case v8::ExceptionContext::kIndexedGetter:
+    case v8::ExceptionContext::kIndexedDescriptor:
+    case v8::ExceptionContext::kIndexedQuery:
+      return ExceptionMessages::FailedToGetIndexed(p, c, m);
+    case v8::ExceptionContext::kIndexedSetter:
+    case v8::ExceptionContext::kIndexedDefiner:
+      return ExceptionMessages::FailedToSetIndexed(p, c, m);
+    case v8::ExceptionContext::kIndexedDeleter:
+      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
+    case v8::ExceptionContext::kNamedGetter:
+    case v8::ExceptionContext::kNamedDescriptor:
+    case v8::ExceptionContext::kNamedQuery:
+      return ExceptionMessages::FailedToGetNamed(p, c, m);
+    case v8::ExceptionContext::kNamedSetter:
+    case v8::ExceptionContext::kNamedDefiner:
+      return ExceptionMessages::FailedToSetNamed(p, c, m);
+    case v8::ExceptionContext::kNamedDeleter:
+      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
+    case v8::ExceptionContext::kUnknown:
+      return m;
+  }
+  NOTREACHED();
+}
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {
   return String::Format("Failed to convert value to '%s'.", type);

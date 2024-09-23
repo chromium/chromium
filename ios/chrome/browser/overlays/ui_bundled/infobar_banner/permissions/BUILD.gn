@@ -1,0 +1,53 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("permissions") {
+  sources = [
+    "permissions_infobar_banner_overlay_mediator.h",
+    "permissions_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model/overlays:overlay_type",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ios/chrome/browser/permissions/model:infobar_delegate",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/web/public/permissions",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "permissions_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":permissions",
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model:model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/permissions/model:infobar_delegate",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/web/public/permissions",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

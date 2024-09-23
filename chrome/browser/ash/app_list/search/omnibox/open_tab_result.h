@@ -40,6 +40,7 @@ class OpenTabResult : public ChromeSearchResult,
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
+  std::optional<GURL> url() const override;
   std::optional<std::string> DriveId() const override;
 
  private:

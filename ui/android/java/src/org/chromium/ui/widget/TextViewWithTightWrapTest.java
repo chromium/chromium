@@ -17,9 +17,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.R;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -49,7 +49,7 @@ public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mTextView = mView.findViewById(R.id.message);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView.setBackgroundColor(activity.getColor(R.color.filled_button_bg));
                     mTextView.setText("First line\nVery very very very long second line");
@@ -92,7 +92,7 @@ public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest"})
     public void testTextViewWithSnooze() throws Exception {
         Button snoozeButton = (Button) mView.findViewById(R.id.button_snooze);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     snoozeButton.setVisibility(View.VISIBLE);
                 });

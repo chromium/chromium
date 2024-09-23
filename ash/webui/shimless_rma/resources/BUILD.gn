@@ -75,21 +75,24 @@ build_webui("build") {
     "shimless_rma_util.ts",
   ]
 
-  mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.js" ]
+  mojo_files = [
+    "$root_gen_dir/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.ts",
+  ]
 
-  mojo_files_deps = [ "//ash/webui/shimless_rma/mojom:mojom_webui_js" ]
+  mojo_files_deps = [ "//ash/webui/shimless_rma/mojom:mojom_ts__generator" ]
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   grd_prefix = "ash_shimless_rma"
   grit_output_dir = "$root_gen_dir/ash/webui"
 }

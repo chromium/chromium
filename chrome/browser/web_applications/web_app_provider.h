@@ -32,8 +32,10 @@ class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
 class IsolatedWebAppUpdateManager;
 class ManifestUpdateManager;
+class NavigationCapturingLog;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
+class VisitedManifestManager;
 class WebAppAudioFocusIdMap;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
@@ -47,6 +49,7 @@ class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
+class WebAppUiStateManager;
 class WebContentsManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -81,9 +84,9 @@ class WebAppProvider : public KeyedService {
   // Deprecated: Use GetForWebApps instead.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
+  // On Windows, Mac and Linux, always returns a WebAppProvider.
   // On Chrome OS: In Ash, returns nullptr if Lacros Web App (WebAppsCrosapi) is
-  // enabled and it is not the Shimless RMA app profile. On other platforms,
-  // always returns a WebAppProvider.
+  // enabled and it is not the Shimless RMA app profile.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
   // Returns the WebAppProvider for the current process. In particular:
@@ -105,8 +108,6 @@ class WebAppProvider : public KeyedService {
 
   using OsIntegrationManagerFactory =
       std::unique_ptr<OsIntegrationManager> (*)(Profile*);
-  static void SetOsIntegrationManagerFactoryForTesting(
-      OsIntegrationManagerFactory factory);
 
   explicit WebAppProvider(Profile* profile);
   WebAppProvider(const WebAppProvider&) = delete;
@@ -191,6 +192,10 @@ class WebAppProvider : public KeyedService {
 
   AbstractWebAppDatabaseFactory& database_factory();
 
+  VisitedManifestManager& visited_manifest_manager();
+
+  NavigationCapturingLog& navigation_capturing_log();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -251,6 +256,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
+  std::unique_ptr<WebAppUiStateManager> ui_state_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
@@ -259,6 +265,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<ExtensionsManager> extensions_manager_;
   std::unique_ptr<GeneratedIconFixManager> generated_icon_fix_manager_;
   scoped_refptr<FileUtilsWrapper> file_utils_;
+  std::unique_ptr<VisitedManifestManager> visited_manifest_manager_;
+  std::unique_ptr<NavigationCapturingLog> navigation_capturing_log_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

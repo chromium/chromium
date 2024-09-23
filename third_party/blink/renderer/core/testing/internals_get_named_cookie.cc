@@ -6,8 +6,8 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internal_cookie.h"
@@ -18,23 +18,26 @@
 namespace blink {
 
 // static
-ScriptPromise InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
-                                                      Internals&,
-                                                      const String& name) {
+ScriptPromise<IDLNullable<InternalCookie>>
+InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
+                                        Internals&,
+                                        const String& name) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   mojo::Remote<test::mojom::blink::CookieManagerAutomation> cookie_manager;
   window->GetBrowserInterfaceBroker().GetInterface(
       cookie_manager.BindNewPipeAndPassReceiver());
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<InternalCookie>>>(
+          script_state);
+  auto promise = resolver->Promise();
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
   raw_cookie_manager->GetNamedCookie(
       name, WTF::BindOnce(
-                [](ScriptPromiseResolver* resolver, ScriptState* script_state,
+                [](ScriptPromiseResolver<IDLNullable<InternalCookie>>* resolver,
+                   ScriptState* script_state,
                    mojo::Remote<test::mojom::blink::CookieManagerAutomation>,
                    network::mojom::blink::CookieWithAccessResultPtr cookie) {
                   InternalCookie* result = nullptr;

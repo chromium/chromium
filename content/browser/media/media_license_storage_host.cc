@@ -253,7 +253,7 @@ void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
   }
 
   // Pass `delta`=0 since media license data does not count against quota.
-  // TODO(crbug.com/1305441): Consider counting this data against quota.
+  // TODO(crbug.com/40218094): Consider counting this data against quota.
   manager_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kMediaLicense, bucket_locator_, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),
@@ -271,7 +271,7 @@ void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
     // `MediaLicenseStorageHost` to still maintain control. We just call in to
     // the `CdmStorageManager` object to be able to update the
     // `CdmStorageDatabase` to keep it in line with `MediaLicenseDatabase`.
-    // TODO(crbug.com/1454512): Create UMA to track failures from the
+    // TODO(crbug.com/40272342): Create UMA to track failures from the
     // MediaLicense* path, as we choose to fail silently to not affect the
     // current code-path's behavior and affect CDM operations.
     manager_->cdm_storage_manager()->DeleteFile(storage_key(), cdm_type,

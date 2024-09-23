@@ -11,13 +11,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "ui/aura/client/capture_client.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -27,6 +32,11 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "ui/aura/window_tree_host_platform.h"    // nogncheck
+#include "ui/platform_window/stub/stub_window.h"  // nogncheck
 #endif
 
 namespace views {
@@ -68,7 +78,7 @@ class TestWidgetObserver : public WidgetObserver {
           Wait();
         break;
       default:
-        NOTREACHED_NORETURN() << "unknown value";
+        NOTREACHED() << "unknown value";
     }
   }
 
@@ -112,15 +122,15 @@ class TestWidgetObserver : public WidgetObserver {
 
 std::unique_ptr<Widget> CreateWidgetWithNativeWidgetWithParams(
     Widget::InitParams params) {
-  std::unique_ptr<Widget> widget(new Widget);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  auto widget = std::make_unique<Widget>();
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
   widget->Init(std::move(params));
   return widget;
 }
 
 std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
   params.remove_standard_frame = true;
   params.bounds = gfx::Rect(100, 100, 100, 100);
@@ -268,8 +278,8 @@ class CustomSizeWidget : public Widget {
 
 TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithMinMax) {
   CustomSizeWidget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(200, 100);
   widget.Init(std::move(params));
   widget.Show();
@@ -345,7 +355,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   auto widget = CreateWidgetWithNativeWidget();
   widget->Show();
 
-  Widget::InitParams widget_2_params(Widget::InitParams::TYPE_MENU);
+  Widget::InitParams widget_2_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_MENU);
   widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
   widget_2_params.parent = widget->GetNativeWindow();
   auto widget2 =
@@ -362,7 +373,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   EXPECT_EQ(host_platform2->window_parent_, host_platform);
   EXPECT_EQ(*host_platform->window_children_.begin(), host_platform2);
 
-  Widget::InitParams widget_3_params(Widget::InitParams::TYPE_MENU);
+  Widget::InitParams widget_3_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_MENU);
   widget_3_params.bounds = gfx::Rect(120, 120, 50, 80);
   widget_3_params.parent = widget->GetNativeWindow();
   auto widget3 =
@@ -378,7 +390,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   EXPECT_NE(host_platform->window_children_.find(host_platform3),
             host_platform->window_children_.end());
 
-  Widget::InitParams widget_4_params(Widget::InitParams::TYPE_TOOLTIP);
+  Widget::InitParams widget_4_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_TOOLTIP);
   widget_4_params.bounds = gfx::Rect(105, 105, 10, 10);
   widget_4_params.context = widget->GetNativeWindow();
   auto widget4 =
@@ -422,11 +435,10 @@ TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {
   using Direction = ui::PlatformWindowDelegate::RotateDirection;
 
   auto delegate = std::make_unique<TestWidgetDelegate>();
-  Widget::InitParams widget_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams widget_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget_params.bounds = gfx::Rect(110, 110, 100, 100);
   widget_params.delegate = delegate.get();
-  widget_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(widget_params));
 
@@ -492,6 +504,140 @@ TEST_F(DesktopWindowTreeHostPlatformTest, CanFullscreen) {
 
   widget->widget_delegate()->SetCanFullscreen(false);
   EXPECT_FALSE(host_platform->CanFullscreen());
+}
+
+#if !BUILDFLAG(IS_FUCHSIA)
+class ScopedPlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  ScopedPlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  ScopedPlatformWindowFactoryDelegate(
+      const ScopedPlatformWindowFactoryDelegate&) = delete;
+  ScopedPlatformWindowFactoryDelegate& operator=(
+      const ScopedPlatformWindowFactoryDelegate&) = delete;
+  ~ScopedPlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    auto stub_ptr = std::make_unique<ui::StubWindow>(gfx::Rect());
+    stub_ptr->InitDelegateWithWidget(/*delegate=*/host,
+                                     /*widget=*/++last_accelerated_widget_);
+    return std::move(stub_ptr);
+  }
+  gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.remove_standard_frame = true;
+  params.bounds = gfx::Rect(100, 100, 100, 100);
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
+  std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
+      scoped_platform_window_factory_delegate(
+          new ScopedPlatformWindowFactoryDelegate);
+  std::unique_ptr<Widget> widget =
+      CreateWidgetWithNativeWidgetWithParams(std::move(params));
+  scoped_platform_window_factory_delegate.reset();
+
+  // Calling `Widget::Show()` for a widget initially created as minimized does
+  // not cause the widget to get activated yet. (i.e. stays minimized). This
+  // happens specifically when the widget is created as part of a session
+  // restore and `Widget::Show()` is called for initialization and not to
+  // actually show the widget. The widget will use `Widget::saved_show_state_`
+  // to pass to the native widget and window tree host. Essentially this is
+  // testing that `DesktopWindowTreeHostPlatform` does not get activated if
+  // `DesktopWindowTreeHostPlatform::Show()` is called with
+  // `ui::mojom::WindowShowState::kMinimized`.
+  widget->Show();
+  EXPECT_FALSE(widget->IsActive());
+
+  widget->Show();
+  EXPECT_TRUE(widget->IsActive());
+}
+
+TEST_F(DesktopWindowTreeHostPlatformTest, FocusParentWindowWillActivate) {
+#if BUILDFLAG(IS_OZONE)
+  if (!base::FeatureList::IsEnabled(
+          features::kOzoneBubblesUsePlatformWidgets)) {
+    GTEST_SKIP();
+  }
+#endif
+
+  std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
+      scoped_platform_window_factory_delegate(
+          new ScopedPlatformWindowFactoryDelegate);
+
+  auto widget = CreateWidgetWithNativeWidget();
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  widget->Show();
+
+  Widget::InitParams widget_2_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_BUBBLE);
+  widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
+  widget_2_params.parent = widget->GetNativeWindow();
+  auto widget2 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_2_params));
+  widget2->Show();
+
+  // Deactivate toplevel.
+  host_platform->Deactivate();
+  EXPECT_FALSE(host_platform->IsActive());
+
+  // Set focus in the toplevel content_window.
+  std::unique_ptr<aura::Window> child_window =
+      std::make_unique<aura::Window>(nullptr);
+  child_window->Init(ui::LAYER_NOT_DRAWN);
+  host_platform->GetContentWindow()->AddChild(child_window.get());
+  auto* focus_client = aura::client::GetFocusClient(host_platform->window());
+  focus_client->FocusWindow(child_window.get());
+
+  // Toplevel should be active.
+  EXPECT_TRUE(host_platform->IsActive());
+}
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+class VisibilityObserver : public aura::WindowObserver {
+ public:
+  VisibilityObserver() = default;
+  int shown() const { return shown_; }
+  void OnWindowVisibilityChanging(aura::Window*, bool visible) override {
+    if (visible) {
+      shown_++;
+    }
+  }
+
+ private:
+  int shown_ = 0;
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest, ContentWindowShownOnce) {
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  VisibilityObserver observer;
+  host_platform->GetContentWindow()->AddObserver(&observer);
+
+  widget->Hide();
+  widget->SetOpacity(0.f);
+  widget->Show();
+
+  // Show is only called once.
+  EXPECT_EQ(observer.shown(), 1);
+
+  host_platform->GetContentWindow()->RemoveObserver(&observer);
 }
 
 }  // namespace views

@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/support_tool_util.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -100,11 +101,12 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
     std::string case_id,
     std::string email_address,
     std::string issue_description,
+    std::optional<std::string> upload_id,
     Profile* profile,
     std::set<support_tool::DataCollectorType> included_data_collectors) {
   std::unique_ptr<SupportToolHandler> handler =
       std::make_unique<SupportToolHandler>(case_id, email_address,
-                                           issue_description);
+                                           issue_description, upload_id);
   for (const auto& data_collector_type : included_data_collectors) {
     switch (data_collector_type) {
       case support_tool::CHROME_INTERNAL:
@@ -198,8 +200,7 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 std::make_unique<system_logs::DBusLogSource>()));
         break;
       case support_tool::CHROMEOS_CROS_API:
-        if (crosapi::BrowserManager::Get()->IsRunning() &&
-            crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+        if (crosapi::BrowserManager::Get()->IsRunning()) {
           handler->AddDataCollector(std::make_unique<
                                     SystemLogSourceDataCollectorAdaptor>(
               "Gets Lacros system information log data if Lacros is running "
@@ -233,6 +234,28 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
             /*requested_logs=*/std::set<base::FilePath>()));
         break;
+      case support_tool::CHROMEOS_PERIODIC_LOG_UPLOAD_SYSTEM_LOGS: {
+        // For periodic log upload only a certain subset of system logs is
+        // necessary.
+        const std::set<base::FilePath> periodicLogUploadSystemLogs = {
+            base::FilePath("bios_info"),
+            base::FilePath("chrome_system_log"),
+            base::FilePath("chrome_system_log.PREVIOUS"),
+            base::FilePath("eventlog"),
+            base::FilePath("extensions.log"),
+            base::FilePath("netlog"),
+            base::FilePath("syslog"),
+            base::FilePath("ui_log"),
+            base::FilePath("update_engine.log"),
+            // TODO(b/352028256): the following log is not currently read by
+            // debugd. Don't forget to add them during the periodic log
+            // upload migration.
+            base::FilePath("extensions.1.log"),
+        };
+        handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
+            periodicLogUploadSystemLogs));
+        break;
+      }
       case support_tool::CHROMEOS_CHROME_USER_LOGS:
         // User session must be active to read user data from Cryptohome.
         if (ash::IsUserBrowserContext(profile)) {
@@ -323,8 +346,7 @@ GetAllAvailableDataCollectorsOnDevice() {
   if (crosapi::browser_util::IsLacrosEnabled()) {
     data_collectors.push_back(support_tool::CHROMEOS_LACROS);
   }
-  if (crosapi::BrowserManager::Get()->IsRunning() &&
-      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
     data_collectors.push_back(support_tool::CHROMEOS_CROS_API);
   }
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
@@ -347,4 +369,14 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
   return target_directory.AppendASCII(
       filename + base::UnlocalizedTimeFormatWithPattern(
                      timestamp, "'UTC'yyyyMMdd_HHmm", icu::TimeZone::getGMT()));
+}
+
+std::string SupportToolErrorsToString(
+    const std::set<SupportToolError>& errors) {
+  std::vector<std::string_view> error_messages;
+  error_messages.reserve(errors.size());
+  for (const auto& error : errors) {
+    error_messages.push_back(error.error_message);
+  }
+  return base::JoinString(error_messages, ", ");
 }

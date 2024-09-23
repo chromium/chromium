@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/win/conflicts/installed_applications.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_inspector.h"
 #include "chrome/browser/win/conflicts/third_party_metrics_recorder.h"
@@ -148,6 +149,11 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   void StartInspection();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Similar with the GetInstance() but overwriting third party conflicts
+  // manager's installed_applications_ for testing.
+  static ModuleDatabase* GetInstanceForTesting(
+      std::unique_ptr<InstalledApplications>);
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns false if third-party modules blocking is disabled via

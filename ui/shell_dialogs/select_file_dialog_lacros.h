@@ -46,7 +46,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLacros : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
   bool IsRunning(gfx::NativeWindow owning_window) const override;
@@ -60,9 +59,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLacros : public SelectFileDialog {
   void OnSelected(crosapi::mojom::SelectFileResult result,
                   std::vector<crosapi::mojom::SelectedFileInfoPtr> files,
                   int file_type_index);
-
-  // Cached parameters from the call to SelectFileImpl.
-  raw_ptr<void> params_ = nullptr;
 
   // The unique ID of the wayland shell surface that owns this dialog.
   std::string owning_shell_window_id_;

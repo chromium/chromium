@@ -51,6 +51,9 @@ class SiteDataCountingHelper {
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       const std::vector<content::StorageUsageInfo>& infos);
+  void GetCdmStorageCallback(
+      const std::vector<std::pair<blink::StorageKey, uint64_t>>&
+          usage_per_storage_keys);
   void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets);
   void GetSharedDictionaryOriginsCallback(
       const std::vector<url::Origin>& origins);

@@ -31,19 +31,6 @@ BASE_FEATURE(kDiscardableMemoryBackingTrial,
              "DiscardableMemoryBackingTrial",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Association of trial group names to trial group enum. Array order must match
-// order of DiscardableMemoryTrialGroup enum.
-const base::FeatureParam<DiscardableMemoryTrialGroup>::Option
-    kDiscardableMemoryBackingParamOptions[] = {
-        {DiscardableMemoryTrialGroup::kEmulatedSharedMemory, "shmem"},
-        {DiscardableMemoryTrialGroup::kMadvFree, "madvfree"},
-        {DiscardableMemoryTrialGroup::kAshmem, "ashmem"}};
-
-const base::FeatureParam<DiscardableMemoryTrialGroup>
-    kDiscardableMemoryBackingParam{
-        &kDiscardableMemoryBackingTrial, "DiscardableMemoryBacking",
-        DiscardableMemoryTrialGroup::kEmulatedSharedMemory,
-        &kDiscardableMemoryBackingParamOptions};
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

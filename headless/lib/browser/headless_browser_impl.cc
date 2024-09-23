@@ -28,7 +28,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
@@ -43,6 +43,11 @@
 #include "components/headless/policy/headless_mode_policy.h"  // nogncheck
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "headless/lib/browser/policy/headless_policies.h"
+#endif
+
+#if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+#include "components/metrics/metrics_service.h"                // nogncheck
+#include "components/variations/service/variations_service.h"  // nogncheck
 #endif
 
 namespace headless {
@@ -78,7 +83,7 @@ Options::~Options() = default;
 Options& Options::operator=(Options&& options) = default;
 
 bool Options::DevtoolsServerEnabled() {
-  return (devtools_pipe_enabled || !devtools_endpoint.IsEmpty());
+  return (devtools_pipe_enabled || devtools_port.has_value());
 }
 
 Builder::Builder() = default;
@@ -105,8 +110,8 @@ Builder& Builder::SetEnableBeginFrameControl(bool enable) {
   return *this;
 }
 
-Builder& Builder::EnableDevToolsServer(const net::HostPortPair& endpoint) {
-  options_.devtools_endpoint = endpoint;
+Builder& Builder::EnableDevToolsServer(int port) {
+  options_.devtools_port = port;
   return *this;
 }
 
@@ -147,6 +152,11 @@ Builder& Builder::SetBlockNewWebContents(bool block) {
 
 Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
   options_.font_render_hinting = hinting;
+  return *this;
+}
+
+Builder& Builder::SetForceNewBrowsingInstance(bool force) {
+  options_.force_new_browsing_instance = force;
   return *this;
 }
 
@@ -344,9 +354,6 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
 
 void HeadlessBrowserImpl::PreMainMessageLoopRun() {
   PlatformInitialize();
-#if defined(HEADLESS_USE_PREFS)
-  CreatePrefService();
-#endif
 
   // We don't support the tethering domain on this agent host.
   agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
@@ -375,12 +382,6 @@ void HeadlessBrowserImpl::PostMainMessageLoopRun() {
 #endif
 }
 
-#if defined(HEADLESS_USE_PREFS)
-PrefService* HeadlessBrowserImpl::GetPrefs() {
-  return local_state_.get();
-}
-#endif
-
 #if defined(HEADLESS_USE_POLICY)
 policy::PolicyService* HeadlessBrowserImpl::GetPolicyService() {
   return policy_connector_ ? policy_connector_->GetPolicyService() : nullptr;
@@ -389,6 +390,8 @@ policy::PolicyService* HeadlessBrowserImpl::GetPolicyService() {
 
 #if defined(HEADLESS_USE_PREFS)
 void HeadlessBrowserImpl::CreatePrefService() {
+  CHECK(!local_state_);
+
   scoped_refptr<PersistentPrefStore> pref_store;
   if (options()->user_data_dir.empty()) {
     pref_store = base::MakeRefCounted<InMemoryPrefStore>();
@@ -421,6 +424,11 @@ void HeadlessBrowserImpl::CreatePrefService() {
   OSCrypt::RegisterLocalPrefs(pref_registry.get());
 #endif
 
+#if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+  metrics::MetricsService::RegisterPrefs(pref_registry.get());
+  variations::VariationsService::RegisterPrefs(pref_registry.get());
+#endif
+
   PrefServiceFactory factory;
 
 #if defined(HEADLESS_USE_POLICY)
@@ -446,6 +454,10 @@ void HeadlessBrowserImpl::CreatePrefService() {
     command_line->AppendSwitch(switches::kDisableCookieEncryption);
   }
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+PrefService* HeadlessBrowserImpl::GetPrefs() {
+  return local_state_.get();
 }
 #endif  // defined(HEADLESS_USE_PREFS)
 

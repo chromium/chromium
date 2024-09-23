@@ -61,4 +61,19 @@ interface TrustedVaultBackend {
   ClearLocalDataForAccount@6(AccountKey account_key);
 };
 
+[Stable, Extensible]
+enum SecurityDomainId {
+  [Default] kUnknown,
+  kChromeSync,
+  kPasskeys,
+};
 
+// Defines an API for lacros-chrome to find available `TrustedVaultBackend`
+// services for different security domains. Implemented in ash-chrome.
+[Stable, Uuid="04638808-a1c6-42a0-8857-44094e73ef58"]
+interface TrustedVaultBackendService {
+   // Binds `backend` to the `TurstedVaultBackend` service instance for the
+   // provided security domain.
+   GetTrustedVaultBackend@0(SecurityDomainId security_domain,
+                            pending_receiver<TrustedVaultBackend> backend);
+};

@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -27,12 +28,22 @@ FakeAccountCapabilitiesFetcherFactory::CreateAccountCapabilitiesFetcher(
   return fetcher;
 }
 
+void FakeAccountCapabilitiesFetcherFactory::
+    PrepareForFetchingAccountCapabilities() {
+  num_prepare_calls_++;
+}
+
 void FakeAccountCapabilitiesFetcherFactory::CompleteAccountCapabilitiesFetch(
     const CoreAccountId& account_id,
     const std::optional<AccountCapabilities> account_capabilities) {
   DCHECK(fetchers_.count(account_id));
   // `CompleteFetch` may destroy the fetcher.
   fetchers_[account_id]->CompleteFetch(account_capabilities);
+}
+
+int FakeAccountCapabilitiesFetcherFactory::
+    GetNumCallsToPrepareForFetchingAccountCapabilities() const {
+  return num_prepare_calls_;
 }
 
 void FakeAccountCapabilitiesFetcherFactory::OnFetcherDestroyed(

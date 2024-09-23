@@ -19,9 +19,11 @@ struct CredentialUIEntry;
     (PasswordPickerCoordinator*)coordinator;
 
 // Called when the user confirms the selection by clicking the next button.
-- (void)passwordPickerCoordinator:(PasswordPickerCoordinator*)coordinator
-              didSelectCredential:
-                  (const password_manager::CredentialUIEntry&)credential;
+- (void)passwordPickerWithNavigationController:
+            (UINavigationController*)navigationController
+                           didSelectCredential:
+                               (const password_manager::CredentialUIEntry&)
+                                   credential;
 
 @end
 

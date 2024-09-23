@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("util") {
+  sources = [
+    "arc_window_watcher.cc",
+    "arc_window_watcher.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/arc/idle_manager",
+    "//chrome/browser/ash/arc/instance_throttle",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chromeos/ui/base",
+    "//ui/aura",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/instance_throttle",
+    "//chrome/browser/ash/arc/idle_manager",
+  ]
+}

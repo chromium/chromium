@@ -89,6 +89,18 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
   const auto& path() const { return path_; }
   auto writer() const { return writer_.get(); }
 
+#if TARGET_OS_SIMULATOR
+  // macOS 14.0 is 23A344, macOS 13.6.5 is 22G621, so if the first two
+  // characters in the kern.osversion are > 22, this build will reproduce the
+  // simulator bug in crbug.com/328282286
+  bool IsMacOSVersion143OrGreaterAndiOS16OrLess() {
+    if (__builtin_available(iOS 17, *)) {
+      return false;
+    }
+    return std::stoi(system_data_.Build().substr(0, 2)) > 22;
+  }
+#endif
+
  private:
   std::unique_ptr<internal::IOSIntermediateDumpWriter> writer_;
   internal::IOSSystemDataCollector system_data_;
@@ -125,6 +137,15 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestSystem) {
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
+#if TARGET_OS_SIMULATOR
+  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
+  // or newer due to a bug in Simulator. crbug.com/328282286
+  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+    // For TearDown.
+    ASSERT_TRUE(LoggingRemoveFile(path()));
+    return;
+  }
+#endif
   // This is “leaked” to crashpad_info.
   crashpad::SimpleStringDictionary* simple_annotations =
       new crashpad::SimpleStringDictionary();

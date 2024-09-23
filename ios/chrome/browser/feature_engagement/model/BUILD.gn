@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_tracker_session_controller.h",
+    "ios_tracker_session_controller.mm",
     "tracker_factory.h",
     "tracker_factory.mm",
     "tracker_factory_util.h",
@@ -18,10 +20,10 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
-    "//ios/chrome/browser/promos_manager/model",
-    "//ios/chrome/browser/promos_manager/model:event_exporter_factory",
-    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/default_browser/model:event_exporter",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
   ]
@@ -39,6 +41,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",
@@ -49,9 +52,13 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "feature_engagement_unittest.mm" ]
+  sources = [
+    "feature_engagement_unittest.mm",
+    "ios_tracker_session_controller_unittest.mm",
+  ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":model",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",

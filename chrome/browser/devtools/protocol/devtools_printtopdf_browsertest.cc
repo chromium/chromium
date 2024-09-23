@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -9,6 +14,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
@@ -128,7 +134,7 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   net::EmbeddedTestServer https_server_;
 
   std::string pdf_data_;
-  base::span<const uint8_t> pdf_span_;
+  base::raw_span<const uint8_t, DanglingUntriaged> pdf_span_;
   int pdf_num_pages_ = 0;
 
   headless::PDFPageBitmap page_bitmap;
@@ -430,6 +436,54 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 
   // Expect midpoint pixel of red color
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
+}
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, HasDocumentOutline) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      "/print_to_pdf/structured_doc.html");
+
+  Attach();
+
+  base::Value::Dict params;
+  // generating a document outline at the moment requires a tagged pdf
+  params.Set("generateTaggedPDF", true);
+  params.Set("generateDocumentOutline", true);
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  params.Set("transferMode", "ReturnAsStream");
+
+  PrintToPdfAsStream(std::move(params));
+
+  std::optional<bool> has_outline = chrome_pdf::PDFDocHasOutline(pdf_span_);
+  EXPECT_THAT(has_outline, testing::Optional(true));
+}
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, Title) {
+  NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
+
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  params.Set("transferMode", "ReturnAsStream");
+
+  PrintToPdfAsStream(std::move(params));
+
+  std::optional<chrome_pdf::DocumentMetadata> metadata =
+      chrome_pdf::GetPDFDocMetadata(pdf_span_);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->title, "PrintToPdf Basic Test");
 }
 
 IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfOOPIF) {

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/types/optional_ref.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
@@ -28,6 +29,7 @@ class AuctionV8Helper;
 extern const char kJavascriptMimeType[];
 extern const char kJsonMimeType[];
 extern const char kWasmMimeType[];
+extern const char kAdAuctionTrustedSignalsMimeType[];
 
 // "X-Allow-Fledge: true" header.
 extern const char kAllowFledgeHeader[];
@@ -49,9 +51,11 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
 
 // Convenience methods to invoke AddResponse() with the specified MIME type and
 // no charset.
-void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
-                           const GURL& url,
-                           const std::string content);
+void AddJavascriptResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const GURL& url,
+    const std::string& content,
+    base::optional_ref<const std::string> extra_headers = std::nullopt);
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content);
@@ -88,6 +92,7 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
     std::u16string key;
     std::u16string value;
     bool ignore_if_present;
+    mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
   };
@@ -97,15 +102,23 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
   ~TestAuctionSharedStorageHost() override;
 
   // mojom::AuctionSharedStorageHost:
-  void Set(const std::u16string& key,
-           const std::u16string& value,
-           bool ignore_if_present) override;
+  void Set(
+      const std::u16string& key,
+      const std::u16string& value,
+      bool ignore_if_present,
+      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
 
-  void Append(const std::u16string& key, const std::u16string& value) override;
+  void Append(
+      const std::u16string& key,
+      const std::u16string& value,
+      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
 
-  void Delete(const std::u16string& key) override;
+  void Delete(
+      const std::u16string& key,
+      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
 
-  void Clear() override;
+  void Clear(
+      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;

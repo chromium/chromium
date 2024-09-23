@@ -220,7 +220,7 @@ export function getSnackbarStateForTest() {
 }
 
 /**
- * TODO(crbug.com/675299): Add ability to specify parent element to Snackbar.
+ * TODO(crbug.com/40498702): Add ability to specify parent element to Snackbar.
  * Creates a Snackbar and shows it if one is not showing already. If a
  * Snackbar is already active, the next Snackbar is queued.
  * @param {string} message The message to display in the Snackbar.
@@ -253,7 +253,7 @@ export function showSnackbar(message, opt_type, opt_actionText, opt_action) {
 window.showSnackbar = showSnackbar;
 
 /**
- * TODO(crbug.com/675299): Add ability to specify parent element to Snackbar.
+ * TODO(crbug.com/40498702): Add ability to specify parent element to Snackbar.
  * Creates a Snackbar and sets events for queuing the next Snackbar to show.
  * @param {!BluetoothSnackbarElement} snackbar
  */

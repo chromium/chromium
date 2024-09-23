@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -29,18 +28,19 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /** A class that handles base properties and model for most suggestions. */
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
     protected final @NonNull Context mContext;
     protected final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull ActionChipsProcessor mActionChipsProcessor;
-    private final @Nullable OmniboxImageSupplier mImageSupplier;
+    private final @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
@@ -53,7 +53,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     public BaseSuggestionViewProcessor(
             @NonNull Context context,
             @NonNull SuggestionHost host,
-            @Nullable OmniboxImageSupplier imageSupplier) {
+            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
         mContext = context;
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
@@ -66,7 +66,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionSizePx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-        mActionChipsProcessor = new ActionChipsProcessor(context, host);
+        mActionChipsProcessor = new ActionChipsProcessor(host);
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param decoration the OmniboxDrawableState to apply
      */
     protected void setOmniboxDrawableState(
-            PropertyModel model, @NonNull OmniboxDrawableState decoration) {
+            @NonNull PropertyModel model, @NonNull OmniboxDrawableState decoration) {
         model.set(BaseSuggestionViewProperties.ICON, decoration);
     }
 
@@ -124,7 +124,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param model Property model to update.
      * @param actions List of actions for the suggestion.
      */
-    protected void setActionButtons(PropertyModel model, List<Action> actions) {
+    protected void setActionButtons(@NonNull PropertyModel model, @Nullable List<Action> actions) {
         model.set(BaseSuggestionViewProperties.ACTION_BUTTONS, actions);
     }
 
@@ -137,7 +137,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void setTabSwitchOrRefineAction(
-            PropertyModel model, AutocompleteMatch suggestion, int position) {
+            @NonNull PropertyModel model, @NonNull AutocompleteMatch suggestion, int position) {
         @DrawableRes int icon;
         String iconString;
         Runnable action;
@@ -166,7 +166,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         }
         setActionButtons(
                 model,
-                Arrays.asList(
+                List.of(
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(mContext, icon, true),
                                 iconString,
@@ -205,7 +205,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
         model.set(
                 BaseSuggestionViewProperties.ON_CLICK,
                 () -> onSuggestionClicked(suggestion, position));
@@ -216,6 +217,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         setActionButtons(model, null);
+
+        model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, false);
+        model.set(BaseSuggestionViewProperties.SHOW_DECORATION, true);
+        model.set(
+                BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING,
+                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+        model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
 
         if (OmniboxFeatures.isTouchDownTriggerForPrefetchEnabled()
                 && !OmniboxFeatures.isLowMemoryDevice()
@@ -294,17 +302,18 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param model Model representing current suggestion.
      * @param url Target URL the suggestion points to.
      */
-    protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
-        if (mImageSupplier == null) return;
-
-        mImageSupplier.fetchFavicon(
-                url,
-                icon -> {
-                    if (icon != null) {
-                        setOmniboxDrawableState(
-                                model, OmniboxDrawableState.forFavIcon(mContext, icon));
-                    }
-                });
+    protected void fetchSuggestionFavicon(@NonNull PropertyModel model, @NonNull GURL url) {
+        mImageSupplier.ifPresent(
+                s ->
+                        s.fetchFavicon(
+                                url,
+                                icon -> {
+                                    if (icon != null) {
+                                        setOmniboxDrawableState(
+                                                model,
+                                                OmniboxDrawableState.forFavIcon(mContext, icon));
+                                    }
+                                }));
     }
 
     /**
@@ -314,12 +323,17 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param model the PropertyModel to update with retrieved image
      * @param imageUrl the URL of the image to retrieve and decode
      */
-    protected void fetchImage(PropertyModel model, GURL imageUrl) {
-        if (mImageSupplier == null) return;
-        mImageSupplier.fetchImage(
-                imageUrl,
-                bitmap -> {
-                    setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
-                });
+    protected void fetchImage(@NonNull PropertyModel model, @NonNull GURL imageUrl) {
+        mImageSupplier.ifPresent(
+                s ->
+                        s.fetchImage(
+                                imageUrl,
+                                bitmap -> {
+                                    if (bitmap != null) {
+                                        setOmniboxDrawableState(
+                                                model,
+                                                OmniboxDrawableState.forImage(mContext, bitmap));
+                                    }
+                                }));
     }
 }

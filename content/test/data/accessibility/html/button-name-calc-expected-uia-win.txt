@@ -15,6 +15,6 @@ Document
 ++++++Text Name='inner2' IsControlElement=false
 ++Button Name='Outer grandchild'
 ++++Text Name='Outer' IsControlElement=false
-++++Group
+++++Group IsControlElement=false
 ++++++Group IsControlElement=false
 ++++++++Text Name='grandchild' IsControlElement=false

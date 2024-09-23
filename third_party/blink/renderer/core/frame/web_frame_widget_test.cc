@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
-
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,10 +33,11 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 
 namespace blink {
 
@@ -265,9 +264,6 @@ class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
                     const gfx::Vector2dF& unused_delta,
                     const cc::OverscrollBehavior& overscroll_behavior,
                     bool event_processed));
-
-  MOCK_METHOD2(WillHandleGestureEvent,
-               void(const WebGestureEvent& event, bool* suppress));
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {
@@ -310,20 +306,6 @@ class WebFrameWidgetImplSimTest : public SimTest {
         WebCoalescedInputEvent(event.Clone(), {}, {}, ui::LatencyInfo()),
         std::move(callback));
   }
-  void WillHandleGestureEvent(const blink::WebGestureEvent& event,
-                              bool* suppress) {
-    if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
-      MockMainFrameWidget()->DidOverscroll(
-          gfx::Vector2dF(event.data.scroll_update.delta_x,
-                         event.data.scroll_update.delta_y),
-          gfx::Vector2dF(event.data.scroll_update.delta_x,
-                         event.data.scroll_update.delta_y),
-          event.PositionInWidget(),
-          gfx::Vector2dF(event.data.scroll_update.velocity_x,
-                         event.data.scroll_update.velocity_y));
-      *suppress = true;
-    }
-  }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
@@ -358,33 +340,6 @@ TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
   MockMainFrameWidget()->SetCursor(cursor);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(widget_host.CursorSetCount(), 2u);
-}
-
-TEST_F(WebFrameWidgetImplSimTest, EventOverscroll) {
-  ON_CALL(*MockMainFrameWidget(), WillHandleGestureEvent(_, _))
-      .WillByDefault(testing::Invoke(
-          this, &WebFrameWidgetImplSimTest::WillHandleGestureEvent));
-  EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
-      .WillRepeatedly(::testing::Return(WebInputEventResult::kNotHandled));
-
-  WebGestureEvent scroll(WebInputEvent::Type::kGestureScrollUpdate,
-                         WebInputEvent::kNoModifiers, base::TimeTicks::Now());
-  scroll.SetPositionInWidget(gfx::PointF(-10, 0));
-  scroll.data.scroll_update.delta_y = 10;
-  MockHandledEventCallback handled_event;
-
-  InputHandlerProxy::DidOverscrollParams expected_overscroll;
-  expected_overscroll.latest_overscroll_delta = gfx::Vector2dF(0, 10);
-  expected_overscroll.accumulated_overscroll = gfx::Vector2dF(0, 10);
-  expected_overscroll.causal_event_viewport_point = gfx::PointF(-10, 0);
-  expected_overscroll.current_fling_velocity = gfx::Vector2dF();
-  // Overscroll notifications received while handling an input event should
-  // be bundled with the event ack IPC.
-  EXPECT_CALL(handled_event, Run(mojom::InputEventResultState::kConsumed, _,
-                                 testing::Pointee(expected_overscroll), _))
-      .Times(1);
-
-  SendInputEvent(scroll, handled_event.GetCallback());
 }
 
 TEST_F(WebFrameWidgetImplSimTest, RenderWidgetInputEventUmaMetrics) {
@@ -614,15 +569,17 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
             {WTF::BindOnce(
                  [](base::OnceClosure swap_quit_closure,
                     base::TimeTicks* swap_time, base::TimeTicks timestamp) {
-                   DCHECK(!timestamp.is_null());
+                   CHECK(!timestamp.is_null());
                    *swap_time = timestamp;
                    std::move(swap_quit_closure).Run();
                  },
                  swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
              WTF::BindOnce(
                  [](base::OnceClosure presentation_quit_closure,
-                    base::TimeTicks timestamp) {
-                   DCHECK(!timestamp.is_null());
+                    const viz::FrameTimingDetails& presentation_details) {
+                   base::TimeTicks timestamp =
+                       presentation_details.presentation_feedback.timestamp;
+                   CHECK(!timestamp.is_null());
                    std::move(presentation_quit_closure).Run();
                  },
                  presentation_run_loop.QuitClosure())});
@@ -642,37 +599,6 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     presentation_run_loop.Run();
   }
 };
-
-TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampValid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::Milliseconds(2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
-}
-
-TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampInvalid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::TimeDelta());
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-}
-
-TEST_F(NotifySwapTimesWebFrameWidgetTest,
-       PresentationTimestampEarlierThanSwaptime) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::Milliseconds(-2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-}
 
 // Verifies that the presentation callback is called after the first successful
 // presentation (skips failed presentations in between).
@@ -703,18 +629,21 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
 
         swap_run_loop.Quit();
       }),
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        DCHECK(!timestamp.is_null());
-        DCHECK(!failed_presentation_time.is_null());
-        DCHECK(!successful_presentation_time.is_null());
+      base::BindLambdaForTesting(
+          [&](const viz::FrameTimingDetails& presentation_details) {
+            base::TimeTicks timestamp =
+                presentation_details.presentation_feedback.timestamp;
+            CHECK(!timestamp.is_null());
+            CHECK(!failed_presentation_time.is_null());
+            CHECK(!successful_presentation_time.is_null());
 
-        // Verify that this callback is run in response to the
-        // successful presentation, not the failed one before that.
-        EXPECT_NE(timestamp, failed_presentation_time);
-        EXPECT_EQ(timestamp, successful_presentation_time);
+            // Verify that this callback is run in response to the
+            // successful presentation, not the failed one before that.
+            EXPECT_NE(timestamp, failed_presentation_time);
+            EXPECT_EQ(timestamp, successful_presentation_time);
 
-        presentation_run_loop.Quit();
-      })};
+            presentation_run_loop.Quit();
+          })};
 
 #if BUILDFLAG(IS_MAC)
   // Assign a ca_layer error code.
@@ -763,10 +692,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   // Wait for the presentation callback to be called. It should be called with
   // the timestamp of the successful presentation.
   presentation_run_loop.Run();
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 // Tests that the presentation callback is only triggered if there’s
@@ -792,15 +717,18 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
              presentation_time = timestamp + delta_from_swap_time;
              swap_run_loop.Quit();
            }),
-           base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-             DCHECK(!timestamp.is_null());
-             DCHECK(!presentation_time.is_null());
+           base::BindLambdaForTesting(
+               [&](const viz::FrameTimingDetails& presentation_details) {
+                 base::TimeTicks timestamp =
+                     presentation_details.presentation_feedback.timestamp;
+                 CHECK(!timestamp.is_null());
+                 CHECK(!presentation_time.is_null());
 
-             // Verify that the presentation is only reported on the successful
-             // commit to the compositor.
-             EXPECT_EQ(timestamp, presentation_time);
-             presentation_run_loop.Quit();
-           })});
+                 // Verify that the presentation is only reported on the
+                 // successful commit to the compositor.
+                 EXPECT_EQ(timestamp, presentation_time);
+                 presentation_run_loop.Quit();
+               })});
 
   // Simulate a failed commit to the compositor, which should not trigger either
   // a swap or a presentation callback in response.
@@ -827,9 +755,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
 
   // Wait for the presentation callback to be called.
   presentation_run_loop.Run();
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 // Tests that the value of VisualProperties::is_pinch_gesture_active is
@@ -995,8 +920,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
@@ -1038,8 +962,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLInputElement* first = DynamicTo<HTMLInputElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1118,10 +1041,13 @@ TEST_F(WebFrameWidgetSimTest, DisplayStateMatchesWindowShowState) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()));
 
-  WTF::Vector<std::pair<ui::WindowShowState, Color>> test_cases = {
-      {ui::SHOW_STATE_MINIMIZED, Color::FromRGB(/*cyan*/ 0, 255, 255)},
-      {ui::SHOW_STATE_MAXIMIZED, Color::FromRGB(/*red*/ 255, 0, 0)},
-      {ui::SHOW_STATE_FULLSCREEN, Color::FromRGB(/*blue*/ 0, 0, 255)}};
+  WTF::Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases =
+      {{ui::mojom::blink::WindowShowState::kMinimized,
+        Color::FromRGB(/*cyan*/ 0, 255, 255)},
+       {ui::mojom::blink::WindowShowState::kMaximized,
+        Color::FromRGB(/*red*/ 255, 0, 0)},
+       {ui::mojom::blink::WindowShowState::kFullscreen,
+        Color::FromRGB(/*blue*/ 0, 0, 255)}};
 
   for (const auto& [show_state, color] : test_cases) {
     visual_properties.window_show_state = show_state;
@@ -1217,8 +1143,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLInputElement* first = DynamicTo<HTMLInputElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1282,8 +1207,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1355,8 +1279,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1420,8 +1343,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1485,8 +1407,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1587,8 +1508,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, /* 123+42= */ 165, 40, 10)}));
@@ -1621,10 +1541,10 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
             border: 0;
           }
           html {
-            zoom: 1.1;
+            zoom: 1.2;
           }
         </style>
-        <div style='height: 100px;'></div>
+        <div style='height: 70px;'></div>
         <iframe src='https://example.com/child_frame.html'
                 id='child_frame' width='300px' height='300px'></iframe>)HTML");
   Compositor().BeginFrame();
@@ -1660,12 +1580,12 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
-  Vector<gfx::Rect> expected(Vector({gfx::Rect(
-      0, /* 100*1.1+40*1.5= */ 170, /* 40*1.5= */ 60, /* 10*1.5= */ 15)}));
+  Vector<gfx::Rect> expected(
+      Vector({gfx::Rect(0, /* 70*1.2+40*1.2*1.5= */ 156, /* 40*1.2*1.5= */ 72,
+                        /* 10*1.2*1.5= */ 18)}));
   Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
@@ -1728,8 +1648,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
   // The expected top value is 100 because of the spacer div in the main frame.
@@ -1879,8 +1798,10 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
                swap_run_loop.QuitClosure(), WTF::Unretained(&swap_time)),
            WTF::BindOnce(
                [](base::OnceClosure presentation_quit_closure,
-                  base::TimeTicks timestamp) {
-                 DCHECK(!timestamp.is_null());
+                  const viz::FrameTimingDetails& presentation_details) {
+                 base::TimeTicks timestamp =
+                     presentation_details.presentation_feedback.timestamp;
+                 CHECK(!timestamp.is_null());
                  std::move(presentation_quit_closure).Run();
                },
                presentation_run_loop.QuitClosure())});

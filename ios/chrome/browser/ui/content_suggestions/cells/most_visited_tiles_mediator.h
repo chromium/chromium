@@ -28,7 +28,7 @@ enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsMetricsRecorder;
 class LargeIconCache;
 @class MostVisitedTilesConfig;
-@protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageActionsDelegate;
 class PrefService;
 @protocol SnackbarCommands;
 class UrlLoadingBrowserAgent;
@@ -39,6 +39,13 @@ class UrlLoadingBrowserAgent;
 
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
+
+// Indicates to the receiver that the initial Most Visited Tiles list has been
+// received.
+- (void)didReceiveInitialMostVistedTiles;
+
+// Indicates to the receiver to remove the MostVisitedTiles module.
+- (void)removeMostVisitedTilesModule;
 
 @end
 
@@ -68,9 +75,8 @@ class UrlLoadingBrowserAgent;
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<MostVisitedTilesMediatorDelegate> delegate;
 
-// Delegate for reporting content suggestions actions to the NTP metrics
-// recorder.
-@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 // Dispatcher.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;

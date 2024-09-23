@@ -51,7 +51,9 @@ bool RenderFrameMetadata::operator==(const RenderFrameMetadata& other) const {
          has_transparent_background == other.has_transparent_background &&
 #endif
          local_surface_id == other.local_surface_id &&
-         new_vertical_scroll_direction == other.new_vertical_scroll_direction;
+         new_vertical_scroll_direction == other.new_vertical_scroll_direction &&
+         primary_main_frame_item_sequence_number ==
+             other.primary_main_frame_item_sequence_number;
 }
 
 bool RenderFrameMetadata::operator!=(const RenderFrameMetadata& other) const {

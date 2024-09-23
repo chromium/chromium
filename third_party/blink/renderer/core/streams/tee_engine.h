@@ -70,10 +70,10 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
   // stream. These are implemented as arrays here. While they are 1-indexed in
   // the standard, they are 0-indexed here; ie. "canceled_[0]" here corresponds
   // to "canceled1" in the standard.
-  bool canceled_[2] = {false, false};
-  TraceWrapperV8Reference<v8::Value> reason_[2];
-  Member<ReadableStream> branch_[2];
-  Member<ReadableStreamDefaultController> controller_[2];
+  std::array<bool, 2> canceled_ = {false, false};
+  std::array<TraceWrapperV8Reference<v8::Value>, 2> reason_;
+  std::array<Member<ReadableStream>, 2> branch_;
+  std::array<Member<ReadableStreamDefaultController>, 2> controller_;
 };
 
 }  // namespace blink

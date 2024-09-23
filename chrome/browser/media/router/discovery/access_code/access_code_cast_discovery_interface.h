@@ -57,33 +57,25 @@ class AccessCodeCastDiscoveryInterface {
   // AddSinkResultCode::OK is returned.
   void ValidateDiscoveryAccessCode(DiscoveryDeviceCallback callback);
 
+  // Testing methods, do not use these outside of tests.
   void SetCallbackForTesting(DiscoveryDeviceCallback callback) {
     callback_ = std::move(callback);
   }
 
- private:
-  friend class AccessCodeCastDiscoveryInterfaceTest;
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
-                           CommandLineSwitch);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
-                           HandleServerErrorProfileSyncError);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
-                           HandleServerErrorAuthError);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
-                           HandleServerErrorServerError);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
-                           HandleServerErrorResponseMalformedError);
+  void SetEndpointFetcherForTesting(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher) {
+    endpoint_fetcher_ = std::move(endpoint_fetcher);
+  }
 
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcherForTesting(
       const std::string& access_code);
 
-  // Used for tests. Can be used if caller constructs their own EndpointFetcher.
-  AccessCodeCastDiscoveryInterface(
-      Profile* profile,
-      const std::string& access_code,
-      LoggerImpl* logger,
-      signin::IdentityManager* identity_manager,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+  void HandleServerErrorForTesting(
+      std::unique_ptr<EndpointResponse> endpoint_response);
+
+ private:
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+      const std::string& access_code);
 
   void SetDeviceCapabilitiesField(
       chrome_browser_media::proto::DeviceCapabilities* device_proto,

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -19,7 +20,7 @@ namespace safe_browsing {
 
 // A tab modal dialog that is shown when the user's tailored security bit
 // changes and the user isn't consented to sync.
-// TODO(crbug.com/1336052): Remove this modal after launching
+// TODO(crbug.com/40847463): Remove this modal after launching
 // `TailoredSecurityDesktopModal`.
 class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   METADATA_HEADER(TailoredSecurityUnconsentedModal, views::DialogDelegateView)
@@ -36,7 +37,7 @@ class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   ~TailoredSecurityUnconsentedModal() override;
 
   // views::DialogDelegate implementation:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   bool ShouldShowCloseButton() const override;
 
  private:

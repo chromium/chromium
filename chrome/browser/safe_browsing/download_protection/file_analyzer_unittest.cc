@@ -36,9 +36,7 @@ using ::testing::StrEq;
 
 class FileAnalyzerTest : public testing::Test {
  public:
-  FileAnalyzerTest() {
-    scoped_feature_list_.InitAndEnableFeature(kSevenZipEvaluationEnabled);
-  }
+  FileAnalyzerTest() = default;
   void DoneCallback(base::OnceCallback<void()> quit_callback,
                     FileAnalyzer::Results result) {
     result_ = result;
@@ -60,7 +58,6 @@ class FileAnalyzerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 };
@@ -697,7 +694,7 @@ TEST_F(FileAnalyzerTest, SmallRarHasContentInspection) {
   EXPECT_FALSE(result_.archived_binaries.Get(0).digests().sha256().empty());
 }
 
-// TODO(crbug.com/949399): The test is flaky (fail, timeout) on all platforms.
+// TODO(crbug.com/41451079): The test is flaky (fail, timeout) on all platforms.
 TEST_F(FileAnalyzerTest, LargeRarSkipsContentInspection) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =
       new testing::StrictMock<MockBinaryFeatureExtractor>();

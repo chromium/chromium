@@ -83,19 +83,24 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
       node_, LineBreakerMode::kContent, GetConstraintSpace(),
       LineLayoutOpportunity(line_width), leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
-  const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
+  const int lines_until_clamp =
+      space_.GetLineClampData().LinesUntilClamp().value_or(0);
   for (;;) {
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.GetBreakToken();
-    if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
+    if (line_breaker.ShouldDisableScoreLineBreak()) [[unlikely]] {
       context.SuspendUntilEndParagraph();
       return;
     }
-    if (line_info.IsEndParagraph() ||
-        UNLIKELY(lines_until_clamp > 0 &&
-                 line_info_list.Size() ==
-                     static_cast<wtf_size_t>(lines_until_clamp))) {
+    if (line_info.IsEndParagraph() || [&] {
+          if (lines_until_clamp > 0 &&
+              line_info_list.Size() ==
+                  static_cast<wtf_size_t>(lines_until_clamp)) [[unlikely]] {
+            return true;
+          }
+          return false;
+        }()) {
       context.SuspendUntilEndParagraph();
       break;
     }
@@ -176,7 +181,15 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
   if (candidates.size() >= 4) {
     // Increase penalties to minimize typographic orphans.
     constexpr float kOrphansPenalty = 10000;
-    candidates[candidates.size() - 2].penalty += kOrphansPenalty * zoom_;
+    const float orphans_penalty = kOrphansPenalty * zoom_;
+    const auto candidates_span =
+        base::span(candidates).first(candidates.size() - 1);
+    for (LineBreakCandidate& candidate : base::Reversed(candidates_span)) {
+      candidate.penalty += orphans_penalty;
+      if (!candidate.is_hyphenated) {
+        break;
+      }
+    }
   }
 
   ComputeLineWidths(line_info_list);
@@ -191,7 +204,7 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
   ComputeBreakPoints(candidates, scores, break_points);
 
   // Copy data for testing.
-  if (UNLIKELY(scores_out_for_testing_)) {
+  if (scores_out_for_testing_) [[unlikely]] {
     for (const LineBreakScore& score : scores) {
       scores_out_for_testing_->push_back(score.score);
     }

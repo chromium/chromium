@@ -21,7 +21,7 @@ test(function(t) {
 }, "Font size isn't affected by page zoom");
 
 test(function(t) {
-  let pageZoomFactor = testRunner.setPageZoomFactor(1);
+  testRunner.setPageZoomFactor(1);
   let paragraph = axElementById('test-para-scale');
   assert_equals(paragraph.fontSize, 10);
 }, "Font size isn't affected by scale transforms");

@@ -17,16 +17,25 @@ import java_types
 _MAX_CHARS_FOR_HASHED_NATIVE_METHODS = 8
 
 
-def get_gen_jni_class(*, short=False, name_prefix=None, package_prefix=None):
+def get_gen_jni_class(*,
+                      short=False,
+                      name_prefix=None,
+                      package_prefix=None,
+                      package_prefix_filter=None):
   """Returns the JavaClass for GEN_JNI."""
   package = 'J' if short else 'org/jni_zero'
   name_prefix = name_prefix + '_' if name_prefix else ''
   name = name_prefix + ('N' if short else 'GEN_JNI')
+  gen_jni_class = java_types.JavaClass(f'{package}/{name}')
 
-  return java_types.JavaClass(f'{package}/{name}').make_prefixed(package_prefix)
+  if package_prefix and common.should_rename_package('org.jni_zero',
+                                                     package_prefix_filter):
+    return gen_jni_class.make_prefixed(package_prefix)
+
+  return gen_jni_class
 
 
-def _create_hashed_method_name(non_hashed_name, is_test_only):
+def create_hashed_method_name(non_hashed_name, is_test_only):
   md5 = hashlib.md5(non_hashed_name.encode('utf8')).digest()
   hash_b64 = base64.b64encode(md5, altchars=b'$_').decode('utf-8')
 
@@ -50,5 +59,16 @@ def create_method_names(java_class, method_name, is_test_only):
   """Returns the method name used in GEN_JNI (both hashed an non-hashed)."""
   proxy_name = common.escape_class_name(
       f'{java_class.full_name_with_slashes}/{method_name}')
-  hashed_proxy_name = _create_hashed_method_name(proxy_name, is_test_only)
+  hashed_proxy_name = create_hashed_method_name(proxy_name, is_test_only)
   return proxy_name, hashed_proxy_name
+
+
+def needs_implicit_array_element_class_param(return_type):
+  return (return_type.is_object_array() and return_type.converted_type
+          and not return_type.java_class.is_system_class())
+
+
+def add_implicit_array_element_class_param(signature):
+  param = java_types.JavaParam(java_types.CLASS, '__arrayClazz')
+  param_list = java_types.JavaParamList(signature.param_list + (param, ))
+  return java_types.JavaSignature.from_params(signature.return_type, param_list)

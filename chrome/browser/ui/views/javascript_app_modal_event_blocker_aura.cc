@@ -67,10 +67,11 @@ void JavascriptAppModalEventBlockerAura::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void JavascriptAppModalEventBlockerAura::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED &&
+  if (event->type() != ui::EventType::kMouseCaptureChanged &&
       ShouldStopPropagationTo(event->target())) {
-    if (event->type() == ui::ET_MOUSE_PRESSED)
+    if (event->type() == ui::EventType::kMousePressed) {
       wm::AnimateWindow(modal_window_, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    }
     event->StopPropagation();
   }
 }
@@ -81,10 +82,11 @@ void JavascriptAppModalEventBlockerAura::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void JavascriptAppModalEventBlockerAura::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() != ui::ET_TOUCH_CANCELLED &&
+  if (event->type() != ui::EventType::kTouchCancelled &&
       ShouldStopPropagationTo(event->target())) {
-    if (event->type() == ui::ET_TOUCH_PRESSED)
+    if (event->type() == ui::EventType::kTouchPressed) {
       wm::AnimateWindow(modal_window_, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    }
     event->StopPropagation();
   }
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -26,10 +28,12 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,11 +70,12 @@ class CrosapiUtilTest : public testing::Test {
 
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    user_manager::UserManagerBase::RegisterProfilePrefs(
+        pref_service_.registry());
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
@@ -84,6 +89,10 @@ class CrosapiUtilTest : public testing::Test {
   }
 
   void TearDown() override {
+    for (const auto& account_id : profile_created_accounts_) {
+      fake_user_manager_->OnUserProfileWillBeDestroyed(account_id);
+    }
+
     cloud_policy_store_ = nullptr;
     testing_profile_ = nullptr;
     profile_manager_.reset();
@@ -97,6 +106,7 @@ class CrosapiUtilTest : public testing::Test {
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
     fake_user_manager_->OnUserProfileCreated(account_id, &pref_service_);
+    profile_created_accounts_.push_back(account_id);
   }
 
   policy::MockCloudPolicyStore* GetCloudPolicyStore() {
@@ -105,6 +115,7 @@ class CrosapiUtilTest : public testing::Test {
 
   // The order of these members is relevant for both construction and
   // destruction timing.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
@@ -112,6 +123,7 @@ class CrosapiUtilTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple pref_service_;
+  std::vector<AccountId> profile_created_accounts_;
   raw_ptr<policy::MockCloudPolicyStore> cloud_policy_store_ = nullptr;
 };
 
@@ -192,6 +204,8 @@ TEST_F(CrosapiUtilTest, EmptyDeviceSettings) {
   EXPECT_TRUE(settings->report_upload_frequency.is_null());
   EXPECT_TRUE(
       settings->report_device_network_telemetry_collection_rate_ms.is_null());
+  EXPECT_EQ(settings->device_extensions_system_log_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kUnset);
 }
 
 TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
@@ -212,6 +226,9 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kReportDeviceNetworkStatus, true);
+  testing_profile_->ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kDeviceExtensionsSystemLogEnabled, true);
 
   const int64_t kReportUploadFrequencyMs = base::Hours(1).InMilliseconds();
   testing_profile_->ScopedCrosSettingsTestHelper()
@@ -258,6 +275,8 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   EXPECT_EQ(settings->report_upload_frequency->value, kReportUploadFrequencyMs);
   EXPECT_EQ(settings->report_device_network_telemetry_collection_rate_ms->value,
             kReportDeviceNetworkTelemetryCollectionRateMs);
+  EXPECT_EQ(settings->device_extensions_system_log_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
 }
 
 TEST_F(CrosapiUtilTest, IsArcAvailable) {
@@ -266,10 +285,8 @@ TEST_F(CrosapiUtilTest, IsArcAvailable) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -283,10 +300,8 @@ TEST_F(CrosapiUtilTest, IsTabletFormFactor) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -302,10 +317,8 @@ TEST_F(CrosapiUtilTest, SerialNumber) {
   statistics_provider_.SetMachineStatistic("serial_number",
                                            expected_serial_number);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -319,28 +332,46 @@ TEST_F(CrosapiUtilTest, BrowserInitParamsContainsUserPolicy) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  policy::UserPolicyBuilder user_policy_builder;
-  user_policy_builder.payload().mutable_userprintersallowed()->set_value(false);
-  user_policy_builder.UnsetSigningKey();
-  user_policy_builder.Build();
+  enterprise_management::CloudPolicySettings user_policies;
+  user_policies.mutable_userprintersallowed()->set_value(false);
+  auto user_policy_data = std::make_unique<enterprise_management::PolicyData>();
+  user_policies.SerializeToString(user_policy_data->mutable_policy_value());
   GetCloudPolicyStore()->set_policy_data_for_testing(
-      std::make_unique<enterprise_management::PolicyData>(
-          user_policy_builder.policy_data()));
-  std::string expected_policy_blob = user_policy_builder.GetBlob();
+      std::move(user_policy_data));
+  std::string expected_policy_blob;
+  GetCloudPolicyStore()->policy_fetch_response()->SerializeToString(
+      &expected_policy_blob);
   std::vector<uint8_t> expected_policy_bytes = std::vector<uint8_t>(
       expected_policy_blob.begin(), expected_policy_blob.end());
+
   task_environment_.RunUntilIdle();
 
   std::string actual_user_policy_blob;
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
 
   EXPECT_EQ(expected_policy_bytes, browser_init_params->device_account_policy);
+}
+
+TEST_F(CrosapiUtilTest, DeviceExtensionsSystemLogEnabledFalse) {
+  testing_profile_->ScopedCrosSettingsTestHelper()
+      ->ReplaceDeviceSettingsProviderWithStub();
+  testing_profile_->ScopedCrosSettingsTestHelper()->SetTrustedStatus(
+      ash::CrosSettingsProvider::TRUSTED);
+  base::RunLoop().RunUntilIdle();
+  testing_profile_->ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kDeviceExtensionsSystemLogEnabled, false);
+
+  auto settings = browser_util::GetDeviceSettings();
+  testing_profile_->ScopedCrosSettingsTestHelper()
+      ->RestoreRealDeviceSettingsProvider();
+
+  EXPECT_EQ(settings->device_extensions_system_log_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kFalse);
 }
 
 }  // namespace crosapi

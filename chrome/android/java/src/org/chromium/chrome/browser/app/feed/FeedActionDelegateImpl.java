@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -31,12 +33,15 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -53,14 +58,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
 
-    @BrowserUiUtils.HostSurface private int mHostSurface;
-
     public FeedActionDelegateImpl(
             Activity activity,
             SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
-            @BrowserUiUtils.HostSurface int hostSurface,
             TabModelSelector tabModelSelector,
             Profile profile,
             BottomSheetController bottomSheetController) {
@@ -68,7 +70,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
-        mHostSurface = hostSurface;
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
         mBottomSheetController = bottomSheetController;
@@ -86,7 +87,8 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             int disposition,
             LoadUrlParams params,
             boolean inGroup,
-            Runnable onPageLoaded,
+            int pageId,
+            PageLoadObserver pageLoadObserver,
             Callback<VisitResult> onVisitComplete) {
         params.setReferrer(
                 new Referrer(
@@ -107,7 +109,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                         || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
         if (tab != null) {
-            tab.addObserver(new FeedTabNavigationObserver(inNewTab, onPageLoaded));
+            tab.addObserver(new FeedTabNavigationObserver(inNewTab, pageId, pageLoadObserver));
             NavigationRecorder.record(
                     tab,
                     navigationResult -> {
@@ -118,7 +120,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                     });
         }
 
-        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
@@ -132,7 +134,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
 
-        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
@@ -175,11 +177,64 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
+    public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
+            return;
+        }
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
+        SigninAndHistorySyncActivityLauncherImpl.get()
+                .launchActivityIfAllowed(
+                        mActivity,
+                        mProfile,
+                        bottomSheetStrings,
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                        signinAccessPoint);
+    }
+
+    @Override
     public void showSignInInterstitial(
             @SigninAccessPoint int signinAccessPoint,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
-        SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                            .setSubtitleStringId(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
+                            .setDismissButtonStringId(R.string.cancel)
+                            .build();
+            SigninAndHistorySyncActivityLauncherImpl.get()
+                    .launchActivityIfAllowed(
+                            mActivity,
+                            mProfile,
+                            bottomSheetStrings,
+                            SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                            SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                            signinAccessPoint);
+            return;
+        }
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin)
+                        .setSubtitleStringId(
+                                R.string
+                                        .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin_old)
+                        .setDismissButtonStringId(R.string.close)
+                        .build();
+        SigninMetricsUtils.logSigninStarted(signinAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
         SigninBottomSheetCoordinator signinCoordinator =
                 new SigninBottomSheetCoordinator(
@@ -187,7 +242,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                         DeviceLockActivityLauncherImpl.get(),
                         bottomSheetController,
                         mProfile,
-                        null,
+                        bottomSheetStrings,
                         null,
                         signinAccessPoint);
         signinCoordinator.show();
@@ -198,22 +253,32 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
      * interactions. Calls reportPageLoaded when navigation completes.
      */
     private class FeedTabNavigationObserver extends EmptyTabObserver {
-        private final Runnable mCallback;
+        private final boolean mInNewTab;
+        private final int mPageId;
+        private final PageLoadObserver mPageLoadObserver;
 
-        FeedTabNavigationObserver(boolean inNewTab, Runnable callback) {
-            mCallback = callback;
+        FeedTabNavigationObserver(boolean inNewTab, int pageId, PageLoadObserver pageLoadObserver) {
+            mInNewTab = inNewTab;
+            mPageId = pageId;
+            mPageLoadObserver = pageLoadObserver;
+        }
+
+        @Override
+        public void onPageLoadStarted(Tab tab, GURL url) {
+            mPageLoadObserver.onPageLoadStarted(mPageId);
         }
 
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
             // TODO(jianli): onPageLoadFinished is called on successful load, and if a user manually
             // stops the page load. We should only capture successful page loads.
-            mCallback.run();
+            mPageLoadObserver.onPageLoadFinished(mPageId, mInNewTab);
             tab.removeObserver(this);
         }
 
         @Override
-        public void onPageLoadFailed(Tab tab, int errorCode) {
+        public void onPageLoadFailed(Tab tab, @NetError int errorCode) {
+            mPageLoadObserver.onPageLoadFailed(mPageId, errorCode);
             tab.removeObserver(this);
         }
 
@@ -225,6 +290,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         @Override
         public void onDestroyed(Tab tab) {
             tab.removeObserver(this);
+        }
+
+        @Override
+        public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+            mPageLoadObserver.onPageFirstContentfulPaint(mPageId);
         }
     }
 }

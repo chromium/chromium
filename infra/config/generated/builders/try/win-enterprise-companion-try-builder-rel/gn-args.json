@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "enable_enterprise_companion": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "symbol_level": 0,
+    "target_cpu": "x64",
+    "target_os": "win",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

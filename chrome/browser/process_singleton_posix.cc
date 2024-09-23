@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // On Linux, when the user tries to launch a second copy of chrome, we check
 // for a socket in the user's profile directory.  If the socket file is open we
 // send a message to the first chrome browser process with the current
@@ -158,7 +163,7 @@ int SetCloseOnExec(int fd) {
 // Close a socket and check return value.
 void CloseSocket(int fd) {
   int rv = IGNORE_EINTR(close(fd));
-  DCHECK_EQ(0, rv) << "Error closing socket: " << base::safe_strerror(errno);
+  DPCHECK(rv == 0) << "Error closing socket";
 }
 
 // Write a message to a socket fd.
@@ -364,7 +369,7 @@ bool DisplayProfileInUseError(const base::FilePath& lock_path,
   return true;
 #endif
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -935,7 +940,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     return PROCESS_NOTIFIED;
   }
 
-  NOTREACHED() << "The other process returned unknown message: " << buf;
+  NOTREACHED_IN_MIGRATION()
+      << "The other process returned unknown message: " << buf;
   return PROCESS_NOTIFIED;
 }
 
@@ -1091,7 +1097,8 @@ bool ProcessSingleton::Create() {
   }
 
   if (listen(sock_, 5) < 0)
-    NOTREACHED() << "listen failed: " << base::safe_strerror(errno);
+    NOTREACHED_IN_MIGRATION()
+        << "listen failed: " << base::safe_strerror(errno);
 
   return true;
 }
@@ -1163,8 +1170,7 @@ void ProcessSingleton::KillProcess(int pid) {
   int rv = kill(static_cast<base::ProcessHandle>(pid), SIGKILL);
   // ESRCH = No Such Process (can happen if the other process is already in
   // progress of shutting down and finishes before we try to kill it).
-  DCHECK(rv == 0 || errno == ESRCH) << "Error killing process: "
-                                    << base::safe_strerror(errno);
+  DPCHECK(rv == 0 || errno == ESRCH) << "Error killing process";
 
   int error_code = (rv == 0) ? 0 : errno;
   base::UmaHistogramSparse(

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,7 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -79,8 +80,9 @@ void UpdateDataProvider::GetData(
     const Extension* extension = registry->GetInstalledExtension(id);
     data.push_back(extension ? std::make_optional<update_client::CrxComponent>()
                              : std::nullopt);
-    if (!extension)
+    if (!extension) {
       continue;
+    }
     DCHECK_NE(0u, update_crx_component.count(id));
     const ExtensionUpdateData& extension_data = update_crx_component.at(id);
     auto& crx_component = data.back();
@@ -94,10 +96,13 @@ void UpdateDataProvider::GetData(
     if (extension_data.is_corrupt_reinstall) {
       crx_component->version = base::Version("0.0.0.0");
     } else {
-      crx_component->version = extension->version();
-      crx_component->fingerprint = extension->DifferentialFingerprint();
+      crx_component->version =
+          extension_data.pending_version
+              ? base::Version(*extension_data.pending_version)
+              : extension->version();
+      crx_component->fingerprint = extension_data.pending_fingerprint.value_or(
+          extension->DifferentialFingerprint());
     }
-    crx_component->allows_background_download = false;
     bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
                      extension_urls::GetDefaultWebstoreUpdateUrl();
     crx_component->requires_network_encryption = !allow_dev;
@@ -117,8 +122,9 @@ void UpdateDataProvider::GetData(
       for (int enum_value = 1;
            enum_value < extensions::disable_reason::DISABLE_REASON_LAST;
            enum_value <<= 1) {
-        if (disabled_reasons & enum_value)
+        if (disabled_reasons & enum_value) {
           crx_component->disabled_reasons.push_back(enum_value);
+        }
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall
@@ -162,10 +168,9 @@ void UpdateDataProvider::InstallUpdateCallback(
     return;
   }
 
-  // Note that error codes are converted into custom error codes, which are all
-  // based on a constant (see ToInstallerResult). This means that custom codes
-  // from different embedders may collide. However, for any given extension ID,
-  // there should be only one embedder, so this should be OK from Omaha.
+  // Error codes are converted into integers and may collide with codes from
+  // other embedders. However, for any given extension ID, there should be only
+  // one embedder, so the server should be able to figure it out.
   ExtensionSystem::Get(browser_context_)
       ->InstallUpdate(
           extension_id, public_key, unpacked_dir, install_immediately,
@@ -180,8 +185,8 @@ void UpdateDataProvider::InstallUpdateCallback(
                               CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE
                           ? static_cast<int>(error->sandbox_failure_detail())
                           : static_cast<int>(error->detail());
-                  result =
-                      update_client::ToInstallerResult(error->type(), detail);
+                  result = update_client::CrxInstaller::Result(
+                      static_cast<int>(error->type()), detail);
                 }
                 std::move(callback).Run(result);
               },

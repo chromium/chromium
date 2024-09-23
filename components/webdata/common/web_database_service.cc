@@ -5,15 +5,34 @@
 #include "components/webdata/common/web_database_service.h"
 
 #include <stddef.h>
+
 #include <utility>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata/common/web_database_backend.h"
+
+namespace features {
+
+// If enabled, then an Encryptor will be requested that is not always backwards
+// compatible with OSCrypt Sync. On some platforms, this might mean a key is
+// used that is stored more securely, such as using App-Bound encryption on
+// Windows.
+// If this feature is enabled, any data stored by `WebDatabaseService` is not
+// guaranteed to be retrievable if OSCrypt Async is not used.
+BASE_FEATURE(kUseNewEncryptionKeyForWebData,
+             "UseNewEncryptionKeyForWebData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
 
 // Receives messages from the backend on the DB sequence, posts them to
 // WebDatabaseService on the UI sequence.
@@ -41,7 +60,10 @@ WebDatabaseService::WebDatabaseService(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : base::RefCountedDeleteOnSequence<WebDatabaseService>(ui_task_runner),
       path_(path),
-      db_task_runner_(db_task_runner) {
+      db_task_runner_(std::move(db_task_runner)),
+      pending_task_queue_(
+          base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
+              db_task_runner_)) {
   DCHECK(ui_task_runner->RunsTasksInCurrentSequence());
   DCHECK(db_task_runner_);
 }
@@ -49,6 +71,8 @@ WebDatabaseService::WebDatabaseService(
 WebDatabaseService::~WebDatabaseService() = default;
 
 void WebDatabaseService::AddTable(std::unique_ptr<WebDatabaseTable> table) {
+  CHECK(!pending_task_queue_->Started())
+      << "Cannot call AddTable after LoadDatabase.";
   if (!web_db_backend_) {
     web_db_backend_ = base::MakeRefCounted<WebDatabaseBackend>(
         path_,
@@ -58,10 +82,28 @@ void WebDatabaseService::AddTable(std::unique_ptr<WebDatabaseTable> table) {
   web_db_backend_->AddTable(std::move(table));
 }
 
-void WebDatabaseService::LoadDatabase() {
+void WebDatabaseService::CompleteLoadDatabase(
+    os_crypt_async::Encryptor encryptor,
+    bool success) {
   DCHECK(web_db_backend_);
+  // All AddTable calls must have happened by the time LoadDatabase is called.
+  web_db_backend_->MaybeInitEncryptorOnUiSequence(std::move(encryptor));
+  // This ensures that the InitDatabase task gets executed on the DB task runner
+  // before any database tasks.
   db_task_runner_->PostTask(
       FROM_HERE, BindOnce(&WebDatabaseBackend::InitDatabase, web_db_backend_));
+  pending_task_queue_->Start();
+}
+
+void WebDatabaseService::LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt) {
+  const auto option =
+      base::FeatureList::IsEnabled(features::kUseNewEncryptionKeyForWebData)
+          ? os_crypt_async::Encryptor::Option::kNone
+          : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
+  // TODO(crbug.com/40267945): Place kEncryptSyncCompat behind base::Feature and
+  // then remove it.
+  subscription_ = os_crypt->GetInstance(
+      base::BindOnce(&WebDatabaseService::CompleteLoadDatabase, this), option);
 }
 
 void WebDatabaseService::ShutdownDatabase() {
@@ -83,12 +125,16 @@ scoped_refptr<WebDatabaseBackend> WebDatabaseService::GetBackend() const {
   return web_db_backend_;
 }
 
+scoped_refptr<base::SequencedTaskRunner> WebDatabaseService::GetDbSequence() {
+  return pending_task_queue_;
+}
+
 void WebDatabaseService::ScheduleDBTask(const base::Location& from_here,
                                         WriteTask task) {
   DCHECK(web_db_backend_);
   std::unique_ptr<WebDataRequest> request =
       web_db_backend_->request_manager()->NewRequest(nullptr);
-  db_task_runner_->PostTask(
+  pending_task_queue_->PostTask(
       from_here,
       BindOnce(&WebDatabaseBackend::DBWriteTaskWrapper, web_db_backend_,
                std::move(task), std::move(request)));
@@ -103,7 +149,7 @@ WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
   std::unique_ptr<WebDataRequest> request =
       web_db_backend_->request_manager()->NewRequest(consumer);
   WebDataServiceBase::Handle handle = request->GetHandle();
-  db_task_runner_->PostTask(
+  pending_task_queue_->PostTask(
       from_here,
       BindOnce(&WebDatabaseBackend::DBReadTaskWrapper, web_db_backend_,
                std::move(task), std::move(request)));

@@ -8,6 +8,7 @@ import time
 
 from absl import app, flags
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
@@ -51,7 +52,7 @@ def main(argv):
   # Click reload policy to pull cloud policies from the server side
   policy_url = "chrome://policy"
   driver.get(policy_url)
-  driver.find_element_by_id('reload-policies').click
+  driver.find_element(By.ID, 'reload-policies').click
 
   download_file_from_url(driver, encrypted_file_url, encrypted_block_text, 30,
                          "Button", "Encrypted blocked")

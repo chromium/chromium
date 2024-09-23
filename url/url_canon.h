@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef URL_URL_CANON_H_
 #define URL_URL_CANON_H_
 
@@ -10,9 +15,11 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/clamped_math.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -127,6 +134,16 @@ class CanonOutputT {
       Resize((base::ClampedNumeric<size_t>(estimated_size) + 8).RawValue());
   }
 
+  // Insert `str` at `pos`. Used for post-processing non-special URL's pathname.
+  // Since this takes O(N), don't use this unless there is a strong reason.
+  void Insert(size_t pos, std::basic_string_view<T> str) {
+    DCHECK_LE(pos, cur_len_);
+    std::basic_string<T> copy(view().substr(pos));
+    set_length(pos);
+    Append(str);
+    Append(copy);
+  }
+
  protected:
   // Grows the given buffer so that it can fit at least |min_additional|
   // characters. Returns true if the buffer could be resized, false on OOM.
@@ -142,8 +159,8 @@ class CanonOutputT {
     return true;
   }
 
-  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
+  // RAW_PTR_EXCLUSION: Performance (based on analysis of sampling profiler
+  // data).
   RAW_PTR_EXCLUSION T* buffer_ = nullptr;
   size_t buffer_len_ = 0;
 
@@ -409,7 +426,7 @@ struct CanonHostInfo {
 // Deprecated. Please call either CanonicalizeSpecialHost or
 // CanonicalizeNonSpecialHost.
 //
-// TODO(crbug.com/1416006): Check the callers of these functions.
+// TODO(crbug.com/40063064): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeHost(const char* spec,
                       const Component& host,
@@ -439,7 +456,7 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
 // Deprecated. Please call either CanonicalizeSpecialHostVerbose or
 // CanonicalizeNonSpecialHostVerbose.
 //
-// TODO(crbug.com/1416006): Check the callers of these functions.
+// TODO(crbug.com/40063064): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,
@@ -575,7 +592,7 @@ bool CanonicalizePort(const char16_t* spec,
 // Returns the default port for the given canonical scheme, or PORT_UNSPECIFIED
 // if the scheme is unknown. Based on https://url.spec.whatwg.org/#default-port
 COMPONENT_EXPORT(URL)
-int DefaultPortForScheme(const char* scheme, int scheme_len);
+int DefaultPortForScheme(std::string_view scheme);
 
 // Path. If the input does not begin in a slash (including if the input is
 // empty), we'll prepend a slash to the path to make it canonical.
@@ -821,6 +838,9 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
 // modified.
 template <typename CHAR>
 struct URLComponentSource {
+  STACK_ALLOCATED();
+
+ public:
   // Constructor normally used by callers wishing to replace components. This
   // will make them all NULL, which is no replacement. The caller would then
   // override the components they want to replace.
@@ -846,30 +866,14 @@ struct URLComponentSource {
         query(default_value),
         ref(default_value) {}
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* scheme;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* username;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* password;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* host;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* port;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* path;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* query;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const CHAR* ref;
+  const CHAR* scheme;
+  const CHAR* username;
+  const CHAR* password;
+  const CHAR* host;
+  const CHAR* port;
+  const CHAR* path;
+  const CHAR* query;
+  const CHAR* ref;
 };
 
 // This structure encapsulates information on modifying a URL. Each component

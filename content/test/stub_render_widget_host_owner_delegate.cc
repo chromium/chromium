@@ -9,7 +9,7 @@
 namespace content {
 
 bool StubRenderWidgetHostOwnerDelegate::MayRenderWidgetForwardKeyboardEvent(
-    const NativeWebKeyboardEvent& key_event) {
+    const input::NativeWebKeyboardEvent& key_event) {
   return true;
 }
 

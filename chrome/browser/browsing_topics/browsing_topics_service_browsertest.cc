@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -41,6 +42,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_topics_test_util.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -51,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace browsing_topics {
 
@@ -87,6 +90,13 @@ constexpr char kExpectedHeaderValueForSiteB[] =
 
 static constexpr char kBrowsingTopicsApiActionTypeHistogramId[] =
     "BrowsingTopics.ApiActionType";
+
+static constexpr char kRedirectCountHistogramId[] =
+    "BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectCount";
+
+static constexpr char kRedirectWithTopicsInvokedCountHistogramId[] =
+    "BrowsingTopics.PageLoad.OnTopicsFirstInvoked."
+    "RedirectWithTopicsInvokedCount";
 
 EpochTopics CreateTestEpochTopics(
     const std::vector<std::pair<Topic, std::set<HashedDomain>>>& topics,
@@ -183,8 +193,11 @@ class BrowsingTopicsBrowserTestBase : public MixinBasedInProcessBrowserTest {
   ~BrowsingTopicsBrowserTestBase() override = default;
 
   std::string InvokeTopicsAPI(const content::ToRenderFrameHost& adapter,
-                              bool skip_observation = false) {
-    return EvalJs(adapter, content::JsReplace(R"(
+                              bool skip_observation = false,
+                              content::EvalJsOptions eval_options =
+                                  content::EXECUTE_SCRIPT_DEFAULT_OPTIONS) {
+    return EvalJs(adapter,
+                  content::JsReplace(R"(
       if (!(document.browsingTopics instanceof Function)) {
         'not a function';
       } else {
@@ -200,7 +213,8 @@ class BrowsingTopicsBrowserTestBase : public MixinBasedInProcessBrowserTest {
         .catch(error => error.message);
       }
     )",
-                                              skip_observation))
+                                     skip_observation),
+                  eval_options)
         .ExtractString();
   }
 
@@ -369,11 +383,15 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
       : prerender_helper_(
             base::BindRepeating(&BrowsingTopicsBrowserTest::web_contents,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
+    // Configure a long epoch_retention_duration to prevent epochs from expiring
+    // during tests where expiration is irrelevant.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics,
-         blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride},
+        {{blink::features::kBrowsingTopics, {}},
+         {blink::features::kBrowsingTopicsParameters,
+          {{"epoch_retention_duration", "3650000d"}}},
+         {blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{});
   }
 
@@ -1101,7 +1119,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   GURL prerender_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
 
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
 
   content::RenderFrameHost* prerender_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
@@ -1714,6 +1733,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
     histogram_tester.ExpectBucketCount(
         "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
         1);
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                    blink::mojom::WebFeature::kTopicsAPIAll,
+                                    1);
   }
 }
 
@@ -2047,18 +2069,389 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(api_usage_contexts[2].hashed_context_domain, HashedDomain(1));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, RedirectMetrics_NoRedirect) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  // Expect no UMA, as Topics API has not been invoked in the page.
+  histogram_tester.ExpectTotalCount(kRedirectCountHistogramId,
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(kRedirectWithTopicsInvokedCountHistogramId,
+                                    /*expected_count=*/0);
+
+  InvokeTopicsAPI(web_contents());
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+
+  // Calling Topics API the second time won't record UMA again.
+  InvokeTopicsAPI(web_contents());
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_OneRedirectWithoutTopicsInvoked) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents(), main_frame_url2));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+
+  // The redirect chain has only one page calling topics. We need at least two
+  // for this `TopicsRedirectChainDetected` event, so it's not being logged.
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_TopicsRedirectChainDetected::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_OneRedirectWithTopicsInvoked) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents(), main_frame_url2));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectBucketCount(kRedirectCountHistogramId,
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kRedirectWithTopicsInvokedCountHistogramId,
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_TopicsRedirectChainDetected::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries.back(), main_frame_url1);
+  ukm_recorder_->ExpectEntryMetric(entries.back(), "NumberOfPagesCallingTopics",
+                                   2);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_HasGesture_RedirectTrackingReset) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  // Trigger a renderer navigation with user activation. The redirect tracking
+  // will be reset.
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(web_contents(), main_frame_url2));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    RedirectMetrics_BrowserInitiatedNavigation_RedirectTrackingReset) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  // Trigger a browser-initiated navigation. The redirect tracking will be
+  // reset.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url2));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_PopUp_RedirectTrackingReset) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  // Enable automated pop-ups.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingDefaultScope(web_contents()->GetURL(), GURL(),
+                                      ContentSettingsType::POPUPS,
+                                      CONTENT_SETTING_ALLOW);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  // Trigger an automated pop-up. The redirect tracking will be reset.
+  content::WebContentsAddedObserver observer;
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("window.open($1)", main_frame_url2),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver popup_navigation_observer(new_web_contents);
+  popup_navigation_observer.Wait();
+
+  InvokeTopicsAPI(new_web_contents, /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_PopUpAndOpenerNavigation) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  content::WebContents* initial_web_contents = web_contents();
+  InvokeTopicsAPI(initial_web_contents, /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+  // Trigger a pop-up (with user gesture).
+  content::WebContentsAddedObserver observer;
+  EXPECT_TRUE(
+      content::ExecJs(initial_web_contents,
+                      content::JsReplace("window.open($1)", main_frame_url2)));
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver popup_navigation_observer(new_web_contents);
+  popup_navigation_observer.Wait();
+
+  GURL main_frame_url3 =
+      https_server_.GetURL("c.test", "/browsing_topics/empty_page.html");
+
+  // Trigger an opener navigation from the pop-up page.
+  content::TestNavigationObserver opener_navigation_observer(
+      initial_web_contents);
+  EXPECT_TRUE(content::ExecJs(
+      new_web_contents,
+      content::JsReplace("window.opener.location.href = $1", main_frame_url3),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  opener_navigation_observer.Wait();
+
+  InvokeTopicsAPI(initial_web_contents, /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  // Expect that the page resulted from the opener navigation will be
+  // initialized with the redirect status derived from the initial page.
+  histogram_tester.ExpectBucketCount(kRedirectCountHistogramId,
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kRedirectWithTopicsInvokedCountHistogramId,
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    RedirectMetrics_SameDocNavigation_RedirectStateUnaffected) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL main_frame_url2 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html#123");
+
+  // Trigger a same-doc navigation. The page and its redirect state won't be
+  // affected.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents(), main_frame_url2));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       RedirectMetrics_TenRedirectsWithTopicsInvoked) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  for (int i = 0; i < 10; ++i) {
+    GURL new_main_frame_url =
+        https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+
+    ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+        web_contents(), new_main_frame_url));
+
+    InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                    content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  }
+
+  // For each bucket from 0 to 4, expect a single sample.
+  for (int i = 0; i < 4; ++i) {
+    histogram_tester.ExpectBucketCount(kRedirectCountHistogramId,
+                                       /*sample=*/i,
+                                       /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        kRedirectWithTopicsInvokedCountHistogramId,
+        /*sample=*/i,
+        /*expected_count=*/1);
+  }
+
+  // For bucket 5, it should have 6 samples (corresponding to the last 6 page
+  // loads), as we cap the number at 5.
+  histogram_tester.ExpectBucketCount(kRedirectCountHistogramId,
+                                     /*sample=*/5,
+                                     /*expected_count=*/6);
+  histogram_tester.ExpectBucketCount(kRedirectWithTopicsInvokedCountHistogramId,
+                                     /*sample=*/5,
+                                     /*expected_count=*/6);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       Download_RedirectStateUnaffected) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url1 =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url1));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  GURL download_url =
+      https_server_.GetURL("a.test", "/downloads/a_zip_file.zip");
+
+  // Trigger a renderer-initiated navigation that turns into a download. The
+  // page and its redirect state won't be affected.
+  std::unique_ptr<content::DownloadTestObserver> observer(
+      new content::DownloadTestObserverTerminal(
+          browser()->profile()->GetDownloadManager(), /*wait_count=*/1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+  ASSERT_FALSE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents(), download_url));
+  observer->WaitForFinished();
+
+  EXPECT_EQ(
+      1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
+
+  InvokeTopicsAPI(web_contents(), /*skip_observation=*/false,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  histogram_tester.ExpectUniqueSample(kRedirectCountHistogramId,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kRedirectWithTopicsInvokedCountHistogramId,
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
 // Tests that the Topics API abides by the Privacy Sandbox Enrollment framework.
 class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
  public:
-  AttestationBrowsingTopicsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kBrowsingTopics,
-         blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     // This test suite tests Privacy Sandbox Attestations related behaviors,
     // turn off the setting that makes all APIs considered attested.
@@ -2068,9 +2461,6 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
   }
 
   ~AttestationBrowsingTopicsBrowserTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Site a.test is attested for Topics, so it should receive a valid response.

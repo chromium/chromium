@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -44,9 +43,6 @@ class ExtendedDragSource : public DataSourceObserver,
    public:
     virtual bool ShouldAllowDropAnywhere() const = 0;
     virtual bool ShouldLockCursor() const = 0;
-    virtual void OnSwallowed(const std::string& mime_type) = 0;
-    virtual void OnUnswallowed(const std::string& mime_type,
-                               const gfx::Vector2d& offset) = 0;
     virtual void OnDataSourceDestroying() = 0;
 
    protected:

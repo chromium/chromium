@@ -42,10 +42,7 @@ TEST_F(ResourceLoaderTest, AddFilesAppResources) {
       {"file_manager/untrusted_resources/files_img_content.css", 11},
   };
 
-  const size_t kTestResourcesSize = std::size(kTestResources);
-
-  AddFilesAppResources(source()->GetWebUIDataSource(), kTestResources,
-                       kTestResourcesSize);
+  AddFilesAppResources(source()->GetWebUIDataSource(), kTestResources);
 
   EXPECT_EQ(8, source()->URLToIdrOrDefault(GetURL("images/icon192.png")));
   EXPECT_EQ(10, source()->URLToIdrOrDefault(

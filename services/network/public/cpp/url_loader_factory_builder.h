@@ -120,24 +120,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
     return std::move(in);
   }
 
-  // `PendingRemote` -> `SharedURLLoaderFactory`:
-  // Wraps by `WrapperSharedURLLoaderFactory`.
-  template <>
-  scoped_refptr<SharedURLLoaderFactory> WrapAs(
-      mojo::PendingRemote<mojom::URLLoaderFactory> in) {
-    return base::MakeRefCounted<WrapperSharedURLLoaderFactory>(std::move(in));
-  }
-
-  // `SharedURLLoaderFactory` -> `PendingRemote`:
-  // Creates a new pipe and cloning.
-  template <>
-  mojo::PendingRemote<mojom::URLLoaderFactory> WrapAs(
-      scoped_refptr<SharedURLLoaderFactory> in) {
-    mojo::PendingRemote<mojom::URLLoaderFactory> remote;
-    in->Clone(remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
-
   template <typename OutType>
   static OutType WrapAs(mojom::NetworkContext* context,
                         mojom::URLLoaderFactoryParamsPtr factory_param) {
@@ -170,6 +152,39 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   // If they are both invalid, then there are no interceptors.
   mojo::PendingRemote<mojom::URLLoaderFactory> head_;
   mojo::PendingReceiver<mojom::URLLoaderFactory> tail_;
+};
+
+// `PendingRemote` -> `SharedURLLoaderFactory`:
+// Wraps by `WrapperSharedURLLoaderFactory`.
+template <>
+COMPONENT_EXPORT(NETWORK_CPP)
+scoped_refptr<SharedURLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    mojo::PendingRemote<mojom::URLLoaderFactory> in);
+
+// `SharedURLLoaderFactory` -> `PendingRemote`:
+// Creates a new pipe and cloning.
+template <>
+COMPONENT_EXPORT(NETWORK_CPP)
+mojo::PendingRemote<mojom::URLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    scoped_refptr<SharedURLLoaderFactory> in);
+
+// Similar to PendingSharedURLLoaderFactory, but also goes through
+// `URLLoaderFactoryBuilder` when constructing the factory.
+class COMPONENT_EXPORT(NETWORK_CPP)
+    PendingSharedURLLoaderFactoryWithBuilder final
+    : public PendingSharedURLLoaderFactory {
+ public:
+  PendingSharedURLLoaderFactoryWithBuilder(
+      URLLoaderFactoryBuilder factory_builder,
+      std::unique_ptr<PendingSharedURLLoaderFactory> terminal_pending_factory);
+  ~PendingSharedURLLoaderFactoryWithBuilder() override;
+
+ private:
+  // PendingSharedURLLoaderFactory implementation.
+  scoped_refptr<SharedURLLoaderFactory> CreateFactory() override;
+
+  URLLoaderFactoryBuilder factory_builder_;
+  std::unique_ptr<PendingSharedURLLoaderFactory> terminal_pending_factory_;
 };
 
 }  // namespace network

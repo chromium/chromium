@@ -167,3 +167,16 @@ bool SessionServiceTestHelper::HasPendingReset() {
 bool SessionServiceTestHelper::HasPendingSave() {
   return service_->GetCommandStorageManagerForTest()->HasPendingSave();
 }
+
+void SessionServiceTestHelper::SetSavingEnabled(bool enabled) {
+  service_->SetSavingEnabled(enabled);
+}
+
+bool SessionServiceTestHelper::did_save_commands_at_least_once() const {
+  return service_->did_save_commands_at_least_once_;
+}
+
+sessions::CommandStorageManager*
+SessionServiceTestHelper::command_storage_manager() {
+  return service_->command_storage_manager_.get();
+}

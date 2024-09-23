@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 
 #include <memory>
@@ -44,6 +49,8 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #endif
 
 using component_updater::ComponentUpdateService;
@@ -81,6 +88,7 @@ const base::FilePath::CharType kKPConfigProtoFileName[] =
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 const base::FilePath::CharType kCRSProtoFileName[] =
     FILE_PATH_LITERAL("crs.pb");
+constexpr char kChromeRootStoreProto[] = "chrome_root_store.RootStore";
 #endif
 
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
@@ -119,8 +127,19 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&LoadBinaryProtoFromDisk,
-                     install_dir_.Append(kCRSProtoFileName)),
+      base::BindOnce(
+          [](const base::FilePath& pb_path)
+              -> std::optional<mojo_base::ProtoWrapper> {
+            std::string file_contents = LoadBinaryProtoFromDisk(pb_path);
+            if (file_contents.size()) {
+              return mojo_base::ProtoWrapper(
+                  base::as_bytes(base::make_span(file_contents)),
+                  kChromeRootStoreProto,
+                  mojo_base::ProtoWrapperBytes::GetPassKey());
+            }
+            return std::nullopt;
+          },
+          install_dir_.Append(kCRSProtoFileName)),
       base::BindOnce(
           &PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI,
           weak_factory_.GetWeakPtr()));
@@ -129,15 +148,14 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
-    const std::string& chrome_root_store_bytes) {
-  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
-      cert_verifier::mojom::ChromeRootStore::New(
-          base::as_bytes(base::make_span(chrome_root_store_bytes)));
-  content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-      std::move(root_store_ptr),
-      base::BindOnce(&PKIMetadataComponentInstallerService::
-                         NotifyChromeRootStoreConfigured,
-                     weak_factory_.GetWeakPtr()));
+    std::optional<mojo_base::ProtoWrapper> chrome_root_store) {
+  if (chrome_root_store.has_value()) {
+    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
+        std::move(chrome_root_store.value()),
+        base::BindOnce(&PKIMetadataComponentInstallerService::
+                           NotifyChromeRootStoreConfigured,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {
@@ -233,7 +251,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       content::GetNetworkService();
 
   if (proto->disable_ct_enforcement()) {
-    // TODO(https://crbug.com/848277): when CT enforcement is moved to the cert
+    // TODO(crbug.com/41392053): when CT enforcement is moved to the cert
     // verifier service, the killswitch also needs to be moved to the cert
     // verifier service.
     network_service->SetCtEnforcementEnabled(
@@ -249,7 +267,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     return;
   }
 
-  // TODO(https://crbug.com/848277): Log info needs to be sent to both network
+  // TODO(crbug.com/41392053): Log info needs to be sent to both network
   // service and cert verifier service. Finish refactoring so that it is only
   // sent to cert verifier service.
   std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;

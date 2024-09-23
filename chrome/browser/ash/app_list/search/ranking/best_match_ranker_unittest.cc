@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/best_match_ranker.h"
 
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
@@ -30,7 +30,7 @@ std::unique_ptr<ChromeSearchResult> MakeResult(
 
 Results MakeAnswers(
     std::vector<std::pair<std::string, double>> ids_relevances) {
-  return base::test::ToVector(ids_relevances, [](const auto& ids_relevance) {
+  return base::ToVector(ids_relevances, [](const auto& ids_relevance) {
     return MakeResult(ids_relevance.first, ids_relevance.second);
   });
 }
@@ -42,12 +42,12 @@ class BestMatchRankerTest : public testing::Test {
   void ExpectBestMatchOrderAndRanks(
       std::vector<std::pair<std::string, int>> expected_ids_ranks) {
     EXPECT_EQ(expected_ids_ranks.size(), ranker_.best_matches_.size());
-    EXPECT_THAT(base::test::ToVector(ranker_.best_matches_,
-                                     [](const auto& res) {
-                                       return std::make_pair(
-                                           res->id(),
-                                           res->scoring().best_match_rank());
-                                     }),
+    EXPECT_THAT(base::ToVector(ranker_.best_matches_,
+                               [](const auto& res) {
+                                 return std::make_pair(
+                                     res->id(),
+                                     res->scoring().best_match_rank());
+                               }),
                 ElementsAreArray(expected_ids_ranks));
   }
 

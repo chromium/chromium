@@ -20,7 +20,7 @@ in the `CreateFromRequestAndPublicKeys()` function in the same file.
 
 The unencrypted payload is first generated as a [CBOR](https://cbor.io/) map
 with the format described in the
-[explainer](https://github.com/WICG/attribution-reporting-api/blob/3d0a541c708391d73905afafa155d6753c8565af/AGGREGATE.md#encrypted-payload)[^1].
+[spec](https://patcg-individual-drafts.github.io/private-aggregation-api/pr-preview/refs/pull/128/merge/index.html#obtain-the-plaintext-payload)[^1].
 This map is serialized to binary and used as the plaintext input.
 
 ### Associated data
@@ -85,10 +85,9 @@ the report.
 
 ## Notes
 
-[^1]: Note that these links point to a specific commit of the explainer that
-    reflects what is currently implemented as of the latest update to this file.
-    The
-    [up-to-date explainer](https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#encrypted-payload)
+[^1]: Note that these links point to a specific commit of the spec that reflects
+    what is currently implemented as of the latest update to this file. The
+    [up-to-date spec](https://patcg-individual-drafts.github.io/private-aggregation-api/#obtain-the-plaintext-payload)
     may have recent changes that have not yet been implemented.
 
 [^2]: This ensures that ciphertexts for one API cannot be accepted for a

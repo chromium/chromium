@@ -24,7 +24,7 @@ constexpr gfx::Size kDefaultThumbnailSize = {100, 100};
 // between implementations. Specifically it's responsible for keeping current
 // list of sources and calling the observer when the list changes.
 //
-// TODO(crbug.com/987001): Consider renaming this class.
+// TODO(crbug.com/40637301): Consider renaming this class.
 class DesktopMediaListBase : public DesktopMediaList {
  public:
   explicit DesktopMediaListBase(base::TimeDelta update_period);
@@ -47,6 +47,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 

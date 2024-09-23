@@ -15,6 +15,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
@@ -30,8 +31,8 @@ import org.chromium.url.GURL;
 
 /**
  * Represent the sad tab displayed in place of a crashed renderer. Instantiated on the first
- * |show()| request from a Tab, and destroyed together with it.
- * TODO(crbug.com/1161348): Consider moving this to its own target.
+ * |show()| request from a Tab, and destroyed together with it. TODO(crbug.com/40162422): Consider
+ * moving this to its own target.
  */
 public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;
@@ -142,12 +143,17 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         mTab.removeObserver(this);
     }
 
+    @Override
+    public @ColorInt int getBackgroundColor(Context context) {
+        return context.getColor(R.color.baseline_neutral_90);
+    }
+
     /**
      * @param context Context this sad tab is shown with.
      * @param suggestionAction {@link Runnable} to be executed when user clicks "try these
-     *                        suggestions".
-     * @param buttonAction {@link Runnable} to be executed when the button is pressed.
-     *                     (e.g., refreshing the page or sending feedback)
+     *     suggestions".
+     * @param buttonAction {@link Runnable} to be executed when the button is pressed. (e.g.,
+     *     refreshing the page or sending feedback)
      * @param showSendFeedbackView Whether to show the "send feedback" version of the Sad Tab view.
      * @param isIncognito Whether the Sad Tab view is being showin in an incognito tab.
      * @return A {@link View} instance which is used in place of a crashed renderer.

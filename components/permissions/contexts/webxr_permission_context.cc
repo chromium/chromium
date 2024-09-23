@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -14,6 +15,10 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents.h"
+#if BUILDFLAG(ENABLE_VR)
+#include "base/feature_list.h"
+#include "device/vr/public/cpp/features.h"
+#endif
 #endif
 
 namespace permissions {
@@ -25,7 +30,8 @@ WebXrPermissionContext::WebXrPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
-         content_settings_type_ == ContentSettingsType::AR);
+         content_settings_type_ == ContentSettingsType::AR ||
+         content_settings_type_ == ContentSettingsType::HAND_TRACKING);
 }
 
 WebXrPermissionContext::~WebXrPermissionContext() = default;
@@ -45,7 +51,9 @@ void WebXrPermissionContext::NotifyPermissionSet(
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision) {
-  DCHECK(!is_one_time);
+  const bool is_hands =
+      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
+  DCHECK(!is_one_time || is_hands);
   DCHECK(is_final_decision);
 
   // Note that this method calls into base class implementation version of
@@ -56,10 +64,20 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // for `UpdateTabContext()` - if it did, we'd need to stop calling into base
   // class with the parameter not matching user's answer.
 
-  // Only AR needs to check for additional permissions, and then only if it was
-  // actually allowed.
-  if (!(content_settings_type_ == ContentSettingsType::AR &&
-        content_setting == ContentSetting::CONTENT_SETTING_ALLOW)) {
+  // If permission was denied, we don't need to check for additional
+  // permissions. We also don't need to check for additional permissions for
+  // non-OpenXR VR.
+  const bool permission_granted =
+      content_setting == ContentSetting::CONTENT_SETTING_ALLOW;
+  const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
+  bool is_openxr = false;
+#if BUILDFLAG(ENABLE_OPENXR)
+  is_openxr = content_settings_type_ == ContentSettingsType::VR &&
+              device::features::IsOpenXrEnabled();
+#endif
+  const bool additional_permissions_needed =
+      permission_granted && (is_ar || is_openxr || is_hands);
+  if (!additional_permissions_needed) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
         content_setting, is_one_time, is_final_decision);
@@ -133,7 +151,7 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
   // initial override of |NotifyPermissionSet|. At this point, if the user
   // has denied the OS level permission, we want to notify the requestor that
   // the permission has been blocked.
-  // TODO(https://crbug.com/1060163): Ensure that this is taken into account
+  // TODO(crbug.com/40678885): Ensure that this is taken into account
   // when returning navigator.permissions results.
   ContentSetting setting = permission_granted
                                ? ContentSetting::CONTENT_SETTING_ALLOW

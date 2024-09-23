@@ -5,16 +5,16 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_ON_DISK_H_
 
-#include "services/network/shared_dictionary/shared_dictionary.h"
-
 #include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/hash_value.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 
 namespace net {
 class IOBufferWithSize;
@@ -29,18 +29,17 @@ class SharedDictionaryDiskCache;
 // ReadAll() may synchronously return OK if the data has been loaded into memory
 // when the method is called.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
-    : public SharedDictionary {
+    : public net::SharedDictionary {
  public:
   SharedDictionaryOnDisk(size_t size,
                          const net::SHA256HashValue& hash,
                          const std::string& id,
                          const base::UnguessableToken& disk_cache_key_token,
-                         SharedDictionaryDiskCache* disk_cahe,
-                         base::OnceClosure disk_cache_error_callback);
+                         SharedDictionaryDiskCache& disk_cahe,
+                         base::OnceClosure disk_cache_error_callback,
+                         base::ScopedClosureRunner on_deleted_closure_runner);
 
-  ~SharedDictionaryOnDisk() override;
-
-  // SharedDictionary
+  // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override;
   scoped_refptr<net::IOBuffer> data() const override;
   size_t size() const override;
@@ -48,6 +47,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   const std::string& id() const override;
 
  private:
+  ~SharedDictionaryOnDisk() override;
+
   enum class State { kLoading, kDone, kFailed };
 
   void OnEntry(base::Time open_start_time, disk_cache::EntryResult result);
@@ -65,6 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   std::vector<base::OnceCallback<void(int)>> readall_callbacks_;
   disk_cache::ScopedEntryPtr entry_;
   scoped_refptr<net::IOBufferWithSize> data_;
+
+  base::ScopedClosureRunner on_deleted_closure_runner_;
   base::WeakPtrFactory<SharedDictionaryOnDisk> weak_factory_{this};
 };
 

@@ -23,6 +23,27 @@ enum class BiometricAuthenticationStatusWin {
   kMaxValue = kNotConfiguredForUser,
 };
 
+// Enum specifying possible results of Windows Hello authentication. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class AuthenticationResultStatusWin {
+  kVerified = 0,
+  kDeviceNotPresent = 1,
+  kNotConfiguredForUser = 2,
+  kDisabledByPolicy = 3,
+  kDeviceBusy = 4,
+  kRetriesExhausted = 5,
+  kCanceled = 6,
+  kFailedToCreateFactory = 7,
+  kFailedToCallAPI = 8,
+  kFailedToPostTask = 9,
+  kUnknown = 10,
+  kAsyncOperationFailed = 11,
+  kFailedToFindBrowser = 12,
+  kFailedToFindHWNDForNativeWindow = 13,
+  kMaxValue = kFailedToFindHWNDForNativeWindow,
+};
+
 // This interface is need to simplify testing as windows authentication happens
 // through free function which is hard to mock.
 class AuthenticatorWinInterface {

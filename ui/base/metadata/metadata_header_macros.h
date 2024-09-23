@@ -27,12 +27,8 @@
                                                                       \
  private:  // NOLINTNEXTLINE
 
-#define _GET_MDH_MACRO_NAME(_1, _2, NAME, ...) NAME
-
-#define METADATA_HEADER(class_name, ...)                            \
-  _GET_MDH_MACRO_NAME(class_name, ##__VA_ARGS__, _METADATA_HEADER2, \
-                      _METADATA_HEADER1)                            \
-  (class_name, ##__VA_ARGS__)
+#define METADATA_HEADER(class_name, ancestor_class_name) \
+  _METADATA_HEADER2(class_name, ancestor_class_name)
 
 // When adding metadata to a templated class, use this macro. `class_name` is
 // the base name of the template class. If the `ancestor_class_name` is also a

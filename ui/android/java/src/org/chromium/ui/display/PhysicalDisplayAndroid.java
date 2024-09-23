@@ -11,9 +11,12 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
@@ -21,9 +24,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForO;
-import org.chromium.base.compat.ApiHelperForR;
-import org.chromium.base.compat.ApiHelperForS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -149,21 +149,17 @@ import java.util.function.Consumer;
     private final Display mDisplay;
     private Consumer<Display> mHdrSdrRatioCallback;
 
-    /* package */ PhysicalDisplayAndroid(Display display) {
+    /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
             // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
             try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 mWindowContext =
-                        ApiHelperForS.createWindowContext(
-                                appContext,
-                                display,
-                                WindowManager.LayoutParams.TYPE_APPLICATION,
-                                null);
+                        appContext.createWindowContext(
+                                display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
             }
-            assert display.getDisplayId()
-                    == ApiHelperForR.getDisplay(mWindowContext).getDisplayId();
+            assert display.getDisplayId() == mWindowContext.getDisplay().getDisplayId();
             mComponentCallbacks =
                     new ComponentCallbacks() {
                         @Override
@@ -175,7 +171,7 @@ import java.util.function.Consumer;
                         }
                     };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
-            mDisplay = ApiHelperForR.getDisplay(mWindowContext);
+            mDisplay = mWindowContext.getDisplay();
             updateFromConfiguration();
         } else {
             mWindowContext = null;
@@ -184,7 +180,8 @@ import java.util.function.Consumer;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && mDisplay.isHdrSdrRatioAvailable()) {
+                && mDisplay.isHdrSdrRatioAvailable()
+                && !disableHdrSdkRatioCallback) {
             mHdrSdrRatioCallback = this::hdrSdrRatioChanged;
             mDisplay.registerHdrSdrRatioChangedListener(
                     (Runnable runnable) -> {
@@ -201,10 +198,11 @@ import java.util.function.Consumer;
         return mWindowContext;
     }
 
+    @RequiresApi(api = VERSION_CODES.R)
     private void updateFromConfiguration() {
         Point size = new Point();
         WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
-        Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);
+        Rect rect = windowManager.getMaximumWindowMetrics().getBounds();
         size.set(rect.width(), rect.height());
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
@@ -212,14 +210,14 @@ import java.util.function.Consumer;
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
-            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
         }
         updateCommon(
                 size,
                 displayMetrics.density,
                 displayMetrics.xdpi,
                 displayMetrics.ydpi,
-                ApiHelperForR.getDisplay(mWindowContext));
+                mWindowContext.getDisplay());
     }
 
     /* package */ void onDisplayRemoved() {
@@ -243,18 +241,14 @@ import java.util.function.Consumer;
         }
         Point size = new Point();
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            display.getRealSize(size);
-            display.getRealMetrics(displayMetrics);
-        } else {
-            display.getSize(size);
-            display.getMetrics(displayMetrics);
-        }
+        display.getRealSize(size);
+        display.getRealMetrics(displayMetrics);
 
         if (BuildInfo.getInstance().isAutomotive
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
-            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(
+                    ContextUtils.getApplicationContext(), displayMetrics);
         }
         updateCommon(
                 size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
@@ -285,7 +279,7 @@ import java.util.function.Consumer;
         // Although this API was added in Android O, it was buggy.
         // Restrict to Android Q, where it was fixed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isWideColorGamut = ApiHelperForO.isWideColorGamut(display);
+            isWideColorGamut = display.isWideColorGamut();
         }
 
         int pixelFormatId = PixelFormat.RGBA_8888;

@@ -18,23 +18,23 @@ UNKNOWN_TYPE | Body$MobileAlerts | Send me special promotion mobile alerts | on 
 EMAIL_ADDRESS | Body$NewEmailAddress2 | Email Address |  | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$WeeklyNewsletterSignup12 | Email me weekly HSN newsletters and special offers | on | Body$BillingIsShippingCheckboxB_1
 UNKNOWN_TYPE | Body$TSNewsletterSignup2 | Email me the daily Today's Special | on | Body$BillingIsShippingCheckboxB_1
-NAME_FIRST | Body$ShippingAddress$_firstName | First Name |  | Body$ShippingAddress$_firstName_2
-NAME_LAST | Body$ShippingAddress$_lastName | Last Name |  | Body$ShippingAddress$_firstName_2
-ADDRESS_HOME_LINE1 | Body$ShippingAddress$_address1 | Address Line 1 |  | Body$ShippingAddress$_firstName_2
-ADDRESS_HOME_LINE2 | Body$ShippingAddress$_address2 | Address Line 2(optional) |  | Body$ShippingAddress$_firstName_2
-ADDRESS_HOME_CITY | Body$ShippingAddress$_city | City |  | Body$ShippingAddress$_firstName_2
-ADDRESS_HOME_STATE | Body$ShippingAddress$_state | State |    | Body$ShippingAddress$_firstName_2
-ADDRESS_HOME_ZIP | Body$ShippingAddress$_zipcode | Zip Code |  | Body$ShippingAddress$_firstName_2
-PHONE_HOME_CITY_AND_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | Body$ShippingAddress$_firstName_2
-UNKNOWN_TYPE | PaymentTypeSelection | Pay with a Credit or Debit Card | 0 | Body$BillingIsShippingCheckboxB_1
+NAME_FIRST | Body$ShippingAddress$_firstName | First Name |  | -default
+NAME_LAST | Body$ShippingAddress$_lastName | Last Name |  | -default
+ADDRESS_HOME_LINE1 | Body$ShippingAddress$_address1 | Address Line 1 |  | -default
+ADDRESS_HOME_LINE2 | Body$ShippingAddress$_address2 | Address Line 2(optional) |  | -default
+ADDRESS_HOME_CITY | Body$ShippingAddress$_city | City |  | -default
+ADDRESS_HOME_STATE | Body$ShippingAddress$_state | State |    | -default
+ADDRESS_HOME_ZIP | Body$ShippingAddress$_zipcode | Zip Code |  | -default
+PHONE_HOME_CITY_AND_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | -default
+UNKNOWN_TYPE | PaymentTypeSelection | Pay with a Credit or Debit Card | 0 | PaymentTypeSelection_2
 CREDIT_CARD_NUMBER | Body$CCNumber | Card Number |  | Body$CCNumber_3
 CREDIT_CARD_EXP_MONTH | Body$CCExpirationDateMonth | Expiration Date | 0 | Body$CCNumber_3
 CREDIT_CARD_EXP_4_DIGIT_YEAR | Body$CCExpirationDateYear | Expiration Date | 0 | Body$CCNumber_3
 CREDIT_CARD_NAME_FULL | Body$CCNameOnCard | Name on Card |  | Body$CCNumber_3
-UNKNOWN_TYPE | IsDebitCard | Yes | 1 | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | IsDebitCard | No | 0 | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | Body$SaveCC4Later | Save information for future purchases | on | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | PaymentTypeSelection | Pay with PayPal | 1 | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | Body$NewPassword | Create Password (optional) |  | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | Body$RepeatNewPassword | Repeat Password (optional) |  | Body$BillingIsShippingCheckboxB_1
-UNKNOWN_TYPE | Body$NewPasswordHint | Password Hint (optional) |  | Body$BillingIsShippingCheckboxB_1
+UNKNOWN_TYPE | IsDebitCard | Yes | 1 | PaymentTypeSelection_2
+UNKNOWN_TYPE | IsDebitCard | No | 0 | PaymentTypeSelection_2
+UNKNOWN_TYPE | Body$SaveCC4Later | Save information for future purchases | on | PaymentTypeSelection_2
+UNKNOWN_TYPE | PaymentTypeSelection | Pay with PayPal | 1 | PaymentTypeSelection_2
+UNKNOWN_TYPE | Body$NewPassword | Create Password (optional) |  | PaymentTypeSelection_2
+UNKNOWN_TYPE | Body$RepeatNewPassword | Repeat Password (optional) |  | PaymentTypeSelection_2
+UNKNOWN_TYPE | Body$NewPasswordHint | Password Hint (optional) |  | PaymentTypeSelection_2

@@ -33,7 +33,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -41,36 +40,20 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-struct SkImageInfo;
-
 namespace blink {
 
-class Canvas2DLayerBridgeTest;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
-  explicit Canvas2DLayerBridge();
+  explicit Canvas2DLayerBridge(CanvasResourceHost* resource_host);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
   virtual ~Canvas2DLayerBridge();
 
-  void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
-  bool Restore();
 
-  bool WritePixels(const SkImageInfo&,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y);
-  void SetCanvasResourceHost(CanvasResourceHost* host);
-
-  void Hibernate();
-  // This is used for a memory usage experiment: frees canvas resource when
-  // canvas is in an invisible tab.
-  void LoseContext();
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 
   scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
@@ -105,42 +88,22 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
     logger_ = std::move(logger);
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
-  void FlushRecording(FlushReason);
-
-  static bool IsHibernationEnabled();
 
   CanvasHibernationHandler& GetHibernationHandlerForTesting() {
     return hibernation_handler_;
   }
 
  private:
-  friend class Canvas2DLayerBridgeTest;
-  friend class CanvasRenderingContext2DTest;
-  friend class HTMLCanvasPainterTestForCAP;
-
-  CanvasResourceProvider* ResourceProvider() const;
-  void ResetResourceProvider();
-
-  // Check if the Raster Mode is GPU and if the GPU context is not lost
-  bool ShouldAccelerate() const;
+  static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
+                                    base::TimeTicks /*idleDeadline*/);
+  void Hibernate();
 
   CanvasHibernationHandler hibernation_handler_;
 
   std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
-  bool context_lost_ = false;
-  bool lose_context_in_background_ = false;
-  bool lose_context_in_background_scheduled_ = false;
 
-
-  enum SnapshotState {
-    kInitialSnapshotState,
-    kDidAcquireSnapshot,
-  };
-  mutable SnapshotState snapshot_state_;
-
-  raw_ptr<CanvasResourceHost, ExperimentalRenderer> resource_host_;
-  viz::TransferableResource previous_frame_resource_;
+  raw_ptr<CanvasResourceHost> resource_host_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };

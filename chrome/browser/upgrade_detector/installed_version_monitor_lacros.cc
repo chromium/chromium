@@ -36,7 +36,7 @@ void LacrosInstalledVersionMonitor::OnBrowserVersionInstalled(
 // static
 std::unique_ptr<InstalledVersionMonitor> InstalledVersionMonitor::Create() {
   auto* lacros_service = chromeos::LacrosService::Get();
-  // TODO(crbug.com/1249228): Enable the DCHECK after the next release.
+  // TODO(crbug.com/40791106): Enable the DCHECK after the next release.
   // DCHECK(lacros_service->IsAvailable<crosapi::mojom::BrowserVersionService>());
   return std::make_unique<LacrosInstalledVersionMonitor>(lacros_service);
 }

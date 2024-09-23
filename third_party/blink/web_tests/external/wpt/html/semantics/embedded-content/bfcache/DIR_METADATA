@@ -1,0 +1,10 @@
+monorail: {
+  component: "UI>Browser>Navigation>BFCache"
+}
+team_email: "bfcache-dev@chromium.org"
+wpt: {
+  notify: YES
+}
+buganizer_public: {
+  component_id: 1457076
+}

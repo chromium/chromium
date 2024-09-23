@@ -38,6 +38,7 @@ void ExtensionPrefStore::OnExtensionPrefValueMapDestruction() {
 }
 
 ExtensionPrefStore::~ExtensionPrefStore() {
-  if (extension_pref_value_map_)
+  if (extension_pref_value_map_) {
     extension_pref_value_map_->RemoveObserver(this);
+  }
 }

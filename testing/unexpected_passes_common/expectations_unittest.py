@@ -3,24 +3,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import datetime
 import os
-import sys
 import tempfile
 import unittest
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+from unittest import mock
 
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu
+
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
@@ -2326,10 +2322,6 @@ crbug.com/874695 foo/test [ Failure ]
                 data_types.StepBuildStatsMap({
                     'blink_web_tests': linux_debug_stats,
                 }),
-                'Mac10.15 Tests':
-                data_types.StepBuildStatsMap({
-                    'blink_web_tests': mac10_release_stats,
-                }),
                 'mac11-arm64-rel-tests':
                 data_types.StepBuildStatsMap({
                     'blink_web_tests': mac11_arm_release_stats,
@@ -2462,7 +2454,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]  # finder:disable-narrowing
 
 class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
   def CreateFile(self, *args, **kwargs) -> None:
-    # TODO(crbug.com/1156806): Remove this and just use fs.create_file() when
+    # TODO(crbug.com/40160566): Remove this and just use fs.create_file() when
     # Catapult is updated to a newer version of pyfakefs that is compatible with
     # Chromium's version.
     if hasattr(self.fs, 'create_file'):

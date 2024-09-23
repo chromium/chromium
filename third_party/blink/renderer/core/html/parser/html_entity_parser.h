@@ -60,7 +60,7 @@ class DecodedHTMLEntity {
   }
 
   unsigned length;
-  UChar data[kMaxLength];
+  std::array<UChar, kMaxLength> data;
 };
 
 void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity);

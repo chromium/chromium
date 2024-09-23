@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -33,10 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -61,7 +57,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -78,9 +73,7 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class, ShadowSysUtils.class})
-@EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)
 public class DesktopSiteSettingsIPHControllerUnitTest {
-    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
@@ -367,13 +360,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
         command.onDismissCallback.run();
         verify(mAppMenuHandler).clearMenuHighlight();
-
-        Assert.assertEquals(
-                "<Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened> should be recorded"
-                        + " when the IPH is dismissed.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened"));
     }
 
     private void initializeController() {

@@ -21,4 +21,8 @@ MockWrongHWIDScreenView::MockWrongHWIDScreenView() = default;
 
 MockWrongHWIDScreenView::~MockWrongHWIDScreenView() = default;
 
+base::WeakPtr<WrongHWIDScreenView> MockWrongHWIDScreenView::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.util.SparseArray;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
+import android.view.autofill.AutofillValue;
 
 import androidx.annotation.Nullable;
 
@@ -41,7 +44,12 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         containerView.addOnDragListener(getDragStateTracker());
 
         if (ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
-            mDragAndDropBrowserDelegate = new ChromeDragAndDropBrowserDelegate(tab.getContext());
+            mDragAndDropBrowserDelegate =
+                    new ChromeDragAndDropBrowserDelegate(
+                            () -> {
+                                if (mTab == null || mTab.getWindowAndroid() == null) return null;
+                                return mTab.getWindowAndroid().getActivity().get();
+                            });
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
@@ -80,21 +88,23 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
     @Override
     public void onBackgroundColorChanged(int color) {
-        mTab.onBackgroundColorChanged(color);
+        mTab.changeWebContentBackgroundColor(color);
     }
 
     @Override
-    public void onTopControlsChanged(
-            int topControlsOffsetY, int contentOffsetY, int topControlsMinHeightOffsetY) {
+    public void onControlsChanged(
+            int topControlsOffsetY,
+            int contentOffsetY,
+            int topControlsMinHeightOffsetY,
+            int bottomControlsOffsetY,
+            int bottomControlsMinHeightOffsetY) {
         TabBrowserControlsOffsetHelper.get(mTab)
-                .setTopOffset(topControlsOffsetY, contentOffsetY, topControlsMinHeightOffsetY);
-    }
-
-    @Override
-    public void onBottomControlsChanged(
-            int bottomControlsOffsetY, int bottomControlsMinHeightOffsetY) {
-        TabBrowserControlsOffsetHelper.get(mTab)
-                .setBottomOffset(bottomControlsOffsetY, bottomControlsMinHeightOffsetY);
+                .setOffsets(
+                        topControlsOffsetY,
+                        contentOffsetY,
+                        topControlsMinHeightOffsetY,
+                        bottomControlsOffsetY,
+                        bottomControlsMinHeightOffsetY);
     }
 
     @Override
@@ -158,6 +168,21 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(null);
             mDragAndDropBrowserDelegate = null;
         }
+    }
+
+    @Override
+    public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+        mTab.onProvideAutofillVirtualStructure(structure, flags);
+    }
+
+    @Override
+    public void autofill(final SparseArray<AutofillValue> values) {
+        mTab.autofill(values);
+    }
+
+    @Override
+    public boolean providesAutofillStructure() {
+        return mTab.providesAutofillStructure();
     }
 
     DragAndDropBrowserDelegate getDragAndDropBrowserDelegateForTesting() {

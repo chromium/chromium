@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+
 #include <sys/types.h>
 
 #include <memory>
@@ -12,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -30,15 +33,17 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -107,16 +112,9 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());
 
-    web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
-        base::BindLambdaForTesting(
-            [this](apps::AppLaunchParams&& params) -> content::WebContents* {
-              auto instance = std::make_unique<apps::Instance>(
-                  params.app_id, base::UnguessableToken(), /*window=*/nullptr);
-              app_service()->InstanceRegistry().OnInstance(std::move(instance));
-              return nullptr;
-            }));
-
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    static_cast<web_app::FakeWebAppUiManager*>(&web_app_provider().ui_manager())
+        ->SetOnLaunchWebAppCallback(app_launch_future_.GetRepeatingCallback());
 
     app_manager_ = std::make_unique<WebKioskAppManager>();
     account_id_ = AccountId::FromUserEmail(kAppEmail);
@@ -142,7 +140,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result =
-        web_app::WebAppUrlLoaderResult::kUrlLoaded;
+        webapps::WebAppUrlLoaderResult::kUrlLoaded;
     install_page_state.redirection_url = std::nullopt;
 
     install_page_state.opt_metadata =
@@ -152,15 +150,16 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;
 
-    install_page_state.opt_manifest = blink::mojom::Manifest::New();
-    install_page_state.opt_manifest->scope =
-        url::Origin::Create(start_url).GetURL();
-    install_page_state.opt_manifest->start_url = start_url;
-    install_page_state.opt_manifest->id =
+    install_page_state.manifest_before_default_processing =
+        blink::mojom::Manifest::New();
+    install_page_state.manifest_before_default_processing->start_url =
+        start_url;
+    install_page_state.manifest_before_default_processing->id =
         web_app::GenerateManifestIdFromStartUrlOnly(start_url);
-    install_page_state.opt_manifest->display =
+    install_page_state.manifest_before_default_processing->display =
         blink::mojom::DisplayMode::kStandalone;
-    install_page_state.opt_manifest->short_name = u"Basic app name";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Basic app name";
 
     return web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
@@ -168,25 +167,30 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   void InstallAppAsPlaceholder() {
     InstallAppInternal(/*install_app_as_placeholder=*/true);
     // sanity check
-    EXPECT_TRUE(IsAppInstalleAsPlaceholder());
+    EXPECT_TRUE(IsAppInstalledAsPlaceholder());
   }
 
   void InstallApp() {
     CreateWebAppWithManifest();
     InstallAppInternal(/*install_app_as_placeholder=*/false);
 
-    web_app::WebAppInstallInfo info;
-    info.start_url = GURL(kAppLaunchUrl);
-    info.title = kAppTitle;
-    app_manager_->UpdateAppByAccountId(account_id_, info);
+    GURL start_url(kAppLaunchUrl);
+    auto info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+    info->title = kAppTitle;
+    app_manager_->UpdateAppByAccountId(account_id_, *info);
   }
 
-  bool IsAppInstalleAsPlaceholder() {
+  bool IsAppInstalledAsPlaceholder() {
     return web_app_provider()
         .registrar_unsafe()
         .LookupPlaceholderAppId(GURL(kAppInstallUrl),
                                 web_app::WebAppManagement::Type::kKiosk)
         .has_value();
+  }
+
+  apps::AppLaunchParams WaitForWebAppLaunch() {
+    return std::get<0>(app_launch_future_.Take());
   }
 
   MockAppLauncherDelegate& delegate() { return delegate_; }
@@ -225,6 +229,9 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   AccountId account_id_;
+  base::test::TestFuture<apps::AppLaunchParams,
+                         web_app::LaunchWebAppWindowSetting>
+      app_launch_future_;
 
   apps::AppServiceTest app_service_test_;
 
@@ -252,6 +259,25 @@ TEST_F(WebKioskAppServiceLauncherTest,
 }
 
 TEST_F(WebKioskAppServiceLauncherTest,
+       ShouldNotInvokeInitializeNetworkWhenAppIsSuccessfullyInstalled) {
+  InstallApp();
+
+  EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), observer(), OnAppPrepared());
+  EXPECT_CALL(delegate(), InitializeNetwork()).Times(0);
+}
+
+TEST_F(
+    WebKioskAppServiceLauncherTest,
+    ShouldInvokeInitializeNetworkWhenAppIsSuccessfullyInstalledButNotOfflineEnabled) {
+  profile()->GetPrefs()->SetBoolean(::prefs::kKioskWebAppOfflineEnabled, false);
+  InstallApp();
+
+  EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), delegate(),
+                         InitializeNetwork());
+  EXPECT_CALL(observer(), OnAppPrepared()).Times(0);
+}
+
+TEST_F(WebKioskAppServiceLauncherTest,
        InitializeShouldInvokeAppPreparedIfAppAlreadyInstalled) {
   InstallApp();
 
@@ -276,7 +302,7 @@ TEST_F(WebKioskAppServiceLauncherTest, ShouldAlwaysInstallPlaceholder) {
   EXEC_AND_WAIT_FOR_CALL(launcher().ContinueWithNetworkReady(), observer(),
                          OnAppPrepared());
 
-  EXPECT_TRUE(IsAppInstalleAsPlaceholder());
+  EXPECT_TRUE(IsAppInstalledAsPlaceholder());
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, LaunchAppShouldInvokeOnAppLaunched) {
@@ -303,6 +329,15 @@ TEST_F(WebKioskAppServiceLauncherTest,
       GURL(kAppInstallUrl)));
 }
 
+TEST_F(WebKioskAppServiceLauncherTest,
+       InstallUrlShouldBeSetAsOverrideUrlInLaunchParams) {
+  InstallApp();
+  launcher().Initialize();
+  launcher().LaunchApp();
+
+  EXPECT_EQ(WaitForWebAppLaunch().override_url, GURL(kAppInstallUrl));
+}
+
 TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
   // Do not preinstall teh app
 
@@ -316,7 +351,7 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
                          OnAppPrepared());
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
-  EXPECT_FALSE(IsAppInstalleAsPlaceholder());
+  EXPECT_FALSE(IsAppInstalledAsPlaceholder());
 
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual
@@ -357,7 +392,7 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
                          OnAppPrepared());
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 
-  EXPECT_FALSE(IsAppInstalleAsPlaceholder());
+  EXPECT_FALSE(IsAppInstalledAsPlaceholder());
 
   // App isn't always ready by the time it's being launched. Therefore we
   // check the total count of kLaunchAppReadinessUMA instead of individual

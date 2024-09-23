@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java",
+    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeFactory.java",
+  ]
 }
 
 android_library("java") {
@@ -88,6 +91,7 @@ android_library("unit_device_javatests") {
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
@@ -115,6 +119,7 @@ android_library("javatests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

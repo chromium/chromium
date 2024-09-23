@@ -28,12 +28,12 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   ~ClientNativePixmapOpaque() override = default;
 
   bool Map() override { return false; }
-  void Unmap() override { NOTREACHED(); }
+  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
   size_t GetNumberOfPlanes() const override {
     return pixmap_handle_.planes.size();
   }
   void* GetMemoryAddress(size_t plane) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   int GetStride(size_t plane) const override {
@@ -80,6 +80,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::SCANOUT_FRONT_RENDERING: {
         if (!CanFitImageForSizeAndFormat(
                 handle, size, format, /*assume_single_memory_object=*/false)) {
+          DLOG(ERROR) << "Failed to verify the size and format of the handle.";
           return nullptr;
         }
 
@@ -122,11 +123,12 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::GPU_READ:
       case gfx::BufferUsage::SCANOUT:
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
+      case gfx::BufferUsage::PROTECTED_SCANOUT:
       case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
         return base::WrapUnique(
             new ClientNativePixmapOpaque(std::move(handle)));
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

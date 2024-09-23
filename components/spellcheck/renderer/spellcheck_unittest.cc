@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/spellcheck/renderer/spellcheck.h"
 
 #include <stddef.h>
@@ -155,7 +160,7 @@ class MockTextCheckingCompletion : public blink::WebTextCheckingCompletion {
 
   void DidCancelCheckingText() override { result_->completion_count_++; }
 
-  raw_ptr<MockTextCheckingResult, ExperimentalRenderer> result_;
+  raw_ptr<MockTextCheckingResult> result_;
 };
 
 // Operates unit tests for the content::SpellCheck::SpellCheckWord() function

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
@@ -129,7 +130,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
     size_t size() const { return targets_.size(); }
 
    private:
-    std::list<AcceleratorTarget*> targets_;
+    std::list<raw_ptr<AcceleratorTarget, CtnExperimental>> targets_;
     bool has_priority_handler_ = false;
   };
 

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
@@ -31,11 +32,16 @@
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -44,6 +50,7 @@
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -240,7 +247,7 @@ class LoggingObserver : public VolumeManagerObserver {
     // by the time VolumeManager shuts down, and this handler is never reached.
     // In fact, it's more likely for UAF crash to happen before this code is
     // reached.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -416,6 +423,7 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemUnmountWithoutMount) {
   ASSERT_EQ(0U, observer.events().size());
   volume_manager()->RemoveObserver(&observer);
 }
+
 TEST_F(VolumeManagerTest, OnBootDeviceDiskEvent) {
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
@@ -1372,7 +1380,7 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Enabled) {
 
   ASSERT_EQ(5U, observer.events().size());
 
-  unsigned index = 0;
+  size_t index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
@@ -1400,7 +1408,7 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
 
   ASSERT_EQ(5U, observer.events().size());
 
-  unsigned index = 0;
+  size_t index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
     EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
@@ -1414,6 +1422,115 @@ TEST_F(VolumeManagerArcTest, OnArcPlayStoreEnabledChanged_Disabled) {
   }
 
   volume_manager()->RemoveObserver(&observer);
+}
+
+TEST_F(VolumeManagerArcTest, ShouldAlwaysMountAndroidVolumesInFilesForTesting) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kArcForceMountAndroidVolumesInFiles);
+
+  LoggingObserver observer;
+  volume_manager()->AddObserver(&observer);
+
+  // Volumes are mounted even when Play Store is not enabled for the profile.
+  volume_manager()->OnArcPlayStoreEnabledChanged(false);
+
+  ASSERT_EQ(5U, observer.events().size());
+
+  size_t index = 0;
+  for (const auto& event : observer.events()) {
+    EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
+    EXPECT_EQ(ash::MountError::kSuccess, event.mount_error);
+    if (index < 4) {
+      EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
+                event.volume_id);
+    } else {
+      EXPECT_EQ(arc_volume_ids[index], event.volume_id);
+    }
+    index++;
+  }
+
+  // No volume-related event happens after Play Store preference changes,
+  // because volumes are just kept being mounted.
+  volume_manager()->OnArcPlayStoreEnabledChanged(true);
+  volume_manager()->OnArcPlayStoreEnabledChanged(false);
+  ASSERT_EQ(5U, observer.events().size());
+
+  volume_manager()->RemoveObserver(&observer);
+}
+
+// Tests VolumeManager with the LocalUserFilesAllowed policy.
+class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
+ public:
+  VolumeManagerLocalUserFilesTest()
+      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    VolumeManagerArcTest::SetUp();
+  }
+
+  void TearDown() override { VolumeManagerArcTest::TearDown(); }
+
+  void SetLocalUserFilesPolicy(bool allowed) {
+    scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
+                                                  allowed);
+  }
+
+  bool ContainsDownloads() {
+    std::vector<base::WeakPtr<Volume>> volume_list =
+        volume_manager()->GetVolumeList();
+    if (volume_list.size() == 0u) {
+      return false;
+    }
+    auto volume = base::ranges::find(volume_list, "downloads:MyFiles",
+                                     &Volume::volume_id);
+    return volume != volume_list.end() &&
+           (*volume)->type() == VOLUME_TYPE_DOWNLOADS_DIRECTORY;
+  }
+
+  bool ContainsPlayFiles() {
+    std::vector<base::WeakPtr<Volume>> volume_list =
+        volume_manager()->GetVolumeList();
+    if (volume_list.size() == 0u) {
+      return false;
+    }
+    auto volume =
+        base::ranges::find(volume_list, "android_files:0", &Volume::volume_id);
+    return volume != volume_list.end() &&
+           (*volume)->type() == VOLUME_TYPE_ANDROID_FILES;
+  }
+
+ private:
+  ScopedTestingLocalState scoped_testing_local_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that VolumeManager removes local volumes when the policy is set to
+// false, and adds them when set to true.
+TEST_F(VolumeManagerLocalUserFilesTest, DisableEnable) {
+  // Enable ARC.
+  profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, true);
+  // Emulate running inside ChromeOS.
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+  volume_manager()->Initialize();  // Adds "Downloads" and "Play Files"
+  EXPECT_TRUE(ContainsDownloads());
+  EXPECT_TRUE(ContainsPlayFiles());
+
+  // Setting the policy to false removes local volumes.
+  SetLocalUserFilesPolicy(/*allowed=*/false);
+  EXPECT_FALSE(ContainsDownloads());
+  EXPECT_FALSE(ContainsPlayFiles());
+
+  // Setting the policy to true adds local volumes.
+  SetLocalUserFilesPolicy(/*allowed=*/true);
+  EXPECT_TRUE(ContainsDownloads());
+  EXPECT_TRUE(ContainsPlayFiles());
+
+  // Another update with the same value shouldn't do anything.
+  SetLocalUserFilesPolicy(/*allowed=*/true);
+  EXPECT_TRUE(ContainsDownloads());
+  EXPECT_TRUE(ContainsPlayFiles());
 }
 
 }  // namespace file_manager

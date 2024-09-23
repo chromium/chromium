@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/config/gpu_preferences.h"
@@ -34,8 +35,8 @@ std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     const GLFormatCaps& caps) {
   if (plane_format == viz::SinglePlaneFormat::kR_8 &&
       (!caps.ext_texture_rg() || caps.disable_r8_shared_images())) {
-    // Fallback to LUMINANCE_8 for R_8 format.
-    return viz::SinglePlaneFormat::kLUMINANCE_8;
+    // Fallback to ALPHA_8 for R_8 format.
+    return viz::SinglePlaneFormat::kALPHA_8;
   }
   if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
       !caps.ext_texture_rg()) {
@@ -94,7 +95,7 @@ std::vector<GLCommonImageBackingFactory::FormatInfo> GetMultiPlaneFormatInfo(
 }  // namespace
 
 GLCommonImageBackingFactory::GLCommonImageBackingFactory(
-    uint32_t supported_usages,
+    SharedImageUsageSet supported_usages,
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,

@@ -64,10 +64,6 @@ static bool check_msgtable() {
   exemptions.push_back(PpapiMsgStart);
 #endif  // !BUILDFLAG(ENABLE_PPAPI)
 
-#if !BUILDFLAG(IS_ANDROID)
-  exemptions.push_back(GinJavaBridgeMsgStart);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   for (size_t i = 0; i < MSGTABLE_SIZE; ++i) {
     int class_id = IPC_MESSAGE_ID_CLASS(msgtable[i].id);
     file_name = msgtable[i].file;

@@ -18,7 +18,7 @@ namespace autofill::autofill_metrics {
 void LogStoredIbanMetrics(
     const std::vector<std::unique_ptr<Iban>>& local_ibans,
     const std::vector<std::unique_ptr<Iban>>& server_ibans,
-    const base::TimeDelta& disused_data_threshold) {
+    base::TimeDelta disused_data_threshold) {
   auto LogStoredIban = [disused_data_threshold](
                            const std::vector<std::unique_ptr<Iban>>& ibans) {
     if (ibans.empty()) {
@@ -168,6 +168,26 @@ void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful) {
 
 void LogServerIbanUnmaskStatus(bool is_successful) {
   base::UmaHistogramBoolean("Autofill.Iban.UnmaskIbanResult", is_successful);
+}
+
+void LogIbanSaveOfferedCountry(std::string_view country_code) {
+  base::UmaHistogramEnumeration("Autofill.Iban.CountryOfSaveOfferedIban",
+                                Iban::GetIbanSupportedCountry(country_code));
+}
+
+void LogIbanSaveAcceptedCountry(std::string_view country_code) {
+  base::UmaHistogramEnumeration("Autofill.Iban.CountryOfSaveAcceptedIban",
+                                Iban::GetIbanSupportedCountry(country_code));
+}
+
+void LogIbanSelectedCountry(std::string_view country_code) {
+  base::UmaHistogramEnumeration("Autofill.Iban.CountryOfSelectedIban",
+                                Iban::GetIbanSupportedCountry(country_code));
+}
+
+void LogIbanUploadSaveFailed(bool iban_saved_locally) {
+  base::UmaHistogramBoolean("Autofill.IbanUpload.SaveFailed",
+                            iban_saved_locally);
 }
 
 }  // namespace autofill::autofill_metrics

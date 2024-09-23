@@ -20,4 +20,4 @@ bool IsSavingPasswordsToAccountWithNormalEncryption(
 
 }  // namespace password_manager_util
 
-#endif  // IOS_CHROME_COMMON_UI_UTIL_PASSWORD_MANAGER_UTIL_IOS_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_UTIL_IOS_H_

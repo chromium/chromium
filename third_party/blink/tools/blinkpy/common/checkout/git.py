@@ -27,9 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import enum
 import logging
 import re
-from typing import List, Optional
+import os
+from typing import List, Mapping, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -38,13 +40,53 @@ from blinkpy.common.system.filesystem import FileSystem
 _log = logging.getLogger(__name__)
 
 
-class Git(object):
+class CommitRange(NamedTuple):
+    start: str
+    end: str
+
+    def __str__(self) -> str:
+        return f'{self.start}...{self.end}'
+
+
+class FileStatusType(enum.Flag):
+    ADD = enum.auto()
+    COPY = enum.auto()
+    DELETE = enum.auto()
+    MODIFY = enum.auto()
+    RENAME = enum.auto()
+
+    def __str__(self) -> str:
+        return ''.join(status.name[0] for status in FileStatusType
+                       if status & self)
+
+    @classmethod
+    def parse_diff_filter(cls, pattern: str) -> 'FileStatusType':
+        """Parse a parameter to `git diff --diff-filter` [0].
+
+        [0]: https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+        """
+        status_by_symbol = {member.name[0]: member for member in cls}
+        status = FileStatusType(0)
+        for symbol in pattern:
+            status |= status_by_symbol[symbol]
+        return status
+
+
+class FileStatus(NamedTuple):
+    status_type: FileStatusType
+    # Source path for copied and renamed files. Ignored for other files.
+    source: Optional[str] = None
+
+
+class Git:
     # Unless otherwise specified, methods are expected to return paths relative
     # to self.checkout_root.
 
     # Git doesn't appear to document error codes, but seems to return
     # 1 or 128, mostly.
     ERROR_FILE_IS_MISSING = 128
+    DEFAULT_DIFF_FILTER = (FileStatusType.ADD | FileStatusType.DELETE
+                           | FileStatusType.MODIFY)
 
     def __init__(self,
                  cwd=None,
@@ -124,6 +166,8 @@ class Git(object):
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
+        if os.getcwd().startswith('/google/cog/cloud'):
+            return os.getcwd()
         return self.run(['rev-parse', '--show-toplevel'], cwd=path).strip()
 
     @classmethod
@@ -144,7 +188,11 @@ class Git(object):
         command = ['diff', 'HEAD', '--no-renames', '--name-only']
         if pathspec:
             command.extend(['--', pathspec])
-        return self.run(command) != ''
+        output = self.run(command)
+        if output != '':
+            _log.error('Has working directory changes:\n%s', output)
+            return True
+        return False
 
     def uncommitted_changes(self):
         """List files with uncommitted changes, including untracked files."""
@@ -243,6 +291,18 @@ class Git(object):
         """Return the commit hash of HEAD."""
         return self.run(['rev-parse', 'HEAD']).strip()
 
+    def new_branch(self, name: str, stack: bool = True):
+        """Create and switch to a new branch.
+
+        Arguments:
+            stack: If true, track the current branch (if it exists). Otherwise,
+                track tip-of-tree (origin/main).
+        """
+        if stack and self.current_branch():
+            self.run(['new-branch', '--upstream-current', name])
+        else:
+            self.run(['new-branch', name])
+
     def _upstream_branch(self):
         current_branch = self.current_branch()
         return self._branch_from_ref(
@@ -270,21 +330,48 @@ class Git(object):
 
         return self._remote_merge_base()
 
-    def changed_files(self,
-                      git_commit=None,
-                      diff_filter='ADM',
-                      path: Optional[str] = None):
-        # FIXME: --diff-filter could be used to avoid the "extract_filenames" step.
+    def changed_files(
+        self,
+        commits: Union[None, str, CommitRange] = None,
+        diff_filter: Union[str, FileStatusType] = DEFAULT_DIFF_FILTER,
+        path: Optional[str] = None,
+        rename_threshold: Optional[float] = None,
+    ) -> Mapping[str, FileStatus]:
+        if isinstance(commits, CommitRange):
+            commit_arg = str(commits)
+        else:
+            commit_arg = self._merge_base(commits)
         status_command = [
-            'diff', '-r', '--name-status', '--no-renames', '--no-ext-diff',
+            'diff',
+            '-r',
+            '-z',
+            '--name-status',
+            '--no-ext-diff',
             '--full-index',
-            self._merge_base(git_commit)
+            f'--diff-filter={diff_filter}',
+            commit_arg,
         ]
+        if rename_threshold is None:
+            status_command.append('--no-renames')
+        else:
+            status_command.append(f'--find-renames={100 * rename_threshold}%')
         if path:
             status_command.append(path)
-        # Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
-        return self._run_status_and_extract_filenames(
-            status_command, self._status_regexp(diff_filter))
+
+        file_statuses = {}
+        raw_output = self.run(status_command)
+        if not raw_output:
+            return file_statuses
+        values = iter(raw_output.rstrip('\x00').split('\x00'))
+        while (status_type := next(values, None)) is not None:
+            status_type = FileStatusType.parse_diff_filter(status_type[0])
+            affected_file = next(values)
+            if status_type in FileStatusType.COPY | FileStatusType.RENAME:
+                file_statuses[next(values)] = FileStatus(
+                    status_type, affected_file)
+            else:
+                file_statuses[affected_file] = FileStatus(status_type)
+        return file_statuses
 
     def added_files(self):
         return self._run_status_and_extract_filenames(self.status_command(),
@@ -317,13 +404,38 @@ class Git(object):
     def display_name(self):
         return 'git'
 
-    def most_recent_log_matching(self, grep_str, path):
+    def most_recent_log_matching(self,
+                                 grep_str: str,
+                                 path: Optional[str] = None,
+                                 commits: Union[None, str, CommitRange] = None,
+                                 format_pattern: Optional[str] = None) -> str:
+        """Find and return the most recent commit message matching a pattern.
+
+        Arguments:
+            grep_str: A grep-style regular expression.
+            path: A path that matching commits should modify.
+            commits: A revision range to search, where:
+              * `None` searches the full history up to `HEAD` (inclusive).
+              * `str` searches the history up to that revision (inclusive).
+              * `CommitRange` searches between the explicit start (exclusive)
+                and end (inclusive) revisions.
+            format_pattern: How `git log` should format the message, if found.
+        """
         # We use '--grep=' + foo rather than '--grep', foo because
         # git 1.7.0.4 (and earlier) didn't support the separate arg.
-        return self.run([
-            'log', '-1', '--grep=' + grep_str, '--date=iso',
-            self.find_checkout_root(path)
-        ])
+        command = [
+            'log',
+            '-1',
+            f'--grep={grep_str}',
+            '--date=iso',
+        ]
+        if format_pattern:
+            command.append(f'--format={format_pattern}')
+        if commits:
+            command.append(str(commits))
+        if path:
+            command.extend(['--', path])
+        return self.run(command)
 
     def _commit_position_from_git_log(self, git_log):
         match = re.search(

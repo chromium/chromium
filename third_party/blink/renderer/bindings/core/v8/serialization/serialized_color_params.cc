@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 
 #include "build/build_config.h"
@@ -27,7 +32,7 @@ SerializedPredefinedColorSpace SerializeColorSpace(
     case PredefinedColorSpace::kSRGBLinear:
       return SerializedPredefinedColorSpace::kSRGBLinear;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SerializedPredefinedColorSpace::kSRGB;
 }
 
@@ -48,7 +53,7 @@ PredefinedColorSpace DeserializeColorSpace(
     case SerializedPredefinedColorSpace::kSRGBLinear:
       return PredefinedColorSpace::kSRGBLinear;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PredefinedColorSpace::kSRGB;
 }
 
@@ -92,7 +97,7 @@ ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
     case SerializedImageDataStorageFormat::kFloat32:
       return ImageDataStorageFormat::kFloat32;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ImageDataStorageFormat::kUint8;
 }
 
@@ -286,7 +291,7 @@ ImageOrientationEnum SerializedImageBitmapSettings::GetImageOrientation()
     case SerializedImageOrientation::kLeftBottom:
       return ImageOrientationEnum::kOriginLeftBottom;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ImageOrientationEnum::kOriginTopLeft;
 }
 

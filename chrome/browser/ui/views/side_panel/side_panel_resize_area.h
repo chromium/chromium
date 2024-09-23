@@ -20,7 +20,7 @@ class SidePanelResizeHandle : public ImageView,
  public:
   explicit SidePanelResizeHandle(SidePanel* side_panel);
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void UpdateVisibility(bool visible);
 
   // ImageView:
   void AddedToWidget() override;
@@ -45,11 +45,13 @@ class SidePanelResizeArea : public ResizeArea {
 
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void Layout(PassKey) override;
 
  private:
   raw_ptr<SidePanel> side_panel_;
-  raw_ptr<ImageView> resize_handle_;
+  raw_ptr<SidePanelResizeHandle> resize_handle_;
 };
 
 }  // namespace views

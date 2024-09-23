@@ -5,18 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class PromosManager;
 
 // Singleton that owns all PromosManagers and associates them with
-// ChromeBrowserState.
+// Profile.
 class PromosManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static PromosManager* GetForBrowserState(ChromeBrowserState* browser_state);
 
+  static PromosManager* GetForProfile(ProfileIOS* profile);
   static PromosManagerFactory* GetInstance();
 
   PromosManagerFactory(const PromosManagerFactory&) = delete;

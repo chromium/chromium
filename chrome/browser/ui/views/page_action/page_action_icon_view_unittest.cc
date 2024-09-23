@@ -12,6 +12,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -69,10 +70,12 @@ class TestPageActionIconView : public PageActionIconView {
                            parent_delegate,
                            delegate,
                            "TestName",
+                           0,
+                           nullptr,
                            true,
                            font_list) {
     SetUpForInOutAnimation();
-    SetAccessibilityProperties(/*role*/ std::nullopt, u"TestTooltip");
+    GetViewAccessibility().SetName(u"TestTooltip");
   }
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }
@@ -119,7 +122,8 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     delegate_ = TestPageActionIconDelegate();
     view_ = widget_->SetContentsView(std::make_unique<TestPageActionIconView>(
         /*command_updater=*/nullptr,
@@ -202,6 +206,6 @@ TEST_F(PageActionIconViewTest, UsesIconImageIfAvailable) {
 }
 
 TEST_F(PageActionIconViewTest, IconViewAccessibleName) {
-  EXPECT_EQ(view()->GetAccessibleName(),
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
             view()->GetTextForTooltipAndAccessibleName());
 }

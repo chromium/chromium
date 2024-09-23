@@ -1,0 +1,70 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "link_to_text_delegate.h",
+    "link_to_text_mediator.h",
+    "link_to_text_mediator.mm",
+  ]
+  deps = [
+    "//components/shared_highlighting/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/link_to_text/model",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
+    "//ios/web/public",
+    "//ui/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "link_to_text_mediator_unittest.mm" ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//components/ukm:test_support",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/link_to_text/model",
+    "//ios/chrome/browser/link_to_text/model:internal",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "link_to_text_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/browser_container:eg_test_support+eg2",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/common:features",
+    "//ios/web/public/navigation:navigation",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -23,6 +23,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
+import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 import {getTemplate} from './reset_settings_card.html.js';
 
 export interface ResetSettingsCardElement {
@@ -47,10 +48,6 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   static get properties() {
     return {
       showPowerwashDialog_: {
-        type: Boolean,
-        value: false,
-      },
-      showSanitizeDialog_: {
         type: Boolean,
         value: false,
       },
@@ -89,18 +86,19 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
     };
   }
 
+  private osResetBrowserProxy_: OsResetBrowserProxy;
   private installedESimProfiles_: ESimProfileRemote[];
   private readonly isRevampWayfindingEnabled_: boolean;
   private readonly isSanitizeAllowed_: boolean;
   private route_: Route;
   private showPowerwashDialog_: boolean;
-  private showSanitizeDialog_: boolean;
 
   constructor() {
     super();
 
     this.route_ = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
                                                     routes.OS_RESET;
+    this.osResetBrowserProxy_ = OsResetBrowserProxyImpl.getInstance();
   }
 
   private async onShowPowerwashDialog_(e: Event): Promise<void> {
@@ -119,8 +117,10 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   }
 
   private onShowSanitizeDialog_(e: Event): void {
-    e.preventDefault();
-    this.showSanitizeDialog_ = true;
+    if (this.isSanitizeAllowed_) {
+      e.preventDefault();
+      this.osResetBrowserProxy_.onShowSanitizeDialog();
+    }
   }
 
 
@@ -129,10 +129,6 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
     focusWithoutInk(this.$.powerwashButton);
   }
 
-  private onSanitizeDialogClose_(): void {
-    this.showSanitizeDialog_ = false;
-    focusWithoutInk(this.$.sanitizeButton);
-  }
 
   override currentRouteChanged(newRoute: Route): void {
     // Check route change applies to this page.

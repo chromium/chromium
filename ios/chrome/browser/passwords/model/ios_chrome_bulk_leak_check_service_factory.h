@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_BULK_LEAK_CHECK_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_BULK_LEAK_CHECK_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 enum class ServiceAccessType;
 
 namespace password_manager {
@@ -17,13 +17,17 @@ class BulkLeakCheckServiceInterface;
 }
 
 // Singleton that owns all BulkLeakCheckServices and associates them with
-// ChromeBrowserState.
+// profile.
 class IOSChromeBulkLeakCheckServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static IOSChromeBulkLeakCheckServiceFactory* GetInstance();
+  // TODO(crbug.com/358301380): remove this method.
   static password_manager::BulkLeakCheckServiceInterface* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
+
+  static password_manager::BulkLeakCheckServiceInterface* GetForProfile(
+      ProfileIOS* profile);
+  static IOSChromeBulkLeakCheckServiceFactory* GetInstance();
 
  private:
   friend class base::NoDestructor<IOSChromeBulkLeakCheckServiceFactory>;

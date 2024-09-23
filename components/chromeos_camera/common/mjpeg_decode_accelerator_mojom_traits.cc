@@ -35,7 +35,7 @@ EnumTraits<chromeos_camera::mojom::DecodeError,
     case chromeos_camera::MjpegDecodeAccelerator::PLATFORM_FAILURE:
       return chromeos_camera::mojom::DecodeError::PLATFORM_FAILURE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chromeos_camera::mojom::DecodeError::NO_ERRORS;
 }
 
@@ -64,7 +64,7 @@ bool EnumTraits<chromeos_camera::mojom::DecodeError,
       *out = chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -77,7 +77,7 @@ mojo::ScopedSharedBufferHandle StructTraits<
           input.TakeRegion());
   DCHECK(input_region.IsValid()) << "Bad BitstreamBuffer handle";
 
-  // TODO(https://crbug.com/793446): Split BitstreamBuffers into ReadOnly and
+  // TODO(crbug.com/40553989): Split BitstreamBuffers into ReadOnly and
   // Unsafe versions corresponding to usage, eg video encode accelerators will
   // use writable mappings but audio uses are readonly (see
   // android_video_encode_accelerator.cc and

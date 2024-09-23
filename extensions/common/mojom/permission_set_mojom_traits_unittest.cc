@@ -5,6 +5,7 @@
 #include "extensions/common/mojom/permission_set_mojom_traits.h"
 
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/mojom/permission_set.mojom.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/mock_manifest_permission.h"

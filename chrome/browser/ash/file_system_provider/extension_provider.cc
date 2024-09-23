@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
@@ -33,7 +33,7 @@ namespace {
 
 // Timeout before an onMountRequested request is considered as stale and hence
 // aborted.
-constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(5);
+constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(10);
 
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
@@ -97,7 +97,7 @@ std::unique_ptr<ProvidedFileSystemInterface>
 ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info,
-    ContentCache* content_cache) {
+    CacheManager* cache_manager) {
   DCHECK(profile);
   if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
     return std::make_unique<ThrottledFileSystem>(
@@ -114,7 +114,7 @@ ExtensionProvider::CreateProvidedFileSystem(
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<CloudFileSystem>(
             std::make_unique<ProvidedFileSystem>(profile, file_system_info),
-            content_cache));
+            cache_manager));
   }
   // CloudFileSystem without cache.
   return std::make_unique<ThrottledFileSystem>(

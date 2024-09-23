@@ -5,16 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_DELEGATE_H_
 
-@class PasswordDetails;
+@class CredentialDetails;
 @class PasswordDetailsTableViewController;
 
 @protocol PasswordDetailsTableViewControllerDelegate
 
-// Called when user finished editing a password.
+// Called when user finished editing a credential.
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(PasswordDetails*)password
+             didEditCredentialDetails:(CredentialDetails*)credential
                       withOldUsername:(NSString*)oldUsername
+                   oldUserDisplayName:(NSString*)oldUserDisplayName
                           oldPassword:(NSString*)oldPassword
                               oldNote:(NSString*)oldNote;
 
@@ -53,7 +54,7 @@
 
 // Called by the view controller when the user wants to dismiss a compromised
 // password warning.
-- (void)dismissWarningForPassword:(PasswordDetails*)password;
+- (void)dismissWarningForPassword:(CredentialDetails*)password;
 
 // Called by the view controller when the user wants to restore a dismissed
 // compromised password warning.

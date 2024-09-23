@@ -139,6 +139,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
   WebTextInputInfo TextInputInfo() override;
   int ComputeWebTextInputNextPreviousFlags() override { return 0; }
   WebRange CompositionRange() const override;
+  // Populate `bounds` with the bounds of each item in EditContext's
+  // stored character bounds, scaled to physical pixels.
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
 
@@ -154,7 +156,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
   void Blur();
 
   // Populate |control_bounds| and |selection_bounds| with the bounds fetched
-  // from the active EditContext.
+  // from the active EditContext, in physical pixels.
   void GetLayoutBounds(gfx::Rect* control_bounds,
                        gfx::Rect* selection_bounds) override;
 
@@ -190,13 +192,14 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // `after` characters following the current `selection_end_`.
   void DeleteSurroundingText(int before, int after);
 
-  // Called from WebLocalFrame to change the selection range.
-  // Unlike updateSelection(), we need to dispatch TextInputEvent to notify the
-  // page that the selection has changed since in this case the change was not
-  // triggered by the page.
-  void SetSelection(int start, int end);
+  // Change the selection range.
+  // Optionally dispatch TextInputEvent to notify the
+  // page that the selection has changed.
+  void SetSelection(int start,
+                    int end,
+                    bool dispatch_text_update_event = false);
 
-  // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
+  // Sets rect_in_viewport to the surrounding rect, in physical pixels,
   // for the character range specified by `location` and `length`.
   // Returns true on success, false on failure (in which case
   // rect_in_viewport) is not changed.
@@ -279,9 +282,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // It is possible that selection_start > selection_end_,
   // indicating a "backwards" selection (e.g. when the user
   // drags the selection from right to left).
+  // These should always be modified via SetSelection() to ensure
+  // that the proper notifications are fired.
   uint32_t selection_start_ = 0;
   uint32_t selection_end_ = 0;
 
+  // The following bounds are in CSS pixels.
   gfx::Rect control_bounds_;
   gfx::Rect selection_bounds_;
   WebVector<gfx::Rect> character_bounds_;

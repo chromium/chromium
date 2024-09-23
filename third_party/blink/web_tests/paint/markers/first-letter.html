@@ -2,11 +2,23 @@
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
 div:first-letter {
-  color: red;
+  font-size: 2em;
+  text-transform: capitalize;
 }
 </style>
 
 <div id="div">None Composition Spelling TextMatch</div>
+<div id="match">search highlighted</div>
+<div id="spelling">sppelling highlighted</div>
+<div id="grammar">&rpar;grammar highlighted</div>
+<div id="collapsibleSpace">
+    has collapsible space
+</div>
+<div id="preSpace" style="white-space:pre">  has non-collapsible space
+</div>
+<div id="textTransform" style="text-transform:uppercase">uppercase</div>
+<div id="punctuation">"H"as punctuation</div>
+
 
 <script>
 function addCompositionMarker(elem, start, end) {
@@ -27,6 +39,15 @@ function addSpellingMarker(elem, start, end) {
         internals.setMarker(document, range, 'spelling');
 };
 
+function addGrammarMarker(elem, start, end) {
+    const range = document.createRange();
+    const textNode = elem.firstChild;
+    range.setStart(textNode, start);
+    range.setEnd(textNode, end);
+    if (typeof internals !== 'undefined')
+        internals.setMarker(document, range, 'grammar');
+};
+
 function addTextMatchMarker(elem, start, end) {
     const range = document.createRange();
     const textNode = elem.firstChild;
@@ -42,5 +63,14 @@ onload = runAfterLayoutAndPaint(function() {
     addCompositionMarker(div, 5, 16);
     addSpellingMarker(div, 17, 25);
     addTextMatchMarker(div, 26, 35);
+
+    addTextMatchMarker(match, 0, 6);
+    addSpellingMarker(spelling, 0, 9);
+    addGrammarMarker(grammar, 0, 8);
+    addTextMatchMarker(collapsibleSpace, 5, 8);
+    addTextMatchMarker(preSpace, 2, 5);
+    addTextMatchMarker(textTransform, 0, 9);
+    addTextMatchMarker(punctuation, 0, 5);
+
 }, true);
 </script>

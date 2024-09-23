@@ -44,15 +44,15 @@ using ::testing::Invoke;
 using ::testing::Return;
 
 typedef uint32_t FrameFlag;
-const FrameFlag kNoFlag = 0;
-const FrameFlag kFinal = 1;
-const FrameFlag kReserved1 = 2;
+constexpr FrameFlag kNoFlag = 0;
+constexpr FrameFlag kFinal = 1;
+constexpr FrameFlag kReserved1 = 2;
 // We don't define values for other flags because we don't need them.
 
 // The value must equal to the value of the corresponding
 // constant in websocket_deflate_stream.cc
-const size_t kChunkSize = 4 * 1024;
-const int kWindowBits = 15;
+constexpr size_t kChunkSize = 4 * 1024;
+constexpr int kWindowBits = 15;
 
 std::string ToString(IOBufferWithSize* buffer) {
   return std::string(buffer->data(), buffer->size());
@@ -714,7 +714,7 @@ TEST_F(WebSocketDeflateStreamTest, ReadControlFrameBetweenDataFrames) {
 TEST_F(WebSocketDeflateStreamTest, SplitToMultipleFramesInReadFrames) {
   WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
   deflater.Initialize(kWindowBits);
-  const size_t kSize = kChunkSize * 3;
+  constexpr size_t kSize = kChunkSize * 3;
   const std::string original_data(kSize, 'a');
   deflater.AddBytes(original_data.data(), original_data.size());
   deflater.Finish();
@@ -1169,7 +1169,7 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
   WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
   LinearCongruentialGenerator lcg(133);
   WriteFramesStub stub(predictor_, OK);
-  const size_t size = 1024;
+  constexpr size_t kSize = 1024;
 
   {
     InSequence s;
@@ -1184,8 +1184,10 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     bool is_final = (total_compressed_frames.size() >= 2);
     std::vector<std::unique_ptr<WebSocketFrame>> frames;
     std::string data;
-    for (size_t i = 0; i < size; ++i)
+    data.reserve(kSize);
+    for (size_t i = 0; i < kSize; ++i) {
       data += static_cast<char>(lcg.Generate());
+    }
     deflater.AddBytes(data.data(), data.size());
     FrameFlag flag = is_final ? kFinal : kNoFlag;
     AppendTo(&frames, WebSocketFrameHeader::kOpCodeBinary, flag, data);

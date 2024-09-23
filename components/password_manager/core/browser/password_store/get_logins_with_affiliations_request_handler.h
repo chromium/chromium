@@ -13,9 +13,8 @@ namespace password_manager {
 class AffiliatedMatchHelper;
 
 // Helper function which is used to obtain PasswordForms for a particular login
-// and affiliated logins in parallel (with kFillingAcrossGroupedSites) it can
-// also obtain logins for grouped sites. 'callback' is invoked after the
-// operation is finished.
+// and affiliated logins in parallel. 'callback' is invoked after the operation
+// is finished.
 void GetLoginsWithAffiliationsRequestHandler(
     PasswordFormDigest form,
     PasswordStoreBackend* backend,

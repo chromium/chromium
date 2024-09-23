@@ -55,6 +55,63 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlySoftwareSource) {
   EXPECT_TRUE(test_future.Get());
 }
 
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlySoftwareSource_Fail) {
+  auto software_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*software_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlyUnexportableSource) {
+  auto unexportable_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+      }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_OnlyUnexportableSource_Fail) {
+  auto unexportable_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.Get());
+}
+
 TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources) {
   auto unexportable_factory = CreateMockedFactory();
   auto software_factory = CreateMockedFactory();
@@ -75,6 +132,60 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources) {
   factory->CreatePrivateKey(test_future.GetCallback());
 
   EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_UnexportableFail) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      }));
+
+  EXPECT_CALL(*software_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+      }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_AllFail) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      }));
+
+  EXPECT_CALL(*software_factory, CreatePrivateKey(_))
+      .WillOnce(Invoke([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      }));
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_FALSE(test_future.Get());
 }
 
 TEST(PrivateKeyFactoryTest, LoadPrivateKey_AllSources_Unexportable) {

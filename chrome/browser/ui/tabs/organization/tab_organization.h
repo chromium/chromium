@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class TabOrganization : public TabData::Observer {
@@ -45,18 +46,24 @@ class TabOrganization : public TabData::Observer {
 
   TabOrganization(TabDatas tab_datas,
                   std::vector<std::u16string> names,
+                  int first_new_tab_index = 0,
                   CurrentName current_name = 0u,
                   UserChoice choice = UserChoice::kNoChoice);
   ~TabOrganization() override;
 
   const TabDatas& tab_datas() const { return tab_datas_; }
+  int first_new_tab_index() const { return first_new_tab_index_; }
   const std::vector<std::u16string>& names() const { return names_; }
   const CurrentName& current_name() const { return current_name_; }
   UserChoice choice() const { return choice_; }
+  // TODO(b/331852814): Remove along with the multi tab organization flag
   optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
+  std::optional<tab_groups::TabGroupId> group_id() const { return group_id_; }
   ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
-  int GetTabRemovedCount() const { return user_removed_tab_ids_.size(); }
+  const std::vector<TabData::TabID>& user_removed_tab_ids() const {
+    return user_removed_tab_ids_;
+  }
 
   bool IsValidForOrganizing() const;
 
@@ -66,7 +73,13 @@ class TabOrganization : public TabData::Observer {
   void AddTabData(std::unique_ptr<TabData> tab_data);
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(CurrentName new_current_name);
-  void SetFeedback(optimization_guide::proto::UserFeedback feedback);
+  // TODO(b/331852814): Remove along with the multi tab organization flag
+  void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
+    feedback_ = feedback;
+  }
+  void SetTabGroupId(std::optional<tab_groups::TabGroupId> id) {
+    group_id_ = id;
+  }
   void Accept();
   void Reject();
 
@@ -81,6 +94,11 @@ class TabOrganization : public TabData::Observer {
   // The tabs that are currently included in the organization. When accepted,
   // they will be organized in the tabstrip.
   TabDatas tab_datas_;
+
+  // The index of the first tab in the organization that is not already part of
+  // the corresponding tab group, if any. Will be 0 if this does not correspond
+  // to an existing tab group.
+  int first_new_tab_index_ = 0;
 
   // The tab ids that have been removed by the user after the organization was
   // instantiated.
@@ -103,8 +121,12 @@ class TabOrganization : public TabData::Observer {
 
   // A separate feedback mechanism, represents whether the user has provided
   // feedback via the thumbs UI.
+  // TODO(b/331852814): Remove along with the multi tab organization flag
   optimization_guide::proto::UserFeedback feedback_ =
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+
+  // The id for the existing tab group this organization refers to, if any.
+  std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt;
 
   // a monotonically increasing ID to refer to the organization in the
   // TabOrganizationSession.

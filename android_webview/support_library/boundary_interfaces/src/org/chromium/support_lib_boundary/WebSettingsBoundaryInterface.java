@@ -55,16 +55,16 @@ public interface WebSettingsBoundaryInterface {
     int getForceDarkBehavior();
 
     @Retention(RetentionPolicy.SOURCE)
-    @interface WebAuthnSupport {
+    @interface WebauthnSupport {
         int NONE = 0;
         int APP = 1;
         int BROWSER = 2;
     }
 
-    void setWebAuthnSupport(@WebAuthnSupport int support);
+    void setWebauthnSupport(@WebauthnSupport int support);
 
-    @WebAuthnSupport
-    int getWebAuthnSupport();
+    @WebauthnSupport
+    int getWebauthnSupport();
 
     void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
 
@@ -107,4 +107,19 @@ public interface WebSettingsBoundaryInterface {
     int getWebViewMediaIntegrityApiDefaultStatus();
 
     Map<String, @WebViewMediaIntegrityApiStatus Integer> getWebViewMediaIntegrityApiOverrideRules();
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface SpeculativeLoadingStatus {
+        int DISABLED = 0;
+        int PRERENDER_ENABLED = 1;
+    }
+
+    void setSpeculativeLoadingStatus(@SpeculativeLoadingStatus int speculativeLoadingStatus);
+
+    @SpeculativeLoadingStatus
+    int getSpeculativeLoadingStatus();
+
+    void setBackForwardCacheEnabled(boolean backForwardCacheEnabled);
+
+    boolean getBackForwardCacheEnabled();
 }

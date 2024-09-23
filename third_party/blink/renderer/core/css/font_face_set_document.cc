@@ -130,7 +130,7 @@ size_t FontFaceSetDocument::ApproximateBlankCharacterCount() const {
   return count;
 }
 
-ScriptPromiseTyped<FontFaceSet> FontFaceSetDocument::ready(
+ScriptPromise<FontFaceSet> FontFaceSetDocument::ready(
     ScriptState* script_state) {
   if (ready_->GetState() != ReadyProperty::kPending && InActiveContext()) {
     // |ready_| is already resolved, but there may be pending stylesheet
@@ -195,13 +195,10 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   ComputedStyleBuilder builder =
       GetDocument()->GetStyleResolver().CreateComputedStyleBuilder();
 
-  FontFamily font_family;
-  font_family.SetFamily(
-      FontFaceSet::DefaultFontFamily(),
-      FontFamily::InferredTypeFor(FontFaceSet::DefaultFontFamily()));
-
   FontDescription default_font_description;
-  default_font_description.SetFamily(font_family);
+  default_font_description.SetFamily(FontFamily(
+      FontFaceSet::DefaultFontFamily(),
+      FontFamily::InferredTypeFor(FontFaceSet::DefaultFontFamily())));
   default_font_description.SetSpecifiedSize(FontFaceSet::kDefaultFontSize);
   default_font_description.SetComputedSize(FontFaceSet::kDefaultFontSize);
 

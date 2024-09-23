@@ -6,12 +6,13 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -89,7 +90,7 @@ std::u16string ElideComponentizedPath(
   }
 
   // If the cutting point is at the beginning and nothing gets elided, return
-  // failure even if the whole text could fit. TODO(https://crbug.com/1074034).
+  // failure even if the whole text could fit. TODO(crbug.com/40127834).
   if (min_index == 0)
     return std::u16string();
 
@@ -100,7 +101,7 @@ std::u16string ElideComponentizedPath(
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ROBOLECTRIC)
 
-bool ShouldShowScheme(base::StringPiece scheme,
+bool ShouldShowScheme(std::string_view scheme,
                       const url_formatter::SchemeDisplay scheme_display) {
   switch (scheme_display) {
     case url_formatter::SchemeDisplay::SHOW:
@@ -120,7 +121,7 @@ bool ShouldShowScheme(base::StringPiece scheme,
 // the entire url with {LSI, PDI} and individual domain labels with {FSI, PDI}).
 // See http://crbug.com/650760 . For now, fall back to punycode if there's a
 // strong RTL character.
-std::u16string HostForDisplay(base::StringPiece host_in_puny) {
+std::u16string HostForDisplay(std::string_view host_in_puny) {
   std::u16string host = url_formatter::IDNToUnicode(host_in_puny);
   return base::i18n::StringContainsStrongRTLChars(host) ?
       base::ASCIIToUTF16(host_in_puny) : host;
@@ -188,7 +189,7 @@ std::u16string ElideUrl(const GURL& url,
   // domain is now C: - this is a nice hack for eliding to work pleasantly.
   if (url.SchemeIsFile()) {
     // Split the path string using ":"
-    constexpr base::StringPiece16 kColon(u":", 1);
+    constexpr std::u16string_view kColon(u":", 1);
     std::vector<std::u16string> file_path_split = base::SplitString(
         url_path, kColon, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (file_path_split.size() > 1) {  // File is of type "file:///C:/.."
@@ -337,7 +338,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   if (!url.is_valid() || url.is_empty() || !url.IsStandard())
     return url_formatter::FormatUrl(url);
 
-  constexpr base::StringPiece16 colon(u":");
+  constexpr std::u16string_view colon(u":");
 
   if (url.SchemeIsFile()) {
     return base::StrCat({url::kFileScheme16, url::kStandardSchemeSeparator16,
@@ -356,8 +357,8 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   }
 
   const GURL origin = url.DeprecatedGetOriginAsURL();
-  base::StringPiece scheme = origin.scheme_piece();
-  base::StringPiece host = origin.host_piece();
+  std::string_view scheme = origin.scheme_piece();
+  std::string_view host = origin.host_piece();
 
   std::u16string result;
   if (ShouldShowScheme(scheme, scheme_display)) {
@@ -367,8 +368,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   result += HostForDisplay(host);
 
   const int port = origin.IntPort();
-  const int default_port = url::DefaultPortForScheme(
-      scheme.data(), static_cast<int>(scheme.length()));
+  const int default_port = url::DefaultPortForScheme(scheme);
   if (port != url::PORT_UNSPECIFIED && port != default_port)
     result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
 
@@ -378,12 +378,12 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
 std::u16string FormatOriginForSecurityDisplay(
     const url::Origin& origin,
     const SchemeDisplay scheme_display) {
-  base::StringPiece scheme = origin.scheme();
-  base::StringPiece host = origin.host();
+  std::string_view scheme = origin.scheme();
+  std::string_view host = origin.host();
   if (scheme.empty() && host.empty())
     return std::u16string();
 
-  constexpr base::StringPiece16 colon(u":");
+  constexpr std::u16string_view colon(u":");
 
   std::u16string result;
   if (ShouldShowScheme(scheme, scheme_display)) {
@@ -393,8 +393,7 @@ std::u16string FormatOriginForSecurityDisplay(
   result += HostForDisplay(host);
 
   int port = static_cast<int>(origin.port());
-  const int default_port = url::DefaultPortForScheme(
-      scheme.data(), static_cast<int>(scheme.length()));
+  const int default_port = url::DefaultPortForScheme(scheme);
   if (port != 0 && port != default_port)
     result += base::StrCat({colon, base::NumberToString16(origin.port())});
 
@@ -452,7 +451,7 @@ void SplitHost(const GURL& url,
   // Get sub domain if requested.
   if (url_subdomain) {
     const size_t domain_start_index = url_host->find(*url_domain);
-    constexpr base::StringPiece16 kWwwPrefix = u"www.";
+    constexpr std::u16string_view kWwwPrefix = u"www.";
     if (domain_start_index != std::u16string::npos)
       *url_subdomain = url_host->substr(0, domain_start_index);
     if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||

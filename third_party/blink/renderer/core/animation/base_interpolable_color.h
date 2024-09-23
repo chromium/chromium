@@ -21,7 +21,7 @@ class CORE_EXPORT BaseInterpolableColor : public InterpolableValue {
   void Trace(Visitor* v) const override { InterpolableValue::Trace(v); }
 
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

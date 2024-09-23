@@ -6,7 +6,7 @@
 #define IOS_CHROME_TEST_EARL_GREY_SCOPED_DISABLE_TIMER_TRACKING_H_
 
 // Helper class to disable EarlGrey's NSTimer tracking.
-// TODO(crbug.com/1101608): This is a workaround that should be removed once a
+// TODO(crbug.com/40138424): This is a workaround that should be removed once a
 // proper fix lands in EarlGrey.
 class ScopedDisableTimerTracking {
  public:

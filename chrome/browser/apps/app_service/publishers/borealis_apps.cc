@@ -4,9 +4,12 @@
 
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 
+#include <optional>
+
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,8 +19,10 @@
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -75,7 +80,8 @@ namespace apps {
 
 BorealisApps::BorealisApps(AppServiceProxy* proxy) : GuestOSApps(proxy) {
   anonymous_app_observation_.Observe(
-      &borealis::BorealisService::GetForProfile(profile())->WindowManager());
+      &borealis::BorealisServiceFactory::GetForProfile(profile())
+           ->WindowManager());
 
   pref_registrar_.Init(profile()->GetPrefs());
 
@@ -100,8 +106,9 @@ BorealisApps::~BorealisApps() {
 
 void BorealisApps::CallWithBorealisAllowed(
     base::OnceCallback<void(bool)> callback) {
-  borealis::BorealisService::GetForProfile(profile())->Features().IsAllowed(
-      base::BindOnce(
+  borealis::BorealisServiceFactory::GetForProfile(profile())
+      ->Features()
+      .IsAllowed(base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              borealis::BorealisFeatures::AllowStatus allow_status) {
             std::move(callback).Run(
@@ -113,7 +120,7 @@ void BorealisApps::CallWithBorealisAllowed(
 
 void BorealisApps::SetUpSpecialApps(bool allowed) {
   // The special apps are only shown if borealis isn't installed and it can be.
-  bool installed = borealis::BorealisService::GetForProfile(profile())
+  bool installed = borealis::BorealisServiceFactory::GetForProfile(profile())
                        ->Features()
                        .IsEnabled();
   bool shown = allowed && !installed;
@@ -204,6 +211,15 @@ void BorealisApps::CreateAppOverrides(
   // Special handling for the steam client itself.
   if (registration.app_id() == borealis::kClientAppId) {
     app->permissions = CreatePermissions(profile());
+  } else {
+    // Identify games to App Service by PackageId.
+    // Steam games have PackageIds like "steam:123", where 123 is the Steam Game
+    // ID.
+    std::optional<int> app_id = borealis::ParseSteamGameId(registration.Exec());
+    if (app_id) {
+      app->installer_package_id = PackageId(
+          PackageType::kBorealis, base::NumberToString(app_id.value()));
+    }
   }
 }
 
@@ -225,8 +241,10 @@ void BorealisApps::LaunchAppWithIntent(const std::string& app_id,
                                        LaunchSource launch_source,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
-  borealis::BorealisService::GetForProfile(profile())->AppLauncher().Launch(
-      app_id, base::DoNothing());
+  borealis::BorealisServiceFactory::GetForProfile(profile())
+      ->AppLauncher()
+      .Launch(app_id, borealis::BorealisLaunchSource::kSteamInstallerApp,
+              base::DoNothing());
 }
 
 void BorealisApps::SetPermission(const std::string& app_id,
@@ -244,7 +262,7 @@ void BorealisApps::Uninstall(const std::string& app_id,
                              UninstallSource uninstall_source,
                              bool clear_site_data,
                              bool report_abuse) {
-  borealis::BorealisService::GetForProfile(profile())
+  borealis::BorealisServiceFactory::GetForProfile(profile())
       ->AppUninstaller()
       .Uninstall(app_id, base::DoNothing());
 }
@@ -257,7 +275,7 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
 
   // Apps should only be uninstallable if we can run the VM, but the vm itself
   // should always be uninstallable.
-  if (borealis::BorealisService::GetForProfile(profile())
+  if (borealis::BorealisServiceFactory::GetForProfile(profile())
           ->Features()
           .IsEnabled() ||
       app_id == borealis::kClientAppId) {

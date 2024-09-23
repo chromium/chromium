@@ -27,15 +27,16 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_active_audio_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -173,7 +174,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       else
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -184,7 +185,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcBootPhaseThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -195,8 +196,13 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
+  }
+
+  ArcInstanceThrottle* CreateArcInstanceThrottle() {
+    return ArcInstanceThrottle::GetForBrowserContextForTesting(
+        testing_profile_.get());
   }
 
   FakePowerInstance* power_instance() { return power_instance_.get(); }
@@ -436,6 +442,30 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
   EXPECT_EQ(3, power_instance()->cpu_restriction_state_count());
 }
 
+MATCHER_P(IsObserverNameEquals, name, "") {
+  return arg->name() == name;
+}
+
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(arc::kUnthrottleOnActiveAudio);
+
+  auto* arc_instance_throttle = CreateArcInstanceThrottle();
+  EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
+              testing::Not(testing::Contains(
+                  IsObserverNameEquals(kArcActiveAudioThrottleObserverName))));
+}
+
+TEST_F(ArcInstanceThrottleTest, UnthrottleOnActiveAudioFeatureOn) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(arc::kUnthrottleOnActiveAudio);
+
+  auto* arc_instance_throttle = CreateArcInstanceThrottle();
+  EXPECT_THAT(arc_instance_throttle->observers_for_testing(),
+              testing::Contains(
+                  IsObserverNameEquals(kArcActiveAudioThrottleObserverName)));
+}
+
 // For testing ARCVM specific part of the class.
 class ArcInstanceThrottleVMTest : public testing::Test {
  public:
@@ -498,7 +528,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

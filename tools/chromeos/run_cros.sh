@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# A shell script to run chrome for chromeos on linux desktop, or lacros on
-# that (chromeos for chrome on linux) environment.
+# A shell script to run chrome for chromeos on linux desktop environment.
 
 # Find a src directory of the repository.
 function find_src_root {
@@ -26,10 +25,6 @@ USER_DATA_DIR=${USER_TMP_DIR}/ash-chrome-user-data-dir
 
 # You may set these env vars to match your working environment
 ASH_CHROME_BUILD_DIR=${ASH_CHROME_BUILD_DIR:-${CHROME_SRC_ROOT}/out/Release}
-LACROS_BUILD_DIR=${LASCROS_BUILD_DIR:-${CHROME_SRC_ROOT}/out/lacros}
-
-# For information only
-LACROS_LOG_FILE=${USER_DATA_DIR}/lacros/lacros.log
 
 # Display Configurations
 declare -A DISPLAY_RES=(
@@ -39,9 +34,9 @@ declare -A DISPLAY_RES=(
 [fhd]=1920x1080*1.25
 [wuxga]=1920x1200*1.6
 [qhd]=2560x1440*2
-[qhdp]=3200x1800*2.25
-[f4k]=3840x2160*2.66
-[slate]=3000x2000*2.25
+[qhdp]=3200x1800*2
+[f4k]=3840x2160*2.6666666
+[slate]=3000x2000*2.25225234
 )
 
 # Custom display configs is possible
@@ -57,13 +52,9 @@ declare -A DISPLAY_RES=(
 # Use FHD as default panel.
 DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 
-LACROS_FEATURES=LacrosOnly
-FEATURES=OverviewButton
-
-LACROS_ENABLED=false
+FEATURES=
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
-LACROS_SOCK_FILE=${USER_TMP_DIR}/lacros.sock
 
 # Check if the directory contains chrome binary
 function check_chrome_dir {
@@ -95,15 +86,12 @@ function ensure_user_dir {
 # Build command arguments
 function build_args {
   ARGS="--user-data-dir=${USER_DATA_DIR} \
-    --enable-wayland-server --ash-debug-shortcuts \
+    --enable-wayland-server --ash-debug-shortcuts --overview-button-for-tests \
     --enable-ui-devtools --ash-dev-shortcuts --login-manager \
-    --lacros-chrome-additional-args=--gpu-sandbox-start-early \
-    --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
+    --login-profile=user \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
     ${TOUCH_DEVICE_OPTION} \
-    --enable-ash-debug-browser \
-    --lacros-chrome-path=${LACROS_BUILD_DIR}/chrome \
     ${EXTRA_ARGS}"
 
   # To enable internal display.
@@ -112,55 +100,18 @@ function build_args {
 
 # Start ash chrome binary.
 function start_ash_chrome {
-  if $LACROS_ENABLED ; then
-    FEATURES="$FEATURES,$LACROS_FEATURES"
-  fi
   build_args
 
   check_chrome_dir "$ASH_CHROME_BUILD_DIR" ash-chrome-build-dir
-  if $LACROS_ENABLED ; then
-    check_chrome_dir "$LACROS_BUILD_DIR" lacros-build-dir
-  fi
   ensure_user_dir ${USER_DATA_DIR} "ash-chrome"
 
   cat <<EOF
 tip: Once you finished OOBE, you can login using any string (e.g. 'x').
 EOF
-  if $LACROS_ENABLED ; then
-    cat <<EOF
-
-tip: Lacros log file ${LACROS_LOG_FILE}
-  or run
-
- $ `basename $0` lacros-log
-
-tip: To start lacros from command line (not from shelf icon), run
-
- $ `basename $0` lacros
-
-Starting ash-chrome ...
-=======================================
-
-EOF
-  fi
 
   echo $ARGS
 
   exec ${ASH_CHROME_BUILD_DIR}/chrome $ARGS
-}
-
-# Start lacros chrome binary.
-function start_lacros_chrome {
-  local lacros_user_data_dir=${USER_TMP_DIR}/lacros-user-data-dir
-
-  check_chrome_dir "$LACROS_BUILD_DIR" lacros-build-dir
-  ensure_user_dir ${lacros_user_data_dir} "lacros"
-  export EGL_PLATFORM=surfaceless
-  exec ${CHROME_SRC_ROOT}/build/lacros/mojo_connection_lacros_launcher.py \
-    -s ${LACROS_SOCK_FILE} \
-    ${LACROS_BUILD_DIR}/chrome \
-    --user-data-dir=${lacros_user_data_dir} \
-    --enable-ui-devtools --gpu-sandbox-start-early
 }
 
 # Start wayland client binary on ash-chrome
@@ -168,8 +119,19 @@ function start_wayland_client {
   exec $*
 }
 
-function lacros_log {
-  exec tail -f ${LACROS_LOG_FILE}
+# Convert the list of panel names into host bounds list.
+function build_display_config {
+  panel_list=$*
+  IFS=,
+  local host_bounds_list=()
+  for panel in ${panel_list}; do
+    if [ -z ${DISPLAY_RES[${panel}]} ]; then
+      return;
+    fi
+    host_bounds_list+=( ${DISPLAY_RES[${panel}]} )
+  done
+  IFS=_
+  echo $(IFS=, ; echo "${host_bounds_list[*]}")
 }
 
 function help {
@@ -177,25 +139,22 @@ function help {
 `basename $0` <command> [options]
 command
   ash-chrome (default)   start ash-chrome
-  lacros                 start lacros chrome. You must have ash-chrome running.
-  lacros-log             tail lacros chrome log.
   show-xinput-device-id  shows the device id that can be used to emulate touch.
   wayland-client         start wayland-client on ash-chrome. This command passes
                          all options to the client.
   help                   print this message.
 
 [options]
-  --enable-lacros        enables lacros.
   --ash-chrome-build-dir specifies the build directory for ash-chrome.
-  --lacros-build-dir     specifies the build directory for lacros.
   --user-data-dir        specifies the user data dir
-  --touch-device-id=<id> [ash-chrome only] Specify the input device to emulate
-                         touch. Use id from 'show-xinput-device-id'.
-  --wayland-debug        [ash-chrome,lacros] Enable WAYLAND_DEBUG=1
-  --panel=<type>         specifies the panel type. Valid opptions are:
+  --touch-device-id=<id> Specify the input device to emulate touch. Use id from
+                         'show-xinput-device-id'.
+  --wayland-debug        Enable WAYLAND_DEBUG=1
+  --panel=<list of type> specifies the panel type. Valid opptions are:
                          wxga(1280x800), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
                          qhdp(3200,1800), f4k(3840,2160)
+                         multiple panels can be specifid, e.g. "xwga,hdp"
   --<chrome commandline flags>
                          Pass extra command line flags to ash-chrome.
                          The script will reject if the string does not exist in
@@ -214,19 +173,14 @@ else
   shift;
 fi
 
+SLEEP_IF_EXTRA_ARGS_NOT_MATCHED=false
+
 # Parse options.
 while [ ${#} -ne 0 ]
 do
   case ${1} in
-    --enable-lacros)
-      LACROS_ENABLED=true
-      ;;
     --ash-chrome-build-dir=*)
       ASH_CHROME_BUILD_DIR=${1:23}
-      ;;
-    --lacros-build-dir=*)
-      LACROS_ENABLED=true
-      LACROS_BUILD_DIR=${1:19}
       ;;
     --user-data-dir=*)
       USER_DATA_DIR=${1:16}
@@ -240,9 +194,9 @@ do
       ;;
     --panel=*)
       panel=${1:8}
-      DISPLAY_CONFIG=${DISPLAY_RES[${panel}]}
+      DISPLAY_CONFIG=$(build_display_config ${panel})
       if [ -z $DISPLAY_CONFIG ]; then
-        echo "Unknown display panel: $panel"
+        echo "Unknown display panel found in '$panel'"
         help
       fi
       ;;
@@ -252,9 +206,11 @@ do
         set +e
         result=$(strings ${ASH_CHROME_BUILD_DIR}/chrome | grep "$flag_name")
         set -e
-        if $result ; then
-          echo "Can't find '${1}' in ash-chrome"
-          help
+        if [ -z "$result" ] ; then
+          cat <<EOF
+Warning: Can't find command line flag '${1}' in ash-chrome
+EOF
+          SLEEP_IF_EXTRA_ARGS_NOT_MATCHED=true
         fi
       fi
       EXTRA_ARGS="${EXTRA_ARGS} $1"
@@ -264,10 +220,13 @@ do
   shift
 done
 
+if $SLEEP_IF_EXTRA_ARGS_NOT_MATCHED ; then
+  echo
+  sleep 2
+fi
+
 case $command in
-  lacros) start_lacros_chrome;;
   ash-chrome) start_ash_chrome ;;
-  lacros-log) lacros_log ;;
   help) help ;;
   show-xinput-device-id) exec xinput -list ;;
   *) echo "Unknown command $command"; help ;;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/file_manager/open_with_browser.h"
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -14,13 +16,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
-#include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -99,10 +99,7 @@ class OpenWithBrowserBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<TestCase> {
  public:
-  OpenWithBrowserBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
-  }
+  OpenWithBrowserBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (profile_type() == TestProfileType::kGuest) {

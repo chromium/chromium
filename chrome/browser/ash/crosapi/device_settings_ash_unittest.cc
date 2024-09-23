@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,9 +28,13 @@ class DeviceSettingsAshTest : public ::testing::Test {
     owner_key_util->SetPublicKeyFromPrivateKey(*device_policy_.GetSigningKey());
     ::ash::DeviceSettingsService::Get()->SetSessionManager(
         &session_manager_client_, owner_key_util);
+
+    install_attributes_ = std::make_unique<ash::StubInstallAttributes>();
+    ash::InstallAttributes::SetForTesting(install_attributes_.get());
   }
 
   void TearDown() override {
+    ash::InstallAttributes::ShutdownForTesting();
     if (::ash::DeviceSettingsService::IsInitialized()) {
       ::ash::DeviceSettingsService::Get()->UnsetSessionManager();
       ::ash::DeviceSettingsService::Shutdown();
@@ -53,6 +59,7 @@ class DeviceSettingsAshTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   ::ash::FakeSessionManagerClient session_manager_client_;
   ::policy::DevicePolicyBuilder device_policy_;
+  std::unique_ptr<ash::StubInstallAttributes> install_attributes_;
 };
 
 TEST_F(DeviceSettingsAshTest, ShouldReturnFalseWhenServiceUninitialized) {

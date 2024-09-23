@@ -6,9 +6,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/task_environment.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
@@ -24,9 +28,24 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
   DiceTabHelperTest() {
     signin_url_ = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
 
-    feature_list_.InitWithFeaturesAndParameters(
-        content::GetBasicBackForwardCacheFeatureForTesting(),
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        content::GetBasicBackForwardCacheFeatureForTesting();
+    std::vector<base::test::FeatureRef> disabled_features =
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+
+  // ChromeRenderViewHostTestHarness::
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
   }
 
   // Does a navigation to Gaia and initializes the tab helper.
@@ -51,9 +70,10 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   GURL signin_url_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
-// Tests DiceTabHelper intialization.
 TEST_F(DiceTabHelperTest, Initialization) {
   DiceTabHelper::CreateForWebContents(web_contents());
   DiceTabHelper* dice_tab_helper =
@@ -74,6 +94,10 @@ TEST_F(DiceTabHelperTest, Initialization) {
   EXPECT_EQ(access_point, dice_tab_helper->signin_access_point());
   EXPECT_EQ(reason, dice_tab_helper->signin_reason());
   EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
+
+  EXPECT_EQ(identity_test_env_adaptor_->identity_test_env()
+                ->GetNumCallsToPrepareForFetchingAccountCapabilities(),
+            1);
 }
 
 TEST_F(DiceTabHelperTest, SigninPageStatus) {
@@ -290,6 +314,40 @@ TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
   EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
   dice_tab_helper->OnSyncSigninFlowComplete();
   EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+}
+
+TEST_F(DiceTabHelperTest, SigninPendingResolutionStarted) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  // Sign in
+  identity_test_env->MakePrimaryAccountAvailable("primary@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::HistogramTester h_tester;
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+  {
+    DiceTabHelper::CreateForWebContents(web_contents());
+    DiceTabHelper* dice_tab_helper =
+        DiceTabHelper::FromWebContents(web_contents());
+
+    InitializeDiceTabHelper(dice_tab_helper, access_point,
+                            signin_metrics::Reason::kReauthentication);
+  }
+  // No value recorded as we are not in a Signin pending State yet.
+  h_tester.ExpectTotalCount("Signin.SigninPending.ResolutionSourceStarted", 0);
+
+  // Trigger signin pending.
+  identity_test_env->SetInvalidRefreshTokenForPrimaryAccount();
+  {
+    DiceTabHelper::CreateForWebContents(web_contents());
+    DiceTabHelper* dice_tab_helper =
+        DiceTabHelper::FromWebContents(web_contents());
+
+    InitializeDiceTabHelper(dice_tab_helper, access_point,
+                            signin_metrics::Reason::kReauthentication);
+  }
+  h_tester.ExpectUniqueSample("Signin.SigninPending.ResolutionSourceStarted",
+                              access_point, 1);
 }
 
 class DiceTabHelperPrerenderTest : public DiceTabHelperTest {

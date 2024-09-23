@@ -35,6 +35,7 @@
 #include <libxml/catalog.h>
 #endif
 #include <libxml/chvalid.h>
+#include <libxml/nanohttp.h>
 
 #define CUR(ctxt) ctxt->input->cur
 #define END(ctxt) ctxt->input->end
@@ -62,7 +63,6 @@
  * @version: the include version number
  *
  * check the compiled lib version against the include one.
- * This can warn or immediately kill the application
  */
 void
 xmlCheckVersion(int version) {
@@ -71,15 +71,11 @@ xmlCheckVersion(int version) {
     xmlInitParser();
 
     if ((myversion / 10000) != (version / 10000)) {
-	xmlGenericError(xmlGenericErrorContext,
-		"Fatal: program compiled against libxml %d using libxml %d\n",
-		(version / 10000), (myversion / 10000));
 	fprintf(stderr,
 		"Fatal: program compiled against libxml %d using libxml %d\n",
 		(version / 10000), (myversion / 10000));
-    }
-    if ((myversion / 100) < (version / 100)) {
-	xmlGenericError(xmlGenericErrorContext,
+    } else if ((myversion / 100) < (version / 100)) {
+	fprintf(stderr,
 		"Warning: program compiled against libxml %d using older %d\n",
 		(version / 100), (myversion / 100));
     }
@@ -94,72 +90,166 @@ xmlCheckVersion(int version) {
 
 
 /**
- * xmlErrMemory:
+ * xmlCtxtSetErrorHandler:
  * @ctxt:  an XML parser context
- * @extra:  extra information
+ * @handler:  error handler
+ * @data:  data for error handler
  *
- * Handle a redefinition of attribute error
+ * Register a callback function that will be called on errors and
+ * warnings. If handler is NULL, the error handler will be deactivated.
+ *
+ * This is the recommended way to collect errors from the parser and
+ * takes precedence over all other error reporting mechanisms.
+ * These are (in order of precedence):
+ *
+ * - per-context structured handler (xmlCtxtSetErrorHandler)
+ * - per-context structured "serror" SAX handler
+ * - global structured handler (xmlSetStructuredErrorFunc)
+ * - per-context generic "error" and "warning" SAX handlers
+ * - global generic handler (xmlSetGenericErrorFunc)
+ * - print to stderr
+ *
+ * Available since 2.13.0.
  */
 void
-xmlErrMemory(xmlParserCtxtPtr ctxt, const char *extra ATTRIBUTE_UNUSED)
+xmlCtxtSetErrorHandler(xmlParserCtxtPtr ctxt, xmlStructuredErrorFunc handler,
+                       void *data)
 {
-    xmlError *lastError = &xmlLastError;
+    if (ctxt == NULL)
+        return;
+    ctxt->errorHandler = handler;
+    ctxt->errorCtxt = data;
+}
 
-    xmlResetLastError();
-    lastError->domain = XML_FROM_PARSER;
-    lastError->code = XML_ERR_NO_MEMORY;
-    lastError->level = XML_ERR_FATAL;
+/**
+ * xmlCtxtErrMemory:
+ * @ctxt:  an XML parser context
+ *
+ * Handle an out-of-memory error.
+ *
+ * Available since 2.13.0.
+ */
+void
+xmlCtxtErrMemory(xmlParserCtxtPtr ctxt)
+{
+    xmlStructuredErrorFunc schannel = NULL;
+    xmlGenericErrorFunc channel = NULL;
+    void *data;
+
+    if (ctxt == NULL)
+        return;
 
     ctxt->errNo = XML_ERR_NO_MEMORY;
     ctxt->instate = XML_PARSER_EOF; /* TODO: Remove after refactoring */
     ctxt->wellFormed = 0;
     ctxt->disableSAX = 2;
 
-    xmlResetError(&ctxt->lastError);
-    ctxt->lastError.domain = XML_FROM_PARSER;
-    ctxt->lastError.code = XML_ERR_NO_MEMORY;
-    ctxt->lastError.level = XML_ERR_FATAL;
-
-    if ((ctxt->sax->initialized == XML_SAX2_MAGIC) &&
+    if (ctxt->errorHandler) {
+        schannel = ctxt->errorHandler;
+        data = ctxt->errorCtxt;
+    } else if ((ctxt->sax->initialized == XML_SAX2_MAGIC) &&
         (ctxt->sax->serror != NULL)) {
-        ctxt->sax->serror(ctxt->userData, &ctxt->lastError);
-    } else if (xmlStructuredError != NULL) {
-        xmlStructuredError(ctxt->userData, &ctxt->lastError);
+        schannel = ctxt->sax->serror;
+        data = ctxt->userData;
     } else {
-        xmlGenericErrorFunc channel = ctxt->sax->error;
-
-        if ((channel == xmlParserError) ||
-            (channel == xmlParserWarning) ||
-            (channel == xmlParserValidityError) ||
-            (channel == xmlParserValidityWarning))
-            channel = xmlGenericError;
-
-        if (channel != NULL)
-            channel(ctxt->userData, "parser error : out of memory\n");
+        channel = ctxt->sax->error;
+        data = ctxt->userData;
     }
+
+    xmlRaiseMemoryError(schannel, channel, data, XML_FROM_PARSER,
+                        &ctxt->lastError);
 }
 
+/**
+ * xmlCtxtErrIO:
+ * @ctxt:  parser context
+ * @code:  xmlParserErrors code
+ * @uri:  filename or URI (optional)
+ *
+ * If filename is empty, use the one from context input if available.
+ *
+ * Report an IO error to the parser context.
+ */
 void
-xmlVErrParser(xmlParserCtxtPtr ctxt, xmlNodePtr node,
-              int domain, int code, xmlErrorLevel level,
-              const xmlChar *str1, const xmlChar *str2, const xmlChar *str3,
-              int int1, const char *msg, va_list ap)
+xmlCtxtErrIO(xmlParserCtxtPtr ctxt, int code, const char *uri)
+{
+    const char *errstr, *msg, *str1, *str2;
+    xmlErrorLevel level;
+
+    if (ctxt == NULL)
+        return;
+
+    /*
+     * Don't report a well-formedness error if an external entity could
+     * not be found. We assume that inputNr is zero for the document
+     * entity which is somewhat fragile.
+     */
+    if ((ctxt->inputNr > 0) &&
+        ((code == XML_IO_ENOENT) ||
+         (code == XML_IO_NETWORK_ATTEMPT) ||
+         (code == XML_IO_UNKNOWN))) {
+        if (ctxt->validate == 0)
+            level = XML_ERR_WARNING;
+        else
+            level = XML_ERR_ERROR;
+    } else {
+        level = XML_ERR_FATAL;
+    }
+
+    errstr = xmlErrString(code);
+
+    if (uri == NULL) {
+        msg = "%s\n";
+        str1 = errstr;
+        str2 = NULL;
+    } else {
+        msg = "failed to load \"%s\": %s\n";
+        str1 = uri;
+        str2 = errstr;
+    }
+
+    xmlCtxtErr(ctxt, NULL, XML_FROM_IO, code, level,
+               (const xmlChar *) uri, NULL, NULL, 0,
+               msg, str1, str2);
+}
+
+/**
+ * xmlCtxtVErr:
+ * @ctxt:  a parser context
+ * @node: the current node or NULL
+ * @domain: the domain for the error
+ * @code: the code for the error
+ * @level: the xmlErrorLevel for the error
+ * @str1: extra string info
+ * @str2: extra string info
+ * @str3: extra string info
+ * @int1: extra int info
+ * @msg:  the message to display/transmit
+ * @ap:  extra parameters for the message display
+ *
+ * Raise a parser error.
+ */
+void
+xmlCtxtVErr(xmlParserCtxtPtr ctxt, xmlNodePtr node, xmlErrorDomain domain,
+            xmlParserErrors code, xmlErrorLevel level,
+            const xmlChar *str1, const xmlChar *str2, const xmlChar *str3,
+            int int1, const char *msg, va_list ap)
 {
     xmlStructuredErrorFunc schannel = NULL;
-    xmlGenericErrorFunc channel;
-    void *data;
+    xmlGenericErrorFunc channel = NULL;
+    void *data = NULL;
     const char *file = NULL;
     int line = 0;
     int col = 0;
     int res;
 
-    if (PARSER_STOPPED(ctxt))
-	return;
-
     if (code == XML_ERR_NO_MEMORY) {
-        xmlErrMemory(ctxt, NULL);
+        xmlCtxtErrMemory(ctxt);
         return;
     }
+
+    if (PARSER_STOPPED(ctxt))
+	return;
 
     if (level == XML_ERR_WARNING) {
         if (ctxt->nbWarnings >= XML_MAX_ERRORS)
@@ -171,21 +261,29 @@ xmlVErrParser(xmlParserCtxtPtr ctxt, xmlNodePtr node,
         ctxt->nbErrors += 1;
     }
 
-    if (ctxt->sax->initialized == XML_SAX2_MAGIC)
-        schannel = ctxt->sax->serror;
-
-    if ((domain == XML_FROM_VALID) || (domain == XML_FROM_DTD)) {
-        if (level == XML_ERR_WARNING)
-            channel = ctxt->vctxt.warning;
-        else
-            channel = ctxt->vctxt.error;
-        data = ctxt->vctxt.userData;
-    } else {
-        if (level == XML_ERR_WARNING)
-            channel = ctxt->sax->warning;
-        else
-            channel = ctxt->sax->error;
-        data = ctxt->userData;
+    if (((ctxt->options & XML_PARSE_NOERROR) == 0) &&
+        ((level != XML_ERR_WARNING) ||
+         ((ctxt->options & XML_PARSE_NOWARNING) == 0))) {
+        if (ctxt->errorHandler) {
+            schannel = ctxt->errorHandler;
+            data = ctxt->errorCtxt;
+        } else if ((ctxt->sax->initialized == XML_SAX2_MAGIC) &&
+            (ctxt->sax->serror != NULL)) {
+            schannel = ctxt->sax->serror;
+            data = ctxt->userData;
+        } else if ((domain == XML_FROM_VALID) || (domain == XML_FROM_DTD)) {
+            if (level == XML_ERR_WARNING)
+                channel = ctxt->vctxt.warning;
+            else
+                channel = ctxt->vctxt.error;
+            data = ctxt->vctxt.userData;
+        } else {
+            if (level == XML_ERR_WARNING)
+                channel = ctxt->sax->warning;
+            else
+                channel = ctxt->sax->error;
+            data = ctxt->userData;
+        }
     }
 
     if (ctxt->input != NULL) {
@@ -206,7 +304,7 @@ xmlVErrParser(xmlParserCtxtPtr ctxt, xmlNodePtr node,
                          msg, ap);
 
     if (res < 0) {
-        xmlErrMemory(ctxt, NULL);
+        xmlCtxtErrMemory(ctxt);
         return;
     }
 
@@ -221,294 +319,65 @@ xmlVErrParser(xmlParserCtxtPtr ctxt, xmlNodePtr node,
     return;
 }
 
+/**
+ * xmlCtxtErr:
+ * @ctxt:  a parser context
+ * @node: the current node or NULL
+ * @domain: the domain for the error
+ * @code: the code for the error
+ * @level: the xmlErrorLevel for the error
+ * @str1: extra string info
+ * @str2: extra string info
+ * @str3: extra string info
+ * @int1: extra int info
+ * @msg:  the message to display/transmit
+ * @...:  extra parameters for the message display
+ *
+ * Raise a parser error.
+ */
 void
-xmlErrParser(xmlParserCtxtPtr ctxt, xmlNodePtr node,
-             int domain, int code, xmlErrorLevel level,
-             const xmlChar *str1, const xmlChar *str2, const xmlChar *str3,
-             int int1, const char *msg, ...)
+xmlCtxtErr(xmlParserCtxtPtr ctxt, xmlNodePtr node, xmlErrorDomain domain,
+           xmlParserErrors code, xmlErrorLevel level,
+           const xmlChar *str1, const xmlChar *str2, const xmlChar *str3,
+           int int1, const char *msg, ...)
 {
     va_list ap;
 
     va_start(ap, msg);
-    xmlVErrParser(ctxt, node, domain, code, level,
-                  str1, str2, str3, int1, msg, ap);
+    xmlCtxtVErr(ctxt, node, domain, code, level,
+                str1, str2, str3, int1, msg, ap);
     va_end(ap);
-}
-
-/**
- * __xmlErrEncoding:
- * @ctxt:  an XML parser context
- * @xmlerr:  the error number
- * @msg:  the error message
- * @str1:  an string info
- * @str2:  an string info
- *
- * Handle an encoding error
- */
-void
-__xmlErrEncoding(xmlParserCtxtPtr ctxt, xmlParserErrors xmlerr,
-                 const char *msg, const xmlChar * str1, const xmlChar * str2)
-{
-    xmlErrParser(ctxt, NULL, XML_FROM_PARSER, xmlerr, XML_ERR_FATAL,
-                 str1, str2, NULL, 0, msg, str1, str2);
-}
-
-/**
- * xmlErrInternal:
- * @ctxt:  an XML parser context
- * @msg:  the error message
- * @str:  error information
- *
- * Handle an internal error
- */
-static void LIBXML_ATTR_FORMAT(2,0)
-xmlErrInternal(xmlParserCtxtPtr ctxt, const char *msg, const xmlChar * str)
-{
-    if (ctxt == NULL)
-        return;
-    xmlErrParser(ctxt, NULL, XML_FROM_PARSER, XML_ERR_INTERNAL_ERROR,
-                 XML_ERR_FATAL, str, NULL, NULL, 0, msg, str);
 }
 
 /**
  * xmlFatalErr:
  * @ctxt:  an XML parser context
- * @error:  the error number
+ * @code:  the error number
  * @info:  extra information string
  *
  * Handle a fatal parser error, i.e. violating Well-Formedness constraints
  */
 void
-xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors error, const char *info)
+xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors code, const char *info)
 {
     const char *errmsg;
+    xmlErrorLevel level;
 
-    switch (error) {
-        case XML_ERR_INVALID_HEX_CHARREF:
-            errmsg = "CharRef: invalid hexadecimal value";
-            break;
-        case XML_ERR_INVALID_DEC_CHARREF:
-            errmsg = "CharRef: invalid decimal value";
-            break;
-        case XML_ERR_INVALID_CHARREF:
-            errmsg = "CharRef: invalid value";
-            break;
-        case XML_ERR_INTERNAL_ERROR:
-            errmsg = "internal error";
-            break;
-        case XML_ERR_PEREF_AT_EOF:
-            errmsg = "PEReference at end of document";
-            break;
-        case XML_ERR_PEREF_IN_PROLOG:
-            errmsg = "PEReference in prolog";
-            break;
-        case XML_ERR_PEREF_IN_EPILOG:
-            errmsg = "PEReference in epilog";
-            break;
-        case XML_ERR_PEREF_NO_NAME:
-            errmsg = "PEReference: no name";
-            break;
-        case XML_ERR_PEREF_SEMICOL_MISSING:
-            errmsg = "PEReference: expecting ';'";
-            break;
-        case XML_ERR_ENTITY_LOOP:
-            errmsg = "Detected an entity reference loop";
-            break;
-        case XML_ERR_ENTITY_NOT_STARTED:
-            errmsg = "EntityValue: \" or ' expected";
-            break;
-        case XML_ERR_ENTITY_PE_INTERNAL:
-            errmsg = "PEReferences forbidden in internal subset";
-            break;
-        case XML_ERR_ENTITY_NOT_FINISHED:
-            errmsg = "EntityValue: \" or ' expected";
-            break;
-        case XML_ERR_ATTRIBUTE_NOT_STARTED:
-            errmsg = "AttValue: \" or ' expected";
-            break;
-        case XML_ERR_LT_IN_ATTRIBUTE:
-            errmsg = "Unescaped '<' not allowed in attributes values";
-            break;
-        case XML_ERR_LITERAL_NOT_STARTED:
-            errmsg = "SystemLiteral \" or ' expected";
-            break;
-        case XML_ERR_LITERAL_NOT_FINISHED:
-            errmsg = "Unfinished System or Public ID \" or ' expected";
-            break;
-        case XML_ERR_MISPLACED_CDATA_END:
-            errmsg = "Sequence ']]>' not allowed in content";
-            break;
-        case XML_ERR_URI_REQUIRED:
-            errmsg = "SYSTEM or PUBLIC, the URI is missing";
-            break;
-        case XML_ERR_PUBID_REQUIRED:
-            errmsg = "PUBLIC, the Public Identifier is missing";
-            break;
-        case XML_ERR_HYPHEN_IN_COMMENT:
-            errmsg = "Comment must not contain '--' (double-hyphen)";
-            break;
-        case XML_ERR_PI_NOT_STARTED:
-            errmsg = "xmlParsePI : no target name";
-            break;
-        case XML_ERR_RESERVED_XML_NAME:
-            errmsg = "Invalid PI name";
-            break;
-        case XML_ERR_NOTATION_NOT_STARTED:
-            errmsg = "NOTATION: Name expected here";
-            break;
-        case XML_ERR_NOTATION_NOT_FINISHED:
-            errmsg = "'>' required to close NOTATION declaration";
-            break;
-        case XML_ERR_VALUE_REQUIRED:
-            errmsg = "Entity value required";
-            break;
-        case XML_ERR_URI_FRAGMENT:
-            errmsg = "Fragment not allowed";
-            break;
-        case XML_ERR_ATTLIST_NOT_STARTED:
-            errmsg = "'(' required to start ATTLIST enumeration";
-            break;
-        case XML_ERR_NMTOKEN_REQUIRED:
-            errmsg = "NmToken expected in ATTLIST enumeration";
-            break;
-        case XML_ERR_ATTLIST_NOT_FINISHED:
-            errmsg = "')' required to finish ATTLIST enumeration";
-            break;
-        case XML_ERR_MIXED_NOT_STARTED:
-            errmsg = "MixedContentDecl : '|' or ')*' expected";
-            break;
-        case XML_ERR_PCDATA_REQUIRED:
-            errmsg = "MixedContentDecl : '#PCDATA' expected";
-            break;
-        case XML_ERR_ELEMCONTENT_NOT_STARTED:
-            errmsg = "ContentDecl : Name or '(' expected";
-            break;
-        case XML_ERR_ELEMCONTENT_NOT_FINISHED:
-            errmsg = "ContentDecl : ',' '|' or ')' expected";
-            break;
-        case XML_ERR_PEREF_IN_INT_SUBSET:
-            errmsg =
-                "PEReference: forbidden within markup decl in internal subset";
-            break;
-        case XML_ERR_GT_REQUIRED:
-            errmsg = "expected '>'";
-            break;
-        case XML_ERR_CONDSEC_INVALID:
-            errmsg = "XML conditional section '[' expected";
-            break;
-        case XML_ERR_EXT_SUBSET_NOT_FINISHED:
-            errmsg = "Content error in the external subset";
-            break;
-        case XML_ERR_CONDSEC_INVALID_KEYWORD:
-            errmsg =
-                "conditional section INCLUDE or IGNORE keyword expected";
-            break;
-        case XML_ERR_CONDSEC_NOT_FINISHED:
-            errmsg = "XML conditional section not closed";
-            break;
-        case XML_ERR_XMLDECL_NOT_STARTED:
-            errmsg = "Text declaration '<?xml' required";
-            break;
-        case XML_ERR_XMLDECL_NOT_FINISHED:
-            errmsg = "parsing XML declaration: '?>' expected";
-            break;
-        case XML_ERR_EXT_ENTITY_STANDALONE:
-            errmsg = "external parsed entities cannot be standalone";
-            break;
-        case XML_ERR_ENTITYREF_SEMICOL_MISSING:
-            errmsg = "EntityRef: expecting ';'";
-            break;
-        case XML_ERR_DOCTYPE_NOT_FINISHED:
-            errmsg = "DOCTYPE improperly terminated";
-            break;
-        case XML_ERR_LTSLASH_REQUIRED:
-            errmsg = "EndTag: '</' not found";
-            break;
-        case XML_ERR_EQUAL_REQUIRED:
-            errmsg = "expected '='";
-            break;
-        case XML_ERR_STRING_NOT_CLOSED:
-            errmsg = "String not closed expecting \" or '";
-            break;
-        case XML_ERR_STRING_NOT_STARTED:
-            errmsg = "String not started expecting ' or \"";
-            break;
-        case XML_ERR_ENCODING_NAME:
-            errmsg = "Invalid XML encoding name";
-            break;
-        case XML_ERR_STANDALONE_VALUE:
-            errmsg = "standalone accepts only 'yes' or 'no'";
-            break;
-        case XML_ERR_DOCUMENT_EMPTY:
-            errmsg = "Document is empty";
-            break;
-        case XML_ERR_DOCUMENT_END:
-            errmsg = "Extra content at the end of the document";
-            break;
-        case XML_ERR_NOT_WELL_BALANCED:
-            errmsg = "chunk is not well balanced";
-            break;
-        case XML_ERR_EXTRA_CONTENT:
-            errmsg = "extra content at the end of well balanced chunk";
-            break;
-        case XML_ERR_VERSION_MISSING:
-            errmsg = "Malformed declaration expecting version";
-            break;
-        case XML_ERR_NAME_TOO_LONG:
-            errmsg = "Name too long";
-            break;
-        case XML_ERR_INVALID_ENCODING:
-            errmsg = "Invalid bytes in character encoding";
-            break;
-        case XML_IO_UNKNOWN:
-            errmsg = "I/O error";
-            break;
-        case XML_ERR_RESOURCE_LIMIT:
-            errmsg = "Resource limit exceeded";
-            break;
-        case XML_ERR_ARGUMENT:
-            errmsg = "Invalid argument";
-            break;
-        case XML_ERR_SYSTEM:
-            errmsg = "Out of system resources";
-            break;
-        case XML_ERR_REDECL_PREDEF_ENTITY:
-            errmsg = "Invalid redeclaration of predefined entity";
-            break;
-#if 0
-        case:
-            errmsg = "";
-            break;
-#endif
-        default:
-            errmsg = "Unregistered error message";
-    }
+    if (code == XML_ERR_UNSUPPORTED_ENCODING)
+        level = XML_ERR_WARNING;
+    else
+        level = XML_ERR_FATAL;
+
+    errmsg = xmlErrString(code);
 
     if (info == NULL) {
-        xmlErrParser(ctxt, NULL, XML_FROM_PARSER, error, XML_ERR_FATAL,
-                     NULL, NULL, NULL, 0, "%s\n", errmsg);
+        xmlCtxtErr(ctxt, NULL, XML_FROM_PARSER, code, level,
+                   NULL, NULL, NULL, 0, "%s\n", errmsg);
     } else {
-        xmlErrParser(ctxt, NULL, XML_FROM_PARSER, error, XML_ERR_FATAL,
-                     (const xmlChar *) info, NULL, NULL, 0,
-                     "%s: %s\n", errmsg, info);
+        xmlCtxtErr(ctxt, NULL, XML_FROM_PARSER, code, level,
+                   (const xmlChar *) info, NULL, NULL, 0,
+                   "%s: %s\n", errmsg, info);
     }
-}
-
-/**
- * xmlErrEncodingInt:
- * @ctxt:  an XML parser context
- * @error:  the error number
- * @msg:  the error message
- * @val:  an integer value
- *
- * n encoding error
- */
-static void LIBXML_ATTR_FORMAT(3,0)
-xmlErrEncodingInt(xmlParserCtxtPtr ctxt, xmlParserErrors error,
-                  const char *msg, int val)
-{
-    xmlErrParser(ctxt, NULL, XML_FROM_PARSER, error, XML_ERR_FATAL,
-                 NULL, NULL, NULL, val, msg, val);
 }
 
 /**
@@ -575,21 +444,25 @@ int
 xmlParserGrow(xmlParserCtxtPtr ctxt) {
     xmlParserInputPtr in = ctxt->input;
     xmlParserInputBufferPtr buf = in->buf;
-    ptrdiff_t curEnd = in->end - in->cur;
-    ptrdiff_t curBase = in->cur - in->base;
+    size_t curEnd = in->end - in->cur;
+    size_t curBase = in->cur - in->base;
+    size_t maxLength = (ctxt->options & XML_PARSE_HUGE) ?
+                       XML_MAX_HUGE_LENGTH :
+                       XML_MAX_LOOKUP_LIMIT;
     int ret;
 
     if (buf == NULL)
         return(0);
     /* Don't grow push parser buffer. */
-    if ((ctxt->progressive) && (ctxt->inputNr <= 1))
+    if (PARSER_PROGRESSIVE(ctxt))
+        return(0);
+    /* Don't grow memory buffers. */
+    if ((buf->encoder == NULL) && (buf->readcallback == NULL))
         return(0);
     if (buf->error != 0)
         return(-1);
 
-    if (((curEnd > XML_MAX_LOOKUP_LIMIT) ||
-         (curBase > XML_MAX_LOOKUP_LIMIT)) &&
-        ((ctxt->options & XML_PARSE_HUGE) == 0)) {
+    if (curBase > maxLength) {
         xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT,
                     "Buffer size limit exceeded, try XML_PARSE_HUGE\n");
         xmlHaltParser(ctxt);
@@ -603,7 +476,7 @@ xmlParserGrow(xmlParserCtxtPtr ctxt) {
     xmlBufUpdateInput(buf->buffer, in, curBase);
 
     if (ret < 0) {
-        xmlFatalErr(ctxt, buf->error, NULL);
+        xmlCtxtErrIO(ctxt, buf->error, NULL);
     }
 
     return(ret);
@@ -632,6 +505,10 @@ xmlParserInputGrow(xmlParserInputPtr in, int len) {
     if (in->base == NULL) return(-1);
     if (in->cur == NULL) return(-1);
     if (in->buf->buffer == NULL) return(-1);
+
+    /* Don't grow memory buffers. */
+    if ((in->buf->encoder == NULL) && (in->buf->readcallback == NULL))
+        return(0);
 
     indx = in->cur - in->base;
     if (xmlBufUse(in->buf->buffer) > (unsigned int) indx + INPUT_CHUNK) {
@@ -665,6 +542,11 @@ xmlParserShrink(xmlParserCtxtPtr ctxt) {
     size_t used;
 
     if (buf == NULL)
+        return;
+    /* Don't shrink pull parser memory buffers. */
+    if ((!PARSER_PROGRESSIVE(ctxt)) &&
+        (buf->encoder == NULL) &&
+        (buf->readcallback == NULL))
         return;
 
     used = in->cur - in->base;
@@ -836,21 +718,7 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
 encoding_error:
     /* Only report the first error */
     if ((ctxt->input->flags & XML_INPUT_ENCODING_ERROR) == 0) {
-        if ((ctxt == NULL) || (ctxt->input == NULL) ||
-            (ctxt->input->end - ctxt->input->cur < 4)) {
-            __xmlErrEncoding(ctxt, XML_ERR_INVALID_CHAR,
-                         "Input is not proper UTF-8, indicate encoding !\n",
-                         NULL, NULL);
-        } else {
-            char buffer[150];
-
-            snprintf(buffer, 149, "Bytes: 0x%02X 0x%02X 0x%02X 0x%02X\n",
-                            ctxt->input->cur[0], ctxt->input->cur[1],
-                            ctxt->input->cur[2], ctxt->input->cur[3]);
-            __xmlErrEncoding(ctxt, XML_ERR_INVALID_CHAR,
-                         "Input is not proper UTF-8, indicate encoding !\n%s",
-                         BAD_CAST buffer, NULL);
-        }
+        xmlCtxtErrIO(ctxt, XML_ERR_INVALID_ENCODING, NULL);
         ctxt->input->flags |= XML_INPUT_ENCODING_ERROR;
     }
     ctxt->input->cur++;
@@ -923,8 +791,8 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
                      * TODO: Null bytes should be handled by callers,
                      * but this can be tricky.
                      */
-                    xmlErrEncodingInt(ctxt, XML_ERR_INVALID_CHAR,
-                            "Char 0x0 out of allowed range\n", c);
+                    xmlFatalErr(ctxt, XML_ERR_INVALID_CHAR,
+                            "Char 0x0 out of allowed range\n");
                 }
             } else {
                 *len = 1;
@@ -986,20 +854,7 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 encoding_error:
     /* Only report the first error */
     if ((ctxt->input->flags & XML_INPUT_ENCODING_ERROR) == 0) {
-        if (ctxt->input->end - ctxt->input->cur < 4) {
-            __xmlErrEncoding(ctxt, XML_ERR_INVALID_CHAR,
-                         "Input is not proper UTF-8, indicate encoding !\n",
-                         NULL, NULL);
-        } else {
-            char buffer[150];
-
-            snprintf(&buffer[0], 149, "Bytes: 0x%02X 0x%02X 0x%02X 0x%02X\n",
-                            ctxt->input->cur[0], ctxt->input->cur[1],
-                            ctxt->input->cur[2], ctxt->input->cur[3]);
-            __xmlErrEncoding(ctxt, XML_ERR_INVALID_CHAR,
-                         "Input is not proper UTF-8, indicate encoding !\n%s",
-                         BAD_CAST buffer, NULL);
-        }
+        xmlCtxtErrIO(ctxt, XML_ERR_INVALID_ENCODING, NULL);
         ctxt->input->flags |= XML_INPUT_ENCODING_ERROR;
     }
     *len = 1;
@@ -1073,9 +928,10 @@ xmlCopyCharMultiByte(xmlChar *out, int val) {
 	else if (val < 0x10000) { *out++= (val >> 12) | 0xE0;  bits=  6;}
 	else if (val < 0x110000)  { *out++= (val >> 18) | 0xF0;  bits=  12; }
 	else {
-	    xmlErrEncodingInt(NULL, XML_ERR_INVALID_CHAR,
-		    "Internal error, xmlCopyCharMultiByte 0x%X out of bound\n",
-			      val);
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+            fprintf(stderr, "xmlCopyCharMultiByte: codepoint out of range\n");
+            abort();
+#endif
 	    return(0);
 	}
 	for ( ; bits >= 0; bits-= 6)
@@ -1169,7 +1025,8 @@ xmlDetectEBCDIC(xmlParserInputPtr input, xmlCharEncodingHandlerPtr *hout) {
                 break;
             out[i] = 0;
             xmlCharEncCloseFunc(handler);
-            res = xmlOpenCharEncodingHandler((char *) out + start, &handler);
+            res = xmlOpenCharEncodingHandler((char *) out + start,
+                                             /* output */ 0, &handler);
             if (res != 0)
                 return(res);
             *hout = handler;
@@ -1227,14 +1084,9 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
     }
 
     if (res != 0) {
-        if (res == XML_ERR_UNSUPPORTED_ENCODING) {
-            const char *name = xmlGetCharEncodingName(enc);
+        const char *name = xmlGetCharEncodingName(enc);
 
-            __xmlErrEncoding(ctxt, res, "encoding not supported: %s\n",
-                             BAD_CAST (name ? name : "<null>"), NULL);
-        } else {
-            xmlFatalErr(ctxt, res, NULL);
-        }
+        xmlFatalErr(ctxt, res, (name ? name : "<null>"));
         return(-1);
     }
 
@@ -1245,6 +1097,32 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
     }
 
     return(ret);
+}
+
+/**
+ * xmlSwitchInputEncodingName:
+ * @ctxt:  the parser context, only for error reporting
+ * @input:  the input strea,
+ * @encoding:  the encoding name
+ *
+ * Returns 0 in case of success, -1 otherwise
+ */
+static int
+xmlSwitchInputEncodingName(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
+                           const char *encoding) {
+    xmlCharEncodingHandlerPtr handler;
+    int res;
+
+    if (encoding == NULL)
+        return(-1);
+
+    res = xmlOpenCharEncodingHandler(encoding, /* output */ 0, &handler);
+    if (res != 0) {
+        xmlFatalErr(ctxt, res, encoding);
+        return(-1);
+    }
+
+    return(xmlSwitchInputEncoding(ctxt, input, handler));
 }
 
 /**
@@ -1264,44 +1142,32 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
  */
 int
 xmlSwitchEncodingName(xmlParserCtxtPtr ctxt, const char *encoding) {
-    xmlCharEncodingHandlerPtr handler;
-    int res;
-
-    res = xmlOpenCharEncodingHandler(encoding, &handler);
-    if (res != 0) {
-        if (res == XML_ERR_UNSUPPORTED_ENCODING)
-            __xmlErrEncoding(ctxt, res, "Unsupported encoding: %s\n",
-                             (const xmlChar *) encoding, NULL);
-        else
-            xmlFatalErr(ctxt, res, NULL);
+    if (ctxt == NULL)
         return(-1);
-    }
 
-    return(xmlSwitchInputEncoding(ctxt, ctxt->input, handler));
+    return(xmlSwitchInputEncodingName(ctxt, ctxt->input, encoding));
 }
 
 /**
- * xmlSwitchInputEncoding:
- * @ctxt:  the parser context
+ * xmlInputSetEncodingHandler:
  * @input:  the input stream
  * @handler:  the encoding handler
  *
- * DEPRECATED: Internal function, don't use.
- *
  * Use encoding handler to decode input data.
  *
- * Returns 0 in case of success, -1 otherwise
+ * Closes the handler on error.
+ *
+ * Returns an xmlParserErrors code.
  */
-int
-xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
-                       xmlCharEncodingHandlerPtr handler)
-{
+static int
+xmlInputSetEncodingHandler(xmlParserInputPtr input,
+                           xmlCharEncodingHandlerPtr handler) {
     int nbchars;
     xmlParserInputBufferPtr in;
 
     if ((input == NULL) || (input->buf == NULL)) {
         xmlCharEncCloseFunc(handler);
-	return (-1);
+	return(XML_ERR_ARGUMENT);
     }
     in = input->buf;
 
@@ -1317,7 +1183,7 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
     }
 
     if (in->encoder == handler)
-        return (0);
+        return(XML_ERR_OK);
 
     if (in->encoder != NULL) {
         /*
@@ -1331,7 +1197,7 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 
         xmlCharEncCloseFunc(in->encoder);
         in->encoder = handler;
-        return (0);
+        return(XML_ERR_OK);
     }
 
     in->encoder = handler;
@@ -1340,7 +1206,12 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
      * Is there already some content down the pipe to convert ?
      */
     if (xmlBufIsEmpty(in->buffer) == 0) {
+        xmlBufPtr buf;
         size_t processed;
+
+        buf = xmlBufCreate();
+        if (buf == NULL)
+            return(XML_ERR_NO_MEMORY);
 
         /*
          * Shrink the current input buffer.
@@ -1350,26 +1221,68 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
         xmlBufShrink(in->buffer, processed);
         input->consumed += processed;
         in->raw = in->buffer;
-        in->buffer = xmlBufCreate();
-        if (in->buffer == NULL) {
-            xmlErrMemory(ctxt, NULL);
-            return(-1);
-        }
+        in->buffer = buf;
         in->rawconsumed = processed;
 
         nbchars = xmlCharEncInput(in);
         xmlBufResetInput(in->buffer, input);
-        if (nbchars == XML_ENC_ERR_MEMORY) {
-            xmlErrMemory(ctxt, NULL);
-        } else if (nbchars < 0) {
-            xmlErrInternal(ctxt,
-                           "switching encoding: encoder error\n",
-                           NULL);
-            xmlHaltParser(ctxt);
-            return (-1);
-        }
+        if (nbchars < 0)
+            return(in->error);
     }
-    return (0);
+
+    return(XML_ERR_OK);
+}
+
+/**
+ * xmlInputSetEncoding:
+ * @input:  the input stream
+ * @encoding:  the encoding name
+ *
+ * Use specified encoding to decode input data. This overrides the
+ * encoding found in the XML declaration.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns an xmlParserErrors code.
+ */
+int
+xmlInputSetEncoding(xmlParserInputPtr input, const char *encoding) {
+    xmlCharEncodingHandlerPtr handler;
+    int res;
+
+    if (encoding == NULL)
+        return(XML_ERR_ARGUMENT);
+
+    res = xmlOpenCharEncodingHandler(encoding, /* output */ 0, &handler);
+    if (res != 0)
+        return(res);
+
+    return(xmlInputSetEncodingHandler(input, handler));
+}
+
+/**
+ * xmlSwitchInputEncoding:
+ * @ctxt:  the parser context, only for error reporting
+ * @input:  the input stream
+ * @handler:  the encoding handler
+ *
+ * DEPRECATED: Internal function, don't use.
+ *
+ * Use encoding handler to decode input data.
+ *
+ * Returns 0 in case of success, -1 otherwise
+ */
+int
+xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
+                       xmlCharEncodingHandlerPtr handler) {
+    int code = xmlInputSetEncodingHandler(input, handler);
+
+    if (code != XML_ERR_OK) {
+        xmlCtxtErrIO(ctxt, code, NULL);
+        return(-1);
+    }
+
+    return(0);
 }
 
 /**
@@ -1558,7 +1471,7 @@ xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding) {
                 xmlFree(encoding);
                 encoding = xmlStrdup(BAD_CAST autoEnc);
                 if (encoding == NULL)
-                    xmlErrMemory(ctxt, NULL);
+                    xmlCtxtErrMemory(ctxt);
             }
         }
     }
@@ -1566,6 +1479,30 @@ xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding) {
     if (ctxt->encoding != NULL)
         xmlFree((xmlChar *) ctxt->encoding);
     ctxt->encoding = encoding;
+}
+
+/**
+ * xmlGetActualEncoding:
+ * @ctxt:  the parser context
+ *
+ * Returns the actual used to parse the document. This can differ from
+ * the declared encoding.
+ */
+const xmlChar *
+xmlGetActualEncoding(xmlParserCtxtPtr ctxt) {
+    const xmlChar *encoding = NULL;
+
+    if ((ctxt->input->flags & XML_INPUT_USES_ENC_DECL) ||
+        (ctxt->input->flags & XML_INPUT_AUTO_ENCODING)) {
+        /* Preserve encoding exactly */
+        encoding = ctxt->encoding;
+    } else if ((ctxt->input->buf) && (ctxt->input->buf->encoder)) {
+        encoding = BAD_CAST ctxt->input->buf->encoder->name;
+    } else if (ctxt->input->flags & XML_INPUT_HAS_ENCODING) {
+        encoding = BAD_CAST "UTF-8";
+    }
+
+    return(encoding);
 }
 
 /************************************************************************
@@ -1585,7 +1522,6 @@ xmlFreeInputStream(xmlParserInputPtr input) {
     if (input == NULL) return;
 
     if (input->filename != NULL) xmlFree((char *) input->filename);
-    if (input->directory != NULL) xmlFree((char *) input->directory);
     if (input->version != NULL) xmlFree((char *) input->version);
     if ((input->free != NULL) && (input->base != NULL))
         input->free((xmlChar *) input->base);
@@ -1608,24 +1544,394 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
 
     input = (xmlParserInputPtr) xmlMalloc(sizeof(xmlParserInput));
     if (input == NULL) {
-        xmlErrMemory(ctxt,  "couldn't allocate a new input stream\n");
+        xmlCtxtErrMemory(ctxt);
 	return(NULL);
     }
     memset(input, 0, sizeof(xmlParserInput));
     input->line = 1;
     input->col = 1;
 
-    /*
-     * If the context is NULL the id cannot be initialized, but that
-     * should not happen while parsing which is the situation where
-     * the id is actually needed.
-     */
-    if (ctxt != NULL) {
-        if (input->id >= INT_MAX) {
-            xmlErrMemory(ctxt, "Input ID overflow\n");
+    return(input);
+}
+
+/**
+ * xmlNewInputURL:
+ * @ctxt:  parser context
+ * @url:  filename or URL
+ * @publicId:  publid ID from doctype (optional)
+ * @encoding:  character encoding (optional)
+ * @flags:  unused, pass 0
+ *
+ * Creates a new parser input from the filesystem, the network or
+ * a user-defined resource loader.
+ *
+ * Returns a new parser input.
+ */
+xmlParserInputPtr
+xmlNewInputURL(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
+               const char *encoding, int flags ATTRIBUTE_UNUSED) {
+    xmlParserInputPtr input;
+
+    if ((ctxt == NULL) || (url == NULL))
+	return(NULL);
+
+    input = xmlLoadResource(ctxt, url, publicId, XML_RESOURCE_MAIN_DOCUMENT);
+    if (input == NULL)
+        return(NULL);
+
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
+
+    return(input);
+}
+
+/**
+ * xmlNewInputInternal:
+ * @buf:  parser input buffer
+ * @filename:  filename or URL
+ *
+ * Internal helper function.
+ *
+ * Returns a new parser input.
+ */
+static xmlParserInputPtr
+xmlNewInputInternal(xmlParserInputBufferPtr buf, const char *filename) {
+    xmlParserInputPtr input;
+
+    input = (xmlParserInputPtr) xmlMalloc(sizeof(xmlParserInput));
+    if (input == NULL) {
+	xmlFreeParserInputBuffer(buf);
+	return(NULL);
+    }
+    memset(input, 0, sizeof(xmlParserInput));
+    input->line = 1;
+    input->col = 1;
+
+    input->buf = buf;
+    xmlBufResetInput(input->buf->buffer, input);
+
+    if (filename != NULL) {
+        input->filename = xmlMemStrdup(filename);
+        if (input->filename == NULL) {
+            xmlFreeInputStream(input);
             return(NULL);
         }
-        input->id = ctxt->input_id++;
+    }
+
+    return(input);
+}
+
+/**
+ * xmlInputCreateMemory:
+ * @url:  base URL (optional)
+ * @mem:  pointer to char array
+ * @size:  size of array
+ * @flags:  optimization hints
+ *
+ * Creates a new parser input to read from a memory area.
+ *
+ * @url is used as base to resolve external entities and for
+ * error reporting.
+ *
+ * If the XML_INPUT_BUF_STATIC flag is set, the memory area must
+ * stay unchanged until parsing has finished. This can avoid
+ * temporary copies.
+ *
+ * If the XML_INPUT_BUF_ZERO_TERMINATED flag is set, the memory
+ * area must contain a zero byte after the buffer at position @size.
+ * This can avoid temporary copies.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns a new parser input or NULL if a memory allocation failed.
+ */
+xmlParserInputPtr
+xmlInputCreateMemory(const char *url, const void *mem, size_t size,
+                     int flags) {
+    xmlParserInputBufferPtr buf;
+
+    if (mem == NULL)
+	return(NULL);
+
+    buf = xmlNewInputBufferMemory(mem, size, flags, XML_CHAR_ENCODING_NONE);
+    if (buf == NULL)
+        return(NULL);
+
+    return(xmlNewInputInternal(buf, url));
+}
+
+/**
+ * xmlNewInputMemory:
+ * @ctxt:  parser context
+ * @url:  base URL (optional)
+ * @mem:  pointer to char array
+ * @size:  size of array
+ * @encoding:  character encoding (optional)
+ * @flags:  optimization hints
+ *
+ * Returns a new parser input or NULL in case of error.
+ */
+xmlParserInputPtr
+xmlNewInputMemory(xmlParserCtxtPtr ctxt, const char *url,
+                  const void *mem, size_t size,
+                  const char *encoding, int flags) {
+    xmlParserInputPtr input;
+
+    if ((ctxt == NULL) || (mem == NULL))
+	return(NULL);
+
+    input = xmlInputCreateMemory(url, mem, size, flags);
+    if (input == NULL) {
+        xmlCtxtErrMemory(ctxt);
+        return(NULL);
+    }
+
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
+
+    return(input);
+}
+
+/**
+ * xmlInputCreateString:
+ * @url:  base URL (optional)
+ * @str:  zero-terminated string
+ * @flags:  optimization hints
+ *
+ * Creates a new parser input to read from a zero-terminated string.
+ *
+ * @url is used as base to resolve external entities and for
+ * error reporting.
+ *
+ * If the XML_INPUT_BUF_STATIC flag is set, the string must
+ * stay unchanged until parsing has finished. This can avoid
+ * temporary copies.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns a new parser input or NULL if a memory allocation failed.
+ */
+xmlParserInputPtr
+xmlInputCreateString(const char *url, const char *str, int flags) {
+    xmlParserInputBufferPtr buf;
+
+    if (str == NULL)
+	return(NULL);
+
+    buf = xmlNewInputBufferString(str, flags);
+    if (buf == NULL)
+        return(NULL);
+
+    return(xmlNewInputInternal(buf, url));
+}
+
+/**
+ * xmlNewInputString:
+ * @ctxt:  parser context
+ * @url:  base URL (optional)
+ * @str:  zero-terminated string
+ * @encoding:  character encoding (optional)
+ * @flags:  optimization hints
+ *
+ * Returns a new parser input.
+ */
+xmlParserInputPtr
+xmlNewInputString(xmlParserCtxtPtr ctxt, const char *url,
+                  const char *str, const char *encoding, int flags) {
+    xmlParserInputPtr input;
+
+    if ((ctxt == NULL) || (str == NULL))
+	return(NULL);
+
+    input = xmlInputCreateString(url, str, flags);
+    if (input == NULL) {
+        xmlCtxtErrMemory(ctxt);
+        return(NULL);
+    }
+
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
+
+    return(input);
+}
+
+/**
+ * xmlInputCreateFd:
+ * @url:  base URL (optional)
+ * @fd:  file descriptor
+ * @flags:  unused, pass 0
+ *
+ * Creates a new parser input to read from a zero-terminated string.
+ *
+ * @url is used as base to resolve external entities and for
+ * error reporting.
+ *
+ * @fd is closed after parsing has finished.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns a new parser input or NULL if a memory allocation failed.
+ */
+xmlParserInputPtr
+xmlInputCreateFd(const char *url, int fd, int flags ATTRIBUTE_UNUSED) {
+    xmlParserInputBufferPtr buf;
+
+    if (fd < 0)
+	return(NULL);
+
+    buf = xmlParserInputBufferCreateFd(fd, XML_CHAR_ENCODING_NONE);
+    if (buf == NULL)
+        return(NULL);
+
+    return(xmlNewInputInternal(buf, url));
+}
+
+/**
+ * xmlNewInputFd:
+ * @ctxt:  parser context
+ * @url:  base URL (optional)
+ * @fd:  file descriptor
+ * @encoding:  character encoding (optional)
+ * @flags:  unused, pass 0
+ *
+ * Returns a new parser input.
+ */
+xmlParserInputPtr
+xmlNewInputFd(xmlParserCtxtPtr ctxt, const char *url,
+              int fd, const char *encoding, int flags) {
+    xmlParserInputPtr input;
+
+    if ((ctxt == NULL) || (fd < 0))
+	return(NULL);
+
+    input = xmlInputCreateFd(url, fd, flags);
+    if (input == NULL) {
+	xmlCtxtErrMemory(ctxt);
+        return(NULL);
+    }
+
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
+
+    return(input);
+}
+
+/**
+ * xmlInputCreateIO:
+ * @url:  base URL (optional)
+ * @ioRead:  read callback
+ * @ioClose:  close callback (optional)
+ * @ioCtxt:  IO context
+ * @flags:  unused, pass 0
+ *
+ * Creates a new parser input to read from input callbacks and
+ * cintext.
+ *
+ * @url is used as base to resolve external entities and for
+ * error reporting.
+ *
+ * @ioRead is called to read new data into a provided buffer.
+ * It must return the number of bytes written into the buffer
+ * ot a negative xmlParserErrors code on failure.
+ *
+ * @ioClose is called after parsing has finished.
+ *
+ * @ioCtxt is an opaque pointer passed to the callbacks.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns a new parser input or NULL if a memory allocation failed.
+ */
+xmlParserInputPtr
+xmlInputCreateIO(const char *url, xmlInputReadCallback ioRead,
+                 xmlInputCloseCallback ioClose, void *ioCtxt,
+                 int flags ATTRIBUTE_UNUSED) {
+    xmlParserInputBufferPtr buf;
+
+    if (ioRead == NULL)
+	return(NULL);
+
+    buf = xmlAllocParserInputBuffer(XML_CHAR_ENCODING_NONE);
+    if (buf == NULL) {
+        if (ioClose != NULL)
+            ioClose(ioCtxt);
+        return(NULL);
+    }
+
+    buf->context = ioCtxt;
+    buf->readcallback = ioRead;
+    buf->closecallback = ioClose;
+
+    return(xmlNewInputInternal(buf, url));
+}
+
+/**
+ * xmlNewInputIO:
+ * @ctxt:  parser context
+ * @url:  base URL (optional)
+ * @ioRead:  read callback
+ * @ioClose:  close callback (optional)
+ * @ioCtxt:  IO context
+ * @encoding:  character encoding (optional)
+ * @flags:  unused, pass 0
+ *
+ * Returns a new parser input.
+ */
+xmlParserInputPtr
+xmlNewInputIO(xmlParserCtxtPtr ctxt, const char *url,
+              xmlInputReadCallback ioRead, xmlInputCloseCallback ioClose,
+              void *ioCtxt, const char *encoding, int flags) {
+    xmlParserInputPtr input;
+
+    if ((ctxt == NULL) || (ioRead == NULL))
+	return(NULL);
+
+    input = xmlInputCreateIO(url, ioRead, ioClose, ioCtxt, flags);
+    if (input == NULL) {
+        xmlCtxtErrMemory(ctxt);
+        return(NULL);
+    }
+
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
+
+    return(input);
+}
+
+/**
+ * xmlInputCreatePush:
+ * @url:  base URL (optional)
+ * @chunk:  pointer to char array
+ * @size:  size of array
+ *
+ * Creates a new parser input for a push parser.
+ *
+ * Returns a new parser input or NULL if a memory allocation failed.
+ */
+xmlParserInputPtr
+xmlInputCreatePush(const char *url, const char *chunk, int size) {
+    xmlParserInputBufferPtr buf;
+    xmlParserInputPtr input;
+
+    buf = xmlAllocParserInputBuffer(XML_CHAR_ENCODING_NONE);
+    if (buf == NULL)
+        return(NULL);
+
+    input = xmlNewInputInternal(buf, url);
+    if (input == NULL)
+	return(NULL);
+
+    input->flags |= XML_INPUT_PROGRESSIVE;
+
+    if ((size > 0) && (chunk != NULL)) {
+        int res;
+
+	res = xmlParserInputBufferPush(input->buf, size, chunk);
+        xmlBufResetInput(input->buf->buffer, input);
+        if (res < 0) {
+            xmlFreeInputStream(input);
+            return(NULL);
+        }
     }
 
     return(input);
@@ -1634,7 +1940,7 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
 /**
  * xmlNewIOInputStream:
  * @ctxt:  an XML parser context
- * @input:  an I/O Input
+ * @buf:  an input buffer
  * @enc:  the charset encoding if known
  *
  * Create a new input stream structure encapsulating the @input into
@@ -1643,32 +1949,31 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
  * Returns the new input stream or NULL
  */
 xmlParserInputPtr
-xmlNewIOInputStream(xmlParserCtxtPtr ctxt, xmlParserInputBufferPtr input,
+xmlNewIOInputStream(xmlParserCtxtPtr ctxt, xmlParserInputBufferPtr buf,
 	            xmlCharEncoding enc) {
-    xmlParserInputPtr inputStream;
+    xmlParserInputPtr input;
+    const char *encoding;
 
-    if (input == NULL) return(NULL);
-    if (xmlParserDebugEntities)
-	xmlGenericError(xmlGenericErrorContext, "new input from I/O\n");
-    inputStream = xmlNewInputStream(ctxt);
-    if (inputStream == NULL) {
+    if (buf == NULL)
+        return(NULL);
+
+    input = xmlNewInputInternal(buf, NULL);
+    if (input == NULL) {
+        xmlCtxtErrMemory(ctxt);
 	return(NULL);
     }
-    inputStream->filename = NULL;
-    inputStream->buf = input;
-    xmlBufResetInput(inputStream->buf->buffer, inputStream);
 
-    if (enc != XML_CHAR_ENCODING_NONE) {
-        xmlSwitchEncoding(ctxt, enc);
-    }
+    encoding = xmlGetCharEncodingName(enc);
+    if (encoding != NULL)
+        xmlSwitchInputEncodingName(ctxt, input, encoding);
 
-    return(inputStream);
+    return(input);
 }
 
 /**
  * xmlNewEntityInputStream:
  * @ctxt:  an XML parser context
- * @entity:  an Entity pointer
+ * @ent:  an Entity pointer
  *
  * DEPRECATED: Internal function, do not use.
  *
@@ -1677,61 +1982,34 @@ xmlNewIOInputStream(xmlParserCtxtPtr ctxt, xmlParserInputBufferPtr input,
  * Returns the new input stream or NULL
  */
 xmlParserInputPtr
-xmlNewEntityInputStream(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
+xmlNewEntityInputStream(xmlParserCtxtPtr ctxt, xmlEntityPtr ent) {
     xmlParserInputPtr input;
 
-    if (entity == NULL) {
-        xmlErrInternal(ctxt, "xmlNewEntityInputStream entity = NULL\n",
-	               NULL);
+    if ((ctxt == NULL) || (ent == NULL))
 	return(NULL);
+
+    if (ent->content != NULL) {
+        input = xmlNewInputString(ctxt, NULL, (const char *) ent->content,
+                                  NULL, XML_INPUT_BUF_STATIC);
+    } else if (ent->URI != NULL) {
+        xmlResourceType rtype;
+
+        if (ent->etype == XML_EXTERNAL_PARAMETER_ENTITY)
+            rtype = XML_RESOURCE_PARAMETER_ENTITY;
+        else
+            rtype = XML_RESOURCE_GENERAL_ENTITY;
+
+        input = xmlLoadResource(ctxt, (char *) ent->URI,
+                                (char *) ent->ExternalID, rtype);
+    } else {
+        return(NULL);
     }
-    if (xmlParserDebugEntities)
-	xmlGenericError(xmlGenericErrorContext,
-		"new input from entity: %s\n", entity->name);
-    if (entity->content == NULL) {
-	switch (entity->etype) {
-            case XML_EXTERNAL_GENERAL_UNPARSED_ENTITY:
-	        xmlErrInternal(ctxt, "Cannot parse entity %s\n",
-		               entity->name);
-                break;
-            case XML_EXTERNAL_GENERAL_PARSED_ENTITY:
-            case XML_EXTERNAL_PARAMETER_ENTITY:
-		input = xmlLoadExternalEntity((char *) entity->URI,
-		       (char *) entity->ExternalID, ctxt);
-                if (input != NULL)
-                    input->entity = entity;
-                return(input);
-            case XML_INTERNAL_GENERAL_ENTITY:
-	        xmlErrInternal(ctxt,
-		      "Internal entity %s without content !\n",
-		               entity->name);
-                break;
-            case XML_INTERNAL_PARAMETER_ENTITY:
-	        xmlErrInternal(ctxt,
-		      "Internal parameter entity %s without content !\n",
-		               entity->name);
-                break;
-            case XML_INTERNAL_PREDEFINED_ENTITY:
-	        xmlErrInternal(ctxt,
-		      "Predefined entity %s without content !\n",
-		               entity->name);
-                break;
-	}
-	return(NULL);
-    }
-    input = xmlNewInputStream(ctxt);
-    if (input == NULL) {
-	return(NULL);
-    }
-    if (entity->URI != NULL)
-	input->filename = (char *) xmlStrdup((xmlChar *) entity->URI);
-    input->base = entity->content;
-    if (entity->length == 0)
-        entity->length = xmlStrlen(entity->content);
-    input->cur = entity->content;
-    input->length = entity->length;
-    input->end = &entity->content[input->length];
-    input->entity = entity;
+
+    if (input == NULL)
+        return(NULL);
+
+    input->entity = ent;
+
     return(input);
 }
 
@@ -1741,35 +2019,209 @@ xmlNewEntityInputStream(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
  * @buffer:  an memory buffer
  *
  * Create a new input stream based on a memory buffer.
+ *
  * Returns the new input stream
  */
 xmlParserInputPtr
 xmlNewStringInputStream(xmlParserCtxtPtr ctxt, const xmlChar *buffer) {
-    xmlParserInputPtr input;
-    xmlParserInputBufferPtr buf;
+    return(xmlNewInputString(ctxt, NULL, (const char *) buffer, NULL, 0));
+}
 
-    if (buffer == NULL) {
-        xmlErrInternal(ctxt, "xmlNewStringInputStream string = NULL\n",
-	               NULL);
-	return(NULL);
+
+/****************************************************************
+ *								*
+ *		External entities loading			*
+ *								*
+ ****************************************************************/
+
+#ifdef LIBXML_CATALOG_ENABLED
+
+/**
+ * xmlResolveResourceFromCatalog:
+ * @URL:  the URL for the entity to load
+ * @ID:  the System ID for the entity to load
+ * @ctxt:  the context in which the entity is called or NULL
+ *
+ * Resolves the URL and ID against the appropriate catalog.
+ * This function is used by xmlDefaultExternalEntityLoader and
+ * xmlNoNetExternalEntityLoader.
+ *
+ * Returns a new allocated URL, or NULL.
+ */
+static xmlChar *
+xmlResolveResourceFromCatalog(const char *URL, const char *ID,
+                              xmlParserCtxtPtr ctxt) {
+    xmlChar *resource = NULL;
+    xmlCatalogAllow pref;
+
+    /*
+     * If the resource doesn't exists as a file,
+     * try to load it from the resource pointed in the catalogs
+     */
+    pref = xmlCatalogGetDefaults();
+
+    if ((pref != XML_CATA_ALLOW_NONE) && (!xmlNoNetExists(URL))) {
+	/*
+	 * Do a local lookup
+	 */
+	if ((ctxt != NULL) && (ctxt->catalogs != NULL) &&
+	    ((pref == XML_CATA_ALLOW_ALL) ||
+	     (pref == XML_CATA_ALLOW_DOCUMENT))) {
+	    resource = xmlCatalogLocalResolve(ctxt->catalogs,
+					      (const xmlChar *)ID,
+					      (const xmlChar *)URL);
+        }
+	/*
+	 * Try a global lookup
+	 */
+	if ((resource == NULL) &&
+	    ((pref == XML_CATA_ALLOW_ALL) ||
+	     (pref == XML_CATA_ALLOW_GLOBAL))) {
+	    resource = xmlCatalogResolve((const xmlChar *)ID,
+					 (const xmlChar *)URL);
+	}
+	if ((resource == NULL) && (URL != NULL))
+	    resource = xmlStrdup((const xmlChar *) URL);
+
+	/*
+	 * TODO: do an URI lookup on the reference
+	 */
+	if ((resource != NULL) && (!xmlNoNetExists((const char *)resource))) {
+	    xmlChar *tmp = NULL;
+
+	    if ((ctxt != NULL) && (ctxt->catalogs != NULL) &&
+		((pref == XML_CATA_ALLOW_ALL) ||
+		 (pref == XML_CATA_ALLOW_DOCUMENT))) {
+		tmp = xmlCatalogLocalResolveURI(ctxt->catalogs, resource);
+	    }
+	    if ((tmp == NULL) &&
+		((pref == XML_CATA_ALLOW_ALL) ||
+	         (pref == XML_CATA_ALLOW_GLOBAL))) {
+		tmp = xmlCatalogResolveURI(resource);
+	    }
+
+	    if (tmp != NULL) {
+		xmlFree(resource);
+		resource = tmp;
+	    }
+	}
     }
-    if (xmlParserDebugEntities)
-	xmlGenericError(xmlGenericErrorContext,
-		"new fixed input: %.30s\n", buffer);
-    buf = xmlParserInputBufferCreateString(buffer);
-    if (buf == NULL) {
-	xmlErrMemory(ctxt, NULL);
-        return(NULL);
+
+    return resource;
+}
+
+#endif
+
+/**
+ * xmlCheckHTTPInput:
+ * @ctxt: an XML parser context
+ * @ret: an XML parser input
+ *
+ * DEPRECATED: Internal function, don't use.
+ *
+ * Check an input in case it was created from an HTTP stream, in that
+ * case it will handle encoding and update of the base URL in case of
+ * redirection. It also checks for HTTP errors in which case the input
+ * is cleanly freed up and an appropriate error is raised in context
+ *
+ * Returns the input or NULL in case of HTTP error.
+ */
+xmlParserInputPtr
+xmlCheckHTTPInput(xmlParserCtxtPtr ctxt, xmlParserInputPtr ret) {
+    /* Avoid unused variable warning if features are disabled. */
+    (void) ctxt;
+
+#ifdef LIBXML_HTTP_ENABLED
+    if ((ret != NULL) && (ret->buf != NULL) &&
+        (ret->buf->readcallback == xmlIOHTTPRead) &&
+        (ret->buf->context != NULL)) {
+        const char *encoding;
+        const char *redir;
+        const char *mime;
+        int code;
+
+        code = xmlNanoHTTPReturnCode(ret->buf->context);
+        if (code >= 400) {
+            /* fatal error */
+	    if (ret->filename != NULL)
+                xmlCtxtErrIO(ctxt, XML_IO_LOAD_ERROR, ret->filename);
+	    else
+                xmlCtxtErrIO(ctxt, XML_IO_LOAD_ERROR, "<null>");
+            xmlFreeInputStream(ret);
+            ret = NULL;
+        } else {
+
+            mime = xmlNanoHTTPMimeType(ret->buf->context);
+            if ((xmlStrstr(BAD_CAST mime, BAD_CAST "/xml")) ||
+                (xmlStrstr(BAD_CAST mime, BAD_CAST "+xml"))) {
+                encoding = xmlNanoHTTPEncoding(ret->buf->context);
+                if (encoding != NULL)
+                    xmlSwitchEncodingName(ctxt, encoding);
+#if 0
+            } else if (xmlStrstr(BAD_CAST mime, BAD_CAST "html")) {
+#endif
+            }
+            redir = xmlNanoHTTPRedir(ret->buf->context);
+            if (redir != NULL) {
+                if (ret->filename != NULL)
+                    xmlFree((xmlChar *) ret->filename);
+                ret->filename =
+                    (char *) xmlStrdup((const xmlChar *) redir);
+            }
+        }
     }
-    input = xmlNewInputStream(ctxt);
-    if (input == NULL) {
-        xmlErrMemory(ctxt,  "couldn't allocate a new input stream\n");
-	xmlFreeParserInputBuffer(buf);
-	return(NULL);
+#endif
+    return(ret);
+}
+
+/**
+ * xmlInputCreateUrl:
+ * @filename:  the filename to use as entity
+ * @flags:  XML_INPUT flags
+ * @out:  pointer to new parser input
+ *
+ * Create a new input stream based on a file or a URL.
+ *
+ * The flag XML_INPUT_UNZIP allows decompression.
+ *
+ * The flag XML_INPUT_NETWORK allows network access.
+ *
+ * Available since 2.14.0.
+ *
+ * Returns an xmlParserErrors code.
+ */
+int
+xmlInputCreateUrl(const char *filename, int flags, xmlParserInputPtr *out) {
+    xmlParserInputBufferPtr buf;
+    xmlParserInputPtr input;
+    int code = XML_ERR_OK;
+
+    if (out == NULL)
+        return(XML_ERR_ARGUMENT);
+    *out = NULL;
+    if (filename == NULL)
+        return(XML_ERR_ARGUMENT);
+
+    if (xmlParserInputBufferCreateFilenameValue != NULL) {
+        buf = xmlParserInputBufferCreateFilenameValue(filename,
+                XML_CHAR_ENCODING_NONE);
+        if (buf == NULL)
+            code = XML_IO_ENOENT;
+    } else {
+        code = xmlParserInputBufferCreateUrl(filename, XML_CHAR_ENCODING_NONE,
+                                             flags, &buf);
     }
-    input->buf = buf;
-    xmlBufResetInput(input->buf->buffer, input);
-    return(input);
+    if (code != XML_ERR_OK)
+	return(code);
+
+    input = xmlNewInputInternal(buf, filename);
+    if (input == NULL)
+	return(XML_ERR_NO_MEMORY);
+
+    /*input = xmlCheckHTTPInput(ctxt, input);*/
+
+    *out = input;
+    return(XML_ERR_OK);
 }
 
 /**
@@ -1783,52 +2235,239 @@ xmlNewStringInputStream(xmlParserCtxtPtr ctxt, const xmlChar *buffer) {
  */
 xmlParserInputPtr
 xmlNewInputFromFile(xmlParserCtxtPtr ctxt, const char *filename) {
-    xmlParserInputBufferPtr buf;
-    xmlParserInputPtr inputStream;
-    char *directory = NULL;
-    xmlChar *URI = NULL;
+    xmlParserInputPtr input;
+    int flags = 0;
+    int code;
 
-    if (xmlParserDebugEntities)
-	xmlGenericError(xmlGenericErrorContext,
-		"new input from file: %s\n", filename);
-    if (ctxt == NULL) return(NULL);
-    buf = xmlParserInputBufferCreateFilename(filename, XML_CHAR_ENCODING_NONE);
-    if (buf == NULL) {
-	if (filename == NULL)
-            xmlLoaderErr(ctxt,
-                         "failed to load external entity: NULL filename\n",
-                         NULL);
-	else
-            xmlLoaderErr(ctxt, "failed to load external entity \"%s\"\n",
-                         (const char *) filename);
-	return(NULL);
-    }
-
-    inputStream = xmlNewInputStream(ctxt);
-    if (inputStream == NULL) {
-	xmlFreeParserInputBuffer(buf);
-	return(NULL);
-    }
-
-    inputStream->buf = buf;
-    inputStream = xmlCheckHTTPInput(ctxt, inputStream);
-    if (inputStream == NULL)
+    if ((ctxt == NULL) || (filename == NULL))
         return(NULL);
 
-    if (inputStream->filename == NULL)
-	URI = xmlStrdup((xmlChar *) filename);
-    else
-	URI = xmlStrdup((xmlChar *) inputStream->filename);
-    directory = xmlParserGetDirectory((const char *) URI);
-    if (inputStream->filename != NULL) xmlFree((char *)inputStream->filename);
-    inputStream->filename = (char *) xmlCanonicPath((const xmlChar *) URI);
-    if (URI != NULL) xmlFree((char *) URI);
-    inputStream->directory = directory;
+    if ((ctxt->options & XML_PARSE_NO_UNZIP) == 0)
+        flags |= XML_INPUT_UNZIP;
+    if ((ctxt->options & XML_PARSE_NONET) == 0)
+        flags |= XML_INPUT_NETWORK;
 
-    xmlBufResetInput(inputStream->buf->buffer, inputStream);
-    if ((ctxt->directory == NULL) && (directory != NULL))
-        ctxt->directory = (char *) xmlStrdup((const xmlChar *) directory);
-    return(inputStream);
+    code = xmlInputCreateUrl(filename, flags, &input);
+    if (code != XML_ERR_OK) {
+        xmlCtxtErrIO(ctxt, code, filename);
+        return(NULL);
+    }
+
+    input = xmlCheckHTTPInput(ctxt, input);
+
+    return(input);
+}
+
+/**
+ * xmlDefaultExternalEntityLoader:
+ * @URL:  the URL for the entity to load
+ * @ID:  the System ID for the entity to load
+ * @ctxt:  the context in which the entity is called or NULL
+ *
+ * By default we don't load external entities, yet.
+ *
+ * Returns a new allocated xmlParserInputPtr, or NULL.
+ */
+static xmlParserInputPtr
+xmlDefaultExternalEntityLoader(const char *url, const char *ID,
+                               xmlParserCtxtPtr ctxt)
+{
+    xmlParserInputPtr input = NULL;
+    char *resource = NULL;
+
+    (void) ID;
+
+    if (url == NULL)
+        return(NULL);
+
+#ifdef LIBXML_CATALOG_ENABLED
+    resource = (char *) xmlResolveResourceFromCatalog(url, ID, ctxt);
+    if (resource != NULL)
+	url = resource;
+#endif
+
+    if ((ctxt != NULL) &&
+        (ctxt->options & XML_PARSE_NONET) &&
+        (xmlStrncasecmp(BAD_CAST url, BAD_CAST "http://", 7) == 0)) {
+        xmlCtxtErrIO(ctxt, XML_IO_NETWORK_ATTEMPT, url);
+    } else {
+        input = xmlNewInputFromFile(ctxt, url);
+    }
+
+    if (resource != NULL)
+	xmlFree(resource);
+    return(input);
+}
+
+/**
+ * xmlNoNetExternalEntityLoader:
+ * @URL:  the URL for the entity to load
+ * @ID:  the System ID for the entity to load
+ * @ctxt:  the context in which the entity is called or NULL
+ *
+ * DEPRECATED: Use XML_PARSE_NONET.
+ *
+ * A specific entity loader disabling network accesses, though still
+ * allowing local catalog accesses for resolution.
+ *
+ * Returns a new allocated xmlParserInputPtr, or NULL.
+ */
+xmlParserInputPtr
+xmlNoNetExternalEntityLoader(const char *URL, const char *ID,
+                             xmlParserCtxtPtr ctxt) {
+    int oldOptions = 0;
+    xmlParserInputPtr input;
+
+    if (ctxt != NULL) {
+        oldOptions = ctxt->options;
+        ctxt->options |= XML_PARSE_NONET;
+    }
+
+    input = xmlDefaultExternalEntityLoader(URL, ID, ctxt);
+
+    if (ctxt != NULL)
+        ctxt->options = oldOptions;
+
+    return(input);
+}
+
+/*
+ * This global has to die eventually
+ */
+static xmlExternalEntityLoader
+xmlCurrentExternalEntityLoader = xmlDefaultExternalEntityLoader;
+
+/**
+ * xmlSetExternalEntityLoader:
+ * @f:  the new entity resolver function
+ *
+ * DEPRECATED: This is a global setting and not thread-safe. Use
+ * xmlCtxtSetResourceLoader or similar functions.
+ *
+ * Changes the default external entity resolver function for the
+ * application.
+ */
+void
+xmlSetExternalEntityLoader(xmlExternalEntityLoader f) {
+    xmlCurrentExternalEntityLoader = f;
+}
+
+/**
+ * xmlGetExternalEntityLoader:
+ *
+ * DEPRECATED: See xmlSetExternalEntityLoader.
+ *
+ * Get the default external entity resolver function for the application
+ *
+ * Returns the xmlExternalEntityLoader function pointer
+ */
+xmlExternalEntityLoader
+xmlGetExternalEntityLoader(void) {
+    return(xmlCurrentExternalEntityLoader);
+}
+
+/**
+ * xmlCtxtSetResourceLoader:
+ * @ctxt:  parser context
+ * @loader:  callback
+ * @vctxt:  user data
+ *
+ * Installs a custom callback to load documents, DTDs or external
+ * entities.
+ *
+ * Available since 2.14.0.
+ */
+void
+xmlCtxtSetResourceLoader(xmlParserCtxtPtr ctxt, xmlResourceLoader loader,
+                         void *vctxt) {
+    if (ctxt == NULL)
+        return;
+
+    ctxt->resourceLoader = loader;
+    ctxt->resourceCtxt = vctxt;
+}
+
+/**
+ * xmlLoadResource:
+ * @ctxt:  parser context
+ * @url:  the URL for the entity to load
+ * @publicId:  the Public ID for the entity to load
+ * @type:  resource type
+ *
+ * Returns the xmlParserInputPtr or NULL in case of error.
+ */
+xmlParserInputPtr
+xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
+                xmlResourceType type) {
+    char *canonicFilename;
+    xmlParserInputPtr ret;
+
+    if (url == NULL)
+        return(NULL);
+
+    if ((ctxt != NULL) && (ctxt->resourceLoader != NULL)) {
+        int flags = 0;
+        int code;
+
+        if ((ctxt->options & XML_PARSE_NO_UNZIP) == 0)
+            flags |= XML_INPUT_UNZIP;
+        if ((ctxt->options & XML_PARSE_NONET) == 0)
+            flags |= XML_INPUT_NETWORK;
+
+        code = ctxt->resourceLoader(ctxt->resourceCtxt, url, publicId, flags,
+                                    type, &ret);
+        if (code != XML_ERR_OK) {
+            xmlCtxtErrIO(ctxt, code, url);
+            return(NULL);
+        }
+        return(ret);
+    }
+
+    canonicFilename = (char *) xmlCanonicPath((const xmlChar *) url);
+    if (canonicFilename == NULL) {
+        xmlCtxtErrMemory(ctxt);
+        return(NULL);
+    }
+
+    ret = xmlCurrentExternalEntityLoader(canonicFilename, publicId, ctxt);
+    xmlFree(canonicFilename);
+    return(ret);
+}
+
+/**
+ * xmlLoadExternalEntity:
+ * @URL:  the URL for the entity to load
+ * @ID:  the Public ID for the entity to load
+ * @ctxt:  the context in which the entity is called or NULL
+ *
+ * @URL is a filename or URL. If if contains the substring "://",
+ * it is assumed to be a Legacy Extended IRI. Otherwise, it is
+ * treated as a filesystem path.
+ *
+ * @ID is an optional XML public ID, typically from a doctype
+ * declaration. It is used for catalog lookups.
+ *
+ * The following resource loaders will be called if they were
+ * registered (in order of precedence):
+ *
+ * - the resource loader set with xmlCtxtSetResourceLoader
+ * - the global external entity loader set with
+ *   xmlSetExternalEntityLoader
+ * - the per-thread xmlParserInputBufferCreateFilenameFunc set with
+ *   xmlParserInputBufferCreateFilenameDefault
+ * - the default loader which will return
+ *   - the result from a matching global input callback set with
+ *     xmlRegisterInputCallbacks
+ *   - a HTTP resource if support is compiled in.
+ *   - a file opened from the filesystem, with automatic detection
+ *     of compressed files if support is compiled in.
+ *
+ * Returns the xmlParserInputPtr or NULL
+ */
+xmlParserInputPtr
+xmlLoadExternalEntity(const char *URL, const char *ID,
+                      xmlParserCtxtPtr ctxt) {
+    return(xmlLoadResource(ctxt, URL, ID, XML_RESOURCE_UNKNOWN));
 }
 
 /************************************************************************
@@ -1856,8 +2495,6 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
 
     if (ctxt == NULL)
         return(-1);
-
-    xmlInitParser();
 
     if (ctxt->dict == NULL)
 	ctxt->dict = xmlDictCreate();
@@ -1905,10 +2542,7 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
     ctxt->hasExternalSubset = 0;
     ctxt->hasPErefs = 0;
     ctxt->html = 0;
-    ctxt->external = 0;
     ctxt->instate = XML_PARSER_START;
-    ctxt->token = 0;
-    ctxt->directory = NULL;
 
     /* Allocate the Node stack */
     if (ctxt->nodeTab == NULL) {
@@ -1945,11 +2579,23 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
     ctxt->wellFormed = 1;
     ctxt->nsWellFormed = 1;
     ctxt->valid = 1;
+
+    ctxt->options = XML_PARSE_NODICT;
+
+    /*
+     * Initialize some parser options from deprecated global variables.
+     * Note that the "modern" API taking options arguments or
+     * xmlCtxtSetOptions will ignore these defaults. They're only
+     * relevant if old API functions like xmlParseFile are used.
+     */
     ctxt->loadsubset = xmlLoadExtDtdDefaultValue;
     if (ctxt->loadsubset) {
         ctxt->options |= XML_PARSE_DTDLOAD;
     }
     ctxt->validate = xmlDoValidityCheckingDefaultValue;
+    if (ctxt->validate) {
+        ctxt->options |= XML_PARSE_DTDVALID;
+    }
     ctxt->pedantic = xmlPedanticParserDefaultValue;
     if (ctxt->pedantic) {
         ctxt->options |= XML_PARSE_PEDANTIC;
@@ -1960,23 +2606,18 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
 	ctxt->sax->ignorableWhitespace = xmlSAX2IgnorableWhitespace;
 	ctxt->options |= XML_PARSE_NOBLANKS;
     }
+    ctxt->replaceEntities = xmlSubstituteEntitiesDefaultValue;
+    if (ctxt->replaceEntities) {
+        ctxt->options |= XML_PARSE_NOENT;
+    }
+    if (xmlGetWarningsDefaultValue == 0)
+        ctxt->options |= XML_PARSE_NOWARNING;
 
     ctxt->vctxt.flags = XML_VCTXT_USE_PCTXT;
     ctxt->vctxt.userData = ctxt;
     ctxt->vctxt.error = xmlParserValidityError;
     ctxt->vctxt.warning = xmlParserValidityWarning;
-    if (ctxt->validate) {
-	if (xmlGetWarningsDefaultValue == 0)
-	    ctxt->vctxt.warning = NULL;
-	else
-	    ctxt->vctxt.warning = xmlParserValidityWarning;
-	ctxt->vctxt.nodeMax = 0;
-        ctxt->options |= XML_PARSE_DTDVALID;
-    }
-    ctxt->replaceEntities = xmlSubstituteEntitiesDefaultValue;
-    if (ctxt->replaceEntities) {
-        ctxt->options |= XML_PARSE_NOENT;
-    }
+
     ctxt->record_info = 0;
     ctxt->checkIndex = 0;
     ctxt->inSubset = 0;
@@ -1991,10 +2632,8 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
 
     if (ctxt->nsdb == NULL) {
         ctxt->nsdb = xmlParserNsCreate();
-        if (ctxt->nsdb == NULL) {
-            xmlErrMemory(ctxt, NULL);
+        if (ctxt->nsdb == NULL)
             return(-1);
-        }
     }
 
     return(0);
@@ -2052,7 +2691,6 @@ xmlFreeParserCtxt(xmlParserCtxtPtr ctxt)
     if (ctxt->sax != NULL)
 #endif /* LIBXML_SAX1_ENABLED */
         xmlFree(ctxt->sax);
-    if (ctxt->directory != NULL) xmlFree((char *) ctxt->directory);
     if (ctxt->vctxt.nodeTab != NULL) xmlFree(ctxt->vctxt.nodeTab);
     if (ctxt->atts != NULL) xmlFree((xmlChar * *)ctxt->atts);
     if (ctxt->dict != NULL) xmlDictFree(ctxt->dict);
@@ -2128,6 +2766,10 @@ xmlNewParserCtxt(void)
  * Allocate and initialize a new SAX parser context. If userData is NULL,
  * the parser context will be passed as user data.
  *
+ * Available since 2.11.0. If you want support older versions,
+ * it's best to invoke xmlNewParserCtxt and set ctxt->sax with
+ * struct assignment.
+ *
  * Returns the xmlParserCtxtPtr or NULL if memory allocation failed.
  */
 
@@ -2135,6 +2777,8 @@ xmlParserCtxtPtr
 xmlNewSAXParserCtxt(const xmlSAXHandler *sax, void *userData)
 {
     xmlParserCtxtPtr ctxt;
+
+    xmlInitParser();
 
     ctxt = (xmlParserCtxtPtr) xmlMalloc(sizeof(xmlParserCtxt));
     if (ctxt == NULL)
@@ -2326,7 +2970,7 @@ xmlParserAddNodeInfo(xmlParserCtxtPtr ctxt,
                                                      byte_size);
 
             if (tmp_buffer == NULL) {
-		xmlErrMemory(ctxt, "failed to allocate buffer\n");
+		xmlCtxtErrMemory(ctxt);
                 return;
             }
             ctxt->node_seq.buffer = tmp_buffer;

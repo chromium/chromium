@@ -8,6 +8,9 @@
 #include <ui-controls-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 
+#include <limits>
+#include <variant>
+
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "base/bit_cast.h"
@@ -27,6 +30,8 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -90,7 +95,11 @@ void ResetInputs(UiControlsState* state) {
   auto* window = ash::Shell::GetPrimaryRootWindow();
   auto pressed_keys = state->seat_->pressed_keys();
   for (auto key : pressed_keys) {
-    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(key.first);
+    const ui::DomCode* physical_key = std::get_if<ui::DomCode>(&key.first);
+    if (!physical_key) {
+      continue;
+    }
+    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(*physical_key);
     ui_controls::SendKeyEvents(window, key_code, ui_controls::kKeyRelease);
   }
 
@@ -117,7 +126,7 @@ void ResetInputs(UiControlsState* state) {
     }
   }
 
-  // TODO(crbug.com/1431512): Fix this issue and the code below should not be
+  // TODO(crbug.com/40263572): Fix this issue and the code below should not be
   // necessary.
   ui_controls::SendMouseMove(0, 0);
 }
@@ -129,7 +138,6 @@ void ResetDisplay(UiControlsState* state) {
   ash::ScreenOrientationControllerTestApi(
       ash::Shell::Get()->screen_orientation_controller())
       .UpdateNaturalOrientation();
-  state->original_displays_.clear();
   state->pending_display_.reset();
   state->pending_display_info_list_.clear();
 }
@@ -317,6 +325,13 @@ UiControls::UiControls(Server* server)
     state_->original_displays_.push_back(
         display_manager->GetDisplayInfo(display.id()));
   }
+  // TODO(crbug.com/324562919) This hardcodes fling gesture detection to be
+  // disabled when ui_controls is in use, so that it does not interfere with
+  // tests that don't intend to trigger fling gestures. Some future tests will
+  // intentionally trigger fling gestures, so this will need to become
+  // configurable by clients at some point.
+  ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(
+      std::numeric_limits<float>::max());
 }
 
 UiControls::~UiControls() = default;

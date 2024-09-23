@@ -100,10 +100,12 @@ void ListTaskListsRequest::OnDataParsed(std::unique_ptr<TaskLists> task_lists) {
 ListTasksRequest::ListTasksRequest(RequestSender* sender,
                                    const std::string& task_list_id,
                                    const std::string& page_token,
+                                   bool include_assigned,
                                    Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       task_list_id_(task_list_id),
       page_token_(page_token),
+      include_assigned_(include_assigned),
       callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
@@ -113,6 +115,7 @@ ListTasksRequest::~ListTasksRequest() = default;
 
 GURL ListTasksRequest::GetURL() const {
   return GetListTasksUrl(task_list_id_, /*include_completed=*/false,
+                         /*include_assigned=*/include_assigned_,
                          kMaxAllowedMaxResults, page_token_);
 }
 

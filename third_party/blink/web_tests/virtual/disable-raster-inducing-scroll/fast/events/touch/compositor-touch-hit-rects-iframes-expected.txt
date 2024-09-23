@@ -1,0 +1,42 @@
+This tests verifies the hit test regions given to the compositor when non-composited iframes are involved. It can only be run in DumpRenderTree. The outputted rects should cover the hit test regions of all the listed elements. Enable visualize mode to quickly validate graphically.
+
+iframe: layer(800x600) has hit test rect (23,130 290x15)
+iframe: layer(800x600) has hit test rect (395,130 15x25)
+iframe: layer(800x600) has hit test rect (395,161 15x35)
+iframe: layer(800x600) has hit test rect (355,168 15x28)
+iframe: layer(800x600) has hit test rect (443,213 18x29)
+iframe: layer(800x600) has hit test rect (395,253 15x25)
+iframe: layer(800x600) has hit test rect (395,284 15x25)
+
+iframe-nested: layer(800x600) has hit test rect (395,130 15x25)
+iframe-nested: layer(800x600) has hit test rect (395,161 15x35)
+iframe-nested: layer(800x600) has hit test rect (33,168 290x15)
+iframe-nested: layer(800x600) has hit test rect (355,168 15x28)
+iframe-nested: layer(800x600) has hit test rect (443,213 18x29)
+iframe-nested: layer(800x600) has hit test rect (395,253 15x25)
+iframe-nested: layer(800x600) has hit test rect (395,284 15x25)
+
+iframe-transform: layer(785x817) has hit test rect (395,146 15x25)
+iframe-transform: layer(785x817) has hit test rect (395,177 15x35)
+iframe-transform: layer(785x817) has hit test rect (355,184 15x28)
+iframe-transform: layer(785x817) has hit test rect (34,223 320x23)
+iframe-transform: layer(785x817) has hit test rect (443,229 18x29)
+iframe-transform: layer(785x817) has hit test rect (395,269 15x25)
+iframe-transform: layer(785x817) has hit test rect (395,300 15x25)
+
+iframe-fixed: layer(332x22) has hit test rect (0,0 332x22)
+iframe-fixed: layer(785x1057) has hit test rect (395,146 15x25)
+iframe-fixed: layer(785x1057) has hit test rect (395,177 15x35)
+iframe-fixed: layer(785x1057) has hit test rect (355,184 15x28)
+iframe-fixed: layer(785x1057) has hit test rect (443,229 18x29)
+iframe-fixed: layer(785x1057) has hit test rect (395,269 15x25)
+iframe-fixed: layer(785x1057) has hit test rect (395,300 15x25)
+
+iframe-doc: layer(785x1297) has hit test rect (395,146 15x25)
+iframe-doc: layer(785x1297) has hit test rect (395,177 15x35)
+iframe-doc: layer(785x1297) has hit test rect (355,184 15x28)
+iframe-doc: layer(785x1297) has hit test rect (443,229 18x29)
+iframe-doc: layer(785x1297) has hit test rect (395,269 15x25)
+iframe-doc: layer(785x1297) has hit test rect (10,300 400x25)
+
+

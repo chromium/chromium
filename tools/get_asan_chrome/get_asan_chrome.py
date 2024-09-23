@@ -59,27 +59,33 @@ def fetch_json(release_info_url):
                  f'{release_info_url}')
 
 
-def get_release_metadata_by_version(release_info):
-    # TODO: fix this endpoint (see crbug.com/1517458)
-    raise RuntimeError("Querying by version is currently broken "
-                       "(see crbug.com/1517458)")
-    uri = (f'https://chromiumdash.appspot.com/fetch_releases'
-           f'?version={release_info.version}'
-           f'&num=1&offset=0')
-    json_response = fetch_json(uri)[0]
-    release_info.branch_position = json_response[
-        'chromium_main_branch_position']
+def get_release_metadata_by_version(version):
+    uri = (f'https://chromiumdash.appspot.com/fetch_version'
+           f'?version={version}')
+    json_response = fetch_json(uri)
+    return json_response['chromium_main_branch_position']
 
 
 def get_release_metadata_by_channel(release_info):
+    os_to_platform = {
+        'linux': 'linux',
+        'linux_debug': 'linux',
+        'mac': 'mac',
+        'win64': 'win64',
+        'lacros': 'lacros',
+    }
+    platform = os_to_platform[release_info.os]
     uri = (f'https://chromiumdash.appspot.com/fetch_releases'
-           f'?platform={release_info.os}'
+           f'?platform={platform}'
            f'&channel={release_info.channel}'
            f'&num=1&offset=0')
-    json_response = fetch_json(uri)[0]
-    release_info.branch_position = json_response[
-        'chromium_main_branch_position']
-    release_info.version = json_response['version']
+    json_response = fetch_json(uri)
+    if not json_response:
+        fail(f'No releases found for platform "{platform}" '
+             f'and channel "{release_info.channel}"')
+    release = json_response[0]
+    release_info.branch_position = release['chromium_main_branch_position']
+    release_info.version = release['version']
 
 
 def get_release_metadata(release_info):
@@ -89,7 +95,8 @@ def get_release_metadata(release_info):
     if release_info.branch_position:
         return
     elif release_info.version:
-        get_release_metadata_by_version(release_info)
+        release_info.branch_position = get_release_metadata_by_version(
+            release_info.version)
     else:
         # If the channel unspecified, use channel closest to ToT for given OS.
         if not release_info.channel:
@@ -123,7 +130,7 @@ def download_asan_chrome(release_info, download_dir, quiet, retries=100):
         'linux': 'linux-release/asan-linux-release',
         'linux_debug': 'linux-debug/asan-linux-debug',
         'mac': 'mac-release/asan-mac-release',
-        'mac_debug': 'mac-release/asan-mac-debug',
+        # 'mac_debug': 'mac-debug/asan-mac-debug',
         # 'ios': 'ios-release/asan-ios-release', # unsupported
         'lacros': 'linux-release-chromeos/asan-linux-release',
         # android is currently unsupported
@@ -182,7 +189,13 @@ if __name__ == '__main__':
                        help='Chromium channel, e.g. canary.')
     parser.add_argument(
         '--os',
-        choices=['linux', 'mac', 'win64', 'lacros'],
+        choices=[
+            'win64',
+            'linux',
+            'linux_debug',
+            'mac',
+            'lacros',
+        ],
         help='Operating system type as defined by Chromium Dash.')
     parser.add_argument(
         '--download_directory',

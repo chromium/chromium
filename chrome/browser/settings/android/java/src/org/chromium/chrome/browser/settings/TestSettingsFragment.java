@@ -9,34 +9,33 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 
-/** A TestSettingsFragment that has several preference inside. */
-public class TestSettingsFragment extends PreferenceFragmentCompat implements BackPressHandler {
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
+/** An embeddable settings fragment that has several preference inside. */
+public class TestSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
+    public static final String EXTRA_TITLE = "title";
 
-    private final CallbackHelper mBackPressCallback = new CallbackHelper();
-
-    public CallbackHelper getBackPressCallback() {
-        return mBackPressCallback;
-    }
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         addPreferencesFromResource(R.xml.test_settings_fragment);
+
+        String title = "test title";
+        Bundle args = getArguments();
+        if (args != null) {
+            String extraTitle = args.getString(EXTRA_TITLE);
+            if (extraTitle != null) {
+                title = extraTitle;
+            }
+        }
+        mPageTitle.set(title);
     }
 
     @Override
-    public int handleBackPress() {
-        mBackPressCallback.notifyCalled();
-        return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressStateSupplier;
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 }

@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -175,7 +181,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone: {
           DOMArrayBuffer* array_buffer = BuildArrayBuffer();
@@ -263,7 +269,7 @@ class FetchDataLoaderAsFailure final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
         case BytesConsumer::Result::kError:
@@ -305,9 +311,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
 
     StringUTF8Adaptor multipart_boundary_utf8(multipart_boundary_);
     Vector<char> multipart_boundary_vector;
-    multipart_boundary_vector.Append(
-        multipart_boundary_utf8.data(),
-        multipart_boundary_utf8.size());
+    multipart_boundary_vector.AppendSpan(base::span(multipart_boundary_utf8));
 
     client_ = client;
     form_data_ = MakeGarbageCollected<FormData>();
@@ -327,7 +331,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         const bool buffer_appended =
-            multipart_parser_->AppendData(buffer, available);
+            multipart_parser_->AppendData(base::span(buffer, available));
         const bool multipart_receive_failed = multipart_parser_->IsCancelled();
         result = consumer_->EndRead(available);
         if (!buffer_appended || multipart_receive_failed) {
@@ -341,7 +345,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           if (multipart_parser_->Finish()) {
@@ -382,9 +386,10 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
       multipart_parser_->Cancel();
   }
 
-  void PartDataInMultipartReceived(const char* bytes, size_t size) override {
-    if (!current_entry_.AppendBytes(bytes, size))
+  void PartDataInMultipartReceived(base::span<const char> bytes) override {
+    if (!current_entry_.AppendBytes(bytes)) {
       multipart_parser_->Cancel();
+    }
   }
 
   void PartDataInMultipartFullyReceived() override {
@@ -420,11 +425,11 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
       return true;
     }
 
-    bool AppendBytes(const char* bytes, size_t size) {
+    bool AppendBytes(base::span<const char> chars) {
       if (blob_data_)
-        blob_data_->AppendBytes(bytes, size);
+        blob_data_->AppendBytes(base::as_bytes(chars));
       if (string_builder_) {
-        string_builder_->Append(string_decoder_->Decode(bytes, size));
+        string_builder_->Append(string_decoder_->Decode(chars));
         if (string_decoder_->SawError())
           return false;
       }
@@ -494,14 +499,14 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (available > 0)
-          builder_.Append(decoder_->Decode(buffer, available));
+          builder_.Append(decoder_->Decode(base::span(buffer, available)));
         result = consumer_->EndRead(available);
       }
       switch (result) {
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           builder_.Append(decoder_->Flush());
@@ -626,14 +631,19 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        if (available == 0) {
+        // SAFETY: `BeginRead` promises to return a valid pointer and size in
+        // the `kOk` case.
+        base::span<const char> span =
+            UNSAFE_BUFFERS(base::span(buffer, available));
+        if (span.empty()) {
           result = consumer_->EndRead(0);
         } else {
-          uint32_t num_bytes = base::checked_cast<uint32_t>(available);
+          size_t actually_written_bytes = 0;
           MojoResult mojo_result = out_data_pipe_->WriteData(
-              buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+              base::as_bytes(span), MOJO_WRITE_DATA_FLAG_NONE,
+              actually_written_bytes);
           if (mojo_result == MOJO_RESULT_OK) {
-            result = consumer_->EndRead(num_bytes);
+            result = consumer_->EndRead(actually_written_bytes);
           } else if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
             result = consumer_->EndRead(0);
             should_wait = true;
@@ -650,7 +660,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           StopInternal();

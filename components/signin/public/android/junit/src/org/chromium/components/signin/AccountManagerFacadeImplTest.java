@@ -4,17 +4,20 @@
 
 package org.chromium.components.signin;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
@@ -52,8 +55,9 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.ArrayList;
@@ -73,7 +77,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
         })
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
-    private static final String TEST_TOKEN_SCOPE = "test-token-scope";
+    private static final AccountInfo TEST_ACCOUNT =
+            new AccountInfo.Builder("test@gmail.com", "testGaiaId").build();
 
     private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
@@ -108,8 +113,11 @@ public class AccountManagerFacadeImplTest {
     private ShadowUserManager mShadowUserManager;
     private ShadowAccountManager mShadowAccountManager;
     private ShadowPostTaskImpl mPostTaskRunner;
+
     private FakeAccountManagerDelegate mDelegate;
-    private AccountManagerFacade mFacade;
+    private AccountManagerFacadeImpl mFacade;
+
+    @Mock private AccountManagerDelegate mDelegateMock;
 
     // Prefer to use the facade with the real system delegate instead of the fake delegate
     // to test the facade more thoroughly
@@ -117,7 +125,7 @@ public class AccountManagerFacadeImplTest {
 
     @Before
     public void setUp() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
         mShadowUserManager =
@@ -128,6 +136,7 @@ public class AccountManagerFacadeImplTest {
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
+        mFacade.resetAccountsForTesting();
 
         mFacadeWithSystemDelegate =
                 new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
@@ -171,10 +180,6 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testAccountFetching() throws Exception {
-        AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
-        doReturn(new Account[] {accountHolder.getAccount()})
-                .when(mDelegate)
-                .getAccountsSynchronous();
         HistogramWatcher retriesHistogram =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Signin.GetAccountsBackoffRetries")
@@ -184,23 +189,26 @@ public class AccountManagerFacadeImplTest {
                         .expectNoRecords("Signin.GetAccountsBackoffSuccess")
                         .build();
 
-        mDelegate.callOnCoreAccountInfoChanged();
-        // Called once on AccountManagerFacade creation and a second time when
-        // onCoreAccountInfoChanged is called.
-        verify(mDelegate, times(2)).getAccountsSynchronous();
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        delegate.addAccount(TEST_ACCOUNT);
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
 
-        Assert.assertTrue(mPostTaskRunner.mRunnables.isEmpty());
+        assertEquals(facade.getCoreAccountInfos().getResult(), List.of(TEST_ACCOUNT));
+        assertTrue(facade.didAccountFetchSucceed());
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
     }
 
     @Test
     public void testErrorFetchingAccounts() throws Exception {
-        AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
         doThrow(AccountManagerDelegateException.class)
-                .doReturn(new Account[] {accountHolder.getAccount()})
-                .when(mDelegate)
+                .doReturn(new Account[] {CoreAccountInfo.getAndroidAccountFrom(TEST_ACCOUNT)})
+                .when(mDelegateMock)
                 .getAccountsSynchronous();
+        doReturn(TEST_ACCOUNT.getGaiaId())
+                .when(mDelegateMock)
+                .getAccountGaiaId(TEST_ACCOUNT.getEmail());
+
         HistogramWatcher retriesHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Signin.GetAccountsBackoffRetries", /* retries= */ 1)
@@ -210,18 +218,18 @@ public class AccountManagerFacadeImplTest {
                         .expectBooleanRecord("Signin.GetAccountsBackoffSuccess", true)
                         .build();
 
-        mDelegate.callOnCoreAccountInfoChanged();
-        // Called once on AccountManagerFacade creation and a second time when
-        // onCoreAccountInfoChanged is called..
-        // TODO(crbug.com/1502123): Add verification that getCoreAccountInfos isn't fulfilled until
-        // getAccountsSynchronous stops throwing exceptions (and that it is correctly fulfilled when
-        // it stops throwing).
-        verify(mDelegate, times(2)).getAccountsSynchronous();
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegateMock);
 
-        // The delegate call is retried once, and succeeds (for a total of three interactions with
-        // the mock).
+        // Called once on AccountManagerFacade creation.
+        verify(mDelegateMock).getAccountsSynchronous();
+        assertFalse(facade.getCoreAccountInfos().isFulfilled());
+
+        // The delegate call is retried once, and succeeds.
         mPostTaskRunner.runAll();
-        verify(mDelegate, times(3)).getAccountsSynchronous();
+        verify(mDelegateMock, times(2)).getAccountsSynchronous();
+        assertTrue(facade.getCoreAccountInfos().isFulfilled());
+        assertTrue(facade.didAccountFetchSucceed());
+        assertEquals(facade.getCoreAccountInfos().getResult(), List.of(TEST_ACCOUNT));
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
     }
@@ -248,8 +256,34 @@ public class AccountManagerFacadeImplTest {
         mPostTaskRunner.runAll();
         verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
                 .getAccountsSynchronous();
+        assertFalse(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getCoreAccountInfos().getResult(), List.of());
         retriesHistogram.assertExpected();
         successHistogram.assertExpected();
+    }
+
+    @Test
+    public void testAccountFetchingFailsThenSucceeds() throws Exception {
+        // Initially, account fetching fails.
+        doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
+        mDelegate.callOnCoreAccountInfoChanged();
+        mPostTaskRunner.runAll();
+        assertFalse(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getCoreAccountInfos().getResult(), List.of());
+
+        // Accounts are updated again.
+        mDelegate.callOnCoreAccountInfoChanged();
+        // Account fetch is still marked as non-successful.
+        assertFalse(mFacade.didAccountFetchSucceed());
+        // This time account fetch will succeed.
+        doReturn(new Account[] {CoreAccountInfo.getAndroidAccountFrom(TEST_ACCOUNT)})
+                .when(mDelegate)
+                .getAccountsSynchronous();
+        doReturn(TEST_ACCOUNT.getGaiaId())
+                .when(mDelegate)
+                .getAccountGaiaId(TEST_ACCOUNT.getEmail());
+        mPostTaskRunner.runAll();
+        assertTrue(mFacade.didAccountFetchSucceed());
     }
 
     // If this test starts flaking, please re-open crbug.com/568636 and make sure there is some sort
@@ -277,13 +311,14 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(
                 List.of(accountInfo1, accountInfo2), mFacade.getCoreAccountInfos().getResult());
 
-        removeTestAccount(accountInfo1.getEmail());
+        removeTestAccount(accountInfo1.getId());
         Assert.assertEquals(List.of(accountInfo2), mFacade.getCoreAccountInfos().getResult());
     }
 
     @Test
     public void testGetCoreAccountInfosWhenGaiaIdIsNull() throws Exception {
         final String accountEmail = "test@gmail.com";
+        final String accountGaiaId = FakeAccountManagerDelegate.toGaiaId(accountEmail);
         AtomicBoolean accountRemoved = new AtomicBoolean(false);
         doAnswer(
                         invocation -> {
@@ -292,7 +327,7 @@ public class AccountManagerFacadeImplTest {
                             // Without this check FakeAccountManagerDelegate.removeAccount() will
                             // crash because the account doesn't exist.
                             if (!accountRemoved.get()) {
-                                removeTestAccount(accountEmail);
+                                removeTestAccount(new CoreAccountId(accountGaiaId));
                                 accountRemoved.set(true);
                             }
                             return null;
@@ -336,7 +371,7 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(
                 List.of(accountInfo1, accountInfo2), mFacade.getCoreAccountInfos().getResult());
 
-        removeTestAccount(accountInfo1.getEmail());
+        removeTestAccount(accountInfo1.getId());
         Assert.assertEquals(List.of(accountInfo2), mFacade.getCoreAccountInfos().getResult());
     }
 
@@ -360,6 +395,7 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testGetCoreAccountInfosWithAccountPatternsChange() throws Exception {
+        mDelegate.callOnCoreAccountInfoChanged();
         Assert.assertEquals(List.of(), mFacade.getCoreAccountInfos().getResult());
 
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
@@ -381,7 +417,7 @@ public class AccountManagerFacadeImplTest {
         Assert.assertEquals(
                 List.of(accountInfo2, accountInfo3), mFacade.getCoreAccountInfos().getResult());
 
-        removeTestAccount(accountInfo3.getEmail());
+        removeTestAccount(accountInfo3.getId());
         Assert.assertEquals(List.of(accountInfo2), mFacade.getCoreAccountInfos().getResult());
     }
 
@@ -429,30 +465,6 @@ public class AccountManagerFacadeImplTest {
                 coreAccountInfo, mChildAccountStatusListenerMock);
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
-    }
-
-    @Test
-    public void testGetAndInvalidateAccessToken() throws Exception {
-        final CoreAccountInfo coreAccountInfo = addTestAccount("test@gmail.com");
-        final AccessTokenData originalToken =
-                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
-        Assert.assertEquals(
-                "The same token should be returned before invalidating the token.",
-                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE).getToken(),
-                originalToken.getToken());
-
-        mFacade.invalidateAccessToken(originalToken.getToken());
-
-        final AccessTokenData newToken = mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
-        Assert.assertNotEquals(
-                "A different token should be returned since the original token is invalidated.",
-                newToken.getToken(),
-                originalToken.getToken());
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testAccountManagerFacadeProviderGetNullInstance() {
-        AccountManagerFacadeProvider.getInstance();
     }
 
     @Test
@@ -525,12 +537,15 @@ public class AccountManagerFacadeImplTest {
     }
 
     private CoreAccountInfo addTestAccount(String accountEmail) {
-        mDelegate.addAccount(AccountHolder.createFromEmail(accountEmail));
-        return AccountUtils.findCoreAccountInfoByEmail(
-                mFacade.getCoreAccountInfos().getResult(), accountEmail);
+        AccountInfo accountInfo =
+                new AccountInfo.Builder(
+                                accountEmail, FakeAccountManagerDelegate.toGaiaId(accountEmail))
+                        .build();
+        mDelegate.addAccount(accountInfo);
+        return accountInfo;
     }
 
-    private void removeTestAccount(String accountEmail) {
-        mDelegate.removeAccount(AccountHolder.createFromEmail(accountEmail));
+    private void removeTestAccount(CoreAccountId accountId) {
+        mDelegate.removeAccount(accountId);
     }
 }

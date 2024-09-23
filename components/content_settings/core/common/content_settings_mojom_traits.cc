@@ -51,7 +51,7 @@ EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::ToMojom(
       // CONTENT_SETTING_NUM_SETTINGS is a dummy enum value.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return content_settings::mojom::ContentSetting::DEFAULT;
 }
 
@@ -83,44 +83,6 @@ bool EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::
 }
 
 // static
-content_settings::mojom::SessionModel EnumTraits<
-    content_settings::mojom::SessionModel,
-    content_settings::SessionModel>::ToMojom(content_settings::SessionModel
-                                                 model) {
-  switch (model) {
-    case content_settings::SessionModel::Durable:
-      return content_settings::mojom::SessionModel::DURABLE;
-    case content_settings::SessionModel::UserSession:
-      return content_settings::mojom::SessionModel::USER_SESSION;
-    case content_settings::SessionModel::NonRestorableUserSession:
-      return content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
-    case content_settings::SessionModel::OneTime:
-      return content_settings::mojom::SessionModel::ONE_TIME;
-  }
-}
-
-// static
-bool EnumTraits<content_settings::mojom::SessionModel,
-                content_settings::SessionModel>::
-    FromMojom(content_settings::mojom::SessionModel model,
-              content_settings::SessionModel* out) {
-  switch (model) {
-    case content_settings::mojom::SessionModel::DURABLE:
-      *out = content_settings::SessionModel::Durable;
-      return true;
-    case content_settings::mojom::SessionModel::USER_SESSION:
-      *out = content_settings::SessionModel::UserSession;
-      return true;
-    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      *out = content_settings::SessionModel::NonRestorableUserSession;
-      return true;
-    case content_settings::mojom::SessionModel::ONE_TIME:
-      *out = content_settings::SessionModel::OneTime;
-      return true;
-  }
-}
-
-// static
 bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
                   content_settings::RuleMetaData>::
     Read(content_settings::mojom::RuleMetaDataDataView data,
@@ -135,12 +97,15 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return false;
   }
   out->SetExpirationAndLifetime(expiration, lifetime);
+  out->set_decided_by_related_website_sets(
+      data.decided_by_related_website_sets());
 
   return data.ReadLastModified(&out->last_modified_) &&
          data.ReadLastUsed(&out->last_used_) &&
          data.ReadLastVisited(&out->last_visited_) &&
          data.ReadSessionModel(&out->session_model_) &&
-         data.ReadTpcdMetadataRuleSource(&out->tpcd_metadata_rule_source_);
+         data.ReadTpcdMetadataRuleSource(&out->tpcd_metadata_rule_source_) &&
+         data.ReadTpcdMetadataCohort(&out->tpcd_metadata_cohort_);
 }
 
 // static
@@ -160,11 +125,7 @@ bool StructTraits<content_settings::mojom::RendererContentSettingRulesDataView,
                   RendererContentSettingRules>::
     Read(content_settings::mojom::RendererContentSettingRulesDataView data,
          RendererContentSettingRules* out) {
-  return data.ReadImageRules(&out->image_rules) &&
-         data.ReadScriptRules(&out->script_rules) &&
-         data.ReadPopupRedirectRules(&out->popup_redirect_rules) &&
-         data.ReadMixedContentRules(&out->mixed_content_rules) &&
-         data.ReadAutoDarkContentRules(&out->auto_dark_content_rules);
+  return data.ReadMixedContentRules(&out->mixed_content_rules);
 }
 
 }  // namespace mojo

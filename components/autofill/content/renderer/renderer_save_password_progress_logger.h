@@ -43,8 +43,7 @@ class RendererSavePasswordProgressLogger : public SavePasswordProgressLogger {
  private:
   // Used by SendLog to send the logs to the browser.
   // |password_manager_driver_| needs to outlive the logger.
-  raw_ptr<mojom::PasswordManagerDriver, ExperimentalRenderer>
-      password_manager_driver_;
+  raw_ptr<mojom::PasswordManagerDriver> password_manager_driver_;
 };
 
 }  // namespace autofill

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -174,7 +179,12 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
   // Query the display's refresh rate.
-  {
+  if (@available(macos 12.0, *)) {
+    // NSScreen.minimumRefreshInterval is available on macOS 12.0+
+    double refresh_rate = 1.0 / screen.minimumRefreshInterval;
+    display.set_display_frequency(refresh_rate);
+  } else {
+    // CVDisplayLink is available on macOS 10.4–15.0.
     CVDisplayLinkRef display_link = nullptr;
     if (CVDisplayLinkCreateWithCGDisplay(display_id, &display_link) ==
         kCVReturnSuccess) {
@@ -194,7 +204,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   // handle the unexpected situations were the angle is not a multiple of 90.
   display.SetRotationAsDegree(static_cast<int>(CGDisplayRotation(display_id)));
 
-  // TODO(crbug.com/1078903): Support multiple internal displays.
+  // TODO(crbug.com/40129700): Support multiple internal displays.
   // CGDisplayIsBuiltin may return -1 on [dis]connect; see crbug.com/1457025.
   if (CGDisplayIsBuiltin(display_id) == YES) {
     SetInternalDisplayIds({display_id});
@@ -478,6 +488,22 @@ class ScreenMac : public Screen {
     return BuildDisplayForScreen(screen).display;
   }
 
+  void OnDelayedNotification() {
+    // This can only be called `delayed_notification_new_displays_` is identical
+    // to `displays_` except for HDR headroom.
+    DCHECK_EQ(delayed_notification_new_displays_.size(), displays_.size());
+    for (size_t i = 0; i < displays_.size(); ++i) {
+      DCHECK(display::Display::EqualExceptForHdrHeadroom(
+          displays_[i], delayed_notification_new_displays_[i]));
+    }
+
+    // Update `displays_` and send the notification.
+    auto old_displays = std::move(displays_);
+    displays_ = std::move(delayed_notification_new_displays_);
+    delayed_notification_new_displays_.clear();
+    change_notifier_.NotifyDisplaysChanged(old_displays, displays_);
+  }
+
   void OnNSScreensMayHaveChanged() {
     TRACE_EVENT0("ui", "OnNSScreensMayHaveChanged");
 
@@ -485,9 +511,63 @@ class ScreenMac : public Screen {
 
     UpdateDisplays();
 
-    if (old_displays != displays_) {
-      change_notifier_.NotifyDisplaysChanged(old_displays, displays_);
+    // Determine if anything changed, and if anything besides HDR headroom
+    // changed.
+    bool all_displays_equal = true;
+    bool all_displays_equal_except_hdr_headroom = true;
+    if (displays_.size() != old_displays.size()) {
+      all_displays_equal = false;
+      all_displays_equal_except_hdr_headroom = false;
+    } else {
+      for (size_t i = 0; i < displays_.size(); ++i) {
+        if (!display::Display::EqualExceptForHdrHeadroom(displays_[i],
+                                                         old_displays[i])) {
+          all_displays_equal = false;
+          all_displays_equal_except_hdr_headroom = false;
+          break;
+        }
+        if (displays_[i] != old_displays[i]) {
+          all_displays_equal = false;
+        }
+      }
     }
+
+    // If nothing changed, do no notifications.
+    if (all_displays_equal) {
+      return;
+    }
+
+#if defined(ARCH_CPU_X86_64)
+    // HDR transitions on Intel can have extremely bad performance, so limit
+    // their updates to 2 FPS.
+    constexpr auto kMinimumHdrHeadroomUpdateInterval = base::Seconds(1 / 2.f);
+#else
+    // Allow HDR headroom updates at 12 FPS. Empirically, this is the minimum
+    // framerate that doesn't feel janky.
+    constexpr auto kMinimumHdrHeadroomUpdateInterval = base::Seconds(1 / 12.f);
+#endif
+
+    // If only HDR headroom changed, start a timer to do delayed notifications
+    // (only if it has not already started).
+    if (all_displays_equal_except_hdr_headroom) {
+      delayed_notification_new_displays_ = std::move(displays_);
+      displays_ = std::move(old_displays);
+      if (!delayed_notification_timer_.IsRunning()) {
+        delayed_notification_timer_.Start(
+            FROM_HERE, kMinimumHdrHeadroomUpdateInterval,
+            base::BindOnce(&ScreenMac::OnDelayedNotification,
+                           weak_factory_.GetWeakPtr()));
+      }
+      return;
+    }
+
+    // Stop and delete any delayed notifications, because we're doing an update
+    // now.
+    delayed_notification_new_displays_.clear();
+    delayed_notification_timer_.Stop();
+
+    // Do the update.
+    change_notifier_.NotifyDisplaysChanged(old_displays, displays_);
   }
 
   // The displays currently attached to the device. Updated by
@@ -502,6 +582,14 @@ class ScreenMac : public Screen {
   id __strong screen_params_change_observer_;
 
   DisplayChangeNotifier change_notifier_;
+
+  // If only the HDR headroom changed, throttle display notification changes to
+  // avoid choppy performance. Start`delayed_notification_timer_` to call
+  // OnDelayedNotification, which will update `displays_` to
+  // `delayed_notification_new_displays_`.
+  base::OneShotTimer delayed_notification_timer_;
+  std::vector<Display> delayed_notification_new_displays_;
+  base::WeakPtrFactory<ScreenMac> weak_factory_{this};
 };
 
 }  // namespace

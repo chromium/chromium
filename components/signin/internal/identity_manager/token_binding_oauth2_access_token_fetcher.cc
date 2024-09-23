@@ -4,15 +4,30 @@
 
 #include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 
 namespace {
 constexpr std::string_view kAssertionFailedPlaceholder = "SIGNATURE_FAILED";
+
+std::string DecryptToken(const HybridEncryptionKey& ephemeral_key,
+                         std::string_view encrypted_token) {
+  std::optional<std::vector<uint8_t>> decryption_result =
+      ephemeral_key.Decrypt(base::as_byte_span(encrypted_token));
+  if (!decryption_result.has_value()) {
+    return std::string();
+  }
+
+  return std::string(decryption_result->begin(), decryption_result->end());
+}
 }
 
 TokenBindingOAuth2AccessTokenFetcher::TokenBindingOAuth2AccessTokenFetcher(
@@ -27,15 +42,17 @@ TokenBindingOAuth2AccessTokenFetcher::~TokenBindingOAuth2AccessTokenFetcher() =
     default;
 
 void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
-    std::string assertion) {
+    std::string assertion,
+    std::optional<HybridEncryptionKey> ephemeral_key) {
   if (assertion.empty()) {
     // Even if the assertion failed, we want to make a server request because
     // the server doesn't verify assertions during dark launch.
-    // TODO(b/263253212): replace the fixed string with an unsigned JWT for dark
-    // launch.
     // TODO(b/263253212): fail here immediately after the feature is fully
     // launched.
     assertion = kAssertionFailedPlaceholder;
+  } else if (ephemeral_key.has_value()) {
+    fetcher_->SetTokenDecryptor(
+        base::BindRepeating(&DecryptToken, std::move(ephemeral_key).value()));
   }
   fetcher_->SetBindingKeyAssertion(std::move(assertion));
   is_binding_key_assertion_set_ = true;

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
 
 #include <optional>
-
 #include <vector>
 
 #include "url/gurl.h"

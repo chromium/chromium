@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import dagger.Lazy;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -22,8 +23,8 @@ import org.chromium.url.GURL;
 import javax.inject.Inject;
 
 /**
- * Default implementation of {@link CustomTabIntentHandlingStrategy}.
- * Navigates the Custom Tab to urls provided in intents.
+ * Default implementation of {@link CustomTabIntentHandlingStrategy}. Navigates the Custom Tab to
+ * urls provided in intents.
  */
 @ActivityScope
 public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHandlingStrategy {
@@ -47,12 +48,18 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @TabCreationMode int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
+        if (mTabProvider.getTab() != null) {
+            CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(mTabProvider.getTab());
+        }
+
         if (initialTabCreationMode == TabCreationMode.HIDDEN) {
             handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
             mNavigationController.navigate(params, intentDataProvider.getIntent());
         }
+
+        CustomTabAuthUrlHeuristics.recordUrlParamsHistogram(intentDataProvider.getUrlToLoad());
     }
 
     // TODO(yfriedman): Remove & inline once CustomTabs junit tests can be created from a provided

@@ -46,13 +46,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
@@ -298,8 +296,7 @@ void SetupInitialPrefsFromInstallPrefs(
 
 // -- Platform-specific functions --
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_BSD) && \
-    !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_BSD)
 bool IsOrganicFirstRun() {
   std::string brand;
   google_brand::GetBrand(&brand);
@@ -349,13 +346,6 @@ bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
 }
 #endif
 
-bool IsMetricsReportingOptIn() {
-  // Metrics reporting is opt-out by default for all platforms and channels.
-  // However, user will have chance to modify metrics reporting state during
-  // first run.
-  return false;
-}
-
 void CreateSentinelIfNeeded() {
   if (IsChromeFirstRun()) {
     auto sentinel_creation_result = CreateSentinel();
@@ -377,11 +367,6 @@ base::Time GetFirstRunSentinelCreationTime() {
 void ResetCachedSentinelDataForTesting() {
   g_cached_sentinel_creation_time = base::Time();
   g_first_run = first_run::internal::FIRST_RUN_UNKNOWN;
-}
-
-bool IsOnWelcomePage(content::WebContents* contents) {
-  return contents->GetVisibleURL().GetWithEmptyPath() ==
-         GURL(chrome::kChromeUIWelcomeURL);
 }
 
 void SetInitialPrefsPathForTesting(const base::FilePath& initial_prefs) {

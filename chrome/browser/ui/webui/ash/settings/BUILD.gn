@@ -1,0 +1,145 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("settings") {
+  sources = [
+    "os_settings_features_util.cc",
+    "os_settings_features_util.h",
+    "os_settings_identifier.h",
+    "os_settings_ui.cc",
+    "os_settings_ui.h",
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  public_deps = [
+    "//ash/public/mojom:hid_preserving_bluetooth_state_controller",
+    "//ash/webui/common/mojom:accelerator_fetcher",
+    "//ash/webui/common/mojom:shortcut_input_provider",
+    "//ash/webui/personalization_app/search:mojo_bindings",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+    "//chrome/browser/ui/webui/ash/settings/search/mojom",
+    "//chrome/browser/ui/webui/nearby_share:mojom",
+    "//chrome/common",
+    "//chromeos/ash/components/audio/public/mojom",
+    "//chromeos/ash/services/auth_factor_config/public/mojom",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//chromeos/ash/services/cellular_setup/public/mojom",
+    "//chromeos/ash/services/connectivity/public/mojom",
+    "//chromeos/ash/services/hotspot_config/public/mojom",
+    "//chromeos/ash/services/ime/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings",
+    "//chromeos/components/in_session_auth/mojom",
+    "//chromeos/services/network_config/public/mojom",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/personalization_app",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/contacts",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/ash/settings:resources",
+    "//chrome/browser/resources/settings_shared:resources",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/services/hats",
+    "//chrome/browser/ui/webui/ash/settings/services/metrics",
+    "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/services/auth_factor_config",
+    "//chromeos/ash/services/cellular_setup",
+    "//chromeos/components/in_session_auth",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/user_manager",
+    "//ui/base/ime/ash",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
+    "//chrome/browser/ui/webui/ash/settings/search",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_settings_features_util_unittest.cc" ]
+
+  deps = [
+    ":settings",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//testing/gtest",
+  ]
+}

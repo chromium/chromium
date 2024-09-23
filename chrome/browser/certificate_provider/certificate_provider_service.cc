@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -285,7 +284,7 @@ bool CertificateProviderService::ReplyToSignRequest(
     const std::vector<uint8_t>& signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Extension " << extension_id
                << " replied to signature request " << sign_request_id
                << ", size " << signature.size();
@@ -406,7 +405,7 @@ void CertificateProviderService::AbortSignatureRequestsForAuthenticatingUser(
     const std::string& extension_id = sign_request.first;
     const int sign_request_id = sign_request.second;
 
-    // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+    // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "Aborting user login signature request from extension "
                  << extension_id << " id " << sign_request_id;
 
@@ -487,7 +486,7 @@ void CertificateProviderService::RequestSignatureFromExtension(
       extension_id, certificate, authenticating_user_account_id,
       std::move(callback));
 
-  // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+  // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
   LOG(WARNING) << "Starting signature request to extension " << extension_id
                << " id " << sign_request_id;
 
@@ -495,7 +494,7 @@ void CertificateProviderService::RequestSignatureFromExtension(
                                        authenticating_user_account_id);
   if (!delegate_->DispatchSignRequestToExtension(
           extension_id, sign_request_id, algorithm, certificate, input)) {
-    // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
+    // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "Failed to dispatch signature request to extension "
                  << extension_id << " id " << sign_request_id;
     scoped_refptr<net::X509Certificate> local_certificate;

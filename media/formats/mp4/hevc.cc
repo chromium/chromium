@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp4/hevc.h"
 
 #include <algorithm>
@@ -9,7 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
@@ -18,9 +24,9 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #else
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
@@ -95,48 +101,51 @@ bool HEVCDecoderConfigurationRecord::Serialize(
   bool result = true;
   output.clear();
   output.resize(expected_size);
-  base::BigEndianWriter writer(reinterpret_cast<char*>(output.data()),
-                               output.size());
+  auto writer = base::SpanWriter(base::span(output));
 
   // configurationVersion
-  result &= writer.WriteU8(configurationVersion);
+  result &= writer.WriteU8BigEndian(configurationVersion);
   // profile_indication
-  result &= writer.WriteU8((general_profile_space << 6) +
-                           (general_tier_flag << 5) + general_profile_idc);
+  result &=
+      writer.WriteU8BigEndian((general_profile_space << 6) +
+                              (general_tier_flag << 5) + general_profile_idc);
   // general_profile_compatibility_flag
-  result &= writer.WriteU32(general_profile_compatibility_flags);
+  result &= writer.WriteU32BigEndian(general_profile_compatibility_flags);
   // general_constraint_indicator_flags
-  result &= writer.WriteU32(general_constraint_indicator_flags >> 16);
-  result &= writer.WriteU16(general_constraint_indicator_flags & 0xffff);
+  result &= writer.WriteU32BigEndian(general_constraint_indicator_flags >> 16);
+  result &=
+      writer.WriteU16BigEndian(general_constraint_indicator_flags & 0xffff);
   // genral_level_idc
-  result &= writer.WriteU8(general_level_idc);
+  result &= writer.WriteU8BigEndian(general_level_idc);
   // min_spatial_segmentation_idc
-  result &= writer.WriteU16(min_spatial_segmentation_idc | (0xf << 12));
+  result &=
+      writer.WriteU16BigEndian(min_spatial_segmentation_idc | (0xf << 12));
   // parallelismType
-  result &= writer.WriteU8(parallelismType | (0x3f << 2));
+  result &= writer.WriteU8BigEndian(parallelismType | (0x3f << 2));
   // chromaFormat
-  result &= writer.WriteU8(chromaFormat | (0x3f << 2));
+  result &= writer.WriteU8BigEndian(chromaFormat | (0x3f << 2));
   // bitDepthLumaMinus8
-  result &= writer.WriteU8(bitDepthLumaMinus8 | (0x1f << 3));
+  result &= writer.WriteU8BigEndian(bitDepthLumaMinus8 | (0x1f << 3));
   // bitDepthChromaMinus8
-  result &= writer.WriteU8(bitDepthChromaMinus8 | (0x1f << 3));
+  result &= writer.WriteU8BigEndian(bitDepthChromaMinus8 | (0x1f << 3));
   // avgFrameRate
-  result &= writer.WriteU16(avgFrameRate);
+  result &= writer.WriteU16BigEndian(avgFrameRate);
   // miscs
-  result &= writer.WriteU8((constantFrameRate << 6) + (numTemporalLayers << 3) +
-                           (temporalIdNested << 2) + lengthSizeMinusOne);
+  result &= writer.WriteU8BigEndian(
+      (constantFrameRate << 6) + (numTemporalLayers << 3) +
+      (temporalIdNested << 2) + lengthSizeMinusOne);
   // numOfArrays
-  result &= writer.WriteU8(numOfArrays);
+  result &= writer.WriteU8BigEndian(numOfArrays);
   for (auto& array : arrays) {
     // array_completeness and nalu type, etc.
-    result &= writer.WriteU8(array.first_byte);
+    result &= writer.WriteU8BigEndian(array.first_byte);
     // num_nalus
-    result &= writer.WriteU16(array.units.size());
+    result &= writer.WriteU16BigEndian(array.units.size());
     for (auto& nalu : array.units) {
       // nalUnitLength
-      result &= writer.WriteU16(nalu.size());
+      result &= writer.WriteU16BigEndian(nalu.size());
       // NAL unit data
-      result &= writer.WriteBytes(nalu.data(), nalu.size());
+      result &= writer.Write(nalu);
     }
   }
 
@@ -257,6 +266,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
         const H265SPS* sps = parser.GetSPS(sps_id);
         DCHECK(sps);
         color_space = sps->GetColorSpace();
+        chroma_sampling = sps->GetChromaSampling();
         break;
       }
       case H265NALU::PREFIX_SEI_NUT: {
@@ -325,6 +335,10 @@ VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
   return color_space;
 }
 
+VideoChromaSampling HEVCDecoderConfigurationRecord::GetChromaSampling() {
+  return chroma_sampling;
+}
+
 gfx::HDRMetadata HEVCDecoderConfigurationRecord::GetHDRMetadata() {
   return hdr_metadata;
 }
@@ -354,7 +368,8 @@ bool HEVC::InsertParamSetsAnnexB(
 
   if (nalu.nal_unit_type == H265NALU::AUD_NUT) {
     // Move insert point to just after the AUD.
-    config_insert_point += (nalu.data + nalu.size) - start;
+    config_insert_point +=
+        (nalu.data + base::checked_cast<size_t>(nalu.size)) - start;
   }
 
   // Clear |parser| and |start| since they aren't needed anymore and
@@ -605,7 +620,8 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
         break;
 
       default:
-        NOTREACHED() << "Unsupported NALU type " << nalu.nal_unit_type;
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported NALU type " << nalu.nal_unit_type;
     }
   }
 

@@ -9,10 +9,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -40,9 +40,8 @@
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -77,8 +76,8 @@ std::string SerializedOfflineBadgeContent();
 
 feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id);
 
-std::string DatastoreEntryToString(base::StringPiece key,
-                                   base::StringPiece value);
+std::string DatastoreEntryToString(std::string_view key,
+                                   std::string_view value);
 
 class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
  public:
@@ -123,6 +122,7 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
                                    int64_t server_send_timestamp_ns) override;
   void LogLoadMoreRequestFinished(int canonical_status) override;
   void LogLoadMoreEnded(bool success) override;
+  void ReportExperiments(const std::vector<int32_t>& experiment_ids) override;
 
  private:
   std::vector<std::string> events_;
@@ -155,9 +155,9 @@ class TestSurfaceBase : public feed::SurfaceRenderer {
 
   // FeedStream::FeedStreamSurface.
   void StreamUpdate(const feedui::StreamUpdate& stream_update) override;
-  void ReplaceDataStoreEntry(base::StringPiece key,
-                             base::StringPiece data) override;
-  void RemoveDataStoreEntry(base::StringPiece key) override;
+  void ReplaceDataStoreEntry(std::string_view key,
+                             std::string_view data) override;
+  void RemoveDataStoreEntry(std::string_view key) override;
   ReliabilityLoggingBridge& GetReliabilityLoggingBridge() override;
 
   // Test functions.
@@ -258,18 +258,10 @@ class TestFeedNetwork : public FeedNetwork {
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  void SendKidFriendlyApiRequest(
-      const supervised_user::GetDiscoverFeedRequest& request,
-      const AccountInfo& account_info,
-      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback)
-      override;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
   void SendDiscoverApiRequest(
       NetworkRequestType request_type,
-      base::StringPiece api_path,
-      base::StringPiece method,
+      std::string_view api_path,
+      std::string_view method,
       std::string request_bytes,
       const AccountInfo& account_info,
       std::optional<RequestMetadata> request_metadata,
@@ -277,7 +269,7 @@ class TestFeedNetwork : public FeedNetwork {
 
   void SendAsyncDataRequest(
       const GURL& url,
-      base::StringPiece request_method,
+      std::string_view request_method,
       net::HttpRequestHeaders request_headers,
       std::string request_body,
       const AccountInfo& account_info,
@@ -442,11 +434,6 @@ class TestWireResponseTranslator : public WireResponseTranslator {
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const override;
-  RefreshResponseData TranslateWireResponse(
-      supervised_user::GetDiscoverFeedResponse response,
-      StreamModelUpdateRequest::Source source,
-      const AccountInfo& account_info,
-      base::Time current_time) const override;
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
                       std::optional<std::string> session_id = std::nullopt);
   void InjectResponse(RefreshResponseData response_data);
@@ -526,7 +513,8 @@ class TestMetricsReporter : public MetricsReporter {
 };
 
 // Base text fixture for feed API tests.
-// Note: The web-feeds feature (kWebFeed) is enabled by default for these tests.
+// Note: The web-feeds feature is enabled by default for these tests because
+// GetCountry() is overridden to return one of the launch counties.
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  public:
   FeedApiTest();
@@ -542,18 +530,20 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
+  bool IsSupervisedAccount() override;
   bool IsSigninAllowed() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
-  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
+  void RegisterFeedUserSettingsFieldTrial(std::string_view group) override;
   std::string GetCountry() override;
 
   // For tests.
 
+  void SetCountry(const std::string& country);
+
   // Replace stream_.
   void CreateStream(bool wait_for_initialization = true,
-                    bool start_surface = false,
                     bool is_new_tab_search_engine_url_android_enabled = false);
   std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
@@ -596,8 +586,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
               /*db_dir=*/{},
               task_environment_.GetMainThreadTaskRunner()));
 
-  std::unique_ptr<TemplateURLService> template_url_service_;
-
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   FakeRefreshTaskScheduler refresh_scheduler_;
   StreamModel::Context stream_model_context_;
   std::unique_ptr<FeedStream> stream_;
@@ -605,14 +594,13 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_offline_ = false;
   AccountInfo account_info_ = TestAccountInfo();
   bool is_signin_allowed_ = true;
+  bool is_supervised_account_ = false;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
   std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::string country_ = "US";
 };
 
 class FeedStreamTestForAllStreamTypes
@@ -628,9 +616,6 @@ class FeedStreamTestForAllStreamTypes
   };
   void SetUp() override;
   RefreshTaskId GetRefreshTaskId() const;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class FeedNetworkEndpointTest

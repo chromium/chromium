@@ -95,8 +95,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
                 PrivacyPreferencesManagerImpl.getInstance();
         PersistableBundle permissions = new PersistableBundle();
         permissions.putBoolean(
-                ChromeMinidumpUploaderDelegate.IS_CLIENT_IN_METRICS_SAMPLE,
-                permissionManager.isClientInMetricsSample());
+                ChromeMinidumpUploaderDelegate.IS_CLIENT_IN_SAMPLE_FOR_CRASHES,
+                permissionManager.isClientInSampleForCrashes());
         permissions.putBoolean(
                 ChromeMinidumpUploaderDelegate.IS_UPLOAD_ENABLED_FOR_TESTS,
                 permissionManager.isUploadEnabledForTests());

@@ -94,6 +94,14 @@ bool Agent::IsIsolatedContext() {
 }
 
 // static
+void Agent::ResetIsIsolatedContextForTest() {
+#if DCHECK_IS_ON()
+  is_isolated_context_set = false;
+#endif
+  is_isolated_context = false;
+}
+
+// static
 void Agent::SetIsIsolatedContext(bool value) {
 #if DCHECK_IS_ON()
   if (is_isolated_context_set)

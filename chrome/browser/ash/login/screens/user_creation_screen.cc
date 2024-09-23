@@ -6,13 +6,11 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
@@ -39,6 +37,7 @@ UserCreationScreen::UserCreationScreenExitTestDelegate* test_exit_delegate =
 
 // static
 std::string UserCreationScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::SIGNIN:
       return "SignIn";
@@ -59,6 +58,7 @@ std::string UserCreationScreen::GetResultString(Result result) {
     case Result::SKIPPED:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UserCreationScreen::UserCreationScreen(base::WeakPtr<UserCreationView> view,
@@ -83,9 +83,7 @@ void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
 }
 
 bool UserCreationScreen::MaybeSkip(WizardContext& context) {
-  const bool is_managed = g_browser_process->platform_part()
-                              ->browser_policy_connector_ash()
-                              ->IsDeviceEnterpriseManaged();
+  const bool is_managed = ash::InstallAttributes::Get()->IsEnterpriseManaged();
   context.is_user_creation_enabled = !is_managed;
   if (context.skip_to_login_for_tests || is_managed) {
     RunExitCallback(Result::SKIPPED);
@@ -169,6 +167,13 @@ bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
   return false;
+}
+
+void UserCreationScreen::SetDefaultStep() {
+  if (!view_) {
+    return;
+  }
+  view_->SetDefaultStep();
 }
 
 void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {

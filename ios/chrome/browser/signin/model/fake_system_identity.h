@@ -30,27 +30,28 @@
 // Returns a third fake identity.
 + (instancetype)fakeIdentity3;
 
+// Returns a forth fake identity.
++ (instancetype)fakeIdentity4;
+
 // Returns a fake managed identity.
 + (instancetype)fakeManagedIdentity;
 
-// Returns a SystemIdentity based on `email`, `gaiaID` and `name`.
-// The `hashedGaiaID` property will be derived from `name`.
+// Returns a SystemIdentity based on `email` with `name@example.com`.
 // For simplicity, both `userGivenName` and `userFullName` properties use
-// `name`.
-+ (instancetype)identityWithEmail:(NSString*)email
-                           gaiaID:(NSString*)gaiaID
-                             name:(NSString*)name;
+// `name` from the email address. And GaiaID will be derived from `email`.
++ (instancetype)identityWithEmail:(NSString*)email;
 
-// Returns a SystemIdentity based on `name` and `domain`. All other
-// values will be derived from those.
-+ (instancetype)identityWithName:(NSString*)name domain:(NSString*)domain;
+// Returns a SystemIdentity based on `email` with `name@example.com`.
+// For simplicity, both `userGivenName` and `userFullName` properties use
+// `name` from the email address.
++ (instancetype)identityWithEmail:(NSString*)email gaiaID:(NSString*)gaiaID;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Redeclared as readwrite.
 @property(strong, nonatomic, readwrite) NSString* userEmail;
-@property(strong, nonatomic, readwrite) NSString* gaiaID;
 @property(strong, nonatomic, readwrite) NSString* userFullName;
 @property(strong, nonatomic, readwrite) NSString* userGivenName;
-@property(strong, nonatomic, readwrite) NSString* hashedGaiaID;
 
 @end
 

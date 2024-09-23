@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+[FAIL] Sanitizer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface object length
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface object name
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer interface: operation sanitize((DocumentFragment or Document))
+  assert_own_property: self does not have own property "Sanitizer" expected property "Sanitizer" missing
+[FAIL] Sanitizer must be primary interface of new Sanitizer({})
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: Sanitizer is not defined"
+[FAIL] Stringification of new Sanitizer({})
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: Sanitizer is not defined"
+[FAIL] Sanitizer interface: new Sanitizer({}) must inherit property "sanitize((DocumentFragment or Document))" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: Sanitizer is not defined"
+[FAIL] Sanitizer interface: calling sanitize((DocumentFragment or Document)) on new Sanitizer({}) with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: Sanitizer is not defined"
+Harness: the test ran to completion.

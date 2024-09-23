@@ -17,6 +17,7 @@
 #include "base/hash/md5.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -195,7 +196,7 @@ std::string GetTeamDriveId(const google_apis::ChangeResource& change_resource) {
       team_drive_id = change_resource.team_drive_id();
       break;
     case ChangeResource::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return team_drive_id;
@@ -648,7 +649,7 @@ CancelCallbackOnce FakeDriveService::GetStartPageToken(
     start_page_token = std::make_unique<StartPageToken>(*start_page_token_);
   } else {
     auto it = team_drive_start_page_tokens_.find(team_drive_id);
-    DCHECK(it != team_drive_start_page_tokens_.end());
+    CHECK(it != team_drive_start_page_tokens_.end(), base::NotFatalUntil::M130);
     start_page_token = std::make_unique<StartPageToken>(*(it->second));
   }
   ++start_page_token_load_count_;
@@ -1787,7 +1788,7 @@ void FakeDriveService::GetChangeListInternal(
         }
         break;
       case ChangeResource::UNKNOWN:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -1896,7 +1897,7 @@ CancelCallbackOnce FakeDriveService::AddPermission(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(callback);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CancelCallbackOnce();
 }
 
@@ -1904,7 +1905,7 @@ std::unique_ptr<BatchRequestConfiguratorInterface>
 FakeDriveService::StartBatchRequest() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

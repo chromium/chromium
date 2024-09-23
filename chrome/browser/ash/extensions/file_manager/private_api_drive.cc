@@ -59,6 +59,7 @@
 #include "components/drive/chromeos/search_metadata.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
+#include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -357,11 +358,14 @@ void OnSearchDriveFs(
   DriveIntegrationService* const service =
       GetIntegrationServiceByProfile(profile);
   if (!service) {
+    LOG(ERROR) << "No drive service";
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   if (error != drive::FILE_ERROR_OK || !items.has_value()) {
+    LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
+        << "Drive search failed: " << drive::FileErrorToString(error);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -403,11 +407,8 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
       Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
                                     filter_dirs, std::move(callback));
-  return service->GetDriveFsHost()->PerformSearch(
-      std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+  return service->GetDriveFsHost()->PerformSearch(std::move(query),
+                                                  std::move(on_response));
 }
 
 void UmaEmitSearchOutcome(

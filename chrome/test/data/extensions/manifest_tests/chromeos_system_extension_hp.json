@@ -13,6 +13,7 @@
     ],
     "optional_permissions": [
       "os.bluetooth_peripherals_info",
+      "os.diagnostics.network_info_mlab",
       "os.management.audio"
     ],
     "chromeos_system_extension": {},

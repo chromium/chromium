@@ -23,10 +23,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/synchronize_visual_properties_interceptor.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
@@ -101,10 +103,7 @@ class UpdateViewportIntersectionMessageFilter
   explicit UpdateViewportIntersectionMessageFilter(
       content::RenderFrameProxyHost* rfph)
       : intersection_state_(blink::mojom::ViewportIntersectionState::New()),
-        render_frame_proxy_host_(rfph),
-        swapped_impl_(
-            render_frame_proxy_host_->frame_host_receiver_for_testing(),
-            this) {}
+        swapped_impl_(rfph->frame_host_receiver_for_testing(), this) {}
 
   ~UpdateViewportIntersectionMessageFilter() override = default;
 
@@ -113,8 +112,8 @@ class UpdateViewportIntersectionMessageFilter
     return intersection_state_;
   }
 
-  RenderFrameProxyHost* GetForwardingInterface() override {
-    return render_frame_proxy_host_;
+  blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
   }
 
   void UpdateViewportIntersection(
@@ -153,9 +152,7 @@ class UpdateViewportIntersectionMessageFilter
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
-  raw_ptr<content::RenderFrameProxyHost> render_frame_proxy_host_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>
       swapped_impl_;
 };
 
@@ -230,15 +227,14 @@ class TextAutosizerPageInfoInterceptor
  public:
   explicit TextAutosizerPageInfoInterceptor(
       RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host),
-        swapped_impl_(
-            render_frame_host_->local_main_frame_host_receiver_for_testing(),
+      : swapped_impl_(
+            render_frame_host->local_main_frame_host_receiver_for_testing(),
             this) {}
 
   ~TextAutosizerPageInfoInterceptor() override = default;
 
   LocalMainFrameHost* GetForwardingInterface() override {
-    return render_frame_host_;
+    return swapped_impl_.old_impl();
   }
 
   void WaitForPageInfo(std::optional<int> target_main_frame_width,
@@ -274,7 +270,6 @@ class TextAutosizerPageInfoInterceptor
   }
 
  private:
-  raw_ptr<RenderFrameHostImpl> render_frame_host_;
   bool remote_page_info_seen_ = false;
   blink::mojom::TextAutosizerPageInfoPtr remote_page_info_ =
       blink::mojom::TextAutosizerPageInfo::New(/*main_frame_width=*/0,
@@ -283,8 +278,7 @@ class TextAutosizerPageInfoInterceptor
   std::unique_ptr<base::RunLoop> run_loop_;
   std::optional<int> target_main_frame_width_;
   std::optional<float> target_device_scale_adjustment_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalMainFrameHost>
       swapped_impl_;
 };
 
@@ -804,7 +798,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_NEAR(expected.y(), viewport_offset.y(), tolerance);
 }
 
-// TODO(crbug.com/1168036): Flaky test.
+// TODO(crbug.com/40743132): Flaky test.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTest,
     DISABLED_NestedIframeTransformedIntoViewViewportIntersection) {
@@ -856,7 +850,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify that OOPIF select element popup menu coordinates account for scroll
 // offset in containers embedding frame.
-// TODO(crbug.com/859552): Reenable this.
+// TODO(crbug.com/40583339): Reenable this.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_PopupMenuInTallIframeTest) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1406,7 +1400,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Verify an OOPIF resize handler doesn't fire immediately after load without
 // the frame having been resized. See https://crbug.com/826457.
-// TODO(crbug.com/1278038): Test is very flaky on many platforms.
+// TODO(crbug.com/40809978): Test is very flaky on many platforms.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_NoResizeAfterIframeLoad) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1704,7 +1698,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // This test verifies that changing the CSS visibility of a cross-origin
 // <iframe> is forwarded to its corresponding RenderWidgetHost and all other
 // RenderWidgetHosts corresponding to the nested cross-origin frame.
-// TODO(crbug.com/1363740): Flaky on mac, linux-lacros, android.
+// TODO(crbug.com/40865141): Flaky on mac, linux-lacros, android.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CSSVisibilityChanged DISABLED_CSSVisibilityChanged
 #else
@@ -2129,7 +2123,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Test that the compositing scale factor for an out-of-process iframe are set
 // and updated correctly, including accounting for all intermediate transforms.
-// TODO(crbug.com/1164391): Flaky test.
+// TODO(crbug.com/40163506): Flaky test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_CompositingScaleFactorInNestedFrameTest) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -2320,8 +2314,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // that the scroll-delta matches the distance between TouchStart/End as seen
 // by the oopif, i.e. the oopif content 'sticks' to the finger during scrolling.
 // The relation is not exact, but should be close.
+// TODO(crbug.com/40697699): Re-enable the flaky test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DisableScrollOopifInPinchZoomedPage \
+  DISABLED_ScrollOopifInPinchZoomedPage
+#else
+#define MAYBE_DisableScrollOopifInPinchZoomedPage ScrollOopifInPinchZoomedPage
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       ScrollOopifInPinchZoomedPage) {
+                       MAYBE_DisableScrollOopifInPinchZoomedPage) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

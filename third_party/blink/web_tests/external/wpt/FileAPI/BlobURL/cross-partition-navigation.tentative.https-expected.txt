@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Blob URL navigation should enforce noopener for a cross-top-level-site navigation
+  promise_test: Unhandled rejection with value: "Blob URL handle wasn't null in not-same-top-level-site iframe: Navigation handle returns not null"
+Harness: the test ran to completion.
+

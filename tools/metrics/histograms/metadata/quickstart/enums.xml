@@ -26,9 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="QuickStartAdvertisingMethod">
-  <int value="0" label="QR Code"/>
-  <int value="1" label="Pin"/>
+<enum name="QuickStartAbortFlowReason">
+  <int value="0" label="User clicked Back"/>
+  <int value="1" label="User clicked Cancel"/>
+  <int value="2" label="Signin School"/>
+  <int value="3" label="Enterprise Enrollment"/>
+  <int value="4" label="Error"/>
+  <int value="5" label="Add Child (Not supported in MVP)"/>
 </enum>
 
 <enum name="QuickStartAttestationCertificateFetchFailureReason">
@@ -37,7 +41,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device does not support attestation"/>
 </enum>
 
-<enum name="QuickStartFastPairAdvertisingEndedErrorCode">
+<enum name="QuickStartAuthenticationMethod">
+  <int value="0" label="PIN"/>
+  <int value="1" label="QR Code"/>
+  <int value="2" label="Automatic Resume After Update"/>
+</enum>
+
+<enum name="QuickStartEntryPoint">
+  <int value="0" label="Welcome Screen"/>
+  <int value="1" label="Network Screen"/>
+  <int value="2" label="Gaia Info Screen"/>
+  <int value="3" label="Gaia Screen"/>
+</enum>
+
+<enum name="QuickStartFastPairAdvertisingErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
   <int value="1" label="Error: Advertisement already exists"/>
   <int value="2" label="Error: Advertisement does not exist"/>
@@ -59,20 +76,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="QuickStartGaiaTransferResultFailureReason">
-  <int value="0" label="No account received from phone"/>
-  <int value="1" label="Ineligible account"/>
-  <int value="2" label="Failed to sign in"/>
-  <int value="3" label="Empty response bytes"/>
-  <int value="4" label="Unable to read as JSON"/>
-  <int value="5" label="Unexpected response size"/>
-  <int value="6" label="Ctap device response status is not success"/>
-  <int value="7" label="Cbor decoding error"/>
-  <int value="8"
-      label="Cbor decoded response values are not valid Cbor value map"/>
-  <int value="9" label="Empty credential ID"/>
-  <int value="10" label="Empty auth data"/>
-  <int value="11" label="Empty signature"/>
-  <int value="12" label="Empty email"/>
+  <int value="0" label="No account on phone"/>
+  <int value="1" label="Failed fetching challenge bytes from Gaia"/>
+  <int value="2" label="Connection lost"/>
+  <int value="3" label="Gaia assertion not received"/>
+  <int value="4" label="Failed fetching attestation certificate"/>
+  <int value="5" label="Failed fetching refresh token"/>
+  <int value="6" label="Fallback URL required"/>
+  <int value="7" label="Error receiving FIDO assertion"/>
+  <int value="8" label="Obfuscated Gaia ID missing"/>
 </enum>
 
 <enum name="QuickStartHandshakeResultErrorCode">
@@ -95,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="QuickStartMessageType">
-  <int value="0" label="Wifi Credentials"/>
+  <int value="0" label="Wi-Fi Credentials"/>
   <int value="1" label="Bootstrap Configurations"/>
   <int value="2" label="Handshake"/>
   <int value="3" label="Notify source of update"/>
@@ -105,39 +117,64 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Bootstrap State Complete"/>
 </enum>
 
+<enum name="QuickStartNearbyConnectionsAdvertisingErrorCode">
+  <int value="0" label="Error occurred without any more information"/>
+  <int value="1" label="Out of order API call"/>
+  <int value="2" label="Already active with another Strategy"/>
+  <int value="3" label="Already advertising"/>
+  <int value="4" label="Bluetooth error"/>
+  <int value="5" label="BLE error"/>
+  <int value="6" label="Unknown failure"/>
+  <int value="7" label="Connection timed out"/>
+  <int value="8" label="Another unexpected error occurred"/>
+</enum>
+
 <enum name="QuickStartScreenName">
   <int value="0" label="Other"/>
   <int value="1" label="None"/>
   <int value="2" label="Welcome Screen"/>
   <int value="3" label="Network Screen"/>
   <int value="4" label="Gaia Screen"/>
-  <int value="5" label="Setup Android Phone with Quick Start"/>
-  <int value="6" label="Connecting to Wifi with Quick Start"/>
+  <int value="5" label="QS Screen: Set up Chromebook with Android Phone"/>
+  <int value="6" label="QS Screen: Connecting to Wi-Fi with Quick Start"/>
   <int value="7"
       label="Checking for Update and Determining Device Configuration"/>
   <int value="8" label="Choose Chromebook Setup"/>
-  <int value="9" label="Installing Latest Update"/>
-  <int value="10" label="Resuming Connection After Update"/>
-  <int value="11" label="Getting Google Account Info"/>
+  <int value="9" label="Installing Latest Update (Consumer Update)"/>
+  <int value="10" label="QS Screen: Resuming Connection After Update"/>
+  <int value="11" label="QS Screen: Getting Google Account Info"/>
   <int value="12" label="Quick Start Complete"/>
   <int value="13" label="Setup Device PIN"/>
-  <int value="14" label="Ask for Parent Permission"/>
-  <int value="15" label="Review Privacy and Terms"/>
+  <int value="14" label="Add Child"/>
+  <int value="15" label="(Unicorn) Review Privacy and Terms"/>
   <int value="16" label="Unified Setup"/>
+  <int value="17" label="Gaia Info Screen"/>
+  <int value="18" label="QS Screen: Wi-Fi Credentials Received"/>
+  <int value="19" label="QS Screen: Account Picker"/>
+  <int value="20" label="QS Screen: Creating Account"/>
+  <int value="21" label="QS Screen: Fallback URL"/>
 </enum>
 
 <enum name="QuickStartWifiTransferResultFailureReason">
   <int value="0" label="Connection dropped while attempting transfer"/>
   <int value="1" label="Empty response bytes"/>
   <int value="2" label="Unable to read as JSON"/>
-  <int value="3" label="Wifi network information not found"/>
+  <int value="3" label="Wi-Fi network information not found"/>
   <int value="4" label="SSID not found in response"/>
   <int value="5" label="SSID has length of 0"/>
   <int value="6" label="Security type not found in response"/>
   <int value="7" label="Invalid security type"/>
   <int value="8" label="Password found for open network"/>
   <int value="9" label="Password not found on a non-open network"/>
-  <int value="10" label="Wifi hide status not found"/>
+  <int value="10" label="Wi-Fi hide status not found"/>
+</enum>
+
+<enum name="ScreenClosedReason">
+  <int value="0" label="Advanced in flow"/>
+  <int value="1" label="User cancelled"/>
+  <int value="2" label="User clicked back"/>
+  <int value="3" label="Setup Complete"/>
+  <int value="4" label="Error"/>
 </enum>
 
 </enums>

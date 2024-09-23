@@ -81,7 +81,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
   }
 
   void GetRequestorName(GetRequestorNameCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CreateReadOnlySharedMemoryRegion(
@@ -151,7 +151,7 @@ class TestUtilityServiceImpl : public mojom::TestService {
     CHECK(region == base::MemoryMappedFile::Region::kWholeFile);
     CHECK(base::WriteFileDescriptor(write_pipe.get(), "test"));
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 

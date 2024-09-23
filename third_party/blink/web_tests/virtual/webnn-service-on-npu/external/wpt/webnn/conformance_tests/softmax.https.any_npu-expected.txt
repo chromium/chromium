@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] softmax float32 2D constant tensor all positive
+  assert_true: assert_array_approx_equals_ulp: test softmax float32 actual 0.15064983069896698 should be close enough to expected 0.15068615972995758 by the acceptable 21 ULP distance, but they have 2438 ULP distance expected true got false
+[FAIL] softmax float32 3D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test softmax float32 actual 0.39594826102256775 should be close enough to expected 0.39589041471481323 by the acceptable 12 ULP distance, but they have 1941 ULP distance expected true got false
+[FAIL] softmax float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test softmax float32 actual 0.3216777741909027 should be close enough to expected 0.3216537833213806 by the acceptable 15 ULP distance, but they have 805 ULP distance expected true got false
+Harness: the test ran to completion.
+

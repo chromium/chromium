@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Normalize spaces
+  assert_equals: expected "scroll-state(overflowing: left)" but got "scroll-state(        overflowing:left)"
+[FAIL] Boolean context
+  assert_equals: expected "scroll-state(overflowing)" but got "scroll-STate(overflowing)"
+[FAIL] Logical with 'or'
+  assert_equals: expected "scroll-state((overflowing: left) or (overflowing: bottom))" but got "scroll-state(( overflowing: LEFT) or ( OVERFLOWING: BOTTOM  ))"
+Harness: the test ran to completion.
+

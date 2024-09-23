@@ -5,7 +5,7 @@
     sub-label="$i18n{offerToEnableTranslateSublabel}"
     on-settings-boolean-control-change="onTranslateToggleChange_">
 </settings-toggle-button>
-<iron-collapse opened="[[prefs.translate.enabled.value]]">
+<cr-collapse opened="[[prefs.translate.enabled.value]]">
   <div class="cr-row continuation">
     <div id="targetLanguageLabel" class="flex cr-padded-text"
         aria-hidden="true">
@@ -81,7 +81,7 @@
       $i18n{noLanguagesAdded}
     </div>
   </div>
-</iron-collapse>
+</cr-collapse>
 <template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
   <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
       language-helper="[[languageHelper]]" id="alwaysTranslateDialog"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -32,6 +33,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
 namespace {
@@ -366,26 +368,47 @@ namespace {
 BASE_FEATURE(kPreconnectToSearchTest,
              "PreconnectToSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Feature to control preconnecting with privacy mode enabled.
+BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabledTest,
+             "PreconnectToSearchWithPrivacyModeEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 class NavigationPredictorPreconnectClientBrowserTestWithSearch
-    : public NavigationPredictorPreconnectClientBrowserTest {
+    : public NavigationPredictorPreconnectClientBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   NavigationPredictorPreconnectClientBrowserTestWithSearch()
       : NavigationPredictorPreconnectClientBrowserTest() {
-    feature_list_.InitWithFeatures({kPreconnectToSearchTest}, {});
+    if (PreconnectWithPrivacyModeEnabled()) {
+      feature_list_.InitWithFeatures(
+          {kPreconnectToSearchTest,
+           kPreconnectToSearchWithPrivacyModeEnabledTest},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {kPreconnectToSearchTest},
+          {kPreconnectToSearchWithPrivacyModeEnabledTest});
+    }
   }
+
+  bool PreconnectWithPrivacyModeEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationPredictorPreconnectClientBrowserTestWithSearch,
+    testing::Bool());
 
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_PreconnectSearchWithFeature DISABLED_PreconnectSearchWithFeature
 #else
 #define MAYBE_PreconnectSearchWithFeature PreconnectSearchWithFeature
 #endif
-IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
+IN_PROC_BROWSER_TEST_P(NavigationPredictorPreconnectClientBrowserTestWithSearch,
                        MAYBE_PreconnectSearchWithFeature) {
   static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
@@ -412,15 +435,27 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
-  // There should be a DSE preconnects.
-  WaitForPreresolveCount(1);
-  EXPECT_EQ(1, preresolve_done_count_);
+  if (PreconnectWithPrivacyModeEnabled()) {
+    // There should be 2 DSE preconnects (2 NAKs).
+    WaitForPreresolveCount(2);
+    EXPECT_EQ(2, preresolve_done_count_);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  // Now there should be an onload preconnect as well as a navigation
-  // preconnect.
-  WaitForPreresolveCount(3);
-  EXPECT_EQ(3, preresolve_done_count_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // Now there should be an onload preconnect as well as a navigation
+    // preconnect.
+    WaitForPreresolveCount(4);
+    EXPECT_EQ(4, preresolve_done_count_);
+  } else {
+    // There should be a DSE preconnect.
+    WaitForPreresolveCount(1);
+    EXPECT_EQ(1, preresolve_done_count_);
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // Now there should be an onload preconnect as well as a navigation
+    // preconnect.
+    WaitForPreresolveCount(3);
+    EXPECT_EQ(3, preresolve_done_count_);
+  }
 }
 
 class NavigationPredictorPreconnectClientLocalURLBrowserTest
@@ -498,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering. The NavigationPredictorClient should ignore
   // non-primary page navigations.
-  int host_id = prerender_test_helper().AddPrerender(url);
+  content::FrameTreeNodeId host_id = prerender_test_helper().AddPrerender(url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

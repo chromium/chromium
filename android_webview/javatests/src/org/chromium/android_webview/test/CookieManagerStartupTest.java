@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.os.Looper;
 
 import androidx.test.InstrumentationRegistry;
@@ -21,17 +23,18 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-import org.chromium.net.test.util.TestWebServer;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 /**
  * Tests for CookieManager/Chromium startup ordering weirdness.
  *
- * This tests various cases around ordering of calls to CookieManager at startup, and thus is
+ * <p>This tests various cases around ordering of calls to CookieManager at startup, and thus is
  * separate from the normal CookieManager tests so it can control call ordering carefully.
  */
 @RunWith(Parameterized.class)
@@ -92,12 +95,14 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("disable-partitioned-cookies")
     public void testStartup() throws Throwable {
         ThreadUtils.setWillOverrideUiThread();
-        TestWebServer webServer = TestWebServer.start();
+        EmbeddedTestServer webServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
         try {
-            String path = "/cookie_test.html";
-            String url = webServer.setResponse(path, CommonResources.ABOUT_HTML, null);
+            String url = webServer.getURL("/android_webview/test/data/hello_world.html");
 
             // Verify that we can use AwCookieManager successfully before having started Chromium.
             AwCookieManager cookieManager = new AwCookieManager();
@@ -110,6 +115,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
             Assert.assertTrue(cookieManager.acceptCookie());
 
             cookieManager.setCookie(url, "count=41");
+            cookieManager.setCookie(url, "partitioned_cookie=123;Secure;Partitioned");
 
             // Now start Chromium to cause the switch from the temporary cookie store to the real
             // Mojo store.
@@ -119,18 +125,20 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
             mActivityTestRule.executeJavaScriptAndWaitForResult(
                     mAwContents,
                     mContentsClient,
-                    "var c=document.cookie.split('=');document.cookie=c[0]+'='+(1+(+c[1]));");
+                    "var c=document.cookie.split('=');"
+                            + "document.cookie=c[0]+'='+(1+(+c[1].split(';')[0]));");
 
             // Verify that the cookie value we set before was successfully passed through to the
             // Mojo store.
-            Assert.assertEquals("count=42", cookieManager.getCookie(url));
+            Assert.assertEquals("partitioned_cookie=123; count=42", cookieManager.getCookie(url));
         } finally {
-            webServer.shutdown();
+            webServer.stopAndDestroyServer();
         }
     }
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView", "Privacy"})
     public void testAllowFileSchemeCookies() {
         AwCookieManager cookieManager = new AwCookieManager();
@@ -143,6 +151,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView", "Privacy"})
     public void testAllowCookies() {
         AwCookieManager cookieManager = new AwCookieManager();

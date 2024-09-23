@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
@@ -112,7 +112,7 @@ public class ContinuousSearchFullUiTest {
 
         // Show the container and contents.
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContinuousNavigationUserData.getForTab(tab).updateData(metadata, mUrl);
                 });
@@ -163,7 +163,7 @@ public class ContinuousSearchFullUiTest {
                         .findViewById(
                                 org.chromium.chrome.browser.continuous_search.R.id.container_root);
         Assert.assertNotNull(rootContainer);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContinuousNavigationUserData.getForTab(tab)
                             .updateCurrentUrl(new GURL("https://other.com/"));

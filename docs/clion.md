@@ -93,7 +93,7 @@ the Run/Debug configuration.
        `src/out/Default/chrome`
 1. Click `Ok` to close the dialog.
 
-### Configure `~/.gbinit`
+### Configure `~/.gdbinit`
 
 Before being able to debug, you need to configure `~/.gdbinit`. Open it with a
 text editor and enter:

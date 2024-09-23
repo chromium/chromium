@@ -1,6 +1,8 @@
 {
   "name": "App launcher",
   "version": "1.0",
-  "manifest_version": 2,
-  "permissions": ["tabs"]
+  "manifest_version": 3,
+  "permissions": [
+    "tabs"
+  ]
 }

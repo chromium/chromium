@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
 
@@ -32,6 +33,10 @@ class FileSystemProviderBase : public ExtensionFunction {
   // Whether ash supports the FileSystemProviderService interface, and in
   // particular its `OperationFinished` method..
   bool OperationFinishedInterfaceAvailable();
+
+  // Whether ash supports the optional metadata struct to be passed on the
+  // OpenFile success callback.
+  bool OpenFileFinishedSuccessfullyInterfaceAvailable();
 
   // A helper function that returns a reference to a functional remote. Should
   // only be called if the needed interface method is supported.
@@ -127,6 +132,15 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
                                       request_id, std::move(args));
   }
 
+  // Forwards the result of the `OpenFileSuccess` callback to the file system
+  // provider service. Falls back to a generic success callback if the remote
+  // interface doesn't support the optional `EntryMetadata` callback.
+  bool ForwardOpenFileFinishedSuccessullyResult(
+      std::optional<
+          api::file_system_provider_internal::OpenFileRequestedSuccess::Params>
+          params,
+      base::Value::List& args);
+
  private:
   bool ForwardOperationResultImpl(
       crosapi::mojom::FSPOperationResponse response,
@@ -203,6 +217,18 @@ class FileSystemProviderInternalReadFileRequestedSuccessFunction
 
  protected:
   ~FileSystemProviderInternalReadFileRequestedSuccessFunction() override {}
+  ResponseAction Run() override;
+};
+
+class FileSystemProviderInternalOpenFileRequestedSuccessFunction
+    : public FileSystemProviderInternal {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "fileSystemProviderInternal.openFileRequestedSuccess",
+      FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDSUCCESS)
+
+ protected:
+  ~FileSystemProviderInternalOpenFileRequestedSuccessFunction() override {}
   ResponseAction Run() override;
 };
 

@@ -19,8 +19,6 @@
 #include <optional>
 #include <string>
 
-// TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
-// code size.
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -34,6 +32,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
@@ -47,6 +46,8 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 
@@ -112,10 +113,11 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path, wchar_t* cmdline) {
 
   ::CloseHandle(pi.hThread);
 
-  DWORD exit_code = SUCCESS_EXIT_CODE;
+  DWORD updater_exit_code = 0;
   DWORD wr = ::WaitForSingleObject(pi.hProcess, INFINITE);
-  if (WAIT_OBJECT_0 != wr || !::GetExitCodeProcess(pi.hProcess, &exit_code)) {
-    // Note:  We've assumed that WAIT_OBJCT_0 != wr means a failure.  The call
+  if (WAIT_OBJECT_0 != wr ||
+      !::GetExitCodeProcess(pi.hProcess, &updater_exit_code)) {
+    // Note:  We've assumed that WAIT_OBJECT_0 != wr means a failure.  The call
     // could return a different object but since we never spawn more than one
     // sub-process at a time that case should never happen.
     return ProcessExitResult(WAIT_FOR_PROCESS_FAILED, ::GetLastError());
@@ -123,7 +125,7 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path, wchar_t* cmdline) {
 
   ::CloseHandle(pi.hProcess);
 
-  return ProcessExitResult(exit_code);
+  return ProcessExitResult(UPDATER_EXIT_CODE, updater_exit_code);
 }
 
 // Windows defined callback used in the EnumResourceNames call. For each
@@ -163,20 +165,16 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
 
 std::optional<base::FilePath> FindOfflineDir(
     const base::FilePath& unpack_path) {
-  const base::FilePath base_offline_dir =
-      unpack_path.Append(L"bin").Append(L"Offline");
-  if (!base::PathExists(base_offline_dir)) {
-    return std::nullopt;
-  }
-  base::FileEnumerator file_enumerator(base_offline_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator file_enumerator(
+      unpack_path.Append(L"bin").Append(L"Offline"), false,
+      base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
     if (IsGuid(path.BaseName().value())) {
       return path;
     }
   }
-  return std::nullopt;
+  return {};
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
@@ -213,14 +211,13 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
 
   *cmd_line_args = '\0';
 
-  // Use the tag from the --tag/--install command line argument if such argument
+  // Use the tag from the `--install` command line argument if such argument
   // exists. Otherwise, try extracting a tag embedded in the program image of
   // the meta installer.
-  if (args.GetSwitchValueASCII(kTagSwitch).empty() &&
-      args.GetSwitchValueASCII(kInstallSwitch).empty()) {
+  if (args.GetSwitchValueASCII(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      args.AppendSwitchASCII(kTagSwitch, tag.c_str());
+      args.AppendSwitchASCII(kInstallSwitch, tag.c_str());
     }
   }
 
@@ -285,10 +282,16 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kCmdLineExpectElevated)) {
     VLOG(1) << __func__ << "Unexpected elevation loop! "
             << command_line.GetCommandLineString();
-    return ProcessExitResult(UNABLE_TO_ELEVATE_METAINSTALLER);
+    return ProcessExitResult(UNEXPECTED_ELEVATION_LOOP);
   }
 
-  // The metainstaller is elevated because unpacking its files and running
+  if (command_line.HasSwitch(kSilentSwitch)) {
+    VLOG(1) << __func__ << ": cannot show an elevation prompt with `/silent`: "
+            << command_line.GetCommandLineString();
+    return ProcessExitResult(UNEXPECTED_ELEVATION_LOOP_SILENT);
+  }
+
+  // The metainstaller needs elevation because unpacking files and running
   // updater.exe must happen from a secure directory.
   base::CommandLine elevated_command_line = command_line;
   elevated_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
@@ -296,10 +299,10 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
                    RunElevated(command_line.GetProgram(),
                                elevated_command_line.GetArgumentsString()),
                    [](HRESULT error) {
-                     return ProcessExitResult(
-                         RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, error);
+                     return ProcessExitResult(FAILED_TO_ELEVATE_METAINSTALLER,
+                                              error);
                    });
-  return ProcessExitResult(result);
+  return ProcessExitResult(UPDATER_EXIT_CODE, result);
 }
 
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
@@ -308,23 +311,25 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
     VLOG(1) << __func__ << "Unexpected de-elevation loop! "
             << command_line.GetCommandLineString();
-    return ProcessExitResult(UNABLE_TO_DE_ELEVATE_METAINSTALLER);
+    return ProcessExitResult(UNEXPECTED_DE_ELEVATION_LOOP);
   }
 
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
   CHECK(com_initializer.Succeeded());
 
-  // Deelevate the metainstaller.
-  HRESULT hr =
-      RunDeElevated(command_line.GetProgram().value(), [&command_line] {
-        base::CommandLine de_elevate_command_line = command_line;
-        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
-        return de_elevate_command_line.GetArgumentsString();
-      }());
-  return SUCCEEDED(hr)
-             ? ProcessExitResult(SUCCESS_EXIT_CODE)
-             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
+  // De-elevate the metainstaller.
+  const base::Process process = base::win::RunDeElevated([&] {
+    base::CommandLine de_elevate_command_line = command_line;
+    de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+    return de_elevate_command_line;
+  }());
+
+  int result = 0;
+  return process.IsValid() && process.WaitForExit(&result)
+             ? ProcessExitResult(UPDATER_EXIT_CODE, result)
+             : ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
+                                 HRESULTFromLastError());
 }
 
 ProcessExitResult InstallerMain(HMODULE module) {
@@ -358,8 +363,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
-    if (run_elevated_result.exit_code !=
-            RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
+    if (run_elevated_result.exit_code == UPDATER_EXIT_CODE ||
         !IsPrefersForCommandLine(command_line)) {
       return run_elevated_result;
     }
@@ -481,11 +485,25 @@ ProcessExitResult InstallerMain(HMODULE module) {
   return exit_code;
 }
 
-ProcessExitResult WMain(HMODULE module) {
-  const updater::ProcessExitResult result = InstallerMain(module);
+int WMain(HMODULE module) {
+  const ProcessExitResult result = InstallerMain(module);
   VLOG(1) << "Metainstaller WMain returned: " << result.exit_code
           << ", Windows error: " << result.windows_error;
-  return result;
+
+  // Display UI only for metainstaller errors.
+  if (result.exit_code != SUCCESS_EXIT_CODE &&
+      result.exit_code != UPDATER_EXIT_CODE &&
+      !GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+    base::FilePath exe_path;
+    base::PathService::Get(base::FILE_EXE, &exe_path);
+    ::MessageBoxEx(nullptr,
+                   GetLocalizedMetainstallerErrorString(result.exit_code,
+                                                        result.windows_error)
+                       .c_str(),
+                   exe_path.BaseName().value().c_str(), 0, 0);
+  }
+  return result.exit_code == UPDATER_EXIT_CODE ? result.windows_error
+                                               : result.exit_code;
 }
 
 }  // namespace updater

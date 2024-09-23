@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/metrics/structured/lib/key_data_provider.h"
+
 #include <optional>
 #include <string>
-
-#include "components/metrics/structured/lib/key_data_provider.h"
 
 namespace metrics::structured {
 

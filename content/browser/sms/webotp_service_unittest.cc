@@ -103,13 +103,7 @@ class Service {
                 /* avoid showing user prompts */
                 std::make_unique<NoopUserConsentHandler>()) {}
 
-  ~Service() {
-    // WebOTPService sends IPCs in its destructor, so for the unit test, pretend
-    // that this works.
-    service_->WillBeDestroyed(
-        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    service_->ResetAndDeleteThis();
-  }
+  ~Service() { Dispose(); }
 
   NiceMock<MockSmsProvider>* provider() { return &provider_; }
   SmsFetcher* fetcher() { return &fetcher_; }
@@ -135,13 +129,26 @@ class Service {
 
   void ActivateTimer() { service_->OnTimeout(); }
 
+ protected:
+  void Dispose() {
+    if (!service_) {
+      return;
+    }
+
+    // WebOTPService sends IPCs in its destructor, so for the unit test, pretend
+    // that this works.
+    service_->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
+    service_.ExtractAsDangling()->ResetAndDeleteThis();
+  }
+
  private:
   StubWebContentsDelegate contents_delegate_;
   NiceMock<MockSmsProvider> provider_;
   SmsFetcherImpl fetcher_;
   std::unique_ptr<UserConsentHandler> consent_handler_;
   mojo::Remote<blink::mojom::WebOTPService> service_remote_;
-  raw_ptr<WebOTPService, DanglingUntriaged> service_;
+  raw_ptr<WebOTPService> service_;
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
@@ -555,15 +562,22 @@ class ServiceWithPrompt : public Service {
         static_cast<NiceMock<MockUserConsentHandler>*>(consent_handler());
   }
 
+  ~ServiceWithPrompt() {
+    // At destruction, WebOTPService calls into `MockUserConsentHandler`, which
+    // can reference `on_complete_callback_`. Preemptively tear it down so
+    // `on_complete_callback_` is not destroyed before it is used.
+    Dispose();
+  }
+
   void ExpectRequestUserConsent() {
     EXPECT_CALL(*mock_handler_, RequestUserConsent(_, _))
-        .WillOnce(
-            Invoke([=](const std::string&, CompletionCallback on_complete) {
+        .WillOnce(Invoke(
+            [=, this](const std::string&, CompletionCallback on_complete) {
               on_complete_callback_ = std::move(on_complete);
             }));
 
     EXPECT_CALL(*mock_handler_, is_async()).WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly(Invoke([=]() {
+    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly(Invoke([=, this]() {
       return !on_complete_callback_.is_null();
     }));
   }

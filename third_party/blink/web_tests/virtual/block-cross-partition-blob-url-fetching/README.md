@@ -1,0 +1,1 @@
+This directory is for tests that need the Block Cross Partition Blob URL Fetching feature enabled.

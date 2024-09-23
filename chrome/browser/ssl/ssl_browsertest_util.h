@@ -25,7 +25,7 @@ enum AuthStateFlags {
   NONE = 0,
   DISPLAYED_INSECURE_CONTENT = 1 << 0,
   RAN_INSECURE_CONTENT = 1 << 1,
-  // TODO(crbug.com/752372): Collapse SHOWING_INTERSTITIAL into SHOWING_ERROR
+  // TODO(crbug.com/41337702): Collapse SHOWING_INTERSTITIAL into SHOWING_ERROR
   // once committed SSL interstitials are launched. For now, we automatically
   // map SHOWING_INTERSTITIAL onto SHOWING_ERROR when committed interstitials
   // are enabled.

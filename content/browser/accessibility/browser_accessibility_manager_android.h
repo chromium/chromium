@@ -8,19 +8,18 @@
 #include <unordered_set>
 #include <utility>
 
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace ui {
 
 class MotionEventAndroid;
+class AXPlatformTreeManagerDelegate;
 
 }  // namespace ui
 
 namespace content {
 
-class WebAXPlatformTreeManagerDelegate;
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.browser.accessibility
@@ -44,12 +43,23 @@ class BrowserAccessibilityAndroid;
 class WebContentsAccessibilityAndroid;
 
 class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
-    : public BrowserAccessibilityManager {
+    : public ui::BrowserAccessibilityManager {
  public:
+  // Creates the platform-specific BrowserAccessibilityManager.
+  static BrowserAccessibilityManager* Create(
+      const ui::AXTreeUpdate& initial_tree,
+      ui::AXNodeIdDelegate& node_id_delegate,
+      ui::AXPlatformTreeManagerDelegate* delegate);
+
+  static BrowserAccessibilityManager* Create(
+      ui::AXNodeIdDelegate& node_id_delegate,
+      ui::AXPlatformTreeManagerDelegate* delegate);
+
   BrowserAccessibilityManagerAndroid(
       const ui::AXTreeUpdate& initial_tree,
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
-      WebAXPlatformTreeManagerDelegate* delegate);
+      ui::AXNodeIdDelegate& node_id_delegate,
+      ui::AXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAndroid(
       const BrowserAccessibilityManagerAndroid&) = delete;
@@ -92,18 +102,25 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireFocusEvent(ui::AXNode* node) override;
 
   // BrowserAccessibilityManager overrides.
-  BrowserAccessibility* GetFocus() const override;
+  ui::BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
-      const std::vector<blink::mojom::LocationChangesPtr>& changes) override;
+      const std::vector<ui::AXLocationChanges>& changes) override;
   ui::AXNode* RetargetForEvents(ui::AXNode* node,
                                 RetargetEventType type) const override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node,
+                      ui::BrowserAccessibility* node,
                       int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 
-  void FireLocationChanged(BrowserAccessibility* node);
+  void FireAriaNotificationEvent(
+      ui::BrowserAccessibility* node,
+      const std::string& announcement,
+      const std::string& notification_id,
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      ax::mojom::AriaNotificationPriority priority_property) override;
+
+  void FireLocationChanged(ui::BrowserAccessibility* node);
 
   // Helper functions to compute the next start and end index when moving
   // forwards or backwards by character, word, or line. This part is
@@ -127,6 +144,12 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
+  std::vector<std::string> GetMetadataForTree() const;
+
+ protected:
+  std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(
+      ui::AXNode* node) override;
+
  private:
   // AXTreeObserver overrides.
   void OnAtomicUpdateFinished(
@@ -140,10 +163,10 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   // This gives BrowserAccessibilityManager::Create access to the class
   // constructor.
-  friend class BrowserAccessibilityManager;
+  friend class ui::BrowserAccessibilityManager;
 
   // Handle a hover event from the renderer process.
-  void HandleHoverEvent(BrowserAccessibility* node);
+  void HandleHoverEvent(ui::BrowserAccessibility* node);
 
   // A weak reference to WebContentsAccessibility for reaching Java layer.
   // Only the root manager has the reference. Should be accessed through

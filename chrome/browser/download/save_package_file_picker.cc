@@ -109,7 +109,7 @@ bool IsErrorPage(content::WebContents* web_contents) {
 
 }  // anonymous namespace
 
-// TODO(crbug/928323): REMOVE DIRTY HACK
+// TODO(crbug.com/41439108): REMOVE DIRTY HACK
 // To prevent access to blocked websites, we are temporarily disabling the
 // HTML-only download of error pages for child users only.
 // Note that MHTML is still available, so the save functionality is preserved.
@@ -224,7 +224,7 @@ SavePackageFilePicker::SavePackageFilePicker(
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
         platform_util::GetTopLevel(web_contents->GetNativeView()),
-        /*params=*/nullptr, /*caller=*/
+        /*caller=*/
         web_contents
             ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
             : nullptr);
@@ -234,8 +234,7 @@ SavePackageFilePicker::SavePackageFilePicker(
   // If |g_should_prompt_for_filename| is unset or |select_file_dialog_| could
   // not be instantiated for some reason, just use 'suggested_path_copy' instead
   // of opening the dialog prompt. Go through FileSelected() for consistency.
-  FileSelected(ui::SelectedFileInfo(suggested_path_copy), file_type_index,
-               nullptr);
+  FileSelected(ui::SelectedFileInfo(suggested_path_copy), file_type_index);
 }
 
 SavePackageFilePicker::~SavePackageFilePicker() {
@@ -249,8 +248,7 @@ void SavePackageFilePicker::SetShouldPromptUser(bool should_prompt) {
 }
 
 void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
-                                         int index,
-                                         void* unused_params) {
+                                         int index) {
   std::unique_ptr<SavePackageFilePicker> delete_this(this);
   RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
   if (!process)
@@ -284,6 +282,6 @@ void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
                            base::BindOnce(&OnSavePackageDownloadCreated));
 }
 
-void SavePackageFilePicker::FileSelectionCanceled(void* unused_params) {
+void SavePackageFilePicker::FileSelectionCanceled() {
   delete this;
 }

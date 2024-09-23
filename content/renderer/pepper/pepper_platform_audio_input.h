@@ -96,7 +96,7 @@ class PepperPlatformAudioInput
 
   // The client to notify when the stream is created. THIS MUST ONLY BE
   // ACCESSED ON THE MAIN THREAD.
-  raw_ptr<PepperAudioInputHost, ExperimentalRenderer> client_ = nullptr;
+  raw_ptr<PepperAudioInputHost> client_ = nullptr;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O THREAD.

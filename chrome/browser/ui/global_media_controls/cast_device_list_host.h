@@ -40,6 +40,7 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
  private:
   void StartCasting(const media_router::UIMediaSink& sink);
   void DestroyCastController();
+  void RecordSinkLoadTime();
 
   // Used to generate `id_`.
   static int next_id_;
@@ -53,6 +54,11 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
   base::RepeatingClosure hide_dialog_callback_;
   // Called whenever the sink is discovered.
   base::RepeatingClosure on_sinks_discovered_callback_;
+
+  // Metrics
+  base::Time initialization_time_;
+  base::Time sinks_load_time_;
+
   const int id_;
 };
 

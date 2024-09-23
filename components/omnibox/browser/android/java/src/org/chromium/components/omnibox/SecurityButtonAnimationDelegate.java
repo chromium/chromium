@@ -21,20 +21,23 @@ public class SecurityButtonAnimationDelegate {
     public static final int FADE_DURATION_MS = 150;
 
     private final ImageButton mSecurityButton;
-    private final View mTitleUrlContainer;
+    private final View mSecurityIconOffsetTarget;
     private final AnimatorSet mSecurityButtonShowAnimator;
     private final AnimatorSet mSecurityButtonHideAnimator;
     private final int mSecurityButtonWidth;
 
     public SecurityButtonAnimationDelegate(
-            ImageButton securityButton, View urlTextView, @DimenRes int securityButtonIconSize) {
+            ImageButton securityButton,
+            View securityIconOffsetTarget,
+            @DimenRes int securityButtonIconSize) {
         mSecurityButton = securityButton;
-        mTitleUrlContainer = urlTextView;
+        mSecurityIconOffsetTarget = securityIconOffsetTarget;
         mSecurityButtonWidth =
                 mSecurityButton.getResources().getDimensionPixelSize(securityButtonIconSize);
 
         mSecurityButtonShowAnimator = new AnimatorSet();
-        Animator translateRight = ObjectAnimator.ofFloat(mTitleUrlContainer, View.TRANSLATION_X, 0);
+        Animator translateRight =
+                ObjectAnimator.ofFloat(mSecurityIconOffsetTarget, View.TRANSLATION_X, 0);
         translateRight.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         translateRight.setDuration(SLIDE_DURATION_MS);
 
@@ -59,12 +62,14 @@ public class SecurityButtonAnimationDelegate {
                     @Override
                     public void onEnd(Animator animation) {
                         mSecurityButton.setVisibility(View.INVISIBLE);
+                        // No icon to display.
+                        mSecurityButton.setImageDrawable(null);
                     }
                 });
 
         Animator translateLeft =
                 ObjectAnimator.ofFloat(
-                        mTitleUrlContainer, View.TRANSLATION_X, -mSecurityButtonWidth);
+                        mSecurityIconOffsetTarget, View.TRANSLATION_X, -mSecurityButtonWidth);
         translateLeft.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         translateLeft.setDuration(SLIDE_DURATION_MS);
         mSecurityButtonHideAnimator.playSequentially(fadeOut, translateLeft);
@@ -88,8 +93,6 @@ public class SecurityButtonAnimationDelegate {
     public void updateSecurityButton(
             int securityIconResource, boolean animate, boolean isActualResourceChange) {
         if (securityIconResource == 0) {
-            // No icon to display.
-            mSecurityButton.setImageDrawable(null);
             hideSecurityButton(animate);
         } else {
             if (isActualResourceChange) {
@@ -119,7 +122,7 @@ public class SecurityButtonAnimationDelegate {
     private void hideSecurityButton(boolean animate) {
         if (mSecurityButtonShowAnimator.isStarted()) mSecurityButtonShowAnimator.cancel();
         if (mSecurityButtonHideAnimator.isStarted()
-                || mTitleUrlContainer.getTranslationX() == -mSecurityButtonWidth) {
+                || mSecurityIconOffsetTarget.getTranslationX() == -mSecurityButtonWidth) {
             return;
         }
 

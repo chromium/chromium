@@ -5,24 +5,27 @@
 #include "components/sync/test/fake_data_type_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/model_error.h"
+#include "components/sync/model/sync_error.h"
 
 namespace syncer {
 
-FakeDataTypeController::FakeDataTypeController(ModelType type)
-    : FakeDataTypeController(type, /*enable_transport_mode=*/false) {}
-
-FakeDataTypeController::FakeDataTypeController(ModelType type,
-                                               bool enable_transport_mode)
-    : ModelTypeController(
+FakeDataTypeController::FakeDataTypeController(
+    DataType type,
+    bool enable_transport_mode,
+    std::unique_ptr<DataTypeLocalDataBatchUploader> uploader)
+    : DataTypeController(
           type,
           /*delegate_for_full_sync_mode=*/
-          std::make_unique<FakeModelTypeControllerDelegate>(type),
+          std::make_unique<FakeDataTypeControllerDelegate>(type),
           /*delegate_for_transport_mode=*/
           enable_transport_mode
-              ? std::make_unique<FakeModelTypeControllerDelegate>(type)
-              : nullptr) {}
+              ? std::make_unique<FakeDataTypeControllerDelegate>(type)
+              : nullptr,
+          std::move(uploader)) {}
 
 FakeDataTypeController::~FakeDataTypeController() = default;
 
@@ -30,10 +33,16 @@ void FakeDataTypeController::SetPreconditionState(PreconditionState state) {
   precondition_state_ = state;
 }
 
-FakeModelTypeControllerDelegate* FakeDataTypeController::model(
+FakeDataTypeControllerDelegate* FakeDataTypeController::model(
     SyncMode sync_mode) {
-  return static_cast<FakeModelTypeControllerDelegate*>(
+  return static_cast<FakeDataTypeControllerDelegate*>(
       GetDelegateForTesting(sync_mode));
+}
+
+void FakeDataTypeController::SimulateControllerError(
+    const base::Location& location) {
+  ReportModelError(SyncError::DATATYPE_POLICY_ERROR,
+                   ModelError(location, "Test error"));
 }
 
 DataTypeController::PreconditionState
@@ -43,7 +52,7 @@ FakeDataTypeController::GetPreconditionState() const {
 
 std::unique_ptr<DataTypeActivationResponse> FakeDataTypeController::Connect() {
   ++activate_call_count_;
-  return ModelTypeController::Connect();
+  return DataTypeController::Connect();
 }
 
 }  // namespace syncer

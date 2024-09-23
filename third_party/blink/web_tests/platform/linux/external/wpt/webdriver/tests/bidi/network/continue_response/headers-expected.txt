@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_set_cookie_header
+  assert 0 == 1
+[FAIL] test_set_cookie_header_and_cookies
+  assert 0 == 2
+Harness: the test ran to completion.

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_presentation_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
-#import "ios/chrome/browser/ui/overlays/overlay_presentation_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {

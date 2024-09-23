@@ -18,6 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_string_list.h"
 
 #include "base/notreached.h"
@@ -73,8 +78,8 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
   if (data.empty())
     return SVGParseStatus::kNoError;
 
-  WTF::VisitCharacters(data, [&](const auto* chars, unsigned length) {
-    ParseInternal(chars, chars + length, list_delimiter);
+  WTF::VisitCharacters(data, [&](auto chars) {
+    ParseInternal(chars.data(), chars.data() + chars.size(), list_delimiter);
   });
   return SVGParseStatus::kNoError;
 }
@@ -104,7 +109,7 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
 void SVGStringListBase::Add(const SVGPropertyBase* other,
                             const SVGElement* context_element) {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGStringListBase::CalculateAnimatedValue(
@@ -116,13 +121,13 @@ void SVGStringListBase::CalculateAnimatedValue(
     const SVGPropertyBase*,
     const SVGElement*) {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGStringListBase::CalculateDistance(const SVGPropertyBase*,
                                            const SVGElement*) const {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1.0f;
 }
 

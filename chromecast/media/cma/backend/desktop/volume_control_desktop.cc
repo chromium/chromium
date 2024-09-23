@@ -69,7 +69,6 @@ class VolumeControlInternal {
                  float level) {
     if (type == AudioContentType::kOther) {
       NOTREACHED() << "Can't set volume for content type kOther";
-      return;
     }
 
     level = std::clamp(level, 0.0f, 1.0f);
@@ -88,7 +87,6 @@ class VolumeControlInternal {
                 bool muted) {
     if (type == AudioContentType::kOther) {
       NOTREACHED() << "Can't set mute state for content type kOther";
-      return;
     }
 
     thread_.task_runner()->PostTask(

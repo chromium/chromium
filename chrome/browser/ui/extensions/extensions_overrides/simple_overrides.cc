@@ -35,6 +35,7 @@ const char* kAllowlistedManifestKeys[] = {
     extensions::manifest_keys::kDifferentialFingerprint,
     extensions::manifest_keys::kHomepageURL,
     extensions::manifest_keys::kIcons,
+    extensions::manifest_keys::kIconVariants,
     extensions::manifest_keys::kKey,
     extensions::manifest_keys::kManifestVersion,
     extensions::manifest_keys::kMinimumChromeVersion,

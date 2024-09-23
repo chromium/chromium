@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -32,6 +33,7 @@ ShelfButton::ShelfButton(Shelf* shelf,
       std::make_unique<views::CircleHighlightPathGenerator>(
           gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
   SetFocusPainter(nullptr);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 ShelfButton::~ShelfButton() = default;
@@ -41,14 +43,11 @@ ShelfButton::~ShelfButton() = default;
 
 void ShelfButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  if (chromeos::features::IsJellyEnabled()) {
-    auto* ink_drop = views::InkDrop::Get(this);
-    ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
-    ink_drop->SetVisibleOpacity(1.0f);
-  } else {
-    StyleUtil::ConfigureInkDropAttributes(
-        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
-  }
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetVisibleOpacity(1.0f);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
@@ -63,12 +62,6 @@ gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   shelf_button_delegate_->OnShelfButtonAboutToRequestFocusFromTabTraversal(
       this, reverse);
-}
-
-// Do not remove this function to avoid unnecessary ChromeVox announcement
-// triggered by Button::GetAccessibleNodeData. (See https://crbug.com/932200)
-void ShelfButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

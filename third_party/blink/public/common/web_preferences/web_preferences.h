@@ -42,6 +42,7 @@ BLINK_COMMON_EXPORT extern const char kCommonScript[];
 // content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT WebPreferences {
   ScriptFontFamilyMap standard_font_family_map;
+  // The value for Osaka font should be "Osaka", not "Osaka-Mono".
   ScriptFontFamilyMap fixed_font_family_map;
   ScriptFontFamilyMap serif_font_family_map;
   ScriptFontFamilyMap sans_serif_font_family_map;
@@ -180,7 +181,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool initialize_at_minimum_page_scale = true;
   bool smart_insert_delete_enabled = BUILDFLAG(IS_MAC);
   bool spatial_navigation_enabled = false;
-  bool fake_no_alloc_direct_call_for_testing_enabled = false;
   blink::mojom::V8CacheOptions v8_cache_options =
       blink::mojom::V8CacheOptions::kDefault;
   bool record_whole_document = false;
@@ -285,6 +285,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases = false;
+
+  // Long press on links selects text instead of triggering context menu.
+  bool long_press_link_select_text = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1284805): Remove IS_ANDROID once WebView supports WebAuthn.
@@ -341,9 +344,28 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
   bool require_transient_activation_for_show_file_or_directory_picker = true;
 
-  // HTML Fullscreen (e.g. `Element.requestFullscreen()`) transient activation
-  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
-  bool require_transient_activation_for_html_fullscreen = true;
+  // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
+  // can be bypassed via
+  // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
+  bool subapps_apis_require_user_gesture_and_authorization = true;
+
+  // The forced colors state for the web content. The forced colors state
+  // is used to evaluate the forced-colors media query, as well as determining
+  // when to apply system color overrides to author specified styles.
+  bool in_forced_colors = false;
+
+  // Indicates if Forced Colors mode should be disabled for this page.
+  // This allows users opt out of forced colors on specific sites.
+  // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
+  bool is_forced_colors_disabled = false;
+
+  // The preferred color scheme set by the user's browser settings. The variable
+  // follows the browser's color mode setting unless a browser theme (custom or
+  // not) is defined, in which case the color scheme is set to the default
+  // value. This value is used to evaluate the used color scheme in non overlay
+  // root scrollbars.
+  blink::mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme =
+      blink::mojom::PreferredColorScheme::kLight;
 
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme

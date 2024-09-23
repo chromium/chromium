@@ -50,6 +50,16 @@ class TestRunCodesignCheck(test_runner_test.TestCase):
     self.assertEqual(return_error, error)
 
 
+class TestKillUsbMuxd(test_runner_test.TestCase):
+
+  @patch('subprocess.check_call')
+  def test_run_kill_usbmuxd_succeeds(self, mock_check_call):
+    mock_check_call.return_value = MagicMock()
+    mac_util.kill_usbmuxd()
+    mock_check_call.assert_called_with(
+        ['sudo', '/usr/bin/killall', '-v', 'usbmuxd'])
+
+
 class TestStopUsbMuxd(test_runner_test.TestCase):
 
   @patch('subprocess.check_call')

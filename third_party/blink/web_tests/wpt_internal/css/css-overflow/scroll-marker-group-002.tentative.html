@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CSS Test: ::scroll-marker-group invalidation</title>
+    <link rel="author" href="mailto:sakhapov@chromium.org">
+    <link rel="match" href="scroll-marker-group-001-ref.tentative.html">
+    <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+    <style>
+        :root {
+            --scroll-marker-group-background: red;
+        }
+
+        div {
+            overflow: auto;
+            scroll-marker-group: before;
+        }
+
+        div::scroll-marker-group {
+            background: var(--scroll-marker-group-background);
+            display: flex;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Test passes if there is a <strong>filled green rectangle</strong>.
+    <div></div>
+</body>
+<script>
+    document.documentElement.offsetTop;
+    document.documentElement.style.setProperty('--scroll-marker-group-background', 'green');
+    document.documentElement.offsetTop;
+</script>
+
+</html>

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ContentTracingManagerBrowserTest, TraceDataCompressed) {
   EXPECT_EQ(trace_id, 1);
   tracing_manager->GetTraceData(trace_id, future.GetCallback());
   // The actual trace data varies.
-  EXPECT_TRUE(future.Get()->data().size() > 0);
+  EXPECT_TRUE(future.Get()->size() > 0u);
 }
 
 // Test that FeedbackData.CompressSystemInfo will not gather trace data when the

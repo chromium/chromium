@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
   ~SHA1EntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider implementation:
-  double GetEntropyForTrial(base::StringPiece trial_name,
+  double GetEntropyForTrial(std::string_view trial_name,
                             uint32_t randomization_seed) const override;
 
  private:
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider final
   ~NormalizedMurmurHashEntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider:
-  double GetEntropyForTrial(base::StringPiece trial_name,
+  double GetEntropyForTrial(std::string_view trial_name,
                             uint32_t randomization_seed) const override;
 
   uint32_t entropy_value() const { return entropy_value_.value; }
@@ -84,7 +85,7 @@ class SessionEntropyProvider : public base::FieldTrial::EntropyProvider {
   SessionEntropyProvider() = default;
   ~SessionEntropyProvider() override;
 
-  double GetEntropyForTrial(base::StringPiece trial_name,
+  double GetEntropyForTrial(std::string_view trial_name,
                             uint32_t randomization_seed) const override;
 };
 

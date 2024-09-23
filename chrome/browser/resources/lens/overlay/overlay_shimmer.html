@@ -1,0 +1,50 @@
+<style>
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+
+  #sparkleContainer {
+    height: 100%;
+    width: 100%;
+  }
+
+  :host([enable-sparkles]) #sparkleContainer {
+    filter: url(#sparkles);
+  }
+
+  svg {
+    display: none;
+  }
+</style>
+<div id="sparkleContainer">
+  <template id="circlesContainer" is="dom-repeat" items="[[circles]]"
+      as="circle">
+    <shimmer-circle color-hex="[[circle.colorHex]]"
+        steady-state-center-x="[[circle.steadyStateCenterX]]"
+        steady-state-center-y="[[circle.steadyStateCenterY]]"
+        is-steady-state$="[[isSteadyState]]"
+        is-wiggling$="[[isWiggling]]"></shimmer-circle>
+  </template>
+</div>
+
+<svg id="filterSvg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="sparkles" color-interpolation-filters="auto">
+      <feTurbulence id="turbulance" baseFrequency="0.5" numOctaves="4"
+          seed$="[[sparkleSeed]]"></feTurbulence>
+      <feColorMatrix values="
+        0 0 0 1 -.4
+        0 0 0 1 -.3
+        0 0 0 1 -.5
+        0 0 0 0 1"></feColorMatrix>
+      <feColorMatrix values="
+        0 0 0 0 1
+        0 0 0 0 1
+        0 0 0 0 1
+        1 1 1 0 0" result="grain"></feColorMatrix>
+      <feComposite in="colormatrix2" in2="SourceGraphic" operator="atop">
+      </feComposite>
+    </filter>
+  </defs>
+</svg>

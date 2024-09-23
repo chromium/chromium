@@ -4,6 +4,7 @@
 
 #include "media/base/audio_encoder.h"
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
@@ -17,13 +18,11 @@ AudioEncoder::Options::~Options() = default;
 
 EncodedAudioBuffer::EncodedAudioBuffer() = default;
 EncodedAudioBuffer::EncodedAudioBuffer(const AudioParameters& params,
-                                       std::unique_ptr<uint8_t[]> data,
-                                       size_t size,
+                                       base::HeapArray<uint8_t> data,
                                        base::TimeTicks timestamp,
                                        base::TimeDelta duration)
     : params(params),
       encoded_data(std::move(data)),
-      encoded_data_size(size),
       timestamp(timestamp),
       duration(duration) {}
 

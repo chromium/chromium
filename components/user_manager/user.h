@@ -63,19 +63,6 @@ class USER_MANAGER_EXPORT User {
     OAUTH2_TOKEN_STATUS_VALID = 4,
   } OAuthTokenStatus;
 
-  // TODO(jasontt): Explore adding a new value for image taken from camera.
-  // These special values are used instead of actual default image indices.
-  typedef enum {
-    USER_IMAGE_INVALID = -3,
-
-    // Returned as |image_index| when user profile image is used as user image.
-    USER_IMAGE_PROFILE = -2,
-
-    // Returned as |image_index| when user-selected file or photo is used as
-    // user image.
-    USER_IMAGE_EXTERNAL = -1,
-  } UserImageType;
-
   // Returns true if user type has gaia account.
   static bool TypeHasGaiaAccount(UserType user_type);
 
@@ -102,9 +89,6 @@ class USER_MANAGER_EXPORT User {
   // Returns true if user has gaia account. True for users of types
   // UserType::kRegular and UserType::kChild.
   bool HasGaiaAccount() const;
-
-  // Returns true if it's Active Directory user.
-  bool IsActiveDirectoryUser() const;
 
   // Returns true if user is child.
   bool IsChild() const;
@@ -143,8 +127,11 @@ class USER_MANAGER_EXPORT User {
   // email if available and use_display_name == true. Otherwise use canonical.
   std::string GetAccountName(bool use_display_email) const;
 
-  // Whether the user has a default image.
-  bool HasDefaultImage() const;
+  // True if the user's session can be locked (i.e. the user has a password with
+  // which to unlock the session).
+  // This depends on Profile preference, and if it's not yet ready, this
+  // returns false as fallback.
+  bool CanLock() const;
 
   int image_index() const { return image_index_; }
   bool has_image_bytes() const { return user_image_->has_image_bytes(); }
@@ -179,10 +166,6 @@ class USER_MANAGER_EXPORT User {
   // user's next sign-in.
   bool force_online_signin() const { return force_online_signin_; }
 
-  // True if the user's session can be locked (i.e. the user has a password with
-  // which to unlock the session).
-  bool can_lock() const;
-
   // Returns empty string when home dir hasn't been mounted yet.
   const std::string& username_hash() const;
 
@@ -209,7 +192,7 @@ class USER_MANAGER_EXPORT User {
 
   static User* CreateRegularUserForTesting(const AccountId& account_id) {
     User* user = CreateRegularUser(account_id, UserType::kRegular);
-    user->SetImage(std::unique_ptr<UserImage>(new UserImage), 0);
+    user->SetImage(std::make_unique<UserImage>(), 0);
     return user;
   }
 
@@ -235,7 +218,6 @@ class USER_MANAGER_EXPORT User {
                                  const UserType user_type);
   static User* CreateGuestUser(const AccountId& guest_account_id);
   static User* CreateKioskAppUser(const AccountId& kiosk_app_account_id);
-  static User* CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id);
   static User* CreateWebKioskAppUser(const AccountId& web_kiosk_account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
@@ -252,7 +234,7 @@ class USER_MANAGER_EXPORT User {
   void SetImageURL(const GURL& image_url);
 
   // Sets a stub image until the next |SetImage| call. |image_index| may be
-  // one of |USER_IMAGE_EXTERNAL| or |USER_IMAGE_PROFILE|.
+  // one of |UserImage::Type::kExternal| or |UserImage::Type::kProfile|.
   // If |is_loading| is |true|, that means user image is being loaded from file.
   void SetStubImage(std::unique_ptr<UserImage> stub_user_image,
                     int image_index,
@@ -288,15 +270,13 @@ class USER_MANAGER_EXPORT User {
 
   void set_is_logged_in(bool is_logged_in) { is_logged_in_ = is_logged_in; }
 
-  void set_can_lock(bool can_lock) { can_lock_ = can_lock; }
-
   void set_is_active(bool is_active) { is_active_ = is_active; }
 
   void SetProfileIsCreated();
 
   void SetProfilePrefs(PrefService* prefs) { profile_prefs_ = prefs; }
 
-  void SetAffiliation(bool is_affiliated);
+  void SetAffiliated(bool is_affiliated);
 
  private:
   AccountId account_id_;
@@ -322,18 +302,15 @@ class USER_MANAGER_EXPORT User {
   // Used to identify homedir mount point.
   std::string username_hash_;
 
-  // Either index of a default image for the user, |USER_IMAGE_EXTERNAL| or
-  // |USER_IMAGE_PROFILE|.
-  int image_index_ = USER_IMAGE_INVALID;
+  // Either index of a default image for the user, |UserImage::Type::kExternal|
+  // or |UserImage::Type::kProfile|.
+  int image_index_ = UserImage::Type::kInvalid;
 
   // True if current user image is a stub set by a |SetStubImage| call.
   bool image_is_stub_ = false;
 
   // True if current user image is being loaded from file.
   bool image_is_loading_ = false;
-
-  // True if user is able to lock screen.
-  bool can_lock_ = false;
 
   // True if user is currently logged in in current session.
   bool is_logged_in_ = false;

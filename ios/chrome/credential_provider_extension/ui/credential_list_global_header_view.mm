@@ -32,7 +32,7 @@ const CGFloat kBottomSpacing = 20;
 }
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithReuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithReuseIdentifier:reuseIdentifier])) {
     _headerTextLabel = [[UILabel alloc] init];
     _headerTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _headerTextLabel.font =

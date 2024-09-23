@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="101606685846791463">tyhjennä selaimen välimuisti, tyhjennä historia, poista evästeet, poista selaushistoria</translation>
 <translation id="132297926492792130">hallitse google tiliäni, korjaa google tili, ylläpidä google tiliä, ylläpidä google tiliäni</translation>
 <translation id="1455865776268085776">siirry incognito tilaan, uusi incognito ikkuna, avaa incognito välilehti</translation>
 <translation id="1545931455576308147">jaa tämä sivu, jaa tämä välilehti</translation>
@@ -24,10 +23,11 @@
 <translation id="5061612070235737664">muuta selaimen fonttia, chromen fontit</translation>
 <translation id="6413237123574479071">ylläpidä maksutapoja, päivitä credit kortti</translation>
 <translation id="6654270263159958770">lisää Custom Search, ylläpidä hakukoneita, hakukoneet</translation>
-<translation id="7081494400361697539">luo google taulukko, luo työtilataulukko, uusi google taulukko, aloita uusi google taulukko</translation>
+<translation id="7081494400361697539">luo google sheets taulukko, luo työtilataulukko, uusi google sheets taulukko, aloita uusi google sheets taulukko</translation>
 <translation id="7153639895359139570">lisää osoite, muuta toimitusosoitetta, muokkaa osoitteita, ylläpidä osoitteita</translation>
 <translation id="7242693601647412075">muuta tietoturva asetuksia</translation>
 <translation id="7441773108452086364">vaihda gmail salasana, vaihda gmail salasanani, google salasanan vaihto, nollaa gmail tilin salasana</translation>
+<translation id="7469628627013714019">tyhjennä selaimen välimuisti, tyhjennä selainten välimuistit, poista historia, poista eväste, poista evästeet, poista selaushistoria</translation>
 <translation id="7660956169713698963">muokkaa chrome-käyttöjärjestelmän esteettömyyttä, muuta esteettömyysasetuksia</translation>
 <translation id="7700496593710078083">katso chrome-historia, katso selaushistoria</translation>
 <translation id="7739523284295786564">tarkista chromen lataukset, katso lataukset</translation>

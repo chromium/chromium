@@ -61,9 +61,11 @@ namespace {
 
 [[nodiscard]] mojom::AppStatePtr MakeMojoAppState(
     const updater::UpdateService::AppState& app_state) {
-  return mojom::AppState::New(app_state.app_id, app_state.version.GetString(),
-                              app_state.ap, app_state.brand_code,
-                              app_state.brand_path, app_state.ecp);
+  return mojom::AppState::New(
+      app_state.app_id, app_state.version.GetString(), app_state.ap,
+      app_state.brand_code, app_state.brand_path, app_state.ecp,
+      app_state.ap_path, app_state.ap_key, app_state.version_path,
+      app_state.version_key, app_state.cohort);
 }
 
 [[nodiscard]] mojom::UpdateStatePtr MakeMojoUpdateState(
@@ -103,8 +105,9 @@ class StateChangeObserverWrapper
 
 // Binds a callback that forwards state change callbacks and the OnComplete
 // callback to a StateChangeObserver.
-[[nodiscard]] std::pair<UpdateService::StateChangeCallback,
-                        UpdateService::Callback>
+[[nodiscard]] std::pair<
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>,
+    base::OnceCallback<void(UpdateService::Result)>>
 MakeStateChangeObserverCallbacks(
     std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer) {
   auto wrapper =

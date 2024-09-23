@@ -1,0 +1,40 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=/signin_shared.css.js
+ * #scheme=relative
+ * #include=signin-shared
+ * #css_wrapper_metadata_end */
+
+.details {
+  line-height: 20px;
+  margin-bottom: 8px;
+  margin-top: 16px;
+  padding: 0 24px;
+}
+
+#normal-error-message > p {
+  margin-bottom: 0;
+}
+
+#profile-blocking-error-message {
+  margin-top: 30px;
+}
+
+#profile-blocking-error-message > div {
+  align-items: center;
+  display: flex;
+  margin-top: 1em;
+}
+
+cr-icon {
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+  height: var(--cr-icon-size);
+  margin-inline-end: 16px;
+  width: var(--cr-icon-size);
+}

@@ -155,8 +155,8 @@ def main():
   extra_gn_args = [
       'enable_android_nocompile_tests = true',
       'treat_warnings_as_errors = true',
-      # GOMA does not work with non-standard output directories.
-      'use_goma = false',
+      # RBE does not work with non-standard output directories.
+      'use_remoteexec = false',
   ]
   _copy_and_append_gn_args(options.gn_args_path, out_gn_args_path,
                            extra_gn_args)

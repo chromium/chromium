@@ -102,7 +102,7 @@ void UrlLoaderNetworkServiceObserver::OnCertificateRequested(
   // is the caller's responsibility to keep them alive until the callback has
   // been run by ClientCertStore.
   temp_client_cert_store->GetClientCerts(
-      *cert_info,
+      cert_info,
       base::BindOnce(&UrlLoaderNetworkServiceObserver::OnCertificatesSelected,
                      weak_factory_.GetWeakPtr(),
                      std::move(client_cert_responder),
@@ -111,7 +111,7 @@ void UrlLoaderNetworkServiceObserver::OnCertificateRequested(
 
 void UrlLoaderNetworkServiceObserver::OnAuthRequired(
     const std::optional<base::UnguessableToken>& window_id,
-    uint32_t request_id,
+    int32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
     const net::AuthChallengeInfo& auth_info,
@@ -160,6 +160,9 @@ void UrlLoaderNetworkServiceObserver::Clone(
   receivers_.Add(this, std::move(observer));
 }
 
+void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToPrivateNetwork(
+    network::mojom::IPAddressSpace ip_address_space) {}
+
 void UrlLoaderNetworkServiceObserver::OnCertificatesSelected(
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         client_cert_responder,
@@ -200,6 +203,11 @@ void UrlLoaderNetworkServiceObserver::ContinueWithCertificate(
 
   mojo::Remote<network::mojom::ClientCertificateResponder> responder(
       std::move(client_cert_responder));
+
+  if (!client_cert || !private_key) {
+    responder->ContinueWithoutCertificate();
+    return;
+  }
 
   mojo::PendingRemote<network::mojom::SSLPrivateKey> ssl_private_key;
   mojo::MakeSelfOwnedReceiver(

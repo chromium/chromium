@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -19,7 +19,7 @@ namespace ash::cfm {
 // Implementation of the DeviceInfo Service.
 // Allowing query to relevant device information
 class DeviceInfoService : public CfmObserver,
-                          public ServiceAdaptor::Delegate,
+                          public chromeos::cfm::ServiceAdaptor::Delegate,
                           public chromeos::cfm::mojom::MeetDevicesInfo,
                           public DeviceSettingsService::Observer {
  public:
@@ -36,7 +36,7 @@ class DeviceInfoService : public CfmObserver,
   // mojom::CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // mojom::ServiceAdaptorDelegate implementation
+  // chromeos::cfm::ServiceAdaptor::Delegate implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
   void OnAdaptorConnect(bool success) override;
   void OnAdaptorDisconnect() override;
@@ -78,7 +78,7 @@ class DeviceInfoService : public CfmObserver,
   // Called after the DeviceInfo Service is no longer discoverable.
   void Reset();
 
-  ServiceAdaptor service_adaptor_;
+  chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<chromeos::cfm::mojom::MeetDevicesInfo> receivers_;
   mojo::RemoteSet<chromeos::cfm::mojom::PolicyInfoObserver> policy_remotes_;
 

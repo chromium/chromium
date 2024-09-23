@@ -5,7 +5,6 @@
 #include "net/dns/https_record_rdata.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
-
 #include <stdint.h>
 
 #include <memory>
@@ -15,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/dns/public/dns_protocol.h"
 

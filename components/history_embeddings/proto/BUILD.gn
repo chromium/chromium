@@ -1,0 +1,13 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("history_embeddings_proto") {
+  proto_in_dir = "//"
+  sources = [
+    "history_embeddings.proto",
+    "passage_embeddings_model_metadata.proto",
+  ]
+}

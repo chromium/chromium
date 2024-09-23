@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_DEVELOPER_TOOLS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_DEVELOPER_TOOLS_POLICY_HANDLER_H_
 
+#include "chrome/browser/policy/extension_developer_mode_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class Profile;
@@ -52,6 +53,12 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
 
   // Returns the effective developer tools availability for the profile.
   static Availability GetEffectiveAvailability(Profile* profile);
+
+ private:
+  // This instance should only be used for calling IsValidPolicySet() and not
+  // for applying the policy settings. The latter is done by the instance which
+  // is added in `ConfigurationPolicyHandlerList`.
+  ExtensionDeveloperModePolicyHandler extension_developer_mode_policy_handler_;
 };
 
 }  // namespace policy

@@ -90,7 +90,7 @@ base::Version ClientFilterableState::GetOSVersion() {
 }
 
 std::string ClientFilterableState::GetHardwareClass() {
-  // TODO(crbug/1111131): Expand to other platforms.
+  // TODO(crbug.com/40708998): Expand to other platforms.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
   return base::SysInfo::HardwareModelName();
 #else

@@ -30,6 +30,8 @@ class CORE_EXPORT ShadowIncludingTreeOrderTraversal {
       const Node&);
   static TraversalDescendantRange<ShadowIncludingTreeOrderTraversal>
   DescendantsOf(const Node&);
+  static TraversalInclusiveDescendantRange<ShadowIncludingTreeOrderTraversal>
+  InclusiveDescendantsOf(const Node&);
 
  private:
   static Node* TraverseParent(const Node& current);
@@ -68,6 +70,12 @@ ShadowIncludingTreeOrderTraversal::ChildrenOf(const Node& parent) {
 inline TraversalDescendantRange<ShadowIncludingTreeOrderTraversal>
 ShadowIncludingTreeOrderTraversal::DescendantsOf(const Node& root) {
   return TraversalDescendantRange<ShadowIncludingTreeOrderTraversal>(&root);
+}
+
+inline TraversalInclusiveDescendantRange<ShadowIncludingTreeOrderTraversal>
+ShadowIncludingTreeOrderTraversal::InclusiveDescendantsOf(const Node& root) {
+  return TraversalInclusiveDescendantRange<ShadowIncludingTreeOrderTraversal>(
+      &root);
 }
 
 inline Node* ShadowIncludingTreeOrderTraversal::TraverseParent(

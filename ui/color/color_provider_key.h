@@ -54,10 +54,6 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     kBlack,
     kWhite,
   };
-  enum class ElevationMode {
-    kLow,
-    kHigh,
-  };
   enum class FrameType {
     // Chrome renders the browser frame.
     kChromium,
@@ -138,7 +134,6 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   ColorMode color_mode = ColorMode::kLight;
   ContrastMode contrast_mode = ContrastMode::kNormal;
   ForcedColors forced_colors = ForcedColors::kNone;
-  ElevationMode elevation_mode = ElevationMode::kLow;
   SystemTheme system_theme = SystemTheme::kDefault;
   FrameType frame_type = FrameType::kChromium;
   FrameStyle frame_style = FrameStyle::kDefault;
@@ -154,14 +149,13 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   bool operator<(const ColorProviderKey& other) const {
     auto* lhs_app_controller = app_controller.get();
     auto* rhs_app_controller = other.app_controller.get();
-    return std::tie(color_mode, contrast_mode, forced_colors, elevation_mode,
-                    system_theme, frame_type, frame_style, user_color_source,
-                    user_color, scheme_variant, custom_theme,
-                    lhs_app_controller) <
+    return std::tie(color_mode, contrast_mode, forced_colors, system_theme,
+                    frame_type, frame_style, user_color_source, user_color,
+                    scheme_variant, custom_theme, lhs_app_controller) <
            std::tie(other.color_mode, other.contrast_mode, other.forced_colors,
-                    other.elevation_mode, other.system_theme, other.frame_type,
-                    other.frame_style, other.user_color_source,
-                    other.user_color, other.scheme_variant, other.custom_theme,
+                    other.system_theme, other.frame_type, other.frame_style,
+                    other.user_color_source, other.user_color,
+                    other.scheme_variant, other.custom_theme,
                     rhs_app_controller);
   }
 };

@@ -30,7 +30,7 @@ var tests = [
     ['span', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['span', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['span', {'dir': 'auto'}, 'ltr', 'isolate'],
-    ['span', {'dir': ''}, 'ltr', 'isolate'],
+    ['span', {'dir': ''}, 'ltr', 'normal'],
 
     ['bdi', {}, 'ltr', 'isolate'],
     ['bdi', {'dir': 'ltr'}, 'ltr', 'isolate'],
@@ -55,7 +55,7 @@ var tests = [
     ['textarea', {'dir': 'ltr'}, 'ltr', 'isolate'],
     ['textarea', {'dir': 'rtl'}, 'rtl', 'isolate'],
     ['textarea', {'dir': 'auto'}, 'ltr', 'plaintext'],
-    ['textarea', {'dir': ''}, 'ltr', 'isolate'],
+    ['textarea', {'dir': ''}, 'ltr', 'normal'],
 
     ['pre', {}, 'ltr', 'isolate'],
     ['pre', {'dir': 'ltr'}, 'ltr', 'isolate'],

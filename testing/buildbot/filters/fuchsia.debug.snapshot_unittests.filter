@@ -1,2 +1,8 @@
 # https://crbug.com/1241502
--SnapshotAuraTest.*
+-SnapshotAuraTest.DeviceScaleFactor
+-SnapshotAuraTest.FullScreenWindow
+-SnapshotAuraTest.PartialBounds
+-SnapshotAuraTest.RotateAndUIScale
+-SnapshotAuraTest.RotateAndUIScaleAndScaleFactor
+-SnapshotAuraTest.Rotated
+-SnapshotAuraTest.UIScale

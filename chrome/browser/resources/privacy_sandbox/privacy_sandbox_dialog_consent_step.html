@@ -1,23 +1,61 @@
-<style include="cr-shared-style shared-style"></style>
+<style include="cr-shared-style shared-style">
+  .iframe {
+    height: calc(100vh - var(--privacy-sandbox-dialog-buttons-row-height));
+    width: 100vw;
+  }
+  .iframe.hidden {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+  }
 
-<div class="content-area custom-scrollbar" scrollable tabindex="-1">
-  <div class="header">
-    <img class="logo" alt="">
-    <h1>$i18n{m1ConsentTitle}</h1>
-  </div>
-  <div class="section cr-secondary-text">
-    $i18n{m1ConsentDescription1}
-  </div>
-  <div class="section cr-secondary-text">
-    $i18n{m1ConsentDescription2}
-  </div>
-  <div class="banner">
-    <img class="topics-banner" alt="">
-  </div>
-  <div class="section cr-secondary-text">
-    $i18n{m1ConsentDescription3}
-  </div>
-  <privacy-sandbox-dialog-learn-more class="learn-more-section"
+  .iframe.visible {
+    position: relative;
+    z-index: auto;
+  }
+
+  .back-button {
+    --cr-icon-button-size: 20px;
+    --cr-icon-button-icon-size: 20px;
+  }
+
+  .back-button.hidden {
+    pointer-events: none;
+    z-index: -1;
+    position: absolute;
+    opacity: 0;
+  }
+
+  .back-button.visible {
+    pointer-events: auto;
+    z-index: auto;
+    position: relative;
+  }
+
+  .iframe-container {
+    display: none;
+  }
+</style>
+
+<div id="consentNotice">
+  <div class="content-area custom-scrollbar" scrollable tabindex="-1">
+    <div class="header">
+      <img class="logo" alt="">
+      <h1>$i18n{m1ConsentTitle}</h1>
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1ConsentDescription1}
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1ConsentDescription2}
+    </div>
+    <div class="banner">
+      <img class="topics-banner" alt="">
+    </div>
+    <div class="section cr-secondary-text">
+      $i18n{m1ConsentDescription3}
+    </div>
+    <privacy-sandbox-dialog-learn-more class="learn-more-section"
       expanded="{{expanded_}}"
       title="$i18n{m1ConsentLearnMoreExpandLabel}">
       <ul class="cr-secondary-text">
@@ -25,24 +63,31 @@
         <li>$i18nRaw{m1ConsentLearnMoreBullet2}</li>
         <li>$i18nRaw{m1ConsentLearnMoreBullet3}</li>
       </ul>
-      <div class="cr-secondary-text">$i18n{m1ConsentLearnMoreLink}</div>
-  </privacy-sandbox-dialog-learn-more>
-  <div class="section cr-secondary-text" id="lastTextElement">
-    $i18n{m1ConsentDescription4}
+      <div id="privacyPolicyDiv" class="cr-secondary-text">
+        $i18nRaw{m1ConsentLearnMoreLink}</div>
+    </privacy-sandbox-dialog-learn-more>
+    <div class="section cr-secondary-text" id="lastTextElement">
+      $i18n{m1ConsentDescription4}
+    </div>
+    <div class="buttons-container">
+      <cr-button id="declineButton" on-click="onConsentDeclined_">
+        $i18n{m1ConsentDeclineButton}
+      </cr-button>
+      <cr-button id="confirmButton" on-click="onConsentAccepted_">
+        $i18n{m1ConsentAcceptButton}
+      </cr-button>
+    </div>
   </div>
-  <div class="buttons-container">
-    <cr-button id="declineButton" on-click="onConsentDeclined_">
-      $i18n{m1ConsentDeclineButton}
-    </cr-button>
-    <cr-button id="confirmButton" on-click="onConsentAccepted_">
-      $i18n{m1ConsentAcceptButton}
+  <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+    <cr-button id="moreButton" on-click="onConsentMoreClicked"
+        class="action-button" aria-hidden="true" tabindex="-1">
+      $i18n{m1DialogMoreButton}
+      <cr-icon icon="cr:expand-more"></cr-icon>
     </cr-button>
   </div>
 </div>
-<div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
-  <cr-button id="moreButton" on-click="onConsentMoreClicked"
-      class="action-button" aria-hidden="true" tabindex="-1">
-    $i18n{m1DialogMoreButton}
-    <iron-icon icon="cr:expand-more"></iron-icon>
-  </cr-button>
+<!-- TODO(crbug.com/358087159): Once UX mocks are approved,
+ fix the spacing and visual of the back button, this is currently a
+ placeholder for functionality. -->
+<div class="iframe-container">
 </div>

@@ -41,13 +41,17 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   // Override from ExclusiveAccessControllerBase
   bool HandleUserPressedEscape() override;
-
+  void HandleUserHeldEscape() override;
+  void HandleUserReleasedEscapeEarly() override;
+  bool RequiresPressAndHoldEscToExit() const override;
   void ExitExclusiveAccessToPreviousState() override;
 
-  // Called by Browser::LostPointerLock.
-  void LostPointerLock();
-
   void UnlockPointer();
+
+  void set_bubble_hide_callback_for_test(
+      ExclusiveAccessBubbleHideCallbackForTest callback) {
+    bubble_hide_callback_for_test_ = std::move(callback);
+  }
 
   void set_lock_state_callback_for_test(base::OnceClosure callback) {
     lock_state_callback_for_test_ = std::move(callback);
@@ -63,6 +67,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
     // Pointer has been locked silently, with no notification to user.
     POINTERLOCK_LOCKED_SILENTLY
   };
+
+  void LockPointer(base::WeakPtr<content::WebContents> web_contents,
+                   bool last_unlocked_by_target);
+  void RejectRequestToLockPointer(
+      base::WeakPtr<content::WebContents> web_contents);
 
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
@@ -99,4 +108,4 @@ class PointerLockController : public ExclusiveAccessControllerBase {
   base::WeakPtrFactory<PointerLockController> weak_ptr_factory_{this};
 };
 
-#endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_POINTER_LOCK_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_POINTER_LOCK_CONTROLLER_H_

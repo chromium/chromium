@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/feedback/show_feedback_page.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,9 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,7 +43,7 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
   base::HistogramTester histogram_tester;
   std::string unused;
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+  chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                false);
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+  chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
@@ -80,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   std::string unused;
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                true);
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+  chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                true);
   chrome::ShowFeedbackPage(
-      browser(), chrome::kFeedbackSourceAssistant,
+      browser(), feedback::kFeedbackSourceAssistant,
       /*description_template=*/description_template,
       /*description_placeholder_text=*/description_placeholder_text,
       /*category_tag=*/category_tag,
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                                                true);
 
   chrome::ShowFeedbackPage(
-      browser(), chrome::kFeedbackSourceOsSettingsSearch,
+      browser(), feedback::kFeedbackSourceOsSettingsSearch,
       /*description_template=*/description_template,
       /*description_placeholder_text=*/description_placeholder_text,
       /*category_tag=*/category_tag,
@@ -261,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                                                true);
 
   chrome::ShowFeedbackPage(
-      browser(), chrome::kFeedbackSourceAutofillContextMenu,
+      browser(), feedback::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/description_template,
       /*description_placeholder_text=*/description_placeholder_text,
       /*category_tag=*/category_tag,
@@ -279,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, FeedbackFlowAI) {
   std::string unused;
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAI,
+  chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceAI,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/unused,

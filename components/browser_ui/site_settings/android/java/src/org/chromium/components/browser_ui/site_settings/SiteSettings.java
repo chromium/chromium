@@ -8,9 +8,15 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -25,17 +31,33 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * browser-wide.
  */
 public class SiteSettings extends BaseSiteSettingsFragment
-        implements Preference.OnPreferenceClickListener, CustomDividerFragment {
+        implements SettingsPage, Preference.OnPreferenceClickListener, CustomDividerFragment {
     // The keys for each category shown on the Site Settings page
-    // are defined in the SiteSettingsCategory.
+    // are defined in the SiteSettingsCategory. The only exception is the permission autorevocation
+    // switch at the bottom of the page and its top divider.
+    @VisibleForTesting
+    public static final String PERMISSION_AUTOREVOCATION_PREF = "permission_autorevocation";
+
+    @VisibleForTesting
+    public static final String PERMISSION_AUTOREVOCATION_HISTOGRAM_NAME =
+            "Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed";
+
+    private static final String DIVIDER_PREF = "divider";
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.site_settings_preferences);
-        getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
+        mPageTitle.set(getContext().getString(R.string.prefs_site_settings));
 
         configurePreferences();
         updatePreferenceStates();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -60,6 +82,12 @@ public class SiteSettings extends BaseSiteSettingsFragment
             if (!getSiteSettingsDelegate().isCategoryVisible(type)) {
                 getPreferenceScreen().removePreference(findPreference(type));
             }
+        }
+
+        // Remove the permission autorevocation preference if Safety Hub is not enabled.
+        if (!getSiteSettingsDelegate().isSafetyHubEnabled()) {
+            getPreferenceScreen().removePreference(findPreference(PERMISSION_AUTOREVOCATION_PREF));
+            getPreferenceScreen().removePreference(findPreference(DIVIDER_PREF));
         }
     }
 
@@ -100,16 +128,15 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                 browserContextHandle, contentType);
             }
 
-            p.setTitle(
-                    ContentSettingsResources.getTitleForCategory(
-                            prefCategory, getSiteSettingsDelegate()));
+            p.setTitle(ContentSettingsResources.getTitleForCategory(prefCategory));
 
             p.setOnPreferenceClickListener(this);
 
             if ((Type.CAMERA == prefCategory
                             || Type.MICROPHONE == prefCategory
                             || Type.NOTIFICATIONS == prefCategory
-                            || Type.AUGMENTED_REALITY == prefCategory)
+                            || Type.AUGMENTED_REALITY == prefCategory
+                            || Type.HAND_TRACKING == prefCategory)
                     && SiteSettingsCategory.createFromType(
                                     getSiteSettingsDelegate().getBrowserContextHandle(),
                                     prefCategory)
@@ -160,9 +187,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
             if (prefCategory != Type.THIRD_PARTY_COOKIES) {
                 p.setIcon(
                         SettingsUtils.getTintedIcon(
-                                getContext(),
-                                ContentSettingsResources.getIcon(
-                                        contentType, getSiteSettingsDelegate())));
+                                getContext(), ContentSettingsResources.getIcon(contentType)));
             }
         }
 
@@ -183,6 +208,21 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                 getSiteSettingsDelegate()
                                         .isBlockAll3PCDEnabledInTrackingProtection()));
             }
+        }
+
+        // For the permission autorevocation switch.
+        ChromeSwitchPreference switch_pref =
+                (ChromeSwitchPreference) findPreference(PERMISSION_AUTOREVOCATION_PREF);
+        if (switch_pref != null) {
+            switch_pref.setChecked(getSiteSettingsDelegate().isPermissionAutorevocationEnabled());
+            switch_pref.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        boolean boolValue = (boolean) newValue;
+                        getSiteSettingsDelegate().setPermissionAutorevocationEnabled(boolValue);
+                        RecordHistogram.recordBooleanHistogram(
+                                PERMISSION_AUTOREVOCATION_HISTOGRAM_NAME, boolValue);
+                        return true;
+                    });
         }
     }
 

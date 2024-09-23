@@ -53,7 +53,7 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
     case TargetEmbeddingType::kSafetyTip:
       return "kSafetyTip";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // These tests do not use the production top domain list. This is to avoid
@@ -76,8 +76,7 @@ class LookalikeUrlUtilTest : public testing::Test {
         test_top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
     lookalikes::SetTopBucketDomainsParamsForTesting(top_bucket_params);
 
-    url_formatter::common_words::SetCommonWordDAFSAForTesting(
-        test::kDafsa, sizeof(test::kDafsa));
+    url_formatter::common_words::SetCommonWordDAFSAForTesting(test::kDafsa);
   }
 
   void TearDown() override {
@@ -509,9 +508,12 @@ TEST_F(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
 
       // .com.de is a de-facto public registry.
       {"www.google.com.de", "google.com.de"},
+      // Regression test for crbug.com/351775838:
+      {"com.de", ""},
 
       // .cloud.goog is a private registry.
       {"www.example.cloud.goog", "cloud.goog"},
+      {"cloud.goog", "cloud.goog"},
   };
 
   for (auto& test_case : kTestCases) {

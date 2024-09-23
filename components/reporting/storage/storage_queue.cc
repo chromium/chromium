@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/reporting/storage/storage_queue.h"
 
 #include <algorithm>
@@ -13,6 +18,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -35,7 +41,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
@@ -54,6 +59,7 @@
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/file.h"
 #include "components/reporting/util/refcounted_closure_list.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -235,6 +241,10 @@ Status StorageQueue::Init() {
   // Make sure the assigned directory exists.
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(options_.directory(), &error)) {
+    base::UmaHistogramEnumeration(
+        reporting::kUmaUnavailableErrorReason,
+        UnavailableErrorReason::FAILED_TO_CREATE_STORAGE_QUEUE_DIRECTORY,
+        UnavailableErrorReason::MAX_VALUE);
     return Status(
         error::UNAVAILABLE,
         base::StrCat(
@@ -325,6 +335,9 @@ Status StorageQueue::SetOrConfirmGenerationId(const base::FilePath& full_name) {
   const auto generation_extension =
       full_name.RemoveFinalExtension().FinalExtension();
   if (generation_extension.empty()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::MISSING_GENERATION_ID,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Data file generation id not found in path: '",
                                 full_name.MaybeAsASCII()}));
@@ -334,6 +347,10 @@ Status StorageQueue::SetOrConfirmGenerationId(const base::FilePath& full_name) {
   const bool success =
       base::StringToInt64(generation_extension.substr(1), &file_generation_id);
   if (!success || file_generation_id <= 0) {
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::FAILED_TO_PASE_GENERATION_ID,
+        DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Data file generation id corrupt: '",
                                 full_name.MaybeAsASCII()}));
@@ -343,6 +360,9 @@ Status StorageQueue::SetOrConfirmGenerationId(const base::FilePath& full_name) {
   if (generation_id_ > 0) {
     // Generation was already set, data file must match.
     if (file_generation_id != generation_id_) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::INVALID_GENERATION_ID,
+                                    DataLossErrorReason::MAX_VALUE);
       return Status(error::DATA_LOSS,
                     base::StrCat({"Data file generation id does not match: '",
                                   full_name.MaybeAsASCII(), "', expected=",
@@ -440,6 +460,13 @@ Status StorageQueue::EnumerateDataFiles(
   // generation id in any of the file paths, then the data is corrupt and we
   // shouldn't proceed.
   if (found_files_in_directory && generation_id_ <= 0) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::INVALID_GENERATION_ID,
+                                  DataLossErrorReason::MAX_VALUE);
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::ALL_FILE_PATHS_MISSING_GENERATION_ID,
+        DataLossErrorReason::MAX_VALUE);
     return Status(
         error::DATA_LOSS,
         base::StrCat({"All file paths missing generation id in directory",
@@ -469,6 +496,10 @@ Status StorageQueue::ScanLastFile() {
   if (!open_status.ok()) {
     LOG(ERROR) << "Error opening file " << last_file->name()
                << ", status=" << open_status;
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::FAILED_TO_OPEN_STORAGE_QUEUE_FILE,
+        DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS, base::StrCat({"Error opening file: '",
                                                   last_file->name(), "'"}));
   }
@@ -654,9 +685,10 @@ Status StorageQueue::WriteHeaderAndBlock(
   if (total_size > RecordHeader::kSize + data.size()) {
     // Fill in with random bytes.
     const size_t pad_size = total_size - (RecordHeader::kSize + data.size());
-    char junk_bytes[FRAME_SIZE];
-    crypto::RandBytes(junk_bytes, pad_size);
-    write_status = file->Append(std::string_view(&junk_bytes[0], pad_size));
+    uint8_t junk_bytes[FRAME_SIZE];
+    auto padding = base::span(junk_bytes).first(pad_size);
+    crypto::RandBytes(padding);
+    write_status = file->Append(base::as_string_view(padding));
     if (!write_status.has_value()) {
       return Status(error::RESOURCE_EXHAUSTED,
                     base::StrCat({"Cannot pad file=", file->name(), " status=",
@@ -717,6 +749,9 @@ Status StorageQueue::WriteMetadata(std::string_view current_record_digest) {
                                 " status=", append_result.error().ToString()}));
   }
   if (append_result.value() != current_record_digest.size()) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_WRITE_METADATA,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS, base::StrCat({"Failure writing metafile=",
                                                   meta_file->name()}));
   }
@@ -750,6 +785,9 @@ Status StorageQueue::ReadMetadata(
       meta_file->Read(/*pos=*/0, sizeof(generation_id_), max_buffer_size);
   if (!read_result.has_value() ||
       read_result.value().size() != sizeof(generation_id_)) {
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_READ_METADATA,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.error().ToString()}));
@@ -758,6 +796,10 @@ Status StorageQueue::ReadMetadata(
       *reinterpret_cast<const int64_t*>(read_result.value().data());
   if (generation_id <= 0) {
     // Generation is not in [1, max_int64] range - file corrupt or empty.
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::METADATA_GENERATION_ID_OUT_OF_RANGE,
+        DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Corrupt or empty metafile=", meta_file->name(),
                                 " - invalid generation ",
@@ -766,6 +808,10 @@ Status StorageQueue::ReadMetadata(
   if (generation_id_ > 0 && generation_id != generation_id_) {
     // Generation has already been set, and meta file does not match it - file
     // corrupt or empty.
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::METADATA_GENERATION_MISMATCH,
+        DataLossErrorReason::MAX_VALUE);
     return Status(
         error::DATA_LOSS,
         base::StrCat({"Corrupt or empty metafile=", meta_file->name(),
@@ -778,6 +824,10 @@ Status StorageQueue::ReadMetadata(
                                 crypto::kSHA256Length, max_buffer_size);
   if (!read_result.has_value() ||
       read_result.value().size() != crypto::kSHA256Length) {
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::METADATA_LAST_RECORD_DIGEST_IS_CORRUPT,
+        DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot read metafile=", meta_file->name(),
                                 " status=", read_result.error().ToString()}));
@@ -844,6 +894,10 @@ Status StorageQueue::RestoreMetadata(
     }
   }
   // No valid metadata found. Cannot recover from that.
+  base::UmaHistogramEnumeration(
+      reporting::kUmaDataLossErrorReason,
+      DataLossErrorReason::FAILED_TO_RESTORE_LAST_RECORD_DIGEST,
+      DataLossErrorReason::MAX_VALUE);
   return Status(error::DATA_LOSS,
                 base::StrCat({"Cannot recover last record digest at ",
                               base::NumberToString(next_sequencing_id_ - 1)}));
@@ -931,6 +985,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void OnStart() override {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -947,6 +1005,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void PrepareDataFiles() {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1014,6 +1076,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void BeginUploading() {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1039,6 +1105,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void StartUploading() {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1106,6 +1176,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     if (!storage_queue_) {
       std::move(completion_cb_)
           .Run(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       files_.clear();
       current_file_ = files_.end();
       return;
@@ -1127,6 +1201,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void CallCurrentRecord(std::string_view blob) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1162,6 +1240,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
                         ScopedReservation scoped_reservation) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1187,6 +1269,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void CallGapUpload(uint64_t count) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1214,6 +1300,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void NextRecord(bool more_records) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1241,6 +1331,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // not match), returns error.
   StatusOr<std::string_view> EnsureBlob(int64_t sequencing_id) {
     if (!storage_queue_) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return base::unexpected(
           Status(error::UNAVAILABLE, "StorageQueue shut down"));
     }
@@ -1327,6 +1421,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void CallRecordOrGap(int64_t sequencing_id) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1362,6 +1460,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void InstantiateUploader(base::OnceCallback<void()> continuation) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1392,6 +1494,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!storage_queue_) {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      base::UmaHistogramEnumeration(
+          reporting::kUmaUnavailableErrorReason,
+          UnavailableErrorReason::STORAGE_QUEUE_SHUTDOWN,
+          UnavailableErrorReason::MAX_VALUE);
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1480,7 +1586,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
 
     // Make sure the record is valid.
-    if (!record_.has_destination()) {
+    if (!record_.has_destination() ||
+        record_.destination() == Destination::UNDEFINED_DESTINATION) {
       Response(Status(error::FAILED_PRECONDITION,
                       "Malformed record: missing destination"));
       return;
@@ -1618,6 +1725,10 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Serialize wrapped record into a string.
     std::string buffer;
     if (!wrapped_record.SerializeToString(&buffer)) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_SERIALIZE_WRAPPED_RECORD,
+          DataLossErrorReason::MAX_VALUE);
       Schedule(&WriteContext::Response, base::Unretained(this),
                Status(error::DATA_LOSS, "Cannot serialize record"));
       return;
@@ -1719,6 +1830,10 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     }
     std::string buffer;
     if (!encrypted_record.SerializeToString(&buffer)) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_SERIALIZE_ENCRYPTED_RECORD,
+          DataLossErrorReason::MAX_VALUE);
       Schedule(&WriteContext::Response, base::Unretained(this),
                Status(error::DATA_LOSS, "Cannot serialize EncryptedRecord"));
       return;
@@ -2252,6 +2367,9 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
                               base::File::FLAG_APPEND | base::File::FLAG_READ));
   if (!handle_ || !handle_->IsValid()) {
     handle_.reset();
+    base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                  DataLossErrorReason::FAILED_TO_OPEN_FILE,
+                                  DataLossErrorReason::MAX_VALUE);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Cannot open file=", name(), " for ",
                                 read_only ? "read" : "append"}));
@@ -2260,6 +2378,10 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
   if (!read_only) {
     int64_t file_size = handle_->GetLength();
     if (file_size < 0) {
+      base::UmaHistogramEnumeration(
+          reporting::kUmaDataLossErrorReason,
+          DataLossErrorReason::FAILED_TO_GET_SIZE_OF_FILE,
+          DataLossErrorReason::MAX_VALUE);
       return Status(error::DATA_LOSS,
                     base::StrCat({"Cannot get size of file=", name()}));
     }
@@ -2294,6 +2416,9 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
     bool expect_readonly) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!handle_) {
+    base::UmaHistogramEnumeration(reporting::kUmaUnavailableErrorReason,
+                                  UnavailableErrorReason::FILE_NOT_OPEN,
+                                  UnavailableErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()})));
   }
@@ -2347,6 +2472,9 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
     const int32_t result =
         handle_->Read(pos, buffer_.at(data_end_), buffer_.size() - data_end_);
     if (result < 0) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::FAILED_TO_READ_FILE,
+                                    DataLossErrorReason::MAX_VALUE);
       return base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"File read error=",
@@ -2381,6 +2509,9 @@ StatusOr<std::string_view> StorageQueue::SingleFile::Read(
 StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!handle_) {
+    base::UmaHistogramEnumeration(reporting::kUmaUnavailableErrorReason,
+                                  UnavailableErrorReason::FILE_NOT_OPEN,
+                                  UnavailableErrorReason::MAX_VALUE);
     return base::unexpected(
         Status(error::UNAVAILABLE, base::StrCat({"File not open ", name()})));
   }
@@ -2393,6 +2524,9 @@ StatusOr<uint32_t> StorageQueue::SingleFile::Append(std::string_view data) {
   while (data.size() > 0) {
     const int32_t result = handle_->Write(size_, data.data(), data.size());
     if (result < 0) {
+      base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
+                                    DataLossErrorReason::FAILED_TO_WRITE_FILE,
+                                    DataLossErrorReason::MAX_VALUE);
       return base::unexpected(Status(
           error::DATA_LOSS,
           base::StrCat({"File write error=",

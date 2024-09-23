@@ -81,7 +81,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         // the downstream calls onAnimatorReady will fail with an assertion. While this is not a
         // state that is expected to happen, it is recoverable by advancing to the
         // WAITING_FOR_ANIMATOR state.
-        // TODO(crbug/1492207): Consider changing this to an assert or exception.
+        // TODO(crbug.com/40285429): Consider changing this to an assert or exception.
         if (mAnimationState == AnimationState.INITIALIZING) {
             mAnimationState = AnimationState.WAITING_FOR_ANIMATOR;
         }

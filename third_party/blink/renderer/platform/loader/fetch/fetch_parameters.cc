@@ -56,7 +56,7 @@ void FetchParameters::SetCrossOriginAccessControl(
     CrossOriginAttributeValue cross_origin) {
   switch (cross_origin) {
     case kCrossOriginAttributeNotSet:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case kCrossOriginAttributeAnonymous:
       SetCrossOriginAccessControl(origin,

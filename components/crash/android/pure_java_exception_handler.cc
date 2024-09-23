@@ -4,6 +4,7 @@
 
 #include "components/crash/android/pure_java_exception_handler.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/crash/android/jni_headers/PureJavaExceptionHandler_jni.h"
 
 void UninstallPureJavaExceptionHandler() {

@@ -21,6 +21,16 @@
 
 namespace blink {
 
+String PlaceholderString(Element& e) {
+  auto* text_control = ToTextControlOrNull(e);
+  if (text_control && text_control->IsPlaceholderVisible()) {
+    if (HTMLElement* placeholder_element = text_control->PlaceholderElement()) {
+      return placeholder_element->textContent();
+    }
+  }
+  return String();
+}
+
 class TextControlElementTest : public testing::Test {
  protected:
   void SetUp() override;
@@ -32,6 +42,12 @@ class TextControlElementTest : public testing::Test {
 
   void UpdateAllLifecyclePhases() {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  }
+
+  void AssertPlaceholderTextIs(const String& element_id, const String& text) {
+    auto* e = GetDocument().getElementById(AtomicString(element_id));
+    ASSERT_TRUE(e);
+    EXPECT_EQ(PlaceholderString(*e), text);
   }
 
  private:
@@ -136,6 +152,26 @@ TEST_F(TextControlElementTest, PlaceholderElement) {
 
   EXPECT_EQ(Input().PlaceholderElement(), nullptr);
   EXPECT_EQ(TextControl().PlaceholderElement(), nullptr);
+}
+
+TEST_F(TextControlElementTest, PlaceholderElementNewlineBehavior) {
+  GetDocument().body()->setInnerHTML(
+      "<input id='p0' placeholder='first line &#13;&#10;second line'>"
+      "<input id='p1' placeholder='&#13;'>");
+  UpdateAllLifecyclePhases();
+  AssertPlaceholderTextIs("p0", "first line second line");
+  AssertPlaceholderTextIs("p1", "");
+}
+
+TEST_F(TextControlElementTest, TextAreaPlaceholderElementNewlineBehavior) {
+  GetDocument().body()->setInnerHTML(
+      "<textarea id='p0' placeholder='first line &#13;&#10;second line'>"
+      "</textarea><textarea id='p1' placeholder='&#10;'></textarea>"
+      "<textarea id='p2' placeholder='&#13;'></textarea>");
+  UpdateAllLifecyclePhases();
+  AssertPlaceholderTextIs("p0", "first line \nsecond line");
+  AssertPlaceholderTextIs("p1", "\n");
+  AssertPlaceholderTextIs("p1", "\n");
 }
 
 }  // namespace blink

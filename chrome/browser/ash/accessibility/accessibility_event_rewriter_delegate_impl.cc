@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -12,9 +11,9 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/constants.h"
@@ -38,7 +37,7 @@ std::string ToString(SwitchAccessCommand command) {
           extensions::api::accessibility_private::SwitchAccessCommand::
               kPrevious);
     case SwitchAccessCommand::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -97,14 +96,14 @@ void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
                         event->source_device_id() == ui::ED_UNKNOWN_DEVICE;
 
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       event_type = ax::mojom::Event::kMouseMoved;
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       event_type = ax::mojom::Event::kMouseDragged;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -175,7 +174,7 @@ void AccessibilityEventRewriterDelegateImpl::OnUnhandledSpokenFeedbackEvent(
 
 bool AccessibilityEventRewriterDelegateImpl::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   OnUnhandledSpokenFeedbackEvent(event.os_event->Clone());
   return true;
 }

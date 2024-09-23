@@ -31,7 +31,7 @@ struct PackResult;
 // - When user's web language prefs changes, installs the appropriate font DLC.
 class LanguagePackFontService : public KeyedService {
  public:
-  using AddFontDir = base::RepeatingCallback<bool(base::FilePath)>;
+  using AddFontDir = base::RepeatingCallback<bool(const base::FilePath&)>;
 
   explicit LanguagePackFontService(PrefService* prefs);
   // Used for injecting `gfx::AddAppFontDir` for tests. `add_font_dir` should
@@ -42,8 +42,10 @@ class LanguagePackFontService : public KeyedService {
 
  private:
   base::flat_set<std::string> GetLanguagePacksForAcceptLanguage();
-  void InstallFontDlcs();
-  void AddDlcFontDirsToFontConfigPackCallback(const PackResult& result);
+  void OnAcceptLanguageChanged();
+  void GetPackStateOnInitCallback(const PackResult& result);
+  void InstallPackOnInitCallback(const PackResult& result);
+  void AddFontDirFromPackResult(const PackResult& result);
 
   // Not owned by this class
   const raw_ref<PrefService> prefs_;

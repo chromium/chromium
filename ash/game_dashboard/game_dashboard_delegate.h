@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace aura {
 class Window;
@@ -38,6 +39,9 @@ class ASH_EXPORT GameDashboardDelegate {
   // Shows the compat mode resize toggle menu, which requires the app `window`
   // param when creating the `ResizeToggleMenu` object.
   virtual void ShowResizeToggleMenu(aura::Window* window) = 0;
+
+  // Gets the UKM source id by `app_id`.
+  virtual ukm::SourceId GetUkmSourceId(const std::string& app_id) = 0;
 };
 
 }  // namespace ash

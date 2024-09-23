@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -144,7 +145,7 @@ class FileMetricsProvider : public MetricsProvider,
     Params(const base::FilePath& path,
            SourceType type,
            SourceAssociation association,
-           base::StringPiece prefs_key = base::StringPiece());
+           std::string_view prefs_key = std::string_view());
 
     ~Params();
 
@@ -152,7 +153,7 @@ class FileMetricsProvider : public MetricsProvider,
     const base::FilePath path;
     const SourceType type;
     const SourceAssociation association;
-    const base::StringPiece prefs_key;
+    const std::string_view prefs_key;
 
     // Other parameters that can be set after construction.
     FilterCallback filter;       // Run-time check for what to do with file.
@@ -175,13 +176,15 @@ class FileMetricsProvider : public MetricsProvider,
   // the necessary keys in advance. Set |prefs_key| empty (nullptr will work) if
   // no persistence is required. ACTIVE files shouldn't have a pref key as
   // they update internal state about what has been previously sent.
-  void RegisterSource(const Params& params);
+  // If `metrics_reporting_enabled` is false, the associated file or directory
+  // is deleted (except for ACTIVE files).
+  void RegisterSource(const Params& params, bool metrics_reporting_enabled);
 
   // Registers all necessary preferences for maintaining persistent state
   // about a monitored file across process restarts. The |prefs_key| is
   // typically the filename.
   static void RegisterSourcePrefs(PrefRegistrySimple* prefs,
-                                  const base::StringPiece prefs_key);
+                                  const std::string_view prefs_key);
 
   static void RegisterPrefs(PrefRegistrySimple* prefs);
 

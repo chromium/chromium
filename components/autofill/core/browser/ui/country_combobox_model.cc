@@ -32,8 +32,9 @@ void CountryComboboxModel::SetCountries(
   countries_.clear();
 
   // Insert the default country at the top as well as in the ordered list.
-  std::string default_country_code =
-      manager.GetDefaultCountryCodeForNewAddress();
+  std::string default_country_code = manager.address_data_manager()
+                                         .GetDefaultCountryCodeForNewAddress()
+                                         .value();
   DCHECK(!default_country_code.empty());
 
   if (filter.is_null() || filter.Run(default_country_code)) {

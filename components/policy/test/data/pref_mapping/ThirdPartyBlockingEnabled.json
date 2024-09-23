@@ -11,7 +11,8 @@
         },
         "prefs": {
           "third_party_blocking_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

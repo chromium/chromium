@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CSS Test: ::scroll-marker-group box creation</title>
+    <link rel="author" href="mailto:sakhapov@chromium.org">
+    <link rel="match" href="scroll-marker-group-001-ref.tentative.html">
+    <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+    <style>
+        div {
+            overflow: auto;
+            scroll-marker-group: before;
+        }
+
+        div::scroll-marker-group {
+            background: green;
+            display: flex;
+            height: 100px;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Test passes if there is a <strong>filled green rectangle</strong>.
+    <div></div>
+</body>
+
+</html>

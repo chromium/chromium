@@ -11,13 +11,14 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/shell/android/content_shell_jni_headers/Shell_jni.h"
 #include "content/shell/android/shell_manager.h"
 #include "content/shell/browser/shell.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/shell/android/content_shell_jni_headers/Shell_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;

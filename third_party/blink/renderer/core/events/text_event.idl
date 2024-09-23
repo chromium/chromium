@@ -37,7 +37,7 @@
 
     [Measure] readonly attribute DOMString data;
 
-    [Measure] void initTextEvent(optional DOMString type = "undefined",
+    [Measure] void initTextEvent(DOMString type,
                                  optional boolean bubbles = false,
                                  optional boolean cancelable = false,
                                  optional Window? view = null,

@@ -55,17 +55,25 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
       relaunchConfirmationDialogDesc: String,
 
       restartType: Object,
+
+      //  Boolean that defines if the confirmation dialog is opened for browser
+      //  version update.
+      isVersionUpdate: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   relaunchConfirmationDialogDesc: string|null;
   restartType: RestartType;
+  isVersionUpdate: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();
     this.relaunchConfirmationDialogDesc =
         await LifetimeBrowserProxyImpl.getInstance()
-            .getRelaunchConfirmationDialogDescription();
+            .getRelaunchConfirmationDialogDescription(this.isVersionUpdate);
   }
 
   private onDialogCancel_() {

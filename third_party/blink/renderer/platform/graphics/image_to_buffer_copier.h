@@ -31,8 +31,8 @@ class PLATFORM_EXPORT ImageToBufferCopier {
   bool EnsureDestImage(const gfx::Size&);
   void CleanupDestImage();
 
-  const raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
-  const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
+  const raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  const raw_ptr<gpu::SharedImageInterface> sii_;
   gfx::Size dest_image_size_;
   scoped_refptr<gpu::ClientSharedImage> dest_shared_image_;
 

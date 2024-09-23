@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Attribution-Reporting-Register-Trigger:{}
+Attribution-Reporting-Register-OS-Trigger:"https://r.test"
+Attribution-Reporting-Info:preferred-platform=os

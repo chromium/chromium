@@ -32,6 +32,8 @@ class MockMediaNotificationView : public MediaNotificationView {
   MOCK_METHOD1(UpdateWithMediaPosition,
                void(const media_session::MediaPosition&));
   MOCK_METHOD1(UpdateWithMediaArtwork, void(const gfx::ImageSkia&));
+  MOCK_METHOD2(UpdateWithChapterArtwork,
+               void(int index, const gfx::ImageSkia& image));
   MOCK_METHOD1(UpdateWithFavicon, void(const gfx::ImageSkia&));
   MOCK_METHOD1(UpdateWithVectorIcon, void(const gfx::VectorIcon* vector_icon));
   MOCK_METHOD1(UpdateWithMuteStatus, void(bool));

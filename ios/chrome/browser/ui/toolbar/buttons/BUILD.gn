@@ -18,11 +18,10 @@ source_set("buttons") {
     "toolbar_style.h",
     "toolbar_tab_grid_button.h",
     "toolbar_tab_grid_button.mm",
+    "toolbar_tab_grid_button_style.h",
   ]
   deps = [
-    "resources:omnibox_incognito_background_color",
-    "resources:tab_toolbar_button_color_highlighted",
-    "resources:tab_toolbar_button_color_highlighted_incognito",
+    ":constants",
     "//base",
     "//components/feature_engagement/public",
     "//components/strings",
@@ -30,7 +29,7 @@ source_set("buttons") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -39,14 +38,37 @@ source_set("buttons") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/toolbar/buttons/resources",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "buttons_constants.h",
+    "buttons_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "toolbar_button_unittest.mm" ]
+  deps = [
+    ":buttons",
+    ":constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }

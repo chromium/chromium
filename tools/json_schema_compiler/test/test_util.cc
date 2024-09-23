@@ -5,6 +5,7 @@
 #include "tools/json_schema_compiler/test/test_util.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -13,7 +14,7 @@
 namespace json_schema_compiler {
 namespace test_util {
 
-base::Value ReadJson(const base::StringPiece& json) {
+base::Value ReadJson(std::string_view json) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json, base::JSON_ALLOW_TRAILING_COMMAS);
   // CHECK not ASSERT since passing invalid |json| is a test error.

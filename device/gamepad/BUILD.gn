@@ -58,12 +58,12 @@ component("gamepad") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//device/gamepad/public/cpp:switches",
     "//device/gamepad/public/mojom",
     "//mojo/public/cpp/system",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:blink_headers",
   ]
 

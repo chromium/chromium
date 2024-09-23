@@ -35,6 +35,9 @@ class GL_EXPORT GLSurfaceOverlay {
 
   gfx::GpuFence* gpu_fence() const { return gpu_fence_.get(); }
   int z_order() const { return overlay_plane_data_.z_order; }
+  gfx::OverlayType overlay_type() const {
+    return overlay_plane_data_.overlay_type;
+  }
 
  private:
   scoped_refptr<gfx::NativePixmap> pixmap_;

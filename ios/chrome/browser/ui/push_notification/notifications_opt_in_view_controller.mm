@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_view_controller.h"
 
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -25,12 +28,37 @@ struct CellConfig {
 };
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
-// Name of the banner image above the title.
-NSString* const kBanner = @"notifications_opt_in_banner";
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
+// Table view separator inset to use to hide the separator.
+CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
+// Accessibility identifier.
+NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
+// Constant for the subtitleLabel's width anchor.
+CGFloat const kSubtitleWidthConstant = 23.0;
+// Title's horizontal margin.
+CGFloat const kTitleHorizontalMargin = 25.0;
+
+// Returns the name of the banner image above the title.
+NSString* BannerImageName(bool landscape) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return landscape ? kChromeNotificationsOptInBannerLandscapeImage
+                   : kChromeNotificationsOptInBannerImage;
+#else
+  return landscape ? kChromiumNotificationsOptInBannerLandscapeImage
+                   : kChromiumNotificationsOptInBannerImage;
+#endif
+}
+
+// Returns true if the view is too narrow to show the banner.
+bool TooNarrowForBanner(UIView* view) {
+  CGFloat minWidth =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? 450 : 300;
+  return view.bounds.size.width < minWidth;
+}
+
 }  // namespace
 
 @interface NotificationsOptInViewController () <UITableViewDelegate>
@@ -53,14 +81,15 @@ CGFloat const kSpaceAboveTitle = 20.0;
   self.titleText = l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE);
+  self.titleHorizontalMargin = kTitleHorizontalMargin;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
-  self.bannerName = kBanner;
-  self.bannerSize = BannerImageSizeType::kShort;
+  [self configureBanner];
   self.shouldBannerFillTopSpace = YES;
+  self.view.accessibilityIdentifier = kNotificationsOptInScreenAxId;
   _tableView = [self createTableView];
   [self.specificContentView addSubview:_tableView];
   [NSLayoutConstraint activateConstraints:@[
@@ -79,11 +108,19 @@ CGFloat const kSpaceAboveTitle = 20.0;
   [self updatePrimaryButtonState];
   [super viewDidLoad];
 
+  // Add subtitle constraint after it is added to hierarchy.
+  [NSLayoutConstraint activateConstraints:@[
+    [self.subtitleLabel.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor
+                       constant:-kSubtitleWidthConstant],
+  ]];
+
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 }
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
+  [self configureBanner];
   [self updateTableViewHeightConstraint];
 }
 
@@ -95,7 +132,8 @@ CGFloat const kSpaceAboveTitle = 20.0;
 
 - (UILabel*)createSubtitleLabel {
   UILabel* subtitleLabel = [[UILabel alloc] init];
-  subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
   subtitleLabel.numberOfLines = 0;
   subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitleLabel.text = self.subtitleText;
@@ -128,7 +166,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   [snapshot appendSectionsWithIdentifiers:@[
     @(SectionIdentifier::kNotificationOptions)
   ]];
-  if (IsContentPushNotificationsSetUpListEnabled()) {
+  if ([self isContentNotificationEnabled]) {
     [snapshot appendItemsWithIdentifiers:@[
       @(NotificationsOptInItemIdentifier::kContent)
     ]];
@@ -202,7 +240,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   switch (itemIdentifier) {
     case kContent:
       return {IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE,
-              IDS_IOS_NOTIFICATIONS_OPT_IN_CONTENT_TOGGLE_MESSSAGE,
+              IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT,
               _contentNotificationsEnabled, YES};
     case kTips:
       return {IDS_IOS_SET_UP_LIST_TIPS_TITLE,
@@ -243,10 +281,10 @@ CGFloat const kSpaceAboveTitle = 20.0;
   cell.switchView.tag = itemIdentifier;
 
   // Make the separator invisible on the last row.
+  BOOL lastRow =
+      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
   CGFloat separatorInset =
-      itemIdentifier == NotificationsOptInItemIdentifier::kMaxValue
-          ? tableView.frame.size.width
-          : kTableViewSeparatorInset;
+      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
 
   [cell.switchView addTarget:self
@@ -269,6 +307,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
 
 // Updates the tableView's height constraint.
 - (void)updateTableViewHeightConstraint {
+  [_tableView layoutIfNeeded];
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
 }
 
@@ -281,8 +320,9 @@ CGFloat const kSpaceAboveTitle = 20.0;
     switch (incomingButton.state) {
       case UIControlStateDisabled: {
         updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kGrey300Color];
-        updatedConfig.baseForegroundColor = [UIColor colorNamed:kGrey800Color];
+            [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+        updatedConfig.baseForegroundColor =
+            [UIColor colorNamed:kTextTertiaryColor];
         break;
       }
       case UIControlStateNormal: {
@@ -304,6 +344,23 @@ CGFloat const kSpaceAboveTitle = 20.0;
 - (void)updatePrimaryButtonState {
   self.primaryButtonEnabled =
       _contentToggle.isOn || _tipsToggle.isOn || _priceTrackingToggle.isOn;
+}
+
+// Configures the banner based on the view's size.
+- (void)configureBanner {
+  if (IsCompactHeight(self.traitCollection) || TooNarrowForBanner(self.view)) {
+    self.bannerName = nil;
+    self.shouldHideBanner = YES;
+  } else if (IsCompactWidth(self.traitCollection)) {
+    self.bannerSize = BannerImageSizeType::kShort;
+    self.bannerName = BannerImageName(false);
+    self.shouldHideBanner = NO;
+  } else {
+    // iPad, full window.
+    self.bannerSize = BannerImageSizeType::kStandard;
+    self.bannerName = BannerImageName(true);
+    self.shouldHideBanner = NO;
+  }
 }
 
 @end

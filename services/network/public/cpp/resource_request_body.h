@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
 
   bool contains_sensitive_info_;
 
-  bool allow_http1_for_streaming_upload_ = true;
+  bool allow_http1_for_streaming_upload_ = false;
 };
 
 }  // namespace network

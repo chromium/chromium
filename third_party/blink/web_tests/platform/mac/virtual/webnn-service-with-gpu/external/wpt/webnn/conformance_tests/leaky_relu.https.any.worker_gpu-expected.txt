@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] leakyRelu float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 0D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 1D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 3D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 5D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -0.1904296875 should be close enough to expected -0.19053640961647034 by the acceptable 1 ULP distance, but they have 7162 ULP distance expected true got false
+[FAIL] leakyRelu float32 1D tensor negative options.alpha
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual 1860 should be close enough to expected 1861.5615234375 by the acceptable 1 ULP distance, but they have 12792 ULP distance expected true got false
+[FAIL] leakyRelu float32 2D tensor positive options.alpha
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual -681.5 should be close enough to expected -682.1043701171875 by the acceptable 1 ULP distance, but they have 9902 ULP distance expected true got false
+[FAIL] leakyRelu float32 5D tensor options.alpha=0.0
+  assert_true: assert_array_approx_equals_ulp: test leakyRelu float32 actual 50.75 should be close enough to expected 50.77590560913086 by the acceptable 1 ULP distance, but they have 6791 ULP distance expected true got false
+Harness: the test ran to completion.
+

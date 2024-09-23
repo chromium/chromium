@@ -27,22 +27,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
-import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -50,9 +49,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetError;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -60,6 +57,7 @@ import org.chromium.net.test.ServerCertificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for detached resource requests. */
@@ -78,14 +76,13 @@ public class DetachedResourceRequestTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mConnection = CustomTabsTestUtils.setUpConnection();
         mContext =
                 InstrumentationRegistry.getInstrumentation()
                         .getTargetContext()
                         .getApplicationContext();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ChromeOriginVerifier::clearCachedVerificationsForTesting);
+        ThreadUtils.runOnUiThreadBlocking(ChromeOriginVerifier::clearCachedVerificationsForTesting);
     }
 
     @After
@@ -98,9 +95,9 @@ public class DetachedResourceRequestTest {
     public void testCanDoParallelRequest() {
         CustomTabsSessionToken session = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mConnection.newSession(session));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertFalse(mConnection.canDoParallelRequest(session, ORIGIN)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String packageName = mContext.getPackageName();
                     ChromeOriginVerifier.addVerificationOverride(
@@ -116,7 +113,7 @@ public class DetachedResourceRequestTest {
     public void testCanDoResourcePrefetch() throws Exception {
         CustomTabsSessionToken session = CustomTabsSessionToken.createMockSessionTokenForTesting();
         Assert.assertTrue(mConnection.newSession(session));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String packageName = mContext.getPackageName();
                     ChromeOriginVerifier.addVerificationOverride(
@@ -127,15 +124,15 @@ public class DetachedResourceRequestTest {
         Intent intent =
                 prepareIntentForResourcePrefetch(
                         Arrays.asList(Uri.parse("https://foo.bar")), ORIGIN);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent)));
 
         CustomTabsTestUtils.warmUpAndWait();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent)));
 
         mConnection.mClientManager.setAllowResourcePrefetchForSession(session, true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(1, mConnection.maybePrefetchResources(session, intent)));
     }
 
@@ -145,7 +142,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int expected = CustomTabsConnection.ParallelRequestStatus.NO_REQUEST;
                     var histogram =
@@ -211,7 +208,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             0, mConnection.maybePrefetchResources(session, new Intent()));
@@ -364,7 +361,6 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResource() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ false);
@@ -376,44 +372,10 @@ public class DetachedResourceRequestTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY,
-        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK
-    })
+    @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
     @DisabledTest(message = "Flaky. See crbug.com/1523239")
     public void testSafeBrowsingMainResourceWithSplitCache() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
-        Assert.assertTrue(
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK));
-    }
-
-    /**
-     * Tests that non-cached detached resource requests that are forbidden by SafeBrowsing don't end
-     * up in the content area, for a main resource.
-     */
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
-    @DisableIf.Build(supported_abis_includes = "x86", message = "Flaky. See crbug.com/1507774.")
-    public void testSafeBrowsingMainResourceWithSplitCache_newSafeBrowsingGmsApiDisabled()
-            throws Exception {
-        testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
-        Assert.assertFalse(
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK));
-    }
-
-    /**
-     * Tests that cached detached resource requests that are forbidden by SafeBrowsing don't end up
-     * in the content area, for a subresource.
-     */
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_SKIP_SUBRESOURCES)
-    public void testSafeBrowsingSubresource() throws Exception {
-        testSafeBrowsingSubresource(true);
     }
 
     /**
@@ -423,21 +385,9 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
     @DisabledTest(message = "https://crbug.com/1431268")
     public void testSafeBrowsingMainResourceBeforeNative() throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ false, /* splitCacheEnabled= */ false);
-    }
-
-    /**
-     * Tests that cached detached resource requests that are forbidden by SafeBrowsing don't end up
-     * in the content area, for a subresource.
-     */
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_SKIP_SUBRESOURCES)
-    public void testSafeBrowsingSubresourceBeforeNative() throws Exception {
-        testSafeBrowsingSubresource(false);
     }
 
     @Test
@@ -446,9 +396,9 @@ public class DetachedResourceRequestTest {
     public void testCanBlockThirdPartyCookies() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
                             prefs.getInteger(COOKIE_CONTROLS_MODE),
                             CookieControlsMode.INCOGNITO_ONLY);
@@ -459,7 +409,7 @@ public class DetachedResourceRequestTest {
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
@@ -491,9 +441,9 @@ public class DetachedResourceRequestTest {
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
         // This isn't blocking third-party cookies by preferences.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
                             prefs.getInteger(COOKIE_CONTROLS_MODE),
                             CookieControlsMode.INCOGNITO_ONLY);
@@ -510,7 +460,7 @@ public class DetachedResourceRequestTest {
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
@@ -536,9 +486,9 @@ public class DetachedResourceRequestTest {
     public void testThirdPartyCookieBlockingAllowsFirstParty() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartServer(mContext);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefs = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     Assert.assertEquals(
                             prefs.getInteger(COOKIE_CONTROLS_MODE),
                             CookieControlsMode.INCOGNITO_ONLY);
@@ -551,7 +501,7 @@ public class DetachedResourceRequestTest {
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
         CustomTabsSessionToken session = prepareSession(origin, customTabsCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
@@ -595,7 +545,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         Assert.assertTrue(mConnection.newSession(token));
         mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeOriginVerifier.addVerificationOverride(
                             mContext.getPackageName(),
@@ -604,13 +554,15 @@ public class DetachedResourceRequestTest {
                     Assert.assertTrue(mConnection.canDoParallelRequest(token, ORIGIN));
                 });
 
+        // Launching a CCT and loading a URL takes more time than usual. Gives a longer timeout.
+        // See crbug.com/40737671.
         mContext.startActivity(intent);
-        callback.waitForRequest(0, 1);
-        callback.waitForCompletion(0, 1);
+        callback.waitForRequest(0, 1, 10, TimeUnit.SECONDS);
+        callback.waitForCompletion(0, 1, 10, TimeUnit.SECONDS);
 
         mContext.startActivity(intent);
-        callback.waitForRequest(1, 1);
-        callback.waitForCompletion(1, 1);
+        callback.waitForRequest(1, 1, 10, TimeUnit.SECONDS);
+        callback.waitForCompletion(1, 1, 10, TimeUnit.SECONDS);
     }
 
     private void testCanStartParallelRequest(boolean afterNative) throws Exception {
@@ -650,7 +602,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
         if (afterNative) CustomTabsTestUtils.warmUpAndWait();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
 
         if (!afterNative) CustomTabsTestUtils.warmUpAndWait();
@@ -670,7 +622,6 @@ public class DetachedResourceRequestTest {
 
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
-        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         CustomTabsSessionToken session = prepareSession();
 
@@ -680,14 +631,8 @@ public class DetachedResourceRequestTest {
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
         try {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)) {
-                MockSafeBrowsingApiHandler.addMockResponse(
-                        url.toString(), MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
-            } else {
-                MockSafetyNetApiHandler.addMockResponse(
-                        url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
-            }
+            MockSafeBrowsingApiHandler.addMockResponse(
+                    url.toString(), MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
 
             Intent intent =
                     CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -696,7 +641,7 @@ public class DetachedResourceRequestTest {
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
-            // TODO(crbug.com/1039443): For now, we check the presence of an interstitial through
+            // TODO(crbug.com/40666836): For now, we check the presence of an interstitial through
             // the title since isShowingInterstitialPage does not work with committed interstitials.
             // Once we fully migrate to committed interstitials, this should be changed to a more
             // robust check.
@@ -716,37 +661,8 @@ public class DetachedResourceRequestTest {
                 Assert.assertEquals(1, readFromSocketCallback.getCallCount());
             }
         } finally {
-            MockSafetyNetApiHandler.clearMockResponses();
             MockSafeBrowsingApiHandler.clearMockResponses();
             SafeBrowsingApiBridge.clearHandlerForTesting();
-        }
-    }
-
-    private void testSafeBrowsingSubresource(boolean afterNative) throws Exception {
-        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
-        CustomTabsSessionToken session = prepareSession();
-        String cacheable = "/cachetime";
-        waitForDetachedRequest(session, cacheable, afterNative);
-        Uri url = Uri.parse(mServer.getURL(cacheable));
-
-        try {
-            MockSafetyNetApiHandler.addMockResponse(
-                    url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
-
-            String pageUrl = mServer.getURL("/chrome/test/data/android/cacheable_subresource.html");
-            Intent intent =
-                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, pageUrl);
-            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            WebContents webContents = tab.getWebContents();
-            // TODO(crbug.com/1039443): For now, we check the presence of an interstitial through
-            // the title since isShowingInterstitialPage does not work with committed interstitials.
-            // Once we fully migrate to committed interstitials, this should be changed to a more
-            // robust check.
-            CriteriaHelper.pollUiThread(() -> webContents.getTitle().equals("Security error"));
-        } finally {
-            MockSafetyNetApiHandler.clearMockResponses();
         }
     }
 
@@ -766,7 +682,7 @@ public class DetachedResourceRequestTest {
         Assert.assertTrue(mConnection.newSession(token));
         mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
         mConnection.mClientManager.setAllowResourcePrefetchForSession(token, true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeOriginVerifier.addVerificationOverride(
                             mContext.getPackageName(),
@@ -803,7 +719,7 @@ public class DetachedResourceRequestTest {
         Uri url = Uri.parse(mServer.getURL(relativeUrl));
         if (afterNative) CustomTabsTestUtils.warmUpAndWait();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
         if (!afterNative) CustomTabsTestUtils.warmUpAndWait();
         readFromSocketCallback.waitForCallback(0);
@@ -859,7 +775,7 @@ public class DetachedResourceRequestTest {
         }
 
         public void waitForRequest() throws TimeoutException {
-            mRequestedWaiter.waitForFirst();
+            mRequestedWaiter.waitForOnly();
         }
 
         public void waitForRequest(int currentCallCount, int numberOfCallsToWaitFor)
@@ -867,13 +783,23 @@ public class DetachedResourceRequestTest {
             mRequestedWaiter.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
         }
 
+        public void waitForRequest(int currentCount, int expectCount, int timeout, TimeUnit unit)
+                throws TimeoutException {
+            mRequestedWaiter.waitForCallback(currentCount, expectCount, timeout, unit);
+        }
+
         public void waitForCompletion() throws TimeoutException {
-            mCompletionWaiter.waitForFirst();
+            mCompletionWaiter.waitForOnly();
         }
 
         public void waitForCompletion(int currentCallCount, int numberOfCallsToWaitFor)
                 throws TimeoutException {
             mCompletionWaiter.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
+        }
+
+        public void waitForCompletion(int currentCount, int expectCount, int timeout, TimeUnit unit)
+                throws TimeoutException {
+            mCompletionWaiter.waitForCallback(currentCount, expectCount, timeout, unit);
         }
     }
 }

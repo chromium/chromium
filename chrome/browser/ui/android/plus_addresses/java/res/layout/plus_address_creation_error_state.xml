@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/plus_address_error_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/plus_address_error_icon"
+        android:layout_width="@dimen/plus_address_title_icon_size"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/plus_address_list_item_small_margin"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_error_outline_red_24dp"
+        android:importantForAccessibility="no"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/plus_address_error_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginBottom="8dp"
+        style="@style/TextAppearance.Headline.Primary" />
+
+    <TextView
+        android:id="@+id/plus_address_error_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:breakStrategy="simple"
+        android:layout_marginBottom="@dimen/list_item_default_margin"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/plus_address_error_ok_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginBottom="@dimen/plus_address_list_item_small_margin"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:minWidth="@dimen/min_touch_target_size" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/plus_address_error_cancel_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:minWidth="@dimen/min_touch_target_size" />
+
+</LinearLayout>

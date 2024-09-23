@@ -275,7 +275,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testNavigateInvalidUrls() {
+  async function testNavigateDisallowedSchemes() {
     const url = 'https://example.com/some-web-document.pdf';
 
     // From non-file: to file:
@@ -284,7 +284,7 @@ chrome.test.runTests([
     await doNavigationUrlTests(url, 'chrome://version', undefined);
 
     await doNavigationUrlTests(
-        url, 'javascript:// this is not a document.pdf', undefined);
+        url, 'javascript://this-is-not-a-document.pdf', undefined);
 
     await doNavigationUrlTests(
         url, 'this-is-not-a-valid-scheme://path.pdf', undefined);

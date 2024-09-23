@@ -8,25 +8,20 @@
 
 import '../../assistant_optin/assistant_optin_flow.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {OobeUiState} from '../../components/display_manager_types.js';
 // TODO(b/320439437) Migrate AssistantOptInFlow to ts
 // import {AssistantOptInFlow} from
 // '../../assistant_optin/assistant_optin_flow.js'
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './assistant_optin.html.js';
 
 const AssistantOptinBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 export class AssistantOptin extends AssistantOptinBase {
   static get is() {
@@ -61,14 +56,15 @@ export class AssistantOptin extends AssistantOptinBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.ONBOARDING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ONBOARDING;
   }
 
   /**
    * Event handler that is invoked just before the frame is shown.
    */
   override onBeforeShow(): void {
+    super.onBeforeShow();
     const card = this.shadowRoot?.querySelector('#card');
     if (card) {
       (card as any).onShow();

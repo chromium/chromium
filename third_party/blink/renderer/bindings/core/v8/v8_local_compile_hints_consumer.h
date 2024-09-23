@@ -19,6 +19,10 @@ class CORE_EXPORT V8LocalCompileHintsConsumer {
  public:
   explicit V8LocalCompileHintsConsumer(CachedMetadata* cached_metadata);
 
+  V8LocalCompileHintsConsumer(const V8LocalCompileHintsConsumer&) = delete;
+  V8LocalCompileHintsConsumer& operator=(const V8LocalCompileHintsConsumer&) =
+      delete;
+
   // Suitable for being used as a callback. data must be a ptr to a
   // V8LocalCompileHintsConsumer object.
   static bool GetCompileHint(int position, void* data);

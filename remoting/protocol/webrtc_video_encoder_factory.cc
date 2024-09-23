@@ -31,8 +31,8 @@ WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
 
 WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;
 
-std::unique_ptr<webrtc::VideoEncoder>
-WebrtcVideoEncoderFactory::CreateVideoEncoder(
+std::unique_ptr<webrtc::VideoEncoder> WebrtcVideoEncoderFactory::Create(
+    const webrtc::Environment& /*env*/,
     const webrtc::SdpVideoFormat& format) {
   return std::make_unique<WebrtcVideoEncoderWrapper>(
       format, session_options_, main_task_runner_,

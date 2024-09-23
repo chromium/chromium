@@ -24,6 +24,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -76,7 +77,7 @@ public class MediaViewerUtils {
 
         if (allowExternalAppHandlers && !willExposeFileUri(contentUri)) {
             // Create a PendingIntent that can be used to view the file externally.
-            // TODO(https://crbug.com/795968): Check if this is problematic in multi-window mode,
+            // TODO(crbug.com/40555252): Check if this is problematic in multi-window mode,
             //                                 where two different viewers could be visible at the
             //                                 same time.
             Intent viewIntent = createViewIntentForUri(contentUri, mimeType, null, null);
@@ -84,7 +85,7 @@ public class MediaViewerUtils {
             chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             String openWithStr = context.getString(R.string.download_manager_open_with);
 
-            // TODO(https://crbug.com/1428364): PendingIntents are no longer allowed to be both
+            // TODO(crbug.com/40262179): PendingIntents are no longer allowed to be both
             // mutable and implicit. Since this must be mutable, we need to set a component and then
             // remove the FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT flag.
             PendingIntent pendingViewIntent =
@@ -106,7 +107,7 @@ public class MediaViewerUtils {
                     BitmapFactory.decodeResource(
                             context.getResources(), R.drawable.ic_share_white_24dp);
 
-            // TODO(https://crbug.com/1428364): PendingIntents are no longer allowed to be both
+            // TODO(crbug.com/40262179): PendingIntents are no longer allowed to be both
             // mutable and implicit. Since this must be mutable, we need to set a component and then
             // remove the FLAG_ALLOW_UNSAFE_IMPLICIT_INTENT flag.
             PendingIntent pendingShareIntent =
@@ -189,24 +190,23 @@ public class MediaViewerUtils {
 
     /**
      * Determines the media type from the given MIME type.
+     *
      * @param mimeType The MIME type to check.
      * @return MediaLauncherActivity.MediaType enum value for determined media type.
      */
-    static int getMediaTypeFromMIMEType(String mimeType) {
-        if (TextUtils.isEmpty(mimeType)) return MediaLauncherActivity.MediaType.UNKNOWN;
+    static boolean isMediaMIMEType(String mimeType) {
+        if (TextUtils.isEmpty(mimeType)) return false;
 
         String[] pieces = mimeType.toLowerCase(Locale.getDefault()).split("/");
-        if (pieces.length != 2) return MediaLauncherActivity.MediaType.UNKNOWN;
+        if (pieces.length != 2) return false;
 
         switch (pieces[0]) {
             case MIMETYPE_AUDIO:
-                return MediaLauncherActivity.MediaType.AUDIO;
             case MIMETYPE_IMAGE:
-                return MediaLauncherActivity.MediaType.IMAGE;
             case MIMETYPE_VIDEO:
-                return MediaLauncherActivity.MediaType.VIDEO;
+                return true;
             default:
-                return MediaLauncherActivity.MediaType.UNKNOWN;
+                return false;
         }
     }
 
@@ -252,23 +252,21 @@ public class MediaViewerUtils {
         sIsMediaLauncherActivityForceEnabledForTest = true;
         // Synchronously update to avoid race conditions in tests.
         synchronousUpdateMediaLauncherActivityEnabled();
-    }
-
-    /** Stops forcing MediaLauncherActivity to be enabled for testing. */
-    public static void stopForcingEnableMediaLauncherActivityForTest() {
-        sIsMediaLauncherActivityForceEnabledForTest = false;
-        // Synchronously update to avoid race conditions in tests.
-        synchronousUpdateMediaLauncherActivityEnabled();
+        ResettersForTesting.register(
+                () -> {
+                    sIsMediaLauncherActivityForceEnabledForTest = false;
+                    synchronousUpdateMediaLauncherActivityEnabled();
+                });
     }
 
     private static boolean shouldEnableMediaLauncherActivity() {
         return sIsMediaLauncherActivityForceEnabledForTest
-                || SysUtils.isAndroidGo()
+                || SysUtils.isLowEndDevice()
                 || isEnterpriseManaged();
     }
 
     private static boolean shouldEnableAudioLauncherActivity() {
-        return shouldEnableMediaLauncherActivity() && !SysUtils.isAndroidGo();
+        return shouldEnableMediaLauncherActivity() && !SysUtils.isLowEndDevice();
     }
 
     private static boolean isEnterpriseManaged() {

@@ -14,8 +14,13 @@
 }
 
 .row > * {
+  align-items: center;
   box-sizing: border-box;
+  display: flex;
   flex: 0 0 10%;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: space-between;
   overflow: hidden;
   padding: 12px;
   text-align: start;
@@ -57,6 +62,30 @@
   background-color: var(--table-header);
   border-bottom: 1px solid var(--table-border);
   border-radius: var(--element-border-radius) var(--element-border-radius) 0 0;
+}
+
+.sort-arrows {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.sort-up-arrow {
+  background-image: url(chrome://resources/images/icon_expand_less.svg);
+}
+
+.sort-down-arrow {
+  background-image: url(chrome://resources/images/icon_expand_more.svg);
+}
+
+.sort-up-arrow,
+.sort-down-arrow {
+  background-color: transparent;
+  background-size: cover;
+  border: none;
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
 }
 
 .value.row .value {
@@ -114,12 +143,96 @@ a {
   <p class="id"></p>
   <div class="main">
     <div class="header row" role="row">
-      <div class="name" role="columnheader">$i18n{headerName}</div>
+      <div class="name" role="columnheader">$i18n{headerName}
+        <div class="sort-arrows" aria-hidden="true">
+          <button
+            class="sort-up-arrow"
+            id="name-sort-up" role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerName} $i18n{sortAscending}">
+          </button>
+          <button
+            class="sort-down-arrow"
+            id="name-sort-down"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerName} $i18n{sortDescending}">
+          </button>
+        </div>
+      </div>
       <div class="value" role="columnheader">$i18n{headerValue}</div>
-      <div class="source" role="columnheader">$i18n{headerSource}</div>
-      <div class="scope" role="columnheader">$i18n{headerScope}</div>
-      <div class="level" role="columnheader">$i18n{headerLevel}</div>
-      <div class="messages" role="columnheader">$i18n{headerStatus}</div>
+      <div class="source" role="columnheader">$i18n{headerSource}
+        <div class="sort-arrows" aria-hidden="true">
+          <button
+            class="sort-up-arrow"
+            id="source-sort-up"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerSource} $i18n{sortAscending}">
+          </button>
+          <button
+            class="sort-down-arrow"
+            id="source-sort-down"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerSource} $i18n{sortDescending}">
+          </button>
+        </div>
+      </div>
+      <div class="scope" role="columnheader">$i18n{headerScope}
+        <div class="sort-arrows" aria-hidden="true">
+          <button
+            class="sort-up-arrow"
+            id="scope-sort-up"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerScope} $i18n{sortAscending}">
+          </button>
+          <button
+            class="sort-down-arrow"
+            id="scope-sort-down"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerScope} $i18n{sortDescending}">
+          </button>
+        </div>
+      </div>
+      <div class="level" role="columnheader">$i18n{headerLevel}
+        <div class="sort-arrows" aria-hidden="true">
+          <button
+            class="sort-up-arrow"
+            id="level-sort-up"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerLevel} $i18n{sortAscending}">
+          </button>
+          <button
+            class="sort-down-arrow"
+            id="level-sort-down"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerLevel} $i18n{sortDescending}">
+          </button>
+        </div>
+      </div>
+      <div class="messages" role="columnheader">$i18n{headerStatus}
+        <div class="sort-arrows" aria-hidden="true">
+          <button
+            class="sort-up-arrow"
+            id="status-sort-up"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerStatus} $i18n{sortAscending}">
+          </button>
+          <button
+            class="sort-down-arrow"
+            id="status-sort-down"
+            role="button"
+            aria-hidden="false"
+            title="$i18n{sort} $i18n{headerStatus} $i18n{sortDescending}">
+          </button>
+        </div>
+      </div>
       <div class="toggle" role="columnheader"></div>
     </div>
     <div class="no-policy">$i18n{noPoliciesSet}</div>

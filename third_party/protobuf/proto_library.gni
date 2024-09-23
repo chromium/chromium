@@ -137,13 +137,14 @@
 #    ]
 #  }
 
+import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
 
 declare_args() {
   # Allows subprojects to omit javascript dependencies (e.g.) closure_compiler
   # and google-closure-library.
-  enable_js_protobuf = true
+  enable_js_protobuf = !is_cronet_build
 }
 
 if (enable_js_protobuf) {
@@ -156,9 +157,20 @@ if (host_os == "win") {
   _host_executable_suffix = ""
 }
 
-_protoc_label = "//third_party/protobuf:protoc($host_toolchain)"
+# TODO(https://crbug.com/337736622): V8 shares this dependency and stores
+# it in a different location. Hence, all references to this folder should
+# use this variable instead of hard-coding //third_party/protobuf.
+# This can be switched back to //third_party/protobuf in M129, or earlier in
+# case crbug.com/338008085 is resolved.
+_this_dir = get_path_info(".", "abspath")
+
+_protoc_label = "$_this_dir:protoc($host_toolchain)"
 _protoc_path = get_label_info(_protoc_label, "root_out_dir") + "/protoc" +
                _host_executable_suffix
+_protoc_gen_js_label =
+    "//third_party/protobuf-javascript:protoc-gen-js($host_toolchain)"
+_protoc_gen_js_path = get_label_info(_protoc_gen_js_label, "root_out_dir") +
+                      "/protoc-gen-js" + _host_executable_suffix
 
 template("proto_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
@@ -407,6 +419,8 @@ template("proto_library") {
       args += [
         "--js-out-dir",
         rel_js_out_dir,
+        "--protoc-gen-js",
+        "./" + rebase_path(_protoc_gen_js_path, root_build_dir),
       ]
     }
 
@@ -455,6 +469,11 @@ template("proto_library") {
     # System protoc is not used so it's necessary to build a chromium one.
     inputs += [ _protoc_path ]
     deps = [ _protoc_label ]
+
+    if (enable_js_protobuf) {
+      inputs += [ _protoc_gen_js_path ]
+      deps += [ _protoc_gen_js_label ]
+    }
 
     if (generate_with_plugin) {
       inputs += [ plugin_path ]
@@ -517,7 +536,7 @@ template("proto_library") {
 
       sources = protogens_js
 
-      deps = [ "//third_party/protobuf:js_proto" ]
+      deps = [ "$_this_dir:js_proto" ]
 
       extra_deps = [ ":$action_name" ]
     }
@@ -551,8 +570,8 @@ template("proto_library") {
     }
 
     public_configs = [
-      "//third_party/protobuf:using_proto",
-      "//third_party/protobuf:allow_deprecated_proto_fields",
+      "$_this_dir:using_proto",
+      "$_this_dir:allow_deprecated_proto_fields",
     ]
     public_deps = []
 
@@ -580,9 +599,9 @@ template("proto_library") {
       if (generate_cc) {
         if (defined(invoker.use_protobuf_full) &&
             invoker.use_protobuf_full == true) {
-          public_deps += [ "//third_party/protobuf:protobuf_full" ]
+          public_deps += [ "$_this_dir:protobuf_full" ]
         } else {
-          public_deps += [ "//third_party/protobuf:protobuf_lite" ]
+          public_deps += [ "$_this_dir:protobuf_lite" ]
         }
 
         if (is_win) {
@@ -615,7 +634,7 @@ template("proto_library") {
       data = protogens_py
       deps = [
         ":$action_name",
-        "//third_party/protobuf:py_proto_runtime",
+        "$_this_dir:py_proto_runtime",
       ]
     }
   }

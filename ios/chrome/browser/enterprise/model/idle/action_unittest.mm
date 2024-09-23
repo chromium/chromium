@@ -10,7 +10,6 @@
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
@@ -19,7 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -43,13 +42,11 @@ class IdleActionTest : public PlatformTest {
  protected:
   using ActionQueue = ActionFactory::ActionQueue;
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = test_cbs_builder.Build();
+    browser_state_ = std::move(test_cbs_builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state(), std::make_unique<FakeAuthenticationServiceDelegate>());
     main_browsing_data_remover_ = std::make_unique<FakeBrowsingDataRemover>();
@@ -93,7 +90,7 @@ class IdleActionTest : public PlatformTest {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state());
     browser_list->AddBrowser(browser_.get());
-    browser_list->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list->AddBrowser(incognito_browser_.get());
 
     // Insert some web states in each browser.
     std::vector<std::string> urls{"https://foo/bar", "https://car/tar",
@@ -146,7 +143,6 @@ class IdleActionTest : public PlatformTest {
   std::unique_ptr<ActionFactory> action_factory_;
   std::unique_ptr<FakeBrowsingDataRemover> main_browsing_data_remover_;
   std::unique_ptr<FakeBrowsingDataRemover> incognito_browsing_data_remover_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;

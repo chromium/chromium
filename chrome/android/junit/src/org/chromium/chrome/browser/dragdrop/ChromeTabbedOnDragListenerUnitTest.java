@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -27,8 +28,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -44,12 +45,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import java.lang.ref.WeakReference;
 
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-})
-@DisableFeatures({
-    ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-})
+@DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
 public class ChromeTabbedOnDragListenerUnitTest {
     private static final int SOURCE_INSTANCE_ID = 1;
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
@@ -66,6 +62,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
     private Context mContext;
     private ChromeTabbedOnDragListener mChromeTabbedOnDragListener;
     private View mCompositorViewHolder;
+    private UserActionTester mUserActionTest;
 
     @Before
     public void setup() {
@@ -79,6 +76,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                         mWindowAndroid,
                         mLayoutStateProviderSupplierImpl);
         mCompositorViewHolder = new View(mContext);
+        mUserActionTest = new UserActionTester();
         when(mTabModelSelector.getCurrentTab()).thenReturn(mCurrentTab);
         when(mCurrentTab.isIncognito()).thenReturn(false);
         when(mCurrentTab.getId()).thenReturn(1);
@@ -174,6 +172,38 @@ public class ChromeTabbedOnDragListenerUnitTest {
 
     @Test
     public void testOnDrag_ActionDrop_Success() {
+        // Verify action drop is success.
+        verifyActionDropSuccess();
+
+        // Verify user action `TabRemovedFromGroup` is not recorded.
+        assertEquals(
+                "TabRemovedFromGroup should not be recorded as the tab being dragged is not in a"
+                        + " tab group",
+                0,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_Success_RecordTabRemovedFromGroup() {
+        // The tab being dragged is in a tab group.
+        when(mDragDropGlobalState.getData())
+                .thenReturn(
+                        new ChromeDropDataAndroid.Builder()
+                                .withTab(mTab)
+                                .withTabInGroup(true)
+                                .build());
+
+        // Verify action drop is success.
+        verifyActionDropSuccess();
+
+        // Verify user action `TabRemovedFromGroup` is recorded.
+        assertEquals(
+                "TabRemovedFromGroup should be recorded",
+                1,
+                mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
+    }
+
+    private void verifyActionDropSuccess() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DragDrop.Tab.Type", DragDropType.TAB_STRIP_TO_CONTENT);

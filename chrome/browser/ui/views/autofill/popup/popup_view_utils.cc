@@ -12,7 +12,8 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -103,85 +104,6 @@ gfx::Size GetExpandedPopupSize(const gfx::Rect& content_area_bounds,
 
 }  // namespace
 
-void CalculatePopupXAndWidthHorizontallyCentered(
-    int popup_preferred_width,
-    const gfx::Rect& content_area_bounds,
-    const gfx::Rect& element_bounds,
-    bool is_rtl,
-    gfx::Rect* popup_bounds) {
-  // The preferred horizontal starting point for the pop-up is at the horizontal
-  // center of the field.
-  int preferred_starting_point =
-      std::clamp(element_bounds.x() + (element_bounds.size().width() / 2),
-                  content_area_bounds.x(), content_area_bounds.right());
-
-  // The space available to the left and to the right.
-  int space_to_right = content_area_bounds.right() - preferred_starting_point;
-  int space_to_left = preferred_starting_point - content_area_bounds.x();
-
-  // Calculate the pop-up width. This is either the preferred pop-up width, or
-  // alternatively the maximum space available if there is not sufficient space
-  // for the preferred width.
-  int popup_width =
-      std::min(popup_preferred_width, space_to_left + space_to_right);
-
-  // Calculates the space that is available to grow into the preferred
-  // direction. In RTL, this is the space to the right side of the content
-  // area, in LTR this is the space to the left side of the content area.
-  int space_to_grow_in_preferred_direction =
-      is_rtl ? space_to_left : space_to_right;
-
-  // Calculate how much the pop-up needs to grow into the non-preferred
-  // direction.
-  int amount_to_grow_in_unpreffered_direction =
-      std::max(0, popup_width - space_to_grow_in_preferred_direction);
-
-  popup_bounds->set_width(popup_width);
-  if (is_rtl) {
-    // Note, in RTL the |pop_up_width| must be subtracted to achieve
-    // right-alignment of the pop-up with the element.
-    popup_bounds->set_x(preferred_starting_point - popup_width +
-                        amount_to_grow_in_unpreffered_direction);
-  } else {
-    popup_bounds->set_x(preferred_starting_point -
-                        amount_to_grow_in_unpreffered_direction);
-  }
-}
-
-void CalculatePopupXAndWidth(int popup_preferred_width,
-                             const gfx::Rect& content_area_bounds,
-                             const gfx::Rect& element_bounds,
-                             bool is_rtl,
-                             gfx::Rect* popup_bounds) {
-  int right_growth_start = std::clamp(
-      element_bounds.x(), content_area_bounds.x(), content_area_bounds.right());
-  int left_growth_end =
-      std::clamp(element_bounds.right(), content_area_bounds.x(),
-                  content_area_bounds.right());
-
-  int right_available = content_area_bounds.right() - right_growth_start;
-  int left_available = left_growth_end - content_area_bounds.x();
-
-  int popup_width = std::min(popup_preferred_width,
-                             std::max(left_available, right_available));
-
-  // Prefer to grow towards the end (right for LTR, left for RTL). But if there
-  // is not enough space available in the desired direction and more space in
-  // the other direction, reverse it.
-  bool grow_left = false;
-  if (is_rtl) {
-    grow_left =
-        left_available >= popup_width || left_available >= right_available;
-  } else {
-    grow_left =
-        right_available < popup_width && right_available < left_available;
-  }
-
-  popup_bounds->set_width(popup_width);
-  popup_bounds->set_x(grow_left ? left_growth_end - popup_width
-                                : right_growth_start);
-}
-
 void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& content_area_bounds,
                               const gfx::Rect& element_bounds,
@@ -207,27 +129,6 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
                                       content_area_bounds.height()));
 }
 
-gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
-                               const gfx::Rect& content_area_bounds,
-                               const gfx::Rect& element_bounds,
-                               bool is_rtl,
-                               bool horizontally_centered) {
-  gfx::Rect popup_bounds;
-
-  if (horizontally_centered) {
-    CalculatePopupXAndWidthHorizontallyCentered(
-        desired_size.width(), content_area_bounds, element_bounds, is_rtl,
-        &popup_bounds);
-  } else {
-    CalculatePopupXAndWidth(desired_size.width(), content_area_bounds,
-                            element_bounds, is_rtl, &popup_bounds);
-  }
-  CalculatePopupYAndHeight(desired_size.height(), content_area_bounds,
-                           element_bounds, &popup_bounds);
-
-  return popup_bounds;
-}
-
 bool CanShowDropdownHere(int item_height,
                          const gfx::Rect& content_area_bounds,
                          const gfx::Rect& element_bounds) {
@@ -246,7 +147,8 @@ bool CanShowDropdownHere(int item_height,
       element_bounds.bottom() > content_area_bounds.y() &&
       element_bounds.bottom() <= content_area_bounds.bottom();
 
-  // TODO(crbug.com/1455336): Test the space on the left/right or forbid it explicitly.
+  // TODO(crbug.com/40272733): Test the space on the left/right or forbid it
+  // explicitly.
   return (enough_space_for_one_item_in_content_area_above_element &&
           element_top_is_within_content_area_bounds) ||
          (enough_space_for_one_item_in_content_area_below_element &&
@@ -282,7 +184,7 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                        : top_level_view;
   views::Widget::Widgets all_widgets;
   views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       all_widgets, [&screen_bounds, web_contents_widget](views::Widget* w) {
         return w->IsDialogBox() &&
                w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&
@@ -411,14 +313,23 @@ views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type) {
   // Probe for a side of the element on which the popup can be shown entirely.
   for (views::BubbleArrowSide possible_side : popup_preferred_sides) {
+    // For caret elements, do not check whether the bounds are sufficiently
+    // large to place a vertical arrow.
+    const bool
+        skip_element_bounds_sufficiently_visible_for_vertical_arrow_check =
+            anchor_type == PopupAnchorType::kCaret;
+    const bool can_arrow_side_be_vertical =
+        skip_element_bounds_sufficiently_visible_for_vertical_arrow_check ||
+        IsElementSufficientlyVisibleForAVerticalArrow(
+            content_area_bounds, element_bounds, possible_side);
     if (IsPopupPlaceableOnSideOfElement(
             content_area_bounds, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
-        IsElementSufficientlyVisibleForAVerticalArrow(
-            content_area_bounds, element_bounds, possible_side)) {
+        can_arrow_side_be_vertical) {
       return possible_side;
     }
   }
@@ -442,12 +353,13 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
     gfx::Rect& popup_bounds,
-    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
+    base::span<const views::BubbleArrowSide> popup_preferred_sides,
+    PopupAnchorType anchor_type) {
   // Determine the best side of the element to put the popup and get a
   // corresponding arrow.
-  views::BubbleArrowSide side =
-      GetOptimalArrowSide(content_area_bounds, element_bounds,
-                          popup_preferred_size, popup_preferred_sides);
+  views::BubbleArrowSide side = GetOptimalArrowSide(
+      content_area_bounds, element_bounds, popup_preferred_size,
+      popup_preferred_sides, anchor_type);
   BubbleBorder::Arrow arrow =
       GetBubbleArrowForBubbleArrowSide(side, right_to_left);
 
@@ -534,121 +446,71 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsFooterPopupItemId(PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kDeleteAddressProfile:
-    case PopupItemId::kViewPasswordDetails:
+bool IsExpandableSuggestionType(SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kCreditCardFieldByFieldFilling:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullEmail:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kFillPredictionImprovements:
+    case SuggestionType::kPredictionImprovementsDetails:
+    case SuggestionType::kPredictionImprovementsError:
       return true;
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAddressEntry:
-    case PopupItemId::kAddressFieldByFieldFilling:
-    case PopupItemId::kAutocompleteEntry:
-    case PopupItemId::kCompose:
-    case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kIbanEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-    case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-    case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPasswordAccountStorageEmpty:
+    case SuggestionType::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kPasswordAccountStorageReSignin:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kShowAccountCards:
+    case SuggestionType::kTitle:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kPredictionImprovementsLoadingState:
       return false;
   }
-}
-
-bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kAddressEntry:
-    case PopupItemId::kAddressFieldByFieldFilling:
-    case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kPasswordEntry:
-      return true;
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kAutocompleteEntry:
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kCompose:
-    case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kDeleteAddressProfile:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kIbanEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-    case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
-    case PopupItemId::kViewPasswordDetails:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return false;
-  }
-}
-
-bool ShouldApplyNewAutofillPopupStyle() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillShowAutocompleteDeleteButton) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillGranularFillingAvailable);
-}
-
-views::style::TextStyle GetPrimaryTextStyle() {
-  return ShouldApplyNewAutofillPopupStyle()
-             ? views::style::TextStyle::STYLE_BODY_3_MEDIUM
-             : views::style::TextStyle::STYLE_PRIMARY;
-}
-
-views::style::TextStyle GetSecondaryTextStyle() {
-  return ShouldApplyNewAutofillPopupStyle()
-             ? views::style::TextStyle::STYLE_BODY_4
-             : views::style::TextStyle::STYLE_SECONDARY;
 }
 
 }  // namespace autofill

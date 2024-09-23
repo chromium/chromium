@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
+  "+ios/chrome/browser/ui/presenters/contained_presenter_delegate.h",
+  "+ios/chrome/browser/ui/toolbar/accessory",
+]

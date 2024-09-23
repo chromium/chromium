@@ -2,7 +2,9 @@ This test documents Blink's web-exposed policy-controlled features.
 All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 accelerometer
+attribution-reporting
 autoplay
+browsing-topics
 camera
 ch-device-memory
 ch-downlink
@@ -16,7 +18,7 @@ ch-save-data
 ch-ua
 ch-ua-arch
 ch-ua-bitness
-ch-ua-form-factor
+ch-ua-form-factors
 ch-ua-full-version
 ch-ua-full-version-list
 ch-ua-mobile
@@ -29,6 +31,7 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
+compute-pressure
 cross-origin-isolated
 display-capture
 encrypted-media
@@ -39,6 +42,8 @@ gyroscope
 hid
 identity-credentials-get
 idle-detection
+interest-cohort
+join-ad-interest-group
 keyboard-map
 local-fonts
 magnetometer
@@ -47,12 +52,16 @@ midi
 otp-credentials
 payment
 picture-in-picture
+private-aggregation
 private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+run-ad-auction
 screen-wake-lock
 serial
+shared-storage
+shared-storage-select-url
 storage-access
 sync-xhr
 unload

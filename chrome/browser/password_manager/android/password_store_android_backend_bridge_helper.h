@@ -24,25 +24,16 @@ class PasswordStoreAndroidBackendBridgeHelper {
 
   // Factory function for creating the helper. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  // Ensure `CanCreateBackend` returns true before calling this method.
+  // Ensure `password_manager_android_util::IsUpmBackendForAccountAvailable`
+  // returns true before calling this method.
   static std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> Create(
       password_manager::IsAccountStore is_account_store);
-
-  // Method that checks whether a backend can be created or whether `Create`
-  // would fail. It returns true if all nontransient prerequisistes are
-  // fulfilled. E.g. if the backend requires a minimum GMS version this method
-  // would return false.
-  static bool CanCreateBackend();
 
   // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
   virtual bool CanUseGetAffiliatedPasswordsAPI() = 0;
 
   // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
   virtual bool CanUseGetAllLoginsWithBrandingInfoAPI() = 0;
-
-  // Returns true if user shouldn't be evicted from the experiment due to
-  // GMSCore errors.
-  virtual bool CanRemoveUnenrollment() = 0;
 
   // Sets the `consumer` that is notified on job completion as defined in
   // `PasswordStoreAndroidBackendReceiverBridge::Consumer`.

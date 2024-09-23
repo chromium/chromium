@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -17,18 +18,18 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
-#include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/preview_mode_client.h"
@@ -41,11 +42,16 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdf_ink_module_client.h"
+#endif
 
 namespace blink {
 class WebAssociatedURLLoader;
@@ -76,7 +82,11 @@ class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 class Thumbnail;
 
-class PdfViewWebPlugin final : public PDFEngine::Client,
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class PdfInkModule;
+#endif
+
+class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
                                public UrlLoader::Client,
@@ -84,6 +94,9 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PdfAccessibilityImageFetcher,
+#if BUILDFLAG(ENABLE_PDF_INK2)
+                               public PdfInkModuleClient,
+#endif
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -112,7 +125,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
 
     // Creates a new `PDFiumEngine`.
     virtual std::unique_ptr<PDFiumEngine> CreateEngine(
-        PDFEngine::Client* client,
+        PDFiumEngineClient* client,
         PDFiumFormFiller::ScriptOption script_option);
 
     // Passes the plugin container to the client. This is first called in
@@ -225,12 +238,14 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
-        PdfAccessibilityImageFetcher* image_fetcher);
+        PdfAccessibilityImageFetcher* image_fetcher,
+        blink::WebPluginContainer* plugin_container,
+        bool print_preview);
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
-                   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service,
-                   const blink::WebPluginParams& params);
+                   mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
+                   blink::WebPluginParams params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
 
@@ -252,14 +267,14 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
       const blink::WebCoalescedInputEvent& event,
       ui::Cursor* cursor) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidReceiveData(const char* data, size_t data_length) override;
+  void DidReceiveData(base::span<const char> data) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
   bool SupportsPaginatedPrint() override;
   bool GetPrintPresetOptionsFromDocument(
       blink::WebPrintPresetOptions* print_preset_options) override;
   int PrintBegin(const blink::WebPrintParams& print_params) override;
-  void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
+  void PrintPage(int page_index, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
   bool HasSelection() const override;
   blink::WebString SelectionAsText() const override;
@@ -296,7 +311,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
       int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
-  // PDFEngine::Client:
+  // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
@@ -342,10 +357,9 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
-  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
+  void FormFieldFocusChange(PDFiumEngineClient::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
-  void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void EnteredEditMode() override;
@@ -353,12 +367,16 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  bool IsInAnnotationMode() const override;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
+  void GetPdfBytes(GetPdfBytesCallback callback) override;
 
   // UrlLoader::Client:
   bool IsValid() const override;
@@ -392,6 +410,20 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   SkBitmap GetImageForOcr(int32_t page_index,
                           int32_t page_object_index) override;
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // PdfInkModuleClient:
+  PageOrientation GetOrientation() const override;
+  gfx::Rect GetPageContentsRect(int index) override;
+  gfx::Vector2dF GetViewportOriginOffset() override;
+  float GetZoom() const override;
+  bool IsPageVisible(int page_index) override;
+  void OnAnnotationModeToggled(bool enable) override;
+  void StrokeFinished() override;
+  void UpdateInkCursorImage(SkBitmap bitmap) override;
+  void UpdateThumbnail(int page_index) override;
+  int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
+#endif
+
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
   void PreviewDocumentLoadFailed() override;
@@ -402,6 +434,10 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect_; }
 
   float GetDeviceScaleForTesting() const { return device_scale_; }
+
+  void SendThumbnailForTesting(base::Value::Dict reply,
+                               int page_index,
+                               Thumbnail thumbnail);
 
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
@@ -466,7 +502,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void UpdateScroll(const gfx::PointF& scroll_position);
 
   // Loads `url`, invoking `callback` on receiving the initial response.
-  void LoadUrl(base::StringPiece url, LoadUrlCallback callback);
+  void LoadUrl(std::string_view url, LoadUrlCallback callback);
 
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
@@ -556,13 +592,13 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   bool HandleWebInputEvent(const blink::WebInputEvent& event);
 
   // Helper method for converting IME text to input events.
-  // TODO(crbug.com/1253665): Consider handling composition events.
+  // TODO(crbug.com/40199248): Consider handling composition events.
   void HandleImeCommit(const blink::WebString& text);
 
   // Callback to print without re-entrancy issues. The callback prevents the
   // invocation of printing in the middle of an event handler, which is risky;
   // see crbug.com/66334.
-  // TODO(crbug.com/1217012): Re-evaluate the need for a callback when parts of
+  // TODO(crbug.com/40185029): Re-evaluate the need for a callback when parts of
   // the plugin are moved off the main thread.
   void OnInvokePrintDialog();
 
@@ -571,13 +607,19 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 
-  // Sends the attachments data.
+  // Sends the attachments data to the frontend.
   void SendAttachments();
 
-  // Sends the bookmarks data.
+  // Sends the bookmarks data to the frontend.
   void SendBookmarks();
 
-  // Send document metadata data.
+  // Notifies the frontend that `edit_command` got executed.
+  void SendExecutedEditCommand(std::string_view edit_command);
+
+  // Notifies the frontend that find-in-page started.
+  void SendStartedFindInPage();
+
+  // Sends document metadata data to the frontend.
   void SendMetadata();
 
   // Sends the loading progress, where `percentage` represents the progress, or
@@ -603,7 +645,13 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void SendPrintPreviewLoadedNotification();
 
   // Sends the thumbnail image data.
-  void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
+  void SendThumbnail(base::Value::Dict reply,
+                     int page_index,
+                     Thumbnail thumbnail);
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  void GenerateAndSendInkThumbnail(int page_index, const gfx::Size& size);
+#endif
 
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
@@ -630,9 +678,14 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::unique_ptr<Client> const client_;
 
   // Used to access the services provided by the browser.
-  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_;
+  mojo::AssociatedRemote<pdf::mojom::PdfHost> const pdf_host_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Null if `features::kPdfInk2` is not enabled.
+  std::unique_ptr<PdfInkModule> const ink_module_;
+#endif
 
   std::unique_ptr<PDFiumEngine> engine_;
 
@@ -643,7 +696,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The current cursor type.
-  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
+  ui::Cursor cursor_ = ui::mojom::CursorType::kPointer;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
@@ -766,8 +819,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::unique_ptr<UrlLoader> form_loader_;
 
   // Handler for accessibility data updates.
-  std::unique_ptr<PdfAccessibilityDataHandler> const
-      pdf_accessibility_data_handler_;
+  std::unique_ptr<PdfAccessibilityDataHandler> pdf_accessibility_data_handler_;
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -53,7 +54,7 @@ int main(int argc, char* argv[]) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
 
-  if (argc <= 1) {
+  if (argc < 2) {
     LOG(INFO) << argv[0] << ": missing operand\n";
     return -1;
   }

@@ -19,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/synchronization/lock.h"
 #include "base/win/access_token.h"
@@ -76,9 +75,8 @@ class ConfigBase final : public TargetConfig {
   MitigationFlags GetDelayedProcessMitigations() const override;
   void AddRestrictingRandomSid() override;
   void SetLockdownDefaultDacl() override;
-  ResultCode AddAppContainerProfile(const wchar_t* package_name,
-                                    bool create_profile) override;
-  scoped_refptr<AppContainer> GetAppContainer() override;
+  ResultCode AddAppContainerProfile(const wchar_t* package_name) override;
+  AppContainer* GetAppContainer() override;
   void AddKernelObjectToClose(HandleToClose handle_info) override;
   void SetDisconnectCsrss() override;
   void SetDesktop(Desktop desktop) override;
@@ -87,12 +85,14 @@ class ConfigBase final : public TargetConfig {
   void SetZeroAppShim() override;
 
  private:
-  // Can call Freeze()
+  // Can call Freeze() and is_csrss_connected().
   friend class BrokerServicesBase;
   // Can examine private fields.
   friend class PolicyDiagnostic;
   // Can call private accessors.
   friend class PolicyBase;
+  // Can ask for the low-level policy.
+  friend class TopLevelDispatcher;
 
   // Promise that no further changes will be made to the configuration, and
   // this object can be reused by multiple policies.
@@ -104,6 +104,11 @@ class ConfigBase final : public TargetConfig {
   // Lazily populates the policy_ and policy_maker_ members for internal rules.
   // Can only be called before the object is fully configured.
   LowLevelPolicy* PolicyMaker();
+
+  // Some IPCs are only configured if a matching policy has been set, this
+  // method allows TopLevelDispatcher to determine if a policy exists for a
+  // given service. Only call after calling Freeze().
+  bool NeedsIpc(IpcTag service) const;
 
 #if DCHECK_IS_ON()
   // Used to sequence-check in DCHECK builds.
@@ -154,7 +159,7 @@ class ConfigBase final : public TargetConfig {
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // AppContainer to be applied to the target process.
-  scoped_refptr<AppContainerBase> app_container_;
+  std::unique_ptr<AppContainerBase> app_container_;
 };
 
 class PolicyBase final : public TargetPolicy {
@@ -209,6 +214,8 @@ class PolicyBase final : public TargetPolicy {
   friend class sandbox::BrokerServicesBase;
   // Allow PolicyDiagnostic to snapshot PolicyBase for diagnostics.
   friend class PolicyDiagnostic;
+  // Allow TopLevelDispatcher to know which IPC policy rules are necessary.
+  friend class TopLevelDispatcher;
 
   // Sets up interceptions for a new target. This policy must own |target|.
   ResultCode SetupAllInterceptions(TargetProcess& target);

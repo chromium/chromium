@@ -19,6 +19,9 @@
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
+#include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
+#include "chromeos/ash/services/ime/user_data_c_api_impl.h"
 #include "mojo/public/c/system/thunks.h"
 
 namespace ash {
@@ -74,6 +77,22 @@ void ImeService::BindInputEngineManager(
 void ImeService::ResetAllBackendConnections() {
   proto_mode_shared_lib_engine_.reset();
   mojo_mode_shared_lib_engine_.reset();
+}
+
+void ImeService::BindInputMethodUserDataService(
+    mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
+  if (input_method_user_data_api_ == nullptr) {
+    std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points =
+        ime_shared_library_->MaybeLoadThenReturnEntryPoints();
+    if (!entry_points.has_value()) {
+      LOG(ERROR) << "shared library entry_points not loaded";
+      return;
+    }
+    input_method_user_data_api_ =
+        std::make_unique<InputMethodUserDataServiceImpl>(
+            std::make_unique<UserDataCApiImpl>(this, *entry_points));
+  }
+  input_method_user_data_api_->AddReceiver(std::move(receiver));
 }
 
 void ImeService::ConnectToImeEngine(
@@ -140,21 +159,22 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   static const base::Feature* kConsideredFeatures[] = {
-      &features::kAssistEmojiEnhanced,
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kFirstPartyVietnameseInput,
       &ash::standalone_browser::features::kLacrosOnly,
       &features::kSystemJapanesePhysicalTyping,
+      &features::kImeDownloaderExperiment,
       &features::kImeDownloaderUpdate,
       &features::kImeKoreanOnlyModeSwitchOnRightAlt,
+      &features::kImeUsEnglishExperimentalModel,
       &features::kImeUsEnglishModelUpdate,
       &features::kImeFstDecoderParamsUpdate,
       &features::kAutocorrectByDefault,
       &features::kAutocorrectUseReplaceSurroundingText,
       &features::kInputMethodKoreanRightAltKeyDownFix,
       &features::kImeKoreanModeSwitchDebug,
-  };
+      &features::kImeSwitchCheckConnectionStatus};
 
   // Use consistent feature flag names as in CrOS base::Feature::name and always
   // wire 1:1 to CrOS feature flags without extra logic.
@@ -229,8 +249,12 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
   }
 }
 
-const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
-  return MojoEmbedderGetSystemThunks32();
+const void* ImeService::Unused4() {
+  return nullptr;
+}
+
+const MojoSystemThunks2* ImeService::GetMojoSystemThunks2() {
+  return MojoEmbedderGetSystemThunks2();
 }
 
 void ImeService::Unused1() {

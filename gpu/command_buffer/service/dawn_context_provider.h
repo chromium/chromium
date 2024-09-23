@@ -8,11 +8,10 @@
 #include <dawn/platform/DawnPlatform.h>
 
 #include <memory>
-
 #include <optional>
+
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -33,52 +32,61 @@ class Context;
 }  // namespace skgpu::graphite
 
 namespace gpu {
-namespace webgpu {
-class DawnInstance;
-}  // namespace webgpu
+
+class DawnSharedContext;
 
 class GPU_GLES2_EXPORT DawnContextProvider {
  public:
-  using CacheBlobCallback = webgpu::DawnCachingInterface::CacheBlobCallback;
+  using ValidateAdapterFn =
+      base::FunctionRef<bool(wgpu::BackendType, wgpu::Adapter)>;
+
+  // `validate_adapter_fn` will be called after the wgpu::Adapter is available
+  // to check if it should be used. If the function returns false creation will
+  // fail.
   static std::unique_ptr<DawnContextProvider> Create(
-      const GpuPreferences& gpu_preferences = GpuPreferences(),
+      const GpuPreferences& gpu_preferences,
+      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn,
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds(),
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
-      CacheBlobCallback callback = {});
+          GpuDriverBugWorkarounds());
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
-      bool force_fallback_adapter = false,
-      const GpuPreferences& gpu_preferences = GpuPreferences(),
+      bool force_fallback_adapter,
+      const GpuPreferences& gpu_preferences,
+      ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn,
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
-          GpuDriverBugWorkarounds(),
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
-      CacheBlobCallback callback = {});
+          GpuDriverBugWorkarounds());
+
+  // Creates a new context provider for use on a different thread that shares
+  // the wgpu::Device/Adapter/Instance with `existing`.
+  static std::unique_ptr<DawnContextProvider> CreateWithSharedDevice(
+      const DawnContextProvider* existing);
 
   static wgpu::BackendType GetDefaultBackendType();
   static bool DefaultForceFallbackAdapter();
 
+  // Default function that will say adapter is supported.
+  static bool DefaultValidateAdapterFn(wgpu::BackendType, wgpu::Adapter);
+
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;
-
   ~DawnContextProvider();
 
-  wgpu::Device GetDevice() const { return device_; }
-  wgpu::BackendType backend_type() const { return backend_type_; }
-  bool is_vulkan_swiftshader_adapter() const {
-    return is_vulkan_swiftshader_adapter_;
-  }
+  wgpu::Device GetDevice() const;
+  wgpu::BackendType backend_type() const;
+  bool is_vulkan_swiftshader_adapter() const;
+  wgpu::Adapter GetAdapter() const;
   wgpu::Instance GetInstance() const;
 
+  // Sets the caching interface. This must be called before graphite context
+  // is created and before device is shared with any other threads.
+  void SetCachingInterface(
+      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
+
   bool InitializeGraphiteContext(
-      const skgpu::graphite::ContextOptions& options);
+      const skgpu::graphite::ContextOptions& context_options);
 
   skgpu::graphite::Context* GetGraphiteContext() const {
     return graphite_context_.get();
-  }
-
-  webgpu::DawnCachingInterfaceFactory* caching_interface_factory() const {
-    return caching_interface_factory_.get();
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -89,29 +97,12 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
-  void OnError(WGPUErrorType error_type, const char* message);
-
  private:
   explicit DawnContextProvider(
-      webgpu::DawnCachingInterfaceFactory* caching_interface_factory);
+      scoped_refptr<DawnSharedContext> dawn_shared_context);
 
-  bool Initialize(wgpu::BackendType backend_type,
-                  bool force_fallback_adapter,
-                  const GpuPreferences& gpu_preferences,
-                  const GpuDriverBugWorkarounds& gpu_driver_workarounds,
-                  CacheBlobCallback callback);
-
-  raw_ptr<webgpu::DawnCachingInterfaceFactory> caching_interface_factory_;
-  std::unique_ptr<dawn::platform::Platform> platform_;
-  std::unique_ptr<webgpu::DawnInstance> instance_;
-  wgpu::Device device_;
-  wgpu::BackendType backend_type_;
-  bool is_vulkan_swiftshader_adapter_ = false;
+  scoped_refptr<DawnSharedContext> dawn_shared_context_;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
-
-  mutable base::Lock context_lost_lock_;
-  std::optional<error::ContextLostReason> context_lost_reason_
-      GUARDED_BY(context_lost_lock_);
 };
 
 }  // namespace gpu

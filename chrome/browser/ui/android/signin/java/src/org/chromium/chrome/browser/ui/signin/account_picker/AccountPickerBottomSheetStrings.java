@@ -5,25 +5,65 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.ui.signin.R;
+/* Class containing string resource ids for the sign-in account picker bottom sheet. */
+public final class AccountPickerBottomSheetStrings {
+    public final @StringRes int titleStringId;
+    public final @StringRes int subtitleStringId;
+    public final @StringRes int dismissButtonStringId;
 
-/**
- * Interface to support different implementations for bottom sheet signin
- * dialog strings.
- */
-public interface AccountPickerBottomSheetStrings {
-    /** Returns the title string for the bottom sheet dialog. */
-    default @StringRes int getTitle() {
-        return R.string.signin_account_picker_dialog_title;
+    // Private constructor to enforce the use of the Builder.
+    private AccountPickerBottomSheetStrings(
+            @StringRes int titleStringId,
+            @StringRes int subtitleStringId,
+            @StringRes int dismissButtonStringId) {
+        this.titleStringId = titleStringId;
+        this.subtitleStringId = subtitleStringId;
+        this.dismissButtonStringId = dismissButtonStringId;
     }
 
-    /** Returns the subtitle string for the bottom sheet dialog. */
-    default @StringRes int getSubtitle() {
-        return R.string.signin_account_picker_bottom_sheet_subtitle;
-    }
+    /**
+     * Builder for {@link AccountPickerBottomSheetStrings} which contains string IDs for the sign-in
+     * bottom sheet.
+     */
+    public static class Builder {
+        private final @StringRes int mTitleStringId;
+        private @StringRes int mSubtitleStringId;
+        private @StringRes int mDismissButtonStringId;
 
-    /** Returns the cancel button string for the bottom sheet dialog. */
-    default @StringRes int getDismissButton() {
-        return R.string.signin_account_picker_dismiss_button;
+        /**
+         * Creates the Builder for AccountPickerBottomSheetStrings.
+         *
+         * @param titleStringId ID for the title string. Should be a non-zero valid string ID.
+         */
+        public Builder(@StringRes int titleStringId) {
+            assert titleStringId != 0;
+            mTitleStringId = titleStringId;
+        }
+
+        /**
+         * Sets the resource ID for the bottom sheet subtitle string.
+         *
+         * @param stringId ID for the subtitle string.
+         */
+        public Builder setSubtitleStringId(@StringRes int stringId) {
+            mSubtitleStringId = stringId;
+            return this;
+        }
+
+        /**
+         * Sets the resource ID for the dismiss button string.
+         *
+         * @param stringId ID for the dismiss button string.
+         */
+        public Builder setDismissButtonStringId(@StringRes int stringId) {
+            mDismissButtonStringId = stringId;
+            return this;
+        }
+
+        /** Builds the AccountPickerBottomSheetStrings. */
+        public AccountPickerBottomSheetStrings build() {
+            return new AccountPickerBottomSheetStrings(
+                    mTitleStringId, mSubtitleStringId, mDismissButtonStringId);
+        }
     }
 }

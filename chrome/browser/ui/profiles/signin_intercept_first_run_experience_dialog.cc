@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -110,8 +111,9 @@ void SigninInterceptFirstRunExperienceDialog::
         const std::string& previous_email,
         const std::string& new_email,
         signin::SigninChoiceCallback callback) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a profile for an "
-                  "account known to Chrome";
+  NOTREACHED_IN_MIGRATION()
+      << "Sign-in intercept shouldn't create a profile for an "
+         "account known to Chrome";
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -119,8 +121,8 @@ void SigninInterceptFirstRunExperienceDialog::
         const AccountInfo& account_info,
         signin::SigninChoiceCallback callback) {
   // This is a brand new profile. Skip the enterprise confirmation.
-  // TODO(crbug.com/1282157): Do not show the sync promo if
-  // PromotionalTabsEnabled policy is set to False
+  // TODO(crbug.com/40209493): Do not show the sync promo if
+  // PromotionsEnabled policy is set to False
   std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
 }
 
@@ -135,11 +137,10 @@ void SigninInterceptFirstRunExperienceDialog::
 
   PrefService* local_state = g_browser_process->local_state();
   if (dialog_->is_forced_intercept_ ||
-      (local_state &&
-       !local_state->GetBoolean(prefs::kPromotionalTabsEnabled))) {
+      (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled))) {
     // Don't show the sync promo if
     // - the user went through the forced interception, or
-    // - promotional tabs are disabled by policy.
+    // - promotional tabs, or promotions in general, are disabled by policy.
     dialog_->DoNextStep(Step::kTurnOnSync, Step::kProfileCustomization);
     std::move(callback).Run(LoginUIService::ABORT_SYNC);
     return;
@@ -170,7 +171,7 @@ void SigninInterceptFirstRunExperienceDialog::
             callback) {
   // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
   // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -184,8 +185,9 @@ void SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a new profile for an "
-                  "account known to Chrome";
+  NOTREACHED_IN_MIGRATION()
+      << "Sign-in intercept shouldn't create a new profile for an "
+         "account known to Chrome";
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -282,7 +284,7 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
 
   switch (step) {
     case Step::kStart:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case Step::kTurnOnSync:
       DoTurnOnSync();
@@ -310,15 +312,10 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
-  TurnSyncOnHelper::SigninAbortedMode abort_mode =
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)
-          ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
-          : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
-
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,
-                       account_id_, abort_mode,
+                       account_id_,
+                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                        std::make_unique<InterceptTurnSyncOnHelperDelegate>(
                            weak_ptr_factory_.GetWeakPtr()),
                        base::OnceClosure());
@@ -328,7 +325,8 @@ void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
   RecordDialogEvent(DialogEvent::kShowSyncConfirmation);
   SetDialogDelegate(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
-          browser_, /*is_signin_intercept=*/true));
+          browser_, SyncConfirmationStyle::kSigninInterceptModal,
+          /*is_sync_promo=*/true));
   PreloadProfileCustomizationUI();
 }
 
@@ -358,9 +356,10 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
   RecordDialogEvent(DialogEvent::kShowProfileCustomization);
   if (!dialog_delegate_) {
     // Modal dialog doesn't exist yet, create a new one.
-    // TODO(crbug.com/1373101): Add a callback for handling customization result
-    // in `SigninViewControllerDelegate::CreateProfileCustomizationDelegate()`
-    // and pass it to `ProfileCustomizationUI::Initialize()`.
+    // TODO(crbug.com/40241939): Add a callback for handling customization
+    // result in
+    // `SigninViewControllerDelegate::CreateProfileCustomizationDelegate()` and
+    // pass it to `ProfileCustomizationUI::Initialize()`.
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
             browser_, /*is_local_profile_creation=*/false,

@@ -22,7 +22,7 @@
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_test_util.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
@@ -214,9 +214,6 @@ void Move(int profile,
 // |parent| at position |index|.
 void Remove(int profile, const bookmarks::BookmarkNode* parent, size_t index);
 
-// Removes all non-permanent nodes in the bookmark model of profile |profile|.
-void RemoveAll(int profile);
-
 // Sorts the children of the node |parent| in the bookmark model of profile
 // |profile|.
 void SortChildren(int profile, const bookmarks::BookmarkNode* parent);
@@ -300,7 +297,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
 
 // Helper class that reacts to any BookmarkModelObserver event by running a
 // callback provided in the constructor.
-class AnyBookmarkChangeObserver : public bookmarks::BookmarkModelObserver {
+class AnyBookmarkChangeObserver : public bookmarks::BaseBookmarkModelObserver {
  public:
   explicit AnyBookmarkChangeObserver(const base::RepeatingClosure& cb);
   ~AnyBookmarkChangeObserver() override;
@@ -309,53 +306,9 @@ class AnyBookmarkChangeObserver : public bookmarks::BookmarkModelObserver {
   AnyBookmarkChangeObserver& operator=(const AnyBookmarkChangeObserver&) =
       delete;
 
-  // BookmarkModelObserver overrides.
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                           bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* old_parent,
-                         size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
-                         size_t new_index) override;
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
-                         size_t index,
-                         bool added_by_user) override;
-  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
-                             const bookmarks::BookmarkNode* parent,
-                             size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& no_longer_bookmarked) override;
-  void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
-                                const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* node) override;
-  void OnWillChangeBookmarkMetaInfo(
-      bookmarks::BookmarkModel* model,
-      const bookmarks::BookmarkNode* node) override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
-                               const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* model,
-                                  const bookmarks::BookmarkNode* node) override;
-  void OnWillReorderBookmarkNode(bookmarks::BookmarkModel* model,
-                                 const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeChildrenReordered(
-      bookmarks::BookmarkModel* model,
-      const bookmarks::BookmarkNode* node) override;
-  void ExtensiveBookmarkChangesBeginning(
-      bookmarks::BookmarkModel* model) override;
-  void ExtensiveBookmarkChangesEnded(bookmarks::BookmarkModel* model) override;
-  void OnWillRemoveAllUserBookmarks(bookmarks::BookmarkModel* model) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
-                                   const std::set<GURL>& removed_urls) override;
-  void GroupedBookmarkChangesBeginning(
-      bookmarks::BookmarkModel* model) override;
-  void GroupedBookmarkChangesEnded(bookmarks::BookmarkModel* model) override;
+  // BaseBookmarkModelObserver overrides.
+  void BookmarkModelChanged() override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
 
  private:
   const base::RepeatingClosure cb_;

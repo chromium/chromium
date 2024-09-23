@@ -132,7 +132,7 @@ class LoggingURLLoaderFactory final : public SharedURLLoaderFactory {
   }
 
   std::unique_ptr<PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

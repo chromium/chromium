@@ -33,7 +33,7 @@ class ChromeOSCompressedGpuMemoryBufferTest
 };
 
 constexpr VideoPixelFormat kPixelFormats[] = {PIXEL_FORMAT_NV12,
-                                              PIXEL_FORMAT_P016LE};
+                                              PIXEL_FORMAT_P010LE};
 constexpr uint64_t kCompressedBufferModifiers[] = {
     I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS, I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
 
@@ -72,8 +72,7 @@ TEST_P(ChromeOSCompressedGpuMemoryBufferTest,
   }
   EXPECT_EQ(frame->layout().modifier(), modifier);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-  ASSERT_TRUE(frame->HasGpuMemoryBuffer());
-  EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_raw_ptr);
+  EXPECT_EQ(frame->GetGpuMemoryBufferForTesting(), gmb_raw_ptr);
   EXPECT_EQ(frame->coded_size(), kCodedSize);
   EXPECT_EQ(frame->visible_rect(), kVisibleRect);
   EXPECT_EQ(frame->natural_size(), kNaturalSize);

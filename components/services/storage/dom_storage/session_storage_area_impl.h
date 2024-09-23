@@ -95,6 +95,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
   void GetAll(
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
+  void Checkpoint() override;
 
   void FlushForTesting();
 

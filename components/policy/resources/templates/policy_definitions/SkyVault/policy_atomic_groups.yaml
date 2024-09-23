@@ -1,0 +1,5 @@
+SkyVaultSettings:
+  caption: SkyVault (all data in cloud) settings
+  policies:
+  - LocalUserFilesAllowed
+  - LocalUserFilesMigrationDestination

@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "build/buildflag.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -87,7 +88,6 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) override;
   bool HasRefreshToken(const CoreAccountId& account_id) const override;
-  bool FixRequestErrorIfPossible() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
   void OnAccessTokenInvalidated(
@@ -262,6 +262,15 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   void UpdateAuthErrorForTesting(const CoreAccountId& account_id,
                                  const GoogleServiceAuthError& error);
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns the wrapped binding key of a refresh token associated with
+  // `account_id`, if any.
+  // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
+  // and (b) the refresh token is bound to a device.
+  std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const;
+#endif
+
   void set_max_authorization_token_fetch_retries_for_testing(int max_retries);
 
   // Override |token_manager_| for testing.
@@ -276,10 +285,14 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
  private:
   friend class signin::IdentityManager;
 
+  void FixAccountErrorIfPossible();
+
   // ProfileOAuth2TokenServiceObserver implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
+
+  void OnRefreshTokenRevokedNotified(const CoreAccountId& account_id);
 
   // Creates a new device ID if there are no accounts, or if the current device
   // ID is empty.
@@ -288,18 +301,14 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   raw_ptr<PrefService> user_prefs_;
 
   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 
   // Whether all credentials have been loaded.
   bool all_credentials_loaded_;
 
   std::unique_ptr<OAuth2AccessTokenManager> token_manager_;
-
-  // Callbacks to invoke, if set, for refresh token-related events.
-  RefreshTokenAvailableFromSourceCallback on_refresh_token_available_callback_;
-  RefreshTokenRevokedFromSourceCallback on_refresh_token_revoked_callback_;
-
-  signin_metrics::SourceForRefreshTokenOperation update_refresh_token_source_ =
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown;
 
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceTest,
                            SameScopesRequestedForDifferentClients);

@@ -46,7 +46,7 @@
 <translation id="1363028406613469049">ट्रैक</translation>
 <translation id="1378727793141957596">Google डिस्क में आपका स्वागत है!</translation>
 <translation id="1379911846207762492">आप ऑफ़लाइन मोड में ऐक्सेस करने के लिए फ़ाइलें डाउनलोड कर सकते हैं.</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1388045380422025115">सभी तरह की फ़ाइलें</translation>
 <translation id="1395262318152388157">सीक स्‍लाइडर</translation>
 <translation id="1399511500114202393">कोई 'उपयोगकर्ता प्रमाणपत्र' नहीं</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS होस्ट</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
-<translation id="3113153474486991170">इस लोकेशन से "<ph name="PATH" />" नहीं खोला जा सका. खोलने के लिए, कृपया "मेरी फ़ाइलें" पर कॉपी करें.</translation>
 <translation id="3113592018909187986">आप एक बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>
 <translation id="3124404833828281817">कुछ सोचता हुआ व्यक्ति</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3691184985318546178">सिंहला</translation>
+<translation id="3702842351052426940">ऐसा हो सकता है कि आपका सिम कार्ड या आपकी ई-सिम प्रोफ़ाइल बंद हो गई हो. सिम कार्ड बदलें या ई-सिम प्रोफ़ाइलों पर स्विच करें.</translation>
 <translation id="3722341589402358578">कोई गड़बड़ी हुई. हो सकता है कि कुछ आइटम ट्रैश में न भेजे गए हों.</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">यह प्रॉक्सी आपके व्‍यवस्‍थापक ने लागू किया है</translation>
 <translation id="3830674330436234648">कोई प्लेबैक उपलब्ध नहीं है</translation>
 <translation id="383652340667548381">सर्बियाई</translation>
+<translation id="3839045880592694915">मोबाइल और इंटरनेट सेवा देने वाली कंपनी, आपके मॉडम को कनेक्ट करने की अनुमति नहीं दे रही है. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
-<translation id="3851491607336266896">कनेक्ट हो गया, सीमित कनेक्टिविटी</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3866249974567520381">वर्णन</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">हाल ही में खोली गई Microsoft फ़ाइलों को OneDrive में भेज दिया गया है</translation>
 <translation id="4002066346123236978">टाइटल</translation>
 <translation id="4017788180641807848">वर्कमैन कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
-<translation id="4019998208269143058">क्विक फ़ाइलों में पिन करें</translation>
 <translation id="4040753847560036377">PUK गलत है</translation>
 <translation id="4057991113334098539">सक्रिय कर रहा है...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
+<translation id="4101601646343868113">अपने मोबाइल नेटवर्क में साइन इन करें और पुष्टि करें कि आपका मोबाइल डेटा प्लान चालू है</translation>
 <translation id="4124731372776320263">Drive की एक फ़ाइल सिंक की जा रही है</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil99 कीबोर्ड के साथ तमिल</translation>
 <translation id="5633226425545095130">इस आइटम को कहीं और ट्रांसफ़र करने से, यह उन सभी लोगों के साथ शेयर हो जाएगा जो इस शेयर किए जाने वाले फ़ोल्डर '<ph name="DESTINATION_NAME" />' को देख सकते हैं.</translation>
 <translation id="5649768706273821470">सुनें</translation>
+<translation id="5650895901941743674">अपने एपीएन कॉन्फ़िगरेशन की जांच करें</translation>
 <translation id="5669691691057771421">नया पिन डालें</translation>
 <translation id="5678784840044122290">Linux ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध होगा और आपके 'लॉन्चर' में एक आइकॉन भी दिखाई दे सकता है.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />किसी संग्रह या वर्चुअल डिस्क से डिसकनेक्ट नहीं किया जा सकता<ph name="END_BOLD" />
@@ -675,7 +676,7 @@
 <translation id="6181912134988520389"><ph name="VM_NAME" /> को अपने Google Drive में मौजूद फ़ाइलें ऐक्सेस करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
-<translation id="6199801702437275229">स्थान जानकारी की प्रतीक्षा कर रहा है...</translation>
+<translation id="6199801702437275229">स्टोरेज की जानकारी का इंतज़ार किया जा रहा है...</translation>
 <translation id="6205710420833115353">कुछ काम करने में उम्मीद से ज़्यादा समय लग रहा है. क्या आप उन्हें रद्द करना चाहते हैं?</translation>
 <translation id="6220423280121890987">पंजाबी</translation>
 <translation id="6224240818060029162">डेनिश</translation>
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करें</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6271903698064569429">फ़ाइलों को अपलोड नहीं किया जा सकता, क्योंकि "<ph name="SHARED_DRIVE_NAME" />" में ज़रूरत के मुताबिक स्टोरेज नहीं है.</translation>
+<translation id="6279140785485544797">ऐसा हो सकता है कि आपका मोबाइल डेटा प्लान खत्म हो गया हो. सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6287852322318138013">यह फ़ाइल खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="6295542640242147836">सिम लॉक करें</translation>
 <translation id="6296410173147755564">PUK अमान्य है</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> संग्रह</translation>
 <translation id="6321303798550928047">हाथ हिलाना</translation>
 <translation id="6327785803543103246">वेब प्रॉक्सी अपने आप खोज</translation>
-<translation id="6337014272874260727">क्विक फ़ाइलों से अनपिन करें</translation>
 <translation id="6339145975392024142">यू.एस. अंतर्राष्ट्रीय (पीसी)</translation>
 <translation id="6356685157277930264">फ़ाइलों के सुझाव वाली विंडो</translation>
 <translation id="6358884629796491903">ड्रैगन</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">मौजूदा डायरेक्ट्री</translation>
 <translation id="6751256176799620176">1 फ़ोल्डर चयनित</translation>
 <translation id="6755827872271341378">ChromeOS Flex वाला डिवाइस</translation>
+<translation id="6777029074498310250">ज़्यादा जानकारी के लिए, <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> पर जाएं</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6794539005637808366">आइटम को वापस लाएं या इसे खींचकर ट्रैश के बाहर किसी नए फ़ोल्डर में ले जाएं</translation>
 <translation id="6795884519221689054">पांडा</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">इनस्क्रिप्ट कीबोर्ड के साथ तमिल</translation>
 <translation id="7088615885725309056">इससे पुराने</translation>
 <translation id="7103992300314999525">मेसिडोनियन</translation>
+<translation id="7104338189998813914">आपके OneDrive खाते को ऐक्सेस करने में कोई समस्या हुई</translation>
 <translation id="7106346894903675391">ज़्यादा स्टोरेज खरीदें...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;खोज डिस्क&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड़ फ़ोनेटिक</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">बस एक सेकंड इंतज़ार करें</translation>
 <translation id="7600126690270271294">सर्बियन</translation>
 <translation id="7603724359189955920">ग्रिड</translation>
+<translation id="7624010287655004652">इसे मोबाइल और इंटरनेट सेवा देने वाली किसी अन्य कंपनी ने लॉक किया है</translation>
 <translation id="7627790789328695202">ओह, <ph name="FILE_NAME" /> पहले से मौजूद है. उसका नाम बदलें और फिर से प्रयास करें.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% पूरा हाे गया.</translation>
 <translation id="7649070708921625228">सहायता</translation>
@@ -879,9 +883,7 @@
 <translation id="7774365994322694683">पक्षी</translation>
 <translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> आइटम वापस लाए गए</translation>
 <translation id="7781829728241885113">बीता कल</translation>
-<translation id="7788080748068240085">"<ph name="FILE_NAME" />" को ऑफ़लाइन सेव करने के लिए आपको <ph name="TOTAL_FILE_SIZE" /> की और ज़्यादा जगह खाली करनी होगी :<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />उन फ़ाइलों को अनपिन करें जिन्हें अब आप ऑफ़लाइन एक्सेस नहीं करना चाहते हैं<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>
+<translation id="7788080748068240085">"<ph name="FILE_NAME" />" को ऑफ़लाइन सेव करने के लिए आपको <ph name="TOTAL_FILE_SIZE" /> जगह और खाली करनी होगी :<ph name="MARKUP_1" /> <ph name="MARKUP_2" />उन फ़ाइलों को अनपिन करें जिन्हें अब आपको ऑफ़लाइन एक्सेस नहीं करना है<ph name="MARKUP_3" /> <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">डिवाइस स्‍वरूपित करें</translation>
 <translation id="7799329977874311193">HTML दस्‍तावेज़</translation>
 <translation id="7801354353640549019">Chromebook</translation>
@@ -1009,6 +1011,7 @@
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>
+<translation id="8630384863424041081">अपने सिम कार्ड का पिन या मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला डिफ़ॉल्ट पिन डालें. सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="863903787380594467">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">आपकी ऑफ़लाइन फ़ाइलों को हटा दिया गया</translation>
@@ -1018,7 +1021,6 @@
 <translation id="8698877009525468705">यह फ़ाइल गोपनीय है और एडमिन की नीति के तहत, इस पर पाबंदियां लगाई गई हैं.</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8713112442029511308">माल्टीज़</translation>
-<translation id="8714138378966541668">मोबाइल और इंटरनेट सेवा देने वाली कंपनी ने लॉक किया है</translation>
 <translation id="8714406895390098252">साइकिल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> को चुना गया.</translation>
 <translation id="872537912056138402">क्रोएशियाई</translation>

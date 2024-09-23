@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 
-#import "ios/chrome/browser/ui/permissions/permission_info.h"
-#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
-#import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
@@ -60,6 +60,14 @@
   permissionsDescription.state =
       self.webState->GetStateForPermission(permission);
   [self.consumer permissionStateChanged:permissionsDescription];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  if (_webState && _observer) {
+    _webState->RemoveObserver(_observer.get());
+    _observer.reset();
+    _webState = nullptr;
+  }
 }
 
 #pragma mark - PermissionsDelegate

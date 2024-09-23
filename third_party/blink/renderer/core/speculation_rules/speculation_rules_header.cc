@@ -9,8 +9,6 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
@@ -20,7 +18,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/resource/speculation_rules_resource.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -32,16 +29,6 @@
 
 namespace blink {
 
-namespace {
-
-// These are the only trials which can be enabled via this approach.
-// This is not a general-purpose way of enabling trials.
-constexpr base::StringPiece kSpeculationRulesHeaderTrials[] = {
-    "SpeculationRulesPrefetchFuture",
-};
-
-}  // namespace
-
 SpeculationRulesHeader::SpeculationRulesHeader() = default;
 SpeculationRulesHeader::~SpeculationRulesHeader() = default;
 
@@ -49,17 +36,6 @@ SpeculationRulesHeader::~SpeculationRulesHeader() = default;
 void SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
     const ResourceResponse& response,
     LocalDOMWindow& window) {
-  // If speculation rules fetch from header isn't enabled, nor is the ability to
-  // turn it on given an Origin-Trial token found in the same response, then we
-  // should not process the Speculation-Rules header at all.
-  const bool can_enable_origin_trial = base::FeatureList::IsEnabled(
-      features::kSpeculationRulesHeaderEnableThirdPartyOriginTrial);
-  if (!RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
-          &window) &&
-      !can_enable_origin_trial) {
-    return;
-  }
-
   // If the Speculation-Rules header isn't present at all, then there's nothing
   // to do.
   const AtomicString& header_value =
@@ -71,22 +47,8 @@ void SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
 
   SpeculationRulesHeader self;
   self.ParseSpeculationRulesHeader(header_value, window.BaseURL());
-
-  // If we might be able to enable an origin trial, parse the Origin-Trial
-  // header to find the relevant tokens and load them in.
-  if (can_enable_origin_trial) {
-    self.ParseOriginTrialHeader(
-        response.HttpHeaderField(http_names::kOriginTrial),
-        window.GetSecurityContext());
-    self.MaybeEnableFeatureFromOriginTrial(window);
-  }
-
-  // After doing so, if fetching Speculation-Rules from a header is enabled, we
-  // can proceed.
-  if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(&window)) {
-    self.ReportErrors(window);
-    self.StartFetches(*window.document());
-  }
+  self.ReportErrors(window);
+  self.StartFetches(*window.document());
 }
 
 void SpeculationRulesHeader::ParseSpeculationRulesHeader(
@@ -94,9 +56,16 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
     const KURL& base_url) {
   auto parsed_header = net::structured_headers::ParseList(header_value.Utf8());
   if (!parsed_header.has_value()) {
+    String message = "Cannot parse Speculation-Rules header value.";
+    if (KURL(base_url, header_value.StripWhiteSpace()).IsValid()) {
+      message = message + " However, " +
+                header_value.StripWhiteSpace().EncodeForDebugging() +
+                " appears to be a valid URL. "
+                "You may need to enclose it in quotation marks.";
+    }
     errors_.push_back(std::pair(
         SpeculationRulesLoadOutcome::kUnparseableSpeculationRulesHeader,
-        "Cannot parse Speculation-Rules header value."));
+        message));
     return;
   }
 
@@ -111,10 +80,21 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
     // Only strings are valid list members.
     if (parsed_item.member.size() != 1u ||
         !parsed_item.member[0].item.is_string()) {
+      String message =
+          "Only strings are valid in Speculation-Rules header value "
+          "and inner lists are ignored.";
+      if (parsed_item.member.size() == 1u &&
+          parsed_item.member[0].item.is_token()) {
+        String token = String::FromUTF8(parsed_item.member[0].item.GetString());
+        if (KURL(base_url, token).IsValid()) {
+          message = message + " However, " + token.EncodeForDebugging() +
+                    " appears to be a valid URL. "
+                    "You may need to enclose it in quotation marks.";
+        }
+      }
       errors_.push_back(std::pair(
           SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem,
-          "Only strings are valid in Speculation-Rules header value "
-          "and inner lists are ignored."));
+          message));
       continue;
     }
     const auto& url_str = String(parsed_item.member[0].item.GetString());
@@ -127,89 +107,6 @@ void SpeculationRulesHeader::ParseSpeculationRulesHeader(
       continue;
     }
     urls_.push_back(std::move(speculation_rule_url));
-  }
-}
-
-// This extracts tokens from the Origin-Trial header and validates them.
-//
-// In particular, while OriginTrialContext takes care of the standard
-// validation, we want to expressly check that only certain speculation rules
-// related origin trials can be enabled in connection with the Speculation-Rules
-// header.
-//
-// This is not intended be a general way of enabling origin trials; this applies
-// only to certain trials, and then only to tokens which can be enabled via a
-// third-party origin.
-//
-// To confirm this we need to invoke some of the validation code to obtain a
-// parsed and validated token, and examine the contained feature name, before
-// storing in the set of tokens which will be injected into OriginTrialContext.
-void SpeculationRulesHeader::ParseOriginTrialHeader(
-    const String& header_value,
-    SecurityContext& security_context) {
-  std::unique_ptr<Vector<String>> tokens =
-      OriginTrialContext::ParseHeaderValue(header_value);
-  if (!tokens || tokens->empty())
-    return;
-
-  // Use an opaque origin as the first-party origin, so that we won't end up
-  // accepting any tokens which are valid as first-party. The normal code path
-  // should handle those.
-  TrialTokenValidator::OriginInfo first_party{
-      SecurityOrigin::CreateUniqueOpaque()->ToUrlOrigin(),
-      security_context.GetSecureContextMode() ==
-          SecureContextMode::kSecureContext,
-  };
-  Vector<TrialTokenValidator::OriginInfo> third_parties;
-  for (const KURL& url : urls_) {
-    auto origin = SecurityOrigin::Create(url);
-    if (origin->IsOpaque() ||
-        origin->IsSameOriginWith(security_context.GetSecurityOrigin())) {
-      continue;
-    }
-    third_parties.emplace_back(origin->ToUrlOrigin());
-  }
-
-  TrialTokenValidator validator;
-  for (String& token : *tokens) {
-    TrialTokenResult result = validator.ValidateTokenAndTrialWithOriginInfo(
-        StringUTF8Adaptor(token).AsStringPiece(), first_party, third_parties,
-        base::Time::Now());
-
-    // Don't store tokens which don't validate.
-    if (result.Status() != OriginTrialTokenStatus::kSuccess)
-      continue;
-
-    const auto& parsed_token = *result.ParsedToken();
-    DCHECK(parsed_token.is_third_party());
-
-    // Don't store tokens which correspond to a trial that is not in the allow
-    // list.
-    if (!base::Contains(kSpeculationRulesHeaderTrials,
-                        parsed_token.feature_name())) {
-      continue;
-    }
-
-    origin_trial_tokens_.push_back(std::move(token));
-  }
-}
-
-void SpeculationRulesHeader::MaybeEnableFeatureFromOriginTrial(
-    ExecutionContext& execution_context) {
-  Vector<scoped_refptr<SecurityOrigin>> external_origins;
-  for (const KURL& url : urls_) {
-    auto origin = SecurityOrigin::Create(url);
-    if (origin->IsOpaque() ||
-        execution_context.GetSecurityOrigin()->IsSameOriginWith(origin.get())) {
-      continue;
-    }
-    external_origins.push_back(std::move(origin));
-  }
-  if (external_origins.empty() || origin_trial_tokens_.empty())
-    return;
-  for (const String& token : origin_trial_tokens_) {
-    execution_context.GetOriginTrialContext()->AddTokenFromExternalScript(
-        token, external_origins);
   }
 }
 

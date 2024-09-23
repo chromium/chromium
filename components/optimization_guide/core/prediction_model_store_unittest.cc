@@ -107,7 +107,7 @@ class PredictionModelStoreTest : public testing::Test {
     for (const auto* additional_file_name : additional_file_names) {
       base::WriteFile(base_model_dir.Append(additional_file_name), "");
       model_info.add_additional_files()->set_file_path(
-          FilePathToString(base_model_dir.Append(additional_file_name)));
+          FilePathToString(base::FilePath(additional_file_name)));
     }
     *model_info.mutable_model_cache_key() = model_cache_key;
     std::string model_info_pb;
@@ -207,7 +207,15 @@ TEST_F(PredictionModelStoreTest, ModelWithAdditionalFile) {
                                                 model_cache_key));
 
   WaitForModeLoad(kTestOptimizationTargetFoo, model_cache_key);
-  EXPECT_TRUE(last_loaded_prediction_model());
+  auto* loaded_model = last_loaded_prediction_model();
+  EXPECT_TRUE(loaded_model);
+  EXPECT_EQ(1, loaded_model->model_info().additional_files_size());
+  auto additional_file = *StringToFilePath(
+      loaded_model->model_info().additional_files(0).file_path());
+  EXPECT_EQ(FILE_PATH_LITERAL("valid_additional_file.txt"),
+            additional_file.BaseName().value());
+  EXPECT_TRUE(additional_file.IsAbsolute());
+  EXPECT_TRUE(base::PathExists(additional_file));
 }
 
 // Tests model with invalid additional file.

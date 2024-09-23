@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] gemm two float32 2D constant tensors options.c
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors options.c
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors broadcast options.c [3, 1] => [3, 5]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 1] => [3, 5]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors broadcast options.c [1] => [3, 5]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors scalar options.c
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors options.alpha
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gemm doesn't support alpha option."
+[FAIL] gemm two float32 2D tensors options.beta
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gemm doesn't support beta option."
+[FAIL] gemm two float32 2D tensors options.c and options.beta
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm two float32 2D tensors options.aTranspose being true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gemm doesn't support aTranspose option."
+[FAIL] gemm two float32 2D tensors all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm both negative options.alpha and 1st float32 input tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm both negative options.alpha and 2nd float32 input tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm both negative options.beta and 3rd float32 input tensor (options.c)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm both negative options.alpha and options.beta
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+[FAIL] gemm both negative options.alpha and 3rd float32 input tensor (options.c)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The dimensions of bias must be [5]."
+Harness: the test ran to completion.
+

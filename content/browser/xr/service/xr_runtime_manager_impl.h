@@ -58,7 +58,9 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // If The singleton is not currently instantiated, this instantiates it with
   // the built-in set of providers.
   // The singleton will persist until all pointers have been dropped.
-  static scoped_refptr<XRRuntimeManagerImpl> GetOrCreateInstance();
+  static scoped_refptr<XRRuntimeManagerImpl> GetOrCreateInstance(
+      WebContents& web_contents);
+  static scoped_refptr<XRRuntimeManagerImpl> GetOrCreateInstanceForTesting();
 
   // Returns the WebContents currently being displayed in a WebXR Immersive
   // Session, if any, null otherwise.
@@ -112,9 +114,12 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   std::vector<webxr::mojom::RuntimeInfoPtr> GetActiveRuntimes();
 
  private:
+  static scoped_refptr<XRRuntimeManagerImpl> GetOrCreateRuntimeManagerInternal(
+      WebContents* web_contents);
   // Constructor also used by tests to supply an arbitrary list of providers
   static scoped_refptr<XRRuntimeManagerImpl> CreateInstance(
-      XRProviderList providers);
+      XRProviderList providers,
+      WebContents* contents);
 
   // Used by tests to check on runtime state.
   device::mojom::XRRuntime* GetRuntimeForTest(device::mojom::XRDeviceId id);
@@ -122,11 +127,12 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // Used by tests
   size_t NumberOfConnectedServices();
 
-  explicit XRRuntimeManagerImpl(XRProviderList providers);
+  explicit XRRuntimeManagerImpl(XRProviderList providers,
+                                WebContents* web_contents);
 
   ~XRRuntimeManagerImpl() override;
 
-  void InitializeProviders(VRServiceImpl* initializing_service);
+  void InitializeProviders(WebContents* web_contents);
   bool AreAllProvidersInitialized();
 
   bool IsInitializedOnCompatibleAdapter(BrowserXRRuntimeImpl* runtime);

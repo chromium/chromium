@@ -123,7 +123,7 @@ bool g_window_has_focus = false;
 
 class TestRenderWidgetHostView : public RenderWidgetHostViewAura {
  public:
-  TestRenderWidgetHostView(RenderWidgetHost* host)
+  explicit TestRenderWidgetHostView(RenderWidgetHost* host)
       : RenderWidgetHostViewAura(host) {}
   ~TestRenderWidgetHostView() override {}
 
@@ -188,8 +188,7 @@ void FakeKeyboardLockWebContentsDelegate::RequestKeyboardLock(
     WebContents* web_contents,
     bool esc_key_locked) {
   keyboard_lock_requested_ = true;
-  if (is_fullscreen_)
-    web_contents->GotResponseToKeyboardLockRequest(/*allowed=*/true);
+  web_contents->GotResponseToKeyboardLockRequest(/*allowed=*/true);
 }
 
 void FakeKeyboardLockWebContentsDelegate::CancelKeyboardLockRequest(
@@ -283,7 +282,6 @@ void KeyboardLockBrowserTest::SetUp() {
 
 void KeyboardLockBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  ContentBrowserTest::SetUpCommandLine(command_line);
   mock_cert_verifier_.SetUpCommandLine(command_line);
 }
 

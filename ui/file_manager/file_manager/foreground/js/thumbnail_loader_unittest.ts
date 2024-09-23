@@ -4,13 +4,14 @@
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import type {ImageOrientation, ImageTransformParam} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_orientation.js';
-import {type LoadImageRequest, LoadImageResponse} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import type {LoadImageResponse} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {type LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 
 import type {ThumbnailMetadataItem} from './metadata/thumbnail_model.js';
-import {FillMode, LoaderType, LoadTarget, ThumbnailLoader} from './thumbnail_loader.js';
+import {FillMode, LoadTarget, ThumbnailLoader} from './thumbnail_loader.js';
 
 type MockLoad =
     (request: LoadImageRequest,
@@ -18,8 +19,7 @@ type MockLoad =
 
 function getLoadTarget(
     entry: Entry, metadata: Partial<ThumbnailMetadataItem>|undefined) {
-  return new ThumbnailLoader(
-             entry, LoaderType.CANVAS, metadata as ThumbnailMetadataItem)
+  return new ThumbnailLoader(entry, metadata as ThumbnailMetadataItem)
       .getLoadTarget();
 }
 
@@ -125,7 +125,7 @@ export async function testLoadAsDataUrlFromExifThumbnail() {
 
   const fileSystem = new MockFileSystem('volume-id');
   const entry = new MockEntry(fileSystem, '/Test1.jpg');
-  const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
+  const thumbnailLoader = new ThumbnailLoader(entry, metadata);
   const result = await thumbnailLoader.loadAsDataUrl(FillMode.OVER_FILL);
   assertEquals(metadata.thumbnail.url, result.data);
 }
@@ -159,7 +159,7 @@ export async function testLoadAsDataUrlFromExifThumbnailPropagatesTransform() {
 
   const fileSystem = new MockFileSystem('volume-id');
   const entry = new MockEntry(fileSystem, '/Test1.jpg');
-  const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
+  const thumbnailLoader = new ThumbnailLoader(entry, metadata);
   const result = await thumbnailLoader.loadAsDataUrl(FillMode.OVER_FILL);
   assertEquals(32, result.width);
   assertEquals(64, result.height);
@@ -193,7 +193,7 @@ export async function testLoadAsDataUrlFromExternal() {
 
   const fileSystem = new MockFileSystem('volume-id');
   const entry = new MockEntry(fileSystem, '/Test1.jpg');
-  const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
+  const thumbnailLoader = new ThumbnailLoader(entry, metadata);
   const result = await thumbnailLoader.loadAsDataUrl(FillMode.OVER_FILL);
   assertEquals(externalThumbnailDataUrl, result.data);
 }

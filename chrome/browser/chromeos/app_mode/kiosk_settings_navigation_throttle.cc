@@ -73,7 +73,7 @@ KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Kiosk check.
-  if (!chrome::IsRunningInForcedAppMode()) {
+  if (!IsRunningInForcedAppMode()) {
     return nullptr;
   }
   // If the web contents were previously marked as restricted, attach a throttle

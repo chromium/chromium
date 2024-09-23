@@ -51,7 +51,7 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    // TODO(crbug.com/40285326): This fails with the field trial testing config.
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
@@ -82,9 +82,8 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
  protected:
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
-    TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                        autofill::AutofillClient* client)
-        : autofill::BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+        : autofill::BrowserAutofillManager(driver, "en-US") {}
 
     [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
         int min_num_awaited_calls) {
@@ -111,15 +110,9 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
             web_contents()->GetPrimaryMainFrame());
     return static_cast<TestAutofillManager&>(driver->GetAutofillManager());
   }
-
-  // At the chrome layer, an outstanding request to /favicon.ico is made. It is
-  // made by the renderer on behalf of the browser process. It counts as an
-  // outstanding request, which prevents the page from entering the
-  // BackForwardCache, as long as it hasn't resolved. Here we use it the same
-  // reason as ChromeBackForwardCacheBrowserTest.
+  // Returns a URL with host `host` and path "/title1.html".
   GURL GetURLWithHost(const std::string& host) {
-    return embedded_test_server()->GetURL(
-        host, "/back_forward_cache/no-favicon.html");
+    return embedded_test_server()->GetURL(host, "/title1.html");
   }
 
   GURL GetTestFormUrl() {

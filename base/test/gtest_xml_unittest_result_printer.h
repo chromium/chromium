@@ -61,8 +61,12 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
                            const std::string& message);
 
   static XmlUnitTestResultPrinter* instance_;
-  raw_ptr<FILE> output_file_{nullptr};
-  bool open_failed_{false};
+  raw_ptr<FILE> output_file_ = nullptr;
+  bool open_failed_ = false;
+
+  // Flag that's true iff a test has been started but not yet ended.
+  bool test_running_ = false;
+
   ThreadChecker thread_checker_;
 };
 

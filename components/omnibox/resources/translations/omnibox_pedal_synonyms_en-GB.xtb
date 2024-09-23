@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="101606685846791463">clear browser cache, clear history, delete cookies, erase browsing history</translation>
 <translation id="132297926492792130">control my google account, fix google account, manage google account, manage my google account</translation>
 <translation id="1455865776268085776">enter incognito mode, new incognito window, open incognito tab</translation>
 <translation id="1545931455576308147">share this page, share this tab</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">add address, change delivery address, edit addresses, manage addresses</translation>
 <translation id="7242693601647412075">manage security settings</translation>
 <translation id="7441773108452086364">change gmail password, change my gmail password, google password change, reset gmail account password</translation>
+<translation id="7469628627013714019">delete browser cache, delete history, delete cookies, erase browsing history</translation>
 <translation id="7660956169713698963">customise chrome's accessibility, manage accessibility settings</translation>
 <translation id="7700496593710078083">see chrome history, view browsing history</translation>
 <translation id="7739523284295786564">manage chrome downloads, view downloads</translation>

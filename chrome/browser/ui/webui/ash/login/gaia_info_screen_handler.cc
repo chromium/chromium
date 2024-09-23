@@ -25,8 +25,10 @@ void GaiaInfoScreenHandler::DeclareLocalizedValues(
   builder->AddF("gaiaInfoScreenTitle", IDS_GAIA_INFO_TITLE,
                 ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("gaiaInfoScreenDescription", IDS_GAIA_INFO_DESCRIPTION);
-  builder->Add("gaiaInfoScreenDescriptionQuickStart",
-               IDS_GAIA_INFO_DESCRIPTION_QUICK_START);
+  builder->Add("gaiaInfoScreenDescriptionQuickStartP1",
+               IDS_GAIA_INFO_DESCRIPTION_QUICK_START_P1);
+  builder->Add("gaiaInfoScreenDescriptionQuickStartP2",
+               IDS_GAIA_INFO_DESCRIPTION_QUICK_START_P2);
   builder->Add("gaiaInfoScreenManualFlow", IDS_GAIA_INFO_MANUAL_FLOW);
   builder->Add("gaiaInfoScreenQuickStartFlow", IDS_GAIA_INFO_QUICK_START_FLOW);
 }
@@ -35,8 +37,8 @@ void GaiaInfoScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void GaiaInfoScreenHandler::SetQuickStartVisible() {
-  CallExternalAPI("setQuickStartVisible");
+base::WeakPtr<GaiaInfoScreenView> GaiaInfoScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

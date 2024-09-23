@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertString} from '../assert.js';
+import {assert, assertString} from '../assert.js';
 import * as dom from '../dom.js';
+import {I18nString} from '../i18n_string.js';
 import {getI18nMessage} from '../models/load_time_data.js';
+import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ViewName} from '../type.js';
 
 import {DialogEnterOptions, View} from './view.js';
@@ -26,7 +28,7 @@ export class Dialog extends View {
 
   private readonly titleHolder: HTMLDivElement|null;
 
-  private readonly descHolder: HTMLDivElement|null;
+  protected readonly descHolder: HTMLDivElement|null;
 
   constructor(
       name: ViewName,
@@ -77,5 +79,44 @@ export class Dialog extends View {
     if (this.negativeButton !== null && cancellable !== undefined) {
       this.negativeButton.hidden = !cancellable;
     }
+  }
+}
+
+const HELP_PAGE_URL =
+    'https://support.google.com/chromebook/?p=camera_usage_on_chromebook';
+export class SuperResIntroDialog extends Dialog {
+  constructor() {
+    const learnMoreAction = () => {
+      ChromeHelper.getInstance().openUrlInBrowser(HELP_PAGE_URL);
+      this.leave();
+    };
+    super(
+        ViewName.SUPER_RES_INTRO_DIALOG,
+        {onNegativeButtonClicked: learnMoreAction});
+  }
+
+  override entering(): void {
+    // Replace the description placeholder with PTZ button icon.
+    assert(this.descHolder !== null);
+
+    const ptzIconPlaceholder = '<PTZ ICON>';
+    const desc = getI18nMessage(
+        I18nString.SUPER_RES_INTRO_DIALOG_DESC, ptzIconPlaceholder);
+    const replacePosition = desc.indexOf(ptzIconPlaceholder);
+
+    const textNode = document.createTextNode(desc);
+    const textAfterIcon = textNode.splitText(replacePosition)
+                              .splitText(ptzIconPlaceholder.length);
+
+    const icon = document.createElement('svg-wrapper');
+    icon.name = 'camera_button_ptz_panel.svg';
+
+    const iconWrapper = document.createElement('span');
+    iconWrapper.classList.add('ptz-icon');
+    iconWrapper.setAttribute(
+        'aria-label', getI18nMessage(I18nString.OPEN_PTZ_PANEL_BUTTON));
+    iconWrapper.appendChild(icon);
+
+    this.descHolder.append(textNode, iconWrapper, textAfterIcon);
   }
 }

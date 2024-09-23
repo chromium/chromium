@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_COUNTERS_AUTOFILL_COUNTER_H_
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_AUTOFILL_COUNTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -14,6 +15,7 @@
 
 namespace autofill {
 class AutofillWebDataService;
+class PersonalDataManager;
 }
 
 namespace browsing_data {
@@ -42,7 +44,8 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
     ResultInt num_addresses_;
   };
 
-  explicit AutofillCounter(
+  AutofillCounter(
+      autofill::PersonalDataManager* personal_data_manager,
       scoped_refptr<autofill::AutofillWebDataService> web_data_service,
       syncer::SyncService* sync_service);
 
@@ -80,12 +83,11 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
 
   base::ThreadChecker thread_checker_;
 
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
   SyncTracker sync_tracker_;
 
   WebDataServiceBase::Handle suggestions_query_;
-  WebDataServiceBase::Handle credit_cards_query_;
-  WebDataServiceBase::Handle addresses_query_;
 
   ResultInt num_suggestions_;
   ResultInt num_credit_cards_;

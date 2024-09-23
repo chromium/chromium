@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -213,7 +214,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
         HttpRequestHeaders::kContentType, kUploadContentType, true);
 
     upload->request->set_upload(ElementsUploadDataStream::CreateWithReader(
-        std::move(upload->payload_reader), 0));
+        std::move(upload->payload_reader)));
 
     // Set the max_depth for this request, to cap how deep a stack of "reports
     // about reports" can get.  (Without this, a Reporting policy that uploads
@@ -258,7 +259,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // Grab Upload from map, and hold on to it in a local unique_ptr so it's
     // removed at the end of the method.
     auto it = uploads_.find(request);
-    DCHECK(it != uploads_.end());
+    CHECK(it != uploads_.end(), base::NotFatalUntil::M130);
     std::unique_ptr<PendingUpload> upload = std::move(it->second);
     uploads_.erase(it);
 
@@ -281,7 +282,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
         HandlePayloadResponse(std::move(upload), response_code);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -319,7 +320,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
   void OnReadCompleted(URLRequest* request, int bytes_read) override {
     // Reporting doesn't need anything in the body of the response, so it
     // doesn't read it, so it should never get OnReadCompleted calls.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   int GetPendingUploadCountForTesting() const override {

@@ -65,7 +65,7 @@ def ParseTemplateFile(lines):
   return package, class_name
 
 
-# TODO(crbug.com/937282): Work will be needed if we want to annotate specific
+# TODO(crbug.com/40616187): Work will be needed if we want to annotate specific
 # constants in the file to be parsed.
 class CppConstantParser:
   """Parses C++ constants, retaining their comments.

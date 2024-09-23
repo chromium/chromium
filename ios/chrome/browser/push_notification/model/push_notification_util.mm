@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -35,9 +36,9 @@ enum class PermissionPromptAction {
   kMaxValue = ERROR
 };
 
-enum class ProvisionalPermissionPromptAction {
-  ACCEPTED,
-  OTHERACTIVE,
+enum class ProvisionalPermissionAction {
+  ENABLED,
+  INELIGIBLE,
   ERROR,
   kMaxValue = ERROR
 };
@@ -69,16 +70,16 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 
 @implementation PushNotificationUtil
 
-+ (void)registerDeviceWithAPNS {
++ (void)registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
+    (BOOL)provisionalNotificationsAvailable {
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         // Logs the users iOS settings' push notification permission status over
         // time.
         [PushNotificationUtil
             logPermissionSettingsMetrics:settings.authorizationStatus];
-
         if (settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
-            settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+            provisionalNotificationsAvailable) {
           [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
       }];
@@ -149,6 +150,29 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
   [center getNotificationSettingsWithCompletionHandler:permissionHandler];
 }
 
+// This function returns the value stored in the prefService that represents the
+// user's iOS settings permission status for push notifications.
++ (UNAuthorizationStatus)getSavedPermissionSettings {
+  ApplicationContext* context = GetApplicationContext();
+  PrefService* prefService = context->GetLocalState();
+  int previousStatus =
+      prefService->GetInteger(prefs::kPushNotificationAuthorizationStatus);
+  switch (previousStatus) {
+    case (int)SettingsAuthorizationStatus::NOTDETERMINED:
+      return UNAuthorizationStatusNotDetermined;
+    case (int)SettingsAuthorizationStatus::DENIED:
+      return UNAuthorizationStatusDenied;
+    case (int)SettingsAuthorizationStatus::AUTHORIZED:
+      return UNAuthorizationStatusAuthorized;
+    case (int)SettingsAuthorizationStatus::PROVISIONAL:
+      return UNAuthorizationStatusProvisional;
+    case (int)SettingsAuthorizationStatus::EPHEMERAL:
+      return UNAuthorizationStatusEphemeral;
+    default:
+      return UNAuthorizationStatusNotDetermined;
+  }
+}
+
 // This function updates the value stored in the prefService that represents the
 // user's iOS settings permission status for push notifications. If there is a
 // difference between the prefService's previous value and the new value, the
@@ -167,6 +191,38 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
   if (changeWasLogged) {
     prefService->SetInteger(prefs::kPushNotificationAuthorizationStatus,
                             base::to_underlying(status));
+  }
+}
+
+// Converts an UNAuthorizationStatus enum to a
+// push_notification::SettingsAuthorizationStatus enum.
++ (SettingsAuthorizationStatus)getNotificationSettingsStatusFrom:
+    (UNAuthorizationStatus)status {
+  switch (status) {
+    case UNAuthorizationStatusNotDetermined:
+      // The authorization status is this case when the user has not yet
+      // decided to give Chrome push notification permissions.
+      return SettingsAuthorizationStatus::NOTDETERMINED;
+    case UNAuthorizationStatusDenied:
+      // The authorization status is this case when the user has denied to
+      // give Chrome push notification permissions via the push
+      // notification iOS system permission prompt or by navigating to the iOS
+      // settings and manually enabling it.
+      return SettingsAuthorizationStatus::DENIED;
+    case UNAuthorizationStatusAuthorized:
+      // The authorization status is this case when the user has
+      // authorized to give Chrome push notification permissions via the
+      // push notification iOS system permission prompt or by navigating to the
+      // iOS settings and manually enabling it.
+      return SettingsAuthorizationStatus::AUTHORIZED;
+    case UNAuthorizationStatusProvisional:
+      // The authorization status is this case when Chrome has the ability
+      // to send provisional push notifications.
+      return SettingsAuthorizationStatus::PROVISIONAL;
+    case UNAuthorizationStatusEphemeral:
+      // The authorization status is this case Chrome can receive
+      // notifications for a limited amount of time.
+      return SettingsAuthorizationStatus::EPHEMERAL;
   }
 }
 
@@ -209,9 +265,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
           settings.authorizationStatus == UNAuthorizationStatusProvisional,
           nil);
     }
-    base::UmaHistogramEnumeration(
-        kProvisionalEnabledPermissionsHistogram,
-        ProvisionalPermissionPromptAction::OTHERACTIVE);
+    base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
+                                  ProvisionalPermissionAction::INELIGIBLE);
     return;
   }
   UNAuthorizationOptions options =
@@ -233,7 +288,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
                            granted:(BOOL)granted
                              error:(NSError*)error {
   if (granted) {
-    [PushNotificationUtil registerDeviceWithAPNS];
+    [PushNotificationUtil
+        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
     base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
                                   PermissionPromptAction::ACCEPTED);
   } else if (!error) {
@@ -256,48 +312,17 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
                                       granted:(BOOL)granted
                                         error:(NSError*)error {
   if (granted) {
-    [PushNotificationUtil registerDeviceWithAPNS];
+    [PushNotificationUtil
+        registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
     base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
-                                  ProvisionalPermissionPromptAction::ACCEPTED);
-  } else {
+                                  ProvisionalPermissionAction::ENABLED);
+  } else if (!granted || error) {
     base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
-                                  ProvisionalPermissionPromptAction::ERROR);
+                                  ProvisionalPermissionAction::ERROR);
   }
 
   if (completion) {
     completion(granted, error);
-  }
-}
-
-// Converts an UNAuthorizationStatus enum to a
-// push_notification::SettingsAuthorizationStatus enum.
-+ (SettingsAuthorizationStatus)getNotificationSettingsStatusFrom:
-    (UNAuthorizationStatus)status {
-  switch (status) {
-    case UNAuthorizationStatusNotDetermined:
-      // The authorization status is this case when the user has not yet
-      // decided to give Chrome push notification permissions.
-      return SettingsAuthorizationStatus::NOTDETERMINED;
-    case UNAuthorizationStatusDenied:
-      // The authorization status is this case when the user has denied to
-      // give Chrome push notification permissions via the push
-      // notification iOS system permission prompt or by navigating to the iOS
-      // settings and manually enabling it.
-      return SettingsAuthorizationStatus::DENIED;
-    case UNAuthorizationStatusAuthorized:
-      // The authorization status is this case when the user has
-      // authorized to give Chrome push notification permissions via the
-      // push notification iOS system permission prompt or by navigating to the
-      // iOS settings and manually enabling it.
-      return SettingsAuthorizationStatus::AUTHORIZED;
-    case UNAuthorizationStatusProvisional:
-      // The authorization status is this case when Chrome has the ability
-      // to send provisional push notifications.
-      return SettingsAuthorizationStatus::PROVISIONAL;
-    case UNAuthorizationStatusEphemeral:
-      // The authorization status is this case Chrome can receive
-      // notifications for a limited amount of time.
-      return SettingsAuthorizationStatus::EPHEMERAL;
   }
 }
 

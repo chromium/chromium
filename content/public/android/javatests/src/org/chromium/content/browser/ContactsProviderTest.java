@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -24,14 +25,13 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
 import org.chromium.content_public.browser.test.util.FencedFrameUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,11 +75,10 @@ public class ContactsProviderTest {
     private static String executeJavaScript(
             final RenderFrameHost frame, String js, boolean userGesture) {
         RenderFrameHostTestExt rfh =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new RenderFrameHostTestExt(frame));
+                ThreadUtils.runOnUiThreadBlocking(() -> new RenderFrameHostTestExt(frame));
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<String> result = new AtomicReference<String>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (userGesture) {
                         rfh.executeJavaScriptWithUserGesture(js);
@@ -127,10 +126,10 @@ public class ContactsProviderTest {
     @Test
     @SmallTest
     public void testGetContactsInPrimaryPageWithUserGesture() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContactsPicker.setContactsPickerDelegate(
-                            (WindowAndroid windowAndroid,
+                            (WebContents webContents,
                                     ContactsPickerListener listener,
                                     boolean multiple,
                                     boolean names,
@@ -162,7 +161,7 @@ public class ContactsProviderTest {
                 });
 
         RenderFrameHost frame =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         executeJavaScript(frame, CONTACTS_SCRIPT, true);
         waitUntilHasValue(frame);
@@ -176,7 +175,7 @@ public class ContactsProviderTest {
     @SmallTest
     public void testGetContactsInPrimaryPageWithoutUserGesture() throws Exception {
         RenderFrameHost frame =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         executeJavaScript(frame, CONTACTS_SCRIPT, false);
         waitUntilHasValue(frame);
@@ -201,7 +200,7 @@ public class ContactsProviderTest {
                         ServerCertificate.CERT_OK);
         String url = testServer.getURL(FENCED_FRAME_URL);
         RenderFrameHost frame =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         RenderFrameHost fencedFrame =
                 FencedFrameUtils.createFencedFrame(mActivityTestRule.getWebContents(), frame, url);

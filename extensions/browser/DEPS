@@ -4,9 +4,9 @@ include_rules = [
   "+components/back_forward_cache",
   "+components/crash/core",
   "+components/guest_view",
+  "+components/input",
   "+components/keyed_service",
   "+components/pref_registry",
-  "+components/safe_browsing/core/browser/hashprefix_realtime",
   "+components/services/unzip/content",
   "+components/services/unzip/public",
   "+components/sessions",
@@ -18,6 +18,7 @@ include_rules = [
   "+components/update_client",
   "+components/value_store",
   "+components/variations",
+  "+components/vector_icons",
   "+components/version_info",
   "+components/web_cache",
   "+components/web_modal",
@@ -34,6 +35,7 @@ include_rules = [
   # Needed for a flag.
   "+net/url_request/url_request.h",
   "+pdf/buildflags.h",
+  "+pdf/pdf_features.h",
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",
   "+services/data_decoder/public",
@@ -52,12 +54,14 @@ include_rules = [
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
   "+third_party/zlib/google",
+  "+ui/color",
   "+ui/display",
 ]
 
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
     "+ash/constants/ash_features.h",
+    "+ash/constants/ash_switches.h",
 
     "+components/account_id",
     "+components/javascript_dialogs",

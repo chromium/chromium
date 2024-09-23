@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.TextView name='span-2'
+++++android.widget.TextView name='span-4'
+++++android.view.View name='span-1'
+++++android.view.View name='span-2'
+++++android.view.View name='span-3'
+++++android.view.View name='span-4'

@@ -119,10 +119,8 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
   }
 #endif
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
  private:
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 TEST_F(GpuChannelManagerTest, EstablishChannel) {
@@ -151,14 +149,8 @@ TEST_F(GpuChannelManagerTest, OnBackgroundedWithWebGL) {
 // Tests that peak memory usage is only reported for valid sequence numbers,
 // and that polling shuts down the monitoring.
 TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("gpu");
-#else
-  // TODO(crbug.com/1006541): Remove trace_analyzer usage after migration to the
-  // SDK.
-  trace_analyzer::Start("gpu");
-#endif
 
   GpuChannelManager* manager = channel_manager();
   const CommandBufferId buffer_id =
@@ -181,7 +173,6 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
   EXPECT_EQ(0u, GetMonitorsPeakMemoryUsage(sequence_num));
   EXPECT_EQ(0u, GetManagersPeakMemoryUsage(sequence_num));
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   absl::Status status = ttp.StopAndParseTrace();
   ASSERT_TRUE(status.ok()) << status.message();
   std::string query =
@@ -214,30 +205,6 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
                   std::vector<std::string>{
                       base::StringPrintf("%" PRIu64, current_memory), "1",
                       base::StringPrintf("%" PRIu64, current_memory), "1"}));
-#else   // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  auto analyzer = trace_analyzer::Stop();
-  trace_analyzer::TraceEventVector events;
-  analyzer->FindEvents(trace_analyzer::Query::EventNameIs("PeakMemoryTracking"),
-                       &events);
-
-  EXPECT_EQ(2u, events.size());
-
-  ASSERT_TRUE(events[0]->HasNumberArg("start"));
-  EXPECT_EQ(current_memory,
-            static_cast<uint64_t>(events[0]->GetKnownArgAsDouble("start")));
-  ASSERT_TRUE(events[0]->HasDictArg("start_sources"));
-  EXPECT_FALSE(events[0]->GetKnownArgAsDict("start_sources").empty());
-
-  const int kEndArgumentsSliceIndex = 1;
-  ASSERT_TRUE(events[kEndArgumentsSliceIndex]->HasNumberArg("peak"));
-  EXPECT_EQ(current_memory,
-            static_cast<uint64_t>(
-                events[kEndArgumentsSliceIndex]->GetKnownArgAsDouble("peak")));
-  ASSERT_TRUE(events[kEndArgumentsSliceIndex]->HasDictArg("end_sources"));
-  EXPECT_FALSE(events[kEndArgumentsSliceIndex]
-                   ->GetKnownArgAsDict("end_sources")
-                   .empty());
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 // Tests that while a channel may exist for longer than a request to monitor,

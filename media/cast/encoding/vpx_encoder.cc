@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/encoding/vpx_encoder.h"
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -14,7 +20,7 @@
 #include "media/cast/constants.h"
 #include "media/cast/encoding/encoding_util.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
@@ -72,10 +78,11 @@ VpxEncoder::VpxEncoder(
     const FrameSenderConfig& video_config,
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider)
     : cast_config_(video_config),
+      codec_params_(cast_config_.video_codec_params.value()),
       target_encoder_utilization_(
-          video_config.video_codec_params.number_of_encode_threads > 2
+          codec_params_->number_of_encode_threads > 2
               ? kHiTargetEncoderUtilization
-              : (video_config.video_codec_params.number_of_encode_threads > 1
+              : (codec_params_->number_of_encode_threads > 1
                      ? kMidTargetEncoderUtilization
                      : kLoTargetEncoderUtilization)),
       metrics_provider_(std::move(metrics_provider)),
@@ -85,10 +92,8 @@ VpxEncoder::VpxEncoder(
       encoding_speed_acc_(base::Microseconds(kEncodingSpeedAccHalfLife)),
       encoding_speed_(kHighestEncodingSpeed) {
   config_.g_timebase.den = 0;  // Not initialized.
-  DCHECK_LE(cast_config_.video_codec_params.min_qp,
-            cast_config_.video_codec_params.max_cpu_saver_qp);
-  DCHECK_LE(cast_config_.video_codec_params.max_cpu_saver_qp,
-            cast_config_.video_codec_params.max_qp);
+  DCHECK_LE(codec_params_->min_qp, codec_params_->max_cpu_saver_qp);
+  DCHECK_LE(codec_params_->max_cpu_saver_qp, codec_params_->max_qp);
 
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -119,7 +124,7 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
                << frame_size.ToString();
       config_.g_w = frame_size.width();
       config_.g_h = frame_size.height();
-      config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
+      config_.rc_min_quantizer = codec_params_->min_qp;
       if (vpx_codec_enc_config_set(&encoder_, &config_) == VPX_CODEC_OK)
         return;
       DVLOG(1) << "libvpx rejected the attempt to use a smaller frame size in "
@@ -137,17 +142,17 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
 
   // Determine appropriate codec interface.
   vpx_codec_iface_t* ctx;
-  if (cast_config_.codec == Codec::kVideoVp9) {
+  if (codec_params_->codec == VideoCodec::kVP9) {
     ctx = vpx_codec_vp9_cx();
   } else {
-    DCHECK(cast_config_.codec == Codec::kVideoVp8);
+    DCHECK(codec_params_->codec == VideoCodec::kVP8);
     ctx = vpx_codec_vp8_cx();
   }
 
   // Populate encoder configuration with default values.
   CHECK_EQ(vpx_codec_enc_config_default(ctx, &config_, 0), VPX_CODEC_OK);
 
-  config_.g_threads = cast_config_.video_codec_params.number_of_encode_threads;
+  config_.g_threads = codec_params_->number_of_encode_threads;
   config_.g_w = frame_size.width();
   config_.g_h = frame_size.height();
   // Set the timebase to match that of base::TimeDelta.
@@ -164,8 +169,8 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.rc_resize_allowed = 0;
   config_.rc_end_usage = VPX_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
-  config_.rc_min_quantizer = cast_config_.video_codec_params.min_qp;
-  config_.rc_max_quantizer = cast_config_.video_codec_params.max_qp;
+  config_.rc_min_quantizer = codec_params_->min_qp;
+  config_.rc_max_quantizer = codec_params_->max_qp;
   config_.rc_undershoot_pct = 100;
   config_.rc_overshoot_pct = 15;
   config_.rc_buf_initial_sz = 500;
@@ -175,7 +180,7 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.kf_mode = VPX_KF_DISABLED;
 
   vpx_codec_flags_t flags = 0;
-  metrics_provider_->Initialize(cast_config_.codec == Codec::kVideoVp9
+  metrics_provider_->Initialize(codec_params_->codec == VideoCodec::kVP9
                                     ? media::VP9PROFILE_MIN
                                     : media::VP8PROFILE_ANY,
                                 frame_size, /*is_hardware_encoder=*/false);
@@ -195,7 +200,7 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   CHECK_EQ(vpx_codec_control(&encoder_, VP8E_SET_STATIC_THRESHOLD, 100),
            VPX_CODEC_OK);
 
-  if (cast_config_.codec == Codec::kVideoVp9) {
+  if (codec_params_->codec == VideoCodec::kVP9) {
     CHECK_EQ(vpx_codec_control(&encoder_, VP9E_SET_TUNE_CONTENT,
                                VP9E_CONTENT_SCREEN),
              VPX_CODEC_OK);
@@ -248,34 +253,40 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   vpx_image_t vpx_image;
   vpx_image_t* const result = vpx_img_wrap(
       &vpx_image, vpx_format, frame_size.width(), frame_size.height(), 1,
-      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane)));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::Plane::kY)));
   DCHECK_EQ(result, &vpx_image);
   switch (vpx_format) {
     case VPX_IMG_FMT_I420:
-      vpx_image.planes[VPX_PLANE_Y] =
-          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
-      vpx_image.planes[VPX_PLANE_U] =
-          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUPlane));
-      vpx_image.planes[VPX_PLANE_V] =
-          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kVPlane));
-      vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
-      vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
-      vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
+      vpx_image.planes[VPX_PLANE_Y] = const_cast<uint8_t*>(
+          video_frame->visible_data(VideoFrame::Plane::kY));
+      vpx_image.planes[VPX_PLANE_U] = const_cast<uint8_t*>(
+          video_frame->visible_data(VideoFrame::Plane::kU));
+      vpx_image.planes[VPX_PLANE_V] = const_cast<uint8_t*>(
+          video_frame->visible_data(VideoFrame::Plane::kV));
+      vpx_image.stride[VPX_PLANE_Y] =
+          video_frame->stride(VideoFrame::Plane::kY);
+      vpx_image.stride[VPX_PLANE_U] =
+          video_frame->stride(VideoFrame::Plane::kU);
+      vpx_image.stride[VPX_PLANE_V] =
+          video_frame->stride(VideoFrame::Plane::kV);
       break;
     case VPX_IMG_FMT_NV12:
-      vpx_image.planes[VPX_PLANE_Y] =
-          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
+      vpx_image.planes[VPX_PLANE_Y] = const_cast<uint8_t*>(
+          video_frame->visible_data(VideoFrame::Plane::kY));
       // In libvpx, the UV plane of NV12 frames is represented by two planes
       // with the same stride, shifted by one byte.
-      vpx_image.planes[VPX_PLANE_U] =
-          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUVPlane));
+      vpx_image.planes[VPX_PLANE_U] = const_cast<uint8_t*>(
+          video_frame->visible_data(VideoFrame::Plane::kUV));
       vpx_image.planes[VPX_PLANE_V] = vpx_image.planes[VPX_PLANE_U] + 1;
-      vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
-      vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUVPlane);
-      vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kUVPlane);
+      vpx_image.stride[VPX_PLANE_Y] =
+          video_frame->stride(VideoFrame::Plane::kY);
+      vpx_image.stride[VPX_PLANE_U] =
+          video_frame->stride(VideoFrame::Plane::kUV);
+      vpx_image.stride[VPX_PLANE_V] =
+          video_frame->stride(VideoFrame::Plane::kUV);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -393,9 +404,8 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
     // Equivalent encoding speed considering both cpu_used setting and
     // quantizer.
     double actual_encoding_speed =
-        encoding_speed_ +
-        kEquivalentEncodingSpeedStepPerQpStep *
-            std::max(0, quantizer - cast_config_.video_codec_params.min_qp);
+        encoding_speed_ + kEquivalentEncodingSpeedStepPerQpStep *
+                              std::max(0, quantizer - codec_params_->min_qp);
     double adjusted_encoding_speed = actual_encoding_speed *
                                      encoded_frame->encoder_utilization /
                                      target_encoder_utilization_;
@@ -414,13 +424,12 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
       next_encoding_speed = kHighestEncodingSpeed;
       next_min_qp =
           static_cast<int>(remainder / kEquivalentEncodingSpeedStepPerQpStep +
-                           cast_config_.video_codec_params.min_qp + 0.5);
-      next_min_qp = std::min(next_min_qp,
-                             cast_config_.video_codec_params.max_cpu_saver_qp);
+                           codec_params_->min_qp + 0.5);
+      next_min_qp = std::min(next_min_qp, codec_params_->max_cpu_saver_qp);
     } else {
       next_encoding_speed =
           std::max<double>(kLowestEncodingSpeed, next_encoding_speed) + 0.5;
-      next_min_qp = cast_config_.video_codec_params.min_qp;
+      next_min_qp = codec_params_->min_qp;
     }
     if (encoding_speed_ != static_cast<int>(next_encoding_speed)) {
       encoding_speed_ = static_cast<int>(next_encoding_speed);
@@ -448,7 +457,7 @@ void VpxEncoder::UpdateRates(uint32_t new_bitrate) {
 
   // Update encoder context.
   if (vpx_codec_enc_config_set(&encoder_, &config_)) {
-    NOTREACHED() << "Invalid return value";
+    NOTREACHED_IN_MIGRATION() << "Invalid return value";
   }
 
   VLOG(1) << "VPX new rc_target_bitrate: " << new_bitrate_kbit << " kbps";

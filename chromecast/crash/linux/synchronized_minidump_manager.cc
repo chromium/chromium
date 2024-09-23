@@ -12,10 +12,10 @@
 #include <unistd.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
@@ -333,7 +333,7 @@ bool SynchronizedMinidumpManager::WriteFiles(
     lockfile += "\n";  // Add line seperatators
   }
 
-  if (WriteFile(lockfile_path_, lockfile.c_str(), lockfile.size()) < 0) {
+  if (!WriteFile(lockfile_path_, lockfile)) {
     return false;
   }
 

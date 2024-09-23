@@ -4,6 +4,8 @@
     "is_component_build": true,
     "is_debug": true,
     "llvm_force_head_revision": true,
-    "target_cpu": "x86"
+    "target_cpu": "x86",
+    "target_os": "win",
+    "use_siso": true
   }
 }

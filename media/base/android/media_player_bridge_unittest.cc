@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +36,7 @@ class MediaPlayerBridgeTest : public testing::Test {
       : bridge_(GURL(),
                 net::SiteForCookies(),
                 url::Origin(),
-                false,
+                net::StorageAccessApiStatus::kNone,
                 "",
                 false,
                 &client_,

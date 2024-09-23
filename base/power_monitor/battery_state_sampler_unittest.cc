@@ -24,7 +24,7 @@ class TestBatteryLevelProvider : public BatteryLevelProvider {
   TestBatteryLevelProvider() = default;
   ~TestBatteryLevelProvider() override = default;
 
-  void GetBatteryState(OnceCallback<void(const absl::optional<BatteryState>&)>
+  void GetBatteryState(OnceCallback<void(const std::optional<BatteryState>&)>
                            callback) override {
     DCHECK(!battery_states_.empty());
 
@@ -34,12 +34,12 @@ class TestBatteryLevelProvider : public BatteryLevelProvider {
     std::move(callback).Run(next_battery_state);
   }
 
-  void PushBatteryState(const absl::optional<BatteryState>& battery_state) {
+  void PushBatteryState(const std::optional<BatteryState>& battery_state) {
     battery_states_.push(battery_state);
   }
 
  protected:
-  std::queue<absl::optional<BatteryState>> battery_states_;
+  std::queue<std::optional<BatteryState>> battery_states_;
 };
 
 class TestBatteryLevelProviderAsync : public TestBatteryLevelProvider {
@@ -47,7 +47,7 @@ class TestBatteryLevelProviderAsync : public TestBatteryLevelProvider {
   TestBatteryLevelProviderAsync() = default;
   ~TestBatteryLevelProviderAsync() override = default;
 
-  void GetBatteryState(OnceCallback<void(const absl::optional<BatteryState>&)>
+  void GetBatteryState(OnceCallback<void(const std::optional<BatteryState>&)>
                            callback) override {
     DCHECK(!battery_states_.empty());
 
@@ -70,36 +70,36 @@ class TestObserver : public BatteryStateSampler::Observer {
   ~TestObserver() override = default;
 
   void OnBatteryStateSampled(
-      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state)
+      const std::optional<BatteryLevelProvider::BatteryState>& battery_state)
       override {
     battery_state_ = battery_state;
   }
 
-  absl::optional<BatteryLevelProvider::BatteryState> battery_state() const {
+  std::optional<BatteryLevelProvider::BatteryState> battery_state() const {
     return battery_state_;
   }
 
  private:
-  absl::optional<BatteryLevelProvider::BatteryState> battery_state_;
+  std::optional<BatteryLevelProvider::BatteryState> battery_state_;
 };
 
 // Those test battery states just need to be different. The actual values don't
 // matter.
-const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState1 =
+const std::optional<BatteryLevelProvider::BatteryState> kTestBatteryState1 =
     BatteryLevelProvider::BatteryState{
         .battery_count = 1,
         .is_external_power_connected = false,
         .current_capacity = 10000,
         .full_charged_capacity = 10000,
         .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMWh};
-const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState2 =
+const std::optional<BatteryLevelProvider::BatteryState> kTestBatteryState2 =
     BatteryLevelProvider::BatteryState{
         .battery_count = 1,
         .is_external_power_connected = false,
         .current_capacity = 5000,
         .full_charged_capacity = 10000,
         .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMWh};
-const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState3 =
+const std::optional<BatteryLevelProvider::BatteryState> kTestBatteryState3 =
     BatteryLevelProvider::BatteryState{
         .battery_count = 1,
         .is_external_power_connected = true,
@@ -259,7 +259,7 @@ TEST(BatteryStateSamplerTest, InitialSample_Async) {
 
   TestObserver observer;
   battery_state_sampler.AddObserver(&observer);
-  EXPECT_EQ(observer.battery_state(), absl::nullopt);
+  EXPECT_EQ(observer.battery_state(), std::nullopt);
 
   RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.battery_state(), kTestBatteryState1);

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/ios/swift_source_set.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/extension_repack.gni")
@@ -19,10 +19,6 @@ config("ios_enable_lockscreen_widget") {
 
 config("ios_enable_shortcuts_widget") {
   swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
-}
-
-config("ios_enable_search_passwords_widget") {
-  swiftflags = [ "-DIOS_ENABLE_SEARCH_PASSWORDS_WIDGET" ]
 }
 
 source_set("crash_helper") {
@@ -42,6 +38,7 @@ swift_source_set("widget_kit_extension_swift") {
     "lockscreen_launcher_widget.swift",
     "main.swift",
     "quick_actions_widget.swift",
+    "search_passwords_widget.swift",
     "search_widget.swift",
     "widget_constants.swift",
   ]
@@ -50,24 +47,9 @@ swift_source_set("widget_kit_extension_swift") {
   deps = [
     ":crash_helper",
     ":system_strings",
-    "resources:lockscreen_chrome_logo",
-    "resources:lockscreen_game_logo",
-    "resources:lockscreen_incognito_logo",
-    "resources:lockscreen_voicesearch_logo",
-    "resources:widget_actions_icon_color",
-    "resources:widget_actions_row_background_color",
-    "resources:widget_background_color",
-    "resources:widget_chrome_logo",
-    "resources:widget_dino_background",
-    "resources:widget_dino_background_placeholder",
-    "resources:widget_incognito_icon",
-    "resources:widget_lens_icon",
-    "resources:widget_password_manager_logo",
-    "resources:widget_search_bar_color",
-    "resources:widget_separator_color",
-    "resources:widget_text_color",
     "//ios/chrome/common/app_group:helper",
     "//ios/chrome/common/ntp_tile",
+    "//ios/chrome/widget_kit_extension/resources",
     "//ui/base:base",
   ]
 
@@ -84,11 +66,6 @@ swift_source_set("widget_kit_extension_swift") {
   if (ios_enable_shortcuts_widget) {
     configs += [ ":ios_enable_shortcuts_widget" ]
     sources += [ "shortcuts_widget.swift" ]
-  }
-
-  if (ios_enable_search_passwords_widget) {
-    configs += [ ":ios_enable_search_passwords_widget" ]
-    sources += [ "search_passwords_widget.swift" ]
   }
 
   frameworks = [

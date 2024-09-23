@@ -51,13 +51,6 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  // Repair prefs if the user was previously affected by crbug.com/1475747. This
-  // will reset the affected prefs, before setting up the state for the Throttle
-  // for this navigation.
-  // TODO(crbug.com/1475747): Remove this after M120 (or after
-  // kHttpsFirstModeV2ForTypicallySecureUsers is enabled by default).
-  HttpsFirstModeService::FixTypicallySecureUserPrefs(profile);
-
   PrefService* prefs = profile->GetPrefs();
   security_interstitials::https_only_mode::HttpInterstitialState
       interstitial_state;
@@ -67,13 +60,19 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
     if (profile->IsIncognitoProfile() && prefs &&
         prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
-      interstitial_state.enabled_by_pref = true;
+      interstitial_state.enabled_by_incognito = true;
     }
   }
 
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
+
+  if (IsBalancedModeEnabled(prefs) && state &&
+      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
+    interstitial_state.enabled_in_balanced_mode = true;
+  }
+
   auto* storage_partition =
       handle->GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition();
 
@@ -149,7 +148,9 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
   if ((handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK &&
        tab_helper->has_failed_upgrade(handle->GetURL())) &&
       !handle->GetURL().SchemeIsCryptographic()) {
-    if (IsInterstitialEnabled(interstitial_state_)) {
+    if (IsInterstitialEnabled(interstitial_state_) &&
+        !(ShouldExcludeUrlFromInterstitial(interstitial_state_,
+                                           handle->GetURL()))) {
       security_interstitials::https_only_mode::RecordInterstitialReason(
           interstitial_state_);
 
@@ -168,11 +169,11 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
     }
 
     // Otherwise, just record metrics and continue.
-    // TODO(crbug.com/1435222): Record a separate histogram for Site Engagement
+    // TODO(crbug.com/40904694): Record a separate histogram for Site Engagement
     // heuristic.
   }
 
-  // TODO(crbug.com/1448371): There are some cases where the navigation may
+  // TODO(crbug.com/40064769): There are some cases where the navigation may
   // "restart", such as if we encounter an exempted transient network error on
   // the upgraded HTTPS URL, show a net error page, and then reload the tab. In
   // these cases the navigation will proceed with the upgrade/fallback logic,
@@ -204,27 +205,27 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
 
   if (tab_helper->is_navigation_fallback() &&
-      !handle->GetURL().SchemeIsCryptographic()) {
-    if (IsInterstitialEnabled(interstitial_state_)) {
-      security_interstitials::https_only_mode::RecordInterstitialReason(
-          interstitial_state_);
+      !handle->GetURL().SchemeIsCryptographic() &&
+      IsInterstitialEnabled(interstitial_state_) &&
+      !ShouldExcludeUrlFromInterstitial(interstitial_state_,
+                                        handle->GetURL())) {
+    security_interstitials::https_only_mode::RecordInterstitialReason(
+        interstitial_state_);
 
-      std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-          blocking_page =
-              blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-                  contents, handle->GetURL(), interstitial_state_);
-      std::string interstitial_html = blocking_page->GetHTMLContents();
-      security_interstitials::SecurityInterstitialTabHelper::
-          AssociateBlockingPage(handle, std::move(blocking_page));
-      return content::NavigationThrottle::ThrottleCheckResult(
-          content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-          interstitial_html);
-    }
-
-    // Otherwise, just record metrics and continue.
-    // TODO(crbug.com/1435222): Record a separate histogram for Site Engagement
-    // heuristic.
+    std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+        blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
+            contents, handle->GetURL(), interstitial_state_);
+    std::string interstitial_html = blocking_page->GetHTMLContents();
+    security_interstitials::SecurityInterstitialTabHelper::
+        AssociateBlockingPage(handle, std::move(blocking_page));
+    return content::NavigationThrottle::ThrottleCheckResult(
+        content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+        interstitial_html);
   }
+
+  // Otherwise, just record metrics and continue.
+  // TODO(crbug.com/40904694): Record a separate histogram for Site Engagement
+  // heuristic.
 
   // If the navigation was upgraded by the Interceptor, then the Throttle's
   // WillRedirectRequest() will get triggered by the artificial redirect to

@@ -8,7 +8,7 @@ import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorCategory, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -36,7 +36,6 @@ export function setUseFakeProviderForTesting(useFake: boolean): void {
 
 /**
  * Sets up a FakeShortcutProvider to be used at runtime.
- * TODO(zentaro): Remove once mojo bindings are implemented.
  */
 export function setupFakeShortcutProvider(): ShortcutProviderInterface {
   // Create provider.
@@ -57,7 +56,6 @@ export function setupFakeShortcutProvider(): ShortcutProviderInterface {
 /**
  * This wrapper is used to bridge the gap from the fake provider to the
  * real provider until all methods are implemented.
- * TODO(cambickel): Remove once all mojo bindings are implemented.
  */
 export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   private remote: AcceleratorConfigurationProviderRemote;
@@ -85,8 +83,8 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isCustomizationAllowedByPolicy();
   }
 
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
-    return this.remote.hasLauncherButton();
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}> {
+    return this.remote.getMetaKeyToDisplay();
   }
 
   addAccelerator(

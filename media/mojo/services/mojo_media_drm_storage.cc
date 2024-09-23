@@ -84,4 +84,8 @@ void MojoMediaDrmStorage::OnPersistentSessionLoaded(
                : nullptr);
 }
 
+base::WeakPtr<MediaDrmStorage> MojoMediaDrmStorage::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace media

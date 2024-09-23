@@ -3,11 +3,11 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
  * #import=./shared_vars.css.js
- * #import=//resources/cr_elements/cr_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-shared-style
+ * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
 .card-container {

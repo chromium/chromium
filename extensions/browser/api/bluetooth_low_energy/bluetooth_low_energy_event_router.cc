@@ -237,12 +237,29 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_INVALID_ARGS:
       return extensions::BluetoothLowEnergyEventRouter::
           kStatusErrorInvalidArguments;
+    case BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorTimeout;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_NO_MEMORY:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorNoMemory;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_ENVIRONMENT:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorJniEnvironment;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_THREAD_ATTACH:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorJniThreadAttach;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorWakelock;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorUnexpectedState;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorSocket;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return extensions::BluetoothLowEnergyEventRouter::
           kStatusErrorInvalidArguments;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
 }
 
@@ -341,7 +358,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   const std::string connect_id = extension_id + device_address;
 
   if (connecting_devices_.count(connect_id) != 0) {
@@ -388,7 +405,7 @@ void BluetoothLowEnergyEventRouter::Disconnect(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   BluetoothLowEnergyConnection* conn =
       FindConnection(extension_id, device_address);
@@ -699,7 +716,7 @@ void BluetoothLowEnergyEventRouter::StartCharacteristicNotifications(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   const std::string session_id = extension_id + instance_id;
 
   if (pending_session_calls_.count(session_id) != 0) {
@@ -759,7 +776,7 @@ void BluetoothLowEnergyEventRouter::StopCharacteristicNotifications(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   BluetoothLowEnergyNotifySession* session =
       FindNotifySession(extension_id, instance_id);
@@ -1097,7 +1114,8 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicReadRequest(
   }
 
   const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
-  // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
+  // TODO(crbug.com/40524549): Delete NullCallback when write callbacks
+  // combined.
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(
@@ -1147,7 +1165,7 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicPrepareWriteRequest(
     bool has_subsequent_request,
     base::OnceClosure callback,
     Delegate::ErrorCallback error_callback) {
-  // TODO(crbug/856869): Support reliable write.
+  // TODO(crbug.com/40582544): Support reliable write.
   OnCharacteristicWriteRequest(device, characteristic, value, offset,
                                std::move(callback), std::move(error_callback));
 }
@@ -1168,7 +1186,8 @@ void BluetoothLowEnergyEventRouter::OnDescriptorReadRequest(
 
   const ExtensionId& extension_id = service_id_to_extension_id_.at(service_id);
 
-  // TODO(crbug.com/730593): Delete NullCallback when write callbacks combined.
+  // TODO(crbug.com/40524549): Delete NullCallback when write callbacks
+  // combined.
   apibtle::Request request = PopulateDevice(device);
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(

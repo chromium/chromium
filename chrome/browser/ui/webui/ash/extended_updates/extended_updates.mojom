@@ -1,0 +1,41 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module ash.extended_updates.mojom;
+
+// Lives in the browser process. A renderer uses this to link itself with
+// a page handler.
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface PageHandlerFactory {
+  // Create a page handler for the Extended Updates UI and link it.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Info about an app.
+struct App {
+  string id;
+  string title;
+};
+
+// Lives in the browser process.
+// Called from TS side (Renderer -> Browser).
+interface PageHandler {
+  // Request to opt in a device into Extended Updates.
+  OptInToExtendedUpdates() => (bool success);
+
+  // Close the dialog hosting the page.
+  // Using chrome.send('dialogClose') is discouraged as it could kill the
+  // page handler before previous mojom calls have been run.
+  CloseDialog();
+
+  // Gets the list of installed Android apps.
+  GetInstalledAndroidApps() => (array<App> apps);
+};
+
+// Lives in the renderer process.
+// Called from C++ side (Browser -> Renderer).
+interface Page {
+};

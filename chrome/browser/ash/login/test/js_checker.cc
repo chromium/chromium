@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/login/test/js_checker.h"
 
 #include <string_view>
@@ -10,9 +15,10 @@
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,8 +101,9 @@ void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
   web_contents_->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
-                                                 base::NullCallback());
+      ->ExecuteJavaScriptWithUserGestureForTests(
+          base::UTF8ToUTF16(new_script), base::NullCallback(),
+          content::ISOLATED_WORLD_ID_GLOBAL);
 }
 
 bool JSChecker::GetBool(const std::string& expression) {

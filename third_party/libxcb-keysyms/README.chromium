@@ -2,6 +2,7 @@ Name: libxcb-keysyms
 Short Name: libxcb-keysyms
 URL: https://gitlab.freedesktop.org/xorg/lib/libxcb-keysyms
 Version: 691515491a4a3c119adc6c769c29de264b3f3806
+Revision: 691515491a4a3c119adc6c769c29de264b3f3806
 License: MIT
 License File: LICENSE
 Security Critical: no

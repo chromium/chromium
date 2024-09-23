@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 
-#include <optional>
 #include <type_traits>
 
 #include "base/types/cxx23_to_underlying.h"
@@ -93,7 +92,7 @@ namespace autofill {
 // country code. If we don't reformat the number, the GetRawInfo()
 // representation remains without one. In all countries but the US and Canada,
 // formatting will put a + in front of the country code.
-// TODO(crbug.com/1311937) Clean this up once AutofillInferCountryCallingCode
+// TODO(crbug.com/40220393) Clean this up once AutofillInferCountryCallingCode
 // is launched.
 //
 // PHONE_HOME_EXTENSION: Extensions are detected, but not filled. This would
@@ -167,7 +166,7 @@ enum FieldType {
   ADDRESS_HOME_CITY = 33,
   ADDRESS_HOME_STATE = 34,
   ADDRESS_HOME_ZIP = 35,
-  // TODO(crbug.com/1434216): Autofill stores country codes. When
+  // TODO(crbug.com/40264633): Autofill stores country codes. When
   // ADDRESS_HOME_COUNTRY is accessed through `AutofillProfile::GetRawInfo()`, a
   // country code is returned. When retrieved using
   // `AutofillProfile::GetInfo()`, the country name is returned.
@@ -414,7 +413,8 @@ enum FieldType {
   // contain the "Entre calle 1" field.
   ADDRESS_HOME_BETWEEN_STREETS_2 = 152,
 
-  // ADDRESS_HOME_HOUSE_NUMBER_AND_APT 153 is server-side only.
+  // House number and apartment.
+  ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 153,
 
   // Username field in a password-less forgot password form.
   SINGLE_USERNAME_FORGOT_PASSWORD = 154,
@@ -444,7 +444,8 @@ enum FieldType {
   // fields between single username and password forms.
   // Will be used to rollout new predictions based on new votes of Username
   // First Flow with intermediate values.
-  // TODO(b/294195764): Deprecate after fully rolling out new predictions.
+  // TODO(crbug.com/294195764): Deprecate after fully rolling out new
+  // predictions.
   SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES = 160,
 
   // SERVER_RESPONSE_PENDING is not exposed as an enum value to prevent
@@ -454,6 +455,13 @@ enum FieldType {
   // the same as NO_SERVER_DATA, which indicates that the server has no
   // classification for the field.
   // SERVER_RESPONSE_PENDING = 161;
+
+  // Improved Prediction indicates that this field is support by the predition
+  // improvement system.
+  // This type is a metatype and does not correspond to a specific sort of
+  // data.
+  // It should not take precedence over existing types.
+  IMPROVED_PREDICTION = 162,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -465,7 +473,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 162,
+  MAX_VALID_FIELD_TYPE = 163,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -482,7 +490,9 @@ enum class FieldTypeGroup {
   kUsernameField,
   kUnfillable,
   kIban,
-  kMaxValue = kIban,
+  kStandaloneCvcField,
+  kPredictionImprovements,
+  kMaxValue = kPredictionImprovements,
 };
 
 template <>
@@ -493,6 +503,8 @@ struct DenseSetTraits<FieldType> {
 };
 
 using FieldTypeSet = DenseSet<FieldType>;
+
+using FieldTypeGroupSet = DenseSet<FieldTypeGroup>;
 
 using HtmlFieldTypeSet = DenseSet<HtmlFieldType>;
 
@@ -557,7 +569,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 117 && t != 127 &&
            !(130 <= t && t <= 132) && t != 134 && !(137 <= t && t <= 139) &&
-           !(147 <= t && t <= 149) && t != 153 && t != 155 && t != 158 &&
+           !(147 <= t && t <= 149) && t != 155 && t != 158 &&
            t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
@@ -572,7 +584,9 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
     return static_cast<underlying_type_t>(HtmlFieldType::kMinValue) <= t &&
            t <= static_cast<underlying_type_t>(HtmlFieldType::kMaxValue) &&
            // Full address is deprecated.
-           t != 17;
+           t != 17 &&
+           // UPI is deprecated.
+           t != 46;
   };
   return IsValid(raw_value) ? static_cast<HtmlFieldType>(raw_value)
                             : fallback_value;

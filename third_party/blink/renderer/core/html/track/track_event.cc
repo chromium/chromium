@@ -79,7 +79,7 @@ V8UnionAudioTrackOrTextTrackOrVideoTrack* TrackEvent::track() {
           To<VideoTrack>(track_.Get()));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

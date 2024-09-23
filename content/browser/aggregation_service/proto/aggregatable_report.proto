@@ -21,6 +21,7 @@ message AggregatableReportHistogramContribution {
   uint64 bucket_high = 1;
   uint64 bucket_low = 2;
   int32 value = 3;
+  optional uint64 filtering_id = 4;
 }
 
 // Proto equivalent of `content::AggregationServicePayloadContents`
@@ -34,6 +35,7 @@ message AggregationServicePayloadContents {
   AggregationServiceMode aggregation_mode = 3;
   int32 max_contributions_allowed = 5;
   optional string aggregation_coordinator_origin = 6;
+  optional uint32 filtering_id_max_bytes = 7;
 
   reserved 4;
   reserved "aggregation_coordinator";
@@ -65,4 +67,17 @@ message AggregatableReportRequest {
   optional uint64 debug_key = 4;
   int32 failed_send_attempts = 5;
   map<string, string> additional_fields = 6;
+
+  // Rough categories of report scheduling delays used for metrics. Keep this
+  // synchronized with `content::AggregatableReportRequest::DelayType`. Do not
+  // remove or renumber enumerators because protos containing these values are
+  // persisted to disk.
+  enum DelayType {
+    SCHEDULED_WITH_REDUCED_DELAY = 0;
+    SCHEDULED_WITH_FULL_DELAY = 1;
+    // Unscheduled requests are never scheduled, and thus never written to disk.
+    reserved 2;
+    reserved "UNSCHEDULED";
+  }
+  optional DelayType delay_type = 7;
 }

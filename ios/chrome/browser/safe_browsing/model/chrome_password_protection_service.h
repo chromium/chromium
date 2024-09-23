@@ -5,23 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 
-#include <map>
-#include <string>
-#include <vector>
+#import <map>
+#import <string>
+#import <vector>
 
-#include "base/gtest_prod_util.h"
+#import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/insecure_credentials_helper.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#import "base/memory/weak_ptr.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/password_manager/core/browser/insecure_credentials_helper.h"
+#import "components/password_manager/core/browser/password_reuse_detector.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
-#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#import "components/sync/protocol/gaia_password_reuse.pb.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class GURL;
 class PrefService;
 class SafeBrowsingService;
@@ -52,7 +52,7 @@ class ChromePasswordProtectionService
       const password_manager::MatchingReusedCredential&)>;
   ChromePasswordProtectionService(
       SafeBrowsingService* sb_service,
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       history::HistoryService* history_service,
       safe_browsing::SafeBrowsingMetricsCollector*
           safe_browsing_metrics_collector,
@@ -98,7 +98,7 @@ class ChromePasswordProtectionService
       override;
 
   void MaybeReportPasswordReuseDetected(
-      safe_browsing::PasswordProtectionRequest* request,
+      const GURL& main_frame_url,
       const std::string& username,
       safe_browsing::PasswordType password_type,
       bool is_phishing_url,
@@ -258,10 +258,10 @@ class ChromePasswordProtectionService
   // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
-  // Gets prefs associated with `browser_state_`.
+  // Gets prefs associated with `profile_`.
   PrefService* GetPrefs() const;
 
-  // Returns whether `browser_state_` has safe browsing service enabled.
+  // Returns whether `profile_` has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
   // Lookup for a callback for showing a warning for a given request.
@@ -269,7 +269,7 @@ class ChromePasswordProtectionService
            safe_browsing::PasswordProtectionService::ShowWarningCallback>
       show_warning_callbacks_;
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
   // testing.

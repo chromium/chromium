@@ -12,9 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/download/internal/common/jni_headers/DownloadCollectionBridge_jni.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/download/internal/common/jni_headers/DownloadCollectionBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;

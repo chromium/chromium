@@ -125,7 +125,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // corresponding tray has been cleaned up.
     base::WeakPtr<Delegate> delegate = nullptr;
     gfx::NativeWindow parent_window = gfx::NativeWindow();
-    raw_ptr<View> anchor_view = nullptr;
+    raw_ptr<View, DanglingUntriaged> anchor_view = nullptr;
     AnchorMode anchor_mode = AnchorMode::kView;
     // Only used if anchor_mode == AnchorMode::kRect.
     gfx::Rect anchor_rect;
@@ -137,9 +137,12 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     int preferred_width = 0;
     int max_height = 0;
     bool close_on_deactivate = true;
+    // Indicates whether the tray bubble will become activatable when it is
+    // clicked.
+    bool set_can_activate_on_click_or_tap = false;
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
-    int corner_radius = kBubbleCornerRadius;
+    int corner_radius = GetBubbleCornerRadius();
     std::optional<gfx::Insets> insets;
     std::optional<gfx::Insets> margin;
     // If the view has a large corner radius(e.g. slider bubble), we should
@@ -237,8 +240,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   // views::View:
   void AddedToWidget() override;
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -277,6 +280,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
   void CloseBubbleView();
 
+  views::BoxLayout* box_layout() { return layout_; }
+  const views::BoxLayout* box_layout() const { return layout_; }
+
  protected:
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
@@ -284,9 +290,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Changes the insets from the bubble border. These were initially set using
   // the InitParams.insets, but may need to be reset programmatically.
   void SetBubbleBorderInsets(gfx::Insets insets);
-
-  views::BoxLayout* box_layout() { return layout_; }
-  const views::BoxLayout* box_layout() const { return layout_; }
 
  private:
   // This reroutes receiving key events to the TrayBubbleView passed in the
@@ -306,17 +309,21 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Overridden from ui::EventHandler
     void OnKeyEvent(ui::KeyEvent* event) override;
+    void OnEvent(ui::Event* event) override;
 
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     raw_ptr<TrayBubbleView> tray_bubble_view_;
   };
 
+  void UpdateAccessibleIgnoredState();
+
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
   base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;
+  bool set_can_activate_on_click_or_tap_;
 
   // True once the mouse cursor was actively moved by the user over the bubble.
   // Only then the OnMouseExitedView() event will get passed on to listeners.

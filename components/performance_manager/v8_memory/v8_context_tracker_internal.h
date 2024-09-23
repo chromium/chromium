@@ -16,8 +16,8 @@
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
@@ -225,10 +225,8 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
 ////////////////////////////////////////////////////////////////////////////////
 // ProcessData declaration:
 
-class ProcessData : public NodeAttachedDataImpl<ProcessData> {
+class ProcessData : public ExternalNodeAttachedDataImpl<ProcessData> {
  public:
-  struct Traits : public NodeAttachedDataInMap<ProcessNodeImpl> {};
-
   using PassKey = base::PassKey<ProcessData>;
 
   explicit ProcessData(const ProcessNodeImpl* process_node);

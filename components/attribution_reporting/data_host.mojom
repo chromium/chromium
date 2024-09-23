@@ -1,0 +1,45 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+import "components/attribution_reporting/registration.mojom";
+import "components/attribution_reporting/registration_header_error.mojom";
+
+// Browser-process interface responsible for processing attribution
+// configurations registered by the renderer. These configurations may be sent
+// out of the normal frame lifecycle, e.g. after the frame is destroyed.
+interface DataHost {
+  // Called when data from the renderer is available for a given attributionsrc
+  // request.
+  SourceDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
+                      attribution_reporting.mojom.SourceRegistration data,
+                      bool was_fetched_via_service_worker);
+
+  // Called when trigger data from the renderer is available for a given
+  // attributionsrc request.
+  TriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
+                       attribution_reporting.mojom.TriggerRegistration data,
+                       bool was_fetched_via_service_worker);
+
+  // Called when OS source data from the renderer is available for a given
+  // attributionsrc request. The OS will make subsequent requests to
+  // to obtain the actual registration.
+  OsSourceDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
+                        attribution_reporting.mojom.OsRegistration registration,
+                        bool was_fetched_via_service_worker);
+
+  // Called when OS trigger data from the renderer is available for a given
+  // attributionsrc request. The OS will make subsequent requests to
+  // to obtain the actual registration.
+  OsTriggerDataAvailable(attribution_reporting.mojom.SuitableOrigin reporting_origin,
+                         attribution_reporting.mojom.OsRegistration registration,
+                         bool was_fetched_via_service_worker);
+
+  // Called when an error occurs during header validation in the renderer for
+  // a given attributionsrc request.
+  ReportRegistrationHeaderError(
+    attribution_reporting.mojom.SuitableOrigin reporting_origin,
+    attribution_reporting.mojom.RegistrationHeaderError error);
+};

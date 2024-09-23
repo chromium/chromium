@@ -18,6 +18,10 @@ namespace extensions {
 // Scheme we serve extension content from.
 inline constexpr char kExtensionScheme[] = "chrome-extension";
 
+// URL used to indicate that an extension resource load request was invalid.
+inline constexpr char kExtensionInvalidRequestURL[] =
+    "chrome-extension://invalid/";
+
 // The name of the manifest inside an extension.
 inline constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");
@@ -204,10 +208,12 @@ enum class AppLaunchSource {
   kSourceProtocolHandler = 25,  // App launch via protocol handler.
   kSourceReparenting = 26,      // APP launch via reparenting.
   kSourceAppHomePage = 27,      // App launch from chrome://apps (App Home).
+  kSourceFocusMode = 28,        // App launch from Focus Mode panel.
+  kSourceSparky = 29,           // App launch from Sparky.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSourceAppHomePage,
+  kMaxValue = kSourceSparky,
 };
 
 // This enum is used for the launch type the user wants to use for an
@@ -368,6 +374,53 @@ inline constexpr char kSigninProfileTestExtensionId[] =
 inline constexpr char kGuestModeTestExtensionId[] =
     "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
+// The extension id of the Amazon Luna .ca Canada PWA.
+inline constexpr char kAmazonLunaAppIdCA[] = "agmpcdnpkedhhjldepagpgebdindblfd";
+
+// The extension id of the Amazon Luna .de Germany PWA.
+inline constexpr char kAmazonLunaAppIdDE[] = "lhedecbjcehgjijkmihhhfmdicbkkgkm";
+
+// The extension id of the Amazon Luna .es Spain PWA.
+inline constexpr char kAmazonLunaAppIdES[] = "befdkfemegjbohkncpbchjcgndhgajfg";
+
+// The extension id of the Amazon Luna .fr France PWA.
+inline constexpr char kAmazonLunaAppIdFR[] = "khklcoifabacgdieoekhmfcilgfmdmbh";
+
+// The extension id of the Amazon Luna .it Italy PWA.
+inline constexpr char kAmazonLunaAppIdIT[] = "agcdabkknemgfgbjdpckaehhncgkfcdi";
+
+// The extension id of the Amazon Luna .nl Netherlands PWA.
+inline constexpr char kAmazonLunaAppIdNL[] = "opkohmiamoeiojmgmhgelaaieecjifod";
+
+// The extension id of the Amazon Luna .pl Poland PWA.
+inline constexpr char kAmazonLunaAppIdPL[] = "alddamigfjonblpigkpieckmhbjdgadd";
+
+// The extension id of the Amazon Luna .co.uk UK PWA.
+inline constexpr char kAmazonLunaAppIdUK[] = "aolalpmkbpdlpjhmhhmcobipjkhlimkj";
+
+// The extension id of the Amazon Luna .com US PWA.
+inline constexpr char kAmazonLunaAppIdUS[] = "mdjpfbokiopdhidmalnpnmekjbajopld";
+
+// The extension id of the Boosteroid PWA.
+inline constexpr char kBoosteroidAppId[] = "ncjnbebeamfkkddkofiijnlpkcnobgin";
+
+// The extension id of the Cool Math Games PWA.
+inline constexpr char kCoolMathGamesAppId[] =
+    "moflhbhdponafajiefoaamnkbhpigdoc";
+
+// The extension id of the Now.gg UK PWA.
+inline constexpr char kNowGGAppIdUK[] = "nphngfagcmpkdicidafibmfcijfighif";
+
+// The extension id of the Now.gg US PWA.
+inline constexpr char kNowGGAppIdUS[] = "dgfmnbibgdaghllenpkjalbnljbffabj";
+
+// The extension id of the Poki PWA.
+inline constexpr char kPokiAppId[] = "nccldcgjjeeglpgcgebibmhmkakanigi";
+
+// The extension id of the Xbox Cloud Gaming PWA.
+inline constexpr char kXboxCloudGamingAppId[] =
+    "chcecgcbjkilfgeccdhoeaillkophnhg";
+
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
@@ -400,7 +453,7 @@ EXTENSIONS_EXPORT bool IsQuickOfficeExtension(std::string_view extension_id);
 // Returns if the app is managed by extension default apps. This is a hardcoded
 // list of default apps for Windows/Linux/MacOS platforms that should be
 // migrated from extension to web app.
-// TODO(https://crbug.com/1257275): remove after deault app migration is done.
+// TODO(crbug.com/40796281): remove after deault app migration is done.
 // This function is copied from
 // chrome/browser/web_applications/extension_status_utils.h.
 EXTENSIONS_EXPORT bool IsPreinstalledAppId(std::string_view app_id);
@@ -425,6 +478,14 @@ inline constexpr char kInvalidColorError[] =
 
 // The default block size for hashing used in content verification.
 inline constexpr int kContentVerificationDefaultBlockSize = 4096;
+
+// The extension id of the Google Docs Offline extension.
+// TODO(crbug.com/325613709): This is only used to log targeted histograms to
+// diagnose corruption rates for this extension. Move this back to
+// chrome/common/extensions/extension_constants.h once the issue has been
+// resolved.
+inline constexpr char kDocsOfflineExtensionId[] =
+    "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
 
 }  // namespace extension_misc
 

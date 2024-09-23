@@ -4,6 +4,9 @@ The `content/` layer of Chromium has a class called `WebContents`, which is one
 of the most basic building blocks of all of Chromium. This document describes
 how `WebContents`es are used to build tabs in browser windows.
 
+Tab Helpers are deprecated for Desktop Chrome. Use TabFeatures instead. See
+[design principles](chrome_browser_design_principles.md).
+
 [TOC]
 
 ## Introduction

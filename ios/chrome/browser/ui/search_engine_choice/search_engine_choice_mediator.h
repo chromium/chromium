@@ -5,19 +5,32 @@
 #ifndef IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
 
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mutator.h"
+
 #import <UIKit/UIKit.h>
 
+class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
-@class SnippetSearchEngineItem;
 
-// Mediator that handles the selection operations.
-@interface SearchEngineChoiceMediator : NSObject
+namespace search_engines {
+class SearchEngineChoiceService;
+}  // namespace search_engines
 
-// The delegate object that manages interactions the Search Engine Choice view.
+@interface SearchEngineChoiceMediator : NSObject<SearchEngineChoiceMutator>
+
+// The delegate object that manages interactions with the Search Engine Choice
+// table view.
 @property(nonatomic, weak) id<SearchEngineChoiceConsumer> consumer;
-// The item selected by the user. Set when the user taps on a row of the search
-// engines choice table.
-@property(nonatomic, weak) SnippetSearchEngineItem* selectedItem;
+
+- (instancetype)
+    initWithTemplateURLService:(TemplateURLService*)templateURLService
+     searchEngineChoiceService:
+         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Save the selected search engine as default.
+- (void)saveDefaultSearchEngine;
 
 // Disconnect the mediator.
 - (void)disconnect;

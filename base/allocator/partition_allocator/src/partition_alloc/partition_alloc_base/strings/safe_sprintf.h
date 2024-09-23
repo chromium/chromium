@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 // For ssize_t
 #include <unistd.h>
 #endif
@@ -20,7 +20,7 @@
 
 namespace partition_alloc::internal::base::strings {
 
-#if defined(COMPILER_MSVC)
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
 // Define ssize_t inside of our namespace.
 #if defined(_WIN64)
 typedef int64_t ssize_t;
@@ -268,4 +268,4 @@ inline ssize_t SafeSPrintf(char (&buf)[N], const char* fmt) {
 
 }  // namespace partition_alloc::internal::base::strings
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_

@@ -5,9 +5,8 @@
 #ifndef GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_
 #define GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_
 
-#include <string>
-
 #include <optional>
+#include <string>
 
 class GURL;
 
@@ -26,6 +25,8 @@ GURL GetListTaskListsUrl(std::optional<int> max_results,
 // `task_list_id`      - task list identifier.
 // `include_completed` - flag indicating whether completed tasks are returned
 //                       in the result.
+// `include_assigned`  - flag indicating whether assigned/shared tasks are
+//                       returned in the result.
 // `max_results`       - maximum number of tasks returned on one page. Adds
 //                       `maxResults` query parameter if not `std::nullopt`.
 // `page_token`        - token specifying the result page to return. Adds
@@ -33,6 +34,7 @@ GURL GetListTaskListsUrl(std::optional<int> max_results,
 // https://developers.google.com/tasks/reference/rest/v1/tasks/list
 GURL GetListTasksUrl(const std::string& task_list_id,
                      bool include_completed,
+                     bool include_assigned,
                      std::optional<int> max_results,
                      const std::string& page_token);
 

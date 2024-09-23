@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // MtabWatcherLinux implementation.
 
 #include "components/storage_monitor/mtab_watcher_linux.h"
@@ -92,7 +97,7 @@ void MtabWatcherLinux::OnFilePathChanged(
   if (path != mtab_path_) {
     // This cannot happen unless FilePathWatcher is buggy. Just ignore this
     // notification and do nothing.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (error) {

@@ -6,6 +6,8 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
@@ -15,8 +17,8 @@ FakeApiBindingsImpl::FakeApiBindingsImpl() = default;
 FakeApiBindingsImpl::~FakeApiBindingsImpl() = default;
 
 fidl::InterfaceHandle<::fuchsia::web::MessagePort>
-FakeApiBindingsImpl::RunAndReturnConnectedPort(base::StringPiece name) {
-  base::AutoReset<base::StringPiece> store_name(&expected_port_name_, name);
+FakeApiBindingsImpl::RunAndReturnConnectedPort(std::string_view name) {
+  base::AutoReset<std::string_view> store_name(&expected_port_name_, name);
 
   auto it = ports_.find(expected_port_name_);
   if (it == ports_.end()) {

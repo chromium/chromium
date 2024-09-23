@@ -1,16 +1,29 @@
     <style include="cr-shared-style settings-shared iron-flex">
+      #addSite {
+        margin-inline-start: var(--cr-button-edge-spacing);
+      }
     </style>
     <div id="category">
       <div class="cr-row first">
-        <h2 class="flex secondary">
+        <h2 id="listHeader" class="flex secondary" tabIndex="-1">
           [[categoryHeader]]
         </h2>
         <cr-button id="addSite" class="header-aligned-button"
-            hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteClick_">
+            hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteClick_"
+            aria-label$="[[getAddButtonLabel_()]]">
           $i18n{add}
         </cr-button>
       </div>
-
+      <div hidden$="[[!showHeaderWarning_(
+              sites.*,systemPermissionWarningKey_)]]"
+          id="systemPermissionDeclinedWarning"
+          class="list-frame">
+        <div class="list-item secondary">
+          <div inner-h-t-m-l="[[getSystemPermissionWarning_(
+                  systemPermissionWarningKey_)]]">
+          </div>
+        </div>
+      </div>
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" id="allow"
             on-click="onAllowClick_" hidden$="[[!showAllowAction_]]">
@@ -52,16 +65,17 @@
                 first$="[[!index]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
                 on-show-tooltip="onShowTooltip_" focus-row-index="[[index]]"
+                on-site-list-entry-reset-click="onResetEntry_"
                 cookies-exception-type="[[cookiesExceptionType]]">
             </site-list-entry>
           </template>
         </iron-list>
       </div>
     </div>
-    <paper-tooltip id="tooltip" hidden="[[!tooltipText_]]"
+    <cr-tooltip id="tooltip" hidden="[[!tooltipText_]]"
         fit-to-visible-bounds manual-mode position="top">
       [[tooltipText_]]
-    </paper-tooltip>
+    </cr-tooltip>
     <template is="dom-if" if="[[showEditExceptionDialog_]]" restamp>
       <settings-edit-exception-dialog model="[[actionMenuSite_]]"
           on-close="onEditExceptionDialogClosed_">

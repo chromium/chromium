@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/sharing_message",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/gcm/model",
+  "+ios/chrome/browser/sync/model",
+]

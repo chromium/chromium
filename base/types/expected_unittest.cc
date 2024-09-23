@@ -91,17 +91,17 @@ TEST(Ok, ValueConstructor) {
 }
 
 TEST(Ok, DefaultConstructor) {
-  constexpr ok<int> o(absl::in_place);
+  constexpr ok<int> o(std::in_place);
   static_assert(o.value() == 0);
 }
 
 TEST(Ok, InPlaceConstructor) {
-  constexpr ok<std::pair<int, double>> o(absl::in_place, 42, 3.14);
+  constexpr ok<std::pair<int, double>> o(std::in_place, 42, 3.14);
   static_assert(o.value() == std::pair(42, 3.14));
 }
 
 TEST(Ok, InPlaceListConstructor) {
-  ok<std::vector<int>> o(absl::in_place, {1, 2, 3});
+  ok<std::vector<int>> o(std::in_place, {1, 2, 3});
   EXPECT_EQ(o.value(), std::vector({1, 2, 3}));
 }
 
@@ -144,17 +144,17 @@ TEST(Unexpected, ValueConstructor) {
 }
 
 TEST(Unexpected, DefaultConstructor) {
-  constexpr unexpected<int> unex(absl::in_place);
+  constexpr unexpected<int> unex(std::in_place);
   static_assert(unex.error() == 0);
 }
 
 TEST(Unexpected, InPlaceConstructor) {
-  constexpr unexpected<std::pair<int, double>> unex(absl::in_place, 42, 3.14);
+  constexpr unexpected<std::pair<int, double>> unex(std::in_place, 42, 3.14);
   static_assert(unex.error() == std::pair(42, 3.14));
 }
 
 TEST(Unexpected, InPlaceListConstructor) {
-  unexpected<std::vector<int>> unex(absl::in_place, {1, 2, 3});
+  unexpected<std::vector<int>> unex(std::in_place, {1, 2, 3});
   EXPECT_EQ(unex.error(), std::vector({1, 2, 3}));
 }
 
@@ -411,13 +411,13 @@ TEST(Expected, ImplicitErrorConstructor) {
 }
 
 TEST(Expected, InPlaceConstructor) {
-  constexpr expected<Strong<int>, int> ex(absl::in_place, 42);
+  constexpr expected<Strong<int>, int> ex(std::in_place, 42);
   static_assert(ex.has_value());
   EXPECT_EQ(ex.value().value, 42);
 }
 
 TEST(Expected, InPlaceListConstructor) {
-  expected<std::vector<int>, int> ex(absl::in_place, {1, 2, 3});
+  expected<std::vector<int>, int> ex(std::in_place, {1, 2, 3});
   EXPECT_THAT(ex, test::ValueIs(std::vector({1, 2, 3})));
 }
 
@@ -918,7 +918,7 @@ TEST(ExpectedVoid, DefaultConstructor) {
 }
 
 TEST(ExpectedVoid, InPlaceConstructor) {
-  constexpr expected<void, int> ex(absl::in_place);
+  constexpr expected<void, int> ex(std::in_place);
   static_assert(ex.has_value());
 }
 

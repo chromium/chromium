@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.CountDownLatch;
@@ -218,7 +218,7 @@ public class PageLoadMetricsTest {
                 "Tab shouldn't be loading anything before we add observer",
                 mActivityTestRule.getActivity().getActivityTab().isLoading());
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver, false));
 
         mActivityTestRule.loadUrl(getNextLoadUrl());
@@ -226,21 +226,20 @@ public class PageLoadMetricsTest {
         Assert.assertFalse("Should not have prerendering", metricsObserver.hasPrerendering());
 
         mActivityTestRule.loadUrl(getNextLoadUrl());
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.removeObserver(metricsObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
     }
 
     @Test
     @SmallTest
     public void testPageLoadMetricNavigationIdSetCorrectly() throws InterruptedException {
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver, false));
         mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver);
 
         PageLoadMetricsTestObserver metricsObserver2 = new PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver2, false));
         mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver2);
@@ -250,10 +249,8 @@ public class PageLoadMetricsTest {
                 metricsObserver.getNavigationId(),
                 metricsObserver2.getNavigationId());
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.removeObserver(metricsObserver));
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.removeObserver(metricsObserver2));
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver2));
     }
 
     @Test
@@ -264,11 +261,11 @@ public class PageLoadMetricsTest {
                 mActivityTestRule.getActivity().getActivityTab().isLoading());
         // Add two observers, one doesn't support prerendering, and the other is does.
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(metricsObserver, false));
         PageLoadMetricsTestObserver prerenderingSupportMetricsObserver =
                 new PageLoadMetricsTestObserver();
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.addObserver(prerenderingSupportMetricsObserver, true));
 
         mActivityTestRule.loadUrl(getNextLoadUrl());
@@ -301,9 +298,8 @@ public class PageLoadMetricsTest {
                 "Observers that support prerendering should observe activation event",
                 prerenderingSupportMetricsObserver.waitForActivationEvent());
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.removeObserver(metricsObserver));
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(metricsObserver));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PageLoadMetrics.removeObserver(prerenderingSupportMetricsObserver));
     }
 }

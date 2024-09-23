@@ -55,9 +55,9 @@ DistillerViewer::DistillerViewer(
   distiller_->DistillPage(
       url, std::move(page),
       base::BindOnce(&DistillerViewer::OnDistillerFinished,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&DistillerViewer::OnArticleDistillationUpdated,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 DistillerViewer::~DistillerViewer() {}
@@ -94,9 +94,10 @@ void DistillerViewer::OnArticleReady(
                        "distillerOnIos = true; " + js_buffer_ + "</script>";
 
     std::move(callback_).Run(url_, html_and_script, images,
-                             article_proto->title());
+                             article_proto->title(), csp_nonce_);
   } else {
-    std::move(callback_).Run(url_, std::string(), {}, std::string());
+    std::move(callback_).Run(url_, std::string(), {}, std::string(),
+                             std::string());
   }
 }
 

@@ -34,7 +34,8 @@ class GL_EXPORT ShaderTracking {
   ~ShaderTracking() {}
 
   mutable base::Lock lock_;
-  std::string shaders_[2];
+  std::string shader0_;
+  std::string shader1_;
 };
 
 }  // namespace gl

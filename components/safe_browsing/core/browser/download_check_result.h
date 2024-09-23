@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_CHECK_RESULT_H_
 
+#include <string_view>
+
 namespace safe_browsing {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -27,13 +29,17 @@ enum class DownloadCheckResult {
   SENSITIVE_CONTENT_BLOCK = 11,
   DEEP_SCANNED_SAFE = 12,
   PROMPT_FOR_SCANNING = 13,
-  BLOCKED_UNSUPPORTED_FILE_TYPE = 14,
+  // Deprecated: BLOCKED_UNSUPPORTED_FILE_TYPE = 14,
   DANGEROUS_ACCOUNT_COMPROMISE = 15,
   DEEP_SCANNED_FAILED = 16,
   PROMPT_FOR_LOCAL_PASSWORD_SCANNING = 17,
   ASYNC_LOCAL_PASSWORD_SCANNING = 18,
-  kMaxValue = ASYNC_LOCAL_PASSWORD_SCANNING,
+  BLOCKED_SCAN_FAILED = 19,
+  IMMEDIATE_DEEP_SCAN = 20,
+  kMaxValue = IMMEDIATE_DEEP_SCAN,
 };
+
+std::string_view DownloadCheckResultToString(DownloadCheckResult result);
 
 }  // namespace safe_browsing
 

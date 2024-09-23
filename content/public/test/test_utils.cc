@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -257,11 +258,8 @@ WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh) {
 
   // Attach. |inner_contents| becomes owned by |outer_contents|.
   WebContents* inner_contents = inner_contents_ptr.get();
-  outer_contents->AttachInnerWebContents(
-      std::move(inner_contents_ptr), rfh,
-      /*remote_frame=*/mojo::NullAssociatedRemote(),
-      /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
-      /*is_full_page=*/false);
+  outer_contents->AttachInnerWebContents(std::move(inner_contents_ptr), rfh,
+                                         /*is_full_page=*/false);
 
   return inner_contents;
 }
@@ -298,6 +296,16 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
   };
 
   Awaiter(web_contents).Await();
+}
+
+void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh) {
+  WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents);
+  FrameTreeNode* node =
+      contents->GetPrimaryFrameTree().FindByID(rfh->GetFrameTreeNodeId());
+  CHECK(node);
+  CHECK_EQ(node->current_frame_host(), rfh);
+  contents->GetPrimaryFrameTree().SetFocusedFrame(
+      node, node->current_frame_host()->GetSiteInstance()->group());
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
@@ -342,7 +350,8 @@ void MessageLoopRunner::Quit() {
 }
 
 LoadStopObserver::LoadStopObserver(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
 
 void LoadStopObserver::Wait() {
   if (!seen_)

@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_ENCRYPTED_REPORTING_CLIENT_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +18,8 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
@@ -24,10 +27,6 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/statusor.h"
-
-namespace policy {
-class CloudPolicyClient;
-}  // namespace policy
 
 namespace reporting {
 
@@ -91,7 +90,12 @@ class EncryptedReportingClient {
   };
 
   using ResponseCallback =
-      base::OnceCallback<void(StatusOr<base::Value::Dict>)>;
+      base::OnceCallback<void(StatusOr<UploadResponseParser>)>;
+
+  // Server is expected to respond within this time, otherwise the upload
+  // job is cancelled and the data will be re-uploaded as soon as the throttling
+  // permits.
+  static constexpr base::TimeDelta kReportingUploadDeadline = base::Minutes(2);
 
   static std::unique_ptr<EncryptedReportingClient> Create(
       std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());
@@ -105,6 +109,12 @@ class EncryptedReportingClient {
   // Returns false otherwise.
   static bool GenerationGuidIsRequired();
 
+  // Presets common settings to be applied to future cached uploads. May be
+  // called more than once, but settings are expected to end up being the same.
+  void PresetUploads(base::Value::Dict context,
+                     std::string dm_token,
+                     std::string client_id);
+
   // Uploads a report containing multiple `records`, augmented with
   // `need_encryption_key` flag and `config_file_version`. Calls `callback` when
   // the upload process is completed. Uses `scoped_reservation` to ensure proper
@@ -113,8 +123,7 @@ class EncryptedReportingClient {
                     int config_file_version,
                     std::vector<EncryptedRecord> records,
                     ScopedReservation scoped_reservation,
-                    std::optional<base::Value::Dict> context,
-                    policy::CloudPolicyClient* cloud_policy_client,
+                    UploadEnqueuedCallback enqueued_cb,
                     ResponseCallback callback);
 
   // Test-only method that resets collected uploads state.
@@ -131,28 +140,36 @@ class EncryptedReportingClient {
   FRIEND_TEST_ALL_PREFIXES(EncryptedReportingClientTest,
                            FailedUploadsSequenceThrottled);
 
-  using JobSet =
-      base::flat_set<std::unique_ptr<policy::DeviceManagementService::Job>,
-                     base::UniquePtrComparator>;
-
   // Constructor called by factory only.
   explicit EncryptedReportingClient(std::unique_ptr<Delegate> delegate);
+
+  // Performs actual upload unless one is already in flight (calls `callback`
+  // with error in that case).
+  void MaybePerformUpload(bool need_encryption_key,
+                          int config_file_version,
+                          Priority priority,
+                          int64_t generation_id,
+                          ResponseCallback callback);
 
   // Constructs upload job after the data is converted into JSON, assigned to
   // `payload_result` (`nullopt` if there was an error). Calls `callback` once
   // the job has been responded or if an error has been detected, and releases
   // `scoped_reservation`.
   void CreateUploadJob(
-      std::optional<base::Value::Dict> context,
-      policy::CloudPolicyClient* cloud_policy_client,
+      Priority priority,
+      int64_t generation_id,
       policy::EncryptedReportingJobConfiguration::UploadResponseCallback
           response_cb,
       ResponseCallback callback,
       std::optional<base::Value::Dict> payload_result,
-      ScopedReservation scoped_reservation);
+      ScopedReservation scoped_reservation,
+      int64_t last_sequence_id,
+      uint64_t events_to_send);
 
   // Callback for encrypted report upload requests.
-  void OnReportUploadCompleted(ScopedReservation scoped_reservation,
+  void OnReportUploadCompleted(Priority priority,
+                               int64_t generation_id,
+                               ScopedReservation scoped_reservation,
                                std::optional<int> request_payload_size,
                                base::WeakPtr<PayloadSizePerHourUmaReporter>
                                    payload_size_per_hour_uma_reporter,
@@ -165,22 +182,26 @@ class EncryptedReportingClient {
   // Checks the new job against the history, determines how soon the upload will
   // be allowed. Returns positive value if not allowed, and 0 or negative
   // otherwise.
-  static base::TimeDelta WhenIsAllowedToProceed(
-      const std::vector<EncryptedRecord>& records);
+  static base::TimeDelta WhenIsAllowedToProceed(Priority priority,
+                                                int64_t generation_id);
 
   // Account for the job, that was allowed to proceed.
-  static void AccountForAllowedJob(const std::vector<EncryptedRecord>& records);
+  static void AccountForAllowedJob(Priority priority,
+                                   int64_t generation_id,
+                                   int64_t last_sequence_id);
 
   // Accounts for net error and response code of the upload.
   static void AccountForUploadResponse(Priority priority,
                                        int64_t generation_id,
-                                       int64_t sequence_id,
                                        int net_error,
                                        int response_code);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  JobSet request_jobs_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Cached elements expected by the reporting server.
+  std::string dm_token_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string client_id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Value::Dict context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const std::unique_ptr<Delegate> delegate_;
 

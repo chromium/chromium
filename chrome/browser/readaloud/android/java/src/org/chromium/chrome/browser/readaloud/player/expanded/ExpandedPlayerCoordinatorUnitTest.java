@@ -51,7 +51,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
     @Mock private ExpandedPlayerMediator mMediator;
     @Mock private ExpandedPlayerSheetContent mSheetContent;
     @Mock private OptionsMenuSheetContent mOptionsMenuSheetContent;
-    @Mock private VoiceMenuSheetContent mVoiceMenu;
+    @Mock private VoiceMenu mVoiceMenu;
     private ExpandedPlayerCoordinator mCoordinator;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     BottomSheetObserver mBottomSheetObserver;

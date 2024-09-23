@@ -24,7 +24,7 @@ blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
     return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
   }
 
-  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
+  // TODO(crbug.com/40161236): Use IsOriginPotentiallyTrustworthy?
   if (url::HostIsIPAddress(caller_origin.host()) ||
       !network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL())) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;

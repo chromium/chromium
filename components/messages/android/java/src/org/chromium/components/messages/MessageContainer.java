@@ -81,22 +81,17 @@ public class MessageContainer extends FrameLayout {
             throw new IllegalStateException("Should not contain the target view when adding.");
         }
         int index = 0;
-        if (MessageFeatureList.isStackAnimationEnabled()) {
-            if (getChildCount() > 1) {
-                throw new IllegalStateException(
-                        "Should not contain more than 2 views when adding a new message.");
-            } else if (getChildCount() == 1) {
-                View cur = getChildAt(0);
-                index = cur.getElevation() > view.getElevation() ? 1 : 0;
-            }
-        } else if (getChildCount() == 1) {
+        if (getChildCount() > 1) {
             throw new IllegalStateException(
-                    "Should not contain any view when adding a new message.");
+                    "Should not contain more than 2 views when adding a new message.");
+        } else if (getChildCount() == 1) {
+            View cur = getChildAt(0);
+            index = cur.getElevation() > view.getElevation() ? 1 : 0;
         }
         super.addView(view, index);
         onChildCountChanged();
 
-        // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
+        // TODO(crbug.com/40749472): clipChildren should be set to false only when the message is in
         // motion.
     }
 
@@ -122,7 +117,7 @@ public class MessageContainer extends FrameLayout {
                 getResources()
                         .getString(
                                 getChildCount() == 1
-                                        ? R.string.dismiss
+                                        ? R.string.chrome_dismiss
                                         : R.string.message_dismiss_and_show_next);
         mA11yDismissActionId =
                 ViewCompat.addAccessibilityAction(
@@ -140,7 +135,7 @@ public class MessageContainer extends FrameLayout {
 
     public int getMessageBannerHeight() {
         assert getChildCount() > 0;
-        // TODO(https://crbug.com/1382275): remove this log after fix.
+        // TODO(crbug.com/40877229): remove this log after fix.
         if (getChildAt(0) == null) {
             Log.w(TAG, "Null child in message container; child count %s", getChildCount());
         }

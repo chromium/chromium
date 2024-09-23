@@ -46,6 +46,7 @@ message CreateTrialsFromSeedTestCase {
   message EntropyValues {
     optional string client_id = 1;
     optional uint32 low_entropy = 2;
+    optional string limited_entropy_randomization_source = 3;
   }
   optional EntropyValues entropy = 3;
 }

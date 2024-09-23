@@ -21,7 +21,8 @@ class AutofillErrorDialogView;
 // The controller is destroyed once the view is dismissed.
 class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
  public:
-  AutofillErrorDialogControllerImpl();
+  explicit AutofillErrorDialogControllerImpl(
+      AutofillErrorDialogContext error_dialog_context);
   ~AutofillErrorDialogControllerImpl() override;
 
   AutofillErrorDialogControllerImpl(const AutofillErrorDialogControllerImpl&) =
@@ -29,10 +30,8 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   AutofillErrorDialogControllerImpl& operator=(
       const AutofillErrorDialogControllerImpl&) = delete;
 
-  // Show the error dialog for the given `autofill_error_dialog_context` and the
-  // `view_creation_callback`.
-  void Show(const AutofillErrorDialogContext& autofill_error_dialog_context,
-            base::OnceCallback<base::WeakPtr<AutofillErrorDialogView>()>
+  // Provide the `view_creation_callback` and show the error dialog.
+  void Show(base::OnceCallback<base::WeakPtr<AutofillErrorDialogView>()>
                 view_creation_callback);
 
   // AutofillErrorDialogController.
@@ -48,7 +47,7 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
 
  private:
   // Dismiss the error dialog if showing.
-  void Dismiss();
+  void DismissIfApplicable();
 
   // The context of the error dialog that is being displayed. Contains
   // information such as the type of the error dialog that is being displayed.
@@ -57,7 +56,7 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   // |error_dialog_context_| contains this information, the fields in
   // |error_dialog_context_| should be preferred when displaying the error
   // dialog.
-  AutofillErrorDialogContext error_dialog_context_;
+  const AutofillErrorDialogContext error_dialog_context_;
 
   // View that displays the error dialog.
   base::WeakPtr<AutofillErrorDialogView> autofill_error_dialog_view_;

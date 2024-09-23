@@ -28,9 +28,12 @@ dictionary WebPrintJobAttributes {
   IsolatedContext
 ]
 interface WebPrintJob : EventTarget {
+  [MeasureAs=WebPrintJobAttributesFunction]
   WebPrintJobAttributes attributes();
 
+  [MeasureAs=WebPrintJobCancelFunction]
   void cancel();
 
+  [MeasureAs=WebPrintJobOnJobStateChangeEvent]
   attribute EventHandler onjobstatechange;
 };

@@ -8,17 +8,19 @@
 #include <optional>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
+#include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
+#include "components/performance_manager/public/viewport_intersection_state.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -37,7 +39,7 @@ using execution_context_priority::PriorityAndReason;
 // content::RenderFrameHost (RFH) in the browser, and a
 // content::RenderFrameImpl / blink::LocalFrame in a renderer.
 //
-// TODO(crbug.com/1211368): The naming is misleading. In the browser,
+// TODO(crbug.com/40182881): The naming is misleading. In the browser,
 // FrameTreeNode tracks state about a frame and RenderFrameHost tracks state
 // about a document loaded into that frame, which can change over time.
 // (Although RFH doesn't exactly track documents 1:1 either - see
@@ -61,13 +63,14 @@ using execution_context_priority::PriorityAndReason;
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.
-class FrameNode : public Node {
+class FrameNode : public TypedNode<FrameNode> {
  public:
-  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
+  using NodeSet = base::flat_set<const Node*>;
+  template <class ReturnType>
+  using NodeSetView = NodeSetView<NodeSet, ReturnType>;
+
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
-  using PageNodeVisitor = base::FunctionRef<bool(const PageNode*)>;
-  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
 
   class ObserverDefaultImpl;
 
@@ -78,6 +81,8 @@ class FrameNode : public Node {
     kVisible,
     kNotVisible,
   };
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
 
   FrameNode();
 
@@ -93,7 +98,7 @@ class FrameNode : public Node {
 
   // Returns the document owning the frame this RenderFrameHost is located in,
   // which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)).
+  // <fencedframe> or an embedder (e.g. GuestViews)).
   // This method is equivalent to
   // RenderFrameHost::GetParentOrOuterDocumentOrEmbedder().
   virtual const FrameNode* GetParentOrOuterDocumentOrEmbedder() const = 0;
@@ -114,9 +119,9 @@ class FrameNode : public Node {
   // constant over the lifetime of the frame.
   virtual content::BrowsingInstanceId GetBrowsingInstanceId() const = 0;
 
-  // Gets the ID of the site instance to which this frame belongs. This is a
+  // Gets the ID of the SiteInstanceGroup to which this frame belongs. This is a
   // constant over the lifetime of the frame.
-  virtual content::SiteInstanceId GetSiteInstanceId() const = 0;
+  virtual content::SiteInstanceGroupId GetSiteInstanceGroupId() const = 0;
 
   // Gets the unique token identifying this node for resource attribution. This
   // token will not be reused after the node is destroyed.
@@ -127,41 +132,19 @@ class FrameNode : public Node {
   //
   // Note that a frame can be considered a main frame without being the
   // outermost frame node. This can happen if this is the main frame of an inner
-  // WebContents (Portal or Guest view), or if this is a <fencedframe>.
+  // WebContents (Guest view), or if this is a <fencedframe>.
   virtual bool IsMainFrame() const = 0;
 
-  // Visits the frame nodes that are children of this frame. The iteration is
-  // halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const = 0;
+  // Returns the set of child frames associated with this frame.
+  virtual NodeSetView<const FrameNode*> GetChildFrameNodes() const = 0;
 
-  // Returns the set of child frame associated with this frame. Note that this
-  // incurs a full container copy of all child nodes. Please use
-  // VisitChildFrameNodes when that makes sense.
-  virtual const base::flat_set<const FrameNode*> GetChildFrameNodes() const = 0;
+  // Returns the set of opened pages associated with this frame. This can change
+  // over the lifetime of the frame.
+  virtual NodeSetView<const PageNode*> GetOpenedPageNodes() const = 0;
 
-  // Visits the page nodes that have been opened by this frame. The iteration
-  // is halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const = 0;
-
-  // Returns the set of opened pages associatted with this frame. Note that
-  // this incurs a full container copy all the opened nodes. Please use
-  // VisitOpenedPageNodes when that makes sense. This can change over the
-  // lifetime of the frame.
-  virtual const base::flat_set<const PageNode*> GetOpenedPageNodes() const = 0;
-
-  // Visits the page nodes that have been embedded by this frame. The iteration
-  // is halted if the visitor returns false. Returns true if every call to the
-  // visitor returned true, false otherwise.
-  virtual bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const = 0;
-
-  // Returns the set of embedded pages associatted with this frame. Note that
-  // this incurs a full container copy all the embedded nodes. Please use
-  // VisitEmbeddedPageNodes when that makes sense. This can change over the
-  // lifetime of the frame.
-  virtual const base::flat_set<const PageNode*> GetEmbeddedPageNodes()
-      const = 0;
+  // Returns the set of embedded pages associated with this frame. This can
+  // change over the lifetime of the frame.
+  virtual NodeSetView<const PageNode*> GetEmbeddedPageNodes() const = 0;
 
   // Returns the current lifecycle state of this frame. See
   // FrameNodeObserver::OnFrameLifecycleStateChanged.
@@ -172,12 +155,16 @@ class FrameNode : public Node {
   // meaningful while the object is frozen.
   virtual bool HasNonemptyBeforeUnload() const = 0;
 
-  // Returns the URL associated with this frame.
+  // Returns the last committed URL for this frame.
   // See FrameNodeObserver::OnURLChanged.
   virtual const GURL& GetURL() const = 0;
 
+  // Returns the last committed origin for this frame. nullopt if no navigation
+  // was committed. See FrameNodeObserver::OnOriginChanged.
+  virtual const std::optional<url::Origin>& GetOrigin() const = 0;
+
   // Returns true if this frame is current (is part of a content::FrameTree).
-  // See FrameNodeObserver::OnIsCurrentChanged.
+  // See FrameNodeObserver::OnCurrentFrameChanged.
   virtual bool IsCurrent() const = 0;
 
   // Returns the current priority of the frame, and the reason for the frame
@@ -200,21 +187,16 @@ class FrameNode : public Node {
   // lock is held by an active transaction or an active DB open request.
   virtual bool IsHoldingIndexedDBLock() const = 0;
 
+  // Returns true if this frame currently uses WebRTC.
+  virtual bool UsesWebRTC() const = 0;
+
   // Returns the child workers of this frame. These are either dedicated workers
   // or shared workers created by this frame, or a service worker that handles
   // this frame's network requests.
-  virtual const base::flat_set<const WorkerNode*> GetChildWorkerNodes()
-      const = 0;
+  virtual NodeSetView<const WorkerNode*> GetChildWorkerNodes() const = 0;
 
-  // Visits the child dedicated workers of this frame. The iteration is halted
-  // if the visitor returns false. Returns true if every call to the visitor
-  // returned true, false otherwise.
-  //
-  // The reason why we don't have a generic VisitChildWorkers method is that
-  // a service/shared worker may appear as a child of multiple other nodes
-  // and thus may be visited multiple times.
-  virtual bool VisitChildDedicatedWorkers(
-      const WorkerNodeVisitor& visitor) const = 0;
+  // Returns true if the frame has been interacted with at least once.
+  virtual bool HadUserActivation() const = 0;
 
   // Returns true if at least one form of the frame has been interacted with.
   virtual bool HadFormInteraction() const = 0;
@@ -230,13 +212,12 @@ class FrameNode : public Node {
   // Returns true if the frame is capturing a media stream (audio or video).
   virtual bool IsCapturingMediaStream() const = 0;
 
-  // Returns true if the frame intersects with the viewport. This could be false
-  // if the frame is not rendered (display: none) or is scrolled out of view.
-  // This is initially null on node creation and is initialized during layout
-  // when the viewport intersection is first calculated. May only be called for
-  // a child frame, as the main frame is always considered to be intersecting
-  // the viewport.
-  virtual std::optional<bool> IntersectsViewport() const = 0;
+  // Returns the ViewportIntersectionState of this frame. This is initially null
+  // on node creation and is initialized during layout when the viewport
+  // intersection is first calculated. May only be called for a child frame, as
+  // the main frame is always considered to be intersecting the viewport.
+  virtual std::optional<ViewportIntersectionState>
+  GetViewportIntersectionState() const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.
@@ -265,14 +246,14 @@ class FrameNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class FrameNodeObserver {
+class FrameNodeObserver : public base::CheckedObserver {
  public:
   FrameNodeObserver();
 
   FrameNodeObserver(const FrameNodeObserver&) = delete;
   FrameNodeObserver& operator=(const FrameNodeObserver&) = delete;
 
-  virtual ~FrameNodeObserver();
+  ~FrameNodeObserver() override;
 
   // Node lifetime notifications.
 
@@ -288,8 +269,10 @@ class FrameNodeObserver {
 
   // Notifications of property changes.
 
-  // Invoked when the IsCurrent property changes.
-  virtual void OnIsCurrentChanged(const FrameNode* frame_node) = 0;
+  // Invoked when the current frame changes. Both arguments can be nullptr.
+  virtual void OnCurrentFrameChanged(
+      const FrameNode* previous_frame_node,
+      const FrameNode* current_current_frame) = 0;
 
   // Invoked when the NetworkAlmostIdle property changes.
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) = 0;
@@ -300,6 +283,11 @@ class FrameNodeObserver {
   // Invoked when the URL property changes.
   virtual void OnURLChanged(const FrameNode* frame_node,
                             const GURL& previous_value) = 0;
+
+  // Invoked when the origin property changes.
+  virtual void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) = 0;
 
   // Invoked when the IsAdFrame property changes.
   virtual void OnIsAdFrameChanged(const FrameNode* frame_node) = 0;
@@ -316,6 +304,9 @@ class FrameNodeObserver {
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) = 0;
 
+  // Called when the frame is interacted with by the user.
+  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) = 0;
+
   // Called when the frame receives a form interaction.
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) = 0;
 
@@ -325,6 +316,9 @@ class FrameNodeObserver {
   // property will only trigger `OnHadUserEditsChanged()`.
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) = 0;
 
+  // Called when the frame starts or stops using WebRTC.
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) = 0;
+
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
@@ -332,7 +326,8 @@ class FrameNodeObserver {
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when a frame's intersection with the viewport changes
-  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) = 0;
+  virtual void OnViewportIntersectionStateChanged(
+      const FrameNode* frame_node) = 0;
 
   // Invoked when the visibility property changes.
   virtual void OnFrameVisibilityChanged(
@@ -370,11 +365,15 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override {}
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override {}
-  void OnIsCurrentChanged(const FrameNode* frame_node) override {}
+  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                             const FrameNode* current_frame_node) override {}
   void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override {}
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override {}
   void OnURLChanged(const FrameNode* frame_node,
                     const GURL& previous_value) override {}
+  void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) override {}
   void OnIsAdFrameChanged(const FrameNode* frame_node) override {}
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override {}
   void OnFrameIsHoldingIndexedDBLockChanged(
@@ -382,11 +381,14 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override {}
+  void OnHadUserActivationChanged(const FrameNode* frame_node) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
-  void OnIntersectsViewportChanged(const FrameNode* frame_node) override {}
+  void OnViewportIntersectionStateChanged(
+      const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {
   }

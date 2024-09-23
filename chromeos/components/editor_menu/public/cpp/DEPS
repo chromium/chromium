@@ -1,0 +1,5 @@
+include_rules = [
+  "+ui/gfx/vector_icon_types.h",
+  "+ui/gfx/range/range.h",
+  "+components/vector_icons",
+]

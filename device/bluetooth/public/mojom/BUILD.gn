@@ -6,7 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_java = true
-  sources = [ "uuid.mojom" ]
+  sources = [
+    "gatt_characteristic_permissions.mojom",
+    "gatt_characteristic_properties.mojom",
+    "gatt_service_error_code.mojom",
+    "uuid.mojom",
+  ]
   webui_module_path = "/"
 
   # Indirect dependency of Blink test support so generate legacy bindings for
@@ -20,15 +25,35 @@ mojom("mojom") {
           mojom = "bluetooth.mojom.UUID"
           cpp = "::device::BluetoothUUID"
         },
+        {
+          mojom = "bluetooth.mojom.GattCharacteristicProperties"
+          cpp = "::device::BluetoothGattCharacteristic::Properties"
+        },
+        {
+          mojom = "bluetooth.mojom.GattCharacteristicPermissions"
+          cpp = "::device::BluetoothGattCharacteristic::Permissions"
+        },
+        {
+          mojom = "bluetooth.mojom.GattServiceErrorCode"
+          cpp = "::device::BluetoothGattService::GattErrorCode"
+        },
       ]
-      traits_headers = [ "//device/bluetooth/public/mojom/uuid_mojom_traits.h" ]
+      traits_headers = [
+        "//device/bluetooth/public/mojom/uuid_mojom_traits.h",
+        "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.h",
+        "//device/bluetooth/public/mojom/gatt_service_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.cc",
+        "//device/bluetooth/public/mojom/gatt_service_mojom_traits.cc",
+      ]
       traits_public_deps = [ "//device/bluetooth/public/cpp" ]
     },
   ]
 }
 
 mojom("fake_bluetooth_interfaces") {
-  sources = [ "test/fake_bluetooth.mojom" ]
+  sources = [ "emulation/fake_bluetooth.mojom" ]
 
   public_deps = [ ":mojom" ]
 
@@ -40,9 +65,7 @@ mojom("fake_bluetooth_interfaces") {
           cpp = "::device::BluetoothDevice::ServiceDataMap"
         },
       ]
-      traits_headers = [
-        "//device/bluetooth/public/mojom/test/fake_bluetooth_mojom_traits.h",
-      ]
+      traits_headers = [ "//device/bluetooth/public/mojom/emulation/fake_bluetooth_mojom_traits.h" ]
       traits_public_deps = [ "//device/bluetooth" ]
     },
   ]
@@ -70,5 +93,8 @@ mojom("deprecated_experimental_interfaces") {
 
     # Nearby Sharing feature
     "//chromeos/ash/services/nearby/public/mojom:*",
+
+    # For device unittests
+    "//device:*",
   ]
 }

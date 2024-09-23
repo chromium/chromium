@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -15,7 +16,8 @@ namespace {
 Element* ClosestInclusiveAncestorContainer(Element& element,
                                            Element* stay_within = nullptr) {
   for (auto* container = &element; container && container != stay_within;
-       container = container->ParentOrShadowHostElement()) {
+       container = ContainerQueryEvaluator::ParentContainerCandidateElement(
+           *container)) {
     const ComputedStyle* style = container->GetComputedStyle();
     if (!style) {
       // TODO(crbug.com/1400631): Eliminate all invalid calls to
@@ -45,14 +47,18 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
   // TODO(crbug.com/1145970): Avoid this work if we're not inside a container
-  if (Element* shadow_including_parent = element.ParentOrShadowHostElement()) {
-    return FromInclusiveAncestors(*shadow_including_parent);
+  if (Element* parent =
+          ContainerQueryEvaluator::ParentContainerCandidateElement(element)) {
+    return FromInclusiveAncestors(*parent);
   }
   return StyleRecalcContext();
 }
 
 StyleRecalcContext StyleRecalcContext::ForSlotChildren(
     const HTMLSlotElement& slot) const {
+  if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled()) {
+    return *this;
+  }
   // If the container is in a different tree scope, it is already in the shadow-
   // including inclusive ancestry of the host.
   if (!container || container->GetTreeScope() != slot.GetTreeScope()) {
@@ -80,6 +86,10 @@ StyleRecalcContext StyleRecalcContext::ForSlotChildren(
 
 StyleRecalcContext StyleRecalcContext::ForSlottedRules(
     HTMLSlotElement& slot) const {
+  if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled()) {
+    return *this;
+  }
+
   // The current container is the shadow-including inclusive ancestors of the
   // host. When matching ::slotted rules, the closest container may be found in
   // the shadow-including inclusive ancestry of the slot. If we reach the host,
@@ -95,6 +105,10 @@ StyleRecalcContext StyleRecalcContext::ForSlottedRules(
 }
 
 StyleRecalcContext StyleRecalcContext::ForPartRules(Element& host) const {
+  if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled()) {
+    return *this;
+  }
+
   DCHECK(IsShadowHost(host));
 
   StyleRecalcContext part_context(*this);

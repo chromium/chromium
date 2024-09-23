@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -2512,7 +2517,7 @@ TEST_P(CacheStorageCacheTestP, VerifySerialScheduling) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/936129): Flaky on Windows.
+// TODO(crbug.com/41443751): Flaky on Windows.
 #define MAYBE_KeysWithManyCacheEntries DISABLED_KeysWithManyCacheEntries
 #else
 #define MAYBE_KeysWithManyCacheEntries KeysWithManyCacheEntries

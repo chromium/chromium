@@ -106,7 +106,7 @@ enum class IPCBlobItemRequestStrategy {
 
 // Used by BlobURLStoreImpl when determining how to validate Blob URLs received
 // from the renderer over Mojo.
-// TODO(https://crbug.com/1058759): Once fixed, remove this.
+// TODO(crbug.com/40051700): Once fixed, remove this.
 enum class BlobURLValidityCheckBehavior {
   DEFAULT,
   // In cases where we know that the storage key may not be opaque when it

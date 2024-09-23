@@ -88,9 +88,6 @@ class TranslateDriver {
   // Returns whether the driver has access to the current page.
   virtual bool HasCurrentPage() const = 0;
 
-  // Opens |url| in a new tab.
-  virtual void OpenUrlInNewTab(const GURL& url) = 0;
-
  protected:
   const base::ObserverList<LanguageDetectionObserver, true>&
   language_detection_observers() const {

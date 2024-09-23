@@ -6,9 +6,9 @@
 #define REMOTING_CLIENT_NOTIFICATION_NOTIFICATION_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"

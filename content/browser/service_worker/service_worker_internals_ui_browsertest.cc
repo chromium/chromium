@@ -48,10 +48,11 @@ void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
   continuation.Run();
 }
 
-void ExpectUnregisterResultAndRun(bool expected,
-                                  base::RepeatingClosure continuation,
-                                  bool actual) {
-  ASSERT_EQ(expected, actual);
+void ExpectUnregisterResultAndRun(
+    blink::ServiceWorkerStatusCode expected_status,
+    base::RepeatingClosure continuation,
+    blink::ServiceWorkerStatusCode actual_status) {
+  EXPECT_EQ(expected_status, actual_status);
   continuation.Run();
 }
 
@@ -350,7 +351,8 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
       // Unregistering something should return true.
       public_context()->UnregisterServiceWorker(
           embedded_test_server()->GetURL(kServiceWorkerScope), key,
-          base::BindOnce(&ExpectUnregisterResultAndRun, true,
+          base::BindOnce(&ExpectUnregisterResultAndRun,
+                         blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
       run_loop.Run();
     }

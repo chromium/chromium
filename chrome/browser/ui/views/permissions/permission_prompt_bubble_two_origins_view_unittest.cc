@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/to_vector.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,14 +34,14 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
       const GURL& embedding_origin,
       const std::vector<permissions::RequestType> request_types)
       : embedding_origin_(embedding_origin) {
-    requests_ = base::test::ToVector(
+    requests_ = base::ToVector(
         request_types,
         [&](auto& request_type)
             -> std::unique_ptr<permissions::PermissionRequest> {
           return std::make_unique<permissions::MockPermissionRequest>(
               requesting_origin, request_type);
         });
-    raw_requests_ = base::test::ToVector(
+    raw_requests_ = base::ToVector(
         requests_,
         [](const auto& request)
             -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {

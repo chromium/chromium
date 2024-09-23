@@ -10,53 +10,52 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
-// `optional_ref<T>` is similar to `absl::optional<T>`, except it does not own
+// `optional_ref<T>` is similar to `std::optional<T>`, except it does not own
 // the underlying value.
 //
 // When passing an optional parameter, prefer `optional_ref` to `const
-// absl::optional<T>&` as the latter often results in hidden copies due to
+// std::optional<T>&` as the latter often results in hidden copies due to
 // implicit conversions, e.g. given the function:
 //
-//   void TakesOptionalString(const absl::optional<std::string>& str);
+//   void TakesOptionalString(const std::optional<std::string>& str);
 //
 // And a call to that looks like:
 //
 //   std::string s = "Hello world!";
 //   TakesOptionalString(s);
 //
-// This copies `s` into a temporary `absl::optional<std::string>` in order to
+// This copies `s` into a temporary `std::optional<std::string>` in order to
 // call `TakesOptionalString()`.
 //
 // The C++ style guide recommends using `const T*` instead of `const
-// absl::optional<T>&` when `T` would normally be passed by reference. However
+// std::optional<T>&` when `T` would normally be passed by reference. However
 // `const T*` is not always a good substitute because:
 //
 // - `const T*` disallows the use of temporaries, since it is not possible to
 //   take the address of a temporary.
 // - additional boilerplate (e.g. `OptionalToPtr`) is required to pass an
-//   `absl::optional<T>` to a `const T*` function parameter.
+//   `std::optional<T>` to a `const T*` function parameter.
 //
 // Like `span<T>`, mutability of `optional_ref<T>` is controlled by the template
 // argument `T`; e.g. `optional_ref<const int>` only allows const access to the
 // referenced `int` value.
 //
 // Thus, `optional_ref<const T>` can be constructed from:
-// - `absl::nullopt`
+// - `std::nullopt`
 // - `const T*` or `T*`
 // - `const T&` or `T&`
-// ` `const absl::optional<T>&` or `absl::optional<T>&`
+// ` `const std::optional<T>&` or `std::optional<T>&`
 //
 // While `optional_ref<T>` can only be constructed from:
-// - `absl::nullopt`
+// - `std::nullopt`
 // - `T*`
 // - `T&`
-// - `absl::optional<T>&`
+// - `std::optional<T>&`
 //
 // Implicit conversions are disallowed, e.g. this will not compile:
 //
@@ -69,7 +68,7 @@ namespace base {
 template <typename T>
 class optional_ref {
  private:
-  // Disallowed because `absl::optional` (and `std::optional`) do not allow
+  // Disallowed because `std::optional` (and `std::optional`) do not allow
   // their template argument to be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
@@ -85,12 +84,14 @@ class optional_ref {
       std::is_convertible_v<U*, T*>;
 
  public:
+  using value_type = T;
+
   // Constructs an empty `optional_ref`.
   constexpr optional_ref() = default;
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(absl::nullopt_t) {}
+  constexpr optional_ref(std::nullopt_t) {}
 
-  // Constructs an `optional_ref` from an `absl::optional`; the resulting
+  // Constructs an `optional_ref` from an `std::optional`; the resulting
   // `optional_ref` is empty iff `o` is empty.
   //
   // Note: when constructing from a const reference, `optional_ref`'s template
@@ -99,13 +100,12 @@ class optional_ref {
   template <typename U>
     requires(std::is_const_v<T> && IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(
-      const absl::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(const std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(absl::optional<U>& o ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  constexpr optional_ref(std::optional<U>& o LIFETIME_BOUND)
       : ptr_(o ? &*o : nullptr) {}
 
   // Constructs an `optional_ref` from a pointer; the resulting `optional_ref`
@@ -117,7 +117,7 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U* p ABSL_ATTRIBUTE_LIFETIME_BOUND) : ptr_(p) {}
+  constexpr optional_ref(U* p LIFETIME_BOUND) : ptr_(p) {}
 
   // Constructs an `optional_ref` from a reference; the resulting `optional_ref`
   // is never empty.
@@ -128,15 +128,13 @@ class optional_ref {
   template <typename U>
     requires(IsCompatibleV<const U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(const U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(const U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
   template <typename U>
     requires(IsCompatibleV<U>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr optional_ref(U& r ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ptr_(std::addressof(r)) {}
+  constexpr optional_ref(U& r LIFETIME_BOUND) : ptr_(std::addressof(r)) {}
 
-  // An empty `optional_ref` must be constructed with `absl::nullopt`, not
+  // An empty `optional_ref` must be constructed with `std::nullopt`, not
   // `nullptr`. Otherwise, `optional_ref<T*>` constructed with `nullptr` would
   // be ambiguous: is it empty or is it engaged with a value of `nullptr`?
   constexpr optional_ref(std::nullptr_t) = delete;
@@ -169,6 +167,7 @@ class optional_ref {
 
   // Returns `true` iff the `optional_ref` is non-empty.
   constexpr bool has_value() const { return ptr_; }
+  constexpr explicit operator bool() const { return has_value(); }
 
   // CHECKs if the `optional_ref` is empty.
   constexpr T& value() const {
@@ -180,12 +179,12 @@ class optional_ref {
   constexpr T* as_ptr() const { return ptr_; }
 
   // Convenience method for turning a non-owning `optional_ref` into an owning
-  // `absl::optional`. Incurs a copy; useful when saving an `optional_ref`
+  // `std::optional`. Incurs a copy; useful when saving an `optional_ref`
   // function parameter as a field, et cetera.
   template <typename U = std::decay_t<T>>
     requires(std::constructible_from<U, T>)
-  constexpr absl::optional<U> CopyAsOptional() const {
-    return ptr_ ? absl::optional<U>(*ptr_) : absl::nullopt;
+  constexpr std::optional<U> CopyAsOptional() const {
+    return ptr_ ? std::optional<U>(*ptr_) : std::nullopt;
   }
 
  private:
@@ -198,9 +197,9 @@ template <typename T>
 optional_ref(T&) -> optional_ref<T>;
 
 template <typename T>
-optional_ref(const absl::optional<T>&) -> optional_ref<const T>;
+optional_ref(const std::optional<T>&) -> optional_ref<const T>;
 template <typename T>
-optional_ref(absl::optional<T>&) -> optional_ref<T>;
+optional_ref(std::optional<T>&) -> optional_ref<T>;
 
 template <typename T>
 optional_ref(T*) -> optional_ref<T>;

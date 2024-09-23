@@ -109,7 +109,7 @@ Take frames coming from various sources and read them using copyTo().
   async function main(arg) {
     let source_type = arg.source_type;
     TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
-    let source = await createFrameSource(source_type, 320, 240);
+    let source = await createFrameSource(source_type, FRAME_WIDTH, FRAME_HEIGHT);
     if (!source) {
       TEST.skip('Unsupported source: ' + source_type);
       return;
@@ -117,6 +117,16 @@ Take frames coming from various sources and read them using copyTo().
 
     let frame = await source.getNextFrame();
     let size = frame.allocationSize();
+
+    // Readback a whole frame to a regular buffer detach it
+    {
+      let buf = new ArrayBuffer(size);
+      TEST.assert(readWholeBuffer(buf) == 0, "Buffer should be zero");
+      let copy_promise = frame.copyTo(buf);
+      buf.transfer(1);
+      let layout = await copy_promise;
+      TEST.assert(layout, "layout is empty / ArrayBuffer");
+    }
 
     // Readback a whole frame to a regular buffer and send it to a worker
     {
@@ -158,4 +168,5 @@ Take frames coming from various sources and read them using copyTo().
     TEST.log('Test completed');
   }
   addManualTestButton([{'source_type': 'offscreen'}]);
+  addManualTestButton([{'source_type': 'arraybuffer'}]);
 </script>

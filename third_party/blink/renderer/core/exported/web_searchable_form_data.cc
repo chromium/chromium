@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -203,7 +204,7 @@ bool BuildSearchString(const HTMLFormElement& form,
                                               FormDataEncoder::kNormalizeCRLF);
       encoded_string->push_back('=');
       if (control == text_element) {
-        encoded_string->Append("{searchTerms}", 13);
+        encoded_string->AppendSpan(base::span_from_cstring("{searchTerms}"));
         is_element_found = true;
       } else {
         FormDataEncoder::EncodeStringAsFormData(

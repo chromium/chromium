@@ -6,8 +6,8 @@ import("//build/config/android/rules.gni")
 
 source_set("public") {
   sources = [
-    "touch_to_fill_credit_card_view.h",
-    "touch_to_fill_credit_card_view_controller.h",
+    "touch_to_fill_payment_method_view.h",
+    "touch_to_fill_payment_method_view_controller.h",
   ]
 
   deps = [ "//base" ]
@@ -15,8 +15,8 @@ source_set("public") {
 
 source_set("android") {
   sources = [
-    "touch_to_fill_credit_card_view_impl.cc",
-    "touch_to_fill_credit_card_view_impl.h",
+    "touch_to_fill_payment_method_view_impl.cc",
+    "touch_to_fill_payment_method_view_impl.h",
   ]
 
   public_deps = [ "//base" ]
@@ -25,6 +25,7 @@ source_set("android") {
     ":jni_headers",
     ":public",
     "//chrome/browser/autofill",
+    "//chrome/browser/profiles",
     "//components/autofill/core/common:features",
     "//content/public/browser:browser",
     "//third_party/libaddressinput:util",
@@ -47,5 +48,5 @@ android_library("public_java") {
     "//ui/android:ui_java",
   ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardComponent.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodComponent.java" ]
 }

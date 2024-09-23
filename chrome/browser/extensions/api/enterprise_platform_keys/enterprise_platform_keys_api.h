@@ -21,9 +21,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
-class Extension;
-class Profile;
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -33,7 +30,6 @@ namespace extensions {
 namespace platform_keys {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-bool IsExtensionAllowed(Profile* profile, const Extension* extension);
 
 }  // namespace platform_keys
 

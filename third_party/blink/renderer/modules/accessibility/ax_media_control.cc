@@ -23,7 +23,7 @@ AXObject* AccessibilityMediaControl::Create(
 AccessibilityMediaControl::AccessibilityMediaControl(
     LayoutObject* layout_object,
     AXObjectCacheImpl& ax_object_cache)
-    : AXLayoutObject(layout_object, ax_object_cache) {}
+    : AXNodeObject(layout_object, ax_object_cache) {}
 
 bool AccessibilityMediaControl::InternalSetAccessibilityFocusAction() {
   MediaControlElementsHelper::NotifyMediaControlAccessibleFocus(GetElement());

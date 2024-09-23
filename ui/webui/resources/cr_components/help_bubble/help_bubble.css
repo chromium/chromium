@@ -1,0 +1,299 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Color declarations.
+   * TODO(crbug.com/40916868): Temporary fallback values for cases where
+   * colors.css and its colors are not available within the WebUI. */
+  --help-bubble-background: var(--color-feature-promo-bubble-background,
+      var(--google-blue-700));
+  --help-bubble-foreground: var(--color-feature-promo-bubble-foreground,
+      var(--google-grey-200));
+
+  /* Variable declarations. */
+  --help-bubble-border-radius: 12px;
+  --help-bubble-close-button-icon-size: 16px;
+  --help-bubble-close-button-size: 20px;
+  --help-bubble-element-spacing: 8px;
+  --help-bubble-padding: 20px;
+  --help-bubble-font-weight: 400;
+
+  border-radius: var(--help-bubble-border-radius);
+  box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15),
+              0 2px 3px rgba(60, 64, 67, 0.3);
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 1;
+}
+
+#arrow {
+  --help-bubble-arrow-size: 11.3px;
+  --help-bubble-arrow-size-half: calc(var(--help-bubble-arrow-size) / 2);
+  --help-bubble-arrow-diameter: 16px;
+  /* approx. */
+  --help-bubble-arrow-radius: calc(var(--help-bubble-arrow-diameter) / 2);
+  --help-bubble-arrow-edge-offset: 22px;
+  --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-edge-offset) +
+                                   var(--help-bubble-arrow-radius));
+  --help-bubble-arrow-border-radius: 2px;
+  position: absolute;
+}
+
+/* #inner-arrow is rotated and positioned in a container to simplify
+ * positioning */
+#inner-arrow {
+  background-color: var(--help-bubble-background);
+  height: var(--help-bubble-arrow-size);
+  left: calc(0px - var(--help-bubble-arrow-size-half));
+  position: absolute;
+  top: calc(0px - var(--help-bubble-arrow-size-half));
+  transform: rotate(45deg);
+  width: var(--help-bubble-arrow-size);
+  z-index: -1;
+}
+
+#arrow.bottom-edge {
+  bottom: 0;
+}
+
+#arrow.bottom-edge #inner-arrow {
+  border-bottom-right-radius: var(--help-bubble-arrow-border-radius);
+}
+
+#arrow.top-edge {
+  top: 0;
+}
+
+#arrow.top-edge #inner-arrow {
+  border-top-left-radius: var(--help-bubble-arrow-border-radius);
+}
+
+#arrow.right-edge {
+  right: 0;
+}
+
+#arrow.right-edge #inner-arrow {
+  border-top-right-radius: var(--help-bubble-arrow-border-radius);
+}
+
+#arrow.left-edge {
+  left: 0;
+}
+
+#arrow.left-edge #inner-arrow {
+  border-bottom-left-radius: var(--help-bubble-arrow-border-radius);
+}
+
+#arrow.top-position {
+  top: var(--help-bubble-arrow-offset);
+}
+
+#arrow.vertical-center-position {
+  top: 50%;
+}
+
+#arrow.bottom-position {
+  bottom: var(--help-bubble-arrow-offset);
+}
+
+#arrow.left-position {
+  left: var(--help-bubble-arrow-offset);
+}
+
+#arrow.horizontal-center-position {
+  left: 50%;
+}
+
+#arrow.right-position {
+  right: var(--help-bubble-arrow-offset);
+}
+
+#topContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+#progress {
+  display: inline-block;
+  flex: auto;
+}
+
+#progress div {
+  --help-bubble-progress-size: 8px;
+  background-color: var(--help-bubble-foreground);
+  border: 1px solid var(--help-bubble-foreground);
+  border-radius: 50%;
+  display: inline-block;
+  height: var(--help-bubble-progress-size);
+  margin-inline-end: var(--help-bubble-element-spacing);
+  margin-top: 5px;
+  width: var(--help-bubble-progress-size);
+}
+
+#progress .total-progress {
+  background-color: var(--help-bubble-background);
+}
+
+#topBody,
+#mainBody {
+  flex: 1;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: var(--help-bubble-font-weight);
+  letter-spacing: 0.3px;
+  line-height: 20px;
+  margin: 0;
+}
+
+#title {
+  flex: 1;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  margin: 0;
+}
+
+.help-bubble {
+  --cr-focus-outline-color: var(--help-bubble-foreground);
+  background-color: var(--help-bubble-background);
+  border-radius: var(--help-bubble-border-radius);
+  box-sizing: border-box;
+  color: var(--help-bubble-foreground);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 340px;
+  min-width: 260px;
+  padding: var(--help-bubble-padding);
+  position: relative;
+}
+
+#main {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-top: var(--help-bubble-element-spacing);
+}
+
+#middleRowSpacer {
+  margin-inline-start: 32px;
+}
+
+/*
+ * The inkdrop color we get from the Chrome mixer doesn't have the correct
+ * alpha (alpha is generally applied by the control) so for now, compute the
+ * hover colors directly.
+ *
+ * The discrepancy in alpha matches the difference between light-on-dark and
+ * dark-on-light used in the Chrome color mixer.
+ */
+cr-icon-button,
+cr-button {
+  --help-bubble-button-foreground: var(--help-bubble-foreground);
+  --help-bubble-button-background: var(--help-bubble-background);
+  --help-bubble-button-hover-alpha: 10%;
+}
+
+cr-button.default-button {
+  --help-bubble-button-foreground: var(
+      --color-feature-promo-bubble-default-button-foreground,
+      var(--help-bubble-background));
+  --help-bubble-button-background: var(
+      --color-feature-promo-bubble-default-button-background,
+      var(--help-bubble-foreground));
+  --help-bubble-button-hover-alpha: 6%;
+}
+
+@media (prefers-color-scheme: dark) {
+  cr-icon-button,
+  cr-button {
+    --help-bubble-button-hover-alpha: 6%;
+  }
+
+  cr-button.default-button {
+    --help-bubble-button-hover-alpha: 10%;
+  }
+}
+
+cr-icon-button:hover,
+#buttons cr-button:hover {
+  background-color: color-mix(
+      in srgb,
+      var(--help-bubble-button-foreground)
+          var(--help-bubble-button-hover-alpha),
+      var(--help-bubble-button-background));
+}
+
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--help-bubble-button-foreground);
+  --cr-icon-button-icon-size: var(--help-bubble-close-button-icon-size);
+  --cr-icon-button-size: var(--help-bubble-close-button-size);
+  --cr-icon-button-stroke-color: var(--help-bubble-button-foreground);
+  box-sizing: border-box;
+  display: block;
+  flex: none;
+  float: right;
+  height: var(--cr-icon-button-size);
+  margin: 0;
+  margin-inline-start: var(--help-bubble-element-spacing);
+  order: 2;
+  width: var(--cr-icon-button-size);
+}
+
+cr-icon-button:focus-visible:focus {
+  box-shadow: inset 0 0 0 1px var(--cr-focus-outline-color);
+}
+
+#bodyIcon {
+  --help-bubble-body-icon-image-size: 18px;
+  --help-bubble-body-icon-size: 24px;
+  --iron-icon-height: var(--help-bubble-body-icon-image-size);
+  --iron-icon-width: var(--help-bubble-body-icon-image-size);
+  background-color: var(--help-bubble-foreground);
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: var(--help-bubble-background);
+  height: var(--help-bubble-body-icon-size);
+  margin-inline-end: var(--help-bubble-element-spacing);
+  padding: calc((var(--help-bubble-body-icon-size) -
+                 var(--help-bubble-body-icon-image-size)) / 2);
+  text-align: center;
+  width: var(--help-bubble-body-icon-size);
+}
+
+#bodyIcon cr-icon {
+  display: block;
+}
+
+#buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+#buttons cr-button {
+  --cr-button-border-color: var(--help-bubble-foreground);
+  --cr-button-text-color: var(--help-bubble-button-foreground);
+  --cr-button-background-color: var(--help-bubble-button-background);
+}
+
+#buttons cr-button:focus {
+  box-shadow: none;
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 1px;
+}
+
+#buttons cr-button:not(:first-child) {
+  margin-inline-start: var(--help-bubble-element-spacing);
+}

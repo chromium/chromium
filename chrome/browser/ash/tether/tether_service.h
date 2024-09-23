@@ -93,7 +93,7 @@ class TetherService
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // TetherHostFetcher::Observer
-  void OnTetherHostsUpdated() override;
+  void OnTetherHostUpdated() override;
 
   // device::BluetoothAdapter::Observer:
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,

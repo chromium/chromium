@@ -1,0 +1,47 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
+
+component("wifi_p2p") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_WIFI_P2P_IMPL" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/network",
+    "//components/device_event_log",
+  ]
+  sources = [
+    "wifi_p2p_controller.cc",
+    "wifi_p2p_controller.h",
+    "wifi_p2p_group.cc",
+    "wifi_p2p_group.h",
+    "wifi_p2p_metrics_logger.cc",
+    "wifi_p2p_metrics_logger.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":wifi_p2p",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/network",
+    "//components/device_event_log",
+    "//testing/gtest",
+  ]
+  sources = [ "wifi_p2p_controller_unittest.cc" ]
+}

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -34,6 +35,7 @@
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
@@ -51,11 +53,11 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
@@ -85,7 +87,7 @@ constexpr char kSyncDataKey[] = "about_sync_data";
 constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
-constexpr char kGraphiteEnabled[] = "graphite_enabled";
+constexpr char kSkiaGraphiteStatusKey[] = "skia_graphite_status";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
@@ -157,8 +159,6 @@ std::string GetPrimaryAccountTypeString() {
       return "kiosk_app";
     case user_manager::UserType::kChild:
       return "child";
-    case user_manager::UserType::kArcKioskApp:
-      return "arc_kiosk_app";
     case user_manager::UserType::kWebKioskApp:
       return "web_kiosk_app";
   }
@@ -209,7 +209,7 @@ void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
     DCHECK(stats);
 
     // Get the HWID.
-    std::optional<base::StringPiece> hwid =
+    std::optional<std::string_view> hwid =
         stats->GetMachineStatistic(ash::system::kHardwareClassKey);
     if (hwid) {
       response->emplace(kHWIDKey, std::string(hwid.value()));
@@ -437,11 +437,17 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   response->emplace(kCpuArch, WinCpuArchAsString());
 #endif
 
-  std::string graphite_enabled =
-      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
-          ? "true"
-          : "false";
-  response->emplace(kGraphiteEnabled, graphite_enabled);
+  std::string skia_graphite_status = "unknown";
+  if (content::GpuDataManager::GetInstance()->IsEssentialGpuInfoAvailable()) {
+    if (content::GpuDataManager::GetInstance()->GetFeatureStatus(
+            gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE) ==
+        gpu::kGpuFeatureStatusEnabled) {
+      skia_graphite_status = "enabled";
+    } else {
+      skia_graphite_status = "disabled";
+    }
+  }
+  response->emplace(kSkiaGraphiteStatusKey, skia_graphite_status);
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
     response->emplace("account_type", "child");

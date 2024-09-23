@@ -72,7 +72,7 @@ class ScreenStateEnabledProviderTest : public AshTestBase {
       outputs.push_back(external_snapshot_.get());
     }
 
-    provider_->OnDisplayModeChanged(outputs);
+    provider_->OnDisplayConfigurationChanged(outputs);
   }
 
   void TearDown() override {
@@ -92,7 +92,7 @@ class ScreenStateEnabledProviderTest : public AshTestBase {
   std::unique_ptr<ScreenStateEnabledProvider> provider_;
 };
 
-TEST_F(ScreenStateEnabledProviderTest, IsInitallyEnabled) {
+TEST_F(ScreenStateEnabledProviderTest, IsInitiallyEnabled) {
   base::MockCallback<base::RepeatingCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run).Times(0);
   provider_->SetCallback(callback.Get());

@@ -1,0 +1,138 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=sp-shared-style-lit cr-hidden-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#empty-state-container {
+  background: var(--background-color);
+  border-radius: 12px;
+  height: 100%;
+  margin: 0 8px;
+  margin-bottom: var(--sp-card-block-padding);
+  min-width: var(--container-min-width);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.sp-scroller {
+  display: block;
+}
+
+#toolbar-container {
+  width: 100%;
+}
+
+#appFlexParent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-x: var(--app-overflow-x);
+  width: 100%;
+}
+
+#appFlexParent #containerParent {
+  background: var(--background-color);
+  height: 100%;
+  margin-bottom: var(--sp-card-block-padding);
+  min-width: var(--container-min-width);
+  overflow: auto;
+}
+
+.sp-scroller::-webkit-scrollbar-track {
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+
+/* User select should be disabled on the Read Anything panel when Read Aloud
+ * is playing audio and enabled otherwise. */
+.user-select-disabled-when-speech-active-true {
+  user-select: none;
+}
+
+.user-select-disabled-when-speech-active-false {
+  user-select: auto;
+}
+
+#appFlexParent #container {
+  background: var(--background-color);
+  color: var(--foreground-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  letter-spacing: var(--letter-spacing);
+  line-height: var(--line-height);
+  margin: 0 auto;
+  /* max-width should match line width limit in read_anything_constants.h. */
+  max-width: 60ch;
+  overflow-wrap: break-word;
+  padding: 20px;
+}
+
+#appFlexParent a:link {
+  color: var(--link-color);
+}
+
+#appFlexParent a:visited {
+  color: var(--visited-link-color);
+}
+
+#appFlexParent sp-empty-state {
+  display: flex;
+  margin: 0 auto 16px auto;
+}
+
+#appFlexParent ::selection {
+  background: var(--selection-color);
+  color: var(--selection-text-color);
+}
+
+#appFlexParent .current-read-highlight {
+  background-color: var(--current-highlight-bg-color);
+}
+
+#appFlexParent .previous-read-highlight {
+  background-color: transparent;
+  color: var(--previous-highlight-color);
+}
+
+#appFlexParent canvas {
+  max-width: 100%;
+}
+
+#toast {
+  bottom: -2%;
+  margin-left: 10%;
+  margin-right: 10%;
+  min-width: 245px;
+  width: 80%;
+}
+
+#toastTitle {
+  display: inline-block;
+  font-size: 1em;
+}
+
+#toastMessage {
+  display: inline-block;
+  font-size: 1em;
+}
+
+#docs-load-more-button {
+  background: var(--color-sys-tonal-container);
+  margin: 0 auto;
+  border-width: 0px;
+  width: 10em;
+  max-width: 100%;
+  height: 3em;
+  font-size: var(--font-size);
+  color: var(--cr-primary-text-color);
+  display: flex;
+  justify-content: center;
+}

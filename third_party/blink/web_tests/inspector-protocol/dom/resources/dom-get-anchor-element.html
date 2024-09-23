@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    .parent {
+      position: relative;
+    }
+
+    #named-anchor {
+      anchor-name: --anc;
+    }
+
+    #default-anchor {
+      anchor-name: --default;
+    }
+
+    #unreachable-anchor {
+      anchor-name: --unreachable;
+    }
+
+    #target {
+      position: absolute;
+    }
+
+    #default-target {
+      position-anchor: --default;
+      position: absolute;
+    }
+  </style>
+  <body>
+    <div class="parent">
+      <div id="named-anchor"></div>
+      <div id="implicit-anchor"></div>
+      <div id="default-anchor"></div>
+      <div id="target" anchor="implicit-anchor"></div>
+      <div id="default-target"></div>
+    </div>
+    <div id="unreachable-anchor"></div>
+  </body>
+</html>

@@ -1,11 +1,15 @@
 {
-   "name": "<all_urls> in content script matches list",
-   "manifest_version": 2,
-   "content_scripts": [
-     {
-       "matches": [ "<all_urls>" ],
-       "js": [ "content_script.js" ]
-     }
-   ],
-   "version": "1"
+  "name": "<all_urls> in content script matches list",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content_script.js"
+      ]
+    }
+  ],
+  "version": "1"
 }

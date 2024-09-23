@@ -64,7 +64,8 @@ class CORE_EXPORT InteractiveDetector
   // for the supplement name.
   static const char* SupplementName();
 
-  explicit InteractiveDetector(Document&, NetworkActivityChecker*);
+  explicit InteractiveDetector(Document&,
+                               std::unique_ptr<NetworkActivityChecker>);
   InteractiveDetector(const InteractiveDetector&) = delete;
   InteractiveDetector& operator=(const InteractiveDetector&) = delete;
   ~InteractiveDetector() override = default;

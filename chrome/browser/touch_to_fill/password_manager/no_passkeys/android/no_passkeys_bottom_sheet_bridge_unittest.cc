@@ -47,6 +47,8 @@ class NoPasskeysBottomSheetBridgeTest : public testing::Test {
     return *no_passkeys_bridge_;
   }
 
+  void destroyNoPassleysBridge() { no_passkeys_bridge_.reset(); }
+
  private:
   raw_ptr<MockJniDelegate> mock_jni_delegate_;
   std::unique_ptr<NoPasskeysBottomSheetBridge> no_passkeys_bridge_;
@@ -78,14 +80,17 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, IgnoreRedundantDismissCalls) {
     EXPECT_CALL(mock_jni_delegate(), Create);
     EXPECT_CALL(mock_jni_delegate(), Show(kTestOrigin));
   }
-  no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            base::DoNothing(), base::DoNothing());
+  no_passkeys_bridge().Show(
+      scoped_window->get(), kTestOrigin,
+      /*on_dismissed_callback=*/base::DoNothing(),
+      /*on_click_use_another_device_callback=*/base::DoNothing());
 
   EXPECT_CALL(mock_jni_delegate(), Dismiss)
       .WillOnce(InvokeWithoutArgs(
           [this]() { no_passkeys_bridge().OnDismissed(/*env=*/nullptr); }));
   no_passkeys_bridge().Dismiss();
   no_passkeys_bridge().Dismiss();  // This should not trigger a second call!
+  destroyNoPassleysBridge();  // This also should not trigger a second call!
 }
 
 TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
@@ -94,9 +99,22 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
   const std::string kTestOrigin("origin.com");
 
   no_passkeys_bridge().Show(scoped_window->get(), kTestOrigin,
-                            base::DoNothing(),
+                            /*on_dismissed_callback=*/base::DoNothing(),
                             on_click_use_another_device_callback.Get());
 
   EXPECT_CALL(on_click_use_another_device_callback, Run);
   no_passkeys_bridge().OnClickUseAnotherDevice(/*env=*/nullptr);
+}
+
+TEST_F(NoPasskeysBottomSheetBridgeTest, DismissesOnDestruction) {
+  auto scoped_window = ui::WindowAndroid::CreateForTesting();
+  const std::string kTestOrigin("origin.com");
+
+  no_passkeys_bridge().Show(
+      scoped_window->get(), kTestOrigin,
+      /*on_dismissed_callback=*/base::DoNothing(),
+      /*on_click_use_another_device_callback=*/base::DoNothing());
+
+  EXPECT_CALL(mock_jni_delegate(), Dismiss);
+  destroyNoPassleysBridge();
 }

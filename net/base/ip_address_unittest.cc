@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/ip_address.h"
 
 #include <optional>
@@ -37,7 +42,7 @@ TEST(IPAddressBytesTest, ConstructEmpty) {
 
 TEST(IPAddressBytesTest, ConstructIPv4) {
   uint8_t data[] = {192, 168, 1, 1};
-  IPAddressBytes bytes(data, std::size(data));
+  IPAddressBytes bytes(data);
   ASSERT_EQ(std::size(data), bytes.size());
   size_t i = 0;
   for (uint8_t byte : bytes)
@@ -47,7 +52,7 @@ TEST(IPAddressBytesTest, ConstructIPv4) {
 
 TEST(IPAddressBytesTest, ConstructIPv6) {
   uint8_t data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-  IPAddressBytes bytes(data, std::size(data));
+  IPAddressBytes bytes(data);
   ASSERT_EQ(std::size(data), bytes.size());
   size_t i = 0;
   for (uint8_t byte : bytes)
@@ -58,8 +63,8 @@ TEST(IPAddressBytesTest, ConstructIPv6) {
 TEST(IPAddressBytesTest, Assign) {
   uint8_t data[] = {192, 168, 1, 1};
   IPAddressBytes copy;
-  copy.Assign(data, std::size(data));
-  EXPECT_EQ(IPAddressBytes(data, std::size(data)), copy);
+  copy.Assign(data);
+  EXPECT_EQ(IPAddressBytes(data), copy);
 }
 
 TEST(IPAddressTest, ConstructIPv4) {
@@ -877,6 +882,52 @@ TEST(IPAddressTest, FromGarbageValue) {
 TEST(IPAddressTest, FromInvalidValue) {
   base::Value value("1.2.3.4.5");
   EXPECT_FALSE(IPAddress::FromValue(value).has_value());
+}
+
+TEST(IPAddressTest, IPv4Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, (IPAddress::kIPv4AddressSize + 1) * 8));
+  EXPECT_FALSE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8 + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv4Mask(&mask, IPAddress::kIPv4AddressSize * 8));
+  EXPECT_EQ("255.255.255.255", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 31));
+  EXPECT_EQ("255.255.255.254", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 24));
+  EXPECT_EQ("255.255.255.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 23));
+  EXPECT_EQ("255.255.254.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 18));
+  EXPECT_EQ("255.255.192.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 16));
+  EXPECT_EQ("255.255.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 8));
+  EXPECT_EQ("255.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 1));
+  EXPECT_EQ("128.0.0.0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv4Mask(&mask, 0));
+  EXPECT_EQ("0.0.0.0", mask.ToString());
+}
+
+TEST(IPAddressTest, IPv6Mask) {
+  IPAddress mask;
+  EXPECT_FALSE(
+      IPAddress::CreateIPv6Mask(&mask, (IPAddress::kIPv6AddressSize * 8) + 1));
+  EXPECT_TRUE(
+      IPAddress::CreateIPv6Mask(&mask, IPAddress::kIPv6AddressSize * 8));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 112));
+  EXPECT_EQ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:0", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 32));
+  EXPECT_EQ("ffff:ffff::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 1));
+  EXPECT_EQ("8000::", mask.ToString());
+  EXPECT_TRUE(IPAddress::CreateIPv6Mask(&mask, 0));
+  EXPECT_EQ("::", mask.ToString());
 }
 
 }  // anonymous namespace

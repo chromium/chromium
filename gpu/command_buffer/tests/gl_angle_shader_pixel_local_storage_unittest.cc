@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_implementation.h"
 
 namespace gpu {
 class ANGLEShaderPixelLocalStorageTest : public testing::Test {
@@ -24,7 +25,7 @@ class ANGLEShaderPixelLocalStorageTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1472517): fix the test for passthrough.
+      // TODO(crbug.com/40278644): fix the test for passthrough.
       GTEST_SKIP();
     }
 #endif
@@ -171,6 +172,13 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, LoadStoreTokens) {
     return;
   }
 
+// Test skipped on Intel-based Macs when running Metal. crbug.com/326278125
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    return;
+  }
+#endif
+
   GLuint texs[4];
   glGenTextures(4, texs);
   for (GLuint tex : texs) {
@@ -212,6 +220,13 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, DrawAPI) {
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
     return;
   }
+
+// Test skipped on Intel-based Macs when running Metal. crbug.com/326278125
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    return;
+  }
+#endif
 
   GLuint tex;
   glGenTextures(1, &tex);

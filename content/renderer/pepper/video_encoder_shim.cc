@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/video_encoder_shim.h"
 
 #include <inttypes.h>
@@ -93,7 +98,7 @@ void GetVpxCodecParameters(media::VideoCodecProfile codec,
       *min_quantizer = 0;
       *max_quantizer = 0;
       *cpu_used = 0;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -129,7 +134,7 @@ class VideoEncoderShim::EncoderImpl {
     ~BitstreamBuffer() {}
 
     media::BitstreamBuffer buffer;
-    raw_ptr<uint8_t, ExperimentalRenderer> mem;
+    raw_ptr<uint8_t> mem;
   };
 
   void DoEncode();
@@ -310,20 +315,20 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
         &vpx_image, VPX_IMG_FMT_I420, frame.frame->visible_rect().width(),
         frame.frame->visible_rect().height(), 1,
         const_cast<uint8_t*>(
-            frame.frame->visible_data(media::VideoFrame::kYPlane)));
+            frame.frame->visible_data(media::VideoFrame::Plane::kY)));
     DCHECK_EQ(result, &vpx_image);
     vpx_image.planes[VPX_PLANE_Y] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kYPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kY));
     vpx_image.planes[VPX_PLANE_U] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kUPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kU));
     vpx_image.planes[VPX_PLANE_V] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kVPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kV));
     vpx_image.stride[VPX_PLANE_Y] =
-        frame.frame->stride(media::VideoFrame::kYPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kY);
     vpx_image.stride[VPX_PLANE_U] =
-        frame.frame->stride(media::VideoFrame::kUPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kU);
     vpx_image.stride[VPX_PLANE_V] =
-        frame.frame->stride(media::VideoFrame::kVPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kV);
 
     vpx_codec_flags_t flags = 0;
     if (frame.force_keyframe)

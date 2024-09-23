@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV",
+      "name": "LayoutBlockFlow (children-inline) DIV",
       "bounds": [304, 200],
       "invalidations": [
         [10, 10, 50, 50]

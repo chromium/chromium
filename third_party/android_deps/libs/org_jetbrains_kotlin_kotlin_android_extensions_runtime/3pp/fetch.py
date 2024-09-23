@@ -19,9 +19,8 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='kotlin-android-extensions-runtime',
                          file_ext='jar',
                          patch_version='cr1',
-                         version_override='1.9.22',
+                         version_override=None,
                          version_filter=None)
-
 
 if __name__ == '__main__':
     fetch_common.main(SPEC)

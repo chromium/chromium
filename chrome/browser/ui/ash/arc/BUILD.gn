@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc") {
+  sources = [
+    "arc_custom_tab_modal_dialog_host.cc",
+    "arc_custom_tab_modal_dialog_host.h",
+    "arc_open_url_delegate_impl.cc",
+    "arc_open_url_delegate_impl.h",
+    "arc_vm_data_migration_confirmation_dialog.cc",
+    "arc_vm_data_migration_confirmation_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/vector_icons",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/style",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/apps",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/arc/notification",
+    "//chrome/browser/ash/arc/print_spooler",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/ash/shelf/app_service",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/webshare:storage",
+    "//chrome/common",
+    "//components/arc",
+    "//components/user_manager",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//storage/browser",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/notification",
+    "//chrome/browser/ash/arc/print_spooler",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_vm_data_migration_confirmation_dialog_unittest.cc" ]
+
+  deps = [
+    ":arc",
+    "//ash:test_support",
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ui",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+    "//ui/base/mojom",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_open_url_delegate_impl_browsertest.cc" ]
+
+  deps = [
+    ":arc",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/arc",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

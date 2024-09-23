@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -129,7 +129,7 @@ class BASE_EXPORT RegKey {
 
   // Setters:
 
-  // Sets an int32_t value.
+  // Sets a uint32_t value.
   LONG WriteValue(const wchar_t* name, DWORD in_value);
 
   // Sets a string value.
@@ -171,7 +171,7 @@ class BASE_EXPORT RegKey {
   // was a link and was deleted, a Windows error code if checking the key or
   // deleting it failed, or `nullopt` if the key exists and is not a symbolic
   // link.
-  absl::optional<LONG> DeleteIfLink();
+  std::optional<LONG> DeleteIfLink();
 
   // Recursively deletes a key and all of its subkeys.
   static LONG RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access);
@@ -209,7 +209,9 @@ class BASE_EXPORT RegistryValueIterator {
   // Advances to the next registry entry.
   void operator++();
 
+  // TODO(crbug.com/329476354): Provide a wcstring_view instead of a pointer.
   const wchar_t* Name() const { return name_.c_str(); }
+  // TODO(crbug.com/329476354): Provide a wcstring_view instead of a pointer.
   const wchar_t* Value() const { return value_.data(); }
   // ValueSize() is in bytes.
   DWORD ValueSize() const { return value_size_; }
@@ -231,6 +233,10 @@ class BASE_EXPORT RegistryValueIterator {
 
   // Current values.
   std::wstring name_;
+  // The vector always has a `0` at the end, after its `ValueSize() / 2u`
+  // elements (since ValueSize() is in bytes, but the vector is of 2-byte
+  // objects). This allows the value to always be read as a NUL-terminated
+  // string, even if it's holding another type of data.
   std::vector<wchar_t> value_;
   DWORD value_size_;
   DWORD type_;

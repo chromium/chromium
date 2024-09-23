@@ -22,10 +22,6 @@ struct GpuPreferences;
 enum class IntelGpuSeriesType;
 enum class IntelGpuGeneration;
 
-// Set GPU feature status if hardware acceleration is disabled.
-GPU_EXPORT GpuFeatureInfo
-ComputeGpuFeatureInfoWithHardwareAccelerationDisabled();
-
 // Set GPU feature status if GPU is blocked.
 GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu();
 
@@ -99,6 +95,8 @@ GPU_EXPORT void RecordDevicePerfInfoHistograms();
 GPU_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
 
 #if BUILDFLAG(IS_WIN)
+GPU_EXPORT std::string DirectMLFeatureLevelToString(
+    uint32_t directml_feature_level);
 GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)

@@ -83,17 +83,13 @@ void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  // TODO(crbug.com/1007969): This is a relic from when we actually did change
+  // TODO(crbug.com/40649749): This is a relic from when we actually did change
   // something about the tab here. It should be safe to remove now.
   NotifyRouter();
 }
 
 void SyncSessionsRouterTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    return;
-  }
-
   // Only notify a notification when the tab becomes visible. This is necessary
   // to sync the last active time field.
   if (visibility == content::Visibility::VISIBLE) {

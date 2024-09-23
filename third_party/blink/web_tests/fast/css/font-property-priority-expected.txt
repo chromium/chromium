@@ -7,5 +7,6 @@ Property 'font-variant-east-asian' has priority 'important'.
 Property 'font-variant-caps' has priority 'important'.
 Property 'font-variant-alternates' has priority 'important'.
 Property 'font-variant-position' has priority 'important'.
+Property 'font-variant-emoji' has priority 'important'.
 Property 'font-style' has priority 'important'.
 

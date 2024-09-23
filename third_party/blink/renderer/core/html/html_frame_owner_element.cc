@@ -128,35 +128,8 @@ bool IsFrameLazyLoadable(ExecutionContext* context,
   return true;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AutomaticLazyLoadFrame {
-  kFeatureNotEnabled = 0,
-  kTargetFramesNotFound = 1,
-  kTargetFramesFound = 2,
-  kMaxValue = kTargetFramesFound,
-};
-
-int GetLazyAdsSkipFrameCount() {
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
-  static const int skip_frame_count = features::kSkipFrameCountForLazyAds.Get();
-  return skip_frame_count;
-}
-
-int GetLazyEmbedsSkipFrameCount() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutomaticLazyFrameLoadingToEmbeds));
-  static const int skip_frame_count =
-      features::kSkipFrameCountForLazyEmbeds.Get();
-  return skip_frame_count;
-}
-
 bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
-                                           bool is_loading_attr_lazy,
-                                           bool is_eligible_for_lazy_embeds,
-                                           bool is_eligible_for_lazy_ads,
-                                           bool record_uma) {
+                                           bool is_loading_attr_lazy) {
   DCHECK(document.GetSettings());
   if (!document.GetSettings()->GetLazyLoadEnabled()) {
     return false;
@@ -169,74 +142,7 @@ bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
   if (is_loading_attr_lazy)
     return true;
 
-  Document& top_document = document.TopDocument();
-  if (top_document.Loader() &&
-      top_document.Loader()->IsReloadedOrFormSubmitted()) {
-    return false;
-  }
-
-  if (record_uma) {
-    base::UmaHistogramEnumeration(
-        "Blink.AutomaticLazyLoadFrame",
-        !base::FeatureList::IsEnabled(
-            features::kAutomaticLazyFrameLoadingToEmbeds)
-            ? AutomaticLazyLoadFrame::kFeatureNotEnabled
-            : is_eligible_for_lazy_embeds
-                  ? AutomaticLazyLoadFrame::kTargetFramesFound
-                  : AutomaticLazyLoadFrame::kTargetFramesNotFound);
-  }
-
-  if (is_eligible_for_lazy_embeds) {
-    top_document.IncrementLazyEmbedsFrameCount();
-    UseCounter::Count(top_document, WebFeature::kAutomaticLazyEmbeds);
-  }
-
-  if (is_eligible_for_lazy_ads) {
-    top_document.IncrementLazyAdsFrameCount();
-    UseCounter::Count(top_document, WebFeature::kAutomaticLazyAds);
-  }
-
-  if (is_eligible_for_lazy_embeds &&
-      base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToEmbeds) &&
-      document.GetImmediateChildFrameCreationCount() >
-          GetLazyEmbedsSkipFrameCount()) {
-    return true;
-  }
-
-  if (is_eligible_for_lazy_ads &&
-      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds) &&
-      document.GetImmediateChildFrameCreationCount() >
-          GetLazyAdsSkipFrameCount()) {
-    return true;
-  }
-
   return false;
-}
-
-// Checks if the passed url is the same origin with the document.
-// This is called in order to limit LazyEmbeds/Ads to apply only cross-origin
-// frames.
-// We're not sure if this is 100% needed, and we should move the check closer
-// to context->GetSecurityOrigin()->CanAccess check.
-bool AreSameOrigin(const Document& document, const KURL& url) {
-  return SecurityOrigin::AreSameOrigin(url, document.Url());
-}
-
-const base::TimeDelta GetLazyEmbedsTimeoutMs() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutomaticLazyFrameLoadingToEmbeds));
-  static const base::TimeDelta timeout_ms =
-      base::Milliseconds(features::kTimeoutMillisForLazyEmbeds.Get());
-  return timeout_ms;
-}
-
-const base::TimeDelta GetLazyAdsTimeoutMs() {
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
-  static const base::TimeDelta timeout_ms =
-      base::Milliseconds(features::kTimeoutMillisForLazyAds.Get());
-  return timeout_ms;
 }
 
 }  // namespace
@@ -265,7 +171,9 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight) {
+  SetHasCustomStyleCallbacks();
   document.IncrementImmediateChildFrameCreationCount();
 }
 
@@ -285,12 +193,70 @@ LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   return DynamicTo<LayoutEmbeddedContent>(GetLayoutObject());
 }
 
+Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  InsertionNotificationRequest result =
+      HTMLElement::InsertedInto(insertion_point);
+  // If a state-preserving atomic move is in progress, then we have to manually
+  // perform some bookkeeping that ordinarily would only be done deeper in the
+  // frame setup logic that gets triggered in the *NON* state-preserving atomic
+  // move flow.
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // State-preserving atomic moves can only be in-progress when all elements
+    // are connected, and when `HTMLFrameOwnerElement` is connected, it must
+    // have a non-null `ContentFrame()`.
+    CHECK(ContentFrame());
+    // During a state-preserving atomic move, we must specifically inform all of
+    // `this`'s ancestor nodes of the new connected frame they are adopting.
+    //
+    // For the non-state-preserving atomic move case (i.e., when we're setting
+    // up a full frame due to real insertion), this is done in
+    // `HTMLFrameOwnerElement::SetContentFrame()` below.
+    for (ContainerNode* node = this; node;
+         node = node->ParentOrShadowHostNode()) {
+      node->IncrementConnectedSubframeCount();
+    }
+  }
+
+  return result;
+}
+
+void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
+  // See documentation in `InsertedInto()` above. In the state-preserving atomic
+  // move case, we don't invoke `ClearContentFrame()`, which would normally do
+  // at least two things:
+  //   1. Teardown the underlying `ContentFrame()`.
+  //   2. Notify all of the ancestor nodes that they lost a connected subframe.
+  //
+  // Not doing (1) is a good thing, since we're trying to preserve the frame,
+  // but we still have to do (2) manually to maintain bookkeeping consistency
+  // among the ancestor nodes.
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // `this` is no longer connected, so we have to decrement our subframe count
+    // separately from our old ancestors's subframe count (i.e.,
+    // `insertion_point`).
+    DecrementConnectedSubframeCount();
+    for (ContainerNode* node = &insertion_point; node;
+         node = node->ParentOrShadowHostNode()) {
+      node->DecrementConnectedSubframeCount();
+    }
+  }
+
+  HTMLElement::RemovedFrom(insertion_point);
+}
+
 void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
   // Make sure we will not end up with two frames referencing the same owner
   // element.
   DCHECK(!content_frame_ || content_frame_->Owner() != this);
   // Disconnected frames should not be allowed to load.
   DCHECK(isConnected());
+
+  // During a state-preserving atomic move, we never set up a new underlying
+  // `content_frame_`, since it is preserved. Therefore when `SetContentFrame()`
+  // is called, we can be sure that we're not in the middle of a
+  // state-preserving atomic move.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
 
   // There should be no lazy load in progress since before SetContentFrame,
   // |this| frame element should have been disconnected.
@@ -319,6 +285,9 @@ void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
 }
 
 void HTMLFrameOwnerElement::ClearContentFrame() {
+  // See similar documentation in `SetContentFrame()` above.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+
   if (!content_frame_)
     return;
 
@@ -481,6 +450,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
   properties->color_scheme = GetColorScheme();
+  properties->preferred_color_scheme = GetPreferredColorScheme();
 
   GetDocument()
       .GetFrame()
@@ -559,9 +529,9 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   if (doc && doc->GetFrame()) {
     bool will_be_display_none = !embedded_content_view;
     if (IsDisplayNone() != will_be_display_none) {
-      doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                          ScrollbarMode(), will_be_display_none,
-                                          GetColorScheme());
+      doc->WillChangeFrameOwnerProperties(
+          MarginWidth(), MarginHeight(), ScrollbarMode(), will_be_display_none,
+          GetColorScheme(), GetPreferredColorScheme());
     }
   }
 
@@ -651,37 +621,9 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
   lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
       *this, LazyLoadFrameObserver::LoadType::kSubsequent);
 
-  // TODO(crbug.com/1341892) Remove having multiple booleans here. We eventually
-  // select one reason to decide the timeout, so essentially we don't have to
-  // keep them. But currently we need these two booleans separately to record
-  // UKM in CheckAndRecordIfShouldLazilyLoadFrame. Once we confirm that we can
-  // ignore AutomaticLazyLoadReason::kBothEmbedsAndAds case due to the small
-  // amount of the data size, we remove these booleans and
-  // AutomaticLazyLoadReason::kBothEmbedsAndAds.
-  const bool is_eligible_for_lazy_embeds = IsEligibleForLazyEmbeds(url);
-  const bool is_eligible_for_lazy_ads = IsEligibleForLazyAds(url);
-  AutomaticLazyLoadReason auto_lazy_load_reason;
-  if (is_eligible_for_lazy_embeds && is_eligible_for_lazy_ads) {
-    auto_lazy_load_reason = AutomaticLazyLoadReason::kBothEmbedsAndAds;
-  } else if (is_eligible_for_lazy_embeds) {
-    auto_lazy_load_reason = AutomaticLazyLoadReason::kEmbeds;
-  } else if (is_eligible_for_lazy_ads) {
-    auto_lazy_load_reason = AutomaticLazyLoadReason::kAds;
-  } else {
-    auto_lazy_load_reason = AutomaticLazyLoadReason::kNotEligible;
-  }
-  base::UmaHistogramEnumeration("Blink.AutomaticLazyFrameLoad.Reason",
-                                auto_lazy_load_reason);
-
-  if (CheckAndRecordIfShouldLazilyLoadFrame(GetDocument(), loading_lazy_set,
-                                            is_eligible_for_lazy_embeds,
-                                            is_eligible_for_lazy_ads,
-                                            /*record_uma=*/true)) {
+  if (CheckAndRecordIfShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
-    MaybeSetTimeoutToStartFrameLoading(url, loading_lazy_set,
-                                       auto_lazy_load_reason);
-
     return true;
   }
   return false;
@@ -738,7 +680,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
     frame_load_request.SetIsContainerInitiated(true);
-    frame_load_request.SetClientRedirectReason(
+    frame_load_request.SetClientNavigationReason(
         ClientNavigationReason::kFrameNavigation);
     WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
     if (replace_current_item)
@@ -799,6 +741,8 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
   frame_load_request.SetIsContainerInitiated(true);
+  frame_load_request.SetClientNavigationReason(
+      ClientNavigationReason::kInitialFrameNavigation);
   child_frame->Loader().StartNavigation(frame_load_request, child_load_type);
 
   return true;
@@ -832,10 +776,7 @@ void HTMLFrameOwnerElement::ParseAttribute(
     if (loading == LoadingAttributeValue::kEager ||
         (GetDocument().GetSettings() &&
          !CheckAndRecordIfShouldLazilyLoadFrame(
-             GetDocument(), loading == LoadingAttributeValue::kLazy,
-             /*is_eligible_for_lazy_embeds=*/false,
-             /*is_eligible_for_lazy_ads=*/false,
-             /*record_uma=*/false))) {
+             GetDocument(), loading == LoadingAttributeValue::kLazy))) {
       should_lazy_load_children_ = false;
       if (lazy_load_frame_observer_ &&
           lazy_load_frame_observer_->IsLazyLoadPending()) {
@@ -847,90 +788,11 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
-bool HTMLFrameOwnerElement::IsEligibleForLazyEmbeds(const KURL& url) const {
-#if DCHECK_IS_ON()
-  if (base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToEmbeds)) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kAutomaticLazyFrameLoadingToEmbedUrls))
-        << "kAutomaticLazyFrameLoadingToEmbedUrls should be enabled when "
-           "kAutomaticLazyFrameLoadingToEmbeds is enabled.";
-  }
-#endif  // DCHECK_IS_ON()
-
-  // LazyEmbeds targets are third-party frames.
-  // Not eligible if the frame url is a same-origin as the parent url.
-  if (AreSameOrigin(GetDocument(), url)) {
-    return false;
-  }
-
-  DEFINE_STATIC_LOCAL(
-      features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy,
-      loading_strategy,
-      (features::kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam.Get()));
-
-  switch (loading_strategy) {
-    case features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy::
-        kAllowList: {
-      DEFINE_STATIC_LOCAL(UrlMatcher, url_matcher,
-                          (UrlMatcher(base::GetFieldTrialParamValueByFeature(
-                              features::kAutomaticLazyFrameLoadingToEmbedUrls,
-                              "allowed_websites"))));
-      return url_matcher.Match(url);
-    }
-    case features::AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kNonAds:
-      return !IsAdRelated();
-  }
-}
-
 bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
     return false;
 
   return content_frame_->IsAdFrame();
-}
-
-bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {
-  // LazyAds targets are third-party frames.
-  // Not eligible if the frame url is a same-origin as the parent url.
-  return IsAdRelated() && !AreSameOrigin(GetDocument(), url);
-}
-
-void HTMLFrameOwnerElement::MaybeSetTimeoutToStartFrameLoading(
-    const KURL& url,
-    bool is_loading_attr_lazy,
-    AutomaticLazyLoadReason auto_lazy_load_reason) {
-  // Even if the frame is ad related, respect the explicit loading="lazy"
-  // attribute and won't set a timeout if the attribute exists.
-  if (is_loading_attr_lazy) {
-    return;
-  }
-
-  base::TimeDelta timeout_ms;
-  switch (auto_lazy_load_reason) {
-    case AutomaticLazyLoadReason::kAds:
-      timeout_ms = GetLazyAdsTimeoutMs();
-      break;
-    // We prioritize LazyEmbeds if the frame is eligible for both reasons, at
-    // least until the LazyEmbeds experiment finishes to secure the chunk of
-    // group size.
-    case AutomaticLazyLoadReason::kBothEmbedsAndAds:
-    case AutomaticLazyLoadReason::kEmbeds:
-      timeout_ms = GetLazyEmbedsTimeoutMs();
-      break;
-    case AutomaticLazyLoadReason::kNotEligible:
-      // If the auto lazy-load is not elibible, do nothing and return.
-      return;
-  }
-
-  GetDocument()
-      .GetTaskRunner(TaskType::kInternalLoading)
-      ->PostDelayedTask(
-          FROM_HERE,
-          WTF::BindOnce(
-              base::IgnoreResult(&HTMLFrameOwnerElement::LoadImmediatelyIfLazy),
-              WrapWeakPersistent(this)),
-          timeout_ms);
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
@@ -943,9 +805,29 @@ void HTMLFrameOwnerElement::SetColorScheme(
     mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
-    doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                        ScrollbarMode(), IsDisplayNone(),
-                                        color_scheme);
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        color_scheme, GetPreferredColorScheme());
+  }
+  FrameOwnerPropertiesChanged();
+}
+
+mojom::blink::PreferredColorScheme
+HTMLFrameOwnerElement::GetPreferredColorScheme() const {
+  return preferred_color_scheme_;
+}
+
+void HTMLFrameOwnerElement::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (preferred_color_scheme_ == preferred_color_scheme) {
+    return;
+  }
+  preferred_color_scheme_ = preferred_color_scheme;
+  Document* doc = contentDocument();
+  if (doc && doc->GetFrame()) {
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        GetColorScheme(), preferred_color_scheme);
   }
   FrameOwnerPropertiesChanged();
 }
@@ -956,6 +838,41 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_frame_observer_);
   HTMLElement::Trace(visitor);
   FrameOwner::Trace(visitor);
+}
+
+// static
+ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
+  ParsedPermissionsPolicy container_policy;
+  {
+    // Legacy frames are not allowed to enable the fullscreen feature. Add an
+    // empty allowlist for the fullscreen feature so that the nested browsing
+    //  context is unable to use the API, regardless of origin.
+    // https://fullscreen.spec.whatwg.org/#model
+    ParsedPermissionsPolicyDeclaration allowlist(
+        mojom::blink::PermissionsPolicyFeature::kFullscreen);
+    container_policy.push_back(allowlist);
+  }
+  {
+    // Legacy frames are unable to enable the unload feature via permissions
+    // policy as they have no `allow` attribute. To make it possible to continue
+    // to enable unload handlers, this pushes an allowlist to allow it for all
+    // origins. Even with this, it still requires permission from the containing
+    // frame for the origin.
+    // https://fergald.github.io/docs/explainers/permissions-policy-deprecate-unload.html
+    ParsedPermissionsPolicyDeclaration allowlist(
+        mojom::blink::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
+        /*allowed_by_default=*/true, /*matches_all_origins=*/true);
+    container_policy.push_back(allowlist);
+  }
+  return container_policy;
+}
+
+void HTMLFrameOwnerElement::DidRecalcStyle(
+    const StyleRecalcChange style_recalc_change) {
+  HTMLElement::DidRecalcStyle(style_recalc_change);
+  SetPreferredColorScheme(
+      GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+          GetComputedStyle()));
 }
 
 }  // namespace blink

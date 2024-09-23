@@ -180,7 +180,7 @@ function getSetIconHandler(methodName) {
   };
 }
 
-// TODO(crbug.com/462542): The setIcon export is only used by the declarative
+// TODO(crbug.com/41159896): The setIcon export is only used by the declarative
 // content custom bindings and it actually has some major problems with how it
 // uses it. When that is resolved we can likely remove this export.
 exports.$set('setIcon', setIcon);

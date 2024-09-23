@@ -1,7 +1,7 @@
 include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-  "!clank/java/src/org/chromium/chrome/browser/AppHooksImpl.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "+chrome/browser/android/lifecycle",
   "+components/image_fetcher",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
@@ -32,6 +32,7 @@ include_rules = [
   "+components/offline_items_collection/core/android/java/src",
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
+  "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
   "+components/search_engines/android/java/src/org/chromium/components/search_engines",
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+components/sync/android/java/src/org/chromium/components/sync",

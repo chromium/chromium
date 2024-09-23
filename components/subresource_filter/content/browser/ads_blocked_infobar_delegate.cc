@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -47,7 +49,7 @@ int AdsBlockedInfobarDelegate::GetIconId() const {
 }
 
 GURL AdsBlockedInfobarDelegate::GetLinkURL() const {
-  DCHECK(infobar_expanded_);
+  CHECK(infobar_expanded_, base::NotFatalUntil::M129);
   return GURL(subresource_filter::kLearnMoreLink);
 }
 

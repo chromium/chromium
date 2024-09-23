@@ -45,8 +45,8 @@ class RenderFrameHost;
 //   SetClient()
 //   StartPresentation()
 //   ...
-// TODO(crbug.com/749327): Split the controller and receiver logic into separate
-// classes so that each is easier to reason about.
+// TODO(crbug.com/41336031): Split the controller and receiver logic into
+// separate classes so that each is easier to reason about.
 class CONTENT_EXPORT PresentationServiceImpl
     : public blink::mojom::PresentationService,
       public WebContentsObserver,

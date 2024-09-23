@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -14,11 +16,13 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/session_types.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}
@@ -55,8 +59,9 @@ std::string AndroidLiveTabContext::GetUserTitle() const {
 
 sessions::LiveTab* AndroidLiveTabContext::GetLiveTabAt(int index) const {
   TabAndroid* tab_android = tab_model_->GetTabAt(index);
-  if (!tab_android || !tab_android->web_contents())
+  if (!tab_android || !tab_android->web_contents()) {
     return nullptr;
+  }
 
   return sessions::ContentLiveTab::GetForWebContents(
       tab_android->web_contents());
@@ -64,8 +69,9 @@ sessions::LiveTab* AndroidLiveTabContext::GetLiveTabAt(int index) const {
 
 sessions::LiveTab* AndroidLiveTabContext::GetActiveLiveTab() const {
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
@@ -82,17 +88,26 @@ AndroidLiveTabContext::GetExtraDataForWindow() const {
 
 std::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
     int index) const {
-  // Not applicable to android.
+  // Implemented in AndroidLiveTabContextCloseWrapper.
   return std::optional<tab_groups::TabGroupId>();
 }
 
 const tab_groups::TabGroupVisualData*
 AndroidLiveTabContext::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
+  // Implemented in AndroidLiveTabContextCloseWrapper.
+
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
+}
+
+const std::optional<base::Uuid>
+AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group) const {
+  // Implemented in AndroidLiveTabContextCloseWrapper.
+  return std::nullopt;
 }
 
 bool AndroidLiveTabContext::IsTabPinned(int index) const {
@@ -103,12 +118,12 @@ bool AndroidLiveTabContext::IsTabPinned(int index) const {
 void AndroidLiveTabContext::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& group_visual_data) {
-  // Not supported on Android.
+  // Implemented in AndroidLiveTabContextRestoreWrapper.
 
-  // TODO(crbug.com/1003128): ensure this never gets called (or remove
+  // TODO(crbug.com/40647050): ensure this never gets called (or remove
   // NOTREACHED) if we implement restoring groups for foreign session
   // windows.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {
@@ -116,9 +131,9 @@ const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState AndroidLiveTabContext::GetRestoredState() const {
+ui::mojom::WindowShowState AndroidLiveTabContext::GetRestoredState() const {
   // Not applicable to android.
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 std::string AndroidLiveTabContext::GetWorkspace() const {
@@ -127,24 +142,16 @@ std::string AndroidLiveTabContext::GetWorkspace() const {
 }
 
 sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    const sessions::tab_restore::Tab& tab,
     int tab_index,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    std::optional<tab_groups::TabGroupId> group,
-    const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
-    bool pin,
-    const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data,
-    const SessionID* tab_id) {
+    sessions::tab_restore::Type original_session_type) {
   Profile* profile = tab_model_->GetProfile();
 
   // Prepare navigation history.
   std::vector<std::unique_ptr<content::NavigationEntry>> nav_entries =
       sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
-          navigations, profile);
+          tab.navigations, profile);
 
   // Restore web contents with navigation history. This is used for background
   // restore so start without a renderer.
@@ -155,12 +162,16 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(params);
   content::WebContents* raw_web_contents = web_contents.get();
-  web_contents->GetController().Restore(
-      selected_navigation, content::RestoreType::kRestored, &nav_entries);
+  web_contents->GetController().Restore(tab.normalized_navigation_index(),
+                                        content::RestoreType::kRestored,
+                                        &nav_entries);
 
   // Create new tab. Ownership is passed into java, which in turn creates a new
-  // TabAndroid instance to own the WebContents.
-  tab_model_->CreateTab(nullptr, web_contents.release());
+  // TabAndroid instance to own the WebContents. Only select the restored tab
+  // when restoring a single tab from a TAB session.
+  tab_model_->CreateTab(
+      nullptr, web_contents.release(),
+      original_session_type == sessions::tab_restore::TAB ? true : false);
   // Don't load the tab yet. This prevents a renderer from starting which keeps
   // the tab restore lightweight as the tab is opened in the background only.
   // The tab will be in a "renderer was lost" state. This is recovered from when
@@ -169,17 +180,11 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
 }
 
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    std::optional<tab_groups::TabGroupId> group,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data) {
+    const sessions::tab_restore::Tab& tab) {
   // Prepare navigation history.
   sessions::SessionTab session_tab;
-  session_tab.current_navigation_index = selected_navigation;
-  session_tab.navigations = navigations;
+  session_tab.current_navigation_index = tab.normalized_navigation_index();
+  session_tab.navigations = tab.navigations;
 
   // This is called only on replacement of the current tab.
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
@@ -198,10 +203,12 @@ void AndroidLiveTabContext::CloseTab() {
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
     const content::WebContents* contents) {
   TabAndroid* tab_android = TabAndroid::FromWebContents(contents);
-  if (!tab_android)
+  if (!tab_android) {
     return nullptr;
+  }
 
-  TabModel* model = TabModelList::FindTabModelWithId(tab_android->window_id());
+  TabModel* model =
+      TabModelList::FindTabModelWithId(tab_android->GetWindowId());
 
   return model ? model->GetLiveTabContext() : nullptr;
 }

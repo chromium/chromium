@@ -15,17 +15,18 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <malloc.h>
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif BUILDFLAG(IS_APPLE)
+
+#include <malloc.h>
+#elif PA_BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
 #include "partition_alloc/shim/allocator_interception_apple.h"
@@ -34,12 +35,17 @@
 #include <malloc.h>
 #endif
 
-#if !BUILDFLAG(IS_WIN)
+#if !PA_BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #endif
 
-#if defined(LIBC_GLIBC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC)
 extern "C" void* __libc_memalign(size_t align, size_t s);
+#endif
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
 #endif
 
 namespace allocator_shim {
@@ -47,6 +53,8 @@ namespace {
 
 using testing::_;
 using testing::MockFunction;
+
+extern AllocatorDispatch g_mock_dispatch;
 
 // Special sentinel values used for testing GetSizeEstimate() interception.
 const char kTestSizeEstimateData[] = "test_value";
@@ -61,40 +69,30 @@ class AllocatorShimTest : public testing::Test {
     return reinterpret_cast<uintptr_t>(ptr) % MaxSizeTracked();
   }
 
-  static void* MockAlloc(const AllocatorDispatch* self,
-                         size_t size,
-                         void* context) {
+  static void* MockAlloc(size_t size, void* context) {
     if (instance_ && size < MaxSizeTracked()) {
       ++(instance_->allocs_intercepted_by_size[size]);
     }
-    return self->next->alloc_function(self->next, size, context);
+    return g_mock_dispatch.next->alloc_function(size, context);
   }
 
-  static void* MockAllocUnchecked(const AllocatorDispatch* self,
-                                  size_t size,
-                                  void* context) {
+  static void* MockAllocUnchecked(size_t size, void* context) {
     if (instance_ && size < MaxSizeTracked()) {
       ++(instance_->allocs_intercepted_by_size[size]);
     }
-    return self->next->alloc_unchecked_function(self->next, size, context);
+    return g_mock_dispatch.next->alloc_unchecked_function(size, context);
   }
 
-  static void* MockAllocZeroInit(const AllocatorDispatch* self,
-                                 size_t n,
-                                 size_t size,
-                                 void* context) {
+  static void* MockAllocZeroInit(size_t n, size_t size, void* context) {
     const size_t real_size = n * size;
     if (instance_ && real_size < MaxSizeTracked()) {
       ++(instance_->zero_allocs_intercepted_by_size[real_size]);
     }
-    return self->next->alloc_zero_initialized_function(self->next, n, size,
-                                                       context);
+    return g_mock_dispatch.next->alloc_zero_initialized_function(n, size,
+                                                                 context);
   }
 
-  static void* MockAllocAligned(const AllocatorDispatch* self,
-                                size_t alignment,
-                                size_t size,
-                                void* context) {
+  static void* MockAllocAligned(size_t alignment, size_t size, void* context) {
     if (instance_) {
       if (size < MaxSizeTracked()) {
         ++(instance_->aligned_allocs_intercepted_by_size[size]);
@@ -103,14 +101,11 @@ class AllocatorShimTest : public testing::Test {
         ++(instance_->aligned_allocs_intercepted_by_alignment[alignment]);
       }
     }
-    return self->next->alloc_aligned_function(self->next, alignment, size,
-                                              context);
+    return g_mock_dispatch.next->alloc_aligned_function(alignment, size,
+                                                        context);
   }
 
-  static void* MockRealloc(const AllocatorDispatch* self,
-                           void* address,
-                           size_t size,
-                           void* context) {
+  static void* MockRealloc(void* address, size_t size, void* context) {
     if (instance_) {
       // Size 0xFEED is a special sentinel for the NewHandlerConcurrency test.
       // Hitting it for the first time will cause a failure, causing the
@@ -129,46 +124,58 @@ class AllocatorShimTest : public testing::Test {
       }
       ++instance_->reallocs_intercepted_by_addr[Hash(address)];
     }
-    return self->next->realloc_function(self->next, address, size, context);
+    return g_mock_dispatch.next->realloc_function(address, size, context);
   }
 
-  static void MockFree(const AllocatorDispatch* self,
-                       void* address,
-                       void* context) {
+  static void* MockReallocUnchecked(void* address, size_t size, void* context) {
+    if (instance_) {
+      // Size 0xFEED is a special sentinel for the NewHandlerConcurrency test.
+      // Hitting it for the first time will cause a failure, causing the
+      // invocation of the std::new_handler.
+      if (size == 0xFEED) {
+        thread_local bool did_fail_realloc_0xfeed_once = false;
+        if (!did_fail_realloc_0xfeed_once) {
+          did_fail_realloc_0xfeed_once = true;
+          return nullptr;
+        }
+        return address;
+      }
+
+      if (size < MaxSizeTracked()) {
+        ++(instance_->reallocs_intercepted_by_size[size]);
+      }
+      ++instance_->reallocs_intercepted_by_addr[Hash(address)];
+    }
+    return g_mock_dispatch.next->realloc_unchecked_function(address, size,
+                                                            context);
+  }
+
+  static void MockFree(void* address, void* context) {
     if (instance_) {
       ++instance_->frees_intercepted_by_addr[Hash(address)];
     }
-    self->next->free_function(self->next, address, context);
+    g_mock_dispatch.next->free_function(address, context);
   }
 
-  static size_t MockGetSizeEstimate(const AllocatorDispatch* self,
-                                    void* address,
-                                    void* context) {
+  static size_t MockGetSizeEstimate(void* address, void* context) {
     // Special testing values for GetSizeEstimate() interception.
     if (address == kTestSizeEstimateAddress) {
       return kTestSizeEstimate;
     }
-    return self->next->get_size_estimate_function(self->next, address, context);
+    return g_mock_dispatch.next->get_size_estimate_function(address, context);
   }
 
-  static bool MockClaimedAddress(const AllocatorDispatch* self,
-                                 void* address,
-                                 void* context) {
+  static bool MockClaimedAddress(void* address, void* context) {
     // The same as MockGetSizeEstimate.
     if (address == kTestSizeEstimateAddress) {
       return true;
     }
-    return self->next->claimed_address_function(self->next, address, context);
+    return g_mock_dispatch.next->claimed_address_function(address, context);
   }
 
-  static size_t MockGoodSize(const AllocatorDispatch* self,
-                             size_t size,
-                             void* context) {
-    return size;
-  }
+  static size_t MockGoodSize(size_t size, void* context) { return size; }
 
-  static unsigned MockBatchMalloc(const AllocatorDispatch* self,
-                                  size_t size,
+  static unsigned MockBatchMalloc(size_t size,
                                   void** results,
                                   unsigned num_requested,
                                   void* context) {
@@ -176,12 +183,11 @@ class AllocatorShimTest : public testing::Test {
       instance_->batch_mallocs_intercepted_by_size[size] =
           instance_->batch_mallocs_intercepted_by_size[size] + num_requested;
     }
-    return self->next->batch_malloc_function(self->next, size, results,
-                                             num_requested, context);
+    return g_mock_dispatch.next->batch_malloc_function(size, results,
+                                                       num_requested, context);
   }
 
-  static void MockBatchFree(const AllocatorDispatch* self,
-                            void** to_be_freed,
+  static void MockBatchFree(void** to_be_freed,
                             unsigned num_to_be_freed,
                             void* context) {
     if (instance_) {
@@ -189,43 +195,44 @@ class AllocatorShimTest : public testing::Test {
         ++instance_->batch_frees_intercepted_by_addr[Hash(to_be_freed[i])];
       }
     }
-    self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                    context);
+    g_mock_dispatch.next->batch_free_function(to_be_freed, num_to_be_freed,
+                                              context);
   }
 
-  static void MockFreeDefiniteSize(const AllocatorDispatch* self,
-                                   void* ptr,
-                                   size_t size,
-                                   void* context) {
+  static void MockFreeDefiniteSize(void* ptr, size_t size, void* context) {
     if (instance_) {
       ++instance_->frees_intercepted_by_addr[Hash(ptr)];
       ++instance_->free_definite_sizes_intercepted_by_size[size];
     }
-    self->next->free_definite_size_function(self->next, ptr, size, context);
+    g_mock_dispatch.next->free_definite_size_function(ptr, size, context);
   }
 
-  static void MockTryFreeDefault(const AllocatorDispatch* self,
-                                 void* ptr,
-                                 void* context) {
+  static void MockTryFreeDefault(void* ptr, void* context) {
     if (instance_) {
       ++instance_->frees_intercepted_by_addr[Hash(ptr)];
     }
-    self->next->try_free_default_function(self->next, ptr, context);
+    g_mock_dispatch.next->try_free_default_function(ptr, context);
   }
 
-  static void* MockAlignedMalloc(const AllocatorDispatch* self,
-                                 size_t size,
-                                 size_t alignment,
-                                 void* context) {
+  static void* MockAlignedMalloc(size_t size, size_t alignment, void* context) {
     if (instance_ && size < MaxSizeTracked()) {
       ++instance_->aligned_mallocs_intercepted_by_size[size];
     }
-    return self->next->aligned_malloc_function(self->next, size, alignment,
-                                               context);
+    return g_mock_dispatch.next->aligned_malloc_function(size, alignment,
+                                                         context);
   }
 
-  static void* MockAlignedRealloc(const AllocatorDispatch* self,
-                                  void* address,
+  static void* MockAlignedMallocUnchecked(size_t size,
+                                          size_t alignment,
+                                          void* context) {
+    if (instance_ && size < MaxSizeTracked()) {
+      ++instance_->aligned_mallocs_intercepted_by_size[size];
+    }
+    return g_mock_dispatch.next->aligned_malloc_unchecked_function(
+        size, alignment, context);
+  }
+
+  static void* MockAlignedRealloc(void* address,
                                   size_t size,
                                   size_t alignment,
                                   void* context) {
@@ -235,17 +242,29 @@ class AllocatorShimTest : public testing::Test {
       }
       ++instance_->aligned_reallocs_intercepted_by_addr[Hash(address)];
     }
-    return self->next->aligned_realloc_function(self->next, address, size,
-                                                alignment, context);
+    return g_mock_dispatch.next->aligned_realloc_function(address, size,
+                                                          alignment, context);
   }
 
-  static void MockAlignedFree(const AllocatorDispatch* self,
-                              void* address,
-                              void* context) {
+  static void* MockAlignedReallocUnchecked(void* address,
+                                           size_t size,
+                                           size_t alignment,
+                                           void* context) {
+    if (instance_) {
+      if (size < MaxSizeTracked()) {
+        ++instance_->aligned_reallocs_intercepted_by_size[size];
+      }
+      ++instance_->aligned_reallocs_intercepted_by_addr[Hash(address)];
+    }
+    return g_mock_dispatch.next->aligned_realloc_unchecked_function(
+        address, size, alignment, context);
+  }
+
+  static void MockAlignedFree(void* address, void* context) {
     if (instance_) {
       ++instance_->aligned_frees_intercepted_by_addr[Hash(address)];
     }
-    self->next->aligned_free_function(self->next, address, context);
+    g_mock_dispatch.next->aligned_free_function(address, context);
   }
 
   static void NewHandler() {
@@ -277,21 +296,21 @@ class AllocatorShimTest : public testing::Test {
     num_new_handler_calls.store(0, std::memory_order_release);
     instance_ = this;
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
     InitializeAllocatorShim();
 #endif
   }
 
   void TearDown() override {
     instance_ = nullptr;
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
     UninterceptMallocZonesForTesting();
 #endif
   }
 
   static size_t MaxSizeTracked() {
-#if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1077271): 64-bit iOS uses a page size that is larger than
+#if PA_BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/40129080): 64-bit iOS uses a page size that is larger than
     // SystemPageSize(), causing this test to make larger allocations, relative
     // to SystemPageSize().
     return 6 * partition_alloc::internal::SystemPageSize();
@@ -355,7 +374,8 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockAllocZeroInit, /* alloc_zero_initialized_function */
     &AllocatorShimTest::MockAllocAligned,  /* alloc_aligned_function */
     &AllocatorShimTest::MockRealloc,       /* realloc_function */
-    &AllocatorShimTest::MockFree,          /* free_function */
+    &AllocatorShimTest::MockReallocUnchecked, /* realloc_unchecked_function */
+    &AllocatorShimTest::MockFree,             /* free_function */
     &AllocatorShimTest::MockGetSizeEstimate,  /* get_size_estimate_function */
     &AllocatorShimTest::MockGoodSize,         /* good_size */
     &AllocatorShimTest::MockClaimedAddress,   /* claimed_address_function */
@@ -364,9 +384,13 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockFreeDefiniteSize, /* free_definite_size_function */
     &AllocatorShimTest::MockTryFreeDefault,   /* try_free_default_function */
     &AllocatorShimTest::MockAlignedMalloc,    /* aligned_malloc_function */
-    &AllocatorShimTest::MockAlignedRealloc,   /* aligned_realloc_function */
-    &AllocatorShimTest::MockAlignedFree,      /* aligned_free_function */
-    nullptr,                                  /* next */
+    &AllocatorShimTest::MockAlignedMallocUnchecked,
+    /* aligned_malloc_unchecked_function */
+    &AllocatorShimTest::MockAlignedRealloc, /* aligned_realloc_function */
+    &AllocatorShimTest::MockAlignedReallocUnchecked,
+    /* aligned_realloc_unchecked_function */
+    &AllocatorShimTest::MockAlignedFree, /* aligned_free_function */
+    nullptr,                             /* next */
 };
 
 TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
@@ -380,7 +404,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_NE(nullptr, zero_alloc_ptr);
   ASSERT_GE(zero_allocs_intercepted_by_size[2 * 23], 1u);
 
-#if !BUILDFLAG(IS_WIN)
+#if !PA_BUILDFLAG(IS_WIN)
   void* posix_memalign_ptr = nullptr;
   int res = posix_memalign(&posix_memalign_ptr, 256, 59);
   ASSERT_EQ(0, res);
@@ -391,38 +415,38 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 
   // (p)valloc() are not defined on Android. pvalloc() is a GNU extension,
   // valloc() is not in POSIX.
-#if !BUILDFLAG(IS_ANDROID)
+#if !PA_BUILDFLAG(IS_ANDROID)
   const size_t kPageSize = partition_alloc::internal::base::GetPageSize();
   void* valloc_ptr = valloc(61);
   ASSERT_NE(nullptr, valloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(valloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[61], 1u);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !PA_BUILDFLAG(IS_ANDROID)
 
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !PA_BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#if !PA_BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(IS_APPLE)
   void* memalign_ptr = memalign(128, 53);
   ASSERT_NE(nullptr, memalign_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(memalign_ptr) % 128);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[128], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[53], 1u);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_POSIX) && !PA_BUILDFLAG(IS_ANDROID)
   void* pvalloc_ptr = pvalloc(67);
   ASSERT_NE(nullptr, pvalloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(pvalloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   // pvalloc rounds the size up to the next page.
   ASSERT_GE(aligned_allocs_intercepted_by_size[kPageSize], 1u);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_POSIX) && !PA_BUILDFLAG(IS_ANDROID)
 
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#endif  // !PA_BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(IS_APPLE)
 
 // See allocator_shim_override_glibc_weak_symbols.h for why we intercept
 // internal libc symbols.
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   void* libc_memalign_ptr = __libc_memalign(512, 56);
   ASSERT_NE(nullptr, memalign_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(libc_memalign_ptr) % 512);
@@ -444,29 +468,29 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   free(zero_alloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(zero_alloc_ptr)], 1u);
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#if !PA_BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(IS_APPLE)
   free(memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_POSIX) && !PA_BUILDFLAG(IS_ANDROID)
   free(pvalloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(pvalloc_ptr)], 1u);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_POSIX) && !PA_BUILDFLAG(IS_ANDROID)
 
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
+#endif  // !PA_BUILDFLAG(IS_WIN) && !PA_BUILDFLAG(IS_APPLE)
 
-#if !BUILDFLAG(IS_WIN)
+#if !PA_BUILDFLAG(IS_WIN)
   free(posix_memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(posix_memalign_ptr)], 1u);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !PA_BUILDFLAG(IS_ANDROID)
   free(valloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(valloc_ptr)], 1u);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !PA_BUILDFLAG(IS_ANDROID)
 
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !PA_BUILDFLAG(IS_WIN)
 
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   free(libc_memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
 #endif
@@ -483,7 +507,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 }
 
 // PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST_F(AllocatorShimTest, InterceptLibcSymbolsBatchMallocFree) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -522,9 +546,10 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbolsFreeDefiniteSize) {
   ASSERT_GE(free_definite_sizes_intercepted_by_size[19], 1u);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(IS_APPLE) &&
+        // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -548,7 +573,7 @@ TEST_F(AllocatorShimTest, AlignedReallocSizeZeroFrees) {
   alloc_ptr = _aligned_realloc(alloc_ptr, 0, 16);
   ASSERT_TRUE(!alloc_ptr);
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 TEST_F(AllocatorShimTest, InterceptCppSymbols) {
   InsertAllocatorDispatch(&g_mock_dispatch);
@@ -586,7 +611,7 @@ TEST_F(AllocatorShimTest, InterceptCppSymbols) {
 
 // PartitionAlloc disallows large allocations to avoid errors with int
 // overflows.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 struct TooLarge {
   char padding1[1UL << 31];
   int padding2;
@@ -634,21 +659,22 @@ TEST_F(AllocatorShimTest, NewHandlerConcurrency) {
   ASSERT_EQ(kNumThreads, GetNumberOfNewHandlerCalls());
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 TEST_F(AllocatorShimTest, ShimReplacesCRTHeapWhenEnabled) {
   ASSERT_EQ(::GetProcessHeap(), reinterpret_cast<HANDLE>(_get_heap_handle()));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 static size_t GetUsableSize(void* ptr) {
   return _msize(ptr);
 }
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 static size_t GetUsableSize(void* ptr) {
   return malloc_size(ptr);
 }
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#elif PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS) || \
+    PA_BUILDFLAG(IS_ANDROID)
 static size_t GetUsableSize(void* ptr) {
   return malloc_usable_size(ptr);
 }
@@ -676,7 +702,7 @@ TEST_F(AllocatorShimTest, ShimDoesntChangeMallocSizeWhenEnabled) {
 }
 #endif  // !defined(NO_MALLOC_SIZE)
 
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   auto total_counts = [](const std::vector<size_t>& counts) {
     size_t total = 0;
@@ -741,7 +767,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Non-regression test for crbug.com/1166558.
 TEST_F(AllocatorShimTest, InterceptVasprintf) {
   // Printing a float which expands to >=30 characters calls vasprintf() in
@@ -774,11 +800,11 @@ TEST_F(AllocatorShimTest, InterceptLongVasprintf) {
   free(str);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_APPLE)
 
 // Non-regression test for crbug.com/1291885.
 TEST_F(AllocatorShimTest, BatchMalloc) {
@@ -797,7 +823,104 @@ TEST_F(AllocatorShimTest, MallocGoodSize) {
   EXPECT_GE(good_size, kTestSize);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_APPLE)
+
+TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
+  const AllocatorDispatch* prev = GetAllocatorDispatchChainHeadForTesting();
+
+  // The nullptr entries are replaced with the functions in the head.
+  AllocatorDispatch empty_dispatch{nullptr};
+  InsertAllocatorDispatch(&empty_dispatch);
+  const AllocatorDispatch* head = GetAllocatorDispatchChainHeadForTesting();
+  EXPECT_EQ(head->alloc_function, prev->alloc_function);
+  EXPECT_EQ(head->realloc_function, prev->realloc_function);
+  EXPECT_EQ(head->free_function, prev->free_function);
+  EXPECT_EQ(head->get_size_estimate_function, prev->get_size_estimate_function);
+  RemoveAllocatorDispatchForTesting(&empty_dispatch);
+
+  // Partially nullptr and partially non-nullptr.
+  AllocatorDispatch non_empty_dispatch{nullptr};
+  non_empty_dispatch.get_size_estimate_function =
+      AllocatorShimTest::MockGetSizeEstimate;
+  InsertAllocatorDispatch(&non_empty_dispatch);
+  head = GetAllocatorDispatchChainHeadForTesting();
+  EXPECT_EQ(head->alloc_function, prev->alloc_function);
+  EXPECT_EQ(head->realloc_function, prev->realloc_function);
+  EXPECT_EQ(head->free_function, prev->free_function);
+  EXPECT_NE(head->get_size_estimate_function, prev->get_size_estimate_function);
+  EXPECT_EQ(head->get_size_estimate_function,
+            AllocatorShimTest::MockGetSizeEstimate);
+  RemoveAllocatorDispatchForTesting(&non_empty_dispatch);
+}
+
+#if PA_BUILDFLAG( \
+    ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT)
+
+void MockFreeWithAdvancedChecks(void* address, void* context);
+void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context);
+
+std::atomic_size_t g_mock_free_with_advanced_checks_count;
+
+AllocatorDispatch g_mock_dispatch_for_advanced_checks = {
+    .realloc_function = &MockReallocWithAdvancedChecks,
+    .free_function = &MockFreeWithAdvancedChecks,
+    .next = nullptr,
+};
+
+void MockFreeWithAdvancedChecks(void* address, void* context) {
+  g_mock_free_with_advanced_checks_count++;
+  g_mock_dispatch_for_advanced_checks.next->free_function(address, context);
+}
+
+void* MockReallocWithAdvancedChecks(void* address, size_t size, void* context) {
+  // no-op.
+  return g_mock_dispatch_for_advanced_checks.next->realloc_function(
+      address, size, context);
+}
+
+TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
+  // To prevent flakiness introduced by sampling-based dispatch inserted,
+  // replace the chain head within this test.
+  AutoResetAllocatorDispatchChainForTesting chain_reset;
+
+  g_mock_free_with_advanced_checks_count = 0u;
+
+  // Insert a normal dispatch.
+  InsertAllocatorDispatch(&g_mock_dispatch);
+
+  // Using `new` and `delete` instead of `malloc()` and `free()`.
+  // On `IS_APPLE` platforms, `free()` may be deferred and not reliably
+  // testable.
+  int* alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
+
+  InstallDispatchToPartitionAllocWithAdvancedChecks(
+      &g_mock_dispatch_for_advanced_checks);
+
+  alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> `dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_GE(g_mock_free_with_advanced_checks_count, 1u);
+
+  UninstallDispatchToPartitionAllocWithAdvancedChecks();
+  g_mock_free_with_advanced_checks_count = 0u;
+
+  alloc_ptr = new int;
+  delete alloc_ptr;
+
+  // `free()` -> `g_mock_dispatch` -> default allocator.
+  EXPECT_GE(frees_intercepted_by_addr[Hash(alloc_ptr)], 1u);
+  EXPECT_EQ(g_mock_free_with_advanced_checks_count, 0u);
+
+  RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
+}
+#endif
 
 }  // namespace
 }  // namespace allocator_shim

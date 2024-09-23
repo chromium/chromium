@@ -4,8 +4,10 @@
 
 source_set("page_info") {
   sources = [
-    "page_info_helper.h",
-    "page_info_helper.mm",
+    "page_info_about_this_site_consumer.h",
+    "page_info_about_this_site_info.h",
+    "page_info_about_this_site_info.mm",
+    "page_info_history_consumer.h",
     "page_info_presentation_commands.h",
     "page_info_security_view_controller.h",
     "page_info_security_view_controller.mm",
@@ -24,8 +26,11 @@ source_set("page_info") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -33,11 +38,7 @@ source_set("page_info") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/page_info/requirements",
-    "//ios/chrome/browser/ui/permissions",
-    "//ios/chrome/browser/ui/permissions:constants",
-    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
@@ -64,8 +65,12 @@ source_set("constants") {
 
 source_set("coordinator") {
   sources = [
+    "page_info_about_this_site_mediator.h",
+    "page_info_about_this_site_mediator.mm",
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
+    "page_info_history_mediator.h",
+    "page_info_history_mediator.mm",
     "page_info_permissions_mediator.h",
     "page_info_permissions_mediator.mm",
     "page_info_security_coordinator.h",
@@ -78,15 +83,25 @@ source_set("coordinator") {
     ":page_info",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser",
+    "//components/page_info/core",
+    "//components/page_info/core:proto",
     "//components/security_state/core",
     "//components/ssl_errors",
     "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/page_info:model",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -96,10 +111,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/fullscreen:coordinators",
     "//ios/chrome/browser/ui/page_info/requirements",
-    "//ios/chrome/browser/ui/permissions",
-    "//ios/chrome/browser/ui/permissions:permission_info",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/web",
@@ -117,8 +133,8 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
-    "//ios/chrome/browser/ui/permissions",
-    "//ios/chrome/browser/ui/permissions:permission_info",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/test:test_support",
     "//ios/web/public/permissions",
     "//ios/web/public/test/fakes",
@@ -136,13 +152,19 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
+    ":eg_test_support+eg2",
     ":features",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/optimization_guide/core:features",
+    "//components/page_info/core",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/ui/permissions:constants",
-    "//ios/chrome/browser/ui/permissions:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/permissions",
@@ -156,5 +178,37 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/page_info/core:core",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "page_info_app_interface.h",
+    "page_info_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "page_info_app_interface.h",
+    "page_info_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_info/core:proto",
+    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/common:uikit",
+  ]
 }

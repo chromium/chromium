@@ -58,7 +58,7 @@ webrtc::VideoFrame CreateMockFrame(int width, int height, uint32_t timestamp) {
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(
           rtc::make_ref_counted<MockVideoFrameBuffer>(width, height))
-      .set_timestamp_rtp(timestamp)
+      .set_rtp_timestamp(timestamp)
       .build();
 }
 
@@ -94,8 +94,8 @@ class MockDecoder : public webrtc::VideoDecoder {
   }
 
  private:
-  const raw_ptr<bool, ExperimentalRenderer> is_hw_accelerated_;
-  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer> callback_;
+  const raw_ptr<bool> is_hw_accelerated_;
+  raw_ptr<webrtc::DecodedImageCallback> callback_;
 };
 
 class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
@@ -106,7 +106,7 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
 
   // Implementation of webrtc::DecodedImageCallback.
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   void Decoded(webrtc::VideoFrame& decodedImage,

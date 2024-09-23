@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/sync_consent_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:scrollIndicators="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Creates a fix minimum spacing of 24dp between the logo and the
+            top of the screen. If additional free space is available in larger
+            screens then divides it at a 1:2 ratio between
+            @id/space_above_account_image and
+            @id/space_between_sync_data_types_and_buttons respectively. -->
+            <View
+                android:id="@+id/space_above_account_image"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="1"
+                android:visibility="invisible" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="36dp">
+                    <ImageView
+                        android:id="@+id/history_sync_illustration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/history_sync_illustration"
+                        android:importantForAccessibility="no" />
+                    <ImageView
+                        android:id="@+id/history_sync_account_image"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_centerVertical="@id/history_sync_illustration"
+                        android:layout_centerInParent="true"
+                        android:importantForAccessibility="no" />
+                </RelativeLayout>
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/history_sync_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="@string/history_sync_title"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                app:leading="@dimen/headline_size_leading" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/history_sync_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="@string/history_sync_subtitle"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading" />
+
+            <!-- Refer to the comment above @id/space_above_account_image -->
+            <View
+                android:id="@+id/space_between_sync_data_types_and_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="2"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Depending on the size of the screen, either the dual_control_button_bar or the
+    small_screen_button_layout will be made visible from the Java side. -->
+    <org.chromium.components.browser_ui.widget.DualControlLayout
+        android:id="@+id/dual_control_button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="22dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/small_screen_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+    </LinearLayout>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/history_sync_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading" />
+</org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView>

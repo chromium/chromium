@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback.h"
@@ -36,8 +37,8 @@ class Widget;
 
 namespace ash {
 
+class SystemToastView;
 class ToastManagerImplTest;
-class SystemToastStyle;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver,
@@ -65,13 +66,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // To test different Toast UI variations, enable debug shortcuts by building
   // with flag `--ash-debug-shortcuts` and use command "Shift + Ctrl + Alt + O".
   ToastOverlay(Delegate* delegate,
-               const std::u16string& text,
-               const std::u16string& dismiss_text,
-               const gfx::VectorIcon& leading_icon,
-               base::TimeDelta duration,
-               bool persist_on_hover,
-               aura::Window* root_window,
-               base::RepeatingClosure dismiss_callback);
+               const ToastData& toast_data,
+               aura::Window* root_window);
 
   ToastOverlay(const ToastOverlay&) = delete;
   ToastOverlay& operator=(const ToastOverlay&) = delete;
@@ -84,22 +80,18 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Update the position and size of toast.
   void UpdateOverlayBounds();
 
-  const std::u16string GetText();
+  const std::u16string GetText() const;
 
-  // Returns true if the toast has a button and it can be highlighted for
-  // accessibility, false otherwise.
-  bool MaybeToggleA11yHighlightOnDismissButton();
+  // Requests focus on the toast's dismiss button. Return true if it was
+  // successful.
+  bool RequestFocusOnActiveToastDismissButton();
 
-  // Activates the dismiss button in `overlay_view_` if it is highlighted.
-  // Returns false if `is_dismiss_button_highlighted_` is false.
-  bool MaybeActivateHighlightedDismissButton();
+  // Returns if the dismiss button is focused in the toast. If the toast does
+  // not have a dismiss button, it returns false.
+  bool IsDismissButtonFocused() const;
 
   // UnifiedSystemTray::Observer:
   void OnSliderBubbleHeightChanged() override;
-
-  // Returns if the dismiss button is highlighted in the toast. If the toast
-  // does not have a dismiss button, it returns false.
-  bool IsDismissButtonHighlighted() const;
 
  private:
   friend class ToastManagerImplTest;
@@ -141,7 +133,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   const std::u16string text_;
   const std::u16string dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
-  std::unique_ptr<SystemToastStyle> overlay_view_;
+  std::unique_ptr<SystemToastView> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   raw_ptr<aura::Window> root_window_;
   base::RepeatingClosure dismiss_callback_;

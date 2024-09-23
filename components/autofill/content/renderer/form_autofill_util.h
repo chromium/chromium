@@ -7,13 +7,16 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -38,7 +41,6 @@ class WebFormElement;
 class WebInputElement;
 class WebLocalFrame;
 class WebNode;
-class WebString;
 }  // namespace blink
 
 namespace content {
@@ -47,8 +49,8 @@ class RenderFrame;
 
 namespace autofill {
 
-struct FormData;
-struct FormFieldData;
+class FormData;
+class FormFieldData;
 
 class FieldDataManager;
 
@@ -58,24 +60,7 @@ namespace form_util {
 // extraction, label inference, DOM traversal, and form field preview and
 // autofilling.
 //
-// To understand form extraction, a bit of terminology is relevant:
-// - We consider a form control element `t` (e.g., an <input>) to be associated
-//   with a form element `f` iff
-//   * `t` is explicitly associated with `f` via a "form" attribute, e.g.
-//     <form id=f></form>
-//     <input type=text id=t form=f>
-//   * or `f` is `t`'s (not shadow-tree including) ancestor node.
-//     Note that there should be at most one not-shadow-tree-including ancestor
-//     node that is a `<form>` since multiple nested `<form>`s are not permitted
-//     inside the same document fragment.
-//   Autofill does not currently support form-associated custom
-//   elements. See https://web.dev/articles/more-capable-form-controls for more
-//   information on those.
-// - We consider a form control element `t` to be owned by a form element `f` if
-//   * `t` is associated with `f`
-//   *  or `t` is a shadow including descendant of `f`.
-// - We consider a form control element to be unowned if is it not owned by any
-//   form.
+// See README.md for the terminology used in this file.
 
 // Mapping from a form element's render id to results of button titles
 // heuristics for a given form element.
@@ -84,52 +69,14 @@ using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 // A bit field mask to extract data from WebFormControlElement.
 // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
 enum class ExtractOption {
-  kValue,       // Extract value from WebFormControlElement.
-  kOptionText,  // Extract option text from WebFormSelectElement. Only
-                // valid when kValue is set. This is used for form submission
-                // where human readable value is captured.
-  kOptions,     // Extract options from WebFormControlElement.
-  kBounds,      // Extract bounds from WebFormControlElement, could
-                // trigger layout if needed.
-  kDatalist,    // Extract datalist from WebFormControlElement, the total
-                // number of options is up to kMaxListSize and each option
-                // has as far as kMaxDataLength.
-  kMinValue = kValue,
+  kBounds,    // Extract bounds from WebFormControlElement, could
+              // trigger layout if needed.
+  kDatalist,  // Extract datalist from WebFormControlElement, the total
+              // number of options is up to kMaxListSize and each option
+              // has as far as kMaxDataLength.
+  kMinValue = kBounds,
   kMaxValue = kDatalist,
 };
-
-// Returns the topmost <form> ancestor of |node|, or an IsNull() pointer.
-//
-// Generally, WebFormElements must not be nested [1]. When parsing HTML, Blink
-// ignores nested form tags; the inner forms therefore never make it into the
-// DOM. However, nested forms can be created and added to the DOM dynamically,
-// in which case Blink associates each field with its closest ancestor.
-//
-// For some elements, Autofill determines the associated form without Blink's
-// help (currently, these are only iframe elements). For consistency with
-// Blink's behaviour, we associate them with their closest form element
-// ancestor.
-//
-// [1] https://html.spec.whatwg.org/multipage/forms.html#the-form-element
-blink::WebFormElement GetClosestAncestorFormElement(blink::WebNode node);
-
-// Returns true if a DOM traversal (pre-order, depth-first) visits `x` before
-// `y`.
-// As a performance improvement, `ancestor_hint` can be set to a suspected
-// ancestor of `x` and `y`. Otherwise, `ancestor_hint` can be arbitrary.
-//
-// This function is a simplified/specialized version of Blink's private
-// Node::compareDocumentPosition().
-//
-// Exposed for testing purposes.
-bool IsDOMPredecessor(const blink::WebNode& x,
-                      const blink::WebNode& y,
-                      const blink::WebNode& ancestor_hint);
-
-// Gets up to kMaxListSize data list values (with corresponding label) for the
-// given element, each value and label have as far as kMaxDataLength.
-void GetDataListSuggestions(const blink::WebInputElement& element,
-                            std::vector<SelectOption>* options);
 
 // Extract FormData from `form_element` or the unowned form if
 // `form_element.IsNull()`.
@@ -137,36 +84,13 @@ std::optional<FormData> ExtractFormData(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                               ExtractOption::kOptionText,
-                                               ExtractOption::kOptions});
+    const CallTimerState& timer_state,
+    DenseSet<ExtractOption> extract_options = {});
 
-// Helper functions to assist in getting the canonical form of the action and
+// Helper function to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will
 // strip unnecessary data (e.g. query params and HTTP credentials).
 GURL GetCanonicalActionForForm(const blink::WebFormElement& form);
-GURL GetDocumentUrlWithoutAuth(const blink::WebDocument& document);
-
-// Returns true if |element| is a month input element.
-bool IsMonthInput(const blink::WebInputElement& element);
-
-// Returns true if |element| is a month input element.
-bool IsMonthInput(const blink::WebFormControlElement& element);
-
-// Returns true if |element| is a text input element.
-bool IsTextInput(const blink::WebInputElement& element);
-
-// Returns true if |element| is a text input element.
-bool IsTextInput(const blink::WebFormControlElement& element);
-
-// Returns true if `element` is either a select or a selectlist element.
-bool IsSelectOrSelectListElement(const blink::WebFormControlElement& element);
-
-// Returns true if |element| is a select element.
-bool IsSelectElement(const blink::WebFormControlElement& element);
-
-// Returns true if `element` is a selectlist element.
-bool IsSelectListElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
@@ -174,18 +98,9 @@ bool IsTextAreaElement(const blink::WebFormControlElement& element);
 // Returns true if `element` is a textarea element or a text input element.
 bool IsTextAreaElementOrTextInput(const blink::WebFormControlElement& element);
 
-// Returns true if |element| is a checkbox or a radio button element.
-bool IsCheckableElement(const blink::WebFormControlElement& element);
-
-// Returns true if |element| is one of the input element types that can be
-// autofilled. {Text, Radiobutton, Checkbox}.
-// TODO(crbug.com/1007974): IsAutofillableInputElement() are currently used
-// inconsistently. Investigate where these checks are necessary.
-bool IsAutofillableInputElement(const blink::WebInputElement& element);
-
 // Returns true if |element| is one of the element types that can be autofilled.
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
-// TODO(crbug.com/1007974): IsAutofillableElement() are currently used
+// TODO(crbug.com/40100455): IsAutofillableElement() are currently used
 // inconsistently. Investigate where these checks are necessary.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
@@ -202,44 +117,6 @@ bool IsElementEditable(const blink::WebInputElement& element);
 // whether a child of the selectlist can take focus.
 bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 
-// A heuristic visibility detection. See crbug.com/1335257 for an overview of
-// relevant aspects.
-//
-// Note that WebElement::BoundsInWidget(), WebElement::GetClientSize(),
-// and WebElement::GetScrollSize() include the padding but do not include the
-// border and margin. BoundsInWidget() additionally scales the
-// dimensions according to the zoom factor.
-//
-// It seems that invisible fields on websites typically have dimensions between
-// 0 and 10 pixels, before the zoom factor. Therefore choosing `kMinPixelSize`
-// is easier without including the zoom factor. For that reason, this function
-// prefers GetClientSize() over BoundsInWidget().
-//
-// This function does not check the position in the viewport because fields in
-// iframes commonly are visible despite the body having height zero. Therefore,
-// `e.GetDocument().Body().BoundsInWidget().Intersects(
-//      e.BoundsInWidget())` yields false negatives.
-//
-// Exposed for testing purposes.
-//
-// TODO(crbug.com/1335257): Can input fields or iframes actually overflow?
-bool IsWebElementVisible(const blink::WebElement& element);
-
-// Returns the maximum length value that Autofill may fill into the field. There
-// are two special cases:
-// - It is 0 for fields that do not support free text input (e.g., <select> and
-//   <input type=month>).
-// - It is the maximum 32 bit number for fields that support text values (e.g.,
-//   <input type=text> or <textarea>) but have no maxlength attribute set.
-//   The choice of 32 (as opposed to 64) is intentional: it allows us to still
-//   do arithmetic with FormFieldData::max_length without having to worry about
-//   integer overflows everywhere.
-uint64_t GetMaxLength(const blink::WebFormControlElement& element);
-
-// Returns the form's |name| attribute if non-empty; otherwise the form's |id|
-// attribute.
-std::u16string GetFormIdentifier(const blink::WebFormElement& form);
-
 // Returns the FormRendererId of a given WebFormElement or contenteditable. If
 // WebFormElement::IsNull(), returns a null form renderer id, which is the
 // renderer id of the unowned form.
@@ -253,58 +130,38 @@ FieldRendererId GetFieldRendererId(const blink::WebElement& e);
 base::i18n::TextDirection GetTextDirectionForElement(
     const blink::WebFormControlElement& element);
 
-// Returns all the form control elements
+// Returns all connected, autofillable form control elements
 // - owned by `form_element` if `!form_element.IsNull()`;
 // - owned by no form otherwise.
-std::vector<blink::WebFormControlElement> GetFormControlElements(
+std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
-// Returns all the autofillable form control elements
-// - owned by `form_element` if `!form_element.IsNull()`;
-// - owned by no form otherwise.
-std::vector<blink::WebFormControlElement> GetAutofillableFormControlElements(
-    const blink::WebDocument& document,
-    const blink::WebFormElement& form_element);
-
-struct ShadowFieldData;
-
-// Fills out a FormField object from a given autofillable WebFormControlElement.
-// |extract_options|: See the enum ExtractOption above for details. Field
-// properties will be copied from |field_data_manager|, if the argument is not
-// null and has entry for |element| (see properties in FieldPropertiesFlags).
-void WebFormControlElementToFormField(
-    const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement& element,
-    const FieldDataManager* field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field,
-    ShadowFieldData* shadow_data = nullptr);
-
-// Returns the form that owns the `form_control`, or a null pointer if no form
-// owns the `form_control`. exists.
+// Returns the form that owns the `form_control`, or a null `WebFormElement` if
+// no form owns the `form_control`.
 //
-// The form that owns `form_control` is
-// - the form with which `form_control` is associated, if such a form exists,
-// - the closest shadow-including ancestor WebFormElement.
+// When `kAutofillIncludeFormElementsInShadowDom` is enabled, the form that owns
+// `form_control` is
+// - if `form_control` is associated to a form, the furthest shadow-including
+//   form ancestor of that form,
+// - otherwise, the furthest shadow-including form ancestor of `form_control`.
+//
+// When `kAutofillIncludeFormElementsInShadowDom` is disabled, `form_control`'s
+// owner is
+// - if `form_control` is associated to a form, that form,
+// - otherwise, the nearest shadow-including form ancestor of `form_control`.
 blink::WebFormElement GetOwningForm(
     const blink::WebFormControlElement& form_control);
 
-// Returns a list of elements whose id matches one of the ids found in
-// `id_list`.
-std::vector<blink::WebElement> GetWebElementsFromIdList(
-    const blink::WebDocument& document,
-    const blink::WebString& id_list);
-
-// Finds the field that represents `element`, and the form that contains
-// `element` and returns them. |extract_options| control what to extract beside
-// the default options which is {ExtractOption::kValue,
-// ExtractOption::kOptions}. Returns nullopt if the form is not found or cannot
-// be serialized.
-std::optional<std::pair<FormData, FormFieldData>>
+// Extracts the FormData that represents the form of `element`. If that form
+// cannot be extracted (e.g., because it is too large), falls back to a
+// single-field form that contains `element`. If however `element` is not
+// autofillable, returns nullopt.
+std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state,
     DenseSet<ExtractOption> extract_options);
 
 // Creates a FormData containing a single field out of a contenteditable
@@ -333,10 +190,10 @@ std::optional<FormData> FindFormForContentEditable(
 // `initiating_element` is the element that initiated the autofill process.
 // Returns a list of pairs of the filled elements and their autofill state
 // prior to the filling.
-std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
+std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFieldsAction(
+    const blink::WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
-    const blink::WebFormControlElement& initiating_element,
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager);
 
@@ -345,10 +202,8 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
 // `old_autofill_state` is the previous state of the field that initiated the
 // preview.
 void ClearPreviewedElements(
-    mojom::ActionType action_type,
     base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
-        previewed_elements,
-    const blink::WebFormControlElement& initiating_element);
+        previewed_elements);
 
 // Indicates if |node| is owned by |frame| in the sense of
 // https://dom.spec.whatwg.org/#concept-node-document. Note that being owned by
@@ -372,19 +227,6 @@ bool MaybeWasOwnedByFrame(const blink::WebNode& node,
 // Meta, script and title tags don't influence the emptiness of a webpage.
 bool IsWebpageEmpty(const blink::WebLocalFrame* frame);
 
-// This function checks whether the children of |element|
-// are of the type <script>, <meta>, or <title>.
-bool IsWebElementEmpty(const blink::WebElement& element);
-
-// Previews |suggestion| in |input_element| and highlights the suffix of
-// |suggestion| not included in the |input_element| text. |input_element| must
-// not be null. |user_input| should be the text typed by the user into
-// |input_element|. Note that |user_input| cannot be easily derived from
-// |input_element| by calling value(), because of http://crbug.com/507714.
-void PreviewSuggestion(const std::u16string& suggestion,
-                       const std::u16string& user_input,
-                       blink::WebFormControlElement& input_element);
-
 // Returns the aggregated values of the descendants of |element| that are
 // non-empty text nodes.  This is a faster alternative to |innerText()| for
 // performance critical operations.  It does a full depth-first search so can be
@@ -397,17 +239,6 @@ std::u16string FindChildText(const blink::WebNode& node);
 // to spare recomputation if called multiple times for the same form.
 ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache);
-
-// Same as FindChildText() below, but with a list of div nodes to skip.
-std::u16string FindChildTextWithIgnoreList(
-    const blink::WebNode& node,
-    const std::set<blink::WebNode>& divs_to_skip);
-
-// Infers corresponding label for `element` from surrounding context in the DOM,
-// e.g. the contents of the preceding <p> tag or text element. Returns an empty
-// string if it could not find a label for `element`.
-std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
-                                    FormFieldData::LabelSource& label_source);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
@@ -426,21 +257,6 @@ blink::WebElement GetContentEditableByRendererId(
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
 
-// Returns the ARIA label text of the elements denoted by the aria-labelledby
-// attribute of |element| or the value of the aria-label attribute of
-// |element|, with priority given to the aria-labelledby attribute.
-std::u16string GetAriaLabel(const blink::WebDocument& document,
-                            const blink::WebElement& element);
-
-// Returns the ARIA label text of the elements denoted by the aria-describedby
-// attribute of |element|.
-std::u16string GetAriaDescription(const blink::WebDocument& document,
-                                  const blink::WebElement& element);
-
-// Helper function to return the next web node of `current_node` in the DOM.
-// `forward` determines the direction to traverse in.
-blink::WebNode NextWebNode(const blink::WebNode& current_node, bool forward);
-
 // Iterates through the node neighbors of form and form control elements in
 // `document` in search of four digit combinations.
 void TraverseDomForFourDigitCombinations(
@@ -448,14 +264,37 @@ void TraverseDomForFourDigitCombinations(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches);
 
+// The following functions exist in as internal helper functions in
+// form_autofill_util.cc and are exposed here just for testing purposes. Check
+// the wrapped functions in the .cc file for documentation.
+std::vector<blink::WebFormControlElement> GetOwnedFormControlsForTesting(
+    const blink::WebDocument& document,
+    const blink::WebFormElement& form_element);
+blink::WebNode NextWebNodeForTesting(const blink::WebNode& current_node,
+                                     bool forward);
+std::u16string GetAriaLabelForTesting(const blink::WebDocument& document,
+                                      const blink::WebElement& element);
+std::u16string GetAriaDescriptionForTesting(const blink::WebDocument& document,
+                                            const blink::WebElement& element);
+void InferLabelForElementsForTesting(
+    base::span<const blink::WebFormControlElement> control_elements,
+    std::vector<FormFieldData>& fields);
+std::u16string FindChildTextWithIgnoreListForTesting(
+    const blink::WebNode& node,
+    const std::set<blink::WebNode>& divs_to_skip);
+std::vector<SelectOption> GetDataListOptionsForTesting(
+    const blink::WebInputElement& element);
+blink::WebFormElement GetClosestAncestorFormElementForTesting(blink::WebNode n);
+bool IsDOMPredecessorForTesting(const blink::WebNode& x,
+                                const blink::WebNode& y,
+                                const blink::WebNode& ancestor_hint);
+bool IsWebElementVisibleForTesting(const blink::WebElement& element);
 bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element);
-
-// TODO(crbug.com/1007974): There's no internal WebFormElementToFormData()
-// anymore. Revise the test to test the interface.
-std::optional<FormData> WebFormElementToFormDataForTesting(
+uint64_t GetMaxLengthForTesting(const blink::WebFormControlElement& element);
+void WebFormControlElementToFormFieldForTesting(
     const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager& field_data_manager,
+    const blink::WebFormControlElement& element,
+    const FieldDataManager* field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormFieldData* field);
 

@@ -88,7 +88,7 @@ void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
 
   // Pass messages from the non-static instances to the static instance during
   // transition.
-  // TODO(crbug.com/1426917): Remove static instance of feature.
+  // TODO(crbug.com/40899585): Remove static instance of feature.
   WebViewMessageHandlerJavaScriptFeature* static_instance =
       WebViewMessageHandlerJavaScriptFeature::GetInstance();
   if (this != static_instance) {

@@ -8,7 +8,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:minHeight="70dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -33,20 +33,22 @@ found in the LICENSE file.
             <TextView
                 android:id="@+id/device_name"
                 android:layout_width="match_parent"
-                android:layout_height="24dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingEnd="2dp"
                 android:maxLines="2"
                 android:ellipsize="end"
+                android:minHeight="24dp"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
             <TextView
                 android:id="@+id/last_active"
                 android:layout_width="match_parent"
-                android:layout_height="24dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:paddingEnd="2dp"
                 android:maxLines="2"
                 android:ellipsize="end"
+                android:minHeight="24dp"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 </LinearLayout>

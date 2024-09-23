@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cellular_setup") {
+  sources = [
+    "cellular_setup_localized_strings_provider.cc",
+    "cellular_setup_localized_strings_provider.h",
+    "mobile_setup_dialog.cc",
+    "mobile_setup_dialog.h",
+    "mobile_setup_ui.cc",
+    "mobile_setup_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/mobile",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//chromeos/ash/components/network",
+    "//components/login",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//url",
+  ]
+}

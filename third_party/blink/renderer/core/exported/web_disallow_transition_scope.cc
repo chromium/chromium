@@ -15,11 +15,11 @@ namespace blink {
 WebDisallowTransitionScope::WebDisallowTransitionScope(
     WebDocument* web_document)
     : document_lifecycle_(Lifecycle(web_document)) {
-  document_lifecycle_.IncrementNoTransitionCount();
+  document_lifecycle_->IncrementNoTransitionCount();
 }
 
 WebDisallowTransitionScope::~WebDisallowTransitionScope() {
-  document_lifecycle_.DecrementNoTransitionCount();
+  document_lifecycle_->DecrementNoTransitionCount();
 }
 
 DocumentLifecycle& WebDisallowTransitionScope::Lifecycle(

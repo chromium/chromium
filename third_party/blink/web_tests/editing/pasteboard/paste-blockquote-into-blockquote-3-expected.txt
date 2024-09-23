@@ -11,7 +11,6 @@ This tests pasting a blockquote into a blockquote. Nothing below should be doubl
 |   <br>
 |     id="endContent"
 |   "two<#selection-caret>"
-|   <br>
 | <blockquote>
 |   type="cite"
 |   <br>

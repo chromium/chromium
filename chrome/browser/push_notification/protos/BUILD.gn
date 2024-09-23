@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Push Notification is CrOS only")
+
+proto_library("proto") {
+  sources = [
+    "channel_type.proto",
+    "data.proto",
+    "delivery_address.proto",
+    "notifications_multi_login_update.proto",
+    "registration_reason.proto",
+    "status.proto",
+    "target.proto",
+    "user_id.proto",
+  ]
+}

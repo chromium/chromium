@@ -211,7 +211,7 @@ void HostGlobals::ModuleDeleted(PP_Module module) {
       << module << " is not a PP_Module.";
   auto found = module_map_.find(module);
   if (found == module_map_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   module_map_.erase(found);

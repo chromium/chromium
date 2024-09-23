@@ -4,35 +4,59 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-source_set("test_support") {
-  testonly = true
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "live_caption/live_caption_test_util.cc",
+      "live_caption/live_caption_test_util.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/live_caption:constants",
+      "//components/soda",
+      "//components/soda:constants",
+      "//components/sync_preferences",
+    ]
+
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
+    }
+
+    if (is_chromeos_lacros) {
+      deps += [
+        "//chromeos/lacros",
+        "//chromeos/startup",
+      ]
+    }
+  }
+}
+
+source_set("utils") {
   sources = [
-    "live_caption/live_caption_test_util.cc",
-    "live_caption/live_caption_test_util.h",
+    "accessibility_state_utils.cc",
+    "accessibility_state_utils.h",
+    "pdf_ocr_metrics.cc",
+    "pdf_ocr_metrics.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support_ui",
-    "//components/live_caption:constants",
-    "//components/soda",
-    "//components/soda:constants",
-    "//components/sync_preferences",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/prefs",
+    "//services/screen_ai/buildflags",
   ]
 
-  public_deps = [ "media_app/test:test_support" ]
-
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-    ]
+    deps += [ "//chrome/browser/ash/accessibility" ]
+  } else {
+    deps += [ "//content/public/browser" ]
   }
 }

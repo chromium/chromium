@@ -12,10 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using autofill::AutofillLogRouterFactory;
 using autofill::LogRouter;
-
-namespace {
 
 const char kTestText[] = "abcd1234";
 
@@ -25,8 +25,6 @@ class MockLogReceiver : public autofill::LogReceiver {
 
   MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
-
-}  // namespace
 
 class AutofillLogRouterFactoryTest : public testing::Test {
  public:
@@ -75,3 +73,5 @@ TEST_F(AutofillLogRouterFactoryTest, ServiceNotActiveIncognito) {
   // Therefore the returned |service| should also be nullptr.
   EXPECT_FALSE(log_router);
 }
+
+}  // namespace

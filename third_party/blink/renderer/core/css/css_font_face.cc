@@ -114,7 +114,7 @@ bool CSSFontFace::FallbackVisibilityChanged(RemoteFontFaceSource* source) {
   return true;
 }
 
-scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
+const SimpleFontData* CSSFontFace::GetFontData(
     const FontDescription& font_description) {
   if (!IsValid()) {
     return nullptr;
@@ -140,7 +140,7 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
       return nullptr;
     }
 
-    if (scoped_refptr<SimpleFontData> result =
+    if (const SimpleFontData* result =
             source->GetFontData(size_adjusted_description,
                                 font_face_->GetFontSelectionCapabilities())) {
       // The font data here is created using the primary font's description.
@@ -149,7 +149,7 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
       if (size_adjusted_description.HasSizeAdjust()) {
         if (auto adjusted_size =
                 FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
-                    result.get(), size_adjusted_description)) {
+                    result, size_adjusted_description)) {
           size_adjusted_description.SetAdjustedSize(adjusted_size.value());
           result =
               source->GetFontData(size_adjusted_description,
@@ -216,9 +216,8 @@ bool CSSFontFace::MaybeLoadFont(const FontDescription& font_description,
 
 void CSSFontFace::Load() {
   FontDescription font_description;
-  FontFamily font_family;
-  font_family.SetFamily(font_face_->family(), FontFamily::Type::kFamilyName);
-  font_description.SetFamily(font_family);
+  font_description.SetFamily(
+      FontFamily(font_face_->family(), FontFamily::Type::kFamilyName));
   Load(font_description);
 }
 
@@ -292,6 +291,7 @@ bool CSSFontFace::UpdatePeriod() {
 void CSSFontFace::Trace(Visitor* visitor) const {
   visitor->Trace(segmented_font_faces_);
   visitor->Trace(sources_);
+  visitor->Trace(ranges_);
   visitor->Trace(font_face_);
 }
 

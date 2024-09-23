@@ -9,7 +9,9 @@
           "PluginVmDataCollectionAllowed": false
         },
         "prefs": {
-          "plugin_vm.data_collection_allowed": {}
+          "plugin_vm.data_collection_allowed": {
+            "value": false
+          }
         }
       }
     ]

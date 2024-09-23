@@ -4,8 +4,9 @@
 
 #include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -15,9 +16,9 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/sharing_message/pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,13 +31,13 @@
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/user_manager/user_manager_pref_names.h"
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
 #include "ui/events/ash/pref_names.h"
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/pref_names.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/pref_names.h"  // nogncheck
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
 #endif
 
@@ -50,6 +51,7 @@ namespace syncable_prefs_ids {
 // tools/metrics/histograms/metadata/sync/enums.xml. When removing an unused
 // enumerator, comment it out here, making it clear the value was previously
 // used, and add "(obsolete)" to the corresponding entry in enums.xml.
+// LINT.IfChange(ChromeSyncablePref)
 enum {
   // Starts with 100000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and
@@ -79,7 +81,7 @@ enum {
   kShowHomeButton = 100022,
   kPinnedExtensions = 100023,
   kSupervisedUserApprovedExtensions = 100024,
-  kIsDefaultPageColorsOnHighContrast = 100025,
+  // kIsDefaultPageColorsOnHighContrast = 100025, (no longer synced)
   kShowFullscreenToolbar = 100026,
   kAllowJavascriptAppleEvents = 100027,
   kRestoreAppsAndPagesPrefName = 100028,
@@ -95,7 +97,7 @@ enum {
   // kAccessibilityGreyscaleAmount = 100038,  // deprecated
   // kAccessibilityHueRotationAmount = 100039,  // deprecated
   // kAccessibilitySaturationAmount = 100040,  // deprecated
-  kAccessibilityScreenMagnifierCenterFocus = 100041,
+  // kAccessibilityScreenMagnifierCenterFocus = 100041,  // deprecated
   kAccessibilityScreenMagnifierFocusFollowingEnabled = 100042,
   kAccessibilityScreenMagnifierMouseFollowingMode = 100043,
   kAccessibilitySelectToSpeakBackgroundShading = 100044,
@@ -199,8 +201,8 @@ enum {
   kTabDiscardingExceptions = 100141,
   kAccessibilityImageLabelsEnabled = 100142,
   kAccessibilityImageLabelsOptInAccepted = 100143,
-  kAccessibilityPdfOcrAlwaysActive = 100144,
-  kApplyPageColorsOnlyOnIncreasedContrast = 100145,
+  // kAccessibilityPdfOcrAlwaysActive = 100144,(deprecated)
+  // kApplyPageColorsOnlyOnIncreasedContrast = 100145, (no longer synced)
   kDefaultCharset = 100146,
   kDefaultTasksByMimeType = 100147,
   kDefaultTasksBySuffix = 100148,
@@ -217,17 +219,17 @@ enum {
   kNetworkPredictionOptions = 100159,
   kNetworkQualities = 100160,
   // kNtpAppPageNames = 100161, (deprecated)
-  kPageColors = 100162,
+  // kPageColors = 100162, (no longer synced)
   kPerformanceTracingEnabled = 100163,
   kPluginsAlwaysOpenPdfExternally = 100164,
-  kPrivacySandboxApisEnabled = 100165,
+  // kPrivacySandboxApisEnabled = 100165, (deprecated)
   kPrivacySandboxRelatedWebsiteSetsEnabled = 100166,
   // kPrivacySandboxManuallyControlled = 100167, (deprecated)
   kPromptForDownload = 100168,
   kProtectedContentDefault = 100169,
   kRestoreOnStartup = 100170,
   kSearchSuggestEnabled = 100171,
-  kSharingVapidKey = 100172,
+  // kSharingVapidKey = 100172, (moved to components)
   kURLsToRestoreOnStartup = 100173,
   kSpellCheckEnable = 100174,
   kProfileContentSettingsExceptionsAntiAbuse = 100175,
@@ -302,7 +304,7 @@ enum {
   kReadAloudSpeed = 100243,
   kReadAloudHighlightingEnabled = 100244,
   kHttpsFirstModeIncognito = 100245,
-  kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246,
+  // kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246, (deprecated)
   kApplicationLocale = 100247,
   kListenToThisPageEnabled = 100248,
   kIpProtectionEnabled = 100249,
@@ -318,7 +320,7 @@ enum {
   kProfileContentSettingsPartitionedExceptionsMouselock = 100258,
   kProfileContentSettingsPartitionedExceptionsPopups = 100259,
   kProfileContentSettingsPartitionedExceptionsWindowPlacement = 100260,
-  kStandaloneWindowMigrationNudgeShown = 100261,
+  // kStandaloneWindowMigrationNudgeShown = 100261, (deprecated)
   kTabDiscardingExceptionsWithTime = 100262,
   kAccessibilityFaceGazeCursorSpeedUp = 100263,
   kAccessibilityFaceGazeCursorSpeedDown = 100264,
@@ -326,6 +328,42 @@ enum {
   kAccessibilityFaceGazeCursorSpeedRight = 100266,
   kAccessibilityFaceGazeCursorSmoothing = 100267,
   kAccessibilityFaceGazeCursorUseAcceleration = 100268,
+  kFingerprintingProtectionEnabled = 100269,
+  kAccessibilityFaceGazeGesturesToMacros = 100270,
+  kAccessibilityFaceGazeGesturesToConfidence = 100271,
+  kShelfContainerAppPinRolls = 100272,
+  kProfileContentSettingsExceptionsTrackingProtection = 100273,
+  kProfileContentSettingsPartitionedExceptionsTrackingProtection = 100274,
+  kProfileDefaultContentSettingValuesTrackingProtection = 100275,
+  kShowForwardButton = 100276,
+  kAccessibilityMagnifierFollowsSts = 100277,
+  kAccessibilityReadAnythingLanguagesEnabled = 100278,
+  kKeyboardDefaultSplitModifierSettings = 100279,
+  kDisplayAmbientLightSensorLastEnabled = 100280,
+  kAccessibilityMainNodeAnnotationsEnabled = 100281,
+  kSyncableVersionedWallpaperInfo = 100282,
+  kFocusModeSelectedTask = 100283,
+  kFocusModeSoundSection = 100284,
+  kAccessibilityFaceGazeActionsEnabled = 100285,
+  kAccessibilityFaceGazeCursorControlEnabled = 100286,
+  kAccessibilityFaceGazeAdjustSpeedSeparately = 100287,
+  kKeyboardAmbientLightSensorLastEnabled = 100288,
+  kAccessibilityReadAnythingImagesEnabled = 100289,
+  kShelfMallAppPinRolls = 100290,
+  kDesktopToiOSAddressPromoLastImpressionTimestamp = 100291,
+  kDesktopToiOSAddressPromoImpressionsCounter = 100292,
+  kDesktopToiOSAddressPromoOptOut = 100293,
+  kMahiNudgeShownCount = 100294,
+  kAccessibilityMagnifierFollowsChromeVox = 100295,
+  kKeyboardHasSplitModifierKeyboard = 100296,
+  kHttpsFirstBalancedMode = 100297,
+  kAccessibilityFlashNotificationsEnabled = 100298,
+  kAccessibilityFlashNotificationsColor = 100299,
+  kPinnedChromeLabsMigrationComplete = 100300,
+  kAccessibilityFaceGazeGesturesToKeyCombos = 100301,
+  kFocusModeYTMDisplayOAuthConsent = 100302,
+  kFocusModeYTMDisplayFreeTrial = 100303,
+  kAccessibilityFaceGazeVelocityThreshold = 100304,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -333,11 +371,12 @@ enum {
   // guidance and escalation path in case anything is unclear.
   // ^^^^^ IMPORTANT! ^^^^^
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:ChromeSyncablePref)
 }  // namespace syncable_prefs_ids
 
 // Non-iOS specific list of syncable preferences.
 constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
-    base::StringPiece,
+    std::string_view,
     sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
@@ -417,12 +456,16 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityReadAnythingHighlightColor,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
-     {syncable_prefs_ids::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingLinksEnabled,
      {syncable_prefs_ids::kAccessibilityReadAnythingLinksEnabled,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityReadAnythingImagesEnabled,
+     {syncable_prefs_ids::kAccessibilityReadAnythingImagesEnabled,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityReadAnythingLanguagesEnabled,
+     {syncable_prefs_ids::kAccessibilityReadAnythingLanguagesEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kLensRegionSearchEnabled,
@@ -441,7 +484,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kHomePageIsNewTabPage, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kNtpCustomBackgroundDict,
+    {prefs::kNtpCustomBackgroundDictDoNotUse,
      {syncable_prefs_ids::kNtpCustomBackgroundDict, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -473,6 +516,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kShowHomeButton, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShowForwardButton,
+     {syncable_prefs_ids::kShowForwardButton, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
     {prefs::kSidePanelCompanionEntryPinnedToToolbar,
      {syncable_prefs_ids::kSidePanelCompanionEntryPinnedToToolbar,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
@@ -485,25 +532,23 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kPinnedSearchCompanionMigrationComplete,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinnedChromeLabsMigrationComplete,
+     {syncable_prefs_ids::kPinnedChromeLabsMigrationComplete,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     {extensions::pref_names::kPinnedExtensions,
      {syncable_prefs_ids::kPinnedExtensions, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     {prefs::kSupervisedUserApprovedExtensions,
      {syncable_prefs_ids::kSupervisedUserApprovedExtensions,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_WIN)
-    {prefs::kIsDefaultPageColorsOnHighContrast,
-     {syncable_prefs_ids::kIsDefaultPageColorsOnHighContrast,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)
     {prefs::kShowFullscreenToolbar,
      {syncable_prefs_ids::kShowFullscreenToolbar, syncer::PREFERENCES,
@@ -568,12 +613,16 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityFloatingMenuPosition,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
-     {syncable_prefs_ids::kAccessibilityScreenMagnifierCenterFocus,
-      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
      {syncable_prefs_ids::kAccessibilityScreenMagnifierFocusFollowingEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityMagnifierFollowsChromeVox,
+     {syncable_prefs_ids::kAccessibilityMagnifierFollowsChromeVox,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityMagnifierFollowsSts,
+     {syncable_prefs_ids::kAccessibilityMagnifierFollowsSts,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
@@ -694,6 +743,22 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kFocusModeSessionDuration,
      {syncable_prefs_ids::kFocusModeSessionDuration, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeSelectedTask,
+     {syncable_prefs_ids::kFocusModeSelectedTask, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeSoundSection,
+     {syncable_prefs_ids::kFocusModeSoundSection, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeYTMDisplayOAuthConsent,
+     {syncable_prefs_ids::kFocusModeYTMDisplayOAuthConsent,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kFocusModeYTMDisplayFreeTrial,
+     {syncable_prefs_ids::kFocusModeYTMDisplayFreeTrial, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kKeyboardDefaultChromeOSSettings,
@@ -1053,7 +1118,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     // This is not exposed in a header.
-    // TODO(crbug.com/1420978): Declare this in the corresponding header.
+    // TODO(crbug.com/40896017): Declare this in the corresponding header.
     {"user_image_info",
      {syncable_prefs_ids::kUserImageInfo, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -1069,10 +1134,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {language::prefs::kApplicationLocale,
      {syncable_prefs_ids::kApplicationLocale, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kStandaloneWindowMigrationNudgeShown,
-     {syncable_prefs_ids::kStandaloneWindowMigrationNudgeShown,
-      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
      {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedUp,
@@ -1098,6 +1159,74 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityFaceGazeCursorUseAcceleration,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToKeyCombos,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToMacros,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToConfidence,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToConfidence,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
+    {ash::prefs::kAccessibilityFaceGazeActionsEnabled,
+     {syncable_prefs_ids::kAccessibilityFaceGazeActionsEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorControlEnabled,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorControlEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
+     {syncable_prefs_ids::kAccessibilityFaceGazeAdjustSpeedSeparately,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeVelocityThreshold,
+     {syncable_prefs_ids::kAccessibilityFaceGazeVelocityThreshold,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsEnabled,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsColor,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsColor,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShelfContainerAppPinRolls,
+     {syncable_prefs_ids::kShelfContainerAppPinRolls, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {ash::prefs::kKeyboardDefaultSplitModifierSettings,
+     {syncable_prefs_ids::kKeyboardDefaultSplitModifierSettings,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kDisplayAmbientLightSensorLastEnabled,
+     {syncable_prefs_ids::kDisplayAmbientLightSensorLastEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kKeyboardAmbientLightSensorLastEnabled,
+     {syncable_prefs_ids::kKeyboardAmbientLightSensorLastEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kSyncableVersionedWallpaperInfo,
+     {syncable_prefs_ids::kSyncableVersionedWallpaperInfo,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kShelfMallAppPinRolls,
+     {syncable_prefs_ids::kShelfMallAppPinRolls, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {ash::prefs::kMahiNudgeShownCount,
+     {syncable_prefs_ids::kMahiNudgeShownCount, syncer::OS_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kKeyboardHasSplitModifierKeyboard,
+     {syncable_prefs_ids::kKeyboardHasSplitModifierKeyboard,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
      {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
@@ -1115,19 +1244,15 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityImageLabelsOptInAccepted,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAccessibilityPdfOcrAlwaysActive,
-     {syncable_prefs_ids::kAccessibilityPdfOcrAlwaysActive, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-     {syncable_prefs_ids::kApplyPageColorsOnlyOnIncreasedContrast,
+    {prefs::kAccessibilityMainNodeAnnotationsEnabled,
+     {syncable_prefs_ids::kAccessibilityMainNodeAnnotationsEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBrowserColorScheme,
+    {prefs::kBrowserColorSchemeDoNotUse,
      {syncable_prefs_ids::kBrowserColorScheme, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kBrowserColorVariant,
+    {prefs::kBrowserColorVariantDoNotUse,
      {syncable_prefs_ids::kBrowserColorVariant, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1155,7 +1280,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kExtensionsUIDeveloperMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kGrayscaleThemeEnabled,
+    {prefs::kGrayscaleThemeEnabledDoNotUse,
      {syncable_prefs_ids::kGrayscaleThemeEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1183,20 +1308,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kNetworkQualities, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kPageColors,
-     {syncable_prefs_ids::kPageColors, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
     {prefs::kPerformanceTracingEnabled,
      {syncable_prefs_ids::kPerformanceTracingEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPluginsAlwaysOpenPdfExternally,
      {syncable_prefs_ids::kPluginsAlwaysOpenPdfExternally, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kPrivacySandboxApisEnabled,
-     {syncable_prefs_ids::kPrivacySandboxApisEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
@@ -1219,15 +1336,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kSharingVapidKey,
-     {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
     {prefs::kURLsToRestoreOnStartup,
      {syncable_prefs_ids::kURLsToRestoreOnStartup, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-    {prefs::kUserColor,
+    {prefs::kUserColorDoNotUse,
      {syncable_prefs_ids::kUserColor, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1286,6 +1399,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableDict}},
+    {"profile.content_settings.exceptions.tracking_protection",
+     {syncable_prefs_ids::kProfileContentSettingsExceptionsTrackingProtection,
+      syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.content_settings.exceptions.window_placement",
      {syncable_prefs_ids::kProfileContentSettingsExceptionsWindowPlacement,
       syncer::PREFERENCES,
@@ -1341,6 +1459,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableDict}},
+    {"profile.content_settings.partitioned_exceptions.tracking_protection",
+     {syncable_prefs_ids::
+          kProfileContentSettingsPartitionedExceptionsTrackingProtection,
+      syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.content_settings.partitioned_exceptions.window_placement",
      {syncable_prefs_ids::
           kProfileContentSettingsPartitionedExceptionsWindowPlacement,
@@ -1385,13 +1509,17 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kProfileDefaultContentSettingValuesPopups,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {"profile.default_content_setting_values.tracking_protection",
+     {syncable_prefs_ids::kProfileDefaultContentSettingValuesTrackingProtection,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
     {"profile.default_content_setting_values.window_placement",
      {syncable_prefs_ids::kProfileDefaultContentSettingValuesWindowPlacement,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif
     // This is not exposed in a header.
-    // TODO(crbug.com/1420978): Declare this in the corresponding header.
+    // TODO(crbug.com/40896017): Declare this in the corresponding header.
     {"webauthn.cablev2_pairings",
      {syncable_prefs_ids::kWebauthnCablev2Pairings, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
@@ -1420,8 +1548,28 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kIpProtectionEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
+    {prefs::kFingerprintingProtectionEnabled,
+     {syncable_prefs_ids::kFingerprintingProtectionEnabled, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,
      {syncable_prefs_ids::kHttpsFirstModeIncognito, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoLastImpressionTimestamp,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoImpressionsCounter,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {promos_prefs::kDesktopToiOSAddressPromoOptOut,
+     {syncable_prefs_ids::kDesktopToiOSAddressPromoOptOut, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kHttpsFirstBalancedMode,
+     {syncable_prefs_ids::kHttpsFirstBalancedMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 });
@@ -1430,8 +1578,8 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
 
 std::optional<sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
-    const std::string& pref_name) const {
-  const auto* it = kChromeSyncablePrefsAllowlist.find(pref_name);
+    std::string_view pref_name) const {
+  const auto it = kChromeSyncablePrefsAllowlist.find(pref_name);
   if (it != kChromeSyncablePrefsAllowlist.end()) {
     DCHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name)
                 .has_value());
@@ -1441,9 +1589,9 @@ ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
   return common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name);
 }
 
-std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
-  std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+  std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
   base::ranges::copy(kChromeSyncablePrefsAllowlist,
                      std::inserter(syncable_prefs, syncable_prefs.end()));

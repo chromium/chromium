@@ -179,10 +179,8 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
       FindTermMatches(input_.text(), text), text.length(),
       ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
-  match.contents = l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-          ? IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT
-          : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT);
+  match.contents =
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   match.contents_class = {{0, ACMatchClassification::DIM}};
 
   CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),

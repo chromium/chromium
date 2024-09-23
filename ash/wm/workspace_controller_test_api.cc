@@ -22,7 +22,7 @@ WorkspaceEventHandler* WorkspaceControllerTestApi::GetEventHandler() {
 }
 
 aura::Window* WorkspaceControllerTestApi::GetBackdropWindow() {
-  return controller_->layout_manager_->backdrop_controller_->backdrop_window_;
+  return controller_->layout_manager()->backdrop_controller_->backdrop_window_;
 }
 
 }  // namespace ash

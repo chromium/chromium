@@ -96,6 +96,9 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
   bool IsValidObject(const base::Value::Dict& object) override;
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   static bool IsValidDict(const base::Value::Dict& dict);
 

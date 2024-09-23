@@ -22,7 +22,7 @@
 #import "components/version_ui/version_handler_helper.h"
 #import "components/version_ui/version_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/version_handler.h"
 #import "ios/chrome/common/channel_info.h"
@@ -127,7 +127,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 VersionUI::VersionUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateVersionUIDataSource());
 }
 

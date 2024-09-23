@@ -8,9 +8,9 @@
 #include <tuple>
 
 #include "base/hash/hash.h"
+#include "base/location.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -54,14 +55,9 @@ static const char* kValidPassphrase = "passphrase!";
 
 class TwoClientPasswordsSyncTest : public SyncTest {
  public:
-  TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
+  TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {}
 
   ~TwoClientPasswordsSyncTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class TwoClientPasswordsSyncTestWithVerifier
@@ -71,7 +67,7 @@ class TwoClientPasswordsSyncTestWithVerifier
   ~TwoClientPasswordsSyncTestWithVerifier() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137740): rewrite tests to not use verifier.
+    // TODO(crbug.com/40152785): rewrite tests to not use verifier.
     return true;
   }
 };
@@ -98,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   for (int i = 0; i < num_clients(); i++) {
     ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
     ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
-    // The user hasn't opted in, so PASSWORDS is not active yet.
-    ASSERT_FALSE(GetSyncService(i)->GetActiveDataTypes().Has(
-        syncer::ModelType::PASSWORDS));
     ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
 
-    // Opt in. PASSWORDS should become active.
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(i)->GetPrefs(), GetSyncService(i));
+    // The PASSWORDS are active only if the signin was explicit.
+    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      // Opt in. PASSWORDS should become active.
+      password_manager::features_util::OptInToAccountStorage(
+          GetProfile(i)->GetPrefs(), GetSyncService(i));
+    }
     PasswordSyncActiveChecker(GetSyncService(i)).Wait();
   }
 
@@ -282,8 +278,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Delete) {
   // Wait for client 0 to commit and client 1 to receive the update.
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
 
-  GetProfilePasswordStoreInterface(1)->RemoveLogin(form0);
-  GetVerifierProfilePasswordStoreInterface()->RemoveLogin(form0);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(FROM_HERE, form0);
+  GetVerifierProfilePasswordStoreInterface()->RemoveLogin(FROM_HERE, form0);
   ASSERT_EQ(1, GetVerifierPasswordCount());
 
   // Wait for deletion from client 1 to propagate.
@@ -341,13 +337,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(init_password_count, GetPasswordCount(1));
 
-  GetProfilePasswordStoreInterface(1)->RemoveLogin(form0);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(FROM_HERE, form0);
 
   // Wait for deletion from client 1 to propagate.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(init_password_count - 1, GetPasswordCount(0));
 
-  GetProfilePasswordStoreInterface(1)->RemoveLogin(form1);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(FROM_HERE, form1);
 
   // Wait for deletion from client 1 to propagate.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
@@ -439,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   // (crbug.com/1046309) where the USS client was local deletions when receiving
   // remote deletions.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PASSWORD",
-                   syncer::ModelTypeEntityChange::kLocalDeletion));
+                   "Sync.DataTypeEntityChange.PASSWORD",
+                   syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -478,9 +474,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
-              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
+              UnorderedElementsAre(
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
+              UnorderedElementsAre(
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -504,8 +504,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(1)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
@@ -532,7 +533,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
+              UnorderedElementsAre(
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
 
   // Remove security issues on Client 1.
   form0.password_issues.clear();
@@ -541,7 +544,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
+              UnorderedElementsAre(
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form0)),
+                  Pointee(password_manager::HasPrimaryKeyAndEquals(form1))));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -568,8 +573,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(1)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 }
 
 // Regression test for crbug.com/1346576.
@@ -588,8 +594,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Remove the password from both clients to simulate a conflict with matching
   // remote and local deletion after Client 1 comes back online.
-  GetProfilePasswordStoreInterface(0)->RemoveLogin(form);
-  GetProfilePasswordStoreInterface(1)->RemoveLogin(form);
+  GetProfilePasswordStoreInterface(0)->RemoveLogin(FROM_HERE, form);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(FROM_HERE, form);
 
   // Simulate going online again.
   fake_server::FakeServerHttpPostProvider::EnableNetwork();
@@ -615,8 +621,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(1)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 
   // Update the note in Client 1.
   form.notes[0].value = u"78910";
@@ -624,8 +631,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(0)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 
   // Remove all notes on Client 0.
   form.notes.clear();
@@ -633,8 +641,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(1)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 }
 
 // This tests the  logic for reading and writing the notes backup blob when
@@ -650,8 +659,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(1)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 
   // Update the password in Client 1.
   form.password_value = u"new_password";
@@ -659,6 +669,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
-              ElementsAre(Pointee(form)));
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(0)),
+      ElementsAre(Pointee(password_manager::HasPrimaryKeyAndEquals(form))));
 }

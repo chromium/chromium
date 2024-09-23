@@ -25,6 +25,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -33,25 +34,21 @@ namespace blink {
 
 class StylePropertyShorthand {
  public:
-  constexpr StylePropertyShorthand()
-      : properties_(nullptr),
-        length_(0),
-        shorthand_id_(CSSPropertyID::kInvalid) {}
+  using Properties = base::span<const CSSProperty* const>;
 
-  constexpr StylePropertyShorthand(CSSPropertyID id,
-                                   const CSSProperty** properties,
-                                   unsigned num_properties)
-      : properties_(properties),
-        length_(num_properties),
-        shorthand_id_(id) {}
+  constexpr StylePropertyShorthand() : shorthand_id_(CSSPropertyID::kInvalid) {}
 
-  const CSSProperty** properties() const { return properties_; }
-  unsigned length() const { return length_; }
+  constexpr StylePropertyShorthand(CSSPropertyID id, Properties properties)
+      : properties_(properties), shorthand_id_(id) {
+    DCHECK_LE(properties.size(), std::numeric_limits<unsigned>::max());
+  }
+
+  const Properties& properties() const { return properties_; }
+  unsigned length() const { return static_cast<unsigned>(properties_.size()); }
   CSSPropertyID id() const { return shorthand_id_; }
 
  private:
-  const CSSProperty** properties_;
-  unsigned length_;
+  Properties properties_;
   CSSPropertyID shorthand_id_;
 };
 

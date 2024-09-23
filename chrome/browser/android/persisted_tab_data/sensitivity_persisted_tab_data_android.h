@@ -9,18 +9,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 
 // Client of PersistedTabDataAndroid
 class SensitivityPersistedTabDataAndroid
     : public PersistedTabDataAndroid,
-      public optimization_guide::PageContentAnnotationsService::
+      public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver {
  public:
   explicit SensitivityPersistedTabDataAndroid(TabAndroid* tab_android);
 
-  void RegisterPCAService(optimization_guide::PageContentAnnotationsService*
-                              page_content_annotations_service);
+  void RegisterPCAService(
+      page_content_annotations::PageContentAnnotationsService*
+          page_content_annotations_service);
   ~SensitivityPersistedTabDataAndroid() override;
 
   // Used to acquire SensitivityPersistedTabDataAndroid for a given TabAndroid
@@ -34,10 +35,11 @@ class SensitivityPersistedTabDataAndroid
 
   bool is_sensitive() { return is_sensitive_; }
 
-  // optimization_guide::PageContentAnnotationsService::PageContentAnnotationsObserver
+  // page_content_annotations::PageContentAnnotationsService::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
       const GURL& url,
-      const optimization_guide::PageContentAnnotationsResult& result) override;
+      const page_content_annotations::PageContentAnnotationsResult& result)
+      override;
 
  protected:
   std::unique_ptr<const std::vector<uint8_t>> Serialize() override;
@@ -46,12 +48,12 @@ class SensitivityPersistedTabDataAndroid
  private:
   friend class TabAndroidUserData<SensitivityPersistedTabDataAndroid>;
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
-  // TODO(crbug.com/1457995) Consider making is_sensitive_ absl::option<bool>
+  // TODO(crbug.com/40273829) Consider making is_sensitive_ absl::option<bool>
   bool is_sensitive_ = false;
   raw_ptr<TabAndroid> tab_;
 
   // Not owned. Register manually through RegisterPCAService
-  raw_ptr<optimization_guide::PageContentAnnotationsService>
+  raw_ptr<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_ = nullptr;
 
   // Determine if SensitivityPersistedTabDataAndroid exists for |tab_android|.

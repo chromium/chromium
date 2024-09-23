@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/search_engines/template_url_data_util.h"
 
 #include <string>
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/search_engines/default_search_manager.h"
@@ -20,10 +24,10 @@
 
 namespace {
 
-// Converts the C-style string `str` to a base::StringPiece making sure to avoid
+// Converts the C-style string `str` to a std::string_view making sure to avoid
 // dereferencing nullptrs.
-base::StringPiece ToStringPiece(const char* str) {
-  return str ? base::StringPiece(str) : base::StringPiece();
+std::string_view ToStringView(const char* str) {
+  return str ? std::string_view(str) : std::string_view();
 }
 
 std::u16string_view ToU16StringView(const char16_t* str) {
@@ -345,25 +349,25 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 
   return std::make_unique<TemplateURLData>(
       ToU16StringView(engine.name), ToU16StringView(engine.keyword),
-      ToStringPiece(engine.search_url), ToStringPiece(engine.suggest_url),
-      ToStringPiece(engine.image_url),
-      ToStringPiece(engine.image_translate_url),
-      ToStringPiece(engine.new_tab_url),
-      ToStringPiece(engine.contextual_search_url),
-      ToStringPiece(engine.logo_url), ToStringPiece(engine.doodle_url),
-      ToStringPiece(engine.search_url_post_params),
-      ToStringPiece(engine.suggest_url_post_params),
-      ToStringPiece(engine.image_url_post_params),
-      ToStringPiece(engine.side_search_param),
-      ToStringPiece(engine.side_image_search_param),
-      ToStringPiece(engine.image_translate_source_language_param_key),
-      ToStringPiece(engine.image_translate_target_language_param_key),
-      std::move(search_intent_params), ToStringPiece(engine.favicon_url),
-      ToStringPiece(engine.encoding), image_search_branding_label,
+      ToStringView(engine.search_url), ToStringView(engine.suggest_url),
+      ToStringView(engine.image_url), ToStringView(engine.image_translate_url),
+      ToStringView(engine.new_tab_url),
+      ToStringView(engine.contextual_search_url), ToStringView(engine.logo_url),
+      ToStringView(engine.doodle_url),
+      ToStringView(engine.search_url_post_params),
+      ToStringView(engine.suggest_url_post_params),
+      ToStringView(engine.image_url_post_params),
+      ToStringView(engine.side_search_param),
+      ToStringView(engine.side_image_search_param),
+      ToStringView(engine.image_translate_source_language_param_key),
+      ToStringView(engine.image_translate_target_language_param_key),
+      std::move(search_intent_params), ToStringView(engine.favicon_url),
+      ToStringView(engine.encoding), image_search_branding_label,
       alternate_urls,
-      ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED",
-      ToStringPiece(engine.prefetch_likely_navigations) == "ALLOWED",
-      engine.id);
+      ToStringView(engine.preconnect_to_search_url) == "ALLOWED",
+      ToStringView(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
+      base::span<const TemplateURLData::RegulatoryExtension>(
+          engine.regulatory_extensions, engine.regulatory_extensions_size));
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
@@ -518,7 +522,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         std::move(search_intent_params), favicon_url, encoding,
         image_search_branding_label, *alternate_urls,
         preconnect_to_search_url.compare("ALLOWED") == 0,
-        prefetch_likely_navigations.compare("ALLOWED") == 0, *id);
+        prefetch_likely_navigations.compare("ALLOWED") == 0, *id,
+        base::span<const TemplateURLData::RegulatoryExtension>());
   }
   return nullptr;
 }
@@ -529,7 +534,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
   turl->SetShortName(l10n_util::GetStringUTF16(engine.name_message_id));
   turl->SetKeyword(u"@" + l10n_util::GetStringUTF16(engine.keyword_message_id));
   turl->SetURL(engine.search_url);
-  turl->favicon_url = GURL(ToStringPiece(engine.favicon_url));
+  turl->favicon_url = GURL(ToStringView(engine.favicon_url));
   turl->starter_pack_id = engine.id;
   turl->GenerateSyncGUID();
   turl->safe_for_autoreplace = true;

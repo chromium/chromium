@@ -8,15 +8,19 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
-#include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
 #include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "system_profile.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/android/metrics/jni_headers/AppUpdateInfoUtils_jni.h"
+#include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
 
 namespace {
 
@@ -37,6 +41,10 @@ void EmitMultipleUserProfilesHistogram() {
           chrome::android::GetMultipleUserProfilesState();
   base::UmaHistogramEnumeration("Android.MultipleUserProfilesState",
                                 multiple_user_profiles_state);
+}
+
+void GetAppUpdateData() {
+  Java_AppUpdateInfoUtils_emitToHistogram(jni_zero::AttachCurrentThread());
 }
 
 metrics::SystemProfileProto::OS::DarkModeState ToProtoDarkModeState(
@@ -71,6 +79,9 @@ void ChromeAndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   const auto type = chrome::android::GetActivityType();
+
+  // Determine and emit to histogram if AppUpdate is available.
+  base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(&GetAppUpdateData));
 
   // All records should be created with an activity type, even if no activity
   // type has yet been declared. If an activity type is declared before the UMA

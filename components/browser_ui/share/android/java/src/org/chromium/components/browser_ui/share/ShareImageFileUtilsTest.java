@@ -35,8 +35,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -114,7 +114,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
         MockitoAnnotations.openMocks(this);
         Looper.prepare();
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
         ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
         clipboard.setImageFileProvider(new ClipboardImageFileProvider());
 

@@ -74,7 +74,8 @@ NSHTTPCookieAcceptPolicy NSHTTPSystemCookieStore::GetCookieAcceptPolicy() {
 #pragma mark private methods
 
 NSArray* NSHTTPSystemCookieStore::GetCookiesForURL(const GURL& url) {
-  NSArray* cookies = [cookie_store_ cookiesForURL:NSURLWithGURL(url)];
+  NSArray<NSHTTPCookie*>* cookies =
+      [cookie_store_ cookiesForURL:NSURLWithGURL(url)];
   // Sort cookies by decreasing path length, then creation time, as per
   // RFC6265.
   return [cookies sortedArrayUsingFunction:CompareCookies
@@ -82,7 +83,7 @@ NSArray* NSHTTPSystemCookieStore::GetCookiesForURL(const GURL& url) {
 }
 
 NSArray* NSHTTPSystemCookieStore::GetAllCookies() {
-  NSArray* cookies = cookie_store_.cookies;
+  NSArray<NSHTTPCookie*>* cookies = cookie_store_.cookies;
   return [cookies sortedArrayUsingFunction:CompareCookies
                                    context:creation_time_manager_.get()];
 }

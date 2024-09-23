@@ -55,7 +55,7 @@ const char* StreamTypeToString(MediaStreamSource::StreamType type) {
     case MediaStreamSource::kTypeVideo:
       return "Video";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "Invalid";
 }
@@ -69,7 +69,7 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
     case MediaStreamSource::kReadyStateEnded:
       return "Ended";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "Invalid";
 }
@@ -316,6 +316,7 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
                "MediaStreamSource::ConsumeAudio");
 
   DCHECK(requires_consumer_);
+
   base::AutoLock locker(audio_consumer_lock_);
   if (!audio_consumer_)
     return;

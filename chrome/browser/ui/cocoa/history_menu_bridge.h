@@ -191,14 +191,14 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Adds an item for the window entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddWindowEntryToMenu(sessions::TabRestoreService::Window* window,
+  bool AddWindowEntryToMenu(sessions::tab_restore::Window* window,
                             NSMenu* menu,
                             NSInteger tag,
                             NSInteger index);
 
   // Adds an item for the group entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+  bool AddGroupEntryToMenu(sessions::tab_restore::Group* group,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index);
@@ -209,8 +209,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   int AddTabsToSubmenu(
       NSMenu* submenu,
       HistoryItem* item,
-      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-          tabs);
+      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs);
 
   // Called by the ctor if |service_| is ready at the time, or by a
   // notification receiver. Finishes initialization tasks by subscribing for
@@ -229,7 +228,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Creates a HistoryItem* for the given tab entry.
   std::unique_ptr<HistoryItem> HistoryItemForTab(
-      const sessions::TabRestoreService::Tab& entry);
+      const sessions::tab_restore::Tab& entry);
 
   // Helper function that sends an async request to the FaviconService to get
   // an icon. The callback will update the NSMenuItem directly.
@@ -251,14 +250,16 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   friend class ::HistoryMenuBridgeLifetimeTest;
   friend class HistoryMenuCocoaControllerTest;
 
+  void FinishCreateMenu();
+
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
                     const history::URLRow& url_row,
                     const history::VisitRow& new_visit) override;
   void OnURLsModified(history::HistoryService* history_service,
                       const history::URLRows& changed_urls) override;
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
   void OnHistoryServiceLoaded(history::HistoryService* service) override;
   void HistoryServiceBeingDeleted(history::HistoryService* service) override;
 
@@ -282,6 +283,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   std::unique_ptr<ScopedProfileKeepAlive> tab_restore_service_keep_alive_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // A timer used to coalesce repeated calls to CreateMenu().
+  base::OneShotTimer finish_create_menu_timer_;
 
   // Mapping of NSMenuItems to HistoryItems.
   std::map<NSMenuItem*, std::unique_ptr<HistoryItem>> menu_item_map_;

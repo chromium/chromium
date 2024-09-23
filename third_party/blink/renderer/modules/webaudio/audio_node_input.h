@@ -85,7 +85,7 @@ class MODULES_EXPORT AudioNodeInput final : public AudioSummingJunction {
  private:
   // This reference is safe because the AudioHandler owns this AudioNodeInput
   // object.
-  const raw_ref<AudioHandler, ExperimentalRenderer> handler_;
+  const raw_ref<AudioHandler> handler_;
 
   // m_disabledOutputs contains the AudioNodeOutputs which are disabled (will
   // not be processed) by the audio graph rendering.  But, from JavaScript's

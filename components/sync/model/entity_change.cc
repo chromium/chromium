@@ -33,6 +33,15 @@ std::unique_ptr<EntityChange> EntityChange::CreateDelete(
       new EntityChange(storage_key, ACTION_DELETE, EntityData()));
 }
 
+// static
+std::unique_ptr<EntityChange>
+EntityChange::CreateDeletedCollaborationMembership(
+    const std::string& storage_key) {
+  std::unique_ptr<EntityChange> entity_change = CreateDelete(storage_key);
+  entity_change->is_deleted_collaboration_membership_ = true;
+  return entity_change;
+}
+
 EntityChange::EntityChange(const std::string& storage_key,
                            ChangeType type,
                            EntityData data)

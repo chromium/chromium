@@ -1,0 +1,99 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ash") {
+  sources = [
+    "chrome_user_logs_data_collector.cc",
+    "chrome_user_logs_data_collector.h",
+    "network_health_data_collector.cc",
+    "network_health_data_collector.h",
+    "network_routes_data_collector.cc",
+    "network_routes_data_collector.h",
+    "shill_data_collector.cc",
+    "shill_data_collector.h",
+    "system_logs_data_collector.cc",
+    "system_logs_data_collector.h",
+    "system_state_data_collector.cc",
+    "system_state_data_collector.h",
+    "ui_hierarchy_data_collector.cc",
+    "ui_hierarchy_data_collector.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_logs",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//components/feedback",
+    "//components/user_manager",
+    "//dbus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chrome_user_logs_data_collector_unittest.cc",
+    "network_health_data_collector_unittest.cc",
+    "network_routes_data_collector_unittest.cc",
+    "shill_data_collector_unittest.cc",
+    "system_logs_data_collector_unittest.cc",
+    "system_state_data_collector_unittest.cc",
+    "ui_hierarchy_data_collector_unittest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_logs",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "ui_hierarchy_data_collector_browsertest.cc" ]
+
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/feedback/redaction_tool",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -83,9 +83,11 @@ interface PageHandler {
   // its state once the request is fulfilled by the browser.
   ToggleVisibility(bool visible) => (bool visible);
 
-  // Queries for clusters matching `query`. If true, `recluster` forces
+  // Queries for clusters matching `query`. `begin_time` is an optional
+  // param to narrow results to a time window. If true, `recluster` forces
   // reclustering as if `persist_clusters_in_history_db` were false.
-  StartQueryClusters(string query, bool recluster);
+  StartQueryClusters(string query, mojo_base.mojom.Time? begin_time,
+      bool recluster);
 
   // Asks the service for more clusters. Call this when the user has scrolled
   // to the bottom of the page. `query` is passed through for sanity checking.

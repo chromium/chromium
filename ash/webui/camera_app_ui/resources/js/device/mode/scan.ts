@@ -61,6 +61,10 @@ class DocumentPhotoHandler implements PhotoHandler {
   onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>): Promise<void> {
     return this.handler.onDocumentCaptureDone(pendingPhotoResult);
   }
+
+  shouldUsePreviewAsPhoto(): boolean {
+    return this.handler.shouldUsePreviewAsPhoto();
+  }
 }
 
 /**

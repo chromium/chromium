@@ -217,7 +217,6 @@ uint64_t PpapiCommandBufferProxy::GenerateFenceSyncRelease() {
 
 bool PpapiCommandBufferProxy::IsFenceSyncReleased(uint64_t release) {
   NOTREACHED();
-  return false;
 }
 
 void PpapiCommandBufferProxy::SignalSyncToken(const gpu::SyncToken& sync_token,
@@ -233,7 +232,6 @@ void PpapiCommandBufferProxy::WaitSyncToken(const gpu::SyncToken& sync_token) {
 bool PpapiCommandBufferProxy::CanWaitUnverifiedSyncToken(
     const gpu::SyncToken& sync_token) {
   NOTREACHED();
-  return false;
 }
 
 void PpapiCommandBufferProxy::SignalQuery(uint32_t query,

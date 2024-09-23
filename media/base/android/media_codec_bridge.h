@@ -14,6 +14,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
@@ -137,6 +138,12 @@ class MEDIA_EXPORT MediaCodecBridge {
       const uint8_t* data,
       size_t data_size,
       base::TimeDelta presentation_time) = 0;
+
+  // Submits a byte array to the given input buffer, using LinearBlock.
+  virtual MediaCodecResult QueueInputBlock(int index,
+                                           base::span<const uint8_t> data,
+                                           base::TimeDelta presentation_time,
+                                           bool is_eos) = 0;
 
   // As above but for encrypted buffers. NULL |subsamples| indicates the
   // whole buffer is encrypted.

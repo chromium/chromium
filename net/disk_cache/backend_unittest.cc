@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -29,7 +35,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -62,6 +67,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -72,12 +78,12 @@ using testing::Eq;
 using testing::Field;
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-
 #include <windows.h>
+
+#include "base/win/scoped_handle.h"
 #endif
 
-// TODO(crbug.com/949811): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
 #define MAYBE_BlockFileOpenOrCreateEntry DISABLED_BlockFileOpenOrCreateEntry
 #define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
@@ -123,8 +129,8 @@ std::unique_ptr<disk_cache::BackendImpl> CreateExistingEntryCache(
 #if BUILDFLAG(IS_FUCHSIA)
 // Load tests with large numbers of file descriptors perform poorly on
 // virtualized test execution environments.
-// TODO(807882): Remove this workaround when virtualized test performance
-// improves.
+// TODO(crbug.com/40560856): Remove this workaround when virtualized test
+// performance improves.
 const int kLargeNumEntries = 100;
 #else
 const int kLargeNumEntries = 512;
@@ -885,8 +891,7 @@ TEST_F(DiskCacheBackendTest, ExternalFiles) {
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   CacheTestFillBuffer(buffer1->data(), kSize, false);
   ASSERT_TRUE(base::WriteFile(
-      filename,
-      base::StringPiece(buffer1->data(), static_cast<size_t>(kSize))));
+      filename, std::string_view(buffer1->data(), static_cast<size_t>(kSize))));
 
   // Now let's create a file with the cache.
   disk_cache::Entry* entry;
@@ -1561,9 +1566,9 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry() {
   // This may be not thread-safe in general, but for now it's OK so add some
   // ThreadSanitizer annotations to ignore data races on cache_.
   // See http://crbug.com/55970
-  ANNOTATE_IGNORE_READS_BEGIN();
+  ABSL_ANNOTATE_IGNORE_READS_BEGIN();
   EXPECT_GE(1, cache_->GetEntryCount());
-  ANNOTATE_IGNORE_READS_END();
+  ABSL_ANNOTATE_IGNORE_READS_END();
 
   EXPECT_NE(net::OK, OpenEntry(first, &entry));
 }
@@ -1625,9 +1630,9 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry2() {
   FlushQueueForTest();
   // If it's not clear enough: we may still have eviction tasks running at this
   // time, so the number of entries is changing while we read it.
-  ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
+  ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
   EXPECT_GE(30, cache_->GetEntryCount());
-  ANNOTATE_IGNORE_READS_AND_WRITES_END();
+  ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_END();
 
   // For extra messiness, the integrity check for the cache can actually cause
   // evictions if it's over-capacity, which would race with above. So change the
@@ -4088,8 +4093,8 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOpenBadFile) {
 
   disk_cache::SimpleFileHeader header;
   header.initial_magic_number = UINT64_C(0xbadf00d);
-  EXPECT_TRUE(base::WriteFile(entry_file1_path,
-                              base::as_bytes(base::make_span(&header, 1u))));
+  EXPECT_TRUE(
+      base::WriteFile(entry_file1_path, base::byte_span_from_ref(header)));
   ASSERT_THAT(OpenEntry(key, &entry), IsError(net::ERR_FAILED));
 }
 

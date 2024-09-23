@@ -323,10 +323,13 @@ export class SettingsInternetKnownNetworksPageElement extends
   }
 
   private async setProperties_(config: ConfigProperties): Promise<void> {
-    recordSettingChange();
     const response =
         await this.networkConfig_.setProperties(this.selectedGuid_, config);
-    if (!response.success) {
+    if (response.success) {
+      recordSettingChange(
+          Setting.kPreferWifiNetwork,
+          {boolValue: config.priority?.value === 1});
+    } else {
       console.warn(
           'Unable to set properties for: ' + this.selectedGuid_ + ': ' +
           JSON.stringify(config));
@@ -350,18 +353,19 @@ export class SettingsInternetKnownNetworksPageElement extends
   }
 
   private async onForgetClick_(): Promise<void> {
-    if (this.networkType === NetworkType.kWiFi) {
-      recordSettingChange(Setting.kForgetWifiNetwork);
-    } else {
-      recordSettingChange();
-    }
-
     this.$.dotsMenu.close();
 
     const response =
         await this.networkConfig_.forgetNetwork(this.selectedGuid_);
     if (!response.success) {
       console.warn('Forget network failed for: ' + this.selectedGuid_);
+      return;
+    }
+
+    if (this.networkType === NetworkType.kWiFi) {
+      recordSettingChange(Setting.kForgetWifiNetwork);
+    } else {
+      // TODO(b/282233232) recordSettingChange() for other network types.
     }
   }
 

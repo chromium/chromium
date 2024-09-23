@@ -27,7 +27,7 @@ namespace {
 using AdditionalWindowingControlsActionCallback =
     base::OnceCallback<void(mojom::blink::PermissionStatus)>;
 
-bool IsPermissionGranted(ScriptPromiseResolver* resolver,
+bool IsPermissionGranted(ScriptPromiseResolver<IDLUndefined>* resolver,
                          mojom::blink::PermissionStatus status) {
   if (!resolver->GetScriptState()->ContextIsValid()) {
     return false;
@@ -69,9 +69,9 @@ bool CanUseWindowingControls(LocalDOMWindow* window,
 #endif
 }
 
-ScriptPromise MaybePromptWindowManagementPermission(
+ScriptPromise<IDLUndefined> MaybePromptWindowManagementPermission(
     LocalDOMWindow* window,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     AdditionalWindowingControlsActionCallback callback) {
   auto* permission_service =
       window->document()->GetPermissionService(window->GetExecutionContext());
@@ -96,7 +96,7 @@ ScriptPromise MaybePromptWindowManagementPermission(
 }
 
 void OnMaximizePermissionRequestComplete(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
     mojom::blink::PermissionStatus status) {
   if (!IsPermissionGranted(resolver, status)) {
@@ -114,7 +114,7 @@ void OnMaximizePermissionRequestComplete(
 }
 
 void OnMinimizePermissionRequestComplete(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
     mojom::blink::PermissionStatus status) {
   if (!IsPermissionGranted(resolver, status)) {
@@ -131,9 +131,10 @@ void OnMinimizePermissionRequestComplete(
   resolver->Resolve();
 }
 
-void OnRestorePermissionRequestComplete(ScriptPromiseResolver* resolver,
-                                        LocalDOMWindow* window,
-                                        mojom::blink::PermissionStatus status) {
+void OnRestorePermissionRequestComplete(
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    LocalDOMWindow* window,
+    mojom::blink::PermissionStatus status) {
   if (!IsPermissionGranted(resolver, status)) {
     return;
   }
@@ -149,7 +150,7 @@ void OnRestorePermissionRequestComplete(ScriptPromiseResolver* resolver,
 }
 
 void OnSetResizablePermissionRequestComplete(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
     bool resizable,
     mojom::blink::PermissionStatus status) {
@@ -171,15 +172,16 @@ void OnSetResizablePermissionRequestComplete(
 }  // namespace
 
 // static
-ScriptPromise AdditionalWindowingControls::maximize(
+ScriptPromise<IDLUndefined> AdditionalWindowingControls::maximize(
     ScriptState* script_state,
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
       WTF::BindOnce(&OnMaximizePermissionRequestComplete,
@@ -187,15 +189,16 @@ ScriptPromise AdditionalWindowingControls::maximize(
 }
 
 // static
-ScriptPromise AdditionalWindowingControls::minimize(
+ScriptPromise<IDLUndefined> AdditionalWindowingControls::minimize(
     ScriptState* script_state,
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
       WTF::BindOnce(&OnMinimizePermissionRequestComplete,
@@ -203,15 +206,16 @@ ScriptPromise AdditionalWindowingControls::minimize(
 }
 
 // static
-ScriptPromise AdditionalWindowingControls::restore(
+ScriptPromise<IDLUndefined> AdditionalWindowingControls::restore(
     ScriptState* script_state,
     LocalDOMWindow& window,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
       WTF::BindOnce(&OnRestorePermissionRequestComplete,
@@ -219,16 +223,17 @@ ScriptPromise AdditionalWindowingControls::restore(
 }
 
 // static
-ScriptPromise AdditionalWindowingControls::setResizable(
+ScriptPromise<IDLUndefined> AdditionalWindowingControls::setResizable(
     ScriptState* script_state,
     LocalDOMWindow& window,
     bool resizable,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   return MaybePromptWindowManagementPermission(
       &window, resolver,
       WTF::BindOnce(&OnSetResizablePermissionRequestComplete,

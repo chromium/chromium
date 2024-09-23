@@ -5,9 +5,7 @@
 package org.chromium.components.webapps;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -114,14 +112,14 @@ public class AppBannerManager {
      */
     @CalledByNative
     private void fetchAppDetails(
-            String url, String packageName, String referrer, int iconSizeInDp) {
+            int requestId, String url, String packageName, String referrer, int iconSizeInDp) {
         if (sAppDetailsDelegate == null) return;
 
         Context context = ContextUtils.getApplicationContext();
         int iconSizeInPx =
                 Math.round(context.getResources().getDisplayMetrics().density * iconSizeInDp);
         sAppDetailsDelegate.getAppDetailsAsynchronously(
-                createAppDetailsObserver(), url, packageName, referrer, iconSizeInPx);
+                createAppDetailsObserver(requestId), url, packageName, referrer, iconSizeInPx);
     }
 
     @CalledByNative
@@ -129,7 +127,7 @@ public class AppBannerManager {
         return PackageUtils.isPackageInstalled(packageName);
     }
 
-    private AppDetailsDelegate.Observer createAppDetailsObserver() {
+    private AppDetailsDelegate.Observer createAppDetailsObserver(int requestId) {
         return new AppDetailsDelegate.Observer() {
             /**
              * Called when data about the package has been retrieved, which includes the url for the
@@ -148,6 +146,7 @@ public class AppBannerManager {
                         .onAppDetailsRetrieved(
                                 mNativePointer,
                                 AppBannerManager.this,
+                                requestId,
                                 data,
                                 data.title(),
                                 data.packageName(),
@@ -156,18 +155,10 @@ public class AppBannerManager {
         };
     }
 
-    /** Returns the language option to use for the add to homescreen dialog and menu item. */
-    public static InstallStringPair getHomescreenLanguageOption(WebContents webContents) {
-        AppBannerManager manager =
-                webContents != null ? AppBannerManager.forWebContents(webContents) : null;
-        if (manager != null && manager.getIsPwa(webContents)) {
-            return PWA_PAIR;
-        } else {
-            return NON_PWA_PAIR;
-        }
-    }
-
-    /** Returns the language option to use for the add to homescreen dialog and menu item. */
+    /**
+     * Returns the manifest id if the current page is installable, otherwise returns the empty
+     * string.
+     */
     public static String maybeGetManifestId(WebContents webContents) {
         AppBannerManager manager =
                 webContents != null ? AppBannerManager.forWebContents(webContents) : null;
@@ -212,47 +203,31 @@ public class AppBannerManager {
         AppBannerManagerJni.get().setTotalEngagementToTrigger(engagement);
     }
 
+    /** Sets the install promo result from segmentation service for testing purpose. */
+    public static void setOverrideSegmentationResultForTesting(boolean show) {
+        AppBannerManagerJni.get().setOverrideSegmentationResultForTesting(show);
+    }
+
     /** Returns the AppBannerManager object. This is owned by the C++ banner manager. */
     public static AppBannerManager forWebContents(WebContents contents) {
         ThreadUtils.assertOnUiThread();
         return AppBannerManagerJni.get().getJavaBannerManagerForWebContents(contents);
     }
 
-    /**
-     * Checks whether the renderer has navigated to a PWA.
-     *
-     * @param contents The web contents to check.
-     * @return true if the site has been determined to contain a PWA.
-     */
-    public boolean getIsPwa(WebContents contents) {
-        return !TextUtils.equals("", AppBannerManagerJni.get().getInstallableWebAppName(contents));
-    }
-
     public String getManifestId(WebContents contents) {
         return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
-    }
-
-    public Pair<Bitmap, Boolean> getIcon(WebContents contents) {
-        return Pair.create(
-                AppBannerManagerJni.get().getInstallableWebAppIcon(contents),
-                AppBannerManagerJni.get().getInstallableWebAppIconHasMaskable(contents));
     }
 
     @NativeMethods
     public interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
 
-        String getInstallableWebAppName(WebContents webContents);
-
         String getInstallableWebAppManifestId(WebContents webContents);
 
-        Bitmap getInstallableWebAppIcon(WebContents webContents);
-
-        boolean getInstallableWebAppIconHasMaskable(WebContents webContents);
-
-        boolean onAppDetailsRetrieved(
+        void onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,
                 AppBannerManager caller,
+                int requestId,
                 AppData data,
                 String title,
                 String packageName,
@@ -272,5 +247,7 @@ public class AppBannerManager {
         void setTimeDeltaForTesting(int days);
 
         void setTotalEngagementToTrigger(double engagement);
+
+        void setOverrideSegmentationResultForTesting(boolean show);
     }
 }

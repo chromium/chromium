@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/win/scoped_handle.h"
 #include "components/power_metrics/energy_metrics_provider.h"
@@ -26,7 +27,7 @@ class EnergyMetricsProviderWin : public EnergyMetricsProvider {
   ~EnergyMetricsProviderWin() override;
 
   // EnergyMetricsProvider implementation.
-  absl::optional<EnergyMetrics> CaptureMetrics() override;
+  std::optional<EnergyMetrics> CaptureMetrics() override;
 
  private:
   EnergyMetricsProviderWin();

@@ -46,7 +46,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   // j_error_callback will be called.
   jint RequestBitmap(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_frame_guid,
+      std::optional<base::UnguessableToken>& frame_guid,
       const base::android::JavaParamRef<jobject>& j_bitmap_callback,
       const base::android::JavaParamRef<jobject>& j_error_callback,
       jfloat j_scale_factor,
@@ -62,7 +62,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   // Called from Java on touch event on a frame.
   base::android::ScopedJavaLocalRef<jstring> OnClick(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_frame_guid,
+      std::optional<base::UnguessableToken>& frame_guid,
       jint j_x,
       jint j_y);
 

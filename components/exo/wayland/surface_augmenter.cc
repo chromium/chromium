@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/wayland/surface_augmenter.h"
 
 #include <memory>
@@ -26,10 +31,6 @@ namespace {
 // associated with with subsurface object.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSubSurfaceHasAugmentedSubSurfaceKey, false)
 
-// The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
-// with a local coordinates bounds.
-static constexpr int kRoundedCornersInLocalCoordinatesSinceVersion = 9;
-
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_surface_interface:
 
@@ -41,13 +42,14 @@ class AugmentedSurface : public SurfaceObserver {
  public:
   explicit AugmentedSurface(Surface* surface) : surface_(surface) {
     surface_->AddSurfaceObserver(this);
-    surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, true);
+    surface_->set_is_augmented(true);
     // No need to create AX Tree for augmented surfaces because they're
     // equivalent to quads.
     // TODO(b/296326746): Revert this CL and set the property to the root
     // surface once arc accessibility is refactored.
     surface_->window()->SetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren,
                                     true);
+    surface_->set_leave_enter_callback(Surface::LeaveEnterCallback());
     surface_->set_legacy_buffer_release_skippable(true);
   }
   AugmentedSurface(const AugmentedSurface&) = delete;
@@ -55,7 +57,6 @@ class AugmentedSurface : public SurfaceObserver {
   ~AugmentedSurface() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
-      surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, false);
     }
   }
 
@@ -66,13 +67,12 @@ class AugmentedSurface : public SurfaceObserver {
                   float top_left,
                   float top_right,
                   float bottom_right,
-                  float bottom_left,
-                  bool is_root_coordinates = true) {
+                  float bottom_left) {
     surface_->SetRoundedCorners(
         gfx::RRectF(gfx::RectF(x, y, width, height),
                     gfx::RoundedCornersF(top_left, top_right, bottom_right,
                                          bottom_left)),
-        is_root_coordinates, /*commit_override=*/false);
+        /*commit_override=*/false);
   }
 
   void SetDestination(float width, float height) {
@@ -81,10 +81,6 @@ class AugmentedSurface : public SurfaceObserver {
 
   void SetBackgroundColor(std::optional<SkColor4f> background_color) {
     surface_->SetBackgroundColor(background_color);
-  }
-
-  void SetTrustedDamage(bool trusted_damage) {
-    surface_->SetTrustedDamage(trusted_damage);
   }
 
   void SetClipRect(float x, float y, float width, float height) {
@@ -164,10 +160,10 @@ void augmented_surface_set_background_color(wl_client* client,
   GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);
 }
 
-void augmented_surface_set_trusted_damage(wl_client* client,
-                                          wl_resource* resource,
-                                          int enabled) {
-  GetUserDataAs<AugmentedSurface>(resource)->SetTrustedDamage(enabled);
+void augmented_surface_set_trusted_damage_DEPRECATED(wl_client* client,
+                                                     wl_resource* resource,
+                                                     int enabled) {
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_surface_set_rounded_corners_clip_bounds(wl_client* client,
@@ -190,17 +186,18 @@ void augmented_surface_set_rounded_corners_clip_bounds(wl_client* client,
     return;
   }
 
-  // In the deprecated implementation, the bounds was in its root surface
-  // coordinates. We cannot use SINCE_VERSION here because the protocol is not
-  // changed while its expectation and behavior on the client side has changed.
-  bool is_root_coordinates = (wl_resource_get_version(resource) <
-                              kRoundedCornersInLocalCoordinatesSinceVersion);
+  // Rounded corners on local surface coordinates is supported since version 9.
+  if (wl_resource_get_version(resource) < 9) {
+    LOG(ERROR) << "Rounded corners clip bounds are set on the root surface "
+               << "coordinates which is deperecated. Use 9 or newer version "
+               << "for surface augmenter.";
+  }
 
   GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
       wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
       wl_fixed_to_double(height), wl_fixed_to_double(top_left),
       wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
-      wl_fixed_to_double(bottom_left), is_root_coordinates);
+      wl_fixed_to_double(bottom_left));
 }
 
 void augmented_surface_set_clip_rect(wl_client* client,
@@ -239,7 +236,7 @@ const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_set_destination_size,
     augmented_surface_set_rounded_corners_bounds_DEPRECATED,
     augmented_surface_set_background_color,
-    augmented_surface_set_trusted_damage,
+    augmented_surface_set_trusted_damage_DEPRECATED,
     augmented_surface_set_rounded_corners_clip_bounds,
     augmented_surface_set_clip_rect,
     augmented_surface_set_frame_trace_id,
@@ -258,8 +255,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
       : sub_surface_(sub_surface) {
     sub_surface_->AddSubSurfaceObserver(this);
     sub_surface_->SetProperty(kSubSurfaceHasAugmentedSubSurfaceKey, true);
-    sub_surface_->surface()->set_leave_enter_callback(
-        Surface::LeaveEnterCallback());
   }
   AugmentedSubSurface(const AugmentedSubSurface&) = delete;
   AugmentedSubSurface& operator=(const AugmentedSubSurface&) = delete;
@@ -272,15 +267,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
 
   void SetPosition(float x, float y) {
     sub_surface_->SetPosition(gfx::PointF(x, y));
-  }
-
-  void SetClipRect(float x, float y, float width, float height) {
-    std::optional<gfx::RectF> clip_rect;
-    if (x >= 0 && y >= 0 && width >= 0 && height >= 0) {
-      clip_rect = gfx::RectF(x, y, width, height);
-    }
-    // TODO(rivr): Should we send a protocol error if there are invalid values?
-    sub_surface_->SetClipRect(clip_rect);
   }
 
   void SetTransform(const gfx::Transform& transform) {
@@ -315,13 +301,7 @@ void augmented_sub_surface_set_clip_rect_DEPRECATED(wl_client* client,
                                                     wl_fixed_t y,
                                                     wl_fixed_t width,
                                                     wl_fixed_t height) {
-  LOG(WARNING) << "Deprecated. Do NOT use this for new codes.";
-
-  // TODO(crbug.com/1457446): Remove the fallback implementation here once
-  // augmented_surface_set_clip_rect is spread enough.
-  GetUserDataAs<AugmentedSubSurface>(resource)->SetClipRect(
-      wl_fixed_to_double(x), wl_fixed_to_double(y), wl_fixed_to_double(width),
-      wl_fixed_to_double(height));
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_sub_surface_set_transform(wl_client* client,
@@ -403,7 +383,7 @@ void augmenter_get_augmented_surface(wl_client* client,
                                      uint32_t id,
                                      wl_resource* surface_resource) {
   Surface* surface = GetUserDataAs<Surface>(surface_resource);
-  if (surface->GetProperty(kSurfaceHasAugmentedSurfaceKey)) {
+  if (surface->is_augmented()) {
     wl_resource_post_error(resource,
                            SURFACE_AUGMENTER_ERROR_AUGMENTED_SURFACE_EXISTS,
                            "an augmenter for that surface already exists");

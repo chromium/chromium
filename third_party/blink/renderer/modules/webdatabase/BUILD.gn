@@ -19,8 +19,6 @@ blink_modules_sources("webdatabase") {
     "database_context.cc",
     "database_context.h",
     "database_error.h",
-    "database_manager.cc",
-    "database_manager.h",
     "database_task.cc",
     "database_task.h",
     "database_thread.cc",

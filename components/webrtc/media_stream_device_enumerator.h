@@ -29,6 +29,8 @@ class MediaStreamDeviceEnumerator {
 
   // Helpers for picking particular requested devices, identified by raw id.
   // If the device requested is not available it will return std::nullopt.
+  // If `eligible_*_device_ids` is empty, return the most preferred
+  // device without filtering.
   virtual const std::optional<blink::MediaStreamDevice>
   GetPreferredAudioDeviceForBrowserContext(
       content::BrowserContext* context,

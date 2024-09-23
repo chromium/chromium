@@ -9,18 +9,18 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/display_util.h"
 #include "ash/display/mouse_warp_controller.h"
-
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "ui/events/event.h"
 
 namespace ash {
 
 MouseCursorEventFilter::MouseCursorEventFilter() : mouse_warp_enabled_(true) {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 MouseCursorEventFilter::~MouseCursorEventFilter() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 }
 
 void MouseCursorEventFilter::ShowSharedEdgeIndicator(aura::Window* from) {
@@ -29,14 +29,14 @@ void MouseCursorEventFilter::ShowSharedEdgeIndicator(aura::Window* from) {
 }
 
 void MouseCursorEventFilter::HideSharedEdgeIndicator() {
-  OnDisplayConfigurationChanged();
+  OnDidApplyDisplayChanges();
 }
 
 void MouseCursorEventFilter::OnDisplaysInitialized() {
-  OnDisplayConfigurationChanged();
+  OnDidApplyDisplayChanges();
 }
 
-void MouseCursorEventFilter::OnDisplayConfigurationChanged() {
+void MouseCursorEventFilter::OnDidApplyDisplayChanges() {
   mouse_warp_controller_ =
       CreateMouseWarpController(Shell::Get()->display_manager(), nullptr);
 }
@@ -48,9 +48,9 @@ void MouseCursorEventFilter::OnMouseEvent(ui::MouseEvent* event) {
 
   // Handle both MOVED and DRAGGED events here because when the mouse pointer
   // enters the other root window while dragging, the underlying window system
-  // (at least X11) stops generating a ui::ET_MOUSE_MOVED event.
-  if (event->type() != ui::ET_MOUSE_MOVED &&
-      event->type() != ui::ET_MOUSE_DRAGGED) {
+  // (at least X11) stops generating a ui::EventType::kMouseMoved event.
+  if (event->type() != ui::EventType::kMouseMoved &&
+      event->type() != ui::EventType::kMouseDragged) {
     return;
   }
 

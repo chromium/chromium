@@ -1,14 +1,16 @@
 - name: 2d.layer.global-states
   desc: Checks that layers correctly use global render states.
-  size: [200, 200]
+  size: [90, 90]
   code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
+    {{ filter_statement }}
 
     ctx.beginLayer();
 
@@ -16,117 +18,94 @@
     // won't individually composite with the background.
     ctx.globalCompositeOperation = 'screen';
 
-    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
+    ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx.fillRect(10, 25, 40, 45);
     ctx.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
+    ctx.fillRect(30, 5, 45, 40);
 
     ctx.endLayer();
   reference: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
+    {{ filter_statement }}
 
-    canvas2 = document.createElement("canvas");
-    ctx2 = canvas2.getContext("2d");
+    const canvas2 = document.createElement("canvas");
+    const ctx2 = canvas2.getContext("2d");
 
     ctx2.globalCompositeOperation = 'screen';
-    ctx2.fillStyle = 'rgba(225, 0, 0, 1)';
-    ctx2.fillRect(50, 50, 75, 50);
+    ctx2.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx2.fillRect(10, 25, 40, 45);
     ctx2.fillStyle = 'rgba(0, 255, 0, 1)';
-    ctx2.fillRect(70, 70, 75, 50);
+    ctx2.fillRect(30, 5, 45, 40);
 
     ctx.drawImage(canvas2, 0, 0);
+  variants_layout:
+    [single_file, single_file, single_file, multi_files, multi_files]
+  grid_width: 8
   variants: &global-state-variants
-    no-global-states:
-      render_states: // No global states.
-    alpha:
-      render_states: ctx.globalAlpha = 0.6;
+  - no-globalAlpha:
+      alpha_statement: // No globalAlpha.
+    globalAlpha:
+      alpha_statement: ctx.globalAlpha = 0.75;
+  - no-composite-op:
+      composite_op_statement: // No globalCompositeOperation.
     blending:
-      render_states: ctx.globalCompositeOperation = 'multiply';
+      composite_op_statement: ctx.globalCompositeOperation = 'multiply';
     composite:
-      render_states: ctx.globalCompositeOperation = 'source-in';
+      composite_op_statement: ctx.globalCompositeOperation = 'source-in';
+    copy:
+      composite_op_statement: ctx.globalCompositeOperation = 'copy';
+  - no-shadow:
+      shadow_statement: // No shadow.
     shadow:
-      render_states: |-
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
+      shadow_statement: |-
+        ctx.shadowOffsetX = -7;
+        ctx.shadowOffsetY = 7;
         ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
         ctx.shadowBlur = 3;
-    alpha.blending:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'multiply';
-    alpha.composite:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'source-in';
-    alpha.shadow:
-      render_states: |-
-        ctx.globalAlpha = 0.5;
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    alpha.blending.shadow:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    alpha.composite.shadow:
-      render_states: |-
-        ctx.globalAlpha = 0.6;
-        ctx.globalCompositeOperation = 'source-in';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    blending.shadow:
-      render_states: |-
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
-    composite.shadow:
-      render_states: |-
-        ctx.globalCompositeOperation = 'source-in';
-        ctx.shadowOffsetX = -10;
-        ctx.shadowOffsetY = 10;
-        ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
-        ctx.shadowBlur = 3;
+  - no-cxt-filter:
+      filter_statement: // No filter.
+    ctx-filter:
+      filter_statement: ctx.filter = 'drop-shadow(-4px -4px 0 fuchsia)';
+  - no-transform:
+      transform_statement: // No transform.
+    rotation:
+      transform_statement: |-
+        ctx.translate(50, 40);
+        ctx.rotate(Math.PI);
+        ctx.translate(-45, -45);
+
 
 - name: 2d.layer.global-states.filter
   desc: Checks that layers with filters correctly use global render states.
-  size: [200, 200]
+  size: [90, 90]
   code: |
-    ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+    {{ transform_statement }}
 
-    var circle = new Path2D();
-    circle.arc(90, 90, 45, 0, 2 * Math.PI);
-    ctx.fill(circle);
+    ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+    ctx.fillRect(20, 15, 50, 50);
 
-    {{ render_states }}
+    {{ alpha_statement }}
+    {{ composite_op_statement }}
+    {{ shadow_statement }}
+    {{ filter_statement }}
 
     ctx.beginLayer({filter: [
-        {name: 'colorMatrix', values: [0.393, 0.769, 0.189, 0, 0,
-                                       0.349, 0.686, 0.168, 0, 0,
-                                       0.272, 0.534, 0.131, 0, 0,
-                                       0, 0, 0, 1, 0]},
+        {name: 'dropShadow',
+            dx: 8, dy: 8, stdDeviation: 0, floodColor: '#00f'},
         {name: 'componentTransfer',
-            funcA: {type: "table", tableValues: [0, 0.7]}},
-        {name: 'dropShadow', dx: 5, dy: 5, floodColor: '#81e'}]});
+            funcA: {type: "table", tableValues: [0, 0.8]}}]});
 
-    ctx.fillStyle = 'rgba(200, 0, 0, 1)';
-    ctx.fillRect(50, 50, 75, 50);
-    ctx.fillStyle = 'rgba(0, 200, 0, 1)';
-    ctx.fillRect(70, 70, 75, 50);
+    ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+    ctx.fillRect(10, 25, 40, 45);
+    ctx.fillStyle = 'rgba(0, 255, 0, 1)';
+    ctx.fillRect(30, 5, 45, 40);
 
     ctx.endLayer();
   reference: |
@@ -135,20 +114,14 @@
             width="{{ size[0] }}" height="{{ size[1] }}"
             color-interpolation-filters="sRGB">
         <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
-          <feColorMatrix
-              type="matrix"
-              values="0.393 0.769 0.189 0 0
-                      0.349 0.686 0.168 0 0
-                      0.272 0.534 0.131 0 0
-                      0 0 0 1 0" />
+          <feDropShadow dx="8" dy="8" stdDeviation="0" flood-color="#00f" />
           <feComponentTransfer>
-            <feFuncA type="table" tableValues="0 0.7"></feFuncA>
+            <feFuncA type="table" tableValues="0 0.8"></feFuncA>
           </feComponentTransfer>
-          <feDropShadow dx="5" dy="5" flood-color="#81e" />
         </filter>
         <g filter="url(#filter)">
-          <rect x="50" y="50" width="75" height="50" fill="rgba(200, 0, 0, 1)"/>
-          <rect x="70" y="70" width="75" height="50" fill="rgba(0, 200, 0, 1)"/>
+          <rect x="10" y="25" width="40" height="45" fill="rgba(255, 0, 0, 1)"/>
+          <rect x="30" y="5" width="45" height="40" fill="rgba(0, 255, 0, 1)"/>
         </g>
       </svg>`;
 
@@ -156,40 +129,208 @@
     img.width = {{ size[0] }};
     img.height = {{ size[1] }};
     img.onload = () => {
-      ctx.fillStyle = 'rgba(0, 0, 255, 1)';
+      {{ transform_statement | indent(2) }}
 
-      var circle = new Path2D();
-      circle.arc(90, 90, 45, 0, 2 * Math.PI);
-      ctx.fill(circle);
+      ctx.fillStyle = 'rgba(128, 128, 128, 1)';
+      ctx.fillRect(20, 15, 50, 50);
 
-      {{ render_states }}
+      {{ alpha_statement | indent(2) }}
+      {{ composite_op_statement | indent(2) }}
+      {{ shadow_statement | indent(2) }}
+      {{ filter_statement | indent(2) }}
 
       ctx.drawImage(img, 0, 0);
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
+  variants_layout:
+    [single_file, single_file, single_file, multi_files, multi_files]
+  grid_width: 8
   variants: *global-state-variants
 
-- name: 2d.layer.global-filter
-  desc: Tests that layers ignore the global context filter.
-  size: [150, 100]
+- name: 2d.layer.globalCompositeOperation
+  desc: Checks that layers work with all globalCompositeOperation values.
+  size: [90, 90]
   code: |
-    ctx.filter = 'blur(5px)'
+    ctx.translate(50, 50);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI);
+    ctx.translate(-25, -25);
+
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.8)';
+    ctx.fillRect(15, 15, 25, 25);
+
+    ctx.globalAlpha = 0.75;
+    ctx.globalCompositeOperation = '{{ variant_name }}';
+    ctx.shadowOffsetX = 7;
+    ctx.shadowOffsetY = 7;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
 
     ctx.beginLayer();
-    ctx.fillRect(10, 10, 30, 30);  // `ctx.filter` applied to draw call.
-    ctx.endLayer();
 
-    ctx.beginLayer();
-    ctx.filter = 'none';
-    ctx.fillRect(60, 10, 30, 30);  // Should not be filted by the layer.
-    ctx.endLayer();
+    ctx.fillStyle = 'rgba(204, 0, 0, 1)';
+    ctx.fillRect(10, 25, 25, 20);
+    ctx.fillStyle = 'rgba(0, 204, 0, 1)';
+    ctx.fillRect(25, 10, 20, 25);
 
-    ctx.fillRect(110, 10, 30, 30);  // `ctx.filter` is still set.
+    ctx.endLayer();
   reference: |
-    ctx.fillRect(60, 10, 30, 30);
-    ctx.filter = 'blur(5px)'
-    ctx.fillRect(10, 10, 30, 30);
-    ctx.fillRect(110, 10, 30, 30);
+    ctx.translate(50, 50);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI);
+    ctx.translate(-25, -25);
+
+    ctx.fillStyle = 'rgba(0, 0, 255, 0.8)';
+    ctx.fillRect(15, 15, 25, 25);
+
+    ctx.globalAlpha = 0.75;
+    ctx.globalCompositeOperation = '{{ variant_name }}';
+    ctx.shadowOffsetX = 7;
+    ctx.shadowOffsetY = 7;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.5)';
+
+    const canvas2 = document.createElement("canvas");
+    const ctx2 = canvas2.getContext("2d");
+
+    ctx2.fillStyle = 'rgba(204, 0, 0, 1)';
+    ctx2.fillRect(10, 25, 25, 20);
+    ctx2.fillStyle = 'rgba(0, 204, 0, 1)';
+    ctx2.fillRect(25, 10, 20, 25);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(canvas2, 0, 0);
+  variants_layout: [single_file]
+  grid_width: 7
+  variants:
+  - source-over:
+    source-in:
+    source-atop:
+    destination-over:
+    destination-in:
+    destination-out:
+    destination-atop:
+    lighter:
+    copy:
+    xor:
+    multiply:
+    screen:
+    overlay:
+    darken:
+    lighten:
+    color-dodge:
+    color-burn:
+    hard-light:
+    soft-light:
+    difference:
+    exclusion:
+    hue:
+    saturation:
+    color:
+    luminosity:
+
+- name: 2d.layer.non-invertible-matrix
+  desc: Test drawing layers when the transform is not invertible.
+  size: [200, 200]
+  code: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
+
+    // Anything below will be non-rasterizable.
+    ctx.scale(1, 0);
+
+    // Open the layer with a non-invertible matrix. The whole layer will be
+    // non-rasterizable.
+    ctx.beginLayer();
+
+    // Because the transform is global, the matrix is still non-invertible.
+    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
+    ctx.fillRect(40, 70, 50, 50);
+
+    // Set a valid matrix in the middle of the layer. This makes the global
+    // matrix invertible again, but because because the layer was opened with a
+    // non-invertible matrix, the whole layer remains non-rasterizable.
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(70, 40, 50, 50);
+
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
+
+- name: 2d.layer.non-invertible-matrix.shadow
+  desc: Test drawing layers when the transform is not invertible.
+  size: [200, 200]
+  code: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
+
+    // Anything below will be non-rasterizable.
+    ctx.scale(1, 0);
+
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 20;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.6)';
+
+    // Open the layer with a non-invertible matrix. The whole layer will be
+    // non-rasterizable.
+    ctx.beginLayer();
+
+    // Because the transform is global, the matrix is still non-invertible.
+    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
+    ctx.fillRect(40, 70, 50, 50);
+
+    // Set a valid matrix in the middle of the layer. This makes the global
+    // matrix invertible again, but because because the layer was opened with a
+    // non-invertible matrix, the whole layer remains non-rasterizable.
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(70, 40, 50, 50);
+
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
+
+- name: 2d.layer.non-invertible-matrix.with-render-states-and-filter
+  desc: Test drawing layers when the transform is not invertible.
+  size: [200, 200]
+  code: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
+
+    // Anything below will be non-rasterizable.
+    ctx.scale(1, 0);
+
+    ctx.globalAlpha = 0.8;
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 20;
+    ctx.shadowColor = 'rgba(255, 165, 0, 0.6)';
+
+    // Open the layer with a non-invertible matrix. The whole layer will be
+    // non-rasterizable.
+    ctx.beginLayer({filter:
+                    {name: 'dropShadow', dx: 10, dy: 0, stdDeviation: 0,
+                    floodColor: 'rgba(128, 128, 255, 0.7)'}});
+
+    // Because the transform is global, the matrix is still non-invertible.
+    ctx.fillStyle = 'rgba(225, 0, 0, 1)';
+    ctx.fillRect(40, 70, 50, 50);
+
+    // Set a valid matrix in the middle of the layer. This makes the global
+    // matrix invertible again, but because because the layer was opened with a
+    // non-invertible matrix, the whole layer remains non-rasterizable.
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(70, 40, 50, 50);
+
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(30, 30, 50, 50);
 
 - name: 2d.layer.nested
   desc: Tests nested canvas layers.
@@ -273,7 +414,8 @@
     ctx.fillRect(70, 70, 75, 50);
 
 - name: 2d.layer.layer-rendering-state-reset-in-layer
-  desc: Tests that layers ignore the global context filter.
+  desc: Tests that rendering states are reset in layers and restored after.
+  test_type: sync
   code: |
     ctx.globalAlpha = 0.5;
     ctx.globalCompositeOperation = 'xor';
@@ -281,6 +423,7 @@
     ctx.shadowOffsetX = 10;
     ctx.shadowOffsetY = 20;
     ctx.shadowBlur = 30;
+    ctx.filter = 'blur(5px)';
 
     @assert ctx.globalAlpha === 0.5;
     @assert ctx.globalCompositeOperation === 'xor';
@@ -288,6 +431,7 @@
     @assert ctx.shadowOffsetX === 10;
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
+    @assert ctx.filter === 'blur(5px)';
 
     ctx.beginLayer();
 
@@ -297,6 +441,7 @@
     @assert ctx.shadowOffsetX === 0;
     @assert ctx.shadowOffsetY === 0;
     @assert ctx.shadowBlur === 0;
+    @assert ctx.filter === 'none';
 
     ctx.endLayer();
 
@@ -306,6 +451,7 @@
     @assert ctx.shadowOffsetX === 10;
     @assert ctx.shadowOffsetY === 20;
     @assert ctx.shadowBlur === 30;
+    @assert ctx.filter === 'blur(5px)';
 
 - name: 2d.layer.clip-outside
   desc: Check clipping set outside the layer
@@ -333,6 +479,189 @@
     ctx.clip();
 
     ctx.drawImage(canvas2, 0, 0);
+
+- name: 2d.layer.ctm.filter
+  desc: Checks that parent transforms affect layer filters.
+  size: [200, 200]
+  code: |
+    // Transforms inside the layer should not apply to the layer's filter.
+    ctx.beginLayer({filter: 'drop-shadow(5px 5px 0px grey)'});
+    ctx.translate(30, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.fillRect(-30, -5, 60, 10);
+    ctx.endLayer();
+
+    // Transforms in the layer's parent should apply to the layer's filter.
+    ctx.translate(80, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.beginLayer({filter: 'drop-shadow(5px 5px 0px grey)'});
+    ctx.fillRect(-30, -5, 60, 10);
+    ctx.endLayer();
+  html_reference: |
+    <svg xmlns="http://www.w3.org/2000/svg"
+          width="{{ size[0] }}" height="{{ size[1] }}"
+          color-interpolation-filters="sRGB">
+      <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
+        <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="grey" />
+      </filter>
+
+      <g filter="url(#filter)">
+        <g transform="translate(30, 90) scale(2) rotate(90)">
+          <rect x="-30" y="-5" width=60 height=10></rect>
+        </g>
+      </g>
+
+      <g transform="translate(80, 90) scale(2) rotate(90)">
+        <g filter="url(#filter)">
+          <rect x="-30" y="-5" width=60 height=10></rect>
+        </g>
+      </g>
+    </svg>
+
+- name: 2d.layer.ctm.ctx-filter
+  desc: Checks that parent transforms don't affect context filters.
+  size: [200, 200]
+  code: |
+    ctx.fillStyle = 'grey';
+    ctx.translate(30, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    // The transform doesn't apply to context filter on normal draw calls.
+    ctx.save();
+    ctx.filter = 'drop-shadow(10px 10px 0px red)';
+    ctx.fillRect(-30, -5, 60, 10);
+    ctx.restore();
+
+    // Likewise, the transform doesn't apply to context filter applied on layer.
+    ctx.save();
+    ctx.filter = 'drop-shadow(10px 10px 0px green)';
+    ctx.beginLayer();
+    ctx.fillRect(-30, -25, 60, 10);
+    ctx.endLayer();
+    ctx.restore();
+
+    // Filters inside layers aren't affected by transform either.
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(5px 5px 0px blue)';
+    ctx.fillRect(-30, -45, 60, 10);
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'red';
+    ctx.fillRect(30, 40, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(20, 30, 20, 120);
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(70, 40, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(60, 30, 20, 120);
+
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(105, 35, 20, 120);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(100, 30, 20, 120);
+
+- name: 2d.layer.ctm.shadow-in-transformed-layer
+  desc: Check shadows inside of a transformed layer.
+  size: [200, 200]
+  code: |
+    ctx.translate(80, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    ctx.beginLayer();
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowColor = 'grey';
+    ctx.fillRect(-30, -5, 60, 10);
+
+    const canvas2 = new OffscreenCanvas(100, 100);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(0, 0, 40, 10);
+    ctx.drawImage(canvas2, -30, -30);
+
+    ctx.endLayer();
+  reference: |
+    ctx.translate(80, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowColor = 'grey';
+    ctx.fillRect(-30, -5, 60, 10);
+
+    const canvas2 = new OffscreenCanvas(100, 100);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(0, 0, 40, 10);
+    ctx.drawImage(canvas2, -30, -30);
+
+- name: 2d.layer.ctm.getTransform
+  desc: Tests getTransform inside layers.
+  test_type: sync
+  code: |
+    ctx.translate(10, 20);
+    ctx.beginLayer();
+    ctx.scale(2, 3);
+    const m = ctx.getTransform();
+    assert_array_equals([m.a, m.b, m.c, m.d, m.e, m.f], [2, 0, 0, 3, 10, 20]);
+    ctx.endLayer();
+
+- name: 2d.layer.ctm.setTransform
+  desc: Tests setTransform inside layers.
+  code: |
+    ctx.translate(80, 0);
+
+    ctx.beginLayer();
+    ctx.rotate(2);
+    ctx.beginLayer();
+    ctx.scale(5, 6);
+    ctx.setTransform(4, 0, 0, 2, 20, 10);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 10, 10);
+    ctx.endLayer();
+    ctx.endLayer();
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 20, 20);
+  reference: |
+    ctx.translate(80, 0);
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 20, 20);
+
+    ctx.setTransform(4, 0, 0, 2, 20, 10);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 10, 10);
+
+- name: 2d.layer.ctm.resetTransform
+  desc: Tests resetTransform inside layers.
+  code: |
+    ctx.translate(40, 0);
+
+    ctx.beginLayer();
+    ctx.rotate(2);
+    ctx.beginLayer();
+    ctx.scale(5, 6);
+    ctx.resetTransform();
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 20, 20);
+    ctx.endLayer();
+    ctx.endLayer();
+
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 20, 20);
+  reference: |
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(0, 0, 20, 20);
+
+    ctx.translate(40, 0);
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 20, 20);
 
 - name: 2d.layer.clip-inside
   desc: Check clipping set inside the layer
@@ -405,8 +734,8 @@
 - name: 2d.layer.flush-on-frame-presentation
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
   size: [200, 200]
-  canvasType: ['HTMLCanvas']
-  test_type: "promise"
+  canvas_types: ['HtmlCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -446,10 +775,9 @@
     ctx.fillRect(80, 40, 75, 50);
 
 - name: 2d.layer.malformed-operations
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_name }} is called while layers are open.
   size: [200, 200]
+  test_type: sync
   code: |
     {{ setup }}
     // Shouldn't throw on its own.
@@ -460,8 +788,9 @@
     ctx.beginLayer();
     assert_throws_dom("InvalidStateError",
                       () => {{ operation }});
+  variants_layout: [single_file]
   variants:
-    createPattern:
+  - createPattern:
       operation: ctx.createPattern(canvas, 'repeat')
     drawImage:
       setup: |-
@@ -479,18 +808,16 @@
       operation: |-
         ctx.putImageData(data, 0, 0)
     toDataURL:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: canvas.toDataURL()
     transferToImageBitmap:
-      canvasType: ['OffscreenCanvas', 'Worker']
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: canvas.transferToImageBitmap()
 
 - name: 2d.layer.malformed-operations-with-promises
-  desc: >-
-    Check that exceptions are thrown for operations that are malformed while
-    layers are open.
+  desc: Throws if {{ variant_name }} is called while layers are open.
   size: [200, 200]
-  test_type: "promise"
+  test_type: promise
   code: |
     // Shouldn't throw on its own.
     await {{ operation }};
@@ -498,16 +825,18 @@
     await {{ operation }};
     // Calling again inside a layer should throw.
     ctx.beginLayer();
-    await promise_rejects_dom(t, 'InvalidStateError', {{ operation }});
+    await promise_rejects_dom(t, 'InvalidStateError',
+                              {{ operation }});
+  variants_layout: [single_file]
   variants:
-    convertToBlob:
-      canvasType: ['OffscreenCanvas', 'Worker']
+  - convertToBlob:
+      canvas_types: ['OffscreenCanvas', 'Worker']
       operation: |-
         canvas.convertToBlob()
     createImageBitmap:
       operation: createImageBitmap(canvas)
     toBlob:
-      canvasType: ['HTMLCanvas']
+      canvas_types: ['HtmlCanvas']
       operation: |-
         new Promise(resolve => canvas.toBlob(resolve))
 
@@ -571,6 +900,7 @@
     ctx.shadowOffsetY = 3;
     ctx.shadowColor = 'rgba(0, 30, 0, 0.3)';
     ctx.shadowBlur = 3;
+    ctx.filter = 'blur(5px)';
 
     ctx.beginLayer({filter: {name: 'dropShadow', dx: -3, dy: 3}});
 
@@ -581,6 +911,7 @@
     ctx.shadowOffsetY = 6;
     ctx.shadowColor = 'rgba(0, 60, 0, 0.6)';
     ctx.shadowBlur = 3;
+    ctx.filter = 'blur(15px)';
 
     ctx.reset();
 
@@ -627,10 +958,53 @@
     ctx.fillStyle = 'blue';
     ctx.fillRect(10, 10, 80, 50);
 
+- name: 2d.layer.drawImage
+  size: [200, 200]
+  desc: >-
+    Checks that drawImage writes the image to the layer and not the parent
+    directly.
+  code: |
+    ctx.fillStyle = 'skyblue';
+    ctx.fillRect(0, 0, 100, 100);
+
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: -10,
+      stdDeviation: 0, floodColor: 'navy'}});
+
+    ctx.fillStyle = 'maroon';
+    ctx.fillRect(20, 20, 50, 50);
+
+    ctx.globalCompositeOperation = 'xor';
+
+    // The image should xor only with the layer content, not the parents'.
+    const canvas_image = new OffscreenCanvas(200,200);
+    const ctx_image = canvas_image.getContext("2d");
+    ctx_image.fillStyle = 'pink';
+    ctx_image.fillRect(40, 40, 50, 50);
+    ctx.drawImage(canvas_image, 0, 0);
+
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'skyblue';
+    ctx.fillRect(0, 0, 100, 100);
+
+    ctx.beginLayer({filter: {name: 'dropShadow', dx: -10, dy: -10,
+      stdDeviation: 0, floodColor: 'navy'}});
+
+    ctx.fillStyle = 'maroon';
+    ctx.fillRect(20, 20, 50, 50);
+
+    ctx.globalCompositeOperation = 'xor';
+
+    // Should xor only with the layer content, not the parents'.
+    ctx.fillStyle = 'pink';
+    ctx.fillRect(40, 40, 50, 50);
+
+    ctx.endLayer();
+
 - name: 2d.layer.valid-calls
   desc: No exception raised on {{ variant_desc }}.
   variants:
-    save:
+  - save:
       variant_desc: lone save() calls
       code: ctx.save();
     beginLayer:
@@ -668,12 +1042,13 @@
 
 - name: 2d.layer.invalid-calls
   desc: Raises exception on {{ variant_desc }}.
+  test_type: sync
   code: |
     assert_throws_dom("INVALID_STATE_ERR", function() {
       {{ call_sequence | indent(2) }}
     });
   variants:
-    endLayer:
+  - endLayer:
       variant_desc: lone endLayer calls
       call_sequence: ctx.endLayer();
     save-endLayer:
@@ -707,6 +1082,7 @@
 
 - name: 2d.layer.exceptions-are-no-op
   desc: Checks that the context state is left unchanged if beginLayer throws.
+  test_type: sync
   code: |
     // Get `beginLayer` to throw while parsing the filter.
     assert_throws_js(TypeError,
@@ -731,6 +1107,7 @@
 
 - name: 2d.layer.beginLayer-options
   desc: Checks beginLayer works for different option parameter values
+  test_type: sync
   code: |
     ctx.beginLayer(); ctx.endLayer();
     ctx.beginLayer(null); ctx.endLayer();
@@ -801,7 +1178,7 @@
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
   variants:
-    no-clipping:
+  - no-clipping:
       clipping: // No clipping.
     with-clipping:
       clipping: |-
@@ -835,7 +1212,7 @@
     ctx.fillStyle = 'green';
     ctx.fillRect(0, 0, 100, 100);
   variants:
-    short-distance:
+  - short-distance:
       distance: |-
         const delta = 1;
       clipping: // No clipping.
@@ -862,7 +1239,7 @@
   desc: Checks that layer blending works inside opaque canvas
   size: [300, 300]
   code: |
-    {% if canvas_type == 'htmlcanvas' %}
+    {% if canvas_type == 'HtmlCanvas' %}
     const canvas2 = document.createElement('canvas');
     canvas2.width = 200;
     canvas2.height = 200;
@@ -932,7 +1309,7 @@
       </g>
     </svg>
   variants:
-    blur:
+  - blur:
       ctx_filter: |-
         'blur(10px)'
       svg_filter: |-
@@ -955,7 +1332,7 @@
   code: *filter-test-code
   html_reference: *filter-test-reference
   variants:
-    x-only:
+  - x-only:
       ctx_filter: |-
         { name: 'gaussianBlur', stdDeviation: [4, 0] }
       svg_filter: |-
@@ -1020,3 +1397,30 @@
     ctx.fillRect(260, 60, 100, 100);
     ctx.fillStyle = 'red';
     ctx.fillRect(250, 50, 100, 100);
+
+- name: 2d.layer.nested-ctx-filter
+  desc: Tests nested canvas layers with context filters.
+  size: [200, 200]
+  code: |
+    ctx.filter = 'drop-shadow(20px 20px 0px red)';
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(10px 10px 0px green)';
+    ctx.beginLayer();
+    ctx.filter = 'drop-shadow(5px 5px 0px blue)';
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(10, 10, 100, 100);
+    ctx.endLayer();
+    ctx.endLayer();
+  reference: |
+    ctx.fillStyle = 'red';
+    ctx.fillRect(45, 45, 100, 100);
+    ctx.fillRect(40, 40, 100, 100);
+    ctx.fillRect(35, 35, 100, 100);
+    ctx.fillRect(30, 30, 100, 100);
+    ctx.fillStyle = 'green';
+    ctx.fillRect(25, 25, 100, 100);
+    ctx.fillRect(20, 20, 100, 100);
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(15, 15, 100, 100);
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(10, 10, 100, 100);

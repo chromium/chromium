@@ -4,13 +4,13 @@
 
 #include "components/version_ui/version_handler_helper.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/net/variations_command_line.h"
@@ -48,7 +48,7 @@ base::Value::List GetVariationsList() {
   }
 #else
   // In release mode, display the hashes only.
-  variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
+  variations::GetFieldTrialActiveGroupIdsAsStrings(std::string_view(),
                                                    active_groups, &variations);
 #endif
 

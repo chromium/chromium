@@ -49,9 +49,7 @@ void InitializeSchemeAllowlist(SchemeSet* allowlist,
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     RebuildPrivateDataFromHistoryDBTask(InMemoryURLIndex* index,
                                         const SchemeSet& scheme_allowlist)
-    : index_(index),
-      scheme_allowlist_(scheme_allowlist),
-      task_creation_time_(base::TimeTicks::Now()) {}
+    : index_(index), scheme_allowlist_(scheme_allowlist) {}
 
 bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
     history::HistoryBackend* backend,
@@ -66,8 +64,6 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
   index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
-  UMA_HISTOGRAM_TIMES("History.InMemoryURLIndexingTime.RoundTripTime",
-                      base::TimeTicks::Now() - task_creation_time_);
 }
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
@@ -164,7 +160,7 @@ void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
   }
 }
 
-void InMemoryURLIndex::OnURLsDeleted(
+void InMemoryURLIndex::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

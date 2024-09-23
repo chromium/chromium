@@ -53,28 +53,31 @@ public class VariationsSeedFetcher {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
                     "chrome_variations_android",
-                    "semantics {"
-                            + "  sender: 'Chrome Variations Service (Android)'"
-                            + "  description:"
-                            + "      'The variations service is responsible for determining the '"
-                            + "      'state of field trials in Chrome. These field trials '"
-                            + "      'typically configure either A/B experiments, or launched '"
-                            + "      'features – oftentimes, critical security features.'"
-                            + "  trigger: 'This request is made once, on Chrome\\'s first run, to '"
-                            + "           'determine the initial state Chrome should be in.'"
-                            + "  data: 'None.'"
-                            + "  destination: GOOGLE_OWNED_SERVICE"
-                            + "}"
-                            + "policy {"
-                            + "  cookies_allowed: NO"
-                            + "  setting: 'Cannot be disabled in Settings. Chrome Variations are '"
-                            + "           'an essential part of Chrome releases.'"
-                            + "  chrome_policy {"
-                            + "    ChromeVariations {"
-                            + "      ChromeVariations: 2"
-                            + "    }"
-                            + "  }"
-                            + "}");
+                    """
+                    semantics {
+                      sender: "Chrome Variations Service (Android)"
+                      description:
+                          "The variations service is responsible for determining the state of "
+                          "field trials in Chrome. These field trials typically configure either "
+                          "A/B experiments, or launched features – oftentimes, critical security "
+                          "features."
+                      trigger:
+                        "This request is made once, on Chrome's first run, to determine the "
+                        "initial state Chrome should be in."
+                      data: "None."
+                      destination: GOOGLE_OWNED_SERVICE
+                    }
+                    policy {
+                      cookies_allowed: NO
+                      setting:
+                        "Cannot be disabled in Settings. Chrome Variations are an essential part "
+                        "of Chrome releases."
+                      chrome_policy {
+                        ChromeVariations {
+                          ChromeVariations: 2
+                        }
+                      }
+                    }""");
 
     @IntDef({VariationsPlatform.ANDROID, VariationsPlatform.ANDROID_WEBVIEW})
     @Retention(RetentionPolicy.SOURCE)
@@ -208,7 +211,8 @@ public class VariationsSeedFetcher {
 
     @VisibleForTesting
     protected String getConnectionString(SeedFetchParameters params) {
-        // TODO(crbug/1302862): Consider reusing native VariationsService::GetVariationsServerURL().
+        // TODO(crbug.com/40825562): Consider reusing native
+        // VariationsService::GetVariationsServerURL().
         String urlString;
         if (CommandLine.getInstance().hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL)) {
             urlString =

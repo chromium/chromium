@@ -26,7 +26,8 @@ class PrefService;
                       title:(NSString*)title
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                     handler:(id<BookmarksCommands>)handler
-                prefService:(PrefService*)prefService;
+                prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

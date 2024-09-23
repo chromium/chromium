@@ -45,7 +45,7 @@
 {#- Validates the specified field, which is supposed to be a handle,
     an interface, an associated interface or an associated interface request.
     This macro is expanded by the Validate() method. #}
-{%- macro validate_handle_or_interface(field, field_index, field_expr, object_name) %}
+{%- macro validate_handle_or_interface(field, field_index, field_expr) %}
 {%-   set name = field.name %}
 {%-   set kind = field.kind %}
 {%-   if not kind|is_nullable_kind %}
@@ -68,11 +68,11 @@
     return false;
 {%- endmacro %}
 
-{%- macro validate_field(field, field_index, field_expr, object_name, union_is_inlined) %}
+{%- macro validate_field(field, field_index, field_expr, union_is_inlined) %}
 {%-   if field.kind|is_object_kind -%}
 {{validate_object(field, field_index, field_expr, union_is_inlined)}}
 {%-   elif field.kind|is_any_handle_or_interface_kind -%}
-{{validate_handle_or_interface(field, field_index, field_expr, object_name)}}
+{{validate_handle_or_interface(field, field_index, field_expr)}}
 {%-   elif field.kind|is_enum_kind %}
 {{validate_enum(field, field_expr)}}
 {%-   endif %}

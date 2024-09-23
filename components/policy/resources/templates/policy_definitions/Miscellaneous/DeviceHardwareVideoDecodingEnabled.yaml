@@ -12,7 +12,7 @@ desc: |-
   Disabling hardware-accelerated video decoding is not advised since it will result in a higher CPU load which in turn will negatively affect device performance and battery consumption.
 
 supported_on:
-- chrome_os:121-
+- chrome_os:120-
 
 device_only: true
 
@@ -36,4 +36,3 @@ default: true
 example_value: false
 
 tags: []
-

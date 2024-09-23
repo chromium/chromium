@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Felmérés</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
+<translation id="2359808026110333948">Tovább</translation>
 <translation id="2388990488038464401">Szeretné ezt a számot hívni a telefonjáról?</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="24452542372838207">Értesítés kibontása</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ÚJ</translation>
 <translation id="2666092431469916601">Felülre</translation>
 <translation id="2701330563083355633">Megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Új</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 éve}other{# éve}}</translation>
 <translation id="2878511608894704031">Az összes törlése</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 nap múlva}other{# nap múlva}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> rendszer</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Bal nyíl</translation>
+<translation id="5633029987065897167">Üres</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 perc}other{# perc}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ma volt aktív}=1{1 napja volt aktív}other{# napja volt aktív}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 nap és }other{# nap és }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-tartalom</translation>
 <translation id="6539092367496845964">Hiba történt. Próbálja újra később.</translation>
 <translation id="654149438358937226">Minden értesítés letiltása</translation>
-<translation id="6612467943526193239">Ha ki szeretne lépni a kalibrálásból, nyomja meg az Esc billentyűt.</translation>
 <translation id="6620110761915583480">Fájl mentése</translation>
 <translation id="6699343763173986273">Következő szám</translation>
 <translation id="6808150112686056157">Leállítás</translation>

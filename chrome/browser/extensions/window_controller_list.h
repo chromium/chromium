@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_WINDOW_CONTROLLER_LIST_H_
 #define CHROME_BROWSER_EXTENSIONS_WINDOW_CONTROLLER_LIST_H_
 
-#include <list>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -20,7 +21,9 @@ class WindowControllerListObserver;
 // Class to maintain a list of WindowControllers.
 class WindowControllerList {
  public:
-  typedef std::list<WindowController*> ControllerList;
+  using ControllerVector =
+      std::vector<raw_ptr<WindowController, CtnExperimental>>;
+  using const_iterator = ControllerVector::const_iterator;
 
   WindowControllerList();
   WindowControllerList(const WindowControllerList&) = delete;
@@ -34,6 +37,14 @@ class WindowControllerList {
   void AddObserver(WindowControllerListObserver* observer);
   void RemoveObserver(WindowControllerListObserver* observer);
 
+  const_iterator begin() const { return windows_.begin(); }
+  const_iterator end() const { return windows_.end(); }
+
+  bool empty() const { return windows_.empty(); }
+  size_t size() const { return windows_.size(); }
+
+  WindowController* get(size_t index) const { return windows_[index]; }
+
   // Returns a window matching the context the function was invoked in
   // using |filter|.
   WindowController* FindWindowForFunctionByIdWithFilter(
@@ -43,16 +54,13 @@ class WindowControllerList {
 
   // Returns the focused or last added window matching the context the function
   // was invoked in.
-  WindowController* CurrentWindowForFunction(
-      const ExtensionFunction* function) const;
+  WindowController* CurrentWindowForFunction(ExtensionFunction* function) const;
 
   // Returns the focused or last added window matching the context the function
   // was invoked in using |filter|.
   WindowController* CurrentWindowForFunctionWithFilter(
-      const ExtensionFunction* function,
+      ExtensionFunction* function,
       WindowController::TypeFilter filter) const;
-
-  const ControllerList& windows() const { return windows_; }
 
   static WindowControllerList* GetInstance();
 
@@ -60,7 +68,7 @@ class WindowControllerList {
   friend struct base::DefaultSingletonTraits<WindowControllerList>;
 
   // Entries are not owned by this class and must be removed when destroyed.
-  ControllerList windows_;
+  ControllerVector windows_;
 
   base::ObserverList<WindowControllerListObserver>::Unchecked observers_;
 };

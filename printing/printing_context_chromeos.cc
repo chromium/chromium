@@ -519,7 +519,6 @@ mojom::ResultCode PrintingContextChromeos::PrintDocument(
   return StreamData(buffer);
 #else
   NOTREACHED();
-  return mojom::ResultCode::kFailed;
 #endif  // BUILDFLAG(USE_CUPS)
 }
 

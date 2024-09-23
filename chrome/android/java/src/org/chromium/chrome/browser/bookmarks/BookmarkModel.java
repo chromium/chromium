@@ -145,13 +145,6 @@ public class BookmarkModel extends BookmarkBridge {
     }
 
     /**
-     * @return The id of the default folder to save bookmarks/folders to.
-     */
-    public BookmarkId getDefaultFolder() {
-        return getMobileFolderId();
-    }
-
-    /**
      * @return The id of the default folder to view bookmarks.
      */
     public BookmarkId getDefaultFolderViewLocation() {

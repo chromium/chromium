@@ -37,8 +37,9 @@ PendingImportMap::PendingImportMap(
       error_to_rethrow_(std::move(error_to_rethrow)),
       original_execution_context_(&original_context) {}
 
-// <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
-// This is parallel to PendingScript::ExecuteScriptBlock().
+// <specdef
+// href="https://html.spec.whatwg.org/C#register-an-import-map"> This is
+// parallel to PendingScript::ExecuteScriptBlock().
 void PendingImportMap::RegisterImportMap() {
   // <spec step="1">If element’s the script’s result is null, then fire an event
   // named error at element, and return.</spec>

@@ -288,7 +288,7 @@ std::optional<Value> Reader::DecodeToSimpleValueOrFloat(
         return Value(result);
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
         return std::nullopt;
     }
@@ -407,7 +407,7 @@ std::optional<Value> Reader::ReadMapContent(
 
   Value::MapValue map;
   map.reserve(cbor_map.size());
-  // TODO(crbug/1271599): when Chromium switches to C++17, this code can be
+  // TODO(crbug.com/40205788): when Chromium switches to C++17, this code can be
   // optimized using std::map::extract().
   for (auto& it : cbor_map)
     map.emplace_hint(map.end(), it.first.Clone(), std::move(it.second));
@@ -502,7 +502,7 @@ const char* Reader::ErrorCodeToString(DecoderError error) {
     case DecoderError::UNKNOWN_ERROR:
       return kUnknownError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown error code.";
   }
 }

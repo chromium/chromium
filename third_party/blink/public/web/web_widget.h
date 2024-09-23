@@ -77,6 +77,12 @@ class WebWidget {
   // compositor.
   virtual void SetCompositorVisible(bool visible) = 0;
 
+  // Asks the compositor to request warming up and request a new frame sink
+  // speculatively. This is an experimental function and only used if
+  // `kWarmUpCompositor` is enabled. Please see crbug.com/41496019
+  // for more details.
+  virtual void WarmUpCompositor() = 0;
+
   // Returns the current size of the WebWidget.
   virtual gfx::Size Size() { return gfx::Size(); }
 
@@ -139,6 +145,10 @@ class WebWidget {
   // Process the input event, blocking until complete.
   virtual void ProcessInputEventSynchronouslyForTesting(
       const WebCoalescedInputEvent&) = 0;
+
+  // Dispatches the input event asynchronously, without blocking.
+  virtual void DispatchNonBlockingEventForTesting(
+      std::unique_ptr<WebCoalescedInputEvent> event) = 0;
 
   virtual void DidOverscrollForTesting(
       const gfx::Vector2dF& overscroll_delta,

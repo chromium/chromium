@@ -19,6 +19,7 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "base/format_macros.h"
 #include "base/scoped_generic.h"
@@ -233,7 +234,7 @@ TEST(UUID, FromString) {
   EXPECT_EQ(uuid.ToString(), "5762c15d-50b5-4171-a2e9-7429c9ec6cab");
 
 #if BUILDFLAG(IS_WIN)
-  // Test accepting a StringPiece16 via L"" literals on Windows.
+  // Test accepting a std::u16string_view via L"" literals on Windows.
   EXPECT_TRUE(
       uuid.InitializeFromString(L"F32E5BDC-2681-4C73-A4E6-444FFD44B444"));
   EXPECT_EQ(uuid.ToString(), "f32e5bdc-2681-4c73-a4e6-444ffd44b444");

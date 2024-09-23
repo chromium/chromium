@@ -6,12 +6,21 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("choose_file") {
   sources = [
+    "choose_file_controller.h",
+    "choose_file_controller.mm",
+    "choose_file_event.h",
+    "choose_file_event.mm",
     "choose_file_java_script_feature.h",
     "choose_file_java_script_feature.mm",
+    "choose_file_tab_helper.h",
+    "choose_file_tab_helper.mm",
+    "choose_file_util.h",
+    "choose_file_util.mm",
   ]
   deps = [
     ":choose_file_js",
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -20,14 +29,32 @@ source_set("choose_file") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "choose_file_java_script_feature_unittest.mm" ]
+  sources = [
+    "choose_file_controller_unittest.mm",
+    "choose_file_java_script_feature_unittest.mm",
+    "choose_file_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":choose_file",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_choose_file_controller.h",
+    "fake_choose_file_controller.mm",
+  ]
   deps = [
     ":choose_file",
     "//base",
-    "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
   ]
 }
 

@@ -63,16 +63,6 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
   return apps::AppServiceProxyFactory::GetForProfile(profile);
 }
 
-// Returns the account id for logging in.
-std::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
-  if (is_managed) {
-    return AccountId::FromUserEmailGaiaId(
-        FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
-  }
-  // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
-  return std::nullopt;
-}
-
 }  // namespace
 
 // A class helps to verify enable/disable Drive could invoke
@@ -183,7 +173,6 @@ class ProjectorClientTest : public InProcessBrowserTest {
 // URLs are valid.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
   VerifyUrlValid(kChromeUIUntrustedProjectorUrl);
-  VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
@@ -342,8 +331,6 @@ class ProjectorClientManagedTest
 
   bool is_child() const { return GetParam(); }
 
-  bool is_managed() const { return !is_child(); }
-
   ProjectorClient* client() { return ProjectorClient::Get(); }
 
   std::string GetPolicy() {
@@ -380,13 +367,9 @@ class ProjectorClientManagedTest
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
   LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
+      &mixin_host_, /*test_base=*/this, embedded_test_server(),
       is_child() ? LoggedInUserMixin::LogInType::kChild
-                 : LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(),
-      this,
-      /*should_launch_browser=*/true,
-      GetPrimaryAccountId(is_managed())};
+                 : LoggedInUserMixin::LogInType::kManaged};
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,

@@ -31,14 +31,17 @@ constexpr base::TimeDelta kDragProxySnapBackDuration = base::Milliseconds(300);
 
 }  // namespace
 
-DeskDragProxy::DeskDragProxy(DeskBarViewBase* desk_bar_view,
-                             DeskMiniView* drag_view,
-                             float init_offset_x)
+DeskDragProxy::DeskDragProxy(
+    DeskBarViewBase* desk_bar_view,
+    DeskMiniView* drag_view,
+    float init_offset_x,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
     : desk_bar_view_(desk_bar_view),
       drag_view_(drag_view),
       drag_preview_size_(drag_view->GetPreviewBoundsInScreen().size()),
       preview_screen_y_(drag_view->GetPreviewBoundsInScreen().y()),
-      init_offset_x_(init_offset_x) {}
+      init_offset_x_(init_offset_x),
+      window_occlusion_calculator_(window_occlusion_calculator) {}
 
 DeskDragProxy::~DeskDragProxy() = default;
 
@@ -69,9 +72,9 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   drag_widget_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
   // Copy the preview of the dragged desk to the widget content.
-  drag_preview_ =
-      drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
-          views::Button::PressedCallback(), drag_view_));
+  drag_widget_->SetContentsView(std::make_unique<DeskPreviewView>(
+      views::Button::PressedCallback(), drag_view_,
+      window_occlusion_calculator_));
 
   // Set the bounds of dragged preview to drag proxy.
   drag_widget_->SetBounds(drag_view_->GetPreviewBoundsInScreen());

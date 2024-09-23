@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -31,7 +31,7 @@ class LacrosSelectionPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  std::optional<crosapi::browser_util::LacrosSelectionPolicy> GetValue(
+  std::optional<ash::standalone_browser::LacrosSelectionPolicy> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
 };

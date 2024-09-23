@@ -39,8 +39,7 @@ AttestationFlowAdaptive::AttestationFlowAdaptive(
     std::unique_ptr<ServerProxy> server_proxy,
     std::unique_ptr<AttestationFlowTypeDecider> type_decider,
     std::unique_ptr<AttestationFlowFactory> factory)
-    : AttestationFlow(/*server_proxy=*/nullptr),
-      server_proxy_(std::move(server_proxy)),
+    : server_proxy_(std::move(server_proxy)),
       raw_server_proxy_(server_proxy_.get()),
       attestation_flow_type_decider_(std::move(type_decider)),
       attestation_flow_factory_(std::move(factory)) {}

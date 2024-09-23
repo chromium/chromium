@@ -17,7 +17,9 @@ namespace ukm::internal {
 class METRICS_EXPORT UkmEntryBuilderBase {
  public:
   UkmEntryBuilderBase(const UkmEntryBuilderBase&) = delete;
+  UkmEntryBuilderBase(UkmEntryBuilderBase&&);
   UkmEntryBuilderBase& operator=(const UkmEntryBuilderBase&) = delete;
+  UkmEntryBuilderBase& operator=(UkmEntryBuilderBase&&);
 
   virtual ~UkmEntryBuilderBase();
 
@@ -34,7 +36,7 @@ class METRICS_EXPORT UkmEntryBuilderBase {
 
  protected:
   UkmEntryBuilderBase(ukm::SourceIdObj source_id, uint64_t event_hash);
-  // TODO(crbug/873866): Remove this version once callers are migrated.
+  // TODO(crbug.com/40589246): Remove this version once callers are migrated.
   UkmEntryBuilderBase(SourceId source_id, uint64_t event_hash);
 
   // Add metric to the entry. A metric contains a metric hash and value.

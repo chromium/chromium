@@ -1,0 +1,89 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("identity_chooser") {
+  sources = [
+    "identity_chooser_coordinator.h",
+    "identity_chooser_coordinator.mm",
+    "identity_chooser_coordinator_delegate.h",
+    "identity_chooser_mediator.h",
+    "identity_chooser_mediator.mm",
+  ]
+  deps = [
+    ":identity_chooser_ui",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication/cells",
+  ]
+}
+
+source_set("identity_chooser_ui") {
+  sources = [
+    "identity_chooser_add_account_item.h",
+    "identity_chooser_add_account_item.mm",
+    "identity_chooser_animator.h",
+    "identity_chooser_animator.mm",
+    "identity_chooser_consumer.h",
+    "identity_chooser_header_item.h",
+    "identity_chooser_header_item.mm",
+    "identity_chooser_presentation_controller.h",
+    "identity_chooser_presentation_controller.mm",
+    "identity_chooser_transition_delegate.h",
+    "identity_chooser_transition_delegate.mm",
+    "identity_chooser_view_controller.h",
+    "identity_chooser_view_controller.mm",
+    "identity_chooser_view_controller_presentation_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/google/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/identity_chooser/resources",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/resources",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "identity_chooser_coordinator_unittest.mm" ]
+  deps = [
+    ":identity_chooser",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/ui/authentication/identity_chooser:identity_chooser_ui",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

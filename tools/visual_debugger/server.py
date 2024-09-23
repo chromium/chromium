@@ -17,6 +17,7 @@ import urllib.request
 import socketserver
 import webbrowser
 import os
+import argparse
 
 debugger_port = 0
 remote_port = 7777
@@ -58,8 +59,18 @@ from local to remote:
 
 if __name__ == '__main__':
   try:
-    remote_port = int(sys.argv[1]) if len(sys.argv) > 1 else remote_port
-    debugger_port = int(sys.argv[2]) if len(sys.argv) > 2 else debugger_port
+    parser = argparse.ArgumentParser()
+    parser.add_argument("remote_port", default=remote_port, type=int)
+    parser.add_argument("debugger_port",
+                        default=debugger_port,
+                        type=int,
+                        nargs='?')
+    parser.add_argument("--nolaunch",
+                        help="Disables launching in browser window",
+                        action="store_true")
+    args = parser.parse_args()
+    remote_port = args.remote_port
+    debugger_port = args.debugger_port
     # Creates a partial object that will behave like a function called with args
     # and kwargs, while overriding directory with the given path.
     Handler = partial(CORSRequestHandler,
@@ -70,9 +81,10 @@ if __name__ == '__main__':
     if (debugger_port == 0):
       debugger_port = tpc_server.server_address[1]
     print("Server running on port", debugger_port)
-    webbrowser.open("http://localhost:" + str(debugger_port) + "/app.html",
-                    new=1,
-                    autoraise=True)
+    if not args.nolaunch:
+      webbrowser.open("http://localhost:" + str(debugger_port) + "/app.html",
+                      new=1,
+                      autoraise=True)
     tpc_server.serve_forever()
   except KeyboardInterrupt:
     tpc_server.server_close()

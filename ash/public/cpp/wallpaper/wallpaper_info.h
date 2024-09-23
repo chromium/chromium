@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -14,11 +15,34 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT WallpaperInfo {
+  // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
+  static constexpr std::string_view kNewWallpaperAssetIdNodeName = "asset_id";
+  static constexpr std::string_view kNewWallpaperCollectionIdNodeName =
+      "collection_id";
+  static constexpr std::string_view kNewWallpaperDateNodeName = "date";
+  static constexpr std::string_view kNewWallpaperDedupKeyNodeName = "dedup_key";
+  static constexpr std::string_view kNewWallpaperLocationNodeName = "file";
+  static constexpr std::string_view kNewWallpaperUserFilePathNodeName =
+      "file_path";
+  static constexpr std::string_view kNewWallpaperLayoutNodeName = "layout";
+  static constexpr std::string_view kNewWallpaperTypeNodeName = "type";
+  static constexpr std::string_view kNewWallpaperUnitIdNodeName = "unit_id";
+  static constexpr std::string_view kNewWallpaperVariantListNodeName =
+      "variants";
+  static constexpr std::string_view kNewWallpaperVersionNodeName = "version";
+
+  // Names of nodes for the online wallpaper variant dictionary.
+  static constexpr std::string_view kOnlineWallpaperTypeNodeName =
+      "online_image_type";
+  static constexpr std::string_view kOnlineWallpaperUrlNodeName = "url";
+
   WallpaperInfo();
 
   // `target_variant` should match one of the
@@ -50,12 +74,28 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   bool MatchesSelection(const WallpaperInfo& other) const;
   bool MatchesAsset(const WallpaperInfo& other) const;
 
+  // Used to convert from local or remote syncable pref dict to a WallpaperInfo.
+  // Returns nullopt if the |dict| contains any invalid value which may come
+  // from future versions of the remote pref .e.g wallpaper type.
+  static std::optional<WallpaperInfo> FromDict(const base::Value::Dict& dict);
+
+  // Returns the dictionary representation of the `WallpaperInfo` to be saved
+  // into pref store.
+  base::Value::Dict ToDict() const;
+
   ~WallpaperInfo();
+
+  // The version associated with the wallpaper. Expected to be in the form of
+  // "major.minor". Major version indicates breaking change, and incompatible
+  // with the other versions. Check `base::Version::IsValid()` before using.
+  base::Version version;
 
   // Either file name of migrated wallpaper including first directory level
   // (corresponding to user wallpaper_files_id), online wallpaper URL, or
   // Google Photos id.
+  // For SeaPen wallpaper, location is a uint32 id as a string.
   std::string location;
+
   // user_file_path is the full path of the wallpaper file and is used as
   // the new CurrentWallpaper key. This field is required as the old key which
   // was set to the filename part made the UI mistakenly highlight multiple

@@ -20,7 +20,8 @@ PersistentWindowInfo::PersistentWindowInfo(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   window_bounds_in_screen_ = window->GetBoundsInScreen();
   display_id_ = display.id();
-  display_bounds_in_screen_ = display.bounds();
+  display_offset_from_origin_in_screen_ = display.bounds().OffsetFromOrigin();
+  display_size_in_pixel_ = display.GetSizeInPixel();
 
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);

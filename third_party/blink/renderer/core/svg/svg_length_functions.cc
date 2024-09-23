@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -88,7 +89,7 @@ float SVGViewportResolver::ViewportDimension(SVGLengthMode mode) const {
               .LengthSquared() /
           2));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -112,8 +113,9 @@ float ValueForLength(const Length& length,
                      float zoom,
                      SVGLengthMode mode) {
   // The viewport will be unaffected by zoom.
-  const float dimension =
-      length.IsPercentOrCalc() ? viewport_resolver.ViewportDimension(mode) : 0;
+  const float dimension = length.MayHavePercentDependence()
+                              ? viewport_resolver.ViewportDimension(mode)
+                              : 0;
   return ValueForLength(length, zoom, dimension);
 }
 
@@ -154,7 +156,8 @@ gfx::Vector2dF VectorForLengthPair(const Length& x_length,
                                    const SVGViewportResolver& viewport_resolver,
                                    const ComputedStyle& style) {
   gfx::SizeF viewport_size;
-  if (x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) {
+  if (x_length.MayHavePercentDependence() ||
+      y_length.MayHavePercentDependence()) {
     viewport_size = viewport_resolver.ResolveViewport();
   }
   return VectorForLengthPair(x_length, y_length, style.EffectiveZoom(),

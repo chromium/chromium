@@ -47,11 +47,10 @@ std::unique_ptr<EnrollmentLauncher> FakeEnrollmentLauncher::Create(
     MockEnrollmentLauncher* mock,
     EnrollmentStatusConsumer* status_consumer,
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
+    const std::string& enrolling_user_domain) {
   auto result =
       base::WrapUnique(new FakeEnrollmentLauncher(mock, status_consumer));
-  result->Setup(enrollment_config, enrolling_user_domain, license_type);
+  result->Setup(enrollment_config, enrolling_user_domain);
   return result;
 }
 
@@ -78,8 +77,13 @@ void FakeEnrollmentLauncher::EnrollUsingAttestation() {
   mock_->EnrollUsingAttestation();
 }
 
-void FakeEnrollmentLauncher::ClearAuth(base::OnceClosure callback) {
-  mock_->ClearAuth(std::move(callback));
+void FakeEnrollmentLauncher::EnrollUsingEnrollmentToken() {
+  mock_->EnrollUsingEnrollmentToken();
+}
+
+void FakeEnrollmentLauncher::ClearAuth(base::OnceClosure callback,
+                                       bool revoke_oauth2_tokens) {
+  mock_->ClearAuth(std::move(callback), revoke_oauth2_tokens);
 }
 
 void FakeEnrollmentLauncher::GetDeviceAttributeUpdatePermission() {
@@ -94,13 +98,16 @@ void FakeEnrollmentLauncher::UpdateDeviceAttributes(
 
 void FakeEnrollmentLauncher::Setup(
     const policy::EnrollmentConfig& enrollment_config,
-    const std::string& enrolling_user_domain,
-    policy::LicenseType license_type) {
-  mock_->Setup(enrollment_config, enrolling_user_domain, license_type);
+    const std::string& enrolling_user_domain) {
+  mock_->Setup(enrollment_config, enrolling_user_domain);
 }
 
 bool FakeEnrollmentLauncher::InProgress() const {
   return mock_->InProgress();
+}
+
+std::string FakeEnrollmentLauncher::GetOAuth2RefreshToken() const {
+  return mock_->GetOAuth2RefreshToken();
 }
 
 }  // namespace ash

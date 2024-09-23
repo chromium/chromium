@@ -6,6 +6,7 @@
 #define SERVICES_PROXY_RESOLVER_WIN_WINHTTP_API_WRAPPER_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <string>

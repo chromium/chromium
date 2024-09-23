@@ -435,11 +435,10 @@ class ColorPicker extends HTMLElement {
 
     this.visualColorPicker_ = new VisualColorPicker(initialColor);
     this.manualColorPicker_ = new ManualColorPicker(initialColor);
-    this.systemColorPicker_ = new SystemColorPicker();
     this.colorValueAXAnnouncer_ = new ColorValueAXAnnouncer();
     this.append(
         this.visualColorPicker_, this.manualColorPicker_,
-        this.systemColorPicker_, this.colorValueAXAnnouncer_);
+        this.colorValueAXAnnouncer_);
 
     this.visualColorPicker_.addEventListener(
         'visual-color-picker-initialized',
@@ -2189,40 +2188,3 @@ class ColorValueAXAnnouncer extends HTMLElement {
   static announcementDelayMS = 500;
 }
 window.customElements.define('color-value-ax-announcer', ColorValueAXAnnouncer);
-
-class SystemColorPicker extends HTMLElement {
-  constructor() {
-    super();
-    if (!global.params.isSystemColorChooserEnabled) {
-      this.classList.add('hidden');
-      return;
-    }
-    this.setAttribute('tabIndex', 0);
-    this.setAttribute('role', 'button');
-    this.textContent = global.params.systemColorChooserLabel;
-    this.setAttribute('aria-label', global.params.systemColorChooserLabel);
-    this.addEventListener('click', this.onClick_);
-    this.addEventListener('keydown', this.onKeyDown_);
-  }
-
-  onClick_ = () => {
-    this.classList.add('selected');
-    window.pagePopupController.openSystemColorChooser();
-  };
-
-  /**
-   * @param {!Event} event
-   */
-  onKeyDown_ = (event) => {
-    switch (event.key) {
-      case 'Enter':
-        this.onClick_();
-        break;
-    }
-  };
-
-  finished = () => {
-    this.classList.remove('selected');
-  }
-}
-window.customElements.define('system-color-picker', SystemColorPicker);

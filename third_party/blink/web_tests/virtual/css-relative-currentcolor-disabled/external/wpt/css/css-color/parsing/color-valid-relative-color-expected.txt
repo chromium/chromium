@@ -1,0 +1,74 @@
+This is a testharness.js-based test.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r calc(g * 2) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(g * 2) 10)\nExpected: rgb(from rebeccapurple r calc(2 * g) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc( * g) )" but got "rgb(from rebeccapurple r calc(g * ) )"
+[FAIL] e.style['color'] = "rgb(from rebeccapurple b calc(r * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple b calc(r * 0.5) 10)\nExpected: rgb(from rebeccapurple b calc(0.5 * r) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple b calc( * r) )" but got "rgb(from rebeccapurple b calc(r * ) )"
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r calc(g * .5 + g * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(g * 0.5 + g * 0.5) 10)\nExpected: rgb(from rebeccapurple r calc((0.5 * g) + (0.5 * g)) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc(( * g) + ( * g)) )" but got "rgb(from rebeccapurple r calc(g *  + g * ) )"
+[FAIL] e.style['color'] = "rgb(from rebeccapurple r calc(b * .5 - g * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(b * 0.5 - g * 0.5) 10)\nExpected: rgb(from rebeccapurple r calc((0.5 * b) - (0.5 * g)) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc(( * b) - ( * g)) )" but got "rgb(from rebeccapurple r calc(b *  - g * ) )"
+[FAIL] e.style['color'] = "rgb(from currentColor r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(g * 2) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(g * 2) 10)\nExpected: rgb(from rebeccapurple r calc(2 * g) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc( * g) )" but got "rgb(from rebeccapurple r calc(g * ) )"
+[FAIL] e.style['color'] = "rgba(from rebeccapurple b calc(r * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple b calc(r * 0.5) 10)\nExpected: rgb(from rebeccapurple b calc(0.5 * r) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple b calc( * r) )" but got "rgb(from rebeccapurple b calc(r * ) )"
+[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(g * .5 + g * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(g * 0.5 + g * 0.5) 10)\nExpected: rgb(from rebeccapurple r calc((0.5 * g) + (0.5 * g)) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc(( * g) + ( * g)) )" but got "rgb(from rebeccapurple r calc(g *  + g * ) )"
+[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(b * .5 - g * .5) 10)" should set the property value
+  Colors do not match.\nActual:   rgb(from rebeccapurple r calc(b * 0.5 - g * 0.5) 10)\nExpected: rgb(from rebeccapurple r calc((0.5 * b) - (0.5 * g)) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc(( * b) - ( * g)) )" but got "rgb(from rebeccapurple r calc(b *  - g * ) )"
+[FAIL] e.style['color'] = "rgba(from currentColor r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hsl(from currentColor h s l)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hsla(from currentColor h s l)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hwb(from currentColor h w b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lab(from lab(50 -30 40) l calc(a / 3) calc(b / 2))" should set the property value
+  Colors do not match.\nActual:   lab(from lab(50 -30 40) l calc(a / 3) calc(b / 2))\nExpected: lab(from lab(50 -30 40) l calc(0.333333 * a) calc(0.5 * b)).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 0.333333 +/- 0.01, expected 0.333333 but got 3
+[FAIL] e.style['color'] = "lab(from currentColor l a b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklab(from oklab(0.7 0.25 -0.15) l calc(a / 2) calc(b / 3))" should set the property value
+  Colors do not match.\nActual:   oklab(from oklab(0.7 0.25 -0.15) l calc(a / 2) calc(b / 3))\nExpected: oklab(from oklab(0.7 0.25 -0.15) l calc(0.5 * a) calc(0.333333 * b)).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 0.5 +/- 0.01, expected 0.5 but got 2
+[FAIL] e.style['color'] = "oklab(from currentColor l a b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lch(from lch(50 100 300) l calc(c / 2) h)" should set the property value
+  Colors do not match.\nActual:   lch(from lch(50 100 300) l calc(c / 2) h)\nExpected: lch(from lch(50 100 300) l calc(0.5 * c) h).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 0.5 +/- 0.01, expected 0.5 but got 2
+[FAIL] e.style['color'] = "lch(from lch(50 100 300) l c calc(h * 2.5))" should set the property value
+  Colors do not match.\nActual:   lch(from lch(50 100 300) l c calc(h * 2.5))\nExpected: lch(from lch(50 100 300) l c calc(2.5 * h)).\nError: assert_equals: Color format is correct. expected "lch(from lch(  ) l c calc( * h))" but got "lch(from lch(  ) l c calc(h * ))"
+[FAIL] e.style['color'] = "lch(from currentColor l c h)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklch(from oklch(0.7 0.2 300) l calc(c / 2) h)" should set the property value
+  Colors do not match.\nActual:   oklch(from oklch(0.7 0.2 300) l calc(c / 2) h)\nExpected: oklch(from oklch(0.7 0.2 300) l calc(0.5 * c) h).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 3, expected 0.5 +/- 0.01, expected 0.5 but got 2
+[FAIL] e.style['color'] = "oklch(from oklch(0.7 0.2 300) l c calc(h * 2.5))" should set the property value
+  Colors do not match.\nActual:   oklch(from oklch(0.7 0.2 300) l c calc(h * 2.5))\nExpected: oklch(from oklch(0.7 0.2 300) l c calc(2.5 * h)).\nError: assert_equals: Color format is correct. expected "oklch(from oklch(  ) l c calc( * h))" but got "oklch(from oklch(  ) l c calc(h * ))"
+[FAIL] e.style['color'] = "oklch(from currentColor l c h)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor srgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor srgb-linear r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor a98-rgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor rec2020 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor prophoto-rgb r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor display-p3 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz-d50 x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from currentColor xyz-d65 x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lch(from peru calc(l * 0.8) c h)" should set the property value
+  Colors do not match.\nActual:   lch(from peru calc(l * 0.8) c h)\nExpected: lch(from peru calc(0.8 * l) c h).\nError: assert_equals: Color format is correct. expected "lch(from peru calc( * l) c h)" but got "lch(from peru calc(l * ) c h)"
+[FAIL] e.style['color'] = "color(from rebeccapurple srgb r g b)" should set the property value
+  Colors do not match.\nActual:   color(from rebeccapurple srgb r g b)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] e.style['color'] = "rgb(from color(srgb 0.4 0.2 0.6) r g b)" should set the property value
+  Colors do not match.\nActual:   rgb(from color(srgb 0.4 0.2 0.6) r g b)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_equals: Color format is correct. expected "color(srgb   )" but got "rgb(from color(srgb   ) r g b)"
+Harness: the test ran to completion.
+

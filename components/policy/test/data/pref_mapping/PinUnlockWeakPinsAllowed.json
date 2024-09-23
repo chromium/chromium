@@ -9,7 +9,9 @@
           "PinUnlockWeakPinsAllowed": true
         },
         "prefs": {
-          "pin_unlock_weak_pins_allowed": {}
+          "pin_unlock_weak_pins_allowed": {
+            "value": true
+          }
         }
       }
     ]

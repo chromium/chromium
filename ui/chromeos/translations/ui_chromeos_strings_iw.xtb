@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
 <translation id="3085752524577180175">‏מארח SOCKS</translation>
 <translation id="3104793765551262433">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי האדמין, פרטים</translation>
-<translation id="3113153474486991170">לא ניתן היה לפתוח את "<ph name="PATH" />" מהמיקום הזה. יש להעתיק כדי לפתוח את "הקבצים שלי".</translation>
 <translation id="3113592018909187986">נותר לך עוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
 <translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">ביטול <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, <ph name="CONNECTION_STATUS" />, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="3691184985318546178">סינהאלה</translation>
+<translation id="3702842351052426940">‏יכול להיות שכרטיס ה-SIM או פרופיל ה-eSIM שלך יושבתו. אפשר לנסות להחליף את כרטיס ה-SIM או להחליף פרופיל eSIM.</translation>
 <translation id="3722341589402358578">אירעה שגיאה. ייתכן שפריטים מסוימים לא הועברו לאשפה.</translation>
 <translation id="3726463242007121105">לא ניתן לפתוח מכשיר זה מאחר שמערכת הקבצים שלו אינה נתמכת.</translation>
 <translation id="3727148787322499904">שינוי של הגדרה זו ישפיע על כל הרשתות המשותפות</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">‏שרת ה-proxy הזה נאכף על ידי מנהל המערכת</translation>
 <translation id="3830674330436234648">לא ניתן להפעיל</translation>
 <translation id="383652340667548381">סרבית</translation>
+<translation id="3839045880592694915">למודם אין הרשאה להתחבר לספק שלך. למידע נוסף, אפשר לפנות לספק.</translation>
 <translation id="385051799172605136">חזרה</translation>
-<translation id="3851491607336266896">יש חיבור, הקישוריות מוגבלת</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3866249974567520381">תיאור</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">‏קובצי Microsoft שנפתחו לאחרונה עברו ל-OneDrive</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4017788180641807848">‏מקלדת Workman באנגלית (ארה"ב)</translation>
-<translation id="4019998208269143058">הצמדה לקבצים המהירים</translation>
 <translation id="4040753847560036377">‏ה-PUK שגוי</translation>
 <translation id="4057991113334098539">מפעיל...</translation>
 <translation id="4092890906744441904">אירית</translation>
+<translation id="4101601646343868113">עליך להיכנס לרשת הסלולרית שלך ולאשר שחבילת הגלישה שלך פעילה</translation>
 <translation id="4124731372776320263">‏קובץ אחד מסתנכרן ב-Drive עכשיו</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
@@ -477,7 +477,7 @@
 <translation id="4779041693283480986">פורטוגזית (פורטוגל)</translation>
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4784330909746505604">‏מצגת PowerPoint</translation>
-<translation id="4788401404269709922">‎<ph name="NUMBER_OF_KB" /> KB</translation>
+<translation id="4788401404269709922">‎<ph name="NUMBER_OF_KB" />KB</translation>
 <translation id="4789067489790477934">‏מתן הרשאת גישה ל-Parallels Desktop לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="4790766916287588578">‏הינדי עם מקלדת InScript</translation>
 <translation id="4801956050125744859">שמירת שתיהן</translation>
@@ -606,6 +606,7 @@
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
 <translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">האזנה</translation>
+<translation id="5650895901941743674">‏בדיקת ההגדרות האישיות של ה-APN</translation>
 <translation id="5669691691057771421">הזנת קוד האימות החדש</translation>
 <translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
@@ -685,6 +686,7 @@
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>
 <translation id="6271903698064569429">לא ניתן להעלות קבצים כי אין מספיק מקום באחסון השיתופי '<ph name="SHARED_DRIVE_NAME" />'.</translation>
+<translation id="6279140785485544797">יכול להיות שתוקף חבילת הגלישה שלך פג. אפשר לפנות לספק לקבלת תמיכה.</translation>
 <translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
 <translation id="6295542640242147836">‏נעילת כרטיס ה-SIM</translation>
 <translation id="6296410173147755564">‏ה-PUK לא תקין</translation>
@@ -694,7 +696,6 @@
 <translation id="6320212353742551423">קובץ ארכיון מסוג <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">דמות שמנופפת</translation>
 <translation id="6327785803543103246">‏גילוי אוטומטי של שרת proxy באינטרנט</translation>
-<translation id="6337014272874260727">ביטול ההצמדה לקבצים המהירים</translation>
 <translation id="6339145975392024142">‏מקלדת ארה"ב בינלאומית (PC)</translation>
 <translation id="6356685157277930264">חלון משוב לגבי קבצים</translation>
 <translation id="6358884629796491903">דרקון</translation>
@@ -740,6 +741,7 @@
 <translation id="6750737795876287924">הספרייה הנוכחית</translation>
 <translation id="6751256176799620176">תיקייה אחת נבחרה</translation>
 <translation id="6755827872271341378">‏מכשיר עם ChromeOS Flex</translation>
+<translation id="6777029074498310250">‏מידע נוסף זמין בכתובת <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6794539005637808366">אפשר לשחזר את הפריט או לגרור אותו לתיקייה חדשה מחוץ לאשפה</translation>
 <translation id="6795884519221689054">פנדה</translation>
@@ -793,6 +795,7 @@
 <translation id="7086590977277044826">‏טמילית עם מקלדת InScript</translation>
 <translation id="7088615885725309056">ישן יותר</translation>
 <translation id="7103992300314999525">מקדונית</translation>
+<translation id="7104338189998813914">‏יש בעיה בגישה לחשבון OneDrive שלך</translation>
 <translation id="7106346894903675391">קניית נפח אחסון נוסף...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
 <translation id="7135561821015524160">קאנדה פונטית</translation>
@@ -853,6 +856,7 @@
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
 <translation id="7600126690270271294">סרבית</translation>
 <translation id="7603724359189955920">רשתות</translation>
+<translation id="7624010287655004652">ננעל על ידי ספק סלולר אחר</translation>
 <translation id="7627790789328695202">אופס, <ph name="FILE_NAME" /> כבר קיים. יש לשנות את השם שלו ולנסות שוב.</translation>
 <translation id="7628656427739290098">‏‎<ph name="PERCENT" />%‎ הושלמו.</translation>
 <translation id="7649070708921625228">עזרה</translation>
@@ -1010,6 +1014,7 @@
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
+<translation id="8630384863424041081">‏עליך להזין את קוד האימות של כרטיס ה-SIM או את קוד האימות שמוגדר כברירת מחדל שניתן לך על ידי הספק. אפשר לפנות לספק לקבלת תמיכה.</translation>
 <translation id="863903787380594467">קוד האימות שגוי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>
 <translation id="8656407365183407932">היה צורך להסיר את הקבצים במצב אופליין</translation>
@@ -1019,7 +1024,6 @@
 <translation id="8698877009525468705">הקובץ הזה סודי וכפוף להגבלות של מדיניות האדמין.</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8713112442029511308">מלטזית</translation>
-<translation id="8714138378966541668">הרשת ננעלה על ידי הספק</translation>
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">קרואטית</translation>

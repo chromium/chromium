@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
@@ -252,9 +251,8 @@ class ContentMainRunnerImplBrowserTest : public ContentBrowserTest {
 
   void TestBasicStartupComplete() {
     // The PostEarlyInitialization test checks that ContentMainRunnerImpl set up
-    // the ThreadPoolInstance and FeatureList. These tests would be invalid if
-    // they already exist before starting.
-    EXPECT_FALSE(base::ThreadPoolInstance::Get());
+    // the FeatureList. This test is invalid if it already exists
+    // before starting.
     EXPECT_FALSE(base::FeatureList::GetInstance());
   }
 

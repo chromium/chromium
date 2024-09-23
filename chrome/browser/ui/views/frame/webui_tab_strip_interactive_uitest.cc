@@ -25,6 +25,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -267,7 +268,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // detail is provided in the actual test sequence.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1399655): Flaky on linux-chromeos-chrome. Reenable
+// TODO(crbug.com/40883259): Flaky on linux-chromeos-chrome. Reenable
 // this test when the flakiness will be resolved.
 #define MAYBE_CloseTabDuringDragDoesNotCrash \
   DISABLED_CloseTabDuringDragDoesNotCrash

@@ -13,29 +13,30 @@
 #include <sstream>
 #include <utility>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY) &&                \
+    (PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX) || \
+     PA_BUILDFLAG(IS_CHROMEOS))
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
 
 // Temporary definitions until a new hwcap.h is pulled in everywhere.
 // https://crbug.com/1265965
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 #ifndef HWCAP2_MTE
 #define HWCAP2_MTE (1 << 18)
 #endif
 #ifndef HWCAP2_BTI
 #define HWCAP2_BTI (1 << 17)
 #endif
-#endif  // # defined(ARCH_CPU_ARM64)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY) && (PA_BUILDFLAG(IS_ANDROID) ||
+        // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS))
 
-#if defined(ARCH_CPU_X86_FAMILY)
-#if defined(COMPILER_MSVC)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
 #include <immintrin.h>  // For _xgetbv()
 #include <intrin.h>
 #endif
@@ -50,8 +51,8 @@ CPU::CPU(CPU&&) = default;
 
 namespace {
 
-#if defined(ARCH_CPU_X86_FAMILY)
-#if !defined(COMPILER_MSVC)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
+#if !PA_BUILDFLAG(PA_COMPILER_MSVC)
 
 #if defined(__pic__) && defined(__i386__)
 
@@ -75,19 +76,19 @@ void __cpuid(int cpu_info[4], int info_type) {
 }
 
 #endif
-#endif  // !defined(COMPILER_MSVC)
+#endif  // !PA_BUILDFLAG(PA_COMPILER_MSVC)
 
 // xgetbv returns the value of an Intel Extended Control Register (XCR).
 // Currently only XCR0 is defined by Intel so |xcr| should always be zero.
 uint64_t xgetbv(uint32_t xcr) {
-#if defined(COMPILER_MSVC)
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
   return _xgetbv(xcr);
 #else
   uint32_t eax, edx;
 
   __asm__ volatile("xgetbv" : "=a"(eax), "=d"(edx) : "c"(xcr));
   return (static_cast<uint64_t>(edx) << 32) | eax;
-#endif  // defined(COMPILER_MSVC)
+#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
 }
 
 #endif  // ARCH_CPU_X86_FAMILY
@@ -95,7 +96,7 @@ uint64_t xgetbv(uint32_t xcr) {
 }  // namespace
 
 void CPU::Initialize() {
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
   int cpu_info[4] = {-1};
 
   // __cpuid with an InfoType argument of 0 returns the number of
@@ -182,17 +183,18 @@ void CPU::Initialize() {
       has_non_stop_time_stamp_counter_ = true;
     }
   }
-#elif defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY)
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
 
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
   unsigned long hwcap2 = getauxval(AT_HWCAP2);
   has_mte_ = hwcap2 & HWCAP2_MTE;
   has_bti_ = hwcap2 & HWCAP2_BTI;
 #endif
 
-#elif BUILDFLAG(IS_WIN)
+#elif PA_BUILDFLAG(IS_WIN)
   // Windows makes high-resolution thread timing information available in
   // user-space.
   has_non_stop_time_stamp_counter_ = true;

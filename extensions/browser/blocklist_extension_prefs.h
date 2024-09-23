@@ -25,7 +25,7 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 // BLOCKLISTED_POTENTIALLY_UNWANTED > BLOCKLISTED_SECURITY_VULNERABILITY.
 BitMapBlocklistState GetExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs);
+    const ExtensionPrefs* extension_prefs);
 
 // Returns whether the extension with |extension_id| is blocklisted for malware
 // by the Safe Browsing blocklist or the Omaha attribute blocklist.
@@ -45,7 +45,7 @@ void RemoveOmahaBlocklistState(const ExtensionId& extension_id,
 // state pref.
 bool HasOmahaBlocklistState(const ExtensionId& extension_id,
                             BitMapBlocklistState state,
-                            ExtensionPrefs* extension_prefs);
+                            const ExtensionPrefs* extension_prefs);
 // Checks whether the `extension_id` is in any Omaha greylist state.
 bool HasAnyOmahaGreylistState(const ExtensionId& extension_id,
                               ExtensionPrefs* extension_prefs);
@@ -87,7 +87,7 @@ void SetSafeBrowsingExtensionBlocklistState(
 // blocklist, please use blocklist_prefs::GetExtensionBlocklistState instead.
 BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs);
+    const ExtensionPrefs* extension_prefs);
 
 // Sets the `bitmap_blocklist_state` to the Extension Telemetry service
 // blocklist state pref.
@@ -100,7 +100,7 @@ void SetExtensionTelemetryServiceBlocklistState(
 // `extension_id`.
 BitMapBlocklistState GetExtensionTelemetryServiceBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs);
+    const ExtensionPrefs* extension_prefs);
 
 }  // namespace blocklist_prefs
 }  // namespace extensions

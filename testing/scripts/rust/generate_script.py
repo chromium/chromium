@@ -11,6 +11,7 @@ import sys
 sys.path.append(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
                  'build'))
+# //build imports.
 import action_helpers
 
 
@@ -54,9 +55,9 @@ def _find_test_executables(args):
                 raise ValueError(
                     f'Duplicate entry "{exe_name}" in {input_filepath}')
             if args.make_bat:
-                suffix = ".exe"
+                suffix = '.exe'
             else:
-                suffix = ""
+                suffix = ''
             exes.add(f'{exe_name}{suffix}')
     if not exes:
         raise ValueError(f'Unexpectedly empty file: {input_filepath}')

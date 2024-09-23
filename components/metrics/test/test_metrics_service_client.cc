@@ -5,6 +5,7 @@
 #include "components/metrics/test/test_metrics_service_client.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -76,7 +77,7 @@ void TestMetricsServiceClient::CollectFinalMetricsForLog(
 std::unique_ptr<MetricsLogUploader> TestMetricsServiceClient::CreateUploader(
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete) {
   auto uploader = std::make_unique<TestMetricsLogUploader>(on_upload_complete);

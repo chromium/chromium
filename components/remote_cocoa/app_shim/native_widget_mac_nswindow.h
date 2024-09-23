@@ -74,6 +74,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // immersive fullscreen session.
 - (BOOL)immersiveFullscreen;
 
+// The sheet parent that should be used. In immersive fullscreen the preferred
+// sheet parent is the root window (the browser window).
+- (NSWindow*)preferredSheetParent;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.

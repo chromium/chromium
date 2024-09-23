@@ -17,17 +17,17 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_coordinator.h"
@@ -230,10 +230,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  if (IsDiscoverFeedPreviewEnabled()) {
-    [model addItem:[self linkPreviewItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
+  [model addItem:[self linkPreviewItem]
+      toSectionWithIdentifier:SectionIdentifierSettings];
 
   self.defaultModeItem = [self defaultSiteMode];
   [model addItem:self.defaultModeItem
@@ -508,8 +506,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.detectAddressesEnabled) {
     self.detectAddressItem.on = [self.detectAddressesEnabled value];
     [self reconfigureCellsForItems:@[ self.detectAddressItem ]];
+  } else if (observableBoolean == self.detectUnitsEnabled) {
+    self.detectUnitsItem.on = [self.detectUnitsEnabled value];
+    [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -576,7 +577,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
-  // TODO(crbug.com/1454777)
+  // TODO(crbug.com/40272467)
   DUMP_WILL_BE_CHECK(_browser);
   [_disablePopupsSetting stop];
   _disablePopupsSetting.observer = nil;

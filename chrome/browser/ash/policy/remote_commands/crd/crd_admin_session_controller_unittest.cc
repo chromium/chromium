@@ -23,8 +23,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
+#include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -101,13 +101,6 @@ auto SaveParamAndInvokeCallback(remoting::ChromeOsEnterpriseParams* output) {
 // to the `GetReconnectableSessionId` call.
 auto ReplyWithSessionId(std::optional<SessionId> id) {
   return [id](auto callback) { std::move(callback).Run(id); };
-}
-
-ui::KeyEvent EventWithSource(int source_device_id) {
-  ui::KeyEvent result{ui::EventType::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_C,
-                      /*flags=*/0};
-  result.set_source_device_id(source_device_id);
-  return result;
 }
 
 class RemotingServiceMock
@@ -648,6 +641,22 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
 }
 
 TEST_F(CrdAdminSessionControllerTest,
+       ShouldSurvive2CallsToHostStateReceivedAccessCode) {
+  InitWithNoReconnectableSession(session_controller());
+  SupportHostObserver& observer = StartCrdHostAndBindObserver();
+
+  observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
+  // This can happen if the client tried to connect and the access is denied,
+  // see `It2MeHost::OnClientAccessDenied`.
+  // The system should not crash when receiving the access code twice.
+  observer.OnHostStateReceivedAccessCode("the-access-code", base::Days(1));
+
+  Response response = WaitForResponse();
+  ASSERT_TRUE(response.HasAccessCode());
+  EXPECT_EQ("the-access-code", response.access_code());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
        ShouldStartSessionIfAccessCodeFetchSucceeds) {
   InitWithNoReconnectableSession(session_controller());
   session_controller().SetOAuthTokenForTesting("test-oauth-token");
@@ -821,8 +830,8 @@ TEST_F(
   InitWithNoReconnectableSession(session_controller());
   SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-  observer.OnHostStateError(
-      remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY);
+  observer.OnHostStateError(static_cast<int64_t>(
+      remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY));
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
@@ -875,14 +884,16 @@ TEST_F(CrdAdminSessionControllerTest,
         ExtendedStartCrdSessionResultCode::
             kFailureLocationAuthzPolicyCheckFailed},
        {ErrorCode::UNAUTHORIZED_ACCOUNT,
-        ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount}};
+        ExtendedStartCrdSessionResultCode::kFailureUnauthorizedAccount},
+       {ErrorCode::REAUTHZ_POLICY_CHECK_FAILED,
+        ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed}};
 
   for (auto& [error_code, expected_result_code] : test_cases) {
     SCOPED_TRACE(testing::Message()
                  << "Failure for error code " << base::ToString(error_code));
     SupportHostObserver& observer = StartCrdHostAndBindObserver();
 
-    observer.OnHostStateError(error_code);
+    observer.OnHostStateError(static_cast<int64_t>(error_code));
 
     Response response = WaitForResponse();
     ASSERT_TRUE(response.HasError());
@@ -1117,8 +1128,8 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
       InitWithReconnectableSession(session_controller());
   ASSERT_TRUE(curtain_controller().IsEnabled());
 
-  observer.OnHostStateError(
-      remoting::protocol::ErrorCode::AUTHENTICATION_FAILED);
+  observer.OnHostStateError(static_cast<int64_t>(
+      remoting::protocol::ErrorCode::AUTHENTICATION_FAILED));
   FlushForTesting(observer);
 
   EXPECT_FALSE(curtain_controller().IsEnabled());
@@ -1174,21 +1185,14 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
 }
 
 TEST_F(CrdAdminSessionControllerReconnectTest,
-       CurtainedSessionShouldFilterNonRemoteEvents) {
+       CurtainedSessionShouldDisableInputDevices) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
   InitWithNoReconnectableSession(session_controller());
 
   StartCrdHost(/*is_curtained=*/true);
   SimulateCrdClientConnects();
 
-  ash::curtain::EventFilter event_filter =
-      curtain_controller().last_init_params().event_filter;
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(ui::ED_REMOTE_INPUT_DEVICE)),
-              Eq(ash::curtain::FilterResult::kKeepEvent));
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(5)),
-              Eq(ash::curtain::FilterResult::kSuppressEvent));
+  EXPECT_TRUE(curtain_controller().last_init_params().disable_input_devices);
 }
 
 class CrdAdminSessionControllerNotificationTest

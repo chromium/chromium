@@ -40,7 +40,7 @@ class MEDIA_EXPORT AmplitudePeakDetector {
   AmplitudePeakDetector& operator=(const AmplitudePeakDetector&) = delete;
 
   // Detects increases in amplitude, and runs `peak_detected_cb_` when we cross
-  // a threshold (but not when amplitude falls back bellow the threshold).
+  // a threshold (but not when amplitude falls back below the threshold).
   void FindPeak(const void* data, int frames, int bytes_per_sample);
   void FindPeak(const AudioBus* audio_bus);
 

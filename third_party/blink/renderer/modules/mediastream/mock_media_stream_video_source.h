@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class DOMException;
-
 class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
  public:
   MockMediaStreamVideoSource();
@@ -85,19 +83,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
     blink::MediaStreamVideoSource::SetMutedState(muted_state);
     DoSetMutedState(muted_state);
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(
-      void,
-      SendWheel,
-      (double, double, int, int, base::OnceCallback<void(DOMException*)>),
-      (override));
-
-  MOCK_METHOD(void,
-              SetZoomLevel,
-              (int, base::OnceCallback<void(DOMException*)>),
-              (override));
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   void EnableStopForRestart() { can_stop_for_restart_ = true; }
   void DisableStopForRestart() { can_stop_for_restart_ = false; }

@@ -36,8 +36,8 @@ NSString* const kEnglishLabel = @"English";
 NSString* const kTurkishLabel = @"Turkish";
 NSString* const kTurkishNativeLabel = @"Türkçe";
 NSString* const kAragoneseLabel = @"Aragonese";
-NSString* const kNeverTranslateLabel = @"Never Translate";
-NSString* const kOfferToTranslateLabel = @"Offer to Translate";
+NSString* const kNeverTranslateLabel = @"Never translate";
+NSString* const kOfferToTranslateLabel = @"Offer to translate";
 
 // Matcher for the Language Settings's main page table view.
 id<GREYMatcher> LanguageSettingsTableView() {

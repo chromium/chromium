@@ -59,7 +59,8 @@ id<GREYMatcher> PopupBlocker() {
 
 // Tests that opening a link with target=_blank which then immediately closes
 // itself works.
-- (void)testLinkWithBlankTargetWithImmediateClose {
+// TODO(crbug.com/361752763): This test started to be flaky on 2024-08-07.
+- (void)FLAKY_testLinkWithBlankTargetWithImmediateClose {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioWindowOpenBlankTargetWithImmediateClose"];
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -183,11 +184,11 @@ id<GREYMatcher> PopupBlocker() {
   // WebKit doesn't parse 'about:blank#hash' as about:blank with URL fragment.
   // Instead, it percent encodes '#hash' and considers 'blank%23hash' as the
   // resource identifier. Nevertheless, the '#' is significant in triggering the
-  // edge case in the bug. TODO(crbug.com/885249): Change back to '#'.
+  // edge case in the bug. TODO(crbug.com/41414501): Change back to '#'.
   // Since about scheme URLs are also trimmed to about:blank, check the url
   // directly instead.
   //
-  // TODO(crbug.com/1484452): Confirm the expected behavir of [ChromeEarlGrey
+  // TODO(crbug.com/40932726): Confirm the expected behavir of [ChromeEarlGrey
   // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
   // returns empty URL ("").
   DCHECK_EQ("",

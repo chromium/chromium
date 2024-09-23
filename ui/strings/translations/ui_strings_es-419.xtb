@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Encuesta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Revisando tu conexión a Internet</translation>
+<translation id="2359808026110333948">Continuar</translation>
 <translation id="2388990488038464401">¿Quieres llamar a este número desde tu teléfono?</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="24452542372838207">Expandir notificación</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NUEVO</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2701330563083355633">Se compartió de <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nuevo</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Hace 1 año}other{Hace # años}}</translation>
 <translation id="2878511608894704031">Borrar todo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{en 1 día}other{en # días}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
 <translation id="5613020302032141669">Flecha izquierda</translation>
+<translation id="5633029987065897167">Vacío</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Activo hoy}=1{Activo hace 1 día}other{Activo hace # días}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 día y }other{# días y }}</translation>
@@ -158,12 +159,11 @@
 <translation id="6503257047630241175">Contenido del archivo RTF</translation>
 <translation id="6539092367496845964">Se produjo un error; vuelve a intentarlo más tarde.</translation>
 <translation id="654149438358937226">Bloquear todas las notificaciones</translation>
-<translation id="6612467943526193239">Para salir de las opciones de calibración, presiona Esc.</translation>
 <translation id="6620110761915583480">Guardar archivo</translation>
 <translation id="6699343763173986273">Pista multimedia siguiente</translation>
 <translation id="6808150112686056157">Detener contenido multimedia</translation>
 <translation id="6845383723252244143">Seleccionar carpeta</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{Falta 1 hora.}other{Faltan # horas.}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{falta 1 hora}other{faltan # horas}}</translation>
 <translation id="688711909580084195">Página web sin título</translation>
 <translation id="6902419395050653510">Contenido HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>

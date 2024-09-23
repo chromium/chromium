@@ -96,7 +96,7 @@ void AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
             AccessCodeCastDiscoveryTypeAndSource::kSavedDeviceRemotePlayback;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else { /* is_saved == false (A new device just added by access code) */
     switch (mode) {
@@ -117,7 +117,7 @@ void AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
             AccessCodeCastDiscoveryTypeAndSource::kNewDeviceRemotePlayback;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

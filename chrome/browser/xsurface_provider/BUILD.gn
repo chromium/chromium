@@ -9,22 +9,19 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderFactory.java",
     "android/java/src/org/chromium/chrome/browser/xsurface_provider/XSurfaceProcessScopeProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooks.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooksImpl.java",
   ]
   deps = [
+    "//base:service_loader_java",
     "//chrome/browser/xsurface:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/XSurfaceHooksImpl*.class" ]
 }
 
 android_library("dependency_provider_impl_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderImpl.java" ]
   deps = [
     "//base:base_java",
+    "//base:service_loader_java",
     "//base/version_info/android:version_constants_java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
@@ -32,11 +29,6 @@ android_library("dependency_provider_impl_java") {
     "//chrome/browser/xsurface:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-}
-
-android_library("hooks_public_impl_java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooksImpl.java" ]
-  deps = [ ":java" ]
 }
 
 robolectric_library("junit") {
@@ -50,6 +42,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:service_loader_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/privacy:java",
     "//chrome/browser/xsurface:java",

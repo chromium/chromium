@@ -53,24 +53,31 @@ public class EventOffsetHandler {
         }
     }
 
-    /** See {@link ViewGroup#onInterceptTouchEvent(MotionEvent)}. */
-    public void onInterceptTouchEvent(MotionEvent e) {
-        setContentViewMotionEventOffsets(e, false);
+    /**
+     * EventOffsetHandler will see only touch downs, and rest of the touch sequence is not
+     * guaranteed to be seen post InputVizard[1] where the input sequence will be transferred to viz
+     * and the parent view does not gets a change to intercept those events. [1]
+     * https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE
+     */
+    public void onInterceptTouchDownEvent(MotionEvent e) {
+        int actionMasked = SPenSupport.convertSPenEventAction(e.getActionMasked());
+        assert (actionMasked == MotionEvent.ACTION_DOWN);
+        setContentViewMotionEventOffsets(e, /* canClear= */ false);
     }
 
     /** See {@link View#onTouchEvent(MotionEvent)}. */
     public void onTouchEvent(MotionEvent e) {
-        setContentViewMotionEventOffsets(e, true);
+        setContentViewMotionEventOffsets(e, /* canClear= */ true);
     }
 
     /** See {@link ViewGroup#onInterceptHoverEvent(MotionEvent)}. */
     public void onInterceptHoverEvent(MotionEvent e) {
-        setContentViewMotionEventOffsets(e, true);
+        setContentViewMotionEventOffsets(e, /* canClear= */ true);
     }
 
     /** See {@link ViewGroup#onHoverEvent(MotionEvent)}. */
     public void onHoverEvent(MotionEvent e) {
-        setContentViewMotionEventOffsets(e, true);
+        setContentViewMotionEventOffsets(e, /* canClear= */ true);
     }
 
     private void setContentViewMotionEventOffsets(MotionEvent e, boolean canClear) {

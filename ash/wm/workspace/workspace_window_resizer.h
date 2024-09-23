@@ -56,6 +56,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
  private:
   friend class WorkspaceWindowResizerTest;
+  friend class WorkspaceWindowResizerTestApi;
   FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
   WorkspaceWindowResizer(

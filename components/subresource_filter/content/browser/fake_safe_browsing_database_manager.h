@@ -48,11 +48,7 @@ class FakeSafeBrowsingDatabaseManager
 
   // safe_browsing::TestSafeBrowsingDatabaseManager:
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool CheckResourceUrl(const GURL& url, Client* client) override;
   void CancelCheck(Client* client) override;
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination /* request_destination */)
-      const override;
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       safe_browsing::CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;

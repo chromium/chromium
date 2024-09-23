@@ -6,8 +6,9 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_ANDROID_VIDEO_IMAGE_BACKING_H_
 
 #include <memory>
-
 #include <optional>
+#include <string>
+
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -17,6 +18,7 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace gpu {
+class DawnContextProvider;
 struct Mailbox;
 struct VulkanYCbCrInfo;
 class AbstractTextureAndroid;
@@ -35,15 +37,17 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
       const gfx::ColorSpace color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
+      std::string debug_label,
       scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<RefCountedLock> drdc_lock);
 
-  // Returns ycbcr information. This is only valid in vulkan context and
-  // nullopt for other context.
+  // Returns ycbcr information. This is only valid in vulkan/dawn contexts and
+  // nullopt for other contexts.
   static std::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
-      viz::VulkanContextProvider* vulkan_context_provider);
+      viz::VulkanContextProvider* vulkan_context_provider,
+      DawnContextProvider* dawn_context_provider);
 
   ~AndroidVideoImageBacking() override;
 
@@ -64,6 +68,7 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
                            const gfx::ColorSpace color_space,
                            GrSurfaceOrigin surface_origin,
                            SkAlphaType alpha_type,
+                           std::string debug_label,
                            bool is_thread_safe);
 
   std::unique_ptr<AbstractTextureAndroid> GenAbstractTexture(

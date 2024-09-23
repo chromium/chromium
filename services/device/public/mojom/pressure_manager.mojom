@@ -4,15 +4,25 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/device/public/mojom/pressure_update.mojom";
 
-// Result of PressureManager.AddClient().
-enum PressureStatus {
-  kOk,
-
+enum PressureManagerAddClientError {
   // The underlying platform does not report compute pressure information or
   // the renderer is not allowed access to the feature.
   kNotSupported,
+};
+
+// PressureManager.AddClient()'s return type.
+union PressureManagerAddClientResult {
+  PressureManagerAddClientError error;
+  pending_receiver<PressureClient> pressure_client;
+};
+
+struct VirtualPressureSourceMetadata {
+  // Whether a virtual pressure source should provide samples or report itself
+  // as not available.
+  bool available = true;
 };
 
 // This interface is used to subscribe to notification about OnPressureUpdated.
@@ -21,10 +31,33 @@ enum PressureStatus {
 // PressureObserverManager in Blink uses this interface to make a
 // PressureClient subscribe to notification about OnPressureUpdated.
 interface PressureManager {
+  // Creates a new virtual pressure source of type |source| handled by |token|.
+  // Callers are responsible for ensuring that |token| does not contain a
+  // pressure source of type |source|. If it does, a bad message will be
+  // reported.
+  AddVirtualPressureSource(
+      mojo_base.mojom.UnguessableToken token, PressureSource source,
+      VirtualPressureSourceMetadata metadata) => ();
+
+  // Removes a virtual pressure source identified by |token| and |source|. Does
+  // nothing if one does not exist.
+  RemoveVirtualPressureSource(
+      mojo_base.mojom.UnguessableToken token, PressureSource source) => ();
+
+  // Sends a state update for a virtual pressure source corresponding to
+  // |token| and |source|. Does nothing if |token| does not contain a pressure
+  // source of type |source|.
+  UpdateVirtualPressureSourceState(
+      mojo_base.mojom.UnguessableToken token, PressureSource source,
+      PressureState state) => ();
+
   // Add a client that will be notified when a new PressureUpdate for `source`
   // is obtained.
-  AddClient(pending_remote<PressureClient> client, PressureSource source)
-    => (PressureStatus status);
+  //
+  // |token| can be used to identify a virtual pressure source created with a
+  // call to AddVirtualPressureSource().
+  AddClient(PressureSource source, mojo_base.mojom.UnguessableToken? token) =>
+      (PressureManagerAddClientResult result);
 };
 
 // Interface that client of the PressureManager interface must

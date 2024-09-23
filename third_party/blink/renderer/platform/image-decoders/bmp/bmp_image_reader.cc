@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
@@ -514,7 +519,7 @@ bool BMPImageReader::IsInfoHeaderValid() const {
     default:
       // Some type we don't understand.  This should have been caught in
       // ReadInfoHeader().
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -542,7 +547,8 @@ bool BMPImageReader::DecodeAlternateFormat() {
     if (info_header_.compression == JPEG) {
       alternate_decoder_ = std::make_unique<JPEGImageDecoder>(
           parent_->GetAlphaOption(), parent_->GetColorBehavior(),
-          parent_->GetMaxDecodedBytes(), img_data_offset_);
+          parent_->GetAuxImage(), parent_->GetMaxDecodedBytes(),
+          img_data_offset_);
     } else {
       alternate_decoder_ = std::make_unique<PNGImageDecoder>(
           parent_->GetAlphaOption(), ImageDecoder::kDefaultBitDepth,
@@ -583,7 +589,8 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
   auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
   const char* buffer = fast_reader_.GetConsecutiveData(
       info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
-  auto profile = ColorProfile::Create(buffer, info_header_.profile_size);
+  auto profile = ColorProfile::Create(
+      base::as_bytes(base::span(buffer, info_header_.profile_size)));
   if (!profile) {
     return parent_->SetFailed();
   }

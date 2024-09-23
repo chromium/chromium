@@ -50,13 +50,21 @@ struct EncoderStatusTraits {
     kInvalidInputFrame = 16,
     // The given output buffer or its id  is invalid.
     kInvalidOutputBuffer = 17,
-    kMaxValue = kInvalidOutputBuffer,
+    // Failure in converting H264/HEVC AnnexB to H264/HEVC bitstream.
+    kBitstreamConversionError = 18,
+    // Failure in allocating a buffer.
+    kOutOfMemoryError = 19,
+    // No hardware encoder is available.
+    kEncoderAccelerationSupportMissing = 20,
+    kMaxValue = kEncoderAccelerationSupportMissing,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };
 
 using EncoderStatus = TypedStatus<EncoderStatusTraits>;
 
+MEDIA_EXPORT const char* EncoderStatusCodeToString(
+    const EncoderStatus& error_status);
 }  // namespace media
 
 #endif  // MEDIA_BASE_ENCODER_STATUS_H_

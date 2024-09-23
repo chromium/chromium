@@ -114,7 +114,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TabbedWebAppNavigationThrottle::WillRedirectRequest() {
-  // TODO(crbug.com/897314): Figure out how redirects should be handled.
+  // TODO(crbug.com/40598974): Figure out how redirects should be handled.
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -123,7 +123,8 @@ TabbedWebAppNavigationThrottle::OpenInNewTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  navigation_handle()->GetWebContents()->OpenURL(std::move(params));
+  navigation_handle()->GetWebContents()->OpenURL(
+      std::move(params), /*navigation_handle_callback=*/{});
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 
@@ -136,11 +137,12 @@ TabbedWebAppNavigationThrottle::FocusHomeTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  params.frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+  params.frame_tree_node_id = content::FrameTreeNodeId();
 
   if (params.url != tab_strip->GetWebContentsAt(0)->GetLastCommittedURL()) {
     // Only do the navigation if the URL has changed.
-    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params));
+    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params),
+                                            /*navigation_handle_callback=*/{});
   }
   tab_strip->ActivateTabAt(0);
   return content::NavigationThrottle::CANCEL_AND_IGNORE;

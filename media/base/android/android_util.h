@@ -11,7 +11,7 @@
 
 namespace media {
 
-// TODO(crbug.com/765862): Remove the type. Use ScopedJavaGlobalRef directly.
+// TODO(crbug.com/40540372): Remove the type. Use ScopedJavaGlobalRef directly.
 using JavaObjectPtr =
     std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>;
 

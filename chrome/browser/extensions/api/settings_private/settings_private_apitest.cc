@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <tuple>
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -28,7 +27,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/switches.h"
@@ -49,26 +47,15 @@ namespace {
 
 using ContextType = ExtensionBrowserTest::ContextType;
 
-class SettingsPrivateApiTest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<std::tuple<ContextType, bool>> {
+class SettingsPrivateApiTest : public ExtensionApiTest,
+                               public testing::WithParamInterface<ContextType> {
  public:
-  SettingsPrivateApiTest() : ExtensionApiTest(std::get<0>(GetParam())) {}
+  SettingsPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   ~SettingsPrivateApiTest() override = default;
   SettingsPrivateApiTest(const SettingsPrivateApiTest&) = delete;
   SettingsPrivateApiTest& operator=(const SettingsPrivateApiTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
-    bool enable_supervised_prefs_flag = std::get<1>(GetParam());
-
-    if (enable_supervised_prefs_flag) {
-      feature_list_.InitWithFeatures(
-          {supervised_user::kSupervisedPrefsControlledBySupervisedStore}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {supervised_user::kSupervisedPrefsControlledBySupervisedStore});
-    }
-
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -77,6 +64,12 @@ class SettingsPrivateApiTest
   }
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        "safe-browsing-treat-user-as-advanced-protection");
+    ExtensionApiTest::SetUpCommandLine(command_line);
+  }
+
   bool RunSettingsSubtest(const std::string& subtest) {
     return RunExtensionTest("settings_private", {.custom_arg = subtest.c_str()},
                             {.load_as_component = true});
@@ -94,23 +87,18 @@ class SettingsPrivateApiTest
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  base::test::ScopedFeatureList feature_list_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 #endif
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
-    SettingsPrivateApiTest,
-    ::testing::Combine(::testing::Values(ContextType::kPersistentBackground),
-                       ::testing::Bool()));
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    SettingsPrivateApiTest,
-    ::testing::Combine(::testing::Values(ContextType::kPersistentBackground),
-                       ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         SettingsPrivateApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         SettingsPrivateApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
 
 }  // namespace
 
@@ -135,23 +123,7 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetRecommendedPref) {
 }
 
 IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetDisabledPref) {
-  HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                 ContentSetting::CONTENT_SETTING_BLOCK);
   EXPECT_TRUE(RunSettingsSubtest("getDisabledPref")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPartiallyManagedPref) {
-  auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(
-      HostContentSettingsMapFactory::GetForProfile(profile()),
-      std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
-  EXPECT_TRUE(RunSettingsSubtest("getPartiallyManagedPref")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetAllPrefs) {
@@ -171,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetManagedByParentPref) {
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
       HostContentSettingsMapFactory::GetForProfile(profile()),
-      std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+      std::move(provider), content_settings::ProviderType::kSupervisedProvider);
   EXPECT_TRUE(RunSettingsSubtest("getManagedByParentPref")) << message_;
 }
 

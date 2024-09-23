@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_RECOVERY_ELIGIBILITY_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_RECOVERY_ELIGIBILITY_SCREEN_H_
 
-#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
+#include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 
 namespace ash {
 

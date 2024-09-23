@@ -1,0 +1,26 @@
+caption: Reporting Endpoints
+default: {}
+desc: |-
+  Allows you to configure the list of Reporting API Endpoints[1] where
+  enterprise reports can be sent.
+
+  [1] https://www.w3.org/TR/reporting-1/#endpoint
+example_value:
+  endpoint-1: https://example.com
+  reporting-endpoint: https://reporting.example/cookie-issues
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- sandormajor@google.com
+- selya@google.com
+schema:
+  type: object
+  additionalProperties:
+    type: string
+future_on:
+- android
+- chrome.*
+- chrome_os
+tags: []
+type: dict

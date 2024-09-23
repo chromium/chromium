@@ -6,14 +6,14 @@
 // once the win-specific allocation shim has been removed, and the generic shim
 // has becaome the default.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
+#ifndef PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
+#define PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
 
 #include <cstdint>
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace allocator_shim {
@@ -47,6 +47,6 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void WinHeapAlignedFree(void* ptr);
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_
+#endif  // PARTITION_ALLOC_SHIM_WINHEAP_STUBS_WIN_H_

@@ -64,6 +64,12 @@ void DevicePostureProviderImpl::OverrideDevicePostureForEmulation(
 }
 
 void DevicePostureProviderImpl::DisableDevicePostureOverrideForEmulation() {
+  // If the posture is not being overridden, bail out earlier to avoid
+  // needlessly calling OnPostureChanged().
+  if (!is_posture_emulated_) {
+    return;
+  }
+
   // Restore the original posture from the platform.
   is_posture_emulated_ = false;
   for (auto& client : posture_clients_) {

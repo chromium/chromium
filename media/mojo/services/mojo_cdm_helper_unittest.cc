@@ -121,6 +121,6 @@ TEST_F(MojoCdmHelperTest, CreateCdmFileIO_OpenWithoutClose) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/773860): Add more test cases.
+// TODO(crbug.com/40544338): Add more test cases.
 
 }  // namespace media

@@ -25,36 +25,6 @@ class JsCheckerTest(unittest.TestCase):
 
     self.checker = js_checker.JSChecker(MockInputApi(), MockOutputApi())
 
-  def ShouldFailDebuggerCheck(self, line):
-    error = self.checker.DebuggerCheck(1, line)
-    self.assertNotEqual("", error, "Should be flagged as style error: " + line)
-    highlight = test_util.GetHighlight(line, error).strip()
-    self.assertTrue(highlight.startswith("debugger"))
-
-  def ShouldPassDebuggerCheck(self, line):
-    self.assertEqual("", self.checker.DebuggerCheck(1, line),
-                     "Should not be flagged as style error: " + line)
-
-  def testDebuggerFails(self):
-    lines = [
-        "debugger;",
-        "  debugger;",
-    ]
-    for line in lines:
-      self.ShouldFailDebuggerCheck(line)
-
-  def testDebuggerPasses(self):
-    lines = [
-        "// Test that it works in the debugger",
-        "  // Test that it works in the debugger",
-        "debugger.debug(func);",
-        "  debugger.debug(func);",
-        "console.log('debugger enabled');",
-        "  console.log('debugger enabled');",
-    ]
-    for line in lines:
-      self.ShouldPassDebuggerCheck(line)
-
   def ShouldFailBindThisCheck(self, line):
     error = self.checker.BindThisCheck(1, line)
     self.assertNotEqual("", error, "Should be flagged as style error: " + line)

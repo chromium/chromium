@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -183,9 +184,10 @@ void ZipFileInstaller::Unzip(ZipResultVariant unzip_dir_or_error) {
   }
 
   base::FilePath unzip_dir = absl::get<base::FilePath>(unzip_dir_or_error);
-  unzip::UnzipWithFilter(
+  unzip::Unzip(
       unzip::LaunchUnzipper(), zip_file_, unzip_dir,
-      base::BindRepeating(&ZipFileInstaller::IsManifestFile),
+      unzip::mojom::UnzipOptions::New(),
+      base::BindRepeating(&ZipFileInstaller::IsManifestFile), base::DoNothing(),
       base::BindOnce(&ZipFileInstaller::ManifestUnzipped, this, unzip_dir));
 }
 
@@ -258,11 +260,11 @@ void ZipFileInstaller::ManifestParsed(const base::FilePath& unzip_dir,
       },
       manifest_type == Manifest::TYPE_THEME);
 
-  // TODO(crbug.com/645263): This silently ignores blocked file types.
+  // TODO(crbug.com/41274425): This silently ignores blocked file types.
   //                         Add install warnings.
-  unzip::UnzipWithFilter(
-      unzip::LaunchUnzipper(), zip_file_, unzip_dir, filter,
-      base::BindOnce(&ZipFileInstaller::UnzipDone, this, unzip_dir));
+  unzip::Unzip(unzip::LaunchUnzipper(), zip_file_, unzip_dir,
+               unzip::mojom::UnzipOptions::New(), filter, base::DoNothing(),
+               base::BindOnce(&ZipFileInstaller::UnzipDone, this, unzip_dir));
 }
 
 void ZipFileInstaller::UnzipDone(const base::FilePath& unzip_dir,
@@ -290,8 +292,9 @@ bool ZipFileInstaller::ShouldExtractFile(bool is_theme,
     const base::FilePath::StringType extension =
         base::ToLowerASCII(file_path.FinalExtension());
     // Allow filenames with no extension.
-    if (extension.empty())
+    if (extension.empty()) {
       return true;
+    }
     return base::Contains(kAllowedThemeFiletypes, extension);
   }
   return !base::FilePath::CompareEqualIgnoreCase(file_path.FinalExtension(),

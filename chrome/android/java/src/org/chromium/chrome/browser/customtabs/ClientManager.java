@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVeri
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -353,6 +354,7 @@ class ClientManager {
 
     private final ChromeOriginVerifierFactory mOriginVerifierFactory;
     private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
+    private final ChromeBrowserInitializer mChromeBrowserInitializer;
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
@@ -360,14 +362,19 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        this(new ChromeOriginVerifierFactoryImpl(), new ProdInstalledAppProviderWrapper());
+        this(
+                new ChromeOriginVerifierFactoryImpl(),
+                new ProdInstalledAppProviderWrapper(),
+                ChromeBrowserInitializer.getInstance());
     }
 
     public ClientManager(
             ChromeOriginVerifierFactory originVerifierFactory,
-            InstalledAppProviderWrapper installedAppProviderWrapper) {
+            InstalledAppProviderWrapper installedAppProviderWrapper,
+            ChromeBrowserInitializer chromeBrowserInitializer) {
         mOriginVerifierFactory = originVerifierFactory;
         mInstalledAppProviderWrapper = installedAppProviderWrapper;
+        mChromeBrowserInitializer = chromeBrowserInitializer;
         RequestThrottler.loadInBackground();
     }
 
@@ -604,10 +611,13 @@ class ClientManager {
                         /* webContents= */ null,
                         /* externalAuthUtils= */ null);
 
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
+        mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
                 () -> {
-                    params.originVerifier.start(listener, origin);
+                    PostTask.runOrPostTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                params.originVerifier.start(listener, origin);
+                            });
                 });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(

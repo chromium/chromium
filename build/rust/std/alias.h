@@ -6,7 +6,7 @@
 // the APIs / macros needed by //build/rust/std;  additionally the APIs were
 // moved into the `build_rust_std` namespace).
 //
-// TODO(https://crbug.com/1475734): Avoid code duplication / reuse code.
+// TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
 #ifndef BUILD_RUST_STD_ALIAS_H_
 #define BUILD_RUST_STD_ALIAS_H_

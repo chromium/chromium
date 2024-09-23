@@ -1,0 +1,283 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@font-face {
+  font-family: "Google Sans Clock";
+
+  /* TODO(pihsun): Preload the font. */
+  src: url("./GoogleSansClock.ttf");
+}
+
+@keyframes slide-out-right {
+  to {
+    transform: translateX(33.3%);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(33.3%);
+  }
+}
+
+@keyframes slide-out-left {
+  to {
+    transform: translateX(-33.3%);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-33.3%);
+  }
+}
+
+@keyframes fade-down {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+  }
+}
+
+:root {
+  /*
+   * From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap.
+   * Setting border-radius to this to force the element to be round on the
+   * shorter side.
+   */
+  --border-radius-rounded-with-short-side: 9999999px;
+  --monospace-font-family: "Google Sans Clock";
+  --small-viewport: 0;
+
+  @media (width <= 960px) {
+    --small-viewport: 1;
+  }
+
+  /*
+   * Determine if the app should be shown in dark or light theme.
+   *
+   * Note that this shouldn't be needed often, since most light/dark theme
+   * should already be handled directly via system color tokens. But this can
+   * be used together with @container style {} query in the rare case that the
+   * color tokens are different in light and dark theme.
+   *
+   * This is preferred over prefers-color-scheme media query since this will
+   * also consider the theme override in local dev environment.
+   */
+  --dark-theme: 0;
+
+  @media (prefers-color-scheme: dark) {
+    --dark-theme: 1;
+  }
+
+  /*
+   * Ref velocity from go/cros-tokens
+   */
+  --cros-ref-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
+  --cros-ref-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --cros-ref-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --cros-ref-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+
+  /*
+   * https://m3.material.io/styles/motion/easing-and-duration/tokens-specs
+   * The emphasized curve is not directly available in CSS, and should use
+   * standard as a fallback.
+   */
+  --cros-ref-motion-easing-emphasized: var(--cros-ref-motion-easing-standard);
+  --cros-ref-motion-easing-emphasized-accelerate: cubic-bezier(
+    0.3,
+    0,
+    0.8,
+    0.15
+  );
+
+  /*
+   * Transitions as defined in
+   * https://carbon.googleplex.com/cr-os-motion-work/pages/baseline-transitions
+   *
+   * Each transition is a pair of animation of -outgoing and -incoming, which
+   * should be applied to the animation of the old element and new element
+   * respectively.
+   */
+
+  /* Forward Medium */
+  --cros-transition-forward-medium-outgoing: 300ms
+      var(--cros-ref-motion-easing-emphasized) both slide-out-left,
+    50ms var(--cros-ref-motion-easing-linear) both fade-down;
+  --cros-transition-forward-medium-incoming: 300ms
+      var(--cros-ref-motion-easing-emphasized) both slide-in-right,
+    250ms var(--cros-ref-motion-easing-linear) 50ms both fade-up;
+
+  /* Backward Medium */
+  --cros-transition-backward-medium-outgoing: 300ms
+      var(--cros-ref-motion-easing-emphasized) both slide-out-right,
+    50ms var(--cros-ref-motion-easing-linear) both fade-down;
+  --cros-transition-backward-medium-incoming: 300ms
+      var(--cros-ref-motion-easing-emphasized) both slide-in-left,
+    250ms var(--cros-ref-motion-easing-linear) 50ms both fade-up;
+
+  /* Top Level Medium */
+  --cros-transition-top-level-medium-outgoing: 100ms
+    var(--cros-ref-motion-easing-linear) both fade-down;
+  --cros-transition-top-level-medium-incoming: 200ms
+    var(--cros-ref-motion-easing-linear) 100ms both fade-up;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  background-color: var(--cros-sys-app_base_shaded);
+  color: var(--cros-sys-on_surface);
+
+  /*
+   * Missing token from cros-component.
+   *
+   * TODO: b/351271419 - Remove this when upstream no longer use this token, or
+   * it's added to new dynamic color spreadsheets.
+   */
+  --cros-disabled-opacity: 0.38;
+
+  /*
+   * Common styling for material components.
+   */
+  --md-focus-ring-duration: 0s;
+  --md-focus-ring-color: var(--cros-sys-focus_ring);
+  --md-focus-ring-width: 2px;
+
+  /*
+   * Elevation from go/cros-tokens
+   */
+  --cros-sys-app_elevation1: 0 4px 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+  --cros-sys-app_elevation3: 0 12px 12px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 12px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+  --cros-sys-app_elevation5: 0 24px 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+}
+
+/* Disable all default transitions */
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation: none;
+}
+
+html.transition-main-playback {
+  &::view-transition-old(root) {
+    animation: var(--cros-transition-forward-medium-outgoing);
+  }
+
+  &::view-transition-new(root) {
+    animation: var(--cros-transition-forward-medium-incoming);
+  }
+}
+
+/*
+ * TODO(pihsun): Confirm with designer about what transition to use for record
+ * -> main.
+ */
+html.transition-record-playback,
+html.transition-record-main {
+  &::view-transition-old(root) {
+    animation: var(--cros-transition-top-level-medium-outgoing);
+  }
+
+  &::view-transition-new(root) {
+    animation: var(--cros-transition-top-level-medium-incoming);
+  }
+}
+
+html.transition-dev-main,
+html.transition-playback-main {
+  &::view-transition-old(root) {
+    animation: var(--cros-transition-backward-medium-outgoing);
+  }
+
+  &::view-transition-new(root) {
+    animation: var(--cros-transition-backward-medium-incoming);
+  }
+}
+
+@keyframes clip-change {
+  from {
+    /* This is calculated and set in JS by core/state/route.ts. */
+    clip-path: var(--start-clip-path);
+  }
+
+  to {
+    clip-path: inset(0 round 0);
+  }
+}
+
+html.transition-main-record {
+  /*
+   * There are four layers for achieving this page transition from old page
+   * (main page) to new page (record page):
+   *
+   * * base: Contains only the background of the record page. This layer is
+   *         clipped by the clip-path, but not faded in/out to maintain the
+   *         background color.
+   * * actions: The action buttons of the main page. This is faded out as in
+   *            the spec.
+   * * new-page: The content of the new page. This is faded in and clipped by
+   *             the clip-path.
+   * * root: The main page except the action buttons. This is not animated and
+   *         kept as a background.
+   */
+  recorder-app::part(record-page) {
+    view-transition-name: base;
+  }
+
+  recorder-app::part(main-page-actions) {
+    view-transition-name: actions;
+  }
+
+  recorder-app::part(record-page-container) {
+    view-transition-name: new-page;
+  }
+
+  &::view-transition-group(actions),
+  &::view-transition-group(new-page) {
+    z-index: 2;
+  }
+
+  &::view-transition-group(base) {
+    z-index: 1;
+  }
+
+  &::view-transition-new(base) {
+    animation: 200ms var(--cros-ref-motion-easing-standard) clip-change;
+  }
+
+  &::view-transition-old(actions) {
+    animation: 50ms var(--cros-ref-motion-easing-standard-accelerate) both
+      fade-down;
+  }
+
+  &::view-transition-new(new-page) {
+    animation:
+      200ms var(--cros-ref-motion-easing-standard) clip-change,
+      150ms var(--cros-ref-motion-easing-standard-decelerate) 50ms both fade-up;
+  }
+
+  &::view-transition-old(root) {
+    animation: 200ms step-end both fade-down;
+  }
+
+  /* All elements on the record page are included in new-page. */
+  &::view-transition-new(root) {
+    display: none;
+  }
+}

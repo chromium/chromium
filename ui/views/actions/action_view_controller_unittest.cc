@@ -143,7 +143,8 @@ TEST_F(ActionViewControllerTest, TestActionViewDestroyed) {
 }
 
 TEST_F(ActionViewControllerTest, TriggerAction) {
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   MdTextButton* action_view =
       parent_view->AddChildView(std::make_unique<MdTextButton>());
@@ -154,7 +155,7 @@ TEST_F(ActionViewControllerTest, TriggerAction) {
           action_view, action_item->GetAsWeakPtr());
   action_view_controller->SetActionItem(action_item->GetAsWeakPtr());
   EXPECT_EQ(0, action_item->GetInvokeCount());
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(action_view);
   test_api.NotifyClick(e);
@@ -195,7 +196,8 @@ TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
   action_item->SetInvokeActionCallback(
       base::BindRepeating(invoke_action_callback));
 
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   TestActionButton* test_button =
       parent_view->AddChildView(std::make_unique<TestActionButton>());
@@ -204,14 +206,15 @@ TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
   ActionViewController action_view_controller = ActionViewController();
   action_view_controller.CreateActionViewRelationship(
       test_button, action_item->GetAsWeakPtr());
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(test_button);
   test_api.NotifyClick(e);
 }
 
 TEST_F(ActionViewControllerTest, TestOnViewChanged) {
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   TestActionButton* test_view =
       parent_view->AddChildView(std::make_unique<TestActionButton>());

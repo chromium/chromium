@@ -12,18 +12,29 @@
   }
 
   #apnTooltip {
-    --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
     text-align: center;
   }
 
-  #hotspotSubtitle {
+  :host-context(body.revamp-wayfinding-enabled) #hotspotSubtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: inherit;
+    padding-left: 20px;
+    padding-top: 8px;
+    max-width: 560px;
+  }
+
+  :host-context(body:not(.revamp-wayfinding-enabled)) #hotspotSubtitle {
     color: var(--cr-secondary-text-color);
     font-size: inherit;
     left: 56px;
     padding-inline-end: 210px;
     position: relative;
     top: -22px;
+  }
+
+  #apnSubpageTitleExtra {
+    display: flex;
+    align-items: center;
   }
 </style>
 <os-settings-animated-pages id="pages" section="[[section_]]">
@@ -58,13 +69,13 @@
                     aria-labelledby="add-wifi-label"></cr-icon-button>
               </div>
             </template>
-            <div actionable$="[[!disableVpnUi_]]" class="list-item"
-                on-click="onAddVpnClick_">
+            <div actionable$="[[!isBuiltInVpnManagementBlocked_]]"
+                class="list-item" on-click="onAddVpnClick_">
               <div class="start settings-box-text"
                   id="add-vpn-label" aria-hidden="true">
                 $i18n{internetAddVPN}
               </div>
-              <template is="dom-if" if="[[disableVpnUi_]]">
+              <template is="dom-if" if="[[isBuiltInVpnManagementBlocked_]]">
                 <cr-policy-indicator id="vpnPolicyIndicator"
                     icon-aria-label="$i18n{networkVpnBuiltin}"
                     indicator-type="devicePolicy"
@@ -73,7 +84,7 @@
               </template>
               <cr-icon-button id="add-vpn-button" class="icon-add-circle"
                   aria-labelledby="add-vpn-label"
-                  disabled="[[disableVpnUi_]]">
+                  disabled="[[isBuiltInVpnManagementBlocked_]]">
               </cr-icon-button>
             </div>
             <template is="dom-repeat" items="[[vpnProviders_]]">
@@ -126,26 +137,25 @@
 
   <template is="dom-if" route-path="/apn" restamp>
     <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
-      <div slot="subpage-title-extra">
-        <div id="apnButtonTitle">
-          <cr-button id="createCustomApnButton"
-              on-click="onCreateCustomApnClicked_"
-              class="cancel-button"
-              deep-link-focus-id$="[[Setting.kCellularAddApn]]"
-              disabled="[[isCreateCustomApnButtonDisabled_]]">
-            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-            $i18n{apnPageAddNewApn}
-          </cr-button>
-        </div>
-        <!-- TODO(b/162365553) Add a11y support-->
-        <template is="dom-if" if="[[isCreateCustomApnButtonDisabled_]]" restamp>
-          <paper-tooltip id="apnTooltip" for="apnButtonTitle">
-            $i18n{customApnLimitReached}
-          </paper-tooltip>
+      <div id="apnSubpageTitleExtra" slot="subpage-title-extra">
+        <template is="dom-if" if="[[shouldDisallowApnModification_(globalPolicy_)]]">
+          <cr-tooltip-icon id="apnManagedIcon"
+              tooltip-text="$i18n{controlledSettingPolicy}"
+              icon-class="cr20:domain"
+              tooltip-position="bottom">
+          </cr-tooltip-icon>
         </template>
+        <cr-icon-button id="apnActionMenuButton" class="icon-more-vert"
+            on-click="onApnMenuButtonClicked_"
+            focus-row-control focus-type="menu"
+            deep-link-focus-id$="[[Setting.kCellularAddApn]]"
+            title="$i18n{moreActions}"
+            disabled="[[shouldDisallowApnModification_(globalPolicy_)]]">
+        </cr-icon-button>
       </div>
       <apn-subpage id="apnSubpage"
-          is-num-custom-apns-limit-reached="{{isCreateCustomApnButtonDisabled_}}"
+          is-num-custom-apns-limit-reached="{{isNumCustomApnsLimitReached_}}"
+          should-disallow-apn-modification="[[shouldDisallowApnModification_(globalPolicy_)]]"
       >
       </apn-subpage>
     </os-settings-subpage>
@@ -159,11 +169,18 @@
           slot="subpage-title-extra"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
       </settings-internet-subpage-menu>
+      <template is="dom-if" if="[[isDeviceUpdating_]]" restamp>
+        <div class="settings-box first">
+          <div id="flashingSubtitle" class="settings-box-text">
+            $i18n{internetDeviceFlashing}
+          </div>
+        </div>
+      </template>
       <template is="dom-if"
-          if="[[isProviderLocked_(subpageType_)]]">
+          if="[[isProviderLocked_]]" restamp>
         <!-- Carrier locked network. -->
         <div class="settings-box first">
-          <div class="settings-box-text">
+          <div id="cellularSubtitle" class="settings-box-text">
             <localized-link
                 localized-string="[[i18nAdvanced('cellularSubpageSubtitle')]]">
             </localized-link>
@@ -171,6 +188,7 @@
         </div>
       </template>
       <settings-internet-subpage
+          prefs="{{prefs}}"
           default-network="[[defaultNetwork]]"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]"
           tether-device-state="[[getTetherDeviceState_(deviceStates)]]"
@@ -178,7 +196,9 @@
           vpn-providers="[[vpnProviders_]]"
           show-spinner="{{showSpinner_}}"
           is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]"
-          is-cellular-setup-active="[[showCellularSetupDialog_]]">
+          is-cellular-setup-active="[[showCellularSetupDialog_]]"
+          is-built-in-vpn-management-blocked=
+              "[[isBuiltInVpnManagementBlocked_]]">
       </settings-internet-subpage>
     </os-settings-subpage>
   </template>
@@ -248,6 +268,33 @@
       on-close="onCloseHotspotConfigDialog_"
       hotspot-info="[[hotspotInfo]]">
   </hotspot-config-dialog>
+</template>
+
+<cr-action-menu id="apnDotsMenu">
+  <button id="discoverMoreApnsButton" class="dropdown-item"
+      on-click="onDiscoverMoreApnsClicked_"
+      disabled="[[isNumCustomApnsLimitReached_]]">
+    $i18n{apnPageDiscoverMoreApns}
+  </button>
+  <button id="createCustomApnButton" class="dropdown-item"
+      on-click="onCreateCustomApnClicked_"
+      disabled="[[isNumCustomApnsLimitReached_]]">
+    $i18n{apnPageCreateNewApn}
+  </button>
+</cr-action-menu>
+
+<template is="dom-if" if="[[isNumCustomApnsLimitReached_]]" restamp>
+  <!-- TODO(b/162365553) Add a11y support-->
+  <paper-tooltip id="discoverMoreApnsTooltip"
+      for="discoverMoreApnsButton"
+      position="[[apnMenuTooltipsPosition_]]">
+    $i18n{customApnLimitReached}
+  </paper-tooltip>
+  <paper-tooltip id="createCustomApnTooltip"
+      for="createCustomApnButton"
+      position="[[apnMenuTooltipsPosition_]]">
+    $i18n{customApnLimitReached}
+  </paper-tooltip>
 </template>
 
 <cr-toast id="errorToast" duration="5000">

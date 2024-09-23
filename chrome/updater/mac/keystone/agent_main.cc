@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <unistd.h>
 
 #include <iostream>
@@ -125,7 +130,7 @@ void KSAgentApp::ChooseServiceForApp(
 }
 
 bool KSAgentApp::HasSwitch(const std::string& arg) const {
-  return base::Contains(switches_, arg);
+  return switches_.contains(arg);
 }
 
 std::string KSAgentApp::SwitchValue(const std::string& arg) const {
@@ -197,8 +202,6 @@ void KSAgentApp::Wake() {
     if (scope == UpdaterScope::kSystem) {
       command.AppendSwitch(kSystemSwitch);
     }
-    command.AppendSwitch(kEnableLoggingSwitch);
-    command.AppendSwitchNative(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
     VLOG(0) << "Launching " << command.GetCommandLineString();
     base::Process process = base::LaunchProcess(command, {});
     if (process.IsValid()) {

@@ -184,7 +184,7 @@ void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

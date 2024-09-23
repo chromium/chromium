@@ -4,6 +4,14 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-local-handle.h"
+
 namespace blink {
 
 void SetFillStyleString(BaseRenderingContext2D* ctx,

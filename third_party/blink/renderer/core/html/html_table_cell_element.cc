@@ -92,7 +92,7 @@ void HTMLTableCellElement::CollectStyleForPresentationAttribute(
     // Longhands of `white-space: nowrap`.
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrapMode,
                                             CSSValueID::kNowrap);
   } else if (name == html_names::kWidthAttr) {
     if (!value.empty()) {

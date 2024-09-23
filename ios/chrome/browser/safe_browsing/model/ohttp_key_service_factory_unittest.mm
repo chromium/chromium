@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
-#import "components/safe_browsing/core/common/features.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -15,46 +13,36 @@ class OhttpKeyServiceFactoryTest : public PlatformTest {
  protected:
   OhttpKeyServiceFactoryTest() = default;
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
-
- private:
-  safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
-      apply_branding_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 };
 
-// Checks that OhttpKeyServiceFactory returns a null for an
-// off-the-record browser state, but returns a non-null instance for a regular
-// browser state, when hash-prefix real-time lookups are enabled.
-TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups},
-      /*disabled_features=*/{});
-  browser_state_ = TestChromeBrowserState::Builder().Build();
+// Checks that OhttpKeyServiceFactory returns null for an off-the-record
+// profile, but returns a non-null instance for a regular profile.
+TEST_F(OhttpKeyServiceFactoryTest, GetForProfile) {
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(OhttpKeyServiceFactory::GetInstance(),
+                            OhttpKeyServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
+  // The factory should return null for an off-the-record profile.
+  EXPECT_FALSE(
+      OhttpKeyServiceFactory::GetForProfile(profile->GetOffTheRecordProfile()));
 
-  // There should be a non-null instance for a regular browser state.
-  EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
+  // There should be a non-null instance for a regular profile.
+  EXPECT_TRUE(OhttpKeyServiceFactory::GetForProfile(profile.get()));
 }
 
-// Checks that OhttpKeyServiceFactory returns a null for both
-// off-the-record and regular browser states, when hash-prefix real-time
-// lookups are disabled.
-TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsDisabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups});
-  browser_state_ = TestChromeBrowserState::Builder().Build();
+// Checks that by default OhttpKeyServiceFactory returns null for both regular
+// and off-the-record profiles for testing profiles if no testing factory is
+// installed.
+TEST_F(OhttpKeyServiceFactoryTest, GetForProfile_NoTestingFactory) {
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
 
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
-
-  // The factory should return null for a regular browser state.
+  // The factory should return null for an off-the-record profile.
   EXPECT_FALSE(
-      OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
+      OhttpKeyServiceFactory::GetForProfile(profile->GetOffTheRecordProfile()));
+
+  // There should be a non-null instance for a regular profile.
+  EXPECT_FALSE(OhttpKeyServiceFactory::GetForProfile(profile.get()));
 }

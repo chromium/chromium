@@ -10,6 +10,7 @@
 
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
+#include "ipcz/features.h"
 #include "ipcz/handle_type.h"
 #include "ipcz/link_side.h"
 #include "ipcz/message.h"
@@ -29,6 +30,14 @@ constexpr uint32_t kProtocolVersion = 0;
 
 // clang-format off
 #include "ipcz/message_macros/message_params_declaration_macros.h"
+#include "ipcz/node_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_versions_declaration_macros.h"
+#include "ipcz/node_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_base_declaration_macros.h"
 #include "ipcz/node_messages_generator.h"
 #include "ipcz/message_macros/undef_message_macros.h"
 

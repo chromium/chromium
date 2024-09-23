@@ -70,7 +70,7 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedHosts) {
             delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded host
-  delegate.UpdateCTPolicies({"google.com"}, {}, {});
+  delegate.UpdateCTPolicies({"google.com"}, {});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
@@ -87,7 +87,7 @@ TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedSPKIs) {
             delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded SPKI
-  delegate.UpdateCTPolicies({}, {hashes_.front().ToString()}, {});
+  delegate.UpdateCTPolicies({}, {hashes_.front().ToString()});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
@@ -108,7 +108,7 @@ TEST_F(ChromeRequireCTDelegateTest, IgnoresInvalidEntries) {
   delegate.UpdateCTPolicies(
       {"file:///etc/fstab", "file://withahost/etc/fstab", "file:///c|/Windows",
        "*", "https://*", "example.com", "https://example.test:invalid_port"},
-      {}, {});
+      {});
 
   // Wildcards are ignored (both * and https://*).
   EXPECT_EQ(CTRequirementLevel::REQUIRED,
@@ -245,52 +245,18 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
       leaf = net::X509Certificate::CreateFromBuffer(
           bssl::UpRef(leaf->cert_buffer()), std::move(intermediates));
     }
-    delegate.UpdateCTPolicies({}, {}, {});
+    delegate.UpdateCTPolicies({}, {});
 
     // The default setting should require CT.
     EXPECT_EQ(CTRequirementLevel::REQUIRED,
               delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
-    delegate.UpdateCTPolicies({}, {test.spki.ToString()}, {});
+    delegate.UpdateCTPolicies({}, {test.spki.ToString()});
 
     // The new setting should take effect.
     EXPECT_EQ(test.expected,
               delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
   }
-}
-
-TEST_F(ChromeRequireCTDelegateTest, SupportsLegacyCaRestrictions) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
-
-  // The hash of a known legacy CA. See
-  // //net/cert/root_cert_list_generated.h
-  net::SHA256HashValue legacy_spki = {{
-      0x00, 0x6C, 0xB2, 0x26, 0xA7, 0x72, 0xC7, 0x18, 0x2D, 0x77, 0x72,
-      0x38, 0x3E, 0x37, 0x3F, 0x0F, 0x22, 0x9E, 0x7D, 0xFE, 0x34, 0x44,
-      0x81, 0x0A, 0x8D, 0x6E, 0x50, 0x90, 0x5D, 0x20, 0xD6, 0x61,
-  }};
-  hashes_.push_back(net::HashValue(legacy_spki));
-
-  // No setting should yield the default results.
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
-
-  // Setting to a non-legacy CA should not work.
-  std::string leaf_hash_string = hashes_.front().ToString();
-  delegate.UpdateCTPolicies({}, {}, {leaf_hash_string});
-
-  // This setting should have no effect, because the hash for |cert_|
-  // is not a legacy CA hash.
-  EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
-
-  // Now set to a truly legacy CA, and create a chain that
-  // contains that legacy CA hash.
-  delegate.UpdateCTPolicies({}, {}, {hashes_.back().ToString()});
-  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 }
 
 }  // namespace

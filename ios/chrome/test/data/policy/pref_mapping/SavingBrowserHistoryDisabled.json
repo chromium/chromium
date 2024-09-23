@@ -10,7 +10,9 @@
           "SavingBrowserHistoryDisabled": false
         },
         "prefs": {
-          "history.saving_disabled": {}
+          "history.saving_disabled": {
+            "value": false
+          }
         }
       },
       {
@@ -18,7 +20,9 @@
           "SavingBrowserHistoryDisabled": true
         },
         "prefs": {
-          "history.saving_disabled": {}
+          "history.saving_disabled": {
+            "value": true
+          }
         }
       }
     ]

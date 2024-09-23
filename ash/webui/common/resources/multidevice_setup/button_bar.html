@@ -28,7 +28,7 @@
       class="cancel-button"
       on-click="onBackwardButtonClicked_"
       hidden$="[[!backwardButtonTextId]]">
-    [[getButtonTextFromId_(backwardButtonTextId)]]
+    [[getButtonTextFromId_(locale, backwardButtonTextId)]]
   </cr-button>
   <div class="flex"></div>
   <cr-button id="cancel"
@@ -36,7 +36,7 @@
       class="cancel-button"
       on-click="onCancelButtonClicked_"
       hidden$="[[!cancelButtonTextId]]">
-      [[getButtonTextFromId_(cancelButtonTextId)]]
+      [[getButtonTextFromId_(locale, cancelButtonTextId)]]
   </cr-button>
   <cr-button id="forward"
       name="forward-button"
@@ -44,6 +44,6 @@
       on-click="onForwardButtonClicked_"
       disabled="[[forwardButtonDisabled]]"
       hidden$="[[!forwardButtonTextId]]">
-    [[getButtonTextFromId_(forwardButtonTextId)]]
+    [[getButtonTextFromId_(locale, forwardButtonTextId)]]
   </cr-button>
 </div>

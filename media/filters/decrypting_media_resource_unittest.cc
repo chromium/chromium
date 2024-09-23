@@ -92,8 +92,8 @@ class DecryptingMediaResourceTest : public testing::Test {
     streams_.push_back(CreateMockDemuxerStream(type, encrypted));
   }
 
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams() {
-    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
+  std::vector<DemuxerStream*> GetAllStreams() {
+    std::vector<DemuxerStream*> streams;
 
     for (auto& stream : streams_) {
       streams.push_back(stream.get());

@@ -34,5 +34,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   grit_output_dir = "$root_gen_dir/components"
 }

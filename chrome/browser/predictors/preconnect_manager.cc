@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -194,6 +197,14 @@ void PreconnectManager::PreconnectUrl(
 
   auto* network_context = GetNetworkContext();
 
+  if (num_sockets > 1 &&
+      base::FeatureList::IsEnabled(
+          features::kLoadingPredictorLimitPreconnectSocketCount)) {
+    // Adjust the number of socket here because LoadingPredictor is the only
+    // call site that sets `num_sockets` to a non-one value.
+    num_sockets = 1;
+  }
+
   network_context->PreconnectSockets(
       num_sockets, url,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
@@ -345,7 +356,7 @@ void PreconnectManager::AllPreresolvesForUrlFinished(PreresolveInfo* info) {
   DCHECK(info);
   DCHECK(info->is_done());
   auto it = preresolve_info_.find(info->url);
-  DCHECK(it != preresolve_info_.end());
+  CHECK(it != preresolve_info_.end(), base::NotFatalUntil::M130);
   DCHECK(info == it->second.get());
   if (delegate_)
     delegate_->PreconnectFinished(std::move(info->stats));

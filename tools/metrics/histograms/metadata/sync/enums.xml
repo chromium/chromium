@@ -62,6 +62,8 @@ chromium-metrics-reviews@google.com.
   <int value="43509" label="Error: LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarkGUIDSource) -->
+
 <enum name="BookmarkGUIDSource">
   <summary>
     Whether a GUID came from BookmarkSpecifics, or, in case it was missing,
@@ -76,6 +78,10 @@ chromium-metrics-reviews@google.com.
       label="GUID cannot be inferred (possibly update with client tag)"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync/engine/bookmark_update_preprocessing.cc:BookmarkGUIDSource) -->
+
+<!-- LINT.IfChange(BookmarksGUIDDuplicates) -->
+
 <enum name="BookmarksGUIDDuplicates">
   <int value="0" label="Matching urls"/>
   <int value="1" label="Matching folders"/>
@@ -84,10 +90,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Different types"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:BookmarksGUIDDuplicates) -->
+
 <enum name="BooleanIsSignedIn">
   <int value="0" label="Not signed in"/>
   <int value="1" label="Signed in"/>
 </enum>
+
+<!-- LINT.IfChange(CrossUserSharingDecryptionResult) -->
 
 <enum name="CrossUserSharingDecryptionResult">
   <int value="0" label="Succeeded"/>
@@ -95,6 +105,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed to decrypt invitation"/>
   <int value="3" label="Failed to parse decrypted invitation"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:CrossUserSharingDecryptionResult) -->
+
+<!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
 
 <enum name="CrossUserSharingKeyPairState">
   <int value="0" label="Key pair valid"/>
@@ -104,11 +118,30 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Pending keys are non-empty"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync/nigori/nigori_state.cc:CrossUserSharingKeyPairState) -->
+
+<!-- LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
+
+<enum name="CrossUserSharingKeyPairStateOnDecryptPendingKeys">
+  <int value="0" label="Valid key pair"/>
+  <int value="1" label="Missing private key"/>
+  <int value="2" label="Empty key pair"/>
+  <int value="3" label="Missing public key"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
+
+<!-- LINT.IfChange(FaviconAvailabilityStatus) -->
+
 <enum name="FaviconAvailabilityStatus">
   <int value="0" label="Favicon available locally"/>
-  <int value="1" label="Favicon available via sync"/>
+  <int value="1" label="(obsolete) Favicon available via sync"/>
   <int value="2" label="Favicon not available"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/favicon/core/history_ui_favicon_request_handler_impl.h:FaviconAvailabilityStatus) -->
+
+<!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
 <enum name="InvalidBookmarkSpecificsError">
   <int value="0" label="Empty specifics"/>
@@ -122,11 +155,33 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Banned GUID"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_specifics_conversions.cc:InvalidBookmarkSpecificsError) -->
+
+<!-- LINT.IfChange(OutgoingPasswordSharingInvitationCommitError) -->
+
 <enum name="OutgoingPasswordSharingInvitationCommitError">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Public Key verions mismatch"/>
   <int value="2" label="Not a family member"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/protocol/password_sharing_invitation_specifics.proto:OutgoingPasswordSharingInvitationCommitError) -->
+
+<!-- LINT.IfChange(PassphraseTypeForMetrics) -->
+
+<enum name="PassphraseTypeForMetrics">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Inconsistent state across profiles"/>
+  <int value="2" label="Implicit passphrase"/>
+  <int value="3" label="Keystore passphrase"/>
+  <int value="4" label="Frozen implicit passphrase"/>
+  <int value="5" label="Custom passphrase"/>
+  <int value="6" label="Trusted vault passphrase"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/passphrase_type_metrics_provider.h:PassphraseTypeForMetrics) -->
+
+<!-- LINT.IfChange(PendingInvalidationStatus) -->
 
 <enum name="PendingInvalidationStatus">
   <int value="0" label="Acknowledged invalidation"/>
@@ -135,8 +190,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Same version (Deprecated)"/>
   <int value="4" label="Same known version"/>
   <int value="5" label="Same unknown version"/>
-  <int value="6" label="ModelType is not connected"/>
+  <int value="6" label="DataType is not connected"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
+
+<!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
 <enum name="RemoteBookmarkUpdateError">
   <int value="0"
@@ -166,7 +225,11 @@ chromium-metrics-reviews@google.com.
              (deprecated)"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:RemoteBookmarkUpdateError) -->
+
 <enum name="SyncablePref">
+<!-- LINT.IfChange(CommonSyncablePref) -->
+
   <int value="0" label="(test) SyncablePrefForTesting"/>
   <int value="1" label="AutofillCreditCardEnabled"/>
   <int value="2" label="(obsolete) AutofillEnabledDeprecated"/>
@@ -178,25 +241,25 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="ShowAppsShortcutInBookmarkBar"/>
   <int value="9" label="ShowBookmarkBar"/>
   <int value="10" label="ShowManagedBookmarksInBookmarkBar"/>
-  <int value="11" label="ClearBrowsingDataHistoryNoticeShownTimes"/>
-  <int value="12" label="DeleteBrowsingHistory"/>
-  <int value="13" label="DeleteBrowsingHistoryBasic"/>
-  <int value="14" label="DeleteCache"/>
-  <int value="15" label="DeleteCacheBasic"/>
-  <int value="16" label="DeleteCookies"/>
-  <int value="17" label="DeleteCookiesBasic"/>
-  <int value="18" label="DeleteDownloadHistory"/>
-  <int value="19" label="DeleteFormData"/>
-  <int value="20" label="DeleteHostedAppsData"/>
-  <int value="21" label="DeletePasswords"/>
-  <int value="22" label="DeleteSiteSettings"/>
-  <int value="23" label="DeleteTimePeriod"/>
-  <int value="24" label="DeleteTimePeriodBasic"/>
+  <int value="11" label="(obsolete) ClearBrowsingDataHistoryNoticeShownTimes"/>
+  <int value="12" label="(obsolete) DeleteBrowsingHistory"/>
+  <int value="13" label="(obsolete) DeleteBrowsingHistoryBasic"/>
+  <int value="14" label="(obsolete) DeleteCache"/>
+  <int value="15" label="(obsolete) DeleteCacheBasic"/>
+  <int value="16" label="(obsolete) DeleteCookies"/>
+  <int value="17" label="(obsolete) DeleteCookiesBasic"/>
+  <int value="18" label="(obsolete) DeleteDownloadHistory"/>
+  <int value="19" label="(obsolete) DeleteFormData"/>
+  <int value="20" label="(obsolete) DeleteHostedAppsData"/>
+  <int value="21" label="(obsolete) DeletePasswords"/>
+  <int value="22" label="(obsolete) DeleteSiteSettings"/>
+  <int value="23" label="(obsolete) DeleteTimePeriod"/>
+  <int value="24" label="(obsolete) DeleteTimePeriodBasic"/>
   <int value="25" label="LastClearBrowsingDataTime"/>
-  <int value="26" label="PreferencesMigratedToBasic"/>
+  <int value="26" label="(obsolete) PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
   <int value="28" label="Font"/>
-  <int value="29" label="OfferReaderMode"/>
+  <int value="29" label="(obsolete) OfferReaderMode"/>
   <int value="30" label="ReaderForAccessibility"/>
   <int value="31" label="Theme"/>
   <int value="32" label="AcceptLanguages"/>
@@ -233,10 +296,22 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="PrefDogfoodGroups"/>
   <int value="63" label="(test) SyncableMergeableDictPrefForTesting"/>
   <int value="64" label="AutofillPaymentCvcStorage"/>
-  <int value="65" label="DeleteTimePeriodV2"/>
-  <int value="66" label="DeleteTimePeriodV2Basic"/>
+  <int value="65" label="(obsolete) DeleteTimePeriodV2"/>
+  <int value="66" label="(obsolete) DeleteTimePeriodV2Basic"/>
   <int value="67" label="SyncableMergeableListPrefForTesting"/>
   <int value="68" label="SyncableHistorySensitiveListPrefForTesting"/>
+  <int value="69" label="AutofillPaymentCardBenefits"/>
+  <int value="70" label="(obsolete) CloseTabs"/>
+  <int value="71" label="ShowTabGroupsInBookmarkBar"/>
+  <int value="72" label="FacilitatedPaymentsPix"/>
+  <int value="73" label="SyncableTabGroups"/>
+  <int value="74" label="AutoPinNewTabGroups"/>
+  <int value="75" label="ShowGoogleLensShortcut"/>
+  <int value="76" label="SharingVapidKey"/>
+<!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
+
+<!-- LINT.IfChange(ChromeSyncablePref) -->
+
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>
@@ -262,7 +337,8 @@ chromium-metrics-reviews@google.com.
   <int value="100022" label="ShowHomeButton"/>
   <int value="100023" label="PinnedExtensions"/>
   <int value="100024" label="SupervisedUserApprovedExtensions"/>
-  <int value="100025" label="IsDefaultPageColorsOnHighContrast"/>
+  <int value="100025"
+      label="(obsolete, no longer synced) IsDefaultPageColorsOnHighContrast"/>
   <int value="100026" label="ShowFullscreenToolbar"/>
   <int value="100027" label="AllowJavascriptAppleEvents"/>
   <int value="100028" label="RestoreAppsAndPagesPrefName"/>
@@ -279,7 +355,8 @@ chromium-metrics-reviews@google.com.
   <int value="100038" label="(obsolete) AccessibilityGreyscaleAmount"/>
   <int value="100039" label="(obsolete) AccessibilityHueRotationAmount"/>
   <int value="100040" label="(obsolete) AccessibilitySaturationAmount"/>
-  <int value="100041" label="AccessibilityScreenMagnifierCenterFocus"/>
+  <int value="100041"
+      label="(obsolete) AccessibilityScreenMagnifierCenterFocus"/>
   <int value="100042"
       label="AccessibilityScreenMagnifierFocusFollowingEnabled"/>
   <int value="100043" label="AccessibilityScreenMagnifierMouseFollowingMode"/>
@@ -385,8 +462,10 @@ chromium-metrics-reviews@google.com.
   <int value="100141" label="TabDiscardingExceptions"/>
   <int value="100142" label="AccessibilityImageLabelsEnabled"/>
   <int value="100143" label="AccessibilityImageLabelsOptInAccepted"/>
-  <int value="100144" label="AccessibilityPdfOcrAlwaysActive"/>
-  <int value="100145" label="ApplyPageColorsOnlyOnIncreasedContrast"/>
+  <int value="100144" label="(obsolete) AccessibilityPdfOcrAlwaysActive"/>
+  <int value="100145"
+      label="(obsolete, no longer synced)
+             ApplyPageColorsOnlyOnIncreasedContrast"/>
   <int value="100146" label="DefaultCharset"/>
   <int value="100147" label="DefaultTasksByMimeType"/>
   <int value="100148" label="DefaultTasksBySuffix"/>
@@ -403,17 +482,17 @@ chromium-metrics-reviews@google.com.
   <int value="100159" label="NetworkPredictionOptions"/>
   <int value="100160" label="NetworkQualities"/>
   <int value="100161" label="(obsolete) NtpAppPageNames"/>
-  <int value="100162" label="PageColors"/>
+  <int value="100162" label="(obsolete, no longer synced) PageColors"/>
   <int value="100163" label="PerformanceTracingEnabled"/>
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
-  <int value="100165" label="PrivacySandboxApisEnabled"/>
+  <int value="100165" label="(obsolete) PrivacySandboxApisEnabled"/>
   <int value="100166" label="PrivacySandboxRelatedWebsiteSetsEnabled"/>
   <int value="100167" label="(obsolete) PrivacySandboxManuallyControlled"/>
   <int value="100168" label="PromptForDownload"/>
   <int value="100169" label="ProtectedContentDefault"/>
   <int value="100170" label="RestoreOnStartup"/>
   <int value="100171" label="SearchSuggestEnabled"/>
-  <int value="100172" label="SharingVapidKey"/>
+  <int value="100172" label="(obsolete) SharingVapidKey"/>
   <int value="100173" label="URLsToRestoreOnStartup"/>
   <int value="100174" label="SpellCheckEnable"/>
   <int value="100175" label="ProfileContentSettingsExceptionsAntiAbuse"/>
@@ -493,7 +572,7 @@ chromium-metrics-reviews@google.com.
   <int value="100244" label="ReadAloudHighlightingEnabled"/>
   <int value="100245" label="HttpsFirstModeIncognito"/>
   <int value="100246"
-      label="AccessibilityReadAnythingOmniboxIconLabelShownCount"/>
+      label="(obsolete) AccessibilityReadAnythingOmniboxIconLabelShownCount"/>
   <int value="100247" label="ApplicationLocale"/>
   <int value="100248" label="ListenToThisPageEnabled"/>
   <int value="100249" label="IpProtectionEnabled"/>
@@ -518,16 +597,59 @@ chromium-metrics-reviews@google.com.
       label="kProfileContentSettingsPartitionedExceptionsPopups"/>
   <int value="100260"
       label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
-  <int value="100261" label="kStandaloneWindowMigrationNudgeShown"/>
+  <int value="100261" label="(obsolete) kStandaloneWindowMigrationNudgeShown"/>
   <int value="100262" label="TabDiscardingExceptionsWithTime"/>
-  <int value="100263" label="kAccessibilityFaceGazeCursorSpeedUp"/>
-  <int value="100264" label="kAccessibilityFaceGazeCursorSpeedDown"/>
-  <int value="100265" label="kAccessibilityFaceGazeCursorSpeedLeft"/>
-  <int value="100266" label="kAccessibilityFaceGazeCursorSpeedRight"/>
-  <int value="100267" label="kAccessibilityFaceGazeCursorSmoothing"/>
-  <int value="100268" label="kAccessibilityFaceGazeCursorUseAcceleration"/>
+  <int value="100263" label="AccessibilityFaceGazeCursorSpeedUp"/>
+  <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
+  <int value="100265" label="AccessibilityFaceGazeCursorSpeedLeft"/>
+  <int value="100266" label="AccessibilityFaceGazeCursorSpeedRight"/>
+  <int value="100267" label="AccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100268" label="AccessibilityFaceGazeCursorUseAcceleration"/>
+  <int value="100269" label="FingerprintingProtectionEnabled"/>
+  <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>
+  <int value="100271" label="AccessibilityFaceGazeGesturesToConfidence"/>
+  <int value="100272" label="ShelfContainerAppPinRolls"/>
+  <int value="100273"
+      label="ProfileContentSettingsExceptionsTrackingProtection"/>
+  <int value="100274"
+      label="ProfileContentSettingsPartitionedExceptionsTrackingProtection"/>
+  <int value="100275"
+      label="ProfileDefaultContentSettingValuesTrackingProtection"/>
+  <int value="100276" label="ShowForwardButton"/>
+  <int value="100277" label="AccessibilityMagnifierFollowsSts"/>
+  <int value="100278" label="AccessibilityReadAnythingLanguagesEnabled"/>
+  <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
+  <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
+  <int value="100281" label="AccessibilityMainNodeAnnotationsEnabled"/>
+  <int value="100282" label="SyncableVersionedWallpaperInfo"/>
+  <int value="100283" label="FocusModeSelectedTask"/>
+  <int value="100284" label="FocusModeSoundSection"/>
+  <int value="100285" label="kAccessibilityFaceGazeActionsEnabled"/>
+  <int value="100286" label="kAccessibilityFaceGazeCursorControlEnabled"/>
+  <int value="100287" label="kAccessibilityFaceGazeAdjustSpeedSeparately"/>
+  <int value="100288" label="KeyboardAmbientLightSensorLastEnabled"/>
+  <int value="100289" label="AccessibilityReadAnythingImagesEnabled"/>
+  <int value="100290" label="ShelfMallAppPinRolls"/>
+  <int value="100291" label="iOSAddressPromoLastImpressionTimestamp"/>
+  <int value="100292" label="iOSAddressPromoImpressionsCounter"/>
+  <int value="100293" label="iOSAddressPromoOptOut"/>
+  <int value="100294" label="MahiNudgeShownCount"/>
+  <int value="100295" label="AccessibilityMagnifierFollowsChromeVox"/>
+  <int value="100296" label="KeyboardHasSplitModifierKeyboard"/>
+  <int value="100297" label="HttpsFirstBalancedMode"/>
+  <int value="100298" label="kAccessibilityFlashNotificationsEnabled"/>
+  <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
+  <int value="100300" label="PinnedChromeLabsMigrationComplete"/>
+  <int value="100301" label="AccessibilityFaceGazeGesturesToKeyCombos"/>
+  <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
+  <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
+  <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
+<!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
+
+<!-- LINT.IfChange(IosSyncablePref) -->
+
   <int value="200000" label="ArticlesForYouEnabled"/>
-  <int value="200001" label="ContextualSearchEnabled_IOS"/>
+  <int value="200001" label="(obsolete) ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
   <int value="200003" label="EnableDoNotTrack_IOS"/>
   <int value="200004" label="IosHandoffToOtherDevices"/>
@@ -537,7 +659,11 @@ chromium-metrics-reviews@google.com.
   <int value="200008" label="SearchSuggestEnabled_IOS"/>
   <int value="200009" label="TrackPricesOnTabsEnabled"/>
   <int value="200010" label="VoiceSearchLocale"/>
+<!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
+
 </enum>
+
+<!-- LINT.IfChange(SyncBookmarkModelMetadataCorruptionReason) -->
 
 <enum name="SyncBookmarkModelMetadataCorruptionReason">
   <int value="0" label="No corruption"/>
@@ -556,6 +682,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Entity missing favicon hash"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync_bookmarks/synced_bookmark_tracker.h:SyncBookmarkModelMetadataCorruptionReason) -->
+
+<!-- LINT.IfChange(SyncClientToServerMessageContents) -->
+
 <enum name="SyncClientToServerMessageContents">
   <summary>
     Type of a network message sent from the client to the sync server.
@@ -567,6 +697,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CLEAR_SERVER_DATA"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync/protocol/sync.proto:SyncClientToServerMessageContents) -->
+
+<!-- LINT.IfChange(SyncConflictResolution) -->
+
+<enum name="SyncConflictResolution">
+  <int value="0" label="Changes match"/>
+  <int value="1" label="Use local"/>
+  <int value="2" label="Use remote"/>
+  <int value="3" label="Ignore local encryption"/>
+  <int value="4" label="Ignore remote encryption"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/conflict_resolution.h:SyncConflictResolution) -->
+
 <enum name="SyncCryptographerPendingKeysState">
   <int value="0" label="Does not have pending keys"/>
   <int value="1" label="Has pending keys"/>
@@ -577,6 +721,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Ready"/>
 </enum>
 
+<!-- LINT.IfChange(SyncCustomPassphraseKeyDerivationMethodState) -->
+
 <enum name="SyncCustomPassphraseKeyDerivationMethodState">
   <int value="0" label="Not set"/>
   <int value="1" label="Unsupported method"/>
@@ -584,169 +730,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SCRYPT_8192_8_11"/>
 </enum>
 
-<enum name="SyncEntityChange">
-  <summary>
-    Type of change of a sync entity. Recorded once for every sync entity
-    whenever it is commited to the server or updated from the server.
-  </summary>
-  <int value="0" label="Local deletion (commited upstream)"/>
-  <int value="1" label="Local creation (commited upstream)"/>
-  <int value="2" label="Local update (commited upstream)"/>
-  <int value="3" label="Remote incremental deletion (updated downstream)"/>
-  <int value="4" label="Remote incremental update (updated downstream)"/>
-  <int value="5" label="Remote initial update (updated downstream)"/>
-</enum>
+<!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:SyncCustomPassphraseKeyDerivationMethodState) -->
 
-<enum name="SyncerErrorValues">
-  <int value="0" label="UNSET"/>
-  <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
-  <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
-  <int value="3" label="NETWORK_IO_ERROR"/>
-  <int value="4" label="SYNC_SERVER_ERROR"/>
-  <int value="5" label="SYNC_AUTH_ERROR"/>
-  <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
-  <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
-  <int value="8" label="SERVER_RETURN_THROTTLED"/>
-  <int value="9" label="SERVER_RETURN_TRANSIENT_ERROR"/>
-  <int value="10" label="SERVER_RETURN_MIGRATION_DONE"/>
-  <int value="11" label="(deprecated) SERVER_RETURN_CLEAR_PENDING"/>
-  <int value="12" label="SERVER_RETURN_NOT_MY_BIRTHDAY"/>
-  <int value="13" label="SERVER_RETURN_CONFLICT"/>
-  <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
-  <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
-  <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
-  <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
-  <int value="18" label="SERVER_RETURN_CLIENT_DATA_OBSOLETE"/>
-  <int value="19" label="SERVER_RETURN_ENCRYPTION_OBSOLETE"/>
-  <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
-  <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
-  <int value="22" label="SYNCER_OK"/>
-</enum>
+<!-- LINT.IfChange(SyncDataTypeErrorSite) -->
 
-<enum name="SyncErrorInfobarTypes">
-  <summary>Possible errors that can trigger a sync error infobar.</summary>
-  <int value="1" label="Sign in needs update"/>
-  <int value="2" label="Service unavailable (deprecated)"/>
-  <int value="3" label="Needs passphrase"/>
-  <int value="4" label="Unrecoverable error"/>
-  <int value="5" label="Sync settings not confirmed"/>
-  <int value="6" label="Sync needs trusted vault key"/>
-  <int value="7" label="Sync trusted vault recoverability degraded"/>
-</enum>
-
-<enum name="SyncErrorType">
-  <summary>Possible errors that can be returned by the sync server.</summary>
-  <int value="1" label="(Obsolete) DEPRECATED_ACCESS_DENIED"/>
-  <int value="2" label="NOT_MY_BIRTHDAY"/>
-  <int value="3" label="THROTTLED">
-    You might want to look at Sync.ThrottledSomeModelTypes to correlate this
-    with throttling of a specific data type, or Sync.ThrottledAllModelTypes for
-    throttling of the whole client.
-  </int>
-  <int value="4" label="(Obsolete) DEPRECATED_AUTH_EXPIRED"/>
-  <int value="5" label="(Obsolete) DEPRECATED_USER_NOT_ACTIVATED"/>
-  <int value="6" label="(Obsolete) DEPRECATED_AUTH_INVALID"/>
-  <int value="7" label="CLEAR_PENDING"/>
-  <int value="8" label="TRANSIENT_ERROR"/>
-  <int value="9" label="MIGRATION_DONE"/>
-  <int value="10" label="DISABLED_BY_ADMIN"/>
-  <int value="11" label="(Obsolete) DEPRECATED_USER_ROLLBACK"/>
-  <int value="12" label="PARTIAL_FAILURE">
-    You might want to look at Sync.BackedOffModelType to see the per-type effect
-    of this.
-  </int>
-  <int value="13" label="CLIENT_DATA_OBSOLETE"/>
-  <int value="100" label="UNKNOWN"/>
-</enum>
-
-<enum name="SyncFeatureOrTransport">
-  <int value="0" label="Full Sync feature."/>
-  <int value="1" label="Sync transport only."/>
-</enum>
-
-<enum name="SyncFeatureStatusForSyncToSigninMigration">
-  <int value="0" label="Undefined"/>
-  <int value="1" label="Disabled or paused"/>
-  <int value="2" label="Initializing"/>
-  <int value="3" label="Active"/>
-</enum>
-
-<enum name="SyncGetUpdatesOrigin">
-  <summary>
-    Equivalent to proto SyncEnums.GetUpdatesOrigin: represents a reason for a
-    client to issue a GetUpdates request to the sync server.
-  </summary>
-  <int value="0" label="UNKNOWN_ORIGIN"/>
-  <int value="4" label="PERIODIC"/>
-  <int value="7" label="NEWLY_SUPPORTED_DATATYPE"/>
-  <int value="8" label="MIGRATION"/>
-  <int value="9" label="NEW_CLIENT"/>
-  <int value="10" label="RECONFIGURATION"/>
-  <int value="12" label="GU_TRIGGER"/>
-  <int value="13" label="RETRY"/>
-  <int value="14" label="PROGRAMMATIC"/>
-</enum>
-
-<enum name="SyncHistoryDatabaseError">
-  <int value="0"
-      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
-             writing visit data"/>
-  <int value="1"
-      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
-             writing metadata"/>
-  <int value="2" label="OnDatabaseError() called"/>
-  <int value="3" label="Error in LoadMetadata()"/>
-  <int value="4"
-      label="(Obsolete) Error in OnURLVisited(): reading visit data. Was
-             never recorded."/>
-  <int value="5"
-      label="(Obsolete) Error in OnURLsDeleted(): reading metadata. Was never
-             recorded."/>
-  <int value="6"
-      label="(Obsolete) Error in OnVisitUpdated(): reading URL data. Was
-             never recorded."/>
-  <int value="7" label="Error in GetAllData(): reading metadata"/>
-</enum>
-
-<enum name="SyncHistorySpecificsError">
-  <int value="0"
-      label="Missing required fields (visit time, originator cache GUID, or
-             redirect entries)"/>
-  <int value="1" label="Too old (already expired)"/>
-  <int value="2" label="Too new (too far in the future)"/>
-  <int value="3" label="Unwanted URL (e.g. file: or chrome:)"/>
-</enum>
-
-<enum name="SyncIncomingInvalidationStatus">
-  <summary>Possible outcomes of handling incoming sync invalidations.</summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed to parse payload"/>
-  <int value="2" label="Contains only unknown data types"/>
-</enum>
-
-<enum name="SyncInitialState">
-  <int value="0" label="Sync-the-feature can start"/>
-  <int value="1" label="No signed in user"/>
-  <int value="2"
-      label="Sync-the-transport can start (Sync-the-feature turned off but
-             initial setup complete)"/>
-  <int value="3"
-      label="Sync-the-transport can start (Sync-the-feature turned off with
-             initial setup incomplete"/>
-  <int value="4"
-      label="Sync-the-transport can start (Sync-the-feature turned on but
-             initial setup incomplete"/>
-  <int value="5" label="Disallowed by enterprise policy"/>
-  <int value="6"
-      label="Disallowed by the platform (obsolete, was never recorded)"/>
-</enum>
-
-<enum name="SyncKeystoreDecryptionFailure">
-  <int value="0" label="No keystore key"/>
-  <int value="1" label="Unknown reason"/>
-</enum>
-
-<enum name="SyncModelTypeErrorSite">
+<enum name="SyncDataTypeErrorSite">
   <int value="0" label="ReportError() called by the bridge"/>
   <int value="1" label="Error returned when applying full updates"/>
   <int value="2" label="Error returned when applying incremental updates"/>
@@ -757,7 +745,11 @@ chromium-metrics-reviews@google.com.
              SupportsIncrementalUpdates()"/>
 </enum>
 
-<enum name="SyncModelTypes">
+<!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.h:SyncDataTypeErrorSite) -->
+
+<!-- LINT.IfChange(SyncDataTypes) -->
+
+<enum name="SyncDataTypes">
   <int value="0" label="Unspecified"/>
   <int value="1"
       label="(Obsolete) Top Level Folder. Removed on 03/2021 (M91)."/>
@@ -815,7 +807,7 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="Printers Authorization Servers"/>
   <int value="53" label="Contact info"/>
   <int value="54" label="Autofill Wallet Usage"/>
-  <int value="55" label="Segmentation"/>
+  <int value="55" label="(Obsolete) Segmentation"/>
   <int value="56" label="Saved Tab Groups"/>
   <int value="57" label="Power Bookmark"/>
   <int value="58" label="WebAuthn Credentials"/>
@@ -824,7 +816,235 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="Autofill Wallet Credential"/>
   <int value="62" label="WebAPKs"/>
   <int value="63" label="Shared Tab Group Data"/>
+  <int value="64" label="Collaboration Groups"/>
+  <int value="65" label="Plus Address"/>
+  <int value="66" label="Product Comparison"/>
+  <int value="67" label="Cookies"/>
+  <int value="68" label="Plus Address Settings"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
+
+<!-- LINT.IfChange(SyncEntityChange) -->
+
+<enum name="SyncEntityChange">
+  <summary>
+    Type of change of a sync entity. Recorded once for every sync entity
+    whenever it is commited to the server or updated from the server.
+  </summary>
+  <int value="0" label="Local deletion (commited upstream)"/>
+  <int value="1" label="Local creation (commited upstream)"/>
+  <int value="2" label="Local update (commited upstream)"/>
+  <int value="3" label="Remote incremental deletion (updated downstream)"/>
+  <int value="4" label="Remote incremental update (updated downstream)"/>
+  <int value="5" label="Remote initial update (updated downstream)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/cycle/entity_change_metric_recording.h:SyncEntityChange) -->
+
+<!-- LINT.IfChange(SyncerErrorValues) -->
+
+<enum name="SyncerErrorValues">
+  <int value="0" label="UNSET"/>
+  <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
+  <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
+  <int value="3" label="NETWORK_IO_ERROR"/>
+  <int value="4" label="SYNC_SERVER_ERROR"/>
+  <int value="5" label="SYNC_AUTH_ERROR"/>
+  <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
+  <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
+  <int value="8" label="SERVER_RETURN_THROTTLED"/>
+  <int value="9" label="SERVER_RETURN_TRANSIENT_ERROR"/>
+  <int value="10" label="SERVER_RETURN_MIGRATION_DONE"/>
+  <int value="11" label="(deprecated) SERVER_RETURN_CLEAR_PENDING"/>
+  <int value="12" label="SERVER_RETURN_NOT_MY_BIRTHDAY"/>
+  <int value="13" label="SERVER_RETURN_CONFLICT"/>
+  <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
+  <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
+  <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
+  <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
+  <int value="18" label="SERVER_RETURN_CLIENT_DATA_OBSOLETE"/>
+  <int value="19" label="SERVER_RETURN_ENCRYPTION_OBSOLETE"/>
+  <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
+  <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
+  <int value="22" label="SYNCER_OK"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/syncer.h:SyncerErrorValues) -->
+
+<!-- LINT.IfChange(SyncErrorInfobarTypes) -->
+
+<enum name="SyncErrorInfobarTypes">
+  <summary>Possible errors that can trigger a sync error infobar.</summary>
+  <int value="1" label="Sign in needs update"/>
+  <int value="2" label="Service unavailable (deprecated)"/>
+  <int value="3" label="Needs passphrase"/>
+  <int value="4" label="Unrecoverable error (deprecated)"/>
+  <int value="5" label="Sync settings not confirmed"/>
+  <int value="6" label="Sync needs trusted vault key"/>
+  <int value="7" label="Sync trusted vault recoverability degraded"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/model/sync/utils/sync_util.mm:SyncErrorInfobarTypes) -->
+
+<!-- LINT.IfChange(SyncErrorType) -->
+
+<enum name="SyncErrorType">
+  <summary>Possible errors that can be returned by the sync server.</summary>
+  <int value="1" label="(Obsolete) DEPRECATED_ACCESS_DENIED"/>
+  <int value="2" label="NOT_MY_BIRTHDAY"/>
+  <int value="3" label="THROTTLED">
+    You might want to look at Sync.ThrottledSomeDataTypes to correlate this with
+    throttling of a specific data type, or Sync.ThrottledAllDataTypes for
+    throttling of the whole client.
+  </int>
+  <int value="4" label="(Obsolete) DEPRECATED_AUTH_EXPIRED"/>
+  <int value="5" label="(Obsolete) DEPRECATED_USER_NOT_ACTIVATED"/>
+  <int value="6" label="(Obsolete) DEPRECATED_AUTH_INVALID"/>
+  <int value="7" label="CLEAR_PENDING"/>
+  <int value="8" label="TRANSIENT_ERROR"/>
+  <int value="9" label="MIGRATION_DONE"/>
+  <int value="10" label="DISABLED_BY_ADMIN"/>
+  <int value="11" label="(Obsolete) DEPRECATED_USER_ROLLBACK"/>
+  <int value="12" label="PARTIAL_FAILURE">
+    You might want to look at Sync.BackedOffDataType to see the per-type effect
+    of this.
+  </int>
+  <int value="13" label="CLIENT_DATA_OBSOLETE"/>
+  <int value="14" label="ENCRYPTION_OBSOLETE"/>
+  <int value="100" label="UNKNOWN"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/model/sync/utils/sync_util.mm:SyncErrorType) -->
+
+<!-- LINT.IfChange(SyncErrorUiAction) -->
+
+<enum name="SyncErrorUiAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Button clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtils.java:SyncErrorUiAction) -->
+
+<!-- LINT.IfChange(SyncFeatureOrTransport) -->
+
+<enum name="SyncFeatureOrTransport">
+  <int value="0" label="Full Sync feature."/>
+  <int value="1" label="Sync transport only."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service_impl.cc:SyncFeatureOrTransport) -->
+
+<!-- LINT.IfChange(SyncFeatureStatusForSyncToSigninMigration) -->
+
+<enum name="SyncFeatureStatusForSyncToSigninMigration">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="(obsolete) Disabled or Paused"/>
+  <int value="2" label="Initializing"/>
+  <int value="3" label="Active"/>
+  <int value="4" label="Paused"/>
+  <int value="5" label="Disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_feature_status_for_migrations_recorder.h:SyncFeatureStatusForSyncToSigninMigration) -->
+
+<!-- LINT.IfChange(SyncGetUpdatesOrigin) -->
+
+<enum name="SyncGetUpdatesOrigin">
+  <summary>
+    Equivalent to proto SyncEnums.GetUpdatesOrigin: represents a reason for a
+    client to issue a GetUpdates request to the sync server.
+  </summary>
+  <int value="0" label="UNKNOWN_ORIGIN"/>
+  <int value="4" label="PERIODIC"/>
+  <int value="7" label="NEWLY_SUPPORTED_DATATYPE"/>
+  <int value="8" label="MIGRATION"/>
+  <int value="9" label="NEW_CLIENT"/>
+  <int value="10" label="RECONFIGURATION"/>
+  <int value="12" label="GU_TRIGGER"/>
+  <int value="13" label="RETRY"/>
+  <int value="14" label="PROGRAMMATIC"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/protocol/sync_enums.proto:SyncGetUpdatesOrigin) -->
+
+<!-- LINT.IfChange(SyncHistoryDatabaseError) -->
+
+<enum name="SyncHistoryDatabaseError">
+  <int value="0"
+      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
+             writing visit data"/>
+  <int value="1"
+      label="Error in MergeFullSyncData() or ApplyIncrementalSyncChanges():
+             writing metadata"/>
+  <int value="2" label="OnDatabaseError() called"/>
+  <int value="3" label="Error in LoadMetadata()"/>
+  <int value="4"
+      label="(Obsolete) Error in OnURLVisited(): reading visit data. Was
+             never recorded."/>
+  <int value="5"
+      label="(Obsolete) Error in OnURLsDeleted(): reading metadata. Was never
+             recorded."/>
+  <int value="6"
+      label="(Obsolete) Error in OnVisitUpdated(): reading URL data. Was
+             never recorded."/>
+  <int value="7" label="Error in GetAllData(): reading metadata"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistoryDatabaseError) -->
+
+<!-- LINT.IfChange(SyncHistorySpecificsError) -->
+
+<enum name="SyncHistorySpecificsError">
+  <int value="0"
+      label="Missing required fields (visit time, originator cache GUID, or
+             redirect entries)"/>
+  <int value="1" label="Too old (already expired)"/>
+  <int value="2" label="Too new (too far in the future)"/>
+  <int value="3" label="Unwanted URL (e.g. file: or chrome:)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistorySpecificsError) -->
+
+<!-- LINT.IfChange(SyncIncomingInvalidationStatus) -->
+
+<enum name="SyncIncomingInvalidationStatus">
+  <summary>Possible outcomes of handling incoming sync invalidations.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to parse payload"/>
+  <int value="2" label="Contains only unknown data types"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/glue/sync_engine_backend.h:SyncIncomingInvalidationStatus) -->
+
+<!-- LINT.IfChange(SyncInitialState) -->
+
+<enum name="SyncInitialState">
+  <int value="0" label="Sync-the-feature can start"/>
+  <int value="1" label="No signed in user"/>
+  <int value="2"
+      label="Sync-the-transport can start (Sync-the-feature turned off but
+             initial setup complete)"/>
+  <int value="3"
+      label="Sync-the-transport can start (Sync-the-feature turned off with
+             initial setup incomplete"/>
+  <int value="4"
+      label="Sync-the-transport can start (Sync-the-feature turned on but
+             initial setup incomplete"/>
+  <int value="5" label="Disallowed by enterprise policy"/>
+  <int value="6"
+      label="Disallowed by the platform (obsolete, was never recorded)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service_impl.cc:SyncInitialState) -->
+
+<enum name="SyncKeystoreDecryptionFailure">
+  <int value="0" label="No keystore key"/>
+  <int value="1" label="Unknown reason"/>
+</enum>
+
+<!-- LINT.IfChange(SyncPassphraseType) -->
 
 <enum name="SyncPassphraseType">
   <int value="0" label="IMPLICIT_PASSPHRASE"/>
@@ -834,15 +1054,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="TRUSTED_VAULT_PASSPHRASE"/>
 </enum>
 
-<enum name="SyncPassphraseType2">
-  <int value="0" label="No active syncing profiles"/>
-  <int value="1" label="Inconsistent state across profiles"/>
-  <int value="2" label="Implicit passphrase"/>
-  <int value="3" label="Keystore passphrase"/>
-  <int value="4" label="Frozen implicit passphrase"/>
-  <int value="5" label="Custom passphrase"/>
-  <int value="6" label="Trusted vault passphrase"/>
-</enum>
+<!-- LINT.ThenChange(/components/sync/base/passphrase_enums.h:SyncPassphraseType) -->
+
+<!-- LINT.IfChange(SyncPasswordNotesStateInUpdate) -->
 
 <enum name="SyncPasswordNotesStateInUpdate">
   <int value="0"
@@ -854,23 +1068,41 @@ chromium-metrics-reviews@google.com.
       label="Notes field is set only in the backup but not decryptable"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:SyncPasswordNotesStateInUpdate) -->
+
+<!-- LINT.IfChange(SyncPlaceholderTabResyncResult) -->
+
 <enum name="SyncPlaceholderTabResyncResult">
   <int value="0" label="PLACEHOLDER_TAB_FOUND"/>
   <int value="1" label="PLACEHOLDER_TAB_RESYNCED"/>
   <int value="2" label="PLACEHOLDER_TAB_NOT_SYNCED"/>
+  <int value="3" label="PLACEHOLDER_TAB_RESYNC_FAILED"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync_sessions/local_session_event_handler_impl.cc:SyncPlaceholderTabResyncResult) -->
+
+<!-- LINT.IfChange(SyncResetEngineReason) -->
 
 <enum name="SyncResetEngineReason">
   <int value="0" label="Shutdown"/>
   <int value="1" label="Unrecoverable error"/>
   <int value="2" label="Disabled account"/>
-  <int value="3" label="Requested pref change"/>
-  <int value="4" label="Stop and clear"/>
+  <int value="3"
+      label="(Obsolete) Requested pref change. Removed 04/2024 (and not used
+             for some time before that)"/>
+  <int value="4" label="Upgrade client error"/>
   <int value="5"
       label="(Obsolete) Set sync allowed by platform. Removed 01/2022."/>
   <int value="6" label="Credentials updated"/>
   <int value="7" label="Reset local Sync data"/>
+  <int value="8" label="Not signed in"/>
+  <int value="9" label="Enterprise policy"/>
+  <int value="10" label="Disable sync on client"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service_impl.h:SyncResetEngineReason) -->
+
+<!-- LINT.IfChange(SyncSharingMessageCommitErrorCode) -->
 
 <enum name="SyncSharingMessageCommitErrorCode">
   <int value="0" label="Ok"/>
@@ -889,27 +1121,19 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Sync auth error"/>
 </enum>
 
-<enum name="SyncStopSource">
-  <int value="0"
-      label="(Obsolete) Profile destruction. Supposedly meant that Sync was
-             stopped due to the profile being destroyed. However, it was
-             recorded during most profile destructions, even if Sync was
-             never enabled in the first place. We stopped recording this in
-             2018-06."/>
-  <int value="1" label="Sign out"/>
-  <int value="2" label="Birthday error"/>
-  <int value="3" label="Chrome sync settings"/>
-  <int value="4"
-      label="(Obsolete) Android Chrome sync setting. Removed on 01/2022."/>
-  <int value="5"
-      label="(Obsolete) Android main sync setting. Removed on 01/2022."/>
-</enum>
+<!-- LINT.ThenChange(/components/sync/protocol/sharing_message_specifics.proto:SyncSharingMessageCommitErrorCode) -->
+
+<!-- LINT.IfChange(SyncToSigninMigrationDataTypeDecision) -->
 
 <enum name="SyncToSigninMigrationDataTypeDecision">
   <int value="0" label="Migrate"/>
   <int value="1" label="Don't migrate, data type disabled"/>
   <int value="2" label="Don't migrate, data type not active"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.h:SyncToSigninMigrationDataTypeDecision) -->
+
+<!-- LINT.IfChange(SyncToSigninMigrationDecisionOverall) -->
 
 <enum name="SyncToSigninMigrationDecisionOverall">
   <int value="0" label="Migrate"/>
@@ -920,7 +1144,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Don't migrate, migration feature flag disabled"/>
   <int value="6" label="Undo the migration"/>
   <int value="7" label="Don't undo: already completed or not necessary"/>
+  <int value="8" label="Migrate forced"/>
+  <int value="9" label="Don't migrate, auth error"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecisionOverall) -->
+
+<!-- LINT.IfChange(SyncToSigninMigrationReadingListStep) -->
 
 <enum name="SyncToSigninMigrationReadingListStep">
   <summary>
@@ -933,18 +1163,9 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Migration finished successfully"/>
 </enum>
 
-<enum name="SyncTypedUrlDatabaseError">
-  <int value="0" label="Error in MergeFullSyncData(): reading"/>
-  <int value="1" label="Error in MergeFullSyncData(): writing data"/>
-  <int value="2" label="Error in MergeFullSyncData(): writing metadata"/>
-  <int value="3" label="Error in ApplyIncrementalSyncChanges(): writing data"/>
-  <int value="4"
-      label="Error in ApplyIncrementalSyncChanges(): writing metadata"/>
-  <int value="5" label="Error in OnURLsDeleted(): reading metadata"/>
-  <int value="6" label="OnDatabaseError() called"/>
-  <int value="7" label="Error in LoadMetadata(): opening DB"/>
-  <int value="8" label="Error in LoadMetadata(): reading"/>
-</enum>
+<!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationReadingListStep) -->
+
+<!-- LINT.IfChange(SyncUserEventType) -->
 
 <enum name="SyncUserEventType">
   <int value="0" label="Unknown"/>
@@ -954,11 +1175,19 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="FlocIdComputedEvent"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/sync_user_events/user_event_service_impl.cc:SyncUserEventType) -->
+
+<!-- LINT.IfChange(TrustedVaultDegradedRecoverabilityValue) -->
+
 <enum name="TrustedVaultDegradedRecoverabilityValue">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not degraded"/>
   <int value="2" label="Degraded"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/proto/local_trusted_vault.proto:TrustedVaultDegradedRecoverabilityValue) -->
+
+<!-- LINT.IfChange(TrustedVaultDeviceRegistrationOutcome) -->
 
 <enum name="TrustedVaultDeviceRegistrationOutcome">
   <int value="0" label="Success"/>
@@ -971,6 +1200,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Other error"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationOutcome) -->
+
+<!-- LINT.IfChange(TrustedVaultDeviceRegistrationState) -->
+
 <enum name="TrustedVaultDeviceRegistrationState">
   <int value="0" label="Already registered V0"/>
   <int value="1" label="Local keys are stale"/>
@@ -982,6 +1215,10 @@ chromium-metrics-reviews@google.com.
              error (deprecated)"/>
   <int value="6" label="Already registered V1"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationState) -->
+
+<!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
 
 <enum name="TrustedVaultDownloadKeysStatus">
   <int value="0" label="Success"/>
@@ -1002,10 +1239,18 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Network error"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDownloadKeysStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultFetchKeysAttempt) -->
+
 <enum name="TrustedVaultFetchKeysAttempt">
   <int value="0" label="First attempt"/>
   <int value="1" label="Second attempt"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service_crypto.cc:TrustedVaultFetchKeysAttempt) -->
+
+<!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
 
 <enum name="TrustedVaultFileReadStatus">
   <int value="0" label="Success"/>
@@ -1016,16 +1261,28 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Data proto deserialization failed"/>
 </enum>
 
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason) -->
+
 <enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">
   <int value="0" label="Recovery method added"/>
   <int value="1" label="Persistent auth error resolved"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultHintDegradedRecoverabilityChangedReason) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
 
 <enum name="TrustedVaultRecoverabilityStatus">
   <int value="0" label="Not degraded"/>
   <int value="1" label="Degraded"/>
   <int value="2" label="Error"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultUserActionTrigger) -->
 
 <enum name="TrustedVaultUserActionTrigger">
   <int value="0" label="Settings page"/>
@@ -1034,6 +1291,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
 
 </enums>
 

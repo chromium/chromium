@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
-#include <optional>
 #include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -33,9 +33,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
  public:
   // Ideally the only external locations that call this constructor are the
   // factory, and dedicated tests.
-  // TODO(crbug.com/1406840): Currently tests dedicated to other components rely
-  // on this interface, they should be migrated to something better (such as a
-  // dedicated test builder)
+  // TODO(crbug.com/40252892): Currently tests dedicated to other components
+  // rely on this interface, they should be migrated to something better (such
+  // as a dedicated test builder)
   PrivacySandboxSettingsImpl(
       std::unique_ptr<Delegate> delegate,
       HostContentSettingsMap* host_content_settings_map,
@@ -43,6 +43,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       TrackingProtectionSettings* tracking_protection_settings,
       PrefService* pref_service);
   ~PrivacySandboxSettingsImpl() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // PrivacySandboxSettings:
   bool IsTopicsAllowed() const override;
@@ -85,15 +88,22 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr,
-      content::RenderFrameHost* console_frame = nullptr) const override;
+      std::string* out_debug_message,
+      content::RenderFrameHost* console_frame,
+      bool* out_block_is_site_setting_specific) const override;
   bool IsSharedStorageSelectURLAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin,
-      std::string* out_debug_message = nullptr) const override;
+      std::string* out_debug_message,
+      bool* out_block_is_site_setting_specific) const override;
+  bool IsLocalUnpartitionedDataAccessAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      content::RenderFrameHost* console_frame) const override;
   bool IsPrivateAggregationAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const override;
+      const url::Origin& reporting_origin,
+      bool* out_block_is_site_setting_specific) const override;
   bool IsPrivateAggregationDebugModeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const override;
@@ -118,6 +128,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool AreRelatedWebsiteSetsEnabled() const override;
 
  private:
+  // TODO(crbug.com/366168654): Browser tests should not reach into the private
+  // method or states of this class. Consider exposing the required functions
+  // via a test helper class or test only functions.
   friend class PrivacySandboxSettingsTest;
   friend class PrivacySandboxAttestations;
   friend class PrivacySandboxAttestationsTestBase;
@@ -126,6 +139,11 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       CallComponentReadyWhenRegistrationFindsExistingComponent);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
                            SentinelFilePreventsSubsequentParsings);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
+                           DifferentHistogramAfterAttestationsFileCheck);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxAttestationPreInstallInteractionWithDownloadTest,
+      BothPreinstalledAndDownloadedAttestationsAvailable);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
@@ -145,12 +163,14 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
     kSiteDataAccessBlocked = 4,
     kMismatchedConsent = 5,
     kAttestationFailed = 6,
-    kAttestationsFileNotYetReady = 7,
+    kAttestationsFileNotYetReadyNOLONGERRECORDED = 7,
     kAttestationsDownloadedNotYetLoaded = 8,
     kAttestationsFileCorrupt = 9,
     kJoiningTopFrameBlocked = 10,
     kBlockedBy3pcdExperiment = 11,
-    kMaxValue = kBlockedBy3pcdExperiment,
+    kAttestationsFileNotYetChecked = 12,
+    kAttestationsFileNotPresent = 13,
+    kMaxValue = kAttestationsFileNotPresent,
   };
 
   static bool IsAllowed(Status status);
@@ -201,17 +221,25 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   // `interest_group_api_operation` is `kJoin`.
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
+  // Whether fenced frame local unpartitioned data access is enabled.
+  Status GetLocalUnpartitionedDataAccessEnabledStatus() const;
+
   // From TrackingProtectionSettingsObserver.
   void OnBlockAllThirdPartyCookiesChanged() override;
+
+  // Sets the out parameter `out_block_is_site_setting_specific` if it is
+  // non-null, based on the given `status`.
+  void SetOutBlockIsSiteSettingSpecificFromStatus(
+      Status status,
+      bool* out_block_is_site_setting_specific) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<HostContentSettingsMap, AcrossTasksDanglingUntriaged>
-      host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<TrackingProtectionSettings> tracking_protection_settings_;
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<TrackingProtectionSettings,

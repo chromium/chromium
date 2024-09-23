@@ -29,8 +29,8 @@ enum PaymentComplete {
     readonly attribute DOMString? payerEmail;
     readonly attribute DOMString? payerPhone;
 
-    [CallWith=ScriptState, RaisesException, NewObject] Promise<void> complete(optional PaymentComplete paymentResult = "unknown");
-    [CallWith=ScriptState, RaisesException, NewObject, Measure] Promise<void> retry(optional PaymentValidationErrors errorFields = {});
+    [CallWith=ScriptState, RaisesException, NewObject] Promise<undefined> complete(optional PaymentComplete paymentResult = "unknown");
+    [CallWith=ScriptState, RaisesException, NewObject, Measure] Promise<undefined> retry(optional PaymentValidationErrors errorFields = {});
 
     attribute EventHandler onpayerdetailchange;
 };

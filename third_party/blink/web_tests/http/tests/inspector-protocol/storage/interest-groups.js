@@ -34,6 +34,14 @@
     }
   }
 
+  function keepOnlyFields(object, keepFields) {
+    for (let fieldName of Object.getOwnPropertyNames(object)) {
+      if (!keepFields.has(fieldName)) {
+        delete object[fieldName];
+      }
+    }
+  }
+
   // Helper for sorting IG devtools events.
   function compareEvents(a, b) {
     let aTypeOrder = typeSortKey(a.type);
@@ -95,11 +103,7 @@
       // changed every time something new is added that shows up by default.
       const keepConfigFields =
           new Set(['decisionLogicURL', 'seller', 'interestGroupBuyers']);
-      for (let fieldName of Object.getOwnPropertyNames(event.auctionConfig)) {
-        if (!keepConfigFields.has(fieldName)) {
-          delete event.auctionConfig[fieldName];
-        }
-      }
+      keepOnlyFields(event.auctionConfig, keepConfigFields);
       testRunner.log(
           event, 'interestGroupAuctionEventOccurred ', ['eventTime']);
     }
@@ -120,7 +124,12 @@
       data = await dp.Storage.getInterestGroupDetails(
         {ownerOrigin: event.ownerOrigin, name: event.name});
       const details = data.result.details;
-      details.expirationTime = 0;
+      const keepIgFields =
+          new Set(['adComponents', 'ads', 'biddingLogicURL',
+                   'executionMode', 'joiningOrigin', 'name',
+                   'ownerOrigin', 'priority', 'trustedBiddingSignalsKeys',
+                   'trustedBiddingSignalsURL']);
+      keepOnlyFields(details, keepIgFields);
       testRunner.log(details, 'interestGroupDetails ');
     }
     events = [];

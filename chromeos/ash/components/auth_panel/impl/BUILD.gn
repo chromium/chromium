@@ -1,0 +1,38 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("impl") {
+  public_deps = [ "//chromeos/ash/components/auth_panel/public" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//ash/style",
+    "//base",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/constants:constants",
+    "//ui/views",
+  ]
+
+  sources = [
+    "auth_factor_store.cc",
+    "auth_factor_store.h",
+    "auth_panel.cc",
+    "auth_panel.h",
+    "auth_panel_event_dispatcher.cc",
+    "auth_panel_event_dispatcher.h",
+    "factor_auth_view.cc",
+    "factor_auth_view.h",
+    "factor_auth_view_factory.cc",
+    "factor_auth_view_factory.h",
+    "views/password_auth_view.cc",
+    "views/password_auth_view.h",
+    "views/view_size_constants.h",
+  ]
+}

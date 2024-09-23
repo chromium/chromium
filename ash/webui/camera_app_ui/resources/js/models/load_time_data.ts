@@ -74,10 +74,10 @@ export function isLocalDev(): boolean {
 }
 
 /**
- * Returns if the video capture capability is disallowed by the policy.
+ * Returns if the CCA capability is disallowed by the policy.
  */
-export function isVideoCaptureDisallowed(): boolean {
-  return loadTimeData.getBoolean('video_capture_disallowed');
+export function isCCADisallowed(): boolean {
+  return loadTimeData.getBoolean('cca_disallowed');
 }
 
 /**
@@ -85,4 +85,12 @@ export function isVideoCaptureDisallowed(): boolean {
  */
 export function getOsVersion(): string {
   return loadTimeData.getString('os_version');
+}
+
+
+/**
+ * Returns if BigBuffer can be used.
+ */
+export function getCanUseBigBuffer(): boolean {
+  return loadTimeData.getBoolean('can_use_big_buffer');
 }

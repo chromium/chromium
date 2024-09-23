@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -23,6 +22,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -69,31 +69,33 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned,
-    const SuggestionsContext& context) {
-  if (!field.should_autocomplete)
+    OnSuggestionsReturnedCallback on_suggestions_returned) {
+  if (!field.should_autocomplete()) {
     return false;
+  }
 
   CancelPendingQueries();
 
-  if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
-      field.form_control_type == FormControlType::kTextArea ||
-      field.form_control_type == FormControlType::kContentEditable ||
+  if (!IsMeaningfulFieldName(field.name()) || !client.IsAutocompleteEnabled() ||
+      field.form_control_type() == FormControlType::kTextArea ||
+      field.form_control_type() == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(field.global_id(), field.value,
+    SendSuggestions({}, QueryHandler(field.global_id(), field.value(),
                                      std::move(on_suggestions_returned)));
     return true;
   }
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        field.name, field.value, kMaxAutocompleteMenuItems, this);
+        field.name(), field.value(), kMaxAutocompleteMenuItems, this);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle, QueryHandler(field.global_id(), field.value,
+        {query_handle, QueryHandler(field.global_id(), field.value(),
                                     std::move(on_suggestions_returned))});
     return true;
   }
@@ -130,21 +132,20 @@ void AutocompleteHistoryManager::CancelPendingQueries() {
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   if (profile_database_)
     profile_database_->RemoveFormValueForElementName(field_name, value);
 }
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value,
-    PopupItemId popup_item_id) {
+    const Suggestion& suggestion) {
   // Try to find the AutofillEntry associated with the given suggestion.
-  auto last_entries_iter = last_entries_.find(value);
+  auto last_entries_iter = last_entries_.find(suggestion.main_text.value);
   if (last_entries_iter == last_entries_.end()) {
     // Not found, therefore nothing to do. Most likely there was a race
     // condition, but it's not that big of a deal in the current scenario
     // (logging metrics).
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -297,16 +298,16 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
     const FormFieldData& field) {
   // We don't want to save a trimmed string, but we want to make sure that the
   // value is neither empty nor only whitespaces.
-  bool is_value_valid = base::ranges::any_of(
-      field.value, std::not_fn(base::IsUnicodeWhitespace<char16_t>));
-  return is_value_valid && IsMeaningfulFieldName(field.name) &&
-         !field.name.empty() && field.IsTextInputElement() &&
+  bool is_value_valid = std::ranges::any_of(
+      field.value(), std::not_fn(base::IsUnicodeWhitespace<char16_t>));
+  return is_value_valid && IsMeaningfulFieldName(field.name()) &&
+         !field.name().empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
-         field.form_control_type != FormControlType::kInputNumber &&
-         field.should_autocomplete && !IsValidCreditCardNumber(field.value) &&
-         !IsSSN(field.value) &&
-         (field.properties_mask & kUserTyped || field.is_focusable) &&
-         field.role != FormFieldData::RoleAttribute::kPresentation;
+         field.form_control_type() != FormControlType::kInputNumber &&
+         field.should_autocomplete() &&
+         !IsValidCreditCardNumber(field.value()) && !IsSSN(field.value()) &&
+         (field.properties_mask() & kUserTyped || field.is_focusable()) &&
+         field.role() != FormFieldData::RoleAttribute::kPresentation;
 }
 
 }  // namespace autofill

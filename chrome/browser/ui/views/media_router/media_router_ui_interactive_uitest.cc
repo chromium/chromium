@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
@@ -65,9 +65,9 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   }
 
   void PressToolbarIcon() {
-    GetCastIcon()->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    GetCastIcon()->OnMousePressed(ui::MouseEvent(
+        ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
   bool ToolbarIconExists() {
@@ -76,7 +76,7 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    MediaRouterActionController::SetAlwaysShowActionPref(browser()->profile(),
+    CastToolbarButtonController::SetAlwaysShowActionPref(browser()->profile(),
                                                          always_show);
   }
 

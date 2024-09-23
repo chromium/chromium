@@ -25,7 +25,7 @@ function getRoutine(routineProp: RoutineProperties): RoutineType {
  */
 export class RoutineGroup {
   routineProperties: RoutineProperties[];
-  private nonBlockingRoutines: Set<RoutineType>;
+  nonBlockingRoutines: Set<RoutineType>;
   routines: RoutineType[];
   groupName: string;
   progress: ExecutionProgress;

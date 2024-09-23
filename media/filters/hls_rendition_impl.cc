@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/hls_rendition_impl.h"
 
 #include "base/task/bind_post_task.h"
@@ -47,7 +52,7 @@ void HlsRenditionImpl::CheckState(
   }
 
   if (IsLive() && playback_rate != 1 && playback_rate != 0) {
-    // TODO(crbug.com/1266991): What should be done about non-paused,
+    // TODO(crbug.com/40057824): What should be done about non-paused,
     // non-real-time playback? Anything above 1 would hit the end and constantly
     // be in a state of demuxer underflow, and anything slower than 1 would
     // eventually have so much data buffered that it would OOM.
@@ -105,7 +110,7 @@ void HlsRenditionImpl::CheckState(
   if (segments_->Exhausted() && duration_.has_value()) {
     if (!set_stream_end_) {
       set_stream_end_ = true;
-      engine_host_->SetEndOfStream();
+      rendition_host_->SetEndOfStream(true);
     }
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
@@ -206,7 +211,8 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 }
 
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
-                                       base::TimeDelta delay) {
+                                        base::TimeDelta delay,
+                                        bool success) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchManifestUpdates", this);
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
@@ -235,7 +241,7 @@ void HlsRenditionImpl::MaybeFetchManifestUpdates(
 }
 
 base::TimeDelta HlsRenditionImpl::GetIdealBufferSize() const {
-  // TODO(crbug.com/1266991): This buffer size _could_ be based on network
+  // TODO(crbug.com/40057824): This buffer size _could_ be based on network
   // speed and video bitrate, but it's actually quite effective to keep it just
   // at a fixed size, due to the fact that the stream adaptation will always try
   // to match an appropriate bitrate. 10 seconds was chosen based on a good
@@ -254,7 +260,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
 
   if (set_stream_end_) {
     set_stream_end_ = false;
-    engine_host_->UnsetEndOfStream();
+    rendition_host_->SetEndOfStream(false);
   }
 
   auto ranges = engine_host_->GetBufferedRanges(role_);
@@ -263,6 +269,9 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
     // update the pending fetch state or clear/flush any buffers.
     return ManifestDemuxer::SeekState::kIsReady;
   }
+
+  decryptor_ = nullptr;
+  last_discontinuity_sequence_num_ = std::nullopt;
 
   if (IsLive()) {
     return ManifestDemuxer::SeekState::kNeedsData;
@@ -351,17 +360,24 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("media", "HLS::FetchSegment", this, "start",
                                     segment_start, "include init",
                                     include_init);
+
+  bool is_fetching_new_key = false;
+  if (auto enc = segment->GetEncryptionData()) {
+    is_fetching_new_key = enc->NeedsKeyFetch();
+  }
   rendition_host_->ReadMediaSegment(
       *segment, /*read_chunked=*/false, include_init,
       base::BindOnce(&HlsRenditionImpl::OnSegmentData,
-                     weak_factory_.GetWeakPtr(), std::move(cb), time,
-                     segment_end, base::TimeTicks::Now()));
+                     weak_factory_.GetWeakPtr(), segment, std::move(cb), time,
+                     segment_end, base::TimeTicks::Now(), is_fetching_new_key));
 }
 
-void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
+void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
+                                     base::OnceClosure cb,
                                      base::TimeDelta required_time,
                                      base::TimeDelta parse_end,
                                      base::TimeTicks net_req_start,
+                                     bool fetched_new_key,
                                      HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchSegment", this);
@@ -372,8 +388,8 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
 
   if (!result.has_value()) {
     // Drop |cb| here, and let the abort handler pick up the pieces.
-    // TODO(crbug/1266991): If a seek abort interrupts us, we want to not bubble
-    // the error upwards.
+    // TODO(crbug.com/40057824): If a seek abort interrupts us, we want to not
+    // bubble the error upwards.
     return engine_host_->OnError(
         {DEMUXER_ERROR_COULD_NOT_PARSE, std::move(result).error()});
   }
@@ -381,11 +397,70 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
   std::unique_ptr<HlsDataSourceStream> stream = std::move(result).value();
   DCHECK(!stream->CanReadMore());
 
-  if (!engine_host_->AppendAndParseData(
-          role_, base::TimeDelta(), parse_end + base::Seconds(1),
-          &parse_offset_, stream->raw_data(), stream->buffer_size())) {
+  // This plaintext vector needs to be declared in the same scope as the
+  // `AppendAndParseData` call, as it will be the memory backing for the span
+  // which that function consumes. Declaring it elsewhere would lead to a
+  // potential use-after-free or stack smash.
+  std::vector<uint8_t> plaintext;
+  base::span<const uint8_t> stream_data =
+      base::span(stream->raw_data(), stream->buffer_size());
+
+  if (auto enc_data = segment->GetEncryptionData()) {
+    switch (enc_data->GetMethod()) {
+      case hls::XKeyTagMethod::kAES128:
+      case hls::XKeyTagMethod::kAES256: {
+        if (!decryptor_ || segment->HasNewEncryptionData() || fetched_new_key) {
+          // Create a new decryptor any time we get a new uri.
+          decryptor_ = std::make_unique<crypto::Encryptor>();
+
+          // Hold on to the segment - this is likely the last reference to it,
+          // and it contains our aes key.
+          segment_with_key_ = segment;
+
+          auto mode = crypto::Encryptor::Mode::CBC;
+
+          auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
+          if (!maybe_iv.has_value()) {
+            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            return;
+          }
+          auto iv = std::move(maybe_iv).value();
+          if (!decryptor_->Init(enc_data->GetKey(), mode, iv)) {
+            engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+            return;
+          }
+        }
+
+        // Decrypt the ciphertext, and re-assign the data span to point to the
+        // cleartext memory in `plaintext`.
+        if (!decryptor_->Decrypt(stream_data, &plaintext)) {
+          return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
+        }
+        stream_data = base::span(plaintext.data(), plaintext.size());
+        if (plaintext.size() == 0) {
+          FetchNext(std::move(cb), required_time);
+          return;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  if (last_discontinuity_sequence_num_.value_or(
+          segment->GetDiscontinuitySequenceNumber()) !=
+      segment->GetDiscontinuitySequenceNumber()) {
+    engine_host_->ResetParserState(role_, parse_end + base::Seconds(1),
+                                   &parse_offset_);
+  }
+
+  if (!engine_host_->AppendAndParseData(role_, parse_end + base::Seconds(1),
+                                        &parse_offset_, stream_data)) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
+
+  last_discontinuity_sequence_num_ = segment->GetDiscontinuitySequenceNumber();
 
   // Wince we've successfully parsed our data, we can mark that an init segment
   // is not required due to seeking.

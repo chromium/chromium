@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_mapping_rules.h"
@@ -45,12 +45,12 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   // to be resolved with ERR_NAME_NOT_RESOLVED.
   //
   // Returns true if the rule was successfully parsed and added.
-  bool AddRuleFromString(base::StringPiece rule_string) {
+  bool AddRuleFromString(std::string_view rule_string) {
     return rules_.AddRuleFromString(rule_string);
   }
 
   // Takes a comma separated list of rules, and assigns them to this resolver.
-  void SetRulesFromString(base::StringPiece rules_string) {
+  void SetRulesFromString(std::string_view rules_string) {
     rules_.SetRulesFromString(rules_string);
   }
 
@@ -65,6 +65,11 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
       const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
       const std::optional<ResolveHostParameters>& optional_parameters) override;
+  std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
+      Host host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      ResolveHostParameters parameters) override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   HostCache* GetHostCache() override;
   base::Value::Dict GetDnsConfigAsValue() const override;

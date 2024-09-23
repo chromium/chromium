@@ -86,8 +86,7 @@ def main():
             "RuntimeEnabled")
         if runtime_enabled_values:
             assert len(runtime_enabled_values) == 1
-            entry["RuntimeEnabled"] = "{}Enabled".format(
-                runtime_enabled_values[0])
+            entry["RuntimeEnabled"] = runtime_enabled_values[0]
         data.append(entry)
     event_interface_names = {
         "metadata": metadata,

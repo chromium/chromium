@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 
 #include <memory>
@@ -12,7 +17,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -29,6 +33,8 @@
 #include "chrome/grit/about_sys_resources.h"
 #include "chrome/grit/about_sys_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/key_value_pair_viewer_shared_resources.h"
+#include "chrome/grit/key_value_pair_viewer_shared_resources_map.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -57,7 +63,6 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(profile,
                                              chrome::kChromeUISystemInfoHost);
-
   static constexpr webui::LocalizedString kStrings[] = {
       {"title", IDS_ABOUT_SYS_TITLE},
       {"description", IDS_ABOUT_SYS_DESC},
@@ -73,9 +78,9 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto other_system_page_url = base::UTF8ToUTF16(chrome::kChromeUISystemURL);
+  std::u16string other_system_page_url(chrome::kChromeUISystemURL16);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto other_system_page_url = base::UTF8ToUTF16(chrome::kOsUISystemURL);
+  std::u16string other_system_page_url(chrome::kOsUISystemURL);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto os_link_container = l10n_util::GetStringFUTF16(
@@ -86,6 +91,9 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kAboutSysResources, kAboutSysResourcesSize),
       IDR_ABOUT_SYS_ABOUT_SYS_HTML);
+  html_source->AddResourcePaths(
+      base::make_span(kKeyValuePairViewerSharedResources,
+                      kKeyValuePairViewerSharedResourcesSize));
 }
 
 }  // namespace
@@ -104,7 +112,7 @@ class SystemInfoUIHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  // Callback for the "requestSystemInfo" message. This asynchronously requests
+  // Callbacks for SystemInfo request messages. This asynchronously requests
   // system info and eventually returns it to the front end.
   void HandleRequestSystemInfo(const base::Value::List& args);
 

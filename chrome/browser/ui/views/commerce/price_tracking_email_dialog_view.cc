@@ -30,7 +30,7 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -73,20 +73,19 @@ PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kUnbounded,
                                    /*adjust_height_for_width=*/true));
-  SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk));
 
   int bubble_width = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   set_fixed_width(bubble_width);
 
   SetTitle(l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_EMAIL_CONSENT_TITLE));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_YES_IM_IN));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_PRICE_TRACKING_NOT_NOW));
-  SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, features::IsChromeRefresh2023()
-                                               ? ui::ButtonStyle::kTonal
-                                               : ui::ButtonStyle::kDefault);
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   SetAcceptCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnAccepted,
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&PriceTrackingEmailDialogView::OnCanceled,
@@ -141,7 +140,8 @@ void PriceTrackingEmailDialogView::OpenHelpArticle() {
   web_contents()->OpenURL(
       content::OpenURLParams(GURL(kPriceTrackingHelpLink), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      /*navigation_handle_callback=*/{});
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.EmailConsentDialog.HelpLinkClicked"));
 }

@@ -19,14 +19,14 @@
 namespace blink {
 
 class CORE_EXPORT StyleInheritedVariables
-    : public RefCounted<StyleInheritedVariables> {
+    : public GarbageCollected<StyleInheritedVariables> {
  public:
-  static scoped_refptr<StyleInheritedVariables> Create() {
-    return base::AdoptRef(new StyleInheritedVariables());
-  }
+  StyleInheritedVariables();
+  StyleInheritedVariables(StyleInheritedVariables& other);
 
-  scoped_refptr<StyleInheritedVariables> Copy() {
-    return base::AdoptRef(new StyleInheritedVariables(*this));
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(variables_);
+    visitor->Trace(root_);
   }
 
   bool operator==(const StyleInheritedVariables& other) const;
@@ -34,9 +34,9 @@ class CORE_EXPORT StyleInheritedVariables
     return !(*this == other);
   }
 
-  void SetData(const AtomicString& name, scoped_refptr<CSSVariableData> value) {
+  void SetData(const AtomicString& name, CSSVariableData* value) {
     DCHECK(!value || !value->NeedsVariableResolution());
-    variables_.SetData(name, std::move(value));
+    variables_.SetData(name, value);
   }
   StyleVariables::OptionalData GetData(const AtomicString&) const;
 
@@ -54,13 +54,10 @@ class CORE_EXPORT StyleInheritedVariables
   const StyleVariables::ValueMap& Values() const { return variables_.Values(); }
 
  private:
-  StyleInheritedVariables();
-  StyleInheritedVariables(StyleInheritedVariables& other);
-
   bool HasEquivalentRoots(const StyleInheritedVariables& other) const;
 
   StyleVariables variables_;
-  scoped_refptr<StyleInheritedVariables> root_;
+  Member<StyleInheritedVariables> root_;
 
   friend CORE_EXPORT std::ostream& operator<<(
       std::ostream& stream,

@@ -315,7 +315,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     }
 
     // The |str| string needs to match the ones that adb_chrome_profiler looks for.
-    // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
+    // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing API.
     private void logForProfiler(String str) {
         Log.i(TAG, str);
     }
@@ -332,7 +332,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
         }
     }
 
-    // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
+    // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing API.
     class TracingBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {

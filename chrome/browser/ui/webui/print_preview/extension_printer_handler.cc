@@ -158,7 +158,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
   DCHECK_EQ(pending_enumeration_count_, 0);
   pending_enumeration_count_ = 1;
   done_callback_ = std::move(done_callback);
-  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::StartGetPrinters() called";
+  PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::StartGetPrinters() called";
 
   bool extension_supports_usb_printers = false;
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
@@ -171,7 +171,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
   }
 
   if (extension_supports_usb_printers) {
-    PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::StartGetPrinters() - "
+    PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::StartGetPrinters() - "
                        << "usb printers detected";
     pending_enumeration_count_++;
     UsbDeviceManager* usb_manager = UsbDeviceManager::Get(profile_);
@@ -319,7 +319,7 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
     base::Value::List printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
-  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
+  PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
                      << "printers.size()=" << printers.size()
                      << " done=" << done;
   if (!printers.empty())
@@ -359,7 +359,7 @@ void ExtensionPrinterHandler::WrapGetPrinterInfoCallback(
 void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
     AddedPrintersCallback callback,
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  PRINTER_LOG(DEBUG) << "ExtensionPrinterHandler::OnUsbDevicesEnumerated() "
+  PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::OnUsbDevicesEnumerated() "
                      << " called";
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   DevicePermissionsManager* permissions_manager =

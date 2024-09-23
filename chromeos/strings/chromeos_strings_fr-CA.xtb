@@ -8,29 +8,42 @@
 <translation id="1020274983236703756">Éléments <ph name="PRODUCT_NAME" /> exclusifs désormais disponibles</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1026212596705997935">Le raccourci est utilisé pour « <ph name="CONFLICT_ACCEL_NAME" /> ». Appuyez sur un nouveau raccourci. Pour remplacer le raccourci d'origine, appuyez à nouveau sur ce raccourci.</translation>
+<translation id="1030856839388844477">Réinitialiser l'utilisation de données</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1049663189809099096">jaune pastel</translation>
+<translation id="1053371972724535586">Mes enregistrements</translation>
+<translation id="1056898198331236512">Avertissement</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
+<translation id="1061864016440983342">Utiliser sans localisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de la page</translation>
 <translation id="1082009148392559545">Téléchargement de l'écran de veille en cours…</translation>
 <translation id="1094693127011229778">L'adresse IP est inaccessible</translation>
+<translation id="1100902271996134409">Création d'images en cours…</translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Nous pourrions partager les commentaires soumis à l'aide de ce formulaire avec nos partenaires dans le but de résoudre les bogues et les autres problèmes signalés. Veuillez ne pas inclure d'informations confidentielles telles que des mots de passe.</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">Panneau de configuration</translation>
 <translation id="1145018782460575098">La fenêtre de mise à jour du micrologiciel pour les appareils externes est ouverte. <ph name="NUM_UPDATES" /> mises à jour disponibles.</translation>
 <translation id="1145516343487477149">Trouvez des articles d'aide et des réponses aux questions courantes relatives au Chromebook</translation>
 <translation id="1154390310959620237">Vous ne pouvez personnaliser que cinq raccourcis. Supprimez un raccourci pour en ajouter un nouveau.</translation>
+<translation id="1155154308031262006">Saisissez une requête</translation>
+<translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Écran de veille de l'aube à l'obscurité</translation>
+<translation id="1166688493741195933">Impossible de générer les noms d'enregistrement</translation>
 <translation id="1167755866710282443">Ouvrez le menu pour personnaliser les clés. Faites glisser le menu pour le déplacer.</translation>
+<translation id="1171349345463658120">lagune sablonneuse</translation>
+<translation id="1173894706177603556">Renommer</translation>
 <translation id="1174073918202301297">Raccourci ajouté</translation>
+<translation id="11743817593307477">Utiliser les touches fléchées pour déplacer cette commande vers l'action de jeu souhaitée. Utiliser la touche Entrée pour passer la commande. Utiliser la touche Échap. pour annuler.</translation>
 <translation id="1175697296044146566">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Moyen (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">chaleureux</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1191518099344003522">Le nom de point d'accès est activé.</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
@@ -40,13 +53,20 @@
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="1207734034680156868">Les suggestions sont basées sur votre description</translation>
 <translation id="121090498480012229">faire jouer ou mettre en pause le contenu multimédia</translation>
+<translation id="1216675364136048456">Fermer</translation>
+<translation id="1223498995510244364">Résumer</translation>
 <translation id="123124571410524056">Un portail semble activé</translation>
+<translation id="1232610416724362657">chute d'eau</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
-<translation id="1264369926465113395">Consultez le nouveau magazine numérique de Chromebook pour les créateurs</translation>
+<translation id="1252766349417594414">Manche</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
+<translation id="1274654146705270731">oranges</translation>
+<translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1300115153046603471">Le nom de point d'accès est de type par défaut et <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">Convertir</translation>
+<translation id="1304014921944666344">Date de création</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
@@ -57,9 +77,14 @@
 <translation id="1328223165223065150">Couleur du fond d'écran</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
+<translation id="1343442362630695901">lac salé</translation>
+<translation id="1348657754632799065">Barre d'enregistrement</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1371650399987522809">Commentaires sur les fonds d'écran propulsés par l'IA de Google</translation>
+<translation id="1374385338586507108">Définir</translation>
+<translation id="1383876407941801731">Rechercher</translation>
 <translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
+<translation id="1393206549145430405">château</translation>
 <translation id="1394661041439318933">Le niveau de la pile du boîtier est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
 <translation id="1398634363027580500">Latence HTTPS très élevée</translation>
@@ -67,100 +92,141 @@
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchidée</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">J'ai une biclé</translation>
 <translation id="1423591390236870726">Touche <ph name="KEY_NAME" /> non enfoncée</translation>
+<translation id="1432110487435300883">Pour obtenir un résultat approximatif, diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Réinitialise automatiquement l'utilisation de données tous les mois à un jour défini</translation>
 <translation id="1442433966118452622">Source de l'image</translation>
+<translation id="1446954767133808402">saphir</translation>
 <translation id="1449035143498573192">Ouvrir dans Recherche Google</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
+<translation id="1452939186874918380">parapluies</translation>
+<translation id="145402479967797468">Commandes de lecture</translation>
 <translation id="1459693405370120464">Météo</translation>
+<translation id="1463084054301832672">chalet</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
 <translation id="1483493594462132177">Envoi</translation>
 <translation id="1488850966314959671">Impossible de se connecter à ce réseau à l'aide de nom de points d'accès (APN) personnalisés activés. Contactez votre fournisseur de services cellulaires pour plus d'informations.</translation>
-<translation id="1491076385728777984">Mise à jour du micrologiciel de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1514446283880973949">Écrivez avec plus d'assurance, résumez du contenu, obtenez des définitions et plus</translation>
 <translation id="1515129336378114413">Page d'accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'écran de veille</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
-<translation id="1531886272553347340">renoncule</translation>
+<translation id="1539864135338521185">lapis-lazuli</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1561927818299383735">couleur rétroéclairée</translation>
+<translation id="1564356849266217610">organza</translation>
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
+<translation id="1587031308639983732">Les modifications en fonction du temps peuvent ne pas être exactes. Ce paramètre est géré par votre administrateur.</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Ce mois-ci</translation>
+<translation id="1593528591614229756">Assurez-vous de sélectionner les noms de point d'accès fournis par votre fournisseur de services mobiles ou votre administrateur. La sélection d'un nom de point d'accès désactivera tous les noms du point d'accès personnalisés. Des noms de point d'accès invalides peuvent perturber votre connexion mobile. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="1604959087182679653">Masquer la transcription</translation>
 <translation id="160633243685262989">Aperçu de l'image</translation>
 <translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
-<translation id="1615576200479539465">Génération d'images en cours…</translation>
+<translation id="1618566998877964907">Utiliser un thème</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
+<translation id="1622402072367425417">bulles lumineuses</translation>
 <translation id="1626590945318984973">Raccourci non accessible. Appuyez sur un nouveau raccourci sans utiliser les touches de fonction et de <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
+<translation id="1642396894598555413">vélos</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1651925268237749928">Vous avez sélectionné un album partagé. D'autres personnes peuvent ajouter ou modifier des photos. Votre fond d'écran peut utiliser des photos qui ne figurent pas dans cet album à l'heure actuelle.</translation>
+<translation id="1661512400125589646">Mettre en pause</translation>
 <translation id="1661865805917886535">Certains renseignements sur le compte et le système peuvent être envoyés à Google. Nous utilisons ces renseignements pour résoudre des problèmes techniques et améliorer nos services, sous réserve de notre politique de confidentialité (<ph name="PRIVACYPOLICYURL" />) et de nos conditions d'utilisation (<ph name="TERMSOFSERVICEURL" />). Pour demander des modifications de contenu, accédez à l'aide juridique (<ph name="LEGALHELPPAGEURL" />).</translation>
+<translation id="1662699081856352167">Résumé généré</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1664796644829245314">Aperçu de <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">RPV intégré</translation>
 <translation id="1669047024429367828">Visibilité</translation>
+<translation id="1670478569471758522">Plus d'information concernant votre sélection</translation>
 <translation id="1672499492233627739">Flux vidéo de la caméra Web</translation>
 <translation id="1676557873873341166">Capture de vidéo en cours…</translation>
 <translation id="1684279041537802716">Couleur de l'accent</translation>
+<translation id="1697278726914783200">Enregistrer</translation>
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1708602061922134366">Bleu Google</translation>
 <translation id="1710499924611012470">Navigation d'accessibilité</translation>
 <translation id="1715359911173058521">Un problème de communication avec le numériseur s'est produit. Vérifiez la connexion réseau ou USB, puis réessayez.</translation>
 <translation id="1717874160321062422">Géré par <ph name="FIRST_MANAGER" /> et par <ph name="SECOND_MANAGER" /></translation>
+<translation id="1718553040985966377">lac</translation>
+<translation id="1720424726586960395">forêt de lucioles</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
 <translation id="1731082422893354635">Pavé tactile Bluethooth</translation>
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou essayez de charger les images à nouveau.</translation>
 <translation id="1751249301761991853">Personnel</translation>
+<translation id="1751335846119670066">Aide à la lecture</translation>
 <translation id="1753496554272155572">Quitter l'aperçu des fonds d'écran</translation>
 <translation id="1754578112426924640">Bouton Modifier pour <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Application de diagnostics</translation>
+<translation id="1756681705074952506">Méthode d'entrée</translation>
 <translation id="175763766237925754">Bon (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762483337755424125">Transcription</translation>
+<translation id="1765169783255151332">Modifier rapidement les touches</translation>
 <translation id="1768959921651994223">Type d'authentification</translation>
 <translation id="1776228893584526149">Ton de fond d'écran</translation>
+<translation id="1777913922912475695">pont</translation>
 <translation id="1782199038061388045">traduction</translation>
 <translation id="1788485524395674731">Cette application est gérée par votre administrateur</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
+<translation id="1808803439260407870">Art classique</translation>
+<translation id="1815850098929213707">La touche sélectionnée est <ph name="KEYS" />. Toucher le bouton pour modifier la commande</translation>
+<translation id="1823120442877418684">Thèmes</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
 <translation id="1836553715834333258">Couleur du système</translation>
+<translation id="183675228220305365">réaliste</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
 <translation id="1840474674287087346">Couleur du bureau</translation>
+<translation id="184095011128924488">créatif</translation>
+<translation id="1846318329111865304">Paysages de rêve</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
 <translation id="1852934301711881861">Installer Chrome OS Flex</translation>
+<translation id="1854156910036166007">paresseux</translation>
 <translation id="1856388568474281774">Flèche vers le bas</translation>
 <translation id="1858620243986915808">Joindre une capture d'écran</translation>
 <translation id="1871413952174074704">Le nom de point d'accès ne peut pas contenir plus de <ph name="CHAR_LIMIT" /> caractères</translation>
 <translation id="1871569928317311284">Désactiver le thème sombre</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="1876997008435570708">papillons</translation>
 <translation id="188114911237521550">Désactiver le mode sombre</translation>
+<translation id="1884794756658039602">Apprenez-en plus sur les étiquettes de locuteurs.</translation>
 <translation id="1885577615937958993">avance rapide du contenu multimédia</translation>
 <translation id="1887850431809612466">Révision du matériel</translation>
+<translation id="189221451253258459">vert néon</translation>
 <translation id="1904932688895783618">Voici quelques autres ressources utiles :</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1908394185991500139">flèche gauche</translation>
 <translation id="1923388006036088459">Couleurs de mise en évidence</translation>
+<translation id="1945403655450283000">Enregistreur</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954818433534793392">immeuble</translation>
 <translation id="1962550982027027473">Un APN par défaut est requis</translation>
+<translation id="1967860190218310525">Créer un nom de point d'accès</translation>
+<translation id="1967917622327567355">Afficher la transcription</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">traditionnel</translation>
 <translation id="1977994649430373166">Photo de profil Google</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1999615961760456652">Portail captif</translation>
@@ -171,17 +237,27 @@
 <translation id="2011174342667534258">Version de la trousse SDK :</translation>
 <translation id="2016697457005847575">Essayer les étapes de dépannage</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2045814230297767491">coutellerie</translation>
 <translation id="2047316797244836561">Veuillez vous connecter à un réseau et actualiser la page pour afficher l'écran de veille.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2073232437457681324">vaste océan</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
+<translation id="2082932131694554252">Touche du clavier attribuée</translation>
 <translation id="2085089206770112532">Diminuer la luminosité de l'écran</translation>
+<translation id="2085876078937250610">Enregistrer…</translation>
+<translation id="2086091080968010660">Les modifications en fonction du temps peuvent ne pas être exactes. Activez l'accès à la position du système dans les paramètres.</translation>
 <translation id="2102231663024125441">Éditeur de texte</translation>
+<translation id="2102648867808308635">M'aider à lire cette page</translation>
 <translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">À l'heure actuelle, l'option est uniquement offerte en anglais (États-Unis)</translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
+<translation id="2135668738111962377">Modifier le <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Vol en images</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
+<translation id="2154460308960858308">Effacer les termes de recherche</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
@@ -191,10 +267,17 @@
 <translation id="2163937499206714165">Activer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayer de rouvrir l'application.</translation>
 <translation id="2189104374785738357">Modifier les détails du nom de point d'accès</translation>
+<translation id="2195732836444333448">Le serveur est au maximum de sa capacité pour le moment. Revenez plus tard.</translation>
+<translation id="2197185031095816179">La réinitialisation de sécurité peut vous aider à supprimer les fenêtres contextuelles indésirables, à résoudre les problèmes de réseau et à résoudre d'autres problèmes inattendus.</translation>
+<translation id="2201758491318984023">vélo</translation>
+<translation id="2203272733515928691">source hydrothermale</translation>
+<translation id="2203642483788377106">falaise</translation>
+<translation id="2208388655216963643">impressionniste</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2215920961700443347">Aucune connexion à Internet. Connectez-vous à Internet et réessayez.</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
+<translation id="221994303562837085">Arrêter l'enregistrement</translation>
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -202,19 +285,25 @@
 <translation id="2230624078793142213">En créer plus</translation>
 <translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
+<translation id="2244834438220057800">vert</translation>
 <translation id="225692081236532131">État de l'activation</translation>
 <translation id="2267285889943769271">Ajouter une capture d'écran</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide le plus populaire</translation>
+<translation id="2277631741861284101">Enregistrer et partager facilement votre contenu audio</translation>
 <translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
+<translation id="2294577623958216786">La programmation actuelle est définie de <ph name="SUNRISE" /> à <ph name="SUNSET" />. Pour mettre à jour le programme de coucher et de lever du soleil automatiquement, activez l'accès à la position du système.</translation>
+<translation id="2305172810646967500">noir</translation>
 <translation id="2307344026739914387">Utiliser la biclé actuelle</translation>
+<translation id="2308243864813041101">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
 <translation id="2324354238778375592">Superposer</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
-<translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">chaise</translation>
 <translation id="2358070305000735383">La boîte de dialogue de modification pour <ph name="DESCRIPTION" /> est ouverte.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
@@ -227,79 +316,126 @@
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2418150275289244458">Ouvrir dans les paramètres</translation>
 <translation id="2421798028054665193">Image : <ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
+<translation id="242825218556404975">Aucune voix détectée</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2465272316171730950">Nous avons atteint notre capacité maximale. Veuillez revenir un peu plus tard.</translation>
+<translation id="2472215337771558851">Utilisez l'Aide à la rédaction pour créer un brouillon ou pour affiner un travail existant, propulsé par l'IA de Google</translation>
+<translation id="2480572840229215612">crabes</translation>
 <translation id="248546197012830854">L'appareil est hors ligne. Connectez-vous au réseau Wi-Fi pour afficher le contenu d'aide.</translation>
+<translation id="2486301288428798846">bois</translation>
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos meilleures photos, sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2501126912075504550">opale</translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
+<translation id="2507491234071975894">Haut-parleur</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
-<translation id="2517472476991765520">Rechercher</translation>
 <translation id="2521835766824839541">chanson précédente</translation>
 <translation id="2526590354069164005">Ordinateur de bureau</translation>
+<translation id="2529641961800709867">Options des boutons</translation>
 <translation id="253029298928638905">Redémarrage en cours…</translation>
 <translation id="2531772459602846206">hortensia</translation>
 <translation id="2533048460510040082">Contenu d'aide suggéré</translation>
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
+<translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> autres</translation>
+<translation id="2560876255701405320">Liste des enregistrements audio</translation>
+<translation id="2561093647892030937">citrons</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
+<translation id="2573178735329662769">Enregistrement de tous les sons sur ce Chromebook</translation>
+<translation id="2575552334616524665">Vous pouvez activer cette fonctionnalité dans les paramètres ou dans le menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
+<translation id="2576253868710695442">Cela prendra jusqu'à 2 Go d'espace de stockage</translation>
+<translation id="2584547424703650812">Paysages lumineux</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
+<translation id="2586146417912237930">bleu et indigo</translation>
+<translation id="2589921777872778654">Menu Modifier et Supprimer</translation>
 <translation id="2597774443162333062">Les fichiers seront envoyés à Google pour un débogage</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées}}</translation>
+<translation id="2617397783536231890">coton</translation>
+<translation id="2618015542787108131">dunes</translation>
 <translation id="2619761439309613843">Actualiser tous les jours</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="2637303424821734920">DÉSACTIVÉ : pour afficher la météo locale, <ph name="BEGIN_LINK" />activez l'accès à la position du système<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> sélectionné</translation>
+<translation id="2645380101799517405">Commandes</translation>
 <translation id="2652403576514495859">activer ou basculer la dictée</translation>
+<translation id="2653659639078652383">Envoyer</translation>
+<translation id="2654647726140493436">N'éteignez pas votre appareil <ph name="DEVICE_TYPE" /> et ne débranchez pas le câble d'alimentation de l'appareil <ph name="DEVICE_TYPE" /> pendant que la mise à jour est en cours</translation>
 <translation id="2656001153562991489">Exclusif au Chromebook Plus</translation>
+<translation id="2665671725390405060">Écouter la prononciation</translation>
 <translation id="267442004702508783">actualiser</translation>
+<translation id="2675392311492541028">Transcription et résumé</translation>
 <translation id="268270014981824665">réduction de la luminosité du clavier</translation>
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
+<translation id="2715723665057727940">rivière</translation>
 <translation id="2717139507051041123">Activer le mode Couleur sombre</translation>
 <translation id="2728460467788544679">Effacer tout l'historique d'impression</translation>
+<translation id="2731700343119398978">Veuillez patienter...</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Partagé</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
+<translation id="2754757901767760034">lampe</translation>
+<translation id="2780756493585863768">Arrière-plans récents propulsés par l'IA de Google</translation>
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
+<translation id="2786429550992142861">lin</translation>
+<translation id="2787237339470862294">Cette langue n'est pas prise en charge pour le moment</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible de se connecter à Internet. Cliquez pour réessayer.</translation>
+<translation id="2855718259207180827">laine</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
+<translation id="286265581261662583">Faites un clic droit ou maintenez le doigt sur du texte pour obtenir des définitions, des traductions ou des conversions d'unités</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2873483161362553159">Navigation dans le navigateur</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
 <translation id="2875812231449496375">Activez ce paramètre pour obtenir de meilleurs résultats avec ce fond d'écran. Vous pouvez le désactiver à tout moment.</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="2880569433548999039">Écran de veille Cloud Flow</translation>
+<translation id="2882230315487799269">Personnaliser l'invite IA</translation>
+<translation id="2888298276507578975">Saisissez une requête telle que « écrire une note de remerciement »</translation>
+<translation id="2890557891229184386">île tropicale</translation>
+<translation id="2895772081848316509">sombre</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrir le couvercle pour tester.</translation>
 <translation id="2941112035454246133">Faible</translation>
+<translation id="2956070106555335453">Résumé</translation>
+<translation id="299385721391037602">rose et jaune</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
 <translation id="3027578600144895987">Fermer la caméra</translation>
 <translation id="3031560714565892478">L'appareil est une caméra vidéo.</translation>
+<translation id="3042927241478734594">Quitter l'enregistrement?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
+<translation id="3060579846059757016">Contours</translation>
+<translation id="3061850252076394168">Activer Sélectionner pour énoncer</translation>
 <translation id="3069085583900247081">Échec du test</translation>
+<translation id="3078740164268491126">Tableau</translation>
+<translation id="3081652522083185657">clair</translation>
 <translation id="3083667275341675831">Diagnostics de connectivité</translation>
 <translation id="3084958266922136097">Désactiver l'écran de veille</translation>
 <translation id="3091839911843451378">Échec : imprimante arrêtée</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">Processeur</translation>
+<translation id="3122614491980756867">piscines</translation>
+<translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Retirer la page?}=1{Retirer la page {PAGE_NUMBER}?}one{Retirer la page {PAGE_NUMBER}?}other{Retirer la page {PAGE_NUMBER}?}}</translation>
+<translation id="3140130301071865159">neige</translation>
 <translation id="3146655726035122603">Exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Données mobiles</translation>
+<translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
 <translation id="3160172848211257835">Envoyer les <ph name="BEGIN_LINK1" />données relatives au système et aux applications<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />mesures<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Placez votre document sur le numériseur</translation>
 <translation id="3174321110679064523">Fond d'écran de l'aube à l'obscurité</translation>
+<translation id="3178532070248519384">avant-garde</translation>
+<translation id="3182676044300231689">Saisissez une requête telle que « emploie un ton plus confiant »</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="319101249942218879">Image d'avatar changée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
@@ -308,8 +444,11 @@
 <translation id="3211671540163313381">Pavé directionnel d'affectation des touches</translation>
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
+<translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Reformuler</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="324961752321393509">Votre administrateur n'autorise pas la fermeture de cette application</translation>
+<translation id="3263941347294171263">Débranchez et rebranchez l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3275729367986477355">Image d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
@@ -319,18 +458,24 @@
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
+<translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">paramètres</translation>
+<translation id="3347558044552027859">moderne</translation>
 <translation id="3359218928534347896">activer/désactiver le son du microphone</translation>
 <translation id="3360306038446926262">Windows</translation>
+<translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
 <translation id="3373141842870501561">Fond d'écran Earth Flow</translation>
-<translation id="337375748120863155">Renseignements relatifs à votre sélection. Utilisez les touches de flèche vers la droite ou vers la gauche pour accéder aux commandes.</translation>
+<translation id="33736539805963175">Un arrière-plan <ph name="LETTERS_COLOR" /> avec la lettre <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusif</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
+<translation id="3410165745972100556">La transcription est désactivée</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
+<translation id="3428551088151258685">extérieur</translation>
+<translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3435896845095436175">Activer</translation>
@@ -338,25 +483,35 @@
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
+<translation id="3462187165860821523">Mise à jour de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="346423161771747987">Courant</translation>
 <translation id="346539236881580388">Recommencer</translation>
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
+<translation id="3487866404496702283">Commentaires sur la fonctionnalité mahi</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
+<translation id="3492882532495507361">Un bureau <ph name="OFFICE_STYLE" /> avec tons <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">C'est votre Chromebook qui mesure les données. Ces mesures peuvent différer des données du fournisseur.</translation>
 <translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
+<translation id="3522508178835057262">Pour l'instant, les transcriptions de plus de <ph name="MAX_WORD_LENGTH" /> mots ne sont pas prises en charge</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
+<translation id="353214771040290298">Modification terminée</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
+<translation id="3533790840489634638">piscine</translation>
 <translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Identité locale (facultative)</translation>
 <translation id="3565064564551103223">Adresses IP autorisées</translation>
 <translation id="3569407787324516067">Écran de veille</translation>
+<translation id="3571184524500629183">Fermer le champ de recherche</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="3583278742022654445">Faible puissance du signal. Essayez de vous rapprocher de la source du signal Wi-Fi.</translation>
+<translation id="3588034708467091142">Assurez-vous que vous êtes connecté à Internet et réessayez.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> est le nom convivial pour <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
+<translation id="3600063043775287169">Lorsque les sons sur ce Chromebook sont activés, l'Enregistreur capture tous les sons joués sur cet appareil. Assurez-vous que vous souhaitez enregistrer tous les sons.</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -364,24 +519,39 @@
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
+<translation id="3621072146987826699">éléphants</translation>
+<translation id="3632040286124154621">Bonne suggestion</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
+<translation id="3639873154908477486">Nom (de A à Z)</translation>
+<translation id="3644695927181369554">Mauvaise suggestion</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
-<translation id="3654530588944650786">Une <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> éclatant en fleurs</translation>
+<translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
+<translation id="3662461537616691585">bourgogne et marron</translation>
 <translation id="3668449597372804501">Fond d'écran Cloud Flow</translation>
+<translation id="3668570675727296296">Paramètres linguistiques</translation>
+<translation id="3675132884790542448">porcs</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="3715651196924935218">Quitter le mode superposé</translation>
+<translation id="3716250181321371108">Créer une commande</translation>
+<translation id="3716830479327464973">Lorsque vous autorisez cette fonctionnalité, l'Enregistreur analyse vos enregistrements audio pour ce qui suit :</translation>
+<translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
+<translation id="3767737419527918477">Rechercher des fichiers d'enregistrement</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
+<translation id="3780740315729837296">Attribuez une touche du clavier</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="3785643128701396311">art du pixel</translation>
+<translation id="3799381533888781854">DÉSACTIVÉ – Ce paramètre est géré par votre administrateur.</translation>
 <translation id="380097101658023925">Commandes RVB</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="382043424867370667">Fond d'écran Coucher de soleil</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
+<translation id="3836587210832263413">Activez uniquement les extensions auxquelles vous faites confiance</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> plus <ph name="ESC_SHORTCUT_START" />Échapp.<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
 <translation id="3848280697030027394">assombrir le clavier</translation>
@@ -389,16 +559,22 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">Une description est requise</translation>
 <translation id="386280020966669610">Inspire-moi</translation>
+<translation id="3864554910039562428">récif de corail</translation>
 <translation id="3865289341173661845">Le contenu de l'aide n'est pas accessible.</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3866249974567520381">Description</translation>
+<translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
+<translation id="3877066159641251281">Écouter la traduction</translation>
+<translation id="3880601782712134623">Détecter automatiquement des voix distinctes et attribuer à chacune une étiquette générique telle que Locuteur 1 et Locuteur 2</translation>
 <translation id="3885327323343477505">Changer l'écran de veille</translation>
-<translation id="3892148308691398805">Copier le texte</translation>
+<translation id="3889914174935857450">Date de réinitialisation</translation>
+<translation id="3897092660631435901">Menu</translation>
 <translation id="391412459402535266">Impossible de tester l'appareil. Passer en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
+<translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non attribué</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3954678691475912818">Le type d'appareil est inconnu.</translation>
@@ -407,19 +583,27 @@
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3969602104473960991">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
-<translation id="3981099166243641873">vert pâle</translation>
+<translation id="3981099166243641873">vert clair</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="3993704782688964914">Votre <ph name="DEVICE_NAME" /> est maintenant à jour</translation>
 <translation id="3998976413398910035">Gérer les imprimantes</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
+<translation id="401147258241215701">obsidienne</translation>
 <translation id="4021031199988160623">Passer en mode ordinateur portable pour tester</translation>
 <translation id="4034824040120875894">Imprimante</translation>
+<translation id="4035877632587724847">Ne pas autoriser</translation>
+<translation id="4042658354407913408">Le résumé est désactivé</translation>
 <translation id="4044093238444069296">Impossible de communiquer avec la passerelle</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
+<translation id="4050208988451295487">Quelques options :</translation>
+<translation id="405181879009056822">Paramètres ChromeOS</translation>
 <translation id="4054683689023980771">Téléchargement de l'image en cours</translation>
-<translation id="4060260348856573701">Nouveau nom du point d'accès</translation>
-<translation id="4063039537646912479">bleu pâle</translation>
+<translation id="4059839844193047929">Le fait de quitter cette page mettra fin à votre enregistrement en cours</translation>
+<translation id="4063039537646912479">bleu clair</translation>
+<translation id="4070799384363688067">animé</translation>
+<translation id="4086271957099059213">Créer une autre commande</translation>
+<translation id="4091002263446255071">romantique</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="409469431304488632">Test</translation>
@@ -428,9 +612,11 @@
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4113067922640381334">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mode sombre</translation>
+<translation id="4126551873361000548">Reculer de 10 secondes</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4130750466177569591">J'accepte</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
+<translation id="4143226836069425823">Toucher une autre touche du clavier pour la remplacer</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Affichage</translation>
@@ -442,26 +628,38 @@
 <translation id="4171077696775491955">diminuer la luminosité</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4176659219503619100">Panneau de configuration</translation>
+<translation id="4193496492959950834">Paramètres de l'Enregistreur</translation>
+<translation id="4198398257084619072">pandas</translation>
 <translation id="420283545744377356">Désactiver l'écran de veille</translation>
+<translation id="4210636113897977670">Enregistrer et quitter</translation>
+<translation id="4210659479607886331">rivière glaciaire</translation>
+<translation id="42126664696688958">Exporter</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4244962993387259361">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de l'espace, accédez à Paramètres &gt; Gestionnaire de stockage.</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
+<translation id="4251839292699800785">Bureau élégant</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
+<translation id="4266143281602681663">fil</translation>
+<translation id="4269815121975886860">Préférences de démarrage</translation>
 <translation id="4271957103967917607">Afficher en plein écran</translation>
 <translation id="4275663329226226506">Médias</translation>
 <translation id="4278766082079064416">Le raccourci est utilisé pour « <ph name="CONFLICT_ACCEL_NAME" /> ». Modifiez-le ou retirez-le pour résoudre le conflit.</translation>
+<translation id="4285999655021474887">mauve</translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
+<translation id="430786093962686457">mousseline</translation>
 <translation id="4310735698903592804">Fonds d'écran récents propulsés par l'IA de Google</translation>
+<translation id="4320904097188876154">rose néon</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
+<translation id="4334293042716981313">Vous pouvez également <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />rédiger votre propre requête<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">touche</translation>
 <translation id="4361257691546579041">Le nom de point d'accès est de type par défaut.</translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
+<translation id="437477383107495720">lapins</translation>
 <translation id="4376423484621194274">Votre administrateur n'autorise pas la fermeture de <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
@@ -469,25 +667,34 @@
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098">Redémarrage de <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="4395835743215824109">clavier personnalisé</translation>
+<translation id="439946595190720558">Cet arrière-plan a été créé avec l'IA à partir du texte suivant : « <ph name="PROMPT" /> ».</translation>
 <translation id="4415951057168511744">Avatar actuel</translation>
 <translation id="4417830657741848074">Votre administrateur a configuré certaines applications pour qu'elles démarrent automatiquement. Certaines de ces applications ne peuvent pas être fermées.</translation>
 <translation id="4422041425070339732">flèche vers le bas</translation>
 <translation id="4425149324548788773">Mon disque</translation>
 <translation id="4428374560396076622">Le réseau <ph name="NETWORK_NAME" /> est désactivé</translation>
+<translation id="4428840632568803690">Locuteur <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Le ticket Kerberos expire bientôt</translation>
 <translation id="4431821876790500265">Afficher le rapport</translation>
+<translation id="4443192710976771874">rouge</translation>
+<translation id="4447592701292766824">Impossible de créer un résumé pour ce contenu</translation>
+<translation id="4448096106102522892">île</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Numériser vers</translation>
 <translation id="4456812688969919973">Le bouton Enregistrer le nom de point d'accès est désormais désactivé</translation>
 <translation id="4469288414739283461">Écran de veille Earth Flow</translation>
+<translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
+<translation id="4503441351962730761">art moderne</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
 <translation id="4511264077854731334">Portail</translation>
+<translation id="4513946894732546136">Commentaires</translation>
+<translation id="4516323842122524821">Volume</translation>
 <translation id="4521826082652183069">Correspondance du nom alternatif du sujet</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4536864596629708641">Configuration de l'adresse IP</translation>
@@ -495,26 +702,41 @@
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="4556753742174065117">Tous les micrologiciels sont à jour</translation>
 <translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
+<translation id="456077979087158257">paysage urbain</translation>
 <translation id="4561801978359312462">Carte SIM déverrouillée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
+<translation id="4570558255126759859">Télécharger le modèle Gemini pour résumer les enregistrements?</translation>
 <translation id="4573777384450697571">Échec – Certificat expiré</translation>
+<translation id="4575450106703099687">options d'accessibilité</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
+<translation id="4594021849294327751">Créer une transcription</translation>
+<translation id="4602266091140407479">Micro</translation>
+<translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
+<translation id="4623061655523261501">Les noms d'enregistrement ont été générés</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
+<translation id="4644611440022666152">Activer et télécharger</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4650608062294027130">Majuscule droite</translation>
 <translation id="4654549501020883054">Changer tous les jours</translation>
+<translation id="4655868084888499342">Image définie comme fond d'écran</translation>
+<translation id="4661249927038176904">Surréaliste</translation>
+<translation id="4664651912255946953">fourrure</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les mots de passe ne correspondent pas</translation>
 <translation id="467715984478005772">Un pare-feu semble être présent</translation>
+<translation id="4683762547447150570">Appuyer sur le bouton pour mettre en évidence l'attribution des touches</translation>
 <translation id="4691278870498629773">Tâche arrêtée : bac manquant</translation>
 <translation id="469379815867856270">Puissance du signal</translation>
+<translation id="4697260493945012995">Sélectionnez votre type de commande</translation>
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mise à jour</translation>
+<translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
 <translation id="4773299976671772492">Arrêté</translation>
+<translation id="4778082030331381943">améthyste</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4793710386569335688">Pour obtenir de l'aide supplémentaire, accédez au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
@@ -528,9 +750,11 @@
 <translation id="4809927044794281115">Thème clair</translation>
 <translation id="4813136279048157860">Mes images</translation>
 <translation id="4813345808229079766">Connexion</translation>
+<translation id="4824527342590024245">Pour l'instant, les transcriptions de moins de <ph name="MIN_WORD_LENGTH" /> mots ne sont pas prises en charge</translation>
+<translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
-<translation id="4839698083503556542">Créez votre propre film</translation>
+<translation id="4838825304062068169">glacier</translation>
 <translation id="48409034532829769">Votre administrateur a configuré « <ph name="APP_NAME" /> » pour qu'elle démarre automatiquement. Cette application ne peut pas être fermée.</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4847902821209177679">Source sélectionnée : <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />), appuyez sur la touche Entrée pour sélectionner des albums de <ph name="TOPIC_SOURCE" /></translation>
@@ -539,6 +763,7 @@
 <translation id="4854586501323951986">Écran tactile intégré</translation>
 <translation id="4855250849489639581">Balayer vers le bas pour plus d'options de mise en page</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
+<translation id="4868181314237714900">molleton</translation>
 <translation id="4873827928179867585">Algorithme d'authentification</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>
 <translation id="488307179443832524">Le raccourci est utilisé pour « <ph name="CONFLICT_ACCEL_NAME" /> ». Appuyez sur un nouveau raccourci.</translation>
@@ -554,14 +779,21 @@
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4946927805998996217">Génération du résumé en cours…</translation>
 <translation id="4950314376641394653">Le micrologiciel <ph name="DEVICE_NAME" /> a été mis à jour vers la version <ph name="VERSION" /></translation>
+<translation id="4950893758552030541">tunnel d'arbre</translation>
+<translation id="4965661459364092269">La réinitialisation de sécurité a été effectuée</translation>
+<translation id="4965703485264574128">Pour obtenir un résultat approximatif, multiplier la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Diviser</translation>
 <translation id="4972592110715526173">changement de mode</translation>
+<translation id="4981003703840817201">bleu et rose</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4982627662315910959">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide de la touche Majuscule et d'une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
+<translation id="4983216687482551672">Audio du Chromebook</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4988526792673242964">Pages</translation>
+<translation id="4989542687859782284">Non disponible</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -571,30 +803,50 @@
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Cette action vous redirigera vers l'écran du lancement de la numérisation.</translation>
+<translation id="5053233795640754917">Mettre en pause</translation>
+<translation id="5078711626843651677">Les modèles vocaux sont enregistrés temporairement sur l'appareil jusqu'à ce que l'attribution des étiquettes de locuteur soit terminée. Vous pouvez désactiver cette fonctionnalité en tout temps dans les paramètres.</translation>
+<translation id="5078983345702708852">futuriste</translation>
 <translation id="5087864757604726239">précédent</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État/province</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" />, puis réinsérez-le pour poursuivre le processus de mise à jour</translation>
+<translation id="5095864667399748231">Activer/désactiver le son</translation>
+<translation id="5099354524039520280">haut</translation>
+<translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
+<translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
 <translation id="5142961317498132443">Authentification</translation>
+<translation id="5144311987923128508">Le bouton de confirmation est maintenant désactivé</translation>
+<translation id="5144887194300568405">Copier la traduction</translation>
 <translation id="5145081769226915336">Activer automatiquement le mode Sombre?</translation>
+<translation id="5145331109270917438">Date de modification</translation>
 <translation id="5154917547274118687">Mémoire</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="5166918508782100047">Paramètres des réponses rapides</translation>
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
+<translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
+<translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
+<translation id="5220549459260334974">Téléchargée à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="522307662484862935">Ne pas inclure l'adresse de courriel</translation>
+<translation id="5223226274641517059">Les transcriptions instantanées s'afficheront pendant que vous enregistrez. Vous pouvez désactiver cette fonctionnalité en tout temps dans les paramètres.</translation>
+<translation id="5226879510707344687">Exporter la transcription</translation>
 <translation id="5227902338748591677">Programmation du thème sombre</translation>
+<translation id="5229104491259541281">Convertir « <ph name="QUERY" /> »</translation>
 <translation id="5229344016299762883">Quitter le mode plein écran</translation>
 <translation id="5234764350956374838">Fermer</translation>
+<translation id="5236119614998611749">Impossible de générer le résumé</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Votre administrateur a configuré « <ph name="APP_NAME" /> » pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré « <ph name="APP_NAME" /> » et 1 autre application pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré « <ph name="APP_NAME" /> » et # autre application pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré « <ph name="APP_NAME" /> » et # autres applications pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
+<translation id="5248419081947706722">bleu</translation>
 <translation id="5252456968953390977">Itinérance</translation>
+<translation id="5254600740122644523">Une étagère <ph name="SIMPLE_STYLE" /> dans une pièce <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Activer le mode Couleur claire</translation>
+<translation id="5261479807286543505">Paramètres de démarrage</translation>
 <translation id="5264277876637023664">Exécuter le test de processeur</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">Le nom de point d'accès (APN) est désactivé.</translation>
@@ -604,15 +856,19 @@
 <translation id="5292579816060236070">Fond d'écran Aurore</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Déplacer la fenêtre vers le bureau</translation>
+<translation id="5302048478445481009">Langue</translation>
 <translation id="5303837385540978511">Fond d'écran exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
+<translation id="53196409393069519">Activer la transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
 <translation id="5333530671332546086">État du portail inconnu</translation>
 <translation id="5335373365677455232">rose</translation>
+<translation id="5344619683981067131">Remplacement du texte sélectionné par la suggestion en cours…</translation>
 <translation id="5346687412805619883">Réseau local</translation>
 <translation id="5358174242040570474">Un problème est survenu. Essayez de nouveau de choisir un fond d'écran ou rouvrez l'application.</translation>
 <translation id="5372659122375744710">Le réseau Wi-Fi n'est pas sécurisé</translation>
@@ -620,32 +876,43 @@
 <translation id="5378184552853359930">Type d'IP</translation>
 <translation id="5389159777326897627">Fond d'écran et style</translation>
 <translation id="5389224261615877010">Arc-en-ciel</translation>
-<translation id="5396811372860835203">calla</translation>
 <translation id="5400907029458559844">L'appareil se connecte.</translation>
 <translation id="5401938042319910061">Exécuter toutes les routines</translation>
+<translation id="5410755018770633464">hot dogs</translation>
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
+<translation id="5470776029649730099">toile de jute</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Il vous reste {0} tentative}one{Il vous reste {0} tentative}other{Il vous reste {0} tentatives}}</translation>
+<translation id="5488280942828718790">magenta</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossible de terminer la numérisation</translation>
 <translation id="5499762266711462226">La couleur du clavier est basée sur le fond d'écran</translation>
 <translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
+<translation id="550600468576850160">pré</translation>
 <translation id="551689408806449779">L'appareil a été déconnecté. Essayez de vous reconnecter pour tester.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5534900277405737921">Relief</translation>
+<translation id="554067135846762198">corail et brun clair</translation>
 <translation id="5543701552415191873">verrouillée</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Cette mise à jour est fournie par le fabricant de l'appareil externe et n'a pas été vérifiée par Google.</translation>
 <translation id="5559898619118303662">Basculer automatiquement au thème sombre au coucher du soleil</translation>
+<translation id="556042886152191864">Bouton</translation>
+<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> dans les tons de <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5572169899491758844">Analyser</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Numériser de nouveau</translation>
 <translation id="5583640892426849032">Effacement arrière</translation>
+<translation id="5588233547254916455">Lettres</translation>
+<translation id="5595623927872580850">gris</translation>
+<translation id="5596627076506792578">Autres options</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
+<translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
-<translation id="5649768706273821470">Écouter</translation>
-<translation id="5654356773042347102">muguet de mai</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
 <translation id="5655296450510165335">Inscription d'appareil</translation>
 <translation id="5655776422854483175">Aucune tâche d'impression</translation>
@@ -653,20 +920,29 @@
 <translation id="5662240986744577912">basculer l'écran de confidentialité</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Décrivez le fond d'écran que vous souhaitez créer</translation>
+<translation id="5680504961595602662">Un(e) <ph name="SURREAL_LANDSCAPE" /> surréaliste avec <ph name="SURREAL_SUBJECT" /></translation>
+<translation id="5685478548317291523">cerises</translation>
 <translation id="5691511426247308406">Famille</translation>
+<translation id="5692395212036914927">Résumé de l'enregistrement et création du nom</translation>
 <translation id="5695599963893094957">Appuyez sur n'importe quelle touche de votre clavier. Vous pouvez enfoncer jusqu'à quatre touches en même temps.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5703716265115423771">diminuer le volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Bouton Modifier pour <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">L'utilisation des données a été réinitialisée</translation>
 <translation id="574392208103952083">Moyenne</translation>
+<translation id="5744175046705638478">Traduire « <ph name="QUERY" /> »</translation>
 <translation id="5757187557809630523">chanson suivante</translation>
 <translation id="5760715441271661976">État du portail</translation>
 <translation id="5763838252932650682">Redémarrage et mise à jour de l'application <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
+<translation id="5779818640587041940">Garder l'écran allumé lors de l'enregistrement</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
+<translation id="5790391387506209808">lapis-lazuli</translation>
+<translation id="5810692306010756935">Graduation</translation>
 <translation id="5816802250591013230">Aucun raccourci attribué</translation>
 <translation id="5826644637650799838">À propos du fond d'écran</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
@@ -680,23 +956,36 @@
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
+<translation id="5877503382465267833">Suspendre <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Plein écran</translation>
+<translation id="5893975327266416093">Appuyer sur une touche du clavier pour l'attribuer</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5896602941605730551">Lire</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil est un ensemble clavier et souris.</translation>
 <translation id="5904994456462260490">Ajouter un nouveau nom de point d'accès</translation>
+<translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur de touche</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Bouton Supprimer pour <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
+<translation id="5938286923316838007">Impossible de créer des noms d'enregistrement pour ce contenu</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
 <translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre fournisseur de services cellulaires recommande un nom de point d'accès personnalisé, entrez les informations du nom de point d'accès en sélectionnant « + Nouveau nom de point d'accès »</translation>
+<translation id="5947266287934282605">Si le dernier jour du mois est antérieur à ce jour, les données seront réinitialisées le dernier jour du mois</translation>
+<translation id="5948460390109837040">chiens</translation>
+<translation id="594989847980441553">Sélectionnez « Créer » pour créer une image à l'aide de l'IA.
+        Toutes les images créées s'afficheront automatiquement ici.</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
+<translation id="5972801171078377748">Ne plus afficher</translation>
 <translation id="5975130252842127517">corail</translation>
+<translation id="5982621672636444458">Options de tri</translation>
 <translation id="5984145644188835034">Fond d'écran par défaut</translation>
+<translation id="5996832681196460718">soie</translation>
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6019566113895157499">Raccourcis clavier</translation>
 <translation id="6034694447310538551">Activer la réinitialisation mensuelle automatique</translation>
@@ -704,46 +993,62 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
 <translation id="604124094241169006">Automatique</translation>
+<translation id="6042308850641462728">Plus</translation>
 <translation id="6048107060512778456">Échec : bourrage de papier</translation>
 <translation id="6050189528197190982">Échelle de gris</translation>
+<translation id="6054711098834486579">expressionniste</translation>
 <translation id="6058625436358447366">Pour terminer cette opération, entrez votre ancien mot de passe et le nouveau</translation>
 <translation id="6061772781719867950">Requêtes HTTP échouées</translation>
 <translation id="6073292342939316679">diminuer la luminosité du clavier</translation>
 <translation id="6075872808778243331">Latence HTTP (Android)</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
+<translation id="6091080061796993741">jaune</translation>
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
 <translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6112878310391905610">Ce paramètre est géré par vos administrateurs</translation>
 <translation id="6113701710518389813">Flèche vers le haut</translation>
+<translation id="6116005346231504406">Créer la première commande</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> autres albums</translation>
+<translation id="6120815036186828722">Recherche d'une voix en cours…</translation>
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122277663991249694">Service de méthode d'entrée Chrome OS</translation>
 <translation id="6127426868813166163">blanc</translation>
 <translation id="6136285399872347291">effacement arrière</translation>
+<translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6156030503438652198">bordeaux et rose</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
+<translation id="6189987971574353264">Lire</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
 <translation id="6196607555925437199">Recréer</translation>
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
+<translation id="6231648282154119906">Les fichiers suspects seront analysés automatiquement par la Navigation sécurisée Google dans le cadre de la protection renforcée que vous avez choisie</translation>
 <translation id="6232017090690406397">Pile</translation>
-<translation id="6235460611964961764">Réinitialiser manuellement l'utilisation de données</translation>
+<translation id="6234024205316847054">Afficher la structure</translation>
 <translation id="6243280677745499710">Fond d'écran actuel</translation>
+<translation id="6250316632541035980">œufs et bacon</translation>
+<translation id="6265268291107409527">La touche sélectionnée est <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Flèche vers la droite</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">Définir « <ph name="QUERY" /> »</translation>
+<translation id="6283581480003247988">bleu et violet</translation>
 <translation id="6284632978374966585">Activer le thème sombre</translation>
+<translation id="6285260286443238386">Exporter l'enregistrement</translation>
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6292095526077353682">Pendant le chargement, affichez l'écran de veille pour la période suivante :</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
+<translation id="6301193653204230066">La réinitialisation de sécurité désactive les extensions du navigateur Chrome et réinitialise les paramètres réseau et d'autres paramètres à Sécurisé par défaut.
+          Vos onglets, vos fichiers, vos témoins et votre historique ne seront pas modifiés.</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
 <translation id="6318437367327684789">indéfiniment</translation>
@@ -753,31 +1058,44 @@
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6327262166342360252">Ce fond d'écran a été créé avec l'IA en utilisant le texte suivant : « <ph name="PROMPT" /> ».</translation>
 <translation id="6331191339300272798">Thème sombre automatique</translation>
+<translation id="6335228876613776082">Téléchargement du modèle terminé</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
+<translation id="6348252528297699679">Vous pouvez désactiver la localisation dans Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nom d'utilisateur et mot de passe</translation>
+<translation id="6352210854422428614">planète différente</translation>
 <translation id="6359706544163531585">Désactiver le thème clair</translation>
+<translation id="6359919876285606596">Cette action est permanente et irréversible</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
+<translation id="6373461326814131011">étang</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6381741036071372448">Tester votre clavier</translation>
 <translation id="6382182670717268353">Aperçu de l'économiseur d'écran</translation>
 <translation id="6388847657025262518">Le chargeur de documents du numériseur est bloqué. Vérifiez le chargeur de documents et réessayez.</translation>
 <translation id="6394634179843537518">Ajouter un fichier</translation>
+<translation id="6396719002784938593">houque laineuse</translation>
+<translation id="639964859328803943">thé d'honneur</translation>
+<translation id="6400680457268373900">Un(e) <ph name="DREAMSCAPES_OBJECT" /> surréaliste fait(e) en <ph name="DREAMSCAPES_MATERIAL" /> de couleur <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">recherche de navigateur</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
 <translation id="6411934471898487866">luminosité du clavier</translation>
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="6419454453018688975">Activer l'accès à la position du système</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Numériser de nouveau la page?}=1{Numériser de nouveau la page {PAGE_NUMBER}?}one{Numériser de nouveau la page {PAGE_NUMBER}?}other{Numériser de nouveau les pages {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
+<translation id="6472979596862005515">bateaux</translation>
 <translation id="64778964625672495">rouge foncé</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Écran de veille exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Tâche arrêtée : bourrage de papier</translation>
+<translation id="6490861263572002431">Défilement automatique</translation>
+<translation id="6492891353338939218">vieilli</translation>
 <translation id="6494974875566443634">Personnalisation</translation>
 <translation id="6500818810472529210">Affichez les résultats dans la recherche Google</translation>
 <translation id="650266656685499220">Pour créer des albums, servez-vous de Google Photos</translation>
@@ -787,6 +1105,9 @@
 <translation id="6526200165918397681">Fond d'écran assorti</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
 <translation id="6535178685492749208">Vous êtes hors ligne. Les commentaires seront envoyés plus tard.</translation>
+<translation id="6543412779435705598">tacos</translation>
+<translation id="6551839203326557324">pommes</translation>
+<translation id="65526652485742171">Le bouton de confirmation est maintenant activé</translation>
 <translation id="6557784757915238407">Le nom de point d'accès est de type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">À plat</translation>
 <translation id="6560196641871357166">Vibrant</translation>
@@ -796,55 +1117,90 @@
 <translation id="6575134580692778371">Non configuré</translation>
 <translation id="6576005492601044801">gauche</translation>
 <translation id="6579509898032828423">Utiliser cette photo</translation>
+<translation id="6587870930887634392">succulente</translation>
+<translation id="6595046262780525922">Activer la transcription et télécharger le modèle de transcription?</translation>
 <translation id="6596816719288285829">Adresse IP</translation>
 <translation id="6599673642868607614">Merci de vos commentaires. Vos commentaires nous aident à améliorer l'expérience sur les Chromebook et seront examinés par notre équipe. En raison du grand nombre de rapports, nous ne serons pas en mesure de vous envoyer de réponse.</translation>
+<translation id="660846213831377756">Touches de la souris</translation>
 <translation id="6618744767048954150">En cours…</translation>
 <translation id="6620487321149975369">Les tâches d'impression s'afficheront dans l'historique, sauf si vous les retirez manuellement</translation>
 <translation id="6624819909909965616">Impossible de télécharger un fichier de plus de 10 Mo</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
+<translation id="6648412990074186169">minimale</translation>
 <translation id="6650062777702288430">Commutateur Kana/alphanumérique</translation>
+<translation id="6657240842932274095">Autoriser les services système à utiliser votre position?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
+<translation id="66621959568103627">rose corail</translation>
 <translation id="6673898378497337661">augmenter la luminosité du clavier</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
 <translation id="6694534975463174713">Verrouiller</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
+<translation id="6712933881624804031">vallée</translation>
+<translation id="6716013206176357696">fraises</translation>
+<translation id="671733080802536771">art nouveau</translation>
+<translation id="6721525125027474520">marécage</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
 <translation id="672609503628871915">Découvrir les nouveautés</translation>
+<translation id="6738867403308150051">Téléchargement en cours…</translation>
+<translation id="6740695858234317715">crème et orange</translation>
+<translation id="6741823073189174383">bateau</translation>
+<translation id="6744441848304920043">jungle</translation>
+<translation id="6747035363363040417">neutre</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6753452347192452143">L'appareil est un ordinateur.</translation>
 <translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
 <translation id="6760706756348334449">Diminuer le volume</translation>
+<translation id="6761537227090937007">Création d'une image haute résolution en cours…</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
+<translation id="6786747875388722282">Extensions</translation>
 <translation id="6791471867139427246">couleur de l'éclairage du clavier</translation>
 <translation id="6796229976413584781">Raccourci supprimé</translation>
 <translation id="6798678288485555829">Navigation dans le texte</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
+<translation id="6831043979455480757">Traduire</translation>
+<translation id="6846843854964504403">Réinitialisation de sécurité</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6862228900689076919">Cette fonctionnalité est gérée par votre administrateur</translation>
+<translation id="6862416241246624313">Commentaires envoyés</translation>
 <translation id="6866732840889595464">marguerite</translation>
-<translation id="6871256179359663621">violet pâle</translation>
+<translation id="6871256179359663621">mauve clair</translation>
 <translation id="6889786074662672253">Pendant le redémarrage, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cela peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
+<translation id="6902359863093437070">Créer un arrière-plan avec l'IA</translation>
+<translation id="6905163627763043954">Essayer</translation>
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
+<translation id="6910845598686542904">Calculer les modèles des voix détectées dans l'enregistrement</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
+<translation id="6927968682840110570">Nom de l'enregistrement</translation>
+<translation id="6930242544192836755">Durée</translation>
+<translation id="6930597342185648547">À propos de l'arrière-plan</translation>
+<translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
+<translation id="6939766318048400022">Café</translation>
 <translation id="6943893908656559156">Identité distante (facultative)</translation>
+<translation id="6953137545147683679">or</translation>
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="695776212669661671">flèche droite</translation>
+<translation id="6957792699151067488">fleur</translation>
 <translation id="6961170852793647506">Pour commencer, placez le document sur le numériseur</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Appareil</translation>
+<translation id="6975620886940770104">Un(e) <ph name="GLOWSCAPES_LANDSCAPE" /> avec un(e) <ph name="GLOWSCAPES_FEATURE" /> rayonnant(e)</translation>
+<translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
-<translation id="6988803763488977828">anémone</translation>
+<translation id="6982462588253070448">dunes</translation>
 <translation id="7005833343836210400">L'appareil est hors ligne</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
+<translation id="7035168792582749309">pommes de terre</translation>
 <translation id="7040230719604914234">Opérateur</translation>
+<translation id="7040729769968826896">Autoriser l'identification du locuteur</translation>
 <translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
 <translation id="7046522406494308071">Réinitialiser tous les raccourcis par défaut?</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
@@ -853,17 +1209,25 @@
 <translation id="7068619307603204412">Préparer votre appareil</translation>
 <translation id="7076851914315147928">Choisir un fond d'écran</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
+<translation id="7086168019478250425">plage bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Générer des noms d'enregistrement</translation>
+<translation id="7097908713073775559">colorés</translation>
 <translation id="710028965487274708">Échec – Échec de l'autorisation</translation>
+<translation id="7101959270679078188">Déverrouillez l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> de <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Choisir parmi les illustrations exclusives à <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Entrée</translation>
+<translation id="7118522231018231199">Assurez-vous de sélectionner les noms de point d'accès fournis par votre fournisseur de services mobiles ou votre administrateur. La sélection d'un nom de point d'accès désactivera tous les noms du point d'accès personnalisés. Des noms de point d'accès invalides peuvent perturber votre connexion mobile.</translation>
 <translation id="7119389851461848805">marche</translation>
+<translation id="7129287270910503851">Votre utilisation de données sera réinitialisée chaque mois ce jour-là</translation>
 <translation id="7130438335435247835">Nom du point d'accès (NPA)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7135814714616751706">Recherchez des raccourcis</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
+<translation id="7144954474087165241">pagode</translation>
+<translation id="7147557737960578492">Attribuez une nouvelle touche en la sélectionnant</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7154020516215182599">Faites-nous part de vos commentaires ou décrivez votre problème. Si possible, incluez les étapes à suivre pour reproduire votre problème.</translation>
 <translation id="7155171745945906037">Photo existante de l'appareil photo ou du fichier</translation>
@@ -874,13 +1238,18 @@
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
+<translation id="7182063559013288142">Point d'accès sans fil immédiat</translation>
 <translation id="7184043045742675738">Cliquez sur n'importe quelle touche pour personnaliser votre bouton. Repositionnez la touche avec la souris ou les touches fléchées.</translation>
 <translation id="7206979415662233817">Conditions d'utilisation</translation>
+<translation id="7210635925306941239">cyan</translation>
 <translation id="7212547870105584639">Gérez les paramètres de nom de point d'accès du réseau. Les noms de point d'accès établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
+<translation id="7223952304612664117">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des renseignements relatifs aux signaux sans fil et aux capteurs pour estimer la position de l'appareil.</translation>
 <translation id="7233782086689993269">Raccourci restauré</translation>
 <translation id="725133483556299729">Sélectionner un courriel</translation>
+<translation id="7255187042098209569">rose et violet</translation>
+<translation id="7271000785316964275">classicisme</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7271932918253517778">Un raccourci comprenant les touches de la rangée supérieure doit inclure la touche de <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -895,6 +1264,7 @@
 <translation id="7311368985037279727">couleur du clavier</translation>
 <translation id="7317831949569936035">Inscription scolaire</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">vert et sarcelle</translation>
 <translation id="7328475450575141167">oiseaux de paradis</translation>
 <translation id="7331297744262591636">Vous devez être âgé d'au moins 18 ans et accepter que votre utilisation des fonds d'écran IA soit soumise aux <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />conditions d'utilisation de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> et aux <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />conditions d'utilisation supplémentaires relatives à l'IA générative<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
@@ -902,15 +1272,23 @@
           Vous ne pouvez créer des fonds d'écran avec l'IA que pour un usage personnel et non commercial. Lorsque vous obtenez de l'aide sur les fonds d'écran, du texte est envoyé aux serveurs de l'IA de Google pour générer des suggestions de fonds d'écran, conformément à la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils réseau</translation>
+<translation id="7344788170842919262">terreux</translation>
+<translation id="7346768383111016081">Placez la commande sur l'action du jeu pour jouer avec votre clavier</translation>
+<translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7353413232959255829">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder au raccourci.</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="73631062356239394">Partager les données de diagnostics</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378170410161264436">L'Enregistreur peut créer des transcriptions pour les enregistrements avec voix.
+Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces transcriptions.</translation>
+<translation id="7384004438856720753">palais</translation>
+<translation id="7388345524791662148">Plus d'options pour <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pavé tactile intégré</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
+<translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
@@ -919,26 +1297,35 @@
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
+<translation id="7500205272584643581">Autoriser l'Enregistreur à détecter et à étiqueter les haut-parleurs?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
+<translation id="7507061649493508884">Une <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> rayonnante</translation>
 <translation id="7513770521371759388">bas</translation>
+<translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334">Faire jouer <ph name="RECORDING_NAME" /></translation>
 <translation id="7525067979554623046">Créer</translation>
 <translation id="7528507600602050979">Le contenu de l'aide n'est pas accessible</translation>
-<translation id="753556296624075801">Propulsé par Google</translation>
 <translation id="7535791657097741517">Activer le thème clair</translation>
+<translation id="7544126681856613971">forêt brumeuse</translation>
+<translation id="7544853251252956727">Aléatoire</translation>
 <translation id="7550715992156305117">Routines de diagnostic</translation>
 <translation id="7551123448725492271">L'appareil est un appareil audio.</translation>
 <translation id="7559239713112547082">Capture d'écran de l'aperçu</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
+<translation id="757747079855995705">pierre</translation>
+<translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Repositionnez avec la souris ou les touches fléchées.</translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
+<translation id="7625095758347640998">Fonds d'écran IA</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7633068090678117093">Image d'arrière-plan</translation>
+<translation id="763873111564339966">indigo</translation>
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
 <translation id="7658239707568436148">Annuler</translation>
@@ -947,6 +1334,7 @@
 <translation id="7673177760638264939">rose de jardin</translation>
 <translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
+<translation id="7696506367342213250">collines d'argile</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7705524343798198388">RPV</translation>
 <translation id="7716280709122323042">WPA3</translation>
@@ -956,33 +1344,50 @@
 <translation id="7746357909584236306">modifiable</translation>
 <translation id="7747039790905080783">Clé prépartagée</translation>
 <translation id="7752963721013053477">De l'aube à l'obscurité – exclusif</translation>
+<translation id="7760571082554155847">Paramètres de la page d'accueil</translation>
 <translation id="7762130827864645708">La modification de votre mot de passe a bien été effectuée. Veuillez utiliser le nouveau mot de passe à partir de maintenant.</translation>
 <translation id="7763470514545477072">Correspondance du suffixe de domaine</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
-<translation id="7770834998503326261">Renseignements supplémentaires concernant votre sélection</translation>
+<translation id="7774759755755950354">Retour</translation>
 <translation id="7778717409420828014">Vos commentaires nous aident à améliorer l'expérience sur les Chromebook et seront examinés par notre équipe. En raison du grand nombre de rapports, nous ne serons pas en mesure de vous envoyer de réponse.</translation>
+<translation id="7781829728241885113">Hier</translation>
 <translation id="7784116172884276937">Aucun serveur DNS n'est configuré</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="779591286616261875">Envoyer un nouveau rapport</translation>
 <translation id="7799817062559422778">Mode clair</translation>
+<translation id="7802764839223122985">La touche est manquante. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7805768142964895445">État</translation>
-<translation id="7819831665603418705">Utiliser un modèle</translation>
+<translation id="7811024689617730980">Sélectionnez un jour de réinitialisation automatique compris entre 1 et 31 inclusivement</translation>
+<translation id="7813073042185856802">montagne</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
+<translation id="7824219488248240180">postimpressionniste</translation>
+<translation id="7828503206075800057">Un café <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
 <translation id="7841134249932030522">Activer le mode sombre</translation>
 <translation id="7846634333498149051">Clavier</translation>
+<translation id="7849030488395653706">aurores boréales</translation>
+<translation id="7849737607196682401">dentelle</translation>
+<translation id="7850320739366109486">Ne pas déranger</translation>
 <translation id="7850847810298646851">Fond d'écran propulsé par l'IA de Google</translation>
 <translation id="785170686607360576">tulipe</translation>
 <translation id="7856267634822906833">Écran tactile Bluetooth</translation>
+<translation id="7859006200041800233">fleur de cactus</translation>
 <translation id="7869143217755017858">Désactiver le mode sombre</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
+<translation id="7889966925761734854">Rechercher</translation>
+<translation id="78957024357676568">gauche</translation>
+<translation id="7897043345768902965">passerelle</translation>
+<translation id="7902285181767404769">Désactivez le son des notifications pendant l'enregistrement</translation>
 <translation id="7903695460270716054">Choisir parmi une sélection d'illustrations et d'images</translation>
+<translation id="7912005977894000746">Retour à la page principale</translation>
 <translation id="7915220255123750251">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet.</translation>
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943235353293548836">Intervalle de connexion persistante</translation>
+<translation id="7943516765291457328">Activez le Bluetooth pour rechercher les points d'accès sans fil à proximité</translation>
+<translation id="7944482598620888754">Contenu du site</translation>
 <translation id="7944562637040950644">basculer le rétroéclairage du clavier</translation>
 <translation id="7953669802889559161">Entrées</translation>
 <translation id="7955587717700691983">Clavier Bluetooth</translation>
@@ -990,115 +1395,169 @@
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour vous connecter à un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7982789257301363584">Réseau</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{« <ph name="APP_NAME_1" /> » a démarré automatiquement}one{# application a démarré automatiquement}other{# applications ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8028993641010258682">Taille</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activer le mode Couleur automatique</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8045012663542226664">Désactivation du microphone</translation>
+<translation id="8054112564438735763">beige</translation>
+<translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> <ph name="CHARACTERS_COLOR" /> sur un arrière-plan <ph name="CHARACTERS_BACKGROUND" /></translation>
 <translation id="8067126283828232460">Le nom de point d'accès (APN) est connecté.</translation>
+<translation id="8067208048261192356">brun</translation>
+<translation id="8067224607978179455">Supprimer <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="8076492880354921740">Onglets</translation>
+<translation id="8079860070590459552">champ de fleurs</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS à partir d'applications Android</translation>
 <translation id="8082644724189923105">zone du clavier</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="8088963492174775412">Appuyez pour enregistrer</translation>
 <translation id="8094062939584182041">Autoriser Google à vous envoyer un courriel à propos de ce problème</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
 <translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
+<translation id="8135609423982943441">Votre Chromebook a été réinitialisé à des paramètres sécuritaires par défaut. Vous pouvez ajuster ces modifications à tout moment dans Paramètres.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Sélectionner <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">magique</translation>
+<translation id="8162776280680283326">renards</translation>
+<translation id="8167413449582155132">Arrière-plan propulsé par l'IA de Google</translation>
+<translation id="8171020708598805594">Créez automatiquement des transcriptions, obtenez des résumés d'enregistrement à l'aide de l'IA de Google et recherchez des contenus audio. Créez des enregistrements même lorsque vous n'êtes pas connecté à Internet.</translation>
 <translation id="8179976553408161302">Entrée</translation>
+<translation id="8183975772394450380">plage</translation>
+<translation id="819278132617411009">Utiliser l'IA de Google pour être plus productif</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
+<translation id="8236972776513018241">Transcription</translation>
+<translation id="8238771987802558562">Choisir un nom de point d'accès</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8250926778281121244">rouille</translation>
+<translation id="8257572018929862473">Ouvrir les paramètres des Réponses rapides</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
+<translation id="8281886186245836920">Ignorer</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
+<translation id="8308787307410010965">Paramètres de contenu du site</translation>
 <translation id="8312330582793120272">lire le contenu multimédia</translation>
 <translation id="8318753676953949627">Aucune image</translation>
+<translation id="8320910311642849813">forêt</translation>
 <translation id="8329018942023753850">application calculatrice</translation>
 <translation id="8336739000755212683">Changer l'image du compte sur l'appareil</translation>
 <translation id="8339024191194156249">En savoir plus sur le lancement automatique</translation>
+<translation id="8346937114125330423">classique</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ou <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
+<translation id="8349758651405877930">instruments</translation>
 <translation id="8349826889576450703">lanceur d'applications</translation>
+<translation id="8351482263741655895">Multiplier la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Point de contact d'affectation des touches</translation>
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
+<translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Utiliser des ensembles de couleurs qui correspondent à votre fond d'écran</translation>
 <translation id="8380114448424469341">Ancrer la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
+<translation id="8391349326751432483">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de la mémoire, fermez les onglets et les applications.</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
+<translation id="8403988360557588704">Une peinture d'un(e) <ph name="ART_FEATURE" /> dans le style <ph name="ART_MOVEMENT" /></translation>
 <translation id="8410244574650205435">Pays détecté automatiquement</translation>
 <translation id="8420955526972171689">Réalisez des tests et des étapes de dépannage en cas de problèmes matériels</translation>
 <translation id="8422748173858722634">IIEM</translation>
+<translation id="8424039430705546751">bas</translation>
+<translation id="8428213095426709021">Paramètres</translation>
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
+<translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="843568408673868420">Connectivité Internet</translation>
 <translation id="844521431886043384">Le DNS n'est pas configuré</translation>
+<translation id="8456200178779628126">Utiliser l'IA de Google pour obtenir de l'aide pour lire et écrire</translation>
 <translation id="8456761643544401578">Mode sombre automatique</translation>
 <translation id="8461329675984532579">Nom du propriétaire</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP PSK</translation>
 <translation id="8476242415522716722">sous-lueur du clavier</translation>
 <translation id="8476942730579767658">Fenêtres et bureaux</translation>
+<translation id="8477536061607044749">conception graphique</translation>
 <translation id="8477551185774834963">La latence du DNS dépasse un peu le seuil acceptable</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP à partir d'applications Android</translation>
+<translation id="8495070016475833911">feutre</translation>
 <translation id="8498220429738806196">Compteurs de trafic</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
+<translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
 <translation id="8508640263392900755">Détails de l'APN</translation>
 <translation id="8522687886059337719">Vous avez maintenant accès aux nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et à l'<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />écran de veille<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">salon de thé</translation>
+<translation id="8538236298648811558">Propulsé par l'IA de Google</translation>
+<translation id="8550364285433943656">Placez des commandes sur les actions du jeu pour jouer avec les touches du clavier</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8593058461203131755">mettre le contenu multimédia en pause</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8626489604350149811">Autres actions pour <ph name="APN_NAME" /></translation>
-<translation id="86356131183441916">Violet clair</translation>
+<translation id="86356131183441916">Mauve clair</translation>
+<translation id="8647595191512746911">Transcription audio</translation>
 <translation id="8651481478098336970">désactiver le son</translation>
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655828773034788261">Partager l'URL :</translation>
 <translation id="8660881923941176839">livres</translation>
+<translation id="8670057600920888023">L'IA générative est expérimentale, et le contenu peut être inexact, trompeur ou choquant.</translation>
 <translation id="8670574982334489519">droit</translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
+<translation id="8682949824227998083">ramen</translation>
+<translation id="8689520252402395106">Réinsérez le câble USB de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
+<translation id="8721554916373590179">Exemples de requêtes</translation>
 <translation id="8723108084122415655">Le seuil de latence du réseau autre que par défaut est trop élevé</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8726019395068607495">Tâchez arrêtée : porte de l'imprimante ouverte</translation>
 <translation id="8730621377337864115">Terminé</translation>
+<translation id="8739555075907731077">Interrompue (progression : <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>
+<translation id="8749478549112817787">Arrière-plan de caméra</translation>
+<translation id="8755946156089753497">tour</translation>
+<translation id="8756235582947991808">Comment créer avec l'IA et quelques points à garder à l'esprit</translation>
+<translation id="8760616037557661287">Requêtes précédentes</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
 <translation id="8775713578693478175">Nom de point d'accès du modem</translation>
+<translation id="877735394245039557">Téléchargement du modèle en cours…</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
+<translation id="8797082062139985406">Créer un nom à l'aide de l'IA de Google</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
+<translation id="8808828119384186784">Paramètres Chrome</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8820457400746201697">Déplacez le point de contact bleu vers une action. Sélectionnez la touche associée à personnaliser.</translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="8833620912470026819">forêt de cactus</translation>
 <translation id="8834539327799336565">Actuellement connecté</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
+<translation id="8849799913685544685">phare</translation>
 <translation id="8851859208664803097">Arrêté - Imprimante inaccessible</translation>
 <translation id="8855781559874488009">Impossible de se connecter à travers le pare-feu à des sites Web utilisant le protocole HTTP</translation>
 <translation id="885701979325669005">Stockage</translation>
@@ -1108,35 +1567,50 @@
 <translation id="8864415976656252616">Aucun contenu suggéré. Voir le contenu d'aide le plus populaire.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">L'appareil est une tablette.</translation>
+<translation id="8878117140814294155">Activer/désactiver le microphone</translation>
 <translation id="8881098542468797602">Test réussi</translation>
+<translation id="8882789155418924367">hiboux</translation>
 <translation id="8892443466059986410">Annuler la modification du raccourci</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>
 <translation id="8909114361904403025">flèche vers le haut</translation>
 <translation id="8910721771319628100">Le seuil de latence du réseau par défaut est trop élevé</translation>
 <translation id="8912306040879976619">Zones de clavier</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8918813738569491921">roche saline</translation>
 <translation id="8919837981463578619">Échec : bac manquant</translation>
-<translation id="8923267550422472772">Jour du mois pour la réinitialisation</translation>
+<translation id="8924154518905976972">Exporter le contenu audio</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>
+<translation id="8933650076320258356">La touche sélectionnée est <ph name="KEYS" /> pour <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
 <translation id="8944651180182756621">Couleur du lanceur</translation>
+<translation id="8945308580158685341">abeilles</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8950424402482976779">haut</translation>
+<translation id="8954341524817067858">montagnes</translation>
+<translation id="8957423540740801332">droite</translation>
+<translation id="8960969673307890087">melons d'eau</translation>
+<translation id="8961025972867871808">manchots</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter de nouveau</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
+<translation id="89945434909472341">village</translation>
 <translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
+<translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="901834265349196618">courriel</translation>
+<translation id="9022897536196898720">fleurs</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9025198690966128418">Utiliser comme un appareil personnel</translation>
 <translation id="902638246363752736">Paramètres du clavier</translation>
 <translation id="9028832514430399253">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>
+<translation id="9030883440316693822">Supprimer l'enregistrement?</translation>
+<translation id="9036971622563146214">Résultats</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9045842401566197375">livres</translation>
 <translation id="9049868303458988905">Le bouton Enregistrer un nom de point d'accès est maintenant activé</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
@@ -1148,33 +1622,46 @@
 <translation id="9087578468327036362">Signalez cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Plus d'informations sur la date de réinitialisation</translation>
 <translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9122492456897874028">Résumez du contenu, obtenez des définitions et bien plus</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
+<translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
 <translation id="9133772297793293778">Appuyez sur les modificateurs 1 à 4 et sur 1 autre touche de votre clavier. Pour quitter le mode de modification, appuyez sur alt+esc.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
+<translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">espace</translation>
+<translation id="9169345239923038539">Vous n'êtes pas encore connecté. Si votre opérateur mobile recommande un nom de point d'accès personnalisé, <ph name="BEGIN_LINK" />entrez les informations du nom de point d'accès<ph name="END_LINK" />.</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="9174334653006917325">Couleur de l'interface utilisateur</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Votre clavier peut automatiquement s'agencer à votre fond d'écran</translation>
 <translation id="9189000703457422362">Impossible de se connecter à ce réseau à l'aide des noms de points d'accès (APN) détectés automatiquement. Contactez votre fournisseur de services cellulaires pour plus d'informations.</translation>
 <translation id="9193744392140377127">Nom du point d'accès*</translation>
+<translation id="9195918315673527512">Les touches du manche sélectionnées sont <ph name="KEYS" />. Toucher le bouton pour modifier la commande</translation>
 <translation id="9204237731135241582">Impossible de communiquer avec la passerelle à partir d'applications Android</translation>
+<translation id="921080052717160800">Image définie comme arrière-plan de la caméra</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
+<translation id="9218016617214286986">Afficher les noms de point d'accès connus</translation>
 <translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
+<translation id="950520315903467048">La touche est manquante pour <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Comparer les voix tout au long de l'enregistrement afin que la transcription reflète ce que chaque locuteur a dit et à quel moment</translation>
 <translation id="952992212772159698">Désactivé</translation>
+<translation id="95718197892796296">argile</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
+<translation id="965918541715156800">jaune et sarcelle</translation>
 <translation id="966787709310836684">menu</translation>
 <translation id="979450713603643090">Rose clair</translation>
 <translation id="982713511914535780">Exécuter le test de décharge</translation>
+<translation id="98515147261107953">Paysage</translation>
 <translation id="987264212798334818">Généralités</translation>
 <translation id="995062385528875723">Impossible d'utiliser des lettres accentuées, un alphabet non latin ou des symboles</translation>
 </translationbundle>

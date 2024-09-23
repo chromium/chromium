@@ -5,7 +5,9 @@
 #include <map>
 
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -20,25 +23,28 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
 using preferences_helper::ChangeBooleanPref;
+using preferences_helper::ConvertPrefValueToValueInSpecifics;
 using preferences_helper::GetPrefs;
 using preferences_helper::GetRegistry;
 using testing::Eq;
@@ -46,29 +52,55 @@ using testing::Ne;
 using testing::NotNull;
 using user_prefs::PrefRegistrySyncable;
 
-std::string ConvertToSyncedPrefValue(const base::Value& value) {
-  std::string result;
-  bool success = base::JSONWriter::Write(value, &result);
-  DCHECK(success);
-  return result;
-}
-
 sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     sync_pb::EntitySpecifics& specifics) {
-  switch (model_type) {
-    case syncer::ModelType::PREFERENCES:
+  switch (data_type) {
+    case syncer::DataType::PREFERENCES:
       return specifics.mutable_preference();
-    case syncer::ModelType::PRIORITY_PREFERENCES:
+    case syncer::DataType::PRIORITY_PREFERENCES:
       return specifics.mutable_priority_preference()->mutable_preference();
-    case syncer::ModelType::OS_PREFERENCES:
+    case syncer::DataType::OS_PREFERENCES:
       return specifics.mutable_os_preference()->mutable_preference();
-    case syncer::ModelType::OS_PRIORITY_PREFERENCES:
+    case syncer::DataType::OS_PRIORITY_PREFERENCES:
       return specifics.mutable_os_priority_preference()->mutable_preference();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return specifics.mutable_preference();
   }
+}
+
+// Reads a json file and returns it as a dict value. If `key` is provided, only
+// the value for that key is returned. This returns nullopt if there was an
+// error reading the values from the file, for example, the file doesn't exist.
+// NOTE: `key` missing from the json file would be returned as an empty dict,
+// and not a nullopt.
+std::optional<base::Value::Dict> ReadValuesFromFile(
+    const base::FilePath& file_path,
+    const std::optional<std::string>& key = std::nullopt) {
+  std::optional<base::Value::Dict> result;
+  // ASSERT_* returns void. Thus using a lambda to not exit from the function,
+  // but still generate fatal failures.
+  [&]() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    ASSERT_TRUE(base::PathExists(file_path))
+        << "Preference file " << file_path << " does not exist.";
+    std::string file_content;
+    ASSERT_TRUE(base::ReadFileToString(file_path, &file_content));
+    std::optional<base::Value> json_content =
+        base::JSONReader::Read(file_content);
+    ASSERT_TRUE(json_content.has_value() && json_content->is_dict())
+        << "Failed to parse file content: " << file_content;
+    if (!key.has_value()) {
+      result = std::move(json_content->GetDict());
+    } else {
+      base::Value::Dict* dict =
+          json_content->GetDict().FindDictByDottedPath(key.value());
+      result = dict ? std::move(*dict) : base::Value::Dict();
+    }
+  }();
+  return result;
 }
 
 class SingleClientPreferencesSyncTest : public SyncTest {
@@ -83,14 +115,14 @@ class SingleClientPreferencesSyncTest : public SyncTest {
   ~SingleClientPreferencesSyncTest() override = default;
 
  protected:
-  void InjectPreferenceToFakeServer(syncer::ModelType model_type,
+  void InjectPreferenceToFakeServer(syncer::DataType data_type,
                                     const char* name,
                                     const base::Value& value) {
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
-        GetPreferenceSpecifics(model_type, specifics);
+        GetPreferenceSpecifics(data_type, specifics);
     preference_specifics->set_name(name);
-    preference_specifics->set_value(ConvertToSyncedPrefValue(value));
+    preference_specifics->set_value(ConvertPrefValueToValueInSpecifics(value));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -114,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
 // Regression test to verify that pagination during GetUpdates() contributes
 // properly to UMA histograms.
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
-                       EmitModelTypeEntityChangeToUma) {
+                       EmitDataTypeEntityChangeToUma) {
   const int kNumEntities = 17;
 
   fake_server_->SetMaxGetUpdatesBatchSize(7);
@@ -133,10 +165,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(kNumEntities,
             histogram_tester.GetBucketCount(
-                "Sync.ModelTypeEntityChange3.PREFERENCE",
-                syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                "Sync.DataTypeEntityChange.PREFERENCE",
+                syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   sync_pb::EntitySpecifics specifics;
@@ -151,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
@@ -177,9 +211,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that priority synced preferences and regular synced preferences are
 // kept separate. Tests that incoming priority preference change does not have
@@ -211,23 +246,6 @@ class SingleClientPreferencesWithAccountStorageSyncTest
  public:
   SingleClientPreferencesWithAccountStorageSyncTest()
       : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
-
-  bool DoesAccountPreferencesFileExist() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    return base::PathExists(file_path);
-  }
-
-  std::optional<base::Value> GetAccountPreferencesFileContent() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    std::string json_content;
-    EXPECT_TRUE(base::ReadFileToString(file_path, &json_content));
-    return base::JSONReader::Read(json_content);
-  }
 
   void CommitToDiskAndWait() const {
     base::RunLoop loop;
@@ -372,9 +390,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Change is synced to account.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
 
   // Disable syncing preferences.
@@ -416,16 +434,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Change is synced to account.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
   // Not the right way to test this but the non-syncable pref has not been
   // synced to the new value.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES, kNonSyncablePref,
-                  ConvertToSyncedPrefValue(base::Value("account value")))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::PREFERENCES, kNonSyncablePref,
+          ConvertPrefValueToValueInSpecifics(base::Value("account value")))
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -488,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                 sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
                 GetFakeServer())
                 ->value(),
-            ConvertToSyncedPrefValue(base::Value(new_value.Clone())));
+            ConvertPrefValueToValueInSpecifics(base::Value(new_value.Clone())));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -534,11 +553,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
       new_value);
 
   // New value is synced to account.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
-                  sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value(new_value.Clone())))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::PREFERENCES,
+          sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value(new_value.Clone())))
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -664,14 +684,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
             "account value");
 
   CommitToDiskAndWait();
-  ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
+  std::optional<base::Value::Dict> file_content =
+#if BUILDFLAG(IS_ANDROID)
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+#else
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+          chrome_prefs::kAccountPreferencesPrefix);
+#endif
+  ASSERT_TRUE(file_content.has_value());
 
-  std::string* value = file_content->GetDict().FindString(
-      sync_preferences::kSyncablePrefForTesting);
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "account value");
 
@@ -687,9 +714,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Account prefs have been removed from the file.
-  file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
-  EXPECT_TRUE(file_content->GetDict().empty());
+  file_content =
+#if BUILDFLAG(IS_ANDROID)
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+#else
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+          chrome_prefs::kAccountPreferencesPrefix);
+#endif
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -719,14 +754,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
             "account value");
 
   CommitToDiskAndWait();
-  ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
+  std::optional<base::Value::Dict> file_content =
+#if BUILDFLAG(IS_ANDROID)
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+#else
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+          chrome_prefs::kAccountPreferencesPrefix);
+#endif
+  ASSERT_TRUE(file_content.has_value());
 
-  std::string* value = file_content->GetDict().FindString(
-      sync_preferences::kSyncablePrefForTesting);
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "account value");
 
@@ -740,13 +782,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Account prefs have been removed from the file.
-  file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
-  EXPECT_TRUE(file_content->GetDict().empty());
+  file_content =
+#if BUILDFLAG(IS_ANDROID)
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
+#else
+      ReadValuesFromFile(
+          GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
+          chrome_prefs::kAccountPreferencesPrefix);
+#endif
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 // Adds pref values to persistent storage.
 IN_PROC_BROWSER_TEST_F(
     SingleClientPreferencesWithAccountStorageSyncTest,
@@ -848,6 +900,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   ASSERT_TRUE(
       GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using SingleClientPreferencesWithAccountStorageMergeSyncTest =
     SingleClientPreferencesWithAccountStorageSyncTest;
@@ -967,12 +1021,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
                                   .Set("cnn.com", "deny")
                                   .Set("facebook.com", "allow")
                                   .Set("microsoft.com", "deny");
-  EXPECT_TRUE(
-      FakeServerPrefMatchesValueChecker(
-          syncer::ModelType::PREFERENCES,
-          sync_preferences::kSyncableMergeableDictPrefForTesting,
-          ConvertToSyncedPrefValue(base::Value(updated_server_value.Clone())))
-          .Wait());
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::DataType::PREFERENCES,
+                  sync_preferences::kSyncableMergeableDictPrefForTesting,
+                  ConvertPrefValueToValueInSpecifics(
+                      base::Value(updated_server_value.Clone())))
+                  .Wait());
 
   // Disable syncing preferences.
   ASSERT_TRUE(GetClient(0)->DisableSyncForType(
@@ -1086,9 +1140,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   // No standard unmerging logic exists for list prefs and hence, updated value
   // is written to the account store and the local store.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncableMergeableListPrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value(updated_value.Clone())))
+                  ConvertPrefValueToValueInSpecifics(
+                      base::Value(updated_value.Clone())))
                   .Wait());
 
   // Disable syncing preferences.
@@ -1102,5 +1157,313 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
                 sync_preferences::kSyncableMergeableListPrefForTesting),
             updated_value);
 }
+
+// Preference tracking is not required on android and chromeos.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+const char* kProtectedPrefName = prefs::kShowHomeButton;
+const char* kUnprotectedPrefName = prefs::kShowForwardButton;
+
+class SingleClientTrackedPreferencesSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    SingleClientPreferencesWithAccountStorageSyncTest::
+        SetUpInProcessBrowserTestFixture();
+
+    // Bots are on a domain, turn off the domain check for settings hardening in
+    // order to be able to test all SettingsEnforcement groups.
+    chrome_prefs::DisableDomainCheckForTesting();
+  }
+
+  bool IsProtectionEnforced() const {
+// Only windows and mac have the strongest enforcement setting.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTest,
+                       ShouldStoreUnprotectedPrefsInPreferencesFile) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Default value.
+  ASSERT_TRUE(GetPrefs(0)->GetBoolean(kUnprotectedPrefName));
+
+  GetPrefs(0)->SetBoolean(kUnprotectedPrefName, false);
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kUnprotectedPrefName,
+                               base::Value(true));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_TRUE(GetPrefs(0)->GetBoolean(kUnprotectedPrefName));
+
+  CommitToDiskAndWait();
+
+  // Check unprotected pref is present in the main preference file.
+  std::string account_pref_name = base::StringPrintf(
+      "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kUnprotectedPrefName);
+  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
+  ASSERT_TRUE(prefs.has_value());
+  ASSERT_TRUE(prefs->FindByDottedPath(kUnprotectedPrefName))
+      << "Missing key " << kUnprotectedPrefName << " in " << *prefs;
+  EXPECT_TRUE(prefs->FindByDottedPath(account_pref_name))
+      << "Missing key " << account_pref_name << " in " << *prefs;
+
+  // Check unprotected pref is not in the secured preference file.
+  std::optional<base::Value::Dict> secured_prefs = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
+  ASSERT_TRUE(secured_prefs.has_value());
+  ASSERT_FALSE(secured_prefs->FindByDottedPath(kUnprotectedPrefName))
+      << "Incorrect key " << kUnprotectedPrefName << " in " << *secured_prefs;
+  EXPECT_FALSE(secured_prefs->FindByDottedPath(account_pref_name))
+      << "Incorrect key " << account_pref_name << " in " << *secured_prefs;
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTest,
+                       ShouldStoreProtectedPrefsInCorrectPreferencesFile) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Default value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  GetPrefs(0)->SetBoolean(kProtectedPrefName, true);
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kProtectedPrefName,
+                               base::Value(false));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  CommitToDiskAndWait();
+
+  std::string account_pref_name = base::StringPrintf(
+      "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
+  if (!IsProtectionEnforced()) {
+    // Check protected pref is present in the main preference file.
+    std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+        GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
+    ASSERT_TRUE(prefs.has_value());
+    ASSERT_TRUE(prefs->FindByDottedPath(kProtectedPrefName))
+        << "Missing key " << kProtectedPrefName << " in " << *prefs;
+    EXPECT_TRUE(prefs->FindByDottedPath(account_pref_name))
+        << "Missing key " << account_pref_name << " in " << *prefs;
+    return;
+  }
+
+  // Check protected pref is not in the main preference file.
+  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
+  ASSERT_TRUE(prefs.has_value());
+  ASSERT_FALSE(prefs->FindByDottedPath(kProtectedPrefName))
+      << "Incorrect key " << kProtectedPrefName << " in " << *prefs;
+  EXPECT_FALSE(prefs->FindByDottedPath(account_pref_name))
+      << "Incorrect key " << account_pref_name << " in " << *prefs;
+
+  // Check protected pref is present in the secured preference file.
+  std::optional<base::Value::Dict> secured_prefs = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
+  ASSERT_TRUE(secured_prefs.has_value());
+  ASSERT_TRUE(secured_prefs->FindByDottedPath(kProtectedPrefName))
+      << "Missing key " << kProtectedPrefName << " in " << *secured_prefs;
+  EXPECT_TRUE(secured_prefs->FindByDottedPath(account_pref_name))
+      << "Missing key " << account_pref_name << " in " << *secured_prefs;
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTest,
+                       ShouldHashTrackedSyncablePrefs) {
+  const char kHashesPrefName[] = "protection.macs";
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Default value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  GetPrefs(0)->SetBoolean(kProtectedPrefName, true);
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kProtectedPrefName,
+                               base::Value(false));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  CommitToDiskAndWait();
+
+  // Load hashes from the preference or the secured preference file.
+  std::optional<base::Value::Dict> protection_values = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append((IsProtectionEnforced()
+                                           ? chrome::kSecurePreferencesFilename
+                                           : chrome::kPreferencesFilename)),
+      kHashesPrefName);
+  ASSERT_TRUE(protection_values.has_value());
+
+  // There should be hashes for both, the regular and the account-prefixed pref
+  // name.
+  std::string account_pref_name = base::StringPrintf(
+      "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
+  ASSERT_TRUE(protection_values->FindByDottedPath(kProtectedPrefName))
+      << "Missing key " << kProtectedPrefName << " in "
+      << protection_values.value();
+  EXPECT_TRUE(protection_values->FindByDottedPath(account_pref_name))
+      << "Missing key " << account_pref_name << " in "
+      << protection_values.value();
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTest,
+                       PRE_ShouldLoadTrackedSyncablePrefsBeforeSyncStart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Default value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kProtectedPrefName,
+                               base::Value(true));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_TRUE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTest,
+                       ShouldLoadTrackedSyncablePrefsBeforeSyncStart) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Account value loaded before sync starts.
+  EXPECT_TRUE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  // Check protected account pref is present in the preference file.
+  std::string account_pref_name = base::StringPrintf(
+      "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
+  std::optional<base::Value::Dict> prefs =
+      ReadValuesFromFile(GetProfile(0)->GetPath().Append(
+          (IsProtectionEnforced() ? chrome::kSecurePreferencesFilename
+                                  : chrome::kPreferencesFilename)));
+  ASSERT_TRUE(prefs.has_value());
+  EXPECT_TRUE(prefs->FindByDottedPath(account_pref_name))
+      << "Missing key " << account_pref_name << " in " << *prefs;
+}
+
+class SingleClientTrackedPreferencesSyncTestWithAttack
+    : public SingleClientTrackedPreferencesSyncTest {
+ public:
+  bool SetUpUserDataDirectory() override {
+    EXPECT_TRUE(
+        SingleClientTrackedPreferencesSyncTest::SetUpUserDataDirectory());
+
+    if (!content::IsPreTest()) {
+      AttackTrackedSyncablePreference();
+    }
+    return true;
+  }
+
+  void AttackTrackedSyncablePreference() {
+    const auto& filename = IsProtectionEnforced()
+                               ? chrome::kSecurePreferencesFilename
+                               : chrome::kPreferencesFilename;
+
+    base::FilePath user_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    base::FilePath file_path =
+        user_data_dir.Append(GetProfileBaseName(0)).Append(filename);
+
+    std::optional<base::Value::Dict> values = ReadValuesFromFile(file_path);
+    ASSERT_TRUE(values.has_value());
+    // Update the existing account value.
+    std::string pref_name = base::StringPrintf(
+        "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
+    std::optional<bool> current_value = values->FindBoolByDottedPath(pref_name);
+    ASSERT_TRUE(current_value.has_value())
+        << "Missing key " << pref_name << " in " << values.value();
+    values->SetByDottedPath(pref_name, !current_value.value());
+    JSONFileValueSerializer serializer(file_path);
+    EXPECT_TRUE(serializer.Serialize(*values));
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTestWithAttack,
+                       PRE_ShouldProtectTrackedSyncablePrefs) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Default value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  GetPrefs(0)->SetBoolean(kProtectedPrefName, true);
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kProtectedPrefName,
+                               base::Value(false));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_FALSE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientTrackedPreferencesSyncTestWithAttack,
+                       ShouldProtectTrackedSyncablePrefs) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // ID for show home page pref is 0.
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "Settings.TrackedPreferenceWantedReset", /*sample=*/0),
+            static_cast<int>(!IsProtectionEnforced()));
+  EXPECT_EQ(histogram_tester_.GetBucketCount("Settings.TrackedPreferenceReset",
+                                             /*sample=*/0),
+            static_cast<int>(IsProtectionEnforced()));
+
+  if (!IsProtectionEnforced()) {
+    return;
+  }
+
+  // Tracked account pref should be reset after attack. So the local value takes
+  // effect.
+  EXPECT_TRUE(GetPrefs(0)->GetBoolean(kProtectedPrefName));
+
+  CommitToDiskAndWait();
+
+  // Check protected account pref is no longer present in the preference file.
+  std::string account_pref_name = base::StringPrintf(
+      "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
+  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+      GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
+  ASSERT_TRUE(prefs.has_value());
+  EXPECT_FALSE(prefs->FindByDottedPath(account_pref_name))
+      << "Incorrect key " << account_pref_name << " in " << *prefs;
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

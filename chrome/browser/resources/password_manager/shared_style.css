@@ -12,6 +12,7 @@
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
+  overflow: hidden;
 }
 
 /* This selector relies on the fact that pseudo-classes :hover and :active have
@@ -109,4 +110,10 @@ cr-input.password-input::part(input) {
   --cr-input-border-radius: 10px;
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 0;
+}
+
+.cr-row-action-button {
+  height: auto;
+  margin-inline-start: 16px;
+  padding: 3px 16px;
 }

@@ -53,6 +53,40 @@ namespace crashpad {
 
 namespace {
 
+// Thread-safe version of `base::apple::ScopedMachReceiveRight` which allocates
+// the Mach port upon construction and deallocates it upon destruction.
+class ThreadSafeScopedMachPortWithReceiveRight {
+ public:
+  ThreadSafeScopedMachPortWithReceiveRight()
+      : port_(NewMachPort(MACH_PORT_RIGHT_RECEIVE)) {}
+
+  ThreadSafeScopedMachPortWithReceiveRight(
+      const ThreadSafeScopedMachPortWithReceiveRight&) = delete;
+  ThreadSafeScopedMachPortWithReceiveRight& operator=(
+      const ThreadSafeScopedMachPortWithReceiveRight&) = delete;
+
+  ~ThreadSafeScopedMachPortWithReceiveRight() { reset(); }
+
+  mach_port_t get() { return port_.load(); }
+  void reset() {
+    mach_port_t old_port = port_.exchange(MACH_PORT_NULL);
+    if (old_port == MACH_PORT_NULL) {
+      // Already reset, nothing to do.
+      return;
+    }
+    kern_return_t kr = mach_port_mod_refs(
+        mach_task_self(), old_port, MACH_PORT_RIGHT_RECEIVE, -1);
+    MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
+        << "ThreadSafeScopedMachPortWithReceiveRight mach_port_mod_refs";
+    kr = mach_port_deallocate(mach_task_self(), old_port);
+    MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
+        << "ThreadSafeScopedMachPortWithReceiveRight mach_port_deallocate";
+  }
+
+ private:
+  std::atomic<mach_port_t> port_;
+};
+
 // A base class for signal handler and Mach exception server.
 class CrashHandler : public Thread,
                      public UniversalMachExcServer::Interface,
@@ -169,14 +203,14 @@ class CrashHandler : public Thread,
   }
 
   bool InstallMachExceptionHandler() {
-    exception_port_.reset(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
-    if (!exception_port_.is_valid()) {
+    mach_port_t exception_port = exception_port_.get();
+    if (exception_port == MACH_PORT_NULL) {
       return false;
     }
 
     kern_return_t kr = mach_port_insert_right(mach_task_self(),
-                                              exception_port_.get(),
-                                              exception_port_.get(),
+                                              exception_port,
+                                              exception_port,
                                               MACH_MSG_TYPE_MAKE_SEND);
     if (kr != KERN_SUCCESS) {
       MACH_LOG(ERROR, kr) << "mach_port_insert_right";
@@ -194,7 +228,7 @@ class CrashHandler : public Thread,
     if (!exception_ports.GetExceptionPorts(mask, &original_handlers_) ||
         !exception_ports.SetExceptionPort(
             mask,
-            exception_port_.get(),
+            exception_port,
             EXCEPTION_STATE_IDENTITY | MACH_EXCEPTION_CODES,
             MACHINE_THREAD_STATE)) {
       return false;
@@ -393,7 +427,7 @@ class CrashHandler : public Thread,
     Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
   }
 
-  base::apple::ScopedMachReceiveRight exception_port_;
+  ThreadSafeScopedMachPortWithReceiveRight exception_port_;
   ExceptionPorts::ExceptionHandlerVector original_handlers_;
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;

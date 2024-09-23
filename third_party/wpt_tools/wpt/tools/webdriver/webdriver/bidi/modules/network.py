@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
@@ -6,6 +7,11 @@ from ._module import BidiModule, command
 class AuthCredentials(Dict[str, Any]):
     def __init__(self, username: str, password: str):
         dict.__init__(self, type="password", username=username, password=password)
+
+
+class CacheBehavior(Enum):
+    BYPASS = "bypass"
+    DEFAULT = "default"
 
 
 class NetworkBase64Value(Dict[str, Any]):
@@ -106,7 +112,7 @@ URLPattern = Union[URLPatternPattern, URLPatternString]
 class Network(BidiModule):
     @command
     def add_intercept(
-        self, phases: List[str], url_patterns: Optional[List[URLPattern]] = None
+        self, phases: List[str], url_patterns: Optional[List[URLPattern]] = None, contexts: Optional[List[str]] = None
     ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "phases": phases,
@@ -114,6 +120,9 @@ class Network(BidiModule):
 
         if url_patterns is not None:
             params["urlPatterns"] = url_patterns
+
+        if contexts is not None:
+            params["contexts"] = contexts
 
         return params
 
@@ -208,11 +217,23 @@ class Network(BidiModule):
     def provide_response(
             self,
             request: str,
+            body: Optional[NetworkBytesValue] = None,
+            cookies: Optional[List[SetCookieHeader]] = None,
+            headers: Optional[List[Header]] = None,
             reason_phrase: Optional[str] = None,
             status_code: Optional[int] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {
             "request": request,
         }
+
+        if body is not None:
+            params["body"] = body
+
+        if cookies is not None:
+            params["cookies"] = cookies
+
+        if headers is not None:
+            params["headers"] = headers
 
         if reason_phrase is not None:
             params["reasonPhrase"] = reason_phrase
@@ -220,11 +241,21 @@ class Network(BidiModule):
         if status_code is not None:
             params["statusCode"] = status_code
 
-        # TODO: Add support for missing parameters: body, cookies, headers
-
         return params
 
     @command
     def remove_intercept(self, intercept: str) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"intercept": intercept}
+        return params
+
+    @command
+    def set_cache_behavior(
+            self,
+            cache_behavior: CacheBehavior,
+            contexts: Optional[List[str]] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"cacheBehavior": cache_behavior}
+
+        if contexts is not None:
+            params["contexts"] = contexts
+
         return params

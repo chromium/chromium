@@ -100,6 +100,10 @@ class URLDatabase {
   // The caller than adds the URLs it wants to preserve to the temporary table,
   // and then deletes everything else by calling CommitTemporaryURLTable().
   // Returns true on success.
+  //
+  // WARNING: if the temporary table already exists, it is dropped and a new
+  // one created. This is done as the temporary table is only intended to
+  // exist for a short amount of time before it's renamed.
   bool CreateTemporaryURLTable();
 
   // Adds a row to the temporary URL table. This must be called between
@@ -204,6 +208,13 @@ class URLDatabase {
                                    KeywordID keyword_id,
                                    const std::u16string& term);
 
+  // Retrieves aggregate values for a subset of fields across all URLs
+  // associated with the given `term`.
+  // Fills `url_info` with the relevant aggregate URL data.
+  // Returns true on success.
+  bool GetAggregateURLDataForKeywordSearchTerm(const std::u16string& term,
+                                               URLRow* url_info);
+
   // Looks up a keyword search term given a url id. Returns all the search terms
   // in `rows`. Returns true on success.
   bool GetKeywordSearchTermRow(URLID url_id, KeywordSearchTermRow* row);
@@ -266,7 +277,8 @@ class URLDatabase {
   //
   // is_temporary is false when generating the "regular" URLs table. The expirer
   // sets this to true to generate the temporary table, which will have a
-  // different name but the same schema.
+  // different name but the same schema. See comment in
+  // CreateTemporaryURLTable() for details on temporary creation.
   bool CreateURLTable(bool is_temporary);
 
   // Creates the index over URLs so we can quickly look up based on URL.

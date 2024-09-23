@@ -10,7 +10,9 @@ import("//ui/gl/features.gni")
 
 assert(is_apple)
 
-import("//build/config/mac/mac_sdk.gni")
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
 
 source_set("mac") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
@@ -23,8 +25,8 @@ source_set("mac") {
     "video_toolbox_decompression_metadata.h",
     "video_toolbox_decompression_session.cc",
     "video_toolbox_decompression_session.h",
-    "video_toolbox_decompression_session_manager.cc",
     "video_toolbox_decompression_session_manager.h",
+    "video_toolbox_decompression_session_manager.mm",
     "video_toolbox_frame_converter.cc",
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
@@ -35,14 +37,10 @@ source_set("mac") {
     "video_toolbox_video_decoder.h",
     "video_toolbox_vp9_accelerator.cc",
     "video_toolbox_vp9_accelerator.h",
-    "vp9_super_frame_bitstream_filter.cc",
-    "vp9_super_frame_bitstream_filter.h",
     "vt_config_util.h",
     "vt_config_util.mm",
-    "vt_video_decode_accelerator_mac.cc",
-    "vt_video_decode_accelerator_mac.h",
-    "vt_video_encode_accelerator_mac.cc",
     "vt_video_encode_accelerator_mac.h",
+    "vt_video_encode_accelerator_mac.mm",
   ]
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [
@@ -97,8 +95,7 @@ source_set("unit_tests") {
     "video_toolbox_h264_accelerator_unittest.cc",
     "video_toolbox_output_queue_unittest.cc",
     "video_toolbox_vp9_accelerator_unittest.cc",
-    "vp9_super_frame_bitstream_filter_unittest.cc",
-    "vt_config_util_unittest.cc",
+    "vt_config_util_unittest.mm",
   ]
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [ "video_toolbox_h265_accelerator_unittest.cc" ]

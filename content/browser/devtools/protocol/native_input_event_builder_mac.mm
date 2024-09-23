@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <Cocoa/Cocoa.h>
 
 #include <algorithm>
@@ -16,7 +21,7 @@ namespace content::protocol {
 // Mac requires a native event to emulate key events. This method gives
 // only crude capabilities (see: crbug.com/667387).
 gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   NSEventType type = NSEventTypeKeyUp;
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kKeyDown)
@@ -24,7 +29,8 @@ gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
   const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
-                textStartAddr + NativeWebKeyboardEvent::kTextLengthCap, '\0') -
+                textStartAddr + input::NativeWebKeyboardEvent::kTextLengthCap,
+                '\0') -
       textStartAddr;
   NSString* character =
       base::SysUTF16ToNSString(std::u16string(textStartAddr, textLength));

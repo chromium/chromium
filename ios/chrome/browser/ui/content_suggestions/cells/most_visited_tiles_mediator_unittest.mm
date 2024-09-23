@@ -9,13 +9,14 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -31,18 +32,19 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
 
-    favicon::LargeIconService* largeIconService =
+    favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
         chrome_browser_state_.get());
-    std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedSites =
+    std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
-            &pref_service_, /*top_sites*/ nullptr, /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
-            /*supervisor=*/nullptr, true);
+            &pref_service_, /*identity_manager*/ nullptr,
+            /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
+            /*popular_sites*/ nullptr,
+            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -51,24 +53,28 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
     mediator_ = [[MostVisitedTilesMediator alloc]
-        initWithMostVisitedSite:std::move(mostVisitedSites)
+        initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:&pref_service_
-               largeIconService:largeIconService
+               largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
-        initWithLocalState:local_state_.Get()];
+        initWithLocalState:local_state()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
-    mediator_.NTPMetricsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageMetricsDelegate));
+    mediator_.NTPActionsDelegate =
+        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
   }
   ~MostVisitedTilesMediatorTest() override { [mediator_ disconnect]; }
+
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   FakeUrlLoadingBrowserAgent* url_loader_;
@@ -87,7 +93,7 @@ TEST_F(MostVisitedTilesMediatorTest, TestOpenMostVisited) {
           initWithConfiguration:item];
   UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
   [view addGestureRecognizer:recognizer];
-  OCMExpect([mediator_.NTPMetricsDelegate mostVisitedTileOpened]);
+  OCMExpect([mediator_.NTPActionsDelegate mostVisitedTileOpened]);
 
   // Action.
   [mediator_ mostVisitedTileTapped:recognizer];

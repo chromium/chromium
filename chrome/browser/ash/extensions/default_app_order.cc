@@ -4,18 +4,24 @@
 
 #include "chrome/browser/ash/extensions/default_app_order.h"
 
+#include <array>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -24,7 +30,11 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "extensions/common/constants.h"
+
+using apps::PackageId;
+using apps::PackageType;
 
 namespace chromeos {
 namespace default_app_order {
@@ -97,8 +107,16 @@ void GetDefault(std::vector<std::string>* app_ids) {
     arc::kPlayStoreAppId,
 
     extension_misc::kFilesManagerAppId,
-    file_manager::kFileManagerSwaAppId,
+    file_manager::kFileManagerSwaAppId
+  });
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+      app_ids->push_back(web_app::kContainerAppId);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  app_ids->insert(app_ids->end(), {
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
     web_app::kGmailAppId,
@@ -148,6 +166,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kPlayBooksAppId,
 
     web_app::kCameraAppId,
+    web_app::kRecorderAppId,
 
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
@@ -160,6 +179,9 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kOsSettingsAppId,
 
     web_app::kHelpAppId,
+
+    web_app::kMallAppId,
+    ash::kMallSystemAppId,
 
     web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
@@ -190,6 +212,11 @@ void GetDefault(std::vector<std::string>* app_ids) {
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     app_ids->push_back(web_app::kNvidiaGeForceNowAppId);
   }
+}
+
+PackageId SystemPackageId(ash::SystemWebAppType type) {
+  return PackageId(PackageType::kSystem,
+                   *apps_util::GetPolicyIdForSystemWebAppType(type));
 }
 
 }  // namespace
@@ -276,6 +303,34 @@ void Get(std::vector<std::string>* app_ids) {
   }
 
   *app_ids = loader_instance->GetAppIds();
+}
+
+base::span<const apps::LauncherItem> GetAppPreloadServiceDefaults() {
+  static const base::NoDestructor<std::array<apps::LauncherItem, 20>>
+      kPackageIds({
+          PackageId(PackageType::kChromeApp, app_constants::kChromeAppId),
+          PackageId(PackageType::kSystem, app_constants::kLacrosChrome),
+          PackageId(PackageType::kChromeApp, arc::kPlayStoreAppId),
+          SystemPackageId(ash::SystemWebAppType::FILE_MANAGER),
+          PackageId(PackageType::kWeb, web_app::kGmailManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleDocsManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleSlidesManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleSheetsManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleDriveManifestId),
+          PackageId(PackageType::kWeb, web_app::kYoutubeManifestId),
+          SystemPackageId(ash::SystemWebAppType::CAMERA),
+          SystemPackageId(ash::SystemWebAppType::SETTINGS),
+          SystemPackageId(ash::SystemWebAppType::HELP),
+          SystemPackageId(ash::SystemWebAppType::MALL),
+          SystemPackageId(ash::SystemWebAppType::MEDIA),
+          SystemPackageId(ash::SystemWebAppType::PROJECTOR),
+          SystemPackageId(ash::SystemWebAppType::PRINT_MANAGEMENT),
+          SystemPackageId(ash::SystemWebAppType::SCANNING),
+          SystemPackageId(ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION),
+          SystemPackageId(ash::SystemWebAppType::TERMINAL),
+      });
+
+  return *kPackageIds;
 }
 
 std::string GetOemAppsFolderName() {

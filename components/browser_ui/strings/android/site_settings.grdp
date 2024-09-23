@@ -76,6 +76,9 @@
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>
+  <message name="IDS_HAND_TRACKING_PERMISSION_TITLE" desc="Title of the permission to use Hand tracking [CHAR_LIMIT=32]">
+    Hand tracking
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
@@ -159,6 +162,15 @@
   <message name="IDS_ENABLE_DESKTOP_SITE_WINDOW_SETTING_TITLE" desc="Title for the preference to enable window setting for request desktop site">
     When the window is narrow, request mobile view
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_QUIET" desc="Label for the quiet version of the permission prompt.">
+    Collapse all requests
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_CPSS" desc="Label for the CPSS version of the permission prompt. Chrome decides to show either the loud or quiet version.">
+    Collapse unwanted requests (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_LOUD" desc="Label for the loud version of the permission prompt.">
+    Expand all requests
+  </message>
 
   <!-- Site settings: general category strings -->
 
@@ -192,8 +204,8 @@
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
       Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
-  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
-    Clear browsing data…
+  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the delete browsing data dialog.">
+    Delete browsing data…
   </message>
   <message name="IDS_SUMMARY_WITH_ONE_BULLET" desc="Used to generate a summary that consists of two parts, separated by a bullet.">
     <ph name="FIRST_PART">%1$s<ex>http</ex></ph> • <ph name="SECOND_PART">%2$s<ex>10 MB</ex></ph>
@@ -215,7 +227,7 @@
   <message name="IDS_WEBSITE_SETTINGS_USAGE_CATEGORY" desc="The headline above the usage stats (how much storage the site is using) on the website details page.">
     Usage
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (First Party Sets) on the website details page.">
+  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (Related Website Sets) on the website details page.">
     Related sites
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_CATEGORY" desc="The headline above all the permissions on the website details page.">
@@ -243,8 +255,8 @@
     Expires today
   </message>
   <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exception list.">
-    {COUNT, plural, 
-      =1 {Expires tomorrow} 
+    {COUNT, plural,
+      =1 {Expires tomorrow}
       other {Expires in # days}
     }
   </message>
@@ -279,10 +291,13 @@
     Select an option for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
 
-  <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->
+  <!-- Site settings Delete Data Dialog and other ways of resetting permissions -->
 
   <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to delete all data for an origin">
     Delete site data?
+  </message>
+  <message name="IDS_WEBSTORAGE_DELETE_DATA_CONTENT_DESCRIPTION" desc="Content description for the button that deletes all data for an origin">
+    Delete site data? <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
   <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_OK_BUTTON" desc="Button confirming site data cleanup [CHAR_LIMIT=20]">
     Delete
@@ -323,7 +338,7 @@
   <message name="IDS_STORAGE_DELETE_SITE_STORAGE_TITLE" desc="Title of delete storage dialogs used in a couple different places to confirm deleting site storage data. [CHAR_LIMIT=24]">
     Delete site data?
   </message>
-  <!-- TODO(crbug.com/1459631): Add proper strings and make them translateable. -->
+  <!-- TODO(crbug.com/40919531): Add proper strings and make them translateable. -->
   <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" translateable="false" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
     Clear all zoom levels?
   </message>
@@ -547,10 +562,10 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ADD_BLOCK_EXCEPTION_DESCRIPTION" desc="The description of a dialog box. Dialog to add a third-party cookie exception to block a site">
     Don't allow a site to use third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_FPS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
+  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
     Some features may not work. Related sites can still use third-party cookies.
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_FPS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
+  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
     Features on some sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
@@ -568,27 +583,32 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_TITLE" desc="First Party Sets toggle title in the cookie site settings subpage.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_TITLE" desc="Related Website Sets toggle title in the cookie site settings subpage.">
     Allow related sites to see your activity in the group
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_DESCRIPTION" desc="First Party Sets toggle description in the cookie site settings subpage.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_DESCRIPTION" desc="Related Website Sets toggle description in the cookie site settings subpage.">
      A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
-  <message name="IDS_ALLSITES_FPS_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites settings page.">
+  <message name="IDS_ALLSITES_RWS_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites settings page.">
     {COUNT, plural,
-      =1 {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
-      other {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
+      =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
+      other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
   </message>
-  <message name="IDS_ALLSITES_FPS_LIST_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites list settings page.">
+  <message name="IDS_RWS_SUMMARY" desc="Related Website Sets information, shown as item summary in the all sites settings page for every site which is in the RWS." translateable="false">
     {COUNT, plural,
-      =1 {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
-      other {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
+      =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}
+      other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}}
   </message>
-  <message name="IDS_COOKIE_INFO_FPS_TITLE" desc="First Party Sets title in the cookies info page.">
+  <message name="IDS_ALLSITES_RWS_LIST_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites list settings page.">
+    {COUNT, plural,
+      =1 {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
+      other {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
+  </message>
+  <message name="IDS_COOKIE_INFO_RWS_TITLE" desc="Related Website Sets title in the cookies info page.">
       Related sites
    </message>
-  <message name="IDS_COOKIE_INFO_FPS_SUMMARY" desc="First Party Sets summary in the cookies info page.">
-    This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>
+  <message name="IDS_COOKIE_INFO_RWS_SUMMARY" desc="Related Website Sets summary in the cookies info page.">
+    This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Desktop Site -->
@@ -635,6 +655,21 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_FEDERATED_IDENTITY_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to use AR. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.
+  </message>
+
+
+  <!-- Hand Tracking -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_ASK" desc="Summary text explaining that sites need to ask for permission before using hand tracking and that it is the recommended setting.">
+    Ask before allowing sites to track your hands (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_BLOCKED" desc="Summary text explaining that sites are blocked from using hand tracking.">
+    Don't allow sites to track your hands
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HAND_TRACKING_A11Y" desc="The screen reader announcement describing a toggle with two option, controling whether sites can request permission to use hand tracking. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to track your hands. When off, sites can’t track your hands.
+  </message>
+  <message name="IDS_ANDROID_HAND_TRACKING_PERMISSION_OFF" desc="The message to show when the hand tracking permission needs to be turned on in Android settings.">
+    To let <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK">&lt;link&gt;</ph>system settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
 
   <!-- Idle Detection -->
@@ -818,7 +853,7 @@
 
   <!-- ZOOM -->
 
-  <!-- TODO(crbug.com/1459631): Add proper strings and make them translateable. -->
+  <!-- TODO(crbug.com/40919531): Add proper strings and make them translateable. -->
   <message name="IDS_SITE_SETTINGS_EMPTY_ZOOM_LEVELS_MESSAGE" translateable="false" desc="Text to display when there are no saved zooms">
     Websites with a saved zoom appear here
   </message>

@@ -46,7 +46,7 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
     case (InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR):
       return "STREAM_OPEN_DEVICE_IN_USE_ERROR";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "UNKNOWN_ERROR";
 }
@@ -163,7 +163,7 @@ InputStream::~InputStream() {
     return;
   }
 
-  // TODO(https://crbug.com/803102): remove InputController::Close() after
+  // TODO(crbug.com/40558532): remove InputController::Close() after
   // content/ streams are removed, destructor should suffice.
   controller_->Close();
 

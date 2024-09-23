@@ -32,4 +32,9 @@ const char kHistogramParseBlockedOnScriptLoadSuffix[] =
 const char kHistogramParseDurationSuffix[] = "ParseTiming.ParseDuration";
 const char kHistogramParseStartSuffix[] = "ParseTiming.NavigationToParseStart";
 
+const char kSuffixFirstNavigation[] = ".IsFirstNavigation";
+const char kSuffixSubsequentNavigation[] = ".IsSubsequentNavigation";
+const char kSuffixFromNewTabPage[] = ".FromNewTabPage";
+const char kSuffixIsBrowserStarting[] = ".IsBrowserStarting";
+
 }  // namespace internal

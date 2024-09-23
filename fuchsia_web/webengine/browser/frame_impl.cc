@@ -24,7 +24,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -124,12 +123,13 @@ class FrameFocusRules : public wm::BaseFocusRules {
 };
 
 bool FrameFocusRules::SupportsChildActivation(const aura::Window*) const {
-  // TODO(crbug.com/878439): Return a result based on window properties such as
-  // visibility.
+  // TODO(crbug.com/40591214): Return a result based on window properties such
+  // as visibility.
   return true;
 }
 
-// TODO(crbug.com/1113289): Use OnLoadScriptInjectorHost's origin matching code.
+// TODO(crbug.com/40710183): Use OnLoadScriptInjectorHost's origin matching
+// code.
 bool IsUrlMatchedByOriginList(const GURL& url,
                               const std::vector<std::string>& allowed_origins) {
   for (const std::string& origin : allowed_origins) {
@@ -218,7 +218,7 @@ void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const std::vector<blink::mojom::PermissionStatus>& result) {
-  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesPtr devices = blink::mojom::StreamDevices::New();
 
   int result_pos = 0;
@@ -595,7 +595,7 @@ bool FrameImpl::IsWebContentsCreationOverridden(
   return false;
 }
 
-void FrameImpl::AddNewContents(
+content::WebContents* FrameImpl::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -605,7 +605,7 @@ void FrameImpl::AddNewContents(
     bool* was_blocked) {
   DCHECK_EQ(source, web_contents_.get());
 
-  // TODO(crbug.com/995395): Add window disposition to the FIDL interface.
+  // TODO(crbug.com/41476982): Add window disposition to the FIDL interface.
   switch (disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
@@ -615,7 +615,7 @@ void FrameImpl::AddNewContents(
       if (url_request_rewrite_rules_manager_.GetCachedRules()) {
         // There is no support for URL request rules rewriting with popups.
         *was_blocked = true;
-        return;
+        return nullptr;
       }
 
       auto* popup_creation_info =
@@ -645,7 +645,7 @@ void FrameImpl::AddNewContents(
       pending_popups_.emplace_back(popup_frame, std::move(frame_handle),
                                    std::move(popup_frame_creation_info));
       MaybeSendPopup();
-      return;
+      return nullptr;
     }
 
     // These kinds of windows don't produce Frames.
@@ -658,7 +658,7 @@ void FrameImpl::AddNewContents(
     case WindowOpenDisposition::UNKNOWN:
       NOTIMPLEMENTED() << "Dropped new web contents (disposition: "
                        << static_cast<int>(disposition) << ")";
-      return;
+      return nullptr;
   }
 }
 
@@ -798,11 +798,11 @@ void FrameImpl::UpdateRenderFrameZoomLevel(
       content::HostZoomMap::GetForWebContents(web_contents_.get());
   host_zoom_map->SetTemporaryZoomLevel(
       render_frame_host->GetGlobalId(),
-      blink::PageZoomFactorToZoomLevel(page_scale));
+      blink::ZoomFactorToZoomLevel(page_scale));
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
-  // TODO(crbug.com/1291613): Replace callbacks with an interface that
+  // TODO(crbug.com/40212813): Replace callbacks with an interface that
   // FrameImpl implements.
   accessibility_bridge_ = std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
       root_window(), fidl::HLCPPToNatural(window_tree_host_->CreateViewRef()),
@@ -960,7 +960,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     return;
   }
 
-  // TODO(crbug.com/1108607): Only allow wildcards to be specified standalone.
+  // TODO(crbug.com/40707541): Only allow wildcards to be specified standalone.
   if (base::Contains(origins, kWildcardOrigin)) {
     script_injector_.AddScriptForAllOrigins(id, *script_as_string);
   } else {
@@ -1275,7 +1275,7 @@ void FrameImpl::SetPermissionState(
           ? blink::mojom::PermissionStatus::GRANTED
           : blink::mojom::PermissionStatus::DENIED;
 
-  // TODO(crbug.com/1136994): Remove this once the PermissionManager API is
+  // TODO(crbug.com/40724536): Remove this once the PermissionManager API is
   // available.
   if (web_origin_string == "*" &&
       type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
@@ -1533,10 +1533,9 @@ bool FrameImpl::CheckMediaAccessPermission(
       break;
     default:
       NOTREACHED();
-      return false;
   }
 
-  // TODO(crbug.com/1321100): Remove `security_origin`.
+  // TODO(crbug.com/40223767): Remove `security_origin`.
   if (security_origin != render_frame_host->GetLastCommittedOrigin()) {
     return false;
   }
@@ -1567,7 +1566,7 @@ FrameImpl::CreateAudioStreamBrokerFactory(content::WebContents* web_contents) {
 bool FrameImpl::CanOverscrollContent() {
   // Don't process "overscroll" events (e.g. pull-to-refresh, swipe back,
   // swipe forward).
-  // TODO(crbug/1177399): Add overscroll toggle to Frame API.
+  // TODO(crbug.com/40748448): Add overscroll toggle to Frame API.
   return false;
 }
 
@@ -1652,7 +1651,7 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
 }
 
 void FrameImpl::OnThemeManagerError() {
-  // TODO(crbug.com/1148454): Destroy the frame once a fake Display service is
+  // TODO(crbug.com/40731307): Destroy the frame once a fake Display service is
   // implemented.
   // this->CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
 }

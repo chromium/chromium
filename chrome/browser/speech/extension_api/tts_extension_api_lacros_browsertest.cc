@@ -26,8 +26,8 @@ namespace extensions {
 
 namespace {
 
-// TODO(crbug/1422469): Deprecate the version skew handling code once the stable
-// channel passes beyond 116.0.5817.0.
+// TODO(crbug.com/40259646): Deprecate the version skew handling code once the
+// stable channel passes beyond 116.0.5817.0.
 bool DoesAshSupportLacrosTtsFeatureFlagForTest() {
   // Make sure Ash is in the version that enables Lacros Tts support code
   // only by its the associated feature.

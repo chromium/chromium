@@ -36,6 +36,10 @@ ViewTransitionContentLayerImpl::ViewTransitionContentLayerImpl(
 
 ViewTransitionContentLayerImpl::~ViewTransitionContentLayerImpl() = default;
 
+mojom::LayerType ViewTransitionContentLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kViewTransitionContent;
+}
+
 std::unique_ptr<LayerImpl> ViewTransitionContentLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return ViewTransitionContentLayerImpl::Create(tree_impl, id(), resource_id_,
@@ -80,10 +84,6 @@ void ViewTransitionContentLayerImpl::AppendQuads(
       render_pass->CreateAndAppendDrawQuad<viz::SharedElementDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, resource_id_);
   append_quads_data->has_shared_element_resources = true;
-}
-
-const char* ViewTransitionContentLayerImpl::LayerTypeAsString() const {
-  return "cc::ViewTransitionContentLayerImpl";
 }
 
 viz::ViewTransitionElementResourceId

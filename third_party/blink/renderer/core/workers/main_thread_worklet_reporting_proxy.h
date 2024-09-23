@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_MAIN_THREAD_WORKLET_REPORTING_PROXY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -21,6 +22,7 @@ class CORE_EXPORT MainThreadWorkletReportingProxy
 
   // Implements WorkerReportingProxy.
   void CountFeature(WebFeature) override;
+  void CountWebDXFeature(mojom::blink::WebDXFeature) override;
   void DidTerminateWorkerThread() override;
 
  private:

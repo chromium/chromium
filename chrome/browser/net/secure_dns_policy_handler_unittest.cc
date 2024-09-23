@@ -503,36 +503,6 @@ TEST_F(SecureDnsPolicyHandlerTest, BothPoliciesSet) {
   EXPECT_EQ(salt, kDohSalt);
 }
 
-// Tests the policy DnsOverHttpsTemplatesWithIdentifiers is not applied when the
-// feature is disabled.
-TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersDisabledByFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(ash::features::kDnsOverHttpsWithIdentifiers);
-
-  SetPolicyValue(key::kDnsOverHttpsMode,
-                 base::Value(SecureDnsConfig::kModeSecure));
-  const std::string test_fallback_policy_value = "https://foo.test.fallback/";
-  SetPolicyValue(key::kDnsOverHttpsTemplates,
-                 base::Value(test_fallback_policy_value));
-  const std::string test_policy_value = "https://foo.test/";
-  SetPolicyValue(key::kDnsOverHttpsTemplatesWithIdentifiers,
-                 base::Value(test_policy_value));
-  SetPolicyValue(key::kDnsOverHttpsSalt, base::Value(kDohSalt));
-
-  CheckAndApplyPolicySettings();
-
-  EXPECT_TRUE(errors().empty());
-
-  std::string templates, templates_with_identifiers, salt;
-  EXPECT_FALSE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                 &templates_with_identifiers));
-  EXPECT_FALSE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
-  // The `ash::features::kDnsOverHttpsWithIdentifiers` feature should not affect
-  // the cross platform policy.
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplates, &templates));
-  EXPECT_EQ(templates, test_fallback_policy_value);
-}
-
 TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersInvalid) {
   SetPolicyValue(key::kDnsOverHttpsMode,
                  base::Value(SecureDnsConfig::kModeSecure));

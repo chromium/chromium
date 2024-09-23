@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -24,34 +26,37 @@ namespace policies {
 
 namespace {
 
-// Returns a priority that will lead to an opposite process priority.
-base::TaskPriority GetOppositePriority(base::TaskPriority priority) {
+base::TaskPriority ToTaskPriority(base::Process::Priority priority) {
   switch (priority) {
-    case base::TaskPriority::BEST_EFFORT:
+    case base::Process::Priority::kBestEffort:
+      return base::TaskPriority::BEST_EFFORT;
+    case base::Process::Priority::kUserVisible:
+      return base::TaskPriority::USER_VISIBLE;
+    case base::Process::Priority::kUserBlocking:
       return base::TaskPriority::USER_BLOCKING;
-
-    case base::TaskPriority::USER_VISIBLE:
-    case base::TaskPriority::USER_BLOCKING:
-      break;
   }
-
-  return base::TaskPriority::BEST_EFFORT;
 }
 
-void PostToggleProcessNodePriority(content::RenderProcessHost* rph) {
+void PostProcessNodePriority(content::RenderProcessHost* rph,
+                             base::Process::Priority priority) {
   auto* rpud = RenderProcessUserData::GetForRenderProcessHost(rph);
   auto* process_node = rpud->process_node();
 
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([process_node]() {
-        process_node->set_priority(
-            GetOppositePriority(process_node->GetPriority()));
+      FROM_HERE, base::BindLambdaForTesting([process_node, priority]() {
+        process_node->set_priority(ToTaskPriority(priority));
       }));
 }
 
-class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness {
+// Tests ProcessPriorityPolicy in different threading configurations.
+class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
+                                  public ::testing::WithParamInterface<bool> {
  public:
-  ProcessPriorityPolicyTest() {}
+  ProcessPriorityPolicyTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kRunOnMainThreadSync,
+                                              GetParam());
+  }
+
   ProcessPriorityPolicyTest(const ProcessPriorityPolicyTest&) = delete;
   ProcessPriorityPolicyTest(ProcessPriorityPolicyTest&&) = delete;
   ProcessPriorityPolicyTest& operator=(const ProcessPriorityPolicyTest&) =
@@ -84,28 +89,33 @@ class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness {
   }
 
   void RunUntilOnSetPriority() {
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-    quit_closure_.Reset();
+    task_environment()->RunUntilQuit();
+    // RunUntilQuit() invalidated the old closure.
+    quit_closure_ = task_environment()->QuitClosure();
   }
 
   // This is eventually invoked by the testing callback when the policy sets a
   // process priority.
-  MOCK_METHOD2(OnSetPriority, void(content::RenderProcessHost*, bool));
+  MOCK_METHOD(void,
+              OnSetPriority,
+              (content::RenderProcessHost*, base::Process::Priority));
 
  private:
-  void OnSetPriorityWrapper(RenderProcessHostProxy rph_proxy, bool foreground) {
-    OnSetPriority(rph_proxy.Get(), foreground);
+  void OnSetPriorityWrapper(RenderProcessHostProxy rph_proxy,
+                            base::Process::Priority priority) {
+    OnSetPriority(rph_proxy.Get(), priority);
     quit_closure_.Run();
   }
 
-  base::RepeatingClosure quit_closure_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::RepeatingClosure quit_closure_ = task_environment()->QuitClosure();
 };
+
+INSTANTIATE_TEST_SUITE_P(, ProcessPriorityPolicyTest, ::testing::Bool());
 
 }  // namespace
 
-TEST_F(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
+TEST_P(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
   // Set the active contents in the RenderViewHostTestHarness.
   SetContents(CreateTestWebContents());
   auto* rvh = web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
@@ -114,18 +124,18 @@ TEST_F(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
   DCHECK(rph);
 
   // Simulate a navigation so that graph nodes spring into existence.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://www.foo.com/"));
-
   // Expect a foreground priority override to be set for process creation.
   // NOTE: This is going to change once we have provisional frames and the like,
   // and can calculate meaningful process startup priorities.
-  EXPECT_CALL(*this, OnSetPriority(rph, true));
+  EXPECT_CALL(*this,
+              OnSetPriority(rph, base::Process::Priority::kUserBlocking));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://www.foo.com/"));
   RunUntilOnSetPriority();
 
   // Toggle the priority and expect it to change.
-  PostToggleProcessNodePriority(rph);
-  EXPECT_CALL(*this, OnSetPriority(rph, false));
+  EXPECT_CALL(*this, OnSetPriority(rph, base::Process::Priority::kBestEffort));
+  PostProcessNodePriority(rph, base::Process::Priority::kBestEffort);
   RunUntilOnSetPriority();
 
   testing::Mock::VerifyAndClearExpectations(this);

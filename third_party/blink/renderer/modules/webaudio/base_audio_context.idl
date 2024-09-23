@@ -2,67 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See https://webaudio.github.io/web-audio-api/#BaseAudioContext
-
+// https://webaudio.github.io/web-audio-api/#enumdef-audiocontextstate
 enum AudioContextState {
     "suspended",
     "running",
     "closed"
 };
 
+// https://webaudio.github.io/web-audio-api/#BaseAudioContext
 callback DecodeErrorCallback = void (DOMException error);
 callback DecodeSuccessCallback = void (AudioBuffer decodedData);
-
 [
     Exposed=Window,
     ActiveScriptWrappable
 ] interface BaseAudioContext : EventTarget {
-    // All rendered audio ultimately connects to destination, which represents the audio hardware.
     readonly attribute AudioDestinationNode destination;
-
-    // All scheduled times are relative to this time in seconds.
-    readonly attribute double currentTime;
-
-    // All AudioNodes in the context run at this sample-rate (sample-frames per second).
     [HighEntropy=Direct, Measure] readonly attribute float sampleRate;
-
-    // All panning is relative to this listener.
+    readonly attribute double currentTime;
     readonly attribute AudioListener listener;
-
-    // Current state of the AudioContext
     readonly attribute AudioContextState state;
+    [SecureContext] readonly attribute AudioWorklet audioWorklet;
+    attribute EventHandler onstatechange;
 
-    [RaisesException] AudioBuffer createBuffer(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
-
-    // Asynchronous audio file data decoding.
-    // TODO(crbug.com/841185): `successCallback` and `errorCallback` are not
-    // nullable in the spec.
-    [RaisesException, MeasureAs=AudioContextDecodeAudioData, CallWith=ScriptState] Promise<AudioBuffer> decodeAudioData(ArrayBuffer audioData, optional DecodeSuccessCallback? successCallback, optional DecodeErrorCallback? errorCallback);
-
-    // Sources
-    [RaisesException, MeasureAs=AudioContextCreateBufferSource] AudioBufferSourceNode createBufferSource();
-    [RaisesException, MeasureAs=AudioContextCreateConstantSource] ConstantSourceNode createConstantSource();
-
-    // Processing nodes
-    [RaisesException, MeasureAs=AudioContextCreateGain] GainNode createGain();
-    [RaisesException, MeasureAs=AudioContextCreateDelay] DelayNode createDelay(optional double maxDelayTime);
-    [RaisesException, MeasureAs=AudioContextCreateBiquadFilter] BiquadFilterNode createBiquadFilter();
-    [RaisesException, MeasureAs=AudioContextCreateIIRFilter] IIRFilterNode createIIRFilter(sequence<double> feedForward, sequence<double> feedBack);
-    [RaisesException, MeasureAs=AudioContextCreateWaveShaper] WaveShaperNode createWaveShaper();
-    [RaisesException, MeasureAs=AudioContextCreatePannerAutomated] PannerNode createPanner();
-    [RaisesException, MeasureAs=AudioContextCreateConvolver] ConvolverNode createConvolver();
-    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
     [RaisesException, MeasureAs=AudioContextCreateAnalyser] AnalyserNode createAnalyser();
+    [RaisesException, MeasureAs=AudioContextCreateBiquadFilter] BiquadFilterNode createBiquadFilter();
+    [RaisesException] AudioBuffer createBuffer(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
+    [RaisesException, MeasureAs=AudioContextCreateBufferSource] AudioBufferSourceNode createBufferSource();
+    [RaisesException, MeasureAs=AudioContextCreateChannelMerger] ChannelMergerNode createChannelMerger(optional unsigned long numberOfInputs);
+    [RaisesException, MeasureAs=AudioContextCreateChannelSplitter] ChannelSplitterNode createChannelSplitter(optional unsigned long numberOfOutputs);
+    [RaisesException, MeasureAs=AudioContextCreateConstantSource] ConstantSourceNode createConstantSource();
+    [RaisesException, MeasureAs=AudioContextCreateConvolver] ConvolverNode createConvolver();
+    [RaisesException, MeasureAs=AudioContextCreateDelay] DelayNode createDelay(optional double maxDelayTime);
+    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateDynamicsCompressor] DynamicsCompressorNode createDynamicsCompressor();
+    [RaisesException, MeasureAs=AudioContextCreateGain] GainNode createGain();
+    [RaisesException, MeasureAs=AudioContextCreateIIRFilter] IIRFilterNode createIIRFilter(sequence<double> feedForward, sequence<double> feedBack);
+    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
+    [RaisesException, MeasureAs=AudioContextCreatePannerAutomated] PannerNode createPanner();
+    [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints constraints = {});
     [RaisesException, MeasureAs=AudioContextCreateScriptProcessor] ScriptProcessorNode createScriptProcessor(optional unsigned long bufferSize, optional unsigned long numberOfInputChannels, optional unsigned long numberOfOutputChannels);
     [RaisesException, MeasureAs=AudioContextCreateStereoPanner] StereoPannerNode createStereoPanner();
-    [HighEntropy, RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
-    [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints constraints = {});
+    [RaisesException, MeasureAs=AudioContextCreateWaveShaper] WaveShaperNode createWaveShaper();
 
-    // Channel splitting and merging
-    [RaisesException, MeasureAs=AudioContextCreateChannelSplitter] ChannelSplitterNode createChannelSplitter(optional unsigned long numberOfOutputs);
-    [RaisesException, MeasureAs=AudioContextCreateChannelMerger] ChannelMergerNode createChannelMerger(optional unsigned long numberOfInputs);
-
-    [SecureContext] readonly attribute AudioWorklet audioWorklet;
-
-    attribute EventHandler onstatechange;
+    [RaisesException, MeasureAs=AudioContextDecodeAudioData, CallWith=ScriptState] Promise<AudioBuffer> decodeAudioData(ArrayBuffer audioData, optional DecodeSuccessCallback? successCallback, optional DecodeErrorCallback? errorCallback);
 };

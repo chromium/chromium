@@ -202,7 +202,7 @@ class WaylandFrameManager {
 
   // Immediately clears submitted_buffers in the 1st in-flight submitted_frame.
   // This unblocks the pipeline.
-  // TODO(crbug.com/1358908): Remove related workaround once CrOS side fix
+  // TODO(crbug.com/40237160): Remove related workaround once CrOS side fix
   // stablizes.
   void FreezeTimeout();
 

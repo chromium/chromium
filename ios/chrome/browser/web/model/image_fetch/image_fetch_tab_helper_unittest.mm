@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
@@ -47,11 +47,10 @@ class ImageFetchTabHelperTest : public PlatformTest {
 
  protected:
   ImageFetchTabHelperTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()),
-        task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
   }
 
@@ -71,7 +70,7 @@ class ImageFetchTabHelperTest : public PlatformTest {
 
   // Sets up the network::TestURLLoaderFactory to handle download request.
   void SetUpTestSharedURLLoaderFactory() {
-    browser_state_->SetSharedURLLoaderFactory(
+    profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
 
@@ -101,8 +100,9 @@ class ImageFetchTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;

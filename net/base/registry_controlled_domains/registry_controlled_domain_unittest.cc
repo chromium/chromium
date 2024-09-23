@@ -4,6 +4,9 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/buildflags.h"
@@ -85,10 +88,9 @@ size_t GetCanonicalHostRegistryLengthIncludingPrivate(const std::string& host) {
 
 class RegistryControlledDomainTest : public testing::Test {
  protected:
-  template <typename Graph>
-  void UseDomainData(const Graph& graph) {
+  void UseDomainData(base::span<const uint8_t> graph) {
     // This is undone in TearDown.
-    SetFindDomainGraphForTesting(graph, sizeof(Graph));
+    SetFindDomainGraphForTesting(graph);
   }
 
   bool CompareDomains(const std::string& url1, const std::string& url2) {
@@ -104,6 +106,33 @@ class RegistryControlledDomainTest : public testing::Test {
 
   void TearDown() override { ResetFindDomainGraphForTesting(); }
 };
+
+TEST_F(RegistryControlledDomainTest, TestHostIsRegistryIdentifier) {
+  UseDomainData(test1::kDafsa);
+  // A hostname with a label above the eTLD
+  EXPECT_FALSE(HostIsRegistryIdentifier("blah.jp", EXCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_FALSE(
+      HostIsRegistryIdentifier(".blah.jp", INCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_FALSE(
+      HostIsRegistryIdentifier(".blah.jp.", INCLUDE_PRIVATE_REGISTRIES));
+  // A private TLD
+  EXPECT_FALSE(HostIsRegistryIdentifier("priv.no", EXCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier("priv.no", INCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(
+      HostIsRegistryIdentifier(".priv.no.", INCLUDE_PRIVATE_REGISTRIES));
+  // A hostname that is a TLD
+  EXPECT_TRUE(HostIsRegistryIdentifier("jp", EXCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier("jp", INCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier(".jp", EXCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier(".jp", INCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier(".jp.", EXCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_TRUE(HostIsRegistryIdentifier(".jp.", INCLUDE_PRIVATE_REGISTRIES));
+  // A hostname that is a TLD specified by a wildcard rule
+  EXPECT_TRUE(
+      HostIsRegistryIdentifier("blah.bar.jp", INCLUDE_PRIVATE_REGISTRIES));
+  EXPECT_FALSE(
+      HostIsRegistryIdentifier("blah.blah.bar.jp", EXCLUDE_PRIVATE_REGISTRIES));
+}
 
 TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
   UseDomainData(test1::kDafsa);

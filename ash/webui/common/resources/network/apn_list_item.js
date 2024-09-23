@@ -7,15 +7,16 @@
  */
 
 import './network_shared.css.js';
-import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from '//resources/ash/common/network/cellular_utils.js';
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './apn_list_item.html.js';
 
@@ -59,6 +60,11 @@ class ApnListItem extends ApnListItemBase {
         value: false,
       },
 
+      shouldDisallowApnModification: {
+        type: Boolean,
+        value: false,
+      },
+
       /** The index of this item in its parent list, used for its a11y label. */
       itemIndex: Number,
 
@@ -78,6 +84,16 @@ class ApnListItem extends ApnListItemBase {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsDisabled_(apn)',
+      },
+
+      isApnRevampAndAllowApnModificationPolicyEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists(
+                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
+              loadTimeData.getBoolean(
+                  'isApnRevampAndAllowApnModificationPolicyEnabled');
+        },
       },
     };
   }
@@ -143,9 +159,31 @@ class ApnListItem extends ApnListItemBase {
       detail: /** @type {!ApnEventData} */ ({
         apn: this.apn,
         // Only allow editing if the APN is a custom APN.
-        mode: this.apn.id ? ApnDetailDialogMode.EDIT : ApnDetailDialogMode.VIEW,
+        mode: this.getDetailDialogMode_(),
       }),
     }));
+  }
+
+  /**
+   * Returns the mode the APN detail dialog should be if opened.
+   * @private
+   */
+  getDetailDialogMode_() {
+    if (!this.apn) {
+      return ApnDetailDialogMode.VIEW;
+    }
+
+    // Only allow editing if the APN is a user-created custom APN and
+    // |AllowAPNModification| is true.
+    if (!this.apn.id) {
+      return ApnDetailDialogMode.VIEW;
+    }
+    if (this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
+      if (this.shouldDisallowApnModification) {
+        return ApnDetailDialogMode.VIEW;
+      }
+    }
+    return ApnDetailDialogMode.EDIT;
   }
 
   /**
@@ -282,7 +320,9 @@ class ApnListItem extends ApnListItemBase {
    * @private
    */
   getDetailsMenuItemLabel_() {
-    return this.apn.id ? this.i18n('apnMenuEdit') : this.i18n('apnMenuDetails');
+    return this.getDetailDialogMode_() === ApnDetailDialogMode.EDIT ?
+        this.i18n('apnMenuEdit') :
+        this.i18n('apnMenuDetails');
   }
 
   /**

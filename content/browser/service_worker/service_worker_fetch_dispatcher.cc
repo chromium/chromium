@@ -57,7 +57,7 @@ namespace content {
 
 namespace {
 
-// TODO(crbug.com/1446228): When this is enabled, the browser will schedule
+// TODO(crbug.com/40268507): When this is enabled, the browser will schedule
 // ServiceWorkerFetchDispatcher::ResponseCallback in a high priority task queue.
 BASE_FEATURE(kServiceWorkerFetchResponseCallbackUseHighPriority,
              "ServiceWorkerFetchResponseCallbackUseHighPriority",
@@ -338,13 +338,13 @@ CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
       partition.browser_context(), frame_tree_node.current_frame_host(),
       frame_tree_node.current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      net::IsolationInfo(),
       frame_tree_node.navigation_request()->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),
       factory_builder, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-      content::GetUIThreadTaskRunner(
-          {content::BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
   // Make the network factory.
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
@@ -437,7 +437,7 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
     if (!version->FinishRequest(fetch_event_id.value(),
                                 fetch_result == FetchEventResult::kGotResponse))
-      NOTREACHED() << "Should only receive one reply per event";
+      NOTREACHED_IN_MIGRATION() << "Should only receive one reply per event";
     // |fetch_dispatcher| is null if the URLRequest was killed.
     if (!fetch_dispatcher)
       return;
@@ -748,15 +748,15 @@ const char* ServiceWorkerFetchDispatcher::FetchEventResultToSuffix(
     case ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse:
       return "_GOT_RESPONSE";
   }
-  NOTREACHED() << "Got unexpected fetch event result:"
-               << static_cast<int>(result);
+  NOTREACHED_IN_MIGRATION()
+      << "Got unexpected fetch event result:" << static_cast<int>(result);
   return "error";
 }
 
 bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
     const network::ResourceRequest& original_request,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (destination_ != network::mojom::RequestDestination::kDocument &&
       destination_ != network::mojom::RequestDestination::kIframe &&
@@ -865,8 +865,8 @@ bool ServiceWorkerFetchDispatcher::IsEventDispatched() const {
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    int frame_tree_node_id) {
-  // TODO(crbug.com/1424235): Require the caller to pass in a FrameTreeNode
+    FrameTreeNodeId frame_tree_node_id) {
+  // TODO(crbug.com/40260328): Require the caller to pass in a FrameTreeNode
   // directly, or figure out why it's OK for it to be null.
   // TODO(falken): Can `navigation_request` check be a DCHECK now that the
   // caller does not post a task to this function?

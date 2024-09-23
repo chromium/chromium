@@ -47,8 +47,8 @@ class GeneratedIconFixManager {
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
 
-  // TODO(crbug.com/1216965): Schedule fixes ten minutes after sync install.
-  // TODO(crbug.com/1216965): Schedule fixes on network reconnection.
+  // TODO(crbug.com/40185008): Schedule fixes ten minutes after sync install.
+  // TODO(crbug.com/40185008): Schedule fixes on network reconnection.
 
   void InvalidateWeakPtrsForTesting();
 

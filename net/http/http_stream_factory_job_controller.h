@@ -18,6 +18,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -38,7 +39,7 @@ class HttpStreamFactory::JobController
                 HttpStreamRequest::Delegate* delegate,
                 HttpNetworkSession* session,
                 JobFactory* job_factory,
-                const HttpRequestInfo& request_info,
+                const HttpRequestInfo& http_request_info,
                 bool is_preconnect,
                 bool is_websocket,
                 bool enable_ip_based_pooling,
@@ -53,7 +54,13 @@ class HttpStreamFactory::JobController
   const Job* alternative_job() const { return alternative_job_.get(); }
   const Job* dns_alpn_h3_job() const { return dns_alpn_h3_job_.get(); }
 
-  void RewriteUrlWithHostMappingRules(GURL& url);
+  // Modifies `url` in-place, applying any applicable HostMappingRules of
+  // `session_` to it.
+  void RewriteUrlWithHostMappingRules(GURL& url) const;
+
+  // Same as RewriteUrlWithHostMappingRules(), but duplicates `url` instead of
+  // modifying it.
+  GURL DuplicateUrlWithHostMappingRules(const GURL& url) const;
 
   // Methods below are called by HttpStreamFactory only.
   // Creates request and hands out to HttpStreamFactory, this will also create
@@ -98,6 +105,11 @@ class HttpStreamFactory::JobController
       Job* job,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override;
+
+  // Invoked when a QUIC job finished a DNS resolution.
+  void OnQuicHostResolution(const url::SchemeHostPort& destination,
+                            base::TimeTicks dns_resolution_start_time,
+                            base::TimeTicks dns_resolution_end_time) override;
 
   // Invoked when |job| fails to create a stream.
   void OnStreamFailed(Job* job, int status) override;
@@ -169,7 +181,7 @@ class HttpStreamFactory::JobController
   };
 
   void OnIOComplete(int result);
-  void OnResolveProxyError(int error);
+
   void RunLoop(int result);
   int DoLoop(int result);
   int DoResolveProxy();
@@ -233,12 +245,14 @@ class HttpStreamFactory::JobController
   void ResetErrorStatusForJobs();
 
   AlternativeServiceInfo GetAlternativeServiceInfoFor(
-      const HttpRequestInfo& request_info,
+      const GURL& http_request_info_url,
+      const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
   AlternativeServiceInfo GetAlternativeServiceInfoInternal(
-      const HttpRequestInfo& request_info,
+      const GURL& http_request_info_url,
+      const StreamRequestInfo& request_info,
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
@@ -280,18 +294,33 @@ class HttpStreamFactory::JobController
            (dns_alpn_h3_job_ ? 1 : 0);
   }
 
-  raw_ptr<HttpStreamFactory, DanglingUntriaged> factory_;
-  raw_ptr<HttpNetworkSession, DanglingUntriaged> session_;
-  raw_ptr<JobFactory, DanglingUntriaged> job_factory_;
+  // Called when the request needs to use the HttpStreamPool instead of `this`.
+  // Call site of Start() should destroy the current HttpStreamRequest and
+  // switch to the HttpStreamPool. `this` will be destroyed when `request_` is
+  // destroyed.
+  void SwitchToHttpStreamPool(quic::ParsedQuicVersion quic_version);
+
+  // Called when `this` asked the HttpStreamPool to handle a preconnect and
+  // the preconnect completed. Used to notify the factory of completion.
+  void OnPoolPreconnectsComplete(int rv);
+
+  // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
+  void CallOnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      AlternativeServiceInfo alternative_service_info,
+      quic::ParsedQuicVersion quic_version);
+
+  const raw_ptr<HttpStreamFactory> factory_;
+  const raw_ptr<HttpNetworkSession> session_;
+  const raw_ptr<JobFactory> job_factory_;
 
   // Request will be handed out to factory once created. This just keeps an
   // reference and is safe as |request_| will notify |this| JobController
   // when it's destructed by calling OnRequestComplete(), which nulls
   // |request_|.
-  raw_ptr<HttpStreamRequest, DanglingUntriaged> request_ = nullptr;
+  raw_ptr<HttpStreamRequest> request_ = nullptr;
 
-  const raw_ptr<HttpStreamRequest::Delegate, AcrossTasksDanglingUntriaged>
-      delegate_;
+  raw_ptr<HttpStreamRequest::Delegate> delegate_;
 
   // True if this JobController is used to preconnect streams.
   const bool is_preconnect_;
@@ -352,6 +381,10 @@ class HttpStreamFactory::JobController
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session_;
 
+  // Set to true when `this` asked the request to use HttpStreamPool instead
+  // of `this`.
+  bool switched_to_http_stream_pool_ = false;
+
   // Waiting time for the main job before it is resumed.
   base::TimeDelta main_job_wait_time_;
 
@@ -361,7 +394,15 @@ class HttpStreamFactory::JobController
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
-  const HttpRequestInfo request_info_;
+  // The URL from the input `http_request_info`.
+  // TODO(https://crbug.com/332724851): Remove this, and update code to use
+  // `origin_url_`.
+  const GURL http_request_info_url_;
+  // The same as `request_info_url_`, but with any applicable rules in
+  // HostMappingRules applied to it.
+  // TODO: Make this use SchemeHostPort instead, and rename it.
+  const GURL origin_url_;
+  const StreamRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   int num_streams_ = 0;

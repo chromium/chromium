@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/safety_check/model:constants",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ui/base",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "utils_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":utils",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}

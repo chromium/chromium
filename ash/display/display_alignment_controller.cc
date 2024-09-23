@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,7 +62,7 @@ DisplayAlignmentController::DisplayAlignmentController()
   Shell* shell = Shell::Get();
   shell->AddPreTargetHandler(this);
   shell->session_controller()->AddObserver(this);
-  shell->window_tree_host_manager()->AddObserver(this);
+  shell->display_manager()->AddDisplayManagerObserver(this);
 
   is_locked_ = shell->session_controller()->IsScreenLocked();
 
@@ -70,12 +71,12 @@ DisplayAlignmentController::DisplayAlignmentController()
 
 DisplayAlignmentController::~DisplayAlignmentController() {
   Shell* shell = Shell::Get();
-  shell->window_tree_host_manager()->RemoveObserver(this);
+  shell->display_manager()->RemoveDisplayManagerObserver(this);
   shell->session_controller()->RemoveObserver(this);
   shell->RemovePreTargetHandler(this);
 }
 
-void DisplayAlignmentController::OnDisplayConfigurationChanged() {
+void DisplayAlignmentController::OnDidApplyDisplayChanges() {
   RefreshState();
 }
 
@@ -85,7 +86,7 @@ void DisplayAlignmentController::OnDisplaysInitialized() {
 
 void DisplayAlignmentController::OnMouseEvent(ui::MouseEvent* event) {
   if (current_state_ == DisplayAlignmentState::kDisabled ||
-      event->type() != ui::ET_MOUSE_MOVED) {
+      event->type() != ui::EventType::kMouseMoved) {
     return;
   }
 
@@ -147,7 +148,7 @@ void DisplayAlignmentController::DisplayDragged(int64_t display_id,
                                                 int32_t delta_y) {
   if (current_state_ != DisplayAlignmentState::kLayoutPreview) {
     // Clear existing indicators. They are all regenerated via
-    // OnDisplayConfigurationChanged() after dragging ends.
+    // OnDidApplyDisplayChanges() after dragging ends.
     ResetState();
 
     dragged_display_id_ = display_id;

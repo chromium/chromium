@@ -145,7 +145,7 @@ void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
                 api::history::OnVisited::kEventName, std::move(args));
 }
 
-void HistoryEventRouter::OnURLsDeleted(
+void HistoryEventRouter::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   OnVisitRemoved::Removed removed;

@@ -51,11 +51,12 @@ void TrackBeforeInstallEvent(int event) {
 }
 
 void TrackInstallableStatusCode(InstallableStatusCode code) {
-  DCHECK_LE(NO_ERROR_DETECTED, code);
-  DCHECK_LT(code, MAX_ERROR_CODE);
-  if (code != IN_INCOGNITO) {
+  DCHECK_LE(InstallableStatusCode::NO_ERROR_DETECTED, code);
+  DCHECK_LT(code, InstallableStatusCode::MAX_ERROR_CODE);
+  if (code != InstallableStatusCode::IN_INCOGNITO) {
     // Do not log that we are in incognito to UMA.
-    base::UmaHistogramSparse(kInstallableStatusCodeHistogram, code);
+    base::UmaHistogramSparse(kInstallableStatusCodeHistogram,
+                             static_cast<int>(code));
   }
 }
 

@@ -42,6 +42,8 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -108,9 +110,9 @@ class BLINK_EXPORT WebView {
   //
   // clients may be null, but should both be null or not together.
   // |is_hidden| defines the initial visibility of the page.
-  // |is_prerendering| defines whether the page is being prerendered by the
-  // Prerender2 feature (see content/browser/preloading/prerender/README.md).
-  // [is_inside_portal] defines whether the page is inside_portal.
+  // |prerender_param| defines a set of parameters for prerendering views. It is
+  // set iff the view is created for a prerendering page. (see
+  // content/browser/preloading/prerender/README.md).
   // [is_fenced_frame] defines whether the page is for a fenced frame.
   // |compositing_enabled| dictates whether accelerated compositing should be
   // enabled for the page. It must be false if no clients are provided, or if a
@@ -131,11 +133,16 @@ class BLINK_EXPORT WebView {
   // frame. Set on create to avoid races. Passing in nullopt indicates the
   // default base background color should be used.
   // TODO(yuzus): Remove |is_hidden| and start using |PageVisibilityState|.
+  // |color_provider_colors| is used to create color providers that live in the
+  // Page. Passing in nullptr indicates the default color maps should be used.
+  // `partitioned_popin_params` are set if this window was opened as a
+  // partitioned popin. The entire frame tree of a partitioned popin is
+  // partitioned as though it was an iframe in the opener.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
   static WebView* Create(
       WebViewClient*,
       bool is_hidden,
-      bool is_prerendering,
-      bool is_inside_portal,
+      blink::mojom::PrerenderParamPtr prerender_param,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,
       bool compositing_enabled,
@@ -146,7 +153,9 @@ class BLINK_EXPORT WebView {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info);
+      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const ColorProviderColorMaps* color_provider_colors,
+      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 
   // Destroys the WebView synchronously.
   virtual void Close() = 0;
@@ -221,20 +230,6 @@ class BLINK_EXPORT WebView {
   // Advance the focus of the WebView forward to the next element or to the
   // previous element in the tab sequence (if reverse is true).
   virtual void AdvanceFocus(bool reverse) {}
-
-  // Zoom ----------------------------------------------------------------
-
-  // Returns the current zoom level.  0 is "original size", and each increment
-  // above or below represents zooming 20% larger or smaller to default limits
-  // of 300% and 50% of original size, respectively.  Only plugins use
-  // non whole-numbers, since they might choose to have specific zoom level so
-  // that fixed-width content is fit-to-page-width, for example.
-  virtual double ZoomLevel() = 0;
-
-  // Changes the zoom level to the specified level, clamping at the limits
-  // noted above, and returns the current zoom level after applying the
-  // change.
-  virtual double SetZoomLevel(double) = 0;
 
   // Gets the scale factor of the page, where 1.0 is the normal size, > 1.0
   // is scaled up, < 1.0 is scaled down.
@@ -370,12 +365,6 @@ class BLINK_EXPORT WebView {
   virtual void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) = 0;
 
-  // Sets the initial color maps for this WebView. All frames in a WebView
-  // share the same color map; updates to the color map will be broadcast
-  // over the `UpdateColorProviders()` Mojo IPC.
-  virtual void SetColorProviders(
-      const ColorProviderColorMaps& color_provider_colors) = 0;
-
   // Scheduling -----------------------------------------------------------
 
   virtual PageScheduler* Scheduler() const = 0;
@@ -482,7 +471,7 @@ class BLINK_EXPORT WebView {
   // Draggable Regions ---------------------------------------------------
   // Indicates that this WebView should collect draggable regions set using the
   // app-region CSS property.
-  virtual void SetSupportsAppRegion(bool supports_app_region) = 0;
+  virtual void SetSupportsDraggableRegions(bool supports_draggable_regions) = 0;
 
   // Misc -------------------------------------------------------------
 

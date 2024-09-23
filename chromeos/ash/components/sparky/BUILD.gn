@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("sparky") {
+  sources = [
+    "snapshot_util.cc",
+    "snapshot_util.h",
+    "sparky_util.cc",
+    "sparky_util.h",
+    "system_info_delegate_impl.cc",
+    "system_info_delegate_impl.h",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SPARKY_IMPL" ]
+
+  deps = [
+    "//ash",
+    "//ash/strings:strings",
+    "//base",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
+    "//chromeos/constants:constants",
+    "//chromeos/dbus/power",
+    "//components/manta",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/snapshot",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_info_delegate_impl_unittest.cc" ]
+
+  deps = [
+    ":sparky",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/dbus/power",
+    "//components/manta",
+    "//testing/gtest",
+    "//testing/gtest",
+  ]
+}

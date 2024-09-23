@@ -1,0 +1,2 @@
+android.webkit.WebView focusable focused
+++android.widget.EditText clickable editable_text focusable multiline

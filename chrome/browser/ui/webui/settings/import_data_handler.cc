@@ -254,8 +254,7 @@ void ImportDataHandler::ImportEnded() {
 }
 
 void ImportDataHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                     int /*index*/,
-                                     void* /*params*/) {
+                                     int /*index*/) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   select_file_dialog_ = nullptr;
@@ -267,7 +266,7 @@ void ImportDataHandler::FileSelected(const ui::SelectedFileInfo& file,
   StartImport(source_profile, importer::FAVORITES);
 }
 
-void ImportDataHandler::FileSelectionCanceled(void* params) {
+void ImportDataHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 

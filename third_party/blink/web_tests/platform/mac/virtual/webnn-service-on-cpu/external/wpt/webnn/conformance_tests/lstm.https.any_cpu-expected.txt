@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias and options.activations=['relu', 'relu', 'relu']
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.peepholeWeight
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.initialHiddenState
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.initialCellState
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and explicit options.returnSequence=false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.returnSequence=true
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and explicit options.direction='forward'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and explicit options.layout='iofg'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.layout='ifgo'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=1 with all options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=2 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.direction='backward'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] lstm float32 tensors steps=2 with all options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'lstm' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

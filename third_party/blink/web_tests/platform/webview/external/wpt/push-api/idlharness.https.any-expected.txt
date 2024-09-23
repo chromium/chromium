@@ -1,0 +1,83 @@
+This is a testharness.js-based test.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PushManager interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface object length
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface object name
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: attribute supportedContentEncodings
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: operation subscribe(optional PushSubscriptionOptionsInit)
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: operation getSubscription()
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager interface: operation permissionState(optional PushSubscriptionOptionsInit)
+  assert_own_property: self does not have own property "PushManager" expected property "PushManager" missing
+[FAIL] PushManager must be primary interface of registration.pushManager
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of registration.pushManager
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: registration.pushManager must inherit property "supportedContentEncodings" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: registration.pushManager must inherit property "subscribe(optional PushSubscriptionOptionsInit)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: calling subscribe(optional PushSubscriptionOptionsInit) on registration.pushManager with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: registration.pushManager must inherit property "getSubscription()" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: registration.pushManager must inherit property "permissionState(optional PushSubscriptionOptionsInit)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushManager interface: calling permissionState(optional PushSubscriptionOptionsInit) on registration.pushManager with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] PushSubscriptionOptions interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface object length
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface object name
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface: attribute userVisibleOnly
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscriptionOptions interface: attribute applicationServerKey
+  assert_own_property: self does not have own property "PushSubscriptionOptions" expected property "PushSubscriptionOptions" missing
+[FAIL] PushSubscription interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface object length
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface object name
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: attribute endpoint
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: attribute expirationTime
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: attribute options
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: operation getKey(PushEncryptionKeyName)
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: operation unsubscribe()
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] PushSubscription interface: operation toJSON()
+  assert_own_property: self does not have own property "PushSubscription" expected property "PushSubscription" missing
+[FAIL] ServiceWorkerRegistration interface: attribute pushManager
+  assert_true: The prototype object must have a property "pushManager" expected true got false
+[FAIL] ServiceWorkerRegistration interface: registration must inherit property "pushManager" with the proper type
+  assert_inherits: property "pushManager" not found in prototype chain
+Harness: the test ran to completion.

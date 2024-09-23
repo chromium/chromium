@@ -1,0 +1,77 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "account_picker_coordinator.h",
+    "account_picker_coordinator.mm",
+    "account_picker_coordinator_delegate.h",
+  ]
+  deps = [
+    ":account_picker_configuration",
+    ":account_picker_consumer",
+    ":account_picker_layout",
+    ":account_picker_logger",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_selection",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("account_picker_consumer") {
+  sources = [ "account_picker_consumer.h" ]
+}
+
+source_set("account_picker_configuration") {
+  sources = [
+    "account_picker_configuration.h",
+    "account_picker_configuration.mm",
+  ]
+}
+
+source_set("account_picker_layout") {
+  sources = [ "account_picker_layout_delegate.h" ]
+  deps = [ "//ui/base" ]
+}
+
+source_set("account_picker_logger") {
+  sources = [ "account_picker_logger.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "account_picker_coordinator_unittest.mm" ]
+  deps = [
+    ":account_picker_configuration",
+    ":account_picker_layout",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

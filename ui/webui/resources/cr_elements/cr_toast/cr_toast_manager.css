@@ -1,0 +1,30 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+#content {
+  display: flex;
+  flex: 1;
+}
+
+.collapsible {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+span {
+  white-space: pre;
+}
+
+.elided-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

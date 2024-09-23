@@ -105,7 +105,7 @@ readAll(stream);
       // Allow Promises to resolve.
       scope.PerformMicrotaskCheckpoint();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::nullopt;
   }
   test::TaskEnvironment task_environment_;
@@ -131,11 +131,12 @@ class TestTransferringOptimizer final
     explicit Source(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
 
-    ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
+    ScriptPromiseUntyped Start(ScriptState* script_state,
+                               ExceptionState&) override {
       Controller()->Enqueue(V8String(script_state->GetIsolate(), "foo"));
       Controller()->Enqueue(V8String(script_state->GetIsolate(), ", bar"));
       Controller()->Close();
-      return ScriptPromise::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
   };
 };
@@ -621,22 +622,22 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
 
   virtual void PullVoid(ReadableByteStreamController*, ExceptionState&) {}
 
-  ScriptPromise Pull(ReadableByteStreamController* controller,
-                     ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState& exception_state) override {
     PullVoid(controller, exception_state);
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   virtual void CancelVoid(v8::Local<v8::Value>, ExceptionState&) {}
 
-  ScriptPromise Cancel(ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
     return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
   }
 
-  ScriptPromise Cancel(v8::Local<v8::Value> reason,
-                       ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState& exception_state) override {
     CancelVoid(reason, exception_state);
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
@@ -656,10 +657,12 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
       : script_state_(script_state) {}
 
   MOCK_METHOD2(Pull,
-               ScriptPromise(ReadableByteStreamController*, ExceptionState&));
-  MOCK_METHOD1(Cancel, ScriptPromise(ExceptionState&));
+               ScriptPromise<IDLUndefined>(ReadableByteStreamController*,
+                                           ExceptionState&));
+  MOCK_METHOD1(Cancel, ScriptPromise<IDLUndefined>(ExceptionState&));
   MOCK_METHOD2(Cancel,
-               ScriptPromise(v8::Local<v8::Value> reason, ExceptionState&));
+               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> reason,
+                                           ExceptionState&));
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 
@@ -690,7 +693,7 @@ TEST_F(ReadableByteStreamTest, PullIsCalled) {
 
   EXPECT_CALL(*mock, Pull(_, _))
       .WillOnce(
-          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+          Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
   EvalWithPrintingError(
       &scope, "stream.getReader({ mode: 'byob' }).read(new Uint8Array(1));\n");
@@ -710,7 +713,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
 
   EXPECT_CALL(*mock, Cancel(_, _))
       .WillOnce(
-          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+          Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
   EvalWithPrintingError(&scope,
                         "const reader = stream.getReader({ mode: 'byob' });\n"

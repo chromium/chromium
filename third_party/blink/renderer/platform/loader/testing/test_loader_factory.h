@@ -41,7 +41,7 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
  private:
-  raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> mock_factory_;
+  raw_ptr<URLLoaderMockFactory, DanglingUntriaged> mock_factory_;
 };
 
 }  // namespace blink

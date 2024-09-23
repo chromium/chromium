@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Unit tests for implementation of google_api_keys namespace.
 //
 // Because the file deals with a lot of preprocessor defines and
@@ -14,12 +19,15 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "google_apis/google_api_keys_utils.h"
 
 // The Win builders fail (with a linker crash) when trying to link unit_tests,
 // and the Android builders complain about multiply defined symbols (likely they
@@ -38,10 +46,12 @@
 #include <stddef.h>
 
 #include <string>
+
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringize_macros.h"
+#include "base/version_info/channel.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "google_apis/google_api_keys_mac.h"
@@ -128,7 +138,7 @@ namespace official_build {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace official_build
 
@@ -138,21 +148,18 @@ TEST_F(GoogleAPIKeysTest, OfficialKeys) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
-  std::string id_remoting = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+  std::string id_remoting =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_NE(0u, api_key.size());
   EXPECT_NE(DUMMY_API_TOKEN, api_key);
@@ -214,7 +221,7 @@ namespace default_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace default_keys
 
@@ -224,21 +231,18 @@ TEST_F(GoogleAPIKeysTest, DefaultKeys) {
   EXPECT_FALSE(testcase::HasAPIKeyConfigured());
   EXPECT_FALSE(testcase::HasOAuthClientConfigured());
 
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
-  std::string id_remoting = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+  std::string id_remoting =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ(kDummyToken, api_key);
   EXPECT_EQ(kDummyToken, id_main);
@@ -271,7 +275,7 @@ namespace override_some_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_some_keys
 
@@ -281,21 +285,18 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeys) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_FALSE(testcase::HasOAuthClientConfigured());
 
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
-  std::string id_remoting = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+  std::string id_remoting =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("API_KEY override", api_key);
   EXPECT_EQ(kDummyToken, id_main);
@@ -333,7 +334,7 @@ namespace override_all_keys {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys
 
@@ -343,21 +344,18 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
-  std::string id_remoting = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+  std::string id_remoting =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("API_KEY", api_key);
   EXPECT_EQ("ID_MAIN", id_main);
@@ -366,6 +364,103 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_EQ("SECRET_REMOTING", secret_remoting);
   EXPECT_EQ("ID_REMOTING_HOST", id_remoting_host);
   EXPECT_EQ("SECRET_REMOTING_HOST", secret_remoting_host);
+}
+
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature_without_param {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in google_api_keys.cc
+#undef DUMMY_API_TOKEN
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+// Undef include guard so things get defined again, within this namespace.
+#undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
+#undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
+#include "google_apis/google_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature_without_param
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeatureWithNoParamIsIgnored) {
+  namespace testcase = override_api_key_via_feature_without_param::google_apis;
+
+  static int test_iteration = 0;
+  test_iteration++;
+
+  // Use base::test::ScopedFeatureList::InitFromCommandLine() to enable the
+  // feature to avoid exposing the feature flag in the header file and exposing
+  // it as a component exported symbol.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("OverrideAPIKey", "");
+
+  base::HistogramTester tester;
+  EXPECT_EQ("API_KEY", testcase::GetAPIKey());
+
+  // |g_api_key_cache| is loaded only once, so the histogram is only logged
+  // during the first iteration of the test.
+  if (test_iteration == 1) {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 1);
+  } else {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 0);
+  }
+}
+
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in google_api_keys.cc
+#undef DUMMY_API_TOKEN
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+// Undef include guard so things get defined again, within this namespace.
+#undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
+#undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
+#include "google_apis/google_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeature) {
+  namespace testcase = override_api_key_via_feature::google_apis;
+  static int test_iteration = 0;
+  test_iteration++;
+
+  // Use base::test::ScopedFeatureList::InitFromCommandLine() to enable the
+  // feature to avoid exposing the feature flag in the header file and exposing
+  // it as a component exported symbol.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "OverrideAPIKey<foo.bar:api_key/API_KEY2", "");
+
+  base::HistogramTester tester;
+  EXPECT_EQ("API_KEY2", testcase::GetAPIKey());
+  // |g_api_key_cache| is loaded only once, so the histogram is only logged
+  // during the first iteration of the test.
+  if (test_iteration == 1) {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 1, 1);
+  } else {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 0);
+  }
 }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -398,7 +493,7 @@ namespace override_all_keys_env {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_env
 
@@ -419,21 +514,18 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingEnvironment) {
 
   // It's important that the first call to Get() only happen after the
   // environment variables have been set.
-  std::string api_key = testcase::g_api_key_cache.Get().api_key();
-  std::string id_main = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_MAIN);
+  std::string api_key = testcase::GetAPIKey();
+  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
   std::string secret_main =
-      testcase::g_api_key_cache.Get().GetClientSecret(testcase::CLIENT_MAIN);
-  std::string id_remoting = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+  std::string id_remoting =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING);
-  std::string id_remoting_host = testcase::g_api_key_cache.Get().GetClientID(
-      testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+  std::string id_remoting_host =
+      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::g_api_key_cache.Get().GetClientSecret(
-          testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("env-API_KEY", api_key);
   EXPECT_EQ("env-ID_MAIN", id_main);
@@ -475,7 +567,7 @@ namespace override_all_keys_setters {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_setters
 
@@ -504,6 +596,7 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
+  EXPECT_EQ(api_key, testcase::GetAPIKey(::version_info::Channel::STABLE));
   EXPECT_EQ(api_key, testcase::GetAPIKey());
 
   EXPECT_EQ(id_main, testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN));
@@ -550,7 +643,7 @@ namespace override_all_keys_config {
 // Undef include guard so things get defined again, within this namespace.
 #undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
-#include "google_apis/google_api_keys.cc"
+#include "google_apis/google_api_keys-inc.cc"
 
 }  // namespace override_all_keys_config
 
@@ -565,6 +658,8 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_TRUE(testcase::HasAPIKeyConfigured());
   EXPECT_TRUE(testcase::HasOAuthClientConfigured());
 
+  EXPECT_EQ("config-API_KEY",
+            testcase::GetAPIKey(::version_info::Channel::STABLE));
   EXPECT_EQ("config-API_KEY", testcase::GetAPIKey());
   EXPECT_EQ("config-ID_MAIN",
             testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN));

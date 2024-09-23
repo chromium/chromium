@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 
@@ -26,20 +27,6 @@ enum class OfferNotificationBubbleResultMetric {
   // The prompt lost focus and was deactivated.
   OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS = 3,
   kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
-};
-
-// Metrics to track event when the offer notification infobar is closed.
-enum class OfferNotificationInfoBarResultMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
-  // User acknowledged the infobar by clicking the ok button.
-  OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
-  // User explicitly closed the infobar with the close button.
-  OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
-  // InfoBar was shown but user did not interact with the it.
-  OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
-  kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
 };
 
 // Metrics to track events related to the offers suggestions popup.
@@ -88,20 +75,30 @@ enum class OffersSuggestionsEvent {
   kMaxValue = kOfferSuggestionSeeOfferDetailsSelectedOnce,
 };
 
+// Logs when the offer notification bubble shows. Records histogram of
+// what type of offer is showing in the bubble and whether the bubble is opened
+// by reshow.
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
-    bool is_reshow,
-    const GURL& url);
+    bool is_reshow);
 
+// Logs when the promo code button is clicked in the offer notification bubble.
+// Records histogram of what type of offer is showing in the bubble that
+// is being clicked.
 void LogOfferNotificationBubblePromoCodeButtonClicked(
-    AutofillOfferData::OfferType offer_type,
-    const GURL& url);
+    AutofillOfferData::OfferType offer_type);
 
+// Logs when the offer notification bubble closes. Records histogram of
+// what type of offer is in the bubble that is being closed, and whether the
+// bubble is from reshowing.
 void LogOfferNotificationBubbleResultMetric(
     AutofillOfferData::OfferType offer_type,
     OfferNotificationBubbleResultMetric metric,
     bool is_reshow);
 
+// Logs when the offer notification bubble is suppressed. Records histogram
+// of what type of offer is showing in the bubble that is being
+// suppressed.
 void LogOfferNotificationBubbleSuppressed(
     AutofillOfferData::OfferType offer_type);
 
@@ -115,11 +112,6 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged);
 void LogIndividualOfferSuggestionEvent(OffersSuggestionsEvent event,
                                        AutofillOfferData::OfferType offer_type);
 
-void LogOfferNotificationInfoBarDeepLinkClicked();
-void LogOfferNotificationInfoBarResultMetric(
-    OfferNotificationInfoBarResultMetric metric);
-void LogOfferNotificationInfoBarShown();
-
 // Logs the offer data associated with a profile. This should be called each
 // time a Chrome profile is launched.
 void LogStoredOfferMetrics(
@@ -127,11 +119,6 @@ void LogStoredOfferMetrics(
 
 // Logs whether the synced autofill offer data is valid.
 void LogSyncedOfferDataBeingValid(bool invalid);
-
-// Log the presence of the offer notification icon shows on navigation `url`
-// for `offer_type`.
-void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
-                                    const GURL& url);
 
 }  // namespace autofill::autofill_metrics
 

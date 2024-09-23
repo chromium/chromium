@@ -141,7 +141,8 @@ TEST_F(BackButtonTest, Visibility) {
   EXPECT_FALSE(IsBackButtonVisible());
   ASSERT_TRUE(!back_button());
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   test_api()->RunMessageLoopUntilAnimationsDone();
 
   EXPECT_TRUE(IsBackButtonVisible());
@@ -162,7 +163,8 @@ TEST_F(BackButtonTest, VisibilityWithVerticalShelf) {
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
   // Create a test widget to transition to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   test_api()->RunMessageLoopUntilAnimationsDone();
   EXPECT_TRUE(back_button());
@@ -179,7 +181,8 @@ TEST_F(BackButtonTest, BackKeySequenceGenerated) {
   // Enter tablet mode; the back button is not visible in non tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
   // Create a test widget to transition to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ShelfNavigationWidget::TestApi navigation_widget_test_api(
       GetPrimaryShelf()->navigation_widget());
@@ -258,7 +261,8 @@ TEST_F(BackButtonTest, BackButtonWithAndroidKeyboard) {
   controller->Register({accelerator_back_release}, &target_back_release);
 
   // Create a test widget to transition to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Fakes showing a virtual keyboard.
   VirtualKeyboardModel* keyboard =
@@ -310,7 +314,8 @@ TEST_F(BackButtonTest, NoContextMenuOnBackButton) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   // Create a test widget to transition to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Wait for the navigation widget's animation.
   ShelfNavigationWidget::TestApi navigation_widget_test_api(
@@ -335,7 +340,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(BackButtonVisibilityWithAccessibilityFeaturesTest,
        TabletModeSwitchWithA11yFeatureEnabled) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   SetTestA11yFeatureEnabled(true /*enabled*/);
 
@@ -355,7 +361,8 @@ TEST_P(BackButtonVisibilityWithAccessibilityFeaturesTest,
 
 TEST_P(BackButtonVisibilityWithAccessibilityFeaturesTest,
        FeatureEnabledWhileInTabletMode) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());

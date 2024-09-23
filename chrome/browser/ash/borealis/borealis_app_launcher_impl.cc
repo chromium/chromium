@@ -10,9 +10,9 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 #include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"
@@ -24,31 +24,32 @@ BorealisAppLauncherImpl::BorealisAppLauncherImpl(Profile* profile)
     : profile_(profile) {}
 
 void BorealisAppLauncherImpl::Launch(std::string app_id,
+                                     BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  Launch(std::move(app_id), {}, std::move(callback));
+  Launch(std::move(app_id), {}, std::move(source), std::move(callback));
 }
 
 void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
+                                     BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  if (!borealis::BorealisService::GetForProfile(profile_)
+  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
-    if (base::FeatureList::IsEnabled(ash::features::kBorealisWebUIInstaller)) {
-      ash::BorealisInstallerDialog::Show(profile_);
-    } else {
-      borealis::ShowBorealisInstallerView(profile_);
-    }
+    ash::BorealisInstallerDialog::Show(profile_);
+    RecordBorealisInstallSourceHistogram(source);
     std::move(callback).Run(LaunchResult::kSuccess);
     return;
   }
-  if (!borealis::BorealisService::GetForProfile(profile_)
+  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->ContextManager()
            .IsRunning()) {
     borealis::ShowBorealisSplashScreenView(profile_);
   }
-  BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
-      base::BindOnce(
+  RecordBorealisLaunchSourceHistogram(source);
+  BorealisServiceFactory::GetForProfile(profile_)
+      ->ContextManager()
+      .StartBorealis(base::BindOnce(
           [](Profile* profile, std::string app_id,
              const std::vector<std::string>& args,
              BorealisAppLauncherImpl::OnLaunchedCallback callback,

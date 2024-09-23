@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -20,10 +19,10 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/download_row.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/navigation_simulator.h"
@@ -47,16 +46,18 @@ namespace {
 // download that was sent to the UI.
 class TestDelegate : public DownloadUIController::Delegate {
  public:
-  explicit TestDelegate(base::WeakPtr<download::DownloadItem*> receiver);
+  explicit TestDelegate(
+      base::WeakPtr<raw_ptr<download::DownloadItem>> receiver);
   ~TestDelegate() override {}
 
  private:
   void OnNewDownloadReady(download::DownloadItem* item) override;
 
-  base::WeakPtr<download::DownloadItem*> receiver_;
+  base::WeakPtr<raw_ptr<download::DownloadItem>> receiver_;
 };
 
-TestDelegate::TestDelegate(base::WeakPtr<download::DownloadItem*> receiver)
+TestDelegate::TestDelegate(
+    base::WeakPtr<raw_ptr<download::DownloadItem>> receiver)
     : receiver_(receiver) {}
 
 void TestDelegate::OnNewDownloadReady(download::DownloadItem* item) {
@@ -126,6 +127,8 @@ class DownloadUIControllerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<MockDownloadItem> CreateMockInProgressDownload();
 
+  void ResetNotifiedItem() { notified_item_ = nullptr; }
+
  private:
   // A private history adapter that stores the DownloadQueryCallback when
   // QueryDownloads is called.
@@ -149,17 +152,12 @@ class DownloadUIControllerTest : public ChromeRenderViewHostTestHarness {
       content::BrowserContext* browser_context);
 
   std::unique_ptr<MockDownloadManager> manager_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::DownloadManager::Observer*
+  raw_ptr<content::DownloadManager::Observer>
       download_history_manager_observer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::DownloadManager::Observer* manager_observer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION download::DownloadItem* notified_item_;
-  base::WeakPtrFactory<download::DownloadItem*> notified_item_receiver_factory_;
+  raw_ptr<content::DownloadManager::Observer> manager_observer_;
+  raw_ptr<download::DownloadItem> notified_item_;
+  base::WeakPtrFactory<raw_ptr<download::DownloadItem>>
+      notified_item_receiver_factory_;
 
   raw_ptr<HistoryAdapter, DanglingUntriaged> history_adapter_;
 };
@@ -191,6 +189,7 @@ void DownloadUIControllerTest::SetUp() {
           &download_history_manager_observer_,
           static_cast<content::DownloadManager::Observer*>(nullptr)));
   EXPECT_CALL(*manager_, GetAllDownloads(_)).Times(AnyNumber());
+  EXPECT_CALL(*manager_, GetDelegate()).WillRepeatedly(Return(nullptr));
 
   std::unique_ptr<HistoryAdapter> history_adapter(new HistoryAdapter);
   history_adapter_ = history_adapter.get();
@@ -302,6 +301,8 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic) {
   item->NotifyObserversDownloadUpdated();
 
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+
+  ResetNotifiedItem();
 }
 
 // A download that's created in an interrupted state should also be displayed.
@@ -314,6 +315,8 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic_Interrupted) {
   ASSERT_TRUE(manager_observer());
   manager_observer()->OnDownloadCreated(manager(), item.get());
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+
+  ResetNotifiedItem();
 }
 
 // A download that's blocked by local policies should also be displayed even
@@ -341,6 +344,8 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyBasic_FileBlocked) {
           Return(download::DownloadItem::InsecureDownloadStatus::SAFE));
   item->NotifyObserversDownloadUpdated();
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+
+  ResetNotifiedItem();
 }
 
 // Downloads that have a target path on creation and are in the IN_PROGRESS
@@ -353,6 +358,8 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_NotifyReadyOnCreate) {
   ASSERT_TRUE(manager_observer());
   manager_observer()->OnDownloadCreated(manager(), item.get());
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+
+  ResetNotifiedItem();
 }
 
 // The UI shouldn't be notified of downloads that were restored from history.
@@ -429,6 +436,8 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_HistoryDownload) {
       .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
   item->NotifyObserversDownloadUpdated();
   EXPECT_EQ(static_cast<download::DownloadItem*>(item.get()), notified_item());
+
+  ResetNotifiedItem();
 }
 
 } // namespace

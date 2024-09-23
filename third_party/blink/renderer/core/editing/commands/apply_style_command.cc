@@ -52,7 +52,9 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_font_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -184,7 +186,7 @@ void ApplyStyleCommand::UpdateStartEnd(const EphemeralRange& range) {
     use_ending_selection_ = true;
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const bool was_base_first =
-      StartingSelection().IsBaseFirst() || !SelectionIsDirectional();
+      StartingSelection().IsAnchorFirst() || !SelectionIsDirectional();
   SelectionInDOMTree::Builder builder;
   if (was_base_first)
     builder.SetAsForwardSelection(range);
@@ -291,18 +293,20 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
   const int end_index = TextIterator::RangeLength(end_range, behavior);
 
   VisiblePosition paragraph_start(StartOfParagraph(visible_start));
-  RelocatablePosition relocatable_beyond_end(
-      NextPositionOf(EndOfParagraph(visible_end)).DeepEquivalent());
+  RelocatablePosition* relocatable_beyond_end =
+      MakeGarbageCollected<RelocatablePosition>(
+          NextPositionOf(EndOfParagraph(visible_end)).DeepEquivalent());
   while (paragraph_start.IsNotNull()) {
     DCHECK(paragraph_start.IsValidFor(GetDocument())) << paragraph_start;
-    const Position& beyond_end = relocatable_beyond_end.GetPosition();
+    const Position& beyond_end = relocatable_beyond_end->GetPosition();
     DCHECK(beyond_end.IsValidFor(GetDocument())) << beyond_end;
     if (beyond_end.IsNotNull() &&
         beyond_end <= paragraph_start.DeepEquivalent())
       break;
 
-    RelocatablePosition next_paragraph_start(
-        NextPositionOf(EndOfParagraph(paragraph_start)).DeepEquivalent());
+    RelocatablePosition* next_paragraph_start =
+        MakeGarbageCollected<RelocatablePosition>(
+            NextPositionOf(EndOfParagraph(paragraph_start)).DeepEquivalent());
     StyleChange style_change(style, paragraph_start.DeepEquivalent());
     if (style_change.CssStyle().length() || remove_only_) {
       Element* block =
@@ -328,7 +332,8 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     }
 
-    paragraph_start = CreateVisiblePosition(next_paragraph_start.GetPosition());
+    paragraph_start =
+        CreateVisiblePosition(next_paragraph_start->GetPosition());
   }
 
   // Update style and layout again, since added or removed styles could have

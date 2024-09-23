@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
+
 #include <memory>
 #include <string>
-#include "build/chromeos_buildflags.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -14,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -23,14 +25,13 @@
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
-#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -41,6 +42,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,8 +67,6 @@ namespace {
 using OriginStatus = page_load_metrics::OriginStatus;
 using OriginStatusWithThrottling =
     page_load_metrics::OriginStatusWithThrottling;
-
-using FrameTreeNodeId = int;
 
 const char kAdsInterventionRecordedHistogram[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an empty embedded ad isn't reported at all.
-// TODO(crbug.com/1226500): This test is flaky.
+// TODO(crbug.com/40188872): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_OriginStatusMetricEmbeddedEmpty) {
   base::HistogramTester histogram_tester;
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       static_cast<int>(page_load_metrics::OriginStatus::kCross));
 }
 
-// TODO(crbug.com/1326576): Re-enable this test
+// TODO(crbug.com/40840626): Re-enable this test
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_AverageViewportAdDensity) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       expected_page_density_height);
 }
 
-// TODO(crbug.com/1352329): Flaky on Lacros bots.
+// TODO(crbug.com/40857704): Flaky on Lacros bots.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PageAdDensityMultipleFrames DISABLED_PageAdDensityMultipleFrames
 #else
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 // Creates a frame with display:none styling and verifies that it has an
 // empty intersection with the main frame.
 //
-// TODO(crbug.com/1121444): This test is disabled due to flaky failures on
+// TODO(crbug.com/40715497): This test is disabled due to flaky failures on
 // multiple platforms.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_PageAdDensityIgnoreDisplayNoneFrame) {
@@ -1008,9 +1008,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
-// TODO(https://crbug.com/1234339): Test is flaky.
-// TODO(https://crbug.com/1495823)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/40286659): Fix this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
 #else
 #define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        MAYBE_DocOverwritesNavigation) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // TODO(https://crbug.com/40189815): Investigate if this needs further fix.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       entries.front(), ukm::builders::AdFrameLoad::kLoading_NumResourcesName,
       3);
 
-  // TODO(https://crbug.com/): We should verify that we also receive FCP for
+  // TODO(crbug.com/): We should verify that we also receive FCP for
   // frames that are loaded in this manner. Currently timing updates are not
   // sent for aborted navigations due to doc.write.
 }
@@ -1228,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       true);
 }
 
-// TODO(https://crbug.com/929136): Investigate why setting display: none on the
+// TODO(crbug.com/41439596): Investigate why setting display: none on the
 // frame will cause size updates to not be received. Verify that we record the
 // correct sizes for display: none iframes.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest, FramePixelSize) {
@@ -1622,7 +1622,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('frame_factory.html', '');", base::NullCallback());
+      u"createAdFrame('frame_factory.html', '');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   // Two pages subresources should have been reported as ad. The iframe resource
   // and its three subresources should also be reported as ads.
   waiter->AddMinimumAdResourceExpectation(6);
@@ -1642,7 +1643,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html")));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('frame_factory.html', 'test');", base::NullCallback());
+      u"createAdFrame('frame_factory.html', 'test');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   waiter->AddMinimumAdResourceExpectation(6);
   waiter->Wait();
   NavigateIframeToURL(web_contents(), "test",
@@ -1681,9 +1683,12 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   auto waiter = CreateAdsPageLoadMetricsTestWaiter();
 
-  browser()->OpenURL(content::OpenURLParams(
-      embedded_test_server()->GetURL("/mock_page.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+  browser()->OpenURL(
+      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   main_html_response->WaitForRequest();
   main_html_response->Send(page_load_metrics::kHttpOkResponseHeader);
@@ -1745,11 +1750,13 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   auto waiter = CreateAdsPageLoadMetricsTestWaiter();
 
-  browser()->OpenURL(content::OpenURLParams(
-      embedded_test_server()->GetURL(
-          "/ads_observer/ad_with_incomplete_resource.html"),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_TYPED, false));
+  browser()->OpenURL(
+      content::OpenURLParams(
+          embedded_test_server()->GetURL(
+              "/ads_observer/ad_with_incomplete_resource.html"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   waiter->AddMinimumCompleteResourcesExpectation(3);
   waiter->Wait();
@@ -1804,15 +1811,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that the ad unloaded by the heavy ad intervention receives an
 // intervention report prior to being unloaded.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_HeavyAdInterventionFired_ReportSent \
-  DISABLED_HeavyAdInterventionFired_ReportSent
-#else
-#define MAYBE_HeavyAdInterventionFired_ReportSent \
-  HeavyAdInterventionFired_ReportSent
-#endif
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       MAYBE_HeavyAdInterventionFired_ReportSent) {
+                       HeavyAdInterventionFired_ReportSent) {
   base::HistogramTester histogram_tester;
   auto incomplete_resource_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1846,7 +1846,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       });
       observer.observe();
 
-      window.addEventListener('unload', function(event) {
+      window.addEventListener('pagehide', function(event) {
         observer.takeRecords().forEach(process);
         window.domAutomationController.send('END');
       });
@@ -2231,7 +2231,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
                                             "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback());
+      u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   waiter->AddMinimumAdResourceExpectation(8);
   waiter->Wait();
 
@@ -2311,7 +2312,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
-// TODO(crbug.com/1305274): Flaky on multiple platforms.
+// TODO(crbug.com/40826975): Flaky on multiple platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TwoRAFFramesTriggerCpuUpdates \
@@ -2644,7 +2645,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
   // Start a prerender.
   GURL prerender_url =
       embedded_test_server()->GetURL("/ads_observer/srcdoc_embedded_ad.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
 

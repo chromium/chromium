@@ -47,6 +47,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
   EXPECT_EQ(std::nullopt, copied.PartitionKey());
   EXPECT_EQ(original->SourceScheme(), copied.SourceScheme());
   EXPECT_EQ(original->SourcePort(), copied.SourcePort());
+  EXPECT_EQ(original->SourceType(), copied.SourceType());
 
   // Test port edge cases: unspecified.
   auto original_unspecified =
@@ -141,6 +142,7 @@ TEST(CookieManagerTraitsTest, Rountrips_CookieWithAccessResult) {
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
+  EXPECT_EQ(original.cookie.SourceType(), copied.cookie.SourceType());
   EXPECT_EQ(original.access_result.effective_same_site,
             copied.access_result.effective_same_site);
   EXPECT_EQ(original.access_result.status, copied.access_result.status);
@@ -174,6 +176,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieAndLineWithAccessResult) {
   EXPECT_EQ(original.cookie->IsHttpOnly(), copied.cookie->IsHttpOnly());
   EXPECT_EQ(original.cookie->SameSite(), copied.cookie->SameSite());
   EXPECT_EQ(original.cookie->Priority(), copied.cookie->Priority());
+  EXPECT_EQ(original.cookie->SourceType(), copied.cookie->SourceType());
   EXPECT_EQ(original.access_result.effective_same_site,
             copied.access_result.effective_same_site);
   EXPECT_EQ(original.cookie_string, copied.cookie_string);
@@ -395,6 +398,33 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   EXPECT_TRUE(copied.PartitionKey()->from_script());
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_AncestorChainBit) {
+  struct {
+    net::CookiePartitionKey key;
+    bool expected_third_party;
+  } cases[]{
+      {net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com"),
+           net::CookiePartitionKey::AncestorChainBit::kCrossSite),
+       true},
+      {net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com"),
+           net::CookiePartitionKey::AncestorChainBit::kSameSite),
+       false},
+  };
+
+  for (auto tc : cases) {
+    net::CookiePartitionKey copied =
+        net::CookiePartitionKey::FromURLForTesting(GURL(""));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKey>(
+        tc.key, copied));
+    // IsThirdParty() is used to access the value of the ancestor chain bit in
+    // net::CookiePartitionKey.
+    EXPECT_EQ(tc.key.IsThirdParty(), copied.IsThirdParty());
+    EXPECT_EQ(tc.key.IsThirdParty(), tc.expected_third_party);
+  };
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeyCollection) {
   {
     net::CookiePartitionKeyCollection original;
@@ -513,6 +543,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cookie.IsHttpOnly(), copied.cookie.IsHttpOnly());
   EXPECT_EQ(original.cookie.SameSite(), copied.cookie.SameSite());
   EXPECT_EQ(original.cookie.Priority(), copied.cookie.Priority());
+  EXPECT_EQ(original.cookie.SourceType(), copied.cookie.SourceType());
   EXPECT_EQ(original.access_result.access_semantics,
             copied.access_result.access_semantics);
   EXPECT_EQ(original.cause, copied.cause);

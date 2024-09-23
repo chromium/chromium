@@ -128,6 +128,21 @@ std::u16string GetShillErrorString(const std::string& error,
   if (error == shill::kErrorTooManySTAs) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_NETWORK_TO_MANY_STAS_ERROR);
   }
+  if (error == shill::kErrorResultInvalidApn) {
+    return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_INVALID_APN);
+  }
+  if (error == shill::kErrorSuspectInactiveSim) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_INACTIVE_SIM);
+  }
+  if (error == shill::kErrorSuspectSubscriptionError) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_SUBSCRIPTION_ERROR);
+  }
+  if (error == shill::kErrorSuspectModemDisallowed) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_MODEM_DISALLOWED);
+  }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN);

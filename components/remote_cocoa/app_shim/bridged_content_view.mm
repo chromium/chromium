@@ -224,7 +224,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   return self;
 }
 
-- (ui::TextInputClient*)textInputClient {
+- (ui::TextInputClient*)textInputClientForTesting {
   return _bridge ? _bridge->host_helper()->GetTextInputClient() : nullptr;
 }
 
@@ -352,13 +352,23 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
   DCHECK(_bridge);
-  std::u16string newTooltipText;
-
-  _bridge->host()->GetTooltipTextAt(locationInContent, &newTooltipText);
-  if (newTooltipText != _lastTooltipText) {
-    std::swap(newTooltipText, _lastTooltipText);
-    [self setToolTipAtMousePoint:base::SysUTF16ToNSString(_lastTooltipText)];
-  }
+  __weak BridgedContentView* weakSelf = self;
+  _bridge->host()->GetTooltipTextAt(
+      locationInContent,
+      base::BindOnce(
+          [](__weak BridgedContentView* weakView,
+             const std::u16string& newTooltipText) {
+            if (!weakView) {
+              return;
+            }
+            __strong BridgedContentView* strongSelf = weakView;
+            if (newTooltipText != strongSelf->_lastTooltipText) {
+              strongSelf->_lastTooltipText = newTooltipText;
+              [strongSelf setToolTipAtMousePoint:base::SysUTF16ToNSString(
+                                                     newTooltipText)];
+            }
+          },
+          weakSelf));
 }
 
 - (void)updateFullKeyboardAccess {
@@ -451,7 +461,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     eventFlags |= ui::EF_SHIFT_DOWN;
 
   // Generate a synthetic event with the keycode toolkit-views expects.
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, keyCode, domCode, eventFlags);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, keyCode, domCode, eventFlags);
 
   // If the current event is a key event, assume it's the event that led to this
   // edit command and attach it. Note that it isn't always the case that the
@@ -467,10 +477,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // If there's an active TextInputClient, schedule the editing command to be
   // performed.
-  // TODO(https://crbug.com/901490): Add mojo support for ui::TextEditCommand.
-  if ([self textInputClient] &&
-          [self textInputClient] -> IsTextEditCommandEnabled(command)) {
-    [self textInputClient] -> SetTextEditCommandForNextKeyEvent(command);
+  bool out_enabled = false;
+  if (_bridge &&
+      _bridge->text_input_host()->IsTextEditCommandEnabled(command,
+                                                           &out_enabled) &&
+      out_enabled) {
+    _bridge->text_input_host()->SetTextEditCommandForNextKeyEvent(command);
   }
 
   [self dispatchKeyEvent:&event];
@@ -877,8 +889,8 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // We need to invert deltas in order to match GestureEventDetails's
   // directions.
-  ui::GestureEventDetails swipeDetails(ui::ET_GESTURE_SWIPE, -[event deltaX],
-                                       -[event deltaY]);
+  ui::GestureEventDetails swipeDetails(ui::EventType::kGestureSwipe,
+                                       -[event deltaX], -[event deltaY]);
   swipeDetails.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   swipeDetails.set_touch_points(3);
 
@@ -1589,12 +1601,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (command == ui::TextEditCommand::INVALID_COMMAND)
     return NO;
 
-  // TODO(https://crbug.com/901490): Add mojo support for ui::TextEditCommand.
-  if ([self textInputClient])
-    return [self textInputClient] -> IsTextEditCommandEnabled(command);
+  bool out_enabled = false;
+  _bridge->text_input_host()->IsTextEditCommandEnabled(command, &out_enabled);
+  if (out_enabled) {
+    return YES;
+  }
 
   // views::Label does not implement the TextInputClient interface but still
   // needs to intercept the Copy and Select All menu actions.
+  // We can't tell if TextInputClient returned NO or was absent entirely.
+  // So if we got NO from IsTextEditCommandEnabled, try this special case.
   if (command != ui::TextEditCommand::COPY &&
       command != ui::TextEditCommand::SELECT_ALL)
     return NO;

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Test that window.fence.disableUntrustedNetwork disables
+  self-navigation of fenced frame roots.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  await fencedframe.execute(async () => {
+    await window.fence.disableUntrustedNetwork();
+    window.executor.suspend(() => { location.href = location.href; });
+  });
+
+  // The old remote context has been suspended, and network revocation should
+  // have prevented it from reloading.
+  const result = await Promise.race([
+      fencedframe.execute(() => { return 'nav success'; }),
+      new Promise((resolve, reject) => t.step_timeout(
+        () => resolve('timeout'), 2000))]);
+  assert_equals(result, 'timeout');
+}, 'window.fence.disableUntrustedNetwork disables FF self navigation');
+
+</script>
+</body>
+

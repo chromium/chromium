@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/accelerators/ash_accelerator_configuration.h"
 
 #include <vector>
@@ -19,7 +24,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -105,7 +109,8 @@ AcceleratorModificationData ValueToAcceleratorModificationData(
 
 void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
                    ash::ActionIdToAcceleratorsMap& id_to_accelerator,
-                   AcceleratorActionMap& accelerator_to_id) {
+                   AcceleratorActionMap& accelerator_to_id,
+                   base::flat_set<ui::Accelerator>& locked_accelerator_set) {
   for (const auto& acceleratorData : accelerators) {
     ui::Accelerator accelerator(acceleratorData.keycode,
                                 acceleratorData.modifiers);
@@ -116,6 +121,9 @@ void SetLookupMaps(base::span<const ash::AcceleratorData> accelerators,
         std::make_pair(accelerator, acceleratorData.action));
     id_to_accelerator[static_cast<uint32_t>(acceleratorData.action)].push_back(
         accelerator);
+    if (acceleratorData.accelerator_locked) {
+      locked_accelerator_set.insert(accelerator);
+    }
   }
 }
 
@@ -155,6 +163,19 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
         accelerators,
         base::make_span(ash::kToggleGameDashboardAcceleratorData,
                         ash::kToggleGameDashboardAcceleratorDataLength));
+  }
+
+  if (ash::features::IsPickerUpdateEnabled()) {
+    AppendAcceleratorData(
+        accelerators, base::make_span(ash::kTogglePickerAcceleratorData,
+                                      ash::kTogglePickerAcceleratorDataLength));
+  }
+
+  if (ash::features::IsTilingWindowResizeEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(ash::kTilingWindowResizeAcceleratorData,
+                        ash::kTilingWindowResizeAcceleratorDataLength));
   }
 
   // Debug accelerators.
@@ -241,6 +262,11 @@ bool AshAcceleratorConfiguration::IsMutable() const {
 bool AshAcceleratorConfiguration::IsDeprecated(
     const ui::Accelerator& accelerator) const {
   return deprecated_accelerators_to_id_.Find(accelerator);
+}
+
+bool AshAcceleratorConfiguration::IsAcceleratorLocked(
+    const ui::Accelerator& accelerator) const {
+  return locked_accelerator_set_.contains(accelerator);
 }
 
 const AcceleratorAction* AshAcceleratorConfiguration::FindAcceleratorAction(
@@ -403,7 +429,7 @@ void AshAcceleratorConfiguration::Initialize(
 
   // Cache these accelerators as the default.
   SetLookupMaps(accelerators, default_id_to_accelerators_cache_,
-                default_accelerators_to_id_cache_);
+                default_accelerators_to_id_cache_, locked_accelerator_set_);
 
   // TODO(jimmyxgong): Before adding the accelerators to the mappings, apply
   // pref remaps.
@@ -454,7 +480,8 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
 
 void AshAcceleratorConfiguration::AddAccelerators(
     base::span<const AcceleratorData> accelerators) {
-  SetLookupMaps(accelerators, id_to_accelerators_, accelerator_to_id_);
+  SetLookupMaps(accelerators, id_to_accelerators_, accelerator_to_id_,
+                locked_accelerator_set_);
   UpdateAndNotifyAccelerators();
 }
 
@@ -494,10 +521,25 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
   CHECK(*found_id == action_id);
 
   // Remove accelerator from lookup map.
-  base::Erase(found_accelerators_iter->second, accelerator);
+  std::erase(found_accelerators_iter->second, accelerator);
 
   // Remove accelerator from reverse lookup map.
   accelerator_to_id_.Erase(accelerator);
+
+  // Also remove accelerators in the reverse key_state.
+  ui::Accelerator accelerator_reverse_state(accelerator);
+  accelerator_reverse_state.set_key_state(
+      accelerator.key_state() == ui::Accelerator::KeyState::PRESSED
+          ? ui::Accelerator::KeyState::RELEASED
+          : ui::Accelerator::KeyState::PRESSED);
+
+  const AcceleratorAction* reverse_key_state_id =
+      accelerator_to_id_.Find(accelerator_reverse_state);
+
+  if (reverse_key_state_id && *reverse_key_state_id == action_id) {
+    std::erase(found_accelerators_iter->second, accelerator_reverse_state);
+    accelerator_to_id_.Erase(accelerator_reverse_state);
+  }
 
   // Store the final state of `action_id`.
   if (save_override) {

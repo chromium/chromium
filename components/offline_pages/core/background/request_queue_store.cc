@@ -71,7 +71,7 @@ bool CreateRequestQueueTable(sql::Database* db) {
 //
 // |upgrade_sql| is the SQL statement that copies data from the temporary
 // table back into the primary table.
-bool UpgradeWithQuery(sql::Database* db, const char* upgrade_sql) {
+bool UpgradeWithQuery(sql::Database* db, const base::cstring_view upgrade_sql) {
   if (!db->Execute("ALTER TABLE " REQUEST_QUEUE_TABLE_NAME
                    " RENAME TO temp_" REQUEST_QUEUE_TABLE_NAME)) {
     return false;
@@ -223,10 +223,9 @@ std::unique_ptr<SavePageRequest> MakeSavePageRequest(
   const SavePageRequest::RequestState state =
       ToRequestState(statement.ColumnInt64(6));
   const GURL url(statement.ColumnString(7));
-  const ClientId client_id(statement.ColumnString(8),
-                           statement.ColumnString(9));
-  const GURL original_url(statement.ColumnString(10));
-  const std::string request_origin(statement.ColumnString(11));
+  ClientId client_id(statement.ColumnString(8), statement.ColumnString(9));
+  GURL original_url(statement.ColumnString(10));
+  std::string request_origin(statement.ColumnString(11));
 
   DVLOG(2) << "making save page request - id " << id << " url " << url
            << " client_id " << client_id.name_space << "-" << client_id.id

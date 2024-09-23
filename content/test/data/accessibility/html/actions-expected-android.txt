@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused name='Actions'
+++android.view.View
+++++android.widget.SeekBar role_description='slider' clickable focusable range name='50' item_index=49 item_count=100 range_min=1 range_max=100 range_current_value=50
+++++android.widget.EditText clickable editable_text focusable hint='Test textfield' input_type=1

@@ -211,10 +211,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
   network::mojom::RedirectMode GetRedirectMode() const;
   void SetRedirectMode(network::mojom::RedirectMode);
 
-  // The integrity which is used in Fetch API.
-  WebString GetFetchIntegrity() const;
-  void SetFetchIntegrity(const WebString&);
-
   // Extra data associated with the underlying resource request. Resource
   // requests can be copied. If non-null, each copy of a resource requests
   // holds a pointer to the extra data, and the extra data pointer will be

@@ -23,6 +23,11 @@ namespace ash {
 class ScopedA11yOverrideWindowSetter;
 class SystemShadow;
 
+namespace deprecated {
+
+// DISCLAIMER: This view has been deprecated, please use `SystemToastView`.
+// More details in go/system-toast-view.
+
 // A view used to present Toasts. It has rounded corners and may have a
 // dismiss button if a `dismiss_text` is provided, and a `leading_icon` if one
 // is provided. The spacing surrounding the elements may change if the text has
@@ -78,6 +83,8 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   // highlighted.
   std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
+
+}  // namespace deprecated
 
 }  // namespace ash
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/platform_state_store.h"
 
+#include <windows.h>
+
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -20,8 +22,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 namespace safe_browsing {
 namespace platform_state_store {

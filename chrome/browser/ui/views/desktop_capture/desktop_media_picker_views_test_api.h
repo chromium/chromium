@@ -11,6 +11,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
 
+class DesktopMediaPaneView;
 class DesktopMediaPickerViews;
 class DesktopMediaListController;
 
@@ -42,6 +43,7 @@ class DesktopMediaPickerViewsTestApi {
   void PressKeyOnSourceAtIndex(size_t index, const ui::KeyEvent& event);
   void SelectTabForSourceType(DesktopMediaList::Type source_type);
   bool HasAudioShareControl() const;
+  std::u16string GetAudioLabelText() const;
   void SetAudioSharingApprovedByUser(bool allow);
   bool IsAudioSharingApprovedByUser() const;
   views::MdTextButton* GetReselectButton();
@@ -53,6 +55,13 @@ class DesktopMediaPickerViewsTestApi {
   std::optional<int> GetSelectedSourceId() const;
   views::View* GetSelectedListView();
   DesktopMediaListController* GetSelectedController();
+
+  const DesktopMediaPaneView* GetActivePane() const;
+  DesktopMediaPaneView* GetActivePane();
+
+#if BUILDFLAG(IS_MAC)
+  void OnPermissionUpdate(bool has_permission);
+#endif
 
  private:
   const views::View* GetSourceAtIndex(size_t index) const;

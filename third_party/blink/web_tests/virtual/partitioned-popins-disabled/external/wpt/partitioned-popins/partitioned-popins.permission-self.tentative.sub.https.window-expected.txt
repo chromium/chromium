@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify Partitioned Popins in an iframe fail when the policy is 'self'
+  assert_equals: expected "Failure" but got "Success"
+Harness: the test ran to completion.
+

@@ -32,12 +32,12 @@ public interface TabModelObserver {
 
     /**
      * Called when a tab starts closing.
+     *
      * @param tab The tab to close.
-     * @param animate Whether or not to animate the closing.
      * @param didCloseAlone indicates whether tab will close by itself VS as part of multiple/all
-     *                      tab closures.
+     *     tab closures.
      */
-    default void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {}
+    default void willCloseTab(Tab tab, boolean didCloseAlone) {}
 
     /**
      * Called right before {@code tab} will be destroyed. Called for each tab.
@@ -48,13 +48,14 @@ public interface TabModelObserver {
 
     /**
      * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
-     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()},
-     * {@link TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger
-     * one event when the tabs associated with a particular closure commit to closing.
+     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()}, {@link
+     * TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger one event
+     * when the tabs associated with a particular closure commit to closing.
      *
      * @param tabs The list of {@link Tab} that were closed.
+     * @param canRestore Whether the closed tabs can be restored to the TabRestoreService.
      */
-    default void onFinishingMultipleTabClosure(List<Tab> tabs) {}
+    default void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.

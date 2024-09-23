@@ -10,8 +10,10 @@
     "proprietary_codecs": true,
     "symbol_level": 1,
     "target_cpu": "x64",
+    "target_os": "linux",
     "use_libfuzzer": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_target_cpu": "arm64"
   }
 }

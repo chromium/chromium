@@ -10,9 +10,9 @@
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
 using send_tab_to_self::SendTabToSelfSyncService;
@@ -22,8 +22,8 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory();
 
   history::HistoryService* history_service =
@@ -48,9 +48,15 @@ SendTabToSelfSyncServiceFactory::GetInstance() {
 
 // static
 SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<SendTabToSelfSyncService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -63,9 +69,9 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SendTabToSelfSyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(ios::HistoryServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() {}

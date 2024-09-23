@@ -6,9 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './info_dialog.html.js';
+import {getCss} from './info_dialog.css.js';
+import {getHtml} from './info_dialog.html.js';
 
 export interface InfoDialogElement {
   $: {
@@ -18,20 +19,32 @@ export interface InfoDialogElement {
 }
 
 /** Info dialog that can be populated with custom text via slotting. */
-export class InfoDialogElement extends PolymerElement {
+export class InfoDialogElement extends CrLitElement {
   static get is() {
     return 'ntp-info-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      showOnAttach: {type: Boolean},
+    };
+  }
+
+  showOnAttach: boolean = false;
 
   showModal() {
     this.$.dialog.showModal();
   }
 
-  private onCloseClick_() {
+  protected onCloseClick_() {
     this.$.dialog.close();
   }
 }

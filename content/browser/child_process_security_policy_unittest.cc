@@ -4,6 +4,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -329,6 +331,21 @@ class ChildProcessSecurityPolicyTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// A test class that forces kOriginKeyedProcessesByDefault off in
+// ChildProcessSecurityPolicyTest. Used for tests that are trying to verify
+// behavior that is inconsistent with Origin Isolation.
+class ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault
+    : public ChildProcessSecurityPolicyTest {
+ public:
+  ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault() {
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_P(ChildProcessSecurityPolicyTest, ChildID) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -398,7 +415,6 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   const std::vector<std::string> kCommitURLs({
       "http://www.google.com/",
       "https://www.paypal.com/",
-      "data:text/html,<b>Hi</b>",
       "filesystem:http://localhost/temporary/a.gif",
   });
   for (const auto& url_string : kCommitURLs) {
@@ -411,6 +427,9 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
       EXPECT_TRUE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
     }
   }
+
+  // A data URL can commit in any process, even with Citadel enabled.
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
 
   // Dangerous to request, commit, or set as origin header.
   EXPECT_FALSE(p->CanRequestURL(kRendererID,
@@ -757,12 +776,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanRequestURL(kRendererID, sensitive_url));
   EXPECT_TRUE(p->CanRedirectToURL(icon_url));
   EXPECT_TRUE(p->CanRedirectToURL(sensitive_url));
-  if (base::FeatureList::IsEnabled(
-          features::kRequestFileSetCheckedInCanRequestURL)) {
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
-  } else {
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, icon_url));
-  }
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, sensitive_url));
 
   p->GrantCommitURL(kRendererID, icon_url);
@@ -1071,46 +1085,8 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
     EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
     EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
-    p->GrantWebUIBindings(kRendererID, BINDINGS_POLICY_WEB_UI);
-
-    EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantCommitOrigin(kRendererID, origin);
-
-    EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->Remove(kRendererID);
-  }
-
-  {
-    p->AddForTesting(kRendererID, browser_context());
-    LockProcessIfNeeded(kRendererID, browser_context(), url);
-
-    EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantWebUIBindings(kRendererID, BINDINGS_POLICY_MOJO_WEB_UI);
+    p->GrantWebUIBindings(kRendererID,
+                          BindingsPolicySet({BindingsPolicyValue::kWebUi}));
 
     EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
 
@@ -1150,7 +1126,46 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
     EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
     p->GrantWebUIBindings(kRendererID,
-                          BINDINGS_POLICY_WEB_UI | BINDINGS_POLICY_MOJO_WEB_UI);
+                          BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}));
+
+    EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
+
+    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
+    EXPECT_TRUE(p->CanRedirectToURL(url));
+
+    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+
+    p->GrantCommitOrigin(kRendererID, origin);
+
+    EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
+    EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
+    EXPECT_TRUE(p->CanRedirectToURL(url));
+
+    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+
+    p->Remove(kRendererID);
+  }
+
+  {
+    p->AddForTesting(kRendererID, browser_context());
+    LockProcessIfNeeded(kRendererID, browser_context(), url);
+
+    EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
+
+    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
+    EXPECT_TRUE(p->CanRedirectToURL(url));
+
+    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+
+    p->GrantWebUIBindings(kRendererID, kWebUIBindingsPolicySet);
 
     EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
 
@@ -1187,8 +1202,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
 
   p->GrantCommitURL(kRendererID, url);
   p->GrantReadFile(kRendererID, file);
-  p->GrantWebUIBindings(kRendererID,
-                        BINDINGS_POLICY_WEB_UI | BINDINGS_POLICY_MOJO_WEB_UI);
+  p->GrantWebUIBindings(kRendererID, kWebUIBindingsPolicySet);
 
   EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));
@@ -1218,7 +1232,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
 //
-// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// TODO(crbug.com/40210893): Refactor the test to avoid calls to
 // CanAccessDataForOrigin on the IO thread, by checking for the presence of
 // security state instead.
 TEST_P(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
@@ -1350,7 +1364,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace_CanAccessDataForOrigin) {
 // removal process. It is intended to simulate pending tasks that could be
 // run on each thread during removal.
 //
-// TODO(crbug.com/1286533): Refactor the test to avoid calls to
+// TODO(crbug.com/40210893): Refactor the test to avoid calls to
 // CanAccessDataForOrigin on the IO thread, by checking for the presence of
 // security state instead.
 TEST_P(ChildProcessSecurityPolicyTest, HandleExtendsSecurityStateLifetime) {
@@ -1697,6 +1711,119 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
     EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  TestBrowserContext browser_context;
+  p->AddForTesting(kRendererID, &browser_context);
+
+  // Create a ProcessLock for a process-isolated sandboxed frame, and lock the
+  // kRendererID process to it.
+  UrlInfo sandboxed_url_info(
+      UrlInfoInit(GURL("https://foo.com")).WithSandbox(true));
+  scoped_refptr<SiteInstanceImpl> sandboxed_instance =
+      SiteInstanceImpl::CreateForUrlInfo(&browser_context, sandboxed_url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  p->LockProcess(sandboxed_instance->GetIsolationContext(), kRendererID,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(sandboxed_instance->GetSiteInfo()));
+
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  auto opaque_foo_origin = foo_origin.DeriveNewOpaqueOrigin();
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com"));
+  auto opaque_bar_origin = bar_origin.DeriveNewOpaqueOrigin();
+
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  // A sandboxed process should be able to commit new URLs, as long as they
+  // have an opaque origin with a matching precursor.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  // TODO(crbug.com/325410297): Currently, non-opaque origins are allowed to
+  // commit. Fix this and flip the expectation to false.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+
+  // A sandboxed process should not be able to access data for any origin.
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                         AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, foo_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, bar_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                         AccessType::kCanAccessDataForCommittedOrigin));
+
+  // A sandboxed process should only be able to claim that it has an opaque
+  // origin.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                                 AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, foo_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, bar_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                                  AccessType::kHostsOrigin));
+
+  p->Remove(kRendererID);
+}
+
+TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  TestBrowserContext browser_context;
+  p->AddForTesting(kRendererID, &browser_context);
+
+  // Create a ProcessLock for a PDF renderer, and lock the kRendererID process
+  // to it.
+  UrlInfo pdf_url_info(UrlInfoInit(GURL("https://foo.com")).WithIsPdf(true));
+  scoped_refptr<SiteInstanceImpl> pdf_instance =
+      SiteInstanceImpl::CreateForUrlInfo(&browser_context, pdf_url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  p->LockProcess(pdf_instance->GetIsolationContext(), kRendererID,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(pdf_instance->GetSiteInfo()));
+
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com"));
+
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  // A PDF process should be able to commit new URLs that match its ProcessLock.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+
+  // A PDF process should also be able to claim it's hosting an origin that
+  // matches its ProcessLock; for example, PDF documents can still use
+  // postMessage so they need to use this to validate the source origin.
+  EXPECT_TRUE(
+      p->CanAccessOrigin(kRendererID, foo_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, bar_origin, AccessType::kHostsOrigin));
+
+  // A PDF process should not be able to access data for any origin.
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, foo_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, bar_origin, AccessType::kCanAccessDataForCommittedOrigin));
+
+  p->Remove(kRendererID);
+}
+
 // Test the granting of origin permissions, and their interactions with
 // granting scheme permissions.
 TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
@@ -1914,7 +2041,8 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
 
 // Verify that the isolation behavior for wildcard and non-wildcard origins,
 // singly or in concert, behaves correctly via calls to GetSiteForURL().
-TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardOrigins) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       WildcardAndNonWildcardOrigins) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1979,7 +2107,8 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardOrigins) {
                      testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, WildcardAndNonWildcardEmbedded) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       WildcardAndNonWildcardEmbedded) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -2440,14 +2569,14 @@ TEST_P(ChildProcessSecurityPolicyTest,
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
-  const base::StringPiece etld1_wild("https://[*.]foo.com");
+  const std::string_view etld1_wild("https://[*.]foo.com");
   url::Origin etld1_wild_origin = url::Origin::Create(GURL("https://foo.com"));
   IsolatedOriginPattern p(etld1_wild);
   EXPECT_TRUE(p.isolate_all_subdomains());
   EXPECT_TRUE(p.is_valid());
   EXPECT_EQ(p.origin(), etld1_wild_origin);
 
-  const base::StringPiece etld2_wild("https://[*.]bar.foo.com");
+  const std::string_view etld2_wild("https://[*.]bar.foo.com");
   url::Origin etld2_wild_origin =
       url::Origin::Create(GURL("https://bar.foo.com"));
   bool result = p.Parse(etld2_wild);
@@ -2457,7 +2586,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_EQ(p.origin(), etld2_wild_origin);
   EXPECT_FALSE(p.origin().opaque());
 
-  const base::StringPiece etld1("https://baz.com");
+  const std::string_view etld1("https://baz.com");
   url::Origin etld1_origin = url::Origin::Create(GURL("https://baz.com"));
   result = p.Parse(etld1);
   EXPECT_TRUE(result);
@@ -2466,35 +2595,35 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_EQ(p.origin(), etld1_origin);
   EXPECT_FALSE(p.origin().opaque());
 
-  const base::StringPiece bad_scheme("ftp://foo.com");
+  const std::string_view bad_scheme("ftp://foo.com");
   result = p.Parse(bad_scheme);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece no_scheme_sep("httpsfoo.com");
+  const std::string_view no_scheme_sep("httpsfoo.com");
   result = p.Parse(no_scheme_sep);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece bad_registry("https://co.uk");
+  const std::string_view bad_registry("https://co.uk");
   result = p.Parse(bad_registry);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece trailing_dot("https://bar.com.");
+  const std::string_view trailing_dot("https://bar.com.");
   result = p.Parse(trailing_dot);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
   EXPECT_FALSE(p.is_valid());
   EXPECT_TRUE(p.origin().opaque());
 
-  const base::StringPiece ip_addr("https://10.20.30.40");
+  const std::string_view ip_addr("https://10.20.30.40");
   url::Origin ip_origin = url::Origin::Create(GURL("https://10.20.30.40"));
   result = p.Parse(ip_addr);
   EXPECT_TRUE(result);
@@ -2503,7 +2632,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   EXPECT_TRUE(p.is_valid());
   EXPECT_EQ(p.origin(), ip_origin);
 
-  const base::StringPiece wild_ip_addr("https://[*.]10.20.30.40");
+  const std::string_view wild_ip_addr("https://[*.]10.20.30.40");
   result = p.Parse(wild_ip_addr);
   EXPECT_FALSE(result);
   EXPECT_FALSE(p.isolate_all_subdomains());
@@ -2713,8 +2842,7 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
       isolation_context, isolated_origin_with_port, kOriginRequestsIsolation,
       &lookup_origin));
-  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
-                                      lookup_origin.scheme().length()),
+  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme()),
             lookup_origin.port());
   EXPECT_EQ(isolated_origin, lookup_origin);
 
@@ -2726,8 +2854,7 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   EXPECT_TRUE(p->GetMatchingProcessIsolatedOrigin(
       isolation_context, wild_with_port, kOriginRequestsIsolation,
       &lookup_origin));
-  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme().data(),
-                                      lookup_origin.scheme().length()),
+  EXPECT_EQ(url::DefaultPortForScheme(lookup_origin.scheme()),
             lookup_origin.port());
   EXPECT_EQ(wild_origin, lookup_origin);
 
@@ -3121,7 +3248,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 // This test verifies that CanAccessDataForOrigin returns true for a process id
 // even if all BrowsingInstanceIDs for that process have been deleted, so long
 // as the request matches the process' lock. This test sets a site-keyed lock.
-TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
+TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+       NoBrowsingInstanceIDs_SiteKeyed) {
   url::Origin foo = url::Origin::Create(GURL("https://sub.foo.com/"));
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3291,6 +3419,13 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChildProcessSecurityPolicyTest,
+    ::testing::Values(ChildProcessSecurityPolicyTestCase::kCitadelDisabled,
+                      ChildProcessSecurityPolicyTestCase::kCitadelEnabled),
+    &ChildProcessSecurityPolicyTest::DescribeParams);
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
     ::testing::Values(ChildProcessSecurityPolicyTestCase::kCitadelDisabled,
                       ChildProcessSecurityPolicyTestCase::kCitadelEnabled),
     &ChildProcessSecurityPolicyTest::DescribeParams);

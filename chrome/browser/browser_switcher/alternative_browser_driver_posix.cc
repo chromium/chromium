@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 
 #include <stdlib.h>
@@ -12,7 +17,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -33,7 +38,7 @@ using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
 
 const char kUrlVarName[] = "${url}";
 
-// TODO(crbug.com/1124758): add ${edge} on macOS/Linux once it's released on
+// TODO(crbug.com/40147515): add ${edge} on macOS/Linux once it's released on
 // those platforms.
 
 #if BUILDFLAG(IS_MAC)
@@ -91,12 +96,13 @@ void ExpandEnvironmentVariables(std::string* arg) {
   static re2::LazyRE2 re = {
       "\\$\\{([a-zA-Z_][a-zA-Z_0-9]*)\\}|\\$([a-zA-Z_][a-zA-Z_0-9]*)"};
   std::string out;
+  std::string_view view(*arg);
   std::string_view submatch[3] = {};
   size_t start = 0;
   bool matched = false;
-  while (re->Match(*arg, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
+  while (re->Match(view, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
                    submatch, std::size(submatch))) {
-    out.append(*arg, start, submatch[0].data() - (arg->data() + start));
+    out.append(view, start, submatch[0].data() - (arg->data() + start));
     if (submatch[0] == kUrlVarName) {
       // Don't treat '${url}' as an environment variable, leave it as is.
       out.append(kUrlVarName);
@@ -106,12 +112,12 @@ void ExpandEnvironmentVariables(std::string* arg) {
       if (var_value != nullptr)
         out.append(var_value);
     }
-    start = submatch[0].end() - arg->data();
+    start = submatch[0].end() - view.begin();
     matched = true;
   }
   if (!matched)
     return;
-  out.append(arg->data() + start, arg->size() - start);
+  out.append(view.data() + start, view.size() - start);
   std::swap(out, *arg);
 }
 
@@ -140,7 +146,7 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
     cmd_line->AppendArg(url.spec());
 }
 
-const BrowserVarMapping* FindBrowserMapping(base::StringPiece path) {
+const BrowserVarMapping* FindBrowserMapping(std::string_view path) {
 #if BUILDFLAG(IS_MAC)
   // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
   // so admins don't have to explicitly configure one.

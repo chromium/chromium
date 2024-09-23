@@ -13,8 +13,8 @@ class GURL;
 namespace autofill {
 
 class AutofillManager;
-struct FormData;
-struct FormFieldData;
+class FormData;
+class FormFieldData;
 
 // Abstract interface for handling a fast checkout run.
 class FastCheckoutClient {

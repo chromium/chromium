@@ -80,7 +80,7 @@ class FileStreamReader::OperationRunner
     // If the file system got unmounted, then abort the reading operation.
     if (!file_system_.get()) {
       content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(callback, 0, false /* has_more */,
+          FROM_HERE, base::BindOnce(callback, 0, /*has_more=*/false,
                                     base::File::FILE_ERROR_ABORT));
       return;
     }
@@ -139,7 +139,8 @@ class FileStreamReader::OperationRunner
   void OnOpenFileCompletedOnUIThread(
       storage::AsyncFileUtil::StatusCallback callback,
       int file_handle,
-      base::File::Error result) {
+      base::File::Error result,
+      std::unique_ptr<EntryMetadata> metadata) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     abort_callback_.Reset();
 
@@ -308,7 +309,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
       break;
 
     case INITIALIZING:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case INITIALIZED:
@@ -319,7 +320,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
       break;
 
     case FAILED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -347,7 +348,7 @@ int64_t FileStreamReader::GetLength(net::Int64CompletionOnceCallback callback) {
       break;
 
     case INITIALIZING:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case INITIALIZED:
@@ -355,7 +356,7 @@ int64_t FileStreamReader::GetLength(net::Int64CompletionOnceCallback callback) {
       break;
 
     case FAILED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

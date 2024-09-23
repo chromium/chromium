@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "zerocopy"
+  epoch = "0.7"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/byteorder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/macro_util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/post_monomorphization_compile_fail_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/third_party/rust/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35/src/wrappers.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.7.35"
+  cargo_pkg_authors = "Joshua Liebow-Feeser <joshlf@google.com>"
+  cargo_pkg_name = "zerocopy"
+  cargo_pkg_description = "Utilities for zero-copy parsing and serialization"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/byteorder/v1:lib",
+    "//third_party/rust/zerocopy_derive/v0_7:lib",
+  ]
+  features = [
+    "byteorder",
+    "derive",
+    "simd",
+    "zerocopy-derive",
+  ]
+}

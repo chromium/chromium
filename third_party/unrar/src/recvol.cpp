@@ -1,11 +1,12 @@
 #include "rar.hpp"
 
+
 #include "recvol3.cpp"
 #include "recvol5.cpp"
 
 
 
-bool RecVolumesRestore(RAROptions *Cmd,const wchar *Name,bool Silent)
+bool RecVolumesRestore(CommandData *Cmd,const std::wstring &Name,bool Silent)
 {
   Archive Arc(Cmd);
   if (!Arc.Open(Name))
@@ -42,24 +43,20 @@ bool RecVolumesRestore(RAROptions *Cmd,const wchar *Name,bool Silent)
 }
 
 
-void RecVolumesTest(RAROptions *Cmd,Archive *Arc,const wchar *Name)
+void RecVolumesTest(CommandData *Cmd,Archive *Arc,const std::wstring &Name)
 {
-  wchar RevName[NM];
-  *RevName=0;
-  if (Arc!=NULL)
+  std::wstring RevName;
+  if (Arc==NULL)
+    RevName=Name;
+  else
   {
     // We received .rar or .exe volume as a parameter, trying to find
     // the matching .rev file number 1.
     bool NewNumbering=Arc->NewNumbering;
 
-    wchar ArcName[NM];
-    wcsncpyz(ArcName,Name,ASIZE(ArcName));
-
-    wchar *VolNumStart=VolNameToFirstName(ArcName,ArcName,ASIZE(ArcName),NewNumbering);
-    wchar RecVolMask[NM];
-    wcsncpyz(RecVolMask,ArcName,ASIZE(RecVolMask));
-    size_t BaseNamePartLength=VolNumStart-ArcName;
-    wcsncpyz(RecVolMask+BaseNamePartLength,L"*.rev",ASIZE(RecVolMask)-BaseNamePartLength);
+    std::wstring RecVolMask;
+    size_t VolNumStart=VolNameToFirstName(Name,RecVolMask,NewNumbering);
+    RecVolMask.replace(VolNumStart, std::wstring::npos, L"*.rev");
 
     FindFile Find;
     Find.SetMask(RecVolMask);
@@ -67,31 +64,30 @@ void RecVolumesTest(RAROptions *Cmd,Archive *Arc,const wchar *Name)
 
     while (Find.Next(&RecData))
     {
-      wchar *Num=GetVolNumPart(RecData.Name);
-      if (*Num!='1') // Name must have "0...01" numeric part.
+      size_t NumPos=GetVolNumPos(RecData.Name);
+      if (RecData.Name[NumPos]!='1') // Name must have "0...01" numeric part.
         continue;
       bool FirstVol=true;
-      while (--Num>=RecData.Name && IsDigit(*Num))
-        if (*Num!='0')
+      while (NumPos>0 && IsDigit(RecData.Name[--NumPos]))
+        if (RecData.Name[NumPos]!='0')
         {
           FirstVol=false;
           break;
         }
       if (FirstVol)
       {
-        wcsncpyz(RevName,RecData.Name,ASIZE(RevName));
-        Name=RevName;
+        RevName=RecData.Name;
         break;
       }
     }
-    if (*RevName==0) // First .rev file not found.
+    if (RevName.empty()) // First .rev file not found.
       return;
   }
   
   File RevFile;
-  if (!RevFile.Open(Name))
+  if (!RevFile.Open(RevName))
   {
-    ErrHandler.OpenErrorMsg(Name); // It also sets RARX_OPEN.
+    ErrHandler.OpenErrorMsg(RevName); // It also sets RARX_OPEN.
     return;
   }
   mprintf(L"\n");
@@ -101,11 +97,11 @@ void RecVolumesTest(RAROptions *Cmd,Archive *Arc,const wchar *Name)
   if (Rev5)
   {
     RecVolumes5 RecVol(Cmd,true);
-    RecVol.Test(Cmd,Name);
+    RecVol.Test(Cmd,RevName);
   }
   else
   {
     RecVolumes3 RecVol(Cmd,true);
-    RecVol.Test(Cmd,Name);
+    RecVol.Test(Cmd,RevName);
   }
 }

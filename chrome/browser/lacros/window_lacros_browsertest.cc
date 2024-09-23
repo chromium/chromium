@@ -8,19 +8,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace crosapi {
-namespace {
-
-// Waits for a widget to become active.
-void WaitForActivation(views::Widget* widget) {
-  views::test::WidgetActivationWaiter waiter(widget, true);
-  waiter.Wait();
-}
-
-}  // namespace
 
 class WindowLacrosBrowserTest : public InProcessBrowserTest {
  public:
@@ -42,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(WindowLacrosBrowserTest, Activation) {
   views::Widget* widget1 =
       BrowserView::GetBrowserViewForBrowser(browser1)->GetWidget();
   browser1->window()->Show();
-  WaitForActivation(widget1);
+  views::test::WaitForWidgetActive(widget1, true);
 
   // Showing the second window should implicitly activate.
   Browser* browser2 =
@@ -50,15 +42,15 @@ IN_PROC_BROWSER_TEST_F(WindowLacrosBrowserTest, Activation) {
   views::Widget* widget2 =
       BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget();
   browser2->window()->Show();
-  WaitForActivation(widget2);
+  views::test::WaitForWidgetActive(widget2, true);
 
   // Check that activating the first browser makes it active.
   widget1->Activate();
-  WaitForActivation(widget1);
+  views::test::WaitForWidgetActive(widget1, true);
 
   // Check that deactivating the first browser makes the second one active.
   widget1->Deactivate();
-  WaitForActivation(widget2);
+  views::test::WaitForWidgetActive(widget2, true);
 }
 
 }  // namespace crosapi

@@ -4,6 +4,7 @@
 
 #include "sql/test/sql_test_suite.h"
 
+#include "base/test/test_suite.h"
 #include "sql/test/paths.h"
 
 namespace sql {

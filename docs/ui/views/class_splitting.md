@@ -202,7 +202,7 @@ void MyPromptView::Show(MyController* controller, gfx::NativeWindow context,
 }
 
 MyPromptView::MyPromptView(MyController* controller) : controller_(controller) {
-  SetDialogButtons(ui::DIALOG_BUTTON_OK);
+  SetDialogButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetAcceptCallback(base::BindOnce(
       &MyPromptView::OnDialogAccepted, base::Unretained(this)));
 

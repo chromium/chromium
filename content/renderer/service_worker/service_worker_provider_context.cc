@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -65,36 +64,6 @@ void CreateSubresourceLoaderFactoryForProviderContext(
           std::move(pending_fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }
-
-// Returns the set of hash strings of fetch handlers which can be bypassed.
-const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
-  const static base::NoDestructor<base::flat_set<std::string>> result(
-      base::SplitString(
-          features::kServiceWorkerBypassFetchHandlerBypassedHashStrings.Get(),
-          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  return *result;
-}
-
-bool ShouldBypassFetchHandlerForSubresource(
-    std::optional<std::string> sha256_script_checksum) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler)) {
-    return false;
-  }
-  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
-      features::ServiceWorkerBypassFetchHandlerTarget::kSubResource) {
-    return false;
-  }
-
-  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
-    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
-      return true;
-    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
-      return FetchHandlerBypassedHashStrings().contains(sha256_script_checksum);
-  }
-}
-
 }  // namespace
 
 ServiceWorkerProviderContext::ServiceWorkerProviderContext(
@@ -151,27 +120,12 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
       return nullptr;
     }
 
-    if (effective_fetch_handler_type_ !=
+    if (fetch_handler_type_ !=
         blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable) {
       // The fetch handler can be skipped.  The service worker process should
       // not be ready for this case.
       CountFeature(
           blink::mojom::WebFeature::kServiceWorkerSkippedForSubresourceLoad);
-      return nullptr;
-    }
-
-    if (fetch_handler_bypass_option_ ==
-        blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-            kBypassOnlyIfServiceWorkerNotStarted) {
-      // If the fetch handler for the main resource is skipped by
-      // ServiceWorkerBypassFetchHandler, the fetch handler doesn't handle
-      // subresources too.
-      return nullptr;
-    }
-
-    if (ShouldBypassFetchHandlerForSubresource(sha256_script_checksum_)) {
-      CountFeature(blink::mojom::WebFeature::
-                       kServiceWorkerBypassFetchHandlerForSubResource);
       return nullptr;
     }
   }
@@ -361,7 +315,7 @@ const blink::WebString ServiceWorkerProviderContext::client_id() const {
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(
     blink::mojom::ServiceWorkerWorkerClient* client) {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  base::EraseIf(
+  std::erase_if(
       worker_clients_,
       [client](const mojo::Remote<blink::mojom::ServiceWorkerWorkerClient>&
                    remote_client) { return remote_client.get() == client; });
@@ -395,7 +349,6 @@ void ServiceWorkerProviderContext::SetController(
          controller_));
   controller_mode_ = controller_info->mode;
   fetch_handler_type_ = controller_info->fetch_handler_type;
-  effective_fetch_handler_type_ = controller_info->effective_fetch_handler_type;
   need_router_evaluate_ = controller_info->need_router_evaluate;
   remote_controller_ = std::move(controller_info->remote_controller);
   fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;

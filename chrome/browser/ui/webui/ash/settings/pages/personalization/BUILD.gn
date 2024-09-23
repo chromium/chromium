@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("personalization") {
+  sources = [
+    "personalization_hub_handler.cc",
+    "personalization_hub_handler.h",
+    "personalization_section.cc",
+    "personalization_section.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "personalization_section_unittest.cc" ]
+
+  deps = [
+    ":personalization",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui/webui/ash/settings",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

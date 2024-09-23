@@ -19,6 +19,7 @@
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
+#import "ios/web_view/public/cwv_web_view.h"
 
 @interface CWVSyncController ()
 
@@ -154,15 +155,16 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 
   autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,
                                                      /*opted_in=*/true);
-  CHECK(password_manager::features_util::IsOptedInForAccountStorage(
-      _prefService, _syncService));
+  if (!CWVWebView.skipAccountStorageCheckEnabled) {
+    CHECK(password_manager::features_util::IsOptedInForAccountStorage(
+        _prefService, _syncService));
+  }
 }
 
 - (void)stopSyncAndClearIdentity {
   auto* primaryAccountMutator = _identityManager->GetPrimaryAccountMutator();
   primaryAccountMutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
 }
 
 - (BOOL)unlockWithPassphrase:(NSString*)passphrase {

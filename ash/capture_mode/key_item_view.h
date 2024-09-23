@@ -33,7 +33,8 @@ class KeyItemView : public views::View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   void SetIcon(const gfx::VectorIcon& icon);
   void SetText(const std::u16string& text);

@@ -1,0 +1,197 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<style>
+body {
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+}
+
+body>* {
+  display:-webkit-box;
+}
+
+#dialogBackground {
+  background-color: rgba(0, 0, 0, .2);
+  display: none;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  -webkit-box-orient: vertical;
+  -webkit-user-select:none;
+}
+
+#dialogHBackground {
+  height: 100%;
+  -webkit-box-orient: horizontal;
+}
+
+#dialog {
+  background-color: #5296DE;
+  border: 1px solid #3A75BD;
+  border-radius: 6px 6px;
+  font-size: 12px;
+  width: 355px;
+  -webkit-box-orient: vertical;
+}
+
+#dialogHeader {
+  background-color: rgba(0,0,0,0);
+  color: white;
+  font-weight: bold;
+  margin: 4px;
+  width: 100%;
+}
+
+#dialogBody {
+  background-color: rgb(240, 240, 240);
+  border: 1px solid #3A75BD;
+  border-bottom-left-radius: 4px 4px;
+  border-bottom-right-radius: 4px 4px;
+  margin: 0px 2px 2px 2px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  -webkit-box-orient: vertical;
+  width: 340px;
+}
+
+#dialogBackground, #dialogBackground div {
+  display: -webkit-box;
+  -webkit-box-align: center;
+}
+
+#dialog input[type="button"] {
+  font-size: 12px;
+  height: 25px;
+  width: 100px;
+}
+
+#dialog input[type="text"] {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 220px;
+}
+
+.dialogRow {
+  margin-left: -24px;
+  width: 100%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: end;
+}
+
+.dialogRow>* {
+  margin: 2px
+}
+
+#dialogContentFooter {
+  margin-bottom: 6px;
+  margin-left: -12px;
+  margin-top: 20px;
+  padding-right: 10px;
+}
+
+.urlAssist {
+  padding-left: 30px;
+}
+
+.status {
+  background-color: #FFF18A;
+}
+
+</style>
+<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="options.js"></script>
+</head>
+<body>
+  <table border="0">
+  <tr>
+    <td valign="top" width="16">
+      <img src="feed-icon-16x16.png" />
+    </td>
+    <td valign="middle">
+      <strong id="rss_subscription_options"></strong>
+    </td>
+    <td colspan="2">
+    </td>
+  </tr>
+  <tr>
+  <td colspan="2">
+    <select id="readerListbox" size="8" style="width:300;"></select>
+  </td>
+  <td valign="top">
+    <button style="width:100%;" id="addReader"></button><br />
+    <button style="width:100%;" id="editReader"></button><br />
+    <button style="width:100%;" id="removeReader"></button><br />
+    <button style="width:100%;" id="setDefault"></button><br />
+    <button style="width:100%;" id="resetList"></button><br />
+  </td>
+  <td style="width: 200px;">
+  </td>
+  </tr>
+  <tr>
+  <td colspan="4">
+    <input type="checkbox" id="alwaysUseDefault"
+         value="alwaysUseDefault"
+    ><span id="rss_subscription_always_use_default"></span>
+  </td>
+  </tr>
+  </table>
+
+  <div id="dialogBackground">
+    <div id="dialogHBackground">
+      <div id="dialog">
+
+        <div id="dialogHeader"></div>
+
+        <div id="dialogBody">
+
+          <div class="dialogRow">
+            &nbsp;<div class="status" id="statusMsg"></div>
+          </div>
+
+          <div class="dialogRow">
+            <div id="rss_subscription_feed_description"></div>
+            <div>
+              <input type="text" id="descriptionText">
+            </div>
+          </div>
+
+          <div class="dialogRow">
+            <div id="rss_subscription_feed_url"></div>
+            <div>
+              <input type="text" id="urlText">
+            </div>
+          </div>
+
+          <div class="dialogRow">
+            <div id="urlAssist" class="urlAssist"></div>
+          </div>
+
+          <div class="dialogRow" id="dialogContentFooter">
+            <div>
+              <input type="button" id="save">
+            </div>
+            <div>
+              <input type="button"
+                     id="rss_subscription_close_button" >
+            </div>
+          </div>
+
+        </div> <!-- /dialogBody -->
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("settings") {
+  sources = [
+    "about_flags.cc",
+    "about_flags.h",
+    "cros_settings_holder.cc",
+    "cros_settings_holder.h",
+    "device_settings_cache.cc",
+    "device_settings_cache.h",
+    "device_settings_provider.cc",
+    "device_settings_provider.h",
+    "device_settings_service.cc",
+    "device_settings_service.h",
+    "hardware_data_usage_controller.cc",
+    "hardware_data_usage_controller.h",
+    "owner_pending_setting_controller.cc",
+    "owner_pending_setting_controller.h",
+    "session_manager_operation.cc",
+    "session_manager_operation.h",
+    "shutdown_policy_forwarder.cc",
+    "shutdown_policy_forwarder.h",
+    "shutdown_policy_handler.cc",
+    "shutdown_policy_handler.h",
+    "stats_reporting_controller.cc",
+    "stats_reporting_controller.h",
+    "stub_cros_settings_provider.cc",
+    "stub_cros_settings_provider.h",
+    "supervised_user_cros_settings_provider.cc",
+    "supervised_user_cros_settings_provider.h",
+    "token_encryptor.cc",
+    "token_encryptor.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/tpm",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/account_id",
+    "//components/flags_ui",
+    "//components/ownership",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//crypto",
+    "//net",
+    "//third_party/re2:re2",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "device_settings_test_helper.cc",
+    "device_settings_test_helper.h",
+    "scoped_cros_settings_test_helper.cc",
+    "scoped_cros_settings_test_helper.h",
+    "scoped_testing_cros_settings.cc",
+    "scoped_testing_cros_settings.h",
+  ]
+
+  public_deps = [ "//components/ownership" ]
+
+  deps = [
+    ":settings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/tpm_manager",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cros_settings_unittest.cc",
+    "device_settings_cache_unittest.cc",
+    "device_settings_provider_unittest.cc",
+    "device_settings_service_unittest.cc",
+    "session_manager_operation_unittest.cc",
+    "shutdown_policy_handler_unittest.cc",
+    "stats_reporting_controller_unittest.cc",
+    "stub_cros_settings_provider_unittest.cc",
+    "token_encryptor_unittest.cc",
+  ]
+
+  deps = [
+    ":settings",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/ownership",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//components/user_manager:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

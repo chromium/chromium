@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_DOMAIN_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_DOMAIN_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 
@@ -37,7 +38,7 @@ class DevToolsDomainHandler {
 
  private:
   std::string name_;
-  DevToolsSession* session_;
+  raw_ptr<DevToolsSession> session_;
 };
 
 }  // namespace protocol

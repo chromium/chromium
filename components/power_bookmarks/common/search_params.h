@@ -16,8 +16,8 @@ struct SearchParams {
   // Specifies a plain text query that will be matched against the contents of
   // powers. The exact semantics of matching depend on the power type.
   //
-  // TODO(crbug.com/1376612): add an option to *not* look for matches in the URL
-  // string.
+  // TODO(crbug.com/40243263): add an option to *not* look for matches in the
+  // URL string.
   std::string query;
 
   // Unless equal to POWER_TYPE_UNSPECIFIED, narrows the search to a single

@@ -13,7 +13,7 @@
 // no-include-guard-because-multiply-included
 
 #include "chrome/browser/page_info/page_info_buildflags.h"
-#include "chrome/browser/password_manager/password_manager_buildflags.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
@@ -49,9 +49,11 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
                     R.drawable.ic_storage)
 DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_XR,
+                    R.drawable.gm_filled_cardboard_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_HAND_TRACKING,
+                    R.drawable.gm_filled_hand_gesture_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SETTINGS, R.drawable.settings_cog)
-DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SAFETY_CHECK, R.drawable.safety_check)
-DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD, R.drawable.shield)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_BLUE,
                     R.drawable.blue_google_shield)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_GRAY, R.drawable.gray_shield)
@@ -59,6 +61,8 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR,
                     R.drawable.ic_key_error)
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_MOBILE_FRIENDLY,
                     R.drawable.ic_mobile_friendly)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_LOCATION_OFF,
+                    R.drawable.permission_location_off)
 
 // Unified Password Manager resources
 // Color logo is used for Google branded builds only.
@@ -69,6 +73,9 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP,
 DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP,
                     R.drawable.ic_vpn_key_blue)
 #endif
+
+// The icon shown when an update to GMSCore is needed.
+DECLARE_RESOURCE_ID(IDR_ANDROID_IC_ERROR, R.drawable.ic_error)
 
 DECLARE_RESOURCE_ID(IDR_SEND_TAB_TO_SELF, R.drawable.send_tab)
 

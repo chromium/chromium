@@ -32,6 +32,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "chromium_with_telemetry_dependencies",
                   "use_clang_coverage"
                 ],
                 "config": "chromium"
@@ -60,6 +61,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "chromium_with_telemetry_dependencies",
                   "use_clang_coverage"
                 ],
                 "config": "chromium"
@@ -127,7 +129,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac13 Tests",
+              "builder": "mac14-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -179,7 +181,7 @@
         },
         {
           "bucket": "ci",
-          "builder": "Mac13 Tests",
+          "builder": "mac14-tests",
           "project": "chromium"
         }
       ]
@@ -195,6 +197,21 @@
   "$build/flakiness": {
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

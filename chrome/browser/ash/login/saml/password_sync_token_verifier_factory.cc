@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
 
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include <memory>
+
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -33,12 +37,13 @@ PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
           "PasswordSyncTokenVerifier",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {
-  DependsOn(InSessionPasswordSyncManagerFactory::GetInstance());
-}
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 PasswordSyncTokenVerifierFactory::~PasswordSyncTokenVerifierFactory() = default;
 

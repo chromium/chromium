@@ -3,6 +3,7 @@
     "android_static_analysis": "off",
     "dcheck_always_on": false,
     "debuggable_apks": false,
+    "enable_chrome_android_internal": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
@@ -14,6 +15,7 @@
     "system_webview_shell_package_name": "org.chromium.my_webview_shell",
     "target_cpu": "x64",
     "target_os": "android",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

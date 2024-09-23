@@ -97,7 +97,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
 
   if (!textInputView) {
     LogShouldOfferResult(ShouldOfferResult::kTextInputNotFound);
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
 
@@ -145,7 +145,7 @@ bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
     if (error) {
       // We should never get an error from compiling the regex, since it's a
       // literal.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return true;
     }
   }

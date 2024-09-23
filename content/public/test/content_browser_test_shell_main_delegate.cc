@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/test/task_environment.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -29,6 +30,13 @@ std::optional<int> ContentBrowserTestShellMainDelegate::PostEarlyInitialization(
   return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void ContentBrowserTestShellMainDelegate::CreateThreadPool(
+    std::string_view name) {
+  // Injects a test TaskTracker to watch for long-running tasks and produce a
+  // useful timeout message in order to find the cause of flaky timeout tests.
+  base::test::TaskEnvironment::CreateThreadPool();
+}
 
 ContentBrowserClient*
 ContentBrowserTestShellMainDelegate::CreateContentBrowserClient() {

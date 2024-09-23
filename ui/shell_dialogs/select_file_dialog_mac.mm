@@ -53,7 +53,6 @@ void SelectFileDialogImpl::FileWasSelected(
   auto it = base::ranges::find(dialog_data_list_, dialog_data,
                                [](const DialogData& d) { return &d; });
   DCHECK(it != dialog_data_list_.end());
-  void* params = dialog_data->params;
   dialog_data_list_.erase(it);
 
   if (dialog_closed_callback_for_testing_)
@@ -63,15 +62,14 @@ void SelectFileDialogImpl::FileWasSelected(
     return;
 
   if (was_cancelled || files.empty()) {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   } else {
     if (is_multi) {
-      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
-                                    params);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
     } else {
       SelectedFileInfo file(files[0]);
       file.file_tags = file_tags;
-      listener_->FileSelected(file, index, params);
+      listener_->FileSelected(file, index);
     }
   }
 }
@@ -84,7 +82,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow gfx_window,
-    void* params,
     const GURL* caller) {
   DCHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
          type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
@@ -97,7 +94,7 @@ void SelectFileDialogImpl::SelectFileImpl(
   // |dialog_data| by pointer because it will only be removed from the list when
   // the callback is made or after the callback has been cancelled by
   // |weak_factory_|.
-  dialog_data_list_.emplace_back(gfx_window, params);
+  dialog_data_list_.emplace_back(gfx_window);
   DialogData& dialog_data = dialog_data_list_.back();
 
   // Create a NSSavePanel for it.
@@ -134,7 +131,7 @@ void SelectFileDialogImpl::SelectFileImpl(
       mojo_type = SelectFileDialogType::kSaveAsFile;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -158,9 +155,8 @@ void SelectFileDialogImpl::SelectFileImpl(
       file_type_index, default_extension, std::move(callback));
 }
 
-SelectFileDialogImpl::DialogData::DialogData(gfx::NativeWindow parent_window_,
-                                             void* params_)
-    : parent_window(parent_window_), params(params_) {}
+SelectFileDialogImpl::DialogData::DialogData(gfx::NativeWindow parent_window_)
+    : parent_window(parent_window_) {}
 
 SelectFileDialogImpl::DialogData::~DialogData() {}
 
@@ -171,9 +167,12 @@ SelectFileDialogImpl::~SelectFileDialogImpl() {
 
   // Walk through the open dialogs and issue the cancel callbacks that would
   // have been made.
-  for (const auto& dialog_data : dialog_data_list_) {
+  // TODO(https://crbug.com/340178601): This doesn't make sense - why would we
+  // issue multiple undifferentiated FileSelectionCanceled() callbacks? Is it
+  // ever possible for there to actually be more than one pending dialog?
+  for (size_t i = 0; i < dialog_data_list_.size(); ++i) {
     if (listener_)
-      listener_->FileSelectionCanceled(dialog_data.params);
+      listener_->FileSelectionCanceled();
   }
 
   // Cancel the NSSavePanels by destroying their bridges.

@@ -3,6 +3,8 @@
 <translationbundle lang="lo">
 <translation id="1016765312371154165">Chrome ມອດ​ຢ່າງບໍ່​ຖືກ​ຕ້ອງ.</translation>
 <translation id="130631256467250065">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ອຸປະກອນຂອງທ່ານໃໝ່.</translation>
+<translation id="1516530951338665275">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
+ ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1635457557763038537">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນເທື່ອຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ Chrome ໃໝ່.</translation>
 <translation id="2399868464369312507">Google Chrome ກຳລັງພະຍາຍາມແກ້ໄຂວິທີການຈ່າຍເງິນ.</translation>
 <translation id="2447485272386224171">Chrome ເກີດຂຶ້ນໄດ້ໂດຍໂຄງການໂອເພນຊອດ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ແລະ <ph name="BEGIN_LINK_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_OSS" /> ອື່ນໆ.</translation>

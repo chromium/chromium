@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
 
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -40,17 +42,17 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     private final Context mContext;
-    private final Supplier<Boolean> mIsIncognitoSupplier;
+    private final Supplier<Profile> mProfileSupplier;
     private Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
     private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
     private MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
     public MessageCardProviderMediator(
             Context context,
-            Supplier<Boolean> isIncognitoSupplier,
+            Supplier<Profile> profileSupplier,
             MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mContext = context;
-        mIsIncognitoSupplier = isIncognitoSupplier;
+        mProfileSupplier = profileSupplier;
         mUiDismissActionProvider = uiDismissActionProvider;
     }
 
@@ -71,7 +73,9 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         for (Message message : mShownMessageItems.values()) {
-            message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+            message.model.set(
+                    MessageCardViewProperties.IS_INCOGNITO,
+                    mProfileSupplier.get().isOffTheRecord());
             message.model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
         }
 
@@ -91,7 +95,8 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         }
 
         Message message = mShownMessageItems.get(messageType);
-        message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+        message.model.set(
+                MessageCardViewProperties.IS_INCOGNITO, mProfileSupplier.get().isOffTheRecord());
         return message;
     }
 
@@ -106,12 +111,6 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
     private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
         switch (messageType) {
-            case TAB_SUGGESTION:
-                assert data instanceof TabSuggestionMessageService.TabSuggestionMessageData;
-                return TabSuggestionMessageCardViewModel.create(
-                        mContext,
-                        this::invalidateShownMessage,
-                        (TabSuggestionMessageService.TabSuggestionMessageData) data);
             case IPH:
                 assert data instanceof IphMessageService.IphMessageData;
                 return IphMessageCardViewModel.create(
@@ -123,7 +122,8 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 return PriceMessageCardViewModel.create(
                         mContext,
                         this::invalidateShownMessage,
-                        (PriceMessageService.PriceMessageData) data);
+                        (PriceMessageService.PriceMessageData) data,
+                        PriceDropNotificationManagerFactory.create(mProfileSupplier.get()));
             case INCOGNITO_REAUTH_PROMO_MESSAGE:
                 assert data
                         instanceof IncognitoReauthPromoMessageService.IncognitoReauthMessageData;
@@ -131,6 +131,10 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                         mContext,
                         this::invalidateShownMessage,
                         (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
+            case ARCHIVED_TABS_MESSAGE:
+                assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageData;
+                return CustomMessageCardViewModel.create(
+                        ((ArchivedTabsMessageService.ArchivedTabsMessageData) data).getProvider());
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MessageCardViewProperties.IS_INCOGNITO, false)
@@ -139,6 +143,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     }
 
     // MessageObserver implementations.
+
     @Override
     public void messageReady(
             @MessageService.MessageType int type, MessageService.MessageData data) {

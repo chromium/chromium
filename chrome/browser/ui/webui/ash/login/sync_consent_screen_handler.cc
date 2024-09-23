@@ -222,4 +222,8 @@ void SyncConsentScreenHandler::RetrieveConsentIDs(
                 consent_description_ids, consent_confirmation_id);
 }
 
+base::WeakPtr<SyncConsentScreenView> SyncConsentScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

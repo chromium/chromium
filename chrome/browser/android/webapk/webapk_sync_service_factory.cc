@@ -4,9 +4,12 @@
 
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
+#include "chrome/browser/android/webapk/webapk_restore_manager.h"
+#include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/features.h"
 
@@ -32,7 +35,8 @@ WebApkSyncServiceFactory::WebApkSyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "WebApkSyncService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+  DependsOn(WebApkInstallServiceFactory::GetInstance());
 }
 
 WebApkSyncServiceFactory::~WebApkSyncServiceFactory() = default;
@@ -41,7 +45,12 @@ std::unique_ptr<KeyedService>
 WebApkSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<WebApkSyncService>(profile);
+  auto restore_manager = std::make_unique<WebApkRestoreManager>(
+      WebApkInstallServiceFactory::GetForBrowserContext(profile),
+      std::make_unique<WebApkRestoreWebContentsManager>(profile));
+  return std::make_unique<WebApkSyncService>(
+      DataTypeStoreServiceFactory::GetForProfile(profile),
+      std::move(restore_manager));
 }
 
 }  // namespace webapk

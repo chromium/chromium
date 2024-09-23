@@ -52,10 +52,4 @@ storage::WatcherManager* DriveFsFileSystemBackendDelegate::GetWatcherManager(
   return nullptr;
 }
 
-void DriveFsFileSystemBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 }  // namespace drive

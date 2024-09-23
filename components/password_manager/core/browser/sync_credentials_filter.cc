@@ -31,7 +31,7 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
     return false;
   }
 
-  if (form.form_data.is_gaia_with_skip_save_password_form) {
+  if (form.form_data.is_gaia_with_skip_save_password_form()) {
     return false;
   }
 
@@ -92,7 +92,7 @@ bool SyncCredentialsFilter::ShouldSaveEnterprisePasswordHash(
 
 bool SyncCredentialsFilter::IsSyncAccountEmail(
     const std::string& username) const {
-  // TODO(https://crbug.com/1464264): `signin::ConsentLevel::kSync` is
+  // TODO(crbug.com/40067296): `signin::ConsentLevel::kSync` is
   // deprecated. Remove this usage.
   return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager(),
                                        signin::ConsentLevel::kSync);

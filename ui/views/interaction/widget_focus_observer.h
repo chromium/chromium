@@ -12,6 +12,7 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace views::test {
 
@@ -39,7 +40,13 @@ class WidgetFocusSupplier : public ui::FrameworkSpecificImplementation {
   // Derived classes should call this when the focus changes.
   void OnWidgetFocusChanged(gfx::NativeView focused_now);
 
+  // Used to retrieve a set of widgets. Results from multiple suppliers may be
+  // combined to get a full set.
+  virtual Widget::Widgets GetAllWidgets() const = 0;
+
  private:
+  friend class WidgetFocusSupplierFrame;
+
   base::RepeatingCallbackList<void(gfx::NativeView)> callbacks_;
 };
 
@@ -61,6 +68,10 @@ class WidgetFocusSupplierFrame {
 
   SupplierList& supplier_list() { return supplier_list_; }
 
+  // Returns the current active widget, if it can be determined, or null
+  // otherwise.
+  Widget* GetActiveWidget();
+
  private:
   // The actual list of widget focus suppliers.
   SupplierList supplier_list_;
@@ -74,6 +85,9 @@ class WidgetFocusObserver : public ui::test::StateObserver<gfx::NativeView> {
  public:
   WidgetFocusObserver();
   ~WidgetFocusObserver() override;
+
+  // ui::test::StateObserver:
+  gfx::NativeView GetStateObserverInitialState() const override;
 
  private:
   void OnWidgetFocusChanged(gfx::NativeView focused_now);

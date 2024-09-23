@@ -71,8 +71,9 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
 
  private:
   void OnBrowserClosing(Browser* browser) override {
-    if (quits_on_browser_closing_)
+    if (quits_on_browser_closing_) {
       quits_on_browser_closing_->Quit();
+    }
   }
 
   std::optional<base::RunLoop> quits_on_browser_closing_;

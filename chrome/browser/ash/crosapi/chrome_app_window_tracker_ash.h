@@ -59,11 +59,7 @@ class ChromeAppWindowTrackerAsh : public mojom::AppWindowTracker,
   // controller or updates the existing shelf item controller.
   virtual void UpdateShelf(const std::string& app_id, aura::Window* window);
 
- private:
-  // If both pieces of metadata are present, then stop tracking the window as
-  // it's no longer pending.
-  void CheckWindowNoLongerPending(const std::string& window_id);
-
+ protected:
   // Holds metadata associated with a chrome app window. Once both pieces of
   // metadata are available, this class has sufficient information to either
   // create a StandaloneBrowserExtensionAppShelfItemController, or else update
@@ -72,6 +68,11 @@ class ChromeAppWindowTrackerAsh : public mojom::AppWindowTracker,
     std::string app_id;
     raw_ptr<aura::Window> window = nullptr;
   };
+
+ private:
+  // If both pieces of metadata are present, then stop tracking the window as
+  // it's no longer pending.
+  void CheckWindowNoLongerPending(const std::string& window_id);
 
   // A map from |window_id| to WindowData. Note that Lacros windows that are not
   // associated with chrome apps will also be present in this map. They will be

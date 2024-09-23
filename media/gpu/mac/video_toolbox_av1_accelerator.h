@@ -50,6 +50,8 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
                       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
                       base::span<const uint8_t> data) override;
   bool OutputPicture(const AV1Picture& pic) override;
+  Status SetStream(base::span<const uint8_t> stream,
+                   const DecryptConfig* decrypt_config) override;
 
  private:
   bool ProcessFormat(const AV1Picture& pic,
@@ -72,7 +74,9 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxDecompressionSessionMetadata session_metadata_;
 
-  bool have_temporal_unit_ = false;
+  // Data for the current frame.
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> temporal_unit_data_;
+  bool format_processed_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

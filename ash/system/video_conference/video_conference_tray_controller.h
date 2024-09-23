@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace base {
@@ -62,6 +63,12 @@ class ASH_EXPORT VideoConferenceTrayController
 
     // Called when the state of screen sharing is changed.
     virtual void OnScreenSharingStateChange(bool is_capturing_screen) = 0;
+
+    // Called when the Dlc download state is changed for `feature_tile_title` if
+    // any DLC was registered for that effect.
+    virtual void OnDlcDownloadStateChanged(
+        bool error,
+        const std::u16string& feature_tile_title) = 0;
   };
 
   VideoConferenceTrayController();
@@ -71,6 +78,9 @@ class ASH_EXPORT VideoConferenceTrayController
       const VideoConferenceTrayController&) = delete;
 
   ~VideoConferenceTrayController() override;
+
+  // Called inside ash/ash_prefs.cc to register related prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns the singleton instance.
   static VideoConferenceTrayController* Get();
@@ -103,9 +113,23 @@ class ASH_EXPORT VideoConferenceTrayController
   // Attempts showing the speak-on-mute opt-in nudge.
   void MaybeShowSpeakOnMuteOptInNudge();
 
+  // Returns true if we can show the animation to help users to discover the new
+  // feature.
+  bool ShouldShowImageButtonAnimation() const;
+  bool ShouldShowCreateWithAiButtonAnimation() const;
+
+  // Disables showing the animation for the button from now on. Calling the
+  // above ShouldShow...() will return false for the current active user going
+  // forward.
+  void DismissImageButtonAnimationForever();
+  void DismissCreateWithAiButtonAnimationForever();
+
   // Callback used to update prefs whenever a user opts in or out of the
   // speak-on-mute feature. An `opt_in` value of false means the user opted out.
   void OnSpeakOnMuteNudgeOptInAction(bool opt_in);
+
+  void OnDlcDownloadStateFetched(bool add_warning,
+                                 const std::u16string& feature_tile_title);
 
   // Closes all nudges that are shown anchored to the VC tray, if any.
   void CloseAllVcNudges();
@@ -150,6 +174,25 @@ class ASH_EXPORT VideoConferenceTrayController
   // camera/microphone.
   bool HasCameraPermission() const;
   bool HasMicrophonePermission() const;
+
+  // Enable or disable input stream ewma power report.
+  void SetEwmaPowerReportEnabled(bool enabled);
+
+  // Return the last reported ewma power.
+  double GetEwmaPower();
+
+  // Enable or disable sidetone.
+  void SetSidetoneEnabled(bool enabled);
+
+  // Gets the state for sidetone.
+  bool GetSidetoneEnabled() const;
+
+  // Gets whether sidetone is supported.
+  bool IsSidetoneSupported() const;
+
+  // Update the sidetone supported value.
+  // Should be called before calling IsSidetoneSupported.
+  void UpdateSidetoneSupportedState();
 
   // Handles device usage from a VC app while the device is system disabled.
   virtual void HandleDeviceUsedWhileDisabled(
@@ -269,11 +312,11 @@ class ASH_EXPORT VideoConferenceTrayController
   // current session.
   int speak_on_mute_nudge_shown_count_ = 0;
 
-  // video_conference_manager_ should be valid after initialized_.
-  // Currently, VideoConferenceTrayController is destroyed inside
-  // ChromeBrowserMainParts::PostMainMessageLoopRun() as a chrome_extra_part;
-  // VideoConferenceManagerAsh is destroyed inside crosapi_manager_.reset()
-  // which is after VideoConferenceTrayController.
+  // `video_conference_manager_` should be valid after `initialized_`.
+  // Currently, `VideoConferenceTrayController` is destroyed inside
+  // `ChromeBrowserMainParts::PostMainMessageLoopRun()` as a chrome_extra_part;
+  // `VideoConferenceManagerAsh` is destroyed inside crosapi_manager_.reset()
+  // which is after `VideoConferenceTrayController`.
   raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
   bool initialized_ = false;
 

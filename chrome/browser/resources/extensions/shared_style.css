@@ -44,18 +44,13 @@ a[href] {
   margin: 0 8px;
 }
 
-.safety-check-wrapper {
-  flex: 1;
-  margin-inline-start: 15px;
-}
-
 .matching-restricted-sites-warning {
   align-items: flex-start;
   display: flex;
   flex-direction: row;
 }
 
-.matching-restricted-sites-warning iron-icon {
+.matching-restricted-sites-warning cr-icon {
   fill: var(--warning-color);
   margin-inline-end: 8px;
   min-height: var(--cr-icon-size);
@@ -99,7 +94,7 @@ a[href] {
   margin-inline-end: var(--cr-section-padding);
 
   /* Makes the tappable area fill its parent.
-   * TODO(crbug.com/949697): This is an explicit reminder to override
+   * TODO(crbug.com/41451251): This is an explicit reminder to override
    * once .separator styling is extracted from settings. */
   margin-inline-start: 0;
 }
@@ -109,3 +104,74 @@ a[href] {
   height: var(--cr-icon-size);
   min-width: var(--cr-icon-size);
 }
+
+.panel-title {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 0 0 16px 5px;
+}
+
+.panel-background {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  padding: 0px var(--cr-section-padding);
+  container-type: inline-size;
+}
+
+.panel-header {
+  align-items: center;
+  display: flex;
+  padding: var(--cr-section-padding) 0px;
+}
+
+.panel-header-text {
+  padding-inline-start: 20px;
+}
+
+.panel-header-text h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.panel-header-icon {
+  align-items: center;
+  fill: var(--panel-icon-color);
+}
+
+.panel-extensions {
+  border-top: var(--cr-separator-line);
+  /* Extension rows have a min height that adds extra padding. Thus, we
+     subtract an adjustment to account for it */
+  padding: calc(var(--cr-section-padding) - 6px) 0px;
+}
+
+.panel-extension-row {
+  border-top: none;
+}
+
+.panel-extension-info {
+  padding-inline-start: 18px;
+  margin-inline: 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-extension-icon {
+  height: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+}
+
+/* Reformat panel when the panel is the width of one extension card */
+/* clean-css ignore:start */
+@container (max-width:450px) {
+  .panel-header-icon {
+    display: none;
+  }
+
+  .panel-header-text {
+    padding-inline-start: 0;
+  }
+}
+/* clean-css ignore:end */

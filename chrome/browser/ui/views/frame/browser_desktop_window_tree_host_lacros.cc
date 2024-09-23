@@ -90,7 +90,7 @@ void BrowserDesktopWindowTreeHostLacros::TabDraggingKindChanged(
       tab_drag_kind == TabDragKind::kNone)
     return;
 
-  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  auto* wayland_extension = ui::GetWaylandToplevelExtension(*platform_window());
   if (auto event_source = GetCurrentTabDragEventSource()) {
     const auto allow_system_drag = base::FeatureList::IsEnabled(
         features::kAllowWindowDragUsingSystemDragDrop);
@@ -100,7 +100,7 @@ void BrowserDesktopWindowTreeHostLacros::TabDraggingKindChanged(
 }
 
 bool BrowserDesktopWindowTreeHostLacros::SupportsMouseLock() {
-  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  auto* wayland_extension = ui::GetWaylandToplevelExtension(*platform_window());
   return wayland_extension->SupportsPointerLock();
 }
 
@@ -108,7 +108,8 @@ void BrowserDesktopWindowTreeHostLacros::LockMouse(aura::Window* window) {
   DesktopWindowTreeHostLacros::LockMouse(window);
 
   if (SupportsMouseLock()) {
-    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    auto* wayland_extension =
+        ui::GetWaylandToplevelExtension(*platform_window());
     wayland_extension->LockPointer(true /*enabled*/);
   }
 }
@@ -117,31 +118,30 @@ void BrowserDesktopWindowTreeHostLacros::UnlockMouse(aura::Window* window) {
   DesktopWindowTreeHostLacros::UnlockMouse(window);
 
   if (SupportsMouseLock()) {
-    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    auto* wayland_extension =
+        ui::GetWaylandToplevelExtension(*platform_window());
     wayland_extension->LockPointer(false /*enabled*/);
   }
 }
 
 void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
-    ui::PlatformWindowState old_window_show_state,
-    ui::PlatformWindowState new_window_show_state) {
-  DesktopWindowTreeHostLacros::OnWindowStateChanged(old_window_show_state,
-                                                    new_window_show_state);
+    ui::PlatformWindowState old_state,
+    ui::PlatformWindowState new_state) {
+  DesktopWindowTreeHostLacros::OnWindowStateChanged(old_state, new_state);
 
-  bool fullscreen_changed =
-      ui::IsPlatformWindowStateFullscreen(new_window_show_state) ||
-      ui::IsPlatformWindowStateFullscreen(old_window_show_state);
-  if (old_window_show_state != new_window_show_state && fullscreen_changed) {
+  bool fullscreen_changed = ui::IsPlatformWindowStateFullscreen(new_state) ||
+                            ui::IsPlatformWindowStateFullscreen(old_state);
+  if (old_state != new_state && fullscreen_changed) {
     // Update WindowPinTypeKey before triggering BrowserView::ProcessFullscreen.
-    if (IsPinned(old_window_show_state)) {
-      CHECK(!IsPinned(new_window_show_state));
+    if (IsPinned(old_state)) {
+      CHECK(!IsPinned(new_state));
       desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
           lacros::kWindowPinTypeKey, chromeos::WindowPinType::kNone);
-    } else if (IsPinned(new_window_show_state)) {
-      CHECK(!IsPinned(old_window_show_state));
+    } else if (IsPinned(new_state)) {
+      CHECK(!IsPinned(old_state));
       desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
           lacros::kWindowPinTypeKey,
-          new_window_show_state == ui::PlatformWindowState::kPinnedFullscreen
+          new_state == ui::PlatformWindowState::kPinnedFullscreen
               ? chromeos::WindowPinType::kPinned
               : chromeos::WindowPinType::kTrustedPinned);
     }

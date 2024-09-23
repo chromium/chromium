@@ -22,9 +22,10 @@ EntityBuilderFactory::~EntityBuilderFactory() = default;
 BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
     const string& title,
     std::optional<std::string> originator_client_item_id) {
-  if (!originator_client_item_id)
+  if (!originator_client_item_id) {
     originator_client_item_id =
         base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
 
   BookmarkEntityBuilder builder(title, cache_guid_, *originator_client_item_id);
   return builder;

@@ -9,9 +9,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -46,6 +46,7 @@ class WaitableEvent;
 
 namespace gpu {
 class DCOMPTexture;
+class FenceSyncReleaseDelegate;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
 class GpuMemoryBufferFactory;
@@ -150,7 +151,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
-  void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
+  void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params,
+                              FenceSyncReleaseDelegate* release_delegate);
   void GetGpuMemoryBufferHandleInfo(
       const gpu::Mailbox& mailbox,
       mojom::GpuChannel::GetGpuMemoryBufferHandleInfoCallback callback);
@@ -213,7 +215,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(mojo::PlatformHandle service_handle,
                                       mojo::PlatformHandle sysmem_token,
-                                      gfx::BufferFormat format,
+                                      const viz::SharedImageFormat& format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)

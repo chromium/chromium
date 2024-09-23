@@ -1,71 +1,65 @@
-var inputEventCounter;
-var changeEventCounter;
-var testInput;
-
 function testSpinButtonChangeAndInputEvents(inputType, writingMode, initialValue, expectedValue, maximumValue)
 {
-    description(`Test for event dispatching by spin buttons in a input[type=${inputType}] with writing-mode: ${writingMode}.`);
-    if (!window.eventSender) {
-        debug('No eventSender');
-        return;
-    }
+  const description = `Test for event dispatching by spin buttons in a input[type=${inputType}] with writing-mode: ${writingMode}.`;
 
-    inputEventCounter = 0;
-    changeEventCounter = 0;
-
-    var parent = document.createElement('div');
+  test(() => {
+    assert_own_property(window, 'eventSender', 'This test requires eventSender.');
+    const parent = document.createElement('div');
     document.body.appendChild(parent);
     parent.innerHTML = '<input id=test><input id=another>';
-    testInput = document.getElementById('test');
-    var anotherInput = document.getElementById('another');
+    const testInput = document.getElementById('test');
+    const anotherInput = document.getElementById('another');
+    let inputEventCounter = 0;
+    let changeEventCounter = 0;
 
     testInput.type = inputType;
     testInput.style.writingMode = writingMode;
     if (maximumValue != undefined)
-        testInput.setAttribute("max", maximumValue);
+      testInput.setAttribute("max", maximumValue);
     testInput.setAttribute("value", initialValue);
     testInput.onchange = function() { changeEventCounter++; };
     testInput.oninput = function() { inputEventCounter++; };
 
-    debug('Initial state');
     eventSender.mouseMoveTo(0, 0);
-    shouldEvaluateTo('changeEventCounter', 0);
-    shouldEvaluateTo('inputEventCounter', 0);
     testInput.focus();
 
-    debug('Click the upper button');
     // Move the cursor on the upper button.
     var spinButton = getElementByPseudoId(internals.shadowRoot(testInput), "-webkit-inner-spin-button");
     var rect = spinButton.getBoundingClientRect();
-    if (writingMode == "horizontal-tb") {
+    if (writingMode == 'horizontal-tb' || writingMode == 'sideways-lr') {
+      // Near the top left corner.
       eventSender.mouseMoveTo(rect.left + rect.width / 4, rect.top + rect.height / 4);
     } else {
+      // Near the top right corner.
       eventSender.mouseMoveTo(rect.left + 3 * rect.width / 4, rect.top + rect.height / 4);
     }
     eventSender.mouseDown();
-    debug('Triggers only input event on mouseDown');
-    shouldBeEqualToString('testInput.value', expectedValue);
-    shouldEvaluateTo('changeEventCounter', 0);
-    shouldEvaluateTo('inputEventCounter', 1);
-    debug('Triggers only change event on mouseUp');
+
+    let desc = 'Triggers only input event on mouseDown';
+    assert_equals(testInput.value, expectedValue, desc);
+    assert_equals(changeEventCounter, 0, desc);
+    assert_equals(inputEventCounter, 1, desc);
+
+    desc = 'Triggers only change event on mouseUp';
     eventSender.mouseUp();
-    shouldBeEqualToString('testInput.value', expectedValue);
-    shouldEvaluateTo('changeEventCounter', 1);
-    shouldEvaluateTo('inputEventCounter', 1);
+    assert_equals(testInput.value, expectedValue, desc);
+    assert_equals(changeEventCounter, 1, desc);
+    assert_equals(inputEventCounter, 1, desc);
 
     if (testInput.hasAttribute("max")) {
-        debug('Click again, but the value is not changed.');
-        eventSender.mouseDown();
-        eventSender.mouseUp();
-        shouldBeEqualToString('testInput.value', expectedValue);
-        shouldEvaluateTo('changeEventCounter', 1);
-        shouldEvaluateTo('inputEventCounter', 1);
+      desc = 'Click again, but the value is not changed.';
+      eventSender.mouseDown();
+      eventSender.mouseUp();
+      assert_equals(testInput.value, expectedValue, desc);
+      assert_equals(changeEventCounter, 1, desc);
+      assert_equals(inputEventCounter, 1, desc);
     }
 
-    debug('Focus on another field');
+    desc = 'Focus on another field';
     anotherInput.focus();
-    shouldEvaluateTo('changeEventCounter', 1);
-    shouldEvaluateTo('inputEventCounter', 1);
+    assert_equals(changeEventCounter, 1, desc);
+    assert_equals(inputEventCounter, 1, desc);
 
-    parent.innerHTML = '';
+    parent.remove();
+  }, description);
 }

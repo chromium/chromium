@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,7 +58,6 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "v8/include/cppgc/internal/api-constants.h"
 
 namespace blink {
@@ -104,7 +108,7 @@ static_assert(WTF::IsTraceable<HeapDeque<IntWrapper>>::value,
 static_assert(
     WTF::IsTraceable<HeapHashSet<IntWrapper, IntWrapperHashTraits>>::value,
     "HeapHashSet<IntWrapper> must be traceable.");
-static_assert(WTF::IsTraceable<HeapHashMap<int, IntWrapper>>::value,
+static_assert(WTF::IsTraceable<HeapHashMap<int, Member<IntWrapper>>>::value,
               "HeapHashMap<int, IntWrapper> must be traceable.");
 
 }  // namespace
@@ -1679,7 +1683,7 @@ class RefCountedAndGarbageCollected final
   ~RefCountedAndGarbageCollected() { ++destructor_calls_; }
 
   void AddRef() {
-    if (UNLIKELY(!ref_count_)) {
+    if (!ref_count_) [[unlikely]] {
       keep_alive_ = this;
     }
     ++ref_count_;
@@ -2801,7 +2805,7 @@ class AllocatesOnAssignment : public GarbageCollected<AllocatesOnAssignment> {
   AllocatesOnAssignment(int x) : value_(MakeGarbageCollected<IntWrapper>(x)) {}
   AllocatesOnAssignment(IntWrapper* x) : value_(x) {}
 
-  AllocatesOnAssignment& operator=(const AllocatesOnAssignment x) {
+  AllocatesOnAssignment& operator=(const AllocatesOnAssignment& x) {
     value_ = x.value_;
     return *this;
   }

@@ -16,7 +16,7 @@
 #include "components/grit/download_internals_resources.h"
 #include "components/grit/download_internals_resources_map.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -34,7 +34,11 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
   DownloadInternalsUIMessageHandler(const DownloadInternalsUIMessageHandler&) =
       delete;
   void operator=(const DownloadInternalsUIMessageHandler&) = delete;
-  ~DownloadInternalsUIMessageHandler() override = default;
+  ~DownloadInternalsUIMessageHandler() override {
+    if (download_service_) {
+      download_service_->GetLogger()->RemoveObserver(this);
+    }
+  }
 
  private:
   // WebUIIOSMessageHandler implementation.
@@ -55,10 +59,9 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
             &DownloadInternalsUIMessageHandler::HandleStartDownload,
             weak_ptr_factory_.GetWeakPtr()));
 
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromWebUIIOS(web_ui());
+    ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
     download_service_ =
-        BackgroundDownloadServiceFactory::GetForBrowserState(browser_state);
+        BackgroundDownloadServiceFactory::GetForProfile(profile);
 
     // download_service_ will be null in incognito mode on iOS.
     if (download_service_)
@@ -168,8 +171,7 @@ DownloadInternalsUI::DownloadInternalsUI(web::WebUIIOS* web_ui,
       kDownloadInternalsResources, kDownloadInternalsResourcesSize));
   html_source->SetDefaultResource(
       IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
-                               html_source);
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
 }
 
 DownloadInternalsUI::~DownloadInternalsUI() = default;

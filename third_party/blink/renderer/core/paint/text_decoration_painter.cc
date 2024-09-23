@@ -64,10 +64,15 @@ void TextDecorationPainter::UpdateDecorationInfo(
     return;
   }
 
-  std::optional<AppliedTextDecoration> effective_selection_decoration =
-      UNLIKELY(phase_ == kSelection)
-          ? selection_->GetSelectionStyle().selection_text_decoration
-          : std::nullopt;
+  TextDecorationLine effective_selection_decoration_lines =
+      TextDecorationLine::kNone;
+  Color effective_selection_decoration_color;
+  if (phase_ == kSelection) [[unlikely]] {
+    effective_selection_decoration_lines =
+        selection_->GetSelectionStyle().selection_decoration_lines;
+    effective_selection_decoration_color =
+        selection_->GetSelectionStyle().selection_decoration_color;
+  }
 
   if (text_item.IsSvgText() && paint_info_.IsRenderingResourceSubtree()) {
     // Need to recompute a scaled font and a scaling factor because they
@@ -89,15 +94,17 @@ void TextDecorationPainter::UpdateDecorationInfo(
     top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
     result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
                    decoration_rect_.InlineSize(), style, inline_context_,
-                   effective_selection_decoration, decoration_override,
+                   effective_selection_decoration_lines,
+                   effective_selection_decoration_color, decoration_override,
                    &scaled_font, MinimumThickness1(false),
                    text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
     result.emplace(decoration_rect.offset, decoration_rect.InlineSize(), style,
-                   inline_context_, effective_selection_decoration,
-                   decoration_override, &text_item.ScaledFont(),
+                   inline_context_, effective_selection_decoration_lines,
+                   effective_selection_decoration_color, decoration_override,
+                   &text_item.ScaledFont(),
                    MinimumThickness1(!text_item.IsSvgText()));
   }
 }
@@ -118,8 +125,8 @@ void TextDecorationPainter::Begin(const FragmentItem& text_item, Phase phase) {
   UpdateDecorationInfo(decoration_info_, text_item, style_);
   clip_rect_.reset();
 
-  if (decoration_info_ && UNLIKELY(selection_)) {
-    if (UNLIKELY(text_item.IsSvgText())) {
+  if (decoration_info_ && selection_) [[unlikely]] {
+    if (text_item.IsSvgText()) [[unlikely]] {
       clip_rect_.emplace(
           ExpandRectForSVGDecorations(selection_->LineRelativeSelectionRect()));
     } else {
@@ -150,8 +157,6 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
         for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount();
              i++) {
           decoration_info.SetDecorationIndex(i);
-          paint_info_.context.SetStrokeThickness(
-              decoration_info.ResolvedThickness());
 
           if (decoration_info.HasSpellingOrGrammerError() &&
               EnumHasFlags(lines_to_paint,
@@ -205,8 +210,6 @@ void TextDecorationPainter::PaintLineThroughDecorations(
           TextDecorationLine lines = decoration.Lines();
           if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
             decoration_info.SetDecorationIndex(applied_decoration_index);
-            paint_info_.context.SetStrokeThickness(
-                decoration_info.ResolvedThickness());
 
             decoration_info.SetLineThroughLineData();
 

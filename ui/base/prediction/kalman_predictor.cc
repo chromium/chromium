@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/ui_base_features.h"
 
@@ -106,7 +106,7 @@ std::unique_ptr<InputPredictor::InputData> KalmanPredictor::GeneratePrediction(
                         atan2(second_dir.x(), second_dir.y());
       }
     }
-    if (fabsf(points_angle) * 180 / base::kPiDouble > 15) {
+    if (base::RadToDeg(fabsf(points_angle)) > 15) {
       position += ScaleVector2d(acceleration,
                                 kAccelerationInfluence * pred_dt * pred_dt);
     }

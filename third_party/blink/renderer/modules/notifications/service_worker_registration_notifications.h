@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,9 +20,9 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class GetNotificationOptions;
+class Notification;
 class NotificationOptions;
 class NotificationResourcesLoader;
-class ScriptPromiseResolver;
 class ScriptState;
 class SecurityOrigin;
 class ServiceWorkerRegistration;
@@ -33,14 +34,16 @@ class ServiceWorkerRegistrationNotifications final
  public:
   static const char kSupplementName[];
 
-  static ScriptPromise showNotification(ScriptState* script_state,
-                                        ServiceWorkerRegistration& registration,
-                                        const String& title,
-                                        const NotificationOptions* options,
-                                        ExceptionState& exception_state);
-  static ScriptPromise getNotifications(ScriptState* script_state,
-                                        ServiceWorkerRegistration& registration,
-                                        const GetNotificationOptions* options);
+  static ScriptPromise<IDLUndefined> showNotification(
+      ScriptState* script_state,
+      ServiceWorkerRegistration& registration,
+      const String& title,
+      const NotificationOptions* options,
+      ExceptionState& exception_state);
+  static ScriptPromise<IDLSequence<Notification>> getNotifications(
+      ScriptState* script_state,
+      ServiceWorkerRegistration& registration,
+      const GetNotificationOptions* options);
 
   ServiceWorkerRegistrationNotifications(ExecutionContext*,
                                          ServiceWorkerRegistration*);
@@ -61,11 +64,11 @@ class ServiceWorkerRegistrationNotifications final
       ServiceWorkerRegistration& registration);
 
   void PrepareShow(mojom::blink::NotificationDataPtr data,
-                   ScriptPromiseResolver* resolver);
+                   ScriptPromiseResolver<IDLUndefined>* resolver);
 
   void DidLoadResources(scoped_refptr<const SecurityOrigin> origin,
                         mojom::blink::NotificationDataPtr data,
-                        ScriptPromiseResolver* resolver,
+                        ScriptPromiseResolver<IDLUndefined>* resolver,
                         NotificationResourcesLoader* loader);
 
   HeapHashSet<Member<NotificationResourcesLoader>> loaders_;

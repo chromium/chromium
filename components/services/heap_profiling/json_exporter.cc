@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/services/heap_profiling/json_exporter.h"
 
 #include <inttypes.h>
@@ -59,7 +64,7 @@ const char* StringForAllocatorType(uint32_t type) {
     case AllocatorType::kPartitionAlloc:
       return "partition_alloc";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "unknown";
   }
 }

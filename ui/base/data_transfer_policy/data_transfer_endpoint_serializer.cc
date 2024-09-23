@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
@@ -67,21 +68,21 @@ std::string EndpointTypeToString(EndpointType type) {
 std::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
-      base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({
+      base::MakeFixedFlatMap<std::string_view, ui::EndpointType>({
 #if BUILDFLAG(IS_CHROMEOS)
-        {kUnknownVmString, EndpointType::kUnknownVm},
-        {kArcString, EndpointType::kArc},
-        {kBorealisString, EndpointType::kBorealis},
-        {kCrostiniString, EndpointType::kCrostini},
-        {kPluginVmString, EndpointType::kPluginVm},
-        {kLacrosString, EndpointType::kLacros},
+          {kUnknownVmString, EndpointType::kUnknownVm},
+          {kArcString, EndpointType::kArc},
+          {kBorealisString, EndpointType::kBorealis},
+          {kCrostiniString, EndpointType::kCrostini},
+          {kPluginVmString, EndpointType::kPluginVm},
+          {kLacrosString, EndpointType::kLacros},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        {kDefaultString, EndpointType::kDefault},
-        {kUrlString, EndpointType::kUrl},
-        {kClipboardHistoryString, EndpointType::kClipboardHistory},
+          {kDefaultString, EndpointType::kDefault},
+          {kUrlString, EndpointType::kUrl},
+          {kClipboardHistoryString, EndpointType::kClipboardHistory},
       });
 
-  auto* it = kEndpointStringToTypeMap.find(endpoint_string);
+  auto it = kEndpointStringToTypeMap.find(endpoint_string);
   if (it != kEndpointStringToTypeMap.end())
     return it->second;
 
@@ -111,26 +112,41 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
     std::string json) {
   std::optional<base::Value> dte_dictionary = base::JSONReader::Read(json);
 
-  if (!dte_dictionary)
+  if (!dte_dictionary) {
     return nullptr;
+  }
 
   const std::string* endpoint_type =
       dte_dictionary->GetDict().FindString(kEndpointTypeKey);
-  const std::string* url_string = dte_dictionary->GetDict().FindString(kUrlKey);
+  if (!endpoint_type) {
+    return nullptr;
+  }
 
-  if (url_string) {
+  if (*endpoint_type == kUrlString) {
+    const std::string* url_string =
+        dte_dictionary->GetDict().FindString(kUrlKey);
+    if (!url_string) {
+      return nullptr;
+    }
+
     GURL url = GURL(*url_string);
+    if (!url.is_valid()) {
+      return nullptr;
+    }
 
     return std::make_unique<DataTransferEndpoint>(
-        url, dte_dictionary->GetDict().FindBool(kOffTheRecord).value_or(false));
+        url, DataTransferEndpointOptions{.off_the_record =
+                                             dte_dictionary->GetDict()
+                                                 .FindBool(kOffTheRecord)
+                                                 .value_or(false)});
   }
 
-  if (endpoint_type && *endpoint_type != kUrlString) {
-    if (auto type_enum = EndpointStringToType(*endpoint_type))
-      return std::make_unique<DataTransferEndpoint>(type_enum.value());
+  auto type_enum = EndpointStringToType(*endpoint_type);
+  if (!type_enum) {
+    return nullptr;
   }
 
-  return nullptr;
+  return std::make_unique<DataTransferEndpoint>(type_enum.value());
 }
 
 }  // namespace ui

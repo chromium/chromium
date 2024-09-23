@@ -246,7 +246,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
 
   bool HasPendingRequest() { return test_url_loader_factory_.NumPending() > 0; }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -335,6 +335,15 @@ TEST_F(KAnonymityTrustTokenGetterTest,
         shortclientidentifier: 2,
         ShortClientIdentifier: 2,
       })",  // wrong keys
+      R"({
+        shortClientIdentifier: 2147483648
+      })",  // too big for int32
+      R"({
+        shortClientIdentifier: 10.5
+      })",  // not an int
+      R"({
+        shortClientIdentifier: -1
+      })",  // negative
   };
   for (const auto& response : bad_responses) {
     base::RunLoop run_loop;
@@ -446,6 +455,15 @@ TEST_F(KAnonymityTrustTokenGetterTest,
       "id": 1,
       "batchSize": 1,
       "keys": [{
+        "keyIdentifier": 4294967296,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // key identifier doesn't fit in uint32
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{
         "keyIdentifier": 0,
         "keyMaterial": "InsertKeyHere",
         "expirationTimestampUsec": "future"
@@ -461,6 +479,33 @@ TEST_F(KAnonymityTrustTokenGetterTest,
       }]})",                           // id is not an integer
       R"({
       "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 10.5,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // id is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": -10,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // id is negative
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 2147483648,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // id doesn't fit in int32
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
       "id": 1,
       "batchSize": "one",
       "keys": [{
@@ -468,9 +513,37 @@ TEST_F(KAnonymityTrustTokenGetterTest,
         "keyMaterial": "InsertKeyHere",
         "expirationTimestampUsec": "253402300799000000"
       }]})",                           // batchSize is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1.5,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // batchSize is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": -1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // batchSize is negative
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 2147483648,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // batchSize doesn't fit in int32
   };
 
   for (const auto& response : bad_responses) {
+    SCOPED_TRACE(response);
     base::RunLoop run_loop;
     getter()->TryGetTrustTokenAndKey(
         base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
@@ -498,6 +571,124 @@ TEST_F(KAnonymityTrustTokenGetterTest,
               bad_responses.size()},
              {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError,
               bad_responses.size()}});
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryJoinSetValidKeyCommitmentResponse) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
+  const size_t kNumCases = 3;
+  const struct {
+    const char* response;
+    const char* expected_commitment;
+  } kTestCases[kNumCases] = {{
+                                 R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",
+                                 R"({
+      "TrustTokenV3VOPRF": {
+        "batchsize": 1,
+        "id":1,
+        "keys": {
+          "0": {
+            "Y": "InsertKeyHere",
+            "expiry": "253402300799000000"
+          }
+        },
+        "protocol_version": "TrustTokenV3VOPRF"
+      }})",
+                             },
+                             {
+                                 R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 0,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": -2,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",
+                                 R"({
+      "TrustTokenV3VOPRF": {
+        "batchsize": 1,
+        "id": 0,
+        "keys": {
+          "4294967294": {
+            "Y": "InsertKeyHere",
+            "expiry": "253402300799000000"
+          }
+        },
+        "protocol_version": "TrustTokenV3VOPRF"
+      }})",
+                             },
+                             {
+                                 R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 2147483647,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 2147483648,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",
+                                 R"({
+      "TrustTokenV3VOPRF": {
+        "batchsize": 1,
+        "id": 2147483647,
+        "keys": {
+          "2147483648": {
+            "Y": "InsertKeyHere",
+            "expiry": "253402300799000000"
+          }
+        },
+        "protocol_version":"TrustTokenV3VOPRF"
+      }})",
+                             }};
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.response);
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(std::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](std::optional<KeyAndNonUniqueUserId> result) {
+                  EXPECT_FALSE(result);
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
+    RespondWithTrustTokenNonUniqueUserId(2);
+    SimulateResponseForPendingRequest("https://authserver/v1/2/fetchKeys",
+                                      test_case.response);
+    SimulateFailedResponseForPendingRequest(
+        "https://authserver/v1/2/issueTrustToken");
+    run_loop.Run();
+    task_environment()->FastForwardBy(base::Minutes(1));
+
+    // Key should have been saved to the database. Verify it was fetched
+    // correctly.
+    std::optional<KeyAndNonUniqueUserIdWithExpiration> maybe_key_commitment =
+        storage_.GetKeyAndNonUniqueUserId();
+    ASSERT_TRUE(maybe_key_commitment);
+    EXPECT_EQ(2, maybe_key_commitment->key_and_id.non_unique_user_id);
+    EXPECT_THAT(
+        base::test::ParseJson(maybe_key_commitment->key_and_id.key_commitment),
+        base::test::IsJson(test_case.expected_commitment));
+
+    storage_.UpdateKeyAndNonUniqueUserId({});
+  }
+  CheckHistogramActions(
+      hist,
+      {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, kNumCases},
+       {KAnonymityTrustTokenGetterAction::kRequestAccessToken, kNumCases},
+       {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, kNumCases},
+       {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, kNumCases},
+       {KAnonymityTrustTokenGetterAction::kFetchTrustToken, kNumCases},
+       {KAnonymityTrustTokenGetterAction::kFetchTrustTokenFailed, kNumCases}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {

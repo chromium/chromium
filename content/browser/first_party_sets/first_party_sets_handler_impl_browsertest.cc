@@ -90,7 +90,7 @@ class FirstPartySetsHandlerImplWithNewSwitchBrowserTest
     // Apply the old switch first.
     FirstPartySetsHandlerImplBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
+        network::switches::kUseRelatedWebsiteSet,
         base::StringPrintf(R"({"primary": "%s",)"
                            R"("associatedSites": ["%s","%s"]})",
                            kSiteD, kSiteB, kSiteC));

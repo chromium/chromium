@@ -71,7 +71,7 @@ class ReportQueueManualTestContextTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-// TODO(crbug.com/1383860) Disabled due to flake on Mac.
+// TODO(crbug.com/40878091) Disabled due to flake on Mac.
 #if BUILDFLAG(IS_MAC)
 TEST_F(
     ReportQueueManualTestContextTest,

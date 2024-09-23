@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
+
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -11,6 +12,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -25,10 +27,12 @@ MandatoryReauthOptInBubbleView::MandatoryReauthOptInBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     MandatoryReauthBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetCancelButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetAcceptButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller->GetCancelButtonText());
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

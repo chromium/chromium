@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['box-shadow-position'] = "inset" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-position'] = "outset" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-position'] = "inset, outset" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['box-shadow-position'] = "outset, inset" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

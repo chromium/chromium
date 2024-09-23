@@ -23,7 +23,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace extensions {
@@ -80,7 +80,7 @@ class AppWindowGeometryCache : public KeyedService,
                     const std::string& window_id,
                     const gfx::Rect& bounds,
                     const gfx::Rect& screen_bounds,
-                    ui::WindowShowState state);
+                    ui::mojom::WindowShowState state);
 
   // Get any saved geometry and state associated with |extension_id| and
   // |window_id|. If saved data exists, sets |bounds|, |screen_bounds| and
@@ -89,7 +89,7 @@ class AppWindowGeometryCache : public KeyedService,
                    const std::string& window_id,
                    gfx::Rect* bounds,
                    gfx::Rect* screen_bounds,
-                   ui::WindowShowState* state);
+                   ui::mojom::WindowShowState* state);
 
   // KeyedService
   void Shutdown() override;
@@ -115,7 +115,7 @@ class AppWindowGeometryCache : public KeyedService,
     ~WindowData();
     gfx::Rect bounds;
     gfx::Rect screen_bounds;
-    ui::WindowShowState window_state;
+    ui::mojom::WindowShowState window_state;
     base::Time last_change;
   };
 

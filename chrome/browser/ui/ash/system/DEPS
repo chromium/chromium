@@ -1,0 +1,52 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/system",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/eol",
+  "+chrome/browser/ash/login/help_app_launcher.h",
+  "+chrome/browser/ash/login/lock",
+  "+chrome/browser/ash/login/login_manager_test.h",
+  "+chrome/browser/ash/login/session",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/ash/system",
+  "+chrome/browser/ash/system_web_apps/apps/personalization_app",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/chromeos/extensions/vpn_provider",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/media/router/discovery/access_code",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/cast_config",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/managed_ui.h",
+  "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/singleton_tabs.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/webui/access_code_cast",
+  "+chrome/browser/ui/webui/ash/bluetooth",
+  "+chrome/browser/ui/webui/ash/internet",
+  "+chrome/browser/ui/webui/ash/multidevice_setup",
+  "+chrome/browser/ui/webui/ash/set_time",
+  "+chrome/browser/upgrade_detector",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+  "+chrome/test",
+]

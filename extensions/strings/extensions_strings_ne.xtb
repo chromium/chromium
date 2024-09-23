@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="3144135466825225871">crx फाइललाई प्रतिस्थापन गर्न असफल भयो। फाइल प्रयोगमा भए नभएको हेर्न जाँच गर्नुहोस्।</translation>
 <translation id="3163201441334626963">बिक्रेता <ph name="VENDOR_ID" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">विस्तार खोल्न सकिँदैन।  विस्तारलाई सुरक्षित साथ खोल्नको लागि, तपाइँको डाइरेक्टरीमा एउटा बाटो हुनु पर्छ जुन एक ड्राइभ अक्षरद्वारा सुरु हुन्छ र जसले एक जङ्कसन, माउन्ट विन्दु, वा सिमलिङ्क समावेश गर्दैन।  तपाइँको प्रोफाइको लागि त्यस्तो कुनै पनि बाटो अवस्थित छैन।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3466070586188012397">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुञ्जीको लागि आगत मूल्य वैध मार्ग हुनैपर्छ।</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">यस कम्प्युटरका प्रशासक यहाँ <ph name="EXTENSION_NAME" /> स्थापना होस् भन्ने चाहान्छन्। यसलाई हटाउन मिल्दैन।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="6068932090455285721">बिक्रेता <ph name="VENDOR_ID" /> बाट <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">एक्सटेन्सन अनप्याक गर्न सकिदैन। सुरक्षित रूपमा एक्सटेन्सन अनप्याक गर्न, तपाईंको प्रोफाइल डिरेक्टरीमा बाटो हुनु पर्छ जसमा सिमलिङ्क हुँदैन। तपाईंको लागि त्यस्तो कुनै बाटोहरू अवस्थित छैन।</translation>
 <translation id="6322279351188361895">निजी कुञ्जी पढ्न असफल भयो।</translation>
 <translation id="6391538222494443604">इनपुट डाइरेक्ट्री हुनैपर्छ।</translation>
 <translation id="641087317769093025">विस्तार अनजिप गर्न सकेन</translation>

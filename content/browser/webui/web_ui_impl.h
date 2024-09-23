@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/bindings_policy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -44,9 +46,6 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // opening a new tab).
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host);
 
-  // Called when a RenderFrame is reused for the same WebUI type (i.e. reload).
-  void RenderFrameReused(RenderFrameHost* render_frame_host);
-
   // Called when the owning RenderFrameHost has started unloading.
   void RenderFrameHostUnloading();
 
@@ -72,20 +71,19 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;
   void OverrideTitle(const std::u16string& title) override;
-  int GetBindings() override;
-  void SetBindings(int bindings) override;
+  BindingsPolicySet GetBindings() override;
+  void SetBindings(BindingsPolicySet bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
-  void RegisterMessageCallback(base::StringPiece message,
+  void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
                            base::Value::List args) override;
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
   void CallJavascriptFunctionUnsafe(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
@@ -117,8 +115,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // Options that may be overridden by individual Web UI implementations. The
   // bool options default to false. See the public getters for more information.
   std::u16string overridden_title_;  // Defaults to empty string.
-  // The bindings from BindingsPolicy that should be enabled for this page.
-  int bindings_;
+
+  // The bindings that should be enabled for this page.
+  BindingsPolicySet bindings_ =
+      BindingsPolicySet({BindingsPolicyValue::kWebUi});
 
   // The URL schemes that can be requested by this document.
   std::vector<std::string> requestable_schemes_;

@@ -947,7 +947,6 @@ virtual/stable/http/tests/navigation/location-assign-adds-history-item.html
 virtual/stable/http/tests/navigation/replacestate-base-legal.html
 virtual/stable/http/tests/navigation/useragent.php
 virtual/stable/webexposed/internal-properties-should-not-be-exposed.html
-virtual/threaded-no-composited-antialiasing/animations/stability/pseudo-element-animation-with-marker-crash.html
 virtual/threaded/printing/page-and-element-geometry-match.html
 webaudio/AudioParam/audioparam-setValueCurve-duration.html
 webaudio/codec-tests/flac/flac-decode.html

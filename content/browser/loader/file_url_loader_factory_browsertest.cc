@@ -9,12 +9,16 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <objbase.h>
-#include <shlobj.h>
+
 #include <windows.h>
+
+#include <shlobj.h>
 #include <wrl/client.h>
 #endif
 

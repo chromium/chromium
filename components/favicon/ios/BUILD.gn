@@ -14,7 +14,7 @@ source_set("ios") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/image_fetcher/ios",
-    "//ios/web",
     "//ui/gfx",
   ]
+  public_deps = [ "//ios/web/public" ]
 }

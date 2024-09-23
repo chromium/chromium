@@ -53,17 +53,14 @@ class PLATFORM_EXPORT DrawingRecorder {
                         DisplayItem::PaintPhaseToDrawingType(phase),
                         visual_rect) {}
 
-  // This form is for recording with a transient paint controller, e.g. when
-  // we are recording into a PaintRecordBuilder, where visual rect doesn't
-  // matter.
+  // This form is for recording with a paint controller without persistent
+  // data, e.g. when we are recording into a PaintRecordBuilder, where visual
+  // rect doesn't matter.
   DrawingRecorder(GraphicsContext& context,
                   const DisplayItemClient& client,
                   DisplayItem::Type type)
       : DrawingRecorder(context, client, type, gfx::Rect()) {
-#if DCHECK_IS_ON()
-    DCHECK_EQ(PaintController::kTransient,
-              context.GetPaintController().GetUsage());
-#endif
+    DCHECK(!context.GetPaintController().HasPersistentData());
   }
   DrawingRecorder(GraphicsContext& context,
                   const DisplayItemClient& client,

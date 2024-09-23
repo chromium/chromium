@@ -17,6 +17,7 @@ source_set("android") {
 
   deps = [
     ":jni_headers",
+    "//chrome/browser/profiles",
     "//chrome/browser/touch_to_fill/password_manager:public",
     "//chrome/browser/touch_to_fill/password_manager/android/internal:jni",
     "//chrome/browser/ui",
@@ -38,6 +39,7 @@ generate_jni("jni_headers") {
 android_library("public_java") {
   resources_package = "org.chromium.chrome.browser.touch_to_fill"
   deps = [
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/common/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
@@ -112,9 +114,11 @@ android_library("test_java") {
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
     "//chrome/browser/password_manager/android:public_impl_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/common/android:java_resources",
     "//chrome/browser/touch_to_fill/password_manager/android/internal:java",

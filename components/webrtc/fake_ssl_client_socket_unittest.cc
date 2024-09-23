@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/webrtc/fake_ssl_client_socket.h"
 
 #include <stddef.h>
@@ -9,6 +14,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -83,7 +89,7 @@ class MockClientSocket : public net::StreamSocket {
 // Break up |data| into a bunch of chunked MockReads/Writes and push
 // them onto |ops|.
 template <net::MockReadWriteType type>
-void AddChunkedOps(base::StringPiece data,
+void AddChunkedOps(std::string_view data,
                    size_t chunk_size,
                    net::IoMode mode,
                    std::vector<net::MockReadWrite<type>>* ops) {
@@ -138,9 +144,9 @@ class FakeSSLClientSocketTest : public testing::Test {
                                   size_t read_chunk_size,
                                   size_t write_chunk_size,
                                   int num_resets) {
-    base::StringPiece ssl_client_hello =
+    std::string_view ssl_client_hello =
         FakeSSLClientSocket::GetSslClientHello();
-    base::StringPiece ssl_server_hello =
+    std::string_view ssl_server_hello =
         FakeSSLClientSocket::GetSslServerHello();
 
     net::MockConnect mock_connect(mode, net::OK);
@@ -202,9 +208,9 @@ class FakeSSLClientSocketTest : public testing::Test {
                                           int error,
                                           HandshakeErrorLocation location) {
     DCHECK_NE(error, net::OK);
-    base::StringPiece ssl_client_hello =
+    std::string_view ssl_client_hello =
         FakeSSLClientSocket::GetSslClientHello();
-    base::StringPiece ssl_server_hello =
+    std::string_view ssl_server_hello =
         FakeSSLClientSocket::GetSslServerHello();
 
     net::MockConnect mock_connect(mode, net::OK);

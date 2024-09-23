@@ -216,10 +216,14 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
     }
     suggest_results.emplace_back(
         FileSuggestionType::kDriveFile,
-        ReparentToDriveMount(path_or_error->get_path(), drive_service_), reason,
-        /*timestamp=*/std::nullopt,
-        /*secondary_timestamp=*/std::nullopt,
-        /*score=*/std::nullopt);
+        ReparentToDriveMount(path_or_error->get_path(), drive_service_),
+        /*title=*/std::nullopt, reason,
+        /*modified_time=*/std::nullopt,
+        /*viewed_time=*/std::nullopt,
+        /*shared_time=*/std::nullopt,
+        /*score=*/std::nullopt,
+        /*drive_file_id=*/std::nullopt,
+        /*icon_url=*/std::nullopt);
   }
 
   // Validation fails on each file, so return early.

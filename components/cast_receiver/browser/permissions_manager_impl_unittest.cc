@@ -10,7 +10,7 @@
 
 namespace cast_receiver {
 
-// TODO(crbug.com/1356310): Add tests for ApplicationStateObserver.
+// TODO(crbug.com/40236247): Add tests for ApplicationStateObserver.
 class PermissionsManagerImplTest : public testing::Test {
  public:
   PermissionsManagerImplTest()

@@ -16,6 +16,10 @@ MediaItemUIObserverSet::~MediaItemUIObserverSet() {
 
 void MediaItemUIObserverSet::Observe(const std::string& id,
                                      MediaItemUI* item_ui) {
+  // If there is an old MediaItemUI with the same ID not fully closed, stop
+  // observing it before adding the new one.
+  StopObserving(id);
+
   item_ui->AddObserver(this);
   observed_item_uis_[id] = item_ui;
 }

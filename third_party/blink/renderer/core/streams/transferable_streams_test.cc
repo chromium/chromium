@@ -42,7 +42,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   TestUnderlyingSource(SourceType source_type,
                        ScriptState* script_state,
                        Vector<int> sequence,
-                       ScriptPromise start_promise)
+                       ScriptPromiseUntyped start_promise)
       : UnderlyingSourceBase(script_state),
         type_(source_type),
         sequence_(std::move(sequence)),
@@ -53,10 +53,11 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
       : TestUnderlyingSource(source_type,
                              script_state,
                              std::move(sequence),
-                             ScriptPromise::CastUndefined(script_state)) {}
+                             ToResolvedUndefinedPromise(script_state)) {}
   ~TestUnderlyingSource() override = default;
 
-  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseUntyped Start(ScriptState* script_state,
+                             ExceptionState&) override {
     started_ = true;
     if (type_ == SourceType::kPush) {
       for (int element : sequence_) {
@@ -67,24 +68,25 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
     }
     return start_promise_;
   }
-  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
+  ScriptPromiseUntyped Pull(ScriptState* script_state,
+                            ExceptionState&) override {
     if (type_ == SourceType::kPush) {
-      return ScriptPromise::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     if (index_ == sequence_.size()) {
       Controller()->Close();
-      return ScriptPromise::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
     EnqueueOrError(script_state, sequence_[index_]);
     ++index_;
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
-  ScriptPromise Cancel(ScriptState* script_state,
-                       ScriptValue reason,
-                       ExceptionState&) override {
+  ScriptPromiseUntyped Cancel(ScriptState* script_state,
+                              ScriptValue reason,
+                              ExceptionState&) override {
     cancelled_ = true;
     cancel_reason_ = reason;
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   bool IsStarted() const { return started_; }
@@ -111,7 +113,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   const Vector<int> sequence_;
   wtf_size_t index_ = 0;
 
-  const ScriptPromise start_promise_;
+  const ScriptPromiseUntyped start_promise_;
   bool started_ = false;
   bool cancelled_ = false;
   ScriptValue cancel_reason_;
@@ -225,11 +227,9 @@ TEST(TransferableStreamsTest, SmokeTest) {
   reader->read(script_state, ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 script_state,
-                MakeGarbageCollected<ExpectNullResponse>(&got_response))
-                ->V8Function(),
+                MakeGarbageCollected<ExpectNullResponse>(&got_response)),
             MakeGarbageCollected<ScriptFunction>(
-                script_state, MakeGarbageCollected<ExpectNotReached>())
-                ->V8Function());
+                script_state, MakeGarbageCollected<ExpectNotReached>()));
 
   // Need to run the event loop to pass messages through the MessagePort.
   test::RunPendingTasks();
@@ -539,7 +539,8 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1, 2}),
       resolver->Promise());
@@ -574,7 +575,8 @@ TEST(ConcatenatedReadableStreamTest, PendingStart2) {
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   TestUnderlyingSource* source1 = MakeGarbageCollected<TestUnderlyingSource>(
       SourceType::kPull, script_state, Vector<int>({1}));
   TestUnderlyingSource* source2 = MakeGarbageCollected<TestUnderlyingSource>(

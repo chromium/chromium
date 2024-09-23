@@ -18,11 +18,6 @@ android_library("module_installer_java") {
     "java/src/org/chromium/components/module_installer/engine/InstallListener.java",
     "java/src/org/chromium/components/module_installer/engine/SplitCompatEngine.java",
     "java/src/org/chromium/components/module_installer/engine/SplitCompatEngineFacade.java",
-    "java/src/org/chromium/components/module_installer/logger/Logger.java",
-    "java/src/org/chromium/components/module_installer/logger/PlayCoreLogger.java",
-    "java/src/org/chromium/components/module_installer/logger/SplitAvailabilityLogger.java",
-    "java/src/org/chromium/components/module_installer/logger/SplitInstallFailureLogger.java",
-    "java/src/org/chromium/components/module_installer/logger/SplitInstallStatusLogger.java",
     "java/src/org/chromium/components/module_installer/observer/ActivityObserver.java",
     "java/src/org/chromium/components/module_installer/observer/ActivityObserverFacade.java",
     "java/src/org/chromium/components/module_installer/observer/InstallerObserver.java",
@@ -30,7 +25,6 @@ android_library("module_installer_java") {
     "java/src/org/chromium/components/module_installer/util/CrashKeyRecorder.java",
     "java/src/org/chromium/components/module_installer/util/ModuleUtil.java",
     "java/src/org/chromium/components/module_installer/util/SplitCompatInitializer.java",
-    "java/src/org/chromium/components/module_installer/util/Timer.java",
   ]
 
   deps = [
@@ -51,9 +45,6 @@ robolectric_binary("module_installer_junit_tests") {
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
     "junit/src/org/chromium/components/module_installer/engine/ApkEngineTest.java",
     "junit/src/org/chromium/components/module_installer/engine/SplitCompatEngineTest.java",
-    "junit/src/org/chromium/components/module_installer/logger/PlayCoreLoggerTest.java",
-    "junit/src/org/chromium/components/module_installer/logger/SplitInstallFailureLoggerTest.java",
-    "junit/src/org/chromium/components/module_installer/logger/SplitInstallStatusLoggerTest.java",
     "junit/src/org/chromium/components/module_installer/observer/ActivityObserverTest.java",
   ]
   deps = [
@@ -70,17 +61,15 @@ robolectric_binary("module_installer_junit_tests") {
 java_library("module_interface_java") {
   supports_android = true
   sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterface.java" ]
+  proguard_configs = [ "module_installer.flags" ]
 }
 
 java_annotation_processor("module_interface_processor") {
   sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
   main_class = "org.chromium.components.module_installer.builder.ModuleInterfaceProcessor"
-  annotation_processor_deps =
-      [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
     ":module_interface_java",
     "//build/android:build_java",
-    "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
     "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
   ]

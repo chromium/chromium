@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/load_flags.h"
@@ -22,6 +23,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
 
@@ -83,11 +85,16 @@ class RemoteSuggestionsServiceTest : public testing::Test {
                          const int response_code,
                          std::unique_ptr<std::string> response_body) {}
 
+  TemplateURLService& template_url_service() {
+    return *search_engines_test_environment_.template_url_service();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
@@ -99,14 +106,13 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -130,14 +136,13 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartSuggestionsRequest(
       RemoteRequestType::kSearch,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -181,15 +186,14 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -208,12 +212,10 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   base::HistogramTester histogram_tester;
 
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData template_url_data;
   template_url_data.suggestions_url = "https://www.example.com/suggest";
-  template_url_service.SetUserSelectedDefaultSearchProvider(
-      template_url_service.Add(
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
@@ -221,9 +223,9 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(),
+      template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
-      template_url_service.search_terms_data(),
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -249,4 +251,132 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   ASSERT_EQ(observer.url().spec(), kRequestUrl);
   ASSERT_TRUE(observer.response_received());
   ASSERT_EQ(observer.response_body(), kResponseBody);
+}
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureCrOSOverridenOrAppendedQueryParams) {
+  // Set up a non-Google search provider.
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  template_url_data.suggestions_url =
+      "https://www.example.com/suggest?q={searchTerms}";
+  TemplateURL template_url(template_url_data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::NTP_REALBOX;
+
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+
+  // No additional query params is appended for the realbox entry point.
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the ChromeOS app_list launcher
+  // entry point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CHROMEOS_APP_LIST;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // Set up a Google search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
+
+  // `sclient=` is appended for the ChromeOS app_list launcher entry point for
+  // Google template URL.
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&sclient=cros-launcher");
+}
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureLensOverridenOrAppendedQueryParams) {
+  // Set up a non-Google search provider.
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  template_url_data.suggestions_url =
+      "https://www.example.com/suggest?q={searchTerms}";
+  TemplateURL template_url(template_url_data);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals("xyz");
+  search_terms_args.lens_overlay_interaction_response =
+      lens_overlay_interaction_response;
+
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::NTP_REALBOX;
+
+  GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+
+  // No additional query params is appended for the realbox entry point.
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the multimodal searchbox entry
+  // point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the non-multimodal searchbox
+  // entry point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the contextual searchbox entry
+  // point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // Set up a Google search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
+
+  // `iil=` and `client=chrome-multimodal` are appended for the multimodal
+  // searchbox entry point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal&iil=xyz");
+
+  // `client=chrome-contextual` is appended for the non-multimodal searchbox
+  // entry point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&client=chrome-contextual");
+
+  // `client=chrome-contextual` is appended for the contextual searchbox entry
+  // point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&client=chrome-contextual");
 }

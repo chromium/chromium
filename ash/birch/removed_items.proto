@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash;
+
+// The storage proto for the BirchItemRemover class, for storing removed items
+// persistently.
+message RemovedItemsProto {
+  // Versioning information that can be used to discard or migrate on-disk
+  // state if an incompatible change is made.
+  optional int32 version = 1;
+
+  // All hashed tab urls that should be removed.
+  // We only need support for quick key lookup, and we do not care about the
+  // (bool) value.
+  map<string, bool> removed_tab_items = 2;
+
+  // All hashed calendar event ids that should be removed.
+  // We only need support for quick key lookup, and we do not care about the
+  // (bool) value.
+  map<string, bool> removed_calendar_items = 3;
+
+  // All hashed file ids that should be removed.
+  // We only need support for quick key lookup, and we do not care about the
+  // (bool) value.
+  map<string, bool> removed_file_items = 4;
+}

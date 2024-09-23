@@ -74,31 +74,39 @@ import org.jni_zero.NativeMethods;
         mInnerUrl = innerUrl;
     }
 
-    /* package */ long toNativeParsed() {
-        long inner = 0;
-        if (mInnerUrl != null) {
-            inner = mInnerUrl.toNativeParsed();
+    /* package */ void initNative(long nativePtr) {
+        Parsed target = this;
+        Parsed innerParsed = mInnerUrl;
+        // Use a loop to avoid two copies of the long parameter list.
+        while (true) {
+            // Send the outer Parsed first, and then mInnerUrl.
+            boolean isInner = target == innerParsed;
+            ParsedJni.get()
+                    .initNative(
+                            nativePtr,
+                            isInner,
+                            target.mSchemeBegin,
+                            target.mSchemeLength,
+                            target.mUsernameBegin,
+                            target.mUsernameLength,
+                            target.mPasswordBegin,
+                            target.mPasswordLength,
+                            target.mHostBegin,
+                            target.mHostLength,
+                            target.mPortBegin,
+                            target.mPortLength,
+                            target.mPathBegin,
+                            target.mPathLength,
+                            target.mQueryBegin,
+                            target.mQueryLength,
+                            target.mRefBegin,
+                            target.mRefLength,
+                            target.mPotentiallyDanglingMarkup);
+            if (isInner || innerParsed == null) {
+                break;
+            }
+            target = mInnerUrl;
         }
-        return ParsedJni.get()
-                .createNative(
-                        mSchemeBegin,
-                        mSchemeLength,
-                        mUsernameBegin,
-                        mUsernameLength,
-                        mPasswordBegin,
-                        mPasswordLength,
-                        mHostBegin,
-                        mHostLength,
-                        mPortBegin,
-                        mPortLength,
-                        mPathBegin,
-                        mPathLength,
-                        mQueryBegin,
-                        mQueryLength,
-                        mRefBegin,
-                        mRefLength,
-                        mPotentiallyDanglingMarkup,
-                        inner);
     }
 
     /* package */ String serialize() {
@@ -172,8 +180,9 @@ import org.jni_zero.NativeMethods;
 
     @NativeMethods
     interface Natives {
-        /** Create and return the pointer to a native Parsed. */
-        long createNative(
+        void initNative(
+                long parsed,
+                boolean setAsInner,
                 int schemeBegin,
                 int schemeLength,
                 int usernameBegin,
@@ -190,7 +199,6 @@ import org.jni_zero.NativeMethods;
                 int queryLength,
                 int refBegin,
                 int refLength,
-                boolean potentiallyDanglingMarkup,
-                long innerUrl);
+                boolean potentiallyDanglingMarkup);
     }
 }

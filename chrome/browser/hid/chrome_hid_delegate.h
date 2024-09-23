@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/hid_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #include "url/origin.h"
@@ -19,7 +20,10 @@
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+struct GlobalRenderFrameHostId;
 }  // namespace content
+
+class HidChooser;
 
 class ChromeHidDelegate : public content::HidDelegate {
  public:
@@ -37,10 +41,12 @@ class ChromeHidDelegate : public content::HidDelegate {
   bool CanRequestDevicePermission(content::BrowserContext* browser_context,
                                   const url::Origin& origin) override;
   bool HasDevicePermission(content::BrowserContext* browser_context,
+                           content::RenderFrameHost* render_frame_host,
                            const url::Origin& origin,
                            const device::mojom::HidDeviceInfo& device) override;
   void RevokeDevicePermission(
       content::BrowserContext* browser_context,
+      content::RenderFrameHost* render_frame_host,
       const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device) override;
   device::mojom::HidManager* GetHidManager(
@@ -65,6 +71,18 @@ class ChromeHidDelegate : public content::HidDelegate {
 
   ContextObservation* GetContextObserver(
       content::BrowserContext* browser_context);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Opens a device chooser for the frame with id `embedder_rfh_id` if `allow`
+  // is true.
+  virtual void OnWebViewHidPermissionRequestCompleted(
+      base::WeakPtr<HidChooser> chooser,
+      content::GlobalRenderFrameHostId embedder_rfh_id,
+      std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+      content::HidChooser::Callback callback,
+      bool allow);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::flat_map<content::BrowserContext*, std::unique_ptr<ContextObservation>>
       observations_;

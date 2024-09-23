@@ -24,13 +24,29 @@ void SharedWorkerConnectorImpl::Create(
     GlobalRenderFrameHostId client_render_frame_host_id,
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
   mojo::MakeSelfOwnedReceiver(base::WrapUnique(new SharedWorkerConnectorImpl(
-                                  client_render_frame_host_id)),
+                                  client_render_frame_host_id, std::nullopt)),
                               std::move(receiver));
 }
 
+// static
+void SharedWorkerConnectorImpl::Create(
+    base::PassKey<StorageAccessHandle>,
+    GlobalRenderFrameHostId client_render_frame_host_id,
+    const blink::StorageKey& storage_key_override,
+    mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new SharedWorkerConnectorImpl(
+          client_render_frame_host_id, storage_key_override)),
+      std::move(receiver));
+}
+
 SharedWorkerConnectorImpl::SharedWorkerConnectorImpl(
-    GlobalRenderFrameHostId client_render_frame_host_id)
-    : client_render_frame_host_id_(client_render_frame_host_id) {}
+    GlobalRenderFrameHostId client_render_frame_host_id,
+    const std::optional<blink::StorageKey>& storage_key_override)
+    : client_render_frame_host_id_(client_render_frame_host_id),
+      storage_key_override_(storage_key_override) {}
+
+SharedWorkerConnectorImpl::~SharedWorkerConnectorImpl() = default;
 
 void SharedWorkerConnectorImpl::Connect(
     blink::mojom::SharedWorkerInfoPtr info,
@@ -60,10 +76,11 @@ void SharedWorkerConnectorImpl::Connect(
   }
   SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
       host->GetStoragePartition()->GetSharedWorkerService());
-  service->ConnectToWorker(
-      client_render_frame_host_id_, std::move(info), std::move(client),
-      creation_context_type, blink::MessagePortChannel(std::move(message_port)),
-      std::move(blob_url_loader_factory), client_ukm_source_id);
+  service->ConnectToWorker(client_render_frame_host_id_, std::move(info),
+                           std::move(client), creation_context_type,
+                           blink::MessagePortChannel(std::move(message_port)),
+                           std::move(blob_url_loader_factory),
+                           client_ukm_source_id, storage_key_override_);
 }
 
 }  // namespace content

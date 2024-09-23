@@ -151,7 +151,7 @@ void TopicSubscriptionRequest::Start() {
             }
           }
           user_data {
-            type: SESSION_ID
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2023-10-24"
         }

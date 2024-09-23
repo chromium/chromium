@@ -16,8 +16,8 @@
 // if the grid is currently the one selected by the user.
 - (void)currentlySelectedGrid:(BOOL)selected;
 
-// Notifies the model that the mode the grid should switch to `mode`.
-- (void)switchToMode:(TabGridMode)mode;
+// Notifies the model that the current page is the active one.
+- (void)setPageAsActive;
 
 @end
 

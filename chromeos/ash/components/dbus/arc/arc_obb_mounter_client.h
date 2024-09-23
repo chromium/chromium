@@ -10,13 +10,14 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace ash {
 
 // ArcObbMounterClient is used to communicate with the ArcObbMounter service
-// which mounts OBB (opaque binary blob - https://goo.gl/ja8aN1) files.
+// which mounts OBB (opaque binary blob) files. See:
+// https://developer.android.com/google/play/expansion-files
 // All method should be called from the origin thread (UI thread) which
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcObbMounterClient

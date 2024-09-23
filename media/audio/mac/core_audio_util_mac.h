@@ -70,7 +70,8 @@ bool IsOutputDevice(AudioObjectID device_id);
 base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
                                    AudioDeviceID device_id,
                                    AudioObjectPropertyScope scope,
-                                   int sample_rate);
+                                   int sample_rate,
+                                   bool is_input);
 
 }  // namespace core_audio_mac
 }  // namespace media

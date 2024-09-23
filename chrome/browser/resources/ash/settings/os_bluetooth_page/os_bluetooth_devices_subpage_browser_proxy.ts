@@ -6,6 +6,17 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 export interface OsBluetoothDevicesSubpageBrowserProxy {
   /**
+   * Invokes the removal of a Fast Pair device by the account key
+   * |accountKey| from a user's account.
+   */
+  deleteFastPairSavedDevice(accountKey: string): void;
+
+  /**
+   * Request the computer's Battery Saver Status.
+   */
+  requestBatterySaverStatus(): void;
+
+  /**
    * Requests whether the Fast Pair feature is supported by the device.
    * Returned by the 'fast-pair-device-supported' WebUI listener event.
    */
@@ -19,10 +30,10 @@ export interface OsBluetoothDevicesSubpageBrowserProxy {
   requestFastPairSavedDevices(): void;
 
   /**
-   * Invokes the removal of a Fast Pair device by the account key
-   * |accountKey| from a user's account.
+   * Request the hardware offloading support status: the computer chipset's
+   * ability to offload scanning and packet-filtering onto the hardware.
    */
-  deleteFastPairSavedDevice(accountKey: string): void;
+  requestHardwareOffloadingSupportStatus(): void;
 
   /**
    * Triggers Bluetooth revamp Hats survey. If user is selected Hats survey
@@ -45,6 +56,14 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl implements
     instance = obj;
   }
 
+  deleteFastPairSavedDevice(accountKey: string): void {
+    chrome.send('removeSavedDevice', [accountKey]);
+  }
+
+  requestBatterySaverStatus(): void {
+    chrome.send('requestBatterySaverStatus');
+  }
+
   requestFastPairDeviceSupport(): void {
     chrome.send('requestFastPairDeviceSupportStatus');
   }
@@ -53,8 +72,8 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl implements
     chrome.send('loadSavedDevicePage');
   }
 
-  deleteFastPairSavedDevice(accountKey: string): void {
-    chrome.send('removeSavedDevice', [accountKey]);
+  requestHardwareOffloadingSupportStatus(): void {
+    chrome.send('requestHardwareOffloadingSupportStatus');
   }
 
   showBluetoothRevampHatsSurvey(): void {

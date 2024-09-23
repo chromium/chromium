@@ -31,7 +31,7 @@ struct UsbDeviceId {
 
 // All the device settings data that are needed in Lacros should be here.
 //
-// Next MinVersion: 6
+// Next MinVersion: 7
 [Stable]
 struct DeviceSettings {
   // The value of AttestationForContentProtectionEnabled device setting.
@@ -69,6 +69,10 @@ struct DeviceSettings {
   [MinVersion=5]
   OptionalBool? device_guest_mode_enabled@9;
 
+  // The value of DeviceExtensionsSystemLogEnabled device policy.
+  [MinVersion=6]
+  OptionalBool? device_extensions_system_log_enabled@10;
+
   [Stable]
   enum OptionalBool {
     kUnset,
@@ -103,7 +107,7 @@ interface DeviceSettingsService {
 
   // Identical to the above but deprecated since it is not correctly typed.
   // The returned values are either dictionaries or a null value.
-  // TODO(https://crbug.com/1340434): Remove the deprecated overload.
+  // TODO(crbug.com/40850357): Remove the deprecated overload.
   [MinVersion=1]
   GetDevicePolicyDeprecated@1() => (mojo_base.mojom.Value device_policy,
                                     mojo_base.mojom.Value legend_data);

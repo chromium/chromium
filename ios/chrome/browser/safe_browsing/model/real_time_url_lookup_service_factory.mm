@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
@@ -23,10 +23,15 @@
 
 // static
 safe_browsing::RealTimeUrlLookupService*
-RealTimeUrlLookupServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+RealTimeUrlLookupServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+safe_browsing::RealTimeUrlLookupService*
+RealTimeUrlLookupServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::RealTimeUrlLookupService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -53,22 +58,19 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
-      VerdictCacheManagerFactory::GetForBrowserState(chrome_browser_state),
-      base::BindRepeating(&GetUserPopulationForBrowserState,
-                          chrome_browser_state),
-      chrome_browser_state->GetPrefs(),
+      VerdictCacheManagerFactory::GetForProfile(profile),
+      base::BindRepeating(&GetUserPopulationForProfile, profile),
+      profile->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
-          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
-      base::BindRepeating(
-          &safe_browsing::SyncUtils::
-              AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
-          SyncServiceFactory::GetForBrowserState(chrome_browser_state),
-          IdentityManagerFactory::GetForBrowserState(chrome_browser_state)),
-      chrome_browser_state->IsOffTheRecord(),
+          IdentityManagerFactory::GetForProfile(profile)),
+      base::BindRepeating(&safe_browsing::SyncUtils::
+                              AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
+                          SyncServiceFactory::GetForProfile(profile),
+                          IdentityManagerFactory::GetForProfile(profile)),
+      profile->IsOffTheRecord(),
       GetApplicationContext()->GetVariationsService(),
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time

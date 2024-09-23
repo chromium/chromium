@@ -70,7 +70,7 @@ class TestImeObserver : public IMEObserver {
   bool ime_menu_active_ = false;
 };
 
-class TestImeControllerObserver : public ImeControllerImpl::Observer {
+class TestImeControllerObserver : public ImeController::Observer {
  public:
   TestImeControllerObserver() = default;
 

@@ -44,7 +44,7 @@ net::structured_headers::Item PolicyValueToItem(const PolicyValue& value) {
     case mojom::PolicyValueType::kDecDouble:
       return net::structured_headers::Item{value.DoubleValue()};
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return net::structured_headers::Item{
           nullptr, net::structured_headers::Item::ItemType::kNullType};
   }

@@ -7,12 +7,12 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "third_party/libpng/png.h"
+#include "skia/buildflags.h"
+#include "skia/rusty_png_feature.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
@@ -21,301 +21,72 @@
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+#include "third_party/skia/experimental/rust_png/SkPngRustDecoder.h"
+#endif
+
 namespace gfx {
 
 // Decoder --------------------------------------------------------------------
-//
-// This code is based on WebKit libpng interface (PNGImageDecoder), which is
-// in turn based on the Mozilla png decoder.
 
 namespace {
 
-// Gamma constants: We assume we're on Windows which uses a gamma of 2.2.
-const double kMaxGamma = 21474.83;  // Maximum gamma accepted by png library.
-const double kDefaultGamma = 2.2;
-const double kInverseGamma = 1.0 / kDefaultGamma;
-
-class PngDecoderState {
- public:
-  // Output is a vector<unsigned char>.
-  PngDecoderState(PNGCodec::ColorFormat ofmt, std::vector<unsigned char>* o)
-      : output_format(ofmt),
-        output_channels(0),
-        bitmap(nullptr),
-        is_opaque(true),
-        output(o),
-        width(0),
-        height(0),
-        done(false) {}
-
-  // Output is an SkBitmap.
-  explicit PngDecoderState(SkBitmap* skbitmap)
-      : output_format(PNGCodec::FORMAT_SkBitmap),
-        output_channels(0),
-        bitmap(skbitmap),
-        is_opaque(true),
-        output(nullptr),
-        width(0),
-        height(0),
-        done(false) {}
-
-  PngDecoderState(const PngDecoderState&) = delete;
-  PngDecoderState& operator=(const PngDecoderState&) = delete;
-
-  PNGCodec::ColorFormat output_format;
-  int output_channels;
-
-  // An incoming SkBitmap to write to. If nullptr, we write to output instead.
-  raw_ptr<SkBitmap> bitmap;
-
-  // Used during the reading of an SkBitmap. Defaults to true until we see a
-  // pixel with anything other than an alpha of 255.
-  bool is_opaque;
-
-  // The other way to decode output, where we write into an intermediary buffer
-  // instead of directly to an SkBitmap.
-  raw_ptr<std::vector<unsigned char>> output;
-
-  // Size of the image, set in the info callback.
-  int width;
-  int height;
-
-  // Set to true when we've found the end of the data.
-  bool done;
-};
-
-// User transform (passed to libpng) which converts a row decoded by libpng to
-// Skia format. Expects the row to have 4 channels, otherwise there won't be
-// enough room in |data|.
-void ConvertRGBARowToSkia(png_structp png_ptr,
-                          png_row_infop row_info,
-                          png_bytep data) {
-  const int channels = row_info->channels;
-  DCHECK_EQ(channels, 4);
-
-  PngDecoderState* state =
-      static_cast<PngDecoderState*>(png_get_user_transform_ptr(png_ptr));
-  DCHECK(state) << "LibPNG user transform pointer is nullptr";
-
-  unsigned char* const end = data + row_info->rowbytes;
-  for (unsigned char* p = data; p < end; p += channels) {
-    uint32_t* sk_pixel = reinterpret_cast<uint32_t*>(p);
-    const unsigned char alpha = p[channels - 1];
-    if (alpha != 255) {
-      state->is_opaque = false;
-      *sk_pixel = SkPreMultiplyARGB(alpha, p[0], p[1], p[2]);
-    } else {
-      *sk_pixel = SkPackARGB32(alpha, p[0], p[1], p[2]);
-    }
+std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
+                                          SkCodec::Result* result) {
+  if (skia::IsRustyPngEnabled()) {
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+    return SkPngRustDecoder::Decode(std::move(stream), result);
+#else
+    // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
+    NOTREACHED_NORETURN();
+#endif
   }
+
+  return SkPngDecoder::Decode(std::move(stream), result);
 }
 
-// Called when the png header has been read. This code is based on the WebKit
-// PNGImageDecoder
-void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
-  PngDecoderState* state =
-      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
-
-  int bit_depth, color_type, interlace_type, compression_type;
-  int filter_type;
-  png_uint_32 w, h;
-  png_get_IHDR(png_ptr, info_ptr, &w, &h, &bit_depth, &color_type,
-               &interlace_type, &compression_type, &filter_type);
-
-  // Bounds check. When the image is unreasonably big, we'll error out and
-  // end up back at the setjmp call when we set up decoding.  "Unreasonably big"
-  // means "big enough that w * h * 32bpp might overflow an int"; we choose this
-  // threshold to match WebKit and because a number of places in code assume
-  // that an image's size (in bytes) fits in a (signed) int.
-  unsigned long long total_size =
-      static_cast<unsigned long long>(w) * static_cast<unsigned long long>(h);
-  if (total_size > ((1 << 29) - 1))
-    longjmp(png_jmpbuf(png_ptr), 1);
-  state->width = static_cast<int>(w);
-  state->height = static_cast<int>(h);
-
-  // The following png_set_* calls have to be done in the order dictated by
-  // the libpng docs. Please take care if you have to move any of them. This
-  // is also why certain things are done outside of the switch, even though
-  // they look like they belong there.
-
-  // Expand to ensure we use 24-bit for RGB and 32-bit for RGBA.
-  if (color_type == PNG_COLOR_TYPE_PALETTE ||
-      (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8))
-    png_set_expand(png_ptr);
-
-  // The '!= 0' is for silencing a Windows compiler warning.
-  bool input_has_alpha = ((color_type & PNG_COLOR_MASK_ALPHA) != 0);
-
-  // Transparency for paletted images.
-  if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
-    png_set_expand(png_ptr);
-    input_has_alpha = true;
+bool PrepareForPNGDecode(const unsigned char* input,
+                         size_t input_size,
+                         PNGCodec::ColorFormat format,
+                         std::unique_ptr<SkCodec>* codec,
+                         SkImageInfo* image_info) {
+  // Parse the input stream with the PNG decoder, yielding a SkCodec.
+  auto stream = std::make_unique<SkMemoryStream>(input, input_size,
+                                                 /*copyData=*/false);
+  SkCodec::Result result;
+  *codec = CreatePngDecoder(std::move(stream), &result);
+  if (!*codec || result != SkCodec::kSuccess) {
+    return false;
   }
 
-  // Convert 16-bit to 8-bit.
-  if (bit_depth == 16)
-    png_set_strip_16(png_ptr);
-
-  // Pick our row format converter necessary for this data.
-  if (!input_has_alpha) {
-    switch (state->output_format) {
-      case PNGCodec::FORMAT_RGBA:
-        state->output_channels = 4;
-        png_set_add_alpha(png_ptr, 0xFF, PNG_FILLER_AFTER);
-        break;
-      case PNGCodec::FORMAT_BGRA:
-        state->output_channels = 4;
-        png_set_bgr(png_ptr);
-        png_set_add_alpha(png_ptr, 0xFF, PNG_FILLER_AFTER);
-        break;
-      case PNGCodec::FORMAT_SkBitmap:
-        state->output_channels = 4;
-        png_set_add_alpha(png_ptr, 0xFF, PNG_FILLER_AFTER);
-        break;
-    }
-  } else {
-    switch (state->output_format) {
-      case PNGCodec::FORMAT_RGBA:
-        state->output_channels = 4;
-        break;
-      case PNGCodec::FORMAT_BGRA:
-        state->output_channels = 4;
-        png_set_bgr(png_ptr);
-        break;
-      case PNGCodec::FORMAT_SkBitmap:
-        state->output_channels = 4;
-        break;
-    }
-  }
-
-  // Expand grayscale to RGB.
-  if (color_type == PNG_COLOR_TYPE_GRAY ||
-      color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-    png_set_gray_to_rgb(png_ptr);
-
-  // Deal with gamma and keep it under our control.
-  double gamma;
-  if (png_get_gAMA(png_ptr, info_ptr, &gamma)) {
-    if (gamma <= 0.0 || gamma > kMaxGamma) {
-      gamma = kInverseGamma;
-      png_set_gAMA(png_ptr, info_ptr, gamma);
-    }
-    png_set_gamma(png_ptr, kDefaultGamma, gamma);
-  } else {
-    png_set_gamma(png_ptr, kDefaultGamma, kInverseGamma);
-  }
-
-  // Setting the user transforms here (as opposed to inside the switch above)
-  // because all png_set_* calls need to be done in the specific order
-  // mandated by libpng.
-  if (state->output_format == PNGCodec::FORMAT_SkBitmap) {
-    png_set_read_user_transform_fn(png_ptr, ConvertRGBARowToSkia);
-    png_set_user_transform_info(png_ptr, state, 0, 0);
-  }
-
-  // Tell libpng to send us rows for interlaced pngs.
-  if (interlace_type == PNG_INTERLACE_ADAM7)
-    png_set_interlace_handling(png_ptr);
-
-  png_read_update_info(png_ptr, info_ptr);
-
-  if (state->bitmap) {
-    if (!state->bitmap->tryAllocN32Pixels(state->width, state->height)) {
-      png_error(png_ptr, "Could not allocate bitmap.");
-      NOTREACHED();
-      return;
-    }
-  } else if (state->output) {
-    state->output->resize(state->width * state->output_channels *
-                          state->height);
-  }
-}
-
-void DecodeRowCallback(png_struct* png_ptr,
-                       png_byte* new_row,
-                       png_uint_32 row_num,
-                       int pass) {
-  if (!new_row)
-    return;  // Interlaced image; row didn't change this pass.
-
-  PngDecoderState* state =
-      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
-
-  if (static_cast<int>(row_num) > state->height) {
-    NOTREACHED() << "Invalid row";
-    return;
-  }
-
-  unsigned char* base = nullptr;
-  if (state->bitmap)
-    base = reinterpret_cast<unsigned char*>(state->bitmap->getAddr32(0, 0));
-  else if (state->output)
-    base = &state->output->front();
-
-  unsigned char* dest = &base[state->width * state->output_channels * row_num];
-  png_progressive_combine_row(png_ptr, dest, new_row);
-}
-
-void DecodeEndCallback(png_struct* png_ptr, png_info* info) {
-  PngDecoderState* state =
-      static_cast<PngDecoderState*>(png_get_progressive_ptr(png_ptr));
-
-  // Mark the image as complete, this will tell the Decode function that we
-  // have successfully found the end of the data.
-  state->done = true;
-}
-
-// Holds png struct and info ensuring the proper destruction.
-class PngReadStructInfo {
- public:
-  PngReadStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {}
-
-  PngReadStructInfo(const PngReadStructInfo&) = delete;
-  PngReadStructInfo& operator=(const PngReadStructInfo&) = delete;
-
-  ~PngReadStructInfo() {
-    png_destroy_read_struct(&png_ptr_, &info_ptr_, nullptr);
-  }
-
-  bool Build(const unsigned char* input, size_t input_size) {
-    if (input_size < 8)
-      return false;  // Input data too small to be a png
-
-    // Have libpng check the signature, it likes the first 8 bytes.
-    if (png_sig_cmp(const_cast<unsigned char*>(input), 0, 8) != 0)
+  // Create an SkImageInfo matching the PNG's, but with our desired format.
+  SkImageInfo codec_info = (*codec)->getInfo();
+  SkAlphaType alpha_type = codec_info.alphaType();
+  SkColorType color_type;
+  switch (format) {
+    case PNGCodec::FORMAT_RGBA:
+      color_type = kRGBA_8888_SkColorType;
+      break;
+    case PNGCodec::FORMAT_BGRA:
+      color_type = kBGRA_8888_SkColorType;
+      break;
+    case PNGCodec::FORMAT_SkBitmap:
+      color_type = kN32_SkColorType;
+      if (alpha_type == kUnpremul_SkAlphaType) {
+        alpha_type = kPremul_SkAlphaType;
+      }
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION() << "Invalid color format " << format;
       return false;
-
-    png_ptr_ = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr,
-                                      nullptr);
-    if (!png_ptr_)
-      return false;
-
-    info_ptr_ = png_create_info_struct(png_ptr_);
-    if (!info_ptr_) {
-      return false;
-    }
-    return true;
   }
+  *image_info =
+      SkImageInfo::Make(codec_info.width(), codec_info.height(), color_type,
+                        alpha_type, codec_info.refColorSpace());
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_struct* png_ptr_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION png_info* info_ptr_;
-};
-
-// Libpng user error and warning functions which allows us to print libpng
-// errors and warnings using Chrome's logging facilities instead of stderr.
-
-void LogLibPNGDecodeError(png_structp png_ptr, png_const_charp error_msg) {
-  DLOG(ERROR) << "libpng decode error: " << error_msg;
-  longjmp(png_jmpbuf(png_ptr), 1);
-}
-
-void LogLibPNGDecodeWarning(png_structp png_ptr, png_const_charp warning_msg) {
-  DLOG(ERROR) << "libpng decode warning: " << warning_msg;
+  // Reject images that would exceed INT_MAX bytes.
+  constexpr int kBytesPerPixel = 4;
+  return image_info->dimensions().area() < (INT_MAX / kBytesPerPixel);
 }
 
 }  // namespace
@@ -327,38 +98,28 @@ bool PNGCodec::Decode(const unsigned char* input,
                       std::vector<unsigned char>* output,
                       int* w,
                       int* h) {
+  DCHECK(output);
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoVector");
 
-  PngReadStructInfo si;
-  if (!si.Build(input, input_size))
-    return false;
+  std::unique_ptr<SkCodec> codec;
+  SkImageInfo info;
+  bool ok = PrepareForPNGDecode(input, input_size, format, &codec, &info);
 
-  if (setjmp(png_jmpbuf(si.png_ptr_))) {
-    // The destroyer will ensure that the structures are cleaned up in this
-    // case, even though we may get here as a jump from random parts of the
-    // PNG library called below.
-    return false;
-  }
-
-  PngDecoderState state(format, output);
-
-  png_set_error_fn(si.png_ptr_, nullptr, LogLibPNGDecodeError,
-                   LogLibPNGDecodeWarning);
-  png_set_progressive_read_fn(si.png_ptr_, &state, &DecodeInfoCallback,
-                              &DecodeRowCallback, &DecodeEndCallback);
-  png_process_data(si.png_ptr_, si.info_ptr_, const_cast<unsigned char*>(input),
-                   input_size);
-
-  if (!state.done) {
-    // Fed it all the data but the library didn't think we got all the data, so
-    // this file must be truncated.
-    output->clear();
+  *w = info.width();
+  *h = info.height();
+  if (!ok) {
     return false;
   }
 
-  *w = state.width;
-  *h = state.height;
-  return true;
+  // Always decode into vanilla sRGB, because the output array is a bag of RGBA
+  // pixels and doesn't have an associated colorspace.
+  SkImageInfo info_srgb = info.makeColorSpace(SkColorSpace::MakeSRGB());
+
+  // Decode the pixels into the `output` vector.
+  output->resize(info_srgb.computeMinByteSize());
+  SkCodec::Result result =
+      codec->getPixels(info_srgb, &output->front(), info.minRowBytes());
+  return result == SkCodec::kSuccess;
 }
 
 // static
@@ -368,33 +129,29 @@ bool PNGCodec::Decode(const unsigned char* input,
   DCHECK(bitmap);
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoSkBitmap");
 
-  PngReadStructInfo si;
-  if (!si.Build(input, input_size))
-    return false;
-
-  if (setjmp(png_jmpbuf(si.png_ptr_))) {
-    // The destroyer will ensure that the structures are cleaned up in this
-    // case, even though we may get here as a jump from random parts of the
-    // PNG library called below.
+  std::unique_ptr<SkCodec> codec;
+  SkImageInfo info;
+  if (!PrepareForPNGDecode(input, input_size, FORMAT_SkBitmap, &codec, &info)) {
     return false;
   }
 
-  PngDecoderState state(bitmap);
+  // The image alpha type is likely to be "unpremultiplied," as this is set by
+  // the PNG standard. However, Skia prefers premultiplied bitmaps. We update
+  // the image-info struct to specify premultiplication; the SkCodec will
+  // automatically fix up the pixels as it runs.
+  SkAlphaType alpha = info.alphaType();
+  if (alpha == kUnpremul_SkAlphaType) {
+    info = info.makeAlphaType(kPremul_SkAlphaType);
+  }
 
-  png_set_progressive_read_fn(si.png_ptr_, &state, &DecodeInfoCallback,
-                              &DecodeRowCallback, &DecodeEndCallback);
-  png_process_data(si.png_ptr_, si.info_ptr_, const_cast<unsigned char*>(input),
-                   input_size);
-
-  if (!state.done) {
+  // Decode the image pixels directly onto the SkBitmap. Alpha premultiplication
+  // will be performed by `getPixels`. No colorspace conversion will occur,
+  // because the bitmap uses the same colorspace as the original PNG.
+  if (!bitmap->tryAllocPixels(info)) {
     return false;
   }
 
-  // Set the bitmap's opaqueness based on what we saw.
-  bitmap->setAlphaType(state.is_opaque ? kOpaque_SkAlphaType
-                                       : kPremul_SkAlphaType);
-
-  return true;
+  return codec->getPixels(bitmap->pixmap()) == SkCodec::kSuccess;
 }
 
 // Encoder --------------------------------------------------------------------
@@ -457,6 +214,17 @@ bool EncodeSkPixmap(const SkPixmap& src,
     return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
                           disable_filters);
   }
+
+  // If the image's pixels are all opaque, encode the PNG as opaque, regardless
+  // of the pixmap's alphaType.
+  if (src.info().alphaType() != kOpaque_SkAlphaType && src.computeIsOpaque()) {
+    SkPixmap opaque_pixmap{src.info().makeAlphaType(kOpaque_SkAlphaType),
+                           src.addr(), src.rowBytes()};
+    return EncodeSkPixmap(opaque_pixmap, comments, output, zlib_level,
+                          disable_filters);
+  }
+
+  // Encode the PNG without any conversions.
   return EncodeSkPixmap(src, comments, output, zlib_level, disable_filters);
 }
 

@@ -5,11 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_COMPOSITOR_DEPENDENCIES_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_COMPOSITOR_DEPENDENCIES_ANDROID_H_
 
-#include <memory>
-
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -17,10 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
-
-namespace cc {
-class TaskGraphRunner;
-}  // namespace cc
 
 namespace content {
 
@@ -33,8 +28,6 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
   CompositorDependenciesAndroid(const CompositorDependenciesAndroid&) = delete;
   CompositorDependenciesAndroid& operator=(
       const CompositorDependenciesAndroid&) = delete;
-
-  cc::TaskGraphRunner* GetTaskGraphRunner();
 
   viz::HostFrameSinkManager* host_frame_sink_manager() {
     return &host_frame_sink_manager_;
@@ -76,10 +69,8 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
   base::OnceClosure pending_connect_viz_on_main_thread_;
 
   // The set of visible CompositorImpls.
-  base::flat_set<CompositorImpl*> visible_compositors_;
+  base::flat_set<raw_ptr<CompositorImpl, CtnExperimental>> visible_compositors_;
   size_t visible_synchronous_compositors_ = 0u;
-
-  std::unique_ptr<cc::TaskGraphRunner> task_graph_runner_;
 };
 
 }  // namespace content

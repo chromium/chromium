@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/common/url_constants.h"
@@ -26,7 +26,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -38,9 +41,18 @@
 
 namespace {
 
+constexpr char kEnterprizeBadgeSource[] = "cr:domain";
+constexpr char kSupervisedBadgeSource[] = "cr20:kite";
+
 // Returns true if the account is managed (aka Enterprise, or Dasher).
 bool IsManaged(const AccountInfo& info) {
   return info.hosted_domain != kNoHostedDomainFound;
+}
+
+// Returns true if the account capabilities are marked as supervised.
+bool IsSupervisedUser(const AccountCapabilities& capabilities) {
+  return capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
 }
 
 SkColor GetProfileHighlightColor(Profile* profile) {
@@ -61,7 +73,14 @@ std::string GetAccountPictureUrl(const AccountInfo& info) {
 
 base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
-  account_info_value.Set("isManaged", IsManaged(info));
+  std::string_view avatar_badge = "";
+  if (IsManaged(info)) {
+    avatar_badge = kEnterprizeBadgeSource;
+  } else if (IsSupervisedUser(info.capabilities) && base::FeatureList::IsEnabled(
+      supervised_user::kShowKiteForSupervisedUsers)) {
+    avatar_badge = kSupervisedBadgeSource;
+  }
+  account_info_value.Set("avatarBadge", avatar_badge);
   account_info_value.Set("pictureUrl", GetAccountPictureUrl(info));
   return account_info_value;
 }
@@ -230,10 +249,20 @@ void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
 base::Value::Dict
 DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
   base::Value::Dict parameters;
+  parameters.Set("title", GetChromeSigninTitle());
+  parameters.Set("subtitle", GetChromeSigninSubtitle());
   parameters.Set("email", intercepted_account().email);
   parameters.Set("fullName", intercepted_account().full_name);
   parameters.Set("givenName", intercepted_account().given_name);
   parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
+
+  std::string_view managed_user_badge = "";
+  if (IsSupervisedUser(intercepted_account().capabilities) &&
+      base::FeatureList::IsEnabled(
+          supervised_user::kShowKiteForSupervisedUsers)) {
+    managed_user_badge = kSupervisedBadgeSource;
+  }
+  parameters.Set("managedUserBadge", managed_user_badge);
   return parameters;
 }
 
@@ -289,6 +318,36 @@ std::string DiceWebSigninInterceptHandler::GetHeaderText() {
              : std::string();
 }
 
+std::string DiceWebSigninInterceptHandler::GetChromeSigninTitle() {
+  // Set the title depending on whether the user is supervised. Note that
+  // calling code waits for Account Capabilities to be fetched (with a timeout),
+  // so Account Capabilities will be available for the vast majority of users.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+      bubble_parameters_.intercepted_account.capabilities
+              .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
+  }
+  return l10n_util::GetStringUTF8(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
+}
+
+std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
+  // Set the subtitle depending on whether the user is supervised. Note that
+  // calling code waits for Account Capabilities to be fetched (with a timeout),
+  // so Account Capabilities will be available for the vast majority of users.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+      bubble_parameters_.intercepted_account.capabilities
+              .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+  }
+  return l10n_util::GetStringUTF8(
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+}
+
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
@@ -297,70 +356,93 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
   }
 
   return l10n_util::GetStringUTF8(
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE);
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? l10n_util::GetStringFUTF8(
+                     IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2,
+                     base::UTF8ToUTF16(intercepted_account().email))
+               : l10n_util::GetStringUTF8(
+                     IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
+  }
+
+  CHECK(bubble_parameters_.interception_type ==
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise ||
+        bubble_parameters_.interception_type ==
+            WebSigninInterceptor::SigninInterceptionType::kMultiUser)
+      << (bubble_parameters_.interception_type ==
+                  WebSigninInterceptor::SigninInterceptionType::kChromeSignin
+              ? "Chrome Signin interception strings are handled by "
+                "GetInterceptionChromeSigninParametersValue()"
+              : "This interception type is not handled by a bubble");
+
+  bool enterprise_interception =
+      bubble_parameters_.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise;
+  if (enterprise_interception && intercepted_account().IsEmpty()) {
     return l10n_util::GetStringUTF8(
-        IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN);
   }
 
-  switch (bubble_parameters_.interception_type) {
-    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      if (intercepted_account().IsEmpty()) {
-        return l10n_util::GetStringUTF8(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN);
-      }
-
-      return ShouldShowManagedDeviceVersion()
-                 ? l10n_util::GetStringFUTF8(
-                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
-                       base::UTF8ToUTF16(intercepted_account().email))
-                 : l10n_util::GetStringFUTF8(
-                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
-                       base::UTF8ToUTF16(primary_account().email));
-    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
-      return ShouldShowManagedDeviceVersion()
-                 ? l10n_util::GetStringFUTF8(
-                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
-                       base::UTF8ToUTF16(primary_account().given_name),
-                       base::UTF8ToUTF16(intercepted_account().email))
-                 : l10n_util::GetStringFUTF8(
-                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
-                       base::UTF8ToUTF16(primary_account().given_name));
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      // Already handled.
-    case WebSigninInterceptor::SigninInterceptionType::
-        kEnterpriseAcceptManagement:
-    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
-      NOTREACHED() << "This interception type is not handled by a bubble";
-      return std::string();
-    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      // TODO(b/301431278): Add NOTREACHED() when the Chrome Signin UI is
-      // created.
-      return std::string();
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    return l10n_util::GetStringFUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC,
+        base::UTF8ToUTF16(primary_account().given_name),
+        base::UTF8ToUTF16(intercepted_account().email));
   }
+
+  if (enterprise_interception) {
+    return ShouldShowManagedDeviceVersion()
+               ? l10n_util::GetStringFUTF8(
+                     IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+                     base::UTF8ToUTF16(intercepted_account().email))
+               : l10n_util::GetStringFUTF8(
+                     IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
+                     base::UTF8ToUTF16(primary_account().email));
+  }
+
+  // `WebSigninInterceptor::SigninInterceptionType::kMultiUser` interception.
+  return ShouldShowManagedDeviceVersion()
+             ? l10n_util::GetStringFUTF8(
+                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
+                   base::UTF8ToUTF16(primary_account().given_name),
+                   base::UTF8ToUTF16(intercepted_account().email))
+             : l10n_util::GetStringFUTF8(
+                   IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
+                   base::UTF8ToUTF16(primary_account().given_name));
 }
 
 std::string DiceWebSigninInterceptHandler::GetConfirmButtonLabel() {
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
     return l10n_util::GetStringUTF8(
-        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL);
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+            ? IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_CONTINUE_BUTTON_LABEL
+            : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL);
   }
 
   return l10n_util::GetStringUTF8(
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CREATE_PROFILE_BUTTON_LABEL
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
 }
 
 std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {
+  if (bubble_parameters_.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL);
+  }
+
   return l10n_util::GetStringUTF8(
-      bubble_parameters_.interception_type ==
-              WebSigninInterceptor::SigninInterceptionType::kProfileSwitch
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL
           : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL);
 }
 
@@ -396,5 +478,5 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
 
 bool DiceWebSigninInterceptHandler::GetShouldUseV2Design() {
   return bubble_parameters_.interception_type !=
-         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
+             WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
 }

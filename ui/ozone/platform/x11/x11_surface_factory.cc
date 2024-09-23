@@ -68,8 +68,21 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
-  bool CanImportNativePixmap() override {
-    return GetNativePixmapSupportType() != NativePixmapSupportType::kNone;
+  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+    if (GetNativePixmapSupportType() == NativePixmapSupportType::kNone) {
+      return false;
+    }
+
+    switch (GetNativePixmapSupportType()) {
+      case NativePixmapSupportType::kDMABuf: {
+        return NativePixmapEGLBinding::IsBufferFormatSupported(format);
+      }
+      case NativePixmapSupportType::kX11Pixmap: {
+        return NativePixmapEGLX11Binding::IsBufferFormatSupported(format);
+      }
+      default:
+        return false;
+    }
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
@@ -115,7 +128,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
               display->GetAs<gl::GLDisplayEGL>(),
               static_cast<x11::Window>(window)));
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return nullptr;
       }
     }
@@ -163,14 +176,12 @@ std::vector<gl::GLImplementationParts>
 X11SurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
   };
 }
 
 GLOzone* X11SurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
-    case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:

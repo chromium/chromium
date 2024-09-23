@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_static_library.gni")
+
+source_set("c_lib_headers") {
+  sources = [ "lib.h" ]
+}
+
+component("c_lib") {
+  sources = [ "lib.c" ]
+
+  deps = [ ":c_lib_headers" ]
+
+  defines = [ "COMPONENT_IMPLEMENTATION" ]
+}
+
+rust_bindgen("c_lib_bindgen") {
+  header = "lib.h"
+  deps = [ ":c_lib_headers" ]
+  wrap_static_fns = true
+}
+
+rust_static_library("bindgen_static_fns_test_lib") {
+  allow_unsafe = true
+  deps = [
+    ":c_lib",
+    ":c_lib_bindgen",
+    ":c_lib_bindgen_static_fns",
+  ]
+  sources = [ "src/lib.rs" ]
+  build_native_rust_unit_tests = true
+  crate_root = "src/lib.rs"
+
+  bindgen_output = get_target_outputs(":c_lib_bindgen")
+  inputs = bindgen_output
+  rustenv = [ "BINDGEN_RS_FILE=" +
+              rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
+}
+
+rust_executable("bindgen_static_fns_test") {
+  deps = [ ":bindgen_static_fns_test_lib" ]
+  sources = [ "main.rs" ]
+  crate_root = "main.rs"
+}

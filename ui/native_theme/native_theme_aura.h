@@ -20,7 +20,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   NativeThemeAura(bool use_overlay_scrollbars,
                   bool should_only_use_dark_colors,
                   ui::SystemTheme system_theme = ui::SystemTheme::kDefault,
-                  NativeTheme* theme_to_update = nullptr);
+                  bool configure_web_instance = false);
 
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;
@@ -31,6 +31,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
 
   // Overridden from NativeTheme:
   SkColor4f FocusRingColorForBaseColor(SkColor4f base_color) const override;
+  void ConfigureWebInstance() override;
 
   // NativeThemeBase:
   void PaintMenuPopupBackground(
@@ -52,6 +53,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
       Part direction,
       State state,
       ColorScheme color_scheme,
+      bool in_forced_colors,
       const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
@@ -59,7 +61,8 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
                            const gfx::Rect& rect,
-                           ColorScheme color_scheme) const override;
+                           ColorScheme color_scheme,
+                           bool in_forced_colors) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            Part part,
@@ -67,6 +70,11 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                            const gfx::Rect& rect,
                            const ScrollbarThumbExtraParams& extra_params,
                            ColorScheme color_scheme) const override;
+  gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
+  SkColor4f GetScrollbarThumbColor(
+      const ui::ColorProvider& color_provider,
+      State state,
+      const ScrollbarThumbExtraParams& extra) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
                             const ColorProvider* color_provider,
                             State state,
@@ -90,6 +98,11 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                                      const cc::PaintFlags& flags);
 
   bool use_overlay_scrollbars_;
+
+  // Used to notify the web native theme of changes to dark mode, high
+  // contrast, preferred color scheme, and preferred contrast.
+  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
+      color_scheme_observer_;
 };
 
 }  // namespace ui

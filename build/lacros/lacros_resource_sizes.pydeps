@@ -8,6 +8,7 @@
 ../../third_party/catapult/tracing/tracing/value/convert_chart_json.py
 ../../third_party/catapult/tracing/tracing_project.py
 ../util/lib/__init__.py
+../util/lib/common/__init__.py
 ../util/lib/common/perf_result_data_type.py
 ../util/lib/common/perf_tests_results_helper.py
 ../util/lib/results/__init__.py

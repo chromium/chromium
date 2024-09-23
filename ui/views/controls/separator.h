@@ -44,7 +44,8 @@ class VIEWS_EXPORT Separator : public View {
   void SetOrientation(Orientation orientation);
 
   // Overridden from View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:

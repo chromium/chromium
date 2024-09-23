@@ -70,7 +70,7 @@ void* PPB_Buffer_Impl::Map() {
     DCHECK(!shared_mapping_.IsValid());
     shared_mapping_ = shared_memory_.Map();
   }
-  return shared_mapping_.memory();
+  return shared_mapping_.data();
 }
 
 void PPB_Buffer_Impl::Unmap() {

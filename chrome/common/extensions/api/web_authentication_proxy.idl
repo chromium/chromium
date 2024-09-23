@@ -141,7 +141,7 @@ namespace webAuthenticationProxy {
     // <code>onCreateRequest</code> event it has received, unless the request
     // was canceled (in which case, an <code>onRequestCanceled</code> event is
     // fired).
-    [supportsPromises] static void completeCreateRequest(
+    static void completeCreateRequest(
         CreateResponseDetails details,
         VoidCallback callback);
 
@@ -149,7 +149,7 @@ namespace webAuthenticationProxy {
     // The extension must call this for every <code>onGetRequest</code> event
     // it has received, unless the request was canceled (in which case, an
     // <code>onRequestCanceled</code> event is fired).
-    [supportsPromises] static void completeGetRequest(
+    static void completeGetRequest(
         GetResponseDetails details,
         VoidCallback callback);
 
@@ -157,7 +157,7 @@ namespace webAuthenticationProxy {
     // <code>PublicKeyCredential.isUserVerifyingPlatformAuthenticator()</code>
     // call. The extension must call this for every
     // <code>onIsUvpaaRequest</code> event it has received.
-    [supportsPromises] static void completeIsUvpaaRequest(
+    static void completeIsUvpaaRequest(
         IsUvpaaResponseDetails details,
         VoidCallback callback);
 
@@ -179,7 +179,7 @@ namespace webAuthenticationProxy {
     // Refer to the <code>onRemoteSessionStateChange</code> event for signaling
     // a change of remote session attachment from a native application to to
     // the (possibly suspended) extension.
-    [supportsPromises] static void attach(ErrorCallback callback);
+    static void attach(ErrorCallback callback);
 
     // Removes this extension from being the active Web Authentication API
     // request proxy.
@@ -191,6 +191,6 @@ namespace webAuthenticationProxy {
     // Refer to the <code>onRemoteSessionStateChange</code> event for signaling
     // a change of remote session attachment from a native application to to
     // the (possibly suspended) extension.
-    [supportsPromises] static void detach(ErrorCallback callback);
+    static void detach(ErrorCallback callback);
   };
 };

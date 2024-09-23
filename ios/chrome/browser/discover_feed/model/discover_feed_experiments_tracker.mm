@@ -27,9 +27,9 @@ void DiscoverFeedExperimentsTracker::RegisterExperiments(
   // by design. We do not provide the variations IDs from the backend
   // and do not attach them to the X-Client-Data header.
   for (const auto& exp : experiments) {
-    for (const auto& group_name : exp.second) {
+    for (const auto& group : exp.second) {
       IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(exp.first,
-                                                                   group_name);
+                                                                   group.name);
     }
   }
 }

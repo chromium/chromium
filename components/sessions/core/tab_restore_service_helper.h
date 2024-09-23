@@ -18,6 +18,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_types.h"
 
 namespace sessions {
 
@@ -34,11 +35,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
  public:
   typedef TabRestoreService::DeletionPredicate DeletionPredicate;
   typedef TabRestoreService::Entries Entries;
-  typedef TabRestoreService::Entry Entry;
-  typedef TabRestoreService::Tab Tab;
-  typedef TabRestoreService::TimeFactory TimeFactory;
-  typedef TabRestoreService::Window Window;
-  typedef TabRestoreService::Group Group;
+  typedef tab_restore::Entry Entry;
+  typedef tab_restore::Tab Tab;
+  typedef tab_restore::TimeFactory TimeFactory;
+  typedef tab_restore::Window Window;
+  typedef tab_restore::Group Group;
 
   // Provides a way for the client to add behavior to the tab restore service
   // helper (e.g. implementing tabs persistence).
@@ -101,14 +102,14 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
 
   const Entries& entries() const;
   std::vector<LiveTab*> RestoreMostRecentEntry(LiveTabContext* context);
-  void RemoveTabEntryById(SessionID id);
+  void RemoveEntryById(SessionID id);
   std::vector<LiveTab*> RestoreEntryById(LiveTabContext* context,
                                          SessionID id,
                                          WindowOpenDisposition disposition);
   bool IsRestoring() const;
 
-  // Notifies observers the tabs have changed.
-  void NotifyTabsChanged();
+  // Notifies observers the entries have changed.
+  void NotifyEntriesChanged();
 
   // Notifies observers the service has loaded.
   void NotifyLoaded();
@@ -153,10 +154,28 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // will be respected instead. If a new LiveTabContext needs to be created for
   // this tab, If present, |live_tab| will be populated with the LiveTab of the
   // restored tab.
+  // |original_session_type| indicates the type of session entry the tab
+  // belongs to.
   LiveTabContext* RestoreTab(const Tab& tab,
                              LiveTabContext* context,
                              WindowOpenDisposition disposition,
+                             sessions::tab_restore::Type session_restore_type,
                              LiveTab** live_tab);
+
+  // This is a helper function for RestoreEntryById(). Restores a single entry
+  // from the `window`. The entry to restore is denoted by `id` and can either
+  // be a single tab or an entire group.
+  LiveTabContext* RestoreTabOrGroupFromWindow(Window& window,
+                                              SessionID id,
+                                              LiveTabContext* context,
+                                              WindowOpenDisposition disposition,
+                                              std::vector<LiveTab*>* live_tabs);
+
+  // Helper function for CreateHistoricalGroup. Returns a Group populated with
+  // metadta for the tab group `id`.
+  std::unique_ptr<Group> CreateHistoricalGroupImpl(
+      LiveTabContext* context,
+      const tab_groups::TabGroupId& id);
 
   // Returns true if |tab| has at least one navigation and
   // |tab->current_navigation_index| is in bounds.

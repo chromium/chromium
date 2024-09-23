@@ -8,6 +8,7 @@
 #include <bitset>
 #include <cstddef>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -103,14 +104,27 @@ class EnumSet {
   // modify an EnumSet while traversing it with an iterator.
   class Iterator {
    public:
+    using value_type = EnumType;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using pointer = EnumType*;
+    using reference = EnumType&;
+    using iterator_category = std::forward_iterator_tag;
+
     Iterator() : enums_(nullptr), i_(kValueCount) {}
     ~Iterator() = default;
+
+    Iterator(const Iterator&) = default;
+    Iterator& operator=(const Iterator&) = default;
+
+    Iterator(Iterator&&) = default;
+    Iterator& operator=(Iterator&&) = default;
 
     friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
       return lhs.i_ == rhs.i_;
     }
 
-    E operator*() const {
+    value_type operator*() const {
       DCHECK(Good());
       return FromIndex(i_);
     }
@@ -152,7 +166,7 @@ class EnumSet {
       return i;
     }
 
-    const raw_ptr<const EnumBitSet> enums_;
+    raw_ptr<const EnumBitSet> enums_;
     size_t i_;
   };
 
@@ -229,6 +243,26 @@ class EnumSet {
     return enums_.to_ullong() << GetUnderlyingValue(kMinValue);
   }
 
+  // Returns a uint64_t bit mask representing the values within the range
+  // [64*n, 64*n + 63] of the EnumSet.
+  std::optional<uint64_t> GetNth64bitWordBitmask(size_t n) const {
+    // If the EnumSet contains less than n 64-bit masks, return std::nullopt.
+    if (GetUnderlyingValue(kMaxValue) / 64 < n) {
+      return std::nullopt;
+    }
+
+    std::bitset<kValueCount> mask = ~uint64_t{0};
+    std::bitset<kValueCount> bits = enums_;
+    if (GetUnderlyingValue(kMinValue) < n * 64) {
+      bits >>= n * 64 - GetUnderlyingValue(kMinValue);
+    }
+    uint64_t result = (bits & mask).to_ullong();
+    if (GetUnderlyingValue(kMinValue) > n * 64) {
+      result <<= GetUnderlyingValue(kMinValue) - n * 64;
+    }
+    return result;
+  }
+
   // Set operations.  Put, Retain, and Remove are basically
   // self-mutating versions of Union, Intersection, and Difference
   // (defined below).
@@ -292,10 +326,10 @@ class EnumSet {
   }
 
   // Returns true iff our set is empty.
-  bool Empty() const { return !enums_.any(); }
+  bool empty() const { return !enums_.any(); }
 
   // Returns how many values our set has.
-  size_t Size() const { return enums_.count(); }
+  size_t size() const { return enums_.count(); }
 
   // Returns an iterator pointing to the first element (if any).
   Iterator begin() const { return Iterator(enums_); }

@@ -43,7 +43,7 @@
 <translation id="134645005685694099">لا تتوفّر مساحة تخزين كافية على جهازك لتظل مزامنة الملفات مفعّلة. ولن تتم مزامنة الملفات الجديدة تلقائيًا.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
-<translation id="1363028406613469049">مقطع صوتي</translation>
+<translation id="1363028406613469049">تتبّع</translation>
 <translation id="1378727793141957596">‏مرحبًا بك في Google Drive!</translation>
 <translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال بالإنترنت.</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -133,7 +133,7 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2084108471225856927">إعدادات الجهاز</translation>
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
-<translation id="2088690981887365033">الشبكة الافتراضية الخاصة</translation>
+<translation id="2088690981887365033">‏شبكة VPN</translation>
 <translation id="209653272837065803">لا تتوفّر مساحة تخزين كافية لمواصلة مزامنة الملفات.</translation>
 <translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">‏أجهزة Chromebit</translation>
 <translation id="3085752524577180175">‏مضيف SOCKS</translation>
 <translation id="3104793765551262433">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة %<ph name="SIGNAL_STRENGTH" />، تم حظر هذه الشبكة من قِبَل المشرف، التفاصيل</translation>
-<translation id="3113153474486991170">تعذَّر فتح "<ph name="PATH" />" من هذا المكان. يُرجي نسخه إلى "ملفاتي" لفتحه.</translation>
 <translation id="3113592018909187986">يتبقى لديك محاولة واحدة. لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>
 <translation id="3124404833828281817">شخص مستغرق في أحلام اليقظة</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعّلة، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3691184985318546178">السنهالية</translation>
+<translation id="3702842351052426940">‏يُحتمل أنّه تم إيقاف شريحة SIM أو ملف تعريف الشريحة الإلكترونية. ننصحك باستبدال شريحة SIM أو تبديل ملفات تعريف الشريحة الإلكترونية.</translation>
 <translation id="3722341589402358578">حدث خطأ. ومن المحتمّل أنّ بعض الملفات لم يتم إرسالها إلى المهملات.</translation>
 <translation id="3726463242007121105">لا يمكن فتح الجهاز لأن نظام الملفات غير متوافق.</translation>
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">تم فرض هذا الخادم الوكيل بواسطة المشرف</translation>
 <translation id="3830674330436234648">لا تتوفر أي عملية تشغيل</translation>
 <translation id="383652340667548381">الصربية</translation>
+<translation id="3839045880592694915">لا يسمح مشغّل شبكة الجوّال بالاتصال بشبكة الإنترنت باستخدام المودم. ننصحك بالتواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من التفاصيل.</translation>
 <translation id="385051799172605136">رجوع</translation>
-<translation id="3851491607336266896">تم الاتصال بالشبكة، ولكن الاتصال بالإنترنت محدود.</translation>
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3866249974567520381">الوصف</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في OneDrive.</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
-<translation id="4019998208269143058">التثبيت في قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="4040753847560036377">‏رمز PUK غير صحيح.</translation>
 <translation id="4057991113334098539">تفعيل...</translation>
 <translation id="4092890906744441904">الأيرلندية</translation>
+<translation id="4101601646343868113">عليك تسجيل الدخول إلى شبكة الجوّال وتأكيد أنّ خطة بيانات الجوّال نشِطة</translation>
 <translation id="4124731372776320263">‏جارٍ مزامنة ملف واحد على Drive</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
 <translation id="4131235941541910880">يمكنك نقل العناصر التي لا تحتاج إليها إلى "المهملات".</translation>
@@ -393,7 +393,7 @@
 <translation id="4179621117429069925">هذا العنصر موضوع في "المهملات"</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
-<translation id="4197674956721858839">تحديد ملف مضغوط</translation>
+<translation id="4197674956721858839">‏ضغط الملفات المختارة بتنسيق Zip</translation>
 <translation id="4202378258276439759">الإسبانية (أمريكا اللاتينية)</translation>
 <translation id="4202977638116331303">الجورجية</translation>
 <translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">‏التاميلية باستخدام لوحة مفاتيح Tamil99</translation>
 <translation id="5633226425545095130">يؤدي نقل هذا الملف إلى مشاركته مع جميع المستخدمين الذين يمكنهم الاطّلاع على المجلد المشترك "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">استماع</translation>
+<translation id="5650895901941743674">‏تحقَّق من إعدادات اسم نقطة الوصول (APN)</translation>
 <translation id="5669691691057771421">إدخال رقم التعريف الشخصي الجديد</translation>
 <translation id="5678784840044122290">‏سيكون تطبيق Linux متاحًا ضمن الوحدة الطرفية وقد يعرض أيضًا رمزًا في مشغِّل التطبيقات.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />لا يمكن قطع الاتصال من أرشيف أو قرص افتراضي<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف <ph name="PHONE_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
 <translation id="6269630227984243955">الملايوية</translation>
 <translation id="6271903698064569429">يتعذّر تحميل الملفات بسبب عدم توفُّر مساحة تخزين كافية في "<ph name="SHARED_DRIVE_NAME" />".</translation>
+<translation id="6279140785485544797">يُحتمل أنّ صلاحية خطة بيانات الجوّال انتهت. ننصحك بالتواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="6287852322318138013">حدد تطبيقًا لفتح هذا الملف من خلاله</translation>
 <translation id="6295542640242147836">‏قفل شريحة SIM</translation>
 <translation id="6296410173147755564">‏رمز PUK غير صالح.</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">أرشيف <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">تلويح باليد</translation>
 <translation id="6327785803543103246">اكتشاف الخادم الوكيل للويب تلقائيًا</translation>
-<translation id="6337014272874260727">إزالة التثبيت من قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="6339145975392024142">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
 <translation id="6358884629796491903">تنين</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">الدليل الحالي</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
+<translation id="6777029074498310250">‏انتقِل إلى <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> للحصول على مزيد من المعلومات</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6794539005637808366">يمكنك استعادة العنصر أو سحبه إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="6795884519221689054">باندا</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">‏التاميلية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="7088615885725309056">أقدم</translation>
 <translation id="7103992300314999525">المقدونية</translation>
+<translation id="7104338189998813914">‏حدثت مشكلة أثناء الوصول إلى حسابك على OneDrive</translation>
 <translation id="7106346894903675391">شراء المزيد من مساحة التخزين...</translation>
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;البحث في Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">الكنادية الصوتية</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">انتظر قليلاً</translation>
 <translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
+<translation id="7624010287655004652">تم القفل بواسطة مقدِّم آخر لخدمات شبكة الجوّال</translation>
 <translation id="7627790789328695202">عذرًا، <ph name="FILE_NAME" /> موجود من قبل. يمكنك إعادة تسميته وإعادة المحاولة.</translation>
 <translation id="7628656427739290098">اكتملت العملية بنسبة <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">مساعدة</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">تم تغيير قائمة الملف إلى عرض الصور المصغرة.</translation>
 <translation id="8601932370724196034">‏ملف صورة Crostini</translation>
 <translation id="8609695766746872526">الآيسلندية</translation>
+<translation id="8630384863424041081">‏أدخِل رقم التعريف الشخصي لشريحة SIM أو رقم التعريف الشخصي التلقائي المقدَّم من مشغّل شبكة الجوّال. ويمكنك التواصل مع مشغّل شبكة الجوّال للحصول على الدعم.</translation>
 <translation id="863903787380594467">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - منفذ</translation>
 <translation id="8656407365183407932">كان يلزم إزالة الملفات المتاحة بلا اتصال بالإنترنت</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">هذا الملف سرّي ويخضع للقيود المفروضة بموجب سياسة المشرف.</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8713112442029511308">المالطية</translation>
-<translation id="8714138378966541668">مُقفَل من خلال مشغّل الشبكة</translation>
 <translation id="8714406895390098252">دراجة</translation>
 <translation id="8719721339511222681">تم اختيار <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">الكرواتية</translation>

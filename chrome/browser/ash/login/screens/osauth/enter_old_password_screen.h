@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_ENTER_OLD_PASSWORD_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_ENTER_OLD_PASSWORD_SCREEN_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,7 +15,7 @@
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
-#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 
 namespace ash {
 

@@ -15,18 +15,19 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/openscreen_platform/task_runner.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/environment.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/environment.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 #include "third_party/openscreen/src/cast/streaming/sender_packet_router.h"
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/base/trivial_clock_traits.h"
 
-using media::cast::Codec;
 using media::cast::RtpPayloadType;
 using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingStopReason;
@@ -60,18 +61,18 @@ struct OpenscreenTestSenders {
         environment(openscreen::Clock::now,
                     task_runner,
                     openscreen::IPEndpoint::kAnyV4()),
-        sender_packet_router(&environment, 20, std::chrono::milliseconds(10)),
+        sender_packet_router(environment, 20, std::chrono::milliseconds(10)),
         audio_sender(std::make_unique<openscreen::cast::Sender>(
-            &environment,
-            &sender_packet_router,
+            environment,
+            sender_packet_router,
             openscreen::cast::SessionConfig{
                 kFirstSsrc, kFirstSsrc + 1, kRtpTimebase, 2 /* channels */,
                 kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,
                 true /* is_pli_enabled */},
             openscreen::cast::RtpPayloadType::kAudioVarious)),
         video_sender(std::make_unique<openscreen::cast::Sender>(
-            &environment,
-            &sender_packet_router,
+            environment,
+            sender_packet_router,
             openscreen::cast::SessionConfig{
                 kFirstSsrc + 2, kFirstSsrc + 3, kRtpTimebase, 1 /* channels */,
                 kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,
@@ -220,9 +221,9 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
         cast_environment, std::move(openscreen_test_senders_->audio_sender),
         std::move(openscreen_test_senders_->video_sender),
         MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
-                                              Codec::kAudioRemote),
+                                              media::AudioCodec::kUnknown),
         MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                              Codec::kVideoRemote));
+                                              media::VideoCodec::kUnknown));
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }

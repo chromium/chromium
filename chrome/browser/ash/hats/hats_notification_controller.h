@@ -10,6 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -29,9 +32,32 @@ struct HatsConfig;
 // managing the HaTS notification that is displayed to the user.
 // This class lives on the UI thread.
 class HatsNotificationController : public message_center::NotificationDelegate,
-                                   public NetworkStateHandlerObserver {
+                                   public NetworkStateHandlerObserver,
+                                   public ProfileObserver {
  public:
   static const char kNotificationId[];
+
+  // Minimum amount of time before the notification is displayed again after a
+  // user has interacted with it.
+  static constexpr base::TimeDelta kHatsThreshold = base::Days(60);
+
+  // The threshold for a Googler is less.
+  static constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
+
+  // Prioritized HaTS has much shorter threshold.
+  static constexpr base::TimeDelta kPrioritizedHatsThreshold = base::Days(10);
+
+  // There are multiple pool/quota of cooldowns: normal and prioritized,
+  // when user was selected for one pool, there need to be another cooldown
+  // to ensure the user would not be selected for the other pool immediately
+  // after.
+  static constexpr base::TimeDelta kMinimumHatsThreshold = base::Days(1);
+
+  // HaTS threshold should be configured correctly.
+  static_assert(kHatsThreshold > kPrioritizedHatsThreshold);
+  static_assert(kHatsThreshold > kHatsGooglerThreshold);
+  static_assert(kPrioritizedHatsThreshold > kMinimumHatsThreshold);
+  static_assert(kHatsGooglerThreshold > kMinimumHatsThreshold);
 
   HatsNotificationController(
       Profile* profile,
@@ -76,7 +102,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
       HatsNotificationControllerTest,
       Disconnected_RemoveNotification_Connected_AddNotification);
   FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
-                           DismissNotification_OptOutShouldUpdatePref);
+                           DismissNotification_PrioritizedShouldUpdatePref);
 
   ~HatsNotificationController() override;
 
@@ -104,6 +130,9 @@ class HatsNotificationController : public message_center::NotificationDelegate,
                           NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Must be run on a blocking thread pool.
   // Gathers the browser version info, firmware info and platform info and
   // returns them in a single encoded string, in the format
@@ -118,7 +147,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastSurveyInteractionTime();
   void ShowDialog(const std::string& site_context);
 
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
   const raw_ref<const HatsConfig> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
@@ -126,6 +155,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   const std::u16string body_;
 
   HatsState state_ = HatsState::kDeviceSelected;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
 };

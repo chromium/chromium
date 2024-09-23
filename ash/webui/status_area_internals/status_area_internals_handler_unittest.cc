@@ -7,16 +7,18 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/fake_power_status.h"
 #include "ash/system/model/fake_system_tray_model.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/model/scoped_fake_system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
@@ -38,12 +40,40 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
+
+namespace {
+
+// A class that mocks `MagicBoostStateAsh` to use in tests.
+class TestMagicBoostState : public chromeos::MagicBoostState {
+ public:
+  TestMagicBoostState() = default;
+
+  TestMagicBoostState(const TestMagicBoostState&) = delete;
+  TestMagicBoostState& operator=(const TestMagicBoostState&) = delete;
+
+  ~TestMagicBoostState() override = default;
+
+  // chromeos::MagicBoostState:
+  void AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus consent_status) override {
+    UpdateHMRConsentStatus(consent_status);
+  }
+
+  bool IsMagicBoostAvailable() override { return true; }
+  bool CanShowNoticeBannerForHMR() override { return false; }
+  int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
+  void AsyncWriteHMREnabled(bool enabled) override {}
+  void DisableOrcaFeature() override {}
+};
+
+}  // namespace
 
 class StatusAreaInternalsHandlerTest : public AshTestBase {
  public:
@@ -56,10 +86,8 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   ~StatusAreaInternalsHandlerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kVideoConference,
-                              features::kCameraEffectsSupportedByHardware},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -161,12 +189,11 @@ TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
           base::BindRepeating(&mojom::status_area_internals::PageHandler::
                                   ToggleVideoConferenceTray,
                               base::Unretained(handler_remote().get()))},
-      // Projector Annotation Tray
+      // Annotation Tray
       ToggleTrayTestParam{
-          "Projector Annotation Tray",
-          GetStatusAreaWidget()->projector_annotation_tray(),
+          "Annotation Tray", GetStatusAreaWidget()->annotation_tray(),
           base::BindRepeating(
-              &mojom::status_area_internals::PageHandler::ToggleProjectorTray,
+              &mojom::status_area_internals::PageHandler::ToggleAnnotationTray,
               base::Unretained(handler_remote().get()))}};
 
   // Test that when triggering the correct `toggle_function` from the test web
@@ -188,42 +215,6 @@ TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
 
     EXPECT_FALSE(tray->GetVisible()) << test_param.tray_name;
   }
-}
-
-TEST_F(StatusAreaInternalsHandlerTest, SetActiveDirectoryManaged) {
-  auto* enterprise_domain_model = GetFakeModel()->enterprise_domain();
-
-  handler_remote()->SetActiveDirectoryManaged(/*managed=*/true);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_TRUE(enterprise_domain_model->active_directory_managed());
-
-  // Make sure that the enterprise managed UI is visible.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()
-                  ->bubble()
-                  ->quick_settings_view()
-                  ->header_for_testing()
-                  ->GetManagedButtonForTest()
-                  ->GetVisible());
-
-  // Close the quick settings bubble.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-
-  // Test the reset case.
-  handler_remote()->SetActiveDirectoryManaged(/*managed=*/false);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_FALSE(enterprise_domain_model->active_directory_managed());
-
-  // Make sure that the enterprise managed UI is not visible.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()
-                   ->bubble()
-                   ->quick_settings_view()
-                   ->header_for_testing()
-                   ->GetManagedButtonForTest()
-                   ->GetVisible());
 }
 
 TEST_F(StatusAreaInternalsHandlerTest, SetIsInUserChildSession) {
@@ -260,4 +251,81 @@ TEST_F(StatusAreaInternalsHandlerTest, SetIsInUserChildSession) {
                    ->GetVisible());
 }
 
+TEST_F(StatusAreaInternalsHandlerTest, ResetHmrConsentStatus) {
+  TestMagicBoostState test_magic_boost_state;
+
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  ASSERT_TRUE(magic_boost_state);
+
+  magic_boost_state->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  ASSERT_EQ(chromeos::HMRConsentStatus::kApproved,
+            magic_boost_state->hmr_consent_status());
+
+  // `ResetHmrConsentStatus()` should reset the consent status appropriately.
+  handler_remote()->ResetHmrConsentStatus();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(chromeos::HMRConsentStatus::kUnset,
+            magic_boost_state->hmr_consent_status());
+}
+
+class StatusAreaInternalsHandlerBatteryTest
+    : public StatusAreaInternalsHandlerTest {
+ public:
+  FakePowerStatus* GetFakePowerStatus() {
+    return handler_->scoped_fake_power_status_->fake_power_status();
+  }
+};
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, XIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kXIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_FALSE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, UnreliableIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kUnreliableIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_TRUE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, BoltIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kBoltIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_TRUE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, BatterySaverPlusIcon) {
+  handler_->SetBatteryIcon(StatusAreaInternalsHandler::PageHandler::
+                               BatteryIcon::kBatterySaverPlusIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_TRUE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, Percent) {
+  handler_->SetBatteryPercent(75);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_EQ(fake_power_status->GetBatteryPercent(), 75);
+}
 }  // namespace ash

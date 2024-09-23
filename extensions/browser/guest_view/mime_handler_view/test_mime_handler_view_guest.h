@@ -58,8 +58,8 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   // inner WebContents. The direct access is centralized in this helper function
   // for easier migration.
   //
-  // TODO(crbug/1261928): Update this implementation for MPArch, and consider
-  // relocate it to `content/public/test/browser_test_utils.h`.
+  // TODO(crbug.com/40202416): Update this implementation for MPArch, and
+  // consider relocate it to `content/public/test/browser_test_utils.h`.
   static void WaitForGuestLoadStartThenStop(GuestViewBase* guest_view);
 
  private:

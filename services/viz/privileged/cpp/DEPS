@@ -1,3 +1,5 @@
 include_rules = [
-  "+gpu/command_buffer"
+  "+gpu/command_buffer",
+  "+ui/gfx/geometry/mojom/geometry_mojom_traits.h",
+  "+ui/gfx/mojom/color_space_mojom_traits.h",
 ]

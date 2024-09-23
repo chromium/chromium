@@ -412,6 +412,9 @@
   <message desc="The instructions for ChromeVox Learn Mode.  The keyboard explorer voices the name of each key when the user presses it. * These instructions describe how to use the keyboard explorer." name="IDS_CHROMEVOX_KBEXPLORER_INSTRUCTIONS">
     Press any key to learn its name. Ctrl+W will close learn mode.
   </message>
+  <message desc="Hint text spoken on pressing 'escape' in ChromeVox learn mode, informing the user that pressing it again will close Learn Mode." name="IDS_CHROMEVOX_LEARN_MODE_ESCAPE_TO_EXIT" is_accessibility_with_no_ui="true">
+    Press escape again to exit Learn Mode
+  </message>
   <message desc="Spoken when a new Chrome tab named 'title' is opened." name="IDS_CHROMEVOX_CHROME_TAB_CREATED">
     tab created
   </message>
@@ -1987,8 +1990,8 @@
   <message desc="Describes the key to toggle full screen  in the ChromeVox keyboard explorer." name="IDS_CHROMEVOX_TOGGLE_FULL_SCREEN_KEY">
     toggle full screen
   </message>
-  <message desc="Describes the key to toggle window overview in the ChromeVox keyboard explorer." name="IDS_CHROMEVOX_WINDOW_OVERVIEW_KEY">
-    window overview
+  <message desc="Describes the key to toggle show windows in the ChromeVox keyboard explorer." name="IDS_CHROMEVOX_WINDOW_OVERVIEW_KEY">
+    show windows
   </message>
   <message desc="Describes the brightness down key in the ChromeVox keyboard explorer." name="IDS_CHROMEVOX_BRIGHTNESS_DOWN_KEY">
     Brightness down
@@ -2141,7 +2144,7 @@
     To open the Chrome browser menu, press Alt+F.
   </message>
   <message desc="Part of the ChromeVox tutorial, explains a keyboard shortcut to press on Chromebook keyboards" name="IDS_CHROMEVOX_TUTORIAL_CHROMEBOOK_CTRL_FORWARD">
-    To jump to other parts of the screen, like toolbars or the system tray, press Control+Forward. On a Chromebook, the Forward key is immediately above the number 2 key.
+    To jump to other parts of the screen, like toolbars or the system tray, press Control+F1. F1 is the first key to the right of the escape key.
   </message>
   <message desc="Heading for a section of the ChromeVox tutorial where the user can learn more" name="IDS_CHROMEVOX_TUTORIAL_LEARN_MORE_HEADING">
     Learn More

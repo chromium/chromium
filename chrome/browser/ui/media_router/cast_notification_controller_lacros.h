@@ -61,7 +61,10 @@ class CastNotificationControllerLacros
   void StopObservingFreezeHost();
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<NotificationDisplayService> notification_service_;
+  // Dangling in SubAppsServiceImplBrowserTest.AddFailAppIsSubApp due to
+  // NotificationDisplayServiceTester replacing the service referenced here.
+  const raw_ptr<NotificationDisplayService, AcrossTasksDanglingUntriaged>
+      notification_service_;
   const raw_ptr<MediaRouter> media_router_;
 
   std::optional<MediaRoute> displayed_route_;

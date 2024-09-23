@@ -1,23 +1,11 @@
-# Copyright 2016 The Chromium Authors
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 import("//build/config/android/rules.gni")
 
-android_java_prebuilt("accessibility_test_framework_java") {
+# We no longer need to do any modifications to the Accessibility Test
+# Framework. This is just an alias until we can migrate everyone to the target.
+java_group("accessibility_core_java") {
   testonly = true
-
-  # Uses wrong version of proto (not protolite).
-  # Disable these to avoid build warnings.
-  enable_bytecode_checks = false
-
-  jar_path = "lib/accessibility-test-framework.jar"
-  deps = [
-    "//third_party/android_deps:com_android_support_support_core_ui_java",
-    "//third_party/hamcrest:hamcrest_core_java",
-  ]
-
-  # TODO(smaier): remove this - crbug.com/898861
-  proguard_configs =
-      [ "//third_party/accessibility_test_framework/proguard.flags" ]
+  deps = [ "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java" ]
 }

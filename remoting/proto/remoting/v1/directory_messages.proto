@@ -44,7 +44,7 @@ message GetHostListResponse {
   repeated remoting.apis.v1.HostInfo hosts = 1;
 }
 
-// Sent from a Me2Me host to update it's info and online presence.
+// Legacy Heartbeat sent to update a host's info and online presence.
 message HeartbeatRequest {
   // Obsolete fields reserved to prevent reuse.
   reserved 1, 5;
@@ -82,16 +82,22 @@ message HeartbeatRequest {
 
 // Sent in response to a HeartbeatRequest.
 message HeartbeatResponse {
-  enum RemoteCommand {
-    REMOTE_COMMAND_UNSPECIFIED = 0;
-    RESTART_HOST = 1;
-  }
+  // Obsolete fields reserved to prevent reuse.
+  reserved 2, 5;
 
   // The amount of time to wait before the host should send its next update.
   optional int32 set_interval_seconds = 1;
 
-  // Command to execute upon reception of the heartbeat response.
-  optional RemoteCommand remote_command = 2;
+  // Use the new lightweight heartbeat api for the next heartbeat.
+  optional bool use_lite_heartbeat = 3;
+
+  // The primary email address of the user which is allowed to connect to the
+  // remote machine.
+  optional string primary_user_email = 4;
+
+  // Indicates whether the session authorization service must be used. If unset,
+  // other authn types may be used (such as PIN).
+  optional bool require_session_authorization = 6;
 }
 
 // Requests that a new host entry to added to the Directory.
@@ -117,6 +123,18 @@ message RegisterHostResponse {
   // An auth code nonce which can be exchanged for a new token from Gaia by the
   // robot account created for the new host instance.
   optional string auth_code = 2;
+}
+
+// Lightweight heartbeat message that just updates the host's timestamp.
+message SendHeartbeatRequest {
+  // Host identity. Normally a UUID.
+  optional string host_id = 1;
+}
+
+// Sent in response to a SendHeartbeatRequest.
+message SendHeartbeatResponse {
+  // The amount of time to wait before the host should send its next update.
+  optional int32 wait_interval_seconds = 1;
 }
 
 // Requests an auth_code with updated OAuth scopes.  Should only be called by

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -110,6 +111,11 @@ void TestScreen::SetWorkAreaInsets(const gfx::Insets& insets) {
   display_list().UpdateDisplay(display);
 }
 
+void TestScreen::SetPreferredScaleFactorForWindow(gfx::NativeWindow window,
+                                                  float scale_factor) {
+  preferred_scale_factors_[window] = scale_factor;
+}
+
 gfx::Transform TestScreen::GetRotationTransform() const {
   display::Display display = GetPrimaryDisplay();
   return display::CreateRotationTransform(display.rotation(),
@@ -148,10 +154,37 @@ bool TestScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
   return GetWindowAtScreenPoint(GetCursorScreenPoint()) == window;
 }
 
+gfx::NativeWindow TestScreen::GetWindowForPoint(Window* window,
+                                                const gfx::Point& local_point) {
+  DCHECK(window);
+  if (!window->IsVisible()) {
+    return nullptr;
+  }
+
+  if (!window->HitTest(local_point)) {
+    return nullptr;
+  }
+
+  for (Window* child : base::Reversed(window->children())) {
+    gfx::Point point_in_child_coords(local_point);
+    Window::ConvertPointToTarget(window, child, &point_in_child_coords);
+    Window* match = GetWindowForPoint(child, point_in_child_coords);
+    if (match) {
+      return match;
+    }
+  }
+  return window;
+}
+
 gfx::NativeWindow TestScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
   if (!host_ || !host_->window())
     return nullptr;
-  return host_->window()->GetEventHandlerForPoint(point);
+
+  // GetWindowAtScreenPoint() is designed to return a visible window that
+  // contains the given point within its bounds. Using GetEventHandlerForPoint()
+  // can lead to null returns for windows that don't have an event handler, such
+  // as content_window_ in DesktopNativeWidgetAura.
+  return GetWindowForPoint(host_->window(), point);
 }
 
 gfx::NativeWindow TestScreen::GetLocalProcessWindowAtPoint(
@@ -167,6 +200,15 @@ display::Display TestScreen::GetDisplayNearestWindow(
 
 std::string TestScreen::GetCurrentWorkspace() {
   return {};
+}
+
+std::optional<float> TestScreen::GetPreferredScaleFactorForWindow(
+    gfx::NativeWindow window) const {
+  if (auto it = preferred_scale_factors_.find(window);
+      it != preferred_scale_factors_.end()) {
+    return it->second;
+  }
+  return Screen::GetPreferredScaleFactorForWindow(window);
 }
 
 TestScreen::TestScreen(const gfx::Rect& screen_bounds) {

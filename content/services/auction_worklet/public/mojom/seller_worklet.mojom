@@ -5,10 +5,12 @@
 module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
+import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/interest_group/ad_display_size.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -61,6 +63,26 @@ struct ScoreAdDependencyLatencies {
 
   // Download of TrustedScoringSignals
   mojo_base.mojom.TimeDelta? trusted_scoring_signals_latency;
+
+  // Times of each step of the ScoreAd flow, used to compute start and end
+  // times for latency phase UKMs.
+  mojo_base.mojom.TimeTicks deps_wait_start_time;
+  mojo_base.mojom.TimeTicks score_ad_start_time;
+  mojo_base.mojom.TimeTicks score_ad_finish_time;
+};
+
+// How long particular tasks took. Unlike ScoreAdDependencyLatencies this
+// doesn't denote how long things blocked for --- e.g. the fetch times are
+// how long the download took, even for later calls to scoreAd() that may not
+// actually wait for the download since it's already in memory.
+struct SellerTimingMetrics {
+  mojo_base.mojom.TimeDelta? js_fetch_latency;
+
+  // How long it took to execute the script (including both the top-level
+  // and the function).
+  mojo_base.mojom.TimeDelta script_latency;
+
+  bool script_timed_out;
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface
@@ -104,11 +126,12 @@ interface ScoreAdClient {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
-  // `scoring_latency` How long it took to execute the scoreAd() JavaScript,
-  //  (including the top-level).
+  // `real_time_contributions` Real time reporting contributions.
   //
-  // `trusted_signals_fetch_latency` How long it took to fetch the trusted
-  //  scoring signals, if any. 0 if there weren't any.
+  // `score_ad_timing_metrics` Time metrics relevant to this call.
+  //
+  // `score_ad_dependency_latencies` How long various depedent-on operations
+  // were waited for on this particular call.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
@@ -123,7 +146,8 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_loss_report_url,
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
-                    mojo_base.mojom.TimeDelta scoring_latency,
+                    array<RealTimeReportingContribution> real_time_contributions,
+                    SellerTimingMetrics score_ad_timing_metrics,
                     ScoreAdDependencyLatencies score_ad_dependency_latencies,
                     array<string> errors);
 };
@@ -196,12 +220,29 @@ interface SellerWorklet {
   // `browser_signal_render_url` The `renderUrl` returned by the
   //  BidderWorklet making the bid.
   //
+  // `browser_signal_selected_buyer_and_seller_reporting_id`
+  //  The selected reporting id from the interest group's ad's
+  // `selectableBuyerAndSellerReportingIds` array.
+  //
+  // `browser_signal_buyer_and_seller_reporting_id` This is the reporting id
+  //  from from the interest group's ad's buyerAndSellerReportingId field,
+  //  which is provided to both buyer and seller reporting worklets
+  //  (reportWin() and reportResult() respectively). This is only provided to
+  //  scoreAd() if browser_signal_selected_buyer_and_seller_reporting_id is
+  //  also present.
+  //
   // `browser_signal_ad_component_urls` The `adComponents` array returned by
   //  the BidderWorklet making the bid.
   //
   // `browser_signal_bidding_duration_msecs` is the duration the BiddingWorklet
   //  took to generate the bid. Taken as milliseconds to reduce granularity of
   //  timing information passed to an untrusted process.
+  //
+  // `browser_signal_render_size` is the size associated with the `renderUrl`
+  // returned by the BidderWorklet making the bid. This argument is optional.
+  // When there is no size associated with the `renderUrl`, it will be a
+  // nullopt.
+  // See explainer: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#32-on-device-bidding
   //
   // `browser_signal_for_debugging_only_in_cooldown_or_lockout` Whether the
   // browser is under lockout or the seller's origin is under cooldown for
@@ -230,8 +271,11 @@ interface SellerWorklet {
           blink.mojom.AdCurrency? component_expect_bid_currency,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
+          string? browser_signal_selected_buyer_and_seller_reporting_id,
+          string? browser_signal_buyer_and_seller_reporting_id,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs,
+          blink.mojom.AdSize? browser_signal_render_size,
           bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
           mojo_base.mojom.TimeDelta? seller_timeout,
           uint64 trace_id,
@@ -297,6 +341,12 @@ interface SellerWorklet {
   //  browserSignals.buyerAndSellerReportingId will be included here; otherwise
   //  it is nullopt.
   //
+  // `browser_signal_selected_buyer_and_seller_reporting_id` If the winning bid
+  //  specified selectedBuyerAndSellerReportingId, and that ID passed the
+  //  appropriate k-anonymity check, a value to set as
+  //  browserSignals.selectedBuyerAndSellerReportingId will be included here;
+  //  otherwise it is nullopt.
+  //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
   // `browser_signal_bid` The stochastically rounded numeric value of the
@@ -358,6 +408,7 @@ interface SellerWorklet {
       ComponentAuctionOtherSeller? browser_signals_other_seller,
       url.mojom.Origin browser_signal_interest_group_owner,
       string? browser_signal_buyer_and_seller_reporting_id,
+      string? browser_signal_selected_buyer_and_seller_reporting_id,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,
@@ -372,10 +423,14 @@ interface SellerWorklet {
            url.mojom.Url? report_url,
            map<string, url.mojom.Url> ad_beacon_map,
            array<PrivateAggregationRequest> pa_requests,
-           mojo_base.mojom.TimeDelta reporting_latency,
+           SellerTimingMetrics time_metrics,
            array<string> error_msgs);
 
-  // Establishes a debugger connection to the worklet.
+  // Establishes a debugger connection to the worklet thread.
+  //
+  // Arguments:
+  // `thread_index` The index of the thread in the thread pool.
   ConnectDevToolsAgent(
-      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent,
+      uint32 thread_index);
 };

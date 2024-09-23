@@ -71,15 +71,15 @@ void FormFieldDataAndroid::UpdateFromJava() {
 }
 
 void FormFieldDataAndroid::OnFormFieldDidChange(std::u16string_view value) {
-  field_->value = std::u16string(value);
-  field_->is_autofilled = false;
+  field_->set_value(std::u16string(value));
+  field_->set_is_autofilled(false);
   bridge_->UpdateValue(value);
 }
 
 void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
     const FormFieldData& field) {
-  field_->is_focusable = field.is_focusable;
-  field_->role = field.role;
+  field_->set_is_focusable(field.is_focusable());
+  field_->set_role(field.role());
   CHECK_EQ(field_->IsFocusable(), field.IsFocusable());
   bridge_->UpdateVisible(field_->IsFocusable());
 }
@@ -87,9 +87,10 @@ void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   auto SimilarityTuple = [](const FormFieldData& f) {
     return std::tuple_cat(
-        std::tie(f.host_frame, f.renderer_id, f.name, f.name_attribute,
-                 f.id_attribute, f.form_control_type),
-        std::make_tuple(IsCheckable(f.check_status)));
+        std::tie(f.host_frame(), f.name(), f.name_attribute(),
+                 f.id_attribute()),
+        std::make_tuple(f.renderer_id(), f.form_control_type(),
+                        IsCheckable(f.check_status())));
   };
 
   // For Android Autofill, labels are considered similar if they meet one of the
@@ -98,9 +99,9 @@ bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   // 2. The labels were inferred from the same type of source and that source
   //    was not `LabelSource::kLabelTag`.
   auto LabelsAreSimilar = [](const FormFieldData& f1, const FormFieldData& f2) {
-    return f1.label == f2.label ||
-           (f1.label_source != FormFieldData::LabelSource::kLabelTag &&
-            f1.label_source == f2.label_source);
+    return f1.label() == f2.label() ||
+           (f1.label_source() != FormFieldData::LabelSource::kLabelTag &&
+            f1.label_source() == f2.label_source());
   };
 
   return SimilarityTuple(*field_) == SimilarityTuple(field) &&

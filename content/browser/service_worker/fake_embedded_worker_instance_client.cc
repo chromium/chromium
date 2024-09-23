@@ -307,7 +307,7 @@ void DelayedFakeEmbeddedWorkerInstanceClient::StartWorker(
       break;
     case State::kCompleted:
     case State::kBlocked:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (quit_closure_for_start_worker_)
@@ -328,7 +328,7 @@ void DelayedFakeEmbeddedWorkerInstanceClient::StopWorker() {
       stop_state_ = State::kBlocked;
       break;
     case State::kCompleted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (quit_closure_for_stop_worker_)

@@ -10,15 +10,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 namespace {
@@ -91,15 +93,15 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionInternal(
     const std::optional<Vector<String>>& types,
     ExceptionState& exception_state) {
   DCHECK(script_state);
-  DCHECK(ThreadScheduler::Current());
   auto* supplement = From(document);
 
   if (callback) {
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     // Set the parent task ID if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
+      callback->SetParentTask(tracker->RunningTask());
     }
   }
   return supplement->StartTransition(document, callback, types,
@@ -120,10 +122,10 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     Document& document,
     ViewTransitionOptions* options,
     ExceptionState& exception_state) {
-  CHECK(!options || (options->hasUpdate() && options->hasType()));
+  CHECK(!options || (options->hasUpdate() && options->hasTypes()));
   return StartViewTransitionInternal(
       script_state, document, options ? options->update() : nullptr,
-      options ? options->type() : std::nullopt, exception_state);
+      options ? options->types() : std::nullopt, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -163,9 +165,19 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
   transition_ =
       ViewTransition::CreateFromScript(&document, callback, types, this);
 
+  if (document.hidden()) {
+    auto skipped_transition = transition_;
+    skipped_transition->SkipTransition(
+        ViewTransition::PromiseResponse::kRejectInvalidState);
+
+    DCHECK(!transition_);
+    return skipped_transition->GetScriptDelegate();
+  }
+
   // If there is a transition in a parent frame, give that precedence over a
   // transition in a child frame.
-  if (HasActiveTransitionInAncestorFrame(document.GetFrame())) {
+  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsSPAEnabled() &&
+      HasActiveTransitionInAncestorFrame(document.GetFrame())) {
     auto skipped_transition = transition_;
     skipped_transition->SkipTransition();
 
@@ -175,10 +187,33 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
   // Skip transitions in all frames associated with this widget. We can only
   // have one transition per widget/CC.
-  SkipTransitionInAllLocalFrames(document.GetFrame());
+  if (!RuntimeEnabledFeatures::ConcurrentViewTransitionsSPAEnabled()) {
+    SkipTransitionInAllLocalFrames(document.GetFrame());
+  }
   DCHECK(transition_);
 
   return transition_->GetScriptDelegate();
+}
+
+void ViewTransitionSupplement::DidChangeVisibilityState() {
+  if (GetSupplementable()->hidden() && transition_) {
+    transition_->SkipTransition(
+        ViewTransition::PromiseResponse::kRejectInvalidState);
+  }
+  SendOptInStatusToHost();
+}
+
+void ViewTransitionSupplement::SendOptInStatusToHost() {
+  // If we have a frame, notify the frame host that the opt-in has changed.
+  Document* document = GetSupplementable();
+  if (!document || !document->GetFrame() || !document->domWindow()) {
+    return;
+  }
+
+  document->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
+      (document->domWindow()->HasBeenRevealed() && !document->hidden())
+          ? cross_document_opt_in_
+          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
 }
 
 void ViewTransitionSupplement::SetCrossDocumentOptIn(
@@ -188,36 +223,45 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
   }
 
   cross_document_opt_in_ = cross_document_opt_in;
-
-  // If we have a frame, notify the frame host that the opt-in has changed.
-  if (auto* document = GetSupplementable(); document->GetFrame()) {
-    document->GetFrame()
-        ->GetLocalFrameHostRemote()
-        .OnViewTransitionOptInChanged(cross_document_opt_in);
-  }
+  SendOptInStatusToHost();
 }
 
 // static
 void ViewTransitionSupplement::SnapshotDocumentForNavigation(
     Document& document,
+    const blink::ViewTransitionToken& navigation_id,
+    mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
   DCHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
   auto* supplement = From(document);
-  supplement->StartTransition(document, std::move(callback));
+  supplement->StartTransition(document, navigation_id, std::move(params),
+                              std::move(callback));
 }
 
 void ViewTransitionSupplement::StartTransition(
     Document& document,
+    const blink::ViewTransitionToken& navigation_id,
+    mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
+  // TODO(khushalsagar): Per spec, we should be checking the opt-in at this
+  // point. See step 2 in
+  // https://drafts.csswg.org/css-view-transitions-2/#setup-outbound-transition.
+
   if (transition_) {
     // We should skip a transition if one exists, regardless of how it was
     // created, since navigation transition takes precedence.
     transition_->SkipTransition();
   }
+
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";
   transition_ = ViewTransition::CreateForSnapshotForNavigation(
-      &document, std::move(callback), this);
+      &document, navigation_id, std::move(callback), cross_document_types_,
+      this);
+
+  auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
+      document, std::move(params), transition_->GetScriptDelegate());
+  document.domWindow()->DispatchEvent(*page_swap_event);
 }
 
 // static
@@ -260,9 +304,7 @@ ViewTransition* ViewTransitionSupplement::GetTransition() {
 }
 
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
-    : Supplement<Document>(document),
-      cross_document_opt_in_(
-          mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {}
+    : Supplement<Document>(document) {}
 
 ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 
@@ -293,26 +335,16 @@ ViewTransitionSupplement::TakePendingRequests() {
   return std::move(pending_requests_);
 }
 
-void ViewTransitionSupplement::OnMetaTagChanged(
-    const AtomicString& content_value) {
-  auto cross_document_opt_in =
-      EqualIgnoringASCIICase(content_value, "same-origin")
-          ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
-          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
-
-  SetCrossDocumentOptIn(cross_document_opt_in);
-}
-
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
-    bool cross_document_enabled) {
+    bool cross_document_enabled,
+    const Vector<String>& types) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
-  // TODO(https://crbug.com/1463966): Remove meta tag opt-in - ignore the case
-  // where both are specified for now.
-
+  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || types.empty());
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
           : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
+  cross_document_types_ = types;
 }
 
 void ViewTransitionSupplement::WillInsertBody() {
@@ -342,6 +374,11 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
     return nullptr;
   }
 
+  // We auto-skip *outbound* transitions when the document has not been
+  // revealed yet. We expect it to not be revealed yet when resolving the
+  // inbound transition.
+  CHECK(!GetSupplementable()->domWindow()->HasBeenRevealed());
+
   if (cross_document_opt_in_ ==
       mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {
     transition_->SkipTransition();
@@ -349,10 +386,27 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
     return nullptr;
   }
 
+  transition_->InitTypes(cross_document_types_);
+
   // TODO(https://crbug.com/1502628): This is where types from the used
   // @view-transition should be applied.
 
   return transition_->GetScriptDelegate();
+}
+
+viz::ViewTransitionElementResourceId
+ViewTransitionSupplement::GenerateResourceId(
+    const blink::ViewTransitionToken& transition_token) {
+  return viz::ViewTransitionElementResourceId(transition_token,
+                                              ++resource_local_id_sequence_);
+}
+
+void ViewTransitionSupplement::InitializeResourceIdSequence(
+    uint32_t next_local_id) {
+  CHECK_GT(next_local_id,
+           viz::ViewTransitionElementResourceId::kInvalidLocalId);
+  resource_local_id_sequence_ =
+      std::max(next_local_id - 1, resource_local_id_sequence_);
 }
 
 }  // namespace blink

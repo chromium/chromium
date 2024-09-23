@@ -9,6 +9,10 @@ namespace prefs {
 
 // Whether the enterprise policy allows Cast devices on all IPs.
 const char kMediaRouterCastAllowAllIPs[] = "media_router.cast_allow_all_ips";
+// Whether the local discovery permission rejected error should be suppressed in
+// the GMC UI.
+const char kSuppressLocalDiscoveryPermissionError[] =
+    "media_router.suppress_local_discovery_permission_error";
 // Whether or not the user has enabled Media Remoting. Defaults to true.
 const char kMediaRouterMediaRemotingEnabled[] =
     "media_router.media_remoting.enabled";

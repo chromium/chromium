@@ -9,26 +9,27 @@ using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 optimization_guide::proto::ComposeLength ComposeLength(
-    compose::mojom::Length length) {
-  switch (length) {
-    case compose::mojom::Length::kShorter:
+    compose::mojom::StyleModifier modifier) {
+  switch (modifier) {
+    case compose::mojom::StyleModifier::kShorter:
       return optimization_guide::proto::ComposeLength::COMPOSE_SHORTER;
-    case compose::mojom::Length::kLonger:
+    case compose::mojom::StyleModifier::kLonger:
       return optimization_guide::proto::ComposeLength::COMPOSE_LONGER;
-    case compose::mojom::Length::kUnset:
+    case compose::mojom::StyleModifier::kUnset:
     default:
       return optimization_guide::proto::ComposeLength::
           COMPOSE_UNSPECIFIED_LENGTH;
   }
 }
 
-optimization_guide::proto::ComposeTone ComposeTone(compose::mojom::Tone tone) {
-  switch (tone) {
-    case compose::mojom::Tone::kCasual:
+optimization_guide::proto::ComposeTone ComposeTone(
+    compose::mojom::StyleModifier modifier) {
+  switch (modifier) {
+    case compose::mojom::StyleModifier::kCasual:
       return optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL;
-    case compose::mojom::Tone::kFormal:
+    case compose::mojom::StyleModifier::kFormal:
       return optimization_guide::proto::ComposeTone::COMPOSE_FORMAL;
-    case compose::mojom::Tone::kUnset:
+    case compose::mojom::StyleModifier::kUnset:
     default:
       return optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE;
   }

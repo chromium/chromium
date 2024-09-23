@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/time/time.h"
 #include "components/metrics/structured/key_data_prefs_delegate.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 
@@ -24,20 +25,18 @@ bool KeyDataProviderPrefs::IsReady() {
   return true;
 }
 
-void KeyDataProviderPrefs::OnProfileAdded(const base::FilePath& profile_path) {}
-
 std::optional<uint64_t> KeyDataProviderPrefs::GetId(
     const std::string& project_name) {
   // Validates the project. If valid, retrieve the metadata associated
   // with the event.
-  auto project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
 
-  if (!project_validator.has_value()) {
+  if (!project_validator) {
     return std::nullopt;
   }
-  return key_data_.Id((*project_validator)->project_hash(),
-                      (*project_validator)->key_rotation_period());
+  return key_data_.Id(project_validator->project_hash(),
+                      base::Days(project_validator->key_rotation_period()));
 }
 
 KeyData* KeyDataProviderPrefs::GetKeyData(const std::string& project_name) {

@@ -215,14 +215,14 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 };
 
 AngleVulkanImageBacking::AngleVulkanImageBacking(
-    SharedContextState* context_state,
+    scoped_refptr<SharedContextState> context_state,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -234,7 +234,7 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
                                       std::move(debug_label),
                                       format.EstimatedSizeInBytes(size),
                                       /*is_thread_safe=*/false),
-      context_state_(context_state) {}
+      context_state_(std::move(context_state)) {}
 
 AngleVulkanImageBacking::~AngleVulkanImageBacking() {
   DCHECK(!is_gl_write_in_process_);
@@ -280,15 +280,14 @@ bool AngleVulkanImageBacking::Initialize(
     const base::span<const uint8_t>& data) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
 
-  constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU;
+  constexpr gpu::SharedImageUsageSet usages_needing_color_attachment =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage() & kUsageNeedsColorAttachment) {
+  if (usage().HasAny(usages_needing_color_attachment)) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format().IsCompressed()) {
@@ -313,7 +312,7 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
 
-    vk_textures_.emplace_back(std::move(vulkan_image), color_space());
+    vk_textures_.emplace_back(std::move(vulkan_image), format(), color_space());
   }
 
   if (!data.empty()) {
@@ -351,7 +350,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
     return false;
   }
 
-  vk_textures_.emplace_back(std::move(vulkan_image), color_space());
+  vk_textures_.emplace_back(std::move(vulkan_image), format(), color_space());
 
   SetCleared();
 
@@ -408,7 +407,7 @@ AngleVulkanImageBacking::ProduceSkiaGanesh(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsVulkan()) {
-    DCHECK_EQ(context_state_, context_state.get());
+    DCHECK_EQ(context_state_, context_state);
     return std::make_unique<SkiaAngleVulkanImageRepresentation>(
         context_state->gr_context(), manager, this, tracker);
   }

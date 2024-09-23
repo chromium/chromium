@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "android_webview/nonembedded/net/network_impl.h"
-#include "android_webview/nonembedded/nonembedded_jni_headers/NetworkFetcherTask_jni.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
@@ -24,6 +23,9 @@
 #include "base/task/thread_pool.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/nonembedded/nonembedded_jni_headers/NetworkFetcherTask_jni.h"
 
 namespace android_webview {
 

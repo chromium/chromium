@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "performance_tuning.high_efficiency_mode.aggressiveness",
+      "pref_location": "local_state",
+      "default_value": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

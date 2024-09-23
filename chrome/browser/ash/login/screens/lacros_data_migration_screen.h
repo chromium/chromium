@@ -10,6 +10,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,10 +23,16 @@ class LacrosDataMigrationScreenView;
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.
-class LacrosDataMigrationScreen : public BaseScreen,
-                                  public chromeos::PowerManagerClient::Observer,
-                                  public OobeUI::Observer {
+class LacrosDataMigrationScreen
+    : public BaseScreen,
+      public chromeos::PowerManagerClient::Observer,
+      public OobeUI::Observer,
+      public screens_login::mojom::LacrosDataMigrationPageHandler,
+      public OobeMojoBinder<
+          screens_login::mojom::LacrosDataMigrationPageHandler,
+          screens_login::mojom::LacrosDataMigrationPage> {
  public:
+  using TView = LacrosDataMigrationScreenView;
   explicit LacrosDataMigrationScreen(
       base::WeakPtr<LacrosDataMigrationScreenView> view);
   ~LacrosDataMigrationScreen() override;
@@ -62,7 +70,11 @@ class LacrosDataMigrationScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+
+  // screens_login::mojom::LacrosDataMigrationPageHandler
+  void OnSkipButtonClicked() override;
+  void OnCancelButtonClicked() override;
+  void OnGotoFilesButtonClicked() override;
 
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,

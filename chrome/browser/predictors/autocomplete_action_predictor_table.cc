@@ -20,7 +20,7 @@
 namespace {
 
 // TODO(shishir): Rename the table for consistency.
-const char kAutocompletePredictorTableName[] = "network_action_predictor";
+#define AUTOCOMPLETE_PREDICTOR_TABLE_NAME "network_action_predictor"
 
 // The maximum length allowed for strings in the database.
 const size_t kMaxDataLength = 2048;
@@ -84,14 +84,14 @@ void AutocompleteActionPredictorTable::GetRow(const Row::Id& id, Row* row) {
   if (CantAccessDatabase())
     return;
 
-  sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-      base::StringPrintf("SELECT * FROM %s WHERE id=?",
-                         kAutocompletePredictorTableName).c_str()));
+  sql::Statement statement(DB()->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT * FROM " AUTOCOMPLETE_PREDICTOR_TABLE_NAME " WHERE id=?"));
   statement.BindString(0, id);
 
   bool success = StepAndInitializeRow(&statement, row);
   DCHECK(success) << "Failed to get row " << id << " from "
-                  << kAutocompletePredictorTableName;
+                  << AUTOCOMPLETE_PREDICTOR_TABLE_NAME;
 }
 
 void AutocompleteActionPredictorTable::GetAllRows(Rows* row_buffer) {
@@ -101,9 +101,8 @@ void AutocompleteActionPredictorTable::GetAllRows(Rows* row_buffer) {
 
   row_buffer->clear();
 
-  sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-      base::StringPrintf(
-          "SELECT * FROM %s", kAutocompletePredictorTableName).c_str()));
+  sql::Statement statement(DB()->GetCachedStatement(
+      SQL_FROM_HERE, "SELECT * FROM " AUTOCOMPLETE_PREDICTOR_TABLE_NAME));
   if (!statement.is_valid())
     return;
 
@@ -141,11 +140,10 @@ void AutocompleteActionPredictorTable::AddAndUpdateRows(
   if (!transaction.Begin())
     return;
   for (auto it = rows_to_add.begin(); it != rows_to_add.end(); ++it) {
-    sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-        base::StringPrintf(
-            "INSERT INTO %s "
-            "(id, user_text, url, number_of_hits, number_of_misses) "
-            "VALUES (?,?,?,?,?)", kAutocompletePredictorTableName).c_str()));
+    sql::Statement statement(DB()->GetCachedStatement(
+        SQL_FROM_HERE, "INSERT INTO " AUTOCOMPLETE_PREDICTOR_TABLE_NAME
+                       "(id, user_text, url, number_of_hits, number_of_misses) "
+                       "VALUES (?,?,?,?,?)"));
     if (!statement.is_valid())
       return;
 
@@ -154,11 +152,11 @@ void AutocompleteActionPredictorTable::AddAndUpdateRows(
       return;
   }
   for (auto it = rows_to_update.begin(); it != rows_to_update.end(); ++it) {
-    sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-        base::StringPrintf(
-            "UPDATE %s "
-            "SET id=?, user_text=?, url=?, number_of_hits=?, number_of_misses=?"
-            " WHERE id=?1", kAutocompletePredictorTableName).c_str()));
+    sql::Statement statement(DB()->GetCachedStatement(
+        SQL_FROM_HERE,
+        "UPDATE " AUTOCOMPLETE_PREDICTOR_TABLE_NAME
+        " SET id=?, user_text=?, url=?, number_of_hits=?, number_of_misses=?"
+        " WHERE id=?1"));
     if (!statement.is_valid())
       return;
 
@@ -180,10 +178,9 @@ void AutocompleteActionPredictorTable::DeleteRows(
   if (!transaction.Begin())
     return;
   for (auto it = id_list.begin(); it != id_list.end(); ++it) {
-    sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-        base::StringPrintf(
-            "DELETE FROM %s WHERE id=?",
-            kAutocompletePredictorTableName).c_str()));
+    sql::Statement statement(DB()->GetCachedStatement(
+        SQL_FROM_HERE,
+        "DELETE FROM " AUTOCOMPLETE_PREDICTOR_TABLE_NAME " WHERE id=?"));
     if (!statement.is_valid())
       return;
 
@@ -199,9 +196,8 @@ void AutocompleteActionPredictorTable::DeleteAllRows() {
   if (CantAccessDatabase())
     return;
 
-  sql::Statement statement(DB()->GetCachedStatement(SQL_FROM_HERE,
-      base::StringPrintf("DELETE FROM %s",
-                         kAutocompletePredictorTableName).c_str()));
+  sql::Statement statement(DB()->GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM " AUTOCOMPLETE_PREDICTOR_TABLE_NAME));
   if (!statement.is_valid())
     return;
 
@@ -219,16 +215,16 @@ void AutocompleteActionPredictorTable::CreateOrClearTablesIfNecessary() {
   if (CantAccessDatabase())
     return;
 
-  if (DB()->DoesTableExist(kAutocompletePredictorTableName))
+  if (DB()->DoesTableExist(AUTOCOMPLETE_PREDICTOR_TABLE_NAME)) {
     return;
+  }
 
-  bool success = DB()->Execute(base::StringPrintf(
-      "CREATE TABLE %s ( "
-      "id TEXT PRIMARY KEY, "
-      "user_text TEXT, "
-      "url TEXT, "
-      "number_of_hits INTEGER, "
-      "number_of_misses INTEGER)", kAutocompletePredictorTableName).c_str());
+  bool success = DB()->Execute("CREATE TABLE " AUTOCOMPLETE_PREDICTOR_TABLE_NAME
+                               "(id TEXT PRIMARY KEY, "
+                               "user_text TEXT, "
+                               "url TEXT, "
+                               "number_of_hits INTEGER, "
+                               "number_of_misses INTEGER)");
   if (!success)
     ResetDB();
 }
@@ -239,8 +235,7 @@ void AutocompleteActionPredictorTable::LogDatabaseStats()  {
     return;
 
   sql::Statement count_statement(DB()->GetUniqueStatement(
-      base::StringPrintf("SELECT count(id) FROM %s",
-                         kAutocompletePredictorTableName).c_str()));
+      "SELECT count(id) FROM " AUTOCOMPLETE_PREDICTOR_TABLE_NAME));
   if (!count_statement.is_valid() || !count_statement.Step())
     return;
 }

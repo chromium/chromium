@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 
 #include <stdint.h>
@@ -254,8 +259,8 @@ sk_sp<SkColorSpace> GetAltImageColorSpace(const avifImage& image) {
       // Same ICC as the base image, no need to specify it.
       return nullptr;
     }
-    std::unique_ptr<ColorProfile> profile =
-        ColorProfile::Create(gain_map->altICC.data, gain_map->altICC.size);
+    std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
+        base::span(gain_map->altICC.data, gain_map->altICC.size));
     if (!profile) {
       DVLOG(1) << "Failed to parse gain map ICC profile";
       return nullptr;
@@ -303,7 +308,11 @@ AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
                                    ColorBehavior color_behavior,
                                    wtf_size_t max_decoded_bytes,
                                    AnimationOption animation_option)
-    : ImageDecoder(alpha_option, hbd_option, color_behavior, max_decoded_bytes),
+    : ImageDecoder(alpha_option,
+                   hbd_option,
+                   color_behavior,
+                   cc::AuxImage::kDefault,
+                   max_decoded_bytes),
       animation_option_(animation_option) {}
 
 AVIFImageDecoder::~AVIFImageDecoder() = default;
@@ -353,10 +362,10 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
       // AVIF_PIXEL_FORMAT_NONE.
       CHECK(!IsDecodedSizeAvailable());
       return cc::YUVSubsampling::kUnknown;
-    case AVIF_PIXEL_FORMAT_COUNT:
+    default:
       break;
   }
-  NOTREACHED_NORETURN() << "Invalid YUV format: " << avif_yuv_format_;
+  NOTREACHED() << "Invalid YUV format: " << avif_yuv_format_;
 }
 
 gfx::Size AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
@@ -492,8 +501,9 @@ void AVIFImageDecoder::DecodeToYUV() {
         libyuv::HalfFloatPlane(src, src_row_bytes, dst, dst_row_bytes,
                                kHighBitDepthMultiplier, width, height);
       } else {
-        NOTREACHED() << "Unsupported color type: "
-                     << static_cast<int>(image_planes_->color_type());
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported color type: "
+            << static_cast<int>(image_planes_->color_type());
       }
     }
     if (plane == cc::YUVIndex::kY) {
@@ -842,8 +852,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~AVIF_STRICT_PIXI_REQUIRED;
 
-    if (base::FeatureList::IsEnabled(features::kGainmapHdrImages) &&
-        base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
+    if (base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
       decoder_->enableParsingGainMapMetadata = AVIF_TRUE;
     }
 
@@ -933,8 +942,8 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // from the AV1 sequence header for the frames. If an ICC profile is
     // present, use it instead of the CICP color description.
     if (container->icc.size) {
-      std::unique_ptr<ColorProfile> profile =
-          ColorProfile::Create(container->icc.data, container->icc.size);
+      std::unique_ptr<ColorProfile> profile = ColorProfile::Create(
+          base::span(container->icc.data, container->icc.size));
       if (!profile) {
         DVLOG(1) << "Failed to parse image ICC profile";
         return false;
@@ -1286,7 +1295,6 @@ void AVIFImageDecoder::ColorCorrectImage(int from_row,
 bool AVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
-  CHECK(base::FeatureList::IsEnabled(features::kGainmapHdrImages));
   if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
     return false;
   }
@@ -1334,19 +1342,10 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
         return false;
       }
 
-      float min_log2 =
+      const float min_log2 =
           FractionToFloat(metadata.gainMapMinN[i], metadata.gainMapMinD[i]);
-      float max_log2 =
+      const float max_log2 =
           FractionToFloat(metadata.gainMapMaxN[i], metadata.gainMapMaxD[i]);
-      if (base_is_hdr != metadata.backwardDirection) {
-        // When base_is_hdr != metadata.backwardDirection, it means that the
-        // gain map was computed as log2(HDR/SDR) instead of log2(SDR/HDR).
-        // But log2(1/x) = -log2(x) so we just need to negate the min/max values
-        // which are used to scale the gain map.
-        // Note that we no longer have min<max but Skia does not check this.
-        min_log2 *= -1.0f;
-        max_log2 *= -1.0f;
-      }
       out_gainmap_info.fGainmapRatioMin[i] = std::exp2(min_log2);
       out_gainmap_info.fGainmapRatioMax[i] = std::exp2(max_log2);
 

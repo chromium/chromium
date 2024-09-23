@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class PrefRegistrySimple;
@@ -18,15 +18,20 @@ namespace syncer {
 
 class SyncService;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// These values are persisted to logs *and* prefs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(SyncFeatureStatusForSyncToSigninMigration)
 enum class SyncFeatureStatusForSyncToSigninMigration {
   kUndefined = 0,
-  kDisabledOrPaused = 1,
+  // Deprecated: kDisabledOrPaused = 1,
   kInitializing = 2,
   kActive = 3,
-  kMaxValue = kActive
+  kPaused = 4,
+  kDisabled = 5,
+  kMaxValue = kDisabled
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncFeatureStatusForSyncToSigninMigration)
+
 // Safely converts an int (e.g. as read from PrefService) back to an enum entry,
 // falling back to `kUndefined` if the value doesn't map to any enum entry.
 SyncFeatureStatusForSyncToSigninMigration
@@ -53,14 +58,14 @@ class SyncFeatureStatusForMigrationsRecorder : public SyncServiceObserver {
 
   static bool GetSyncDataTypeActiveForSyncToSigninMigration(
       const PrefService* prefs,
-      ModelType type);
+      DataType type);
 
   // SyncServiceObserver implementation.
   void OnStateChanged(SyncService* sync) override;
   void OnSyncShutdown(SyncService* sync) override;
 
  private:
-  static std::string GetModelTypeStatusPrefName(ModelType type);
+  static std::string GetDataTypeStatusPrefName(DataType type);
 
   SyncFeatureStatusForSyncToSigninMigration DetermineSyncFeatureStatus(
       const SyncService* sync) const;

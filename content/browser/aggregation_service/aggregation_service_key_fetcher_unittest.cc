@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -35,7 +36,7 @@ using FetchCallback = AggregationServiceKeyFetcher::FetchCallback;
 using NetworkFetchCallback =
     AggregationServiceKeyFetcher::NetworkFetcher::NetworkFetchCallback;
 
-constexpr char kExampleUrl[] = "https://a.com/keys";
+constexpr std::string_view kExampleUrl = "https://a.com/keys";
 
 // NetworkFetcher that manages the public keys in memory.
 class MockNetworkFetcher : public AggregationServiceKeyFetcher::NetworkFetcher {

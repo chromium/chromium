@@ -28,10 +28,8 @@ namespace {
 // Retrieves the localized display name for the base name of the given path.
 // If the path is not localized, this will just return the base name.
 std::string GetDisplayBaseName(const base::FilePath& path) {
-  base::apple::ScopedCFTypeRef<CFURLRef> url(
-      CFURLCreateFromFileSystemRepresentation(
-          nullptr, (const UInt8*)path.value().c_str(), path.value().length(),
-          /*isDirectory=*/true));
+  base::apple::ScopedCFTypeRef<CFURLRef> url =
+      base::apple::FilePathToCFURL(path);
   if (!url) {
     return path.BaseName().value();
   }
@@ -74,8 +72,9 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   }
 
   base::FilePath display_path = base::FilePath(kHomeShortcut);
-  if (source_path == home_path)
+  if (source_path == home_path) {
     return display_path;
+  }
 
 #if BUILDFLAG(IS_MAC)
   DCHECK(source_path.IsAbsolute());
@@ -103,8 +102,9 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   DCHECK_EQ(actual_path.value(), source_path.value());
   return display_path;
 #else   // BUILDFLAG(IS_MAC)
-  if (home_path.AppendRelativePath(source_path, &display_path))
+  if (home_path.AppendRelativePath(source_path, &display_path)) {
     return display_path;
+  }
   return source_path;
 #endif  // BUILDFLAG(IS_MAC)
 }

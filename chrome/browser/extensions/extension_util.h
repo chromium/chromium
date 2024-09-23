@@ -66,8 +66,7 @@ base::Value::Dict GetExtensionInfo(const Extension* extension);
 // displayed in an extension installation prompt for the specified |extension|.
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
-    Profile* profile,
-    bool include_optional_permissions);
+    Profile* profile);
 
 // Returns all profiles affected by permissions of an extension running in
 // "spanning" (rather than "split) mode.
@@ -78,6 +77,12 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
 // Sets whether the given `profile` is in developer mode and notifies
 // relevant subsystems.
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode);
+
+// Returns the extension name to be used in UI surfaces. Name will be truncated
+// if its very long, preventing extension name to spoof or break UI surfaces
+// (see crbug.com/40063885).
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::string& extension_name);
 
 }  // namespace util
 }  // namespace extensions

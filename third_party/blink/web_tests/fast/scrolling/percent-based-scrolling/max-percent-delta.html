@@ -1,0 +1,58 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/percent-based-util.js"></script>
+
+<style>
+  .scroller {
+    width: 1000px;
+    height: 2000px;
+    overflow: scroll;
+  }
+
+  .scroller>.child {
+    width: 4000px;
+    height: 4000px;
+  }
+</style>
+
+<div id="scroller" class="scroller">
+  <div class="child"></div>
+</div>
+<script>
+  // 1 - Test arrows
+  promise_test(async () => {
+    if (!isPercentBasedScrollingEnabled())
+      return;
+
+    // Mac doesn't have scrollbar arrows.
+    const onMacPlatform = navigator.userAgent.includes("Mac OS X");
+    if(onMacPlatform)
+      return;
+
+    const expected_y =
+      Math.round(SCROLLBAR_SCROLL_PERCENTAGE * window.innerHeight);
+    const expected_x =
+      Math.round(SCROLLBAR_SCROLL_PERCENTAGE * window.innerWidth);
+
+    await runScrollbarArrowsTest(scroller, expected_x, expected_y);
+  }, "Percent scrolling using scrollbar arrows in scroller clamped " +
+    "by viewport size");
+
+  // 2 - Test mousewheel
+  promise_test(async () => {
+    if (!isPercentBasedScrollingEnabled())
+      return;
+
+    const SCROLL_PERCENTAGE = 0.6;
+    const expected_x = Math.round(SCROLL_PERCENTAGE * window.innerWidth);
+    const expected_y = Math.round(SCROLL_PERCENTAGE * window.innerHeight);
+
+    // Check if mousewheel scrolls are clamping by its maximum value.
+    await runMousewheelTest(scroller, expected_x, expected_y, SCROLL_PERCENTAGE);
+  }, "Percent scrolling in using mousewheel in scroller clamped by " +
+    "viewport size");
+</script>

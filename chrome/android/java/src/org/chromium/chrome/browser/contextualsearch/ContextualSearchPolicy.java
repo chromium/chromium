@@ -13,10 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma.ContextualSearchPreference;
@@ -47,11 +50,11 @@ class ContextualSearchPolicy {
     private static final String CONTEXTUAL_SEARCH_ENABLED = "true";
 
     private final SharedPreferencesManager mPreferencesManager;
+    private final Profile mProfile;
     private final ContextualSearchSelectionController mSelectionController;
     private final RelatedSearchesStamp mRelatedSearchesStamp;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
-    private ContextualSearchPanelInterface mSearchPanel;
-    private Profile mProfile;
+    private ContextualSearchPanel mSearchPanel;
 
     // Members used only for testing purposes.
     private boolean mDidOverrideFullyEnabledForTesting;
@@ -59,13 +62,16 @@ class ContextualSearchPolicy {
     private Integer mTapTriggeredPromoLimitForTesting;
     private boolean mDidOverrideAllowSendingPageUrlForTesting;
     private boolean mAllowSendingPageUrlForTesting;
+    private Boolean mContextualSearchResolutionUrlValid;
 
     /** ContextualSearchPolicy constructor. */
     public ContextualSearchPolicy(
+            Profile profile,
             ContextualSearchSelectionController selectionController,
             ContextualSearchNetworkCommunicator networkCommunicator) {
         mPreferencesManager = ChromeSharedPreferences.getInstance();
 
+        mProfile = profile;
         mSelectionController = selectionController;
         mNetworkCommunicator = networkCommunicator;
         mRelatedSearchesStamp = new RelatedSearchesStamp(this);
@@ -73,21 +79,16 @@ class ContextualSearchPolicy {
 
     /**
      * Sets the handle to the ContextualSearchPanel.
+     *
      * @param panel The ContextualSearchPanel.
      */
-    public void setContextualSearchPanel(ContextualSearchPanelInterface panel) {
+    public void setContextualSearchPanel(ContextualSearchPanel panel) {
         mSearchPanel = panel;
-    }
-
-    /** Set the {@link Profile} interacting with Contextual Search. */
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 
     /**
      * @return The number of additional times to show the promo on tap, 0 if it should not be shown,
-     *         or a negative value if the counter has been disabled or the user has accepted
-     *         the promo.
+     *     or a negative value if the counter has been disabled or the user has accepted the promo.
      */
     int getPromoTapsRemaining() {
         if (!isUserUndecided()) return REMAINING_NOT_APPLICABLE;
@@ -124,10 +125,10 @@ class ContextualSearchPolicy {
 
     /**
      * @return whether or not the Contextual Search Result should be preloaded before the user
-     *         explicitly interacts with the feature.
+     *     explicitly interacts with the feature.
      */
     boolean shouldPrefetchSearchResult() {
-        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
+        if (PreloadPagesSettingsBridge.getState(mProfile) == PreloadPagesState.NO_PRELOADING) {
             return false;
         }
 
@@ -528,7 +529,27 @@ class ContextualSearchPolicy {
     boolean isContextualSearchFullyEnabled() {
         if (mDidOverrideFullyEnabledForTesting) return mFullyEnabledForTesting;
 
-        return isContextualSearchEnabled(mProfile);
+        return isContextualSearchResolutionUrlValid() && isContextualSearchEnabled(mProfile);
+    }
+
+    /**
+     * @return Whether the contextual search resolution URL is valid and can be used to resolve
+     *     highlight.
+     */
+    boolean isContextualSearchResolutionUrlValid() {
+        // This function is needed because certain DMA implementations supply a persistent set of
+        // Template URL overrides. These overrides are in effect until the user performs a factory
+        // data reset of their device, and occasionally miss relevant information, such as - in this
+        // particular case - "contextual_search_url" value.
+        if (mContextualSearchResolutionUrlValid == null) {
+            if (ContextualSearchPolicyJni.get() == null) {
+                // JNI is not initialized.
+                return false;
+            }
+            mContextualSearchResolutionUrlValid =
+                    ContextualSearchPolicyJni.get().isContextualSearchResolutionUrlValid(mProfile);
+        }
+        return mContextualSearchResolutionUrlValid;
     }
 
     /**
@@ -566,5 +587,10 @@ class ContextualSearchPolicy {
     @VisibleForTesting
     public void setNetworkCommunicator(ContextualSearchNetworkCommunicator networkCommunicator) {
         mNetworkCommunicator = networkCommunicator;
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean isContextualSearchResolutionUrlValid(@JniType("Profile*") Profile profile);
     }
 }

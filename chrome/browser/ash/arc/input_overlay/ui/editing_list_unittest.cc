@@ -10,18 +10,25 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_highlight.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -120,13 +127,25 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->input_mapping_widget_.get();
   }
 
-  bool IsActionHighlightVisible() {
+  // Verify action highlight is `expect_visible`. If it is visible, check if it
+  // is anchored to `expect_anchor_view`.
+  void VerifyActionHighlight(bool expect_visible,
+                             ActionView* expect_anchor_view) {
     DCHECK(controller_);
-    if (const auto* highlight_widget =
-            controller_->action_highlight_widget_.get()) {
-      return highlight_widget->IsVisible();
+    bool visible = false;
+    ActionView* anchor_view = nullptr;
+    if (auto* highlight_widget = controller_->action_highlight_widget_.get()) {
+      visible = highlight_widget->IsVisible();
+      auto* highlight = views::AsViewClass<ActionHighlight>(
+          highlight_widget->GetContentsView());
+      DCHECK(highlight);
+      anchor_view = highlight->anchor_view();
     }
-    return false;
+
+    EXPECT_EQ(expect_visible, visible);
+    if (expect_visible) {
+      EXPECT_EQ(expect_anchor_view, anchor_view);
+    }
   }
 
   bool IsButtonOptionsMenuVisible() {
@@ -261,14 +280,18 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   EXPECT_NE(action_3, action_2);
 }
 
-TEST_F(EditingListTest, TestHoverAtListItem) {
-  EXPECT_FALSE(IsActionHighlightVisible());
+TEST_F(EditingListTest, TestActionHighlight) {
+  // 1. Hover without no view focused.
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
 
   HoverAtActionViewListItem(/*index=*/0u);
-  EXPECT_TRUE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
 
   HoverAtActionViewListItem(/*index=*/1u);
-  EXPECT_TRUE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
 
   // Hover outside of the list item and the view highlight is also removed.
   auto* list_item = GetEditingListItem(/*index=*/1u);
@@ -277,7 +300,56 @@ TEST_F(EditingListTest, TestHoverAtListItem) {
   item_origin.Offset(-2, -2);
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(item_origin);
-  EXPECT_FALSE(IsActionHighlightVisible());
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
+
+  // 2. Hover with the focused list item.
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/0u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
+
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/1u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+
+  // 3. Hover with the focused edit label.
+  // Clear high light first.
+  event_generator->MoveMouseTo(item_origin);
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
+  auto* edit_label = GetEditLabel(
+      views::AsViewClass<ActionViewListItem>(list_item), /*index=*/0);
+  edit_label->RequestFocus();
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/0u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_->action_view());
+
+  edit_label->RequestFocus();
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  HoverAtActionViewListItem(/*index=*/1u);
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+
+  // 4. Focus on the list item and then click on other view to move the
+  // activation.
+  list_item->RequestFocus();
+  EXPECT_EQ(list_item, list_item->GetFocusManager()->GetFocusedView());
+  VerifyActionHighlight(/*expect_visible=*/true,
+                        /*expect_anchor_view=*/tap_action_two_->action_view());
+  LeftClickOn(tap_action_->action_view());
+  VerifyActionHighlight(/*expect_visible=*/false,
+                        /*expect_anchor_view=*/nullptr);
 }
 
 TEST_F(EditingListTest, TestReposition) {
@@ -438,6 +510,56 @@ TEST_F(EditingListTest, TestScrollView) {
   window_content_height = touch_injector_->content_bounds().height();
   EXPECT_EQ(window_content_height, list_window->bounds().height() +
                                        kEditingListOffsetInsideMainWindow);
+}
+
+TEST_F(EditingListTest, TestMaximumActions) {
+  const size_t action_size = controller_->GetActiveActionsSize();
+  // Add new action util it reaches to the maximum.
+  EXPECT_GT(kMaxActionCount, action_size);
+  for (size_t i = 0; i < kMaxActionCount - action_size; i++) {
+    AddNewActionInCenter();
+    PressDoneButtonOnButtonOptionsMenu();
+  }
+
+  // Once the actions size reaches to the maximum, press add buttons shouldn't
+  // get into the button placement mode.
+  PressAddButton();
+  EXPECT_FALSE(GetTargetView());
+
+  PressAddContainerButton();
+  EXPECT_FALSE(GetTargetView());
+}
+
+TEST_F(EditingListTest, TestHistograms) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  const std::string histogram_name =
+      BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
+  std::map<EditingListFunction, int> expected_histogram_values;
+
+  PressAddButton();
+  MapIncreaseValueByOne(expected_histogram_values, EditingListFunction::kAdd);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u,
+      static_cast<int64_t>(EditingListFunction::kAdd));
+
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  HoverAtActionViewListItem(/*index=*/0u);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditingListFunction::kHoverListItem);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u,
+      static_cast<int64_t>(EditingListFunction::kHoverListItem));
+
+  LeftClickAtActionViewListItem(/*index=*/0);
+  MapIncreaseValueByOne(expected_histogram_values,
+                        EditingListFunction::kPressListItem);
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u,
+      static_cast<int64_t>(EditingListFunction::kPressListItem));
 }
 
 }  // namespace arc::input_overlay

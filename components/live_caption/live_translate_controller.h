@@ -68,7 +68,6 @@ class LiveTranslateController : public KeyedService {
   void OnResponseJsonParsed(OnTranslateEventCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
 
-  void OnLiveCaptionEnabledChanged();
   void OnLiveTranslateEnabledChanged();
 
   raw_ptr<content::BrowserContext> browser_context_;

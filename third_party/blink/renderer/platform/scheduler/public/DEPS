@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "agent_group_scheduler.h": [
+    "+ipc/urgent_message_observer.h",
+  ],
   "feature_and_js_location_blocking_bfcache.h": [
     "+third_party/blink/renderer/platform/bindings/source_location.h",
   ],

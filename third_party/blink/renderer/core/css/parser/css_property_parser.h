@@ -25,21 +25,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 
-#include "css_tokenized_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
 class CSSPropertyValue;
+class CSSParserTokenStream;
 class CSSValue;
 class ExecutionContext;
 
-// Inputs: PropertyID, isImportant bool, CSSParserTokenRange.
+// Inputs: PropertyID, isImportant bool, CSSParserTokenStream.
 // Outputs: Vector of CSSProperties
 
 class CORE_EXPORT CSSPropertyParser {
@@ -49,41 +50,49 @@ class CORE_EXPORT CSSPropertyParser {
   CSSPropertyParser(const CSSPropertyParser&) = delete;
   CSSPropertyParser& operator=(const CSSPropertyParser&) = delete;
 
-  // NOTE: The CSSTokenizedValue must have leading whitespace (and comments)
+  // NOTE: The stream must have leading whitespace (and comments)
   // stripped; it will strip any trailing whitespace (and comments) itself.
   // This is done because it's easy to strip tokens from the start when
   // tokenizing (but trailing comments is so rare that we can just as well
   // do that in a slow path).
   static bool ParseValue(CSSPropertyID,
-                         bool important,
-                         const CSSTokenizedValue&,
+                         bool allow_important_annotation,
+                         CSSParserTokenStream&,
                          const CSSParserContext*,
                          HeapVector<CSSPropertyValue, 64>&,
                          StyleRule::RuleType);
 
   // Parses a non-shorthand CSS property
   static const CSSValue* ParseSingleValue(CSSPropertyID,
-                                          CSSParserTokenRange,
+                                          CSSParserTokenStream&,
                                           const CSSParserContext*);
 
+  // Tries to parse an entire value consisting solely of a CSS-wide
+  // keyword (and potentially !important). Returns nullptr on failure,
+  // and then leaves the stream position untouched (but “important”
+  // in an undeterminate state). Unlike the ParseFoo() functions,
+  // this is static, so does not touch parsed_properties_.
+  static const CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
+                                               bool allow_important_annotation,
+                                               bool& important);
+
  private:
-  CSSPropertyParser(const CSSTokenizedValue&,
+  CSSPropertyParser(CSSParserTokenStream&,
                     const CSSParserContext*,
                     HeapVector<CSSPropertyValue, 64>*);
 
   // TODO(timloh): Rename once the CSSParserValue-based parseValue is removed
   bool ParseValueStart(CSSPropertyID unresolved_property,
-                       StyleRule::RuleType rule_type,
-                       bool important);
-  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                             bool important,
-                             StyleRule::RuleType rule_type);
+                       bool allow_important_annotation,
+                       StyleRule::RuleType rule_type);
+  bool ParseCSSWideKeyword(CSSPropertyID unresolved_property,
+                           bool allow_important_annotation);
 
   bool ParseFontFaceDescriptor(CSSPropertyID);
 
  private:
   // Inputs:
-  CSSTokenizedValue value_;
+  CSSParserTokenStream& stream_;
   const CSSParserContext* context_;
   // Outputs:
   HeapVector<CSSPropertyValue, 64>* parsed_properties_;

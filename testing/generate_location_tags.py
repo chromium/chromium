@@ -19,18 +19,25 @@ import sys
 
 THIS_DIR = os.path.dirname(__file__)
 SRC_DIR = os.path.abspath(os.path.dirname(THIS_DIR))
+
+# //build imports.
 BUILD_DIR = os.path.join(SRC_DIR, 'build')
 sys.path.insert(0, BUILD_DIR)
 import find_depot_tools
 
+
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-o', '--out', required=True,
+  parser.add_argument('-o',
+                      '--out',
+                      required=True,
                       help='path to write location tag metadata to')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.WARNING)
-  if not os.path.isdir(os.path.join(SRC_DIR, '.git')):
+
+  # ".git" is a directory in full checkouts, but a file in work trees.
+  if not os.path.exists(os.path.join(SRC_DIR, '.git')):
     logging.warning('Skip generating location tags because the script is not '
                     'running in a git repository')
     return 0
@@ -40,12 +47,16 @@ def main():
     exe = exe + '.bat'
 
   return subprocess.call([
-    exe,
-    'location-tags',
-    '-out', args.out,
-    '-root', SRC_DIR,
-    '-repo', 'https://chromium.googlesource.com/chromium/src',
-    ])
+      exe,
+      'location-tags',
+      '-out',
+      args.out,
+      '-root',
+      SRC_DIR,
+      '-repo',
+      'https://chromium.googlesource.com/chromium/src',
+  ])
+
 
 if __name__ == '__main__':
   sys.exit(main())

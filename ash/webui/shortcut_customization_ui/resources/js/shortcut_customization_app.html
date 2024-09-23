@@ -84,10 +84,10 @@
   }
 
   #restoreTitle {
+    --cr-dialog-title-slot-padding-top: 32px;
     color: var(--cros-text-color-secondary);
     display: flex;
     font: var(--cros-body-1-font);
-    margin-block-end: 32px;
     padding-inline: 32px;
   }
 
@@ -147,7 +147,7 @@
 <template is="dom-if" if="[[showRestoreAllDialog]]" restamp>
   <cr-dialog id="restoreDialog" show-on-attach
       on-close="closeRestoreAllDialog">
-    <div id="restoreTitle" slot="body">
+    <div id="restoreTitle" slot="title">
       [[i18n('confirmResetAllShortcutsTitle')]]
     </div>
     <div id="buttonContainer" slot="button-container">

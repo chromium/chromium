@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -31,14 +33,18 @@
 namespace blink {
 
 LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
-    : LayoutSVGContainer(node), is_layout_size_changed_(false) {}
+    : LayoutSVGContainer(node) {}
 
-void LayoutSVGViewportContainer::UpdateLayout() {
+SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
+  SVGLayoutInfo child_layout_info = layout_info;
+
   const auto* svg = To<SVGSVGElement>(GetElement());
-  is_layout_size_changed_ = SelfNeedsFullLayout() && svg->HasRelativeLengths();
+  child_layout_info.viewport_changed =
+      SelfNeedsFullLayout() && svg->HasRelativeLengths();
 
   if (SelfNeedsFullLayout()) {
     SVGLengthContext length_context(svg);
@@ -48,13 +54,12 @@ void LayoutSVGViewportContainer::UpdateLayout() {
                       svg->width()->CurrentValue()->Value(length_context),
                       svg->height()->CurrentValue()->Value(length_context));
     if (old_viewport != viewport_) {
-      SetNeedsBoundariesUpdate();
       // The transform depends on viewport values.
       SetNeedsTransformUpdate();
     }
   }
 
-  LayoutSVGContainer::UpdateLayout();
+  return LayoutSVGContainer::UpdateSVGLayout(child_layout_info);
 }
 
 SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
@@ -85,6 +90,12 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
   }
   return LayoutSVGContainer::NodeAtPoint(result, hit_test_location,
                                          accumulated_offset, phase);
+}
+
+void LayoutSVGViewportContainer::IntersectChildren(
+    HitTestResult& result,
+    const HitTestLocation& location) const {
+  Content().HitTest(result, location, HitTestPhase::kForeground);
 }
 
 void LayoutSVGViewportContainer::StyleDidChange(

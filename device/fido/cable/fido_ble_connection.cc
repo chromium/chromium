@@ -49,7 +49,7 @@ constexpr const char* ToString(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -73,7 +73,7 @@ constexpr const char* ToString(BluetoothGattService::GattErrorCode error_code) {
     case BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -89,7 +89,7 @@ std::ostream& operator<<(std::ostream& os,
       return os << "FIDO2";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 
@@ -386,7 +386,7 @@ void FidoBleConnection::OnReadServiceRevisions(
   // characteristic. Note that this information is currently not used in another
   // way, as we will still attempt a CTAP GetInfo() command, even if only U2F is
   // supported.
-  // TODO(https://crbug.com/780078): Consider short circuiting to the
+  // TODO(crbug.com/40547449): Consider short circuiting to the
   // U2F logic if FIDO2 is not supported.
   DCHECK_EQ(
       *std::min_element(service_revisions.begin(), service_revisions.end()),

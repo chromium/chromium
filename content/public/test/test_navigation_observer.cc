@@ -117,7 +117,7 @@ void TestNavigationObserver::Wait() {
   was_event_consumed_ = false;
   TRACE_EVENT1("test", "TestNavigationObserver::Wait", "params",
                [&](perfetto::TracedValue ctx) {
-                 // TODO(crbug.com/1183371): Replace this with passing more
+                 // TODO(crbug.com/40751990): Replace this with passing more
                  // parameters to TRACE_EVENT directly when available.
                  auto dict = std::move(ctx).WriteDictionary();
                  dict.Add("wait_event", wait_event_);
@@ -184,7 +184,7 @@ void TestNavigationObserver::OnWebContentsDestroyed(
     TestWebContentsObserver* observer,
     WebContents* web_contents) {
   auto web_contents_state_iter = web_contents_state_.find(web_contents);
-  DCHECK(web_contents_state_iter != web_contents_state_.end());
+  CHECK(web_contents_state_iter != web_contents_state_.end());
   DCHECK_EQ(web_contents_state_iter->second.observer.get(), observer);
 
   web_contents_state_.erase(web_contents_state_iter);
@@ -251,7 +251,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   WebContentsState* web_contents_state =
       GetWebContentsState(navigation_handle->GetWebContents());
 
-  // TODO(crbug.com/1233764): It is generally the case that we've received load
+  // TODO(crbug.com/40191691): It is generally the case that we've received load
   // started events by this point, but we don't send load events for prerendered
   // pages (by design). It's also the case that frame tree nodes don't report
   // load start if the tree is already loading. For all of prerendering,
@@ -260,8 +260,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   // frame, so the DCHECK has been updated to ignore these cases. We also only
   // enforce this check if we haven't already called EventTriggered (since this
   // will reset navigation_started and can cause errors in subsequent
-  // DidFinishNavigation calls). All this being said, we should, in general,
-  // move away from NotificationService and related events.
+  // DidFinishNavigation calls).
   DCHECK(was_event_consumed_ || !navigation_handle->IsInPrimaryMainFrame() ||
          web_contents_state->navigation_started);
 
@@ -277,6 +276,12 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_initiator_activation_and_ad_status_ =
       navigation_handle->GetNavigationInitiatorActivationAndAdStatus();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
+  if (auto* headers = navigation_handle->GetResponseHeaders(); !!headers) {
+    last_http_response_code_ =
+        static_cast<net::HttpStatusCode>(headers->response_code());
+  } else {
+    last_http_response_code_ = std::nullopt;
+  }
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
   last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();
@@ -341,7 +346,7 @@ bool TestNavigationObserver::HasFilter() {
 TestNavigationObserver::WebContentsState*
 TestNavigationObserver::GetWebContentsState(WebContents* web_contents) {
   auto web_contents_state_iter = web_contents_state_.find(web_contents);
-  DCHECK(web_contents_state_iter != web_contents_state_.end());
+  CHECK(web_contents_state_iter != web_contents_state_.end());
   return &(web_contents_state_iter->second);
 }
 

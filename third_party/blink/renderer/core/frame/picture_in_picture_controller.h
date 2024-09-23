@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -13,7 +15,8 @@ namespace blink {
 class Document;
 class Element;
 class HTMLVideoElement;
-class ScriptPromiseResolver;
+class LocalDOMWindow;
+class PictureInPictureWindow;
 class TreeScope;
 
 // PictureInPictureController allows to know if Picture-in-Picture is allowed
@@ -37,9 +40,16 @@ class CORE_EXPORT PictureInPictureController
   // returns false if PictureInPictureController is not attached to a document.
   static bool IsElementInPictureInPicture(const Element*);
 
-  // Returns whether the document has a Document Picture-in-Picture window. It
-  // returns false if PictureInPictureController is not attached to a document.
-  static bool HasDocumentPictureInPictureWindow(const Document&);
+  // Returns the document picture-in-picture window opened by the Document. It
+  // returns null if there is no open document picture-in-picture window for the
+  // Document or if PictureInPictureController is not attached to the Document.
+  static LocalDOMWindow* GetDocumentPictureInPictureWindow(const Document&);
+
+  // If the provided document is attached to a document picture-in-picture
+  // window, then this returns the LocalDOMWindow that owns and originally
+  // opened the document picture-in-picture window. Returns null if the provided
+  // document is not attached to a document picture-in-picture window.
+  static LocalDOMWindow* GetDocumentPictureInPictureOwner(const Document&);
 
   // List of Picture-in-Picture support statuses. If status is kEnabled,
   // Picture-in-Picture is enabled for a document or element, otherwise it is
@@ -60,12 +70,13 @@ class CORE_EXPORT PictureInPictureController
   };
 
   // Enter Picture-in-Picture for a video element and resolve promise if any.
-  virtual void EnterPictureInPicture(HTMLVideoElement*,
-                                     ScriptPromiseResolver*) = 0;
+  virtual void EnterPictureInPicture(
+      HTMLVideoElement*,
+      ScriptPromiseResolver<PictureInPictureWindow>*) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
   virtual void ExitPictureInPicture(HTMLVideoElement*,
-                                    ScriptPromiseResolver*) = 0;
+                                    ScriptPromiseResolver<IDLUndefined>*) = 0;
 
   // Returns whether a given video element in a document associated with the
   // controller is allowed to request Picture-in-Picture.
@@ -73,7 +84,8 @@ class CORE_EXPORT PictureInPictureController
                                   bool report_failure = false) const = 0;
 
   // Should be called when an element has exited Picture-in-Picture.
-  virtual void OnExitedPictureInPicture(ScriptPromiseResolver*) = 0;
+  virtual void OnExitedPictureInPicture(
+      ScriptPromiseResolver<IDLUndefined>*) = 0;
 
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;
@@ -96,12 +108,20 @@ class CORE_EXPORT PictureInPictureController
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns whether the document has a Document Picture-in-Picture window.
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
+  // Returns the document picture-in-picture window opened by the Document. It
+  // returns null if there is no open document picture-in-picture window for the
+  // Document or if PictureInPictureController is not attached to the Document.
   // It is protected so that clients use the static method
-  // HasDocumentPictureInPictureWindow() that avoids creating the controller.
-  virtual bool HasDocumentPictureInPictureWindow() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  // GetDocumentPictureInPictureWindow() that avoids creating the controller.
+  virtual LocalDOMWindow* GetDocumentPictureInPictureWindow() const = 0;
+
+  // If this is attached to a document picture-in-picture window, then this
+  // returns the LocalDOMWindow that owns and originally opened the document
+  // picture-in-picture window. Returns null if the this is not attached to a
+  // document picture-in-picture window.
+  virtual LocalDOMWindow* GetDocumentPictureInPictureOwner() const = 0;
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 };
 
 }  // namespace blink

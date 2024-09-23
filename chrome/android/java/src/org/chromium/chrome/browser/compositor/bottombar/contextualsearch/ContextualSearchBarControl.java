@@ -139,9 +139,9 @@ public class ContextualSearchBarControl {
     /**
      * Constructs a new bottom bar control container by inflating views from XML.
      *
-     * @param panel     The panel.
+     * @param panel The panel.
      * @param container The parent view for the bottom bar views.
-     * @param loader    The resource loader that will handle the snapshot capturing.
+     * @param loader The resource loader that will handle the snapshot capturing.
      */
     public ContextualSearchBarControl(
             ContextualSearchPanel panel,
@@ -153,9 +153,12 @@ public class ContextualSearchBarControl {
         mImageControl = new ContextualSearchImageControl(panel);
         mContextControl = new ContextualSearchContextControl(panel, context, container, loader);
         mSearchTermControl = new ContextualSearchTermControl(panel, context, container, loader);
+
+        mDpToPx = context.getResources().getDisplayMetrics().density;
         mCaptionControl =
                 new ContextualSearchCaptionControl(
                         panel, context, container, loader, mCanPromoteToNewTab);
+
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
 
@@ -171,7 +174,6 @@ public class ContextualSearchBarControl {
         mEndButtonWidth =
                 mPaddedIconWidthPx
                         + context.getResources().getDimension(R.dimen.overlay_panel_button_padding);
-        mDpToPx = context.getResources().getDisplayMetrics().density;
     }
 
     /**

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -24,7 +24,7 @@ class UploadCardRequest : public PaymentsRequest {
       const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
       const bool full_sync_enabled,
       base::OnceCallback<
-          void(AutofillClient::PaymentsRpcResult,
+          void(PaymentsAutofillClient::PaymentsRpcResult,
                const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback);
   UploadCardRequest(const UploadCardRequest&) = delete;
@@ -37,13 +37,16 @@ class UploadCardRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   const PaymentsNetworkInterface::UploadCardRequestDetails request_details_;
   const bool full_sync_enabled_;
   base::OnceCallback<void(
-      AutofillClient::PaymentsRpcResult,
+      PaymentsAutofillClient::PaymentsRpcResult,
       const PaymentsNetworkInterface::UploadCardResponseDetails&)>
       callback_;
   PaymentsNetworkInterface::UploadCardResponseDetails

@@ -8,7 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/command_id_constants.h"
 
 // This file lists all the command IDs understood by e.g. the browser.
@@ -72,7 +72,7 @@
 #define IDC_USE_SYSTEM_TITLE_BAR        34051
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch of lacros-chrome is complete.
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define IDC_RESTORE_WINDOW              34052
 #endif
@@ -126,8 +126,6 @@
 #define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35030
 #define IDC_SHARING_HUB_SCREENSHOT      35031
 #define IDC_VIRTUAL_CARD_ENROLL         35032
-#define IDC_FOLLOW                      35033
-#define IDC_UNFOLLOW                    35034
 #define IDC_SAVE_IBAN_FOR_PAGE          35035
 #define IDC_AUTOFILL_MANDATORY_REAUTH   35036
 #define IDC_PROFILE_MENU_IN_APP_MENU    35039
@@ -136,6 +134,7 @@
 #define IDC_SHOW_PAYMENT_METHODS        35042
 #define IDC_SHOW_ADDRESSES              35043
 #define IDC_ORGANIZE_TABS               35044
+#define IDC_CREATE_NEW_TAB_GROUP        35045
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
@@ -219,6 +218,7 @@
 #define IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL 40025
 #define IDC_PROFILING_ENABLED           40028
 #define IDC_BOOKMARKS_MENU              40029
+#define IDC_SAVED_TAB_GROUPS_MENU       40030
 #define IDC_EXTENSION_ERRORS            40031
 #define IDC_SHOW_SETTINGS_CHANGE_FIRST  40033
 #define IDC_SHOW_SETTINGS_CHANGE_LAST   40133
@@ -249,11 +249,6 @@
 #define IDC_CARET_BROWSING_TOGGLE      40260
 #define IDC_CHROME_TIPS                40263
 #define IDC_CHROME_WHATS_NEW           40264
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define IDC_LACROS_DATA_MIGRATION      40265
-#endif
-
 #define IDC_PERFORMANCE                             40266
 #define IDC_EXTENSIONS_SUBMENU                         40267
 #define IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS       40268
@@ -268,7 +263,11 @@
 #define IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS  40277
 #define IDC_OPEN_RECENT_TAB             40278
 #define IDC_OPEN_SAFETY_HUB             40279
-#define IDC_SHOW_PASSWORD_CHECKUP       40280
+#define IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP  40280
+#define IDC_SAFETY_HUB_MANAGE_EXTENSIONS  40281
+#define IDC_SHOW_GOOGLE_LENS_SHORTCUT   40282
+#define IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL 40283
+#define IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR 40284
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
@@ -383,8 +382,12 @@
 #define IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP 50173
 #define IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH 50174
 #define IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH 50175
+// TODO(b/316143236): Remove this entry once `kPasswordManualFallbackAvailable`
+// is rolled out.
 #define IDC_CONTENT_CONTEXT_GENERATEPASSWORD 50176
 #define IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN 50177
+// TODO(b/316143236): Remove this entry once `kPasswordManualFallbackAvailable`
+// is rolled out.
 #define IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS 50178
 #define IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE 50179
 // Frame items.
@@ -397,6 +400,7 @@
 #define IDC_CONTENT_CONTEXT_GOTOURL 50190
 #define IDC_CONTENT_CONTEXT_SEARCHWEBFOR 50191
 #define IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB 50192
+#define IDC_CONTENT_CONTEXT_LENS_OVERLAY 50193
 // Open with items.
 #define IDC_CONTENT_CONTEXT_OPEN_WITH1 50200
 #define IDC_CONTENT_CONTEXT_OPEN_WITH2 50201
@@ -438,6 +442,7 @@
 #define IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK 51018
 #define IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR 51019
 #define IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR 51020
+#define IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS 51021
 
 // Context menu items for Sharing
 #define IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE 51030
@@ -506,12 +511,6 @@
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY 52414
 #endif
 
-// Screen AI layout extraction.
-#define IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION 52420
-
-// PDF OCR
-#define IDC_CONTENT_CONTEXT_PDF_OCR 52421
-
 // Tab Search
 #define IDC_TAB_SEARCH 52500
 #define IDC_TAB_SEARCH_CLOSE 52501
@@ -525,8 +524,15 @@
 // Autofill feedback.
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK 52990
 // Autofill context menu commands
+#define IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS 52993
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS 52994
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS 52995
 #define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS 52996
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS 52997
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD 52998
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS 52999
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD 53000
+#define IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS 53001
 
 // Live Caption
 #define IDC_LIVE_CAPTION 53251
@@ -534,6 +540,12 @@
 // Device API system tray icon
 #define IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST 53260
 #define IDC_DEVICE_SYSTEM_TRAY_ICON_LAST 53299
+
+// Default browser prompt
+#define IDC_SET_BROWSER_AS_DEFAULT 53300
+
+// Enable / Disable compact mode for the browser
+#define IDC_COMPACT_MODE 53301
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

@@ -10,12 +10,14 @@
 #include <list>
 #include <string>
 
+#include "third_party/omnibox_proto/answer_type.pb.h"
 
 struct AnswersQueryData {
   AnswersQueryData();
-  AnswersQueryData(const std::u16string& full_query_text, int query_type);
+  AnswersQueryData(const std::u16string& full_query_text,
+                   omnibox::AnswerType query_type);
   std::u16string full_query_text;
-  int query_type;
+  omnibox::AnswerType query_type;
 };
 
 // Cache for the most-recently seen answer for Answers in Suggest.
@@ -32,7 +34,7 @@ class AnswersCache {
 
   // Registers a query that received an answer suggestion.
   void UpdateRecentAnswers(const std::u16string& full_query_text,
-                           int query_type);
+                           omnibox::AnswerType query_type);
 
   // Signals if cache is empty.
   bool empty() const { return cache_.empty(); }

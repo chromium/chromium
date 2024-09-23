@@ -4,14 +4,15 @@
 
 #include "chrome/browser/serial/serial_blocklist.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SerialBlocklistTest : public testing::Test {
  public:
-  void SetDynamicBlocklist(base::StringPiece value) {
+  void SetDynamicBlocklist(std::string_view value) {
     feature_list_.Reset();
 
     std::map<std::string, std::string> parameters;

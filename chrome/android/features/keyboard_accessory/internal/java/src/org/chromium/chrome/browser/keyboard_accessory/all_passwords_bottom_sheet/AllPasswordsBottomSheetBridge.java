@@ -4,11 +4,20 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.List;
 
 /**
  * This bridge creates and initializes a {@link AllPasswordsBottomSheetCoordinator} on construction
@@ -16,26 +25,41 @@ import org.chromium.ui.base.WindowAndroid;
  */
 class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinator.Delegate {
     private long mNativeView;
-    private Credential[] mCredentials;
     private final AllPasswordsBottomSheetCoordinator mAllPasswordsBottomSheetCoordinator;
 
     private AllPasswordsBottomSheetBridge(
-            long nativeView, WindowAndroid windowAndroid, String origin) {
+            long nativeView,
+            Profile profile,
+            Context context,
+            String origin,
+            BottomSheetController bottomSheetController) {
+        assert nativeView != 0;
         mNativeView = nativeView;
-        assert (mNativeView != 0);
-        assert (windowAndroid.getActivity().get() != null);
         mAllPasswordsBottomSheetCoordinator = new AllPasswordsBottomSheetCoordinator();
         mAllPasswordsBottomSheetCoordinator.initialize(
-                windowAndroid.getActivity().get(),
-                BottomSheetControllerProvider.from(windowAndroid),
-                this,
-                origin);
+                context, profile, bottomSheetController, this, origin);
     }
 
     @CalledByNative
-    private static AllPasswordsBottomSheetBridge create(
-            long nativeView, WindowAndroid windowAndroid, String origin) {
-        return new AllPasswordsBottomSheetBridge(nativeView, windowAndroid, origin);
+    private static @Nullable AllPasswordsBottomSheetBridge create(
+            long nativeView,
+            Profile profile,
+            @Nullable WindowAndroid windowAndroid,
+            @JniType("std::string") String origin) {
+        if (windowAndroid == null) {
+            return null;
+        }
+        Context context = windowAndroid.getActivity().get();
+        if (context == null) {
+            return null;
+        }
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            return null;
+        }
+        return new AllPasswordsBottomSheetBridge(
+                nativeView, profile, context, origin, bottomSheetController);
     }
 
     @CalledByNative
@@ -44,43 +68,21 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     }
 
     @CalledByNative
-    private void createCredentialArray(int size) {
-        mCredentials = new Credential[size];
-    }
-
-    @CalledByNative
-    private void insertCredential(
-            int index,
-            String username,
-            String password,
-            String formattedUsername,
-            String originUrl,
-            boolean isAndroidCredential,
-            String appDisplayName) {
-        mCredentials[index] =
-                new Credential(
-                        username,
-                        password,
-                        formattedUsername,
-                        originUrl,
-                        isAndroidCredential,
-                        appDisplayName);
-    }
-
-    @CalledByNative
-    private void showCredentials(boolean isPasswordField) {
-        mAllPasswordsBottomSheetCoordinator.showCredentials(mCredentials, isPasswordField);
+    private void showCredentials(
+            @JniType("std::vector") List<Credential> credentials, boolean isPasswordField) {
+        mAllPasswordsBottomSheetCoordinator.showCredentials(credentials, isPasswordField);
     }
 
     @Override
     public void onCredentialSelected(CredentialFillRequest credentialFillRequest) {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        AllPasswordsBottomSheetBridgeJni.get()
-                .onCredentialSelected(
-                        mNativeView,
-                        credentialFillRequest.getCredential().getUsername(),
-                        credentialFillRequest.getCredential().getPassword(),
-                        credentialFillRequest.getRequestsToFillPassword());
+        if (mNativeView != 0) { // The native side is already dismissed.
+            AllPasswordsBottomSheetBridgeJni.get()
+                    .onCredentialSelected(
+                            mNativeView,
+                            credentialFillRequest.getCredential().getUsername(),
+                            credentialFillRequest.getCredential().getPassword(),
+                            credentialFillRequest.getRequestsToFillPassword());
+        }
     }
 
     @Override
@@ -94,8 +96,8 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     interface Natives {
         void onCredentialSelected(
                 long nativeAllPasswordsBottomSheetViewImpl,
-                String username,
-                String password,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password,
                 boolean requestsToFillPassword);
 
         void onDismiss(long nativeAllPasswordsBottomSheetViewImpl);

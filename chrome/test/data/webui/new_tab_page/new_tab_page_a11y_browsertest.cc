@@ -8,8 +8,8 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_mode.h"
 
 class NewTabPageA11yBrowserTest : public WebUIMochaBrowserTest {

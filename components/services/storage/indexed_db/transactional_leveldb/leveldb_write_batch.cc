@@ -9,7 +9,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-namespace content {
+namespace content::indexed_db {
 
 std::unique_ptr<LevelDBWriteBatch> LevelDBWriteBatch::Create() {
   return base::WrapUnique(new LevelDBWriteBatch);
@@ -32,4 +32,4 @@ void LevelDBWriteBatch::Clear() {
   write_batch_->Clear();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

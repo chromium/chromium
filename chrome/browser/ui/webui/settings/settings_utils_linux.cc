@@ -43,7 +43,7 @@ const char* const kGNOME3ProxyConfigCommand[] = {"gnome-control-center",
 const char* const kKDE3ProxyConfigCommand[] = {"kcmshell", "proxy"};
 const char* const kKDE4ProxyConfigCommand[] = {"kcmshell4", "proxy"};
 const char* const kKDE5ProxyConfigCommand[] = {"kcmshell5", "proxy"};
-const char* const kKDE6ProxyConfigCommand[] = {"kcmshell6", "proxy"};
+const char* const kKDE6ProxyConfigCommand[] = {"kcmshell6", "kcm_proxy"};
 
 // In Deepin OS, we might need to run dde-control-center instead.
 const char* const kDeepinProxyConfigCommand[] = {"dde-control-center",
@@ -67,8 +67,9 @@ void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
 
-  if (web_contents)
-    web_contents->OpenURL(params);
+  if (web_contents) {
+    web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
 }
 
 // Start the given proxy configuration utility.

@@ -45,6 +45,7 @@ class BASE_EXPORT dict_iterator {
     reference ref_;
   };
 
+  constexpr dict_iterator() = default;
   explicit dict_iterator(DictStorage::iterator dict_iter);
   dict_iterator(const dict_iterator& dict_iter);
   dict_iterator& operator=(const dict_iterator& dict_iter);
@@ -99,6 +100,7 @@ class BASE_EXPORT const_dict_iterator {
     const reference ref_;
   };
 
+  constexpr const_dict_iterator() = default;
   explicit const_dict_iterator(DictStorage::const_iterator dict_iter);
   const_dict_iterator(const const_dict_iterator& dict_iter);
   const_dict_iterator& operator=(const const_dict_iterator& dict_iter);

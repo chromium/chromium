@@ -1,0 +1,114 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("accessibility") {
+  sources = [
+    "accessibility_helper_instance_remote_proxy.cc",
+    "accessibility_helper_instance_remote_proxy.h",
+    "arc_accessibility_helper_bridge.cc",
+    "arc_accessibility_helper_bridge.h",
+    "arc_accessibility_tree_tracker.cc",
+    "arc_accessibility_tree_tracker.h",
+    "arc_accessibility_util.cc",
+    "arc_accessibility_util.h",
+    "arc_serialization_delegate.cc",
+    "arc_serialization_delegate.h",
+    "geometry_util.cc",
+    "geometry_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//ash/public/cpp/external_arc",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/input_method_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/exo",
+    "//components/prefs",
+    "//extensions/browser",
+    "//services/accessibility/android:android_lib",
+    "//services/accessibility/android/public/mojom",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_accessibility_helper_bridge_unittest.cc",
+    "arc_accessibility_tree_tracker_unittest.cc",
+    "arc_serialization_delegate_unittest.cc",
+  ]
+
+  deps = [
+    ":accessibility",
+    "//ash:test_support",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//ash/public/cpp/external_arc",
+    "//ash/public/cpp/external_arc:test_support",
+    "//base",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//services/accessibility/android:android_lib",
+    "//services/accessibility/android:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/message_center",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_accessibility_helper_bridge_browsertest.cc" ]
+
+  deps = [
+    ":accessibility",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/shelf/app_service",
+    "//chrome/test:test_support",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//services/accessibility/android:android_lib",
+    "//services/accessibility/android:test_support",
+    "//ui/accessibility",
+    "//ui/compositor",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}

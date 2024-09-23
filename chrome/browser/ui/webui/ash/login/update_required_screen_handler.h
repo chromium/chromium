@@ -17,7 +17,7 @@ class UpdateRequiredScreen;
 // Interface for dependency injection between UpdateRequiredScreen and its
 // WebUI representation.
 
-class UpdateRequiredView : public base::SupportsWeakPtr<UpdateRequiredView> {
+class UpdateRequiredView {
  public:
   enum UIState {
     UPDATE_REQUIRED_MESSAGE = 0,   // 'System update required' message.
@@ -57,10 +57,13 @@ class UpdateRequiredView : public base::SupportsWeakPtr<UpdateRequiredView> {
                                           const std::u16string& deviceName) = 0;
   virtual void SetEolMessage(const std::string& eolMessage) = 0;
   virtual void SetIsUserDataPresent(bool deleted) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<UpdateRequiredView> AsWeakPtr() = 0;
 };
 
-class UpdateRequiredScreenHandler : public UpdateRequiredView,
-                                    public BaseScreenHandler {
+class UpdateRequiredScreenHandler final : public UpdateRequiredView,
+                                          public BaseScreenHandler {
  public:
   using TView = UpdateRequiredView;
 
@@ -86,6 +89,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
                                   const std::u16string& deviceName) override;
   void SetEolMessage(const std::string& eolMessage) override;
   void SetIsUserDataPresent(bool data_present) override;
+  base::WeakPtr<UpdateRequiredView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -93,6 +97,9 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
 
   // The domain name for which update required screen is being shown.
   std::string domain_;
+
+ private:
+  base::WeakPtrFactory<UpdateRequiredView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

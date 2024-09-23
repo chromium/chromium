@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -53,7 +54,6 @@
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -137,12 +137,11 @@ void MessagePort::postMessage(ScriptState* script_state,
   // Only pass the parent task ID if we're in the main world, as isolated world
   // task tracking is not yet supported. Also, only pass the parent task if the
   // port is still entangled to its initially entangled port.
-  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  if (auto* tracker =
+          scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
       initially_entangled_port_ && tracker &&
       script_state->World().IsMainWorld()) {
-    scheduler::TaskAttributionInfo* task =
-        tracker->RunningTask(script_state->GetIsolate());
-    if (task) {
+    if (scheduler::TaskAttributionInfo* task = tracker->RunningTask()) {
       // Since `initially_entangled_port_` is not nullptr, neither should be
       // `post_message_task_container_`.
       CHECK(post_message_task_container_);
@@ -352,9 +351,7 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
   }
 
   Event* evt = CreateMessageEvent(message);
-  // This unique_ptr is here to ensure that the TaskScope remains alive for the
-  // lifetime of this function.
-  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   // Using a variable here places the WeakMember pointer on the stack, ensuring
   // it doesn't get GCed while it's being used.
@@ -377,9 +374,8 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
     // v8::Context may still be empty (and hence
     // ExecutionContext::GetCurrentWorld returns null).
     if (ScriptState* script_state = ToScriptStateForMainWorld(context)) {
-      CHECK(ThreadScheduler::Current());
-      if (auto* tracker =
-              ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+      if (auto* tracker = scheduler::TaskAttributionTracker::From(
+              script_state->GetIsolate())) {
         // Since `initially_entangled_port_` is not nullptr, neither should be
         // its `post_message_task_container_`.
         CHECK(entangled_port->post_message_task_container_);

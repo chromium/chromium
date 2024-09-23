@@ -11,8 +11,8 @@ namespace ash {
 // Also, for historical reasons, this key is used for Active Directory users and
 // for Public Session keys.
 //
-// TODO(crbug.com/826417): Introduce a separate constant for the Public Session
-// key label.
+// TODO(crbug.com/40568975): Introduce a separate constant for the Public
+// Session key label.
 const char kCryptohomeGaiaKeyLabel[] = "gaia";
 
 const char kCryptohomeLocalPasswordKeyLabel[] = "local-password";

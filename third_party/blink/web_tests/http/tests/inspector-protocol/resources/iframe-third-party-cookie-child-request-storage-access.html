@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script type="module">
+ await internals.setPermission({name: 'storage-access'}, 'granted', "*", "*");
+ await document.requestStorageAccess();
+
+ const setCookieUrl = 'https://example.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie='
+      + encodeURIComponent('foo=bar; Path=/; Domain=example.test; Secure; SameSite=None;');
+ await fetch(setCookieUrl);
+
+</script>

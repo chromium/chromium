@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -32,6 +33,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"
@@ -39,6 +41,7 @@
 #include "ui/views/interaction/interaction_sequence_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "url/gurl.h"
 
 namespace {
@@ -77,24 +80,11 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       // the menu appears.
       Do(base::BindOnce([]() { LOG(INFO) << "In second action."; })),
       PressButton(kToolbarAppMenuButtonElementId),
-      AfterActivate(
-          kToolbarAppMenuButtonElementId,
-          base::BindLambdaForTesting(
-              [&](ui::InteractionSequence* seq, ui::TrackedElement* el) {
-                // Check AsView() to make sure it correctly returns the view.
-                auto* const button = AsView<BrowserAppMenuButton>(el);
-                auto* const browser_view =
-                    BrowserView::GetBrowserViewForBrowser(browser());
-                if (button != browser_view->toolbar()->app_menu_button()) {
-                  LOG(WARNING)
-                      << "AsView() should have returned the app menu button.";
-                  seq->FailForTesting();
-                }
-              })),
-      AfterShow(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()),
+      WaitForActivate(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
       // Move the mouse to the button and click it. This will hide the menu.
       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-      AfterHide(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()));
+      WaitForHide(AppMenuModel::kMoreToolsMenuItem));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
@@ -166,13 +156,13 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       InContext(incognito->window()->GetElementContext(),
                 WaitForShow(kBrowserViewElementId)),
       InSameContext(Steps(
-          ActivateSurface(kBrowserViewElementId), FlushEvents(),
+          ActivateSurface(kBrowserViewElementId),
           MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
           SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
           WaitForHide(AppMenuModel::kDownloadsMenuItem),
           // These two types of actions use PostTask() internally and bounce off
           // the pivot element. Make sure they still work in a "InSameContext".
-          FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+          EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
           // Make sure this picks up the correct button, since it was after a
           // string of non-element-specific actions.
           WithElement(kToolbarAppMenuButtonElementId,
@@ -189,14 +179,14 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 
   RunTestSequence(InContext(
       incognito->window()->GetElementContext(),
-      Steps(ActivateSurface(kBrowserViewElementId), FlushEvents(),
+      Steps(ActivateSurface(kBrowserViewElementId),
             MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
             SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
             WaitForHide(AppMenuModel::kDownloadsMenuItem),
             // These two types of actions use PostTask() internally and
             // bounce off the pivot element. Make sure they still work in a
             // "InSameContext".
-            FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
+            EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
             // Make sure this picks up the correct button, since it was
             // after a string of non-element-specific actions.
             WithElement(kToolbarAppMenuButtonElementId,
@@ -223,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      ActivateSurface(kBrowserViewElementId),
       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
       WaitForShow(AppMenuModel::kDownloadsMenuItem));
 }
@@ -245,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), ActivateSurface(kBrowserViewElementId),
+      ActivateSurface(kBrowserViewElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
         return BrowserView::GetBrowserViewForBrowser(browser())
             ->GetWidget()
@@ -271,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), InstrumentTab(kWebContentsElementId),
+      InstrumentTab(kWebContentsElementId),
       ActivateSurface(kWebContentsElementId),
       WaitForState(views::test::kCurrentWidgetFocus, [this]() {
         return BrowserView::GetBrowserViewForBrowser(browser())
@@ -280,10 +270,19 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       }));
 }
 
+// TODO(crbug.com/330095872): Flaky on linux-chromeos-rel and Linux ChromiumOS
+// MSan.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WatchForNonTabWebContentsActivation \
+  DISABLED_WatchForNonTabWebContentsActivation
+#else
+#define MAYBE_WatchForNonTabWebContentsActivation \
+  WatchForNonTabWebContentsActivation
+#endif
 // Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
 // correctly when targeting a non-tab web contents.
 //
-// TODO(crbug.com/1471043): These tests can be kind of hairy and we're working
+// TODO(crbug.com/40069026): These tests can be kind of hairy and we're working
 // on making sure these primitives play nice together and do not flake. If you
 // see a flake, first, note that these are edge case tests for new test
 // infrastructure and do not directly affect Chrome stability. Next, please:
@@ -294,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 //
 // Thank you for working with us to make Chrome test infrastructure better!
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       WatchForNonTabWebContentsActivation) {
+                       MAYBE_WatchForNonTabWebContentsActivation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   constexpr char kWebViewName[] = "Web View";
   auto* const incognito = CreateIncognitoBrowser();
@@ -312,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
-      FlushEvents(), PressButton(kTabSearchButtonElementId),
+      PressButton(kTabSearchButtonElementId),
       WaitForShow(kTabSearchBubbleElementId),
       NameDescendantViewByType<views::WebView>(kTabSearchBubbleElementId,
                                                kWebViewName),
@@ -402,11 +401,12 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       EnsureNotPresent(kBrowserPageId),
       // But we can find a page in the correct context even if we specify
       // InAnyContext().
-      InAnyContext(WithElement(kIncognitoPageId, base::DoNothing())));
+      InAnyContext(EnsurePresent(kIncognitoPageId)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       InstrumentNonTabAsTestStep) {
+                       // TODO(crbug.com/330210402): Re-enable this test
+                       DISABLED_InstrumentNonTabAsTestStep) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   const char kTabSearchWebViewName[] = "Tab Search WebView";
 
@@ -419,24 +419,21 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
             return view->web_view();
           })),
       InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
-      WithElement(kTabSearchWebViewName, base::DoNothing()));
+      EnsurePresent(kTabSearchWebViewName));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        SendAcceleratorToWebContents) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOverflowMenuOpenEvent);
-  const DeepQuery kOverflowMenuButton = {"downloads-manager",
-                                         "downloads-toolbar", "#moreActions"};
-  const DeepQuery kOverflowMenuDialog = {"downloads-manager",
-                                         "downloads-toolbar",
-                                         "#moreActionsMenu", "#dialog[open]"};
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kClearAllClickEvent);
+  const DeepQuery kClearAllDownloadsButton = {"downloads-manager",
+                                              "downloads-toolbar", "#clearAll"};
   const ui::Accelerator kClickWebButtonAccelerator(ui::KeyboardCode::VKEY_SPACE,
                                                    ui::EF_NONE);
-  StateChange overflow_menu_open;
-  overflow_menu_open.type = StateChange::Type::kExists;
-  overflow_menu_open.where = kOverflowMenuDialog;
-  overflow_menu_open.event = kOverflowMenuOpenEvent;
+  StateChange clear_all_downloads_click;
+  clear_all_downloads_click.type = StateChange::Type::kExists;
+  clear_all_downloads_click.where = kClearAllDownloadsButton;
+  clear_all_downloads_click.event = kClearAllClickEvent;
   RunTestSequence(
       InstrumentTab(kWebContentsId),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -444,9 +441,9 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForWebContentsNavigation(kWebContentsId,
                                    GURL(chrome::kChromeUIDownloadsURL)),
       FocusWebContents(kWebContentsId),
-      ExecuteJsAt(kWebContentsId, kOverflowMenuButton, "el => el.focus()"),
+      ExecuteJsAt(kWebContentsId, kClearAllDownloadsButton, "el => el.focus()"),
       SendAccelerator(kWebContentsId, kClickWebButtonAccelerator),
-      WaitForStateChange(kWebContentsId, overflow_menu_open));
+      WaitForStateChange(kWebContentsId, clear_all_downloads_click));
 }
 
 namespace {
@@ -492,6 +489,13 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
     web_view_->LoadInitialURL(url);
   }
 
+  // views::BubbleDialogDelegateView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    // Need a large enough bubble that the WebView has size to render.
+    return gfx::Size(300, 400);
+  }
+
   const raw_ptr<Profile> profile_;
   raw_ptr<views::WebView> web_view_;
   std::unique_ptr<content::WebContents> owned_web_contents_;
@@ -515,8 +519,37 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                   // Need to flush here because we're still responding to the
                   // original WebContents being shown, so we can't destroy the
                   // WebContents until the call resolves.
-                  FlushEvents(), Do([&]() { bubble->SwapWebContents(url2); }),
+                  Do([&]() { bubble->SwapWebContents(url2); }),
                   WaitForWebContentsNavigation(kWebContentsId, url2));
 
   bubble->GetWidget()->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       WaitForWebContentsPainted) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  auto* const bubble = WebBubbleView::CreateBubble(browser(), url);
+
+  RunTestSequence(
+      InstrumentNonTabWebView(kWebContentsId, bubble->web_view(), false),
+      // This should wait for the element to appear and then paint.
+      WaitForWebContentsPainted(kWebContentsId),
+      // This should be more or less a no-op.
+      WaitForWebContentsPainted(kWebContentsId));
+
+  bubble->GetWidget()->CloseNow();
+}
+
+// Ensure that the initial active window is detected by the focus observer.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, InitialWindowActive) {
+  auto* const widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WaitForWidgetActive(widget, true);
+
+  RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
+                  WaitForState(views::test::kCurrentWidgetFocus,
+                               [widget]() { return widget->GetNativeView(); }));
 }

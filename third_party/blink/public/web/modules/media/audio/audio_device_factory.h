@@ -48,32 +48,39 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
       WebAudioDeviceSourceType source);
 
   // Creates an AudioRendererSink bound to an AudioOutputDevice.
-  // Basing on |source_type| and build configuration, audio played out through
-  // the sink goes to AOD directly or can be mixed with other audio before that.
-  // TODO(olka): merge it with NewRestartableOutputDevice() as soon as
-  // AudioOutputDevice is fixed to be restartable.
   virtual scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
       WebAudioDeviceSourceType source_type,
       const LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params);
 
-  // Creates a SwitchableAudioRendererSink bound to an AudioOutputDevice
-  // Basing on |source_type| and build configuration, audio played out through
-  // the sink goes to AOD directly or can be mixed with other audio before that.
-  virtual scoped_refptr<media::SwitchableAudioRendererSink>
-  NewSwitchableAudioRendererSink(WebAudioDeviceSourceType source_type,
-                                 const LocalFrameToken& frame_token,
-                                 const media::AudioSinkParameters& params);
+  // Creates a sink for a stream that can be mixed with other streams.
+  //
+  // `source_type` represents the type of entity producing audio.
+  // `frame_token` refers to the local RenderFrame containing the entity
+  // producing the audio. It is used to create output sinks.
+  // `main_frame_token` refers to the local or remote main frame at the root of
+  // the tree containing the RenderFrame referenced by `frame_token` and is used
+  // for sharing the underlying audio output device.
+  // `params` contains the device id that should be used for audio output.
+  //
+  // Note: These sinks do not support the blocking GetOutputDeviceInfo() API and
+  // instead clients are required to use the GetOutputDeviceInfoAsync() API. As
+  // such they are configured with no authorization timeout value.
+  virtual scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
+      blink::WebAudioDeviceSourceType source_type,
+      const blink::LocalFrameToken& frame_token,
+      const blink::FrameToken& main_frame_token,
+      const media::AudioSinkParameters& params);
 
   // A helper to get device info in the absence of AudioOutputDevice.
-  // |device_id| identifies which device we are getting info from.
-  // |frame_token| is used to created a temporary sink to retrieve the info.
+  // `device_id` identifies which device we are getting info from.
+  // `frame_token` is used to created a temporary sink to retrieve the info.
   virtual media::OutputDeviceInfo GetOutputDeviceInfo(
       const LocalFrameToken& frame_token,
       const std::string& device_id);
 
   // Creates an AudioCapturerSource using the currently registered factory.
-  // |frame_token| refers to the RenderFrame containing the entity
+  // `frame_token` refers to the RenderFrame containing the entity
   // consuming the audio.
   virtual scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(
       WebLocalFrame* web_frame,
@@ -81,29 +88,6 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
 
  protected:
   virtual ~AudioDeviceFactory();
-
-  // Creates a sink for a stream that can be mixed with other streams.
-  scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
-      blink::WebAudioDeviceSourceType source_type,
-      const blink::LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params);
-
-  // Creates a sink for AudioRendererMixer. |frame_token| refers to the
-  // RenderFrame containing the entity producing the audio. Note: These sinks do
-  // not support the blocking GetOutputDeviceInfo() API and instead clients are
-  // required to use the GetOutputDeviceInfoAsync() API. As such they are
-  // configured with no authorization timeout value.
-  virtual scoped_refptr<media::AudioRendererSink> NewAudioRendererMixerSink(
-      const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params);
-
-  // Creates a final sink in the rendering pipeline, which represents the actual
-  // output device. |auth_timeout| is the authorization timeout allowed for the
-  // underlying AudioOutputDevice instance; a timeout of zero means no timeout.
-  scoped_refptr<media::AudioRendererSink> NewFinalAudioRendererSink(
-      const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params,
-      base::TimeDelta auth_timeout);
 
  private:
   std::unique_ptr<AudioRendererMixerManager> mixer_manager_;

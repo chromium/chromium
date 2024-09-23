@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -70,11 +71,13 @@ void FormatBlockCommand::FormatSelection(
   did_apply_ = true;
 }
 
-void FormatBlockCommand::FormatRange(const Position& start,
-                                     const Position& end,
-                                     const Position& end_of_selection,
-                                     HTMLElement*& block_element,
-                                     EditingState* editing_state) {
+void FormatBlockCommand::FormatRange(
+    const Position& start,
+    const Position& end,
+    const Position& end_of_selection,
+    HTMLElement*& block_element,
+    VisiblePosition& out_end_of_next_of_paragraph_to_move,
+    EditingState* editing_state) {
   Element* ref_element = EnclosingBlockFlowElement(CreateVisiblePosition(end));
   Element* root = RootEditableElementOf(start);
   // Root is null for elements with contenteditable=false.

@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -28,7 +28,6 @@ using bookmarks::BookmarkNode;
 
 namespace extensions {
 
-namespace keys = bookmark_api_constants;
 using api::bookmarks::BookmarkTreeNode;
 
 namespace bookmark_api_helpers {
@@ -140,14 +139,14 @@ TEST_F(ExtensionBookmarksTest, RemoveNodeInvalidId) {
   int64_t invalid_id = model_->next_node_id();
   std::string error;
   EXPECT_FALSE(RemoveNode(model_, managed_, invalid_id, true, &error));
-  EXPECT_EQ(keys::kNoNodeError, error);
+  EXPECT_EQ(bookmarks_errors::kNoNodeError, error);
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodePermanent) {
   std::string error;
   EXPECT_FALSE(
       RemoveNode(model_, managed_, model_->other_node()->id(), true, &error));
-  EXPECT_EQ(keys::kModifySpecialError, error);
+  EXPECT_EQ(bookmarks_errors::kModifySpecialError, error);
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodeManaged) {
@@ -157,13 +156,13 @@ TEST_F(ExtensionBookmarksTest, RemoveNodeManaged) {
   std::string error;
   EXPECT_FALSE(
       RemoveNode(model_, managed_, managed_bookmark->id(), true, &error));
-  EXPECT_EQ(keys::kModifyManagedError, error);
+  EXPECT_EQ(bookmarks_errors::kModifyManagedError, error);
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodeNotRecursive) {
   std::string error;
   EXPECT_FALSE(RemoveNode(model_, managed_, folder_->id(), false, &error));
-  EXPECT_EQ(keys::kFolderNotEmptyError, error);
+  EXPECT_EQ(bookmarks_errors::kFolderNotEmptyError, error);
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodeRecursive) {

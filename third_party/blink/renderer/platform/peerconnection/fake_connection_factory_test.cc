@@ -47,14 +47,12 @@ class FakeConnectionFactoryTest : public ::testing::Test {
 
     // Factory doesn't work before initialization.
     EXPECT_EQ(factory->port_count(), 0);
-    EXPECT_EQ(
-        factory->CreateConnection(FakeConnectionFactory::CandidateType::LOCAL,
-                                  kIpv4Address, kPort),
-        nullptr);
-    EXPECT_EQ(
-        factory->CreateConnection(FakeConnectionFactory::CandidateType::LOCAL,
-                                  kIpv6Address, kPort),
-        nullptr);
+    EXPECT_EQ(factory->CreateConnection(webrtc::IceCandidateType::kHost,
+                                        kIpv4Address, kPort),
+              nullptr);
+    EXPECT_EQ(factory->CreateConnection(webrtc::IceCandidateType::kHost,
+                                        kIpv6Address, kPort),
+              nullptr);
 
     int flags = ipv6 ? cricket::PORTALLOCATOR_ENABLE_IPV6 |
                            cricket::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI
@@ -74,24 +72,23 @@ class FakeConnectionFactoryTest : public ::testing::Test {
 TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv4) {
   std::unique_ptr<FakeConnectionFactory> factory = GetFactory();
   const cricket::Connection* conn = factory->CreateConnection(
-      FakeConnectionFactory::CandidateType::LOCAL, kIpv4Address, kPort);
+      webrtc::IceCandidateType::kHost, kIpv4Address, kPort);
   ASSERT_NE(conn, nullptr);
   EXPECT_EQ(conn->remote_candidate().address().ToString(), kIpv4AddressString);
   EXPECT_EQ(conn->network_thread(), webrtc::ThreadWrapper::current());
 
   // Connection shouldn't be created to an IPv6 remote address if the factory is
   // not initialized for IPv6.
-  ASSERT_EQ(
-      factory->CreateConnection(FakeConnectionFactory::CandidateType::LOCAL,
-                                kIpv6Address, kPort),
-      nullptr);
+  ASSERT_EQ(factory->CreateConnection(webrtc::IceCandidateType::kHost,
+                                      kIpv6Address, kPort),
+            nullptr);
 }
 
 TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv6) {
   if (rtc::HasIPv6Enabled()) {
     std::unique_ptr<FakeConnectionFactory> factory = GetFactory(/*ipv6=*/true);
     const cricket::Connection* conn = factory->CreateConnection(
-        FakeConnectionFactory::CandidateType::LOCAL, kIpv6Address, kPort);
+        webrtc::IceCandidateType::kHost, kIpv6Address, kPort);
     ASSERT_NE(conn, nullptr);
     EXPECT_EQ(conn->remote_candidate().address().ToString(),
               kIpv6AddressString);
@@ -99,17 +96,16 @@ TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv6) {
 
     // Connection shouldn't be created to an IPv4 remote address if the factory
     // is not initialized for IPv6.
-    ASSERT_EQ(
-        factory->CreateConnection(FakeConnectionFactory::CandidateType::LOCAL,
-                                  kIpv4Address, kPort),
-        nullptr);
+    ASSERT_EQ(factory->CreateConnection(webrtc::IceCandidateType::kHost,
+                                        kIpv4Address, kPort),
+              nullptr);
   }
 }
 
 TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv4) {
   std::unique_ptr<FakeConnectionFactory> factory = GetFactory();
   const cricket::Connection* conn = factory->CreateConnection(
-      FakeConnectionFactory::CandidateType::LOCAL, kIpv4Address, kPort);
+      webrtc::IceCandidateType::kHost, kIpv4Address, kPort);
   ASSERT_NE(conn, nullptr);
   blink::IceConnection iceConn(conn);
   EXPECT_EQ(iceConn.local_candidate().address().ToString(),
@@ -122,7 +118,7 @@ TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv6) {
   if (rtc::HasIPv6Enabled()) {
     std::unique_ptr<FakeConnectionFactory> factory = GetFactory(/*ipv6=*/true);
     const cricket::Connection* conn = factory->CreateConnection(
-        FakeConnectionFactory::CandidateType::LOCAL, kIpv6Address, kPort);
+        webrtc::IceCandidateType::kHost, kIpv6Address, kPort);
     ASSERT_NE(conn, nullptr);
     blink::IceConnection iceConn(conn);
     EXPECT_EQ(iceConn.local_candidate().address().ToString(),

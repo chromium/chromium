@@ -13,7 +13,7 @@
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -67,15 +67,14 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     // Register a fake identity and set the expected capabilities.
     id<SystemIdentity> identity = [FakeSystemIdentity
         identityWithEmail:base::SysUTF8ToNSString(account_info.email)
-                   gaiaID:base::SysUTF8ToNSString(account_info.gaia)
-                     name:@"Jane Doe"];
+                   gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
     system_identity_manager->AddIdentity(identity);
 
     if (capability_fetched.has_value() &&
         capability_fetched.value() !=
             SystemIdentityCapabilityResult::kUnknown) {
       AccountCapabilitiesTestMutator* mutator =
-          system_identity_manager->GetCapabilitiesMutator(identity);
+          system_identity_manager->GetPendingCapabilitiesMutator(identity);
       bool has_capability =
           capability_fetched.value() == SystemIdentityCapabilityResult::kTrue;
       mutator->set_can_have_email_address_displayed(has_capability);

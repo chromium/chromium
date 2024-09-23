@@ -2,47 +2,76 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
+#include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
-#include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
-#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "ui/accessibility/ax_mode.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/private/base/SkPoint_impl.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-local-handle.h"
 
-using testing::Mock;
+// GoogleTest expectation macros trigger a bug in IWYU:
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_include <string>
+// IWYU pragma: no_include <tuple>
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 
@@ -320,20 +349,24 @@ TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
 TEST_F(CanvasRenderingContext2DAPITest,
        GetImageDataIntegerOverflowNegativeParams) {
   CreateContext(kNonOpaque);
-  DummyExceptionStateForTesting exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
-  ImageData* image_data = Context2D()->getImageData(
-      1, -2147483647, 1, -2147483647, settings, exception_state);
-  EXPECT_EQ(nullptr, image_data);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ImageData* image_data = Context2D()->getImageData(
+        1, -2147483647, 1, -2147483647, settings, exception_state);
+    EXPECT_EQ(nullptr, image_data);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  }
 
-  exception_state.ClearException();
-  image_data = Context2D()->getImageData(-2147483647, 1, -2147483647, 1,
-                                         settings, exception_state);
-  EXPECT_EQ(nullptr, image_data);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  {
+    DummyExceptionStateForTesting exception_state;
+    ImageData* image_data = Context2D()->getImageData(
+        -2147483647, 1, -2147483647, 1, settings, exception_state);
+    EXPECT_EQ(nullptr, image_data);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(ESErrorType::kRangeError, exception_state.CodeAs<ESErrorType>());
+  }
 }
 
 // Checks `CreateImageBitmap` throws an exception if called inside a layer.
@@ -553,12 +586,12 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
   EXPECT_TRUE(canvas->RenderingContext()->IsRenderingContext2D());
 }
 
-
 // A IdentifiabilityStudySettingsProvider implementation that opts-into study
 // participation.
 class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
  public:
   explicit ActiveSettingsProvider(bool enabled) : enabled_(enabled) {}
+  bool IsMetaExperimentActive() const override { return false; }
   bool IsActive() const override { return enabled_; }
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface surface) const override {
@@ -624,7 +657,7 @@ TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
   CreateContext(kNonOpaque);
 
   Context2D()->setFont("Arial");
-  EXPECT_EQ(INT64_C(-7111871220951205888),
+  EXPECT_EQ(INT64_C(7339381412423806682),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -663,7 +696,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->strokeText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(2232415440872807707),
+  EXPECT_EQ(INT64_C(8218678546639211996),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -687,7 +720,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(6317349156921019980),
+  EXPECT_EQ(INT64_C(-7525055925911674050),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -711,7 +744,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->setTextAlign("center");
-  EXPECT_EQ(INT64_C(-1799394612814265049),
+  EXPECT_EQ(INT64_C(-5618040280239325003),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -735,7 +768,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->setTextBaseline("top");
-  EXPECT_EQ(INT64_C(-7620161594820691651),
+  EXPECT_EQ(INT64_C(-6814889525293785691),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -760,7 +793,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   SetStrokeStyleString(Context2D(), GetScriptState(), "blue");
-  EXPECT_EQ(INT64_C(-1964835352532316734),
+  EXPECT_EQ(INT64_C(3577524355478740727),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -785,7 +818,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   SetFillStyleString(Context2D(), GetScriptState(), "blue");
-  EXPECT_EQ(INT64_C(-4860826471555317536),
+  EXPECT_EQ(INT64_C(7953663110297373742),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -809,14 +842,14 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(6317349156921019980),
+  EXPECT_EQ(INT64_C(-7525055925911674050),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
   Context2D()->setTextAlign("right");
   SetFillStyleString(Context2D(), GetScriptState(), "red");
   Context2D()->fillText("Bye", 4.0, 3.0);
-  EXPECT_EQ(INT64_C(5574475585707445774),
+  EXPECT_EQ(INT64_C(-7631959002534825456),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -890,13 +923,11 @@ MATCHER_P(Mesh2dBufferIs, matcher, "") {
 }
 
 NotShared<DOMFloat32Array> CreateFloat32Array(std::vector<float> array) {
-  return NotShared<DOMFloat32Array>(
-      DOMFloat32Array::Create(array.data(), array.size()));
+  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array));
 }
 
 NotShared<DOMUint16Array> CreateUint16Array(std::vector<uint16_t> array) {
-  return NotShared<DOMUint16Array>(
-      DOMUint16Array::Create(array.data(), array.size()));
+  return NotShared<DOMUint16Array>(DOMUint16Array::Create(array));
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer0Floats) {

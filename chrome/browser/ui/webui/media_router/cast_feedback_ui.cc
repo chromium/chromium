@@ -14,6 +14,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
@@ -155,28 +156,11 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
     source->AddString("logData", log_data);
   }
 
-  // Determine the category tag to use for the feedback report.  As the name
-  // suggests, this value is used to categorize feedback reports for easier
-  // analysis and triage.
-  const char* categoryTag = nullptr;
-  switch (chrome::GetChannel()) {
-    case version_info::Channel::CANARY:
-      categoryTag = "canary";
-      break;
-    case version_info::Channel::DEV:
-      categoryTag = "dev";
-      break;
-    case version_info::Channel::BETA:
-      categoryTag = "beta";
-      break;
-    case version_info::Channel::STABLE:
-      categoryTag = "stable";
-      break;
-    case version_info::Channel::UNKNOWN:
-      categoryTag = "unknown";
-      break;
-  }
-  source->AddString("categoryTag", categoryTag);
+  // As the name suggests, this value is used to categorize feedback reports for
+  // easier analysis and triage.
+  source->AddString(
+      "categoryTag",
+      std::string(version_info::GetChannelString(chrome::GetChannel())));
 
   source->AddBoolean("globalMediaControlsCastStartStop",
                      GlobalMediaControlsCastStartStopEnabled(profile_));
@@ -199,6 +183,16 @@ CastFeedbackUI::~CastFeedbackUI() = default;
 
 void CastFeedbackUI::OnCloseMessage(const base::Value::List&) {
   web_contents_->GetDelegate()->CloseContents(web_contents_);
+}
+
+CastFeedbackUIConfig::CastFeedbackUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUICastFeedbackHost) {}
+
+bool CastFeedbackUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return MediaRouterEnabled(profile) && FeedbackUI::IsFeedbackEnabled(profile);
 }
 
 }  // namespace media_router

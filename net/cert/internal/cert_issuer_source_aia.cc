@@ -29,7 +29,7 @@ bool ParseCertFromDer(base::span<const uint8_t> data,
   if (!bssl::ParsedCertificate::CreateAndAddToVector(
           x509_util::CreateCryptoBuffer(data),
           x509_util::DefaultParseCertificateOptions(), results, &errors)) {
-    // TODO(crbug.com/634443): propagate error info.
+    // TODO(crbug.com/41267838): propagate error info.
     // TODO(mattm): this creates misleading log spam if one of the other Parse*
     // methods is actually able to parse the data.
     LOG(ERROR) << "Error parsing cert retrieved from AIA (as DER):\n"
@@ -58,7 +58,7 @@ bool ParseCertsFromCms(base::span<const uint8_t> data,
     if (!bssl::ParsedCertificate::CreateAndAddToVector(
             std::move(cert_buffer), x509_util::DefaultParseCertificateOptions(),
             results, &errors)) {
-      // TODO(crbug.com/634443): propagate error info.
+      // TODO(crbug.com/41267838): propagate error info.
       LOG(ERROR) << "Error parsing cert extracted from AIA PKCS7:\n"
                  << errors.ToDebugString();
       continue;
@@ -143,7 +143,7 @@ bool AiaRequest::AddCompletedFetchToResults(
   //    certificates MUST be able to accept individual DER encoded
   //    certificates and SHOULD be able to accept "certs-only" CMS messages.
 
-  // TODO(https://crbug.com/870359): Some AIA responses are served as PEM, which
+  // TODO(crbug.com/41405652): Some AIA responses are served as PEM, which
   // is not part of RFC 5280's profile.
   return ParseCertFromDer(fetched_bytes, results) ||
          ParseCertsFromCms(fetched_bytes, results) ||

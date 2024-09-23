@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 
@@ -12,7 +11,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
@@ -90,20 +88,6 @@ public class OmahaBase {
         int OFFLINE = 2;
         int FAILED = 3;
     }
-
-    // Flags for retrieving the OmahaClient's state after it's written to disk.
-    // The PREF_PACKAGE doesn't match the current OmahaClient package for historical reasons.
-    static final String PREF_PACKAGE = "com.google.android.apps.chrome.omaha";
-    static final String PREF_INSTALL_SOURCE = "installSource";
-    static final String PREF_LATEST_VERSION = "latestVersion";
-    static final String PREF_MARKET_URL = "marketURL";
-    static final String PREF_SERVER_DATE = "serverDate";
-    static final String PREF_PERSISTED_REQUEST_ID = "persistedRequestID";
-    static final String PREF_SEND_INSTALL_EVENT = "sendInstallEvent";
-    static final String PREF_TIMESTAMP_FOR_NEW_REQUEST = "timestampForNewRequest";
-    static final String PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT = "timestampForNextPostAttempt";
-    static final String PREF_TIMESTAMP_OF_INSTALL = "timestampOfInstall";
-    static final String PREF_TIMESTAMP_OF_REQUEST = "timestampOfRequest";
 
     private static final int UNKNOWN_DATE = -2;
 
@@ -196,8 +180,8 @@ public class OmahaBase {
                 createRequestData(false, currentTimestamp, null, installSource);
         String sessionID = mDelegate.generateUUID();
         long timestampOfInstall =
-                OmahaBase.getSharedPreferences()
-                        .getLong(OmahaBase.PREF_TIMESTAMP_OF_INSTALL, currentTimestamp);
+                OmahaPrefUtils.getSharedPreferences()
+                        .getLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_INSTALL, currentTimestamp);
         // Send the request and parse the response.
         VersionConfig versionConfig =
                 generateAndPostRequest(
@@ -502,14 +486,16 @@ public class OmahaBase {
         ExponentialBackoffScheduler scheduler = getBackoffScheduler();
         long currentTime = scheduler.getCurrentTime();
 
-        SharedPreferences preferences = OmahaBase.getSharedPreferences();
+        SharedPreferences preferences = OmahaPrefUtils.getSharedPreferences();
         mTimestampForNewRequest =
-                preferences.getLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, currentTime);
+                preferences.getLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, currentTime);
         mTimestampForNextPostAttempt =
-                preferences.getLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, currentTime);
-        mTimestampOfInstall = preferences.getLong(OmahaBase.PREF_TIMESTAMP_OF_INSTALL, currentTime);
-        mSendInstallEvent = preferences.getBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, true);
-        mInstallSource = preferences.getString(OmahaBase.PREF_INSTALL_SOURCE, installSource);
+                preferences.getLong(
+                        OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, currentTime);
+        mTimestampOfInstall =
+                preferences.getLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_INSTALL, currentTime);
+        mSendInstallEvent = preferences.getBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, true);
+        mInstallSource = preferences.getString(OmahaPrefUtils.PREF_INSTALL_SOURCE, installSource);
         mVersionConfig = getVersionConfig(preferences);
 
         // If we're not sending an install event, don't bother restoring the request ID:
@@ -517,10 +503,10 @@ public class OmahaBase {
         String persistedRequestId =
                 mSendInstallEvent
                         ? preferences.getString(
-                                OmahaBase.PREF_PERSISTED_REQUEST_ID, INVALID_REQUEST_ID)
+                                OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, INVALID_REQUEST_ID)
                         : INVALID_REQUEST_ID;
         long requestTimestamp =
-                preferences.getLong(OmahaBase.PREF_TIMESTAMP_OF_REQUEST, INVALID_TIMESTAMP);
+                preferences.getLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, INVALID_TIMESTAMP);
         mCurrentRequest =
                 requestTimestamp == INVALID_TIMESTAMP
                         ? null
@@ -556,20 +542,20 @@ public class OmahaBase {
 
     /** Writes out the current state to a file. */
     private void saveState() {
-        SharedPreferences prefs = OmahaBase.getSharedPreferences();
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, mSendInstallEvent);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_INSTALL, mTimestampOfInstall);
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, mSendInstallEvent);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_INSTALL, mTimestampOfInstall);
         editor.putLong(
-                OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, mTimestampForNextPostAttempt);
-        editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, mTimestampForNewRequest);
+                OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, mTimestampForNextPostAttempt);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, mTimestampForNewRequest);
         editor.putLong(
-                OmahaBase.PREF_TIMESTAMP_OF_REQUEST,
+                OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST,
                 hasRequest() ? mCurrentRequest.getCreationTimestamp() : INVALID_TIMESTAMP);
         editor.putString(
-                OmahaBase.PREF_PERSISTED_REQUEST_ID,
+                OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID,
                 hasRequest() ? mCurrentRequest.getRequestID() : INVALID_REQUEST_ID);
-        editor.putString(OmahaBase.PREF_INSTALL_SOURCE, mInstallSource);
+        editor.putString(OmahaPrefUtils.PREF_INSTALL_SOURCE, mInstallSource);
         setVersionConfig(editor, mVersionConfig);
         editor.apply();
 
@@ -592,8 +578,8 @@ public class OmahaBase {
 
     /** Checks whether Chrome has ever tried contacting Omaha before. */
     public static boolean isProbablyFreshInstall() {
-        SharedPreferences prefs = getSharedPreferences();
-        return prefs.getLong(PREF_TIMESTAMP_OF_INSTALL, -1) == -1;
+        SharedPreferences prefs = OmahaPrefUtils.getSharedPreferences();
+        return prefs.getLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_INSTALL, -1) == -1;
     }
 
     /** Sends the request to the server and returns the response. */
@@ -610,7 +596,7 @@ public class OmahaBase {
                 | IndexOutOfBoundsException
                 | IllegalArgumentException e) {
             // IndexOutOfBoundsException is thought to be triggered by a bug in okio.
-            // TODO(crbug.com/1111334): Record IndexOutOfBoundsException specifically.
+            // TODO(crbug.com/40709132): Record IndexOutOfBoundsException specifically.
             // IllegalArgumentException is triggered by a bug in okio. crbug.com/1149863.
             throw new RequestFailureException(
                     "Failed to write request to server: ",
@@ -654,28 +640,23 @@ public class OmahaBase {
         }
     }
 
-    /** Returns the Omaha SharedPreferences. */
-    public static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
-    }
-
     static void setVersionConfig(SharedPreferences.Editor editor, VersionConfig versionConfig) {
         editor.putString(
-                OmahaBase.PREF_LATEST_VERSION,
+                OmahaPrefUtils.PREF_LATEST_VERSION,
                 versionConfig == null ? "" : versionConfig.latestVersion);
         editor.putString(
-                OmahaBase.PREF_MARKET_URL, versionConfig == null ? "" : versionConfig.downloadUrl);
+                OmahaPrefUtils.PREF_MARKET_URL,
+                versionConfig == null ? "" : versionConfig.downloadUrl);
         if (versionConfig != null) {
-            editor.putInt(OmahaBase.PREF_SERVER_DATE, versionConfig.serverDate);
+            editor.putInt(OmahaPrefUtils.PREF_SERVER_DATE, versionConfig.serverDate);
         }
     }
 
     static VersionConfig getVersionConfig(SharedPreferences sharedPref) {
         return new VersionConfig(
-                sharedPref.getString(OmahaBase.PREF_LATEST_VERSION, ""),
-                sharedPref.getString(OmahaBase.PREF_MARKET_URL, ""),
-                sharedPref.getInt(OmahaBase.PREF_SERVER_DATE, -2),
+                sharedPref.getString(OmahaPrefUtils.PREF_LATEST_VERSION, ""),
+                sharedPref.getString(OmahaPrefUtils.PREF_MARKET_URL, ""),
+                sharedPref.getInt(OmahaPrefUtils.PREF_SERVER_DATE, -2),
                 // updateStatus is only used for the on-demand check.
                 null);
     }

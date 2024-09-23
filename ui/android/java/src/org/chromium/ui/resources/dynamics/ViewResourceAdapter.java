@@ -6,7 +6,6 @@ package org.chromium.ui.resources.dynamics;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
@@ -69,13 +68,11 @@ public class ViewResourceAdapter
 
     /**
      * Builds a {@link ViewResourceAdapter} instance around {@code view}.
-     * @param view The {@link View} to expose as a {@link Resource}.
      *
-     * @param useHardwareBitmapDraw controls if we should software draw bitmaps or use a
-     * RenderNode and hardware acceleration.
+     * @param view The {@link View} to expose as a {@link Resource}.
      */
     @SuppressWarnings("NewApi")
-    public ViewResourceAdapter(View view, boolean useHardwareBitmapDraw) {
+    public ViewResourceAdapter(View view) {
         mView = view;
 
         // It is possible the view has not had an layout pass yet, and these values are wrong. Even
@@ -85,26 +82,12 @@ public class ViewResourceAdapter
         mViewSize.set(0, 0, mView.getWidth(), mView.getHeight());
         mDirtyRect.set(mViewSize);
 
-        // Enforce hardware accelerated drawing on android Q+ where it's supported.
-        useHardwareBitmapDraw &= Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-        if (useHardwareBitmapDraw) {
-            mCaptureMechanism = new HardwareDraw();
-        } else {
-            mCaptureMechanism = new SoftwareDraw();
-        }
+        mCaptureMechanism = new SoftwareDraw();
     }
 
     /**
-     * Builds a {@link ViewResourceAdapter} instance around {@code view}.
-     * @param view The {@link View} to expose as a {@link Resource}.
-     */
-    public ViewResourceAdapter(View view) {
-        this(view, false);
-    }
-
-    /**
-     * Triggers a bitmap capture ignoring whether the view is dirty. Depending on this mechanism,
-     * it may do some or all of the work, and may be sync or async.
+     * Triggers a bitmap capture ignoring whether the view is dirty. Depending on this mechanism, it
+     * may do some or all of the work, and may be sync or async.
      */
     @SuppressWarnings("NewApi")
     public void triggerBitmapCapture() {

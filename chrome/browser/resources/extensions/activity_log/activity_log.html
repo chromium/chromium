@@ -25,7 +25,7 @@
     padding-bottom: 0;
   }
 
-  iron-pages {
+  cr-page-selector {
     flex: 1;
     position: relative;
   }
@@ -51,9 +51,10 @@
         [[getActivityLogHeading_(extensionInfo)]]
       </div>
     </div>
-    <cr-tabs selected="{{selectedSubpage_}}" tab-names="[[tabNames_]]">
+    <cr-tabs id="tabs" selected="{{selectedSubpage_}}"
+        tab-names="[[tabNames_]]">
     </cr-tabs>
-    <iron-pages selected="[[selectedSubpage_]]">
+    <cr-page-selector selected="[[selectedSubpage_]]">
       <div>
         <template is="dom-if"
             if="[[isHistoryTabSelected_(selectedSubpage_)]]" restamp>
@@ -70,6 +71,6 @@
           </activity-log-stream>
         </template>
       </div>
-    </iron-pages>
+    </cr-page-selector>
   </div>
 </div>

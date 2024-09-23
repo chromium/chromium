@@ -28,7 +28,6 @@ namespace vr {
 class BaseRenderer;
 class GridRenderer;
 class RadialGradientQuadRenderer;
-class TextureCopyRenderer;
 class TexturedQuadRenderer;
 
 // An instance of this class is passed to UiElements by the UiRenderer in order
@@ -71,11 +70,6 @@ class UiElementRenderer {
       int gridline_count,
       float opacity);
 
-  VIRTUAL_FOR_MOCKS void DrawTextureCopy(int texture_data_handle,
-                                         const float (&uv_transform)[16],
-                                         float xborder,
-                                         float yborder);
-
   void Flush();
 
  protected:
@@ -89,7 +83,6 @@ class UiElementRenderer {
 
   std::unique_ptr<TexturedQuadRenderer> textured_quad_renderer_;
   std::unique_ptr<RadialGradientQuadRenderer> radial_gradient_quad_renderer_;
-  std::unique_ptr<TextureCopyRenderer> texture_copy_renderer_;
   std::unique_ptr<GridRenderer> gradient_grid_renderer_;
 };
 

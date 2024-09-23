@@ -8,14 +8,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='main'",
+      "name": "LayoutBlockFlow (positioned) DIV class='main'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='squahed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='squahed'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#90EE90",

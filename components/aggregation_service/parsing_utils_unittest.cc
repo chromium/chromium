@@ -7,7 +7,7 @@
 #include <optional>
 #include <string>
 
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -16,12 +16,14 @@ namespace aggregation_service {
 namespace {
 
 TEST(AggregationServiceParsingUtilsTest, ParseAggregationCoordinator) {
+  ScopedAggregationCoordinatorAllowlistForTesting scoped_coordinator_allowlist(
+      {url::Origin::Create(GURL("https://b.test"))});
+
   const struct {
     std::string str;
     std::optional<url::Origin> expected;
   } kTestCases[] = {
-      {kAggregationServiceCoordinatorAwsCloud.Get(),
-       url::Origin::Create(GURL(kAggregationServiceCoordinatorAwsCloud.Get()))},
+      {"https://b.test", url::Origin::Create(GURL("https://b.test"))},
       {"https://a.test", std::nullopt},
   };
 

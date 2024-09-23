@@ -1,0 +1,97 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/policy/core",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/attestation",
+  "+chrome/browser/ash/cert_provisioning",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/extensions",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/notifications",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/dev_mode",
+  "+chrome/browser/ash/policy/enrollment",
+  "+chrome/browser/ash/policy/external_data",
+  "+chrome/browser/ash/policy/handlers",
+  "+chrome/browser/ash/policy/invalidation",
+  "+chrome/browser/ash/policy/skyvault",
+  "+chrome/browser/ash/policy/login",
+  "+chrome/browser/ash/policy/networking",
+  "+chrome/browser/ash/policy/off_hours",
+  "+chrome/browser/ash/policy/remote_commands",
+  "+chrome/browser/ash/policy/reporting",
+  "+chrome/browser/ash/policy/rsu",
+  "+chrome/browser/ash/policy/scheduled_task_handler",
+  "+chrome/browser/ash/policy/server_backed_state",
+  "+chrome/browser/ash/policy/status_collector",
+  "+chrome/browser/ash/policy/test_support",
+  "+chrome/browser/ash/policy/uploading",
+  "+chrome/browser/ash/policy/value_validation",
+  "+chrome/browser/ash/printing",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/session_length_limiter.h",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/ash/system",
+  "+chrome/browser/ash/tpm",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/chromeos/extensions",
+  "+chrome/browser/device_identity",
+  "+chrome/browser/enterprise/reporting",
+  "+chrome/browser/extensions/chrome_test_extension_loader.h",
+  "+chrome/browser/extensions/crx_installer.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/external_loader.h",
+  "+chrome/browser/extensions/external_provider_impl.h",
+  "+chrome/browser/extensions/policy_handlers.h",
+  "+chrome/browser/extensions/updater",
+  "+chrome/browser/invalidation",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/metrics",
+  "+chrome/browser/net",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/browser/ui/webui/certificates_handler.h",
+  "+chrome/browser/unified_consent",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/common/chrome_constants.h",
+  "+chrome/common/chrome_content_client.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/extensions",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+]
+
+specific_include_rules = {
+  "browser_policy_connector_ash_unittest.cc": [
+    "+chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h",
+    "+chrome/browser/ui/ash/wallpaper",
+  ],
+}

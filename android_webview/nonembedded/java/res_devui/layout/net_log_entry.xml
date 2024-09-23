@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2024 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/net_log_entry"
+    android:clickable="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- A compound drawable will be populated at runtime, but it's OK to configure drawablePadding now. -->
+    <TextView
+      android:id="@+id/file_name"
+      android:clickable="false"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:textAppearance="@style/MediumText"
+      android:drawablePadding="4dp"
+      android:paddingTop="8dp"
+      android:paddingBottom="8dp"
+      android:paddingStart="8dp"/>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+      android:id="@+id/file_time"
+      android:clickable="false"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:layout_weight="1"
+      android:paddingBottom="8dp"
+      android:paddingStart="8dp"/>
+
+    <TextView
+      android:id="@+id/file_capacity"
+      android:clickable="false"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:paddingBottom="8dp"
+      android:paddingEnd="8dp"/>
+
+  </LinearLayout>
+
+</LinearLayout>

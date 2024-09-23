@@ -35,6 +35,8 @@ source_set("file_util") {
     "//mojo/public/mojom/base",
   ]
 
+  defines = []
+
   if (is_chromeos_ash) {
     sources += [
       "zip_file_creator.cc",
@@ -54,27 +56,13 @@ source_set("file_util") {
       "safe_archive_analyzer.h",
     ]
 
-    if (is_linux || is_win) {
-      sources += [
-        "document_analysis_service.cc",
-        "document_analysis_service.h",
-        "safe_document_analyzer.cc",
-        "safe_document_analyzer.h",
-      ]
-    }
-
     deps += [
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/utility/safe_browsing",
     ]
 
-    if (is_linux || is_win) {
-      deps += [
-        "//chrome/common/safe_browsing:document_analyzer_results",
-        "//chrome/utility/safe_browsing:document_analyzer",
-      ]
-    }
+    defines += [ "USE_UNRAR=$safe_browsing_use_unrar" ]
   }
 
   if (enable_extractors) {
@@ -120,13 +108,6 @@ source_set("test_support") {
     "fake_file_util_service.h",
   ]
 
-  if (is_linux || is_win) {
-    sources += [
-      "fake_document_analysis_service.cc",
-      "fake_document_analysis_service.h",
-    ]
-  }
-
   deps = [
     ":buildflags",
     "//base",
@@ -142,13 +123,10 @@ source_set("test_support") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_EXTRACTORS=$enable_extractors",
-    "ENABLE_MALDOCA=$enable_maldoca",
-  ]
+  flags = [ "ENABLE_EXTRACTORS=$enable_extractors" ]
 }
 
-if (enable_extractors && fuzztest_supported) {
+if (enable_extractors) {
   test("single_file_tar_reader_fuzzer") {
     sources = [ "single_file_tar_reader_fuzzer.cc" ]
 

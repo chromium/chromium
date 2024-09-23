@@ -47,7 +47,8 @@ namespace crashReportPrivate {
     // Report and upload an error to Crash.
     // |info|: Information about the error.
     // |callback|: Called when the error has been uploaded.
-    [supportsPromises] static void reportError(ErrorInfo info,
-                                               ReportCallback callback);
+    static void reportError(
+        ErrorInfo info,
+        ReportCallback callback);
   };
 };

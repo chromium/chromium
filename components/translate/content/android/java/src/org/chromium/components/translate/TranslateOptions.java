@@ -31,7 +31,7 @@ public class TranslateOptions {
     public static class TranslateLanguageData {
         public final String mLanguageCode;
         public final String mLanguageRepresentation;
-        // TODO(crbug/1440513): Remove |mLanguageUMAHashCode| as these hashes
+        // TODO(crbug.com/40266152): Remove |mLanguageUMAHashCode| as these hashes
         // are no longer used.
         public final Integer mLanguageUMAHashCode;
 

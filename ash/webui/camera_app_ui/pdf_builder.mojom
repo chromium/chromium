@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.camera_app.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// PdfBuilder creates a PDF and provides operations to add and delete pages, and
+// save the PDF.
+interface PdfBuilder {
+  // Adds a new page to the PDF at `page_index` with the given image and a layer
+  // of invisible text. If the page already exists, it will be replaced. If
+  // `page_index` is larger than PDF's current last index(L), the created page
+  // index is the next available index(L+1).
+  AddPage(mojo_base.mojom.BigBuffer jpeg, uint32 page_index);
+  // Same as `AddPage`, but using `array<uint8>` instead.
+  AddPageInline(array<uint8> jpeg, uint32 page_index);
+  // Deletes the page of the PDF at `page_index` and shift the following pages
+  // forward. Does nothing if the page at `page_index` doesn't exist.
+  DeletePage(uint32 page_index);
+  // Returns the PDF. It can be called multiple times at any time.
+  Save() => (mojo_base.mojom.BigBuffer pdf);
+  // Same as `Save`, but using `array<uint8>` instead.
+  SaveInline() => (array<uint8> pdf);
+};

@@ -78,6 +78,9 @@ CreateBrightnessGrayscaleAnimationSequence(float target_value,
 ASH_EXPORT gfx::Rect GetMinimizeAnimationTargetBoundsInScreen(
     aura::Window* window);
 
+// Triggers the window bounce animation.
+ASH_EXPORT void BounceWindow(aura::Window* window);
+
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_ANIMATIONS_H_

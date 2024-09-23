@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Questo sito non può richiedere la tua autorizzazione</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Attiva il Bluetooth<ph name="END_LINK" /> per consentire l'accoppiamento</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> deve avere l'autorizzazione per monitorare le tue mani.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /> durante la ricerca di dispositivi…</translation>
 <translation id="4925793601605263825">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso al microfono.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> richiede di eseguire la scansione per rilevare dispositivi Bluetooth nelle vicinanze. Sono stati rilevati i seguenti dispositivi:</translation>

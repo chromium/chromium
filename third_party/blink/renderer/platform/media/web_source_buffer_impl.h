@@ -40,8 +40,8 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   double HighestPresentationTimestamp() override;
   bool EvictCodedFrames(double currentPlaybackTime,
                         size_t newDataSize) override;
-  [[nodiscard]] bool AppendToParseBuffer(const unsigned char* data,
-                                         size_t length) override;
+  [[nodiscard]] bool AppendToParseBuffer(
+      base::span<const unsigned char> data) override;
   [[nodiscard]] media::StreamParser::ParseStatus RunSegmentParserLoop(
       double* timestamp_offset) override;
   bool AppendChunks(
@@ -67,10 +67,10 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   void NotifyParseWarning(const media::SourceBufferParseWarning warning);
 
   std::string id_;
-  raw_ptr<media::ChunkDemuxer, ExperimentalRenderer>
-      demuxer_;  // Owned by WebMediaPlayerImpl.
+  // Owned by WebMediaPlayerImpl.
+  raw_ptr<media::ChunkDemuxer, DanglingUntriaged> demuxer_;
 
-  raw_ptr<WebSourceBufferClient, ExperimentalRenderer> client_;
+  raw_ptr<WebSourceBufferClient> client_;
 
   // Controls the offset applied to timestamps when processing appended media
   // segments. It is initially 0, which indicates that no offset is being

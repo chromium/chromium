@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -148,7 +149,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   // |lock_| must be locked when accessing |pending_send_messages_|.
   base::Lock lock_;
-  std::list<PendingSend*> pending_send_messages_;
+  std::list<raw_ptr<PendingSend, CtnExperimental>> pending_send_messages_;
   base::WaitableEvent pending_send_event_;
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
   SampledDurationCallback task_latency_callback_;

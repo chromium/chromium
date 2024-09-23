@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 
+#include <array>
 #include <optional>
 
 #include "base/test/simple_test_clock.h"
@@ -78,11 +79,11 @@ class PasswordReuseDetectionManagerTest : public ::testing::Test {
 // Verify that CheckReuse is called on each key pressed event with an argument
 // equal to the last 30 keystrokes typed after the last main frame navigation.
 TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
-  const GURL gurls[] = {GURL("https://www.example.com"),
-                        GURL("https://www.otherexample.com")};
-  const std::u16string input[] = {
-      u"1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ",
-      u"?<>:'{}ABCDEF"};
+  const auto gurls = std::to_array(
+      {GURL("https://www.example.com"), GURL("https://www.otherexample.com")});
+  const std::array<std::u16string, 2> input{
+      {u"1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ",
+       u"?<>:'{}ABCDEF"}};
 
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
@@ -191,9 +192,9 @@ TEST_F(PasswordReuseDetectionManagerTest, DidNavigateMainFrame) {
 
 // Verify that CheckReuse is called on a paste event.
 TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
-  const GURL gurls[] = {GURL("https://www.example.com"),
-                        GURL("https://www.example.test")};
-  const std::u16string input[] = {
+  const std::array<GURL, 2> gurls = {GURL("https://www.example.com"),
+                                     GURL("https://www.example.test")};
+  const std::array<std::u16string, 2> input = {
       u"1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ",
       u"?<>:'{}ABCDEF"};
 

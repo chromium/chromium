@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.camera_app.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Writing direction of a word.
+enum WordDirection {
+  kLeftToRight,
+  kRightToLeft,
+};
+
+// OCR result for a given image.
+struct OcrResult {
+  array<Line> lines;
+};
+
+
+// Text line with associated bounding box.
+struct Line {
+  // Words in the text line.
+  array<Word> words;
+
+  // Text line in UTF-8 format.
+  string text;
+
+  // Line bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // Rotation angle (in degrees, clockwise) of the line bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
+  // Language guess for the line. The format is the ISO 639-1 two-letter
+  // language code if that is defined (e.g. "en"), or else the ISO 639-2
+  // three-letter code if that is defined, or else a Google-specific code.
+  string language;
+
+  // Confidence as computed by the OCR engine. The value is in range [0, 1].
+  float confidence;
+};
+
+// Word with associated bounding box.
+struct Word {
+  // A single word in UTF-8 format.
+  string text;
+
+  // Word bounding box relative to the original image.
+  gfx.mojom.Rect bounding_box;
+
+  // Rotation angle (in degrees, clockwise) of the word bounding box about its
+  // top-left corner.
+  float bounding_box_angle;
+
+  // The direction of the script contained in the word.
+  WordDirection direction;
+};

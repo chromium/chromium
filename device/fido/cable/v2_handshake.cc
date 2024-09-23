@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/cable/v2_handshake.h"
 
 #include <inttypes.h>
@@ -12,12 +17,13 @@
 #include <type_traits>
 
 #include "base/base64url.h"
+#include "base/functional/overloaded.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -49,15 +55,14 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
+bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12u> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  std::fill(out_nonce.begin(), out_nonce.end(), 0);
-  counter = base::ByteSwap(counter);
-  memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
-         sizeof(counter));
+  auto [zeros, counter_span] = out_nonce.split_at<12u - 4u>();
+  std::ranges::fill(zeros, uint8_t{0});
+  counter_span.copy_from(base::numerics::U32ToBigEndian(counter));
   return true;
 }
 
@@ -415,7 +420,7 @@ std::optional<Components> Parse(const std::string& qr_url) {
 }
 
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
-                   FidoRequestType request_type) {
+                   RequestType request_type) {
   cbor::Value::MapValue qr_contents;
   qr_contents.emplace(
       0, SeedToCompressedPublicKey(
@@ -575,19 +580,34 @@ void Derive(uint8_t* out,
 
 }  // namespace internal
 
-const char* RequestTypeToString(FidoRequestType request_type) {
-  switch (request_type) {
-    case FidoRequestType::kMakeCredential:
-      return "mc";
-    case FidoRequestType::kGetAssertion:
-      return "ga";
-      // If adding a value here, also update `RequestTypeFromString`.
-  }
+const char* RequestTypeToString(RequestType request_type) {
+  return absl::visit(
+      base::Overloaded{[](const FidoRequestType& request_type) {
+                         switch (request_type) {
+                           case FidoRequestType::kMakeCredential:
+                             return "mc";
+                           case FidoRequestType::kGetAssertion:
+                             return "ga";
+                             // If adding a value here, also update
+                             // `RequestTypeFromString`.
+                         }
+                       },
+                       [](const CredentialRequestType& request_type) {
+                         switch (request_type) {
+                           case CredentialRequestType::kPresentation:
+                             return "dcp";
+                             // If adding a value here, also update
+                             // `RequestTypeFromString`.
+                         }
+                       }},
+      request_type);
 }
 
-FidoRequestType RequestTypeFromString(const std::string& s) {
+RequestType RequestTypeFromString(const std::string& s) {
   if (s == "mc") {
     return FidoRequestType::kMakeCredential;
+  } else if (s == "dcp") {
+    return CredentialRequestType::kPresentation;
   }
   // kGetAssertion is the default if the value is unknown too.
   return FidoRequestType::kGetAssertion;
@@ -745,7 +765,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_size_checked = (padded_size_checked + kPaddingGranularity - 1) &
                         ~(kPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -900,8 +920,8 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
 
 HandshakeResult HandshakeInitiator::ProcessResponse(
     base::span<const uint8_t> response) {
-  if (response.size() < kP256X962Length) {
-    FIDO_LOG(DEBUG) << "Handshake response truncated (" << response.size()
+  if (response.size() != kResponseSize) {
+    FIDO_LOG(DEBUG) << "Handshake response wrong size (" << response.size()
                     << " bytes)";
     return std::nullopt;
   }

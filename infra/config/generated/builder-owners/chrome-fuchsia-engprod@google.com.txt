@@ -1,0 +1,11 @@
+ci/Deterministic Fuchsia (dbg)
+ci/fuchsia-arm64-cast-receiver-rel
+ci/fuchsia-fyi-arm64-dbg
+ci/fuchsia-fyi-x64-asan
+ci/fuchsia-fyi-x64-dbg-persistent-emulator
+ci/fuchsia-x64-cast-receiver-dbg
+ci/fuchsia-x64-cast-receiver-rel
+try/fuchsia-fyi-x64-asan
+try/fuchsia-fyi-x64-dbg-persistent-emulator
+try/fuchsia-x64-cast-receiver-dbg
+try/fuchsia-x64-cast-receiver-dbg-compile

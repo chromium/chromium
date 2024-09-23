@@ -10,18 +10,20 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +64,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     }
 
     private void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     initialize();
                 });
@@ -95,7 +97,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         ApplicationProvider.getApplicationContext(),
                         null,
                         false,
-                        mSelector::getTabById);
+                        mSelector::getTabById,
+                        TabWindowManagerSingleton.getInstance());
         tabContentManager.initWithNative();
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
@@ -133,7 +136,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         orderController,
                         tabContentManager,
                         nextTabPolicySupplier,
@@ -143,7 +146,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
-                        Profile.getLastUsedRegularProfile()
+                        ProfileManager.getLastUsedRegularProfile()
                                 .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                         orderController,
                         tabContentManager,
@@ -176,7 +179,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     nextTabPolicySupplier,
                     asyncTabParamsManager,
                     modelDelegate,
-                    false);
+                    /* supportUndo= */ false,
+                    /* trackInNativeModelList= */ true);
         }
 
         @Override
@@ -207,7 +211,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 AsyncTabParamsManager asyncTabParamsManager,
                 TabModelDelegate modelDelegate) {
             super(
-                    Profile.getLastUsedRegularProfile()
+                    ProfileManager.getLastUsedRegularProfile()
                             .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                     orderController,
                     tabContentManager,

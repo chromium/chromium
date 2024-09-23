@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/native_messaging/native_messaging_writer.h"
 
 #include <stddef.h>
@@ -10,17 +15,15 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 
 // 4-byte type used for the message header.
 typedef uint32_t MessageLengthType;
-
-// Defined as an int, for passing to APIs that take an int, to avoid
-// signed/unsigned warnings about implicit cast.
-const int kMessageHeaderSize = sizeof(MessageLengthType);
 
 // Limit the size of sent messages, since Chrome will not accept messages
 // larger than 1MB, and this helps deal with the problem of integer overflow
@@ -49,29 +52,20 @@ bool NativeMessagingWriter::WriteMessage(base::ValueView message) {
 
   CHECK_LE(message_json.length(), kMaximumMessageSize);
 
-  // Cast from size_t to the proper header type. The check above ensures this
-  // won't overflow.
+  // Cast from size_t to the proper header type, checking this won't overflow.
   MessageLengthType message_length =
-      static_cast<MessageLengthType>(message_json.length());
+      base::checked_cast<MessageLengthType>(message_json.length());
 
-  int result = write_stream_.WriteAtCurrentPos(
-      reinterpret_cast<char*>(&message_length), kMessageHeaderSize);
-  if (result != kMessageHeaderSize) {
-    LOG(ERROR) << "Failed to send message header, write returned " << result;
+  if (!write_stream_.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_ref(message_length))) {
+    LOG(ERROR) << "Failed to send message header";
     fail_ = true;
     return false;
   }
 
-  // The length check above ensures that the cast won't overflow a signed
-  // 32-bit int.
-  int message_length_as_int = message_length;
-
-  // CHECK needed since data() is undefined on an empty std::string.
-  CHECK(!message_json.empty());
-  result = write_stream_.WriteAtCurrentPos(message_json.data(),
-                                           message_length_as_int);
-  if (result != message_length_as_int) {
-    LOG(ERROR) << "Failed to send message body, write returned " << result;
+  if (!write_stream_.WriteAtCurrentPosAndCheck(
+          base::as_byte_span(message_json))) {
+    LOG(ERROR) << "Failed to send message body";
     fail_ = true;
     return false;
   }

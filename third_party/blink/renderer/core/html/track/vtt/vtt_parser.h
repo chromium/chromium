@@ -104,7 +104,7 @@ class VTTParser final : public GarbageCollected<VTTParser> {
                                                              TextTrack*);
 
   // Input data to the parser to parse.
-  void ParseBytes(const char* data, size_t length);
+  void ParseBytes(base::span<const char> data);
   void Flush();
 
   // Transfers ownership of last parsed cues to caller.

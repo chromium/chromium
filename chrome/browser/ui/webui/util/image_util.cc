@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/util/image_util.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -15,7 +17,7 @@
 namespace webui {
 
 std::string MakeDataURIForImage(base::span<const uint8_t> image_data,
-                                base::StringPiece mime_subtype) {
+                                std::string_view mime_subtype) {
   std::string result = "data:image/";
   result.append(mime_subtype.begin(), mime_subtype.end());
   result += ";base64,";

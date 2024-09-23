@@ -22,8 +22,6 @@
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/browser/installable/installable_task_queue.h"
 #include "content/public/browser/installability_error.h"
-#include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -34,8 +32,7 @@ namespace webapps {
 // This class is responsible for fetching the resources required to check and
 // install a site.
 class InstallableManager
-    : public content::ServiceWorkerContextObserver,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public content::WebContentsUserData<InstallableManager> {
  public:
   explicit InstallableManager(content::WebContents* web_contents);
@@ -49,9 +46,6 @@ class InstallableManager
   // |callback| is invoked synchronously (i.e. not via PostTask on the UI thread
   // when the data is ready; the synchronous execution ensures that the
   // references |callback| receives in its InstallableData argument are valid.
-  //
-  // |callback| may never be invoked if |params.wait_for_worker| is true, or if
-  // the user navigates the page before fetching is complete.
   //
   // Calls requesting data that has already been fetched will return the cached
   // data.
@@ -72,7 +66,6 @@ class InstallableManager
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void OnTaskFinished();
-  virtual void OnTaskPaused();
 
  protected:
   // For mocking in tests.
@@ -87,11 +80,7 @@ class InstallableManager
                            ManagerBeginsInEmptyState);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest, ManagerInIncognito);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
-                           CheckLazyServiceWorkerNoFetchHandlerFails);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            ManifestUrlChangeFlushesState);
-  FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
-                           CheckLazyServiceWorkerPassesWhenWaiting);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest, CheckWebapp);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
                            InstallableManagerInPrerendering);
@@ -104,7 +93,6 @@ class InstallableManager
 
   // Gets/sets parts of particular properties. Exposed for testing.
   InstallableStatusCode manifest_error() const;
-  InstallableStatusCode worker_error() const;
   InstallableStatusCode icon_error() const;
   GURL icon_url() const;
   const SkBitmap* icon() const;
@@ -122,10 +110,6 @@ class InstallableManager
   // Methods coordinating and dispatching work for the current task.
   void FinishAndStartNextTask();
 
-  // content::ServiceWorkerContextObserver overrides
-  void OnRegistrationCompleted(const GURL& pattern) override;
-  void OnDestruct(content::ServiceWorkerContext* context) override;
-
   // content::WebContentsObserver overrides
   void PrimaryPageChanged(content::Page& page) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
@@ -134,14 +118,10 @@ class InstallableManager
 
   const GURL& manifest_url() const;
   const blink::mojom::Manifest& manifest() const;
-  bool has_worker() const;
 
   std::unique_ptr<InstallablePageData> page_data_;
   InstallableTaskQueue task_queue_;
 
-  // Owned by the storage partition attached to the content::WebContents which
-  // this object is scoped to.
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};

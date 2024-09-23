@@ -5,7 +5,6 @@
 #include "base/task/common/scoped_defer_task_posting.h"
 
 #include "base/compiler_specific.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -13,7 +12,7 @@ namespace {
 
 // Holds a thread-local pointer to the current scope or null when no
 // scope is active.
-ABSL_CONST_INIT thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
+constinit thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
     nullptr;
 
 }  // namespace

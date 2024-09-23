@@ -18,7 +18,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 TransactionalLevelDBIterator::TransactionalLevelDBIterator(
     std::unique_ptr<leveldb::Iterator> it,
@@ -74,7 +74,7 @@ bool TransactionalLevelDBIterator::IsValid() const {
     case IteratorState::kActive:
       return iterator_->Valid();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 leveldb::Status TransactionalLevelDBIterator::SeekToLast() {
@@ -274,4 +274,4 @@ void TransactionalLevelDBIterator::CheckState() const {
 #endif
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

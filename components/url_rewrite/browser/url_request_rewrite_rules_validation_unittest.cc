@@ -4,16 +4,17 @@
 
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 
+#include <string_view>
+
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace url_rewrite {
 namespace {
 
 mojom::UrlRequestActionPtr CreateRewriteAddHeaders(
-    base::StringPiece header_name,
-    base::StringPiece header_value) {
+    std::string_view header_name,
+    std::string_view header_value) {
   auto add_headers = mojom::UrlRequestRewriteAddHeaders::New();
   add_headers->headers.push_back(mojom::UrlHeader::New(
       std::string(header_name), std::string(header_value)));
@@ -21,8 +22,8 @@ mojom::UrlRequestActionPtr CreateRewriteAddHeaders(
 }
 
 mojom::UrlRequestActionPtr CreateRewriteRemoveHeader(
-    std::optional<base::StringPiece> query_pattern,
-    base::StringPiece header_name) {
+    std::optional<std::string_view> query_pattern,
+    std::string_view header_name) {
   auto remove_header = mojom::UrlRequestRewriteRemoveHeader::New();
   if (query_pattern)
     remove_header->query_pattern.emplace(std::string(*query_pattern));
@@ -31,8 +32,8 @@ mojom::UrlRequestActionPtr CreateRewriteRemoveHeader(
 }
 
 mojom::UrlRequestActionPtr CreateRewriteSubstituteQueryPattern(
-    base::StringPiece pattern,
-    base::StringPiece substitution) {
+    std::string_view pattern,
+    std::string_view substitution) {
   auto substitute_query_pattern =
       mojom::UrlRequestRewriteSubstituteQueryPattern::New();
   substitute_query_pattern->pattern = std::string(pattern);
@@ -42,15 +43,15 @@ mojom::UrlRequestActionPtr CreateRewriteSubstituteQueryPattern(
 }
 
 mojom::UrlRequestActionPtr CreateRewriteReplaceUrl(
-    base::StringPiece url_ends_with,
-    base::StringPiece new_url) {
+    std::string_view url_ends_with,
+    std::string_view new_url) {
   auto replace_url = mojom::UrlRequestRewriteReplaceUrl::New();
   replace_url->url_ends_with = std::string(url_ends_with);
   replace_url->new_url = GURL(new_url);
   return mojom::UrlRequestAction::NewReplaceUrl(std::move(replace_url));
 }
 
-mojom::UrlRequestActionPtr CreateRewriteAppendToQuery(base::StringPiece query) {
+mojom::UrlRequestActionPtr CreateRewriteAppendToQuery(std::string_view query) {
   auto append_to_query = mojom::UrlRequestRewriteAppendToQuery::New();
   append_to_query->query = std::string(query);
   return mojom::UrlRequestAction::NewAppendToQuery(std::move(append_to_query));

@@ -30,6 +30,7 @@ include_rules = [
   "+components/browser_ui/sms/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
+  "+components/browsing_data/content/android/java/src/org/chromium/components/browsing_data/content",
   "+components/crash/android",
   "+components/embedder_support/android",
   "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
@@ -49,6 +50,7 @@ include_rules = [
   "+components/payments/content/android/junit/src/org/chromium/components/payments/test_support",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/safe_browsing/android/java/src/org/chromium/components/safe_browsing",
+  "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
   "+components/search_engines",
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
@@ -77,6 +79,9 @@ specific_include_rules = {
   ],
   "AuthenticatorTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
+  ],
+  "DigitalCredentialProviderTest\.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
   ],
   "Fido2CredentialRequestTest.java": [
     "+content/public/android/java/src/org/chromium/content/browser/ClientDataJsonImpl.java",

@@ -1,0 +1,160 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+import "click_to_call_message.proto";
+import "optimization_guide_push_notification.proto";
+import "peer_connection_messages.proto";
+import "remote_copy_message.proto";
+import "shared_clipboard_message.proto";
+import "sms_fetch_message_test_proto3_optional.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message for sending between devices in Sharing.
+// Next tag: 17
+message SharingMessage {
+  // Identifier of sender. required unless any of the following is true:
+  // 1. payload is a AckMessage
+  // 2. ack_channel_configuration is a ServerChannelConfiguration
+  string sender_guid = 1;
+
+  // Payload of the message, contains one of the messages below. required.
+  oneof payload {
+    PingMessage ping_message = 2;
+    AckMessage ack_message = 3;
+    ClickToCallMessage click_to_call_message = 4;
+    SharedClipboardMessage shared_clipboard_message = 5;
+    SmsFetchRequest sms_fetch_request = 8;
+    RemoteCopyMessage remote_copy_message = 9;
+    PeerConnectionOfferMessage peer_connection_offer_message = 10;
+    PeerConnectionIceCandidatesMessage peer_connection_ice_candidates_message =
+        11;
+    DiscoveryRequest discovery_request = 13;
+    WebRtcSignalingMessage web_rtc_signaling_frame = 14;
+    OptimizationGuidePushNotification optimization_guide_push_notification = 16;
+  }
+
+  oneof ack_channel_configuration {
+    // FCM channel configuration. Ack message will be delivered as a FCM
+    // message. optional.
+    FCMChannelConfiguration fcm_channel_configuration = 6;
+
+    // Server channel configuration. Ack message will be delivered through
+    // server channel. optional.
+    ServerChannelConfiguration server_channel_configuration = 12;
+  }
+
+  // The name of the device sending this message. optional.
+  string sender_device_name = 7;
+
+  // Identifier of the message.
+  // required for message sent via Sync.
+  // optional for message sent via VAPID.
+  string message_id = 15;
+}
+
+// Message for pinging the receiver expecting an acknowledgement.
+message PingMessage {
+  // Intentionally empty.
+}
+
+// Message for acknowledging the sender after a non-AckMessage is received.
+// Next tag: 4
+message AckMessage {
+  reserved 2;
+
+  // required.
+  string original_message_id = 1;
+
+  // Response of the message, optional.
+  ResponseMessage response_message = 3;
+}
+
+// Message for responding to a SharingMessage.
+message ResponseMessage {
+  // Payload of the response, contains one of the messages below. required.
+  oneof payload {
+    SmsFetchResponse sms_fetch_response = 1;
+    PeerConnectionAnswerMessage peer_connection_answer_message_response = 2;
+    DiscoveryResponse discovery_response = 3;
+  }
+}
+
+// FCM channel configuration. Message will be delivered as a FCM message.
+message FCMChannelConfiguration {
+  // FCM registration token of device subscribed using VAPID key. required.
+  string vapid_fcm_token = 1;
+
+  // Subscription public key required for RFC 8291 using VAPID key.
+  bytes vapid_p256dh = 2;
+
+  // Auth secret key required for RFC 8291 using VAPID key.
+  bytes vapid_auth_secret = 3;
+
+  // FCM registration token of device subscribed using sender ID. required.
+  string sender_id_fcm_token = 4;
+
+  // Subscription public key required for RFC 8291 using sender ID.
+  bytes sender_id_p256dh = 5;
+
+  // Auth secret key required for RFC 8291 using sender ID.
+  bytes sender_id_auth_secret = 6;
+}
+
+// Server channel configuration. Message will be delivered through server
+// channel.
+message ServerChannelConfiguration {
+  reserved 1, 2;
+
+  // Opaque server channel configuration. required.
+  bytes configuration = 3;
+
+  // Subscription public key required for RFC 8291 using VAPID key. required.
+  bytes p256dh = 4;
+
+  // Auth secret key required for RFC 8291 using VAPID key. required.
+  bytes auth_secret = 5;
+}
+
+// Request for Sharing Discovery.
+message DiscoveryRequest {
+  // required
+  string service_id = 1;
+}
+
+// Response for Sharing Discovery.
+message DiscoveryResponse {
+  // required
+  string service_id = 1;
+
+  // required
+  string endpoint_id = 2;
+
+  // required
+  bytes endpoint_info = 3;
+}
+
+// Request for WebRTC signalling for Discovery.
+message WebRtcSignalingMessage {
+  // required
+  bytes web_rtc_signaling_frame = 1;
+}
+
+// Message for sending data between devices using webRTC.
+message WebRtcMessage {
+  // Randomly generated guid. Required for messages other than AckMessage.
+  string message_guid = 1;
+
+  // The actual SharingMessage to be sent across the two remote devices.
+  // Required.
+  SharingMessage message = 2;
+}

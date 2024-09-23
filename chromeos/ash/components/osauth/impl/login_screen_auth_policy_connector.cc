@@ -6,9 +6,8 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 

@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_ERROR_CONTROLLER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_ERROR_CONTROLLER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class SigninErrorController;
 
 namespace ios {
@@ -18,8 +18,10 @@ namespace ios {
 // ChromeBrowserState.
 class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SigninErrorController* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static SigninErrorController* GetForBrowserState(ProfileIOS* profile);
+
+  static SigninErrorController* GetForProfile(ProfileIOS* profile);
   static SigninErrorControllerFactory* GetInstance();
 
   SigninErrorControllerFactory(const SigninErrorControllerFactory&) = delete;

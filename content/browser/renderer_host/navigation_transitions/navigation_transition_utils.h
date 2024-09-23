@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_UTILS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_UTILS_H_
 
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace gfx {
 class Size;
@@ -15,12 +18,42 @@ namespace content {
 
 class NavigationRequest;
 
-struct NavigationTransitionUtils {
+class NavigationTransitionUtils {
+ public:
+  NavigationTransitionUtils() = delete;
+
+  // See ScreenshotCallback in NavigationTransitionTestUtils.
+  using ScreenshotCallback =
+      base::RepeatingCallback<void(int nav_entry_index,
+                                   const SkBitmap& bitmap,
+                                   bool requested,
+                                   SkBitmap& out_override)>;
+
   // Capture the `NavigationEntryScreenshot` for the old page, and store the
   // screenshot in the old page's NavigationEntry.
-  // Should only be called immediately before the old page is unloaded.
-  static void CaptureNavigationEntryScreenshot(
-      const NavigationRequest& navigation_request);
+  //
+  // This is invoked at 2 points in the navigation's lifecycle, the screenshot is done at one
+  // of these 2 points:
+  //
+  // 1. When dispatching a commit message from the browser to the renderer
+  //    process.
+  // 2. When the browser receives the DidCommitNavigation ack and the navigation
+  //    is committed in the browser process.
+  //
+  // Returns true if a screenshot for the currently committed Document is
+  // requested for this navigation.
+  static bool CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
+      NavigationRequest& navigation_request,
+      bool did_receive_commit_ack);
+
+  // Called when `DidCommitSameDocumentNavigation` arrives at the browser, and
+  // *before* the navigation commits. Ensures that a `NavigationEntryScreenshot`
+  // for the pre-navigation DOM state is cached when provided by the Viz
+  // process.
+  static void SetSameDocumentNavigationEntryScreenshotToken(
+      NavigationRequest& navigation_request,
+      std::optional<blink::SameDocNavigationScreenshotDestinationToken>
+          destination_token);
 
   // Used by tests to deterministically validate the memory budgeting / eviction
   // logic.
@@ -32,6 +65,12 @@ struct NavigationTransitionUtils {
 
   // Resets the above counter to zero.
   CONTENT_EXPORT static void ResetNumCopyOutputRequestIssuedForTesting();
+
+  // Calls `screenshot_callback` with the index of the previous NavigationEntry
+  // when leaving a page, along with the generated bitmap captured captured for
+  // all navigations.
+  CONTENT_EXPORT static void SetNavScreenshotCallbackForTesting(
+      ScreenshotCallback screenshot_callback);
 };
 
 }  // namespace content

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

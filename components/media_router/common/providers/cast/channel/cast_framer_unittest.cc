@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -37,7 +38,7 @@ class CastFramerTest : public testing::Test {
   }
 
   void WriteToBuffer(const std::string& data) {
-    memcpy(buffer_->StartOfBuffer(), data.data(), data.size());
+    buffer_->everything().copy_prefix_from(base::as_byte_span(data));
   }
 
  protected:
@@ -63,9 +64,8 @@ TEST_F(CastFramerTest, TestMessageFramerCompleteMessage) {
   // body contents.
   EXPECT_EQ(nullptr, framer_->Ingest(3, &message_length, &error).get());
   EXPECT_EQ(ChannelError::NONE, error);
-  EXPECT_EQ(
-      cast_message_str_.size() - MessageFramer::MessageHeader::header_size(),
-      framer_->BytesRequested());
+  EXPECT_EQ(cast_message_str_.size() - sizeof(MessageFramer::MessageHeader),
+            framer_->BytesRequested());
 
   // Remainder of packet sent over the wire.
   std::unique_ptr<CastMessage> message;
@@ -137,11 +137,11 @@ TEST_F(CastFramerTest, TestIngestIllegalLargeMessage2) {
 TEST_F(CastFramerTest, TestUnparsableBodyProto) {
   // Message header is OK, but the body is replaced with "x"en.
   std::string mangled_cast_message = cast_message_str_;
-  for (size_t i = MessageFramer::MessageHeader::header_size();
+  for (size_t i = sizeof(MessageFramer::MessageHeader);
        i < mangled_cast_message.size(); ++i) {
-    std::fill(mangled_cast_message.begin() +
-                  MessageFramer::MessageHeader::header_size(),
-              mangled_cast_message.end(), 'x');
+    std::fill(
+        mangled_cast_message.begin() + sizeof(MessageFramer::MessageHeader),
+        mangled_cast_message.end(), 'x');
   }
   WriteToBuffer(mangled_cast_message);
 

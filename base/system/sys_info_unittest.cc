@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/system/sys_info.h"
+
 #include <stdint.h>
 
+#include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
@@ -30,7 +33,6 @@
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_util.h"
@@ -221,10 +223,10 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
   // a number.
   EXPECT_TRUE(base::MatchPattern(hardware_model, "iOS Simulator (*)"))
       << hardware_model;
-  std::vector<StringPiece> mainPieces =
+  std::vector<std::string_view> mainPieces =
       SplitStringPiece(hardware_model, "()", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(3u, mainPieces.size()) << hardware_model;
-  std::vector<StringPiece> modelPieces =
+  std::vector<std::string_view> modelPieces =
       SplitStringPiece(mainPieces[1], ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_GE(modelPieces.size(), 1u) << hardware_model;
   if (modelPieces.size() == 1u) {
@@ -238,7 +240,7 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
 #else
   // The expected format is "Foo,Bar" where Foo is "iPhone" or "iPad" and Bar is
   // a number.
-  std::vector<StringPiece> pieces =
+  std::vector<std::string_view> pieces =
       SplitStringPiece(hardware_model, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size()) << hardware_model;
   int value;
@@ -249,10 +251,10 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
 
 TEST_F(SysInfoTest, GetHardwareInfo) {
   test::TaskEnvironment task_environment;
-  absl::optional<SysInfo::HardwareInfo> hardware_info;
+  std::optional<SysInfo::HardwareInfo> hardware_info;
 
   auto callback = base::BindOnce(
-      [](absl::optional<SysInfo::HardwareInfo>* target_info,
+      [](std::optional<SysInfo::HardwareInfo>* target_info,
          SysInfo::HardwareInfo info) { *target_info = std::move(info); },
       &hardware_info);
   SysInfo::GetHardwareInfo(std::move(callback));
@@ -276,10 +278,10 @@ TEST_F(SysInfoTest, GetHardwareInfo) {
 TEST_F(SysInfoTest, GetHardwareInfoWMIMatchRegistry) {
   base::win::ScopedCOMInitializer com_initializer;
   test::TaskEnvironment task_environment;
-  absl::optional<SysInfo::HardwareInfo> hardware_info;
+  std::optional<SysInfo::HardwareInfo> hardware_info;
 
   auto callback = base::BindOnce(
-      [](absl::optional<SysInfo::HardwareInfo>* target_info,
+      [](std::optional<SysInfo::HardwareInfo>* target_info,
          SysInfo::HardwareInfo info) { *target_info = std::move(info); },
       &hardware_info);
   SysInfo::GetHardwareInfo(std::move(callback));

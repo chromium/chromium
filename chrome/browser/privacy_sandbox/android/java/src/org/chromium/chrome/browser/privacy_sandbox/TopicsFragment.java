@@ -13,7 +13,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -33,6 +34,7 @@ import java.util.List;
 public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
+    private static final String TOPICS_EXPLANATION_PREFERENCE = "topics_explanation";
     private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
@@ -43,6 +45,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private static final String MANAGE_TOPICS_PREFERENCE = "manage_topics";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
+    private TextMessagePreference mTopicsExplanationPreference;
     private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
     private PreferenceCategory mCurrentTopicsCategory;
     private TextMessagePreference mEmptyTopicsPreference;
@@ -51,6 +54,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private Preference mActiveTopicsPreference;
     private Preference mBlockedTopicsPreference;
     private Preference mManageTopicsPreference;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     static boolean isTopicsPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -70,15 +74,11 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_topics_page_title);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v2);
-        } else {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
-        }
+        mPageTitle.set(getString(R.string.settings_topics_page_title));
+        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v2);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
+        mTopicsExplanationPreference = findPreference(TOPICS_EXPLANATION_PREFERENCE);
         mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
@@ -93,31 +93,14 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
 
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
-            mTopicsHeadingPreference.setSummary(
-                    SpanApplier.applySpans(getResources().getString(
-                            R.string.settings_topics_page_current_topics_description),
-                            new SpanApplier.SpanInfo(
-                                    "<link>",
-                                    "</link>",
-                                    new NoUnderlineClickableSpan(
-                                            getContext(), this::onLearnMoreClicked))));
-            mTopicsPageFooterPreference.setSummary(
-                    SpanApplier.applySpans(
-                            getResources().getString(R.string.settings_topics_page_footer),
-                            new SpanApplier.SpanInfo(
-                                    "<link1>",
-                                    "</link1>",
-                                    new NoUnderlineClickableSpan(
-                                            getContext(), this::onFledgeSettingsLinkClicked)),
-                            new SpanApplier.SpanInfo(
-                                    "<link2>",
-                                    "</link2>",
-                                    new NoUnderlineClickableSpan(
-                                            getContext(), this::onCookieSettingsLink))));
-            return;
-        }
+        mTopicsExplanationPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_topics_page_disclaimer_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onManagingAdPrivacyClicked))));
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_topics_page_footer_new),
@@ -138,9 +121,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                         getContext(), this::onManagingAdPrivacyClicked))));
     }
 
-    private void onLearnMoreClicked(View view) {
-        RecordUserAction.record("Settings.PrivacySandbox.Topics.LearnMoreClicked");
-        launchSettingsActivity(TopicsLearnMoreFragment.class);
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void onManagingAdPrivacyClicked(View view) {
@@ -180,7 +163,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                             : "Settings.PrivacySandbox.Topics.Disabled");
             setTopicsPrefEnabled(getProfile(), enabled);
             updatePreferenceVisibility();
-            PrivacySandboxBridge.topicsToggleChanged(enabled);
+            getPrivacySandboxBridge().topicsToggleChanged(enabled);
             return true;
         }
 
@@ -190,7 +173,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof TopicPreference) {
-            PrivacySandboxBridge.setTopicAllowed(((TopicPreference) preference).getTopic(), false);
+            getPrivacySandboxBridge()
+                    .setTopicAllowed(((TopicPreference) preference).getTopic(), false);
             mCurrentTopicsCategory.removePreference(preference);
             updatePreferenceVisibility();
 
@@ -210,7 +194,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     private void populateCurrentTopics() {
         mCurrentTopicsCategory.removeAll();
-        List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
+        List<Topic> currentTopics = getPrivacySandboxBridge().getCurrentTopTopics();
         for (Topic topic : currentTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(
@@ -229,11 +213,10 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         boolean topicsEnabled = isTopicsPrefEnabled(getProfile());
         boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
-        // Visible when Topics are disabled.
-        mDisabledTopicsPreference.setVisible(
-                !topicsEnabled
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING));
+
+        // TODO(crbug.com/362973179): Set default values in xml.
+        // Always not visible.
+        mDisabledTopicsPreference.setVisible(false);
 
         // Visible when Topics are enabled, but the current Topics list is empty.
         mEmptyTopicsPreference.setVisible(topicsEnabled && topicsEmpty);
@@ -242,12 +225,9 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         mCurrentTopicsCategory.setVisible(topicsEnabled && !topicsEmpty);
 
         // The new UI hides all the sections when the Topics are disabled.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
-            mActiveTopicsPreference.setVisible(topicsEnabled);
-            mBlockedTopicsPreference.setVisible(topicsEnabled);
-            mManageTopicsPreference.setVisible(topicsEnabled);
-        }
+        mActiveTopicsPreference.setVisible(topicsEnabled);
+        mBlockedTopicsPreference.setVisible(topicsEnabled);
+        mManageTopicsPreference.setVisible(topicsEnabled);
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {

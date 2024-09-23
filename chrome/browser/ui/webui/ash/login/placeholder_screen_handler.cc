@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,16 @@ PlaceholderScreenHandler::PlaceholderScreenHandler()
 
 PlaceholderScreenHandler::~PlaceholderScreenHandler() = default;
 
-// Add localized values that you want to propagate to the JS side here.
+// Add localized values that you want to propagate to the TS side here.
 void PlaceholderScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void PlaceholderScreenHandler::Show() {
   ShowInWebUI();
+}
+
+base::WeakPtr<PlaceholderScreenView> PlaceholderScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

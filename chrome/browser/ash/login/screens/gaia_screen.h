@@ -45,7 +45,6 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
     BACK_CHILD,
     CANCEL,
     ENTERPRISE_ENROLL,
-    START_CONSUMER_KIOSK,
     ENTER_QUICK_START,
     QUICK_START_ONGOING,
   };
@@ -76,6 +75,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
       ScreenBacklightState screen_backlight_state) override;
 
  private:
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
@@ -100,8 +100,14 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void OnQuickStartButtonClicked();
   void SetQuickStartButtonVisibility(bool visible);
 
-  // Loads the default GAIA path.
-  void LoadDefaultOnlineGaia(const AccountId& account);
+  // Starts online authentication for a given account (can be empty if
+  // user is unknown). If `force_default_gaia_page` is true, will
+  // choose the Gaia path corresponding to
+  // `WizardContext::GaiaPath::kDefault`.
+  void LoadOnlineGaiaForAccount(const AccountId& account,
+                                bool force_default_gaia_page = false);
+
+  bool MaybeLoginWithCachedCredentials();
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;

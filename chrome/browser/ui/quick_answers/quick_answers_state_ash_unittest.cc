@@ -13,7 +13,9 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -75,7 +77,9 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
   bool prefs_initialized_ = false;
 };
 
-class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
+// The bool parameter controls the feature flag QuickAnswers.
+class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
+                                 public testing::WithParamInterface<bool> {
  protected:
   QuickAnswersStateAshTest() = default;
   QuickAnswersStateAshTest(const QuickAnswersStateAshTest&) = delete;
@@ -85,13 +89,15 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
   // ChromeQuickAnswersTestBase:
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
-
-    prefs_ = static_cast<TestingPrefServiceSimple*>(
-        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
-    DCHECK(prefs_);
-    DCHECK(QuickAnswersState::Get()->prefs_initialized());
+    CHECK(QuickAnswersState::Get()->prefs_initialized());
 
     observer_ = std::make_unique<TestQuickAnswersStateObserver>();
+  }
+
+  void SetUpInitialPrefValues() override {
+    prefs_ = static_cast<TestingPrefServiceSimple*>(
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+    CHECK(prefs_);
   }
 
   TestingPrefServiceSimple* prefs() { return prefs_; }
@@ -103,10 +109,21 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 
+class QuickAnswersStateAshEnabledTest : public QuickAnswersStateAshTest {
+ protected:
+  void SetUpInitialPrefValues() override {
+    QuickAnswersStateAshTest::SetUpInitialPrefValues();
+
+    prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+    CHECK_EQ(
+        ConsentStatus::kUnknown,
+        prefs()->GetInteger(quick_answers::prefs::kQuickAnswersConsentStatus));
+  }
+};
+
 TEST_F(QuickAnswersStateAshTest, InitObserver) {
-  EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
-            ConsentStatus::kUnknown);
+  EXPECT_FALSE(QuickAnswersState::IsEnabled());
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(), ConsentStatus::kUnknown);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), std::string());
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
@@ -115,9 +132,8 @@ TEST_F(QuickAnswersStateAshTest, InitObserver) {
   const std::string application_locale = "en-US";
   prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
 
-  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
-            ConsentStatus::kAccepted);
+  EXPECT_TRUE(QuickAnswersState::IsEnabled());
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(), ConsentStatus::kAccepted);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), application_locale);
 
   // The observer class should get an instant notification about the current
@@ -134,19 +150,22 @@ TEST_F(QuickAnswersStateAshTest, InitObserver) {
 TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_FALSE(QuickAnswersState::Get()->settings_enabled());
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
+  EXPECT_FALSE(QuickAnswersState::IsEnabled());
   EXPECT_FALSE(observer()->settings_enabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kUnknown);
 
   // The observer class should get an notification when the pref value changes.
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
-  EXPECT_TRUE(QuickAnswersState::Get()->settings_enabled());
+  EXPECT_TRUE(QuickAnswersState::IsEnabled());
   EXPECT_TRUE(observer()->settings_enabled());
 
   // Consent status should also be set to accepted since the feature is
   // explicitly enabled.
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kAccepted);
 
   QuickAnswersState::Get()->RemoveObserver(observer());
@@ -155,7 +174,7 @@ TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
 TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kUnknown);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kUnknown);
@@ -163,14 +182,14 @@ TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
   // The observer class should get an notification when the pref value changes.
   prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
                       quick_answers::prefs::ConsentStatus::kRejected);
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kRejected);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kRejected);
 
   prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
                       quick_answers::prefs::ConsentStatus::kAccepted);
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kAccepted);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kAccepted);
@@ -179,30 +198,45 @@ TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateDefinitionEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Definition subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->definition_enabled());
+  EXPECT_TRUE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kDefinition));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersDefinitionEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->definition_enabled());
+  EXPECT_FALSE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kDefinition));
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateTranslationEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Translation subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->translation_enabled());
+  EXPECT_TRUE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kTranslation));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersTranslationEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->translation_enabled());
+  EXPECT_FALSE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kTranslation));
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateUnitConversionEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Unit conversion subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->unit_conversion_enabled());
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligible(
+      quick_answers::Intent::kUnitConversion));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersUnitConversionEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->unit_conversion_enabled());
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(
+      quick_answers::Intent::kUnitConversion));
 }
 
 TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {
@@ -246,38 +280,38 @@ TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
 TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "pt");
   SimulateUserLogin(kTestUser);
-  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(QuickAnswersState::IsEligible());
   EXPECT_TRUE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "en");
   SimulateUserLogin(kTestUser);
-  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_TRUE(QuickAnswersState::IsEligible());
   EXPECT_TRUE(observer()->is_eligible());
 }
 
 TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
   SimulateUserLogin(kTestUser);
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "ja");
   SimulateUserLogin(kTestUser);
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
+  EXPECT_FALSE(QuickAnswersState::IsEligible());
   EXPECT_FALSE(observer()->is_eligible());
 }
 
@@ -314,7 +348,19 @@ TEST_F(QuickAnswersStateAshTest, EnabledThenDisabledByPolicy) {
   EXPECT_FALSE(observer()->settings_enabled());
 }
 
-TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
+// This is for testing `turned_on` in
+// `QuickAnswersStateAsh::UpdateSettingsEnabled`.
+TEST_F(QuickAnswersStateAshEnabledTest, EnabledFromBeginning) {
+  ASSERT_TRUE(prefs()->GetBoolean(quick_answers::prefs::kQuickAnswersEnabled));
+
+  EXPECT_EQ(
+      ConsentStatus::kUnknown,
+      prefs()->GetInteger(quick_answers::prefs::kQuickAnswersConsentStatus))
+      << "If pref value is enabled from beginning, it should not be treated as "
+         "turned on, i.e., consent status must be un-touched.";
+}
+
+TEST_P(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
   QuickAnswersState::Get()->AddObserver(observer());
 
   user_manager::ScopedUserManager user_manager(
@@ -322,7 +368,7 @@ TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
   chromeos::SetUpFakeKioskSession();
 
   EXPECT_TRUE(chromeos::IsKioskSession());
-  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, GetParam());
 
   EXPECT_FALSE(
       prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
@@ -330,3 +376,7 @@ TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
             observer()->consent_status());
   EXPECT_FALSE(observer()->settings_enabled());
 }
+
+INSTANTIATE_TEST_SUITE_P(ForceDisabledForKiosk,
+                         QuickAnswersStateAshTest,
+                         testing::Bool());

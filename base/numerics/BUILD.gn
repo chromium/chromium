@@ -19,6 +19,7 @@ source_set("base_numerics") {
     "safe_math_shared_impl.h",
   ]
   public = [
+    "angle_conversions.h",
     "byte_conversions.h",
     "checked_math.h",
     "clamped_math.h",

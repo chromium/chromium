@@ -217,9 +217,6 @@ public class Shell extends LinearLayout {
             mNavigationController.loadUrl(new LoadUrlParams(sanitizeUrl(url)));
         }
         mUrlTextView.clearFocus();
-        // TODO(aurimas): Remove this when crbug.com/174541 is fixed.
-        getContentView().clearFocus();
-        getContentView().requestFocus();
     }
 
     /**
@@ -305,18 +302,18 @@ public class Shell extends LinearLayout {
 
     /**
      * Initializes the ContentView based on the native tab contents pointer passed in.
+     *
      * @param webContents A {@link WebContents} object.
      */
     @SuppressWarnings("unused")
     @CalledByNative
     private void initFromNativeTabContents(WebContents webContents) {
         Context context = getContext();
-        ContentView cv =
-                ContentView.createContentView(context, /* eventOffsetHandler= */ null, webContents);
+        ContentView cv = ContentView.createContentView(context, webContents);
         mViewAndroidDelegate = new ShellViewAndroidDelegate(cv);
         assert (mWebContents != webContents);
         if (mWebContents != null) mWebContents.clearNativeReference();
-        webContents.initialize(
+        webContents.setDelegates(
                 "", mViewAndroidDelegate, cv, mWindow, WebContents.createDefaultInternalsHolder());
         mWebContents = webContents;
         SelectionPopupController.fromWebContents(webContents)

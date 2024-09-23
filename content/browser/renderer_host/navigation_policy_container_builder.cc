@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "content/browser/renderer_host/frame_navigation_entry.h"
+#include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -31,16 +32,17 @@ std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
 //
 // Must only be called on the browser's UI thread.
 std::unique_ptr<PolicyContainerPolicies> GetInitiatorPolicies(
-    const blink::LocalFrameToken* frame_token) {
+    const blink::LocalFrameToken* frame_token,
+    int initiator_process_id,
+    StoragePartitionImpl* storage_partition) {
   if (!frame_token) {
     return nullptr;
   }
 
-  // We use PolicyContainerHost::FromFrameToken directly since this will
-  // retrieve the PolicyContainerHost of the initiator RenderFrameHost even if
-  // the RenderFrameHost has already been deleted.
   PolicyContainerHost* initiator_policy_container_host =
-      PolicyContainerHost::FromFrameToken(*frame_token);
+      RenderFrameHostImpl::GetPolicyContainerHost(
+          frame_token, initiator_process_id, storage_partition);
+
   DCHECK(initiator_policy_container_host);
   if (!initiator_policy_container_host) {
     // Guard against wrong tokens being passed accidentally.
@@ -70,9 +72,14 @@ std::unique_ptr<PolicyContainerPolicies> GetHistoryPolicies(
 NavigationPolicyContainerBuilder::NavigationPolicyContainerBuilder(
     RenderFrameHostImpl* parent,
     const blink::LocalFrameToken* initiator_frame_token,
+    int initiator_process_id,
+    StoragePartition* storage_partition,
     const FrameNavigationEntry* history_entry)
     : parent_policies_(GetParentPolicies(parent)),
-      initiator_policies_(GetInitiatorPolicies(initiator_frame_token)),
+      initiator_policies_(GetInitiatorPolicies(
+          initiator_frame_token,
+          initiator_process_id,
+          static_cast<StoragePartitionImpl*>(storage_partition))),
       history_policies_(GetHistoryPolicies(history_entry)) {}
 
 NavigationPolicyContainerBuilder::~NavigationPolicyContainerBuilder() = default;
@@ -139,6 +146,13 @@ void NavigationPolicyContainerBuilder::SetCrossOriginEmbedderPolicy(
   delivered_policies_.cross_origin_embedder_policy = coep;
 }
 
+void NavigationPolicyContainerBuilder::SetDocumentIsolationPolicy(
+    const network::DocumentIsolationPolicy& dip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.document_isolation_policy = dip;
+}
+
 const PolicyContainerPolicies&
 NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
@@ -154,7 +168,7 @@ void NavigationPolicyContainerBuilder::ComputePoliciesForError() {
 
   DCHECK(!HasComputedPolicies());
 
-  // TODO(https://crbug.com/1175787): We should enforce strict policies on error
+  // TODO(crbug.com/40747546): We should enforce strict policies on error
   // pages.
   PolicyContainerPolicies policies;
 

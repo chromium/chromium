@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include <stddef.h>
@@ -121,7 +126,7 @@ class SingleProcessBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1231009): Flaky / times out on many bots.
+// TODO(crbug.com/40190525): Flaky / times out on many bots.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Test DISABLED_Test
 #else

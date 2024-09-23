@@ -27,7 +27,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
       return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair;
     case CWVTrustedVaultStateAttemptingRegistrationWithPersistentAuthError:
-      // TODO(crbug.com/1418027): remove CWV version of this bucket.
+      // TODO(crbug.com/40257503): remove CWV version of this bucket.
       return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
           kDeprecatedAttemptingRegistrationWithPersistentAuthError;
     case CWVTrustedVaultStateAlreadyRegisteredV1:
@@ -52,7 +52,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 }
 
 + (void)logTrustedVaultDidFailKeyDistribution:(NSError*)error {
-  // TODO(crbug.com/1266130): Check to see if any UMA logging needs to occur.
+  // TODO(crbug.com/40204010): Check to see if any UMA logging needs to occur.
 }
 
 @end

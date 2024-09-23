@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 enum class ContentSuggestionsModuleType;
+@class TabResumptionItem;
 
 // Delegate handling events from the TabResumptionHelper.
 @protocol TabResumptionHelperDelegate
@@ -15,11 +16,17 @@ enum class ContentSuggestionsModuleType;
 // Signals that the TabResumptionHelper received a new item configuration.
 - (void)tabResumptionHelperDidReceiveItem;
 
+// Signals that the TabResumptionHelper did reconfignure the existing item.
+- (void)tabResumptionHelperDidReconfigureItem;
+
 // Signals that the Tab Resumption module should be removed.
 - (void)removeTabResumptionModule;
 
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
+
+// Returns the index rank of `moduleType` or NSNotFound if not found.
+- (NSUInteger)indexForMagicStackModule:(ContentSuggestionsModuleType)moduleType;
 
 @end
 

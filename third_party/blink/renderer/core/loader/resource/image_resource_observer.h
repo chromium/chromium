@@ -27,7 +27,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -85,7 +88,7 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
   }
 
   // Name for debugging, e.g. shown in memory-infra.
-  virtual String DebugName() const = 0;
+  virtual WTF::String DebugName() const = 0;
 
   static bool IsExpectedType(ImageResourceObserver*) { return true; }
 

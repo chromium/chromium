@@ -19,12 +19,7 @@ namespace {
 
 class SecureHashSHA256 : public SecureHash {
  public:
-  SecureHashSHA256() {
-    // Ensure that CPU features detection is performed before using
-    // BoringSSL. This will enable hw accelerated implementations.
-    EnsureOpenSSLInit();
-    SHA256_Init(&ctx_);
-  }
+  SecureHashSHA256() { SHA256_Init(&ctx_); }
 
   SecureHashSHA256(const SecureHashSHA256& other) {
     memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
@@ -34,13 +29,13 @@ class SecureHashSHA256 : public SecureHash {
     OPENSSL_cleanse(&ctx_, sizeof(ctx_));
   }
 
-  void Update(const void* input, size_t len) override {
-    SHA256_Update(&ctx_, static_cast<const unsigned char*>(input), len);
+  void Update(base::span<const uint8_t> input) override {
+    SHA256_Update(&ctx_, input.data(), input.size());
   }
 
-  void Finish(void* output, size_t len) override {
-    ScopedOpenSSLSafeSizeBuffer<SHA256_DIGEST_LENGTH> result(
-        static_cast<unsigned char*>(output), len);
+  void Finish(base::span<uint8_t> output) override {
+    ScopedOpenSSLSafeSizeBuffer<SHA256_DIGEST_LENGTH> result(output.data(),
+                                                             output.size());
     SHA256_Final(result.safe_buffer(), &ctx_);
   }
 
@@ -56,12 +51,7 @@ class SecureHashSHA256 : public SecureHash {
 
 class SecureHashSHA512 : public SecureHash {
  public:
-  SecureHashSHA512() {
-    // Ensure that CPU features detection is performed before using
-    // BoringSSL. This will enable hw accelerated implementations.
-    EnsureOpenSSLInit();
-    SHA512_Init(&ctx_);
-  }
+  SecureHashSHA512() { SHA512_Init(&ctx_); }
 
   SecureHashSHA512(const SecureHashSHA512& other) {
     memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
@@ -69,13 +59,13 @@ class SecureHashSHA512 : public SecureHash {
 
   ~SecureHashSHA512() override { OPENSSL_cleanse(&ctx_, sizeof(ctx_)); }
 
-  void Update(const void* input, size_t len) override {
-    SHA512_Update(&ctx_, static_cast<const unsigned char*>(input), len);
+  void Update(base::span<const uint8_t> input) override {
+    SHA512_Update(&ctx_, input.data(), input.size());
   }
 
-  void Finish(void* output, size_t len) override {
-    ScopedOpenSSLSafeSizeBuffer<SHA512_DIGEST_LENGTH> result(
-        static_cast<unsigned char*>(output), len);
+  void Finish(base::span<uint8_t> output) override {
+    ScopedOpenSSLSafeSizeBuffer<SHA512_DIGEST_LENGTH> result(output.data(),
+                                                             output.size());
     SHA512_Final(result.safe_buffer(), &ctx_);
   }
 
@@ -101,6 +91,22 @@ std::unique_ptr<SecureHash> SecureHash::Create(Algorithm algorithm) {
       NOTIMPLEMENTED();
       return nullptr;
   }
+}
+
+void SecureHash::Update(const void* input, size_t len) {
+  // SAFETY: This API is deprecated & being migrated away from. It can't be
+  // safely implemented at the moment.
+  // TODO(https://crbug.com/364687923): Remove this.
+  return Update(UNSAFE_BUFFERS(
+      base::span<const uint8_t>(static_cast<const uint8_t*>(input), len)));
+}
+
+void SecureHash::Finish(void* output, size_t len) {
+  // SAFETY: This API is deprecated & being migrated away from. It can't be
+  // safely implemented at the moment.
+  // TODO(https://crbug.com/364687923): Remove this.
+  return Finish(
+      UNSAFE_BUFFERS(base::span<uint8_t>(static_cast<uint8_t*>(output), len)));
 }
 
 }  // namespace crypto

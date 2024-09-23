@@ -15,6 +15,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
@@ -28,7 +29,7 @@ class ProgressBarTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     container_view_ = widget_->SetContentsView(std::make_unique<View>());
     auto* layout =
         container_view_->SetLayoutManager(std::make_unique<FlexLayout>());
@@ -56,7 +57,7 @@ TEST_F(ProgressBarTest, AccessibleNodeData) {
   bar()->SetValue(0.626);
 
   ui::AXNodeData node_data;
-  bar()->GetAccessibleNodeData(&node_data);
+  bar()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kProgressIndicator, node_data.role);
   EXPECT_EQ(std::u16string(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -162,6 +163,18 @@ TEST_F(ProgressBarTest, RoundCornerMax) {
   views::test::RunScheduledLayout(container_view_);
   EXPECT_EQ(gfx::RoundedCornersF(12, 12, 12, 12),
             bar()->GetPreferredCornerRadii());
+}
+
+// Test that if value is set negative, which means progress bar is
+// indeterminate, the string attribute value should be empty.
+TEST_F(ProgressBarTest, RemoveValue) {
+  // setting negative progress bar value
+  bar()->SetValue(-0.626);
+
+  ui::AXNodeData node_data;
+  bar()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(std::string(""),
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
 }  // namespace views

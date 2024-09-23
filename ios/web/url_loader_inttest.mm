@@ -19,7 +19,7 @@ namespace web {
 
 class URLLoaderTest : public WebTest {
  protected:
-  URLLoaderTest() : WebTest(WebTaskEnvironment::Options::IO_MAINLOOP) {}
+  URLLoaderTest() : WebTest(WebTaskEnvironment::MainThreadType::IO) {}
 
  protected:
   net::EmbeddedTestServer server_;

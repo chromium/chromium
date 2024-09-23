@@ -21,6 +21,10 @@
 #include "gpu/vulkan/vulkan_instance.h"
 #include "ui/gfx/extension_set.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace gpu {
 
 class VulkanCommandPool;
@@ -167,6 +171,12 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
       enabled_device_features_2_from_angle_ = nullptr;
 
   bool allow_protected_memory_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<
+      const base::android::PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric>
+      metric_ = nullptr;
+#endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

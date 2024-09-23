@@ -72,6 +72,15 @@ class ReportingServiceImpl : public ReportingService {
                        origin, std::move(endpoints)));
   }
 
+  void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) override {
+    if (!base::FeatureList::IsEnabled(
+            net::features::kReportingApiEnableEnterpriseCookieIssues)) {
+      return;
+    }
+    context_->cache()->SetEnterpriseReportingEndpoints(endpoints);
+  }
+
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     DCHECK(!reporting_source.is_empty());
@@ -87,7 +96,8 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& group,
       const std::string& type,
       base::Value::Dict body,
-      int depth) override {
+      int depth,
+      ReportingTargetType target_type) override {
     DCHECK(context_);
     DCHECK(context_->delegate());
     // If |reporting_source| is provided, it must not be empty.
@@ -110,7 +120,7 @@ class ReportingServiceImpl : public ReportingService {
                        base::Unretained(this), reporting_source,
                        FixupNetworkAnonymizationKey(network_anonymization_key),
                        std::move(sanitized_url), user_agent, group, type,
-                       std::move(body), depth, queued_ticks));
+                       std::move(body), depth, queued_ticks, target_type));
   }
 
   void ProcessReportToHeader(
@@ -213,11 +223,13 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& type,
       base::Value::Dict body,
       int depth,
-      base::TimeTicks queued_ticks) {
+      base::TimeTicks queued_ticks,
+      ReportingTargetType target_type) {
     DCHECK(initialized_);
-    context_->cache()->AddReport(
-        reporting_source, network_anonymization_key, sanitized_url, user_agent,
-        group, type, std::move(body), depth, queued_ticks, 0 /* attempts */);
+    context_->cache()->AddReport(reporting_source, network_anonymization_key,
+                                 sanitized_url, user_agent, group, type,
+                                 std::move(body), depth, queued_ticks,
+                                 0 /* attempts */, target_type);
   }
 
   void DoProcessReportToHeader(
@@ -330,9 +342,10 @@ ReportingService::~ReportingService() = default;
 std::unique_ptr<ReportingService> ReportingService::Create(
     const ReportingPolicy& policy,
     URLRequestContext* request_context,
-    ReportingCache::PersistentReportingStore* store) {
-  return std::make_unique<ReportingServiceImpl>(
-      ReportingContext::Create(policy, request_context, store));
+    ReportingCache::PersistentReportingStore* store,
+    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
+  return std::make_unique<ReportingServiceImpl>(ReportingContext::Create(
+      policy, request_context, store, enterprise_reporting_endpoints));
 }
 
 // static

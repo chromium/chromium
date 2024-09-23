@@ -163,8 +163,7 @@ std::string ProxyList::ToPacString() const {
     CHECK(!proxy_chain.is_multi_proxy());
     proxy_list += proxy_chain.is_direct()
                       ? "DIRECT"
-                      : ProxyServerToPacResultElement(
-                            proxy_chain.GetProxyServer(/*chain_index=*/0));
+                      : ProxyServerToPacResultElement(proxy_chain.First());
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
@@ -181,8 +180,7 @@ std::string ProxyList::ToDebugString() const {
     } else {
       proxy_list += proxy_chain.is_direct()
                         ? "DIRECT"
-                        : ProxyServerToPacResultElement(
-                              proxy_chain.GetProxyServer(/*chain_index=*/0));
+                        : ProxyServerToPacResultElement(proxy_chain.First());
     }
   }
   return proxy_list;
@@ -204,7 +202,7 @@ bool ProxyList::Fallback(ProxyRetryInfoMap* proxy_retry_info,
                          int net_error,
                          const NetLogWithSource& net_log) {
   if (proxy_chains_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // By default, proxy chains are not retried for 5 minutes.
@@ -249,7 +247,7 @@ void ProxyList::UpdateRetryInfoOnFallback(
   DCHECK(!retry_delay.is_zero());
 
   if (proxy_chains_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

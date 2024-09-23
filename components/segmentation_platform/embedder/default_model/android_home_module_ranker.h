@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
@@ -29,6 +29,8 @@ class AndroidHomeModuleRanker : public DefaultModelProvider {
   std::unique_ptr<ModelConfig> GetModelConfig() override;
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
+
+  bool is_android_home_module_ranker_v2_enabled{false};
 };
 
 }  // namespace segmentation_platform

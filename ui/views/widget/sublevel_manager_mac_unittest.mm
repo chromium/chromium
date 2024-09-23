@@ -13,11 +13,9 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/views_features.h"
 
 namespace views {
 
@@ -28,9 +26,7 @@ class SublevelManagerMacTest
       public testing::WithParamInterface<
           std::tuple<WidgetShowType, Widget::InitParams::Activatable>> {
  public:
-  SublevelManagerMacTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWidgetLayering);
-  }
+  SublevelManagerMacTest() = default;
 
   std::unique_ptr<Widget> CreateChildWidget(
       Widget* parent,
@@ -75,24 +71,23 @@ class SublevelManagerMacTest
         test_name += "Activatable";
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return test_name;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Disabled widgets are ignored when its siblings are re-ordered.
 TEST_P(SublevelManagerMacTest, ExplicitUntrack) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
-  std::unique_ptr<Widget> root2 = CreateTestWidget();
-  std::unique_ptr<Widget> children[3];
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::unique_ptr<Widget> root2 =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::array<std::unique_ptr<Widget>, 3> children;
 
   ShowWidget(root);
   ShowWidget(root2);
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < children.size(); i++) {
     children[i] = CreateChildWidget(
         root.get(), ui::ZOrderLevel::kNormal, i,
         std::get<Widget::InitParams::Activatable>(GetParam()));

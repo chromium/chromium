@@ -41,7 +41,7 @@ base::Value NetLogNumberValueHelper(T num) {
 
 }  // namespace
 
-base::Value NetLogStringValue(base::StringPiece raw) {
+base::Value NetLogStringValue(std::string_view raw) {
   // The common case is that |raw| is ASCII. Represent this directly.
   if (base::IsStringASCII(raw))
     return base::Value(raw);
@@ -63,7 +63,7 @@ base::Value NetLogBinaryValue(base::span<const uint8_t> bytes) {
 
 base::Value NetLogBinaryValue(const void* bytes, size_t length) {
   std::string b64 = base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(bytes), length));
+      std::string_view(reinterpret_cast<const char*>(bytes), length));
   return base::Value(std::move(b64));
 }
 
@@ -79,26 +79,26 @@ base::Value NetLogNumberValue(uint32_t num) {
   return NetLogNumberValueHelper(num);
 }
 
-base::Value::Dict NetLogParamsWithInt(base::StringPiece name, int value) {
+base::Value::Dict NetLogParamsWithInt(std::string_view name, int value) {
   base::Value::Dict params;
   params.Set(name, value);
   return params;
 }
 
-base::Value::Dict NetLogParamsWithInt64(base::StringPiece name, int64_t value) {
+base::Value::Dict NetLogParamsWithInt64(std::string_view name, int64_t value) {
   base::Value::Dict params;
   params.Set(name, NetLogNumberValue(value));
   return params;
 }
 
-base::Value::Dict NetLogParamsWithBool(base::StringPiece name, bool value) {
+base::Value::Dict NetLogParamsWithBool(std::string_view name, bool value) {
   base::Value::Dict params;
   params.Set(name, value);
   return params;
 }
 
-base::Value::Dict NetLogParamsWithString(base::StringPiece name,
-                                         base::StringPiece value) {
+base::Value::Dict NetLogParamsWithString(std::string_view name,
+                                         std::string_view value) {
   base::Value::Dict params;
   params.Set(name, value);
   return params;

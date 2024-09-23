@@ -7,10 +7,10 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetupInterface} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
@@ -368,7 +368,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.WAITING_FOR_USER_PAYMENT:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.DISABLED,
         };
@@ -376,7 +375,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('tryAgain');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -384,7 +382,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.ACTIVATION_SUCCESS:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -394,7 +391,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -403,7 +399,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.HIDDEN,
           forward: ButtonState.ENABLED,
         };

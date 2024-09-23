@@ -33,7 +33,7 @@ void TestMerging(
     bool is_mergeable,
     int merge_modes,
     bool newer_was_more_recently_used) {
-  test_api(older_component).SetMergeMode(merge_modes);
+  test_api(*older_component).SetMergeMode(merge_modes);
 
   SCOPED_TRACE(is_mergeable);
   SCOPED_TRACE(merge_modes);

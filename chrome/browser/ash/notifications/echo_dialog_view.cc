@@ -12,7 +12,10 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/font.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
@@ -39,23 +42,25 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
           base::BindRepeating(&EchoDialogListener::OnMoreInfoLinkClicked,
                               base::Unretained(listener)),
           vector_icons::kHelpOutlineIcon));
-  learn_more_button->SetAccessibleName(
+  learn_more_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
 
   if (params.echo_enabled) {
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK |
-                                ui::DIALOG_BUTTON_CANCEL);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kOk) |
+        static_cast<int>(ui::mojom::DialogButton::kCancel));
     DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_OFFERS_CONSENT_INFOBAR_ENABLE_BUTTON));
     DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_CANCEL,
+        ui::mojom::DialogButton::kCancel,
         l10n_util::GetStringUTF16(IDS_OFFERS_CONSENT_INFOBAR_DISABLE_BUTTON));
     InitForEnabledEcho(params.service_name, params.origin);
   } else {
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kCancel));
     DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_CANCEL,
+        ui::mojom::DialogButton::kCancel,
         l10n_util::GetStringUTF16(IDS_ECHO_CONSENT_DISMISS_BUTTON));
     InitForDisabledEcho();
   }
@@ -68,7 +73,7 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
   DialogDelegate::SetShowTitle(false);
   DialogDelegate::SetShowCloseButton(false);
 
-  DialogDelegate::SetModalType(ui::MODAL_TYPE_WINDOW);
+  DialogDelegate::SetModalType(ui::mojom::ModalType::kWindow);
   DialogDelegate::set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

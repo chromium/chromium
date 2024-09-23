@@ -11,6 +11,9 @@
 // Sends call to open safe browsing settings menu.
 - (void)openSafeBrowsingSettings;
 
+// Sends call to open Enhanced Safe Browsing infobar.
+- (void)showEnhancedSafeBrowsingInfobar;
+
 @end
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_TAB_HELPER_DELEGATE_H_

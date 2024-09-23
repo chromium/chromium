@@ -82,7 +82,7 @@ TEST_F(OutOfFlowLayoutPartTest, FixedInsideAbs) {
       )HTML");
 
   // Test whether the oof fragments have been collected at NG->Legacy boundary.
-  Element* rel = GetDocument().getElementById(AtomicString("rel"));
+  Element* rel = GetElementById("rel");
   auto* block_flow = To<LayoutBlockFlow>(rel->GetLayoutObject());
   const LayoutResult* result = block_flow->GetSingleCachedLayoutResult();
   EXPECT_TRUE(result);
@@ -91,8 +91,8 @@ TEST_F(OutOfFlowLayoutPartTest, FixedInsideAbs) {
       2u);
 
   // Test the final result.
-  Element* fixed_1 = GetDocument().getElementById(AtomicString("fixed1"));
-  Element* fixed_2 = GetDocument().getElementById(AtomicString("fixed2"));
+  Element* fixed_1 = GetElementById("fixed1");
+  Element* fixed_2 = GetElementById("fixed2");
   // fixed1 top is static: #abs.top + #pad.height
   EXPECT_EQ(fixed_1->OffsetTop(), LayoutUnit(99));
   // fixed2 top is positioned: #fixed2.top
@@ -1352,8 +1352,6 @@ TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // Note that it's not obvious that the block-size of the last inner
-  // fragmentainer (after the spanners) is correct; see crbug.com/1224337
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1366,7 +1364,7 @@ TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
           offset:10,30 size:480x0
           offset:10,30 size:480x0
           offset:10,30 size:480x0
-          offset:10,30 size:232x40
+          offset:258,10 size:232x20
             offset:0,0 size:5x20
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1404,8 +1402,10 @@ TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // Note that it's not obvious that the block-size of the last inner
-  // fragmentainers (after the spanners) are correct; see crbug.com/1224337
+  // Note that the two last inner fragmentainers (after the spanners) aren't
+  // quite right. They just keep on using the same block-offset (and block-size)
+  // of the preceding fragmentainers, since we don't let OOFs trigger creation
+  // of new outer fragmentainers. This is being discussed in crbug.com/40775119
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1419,9 +1419,9 @@ TEST_F(OutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
           offset:0,60 size:500x0
           offset:0,60 size:500x0
           offset:0,60 size:500x0
-          offset:0,60 size:242x60
+          offset:516,0 size:242x60
             offset:0,0 size:5x60
-          offset:258,60 size:242x60
+          offset:774,0 size:242x60
             offset:0,0 size:5x60
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1787,6 +1787,86 @@ TEST_F(OutOfFlowLayoutPartTest, UseCountOutOfFlowBothInsets) {
       GetDocument().IsUseCounted(WebFeature::kOutOfFlowJustifySelfBothInsets));
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kOutOfFlowAlignSelfBothInsets));
+}
+
+TEST_F(OutOfFlowLayoutPartTest, EmptyFragmentainersBeforeOOF) {
+  // There's an OOF in the fourth, fifth and sixth columns.
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="multicol" style="columns:6; column-fill:auto; height:100px;">
+        <div style="position:relative;">
+          <div style="position:absolute; width:50px; top:300px; height:300px;"></div>
+        </div>
+      </div>
+      )HTML");
+
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  ASSERT_TRUE(multicol);
+  const auto columns = multicol->GetPhysicalFragment(0)->Children();
+  ASSERT_EQ(columns.size(), 6u);
+
+  const auto* fragmentainer = To<PhysicalBoxFragment>(columns[0].get());
+  const BlockBreakToken* break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[1].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[2].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[3].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ChildBreakTokens().size(), 1u);
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[4].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ChildBreakTokens().size(), 1u);
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[5].get());
+  break_token = fragmentainer->GetBreakToken();
+  EXPECT_FALSE(break_token);
+}
+
+TEST_F(OutOfFlowLayoutPartTest, MultipleUnfragmentedOOFs) {
+  // There's an OOF in every column, but none of them fragments. All columns but
+  // the last should have break tokens nevertheless.
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="multicol" style="columns:3; column-fill:auto; height:100px;">
+        <div style="position:relative;">
+          <div style="position:absolute; top:0; width:50px; height:10px;"></div>
+          <div style="position:absolute; top:100px; width:50px; height:10px;"></div>
+          <div style="position:absolute; top:200px; width:50px; height:10px;"></div>
+        </div>
+      </div>
+      )HTML");
+
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  ASSERT_TRUE(multicol);
+  const auto columns = multicol->GetPhysicalFragment(0)->Children();
+  ASSERT_EQ(columns.size(), 3u);
+
+  const auto* fragmentainer = To<PhysicalBoxFragment>(columns[0].get());
+  const BlockBreakToken* break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[1].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[2].get());
+  break_token = fragmentainer->GetBreakToken();
+  EXPECT_FALSE(break_token);
 }
 
 }  // namespace

@@ -30,7 +30,7 @@ class WebApkSpecificsFetcher : public AbstractWebApkSpecificsFetcher {
       const override;
 
  private:
-  // TODO(crbug.com/1497527): WebappRegistry is supposed to be owned by
+  // TODO(crbug.com/40287112): WebappRegistry is supposed to be owned by
   // ChromeBrowsingDataRemoverDelegate.
   WebappRegistry webapp_registry_;
 };

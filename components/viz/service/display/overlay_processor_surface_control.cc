@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/android/build_info.h"
+#include "base/feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
+#include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -17,6 +19,10 @@
 
 namespace viz {
 namespace {
+
+BASE_FEATURE(kAndroidSurfaceControlSingleOnTOp,
+             "AndroidSurfaceControlSingleOnTOp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::RectF ClipFromOrigin(gfx::RectF input) {
   if (input.x() < 0.f) {
@@ -41,13 +47,19 @@ OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl() {
   // Therefore, our damage tracking for overlays is incorrect and we must ignore
   // the thresholding of prioritization.
 
-  // TODO(crbug.com/1358093): We should take issue into account when trying to
+  // TODO(crbug.com/40236858): We should take issue into account when trying to
   // find a replacement for number-of-scanouts.
   prioritization_config_.changing_threshold = false;
   prioritization_config_.damage_rate_threshold = false;
 
   strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
       this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
+  if (base::FeatureList::IsEnabled(kAndroidSurfaceControlSingleOnTOp)) {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+    // Prefer underlay strategy because it is more mature on Android. So turn
+    // off sorting and just attempt the strategies in insertion order.
+    prioritization_config_.power_gain_sort = false;
+  }
 }
 
 OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() {}
@@ -77,13 +89,21 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
       return;
     }
 
-    // Check if screen rotation matches.
-    if (absl::get<gfx::OverlayTransform>(candidate.transform) !=
-        display_transform_) {
+    // Aggregator adds `display_transform_` to all quads, which is then added to
+    // `candidate.transform` here. `display_transform_` only applies to content
+    // on the main plane so it needs to be removed candidate it its own plane.
+    gfx::OverlayTransform candidate_overlay_transform = OverlayTransformsConcat(
+        absl::get<gfx::OverlayTransform>(candidate.transform),
+        InvertOverlayTransform(display_transform_));
+    // Note the transform below using `candidate_overlay_transform` to compute
+    // clipped and normalized `uv_rect` is only tested with NONE and
+    // FLIP_VERTICAL.
+    if (candidate_overlay_transform != gfx::OVERLAY_TRANSFORM_NONE &&
+        candidate_overlay_transform != gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
       candidate.overlay_handled = false;
       return;
     }
-    candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
+    candidate.transform = candidate_overlay_transform;
 
     gfx::RectF orig_display_rect = candidate.display_rect;
     gfx::RectF display_rect = orig_display_rect;
@@ -109,8 +129,18 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     candidate.unclipped_uv_rect = candidate.uv_rect;
 
     candidate.display_rect = gfx::RectF(gfx::ToEnclosingRect(display_rect));
+
+    // Transform `uv_rect` to display space, then clip, then transform back.
+    candidate.uv_rect = gfx::OverlayTransformToTransform(
+                            candidate_overlay_transform, gfx::SizeF(1, 1))
+                            .MapRect(candidate.uv_rect);
     candidate.uv_rect = cc::MathUtil::ScaleRectProportional(
         candidate.uv_rect, orig_display_rect, candidate.display_rect);
+    candidate.uv_rect =
+        gfx::OverlayTransformToTransform(
+            gfx::InvertOverlayTransform(candidate_overlay_transform),
+            gfx::SizeF(1, 1))
+            .MapRect(candidate.uv_rect);
     candidate.overlay_handled = true;
   }
 }
@@ -156,6 +186,10 @@ gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
   auto transform = gfx::OverlayTransformToTransform(
       display_transform_, gfx::SizeF(viewport_size_pre_display_transform));
   return transform.MapRect(gfx::ToEnclosingRect(candidate.display_rect));
+}
+
+bool OverlayProcessorSurfaceControl::SupportsFlipRotateTransform() const {
+  return true;
 }
 
 void OverlayProcessorSurfaceControl::SetDisplayTransformHint(

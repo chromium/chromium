@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "base/sequence_token.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-ABSL_CONST_INIT thread_local SequenceLocalStorageMap*
-    current_sequence_local_storage = nullptr;
+constinit thread_local SequenceLocalStorageMap* current_sequence_local_storage =
+    nullptr;
 
 }  // namespace
 
@@ -26,6 +26,7 @@ SequenceLocalStorageMap::~SequenceLocalStorageMap() = default;
 
 // static
 SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
+  CHECK(!CurrentTaskIsRunningSynchronously());
   DCHECK(IsSetForCurrentThread())
       << "SequenceLocalStorageSlot cannot be used because no "
          "SequenceLocalStorageMap was stored in TLS. Use "

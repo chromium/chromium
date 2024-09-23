@@ -5,6 +5,7 @@ include_rules = [
   "+components/metrics",
   "+components/network_time",
   "+components/pref_registry",
+  "+components/sync",
   "+components/sync_preferences",
   "+components/version_info",
   "+components/web_resource",

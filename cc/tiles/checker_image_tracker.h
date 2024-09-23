@@ -6,10 +6,10 @@
 #define CC_TILES_CHECKER_IMAGE_TRACKER_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"

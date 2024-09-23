@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-
 #include <stddef.h>
 
 #include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_trace_processor.h"
+#include "components/input/features.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/input/mock_input_manager.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -27,6 +30,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace viz {
 namespace {
@@ -98,6 +102,12 @@ class FrameSinkManagerTest : public testing::Test {
            base::Contains(manager_.root_sink_map_, frame_sink_id);
   }
 
+  bool InputManagerExists() { return manager_.GetInputManager(); }
+
+  MockInputManager* GetMockInputManager() {
+    return static_cast<MockInputManager*>(manager_.GetInputManager());
+  }
+
   CapturableFrameSink* FindCapturableFrameSink(const FrameSinkId& id) {
     return manager_.FindCapturableFrameSink(VideoCaptureTarget(id));
   }
@@ -111,8 +121,10 @@ class FrameSinkManagerTest : public testing::Test {
     }
   }
 
+  // testing::Test implementation.
   void SetUp() override {
-    manager_.surface_manager()->AddObserver(&surface_observer_);
+    manager_.SetInputManagerForTesting(
+        std::make_unique<MockInputManager>(&manager_));
   }
 
   // testing::Test implementation.
@@ -125,8 +137,6 @@ class FrameSinkManagerTest : public testing::Test {
 
     // Make sure test has invalidated all registered FrameSinkIds.
     EXPECT_TRUE(manager_.frame_sink_data_.empty());
-
-    manager_.surface_manager()->RemoveObserver(&surface_observer_);
   }
 
  protected:
@@ -134,7 +144,8 @@ class FrameSinkManagerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
-  FakeSurfaceObserver surface_observer_;
+  FakeSurfaceObserver surface_observer_{manager_.surface_manager()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
@@ -151,6 +162,29 @@ TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdRoot));
 }
 
+TEST_F(FrameSinkManagerTest, InputManagerCreation) {
+  ASSERT_FALSE(input::IsTransferInputToVizSupported());
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  // InputManager is not created since IsTransferInputToVizSupported() returns
+  // false.
+  EXPECT_FALSE(InputManagerExists());
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+}
+
 TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
@@ -160,7 +194,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
@@ -177,7 +212,8 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Close the connection from the renderer.
@@ -296,7 +332,7 @@ TEST_F(FrameSinkManagerTest, MultipleDisplays) {
   EXPECT_EQ(nullptr, GetBeginFrameSource(root1));
   EXPECT_NE(nullptr, GetBeginFrameSource(root2));
 
-  // Detatch root2 from BFS.
+  // Detach root2 from BFS.
   manager_.UnregisterBeginFrameSource(&root2_source);
   EXPECT_EQ(nullptr, GetBeginFrameSource(client_a));
   EXPECT_EQ(nullptr, GetBeginFrameSource(client_b));
@@ -689,7 +725,13 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
   manager_.EvictSurfaces({surface_id});
-  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+
+  // Eviction of the root surface takes a snapshot, so the root surface will
+  // not be evicted immediately.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
+  }));
+
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -714,7 +756,13 @@ TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
   const LocalSurfaceId next_local_surface_id =
       allocator.GetCurrentLocalSurfaceId();
   manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
-  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+
+  // Eviction of the root surface takes a snapshot, so the root surface will
+  // not be evicted immediately.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
+  }));
+
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
@@ -738,8 +786,16 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id, MakeDefaultCompositorFrame(), std::nullopt, 0);
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
-  manager_.EvictSurfaces({surface_id, surface_id2});
-  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.EvictSurfaces({surface_id});
+
+  // Eviction of the root surface takes a snapshot, so the root surface will
+  // not be evicted immediately.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid();
+  }));
+
+  manager_.EvictSurfaces({surface_id2});
+
   GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
       local_surface_id2, MakeDefaultCompositorFrame(), std::nullopt, 0);
 
@@ -763,7 +819,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;
@@ -811,7 +868,8 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;
@@ -863,7 +921,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;
@@ -893,6 +952,192 @@ TEST_F(FrameSinkManagerTest,
   manager_.InvalidateFrameSinkId(kFrameSinkIdA);
   manager_.UnregisterBeginFrameSource(&source);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class AndroidFrameSinkManagerTest : public FrameSinkManagerTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  AndroidFrameSinkManagerTest() {
+    scoped_feature_list_.InitWithFeatureState(input::features::kInputOnViz,
+                                              /* enabled= */ GetParam());
+  }
+
+  bool ExpectedInputManagerCreation() {
+    return input::IsTransferInputToVizSupported();
+  }
+
+ private:
+  base::test::TracingEnvironment tracing_environment_;
+};
+
+TEST_P(AndroidFrameSinkManagerTest, InputManagerCreation) {
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+}
+
+TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a CompositorFrameSinkImpl.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  auto config = input::mojom::RenderInputRouterConfig::New();
+  config->rir_client = std::move(rir_client);
+
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdA, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(), std::move(config));
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
+  if (InputManagerExists()) {
+    EXPECT_TRUE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdA));
+  }
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  if (InputManagerExists()) {
+    EXPECT_FALSE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdA));
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT COUNT(*) AS cnt,
+    EXTRACT_ARG(arg_set_id, 'debug.config_is_null') as config_is_null,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_client_id')
+      as client_id,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_id') as sink_id
+    FROM slice
+    WHERE slice.name = 'InputManager::OnCreateCompositorFrameSink'
+  )";
+
+  auto result = ttp.RunQuery(query);
+  EXPECT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"cnt", "config_is_null",
+  // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
+  EXPECT_EQ(result.value().size(), 2u);
+  EXPECT_EQ(result.value()[1].size(), 4u);
+  if (input::IsTransferInputToVizSupported()) {
+    // Checks if `InputManger::OnCreateCompositorFrameSink` was called for
+    // kFrameSinkIdA.
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(
+            testing::ElementsAre("cnt", "config_is_null", "client_id",
+                                 "sink_id"),
+            testing::ElementsAre(
+                "1", "0", base::NumberToString(kFrameSinkIdA.client_id()),
+                base::NumberToString(kFrameSinkIdA.sink_id()))));
+  } else {
+    EXPECT_EQ(result.value()[1][0], "0");
+  }
+
+  std::string query2 = R"(
+    SELECT COUNT(*) AS cnt,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_client_id')
+      as client_id,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_id') as sink_id
+    FROM slice
+    WHERE slice.name = 'InputManager::OnDestroyedCompositorFrameSink'
+  )";
+
+  auto result2 = ttp.RunQuery(query2);
+  EXPECT_TRUE(result2.has_value());
+
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_THAT(result2.value(),
+                testing::ElementsAre(
+                    testing::ElementsAre("cnt", "client_id", "sink_id"),
+                    testing::ElementsAre(
+                        "1", base::NumberToString(kFrameSinkIdA.client_id()),
+                        base::NumberToString(kFrameSinkIdA.sink_id()))));
+  } else {
+    EXPECT_EQ(result2.value()[1][0], "0");
+  }
+}
+
+TEST_P(AndroidFrameSinkManagerTest,
+       RenderInputRouterLifecycleNonLayerFrameSink) {
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz");
+
+  // Register a non layer tree frame sink.
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
+  manager_.CreateCompositorFrameSink(
+      kFrameSinkIdB, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* render_input_router_config= */ nullptr);
+  EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdB));
+
+  if (InputManagerExists()) {
+    // RIR should not be created for non layer tree frame sink.
+    EXPECT_FALSE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdB));
+  }
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdB);
+
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
+
+  if (InputManagerExists()) {
+    EXPECT_FALSE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdB));
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  EXPECT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT COUNT(*) AS cnt,
+    EXTRACT_ARG(arg_set_id, 'debug.config_is_null') as config_is_null,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_client_id')
+      as client_id,
+    EXTRACT_ARG(arg_set_id, 'debug.frame_sink_id.frame_sink_id') as sink_id
+    FROM slice
+    WHERE slice.name = 'InputManager::OnCreateCompositorFrameSink'
+  )";
+
+  auto result = ttp.RunQuery(query);
+  EXPECT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"cnt", "config_is_null",
+  // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
+  EXPECT_EQ(result.value().size(), 2u);
+  EXPECT_EQ(result.value()[1].size(), 4u);
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(
+            testing::ElementsAre("cnt", "config_is_null", "client_id",
+                                 "sink_id"),
+            testing::ElementsAre(
+                "1", "1", base::NumberToString(kFrameSinkIdB.client_id()),
+                base::NumberToString(kFrameSinkIdB.sink_id()))));
+  } else {
+    EXPECT_EQ(result.value()[1][0], "0");
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AndroidFrameSinkManagerTest,
+                         ::testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "InputOnViz_Enabled"
+                                             : "InputOnViz_Disabled";
+                         });
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 

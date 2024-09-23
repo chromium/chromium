@@ -20,10 +20,23 @@ namespace user_education {
 // HelpBubbleFactory's CreateBubble...() method.
 class HelpBubble : public ui::FrameworkSpecificImplementation {
  public:
+  // Describes why a help bubble was closed.
+  enum class CloseReason {
+    // The bubble was closed expectedly; for example, because an action button
+    // or the close button was clicked.
+    kProgrammaticallyClosed,
+    // The bubble was closed because its anchor disappeared.
+    kAnchorHidden,
+    // The bubble UI element was destroyed for some reason.
+    kBubbleElementDestroyed,
+    // The HelpBubble object went out of scope.
+    kBubbleDestroyed,
+  };
+
   // Callback to be notified when the help bubble is closed. Note that the
   // pointer passed in is entirely for reference and should not be dereferenced
   // as another callback may have deleted the bubble itself.
-  using ClosedCallback = base::OnceCallback<void(HelpBubble*)>;
+  using ClosedCallback = base::OnceCallback<void(HelpBubble*, CloseReason)>;
 
   HelpBubble();
   ~HelpBubble() override;
@@ -33,7 +46,7 @@ class HelpBubble : public ui::FrameworkSpecificImplementation {
 
   // Closes the bubble if it is not already closed. Returns whether the bubble
   // was open.
-  bool Close();
+  bool Close(CloseReason close_reason = CloseReason::kProgrammaticallyClosed);
 
   // Notify that the element the help bubble is anchored to may have moved.
   // Default is no-op.

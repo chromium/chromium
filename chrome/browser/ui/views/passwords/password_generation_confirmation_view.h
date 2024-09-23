@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_CONFIRMATION_VIEW_H_
 
 #include "base/timer/timer.h"
-
 #include "chrome/browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "ui/views/view.h"

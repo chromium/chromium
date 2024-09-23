@@ -30,7 +30,7 @@ void MaybeRecordMetric(bool record_identifiability,
                        const String& hint,
                        const IdentifiableToken token,
                        ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
+  if (!record_identifiability) [[likely]] {
     return;
   }
   auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
@@ -53,7 +53,7 @@ void MaybeRecordMetric(bool record_identifiability,
                        const String& hint,
                        const Vector<String>& strings,
                        ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
+  if (!record_identifiability) [[likely]] {
     return;
   }
   IdentifiableTokenBuilder token_builder;
@@ -135,8 +135,8 @@ void NavigatorUAData::SetWoW64(bool wow64) {
   is_wow64_ = wow64;
 }
 
-void NavigatorUAData::SetFormFactor(Vector<String> form_factor) {
-  form_factor_ = std::move(form_factor);
+void NavigatorUAData::SetFormFactors(Vector<String> form_factors) {
+  form_factors_ = std::move(form_factors);
 }
 
 bool NavigatorUAData::mobile() const {
@@ -155,8 +155,8 @@ const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
   ExecutionContext* context = GetExecutionContext();
   if (context) {
     // Record IdentifiabilityStudy metrics if the client is in the study.
-    if (UNLIKELY(IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-            identifiable_surface))) {
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
+            identifiable_surface)) [[unlikely]] {
       IdentifiableTokenBuilder token_builder;
       for (const auto& brand : brand_set_) {
         token_builder.AddValue(brand->hasBrand());
@@ -184,11 +184,12 @@ const String& NavigatorUAData::platform() const {
   return WTF::g_empty_string;
 }
 
-ScriptPromise NavigatorUAData::getHighEntropyValues(
+ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
     ScriptState* script_state,
     Vector<String>& hints) const {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<UADataValues>>(script_state);
+  auto promise = resolver->Promise();
   auto* execution_context =
       ExecutionContext::From(script_state);  // GetExecutionContext();
   DCHECK(execution_context);
@@ -245,11 +246,11 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
       values->setWow64(is_wow64_);
       MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
                         execution_context);
-    } else if (hint == "formFactor") {
+    } else if (hint == "formFactors") {
       if (base::FeatureList::IsEnabled(
-              blink::features::kClientHintsFormFactor)) {
-        values->setFormFactor(form_factor_);
-        MaybeRecordMetric(record_identifiability, hint, form_factor_,
+              blink::features::kClientHintsFormFactors)) {
+        values->setFormFactors(form_factors_);
+        MaybeRecordMetric(record_identifiability, hint, form_factors_,
                           execution_context);
       }
     }
@@ -258,7 +259,7 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   execution_context->GetTaskRunner(TaskType::kPermission)
       ->PostTask(
           FROM_HERE,
-          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+          WTF::BindOnce([](ScriptPromiseResolver<UADataValues>* resolver,
                            UADataValues* values) { resolver->Resolve(values); },
                         WrapPersistent(resolver), WrapPersistent(values)));
 

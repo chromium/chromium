@@ -13,6 +13,8 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -194,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachDetach) {
   EXPECT_TRUE(RunExtensionTest("web_authentication_proxy/main"));
 }
 
-// TODO(crbug.com/1276042): Flaky on all platforms
+// TODO(crbug.com/40808644): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, DISABLED_AttachReload) {
   SetJsTestName("attachReload");
   // Load an extension that immediately attaches.

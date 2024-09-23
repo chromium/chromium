@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -36,22 +37,26 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
 }
 
 bool AreAllRequiredFeaturesSupported(
+    const mojom::XRSessionMode mode,
     const std::vector<mojom::XRSessionFeature>& required_features,
     const OpenXrExtensionHelper& extension_helper) {
   return base::ranges::all_of(
       required_features,
-      [&extension_helper](const mojom::XRSessionFeature& feature) {
-        // This function returns true for features that are supported entirely
-        // by the core spec. We rely on the Browser process pre-filtering and
-        // not passing us any features that we haven't already indicated that
-        // we could support, which is the union of core spec features and things
-        // that could theoretically be supported depending on enabled
-        // extensions (which we're now checking if they're actually supported,
-        // since we need to create an instance to confirm that).
-        return extension_helper.IsFeatureSupported(feature);
+      [&extension_helper, mode](const mojom::XRSessionFeature& feature) {
+        // First we check if we will allow the feature to be supported in the
+        // mode that has been requested; before querying if the feature can
+        // actually be supported by the current runtime.
+        // The extension helper returns true for features that are supported
+        // entirely by the core spec. We rely on the Browser process
+        // pre-filtering and not passing us any features that we haven't already
+        // indicated that we could support, which is the union of core spec
+        // features and things that could theoretically be supported depending
+        // on enabled extensions (which we're now checking if they're actually
+        // supported,since we need to create an instance to confirm that).
+        return IsFeatureSupportedForMode(feature, mode) &&
+               extension_helper.IsFeatureSupported(feature);
       });
 }
-
 }  // namespace
 
 OpenXrDevice::OpenXrDevice(
@@ -79,9 +84,12 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::LAYERS);
 
   // Only support hit test if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kOpenXrExtendedFeatureSupport)) {
+  if (device::features::IsOpenXrArEnabled()) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::HIT_TEST);
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::LIGHT_ESTIMATION);
+    device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
   }
 
   SetDeviceData(std::move(device_data));
@@ -103,11 +111,6 @@ OpenXrDevice::~OpenXrDevice() {
   if (request_session_callback_) {
     std::move(request_session_callback_).Run(nullptr);
   }
-}
-
-mojo::PendingRemote<mojom::XRCompositorHost>
-OpenXrDevice::BindCompositorHost() {
-  return compositor_host_receiver_.BindNewPipeAndPassRemote();
 }
 
 void OpenXrDevice::RequestSession(
@@ -146,8 +149,13 @@ void OpenXrDevice::OnCreateInstanceResult(
   extension_helper_ = std::make_unique<OpenXrExtensionHelper>(
       instance_, platform_helper_->GetExtensionEnumeration());
 
-  if (!AreAllRequiredFeaturesSupported(options->required_features,
-                                       *extension_helper_)) {
+  // Now that we have an instance, check if it's even theoretically possible
+  // to support all of our required features. While this check isn't final, as
+  // the OpenXrRenderLoop will make that ultimate determination, it can help
+  // us early-exit and avoid spinning it up if we know we don't even have the
+  // extensions necessary to support a required feature.
+  if (!AreAllRequiredFeaturesSupported(
+          options->mode, options->required_features, *extension_helper_)) {
     DVLOG(1) << __func__ << " Missing a required feature";
     // Reject session request, and call ForceEndSession to ensure that we clean
     // up any objects that were already created.
@@ -161,13 +169,6 @@ void OpenXrDevice::OnCreateInstanceResult(
         context_provider_factory_async_, instance_, *extension_helper_,
         platform_helper_);
     render_loop_->Start();
-
-    if (overlay_receiver_) {
-      render_loop_->task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
-                                    base::Unretained(render_loop_.get()),
-                                    std::move(overlay_receiver_)));
-    }
   }
 
   auto my_callback = base::BindOnce(&OpenXrDevice::OnRequestSessionResult,
@@ -185,7 +186,8 @@ void OpenXrDevice::OnCreateInstanceResult(
 
 void OpenXrDevice::OnRequestSessionResult(
     bool result,
-    mojom::XRSessionPtr session) {
+    mojom::XRSessionPtr session,
+    mojo::PendingRemote<mojom::ImmersiveOverlay> overlay) {
   DCHECK(request_session_callback_);
 
   if (!result) {
@@ -202,6 +204,7 @@ void OpenXrDevice::OnRequestSessionResult(
   session_result->session = std::move(session);
   session_result->controller =
       exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+  session_result->overlay = std::move(overlay);
 
   std::move(request_session_callback_).Run(std::move(session_result));
 
@@ -243,20 +246,7 @@ void OpenXrDevice::ShutdownSession(
 
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
   // Presentation sessions can not currently be restricted.
-  NOTREACHED();
-}
-
-void OpenXrDevice::CreateImmersiveOverlay(
-    mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver) {
-  // This should only be triggered if we have a session
-  if (render_loop_) {
-    render_loop_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
-                                  base::Unretained(render_loop_.get()),
-                                  std::move(overlay_receiver)));
-  } else {
-    overlay_receiver_ = std::move(overlay_receiver);
-  }
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace device

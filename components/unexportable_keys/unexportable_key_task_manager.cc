@@ -80,26 +80,29 @@ WrapCallbackWithMetrics(
 
 }  // namespace
 
-UnexportableKeyTaskManager::UnexportableKeyTaskManager()
+UnexportableKeyTaskManager::UnexportableKeyTaskManager(
+    crypto::UnexportableKeyProvider::Config config)
     : task_scheduler_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::
               DEDICATED  // Using a dedicated thread to run long and blocking
                          // TPM tasks.
-          )) {}
+          )),
+      config_(std::move(config)) {}
 
 UnexportableKeyTaskManager::~UnexportableKeyTaskManager() = default;
 
 // static
 std::unique_ptr<crypto::UnexportableKeyProvider>
-UnexportableKeyTaskManager::GetUnexportableKeyProvider() {
+UnexportableKeyTaskManager::GetUnexportableKeyProvider(
+    crypto::UnexportableKeyProvider::Config config) {
   if (base::FeatureList::IsEnabled(
           kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)) {
     return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
   }
 
-  return crypto::GetUnexportableKeyProvider();
+  return crypto::GetUnexportableKeyProvider(std::move(config));
 }
 
 void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
@@ -113,7 +116,7 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
       BackgroundTaskType::kGenerateKey, std::move(callback));
 
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
-      GetUnexportableKeyProvider();
+      GetUnexportableKeyProvider(config_);
 
   if (!key_provider) {
     std::move(callback_wrapper)
@@ -144,7 +147,7 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
       BackgroundTaskType::kFromWrappedKey, std::move(callback));
 
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
-      GetUnexportableKeyProvider();
+      GetUnexportableKeyProvider(config_);
 
   if (!key_provider) {
     std::move(callback_wrapper)

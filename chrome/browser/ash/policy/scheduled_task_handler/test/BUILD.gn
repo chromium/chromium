@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_reboot_notifications_scheduler.cc",
+    "fake_reboot_notifications_scheduler.h",
+    "fake_scheduled_task_executor.cc",
+    "fake_scheduled_task_executor.h",
+    "scheduled_task_test_util.cc",
+    "scheduled_task_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//components/prefs",
+    "//testing/gtest",
+    "//third_party/icu:icui18n",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_scheduled_reboot_handler_unittest.cc",
+    "device_scheduled_update_checker_unittest.cc",
+    "reboot_notifications_scheduler_unittest.cc",
+    "scheduled_task_util_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/policy/scheduled_task_handler/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//services/device/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu:icui18n",
+    "//third_party/icu:icuuc_public",
+  ]
+}

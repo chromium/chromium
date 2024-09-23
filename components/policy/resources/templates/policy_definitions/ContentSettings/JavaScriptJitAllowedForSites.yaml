@@ -2,7 +2,7 @@ caption: Allow JavaScript to use JIT on these sites
 desc: |-
   Allows you to set a list of site url patterns that specify sites which are allowed to run JavaScript with JIT (Just In Time) compiler enabled.
 
-            For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+            For detailed information on valid site url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
             JavaScript JIT policy exceptions will only be enforced at a site granularity (eTLD+1). A policy set for only subdomain.site.com will not correctly apply to site.com or subdomain.site.com since they both resolve to the same eTLD+1 (site.com) for which there is no policy. In this case, policy must be set on site.com to apply correctly for both site.com and subdomain.site.com.
 

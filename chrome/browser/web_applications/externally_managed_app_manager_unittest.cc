@@ -40,10 +40,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,8 +87,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const GURL& app_url,
-                   ExternalInstallSource install_source) -> bool {
+            [this](const GURL& app_url, ExternalInstallSource install_source)
+                -> webapps::UninstallResultCode {
               std::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id.has_value()) {
@@ -97,7 +97,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                 update->DeleteApp(app_id.value());
                 deduped_uninstall_count_++;
               }
-              return true;
+              return webapps::UninstallResultCode::kAppRemoved;
             }));
   }
 
@@ -122,7 +122,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
             [&run_loop, urls](
                 std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) { run_loop.Quit(); }));
     // Wait for SynchronizeInstalledApps to finish.
     run_loop.Run();
   }
@@ -203,7 +204,8 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
         base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) { run_loop.Quit(); }));
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -275,7 +277,8 @@ class ExternallyAppManagerTest : public WebAppTest {
  public:
   using InstallResults = std::map<GURL /*install_url*/,
                                   ExternallyManagedAppManager::InstallResult>;
-  using UninstallResults = std::map<GURL /*install_url*/, bool /*succeeded*/>;
+  using UninstallResults =
+      std::map<GURL /*install_url*/, webapps::UninstallResultCode>;
   using SynchronizeFuture =
       base::test::TestFuture<InstallResults, UninstallResults>;
   using InstallNowFuture =
@@ -290,11 +293,6 @@ class ExternallyAppManagerTest : public WebAppTest {
     // don't compete with the policy app manager for our installs /
     // synchronization.
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void TearDown() override {
-    provider().Shutdown();
-    WebAppTest::TearDown();
   }
 
   std::vector<ExternalInstallOptions> CreateExternalInstallOptionsFromTemplate(
@@ -332,7 +330,8 @@ class ExternallyAppManagerTest : public WebAppTest {
                                                       GURL start_url) {
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(install_url);
-    install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    install_page_state.url_load_result =
+        webapps::WebAppUrlLoaderResult::kUrlLoaded;
     install_page_state.redirection_url = std::nullopt;
 
     install_page_state.opt_metadata =
@@ -342,15 +341,16 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;
 
-    install_page_state.opt_manifest = blink::mojom::Manifest::New();
-    install_page_state.opt_manifest->scope =
-        url::Origin::Create(start_url).GetURL();
-    install_page_state.opt_manifest->start_url = start_url;
-    install_page_state.opt_manifest->id =
+    install_page_state.manifest_before_default_processing =
+        blink::mojom::Manifest::New();
+    install_page_state.manifest_before_default_processing->start_url =
+        start_url;
+    install_page_state.manifest_before_default_processing->id =
         GenerateManifestIdFromStartUrlOnly(start_url);
-    install_page_state.opt_manifest->display =
+    install_page_state.manifest_before_default_processing->display =
         blink::mojom::DisplayMode::kStandalone;
-    install_page_state.opt_manifest->short_name = u"Basic app name";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Basic app name";
 
     return GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
@@ -533,8 +533,10 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
                         app_id))));
 
     // One install URL uninstalled.
-    EXPECT_THAT(result.Get<UninstallResults>(),
-                UnorderedElementsAre(std::make_pair(kInstallUrl2, true)));
+    EXPECT_THAT(
+        result.Get<UninstallResults>(),
+        UnorderedElementsAre(std::make_pair(
+            kInstallUrl2, webapps::UninstallResultCode::kInstallUrlRemoved)));
 
     EXPECT_EQ(app_registrar().GetAppIds().size(), 1ul);
     const WebApp* app = app_registrar().GetAppById(app_id);
@@ -561,7 +563,8 @@ TEST_F(ExternallyAppManagerTest, RemovingInstallUrlsFromSource) {
 
     // One install URL uninstalled.
     EXPECT_THAT(result.Get<UninstallResults>(),
-                UnorderedElementsAre(std::make_pair(kInstallUrl1, true)));
+                UnorderedElementsAre(std::make_pair(
+                    kInstallUrl1, webapps::UninstallResultCode::kAppRemoved)));
 
     // App should be cleaned up.
     EXPECT_EQ(app_registrar().GetAppIds().size(), 0ul);
@@ -621,9 +624,9 @@ TEST_F(ExternallyAppManagerTest, InstallUrlChanges) {
             ExternallyManagedAppManager::InstallResult(
                 webapps::InstallResultCode::kSuccessNewInstall, app_id))));
 
-    ASSERT_THAT(
-        result.Get<UninstallResults>(),
-        testing::UnorderedElementsAre(std::make_pair(kInstallUrl, true)));
+    ASSERT_THAT(result.Get<UninstallResults>(),
+                testing::UnorderedElementsAre(std::make_pair(
+                    kInstallUrl, webapps::UninstallResultCode::kAppRemoved)));
   }
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
@@ -649,10 +652,11 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install user app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.opt_manifest->short_name = u"Test user app";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Test user app";
 
-    auto install_info = std::make_unique<WebAppInstallInfo>();
-    install_info->start_url = kStartUrl;
+    auto install_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
     install_info->title = u"Test user app";
     std::optional<webapps::AppId> user_app_id =
         test::InstallWebApp(profile(), std::move(install_info));
@@ -667,7 +671,8 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install policy app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.opt_manifest->short_name = u"Test policy app";
+    install_page_state.manifest_before_default_processing->short_name =
+        u"Test policy app";
 
     SynchronizeFuture result;
     provider().externally_managed_app_manager().SynchronizeInstalledApps(
@@ -690,7 +695,7 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
 TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
   const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -732,7 +737,7 @@ TEST_F(ExternallyAppManagerTest, RedirectInstallUrlPlaceholder) {
   const GURL kRedirectToUrl =
       GURL("https://www.otherorigin.com/redirected.html");
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -781,7 +786,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromSynchronize) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -831,7 +836,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -878,7 +883,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -910,7 +915,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlSameSourceInstallNow) {
     ASSERT_TRUE(install_future.Wait());
   }
 
-  // TODO(https://crbug.com/1434692): This keeps the original app, but perhaps
+  // TODO(crbug.com/40264854): This keeps the original app, but perhaps
   // should install app_id2.
   app_ids = provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
@@ -924,7 +929,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -957,7 +962,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesInstallNow) {
     ASSERT_TRUE(install_future.Wait());
   }
 
-  // TODO(https://crbug.com/1434692): Currently, this keeps the original app,
+  // TODO(crbug.com/40264854): Currently, this keeps the original app,
   // but we should eventually resolve all apps to app_id2.
   app_ids = provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, ElementsAre(app_id1));
@@ -971,7 +976,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
 
   webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
@@ -1003,7 +1008,7 @@ TEST_F(ExternallyAppManagerTest, TwoAppsSameInstallUrlTwoSourcesSynchronize) {
     ASSERT_TRUE(result.Wait());
   }
 
-  // TODO(https://crbug.com/1434692): Currently this resolves to app_id1, but
+  // TODO(crbug.com/40264854): Currently this resolves to app_id1, but
   // should probably eventually resolve to app_id2.
   app_ids = provider().registrar_unsafe().GetAppIds();
   EXPECT_THAT(app_ids, UnorderedElementsAre(app_id1));
@@ -1015,7 +1020,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFixedBySecondInstallUrlInstallNow) {
   const GURL kManifestUrl = GURL("https://www.example.com/manifest1.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -1094,7 +1099,7 @@ TEST_F(ExternallyAppManagerTest,
   // the placeholder app's default identity).
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 
@@ -1166,7 +1171,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
   const GURL kManifestUrl2 = GURL("https://www.example.com/manifest2.json");
 
   ExternalInstallOptions template_options(
-      GURL(), mojom::UserDisplayMode::kStandalone,
+      kInstallUrl1, mojom::UserDisplayMode::kStandalone,
       ExternalInstallSource::kExternalPolicy);
   template_options.install_placeholder = true;
 

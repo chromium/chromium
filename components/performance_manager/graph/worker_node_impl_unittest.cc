@@ -4,13 +4,16 @@
 
 #include "components/performance_manager/graph/worker_node_impl.h"
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
+#include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -20,6 +23,56 @@ class WorkerNodeImplTest : public GraphTestHarness {
  public:
  protected:
 };
+
+// Mock observer for the basic ObserverWorks test.
+class LenientMockObserver : public WorkerNodeImpl::Observer {
+ public:
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
+
+  MOCK_METHOD(void, OnWorkerNodeAdded, (const WorkerNode*), (override));
+  MOCK_METHOD(void, OnBeforeWorkerNodeRemoved, (const WorkerNode*), (override));
+  MOCK_METHOD(void,
+              OnFinalResponseURLDetermined,
+              (const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientFrameAdded,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnClientFrameAdded,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientFrameRemoved,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientWorkerAdded,
+              (const WorkerNode*, const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnClientWorkerAdded,
+              (const WorkerNode*, const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientWorkerRemoved,
+              (const WorkerNode*, const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const WorkerNode*, const PriorityAndReason&),
+              (override));
+};
+
+using MockObserver = ::testing::StrictMock<LenientMockObserver>;
+
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -49,9 +102,12 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
       base::UnguessableToken::Create().ToString();
   auto process = CreateNode<ProcessNodeImpl>();
   static const blink::WorkerToken kTestWorkerToken;
+  static const auto kTestWorkerOrigin =
+      url::Origin::Create(GURL("https://example.com"));
 
   auto worker_impl = CreateNode<WorkerNodeImpl>(
-      kWorkerType, process.get(), kTestBrowserContextId, kTestWorkerToken);
+      kWorkerType, process.get(), kTestBrowserContextId, kTestWorkerToken,
+      kTestWorkerOrigin);
 
   // Test private interface.
   EXPECT_EQ(worker_impl->process_node(), process.get());
@@ -63,6 +119,7 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
   EXPECT_EQ(worker->GetWorkerType(), kWorkerType);
   EXPECT_EQ(worker->GetProcessNode(), process.get());
   EXPECT_EQ(worker->GetWorkerToken(), kTestWorkerToken);
+  EXPECT_EQ(worker->GetOrigin(), kTestWorkerOrigin);
 }
 
 TEST_F(WorkerNodeImplTest, OnFinalResponseURLDetermined) {
@@ -206,131 +263,119 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
   EXPECT_EQ(worker_impl->GetPriorityAndReason(), kTestPriorityAndReason);
 }
 
-class TestWorkerNodeObserver : public WorkerNodeObserver {
- public:
-  TestWorkerNodeObserver() = default;
+TEST_F(WorkerNodeImplTest, ObserverWorks) {
+  auto process = CreateNode<ProcessNodeImpl>();
 
-  TestWorkerNodeObserver(const TestWorkerNodeObserver&) = delete;
-  TestWorkerNodeObserver& operator=(const TestWorkerNodeObserver&) = delete;
+  MockObserver head_obs;
+  MockObserver obs;
+  MockObserver tail_obs;
+  graph()->AddWorkerNodeObserver(&head_obs);
+  graph()->AddWorkerNodeObserver(&obs);
+  graph()->AddWorkerNodeObserver(&tail_obs);
 
-  ~TestWorkerNodeObserver() override = default;
+  // Remove observers at the head and tail of the list inside a callback, and
+  // expect that `obs` is still notified correctly.
+  EXPECT_CALL(head_obs, OnWorkerNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
+    graph()->RemoveWorkerNodeObserver(&head_obs);
+    graph()->RemoveWorkerNodeObserver(&tail_obs);
+  }));
+  // `tail_obs` should not be notified as it was removed.
+  EXPECT_CALL(tail_obs, OnWorkerNodeAdded(_)).Times(0);
 
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) override {
-    EXPECT_TRUE(client_frames_.insert({worker_node, {}}).second);
-    EXPECT_TRUE(client_workers_.insert({worker_node, {}}).second);
-  }
-  void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {
-    EXPECT_TRUE(client_frames_.empty());
-    EXPECT_TRUE(client_workers_.empty());
-    EXPECT_EQ(client_frames_.erase(worker_node), 1u);
-    EXPECT_EQ(client_workers_.erase(worker_node), 1u);
-  }
-  void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {
-    on_final_response_url_determined_called_ = true;
-  }
-  void OnClientFrameAdded(const WorkerNode* worker_node,
-                          const FrameNode* client_frame_node) override {
-    auto& client_frames = client_frames_.find(worker_node)->second;
-    EXPECT_TRUE(client_frames.insert(client_frame_node).second);
-  }
-  void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
-                                  const FrameNode* client_frame_node) override {
-    auto& client_frames = client_frames_.find(worker_node)->second;
-    EXPECT_EQ(client_frames.erase(client_frame_node), 1u);
-  }
-  void OnClientWorkerAdded(const WorkerNode* worker_node,
-                           const WorkerNode* client_worker_node) override {
-    auto& client_workers = client_workers_.find(worker_node)->second;
-    EXPECT_TRUE(client_workers.insert(client_worker_node).second);
-  }
-  void OnBeforeClientWorkerRemoved(
-      const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) override {
-    auto& client_workers = client_workers_.find(worker_node)->second;
-    EXPECT_EQ(client_workers.erase(client_worker_node), 1u);
-  }
-  void OnPriorityAndReasonChanged(
-      const WorkerNode* worker_node,
-      const PriorityAndReason& previous_value) override {
-    on_priority_and_reason_changed_called_ = true;
-  }
+  // Create a worker node and expect a matching call to "OnWorkerNodeAdded".
+  const WorkerNode* worker_node = nullptr;
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_))
+      .WillOnce(Invoke([&](const WorkerNode* node) { worker_node = node; }));
+  auto dedicated_worker = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, process.get());
+  EXPECT_EQ(worker_node, dedicated_worker.get());
 
-  bool on_final_response_url_determined_called() const {
-    return on_final_response_url_determined_called_;
-  }
+  // Re-entrant iteration should work.
+  EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker_node))
+      .WillOnce(InvokeWithoutArgs([&] {
+        dedicated_worker->SetPriorityAndReason(PriorityAndReason(
+            base::TaskPriority::USER_BLOCKING, "test priority"));
+      }));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_node, _));
+  dedicated_worker->OnFinalResponseURLDetermined(GURL("https://example.com"));
 
-  const base::flat_map<const WorkerNode*, base::flat_set<const FrameNode*>>&
-  client_frames() const {
-    return client_frames_;
-  }
-
-  const base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>&
-  client_workers() const {
-    return client_workers_;
-  }
-
-  bool on_priority_and_reason_changed_called() const {
-    return on_priority_and_reason_changed_called_;
-  }
-
- private:
-  bool on_final_response_url_determined_called_ = false;
-
-  base::flat_map<const WorkerNode*, base::flat_set<const FrameNode*>>
-      client_frames_;
-  base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>
-      client_workers_;
-
-  bool on_priority_and_reason_changed_called_ = false;
-};
+  graph()->RemoveWorkerNodeObserver(&obs);
+}
 
 // Same as the AddWorkerNodes test, but the graph is verified through the
 // WorkerNodeObserver interface.
 TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
-  TestWorkerNodeObserver worker_node_observer;
-  graph()->AddWorkerNodeObserver(&worker_node_observer);
+  InSequence s;
+
+  MockObserver obs;
+  graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // Create workers.
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_)).Times(3);
+
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
   auto shared_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kShared, process.get());
   auto service_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kService, process.get());
+
+  // Add client connections.
+  EXPECT_CALL(obs,
+              OnBeforeClientFrameAdded(dedicated_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnClientFrameAdded(dedicated_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnBeforeClientFrameAdded(shared_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnClientFrameAdded(shared_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnBeforeClientFrameAdded(service_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnClientFrameAdded(service_worker.get(), frame.get()));
 
   dedicated_worker->AddClientFrame(frame.get());
   shared_worker->AddClientFrame(frame.get());
   service_worker->AddClientFrame(frame.get());
 
-  // 3 different workers observed.
-  EXPECT_EQ(worker_node_observer.client_frames().size(), 3u);
-  for (const auto& worker_and_client_frames :
-       worker_node_observer.client_frames()) {
-    // For each worker, check that |frame| is a client.
-    const base::flat_set<const FrameNode*>& client_frames =
-        worker_and_client_frames.second;
-    EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
-  }
-
   // Remove client connections.
+  EXPECT_CALL(obs,
+              OnBeforeClientFrameRemoved(service_worker.get(), frame.get()));
+  EXPECT_CALL(obs,
+              OnBeforeClientFrameRemoved(shared_worker.get(), frame.get()));
+  EXPECT_CALL(obs,
+              OnBeforeClientFrameRemoved(dedicated_worker.get(), frame.get()));
+
   service_worker->RemoveClientFrame(frame.get());
   shared_worker->RemoveClientFrame(frame.get());
   dedicated_worker->RemoveClientFrame(frame.get());
 
-  graph()->RemoveWorkerNodeObserver(&worker_node_observer);
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()));
+
+  // Clean up workers.
+  service_worker.reset();
+  shared_worker.reset();
+  dedicated_worker.reset();
+
+  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 // Same as the ClientsOfServiceWorkers test, but the graph is verified through
 // the WorkerNodeObserver interface.
 TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
-  TestWorkerNodeObserver worker_node_observer;
-  graph()->AddWorkerNodeObserver(&worker_node_observer);
+  InSequence s;
+
+  MockObserver obs;
+  graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // Create workers.
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_)).Times(3);
+
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
   auto shared_worker = CreateNode<WorkerNodeImpl>(
@@ -338,63 +383,86 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   auto service_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kService, process.get());
 
+  // Add client connections.
+  EXPECT_CALL(obs, OnBeforeClientFrameAdded(service_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnClientFrameAdded(service_worker.get(), frame.get()));
+  EXPECT_CALL(obs, OnBeforeClientWorkerAdded(service_worker.get(),
+                                             dedicated_worker.get()));
+  EXPECT_CALL(
+      obs, OnClientWorkerAdded(service_worker.get(), dedicated_worker.get()));
+  EXPECT_CALL(obs, OnBeforeClientWorkerAdded(service_worker.get(),
+                                             shared_worker.get()));
+  EXPECT_CALL(obs,
+              OnClientWorkerAdded(service_worker.get(), shared_worker.get()));
+
   service_worker->AddClientFrame(frame.get());
   service_worker->AddClientWorker(dedicated_worker.get());
   service_worker->AddClientWorker(shared_worker.get());
 
-  // 3 different workers observed.
-  EXPECT_EQ(worker_node_observer.client_frames().size(), 3u);
-
-  // Check clients of the service worker.
-  const base::flat_set<const FrameNode*>& client_frames =
-      worker_node_observer.client_frames().find(service_worker.get())->second;
-  EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
-
-  const base::flat_set<const WorkerNode*>& client_workers =
-      worker_node_observer.client_workers().find(service_worker.get())->second;
-  EXPECT_TRUE(client_workers.find(dedicated_worker.get()) !=
-              client_workers.end());
-  EXPECT_TRUE(client_workers.find(shared_worker.get()) != client_workers.end());
 
   // Remove client connections.
+  EXPECT_CALL(obs, OnBeforeClientWorkerRemoved(service_worker.get(),
+                                               shared_worker.get()));
+  EXPECT_CALL(obs, OnBeforeClientWorkerRemoved(service_worker.get(),
+                                               dedicated_worker.get()));
+  EXPECT_CALL(obs,
+              OnBeforeClientFrameRemoved(service_worker.get(), frame.get()));
+
   service_worker->RemoveClientWorker(shared_worker.get());
   service_worker->RemoveClientWorker(dedicated_worker.get());
   service_worker->RemoveClientFrame(frame.get());
 
-  graph()->RemoveWorkerNodeObserver(&worker_node_observer);
+  // Clean up workers.
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()));
+
+  service_worker.reset();
+  shared_worker.reset();
+  dedicated_worker.reset();
+
+  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
-  TestWorkerNodeObserver worker_node_observer;
-  graph()->AddWorkerNodeObserver(&worker_node_observer);
+  InSequence s;
+
+  MockObserver obs;
+  graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
+
+  // Create the worker.
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
 
-  EXPECT_FALSE(worker_node_observer.on_final_response_url_determined_called());
+  // Set the final response URL.
+  EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker.get()));
   worker->OnFinalResponseURLDetermined(GURL("testurl.com"));
-  EXPECT_TRUE(worker_node_observer.on_final_response_url_determined_called());
 
-  graph()->RemoveWorkerNodeObserver(&worker_node_observer);
+  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
-  TestWorkerNodeObserver worker_node_observer;
-  graph()->AddWorkerNodeObserver(&worker_node_observer);
+  InSequence s;
+
+  MockObserver obs;
+  graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
+
+  // Create the worker.
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
 
-  EXPECT_FALSE(worker_node_observer.on_priority_and_reason_changed_called());
   static const PriorityAndReason kPriorityAndReason(base::TaskPriority::HIGHEST,
                                                     "this is a reason!");
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker.get(), _));
   worker->SetPriorityAndReason(kPriorityAndReason);
-  EXPECT_TRUE(worker_node_observer.on_priority_and_reason_changed_called());
-  EXPECT_EQ(worker->GetPriorityAndReason(), kPriorityAndReason);
 
-  graph()->RemoveWorkerNodeObserver(&worker_node_observer);
+  graph()->RemoveWorkerNodeObserver(&obs);
 }
 
 }  // namespace performance_manager

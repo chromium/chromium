@@ -24,6 +24,7 @@ class OpenTabProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
 
  private:
+  friend class OpenTabProviderTest;
   ~OpenTabProvider() override;
 
   AutocompleteMatch CreateOpenTabMatch(const AutocompleteInput& input,

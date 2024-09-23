@@ -272,6 +272,45 @@ public class Encoder {
         return encoderForArray(BindingsHelper.UNION_SIZE, length, offset, expectedLength);
     }
 
+    /**
+     * Computes the packed bitfield which signals whether or not an element at a certain index has
+     * value or should be considered unset.
+     *
+     * @param arr The array. The bit for an index will be set if the value is not null, otherwise it
+     *     will have a zero value.
+     * @param alignmentBytes The alignment for the arr data type. This determines how much padding
+     *     is needed to keep alignment. For example, if alignmentByte is 4-bytes and only 2 bytes
+     *     are needed to represent the bitfield, then another 2 bytes of padding will be added to
+     *     maintain alignment.
+     */
+    public static byte[] computeHasValueBitfieldForArray(Object[] arr, int alignmentBytes) {
+        boolean[] nullMap = new boolean[arr.length];
+        for (int i = 0; i < arr.length; ++i) {
+            nullMap[i] = arr[i] != null;
+        }
+        return packBoolsToBitfield(nullMap, alignmentBytes);
+    }
+
+    /**
+     * Packs a boolean array to bitfield so that only 1 bit is needed to represent a bool value.
+     *
+     * @param bool the boolean array.
+     * @param alignmentBytes Determines the width of the bitfield. If a bitfield size is not a
+     *     multiple of alignmentBytes, additional padding will be added so that the final size is a
+     *     multiple of alignmentBytes.
+     */
+    private static byte[] packBoolsToBitfield(boolean[] bools, int alignmentBytes) {
+        byte[] bytes = new byte[BindingsHelper.computeBitfieldSize(alignmentBytes, bools.length)];
+        for (int i = 0; i < bools.length; ++i) {
+            if (bools[i]) {
+                int idx = i / 8;
+                int mask = i % 8;
+                bytes[idx] |= (byte) (1 << mask);
+            }
+        }
+        return bytes;
+    }
+
     /** Encodes an array of booleans. */
     public void encode(boolean[] v, int offset, int arrayNullability, int expectedLength) {
         if (v == null) {
@@ -282,20 +321,14 @@ public class Encoder {
                 && expectedLength != v.length) {
             throw new SerializationException("Trying to encode a fixed array of incorrect length.");
         }
-        byte[] bytes = new byte[(v.length + 7) / BindingsHelper.ALIGNMENT];
-        for (int i = 0; i < bytes.length; ++i) {
-            for (int j = 0; j < BindingsHelper.ALIGNMENT; ++j) {
-                int booleanIndex = BindingsHelper.ALIGNMENT * i + j;
-                if (booleanIndex < v.length && v[booleanIndex]) {
-                    bytes[i] |= (byte) (1 << j);
-                }
-            }
-        }
-        encodeByteArray(bytes, v.length, offset);
+        byte[] bytes = packBoolsToBitfield(v, 1);
+        Encoder encoder = encoderForArrayByTotalSize(bytes.length, v.length, offset);
+
+        encoder.mEncoderState.byteBuffer.position(encoder.mBaseOffset + DataHeader.HEADER_SIZE);
+        encoder.append(bytes);
     }
 
-    /** Encodes an array of bytes. */
-    public void encode(byte[] v, int offset, int arrayNullability, int expectedLength) {
+    public void encode(Boolean[] v, int offset, int arrayNullability, int expectedLength) {
         if (v == null) {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
@@ -304,7 +337,42 @@ public class Encoder {
                 && expectedLength != v.length) {
             throw new SerializationException("Trying to encode a fixed array of incorrect length.");
         }
-        encodeByteArray(v, v.length, offset);
+        byte[] hasValueBitfield = computeHasValueBitfieldForArray(v, 1);
+
+        boolean[] unboxed = new boolean[v.length];
+        for (int i = 0; i < v.length; ++i) {
+            if (v[i] != null) {
+                unboxed[i] = v[i].booleanValue();
+            } else {
+                unboxed[i] = false;
+            }
+        }
+        byte[] packed = packBoolsToBitfield(unboxed, 1);
+
+        Encoder encoder =
+                encoderForArrayByTotalSize(
+                        hasValueBitfield.length + packed.length, v.length, offset);
+        encoder.mEncoderState.byteBuffer.position(encoder.mBaseOffset + DataHeader.HEADER_SIZE);
+        encoder.append(hasValueBitfield);
+        encoder.append(packed);
+    }
+
+    /** Encodes an array of bytes. */
+    public void encode(byte[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForArrayOfElements(1, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of bytes. */
+    public void encode(Byte[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(1, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of shorts. */
@@ -313,7 +381,16 @@ public class Encoder {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
         }
-        encoderForArray(2, v.length, offset, expectedLength).append(v);
+        encoderForArrayOfElements(2, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of shorts. */
+    public void encode(Short[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(2, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of ints. */
@@ -322,7 +399,16 @@ public class Encoder {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
         }
-        encoderForArray(4, v.length, offset, expectedLength).append(v);
+        encoderForArrayOfElements(4, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of Integers. */
+    public void encode(Integer[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(4, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of floats. */
@@ -331,7 +417,16 @@ public class Encoder {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
         }
-        encoderForArray(4, v.length, offset, expectedLength).append(v);
+        encoderForArrayOfElements(4, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of floats. */
+    public void encode(Float[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(4, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of longs. */
@@ -340,7 +435,16 @@ public class Encoder {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
         }
-        encoderForArray(8, v.length, offset, expectedLength).append(v);
+        encoderForArrayOfElements(8, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of longs. */
+    public void encode(Long[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(8, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of doubles. */
@@ -349,7 +453,16 @@ public class Encoder {
             encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
             return;
         }
-        encoderForArray(8, v.length, offset, expectedLength).append(v);
+        encoderForArrayOfElements(8, v.length, offset, expectedLength).append(v);
+    }
+
+    /** Encodes an array of doubles. */
+    public void encode(Double[] v, int offset, int arrayNullability, int expectedLength) {
+        if (v == null) {
+            encodeNullPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+            return;
+        }
+        encoderForNullablePrimitives(8, v, offset, expectedLength).append(v);
     }
 
     /** Encodes an array of {@link Handle}. */
@@ -470,6 +583,38 @@ public class Encoder {
         encode((long) mEncoderState.dataEnd - (mBaseOffset + offset), offset);
     }
 
+    /**
+     * Returns an encoder which is ready to accept an array of nullable elements. Users should not
+     * advance the byte buffer to account for the header.
+     */
+    private Encoder encoderForNullablePrimitives(
+            int elementSizeInByte, Object[] values, int offset, int expectedLength) {
+        if (expectedLength != BindingsHelper.UNSPECIFIED_ARRAY_LENGTH
+                && expectedLength != values.length) {
+            throw new SerializationException("Trying to encode a fixed array of incorrect length.");
+        }
+        byte[] bitField = computeHasValueBitfieldForArray(values, elementSizeInByte);
+        Encoder encoder =
+                encoderForArrayByTotalSize(
+                        (values.length * elementSizeInByte) + bitField.length,
+                        values.length,
+                        offset);
+        encoder.mEncoderState.byteBuffer.position(encoder.mBaseOffset + DataHeader.HEADER_SIZE);
+        encoder.mEncoderState.byteBuffer.put(bitField);
+        return encoder;
+    }
+
+    /**
+     * Returns an encoder which is ready to accept an array of elements. Users should not advance
+     * the byte buffer to account for the header.
+     */
+    private Encoder encoderForArrayOfElements(
+            int elementSizeInByte, int length, int offset, int expectedLength) {
+        Encoder encoder = encoderForArray(elementSizeInByte, length, offset, expectedLength);
+        encoder.mEncoderState.byteBuffer.position(encoder.mBaseOffset + DataHeader.HEADER_SIZE);
+        return encoder;
+    }
+
     private Encoder encoderForArray(
             int elementSizeInByte, int length, int offset, int expectedLength) {
         if (expectedLength != BindingsHelper.UNSPECIFIED_ARRAY_LENGTH && expectedLength != length) {
@@ -483,37 +628,87 @@ public class Encoder {
         return getEncoderAtDataOffset(new DataHeader(DataHeader.HEADER_SIZE + byteSize, length));
     }
 
-    private void encodeByteArray(byte[] bytes, int length, int offset) {
-        encoderForArrayByTotalSize(bytes.length, length, offset).append(bytes);
-    }
-
     private void append(byte[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.put(v);
     }
 
+    private void append(Byte[] values) {
+        for (Byte b : values) {
+            if (b != null) {
+                mEncoderState.byteBuffer.put(b);
+            } else {
+                mEncoderState.byteBuffer.put((byte) 0);
+            }
+        }
+    }
+
     private void append(short[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.asShortBuffer().put(v);
     }
 
+    private void append(Short[] values) {
+        for (Short s : values) {
+            if (s != null) {
+                mEncoderState.byteBuffer.putShort(s);
+            } else {
+                mEncoderState.byteBuffer.putShort((short) 0);
+            }
+        }
+    }
+
     private void append(int[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.asIntBuffer().put(v);
     }
 
+    private void append(Integer[] values) {
+        for (Integer i : values) {
+            if (i != null) {
+                mEncoderState.byteBuffer.putInt(i);
+            } else {
+                mEncoderState.byteBuffer.putInt(0);
+            }
+        }
+    }
+
     private void append(float[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.asFloatBuffer().put(v);
     }
 
+    private void append(Float[] values) {
+        for (Float f : values) {
+            if (f != null) {
+                mEncoderState.byteBuffer.putFloat(f);
+            } else {
+                mEncoderState.byteBuffer.putFloat(0.0f);
+            }
+        }
+    }
+
     private void append(double[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.asDoubleBuffer().put(v);
     }
 
+    private void append(Double[] values) {
+        for (Double d : values) {
+            if (d != null) {
+                mEncoderState.byteBuffer.putDouble(d);
+            } else {
+                mEncoderState.byteBuffer.putDouble(0.0f);
+            }
+        }
+    }
+
     private void append(long[] v) {
-        mEncoderState.byteBuffer.position(mBaseOffset + DataHeader.HEADER_SIZE);
         mEncoderState.byteBuffer.asLongBuffer().put(v);
+    }
+
+    private void append(Long[] values) {
+        for (Long v : values) {
+            if (v != null) {
+                mEncoderState.byteBuffer.putLong(v);
+            } else {
+                mEncoderState.byteBuffer.putLong(0);
+            }
+        }
     }
 }

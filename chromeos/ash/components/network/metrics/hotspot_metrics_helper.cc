@@ -144,6 +144,8 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
       return HotspotMetricsSetEnabledResult::kAlreadyFulfilled;
     case HotspotControlResult::kAborted:
       return HotspotMetricsSetEnabledResult::kAborted;
+    case HotspotControlResult::kInvalid:
+      return HotspotMetricsSetEnabledResult::kInvalid;
     default:
       return HotspotMetricsSetEnabledResult::kUnknownFailure;
   }
@@ -176,7 +178,7 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
     case CheckReadinessResult::kUnknownResult:
       return HotspotMetricsCheckReadinessResult::kUnknownResult;
   }
-  NOTREACHED() << "Unknown check tethering readiness result.";
+  NOTREACHED_IN_MIGRATION() << "Unknown check tethering readiness result.";
 }
 
 // static
@@ -205,7 +207,7 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
       }
       return HotspotMetricsSetConfigResult::kFailedUnknownShillError;
   }
-  NOTREACHED() << "Unknown set hotspot config result.";
+  NOTREACHED_IN_MIGRATION() << "Unknown set hotspot config result.";
 }
 
 // static
@@ -237,8 +239,14 @@ HotspotMetricsHelper::GetMetricsDisableReason(
       return HotspotMetricsDisableReason::kDownstreamLinkDisconnect;
     case DisableReason::kDownstreamNetworkDisconnect:
       return HotspotMetricsDisableReason::kDownstreamNetworkDisconnect;
+    case DisableReason::kStartTimeout:
+      return HotspotMetricsDisableReason::kStartTimeout;
+    case DisableReason::kUpstreamNotAvailable:
+      return HotspotMetricsDisableReason::kUpstreamNotAvailable;
+    case DisableReason::kUnknownError:
+      return HotspotMetricsDisableReason::kUnknownError;
   }
-  NOTREACHED() << "Unknown hotspot disable reason.";
+  NOTREACHED_IN_MIGRATION() << "Unknown hotspot disable reason.";
 }
 
 HotspotMetricsHelper::HotspotMetricsHelper() = default;

@@ -43,7 +43,7 @@
 <translation id="134645005685694099">อุปกรณ์ของคุณมีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะเปิดการซิงค์ไฟล์ไว้ ไฟล์ใหม่จะไม่ซิงค์โดยอัตโนมัติอีกต่อไป</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ไฟล์หรือไดเรกทอรีใช้งานไม่ได้</translation>
-<translation id="1363028406613469049">แทร็ก</translation>
+<translation id="1363028406613469049">ติดตาม</translation>
 <translation id="1378727793141957596">ยินดีต้อนรับสู่ Google ไดรฟ์!</translation>
 <translation id="1379911846207762492">คุณทำให้ไฟล์ใช้งานแบบออฟไลน์ได้เพื่อเข้าถึงเมื่อไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">โฮสต์ SOCKS</translation>
 <translation id="3104793765551262433">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
-<translation id="3113153474486991170">เปิด "<ph name="PATH" />" จากตำแหน่งนี้ไม่ได้ โปรดคัดลอกไปที่ "ไฟล์ของฉัน" เพื่อเปิด</translation>
 <translation id="3113592018909187986">คุณลองได้อีก 1 ครั้ง คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
 <translation id="3124404833828281817">คนฝันกลางวัน</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">ยกเลิก<ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, <ph name="CONNECTION_STATUS" />, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3691184985318546178">สิงหล</translation>
+<translation id="3702842351052426940">ซิมการ์ดหรือโปรไฟล์ eSIM ของคุณอาจถูกปิดใช้งาน ลองเปลี่ยนซิมการ์ดหรือสลับโปรไฟล์ eSIM</translation>
 <translation id="3722341589402358578">เกิดข้อผิดพลาด ระบบอาจไม่ได้ทิ้งบางรายการลงถังขยะ</translation>
 <translation id="3726463242007121105">ไม่สามารถเปิดอุปกรณ์นี้ได้ เนื่องจากไม่สนับสนุนระบบไฟล์ของอุปกรณ์นี้</translation>
 <translation id="3727148787322499904">การเปลี่ยนการตั้งค่านี้จะส่งผลกับเครือข่ายที่แชร์ทั้งหมด</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">ผู้ดูแลระบบของคุณกำหนดให้ใช้พร็อกซีนี้</translation>
 <translation id="3830674330436234648">ไม่สามารถเล่นได้</translation>
 <translation id="383652340667548381">เซอร์เบีย</translation>
+<translation id="3839045880592694915">ผู้ให้บริการไม่อนุญาตให้เชื่อมต่อโมเด็ม โปรดติดต่อผู้ให้บริการเพื่อสอบถามรายละเอียดเพิ่มเติม</translation>
 <translation id="385051799172605136">กลับ</translation>
-<translation id="3851491607336266896">เชื่อมต่อแล้ว การเชื่อมต่อจํากัด</translation>
 <translation id="3855472144336161447">Neo 2 แบบเยอรมัน</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3866249974567520381">คำอธิบาย</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">ไฟล์ Microsoft ที่เปิดล่าสุดได้ย้ายไปยัง OneDrive แล้ว</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
-<translation id="4019998208269143058">ปักหมุดไว้ที่ไฟล์ด่วน</translation>
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
+<translation id="4101601646343868113">ลงชื่อเข้าใช้เครือข่ายมือถือและยืนยันว่าแพ็กเกจอินเทอร์เน็ตมือถือของคุณใช้งานได้</translation>
 <translation id="4124731372776320263">กำลังซิงค์ไฟล์ในไดรฟ์ 1 รายการ</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
@@ -429,7 +429,7 @@
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4432921877815220091">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4439427728133035643">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
-<translation id="4442424173763614572">การค้นหา DNS ล้มเหลว</translation>
+<translation id="4442424173763614572">DNS Lookup ล้มเหลว</translation>
 <translation id="4445896958353114391">กำลังซิงค์ไฟล์</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465725236958772856">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
@@ -487,7 +487,7 @@
 <translation id="4826849268470072925">ทมิฬ (ITRANS)</translation>
 <translation id="482932175346970750">พิมพ์ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ลงในเบราว์เซอร์</translation>
 <translation id="4843566743023903107">Chromebase</translation>
-<translation id="4850886885716139402">มุมมอง</translation>
+<translation id="4850886885716139402">ดู</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
 <translation id="4862885579661885411">การตั้งค่า Files</translation>
 <translation id="4867079195717347957">คลิกเพื่อจัดเรียงคอลัมน์จากมากไปหาน้อย</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">ทมิฬด้วยแป้นพิมพ์ Tamil99</translation>
 <translation id="5633226425545095130">การย้ายรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
 <translation id="5649768706273821470">ฟัง</translation>
+<translation id="5650895901941743674">ตรวจสอบการกำหนดค่า APN</translation>
 <translation id="5669691691057771421">ป้อน PIN ใหม่</translation>
 <translation id="5678784840044122290">แอปพลิเคชัน Linux จะพร้อมให้ใช้งานในเทอร์มินัลของคุณและอาจแสดงไอคอนใน Launcher ด้วย</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ยกเลิกการเชื่อมต่อจากที่เก็บถาวรหรือดิสก์เสมือนไม่สำเร็จ<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
 <translation id="6269630227984243955">มาเลย์</translation>
 <translation id="6271903698064569429">อัปโหลดไฟล์ไม่ได้เนื่องจาก "<ph name="SHARED_DRIVE_NAME" />" มีพื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
+<translation id="6279140785485544797">แพ็กเกจอินเทอร์เน็ตมือถือของคุณอาจหมดอายุ ติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
 <translation id="6287852322318138013">เลือกแอปที่จะเปิดไฟล์นี้</translation>
 <translation id="6295542640242147836">ล็อกซิม</translation>
 <translation id="6296410173147755564">PUK ไม่ถูกต้อง</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">ที่เก็บ <ph name="ARCHIVE_TYPE" /> ถาวร</translation>
 <translation id="6321303798550928047">โบกมือ</translation>
 <translation id="6327785803543103246">การค้นหาเว็บพร็อกซีอัตโนมัติ</translation>
-<translation id="6337014272874260727">เลิกปักหมุดในไฟล์ด่วน</translation>
 <translation id="6339145975392024142">สหรัฐอเมริกาสากล (พีซี)</translation>
 <translation id="6356685157277930264">หน้าต่างความคิดเห็นของไฟล์</translation>
 <translation id="6358884629796491903">มังกร</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">ไดเรกทอรีปัจจุบัน</translation>
 <translation id="6751256176799620176">เลือกไว้ 1 โฟลเดอร์</translation>
 <translation id="6755827872271341378">อุปกรณ์ Chrome OS Flex</translation>
+<translation id="6777029074498310250">ดูข้อมูลเพิ่มเติมได้ที่ <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6794539005637808366">กู้คืนรายการหรือลากไปที่โฟลเดอร์ใหม่นอกถังขยะ</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">ทมิฬด้วยแป้นพิมพ์ InScript</translation>
 <translation id="7088615885725309056">เก่ากว่า</translation>
 <translation id="7103992300314999525">มาซีโดเนีย</translation>
+<translation id="7104338189998813914">เกิดปัญหาในการเข้าถึงบัญชี OneDrive ของคุณ</translation>
 <translation id="7106346894903675391">ซื้อพื้นที่เก็บข้อมูลเพิ่มเติม...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;ค้นหาไดรฟ์&lt;/em&gt;</translation>
 <translation id="7135561821015524160">กันนาดา (ตามการออกเสียง)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
+<translation id="7624010287655004652">ล็อกโดยผู้ให้บริการเครือข่ายมือถือรายอื่น</translation>
 <translation id="7627790789328695202">อ๊ะ มี <ph name="FILE_NAME" /> อยู่แล้ว เปลี่ยนชื่อแล้วลองอีกครั้ง</translation>
 <translation id="7628656427739290098">เสร็จแล้ว <ph name="PERCENT" />%</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
+<translation id="8630384863424041081">ป้อน PIN ของซิมการ์ดหรือ PIN เริ่มต้นที่ผู้ให้บริการให้ไว้ ติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>
 <translation id="8656407365183407932">ต้องนําไฟล์ออฟไลน์ออก</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">ไฟล์นี้เป็นความลับและอยู่ภายใต้ข้อจำกัดตามนโยบายของผู้ดูแลระบบ</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8713112442029511308">มอลตา</translation>
-<translation id="8714138378966541668">ล็อกโดยผู้ให้บริการ</translation>
 <translation id="8714406895390098252">จักรยาน</translation>
 <translation id="8719721339511222681">เลือก <ph name="ENTRY_NAME" /> ไว้</translation>
 <translation id="872537912056138402">โครเอเชีย</translation>
@@ -1044,7 +1048,7 @@
 <translation id="8919081441417203123">เดนมาร์ก</translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
-<translation id="8970887620466824814">มีบางอย่างผิดพลาด</translation>
+<translation id="8970887620466824814">เกิดข้อผิดพลาด</translation>
 <translation id="8971742885766657349">กำลังซิงค์ - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="8998871447376656508">มีพื้นที่ว่างใน Google ไดรฟ์ไม่เพียงพอที่จะอัปโหลดให้เสร็จสิ้น</translation>

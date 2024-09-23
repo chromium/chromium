@@ -48,8 +48,8 @@ Mp4MovieFragmentBoxWriter::Mp4MovieFragmentBoxWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddChildBox(
-      std::make_unique<Mp4MovieFragmentHeaderBoxWriter>(context, box_.header));
-  for (const auto& fragment : box_.track_fragments) {
+      std::make_unique<Mp4MovieFragmentHeaderBoxWriter>(context, box_->header));
+  for (const auto& fragment : box_->track_fragments) {
     AddChildBox(std::make_unique<Mp4TrackFragmentBoxWriter>(context, fragment));
   }
 }
@@ -79,9 +79,9 @@ Mp4MovieFragmentHeaderBoxWriter::~Mp4MovieFragmentHeaderBoxWriter() = default;
 void Mp4MovieFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFHD, /*flags=*/0, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_MFHD, /*flags=*/0);
 
-  writer.WriteU32(box_.sequence_number);
+  writer.WriteU32(box_->sequence_number);
 
   writer.EndBox();
 }
@@ -94,11 +94,11 @@ Mp4TrackFragmentBoxWriter::Mp4TrackFragmentBoxWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AddChildBox(
-      std::make_unique<Mp4TrackFragmentHeaderBoxWriter>(context, box_.header));
+      std::make_unique<Mp4TrackFragmentHeaderBoxWriter>(context, box_->header));
   AddChildBox(std::make_unique<Mp4TrackFragmentDecodeTimeBoxWriter>(
-      context, box_.decode_time));
+      context, box_->decode_time));
   AddChildBox(
-      std::make_unique<Mp4TrackFragmentRunBoxWriter>(context, box_.run));
+      std::make_unique<Mp4TrackFragmentRunBoxWriter>(context, box_->run));
 }
 
 Mp4TrackFragmentBoxWriter::~Mp4TrackFragmentBoxWriter() = default;
@@ -126,37 +126,37 @@ Mp4TrackFragmentHeaderBoxWriter::~Mp4TrackFragmentHeaderBoxWriter() = default;
 void Mp4TrackFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFHD, box_.flags, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_TFHD, box_->flags);
 
-  writer.WriteU32(box_.track_id);
+  writer.WriteU32(box_->track_id);
 
-  CHECK(box_.flags &
+  CHECK(box_->flags &
         static_cast<uint32_t>(
             mp4::writable_boxes::TrackFragmentHeaderFlags::kDefaultBaseIsMoof));
 
-  if (box_.flags &
+  if (box_->flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kSampleDescriptionIndexPresent)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  if (box_.flags &
+  if (box_->flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kDefaultSampleDurationPresent)) {
-    writer.WriteU32(box_.default_sample_duration.InMilliseconds());
+    writer.WriteU32(box_->default_sample_duration.InMilliseconds());
   }
 
-  if (box_.flags &
+  if (box_->flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kDefaultSampleSizePresent)) {
-    writer.WriteU32(box_.default_sample_size);
+    writer.WriteU32(box_->default_sample_size);
   }
 
-  if (box_.flags &
+  if (box_->flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kkDefaultSampleFlagsPresent)) {
-    ValidateSampleFlags(box_.default_sample_flags);
-    writer.WriteU32(box_.default_sample_flags);
+    ValidateSampleFlags(box_->default_sample_flags);
+    writer.WriteU32(box_->default_sample_flags);
   }
 
   writer.EndBox();
@@ -176,16 +176,16 @@ Mp4TrackFragmentDecodeTimeBoxWriter::~Mp4TrackFragmentDecodeTimeBoxWriter() =
 void Mp4TrackFragmentDecodeTimeBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFDT);
+  writer.StartFullBox(mp4::FOURCC_TFDT, /*flags=*/0, /*version=*/1);
 
   uint32_t timescale = 0;
-  if (IsVideoTrackBox(context(), box_.track_id)) {
+  if (IsVideoTrackBox(context(), box_->track_id)) {
     timescale = context().GetVideoTrack().value().timescale;
   } else {
     timescale = context().GetAudioTrack().value().timescale;
   }
 
-  writer.WriteU64(ConvertToTimescale(box_.base_media_decode_time, timescale));
+  writer.WriteU64(ConvertToTimescale(box_->base_media_decode_time, timescale));
 
   writer.EndBox();
 }
@@ -203,27 +203,27 @@ Mp4TrackFragmentRunBoxWriter::~Mp4TrackFragmentRunBoxWriter() = default;
 void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TRUN, box_.flags, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_TRUN, box_->flags, /*version=*/1);
 
-  writer.WriteU32(box_.sample_count);
+  writer.WriteU32(box_->sample_count);
 
   {
     // `data_offset`.
 
     // `movie-fragment relative addressing` should exist by
     // `https://www.w3.org/TR/mse-byte-stream-format-isobmff/`.
-    CHECK(box_.flags &
+    CHECK(box_->flags &
           static_cast<uint16_t>(
               mp4::writable_boxes::TrackFragmentRunFlags::kDataOffsetPresent));
     writer.WriteOffsetPlaceholder();
   }
 
   uint32_t timescale = 0;
-  if (box_.flags &
+  if (box_->flags &
       static_cast<uint16_t>(mp4::writable_boxes::TrackFragmentRunFlags::
                                 kFirstSampleFlagsPresent)) {
-    ValidateSampleFlags(box_.first_sample_flags);
-    writer.WriteU32(box_.first_sample_flags);
+    ValidateSampleFlags(box_->first_sample_flags);
+    writer.WriteU32(box_->first_sample_flags);
 
     // `kFirstSampleFlagsPresent` exists for only Video track.
     timescale = context().GetVideoTrack().value().timescale;
@@ -232,50 +232,50 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
   }
 
   bool duration_exists =
-      (box_.flags &
+      (box_->flags &
        static_cast<uint16_t>(
            mp4::writable_boxes::TrackFragmentRunFlags::kSampleDurationPresent));
   bool size_exists =
-      (box_.flags &
+      (box_->flags &
        static_cast<uint16_t>(
            mp4::writable_boxes::TrackFragmentRunFlags::kSampleSizePresent));
   bool flags_exists =
-      (box_.flags &
+      (box_->flags &
        static_cast<uint16_t>(
            mp4::writable_boxes::TrackFragmentRunFlags::kSampleFlagsPresent));
 
   if (duration_exists) {
     // fragment, if not last, has an additional timestamp entry for last
     // item duration calculation.
-    if (box_.sample_count == 0) {
-      CHECK_EQ(box_.sample_count, box_.sample_timestamps.size());
+    if (box_->sample_count == 0) {
+      CHECK_EQ(box_->sample_count, box_->sample_timestamps.size());
     } else {
-      CHECK_EQ(box_.sample_count + 1, box_.sample_timestamps.size());
+      CHECK_EQ(box_->sample_count + 1, box_->sample_timestamps.size());
     }
   }
 
   if (size_exists) {
-    CHECK_EQ(box_.sample_count, box_.sample_sizes.size());
+    CHECK_EQ(box_->sample_count, box_->sample_sizes.size());
   }
 
   if (flags_exists) {
-    CHECK_EQ(box_.sample_count, box_.sample_flags.size());
+    CHECK_EQ(box_->sample_count, box_->sample_flags.size());
   }
 
-  for (uint32_t i = 0; i < box_.sample_count; ++i) {
+  for (uint32_t i = 0; i < box_->sample_count; ++i) {
     if (duration_exists) {
       base::TimeDelta time_diff =
-          box_.sample_timestamps[i + 1] - box_.sample_timestamps[i];
+          box_->sample_timestamps[i + 1] - box_->sample_timestamps[i];
       writer.WriteU32(
           static_cast<uint32_t>(ConvertToTimescale(time_diff, timescale)));
     }
 
     if (size_exists) {
-      writer.WriteU32(box_.sample_sizes[i]);
+      writer.WriteU32(box_->sample_sizes[i]);
     }
 
     if (flags_exists) {
-      writer.WriteU32(box_.sample_flags[i]);
+      writer.WriteU32(box_->sample_flags[i]);
     }
   }
 
@@ -297,7 +297,7 @@ void Mp4MediaDataBoxWriter::Write(BoxByteStream& writer) {
 
   writer.StartBox(mp4::FOURCC_MDAT);
 
-  for (const auto& data : box_.track_data) {
+  for (const auto& data : box_->track_data) {
     // Write base data offset to the entry of `base_data_offset` of the `trun`,
     // which was set with placeholder during its write.
     writer.FlushCurrentOffset();
@@ -318,7 +318,7 @@ Mp4FragmentRandomAccessBoxWriter::Mp4FragmentRandomAccessBoxWriter(
   // audio.
   if (auto video_track = context.GetVideoTrack()) {
     AddChildBox(std::make_unique<Mp4TrackFragmentRandomAccessBoxWriter>(
-        context, box_.tracks[video_track.value().index]));
+        context, box_->tracks[video_track.value().index]));
   }
 
   AddChildBox(
@@ -351,18 +351,18 @@ Mp4TrackFragmentRandomAccessBoxWriter::
 void Mp4TrackFragmentRandomAccessBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFRA);
+  writer.StartFullBox(mp4::FOURCC_TFRA, /*flags=*/0, /*version=*/1);
 
   // `length_size_of_traf_num`, `length_size_of_trun_num` and
   // `length_size_of_sample_num` size is 4 (uint32_t size).
   constexpr uint32_t kLengthSizeOfEntries = 0x0000003F;
 
-  writer.WriteU32(box_.track_id);
+  writer.WriteU32(box_->track_id);
   writer.WriteU32(kLengthSizeOfEntries);
-  writer.WriteU32(box_.entries.size());
+  writer.WriteU32(box_->entries.size());
 
   for (const mp4::writable_boxes::TrackFragmentRandomAccessEntry& entry :
-       box_.entries) {
+       box_->entries) {
     // TODO(crbug.com://1471314): convert the presentation time based on
     // the track's timescale.
     uint32_t timescale = context().GetVideoTrack().value().timescale;
@@ -389,7 +389,7 @@ Mp4FragmentRandomAccessOffsetBoxBoxWriter::
 void Mp4FragmentRandomAccessOffsetBoxBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFRO);
+  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/1);
 
   // `size` property of the `mfro` box is the total size of the `mfra` box.
   writer.WriteU32(writer.size() + 4);

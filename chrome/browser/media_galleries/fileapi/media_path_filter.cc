@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
@@ -89,7 +94,7 @@ std::vector<base::FilePath::StringType> GetMediaExtensionList(
     const std::string& mime_type) {
   std::vector<base::FilePath::StringType> extensions;
   net::GetExtensionsForMimeType(mime_type, &extensions);
-  base::EraseIf(extensions, &IsUnsupportedExtension);
+  std::erase_if(extensions, &IsUnsupportedExtension);
   return extensions;
 }
 

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/lens",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/ui/menu",
+]

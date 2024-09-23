@@ -7,7 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 
 void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(

@@ -5,6 +5,9 @@
     "is_debug": false,
     "llvm_force_head_revision": true,
     "symbol_level": 1,
-    "use_clang_coverage": true
+    "target_cpu": "x64",
+    "target_os": "win",
+    "use_clang_coverage": true,
+    "use_siso": true
   }
 }

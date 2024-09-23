@@ -3,16 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+
 #include <string>
-#include "base/time/time.h"
-#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
-#include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/feed_network.h"
-#include "components/feed/core/v2/public/logging_parameters.h"
-#include "components/feed/core/v2/public/reliability_logging_bridge.h"
-#include "components/feed/core/v2/types.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,36 +16,38 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/test/test_util.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace feed {
 namespace test {
@@ -84,7 +79,7 @@ std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
       base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale, or which account.
   load_task.IgnoreStalenessForTesting();
-  load_task.IngoreAccountForTesting();
+  load_task.IgnoreAccountForTesting();
 
   base::RunLoop run_loop;
   load_task.Execute(run_loop.QuitClosure());
@@ -153,8 +148,8 @@ feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
   *msg.mutable_action_payload() = MakeFeedAction(id).action_payload();
   return msg;
 }
-std::string DatastoreEntryToString(base::StringPiece key,
-                                   base::StringPiece value) {
+std::string DatastoreEntryToString(std::string_view key,
+                                   std::string_view value) {
   if (base::StartsWith(key, "/app/webfeed-follow-state/")) {
     feedxsurface::WebFeedFollowState pb;
     if (pb.ParseFromArray(value.data(), value.size())) {
@@ -233,14 +228,14 @@ void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
 
   described_updates_.push_back(CurrentState());
 }
-void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
-                                            base::StringPiece data) {
+void TestSurfaceBase::ReplaceDataStoreEntry(std::string_view key,
+                                            std::string_view data) {
   described_datastore_updates_.push_back(
       base::StrCat({"write ", key, ": ", DatastoreEntryToString(key, data)}));
   data_store_entries_[static_cast<std::string>(key)] =
       static_cast<std::string>(data);
 }
-void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
+void TestSurfaceBase::RemoveDataStoreEntry(std::string_view key) {
   described_datastore_updates_.push_back(base::StrCat({"delete ", key}));
   data_store_entries_.erase(static_cast<std::string>(key));
 }
@@ -516,6 +511,9 @@ void TestReliabilityLoggingBridge::LogLoadMoreEnded(bool success) {
       base::StrCat({"LogLoadMoreEnded success=", success ? "true" : "false"}));
 }
 
+void TestReliabilityLoggingBridge::ReportExperiments(
+    const std::vector<int32_t>& experiment_ids) {}
+
 TestImageFetcher::TestImageFetcher(
     scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory)
     : ImageFetcher(url_loader_factory) {}
@@ -537,7 +535,7 @@ void TestFeedNetwork::SendQueryRequest(
     const feedwire::Request& request,
     const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
-  sent_request_types_.push_back(NetworkRequestType::kFeedQuery);
+  sent_request_types_.push_back(request_type);
   last_account_info = account_info;
   ++send_query_call_count;
   // Emulate a successful response.
@@ -546,10 +544,11 @@ void TestFeedNetwork::SendQueryRequest(
   query_request_sent = request;
   QueryRequestResult result;
 
-  if (error != net::Error::OK)
+  if (error != net::Error::OK) {
     result.response_info.status_code = error;
-  else
+  } else {
     result.response_info.status_code = http_status_code;
+  }
 
   result.response_info.response_body_bytes = 100;
   result.response_info.fetch_duration = base::Milliseconds(42);
@@ -562,36 +561,6 @@ void TestFeedNetwork::SendQueryRequest(
   }
   Reply(base::BindOnce(std::move(callback), std::move(result)));
 }
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-void TestFeedNetwork::SendKidFriendlyApiRequest(
-    const supervised_user::GetDiscoverFeedRequest& request,
-    const AccountInfo& account_info,
-    base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback) {
-  sent_request_types_.push_back(NetworkRequestType::kSupervisedFeed);
-  last_account_info = account_info;
-  ++send_query_call_count;
-  // Emulate a successful response.
-  // The response body is currently an empty message, because most of the
-  // time we want to inject a translated response for ease of test-writing.
-  query_request_sent = feedwire::Request();
-  KidFriendlyQueryRequestResult result;
-
-  if (error != net::Error::OK) {
-    result.response_info.status_code = error;
-  } else {
-    result.response_info.status_code = http_status_code;
-  }
-
-  result.response_info.response_body_bytes = 100;
-  result.response_info.fetch_duration = base::Milliseconds(42);
-  result.response_info.account_info = account_info;
-  result.response_body =
-      std::make_unique<supervised_user::GetDiscoverFeedResponse>();
-
-  Reply(base::BindOnce(std::move(callback), std::move(result)));
-}
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 template <typename API>
 void DebugLogApiResponse(std::string request_bytes,
@@ -607,8 +576,8 @@ void DebugLogApiResponse(std::string request_bytes,
 }
 
 void DebugLogResponse(NetworkRequestType request_type,
-                      base::StringPiece api_path,
-                      base::StringPiece method,
+                      std::string_view api_path,
+                      std::string_view method,
                       std::string request_bytes,
                       const FeedNetwork::RawResponse& raw_response) {
   VLOG(1) << "TestFeedNetwork responding to request " << method << " "
@@ -625,8 +594,8 @@ void DebugLogResponse(NetworkRequestType request_type,
 
 void TestFeedNetwork::SendDiscoverApiRequest(
     NetworkRequestType request_type,
-    base::StringPiece api_path,
-    base::StringPiece method,
+    std::string_view api_path,
+    std::string_view method,
     std::string request_bytes,
     const AccountInfo& account_info,
     std::optional<RequestMetadata> request_metadata,
@@ -729,7 +698,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
 
 void TestFeedNetwork::SendAsyncDataRequest(
     const GURL& url,
-    base::StringPiece request_method,
+    std::string_view request_method,
     net::HttpRequestHeaders request_headers,
     std::string request_body,
     const AccountInfo& account_info,
@@ -841,18 +810,6 @@ TestWireResponseTranslator::TestWireResponseTranslator() = default;
 TestWireResponseTranslator::~TestWireResponseTranslator() = default;
 RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     feedwire::Response response,
-    StreamModelUpdateRequest::Source source,
-    const AccountInfo& account_info,
-    base::Time current_time) const {
-  std::optional<RefreshResponseData> result =
-      TranslateStreamSource(source, account_info, current_time);
-  return result ? std::move(result.value())
-                : WireResponseTranslator::TranslateWireResponse(
-                      std::move(response), source, account_info, current_time);
-}
-
-RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
-    supervised_user::GetDiscoverFeedResponse response,
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
     base::Time current_time) const {
@@ -985,9 +942,7 @@ void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   MetricsReporter::OnUploadActions(status);
 }
 
-FeedApiTest::FeedApiTest() {
-  scoped_feature_list_.InitAndEnableFeature(kWebFeed);
-}
+FeedApiTest::FeedApiTest() = default;
 FeedApiTest::~FeedApiTest() = default;
 void FeedApiTest::SetUp() {
   kTestTimeEpoch = base::Time::Now();
@@ -1012,10 +967,6 @@ void FeedApiTest::SetUp() {
           &test_factory_);
   image_fetcher_ =
       std::make_unique<TestImageFetcher>(shared_url_loader_factory_);
-
-  // Test initialization of TemplateURLService that defaults to Google as
-  // the default search engine.
-  template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
 
   CreateStream();
 }
@@ -1043,7 +994,7 @@ bool FeedApiTest::IsOffline() {
   return is_offline_;
 }
 std::string FeedApiTest::GetCountry() {
-  return "US";
+  return country_;
 }
 AccountInfo FeedApiTest::GetAccountInfo() {
   return account_info_;
@@ -1051,12 +1002,15 @@ AccountInfo FeedApiTest::GetAccountInfo() {
 bool FeedApiTest::IsSigninAllowed() {
   return is_signin_allowed_;
 }
+bool FeedApiTest::IsSupervisedAccount() {
+  return is_supervised_account_;
+}
 void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
     size_t follow_count) {
   register_following_feed_follow_count_field_trial_calls_.push_back(
       follow_count);
 }
-void FeedApiTest::RegisterFeedUserSettingsFieldTrial(base::StringPiece group) {
+void FeedApiTest::RegisterFeedUserSettingsFieldTrial(std::string_view group) {
   register_feed_user_settings_field_trial_calls_.push_back(
       static_cast<std::string>(group));
 }
@@ -1077,6 +1031,9 @@ void FeedApiTest::ClearAll() {
   if (on_clear_all_)
     on_clear_all_.Run();
 }
+void FeedApiTest::SetCountry(const std::string& country) {
+  country_ = country;
+}
 void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetched_images_.push_back(url);
   prefetch_image_call_count_++;
@@ -1084,19 +1041,17 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
 
 void FeedApiTest::CreateStream(
     bool wait_for_initialization,
-    bool start_surface,
     bool is_new_tab_search_engine_url_android_enabled) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
-  chrome_info.start_surface = start_surface;
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       is_new_tab_search_engine_url_android_enabled;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),
-      persistent_key_value_store_.get(), template_url_service_.get(),
-      chrome_info);
+      persistent_key_value_store_.get(),
+      search_engines_test_environment_.template_url_service(), chrome_info);
   stream_->SetWireResponseTranslatorForTesting(&response_translator_);
 
   if (wait_for_initialization)

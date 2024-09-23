@@ -32,5 +32,5 @@ dictionary ObservableEventListenerOptions {
     void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
     void removeEventListener(DOMString type, EventListener? listener, optional (EventListenerOptions or boolean) options);
     [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean dispatchEvent(Event event);
-    [MeasureAs=EventTargetOnObservable, RuntimeEnabled=ObservableAPI] Observable on(DOMString type, optional ObservableEventListenerOptions options = {});
+    [MeasureAs=EventTargetOnObservable, RuntimeEnabled=ObservableAPI] Observable when(DOMString type, optional ObservableEventListenerOptions options = {});
 };

@@ -1,0 +1,85 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc") {
+  sources = [
+    "android_management_client.cc",
+    "android_management_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//services/network/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_android_management_client.cc",
+    "fake_android_management_client.h",
+  ]
+
+  deps = [
+    ":arc",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "android_management_client_unittest.cc" ]
+
+  deps = [
+    ":arc",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "unaffiliated_arc_allowed_browsertest.cc" ]
+
+  deps = [
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -4,7 +4,7 @@
 
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 
-#include "base/containers/cxx20_erase.h"
+#include "base/not_fatal_until.h"
 #include "services/network/trust_tokens/types.h"
 #include "url/gurl.h"
 
@@ -109,7 +109,7 @@ bool InMemoryTrustTokenPersister::DeleteIssuerConfig(
 
   for (auto const& origin : keys_to_delete) {
     auto it = issuer_configs_.find(origin);
-    DCHECK(it != issuer_configs_.end());
+    CHECK(it != issuer_configs_.end(), base::NotFatalUntil::M130);
     issuer_configs_.erase(it);
   }
   for (const auto& kv : key_value_pairs_to_update) {
@@ -133,7 +133,7 @@ bool InMemoryTrustTokenPersister::DeleteToplevelConfig(
   }
   for (auto const& origin : keys_to_delete) {
     auto it = toplevel_configs_.find(origin);
-    DCHECK(it != toplevel_configs_.end());
+    CHECK(it != toplevel_configs_.end(), base::NotFatalUntil::M130);
     toplevel_configs_.erase(it);
   }
   return data_deleted;
@@ -176,7 +176,7 @@ bool InMemoryTrustTokenPersister::DeleteIssuerToplevelPairConfig(
   }
   for (auto const& key : keys_to_delete) {
     auto it = issuer_toplevel_pair_configs_.find(key);
-    DCHECK(it != issuer_toplevel_pair_configs_.end());
+    CHECK(it != issuer_toplevel_pair_configs_.end(), base::NotFatalUntil::M130);
     issuer_toplevel_pair_configs_.erase(it);
   }
   return data_deleted;
@@ -187,6 +187,28 @@ InMemoryTrustTokenPersister::GetStoredTrustTokenCounts() {
   base::flat_map<SuitableTrustTokenOrigin, int> result;
   for (const auto& kv : issuer_configs_) {
     result.emplace(kv.first, kv.second->tokens_size());
+  }
+  return result;
+}
+
+IssuerRedemptionRecordMap InMemoryTrustTokenPersister::GetRedemptionRecords() {
+  IssuerRedemptionRecordMap result;
+
+  for (const auto& [issuer_toplevel_origin, issuer_toplevel_config] :
+       issuer_toplevel_pair_configs_) {
+    const base::Time last_redemption =
+        internal::TimestampToTime(issuer_toplevel_config->last_redemption());
+    auto entry = mojom::ToplevelRedemptionRecord::New(
+        std::move(issuer_toplevel_origin.second), std::move(last_redemption));
+
+    if (auto it = result.find(issuer_toplevel_origin.first.origin());
+        it != result.end()) {
+      it->second.push_back(std::move(entry));
+      continue;
+    }
+    std::vector<mojom::ToplevelRedemptionRecordPtr> v = {};
+    v.push_back(std::move(entry));
+    result.emplace(std::move(issuer_toplevel_origin.first), std::move(v));
   }
   return result;
 }

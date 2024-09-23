@@ -1,0 +1,171 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+the visited url ranking component along with a detailed description for each
+histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram
+    name="VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits.InOutPercentage"
+    units="%" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the percentage of history annotated visits that have a visit
+    duration greater than zero milliseconds and that will be leveratged to
+    produce history aggregate data. Logged every time the History URL visit data
+    fetcher executes and the associated features and params are enabled.
+  </summary>
+</histogram>
+
+<histogram name="VisitedURLRanking.Fetch.{Fetcher}.Success"
+    enum="BooleanSuccess" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the success or failure of a given data fetcher's execution. Logged
+    every time the Visited URL Ranking Service's Fetch API is invoked and data
+    fetchers executed.
+  </summary>
+  <token key="Fetcher">
+    <variant name="History" summary="History"/>
+    <variant name="Session" summary="Session"/>
+    <variant name="TabModel" summary="Tab Model"/>
+  </token>
+</histogram>
+
+<histogram name="VisitedURLRanking.Rank.NumVisits" units="counts"
+    expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of URL visit aggregates that have been scored and will be
+    returned to the caller. Logged as part of the Visited URL Ranking Service's
+    Rank API call. Only logged when the visited url ranking service feature is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="VisitedURLRanking.Request.Step.{Step}.Status"
+    enum="VisitedURLRankingRequestStepStatus" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the status of a particular execution step of the Visited URL ranking
+    service's APIs. Logged every time a client invokes one of the service's
+    APIs. `Fetch` is recorded once per fetcher source participating in incoming
+    Fetch API calls. `Rank` is recorded once per incoming Rank API call.
+    `Transform` is recorded once per transformer participating in an incoming
+    Fetch API call. Only logged when the visited url ranking service feature is
+    enabled.
+  </summary>
+  <token key="Step">
+    <variant name="Fetch" summary="Fetch"/>
+    <variant name="Rank" summary="Rank"/>
+    <variant name="Transform" summary="Transform"/>
+  </token>
+</histogram>
+
+<histogram name="VisitedURLRanking.ScoredURLAction" enum="ScoredURLUserAction"
+    expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the most relevant action that took place for a scored URL visit
+    resumption suggestion displayed on a UI, such as whether the user has seen,
+    activated, or dismissed the suggestion. Logged by various Tab Resumption UI
+    features when the user is presented with and/or interacts with a URL visit
+    resumption suggestion. Only logged when the visited url ranking service
+    feature is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.InOutPercentage"
+    units="%" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the percentage of outbound URL visit aggregates returned by a
+    transform versus the inbound URL visit aggregates provided to the transform.
+    Logged every time a URL visit aggregates transformer succeeded. Only logged
+    if the visited url ranking service feature is enabled.
+  </summary>
+  <token key="URLVisitAggregatesTransformType">
+    <variant name="BookmarkData" summary="Bookmark data"/>
+    <variant name="DefaultAppUrlFilter" summary="Default app URL filter"/>
+    <variant name="HistoryBrowserTypeFilter"
+        summary="History browser type filter"/>
+    <variant name="HistoryCategoriesFilter"
+        summary="History caetgories filter"/>
+    <variant name="HistoryVisibilityScoreFilter"
+        summary="History visibility score filter"/>
+    <variant name="None" summary="None"/>
+    <variant name="RecencyFilter" summary="Recency filter"/>
+    <variant name="SegmentationMetricsData"
+        summary="Segmentation metrics data"/>
+    <variant name="ShoppingData" summary="Shopping data"/>
+  </token>
+</histogram>
+
+<histogram
+    name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Latency"
+    units="ms" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the time elapsed in milliseconds (i.e. latency) when executing a
+    given transformation. Logged every time a transformer succeeded and there
+    were URL visit aggregates passed as input to the transform. Only logged if
+    the visited url ranking service feature is enabled. Only logged when the
+    tranform had data to process and when the transform was successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Success"
+    enum="BooleanSuccess" expires_after="2025-03-22">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the success or failure of a transform type that was executed as part
+    of the Visited URL Ranking Service's Fetch API call. Logged once for each
+    transformer that excuted in the Fetch API call. Only logged if the visited
+    url ranking service feature is enabled.
+  </summary>
+  <token key="URLVisitAggregatesTransformType">
+    <variant name="BookmarkData" summary="Bookmark data"/>
+    <variant name="DefaultAppUrlFilter" summary="Default app URL filter"/>
+    <variant name="HistoryCategoriesFilter"
+        summary="History caetgories filter"/>
+    <variant name="HistoryVisibilityScoreFilter"
+        summary="History visibility score filter"/>
+    <variant name="None" summary="None"/>
+    <variant name="RecencyFilter" summary="Recency filter"/>
+    <variant name="SegmentationMetricsData"
+        summary="Segmentation metrics data"/>
+    <variant name="ShoppingData" summary="Shopping data"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

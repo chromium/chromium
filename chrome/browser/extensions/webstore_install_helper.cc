@@ -119,7 +119,7 @@ void WebstoreInstallHelper::OnJSONParsed(
     error_ = (!result.has_value() || result.error().empty())
                  ? "Invalid JSON response"
                  : result.error();
-    parse_error_ = Delegate::MANIFEST_ERROR;
+    parse_error_ = Delegate::kManifestError;
   }
   ReportResultsIfComplete();
 }

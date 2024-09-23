@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/app_view/app_view_constants.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager.h"
@@ -62,6 +61,8 @@ base::LazyInstance<PendingResponseMap>::DestructorAtExit
 
 // static.
 const char AppViewGuest::Type[] = "appview";
+const guest_view::GuestViewHistogramValue AppViewGuest::HistogramValue =
+    guest_view::GuestViewHistogramValue::kAppView;
 
 // static.
 bool AppViewGuest::CompletePendingRequest(
@@ -228,8 +229,9 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
 void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
 
-  if (!url_.is_valid())
+  if (!url_.is_valid()) {
     return;
+  }
 
   GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                           std::string());
@@ -237,10 +239,8 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
 void AppViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
-    // This situation is not possible for AppView.
-    NOTREACHED();
-  }
+  // This situation is not possible for AppView.
+  NOTREACHED_IN_MIGRATION();
 }
 
 const char* AppViewGuest::GetAPINamespace() const {
@@ -274,7 +274,9 @@ void AppViewGuest::CompleteCreateWebContents(
       content::SiteInstance::CreateForURL(browser_context(),
                                           guest_extension->url()));
   params.guest_delegate = this;
-  std::move(callback).Run(std::move(owned_this), WebContents::Create(params));
+  auto web_contents = WebContents::Create(params);
+  app_delegate_->InitWebContents(web_contents.get());
+  std::move(callback).Run(std::move(owned_this), std::move(web_contents));
 }
 
 void AppViewGuest::LaunchAppAndFireEvent(

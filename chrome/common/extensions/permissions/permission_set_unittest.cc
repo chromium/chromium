@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -115,7 +120,7 @@ testing::AssertionResult PermissionSetProducesMessage(
 // Tests GetByID.
 TEST(PermissionsTest, GetByID) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
-  APIPermissionSet apis = info->GetAll();
+  APIPermissionSet apis = info->GetAllForTest();
   for (const auto* api : apis)
     EXPECT_EQ(api->id(), api->info()->id());
 }
@@ -131,7 +136,7 @@ TEST(PermissionsTest, GetByName) {
 TEST(PermissionsTest, GetAll) {
   size_t count = 0;
   PermissionsInfo* info = PermissionsInfo::GetInstance();
-  APIPermissionSet apis = info->GetAll();
+  APIPermissionSet apis = info->GetAllForTest();
   for (const auto* api : apis) {
     // Make sure only the valid permission IDs get returned.
     EXPECT_NE(APIPermissionID::kInvalid, api->id());
@@ -158,7 +163,7 @@ TEST(PermissionsTest, GetAllByName) {
   expected.insert(APIPermissionID::kTab);
 
   EXPECT_EQ(expected,
-            PermissionsInfo::GetInstance()->GetAllByName(names));
+            PermissionsInfo::GetInstance()->GetAllByNameForTest(names));
 }
 
 // Tests that the aliases are properly mapped.
@@ -888,7 +893,7 @@ TEST(PermissionsTest, PermissionMessages) {
 
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
   PermissionsInfo* info = PermissionsInfo::GetInstance();
-  APIPermissionSet permissions = info->GetAll();
+  APIPermissionSet permissions = info->GetAllForTest();
   for (const auto* permission : permissions) {
     const APIPermissionInfo* permission_info = permission->info();
     EXPECT_TRUE(permission_info);
@@ -1311,7 +1316,7 @@ TEST(PermissionsTest, GetWarningMessages_PlatformAppHosts) {
 
 testing::AssertionResult ShowsAllHostsWarning(const std::string& pattern) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("TLDWildCardTest").AddPermission(pattern).Build();
+      ExtensionBuilder("TLDWildCardTest").AddHostPermission(pattern).Build();
 
   return VerifyHasPermissionMessage(
       extension->permissions_data(),
@@ -1673,7 +1678,7 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
        false,
        true},
       // Test expanding from any .com host to any host in any TLD.
-      // TODO(crbug.com/849906): Should this really be a permissions increase?
+      // TODO(crbug.com/40579475): Should this really be a permissions increase?
       {{{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*.com/*"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*/*"}},
        Manifest::TYPE_EXTENSION,
@@ -1722,7 +1727,7 @@ TEST(PermissionsTest, GetAPIsAsStrings) {
   // and we can convert it back to the id set.
   EXPECT_EQ(4u, api_names.size());
   EXPECT_EQ(apis,
-            PermissionsInfo::GetInstance()->GetAllByName(api_names));
+            PermissionsInfo::GetInstance()->GetAllByNameForTest(api_names));
 }
 
 TEST(PermissionsTest, IsEmpty) {

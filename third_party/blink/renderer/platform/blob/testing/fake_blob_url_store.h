@@ -29,7 +29,6 @@ class FakeBlobURLStore : public mojom::blink::BlobURLStore {
       const std::optional<BlinkSchemefulSite>& unsafe_top_level_site,
       RegisterCallback) override;
   void Revoke(const KURL&) override;
-  void Resolve(const KURL&, ResolveCallback) override;
   void ResolveAsURLLoaderFactory(
       const KURL&,
       mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>,

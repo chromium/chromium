@@ -107,41 +107,6 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies `CreateHelpBubble()` is working as intended.
-TEST_F(ChromeUserEducationDelegateTest, CreateHelpBubble) {
-  // Create and show a `widget`.
-  views::Widget widget;
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-  widget.Init(std::move(params));
-  widget.SetContentsView(std::make_unique<views::View>());
-  widget.CenterWindow(gfx::Size(100, 100));
-  widget.Show();
-
-  // Cache `element_context` for the widget.
-  const ui::ElementContext element_context =
-      views::ElementTrackerViews::GetContextForWidget(&widget);
-
-  // Verify that a help bubble is *not* created for the specified `kElementId`
-  // and `element_context` pair since no tracked element matching that pair has
-  // been registered with the element tracker framework.
-  EXPECT_FALSE(delegate()->CreateHelpBubble(
-      account_id(), ash::HelpBubbleId::kTest,
-      user_education::HelpBubbleParams(), kElementId, element_context));
-
-  // Register the `widget`s contents `view` with the element tracker framework.
-  views::View* const view = widget.GetContentsView();
-  view->SetProperty(ash::kHelpBubbleContextKey, ash::HelpBubbleContext::kAsh);
-  view->SetProperty(views::kElementIdentifierKey, kElementId);
-
-  // Verify that a help bubble *is* created for the specified `kElementId` and
-  // `element_context` pair.
-  EXPECT_TRUE(delegate()->CreateHelpBubble(
-      account_id(), ash::HelpBubbleId::kTest,
-      user_education::HelpBubbleParams(), kElementId, element_context));
-}
-
 // Verifies that `GetElementIdentifierForAppId()` is working as intended.
 TEST_F(ChromeUserEducationDelegateTest, GetElementIdentifierForAppId) {
   using AppIdWithElementIdentifier =
@@ -303,30 +268,31 @@ class ChromeUserEducationDelegateNewUserTest
  private:
   // ChromeUserEducationDelegateTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{app_list::AppListSyncableServiceFactory::GetInstance(),
-             base::BindLambdaForTesting([&](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-               auto app_list_syncable_service =
-                   std::make_unique<NiceMock<MockAppListSyncableService>>(
-                       Profile::FromBrowserContext(context));
+    return {TestingProfile::TestingFactory{
+        app_list::AppListSyncableServiceFactory::GetInstance(),
+        base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto app_list_syncable_service =
+              std::make_unique<NiceMock<MockAppListSyncableService>>(
+                  Profile::FromBrowserContext(context));
 
-               // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
-               // it runs callbacks to inform them if the first app list sync in
-               // the session was the first sync ever across all ChromeOS
-               // devices and sessions for the given user, based on test
-               // parameterization. Callbacks should only run once signaled that
-               // the first app list sync in the session has been completed.
-               ON_CALL(*app_list_syncable_service, OnFirstSync)
-                   .WillByDefault(Invoke(
-                       [&](base::OnceCallback<void(bool was_first_sync_ever)>
-                               callback) {
-                         on_first_sync_.Post(
-                             FROM_HERE, base::BindOnce(std::move(callback),
+          // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
+          // it runs callbacks to inform them if the first app list sync in
+          // the session was the first sync ever across all ChromeOS
+          // devices and sessions for the given user, based on test
+          // parameterization. Callbacks should only run once signaled that
+          // the first app list sync in the session has been completed.
+          ON_CALL(*app_list_syncable_service, OnFirstSync)
+              .WillByDefault(
+                  Invoke([&](base::OnceCallback<void(bool was_first_sync_ever)>
+                                 callback) {
+                    on_first_sync_.Post(FROM_HERE,
+                                        base::BindOnce(std::move(callback),
                                                        was_first_sync_ever()));
-                       }));
+                  }));
 
-               return app_list_syncable_service;
-             })}};
+          return app_list_syncable_service;
+        })}};
   }
 
   // The event to signal when the first app list sync in the session has been

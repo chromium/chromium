@@ -90,10 +90,10 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
 
   EncryptedReportingJobConfiguration(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
-      DMAuth auth_data,
       const std::string& server_url,
       base::Value::Dict merging_payload,
-      CloudPolicyClient* cloud_policy_client,
+      const std::string dm_token,
+      const std::string client_id,
       UploadResponseCallback response_cb,
       UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;

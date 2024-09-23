@@ -22,8 +22,8 @@ void OmniboxMouseEnterExitHandler::ObserveMouseEnterExitOn(views::View* view) {
 }
 
 void OmniboxMouseEnterExitHandler::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_ENTERED ||
-      event->type() == ui::ET_MOUSE_EXITED) {
+  if (event->type() == ui::EventType::kMouseEntered ||
+      event->type() == ui::EventType::kMouseExited) {
     enter_exit_callback_.Run();
   }
 }

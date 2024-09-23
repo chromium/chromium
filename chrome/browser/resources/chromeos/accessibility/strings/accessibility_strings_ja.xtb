@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ロージー ブラウン</translation>
 <translation id="249330843868392562">テキスト読み上げの設定を開く</translation>
 <translation id="2497706219848005458">グリーン イエロー</translation>
+<translation id="2512979179176933762">ウィンドウを表示する</translation>
 <translation id="2523609930580546572">ChromeVox チュートリアル</translation>
 <translation id="2525706221823668172">Chromebook のキーボード ショートカット</translation>
 <translation id="2553108862507765288">文法上の誤り</translation>
@@ -247,7 +248,7 @@
 <translation id="2675533876313964202">シャルトリューズ</translation>
 <translation id="2684412629217766642">ChromeVox のチュートリアルを閉じる</translation>
 <translation id="2692503699962701720">要素タイプと書式付きテキストを読み上げるときにピッチを変更する</translation>
-<translation id="2697408785920771974">インライン オートコンプリート</translation>
+<translation id="2697408785920771974">インライン予測入力</translation>
 <translation id="2697786971245905543">テキスト変換候補</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{左丸かっこ}other{# 個の左丸かっこ}}</translation>
 <translation id="270523456882008230">ヒント: 現在のアイテムを有効にするには、1 本の指でダブルタップします。</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">前のアイテムに移動するには、1 本の指で右から左にスワイプします。では、やってみましょう。</translation>
 <translation id="280499067616661124">ChromeVox でページ内を検索します</translation>
-<translation id="2811019999044652585">ツールバーやシステムトレイなど画面の他の部分に移動するには、Ctrl+Forward キーを押します。Chromebook では、Forward キーは数字キー 2 のすぐ上にあります。</translation>
 <translation id="2811204574343810641">行</translation>
 <translation id="2816868829355607410">練習エリア: ジャンプ コマンド</translation>
 <translation id="2841013758207633010">時間</translation>
@@ -427,7 +427,7 @@
 <translation id="3777742246909257041">スノー</translation>
 <translation id="3781428340399460090">ホットピンク</translation>
 <translation id="3783725005098956899">ログを表示</translation>
-<translation id="3801735343383419236">オートコンプリートはリスト形式</translation>
+<translation id="3801735343383419236">予測入力はリスト形式</translation>
 <translation id="3806327402890551732">次または前のアイテムに移動する</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3813387282697781382">ライトコーラル</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">スチールブルー</translation>
 <translation id="4253168017788158739">メモ</translation>
 <translation id="4254798249533888099">ツリー</translation>
+<translation id="4259220820964911921">フェイス コントロールを有効にしますか？</translation>
 <translation id="4271220233568730077">次の数式</translation>
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4278486392851938658">前にアクセスしたリンクはありません</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">インディアン レッド</translation>
 <translation id="4432896207833262240">マークされたコンテンツ</translation>
 <translation id="4437615272777527928">メニューを検索するには入力してください。結果を切り替えるには上下の矢印キーを使用します。テキスト カーソルの調整やメニュー間の移動には左右の矢印キーを使用します。</translation>
+<translation id="4453530046591759283">ツールバーやシステムトレイなど、画面の他の部分に移動するには、Ctrl+F1 キーを押します。Esc キーの右側にある最初のキーが F1 キーです。</translation>
 <translation id="4457472090507035117">現在の音声を選択:</translation>
 <translation id="4476183483923481720">新しい行</translation>
 <translation id="4479068155583208887">ファイア ブリック</translation>
@@ -643,7 +645,7 @@
     <ph name="UNDERLINE_STRING" />
     <ph name="LINE_THROUGH_STRING" />
     <ph name="FONT_FAMILY_STRING" /></translation>
-<translation id="5336381510091010269">リストのインライン オートコンプリート</translation>
+<translation id="5336381510091010269">リストのインライン予測入力</translation>
 <translation id="5349770431644471053">言及リンク</translation>
 <translation id="5355014376930441909">次のセクションはありません</translation>
 <translation id="5368000168321181111">イアコン オフ</translation>
@@ -681,7 +683,7 @@
 <translation id="5598905979683743333"><ph name="NAME" />、選択されていないラジオボタン</translation>
 <translation id="5601172225407283979">デフォルトの操作を実行します</translation>
 <translation id="5604302400025591178">{COUNT,plural, =1{四角形の箇条書き記号}other{# 個の四角形の箇条書き記号}}</translation>
-<translation id="5608798115546226984">オートコンプリートはインライン表示</translation>
+<translation id="5608798115546226984">予測入力はインライン表示</translation>
 <translation id="5616029807486814372">次のレッスン</translation>
 <translation id="561939826962581046">日時</translation>
 <translation id="5623778242535476823">ラジオボタン</translation>
@@ -700,7 +702,7 @@
 <translation id="5683155931978483559">前のチェックボックス</translation>
 <translation id="5684277895745049190">リスト</translation>
 <translation id="5703716265115423771">音量を下げる</translation>
-<translation id="5704453877234251104">上または下矢印キーでオート コンプリートの候補を表示します</translation>
+<translation id="5704453877234251104">上または下矢印キーで予測入力の候補を表示します</translation>
 <translation id="5712244464475377681">ポップアップ ボタン</translation>
 <translation id="5712889723513495267">次または前のセクションに移動する</translation>
 <translation id="5725079927589231571">ライト スチールブルー</translation>
@@ -709,6 +711,7 @@
 <translation id="5760594853119905566">付録</translation>
 <translation id="5761219715606611783">お疲れさまでした。ChromeVox の基本のタッチ操作はこれで終わりです。チュートリアルをもう一度確認する場合や終了する場合は、下のボタンを押してください。</translation>
 <translation id="5776001898637896684">Google Enhanced Network テキスト読み上げ拡張機能</translation>
+<translation id="5783252477644995371">フェイス コントロールでは、顔の向きでカーソルを操作したり、笑顔などの顔の動きで左クリックといった操作を行ったりできます</translation>
 <translation id="5805940204952508776">2 本の指でタップします</translation>
 <translation id="5819072574982403430">ツリー項目</translation>
 <translation id="5822819874379903994">ダーク ターコイズ</translation>
@@ -879,6 +882,7 @@
 <translation id="7091296112653361280">ナバホホワイト</translation>
 <translation id="7095834689119144465">数字のみのテキスト編集</translation>
 <translation id="7096001299300236431">前のメディア</translation>
+<translation id="7096668131290451939">もう一度 Esc キーを押すと、学習モードを終了します</translation>
 <translation id="7116595520562830928">複数行</translation>
 <translation id="712735679809149106">単語読み上げ</translation>
 <translation id="7137397390322864165">サーモン</translation>
@@ -966,7 +970,7 @@
 <translation id="7693840228159394336">前のラジオボタン</translation>
 <translation id="7696631298608145306">次の単語に移動</translation>
 <translation id="7701040980221191251">なし</translation>
-<translation id="7701196182766842984">リストのオートコンプリート</translation>
+<translation id="7701196182766842984">リストの予測入力</translation>
 <translation id="7714340021005120797">次のコンボボックスはありません</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7731785449856576010">次のメディア ウィジェットはありません</translation>
@@ -1057,7 +1061,7 @@
 <translation id="8326783648485765113">ローングリーン</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ポンド}other{# 個のポンド記号}}</translation>
 <translation id="8378855320830505539">地域</translation>
-<translation id="8382679411218029383">オートコンプリートはインライン表示とリスト形式の両方</translation>
+<translation id="8382679411218029383">予測入力はインライン表示とリスト形式の両方</translation>
 <translation id="8394908167088220973">メディアの再生/一時停止</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" /> 階層</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">次のチェックボックスはありません</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8476408756881832830">ChromeVox の読み上げ中は再生を一時停止する</translation>
-<translation id="8476508772960940536">ウィンドウ概観</translation>
 <translation id="8480873377842220259">次は、基本操作をいくつか見ていきましょう。検索+矢印キーを押すと、画面上を移動できます。次へ進むには、検索+右矢印キーを押してください。</translation>
 <translation id="8503360654911991865">一度に移動する単位を大きくする</translation>
 <translation id="8520472399088452386">スピンボタン</translation>
@@ -1161,7 +1164,7 @@
 <translation id="9173115498289768110">音量 <ph name="PERCENT" /> パーセント</translation>
 <translation id="9185200690645120087">ChromeVox タッチ操作チュートリアル</translation>
 <translation id="9192904702577636854">マーキー</translation>
-<translation id="9205282956404529648">文字を入力すると、オート コンプリートの候補が表示されます</translation>
+<translation id="9205282956404529648">文字を入力すると、予測入力の候補が表示されます</translation>
 <translation id="9208241857935108694">アンティーク ホワイト</translation>
 <translation id="9220679313820249046">オレンジレッド</translation>
 <translation id="9223032053830369045">ダークレッド</translation>

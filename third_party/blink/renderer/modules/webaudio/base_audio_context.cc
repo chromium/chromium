@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/webaudio/channel_splitter_node.h"
 #include "third_party/blink/renderer/modules/webaudio/constant_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/convolver_node.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_node.h"
 #include "third_party/blink/renderer/modules/webaudio/gain_node.h"
@@ -104,7 +105,7 @@ BaseAudioContext::~BaseAudioContext() {
   {
     // We may need to destroy summing junctions, which must happen while this
     // object is still valid and with the graph lock held.
-    GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(this);
     destination_handler_ = nullptr;
   }
 
@@ -175,7 +176,7 @@ void BaseAudioContext::Uninitialize() {
   Clear();
 
   DCHECK(!is_resolving_resume_promises_);
-  DCHECK_EQ(resume_resolvers_.size(), 0u);
+  DCHECK_EQ(pending_promises_resolvers_.size(), 0u);
 }
 
 void BaseAudioContext::Dispose() {
@@ -292,7 +293,7 @@ AudioBuffer* BaseAudioContext::createBuffer(uint32_t number_of_channels,
   return buffer;
 }
 
-ScriptPromise BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     ExceptionState& exception_state) {
@@ -300,7 +301,7 @@ ScriptPromise BaseAudioContext::decodeAudioData(
                          exception_state);
 }
 
-ScriptPromise BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     V8DecodeSuccessCallback* success_callback,
@@ -309,7 +310,7 @@ ScriptPromise BaseAudioContext::decodeAudioData(
                          exception_state);
 }
 
-ScriptPromise BaseAudioContext::decodeAudioData(
+ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
     ScriptState* script_state,
     DOMArrayBuffer* audio_data,
     V8DecodeSuccessCallback* success_callback,
@@ -322,7 +323,7 @@ ScriptPromise BaseAudioContext::decodeAudioData(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot decode audio data: The document is no longer active.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   v8::Isolate* isolate = script_state->GetIsolate();
@@ -347,9 +348,9 @@ ScriptPromise BaseAudioContext::decodeAudioData(
   } else {  // audio_data->Transfer succeeded.
     DOMArrayBuffer* audio = DOMArrayBuffer::Create(buffer_contents);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
         script_state, exception_state.GetContext());
-    ScriptPromise promise = resolver->Promise();
+    auto promise = resolver->Promise();
     decode_audio_resolvers_.insert(resolver);
 
     audio_decoder_.DecodeAsync(audio, sampleRate(), success_callback,
@@ -371,12 +372,12 @@ ScriptPromise BaseAudioContext::decodeAudioData(
     error_callback->InvokeAndReportException(this, dom_exception);
   }
 
-  return ScriptPromise();
+  return EmptyPromise();
 }
 
 void BaseAudioContext::HandleDecodeAudioData(
     AudioBuffer* audio_buffer,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<AudioBuffer>* resolver,
     V8DecodeSuccessCallback* success_callback,
     V8DecodeErrorCallback* error_callback,
     ExceptionContext exception_context) {
@@ -645,7 +646,7 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
       }
       return periodic_wave_triangle_.Get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -653,7 +654,7 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
 String BaseAudioContext::state() const {
   // These strings had better match the strings for AudioContextState in
   // AudioContext.idl.
-  switch (context_state_) {
+  switch (control_thread_state_) {
     case kSuspended:
       return "suspended";
     case kRunning:
@@ -661,7 +662,7 @@ String BaseAudioContext::state() const {
     case kClosed:
       return "closed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -670,7 +671,7 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
 
   // If there's no change in the current state, there's nothing that needs to be
   // done.
-  if (new_state == context_state_) {
+  if (new_state == control_thread_state_) {
     return;
   }
 
@@ -678,17 +679,17 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
   // Running->Suspended, and anything->Closed.
   switch (new_state) {
     case kSuspended:
-      DCHECK_EQ(context_state_, kRunning);
+      DCHECK_EQ(control_thread_state_, kRunning);
       break;
     case kRunning:
-      DCHECK_EQ(context_state_, kSuspended);
+      DCHECK_EQ(control_thread_state_, kSuspended);
       break;
     case kClosed:
-      DCHECK_NE(context_state_, kClosed);
+      DCHECK_NE(control_thread_state_, kClosed);
       break;
   }
 
-  context_state_ = new_state;
+  control_thread_state_ = new_state;
 
   if (new_state == kClosed) {
     GetDeferredTaskHandler().StopAcceptingTailProcessing();
@@ -723,7 +724,7 @@ LocalDOMWindow* BaseAudioContext::GetWindow() const {
 
 void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
   DCHECK(IsMainThread());
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   GetDeferredTaskHandler().GetActiveSourceHandlers()->insert(&node->Handler());
   node->Handler().MakeConnection();
@@ -732,7 +733,7 @@ void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
 void BaseAudioContext::ReleaseActiveSourceNodes() {
   DCHECK(IsMainThread());
 
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   for (auto source_handler :
        *GetDeferredTaskHandler().GetActiveSourceHandlers()) {
@@ -777,11 +778,11 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
     return;
   }
 
-  GraphAutoLocker locker(this);
+  DeferredTaskHandler::GraphAutoLocker locker(this);
 
   if (is_resolving_resume_promises_) {
-    for (auto& resolver : resume_resolvers_) {
-      if (context_state_ == kClosed) {
+    for (auto& resolver : pending_promises_resolvers_) {
+      if (control_thread_state_ == kClosed) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "Cannot resume a context that has been closed"));
@@ -790,7 +791,7 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
         resolver->Resolve();
       }
     }
-    resume_resolvers_.clear();
+    pending_promises_resolvers_.clear();
     is_resolving_resume_promises_ = false;
   }
 
@@ -825,11 +826,11 @@ void BaseAudioContext::RejectPendingResolvers() {
   // Audio context is closing down so reject any resume promises that are still
   // pending.
 
-  for (auto& resolver : resume_resolvers_) {
+  for (auto& resolver : pending_promises_resolvers_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
   }
-  resume_resolvers_.clear();
+  pending_promises_resolvers_.clear();
   is_resolving_resume_promises_ = false;
 
   RejectPendingDecodeAudioDataResolvers();
@@ -851,7 +852,7 @@ void BaseAudioContext::StartRendering() {
   DCHECK(IsMainThread());
   DCHECK(destination_node_);
 
-  if (context_state_ == kSuspended) {
+  if (control_thread_state_ == kSuspended) {
     destination()->GetAudioDestinationHandler().StartRendering();
   }
 }
@@ -859,7 +860,7 @@ void BaseAudioContext::StartRendering() {
 void BaseAudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(destination_node_);
   visitor->Trace(listener_);
-  visitor->Trace(resume_resolvers_);
+  visitor->Trace(pending_promises_resolvers_);
   visitor->Trace(decode_audio_resolvers_);
   visitor->Trace(periodic_wave_sine_);
   visitor->Trace(periodic_wave_square_);
@@ -890,7 +891,7 @@ void BaseAudioContext::NotifyWorkletIsReady() {
   {
     // `audio_worklet_thread_` is constantly peeked by the rendering thread,
     // So we protect it with the graph lock.
-    GraphAutoLocker locker(this);
+    DeferredTaskHandler::GraphAutoLocker locker(this);
 
     // At this point, the WorkletGlobalScope must be ready so it is safe to keep
     // the reference to the AudioWorkletThread for the future worklet operation.

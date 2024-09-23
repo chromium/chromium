@@ -67,14 +67,18 @@ TEST_F('I18nProcessTest', 'All', function() {
       i18nTemplate.process(document, loadTimeData);
     });
 
-    test('attributes', function() {
+    test('attributes', async function() {
+      const {assertNotEquals, assertTrue, assertEquals} =
+          await import('chrome://webui-test/chai_assert.js');
       assertNotEquals('', document.title);
       assertTrue(document.body.hasAttribute('type'));
       assertTrue(document.querySelector('span').textContent.length > 5);
       assertEquals('none', document.querySelector('span').style.display);
     });
 
-    test('fragment', function() {
+    test('fragment', async function() {
+      const {assertNotEquals, assertTrue} =
+          await import('chrome://webui-test/chai_assert.js');
       const span = document.createElement('span');
       span.setAttribute('i18n-content', 'content');
 
@@ -92,13 +96,16 @@ TEST_F('I18nProcessTest', 'All', function() {
       assertTrue(div.hasAttribute('i18n-processed'));
     });
 
-    test('rerun', function() {
+    test('rerun', async function() {
+      const {assertTrue} = await import('chrome://webui-test/chai_assert.js');
       document.body.removeAttribute('type');
       i18nTemplate.process(document, loadTimeData);
       assertTrue(document.body.hasAttribute('type'));
     });
 
-    test('templates', function() {
+    test('templates', async function() {
+      const {assertNotEquals} =
+          await import('chrome://webui-test/chai_assert.js');
       const outerDocFrag = document.querySelector('template').content;
       const innerDocFrag = outerDocFrag.querySelector('template').content;
       assertNotEquals('', innerDocFrag.querySelector('div').textContent);

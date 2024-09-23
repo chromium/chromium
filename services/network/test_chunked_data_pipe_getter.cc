@@ -11,7 +11,11 @@ namespace network {
 
 TestChunkedDataPipeGetter::TestChunkedDataPipeGetter() = default;
 
-TestChunkedDataPipeGetter::~TestChunkedDataPipeGetter() = default;
+TestChunkedDataPipeGetter::~TestChunkedDataPipeGetter() {
+  if (get_size_callback_) {
+    std::move(get_size_callback_).Run(0, 0);
+  }
+}
 
 mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
 TestChunkedDataPipeGetter::GetDataPipeGetterRemote() {

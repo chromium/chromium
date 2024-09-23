@@ -4,6 +4,85 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
+[Worker] interface AI
+[Worker]     attribute @@toStringTag
+[Worker]     getter assistant
+[Worker]     getter rewriter
+[Worker]     getter summarizer
+[Worker]     getter writer
+[Worker]     method constructor
+[Worker] interface AIAssistant
+[Worker]     attribute @@toStringTag
+[Worker]     getter maxTokens
+[Worker]     getter temperature
+[Worker]     getter tokensLeft
+[Worker]     getter tokensSoFar
+[Worker]     getter topK
+[Worker]     method clone
+[Worker]     method constructor
+[Worker]     method countPromptTokens
+[Worker]     method destroy
+[Worker]     method prompt
+[Worker]     method promptStreaming
+[Worker] interface AIAssistantCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     getter available
+[Worker]     getter defaultTemperature
+[Worker]     getter defaultTopK
+[Worker]     getter maxTopK
+[Worker]     method constructor
+[Worker] interface AIAssistantFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method capabilities
+[Worker]     method constructor
+[Worker]     method create
+[Worker] interface AIRewriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     getter sharedContext
+[Worker]     getter tone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method rewrite
+[Worker]     method rewriteStreaming
+[Worker] interface AIRewriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
+[Worker] interface AISummarizer
+[Worker]     attribute @@toStringTag
+[Worker]     getter format
+[Worker]     getter length
+[Worker]     getter sharedContext
+[Worker]     getter type
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method summarize
+[Worker]     method summarizeStreaming
+[Worker] interface AISummarizerCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     getter available
+[Worker]     method constructor
+[Worker]     method supportsFormat
+[Worker]     method supportsInputLanguage
+[Worker]     method supportsLength
+[Worker]     method supportsType
+[Worker] interface AISummarizerFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method capabilities
+[Worker]     method constructor
+[Worker]     method create
+[Worker] interface AIWriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter sharedContext
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method write
+[Worker]     method writeStreaming
+[Worker] interface AIWriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal
@@ -472,8 +551,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method addEventListener
 [Worker]     method constructor
 [Worker]     method dispatchEvent
-[Worker]     method on
 [Worker]     method removeEventListener
+[Worker]     method when
 [Worker] interface FaceDetector
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -637,6 +716,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUAdapter
 [Worker]     attribute @@toStringTag
 [Worker]     getter features
+[Worker]     getter info
 [Worker]     getter isCompatibilityMode
 [Worker]     getter isFallbackAdapter
 [Worker]     getter limits
@@ -846,6 +926,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method endOcclusionQuery
 [Worker]     method executeBundles
 [Worker]     method insertDebugMarker
+[Worker]     method multiDrawIndexedIndirect
+[Worker]     method multiDrawIndirect
 [Worker]     method popDebugGroup
 [Worker]     method pushDebugGroup
 [Worker]     method setBindGroup
@@ -948,6 +1030,40 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface GPUValidationError : GPUError
 [Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface HID : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter onconnect
+[Worker]     getter ondisconnect
+[Worker]     method constructor
+[Worker]     method getDevices
+[Worker]     setter onconnect
+[Worker]     setter ondisconnect
+[Worker] interface HIDConnectionEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter device
+[Worker]     method constructor
+[Worker] interface HIDDevice : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter collections
+[Worker]     getter oninputreport
+[Worker]     getter opened
+[Worker]     getter productId
+[Worker]     getter productName
+[Worker]     getter vendorId
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method forget
+[Worker]     method open
+[Worker]     method receiveFeatureReport
+[Worker]     method sendFeatureReport
+[Worker]     method sendReport
+[Worker]     setter oninputreport
+[Worker] interface HIDInputReportEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter data
+[Worker]     getter device
+[Worker]     getter reportId
 [Worker]     method constructor
 [Worker] interface Headers
 [Worker]     attribute @@toStringTag
@@ -1153,6 +1269,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
+[Worker] interface LanguageTranslator
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method translate
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -1163,105 +1283,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method query
 [Worker]     method request
-[Worker] interface ML
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method createContext
-[Worker]     method createContextSync
-[Worker] interface MLActivation
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker] interface MLContext
-[Worker]     attribute @@toStringTag
-[Worker]     method computeSync
-[Worker]     method constructor
-[Worker] interface MLGraph
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker] interface MLGraphBuilder
-[Worker]     attribute @@toStringTag
-[Worker]     method abs
-[Worker]     method add
-[Worker]     method argMax
-[Worker]     method argMin
-[Worker]     method averagePool2d
-[Worker]     method batchNormalization
-[Worker]     method buildSync
-[Worker]     method cast
-[Worker]     method ceil
-[Worker]     method clamp
-[Worker]     method concat
-[Worker]     method constant
-[Worker]     method constructor
-[Worker]     method conv2d
-[Worker]     method convTranspose2d
-[Worker]     method cos
-[Worker]     method div
-[Worker]     method elu
-[Worker]     method equal
-[Worker]     method erf
-[Worker]     method exp
-[Worker]     method expand
-[Worker]     method floor
-[Worker]     method gather
-[Worker]     method gemm
-[Worker]     method greater
-[Worker]     method greaterOrEqual
-[Worker]     method hardSigmoid
-[Worker]     method hardSwish
-[Worker]     method identity
-[Worker]     method input
-[Worker]     method instanceNormalization
-[Worker]     method l2Pool2d
-[Worker]     method layerNormalization
-[Worker]     method leakyRelu
-[Worker]     method lesser
-[Worker]     method lesserOrEqual
-[Worker]     method linear
-[Worker]     method log
-[Worker]     method logicalNot
-[Worker]     method lstm
-[Worker]     method matmul
-[Worker]     method max
-[Worker]     method maxPool2d
-[Worker]     method min
-[Worker]     method mul
-[Worker]     method neg
-[Worker]     method pad
-[Worker]     method pow
-[Worker]     method prelu
-[Worker]     method reciprocal
-[Worker]     method reduceL1
-[Worker]     method reduceL2
-[Worker]     method reduceLogSum
-[Worker]     method reduceLogSumExp
-[Worker]     method reduceMax
-[Worker]     method reduceMean
-[Worker]     method reduceMin
-[Worker]     method reduceProduct
-[Worker]     method reduceSum
-[Worker]     method reduceSumSquare
-[Worker]     method relu
-[Worker]     method resample2d
-[Worker]     method reshape
-[Worker]     method sigmoid
-[Worker]     method sin
-[Worker]     method slice
-[Worker]     method softmax
-[Worker]     method softplus
-[Worker]     method softsign
-[Worker]     method split
-[Worker]     method sqrt
-[Worker]     method sub
-[Worker]     method tan
-[Worker]     method tanh
-[Worker]     method transpose
-[Worker]     method where
-[Worker] interface MLOperand
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method dataType
-[Worker]     method shape
 [Worker] interface MediaCapabilities
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1439,10 +1460,25 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onshow
 [Worker] interface Observable
+[Worker]     static method from
 [Worker]     attribute @@toStringTag
+[Worker]     method catch
 [Worker]     method constructor
+[Worker]     method drop
+[Worker]     method every
+[Worker]     method filter
+[Worker]     method find
+[Worker]     method first
+[Worker]     method flatMap
 [Worker]     method forEach
+[Worker]     method inspect
+[Worker]     method last
+[Worker]     method map
+[Worker]     method reduce
+[Worker]     method some
 [Worker]     method subscribe
+[Worker]     method switchMap
+[Worker]     method take
 [Worker]     method takeUntil
 [Worker]     method toArray
 [Worker] interface OffscreenCanvas : EventTarget
@@ -1496,7 +1532,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clearRect
 [Worker]     method clip
 [Worker]     method closePath
-[Worker]     method commit
 [Worker]     method constructor
 [Worker]     method createConicGradient
 [Worker]     method createImageData
@@ -1515,6 +1550,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fillText
 [Worker]     method getImageData
 [Worker]     method getLineDash
+[Worker]     method getTextureFormat
 [Worker]     method getTransform
 [Worker]     method isContextLost
 [Worker]     method isPointInPath
@@ -1537,6 +1573,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stroke
 [Worker]     method strokeRect
 [Worker]     method strokeText
+[Worker]     method transferBackFromGPUTexture
+[Worker]     method transferToGPUTexture
 [Worker]     method transform
 [Worker]     method translate
 [Worker]     setter direction
@@ -1681,7 +1719,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestAll
 [Worker]     method revoke
 [Worker] interface PressureObserver
-[Worker]     static getter supportedSources
+[Worker]     static getter knownSources
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method disconnect
@@ -1727,6 +1765,38 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter applicationServerKey
 [Worker]     getter userVisibleOnly
 [Worker]     method constructor
+[Worker] interface RTCDataChannel : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter binaryType
+[Worker]     getter bufferedAmount
+[Worker]     getter bufferedAmountLowThreshold
+[Worker]     getter id
+[Worker]     getter label
+[Worker]     getter maxPacketLifeTime
+[Worker]     getter maxRetransmits
+[Worker]     getter negotiated
+[Worker]     getter onbufferedamountlow
+[Worker]     getter onclose
+[Worker]     getter onclosing
+[Worker]     getter onerror
+[Worker]     getter onmessage
+[Worker]     getter onopen
+[Worker]     getter ordered
+[Worker]     getter priority
+[Worker]     getter protocol
+[Worker]     getter readyState
+[Worker]     getter reliable
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method send
+[Worker]     setter binaryType
+[Worker]     setter bufferedAmountLowThreshold
+[Worker]     setter onbufferedamountlow
+[Worker]     setter onclose
+[Worker]     setter onclosing
+[Worker]     setter onerror
+[Worker]     setter onmessage
+[Worker]     setter onopen
 [Worker] interface RTCEncodedAudioFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
@@ -1734,7 +1804,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata
-[Worker]     method setTimestamp
 [Worker]     method toString
 [Worker]     setter data
 [Worker] interface RTCEncodedVideoFrame
@@ -1745,9 +1814,52 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getMetadata
 [Worker]     method setMetadata
-[Worker]     method setTimestamp
 [Worker]     method toString
 [Worker]     setter data
+[Worker] interface RTCRtpAcks
+[Worker]     attribute @@toStringTag
+[Worker]     getter explicitCongestionNotification
+[Worker]     getter receivedTime
+[Worker]     getter remoteSendTimestamp
+[Worker]     method acks
+[Worker]     method constructor
+[Worker] interface RTCRtpScriptTransformer : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter options
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker]     method sendKeyFrameRequest
+[Worker] interface RTCRtpSendResult
+[Worker]     attribute @@toStringTag
+[Worker]     getter sent
+[Worker]     getter unsent
+[Worker]     method constructor
+[Worker] interface RTCRtpSendStream
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method sendRtp
+[Worker] interface RTCRtpSent
+[Worker]     attribute @@toStringTag
+[Worker]     getter ackId
+[Worker]     getter size
+[Worker]     getter time
+[Worker]     method constructor
+[Worker] interface RTCRtpTransportProcessor
+[Worker]     attribute @@toStringTag
+[Worker]     getter customMaxBandwidth
+[Worker]     method constructor
+[Worker]     method readReceivedAcks
+[Worker]     method readSentRtp
+[Worker]     setter customMaxBandwidth
+[Worker] interface RTCRtpTransportProcessorEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter processor
+[Worker]     method constructor
+[Worker] interface RTCTransformEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter transformer
+[Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
 [Worker]     getter byobRequest
@@ -1759,12 +1871,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface ReadableStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter locked
+[Worker]     method @@asyncIterator
 [Worker]     method cancel
 [Worker]     method constructor
 [Worker]     method getReader
 [Worker]     method pipeThrough
 [Worker]     method pipeTo
 [Worker]     method tee
+[Worker]     method values
 [Worker] interface ReadableStreamBYOBReader
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed
@@ -1805,6 +1919,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter cache
 [Worker]     getter credentials
 [Worker]     getter destination
+[Worker]     getter duplex
 [Worker]     getter headers
 [Worker]     getter integrity
 [Worker]     getter isHistoryNavigation
@@ -1877,6 +1992,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter ondisconnect
 [Worker] interface SerialPort : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter connected
 [Worker]     getter onconnect
 [Worker]     getter ondisconnect
 [Worker]     getter readable
@@ -2059,7 +2175,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter actualBoundingBoxDescent
 [Worker]     getter actualBoundingBoxLeft
 [Worker]     getter actualBoundingBoxRight
-[Worker]     getter advances
 [Worker]     getter alphabeticBaseline
 [Worker]     getter emHeightAscent
 [Worker]     getter emHeightDescent
@@ -2068,7 +2183,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter hangingBaseline
 [Worker]     getter ideographicBaseline
 [Worker]     getter width
+[Worker]     method caretPositionFromPoint
 [Worker]     method constructor
+[Worker]     method getActualBoundingBox
+[Worker]     method getSelectionRects
 [Worker] interface TimestampTrigger
 [Worker]     attribute @@toStringTag
 [Worker]     getter timestamp
@@ -2085,6 +2203,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method enqueue
 [Worker]     method error
 [Worker]     method terminate
+[Worker] interface Translation
+[Worker]     attribute @@toStringTag
+[Worker]     method canTranslate
+[Worker]     method constructor
+[Worker]     method createTranslator
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
@@ -2128,6 +2251,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface URL
 [Worker]     static method canParse
 [Worker]     static method createObjectURL
+[Worker]     static method parse
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash
@@ -2329,8 +2453,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method encode
 [Worker]     method flush
+[Worker]     method getAllFrameBuffers
 [Worker]     method reset
 [Worker]     setter ondequeue
+[Worker] interface VideoEncoderBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     getter id
+[Worker]     method constructor
 [Worker] interface VideoFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter codedHeight
@@ -3173,23 +3302,26 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter size
 [Worker]     getter type
 [Worker]     method constructor
-[Worker] interface WebGLBuffer
+[Worker] interface WebGLBuffer : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface WebGLContextEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter statusMessage
 [Worker]     method constructor
-[Worker] interface WebGLFramebuffer
+[Worker] interface WebGLFramebuffer : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLProgram
+[Worker] interface WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLQuery
+[Worker] interface WebGLProgram : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLRenderbuffer
+[Worker] interface WebGLQuery : WebGLObject
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker] interface WebGLRenderbuffer : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface WebGLRenderingContext
@@ -3640,10 +3772,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method viewport
 [Worker]     setter drawingBufferColorSpace
 [Worker]     setter unpackColorSpace
-[Worker] interface WebGLSampler
+[Worker] interface WebGLSampler : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLShader
+[Worker] interface WebGLShader : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface WebGLShaderPrecisionFormat
@@ -3652,19 +3784,19 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter rangeMax
 [Worker]     getter rangeMin
 [Worker]     method constructor
-[Worker] interface WebGLSync
+[Worker] interface WebGLSync : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLTexture
+[Worker] interface WebGLTexture : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLTransformFeedback
+[Worker] interface WebGLTransformFeedback : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface WebGLUniformLocation
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
-[Worker] interface WebGLVertexArrayObject
+[Worker] interface WebGLVertexArrayObject : WebGLObject
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface WebSocket : EventTarget
@@ -3714,6 +3846,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method createBidirectionalStream
 [Worker]     method createUnidirectionalStream
+[Worker]     method getStats
 [Worker] interface WebTransportBidirectionalStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter readable
@@ -3749,6 +3882,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onmessage
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter ai
 [Worker]     getter caches
 [Worker]     getter crossOriginEmbedderPolicy
 [Worker]     getter crossOriginIsolated
@@ -3767,6 +3901,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter performance
 [Worker]     getter scheduler
 [Worker]     getter self
+[Worker]     getter translation
 [Worker]     getter trustedTypes
 [Worker]     method atob
 [Worker]     method btoa
@@ -3781,6 +3916,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setInterval
 [Worker]     method setTimeout
 [Worker]     method structuredClone
+[Worker]     setter ai
 [Worker]     setter onerror
 [Worker]     setter onlanguagechange
 [Worker]     setter onrejectionhandled
@@ -3789,6 +3925,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter origin
 [Worker]     setter performance
 [Worker]     setter scheduler
+[Worker]     setter translation
 [Worker] interface WorkerLocation
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash
@@ -3811,11 +3948,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter deviceMemory
 [Worker]     getter gpu
 [Worker]     getter hardwareConcurrency
+[Worker]     getter hid
 [Worker]     getter language
 [Worker]     getter languages
 [Worker]     getter locks
 [Worker]     getter mediaCapabilities
-[Worker]     getter ml
 [Worker]     getter onLine
 [Worker]     getter permissions
 [Worker]     getter platform
@@ -3863,7 +4000,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter responseText
 [Worker]     getter responseType
 [Worker]     getter responseURL
-[Worker]     getter responseXML
 [Worker]     getter status
 [Worker]     getter statusText
 [Worker]     getter timeout
@@ -3971,6 +4107,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
+[Worker]     getter onrtcrtptransportprocessor
+[Worker]     getter onrtctransform
 [Worker]     method cancelAnimationFrame
 [Worker]     method close
 [Worker]     method gc
@@ -3983,6 +4121,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
+[Worker]     setter onrtcrtptransportprocessor
+[Worker]     setter onrtctransform
 PASS successfullyParsed is true
 
 TEST COMPLETE

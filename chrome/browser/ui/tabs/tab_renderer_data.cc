@@ -92,7 +92,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
   data.blocked = model->IsTabBlocked(index);
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  data.alert_state = chrome::GetTabAlertStatesForContents(contents);
+  data.alert_state = GetTabAlertStatesForContents(contents);
 
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
@@ -102,14 +102,15 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
       memory_saver::GetDiscardReason(contents);
 
-  // Only show discard status for tabs that were proactively discarded to
-  // prevent confusion to users on why a tab was discarded. Also, the favicon
-  // discard animation may use resources so the animation should be limited
-  // to proactive discards to prevent performance issues.
+  // Only show discard status for tabs that were proactively discarded or
+  // suggested by the PerformanceDetectionManager to prevent confusion to users
+  // on why a tab was discarded. Also, the favicon discard animation may use
+  // resources so the animation should be limited to prevent performance issues.
   data.should_show_discard_status =
       memory_saver::IsURLSupported(contents->GetURL()) &&
       contents->WasDiscarded() && discard_reason.has_value() &&
-      discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
+      (discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
+       discard_reason.value() == mojom::LifecycleUnitDiscardReason::SUGGESTED);
 
   if (contents->WasDiscarded()) {
     data.discarded_memory_savings_in_bytes =

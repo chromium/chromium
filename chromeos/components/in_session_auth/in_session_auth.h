@@ -5,7 +5,11 @@
 #ifndef CHROMEOS_COMPONENTS_IN_SESSION_AUTH_IN_SESSION_AUTH_H_
 #define CHROMEOS_COMPONENTS_IN_SESSION_AUTH_IN_SESSION_AUTH_H_
 
+#include <memory>
+
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/public/request/auth_request.h"
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -36,6 +40,9 @@ class InSessionAuth : public chromeos::auth::mojom::InSessionAuth {
                   const std::string& token,
                   CheckTokenCallback callback) override;
   void InvalidateToken(const std::string& token) override;
+  void RequestLegacyWebAuthn(const std::string& rp_id,
+                             const std::string& window_id,
+                             RequestLegacyWebAuthnCallback callback) override;
 
  private:
   // Continuation of InSessionAuth::RequestToken. Last 3 params match
@@ -44,6 +51,10 @@ class InSessionAuth : public chromeos::auth::mojom::InSessionAuth {
                       bool success,
                       const ash::AuthProofToken& token,
                       base::TimeDelta timeout);
+
+  std::unique_ptr<ash::AuthRequest> AuthRequestFromReason(
+      ash::AuthRequest::Reason reason,
+      RequestTokenCallback callback);
 
   mojo::ReceiverSet<chromeos::auth::mojom::InSessionAuth> receivers_;
 

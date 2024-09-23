@@ -48,10 +48,6 @@ class SystemWebAppIconChecker {
   // called again before `callback` runs.
   virtual void StartCheck(const std::vector<webapps::AppId>& apps_ids,
                           base::OnceCallback<void(IconState)> callback) = 0;
-
-  // Stop all running checks, `callback` passed into StartCheck() won't be
-  // invoked if the check hasn't completed.
-  virtual void StopCheck() = 0;
 };
 }  // namespace ash
 

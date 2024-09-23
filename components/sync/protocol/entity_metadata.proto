@@ -14,12 +14,13 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
 
-// Sync proto to store entity metadata in model type storage.
+// Sync proto to store entity metadata in data type storage.
 message EntityMetadata {
-  // A hash based on the client tag and model type.
+  // A hash based on the client tag and data type.
   // Used for various map lookups. Should always be available.
   // Sent to the server as SyncEntity::client_tag_hash.
   optional string client_tag_hash = 1;
@@ -81,7 +82,7 @@ message EntityMetadata {
   // Last specifics known by both the client and server. Used during commits to
   // the server in order to prevent data loss caused by older clients dealing
   // with unknown proto fields (fields that were introduced later). Datatypes
-  // (ModelTypeSyncBridge) may implement logic to trim down (or fully clear)
+  // (DataTypeSyncBridge) may implement logic to trim down (or fully clear)
   // this proto prior to caching, to avoid the memory and I/O overhead of
   // dealing with an extra copy of the data. Introduced in M101.
   optional EntitySpecifics possibly_trimmed_base_specifics = 13;
@@ -89,4 +90,18 @@ message EntityMetadata {
   // If the entity is deleted, this field will record the chromium version
   // (e.g. 117.0.5875.1) that originated the deletion. Introduced in M117.
   optional string deleted_by_version = 14;
+
+  // Metadata used for shared data types. Must not be present for regular data
+  // types.
+  // Introduced in M124.
+  message CollaborationMetadata {
+    // Collaboration ID which the current entity belongs to.
+    optional string collaboration_id = 1;
+  }
+  optional CollaborationMetadata collaboration = 15;
+
+  // Optionally present for committed deletions (but may remain unset if the
+  // origin is unspecified), it represents which piece of code triggered a
+  // deletion. Introduced in M126.
+  optional DeletionOrigin deletion_origin = 16;
 }

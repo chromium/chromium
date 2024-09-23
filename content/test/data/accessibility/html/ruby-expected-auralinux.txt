@@ -8,3 +8,6 @@
 ++++[static] name='Hi! '
 ++++[section] description='ruby text' description-from:ruby-annotation
 ++++++[static] name='ruby base'
+++[paragraph]
+++++[section] description='ruby text' description-from:ruby-annotation
+++++++[static] name='ruby base'

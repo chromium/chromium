@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField inputType='text' name='Title0'
+++++++textField inputType='text' name='Title0' nameFrom=title
 ++++++++genericContainer
 ++++++textField description='Title1' inputType='text' name='Label1' descriptionFrom=title
 ++++++++genericContainer
@@ -9,15 +9,15 @@ rootWebArea
 ++++++++genericContainer
 ++++++textField description='Title3' inputType='text' name='LabelledBy3' descriptionFrom=title
 ++++++++genericContainer
-++++++textField inputType='text' name='Placeholder4'
+++++++textField inputType='text' name='Placeholder4' nameFrom=placeholder
 ++++++++genericContainer ignored
 ++++++++genericContainer
-++++++textField inputType='text' name='ARIA Placeholder4a'
+++++++textField inputType='text' name='ARIA Placeholder4a' nameFrom=placeholder
 ++++++++genericContainer
-++++++textField inputType='text' name='Placeholder4b'
+++++++textField inputType='text' name='Placeholder4b' nameFrom=placeholder
 ++++++++genericContainer ignored
 ++++++++genericContainer
-++++++textField inputType='text' name='Title5' placeholder='Placeholder5'
+++++++textField inputType='text' name='Title5' placeholder='Placeholder5' nameFrom=title
 ++++++++genericContainer ignored
 ++++++++genericContainer
 ++++++textField description='DescribedBy6' inputType='text' name='LabelledBy6' descriptionFrom=relatedElement

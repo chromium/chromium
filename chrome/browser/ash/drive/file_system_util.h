@@ -61,6 +61,13 @@ DriveAvailability CheckDriveEnabledAndDriveAvailabilityForProfile(
 [[nodiscard]] bool IsOobeDrivePinningAvailable();
 [[nodiscard]] bool IsOobeDrivePinningScreenEnabled();
 
+// Returns true if the mirror sync feature should be available and visible in
+// the given Profile. This does not indicate whether the mirror sync
+// feature has been activated (turned on) by the user. It merely indicates
+// whether the mirror sync feature is available and can be turned on by the
+// user if they choose to.
+[[nodiscard]] bool IsDriveFsMirrorSyncAvailable(const Profile* profile);
+
 // Connection status to Drive.
 enum class ConnectionStatus {
   // Disconnected because Drive service is unavailable for this account (either

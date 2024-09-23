@@ -2,17 +2,17 @@ AXWebArea
 ++AXButton AXExpanded=0 AXTitle='Button pointing to hidden popover'
 ++AXTextField
 ++AXStaticText AXValue='Text input pointing to hidden popover '
-++AXButton AXTitle='Hide button pointing to hidden manual'
+++AXButton AXExpanded=0 AXTitle='Hide button pointing to hidden manual'
 ++AXTextField
 ++AXStaticText AXValue='Email input pointing to hidden manual '
-++AXButton AXTitle='Button pointing to hint popover'
-++AXButton AXTitle='Button pointing to "rich" hint popover'
+++AXButton AXExpanded=0 AXTitle='Button pointing to hint popover'
+++AXButton AXExpanded=0 AXTitle='Button pointing to "rich" hint popover'
 ++AXButton AXTitle='Button pointing to non-popover'
 ++AXTextField
 ++AXStaticText AXValue='Text input pointing to non-popover'
 ++AXGroup
 ++++AXStaticText AXValue='No popover attribute'
-++AXButton AXTitle='Button pointing to invalid popover value'
+++AXButton AXExpanded=0 AXTitle='Button pointing to invalid popover value'
 ++AXTextField
 ++AXStaticText AXValue='Text input pointing to invalid popover value'
 ++AXGroup
@@ -28,10 +28,10 @@ AXWebArea
 ++++AXStaticText AXValue='Popover (showing)'
 ++++AXGroup AXSubrole=AXApplicationGroup
 ++++++AXStaticText AXValue='Nested popover (showing)'
-++AXButton AXTitle='Hide button pointing to showing manual (should add aria-details)'
+++AXButton AXExpanded=1 AXTitle='Hide button pointing to showing manual (should add aria-details)'
 ++AXTextField
 ++AXStaticText AXValue='Url input pointing to showing manual '
-++AXButton AXTitle='Hide button pointing to showing manual (should NOT add aria-details)'
+++AXButton AXExpanded=1 AXTitle='Hide button pointing to showing manual (should NOT add aria-details)'
 ++AXGroup AXSubrole=AXApplicationGroup
 ++++AXStaticText AXValue='Manual (showing)'
 ++AXGroup AXSubrole=AXApplicationGroup

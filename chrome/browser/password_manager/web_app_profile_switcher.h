@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/webapps/common/web_app_id.h"
 
-
 namespace webapps {
 enum class InstallResultCode;
 }  // namespace webapps

@@ -10,6 +10,7 @@
 @protocol OmniboxIcon;
 @protocol OmniboxPedal;
 @class CrURL;
+@class SuggestAction;
 
 /// Copy of `SuggestTileType` enum in histograms.
 typedef NS_ENUM(NSUInteger, SuggestTileType) {
@@ -66,6 +67,8 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) BOOL isWrapping;
 /// For URL suggestions, the URL that the match represents.
 @property(nonatomic, readonly) CrURL* destinationUrl;
+/// Suggestion attached actions in suggest.
+@property(nonatomic, readonly) NSArray<SuggestAction*>* actionsInSuggest;
 
 #pragma mark tail suggest
 

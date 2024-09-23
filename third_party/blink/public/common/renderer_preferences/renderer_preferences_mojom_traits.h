@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,6 +61,14 @@ struct BLINK_COMMON_EXPORT
   static const bool& use_subpixel_positioning(
       const ::blink::RendererPreferences& data) {
     return data.use_subpixel_positioning;
+  }
+
+  static const float& text_contrast(const ::blink::RendererPreferences& data) {
+    return data.text_contrast;
+  }
+
+  static const float& text_gamma(const ::blink::RendererPreferences& data) {
+    return data.text_gamma;
   }
 
   static const uint32_t& focus_ring_color(
@@ -243,6 +252,11 @@ struct BLINK_COMMON_EXPORT
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;
+  }
+
+  static const std::optional<bool> prefixed_fullscreen_video_api_availability(
+      const ::blink::RendererPreferences& data) {
+    return data.prefixed_fullscreen_video_api_availability;
   }
 
   static bool Read(blink::mojom::RendererPreferencesDataView,

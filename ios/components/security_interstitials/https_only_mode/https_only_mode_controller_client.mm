@@ -35,7 +35,7 @@ void HttpsOnlyModeControllerClient::GoBack() {
 }
 
 void HttpsOnlyModeControllerClient::Proceed() {
-  // TODO(crbug.com/1302509): Remember the URL so that we don't block
+  // TODO(crbug.com/40825375): Remember the URL so that we don't block
   // again for a certain time.
   Reload();
 }

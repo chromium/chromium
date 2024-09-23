@@ -22,6 +22,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "ui/display/display_switches.h"
 
 using extensions::AppWindowGeometryCache;
 using extensions::ResultCatcher;
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestMaximize) {
 }
 
 // Flaky on Linux. http://crbug.com/424399.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestMinimize DISABLED_TestMinimize

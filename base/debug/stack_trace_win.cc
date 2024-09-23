@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/debug/stack_trace.h"
 
 #include <windows.h>
@@ -17,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -249,15 +255,14 @@ class SymbolContext {
   // LOG(FATAL) here because this code is called might be triggered by a
   // LOG(FATAL) itself. Also, it should not be calling complex code that is
   // extensible like PathService since that can in turn fire CHECKs.
-  void OutputTraceToStream(const void* const* trace,
-                           size_t count,
+  void OutputTraceToStream(base::span<const void* const> traces,
                            std::ostream* os,
-                           const char* prefix_string) {
+                           cstring_view prefix_string) {
     AutoLock lock(lock_);
 
-    for (size_t i = 0; (i < count) && os->good(); ++i) {
+    for (size_t i = 0; (i < traces.size()) && os->good(); ++i) {
       const int kMaxNameLength = 256;
-      DWORD_PTR frame = reinterpret_cast<DWORD_PTR>(trace[i]);
+      DWORD_PTR frame = reinterpret_cast<DWORD_PTR>(traces[i]);
 
       // Code adapted from MSDN example:
       // http://msdn.microsoft.com/en-us/library/ms680578(VS.85).aspx
@@ -284,15 +289,13 @@ class SymbolContext {
                                            &line_displacement, &line);
 
       // Output the backtrace line.
-      if (prefix_string)
-        (*os) << prefix_string;
-      (*os) << "\t";
+      (*os) << prefix_string << "\t";
       if (has_symbol) {
-        (*os) << symbol->Name << " [0x" << trace[i] << "+"
-              << sym_displacement << "]";
+        (*os) << symbol->Name << " [0x" << traces[i] << "+" << sym_displacement
+              << "]";
       } else {
         // If there is no symbol information, add a spacer.
-        (*os) << "(No symbol) [0x" << trace[i] << "]";
+        (*os) << "(No symbol) [0x" << traces[i] << "]";
       }
       if (has_line) {
         (*os) << " (" << line.FileName << ":" << line.LineNumber << ")";
@@ -324,9 +327,10 @@ bool EnableInProcessStackDumping() {
   return InitializeSymbols();
 }
 
-NOINLINE size_t CollectStackTrace(const void** trace, size_t count) {
+NOINLINE size_t CollectStackTrace(span<const void*> trace) {
   // When walking our own stack, use CaptureStackBackTrace().
-  return CaptureStackBackTrace(0, count, const_cast<void**>(trace), NULL);
+  return CaptureStackBackTrace(0, trace.size(),
+                               const_cast<void**>(trace.data()), NULL);
 }
 
 StackTrace::StackTrace(EXCEPTION_POINTERS* exception_pointers) {
@@ -338,6 +342,12 @@ StackTrace::StackTrace(const CONTEXT* context) {
 }
 
 void StackTrace::InitTrace(const CONTEXT* context_record) {
+  if (ShouldSuppressOutput()) {
+    CHECK_EQ(count_, 0U);
+    base::ranges::fill(trace_, nullptr);
+    return;
+  }
+
   // StackWalk64 modifies the register context in place, so we have to copy it
   // so that downstream exception handlers get the right context.  The incoming
   // context may have had more register state (YMM, etc) than we need to unwind
@@ -379,27 +389,31 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
     trace_[count_++] = reinterpret_cast<void*>(stack_frame.AddrPC.Offset);
   }
 
-  for (size_t i = count_; i < std::size(trace_); ++i)
-    trace_[i] = NULL;
+  base::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
-  OutputToStreamWithPrefix(&std::cerr, prefix_string);
+// static
+void StackTrace::PrintMessageWithPrefix(cstring_view prefix_string,
+                                        cstring_view message) {
+  std::cerr << prefix_string << message;
 }
 
-void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
+void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
+  OutputToStreamWithPrefixImpl(&std::cerr, prefix_string);
+}
+
+void StackTrace::OutputToStreamWithPrefixImpl(
+    std::ostream* os,
+    cstring_view prefix_string) const {
   SymbolContext* context = SymbolContext::GetInstance();
   if (g_init_error != ERROR_SUCCESS) {
     (*os) << "Error initializing symbols (" << g_init_error
           << ").  Dumping unresolved backtrace:\n";
     for (size_t i = 0; (i < count_) && os->good(); ++i) {
-      if (prefix_string)
-        (*os) << prefix_string;
-      (*os) << "\t" << trace_[i] << "\n";
+      (*os) << prefix_string << "\t" << trace_[i] << "\n";
     }
   } else {
-    context->OutputTraceToStream(trace_, count_, os, prefix_string);
+    context->OutputTraceToStream(addresses(), os, prefix_string);
   }
 }
 

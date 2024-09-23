@@ -128,8 +128,9 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
     DCHECK(IsRunningInCorrectSequence());
 
     progress_ = progress;
-    if (!cancel_)
+    if (!cancel_) {
       return;
+    }
 
     image_writer_utility_client_->Cancel(base::BindOnce(
         &ImageWriterUtilityClientTest::Cancelled, base::Unretained(this)));

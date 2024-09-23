@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
@@ -46,7 +47,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
@@ -109,7 +113,7 @@ class UninstallCheckboxView : public views::View,
         .AddRows(1, views::TableLayout::kFixedSize);
 
     auto checkbox = std::make_unique<views::Checkbox>();
-    checkbox->SetAccessibleName(label.get());
+    checkbox->GetViewAccessibility().SetName(*label.get());
     checkbox->SetEventTargeter(std::make_unique<views::ViewTargeter>(
         std::make_unique<CheckboxTargeter>()));
     checkbox_ = AddChildView(std::move(checkbox));
@@ -217,8 +221,7 @@ AppUninstallDialogView::AppUninstallDialogView(
       profile_(profile) {
   profile_observation_.Observe(profile);
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
+  SetModalType(ui::mojom::ModalType::kWindow);
 
   SetCloseCallback(base::BindOnce(&AppUninstallDialogView::OnDialogCancelled,
                                   base::Unretained(this)));
@@ -227,7 +230,7 @@ AppUninstallDialogView::AppUninstallDialogView(
   SetAcceptCallback(base::BindOnce(&AppUninstallDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
 
-  InitializeView(profile, app_type, app_id);
+  InitializeView(profile, app_type, app_id, app_name);
 
   g_app_uninstall_dialog_view = this;
 }
@@ -247,15 +250,18 @@ void AppUninstallDialogView::OnProfileWillBeDestroyed(Profile* profile) {
 
 void AppUninstallDialogView::InitializeView(Profile* profile,
                                             apps::AppType app_type,
-                                            const std::string& app_id) {
+                                            const std::string& app_id,
+                                            const std::string& app_name) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+  AddTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
 
   switch (app_type) {
     case apps::AppType::kUnknown:
@@ -264,7 +270,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case apps::AppType::kStandaloneBrowserChromeApp:
       // Do nothing special for kStandaloneBrowserChromeApp.
       break;
@@ -273,43 +279,43 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       InitializeViewForArcApp(profile, app_id);
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kPluginVm:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(
+      AddSubtitle(
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBorealis:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (app_id == borealis::kClientAppId) {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY));
       } else {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY));
       }
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kCrostini:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(l10n_util::GetStringUTF16(
+      AddSubtitle(l10n_util::GetStringUTF16(
           IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBruschetta:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // TODO(b/247636749): Implement Bruschetta uninstall.
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
 
     case apps::AppType::kWeb:
@@ -419,8 +425,9 @@ void AppUninstallDialogView::InitializeSubAppList(
   sub_apps_container->SetBetweenChildSpacing(
       provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
   sub_apps_container->SetInsideBorderInsets(gfx::Insets::TLBR(
-      0, provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL), 0,
-      0));
+      0,
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
+      0, 0));
 
   for (const SubApp& sub_app : sub_apps) {
     auto box = std::make_unique<views::BoxLayoutView>();
@@ -454,8 +461,8 @@ void AppUninstallDialogView::InitializeSubAppList(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
   AddChildView(std::make_unique<views::Separator>());
 
-  sub_apps_scroll_view_->SetVisible(true);
-  sub_apps_description_->SetVisible(true);
+  sub_apps_scroll_view_->SetVisible(!sub_apps.empty());
+  sub_apps_description_->SetVisible(!sub_apps.empty());
   ResizeWidgetToContents(sub_apps_scroll_view_->GetWidget());
 }
 
@@ -561,21 +568,14 @@ void AppUninstallDialogView::InitializeViewForArcApp(
     const std::string& app_id) {
   if (IsArcShortcutApp(profile, app_id)) {
     SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   } else {
-    InitializeViewWithMessage(l10n_util::GetStringUTF16(
+    AddSubtitle(l10n_util::GetStringUTF16(
         IDS_ARC_APP_UNINSTALL_PROMPT_DATA_REMOVAL_WARNING));
   }
 }
 
-void AppUninstallDialogView::InitializeViewWithMessage(
-    const std::u16string& message) {
-  auto* label = AddChildView(std::make_unique<views::Label>(message));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
-}
 #endif
 
 void AppUninstallDialogView::OnDialogCancelled() {

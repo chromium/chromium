@@ -1,0 +1,6 @@
+include_rules = [
+  '+crypto/sha2.h',
+  '+third_party/abseil-cpp/absl/time/time.h',
+  '+third_party/nearby/src/internal/platform/implementation/crypto.h',
+  '+third_party/nearby/src/internal/platform/implementation/system_clock.h',
+]

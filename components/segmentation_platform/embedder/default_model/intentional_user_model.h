@@ -13,7 +13,7 @@ struct Config;
 
 // Segmentation intentional user model provider. Provides a default model and
 // metadata for the intentional user segment.
-// TODO(crbug/1357107): Add support for non-android platforms.
+// TODO(crbug.com/40236552): Add support for non-android platforms.
 class IntentionalUserModel : public DefaultModelProvider {
  public:
   IntentionalUserModel();

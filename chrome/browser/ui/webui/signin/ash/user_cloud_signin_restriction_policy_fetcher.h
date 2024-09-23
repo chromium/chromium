@@ -88,6 +88,11 @@ class UserCloudSigninRestrictionPolicyFetcher
                               std::optional<std::string> policy,
                               const std::string& domain)>;
 
+  // Callback invoked when SecondaryAccountAllowedInArc policy value
+  // is fetched. `policy` is the fetched policy value.
+  using PolicyInfoCallbackForArc =
+      base::OnceCallback<void(Status status, std::optional<bool> policy)>;
+
   // `email` can be a raw email (abc.123.4@gmail.com) or a canonicalized email
   // (abc1234@gmail.com). It's used to skip API requests for domains such as
   // gmail.com and others since these type of users are known to be
@@ -113,6 +118,10 @@ class UserCloudSigninRestrictionPolicyFetcher
   void GetSecondaryGoogleAccountUsage(
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
       PolicyInfoCallback callback);
+
+  void GetSecondaryAccountAllowedInArcPolicy(
+      std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
+      PolicyInfoCallbackForArc callback);
 
   // Protected for testing.
  protected:
@@ -146,6 +155,10 @@ class UserCloudSigninRestrictionPolicyFetcher
   // `OnSecondaryGoogleAccountUsageResult` with the result from the API.
   void GetSecondaryGoogleAccountUsageInternal();
 
+  void GetSecondaryAccountAllowedInArcInternal();
+  bool IsFetchingArcPolicy() const;
+  void FinalizeResult(Status status, std::optional<std::string> policy);
+
   std::string GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
 
   std::string email_;
@@ -155,6 +168,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<policy::UserInfoFetcher> user_info_fetcher_;
   PolicyInfoCallback callback_;
+  PolicyInfoCallbackForArc callback_for_arc_;
   base::TimeTicks policy_fetch_start_time_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -44,6 +44,11 @@ def main():
   if opts.debug:
     command.append('--debug')
 
+  # ClusterFuzz macOS bots are Intel machines. Remove this once they have
+  # moved to ARM.
+  if opts.asan:
+    command.append('--architecture=x86_64 arm64')
+
   if opts.j:
     command.extend(['-jobs', opts.j])
   command.extend(extra_args)

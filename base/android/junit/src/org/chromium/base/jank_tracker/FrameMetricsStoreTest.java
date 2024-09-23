@@ -7,6 +7,7 @@ package org.chromium.base.jank_tracker;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,36 +23,39 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class FrameMetricsStoreTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
+    private FrameMetricsStore mStore;
+
+    @Before
+    public void setUp() {
+        mStore = new FrameMetricsStore();
+        mStore.initialize();
+    }
+
     @Test
     public void addFrameMeasurementTest() {
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-
-        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        mStore.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         long frame_start_vsync_ts = 0;
-        store.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
-        store.addFrameMeasurement(12_000_000L, 0, frame_start_vsync_ts);
-        store.addFrameMeasurement(20_000_000L, 1, frame_start_vsync_ts);
-        store.addFrameMeasurement(8_000_000L, 2, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(12_000_000L, 0, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(20_000_000L, 1, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(8_000_000L, 2, frame_start_vsync_ts);
 
-        JankMetrics metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        JankMetrics metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         assertArrayEquals(
                 new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
                 metrics.durationsNs);
         assertArrayEquals(new int[] {0, 0, 1, 2}, metrics.missedVsyncs);
 
-        metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
         assertEquals(0, metrics.durationsNs.length);
     }
 
     @Test
     public void takeMetrics_getMetricsWithoutAnyFrames() {
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
-        JankMetrics metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        mStore.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        JankMetrics metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         assertEquals(0, metrics.durationsNs.length);
     }
@@ -63,32 +67,29 @@ public class FrameMetricsStoreTest {
         // 2) that the deletion logic runs correctly. Note however that deletion logic is not
         // actually public behaviour but we just want this test to explicitly exercise it to
         // uncover potential bugs.
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-
-        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        mStore.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         long frame_start_vsync_ts = 1_000_000L;
-        store.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
-        store.addFrameMeasurement(12_000_000L, 0, frame_start_vsync_ts + 1);
-        store.startTrackingScenario(JankScenario.FEED_SCROLLING);
-        store.addFrameMeasurement(20_000_000L, 2, frame_start_vsync_ts + 2);
-        store.addFrameMeasurement(8_000_000L, 1, frame_start_vsync_ts + 3);
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(12_000_000L, 0, frame_start_vsync_ts + 1);
+        mStore.startTrackingScenario(JankScenario.FEED_SCROLLING);
+        mStore.addFrameMeasurement(20_000_000L, 2, frame_start_vsync_ts + 2);
+        mStore.addFrameMeasurement(8_000_000L, 1, frame_start_vsync_ts + 3);
 
         // Stop NEW_TAB_PAGE and now the first two frames will be deleted from the
         // FrameMetricsStore().
-        JankMetrics metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        JankMetrics metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         assertArrayEquals(
                 new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
                 metrics.durationsNs);
         assertArrayEquals(new int[] {0, 0, 2, 1}, metrics.missedVsyncs);
 
-        metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
         assertEquals(0, metrics.durationsNs.length);
 
         // Only after that will we stop FEED_SCROLLING and we should only see the last two frames.
-        metrics = store.stopTrackingScenario(JankScenario.FEED_SCROLLING);
+        metrics = mStore.stopTrackingScenario(JankScenario.FEED_SCROLLING);
         assertArrayEquals(new long[] {20_000_000L, 8_000_000L}, metrics.durationsNs);
         assertArrayEquals(new int[] {2, 1}, metrics.missedVsyncs);
     }
@@ -96,44 +97,38 @@ public class FrameMetricsStoreTest {
     @Test
     public void restartScenario() {
         // This test is setup to mainly test removeUnusedFrames() method codepaths.
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         long frame_start_vsync_ts = 1_000_000L;
-        store.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
-        store.addFrameMeasurement(12_000_000L, 1, frame_start_vsync_ts + 1);
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts);
+        mStore.addFrameMeasurement(12_000_000L, 1, frame_start_vsync_ts + 1);
 
-        JankMetrics metrics = store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        JankMetrics metrics = mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         assertArrayEquals(new long[] {10_000_000L, 12_000_000L}, metrics.durationsNs);
         assertArrayEquals(new int[] {0, 1}, metrics.missedVsyncs);
 
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
-        store.addFrameMeasurement(10_000_100L, 2, frame_start_vsync_ts + 2);
-        store.addFrameMeasurement(11_000_100L, 0, frame_start_vsync_ts + 3);
+        mStore.addFrameMeasurement(10_000_100L, 2, frame_start_vsync_ts + 2);
+        mStore.addFrameMeasurement(11_000_100L, 0, frame_start_vsync_ts + 3);
 
-        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        mStore.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
-        store.addFrameMeasurement(12_000_100L, 0, frame_start_vsync_ts + 4);
+        mStore.addFrameMeasurement(12_000_100L, 0, frame_start_vsync_ts + 4);
 
-        metrics = store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        metrics = mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
         assertArrayEquals(new long[] {10_000_100L, 11_000_100L, 12_000_100L}, metrics.durationsNs);
         assertArrayEquals(new int[] {2, 0, 0}, metrics.missedVsyncs);
 
-        metrics = store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
+        metrics = mStore.stopTrackingScenario(JankScenario.NEW_TAB_PAGE);
         assertArrayEquals(new long[] {12_000_100L}, metrics.durationsNs);
         assertArrayEquals(new int[] {0}, metrics.missedVsyncs);
     }
 
     @Test
     public void startPendingScenarioBeforeScenarioEnd() {
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         long now = TimeUtils.uptimeMillis();
 
@@ -147,28 +142,28 @@ public class FrameMetricsStoreTest {
                     (now + 5) * TimeUtils.NANOSECONDS_PER_MILLISECOND, // Frame4 start time
                 };
 
-        store.addFrameMeasurement(10_000_000L, 0, frame_timestamps_ns[0]);
-        store.addFrameMeasurement(12_000_000L, 3, frame_timestamps_ns[1]);
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_timestamps_ns[0]);
+        mStore.addFrameMeasurement(12_000_000L, 3, frame_timestamps_ns[1]);
 
         // This start scenario shouldn't be blanket ignored instead this should
         // trigger start of the scenario after stop scenario call.
         mFakeTimeTestRule.advanceMillis(
                 (frame_timestamps_ns[3] / TimeUtils.NANOSECONDS_PER_MILLISECOND) - now);
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         // The end time of scenario is before the start time of last start calls,
         // this can occur in the field as well since we delay stopTrackingScenario
         // to receive metrics for all the frames in given time range.
         JankMetrics metrics =
-                store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[2]);
+                mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[2]);
 
         assertArrayEquals(new long[] {10_000_000L, 12_000_000L}, metrics.durationsNs);
         assertArrayEquals(new int[] {0, 3}, metrics.missedVsyncs);
 
-        store.addFrameMeasurement(10_000_100L, 2, frame_timestamps_ns[4]);
-        store.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[5]);
+        mStore.addFrameMeasurement(10_000_100L, 2, frame_timestamps_ns[4]);
+        mStore.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[5]);
 
-        metrics = store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        metrics = mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         assertArrayEquals(new long[] {10_000_100L, 11_000_100L}, metrics.durationsNs);
         assertArrayEquals(new int[] {2, 0}, metrics.missedVsyncs);
@@ -192,10 +187,7 @@ public class FrameMetricsStoreTest {
          * but this should be fine since the scenario is pretty unrealistic so shouldn't occur often
          * in field data.
          */
-        FrameMetricsStore store = new FrameMetricsStore();
-        store.initialize();
-
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
 
         long now = TimeUtils.uptimeMillis();
 
@@ -214,41 +206,77 @@ public class FrameMetricsStoreTest {
                     (now + 10) * TimeUtils.NANOSECONDS_PER_MILLISECOND, // Scroll3 end time
                 };
 
-        store.addFrameMeasurement(10_000_000L, 0, frame_timestamps_ns[0]); // Frame1
-        store.addFrameMeasurement(12_000_000L, 1, frame_timestamps_ns[1]); // Frame2
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_timestamps_ns[0]); // Frame1
+        mStore.addFrameMeasurement(12_000_000L, 1, frame_timestamps_ns[1]); // Frame2
 
         mFakeTimeTestRule.advanceMillis(
                 (frame_timestamps_ns[3] / TimeUtils.NANOSECONDS_PER_MILLISECOND) - now);
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING); // Scroll2 start
-        store.addFrameMeasurement(10_000_100L, 2, frame_timestamps_ns[4]); // Frame3
-        store.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[5]); // Frame4
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING); // Scroll2 start
+        mStore.addFrameMeasurement(10_000_100L, 2, frame_timestamps_ns[4]); // Frame3
+        mStore.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[5]); // Frame4
 
         mFakeTimeTestRule.advanceMillis(
                 (frame_timestamps_ns[7] / TimeUtils.NANOSECONDS_PER_MILLISECOND)
                         - (frame_timestamps_ns[3] / TimeUtils.NANOSECONDS_PER_MILLISECOND));
-        store.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING); // Scroll3 start
-        store.addFrameMeasurement(10_000_100L, 1, frame_timestamps_ns[8]); // Frame5
-        store.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[9]); // Frame6
+        mStore.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING); // Scroll3 start
+        mStore.addFrameMeasurement(10_000_100L, 1, frame_timestamps_ns[8]); // Frame5
+        mStore.addFrameMeasurement(11_000_100L, 0, frame_timestamps_ns[9]); // Frame6
 
         // Scroll1 end.
         JankMetrics metrics =
-                store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[2]);
+                mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[2]);
 
         assertArrayEquals(new long[] {10_000_000L, 12_000_000L}, metrics.durationsNs);
         assertArrayEquals(new int[] {0, 1}, metrics.missedVsyncs);
 
         // Scroll2 end.
         metrics =
-                store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[6]);
+                mStore.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[6]);
 
         assertArrayEquals(new long[] {}, metrics.durationsNs);
         assertArrayEquals(new int[] {}, metrics.missedVsyncs);
 
         // Scroll3 end.
         metrics =
-                store.stopTrackingScenario(JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[10]);
+                mStore.stopTrackingScenario(
+                        JankScenario.WEBVIEW_SCROLLING, frame_timestamps_ns[10]);
 
         assertArrayEquals(new long[] {}, metrics.durationsNs);
         assertArrayEquals(new int[] {}, metrics.missedVsyncs);
+    }
+
+    @Test
+    public void multipleActiveScrollScenarios() {
+        JankScenario wv_scroll1 = new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, 1);
+        JankScenario wv_scroll2 = new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, 2);
+
+        mStore.startTrackingScenario(wv_scroll1);
+        long frame_start_vsync_ts = 0;
+        // Scroll1 frames.
+        mStore.addFrameMeasurement(10_000_000L, 0, frame_start_vsync_ts + 1);
+        mStore.addFrameMeasurement(11_000_000L, 1, frame_start_vsync_ts + 2);
+
+        mStore.startTrackingScenario(wv_scroll2);
+
+        // Common - scroll1 and scroll 2 frames.
+        mStore.addFrameMeasurement(12_000_000L, 2, frame_start_vsync_ts + 3);
+        mStore.addFrameMeasurement(13_000_000L, 0, frame_start_vsync_ts + 4);
+
+        JankMetrics scroll1_metrics = mStore.stopTrackingScenario(wv_scroll1);
+
+        // Scrol2 frames.
+        mStore.addFrameMeasurement(14_000_000L, 0, frame_start_vsync_ts + 5);
+        mStore.addFrameMeasurement(15_000_000L, 1, frame_start_vsync_ts + 6);
+        JankMetrics scroll2_metrics = mStore.stopTrackingScenario(wv_scroll2);
+
+        assertArrayEquals(
+                new long[] {10_000_000L, 11_000_000L, 12_000_000L, 13_000_000L},
+                scroll1_metrics.durationsNs);
+        assertArrayEquals(new int[] {0, 1, 2, 0}, scroll1_metrics.missedVsyncs);
+
+        assertArrayEquals(
+                new long[] {12_000_000L, 13_000_000L, 14_000_000L, 15_000_000L},
+                scroll2_metrics.durationsNs);
+        assertArrayEquals(new int[] {2, 0, 0, 1}, scroll2_metrics.missedVsyncs);
     }
 }

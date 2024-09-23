@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -81,13 +80,13 @@ const char kESimPolicyUsageCountHistogram[] =
     "Network.Cellular.ESim.Policy.Usage.Count";
 
 const char kUnrestrictedPSimServiceAtLoginHistogram[] =
-    "Network.Cellular.Unrestricted.PSim.ServiceAtLogin.Count";
+    "Network.Cellular.PSim.ServiceAtLoginCount.SimLockAllowedByPolicy";
 const char kUnrestrictedESimServiceAtLoginHistogram[] =
-    "Network.Cellular.Unrestricted.ESim.ServiceAtLogin.Count";
+    "Network.Cellular.ESim.ServiceAtLoginCount.SimLockAllowedByPolicy";
 const char kRestrictedPSimServiceAtLoginHistogram[] =
-    "Network.Cellular.Restricted.PSim.ServiceAtLogin.Count";
+    "Network.Cellular.PSim.ServiceAtLoginCount.SimLockProhibitedByPolicy";
 const char kRestrictedESimServiceAtLoginHistogram[] =
-    "Network.Cellular.Restricted.ESim.ServiceAtLogin.Count";
+    "Network.Cellular.ESim.ServiceAtLoginCount.SimLockProhibitedByPolicy";
 const char kESimPolicyServiceAtLoginHistogram[] =
     "Network.Cellular.ESim.Policy.ServiceAtLogin.Count";
 
@@ -154,8 +153,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
     if (check_esim_feature_eligible) {
       histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 0);
     }
-    if (ash::features::IsSmdsSupportEnabled() &&
-        check_enterprise_esim_feature_eligible &&
+    if (check_enterprise_esim_feature_eligible &&
         InstallAttributes::IsInitialized() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
       histogram_tester_->ExpectTotalCount(kEnterpriseESimFeatureUsageMetric, 0);
@@ -169,8 +167,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
               feature_usage::FeatureUsageMetrics::Event::kEligible),
           1);
     }
-    if (ash::features::IsSmdsSupportEnabled() &&
-        check_enterprise_esim_feature_eligible &&
+    if (check_enterprise_esim_feature_eligible &&
         InstallAttributes::IsInitialized() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
       histogram_tester_->ExpectBucketCount(
@@ -311,7 +308,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
         LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
     LoginState::Get()->SetLoggedInState(
         LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-        LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+        LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   }
 
   ShillServiceClient::TestInterface* service_client_test() {
@@ -338,7 +335,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
-      false /* use_default_devices_and_services */};
+      /*use_default_devices_and_services=*/false};
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
@@ -350,8 +347,6 @@ class CellularMetricsLoggerTest : public ::testing::Test {
 };
 
 TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
-  base::test::ScopedFeatureList feature_list;
-
   // Chrome caches eSIM profile information from Hermes so that this information
   // is available even when Hermes is not. Simulate the situation where Chrome
   // has eSIM information cached in prefs and Hermes being unavailable and
@@ -382,6 +377,7 @@ TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
 }
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
+  InitCellular();
   AddESimProfile(hermes::profile::State::kActive, kTestESimCellularServicePath);
   InitMetricsLogger();
   histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 2);
@@ -397,7 +393,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginWithRestrictedSimLock) {
 
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   InitCellular();
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kInitializationTimeout);
@@ -413,7 +409,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
   // Should defer logging when there are no cellular networks.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   ValidateServiceCount(0, 0);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 0);
 
@@ -432,7 +428,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   ValidateServiceCount(0, 2);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
 
@@ -442,6 +438,22 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
   ValidateServiceCount(0, 2);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
+}
+
+TEST_F(CellularMetricsLoggerTest, AllowApnModificationTest) {
+  InitMetricsLogger();
+  ON_CALL(*mock_managed_network_configuration_handler_, AllowApnModification())
+      .WillByDefault(::testing::Return(false));
+
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_NONE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
+
+  histogram_tester_->ExpectBucketCount(
+      "Network.Ash.Cellular.Apn.Login.AllowApnModification", false, 1);
 }
 
 TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
@@ -680,7 +692,7 @@ TEST_F(CellularMetricsLoggerTest, CellularESimProfileStatusAtLoginTest) {
   // Should defer logging when there are no cellular networks.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   histogram_tester_->ExpectTotalCount(kESimStatusAtLoginHistogram, 0);
 
   // Should wait until initialization timeout before logging status.
@@ -741,7 +753,7 @@ TEST_F(CellularMetricsLoggerTest, CellularPSimActivationStateAtLoginTest) {
   // Should defer logging when there are no cellular networks.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   histogram_tester_->ExpectTotalCount(kPSimStatusAtLoginHistogram, 0);
 
   // Should wait until initialization timeout before logging status.
@@ -1370,8 +1382,6 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEnrolled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   TestingPrefServiceSimple device_prefs;
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
@@ -1389,8 +1399,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEligible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1409,8 +1417,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EligibleViaEuicc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1439,8 +1445,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_Accessible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1480,8 +1484,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledViaService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1502,8 +1504,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledAndUsage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 

@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Special sync datatype to notify client about People Group changes.
+message CollaborationGroupSpecifics {
+  // Unique identifier for a collaboration group, also known as `group_id` or
+  // `group_name`.
+  optional string collaboration_id = 1;
+
+  // Indicates staleness of the collaboration group, used to determine whether
+  // client should refresh cached group. Server-side derived from group event
+  // `changed_at`.
+  optional int64 changed_at_timestamp_millis_since_unix_epoch = 2;
+
+  // An opaque token, that is used to optimize ReadGroup(s) RPCs.
+  optional string consistency_token = 3;
+}

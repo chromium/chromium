@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ARRAY_BUFFER_UTIL_H_
 
@@ -62,16 +67,18 @@ class ArrayBufferContentsExternalMemory
  public:
   explicit ArrayBufferContentsExternalMemory(ArrayBufferContents contents,
                                              base::span<const uint8_t> span)
-      : media::DecoderBuffer::ExternalMemory(span),
-        contents_(std::move(contents)) {
+      : contents_(std::move(contents)), span_(span) {
     // Check that `span` refers to the memory inside `contents`.
     auto* contents_data = static_cast<const uint8_t*>(contents_.Data());
     CHECK_GE(span.data(), contents_data);
     CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
   }
 
+  const base::span<const uint8_t> Span() const override { return span_; }
+
  private:
   ArrayBufferContents contents_;
+  const base::span<const uint8_t> span_;
 };
 
 }  // namespace blink

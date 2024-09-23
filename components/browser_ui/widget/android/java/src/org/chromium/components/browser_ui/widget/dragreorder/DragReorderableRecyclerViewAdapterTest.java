@@ -19,11 +19,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragBinder;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
@@ -62,7 +62,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRecyclerView = new RecyclerView(getActivity());
                     RecyclerView.LayoutParams params =
@@ -84,7 +84,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
 
     @Override
     public void tearDownTest() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList.clear();
                 });
@@ -155,13 +155,13 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_cannotDragOverNormal() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList.add(buildListItem("normal_1", Type.NORMAL));
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAdapter.simulateDragForTests(1, 0);
                 });
@@ -174,13 +174,13 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_normalOverNormal() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAdapter.simulateDragForTests(1, 0);
                 });
@@ -193,7 +193,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
     @Test
     @SmallTest
     public void testDrag_normalThroughPassivelyDraggable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList.add(buildListItem("draggable_1", Type.DRAGGABLE));
                     mModelList.add(
@@ -201,7 +201,7 @@ public class DragReorderableRecyclerViewAdapterTest extends BlankUiTestActivityT
                     mModelList.add(buildListItem("draggable_2", Type.DRAGGABLE));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAdapter.simulateDragForTests(0, 1);
                 });

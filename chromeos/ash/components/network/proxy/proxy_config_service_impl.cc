@@ -51,19 +51,38 @@ bool GetNetworkProxyConfig(const PrefService* profile_prefs,
                                                            proxy_config);
 }
 
-bool GetIsCaptivePortalSignin(const PrefService* profile_prefs) {
+// When the CaptivePortalPopupWindow feature is enabled, this code is
+// responsible for determining whether proxies should be disabled for
+// captive portal signin windows.
+bool ProxiesDisabledForCaptivePortalSignin(const PrefService* profile_prefs) {
+  // If the CaptivePortalPopupWindow feature is not enabled, the logic for
+  // avoiding proxies for captive portal signin is handled in
+  // NetworkPortalSigninController.
   if (!chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
     return false;
   }
+  // Prior to login only the signin Profile can be used with no special
+  // behavior.
   if (!profile_prefs) {
     return false;
   }
+  // The kCaptivePortalSignin pref identifies signin windows. If this is not
+  // a signin window, do not disable proxies here.
   const PrefService::Preference* const captive_portal_pref =
       profile_prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);
-  if (!captive_portal_pref) {
+  if (!captive_portal_pref || !captive_portal_pref->GetValue()->GetBool()) {
     return false;
   }
-  return captive_portal_pref->GetValue()->GetBool();
+  // If the CaptivePortalAuthenticationIgnoresProxy pref is set to false by
+  // policy, proxies should not be disabled for captive portal signin.
+  const PrefService::Preference* const ignore_proxy_pref =
+      profile_prefs->FindPreference(
+          chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy);
+  if (ignore_proxy_pref && !ignore_proxy_pref->GetValue()->GetBool()) {
+    return false;
+  }
+  // Otherwise, disable proxies for captive portal signin.
+  return true;
 }
 
 }  // namespace
@@ -196,8 +215,7 @@ std::unique_ptr<ProxyConfigDictionary>
 ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
     const PrefService* profile_prefs,
     const PrefService* local_state_prefs) {
-  if (GetIsCaptivePortalSignin(profile_prefs)) {
-    // Ignore proxies for captive portal signin.
+  if (ProxiesDisabledForCaptivePortalSignin(profile_prefs)) {
     return nullptr;
   }
 
@@ -241,8 +259,7 @@ void ProxyConfigServiceImpl::DetermineEffectiveConfigFromDefaultNetwork() {
     return;
   }
 
-  // Ignore proxies for captive portal signin.
-  if (GetIsCaptivePortalSignin(profile_prefs_)) {
+  if (ProxiesDisabledForCaptivePortalSignin(profile_prefs_)) {
     return;
   }
 

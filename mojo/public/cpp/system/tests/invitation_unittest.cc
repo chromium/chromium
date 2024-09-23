@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/public/cpp/system/invitation.h"
 
 #include <optional>
@@ -75,7 +80,7 @@ const char kTransportTypeChannel[] = "channel";
 const char kTransportTypeChannelServer[] = "channel-server";
 #endif
 
-// TODO(https://crbug.com/1428561): Flaky on Tsan.
+// TODO(crbug.com/40900578): Flaky on Tsan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_InvitationCppTest DISABLED_InvitationCppTest
 #else
@@ -427,7 +432,7 @@ TEST_P(MAYBE_InvitationCppTest, MAYBE_ProcessErrors) {
   error_loop.Run();
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
 
-  // TODO(https://crbug.com/846833): Once we can rework the C++ invitation API
+  // TODO(crbug.com/40578072): Once we can rework the C++ invitation API
   // to also notify on disconnect, this test should cover that too. For now we
   // just tell the process to exit and wait for it to do.
   WriteMessage(pipe, kDisconnectMessage);

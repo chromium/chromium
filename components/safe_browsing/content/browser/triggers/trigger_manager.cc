@@ -53,8 +53,8 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       return true;
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
-      NOTREACHED() << "These triggers have been handled in "
-                      "CanStartDataCollectionWithReason()";
+      NOTREACHED_IN_MIGRATION() << "These triggers have been handled in "
+                                   "CanStartDataCollectionWithReason()";
       return true;
   }
   // By default, require opt-in for all triggers.
@@ -100,19 +100,19 @@ void TriggerManager::set_trigger_throttler(TriggerThrottler* throttler) {
 SBErrorOptions TriggerManager::GetSBErrorDisplayOptions(
     const PrefService& pref_service,
     content::WebContents* web_contents) {
-  return SBErrorOptions(/*is_main_frame_load_pending=*/false,
-                        /*is_subresource=*/true,
-                        IsExtendedReportingOptInAllowed(pref_service),
-                        web_contents->GetBrowserContext()->IsOffTheRecord(),
-                        IsExtendedReportingEnabled(pref_service),
-                        IsExtendedReportingPolicyManaged(pref_service),
-                        IsEnhancedProtectionEnabled(pref_service),
-                        /*is_proceed_anyway_disabled=*/false,
-                        /*should_open_links_in_new_tab=*/false,
-                        /*always_show_back_to_safety=*/true,
-                        /*is_enhanced_protection_message_enabled=*/true,
-                        IsSafeBrowsingPolicyManaged(pref_service),
-                        /*help_center_article_link=*/std::string());
+  return SBErrorOptions(
+      /*is_main_frame_load_pending=*/false,
+      IsExtendedReportingOptInAllowed(pref_service),
+      web_contents->GetBrowserContext()->IsOffTheRecord(),
+      IsExtendedReportingEnabledBypassDeprecationFlag(pref_service),
+      IsExtendedReportingPolicyManaged(pref_service),
+      IsEnhancedProtectionEnabled(pref_service),
+      /*is_proceed_anyway_disabled=*/false,
+      /*should_open_links_in_new_tab=*/false,
+      /*always_show_back_to_safety=*/true,
+      /*is_enhanced_protection_message_enabled=*/true,
+      IsSafeBrowsingPolicyManaged(pref_service),
+      /*help_center_article_link=*/std::string());
 }
 
 bool TriggerManager::CanStartDataCollection(
@@ -190,12 +190,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   // entry in the map for this |web_contents| if it's not there already.
   DataCollectorsContainer* collectors =
       &data_collectors_map_[GetWebContentsKey(web_contents)];
-  bool collection_in_progress = collectors->threat_details != nullptr;
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtStart" +
-          std::string(resource.is_subresource ? ".Subresource" : ".Mainframe"),
-      collection_in_progress);
-  if (collection_in_progress) {
+  if (collectors->threat_details) {
     return false;
   }
 
@@ -230,16 +225,12 @@ TriggerManager::FinishCollectingThreatDetails(
   bool has_threat_details_in_map =
       base::Contains(data_collectors_map_, web_contents_key);
 
-  if (should_send_report) {
+  if (should_send_report &&
+      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
     base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab",
+        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
+        "SecurityInterstitial",
         has_threat_details_in_map);
-    if (trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
-          "SecurityInterstitial",
-          has_threat_details_in_map);
-    }
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.
@@ -249,14 +240,6 @@ TriggerManager::FinishCollectingThreatDetails(
         /*are_threat_details_available=*/false);
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
   bool has_threat_details = !!collectors->threat_details;
-
-  if (should_send_report &&
-      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer."
-        "SecurityInterstitial",
-        has_threat_details);
-  }
 
   if (!has_threat_details) {
     return FinishCollectingThreatDetailsResult(

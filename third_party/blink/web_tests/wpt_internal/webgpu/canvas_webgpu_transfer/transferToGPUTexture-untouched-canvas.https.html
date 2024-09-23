@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-untouched-canvas</h1>
+
+<p>transferToGPUTexture() creates a texture from an uninitialized canvas.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_transferToGPUTexture_untouched_canvas(
+          device,
+          document.getElementById('c'));
+    });
+  },
+  'transferToGPUTexture() should create a texture from an uninitialized ' +
+  'canvas.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_transferToGPUTexture_untouched_canvas(
+          device,
+          new OffscreenCanvas(50, 50));
+    });
+  },
+  'transferToGPUTexture() should create a texture from an uninitialized ' +
+  'offscreen canvas.'
+);
+
+</script>

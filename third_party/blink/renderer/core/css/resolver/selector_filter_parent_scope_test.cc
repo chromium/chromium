@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -19,6 +20,11 @@ class SelectorFilterParentScopeTest : public testing::Test {
   void SetUp() override {
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
+  }
+
+  void TearDown() override {
+    dummy_page_holder_ = nullptr;
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
@@ -115,6 +121,24 @@ TEST_F(SelectorFilterParentScopeTest, ReentrantSVGImageLoading) {
   // recalc for the SVG image Document. Without supporting re-entrancy for
   // SelectorFilterParentScope with a SelectorFilterRootScope, this update may
   // cause DCHECKs to fail.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  // Drop the reference to the SVG, which is an `IsolatedSVGDDocument`, and is
+  // not destroyed during GC, instead using a separate lifetime system. Without
+  // this, something keeps it alive until the next GC after test teardown. This
+  // is all the information available at the time of writing.
+  //
+  // This is a problem because it refers to a `blink::PerformanceMonitor`, which
+  // is a `CheckedObserver`, and which must be destroyed before resetting
+  // `blink::MainThread` during test teardown, because at that point, it is no
+  // longer possible to remove it from `ObserverList`s.
+  //
+  // TODO(crbug.com/337200890): Update this comment with more information and
+  // see whether removing this code is possible once this crashbug's root cause
+  // has been determined.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div></div>
+  )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 }
 

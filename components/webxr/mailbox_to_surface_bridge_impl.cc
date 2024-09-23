@@ -22,11 +22,9 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/buffer_types.h"
@@ -219,10 +217,9 @@ void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
 void MailboxToSurfaceBridgeImpl::CreateSurface(
     gl::SurfaceTexture* surface_texture) {
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  surface_handle_ =
-      tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
-          gl::ScopedJavaSurface(surface_texture),
-          false /* can_be_used_with_surface_control */));
+  surface_handle_ = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(gl::ScopedJavaSurface(surface_texture),
+                         false /* can_be_used_with_surface_control */));
   // Unregistering happens in the destructor.
 }
 
@@ -290,8 +287,6 @@ bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
     needs_resize_ = false;
   }
 
-  DCHECK(mailbox.mailbox.IsSharedImage());
-
   // While it's not an error to use a zero-sized Surface, it's not going to
   // produce any visible output. Show a debug mode warning in that case to avoid
   // another annoying debugging session.
@@ -347,7 +342,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
     gfx::BufferFormat buffer_format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
@@ -357,12 +352,12 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
 
   CHECK_EQ(buffer_format, gfx::BufferFormat::RGBA_8888);
   auto client_shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "WebXrMailboxToSurfaceBridge", std::move(buffer_handle));
+      {viz::SinglePlaneFormat::kRGBA_8888, size, color_space, usage,
+       "WebXrMailboxToSurfaceBridge"},
+      std::move(buffer_handle));
   CHECK(client_shared_image);
   sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format));
+  DCHECK(client_shared_image->GetTextureTarget() == GL_TEXTURE_2D);
   return client_shared_image;
 }
 

@@ -5,7 +5,6 @@
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -17,12 +16,12 @@ import '../../components/buttons/oobe_text_button.js';
 import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
 import {getTemplate} from './enter_old_password.html.js';
@@ -37,16 +36,8 @@ enum EnterOldPasswordUiState {
 }
 
 
-const EnterOldPasswordBase = mixinBehaviors(
-                                 [
-                                   OobeI18nBehavior,
-                                   LoginScreenBehavior,
-                                   MultiStepBehavior,
-                                 ],
-                                 PolymerElement) as {
-  new (): PolymerElement & OobeI18nBehaviorInterface &
-      LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-};
+const EnterOldPasswordBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 
 export class EnterOldPassword extends EnterOldPasswordBase {
@@ -113,14 +104,15 @@ export class EnterOldPassword extends EnterOldPasswordBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.PASSWORD_CHANGED;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.PASSWORD_CHANGED;
   }
 
   /**
    * Invoked just before being shown.
    */
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     this.reset();
   }
 

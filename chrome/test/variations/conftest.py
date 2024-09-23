@@ -30,7 +30,8 @@ def pytest_addoption(parser: pytest.Parser):
                    '--git-revision',
                    '--gerrit-issue',
                    '--gerrit-patchset',
-                   '--buildbucket-id')
+                   '--buildbucket-id',
+                   '--logs-dir')
 
   parser.addoption('--isolated-script-test-output',
                    '--write-full-results-to',

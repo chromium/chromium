@@ -13,9 +13,6 @@ NSString* const kPasswordSettingsSavePasswordSwitchTableViewId =
 NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId =
     @"PasswordSettingsManagedSavePasswordSwitchTableViewId";
 
-NSString* const kPasswordSettingsAccountStorageSwitchTableViewId =
-    @"PasswordSettingsAccountStorageSwitchTableViewId";
-
 NSString* const
     kPasswordSettingsBulkMovePasswordsToAccountDescriptionTableViewId =
         @"PasswordSettingsBulkMovePasswordsToAccountDescriptionTableViewId";

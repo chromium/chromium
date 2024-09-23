@@ -13,12 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -26,12 +26,15 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -47,18 +50,18 @@ std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
-// Converts AutofillProfile::Source enum to the WebUI idl one.
-autofill_private::AddressSource ConvertProfileSource(
-    autofill::AutofillProfile::Source source) {
-  switch (source) {
-    case autofill::AutofillProfile::Source::kLocalOrSyncable:
-      return autofill_private::AddressSource::kLocalOrSyncable;
-    case autofill::AutofillProfile::Source::kAccount:
-      return autofill_private::AddressSource::kAccount;
-    default:
-      NOTREACHED();
-      return autofill_private::AddressSource::kNone;
+// Converts AutofillProfile::RecordType enum to the WebUI idl one.
+autofill_private::AddressRecordType ConvertProfileRecordType(
+    autofill::AutofillProfile::RecordType record_type) {
+  switch (record_type) {
+    case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
+      return autofill_private::AddressRecordType::kLocalOrSyncable;
+    case autofill::AutofillProfile::RecordType::kAccount:
+    case autofill::AutofillProfile::RecordType::kAccountHome:
+    case autofill::AutofillProfile::RecordType::kAccountWork:
+      return autofill_private::AddressRecordType::kAccount;
   }
+  NOTREACHED();
 }
 
 autofill_private::AddressEntry ProfileToAddressEntry(
@@ -92,23 +95,10 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
-  address.metadata->source = ConvertProfileSource(profile.source());
+  address.metadata->record_type =
+      ConvertProfileRecordType(profile.record_type());
 
   return address;
-}
-
-autofill_private::CountryEntry CountryToCountryEntry(
-    autofill::AutofillCountry* country) {
-  autofill_private::CountryEntry entry;
-
-  // A null |country| means "insert a space here", so we add a country w/o a
-  // |name| or |country_code| to the list and let the UI handle it.
-  if (country) {
-    entry.name = base::UTF16ToUTF8(country->name());
-    entry.country_code = country->country_code();
-  }
-
-  return entry;
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
@@ -151,6 +141,10 @@ std::string CardNetworkToIconResourceIdString(const std::string& network) {
     return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_UNIONPAY"
                          : "chrome://theme/IDR_AUTOFILL_CC_UNIONPAY";
   }
+  if (network == autofill::kVerveCard) {
+    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VERVE"
+                         : "chrome://theme/IDR_AUTOFILL_CC_VERVE";
+  }
   if (network == autofill::kVisaCard) {
     return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VISA"
                          : "chrome://theme/IDR_AUTOFILL_CC_VISA";
@@ -189,15 +183,14 @@ namespace extensions::autofill_util {
 
 AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
-  const std::vector<autofill::AutofillProfile*>& profiles =
-      personal_data.GetProfilesForSettings();
+  const std::vector<const autofill::AutofillProfile*>& profiles =
+      personal_data.address_data_manager().GetProfilesForSettings();
   std::vector<std::u16string> labels;
-  // TODO(crbug.com/1487119): Replace by `profiles` when
-  // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.
+  // TODO(crbug.com/40283168): Replace by `profiles`.
   autofill::AutofillProfile::CreateDifferentiatingLabels(
       std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
           profiles.begin(), profiles.end()),
-      g_browser_process->GetApplicationLocale(), &labels);
+      ExtensionsBrowserClient::Get()->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;
@@ -208,18 +201,32 @@ AddressEntryList GenerateAddressList(
 }
 
 CountryEntryList GenerateCountryList(
-    const autofill::PersonalDataManager& personal_data) {
+    const autofill::PersonalDataManager& personal_data,
+    bool for_account_address_profile) {
   autofill::CountryComboboxModel model;
   model.SetCountries(personal_data,
                      base::RepeatingCallback<bool(const std::string&)>(),
-                     g_browser_process->GetApplicationLocale());
+                     ExtensionsBrowserClient::Get()->GetApplicationLocale());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();
 
   CountryEntryList list;
 
-  for (const auto& country : countries)
-    list.push_back(CountryToCountryEntry(country.get()));
+  for (const auto& country : countries) {
+    // A null |country| means "insert a space here", so we add a country w/o a
+    // |name| or |country_code| to the list and let the UI handle it.
+    if (!country) {
+      list.emplace_back();
+      continue;
+    }
+    if (!for_account_address_profile ||
+        personal_data.address_data_manager().IsCountryEligibleForAccountStorage(
+            country->country_code())) {
+      api::autofill_private::CountryEntry& entry = list.emplace_back();
+      entry.name = base::UTF16ToUTF8(country->name());
+      entry.country_code = country->country_code();
+    }
+  }
 
   return list;
 }
@@ -227,7 +234,7 @@ CountryEntryList GenerateCountryList(
 CreditCardEntryList GenerateCreditCardList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<autofill::CreditCard*>& cards =
-      personal_data.GetCreditCards();
+      personal_data.payments_data_manager().GetCreditCards();
 
   CreditCardEntryList list;
   for (const autofill::CreditCard* card : cards) {
@@ -241,7 +248,8 @@ CreditCardEntryList GenerateCreditCardList(
 IbanEntryList GenerateIbanList(
     const autofill::PersonalDataManager& personal_data) {
   IbanEntryList list;
-  for (const autofill::Iban* iban : personal_data.GetLocalIbans()) {
+  for (const autofill::Iban* iban :
+       personal_data.payments_data_manager().GetLocalIbans()) {
     list.push_back(IbanToIbanEntry(*iban, personal_data));
   }
 
@@ -250,8 +258,9 @@ IbanEntryList GenerateIbanList(
 
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data) {
-  std::optional<CoreAccountInfo> account =
-      personal_data.GetPrimaryAccountInfo();
+  const autofill::AddressDataManager& adm =
+      personal_data.address_data_manager();
+  std::optional<CoreAccountInfo> account = adm.GetPrimaryAccountInfo();
   if (!account.has_value()) {
     return std::nullopt;
   }
@@ -259,14 +268,13 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
   api_account.is_sync_enabled_for_autofill_profiles =
-      personal_data.IsSyncFeatureEnabledForAutofill();
+      adm.IsSyncFeatureEnabledForAutofill();
   api_account.is_eligible_for_address_account_storage =
-      personal_data.IsEligibleForAddressAccountStorage();
+      adm.IsEligibleForAddressAccountStorage();
   api_account.is_autofill_sync_toggle_enabled =
-      personal_data.IsUserSelectableTypeEnabled(
-          syncer::UserSelectableType::kAutofill);
+      adm.IsAutofillUserSelectableTypeEnabled();
   api_account.is_autofill_sync_toggle_available =
-      personal_data.IsAutofillSyncToggleAvailable();
+      adm.IsAutofillSyncToggleAvailable();
   return std::move(api_account);
 }
 
@@ -307,13 +315,14 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableCardArtImage)) {
     card_art_image =
-        personal_data.GetCreditCardArtImageForUrl(credit_card.card_art_url());
+        personal_data.payments_data_manager().GetCreditCardArtImageForUrl(
+            credit_card.card_art_url());
   }
   card.image_src =
       card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
                      : CardNetworkToIconResourceIdString(credit_card.network());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefits) &&
+  if (personal_data.payments_data_manager().IsCardEligibleForBenefits(
+          credit_card) &&
       credit_card.product_terms_url().is_valid()) {
     card.product_terms_url = credit_card.product_terms_url().spec();
   }
@@ -326,13 +335,12 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
   card.metadata->is_local =
       credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard;
-  card.metadata->is_cached = credit_card.record_type() ==
-                             autofill::CreditCard::RecordType::kFullServerCard;
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
   card.metadata->is_migratable =
-      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
+      credit_card.IsValid() &&
+      !personal_data.payments_data_manager().IsServerCard(&credit_card);
   card.metadata->is_virtual_card_enrollment_eligible =
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled ||

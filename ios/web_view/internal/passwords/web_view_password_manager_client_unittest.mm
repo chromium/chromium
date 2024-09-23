@@ -92,10 +92,7 @@ TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotSignedIn) {
       .WillOnce(Return(false));
 
   // There's no signed-in user.
-  sync_service_.SetAccountInfo(CoreAccountInfo());
-  sync_service_.SetHasSyncConsent(false);
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  sync_service_.SetSignedOut();
 
   EXPECT_FALSE(password_manager_client_->PromptUserToSaveOrUpdatePassword(
       std::move(password_manager_for_ui), /*update_password=*/false));
@@ -109,10 +106,7 @@ TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotOptedInToAccountStorage) {
       .WillOnce(Return(false));
 
   // There is a signed-in user, but they have chosen not to enable passwords.
-  CoreAccountInfo account_info;
-  account_info.gaia = "1337";
-  sync_service_.SetAccountInfo(account_info);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
@@ -127,10 +121,7 @@ TEST_F(WebViewPasswordManagerClientTest, PromptIfAllConditionsPass) {
   EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
       .WillOnce(Return(false));
 
-  CoreAccountInfo account_info;
-  account_info.gaia = "1337";
-  sync_service_.SetAccountInfo(account_info);
-  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   // The user chose to enable passwords (along with all other types).
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, syncer::UserSelectableTypeSet());

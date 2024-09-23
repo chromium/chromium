@@ -1,0 +1,7 @@
+invalidate-before-swap-iterators.cpp:19:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it1 = 0;
+   ^
+invalidate-before-swap-iterators.cpp:25:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it2 = 0;
+   ^
+2 errors generated.

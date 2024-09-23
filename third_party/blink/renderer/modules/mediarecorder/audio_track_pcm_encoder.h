@@ -17,7 +17,9 @@ namespace blink {
 // back out again.
 class AudioTrackPcmEncoder : public AudioTrackEncoder {
  public:
-  explicit AudioTrackPcmEncoder(OnEncodedAudioCB on_encoded_audio_cb);
+  explicit AudioTrackPcmEncoder(
+      OnEncodedAudioCB on_encoded_audio_cb,
+      OnEncodedAudioErrorCB on_encoded_audio_error_cb);
 
   AudioTrackPcmEncoder(const AudioTrackPcmEncoder&) = delete;
   AudioTrackPcmEncoder& operator=(const AudioTrackPcmEncoder&) = delete;

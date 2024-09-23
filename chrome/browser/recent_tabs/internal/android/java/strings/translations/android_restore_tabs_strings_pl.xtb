@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Urządzenia zsynchronizowane na potrzeby przywrócenia kart można zmienić po dotknięciu. Dotknij, aby przejrzeć lub przywrócić wybrane karty na obecnym urządzeniu. Klawiatura jest ukryta.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Otwórz <ph name="TABS_COUNT_ONE" /> kartę}few{Otwórz <ph name="TABS_COUNT_MANY" /> karty}many{Otwórz <ph name="TABS_COUNT_MANY" /> kart}other{Otwórz <ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="4509609396389120020">Pobierz karty z innych urządzeń</translation>
+<translation id="4619615317237390068">Karty z innych urządzeń</translation>
 <translation id="4811934403802581334">Wszystkie wybrane karty z aktualnie wybranego urządzenia zostaną przywrócone.</translation>
 <translation id="5336031759968328813">Sprawdź wszystkie karty</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>

@@ -40,7 +40,8 @@ InterpolationValue CSSFontStretchInterpolationType::CreateFontStretchValue(
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      0, CSSPrimitiveValue::UnitType::kPercentage));
 }
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInitial(
@@ -57,7 +58,8 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInherit(
   FontSelectionValue inherited_font_stretch =
       state.ParentStyle()->GetFontStretch();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontStretchChecker>(inherited_font_stretch));
+      MakeGarbageCollected<InheritedFontStretchChecker>(
+          inherited_font_stretch));
   return CreateFontStretchValue(inherited_font_stretch);
 }
 

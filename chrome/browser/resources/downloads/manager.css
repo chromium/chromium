@@ -1,0 +1,113 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-page-host-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex: 1 0;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    color: var(--cr-secondary-text-color);
+  }
+}
+
+#toolbar {
+  z-index: 1;
+  --cr-toolbar-center-basis: 680px;
+  --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
+  --cr-toolbar-field-width: 100%;
+  --cr-toolbar-header-white-space: nowrap;
+}
+
+:host([has-shadow_]) #drop-shadow {
+  opacity: var(--cr-container-shadow-max-opacity);
+}
+
+downloads-item,
+#downloadsList,
+cr-toast-manager {
+  --downloads-card-margin: 24px;
+  --downloads-card-width: clamp(550px, 80%, 680px);
+  --cr-toast-max-width: var(--downloads-card-width);
+}
+
+#downloadsList {
+  min-width: calc(
+    var(--downloads-card-width) + 2 * var(--downloads-card-margin));
+}
+
+#no-downloads,
+#downloadsList {
+  flex: 1;
+}
+
+:host([loading]) #no-downloads,
+:host([loading]) #downloadsList {
+  display: none;
+}
+
+#no-downloads {
+  align-items: center;
+  color: #6e6e6e;
+  display: flex;
+  font-size: 123.1%;
+  font-weight: 500;
+  justify-content: center;
+  /* To avoid overlapping with the header, we need this min-height
+   * until bug 596743 is fixed. */
+  min-height: min-content;
+}
+
+@media (prefers-color-scheme: dark) {
+  #no-downloads {
+    color: var(--cr-secondary-text-color);
+  }
+}
+
+#no-downloads .illustration {
+  background: url(images/no_downloads.svg) no-repeat
+      center center;
+  background-size: contain;
+  height: 144px;
+  margin-bottom: 32px;
+}
+
+#mainContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: overlay;
+}
+
+managed-footnote {
+  border-top: none;
+  /* margin-bottom is needed to compensate for the next element's 21px
+   * margin at the top and 8px padding at the top. This leaves a 12px
+   * padding between this element's content and the top of the next
+   * element's text. */
+  margin-bottom: calc(-21px - 8px);
+  min-width: calc(
+      var(--downloads-card-width) + 2 * var(--downloads-card-margin));
+  padding-bottom: 12px;
+  padding-top: 12px;
+  /* The next element spills over this element. This ensures the link
+   * is clickable. */
+  z-index: 1;
+}

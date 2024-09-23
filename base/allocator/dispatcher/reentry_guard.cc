@@ -29,7 +29,7 @@ void ReentryGuard::InitTLSSlot() {
     int error = pthread_key_create(&entered_key_, nullptr);
     CHECK(!error);
     // Touch the TLS slot immediately to force any allocations.
-    // TODO(https://crbug.com/1411454): Use this technique to avoid allocations
+    // TODO(crbug.com/40062835): Use this technique to avoid allocations
     // in PoissonAllocationSampler::ScopedMuteThreadSamples, which will make
     // ReentryGuard redundant.
     pthread_setspecific(entered_key_, nullptr);
@@ -47,7 +47,7 @@ void ReentryGuard::InitTLSSlot() {}
 void ReentryGuard::RecordTLSSlotToCrashKey() {
   // Record the key in crash dumps to detect when it's higher than 32
   // (PTHREAD_KEY_2NDLEVEL_SIZE).
-  // TODO(crbug.com/1411454): Remove this after diagnosing reentry crashes.
+  // TODO(crbug.com/40062835): Remove this after diagnosing reentry crashes.
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "reentry_guard_tls_slot", base::debug::CrashKeySize::Size32);
 

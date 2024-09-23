@@ -188,7 +188,7 @@ public class OfflineIndicatorControllerV2 {
 
         mIsUrlBarFocusedSupplier = isUrlBarFocusedSupplier;
         mCanAnimateBrowserControlsSupplier = canAnimateNativeBrowserControls;
-        // TODO(crbug.com/1075793): Move the UrlBar focus related code to the widget or glue code.
+        // TODO(crbug.com/40128377): Move the UrlBar focus related code to the widget or glue code.
         mOnUrlBarFocusChanged =
                 (hasFocus) -> {
                     if (!hasFocus && mOnUrlBarUnfocusedRunnable != null) {
@@ -213,7 +213,7 @@ public class OfflineIndicatorControllerV2 {
         }
 
         mHandler.removeCallbacks(mUpdateStatusIndicatorDelayedRunnable);
-        // TODO(crbug.com/1081427): This currently only protects the widget from going into a bad
+        // TODO(crbug.com/40691334): This currently only protects the widget from going into a bad
         // state. We need a better way to handle flaky connections.
         final long elapsedTimeSinceLastAction = getElapsedTime() - mLastActionTime;
         if (elapsedTimeSinceLastAction < STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS) {

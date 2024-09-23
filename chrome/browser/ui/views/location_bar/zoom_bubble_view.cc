@@ -37,6 +37,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
@@ -109,7 +110,14 @@ class ZoomValue : public views::Label {
   // views::Label:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    return gfx::Size(max_width_, GetHeightForWidth(max_width_));
+    gfx::Size size =
+        views::Label::CalculatePreferredSize(views::SizeBounds(max_width_, {}));
+    // When the initial value of the text width is small(eg: 80%), the
+    // `ZoomBubbleView` will be smaller. Then after we use a larger value(eg:
+    // 200%), the text will not be fully displayed. It needs to be set to the
+    // maximum value to ensure that the size of `ZoomBubbleView` is fixed.
+    size.set_width(max_width_);
+    return size;
   }
 
  private:
@@ -302,7 +310,7 @@ ZoomBubbleView::ZoomBubbleView(
       auto_close_(reason == AUTOMATIC),
       immersive_mode_controller_(immersive_mode_controller),
       session_id_(chrome::FindBrowserWithTab(web_contents)->session_id()) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetNotifyEnterExitOnChild(true);
   if (immersive_mode_controller_)
@@ -342,7 +350,7 @@ void ZoomBubbleView::OnBlur() {
 
 void ZoomBubbleView::OnGestureEvent(ui::GestureEvent* event) {
   if (!zoom_bubble_ || !zoom_bubble_->auto_close_ ||
-      event->type() != ui::ET_GESTURE_TAP) {
+      event->type() != ui::EventType::kGestureTap) {
     return;
   }
 
@@ -375,7 +383,7 @@ void ZoomBubbleView::Init() {
   constexpr int kPercentLabelPadding = 64;
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int spacing =
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   gfx::Insets inset_border_insets =
       provider->GetInsetsMetric(INSETS_TOAST) - margins();
   inset_border_insets.set_top_bottom(0, 0);
@@ -428,7 +436,7 @@ void ZoomBubbleView::Init() {
   // Add zoom label with the new zoom percent.
   auto label = std::make_unique<ZoomValue>(web_contents());
   label->SetProperty(views::kMarginsKey, gfx::Insets(label_margin));
-  label->SetAccessibleRole(ax::mojom::Role::kAlert);
+  label->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
   label_ = label.get();
   AddChildView(std::move(label));
 
@@ -520,7 +528,7 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
   // is an action icon (size-16) this is an acceptable alternative.
   const ExtensionIconSet* icons = &extensions::IconsInfo::GetIcons(extension);
   bool has_default_sized_icon =
-      !icons->Get(gfx::kFaviconSize, ExtensionIconSet::MATCH_EXACTLY).empty();
+      !icons->Get(gfx::kFaviconSize, ExtensionIconSet::Match::kExactly).empty();
 
   if (!has_default_sized_icon) {
     const extensions::ActionInfo* action =
@@ -540,7 +548,7 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
 void ZoomBubbleView::UpdateZoomPercent() {
   label_->SetText(base::FormatPercent(
       zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent()));
-  label_->SetAccessibleName(GetAccessibleWindowTitle());
+  label_->GetViewAccessibility().SetName(GetAccessibleWindowTitle());
   label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 
   // Disable buttons at min, max and default
@@ -551,10 +559,10 @@ void ZoomBubbleView::UpdateZoomPercent() {
       zoom::PageZoom::PresetZoomLevels(default_zoom_level);
   DCHECK(zoom_out_button_);
   zoom_out_button_->SetEnabled(
-      !blink::PageZoomValuesEqual(zoom_levels.front(), current_zoom_level));
+      !blink::ZoomValuesEqual(zoom_levels.front(), current_zoom_level));
   DCHECK(zoom_in_button_);
   zoom_in_button_->SetEnabled(
-      !blink::PageZoomValuesEqual(zoom_levels.back(), current_zoom_level));
+      !blink::ZoomValuesEqual(zoom_levels.back(), current_zoom_level));
 }
 
 void ZoomBubbleView::UpdateZoomIconVisibility() {

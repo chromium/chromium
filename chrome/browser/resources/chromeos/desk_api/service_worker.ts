@@ -7,9 +7,9 @@
  * class as declared in types.d.ts
  */
 
-import {DeskApiBridgeRequest, DeskApiBridgeResponse, MessageSender, ServiceWorker} from './desk_api_types';
-import {EventType, RequestType, ResponseType} from './message_type';
-import {Desk, DeskApi, GetDeskByIdOperands, LaunchOptions, NotificationApi, NotificationOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types';
+import {DeskApiBridgeRequest, DeskApiBridgeResponse, MessageSender, ServiceWorker} from './desk_api_types.js';
+import {EventType, RequestType, ResponseType} from './message_type.js';
+import {Desk, DeskApi, GetDeskByIdOperands, LaunchOptions, NotificationApi, NotificationOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types.js';
 
 
 /**

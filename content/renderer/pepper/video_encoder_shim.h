@@ -68,7 +68,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
 
   std::unique_ptr<EncoderImpl> encoder_impl_;
 
-  raw_ptr<PepperVideoEncoderHost, ExperimentalRenderer> host_;
+  raw_ptr<PepperVideoEncoderHost> host_;
 
   // Task doing the encoding.
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

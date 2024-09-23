@@ -103,4 +103,12 @@ void FakeBrowserState::SetSharedURLLoaderFactory(
   test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
 }
 
+const std::string& FakeBrowserState::GetWebKitStorageID() const {
+  return storage_uuid_;
+}
+
+void FakeBrowserState::SetWebKitStorageID(std::string uuid) {
+  storage_uuid_ = uuid;
+}
+
 }  // namespace web

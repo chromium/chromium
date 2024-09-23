@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <memory>
@@ -11,10 +16,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/common/features.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/network_isolation_key.h"
@@ -59,7 +67,9 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
 
   // This function initializes the cache and waits till the transaction is
   // finished. When this function returns, the backend is already initialized.
-  void InitializeCache(GeneratedCodeCache::CodeCacheType cache_type) {
+  void InitializeCache(GeneratedCodeCache::CodeCacheType cache_type,
+                       const char* initial_url = kInitialUrl,
+                       const char* initial_origin = kInitialOrigin) {
     // Create code cache
     generated_code_cache_ = std::make_unique<GeneratedCodeCache>(
         cache_path_, kMaxSizeInBytes, cache_type);
@@ -68,9 +78,8 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
         &GeneratedCodeCacheTest::GetBackendCallback, base::Unretained(this));
     generated_code_cache_->GetBackend(std::move(callback));
 
-    GURL url(kInitialUrl);
-    GURL origin_lock = GURL(kInitialOrigin);
-    WriteToCache(url, origin_lock, kInitialData, base::Time::Now());
+    WriteToCache(GURL(initial_url), GURL(initial_origin), kInitialData,
+                 base::Time::Now());
     task_environment_.RunUntilIdle();
   }
 
@@ -684,8 +693,123 @@ TEST_P(GeneratedCodeCacheTest, TestFailedBackendOpening) {
   ASSERT_TRUE(received_null_);
 }
 
+// Tests the embedder specifying custom WebUI hostnames for metrics reporting.
+class TestBrowserClient : public ContentBrowserClient {
+ public:
+  TestBrowserClient() = default;
+  TestBrowserClient(const TestBrowserClient&) = delete;
+  TestBrowserClient& operator=(const TestBrowserClient&) = delete;
+  ~TestBrowserClient() override = default;
+
+  // ContentBrowserClient:
+  std::string GetWebUIHostnameForCodeCacheMetrics(
+      const GURL& webui_url) const override {
+    if (webui_url.host() == "foo") {
+      return "Foo";
+    }
+    if (webui_url.host() == "bar") {
+      return "Bar";
+    }
+    return std::string();
+  }
+};
+
+class GeneratedCodeCacheMetricsTest : public GeneratedCodeCacheTest {
+ public:
+  GeneratedCodeCacheMetricsTest() {
+    content::SetBrowserClientForTesting(&browser_client_);
+  }
+  ~GeneratedCodeCacheMetricsTest() override {
+    content::SetBrowserClientForTesting(nullptr);
+  }
+
+ private:
+  TestBrowserClient browser_client_;
+};
+
+TEST_P(GeneratedCodeCacheMetricsTest, JSWebUIMetricsWithEmbedderHostnames) {
+  constexpr char kResource1Url[] = "chrome://foo/resource.js";
+  constexpr char kResource2Url[] = "chrome://bar/resource.js";
+  constexpr char kOriginUrl[] = "chrome://foo/";
+  InitializeCache(GeneratedCodeCache::CodeCacheType::kWebUIJavaScript,
+                  kResource1Url, kOriginUrl);
+  base::HistogramTester histogram_tester;
+
+  // Simulate a request for two resources against different data sources for a
+  // single origin.
+  generated_code_cache_->CollectStatisticsForTest(
+      GURL(kResource1Url), GURL(kOriginUrl),
+      content::GeneratedCodeCache::CacheEntryStatus::kUpdate);
+  generated_code_cache_->CollectStatisticsForTest(
+      GURL(kResource2Url), GURL(kOriginUrl),
+      content::GeneratedCodeCache::CacheEntryStatus::kHit);
+
+  // WebUI scripts report both the generic and WebUI specific metrics.
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kUpdate, 1);
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.WebUI.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kUpdate, 1);
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.WebUI.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+
+  // There should be two source specific resource hits.
+  histogram_tester.ExpectUniqueSample(
+      "SiteIsolatedCodeCache.JS.WebUI.Foo.Resource.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kUpdate, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SiteIsolatedCodeCache.JS.WebUI.Bar.Resource.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+
+  // Both resource requests should be reported against the same origin.
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.WebUI.Foo.Origin.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kUpdate, 1);
+  histogram_tester.ExpectBucketCount(
+      "SiteIsolatedCodeCache.JS.WebUI.Foo.Origin.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+}
+
+TEST_P(GeneratedCodeCacheMetricsTest, JavaScriptMetrics) {
+  constexpr char kResourceUrl[] = "https://foo/resource.js";
+  constexpr char kOriginUrl[] = "https://foo/";
+  InitializeCache(GeneratedCodeCache::CodeCacheType::kJavaScript, kResourceUrl,
+                  kOriginUrl);
+  base::HistogramTester histogram_tester;
+
+  generated_code_cache_->CollectStatisticsForTest(
+      GURL(kResourceUrl), GURL(kOriginUrl),
+      content::GeneratedCodeCache::CacheEntryStatus::kHit);
+  histogram_tester.ExpectUniqueSample(
+      "SiteIsolatedCodeCache.JS.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+}
+
+TEST_P(GeneratedCodeCacheMetricsTest, WebAssemblyMetrics) {
+  constexpr char kResourceUrl[] = "https://foo/resource.wasm";
+  constexpr char kOriginUrl[] = "https://foo/";
+  InitializeCache(GeneratedCodeCache::CodeCacheType::kWebAssembly, kResourceUrl,
+                  kOriginUrl);
+  base::HistogramTester histogram_tester;
+
+  generated_code_cache_->CollectStatisticsForTest(
+      GURL(kResourceUrl), GURL(kOriginUrl),
+      content::GeneratedCodeCache::CacheEntryStatus::kHit);
+  histogram_tester.ExpectUniqueSample(
+      "SiteIsolatedCodeCache.WASM.Behaviour",
+      content::GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(GeneratedCodeCacheTest,
                          GeneratedCodeCacheTest,
+                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(GeneratedCodeCacheMetricsTest,
+                         GeneratedCodeCacheMetricsTest,
                          testing::Bool());
 
 }  // namespace content

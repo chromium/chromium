@@ -22,17 +22,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -58,7 +61,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
         ViewGroup view = new LinearLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view);
 
@@ -91,13 +94,15 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
         super.tearDownTest();
     }
 
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    @DisabledTest(message = "crbug.com/347214230")
     public void testDeviceLockView_preExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
@@ -109,7 +114,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 "The description text should match the version for a pre-existing device lock.",
                 getActivity()
                         .getResources()
-                        .getString(R.string.device_lock_existing_lock_description),
+                        .getString(R.string.device_lock_existing_lock_description_for_signin),
                 mView.getDescription().getText());
         assertEquals(
                 "The notice text should match the version for a pre-existing device lock..",
@@ -193,6 +198,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void
             testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
         mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
@@ -260,6 +266,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testDeviceLockView_userUnderstandsButtonClicked_triggersOnClick() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
         mUserUnderstandsButtonClicked.set(false);

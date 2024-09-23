@@ -37,24 +37,7 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
     &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
-
-// Use the Android 14 Credential Manager API for hybrid requests.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Advertise hybrid prelinking on Android even if the app doesn't have
-// notifications permission.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
-
-// Require up-to-date JSON formatting in remote-desktop contexts.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop);
-
-// Enable support for iCloud Keychain
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
 
 // These five feature flags control whether iCloud Keychain is the default
 // mechanism for platform credential creation in different situations.
@@ -74,38 +57,18 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 
-// Allow sites to opt into experimenting with conditional UI presentations.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);
-
-// Allow some sites to experiment with removing caBLE linking in requests.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
-
 // Enable use of a cloud enclave authenticator service.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 
-// Use the new desktop passkey UI that has the following changes:
-// * Display passkeys from multiple sources, including from Windows Hello,
-//   alongside mechanisms on the modal UI.
-// * Merge the QR and USB screens when available.
-// * String tweaks on modal and conditional UI.
+// Enable use of Google Password Manager PIN.
+const char kWebAuthnGpmPinFeatureParameterName[] = "WebAuthenticationGpmPin";
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
+extern const base::FeatureParam<bool> kWebAuthnGpmPin;
 
-// Filter a priori discovered credentials on google.com to those that have a
-// user id that starts with "GOOGLE_ACCOUNT:".
+// Enable handling the passkeys reset flow.
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
-
-// Show an incognito confirmation sheet on Android when creating a credential.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidIncognitoConfirmation);
-
-// Support evaluating PRFs during create() calls.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPRFEvalDuringCreate);
+BASE_DECLARE_FEATURE(kWebAuthnPasskeysReset);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable ChromeOS native passkey support.
@@ -113,38 +76,58 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 #endif
 
-// A webauthn UI mode that detects screen readers and makes the dialog title
-// focusable.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnScreenReaderMode);
-
-// Update the minimum, maximum, and default timeout values for webauthn requests
-// to be more generous and meet https://www.w3.org/TR/WCAG21/#enough-time.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAccessibleTimeouts);
-
 // Support cross-domain RP ID assertions.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 
-// CHECK an invariant about credential sources.
+// Enable the Chrome Android cable authenticator. This lets a Chrome module
+// handle cable requests from scanning a QR code, tapping on an FCM
+// notification, or coming from Play Services. The Chrome Android cable
+// authenticator has been replaced by an implementation in GMSCore, and this
+// flag is here to help us safely remove the code.
+//
+// Note that the USB cable authenticator is not controlled by this flag. That
+// feature hasn't shipped in GMSCore, so it is desirable to keep it around for a
+// while longer.
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
+BASE_DECLARE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator);
 
-// Allow extensions to assert WebAuthn relying party identifiers for domains
-// they have host permissions for.
-// Added in M121. Remove in or after M124.
+// Use insecure software unexportable keys to authenticate to the enclave.
+// For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds);
+BASE_DECLARE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys);
 
-// Send and receive JSON from Play Services.
+// Enable a workaround for an interaction between Windows 10 and certain
+// security keys.
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidFidoJson);
+BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
 
-// Prefer dispatching to a platform (i.e. internal transport) virtual
-// authenticator if available.
+// Store recovery keys on iCloud keychain for the enclave authenticator.
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator);
+BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
+
+// Retrieve and recover from recovery keys on iCloud keychain for the enclave
+// authenticator.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnRecoverFromICloudRecoveryKey);
+
+// Cache responses from the security domain. To be used if we're overloading the
+// security domain service.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
+
+// Whether to enable the Android Open Accessory protocol, a.k.a
+// "caBLE-over-cable".
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidOpenAccessory);
+
+// Send enclave requests with 5 seconds delay. For development purposes only.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
+
+// Enable non-autofill sign-in UI for conditional mediation.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
 }  // namespace device
 

@@ -14,6 +14,7 @@
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "cc/paint/paint_shader.h"
+#include "ui/base/cocoa/defaults_utils.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider.h"
@@ -23,7 +24,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_features.h"
 
@@ -110,7 +111,7 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
 
 NativeTheme* NativeTheme::GetInstanceForDarkUI() {
   static base::NoDestructor<NativeThemeMac> s_native_theme(
-      /*should_only_use_dark_colors=*/true);
+      /*configure_web_instance=*/false, /*should_only_use_dark_colors=*/true);
   return s_native_theme.get();
 }
 
@@ -122,8 +123,7 @@ bool NativeTheme::SystemDarkModeSupported() {
 // static
 NativeThemeMac* NativeThemeMac::instance() {
   static base::NoDestructor<NativeThemeMac> s_native_theme(
-      /*should_only_use_dark_colors=*/false,
-      /*theme_to_update=*/NativeTheme::GetInstanceForWeb());
+      /*configure_web_instance=*/true, /*should_only_use_dark_colors=*/false);
   return s_native_theme.get();
 }
 
@@ -140,6 +140,7 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
                            ColorScheme color_scheme,
+                           bool in_forced_colors,
                            const std::optional<SkColor>& accent_color) const {
   ColorScheme color_scheme_updated = color_scheme;
   if (color_scheme_updated == ColorScheme::kDefault)
@@ -168,7 +169,7 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
       break;
     default:
       NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
-                             color_scheme, accent_color);
+                             color_scheme, in_forced_colors, accent_color);
       break;
   }
 }
@@ -365,7 +366,7 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
   }
 }
 
-gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) const {
+gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) {
   const int kLength = 18 * scale;
   const int kGirth = 6 * scale;
 
@@ -511,7 +512,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       PaintSelectedMenuItem(canvas, color_provider, rect, menu_item);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -525,11 +526,9 @@ static void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
   NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
 }
 
-NativeThemeMac::NativeThemeMac(bool should_only_use_dark_colors,
-                               NativeTheme* theme_to_update)
-    : NativeThemeBase(should_only_use_dark_colors,
-                      ui::SystemTheme::kDefault,
-                      theme_to_update) {
+NativeThemeMac::NativeThemeMac(bool configure_web_instance,
+                               bool should_only_use_dark_colors)
+    : NativeThemeBase(should_only_use_dark_colors) {
   if (!should_only_use_dark_colors)
     InitializeDarkModeStateAndObserver();
 
@@ -555,27 +554,20 @@ NativeThemeMac::NativeThemeMac(bool should_only_use_dark_colors,
                     theme->NotifyOnNativeThemeUpdated();
                   }];
 
-  if (theme_to_update) {
-    theme_to_update->set_use_dark_colors(IsDarkMode());
-    theme_to_update->set_preferred_color_scheme(
-        CalculatePreferredColorScheme());
-    theme_to_update->SetPreferredContrast(CalculatePreferredContrast());
-    theme_to_update->set_prefers_reduced_transparency(
-        PrefersReducedTransparency());
-    theme_to_update->set_inverted_colors(InvertedColors());
-
-    // Observe caption style changes.
-    CFNotificationCenterAddObserver(
-        CFNotificationCenterGetLocalCenter(), this,
-        CaptionSettingsChangedNotificationCallback,
-        kMACaptionAppearanceSettingsChangedNotification, nullptr,
-        CFNotificationSuspensionBehaviorDeliverImmediately);
-  }
+  if (configure_web_instance)
+    ConfigureWebInstance();
 }
 
 NativeThemeMac::~NativeThemeMac() {
   [NSNotificationCenter.defaultCenter
       removeObserver:display_accessibility_notification_token_];
+}
+
+std::optional<base::TimeDelta> NativeThemeMac::GetPlatformCaretBlinkInterval()
+    const {
+  // If there's insertion point flash rate info in NSUserDefaults, use the
+  // blink period derived from that.
+  return ui::TextInsertionCaretBlinkPeriodFromDefaults();
 }
 
 void NativeThemeMac::PaintSelectedMenuItem(
@@ -602,6 +594,30 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
         theme->set_preferred_color_scheme(CalculatePreferredColorScheme());
         theme->NotifyOnNativeThemeUpdated();
       }];
+}
+
+void NativeThemeMac::ConfigureWebInstance() {
+  // NativeThemeAura is used as web instance so we need to initialize its state.
+  NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
+  web_instance->set_use_dark_colors(IsDarkMode());
+  web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
+  web_instance->SetPreferredContrast(CalculatePreferredContrast());
+  web_instance->set_prefers_reduced_transparency(PrefersReducedTransparency());
+  web_instance->set_inverted_colors(InvertedColors());
+
+  // Add the web native theme as an observer to stay in sync with color scheme
+  // changes.
+  color_scheme_observer_ =
+      std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
+          NativeTheme::GetInstanceForWeb());
+  AddObserver(color_scheme_observer_.get());
+
+  // Observe caption style changes.
+  CFNotificationCenterAddObserver(
+      CFNotificationCenterGetLocalCenter(), this,
+      CaptionSettingsChangedNotificationCallback,
+      kMACaptionAppearanceSettingsChangedNotification, nullptr,
+      CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 NativeThemeMacWeb::NativeThemeMacWeb()

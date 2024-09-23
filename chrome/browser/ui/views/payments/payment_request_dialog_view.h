@@ -199,7 +199,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void ResizeDialogWindow();
 
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 

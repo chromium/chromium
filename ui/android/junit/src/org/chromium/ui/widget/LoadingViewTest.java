@@ -164,4 +164,18 @@ public class LoadingViewTest {
                 1,
                 mTestObserver2.hideLoadingCallback.getCallCount());
     }
+
+    @Test
+    @SmallTest
+    public void testLoadingSkipDelay() {
+        mLoadingView.showLoadingUI(/* skipDelay= */ true);
+        Assert.assertEquals(
+                "showLoadingCallback1 should be executed as soon as showLoadingUI is called.",
+                1,
+                mTestObserver1.showLoadingCallback.getCallCount());
+        Assert.assertEquals(
+                "showLoadingCallback2 should be executed as soon as showLoadingUI is called.",
+                1,
+                mTestObserver2.showLoadingCallback.getCallCount());
+    }
 }

@@ -11,9 +11,11 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -54,6 +56,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -117,7 +120,7 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
   IntentPickerBubbleViewBrowserTestChromeOS() {
-    // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
+    // TODO(crbug.com/40236806): Run relevant tests against the updated UI.
     feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
   }
 
@@ -181,9 +184,9 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
   std::string InstallWebApp(const std::string& app_name, const GURL& url) {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(url);
     web_app_info->title = base::UTF8ToUTF16(app_name);
-    web_app_info->start_url = url;
     web_app_info->scope = url;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -203,11 +206,12 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
   views::Checkbox* remember_selection_checkbox() {
-    return static_cast<views::Checkbox*>(intent_picker_bubble()->GetViewByID(
-        IntentPickerBubbleView::ViewId::kRememberCheckbox));
+    return views::AsViewClass<views::Checkbox>(
+        intent_picker_bubble()->GetViewByID(
+            IntentPickerBubbleView::ViewId::kRememberCheckbox));
   }
 
-  // TODO(crbug.com/1265991): There should be an explicit signal we can wait on
+  // TODO(crbug.com/40203946): There should be an explicit signal we can wait on
   // rather than assuming the AppService will be started after RunUntilIdle.
   void WaitForAppService() { base::RunLoop().RunUntilIdle(); }
 
@@ -341,7 +345,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 
 // Test that the intent picker bubble will show for ARC apps.
 //
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+// TODO(crbug.com/40863954): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_ArcOnlyShowBubble Disabled_ArcOnlyShowBubble
 #else
@@ -699,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
 // Test that remember this choice checkbox works for open ARC app option.
 //
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+// TODO(crbug.com/40863954): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_RememberOpenARCApp DISABLED_RememberOpenARCApp
 #else

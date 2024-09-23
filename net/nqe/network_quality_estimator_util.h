@@ -9,10 +9,10 @@
 
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
-class HostPortPair;
 class HostResolver;
 class NetworkAnonymizationKey;
 class URLRequest;
@@ -38,7 +38,7 @@ NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request,
 // for testing.
 NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
     HostResolver* host_resolver,
-    const HostPortPair& host_port_pair,
+    url::SchemeHostPort scheme_host_port,
     const NetworkAnonymizationKey& network_anonymization_key);
 
 }  // namespace nqe::internal

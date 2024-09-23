@@ -130,7 +130,7 @@ void ThumbnailCaptureDriver::UpdateSchedulingPriority() {
   // touch/tablet tabstrip more responsive by pre-loading thumbnails from those
   // pages. However, this currently results in a number of test failures and a
   // possible violation of an assumption made by the renderer.
-  // TODO(crbug.com/1073141): Figure out how to force-render background tabs.
+  // TODO(crbug.com/40686155): Figure out how to force-render background tabs.
   // This bug has detailed descriptions of steps we might take to make capture
   // more flexible in this area.
   if (!thumbnail_visible_) {

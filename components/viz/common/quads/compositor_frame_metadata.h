@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -16,10 +17,13 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -35,10 +39,14 @@
 
 namespace viz {
 
-// A frame token value of 0 indicates an invalid or local frame token. A
+// A frame token value of 0 indicates an invalid token.
+inline constexpr uint32_t kInvalidFrameToken = 0;
+
+// A frame token value of `kLocalFrameToken` indicates a local frame token. A
 // local frame token is used inside viz when it creates its own CompositorFrame
 // for a surface.
-inline constexpr uint32_t kInvalidOrLocalFrameToken = 0;
+inline constexpr uint32_t kLocalFrameToken =
+    std::numeric_limits<uint32_t>::max();
 
 // Compares two frame tokens, handling cases where the token wraps around the
 // 32-bit max value.
@@ -51,7 +59,11 @@ inline bool FrameTokenGT(uint32_t token1, uint32_t token2) {
 class VIZ_COMMON_EXPORT FrameTokenGenerator {
  public:
   inline uint32_t operator++() {
-    if (++frame_token_ == kInvalidOrLocalFrameToken) {
+    ++frame_token_;
+    if (frame_token_ == kLocalFrameToken) {
+      ++frame_token_;
+    }
+    if (frame_token_ == kInvalidFrameToken) {
       ++frame_token_;
     }
     return frame_token_;
@@ -60,9 +72,11 @@ class VIZ_COMMON_EXPORT FrameTokenGenerator {
   inline uint32_t operator*() const { return frame_token_; }
 
  private:
-  uint32_t frame_token_ = kInvalidOrLocalFrameToken;
+  uint32_t frame_token_ = kInvalidFrameToken;
 };
 
+// NOTE: Remember to update the private copy constructor if the new field added
+// needs to be copied (via `Clone()`)!
 class VIZ_COMMON_EXPORT CompositorFrameMetadata {
  public:
   CompositorFrameMetadata();
@@ -90,12 +104,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   bool may_throttle_if_undrawn_frames = true;
 
-  // WebView makes quality decisions for rastering resourceless software frames
-  // based on information that a scroll or animation is active.
-  // TODO(aelias): Remove this and always enable filtering if there aren't apps
-  // depending on this anymore.
-  bool is_resourceless_software_draw_with_scroll_or_animation = false;
-
   // True if this compositor frame is related to an animated or precise scroll.
   // This includes during the touch interaction just prior to the initiation of
   // gesture scroll events.
@@ -121,10 +129,10 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This is the set of dependent SurfaceIds that should be active in the
   // display compositor before this CompositorFrame can be activated.
   // Note: |activation_dependencies| MUST be a subset of |referenced_surfaces|.
-  // TODO(samans): Rather than having a separate list for activation
+  // TODO(crbug.com/41445303): Rather than having a separate list for activation
   // dependencies, each member of referenced_surfaces can have a boolean flag
   // that determines whether activation of this particular SurfaceId blocks the
-  // activation of the CompositorFrame. https://crbug.com/938946
+  // activation of the CompositorFrame.
   std::vector<SurfaceId> activation_dependencies;
 
   // This specifies a deadline for this CompositorFrame to synchronize with its
@@ -141,9 +149,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // For comparing |frame_token| from different frames, use |FrameTokenGT()|
   // instead of directly comparing them, since the tokens wrap around back to 1
   // after the 32-bit max value.
-  // TODO(crbug.com/850386): A custom type would be better to avoid incorrect
+  // TODO(crbug.com/41393200): A custom type would be better to avoid incorrect
   // comparisons.
-  uint32_t frame_token = kInvalidOrLocalFrameToken;
+  uint32_t frame_token = kInvalidFrameToken;
 
   // Once the display compositor processes a frame with
   // |send_frame_token_to_embedder| flag turned on, the |frame_token| for the
@@ -159,8 +167,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // visible height should be the same as in the latest submitted frame with a
   // value set.
   std::optional<float> top_controls_visible_height;
-
-  std::optional<base::TimeDelta> preferred_frame_interval;
 
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.
@@ -189,6 +195,30 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // Indicates if this frame references shared element resources that need to
   // be replaced with ResourceIds in the Viz process.
   bool has_shared_element_resources = false;
+
+  // When set, the compositor frame submission also informs viz to issue a
+  // screenshot against the previous surface.
+  std::optional<blink::SameDocNavigationScreenshotDestinationToken>
+      screenshot_destination;
+
+  // When set, this frame contains software resources. See
+  // TransferableResource::is_software for details.
+  bool is_software = false;
+
+  // List of tags that will be added on quads in this CompositorFrame.
+  // Note: The `SurfaceRange`s used in these definitions MUST be a subset of
+  // `referenced_surfaces`.
+  // TODO(crbug.com/41445303): Rather than having a separate list of
+  // OffsetTagDefinitions, each member of referenced_surfaces can have a set of
+  // OffsetTagDefinitions.
+  std::vector<OffsetTagDefinition> offset_tag_definitions;
+
+  // List of values for tags that apply to tagged quads in an embedding
+  // CompositorFrame.
+  std::vector<OffsetTagValue> offset_tag_values;
+
+  // Information used to compute overall ideal frame interval.
+  FrameIntervalInputs frame_interval_inputs;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

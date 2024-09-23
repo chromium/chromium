@@ -18,8 +18,6 @@ namespace blink {
 //
 // Design doc:
 // https://docs.google.com/document/d/1IYN0mVy7yi4Afnm2Y0uda0JH8L2KwLgaBqsMVLMYXtk
-// TODO(mustaq): Consolidate with TransientAllowFullscreen which pertains to an
-// entire frame tree.
 class BLINK_COMMON_EXPORT DelegatedCapabilityRequestToken {
  public:
   DelegatedCapabilityRequestToken();

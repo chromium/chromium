@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, UserFeedback} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PageCallbackRouter, PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBrowserProxy extends BaseTestBrowserProxy implements
@@ -21,6 +23,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     currentPrice: '',
     previousPrice: '',
     clusterId: BigInt(0),
+    categoryLabels: [],
   };
   private priceInsights_: PriceInsightsInfo = {
     clusterId: BigInt(0),
@@ -34,6 +37,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     locale: '',
     currencyCode: '',
   };
+  private productSpecs_: ProductSpecifications = {
+    products: [],
+    productDimensionMap: new Map<bigint, string>(),
+  };
   private shoppingCollectionId_: bigint = BigInt(-1);
 
   constructor() {
@@ -44,15 +51,35 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'untrackPriceForBookmark',
       'getProductInfoForCurrentUrl',
       'getPriceInsightsInfoForCurrentUrl',
+      'getUrlInfosForProductTabs',
+      'getUrlInfosForRecentlyViewedTabs',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
-      'showFeedback',
+      'switchToOrOpenTab',
+      'showFeedbackForPriceInsights',
       'isShoppingListEligible',
       'getShoppingCollectionBookmarkFolderId',
       'getPriceTrackingStatusForCurrentUrl',
       'setPriceTrackingStatusForCurrentUrl',
       'getParentBookmarkFolderNameForCurrentUrl',
       'showBookmarkEditorForCurrentUrl',
+      'showProductSpecificationsSetForUuid',
+      'getPriceInsightsInfoForUrl',
+      'getProductInfoForUrl',
+      'getProductSpecificationsForUrls',
+      'getAllProductSpecificationsSets',
+      'getProductSpecificationsSetByUuid',
+      'addProductSpecificationsSet',
+      'deleteProductSpecificationsSet',
+      'setNameForProductSpecificationsSet',
+      'setUrlsForProductSpecificationsSet',
+      'setProductSpecificationsUserFeedback',
+      'setProductSpecificationDisclosureAcceptVersion',
+      'maybeShowProductSpecificationDisclosure',
+      'declineProductSpecificationDisclosure',
+      'showSyncSetupFlow',
+      'getProductSpecificationsFeatureState',
+      'getPageTitleFromHistory',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -87,6 +114,21 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('untrackPriceForBookmark', bookmarkId);
   }
 
+  getPriceInsightsInfoForUrl(url: Url) {
+    this.methodCalled('getPriceInsightsInfoForUrl', url);
+    return Promise.resolve({priceInsightsInfo: this.priceInsights_});
+  }
+
+  getProductInfoForUrl(url: Url) {
+    this.methodCalled('getProductInfoForUrl', url);
+    return Promise.resolve({productInfo: this.product_});
+  }
+
+  getProductSpecificationsForUrls(urls: Url[]) {
+    this.methodCalled('getProductSpecificationsForUrls', urls);
+    return Promise.resolve({productSpecs: this.productSpecs_});
+  }
+
   getProductInfoForCurrentUrl() {
     this.methodCalled('getProductInfoForCurrentUrl');
     return Promise.resolve({productInfo: this.product_});
@@ -97,6 +139,16 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     return Promise.resolve({priceInsightsInfo: this.priceInsights_});
   }
 
+  getUrlInfosForProductTabs() {
+    this.methodCalled('getUrlInfosForProductTabs');
+    return Promise.resolve({urlInfos: []});
+  }
+
+  getUrlInfosForRecentlyViewedTabs() {
+    this.methodCalled('getUrlInfosForRecentlyVisitedTabs');
+    return Promise.resolve({urlInfos: []});
+  }
+
   showInsightsSidePanelUi() {
     this.methodCalled('showInsightsSidePanelUi');
   }
@@ -105,8 +157,12 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('openUrlInNewTab');
   }
 
-  showFeedback() {
-    this.methodCalled('showFeedback');
+  switchToOrOpenTab() {
+    this.methodCalled('switchToOrOpenTab');
+  }
+
+  showFeedbackForPriceInsights() {
+    this.methodCalled('showFeedbackForPriceInsights');
   }
 
   isShoppingListEligible() {
@@ -135,6 +191,72 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   showBookmarkEditorForCurrentUrl() {
     this.methodCalled('showBookmarkEditorForCurrentUrl');
+  }
+
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean) {
+    this.methodCalled('showProductSpecificationsSetForUuid', uuid, inNewTab);
+  }
+
+  getAllProductSpecificationsSets() {
+    this.methodCalled('getAllProductSpecificationsSets');
+    return Promise.resolve({sets: []});
+  }
+
+  getProductSpecificationsSetByUuid(uuid: Uuid) {
+    this.methodCalled('getProductSpecificationsSetByUuid', uuid);
+    return Promise.resolve({set: null});
+  }
+
+  addProductSpecificationsSet(name: string, urls: Url[]) {
+    this.methodCalled('addProductSpecificationsSet', name, urls);
+    return Promise.resolve({createdSet: null});
+  }
+
+  deleteProductSpecificationsSet(uuid: Uuid) {
+    this.methodCalled('deleteProductSpecificationsSet', uuid);
+  }
+
+  setNameForProductSpecificationsSet(uuid: Uuid, name: string) {
+    this.methodCalled('setNameForProductSpecificationsSet', uuid, name);
+    return Promise.resolve({updatedSet: null});
+  }
+
+  setUrlsForProductSpecificationsSet(uuid: Uuid, urls: Url[]) {
+    this.methodCalled('setUrlsForProductSpecificationsSet', uuid, urls);
+    return Promise.resolve({updatedSet: null});
+  }
+
+  setProductSpecificationsUserFeedback(feedback: UserFeedback) {
+    this.methodCalled('setUrlsForProductSpecificationsSet', feedback);
+  }
+
+  setProductSpecificationDisclosureAcceptVersion(
+      version: ProductSpecificationsDisclosureVersion) {
+    this.methodCalled(
+        'setProductSpecificationDisclosureAcceptVersion', version);
+  }
+
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
+    this.methodCalled('maybeShowProductSpecificationDisclosure', urls, name);
+    return Promise.resolve({disclosureShown: false});
+  }
+
+  declineProductSpecificationDisclosure() {
+    this.methodCalled('declineProductSpecificationDisclosure');
+  }
+
+  showSyncSetupFlow() {
+    this.methodCalled('showSyncSetupFlow');
+  }
+
+  getProductSpecificationsFeatureState() {
+    this.methodCalled('getProductSpecificationsFeatureState');
+    return Promise.resolve({state: null});
+  }
+
+  getPageTitleFromHistory() {
+    this.methodCalled('getPageTitleFromHistory');
+    return Promise.resolve({title: ''});
   }
 
   getCallbackRouter() {

@@ -34,7 +34,8 @@
           "mailto": "mailto:bad",
           "wss": "wss://bad/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should parse absolute URLs, ignoring unparseable ones": {
@@ -58,7 +59,8 @@
           "prettyNormal": "https://example.net/",
           "percentDecoding": "https://example.com/"
         },
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

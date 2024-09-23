@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamjena crx fajla nije uspjela. Provjerite je li fajl upotrebi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nije moguće otpakirati ekstenziju.  Za sigurno otpakivanje ekstenzije, mora postojati putanja do direktorija vašeg profila koja počinje slovom diska i koja ne sadrži spoj, tačku aktiviranja ili simbolični link.  Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrijednost za privatni ključ mora biti važeća putanja.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Nije je moguće deinstalirati.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Nije moguće otpakirati ekstenziju.  Da sigurno otpakirate ekstenziju, mora postojati putanja do direktorija vašeg profila koja ne sadrži simbolični link.  Takva putanja ne postoji za vaš profil.</translation>
 <translation id="6322279351188361895">Čitanje privatnog ključa nije uspjelo.</translation>
 <translation id="6391538222494443604">Mora postojati ulazni direktorij.</translation>
 <translation id="641087317769093025">Otpakiranje ekstenzije nije uspjelo</translation>

@@ -79,6 +79,10 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
+    ON_CALL(*mock_delegate_,
+            GetManagePasswordsSingleCredentialDetailsModeCredential)
+        .WillByDefault(::testing::ReturnRef(
+            default_single_credential_details_mode_credential_));
   }
 
   ~ManagePasswordsBubbleControllerTest() override = default;
@@ -114,6 +118,8 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<ManagePasswordsBubbleController> controller_;
+  std::optional<password_manager::PasswordForm>
+      default_single_credential_details_mode_credential_;
 };
 
 void ManagePasswordsBubbleControllerTest::Init() {
@@ -184,33 +190,22 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnLocalCredentials) {
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
   Init();
-  CoreAccountInfo account;
-  account.email = "account@gmail.com";
-  account.gaia = "account";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-
-  sync_service()->SetAccountInfo(account);
-  sync_service()->SetHasSyncConsent(false);
-  sync_service()->SetDisableReasons({});
-  sync_service()->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/syncer::UserSelectableTypeSet());
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
             ManagePasswordsBubbleController::SyncState::kNotActive);
 
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, true);
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
       ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
-  sync_service()->SetHasSyncConsent(true);
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
@@ -244,9 +239,9 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdatePasswordNote) {
   password_manager::PasswordForm expected_updated_form = updated_form;
 
   EXPECT_CALL(*GetStore(), UpdateLogin(expected_updated_form, _));
-  controller()->set_currently_selected_password(original_form);
-  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
-  EXPECT_EQ(controller()->get_currently_selected_password(), updated_form);
+  controller()->set_details_bubble_credential(original_form);
+  controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
+  EXPECT_EQ(controller()->get_details_bubble_credential(), updated_form);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsername) {
@@ -273,8 +268,8 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsername) {
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
   EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
                                                      original_form, _));
-  controller()->set_currently_selected_password(original_form);
-  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
+  controller()->set_details_bubble_credential(original_form);
+  controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
@@ -293,17 +288,17 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
   EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
                                                      original_form, _));
-  controller()->set_currently_selected_password(original_form);
-  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
+  controller()->set_details_bubble_credential(original_form);
+  controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest,
-       ShouldChangeSelectedPasswordOnSuccessfulOsAuth) {
+       ShouldChangeDetailsBubbleCredentialOnSuccessfulOsAuth) {
   // The time it takes the user to complete the authentication flow in seconds.
   const int kTimeToAuth = 10;
   base::HistogramTester histogram_tester;
   Init();
-  password_manager::PasswordForm selected_form = CreateTestForm();
+  password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -316,18 +311,18 @@ TEST_F(ManagePasswordsBubbleControllerTest,
           })));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
-  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+  controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
                                                     mock_callback.Get());
   histogram_tester.ExpectUniqueTimeSample(
-      "PasswordManager.ManagementBubble.AuthenticationTime",
+      "PasswordManager.ManagementBubble.AuthenticationTime2",
       base::Seconds(kTimeToAuth), 1);
-  EXPECT_EQ(controller()->get_currently_selected_password(), selected_form);
+  EXPECT_EQ(controller()->get_details_bubble_credential(), details_bubble_form);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest,
-       ShouldNotChangeSelectedPasswordOnFailedOsAuth) {
+       ShouldNotChangeDetailsBubbleCredentialOnFailedOsAuth) {
   Init();
-  password_manager::PasswordForm selected_form = CreateTestForm();
+  password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -337,9 +332,9 @@ TEST_F(ManagePasswordsBubbleControllerTest,
           })));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(false));
-  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+  controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
                                                     mock_callback.Get());
-  EXPECT_FALSE(controller()->get_currently_selected_password().has_value());
+  EXPECT_FALSE(controller()->get_details_bubble_credential().has_value());
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
@@ -351,7 +346,7 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
 TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
   base::HistogramTester histogram_tester;
   Init();
-  password_manager::PasswordForm selected_form = CreateTestForm();
+  password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   // Used to mock displaying the details view. This is needed to set the
   // selected_form value to the one that we expect.
@@ -363,10 +358,10 @@ TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
           })));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
-  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+  controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
                                                     mock_callback.Get());
 
-  EXPECT_CALL(*delegate(), ShowMovePasswordBubble(selected_form));
+  EXPECT_CALL(*delegate(), ShowMovePasswordBubble(details_bubble_form));
   controller()->OnMovePasswordLinkClicked();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordManagementBubble.UserAction",

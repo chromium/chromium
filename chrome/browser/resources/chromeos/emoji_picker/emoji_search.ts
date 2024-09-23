@@ -15,7 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
 import {Status} from './emoji_picker.mojom-webui.js';
-import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
@@ -296,8 +296,7 @@ export class EmojiSearch extends PolymerElement {
 
   private async computeEmojiSearchResults(search: string):
       Promise<EmojiGroupData> {
-    const results =
-        await EmojiPickerApiProxyImpl.getInstance().searchEmoji(search);
+    const results = await EmojiPickerApiProxy.getInstance().searchEmoji(search);
 
     return [
       {
@@ -419,7 +418,7 @@ export class EmojiSearch extends PolymerElement {
     }
 
     const searchResults: EmojiGroupData = [];
-    const apiProxy = EmojiPickerApiProxyImpl.getInstance();
+    const apiProxy = EmojiPickerApiProxy.getInstance();
     const {status, searchGifs} = await apiProxy.searchGifs(search);
     this.status = status;
     this.nextGifPos = searchGifs.next;
@@ -442,7 +441,7 @@ export class EmojiSearch extends PolymerElement {
       return [];
     }
 
-    const apiProxy = EmojiPickerApiProxyImpl.getInstance();
+    const apiProxy = EmojiPickerApiProxy.getInstance();
     const {searchGifs} = await apiProxy.searchGifs(search, this.nextGifPos);
     this.nextGifPos = searchGifs.next;
     return apiProxy.convertTenorGifsToEmoji(searchGifs);
@@ -529,19 +528,21 @@ export class EmojiSearch extends PolymerElement {
 
   onSealImageClick(e: CustomEvent<Image>) {
     this.dispatchEvent(createCustomEvent(
-      EMOJI_IMG_BUTTON_CLICK, {
-        name: 'image',
-        category: CategoryEnum.GIF,
-        visualContent: {
-          id: 'seal',
-          url: {
-            full: e.detail.url,
-            preview: e.detail.url,
+        EMOJI_IMG_BUTTON_CLICK,
+        {
+          name: 'image',
+          category: CategoryEnum.GIF,
+          visualContent: {
+            id: 'seal',
+            url: {
+              full: e.detail.url,
+              preview: e.detail.url,
+              previewImage: e.detail.url,
+            },
+            previewSize: e.detail.size,
           },
-          previewSize: e.detail.size,
         },
-      },
-    ));
+        ));
   }
 
   /**

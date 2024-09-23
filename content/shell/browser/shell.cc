@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -292,21 +293,35 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
 
   params.load_type = NavigationController::LOAD_TYPE_DATA;
   params.base_url_for_data_url = base_url;
-  params.virtual_url_for_data_url = url;
+  params.virtual_url_for_special_cases = url;
   params.override_user_agent = NavigationController::UA_OVERRIDE_FALSE;
   web_contents_->GetController().LoadURLWithParams(params);
 }
 
-void Shell::AddNewContents(WebContents* source,
-                           std::unique_ptr<WebContents> new_contents,
-                           const GURL& target_url,
-                           WindowOpenDisposition disposition,
-                           const blink::mojom::WindowFeatures& window_features,
-                           bool user_gesture,
-                           bool* was_blocked) {
+WebContents* Shell::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+#if !BUILDFLAG(IS_ANDROID)
+  // If the shell is opening a document picture-in-picture window, it needs to
+  // inform the DocumentPictureInPictureWindowController.
+  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    DocumentPictureInPictureWindowController* controller =
+        PictureInPictureWindowController::
+            GetOrCreateDocumentPictureInPictureController(source);
+    controller->SetChildWebContents(new_contents.get());
+    controller->Show();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   CreateShell(
       std::move(new_contents), AdjustWindowSize(window_features.bounds.size()),
       !delay_popup_contents_delegate_for_testing_ /* should_set_delegate */);
+  return nullptr;
 }
 
 void Shell::GoBackOrForward(int offset) {
@@ -398,8 +413,11 @@ void Shell::URLEntered(const std::string& url_string) {
 }
 #endif
 
-WebContents* Shell::OpenURLFromTab(WebContents* source,
-                                   const OpenURLParams& params) {
+WebContents* Shell::OpenURLFromTab(
+    WebContents* source,
+    const OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   WebContents* target = nullptr;
   switch (params.disposition) {
     case WindowOpenDisposition::CURRENT_TAB:
@@ -442,8 +460,14 @@ WebContents* Shell::OpenURLFromTab(WebContents* source,
       return nullptr;
   }
 
-  target->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(params));
+  base::WeakPtr<NavigationHandle> navigation_handle =
+      target->GetController().LoadURLWithParams(
+          NavigationController::LoadURLParams(params));
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
+
   return target;
 }
 
@@ -605,7 +629,7 @@ void Shell::PrimaryPageChanged(Page& page) {
 }
 
 bool Shell::HandleKeyboardEvent(WebContents* source,
-                                const NativeWebKeyboardEvent& event) {
+                                const input::NativeWebKeyboardEvent& event) {
   return g_platform->HandleKeyboardEvent(this, source, event);
 }
 #endif
@@ -638,7 +662,7 @@ void Shell::ActivateContents(WebContents* contents) {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 std::unique_ptr<ColorChooser> Shell::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,
@@ -669,7 +693,7 @@ void Shell::EnumerateDirectory(WebContents* web_contents,
   }
 }
 
-bool Shell::IsBackForwardCacheSupported() {
+bool Shell::IsBackForwardCacheSupported(WebContents& web_contents) {
   return true;
 }
 
@@ -689,19 +713,6 @@ class PendingCallback : public base::RefCounted<PendingCallback> {
   base::OnceCallback<void()> callback_;
 };
 }  // namespace
-
-void Shell::UpdateInspectedWebContentsIfNecessary(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  scoped_refptr<PendingCallback> pending_callback =
-      base::MakeRefCounted<PendingCallback>(std::move(callback));
-  for (auto* shell_devtools_bindings :
-       ShellDevToolsBindings::GetInstancesForWebContents(old_contents)) {
-    shell_devtools_bindings->UpdateInspectedWebContents(
-        new_contents, base::DoNothingWithBoundArgs(pending_callback));
-  }
-}
 
 bool Shell::ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                               bool allowed_per_prefs,

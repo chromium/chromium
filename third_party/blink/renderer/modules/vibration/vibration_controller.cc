@@ -19,7 +19,7 @@
 
 #include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_unsignedlong_unsignedlongsequence.h"
@@ -77,7 +77,7 @@ VibrationController::SanitizeVibrationPattern(
       return sanitizeVibrationPatternInternal(
           input->GetAsUnsignedLongSequence());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -146,7 +146,6 @@ bool VibrationController::Vibrate(const VibrationPattern& pattern) {
 
   if (!frame->HasStickyUserActivation()) {
     String message;
-    // TODO(crbug.com/1254770): Update for embedded portals.
     if (frame->IsCrossOriginToNearestMainFrame()) {
       message =
           "Blocked call to navigator.vibrate inside a cross-origin "

@@ -97,6 +97,7 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   const std::unique_ptr<IdentifiabilityStudySettingsProvider> provider_;
   const bool is_enabled_ = false;
   const bool is_any_surface_or_type_blocked_ = false;
+  const bool is_meta_experiment_active_ = false;
 };
 
 }  // namespace blink

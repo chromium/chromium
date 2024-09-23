@@ -18,11 +18,7 @@ class Browser;
 - (void)browserList:(const BrowserList*)browserList
        browserAdded:(Browser*)browser;
 - (void)browserList:(const BrowserList*)browserList
-    incognitoBrowserAdded:(Browser*)browser;
-- (void)browserList:(const BrowserList*)browserList
      browserRemoved:(Browser*)browser;
-- (void)browserList:(const BrowserList*)browserList
-    incognitoBrowserRemoved:(Browser*)browser;
 - (void)browserListWillShutdown:(const BrowserList*)browserList;
 
 @end
@@ -41,12 +37,8 @@ class BrowserListObserverBridge : public BrowserListObserver {
   // BrowserListObserver
   void OnBrowserAdded(const BrowserList* browser_list,
                       Browser* browser) override;
-  void OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                               Browser* browser) override;
   void OnBrowserRemoved(const BrowserList* browser_list,
                         Browser* browser) override;
-  void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
-                                 Browser* browser) override;
   void OnBrowserListShutdown(BrowserList* browser_list) override;
 
  private:

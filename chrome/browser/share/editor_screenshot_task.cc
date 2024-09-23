@@ -7,11 +7,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/android/chrome_jni_headers/EditorScreenshotTask_jni.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/snapshot/snapshot.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/EditorScreenshotTask_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -20,11 +22,10 @@ using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
 using ui::WindowAndroid;
 
-namespace chrome {
 namespace android {
 
 /**
- * TODO(crbug/1024586): Remove this temporary class and instead move
+ * TODO(crbug.com/40107491): Remove this temporary class and instead move
  * chrome/browser/android/feedback/screenshot_task.cc.
  */
 void JNI_EditorScreenshotTask_SnapshotCallback(
@@ -50,11 +51,10 @@ void JNI_EditorScreenshotTask_GrabWindowSnapshotAsync(
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   gfx::Rect window_bounds(window_width, window_height);
-  ui::GrabWindowSnapshotAsyncPNG(
+  ui::GrabWindowSnapshotAsPNG(
       window_android, window_bounds,
       base::BindOnce(&JNI_EditorScreenshotTask_SnapshotCallback, env,
                      ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
 }  // namespace android
-}  // namespace chrome

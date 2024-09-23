@@ -1,0 +1,27 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++button name='1'
+++++++++++++staticText name='1'
+++++++++++++++inlineTextBox name='1'
+++++++++button name='2'
+++++++++++staticText name='2'
+++++++++++++inlineTextBox name='2'
+++++++++button name='3'
+++++++++++staticText name='3'
+++++++++++++inlineTextBox name='3'
+++++++++button name='4'
+++++++++++staticText name='4'
+++++++++++++inlineTextBox name='4'
+++++++++genericContainer
+++++++++++button name='5.1'
+++++++++++++staticText name='5.1'
+++++++++++++++inlineTextBox name='5.1'
+++++++++++button name='5.2'
+++++++++++++staticText name='5.2'
+++++++++++++++inlineTextBox name='5.2'
+++++++++button name='6'
+++++++++++staticText name='6'
+++++++++++++inlineTextBox name='6'

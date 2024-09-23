@@ -123,7 +123,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
                     @Override
                     public void onPageLoadFailed(Tab tab, int errorCode) {
-                        // TODO(https://crbug.com/1471156): Associate events with navigation ids or
+                        // TODO(crbug.com/40926082): Associate events with navigation ids or
                         // urls, so that we can fully unlock controls here possible here.
                         // May have already received the start of a different navigation. Do not
                         // cancel the outstanding delay. See https://crbug.com/1447237.

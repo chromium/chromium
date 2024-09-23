@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/spdy/spdy_buffer.h"
 
 #include <cstring>
@@ -31,8 +36,8 @@ std::unique_ptr<spdy::SpdySerializedFrame> MakeSpdySerializedFrame(
 
   auto frame_data = std::make_unique<char[]>(size);
   std::memcpy(frame_data.get(), data, size);
-  return std::make_unique<spdy::SpdySerializedFrame>(frame_data.release(), size,
-                                                     true /* owns_buffer */);
+  return std::make_unique<spdy::SpdySerializedFrame>(std::move(frame_data),
+                                                     size);
 }
 
 }  // namespace

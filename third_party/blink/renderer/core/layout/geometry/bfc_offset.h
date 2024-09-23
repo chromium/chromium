@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 struct CORE_EXPORT BfcDelta {
@@ -53,7 +57,7 @@ struct CORE_EXPORT BfcOffset {
 
   bool operator!=(const BfcOffset& other) const { return !operator==(other); }
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const BfcOffset&);

@@ -68,7 +68,7 @@ class BinaryFeatureExtractor
   // As above, but works on a byte array containing image data. This does not
   // take ownership of the data.
   virtual bool ExtractImageFeaturesFromData(
-      const uint8_t* data, size_t data_size,
+      base::span<const uint8_t> data,
       ExtractHeadersOption options,
       ClientDownloadRequest_ImageHeaders* image_headers,
       google::protobuf::RepeatedPtrField<std::string>* signed_data);

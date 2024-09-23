@@ -14,8 +14,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 
-import {Network, TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {Network, TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './settings_traffic_counters.html.js';
@@ -63,6 +64,17 @@ function getDataInfoString(totalBytes: bigint): string {
 
 const SettingsTrafficCountersElementBase = I18nMixin(PolymerElement);
 
+export interface SettingsTrafficCountersElement {
+  $: {
+    dataUsageLabel: HTMLElement,
+    dataUsageSubLabel: HTMLElement,
+    resetDataUsageButton: HTMLButtonElement,
+    daySelectionLabel: HTMLElement,
+    daySelectionSubLabel: HTMLElement,
+    resetDayList: HTMLSelectElement,
+  };
+}
+
 export class SettingsTrafficCountersElement extends
     SettingsTrafficCountersElementBase {
   static get is() {
@@ -76,11 +88,18 @@ export class SettingsTrafficCountersElement extends
   static get properties() {
     return {
       /** The network GUID to display details for. */
-      guid: String,
-      /** Tracks whether traffic counter info should be shown. */
-      trafficCountersAvailable_: {
-        type: Boolean,
-        value: false,
+      guid: {
+        type: String,
+        value: '',
+        observer: 'load',
+      },
+      /**
+       * Tracks the managed properties of the network. Used to handle network
+       * network state changes.
+       * */
+      managedProperties: {
+        type: Object,
+        observer: 'managedPropertiesChanged_',
       },
       /** Tracks the last reset time information. */
       date_: {
@@ -92,25 +111,18 @@ export class SettingsTrafficCountersElement extends
         type: String,
         value: '',
       },
-      /** Tracks whether auto reset is enabled. */
-      autoReset_: {
-        type: Boolean,
-        value: false,
-      },
       /** Tracks the user specified day of reset. Default is 1. */
       resetDay_: {
         type: Number,
-        value: 1,
+        value: DEFAULT_RESET_DAY,
       },
     };
   }
 
   guid: string;
-  private autoReset_: boolean;
   private date_: string;
   private resetDay_: number;
   private trafficCountersAdapter_: TrafficCountersAdapter;
-  private trafficCountersAvailable_: boolean;
   private value_: string;
 
   constructor() {
@@ -120,17 +132,19 @@ export class SettingsTrafficCountersElement extends
      * Adapter to collect network related information.
      */
     this.trafficCountersAdapter_ = new TrafficCountersAdapter();
-    this.load();
   }
 
   /**
    * Loads all the values needed to populate the HTML.
    */
   load(): void {
-    this.populateTrafficCountersAvailable_();
     this.populateDate_();
     this.populateDataUsageValue_();
-    this.populateAutoResetValues_();
+    this.populateUserSpecifiedResetDay_();
+  }
+
+  private managedPropertiesChanged_(): void {
+    this.load();
   }
 
   /**
@@ -140,6 +154,8 @@ export class SettingsTrafficCountersElement extends
     await this.trafficCountersAdapter_.resetTrafficCountersForNetwork(
         this.guid);
     this.load();
+    getAnnouncerInstance().announce(
+        this.i18n('TrafficCountersDataUsageResetButtonPressedA11yMessage'));
   }
 
   /**
@@ -151,26 +167,6 @@ export class SettingsTrafficCountersElement extends
                          .requestTrafficCountersForActiveNetworks();
     const network = networks.find(n => n.guid === this.guid);
     return network || null;
-  }
-
-  /**
-   * Determines whether data usage should be shown.
-   */
-  private async populateTrafficCountersAvailable_(): Promise<void> {
-    const result = await this.populateTrafficCountersAvailableHelper_();
-    this.trafficCountersAvailable_ = result;
-  }
-
-  /**
-   * Gathers data usage visibility information for this network.
-   */
-  private async populateTrafficCountersAvailableHelper_(): Promise<boolean> {
-    if (this.guid === '') {
-      return false;
-    }
-
-    const network = await this.getNetworkIfAvailable_();
-    return !!network;
   }
 
   /**
@@ -217,31 +213,7 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Populates the auto reset enable and day values.
-   */
-  private populateAutoResetValues_(): void {
-    this.populateEnableAutoResetBoolean_();
-    this.populateUserSpecifiedResetDay_();
-  }
-
-  /**
-   * Determines whether auto reset is enabled.
-   */
-  private async populateEnableAutoResetBoolean_(): Promise<void> {
-    const result = await this.populateEnableAutoResetBooleanHelper_();
-    this.autoReset_ = result;
-  }
-
-  /**
-   * Gathers auto reset enable information.
-   */
-  private async populateEnableAutoResetBooleanHelper_(): Promise<boolean> {
-    const network = await this.getNetworkIfAvailable_();
-    return network ? network.autoReset : false;
-  }
-
-  /**
-   * Determines the auto reset day.
+   * Determines the reset day.
    */
   private async populateUserSpecifiedResetDay_(): Promise<void> {
     const result = await this.populateUserSpecifiedResetDayHelper_();
@@ -249,7 +221,7 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Gathers the auto reset day information.
+   * Gathers the reset day information (helper).
    */
   private async populateUserSpecifiedResetDayHelper_(): Promise<number> {
     const network = await this.getNetworkIfAvailable_();
@@ -257,27 +229,31 @@ export class SettingsTrafficCountersElement extends
   }
 
   /**
-   * Handles the auto reset toggle changes.
-   */
-  private onAutoDataUsageResetToggle_(): void {
-    this.autoReset_ = !this.autoReset_;
-    this.resetDay_ = 1;
-    const day = this.autoReset_ ? {value: this.resetDay_} : null;
-    this.trafficCountersAdapter_.setTrafficCountersAutoResetForNetwork(
-        this.guid, this.autoReset_, day);
-    this.load();
-  }
-
-  /**
    * Handles day of reset changes.
    */
   private onResetDaySelected_(): void {
-    if (!this.autoReset_) {
-      return;
-    }
-    this.trafficCountersAdapter_.setTrafficCountersAutoResetForNetwork(
-        this.guid, this.autoReset_, {value: this.resetDay_});
-    this.load();
+    this.resetDay_ = Number(this.$.resetDayList.value);
+    this.trafficCountersAdapter_.setTrafficCountersResetDayForNetwork(
+        this.guid, {value: this.resetDay_});
+  }
+
+  /**
+   * Tracks the list of options available in the reset day dropdown.
+   */
+  private getDaysList_(): number[] {
+    return Array.from({length: 31}, (_, i) => i + 1);
+  }
+
+  /**
+   * Determines if the given day should be marked as selected in the dropdown.
+   *
+   * @param item - The day number from the dropdown options to check
+   *     against the selected day.
+   * @param selectedDay - The day currently set as selected in the
+   *     component's state.
+   */
+  private isSelected_(item: number, selectedDay: number): boolean {
+    return item === selectedDay;
   }
 }
 

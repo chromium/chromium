@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -43,7 +44,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 public class ImeTest {
     /* package */ static final String IME_BATCH = "ImeTestBatch";
 
-    // TODO(https://crbug.com/989569): Find a way to re-use the content shell
+    // TODO(crbug.com/41473895): Find a way to re-use the content shell
     // across tests?
     @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
     @Rule public ExpectedException thrown = ExpectedException.none();
@@ -725,7 +725,6 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @SuppressWarnings("TryFailThrowable") // TODO(tedchoc): Remove after fixing timeout.
     public void testPhysicalKeyboard_AttachDetach() throws Throwable {
         mRule.attachPhysicalKeyboard();
         // We still call showSoftKeyboard, which will be ignored by physical keyboard.
@@ -748,7 +747,7 @@ public class ImeTest {
         mRule.detachPhysicalKeyboard();
 
         // We should not show soft keyboard here because focus has been lost.
-        thrown.expect(AssertionError.class);
+        thrown.expect(CriteriaHelper.TimeoutException.class);
         CriteriaHelper.pollUiThread(
                 () -> mRule.getInputMethodManagerWrapper().isShowWithoutHideOutstanding());
     }
@@ -841,7 +840,7 @@ public class ImeTest {
     @SmallTest
     @Feature({"TextInput"})
     public void testImePaste() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipboardManager =
                             (ClipboardManager)
@@ -1491,7 +1490,7 @@ public class ImeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            mRule.getSelectionPopupController().isPastePopupShowing(),
+                            mRule.getSelectionPopupController().isPasteActionModeValid(),
                             Matchers.is(true));
                     Criteria.checkThat(
                             mRule.getSelectionPopupController().isInsertionForTesting(),
@@ -1502,7 +1501,7 @@ public class ImeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            mRule.getSelectionPopupController().isPastePopupShowing(),
+                            mRule.getSelectionPopupController().isPasteActionModeValid(),
                             Matchers.is(false));
                 });
         Assert.assertFalse(mRule.getSelectionPopupController().isInsertionForTesting());
@@ -1568,12 +1567,12 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testContentEditableEvents_ComposingText() throws Throwable {
         mRule.focusElementAndWaitForStateUpdate("contenteditable_event");
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.setComposingText("a", 1);
         mRule.waitAndVerifyUpdateSelection(0, 1, 1, 0, 1);
-        mRule.waitForEventLogs(
+        mRule.waitForEventLogState(
                 "keydown(229),compositionstart(),compositionupdate(a),input(a),keyup(229),"
                         + "selectionchange");
         mRule.clearEventLogs();
@@ -1589,7 +1588,7 @@ public class ImeTest {
     public void testInputTextEvents_ComposingText() throws Throwable {
         mRule.setComposingText("a", 1);
         mRule.waitAndVerifyUpdateSelection(0, 1, 1, 0, 1);
-        mRule.waitForEventLogs(
+        mRule.waitForEventLogState(
                 "keydown(229),compositionstart(),compositionupdate(a),"
                         + "input(a),keyup(229),selectionchange");
         mRule.clearEventLogs();
@@ -1604,13 +1603,13 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testContentEditableEvents_CommitText() throws Throwable {
         mRule.focusElementAndWaitForStateUpdate("contenteditable_event");
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.commitText("a", 1);
         mRule.waitAndVerifyUpdateSelection(0, 1, 1, -1, -1);
 
-        mRule.waitForEventLogs("keydown(229),input(a),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(a),keyup(229),selectionchange");
     }
 
     @Test
@@ -1620,7 +1619,7 @@ public class ImeTest {
         mRule.commitText("a", 1);
         mRule.waitAndVerifyUpdateSelection(0, 1, 1, -1, -1);
 
-        mRule.waitForEventLogs("keydown(229),input(a),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(a),keyup(229),selectionchange");
     }
 
     @Test
@@ -1628,25 +1627,24 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testContentEditableEvents_DeleteSurroundingText() throws Throwable {
         mRule.focusElementAndWaitForStateUpdate("contenteditable_event");
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.commitText("hello", 1);
         mRule.waitAndVerifyUpdateSelection(0, 5, 5, -1, -1);
-        mRule.waitForEventLogs("keydown(229),input(hello),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(hello),keyup(229),selectionchange");
         mRule.clearEventLogs();
 
         mRule.setSelection(2, 2);
         mRule.waitAndVerifyUpdateSelection(1, 2, 2, -1, -1);
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.deleteSurroundingText(1, 1);
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
 
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
-        mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+        mRule.waitForEventLogState("keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1655,19 +1653,18 @@ public class ImeTest {
     public void testInputTextEvents_DeleteSurroundingText() throws Throwable {
         mRule.commitText("hello", 1);
         mRule.waitAndVerifyUpdateSelection(0, 5, 5, -1, -1);
-        mRule.waitForEventLogs("keydown(229),input(hello),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(hello),keyup(229),selectionchange");
         mRule.clearEventLogs();
 
         mRule.setSelection(2, 2);
         mRule.waitAndVerifyUpdateSelection(1, 2, 2, -1, -1);
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.deleteSurroundingText(1, 1);
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
-        mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+        mRule.waitForEventLogState("keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1675,24 +1672,23 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testContentEditableEvents_DeleteSurroundingTextInCodePoints() throws Throwable {
         mRule.focusElementAndWaitForStateUpdate("contenteditable_event");
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.commitText("hello", 1);
         mRule.waitAndVerifyUpdateSelection(0, 5, 5, -1, -1);
-        mRule.waitForEventLogs("keydown(229),input(hello),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(hello),keyup(229),selectionchange");
         mRule.clearEventLogs();
 
         mRule.setSelection(2, 2);
         mRule.waitAndVerifyUpdateSelection(1, 2, 2, -1, -1);
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.deleteSurroundingTextInCodePoints(1, 1);
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
-        mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+        mRule.waitForEventLogState("keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1701,19 +1697,18 @@ public class ImeTest {
     public void testInputTextEvents_DeleteSurroundingTextInCodePoints() throws Throwable {
         mRule.commitText("hello", 1);
         mRule.waitAndVerifyUpdateSelection(0, 5, 5, -1, -1);
-        mRule.waitForEventLogs("keydown(229),input(hello),keyup(229),selectionchange");
+        mRule.waitForEventLogState("keydown(229),input(hello),keyup(229),selectionchange");
         mRule.clearEventLogs();
 
         mRule.setSelection(2, 2);
         mRule.waitAndVerifyUpdateSelection(1, 2, 2, -1, -1);
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
 
         mRule.deleteSurroundingTextInCodePoints(1, 1);
         mRule.waitAndVerifyUpdateSelection(2, 1, 1, -1, -1);
         // TODO(yabinh): It should only fire 1 input and 1 selectionchange events.
-        mRule.waitForEventLogs(
-                "keydown(229),input,input,keyup(229),selectionchange,selectionchange");
+        mRule.waitForEventLogState("keydown(229),input,input,keyup(229),selectionchange");
     }
 
     @Test
@@ -1803,7 +1798,7 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testUiThreadAccess() throws Exception {
         final ChromiumBaseInputConnection connection = mRule.getConnection();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We allow UI thread access for most functions, except for
                     // beginBatchEdit(), endBatchEdit(), and get* methods().

@@ -12,6 +12,16 @@ namespace ash {
 // Helper class used by tests to access FloatController's internal elements.
 class FloatTestApi {
  public:
+  // A class to forcefully disable tuck education while it is alive.
+  class ScopedTuckEducationDisabler {
+   public:
+    ScopedTuckEducationDisabler();
+    ScopedTuckEducationDisabler(const ScopedTuckEducationDisabler&) = delete;
+    ScopedTuckEducationDisabler& operator=(const ScopedTuckEducationDisabler&) =
+        delete;
+    ~ScopedTuckEducationDisabler();
+  };
+
   FloatTestApi() = delete;
 
   static int GetFloatedWindowCounter();

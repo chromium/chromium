@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -166,14 +167,8 @@ class PresentationReceiverWindowControllerBrowserTest
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1424970): Re-enable on lacros.
-#define MAYBE_CreatesWindow DISABLED_CreatesWindow
-#else
-#define MAYBE_CreatesWindow CreatesWindow
-#endif
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
-                       MAYBE_CreatesWindow) {
+                       CreatesWindow) {
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
@@ -182,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());
   receiver_window->Start(kPresentationId, GURL("about:blank"));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(IsWindowFullscreen(*receiver_window));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return IsWindowFullscreen(*receiver_window); }));
 
   destroyer.AwaitTerminate(std::move(receiver_window));
 }

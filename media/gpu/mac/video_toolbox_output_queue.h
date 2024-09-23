@@ -57,4 +57,4 @@ class MEDIA_GPU_EXPORT VideoToolboxOutputQueue {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_MAC_VIDEO_TOOLBOX_H264_ACCELERATOR_H_
+#endif  // MEDIA_GPU_MAC_VIDEO_TOOLBOX_OUTPUT_QUEUE_H_

@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/web_state_list/model",
 ]
 

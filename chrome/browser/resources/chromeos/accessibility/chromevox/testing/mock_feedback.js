@@ -96,21 +96,6 @@ MockFeedback = class {
     this.lastMatchedBraille_ = null;
   }
 
-  static async imports() {
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AbstractEarcons', '/chromevox/background/abstract_earcons.js'),
-      importModule(
-          'BrailleInterface',
-          '/chromevox/background/braille/braille_interface.js'),
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('TtsInterface', '/chromevox/background/tts_interface.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
-  }
-
   /**
    * Install mock objects as |ChromeVox.tts| and |ChromeVox.braille|
    * to collect feedback.
@@ -118,11 +103,13 @@ MockFeedback = class {
   install() {
     assertFalse(this.replaying_, 'install: Should not already be replaying.');
 
-    const MockTts = function() {};
-    MockTts.prototype = {
-      __proto__: TtsInterface.prototype,
-      speak: (...args) => this.addUtterance_(...args),
-    };
+    const addUtterance = this.addUtterance_.bind(this);
+    class MockTts extends PrimaryTts {
+      /** @override */
+      speak(...args) {
+        addUtterance(...args);
+      }
+    }
 
     ChromeVox.tts = new MockTts();
 
@@ -130,6 +117,7 @@ MockFeedback = class {
     MockBraille.prototype = {
       __proto__: BrailleInterface.prototype,
       write: (...args) => this.addBraille_(...args),
+      thaw: () => {},
     };
 
     ChromeVox.braille = new MockBraille();

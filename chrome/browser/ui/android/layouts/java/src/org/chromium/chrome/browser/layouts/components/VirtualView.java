@@ -28,6 +28,20 @@ public interface VirtualView {
     boolean checkClickedOrHovered(float x, float y);
 
     /**
+     * @return Whether there is a click action associated with this virtual view.
+     */
+    default boolean hasClickAction() {
+        return true;
+    }
+
+    /**
+     * @return Whether there is a long click action associated with this virtual view.
+     */
+    default boolean hasLongClickAction() {
+        return true;
+    }
+
+    /**
      * Notifies the view to handle the click action.
      *
      * @param time The time of the click action.

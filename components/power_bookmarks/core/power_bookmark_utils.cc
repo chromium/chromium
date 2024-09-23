@@ -26,7 +26,7 @@ namespace {
 
 // Backfill old shopping_specifics field to the new one. This is necessary
 // as we're transitioning from oneof powers to allowing multiple.
-// TODO(crbug.com/1349651): Also invoke this in meta updates once available.
+// TODO(crbug.com/40233844): Also invoke this in meta updates once available.
 void BackfillShoppingSpecifics(PowerBookmarkMeta* meta) {
   if (meta->has_old_shopping_specifics() && !meta->has_shopping_specifics()) {
     meta->mutable_shopping_specifics()->CopyFrom(
@@ -107,13 +107,14 @@ bool DoBookmarkTagsContainWords(const std::unique_ptr<PowerBookmarkMeta>& meta,
 }
 
 template <class type>
-void GetBookmarksMatchingPropertiesImpl(
+std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingPropertiesImpl(
     type& iterator,
     bookmarks::BookmarkModel* model,
     const PowerBookmarkQueryFields& query,
     const std::vector<std::u16string>& query_words,
-    size_t max_count,
-    std::vector<const bookmarks::BookmarkNode*>* nodes) {
+    size_t max_count) {
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* node = iterator.Next();
 
@@ -140,7 +141,7 @@ void GetBookmarksMatchingPropertiesImpl(
           type_present = meta->has_shopping_specifics();
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
 
       if (!type_present)
@@ -183,23 +184,26 @@ void GetBookmarksMatchingPropertiesImpl(
         continue;
     }
 
-    nodes->push_back(node);
-    if (nodes->size() == max_count)
-      return;
+    nodes.push_back(node);
+    if (nodes.size() == max_count) {
+      break;
+    }
   }
+
+  return nodes;
 }
 
-void GetBookmarksMatchingProperties(
+std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingProperties(
     bookmarks::BookmarkModel* model,
     const PowerBookmarkQueryFields& query,
-    size_t max_count,
-    std::vector<const bookmarks::BookmarkNode*>* nodes) {
+    size_t max_count) {
   // ParseBookmarkQuery and some of the other util methods come from
   // bookmark_utils.
   std::vector<std::u16string> query_words =
       bookmarks::ParseBookmarkQuery(query);
-  if (query.word_phrase_query && query_words.empty() && query.tags.empty())
-    return;
+  if (query.word_phrase_query && query_words.empty() && query.tags.empty()) {
+    return {};
+  }
 
   const bookmarks::BookmarkNode* search_folder = model->root_node();
   if (query.folder && query.folder->is_folder())
@@ -214,14 +218,14 @@ void GetBookmarksMatchingProperties(
       url_matched_nodes = model->GetNodesByURL(url);
     }
     bookmarks::VectorIterator iterator(&url_matched_nodes);
-    GetBookmarksMatchingPropertiesImpl<bookmarks::VectorIterator>(
-        iterator, model, query, query_words, max_count, nodes);
-  } else {
-    ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(search_folder);
-    GetBookmarksMatchingPropertiesImpl<
-        ui::TreeNodeIterator<const bookmarks::BookmarkNode>>(
-        iterator, model, query, query_words, max_count, nodes);
+    return GetBookmarksMatchingPropertiesImpl<bookmarks::VectorIterator>(
+        iterator, model, query, query_words, max_count);
   }
+
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(search_folder);
+  return GetBookmarksMatchingPropertiesImpl<
+      ui::TreeNodeIterator<const bookmarks::BookmarkNode>>(
+      iterator, model, query, query_words, max_count);
 }
 
 void EncodeMetaForStorage(const PowerBookmarkMeta& meta, std::string* out) {

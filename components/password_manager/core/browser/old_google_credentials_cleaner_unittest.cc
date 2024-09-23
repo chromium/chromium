@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -17,7 +19,7 @@ namespace password_manager {
 
 namespace {
 
-PasswordForm CreateForm(base::StringPiece signon_realm) {
+PasswordForm CreateForm(std::string_view signon_realm) {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.signon_realm = std::string(signon_realm);
@@ -84,7 +86,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestOldGooglePasswordsAreDeleted) {
 
   ExpectPasswords(forms);
   for (const auto& form : forms) {
-    EXPECT_CALL(*store(), RemoveLogin(form));
+    EXPECT_CALL(*store(), RemoveLogin(testing::_, form));
   }
 
   EXPECT_CALL(observer, CleaningCompleted);
@@ -109,7 +111,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestNewerGooglePasswordsAreNotDeleted) {
   ASSERT_TRUE(cleaner.NeedsCleaning());
 
   ExpectPasswords({old_form, new_form, CreateForm("http://test.com/")});
-  EXPECT_CALL(*store(), RemoveLogin(old_form));
+  EXPECT_CALL(*store(), RemoveLogin(testing::_, old_form));
   EXPECT_CALL(observer, CleaningCompleted);
   cleaner.StartCleaning(&observer);
 

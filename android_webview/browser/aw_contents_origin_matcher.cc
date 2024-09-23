@@ -4,11 +4,13 @@
 
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 
-#include "android_webview/browser_jni_headers/AwContentsOriginMatcher_jni.h"
 
 #include "components/js_injection/common/origin_matcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwContentsOriginMatcher_jni.h"
 
 namespace android_webview {
 

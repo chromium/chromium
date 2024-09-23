@@ -20,6 +20,7 @@
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
+#include "v8-value.h"
 
 namespace v8 {
 template <typename T>
@@ -79,12 +80,33 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   std::string GetEventTypeString(
       const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
           event_type) const override;
+
+  // These two functions have no effect on ATP because the automation client
+  // pipe connects directly from js where in the extensions implementation it
+  // needs to be sent over mojo from renderer to main browser process.
   void StartCachingAccessibilityTrees() override {}
   void StopCachingAccessibilityTrees() override {}
   void DispatchEvent(const std::string& event_name,
                      const base::Value::List& event_args) const override;
 
  private:
+  // Helper function to convert base::Value into v8::Value.
+  v8::Local<v8::Value> ConvertToV8Value(base::ValueView value,
+                                        v8::Local<v8::Context> context) const;
+  v8::Local<v8::Value> ToV8Value(v8::Isolate* isolate,
+                                 v8::Local<v8::Object> creation_context,
+                                 base::ValueView value) const;
+  v8::Local<v8::Value> ToArrayBuffer(
+      v8::Isolate* isolate,
+      v8::Local<v8::Object> creation_context,
+      const base::Value::BlobStorage& value) const;
+  v8::Local<v8::Value> ToV8Object(v8::Isolate* isolate,
+                                  v8::Local<v8::Object> creation_context,
+                                  const base::Value::Dict& val) const;
+  v8::Local<v8::Value> ToV8Array(v8::Isolate* isolate,
+                                 v8::Local<v8::Object> creation_context,
+                                 const base::Value::List& val) const;
+
   friend class AutomationInternalBindingsTest;
 
   // Used during object template creation.

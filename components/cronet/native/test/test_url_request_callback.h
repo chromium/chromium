@@ -66,7 +66,7 @@ class TestUrlRequestCallback {
     int64_t received_byte_count = 0;
   };
 
-  // TODO(crbug.com/969048): Make these private with public accessors.
+  // TODO(crbug.com/41462044): Make these private with public accessors.
   std::vector<std::unique_ptr<UrlResponseInfo>> redirect_response_info_list_;
   std::vector<std::string> redirect_url_list_;
   // Owned by UrlRequest, only valid until UrlRequest is destroyed.

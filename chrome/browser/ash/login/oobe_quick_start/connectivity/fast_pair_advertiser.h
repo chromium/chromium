@@ -52,8 +52,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   // Begin broadcasting Fast Pair advertisement.
   virtual void StartAdvertising(base::OnceClosure callback,
                                 base::OnceClosure error_callback,
-                                const AdvertisingId& advertising_id,
-                                bool use_pin_authentication);
+                                const AdvertisingId& advertising_id);
 
   // Stop broadcasting Fast Pair advertisement.
   virtual void StopAdvertising(base::OnceClosure callback);
@@ -86,7 +85,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
   base::OnceClosure stop_callback_;
-  QuickStartMetrics quick_start_metrics_;
+  std::unique_ptr<QuickStartMetrics> quick_start_metrics_;
   base::WeakPtrFactory<FastPairAdvertiser> weak_ptr_factory_{this};
 };
 

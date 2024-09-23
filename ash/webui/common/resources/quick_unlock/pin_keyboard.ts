@@ -28,7 +28,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './pin_keyboard_icons.html.js';
 
@@ -67,6 +66,7 @@ const INITIAL_BACKSPACE_DELAY_MS = 500;
 const PIN_INPUT_ALLOWED_NON_NUMBER_KEY_CODES = new Set([
   8,   // backspace
   9,   // tab
+  27,  // escape
   37,  // left
   39,  // right
   // We don't allow back or forward.
@@ -488,18 +488,19 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
   /**
    * Called when a key event is pressed while the input element has focus.
    */
-  private onInputKeyDown_(event: Event): void {
+  private onInputKeyDown_(event: KeyboardEvent): void {
     assertInstanceof(event, KeyboardEvent);
 
     // Up/down pressed, swallow the event to prevent the input value from
     // being incremented or decremented.
-    if (event.keyCode === 38 || event.keyCode === 40) {
+    if (event.keyCode === 38 || event.keyCode === 40 ||
+        event.code === 'ArrowUp' || event.code === 'ArrowDown') {
       event.preventDefault();
       return;
     }
 
     // Enter pressed.
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || event.code === 'Enter') {
       this.firePinSubmitEvent_();
       event.preventDefault();
       return;

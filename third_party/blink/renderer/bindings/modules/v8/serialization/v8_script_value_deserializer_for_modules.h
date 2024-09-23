@@ -20,25 +20,14 @@ class MediaSourceHandleImpl;
 class RestrictionTarget;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
+class RTCDataChannel;
 class VideoFrame;
 
 // Extends V8ScriptValueSerializer with support for modules/ types.
 class MODULES_EXPORT V8ScriptValueDeserializerForModules final
     : public V8ScriptValueDeserializer {
  public:
-  // TODO(jbroman): This should just be:
-  // using V8ScriptValueDeserializer::V8ScriptValueDeserializer;
-  // Unfortunately, MSVC 2015 emits C2248, claiming that it cannot access its
-  // own private members. Until it's gone, we write the constructors by hand.
-  V8ScriptValueDeserializerForModules(ScriptState* script_state,
-                                      UnpackedSerializedScriptValue* unpacked,
-                                      const Options& options = Options())
-      : V8ScriptValueDeserializer(std::move(script_state), unpacked, options) {}
-  V8ScriptValueDeserializerForModules(
-      ScriptState* script_state,
-      scoped_refptr<SerializedScriptValue> value,
-      const Options& options = Options())
-      : V8ScriptValueDeserializer(script_state, std::move(value), options) {}
+  using V8ScriptValueDeserializer::V8ScriptValueDeserializer;
 
   static bool ExecutionContextExposesInterface(ExecutionContext*,
                                                SerializationTag interface_tag);
@@ -63,6 +52,7 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   EncodedAudioChunk* ReadEncodedAudioChunk();
   EncodedVideoChunk* ReadEncodedVideoChunk();
   MediaStreamTrack* ReadMediaStreamTrack();
+  RTCDataChannel* ReadRTCDataChannel();
   CropTarget* ReadCropTarget();
   RestrictionTarget* ReadRestrictionTarget();
   MediaSourceHandleImpl* ReadMediaSourceHandle();

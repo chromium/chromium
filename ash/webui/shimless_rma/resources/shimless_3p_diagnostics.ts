@@ -9,7 +9,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -176,7 +176,6 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
                   '3pFailedToLoadDialogTitle', '3pFailedToLoadDialogMessage');
               return;
           }
-          assertNotReached();
         });
   }
 

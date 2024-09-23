@@ -263,8 +263,17 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
 // Tests that the device refuses to start if the WebContents target was
 // destroyed before the device could start.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart \
+  DISABLED_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart
+#else
+#define MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart \
+  ErrorsOutIfWebContentsHasGoneBeforeDeviceStart
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutIfWebContentsHasGoneBeforeDeviceStart) {
+                       MAYBE_ErrorsOutIfWebContentsHasGoneBeforeDeviceStart) {
   NavigateToInitialDocument();
 
   auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
@@ -300,8 +309,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the WebContents is destroyed before the device is stopped.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  DISABLED_ErrorsOutWhenWebContentsIsDestroyed
+#else
+#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
+  ErrorsOutWhenWebContentsIsDestroyed
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutWhenWebContentsIsDestroyed) {
+                       MAYBE_ErrorsOutWhenWebContentsIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -322,8 +341,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that capture is re-targetted when the render view of a WebContents
 // changes.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
+#else
+#define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ChangesTargettedRenderView) {
+                       MAYBE_ChangesTargettedRenderView) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -357,7 +384,7 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kApplyNativeOcclusionToCompositor,
-        {{features::kApplyNativeOcclusionToCompositorType,
+        {{features::kApplyNativeOcclusionToCompositorType.name,
           features::kApplyNativeOcclusionToCompositorTypeRelease}});
 
     WebContentsVideoCaptureDeviceBrowserTest::SetUp();
@@ -395,8 +422,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
+#else
+#define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       RecoversAfterRendererCrash) {
+                       MAYBE_RecoversAfterRendererCrash) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -425,8 +460,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug/328419809): Also flaky on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
+#else
+#define MAYBE_SuspendsAndResumes SuspendsAndResumes
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       SuspendsAndResumes) {
+                       MAYBE_SuspendsAndResumes) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -460,8 +503,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_DeliversRefreshFramesUponRequest \
+  DISABLED_DeliversRefreshFramesUponRequest
+#else
+#define MAYBE_DeliversRefreshFramesUponRequest DeliversRefreshFramesUponRequest
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       DeliversRefreshFramesUponRequest) {
+                       MAYBE_DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -500,10 +552,9 @@ class WebContentsVideoCaptureDeviceBrowserTestP
     return std::get<3>(GetParam());
   }
 
-#if BUILDFLAG(IS_WIN)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebContentsVideoCaptureDeviceBrowserTest::SetUpCommandLine(command_line);
-
+#if BUILDFLAG(IS_WIN)
     if (!IsSoftwareCompositingTest()) {
       // In order to test the NV12 code-path, we need to use hardware GPU in the
       // tests as the product code checks whether hardware when deciding whether
@@ -515,8 +566,14 @@ class WebContentsVideoCaptureDeviceBrowserTestP
       // machines.
       command_line->AppendSwitch(switches::kUseGpuInTests);
     }
-  }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    // Disable RenderDocument temporarily while we figure out why the test
+    // "CapturesContentChange" is flaky when we change RenderFrameHosts.
+    scoped_feature_list_.InitWithFeatures({}, {features::kRenderDocument});
+#endif
+  }
 
   // Returns human-readable description of the test based on test parameters.
   // Currently unused due to CQ treating the tests as new and applying higher
@@ -534,6 +591,9 @@ class WebContentsVideoCaptureDeviceBrowserTestP
              : "Detect"});
     return name;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
@@ -585,8 +645,19 @@ INSTANTIATE_TEST_SUITE_P(
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug/328419809): Also flaky on Mac.
+// TODO(crbug/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
+    (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG))
+#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
+#else
+#define MAYBE_CapturesContentChanges CapturesContentChanges
+#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       CapturesContentChanges) {
+                       MAYBE_CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
 

@@ -3,22 +3,19 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXTimeField AXRoleDescription='time field' AXValue='00:00:00'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='12' AXDescription='Hours'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='12'
+++++++++++AXIncrementor AXDescription='Hours' AXRoleDescription='stepper' AXValue=12
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=':'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0' AXDescription='Minutes'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='00'
+++++++++++AXIncrementor AXDescription='Minutes' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='1' AXDescription='AM/PM'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='AM'
-++++AXTimeField AXRoleDescription='time field' AXValue='00:00:00' AXDescription='Breakfast'
+++++++++++AXIncrementor AXDescription='AM/PM' AXRoleDescription='stepper' AXValue=1
+++++++AXPopUpButton AXDescription='Show time picker' AXRoleDescription='pop up button'
+++++AXTimeField AXDescription='Breakfast' AXRoleDescription='time field' AXValue='00:00:00'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='12' AXDescription='Hours Breakfast'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='12'
+++++++++++AXIncrementor AXDescription='Hours Breakfast' AXRoleDescription='stepper' AXValue=12
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=':'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0' AXDescription='Minutes Breakfast'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='00'
+++++++++++AXIncrementor AXDescription='Minutes Breakfast' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='1' AXDescription='AM/PM Breakfast'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='AM'
+++++++++++AXIncrementor AXDescription='AM/PM Breakfast' AXRoleDescription='stepper' AXValue=1
+++++++AXPopUpButton AXDescription='Show time picker' AXRoleDescription='pop up button'
+++++AXComboBox AXAutocompleteValue='list' AXRoleDescription='combo box'

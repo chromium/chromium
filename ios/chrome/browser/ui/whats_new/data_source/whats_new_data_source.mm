@@ -57,6 +57,8 @@ UIColor* GenerateColor(NSString* color) {
     return [UIColor colorNamed:kGrey800Color];
   } else if ([color isEqualToString:@"purple"]) {
     return [UIColor colorNamed:kPurple500Color];
+  } else if ([color isEqualToString:@"green"]) {
+    return [UIColor colorNamed:kGreen500Color];
   } else {
     return nil;
   }
@@ -67,13 +69,14 @@ UIColor* GenerateColor(NSString* color) {
 NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
   switch (action) {
     case WhatsNewPrimaryAction::kIOSSettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
-    case WhatsNewPrimaryAction::kPrivacySettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
-    case WhatsNewPrimaryAction::kChromeSettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kPrivacySettings:
+    case WhatsNewPrimaryAction::kChromeSettings:
+    case WhatsNewPrimaryAction::kSafeBrowsingSettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kChromePasswordManager:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_PASSWORD_MANAGER);
     case WhatsNewPrimaryAction::kLens:
       return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
     case WhatsNewPrimaryAction::kNoAction:
@@ -121,7 +124,7 @@ WhatsNewType WhatsNewTypeFromInt(int type) {
   const int max_value = static_cast<int>(WhatsNewType::kMaxValue);
 
   if (min_value > type || type > max_value) {
-    NOTREACHED() << "unexpected type: " << type;
+    NOTREACHED_IN_MIGRATION() << "unexpected type: " << type;
     return WhatsNewType::kError;
   }
 
@@ -133,7 +136,7 @@ WhatsNewPrimaryAction WhatsNewPrimaryActionFromInt(int type) {
   const int max_value = static_cast<int>(WhatsNewPrimaryAction::kMaxValue);
 
   if (min_value > type || type > max_value) {
-    NOTREACHED() << "unexpected type: " << type;
+    NOTREACHED_IN_MIGRATION() << "unexpected type: " << type;
     return WhatsNewPrimaryAction::kError;
   }
 

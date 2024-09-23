@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "browse_drive_file_picker_coordinator.h",
+    "browse_drive_file_picker_coordinator.mm",
+    "browse_drive_file_picker_coordinator_delegate.h",
+    "drive_file_picker_mediator.h",
+    "drive_file_picker_mediator.mm",
+    "drive_file_picker_mediator_delegate.h",
+    "root_drive_file_picker_coordinator.h",
+    "root_drive_file_picker_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/image_fetcher/core",
+    "//ios/chrome/browser/drive/model:drive_file_downloader",
+    "//ios/chrome/browser/drive/model:drive_list",
+    "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive_file_picker/ui",
+    "//ios/chrome/browser/drive_file_picker/ui:constants",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/web/model/choose_file",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browse_drive_file_picker_coordinator_unittest.mm",
+    "drive_file_picker_mediator_unittest.mm",
+    "root_drive_file_picker_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/image_fetcher/core",
+    "//ios/chrome/browser/drive/model:drive_list",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive/model:test_support",
+    "//ios/chrome/browser/drive_file_picker/ui",
+    "//ios/chrome/browser/drive_file_picker/ui:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/web/model/choose_file",
+    "//ios/chrome/browser/web/model/choose_file:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_drive_file_picker_handler.h",
+    "fake_drive_file_picker_handler.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/public/commands" ]
+}

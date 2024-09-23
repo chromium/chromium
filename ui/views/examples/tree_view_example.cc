@@ -220,7 +220,7 @@ void TreeViewExample::ExecuteCommand(int command_id, int event_flags) {
       AddNewNode();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

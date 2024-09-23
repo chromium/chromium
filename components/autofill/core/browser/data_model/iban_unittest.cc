@@ -8,7 +8,7 @@
 
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -21,8 +21,8 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 // with a whitespace. If `is_value_masked` is true, replace oneDot ('\u2022')
 // with '*'.
 // This is useful to simplify the expectations in tests.
-std::u16string GetIbanValueGroupedByFour(const Iban& iban,
-                                         bool is_value_masked) {
+std::u16string GetHumanReadableIbanString(const Iban& iban,
+                                          bool is_value_masked) {
   std::u16string identifierIbanValue =
       iban.GetIdentifierStringForAutofillDisplay(is_value_masked);
   base::ReplaceChars(identifierIbanValue, kEllipsisOneSpace, u" ",
@@ -32,13 +32,11 @@ std::u16string GetIbanValueGroupedByFour(const Iban& iban,
   return identifierIbanValue;
 }
 
-void SetPrefixSuffixAndLength(Iban& iban,
-                              const std::u16string& prefix,
-                              const std::u16string& suffix,
-                              int length) {
+void SetPrefixAndSuffix(Iban& iban,
+                        const std::u16string& prefix,
+                        const std::u16string& suffix) {
   iban.set_prefix(prefix);
   iban.set_suffix(suffix);
-  iban.set_length(length);
 }
 
 TEST(IbanTest, AssignmentOperator) {
@@ -67,7 +65,7 @@ TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetLocalIban();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
-  AutofillMetadata local_metadata = local_iban.GetMetadata();
+  PaymentsMetadata local_metadata = local_iban.GetMetadata();
 
   EXPECT_EQ(local_iban.guid(), local_metadata.id);
   EXPECT_EQ(local_iban.use_count(), local_metadata.use_count);
@@ -105,6 +103,40 @@ TEST(IbanTest, SetNickname) {
   EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
 }
 
+// Verify that the value has been capitalized.
+TEST(IbanTest, SetValue_Capitalization) {
+  Iban iban;
+
+  iban.set_value(u"be71096123456769");
+  EXPECT_EQ(u"BE71096123456769", iban.value());
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"6769", iban.suffix());
+
+  iban.set_value(u"Br1500000000000010932840814P2");
+  EXPECT_EQ(u"BR1500000000000010932840814P2", iban.value());
+  EXPECT_EQ(u"BR", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+
+  iban.set_value(u"fR7630006000011234567890189");
+  EXPECT_EQ(u"FR7630006000011234567890189", iban.value());
+  EXPECT_EQ(u"FR", iban.prefix());
+  EXPECT_EQ(u"0189", iban.suffix());
+}
+
+// Verify that the prefix and suffix have been capitalized.
+TEST(IbanTest, SetPrefixAndSuffix_Capitalization) {
+  Iban iban;
+  iban.set_prefix(u"be");
+  iban.set_suffix(u"14p2");
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+
+  iban.set_prefix(u"Be");
+  iban.set_suffix(u"14p2");
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+}
+
 TEST(IbanTest, SetValue) {
   Iban iban;
 
@@ -125,34 +157,30 @@ TEST(IbanTest, SetValue) {
   EXPECT_EQ(u"DE91100000000123456789", iban.value());
 }
 
-TEST(IbanTest, ValuePrefixSuffixAndLength) {
+TEST(IbanTest, ValuePrefixAndSuffix) {
   Iban iban;
   iban.set_value(u"DE91100000000123456789");
   EXPECT_EQ(u"DE91100000000123456789", iban.value());
-  EXPECT_EQ(u"DE91", iban.prefix());
+  EXPECT_EQ(u"DE", iban.prefix());
   EXPECT_EQ(u"6789", iban.suffix());
-  EXPECT_EQ(22, iban.length());
 
   iban.set_value(u"CH5604835012345678009");
   EXPECT_EQ(u"CH5604835012345678009", iban.value());
-  EXPECT_EQ(u"CH56", iban.prefix());
+  EXPECT_EQ(u"CH", iban.prefix());
   EXPECT_EQ(u"8009", iban.suffix());
-  EXPECT_EQ(21, iban.length());
 }
 
-TEST(IbanTest, InvalidValuePrefixSuffixAndLength) {
+TEST(IbanTest, InvalidValuePrefixAndSuffix) {
   Iban iban;
   iban.set_value(u"DE1234567");
   EXPECT_EQ(u"", iban.value());
   EXPECT_EQ(u"", iban.prefix());
   EXPECT_EQ(u"", iban.suffix());
-  EXPECT_EQ(0, iban.length());
 
   iban.set_value(u"");
   EXPECT_EQ(u"", iban.value());
   EXPECT_EQ(u"", iban.prefix());
   EXPECT_EQ(u"", iban.suffix());
-  EXPECT_EQ(0, iban.length());
 }
 
 TEST(IbanTest, SetRawData) {
@@ -169,43 +197,41 @@ TEST(IbanTest, GetUserFacingValue_LocalIban) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
   Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  EXPECT_EQ(u"", GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"", GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
 
   iban.set_value(u"CH5604835012345678009");
 
-  EXPECT_EQ(u"CH56 **** **** **** *800 9",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"CH **8009",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"CH56 0483 5012 3456 7800 9",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"DE91100000000123456789");
 
-  EXPECT_EQ(u"DE91 **** **** **** **67 89",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"DE **6789",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"DE91 1000 0000 0123 4567 89",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"GR9608100010000001234567890");
 
-  EXPECT_EQ(u"GR96 **** **** **** **** ***7 890",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"GR **7890",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"GR96 0810 0010 0000 0123 4567 890",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 
   iban.set_value(u"PK70BANK0000123456789000");
 
-  EXPECT_EQ(u"PK70 **** **** **** **** 9000",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(u"PK **9000",
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
   EXPECT_EQ(u"PK70 BANK 0000 1234 5678 9000",
-            GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
+            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
   Iban server_iban(Iban::InstrumentId(1234567));
-  // Set the prefix, suffix and length of the server IBAN.
-  server_iban.set_prefix(u"FR76");
-  server_iban.set_suffix(u"0189");
-  server_iban.set_length(27);
+  // Set the prefix and suffix of the server IBAN.
+  SetPrefixAndSuffix(server_iban, u"FR76", u"0189");
   EXPECT_DEATH_IF_SUPPORTED(server_iban.GetIdentifierStringForAutofillDisplay(
                                 /*is_value_masked=*/false),
                             "");
@@ -213,42 +239,34 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
   Iban server_iban(Iban::InstrumentId(1234567));
-  // Set the prefix, suffix and length of the server IBAN.
-  server_iban.set_prefix(u"FR76");
-  server_iban.set_suffix(u"0189");
-  server_iban.set_length(27);
-  EXPECT_EQ(u"FR76 **** **** **** **** ***0 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  // Set the prefix and suffix of the server IBAN.
+  SetPrefixAndSuffix(server_iban, u"FR", u"0189");
+  EXPECT_EQ(u"FR **0189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
   // Set up a `server_iban` with empty prefix.
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"");
-  server_iban.set_suffix(u"0189");
-  server_iban.set_length(27);
-  EXPECT_EQ(u"**** **** **** **** **** ***0 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  SetPrefixAndSuffix(server_iban, u"", u"0189");
+  EXPECT_EQ(u" **0189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
   // Set up a `server_iban` with empty suffix.
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"FR76");
-  server_iban.set_suffix(u"");
-  server_iban.set_length(27);
-  EXPECT_EQ(u"FR76 **** **** **** **** **** ***",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  SetPrefixAndSuffix(server_iban, u"FR", u"");
+  EXPECT_EQ(u"FR **",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
   // Set the prefix and suffix of the server IBAN with length other than 4.
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"FR7");
-  server_iban.set_suffix(u"10189");
-  server_iban.set_length(27);
-  EXPECT_EQ(u"FR7* **** **** **** **** **10 189",
-            GetIbanValueGroupedByFour(server_iban, /*is_value_masked=*/true));
+  SetPrefixAndSuffix(server_iban, u"FR7", u"10189");
+  EXPECT_EQ(u"FR7 **10189",
+            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnLength) {
@@ -325,6 +343,14 @@ TEST(IbanTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
   EXPECT_FALSE(Iban::IsValid(u"XXA1CBKU0000000000001234560101"));
 }
 
+TEST(IbanTest, GetCountryCode) {
+  Iban iban;
+  iban.set_value(u"ch5604835012345678009");
+
+  EXPECT_EQ(iban.GetCountryCode(iban.value()), "CH");
+  EXPECT_EQ(iban.GetCountryCode(), "CH");
+}
+
 TEST(IbanTest, IsIbanApplicableInCountry) {
   // Is an IBAN-supported country.
   EXPECT_TRUE(Iban::IsIbanApplicableInCountry("KW"));
@@ -333,115 +359,100 @@ TEST(IbanTest, IsIbanApplicableInCountry) {
   EXPECT_FALSE(Iban::IsIbanApplicableInCountry("AB"));
 }
 
-// Test that `MatchesPrefixSuffixAndLength()` returns the expected outcome based
-// on the prefix matching when the suffix and length match already.
-TEST(IbanTest, MatchesPrefixSuffixAndLength_Prefix) {
+TEST(IbanTest, GetIbanSupportedCountry) {
+  // Is an IBAN-supported country.
+  EXPECT_EQ(Iban::IbanSupportedCountry::kKW,
+            Iban::GetIbanSupportedCountry("KW"));
+
+  // Not an IBAN-supported country.
+  EXPECT_EQ(Iban::IbanSupportedCountry::kUnsupported,
+            Iban::GetIbanSupportedCountry("AB"));
+}
+
+// Test that `MatchesPrefixAndSuffix()` returns the expected outcome based
+// on the prefix matching when the suffix matches already.
+TEST(IbanTest, MatchesPrefixAndSuffix_Prefix) {
   const std::u16string prefix_1 = u"FR76";
   const std::u16string prefix_2 = u"FR75";
   const std::u16string prefix_1_shorter = u"FR7";
   const std::u16string prefix_1_longer = u"FR765";
   const std::u16string suffix = u"0189";
-  int length = 27;
   Iban iban_1;
   Iban iban_2;
-  SetPrefixSuffixAndLength(iban_1, prefix_1, suffix, length);
-  SetPrefixSuffixAndLength(iban_2, prefix_2, suffix, length);
+  SetPrefixAndSuffix(iban_1, prefix_1, suffix);
+  SetPrefixAndSuffix(iban_2, prefix_2, suffix);
 
   // Should not match because prefix "FR76" != "FR75". Also, test both ways
   // because the order does not matter.
-  EXPECT_FALSE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_FALSE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  EXPECT_FALSE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_FALSE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   iban_2 = iban_1;
   // Should match because the IBANs have equivalent data.
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   // Should match because "FR7" is still a prefix of "FR76".
-  SetPrefixSuffixAndLength(iban_2, prefix_1_shorter, suffix, length);
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  SetPrefixAndSuffix(iban_2, prefix_1_shorter, suffix);
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   // Should match because "FR76" is still a prefix of "FR765".
-  SetPrefixSuffixAndLength(iban_2, prefix_1_longer, suffix, length);
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  SetPrefixAndSuffix(iban_2, prefix_1_longer, suffix);
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 }
 
-// Test that `MatchesPrefixSuffixAndLength()` returns the expected outcome based
-// on the suffix matching when the prefix and length match already.
-TEST(IbanTest, MatchesPrefixSuffixAndLength_Suffix) {
+// Test that `MatchesPrefixAndSuffix()` returns the expected outcome based
+// on the suffix matching when the prefix matches already.
+TEST(IbanTest, MatchesPrefixAndSuffix_Suffix) {
   const std::u16string prefix = u"FR76";
   const std::u16string suffix_1 = u"0189";
   const std::u16string suffix_2 = u"1189";
   const std::u16string suffix_1_shorter = u"189";
   const std::u16string suffix_1_longer = u"00189";
-  int length = 27;
   Iban iban_1;
   Iban iban_2;
-  SetPrefixSuffixAndLength(iban_1, prefix, suffix_1, length);
-  SetPrefixSuffixAndLength(iban_2, prefix, suffix_2, length);
+  SetPrefixAndSuffix(iban_1, prefix, suffix_1);
+  SetPrefixAndSuffix(iban_2, prefix, suffix_2);
 
   // Should not match because suffix "0189" != "1189".
-  EXPECT_FALSE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_FALSE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  EXPECT_FALSE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_FALSE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   iban_2 = iban_1;
   // Should match because the IBANs have equivalent data.
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   // Should match because "189" is still a suffix of "0189".
-  SetPrefixSuffixAndLength(iban_2, prefix, suffix_1_shorter, length);
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  SetPrefixAndSuffix(iban_2, prefix, suffix_1_shorter);
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 
   // Should match because "0189" is still a suffix of "00189".
-  SetPrefixSuffixAndLength(iban_2, prefix, suffix_1_longer, length);
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
+  SetPrefixAndSuffix(iban_2, prefix, suffix_1_longer);
+  EXPECT_TRUE(iban_1.MatchesPrefixAndSuffix(iban_2));
+  EXPECT_TRUE(iban_2.MatchesPrefixAndSuffix(iban_1));
 }
 
-// Test that `MatchesPrefixSuffixAndLength()` returns the expected outcome based
-// on the length matching when the prefix and suffix match already.
-TEST(IbanTest, MatchesPrefixSuffixAndLength_Length) {
-  const std::u16string prefix = u"FR76";
-  const std::u16string suffix = u"0189";
-  int length_1 = 27;
-  int length_2 = 28;
-  Iban iban_1;
-  Iban iban_2;
-  SetPrefixSuffixAndLength(iban_1, prefix, suffix, length_1);
-  SetPrefixSuffixAndLength(iban_2, prefix, suffix, length_2);
-
-  EXPECT_FALSE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_FALSE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
-
-  // Should match because the IBANs have equivalent data.
-  SetPrefixSuffixAndLength(iban_2, prefix, suffix, length_1);
-  EXPECT_TRUE(iban_1.MatchesPrefixSuffixAndLength(iban_2));
-  EXPECT_TRUE(iban_2.MatchesPrefixSuffixAndLength(iban_1));
-}
-
-// Test that `MatchesPrefixSuffixAndLength()` can match local IBANs to server
-// IBANs correctly based on the prefix, suffix, and length.
-TEST(IbanTest, MatchesPrefixSuffixAndLength_AcrossTypes) {
-  // `local_iban` and below server-based `server_iban` have the same prefix,
-  // suffix and length.
+// Test that `MatchesPrefixAndSuffix()` can match local IBANs to server
+// IBANs correctly based on the prefix and suffix.
+TEST(IbanTest, MatchesPrefixAndSuffix_AcrossTypes) {
+  // `local_iban` and below server-based `server_iban` have the same prefix and
+  // suffix.
   Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   local_iban.set_value(u"CH56 0483 5012 3456 7800 9");
   Iban server_iban(Iban::InstrumentId(1234567));
-  server_iban.set_prefix(u"CH56");
+  server_iban.set_prefix(u"CH");
   server_iban.set_suffix(u"8009");
-  server_iban.set_length(21);
-  EXPECT_TRUE(local_iban.MatchesPrefixSuffixAndLength(server_iban));
-  EXPECT_TRUE(server_iban.MatchesPrefixSuffixAndLength(local_iban));
+  EXPECT_TRUE(local_iban.MatchesPrefixAndSuffix(server_iban));
+  EXPECT_TRUE(server_iban.MatchesPrefixAndSuffix(local_iban));
 
   server_iban = test::GetServerIban2();
-  server_iban.set_length(28);
-  EXPECT_FALSE(local_iban.MatchesPrefixSuffixAndLength(server_iban));
-  EXPECT_FALSE(server_iban.MatchesPrefixSuffixAndLength(local_iban));
+  EXPECT_FALSE(local_iban.MatchesPrefixAndSuffix(server_iban));
+  EXPECT_FALSE(server_iban.MatchesPrefixAndSuffix(local_iban));
 }
 
 }  // namespace autofill

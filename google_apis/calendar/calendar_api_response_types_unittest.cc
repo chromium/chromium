@@ -107,6 +107,8 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   EXPECT_EQ(event.status(), CalendarEvent::EventStatus::kConfirmed);
   EXPECT_EQ(event.self_response_status(),
             CalendarEvent::ResponseStatus::kNeedsAction);
+  EXPECT_EQ(event.location(), "location 1");
+  EXPECT_FALSE(event.has_other_attendee());
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseConferenceDataUri) {
@@ -213,6 +215,22 @@ TEST(CalendarAPIResponseTypesTest,
             CalendarEvent::ResponseStatus::kUnknown);
 }
 
+TEST(CalendarAPIResponseTypesTest,
+     ParseEventListWithCorrectHasOtherAttendeeValue) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/events.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(3U, event_list->items().size());
+
+  EXPECT_FALSE(event_list->items()[0]->has_other_attendee());
+  EXPECT_FALSE(event_list->items()[1]->has_other_attendee());
+  EXPECT_TRUE(event_list->items()[2]->has_other_attendee());
+}
+
 TEST(CalendarAPIResponseTypesTest, ParseFailed) {
   std::unique_ptr<base::Value> events =
       test_util::LoadJSONFile("calendar/invalid_events.json");
@@ -221,6 +239,67 @@ TEST(CalendarAPIResponseTypesTest, ParseFailed) {
   ASSERT_EQ(base::Value::Type::DICT, events->type());
   std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
   ASSERT_EQ(event_list, nullptr);
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseAttachments) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_with_attachments.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  const auto attachments = event_list->items()[0]->attachments();
+  EXPECT_EQ(attachments.size(), 2U);
+
+  EXPECT_EQ(attachments[0].file_url(),
+            "https://docs.google.com/document/d/"
+            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw/"
+            "edit?tab=t.0&resourcekey=0-yNQRr67lHMYKNFyrXmvwBw");
+  EXPECT_EQ(attachments[0].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "docs_2020q4_48dp.png");
+  EXPECT_EQ(attachments[0].title(), "Google Docs Attachment");
+  EXPECT_EQ(attachments[0].file_id(),
+            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw");
+
+  EXPECT_EQ(attachments[1].file_url(),
+            "https://docs.google.com/presentation/d/"
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p");
+  EXPECT_EQ(attachments[1].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "slides_2020q4_48dp.png");
+  EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
+  EXPECT_EQ(attachments[1].file_id(),
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q");
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseInvalidAttachments) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_with_invalid_attachments.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  const auto attachments = event_list->items()[0]->attachments();
+  EXPECT_EQ(attachments.size(), 2U);
+
+  EXPECT_TRUE(attachments[0].file_url().is_empty());
+  EXPECT_EQ(attachments[0].icon_link(),
+            "https://www.gstatic.com/images/branding/product/1x/"
+            "docs_2020q4_48dp.png");
+  EXPECT_EQ(attachments[0].title(), "Google Docs Attachment");
+
+  EXPECT_EQ(attachments[1].file_url(),
+            "https://docs.google.com/presentation/d/"
+            "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p");
+  EXPECT_TRUE(attachments[1].icon_link().is_empty());
+  EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
 }
 }  // namespace calendar
 }  // namespace google_apis

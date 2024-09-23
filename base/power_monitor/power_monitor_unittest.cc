@@ -4,10 +4,12 @@
 
 #include "base/power_monitor/power_monitor.h"
 
+#include <optional>
+
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
+#include "power_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace test {
@@ -28,7 +30,7 @@ class PowerMonitorTest : public testing::Test {
 
  private:
   TaskEnvironment task_environment_;
-  absl::optional<ScopedPowerMonitorTestSource> power_monitor_source_;
+  std::optional<ScopedPowerMonitorTestSource> power_monitor_source_;
 };
 
 // PowerMonitorSource is tightly coupled with the PowerMonitor, so this test
@@ -39,10 +41,11 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   PowerMonitorInitialize();
 
   PowerMonitorTestObserver observers[kObservers];
+  auto* power_monitor = PowerMonitor::GetInstance();
   for (auto& index : observers) {
-    PowerMonitor::AddPowerSuspendObserver(&index);
-    PowerMonitor::AddPowerStateObserver(&index);
-    PowerMonitor::AddPowerThermalObserver(&index);
+    power_monitor->AddPowerSuspendObserver(&index);
+    power_monitor->AddPowerStateObserver(&index);
+    power_monitor->AddPowerThermalObserver(&index);
   }
 
   // Sending resume when not suspended should have no effect.
@@ -68,21 +71,27 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   EXPECT_EQ(observers[0].resumes(), 1);
 
   // Pretend the device has gone on battery power
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
-  EXPECT_EQ(observers[0].last_power_state(), true);
+  EXPECT_EQ(observers[0].last_power_status(),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // Repeated indications the device is on battery power should be suppressed.
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observers[0].power_state_changes(), 1);
 
   // Pretend the device has gone off battery power
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
-  EXPECT_EQ(observers[0].last_power_state(), false);
+  EXPECT_EQ(observers[0].last_power_status(),
+            PowerStateObserver::BatteryPowerStatus::kExternalPower);
 
   // Repeated indications the device is off battery power should be suppressed.
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
   // Send speed limit change notifications.
@@ -115,15 +124,16 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
             PowerThermalObserver::DeviceThermalState::kFair);
 
   for (auto& index : observers) {
-    PowerMonitor::RemovePowerSuspendObserver(&index);
-    PowerMonitor::RemovePowerStateObserver(&index);
-    PowerMonitor::RemovePowerThermalObserver(&index);
+    power_monitor->RemovePowerSuspendObserver(&index);
+    power_monitor->RemovePowerStateObserver(&index);
+    power_monitor->RemovePowerThermalObserver(&index);
   }
 }
 
 TEST_F(PowerMonitorTest, ThermalThrottling) {
   PowerMonitorTestObserver observer;
-  PowerMonitor::AddPowerThermalObserver(&observer);
+  auto* power_monitor = PowerMonitor::GetInstance();
+  power_monitor->AddPowerThermalObserver(&observer);
 
   PowerMonitorInitialize();
 
@@ -140,20 +150,21 @@ TEST_F(PowerMonitorTest, ThermalThrottling) {
     EXPECT_EQ(observer.last_thermal_state(), state);
   }
 
-  PowerMonitor::RemovePowerThermalObserver(&observer);
+  power_monitor->RemovePowerThermalObserver(&observer);
 }
 
 TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;
+  auto* power_monitor = PowerMonitor::GetInstance();
 
   // An observer is added before the PowerMonitor initialization.
-  PowerMonitor::AddPowerSuspendObserver(&observer1);
+  power_monitor->AddPowerSuspendObserver(&observer1);
 
   PowerMonitorInitialize();
 
   // An observer is added after the PowerMonitor initialization.
-  PowerMonitor::AddPowerSuspendObserver(&observer2);
+  power_monitor->AddPowerSuspendObserver(&observer2);
 
   // Simulate suspend/resume notifications.
   source().GenerateSuspendEvent();
@@ -166,80 +177,88 @@ TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   EXPECT_EQ(observer1.resumes(), 1);
   EXPECT_EQ(observer2.resumes(), 1);
 
-  PowerMonitor::RemovePowerSuspendObserver(&observer1);
-  PowerMonitor::RemovePowerSuspendObserver(&observer2);
+  power_monitor->RemovePowerSuspendObserver(&observer1);
+  power_monitor->RemovePowerSuspendObserver(&observer2);
 }
 
 TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;
+  auto* power_monitor = PowerMonitor::GetInstance();
 
   // An observer is added before the PowerMonitor initialization.
-  PowerMonitor::AddPowerStateObserver(&observer1);
+  power_monitor->AddPowerStateObserver(&observer1);
 
   PowerMonitorInitialize();
 
   // An observer is added after the PowerMonitor initialization.
-  PowerMonitor::AddPowerStateObserver(&observer2);
+  power_monitor->AddPowerStateObserver(&observer2);
 
   // Simulate power state transitions (e.g. battery on/off).
   EXPECT_EQ(observer1.power_state_changes(), 0);
   EXPECT_EQ(observer2.power_state_changes(), 0);
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
   EXPECT_EQ(observer1.power_state_changes(), 1);
   EXPECT_EQ(observer2.power_state_changes(), 1);
-  source().GeneratePowerStateEvent(false);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kExternalPower);
   EXPECT_EQ(observer1.power_state_changes(), 2);
   EXPECT_EQ(observer2.power_state_changes(), 2);
 
-  PowerMonitor::RemovePowerStateObserver(&observer1);
-  PowerMonitor::RemovePowerStateObserver(&observer2);
+  power_monitor->RemovePowerStateObserver(&observer1);
+  power_monitor->RemovePowerStateObserver(&observer2);
 }
 
 TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;
+  auto* power_monitor = PowerMonitor::GetInstance();
 
   PowerMonitorInitialize();
 
-  EXPECT_FALSE(
-      PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer1));
+  EXPECT_FALSE(power_monitor->AddPowerSuspendObserverAndReturnSuspendedState(
+      &observer1));
 
   source().GenerateSuspendEvent();
 
-  EXPECT_TRUE(
-      PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer2));
+  EXPECT_TRUE(power_monitor->AddPowerSuspendObserverAndReturnSuspendedState(
+      &observer2));
 
   EXPECT_EQ(observer1.suspends(), 1);
   EXPECT_EQ(observer2.suspends(), 0);
   EXPECT_EQ(observer1.resumes(), 0);
   EXPECT_EQ(observer2.resumes(), 0);
 
-  PowerMonitor::RemovePowerSuspendObserver(&observer1);
-  PowerMonitor::RemovePowerSuspendObserver(&observer2);
+  power_monitor->RemovePowerSuspendObserver(&observer1);
+  power_monitor->RemovePowerSuspendObserver(&observer2);
 }
 
 TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;
+  auto* power_monitor = PowerMonitor::GetInstance();
 
   PowerMonitorInitialize();
 
   // An observer is added before the on-battery notification.
-  EXPECT_FALSE(
-      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer1));
+  EXPECT_NE(power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(
+                &observer1),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
-  source().GeneratePowerStateEvent(true);
+  source().GeneratePowerStateEvent(
+      PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   // An observer is added after the on-battery notification.
-  EXPECT_TRUE(
-      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer2));
+  EXPECT_EQ(power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(
+                &observer2),
+            PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   EXPECT_EQ(observer1.power_state_changes(), 1);
   EXPECT_EQ(observer2.power_state_changes(), 0);
 
-  PowerMonitor::RemovePowerStateObserver(&observer1);
-  PowerMonitor::RemovePowerStateObserver(&observer2);
+  power_monitor->RemovePowerStateObserver(&observer1);
+  power_monitor->RemovePowerStateObserver(&observer2);
 }
 
 }  // namespace test

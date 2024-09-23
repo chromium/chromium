@@ -94,7 +94,7 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
-    // TODO(1440504): Move this logic to the data model.
+    // TODO(crbug.com/40266145): Move this logic to the data model.
     AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL))
         ? name_->SetValueForType(type.GetStorableType(), value, status)
         : name_->SetValueForTypeAndResetSubstructure(type.GetStorableType(),
@@ -162,11 +162,14 @@ void CompanyInfo::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(COMPANY_NAME);
 }
 
-void CompanyInfo::GetMatchingTypes(const std::u16string& text,
-                                   const std::string& app_locale,
-                                   FieldTypeSet* matching_types) const {
+void CompanyInfo::GetMatchingTypesWithProfileSources(
+    const std::u16string& text,
+    const std::string& app_locale,
+    FieldTypeSet* matching_types,
+    PossibleProfileValueSources* profile_value_sources) const {
   if (IsValid()) {
-    FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+    FormGroup::GetMatchingTypesWithProfileSources(
+        text, app_locale, matching_types, profile_value_sources);
   } else if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
   }

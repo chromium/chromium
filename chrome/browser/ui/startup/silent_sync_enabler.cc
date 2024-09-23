@@ -28,7 +28,7 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
       signin::SigninChoiceCallback callback) override {
     // We proceed here, and we are waiting until `ShowSyncConfirmation()` for
     // the Sync engine to be started to know if we can proceed or not.
-    // TODO(https://crbug.com/1324569): Introduce a `DEFER` status or a new
+    // TODO(crbug.com/40225086): Introduce a `DEFER` status or a new
     // `ShouldShowEnterpriseAccountConfirmation()` delegate method to handle
     // management consent not being handled at this step.
     std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
@@ -51,20 +51,22 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
           callback) override {
     // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
     // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void ShowMergeSyncDataConfirmation(const std::string&,
                                      const std::string&,
                                      signin::SigninChoiceCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void ShowSyncSettings() override { NOTREACHED(); }
+  void ShowSyncSettings() override { NOTREACHED_IN_MIGRATION(); }
 
-  void SwitchToProfile(Profile*) override { NOTREACHED(); }
+  void SwitchToProfile(Profile*) override { NOTREACHED_IN_MIGRATION(); }
 };
 
 }  // namespace

@@ -5,9 +5,10 @@
 #ifndef PRINTING_EMF_WIN_H_
 #define PRINTING_EMF_WIN_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <memory>
 #include <vector>
@@ -100,6 +101,22 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
 
   // Valid when generating EMF data through a virtual HDC.
   HDC hdc_;
+};
+
+// Emf subclass that knows how to play back PostScript data embedded as EMF
+// comment records.
+class COMPONENT_EXPORT(PRINTING_METAFILE) PostScriptMetaFile : public Emf {
+ public:
+  PostScriptMetaFile();
+
+  PostScriptMetaFile(const PostScriptMetaFile&) = delete;
+  PostScriptMetaFile& operator=(const PostScriptMetaFile&) = delete;
+
+  ~PostScriptMetaFile() override;
+
+  // `Emf` overrides:
+  mojom::MetafileDataType GetDataType() const override;
+  bool SafePlayback(HDC hdc) const override;
 };
 
 struct Emf::EnumerationContext {

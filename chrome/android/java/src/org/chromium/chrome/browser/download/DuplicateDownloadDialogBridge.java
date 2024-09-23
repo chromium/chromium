@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -35,6 +36,7 @@ public class DuplicateDownloadDialogBridge {
 
     /**
      * Called to show a dialog to confirm user wants to download a duplicate file.
+     *
      * @param windowAndroid Window to show the dialog.
      * @param filePath Path of the download file.
      * @param pageUrl URL of the page, empty for file downloads.
@@ -46,8 +48,8 @@ public class DuplicateDownloadDialogBridge {
     @CalledByNative
     public void showDialog(
             WindowAndroid windowAndroid,
-            String filePath,
-            String pageUrl,
+            @JniType("std::string") String filePath,
+            @JniType("std::string") String pageUrl,
             long totalBytes,
             boolean duplicateExists,
             OTRProfileID otrProfileID,

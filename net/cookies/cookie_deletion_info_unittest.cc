@@ -498,10 +498,10 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
 // the IncludeForRequestURL call uses CookieOptions::MakeAllInclusive).
 TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   // Cookie with unspecified SameSite.
-  auto cookie = CanonicalCookie::Create(GURL("https://www.example.com"),
-                                        "cookie=1", base::Time::Now(),
-                                        /*server_time=*/std::nullopt,
-                                        /*cookie_partition_key=*/std::nullopt);
+  auto cookie = CanonicalCookie::CreateForTesting(
+      GURL("https://www.example.com"), "cookie=1", base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt);
 
   CookieDeletionInfo delete_info;
   delete_info.url = GURL("https://www.example.com/path");
@@ -562,7 +562,7 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.desc);
-    auto cookie = CanonicalCookie::Create(
+    auto cookie = CanonicalCookie::CreateForTesting(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
         /*server_time=*/std::nullopt, test_case.cookie_partition_key);
@@ -593,18 +593,22 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
        CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")), true,
        true},
       {"Nonced partitioned cookie when unpartitioned not excluded",
-       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
-                                             base::UnguessableToken::Create()),
+       CookiePartitionKey::FromURLForTesting(
+           GURL("https://foo.com"),
+           CookiePartitionKey::AncestorChainBit::kCrossSite,
+           base::UnguessableToken::Create()),
        false, true},
       {"Nonced partitioned cookie when unpartitioned excluded",
-       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
-                                             base::UnguessableToken::Create()),
+       CookiePartitionKey::FromURLForTesting(
+           GURL("https://foo.com"),
+           CookiePartitionKey::AncestorChainBit::kCrossSite,
+           base::UnguessableToken::Create()),
        true, true},
   };
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.desc);
-    auto cookie = CanonicalCookie::Create(
+    auto cookie = CanonicalCookie::CreateForTesting(
         GURL("https://www.example.com"),
         "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
         /*server_time=*/std::nullopt, test_case.cookie_partition_key);

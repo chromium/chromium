@@ -17,10 +17,10 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -54,7 +54,7 @@
 #endif
 
 // Fuchsia defines TCP_INFO, but it's not implemented.
-// TODO(crbug.com/758294): Enable TCP_INFO on Fuchsia once it's implemented
+// TODO(crbug.com/42050612): Enable TCP_INFO on Fuchsia once it's implemented
 // there (see NET-160).
 #if defined(TCP_INFO) && !BUILDFLAG(IS_FUCHSIA)
 #define HAVE_TCP_INFO
@@ -142,6 +142,23 @@ base::TimeDelta GetTransportRtt(SocketDescriptor fd) {
 }  // namespace
 
 //-----------------------------------------------------------------------------
+
+// static
+std::unique_ptr<TCPSocketPosix> TCPSocketPosix::Create(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLog* net_log,
+    const NetLogSource& source) {
+  return base::WrapUnique(new TCPSocketPosix(
+      std::move(socket_performance_watcher), net_log, source));
+}
+
+// static
+std::unique_ptr<TCPSocketPosix> TCPSocketPosix::Create(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLogWithSource net_log_source) {
+  return base::WrapUnique(new TCPSocketPosix(
+      std::move(socket_performance_watcher), net_log_source));
+}
 
 TCPSocketPosix::TCPSocketPosix(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -473,7 +490,7 @@ void TCPSocketPosix::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -482,7 +499,7 @@ void TCPSocketPosix::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -541,8 +558,8 @@ int TCPSocketPosix::BuildTcpSocketPosix(
     return ERR_ADDRESS_INVALID;
   }
 
-  *tcp_socket = std::make_unique<TCPSocketPosix>(nullptr, net_log_.net_log(),
-                                                 net_log_.source());
+  *tcp_socket =
+      TCPSocketPosix::Create(nullptr, net_log_.net_log(), net_log_.source());
   (*tcp_socket)->socket_ = std::move(accept_socket_);
   return OK;
 }

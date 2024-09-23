@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_response_headers.h"
@@ -101,9 +102,10 @@ class FileWriterDelegateTest : public PlatformTest {
 
   int64_t usage() {
     return file_system_context_->GetQuotaUtil(kFileSystemType)
-        ->GetStorageKeyUsageOnFileTaskRunner(
+        ->GetBucketUsageOnFileTaskRunner(
             file_system_context_.get(),
-            blink::StorageKey::CreateFromStringForTesting(kOrigin),
+            BucketLocator::ForDefaultBucket(
+                blink::StorageKey::CreateFromStringForTesting(kOrigin)),
             kFileSystemType);
   }
 

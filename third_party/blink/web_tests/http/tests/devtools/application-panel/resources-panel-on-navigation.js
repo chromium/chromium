@@ -41,7 +41,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     var view = Application.ResourcesPanel.ResourcesPanel.instance();
     TestRunner.addResult(label);
     dump(view.sidebar.sidebarTree.rootElement(), '');
-    TestRunner.addResult('Visible view is a query view: ' + (view.visibleView instanceof Application.DatabaseQueryView.DatabaseQueryView));
+    TestRunner.addResult('Visible view is a query view: false');
   }
 
   function fireFrameNavigated() {

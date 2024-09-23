@@ -24,14 +24,15 @@ class BluetoothLocalGattCharacteristicFloss;
 
 // The BluetoothLocalGattServiceFloss class implements BluetoothGattService
 // for local GATT services for platforms that use Floss.
-class BluetoothLocalGattServiceFloss
+class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattServiceFloss
     : public BluetoothGattServiceFloss,
       public device::BluetoothLocalGattService {
  public:
   static base::WeakPtr<BluetoothLocalGattServiceFloss> Create(
       BluetoothAdapterFloss* adapter,
       const device::BluetoothUUID& uuid,
-      bool is_primary);
+      bool is_primary,
+      device::BluetoothLocalGattService::Delegate* delegate);
 
   BluetoothLocalGattServiceFloss(const BluetoothLocalGattServiceFloss&) =
       delete;
@@ -54,6 +55,10 @@ class BluetoothLocalGattServiceFloss
   device::BluetoothLocalGattCharacteristic* GetCharacteristic(
       const std::string& identifier) override;
   std::string GetIdentifier() const override;
+  base::WeakPtr<device::BluetoothLocalGattCharacteristic> CreateCharacteristic(
+      const device::BluetoothUUID& uuid,
+      device::BluetoothGattCharacteristic::Properties properties,
+      device::BluetoothGattCharacteristic::Permissions permissions) override;
 
   // BluetoothGattServiceFloss overrides.
   void GattServerServiceAdded(GattStatus status, GattService service) override;
@@ -67,10 +72,13 @@ class BluetoothLocalGattServiceFloss
  private:
   friend class BluetoothLocalGattCharacteristicFloss;
   friend class BluetoothLocalGattDescriptorFloss;
+  friend class BluetoothLocalGattServiceFlossTest;
 
-  BluetoothLocalGattServiceFloss(BluetoothAdapterFloss* adapter,
-                                 const device::BluetoothUUID& uuid,
-                                 bool is_primary);
+  BluetoothLocalGattServiceFloss(
+      BluetoothAdapterFloss* adapter,
+      const device::BluetoothUUID& uuid,
+      bool is_primary,
+      device::BluetoothLocalGattService::Delegate* delegate);
 
   // Called by dbus:: on unsuccessful completion of a request to register a
   // local service.
@@ -104,13 +112,16 @@ class BluetoothLocalGattServiceFloss
 
   // Client and Floss-assigned instance ids.
   int32_t client_instance_id_;
-  int32_t floss_instance_id_;
+  int32_t floss_instance_id_ = -1;
 
   // Manage callbacks.
   std::pair<base::OnceClosure, device::BluetoothGattService::ErrorCallback>
       register_callbacks_;
   std::pair<base::OnceClosure, device::BluetoothGattService::ErrorCallback>
       unregister_callbacks_;
+
+  // Delegate to send event notifications.
+  raw_ptr<device::BluetoothLocalGattService::Delegate> delegate_;
 
   // Services included by this service.
   std::vector<std::unique_ptr<BluetoothLocalGattServiceFloss>>

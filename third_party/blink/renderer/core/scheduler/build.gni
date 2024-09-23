@@ -1,0 +1,45 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+
+blink_core_sources_scheduler = [
+  "dom_scheduler.cc",
+  "dom_scheduler.h",
+  "dom_task.cc",
+  "dom_task.h",
+  "dom_task_continuation.cc",
+  "dom_task_continuation.h",
+  "dom_task_controller.cc",
+  "dom_task_controller.h",
+  "dom_task_signal.cc",
+  "dom_task_signal.h",
+  "dom_timer.cc",
+  "dom_timer.h",
+  "idle_deadline.cc",
+  "idle_deadline.h",
+  "scheduled_action.cc",
+  "scheduled_action.h",
+  "script_wrappable_task_state.cc",
+  "script_wrappable_task_state.h",
+  "scripted_idle_task_controller.cc",
+  "scripted_idle_task_controller.h",
+  "task_attribution_info_impl.cc",
+  "task_attribution_info_impl.h",
+  "task_attribution_tracker_impl.cc",
+  "task_attribution_tracker_impl.h",
+  "task_priority_change_event.cc",
+  "task_priority_change_event.h",
+  "web_scheduling_task_state.cc",
+  "web_scheduling_task_state.h",
+  "window_idle_tasks.cc",
+  "window_idle_tasks.h",
+]
+
+blink_core_tests_scheduler = [
+  "dom_scheduler_test.cc",
+  "dom_timer_test.cc",
+  "idle_deadline_test.cc",
+  "scripted_idle_task_controller_test.cc",
+]

@@ -217,6 +217,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // Paints first frame and sets `painted_first_frame_` to true if
   // `painted_first_frame_` is false.
   void PaintFirstFrame();
+  void PaintFirstFrame_Locked();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

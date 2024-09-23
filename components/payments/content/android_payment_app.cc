@@ -88,7 +88,7 @@ bool AndroidPaymentApp::CanPreselect() const {
 }
 
 std::u16string AndroidPaymentApp::GetMissingInfoLabel() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -152,7 +152,7 @@ bool AndroidPaymentApp::IsWaitingForPaymentDetailsUpdate() const {
 
 void AndroidPaymentApp::UpdateWith(
     mojom::PaymentRequestDetailsUpdatePtr details_update) {
-  // TODO(crbug.com/1022512): Support payment method, shipping address, and
+  // TODO(crbug.com/40106647): Support payment method, shipping address, and
   // shipping option change events.
 }
 
@@ -177,7 +177,7 @@ bool AndroidPaymentApp::IsPreferred() const {
   // of Chrome with a TWA specific payment method, so this app should be
   // preferred.
 #if !BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(1U, GetAppMethodNames().size());
   DCHECK_EQ(methods::kGooglePlayBilling, *GetAppMethodNames().begin());

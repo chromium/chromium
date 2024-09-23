@@ -867,7 +867,7 @@ bool FakeDMServer::FindKey(const base::Value::Dict& dict,
       return true;
     }
     default: {
-      NOTREACHED_NORETURN() << "Unsupported type for client file key";
+      NOTREACHED() << "Unsupported type for client file key";
     }
   }
 }

@@ -41,7 +41,7 @@ source_set("utils") {
     ":fresnel_service_proto",
     "//base",
     "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
-    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/system",
     "//components/prefs:prefs",
     "//components/version_info",
@@ -159,7 +159,7 @@ source_set("unit_tests") {
   ]
 
   data = [
-    # TODO(crbug/1393862): Script should binarypb from textpb.
+    # TODO(crbug.com/40248354): Script should binarypb from textpb.
     "//chromeos/ash/components/report/device_metrics/testing/preserved_file_test_data.binarypb",
   ]
 }

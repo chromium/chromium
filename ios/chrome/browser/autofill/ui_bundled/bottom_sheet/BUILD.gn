@@ -1,0 +1,324 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":bottom_sheet_unit_tests",
+    ":virtual_card_enrollment_bottom_sheet_coordinator_unittest",
+    ":virtual_card_enrollment_bottom_sheet_mediator_unittest",
+  ]
+}
+
+group("eg2_tests") {
+  testonly = true
+  deps = [
+    ":bottom_sheet_egtest",
+    ":virtual_card_enrollment_bottom_sheet_egtest",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "bottom_sheet_constants.h",
+    "bottom_sheet_constants.mm",
+  ]
+}
+
+source_set("bottom_sheet") {
+  sources = [
+    "autofill_edit_profile_bottom_sheet_coordinator.h",
+    "autofill_edit_profile_bottom_sheet_coordinator.mm",
+    "payments_suggestion_bottom_sheet_coordinator.h",
+    "payments_suggestion_bottom_sheet_coordinator.mm",
+    "payments_suggestion_bottom_sheet_exit_reason.h",
+    "payments_suggestion_bottom_sheet_mediator.h",
+    "payments_suggestion_bottom_sheet_mediator.mm",
+  ]
+  deps = [
+    ":bottom_sheet_ui",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled:constants",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+}
+
+source_set("bottom_sheet_ui") {
+  sources = [
+    "autofill_edit_profile_bottom_sheet_table_view_controller.h",
+    "autofill_edit_profile_bottom_sheet_table_view_controller.mm",
+    "payments_suggestion_bottom_sheet_consumer.h",
+    "payments_suggestion_bottom_sheet_delegate.h",
+    "payments_suggestion_bottom_sheet_handler.h",
+    "payments_suggestion_bottom_sheet_view_controller.h",
+    "payments_suggestion_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//build:branding_buildflags",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/strings:components_strings_grit",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base:base",
+    "//url",
+  ]
+}
+
+source_set("bottom_sheet_unit_tests") {
+  testonly = true
+  sources = [
+    "payments_suggestion_bottom_sheet_coordinator_unittest.mm",
+    "payments_suggestion_bottom_sheet_mediator_unittest.mm",
+  ]
+  deps = [
+    ":bottom_sheet",
+    ":bottom_sheet_ui",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/form_util",
+    "//components/prefs",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("bottom_sheet_egtest") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+# Virtual Card Enrollment Bottom Sheet related classes are below:
+
+source_set("virtual_card_enrollment_bottom_sheet_coordinator") {
+  sources = [
+    "virtual_card_enrollment_bottom_sheet_coordinator.h",
+    "virtual_card_enrollment_bottom_sheet_coordinator.mm",
+  ]
+  deps = [
+    ":virtual_card_enrollment_bottom_sheet_consumer",
+    ":virtual_card_enrollment_bottom_sheet_delegate",
+    ":virtual_card_enrollment_bottom_sheet_mediator",
+    ":virtual_card_enrollment_bottom_sheet_view_controller",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public:public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_coordinator_unittest") {
+  testonly = true
+  sources = [ "virtual_card_enrollment_bottom_sheet_coordinator_unittest.mm" ]
+  deps = [
+    ":virtual_card_enrollment_bottom_sheet_consumer",
+    ":virtual_card_enrollment_bottom_sheet_coordinator",
+    ":virtual_card_enrollment_bottom_sheet_delegate",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_mediator") {
+  sources = [
+    "virtual_card_enrollment_bottom_sheet_mediator.h",
+    "virtual_card_enrollment_bottom_sheet_mediator.mm",
+  ]
+  deps = [
+    ":virtual_card_enrollment_bottom_sheet_consumer",
+    ":virtual_card_enrollment_bottom_sheet_data",
+    ":virtual_card_enrollment_bottom_sheet_mutator",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
+    "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_mutator") {
+  sources = [ "virtual_card_enrollment_bottom_sheet_mutator.h" ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_data") {
+  sources = [
+    "virtual_card_enrollment_bottom_sheet_data.h",
+    "virtual_card_enrollment_bottom_sheet_data.mm",
+  ]
+  deps = [
+    ":bottom_sheet",
+    "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/autofill/model/message",
+  ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_consumer") {
+  sources = [ "virtual_card_enrollment_bottom_sheet_consumer.h" ]
+  deps = [
+    ":virtual_card_enrollment_bottom_sheet_data",
+    "//components/autofill/core/browser",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_mediator_unittest") {
+  testonly = true
+  sources = [ "virtual_card_enrollment_bottom_sheet_mediator_unittest.mm" ]
+  deps = [
+    ":virtual_card_enrollment_bottom_sheet_consumer",
+    ":virtual_card_enrollment_bottom_sheet_mediator",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",  # This test depends on
+                                           # autofill::VirtualCardEnrollUiModel.
+    "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
+  sources = [
+    "virtual_card_enrollment_bottom_sheet_view_controller.h",
+    "virtual_card_enrollment_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":bottom_sheet",
+    ":virtual_card_enrollment_bottom_sheet_consumer",
+    ":virtual_card_enrollment_bottom_sheet_delegate",
+    ":virtual_card_enrollment_bottom_sheet_mutator",
+    "//build:branding_buildflags",
+    "//components/autofill/core/browser",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet/resources",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/util:util",
+    "//url:url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_delegate") {
+  sources = [ "virtual_card_enrollment_bottom_sheet_delegate.h" ]
+  deps = []
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_egtest") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "virtual_card_enrollment_bottom_sheet_egtest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser:autofill_test_bundle_data",
+    "//components/strings:strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/authentication:egtest_util",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

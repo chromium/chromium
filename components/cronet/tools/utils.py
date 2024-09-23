@@ -11,12 +11,15 @@ GN and Ninja commands.
 import subprocess
 import os
 import re
+import pathlib
+import difflib
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
+_GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
 def run(command, **kwargs):
@@ -43,7 +46,7 @@ def run_shell(command, extra_options=''):
   return os.system(command)
 
 
-def gn(out_dir, gn_args, gn_extra=None):
+def gn(out_dir, gn_args, gn_extra=None, **kwargs):
   """ Executes `gn gen`.
 
   Runs `gn gen |out_dir| |gn_args + gn_extra|` which will generate
@@ -61,20 +64,51 @@ def gn(out_dir, gn_args, gn_extra=None):
   cmd = [_GN_PATH, 'gen', out_dir, '--args=%s' % gn_args]
   if gn_extra:
     cmd += gn_extra
-  return run(cmd)
+  return run(cmd, **kwargs)
+
+
+def compare_text_and_generate_diff(generated_text, golden_text,
+                                   golden_file_path):
+  """
+  Compares the generated text with the golden text.
+
+  returns a diff that can be applied with `patch` if exists.
+  """
+  golden_lines = [line.rstrip() for line in golden_text.splitlines()]
+  generated_lines = [line.rstrip() for line in generated_text.splitlines()]
+  if golden_lines == generated_lines:
+    return None
+
+  expected_path = os.path.relpath(golden_file_path, REPOSITORY_ROOT)
+
+  diff = difflib.unified_diff(
+      golden_lines,
+      generated_lines,
+      fromfile=os.path.join('before', expected_path),
+      tofile=os.path.join('after', expected_path),
+      n=0,
+      lineterm='',
+  )
+
+  return '\n'.join(diff)
+
+
+def read_file(path):
+  """Reads a file as a string"""
+  return pathlib.Path(path).read_text()
 
 
 def build(out_dir, build_target, extra_options=None):
-  """Runs `ninja build`.
+  """Runs `autoninja build`.
 
-  Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
+  Runs `autoninja -C |out_dir| |build_target| |extra_options|` which will build
   the target |build_target| for the GN configuration living under |out_dir|.
   This is done locally on the same chromium checkout.
 
   Returns:
-    Exit code of running `ninja ..` command with the argument provided.
+    Exit code of running `autoninja ..` command with the argument provided.
   """
-  cmd = ['ninja', '-C', out_dir, build_target] + _get_ninja_jobs_options()
+  cmd = ['autoninja', '-C', out_dir, build_target]
   if extra_options:
     cmd += extra_options
   return run(cmd)
@@ -111,22 +145,19 @@ def get_android_gn_args(is_release, target_cpu):
   gn_args = subprocess.check_output(
       ['python3', _MB_PATH, 'lookup', '-m', group_name, '-b',
        builder_name]).decode('utf-8').strip()
-  return _filter_gn_args(gn_args.split("\n"))
+  return filter_gn_args(gn_args.split("\n"), [])
 
 
-def _use_goma():
-  goma_dir = (subprocess.check_output(['goma_ctl',
-                                       'goma_dir']).decode('utf-8').strip())
-  result = run(['goma_ctl', 'ensure_start'])
-  if not result:
-    return 'use_goma=true goma_dir="' + goma_dir + '" '
-  return ''
+def get_path_from_gn_label(gn_label: str) -> str:
+  """Returns the path part from a GN Label
 
-
-def _get_ninja_jobs_options():
-  if _use_goma():
-    return ["-j1000"]
-  return []
+  GN label consist of two parts, path and target_name, this will
+  remove the target name and return the path or throw an error
+  if it can't remove the target_name or if it doesn't exist.
+  """
+  if ":" not in gn_label:
+    raise ValueError(f"Provided gn label {gn_label} is not a proper label")
+  return gn_label[:gn_label.find(":")]
 
 
 def _map_config_to_android_builder(is_release, target_cpu):
@@ -148,18 +179,24 @@ def _map_config_to_android_builder(is_release, target_cpu):
   return builder_name
 
 
-def _filter_gn_args(gn_args):
-  gn_arg_matcher = re.compile("^.*=.*$")
-  # `mb_py lookup` prints out a bunch of metadata lines which we don't
-  # care about, we only want the GN args.
-  assert len(gn_args) > 4
-  actual_gn_args = gn_args[1:-3]
-  for line in gn_args:
-    if line in actual_gn_args:
-      assert gn_arg_matcher.match(line), \
-             f'Not dropping {line}, which does not look like a GN arg'
-    else:
-      assert not gn_arg_matcher.match(line), \
-             f'Dropping {line}, which looks like a GN arg'
+def _should_remove_arg(arg, keys):
+  """An arg is removed if its key appear in the list of |keys|"""
+  return arg.split("=")[0].strip() in keys
 
-  return list(filter(lambda string: "remoteexec" not in string, actual_gn_args))
+
+def filter_gn_args(gn_args, keys_to_remove):
+  """Returns a list of filtered GN args.
+
+  (1) GN arg's returned must match the regex |_GN_ARG_MATCHER|.
+  (2) GN arg's key must not be in |keys_to_remove|.
+
+  Args:
+    gn_args: list of GN args.
+    keys_to_remove: List of string that will be removed from gn_args.
+  """
+  filtered_args = []
+  for arg in gn_args:
+    if _GN_ARG_MATCHER.match(arg) and not _should_remove_arg(
+        arg, keys_to_remove):
+      filtered_args.append(arg)
+  return filtered_args

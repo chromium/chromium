@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+// This test suite verifies that the following use counters work correctly:
+// - kDOMClobberedShadowedFormPropertyAccessed
+// - kDOMClobberedNotShadowedFormPropertyAccessed
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+
+    const form = document.createElement("form");
+    const input = document.createElement("input");
+    input.name = "someRandomName"
+    form.appendChild(input);
+
+    // Check if the property is actually clobbered, and this should also
+    // trigger the use counter.
+    assert_equals(form.someRandomName, input);
+
+    assert_true(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+
+
+}, 'Non-shadowed clobbered property in form should be use-counted');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+
+    const form = document.createElement("form");
+    const input = document.createElement("input");
+    input.name = "nodeName"
+    form.appendChild(input);
+
+    // Check if the property is actually clobbered, and this should also
+    // trigger the use counter.
+    assert_equals(form.nodeName, input);
+
+    assert_false(internals.isUseCounted(document,WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+    assert_true(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+}, 'Shadowed clobbered property should be use-counted');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+
+    const form = document.createElement("form");
+    assert_equals(form.somethingRandom, undefined);
+
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedFormPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedFormPropertyAccessed));
+}, 'Non-existing property should not be use-counted');
+
+
+</script>

@@ -4,11 +4,18 @@
 //
 // This file defines the methods useful for uninstalling Chrome.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/setup/uninstall.h"
 
+#include <windows.h>
+
+#include <shlobj.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <initializer_list>
 #include <memory>
@@ -23,6 +30,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
+#include "base/process/launch.h"
 #include "base/process/process_iterator.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -188,7 +196,7 @@ void RetargetUserShortcutsWithArgs(const InstallerState& installer_state,
                                    const base::FilePath& old_target_exe,
                                    const base::FilePath& new_target_exe) {
   if (installer_state.system_install()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   ShellUtil::ShellChange install_level = ShellUtil::CURRENT_USER;
@@ -606,7 +614,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                                     browser_entry_suffix);
   DeleteProgIdFromSoftwareClasses(root, chrome_prog_id);
 
-  // TODO(https://crbug.com/414141): Delete ChromePDF ProgId once support for
+  // TODO(crbug.com/40384442): Delete ChromePDF ProgId once support for
   // PDF docs has landed.
 
   // Delete Software\Classes\CLSID\|toast_activator_clsid|.
@@ -779,6 +787,41 @@ void UninstallFirewallRules(const base::FilePath& chrome_exe) {
     manager->RemoveFirewallRules();
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Run os_update_handler.exe with --uninstall switch, and system-level, if
+// install is a system install. Waits for os_update_handler.exe process to exit
+// so that the exe file can be deleted. `installer_dir` is the setup.exe
+// location and os_update_handler.exe is in its parent dir.
+void UninstallOsUpdateHandler(const base::FilePath& installer_dir,
+                              const InstallerState& installer_state) {
+  const base::FilePath os_update_handler_exe =
+      installer_dir.DirName().Append(installer::kOsUpdateHandlerExe);
+  constexpr base::TimeDelta kOsUpdateUninstallTimeout = base::Seconds(5);
+  base::CommandLine uninstall_cmd(os_update_handler_exe);
+  uninstall_cmd.AppendSwitch(installer::switches::kUninstall);
+  if (installer_state.system_install()) {
+    uninstall_cmd.AppendSwitch(installer::switches::kSystemLevel);
+  }
+  const std::wstring cmd_string = uninstall_cmd.GetCommandLineString();
+  VLOG(1) << "Launching: " << cmd_string;
+  const base::Process process = base::LaunchProcess(uninstall_cmd, {});
+  int exit_code = 0;
+  if (!process.IsValid()) {
+    PLOG(ERROR) << "Failed to launch (" << cmd_string << ")";
+  } else if (!process.WaitForExitWithTimeout(kOsUpdateUninstallTimeout,
+                                             &exit_code)) {
+    // The GetExitCodeProcess failed or timed-out.
+    LOG(ERROR) << "Command (" << cmd_string << ") is taking more than "
+               << kOsUpdateUninstallTimeout.InMilliseconds()
+               << " milliseconds to complete. Terminating it.";
+    process.Terminate(0, /*wait=*/true);
+  } else if (exit_code != 0) {
+    LOG(ERROR) << "Command (" << cmd_string << ") exited with code "
+               << exit_code;
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 InstallStatus UninstallProduct(const ModifyParams& modify_params,
                                bool remove_all,
                                bool force_uninstall,
@@ -903,6 +946,10 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // Remove Omaha product key.
   DeleteRegistryKey(reg_root, install_static::GetClientsKeyPath(),
                     KEY_WOW64_32KEY);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UninstallOsUpdateHandler(setup_exe.DirName(), installer_state);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Also try to delete the MSI value in the ClientState key (it might not be
   // there). This is due to a Google Update behaviour where an uninstall and a
@@ -1116,8 +1163,10 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
 
   base::FilePath tmp_dir;
   base::FilePath temp_file;
-  if (!base::PathService::Get(base::DIR_TEMP, &tmp_dir)) {
-    NOTREACHED();
+  if (!(::IsUserAnAdmin()
+            ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &tmp_dir)
+            : base::PathService::Get(base::DIR_TEMP, &tmp_dir))) {
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

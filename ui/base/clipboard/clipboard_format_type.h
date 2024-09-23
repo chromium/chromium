@@ -56,9 +56,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& SvgType();
   static const ClipboardFormatType& RtfType();
   static const ClipboardFormatType& PngType();
-  // TODO(crbug.com/1201018): Remove this type.
+  // TODO(crbug.com/40178509): Remove this type.
   static const ClipboardFormatType& BitmapType();
-  static const ClipboardFormatType& WebCustomDataType();
+  // Chromium-only type for custom formats copied via DataTransfer API.
+  // See https://w3c.github.io/clipboard-apis/#clipboard-events-and-interfaces.
+  static const ClipboardFormatType& DataTransferCustomType();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS custom type to sync clipboard source metadata between Ash and
@@ -84,6 +86,14 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& FilenameType();
   static const ClipboardFormatType& IDListType();
   static const ClipboardFormatType& MozUrlType();
+
+  // Type only used by Chromium to track the source URL of clipboard data.
+  static const ClipboardFormatType& InternalSourceUrlType();
+
+  // Prevents clipboard data from being included in the clipboard history.
+  static const ClipboardFormatType& ClipboardHistoryType();
+  // Prevents clipboard data from being included in the cloud clipboard.
+  static const ClipboardFormatType& UploadCloudClipboardType();
 #endif
 
   // For custom formats, individual types are added to the clipboard with a type

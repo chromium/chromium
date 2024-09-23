@@ -4,6 +4,7 @@
 
 #include "content/browser/code_cache/simple_lru_cache.h"
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/common/features.h"
@@ -25,11 +26,6 @@ class SimpleLruCacheTest : public testing::TestWithParam<bool> {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-std::vector<uint8_t> ToVector(const mojo_base::BigBuffer& buffer) {
-  return std::vector<uint8_t>(buffer.byte_span().begin(),
-                              buffer.byte_span().end());
-}
 
 TEST_P(SimpleLruCacheTest, Empty) {
   const std::string kKey = "hello";
@@ -101,9 +97,9 @@ TEST_P(SimpleLruCacheTest, PutAndGet) {
   EXPECT_EQ(result4->response_time, kResponseTime4);
 
   if (base::FeatureList::IsEnabled(features::kInMemoryCodeCache)) {
-    EXPECT_EQ(ToVector(result1->data), kData2);
-    EXPECT_EQ(ToVector(result2->data), kData3);
-    EXPECT_EQ(ToVector(result4->data), kData4);
+    EXPECT_EQ(base::ToVector(result1->data), kData2);
+    EXPECT_EQ(base::ToVector(result2->data), kData3);
+    EXPECT_EQ(base::ToVector(result4->data), kData4);
   } else {
     EXPECT_EQ(result1->data.size(), 0u);
     EXPECT_EQ(result2->data.size(), 0u);

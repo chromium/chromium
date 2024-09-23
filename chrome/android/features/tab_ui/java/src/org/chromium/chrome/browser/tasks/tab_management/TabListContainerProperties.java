@@ -4,23 +4,23 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.view.View;
+
+import androidx.core.util.Function;
+import androidx.core.util.Pair;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class TabListContainerProperties {
-    public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
-
     public static final PropertyModel.WritableBooleanPropertyKey BLOCK_TOUCH_INPUT =
             new PropertyModel.WritableBooleanPropertyKey();
-
-    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
-            new PropertyModel.WritableBooleanPropertyKey();
-
-    public static final PropertyModel.WritableObjectPropertyKey<
-                    TabListRecyclerView.VisibilityListener>
-            VISIBILITY_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.ReadableObjectPropertyKey<BrowserControlsStateProvider>
             BROWSER_CONTROLS_STATE_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
@@ -31,21 +31,6 @@ class TabListContainerProperties {
      */
     public static final PropertyModel.WritableObjectPropertyKey<Integer> INITIAL_SCROLL_INDEX =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-
-    public static final PropertyModel.WritableBooleanPropertyKey ANIMATE_VISIBILITY_CHANGES =
-            new PropertyModel.WritableBooleanPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
-            new PropertyModel.WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey BOTTOM_CONTROLS_HEIGHT =
-            new PropertyModel.WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey SHADOW_TOP_OFFSET =
-            new PropertyModel.WritableIntPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
-            new PropertyModel.WritableIntPropertyKey();
 
     /** Same as {@link TabListCoordinator.TabListMode}. */
     public static final PropertyModel.WritableIntPropertyKey MODE =
@@ -60,31 +45,33 @@ class TabListContainerProperties {
             FOCUS_TAB_INDEX_FOR_ACCESSIBILITY =
                     new PropertyModel.WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {
-                IS_VISIBLE,
-                BLOCK_TOUCH_INPUT,
-                IS_INCOGNITO,
-                VISIBILITY_LISTENER,
-                BROWSER_CONTROLS_STATE_PROVIDER,
-                INITIAL_SCROLL_INDEX,
-                ANIMATE_VISIBILITY_CHANGES,
-                TOP_MARGIN,
-                BOTTOM_CONTROLS_HEIGHT,
-                SHADOW_TOP_OFFSET,
-                BOTTOM_PADDING,
-                MODE,
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY
-            };
+    /** Sets the bottom padding for the recycler view. */
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
+            new PropertyModel.WritableIntPropertyKey();
+
+    /** Get root view for a given recycler view index. Can be null. */
+    public static final ReadableObjectPropertyKey<Callback<Function<Integer, View>>>
+            FETCH_VIEW_BY_INDEX_CALLBACK = new ReadableObjectPropertyKey<>();
+
+    /** Inclusive start and stop indexes for fully visible items. */
+    public static final ReadableObjectPropertyKey<Callback<Supplier<Pair<Integer, Integer>>>>
+            GET_VISIBLE_RANGE_CALLBACK = new ReadableObjectPropertyKey<>();
+
+    /** Whether the recycler view is currently being scrolled. */
+    public static final ReadableObjectPropertyKey<Callback<ObservableSupplier<Boolean>>>
+            IS_SCROLLING_SUPPLIER_CALLBACK = new WritableObjectPropertyKey<>();
 
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
-    public static final PropertyKey[] PANE_KEYS =
+    public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BLOCK_TOUCH_INPUT,
-                IS_INCOGNITO,
                 BROWSER_CONTROLS_STATE_PROVIDER,
                 INITIAL_SCROLL_INDEX,
                 MODE,
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+                BOTTOM_PADDING,
+                FETCH_VIEW_BY_INDEX_CALLBACK,
+                GET_VISIBLE_RANGE_CALLBACK,
+                IS_SCROLLING_SUPPLIER_CALLBACK,
             };
 }

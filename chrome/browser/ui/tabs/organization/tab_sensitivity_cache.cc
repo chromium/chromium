@@ -4,18 +4,18 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 
-#include "base/containers/cxx20_erase.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 
 TabSensitivityCache::TabSensitivityCache(Profile* profile) : profile_(profile) {
-  optimization_guide::PageContentAnnotationsService* const annotations_service =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile);
+  page_content_annotations::PageContentAnnotationsService* const
+      annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (annotations_service) {
     annotations_service->AddObserver(
-        optimization_guide::AnnotationType::kContentVisibility, this);
+        page_content_annotations::AnnotationType::kContentVisibility, this);
   }
 }
 
@@ -32,9 +32,9 @@ std::optional<float> TabSensitivityCache::GetScore(const GURL& url) const {
 
 void TabSensitivityCache::OnPageContentAnnotated(
     const GURL& url,
-    const optimization_guide::PageContentAnnotationsResult& result) {
+    const page_content_annotations::PageContentAnnotationsResult& result) {
   CHECK(result.GetType() ==
-        optimization_guide::AnnotationType::kContentVisibility);
+        page_content_annotations::AnnotationType::kContentVisibility);
 
   // Invert the visibility score to get a sensitivity score.
   sensitivy_scores_[url] = 1.0 - result.GetContentVisibilityScore();

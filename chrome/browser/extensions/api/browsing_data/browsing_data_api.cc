@@ -121,7 +121,7 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   // extension data.
   base::Value::Dict origin_types;
   origin_types.Set(extension_browsing_data_api_constants::kUnprotectedWebKey,
-                   isDataTypeSelected(BrowsingDataType::COOKIES, tab));
+                   isDataTypeSelected(BrowsingDataType::SITE_DATA, tab));
   origin_types.Set(extension_browsing_data_api_constants::kProtectedWebKey,
                    isDataTypeSelected(BrowsingDataType::HOSTED_APPS_DATA, tab));
   origin_types.Set(extension_browsing_data_api_constants::kExtensionsKey,
@@ -149,7 +149,7 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   base::Value::Dict permitted;
 
   bool delete_site_data =
-      isDataTypeSelected(BrowsingDataType::COOKIES, tab) ||
+      isDataTypeSelected(BrowsingDataType::SITE_DATA, tab) ||
       isDataTypeSelected(BrowsingDataType::HOSTED_APPS_DATA, tab);
 
   SetDetails(&selected, &permitted,
@@ -270,6 +270,8 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
     if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    EXTENSION_FUNCTION_VALIDATE(!result->empty());
+
     origins_ = std::move(*result);
   } else if (exclude_origins) {
     OriginParsingResult result = ParseOrigins(*exclude_origins);

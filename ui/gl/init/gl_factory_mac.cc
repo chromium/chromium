@@ -45,15 +45,19 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       return InitializeGLContext(new GLContextEGL(share_group),
                                  compatible_surface, attribs);
     case kGLImplementationMockGL:
-      return new GLContextStub(share_group);
     case kGLImplementationStubGL: {
       scoped_refptr<GLContextStub> stub_context =
-          new GLContextStub(share_group);
-      stub_context->SetUseStubApi(true);
+          base::MakeRefCounted<GLContextStub>(share_group);
+      if (GetGLImplementation() == kGLImplementationStubGL) {
+        stub_context->SetUseStubApi(true);
+      }
+      // The stub ctx needs to be initialized so that the gl::GLContext can
+      // store the |compatible_surface|.
+      stub_context->Initialize(compatible_surface, attribs);
       return stub_context;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -70,7 +74,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -92,7 +96,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

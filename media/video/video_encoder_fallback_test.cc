@@ -46,7 +46,11 @@ class VideoEncoderFallbackTest : public testing::Test {
 
   void RunLoop() { task_environment_.RunUntilIdle(); }
 
-  std::unique_ptr<VideoEncoder> CreateSecondaryEncoder() {
+  media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  CreateSecondaryEncoder() {
+    if (!secondary_video_encoder_holder_) {
+      return EncoderStatus::Codes::kEncoderInitializationError;
+    }
     return std::unique_ptr<VideoEncoder>(
         secondary_video_encoder_holder_.release());
   }

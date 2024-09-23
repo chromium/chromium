@@ -5,11 +5,11 @@ BitInput::BitInput(bool AllocBuffer)
   ExternalBuffer=false;
   if (AllocBuffer)
   {
-    // getbits32 attempts to read data from InAddr, ... InAddr+3 positions.
-    // So let's allocate 3 additional bytes for situation, when we need to
+    // getbits*() attempt to read data from InAddr, ... InAddr+8 positions.
+    // So let's allocate 8 additional bytes for situation, when we need to
     // read only 1 byte from the last position of buffer and avoid a crash
-    // from access to next 3 bytes, which contents we do not need.
-    size_t BufSize=MAX_SIZE+3;
+    // from access to next 8 bytes, which contents we do not need.
+    size_t BufSize=MAX_SIZE+8;
     InBuf=new byte[BufSize];
 
     // Ensure that we get predictable results when accessing bytes in area
@@ -17,7 +17,7 @@ BitInput::BitInput(bool AllocBuffer)
     memset(InBuf,0,BufSize);
   }
   else
-    InBuf=NULL;
+    InBuf=nullptr;
 }
 
 
@@ -30,14 +30,14 @@ BitInput::~BitInput()
 
 void BitInput::faddbits(uint Bits)
 {
-  // Function wrapped version of inline addbits to save code size.
+  // Function wrapped version of inline addbits to reduce the code size.
   addbits(Bits);
 }
 
 
 uint BitInput::fgetbits()
 {
-  // Function wrapped version of inline getbits to save code size.
+  // Function wrapped version of inline getbits to reduce the code size.
   return getbits();
 }
 

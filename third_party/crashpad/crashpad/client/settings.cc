@@ -293,7 +293,6 @@ FileHandle Settings::GetHandleFromOptions(
           file_path, options.mode, options.permissions);
   }
   NOTREACHED();
-  return kInvalidFileHandle;
 }
 
 Settings::ScopedLockedFileHandle Settings::OpenForReading() {

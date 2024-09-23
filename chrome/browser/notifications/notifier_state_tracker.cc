@@ -90,7 +90,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
       // Disabling Crostini notifications is not supported yet.
       return true;
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 #endif
     case message_center::NotifierType::PHONE_HUB:
@@ -102,7 +102,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
 #endif
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -122,11 +122,11 @@ void NotifierStateTracker::SetNotifierEnabled(
       id = base::Value(notifier_id.id);
       FirePermissionLevelChangedEvent(notifier_id, enabled);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   DCHECK(pref_name != nullptr);
 

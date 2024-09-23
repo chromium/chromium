@@ -64,7 +64,7 @@ class NotificationBuilder {
   Notification GetResult() { return notification_; }
 
   NotificationBuilder& SetImage(const gfx::Image& image) {
-    notification_.set_image(image);
+    notification_.SetImage(image);
     return *this;
   }
 
@@ -594,8 +594,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationImages) {
             EXPECT_TRUE(base::ReadFileToString(base::FilePath(file_name),
                                                &file_contents));
             gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-                reinterpret_cast<const unsigned char*>(file_contents.c_str()),
-                file_contents.size());
+                base::as_byte_span(file_contents));
             EXPECT_EQ(expected_width, image.Width());
             EXPECT_EQ(expected_height, image.Height());
           },

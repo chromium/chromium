@@ -1,0 +1,111 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  deps = [
+    "//base",
+    "//ios/web",
+  ]
+
+  sources = [
+    "java_script_dialog_blocking_state.h",
+    "java_script_dialog_blocking_state.mm",
+  ]
+
+  public_deps = [ "//ios/web/public" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "java_script_dialog_blocking_state_unittest.mm" ]
+
+  deps = [
+    ":java_script_blocking_fake_web_state",
+    ":ui_bundled",
+    "//ios/web",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+source_set("java_script_blocking_fake_web_state") {
+  testonly = true
+
+  sources = [
+    "java_script_blocking_fake_web_state.h",
+    "java_script_blocking_fake_web_state.mm",
+  ]
+
+  deps = [
+    "//ios/web",
+    "//ios/web/public/test/fakes",
+  ]
+}
+
+source_set("dialogs_internal") {
+  sources = [
+    "nsurl_protection_space_util.h",
+    "nsurl_protection_space_util.mm",
+    "overlay_java_script_dialog_presenter.h",
+    "overlay_java_script_dialog_presenter.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests_internal") {
+  testonly = true
+  sources = [
+    "nsurl_protection_space_util_unittest.mm",
+    "overlay_java_script_dialog_presenter_unittest.mm",
+  ]
+  deps = [
+    ":dialogs_internal",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/web",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "javascript_dialog_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

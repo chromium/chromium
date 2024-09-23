@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingTop="8dp">
+
+  <!-- Sets edge padding separately because android:padding doesn't override
+       android:paddingStart. -->
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/open_full_chrome_history_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top"
+      android:paddingTop="@dimen/list_item_default_margin"
+      android:paddingBottom="@dimen/list_item_default_margin"
+      android:paddingStart="@dimen/list_item_default_margin"
+      android:paddingEnd="@dimen/list_item_default_margin"
+      android:gravity="center_vertical|start"
+      android:text="@string/open_full_chrome_history"
+      app:verticalInset="0dp"
+      style="@style/TextButton" />
+
+  <View style="@style/HorizontalDivider" />
+
+</LinearLayout>

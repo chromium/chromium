@@ -33,8 +33,8 @@ AccessibilityPanelLayoutManager* GetLayoutManager() {
 std::unique_ptr<views::Widget> CreateChromeVoxPanel() {
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   params.parent = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);

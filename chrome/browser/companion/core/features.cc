@@ -14,7 +14,7 @@ namespace features {
 
 // `internal` code should be called outside this file with extreme caution.
 // The external code should call the utility functions defined in
-// chrome/browser/ui/side_panel/companion/companion_utils.h or
+// chrome/browser/ui/views/side_panel/companion/companion_utils.h or
 // chrome/browser/companion/core/utils.h.
 namespace internal {
 // This differs from the search companion by providing a separate WebUI that
@@ -25,7 +25,7 @@ namespace internal {
 // that's permanent consistent).
 BASE_FEATURE(kSidePanelCompanion,
              "SidePanelCompanion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSidePanelCompanion2,
              "SidePanelCompanion2",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -46,11 +46,6 @@ BASE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem,
              "CompanionEnableSearchWebInNewTabContextMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When search companion is enabled, show new badges on the context menu items
-// that open the companion.
-BASE_FEATURE(kCompanionEnableNewBadgesInContextMenu,
-             "CompanionEnableNewBadgesInContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Allow sharing page content with CSC. Enabling this flag alone isn't enough to
 // share page content - the user still needs to opt in either through a promo or
 // chrome://settings. When disabled, page content will not be shared even if the
@@ -88,8 +83,9 @@ std::optional<bool> ShouldForceOverrideCompanionPinState() {
     return false;
   }
 
-  NOTREACHED() << "Invalid Companion pin state command line switch value: "
-               << pinned_state;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid Companion pin state command line switch value: "
+      << pinned_state;
   return std::nullopt;
 }
 

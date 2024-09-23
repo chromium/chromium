@@ -26,8 +26,8 @@
 #include "extensions/common/core_extensions_api_provider.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -74,6 +74,8 @@ void ChromeExtensionsClient::InitializeWebStoreUrls(
     base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kAppsGalleryURL)) {
     webstore_base_url_ =
+        GURL(command_line->GetSwitchValueASCII(switches::kAppsGalleryURL));
+    new_webstore_base_url_ =
         GURL(command_line->GetSwitchValueASCII(switches::kAppsGalleryURL));
   } else {
     webstore_base_url_ = GURL(extension_urls::kChromeWebstoreBaseURL);
@@ -207,7 +209,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   // Allow component extensions to access chrome://theme/.
   //
   // We don't want to grant these permissions to inactive component extensions,
-  // to avoid granting them in "unblessed" (non-extension) processes.  If a
+  // to avoid granting them in "unprivileged" (non-extension) processes.  If a
   // component extension somehow starts as inactive and becomes active later,
   // we'll re-init the origin permissions, so there's no danger in being
   // conservative. Components shouldn't be subject to enterprise policy controls

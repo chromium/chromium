@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -24,6 +30,25 @@ const uint64_t kSharedBufferSizeInBytes =
 }  // namespace
 
 namespace device {
+
+bool WaiterHelper::Wait() {
+  bool result = WaitInternal();
+  event_received_ = false;
+  return result;
+}
+
+void WaiterHelper::OnEvent() {
+  event_received_ = true;
+  run_loop_.Quit();
+}
+
+bool WaiterHelper::WaitInternal() {
+  if (event_received_) {
+    return true;
+  }
+  run_loop_.Run();
+  return event_received_;
+}
 
 FakeSensor::FakeSensor(mojom::SensorType sensor_type,
                        SensorReadingSharedBuffer* buffer)
@@ -46,9 +71,20 @@ void FakeSensor::GetDefaultConfiguration(
 void FakeSensor::RemoveConfiguration(
     const PlatformSensorConfiguration& configuration) {}
 
-void FakeSensor::Suspend() {}
+void FakeSensor::Suspend() {
+  suspend_waiter_.OnEvent();
+}
 
-void FakeSensor::Resume() {}
+void FakeSensor::Resume() {
+  resume_waiter_.OnEvent();
+}
+
+bool FakeSensor::WaitForSuspend(bool suspend) {
+  if (suspend) {
+    return suspend_waiter_.Wait();
+  }
+  return resume_waiter_.Wait();
+}
 
 void FakeSensor::ConfigureReadingChangeNotifications(bool enabled) {
   reading_notification_enabled_ = enabled;
@@ -75,7 +111,7 @@ mojo::PendingReceiver<mojom::SensorClient> FakeSensor::GetClient() {
 }
 
 uint64_t FakeSensor::GetBufferOffset() {
-  return SensorReadingSharedBuffer::GetOffset(sensor_type_);
+  return GetSensorReadingSharedBufferOffset(sensor_type_);
 }
 
 void FakeSensor::SetReading(SensorReading reading) {
@@ -328,13 +364,44 @@ bool FakeSensorProvider::CreateSharedBufferIfNeeded() {
 SensorReadingSharedBuffer*
 FakeSensorProvider::GetSensorReadingSharedBufferForType(
     mojom::SensorType type) {
-  auto* ptr = static_cast<char*>(mapped_region_.mapping.memory());
-  if (!ptr)
+  base::span<SensorReadingSharedBuffer> buffers =
+      mapped_region_.mapping.GetMemoryAsSpan<SensorReadingSharedBuffer>();
+  if (buffers.empty()) {
     return nullptr;
+  }
 
-  ptr += SensorReadingSharedBuffer::GetOffset(type);
-  memset(ptr, 0, kReadingBufferSize);
-  return reinterpret_cast<SensorReadingSharedBuffer*>(ptr);
+  size_t offset = GetSensorReadingSharedBufferOffset(type);
+  CHECK(offset % sizeof(SensorReadingSharedBuffer) == 0u);
+
+  SensorReadingSharedBuffer& buffer =
+      buffers[offset / sizeof(SensorReadingSharedBuffer)];
+  std::ranges::fill(base::byte_span_from_ref(buffer), 0u);
+  return &buffer;
+}
+
+bool FakeSensorProvider::WaitForAccelerometerSuspend(bool suspend) {
+  CHECK(accelerometer_is_available_);
+  return accelerometer_->WaitForSuspend(suspend);
+}
+
+bool FakeSensorProvider::WaitForAmbientLightSensorSuspend(bool suspend) {
+  CHECK(ambient_light_sensor_is_available_);
+  return ambient_light_sensor_->WaitForSuspend(suspend);
+}
+
+bool FakeSensorProvider::WaitForLinearAccelerationSensorSuspend(bool suspend) {
+  CHECK(linear_acceleration_sensor_is_available_);
+  return linear_acceleration_sensor_->WaitForSuspend(suspend);
+}
+
+bool FakeSensorProvider::WaitForGravitySensorSuspend(bool suspend) {
+  CHECK(gravity_sensor_is_available_);
+  return gravity_sensor_->WaitForSuspend(suspend);
+}
+
+bool FakeSensorProvider::WaitForGyroscopeSuspend(bool suspend) {
+  CHECK(gyroscope_is_available_);
+  return gyroscope_->WaitForSuspend(suspend);
 }
 
 }  // namespace device

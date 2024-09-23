@@ -26,6 +26,7 @@ enum RTCStatsType {
   "certificate"
 };
 
+// https://w3c.github.io/webrtc-pc/#rtciceservertransportprotocol-enum
 enum RTCIceServerTransportProtocol {
   "udp",
   "tcp",

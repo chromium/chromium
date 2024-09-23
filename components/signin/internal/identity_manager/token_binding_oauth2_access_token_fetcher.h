@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_OAUTH2_ACCESS_TOKEN_FETCHER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_OAUTH2_ACCESS_TOKEN_FETCHER_H_
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
 class OAuth2MintAccessTokenFetcherAdapter;
@@ -30,7 +33,10 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
   // - if `Start()` was called prior to this method, starts a new fetch;
   // - otherwise, the next `Start()` call will start a new fetch immediately.
   // An empty `assertion` signifies that the assertion generation failed.
-  void SetBindingKeyAssertion(std::string assertion);
+  // `ephemeral_key`, if set, should be used to decrypt credentials in the
+  // response message. The key is ignored if `assertion` is empty.
+  void SetBindingKeyAssertion(std::string assertion,
+                              std::optional<HybridEncryptionKey> ephemeral_key);
 
   // OAuth2AccessTokenFetcher:
   void Start(const std::string& client_id,

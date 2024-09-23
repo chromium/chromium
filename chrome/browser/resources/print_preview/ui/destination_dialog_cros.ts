@@ -4,11 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../print_preview_utils.js';
 import './destination_dialog_style.css.js';
 import './destination_list.js';
@@ -20,13 +19,13 @@ import './provisional_destination_resolver.js';
 import '../strings.m.js';
 import './throbber.css.js';
 import './destination_list_item_cros.js';
+import './searchable_drop_down_cros.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Destination} from '../data/destination.js';
@@ -41,7 +40,7 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 import {getTemplate} from './destination_dialog_cros.html.js';
 import type {PrintPreviewDestinationListItemElement} from './destination_list_item_cros.js';
 import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
-import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
+import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 import type {PrintPreviewProvisionalDestinationResolverElement} from './provisional_destination_resolver.js';
 
 interface PrintServersChangedEventDetail {
@@ -123,20 +122,11 @@ export class PrintPreviewDestinationDialogCrosElement extends
             'loadingDestinations_, loadingServerPrinters_)',
       },
 
-      isPrintPreviewSetupAssistanceEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrintPreviewSetupAssistanceEnabled');
-        },
-        readOnly: true,
-      },
-
       isShowingPrinterSetupAssistance: {
         type: Boolean,
         computed:
             'computeIsShowingPrinterSetupAssistance(destinations_.length, ' +
-            'isPrintPreviewSetupAssistanceEnabled_, showThrobber_)',
+            'showThrobber_)',
       },
 
       isShowingDestinationList: {
@@ -159,9 +149,9 @@ export class PrintPreviewDestinationDialogCrosElement extends
         readOnly: true,
       },
 
-      destinationDialogCrosSource_: {
+      destinationDialogCrosInitiator_: {
         type: Number,
-        value: PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS,
+        value: PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS,
         readOnly: true,
       },
 
@@ -184,7 +174,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private printServerNames_: string[];
   private loadingServerPrinters_: boolean;
   private loadingAnyDestinations_: boolean;
-  private isPrintPreviewSetupAssistanceEnabled_: boolean;
   private metricsContext_: MetricsContext;
   private isShowingPrinterSetupAssistance: boolean;
   private isShowingDestinationList: boolean;
@@ -420,10 +409,8 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
   private onManageButtonClick_() {
     NativeLayerImpl.getInstance().managePrinters();
-    if (this.isPrintPreviewSetupAssistanceEnabled_) {
-      this.metricsContext_.record(
-          PrintPreviewLaunchSourceBucket.DESTINATION_DIALOG_CROS_HAS_PRINTERS);
-    }
+    this.metricsContext_.record(
+        PrintPreviewLaunchSourceBucket.DESTINATION_DIALOG_CROS_HAS_PRINTERS);
   }
 
   /**
@@ -434,10 +421,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
    * Save to drive is already excluded by `getDestinationList_()`.
    */
   private computeIsShowingPrinterSetupAssistance(): boolean {
-    if (!this.isPrintPreviewSetupAssistanceEnabled_) {
-      return false;
-    }
-
     return !this.showThrobber_ && !this.printerDestinationExists();
   }
 
@@ -447,10 +430,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
    * for the user to select.
    */
   private computeIsShowingDestinationList(): boolean {
-    if (!this.isPrintPreviewSetupAssistanceEnabled_) {
-      return true;
-    }
-
     return this.printerDestinationExists();
   }
 
@@ -465,10 +444,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   private computeShowThrobber_(): boolean {
-    if (!this.isPrintPreviewSetupAssistanceEnabled_) {
-      return false;
-    }
-
     return !this.minLoadingTimeElapsed_ || this.loadingAnyDestinations_;
   }
 
@@ -488,15 +463,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
         this.shadowRoot!.querySelector('print-preview-destination-list');
     assert(destinationList);
     destinationList.updatePrinterStatusIcon(destinationKey);
-  }
-
-  private showDestinationListThrobber(): boolean {
-    // When flag is enabled, DestinationDialogCros shows its own throbber.
-    if (this.isPrintPreviewSetupAssistanceEnabled_) {
-      return false;
-    }
-
-    return this.loadingAnyDestinations_;
   }
 }
 

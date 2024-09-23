@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -22,11 +23,15 @@ namespace ash::download_status {
 // Lists the types of commands that can be performed on a displayed download.
 enum class CommandType {
   kCancel,
+  kCopyToClipboard,
+  kEditWithMediaApp,
   kOpenFile,
+  kOpenWithMediaApp,
   kPause,
   kResume,
   kShowInBrowser,
   kShowInFolder,
+  kViewDetailsInBrowser,
 };
 
 // The metadata to display a download command.
@@ -102,6 +107,10 @@ struct DisplayMetadata {
   // The path to the file that bytes are actually written to during download.
   // NOTE: This path is different from the download target path.
   base::FilePath file_path;
+
+  // Points to valid dark/light mode download status icons. Null if either icon
+  // is missing or invalid.
+  crosapi::mojom::DownloadStatusIconsPtr icons;
 
   // A nullable image that represents the underlying download.
   gfx::ImageSkia image;

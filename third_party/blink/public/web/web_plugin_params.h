@@ -42,6 +42,7 @@ struct WebPluginParams {
   WebString mime_type;
   WebVector<WebString> attribute_names;
   WebVector<WebString> attribute_values;
+  // TODO(crbug.com/40511450): Remove once PPAPI is gone.
   bool load_manually;
 };
 

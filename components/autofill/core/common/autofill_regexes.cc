@@ -4,14 +4,12 @@
 
 #include "components/autofill/core/common/autofill_regexes.h"
 
-#include <map>
-#include <memory>
-#include <string>
-#include <utility>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 
 namespace {
 
@@ -24,7 +22,7 @@ constexpr int kMaxStringLength = 5000;
 namespace autofill {
 
 std::unique_ptr<const icu::RegexPattern> CompileRegex(
-    base::StringPiece16 regex) {
+    std::u16string_view regex) {
   const icu::UnicodeString icu_regex(false, regex.data(), regex.length());
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::RegexPattern> regex_pattern = base::WrapUnique(
@@ -33,7 +31,7 @@ std::unique_ptr<const icu::RegexPattern> CompileRegex(
   return regex_pattern;
 }
 
-bool MatchesRegex(base::StringPiece16 input,
+bool MatchesRegex(std::u16string_view input,
                   const icu::RegexPattern& regex_pattern,
                   std::vector<std::u16string>* groups) {
   if (input.size() > kMaxStringLength)
@@ -72,7 +70,7 @@ AutofillRegexCache::~AutofillRegexCache() {
 }
 
 const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
-    base::StringPiece16 regex) {
+    std::u16string_view regex) {
   auto GetOrCreate = [&]() {
     auto it = cache_.find(regex);
     if (it == cache_.end()) {
@@ -81,7 +79,7 @@ const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
           cache_.emplace(std::u16string(regex), CompileRegex(regex));
       DCHECK(success);
     }
-    DCHECK(it != cache_.end());
+    CHECK(it != cache_.end(), base::NotFatalUntil::M130);
     DCHECK(it->second.get());
     return it->second.get();
   };

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {getFileTypeForName} from '../../../common/js/file_types_base.js';
@@ -41,33 +41,19 @@ function getOkButtonLabel(dialogType: DialogType): string {
  * Footer shown when the Files app is opened as a file/folder selecting dialog.
  */
 export class DialogFooter {
-  /**
-   * OK button in the footer.
-   */
+  /** OK button in the footer. */
   readonly okButton: HTMLButtonElement;
 
-  /**
-   * OK button's label in the footer.
-   */
+  /** OK button's label in the footer. */
   readonly okButtonLabel: HTMLSpanElement;
 
-  /**
-   * Cancel button in the footer.
-   * @public @const
-   */
+  /** Cancel button in the footer. */
   readonly cancelButton: HTMLButtonElement;
 
-  /**
-   * New folder button in the footer.
-   * @public @const
-   */
+  /** New folder button in the footer. */
   readonly newFolderButton: HTMLButtonElement;
 
-  /**
-   * File type selector in the footer.
-   * TODO(adanilo) Replace annotation HTMLSelectElement when we can style
-   * them.
-   */
+  /** File type selector in the footer. */
   readonly fileTypeSelector: HTMLElement;
 
   readonly fileTypeSelectorText: HTMLSpanElement;

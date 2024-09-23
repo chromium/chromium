@@ -55,6 +55,16 @@ class BrowsingTopicsService : public KeyedService {
   virtual std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const = 0;
 
+  // Validates if the scheduled topics calculation ran on time, logging failure
+  // metrics if not.
+  //
+  // Validation is skipped under the following conditions:
+  //   - The topics data is not yet fully loaded.
+  //   - A calculation is currently in progress.
+  //   - The browser is in the process of shutting down.
+  //   - Failure metrics for the current session have already been logged.
+  virtual void ValidateCalculationSchedule() = 0;
+
   virtual Annotator* GetAnnotator() = 0;
 
   // Removes topic from any existing epoch.

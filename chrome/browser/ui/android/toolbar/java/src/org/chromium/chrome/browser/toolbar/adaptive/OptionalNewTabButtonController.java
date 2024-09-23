@@ -66,7 +66,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
          * <p>Not using {@link IncognitoStateProvider} because ISP is created in the {@link
          * ToolbarManager} and not in {@link RootUiCoordinator}.
          *
-         * <p>TODO(crbug.com/1185948): Make IncognitoStateProvider available in RootUiCooridnator.
+         * <p>TODO(crbug.com/40753461): Make IncognitoStateProvider available in RootUiCooridnator.
          */
         @Nullable
         Supplier<Tab> getActiveTabSupplier() {

@@ -14,13 +14,13 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 class Profile;
@@ -85,6 +85,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   }
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   views::View* no_sinks_view_for_test() { return no_sinks_view_; }
+  views::View* permission_rejected_view_for_test() {
+    return permission_rejected_view_;
+  }
   views::Button* sources_button_for_test() { return sources_button_; }
   HoverButton* access_code_cast_button_for_test() {
     return access_code_cast_button_;
@@ -112,7 +115,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void MaybeShowAccessCodeCastButton();
 
   void ShowNoSinksView();
+  void ShowPermissionRejectedView();
   void ShowScrollView();
+  void ResetViews();
 
   // Applies the stored scroll state.
   void RestoreSinkListState();
@@ -169,10 +174,11 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<CastDialogController> controller_;
 
   // ScrollView containing the list of sink buttons.
-  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // View shown while there are no sinks.
-  raw_ptr<views::View, DanglingUntriaged> no_sinks_view_ = nullptr;
+  raw_ptr<views::View> no_sinks_view_ = nullptr;
+  raw_ptr<views::View> permission_rejected_view_ = nullptr;
 
   const raw_ptr<Profile> profile_;
 

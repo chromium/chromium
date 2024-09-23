@@ -43,8 +43,9 @@ class PNGImageSource : public ImageSkiaSource {
     // gfx::ImageSkia passes one of the resource scale factors. The source
     // should return:
     // 1) The ImageSkiaRep with the highest scale if all available
-    // scales are smaller than |scale|.
+    //    scales are smaller than |scale|.
     // 2) The ImageSkiaRep with the smallest one that is larger than |scale|.
+    // TODO(crbug.com/329953472): Use a predefined threshold.
     for (auto iter = image_skia_reps_.begin(); iter != image_skia_reps_.end();
          ++iter) {
       if ((*iter).scale() == scale)
@@ -73,7 +74,7 @@ class PNGImageSource : public ImageSkiaSource {
     scoped_refptr<base::RefCountedMemory> raw_data = png_rep.raw_data;
     CHECK(raw_data.get());
     SkBitmap bitmap;
-    if (!PNGCodec::Decode(raw_data->front(), raw_data->size(), &bitmap)) {
+    if (!PNGCodec::Decode(raw_data->data(), raw_data->size(), &bitmap)) {
       LOG(ERROR) << "Unable to decode PNG for " << png_rep.scale << ".";
       return ImageSkiaRep();
     }
@@ -117,7 +118,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
   scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
   if (image_skia_rep.scale() != 1.0f ||
       !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.GetBitmap(), false,
-                                    &png_bytes->data())) {
+                                    &png_bytes->as_vector())) {
     return nullptr;
   }
   return png_bytes;

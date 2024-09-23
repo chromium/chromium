@@ -86,7 +86,6 @@ float TrackpadInputStrategy::GetFeedbackRadius(TouchFeedbackType type) const {
       return kDragFeedbackRadius;
   }
   NOTREACHED();
-  return 0.f;
 }
 
 bool TrackpadInputStrategy::IsCursorVisible() const {

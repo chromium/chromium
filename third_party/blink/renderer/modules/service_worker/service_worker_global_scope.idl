@@ -39,7 +39,7 @@
   readonly attribute ServiceWorkerRegistration registration;
   readonly attribute ServiceWorker serviceWorker;
 
-  [CallWith=ScriptState] Promise<void> skipWaiting();
+  [CallWith=ScriptState] Promise<undefined> skipWaiting();
 
   attribute EventHandler onactivate;
   attribute EventHandler onfetch;

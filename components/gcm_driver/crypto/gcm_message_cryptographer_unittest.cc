@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "crypto/ec_private_key.h"
@@ -236,10 +241,9 @@ const TestVector kDecryptionTestVectorsDraft08[] = {
 // Computes the shared secret between the sender and the receiver. The sender
 // must have a ASN.1-encoded PKCS #8 EncryptedPrivateKeyInfo block, whereas
 // the receiver must have a public key in uncompressed EC point format.
-bool ComputeSharedP256SecretFromPrivateKeyStr(
-    const base::StringPiece& private_key,
-    const base::StringPiece& peer_public_key,
-    std::string* out_shared_secret) {
+bool ComputeSharedP256SecretFromPrivateKeyStr(std::string_view private_key,
+                                              std::string_view peer_public_key,
+                                              std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
   std::unique_ptr<crypto::ECPrivateKey> local_key(
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
@@ -253,10 +257,9 @@ bool ComputeSharedP256SecretFromPrivateKeyStr(
                                  out_shared_secret);
 }
 
-void ComputeSharedSecret(
-    const base::StringPiece& encoded_sender_private_key,
-    const base::StringPiece& encoded_receiver_public_key,
-    std::string* shared_secret) {
+void ComputeSharedSecret(std::string_view encoded_sender_private_key,
+                         std::string_view encoded_receiver_public_key,
+                         std::string* shared_secret) {
   std::string sender_private_key, receiver_public_key;
   ASSERT_TRUE(base::Base64UrlDecode(
       encoded_sender_private_key,
@@ -323,9 +326,8 @@ class GCMMessageCryptographerTest
   // Generates a cryptographically secure random salt of 16-octets in size, the
   // required length as expected by the HKDF.
   std::string GenerateRandomSalt() {
-    std::string salt;
-
-    crypto::RandBytes(base::WriteInto(&salt, kSaltSize + 1), kSaltSize);
+    std::string salt(kSaltSize, '\0');
+    crypto::RandBytes(base::as_writable_byte_span(salt));
     return salt;
   }
 
@@ -514,12 +516,10 @@ TEST_P(GCMMessageCryptographerTest, InvalidRecordPadding) {
 }
 
 TEST_P(GCMMessageCryptographerTest, AuthSecretAffectsPRK) {
-  std::string first_auth_secret, second_auth_secret;
-
-  crypto::RandBytes(base::WriteInto(&first_auth_secret, kAuthSecretSize + 1),
-                    kAuthSecretSize);
-  crypto::RandBytes(base::WriteInto(&second_auth_secret, kAuthSecretSize + 1),
-                    kAuthSecretSize);
+  std::string first_auth_secret(kAuthSecretSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(first_auth_secret));
+  std::string second_auth_secret(kAuthSecretSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(second_auth_secret));
 
   ASSERT_NE(cryptographer_->encryption_scheme_->DerivePseudoRandomKey(
                 recipient_public_key_, sender_public_key_, ecdh_shared_secret_,
@@ -847,10 +847,10 @@ const char kRecipientPrivate[] =
   MessagePayloadParser message_parser(message);
   ASSERT_TRUE(message_parser.IsValid());
 
-  base::StringPiece salt = message_parser.salt();
+  std::string_view salt = message_parser.salt();
   uint32_t record_size = message_parser.record_size();
-  base::StringPiece sender_public_key = message_parser.public_key();
-  base::StringPiece ciphertext = message_parser.ciphertext();
+  std::string_view sender_public_key = message_parser.public_key();
+  std::string_view ciphertext = message_parser.ciphertext();
 
   std::string sender_shared_secret, receiver_shared_secret;
 

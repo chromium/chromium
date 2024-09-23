@@ -18,7 +18,8 @@
         "IpType": "",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Enabled"
+        "State": "Enabled",
+        "Source": "Ui"
       },
       {
         "AccessPointName": "test-apn-2",
@@ -26,7 +27,8 @@
         "Authentication": "CHAP",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Disabled"
+        "State": "Disabled",
+        "Source": "Ui"
       },
       {
         "AccessPointName": "test-apn-3",
@@ -35,7 +37,8 @@
         "IpType": "IPv4orIPv6",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Enabled"
+        "State": "Enabled",
+        "Source": "Ui"
       },
       {
         "AccessPointName": "test-apn-4",
@@ -44,7 +47,8 @@
         "IpType": "IPv4orIPv6",
         "Username": "test-username",
         "Password": "test-password",
-        "State": "Enabled"
+        "State": "Enabled",
+        "Source": "Ui"
       }
     ]
   }

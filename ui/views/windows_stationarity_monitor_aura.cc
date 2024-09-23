@@ -4,7 +4,8 @@
 
 #include "ui/views/windows_stationarity_monitor_aura.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/env.h"
@@ -62,7 +63,7 @@ void WindowsStationarityMonitorAura::OnHostInitialized(
 }
 
 void WindowsStationarityMonitorAura::OnWindowDestroying(aura::Window* window) {
-  base::Erase(tracked_windows_, window);
+  std::erase(tracked_windows_, window);
   NotifyWindowStationaryStateChanged();
 }
 

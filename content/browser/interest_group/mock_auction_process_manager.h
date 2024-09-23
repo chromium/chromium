@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -19,8 +20,10 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/public/browser/site_instance.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -48,10 +51,11 @@ class ProcessHandle;
 class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
                           auction_worklet::mojom::GenerateBidFinalizer {
  public:
-  MockBidderWorklet(mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
-                        pending_receiver,
-                    const std::map<std::string, base::TimeDelta>&
-                        expected_per_buyer_timeouts);
+  MockBidderWorklet(
+      mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+          pending_receiver,
+      const std::map<std::string, base::TimeDelta>& expected_per_buyer_timeouts,
+      bool skip_generate_bid);
 
   MockBidderWorklet(const MockBidderWorklet&) = delete;
   const MockBidderWorklet& operator=(const MockBidderWorklet&) = delete;
@@ -69,9 +73,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
+      uint16_t multi_bid_limit,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
           generate_bid_client,
@@ -80,8 +85,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void SendPendingSignalsRequests() override;
   void ReportWin(
       bool is_for_additional_bid,
-      auction_worklet::mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -106,12 +113,13 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       uint8_t browser_signal_recency,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
+      const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
       std::optional<uint32_t> bidding_signals_data_version,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override;
 
   // mojom::GenerateBidFinalizer implementation.
   void FinishGenerateBid(
@@ -134,10 +142,21 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // OnGenerateBidComplete()), respectively, to return `delta`.
   void SetBidderTrustedSignalsFetchLatency(base::TimeDelta delta);
   void SetBiddingLatency(base::TimeDelta delta);
+  void SetCodeFetchLatencies(std::optional<base::TimeDelta> js_fetch_latency,
+                             std::optional<base::TimeDelta> wasm_fetch_latency);
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
 
   // Same for `reporting_latency` for ReportWin()
   void SetReportingLatency(base::TimeDelta delta) {
     reporting_latency_ = delta;
+  }
+
+  // Controls what's passed to `non_kanon_pa_requests` of the generate bid
+  // callback.
+  void SetNonKAnonPARequests(
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+          non_kanon_pa_requests) {
+    non_kanon_pa_requests_ = std::move(non_kanon_pa_requests);
   }
 
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
@@ -146,8 +165,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       std::optional<double> bid,
       const std::optional<blink::AdCurrency>& bid_currency = std::nullopt,
       const blink::AdDescriptor& ad_descriptor = blink::AdDescriptor(),
-      auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid =
-          auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
+      auction_worklet::mojom::BidRole bid_role =
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      std::vector<auction_worklet::mojom::BidderWorkletBidPtr> further_bids =
+          std::vector<auction_worklet::mojom::BidderWorkletBidPtr>(),
       std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors =
           std::nullopt,
       base::TimeDelta duration = base::TimeDelta(),
@@ -157,6 +178,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const std::optional<GURL>& debug_win_report_url = std::nullopt,
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests = {},
+      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
+          real_time_contributions = {},
       auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
           dependency_latencies =
               auction_worklet::mojom::GenerateBidDependencyLatenciesPtr(),
@@ -182,20 +205,34 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // Flush the receiver pipe and return whether or not its closed.
   bool PipeIsClosed();
 
+  void SetSelectedBuyerAndSellerReportingId(
+      std::optional<std::string> selected);
+
  private:
   void OnPipeClosed() { pipe_closed_ = true; }
 
-  mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>
-      generate_bid_client_;
+  std::list<mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidClient>>
+      generate_bid_clients_;
   mojo::AssociatedReceiverSet<auction_worklet::mojom::GenerateBidFinalizer,
                               base::TimeDelta>
       finalizer_receiver_set_;
 
   bool pipe_closed_ = false;
 
+  std::optional<std::string> selected_buyer_and_seller_reporting_id_;
+
+  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+      non_kanon_pa_requests_;
+
   std::unique_ptr<base::RunLoop> generate_bid_run_loop_;
   std::unique_ptr<base::RunLoop> report_win_run_loop_;
   ReportWinCallback report_win_callback_;
+
+  // If true, bypass the `BeginGenerateBid()` function. This class does not
+  // support testing multiple calls to `BeginGenerateBid()`. This flag is useful
+  // for testing other auction functions while disabling that specific code
+  // path.
+  bool skip_generate_bid_ = false;
 
   bool generate_bid_called_ = false;
   bool send_pending_signals_requests_called_ = false;
@@ -204,13 +241,17 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   std::map<std::string, base::TimeDelta> expected_per_buyer_timeouts_;
 
   // To be fed as `trusted_signals_fetch_latency` (from
-  // OnBiddingSignalsReceived()) and `bidding_latency` (from
-  // OnGenerateBidComplete()), respectively,
+  // OnBiddingSignalsReceived()).
   base::TimeDelta trusted_signals_fetch_latency_;
-  base::TimeDelta bidding_latency_;
 
-  // To be fed as `reporting_latency` to ReportWin() callback.
+  // These are fed as part of BidderTimingMetrics. Except for
+  // `bidding_latency_` and `reporting_latency_` they are used both for
+  // generateBid and reportWin.
+  base::TimeDelta bidding_latency_;
   base::TimeDelta reporting_latency_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  std::optional<base::TimeDelta> wasm_fetch_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -261,8 +302,13 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
@@ -283,6 +329,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -296,8 +344,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       uint64_t trace_id,
       ReportResultCallback report_result_callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override;
 
   // Closes the receiver pipe with the provided reason.
   void ResetReceiverWithReason(const std::string& reason);
@@ -335,6 +383,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     expect_send_pending_signals_requests_called_ = value;
   }
 
+  void SetCodeFetchLatency(std::optional<base::TimeDelta> js_fetch_latency) {
+    js_fetch_latency_ = js_fetch_latency;
+  }
+
+  void SetScriptTimedOut(bool val) { script_timed_out_ = val; }
+
  private:
   std::unique_ptr<base::RunLoop> score_ad_run_loop_;
   std::list<ScoreAdParams> score_ad_params_;
@@ -347,6 +401,10 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   // To be fed as `reporting_latency` to ReportResult() callback.
   base::TimeDelta reporting_latency_;
+
+  // Used for reporting callback as well.
+  std::optional<base::TimeDelta> js_fetch_latency_;
+  bool script_timed_out_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -382,8 +440,9 @@ class MockAuctionProcessManager
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -396,12 +455,14 @@ class MockAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet_receiver,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -445,6 +506,16 @@ class MockAuctionProcessManager
   // Flushes the receiver set.
   void Flush();
 
+  void SetSkipGenerateBid() { skip_generate_bid_ = true; }
+
+  size_t load_bidder_worklet_count() const {
+    return load_bidder_worklet_count_;
+  }
+
+  size_t last_load_bidder_worklet_threads_count() const {
+    return last_load_bidder_worklet_threads_count_;
+  }
+
  private:
   void MaybeQuitWaitForWorkletsRunLoop();
 
@@ -467,6 +538,15 @@ class MockAuctionProcessManager
   // towards these totals.
   size_t waiting_for_num_bidders_ = 0;
   size_t waiting_for_num_sellers_ = 0;
+
+  // If true, configure the bidder worklets to bypass the `BeginGenerateBid()`
+  // function. The `MockBidderWorklet` does not support testing multiple calls
+  // to `BeginGenerateBid()`. This flag is useful for testing other auction
+  // functions while disabling that specific code path.
+  bool skip_generate_bid_ = false;
+
+  size_t load_bidder_worklet_count_ = 0;
+  size_t last_load_bidder_worklet_threads_count_ = 0;
 
   // Map from ReceiverSet IDs to display name when the process was launched.
   // Used to verify that worklets are created in the right process.

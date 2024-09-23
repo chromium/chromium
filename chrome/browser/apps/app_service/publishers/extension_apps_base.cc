@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
-
 #include <optional>
 #include <string>
 #include <utility>
@@ -19,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
@@ -39,9 +38,11 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -55,14 +56,14 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/url_constants.h"
 
-// TODO(crbug.com/826982): life cycle events. Extensions can be installed and
+// TODO(crbug.com/40569217): life cycle events. Extensions can be installed and
 // uninstalled. ExtensionAppsBase should implement extensions::InstallObserver
 // and be able to show download progress in the UI, a la
 // ExtensionAppModelBuilder. This might involve using an
 // extensions::InstallTracker. It might also need the equivalent of a
 // ShelfExtensionAppUpdater.
 
-// TODO(crbug.com/826982): consider that, per khmel@, "in some places Chrome
+// TODO(crbug.com/40569217): consider that, per khmel@, "in some places Chrome
 // apps is not used and raw extension app without any effect is displayed...
 // Search where ChromeAppIcon or ChromeAppIconLoader is used compared with
 // direct loading the ExtensionIcon".
@@ -141,6 +142,8 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
+  app->installer_package_id =
+      apps::PackageId(apps::PackageType::kChromeApp, extension->id());
   app->policy_ids = {extension->id()};
 
   if (profile_) {
@@ -217,7 +220,7 @@ void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   LaunchImpl(std::move(params));
 
-  // TODO(crbug.com/1244506): Add launch return value.
+  // TODO(crbug.com/40787924): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
 
@@ -351,6 +354,9 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromSysTrayCalendar:
     case apps::LaunchSource::kFromInstaller:
     case apps::LaunchSource::kFromFirstRun:
+    case apps::LaunchSource::kFromWelcomeTour:
+    case apps::LaunchSource::kFromFocusMode:
+    case apps::LaunchSource::kFromSparky:
       break;
   }
 
@@ -410,8 +416,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
                                   UninstallSource uninstall_source,
                                   bool clear_site_data,
                                   bool report_abuse) {
-  // TODO(crbug.com/1009248): We need to add the error code, which could be used
-  // by ExtensionFunction, ManagementUninstallFunctionBase on the callback
+  // TODO(crbug.com/40100977): We need to add the error code, which could be
+  // used by ExtensionFunction, ManagementUninstallFunctionBase on the callback
   // OnExtensionUninstallDialogClosed
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionRegistry::Get(profile())->GetInstalledExtension(
@@ -539,7 +545,7 @@ void ExtensionAppsBase::OnExtensionInstalled(
     return;
   }
 
-  // TODO(crbug.com/826982): Does the is_update case need to be handled
+  // TODO(crbug.com/40569217): Does the is_update case need to be handled
   // differently? E.g. by only passing through fields that have changed.
   AppPublisher::Publish(CreateApp(extension, Readiness::kReady));
 }

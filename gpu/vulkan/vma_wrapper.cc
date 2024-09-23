@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/vulkan/vma_wrapper.h"
 
 #include <algorithm>
@@ -189,7 +194,7 @@ void GetBudget(VmaAllocator allocator, VmaBudget* budget) {
 
 std::pair<uint64_t, uint64_t> GetTotalAllocatedAndUsedMemory(
     VmaAllocator allocator) {
-  // See GrVkMemoryAllocatorImpl::totalAllocatedAndUsedMemory() in skia for
+  // See VulkanAMDMemoryAllocator::totalAllocatedAndUsedMemory() in skia for
   // reference.
   VmaBudget budget[VK_MAX_MEMORY_HEAPS];
   GetBudget(allocator, budget);

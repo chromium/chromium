@@ -13,9 +13,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
@@ -61,8 +61,8 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   BOOL _undoActive;
 
   BOOL _scrolledToEdge;
-  UIView* _scrolledToTopBackgroundView;
   UIView* _scrolledBackgroundView;
+  UIView* _scrolledToTopBackgroundView;
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
 }
@@ -71,6 +71,20 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   self = [super initWithFrame:frame];
   if (self) {
     [self setupViews];
+    [self setItemsForTraitCollection:self.traitCollection];
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      __weak TabGridTopToolbar* weakSelf = self;
+      [weakSelf
+          registerForTraitChanges:traits
+                      withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                    UITraitCollection* previousCollection) {
+                        [weakSelf
+                            setItemsForTraitCollection:weakSelf
+                                                           .traitCollection];
+                      }];
+    }
   }
   return self;
 }
@@ -92,7 +106,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     return;
   }
   // Reset search state when exiting search mode.
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     _searchBar.text = @"";
     [_searchBar resignFirstResponder];
   }
@@ -102,7 +116,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   // Reset the Select All button to its default title.
   [self configureSelectAllButtonTitle];
   [self setItemsForTraitCollection:self.traitCollection];
-  if (mode == TabGridModeSearch) {
+  if (mode == TabGridMode::kSearch) {
     // Focus the search bar, and make it a first responder once the user enter
     // to search mode. Doing that here instead in `setItemsForTraitCollection`
     // makes sure it's only called once and allows VoiceOver to transition
@@ -187,6 +201,14 @@ const CGFloat kSymbolSearchImagePointSize = 22;
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
 }
 
+- (void)highlightLastPageControl {
+  [self.pageControl highlightLastPageControl];
+}
+
+- (void)resetLastPageControlHighlight {
+  [self.pageControl resetLastPageControlHighlight];
+}
+
 - (void)hide {
   self.backgroundColor = UIColor.blackColor;
   self.pageControl.alpha = 0.0;
@@ -225,6 +247,13 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
 }
 
+- (void)setBounds:(CGRect)bounds {
+  [super setBounds:bounds];
+  if (_mode == TabGridMode::kSearch) {
+    [self configureSearchModeForTraitCollection:self.traitCollection];
+  }
+}
+
 - (void)didMoveToSuperview {
   if (_scrolledBackgroundView) {
     [self.superview.topAnchor
@@ -234,10 +263,16 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [super didMoveToSuperview];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self setItemsForTraitCollection:self.traitCollection];
 }
+#endif
 
 #pragma mark - UIBarPositioningDelegate
 
@@ -251,7 +286,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 - (void)configureSearchModeForTraitCollection:
     (UITraitCollection*)traitCollection {
-  DCHECK_EQ(_mode, TabGridModeSearch);
+  DCHECK_EQ(_mode, TabGridMode::kSearch);
   CGFloat widthModifier = 1;
 
   // In the landscape mode the search bar size should only span half of the
@@ -277,7 +312,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)setItemsForTraitCollection:(UITraitCollection*)traitCollection {
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     [self configureSearchModeForTraitCollection:traitCollection];
     return;
   }
@@ -285,13 +320,13 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   UIBarButtonItem* trailingButton = _doneButton;
   _selectionModeFixedSpace.width = 0;
   if ([self shouldUseCompactLayout:traitCollection]) {
-    if (_mode == TabGridModeNormal) {
+    if (_mode == TabGridMode::kNormal) {
       _leadingButton = _searchButton;
     } else {
       _leadingButton = _spaceItem;
     }
 
-    if (_mode == TabGridModeSelection) {
+    if (_mode == TabGridMode::kSelection) {
       // In the selection mode, Done button is much smaller than SelectAll
       // we need to calculate the difference on the width and use it as a
       // fixed space to make sure that the title is still centered.
@@ -316,7 +351,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     _leadingButton = _closeAllOrUndoButton;
   }
 
-  if (_mode == TabGridModeSelection) {
+  if (_mode == TabGridMode::kSelection) {
     // In the selection mode, Done button is much smaller than SelectAll
     // we need to calculate the difference on the width and use it as a
     // fixed space to make sure that the title is still centered.
@@ -333,7 +368,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   [items addObject:_leadingButton];
 
-  if (_mode == TabGridModeNormal) {
+  if (_mode == TabGridMode::kNormal) {
     animated = YES;
     [items
         addObjectsFromArray:@[ _iconButtonAdditionalSpaceItem, _searchButton ]];
@@ -341,7 +376,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   [items addObjectsFromArray:@[ _spaceItem, centralItem, _spaceItem ]];
 
-  if (_mode != TabGridModeNormal) {
+  if (_mode != TabGridMode::kNormal) {
     [items addObject:_selectionModeFixedSpace];
   }
 
@@ -511,6 +546,10 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 #pragma mark - Public
 
+- (void)unfocusSearchBar {
+  [_searchBar resignFirstResponder];
+}
+
 - (void)respondBeforeResponder:(UIResponder*)nextResponder {
   _followingNextResponder = nextResponder;
 }
@@ -533,7 +572,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     return _undoActive;
   }
   if (sel_isEqual(action, @selector(keyCommand_close))) {
-    return _doneButton.enabled || _mode == TabGridModeSearch;
+    return _doneButton.enabled || _mode == TabGridMode::kSearch;
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
     return _searchButton.enabled;
@@ -549,13 +588,13 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 - (void)keyCommand_undo {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandUndo"));
   // This function is also responsible for handling undo.
-  // TODO(crbug.com/1457146): This should be separated to avoid confusion.
+  // TODO(crbug.com/40273478): This should be separated to avoid confusion.
   [self closeAllButtonTapped:nil];
 }
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     [self cancelSearchButtonTapped:nil];
   } else {
     [self doneButtonTapped:nil];

@@ -30,10 +30,13 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
-#include "third_party/blink/renderer/modules/webdatabase/database_manager.h"
+#include "third_party/blink/renderer/modules/webdatabase/database_client.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_task.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_thread.h"
+#include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
+#include "third_party/blink/renderer/modules/webdatabase/storage_log.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -44,18 +47,18 @@ namespace blink {
 // ... in other words, who's keeping the DatabaseContext alive and how long does
 // it need to stay alive?
 //
-// The DatabaseContext is referenced from:
-// 1. DatabaseManager
+// The DatabaseContext is referenced from
+// 1. Supplement<ExecutionContext>
 // 2. Database
 //
 // At Birth:
 // ========
 // We create a DatabaseContext only when there is a need i.e. the script tries
-// to open a Database via DatabaseManager::openDatabase().
+// to open a Database via DatabaseContext::OpenDatabase().
 //
-// The DatabaseContext constructor will register itself to DatabaseManager. This
-// lets DatabaseContext keep itself alive until it is unregisterd in
-// contextDestroyed().
+// The DatabaseContext constructor will register itself to ExecutionContext as
+// a supplement. This lets DatabaseContext keep itself alive until it is
+// cleared after ContextDestroyed().
 //
 // Once a DatabaseContext is associated with a ExecutionContext, it will
 // live until after the ExecutionContext destructs. This is true even if
@@ -74,7 +77,7 @@ namespace blink {
 //      list. This removal needs to be executed on the script's thread. Hence,
 //      we
 //      rely on the ExecutionContext's shutdown process to call
-//      stop() and contextDestroyed() to give us a chance to clean these up from
+//      Stop() and ContextDestroyed() to give us a chance to clean these up from
 //      the script thread.
 //
 // 2. "outlive" the Databases.
@@ -88,35 +91,37 @@ namespace blink {
 // be a race condition as to whether the ExecutionContext or the Databases
 // destruct first.
 //
-// The Members in the Databases and DatabaseManager will ensure that the
-// DatabaseContext will outlive Database and ExecutionContext regardless of
-// which of the 2 destructs first.
+// The Members in the Databases and Supplement<ExecutionContext> will ensure
+// that the DatabaseContext will outlive Database and ExecutionContext
+// regardless of which of the 2 destructs first.
 
-DatabaseContext* DatabaseContext::Create(ExecutionContext* context) {
-  DatabaseContext* self = MakeGarbageCollected<DatabaseContext>(context);
-  DatabaseManager::Manager().RegisterDatabaseContext(self);
-  return self;
+DatabaseContext* DatabaseContext::From(ExecutionContext& context) {
+  auto* supplement =
+      Supplement<ExecutionContext>::From<DatabaseContext>(context);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<DatabaseContext>(
+        context, base::PassKey<DatabaseContext>());
+    ProvideTo(context, supplement);
+  }
+  return supplement;
 }
 
-DatabaseContext::DatabaseContext(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+const char DatabaseContext::kSupplementName[] = "DatabaseContext";
+
+DatabaseContext::DatabaseContext(ExecutionContext& context,
+                                 base::PassKey<DatabaseContext> passkey)
+    : Supplement<ExecutionContext>(context),
+      ExecutionContextLifecycleObserver(&context),
       has_open_databases_(false),
       has_requested_termination_(false) {
   DCHECK(IsMainThread());
-
-  // For debug accounting only. We must do this before we register the
-  // instance. The assertions assume this.
-  DatabaseManager::Manager().DidConstructDatabaseContext();
 }
 
-DatabaseContext::~DatabaseContext() {
-  // For debug accounting only. We must call this last. The assertions assume
-  // this.
-  DatabaseManager::Manager().DidDestructDatabaseContext();
-}
+DatabaseContext::~DatabaseContext() = default;
 
 void DatabaseContext::Trace(Visitor* visitor) const {
   visitor->Trace(database_thread_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -127,11 +132,6 @@ void DatabaseContext::Trace(Visitor* visitor) const {
 // It is not safe to just delete the context here.
 void DatabaseContext::ContextDestroyed() {
   StopDatabases();
-  DatabaseManager::Manager().UnregisterDatabaseContext(this);
-}
-
-DatabaseContext* DatabaseContext::Backend() {
-  return this;
 }
 
 DatabaseThread* DatabaseContext::GetDatabaseThread() {
@@ -184,6 +184,98 @@ const SecurityOrigin* DatabaseContext::GetSecurityOrigin() const {
 
 bool DatabaseContext::IsContextThread() const {
   return GetExecutionContext()->IsContextThread();
+}
+
+static void LogOpenDatabaseError(ExecutionContext* context,
+                                 const String& name) {
+  STORAGE_DVLOG(1) << "Database " << name << " for origin "
+                   << context->GetSecurityOrigin()->ToString()
+                   << " not allowed to be established";
+}
+
+Database* DatabaseContext::OpenDatabaseInternal(
+    const String& name,
+    const String& expected_version,
+    const String& display_name,
+    V8DatabaseCallback* creation_callback,
+    bool set_version_in_new_database,
+    DatabaseError& error,
+    String& error_message) {
+  DCHECK_EQ(error, DatabaseError::kNone);
+
+  if (DatabaseTracker::Tracker().CanEstablishDatabase(this, error)) {
+    Database* backend = MakeGarbageCollected<Database>(
+        this, name, expected_version, display_name);
+    if (backend->OpenAndVerifyVersion(set_version_in_new_database, error,
+                                      error_message, creation_callback)) {
+      return backend;
+    }
+  }
+
+  DCHECK_NE(error, DatabaseError::kNone);
+  switch (error) {
+    case DatabaseError::kGenericSecurityError:
+      LogOpenDatabaseError(GetExecutionContext(), name);
+      return nullptr;
+
+    case DatabaseError::kInvalidDatabaseState:
+      LogErrorMessage(GetExecutionContext(), error_message);
+      return nullptr;
+
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+  return nullptr;
+}
+
+Database* DatabaseContext::OpenDatabase(const String& name,
+                                        const String& expected_version,
+                                        const String& display_name,
+                                        V8DatabaseCallback* creation_callback,
+                                        DatabaseError& error,
+                                        String& error_message) {
+  DCHECK_EQ(error, DatabaseError::kNone);
+
+  bool set_version_in_new_database = !creation_callback;
+  Database* database = OpenDatabaseInternal(
+      name, expected_version, display_name, creation_callback,
+      set_version_in_new_database, error, error_message);
+  if (!database) {
+    return nullptr;
+  }
+
+  SetHasOpenDatabases();
+  ExecutionContext* context = GetExecutionContext();
+  DatabaseClient::From(context)->DidOpenDatabase(
+      database, context->GetSecurityOrigin()->Host(), name, expected_version);
+  DCHECK(database);
+  return database;
+}
+
+void DatabaseContext::ThrowExceptionForDatabaseError(
+    DatabaseError error,
+    const String& error_message,
+    ExceptionState& exception_state) {
+  switch (error) {
+    case DatabaseError::kNone:
+      return;
+    case DatabaseError::kGenericSecurityError:
+      exception_state.ThrowSecurityError(error_message);
+      return;
+    case DatabaseError::kInvalidDatabaseState:
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        error_message);
+      return;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+}
+
+void DatabaseContext::LogErrorMessage(ExecutionContext* context,
+                                      const String& message) {
+  context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kStorage,
+      mojom::blink::ConsoleMessageLevel::kError, message));
 }
 
 }  // namespace blink

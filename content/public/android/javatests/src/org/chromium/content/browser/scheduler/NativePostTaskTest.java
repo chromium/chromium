@@ -24,7 +24,9 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.task.SchedulerTestHelpers;
 import org.chromium.base.test.task.ThreadPoolTestHelpers;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -37,10 +39,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Test class for {@link PostTask}.
  *
- * Due to layering concerns we can't test native backed task posting in base, so we do it here
+ * <p>Due to layering concerns we can't test native backed task posting in base, so we do it here
  * instead.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class NativePostTaskTest {
     private static class BlockedTask extends BackgroundOnlyAsyncTask<Integer> {
         private Object mStartLock = new Object();
@@ -79,9 +82,14 @@ public class NativePostTaskTest {
         }
     }
 
+    private static boolean sNativeLoaded;
+    private boolean mFenceCreated;
+
     @After
     public void tearDown() {
-        ThreadPoolTestHelpers.disableThreadPoolExecutionForTesting();
+        if (mFenceCreated) {
+            ThreadPoolTestHelpers.disableThreadPoolExecutionForTesting();
+        }
     }
 
     @Test
@@ -113,6 +121,7 @@ public class NativePostTaskTest {
 
     @Test
     @MediumTest
+    @RequiresRestart
     public void testNativePostDelayedTask() throws Exception {
         final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
@@ -171,14 +180,6 @@ public class NativePostTaskTest {
         testRunningTasksInSequence(taskQueue);
     }
 
-    @Test
-    @MediumTest
-    public void testCreateSingleThreadSequencedTaskRunner() {
-        startNativeScheduler();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        testRunningTasksInSequence(taskQueue);
-    }
-
     private void performSequencedTestSchedulerMigration(
             TaskRunner taskQueue, List<Integer> orderListImmediate, List<Integer> orderListDelayed)
             throws Exception {
@@ -228,22 +229,11 @@ public class NativePostTaskTest {
 
     @Test
     @MediumTest
+    @RequiresRestart
     public void testCreateSequencedTaskRunnerMigrationToNative() throws Exception {
         List<Integer> orderListImmediate = new ArrayList<>();
         List<Integer> orderListDelayed = new ArrayList<>();
         TaskRunner taskQueue = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);
-        performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
-
-        assertThat(orderListImmediate, contains(1, 2, 3, 4));
-        assertThat(orderListDelayed, contains(1, 2, 3));
-    }
-
-    @Test
-    @MediumTest
-    public void testCreateSingleThreadSequencedTaskRunnerMigrationToNative() throws Exception {
-        List<Integer> orderListImmediate = new ArrayList<>();
-        List<Integer> orderListDelayed = new ArrayList<>();
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
         performSequencedTestSchedulerMigration(taskQueue, orderListImmediate, orderListDelayed);
 
         assertThat(orderListImmediate, contains(1, 2, 3, 4));
@@ -258,7 +248,7 @@ public class NativePostTaskTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(
+        taskQueue.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -269,7 +259,7 @@ public class NativePostTaskTest {
                                 lock.notify();
                             }
                         } else {
-                            taskQueue.postTask(this);
+                            taskQueue.execute(this);
                         }
                     }
                 });
@@ -347,9 +337,13 @@ public class NativePostTaskTest {
     }
 
     private void startNativeScheduler() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        PowerMonitor.createForTests();
-        ContentMain.start(/* startMinimalBrowser= */ false);
+        if (!sNativeLoaded) {
+            NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+            PowerMonitor.createForTests();
+            ContentMain.start(/* startMinimalBrowser= */ false);
+            sNativeLoaded = true;
+        }
+        mFenceCreated = true;
         ThreadPoolTestHelpers.enableThreadPoolExecutionForTesting();
     }
 }

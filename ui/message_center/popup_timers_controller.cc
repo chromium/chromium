@@ -5,6 +5,7 @@
 #include "ui/message_center/popup_timers_controller.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
@@ -61,7 +62,8 @@ void PopupTimersController::StartTimer(const std::string& id,
     return;
   }
 
-  std::unique_ptr<PopupTimer> timer(new PopupTimer(id, timeout, AsWeakPtr()));
+  auto timer =
+      std::make_unique<PopupTimer>(id, timeout, weak_ptr_factory_.GetWeakPtr());
 
   timer->Start();
   popup_timers_.emplace(id, std::move(timer));

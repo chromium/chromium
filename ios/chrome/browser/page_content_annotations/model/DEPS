@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/page_content_annotations/core",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/autocomplete/model",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+components/variations/service",
+]

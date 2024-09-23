@@ -165,8 +165,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (local_paint_info.phase != PaintPhase::kForeground &&
       local_paint_info.phase != PaintPhase::kSelectionDragImage &&
-      !layout_replaced_.CanHaveChildren())
+      (!layout_replaced_.CanHaveChildren() || layout_replaced_.IsCanvas())) {
     return;
+  }
 
   if (local_paint_info.phase == PaintPhase::kSelectionDragImage &&
       !layout_replaced_.IsSelected())
@@ -183,14 +184,13 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     MeasureOverflowMetrics();
   }
 
-  if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
+  if (layout_replaced_.StyleRef().UsedVisibility() == EVisibility::kVisible &&
       layout_replaced_.CanResize()) {
     auto* scrollable_area = layout_replaced_.GetScrollableArea();
     DCHECK(scrollable_area);
     if (!scrollable_area->HasLayerForScrollCorner()) {
       ScrollableAreaPainter(*scrollable_area)
-          .PaintResizer(local_paint_info.context,
-                        ToRoundedVector2d(paint_offset),
+          .PaintResizer(local_paint_info.context, paint_offset,
                         local_paint_info.GetCullRect());
     }
     // Otherwise the resizer will be painted by the scroll corner layer.
@@ -234,7 +234,8 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                              selection_painting_int_rect);
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
-        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection);
+        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
+        SearchTextIsCurrent::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
@@ -259,8 +260,9 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
   // But if it's an SVG root, there can be children, so we'll check visibility
   // later.
   if (!layout_replaced_.IsSVGRoot() &&
-      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible)
+      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
 
   PhysicalRect local_rect = layout_replaced_.VisualOverflowRect();
   local_rect.Unite(layout_replaced_.LocalSelectionVisualRect());
@@ -308,7 +310,7 @@ void ReplacedPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   const ComputedStyle& style = layout_replaced_.StyleRef();
-  if (style.Visibility() != EVisibility::kVisible) {
+  if (style.UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -492,7 +494,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
 
   if (!layout_replaced_.HasMask() ||
-      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
+      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 

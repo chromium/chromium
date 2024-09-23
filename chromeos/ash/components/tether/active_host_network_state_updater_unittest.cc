@@ -106,7 +106,7 @@ class ActiveHostNetworkStateUpdaterTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
 
   std::unique_ptr<FakeActiveHost> fake_active_host_;
 

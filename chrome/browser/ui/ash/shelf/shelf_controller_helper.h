@@ -12,7 +12,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 class ArcAppListPrefs;
 class ExtensionEnableFlow;
@@ -62,6 +61,10 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus GetAppStatus(Profile* profile,
                                      const std::string& app_id);
 
+  // Returns whether the app with `app_id` was installed by default.
+  static bool IsAppDefaultInstalled(Profile* profile,
+                                    const std::string& app_id);
+
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);
@@ -89,15 +92,6 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // Convert promise status into general app status.
   static ash::AppStatus ConvertPromiseStatusToAppStatus(
       apps::PromiseStatus promise_status);
-
-  // Check whether this item is an app service shortcut.
-  static bool IsAppServiceShortcut(Profile* profile, const std::string& id);
-
-  // Get the accessible label that should be announced by the scrrenreader for
-  // the specific app service shortcut shelf item.
-  static std::u16string GetAppServiceShortcutAccessibleLabel(
-      Profile* profile,
-      const apps::ShortcutId& shortcut_id);
 
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.

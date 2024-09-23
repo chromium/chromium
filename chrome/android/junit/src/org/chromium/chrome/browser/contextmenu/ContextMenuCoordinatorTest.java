@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 
@@ -23,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -35,8 +37,8 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -46,8 +48,10 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
@@ -66,10 +70,8 @@ import java.util.List;
 
 /** Unit tests for the context menu. Use density=mdpi so the screen density is 1. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-    ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-})
+@DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+@EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY})
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
 
@@ -137,7 +139,6 @@ public class ContextMenuCoordinatorTest {
         }
     }
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mocker = new JniMocker();
 
     @Rule
@@ -207,13 +208,70 @@ public class ContextMenuCoordinatorTest {
         assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
         assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        // "Save link as"  and "save image" should be enabled.
+        assertTrue(itemList.get(4).model.get(ENABLED));
+        assertTrue(itemList.get(8).model.get(ENABLED));
+    }
+
+    @Test
+    public void testGetItemListWithDownloadBlockedByPolicy() {
+        final ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        ContextMenuDataMediaType.IMAGE,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        /* additionalNavigationParams= */ null);
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
+        // Link items
+        ModelList groupOne = new ModelList();
+        groupOne.add(createListItem(Item.OPEN_IN_NEW_TAB));
+        groupOne.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
+        groupOne.add(createListItem(Item.SAVE_LINK_AS, false));
+        groupOne.add(createShareListItem(Item.SHARE_LINK));
+        rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
+        // Image Items
+        ModelList groupTwo = new ModelList();
+        groupTwo.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
+        groupTwo.add(createListItem(Item.SAVE_IMAGE, false));
+        groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
+        rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
+
+        mCoordinator.initializeHeaderCoordinatorForTesting(
+                mActivity, params, mProfile, mNativeDelegate);
+        ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {}, true);
+
+        assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
+        assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
+        assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(3).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(5).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        assertThat(itemList.get(6).type, equalTo(ListItemType.DIVIDER));
+        assertThat(itemList.get(7).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(8).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+        assertThat(itemList.get(9).type, equalTo(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON));
+        // "Save link as"  and "save image" should be disabled.
+        assertFalse(itemList.get(4).model.get(ENABLED));
+        assertFalse(itemList.get(8).model.get(ENABLED));
     }
 
     @Test
     public void testGetItemListWithLink() {
         // We're testing it for a link, but the mediaType in params is image. That's because if it
         // isn't image or video, the header mediator tries to get a favicon for us and calls
-        // Profile.getLastUsedRegularProfile(), which throws an exception because native isn't
+        // ProfileManager.getLastUsedRegularProfile(), which throws an exception because native
+        // isn't
         // initialized. mediaType here doesn't have any effect on what we're testing.
         final ContextMenuParams params =
                 new ContextMenuParams(
@@ -300,13 +358,11 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @DisabledTest(message = "crbug.com/1444964")
-    @EnableFeatures({
-        ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-    })
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
             shadows = {ShadowContextMenuDialog.class},
             qualifiers = "mdpi")
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/* isPopup= */ true);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
@@ -404,10 +460,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @DisabledTest(message = "crbug.com/1444964")
-    @EnableFeatures({
-        ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
-    })
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
             shadows = {
                 ShadowContextMenuDialog.class,
@@ -415,6 +468,7 @@ public class ContextMenuCoordinatorTest {
                 ShadowProfile.class
             },
             qualifiers = "mdpi")
+    @CommandLineFlags.Add(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testDisplayMenu_DragEnabled() {
         final int shadowImgWidth = 50;
         final int shadowImgHeight = 40;
@@ -457,10 +511,17 @@ public class ContextMenuCoordinatorTest {
     }
 
     private ListItem createListItem(@Item int item) {
+        return createListItem(item, /* enabled= */ true);
+    }
+
+    private ListItem createListItem(@Item int item, boolean enabled) {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .with(ENABLED, enabled)
+                        .with(
+                                TEXT,
+                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM, model);
     }
@@ -469,7 +530,10 @@ public class ContextMenuCoordinatorTest {
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(TEXT, ChromeContextMenuItem.getTitle(mActivity, item, false))
+                        .with(ENABLED, true)
+                        .with(
+                                TEXT,
+                                ChromeContextMenuItem.getTitle(mActivity, mProfile, item, false))
                         .build();
         return new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON, model);
     }

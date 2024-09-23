@@ -79,7 +79,7 @@ TraceEntryInfo GetTraceEntryInfoFromValue(const base::Value::Dict& value) {
   return info;
 }
 
-void EnableTraceLog(base::StringPiece category) {
+void EnableTraceLog(std::string_view category) {
   TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(category, ""), TraceLog::RECORDING_MODE);
   // AsyncEnabledStateObserver will receive enabled notification one message
@@ -124,7 +124,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       bool has_more_events) {
     DCHECK(trace_events_.empty());
     trace_buffer_.Start();
-    trace_buffer_.AddFragment(events_str->data());
+    trace_buffer_.AddFragment(events_str->as_string());
     trace_buffer_.Finish();
 
     std::optional<base::Value> trace_value;
@@ -209,30 +209,6 @@ TEST_F(TraceNetLogObserverTest, TracingNotEnabled) {
 
   EXPECT_EQ(0u, trace_events_size());
 }
-
-// This test will result in a deadlock if EnabledStateObserver instead
-// of AsyncEnabledStateObserver is used. Regression test for crbug.com/760817.
-// Perfetto SDK doesn't have this problem, so the test is not necessary.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TraceNetLogObserverTest, TracingDisabledDuringOnAddEntry) {
-  trace_net_log_observer()->WatchForTraceStart(NetLog::Get());
-  TraceLog* trace_log = TraceLog::GetInstance();
-  trace_log->SetTraceBufferForTesting(base::WrapUnique(
-      base::trace_event::TraceBuffer::CreateTraceBufferVectorOfSize(1)));
-  EnableTraceLogWithNetLog();
-  // TraceLog will disable itself when an event makes the TraceBuffer full.
-  while (!trace_log->BufferIsFull()) {
-    NetLog::Get()->AddGlobalEntry(NetLogEventType::REQUEST_ALIVE);
-  }
-
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(trace_log->IsEnabled());
-  ASSERT_FALSE(trace_net_log_observer()->net_log());
-  trace_net_log_observer()->StopWatchForTraceStart();
-  // Flush now so that TraceLog's buffer is empty in the next test.
-  EndTraceAndFlush();
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   auto entries = net_log_observer()->GetEntries();
@@ -460,17 +436,10 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   ASSERT_TRUE(item1_params);
   EXPECT_EQ("bar", *item1_params);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Perfetto tracing backend skips empty args.
   const base::Value::Dict* item2_args =
       item2->GetDict().FindDictByDottedPath("args");
   EXPECT_FALSE(item2_args->contains("params"));
-#else
-  const base::Value::Dict* item2_params =
-      item2->GetDict().FindDictByDottedPath("args.params");
-  ASSERT_TRUE(item2_params);
-  EXPECT_TRUE(item2_params->empty());
-#endif
 }
 
 TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {

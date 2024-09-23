@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "url/origin.h"

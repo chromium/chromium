@@ -1,0 +1,119 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfig.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreator.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandler.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarLogger.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
+  ]
+  deps = [
+    ":java_resources",
+    ":proto_java",
+    "//base:base_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/gsa:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/lens:util_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//components/search_engines/android:java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.google_bottom_bar"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/bookmark.xml",
+    "java/res/drawable/bottom_bar_home_icon.xml",
+    "java/res/drawable/bottom_bar_page_insights_icon.xml",
+    "java/res/drawable/bottom_bar_searchbox_background.xml",
+    "java/res/drawable/bottom_bar_searchbox_lens_icon.xml",
+    "java/res/drawable/bottom_bar_searchbox_mic_icon.xml",
+    "java/res/drawable/bottom_bar_searchbox_superg_icon.xml",
+    "java/res/layout/bottom_bar_button_even_layout.xml",
+    "java/res/layout/bottom_bar_button_non_spotlight_layout.xml",
+    "java/res/layout/bottom_bar_button_spotlight_layout.xml",
+    "java/res/layout/bottom_bar_double_decker_root_layout.xml",
+    "java/res/layout/bottom_bar_no_variant_root_layout.xml",
+    "java/res/layout/bottom_bar_single_decker_root_layout.xml",
+    "java/res/layout/bottom_bar_single_decker_with_right_buttons_root_layout.xml",
+    "java/res/layout/google_bottom_bar_even.xml",
+    "java/res/layout/google_bottom_bar_searchbox.xml",
+    "java/res/layout/google_bottom_bar_spotlight.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//content/public/android:content_java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreatorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandlerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarLoggerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreatorTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/gsa:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/lens:util_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/google_bottom_bar:proto_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/search_engines/android:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:url_java",
+  ]
+}
+
+proto_java_library("proto_java") {
+  proto_path = "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/proto"
+  sources = [ "$proto_path/intent_params.proto" ]
+}

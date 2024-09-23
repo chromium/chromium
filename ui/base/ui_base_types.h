@@ -7,27 +7,30 @@
 
 #include <cstdint>
 
+#include "ui/base/mojom/window_show_state.mojom.h"
+
 namespace ui {
 
-// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
-// full restore, and read from disk by a possibly newer version of chrome. This
-// means that it's ok to add new values, but existing values should never be
-// changed or removed.
-//
-// Window "show" state.
-// TODO: Add snapped window state to immersive fullscreen state to
-// WindowShowState. Those are ChromeOS specific window states but we should make
-// it available here as well as Lacros also needs to know those states.
-enum WindowShowState {
-  // A default un-set state.
-  SHOW_STATE_DEFAULT = 0,
-  SHOW_STATE_NORMAL = 1,
-  SHOW_STATE_MINIMIZED = 2,
-  SHOW_STATE_MAXIMIZED = 3,
-  SHOW_STATE_INACTIVE = 4,  // Views only, not persisted.
-  SHOW_STATE_FULLSCREEN = 5,
-  SHOW_STATE_END = 6  // The end of show state enum.
-};
+// Alias until all clients of `WindowShowState` have been migrated.
+// Will be removed once that is complete.
+using WindowShowState = ::ui::mojom::WindowShowState;
+
+// Alias for the old enumerators of `WindowShowState` until all clients have
+// been migrated. Will be removed once that is complete.
+inline constexpr WindowShowState SHOW_STATE_DEFAULT =
+    ui::mojom::WindowShowState::kDefault;
+inline constexpr WindowShowState SHOW_STATE_NORMAL =
+    ui::mojom::WindowShowState::kNormal;
+inline constexpr WindowShowState SHOW_STATE_MINIMIZED =
+    ui::mojom::WindowShowState::kMinimized;
+inline constexpr WindowShowState SHOW_STATE_MAXIMIZED =
+    ui::mojom::WindowShowState::kMaximized;
+inline constexpr WindowShowState SHOW_STATE_INACTIVE =
+    ui::mojom::WindowShowState::kInactive;
+inline constexpr WindowShowState SHOW_STATE_FULLSCREEN =
+    ui::mojom::WindowShowState::kFullscreen;
+inline constexpr WindowShowState SHOW_STATE_END =
+    ui::mojom::WindowShowState::kEnd;
 
 // Specifies which edges of the window are tiled.
 //
@@ -51,14 +54,6 @@ struct WindowTiledEdges {
   }
 };
 
-// Dialog button identifiers used to specify which buttons to show the user.
-enum DialogButton {
-  DIALOG_BUTTON_NONE = 0,
-  DIALOG_BUTTON_OK = 1,
-  DIALOG_BUTTON_CANCEL = 2,
-  DIALOG_BUTTON_LAST = DIALOG_BUTTON_CANCEL,
-};
-
 // MdTextButtons have various button styles that can change the button's
 // relative prominence/priority. The relative priority (least to greatest) is
 // as follows:
@@ -75,20 +70,11 @@ enum class ButtonStyle {
   kProminent,
 };
 
-// Specifies the type of modality applied to a window. Different modal
-// treatments may be handled differently by the window manager.
-enum ModalType {
-  MODAL_TYPE_NONE = 0,    // Window is not modal.
-  MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
-  MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
-};
-
 // The class of window and its overall z-order. Only the Mac provides this
 // level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values
 // here that aren't `kNormal` are treated equally as "always on top".
-// TODO(crbug.com/1358586): For non-desktop widgets on Linux and Windows,
+// TODO(crbug.com/40237029): For non-desktop widgets on Linux and Windows,
 // this z-order currently does not have any effect.
 enum class ZOrderLevel {
   // The default level for windows.

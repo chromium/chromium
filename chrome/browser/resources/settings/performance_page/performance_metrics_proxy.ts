@@ -18,6 +18,19 @@ export enum BatterySaverModeState {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// This must be kept in sync with MemorySaverModeAggressiveness in
+// components/performance_manager/public/user_tuning/prefs.h
+export enum MemorySaverModeAggressiveness {
+  CONSERVATIVE = 0,
+  MEDIUM = 1,
+  AGGRESSIVE = 2,
+
+  // Must be last.
+  COUNT = 3,
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 export enum MemorySaverModeExceptionListAction {
   ADD_MANUAL = 0,
   EDIT = 1,
@@ -34,8 +47,8 @@ export enum MemorySaverModeExceptionListAction {
 // components/performance_manager/public/user_tuning/prefs.h
 export enum MemorySaverModeState {
   DISABLED = 0,
-  ENABLED = 1,
-  ENABLED_ON_TIMER = 2,
+  DEPRECATED = 1,
+  ENABLED = 2,
 
   // Must be last.
   COUNT = 3,
@@ -44,7 +57,11 @@ export enum MemorySaverModeState {
 export interface PerformanceMetricsProxy {
   recordBatterySaverModeChanged(state: BatterySaverModeState): void;
   recordMemorySaverModeChanged(state: MemorySaverModeState): void;
+  recordMemorySaverModeAggressivenessChanged(
+      aggressiveness: MemorySaverModeAggressiveness): void;
+  recordDiscardRingTreatmentEnabledChanged(enabled: boolean): void;
   recordExceptionListAction(action: MemorySaverModeExceptionListAction): void;
+  recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void;
 }
 
 export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
@@ -60,10 +77,27 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
         MemorySaverModeState.COUNT);
   }
 
+  recordMemorySaverModeAggressivenessChanged(
+      aggressiveness: MemorySaverModeAggressiveness): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PerformanceControls.MemorySaver.SettingsChangeAggressiveness',
+        aggressiveness, MemorySaverModeAggressiveness.COUNT);
+  }
+
+  recordDiscardRingTreatmentEnabledChanged(enabled: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'PerformanceControls.MemorySaver.DiscardRingTreatment', enabled);
+  }
+
   recordExceptionListAction(action: MemorySaverModeExceptionListAction) {
     chrome.metricsPrivate.recordEnumerationValue(
         'PerformanceControls.MemorySaver.SettingsChangeExceptionList', action,
         MemorySaverModeExceptionListAction.COUNT);
+  }
+
+  recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'PerformanceControls.Intervention.SettingsChangeNotification', enabled);
   }
 
   static getInstance(): PerformanceMetricsProxy {

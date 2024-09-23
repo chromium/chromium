@@ -17,10 +17,10 @@ class InternalsFuzzing final {
   STATIC_ONLY(InternalsFuzzing);
 
  public:
-  static ScriptPromise runFuzzer(ScriptState* context,
-                                 Internals&,
-                                 const String& fuzzer_id,
-                                 V8BufferSource* fuzzer_data);
+  static ScriptPromise<IDLUndefined> runFuzzer(ScriptState* context,
+                                               Internals&,
+                                               const String& fuzzer_id,
+                                               V8BufferSource* fuzzer_data);
 };
 
 }  // namespace blink

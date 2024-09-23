@@ -29,7 +29,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -43,8 +42,8 @@ class Document;
 class Element;
 class FocusChangedObserver;
 class Frame;
+class HTMLElement;
 class HTMLFrameOwnerElement;
-class HTMLSlotElement;
 class InputDeviceCapabilities;
 class LocalFrame;
 class Page;
@@ -88,7 +87,7 @@ class CORE_EXPORT FocusController final
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  static HTMLSlotElement* FindScopeOwnerSlot(const Element&);
+  static HTMLElement* FindScopeOwnerSlotOrReadingFlowContainer(const Element&);
 
   // Returns the next focusable element (likely an <input> field) after the
   // given element in focus traversal and within the enclosing <form> that

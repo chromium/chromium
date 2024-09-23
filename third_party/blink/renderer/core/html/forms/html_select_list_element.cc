@@ -264,8 +264,7 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectListElement);
 
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
   select_mutation_callback_ =
       MakeGarbageCollected<HTMLSelectListElement::SelectMutationCallback>(
           *this);
@@ -432,7 +431,7 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       MakeGarbageCollected<PreviewPopoverInnerElement>(document);
   suggested_option_popover_->setAttribute(html_names::kPopoverAttr,
                                           keywords::kManual);
-  suggested_option_popover_->SetPopoverOwnerSelectListElement(this);
+  suggested_option_popover_->SetInternalImplicitAnchor(this);
   suggested_option_popover_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-preview"));
   root.AppendChild(suggested_option_popover_);
@@ -473,11 +472,11 @@ String HTMLSelectListElement::value() const {
 void HTMLSelectListElement::setValueForBinding(const String& value) {
   String old_value = this->value();
   bool was_autofilled = IsAutofilled();
+  bool value_changed = old_value != value;
   setValue(value, /*send_events=*/false,
-           !was_autofilled || value != old_value
-               ? WebAutofillState::kNotFilled
-               : WebAutofillState::kAutofilled);
-  if (Page* page = GetDocument().GetPage()) {
+           was_autofilled && !value_changed ? WebAutofillState::kAutofilled
+                                            : WebAutofillState::kNotFilled);
+  if (Page* page = GetDocument().GetPage(); page && value_changed) {
     page->GetChromeClient().JavaScriptChangedValue(*this, old_value,
                                                    was_autofilled);
   }
@@ -607,11 +606,11 @@ bool HTMLSelectListElement::SetListboxPart(HTMLElement* new_listbox_part) {
     return false;
 
   if (listbox_part_) {
-    listbox_part_->SetPopoverOwnerSelectListElement(nullptr);
+    listbox_part_->SetInternalImplicitAnchor(nullptr);
   }
 
   if (new_listbox_part) {
-    new_listbox_part->SetPopoverOwnerSelectListElement(this);
+    new_listbox_part->SetInternalImplicitAnchor(this);
   } else {
     QueueCheckForMissingParts();
   }
@@ -1068,13 +1067,15 @@ void HTMLSelectListElement::SetSelectedOption(
   }
   NotifyFormStateChanged();
 
-  // We set the Autofill state again because setting the autofill value
-  // triggers JavaScript events and the site may override the autofilled value,
-  // which resets the Autofilled state. Even if the website modifies the from
-  // control element's content during the autofill operation, we want the state
-  // to show as autofilled.
-  SetAutofillState(selected_option ? autofill_state
-                                   : WebAutofillState::kNotFilled);
+  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
+    // We set the Autofill state again because setting the autofill value
+    // triggers JavaScript events and the site may override the autofilled
+    // value, which resets the Autofilled state. Even if the website modifies
+    // the from control element's content during the autofill operation, we want
+    // the state to show as autofilled.
+    SetAutofillState(selected_option ? autofill_state
+                                     : WebAutofillState::kNotFilled);
+  }
 }
 
 void HTMLSelectListElement::OptionElementChildrenChanged(

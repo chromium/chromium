@@ -28,8 +28,9 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
       V8WakeLockType::Enum::kScreen, mojom::blink::PermissionStatus::GRANTED);
 
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise screen_promise = screen_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto screen_promise = screen_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
@@ -42,8 +43,9 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
   screen_lock.WaitForRequest();
   context.WaitForPromiseFulfillment(screen_promise);
 
-  EXPECT_NE(nullptr, ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
-                         screen_promise));
+  EXPECT_NE(nullptr,
+            ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+                context.GetScriptState()->GetIsolate(), screen_promise));
   EXPECT_TRUE(screen_lock.is_acquired());
 }
 
@@ -56,8 +58,9 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
       V8WakeLockType::Enum::kSystem, mojom::blink::PermissionStatus::DENIED);
 
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise system_promise = system_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kSystem, system_resolver);
@@ -76,7 +79,8 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   // System locks are not allowed by default, so the promise should have been
   // rejected with a NotAllowedError DOMException.
   DOMException* dom_exception =
-      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(system_promise);
+      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
+          context.GetScriptState()->GetIsolate(), system_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 }
@@ -98,14 +102,14 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
   // First, acquire a handful of locks of different types.
   auto* screen_resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  screen_resolver1->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
   auto* screen_resolver2 =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  screen_resolver2->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
   auto* system_resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  system_resolver1->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver1);
@@ -116,8 +120,8 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
   // Now shut down our Document and make sure all [[ActiveLocks]] slots have
   // been cleared. We cannot check that the promises have been rejected because
-  // ScriptPromiseResolver::Reject() will bail out if we no longer have a valid
-  // execution context.
+  // ScriptPromiseResolverBase::Reject() will bail out if we no longer have a
+  // valid execution context.
   context.Frame()->DomWindow()->FrameDestroyed();
   screen_lock.WaitForCancelation();
   system_lock.WaitForCancelation();
@@ -140,14 +144,16 @@ TEST(WakeLockTest, PageVisibilityHidden) {
   MockWakeLock& screen_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise screen_promise = screen_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise system_promise = system_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
@@ -170,8 +176,9 @@ TEST(WakeLockTest, PageVisibilityHidden) {
       mojom::blink::PageVisibilityState::kVisible, false);
 
   auto* other_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise other_promise = other_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto other_promise = other_resolver->Promise();
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, other_resolver);
   screen_lock.WaitForRequest();
   context.WaitForPromiseFulfillment(other_promise);
@@ -193,14 +200,16 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   MockWakeLock& screen_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kScreen);
   auto* screen_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise screen_promise = screen_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto screen_promise = screen_resolver->Promise();
 
   MockWakeLock& system_lock =
       wake_lock_service.get_wake_lock(V8WakeLockType::Enum::kSystem);
   auto* system_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(context.GetScriptState());
-  ScriptPromise system_promise = system_resolver->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<WakeLockSentinel>>(
+          context.GetScriptState());
+  auto system_promise = system_resolver->Promise();
 
   auto* wake_lock = WakeLock::wakeLock(*context.DomWindow()->navigator());
   wake_lock->DoRequest(V8WakeLockType::Enum::kScreen, screen_resolver);
@@ -215,7 +224,8 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   EXPECT_EQ(v8::Promise::kRejected,
             ScriptPromiseUtils::GetPromiseState(screen_promise));
   DOMException* dom_exception =
-      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(screen_promise);
+      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
+          context.GetScriptState()->GetIsolate(), screen_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 

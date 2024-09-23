@@ -7,7 +7,6 @@ closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
 jsbundler_modules = [
-  "//third_party/chromevox/third_party/closure-library/closure/bin/build/depstree.py",
   "//third_party/chromevox/third_party/closure-library/closure/bin/build/source.py",
   "//third_party/chromevox/third_party/closure-library/closure/bin/build/treescan.py",
   "//third_party/rjsmin/rjsmin.py",
@@ -16,11 +15,6 @@ jsbundler_modules = [
 template("run_jsbundler") {
   assert(defined(invoker.mode))
   assert(defined(invoker.sources))
-  if (defined(invoker.modules)) {
-    modules = invoker.modules
-  } else {
-    modules = []
-  }
   if (defined(invoker.rewrite_rules)) {
     rewrite_rules = invoker.rewrite_rules
   } else {
@@ -44,13 +38,8 @@ template("run_jsbundler") {
     sources = invoker.sources
     forward_variables_from(invoker, [ "deps" ])
     if (defined(invoker.output_file)) {
-      if (defined(invoker.modules)) {
-        depfile = "$target_out_dir/" +
-                  get_path_info(invoker.output_file, "name") + ".d"
-      }
       outputs = [ invoker.output_file ]
     } else {
-      assert(!defined(invoker.modules))
       stampfile = "$target_out_dir/${target_name}_copy.stamp"
       outputs = [ stampfile ]
     }
@@ -87,12 +76,6 @@ template("run_jsbundler") {
       args += [
         "-d",
         rebase_path(invoker.dest_dir, root_build_dir),
-      ]
-    }
-    foreach(module, modules) {
-      args += [
-        "-M",
-        rebase_path(module, root_build_dir),
       ]
     }
     foreach(rule, rewrite_rules) {

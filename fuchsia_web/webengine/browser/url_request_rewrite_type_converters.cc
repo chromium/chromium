@@ -4,15 +4,16 @@
 
 #include "fuchsia_web/webengine/browser/url_request_rewrite_type_converters.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "fuchsia_web/common/string_util.h"
 #include "net/base/url_util.h"
 
 namespace {
 
-std::string NormalizeHost(base::StringPiece host) {
+std::string NormalizeHost(std::string_view host) {
   return GURL(base::StrCat({url::kHttpScheme, "://", host})).host();
 }
 
@@ -29,8 +30,8 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr,
         url_rewrite::mojom::UrlRequestRewriteAddHeaders::New();
     if (input.has_headers()) {
       for (const auto& header : input.headers()) {
-        base::StringPiece header_name = BytesAsString(header.name);
-        base::StringPiece header_value = BytesAsString(header.value);
+        std::string_view header_name = BytesAsString(header.name);
+        std::string_view header_value = BytesAsString(header.value);
         url_rewrite::mojom::UrlHeaderPtr url_header =
             url_rewrite::mojom::UrlHeader::New(std::string(header_name),
                                                std::string(header_value));
@@ -162,10 +163,10 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRulePtr,
 
     if (input.has_hosts_filter()) {
       // Convert host names in case they contain non-ASCII characters.
-      const base::StringPiece kWildcard("*.");
+      const std::string_view kWildcard("*.");
 
       std::vector<std::string> hosts;
-      for (const base::StringPiece host : input.hosts_filter()) {
+      for (const std::string_view host : input.hosts_filter()) {
         if (base::StartsWith(host, kWildcard, base::CompareCase::SENSITIVE)) {
           hosts.push_back(
               base::StrCat({kWildcard, NormalizeHost(host.substr(2))}));

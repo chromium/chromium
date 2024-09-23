@@ -38,11 +38,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -56,7 +58,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.Optional;
@@ -86,8 +87,8 @@ public class CreditCardAccessorySheetViewTest {
         MockitoAnnotations.initMocks(this);
 
         mActivityTestRule.startMainActivityOnBlankPage();
-        PersonalDataManager.setInstanceForTesting(mMockPersonalDataManager);
-        TestThreadUtils.runOnUiThreadBlocking(
+        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
                     AccessorySheetCoordinator accessorySheet =
@@ -111,7 +112,12 @@ public class CreditCardAccessorySheetViewTest {
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
                                                 CreditCardAccessorySheetViewBinder.initializeView(
-                                                        mView.get(), mModel);
+                                                        mView.get(),
+                                                        CreditCardAccessorySheetCoordinator
+                                                                .createUiConfiguration(
+                                                                        view.getContext(),
+                                                                        mMockPersonalDataManager),
+                                                        mModel);
                                             }
 
                                             @Override
@@ -139,7 +145,7 @@ public class CreditCardAccessorySheetViewTest {
     public void testAddingCaptionsToTheModelRendersThem() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -159,7 +165,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -196,10 +202,10 @@ public class CreditCardAccessorySheetViewTest {
                         : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
         assertThat(clicked.get(), is(true));
         clicked.set(false);
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.exp_month)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.exp_month)::performClick);
         assertThat(clicked.get(), is(true));
     }
 
@@ -217,7 +223,7 @@ public class CreditCardAccessorySheetViewTest {
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -265,7 +271,7 @@ public class CreditCardAccessorySheetViewTest {
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
                 .thenReturn(Optional.empty());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -307,7 +313,7 @@ public class CreditCardAccessorySheetViewTest {
     public void testAddingUnselectableFieldsRendersUnclickabeChips() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserInfo infoWithUnclickableField = new UserInfo("", false);
                     infoWithUnclickableField.addField(
@@ -345,7 +351,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -379,7 +385,7 @@ public class CreditCardAccessorySheetViewTest {
         final String kWarning = "Insecure, so filling is no.";
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -393,12 +399,10 @@ public class CreditCardAccessorySheetViewTest {
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
 
-        assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
-        LinearLayout warning = (LinearLayout) mView.get().getChildAt(0);
-        assertThat(warning.findViewById(R.id.tab_title), instanceOf(TextView.class));
-        TextView warningText = warning.findViewById(R.id.tab_title);
-        assertThat(warningText.isShown(), is(true));
-        assertThat(warningText.getText(), is(kWarning));
+        assertThat(mView.get().getChildAt(0), instanceOf(TextView.class));
+        TextView warningView = (TextView) mView.get().getChildAt(0);
+        assertThat(warningView.isShown(), is(true));
+        assertThat(warningView.getText(), is(kWarning));
     }
 
     @Test
@@ -410,7 +414,7 @@ public class CreditCardAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PromoCodeInfo info = new PromoCodeInfo();
                     info.setPromoCode(
@@ -455,7 +459,7 @@ public class CreditCardAccessorySheetViewTest {
                         .getDrawable(R.drawable.ic_logo_googleg_24dp);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
         assertThat(clicked.get(), is(true));
     }
 

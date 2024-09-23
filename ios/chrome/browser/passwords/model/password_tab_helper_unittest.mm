@@ -10,10 +10,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -38,14 +37,12 @@ NSString* const kWrongURL = @"https://example.com";
 class PasswordTabHelperTest : public PlatformTest {
  public:
   PasswordTabHelperTest()
-      : web_client_(std::make_unique<web::FakeWebClient>()),
-        task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
 
-    UniqueIDDataTabHelper::CreateForWebState(web_state_.get());
     PasswordTabHelper::CreateForWebState(web_state_.get());
   }
 
@@ -67,7 +64,8 @@ class PasswordTabHelperTest : public PlatformTest {
 
  protected:
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<PasswordTabHelper> helper_ = nullptr;

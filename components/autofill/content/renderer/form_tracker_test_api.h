@@ -26,8 +26,8 @@ class FormTrackerTestApi {
   const raw_ref<FormTracker> form_tracker_;
 };
 
-inline FormTrackerTestApi test_api(FormTracker& agent) {
-  return FormTrackerTestApi(&agent);
+inline FormTrackerTestApi test_api(FormTracker& tracker) {
+  return FormTrackerTestApi(&tracker);
 }
 
 }  // namespace autofill

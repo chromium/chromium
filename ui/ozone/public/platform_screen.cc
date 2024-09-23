@@ -4,6 +4,8 @@
 
 #include "ui/ozone/public/platform_screen.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
@@ -52,6 +54,12 @@ base::TimeDelta PlatformScreen::CalculateIdleTime() const {
 base::Value::List PlatformScreen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   return base::Value::List();
+}
+
+std::optional<float>
+PlatformScreen::GetPreferredScaleFactorForAcceleratedWidget(
+    gfx::AcceleratedWidget widget) const {
+  return std::nullopt;
 }
 
 void PlatformScreen::StorePlatformNameIntoListOfValues(

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction with reporting URLs
+  assert_true: valid key Id expected true got false
+[FAIL] Hybrid B&A auction
+  assert_true: valid key Id expected true got false
+[FAIL] Hybrid B&A auction with reporting URLs
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

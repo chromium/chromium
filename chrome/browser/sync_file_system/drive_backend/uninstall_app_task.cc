@@ -55,7 +55,7 @@ void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
   FileTracker app_root_tracker;
   if (!metadata_database()->FindTrackerByTrackerID(trackers.active_tracker(),
                                                    &app_root_tracker)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(SYNC_STATUS_FAILED);
     return;
   }

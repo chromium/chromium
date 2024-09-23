@@ -24,6 +24,53 @@ namespace ash {
 class DiversionBackendDelegate : public FileSystemBackendDelegate,
                                  public storage::AsyncFileUtil {
  public:
+  // How this wrapper treats a virtual file (identified by its FileSystemURL).
+  enum class Policy {
+    kDoNotDivert,
+
+    // Operations (EnsureFileExists, GetFileInfo, etc) happen entirely in the
+    // interposed local-disk cache, and do not touch the wrappees, up until the
+    // virtual file is copied or moved to another place (a place that, if also
+    // subject to this DiversionBackendDelegate, its Policy should be
+    // kDoNotDivert) or an inactivity time out.
+    //
+    // For example, calling GetFileInfo will return FILE_ERROR_NOT_FOUND
+    // (unless EnsureFileExists was previously called) even if the wrapped file
+    // system has an existing file for that name (that FileSystemURL). It
+    // "doesn't exist" because the wrappees are not even consulted.
+    //
+    // Similarly, calling EnsureFileExists will return created=true even if the
+    // wrappees have an existing file for that FileSystemURL.
+    //
+    // This Policy is intended for "temporary files", like "*.crdownload" or
+    // "*.crswap", where a potentially-large file is incrementally built over
+    // time before being moved/renamed over the ultimate destination. These
+    // temporary files don't really care about their name other than it doesn't
+    // clash with other files. But in Chromium's //storage/browser/file_system
+    // cross-platform abstraction, every virtual file needs a unique name. With
+    // DiversionBackendDelegate, we can provide an isolated "overlay namespace"
+    // for these temporary files, ignoring the underlying wrapped file system.
+    //
+    // Isolation reduces the number of spurious calls to the wrappees. Spurious
+    // work can fail (unnecessarily), take a noticeable amount of time (for
+    // cloud-backed file systems), add noise to metrics or debug logs, etc.
+    kDivertIsolated,
+
+    // Operations happen in the interposed local-disk cache, but unlike
+    // kDivertIsolated, they consult with the wrappee file system.
+    //
+    // For example, EnsureFileExists will return created=false when the wrappee
+    // has an existing file for that FileSystemURL.
+    //
+    // This Policy is intended for when you do want diversion to apply (e.g.
+    // you want efficient incremental-append writes) but you don't have a
+    // "temporary file".
+    //
+    // If in doubt, use kDivertMingled instead of kDivertIsolated, as its
+    // behavior is closer to not having a DiversionBackendDelegate at all.
+    kDivertMingled,
+  };
+
   explicit DiversionBackendDelegate(
       std::unique_ptr<FileSystemBackendDelegate> wrappee);
   ~DiversionBackendDelegate() override;
@@ -46,8 +93,6 @@ class DiversionBackendDelegate : public FileSystemBackendDelegate,
       storage::FileSystemContext* context) override;
   storage::WatcherManager* GetWatcherManager(
       storage::FileSystemType type) override;
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) override;
 
   // storage::AsyncFileUtil overrides.
   void CreateOrOpen(
@@ -117,7 +162,7 @@ class DiversionBackendDelegate : public FileSystemBackendDelegate,
       CreateSnapshotFileCallback callback) override;
 
   void OverrideTmpfileDirForTesting(const base::FilePath& tmpfile_dir);
-  static bool ShouldDivertForTesting(const storage::FileSystemURL& url);
+  static Policy ShouldDivertForTesting(const storage::FileSystemURL& url);
   static base::TimeDelta IdleTimeoutForTesting();
 
  private:

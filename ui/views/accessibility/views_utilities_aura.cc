@@ -54,9 +54,9 @@ WordBoundaries ComputeWordBoundaries(const std::u16string& text) {
 
 std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
   std::vector<int32_t> offsets;
-  // TODO(https://crbug.com/1085014): Allow elided text once the support for
+  // TODO(crbug.com/40132003): Allow elided text once the support for
   // elided text in `RenderText::GetLookupDataForRange` is completed.
-  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (!render_text || render_text->multiline() ||
       render_text->elide_behavior() == gfx::ELIDE_MIDDLE ||
       render_text->elide_behavior() == gfx::ELIDE_HEAD ||
@@ -64,9 +64,14 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
     return offsets;
   }
 
-  // TODO(https://crbug.com/1505805): Add a maximum length check to avoid hangs.
+  // TODO(crbug.com/40946445): Add a maximum length check to avoid hangs.
   size_t begin_position = 0;
   int last_x = 0;
+
+  // Subtract the display offset to get the offsets relative to the origin. The
+  // display offset will be applied later, in `ViewAXPlatformNodeDelegate`.
+  int offset = render_text->GetUpdatedDisplayOffset().x();
+
   while (begin_position < render_text->text().length()) {
     size_t end_position = render_text->IndexOfAdjacentGrapheme(
         begin_position, gfx::CURSOR_FORWARD);
@@ -82,8 +87,8 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
       // display text.
       offsets.push_back(last_x);
     } else {
-      offsets.push_back(bounds.x());
-      last_x = bounds.right();
+      offsets.push_back(bounds.x() - offset);
+      last_x = bounds.right() - offset;
     }
 
     begin_position = end_position;

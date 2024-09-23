@@ -88,6 +88,10 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   // Should only be called from the browser process, on the UI thread.
   static bool PrefersReducedMotion();
   static void UpdatePrefersReducedMotion();
+#if BUILDFLAG(IS_CHROMEOS)
+  // This should only be used by the ChromeOS Accessibility system.
+  static void SetPrefersReducedMotionForA11y(bool prefers_reduced_motion);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   static void SetPrefersReducedMotionForTesting(bool prefers_reduced_motion) {
     prefers_reduced_motion_ = prefers_reduced_motion;
   }

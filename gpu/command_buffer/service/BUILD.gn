@@ -46,18 +46,19 @@ target(link_target_type, "service_sources") {
     "decoder_client.h",
     "gpu_switches.cc",
     "gpu_switches.h",
-    "mailbox_manager.h",
     "memory_tracking.cc",
     "memory_tracking.h",
+    "retaining_one_shot_timer_holder.cc",
+    "retaining_one_shot_timer_holder.h",
     "scheduler.cc",
     "scheduler.h",
-    "scheduler_dfs.cc",
-    "scheduler_dfs.h",
     "scheduler_task_runner.cc",
     "scheduler_task_runner.h",
     "sequence_id.h",
     "sync_point_manager.cc",
     "sync_point_manager.h",
+    "task_graph.cc",
+    "task_graph.h",
     "texture_base.cc",
     "texture_base.h",
     "transfer_buffer_manager.cc",
@@ -77,7 +78,6 @@ target(link_target_type, "service_sources") {
   ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//gpu/command_buffer/client:client_sources",
     "//gpu/config:config_sources",
     "//gpu/ipc/common:ipc_common_sources",
@@ -161,8 +161,6 @@ target(link_target_type, "gles2_sources") {
     "gles2_cmd_decoder_passthrough_doers.cc",
     "gles2_cmd_decoder_passthrough_handlers.cc",
     "gles2_cmd_decoder_passthrough_handlers_autogen.cc",
-    "gles2_cmd_srgb_converter.cc",
-    "gles2_cmd_srgb_converter.h",
     "gles2_cmd_validation.cc",
     "gles2_cmd_validation.h",
     "gles2_cmd_validation_autogen.h",
@@ -198,12 +196,6 @@ target(link_target_type, "gles2_sources") {
     "isolation_key_provider.h",
     "logger.cc",
     "logger.h",
-    "mailbox_manager_dummy.cc",
-    "mailbox_manager_dummy.h",
-    "mailbox_manager_factory.cc",
-    "mailbox_manager_factory.h",
-    "mailbox_manager_impl.cc",
-    "mailbox_manager_impl.h",
     "memory_program_cache.cc",
     "memory_program_cache.h",
     "multi_draw_manager.cc",
@@ -248,6 +240,12 @@ target(link_target_type, "gles2_sources") {
     "shared_context_state.h",
     "shared_image/compound_image_backing.cc",
     "shared_image/compound_image_backing.h",
+    "shared_image/copy_image_plane.cc",
+    "shared_image/copy_image_plane.h",
+    "shared_image/egl_image_backing.cc",
+    "shared_image/egl_image_backing.h",
+    "shared_image/egl_image_backing_factory.cc",
+    "shared_image/egl_image_backing_factory.h",
     "shared_image/gl_common_image_backing_factory.cc",
     "shared_image/gl_common_image_backing_factory.h",
     "shared_image/gl_repack_utils.cc",
@@ -286,6 +284,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/skia_gl_image_representation.h",
     "shared_image/wrapped_graphite_texture_backing.cc",
     "shared_image/wrapped_graphite_texture_backing.h",
+    "shared_image/wrapped_graphite_texture_holder.cc",
+    "shared_image/wrapped_graphite_texture_holder.h",
     "shared_image/wrapped_sk_image_backing.cc",
     "shared_image/wrapped_sk_image_backing.h",
     "shared_image/wrapped_sk_image_backing_factory.cc",
@@ -314,24 +314,10 @@ target(link_target_type, "gles2_sources") {
     "webgpu_decoder.h",
   ]
 
-  if (!is_android) {
-    sources += [
-      "abstract_texture.cc",
-      "abstract_texture.h",
-    ]
-  } else {
+  if (is_android) {
     sources += [
       "abstract_texture_android.cc",
       "abstract_texture_android.h",
-    ]
-  }
-
-  if (use_egl) {
-    sources += [
-      "shared_image/egl_image_backing.cc",
-      "shared_image/egl_image_backing.h",
-      "shared_image/egl_image_backing_factory.cc",
-      "shared_image/egl_image_backing_factory.h",
     ]
   }
 
@@ -381,7 +367,6 @@ target(link_target_type, "gles2_sources") {
     ":disk_cache_proto",
     ":service",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//components/crash/core/common",
@@ -394,7 +379,7 @@ target(link_target_type, "gles2_sources") {
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
     "//third_party/angle:angle_version_info",
-    "//third_party/dawn/src/dawn:cpp",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
@@ -448,8 +433,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/texture_holder_vk.h",
     ]
 
-    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
-        is_apple) {
+    if (is_linux || is_fuchsia || is_win) {
       sources += [
         "external_semaphore.cc",
         "external_semaphore.h",
@@ -477,7 +461,7 @@ target(link_target_type, "gles2_sources") {
       ]
     }
 
-    if ((is_linux || is_chromeos) && use_dawn) {
+    if (is_linux && use_dawn) {
       sources += [
         "shared_image/external_vk_image_dawn_representation.cc",
         "shared_image/external_vk_image_dawn_representation.h",
@@ -527,6 +511,7 @@ target(link_target_type, "gles2_sources") {
 
     # Required by gles2_cmd_decoder.cc on Apple.
     frameworks = [
+      "CoreVideo.framework",
       "IOSurface.framework",
       "Metal.framework",
     ]
@@ -542,10 +527,20 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dawn_context_provider.cc",
       "dawn_context_provider.h",
+      "shared_image/dawn_shared_texture_holder.cc",
+      "shared_image/dawn_shared_texture_holder.h",
       "shared_image/skia_graphite_dawn_image_representation.cc",
       "shared_image/skia_graphite_dawn_image_representation.h",
     ]
     deps += [ "//third_party/dawn/src/dawn:cpp" ]
+
+    if (is_chromeos) {
+      sources += [
+        "drm_modifiers_filter_dawn.cc",
+        "drm_modifiers_filter_dawn.h",
+      ]
+      deps += [ "//ui/gfx/linux:drm" ]
+    }
   }
 
   if (is_android) {

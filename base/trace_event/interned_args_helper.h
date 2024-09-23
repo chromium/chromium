@@ -5,6 +5,7 @@
 #ifndef BASE_TRACE_EVENT_INTERNED_ARGS_HELPER_H_
 #define BASE_TRACE_EVENT_INTERNED_ARGS_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -14,7 +15,6 @@
 #include "base/profiler/module_cache.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 
@@ -169,24 +169,11 @@ struct BASE_EXPORT InternedUnsymbolizedSourceLocation
           uintptr_t> {
   // We need a custom Get implementation to use ModuleCache, and to return
   // a nullopt if a module for the given address cannot be found.
-  static absl::optional<size_t> Get(perfetto::EventContext* ctx,
-                                    uintptr_t address);
+  static std::optional<size_t> Get(perfetto::EventContext* ctx,
+                                   uintptr_t address);
   static void Add(perfetto::protos::pbzero::InternedData* interned_data,
                   size_t iid,
                   const UnsymbolizedSourceLocation& location);
-
-// We use thread local storage for the module cache if we are using the
-// client library since it is more optimal. It was not worth it to write
-// optimal caching for not client library users since everyone will convert.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
- private:
-  // This implies that a module cache lifetime = incremental state.
-  // We don't want unlimited lifetime because it keeps modules pinned in
-  // memory on some platforms (Windows).
-  // TODO(b/237055179): Consider tying module cache to DataSource instead so
-  // that the cache is not unnecessarily cleared on incremental state change.
-  base::ModuleCache module_cache_;
-#endif
 };
 
 }  // namespace trace_event

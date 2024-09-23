@@ -123,7 +123,7 @@ void LookalikeUrlBlockingPage::CommandReceived(const std::string& command) {
     case security_interstitials::CMD_OPEN_LOGIN:
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
       // Not supported by the lookalike URL warning page.
-      NOTREACHED() << "Unsupported command: " << command;
+      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
       break;
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_TEXT_FOUND:

@@ -135,7 +135,7 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
 }
 
 - (instancetype)init {
-  if (self = [super initWithNibName:nil bundle:nil]) {
+  if ((self = [super initWithNibName:nil bundle:nil])) {
     _activeVariationIDs = @[];
     _variationStackView = VariationStackView();
     _activeVariationIDTextView = DebugTextView();

@@ -628,6 +628,21 @@
         ]
       },
       {
+        "id": "HidPermissionRequest",
+        "type": "object",
+        "description": "The type of <code>request</code> object which accompanies an <code>hid</code> <a href=\"#event-permissionrequest\">permissionrequest</a></code> DOM event.",
+        "properties": {
+          "url": {
+            "description": "The URL of the frame requesting access to the HID API.",
+            "type": "string"
+          }
+        },
+        "functions": [
+          { "name": "allow", "description": "Allow the permission request." },
+          { "name": "deny", "description": "Deny the permission request. This is the default behavior if <code>allow</code> is not called." }
+        ]
+      },
+      {
         "id": "SelectionRect",
         "type": "object",
         "description": "<p>Describes a rectangle in screen coordinates.</p><p>The containment semantics are array-like; that is, the coordinate <code>(left, top)</code> is considered to be contained by the rectangle, but the coordinate <code>(left + width, top)</code> is not.</p>",
@@ -1410,13 +1425,13 @@
             "name": "permission",
             "description": "The type of permission being requested.",
             "type": "string",
-            "enum": ["media", "geolocation", "pointerLock", "download", "loadplugin", "filesystem", "fullscreen"]
+            "enum": ["media", "geolocation", "pointerLock", "download", "loadplugin", "filesystem", "fullscreen", "hid"]
           },
           {
             "name": "request",
             "type": "object",
             "properties": {},
-            "description": "An object which holds details of the requested permission. Depending on the type of permission requested, this may be a $(ref:webviewTag.MediaPermissionRequest), $(ref:webviewTag.GeolocationPermissionRequest), $(ref:webviewTag.PointerLockPermissionRequest), $(ref:webviewTag.DownloadPermissionRequest), $(ref:webviewTag.LoadPluginPermissionRequest), or $(ref:webviewTag.FullscreenPermissionRequest)."
+            "description": "An object which holds details of the requested permission. Depending on the type of permission requested, this may be a $(ref:webviewTag.MediaPermissionRequest), $(ref:webviewTag.GeolocationPermissionRequest), $(ref:webviewTag.PointerLockPermissionRequest), $(ref:webviewTag.DownloadPermissionRequest), $(ref:webviewTag.LoadPluginPermissionRequest), $(ref:webviewTag.FullscreenPermissionRequest) or $(ref:webviewTag.HidPermissionRequest)."
           }
         ]
       },

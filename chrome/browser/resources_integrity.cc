@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/resources_integrity.h"
 
 #include <array>
@@ -44,18 +49,19 @@ bool CheckResourceIntegrityInternal(
     return false;
 
   auto hash = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  std::vector<char> buffer(base::GetPageSize());
+  std::vector<uint8_t> buffer(base::GetPageSize());
 
-  int bytes_read = 0;
+  std::optional<size_t> bytes_read = 0;
   do {
-    bytes_read = file.ReadAtCurrentPos(buffer.data(), buffer.size());
-    if (bytes_read == -1)
+    bytes_read = file.ReadAtCurrentPos(buffer);
+    if (!bytes_read.has_value()) {
       return false;
-    hash->Update(buffer.data(), bytes_read);
-  } while (bytes_read > 0);
+    }
+    hash->Update(buffer.data(), *bytes_read);
+  } while (bytes_read.value_or(0) > 0);
 
   std::array<uint8_t, crypto::kSHA256Length> digest;
-  hash->Finish(digest.data(), digest.size());
+  hash->Finish(digest);
 
   return base::ranges::equal(digest, expected_signature);
 }

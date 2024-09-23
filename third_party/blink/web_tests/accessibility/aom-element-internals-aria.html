@@ -22,6 +22,7 @@ customElements.define("test-element", TestElement);
 
 function createTestElement(id) {
   const element = document.createElement("test-element");
+  element.setAttribute('lang', 'fr-CA');  // Ensure element is exposed.
   element.id = id;
   element.innerText = "foo";
   document.body.appendChild(element);

@@ -7,8 +7,9 @@ import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
+import("//components/nacl/features.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
 # Most consumers of sandbox::policy should depend on this target.
@@ -29,10 +30,10 @@ component("policy") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/services/screen_ai/buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//sandbox/policy/mojom",
+    "//services/screen_ai/buildflags",
   ]
   public_deps = [ "//sandbox:common" ]
   if (is_android) {
@@ -65,6 +66,10 @@ component("policy") {
       "linux/bpf_cros_arm_gpu_policy_linux.h",
       "linux/bpf_cros_intel_gpu_policy_linux.cc",
       "linux/bpf_cros_intel_gpu_policy_linux.h",
+      "linux/bpf_cros_nvidia_gpu_policy_linux.cc",
+      "linux/bpf_cros_nvidia_gpu_policy_linux.h",
+      "linux/bpf_cros_virtio_gpu_policy_linux.cc",
+      "linux/bpf_cros_virtio_gpu_policy_linux.h",
       "linux/bpf_gpu_policy_linux.cc",
       "linux/bpf_gpu_policy_linux.h",
       "linux/bpf_network_policy_linux.cc",
@@ -96,7 +101,7 @@ component("policy") {
       deps += [ "//media/gpu:buildflags" ]
     }
     if (is_linux) {
-      deps += [ "//net" ]  # TODO(crbug.com/1312226): remove this.
+      deps += [ "//net" ]  # TODO(crbug.com/40220507): remove this.
     }
     if (enable_oop_printing) {
       sources += [
@@ -126,6 +131,8 @@ component("policy") {
     sources += [
       "linux/bpf_ime_policy_linux.cc",
       "linux/bpf_ime_policy_linux.h",
+      "linux/bpf_nearby_policy_linux.cc",
+      "linux/bpf_nearby_policy_linux.h",
       "linux/bpf_tts_policy_linux.cc",
       "linux/bpf_tts_policy_linux.h",
     ]
@@ -186,11 +193,12 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
 
-      # TODO(crbug.com/1224707): Remove after switching to fuchsia.scheduler API.
+      # TODO(crbug.com/42050308): Remove after switching to fuchsia.scheduler API.
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.scheduler:fuchsia.scheduler_cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto:fuchsia.tracing.perfetto_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider:fuchsia.tracing.provider_hlcpp",
@@ -204,7 +212,7 @@ buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
-# TODO(crbug.com/1097376): Figure out a better organization for //sandbox
+# TODO(crbug.com/40136586): Figure out a better organization for //sandbox
 # tests.
 source_set("tests") {
   testonly = true

@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/gfx/geometry/size.h"
@@ -161,7 +164,7 @@ TEST_F(LocalFrameViewTest, UpdateLifecyclePhasesForPrintingDetachedFrame) {
   SetBodyInnerHTML("<iframe style='display: none'></iframe>");
   SetChildFrameHTML("A");
 
-  ChildFrame().StartPrinting(gfx::SizeF(200, 200), 1);
+  ChildFrame().StartPrinting(WebPrintParams(gfx::SizeF(200, 200)));
   ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   // The following checks that the detached frame has been walked for PrePaint.
@@ -177,7 +180,7 @@ TEST_F(LocalFrameViewTest, PrintFrameUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<iframe></iframe>");
   SetChildFrameHTML("A");
 
-  ChildFrame().StartPrinting(gfx::SizeF(200, 200), 1);
+  ChildFrame().StartPrinting(WebPrintParams(gfx::SizeF(200, 200)));
   ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
@@ -207,7 +210,8 @@ TEST_F(LocalFrameViewTest, CanHaveScrollbarsIfScrollingAttrEqualsNoChanged) {
 
   ChildDocument().WillChangeFrameOwnerProperties(
       0, 0, mojom::blink::ScrollbarMode::kAlwaysOn, false,
-      mojom::blink::ColorScheme::kLight);
+      mojom::blink::ColorScheme::kLight,
+      mojom::blink::PreferredColorScheme::kLight);
   EXPECT_TRUE(ChildDocument().View()->CanHaveScrollbars());
 }
 
@@ -821,6 +825,39 @@ TEST_F(ResizableLocalFrameViewTest, FocusedElementStaysOnResizeWithCQ) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(element, GetDocument().FocusedElement());
+}
+
+class PrerenderLocalFrameViewTest : public base::test::WithFeatureOverride,
+                                    public SimTest {
+ public:
+  PrerenderLocalFrameViewTest()
+      : base::test::WithFeatureOverride(
+            features::kPrerender2EarlyDocumentLifecycleUpdate) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PrerenderLocalFrameViewTest);
+
+TEST_P(PrerenderLocalFrameViewTest, RunPrePaintLifecyclePhaseBeforeActivation) {
+  InitializePrerenderPageRoot();
+  ASSERT_TRUE(GetDocument().IsPrerendering());
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"(
+    <body>
+    This is a prerendering page.
+    </body>
+  )");
+
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2EarlyDocumentLifecycleUpdate)) {
+    EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
+              GetDocument().Lifecycle().GetState());
+    EXPECT_FALSE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_EQ(DocumentLifecycle::kLayoutClean,
+              GetDocument().Lifecycle().GetState());
+    EXPECT_TRUE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
+  }
 }
 
 }  // namespace

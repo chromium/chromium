@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -17,16 +14,9 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 public class ChromeTabbedActivityXrTestRule extends ChromeTabbedActivityTestRule
         implements XrTestRule {
     @Override
-    public Statement apply(final Statement base, final Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        startMainActivityOnBlankPage();
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        startMainActivityOnBlankPage();
     }
 
     @Override

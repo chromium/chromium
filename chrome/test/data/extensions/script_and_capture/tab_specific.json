@@ -1,5 +1,5 @@
 {
   "name": "Extension with no host permissions.",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1"
 }

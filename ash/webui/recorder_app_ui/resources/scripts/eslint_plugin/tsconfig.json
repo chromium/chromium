@@ -1,0 +1,10 @@
+{
+  "files": ["index.js"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "Node16",
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true
+  }
+}

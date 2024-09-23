@@ -16,7 +16,7 @@ namespace {
 base::FilePath GetRootDirectory() {
   base::FilePath dir_temp;
   if (!base::PathService::Get(base::DIR_TEMP, &dir_temp))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   std::vector<base::FilePath::StringType> components = dir_temp.GetComponents();
 

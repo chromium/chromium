@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -16,6 +17,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -86,10 +90,9 @@ static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(
     jboolean show_home_button,
     jboolean homepage_is_ntp,
     const JavaParamRef<jobject>& jhomepage_gurl) {
-  std::unique_ptr<GURL> homepage_gurl =
-      url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
+  GURL homepage_gurl = url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
   PrefMetricsService::RecordHomePageLaunchMetrics(
-      show_home_button, homepage_is_ntp, *homepage_gurl);
+      show_home_button, homepage_is_ntp, homepage_gurl);
 }
 
 }  // namespace metrics

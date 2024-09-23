@@ -8,8 +8,8 @@ import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
-    "search_engine_choice_service_factory.cc",
     "search_engine_choice_service_factory.h",
+    "search_engine_choice_service_factory.mm",
     "search_engine_java_script_feature.h",
     "search_engine_java_script_feature.mm",
     "search_engine_observer_bridge.h",
@@ -40,11 +40,13 @@ source_set("model") {
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
+    "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
@@ -98,11 +100,14 @@ source_set("unit_tests") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/test:test_support",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -113,13 +118,14 @@ source_set("unit_tests") {
 }
 
 source_set("template_url_service_factory") {
-  # TODO(crbug.com/1382864): This target was added to prevent dependency
+  # TODO(crbug.com/40245854): This target was added to prevent dependency
   # cycles for Lens navigation.
   # Remove this target after fixing the Lens / Web dependency cycle.
   sources = [ "template_url_service_factory.h" ]
   deps = [
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 

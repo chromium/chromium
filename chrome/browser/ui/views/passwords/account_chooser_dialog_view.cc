@@ -22,6 +22,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -41,12 +43,12 @@ AccountChooserDialogView::AccountChooserDialogView(
     : controller_(controller), web_contents_(web_contents) {
   DCHECK(controller);
   DCHECK(web_contents);
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   if (controller_->ShouldShowFooter()) {
     auto* label = SetFootnoteView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
@@ -65,8 +67,9 @@ void AccountChooserDialogView::ShowAccountChooser() {
   // It isn't known until after the creation of this dialog whether the sign-in
   // button should be shown, so always reset the button state here.
   SetButtons(controller_->ShouldShowSignInButton()
-                 ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
-                 : ui::DIALOG_BUTTON_CANCEL);
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel)
+                 : static_cast<int>(ui::mojom::DialogButton::kCancel));
   DialogModelChanged();
   InitWindow();
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
@@ -80,7 +83,7 @@ void AccountChooserDialogView::ControllerGone() {
 }
 
 std::u16string AccountChooserDialogView::GetWindowTitle() const {
-  return controller_->GetAccoutChooserTitle();
+  return controller_->GetAccountChooserTitle();
 }
 
 bool AccountChooserDialogView::ShouldShowCloseButton() const {
@@ -88,8 +91,9 @@ bool AccountChooserDialogView::ShouldShowCloseButton() const {
 }
 
 void AccountChooserDialogView::WindowClosing() {
-  if (controller_)
+  if (controller_) {
     controller_->OnCloseDialog();
+  }
 }
 
 bool AccountChooserDialogView::Accept() {
@@ -118,7 +122,6 @@ void AccountChooserDialogView::InitWindow() {
             titles.first, titles.second, form.get(),
             GetURLLoaderForMainFrame(web_contents_).get(),
             web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
-    credential_view->SetStoreIndicatorIcon(form->in_store);
     ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
     gfx::Insets insets =
         layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);

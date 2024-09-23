@@ -6,11 +6,9 @@
 
 #include <string>
 
-#include "ash/accessibility/accessibility_controller.h"
-#include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/system/toast_data.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
@@ -23,7 +21,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -33,7 +31,7 @@ namespace {
 constexpr gfx::Insets kToastInteriorMargin = gfx::Insets::VH(8, 16);
 constexpr gfx::Insets kMultilineToastInteriorMargin = gfx::Insets::VH(8, 24);
 constexpr gfx::Insets kToastWithButtonInteriorMargin =
-    gfx::Insets::TLBR(2, 16, 2, 0);
+    gfx::Insets::TLBR(2, 16, 2, 2);
 constexpr gfx::Insets kMultilineToastWithButtonInteriorMargin =
     gfx::Insets::TLBR(8, 24, 8, 12);
 
@@ -41,10 +39,14 @@ constexpr gfx::Insets kMultilineToastWithButtonInteriorMargin =
 constexpr int kToastLabelMaxWidth = 512;
 constexpr int kToastLeadingIconSize = 20;
 constexpr int kToastLeadingIconPaddingWidth = 14;
+constexpr int kDismissButtonFocusRingHaloInset = 1;
 
 }  // namespace
 
-SystemToastView::SystemToastView(const ToastData& toast_data) {
+SystemToastView::SystemToastView(const std::u16string& text,
+                                 const std::u16string& dismiss_text,
+                                 base::RepeatingClosure dismiss_callback,
+                                 const gfx::VectorIcon* leading_icon) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -54,26 +56,26 @@ SystemToastView::SystemToastView(const ToastData& toast_data) {
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  if (!toast_data.leading_icon->is_empty()) {
-    AddChildView(
-        views::Builder<views::ImageView>()
-            .SetID(VIEW_ID_TOAST_IMAGE_VIEW)
-            .SetPreferredSize(
-                gfx::Size(kToastLeadingIconSize, kToastLeadingIconSize))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                *toast_data.leading_icon, cros_tokens::kCrosSysOnSurface))
-            .Build());
+  if (!leading_icon->is_empty()) {
+    AddChildView(views::Builder<views::ImageView>()
+                     .SetID(VIEW_ID_TOAST_IMAGE_VIEW)
+                     .SetPreferredSize(gfx::Size(kToastLeadingIconSize,
+                                                 kToastLeadingIconSize))
+                     .SetImage(ui::ImageModel::FromVectorIcon(
+                         *leading_icon, cros_tokens::kCrosSysOnSurface))
+                     .Build());
 
     auto* icon_padding = AddChildView(std::make_unique<views::View>());
     icon_padding->SetPreferredSize(
         gfx::Size(kToastLeadingIconPaddingWidth, kToastLeadingIconSize));
   }
 
-  auto* label = AddChildView(
+  AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&label_)
           .SetID(VIEW_ID_TOAST_LABEL)
-          .SetText(toast_data.text)
-          .SetTooltipText(toast_data.text)
+          .SetText(text)
+          .SetTooltipText(text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
@@ -81,25 +83,36 @@ SystemToastView::SystemToastView(const ToastData& toast_data) {
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosBody2))
           .SetMultiLine(true)
+          .SetMaximumWidth(kToastLabelMaxWidth)
           .SetMaxLines(2)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::LayoutOrientation::kHorizontal,
+                           views::MinimumFlexSizeRule::kScaleToZero,
+                           views::MaximumFlexSizeRule::kScaleToMaximum))
           .Build());
 
-  const bool has_button = !toast_data.dismiss_text.empty();
+  const bool has_button = !dismiss_text.empty();
   if (has_button) {
     AddChildView(
         views::Builder<PillButton>()
+            .CopyAddressTo(&dismiss_button_)
             .SetID(VIEW_ID_TOAST_BUTTON)
-            .SetCallback(std::move(toast_data.dismiss_callback))
-            .SetText(toast_data.dismiss_text)
-            .SetTooltipText(toast_data.dismiss_text)
+            .SetCallback(std::move(dismiss_callback))
+            .SetText(dismiss_text)
+            .SetTooltipText(dismiss_text)
             .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
-            .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+            .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
             .Build());
+
+    auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
+    button_focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
+    button_focus_ring->SetOutsetFocusRingDisabled(true);
   }
 
-  label->SetMaximumWidth(kToastLabelMaxWidth);
-  label->SetPreferredSize(label->GetPreferredSize());
-  SetInteriorMargin(label->GetRequiredLines() > 1
+  // Need to size label to get the required number of lines.
+  label_->SizeToPreferredSize();
+  SetInteriorMargin(label_->GetRequiredLines() > 1
                         ? has_button ? kMultilineToastWithButtonInteriorMargin
                                      : kMultilineToastInteriorMargin
                     : has_button ? kToastWithButtonInteriorMargin
@@ -116,9 +129,19 @@ SystemToastView::SystemToastView(const ToastData& toast_data) {
   shadow_ =
       SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
   shadow_->SetRoundedCornerRadius(rounded_corner_radius);
+
+  SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);
 }
 
 SystemToastView::~SystemToastView() = default;
+
+void SystemToastView::SetText(const std::u16string& text) {
+  label_->SetText(text);
+}
+
+const std::u16string& SystemToastView::GetText() const {
+  return label_->GetText();
+}
 
 void SystemToastView::AddedToWidget() {
   shadow_->ObserveColorProviderSource(GetWidget());
@@ -134,6 +157,9 @@ void SystemToastView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // `shadow_` should have the same bounds as the view's layer.
   shadow_->SetContentBounds(layer()->bounds());
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemToastView,
+                                      kSystemToastViewElementId);
 
 BEGIN_METADATA(SystemToastView)
 END_METADATA

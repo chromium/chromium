@@ -45,22 +45,11 @@ class TestUtils {
       const GURL& secondary_url,
       ContentSettingsType type);
 
-  // This wrapper exists only to make
-  // HostContentSettingsMap::GetContentSettingValueAndPatterns public for use in
-  // tests.
-  static base::Value GetContentSettingValueAndPatterns(
-      content_settings::RuleIterator* rule_iterator,
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsPattern* primary_pattern,
-      ContentSettingsPattern* secondary_pattern,
-      RuleMetaData* metadata = nullptr);
-
   // Replace a provider with a different instance for testing purposes
   static void OverrideProvider(
       HostContentSettingsMap* map,
       std::unique_ptr<content_settings::ObservableProvider> provider,
-      HostContentSettingsMap::ProviderType type);
+      content_settings::ProviderType type);
 };
 
 }  // namespace content_settings

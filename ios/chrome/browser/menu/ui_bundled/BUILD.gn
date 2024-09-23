@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "action_factory+protected.h",
+    "action_factory.h",
+    "action_factory.mm",
+    "browser_action_factory.h",
+    "browser_action_factory.mm",
+    "menu_action_type.h",
+    "menu_histograms.h",
+    "menu_histograms.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/open_from_clipboard",
+    "//components/prefs",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/window_activities/model",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("tab_context_menu_delegate") {
+  sources = [ "tab_context_menu_delegate.h" ]
+
+  deps = [ "//ios/chrome/browser/ui/sharing" ]
+}

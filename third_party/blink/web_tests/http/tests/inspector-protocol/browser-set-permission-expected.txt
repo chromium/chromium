@@ -11,6 +11,9 @@ Test that permissions can be changed
 - Set: {"name":"midi","sysex":false} to prompt
 - Set: {"name":"push","userVisibleOnly":true} to granted
 - Set: {"name":"camera","panTiltZoom":true} to granted
+- Set: {"name":"fullscreen","allowWithoutGesture":true} to granted
+- Failed to set: {"name":"fullscreen","allowWithoutGesture":false}  error: Fullscreen Permission only supports allowWithoutGesture:true
+- Failed to set: {"name":"fullscreen"}  error: Fullscreen Permission only supports allowWithoutGesture:true
 - Set: {"name":"geolocation"} to granted
 - Set: {"name":"geolocation"} to denied
 [
@@ -28,6 +31,7 @@ Test that permissions can be changed
     [11] : {"name":"midi","sysex":true}: prompt
     [12] : {"name":"push","userVisibleOnly":true}: granted
     [13] : {"name":"camera","panTiltZoom":true}: granted
-    [14] : {"name":"geolocation"}: granted
+    [14] : {"name":"fullscreen","allowWithoutGesture":true}: granted
+    [15] : {"name":"geolocation"}: granted
 ]
 

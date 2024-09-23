@@ -18,7 +18,7 @@ namespace ash {
 // When removing an unused enumerator, comment it out, making it clear the value
 // was previously used.
 // Please keep in sync with "ProjectorToolbar" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/ash/enums.xml.
 enum class ProjectorToolbar {
   // kToolbarOpened = 0,
   // kToolbarClosed = 1,
@@ -42,32 +42,15 @@ enum class ProjectorToolbar {
   // kToolbarLocationTopCenter = 19,
   // kToolbarLocationBottomCenter = 20,
   // Add future entries above this comment, in sync with
-  // "ProjectorToolbar" in src/tools/metrics/histograms/enums.xml.
+  // "ProjectorToolbar" in src/tools/metrics/histograms/metadata/ash/enums.xml.
   // Update kMaxValue to the last value.
   kMaxValue = kMarkerTool
-};
-
-// These enum values represent marker colors on the Projector toolbar and log to
-// UMA. Entries should not be renumbered and numeric values should never be
-// reused. Please keep in sync with "ProjectorMarkerColor" in
-// src/tools/metrics/histograms/enums.xml.
-enum class ProjectorMarkerColor {
-  // kBlack = 0,
-  // kWhite = 1,
-  kBlue = 2,
-  kRed = 3,
-  kYellow = 4,
-  kMagenta = 5,
-  // Add future entries above this comment, in sync with
-  // "ProjectorMarkerColor" in src/tools/metrics/histograms/enums.xml.
-  // Update kMaxValue to the last value.
-  kMaxValue = kMagenta
 };
 
 // These enum values represent steps in the Projector creation flow and log to
 // UMA. Entries should not be renumbered and numeric values should never be
 // reused. Please keep in sync with "ProjectorCreationFlow" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/ash/enums.xml.
 enum class ProjectorCreationFlow {
   kSessionStarted = 0,
   kRecordingStarted = 1,
@@ -75,22 +58,24 @@ enum class ProjectorCreationFlow {
   kRecordingEnded = 3,
   kSessionStopped = 4,
   // Add future entries above this comment, in sync with
-  // "ProjectorCreationFlow" in src/tools/metrics/histograms/enums.xml.
-  // Update kMaxValue to the last value.
+  // "ProjectorCreationFlow" in
+  // src/tools/metrics/histograms/metadata/ash/enums.xml. Update kMaxValue to
+  // the last value.
   kMaxValue = kSessionStopped
 };
 
 // These enum values represent user-facing errors in the Projector creation flow
 // and log to UMA. Entries should not be renumbered and numeric values should
 // never be reused. Please keep in sync with "ProjectorCreationFlowError" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/ash/enums.xml.
 enum class ProjectorCreationFlowError {
   kSaveError = 0,
   kTranscriptionError = 1,
   kSessionAbortedByAudioPolicyDisabled = 2,
   // Add future entries above this comment, in sync with
-  // "ProjectorCreationFlowError" in src/tools/metrics/histograms/enums.xml.
-  // Update kMaxValue to the last value.
+  // "ProjectorCreationFlowError" in
+  // src/tools/metrics/histograms/metadata/ash/enums.xml. Update kMaxValue to
+  // the last value.
   kMaxValue = kSessionAbortedByAudioPolicyDisabled
 };
 
@@ -98,7 +83,7 @@ enum class ProjectorCreationFlowError {
 // change handling and log to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
 // "OnDeviceToServerSpeechRecognitionFallbackReason" in
-// src/tools/metrics/histograms/enums.xml.
+// src/tools/metrics/histograms/metadata/ash/enums.xml.
 // This enum is the smiliar to the `OnDeviceRecognitionAvailability` because
 // all fallback reasons are related to on device recognition is not supported.
 enum class OnDeviceToServerSpeechRecognitionFallbackReason : int {
@@ -137,10 +122,6 @@ enum class SpeechRecognitionEndState {
 
 // Records the buttons the user presses on the Projector toolbar.
 void RecordToolbarMetrics(ProjectorToolbar button);
-
-// Records the marker colors the user chooses to use. Only records if the user
-// switches from the default color.
-void RecordMarkerColorMetrics(ProjectorMarkerColor color);
 
 // Records the user's progress in the Projector creation flow.
 void RecordCreationFlowMetrics(ProjectorCreationFlow step);

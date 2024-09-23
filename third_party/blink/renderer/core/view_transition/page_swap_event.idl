@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#pageswapevent
+[
+  Exposed=Window,
+  RuntimeEnabled=PageSwapEvent
+] interface PageSwapEvent : Event {
+  constructor(DOMString type, optional PageSwapEventInit eventInitDict = {});
+  [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
+  readonly attribute NavigationActivation? activation;
+};

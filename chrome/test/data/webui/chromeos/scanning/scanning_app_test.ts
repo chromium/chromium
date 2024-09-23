@@ -14,16 +14,18 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScanDoneSectionElement} from 'chrome://scanning/scan_done_section.js';
 import {ScanPreviewElement} from 'chrome://scanning/scan_preview.js';
-import {ColorMode, FileType, MultiPageScanControllerInterface, MultiPageScanControllerRemote, PageSize, ScanJobObserverRemote, Scanner, ScannerCapabilities, ScanResult, ScanServiceInterface, ScanSettings as ScanSettingsMojom, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
-import {ScanningAppElement} from 'chrome://scanning/scanning_app.js';
-import {MAX_NUM_SAVED_SCANNERS, ScannerCapabilitiesResponse, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
+import {ColorMode, FileType, PageSize, ScanResult, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
+import type {MultiPageScanControllerInterface, MultiPageScanControllerRemote, ScanJobObserverRemote, Scanner, ScannerCapabilities, ScanServiceInterface, ScanSettings as ScanSettingsMojom} from 'chrome://scanning/scanning.mojom-webui.js';
+import type {ScanningAppElement} from 'chrome://scanning/scanning_app.js';
+import {MAX_NUM_SAVED_SCANNERS} from 'chrome://scanning/scanning_app_types.js';
+import type {ScannerCapabilitiesResponse, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
 import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -343,7 +345,6 @@ suite('scanningAppTest', function() {
   let scannedImages: HTMLElement|null = null;
   let linkEl: HTMLLinkElement|null = null;
 
-  const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
   const capabilities = new Map<UnguessableToken, ScannerCapabilities>();
   capabilities.set(firstScannerId, firstCapabilities);
   capabilities.set(secondScannerId, secondCapabilities);
@@ -365,7 +366,6 @@ suite('scanningAppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     linkEl = document.createElement('link');
-    linkEl.href = disabledUrl;
     document.head.appendChild(linkEl);
   });
 
@@ -2313,26 +2313,5 @@ suite('scanningAppTest', function() {
     assertEquals(PageSize.kNaLetter.toString(), pageSizeSelect.value);
     changeSelectedValue(pageSizeSelect, PageSize.kMax.toString());
     assertEquals(PageSize.kMax.toString(), pageSizeSelect.value);
-  });
-
-  // Verify cros_styles.css kept when `isJellyEnabledForScanningApp` is false.
-  test('IsJellyEnabledForScanningApp_DisabledKeepsCSS', async () => {
-    loadTimeData.overrideValues({
-      isJellyEnabledForScanningApp: false,
-    });
-    await initializeScanningApp(expectedScanners, capabilities);
-
-    assertTrue(linkEl!.href.includes(disabledUrl));
-  });
-
-  // Verify cros_styles.css replaced when `isJellyEnabledForScanningApp` is
-  // true.
-  test('IsJellyEnabledForScanningApp_EnabledUpdateCSS', async () => {
-    loadTimeData.overrideValues({
-      isJellyEnabledForScanningApp: true,
-    });
-    await initializeScanningApp(expectedScanners, capabilities);
-
-    assertTrue(linkEl!.href.includes('chrome://theme/colors.css'));
   });
 });  // End of suite

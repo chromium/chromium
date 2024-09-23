@@ -54,7 +54,7 @@ void UpdateManifestFetcher::DownloadUpdateManifest() {
       destination: OTHER
       internal {
         contacts {
-          email: "peletskyi@google.com"
+          owners: "//chrome/browser/web_applications/isolated_web_apps/OWNERS"
         }
       }
       user_data {
@@ -140,11 +140,11 @@ void UpdateManifestFetcher::OnUpdateManifestParsed(
           [](UpdateManifest::JsonFormatError error) -> Error {
             switch (error) {
               case UpdateManifest::JsonFormatError::kRootNotADictionary:
+              case UpdateManifest::JsonFormatError::kChannelsNotADictionary:
+              case UpdateManifest::JsonFormatError::kChannelNotADictionary:
               case UpdateManifest::JsonFormatError::kVersionsNotAnArray:
               case UpdateManifest::JsonFormatError::kVersionEntryNotADictionary:
                 return Error::kInvalidManifest;
-              case UpdateManifest::JsonFormatError::kNoApplicableVersion:
-                return Error::kNoApplicableVersion;
             }
           }));
 }

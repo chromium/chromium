@@ -83,8 +83,10 @@ void BookmarkModelView::EndExtensiveChanges() {
   bookmark_model_->EndExtensiveChanges();
 }
 
-void BookmarkModelView::Remove(const bookmarks::BookmarkNode* node) {
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+void BookmarkModelView::Remove(const bookmarks::BookmarkNode* node,
+                               const base::Location& location) {
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                          location);
 }
 
 void BookmarkModelView::Move(const bookmarks::BookmarkNode* node,
@@ -182,9 +184,22 @@ void BookmarkModelViewUsingLocalOrSyncableNodes::EnsurePermanentNodesExist() {
 }
 
 void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
-  // Relevant on iOS only, to delete all account bookmarks in a dedicated
-  // BookmarkModel instance.
-  underlying_model()->RemoveAllUserBookmarks();
+  underlying_model()->BeginExtensiveChanges();
+
+  for (const auto& permanent_node : root_node()->children()) {
+    if (!IsNodeSyncable(permanent_node.get())) {
+      continue;
+    }
+
+    for (int i = static_cast<int>(permanent_node->children().size() - 1);
+         i >= 0; --i) {
+      underlying_model()->Remove(permanent_node->children()[i].get(),
+                                 bookmarks::metrics::BookmarkEditSource::kOther,
+                                 FROM_HERE);
+    }
+  }
+
+  underlying_model()->EndExtensiveChanges();
 }
 
 const bookmarks::BookmarkNode*

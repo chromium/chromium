@@ -6,14 +6,18 @@
 #define ASH_PICKER_VIEWS_PICKER_CATEGORY_TYPE_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_category.h"
+#include "ash/picker/picker_category.h"
 
 namespace ash {
 
 // Used to group related categories together.
 enum class ASH_EXPORT PickerCategoryType {
-  kExpressions,
-  kLinks,
+  kNone,
+  kEditorWrite,
+  kEditorRewrite,
+  kGeneral,
+  kMore,
+  kCaseTransformations,
 };
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category);

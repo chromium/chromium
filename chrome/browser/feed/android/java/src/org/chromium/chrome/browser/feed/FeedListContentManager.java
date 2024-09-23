@@ -110,6 +110,15 @@ public class FeedListContentManager implements ListContentManager {
             mLateralPaddingsPx = lateralPaddingsPx;
         }
 
+        /** Holds an inflated native view. */
+        public NativeViewContent(
+                @Px int lateralPaddingsPx, String key, View nativeView, boolean isFullSpan) {
+            super(key, isFullSpan);
+            assert nativeView != null;
+            mNativeView = nativeView;
+            mLateralPaddingsPx = lateralPaddingsPx;
+        }
+
         /** Holds a resource ID used to inflate a native view. */
         public NativeViewContent(@Px int lateralPaddingsPx, String key, int resId) {
             super(key, true);

@@ -10,12 +10,15 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
+import android.os.Process;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,8 +31,9 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -46,7 +50,6 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -94,7 +97,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         // to be granted.
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Explicitly send the data to PlatformServiceBridge and avoid sending the data
                     // via MetricsUploadService to avoid unexpected failures due to service
@@ -102,7 +105,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     // outside the scope of these integeration tests.
                     AndroidMetricsLogConsumer directUploader =
                             data -> {
-                                PlatformServiceBridge.getInstance().logMetrics(data, true);
+                                PlatformServiceBridge.getInstance().logMetrics(data);
                                 return HttpURLConnection.HTTP_OK;
                             };
                     AndroidMetricsLogUploader.setConsumer(
@@ -170,7 +173,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         // some reason).
         assertTrue("Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        assertEquals(ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        assertEquals(Process.is64Bit(), systemProfile.getAppVersion().contains("-64"));
         assertTrue("Should have some low_entropy_source", systemProfile.hasLowEntropySource());
         assertTrue(
                 "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
@@ -290,12 +293,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 "Should have some network.connection_type",
                 systemProfile.getNetwork().hasConnectionType());
         assertTrue(
-                "Should have some network.wifi_phy_layer_protocol_is_ambiguous",
-                systemProfile.getNetwork().hasWifiPhyLayerProtocolIsAmbiguous());
-        assertTrue(
-                "Should have some network.wifi_phy_layer_protocol",
-                systemProfile.getNetwork().hasWifiPhyLayerProtocol());
-        assertTrue(
                 "Should have some network.min_effective_connection_type",
                 systemProfile.getNetwork().hasMinEffectiveConnectionType());
         assertTrue(
@@ -325,6 +322,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=CreateSpareRendererOnBrowserContextCreation"})
     public void testMetadata_stability_rendererLaunchCount() throws Throwable {
         EmbeddedTestServer embeddedTestServer =
                 EmbeddedTestServer.createAndStartServer(
@@ -429,10 +427,39 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testMetadata_debugging() throws Throwable {
+        // Wait for a metrics log, since DebuggingMetricsProvider only logs this histogram
+        // during log collection. Do not assert anything about this histogram before this point (ex.
+        // do not assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assume.assumeTrue(
+                "Build type is userdebug in the test environment, so we expect this to pass.",
+                BuildInfo.isDebugAndroidOrApp());
+
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=not enabled */ 0));
+        assertEquals(
+                0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=enabled by setWebContentsDebuggingEnabled(true) */
+                        1));
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.isDebuggable", /* sample=enabled by debuggable app or os */
+                        2));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testMetadata_appPackageName() throws Throwable {
         final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
 
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwBrowserProcess.setWebViewPackageName(appPackageName);
                     AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
@@ -523,7 +550,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         final CallbackHelper helper = new CallbackHelper();
         int finalMetricsCollectedCount = helper.getCallCount();
         // Load a page and wait for final metrics collection.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
                             () -> {
@@ -590,7 +617,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 "There should be at least one sample in a non-zero bucket",
                 zeroBucketSamples,
                 totalSamples);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());

@@ -4,7 +4,7 @@
 
 ; --- The contents of common.sb implicitly included here. ---
 
-; Required to load the libscreen_ai.so binary downloaded by the component
+; Required to load the libchromescreen_ai.so binary downloaded by the component
 ; updater.
 (define screen-ai-component-path "SCREEN_AI_COMPONENT_PATH")
-(allow file-read* (subpath (param screen-ai-component-path)))
+(allow file-read* (path (param screen-ai-component-path)))

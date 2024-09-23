@@ -69,7 +69,7 @@ TEST(ScopedRunLoopTimeoutTest, TimesOutWithInheritedTimeoutValue) {
 
   static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
-  ScopedRunLoopTimeout run_timeout2(FROM_HERE, absl::nullopt,
+  ScopedRunLoopTimeout run_timeout2(FROM_HERE, std::nullopt,
                                     log_callback.Get());
 
   // Since the delayed task will be posted only after the message pump starts
@@ -100,7 +100,7 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeoutWithInheritedTimeoutValue) {
 
   static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
-  ScopedRunLoopTimeout run_timeout2(FROM_HERE, absl::nullopt,
+  ScopedRunLoopTimeout run_timeout2(FROM_HERE, std::nullopt,
                                     log_callback.Get());
 
   // Posting a task with the same delay as our timeout, immediately before

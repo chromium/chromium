@@ -185,8 +185,7 @@ class KeyCodeMap {
   std::map<KeyboardCode, std::string> map_key_dom_;
 };
 
-base::LazyInstance<KeyCodeMap>::Leaky g_keycode_map =
-    LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<KeyCodeMap>::Leaky g_keycode_map = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 

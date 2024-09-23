@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Slicing test: slice (2,1).
+  assert_equals: expected "squiggle" but got "undefine"
+[FAIL] Slicing test: slice (2,2).
+  assert_equals: expected "os" but got "ou"
+[FAIL] Slicing test: slice (2,3).
+  assert_equals: expected "eb" but got "ed"
+[FAIL] Slicing test: slice (3,0).
+  assert_equals: expected "squiggle" but got "undefine"
+[FAIL] Slicing test: slice (3,1).
+  assert_equals: expected "ef" but got "ed"
+[FAIL] Slicing test: slice (3,2).
+  assert_equals: expected "os" but got "oo"
+[FAIL] Slicing test: slice (3,3).
+  assert_equals: expected "qui" but got "nde"
+[FAIL] Slicing test: slice (3,4).
+  assert_equals: expected "qui" but got "und"
+[FAIL] Slicing test: slice (4,0).
+  assert_equals: expected "steak" but got "undef"
+[FAIL] Slicing test: slice (4,1).
+  assert_equals: expected "squiggle" but got "inedunde"
+[FAIL] Slicing test: slice (4,2).
+  assert_equals: expected "steak" but got "fined"
+[FAIL] Slicing test: slice (4,3).
+  assert_equals: expected "te" but got "nd"
+[FAIL] Slicing test: slice (4,4).
+  assert_equals: expected "quig" but got "nedu"
+[FAIL] Slicing test: slice (5,1).
+  assert_equals: expected "IJKLMNOPsq" but got "IJKLMNOPun"
+[FAIL] Slicing test: slice (5,2).
+  assert_equals: expected "qui" but got "nde"
+[FAIL] Slicing test: slice (6,0).
+  assert_equals: expected "DEFGHsqu" but got "DEFGHund"
+[FAIL] Slicing test: slice (6,1).
+  assert_equals: expected 8 but got 9
+[FAIL] Slicing test: slice (6,2).
+  assert_equals: expected "Hsquiggl" but got "Hundefin"
+Harness: the test ran to completion.
+

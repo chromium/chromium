@@ -12,12 +12,14 @@
 #include "base/android/jni_string.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 #include "chrome/browser/web_share_target/target_util.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -35,36 +37,27 @@ void NavigateShareTargetPost(
       false /* is_renderer_initiated */);
   open_url_params.post_data = post_data;
   open_url_params.extra_headers = header_list;
-  web_contents->OpenURL(open_url_params);
+  web_contents->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 }
 }  // namespace webapk
 
 static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     JNIEnv* env,
     const jboolean java_is_multipart_encoding,
-    const JavaParamRef<jobjectArray>& java_names,
-    const JavaParamRef<jobjectArray>& java_values,
+    std::vector<std::string>& names,
+    std::vector<std::string>& values,
     const JavaParamRef<jbooleanArray>& java_is_value_file_uris,
-    const JavaParamRef<jobjectArray>& java_filenames,
-    const JavaParamRef<jobjectArray>& java_types,
-    const JavaParamRef<jstring>& java_url,
+    std::vector<std::string>& filenames,
+    std::vector<std::string>& types,
+    std::string& url,
     const JavaParamRef<jobject>& java_web_contents) {
-  std::vector<std::string> names;
-  std::vector<std::string> values;
-  std::vector<std::string> filenames;
-  std::vector<std::string> types;
   std::vector<bool> is_value_file_uris;
 
   bool is_multipart_encoding = static_cast<bool>(java_is_multipart_encoding);
-  base::android::AppendJavaStringArrayToStringVector(env, java_names, &names);
-  base::android::AppendJavaStringArrayToStringVector(env, java_values, &values);
   base::android::JavaBooleanArrayToBoolVector(env, java_is_value_file_uris,
                                               &is_value_file_uris);
-  base::android::AppendJavaStringArrayToStringVector(env, java_filenames,
-                                                     &filenames);
-  base::android::AppendJavaStringArrayToStringVector(env, java_types, &types);
 
-  GURL share_target_gurl(base::android::ConvertJavaStringToUTF8(java_url));
+  GURL share_target_gurl(url);
 
   scoped_refptr<network::ResourceRequestBody> post_data;
   std::string header_list;

@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
 #define SANDBOX_WIN_SRC_CROSSCALL_PARAMS_H_
 
 #include <windows.h>
 
 #include <lmaccess.h>
-
 #include <stddef.h>
 #include <stdint.h>
 

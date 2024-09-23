@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
@@ -32,6 +33,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,26 +48,28 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.util.ArrayList;
@@ -78,7 +82,6 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabIntentDataProviderTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
 
@@ -239,6 +242,354 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void googleBottomBarFlagsOff_customButtonWithSupportedId_hasItemsInToolbar() {
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(0, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void googleBottomBarFlagsOn_customButtonWithSupportedId_hasItemInGoogleBottomBar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(1, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(1, dataProvider.getCustomButtonsOnToolbar().size());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void googleBottomBarFlagsOn_customButtonWithNonSupportedId_hasItemsInToolbar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(1),
+                                createCustomActionButtonBundleWithId(2)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(0, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void
+            googleBottomBarFlagsOn_hasExtraGoogleBottomBarButtons_hasSupportedItemsInGoogleBottomBar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(103),
+                                createCustomGoogleBottomBarItemBundleWithId(2)));
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(2, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(1, dataProvider.getCustomButtonsOnToolbar().size());
+        assertEquals(3, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
+    })
+    public void googleBottomBarFlagsOn_withNoVariantLayout_hasItemsInGoogleBottomBar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(105), // CUSTOM
+                                createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
+                        );
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
+                .thenReturn(
+                        GoogleBottomBarIntentParams.newBuilder()
+                                .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
+                                .addAllEncodedButton(
+                                        // PIH_BASIC, CUSTOM, SEARCH  Not checked for this layout
+                                        // type
+                                        List.of(0, 1, 8, 9))
+                                .build());
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100), // SAVE
+                                createCustomActionButtonBundleWithId(101), // SHARE
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(
+                3, dataProvider.getCustomButtonsOnGoogleBottomBar().size()); // SAVE, SHARE, CUSTOM
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(1, dataProvider.getCustomButtonsOnToolbar().size()); // 1
+        assertEquals(4, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
+    })
+    public void googleBottomBarFlagsOn_withDoubleDeckerLayout_hasItemsInGoogleBottomBar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(105), // CUSTOM
+                                createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
+                        );
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
+                .thenReturn(
+                        GoogleBottomBarIntentParams.newBuilder()
+                                .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
+                                .addAllEncodedButton(
+                                        // PIH_BASIC, CUSTOM, SEARCH  Not checked for this layout
+                                        // type
+                                        List.of(0, 1, 8, 9))
+                                .build());
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100), // SAVE
+                                createCustomActionButtonBundleWithId(101), // SHARE
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(
+                3, dataProvider.getCustomButtonsOnGoogleBottomBar().size()); // SAVE, SHARE, CUSTOM
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(1, dataProvider.getCustomButtonsOnToolbar().size()); // 1
+        assertEquals(4, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
+    })
+    public void googleBottomBarFlagsOn_withSingleDeckerLayout_hasItemsInToolbar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(105), // CUSTOM
+                                createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
+                        );
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
+                .thenReturn(
+                        GoogleBottomBarIntentParams.newBuilder()
+                                .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
+                                .addAllEncodedButton(List.of())
+                                .build());
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100), // SAVE
+                                createCustomActionButtonBundleWithId(101))); // SHARE
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(1, dataProvider.getCustomButtonsOnGoogleBottomBar().size()); // CUSTOM
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size()); // SAVE, SHARE
+        assertEquals(3, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS
+    })
+    public void googleBottomBarFlagsOn_withSingleDeckerWithRightButtonsLayout_hasItemsInToolbar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(105), // CUSTOM
+                                createCustomGoogleBottomBarItemBundleWithId(2)) // UNSUPPORTED
+                        );
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        when(connection.getGoogleBottomBarIntentParams(any()))
+                .thenReturn(
+                        GoogleBottomBarIntentParams.newBuilder()
+                                .setVariantLayoutType(
+                                        VariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS)
+                                .addAllEncodedButton(List.of(0, 2)) // SHARE
+                                .build());
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100), // SAVE
+                                createCustomActionButtonBundleWithId(101), // SHARE
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(2, dataProvider.getCustomButtonsOnGoogleBottomBar().size()); // SHARE, CUSTOM
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size()); // 1, SAVE
+        assertEquals(4, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR})
+    public void googleBottomBarFlagsOff_hasExtraGoogleBottomBarButtons_hasItemsInToolbar() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.hasExtraGoogleBottomBarButtons(any())).thenReturn(true);
+
+        ArrayList<Bundle> googleBottomBarButtons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomGoogleBottomBarItemBundleWithId(103),
+                                createCustomGoogleBottomBarItemBundleWithId(2)));
+
+        when(connection.getGoogleBottomBarButtons(any())).thenReturn(googleBottomBarButtons);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(0, dataProvider.getCustomButtonsOnGoogleBottomBar().size());
+        assertEquals(0, dataProvider.getCustomButtonsOnBottombar().size());
+        assertEquals(2, dataProvider.getCustomButtonsOnToolbar().size());
+        assertEquals(2, dataProvider.getAllCustomButtons().size());
+    }
+
+    @Test
     public void shareStateOn_buttonInToolbarAndCustomMenuItems_hasShareItemInMenu() {
         ArrayList<Bundle> buttons =
                 new ArrayList<>(Collections.singleton(createActionButtonInToolbarBundle()));
@@ -372,18 +723,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testInitialActivityWidth_1Pdisabled() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(false);
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
-    }
-
-    @Test
-    public void testInitialActivityWidth_3Penabled_notdenied() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+    public void testInitialActivityWidth_3P_notdenied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -394,9 +734,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testInitialActivityWidth_3Penabled_denied() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+    public void testInitialActivityWidth_3P_denied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -406,19 +744,6 @@ public class CustomTabIntentDataProviderTest {
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
-    }
-
-    @Test
-    public void testInitialActivityWidth_3Pdisabled() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(false);
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        when(connection.isFirstParty(any())).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Width should be 50", 50, dataProvider.getInitialActivityWidth());
     }
 
     @Test
@@ -577,6 +902,17 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         assertNull(dataProvider.getClientPackageName());
+    }
+
+    @Test
+    public void testGetClientPackageNameIdentitySharing() {
+        Intent intent = new Intent();
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        Assert.assertNull(dataProvider.getClientPackageNameIdentitySharing());
+
+        intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, "com.foo.bar");
+        var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        Assert.assertEquals("com.foo.bar", dataProvider2.getClientPackageNameIdentitySharing());
     }
 
     @Test
@@ -853,43 +1189,223 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
-    public void chromePihEnabled_pihOverflowMenuItemExtraAdded_pihOverflowMenuItemNotFound() {
-        String pihOverflowMenuItem = "View Page Insights";
-        List<String> overflowMenuItemList =
-                createIntentWithPihTitleAndReturnOverflowMenuList(pihOverflowMenuItem);
-        assertFalse(overflowMenuItemList.contains(pihOverflowMenuItem));
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_originValidation() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
+                "com.a.b.c|org.d.e.f");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertTrue(dataProvider.isInteractiveOmniboxAllowed());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("org.d.e.f");
+        assertTrue(dataProvider.isInteractiveOmniboxAllowed());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
-    public void chromePihDisabled_pihOverflowMenuItemExtraAdded_pihOverflowMenuItemFound() {
-        String pihOverflowMenuItem = "View Page Insights";
-        List<String> overflowMenuItemList =
-                createIntentWithPihTitleAndReturnOverflowMenuList(pihOverflowMenuItem);
-        assertTrue(overflowMenuItemList.contains(pihOverflowMenuItem));
-    }
-
-    private List<String> createIntentWithPihTitleAndReturnOverflowMenuList(
-            String pihOverflowMenuItem) {
+    @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_allowedPackagesRejectedWithFeatureDisabled() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
+                "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
         CustomTabsConnection.setInstanceForTesting(connection);
 
-        Intent intent = new Intent();
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE,
-                pihOverflowMenuItem);
-        intent.putExtra(
-                CustomTabsIntent.EXTRA_MENU_ITEMS,
-                new ArrayList<>(
-                        Arrays.asList(
-                                createMenuItemBundle(),
-                                createPageInsightsHubMenuItemBundle(pihOverflowMenuItem))));
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
-        return provider.getMenuTitles();
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("org.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedInOffTheRecordMode() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
+        when(dataProvider.isOffTheRecord()).thenReturn(true);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedOnPartialCCTs() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
+        when(dataProvider.isPartialCustomTab()).thenReturn(true);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedOnAutomotive() {
+        var shadowPkgMgr = Shadows.shadowOf(mContext.getPackageManager());
+        shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
+        assertTrue(BuildInfo.getInstance().isAutomotive);
+
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addShareOption_conventionalCct_defaultState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Expect only the share button to be created.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(1, buttons.size());
+        var button = buttons.get(0);
+        assertEquals(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON, button.getType());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addShareOption_conventionalCct_disabledState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_OFF);
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Expect no toolbar buttons.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(0, buttons.size());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addShareOption_searchInCct_enabledState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON);
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Expect only the Open in Browser button, as the Share button is gated by empty Toolbar.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(1, buttons.size());
+        assertEquals(
+                CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, buttons.get(0).getType());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addOpenInBrowserOption_searchInCct_defaultState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Since we're simulating an Omnibox-enabled CCT, expect the default button to be the Open
+        // in Browser.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(1, buttons.size());
+        var button = buttons.get(0);
+        assertEquals(CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, button.getType());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addOpenInBrowserOption_searchInCct_disabledState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_OFF);
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Since we explicitly disabled the Open in Browser button, we should pick the implicitly
+        // added Share button.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(1, buttons.size());
+        var button = buttons.get(0);
+        assertEquals(CustomButtonParams.ButtonType.CCT_SHARE_BUTTON, button.getType());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void addOpenInBrowserOption_conventionalCct_enabledState() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+
+        // Buttons are initialized as part of the Constructor logic.
+        // Expect only the Open in Browser button, as the Share button is gated by empty Toolbar.
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals(1, buttons.size());
+        assertEquals(
+                CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, buttons.get(0).getType());
     }
 
     private Bundle createActionButtonInToolbarBundle() {
@@ -911,9 +1427,14 @@ public class CustomTabIntentDataProviderTest {
         return bundle;
     }
 
-    private Bundle createMenuItemBundle() {
+    private Bundle createCustomActionButtonBundleWithId(int id) {
         Bundle bundle = new Bundle();
-        bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, "title");
+        bundle.putInt(CustomTabsIntent.KEY_ID, id);
+        int iconHeight = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        bundle.putParcelable(
+                CustomTabsIntent.KEY_ICON,
+                Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
+        bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
         bundle.putParcelable(
                 CustomTabsIntent.KEY_PENDING_INTENT,
                 PendingIntent.getBroadcast(
@@ -921,12 +1442,32 @@ public class CustomTabIntentDataProviderTest {
                         0,
                         new Intent(),
                         IntentUtils.getPendingIntentMutabilityFlag(true)));
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 
-    private Bundle createPageInsightsHubMenuItemBundle(String pihTitle) {
+    private Bundle createCustomGoogleBottomBarItemBundleWithId(int id) {
         Bundle bundle = new Bundle();
-        bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, pihTitle);
+        bundle.putInt(CustomTabsIntent.KEY_ID, id);
+        int iconHeight = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        bundle.putParcelable(
+                CustomTabsIntent.KEY_ICON,
+                Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
+        bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
+        bundle.putParcelable(
+                CustomTabsIntent.KEY_PENDING_INTENT,
+                PendingIntent.getBroadcast(
+                        mContext,
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, false);
+        return bundle;
+    }
+
+    private Bundle createMenuItemBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, "title");
         bundle.putParcelable(
                 CustomTabsIntent.KEY_PENDING_INTENT,
                 PendingIntent.getBroadcast(

@@ -25,6 +25,8 @@ namespace media {
 // should be called on the same sequence.
 class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // V4L2DecodeSurfaceHandler maintains a list of InputRecords, which records
   // the status and metadata of input buffers.
   // |input_buffer| and |output_buffer| are the buffers to be used as input and
@@ -35,7 +37,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   // secure decoding on ARM, zero otherwise.
   V4L2DecodeSurface(V4L2WritableBufferRef input_buffer,
                     V4L2WritableBufferRef output_buffer,
-                    scoped_refptr<VideoFrame> frame,
+                    scoped_refptr<FrameResource> frame,
                     uint64_t secure_handle);
 
   V4L2DecodeSurface(const V4L2DecodeSurface&) = delete;
@@ -72,7 +74,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   V4L2WritableBufferRef& output_buffer() {
     return output_buffer_;
   }
-  scoped_refptr<VideoFrame> video_frame() const { return video_frame_; }
+  scoped_refptr<FrameResource> frame() const { return frame_; }
   gfx::Rect visible_rect() const { return visible_rect_; }
   const VideoColorSpace& color_space() const { return color_space_; }
   uint64_t secure_handle() const { return secure_handle_; }
@@ -80,15 +82,15 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   std::string ToString() const;
 
  protected:
-  virtual ~V4L2DecodeSurface();
   friend class base::RefCounted<V4L2DecodeSurface>;
+  virtual ~V4L2DecodeSurface();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   V4L2WritableBufferRef input_buffer_;
   V4L2WritableBufferRef output_buffer_;
-  scoped_refptr<VideoFrame> video_frame_;
+  scoped_refptr<FrameResource> frame_;
 
   // The index of the corresponding output record.
   const int output_record_;
@@ -118,7 +120,7 @@ class V4L2RequestDecodeSurface : public V4L2DecodeSurface {
  public:
   V4L2RequestDecodeSurface(V4L2WritableBufferRef input_buffer,
                            V4L2WritableBufferRef output_buffer,
-                           scoped_refptr<VideoFrame> frame,
+                           scoped_refptr<FrameResource> frame,
                            uint64_t secure_handle,
                            V4L2RequestRef request_ref)
       : V4L2DecodeSurface(std::move(input_buffer),

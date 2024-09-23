@@ -588,6 +588,30 @@ def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
 class UtilMethodsTest(test_runner_test.TestCase):
   """Test case for utility methods not related with Parser class."""
 
+  def setUp(self):
+    self.summary_xcode16_with_parallel = {
+        'tests': {
+            '_values': ['TestSuite1', 'TestSuite2']
+        }
+    }
+
+    # Example test summary when running xcode version lower than 16.
+    # It could also be when running xcode version 16 without xcode
+    # parallelization enabled.
+    self.summary_pre_xcode16 = {
+        'tests': {
+            '_values': [{
+                'subtests': {
+                    '_values': [{
+                        'subtests': {
+                            '_values': ['TestSuite1', 'TestSuite2']
+                        }
+                    }]
+                }
+            }]
+        }
+    }
+
   def testParseTestsForInterruptedRun(self):
     test_output = """
     Test case '-[DownloadManagerTestCase testVisibleFileNameAndOpenInDownloads]' passed on 'Clone 2 of iPhone X 15.0 test simulator - ios_chrome_ui_eg2tests_module-Runner (34498)' (20.715 seconds)
@@ -619,6 +643,25 @@ class UtilMethodsTest(test_runner_test.TestCase):
       if result.name == 'LinkToTextTestCase/testGenerateLinkForSimpleText':
         self.assertEqual(result.test_log, expected_failed_message)
 
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_xcode16_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = True
+    result = xcode_log_parser.get_test_suites(
+        self.summary_xcode16_with_parallel, True)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
+
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_xcode16_not_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = True
+    result = xcode_log_parser.get_test_suites(self.summary_pre_xcode16, False)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
+
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def test_pre_xcode16_parallel(self, mock_xcode_version):
+    mock_xcode_version.return_value = False
+    result = xcode_log_parser.get_test_suites(self.summary_pre_xcode16, True)
+    self.assertEqual(result, ['TestSuite1', 'TestSuite2'])
+
 
 class XcodeLogParserTest(test_runner_test.TestCase):
   """Test case to test XcodeLogParser."""
@@ -628,7 +671,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
     self.mock(test_runner, 'get_current_xcode_info', lambda: XCODE11_DICT)
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def testXcresulttoolGetRoot(self, mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testXcresulttoolGetRoot(self, mock_xcode_version, mock_process):
+    mock_xcode_version.return_value = False
     mock_process.return_value = b'%JSON%'
     xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path')
     self.assertTrue(
@@ -638,7 +683,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         mock_process.mock_calls[0][1][0])
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def testXcresulttoolGetRef(self, mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testXcresulttoolGetRef(self, mock_xcode_version, mock_process):
+    mock_xcode_version.return_value = False
     mock_process.side_effect = [REF_ID, b'JSON']
     xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path',
                                                           'testsRef')
@@ -684,7 +731,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         'PageStateTestCase/testMethod3'
     ])
     results = xcode_log_parser.XcodeLogParser()._get_test_statuses(
-        OUTPUT_PATH)
+        OUTPUT_PATH, False)
     self.assertEqual(expected_expected_tests, results.expected_tests())
     seen_failed_test = False
     for test_result in results.test_results:
@@ -796,8 +843,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testCopyScreenshots(self, mock_xcresulttool_get, mock_path_exists,
-                          mock_process):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testCopyScreenshots(self, mock_xcode_version, mock_xcresulttool_get,
+                          mock_path_exists, mock_process):
+    mock_xcode_version.return_value = False
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
     xcode_log_parser.XcodeLogParser().copy_artifacts(OUTPUT_PATH)
@@ -823,8 +872,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testExportDiagnosticData(self, mock_xcresulttool_get, mock_path_exists,
-                               mock_process, _):
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testExportDiagnosticData(self, mock_xcode_version, mock_xcresulttool_get,
+                               mock_path_exists, mock_process, _):
+    mock_xcode_version.return_value = False
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
     xcode_log_parser.XcodeLogParser.export_diagnostic_data(OUTPUT_PATH)
@@ -839,9 +890,12 @@ class XcodeLogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
-  def testStdoutCopiedInExportDiagnosticData(self, mock_xcresulttool_get,
+  @mock.patch('xcode_util.using_xcode_16_or_higher')
+  def testStdoutCopiedInExportDiagnosticData(self, mock_xcode_version,
+                                             mock_xcresulttool_get,
                                              mock_path_exists, mock_process,
                                              mock_copy, _):
+    mock_xcode_version.return_value = False
     output_path_in_test = 'test_data/attempt_0'
     xcresult_path_in_test = 'test_data/attempt_0.xcresult'
     mock_path_exists.return_value = True

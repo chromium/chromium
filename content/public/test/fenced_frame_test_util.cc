@@ -4,6 +4,10 @@
 
 #include "content/public/test/fenced_frame_test_util.h"
 
+#include <string_view>
+#include <vector>
+
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -15,6 +19,9 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -51,10 +58,12 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesAPIChanges, {}},
        {blink::features::kFencedFramesDefaultMode, {}},
        {features::kFencedFramesEnforceFocus, {}},
-       {blink::features::kFencedFramesM120FeaturesPart1, {}},
        {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
-       {blink::features::kFencedFramesM120FeaturesPart2, {}},
-       {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}}},
+       {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
+       {blink::features::kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
+        {}},
+       {blink::features::kFencedFramesReportEventHeaderChanges, {}},
+       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}}},
       {/* disabled_features */});
 }
 
@@ -87,7 +96,7 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   FencedFrame* fenced_frame = fenced_frames.back();
   // It is possible that we got the did stop loading notification because the
   // fenced frame was actually being destroyed. Check to make sure that's not
-  // the case. TODO(crbug.com/1123606): Consider weakly referencing the fenced
+  // the case. TODO(crbug.com/40053214): Consider weakly referencing the fenced
   // frame if the removal-and-stop-loading scenario is a useful one to test.
   EXPECT_EQ(previous_fenced_frame_count + 1,
             fenced_frame_parent_rfh->GetFencedFrames().size());
@@ -289,6 +298,55 @@ GURL AddAndVerifyFencedFrameURL(
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();
 }
+
+void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
+                                                const std::vector<GURL>& urls) {
+  base::ranges::for_each(urls, [rfh](GURL url) {
+    static_cast<RenderFrameHostImpl*>(rfh)
+        ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
+  });
+}
+
+void SimulateClickInFencedFrameTree(const ToRenderFrameHost& adapter,
+                                    blink::WebMouseEvent::Button button,
+                                    const gfx::PointF& point) {
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = button;
+  mouse_event.SetPositionInWidget(point);
+  mouse_event.click_count = 1;
+  adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  adapter.render_frame_host()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+}
+
+gfx::PointF GetTopLeftCoordinatesOfElementWithId(
+    const ToRenderFrameHost& adapter,
+    std::string_view id) {
+  double x = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.left)
+                                )",
+                                                id))
+                 .ExtractDouble();
+  double y = EvalJs(adapter, content::JsReplace(R"(
+                                  const bounds =
+                                    document.getElementById($1).
+                                    getBoundingClientRect();
+                                  Math.floor(bounds.top)
+                                )",
+                                                id))
+                 .ExtractDouble();
+
+  return gfx::PointF(x, y);
+}
+
 }  // namespace test
 
 }  // namespace content

@@ -231,8 +231,8 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
 TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
   base::HistogramTester histogram_tester;
 
-  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  std::string file_name("foo.txt");
+  const std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const std::string file_name = "new\nline.txt";
   const base::FilePath file_path = downloads_dir_.Append(file_name);
   const std::string file_trashinfo_contents =
       CreateTrashInfoContentsFromPath(file_path);

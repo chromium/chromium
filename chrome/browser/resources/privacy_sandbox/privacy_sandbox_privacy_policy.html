@@ -1,0 +1,20 @@
+<style>
+  html, body {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+  }
+</style>
+<object onload="loading()" data="$i18n{privacyPolicyURL}" type="text/html"
+  height="100%" width="100%"></object>
+<script>
+  function loading(){
+    const privacyPolicyLoadTime = performance.now();
+    window.parent.postMessage(
+      {
+        id: 'privacy-policy-loaded',
+        value: privacyPolicyLoadTime
+      },
+      'chrome://privacy-sandbox-dialog');
+  }
+</script>

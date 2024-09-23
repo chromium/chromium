@@ -12,9 +12,12 @@ static_library("profiling_host") {
     "profiling_process_host.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:main_extra_parts",
     "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//components/heap_profiling/multi_process",

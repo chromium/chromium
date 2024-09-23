@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_checker.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 namespace metrics {
 class MetricsService;
@@ -26,8 +27,11 @@ class UkmService;
 
 namespace variations {
 class EntropyProviders;
+class SyntheticTrialRegistry;
 class VariationsService;
 }  // namespace variations
+
+class IdentifiabilityStudyState;
 
 namespace metrics_services_manager {
 
@@ -56,12 +60,20 @@ class MetricsServicesManager {
   // Side effect: Initializes the CleanExitBeacon.
   void InstantiateFieldTrialList() const;
 
+  // Returns the SyntheticTrialRegistry, creating it if it hasn't been created
+  // yet.
+  variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
+
   // Returns the MetricsService, creating it if it hasn't been created yet (and
   // additionally creating the MetricsServiceClient in that case).
   metrics::MetricsService* GetMetricsService();
 
   // Returns the UkmService, creating it if it hasn't been created yet.
   ukm::UkmService* GetUkmService();
+
+  // Returns the IdentifiabilityStudyState, if it has been created, and nullptr
+  // otherwise.
+  IdentifiabilityStudyState* GetIdentifiabilityStudyState();
 
   // Returns the StructuredMetricsService associated with the
   // |metrics_service_client_|.
@@ -136,6 +148,8 @@ class MetricsServicesManager {
 
   // The current metrics setting reflecting if consent was given.
   bool consent_given_;
+
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 
   // The MetricsServiceClient. Owns the MetricsService.
   std::unique_ptr<metrics::MetricsServiceClient> metrics_service_client_;

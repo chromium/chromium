@@ -90,111 +90,83 @@ function registerElement(elementName, containerElementType) {
 function forwardApiMethods(
     containerElementType, containerType, internalApi, methodNames,
     promiseMethodDetails) {
-  var createContainerImplHandler = function(m) {
+  const getMethodType = function(name) {
+    if (containerElementType.prototype[name]) {
+      return 'CONTAINER_ELEMENT';
+    } else if (containerType.prototype[name]) {
+      return 'CONTAINER';
+    } else if (internalApi && internalApi[name]) {
+      return 'INTERNAL';
+    }
+    return 'UNKNOWN';
+  };
+
+  const createMethodHandler = function(methodName) {
+    switch (getMethodType(methodName)) {
+      case 'CONTAINER_ELEMENT':
+        return containerElementType.prototype[methodName];
+
+      case 'CONTAINER':
+        return function(var_args) {
+          const internal = privates(this).internal;
+          return $Function.apply(internal[methodName], internal, arguments);
+        };
+
+      case 'INTERNAL':
+        return function(var_args) {
+          const internal = privates(this).internal;
+          const instanceId = internal.guest.getId();
+          if (!instanceId) {
+            return false;
+          }
+          const args = $Array.concat([instanceId], $Array.slice(arguments));
+          $Function.apply(internalApi[methodName], null, args);
+          return true;
+        };
+
+      default:
+        logging.DCHECK(false, `${methodName} has no implementation.`);
+    }
+  };
+
+  const promisifyMethodHandler = function(methodDetails, handler) {
+    const methodType = getMethodType(methodDetails.name);
     return function(var_args) {
-      var internal = privates(this).internal;
-      return $Function.apply(internal[m], internal, arguments);
+      const args = $Array.slice(arguments);
+      if (args[methodDetails.callbackIndex] !== undefined) {
+        return $Function.apply(handler, this, args);
+      }
+      return new $Promise.self((resolve, reject) => {
+        if (methodType === 'INTERNAL') {
+          if (!privates(this).internal.guest.getId()) {
+            reject('The embedded page has been destroyed.');
+            return;
+          }
+        }
+        const callback = function(result) {
+          if (bindingUtil.hasLastError()) {
+            reject(bindingUtil.getLastErrorMessage());
+            bindingUtil.clearLastError();
+            return;
+          }
+          resolve(result);
+        };
+        args[methodDetails.callbackIndex] = callback;
+        $Function.apply(handler, this, args);
+      });
     };
   };
 
-  // Add a version of the container handler function defined above which returns
-  // a Promise.
-  let createContainerImplPromiseHandler =
-      function(m) {
-    return function(var_args) {
-      const internal = privates(this).internal;
-      const args = [...arguments];
-      if (args[m.callbackIndex] != undefined) {
-        return $Function.apply(internal[m], internal, arguments);
-      }
-      return new $Promise.self((resolve, reject) => {
-          const callback = function(result) {
-            if (bindingUtil.hasLastError()) {
-              reject(bindingUtil.getLastErrorMessage());
-              bindingUtil.clearLastError();
-              return;
-            }
-            resolve(result);
-          };
-          args[m.callbackIndex] = callback;
-        $Function.apply(internal[m.name], internal, args);
-      });
-    }
+
+  for (const methodName of methodNames) {
+    containerElementType.prototype[methodName] =
+        createMethodHandler(methodName);
   }
 
-  var createInternalApiHandler = function(m) {
-    return function(var_args) {
-      var internal = privates(this).internal;
-      var instanceId = internal.guest.getId();
-      if (!instanceId) {
-        return false;
-      }
-      var args = $Array.concat([instanceId], $Array.slice(arguments));
-      $Function.apply(internalApi[m], null, args);
-      return true;
-    };
-  };
-
-  // Add a version of the internal handler function defined above which returns
-  // a Promise.
-  let createInternalApiPromiseHandler =
-      function(m) {
-    return function(var_args) {
-      const internal = privates(this).internal;
-      const instanceId = internal.guest.getId();
-      var args = $Array.slice(arguments);
-      if (args[m.callbackIndex] !== undefined) {
-        if (!instanceId) {
-          return false;
-        }
-        args = $Array.concat([instanceId], args);
-        $Function.apply(internalApi[m.name], null, args)
-        return true;
-      }
-      return new $Promise.self((resolve, reject) => {
-        if (!instanceId) {
-          reject();
-          return;
-        }
-          const callback = function(result) {
-            if (bindingUtil.hasLastError()) {
-              reject(bindingUtil.getLastErrorMessage());
-              bindingUtil.clearLastError();
-              return;
-            }
-            resolve(result);
-          };
-          args[m.callbackIndex] = callback;
-        args = $Array.concat([instanceId], args);
-        $Function.apply(internalApi[m.name], null, args);
-      });
-    }
-  }
-
-  for (var m of methodNames) {
-    if (!containerElementType.prototype[m]) {
-      if (containerType.prototype[m]) {
-        containerElementType.prototype[m] = createContainerImplHandler(m);
-      } else if (internalApi && internalApi[m]) {
-        containerElementType.prototype[m] = createInternalApiHandler(m);
-      } else {
-        logging.DCHECK(false, m + ' has no implementation.');
-      }
-    }
-  }
-
-  for (let m of promiseMethodDetails) {
-    if (!containerElementType.prototype[m.name]) {
-      if (containerType.prototype[m.name]) {
-        containerElementType.prototype[m.name] =
-            createContainerImplPromiseHandler(m);
-      } else if (internalApi && internalApi[m.name]) {
-        containerElementType.prototype[m.name] =
-            createInternalApiPromiseHandler(m);
-      } else {
-        logging.DCHECK(false, m.name + 'has no implementation.');
-      }
-    }
+  for (const methodDetails of promiseMethodDetails) {
+    const handler = createMethodHandler(methodDetails.name);
+    containerElementType.prototype[methodDetails.name] =
+        promisifyMethodHandler(methodDetails, handler);
   }
 }
 

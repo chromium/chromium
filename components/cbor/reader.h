@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
 
@@ -218,7 +219,7 @@ class CBOR_EXPORT Reader {
 
   size_t num_bytes_remaining() const { return rest_.size(); }
 
-  base::span<const uint8_t> rest_;
+  base::raw_span<const uint8_t> rest_;
   DecoderError error_code_;
 };
 

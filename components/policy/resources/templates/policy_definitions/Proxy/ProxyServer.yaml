@@ -16,7 +16,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
 - file://components/proxy_config/OWNERS
 schema:
   type: string

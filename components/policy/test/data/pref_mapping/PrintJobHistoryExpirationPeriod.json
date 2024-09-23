@@ -9,7 +9,9 @@
           "PrintJobHistoryExpirationPeriod": 90
         },
         "prefs": {
-          "printing.print_job_history_expiration_period": {}
+          "printing.print_job_history_expiration_period": {
+            "value": 90
+          }
         }
       }
     ]

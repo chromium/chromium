@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split_internal.h"
 
 namespace base {

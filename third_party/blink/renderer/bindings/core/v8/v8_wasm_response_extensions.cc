@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
 #include "base/debug/dump_without_crashing.h"
@@ -115,10 +120,9 @@ class WasmCodeCachingCallback {
     {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                    "v8.wasm.compileDigestForCreate");
-      if (!ComputeDigest(kHashAlgorithmSha256,
-                         reinterpret_cast<const char*>(wire_bytes.data()),
-                         wire_bytes.size(), wire_bytes_digest))
+      if (!ComputeDigest(kHashAlgorithmSha256, wire_bytes, wire_bytes_digest)) {
         return;
+      }
       if (wire_bytes_digest.size() != kWireBytesDigestSize)
         return;
     }
@@ -128,7 +132,7 @@ class WasmCodeCachingCallback {
     Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedDataHeader(
         kWasmModuleTag, kWireBytesDigestSize + base::checked_cast<wtf_size_t>(
                                                    serialized_module.size));
-    serialized_data.Append(wire_bytes_digest.data(), kWireBytesDigestSize);
+    serialized_data.AppendSpan(base::span(wire_bytes_digest));
     serialized_data.Append(
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
         base::checked_cast<wtf_size_t>(serialized_module.size));
@@ -226,7 +230,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       }
       switch (result) {
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kOk:
           break;
@@ -436,7 +440,7 @@ class WasmDataLoaderClient final
   WasmDataLoaderClient& operator=(const WasmDataLoaderClient&) = delete;
 
   void DidFetchDataLoadedCustomFormat() override {}
-  void DidFetchDataLoadFailed() override { NOTREACHED(); }
+  void DidFetchDataLoadFailed() override { NOTREACHED_IN_MIGRATION(); }
   void Abort() override { loader_->AbortFromClient(); }
 
   void Trace(Visitor* visitor) const override {
@@ -497,7 +501,7 @@ void StreamFromResponseCallback(
                        "v8.wasm.streamFromResponseCallback",
                        TRACE_EVENT_SCOPE_THREAD);
   ExceptionState exception_state(args.GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+                                 v8::ExceptionContext::kOperation,
                                  "WebAssembly", "compile");
   std::shared_ptr<v8::WasmStreaming> streaming =
       v8::WasmStreaming::Unpack(args.GetIsolate(), args.Data());
@@ -552,7 +556,7 @@ void StreamFromResponseCallback(
   // The spec explicitly disallows any extras on the Content-Type header,
   // so we check against ContentType() rather than MimeType(), which
   // implicitly strips extras.
-  if (response->ContentType().LowerASCII() != "application/wasm") {
+  if (!EqualIgnoringASCIICase(response->ContentType(), "application/wasm")) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kWrongMimeType);
     exception_state.ThrowTypeError(

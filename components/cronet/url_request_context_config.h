@@ -166,7 +166,7 @@ struct URLRequestContextConfig {
 
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
-  const std::optional<double> network_thread_priority;
+  const std::optional<int> network_thread_priority;
 
   // Whether the connection status of active bidirectional streams should be
   // monitored.
@@ -210,7 +210,7 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      std::optional<double> network_thread_priority);
+      std::optional<int> network_thread_priority);
 
  private:
   URLRequestContextConfig(
@@ -244,7 +244,7 @@ struct URLRequestContextConfig {
       // Optional network thread priority.
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. Do not specify for other targets.
-      std::optional<double> network_thread_priority);
+      std::optional<int> network_thread_priority);
 
   // Parses experimental options from their JSON format to the format used
   // internally.
@@ -321,7 +321,7 @@ struct URLRequestContextConfigBuilder {
   // Optional network thread priority.
   // On Android, corresponds to android.os.Process.setThreadPriority() values.
   // Do not specify for other targets.
-  std::optional<double> network_thread_priority;
+  std::optional<int> network_thread_priority;
 };
 
 }  // namespace cronet

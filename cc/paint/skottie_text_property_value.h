@@ -36,7 +36,7 @@ class CC_PAINT_EXPORT SkottieTextPropertyValue {
   bool operator!=(const SkottieTextPropertyValue& other) const;
 
   void SetText(std::string text);
-  const std::string& text() const { return text_->data(); }
+  const std::string& text() const { return text_->as_string(); }
 
   void set_box(gfx::RectF box) { box_ = std::move(box); }
   const gfx::RectF& box() const { return box_; }

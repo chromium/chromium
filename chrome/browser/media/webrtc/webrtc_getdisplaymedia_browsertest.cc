@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,14 +21,16 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -69,7 +70,12 @@ using ::content::MockCapturedSurfaceController;
 using ::content::WebContents;
 using ::content::WebContentsMediaCaptureId;
 using ::testing::_;
+using ::testing::Bool;
+using ::testing::Combine;
 using ::testing::Mock;
+using ::testing::Values;
+using TabSharingInfoBarButton =
+    ::TabSharingInfoBarDelegate::TabSharingInfoBarButton;
 
 using CapturedSurfaceControllerFactoryCallback =
     ::base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
@@ -85,6 +91,9 @@ static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
 static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
 static const std::u16string kShareThisTabInsteadMessage =
     u"Share this tab instead";
+
+constexpr TabSharingInfoBarButton kCscIndicator =
+    TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
@@ -145,7 +154,7 @@ std::string DisplaySurfaceTypeAsString(
     case DisplaySurfaceType::kScreen:
       return "screen";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RunGetDisplayMedia(content::WebContents* tab,
@@ -171,7 +180,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
 #if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
-          system_media_permissions::SystemPermission::kAllowed) {
+          system_permission_settings::SystemPermission::kAllowed) {
     expect_success = false;
   }
 #endif
@@ -208,31 +217,37 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
-ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
-                                    size_t infobar_index = 0) {
-  return static_cast<ConfirmInfoBarDelegate*>(
+TabSharingInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
+                                       size_t infobar_index = 0) {
+  return static_cast<TabSharingInfoBarDelegate*>(
       GetInfoBarManager(web_contents)->infobars()[infobar_index]->delegate());
 }
 
-bool HasSecondaryButton(content::WebContents* web_contents) {
-  return GetDelegate(web_contents)->GetButtons() &
-         ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+bool HasCscIndicator(content::WebContents* web_contents) {
+  return GetDelegate(web_contents)->GetButtons() & kCscIndicator;
 }
 
-std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
-  DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
+bool HasShareThisTabInsteadButton(content::WebContents* web_contents) {
+  return GetDelegate(web_contents)->GetButtons() &
+         TabSharingInfoBarButton::kShareThisTabInstead;
+}
+
+std::u16string GetShareThisTabInsteadButtonLabel(
+    content::WebContents* web_contents) {
+  DCHECK(HasShareThisTabInsteadButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
-      ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+      ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
   CHECK(command_line);
 
-  // TODO(https://crbug.com/1424557): Remove this after fixing feature
+  // MSan and GL do not get along so avoid using the GPU with MSan.
+  // TODO(crbug.com/40260482): Remove this after fixing feature
   // detection in 0c tab capture path as it'll no longer be needed.
-  if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-    command_line->AppendSwitch(switches::kUseGpuInTests);
-  }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+  command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
 }
 
 }  // namespace
@@ -313,12 +328,12 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebRtcScreenCaptureBrowserTestWithPicker,
-                         testing::Combine(
-                             /*should_prefer_current_tab=*/testing::Bool(),
-                             /*accept_this_tab_capture=*/testing::Bool()));
+                         Combine(
+                             /*should_prefer_current_tab=*/Bool(),
+                             /*accept_this_tab_capture=*/Bool()));
 
-// TODO(1170479): Real desktop capture is flaky on below platforms.
-// TODO(crbug.com/1520393): enable this flaky test.
+// TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
+// TODO(crbug.com/41493366): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
@@ -392,8 +407,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(1170479): Real desktop capture is flaky on below platforms.
-// TODO(crbug.com/1520393): enable this flaky test.
+// TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
+// TODO(crbug.com/41493366): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
@@ -526,14 +541,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCaptureBrowserTestWithFakeUI,
-    testing::Values(TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
-                                        /*display_surface=*/"monitor"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
-                                        /*display_surface=*/"window"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
-                                        /*display_surface=*/"browser"},
-                    TestConfigForFakeUI{/*should_prefer_current_tab=*/true,
-                                        /*display_surface=*/"browser"}));
+    Values(TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
+                               /*display_surface=*/"monitor"},
+           TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
+                               /*display_surface=*/"window"},
+           TestConfigForFakeUI{/*should_prefer_current_tab=*/false,
+                               /*display_surface=*/"browser"},
+           TestConfigForFakeUI{/*should_prefer_current_tab=*/true,
+                               /*display_surface=*/"browser"}));
 
 class WebRtcScreenCapturePermissionPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest,
@@ -565,9 +580,9 @@ class WebRtcScreenCapturePermissionPolicyBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCapturePermissionPolicyBrowserTest,
-    testing::Combine(testing::Values(GetDisplayMediaVariant::kStandard,
-                                     GetDisplayMediaVariant::kPreferCurrentTab),
-                     /*allowlisted_by_policy=*/testing::Bool()));
+    Combine(Values(GetDisplayMediaVariant::kStandard,
+                   GetDisplayMediaVariant::kPreferCurrentTab),
+            /*allowlisted_by_policy=*/Bool()));
 
 // Flaky on Win bots http://crbug.com/1264805
 #if BUILDFLAG(IS_WIN)
@@ -884,7 +899,7 @@ class GetDisplayMediaVideoTrackBrowserTest
       case DisplaySurfaceType::kScreen:
         return "MediaStreamTrack";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  protected:
@@ -898,11 +913,11 @@ class GetDisplayMediaVideoTrackBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     _,
     GetDisplayMediaVideoTrackBrowserTest,
-    testing::Combine(/*region_capture_enabled=*/testing::Bool(),
-                     /*display_surface_type=*/
-                     testing::Values(DisplaySurfaceType::kTab,
-                                     DisplaySurfaceType::kWindow,
-                                     DisplaySurfaceType::kScreen)),
+    Combine(/*region_capture_enabled=*/Bool(),
+            /*display_surface_type=*/
+            Values(DisplaySurfaceType::kTab,
+                   DisplaySurfaceType::kWindow,
+                   DisplaySurfaceType::kScreen)),
     [](const testing::TestParamInfo<
         GetDisplayMediaVideoTrackBrowserTest::ParamType>& info) {
       return base::StrCat(
@@ -1087,15 +1102,15 @@ INSTANTIATE_TEST_SUITE_P(
     // (cf. kBrowserWindowWidth and kBrowserWindowHeight in
     // GetDisplayMediaHiDpiBrowserTest above), and the large sizes must be
     // significantly larger than the browser window size.
-    testing::Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
-                                       /*constraint_width=*/3840,
-                                       /*constraint_height=*/2160},
-                    TestConfigForHiDpi{/*enable_hidpi=*/true,
-                                       /*constraint_width=*/640,
-                                       /*constraint_height=*/480},
-                    TestConfigForHiDpi{/*enable_hidpi=*/true,
-                                       /*constraint_width=*/3840,
-                                       /*constraint_height=*/2160}));
+    Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
+                              /*constraint_width=*/3840,
+                              /*constraint_height=*/2160},
+           TestConfigForHiDpi{/*enable_hidpi=*/true,
+                              /*constraint_width=*/640,
+                              /*constraint_height=*/480},
+           TestConfigForHiDpi{/*enable_hidpi=*/true,
+                              /*constraint_width=*/3840,
+                              /*constraint_height=*/2160}));
 #endif
 
 class GetDisplayMediaChangeSourceBrowserTest
@@ -1109,7 +1124,7 @@ class GetDisplayMediaChangeSourceBrowserTest
   ~GetDisplayMediaChangeSourceBrowserTest() override = default;
 
   void SetUp() override {
-    // TODO(crbug.com/1381951): Fix GetDisplayMediaChangeSourceBrowserTest with
+    // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
 #if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
     if (dynamic_surface_switching_requested_ && feature_enabled_ &&
@@ -1164,11 +1179,9 @@ class GetDisplayMediaChangeSourceBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaChangeSourceBrowserTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         Combine(Bool(), Bool(), Bool()));
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1184,27 +1197,28 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   if (!ShouldShowShareThisTabInsteadButton()) {
-    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    EXPECT_FALSE(HasShareThisTabInsteadButton(other_tab));
     return;
   }
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button
-  GetDelegate(other_tab)->Cancel();
+  // Click the share-this-tab-instead secondary button.
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1214,15 +1228,16 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(captured_tab->IsBeingCaptured());
   EXPECT_TRUE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab), kShareThisTabInsteadMessage);
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab),
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(captured_tab),
+            kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
                 url_formatter::FormatOriginForSecurityDisplay(
                     other_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
                     url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
@@ -1230,7 +1245,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSourceThenStopTracksRemovesIndicators) {
   if (!ShouldShowShareThisTabInsteadButton()) {
@@ -1246,8 +1261,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                      /*expect_success=*/true,
                      /*is_tab_capture=*/true);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button
-  GetDelegate(other_tab)->Cancel();
+  // Click the share-this-tab-instead secondary button.
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1261,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   } while (GetInfoBarManager(capturing_tab)->infobars().size() > 0u);
 }
 
-// TODO(1428806) Re-enable flaky test.
+// TODO(crbug.com/40900706) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                        DISABLED_ChangeSourceReject) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1277,24 +1292,25 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   if (!ShouldShowShareThisTabInsteadButton()) {
-    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    EXPECT_FALSE(HasShareThisTabInsteadButton(other_tab));
     return;
   }
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
 
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
@@ -1305,9 +1321,9 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
                                                false);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button. This
-  // is rejected since screen capture is not allowed by the above policy.
-  GetDelegate(other_tab)->Cancel();
+  // Click the share-this-tab-instead secondary button. This is rejected since
+  // screen capture is not allowed by the above policy.
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // When "Share this tab instead" fails for other_tab, the focus goes back to
   // the captured tab. Wait until that happens:
@@ -1319,15 +1335,16 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
@@ -1394,7 +1411,7 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                         testing::Values("", "include", "exclude"));
+                         Values("", "include", "exclude"));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                        SelfBrowserSurfaceChangesCapturedTab) {
@@ -1502,19 +1519,18 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureSelectAllScreensTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebRtcScreenCaptureSelectAllScreensTest,
-    testing::Values(
-        TestConfigForSelectAllScreens{/*display_surface=*/"browser",
-                                      /*enable_select_all_screens=*/true},
-        TestConfigForSelectAllScreens{/*display_surface=*/"browser",
-                                      /*enable_select_all_screens=*/false},
-        TestConfigForSelectAllScreens{/*display_surface=*/"window",
-                                      /*enable_select_all_screens=*/true},
-        TestConfigForSelectAllScreens{/*display_surface=*/"window",
-                                      /*enable_select_all_screens=*/false},
-        TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
-                                      /*enable_select_all_screens=*/true},
-        TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
-                                      /*enable_select_all_screens=*/false}));
+    Values(TestConfigForSelectAllScreens{/*display_surface=*/"browser",
+                                         /*enable_select_all_screens=*/true},
+           TestConfigForSelectAllScreens{/*display_surface=*/"browser",
+                                         /*enable_select_all_screens=*/false},
+           TestConfigForSelectAllScreens{/*display_surface=*/"window",
+                                         /*enable_select_all_screens=*/true},
+           TestConfigForSelectAllScreens{/*display_surface=*/"window",
+                                         /*enable_select_all_screens=*/false},
+           TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
+                                         /*enable_select_all_screens=*/true},
+           TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
+                                         /*enable_select_all_screens=*/false}));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1620,12 +1636,12 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaTransientActivationRequiredTest, Check) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     GetDisplayMediaTransientActivationRequiredTest,
-    testing::Combine(
-        /*with_user_gesture=*/testing::Bool(),
-        /*require_gesture_feature_enabled=*/testing::Bool(),
-        /*prefer_current_tab=*/testing::Bool(),
+    Combine(
+        /*with_user_gesture=*/Bool(),
+        /*require_gesture_feature_enabled=*/Bool(),
+        /*prefer_current_tab=*/Bool(),
         /*policy_allowlist_value=*/
-        testing::Values(std::nullopt, kEmbeddedTestServerOrigin, kOtherOrigin)),
+        Values(std::nullopt, kEmbeddedTestServerOrigin, kOtherOrigin)),
     &GetDisplayMediaTransientActivationRequiredTest::GetDescription);
 
 // Encapsulates information about a capture-session in which one tab starts
@@ -1727,7 +1743,7 @@ class CaptureSessionDetails {
       case CapturedTab::kCapturingTab:
         return capturing_tab_;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Get the tab that's neither capturing nor being captured.
@@ -1756,7 +1772,7 @@ class CaptureSessionDetails {
     EXPECT_EQ(capturing_tab_->IsBeingCaptured(),
               captured == CapturedTab::kCapturingTab);
 
-    EXPECT_EQ(GetSecondaryButtonLabel(GetNonCapturedTab()),
+    EXPECT_EQ(GetShareThisTabInsteadButtonLabel(GetNonCapturedTab()),
               kShareThisTabInsteadMessage);
   }
 
@@ -1765,6 +1781,21 @@ class CaptureSessionDetails {
         content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
                         base::StringPrintf("sendWheel(%s);", action.c_str())),
         "send-wheel-resolved");
+  }
+
+  void SetZoomLevel(int zoom_level) {
+    EXPECT_EQ(
+        content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
+                        base::StringPrintf("setZoomLevel(%d);", zoom_level)),
+        "set-zoom-level-resolved");
+  }
+
+  int GetZoomLevel() {
+    const int result = content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
+                                       "getZoomLevel();")
+                           .ExtractInt();
+    EXPECT_GT(result, 0);
+    return result;
   }
 
   WebContents* initially_captured_tab() const {
@@ -1820,8 +1851,41 @@ class CaptureSessionDetails {
 
 class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
  public:
+  enum class Action {
+    kSendWheel,
+    kSetZoomLevel,
+    kGetZoomLevel,
+  };
+
+  static bool IsWriteAccessAction(Action action) {
+    switch (action) {
+      case Action::kSendWheel:
+      case Action::kSetZoomLevel:
+        return true;
+      case Action::kGetZoomLevel:
+        return false;
+    }
+    NOTREACHED();
+  }
+
   GetDisplayMediaCapturedSurfaceControlTest() = default;
   ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
+
+  static void MakeValidApiCall(CaptureSessionDetails& capture_session,
+                               Action action) {
+    switch (action) {
+      case Action::kSendWheel:
+        capture_session.SendWheel();
+        return;
+      case Action::kSetZoomLevel:
+        capture_session.SetZoomLevel(200);
+        return;
+      case Action::kGetZoomLevel:
+        capture_session.GetZoomLevel();
+        return;
+    }
+    NOTREACHED();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
@@ -1868,6 +1932,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
+using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
+
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
                        ChangeSourceTriggersUpdateCaptureTarget) {
   SCOPED_TRACE("ChangeSourceTriggersUpdateCaptureTarget");
@@ -1885,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   // Expect that clicking "share this tab instead" will pipe a notification of
   // the change to the captured surface controller.
   capture_session.SetExpectUpdateCaptureTarget();
-  GetDelegate(capture_session.other_tab())->Cancel();
+  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
   capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session.VerifyAndClearExpectations();
@@ -1919,7 +1985,7 @@ void GetDisplayMediaCapturedSurfaceControlTest::
   capture_session_experiencing_change.SetExpectUpdateCaptureTarget();
   GetDelegate(capture_session_experiencing_change.other_tab(),
               /*infobar_index=*/session_experiencing_change)
-      ->Cancel();
+      ->ShareThisTabInstead();
   capture_session_experiencing_change.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session_0.VerifyAndClearExpectations();
@@ -1938,4 +2004,116 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
                        ChangeSourceWorksOnCorrectCaptureSession1) {
   SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession1");
   RunChangeSourceWorksOnCorrectCaptureSession(1);
+}
+
+class GetDisplayMediaCapturedSurfaceControlIndicatorTest
+    : public GetDisplayMediaCapturedSurfaceControlTest,
+      public testing::WithParamInterface<CscAction> {
+ public:
+  GetDisplayMediaCapturedSurfaceControlIndicatorTest() : action_(GetParam()) {}
+  ~GetDisplayMediaCapturedSurfaceControlIndicatorTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GetDisplayMediaCapturedSurfaceControlTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kAutoGrantCapturedSurfaceControlPrompt);
+  }
+
+ protected:
+  const CscAction action_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+                         Values(CscAction::kSendWheel,
+                                CscAction::kSetZoomLevel,
+                                CscAction::kGetZoomLevel));
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+                       IndicatorNotShownBeforeApiInvocation) {
+  SCOPED_TRACE("IndicatorNotShownBeforeApiInvocation");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  // The CSC indicator is not shown anywhere.
+  EXPECT_FALSE(HasCscIndicator(capture_session.capturing_tab()));
+  EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
+  EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
+}
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+                       IndicatorShownAfterWriteAccessApiInvocation) {
+  SCOPED_TRACE("IndicatorShownAfterWriteAccessApiInvocation");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  MakeValidApiCall(capture_session, action_);
+
+  // The capturing tab's infobar shows the CSC indicator, but only
+  // if the action was a write-access action.
+  EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
+            IsWriteAccessAction(action_));
+
+  // The CSC indicator is not shown on any other infobar.
+  EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
+  EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore) {
+  SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  // Note absence of call to MakeValidApiCall() before share-this-tab-instead.
+  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
+
+  // The capturing tab's infobar does not show the CSC indicator because
+  // a write-access CSC action was not invoked.
+  EXPECT_FALSE(HasCscIndicator(capture_session.capturing_tab()));
+
+  // The CSC indicator is not shown on any other infobar.
+  EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
+  EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction) {
+  SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  MakeValidApiCall(capture_session, action_);
+  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
+
+  // The capturing tab's infobar show the CSC indicator if the action
+  // was a write-access action.
+  EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
+            IsWriteAccessAction(action_));
+
+  // The CSC indicator is not shown on any other infobar.
+  EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
+  EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
 }

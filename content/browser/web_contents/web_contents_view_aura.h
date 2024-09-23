@@ -159,6 +159,13 @@ class CONTENT_EXPORT WebContentsViewAura
       RejectDragFromNonPrivilegedWebContentsToPrivilegedWebContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            StartDragFromPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           EmptyTextInDropDataIsNonNullInOSExchangeData);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      EmptyTextWithUrlInDropDataIsEmptyInOSExchangeDataGetString);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           UrlInDropDataReturnsUrlInOSExchangeDataGetString);
 
   class WindowObserver;
 
@@ -197,7 +204,6 @@ class CONTENT_EXPORT WebContentsViewAura
   void RestoreFocus() override;
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
-  void TransferDragSecurityInfo(WebContentsView* view) override;
   gfx::Rect GetViewBounds() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(

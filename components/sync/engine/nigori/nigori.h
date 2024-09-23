@@ -76,6 +76,9 @@ class Nigori {
 
   static std::string GenerateScryptSalt();
 
+  // Allows tests to use faster key derivation with Scrypt derivation method.
+  static void SetUseScryptCostParameterForTesting(bool use_low_scrypt_cost);
+
   // Exposed for tests.
   static const size_t kIvSize = 16;
 

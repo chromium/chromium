@@ -1,0 +1,1986 @@
+{
+  "chrome_v125_linux.x64.local_0": {
+    "info": {
+      "label": "linux.x64.local_0",
+      "browser": "Google-Chrome",
+      "version": "125.0.6422.76",
+      "os": "linux 6.6.15-2rodete2-amd64 x64",
+      "device": "Google Google Compute Engine",
+      "cpu": " AMD EPYC 7B13 128 cores",
+      "binary": "/usr/bin/google-chrome",
+      "flags": "--no-default-browser-check --disable-component-update --disable-sync --disable-extensions --no-first-run --disable-search-engine-choice-screen --disable-background-timer-throttling --disable-renderer-backgrounding --no-experiments --enable-benchmarking --disable-field-trial-config",
+      "runs": 1,
+      "failed runs": 0
+    },
+    "data": {
+      "Angular2-TypeScript-TodoMVC/Adding100Items/Async": {
+        "values": [
+          3.926424270575017
+        ],
+        "min": 3.926424270575017,
+        "average": 3.926424270575017,
+        "geomean": 3.926424270575017,
+        "max": 3.926424270575017,
+        "sum": 3.926424270575017,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          18.80074602611426
+        ],
+        "min": 18.80074602611426,
+        "average": 18.80074602611426,
+        "geomean": 18.80074602611426,
+        "max": 18.80074602611426,
+        "sum": 18.80074602611426,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/Adding100Items/total": {
+        "values": [
+          22.73074209082614
+        ],
+        "min": 22.73074209082614,
+        "average": 22.73074209082614,
+        "geomean": 22.73074209082614,
+        "max": 22.73074209082614,
+        "sum": 22.73074209082614,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          2.397447205474967
+        ],
+        "min": 2.397447205474967,
+        "average": 2.397447205474967,
+        "geomean": 2.397447205474967,
+        "max": 2.397447205474967,
+        "sum": 2.397447205474967,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          3.7774279998374003
+        ],
+        "min": 3.7774279998374003,
+        "average": 3.7774279998374003,
+        "geomean": 3.7774279998374003,
+        "max": 3.7774279998374003,
+        "sum": 3.7774279998374003,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          6.1845878255040345
+        ],
+        "min": 6.1845878255040345,
+        "average": 6.1845878255040345,
+        "geomean": 6.1845878255040345,
+        "max": 6.1845878255040345,
+        "sum": 6.1845878255040345,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.0
+        ],
+        "min": 0.0,
+        "average": 0.0,
+        "geomean": 0.0,
+        "max": 0.0,
+        "sum": 0.0,
+        "stddev": 0.0,
+        "stddevPercent": 0
+      },
+      "Angular2-TypeScript-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          6.3152421808035735
+        ],
+        "min": 6.3152421808035735,
+        "average": 6.3152421808035735,
+        "geomean": 6.3152421808035735,
+        "max": 6.3152421808035735,
+        "sum": 6.3152421808035735,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/DeletingItems/total": {
+        "values": [
+          6.520235655485408
+        ],
+        "min": 6.520235655485408,
+        "average": 6.520235655485408,
+        "geomean": 6.520235655485408,
+        "max": 6.520235655485408,
+        "sum": 6.520235655485408,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Angular2-TypeScript-TodoMVC/total": {
+        "values": [
+          35.45586084268101
+        ],
+        "min": 35.45586084268101,
+        "average": 35.45586084268101,
+        "geomean": 35.45586084268101,
+        "max": 35.45586084268101,
+        "sum": 35.45586084268101,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/Adding100Items/Async": {
+        "values": [
+          7.628254326172813
+        ],
+        "min": 7.628254326172813,
+        "average": 7.628254326172813,
+        "geomean": 7.628254326172813,
+        "max": 7.628254326172813,
+        "sum": 7.628254326172813,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          73.49540936069221
+        ],
+        "min": 73.49540936069221,
+        "average": 73.49540936069221,
+        "geomean": 73.49540936069221,
+        "max": 73.49540936069221,
+        "sum": 73.49540936069221,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/Adding100Items/total": {
+        "values": [
+          81.30133434926823
+        ],
+        "min": 81.30133434926823,
+        "average": 81.30133434926823,
+        "geomean": 81.30133434926823,
+        "max": 81.30133434926823,
+        "sum": 81.30133434926823,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.6510301673146164
+        ],
+        "min": 3.6510301673146164,
+        "average": 3.6510301673146164,
+        "geomean": 3.6510301673146164,
+        "max": 3.6510301673146164,
+        "sum": 3.6510301673146164,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          24.386684392341927
+        ],
+        "min": 24.386684392341927,
+        "average": 24.386684392341927,
+        "geomean": 24.386684392341927,
+        "max": 24.386684392341927,
+        "sum": 24.386684392341927,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          28.051591307991146
+        ],
+        "min": 28.051591307991146,
+        "average": 28.051591307991146,
+        "geomean": 28.051591307991146,
+        "max": 28.051591307991146,
+        "sum": 28.051591307991146,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          3.6251625905262794
+        ],
+        "min": 3.6251625905262794,
+        "average": 3.6251625905262794,
+        "geomean": 3.6251625905262794,
+        "max": 3.6251625905262794,
+        "sum": 3.6251625905262794,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          63.5638027630245
+        ],
+        "min": 63.5638027630245,
+        "average": 63.5638027630245,
+        "geomean": 63.5638027630245,
+        "max": 63.5638027630245,
+        "sum": 63.5638027630245,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          67.83217839649647
+        ],
+        "min": 67.83217839649647,
+        "average": 67.83217839649647,
+        "geomean": 67.83217839649647,
+        "max": 67.83217839649647,
+        "sum": 67.83217839649647,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "AngularJS-TodoMVC/total": {
+        "values": [
+          177.33954574949544
+        ],
+        "min": 177.33954574949544,
+        "average": 177.33954574949544,
+        "geomean": 177.33954574949544,
+        "max": 177.33954574949544,
+        "sum": 177.33954574949544,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.2132577469963195
+        ],
+        "min": 5.2132577469963195,
+        "average": 5.2132577469963195,
+        "geomean": 5.2132577469963195,
+        "max": 5.2132577469963195,
+        "sum": 5.2132577469963195,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          18.977918024546423
+        ],
+        "min": 18.977918024546423,
+        "average": 18.977918024546423,
+        "geomean": 18.977918024546423,
+        "max": 18.977918024546423,
+        "sum": 18.977918024546423,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/Adding100Items/total": {
+        "values": [
+          24.206789853994312
+        ],
+        "min": 24.206789853994312,
+        "average": 24.206789853994312,
+        "geomean": 24.206789853994312,
+        "max": 24.206789853994312,
+        "sum": 24.206789853994312,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.284459625753098
+        ],
+        "min": 4.284459625753098,
+        "average": 4.284459625753098,
+        "geomean": 4.284459625753098,
+        "max": 4.284459625753098,
+        "sum": 4.284459625753098,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          9.286170775656126
+        ],
+        "min": 9.286170775656126,
+        "average": 9.286170775656126,
+        "geomean": 9.286170775656126,
+        "max": 9.286170775656126,
+        "sum": 9.286170775656126,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          13.580644640153972
+        ],
+        "min": 13.580644640153972,
+        "average": 13.580644640153972,
+        "geomean": 13.580644640153972,
+        "max": 13.580644640153972,
+        "sum": 13.580644640153972,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          0.30600830263978845
+        ],
+        "min": 0.30600830263978845,
+        "average": 0.30600830263978845,
+        "geomean": 0.30600830263978845,
+        "max": 0.30600830263978845,
+        "sum": 0.30600830263978845,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          6.998895157196989
+        ],
+        "min": 6.998895157196989,
+        "average": 6.998895157196989,
+        "geomean": 6.998895157196989,
+        "max": 6.998895157196989,
+        "sum": 6.998895157196989,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          7.33610602731459
+        ],
+        "min": 7.33610602731459,
+        "average": 7.33610602731459,
+        "geomean": 7.33610602731459,
+        "max": 7.33610602731459,
+        "sum": 7.33610602731459,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "BackboneJS-TodoMVC/total": {
+        "values": [
+          45.139743758204325
+        ],
+        "min": 45.139743758204325,
+        "average": 45.139743758204325,
+        "geomean": 45.139743758204325,
+        "max": 45.139743758204325,
+        "sum": 45.139743758204325,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.441121686915646
+        ],
+        "min": 5.441121686915646,
+        "average": 5.441121686915646,
+        "geomean": 5.441121686915646,
+        "max": 5.441121686915646,
+        "sum": 5.441121686915646,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          45.130203716757116
+        ],
+        "min": 45.130203716757116,
+        "average": 45.130203716757116,
+        "geomean": 45.130203716757116,
+        "max": 45.130203716757116,
+        "sum": 45.130203716757116,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/Adding100Items/total": {
+        "values": [
+          50.58212427868247
+        ],
+        "min": 50.58212427868247,
+        "average": 50.58212427868247,
+        "geomean": 50.58212427868247,
+        "max": 50.58212427868247,
+        "sum": 50.58212427868247,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.873955916502803
+        ],
+        "min": 4.873955916502803,
+        "average": 4.873955916502803,
+        "geomean": 4.873955916502803,
+        "max": 4.873955916502803,
+        "sum": 4.873955916502803,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          51.966426425675145
+        ],
+        "min": 51.966426425675145,
+        "average": 51.966426425675145,
+        "geomean": 51.966426425675145,
+        "max": 51.966426425675145,
+        "sum": 51.966426425675145,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          56.85245875775587
+        ],
+        "min": 56.85245875775587,
+        "average": 56.85245875775587,
+        "geomean": 56.85245875775587,
+        "max": 56.85245875775587,
+        "sum": 56.85245875775587,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/DeletingItems/Async": {
+        "values": [
+          1.0057022419740982
+        ],
+        "min": 1.0057022419740982,
+        "average": 1.0057022419740982,
+        "geomean": 1.0057022419740982,
+        "max": 1.0057022419740982,
+        "sum": 1.0057022419740982,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          39.84504663864405
+        ],
+        "min": 39.84504663864405,
+        "average": 39.84504663864405,
+        "geomean": 39.84504663864405,
+        "max": 39.84504663864405,
+        "sum": 39.84504663864405,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/DeletingItems/total": {
+        "values": [
+          40.85369746000977
+        ],
+        "min": 40.85369746000977,
+        "average": 40.85369746000977,
+        "geomean": 40.85369746000977,
+        "max": 40.85369746000977,
+        "sum": 40.85369746000977,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Elm-TodoMVC/total": {
+        "values": [
+          148.50563022672497
+        ],
+        "min": 148.50563022672497,
+        "average": 148.50563022672497,
+        "geomean": 148.50563022672497,
+        "max": 148.50563022672497,
+        "sum": 148.50563022672497,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/Adding100Items/Async": {
+        "values": [
+          6.5484834438000155
+        ],
+        "min": 6.5484834438000155,
+        "average": 6.5484834438000155,
+        "geomean": 6.5484834438000155,
+        "max": 6.5484834438000155,
+        "sum": 6.5484834438000155,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          198.6686280993866
+        ],
+        "min": 198.6686280993866,
+        "average": 198.6686280993866,
+        "geomean": 198.6686280993866,
+        "max": 198.6686280993866,
+        "sum": 198.6686280993866,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/Adding100Items/total": {
+        "values": [
+          206.30005951036068
+        ],
+        "min": 206.30005951036068,
+        "average": 206.30005951036068,
+        "geomean": 206.30005951036068,
+        "max": 206.30005951036068,
+        "sum": 206.30005951036068,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.8834628554351607
+        ],
+        "min": 3.8834628554351607,
+        "average": 3.8834628554351607,
+        "geomean": 3.8834628554351607,
+        "max": 3.8834628554351607,
+        "sum": 3.8834628554351607,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          119.97793609405925
+        ],
+        "min": 119.97793609405925,
+        "average": 119.97793609405925,
+        "geomean": 119.97793609405925,
+        "max": 119.97793609405925,
+        "sum": 119.97793609405925,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          123.89508732777904
+        ],
+        "min": 123.89508732777904,
+        "average": 123.89508732777904,
+        "geomean": 123.89508732777904,
+        "max": 123.89508732777904,
+        "sum": 123.89508732777904,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.9058628991899221
+        ],
+        "min": 0.9058628991899221,
+        "average": 0.9058628991899221,
+        "geomean": 0.9058628991899221,
+        "max": 0.9058628991899221,
+        "sum": 0.9058628991899221,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          119.2396116211965
+        ],
+        "min": 119.2396116211965,
+        "average": 119.2396116211965,
+        "geomean": 119.2396116211965,
+        "max": 119.2396116211965,
+        "sum": 119.2396116211965,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/DeletingItems/total": {
+        "values": [
+          120.41619662863796
+        ],
+        "min": 120.41619662863796,
+        "average": 120.41619662863796,
+        "geomean": 120.41619662863796,
+        "max": 120.41619662863796,
+        "sum": 120.41619662863796,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-Debug-TodoMVC/total": {
+        "values": [
+          451.1857850148868
+        ],
+        "min": 451.1857850148868,
+        "average": 451.1857850148868,
+        "geomean": 451.1857850148868,
+        "max": 451.1857850148868,
+        "sum": 451.1857850148868,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/Adding100Items/Async": {
+        "values": [
+          4.858767516998816
+        ],
+        "min": 4.858767516998816,
+        "average": 4.858767516998816,
+        "geomean": 4.858767516998816,
+        "max": 4.858767516998816,
+        "sum": 4.858767516998816,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          80.95371791948142
+        ],
+        "min": 80.95371791948142,
+        "average": 80.95371791948142,
+        "geomean": 80.95371791948142,
+        "max": 80.95371791948142,
+        "sum": 80.95371791948142,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/Adding100Items/total": {
+        "values": [
+          85.8179715645639
+        ],
+        "min": 85.8179715645639,
+        "average": 85.8179715645639,
+        "geomean": 85.8179715645639,
+        "max": 85.8179715645639,
+        "sum": 85.8179715645639,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.196079759516106
+        ],
+        "min": 4.196079759516106,
+        "average": 4.196079759516106,
+        "geomean": 4.196079759516106,
+        "max": 4.196079759516106,
+        "sum": 4.196079759516106,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          46.53870123630408
+        ],
+        "min": 46.53870123630408,
+        "average": 46.53870123630408,
+        "geomean": 46.53870123630408,
+        "max": 46.53870123630408,
+        "sum": 46.53870123630408,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          50.86861274376107
+        ],
+        "min": 50.86861274376107,
+        "average": 50.86861274376107,
+        "geomean": 50.86861274376107,
+        "max": 50.86861274376107,
+        "sum": 50.86861274376107,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.6078087301431714
+        ],
+        "min": 0.6078087301431714,
+        "average": 0.6078087301431714,
+        "geomean": 0.6078087301431714,
+        "max": 0.6078087301431714,
+        "sum": 0.6078087301431714,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          31.031017139352986
+        ],
+        "min": 31.031017139352986,
+        "average": 31.031017139352986,
+        "geomean": 31.031017139352986,
+        "max": 31.031017139352986,
+        "sum": 31.031017139352986,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/DeletingItems/total": {
+        "values": [
+          31.773290688380154
+        ],
+        "min": 31.773290688380154,
+        "average": 31.773290688380154,
+        "geomean": 31.773290688380154,
+        "max": 31.773290688380154,
+        "sum": 31.773290688380154,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "EmberJS-TodoMVC/total": {
+        "values": [
+          169.0720406598573
+        ],
+        "min": 169.0720406598573,
+        "average": 169.0720406598573,
+        "geomean": 169.0720406598573,
+        "max": 169.0720406598573,
+        "sum": 169.0720406598573,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/Adding100Items/Async": {
+        "values": [
+          4.291009974232494
+        ],
+        "min": 4.291009974232494,
+        "average": 4.291009974232494,
+        "geomean": 4.291009974232494,
+        "max": 4.291009974232494,
+        "sum": 4.291009974232494,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          21.78081798930564
+        ],
+        "min": 21.78081798930564,
+        "average": 21.78081798930564,
+        "geomean": 21.78081798930564,
+        "max": 21.78081798930564,
+        "sum": 21.78081798930564,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/Adding100Items/total": {
+        "values": [
+          26.076320049542623
+        ],
+        "min": 26.076320049542623,
+        "average": 26.076320049542623,
+        "geomean": 26.076320049542623,
+        "max": 26.076320049542623,
+        "sum": 26.076320049542623,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.29663187774499
+        ],
+        "min": 4.29663187774499,
+        "average": 4.29663187774499,
+        "geomean": 4.29663187774499,
+        "max": 4.29663187774499,
+        "sum": 4.29663187774499,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          23.873485040055712
+        ],
+        "min": 23.873485040055712,
+        "average": 23.873485040055712,
+        "geomean": 23.873485040055712,
+        "max": 23.873485040055712,
+        "sum": 23.873485040055712,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          28.187251706599724
+        ],
+        "min": 28.187251706599724,
+        "average": 28.187251706599724,
+        "geomean": 28.187251706599724,
+        "max": 28.187251706599724,
+        "sum": 28.187251706599724,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.39487014894635286
+        ],
+        "min": 0.39487014894635286,
+        "average": 0.39487014894635286,
+        "geomean": 0.39487014894635286,
+        "max": 0.39487014894635286,
+        "sum": 0.39487014894635286,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          17.1836091285497
+        ],
+        "min": 17.1836091285497,
+        "average": 17.1836091285497,
+        "geomean": 17.1836091285497,
+        "max": 17.1836091285497,
+        "sum": 17.1836091285497,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/DeletingItems/total": {
+        "values": [
+          17.582559062568265
+        ],
+        "min": 17.582559062568265,
+        "average": 17.582559062568265,
+        "geomean": 17.582559062568265,
+        "max": 17.582559062568265,
+        "sum": 17.582559062568265,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Flight-TodoMVC/total": {
+        "values": [
+          71.86042575864035
+        ],
+        "min": 71.86042575864035,
+        "average": 71.86042575864035,
+        "geomean": 71.86042575864035,
+        "max": 71.86042575864035,
+        "sum": 71.86042575864035,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.856096093943682
+        ],
+        "min": 5.856096093943682,
+        "average": 5.856096093943682,
+        "geomean": 5.856096093943682,
+        "max": 5.856096093943682,
+        "sum": 5.856096093943682,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          13.890323729756453
+        ],
+        "min": 13.890323729756453,
+        "average": 13.890323729756453,
+        "geomean": 13.890323729756453,
+        "max": 13.890323729756453,
+        "sum": 13.890323729756453,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/Adding100Items/total": {
+        "values": [
+          19.902390036848026
+        ],
+        "min": 19.902390036848026,
+        "average": 19.902390036848026,
+        "geomean": 19.902390036848026,
+        "max": 19.902390036848026,
+        "sum": 19.902390036848026,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          1.1439326874925744
+        ],
+        "min": 1.1439326874925744,
+        "average": 1.1439326874925744,
+        "geomean": 1.1439326874925744,
+        "max": 1.1439326874925744,
+        "sum": 1.1439326874925744,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          23.0324379024858
+        ],
+        "min": 23.0324379024858,
+        "average": 23.0324379024858,
+        "geomean": 23.0324379024858,
+        "max": 23.0324379024858,
+        "sum": 23.0324379024858,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          24.18067038472852
+        ],
+        "min": 24.18067038472852,
+        "average": 24.18067038472852,
+        "geomean": 24.18067038472852,
+        "max": 24.18067038472852,
+        "sum": 24.18067038472852,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.5129051248644015
+        ],
+        "min": 0.5129051248644015,
+        "average": 0.5129051248644015,
+        "geomean": 0.5129051248644015,
+        "max": 0.5129051248644015,
+        "sum": 0.5129051248644015,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          43.00035986227533
+        ],
+        "min": 43.00035986227533,
+        "average": 43.00035986227533,
+        "geomean": 43.00035986227533,
+        "max": 43.00035986227533,
+        "sum": 43.00035986227533,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/DeletingItems/total": {
+        "values": [
+          43.51980794683448
+        ],
+        "min": 43.51980794683448,
+        "average": 43.51980794683448,
+        "geomean": 43.51980794683448,
+        "max": 43.51980794683448,
+        "sum": 43.51980794683448,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Inferno-TodoMVC/total": {
+        "values": [
+          87.70769917456579
+        ],
+        "min": 87.70769917456579,
+        "average": 87.70769917456579,
+        "geomean": 87.70769917456579,
+        "max": 87.70769917456579,
+        "sum": 87.70769917456579,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/Adding100Items/Async": {
+        "values": [
+          6.986118352650876
+        ],
+        "min": 6.986118352650876,
+        "average": 6.986118352650876,
+        "geomean": 6.986118352650876,
+        "max": 6.986118352650876,
+        "sum": 6.986118352650876,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          0.8758644671291177
+        ],
+        "min": 0.8758644671291177,
+        "average": 0.8758644671291177,
+        "geomean": 0.8758644671291177,
+        "max": 0.8758644671291177,
+        "sum": 0.8758644671291177,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/Adding100Items/total": {
+        "values": [
+          7.898956446217845
+        ],
+        "min": 7.898956446217845,
+        "average": 7.898956446217845,
+        "geomean": 7.898956446217845,
+        "max": 7.898956446217845,
+        "sum": 7.898956446217845,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.66194006619999
+        ],
+        "min": 3.66194006619999,
+        "average": 3.66194006619999,
+        "geomean": 3.66194006619999,
+        "max": 3.66194006619999,
+        "sum": 3.66194006619999,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          0.7974842016182878
+        ],
+        "min": 0.7974842016182878,
+        "average": 0.7974842016182878,
+        "geomean": 0.7974842016182878,
+        "max": 0.7974842016182878,
+        "sum": 0.7974842016182878,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          4.462351263022035
+        ],
+        "min": 4.462351263022035,
+        "average": 4.462351263022035,
+        "geomean": 4.462351263022035,
+        "max": 4.462351263022035,
+        "sum": 4.462351263022035,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.8499290586080726
+        ],
+        "min": 0.8499290586080726,
+        "average": 0.8499290586080726,
+        "geomean": 0.8499290586080726,
+        "max": 0.8499290586080726,
+        "sum": 0.8499290586080726,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          0.5875024360862546
+        ],
+        "min": 0.5875024360862546,
+        "average": 0.5875024360862546,
+        "geomean": 0.5875024360862546,
+        "max": 0.5875024360862546,
+        "sum": 0.5875024360862546,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/DeletingItems/total": {
+        "values": [
+          1.4444180158980315
+        ],
+        "min": 1.4444180158980315,
+        "average": 1.4444180158980315,
+        "geomean": 1.4444180158980315,
+        "max": 1.4444180158980315,
+        "sum": 1.4444180158980315,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Preact-TodoMVC/total": {
+        "values": [
+          13.87701182529834
+        ],
+        "min": 13.87701182529834,
+        "average": 13.87701182529834,
+        "geomean": 13.87701182529834,
+        "max": 13.87701182529834,
+        "sum": 13.87701182529834,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/Adding100Items/Async": {
+        "values": [
+          6.103533525836221
+        ],
+        "min": 6.103533525836221,
+        "average": 6.103533525836221,
+        "geomean": 6.103533525836221,
+        "max": 6.103533525836221,
+        "sum": 6.103533525836221,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          61.65475979656857
+        ],
+        "min": 61.65475979656857,
+        "average": 61.65475979656857,
+        "geomean": 61.65475979656857,
+        "max": 61.65475979656857,
+        "sum": 61.65475979656857,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/Adding100Items/total": {
+        "values": [
+          67.92917092826269
+        ],
+        "min": 67.92917092826269,
+        "average": 67.92917092826269,
+        "geomean": 67.92917092826269,
+        "max": 67.92917092826269,
+        "sum": 67.92917092826269,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.531856010186903
+        ],
+        "min": 4.531856010186903,
+        "average": 4.531856010186903,
+        "geomean": 4.531856010186903,
+        "max": 4.531856010186903,
+        "sum": 4.531856010186903,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          79.95895849331659
+        ],
+        "min": 79.95895849331659,
+        "average": 79.95895849331659,
+        "geomean": 79.95895849331659,
+        "max": 79.95895849331659,
+        "sum": 79.95895849331659,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          84.74529354538892
+        ],
+        "min": 84.74529354538892,
+        "average": 84.74529354538892,
+        "geomean": 84.74529354538892,
+        "max": 84.74529354538892,
+        "sum": 84.74529354538892,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.7896829345631269
+        ],
+        "min": 0.7896829345631269,
+        "average": 0.7896829345631269,
+        "geomean": 0.7896829345631269,
+        "max": 0.7896829345631269,
+        "sum": 0.7896829345631269,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          48.00815697356904
+        ],
+        "min": 48.00815697356904,
+        "average": 48.00815697356904,
+        "geomean": 48.00815697356904,
+        "max": 48.00815697356904,
+        "sum": 48.00815697356904,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/DeletingItems/total": {
+        "values": [
+          48.81918771896022
+        ],
+        "min": 48.81918771896022,
+        "average": 48.81918771896022,
+        "geomean": 48.81918771896022,
+        "max": 48.81918771896022,
+        "sum": 48.81918771896022,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-Redux-TodoMVC/total": {
+        "values": [
+          201.73587710472188
+        ],
+        "min": 201.73587710472188,
+        "average": 201.73587710472188,
+        "geomean": 201.73587710472188,
+        "max": 201.73587710472188,
+        "sum": 201.73587710472188,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.362103686778921
+        ],
+        "min": 5.362103686778921,
+        "average": 5.362103686778921,
+        "geomean": 5.362103686778921,
+        "max": 5.362103686778921,
+        "sum": 5.362103686778921,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          46.72624100235675
+        ],
+        "min": 46.72624100235675,
+        "average": 46.72624100235675,
+        "geomean": 46.72624100235675,
+        "max": 46.72624100235675,
+        "sum": 46.72624100235675,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/Adding100Items/total": {
+        "values": [
+          52.12437654539018
+        ],
+        "min": 52.12437654539018,
+        "average": 52.12437654539018,
+        "geomean": 52.12437654539018,
+        "max": 52.12437654539018,
+        "sum": 52.12437654539018,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          4.33776994203152
+        ],
+        "min": 4.33776994203152,
+        "average": 4.33776994203152,
+        "geomean": 4.33776994203152,
+        "max": 4.33776994203152,
+        "sum": 4.33776994203152,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          28.86675222745579
+        ],
+        "min": 28.86675222745579,
+        "average": 28.86675222745579,
+        "geomean": 28.86675222745579,
+        "max": 28.86675222745579,
+        "sum": 28.86675222745579,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          33.3476371462663
+        ],
+        "min": 33.3476371462663,
+        "average": 33.3476371462663,
+        "geomean": 33.3476371462663,
+        "max": 33.3476371462663,
+        "sum": 33.3476371462663,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          0.792434765601157
+        ],
+        "min": 0.792434765601157,
+        "average": 0.792434765601157,
+        "geomean": 0.792434765601157,
+        "max": 0.792434765601157,
+        "sum": 0.792434765601157,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          18.28621744703504
+        ],
+        "min": 18.28621744703504,
+        "average": 18.28621744703504,
+        "geomean": 18.28621744703504,
+        "max": 18.28621744703504,
+        "sum": 18.28621744703504,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          19.799469517300814
+        ],
+        "min": 19.799469517300814,
+        "average": 19.799469517300814,
+        "geomean": 19.799469517300814,
+        "max": 19.799469517300814,
+        "sum": 19.799469517300814,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "React-TodoMVC/total": {
+        "values": [
+          105.61495878944264
+        ],
+        "min": 105.61495878944264,
+        "average": 105.61495878944264,
+        "geomean": 105.61495878944264,
+        "max": 105.61495878944264,
+        "sum": 105.61495878944264,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/Adding100Items/Async": {
+        "values": [
+          4.369100351673203
+        ],
+        "min": 4.369100351673203,
+        "average": 4.369100351673203,
+        "geomean": 4.369100351673203,
+        "max": 4.369100351673203,
+        "sum": 4.369100351673203,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          22.00265061014821
+        ],
+        "min": 22.00265061014821,
+        "average": 22.00265061014821,
+        "geomean": 22.00265061014821,
+        "max": 22.00265061014821,
+        "sum": 22.00265061014821,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/Adding100Items/total": {
+        "values": [
+          26.38065554177188
+        ],
+        "min": 26.38065554177188,
+        "average": 26.38065554177188,
+        "geomean": 26.38065554177188,
+        "max": 26.38065554177188,
+        "sum": 26.38065554177188,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.9120444198734496
+        ],
+        "min": 3.9120444198734496,
+        "average": 3.9120444198734496,
+        "geomean": 3.9120444198734496,
+        "max": 3.9120444198734496,
+        "sum": 3.9120444198734496,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          13.215320542279107
+        ],
+        "min": 13.215320542279107,
+        "average": 13.215320542279107,
+        "geomean": 13.215320542279107,
+        "max": 13.215320542279107,
+        "sum": 13.215320542279107,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          17.323416081039426
+        ],
+        "min": 17.323416081039426,
+        "average": 17.323416081039426,
+        "geomean": 17.323416081039426,
+        "max": 17.323416081039426,
+        "sum": 17.323416081039426,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.5689917062126727
+        ],
+        "min": 0.5689917062126727,
+        "average": 0.5689917062126727,
+        "geomean": 0.5689917062126727,
+        "max": 0.5689917062126727,
+        "sum": 0.5689917062126727,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          7.013260699990722
+        ],
+        "min": 7.013260699990722,
+        "average": 7.013260699990722,
+        "geomean": 7.013260699990722,
+        "max": 7.013260699990722,
+        "sum": 7.013260699990722,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/DeletingItems/total": {
+        "values": [
+          8.479142629127523
+        ],
+        "min": 8.479142629127523,
+        "average": 8.479142629127523,
+        "geomean": 8.479142629127523,
+        "max": 8.479142629127523,
+        "sum": 8.479142629127523,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-Babel-Webpack-TodoMVC/total": {
+        "values": [
+          52.58201046644285
+        ],
+        "min": 52.58201046644285,
+        "average": 52.58201046644285,
+        "geomean": 52.58201046644285,
+        "max": 52.58201046644285,
+        "sum": 52.58201046644285,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.051149457114508
+        ],
+        "min": 5.051149457114508,
+        "average": 5.051149457114508,
+        "geomean": 5.051149457114508,
+        "max": 5.051149457114508,
+        "sum": 5.051149457114508,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          23.411995340185182
+        ],
+        "min": 23.411995340185182,
+        "average": 23.411995340185182,
+        "geomean": 23.411995340185182,
+        "max": 23.411995340185182,
+        "sum": 23.411995340185182,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/Adding100Items/total": {
+        "values": [
+          29.253691918680747
+        ],
+        "min": 29.253691918680747,
+        "average": 29.253691918680747,
+        "geomean": 29.253691918680747,
+        "max": 29.253691918680747,
+        "sum": 29.253691918680747,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.813065903728007
+        ],
+        "min": 3.813065903728007,
+        "average": 3.813065903728007,
+        "geomean": 3.813065903728007,
+        "max": 3.813065903728007,
+        "sum": 3.813065903728007,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          13.592569237058218
+        ],
+        "min": 13.592569237058218,
+        "average": 13.592569237058218,
+        "geomean": 13.592569237058218,
+        "max": 13.592569237058218,
+        "sum": 13.592569237058218,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          17.7287529562608
+        ],
+        "min": 17.7287529562608,
+        "average": 17.7287529562608,
+        "geomean": 17.7287529562608,
+        "max": 17.7287529562608,
+        "sum": 17.7287529562608,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/DeletingItems/Async": {
+        "values": [
+          0.0
+        ],
+        "min": 0.0,
+        "average": 0.0,
+        "geomean": 0.0,
+        "max": 0.0,
+        "sum": 0.0,
+        "stddev": 0.0,
+        "stddevPercent": 0
+      },
+      "Vanilla-ES2015-TodoMVC/DeletingItems/Sync": {
+        "values": [
+          7.0856798563049015
+        ],
+        "min": 7.0856798563049015,
+        "average": 7.0856798563049015,
+        "geomean": 7.0856798563049015,
+        "max": 7.0856798563049015,
+        "sum": 7.0856798563049015,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/DeletingItems/total": {
+        "values": [
+          7.6609075422760595
+        ],
+        "min": 7.6609075422760595,
+        "average": 7.6609075422760595,
+        "geomean": 7.6609075422760595,
+        "max": 7.6609075422760595,
+        "sum": 7.6609075422760595,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Vanilla-ES2015-TodoMVC/total": {
+        "values": [
+          55.21868852101193
+        ],
+        "min": 55.21868852101193,
+        "average": 55.21868852101193,
+        "geomean": 55.21868852101193,
+        "max": 55.21868852101193,
+        "sum": 55.21868852101193,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/Adding100Items/Async": {
+        "values": [
+          4.122957791860835
+        ],
+        "min": 4.122957791860835,
+        "average": 4.122957791860835,
+        "geomean": 4.122957791860835,
+        "max": 4.122957791860835,
+        "sum": 4.122957791860835,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          19.93332368167061
+        ],
+        "min": 19.93332368167061,
+        "average": 19.93332368167061,
+        "geomean": 19.93332368167061,
+        "max": 19.93332368167061,
+        "sum": 19.93332368167061,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/Adding100Items/total": {
+        "values": [
+          24.067473254778104
+        ],
+        "min": 24.067473254778104,
+        "average": 24.067473254778104,
+        "geomean": 24.067473254778104,
+        "max": 24.067473254778104,
+        "sum": 24.067473254778104,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          3.193510692559698
+        ],
+        "min": 3.193510692559698,
+        "average": 3.193510692559698,
+        "geomean": 3.193510692559698,
+        "max": 3.193510692559698,
+        "sum": 3.193510692559698,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          10.109273357770626
+        ],
+        "min": 10.109273357770626,
+        "average": 10.109273357770626,
+        "geomean": 10.109273357770626,
+        "max": 10.109273357770626,
+        "sum": 10.109273357770626,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          13.320346847103606
+        ],
+        "min": 13.320346847103606,
+        "average": 13.320346847103606,
+        "geomean": 13.320346847103606,
+        "max": 13.320346847103606,
+        "sum": 13.320346847103606,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          0.0
+        ],
+        "min": 0.0,
+        "average": 0.0,
+        "geomean": 0.0,
+        "max": 0.0,
+        "sum": 0.0,
+        "stddev": 0.0,
+        "stddevPercent": 0
+      },
+      "VanillaJS-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          5.4861278223364724
+        ],
+        "min": 5.4861278223364724,
+        "average": 5.4861278223364724,
+        "geomean": 5.4861278223364724,
+        "max": 5.4861278223364724,
+        "sum": 5.4861278223364724,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          5.586024644369505
+        ],
+        "min": 5.586024644369505,
+        "average": 5.586024644369505,
+        "geomean": 5.586024644369505,
+        "max": 5.586024644369505,
+        "sum": 5.586024644369505,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VanillaJS-TodoMVC/total": {
+        "values": [
+          42.99390913266835
+        ],
+        "min": 42.99390913266835,
+        "average": 42.99390913266835,
+        "geomean": 42.99390913266835,
+        "max": 42.99390913266835,
+        "sum": 42.99390913266835,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/Adding100Items/Async": {
+        "values": [
+          11.023299959190904
+        ],
+        "min": 11.023299959190904,
+        "average": 11.023299959190904,
+        "geomean": 11.023299959190904,
+        "max": 11.023299959190904,
+        "sum": 11.023299959190904,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          1.5420290347920185
+        ],
+        "min": 1.5420290347920185,
+        "average": 1.5420290347920185,
+        "geomean": 1.5420290347920185,
+        "max": 1.5420290347920185,
+        "sum": 1.5420290347920185,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/Adding100Items/total": {
+        "values": [
+          12.581379259572858
+        ],
+        "min": 12.581379259572858,
+        "average": 12.581379259572858,
+        "geomean": 12.581379259572858,
+        "max": 12.581379259572858,
+        "sum": 12.581379259572858,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          6.003157087067431
+        ],
+        "min": 6.003157087067431,
+        "average": 6.003157087067431,
+        "geomean": 6.003157087067431,
+        "max": 6.003157087067431,
+        "sum": 6.003157087067431,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          0.698558135924737
+        ],
+        "min": 0.698558135924737,
+        "average": 0.698558135924737,
+        "geomean": 0.698558135924737,
+        "max": 0.698558135924737,
+        "sum": 0.698558135924737,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          6.704003466119257
+        ],
+        "min": 6.704003466119257,
+        "average": 6.704003466119257,
+        "geomean": 6.704003466119257,
+        "max": 6.704003466119257,
+        "sum": 6.704003466119257,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          1.593659184012823
+        ],
+        "min": 1.593659184012823,
+        "average": 1.593659184012823,
+        "geomean": 1.593659184012823,
+        "max": 1.593659184012823,
+        "sum": 1.593659184012823,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          1.3262600772471749
+        ],
+        "min": 1.3262600772471749,
+        "average": 1.3262600772471749,
+        "geomean": 1.3262600772471749,
+        "max": 1.3262600772471749,
+        "sum": 1.3262600772471749,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          2.923234606133989
+        ],
+        "min": 2.923234606133989,
+        "average": 2.923234606133989,
+        "geomean": 2.923234606133989,
+        "max": 2.923234606133989,
+        "sum": 2.923234606133989,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "VueJS-TodoMVC/total": {
+        "values": [
+          22.277259178240385
+        ],
+        "min": 22.277259178240385,
+        "average": 22.277259178240385,
+        "geomean": 22.277259178240385,
+        "max": 22.277259178240385,
+        "sum": 22.277259178240385,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/Adding100Items/Async": {
+        "values": [
+          5.994205958200499
+        ],
+        "min": 5.994205958200499,
+        "average": 5.994205958200499,
+        "geomean": 5.994205958200499,
+        "max": 5.994205958200499,
+        "sum": 5.994205958200499,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/Adding100Items/Sync": {
+        "values": [
+          48.23882638581758
+        ],
+        "min": 48.23882638581758,
+        "average": 48.23882638581758,
+        "geomean": 48.23882638581758,
+        "max": 48.23882638581758,
+        "sum": 48.23882638581758,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/Adding100Items/total": {
+        "values": [
+          54.38815569087539
+        ],
+        "min": 54.38815569087539,
+        "average": 54.38815569087539,
+        "geomean": 54.38815569087539,
+        "max": 54.38815569087539,
+        "sum": 54.38815569087539,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/CompletingAllItems/Async": {
+        "values": [
+          9.136188686260938
+        ],
+        "min": 9.136188686260938,
+        "average": 9.136188686260938,
+        "geomean": 9.136188686260938,
+        "max": 9.136188686260938,
+        "sum": 9.136188686260938,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/CompletingAllItems/Sync": {
+        "values": [
+          109.50116324337993
+        ],
+        "min": 109.50116324337993,
+        "average": 109.50116324337993,
+        "geomean": 109.50116324337993,
+        "max": 109.50116324337993,
+        "sum": 109.50116324337993,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/CompletingAllItems/total": {
+        "values": [
+          119.40817314948804
+        ],
+        "min": 119.40817314948804,
+        "average": 119.40817314948804,
+        "geomean": 119.40817314948804,
+        "max": 119.40817314948804,
+        "sum": 119.40817314948804,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/DeletingAllItems/Async": {
+        "values": [
+          1.9593129399112583
+        ],
+        "min": 1.9593129399112583,
+        "average": 1.9593129399112583,
+        "geomean": 1.9593129399112583,
+        "max": 1.9593129399112583,
+        "sum": 1.9593129399112583,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/DeletingAllItems/Sync": {
+        "values": [
+          49.956924583476884
+        ],
+        "min": 49.956924583476884,
+        "average": 49.956924583476884,
+        "geomean": 49.956924583476884,
+        "max": 49.956924583476884,
+        "sum": 49.956924583476884,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/DeletingAllItems/total": {
+        "values": [
+          52.88712401184863
+        ],
+        "min": 52.88712401184863,
+        "average": 52.88712401184863,
+        "geomean": 52.88712401184863,
+        "max": 52.88712401184863,
+        "sum": 52.88712401184863,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "jQuery-TodoMVC/total": {
+        "values": [
+          228.69504639975204
+        ],
+        "min": 228.69504639975204,
+        "average": 228.69504639975204,
+        "geomean": 228.69504639975204,
+        "max": 228.69504639975204,
+        "sum": 228.69504639975204,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Mean": {
+        "values": [
+          119.63089946986675
+        ],
+        "min": 119.63089946986675,
+        "average": 119.63089946986675,
+        "geomean": 119.63089946986675,
+        "max": 119.63089946986675,
+        "sum": 119.63089946986675,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Total": {
+        "values": [
+          1914.0943915178684
+        ],
+        "min": 1914.0943915178684,
+        "average": 1914.0943915178684,
+        "geomean": 1914.0943915178684,
+        "max": 1914.0943915178684,
+        "sum": 1914.0943915178684,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Geomean": {
+        "values": [
+          81.52911441549865
+        ],
+        "min": 81.52911441549865,
+        "average": 81.52911441549865,
+        "geomean": 81.52911441549865,
+        "max": 81.52911441549865,
+        "sum": 81.52911441549865,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Score": {
+        "values": [
+          245.31113999440205
+        ],
+        "min": 245.31113999440205,
+        "average": 245.31113999440205,
+        "geomean": 245.31113999440205,
+        "max": 245.31113999440205,
+        "sum": 245.31113999440205,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      }
+    }
+  }
+}

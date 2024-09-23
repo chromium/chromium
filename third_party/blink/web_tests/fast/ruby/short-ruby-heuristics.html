@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="width:0px;" class="base-test">
+<ruby>あ<rt>foo</ruby><br>
+<ruby>あ🤷‍♂️<rt>foo</ruby><br>
+<ruby>あ🤷‍♂️🤷‍♂️<rt>foo</ruby><br>
+<ruby>あ🤷‍♂️🤷‍♂️🤷‍♂️<rt>foo</ruby><br>
+<ruby>あ🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️<rt>foo</ruby><br>
+</div>
+
+<div style="width:0px;" class="annotation-test">
+<ruby>にく<rt>🤷‍♂️</ruby><br>
+<ruby>にく<rt>🤷‍♂️🤷‍♂️</ruby><br>
+<ruby>にく<rt>🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️</ruby><br>
+<ruby>にく<rt>🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️</ruby><br>
+<ruby>にく<rt>🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️</ruby><br>
+</div>
+
+<script>
+test(() => {
+  // Only the last one is breakable with the current rule.
+  const rubies = document.querySelectorAll('.base-test ruby');
+  const base = rubies[0].getBoundingClientRect().height;
+  assert_equals(base, rubies[1].getBoundingClientRect().height);
+  assert_equals(base, rubies[2].getBoundingClientRect().height);
+  assert_equals(base, rubies[3].getBoundingClientRect().height);
+  assert_less_than(base, rubies[4].getBoundingClientRect().height);
+}, 'Ruby with less-than-5 base glyphs is monolithic.');
+
+test(() => {
+  // Only the last one is breakable with the current rule.
+  const rubies = document.querySelectorAll('.annotation-test ruby');
+  const base = rubies[0].getBoundingClientRect().height;
+  assert_equals(base, rubies[1].getBoundingClientRect().height);
+  assert_equals(base, rubies[2].getBoundingClientRect().height);
+  assert_equals(base, rubies[3].getBoundingClientRect().height);
+  assert_less_than(base, rubies[4].getBoundingClientRect().height);
+}, 'Ruby with less-than-9 annotation glyphs is monolithic');
+</script>

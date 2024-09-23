@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//device/vr/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/device/vr/XrFeatureStatus.java" ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [ "java/src/org/chromium/device/vr/XrFeatureStatus.java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}

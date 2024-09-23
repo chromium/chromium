@@ -107,7 +107,7 @@ bool ServerPassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
          "available on the server.";
 
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByDataType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
          syncer::ProtoPassphraseInt32ToEnum(
@@ -126,7 +126,7 @@ bool ServerCrossUserSharingPublicKeyChangedChecker::IsExitConditionSatisfied(
       << " available on the server";
 
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByDataType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
          nigori_entities[0]
@@ -142,7 +142,7 @@ ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
 
 bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByDataType(syncer::NIGORI);
   DCHECK_EQ(nigori_entities.size(), 1U);
 
   const std::string given_key_name =

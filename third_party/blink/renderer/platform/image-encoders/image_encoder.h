@@ -35,7 +35,7 @@ class VectorWStream : public SkWStream {
 
  private:
   // Does not have ownership.
-  raw_ptr<Vector<unsigned char>, ExperimentalRenderer> dst_;
+  raw_ptr<Vector<unsigned char>> dst_;
 };
 
 class PLATFORM_EXPORT ImageEncoder {

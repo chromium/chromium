@@ -7,8 +7,6 @@
 
 #include "components/content_settings/browser/content_settings_manager_impl.h"
 
-namespace chrome {
-
 class ContentSettingsManagerDelegate
     : public content_settings::ContentSettingsManagerImpl::Delegate {
  public:
@@ -27,7 +25,5 @@ class ContentSettingsManagerDelegate
       base::OnceCallback<void(bool)>* callback) override;
   std::unique_ptr<Delegate> Clone() override;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_CONTENT_SETTINGS_MANAGER_DELEGATE_H_

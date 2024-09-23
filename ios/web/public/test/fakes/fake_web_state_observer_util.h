@@ -105,6 +105,11 @@ struct TestUpdateFaviconUrlCandidatesInfo {
   std::vector<web::FaviconURL> candidates;
 };
 
+// Arguments passed to `UnderPageBackgroundColorChanged`.
+struct TestUnderPageBackgroundColorChangedInfo {
+  raw_ptr<WebState> web_state = nullptr;
+};
+
 // Arguments passed to `RenderProcessGone`.
 struct TestRenderProcessGoneInfo {
   raw_ptr<WebState> web_state = nullptr;

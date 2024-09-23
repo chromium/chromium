@@ -17,8 +17,6 @@ namespace web_app {
 struct SynchronizeOsOptions {
   // This option will always unregister all os integration, despite what may be
   // in the database. All other options will be ignored.
-  // TODO(b/300628551): Investigate if this can be exposed as a separate API
-  // instead of being called via Synchronize().
   bool force_unregister_os_integration = false;
   // Adds a shortcut to the desktop IFF this call to synchronize creates
   // shortcuts fresh for the given app (it's not an update).
@@ -26,9 +24,16 @@ struct SynchronizeOsOptions {
   // Adds a shortcut to the quick launch bar IFF this call to synchronize
   // creates shortcuts fresh for the given app (it's not an update).
   bool add_to_quick_launch_bar = false;
-  // This is used for the "Create Shortcuts" option from App Home, allowing to
-  // recreate shortcuts if they deleted them.
+  // This ensures that shortcuts are always recreated if they were removed. This
+  // requires the desired OS integration states to be non-empty during the
+  // Configure() phase, at least for the sub manager responsible for creating
+  // shortcuts, otherwise there will not be any effect of this flag.
   bool force_create_shortcuts = false;
+  // When set to true, this allows shortcuts to always be updated, even when
+  // there is no change in between the current and desired OS integration states
+  // for a web app. If the user has deleted the created shortcuts manually,
+  // setting this flag will not recreate them.
+  bool force_update_shortcuts = false;
   // The reason synchronize is called, used to possibly show the location of the
   // shortcut to the user (this happen on Mac).
   ShortcutCreationReason reason = SHORTCUT_CREATION_AUTOMATED;

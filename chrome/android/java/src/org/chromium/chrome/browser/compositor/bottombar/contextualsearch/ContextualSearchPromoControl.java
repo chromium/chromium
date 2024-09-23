@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.base.LocalizationUtils;
@@ -317,17 +317,17 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         View view = getView();
 
         // "Allow" button.
-        Button allowButton = (Button) view.findViewById(R.id.contextual_search_allow_button);
+        Button allowButton = view.findViewById(R.id.contextual_search_allow_button);
         allowButton.setOnClickListener(
                 v -> ContextualSearchPromoControl.this.handlePromoChoice(true));
 
         // "No thanks" button.
-        Button noThanksButton = (Button) view.findViewById(R.id.contextual_search_no_thanks_button);
+        Button noThanksButton = view.findViewById(R.id.contextual_search_no_thanks_button);
         noThanksButton.setOnClickListener(
                 v -> ContextualSearchPromoControl.this.handlePromoChoice(false));
 
         // Fill in text with link to Settings.
-        TextView promoText = (TextView) view.findViewById(R.id.contextual_search_promo_text);
+        TextView promoText = view.findViewById(R.id.contextual_search_promo_text);
 
         NoUnderlineClickableSpan settingsLink =
                 new NoUnderlineClickableSpan(
@@ -373,7 +373,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                         new Runnable() {
                             @Override
                             public void run() {
-                                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                                SettingsLauncher settingsLauncher =
+                                        SettingsLauncherFactory.createSettingsLauncher();
                                 settingsLauncher.launchSettingsActivity(
                                         getContext(), ContextualSearchSettingsFragment.class);
                             }

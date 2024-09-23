@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
@@ -71,13 +73,13 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   struct ExtendedMetricsKeyMap {
     ExtendedMetricsKeyMap(const ExtendedMetricsKeyMap& copy);
     ExtendedMetricsKeyMap(WatchTimeKey watch_time_key,
-                          base::StringPiece mtbr_key,
-                          base::StringPiece smooth_rate_key,
-                          base::StringPiece discard_key);
+                          std::string_view mtbr_key,
+                          std::string_view smooth_rate_key,
+                          std::string_view discard_key);
     const WatchTimeKey watch_time_key;
-    const base::StringPiece mtbr_key;
-    const base::StringPiece smooth_rate_key;
-    const base::StringPiece discard_key;
+    const std::string_view mtbr_key;
+    const std::string_view smooth_rate_key;
+    const std::string_view discard_key;
   };
   const std::vector<ExtendedMetricsKeyMap> extended_metrics_keys_;
 

@@ -41,19 +41,26 @@ found in the LICENSE file.
                 considered against the limit below, possibly ignoring some of
                 the total (e.g., to prevent extensions from using up the limit).
               </td>
-           </tr>
+            </tr>
             <tr>
               <td>Renderer Process Limit:</td>
               <td id="process-limit"></td>
               <td class="description">A soft limit to the number of renderer
                 processes, after which same-site processes will be reused when
                 possible.</td>
-           </tr>
+            </tr>
             <tr>
               <td>Over Process Limit?</td>
               <td id="over-process-limit"></td>
               <td class="description">Whether processes will be reused for new
                 main-frame documents when possible.</td>
+            </tr>
+            <tr>
+              <td>ProcessPerSite for main frames:</td>
+              <td id="process-per-site-mode"></td>
+              <td class="description">Whether processes will be aggressively
+                shared for new main frame documents, even when under the
+                process limit, when possible.</td>
            </tr>
           </tbody>
         </table>

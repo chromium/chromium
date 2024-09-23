@@ -12,9 +12,6 @@ import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-// <if expr="is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,7 +21,7 @@ import type {Destination} from '../data/destination.js';
 import type {Margins, MarginsSetting} from '../data/margins.js';
 import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
-import type {MediaSizeValue, Ticket} from '../data/model.js';
+import type {MediaSizeValue, Settings, Ticket} from '../data/model.js';
 import {DuplexMode} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
@@ -39,7 +36,7 @@ import type {PluginProxy} from './plugin_proxy.js';
 import {PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
 // <if expr="is_chromeos">
-import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
+import {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType} from './printer_setup_info_cros.js';
 // </if>
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -62,6 +59,13 @@ export enum PreviewAreaState {
 export interface PrintPreviewPreviewAreaElement {
   $: {marginControlContainer: PrintPreviewMarginControlContainerElement};
 }
+
+// <if expr="is_chromeos">
+export function shouldShowCrosPrinterSetupError(
+    state: State, error: Error): boolean {
+  return state === State.ERROR && error === Error.INVALID_PRINTER;
+}
+// </if>
 
 const PrintPreviewPreviewAreaElementBase =
     WebUiListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
@@ -118,24 +122,15 @@ export class PrintPreviewPreviewAreaElement extends
       },
 
       // <if expr="is_chromeos">
-      isPrintPreviewSetupAssistanceEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrintPreviewSetupAssistanceEnabled');
-        },
-        readOnly: true,
-      },
-
       printerOffline_: {
         type: Number,
         value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
         readOnly: true,
       },
 
-      previewAreaSource_: {
+      previewAreaInitiator_: {
         type: Number,
-        value: PrinterSetupInfoMetricsSource.PREVIEW_AREA,
+        value: PrinterSetupInfoInitiator.PREVIEW_AREA,
         readOnly: true,
       },
       // </if>
@@ -167,9 +162,6 @@ export class PrintPreviewPreviewAreaElement extends
   private pluginLoadComplete_: boolean;
   private documentReady_: boolean;
   private previewLoaded_: boolean;
-  // <if expr="is_chromeos">
-  private isPrintPreviewSetupAssistanceEnabled_: boolean;
-  // </if>
 
   private showCrosPrinterSetupInfo_: boolean = false;
   private nativeLayer_: NativeLayer|null = null;
@@ -688,7 +680,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   /** @return Appropriate key for the scaling type setting. */
-  private getScalingSettingKey_(): string {
+  private getScalingSettingKey_(): keyof Settings {
     return this.getSetting('scalingTypePdf').available ? 'scalingTypePdf' :
                                                          'scalingType';
   }
@@ -807,17 +799,17 @@ export class PrintPreviewPreviewAreaElement extends
 
   /**
    * Determines if setup info element should be shown instead of the preview
-   * area message. For ChromeOS, setup assistance is shown if the flag is
-   * enabled and the `INVALID_PRINTER` error has occurred. All other platforms
+   * area message. For ChromeOS, setup assistance is shown if the
+   * `INVALID_PRINTER` error has occurred. All other platforms
    * `computeShowCrosPrinterSetupInfo` will return false.
    */
   private computeShowCrosPrinterSetupInfo(): boolean {
     // <if expr="is_chromeos">
-    if (this.isPrintPreviewSetupAssistanceEnabled_) {
-      return this.state === State.ERROR && this.error === Error.INVALID_PRINTER;
-    }
+    return shouldShowCrosPrinterSetupError(this.state, this.error);
     // </if>
+    // <if expr="not is_chromeos">
     return false;
+    // </if>
   }
 }
 

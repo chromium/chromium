@@ -26,7 +26,7 @@ std::unique_ptr<DisplayWebView> DisplayWebView::Create(
   std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
   OverlayProcessorWebView* overlay_processor_webview_raw = nullptr;
   if (features::IsAndroidSurfaceControlEnabled()) {
-    // TODO(crbug.com/1039876): This is to help triage bugs on pre-release
+    // TODO(crbug.com/40113791): This is to help triage bugs on pre-release
     // android. Remove this log once feature is controlled only by feature flag
     // or launched.
     LOG(WARNING) << "WebView overlays are enabled!";
@@ -63,6 +63,7 @@ DisplayWebView::DisplayWebView(
     : viz::Display(/*bitmap_manager=*/nullptr,
                    /*shared_image_manager=*/nullptr,
                    /*sync_point_manager=*/nullptr,
+                   /*gpu_scheduler=*/nullptr,
                    settings,
                    debug_settings,
                    frame_sink_id,
@@ -74,8 +75,8 @@ DisplayWebView::DisplayWebView(
       overlay_processor_webview_(overlay_processor_webview),
       frame_sink_manager_(frame_sink_manager),
       root_frame_sink_(root_frame_sink),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          features::UseWebViewNewInvalidateHeuristic()) {
   if (overlay_processor_webview_) {
     frame_sink_manager_observation_.Observe(frame_sink_manager);
   }

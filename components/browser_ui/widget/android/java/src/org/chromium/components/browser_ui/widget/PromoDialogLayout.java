@@ -14,9 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.view.ViewCompat;
-
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.PromoDialog.DialogParams;
 
 /**
@@ -136,14 +135,15 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
                         ? mParams.primaryButtonCharSequence.toString()
                         : getResources().getString(mParams.primaryButtonStringResource);
         buttonBar.addView(
-                DualControlLayout.createButtonForLayout(getContext(), true, primaryString, null));
+                DualControlLayout.createButtonForLayout(
+                        getContext(), ButtonType.PRIMARY_FILLED, primaryString, null));
 
         if (mParams.secondaryButtonStringResource != 0) {
             String secondaryString =
                     getResources().getString(mParams.secondaryButtonStringResource);
             buttonBar.addView(
                     DualControlLayout.createButtonForLayout(
-                            getContext(), false, secondaryString, null));
+                            getContext(), ButtonType.SECONDARY_TEXT, secondaryString, null));
         }
     }
 
@@ -180,7 +180,7 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
                 applyHeaderPadding
                         ? getResources().getDimensionPixelSize(R.dimen.promo_dialog_padding)
                         : 0;
-        ViewCompat.setPaddingRelative(mHeaderView, startEndPadding, 0, startEndPadding, 0);
+        mHeaderView.setPaddingRelative(startEndPadding, 0, startEndPadding, 0);
         return true;
     }
 

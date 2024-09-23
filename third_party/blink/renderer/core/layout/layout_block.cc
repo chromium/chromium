@@ -47,10 +47,11 @@
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -68,7 +69,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -333,8 +333,8 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
          GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
-  if (UNLIKELY(NeedsLayout() && !ChildLayoutBlockedByDisplayLock())) {
-    NOTREACHED();
+  if (NeedsLayout() && !ChildLayoutBlockedByDisplayLock()) [[unlikely]] {
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -345,7 +345,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayoutBlock::InvalidatePaint(
@@ -455,8 +455,9 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
 LayoutUnit LayoutBlock::TextIndentOffset() const {
   NOT_DESTROYED();
   LayoutUnit cw;
-  if (StyleRef().TextIndent().IsPercentOrCalc())
+  if (StyleRef().TextIndent().HasPercent()) {
     cw = ContentLogicalWidth();
+  }
   return MinimumValueForLength(StyleRef().TextIndent(), cw);
 }
 
@@ -466,13 +467,14 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
                               HitTestPhase phase) {
   NOT_DESTROYED();
 
-  // See |Paint()|.
-  DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
-         Parent()->CanTraversePhysicalFragments());
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).
   DCHECK(PhysicalFragmentCount() <= 1u ||
          GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
+
+  if (!MayIntersect(result, hit_test_location, accumulated_offset)) {
+    return false;
+  }
 
   if (PhysicalFragmentCount()) {
     const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
@@ -607,21 +609,6 @@ LayoutUnit LayoutBlock::FirstLineHeight() const {
   return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
-bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
-  NOT_DESTROYED();
-  // CSS2.1 states that the baseline of an 'inline-block' is:
-  // the baseline of the last line box in the normal flow, unless it has
-  // either no in-flow line boxes or if its 'overflow' property has a computed
-  // value other than 'visible', in which case the baseline is the bottom
-  // margin edge.
-  // We likewise avoid using the last line box in the case of size containment,
-  // where the block's contents shouldn't be considered when laying out its
-  // ancestors or siblings.
-  return (!StyleRef().IsOverflowVisibleOrClip() &&
-          !StyleRef().ShouldIgnoreOverflowPropertyForInlineBlockBaseline()) ||
-         ShouldApplyLayoutContainment();
-}
-
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   NOT_DESTROYED();
   const LayoutBlock* first_line_block = this;
@@ -730,7 +717,7 @@ LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
 
 const char* LayoutBlock::GetName() const {
   NOT_DESTROYED();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "LayoutBlock";
 }
 
@@ -780,7 +767,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);
-    layout_block = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
+    layout_block = MakeGarbageCollected<LayoutBlockFlow>(nullptr);
   }
   layout_block->SetDocumentForAnonymous(&parent->GetDocument());
   layout_block->SetStyle(new_style);

@@ -15,14 +15,14 @@ class WebUI;
 namespace ash {
 namespace eche_app {
 
+class UntrustedEcheAppUI;
+
 // WebUI config for chrome-untrusted://eche-app
-class UntrustedEcheAppUIConfig : public content::WebUIConfig {
+class UntrustedEcheAppUIConfig
+    : public content::DefaultWebUIConfig<UntrustedEcheAppUI> {
  public:
   UntrustedEcheAppUIConfig();
   ~UntrustedEcheAppUIConfig() override;
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // WebUI controller for chrome-untrusted://eche-app

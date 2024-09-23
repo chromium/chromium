@@ -22,6 +22,11 @@ chrome.app.runtime.onEmbedRequested.addListener(function(request) {
     return;
   }
 
+  if (request.data.runWebViewInAppViewFocusTest) {
+    request.allow('web_view_focus_test.html');
+    return;
+  }
+
   if (!request.data.foo) {
     request.allow('main.html');
     return;

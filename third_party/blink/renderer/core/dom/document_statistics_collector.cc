@@ -66,7 +66,8 @@ bool IsVisible(const Element& element) {
   if (!style)
     return false;
   return (style->Display() != EDisplay::kNone &&
-          style->Visibility() != EVisibility::kHidden && style->Opacity() != 0);
+          style->UsedVisibility() != EVisibility::kHidden &&
+          style->Opacity() != 0);
 }
 
 bool MatchAttributes(const Element& element, const Vector<String>& words) {

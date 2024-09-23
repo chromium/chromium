@@ -97,7 +97,7 @@ class Rankings {
 
   // If we have multiple lists, we have to iterate through all at the same time.
   // This structure keeps track of where we are on the iteration.
-  // TODO(https://crbug.com/1409814) refactor this struct to make it clearer
+  // TODO(crbug.com/40889343) refactor this struct to make it clearer
   // this owns the `nodes`.
   struct Iterator {
     Iterator();

@@ -26,8 +26,10 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_controller.h"
 
 #include <memory>
+#include <optional>
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
@@ -51,45 +53,76 @@ SpeechRecognitionController* SpeechRecognitionController::From(
 }
 
 SpeechRecognitionController::SpeechRecognitionController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), speech_recognizer_(&window) {}
+    : Supplement<LocalDOMWindow>(window),
+      speech_recognizer_(&window),
+      on_device_speech_recognition_(&window) {}
 
 SpeechRecognitionController::~SpeechRecognitionController() {
   // FIXME: Call m_client->pageDestroyed(); once we have implemented a client.
 }
 
 void SpeechRecognitionController::Start(
-    mojo::PendingReceiver<mojom::blink::SpeechRecognitionSession>
+    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
         session_receiver,
-    mojo::PendingRemote<mojom::blink::SpeechRecognitionSessionClient>
+    mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
         session_client,
     const SpeechGrammarList& grammars,
     const String& lang,
     bool continuous,
     bool interim_results,
-    uint32_t max_alternatives) {
-  mojom::blink::StartSpeechRecognitionRequestParamsPtr msg_params =
-      mojom::blink::StartSpeechRecognitionRequestParams::New();
+    uint32_t max_alternatives,
+    bool on_device,
+    bool allow_cloud_fallback,
+    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    std::optional<media::AudioParameters> audio_parameters) {
+  media::mojom::blink::StartSpeechRecognitionRequestParamsPtr msg_params =
+      media::mojom::blink::StartSpeechRecognitionRequestParams::New();
   for (unsigned i = 0; i < grammars.length(); i++) {
     SpeechGrammar* grammar = grammars.item(i);
-    msg_params->grammars.push_back(mojom::blink::SpeechRecognitionGrammar::New(
-        grammar->src(), grammar->weight()));
+    msg_params->grammars.push_back(
+        media::mojom::blink::SpeechRecognitionGrammar::New(grammar->src(),
+                                                           grammar->weight()));
   }
   msg_params->language = lang.IsNull() ? g_empty_string : lang;
   msg_params->max_hypotheses = max_alternatives;
   msg_params->continuous = continuous;
   msg_params->interim_results = interim_results;
+  msg_params->on_device = on_device;
+  msg_params->allow_cloud_fallback = allow_cloud_fallback;
   msg_params->client = std::move(session_client);
   msg_params->session_receiver = std::move(session_receiver);
 
+  if (audio_forwarder.is_valid()) {
+    msg_params->audio_forwarder = std::move(audio_forwarder);
+    msg_params->channel_count = audio_parameters.value().channels();
+    msg_params->sample_rate = audio_parameters.value().sample_rate();
+  }
+
   GetSpeechRecognizer()->Start(std::move(msg_params));
+}
+
+void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
+    const String& language,
+    base::OnceCallback<void(bool)> callback) {
+  GetOnDeviceSpeechRecognition()->OnDeviceWebSpeechAvailable(
+      language, std::move(callback));
+}
+
+void SpeechRecognitionController::InstallOnDeviceSpeechRecognition(
+    const String& language,
+    base::OnceCallback<void(bool)> callback) {
+  GetOnDeviceSpeechRecognition()->InstallOnDeviceSpeechRecognition(
+      language, std::move(callback));
 }
 
 void SpeechRecognitionController::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(speech_recognizer_);
+  visitor->Trace(on_device_speech_recognition_);
 }
 
-mojom::blink::SpeechRecognizer*
+media::mojom::blink::SpeechRecognizer*
 SpeechRecognitionController::GetSpeechRecognizer() {
   if (!speech_recognizer_.is_bound()) {
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
@@ -97,6 +130,16 @@ SpeechRecognitionController::GetSpeechRecognizer() {
             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
   return speech_recognizer_.get();
+}
+
+media::mojom::blink::OnDeviceSpeechRecognition*
+SpeechRecognitionController::GetOnDeviceSpeechRecognition() {
+  if (!on_device_speech_recognition_.is_bound()) {
+    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+        on_device_speech_recognition_.BindNewPipeAndPassReceiver(
+            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
+  return on_device_speech_recognition_.get();
 }
 
 }  // namespace blink

@@ -110,8 +110,9 @@ TEST_F(ServiceMainTest, EncryptDecryptTest) {
   memcpy(input, plaintext.data(), plaintext.length());
   base::win::ScopedBstr output;
   DWORD last_error;
-  HRESULT hr = elevator->EncryptData(ProtectionLevel::PATH_VALIDATION, input,
-                                     output.Receive(), &last_error);
+  HRESULT hr =
+      elevator->EncryptData(ProtectionLevel::PROTECTION_PATH_VALIDATION, input,
+                            output.Receive(), &last_error);
   ::SysFreeString(input);
 
   ASSERT_HRESULT_SUCCEEDED(hr);

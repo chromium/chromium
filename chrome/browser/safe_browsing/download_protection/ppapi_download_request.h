@@ -102,8 +102,8 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
 
   friend class DownloadProtectionService;
 
-  // Allowlist checking needs to the done on the SB thread.
-  static void CheckAllowlistsOnSBThread(
+  // Allowlist checking needs to the done on the UI thread.
+  static void CheckAllowlistsOnUIThread(
       const GURL& requestor_url,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       base::WeakPtr<PPAPIDownloadRequest> download_request);

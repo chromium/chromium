@@ -222,7 +222,7 @@ bool OffscreenTab::ShouldSuppressDialogs(WebContents* source) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
   // Suppress all because there is no possible direct user interaction with
   // dialogs.
-  // TODO(crbug.com/734191): This does not suppress window.print().
+  // TODO(crbug.com/40526231): This does not suppress window.print().
   return true;
 }
 
@@ -258,7 +258,7 @@ bool OffscreenTab::HandleContextMenu(
 
 content::KeyboardEventProcessingResult OffscreenTab::PreHandleKeyboardEvent(
     WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
   // Intercept and silence all keyboard events before they can be sent to the
   // renderer.

@@ -17,12 +17,16 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
+namespace base {
+class Location;
+}
+
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace webauthn {
@@ -74,10 +78,17 @@ class PasskeyModel : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns the sync ModelTypeControllerDelegate for the WEBAUTHN_CREDENTIAL
+  // Returns the sync DataTypeControllerDelegate for the WEBAUTHN_CREDENTIAL
   // data type.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate() = 0;
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate() = 0;
+
+  // Returns true if the model has finished loading state from disk and is ready
+  // to sync.
+  virtual bool IsReady() const = 0;
+
+  // Returns true if there are no passkeys in the account.
+  virtual bool IsEmpty() const = 0;
 
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
 
@@ -99,14 +110,24 @@ class PasskeyModel : public KeyedService {
 
   // Deletes the passkey with the given `credential_id`. If the passkey is the
   // head of the shadow chain, then all passkeys for the same (user id, rp id)
-  // are deleted as well.
-  // Returns true if a passkey was found and deleted, false otherwise.
-  virtual bool DeletePasskey(const std::string& credential_id) = 0;
+  // are deleted as well. `location` is used for logging purposes and
+  // investigations. Returns true if a passkey was found and deleted, false
+  // otherwise.
+  virtual bool DeletePasskey(const std::string& credential_id,
+                             const base::Location& location) = 0;
+
+  // Deletes all passkeys.
+  virtual void DeleteAllPasskeys() = 0;
 
   // Updates attributes of the passkey with the given `credential_id`. Returns
   // true if the credential was found and updated, false otherwise.
+  // |updated_by_user| should be true if the user explicitly requested this
+  // update, e.g. through the password manager. Passkeys updated by the user
+  // will be permantently marked as such. Any further attempts to update the
+  // passkey with |updated_by_user| set to |false| will be dropped.
   virtual bool UpdatePasskey(const std::string& credential_id,
-                             PasskeyUpdate change) = 0;
+                             PasskeyUpdate change,
+                             bool updated_by_user) = 0;
 
   // Creates a passkey for the given RP and user and returns the new entity
   // specifics.

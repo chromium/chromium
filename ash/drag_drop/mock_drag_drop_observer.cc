@@ -15,4 +15,8 @@ MockDragDropObserver::MockDragDropObserver(
 
 MockDragDropObserver::~MockDragDropObserver() = default;
 
+void MockDragDropObserver::ResetObservation() {
+  observation_.Reset();
+}
+
 }  // namespace ash

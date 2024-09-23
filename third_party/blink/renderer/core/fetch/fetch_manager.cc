@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 
 #include <stdint.h>
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -28,12 +34,12 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
@@ -67,6 +73,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -82,6 +89,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -160,19 +168,6 @@ constexpr net::NetworkTrafficAnnotationTag kFetchLaterTrafficAnnotationTag =
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// Must remain in sync with FetchKeepAliveRendererMetricType in
-// tools/metrics/histograms/enums.xml.
-enum class FetchKeepAliveRendererMetricType {
-  kLoadingSuceeded = 0,
-  kLoadingFailed = 1,
-  kAbortedByUser = 2,
-  kContextDestroyed = 3,
-  kMaxValue = kContextDestroyed,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
 // Must remain in sync with FetchLaterRendererMetricType in
 // tools/metrics/histograms/enums.xml.
 enum class FetchLaterRendererMetricType {
@@ -203,6 +198,14 @@ bool IsFetchLaterUseBackgroundSyncPermissionEnabled() {
 bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(features::kFetchLaterAPI,
                                                  "send_on_enter_bfcache", true);
+}
+
+// Tells whether the FetchLater should use the "deferred-fetch" policy.
+// Defaults to false until the discussion is finalized.
+// https://github.com/WICG/pending-beacon/issues/87#issuecomment-2315624105
+bool IsFetchLaterUsePermissionsPolicyEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "use_permissions_policy", false);
 }
 
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
@@ -237,18 +240,6 @@ void HistogramNetErrorForTrustTokensOperation(
       net_error);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FetchManagerLoaderCheckPoint {
-  kConstructor = 0,
-  kFailed = 1,
-  kMaxValue = kFailed,
-};
-
-void SendHistogram(FetchManagerLoaderCheckPoint cp) {
-  base::UmaHistogramEnumeration("Net.Fetch.CheckPoint.FetchManagerLoader", cp);
-}
-
 ResourceLoadPriority ComputeFetchLaterLoadPriority(
     const FetchParameters& params) {
   // FetchLater's ResourceType is ResourceType::kRaw, which should default to
@@ -260,6 +251,22 @@ ResourceLoadPriority ComputeFetchLaterLoadPriority(
       params.GetRenderBlockingBehavior());
   // TODO(crbug.com/1465781): Apply kLow when IsSubframeDeprioritizationEnabled.
 }
+
+class FetchManagerResourceRequestContext final : public ResourceRequestContext {
+  STACK_ALLOCATED();
+
+ public:
+  ~FetchManagerResourceRequestContext() override = default;
+
+  // Computes the ResourceLoadPriority. This is called if the priority was not
+  // set.
+  ResourceLoadPriority ComputeLoadPriority(
+      const FetchParameters& params) override {
+    return ComputeFetchLaterLoadPriority(params);
+  }
+
+  void RecordTrace() override {}
+};
 
 }  // namespace
 
@@ -300,6 +307,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
     visitor->Trace(script_state_);
     visitor->Trace(signal_);
     visitor->Trace(abort_handle_);
+    visitor->Trace(world_);
   }
 
  protected:
@@ -331,14 +339,14 @@ class FetchLoaderBase : public GarbageCollectedMixin {
     return fetch_request_data_.Get();
   }
   ScriptState* GetScriptState() { return script_state_.Get(); }
-  scoped_refptr<const DOMWrapperWorld> World() { return world_; }
+  const DOMWrapperWorld* World() { return world_; }
   AbortSignal* Signal() { return signal_.Get(); }
 
  private:
   Member<ExecutionContext> execution_context_;
   Member<FetchRequestData> fetch_request_data_;
   Member<ScriptState> script_state_;
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
   Member<AbortSignal> signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
@@ -350,7 +358,7 @@ class FetchManager::Loader final
  public:
   Loader(ExecutionContext*,
          FetchManager*,
-         ScriptPromiseResolver*,
+         ScriptPromiseResolver<Response>*,
          FetchRequestData*,
          ScriptState*,
          AbortSignal*);
@@ -359,8 +367,7 @@ class FetchManager::Loader final
 
   void Dispose() override;
 
-  void LogIfKeepalive(const FetchKeepAliveRendererMetricType& type) const;
-  void LogIfKeepalive(const std::string& metric) const;
+  void LogIfKeepalive(std::string_view request_state) const;
 
   // ThreadableLoaderClient implementation.
   bool WillFollowRedirect(uint64_t,
@@ -389,8 +396,7 @@ class FetchManager::Loader final
           loader_(loader),
           integrity_metadata_(integrity_metadata),
           url_(url),
-          response_type_(response_type),
-          finished_(false) {
+          response_type_(response_type) {
       body_->SetClient(this);
 
       OnStateChange();
@@ -410,7 +416,8 @@ class FetchManager::Loader final
         size_t available;
         result = body_->BeginRead(&buffer, &available);
         if (result == Result::kOk) {
-          buffer_.Append(buffer, base::checked_cast<wtf_size_t>(available));
+          buffer_.Append(base::make_span(
+              buffer, base::checked_cast<wtf_size_t>(available)));
           result = body_->EndRead(available);
         }
         if (result == Result::kShouldWait)
@@ -436,13 +443,13 @@ class FetchManager::Loader final
               integrity_metadata_,
               SubresourceIntegrityHelper::GetFeatures(
                   loader_->GetExecutionContext()),
-              buffer_.data(), buffer_.size(), url_, report_info);
+              &buffer_, url_, report_info);
         }
         SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
                                              report_info);
         if (check_result) {
-          updater_->Update(MakeGarbageCollected<FormDataBytesConsumer>(
-              buffer_.data(), buffer_.size()));
+          updater_->Update(
+              MakeGarbageCollected<FormDataBytesConsumer>(std::move(buffer_)));
           loader_->resolver_->Resolve(response_);
           loader_->resolver_.Clear();
           return;
@@ -478,8 +485,8 @@ class FetchManager::Loader final
     String integrity_metadata_;
     KURL url_;
     const FetchResponseType response_type_;
-    Vector<char> buffer_;
-    bool finished_;
+    SegmentedBuffer buffer_;
+    bool finished_ = false;
   };
 
  private:
@@ -498,7 +505,7 @@ class FetchManager::Loader final
       std::optional<base::UnguessableToken> issue_id = std::nullopt) override;
 
   Member<FetchManager> fetch_manager_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolver<Response>> resolver_;
   Member<ThreadableLoader> threadable_loader_;
   Member<PlaceHolderBytesConsumer> place_holder_body_;
   bool failed_;
@@ -514,7 +521,7 @@ class FetchManager::Loader final
 
 FetchManager::Loader::Loader(ExecutionContext* execution_context,
                              FetchManager* fetch_manager,
-                             ScriptPromiseResolver* resolver,
+                             ScriptPromiseResolver<Response>* resolver,
                              FetchRequestData* fetch_request_data,
                              ScriptState* script_state,
                              AbortSignal* signal)
@@ -539,8 +546,6 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
   v8::Local<v8::Value> exception =
       V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
   exception_.Reset(isolate, exception);
-  SendHistogram(FetchManagerLoaderCheckPoint::kConstructor);
-  LogIfKeepalive("FetchKeepAlive.Renderer.Total");
 }
 
 FetchManager::Loader::~Loader() {
@@ -609,7 +614,7 @@ void FetchManager::Loader::DidReceiveResponse(
   auto response_type = response.GetType();
   DCHECK_NE(response_type, FetchResponseType::kError);
 
-  LogIfKeepalive(FetchKeepAliveRendererMetricType::kLoadingSuceeded);
+  LogIfKeepalive("Succeeded");
 
   ScriptState::Scope scope(GetScriptState());
 
@@ -675,7 +680,7 @@ void FetchManager::Loader::DidReceiveResponse(
       tainted_response = response_data->CreateOpaqueRedirectFilteredResponse();
       break;
     case FetchResponseType::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // TODO(crbug.com/1288221): Remove this once the investigation is done.
@@ -719,7 +724,8 @@ void FetchManager::Loader::DidStartLoadingResponseBody(BytesConsumer& body) {
     // https://fetch.spec.whatwg.org/#fetching
     // The user agent should ignore the suspension request if the ongoing
     // fetch is updating the response in the HTTP cache for the request.
-    place_holder_body_->Update(BufferingBytesConsumer::CreateWithDelay(&body));
+    place_holder_body_->Update(BufferingBytesConsumer::CreateWithDelay(
+        &body, GetExecutionContext()->GetTaskRunner(TaskType::kNetworking)));
   } else {
     place_holder_body_->Update(&body);
   }
@@ -793,7 +799,8 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
 
   // "- should fetching |request| be blocked as content security returns
   //    blocked"
-  if (!execution_context_->GetContentSecurityPolicyForWorld(world_.get())
+  CHECK(execution_context_);
+  if (!execution_context_->GetContentSecurityPolicyForWorld(world_.Get())
            ->AllowConnectToSource(fetch_request_data_->Url(),
                                   fetch_request_data_->Url(),
                                   RedirectStatus::kNoRedirect)) {
@@ -886,10 +893,15 @@ void FetchManager::Loader::Dispose() {
   SetExecutionContext(nullptr);
 }
 
+// https://fetch.spec.whatwg.org/#abort-fetch
+// To abort a fetch() call with a promise, request, responseObject, and an
+// error:
 void FetchManager::Loader::Abort() {
+  ScriptState* script_state = GetScriptState();
+  v8::Local<v8::Value> error = Signal()->reason(script_state).V8Value();
+  // 1. Reject promise with error.
   if (resolver_) {
-    resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+    resolver_->Reject(error);
     resolver_.Clear();
   }
   if (threadable_loader_) {
@@ -898,7 +910,16 @@ void FetchManager::Loader::Abort() {
     threadable_loader_ = nullptr;
     loader->Cancel();
   }
-  LogIfKeepalive(FetchKeepAliveRendererMetricType::kAbortedByUser);
+
+  // 2. If request’s body is non-null and is readable, then cancel request’s
+  //  body with error.
+  if (FetchRequestData* fetch_request_data = GetFetchRequestData()) {
+    if (BodyStreamBuffer* body_stream_buffer = fetch_request_data->Buffer()) {
+      if (ReadableStream* readable_stream = body_stream_buffer->Stream()) {
+        ReadableStream::Cancel(script_state, readable_stream, error);
+      }
+    }
+  }
   NotifyFinished();
 }
 
@@ -1049,6 +1070,8 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   request.SetAdAuctionHeaders(fetch_request_data_->AdAuctionHeaders());
   request.SetAttributionReportingEligibility(
       fetch_request_data_->AttributionReportingEligibility());
+  request.SetAttributionReportingSupport(
+      fetch_request_data_->AttributionSupport());
   request.SetSharedStorageWritableOptedIn(
       fetch_request_data_->SharedStorageWritable());
 
@@ -1058,6 +1081,12 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
       fetch_request_data_->ServiceWorkerRaceNetworkRequestToken());
 
   request.SetFetchLaterAPI(IsDeferred());
+
+  if (execution_context_->IsSharedWorkerGlobalScope() &&
+      DynamicTo<SharedWorkerGlobalScope>(*execution_context_)
+          ->DoesRequireCrossSiteRequestForCookies()) {
+    request.SetSiteForCookies(net::SiteForCookies());
+  }
 
   // "3. Append `Host`, ..."
   // FIXME: Implement this when the spec is fixed.
@@ -1086,6 +1115,11 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
             std::move(factory_clone));
   }
 
+  if (fetch_request_data_->Keepalive() && !request.IsFetchLaterAPI()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        request.GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kTotal);
+  }
   CreateLoader(std::move(request), resource_loader_options);
 }
 
@@ -1182,15 +1216,13 @@ void FetchManager::Loader::Failed(
                      IdentifiersFactory::IdFromToken(*issue_id)));
       }
       resolver_->Reject(value);
-      SendHistogram(FetchManagerLoaderCheckPoint::kFailed);
-      LogIfKeepalive(FetchKeepAliveRendererMetricType::kLoadingFailed);
+      LogIfKeepalive("Failed");
     }
   }
   NotifyFinished();
 }
 
 void FetchManager::Loader::NotifyFinished() {
-  LogIfKeepalive("FetchKeepAlive.Renderer.Total.Finished");
   if (fetch_manager_)
     fetch_manager_->OnLoaderFinished(this);
 }
@@ -1200,34 +1232,18 @@ bool FetchManager::Loader::IsDeferred() const {
 }
 
 void FetchManager::Loader::LogIfKeepalive(
-    const FetchKeepAliveRendererMetricType& type) const {
+    std::string_view request_state) const {
+  return;
+  CHECK(request_state == "Succeeded" || request_state == "Failed");
   if (!GetFetchRequestData()->Keepalive()) {
     return;
   }
-
-  base::UmaHistogramEnumeration("FetchKeepAlive.Renderer.Metrics", type);
 
   base::TimeDelta duration = base::TimeTicks::Now() - request_started_time_;
-  if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded ||
-      type == FetchKeepAliveRendererMetricType::kLoadingFailed) {
-    base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration", duration);
-
-    if (type == FetchKeepAliveRendererMetricType::kLoadingSuceeded) {
-      base::UmaHistogramMediumTimes(
-          "FetchKeepAlive.Renderer.Duration.Succeeded", duration);
-    } else {
-      base::UmaHistogramMediumTimes("FetchKeepAlive.Renderer.Duration.Failed",
-                                    duration);
-    }
-  }
-}
-
-void FetchManager::Loader::LogIfKeepalive(const std::string& metric) const {
-  if (!GetFetchRequestData()->Keepalive()) {
-    return;
-  }
-
-  base::UmaHistogramBoolean(metric, true);
+  base::UmaHistogramMediumTimes("FetchKeepAlive.RequestDuration", duration);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"FetchKeepAlive.RequestDuration.", request_state}),
+      duration);
 }
 
 // A subtype of FetchLoader to handle the deferred fetching algorithm [1].
@@ -1358,7 +1374,7 @@ class FetchLaterManager::DeferredLoader final
                           WebFeature::kFetchLaterInvokeStateActivated);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     };
     invoke_state_ = state;
     fetch_later_result_->SetActivated(state == InvokeState::ACTIVATED);
@@ -1475,21 +1491,21 @@ class FetchLaterManager::DeferredLoader final
 FetchManager::FetchManager(ExecutionContext* execution_context)
     : ExecutionContextLifecycleObserver(execution_context) {}
 
-ScriptPromise FetchManager::Fetch(ScriptState* script_state,
-                                  FetchRequestData* request,
-                                  AbortSignal* signal,
-                                  ExceptionState& exception_state) {
+ScriptPromise<Response> FetchManager::Fetch(ScriptState* script_state,
+                                            FetchRequestData* request,
+                                            AbortSignal* signal,
+                                            ExceptionState& exception_state) {
   DCHECK(signal);
   if (signal->aborted()) {
-    exception_state.RethrowV8Exception(signal->reason(script_state).V8Value());
-    return ScriptPromise();
+    return ScriptPromise<Response>::Reject(script_state,
+                                           signal->reason(script_state));
   }
 
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   auto* loader = MakeGarbageCollected<Loader>(
       GetExecutionContext(), this, resolver, request, script_state, signal);
@@ -1505,10 +1521,10 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     AbortSignal* signal,
     std::optional<DOMHighResTimeStamp> activate_after_ms,
     ExceptionState& exception_state) {
-  // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
+  // https://whatpr.org/fetch/1647.html#dom-global-fetch-later
   // Continuing the fetchLater(input, init) method steps:
   CHECK(signal);
-  // 3. If request’s signal is aborted, then throw signal’s abort reason.
+  // 2. If request’s signal is aborted, then throw signal’s abort reason.
   if (signal->aborted()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "The user aborted a fetchLater request.");
@@ -1518,7 +1534,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   std::optional<base::TimeDelta> activate_after = std::nullopt;
   if (activate_after_ms.has_value()) {
     activate_after = base::Milliseconds(*activate_after_ms);
-    // 8. If `activate_after` is less than 0 then throw a RangeError.
+    // 7. If `activate_after` is less than 0 then throw a RangeError.
     if (activate_after->is_negative()) {
       exception_state.ThrowRangeError(
           "fetchLater's activateAfter cannot be negative.");
@@ -1526,11 +1542,20 @@ FetchLaterResult* FetchLaterManager::FetchLater(
     }
   }
 
-  // 12. Let deferredRecord be the result of calling request a deferred fetch
+  // 8. Let deferredRecord be the result of calling "request a deferred fetch"
   // given `request` and `activate_after`. This may throw an exception.
   //
-  // "request a deferred fetch"
-  // https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#request-a-deferred-fetch
+  // "request a deferred fetch":
+  // https://whatpr.org/fetch/1647.html#request-a-deferred-fetch
+
+  // 1. If request’s client is not a fully active Document, then throw an
+  // "InvalidStateError" DOMException.
+  if (!DomWindow() || GetExecutionContext()->is_in_back_forward_cache()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "fetchLater can only be called from a fully active Document.");
+    return nullptr;
+  }
 
   // 2. If request’s URL’s scheme is not an HTTPS scheme, then throw a
   // TypeError.
@@ -1545,6 +1570,25 @@ FetchLaterResult* FetchLaterManager::FetchLater(
         "fetchLater was passed an insecure URL.");
     return nullptr;
   }
+
+  // 4. If request’s client’s fetch group is eligible for deferred fetching is
+  // false, then throw a "NotAllowedError" DOMException.
+  // https://w3c.github.io/webappsec-permissions-policy/#algo-is-feature-enabled
+  // NOTE: The default value of True for report means that most permissions
+  // policy checks will generate a violation report if the feature is disabled.
+  if (IsFetchLaterUsePermissionsPolicyEnabled() &&
+      !GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Access to fetchLater requires the permissions policy "
+        "\"deferred-fetch\" be enabled for the origin of this document.");
+    return nullptr;
+  }
+
+  // TODO(crbug.com/40276121): Update the following steps to match latest PR.
+
   // 4. Set request’s service-workers mode to "none".
   // Done in `PerformHTTPFetch()`.
   // 5. If request’s body is not null and request’s body’s source is null, then
@@ -1625,7 +1669,6 @@ void FetchManager::ContextDestroyed() {
   // controller is non-null and record’s done flag is unset and keepalive is
   // false, terminate the fetch record’s controller .
   for (auto& loader : loaders_) {
-    loader->LogIfKeepalive(FetchKeepAliveRendererMetricType::kContextDestroyed);
     loader->Dispose();
   }
 }
@@ -1761,12 +1804,28 @@ FetchLaterManager::PrepareNetworkRequest(
   FetchParameters params(std::move(request), options);
   WebScopedVirtualTimePauser unused_virtual_time_pauser;
   params.OverrideContentType(kFetchLaterContentType);
-  if (PrepareResourceRequest(
-          kFetchLaterResourceType,
-          fetcher->GetProperties().GetFetchClientSettingsObject(), params,
-          fetcher->Context(), unused_virtual_time_pauser,
-          WTF::BindOnce(&ComputeFetchLaterLoadPriority)) != std::nullopt) {
-    return nullptr;
+  const FetchClientSettingsObject& fetch_client_settings_object =
+      fetcher->GetProperties().GetFetchClientSettingsObject();
+
+  FetchManagerResourceRequestContext resource_request_context;
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    if (PrepareResourceRequest(
+            kFetchLaterResourceType, fetch_client_settings_object, params,
+            fetcher->Context(), unused_virtual_time_pauser,
+            resource_request_context, KURL()) != std::nullopt) {
+      return nullptr;
+    }
+  } else {
+    if (PrepareResourceRequestForCacheAccess(
+            kFetchLaterResourceType, fetch_client_settings_object, KURL(),
+            resource_request_context, fetcher->Context(),
+            params) != std::nullopt) {
+      return nullptr;
+    }
+    UpgradeResourceRequestForLoaderNew(
+        kFetchLaterResourceType, params, fetcher->Context(),
+        resource_request_context, unused_virtual_time_pauser);
   }
 
   // From `ResourceFetcher::StartLoad()`:

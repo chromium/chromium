@@ -23,9 +23,8 @@ class TabPageObserver;
 // or using the `FromPageNode` function allows callers to obtain a pointer to a
 // `TabHandle` object whose `page_node()` function always points to the
 // `PageNode` associated with the tab.
-class TabPageDecorator : public GraphOwnedDefaultImpl,
-                         public PageNode::ObserverDefaultImpl,
-                         public GraphRegisteredImpl<TabPageDecorator> {
+class TabPageDecorator : public PageNode::ObserverDefaultImpl,
+                         public GraphOwnedAndRegistered<TabPageDecorator> {
  public:
   class Data;
   class TabHandle;

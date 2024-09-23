@@ -15,14 +15,14 @@ r:::gen-overlapping-actual.cc:::919:::11:::raw_ptr<SomeClass>
 r:::gen-overlapping-actual.cc:::919:::32:::raw_ptr<SomeClass> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
-my_namespace::MyStruct::overlapping_ptr_1a  # overlapping
-my_namespace::MyStruct::overlapping_ptr_1b  # overlapping
-my_namespace::MyStruct::overlapping_ptr_2a  # overlapping
-my_namespace::MyStruct::overlapping_ptr_3b  # overlapping
-my_namespace::MyStruct::overlapping_ref_1a  # overlapping
-my_namespace::MyStruct::overlapping_ref_1b  # overlapping
-my_namespace::MyStruct::overlapping_ref_2a  # overlapping
-my_namespace::MyStruct::overlapping_ref_3b  # overlapping
-my_namespace::MyStruct::ptr_to_non_free_standing_struct  # overlapping
-my_namespace::MyStruct::ptr_to_non_free_standing_struct2  # overlapping
+my_namespace::MyStruct::overlapping_ptr_1a @ gen-overlapping-actual.cc:24:3  # overlapping
+my_namespace::MyStruct::overlapping_ptr_1b @ gen-overlapping-actual.cc:24:3  # overlapping
+my_namespace::MyStruct::overlapping_ptr_2a @ gen-overlapping-actual.cc:28:3  # overlapping
+my_namespace::MyStruct::overlapping_ptr_3b @ gen-overlapping-actual.cc:29:3  # overlapping
+my_namespace::MyStruct::overlapping_ref_1a @ gen-overlapping-actual.cc:33:3  # overlapping
+my_namespace::MyStruct::overlapping_ref_1b @ gen-overlapping-actual.cc:33:3  # overlapping
+my_namespace::MyStruct::overlapping_ref_2a @ gen-overlapping-actual.cc:37:3  # overlapping
+my_namespace::MyStruct::overlapping_ref_3b @ gen-overlapping-actual.cc:38:3  # overlapping
+my_namespace::MyStruct::ptr_to_non_free_standing_struct @ gen-overlapping-actual.cc:43:3  # overlapping
+my_namespace::MyStruct::ptr_to_non_free_standing_struct2 @ gen-overlapping-actual.cc:51:3  # overlapping
 ==== END FIELD FILTERS ====

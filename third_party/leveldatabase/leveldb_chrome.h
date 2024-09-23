@@ -25,7 +25,11 @@ class ProcessMemoryDump;
 namespace leveldb_chrome {
 
 // Return the shared leveldb block cache for web APIs. The caller *does not*
-// own the returned instance.
+// own the returned instance. Thread safety:
+//
+// * `leveldb::Cache` is thread-safe to use
+// * `GetSharedWebBlockCache()` is thread-safe to call (it instantiates and
+//   returns a local static)
 LEVELDB_EXPORT leveldb::Cache* GetSharedWebBlockCache();
 
 // Return the shared leveldb block cache for browser (non web) APIs. The caller

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] fetchLater() sends on page entering BFCache if BackgroundSync is off.
-  Cannot read properties of undefined (reading 'persisted')
-[FAIL] Call fetchLater() when BFCached with activateAfter=0 sends immediately.
-  Cannot read properties of undefined (reading 'persisted')
-[FAIL] fetchLater() with activateAfter=1m sends on page entering BFCache if BackgroundSync is off.
-  Cannot read properties of undefined (reading 'persisted')
-Harness: the test ran to completion.

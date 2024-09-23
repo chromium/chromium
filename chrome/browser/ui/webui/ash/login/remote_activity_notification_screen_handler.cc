@@ -31,4 +31,9 @@ void RemoteActivityNotificationScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<RemoteActivityNotificationView>
+RemoteActivityNotificationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

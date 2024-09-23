@@ -18,6 +18,7 @@
 namespace blink {
 
 class Frame;
+class ComputeIntersectionsContext;
 struct IntrinsicSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
@@ -32,7 +33,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // is true for any tracked observer in the frame subtree).
   virtual bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
-      std::optional<base::TimeTicks>& monotonic_time) = 0;
+      ComputeIntersectionsContext&) = 0;
 
   virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
   virtual bool HasIntrinsicSizingInfo() const = 0;
@@ -50,7 +51,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   virtual bool ShouldReportMainFrameIntersection() const { return false; }
 
   Frame& GetFrame() const;
-  blink::mojom::FrameVisibility GetFrameVisibility() const {
+  std::optional<mojom::blink::FrameVisibility> GetFrameVisibility() const {
     return frame_visibility_;
   }
 
@@ -89,14 +90,16 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
 
   bool DisplayLockedInParentFrame();
 
-  virtual void VisibilityChanged(blink::mojom::FrameVisibility visibilty) = 0;
+  virtual void VisibilityChanged(mojom::blink::FrameVisibility visibilty) = 0;
 
  private:
   PhysicalRect rect_in_parent_;
   PhysicalRect rect_in_parent_for_iov2_;
   base::TimeTicks rect_in_parent_stable_since_;
   base::TimeTicks rect_in_parent_stable_since_for_iov2_;
-  blink::mojom::FrameVisibility frame_visibility_;
+  // The visibility of this frame, which takes into account the intersection
+  // with the viewport. Nullopt means this is not known yet.
+  std::optional<mojom::blink::FrameVisibility> frame_visibility_;
   bool hidden_for_throttling_ = false;
   bool subtree_throttled_ = false;
   bool display_locked_ = false;

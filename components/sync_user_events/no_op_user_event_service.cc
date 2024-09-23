@@ -20,7 +20,7 @@ void NoOpUserEventService::RecordUserEvent(
 void NoOpUserEventService::RecordUserEvent(
     const UserEventSpecifics& specifics) {}
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 NoOpUserEventService::GetControllerDelegate() {
   return nullptr;
 }

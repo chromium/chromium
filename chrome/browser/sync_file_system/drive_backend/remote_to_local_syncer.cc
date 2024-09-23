@@ -139,7 +139,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     if (remote_metadata_ && !remote_metadata_->has_details()) {
       token->RecordLog("Missing details of a remote file: " +
                        remote_metadata_->file_id());
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     token->RecordLog("Missing remote metadata case.");
 
@@ -169,7 +169,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     token->RecordLog(base::StringPrintf(
         "Missing synced_details of an active tracker: %" PRId64,
         dirty_tracker_->tracker_id()));
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -196,7 +196,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
             metadata_database()->GetSyncRootTrackerID());
 
   if (!BuildFileSystemURL(metadata_database(), *dirty_tracker_, &url_)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -215,7 +215,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     DCHECK(synced_details.missing());
     token->RecordLog("Found a stray missing tracker: " +
                      dirty_tracker_->file_id());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_OK);
     return;
   }
@@ -229,7 +229,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
         " type: (local) %d vs (remote) %d",
         dirty_tracker_->file_id().c_str(), synced_details.file_kind(),
         remote_details.file_kind()));
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -238,7 +238,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
   if (synced_details.file_kind() == FILE_KIND_UNSUPPORTED) {
     token->RecordLog("Found an unsupported active file: " +
                      remote_metadata_->file_id());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -261,7 +261,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
           dirty_tracker_->parent_tracker_id(), &parent_tracker)) {
     token->RecordLog("Missing parent tracker for a non sync-root tracker: " +
                      dirty_tracker_->file_id());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -421,7 +421,7 @@ void RemoteToLocalSyncer::DidGetRemoteMetadata(
   }
 
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -662,7 +662,7 @@ void RemoteToLocalSyncer::DidListFolderContent(
   }
 
   if (!file_list) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncCompleted(std::move(token), SYNC_STATUS_FAILED);
     return;
   }
@@ -745,7 +745,7 @@ void RemoteToLocalSyncer::FinalizeSync(std::unique_ptr<SyncTaskToken> token,
 
 void RemoteToLocalSyncer::Prepare(SyncStatusCallback callback) {
   DCHECK(url_.is_valid());
-  // TODO(https://crbug.com/1152272): convert passed parameters to moved
+  // TODO(crbug.com/40733540): convert passed parameters to moved
   // parameters when this is converted to base::BindOnce.
   remote_change_processor()->PrepareForProcessRemoteChange(
       url_,

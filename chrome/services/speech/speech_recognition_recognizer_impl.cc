@@ -84,7 +84,7 @@ void OnSodaResponse(const char* serialized_proto,
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
-    // TODO(crbug.com/1175357): Use the langid event to prompt users to switch
+    // TODO(crbug.com/40167928): Use the langid event to prompt users to switch
     // languages.
     soda::chrome::SodaLangIdEvent event = response.langid_event();
 
@@ -440,7 +440,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   // Initialize the SODA instance.
   auto api_key = google_apis::GetSodaAPIKey();
 
-  // TODO(crbug.com/1161569): Use language from SpeechRecognitionOptions
+  // TODO(crbug.com/40162502): Use language from SpeechRecognitionOptions
   // to determine the appropriate language pack path. Note that
   // SodaInstaller::GetLanguagePath() is not implemented outside of Chrome OS,
   // and options_->language is not set for Live Caption.

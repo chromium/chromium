@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("sharesheet") {
+  sources = [
+    "copy_to_clipboard_share_action.cc",
+    "copy_to_clipboard_share_action.h",
+    "drive_share_action.cc",
+    "drive_share_action.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/ash/sharesheet",
+    "//chromeos/components/sharesheet:constants",
+    "//components/services/app_service",
+    "//storage/browser",
+    "//ui/chromeos/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "copy_to_clipboard_share_action_unittest.cc" ]
+
+  deps = [
+    ":sharesheet",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//ui/base/clipboard:clipboard_test_support",
+  ]
+}

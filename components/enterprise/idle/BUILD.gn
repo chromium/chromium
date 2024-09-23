@@ -6,8 +6,6 @@ source_set("idle") {
   sources = [
     "action_type.cc",
     "action_type.h",
-    "idle_features.cc",
-    "idle_features.h",
     "idle_pref_names.cc",
     "idle_pref_names.h",
     "idle_timeout_policy_handler.cc",

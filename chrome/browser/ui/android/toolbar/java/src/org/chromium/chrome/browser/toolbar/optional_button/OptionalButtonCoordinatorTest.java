@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
-import static junit.framework.Assert.assertEquals;
-
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -41,11 +40,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -80,7 +79,7 @@ public class OptionalButtonCoordinatorTest {
                         mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
-                        mMockTracker);
+                        () -> mMockTracker);
     }
 
     @Test
@@ -302,9 +301,13 @@ public class OptionalButtonCoordinatorTest {
 
     @Test
     public void testUpdateButton_actionChipResourceIdGetsRemovedWhenNotInVariant() {
+        AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
+                AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "false");
+                AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
+                "action_chip",
+                "false");
         FeatureList.setTestValues(testValues);
 
         Drawable iconDrawable = mock(Drawable.class);
@@ -323,7 +326,7 @@ public class OptionalButtonCoordinatorTest {
                         /* supportsTinting= */ true,
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
-                        AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                        AdaptiveToolbarButtonVariant.TEST_BUTTON,
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* showHoverHighlight= */ false);
 
@@ -336,9 +339,13 @@ public class OptionalButtonCoordinatorTest {
 
     @Test
     public void testUpdateButton_actionChipResourceIdGetsRemovedByFeatureEngagement() {
+        AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
+                AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "true");
+                AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
+                "action_chip",
+                "true");
         FeatureList.setTestValues(testValues);
 
         doReturn(true).when(mMockTracker).isInitialized();
@@ -362,7 +369,7 @@ public class OptionalButtonCoordinatorTest {
                         /* supportsTinting= */ true,
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
-                        AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                        AdaptiveToolbarButtonVariant.TEST_BUTTON,
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* showHoverHighlight= */ false);
 
@@ -375,9 +382,13 @@ public class OptionalButtonCoordinatorTest {
 
     @Test
     public void testUpdateButton_actionChipResourceIdGetsKeptByFeatureEngagement() {
+        AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
+                AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "true");
+                AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
+                "action_chip",
+                "true");
         FeatureList.setTestValues(testValues);
 
         doReturn(true).when(mMockTracker).isInitialized();
@@ -401,7 +412,7 @@ public class OptionalButtonCoordinatorTest {
                         /* supportsTinting= */ true,
                         mockIphCommandBuilder,
                         /* isEnabled= */ isEnabled,
-                        AdaptiveToolbarButtonVariant.PRICE_TRACKING,
+                        AdaptiveToolbarButtonVariant.TEST_BUTTON,
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* showHoverHighlight= */ false);
 

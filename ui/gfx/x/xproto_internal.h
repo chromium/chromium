@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef UI_GFX_X_XPROTO_INTERNAL_H_
 #define UI_GFX_X_XPROTO_INTERNAL_H_
+
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 
@@ -43,19 +50,15 @@ void ReadError(T* error, ReadBuffer* buf);
 
 // Calls free() on the underlying data when the count drops to 0.
 class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
-    : public base::RefCountedMemory {
+    : public UnsizedRefCountedMemory {
  public:
   explicit MallocedRefCountedMemory(void* data);
 
   MallocedRefCountedMemory(const MallocedRefCountedMemory&) = delete;
   MallocedRefCountedMemory& operator=(const MallocedRefCountedMemory&) = delete;
 
-  const uint8_t* front() const override;
-
-  size_t size() const override;
-
  private:
-  struct deleter {
+  struct Deleter {
     void operator()(uint8_t* data) {
       if (data) {
         free(data);
@@ -64,61 +67,64 @@ class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
   };
   ~MallocedRefCountedMemory() override;
 
-  std::unique_ptr<uint8_t, deleter> data_;
+  // UnsizedRefCountedMemory:
+  void* data() LIFETIME_BOUND override;
+  const void* data() const LIFETIME_BOUND override;
+
+  std::unique_ptr<uint8_t[], Deleter> data_;
 };
 
 // Wraps another RefCountedMemory, giving a view into it.  Similar to
-// base::StringPiece, the data is some contiguous subarray, but unlike
-// StringPiece, a counted reference is kept on the underlying memory.
+// std::string_view, the data is some contiguous subarray, but unlike
+// std::string_view, a counted reference is kept on the underlying memory.
 class COMPONENT_EXPORT(X11) OffsetRefCountedMemory
-    : public base::RefCountedMemory {
+    : public UnsizedRefCountedMemory {
  public:
-  OffsetRefCountedMemory(scoped_refptr<base::RefCountedMemory> memory,
+  OffsetRefCountedMemory(scoped_refptr<UnsizedRefCountedMemory> memory,
                          size_t offset,
                          size_t size);
 
   OffsetRefCountedMemory(const OffsetRefCountedMemory&) = delete;
   OffsetRefCountedMemory& operator=(const OffsetRefCountedMemory&) = delete;
 
-  const uint8_t* front() const override;
-
-  size_t size() const override;
-
  private:
   ~OffsetRefCountedMemory() override;
 
-  scoped_refptr<base::RefCountedMemory> memory_;
+  // UnsizedRefCountedMemory:
+  void* data() LIFETIME_BOUND override;
+  const void* data() const LIFETIME_BOUND override;
+
+  scoped_refptr<UnsizedRefCountedMemory> memory_;
   size_t offset_;
-  size_t size_;
 };
 
 // Wraps a bare pointer and does not take any action when the reference count
 // reaches 0.  This is used to wrap stack-alloctaed or persistent data so we can
 // pass those to Read/ReadEvent/ReadReply which expect RefCountedMemory.
 class COMPONENT_EXPORT(X11) UnretainedRefCountedMemory
-    : public base::RefCountedMemory {
+    : public UnsizedRefCountedMemory {
  public:
-  explicit UnretainedRefCountedMemory(const void* data);
+  explicit UnretainedRefCountedMemory(void* data);
 
   UnretainedRefCountedMemory(const UnretainedRefCountedMemory&) = delete;
   UnretainedRefCountedMemory& operator=(const UnretainedRefCountedMemory&) =
       delete;
 
-  const uint8_t* front() const override;
-
-  size_t size() const override;
-
  private:
   ~UnretainedRefCountedMemory() override;
 
-  const uint8_t* const data_;
+  // UnsizedRefCountedMemory:
+  void* data() LIFETIME_BOUND override;
+  const void* data() const LIFETIME_BOUND override;
+
+  raw_ptr<void> data_;
 };
 
 template <typename T>
 void Read(T* t, ReadBuffer* buf) {
   static_assert(std::is_trivially_copyable<T>::value, "");
   detail::VerifyAlignment(t, buf->offset);
-  memcpy(t, buf->data->data() + buf->offset, sizeof(*t));
+  memcpy(t, buf->data->bytes() + buf->offset, sizeof(*t));
   buf->offset += sizeof(*t);
 }
 

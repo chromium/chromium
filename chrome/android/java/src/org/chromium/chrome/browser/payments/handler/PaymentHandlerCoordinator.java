@@ -83,8 +83,7 @@ public class PaymentHandlerCoordinator {
                 WebContentsFactory.createWebContents(profile, /* initiallyHidden= */ false, false);
         PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
         ContentView webContentView =
-                ContentView.createContentView(
-                        activity, /* eventOffsetHandler= */ null, mPaymentHandlerWebContents);
+                ContentView.createContentView(activity, mPaymentHandlerWebContents);
         initializeWebContents(windowAndroid, webContentView, url);
 
         mToolbarCoordinator =
@@ -161,7 +160,7 @@ public class PaymentHandlerCoordinator {
 
     private void initializeWebContents(
             WindowAndroid windowAndroid, ContentView webContentView, GURL url) {
-        mPaymentHandlerWebContents.initialize(
+        mPaymentHandlerWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(webContentView),
                 webContentView,

@@ -6,9 +6,10 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
-#include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
 #include "components/permissions/features.h"
-#include "content/public/common/content_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/core_jni/PermissionsAndroidFeatureMap_jni.h"
 
 namespace permissions {
 
@@ -20,9 +21,8 @@ namespace {
 // components/permissions/features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidApproximateLocationPermissionSupport,
-    &::features::kBlockMidiByDefault,
+    &kAndroidCancelPermissionPromptOnTouchOutside,
     &features::kOneTimePermission,
-    &features::kPermissionStorageAccessAPI,
 };
 
 // static
@@ -36,6 +36,12 @@ base::android::FeatureMap* GetFeatureMap() {
 
 BASE_FEATURE(kAndroidApproximateLocationPermissionSupport,
              "AndroidApproximateLocationPermissionSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables tapping outside the permission prompt scrim to dismiss a permission
+// prompt. Do not remove flag (killswitch).
+BASE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside,
+             "AndroidCancelPermissionPromptOnTouchOutside",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {

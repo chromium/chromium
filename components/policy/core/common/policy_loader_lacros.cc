@@ -88,7 +88,7 @@ void PolicyLoaderLacros::InitOnBackgroundThread() {
   // We add this as observer on background thread to avoid a situation when
   // notification comes after the object is destroyed, but not removed from the
   // list yet.
-  // TODO(crbug.com/1114069): Set up LacrosService in tests.
+  // TODO(crbug.com/40143748): Set up LacrosService in tests.
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service) {
     lacros_service->AddObserver(this);
@@ -136,7 +136,7 @@ PolicyBundle PolicyLoaderLacros::Load() {
         SetEnterpriseUsersSystemWideDefaults(&policy_map);
         break;
       case PolicyPerProfileFilter::kAny:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))

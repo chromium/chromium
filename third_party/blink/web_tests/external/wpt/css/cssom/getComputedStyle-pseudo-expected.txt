@@ -1,35 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] Resolution of width is correct when pseudo-element argument is ignored (due to no colon)
   assert_equals: expected "100px" but got "50px"
-[FAIL] Resolution of width is correct when pseudo-element argument is invalid (due to a trailing token)
-  assert_equals: :before  expected "" but got "100px"
 [FAIL] Pseudo-elements can use the full range of CSS syntax
-  assert_equals: expected "50px" but got "100px"
-[FAIL] Unknown pseudo-elements
-  assert_true: Should return an empty style for unknown pseudo-elements starting with double-colon expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: backdrop
-  assert_true: Should return an empty style for :backdrop expected true got false
+  assert_equals: expected "50px" but got ""
 [FAIL] Unknown pseudo-element with a known identifier: file-selector-button
-  assert_true: Should return an empty style for :file-selector-button expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: grammar-error
-  assert_true: Should return an empty style for :grammar-error expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: highlight(name)
-  assert_true: Should return an empty style for :highlight(name) expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: marker
-  assert_true: Should return an empty style for :marker expected true got false
+  assert_equals: Should return the ::file-selector-button style expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
 [FAIL] Unknown pseudo-element with a known identifier: placeholder
-  assert_true: Should return an empty style for :placeholder expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: spelling-error
-  assert_true: Should return an empty style for :spelling-error expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: view-transition
-  assert_true: Should return an empty style for :view-transition expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: view-transition-image-pair(name)
-  assert_true: Should return an empty style for :view-transition-image-pair(name) expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: view-transition-group(name)
-  assert_true: Should return an empty style for :view-transition-group(name) expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: view-transition-old(name)
-  assert_true: Should return an empty style for :view-transition-old(name) expected true got false
-[FAIL] Unknown pseudo-element with a known identifier: view-transition-new(name)
-  assert_true: Should return an empty style for :view-transition-new(name) expected true got false
+  assert_equals: Should return the ::placeholder style expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
 Harness: the test ran to completion.
 

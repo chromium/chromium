@@ -7,7 +7,6 @@ import json
 import logging
 import os
 
-
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
 
@@ -49,6 +48,7 @@ def load_test_seed_from_file(hardcoded_seed_path):
   return (seed_json.get(LOCAL_STATE_SEED_NAME, None),
           seed_json.get(LOCAL_STATE_SEED_SIGNATURE_NAME, None))
 
+
 def get_test_seed_file_path(hardcoded_seed_path):
   """Gets the file path to the test seed.
 
@@ -89,8 +89,9 @@ def get_current_seed(user_data_dir):
   with open(os.path.join(user_data_dir, _LOCAL_STATE_FILE_NAME)) as f:
     local_state = json.load(f)
 
-  return local_state.get(LOCAL_STATE_SEED_NAME, None), local_state.get(
-      LOCAL_STATE_SEED_SIGNATURE_NAME, None)
+  return local_state.get(LOCAL_STATE_SEED_NAME,
+                         None), local_state.get(LOCAL_STATE_SEED_SIGNATURE_NAME,
+                                                None)
 
 
 def update_local_state(user_data_dir, update_dict):
@@ -121,8 +122,8 @@ def inject_test_seed(seed, signature, user_data_dir):
     bool: Whether the injection succeeded.
   """
   seed_dict = {
-    LOCAL_STATE_SEED_NAME: seed,
-    LOCAL_STATE_SEED_SIGNATURE_NAME: signature,
+      LOCAL_STATE_SEED_NAME: seed,
+      LOCAL_STATE_SEED_SIGNATURE_NAME: signature,
   }
   update_local_state(user_data_dir, seed_dict)
   current_seed, current_signature = get_current_seed(user_data_dir)

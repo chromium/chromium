@@ -202,7 +202,7 @@ class AudioTrackOutputStream {
         try {
             Log.d(
                     TAG,
-                    "Crate AudioTrack with sample rate:%d, channel:%d, format:%d ",
+                    "Create AudioTrack with sample rate:%d, channel:%d, format:%d ",
                     sampleRate,
                     channelConfig,
                     sampleFormat);

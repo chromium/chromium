@@ -11,6 +11,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/system/toast/anchored_nudge.h"

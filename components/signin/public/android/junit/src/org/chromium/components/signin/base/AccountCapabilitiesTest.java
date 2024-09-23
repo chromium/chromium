@@ -51,10 +51,19 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.isOptedInToParentalSupervision();
+            case AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME:
+                return capabilities.canFetchFamilyMemberInfo();
             case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
                 return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME:
                 return capabilities.canUseChromeIpProtection();
+            case AccountCapabilitiesConstants
+                    .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME:
+                return capabilities.canUseDevToolsGenerativeAiFeatures();
+            case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
+                return capabilities.canUseEduFeatures();
+            case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
+                return capabilities.canUseMantaService();
             case AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME:
                 return capabilities.canUseModelExecutionFeatures();
             case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
@@ -115,6 +124,14 @@ public final class AccountCapabilitiesTest {
                                         AccountCapabilitiesConstants
                                                 .CAN_USE_CHROME_IP_PROTECTION_NAME),
                         new ParameterSet()
+                                .name("CanUseDevToolsGenerativeAiFeatures")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME),
+                        new ParameterSet()
+                                .name("CanUseMantaService")
+                                .value(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME),
+                        new ParameterSet()
                                 .name("CanUseModelExecutionFeatures")
                                 .value(
                                         AccountCapabilitiesConstants
@@ -129,6 +146,9 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),
+                        new ParameterSet()
+                            .name("CanFetchFamilyMemberInfo")
+                            .value(AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
                         new ParameterSet()
                                 .name("IsSubjectToParentalControls")
                                 .value(

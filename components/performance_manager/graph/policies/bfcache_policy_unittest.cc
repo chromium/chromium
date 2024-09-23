@@ -24,9 +24,11 @@ class LenientMockBFCachePolicy : public BFCachePolicy {
   ~LenientMockBFCachePolicy() override = default;
   LenientMockBFCachePolicy(const LenientMockBFCachePolicy& other) = delete;
   LenientMockBFCachePolicy& operator=(const LenientMockBFCachePolicy&) = delete;
-  MOCK_METHOD2(MaybeFlushBFCache,
-               void(const PageNode* page_node,
-                    MemoryPressureLevel memory_pressure_level));
+  MOCK_METHOD(void,
+              MaybeFlushBFCache,
+              (const PageNode* page_node,
+               MemoryPressureLevel memory_pressure_level),
+              (override));
 };
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using MockBFCachePolicy = ::testing::StrictMock<LenientMockBFCachePolicy>;
@@ -55,7 +57,9 @@ class BFCachePolicyTest : public GraphTestHarness {
         CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
     frame_node_2_ =
         CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
-    frame_node_2_->SetIsCurrent(false);
+    // TODO: There is 2 current frame nodes and then we change 1 to not be
+    // current anymore but that breaks the "only 1 current frame" invariant.
+    FrameNodeImpl::UpdateCurrentFrame(frame_node_2_.get(), nullptr, graph);
   }
 
  protected:

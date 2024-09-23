@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 
 #include <tuple>
@@ -371,5 +376,83 @@ INSTANTIATE_TEST_SUITE_P(RandomInterval,
                                                          kSunday,
                                                          14 * kMinutesInHour,
                                                          false)));
+
+using WeeklyTimeIntervalOverlapTest = testing::Test;
+
+TEST_F(WeeklyTimeIntervalOverlapTest, NoOverlap) {
+  WeeklyTimeInterval interval_a =
+      WeeklyTimeInterval(WeeklyTime(kMonday, base::Hours(18).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt),
+                         WeeklyTime(kTuesday, base::Hours(8).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt));
+
+  WeeklyTimeInterval interval_b =
+      WeeklyTimeInterval(WeeklyTime(kFriday, base::Hours(8).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt),
+                         WeeklyTime(kSaturday, base::Hours(8).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt));
+
+  WeeklyTimeInterval interval_c = WeeklyTimeInterval(
+      WeeklyTime(kTuesday, base::Hours(8).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt),
+      WeeklyTime(kWednesday, base::Hours(14).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt));
+
+  /*
+  Mon         Tue         Wed         Thu         Fri         Sat         Sun
+          |---------|                               |--------------|
+               a                                            b
+                    |------------|
+                          c
+  */
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_a, interval_b));
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_b, interval_a));
+
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_a, interval_c));
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_c, interval_a));
+
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_b, interval_c));
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_c, interval_b));
+}
+
+TEST_F(WeeklyTimeIntervalOverlapTest, Overlap) {
+  WeeklyTimeInterval interval_a =
+      WeeklyTimeInterval(WeeklyTime(kMonday, base::Hours(18).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt),
+                         WeeklyTime(kThursday, base::Hours(18).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt));
+
+  WeeklyTimeInterval interval_b =
+      WeeklyTimeInterval(WeeklyTime(kThursday, base::Hours(6).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt),
+                         WeeklyTime(kFriday, base::Hours(13).InMilliseconds(),
+                                    /*timezone_offset=*/std::nullopt));
+
+  WeeklyTimeInterval interval_c = WeeklyTimeInterval(
+      WeeklyTime(kTuesday, base::Hours(8).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt),
+      WeeklyTime(kWednesday, base::Hours(14).InMilliseconds(),
+                 /*timezone_offset=*/std::nullopt));
+
+  /*
+  Mon         Tue         Wed         Thu         Fri         Sat         Sun
+          |------------------------------------|
+               a
+                                         |----------------|
+                                                  b
+                    |------------|
+                          c
+  */
+  EXPECT_TRUE(WeeklyTimeInterval::IntervalsOverlap(interval_a, interval_a));
+
+  EXPECT_TRUE(WeeklyTimeInterval::IntervalsOverlap(interval_a, interval_b));
+  EXPECT_TRUE(WeeklyTimeInterval::IntervalsOverlap(interval_b, interval_a));
+
+  EXPECT_TRUE(WeeklyTimeInterval::IntervalsOverlap(interval_a, interval_c));
+  EXPECT_TRUE(WeeklyTimeInterval::IntervalsOverlap(interval_c, interval_a));
+
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_b, interval_c));
+  EXPECT_FALSE(WeeklyTimeInterval::IntervalsOverlap(interval_c, interval_b));
+}
 
 }  // namespace policy

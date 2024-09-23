@@ -9,12 +9,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
-#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
@@ -38,20 +36,10 @@ using ::testing::Return;
 // Base class for tests of the `UserEducationController`.
 class UserEducationControllerTestBase : public UserEducationAshTestBase {
  public:
-  UserEducationControllerTestBase(bool holding_space_wallpaper_nudge_enabled,
-                                  bool welcome_tour_enabled)
-      : holding_space_wallpaper_nudge_enabled_(
-            holding_space_wallpaper_nudge_enabled),
-        welcome_tour_enabled_(welcome_tour_enabled) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHoldingSpaceWallpaperNudge,
-          IsHoldingSpaceWallpaperNudgeEnabled()},
-         {features::kWelcomeTour, IsWelcomeTourEnabled()}});
-  }
-
-  // Returns whether the Holding Space wallpaper nudge is enabled.
-  bool IsHoldingSpaceWallpaperNudgeEnabled() const {
-    return holding_space_wallpaper_nudge_enabled_;
+  UserEducationControllerTestBase(bool welcome_tour_enabled)
+      : welcome_tour_enabled_(welcome_tour_enabled) {
+    scoped_feature_list_.InitWithFeatureState(features::kWelcomeTour,
+                                              IsWelcomeTourEnabled());
   }
 
   // Returns whether the Welcome Tour is enabled.
@@ -59,7 +47,6 @@ class UserEducationControllerTestBase : public UserEducationAshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  const bool holding_space_wallpaper_nudge_enabled_;
   const bool welcome_tour_enabled_;
 };
 
@@ -69,51 +56,28 @@ class UserEducationControllerTestBase : public UserEducationAshTestBase {
 // whether user education features are enabled.
 class UserEducationControllerTest
     : public UserEducationControllerTestBase,
-      public testing::WithParamInterface<
-          std::tuple</*holding_space_wallpaper_nudge_enabled=*/bool,
-                     /*welcome_tour_enabled=*/bool>> {
+      public testing::WithParamInterface</*welcome_tour_enabled=*/bool> {
  public:
   UserEducationControllerTest()
       : UserEducationControllerTestBase(
-            /*holding_space_wallpaper_nudge_enabled=*/std::get<0>(GetParam()),
-            /*welcome_tour_enabled=*/std::get<1>(GetParam())) {}
+            /*welcome_tour_enabled=*/GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    UserEducationControllerTest,
-    testing::Combine(
-        /*holding_space_wallpaper_nudge_enabled=*/testing::Bool(),
-        /*welcome_tour_enabled=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserEducationControllerTest,
+                         /*welcome_tour_enabled=*/testing::Bool());
 
 // Tests -----------------------------------------------------------------------
 
 // Verifies that the controller exists iff user education features are enabled.
 TEST_P(UserEducationControllerTest, Exists) {
-  EXPECT_EQ(!!UserEducationController::Get(),
-                IsHoldingSpaceWallpaperNudgeEnabled() ||
-                IsWelcomeTourEnabled());
-}
-
-// Verifies that the Holding Space wallpaper nudge controller exists iff the
-// feature is enabled.
-TEST_P(UserEducationControllerTest,
-       HoldingSpaceWallpaperNudgeControllerExists) {
-  EXPECT_EQ(!!HoldingSpaceWallpaperNudgeController::Get(),
-            IsHoldingSpaceWallpaperNudgeEnabled());
+  EXPECT_EQ(!!UserEducationController::Get(), IsWelcomeTourEnabled());
 }
 
 // Verifies that the user education help bubble controller exists iff user
 // education features are enabled.
 TEST_P(UserEducationControllerTest, UserEducationHelpBubbleControllerExists) {
   EXPECT_EQ(!!UserEducationHelpBubbleController::Get(),
-            !!UserEducationController::Get());
-}
-
-// Verifies that the user education ping controller exists iff user education
-// features are enabled.
-TEST_P(UserEducationControllerTest, UserEducationPingControllerExists) {
-  EXPECT_EQ(!!UserEducationPingController::Get(),
             !!UserEducationController::Get());
 }
 

@@ -68,11 +68,18 @@ base::Time GetTime() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "MultitaskNudgeWidget";
   params.accept_events = false;
   params.parent = window->parent();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This widget must not set `use_accelerated_widget_override` b/c this
+  // widget's window will be reparented to `window`.
+  params.use_accelerated_widget_override = false;
+#endif
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   const int message_id = display::Screen::GetScreen()->InTabletMode()
@@ -97,7 +104,8 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
                       gfx::Font::Weight::NORMAL))
                   .SetText(l10n_util::GetStringUTF16(message_id)))
           .Build();
-  const float corner_radius = contents_view->GetPreferredSize().height() / 2.0f;
+  const float corner_radius =
+      contents_view->GetPreferredSize({}).height() / 2.0f;
   contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
@@ -119,23 +127,23 @@ MultitaskMenuNudgeController::Delegate::Delegate() {
   g_delegate_instance = this;
 }
 
-bool MultitaskMenuNudgeController::Delegate::IsUserNew() const {
+bool MultitaskMenuNudgeController::Delegate::IsUserNewOrGuest() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return user_manager::UserManager::IsInitialized()
-             ? user_manager::UserManager::Get()->IsCurrentUserNew()
-             : false;
+  if (!user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
+
+  return user_manager::UserManager::Get()->IsCurrentUserNew() ||
+         user_manager::UserManager::Get()->IsLoggedInAsGuest();
 #else
   return false;
 #endif
 }
 
-MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
-  display::Screen::GetScreen()->AddObserver(this);
-}
+MultitaskMenuNudgeController::MultitaskMenuNudgeController() = default;
 
 MultitaskMenuNudgeController::~MultitaskMenuNudgeController() {
   DismissNudge();
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -160,7 +168,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
                                                   views::View* anchor_view) {
   // Delegate could be null if the associated window was created during OOBE.
-  if (!g_delegate_instance || g_delegate_instance->IsUserNew()) {
+  if (!g_delegate_instance || g_delegate_instance->IsUserNewOrGuest()) {
     return;
   }
 
@@ -195,6 +203,7 @@ void MultitaskMenuNudgeController::DismissNudge() {
 
   window_ = nullptr;
   window_observation_.Reset();
+  widget_observation_.Reset();
 
   anchor_view_ = nullptr;
   pulse_layer_.reset();
@@ -246,15 +255,6 @@ void MultitaskMenuNudgeController::OnWindowVisibilityChanged(
   }
 }
 
-void MultitaskMenuNudgeController::OnWindowBoundsChanged(
-    aura::Window* window,
-    const gfx::Rect& old_bounds,
-    const gfx::Rect& new_bounds,
-    ui::PropertyChangeReason reason) {
-  CHECK_EQ(window_, window);
-  UpdateWidgetAndPulse();
-}
-
 void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
     aura::Window* window,
     const gfx::Transform& new_transform) {
@@ -291,6 +291,13 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
   CHECK_EQ(window_, window);
   DismissNudge();
+}
+
+void MultitaskMenuNudgeController::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  CHECK_EQ(window_, widget->GetNativeWindow());
+  UpdateWidgetAndPulse();
 }
 
 void MultitaskMenuNudgeController::OnDisplayTabletStateChanged(
@@ -385,6 +392,10 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   // trigger some window observations.
   window_observation_.Observe(window_.get());
 
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window_);
+  CHECK(widget);
+  widget_observation_.Observe(widget);
+
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.
     pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
@@ -471,7 +482,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
     }
   }
 
-  const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize({});
 
   if (tablet_mode) {
     // The nudge is placed in the top center of the window, just below the cue.

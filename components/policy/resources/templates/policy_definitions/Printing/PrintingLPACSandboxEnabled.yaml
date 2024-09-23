@@ -1,0 +1,27 @@
+caption: Enable Printing LPAC Sandbox
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset enables the LPAC Sandbox for printing services whenever the system configuration supports it.
+
+  Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security as services used for printing might run in a weaker sandbox configuration.
+
+  Only turn off the policy if there are compatibility issues with third party software that prevent printing services from operating correctly inside the LPAC Sandbox.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable LPAC Sandbox for printing services
+  value: true
+- caption: Disable LPAC Sandbox for printing services
+  value: false
+owners:
+- awscreen@chromium.org
+- wfh@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:128-
+tags:
+- system-security
+type: main

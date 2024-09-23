@@ -86,7 +86,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
   ASSERT_FALSE(base::PathExists(extension_dir));
 }
 
-// TODO(crbug.com/1378775): The test extension good_juKvIh seems to error on
+// TODO(crbug.com/40875193): The test extension good_juKvIh seems to error on
 // install with "Manifest file is missing or unreadable" despite the manifest
 // being valid. This test case is still valid because we're only checking if the
 // files get deleted. The files get copied to the install directory by the test
@@ -208,7 +208,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, GarbageCollectWithPendingUpdates) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(params.ConfigureByTestDataDirectory(
       data_dir().AppendASCII("pending_updates")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.
@@ -236,7 +236,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, UpdateOnStartup) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(params.ConfigureByTestDataDirectory(
       data_dir().AppendASCII("pending_updates")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.

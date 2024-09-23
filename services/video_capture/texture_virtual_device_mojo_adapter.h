@@ -34,9 +34,9 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   void SetReceiverDisconnectedCallback(base::OnceClosure callback);
 
   // mojom::TextureVirtualDevice implementation.
-  void OnNewMailboxHolderBufferHandle(
+  void OnNewSharedImageBufferHandle(
       int32_t buffer_id,
-      media::mojom::MailboxBufferHandleSetPtr mailbox_handles) override;
+      media::mojom::SharedImageBufferHandleSetPtr shared_image_handle) override;
   void OnFrameAccessHandlerReady(
       mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
           pending_frame_access_handler) override;
@@ -51,8 +51,7 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   void StartInProcess(
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
-          video_effects_manager) override;
+      media::VideoEffectsContext context) override;
   void MaybeSuspend() override;
   void Resume() override;
   void GetPhotoState(GetPhotoStateCallback callback) override;
@@ -73,8 +72,8 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   mojo::Remote<mojom::VideoFrameHandler> video_frame_handler_;
   // Used when this device is started in process.
   base::WeakPtr<media::VideoFrameReceiver> video_frame_handler_in_process_;
-  std::unordered_map<int32_t, media::mojom::MailboxBufferHandleSetPtr>
-      known_buffer_handles_;
+  std::unordered_map<int32_t, media::mojom::SharedImageBufferHandleSetPtr>
+      known_shared_image_buffer_handles_;
   // Because the adapter's lifetime can be greater than |video_frame_handler_|,
   // each handler that is bound gets forwarded its own instance of
   // VideoFrameAccessHandlerForwarder.

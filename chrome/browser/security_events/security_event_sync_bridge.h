@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace sync_pb {
 class SecurityEventSpecifics;
@@ -25,7 +25,7 @@ class SecurityEventSyncBridge {
       sync_pb::SecurityEventSpecifics specifics) = 0;
 
   // Returns the delegate for the controller, i.e. sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

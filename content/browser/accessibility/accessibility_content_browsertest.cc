@@ -8,13 +8,13 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace content {
 
@@ -67,48 +67,48 @@ AccessibilityContentBrowserTest::GetWebContentsImplAndAssertNonNull() const {
   return static_cast<WebContentsImpl*>(GetWebContentsAndAssertNonNull());
 }
 
-BrowserAccessibilityManager*
+ui::BrowserAccessibilityManager*
 AccessibilityContentBrowserTest::GetManagerAndAssertNonNull() const {
   // Perform the null pointer validation inside a void function to allow for a
   // return type.
   auto GetManagerAndAssertNonNull =
-      [this](BrowserAccessibilityManager** result) {
-        BrowserAccessibilityManager* browser_accessibility_manager =
+      [this](ui::BrowserAccessibilityManager** result) {
+        ui::BrowserAccessibilityManager* browser_accessibility_manager =
             GetWebContentsImplAndAssertNonNull()
                 ->GetRootBrowserAccessibilityManager();
         ASSERT_NE(nullptr, browser_accessibility_manager);
         *result = browser_accessibility_manager;
       };
 
-  BrowserAccessibilityManager* browser_accessibility_manager;
+  ui::BrowserAccessibilityManager* browser_accessibility_manager;
   GetManagerAndAssertNonNull(&browser_accessibility_manager);
   return browser_accessibility_manager;
 }
 
-BrowserAccessibility* AccessibilityContentBrowserTest::GetRootAndAssertNonNull()
-    const {
+ui::BrowserAccessibility*
+AccessibilityContentBrowserTest::GetRootAndAssertNonNull() const {
   // Perform the null pointer validation inside a void function to allow for a
   // return type.
-  auto GetRootAndAssertNonNull = [this](BrowserAccessibility** result) {
-    BrowserAccessibility* root_browser_accessibility =
+  auto GetRootAndAssertNonNull = [this](ui::BrowserAccessibility** result) {
+    ui::BrowserAccessibility* root_browser_accessibility =
         GetManagerAndAssertNonNull()->GetBrowserAccessibilityRoot();
     ASSERT_NE(nullptr, result);
     *result = root_browser_accessibility;
   };
 
-  BrowserAccessibility* root_browser_accessibility;
+  ui::BrowserAccessibility* root_browser_accessibility;
   GetRootAndAssertNonNull(&root_browser_accessibility);
   return root_browser_accessibility;
 }
 
-BrowserAccessibility* AccessibilityContentBrowserTest::FindNode(
+ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNode(
     const ax::mojom::Role role,
     const std::string& name_or_value) const {
   return FindNodeInSubtree(GetRootAndAssertNonNull(), role, name_or_value);
 }
 
-BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
-    BrowserAccessibility* node,
+ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
+    ui::BrowserAccessibility* node,
     const ax::mojom::Role role,
     const std::string& name_or_value) const {
   const std::string& name =
@@ -127,7 +127,7 @@ BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
   }
 
   for (uint32_t i = 0; i < node->PlatformChildCount(); ++i) {
-    BrowserAccessibility* result =
+    ui::BrowserAccessibility* result =
         FindNodeInSubtree(node->PlatformGetChild(i), role, name_or_value);
     if (result)
       return result;

@@ -80,7 +80,6 @@ audio_service::ContentType ConvertContentType(AudioContentType content_type) {
       return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
       NOTREACHED();
-      return audio_service::CONTENT_TYPE_MEDIA;
   }
 }
 

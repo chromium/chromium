@@ -5,146 +5,195 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
-import android.content.ComponentCallbacks;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListView;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
-import org.chromium.base.LifetimeAssert;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.listmenu.ListMenuItemViewBinder;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * A coordinator for the menu in TabGridDialog toolbar. It is responsible for creating a list of
  * menu items, setting up the menu and displaying the menu.
  */
-public class TabGridDialogMenuCoordinator {
-    private final Context mContext;
-    private final ComponentCallbacks mComponentCallbacks;
-    private final Callback<Integer> mOnItemClickedCallback;
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private AnchoredPopupWindow mMenuWindow;
+public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinator {
+    private Supplier<Integer> mTabIdSupplier;
+
+    /**
+     * @param onItemClickedCallback A callback for listening to clicks.
+     * @param tabModelSupplier The supplier of the tab model.
+     * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
+     *     on.
+     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
+     * @param identityManager Used for checking the current account.
+     * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param dataSharingService Used for checking the user is the owner of a group.
+     */
+    public TabGridDialogMenuCoordinator(
+            OnItemClickedCallback onItemClicked,
+            Supplier<TabModel> tabModelSupplier,
+            Supplier<Integer> tabIdSupplier,
+            boolean isTabGroupSyncEnabled,
+            @Nullable IdentityManager identityManager,
+            @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable DataSharingService dataSharingService) {
+        super(
+                R.layout.tab_switcher_action_menu_layout,
+                onItemClicked,
+                tabModelSupplier,
+                isTabGroupSyncEnabled,
+                identityManager,
+                tabGroupSyncService,
+                dataSharingService);
+        mTabIdSupplier = tabIdSupplier;
+    }
 
     /**
      * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
-     * @param onItemClicked  The clicked listener callback that handles clicks on menu items.
-     * @return A {@link View.OnClickListener} for the button that opens up the menu.
+     *
+     * @param anchorView The view to anchor the menu on.
+     * @return The on click listener.
      */
-    static View.OnClickListener getTabGridDialogMenuOnClickListener(
-            Callback<Integer> onItemClicked) {
-        return view -> {
-            Context context = view.getContext();
-            TabGridDialogMenuCoordinator menu =
-                    new TabGridDialogMenuCoordinator(context, view, onItemClicked);
-            menu.display();
-        };
+    public View.OnClickListener getOnClickListener() {
+        return view -> createAndShowMenu(view, mTabIdSupplier.get(), (Activity) view.getContext());
     }
 
-    private TabGridDialogMenuCoordinator(
-            Context context, View anchorView, Callback<Integer> onItemClicked) {
-        mContext = context;
-        mOnItemClickedCallback = onItemClicked;
-        mComponentCallbacks =
-                new ComponentCallbacks() {
-                    @Override
-                    public void onConfigurationChanged(Configuration newConfig) {
-                        if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
-                        mMenuWindow.dismiss();
-                    }
-
-                    @Override
-                    public void onLowMemory() {}
-                };
-        mContext.registerComponentCallbacks(mComponentCallbacks);
-
-        final View contentView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        setupMenu(contentView, anchorView);
-    }
-
-    private void setupMenu(View contentView, View anchorView) {
-        ListView listView = contentView.findViewById(R.id.tab_switcher_action_menu_list);
-        ModelList modelList = buildMenuItems();
-        ModelListAdapter adapter =
-                new ModelListAdapter(modelList) {
-                    @Override
-                    public long getItemId(int position) {
-                        return ((ListItem) getItem(position))
-                                .model.get(ListMenuItemProperties.MENU_ITEM_ID);
-                    }
-                };
-        listView.setAdapter(adapter);
-        adapter.registerType(
-                ListMenuItemType.MENU_ITEM,
-                new LayoutViewBuilder(R.layout.list_menu_item),
-                ListMenuItemViewBinder::binder);
-        listView.setOnItemClickListener(
-                (p, v, pos, id) -> {
-                    if (mOnItemClickedCallback != null) {
-                        mOnItemClickedCallback.onResult((int) id);
-                    }
-                    mMenuWindow.dismiss();
-                });
-
-        View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
-        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
-
-        mMenuWindow =
-                new AnchoredPopupWindow(
-                        mContext,
-                        decorView,
-                        AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted),
-                        contentView,
-                        rectProvider);
-        mMenuWindow.setFocusable(true);
-        mMenuWindow.setHorizontalOverlapAnchor(true);
-        mMenuWindow.setVerticalOverlapAnchor(true);
-        mMenuWindow.setAnimationStyle(R.style.EndIconMenuAnim);
-        int popupWidth = mContext.getResources().getDimensionPixelSize(R.dimen.menu_width);
-        mMenuWindow.setMaxWidth(popupWidth);
-
-        // When the menu is dismissed, call destroy to unregister the orientation listener.
-        mMenuWindow.addOnDismissListener(this::destroy);
-    }
-
-    private void display() {
-        if (mMenuWindow == null) return;
-
-        mMenuWindow.show();
-    }
-
-    private void destroy() {
-        mContext.unregisterComponentCallbacks(mComponentCallbacks);
-        // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
-        // with a stack trace showing the stack during LifetimeAssert.create().
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
-    }
-
-    private ModelList buildMenuItems() {
-        ModelList itemList = new ModelList();
+    @VisibleForTesting
+    @Override
+    public void buildMenuActionItems(
+            ModelList itemList,
+            boolean isIncognito,
+            boolean isTabGroupSyncEnabled,
+            boolean hasCollaborationData) {
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.menu_select_tabs, R.id.select_tabs, 0, true));
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.menu_select_tabs,
+                        R.id.select_tabs,
+                        R.drawable.ic_select_check_box_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        /* enabled= */ true));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
                         R.string.tab_grid_dialog_toolbar_edit_group_name,
                         R.id.edit_group_name,
-                        0,
-                        true));
-        return itemList;
+                        R.drawable.material_ic_edit_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        /* enabled= */ true));
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_edit_group_color,
+                            R.id.edit_group_color,
+                            R.drawable.ic_colorize_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            /* enabled= */ true));
+        }
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.tab_grid_dialog_toolbar_close_group,
+                        R.id.close_tab,
+                        R.drawable.ic_tab_close_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        /* enabled= */ true));
+        if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_delete_group,
+                            R.id.delete_tab,
+                            R.drawable.material_ic_delete_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            /* enabled= */ true));
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public void buildCollaborationMenuItems(
+            ModelList itemList,
+            IdentityManager identityManager,
+            GroupDataOrFailureOutcome outcome) {
+        @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
+        if (memberRole != MemberRole.UNKNOWN) {
+            // Insert these items above the close group menu item.
+            int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab);
+            itemList.add(
+                    insertionIndex++,
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_manage_sharing,
+                            R.id.manage_sharing,
+                            R.drawable.ic_group_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+            itemList.add(
+                    insertionIndex++,
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_recent_activity,
+                            R.id.recent_activity,
+                            R.drawable.ic_update_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        }
+
+        if (memberRole == MemberRole.OWNER) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_delete_group,
+                            R.id.delete_shared_group,
+                            R.drawable.material_ic_delete_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        } else if (memberRole == MemberRole.MEMBER) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_leave_group,
+                            R.id.leave_group,
+                            R.drawable.material_ic_delete_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            /* isIncognito= */ false,
+                            /* enabled= */ true));
+        }
+    }
+
+    @Override
+    protected @DimenRes int getMenuWidth() {
+        return R.dimen.menu_width;
+    }
+
+    private int getMenuItemIndex(ModelList itemList, int menuItemId) {
+        for (int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i).model.get(ListMenuItemProperties.MENU_ITEM_ID) == menuItemId) {
+                return i;
+            }
+        }
+        return itemList.size();
     }
 }

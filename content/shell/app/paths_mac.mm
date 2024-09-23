@@ -8,6 +8,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/path_service.h"
+#include "base/strings/sys_string_conversions.h"
 #include "content/public/common/content_paths.h"
 
 namespace {
@@ -95,4 +96,10 @@ base::FilePath GetResourcesPakFilePath() {
 
 base::FilePath GetInfoPlistPath() {
   return GetContentsPath().Append("Info.plist");
+}
+
+void OverrideBundleID() {
+  NSBundle* bundle = base::apple::OuterBundle();
+  base::apple::SetBaseBundleID(
+      base::SysNSStringToUTF8([bundle bundleIdentifier]).c_str());
 }

@@ -56,6 +56,7 @@ build_webui("build") {
       "ui/printer_setup_info_cros.ts",
       "ui/provisional_destination_resolver.ts",
       "ui/destination_dialog_cros.ts",
+      "ui/searchable_drop_down_cros.ts",
     ]
   } else {
     web_component_files += [
@@ -112,9 +113,11 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "ui/icons.html" ]
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
@@ -131,6 +134,7 @@ build_webui("build") {
                            "$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
                            target_gen_dir) ]
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "print"

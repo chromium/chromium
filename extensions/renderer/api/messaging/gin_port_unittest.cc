@@ -87,13 +87,15 @@ class GinPortTest : public APIBindingTest {
     binding::InvalidateContext(context);
   }
 
-  gin::Handle<GinPort> CreatePort(v8::Local<v8::Context> context,
-                                  const PortId& port_id,
-                                  const char* name = kDefaultPortName) {
+  gin::Handle<GinPort> CreatePort(
+      v8::Local<v8::Context> context,
+      const PortId& port_id,
+      const mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage,
+      const char* name = kDefaultPortName) {
     EXPECT_EQ(context, context->GetIsolate()->GetCurrentContext());
-    return gin::CreateHandle(
-        isolate(),
-        new GinPort(context, port_id, name, event_handler(), delegate()));
+    return gin::CreateHandle(isolate(),
+                             new GinPort(context, port_id, name, channel_type,
+                                         event_handler(), delegate()));
   }
 
   APIEventHandler* event_handler() { return event_handler_.get(); }

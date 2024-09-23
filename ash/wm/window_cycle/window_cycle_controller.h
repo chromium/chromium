@@ -19,11 +19,11 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace ui {
 class LocatedEvent;
-}
+}  // namespace ui
 
 namespace ash {
 

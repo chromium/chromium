@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -45,7 +45,8 @@ v8::Local<v8::Value> ReadValueFromStream(const V8TestingScope& scope,
   auto* reader =
       stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester read_tester(script_state, read_promise);
   read_tester.WaitUntilSettled();

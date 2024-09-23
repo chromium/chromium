@@ -6,6 +6,7 @@
 #define UI_DISPLAY_TYPES_DISPLAY_COLOR_MANAGEMENT_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -42,6 +43,10 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
   // Evaluate at a point `x` in [0, 1]. If `x` is not in that interval then this
   // function will clamp `x` to [0, 1].
   void Evaluate(float x, uint16_t& r, uint16_t& g, uint16_t& b) const;
+
+  // Evaluate at the specified RGB values. Input values will be clamped to the
+  // [0, 1] interval.
+  void Evaluate(float rgb[3]) const;
 
   // Display as a string for debugging.
   std::string ToString() const;

@@ -11,7 +11,7 @@ import type {PdfViewerPrintElement} from 'chrome://print/pdf/pdf_print_wrapper.j
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('PdfViewerTest', function() {
   setup(function() {
@@ -62,16 +62,18 @@ suite('PdfViewerTest', function() {
     assertTrue(!!viewer.shadowRoot!.querySelector('viewer-error-dialog'));
   });
 
-  test('PageIndicator', function() {
+  test('PageIndicator', async () => {
     const indicator = document.createElement('viewer-page-indicator');
     document.body.appendChild(indicator);
 
     // Assumes label is index + 1 if no labels are provided
     indicator.index = 2;
-    assertEquals('3', indicator.label);
+    await microtasksFinished();
+    assertEquals('3', indicator.$.text.textContent);
 
     // If labels are provided, uses the index to get the label.
     indicator.pageLabels = [1, 3, 5];
-    assertEquals('5', indicator.label);
+    await microtasksFinished();
+    assertEquals('5', indicator.$.text.textContent);
   });
 });

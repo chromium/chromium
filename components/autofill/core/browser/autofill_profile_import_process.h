@@ -6,14 +6,19 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_IMPORT_PROCESS_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "url/origin.h"
 
 namespace autofill {
+
+class AddressDataManager;
 
 // Specifies the type of a profile form import.
 enum class AutofillProfileImportType {
@@ -74,7 +79,13 @@ enum class PhoneImportStatus {
 // ProfileImportProcess. This is required to do metric collection, depending on
 // the user's decision to (not) import, based on how we construct the candidate
 // profile in FormDataImporter.
+// Besides metrics, it is also required to avoid creating obvious quasi
+// duplicates after autofilling a profile.
 struct ProfileImportMetadata {
+  ProfileImportMetadata();
+  ProfileImportMetadata(const ProfileImportMetadata&);
+  ~ProfileImportMetadata();
+
   // Tracks if the form section contains an invalid country.
   bool observed_invalid_country = false;
   // Whether the profile's country was complemented automatically.
@@ -87,6 +98,12 @@ struct ProfileImportMetadata {
   bool did_import_from_unrecognized_autocomplete_field = false;
   // The origin that the form was submitted on.
   url::Origin origin;
+  // Contains an entry for every type observed in the form, which was used to
+  // construct the candidate profile. The value indicates GUID of the profile
+  // that was used to autofill the corresponding field - or nullopt, if the
+  // field was not autofilled with address data at submission.
+  base::flat_map<FieldType, std::optional<std::string>>
+      filled_types_to_autofill_guid;
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -101,7 +118,7 @@ struct ProfileImportMetadata {
 //   `AcceptWithEdits()`, `Declined()` or `Ignore()`.
 //
 // * Finally, `ImportAffectedProfiles()` should be used to update the
-//   profiles in the `PersonalDataManager`.
+//   profiles in the `AddressDataManager`.
 //
 // The instance of this class should contain all information needed to record
 // metrics once an import process is finished.
@@ -110,7 +127,7 @@ class ProfileImportProcess {
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::string& app_locale,
                        const GURL& form_source_url,
-                       PersonalDataManager* personal_data_manager,
+                       AddressDataManager* address_data_manager,
                        bool allow_only_silent_updates,
                        ProfileImportMetadata import_metadata = {});
 
@@ -158,7 +175,7 @@ class ProfileImportProcess {
     return import_metadata_;
   }
 
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
+  AutofillClient::AddressPromptUserDecision user_decision() const {
     return user_decision_;
   }
 
@@ -175,7 +192,7 @@ class ProfileImportProcess {
   const GURL& form_source_url() const { return form_source_url_; }
 
   // Adds and updates all profiles affected by the import process in the
-  // `personal_data_manager_`. The affected profiles correspond to the
+  // `address_data_manager_`. The affected profiles correspond to the
   // `silently_updated_profiles_` and depending on the import type, the
   // `confirmed_import_candidate_`.
   void ApplyImport();
@@ -208,13 +225,16 @@ class ProfileImportProcess {
   // Supply a user |decision| for the import process. The option
   // |edited_profile| reflect user edits to the import candidate.
   void SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> edited_profile = std::nullopt);
 
-  // Records UMA and UKM metrics. Should only be called after a user decision
-  // was supplied or a silent update happens.
-  void CollectMetrics(ukm::UkmRecorder* ukm_recorder,
-                      ukm::SourceId source_id) const;
+  // Records UMA and UKM metrics after the import was applied. Should only be
+  // called after a user decision was supplied or a silent update happens.
+  // `existing_profiles` are the profiles before the import was applied.
+  void CollectMetrics(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      const std::vector<const AutofillProfile*>& existing_profiles) const;
 
  private:
   // Determines the import type of |observed_profile_| with respect to
@@ -225,6 +245,15 @@ class ProfileImportProcess {
   // For new profile imports, sets the source of the `import_candidate_`
   // correctly, depending on the user's account storage eligiblity.
   void DetermineSourceOfImportCandidate();
+
+  // Determines whether the values of the `observed_profile_` were autofilled
+  // with exactly one profile, except for an edit in a low-quality token. In
+  // this case, the autofilled profile qualifies for an update (rather than a
+  // new profile import).
+  // If the above situation applies, returns true and sets the import and merge
+  // candidates to offer updating the low quality token.
+  bool IsObservedProfileAutofilledQuasiDuplicate(
+      const AutofillProfileComparator& comparator);
 
   // If the observed profile is a duplicate (modulo silent updates) of an
   // existing `kLocalOrSyncable` profile, eligible users are prompted to change
@@ -242,9 +271,7 @@ class ProfileImportProcess {
 
   // Computes the settings-visible profile difference between the
   // `import_candidate_` and the `confirmed_import_candidate_`. Logs all edited
-  // types and the number of edited fields to UMA histograms, depending on the
-  // import type.
-  // Returns the number of edited fields.
+  // types, depending on the import type. Returns the number of edited fields.
   // If the user didn't edit any fields (or wasn't prompted), this is a no-op.
   int CollectedEditedTypeHistograms() const;
 
@@ -277,8 +304,8 @@ class ProfileImportProcess {
   std::optional<AutofillProfile> confirmed_import_candidate_;
 
   // The decision the user made when prompted.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{
-      AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined};
+  AutofillClient::AddressPromptUserDecision user_decision_{
+      AutofillClient::AddressPromptUserDecision::kUndefined};
 
   // The application locale used for this import process.
   std::string app_locale_;
@@ -290,9 +317,9 @@ class ProfileImportProcess {
   // was observed on.
   bool new_profiles_suppressed_for_domain_;
 
-  // A pointer to the persona data manager that is used to retrieve additional
+  // A reference to the address data manager that is used to retrieve additional
   // information about existing profiles and save/update imported profiles.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ref<AddressDataManager> address_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};

@@ -80,6 +80,10 @@ namespace ui {
 class Cursor;
 }
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 class ColorChooser;
@@ -179,7 +183,11 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   // Returns true if the page should support drag regions via the app-region
   // CSS property.
-  virtual bool SupportsAppRegion() = 0;
+  virtual bool SupportsDraggableRegions() = 0;
+
+  // Sends the draggable regions defined by the app-region CSS property to the
+  // browser.
+  virtual void DraggableRegionsChanged() = 0;
 
   // Allow document lifecycle updates to be run in order to produce composited
   // outputs. Updates are blocked from occurring during loading navigation in
@@ -261,15 +269,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                     LocalFrame& opener_frame,
                     NavigationPolicy navigation_policy,
                     bool consumed_user_gesture) = 0;
-
-  // All the parameters should be in viewport space. That is, if an event
-  // scrolls by 10 px, but due to a 2X page scale we apply a 5px scroll to the
-  // root frame, all of which is handled as overscroll, we should return 10px
-  // as the |overscroll_delta|.
-  virtual void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
-                             const gfx::Vector2dF& accumulated_overscroll,
-                             const gfx::PointF& position_in_viewport,
-                             const gfx::Vector2dF& velocity_in_viewport) = 0;
 
   // For a scrollbar scroll action, injects a gesture event of |injected_type|
   // to be dispatched at a later point in time. |injected_type| is required to
@@ -494,7 +493,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
     return false;
   }
 
-  virtual bool IsSVGImageChromeClient() const { return false; }
+  virtual bool IsIsolatedSVGChromeClient() const { return false; }
 
   virtual gfx::Size MinimumWindowSize() const { return gfx::Size(100, 100); }
 
@@ -505,6 +504,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
       HTMLElement*,
       WebFormRelatedChangeType) {}
   virtual void DidChangeValueInTextField(HTMLFormControlElement&) {}
+  virtual void DidClearValueInTextField(HTMLFormControlElement&) {}
   virtual void DidUserChangeContentEditableContent(Element&) {}
   virtual void DidEndEditingOnTextField(HTMLInputElement&) {}
   virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,
@@ -521,6 +521,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Called when the value of `element` has been changed by JavaScript.
   // `old_value` contains the value before being changed.
   // `was_autofilled` is the state of the field prior to the JS change.
+  // Only called if there is an observable change in the actual value, i.e.
+  // JavaScript setting it to the current value will not trigger this.
   virtual void JavaScriptChangedValue(HTMLFormControlElement&,
                                       const String& old_value,
                                       bool was_autofilled) {}
@@ -559,7 +561,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // the frame to be presented, the `callback` will run with the time of the
   // failure.
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(const viz::FrameTimingDetails&)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 
@@ -581,10 +583,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void DocumentDetached(Document&) {}
 
   // Return the user's zoom factor which is different from the typical usage
-  // of "zoom factor" in blink (e.g., |LocalFrame::PageZoomFactor()|) which
+  // of "zoom factor" in blink (e.g., |LocalFrame::LayoutZoomFactor()|) which
   // includes CSS zoom and the device scale factor (if use-zoom-for-dsf is
   // enabled). This only includes the zoom initiated by the user (ctrl +/-).
-  virtual double UserZoomFactor() const { return 1; }
+  virtual double UserZoomFactor(LocalFrame* frame) const { return 1; }
 
   virtual void SetDelegatedInkMetadata(
       LocalFrame* frame,

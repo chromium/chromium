@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/color_space.h"
 
 #include <iomanip>
@@ -29,14 +34,6 @@
 namespace gfx {
 
 namespace {
-
-// Videos that are from a 10 or 12 bit source, but are stored in a 16-bit
-// format (e.g, PIXEL_FORMAT_P016LE) will report having 16 bits per pixel.
-// Assume they have 10 bits per pixel.
-// https://crbug.com/1381100
-int BitDepthWithWorkaroundApplied(int bit_depth) {
-  return bit_depth == 16 ? 10 : bit_depth;
-}
 
 static bool FloatsEqualWithinTolerance(const float* a,
                                        const float* b,
@@ -233,6 +230,7 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
       PrimaryID::ADOBE_RGB,
       PrimaryID::APPLE_GENERIC_RGB,
       PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+      PrimaryID::EBU_3213_E,
   };
   for (PrimaryID id : kIDsToCheck) {
     skcms_Matrix3x3 matrix;
@@ -485,6 +483,7 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(PrimaryID, ADOBE_RGB)
     PRINT_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
     PRINT_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
+    PRINT_ENUM_CASE(PrimaryID, EBU_3213_E)
     case PrimaryID::CUSTOM:
       ss << skia::SkColorSpacePrimariesToString(GetPrimaries());
       break;
@@ -566,7 +565,6 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(MatrixID, SMPTE240M)
     PRINT_ENUM_CASE(MatrixID, YCOCG)
     PRINT_ENUM_CASE(MatrixID, BT2020_NCL)
-    PRINT_ENUM_CASE(MatrixID, BT2020_CL)
     PRINT_ENUM_CASE(MatrixID, YDZDX)
     PRINT_ENUM_CASE(MatrixID, GBR)
   }
@@ -861,6 +859,9 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
 
     case ColorSpace::PrimaryID::ADOBE_RGB:
       return SkNamedPrimariesExt::kA98RGB;
+
+    case ColorSpace::PrimaryID::EBU_3213_E:
+      return SkNamedPrimariesExt::kITU_T_H273_Value22;
   }
   return primaries;
 }
@@ -1025,7 +1026,6 @@ bool ColorSpace::GetPiecewiseHDRParams(float* sdr_joint,
 }
 
 SkM44 ColorSpace::GetTransferMatrix(int bit_depth) const {
-  bit_depth = BitDepthWithWorkaroundApplied(bit_depth);
   DCHECK_GE(bit_depth, 8);
   // If chroma samples are real numbers in the range of −0.5 to 0.5, an offset
   // of 0.5 is added to get real numbers in the range of 0 to 1. When
@@ -1073,20 +1073,6 @@ SkM44 ColorSpace::GetTransferMatrix(int bit_depth) const {
       return SkM44::RowMajor(data);
     }
 
-    // BT2020_CL is a special case.
-    // Basically we return a matrix that transforms RYB values
-    // to YUV values. (Note that the green component have been replaced
-    // with the luminance.)
-    case ColorSpace::MatrixID::BT2020_CL: {
-      Kr = 0.2627f;
-      Kb = 0.0593f;
-      float data[16] = {1.0f, 0.0f,           0.0f, 0.0f,  // R
-                        Kr,   1.0f - Kr - Kb, Kb,   0.0f,  // Y
-                        0.0f, 0.0f,           1.0f, 0.0f,  // B
-                        0.0f, 0.0f,           0.0f, 1.0f};
-      return SkM44::RowMajor(data);
-    }
-
     case ColorSpace::MatrixID::BT2020_NCL:
       Kr = 0.2627f;
       Kb = 0.0593f;
@@ -1126,7 +1112,6 @@ SkM44 ColorSpace::GetTransferMatrix(int bit_depth) const {
 }
 
 SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
-  bit_depth = BitDepthWithWorkaroundApplied(bit_depth);
   DCHECK_GE(bit_depth, 8);
   switch (range_) {
     case RangeID::FULL:
@@ -1158,7 +1143,6 @@ SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
     case MatrixID::SMPTE170M:
     case MatrixID::SMPTE240M:
     case MatrixID::BT2020_NCL:
-    case MatrixID::BT2020_CL:
     case MatrixID::YDZDX: {
       const float a_uv = 224 << shift;
       const float scale_uv = c / a_uv;
@@ -1167,12 +1151,11 @@ SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
           .postTranslate(-16.0f / 219.0f, translate_uv, translate_uv);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkM44();
 }
 
 bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
-  bit_depth = BitDepthWithWorkaroundApplied(bit_depth);
   switch (matrix_) {
     case MatrixID::BT709:
       *out = range_ == RangeID::FULL ? kRec709_Full_SkYUVColorSpace
@@ -1201,8 +1184,55 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
                                        : kBT2020_12bit_Limited_SkYUVColorSpace;
         return true;
       }
+      if (bit_depth == 16) {
+        *out = range_ == RangeID::FULL ? kBT2020_16bit_Full_SkYUVColorSpace
+                                       : kBT2020_16bit_Limited_SkYUVColorSpace;
+        return true;
+      }
       return false;
 
+    case MatrixID::FCC:
+      *out = range_ == RangeID::FULL ? kFCC_Full_SkYUVColorSpace
+                                     : kFCC_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::SMPTE240M:
+      *out = range_ == RangeID::FULL ? kSMPTE240_Full_SkYUVColorSpace
+                                     : kSMPTE240_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::YDZDX:
+      *out = range_ == RangeID::FULL ? kYDZDX_Full_SkYUVColorSpace
+                                     : kYDZDX_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::GBR:
+      *out = range_ == RangeID::FULL ? kGBR_Full_SkYUVColorSpace
+                                     : kGBR_Limited_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::YCOCG:
+      if (bit_depth == 8) {
+        *out = range_ == RangeID::FULL ? kYCgCo_8bit_Full_SkYUVColorSpace
+                                       : kYCgCo_8bit_Limited_SkYUVColorSpace;
+        return true;
+      }
+      if (bit_depth == 10) {
+        *out = range_ == RangeID::FULL ? kYCgCo_10bit_Full_SkYUVColorSpace
+                                       : kYCgCo_10bit_Limited_SkYUVColorSpace;
+        return true;
+      }
+      if (bit_depth == 12) {
+        *out = range_ == RangeID::FULL ? kYCgCo_12bit_Full_SkYUVColorSpace
+                                       : kYCgCo_12bit_Limited_SkYUVColorSpace;
+        return true;
+      }
+      if (bit_depth == 16) {
+        *out = range_ == RangeID::FULL ? kYCgCo_16bit_Full_SkYUVColorSpace
+                                       : kYCgCo_16bit_Limited_SkYUVColorSpace;
+        return true;
+      }
+      return false;
     default:
       break;
   }

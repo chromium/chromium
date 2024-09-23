@@ -255,24 +255,12 @@
 
       <!-- About Flags UI -->
       <if expr="not chromeos_ash">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
           Your changes will take effect the next time you relaunch Chrome.
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
-          Your changes will take effect the next time you restart your device.
-        </message>
-      </if>
-
-      <!-- about:flags/deprecated strings -->
-      <if expr="not chromeos_ash">
-        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
-          Your changes will take effect the next time you relaunch Chrome.
-        </message>
-      </if>
-      <if expr="chromeos_ash">
-        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
       </if>
@@ -309,6 +297,11 @@
       <!-- Session Crash -->
       <message name="IDS_SESSION_CRASHED_VIEW_MESSAGE" desc="Message shown when the last session didn't exit cleanly.">
         Chrome didn't shut down correctly.
+      </message>
+
+      <!-- Device Chooser Prompt -->
+      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
+        Google Chrome needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
       </message>
     </messages>
   </release>

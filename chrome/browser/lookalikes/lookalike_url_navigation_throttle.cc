@@ -241,11 +241,13 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/plIZV3Rkzok
     // for why this is OK. Assume interstitial reloads are always browser
     // initiated.
-    handle->GetWebContents()->OpenURL(content::OpenURLParams(
-        interstitial_params.url, interstitial_params.referrer,
-        WindowOpenDisposition::CURRENT_TAB,
-        ui::PageTransition::PAGE_TRANSITION_RELOAD,
-        false /* is_renderer_initiated */));
+    handle->GetWebContents()->OpenURL(
+        content::OpenURLParams(interstitial_params.url,
+                               interstitial_params.referrer,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PageTransition::PAGE_TRANSITION_RELOAD,
+                               false /* is_renderer_initiated */),
+        /*navigation_handle_callback=*/{});
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
@@ -320,12 +322,9 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
 
   // Don't handle navigations in subframe or fenced frame which shouldn't
   // show an interstitial and record metrics.
-  // TODO(crbug.com/1199724): For portals, the throttle probably should be run
-  // as they may eventually become the primary main frame. Revisit here once
-  // portals are migrated to MPArch.
-  if (!navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->IsInPrerenderedMainFrame())
+  if (!navigation_handle->IsInOutermostMainFrame()) {
     return nullptr;
+  }
 
   // Otherwise, always insert the throttle for metrics recording.
   return std::make_unique<LookalikeUrlNavigationThrottle>(navigation_handle);

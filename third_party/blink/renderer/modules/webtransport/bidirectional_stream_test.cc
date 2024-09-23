@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -17,8 +18,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -109,7 +110,7 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
   // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CreateStream(
@@ -202,7 +203,7 @@ class ScopedWebTransport {
 
   BidirectionalStream* CreateBidirectionalStream(const V8TestingScope& scope) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromise bidirectional_stream_promise =
+    ScriptPromiseUntyped bidirectional_stream_promise =
         GetWebTransport()->createBidirectionalStream(script_state,
                                                      ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
@@ -254,7 +255,7 @@ void TestWrite(const V8TestingScope& scope,
       script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
   *chunk->Data() = 'A';
-  ScriptPromise result =
+  ScriptPromiseUntyped result =
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, result);
@@ -264,16 +265,15 @@ void TestWrite(const V8TestingScope& scope,
 
   mojo::ScopedDataPipeConsumerHandle& output_consumer =
       scoped_web_transport->Stub()->OutputConsumer();
-  const void* buffer = nullptr;
-  uint32_t buffer_num_bytes = 0;
-  MojoResult mojo_result = output_consumer->BeginReadData(
-      &buffer, &buffer_num_bytes, MOJO_BEGIN_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  MojoResult mojo_result =
+      output_consumer->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, buffer);
 
   ASSERT_EQ(mojo_result, MOJO_RESULT_OK);
-  EXPECT_EQ(buffer_num_bytes, 1u);
-  EXPECT_EQ(reinterpret_cast<const char*>(buffer)[0], 'A');
+  EXPECT_EQ(buffer.size(), 1u);
+  EXPECT_EQ(base::as_string_view(buffer), "A");
 
-  output_consumer->EndReadData(buffer_num_bytes);
+  output_consumer->EndReadData(buffer.size());
 }
 
 TEST(BidirectionalStreamTest, CreateLocallyAndWrite) {
@@ -305,10 +305,8 @@ void TestRead(V8TestingScope& scope,
               BidirectionalStream* bidirectional_stream) {
   mojo::ScopedDataPipeProducerHandle& input_producer =
       scoped_web_transport->Stub()->InputProducer();
-  constexpr char input[] = {'B'};
-  uint32_t input_num_bytes = sizeof(input);
-  MojoResult mojo_result = input_producer->WriteData(
-      input, &input_num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  MojoResult mojo_result =
+      input_producer->WriteAllData(base::as_byte_span(std::string_view("B")));
 
   ASSERT_EQ(mojo_result, MOJO_RESULT_OK);
 
@@ -361,7 +359,8 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
   auto* reader = bidirectional_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester read_tester(script_state, read_promise);
   read_tester.WaitUntilSettled();
@@ -385,7 +384,7 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise close_promise = bidirectional_stream->writable()->close(
+  ScriptPromiseUntyped close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
@@ -444,8 +443,9 @@ TEST(BidirectionalStreamTest, WriteAfterCancellingIncoming) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise cancel_promise = bidirectional_stream->readable()->cancel(
-      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped cancel_promise =
+      bidirectional_stream->readable()->cancel(script_state,
+                                               ASSERT_NO_EXCEPTION);
   ScriptPromiseTester cancel_tester(script_state, cancel_promise);
   cancel_tester.WaitUntilSettled();
   EXPECT_TRUE(cancel_tester.IsFulfilled());
@@ -485,7 +485,7 @@ TEST(BidirectionalStreamTest, ReadAfterClosingOutgoing) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise close_promise = bidirectional_stream->writable()->close(
+  ScriptPromiseUntyped close_promise = bidirectional_stream->writable()->close(
       script_state, ASSERT_NO_EXCEPTION);
 
   scoped_web_transport.GetWebTransport()->OnOutgoingStreamClosed(
@@ -507,7 +507,7 @@ TEST(BidirectionalStreamTest, ReadAfterAbortingOutgoing) {
   ASSERT_TRUE(bidirectional_stream);
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise abort_promise = bidirectional_stream->writable()->abort(
+  ScriptPromiseUntyped abort_promise = bidirectional_stream->writable()->abort(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester abort_tester(script_state, abort_promise);
   abort_tester.WaitUntilSettled();

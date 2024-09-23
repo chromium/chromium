@@ -8,7 +8,7 @@ var TEST_CASES = [
     url: 'chrome://extension-icon/gbmgkahjioeacddebbnengilkgbkhodg/128/0',
     expectedSize: 128
   },
-  // Tests loading a standard 48px icon with a MATCH_SMALLER.
+  // Tests loading a standard 48px icon with ExtensionIconSet::Match::kExactly.
   // This should not be resized to 48px.
   {
     url: 'chrome://extension-icon/gbmgkahjioeacddebbnengilkgbkhodg/48/2',
@@ -21,8 +21,8 @@ var TEST_CASES = [
         '32/1?grayscale=true',
     expectedSize: 32
   },
-  // Tests loading a 16px by resizing the 32px version (MATCH_BIGGER).
-  // This should be resized to 16px.
+  // Tests loading a 16px by resizing the 32px version
+  // (ExtensionIconSet::Match::kExactly). This should be resized to 16px.
   {
     url: 'chrome://extension-icon/gbmgkahjioeacddebbnengilkgbkhodg/16/1',
     expectedSize: 16

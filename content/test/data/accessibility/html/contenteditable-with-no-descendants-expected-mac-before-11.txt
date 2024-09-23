@@ -1,6 +1,6 @@
 AXWebArea
-++AXTextArea AXDescription='label'
-++AXTextArea AXHelp='description'
-++AXTextArea AXDescription='title'
+++AXGroup AXDescription='label'
+++AXGroup AXHelp='description'
+++AXGroup AXDescription='title'
 ++AXGroup
 ++++AXStaticText AXValue='description'

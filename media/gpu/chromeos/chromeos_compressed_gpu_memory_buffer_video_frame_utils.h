@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_CHROMEOS_COMPRESSED_GPU_MEMORY_BUFFER_VIDEO_FRAME_UTILS_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 

@@ -20,6 +20,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
@@ -110,7 +111,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   WinWebAuthnApi();
 };
 
-std::pair<CtapDeviceResponseCode,
+std::pair<MakeCredentialStatus,
           std::optional<AuthenticatorMakeCredentialResponse>>
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
@@ -118,8 +119,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request,
                                     MakeCredentialOptions request_options);
 
-std::pair<CtapDeviceResponseCode,
-          std::optional<AuthenticatorGetAssertionResponse>>
+std::pair<GetAssertionStatus, std::optional<AuthenticatorGetAssertionResponse>>
 AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   HWND h_wnd,
                                   GUID cancellation_id,

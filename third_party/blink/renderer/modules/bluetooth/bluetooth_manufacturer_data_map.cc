@@ -22,7 +22,7 @@ class BluetoothManufacturerDataMapIterationSource final
                      ExceptionState&) override {
     if (iterator_ == map_->Map().end())
       return false;
-    map_key = iterator_->key;
+    map_key = iterator_->key->id;
     map_value = NotShared<DOMDataView>(
         BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(iterator_->value));
     ++iterator_;
@@ -42,8 +42,11 @@ class BluetoothManufacturerDataMapIterationSource final
 };
 
 BluetoothManufacturerDataMap::BluetoothManufacturerDataMap(
-    const BluetoothManufacturerDataMap::MapType& map)
-    : parameter_map_(map) {}
+    const BluetoothManufacturerDataMap::MapType& map) {
+  for (const auto& entry : map) {
+    parameter_map_.insert(entry.key.Clone(), entry.value);
+  }
+}
 
 BluetoothManufacturerDataMap::~BluetoothManufacturerDataMap() {}
 
@@ -58,7 +61,9 @@ bool BluetoothManufacturerDataMap::GetMapEntry(ScriptState*,
                                                const uint16_t& key,
                                                NotShared<DOMDataView>& value,
                                                ExceptionState&) {
-  auto it = parameter_map_.find(key);
+  mojom::blink::WebBluetoothCompanyPtr company =
+      mojom::blink::WebBluetoothCompany::New(key);
+  auto it = parameter_map_.find(company);
   if (it == parameter_map_.end())
     return false;
 

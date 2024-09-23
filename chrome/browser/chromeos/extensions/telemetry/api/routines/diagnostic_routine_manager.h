@@ -72,6 +72,12 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
   // Stops the routine with `routine_id`.
   void CancelRoutineForExtension(extensions::ExtensionId extension_id,
                                  base::Uuid routine_id);
+  // Sends reply to the inquiry of the routine with `routine_id`. Returns true
+  // if successful, otherwise false.
+  bool ReplyToRoutineInquiryForExtension(
+      const extensions::ExtensionId& extension_id,
+      const base::Uuid& routine_id,
+      crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr reply);
 
   void IsRoutineArgumentSupported(
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr arg,
@@ -121,11 +127,10 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
 namespace extensions {
 
 template <>
-struct extensions::BrowserContextFactoryDependencies<
-    chromeos::DiagnosticRoutineManager> {
+struct BrowserContextFactoryDependencies<chromeos::DiagnosticRoutineManager> {
   static void DeclareFactoryDependencies(
-      extensions::BrowserContextKeyedAPIFactory<
-          chromeos::DiagnosticRoutineManager>* factory) {
+      BrowserContextKeyedAPIFactory<chromeos::DiagnosticRoutineManager>*
+          factory) {
     factory->DependsOn(ExtensionRegistryFactory::GetInstance());
   }
 };

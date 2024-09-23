@@ -14,6 +14,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -22,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -109,6 +109,7 @@ class NET_EXPORT HostResolverManager
   struct NET_EXPORT_PRIVATE JobKey;
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE RequestImpl;
+  class NET_EXPORT_PRIVATE ServiceEndpointRequestImpl;
 
   // Creates a HostResolver as specified by |options|. Blocking tasks are run in
   // ThreadPool.
@@ -168,6 +169,15 @@ class NET_EXPORT HostResolverManager
       ResolveContext* resolve_context);
   std::unique_ptr<MdnsListener> CreateMdnsListener(const HostPortPair& host,
                                                    DnsQueryType query_type);
+
+  // Creates a service endpoint resolution request.
+  std::unique_ptr<HostResolver::ServiceEndpointRequest>
+  CreateServiceEndpointRequest(
+      url::SchemeHostPort scheme_host_port,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      ResolveHostParameters parameters,
+      ResolveContext* resolve_context);
 
   // Enables or disables the built-in asynchronous DnsClient. If enabled, by
   // default (when no |ResolveHostParameters::source| is specified), the
@@ -304,7 +314,6 @@ class NET_EXPORT HostResolverManager
   // reachability. These job key and IP address are used to call
   // ResolveLocally() and CreateAndStartJob().
   void InitializeJobKeyAndIPAddress(
-      const HostResolver::Host& host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const ResolveHostParameters& parameters,
       const NetLogWithSource& source_net_log,
@@ -352,6 +361,12 @@ class NET_EXPORT HostResolverManager
       RequestPriority priority,
       const NetLogWithSource& source_net_log);
 
+  // Similar to CreateAndStartJob(), but for a ServiceEndpointRequest.
+  void CreateAndStartJobForServiceEndpointRequest(
+      JobKey key,
+      std::deque<TaskType> tasks,
+      ServiceEndpointRequestImpl* request);
+
   // Resolves the IP literal hostname represented by `ip_address`.
   HostCache::Entry ResolveAsIP(DnsQueryTypeSet query_types,
                                bool resolve_canonname,
@@ -383,7 +398,7 @@ class NET_EXPORT HostResolverManager
   // attempt a system lookup, then try to resolve the query using the HOSTS
   // file.
   std::optional<HostCache::Entry> ServeFromHosts(
-      base::StringPiece hostname,
+      std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6,
       const std::deque<TaskType>& tasks);
@@ -391,7 +406,7 @@ class NET_EXPORT HostResolverManager
   // Iff |key| is for a localhost name (RFC 6761) and address DNS query type,
   // returns a results entry with the loopback IP.
   std::optional<HostCache::Entry> ServeLocalhost(
-      base::StringPiece hostname,
+      std::string_view hostname,
       DnsQueryTypeSet query_types,
       bool default_family_due_to_no_ipv6);
 
@@ -597,7 +612,7 @@ class NET_EXPORT HostResolverManager
 // TODO(tfarina): It would be better to change the tests so this function
 // gets exercised indirectly through HostResolverManager.
 NET_EXPORT_PRIVATE bool ResolveLocalHostname(
-    base::StringPiece host,
+    std::string_view host,
     std::vector<IPEndPoint>* address_list);
 
 }  // namespace net

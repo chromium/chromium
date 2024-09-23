@@ -201,11 +201,14 @@ std::string FakeAuthorizationServer::GetNextRequest(
   std::string msg;
   msg += ExpectEqual("HTTP method", current_request_->request.method, method);
   msg += ExpectEqual("URL", current_request_->request.url.spec(), url);
-  std::string value;
-  current_request_->request.headers.GetHeader("Content-Type", &value);
-  msg += ExpectEqual("header Content-Type", value, content_type);
-  if (current_request_->request.headers.GetHeader("Accept", &value)) {
-    msg += ExpectEqual("header Accept", value, "application/json");
+  msg += ExpectEqual("header Content-Type",
+                     current_request_->request.headers.GetHeader("Content-Type")
+                         .value_or(std::string()),
+                     content_type);
+  std::optional<std::string> value =
+      current_request_->request.headers.GetHeader("Accept");
+  if (value) {
+    msg += ExpectEqual("header Accept", *value, "application/json");
   }
   return msg;
 }

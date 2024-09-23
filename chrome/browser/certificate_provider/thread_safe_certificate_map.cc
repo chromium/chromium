@@ -5,10 +5,10 @@
 #include "chrome/browser/certificate_provider/thread_safe_certificate_map.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
 #include "net/base/hash_value.h"
@@ -21,7 +21,7 @@ namespace certificate_provider {
 namespace {
 
 std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
-  base::StringPiece spki_bytes;
+  std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer()),
           &spki_bytes)) {

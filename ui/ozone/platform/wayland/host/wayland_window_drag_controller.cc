@@ -6,6 +6,7 @@
 
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <wayland-client-protocol.h>
+#include <xdg-toplevel-drag-v1-client-protocol.h>
 
 #include <cstdint>
 #include <memory>
@@ -36,20 +37,24 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
+#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
@@ -100,20 +105,56 @@ class WaylandWindowDragController::ExtendedDragSource {
   const raw_ref<WaylandConnection> connection_;
 };
 
+class WaylandWindowDragController::XdgToplevelDrag {
+ public:
+  XdgToplevelDrag(WaylandConnection& connection, wl_data_source* source)
+      : connection_(connection) {
+    DCHECK(connection.toplevel_drag_manager_v1());
+    drag_.reset(xdg_toplevel_drag_manager_v1_get_xdg_toplevel_drag(
+        connection.toplevel_drag_manager_v1(), source));
+    DCHECK(drag_);
+  }
+
+  void SetDraggedWindow(WaylandToplevelWindow* window,
+                        const gfx::Vector2d& offset) {
+    if (!window) {
+      // Detaching happens implicitly via wl_data_source.dnd_drop_performed (see
+      // OnDataSourceDropPerformed()) or when the toplevel gets unmapped.
+      return;
+    }
+    DCHECK(window->shell_toplevel() &&
+           window->shell_toplevel()->AsXDGToplevelWrapper());
+
+    auto* toplevel =
+        window->shell_toplevel()->AsXDGToplevelWrapper()->xdg_toplevel_.get();
+    DCHECK(toplevel);
+
+    xdg_toplevel_drag_v1_attach(drag_.get(), toplevel, offset.x(), offset.y());
+    connection_->Flush();
+  }
+
+ private:
+  wl::Object<xdg_toplevel_drag_v1> drag_;
+  const raw_ref<WaylandConnection> connection_;
+};
+
 WaylandWindowDragController::WaylandWindowDragController(
     WaylandConnection* connection,
     WaylandDataDeviceManager* device_manager,
     WaylandPointer::Delegate* pointer_delegate,
-    WaylandTouch::Delegate* touch_delegate)
+    WaylandTouch::Delegate* touch_delegate,
+    WaylandKeyboard::Delegate* keyboard_delegate)
     : connection_(connection),
       data_device_manager_(device_manager),
       data_device_(device_manager->GetDevice()),
       window_manager_(connection_->window_manager()),
       pointer_delegate_(pointer_delegate),
-      touch_delegate_(touch_delegate) {
+      touch_delegate_(touch_delegate),
+      keyboard_delegate_(keyboard_delegate) {
   DCHECK(data_device_);
   DCHECK(pointer_delegate_);
   DCHECK(touch_delegate_);
+  DCHECK(keyboard_delegate_);
 }
 
 WaylandWindowDragController::~WaylandWindowDragController() = default;
@@ -123,6 +164,22 @@ bool WaylandWindowDragController::StartDragSession(
     DragEventSource drag_source) {
   if (state_ != State::kIdle)
     return true;
+
+  // TODO(crbug.com/340398746): This should be a CHECK instead. However
+  // currently buggy compositors, eg: KWin 6, which do not send
+  // data_source.dnd_finish|cancelled in some cases. In such a case for a data
+  // drag, the data drag controller is left in an inconsistent state and shared
+  // dragging state is not reset. This may cause chrome to crash if a window
+  // drag session is requested before the shared dragging state is reset. Reset
+  // the shared drag state in this case, revert this handling once it stabilizes
+  // at compositors side (see also comment in
+  // WaylandDataDragController::StartSession).
+  if (connection_->IsDragInProgress()) {
+    LOG(ERROR) << "Received window drag request for active data drag, "
+                  "resetting shared data device state.";
+    data_device_->ResetDragDelegate();
+    CHECK(!connection_->IsDragInProgress());
+  }
 
   auto serial = GetSerial(drag_source, origin);
   if (!serial) {
@@ -145,18 +202,25 @@ bool WaylandWindowDragController::StartDragSession(
   data_source_->Offer({kMimeTypeChromiumWindow});
   data_source_->SetDndActions(kDndActionWindowDrag);
 
-  if (IsExtendedDragAvailableInternal()) {
+  if (IsXdgToplevelDragAvailable()) {
+    xdg_toplevel_drag_ = std::make_unique<XdgToplevelDrag>(
+        *connection_, data_source_->data_source());
+  } else if (IsExtendedDragAvailableInternal()) {
     extended_drag_source_ = std::make_unique<ExtendedDragSource>(
         *connection_, data_source_->data_source());
   } else {
-    LOG(ERROR) << "zcr_extended_drag_v1 extension not available! "
-               << "Window/Tab dragging won't be fully functional.";
+    LOG(ERROR)
+        << "zcr_extended_drag_v1 and xdg_toplevel_drag_v1 extensions "
+           "not available! Window/Tab dragging won't be fully functional.";
   }
 
   data_device_->StartDrag(*data_source_, *origin_window_, serial->value,
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
   should_process_drag_motion_events_ = false;
+  has_received_enter_ = false;
+  nested_dispatcher_ =
+      PlatformEventSource::GetInstance()->OverrideDispatcher(this);
 
   // Observe window so we can take ownership of the origin surface in case it
   // is destroyed during the DND session.
@@ -175,7 +239,7 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
   SetDraggedWindow(nullptr, {});
 
   DCHECK(state_ == State::kAttaching || state_ == State::kDropped ||
-         state_ == State::kCancelled);
+         state_ == State::kCancelled) << "Drag state: " << int(state_);
   if (state_ == State::kAttaching) {
     state_ = State::kAttached;
     return false;
@@ -201,6 +265,10 @@ void WaylandWindowDragController::StopDragging() {
       window_manager_->GetCurrentPointerOrTouchFocusedWindow();
   VLOG(1) << "Quiting Loop : StopDragging";
   QuitLoop();
+}
+
+bool WaylandWindowDragController::IsDragInProgress() const {
+  return state_ != State::kIdle;
 }
 
 bool WaylandWindowDragController::IsDragSource() const {
@@ -236,6 +304,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   CHECK(data_source_);
   CHECK(data_offer_);
 
+  has_received_enter_ = true;
   drag_target_window_ = window;
 
   // Forward focus change event to the input delegate, so other components, such
@@ -254,7 +323,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 
   DVLOG(1) << "OnEnter. widget=" << window->GetWidget();
 
-  // TODO(crbug.com/1102946): Exo does not support custom mime types. In this
+  // TODO(crbug.com/40704369): Exo does not support custom mime types. In this
   // case, |data_offer_| will hold an empty mime_types list and, at this point,
   // it's safe just to skip the offer checks and requests here.
   if (!base::Contains(data_offer_->mime_types(), kMimeTypeChromiumWindow)) {
@@ -295,17 +364,18 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
   pointer_location_ = location;
 
   if (*drag_source_ == DragEventSource::kMouse) {
-    pointer_delegate_->OnPointerMotionEvent(
-        location, timestamp, wl::EventDispatchPolicy::kImmediate);
+    pointer_delegate_->OnPointerMotionEvent(location, timestamp,
+                                            wl::EventDispatchPolicy::kImmediate,
+                                            /*is_synthesized=*/true);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    LOG_IF(WARNING, touch_pointer_ids.size() != 1u)
+    LOG_IF(WARNING, touch_pointer_ids.size() < 1u)
         << "Unexpected touch drag motion. Active touch_points: "
         << touch_pointer_ids.size();
-    if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchMotionEvent(location, timestamp,
-                                          touch_pointer_ids[0],
-                                          wl::EventDispatchPolicy::kImmediate);
+    for (auto id : touch_pointer_ids) {
+      touch_delegate_->OnTouchMotionEvent(location, timestamp, id,
+                                          wl::EventDispatchPolicy::kImmediate,
+                                          /*is_synthesized=*/true);
     }
   }
 }
@@ -321,9 +391,9 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
 
   drag_target_window_ = nullptr;
 
-  // In order to guarantee ET_MOUSE_RELEASED event is delivered once the DND
-  // session finishes, the focused window is not reset here. This is similar to
-  // the "implicit grab" behavior implemented by Wayland compositors for
+  // In order to guarantee EventType::kMouseReleased event is delivered once the
+  // DND session finishes, the focused window is not reset here. This is similar
+  // to the "implicit grab" behavior implemented by Wayland compositors for
   // wl_pointer events. Additionally, this makes it possible for the drag
   // controller to overcome deviations in the order that wl_data_source and
   // wl_pointer events arrive when the drop happens. For example, unlike Weston
@@ -350,7 +420,7 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   // they properly handle platforms that do not support global screen
   // coordinates, like Wayland.
   //
-  // TODO(https://crbug.com/1282186): Find a better solution for upwards tab
+  // TODO(crbug.com/40209502): Find a better solution for upwards tab
   // detaching.
   if (state_ != State::kAttached)
     return;
@@ -358,18 +428,18 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
         {pointer_location_.x(), -1}, timestamp,
-        wl::EventDispatchPolicy::kImmediate);
+        wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    if (!touch_pointer_ids.empty()) {
+    for (auto id : touch_pointer_ids) {
       // If an user starts dragging a tab horizontally with touch, Chrome enters
       // in "horizontal snapping" mode (see SnapScrollController for details).
       // Hence, in case of touch driven dragging, use a higher negative dy
       // to work around the threshold in ScrollSnapController otherwise,
       // the drag event is discarded.
       touch_delegate_->OnTouchMotionEvent(
-          {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
-          touch_pointer_ids[0], wl::EventDispatchPolicy::kImmediate);
+          {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp, id,
+          wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
     }
   }
 }
@@ -408,19 +478,28 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
   VLOG(1) << "DataSourceFinish received. completed=" << completed
           << ", state=" << state_;
   // Release DND objects.
+  nested_dispatcher_.reset();
   data_offer_.reset();
   data_source_.reset();
   extended_drag_source_.reset();
+  xdg_toplevel_drag_.reset();
   origin_surface_.reset();
   origin_window_ = nullptr;
+  has_received_enter_ = false;
 
-  // When extended-drag is available and the drop happens while a non-null
-  // surface was being dragged (i.e: detached mode) which had pointer focus
-  // before the drag session, we must reset focus to it, otherwise it would be
-  // wrongly kept to the latest surface received through wl_data_device::enter
-  // (see OnDragEnter function).
-  // In case of touch, though, we simply reset the focus altogether.
-  if (IsExtendedDragAvailableInternal() && dragged_window_) {
+  // When extended-drag or xdg-toplevel-drag is available and the drop happens
+  // while a non-null surface was being dragged (i.e: detached mode) which had
+  // pointer focus before the drag session, we must reset focus to it, otherwise
+  // it would be wrongly kept to the latest surface received through
+  // wl_data_device::enter (see OnDragEnter function). In case of touch, though,
+  // we simply reset the focus altogether.
+  //
+  // TODO(crbug.com/324170129): Move drop handling logic below into
+  // OnDataSourceDropPerformed instead, otherwise dropping outside target
+  // surfaces will results in drag cancellation when xdg-toplevel-drag is used.
+  bool is_protocol_available =
+      IsExtendedDragAvailableInternal() || IsXdgToplevelDragAvailable();
+  if (is_protocol_available && dragged_window_) {
     if (*drag_source_ == DragEventSource::kMouse) {
       // TODO: check if this usage is correct.
 
@@ -436,9 +515,11 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
   // Transition to |kDropped| state and determine the next action to take. If
   // drop happened while the move loop was running (i.e: kDetached), ask to quit
   // the loop, otherwise notify session end and reset state right away.
+  is_protocol_available =
+      IsExtendedDragAvailable() || IsXdgToplevelDragAvailable();
   State state_when_dropped = std::exchange(
-      state_, completed || !IsExtendedDragAvailable() ? State::kDropped
-                                                      : State::kCancelled);
+      state_, completed || !is_protocol_available ? State::kDropped
+                                                  : State::kCancelled);
   if (state_when_dropped == State::kDetached) {
     VLOG(1) << "Quiting Loop : Detached";
     QuitLoop();
@@ -458,19 +539,34 @@ void WaylandWindowDragController::OnDataSourceSend(WaylandDataSource* source,
 }
 
 bool WaylandWindowDragController::CanDispatchEvent(const PlatformEvent& event) {
-  return state_ == State::kDetached;
+  return state_ != State::kIdle;
 }
 
 uint32_t WaylandWindowDragController::DispatchEvent(
     const PlatformEvent& event) {
-  DCHECK_EQ(state_, State::kDetached);
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK_NE(state_, State::kIdle);
+  CHECK(base::CurrentUIThread::IsSet());
 
-  if (event->type() == ET_MOUSE_MOVED || event->type() == ET_MOUSE_DRAGGED ||
-      event->type() == ET_TOUCH_MOVED) {
+  // Currently, there's no reliable way in the protocol to determine when the
+  // drag session has effectively started, so as a best-effort heuristic we
+  // consider it started once wl_data_device.enter has been received at least
+  // once.
+  auto cancel_drag_cb = base::BindOnce(
+      &WaylandWindowDragController::OnDataSourceFinish, base::Unretained(this),
+      data_source_.get(), EventTimeForNow(), /*completed=*/false);
+  if (wl::MaybeHandlePlatformEventForDrag(
+          event, /*start_drag_ack_received=*/has_received_enter_,
+          std::move(cancel_drag_cb))) {
+    return POST_DISPATCH_STOP_PROPAGATION;
+  }
+
+  if (state_ == State::kDetached &&
+      (event->type() == EventType::kMouseMoved ||
+       event->type() == EventType::kMouseDragged ||
+       event->type() == EventType::kTouchMoved)) {
     HandleMotionEvent(event->AsLocatedEvent());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (event->type() != ET_TOUCH_MOVED) {
+    if (event->type() != EventType::kTouchMoved) {
       // Pass through touch so that touch position will be updated.
       return POST_DISPATCH_STOP_PROPAGATION;
     }
@@ -479,23 +575,6 @@ uint32_t WaylandWindowDragController::DispatchEvent(
 #endif
   }
   return POST_DISPATCH_PERFORM_DEFAULT;
-}
-
-void WaylandWindowDragController::OnToplevelWindowCreated(
-    WaylandToplevelWindow* window) {
-  // Skip unless a toplevel window is getting visible while in attached mode.
-  // E.g: A window/tab is being detached in a tab dragging session.
-  if (state_ != State::kAttached)
-    return;
-
-  DCHECK(window);
-  auto origin = window->GetBoundsInDIP().origin();
-  gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
-  DVLOG(1) << "Toplevel window created (detached)."
-           << " widget=" << window->GetWidget()
-           << " calculated_offset=" << offset.ToString();
-
-  SetDraggedWindow(window, offset);
 }
 
 void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
@@ -519,6 +598,7 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   }
 
   if (window == origin_window_) {
+    // See the declaration of TakeWaylandSurface() for why this is needed.
     origin_surface_ = origin_window_->TakeWaylandSurface();
     origin_window_ = nullptr;
   }
@@ -555,7 +635,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   should_process_drag_motion_events_ = false;
 }
 
-// Dispatch mouse release event (to tell clients that the drop just happened)
+// Dispatch mouse release events (to tell clients that the drop just happened)
 // clear focus and reset internal state. Must be called when the session is
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState(
@@ -568,21 +648,36 @@ void WaylandWindowDragController::HandleDropAndResetState(
   // function for a single drop event. That results in ILL_ILLOPN crashes in
   // below code, because |drag_source_| is null after the first call to this
   // function. So, early out here in that case.
-  // TODO(crbug.com/1280981): Revert this once Exo-side issue gets solved.
+  // TODO(crbug.com/40209138): Revert this once Exo-side issue gets solved.
   if (!drag_source_.has_value())
     return;
 
-  if (*drag_source_ == DragEventSource::kMouse) {
-    if (pointer_grab_owner_) {
-      pointer_delegate_->OnPointerButtonEvent(
-          ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
-          pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate);
-    }
+  // At this point, kCancelled + extended-drag protocol extension available
+  // means that the drag session was indeed cancelled, eg: when the user press
+  // ESC key. Currently, the only way of notifing platform delegate code (upper
+  // layers) about the window drag cancellation is to dispatch an ESC key press
+  // event, so do it now.
+  //
+  // Note: On environments with no ext-drag available, kCancelled is ignored,
+  // because without the extension, detaching a tab into a window would be
+  // mostly impossible, as a regular dnd session would end up with
+  // wl_data_source.dnd_finished event.
+  if (state_ == State::kCancelled && IsExtendedDragAvailable()) {
+    VLOG(1) << "Dispatching cancellation event.";
+    keyboard_delegate_->OnSynthesizedKeyPressEvent(DomCode::ESCAPE, timestamp);
   } else {
-    const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchReleaseEvent(timestamp, touch_pointer_ids[0],
-                                           wl::EventDispatchPolicy::kImmediate);
+    if (*drag_source_ == DragEventSource::kMouse) {
+      if (pointer_grab_owner_) {
+        pointer_delegate_->ReleasePressedPointerButtons(pointer_grab_owner_,
+                                                        timestamp);
+      }
+    } else {
+      const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
+      for (auto id : touch_pointer_ids) {
+        touch_delegate_->OnTouchReleaseEvent(
+            timestamp, id, wl::EventDispatchPolicy::kImmediate,
+            /*is_synthesized=*/true);
+      }
     }
   }
 
@@ -594,14 +689,10 @@ void WaylandWindowDragController::HandleDropAndResetState(
 void WaylandWindowDragController::RunLoop() {
   DCHECK_EQ(state_, State::kDetached);
   DCHECK(dragged_window_);
-  auto old_dispatcher = std::move(nested_dispatcher_);
+  CHECK(nested_dispatcher_);
 
   VLOG(1) << "Starting drag loop. widget=" << dragged_window_->GetWidget()
-          << " offset=" << drag_offset_.ToString()
-          << ", has old dispatcher=" << !!old_dispatcher;
-
-  nested_dispatcher_ =
-      PlatformEventSource::GetInstance()->OverrideDispatcher(this);
+          << " offset=" << drag_offset_.ToString();
 
   base::WeakPtr<WaylandWindowDragController> alive(weak_factory_.GetWeakPtr());
 
@@ -614,15 +705,12 @@ void WaylandWindowDragController::RunLoop() {
     return;
   }
 
-  nested_dispatcher_ = std::move(old_dispatcher);
-
   VLOG(1) << "Exited drag loop: state=" << state_;
 }
 
 void WaylandWindowDragController::QuitLoop() {
   DCHECK(!quit_loop_closure_.is_null());
-  VLOG(1) << "Quit Loop: resetting nested dispatcher=" << !!nested_dispatcher_;
-  nested_dispatcher_.reset();
+  VLOG(1) << "Quit Loop";
   std::move(quit_loop_closure_).Run();
 }
 
@@ -635,14 +723,21 @@ void WaylandWindowDragController::SetDraggedWindow(
   dragged_window_ = window;
   drag_offset_ = offset;
 
-  // TODO(crbug.com/896640): Fallback when extended-drag is not available.
-  if (extended_drag_source_)
+  // TODO(crbug.com/40598679): Fallback when no window drag protocol available.
+  if (extended_drag_source_) {
     extended_drag_source_->SetDraggedWindow(dragged_window_, drag_offset_);
+  } else if (xdg_toplevel_drag_) {
+    xdg_toplevel_drag_->SetDraggedWindow(dragged_window_, drag_offset_);
+  }
 }
 
 bool WaylandWindowDragController::IsExtendedDragAvailable() const {
   return extended_drag_available_for_testing_ ||
          IsExtendedDragAvailableInternal();
+}
+
+bool WaylandWindowDragController::IsXdgToplevelDragAvailable() const {
+  return !!connection_->toplevel_drag_manager_v1();
 }
 
 bool WaylandWindowDragController::IsActiveDragAndDropSession() const {

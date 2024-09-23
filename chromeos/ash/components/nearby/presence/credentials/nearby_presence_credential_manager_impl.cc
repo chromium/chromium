@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
-#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_shared_credentials_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/cross_device/logging/logging.h"
@@ -72,7 +72,7 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
     CreateCallback on_created) {
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Creating NearbyPresenceCredentialManager";
   Create(pref_service, identity_manager, url_loader_factory, nearby_presence,
          std::make_unique<LocalDeviceDataProviderImpl>(pref_service,
@@ -93,14 +93,15 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
 
   on_created_ = (std::move(on_created));
 
-  // This can only be set via `SetCredentialManagerForTesting` since the
-  // class assumes only one CredentialManager is created per lifetime, and
-  // asserts that there isn't an existing CredentialManager outside of unit
+  // This can only be set via `SetNextCredentialManagerInstanceForTesting`
+  // since the class assumes only one CredentialManager is created per lifetime,
+  // and asserts that there isn't an existing CredentialManager outside of unit
   // tests.
   if (g_is_credential_manager_set_for_testing_) {
     CHECK(credential_manager_under_initialization_);
     std::move(on_created_)
         .Run(std::move(credential_manager_under_initialization_));
+    g_is_credential_manager_set_for_testing_ = false;
     return;
   }
 
@@ -111,9 +112,10 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
           std::move(local_device_data_provider)));
 
   if (!credential_manager_under_initialization_->IsLocalDeviceRegistered()) {
-    CD_LOG(VERBOSE, Feature::NP) << __func__
-                                 << ": Device is not registered with server. "
-                                    "Registering the local device.";
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
+        << __func__
+        << ": Device is not registered with server. "
+           "Registering the local device.";
     credential_manager_under_initialization_->RegisterPresence(
         base::BindOnce(&NearbyPresenceCredentialManagerImpl::Creator::
                            OnCredentialManagerRegistered,
@@ -129,7 +131,7 @@ void NearbyPresenceCredentialManagerImpl::Creator::Create(
 
 // static
 void NearbyPresenceCredentialManagerImpl::Creator::
-    SetCredentialManagerForTesting(
+    SetNextCredentialManagerInstanceForTesting(
         std::unique_ptr<NearbyPresenceCredentialManager> credential_manager) {
   CHECK(credential_manager);
   CHECK(credential_manager->IsLocalDeviceRegistered());
@@ -145,14 +147,14 @@ void NearbyPresenceCredentialManagerImpl::Creator::
   CHECK(on_created_);
 
   if (!success) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": Credential manager failed to register.";
     // TODO(b/276307539): Add metrics to record failures.
     std::move(on_created_).Run(nullptr);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Credential manager successfully registered.";
 
   CHECK(credential_manager_under_initialization_->IsLocalDeviceRegistered());
@@ -167,7 +169,7 @@ void NearbyPresenceCredentialManagerImpl::Creator::
   CHECK(credential_manager_under_initialization_);
   CHECK(credential_manager_under_initialization_->IsLocalDeviceRegistered());
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Credential manager successfully initialized.";
   std::move(on_created_)
       .Run(std::move(credential_manager_under_initialization_));
@@ -198,7 +200,7 @@ NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::StartDailySync,
               weak_ptr_factory_.GetWeakPtr()),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   daily_credential_sync_scheduler_->Start();
 }
 
@@ -223,7 +225,7 @@ void NearbyPresenceCredentialManagerImpl::RegisterPresence(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration,
               weak_ptr_factory_.GetWeakPtr()),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   first_time_registration_on_demand_scheduler_->Start();
   first_time_registration_on_demand_scheduler_->MakeImmediateRequest();
 }
@@ -276,7 +278,7 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
 
   first_time_server_registration_attempts_needed_count_++;
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Beginning first time registration.";
 
   // Construct a request for first time registration to let the server know
@@ -310,7 +312,7 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
 
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeRegistrationComplete(
     metrics::FirstTimeRegistrationResult result) {
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": First time registration completed with result: ["
       << ((result == metrics::FirstTimeRegistrationResult::kSuccess)
               ? "success"
@@ -330,7 +332,7 @@ void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationTimeout() {
 
 void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure(
     ash::nearby::NearbyHttpResult result) {
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Failed first time registration with result: " << result;
 
   server_client_.reset();
@@ -357,7 +359,7 @@ void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure(
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
     base::TimeTicks registration_request_start_time,
     const ash::nearby::proto::UpdateDeviceResponse& response) {
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__
       << ": Successfully registered device with the Nearby Presence server.";
 
@@ -405,14 +407,14 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
     std::vector<mojom::SharedCredentialPtr> shared_credentials,
     mojo_base::mojom::AbslStatusCode status) {
   if (status != mojo_base::mojom::AbslStatusCode::kOk) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": First time credentials failed to generate.";
     OnFirstTimeRegistrationComplete(metrics::FirstTimeRegistrationResult::
                                         kLocalCredentialGenerationFailure);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": First time credentials successfully generated.";
 
   // With generated credentials, the CredentialManager needs to upload the
@@ -444,13 +446,14 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsUpload(
     bool success) {
   if (!success) {
-    CD_LOG(ERROR, Feature::NP) << ": First time credential upload failed.";
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
+        << ": First time credential upload failed.";
     OnFirstTimeRegistrationComplete(
         metrics::FirstTimeRegistrationResult::kUploadLocalCredentialsFailure);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": First time credential upload succeeded.";
 
   // We've completed the 3rd of 5 steps of first time registration:
@@ -469,14 +472,14 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
     std::vector<::nearby::internal::SharedCredential> credentials,
     bool success) {
   if (!success) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": First time credential download failed.";
     OnFirstTimeRegistrationComplete(metrics::FirstTimeRegistrationResult::
                                         kDownloadRemoteCredentialsFailure);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": First time credential download completed successfully.";
 
   // We've completed the 4th of 5 steps for first time registration.
@@ -504,14 +507,14 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
     mojo_base::mojom::AbslStatusCode status) {
   if (status != mojo_base::mojom::AbslStatusCode::kOk) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": First time credential save failed.";
     OnFirstTimeRegistrationComplete(
         metrics::FirstTimeRegistrationResult::kSaveRemoteCredentialsFailure);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": First time credential save succeeded.";
 
   local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
@@ -529,7 +532,7 @@ void NearbyPresenceCredentialManagerImpl::StartDailySync() {
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Beginning daily credential sync.";
 
   is_daily_sync_in_progress_ = true;
@@ -554,7 +557,7 @@ void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
     mojo_base::mojom::AbslStatusCode status) {
   // On failures, exponentially retry the daily sync flow.
   if (status != mojo_base::mojom::AbslStatusCode::kOk) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": Failed to retrieve local shared credentials.";
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
@@ -580,7 +583,7 @@ void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
   // schedule an upload of the credentials.
   if (local_device_data_provider_->HaveSharedCredentialsChanged(
           proto_shared_credentials)) {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__
         << ": Persisted credentials have changed; scheduling upload of local "
            "updated credentials.";
@@ -594,9 +597,10 @@ void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP) << __func__
-                               << ": Persisted credentials have not changed; "
-                                  "scheduling download of remote credentials.";
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
+      << __func__
+      << ": Persisted credentials have not changed; "
+         "scheduling download of remote credentials.";
 
   // If the local credentials haven't changed, don't upload them to the server.
   // We've completed the 2nd of 4 steps for daily credential sync.
@@ -615,12 +619,13 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialUpload(
     bool success) {
   // On failures, exponentially retry the daily sync flow.
   if (!success) {
-    CD_LOG(ERROR, Feature::NP) << __func__ << ": Failed to upload credentials.";
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
+        << __func__ << ": Failed to upload credentials.";
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Scheduling download of remote credentials.";
 
   // We've completed the 2nd of 4 steps for daily credential sync.
@@ -640,7 +645,7 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload(
     bool success) {
   // On failures, exponentially retry the daily sync flow.
   if (!success) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": Failed to download remote credentials.";
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
@@ -660,7 +665,7 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload(
     mojo_credentials.push_back(proto::SharedCredentialToMojom(cred));
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__
       << ": Beginning attempt to save remote credentials "
          "to credential storage.";
@@ -678,14 +683,14 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncRemoteCredentialsSaved(
     mojo_base::mojom::AbslStatusCode status) {
   // On failures, exponentially retry the daily sync flow.
   if (status != mojo_base::mojom::AbslStatusCode::kOk) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__
         << ": Failed to save remote credentials to credential storage.";
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__
       << ": Successfully stored remote credentials to credential storage.";
 
@@ -714,7 +719,7 @@ void NearbyPresenceCredentialManagerImpl::ScheduleUploadCredentials(
               &NearbyPresenceCredentialManagerImpl::UploadCredentials,
               weak_ptr_factory_.GetWeakPtr(), proto_shared_credentials,
               std::move(on_upload)),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   upload_on_demand_scheduler_->Start();
   upload_on_demand_scheduler_->MakeImmediateRequest();
 }
@@ -731,7 +736,7 @@ void NearbyPresenceCredentialManagerImpl::ScheduleDownloadCredentials(
           base::BindRepeating(
               &NearbyPresenceCredentialManagerImpl::DownloadCredentials,
               weak_ptr_factory_.GetWeakPtr(), std::move(on_download)),
-          base::DefaultClock::GetInstance());
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
   download_on_demand_scheduler_->Start();
   download_on_demand_scheduler_->MakeImmediateRequest();
 }
@@ -853,9 +858,12 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback) {
   download_credentials_attempts_needed_count_++;
-  ash::nearby::proto::ListPublicCertificatesRequest request;
-  request.set_parent(kDeviceIdPrefix +
-                     local_device_data_provider_->GetDeviceId());
+  ash::nearby::proto::ListSharedCredentialsRequest request;
+
+  // TODO(hansberry): Populate with actual DUSI.
+  request.set_dusi("test_dusi");
+  request.set_identity_type(
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 
   server_response_timer_.Start(
       FROM_HERE, kServerResponseTimeout,
@@ -870,7 +878,7 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
   server_client_ = NearbyPresenceServerClientImpl::Factory::Create(
       std::make_unique<ash::nearby::NearbyApiCallFlowImpl>(), identity_manager_,
       url_loader_factory_);
-  server_client_->ListPublicCertificates(
+  server_client_->ListSharedCredentials(
       request,
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess,
@@ -940,22 +948,23 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback,
     base::TimeTicks download_request_start_time,
-    const ash::nearby::proto::ListPublicCertificatesResponse& response) {
+    const ash::nearby::proto::ListSharedCredentialsResponse& response) {
   server_response_timer_.Stop();
   base::TimeDelta download_request_duration =
       base::TimeTicks::Now() - download_request_start_time;
   metrics::RecordSharedCredentialDownloadDuration(download_request_duration);
 
-  std::vector<::nearby::internal::SharedCredential> remote_credentials;
-  for (auto public_certificate : response.public_certificates()) {
-    remote_credentials.push_back(
-        proto::PublicCertificateToSharedCredential(public_certificate));
+  std::vector<::nearby::internal::SharedCredential> shared_credentials;
+  for (auto remote_shared_credential : response.shared_credentials()) {
+    shared_credentials.push_back(
+        proto::RemoteSharedCredentialToThirdPartySharedCredential(
+            remote_shared_credential));
   }
 
   HandleDownloadCredentialsResult(
       download_credentials_result_callback,
       /*result=*/ash::nearby::NearbyHttpResult::kSuccess,
-      /*credentials=*/remote_credentials);
+      /*credentials=*/shared_credentials);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(

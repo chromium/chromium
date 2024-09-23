@@ -26,8 +26,12 @@ struct ScheduleParams {
 
   ScheduleParams();
   ScheduleParams(const ScheduleParams& other);
-  bool operator==(const ScheduleParams& other) const;
+  ScheduleParams(ScheduleParams&& other);
+  ScheduleParams& operator=(const ScheduleParams& other);
+  ScheduleParams& operator=(ScheduleParams&& other);
   ~ScheduleParams();
+
+  bool operator==(const ScheduleParams& other) const;
 
   Priority priority;
 

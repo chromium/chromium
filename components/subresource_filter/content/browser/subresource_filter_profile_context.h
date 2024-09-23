@@ -7,9 +7,14 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class HostContentSettingsMap;
+
+namespace content_settings {
+class CookieSettings;
+}  // namespace content_settings
 
 namespace subresource_filter {
 
@@ -30,7 +35,8 @@ class SubresourceFilterProfileContext : public KeyedService {
   };
 
   explicit SubresourceFilterProfileContext(
-      HostContentSettingsMap* settings_map);
+      HostContentSettingsMap* settings_map,
+      scoped_refptr<content_settings::CookieSettings> cookie_settings);
 
   SubresourceFilterProfileContext(const SubresourceFilterProfileContext&) =
       delete;
@@ -47,6 +53,10 @@ class SubresourceFilterProfileContext : public KeyedService {
     return ads_intervention_manager_.get();
   }
 
+  content_settings::CookieSettings* cookie_settings() {
+    return cookie_settings_.get();
+  }
+
   // Can be used to attach an embedder-level object to this object. Can only be
   // invoked once. |embedder_data| will be destroyed before the other objects
   // owned by this object, and thus it can safely depend on those other objects.
@@ -61,6 +71,8 @@ class SubresourceFilterProfileContext : public KeyedService {
   // Manages ads interventions that have been triggered on previous
   // navigations.
   std::unique_ptr<AdsInterventionManager> ads_intervention_manager_;
+
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   // NOTE: Declared after the objects above to ensure that it is destroyed
   // before them.

@@ -8,7 +8,7 @@ import {SeaPenStoreInterface, setSeaPenStore} from 'chrome://resources/ash/commo
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {DeferredAction, StoreObserver} from 'chrome://resources/js/store.js';
 
-import {beginLoadSelectedImageAction} from './personalization_app.js';
+import {beginLoadSelectedImageAction, setFullscreenStateAction} from './personalization_app.js';
 import {PersonalizationState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 
@@ -81,6 +81,9 @@ export class SeaPenStoreAdapter implements SeaPenStoreInterface,
       case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
       case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
         store.dispatch(beginLoadSelectedImageAction());
+        break;
+      case SeaPenActionName.SET_SEA_PEN_FULLSCREEN_STATE:
+        store.dispatch(setFullscreenStateAction(action.state));
         break;
     }
     store.dispatch(action);

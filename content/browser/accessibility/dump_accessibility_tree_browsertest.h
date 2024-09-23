@@ -73,6 +73,11 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
   }
 
+  void RunAriaTestMinusHtmlMode(const base::FilePath::CharType* file_path) {
+    RunTypedTest<kARIA>(file_path,
+                        ui::kAXModeComplete);  // & ~ui::AXMode::kHTML);
+  }
+
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kHTML>(file_path);
   }
@@ -99,26 +104,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void RunRegressionTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kRegression>(file_path);
-  }
-
-  void RunLanguageDetectionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "language-detection");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath language_detection_file =
-        test_path.Append(base::FilePath(file_path));
-
-    // Enable language detection for both static and dynamic content.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityLanguageDetection);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic);
-
-    RunTest(ui::kAXModeComplete, language_detection_file,
-            "accessibility/language-detection");
   }
 
   // Testing of the Test Harness itself.

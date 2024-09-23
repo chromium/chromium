@@ -9,6 +9,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
@@ -490,7 +492,7 @@ TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
   EXPECT_FALSE(widget->widget_delegate()->CanFullscreen());
 }
 
-// TODO(crbug.com/1490404): Re-enable this when flakiness is resolved.
+// TODO(crbug.com/40284737): Re-enable this when flakiness is resolved.
 TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
   UpdateDisplay("800x600");
 
@@ -512,8 +514,8 @@ TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
 
   views::Widget* widget = xdg_surface->shell_surface->GetWidget();
   auto* window_state = ash::WindowState::Get(widget->GetNativeWindow());
-  window_state->window()->SetProperty(aura::client::kAppType,
-                                      static_cast<int>(ash::AppType::LACROS));
+  window_state->window()->SetProperty(chromeos::kAppTypeKey,
+                                      chromeos::AppType::LACROS);
   ASSERT_FALSE(window_state->IsFloated());
 
   // Location 0 is bottom right. Test that the window is floated and in the

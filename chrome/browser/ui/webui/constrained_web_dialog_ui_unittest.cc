@@ -37,32 +37,32 @@ class TestConstrainedWebDialogDelegate : public ConstrainedWebDialogDelegate {
   void OnDialogCloseFromWebUI() override {}
 
   std::unique_ptr<content::WebContents> ReleaseWebContents() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   content::WebContents* GetWebContents() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   gfx::NativeWindow GetNativeDialog() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   gfx::Size GetConstrainedWebDialogMinimumSize() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Size();
   }
 
   gfx::Size GetConstrainedWebDialogMaximumSize() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Size();
   }
 
   gfx::Size GetConstrainedWebDialogPreferredSize() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Size();
   }
 

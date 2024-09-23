@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "contextual_sheet_display_controller.h",
+    "contextual_sheet_view_controller.h",
+    "contextual_sheet_view_controller.mm",
+    "panel_block_metrics_data.h",
+    "panel_block_metrics_data.mm",
+    "panel_content_consumer.h",
+    "panel_content_view_controller.h",
+    "panel_content_view_controller.mm",
+    "trait_collection_change_delegate.h",
+  ]
+  deps = [
+    ":public",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/browser/contextual_panel/utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  sources = [
+    "contextual_panel_view_constants.h",
+    "contextual_panel_view_constants.mm",
+    "panel_block_data.h",
+    "panel_block_data.mm",
+    "panel_item_collection_view_cell.h",
+    "panel_item_collection_view_cell.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "contextual_panel_egtest.mm" ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

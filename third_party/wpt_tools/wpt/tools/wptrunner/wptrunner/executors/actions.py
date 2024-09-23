@@ -319,7 +319,7 @@ class ClickFedCMDialogButtonAction:
     def __call__(self, payload):
         dialog_button = payload["dialog_button"]
         self.logger.debug(f"Clicking FedCM dialog button: {dialog_button}")
-        return self.protocol.fedcm.click_fedcm_dialog_button()
+        return self.protocol.fedcm.click_fedcm_dialog_button(dialog_button)
 
 class SelectFedCMAccountAction:
     name = "select_fedcm_account"
@@ -443,6 +443,73 @@ class GetVirtualSensorInformationAction:
         self.logger.debug("Requesting information from %s sensor" % sensor_type)
         return self.protocol.virtual_sensor.get_virtual_sensor_information(sensor_type)
 
+class SetDevicePostureAction:
+    name = "set_device_posture"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        posture = payload["posture"]
+        return self.protocol.device_posture.set_device_posture(posture)
+
+class ClearDevicePostureAction:
+    name = "clear_device_posture"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        return self.protocol.device_posture.clear_device_posture()
+
+class RunBounceTrackingMitigationsAction:
+    name = "run_bounce_tracking_mitigations"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        self.logger.debug("Running bounce tracking mitigations")
+        return self.protocol.storage.run_bounce_tracking_mitigations()
+
+class CreateVirtualPressureSourceAction:
+    name = "create_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        metadata = payload["metadata"]
+        self.logger.debug("Creating %s pressure source with %s values" % (source_type, metadata))
+        return self.protocol.pressure.create_virtual_pressure_source(source_type, metadata)
+
+class UpdateVirtualPressureSourceAction:
+    name = "update_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        sample = payload["sample"]
+        return self.protocol.pressure.update_virtual_pressure_source(source_type, sample)
+
+class RemoveVirtualPressureSourceAction:
+    name = "remove_virtual_pressure_source"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        source_type = payload["source_type"]
+        return self.protocol.pressure.remove_virtual_pressure_source(source_type)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -477,4 +544,10 @@ actions = [ClickAction,
            CreateVirtualSensorAction,
            UpdateVirtualSensorAction,
            RemoveVirtualSensorAction,
-           GetVirtualSensorInformationAction]
+           GetVirtualSensorInformationAction,
+           SetDevicePostureAction,
+           ClearDevicePostureAction,
+           RunBounceTrackingMitigationsAction,
+           CreateVirtualPressureSourceAction,
+           UpdateVirtualPressureSourceAction,
+           RemoveVirtualPressureSourceAction]

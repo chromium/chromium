@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Single Tab module on phones -->
+<dimen name="single_tab_module_lateral_margin">@dimen/mvt_container_lateral_margin</dimen>
+<dimen name="single_tab_module_padding_top">16dp</dimen>
+<dimen name="single_tab_module_padding_bottom">20dp</dimen>
+<dimen name="single_tab_module_title_margin_bottom">12dp</dimen>
+<dimen name="single_tab_module_tab_thumbnail_size">106dp</dimen>
+<dimen name="single_tab_thumbnail_margin">1dp</dimen>
+<dimen name="single_tab_thumbnail_radius">12dp</dimen>
+<dimen name="favicon_padding">4dp</dimen>
+<dimen name="favicon_background_radius">4dp</dimen>
+</resources>

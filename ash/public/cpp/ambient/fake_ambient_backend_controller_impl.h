@@ -40,7 +40,9 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int banner_height,
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
-  void FetchWeather(FetchWeatherCallback callback) override;
+  void FetchWeather(std::optional<std::string> weather_client_id,
+                    bool prefer_aplha_endpoint,
+                    FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
   std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
       AmbientVideo video) const override;
@@ -99,6 +101,17 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
     return current_temperature_unit_;
   }
 
+  int fetch_weather_count() const { return fetch_weather_count_; }
+
+  void set_run_fetch_weather_callback(bool value) {
+    run_fetch_weather_callback_ = value;
+  }
+
+  // The latest `weather_client_id` passed to `FetchWeather()`.
+  std::optional<std::string> weather_client_id() const {
+    return weather_client_id_;
+  }
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
@@ -122,6 +135,10 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
 
   AmbientModeTemperatureUnit current_temperature_unit_ =
       AmbientModeTemperatureUnit::kCelsius;
+
+  int fetch_weather_count_ = 0;
+  bool run_fetch_weather_callback_ = true;
+  std::optional<std::string> weather_client_id_;
 };
 
 }  // namespace ash

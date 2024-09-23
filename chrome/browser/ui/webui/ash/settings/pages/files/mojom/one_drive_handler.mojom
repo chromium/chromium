@@ -35,4 +35,8 @@ interface Page {
   // Invoked on ODFS mount or unmount, indicating that the user has signed in
   // or out of OneDrive.
   OnODFSMountOrUnmount();
+
+  // Invoked whenever AllowUserToRemoveODFS pref is updated, indicating
+  // whether the user is allowed to remove OneDrive.
+  OnAllowUserToRemoveODFSChanged(bool is_allowed);
 };

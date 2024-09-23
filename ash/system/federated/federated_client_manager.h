@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
+#include "chromeos/ash/services/federated/public/mojom/tables.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::federated {
@@ -56,13 +57,16 @@ class ASH_EXPORT FederatedClientManager {
   // Reports an example to Federated Service storage.
   // If the Federated Service is not available, this method is effectively a
   // no-op.
-  void ReportExample(const std::string& client_name, ExamplePtr example);
+  void ReportExample(
+      chromeos::federated::mojom::FederatedExampleTableId table_id,
+      ExamplePtr example);
   // Same as ReportExample above, except FederatedClientManager will use the
   // inputs to construct an ExamplePtr (see .cc for exact schema). This is
   // expected to be useful mainly for PHH cases.
-  void ReportSingleString(const std::string& client_name,
-                          const std::string& example_feature_name,
-                          const std::string& example_str);
+  void ReportSingleString(
+      chromeos::federated::mojom::FederatedExampleTableId table_id,
+      const std::string& example_feature_name,
+      const std::string& example_str);
 
   // ***** Methods for Federated Strings Service clients *****
 
@@ -73,8 +77,9 @@ class ASH_EXPORT FederatedClientManager {
   // Reports a Strings Service example to Federated Service storage.
   // If the Federated Service is not available, this method is effectively a
   // no-op.
-  void ReportStringViaStringsService(const std::string& client_name,
-                                     const std::string& client_string);
+  void ReportStringViaStringsService(
+      chromeos::federated::mojom::FederatedExampleTableId table_id,
+      const std::string& client_string);
 
   // Returns a count of examples which were sent to the Federated Service.
   // "Success" here means "successfully processed by FederatedClientManager, and
@@ -88,8 +93,9 @@ class ASH_EXPORT FederatedClientManager {
 
  private:
   void TryToBindFederatedServiceIfNecessary();
-  void ReportExampleToFederatedService(const std::string& client_name,
-                                       ExamplePtr example);
+  void ReportExampleToFederatedService(
+      const chromeos::federated::mojom::FederatedExampleTableId table_id,
+      ExamplePtr example);
 
   int successful_reports_for_test_ = 0;
   bool initialized_ = false;

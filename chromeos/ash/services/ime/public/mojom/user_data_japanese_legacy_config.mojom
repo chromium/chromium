@@ -1,0 +1,82 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.ime.mojom;
+
+// Represents a legacy Japanese IME configuration that is received via
+// chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_legacy_config.proto
+//
+// Used by the InputMethodUserDataService mojom interface.
+// Based on https://github.com/google/mozc/blob/master/src/protocol/config.proto
+struct JapaneseLegacyConfig {
+  enum PreeditMethod {
+    kUnspecified,
+    kRomaji,
+    kKana,
+  };
+
+  enum PunctuationMethod {
+    kUnspecified,
+    kKutenTouten,
+    kCommaPeriod,
+    kKutenPeriod,
+    kCommaTouten,
+  };
+
+  enum SymbolMethod {
+    kUnspecified,
+    kCornerBracketMiddleDot,
+    kSquareBracketSlash,
+    kCornerBracketSlash,
+    kSquareBracketMiddleDot,
+  };
+
+  enum FundamentalCharacterForm {
+    kUnspecified,
+    kInputMode,
+    kFullWidth,
+    kHalfWidth,
+  };
+
+  enum SelectionShortcut {
+    kUnspecified,
+    k123456789,
+    kAsdfghjkl,
+    kNoShortcut,
+  };
+
+  enum SessionKeymap {
+    kUnspecified,
+    kCustom,
+    kAtok,
+    kMsime,
+    kKotoeri,
+    kMobile,
+    kChromeos,
+    kNone,
+  };
+
+  enum ShiftKeyModeSwitch {
+    kUnspecified,
+    kOff,
+    kAsciiInputMode,
+    kKatakana,
+  };
+
+  PreeditMethod preedit_method;
+  PunctuationMethod punctuation_method;
+  SymbolMethod symbol_method;
+  FundamentalCharacterForm space_character_form;
+  SelectionShortcut selection_shortcut;
+  SessionKeymap session_keymap;
+  bool use_auto_conversion;
+  ShiftKeyModeSwitch shift_key_mode_switch;
+  bool use_history_suggest;
+  bool use_dictionary_suggest;
+  uint32 suggestion_size;
+  bool incognito_mode;
+  // Allows the uploading of usage stats to google.
+  bool upload_usage_stats;
+};
+

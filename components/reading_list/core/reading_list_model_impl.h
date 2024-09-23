@@ -25,7 +25,7 @@ class Clock;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 // Concrete implementation of a reading list model using in memory lists.
@@ -49,9 +49,9 @@ class ReadingListModelImpl : public ReadingListModel {
 
   // ReadingListModel implementation.
   bool loaded() const override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetSyncControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
       override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegateForTransportMode() override;
   bool IsPerformingBatchUpdates() const override;
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;
@@ -60,7 +60,7 @@ class ReadingListModelImpl : public ReadingListModel {
   size_t unread_size() const override;
   size_t unseen_size() const override;
   void MarkAllSeen() override;
-  bool DeleteAllEntries() override;
+  bool DeleteAllEntries(const base::Location& location) override;
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
@@ -72,7 +72,8 @@ class ReadingListModelImpl : public ReadingListModel {
       const std::string& title,
       reading_list::EntrySource source,
       base::TimeDelta estimated_read_time) override;
-  void RemoveEntryByURL(const GURL& url) override;
+  void RemoveEntryByURL(const GURL& url,
+                        const base::Location& location) override;
   void SetReadStatusIfExists(const GURL& url, bool read) override;
   void SetEntryTitleIfExists(const GURL& url,
                              const std::string& title) override;
@@ -141,7 +142,7 @@ class ReadingListModelImpl : public ReadingListModel {
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   // Exposes the sync bridge publicly for testing purposes.
   ReadingListSyncBridge* GetSyncBridgeForTest();
@@ -168,7 +169,7 @@ class ReadingListModelImpl : public ReadingListModel {
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   void StoreLoaded(ReadingListModelStorage::LoadResultOrError result_or_error);
 
@@ -187,7 +188,9 @@ class ReadingListModelImpl : public ReadingListModel {
 
   // Remove entry |url| and propagate to the sync bridge if |from_sync| is
   // false.
-  void RemoveEntryByURLImpl(const GURL& url, bool from_sync);
+  void RemoveEntryByURLImpl(const GURL& url,
+                            const base::Location& location,
+                            bool from_sync);
 
   // Update the 3 counts above considering addition/removal of |entry|.
   void UpdateEntryStateCountersOnEntryRemoval(const ReadingListEntry& entry);

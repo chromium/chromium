@@ -14,7 +14,7 @@ namespace mojo {
 
 // TypeConverter to translate from
 // device::BluetoothDevice::ConnectErrorCode to bluetooth.mojom.ConnectResult.
-// TODO(crbug.com/666561): Replace because TypeConverter is deprecated.
+// TODO(crbug.com/40494280): Replace because TypeConverter is deprecated.
 template <>
 struct TypeConverter<bluetooth::mojom::ConnectResult,
                      device::BluetoothDevice::ConnectErrorCode> {
@@ -50,11 +50,25 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
         return bluetooth::mojom::ConnectResult::DOES_NOT_EXIST;
       case device::BluetoothDevice::ConnectErrorCode::ERROR_INVALID_ARGS:
         return bluetooth::mojom::ConnectResult::INVALID_ARGS;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT:
+        return bluetooth::mojom::ConnectResult::NON_AUTH_TIMEOUT;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_NO_MEMORY:
+        return bluetooth::mojom::ConnectResult::NO_MEMORY;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_ENVIRONMENT:
+        return bluetooth::mojom::ConnectResult::JNI_ENVIRONMENT;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_THREAD_ATTACH:
+        return bluetooth::mojom::ConnectResult::JNI_THREAD_ATTACH;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
+        return bluetooth::mojom::ConnectResult::WAKELOCK;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
+        return bluetooth::mojom::ConnectResult::UNEXPECTED_STATE;
+      case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+        return bluetooth::mojom::ConnectResult::SOCKET;
       case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return bluetooth::mojom::ConnectResult::FAILED;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return bluetooth::mojom::ConnectResult::FAILED;
   }
 };

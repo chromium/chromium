@@ -27,4 +27,8 @@ found in the LICENSE file.
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
+    <style name="Theme.Chromium.SigninAndHistorySyncActivity"
+        parent="Base.Theme.Chromium.SigninAndHistorySyncActivity">
+        <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
+    </style>
 </resources>

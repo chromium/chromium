@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [
+    "configure_network_interactive_uitest.cc",
+    "passpoint_ui_interactive_uitest.cc",
+    "wifi_interactive_uitest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//ash",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/test:test_support",
+    "//chrome/test/base/ash/interactive:test_support",
+    "//chrome/test/base/ash/interactive/network:test_support",
+    "//chrome/test/base/ash/interactive/settings:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/shill:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/connectivity/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//chromeos/strings:strings_grit",
+    "//content/test:test_support",
+    "//ui/base:base",
+    "//ui/base:test_support",
+  ]
+}

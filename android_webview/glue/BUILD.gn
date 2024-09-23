@@ -23,6 +23,7 @@ android_library("glue_java") {
     "//components/embedder_support/android:application_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_util_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -35,6 +36,7 @@ android_library("glue_java") {
 
   sources = [
     "java/src/com/android/webview/chromium/AndroidXProcessGlobalConfig.java",
+    "java/src/com/android/webview/chromium/ApiImplementationLogger.java",
     "java/src/com/android/webview/chromium/CallbackConverter.java",
     "java/src/com/android/webview/chromium/ContentSettingsAdapter.java",
     "java/src/com/android/webview/chromium/CookieManagerAdapter.java",
@@ -47,6 +49,9 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/GlueApiHelperForR.java",
     "java/src/com/android/webview/chromium/GraphicsUtils.java",
     "java/src/com/android/webview/chromium/PacProcessorImpl.java",
+    "java/src/com/android/webview/chromium/PrefetchOperationResult.java",
+    "java/src/com/android/webview/chromium/PrefetchOperationStatusCode.java",
+    "java/src/com/android/webview/chromium/PrefetchParams.java",
     "java/src/com/android/webview/chromium/Profile.java",
     "java/src/com/android/webview/chromium/ProfileStore.java",
     "java/src/com/android/webview/chromium/SafeBrowsingResponseAdapter.java",

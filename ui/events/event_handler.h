@@ -5,11 +5,11 @@
 #ifndef UI_EVENTS_EVENT_HANDLER_H_
 #define UI_EVENTS_EVENT_HANDLER_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -53,7 +53,7 @@ class EVENTS_EXPORT EventHandler {
 
   // Returns information about the implementing class or scope for diagnostic
   // logging purposes.
-  virtual base::StringPiece GetLogContext() const;
+  virtual std::string_view GetLogContext() const;
 
  private:
   friend class EventDispatcher;
@@ -61,7 +61,7 @@ class EVENTS_EXPORT EventHandler {
 
   // EventDispatcher pushes itself on the top of this stack while dispatching
   // events to this then pops itself off when done.
-  base::stack<EventDispatcher*> dispatchers_;
+  base::stack<raw_ptr<EventDispatcher, CtnExperimental>> dispatchers_;
 };
 
 using EventHandlerList = std::vector<raw_ptr<EventHandler, VectorExperimental>>;

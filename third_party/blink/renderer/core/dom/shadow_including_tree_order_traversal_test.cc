@@ -45,7 +45,7 @@ void RemoveWhiteSpaceOnlyTextNodes(ContainerNode& container) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="c0">
       <div id="c00">
         <template shadowrootmode="open"></template>
@@ -133,7 +133,7 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="a0">
       <div id="a00"></div>
       <div id="a01"></div>
@@ -148,16 +148,22 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, DescendantsOf) {
     </div>
     <div id="a2"></div>
   )HTML");
+  GetDocument().body()->SetIdAttribute(AtomicString("body"));
 
   EXPECT_THAT(GatherElementIdsFromTraversalRange(
                   ShadowIncludingTreeOrderTraversal::DescendantsOf(
                       *GetDocument().body())),
               ElementsAre("a0", "a00", "a01", "a1", "shadow", "b0", "b00",
                           "a10", "a2"));
+  EXPECT_THAT(GatherElementIdsFromTraversalRange(
+                  ShadowIncludingTreeOrderTraversal::InclusiveDescendantsOf(
+                      *GetDocument().body())),
+              ElementsAre("body", "a0", "a00", "a01", "a1", "shadow", "b0",
+                          "b00", "a10", "a2"));
 }
 
 TEST_F(ShadowIncludingTreeOrderTraversalTest, ChildrenOf) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="a0">
       <div id="a00"></div>
       <div id="a01"></div>

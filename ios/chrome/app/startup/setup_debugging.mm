@@ -6,8 +6,6 @@
 
 #import <objc/runtime.h>
 
-#import <ostream>
-
 #import "base/check.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
@@ -50,15 +48,15 @@ void SwizzleUIImageImageNamed() {
   // A set of image names that are exceptions to the 'missing image' check.
   NSMutableSet* exceptions = [NSMutableSet set];
 
-  // TODO(crbug.com/720337): Add missing image.
+  // TODO(crbug.com/41318097): Add missing image.
   [exceptions addObject:@"card_close_button_pressed_incognito"];
-  // TODO(crbug.com/720355): Add missing image.
+  // TODO(crbug.com/41318110): Add missing image.
   [exceptions addObject:@"find_close_pressed_incognito"];
-  // TODO(crbug.com/720338): Add missing images.
+  // TODO(crbug.com/40519792): Add missing images.
   [exceptions addObject:@"glif-mic-to-dots-small_37"];
   [exceptions addObject:@"glif-mic-to-dots-large_37"];
   [exceptions addObject:@"glif-google-to-dots_28"];
-  // TODO(crbug.com/721338): Add missing image.
+  // TODO(crbug.com/41318906): Add missing image.
   [exceptions addObject:@"voice_icon_keyboard_accessory"];
 
   // The original implementation of [UIImage imageNamed:].
@@ -74,7 +72,7 @@ void SwizzleUIImageImageNamed() {
 
     if (![exceptions containsObject:imageName] &&
         ![imageName containsString:@".FAUXBUNDLEID."]) {
-// TODO(crbug.com/1325334): Temporarily turn off DCHECK while bootstrapping
+// TODO(crbug.com/40225445): Temporarily turn off DCHECK while bootstrapping
 // Catalyst. Log the error to the console instead.
 #if BUILDFLAG(IS_IOS_MACCATALYST)
       DLOG(ERROR) << "Missing image: " << base::SysNSStringToUTF8(imageName);
@@ -165,7 +163,7 @@ void SwizzleNSDataDataWithContentsOfFile() {
 
 + (void)setUpDebuggingOptions {
 // Enable the zombie treadmill on simulator builds.
-// TODO(crbug.com/663390): Consider enabling this on device builds too.
+// TODO(crbug.com/40492640): Consider enabling this on device builds too.
 #if TARGET_IPHONE_SIMULATOR
   DCHECK(ObjcEvilDoers::ZombieEnable(true, 10000));
 #endif

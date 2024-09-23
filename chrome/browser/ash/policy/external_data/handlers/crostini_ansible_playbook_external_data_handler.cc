@@ -7,23 +7,15 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
 
 CrostiniAnsiblePlaybookExternalDataHandler::
-    CrostiniAnsiblePlaybookExternalDataHandler(
-        ash::CrosSettings* cros_settings,
-        DeviceLocalAccountPolicyService* policy_service)
-    : crostini_ansible_observer_(cros_settings,
-                                 policy_service,
-                                 key::kCrostiniAnsiblePlaybook,
-                                 this) {
-  crostini_ansible_observer_.Init();
-}
+    CrostiniAnsiblePlaybookExternalDataHandler() = default;
 
 CrostiniAnsiblePlaybookExternalDataHandler::
     ~CrostiniAnsiblePlaybookExternalDataHandler() = default;
@@ -31,8 +23,8 @@ CrostiniAnsiblePlaybookExternalDataHandler::
 void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  Profile* profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(GetAccountId(user_id));
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByAccountId(
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
     return;
@@ -48,8 +40,8 @@ void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  Profile* profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(GetAccountId(user_id));
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByAccountId(
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
     return;
@@ -61,20 +53,17 @@ void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataFetched(
 }
 
 void CrostiniAnsiblePlaybookExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
+    const AccountId& account_id) {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
-    std::move(on_removed).Run();
     return;
   }
   profile->GetPrefs()->ClearPref(
       crostini::prefs::kCrostiniAnsiblePlaybookFilePath);
   profile->GetPrefs()->ClearPref(
       crostini::prefs::kCrostiniDefaultContainerConfigured);
-  std::move(on_removed).Run();
 }
 
 }  // namespace policy

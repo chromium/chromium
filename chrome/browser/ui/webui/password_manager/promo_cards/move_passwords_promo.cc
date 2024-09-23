@@ -7,7 +7,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -106,9 +105,7 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
       !should_suppress ||
       base::Time().Now() - last_time_shown_ > kMovePasswordsPromoPeriod;
 
-  return bubble_is_not_over_prompted && HasLocalPasswords(delegate_.get()) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kButterOnDesktopFollowup);
+  return bubble_is_not_over_prompted && HasLocalPasswords(delegate_.get());
 }
 
 std::u16string MovePasswordsPromo::GetTitle() const {

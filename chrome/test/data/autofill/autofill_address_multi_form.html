@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>AutofillAddressMultiForm</title>
+</head>
+
+<body>
+    <form id="f1" method="post">
+        <label for="name">Name</label>
+        <input name="name" id="name" type='text'>
+
+        <label for="street-address">Address</label>
+        <input name="street-address" id="street-address" required autocomplete="street-address">
+
+        <label for="postal-code">Postal code</label>
+        <input name="postal-code" id="postal-code" required autocomplete="postal-code">
+
+        <label for="city">City</label>
+        <input name="city" id="city" required autocomplete="address-level2">
+
+        <label for="phone">Phone</label>
+        <input name="phone" id="phone" type="tel" required autocomplete="tel">
+
+        <label for="email">Email</label>
+        <input name="email" id="email" required placeholder="email@email.com" autocomplete="email">
+
+        <input type="submit" id="button" value="OK" class="test-target-button">
+    </form>
+
+    <form id="f2" method="post">
+      <label for="name2">Name</label>
+      <input name="name" id="name2" type='text'>
+
+      <label for="street-address2">Address</label>
+      <input name="street-address" id="street-address2" required autocomplete="street-address">
+
+      <label for="postal-code2">Postal code</label>
+      <input name="postal-code" id="postal-code2" required autocomplete="postal-code">
+
+      <label for="city2">City</label>
+      <input name="city" id="city2" required autocomplete="address-level2">
+
+      <input type="submit" id="button" value="OK" class="test-target-button">
+  </form>
+
+
+</body>
+</html>

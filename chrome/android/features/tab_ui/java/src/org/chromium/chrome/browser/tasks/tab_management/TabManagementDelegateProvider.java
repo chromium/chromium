@@ -4,15 +4,22 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import org.chromium.base.ResettersForTesting;
+
 /** Provider class for {@link TabManagementDelegate}. */
 public class TabManagementDelegateProvider {
-    private static TabManagementDelegateImpl sTabManagementDelegateImpl;
+    private static TabManagementDelegate sTabManagementDelegate;
 
     /** Returns {@link TabManagementDelegate} implementation. */
     public static TabManagementDelegate getDelegate() {
-        if (sTabManagementDelegateImpl == null) {
-            sTabManagementDelegateImpl = new TabManagementDelegateImpl();
+        if (sTabManagementDelegate == null) {
+            sTabManagementDelegate = new TabManagementDelegateImpl();
         }
-        return sTabManagementDelegateImpl;
+        return sTabManagementDelegate;
+    }
+
+    static void setTabManagementDelegateForTesting(TabManagementDelegate tabManagmentDelegate) {
+        sTabManagementDelegate = tabManagmentDelegate;
+        ResettersForTesting.register(() -> sTabManagementDelegate = null);
     }
 }

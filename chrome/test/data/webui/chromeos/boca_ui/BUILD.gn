@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build_webui_tests") {
+  is_chrome_untrusted = true
+  ts_path_mappings = [
+    "chrome-untrusted://boca-app/*|" +
+        rebase_path("$root_gen_dir/ash/webui/boca_ui/resources/tsc/*",
+                    target_gen_dir),
+    "chrome-untrusted://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
+    "chrome-untrusted://resources/*|" +
+        rebase_path("$root_gen_dir/ui/webui/resources/tsc/*", target_gen_dir),
+  ]
+
+  files = [
+    "client_delegate_impl_test.ts",
+    "producer_main_page_test.ts",
+    "consumer_main_page_test.ts",
+  ]
+
+  ts_definitions = []
+
+  ts_deps = [
+    "//ash/webui/boca_ui/resources:build_ts",
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

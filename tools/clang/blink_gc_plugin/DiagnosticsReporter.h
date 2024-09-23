@@ -87,12 +87,24 @@ class DiagnosticsReporter {
   void UniquePtrUsedWithGC(const clang::Expr* expr,
                            const clang::FunctionDecl* bad_function,
                            const clang::CXXRecordDecl* gc_type);
-  void OptionalFieldUsedWithGC(const clang::FieldDecl* decl,
-                               const clang::CXXRecordDecl* optional,
-                               const clang::CXXRecordDecl* gc_type);
+  void OptionalDeclUsedWithGC(const clang::Decl* decl,
+                              const clang::CXXRecordDecl* optional,
+                              const clang::CXXRecordDecl* gc_type);
   void OptionalNewExprUsedWithGC(const clang::Expr* expr,
                                  const clang::CXXRecordDecl* optional,
                                  const clang::CXXRecordDecl* gc_type);
+  void OptionalDeclUsedWithMember(const clang::Decl* decl,
+                                  const clang::CXXRecordDecl* optional,
+                                  const clang::CXXRecordDecl* member);
+  void OptionalNewExprUsedWithMember(const clang::Expr* expr,
+                                     const clang::CXXRecordDecl* optional,
+                                     const clang::CXXRecordDecl* member);
+  void RawPtrOrRefDeclUsedWithGC(const clang::Decl* decl,
+                                 const clang::CXXRecordDecl* optional,
+                                 const clang::CXXRecordDecl* gc_type);
+  void RawPtrOrRefNewExprUsedWithGC(const clang::Expr* expr,
+                                    const clang::CXXRecordDecl* optional,
+                                    const clang::CXXRecordDecl* gc_type);
   void VariantUsedWithGC(const clang::Expr* expr,
                          const clang::CXXRecordDecl* variant,
                          const clang::CXXRecordDecl* gc_type);
@@ -113,6 +125,9 @@ class DiagnosticsReporter {
   void WeakPtrToGCed(const clang::Decl* decl,
                      const clang::CXXRecordDecl* weak_ptr,
                      const clang::CXXRecordDecl* gc_type);
+  void GCedField(const clang::FieldDecl* field,
+                 const clang::CXXRecordDecl* gctype);
+  void GCedVar(const clang::VarDecl* var, const clang::CXXRecordDecl* gctype);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -148,6 +163,8 @@ class DiagnosticsReporter {
   unsigned diag_base_class_must_declare_virtual_trace_;
   unsigned diag_class_must_crtp_itself_;
   unsigned diag_weak_ptr_to_gc_managed_class_;
+  unsigned diag_gced_field_;
+  unsigned diag_gced_var_;
 
   unsigned diag_base_requires_tracing_note_;
   unsigned diag_field_requires_tracing_note_;
@@ -155,8 +172,11 @@ class DiagnosticsReporter {
   unsigned diag_raw_ptr_to_gc_managed_class_note_;
   unsigned diag_ref_ptr_to_gc_managed_class_note_;
   unsigned diag_reference_ptr_to_gc_managed_class_note_;
-  unsigned diag_own_ptr_to_gc_managed_class_note_;
   unsigned diag_unique_ptr_to_gc_managed_class_note_;
+  unsigned diag_raw_ptr_to_traceable_class_note_;
+  unsigned diag_ref_ptr_to_traceable_class_note_;
+  unsigned diag_reference_ptr_to_traceable_class_note_;
+  unsigned diag_unique_ptr_to_traceable_class_note_;
   unsigned diag_member_to_gc_unmanaged_class_note_;
   unsigned diag_stack_allocated_field_note_;
   unsigned diag_member_in_unmanaged_class_note_;
@@ -183,8 +203,12 @@ class DiagnosticsReporter {
   unsigned diag_mojo_associated_receiver_in_gc_class_note;
 
   unsigned diag_unique_ptr_used_with_gc_;
-  unsigned diag_optional_field_used_with_gc_;
+  unsigned diag_optional_decl_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
+  unsigned diag_optional_decl_used_with_member_;
+  unsigned diag_optional_new_expr_used_with_member_;
+  unsigned diag_raw_ptr_or_ref_decl_used_with_gc_;
+  unsigned diag_raw_ptr_or_ref_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
   unsigned diag_collection_of_gced_;
   unsigned diag_collection_of_members_;

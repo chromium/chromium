@@ -220,6 +220,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2490721194269245365">Kafe rozë</translation>
 <translation id="249330843868392562">Hap cilësimet e tekstit në ligjërim</translation>
 <translation id="2497706219848005458">E verdhë e gjelbër</translation>
+<translation id="2512979179176933762">shfaq dritaret</translation>
 <translation id="2523609930580546572">Udhëzuesi i ChromeVox</translation>
 <translation id="2525706221823668172">Shkurtoret e tastierës së Chromebook</translation>
 <translation id="2553108862507765288">gabim gramatikor</translation>
@@ -264,7 +265,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Mund të rrëshqasësh shpejt po ashtu një gisht nga e djathta në të majtë për të kaluar tek artikulli i mëparshëm. Provoje tani.</translation>
 <translation id="280499067616661124">Gjej në faqe me ChromeVox</translation>
-<translation id="2811019999044652585">Për të kërcyer te pjesë të tjera të ekranit, siç janë shiritat e veglave ose tabakaja e sistemit, shtyp Control+Përpara. Në Chromebook, tasti "Përpara" ndodhet menjëherë mbi tastin me numër 2.</translation>
 <translation id="2811204574343810641">Rreshti</translation>
 <translation id="2816868829355607410">Zona praktike: Komandat e kërcimit</translation>
 <translation id="2841013758207633010">Koha</translation>
@@ -498,6 +498,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4246217262268234757">Blu në gri</translation>
 <translation id="4253168017788158739">Shënim</translation>
 <translation id="4254798249533888099">Pemë</translation>
+<translation id="4259220820964911921">Të aktivizohet kontrolli me anë të fytyrës?</translation>
 <translation id="4271220233568730077">Tasti tjetër matematikor</translation>
 <translation id="4275397969489577657">Aktivizo regjistrimin e rrjedhës së ngjarjeve</translation>
 <translation id="4278486392851938658">Nuk ka lidhje të vizituara më parë</translation>
@@ -520,6 +521,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4432457053224379116">E kuqe indiane</translation>
 <translation id="4432896207833262240">Përmbajtje e shënuar</translation>
 <translation id="4437615272777527928">Shkruaj për të kërkuar në meny. Përdor shigjetat lart dhe poshtë për të kaluar në cikël mes rezultateve. Përdor shigjetat majtas dhe djathtas për të rregulluar kursorin e tekstit dhe për të lëvizur mes menyve.</translation>
+<translation id="4453530046591759283">Për të kaluar te pjesë të tjera të ekranit, si p.sh. shiritat e veglave ose tabakaja e sistemit, shtyp Control + F1. F1 është tasti i parë në të djathtë të tastit Escape.</translation>
 <translation id="4457472090507035117">Zgjidh zërin aktual:</translation>
 <translation id="4476183483923481720">kryeradhë</translation>
 <translation id="4479068155583208887">Tullë zjarri</translation>
@@ -670,7 +672,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
 <translation id="554893713779400387">Ndërro diktimin</translation>
-<translation id="5549179427201066174">Aktivizo ose çaktivizo reagimet e tingujve (tingujt e shkurtër)</translation>
+<translation id="5549179427201066174">Aktivizo ose çaktivizo reagimin me tinguj (tingujt e shkurtër)</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5561345396546889625">Lista tjetër</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
@@ -710,6 +712,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5760594853119905566">Shtojcë</translation>
 <translation id="5761219715606611783">Shumë mirë! Ke mësuar bazat e gjesteve të prekjes në ChromeVox. Mund ta shfletosh nga e para udhëzuesin ose dil nga ai duke përdorur butonat më poshtë.</translation>
 <translation id="5776001898637896684">Shtesa e tekstit-në-ligjërim e Google Enhanced Network</translation>
+<translation id="5783252477644995371">Kontrolli me anë të fytyrës të jep kontrollin e kursorit me drejtimin e fytyrës dhe aftësinë për të kryer veprime, si p.sh. klikimi me butonin majtas, me anë të gjesteve të fytyrës si buzëqeshja</translation>
 <translation id="5805940204952508776">Trokit me dy gishta</translation>
 <translation id="5819072574982403430">Artikull pemë</translation>
 <translation id="5822819874379903994">Gurkali e errët</translation>
@@ -880,6 +883,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="7091296112653361280">E bardhë Navajo</translation>
 <translation id="7095834689119144465">Redakto vetëm tekstin numerik</translation>
 <translation id="7096001299300236431">Media e mëparshme</translation>
+<translation id="7096668131290451939">Shtyp përsëri tastin "Escape" për të dalë nga "Modaliteti mësimor"</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">jehona e fjalës</translation>
 <translation id="7137397390322864165">Ngjyrë salmoni</translation>
@@ -1072,7 +1076,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="847040613207937740">Nuk ka asnjë kuti kontrolli tjetër</translation>
 <translation id="8473540203671727883">Lexo me zë tekstin poshtë miut</translation>
 <translation id="8476408756881832830">Vendosje luajtjen në pauzë kur flet ChromeVox</translation>
-<translation id="8476508772960940536">përmbledhja e dritares</translation>
 <translation id="8480873377842220259">Tani do të mësosh disa navigime bazë. Mund ta mbash shtypur tastin Search dhe të shtypësh tastet e shigjetave për të lëvizur nëpër ekran. Për të vazhduar, shtyp Search + Shigjetën djathtas</translation>
 <translation id="8503360654911991865">Ul shkallën e detajeve të lundrimit</translation>
 <translation id="8520472399088452386">Butoni i rrotullimit</translation>

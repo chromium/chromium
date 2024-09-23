@@ -1,0 +1,134 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.printing.print_preview.mojom;
+
+
+enum ColorType {
+  kStandardColor,
+  kStandardMonochrome,
+  kCustomColor,
+  kCustomMonochrome,
+  kAutoColor,
+};
+
+struct ColorOption {
+  ColorType? type;
+  string? vendor_id;
+  string? custom_display_name;
+  bool? is_default;
+};
+
+struct ColorCapability {
+  array<ColorOption> options;
+  bool? reset_to_default;
+};
+
+struct CollateCapability {
+  bool value_default;
+};
+
+struct CopiesCapability {
+  uint32 value_default;
+  uint32 max;
+};
+
+enum DuplexType {
+  kNoDuplex,
+  kLongEdge,
+  kShortEdge,
+};
+
+struct DuplexOption {
+  DuplexType? type;
+  bool? is_default;
+};
+
+struct DuplexCapability {
+  array<DuplexOption> options;
+};
+
+enum PageOrientation {
+  kPortrait,
+  kLandscape,
+  kAuto,
+};
+
+struct PageOrientationOption {
+  PageOrientation option;
+  bool? is_default;
+};
+
+struct PageOrientationCapability {
+  array<PageOrientationOption> options;
+  bool? reset_to_default;
+};
+
+struct LocalizedString {
+  string locale;
+  string value;
+};
+
+struct MediaSizeOption {
+  string? vendor_id;
+  uint32 height_microns;
+  uint32 width_microns;
+  uint32? imageable_area_left_microns;
+  uint32? imageable_area_bottom_microns;
+  uint32? imageable_area_right_microns;
+  uint32? imageable_area_top_microns;
+  bool? has_borderless_variant;
+  string? custom_display_name;
+  array<LocalizedString>? custom_display_name_localized;
+  string? name;
+  bool? is_default;
+};
+
+struct MediaSizeCapability {
+  array<MediaSizeOption> options;
+  bool? reset_to_default;
+};
+
+struct MediaTypeOption {
+  string vendor_id;
+  string? custom_display_name;
+  array<LocalizedString>? custom_display_name_localized;
+  string? name;
+  bool? is_default;
+};
+
+struct MediaTypeCapability {
+  array<MediaTypeOption> options;
+  bool? reset_to_default;
+};
+
+struct DpiOption {
+  string? vendor_id;
+  uint32 horizontal_dpi;
+  uint32 vertical_dpi;
+  bool? is_default;
+};
+
+struct DpiCapability {
+  array<DpiOption> options;
+  bool? reset_to_default;
+};
+
+struct PinCapability {
+  bool? supported;
+};
+
+struct Capabilities {
+  string destination_id;
+  // TODO(b/323421684): Support vendor_capability.
+  CollateCapability? collate;
+  ColorCapability? color;
+  CopiesCapability? copies;
+  DuplexCapability? duplex;
+  PageOrientationCapability? page_orientation;
+  MediaSizeCapability? media_size;
+  MediaTypeCapability? media_type;
+  DpiCapability? dpi;
+  PinCapability? pin;
+};

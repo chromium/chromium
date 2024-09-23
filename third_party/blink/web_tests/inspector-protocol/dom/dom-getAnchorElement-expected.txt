@@ -1,0 +1,9 @@
+Tests DOM.getAnchorElement command.
+Node Id from query selector and getAnchorElement should be the same:
+true
+true
+true
+Anchor query with no valid result should return node Id of 0:
+0
+0
+

@@ -22,6 +22,12 @@ public interface ModuleProvider {
      */
     void hideModule();
 
+    /**
+     * Updates the module's data if necessary. This API allows the module to decide whether to
+     * refresh the data.
+     */
+    default void updateModule() {}
+
     /** Gets the type of the module. */
     @ModuleType
     int getModuleType();
@@ -48,6 +54,6 @@ public interface ModuleProvider {
     /** Called when a context menu is created and shown. */
     void onContextMenuCreated();
 
-    /** Returns the title of the module. */
-    String getModuleTitle(Context context);
+    /** Returns the text shown on the context menu to hide the module. */
+    String getModuleContextMenuHideText(Context context);
 }

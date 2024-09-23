@@ -7,11 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "components/exo/seat_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/autocorrect_info.h"
@@ -69,14 +70,14 @@ class TextInput : public ui::TextInputClient,
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 
     // Commit |text| to the current text input session.
-    virtual void Commit(base::StringPiece16 text) = 0;
+    virtual void Commit(std::u16string_view text) = 0;
 
     // Set the cursor position.
     // |surrounding_text| is the current surrounding text.
     // The |selection| range is in UTF-16 offsets of the current surrounding
     // text. |selection| must be a valid range, i.e.
     // selection.IsValid() && selection.GetMax() <= surrounding_text.length().
-    virtual void SetCursor(base::StringPiece16 surrounding_text,
+    virtual void SetCursor(std::u16string_view surrounding_text,
                            const gfx::Range& selection) = 0;
 
     // Delete the surrounding text of the current text input.
@@ -84,7 +85,7 @@ class TextInput : public ui::TextInputClient,
     // The delete |range| is in UTF-16 offsets of the current surrounding text.
     // |range| must be a valid range, i.e.
     // range.IsValid() && range.GetMax() <= surrounding_text.length().
-    virtual void DeleteSurroundingText(base::StringPiece16 surrounding_text,
+    virtual void DeleteSurroundingText(std::u16string_view surrounding_text,
                                        const gfx::Range& range) = 0;
 
     // Sends a key event.
@@ -100,7 +101,7 @@ class TextInput : public ui::TextInputClient,
     // composition, i.e. relative to |range|'s start. All offsets are in UTF16,
     // and must be valid.
     virtual void SetCompositionFromExistingText(
-        base::StringPiece16 surrounding_text,
+        std::u16string_view surrounding_text,
         const gfx::Range& cursor,
         const gfx::Range& range,
         const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) = 0;
@@ -108,20 +109,20 @@ class TextInput : public ui::TextInputClient,
     // Clears all the grammar fragments in |range|.
     // |surrounding_text| is the current surrounding text, used for utf16 to
     // utf8 conversion.
-    virtual void ClearGrammarFragments(base::StringPiece16 surrounding_text,
+    virtual void ClearGrammarFragments(std::u16string_view surrounding_text,
                                        const gfx::Range& range) = 0;
 
     // Adds a new grammar marker according to |fragments|. Clients should show
     // some visual indications such as underlining.
     // |surrounding_text| is the current surrounding text, used for utf16 to
     // utf8 conversion.
-    virtual void AddGrammarFragment(base::StringPiece16 surrounding_text,
+    virtual void AddGrammarFragment(std::u16string_view surrounding_text,
                                     const ui::GrammarFragment& fragment) = 0;
 
     // Sets the autocorrect range from the current surrounding text offsets.
     // Offsets in |range| is relative to the beginning of
     // |surrounding_text|. All offsets are in UTF16, and must be valid.
-    virtual void SetAutocorrectRange(base::StringPiece16 surrounding_text,
+    virtual void SetAutocorrectRange(std::u16string_view surrounding_text,
                                      const gfx::Range& range) = 0;
 
     // Commits the current composition text.
@@ -177,7 +178,7 @@ class TextInput : public ui::TextInputClient,
   // |autocorrect_info->bounds| is the bounding rect around the autocorrected
   // text and is relative to the window origin.
   void SetSurroundingText(
-      base::StringPiece16 text,
+      std::u16string_view text,
       uint32_t offset,
       const gfx::Range& cursor_pos,
       const std::optional<ui::GrammarFragment>& grammar_fragment,
@@ -201,6 +202,7 @@ class TextInput : public ui::TextInputClient,
   Delegate* delegate() { return delegate_.get(); }
 
   // ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -232,7 +234,7 @@ class TextInput : public ui::TextInputClient,
   void ExtendSelectionAndDelete(size_t before, size_t after) override;
   void ExtendSelectionAndReplace(size_t before,
                                  size_t after,
-                                 base::StringPiece16 replacement_text) override;
+                                 std::u16string_view replacement_text) override;
   void EnsureCaretNotInRect(const gfx::Rect& rect) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) override;
@@ -343,6 +345,7 @@ class TextInput : public ui::TextInputClient,
   std::optional<bool> staged_vk_visible_;
   // Holds the vk occluded bounds to send to the client.
   std::optional<gfx::Rect> staged_vk_occluded_bounds_;
+  base::WeakPtrFactory<TextInput> weak_ptr_factory_{this};
 };
 
 }  // namespace exo

@@ -58,7 +58,8 @@ public class BottomContainer extends FrameLayout
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         setTranslationY(mBaseYOffset);
     }
 

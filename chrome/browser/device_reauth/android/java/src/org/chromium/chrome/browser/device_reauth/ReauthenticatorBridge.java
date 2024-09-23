@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Class handling the communication with the C++ part of the reauthentication based on device lock.
@@ -20,8 +24,10 @@ public class ReauthenticatorBridge {
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    private ReauthenticatorBridge(@DeviceAuthSource int source) {
-        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, source);
+    private ReauthenticatorBridge(
+            Activity activity, Profile profile, @DeviceAuthSource int source) {
+        mNativeReauthenticatorBridge =
+                ReauthenticatorBridgeJni.get().create(this, activity, profile, source);
     }
 
     /**
@@ -58,15 +64,22 @@ public class ReauthenticatorBridge {
         }
     }
 
+    /** Deletes the C++ counterpart. */
+    public void destroy() {
+        ReauthenticatorBridgeJni.get().destroy(mNativeReauthenticatorBridge);
+        mNativeReauthenticatorBridge = 0;
+    }
+
     /**
-     * Create an instance of {@link ReauthenticatorBridge} based on the provided
-     * {@link DeviceAuthSource}.
-     * */
-    public static ReauthenticatorBridge create(@DeviceAuthSource int source) {
+     * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
+     * DeviceAuthSource}.
+     */
+    public static ReauthenticatorBridge create(
+            Activity activity, Profile profile, @DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
-        return new ReauthenticatorBridge(source);
+        return new ReauthenticatorBridge(activity, profile, source);
     }
 
     /** For testing only. */
@@ -84,12 +97,18 @@ public class ReauthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        long create(ReauthenticatorBridge reauthenticatorBridge, int source);
+        long create(
+                ReauthenticatorBridge reauthenticatorBridge,
+                Activity activity,
+                @JniType("Profile*") Profile profile,
+                int source);
 
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
 
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
 
         void reauthenticate(long nativeReauthenticatorBridge);
+
+        void destroy(long nativeReauthenticatorBridge);
     }
 }

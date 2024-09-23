@@ -137,7 +137,7 @@ std::unique_ptr<HttpResponse> HandleEchoCookieWithStatus(
   return http_response;
 }
 
-// TODO(https://crbug.com/1138913): Remove when request handlers are
+// TODO(crbug.com/40153192): Remove when request handlers are
 // implementable in Android's embedded test server implementation
 std::unique_ptr<HttpResponse> HandleEchoCriticalHeader(
     const HttpRequest& request) {
@@ -988,7 +988,8 @@ std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
     } else if (query.GetKey() == "chunksNumber") {
       num_chunks = value;
     } else {
-      NOTREACHED() << query.GetKey() << "Is not a valid argument of /chunked";
+      NOTREACHED_IN_MIGRATION()
+          << query.GetKey() << "Is not a valid argument of /chunked";
     }
   }
 

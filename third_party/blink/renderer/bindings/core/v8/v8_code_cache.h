@@ -55,6 +55,8 @@ class CORE_EXPORT V8CodeCache final {
   // Returns true iff the CachedMetadataHandler contains a hot time stamp or a
   // compile hints cache containing a hot timestamp.
   static bool HasHotTimestamp(const CachedMetadataHandler* cache_handler);
+  static bool HasHotTimestamp(const CachedMetadata& data,
+                              const String& encoding);
 
   // Returns true iff the CachedMetadataHandler contains a code cache
   // that can be consumed by V8.
@@ -62,31 +64,38 @@ class CORE_EXPORT V8CodeCache final {
       const CachedMetadataHandler*,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
+  static bool HasCodeCache(const CachedMetadata& data, const String& encoding);
 
   static bool HasCompileHints(
       const CachedMetadataHandler*,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
+  static bool HasHotCompileHints(const CachedMetadata& data,
+                                 const String& encoding);
 
-  // `can_use_compile_hints` may be set to true only if we're compiling a script
-  // in a LocalMainFrame.
+  // `can_use_crowdsourced_compile_hints` may be set to true only if we're
+  // compiling a script in a LocalMainFrame.
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
-  GetCompileOptions(mojom::blink::V8CacheOptions,
-                    const ClassicScript&,
-                    bool might_generate_compile_hints = false,
-                    bool can_use_compile_hints = false);
+  GetCompileOptions(
+      mojom::blink::V8CacheOptions cache_options,
+      const ClassicScript&,
+      bool might_generate_crowdsourced_compile_hints = false,
+      bool can_use_crowdsourced_compile_hints = false,
+      bool v8_compile_hints_magic_comment_runtime_enabled = false);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
-  GetCompileOptions(mojom::blink::V8CacheOptions,
-                    const CachedMetadataHandler*,
-                    size_t source_text_length,
-                    ScriptSourceLocationType,
-                    const KURL& url,
-                    bool might_generate_compile_hints = false,
-                    bool can_use_compile_hints = false);
+  GetCompileOptions(
+      mojom::blink::V8CacheOptions cache_options,
+      const CachedMetadataHandler*,
+      size_t source_text_length,
+      ScriptSourceLocationType,
+      const KURL& url,
+      bool might_generate_crowdsourced_compile_hints = false,
+      bool can_use_crowdsourced_compile_hints = false,
+      bool v8_compile_hints_magic_comment_runtime_enabled = false);
 
   static bool IsFull(const CachedMetadata* metadata);
 
@@ -124,6 +133,36 @@ class CORE_EXPORT V8CodeCache final {
       const KURL& source_url,
       const WTF::TextEncoding&,
       OpaqueMode);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class GetMetadataType {
+    kNone = 0,
+    kHotTimestamp = 1,
+    kColdTimestamp = 2,
+    kLocalCompileHintsWithHotTimestamp = 3,
+    kLocalCompileHintsWithColdTimestamp = 4,
+    kCodeCache = 5,
+    kMaxValue = kCodeCache
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SetMetadataType {
+    kTimestamp = 0,
+    kLocalCompileHintsAtFMP = 1,
+    kLocalCompileHintsAtInteractive = 2,
+    kCodeCache = 3,
+    kMaxValue = kCodeCache
+  };
+
+  static void RecordCacheGetStatistics(
+      const CachedMetadataHandler* cache_handler);
+  static void RecordCacheGetStatistics(const CachedMetadata* cached_metadata,
+                                       const String& encoding);
+  static void RecordCacheGetStatistics(GetMetadataType metadata_type);
+
+  static void RecordCacheSetStatistics(SetMetadataType metadata_type);
 };
 
 }  // namespace blink

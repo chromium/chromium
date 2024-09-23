@@ -40,10 +40,15 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_SUPPORTED_ELEMENTS;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -185,6 +190,33 @@ public class AccessibilityNodeInfoUtils {
                 .append(toString(node.getActionList(), includeScreenSizeDependentAttributes));
         builder.append(" bundle:")
                 .append(toString(node.getExtras(), includeScreenSizeDependentAttributes));
+
+        // Add bounds when including screen size dependent attributes.
+        if (includeScreenSizeDependentAttributes) {
+            Rect output = new Rect();
+            node.getBoundsInScreen(output);
+            builder.append(" bounds:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+
+            output = new Rect();
+            node.getBoundsInParent(output);
+            builder.append(" boundsInParent:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+        }
 
         return builder.toString();
     }
@@ -357,7 +389,11 @@ public class AccessibilityNodeInfoUtils {
             // explicitly allowed for this instance.
             if (!includeScreenSizeDependentAttributes
                     && (key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
-                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM))) {
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_RIGHT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT))) {
                 continue;
             }
 

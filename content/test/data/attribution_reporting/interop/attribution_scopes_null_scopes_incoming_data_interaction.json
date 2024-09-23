@@ -1,0 +1,196 @@
+{
+  "description": "A source with scope data set to null should be removed with incoming scope data.",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      // S1: attribution scopes -> [1] destinations -> [D1]
+      // attribution scope limit -> 4.
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "priority": "100",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "1"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // S2: attribution_scopes -> [] destinations -> [D1].
+      // S1 attribution scope fields will be set to null.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "234"
+              }
+            }
+          }
+        ]
+      },
+      // T1: attribution scope -> "1", destination -> D1.
+      // This should match to none as S1 scopes were set to null.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "attribution_scopes": [
+                  "1"
+                ],
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {}
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // T2: attribution scope -> [], destination -> D1.
+      // This should match to S1 as it has a higher priority than S2.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // S3: attribution_scope_limit -> 4 attribution scopes -> [2].
+      // S1 and S2 should be deleted due to having a null scope data.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "345",
+                "attribution_scopes": {
+                  "limit": 4,
+                  "values": [
+                    "2"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // T3: This should match to S3 even though S1 has a higher priority as it
+      // is now deleted.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test"
+            },
+            "type": "trigger-no-matching-source"
+          }
+        ],
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172800000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172804",
+          "source_event_id": "345",
+          "source_type": "navigation",
+          "trigger_data": "3"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "172804000"
+      }
+    ]
+  }
+}

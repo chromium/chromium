@@ -23,7 +23,7 @@ void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
   DCHECK(native_message_host);
   std::string message_string;
   if (!base::JSONWriter::Write(message, &message_string)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   native_message_host->OnMessage(message_string);
@@ -143,7 +143,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
   const base::Value::Dict& message = parsed_json->GetDict();
   const std::string* action = message.FindString("action");
   if (!action) {
-    NOTREACHED() << message_string;
+    NOTREACHED_IN_MIGRATION() << message_string;
     return;
   }
 
@@ -153,7 +153,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (*action == "showPage") {
     const std::string* page = message.FindString("page");
     if (!page) {
-      NOTREACHED() << message_string;
+      NOTREACHED_IN_MIGRATION() << message_string;
       return;
     }
     if (*page == "terms") {
@@ -161,7 +161,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
     } else if (*page == "arc-loading") {
       ui_page_ = ArcSupportHost::UIPage::ARC_LOADING;
     } else {
-      NOTREACHED() << message_string;
+      NOTREACHED_IN_MIGRATION() << message_string;
     }
   } else if (*action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
@@ -174,21 +174,21 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (*action == "setMetricsMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED() << message_string;
+      NOTREACHED_IN_MIGRATION() << message_string;
       return;
     }
     metrics_mode_ = opt.value();
   } else if (*action == "setBackupAndRestoreMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED() << message_string;
+      NOTREACHED_IN_MIGRATION() << message_string;
       return;
     }
     backup_and_restore_mode_ = opt.value();
   } else if (*action == "setLocationServiceMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {
-      NOTREACHED() << message_string;
+      NOTREACHED_IN_MIGRATION() << message_string;
       return;
     }
     location_service_mode_ = opt.value();
@@ -198,7 +198,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
     // Do nothing as emulation.
   } else {
     // Unknown or unsupported action.
-    NOTREACHED() << message_string;
+    NOTREACHED_IN_MIGRATION() << message_string;
   }
   if (prev_ui_page != ui_page_) {
     for (auto& observer : observer_list_)
@@ -207,7 +207,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
 }
 
 void FakeArcSupport::CloseChannel(const std::string& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace arc

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -28,22 +27,12 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::NavigationBarCancelButton;
-using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
 
 NSString* const kPassphrase = @"hello";
-
-// Depending on whether feature kReplaceSyncPromosWithSignInPromos is enabled,
-// the label ID for the button to enter a passphrase differs.
-int GetInfoBarEnterPassphraseButtonLabelId() {
-  return [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
-             ? IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL
-             : IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON;
-}
 
 }  // namespace
 
@@ -71,8 +60,9 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
 }
 
 // Tests to open the sync passphrase view, and to close it.
-- (void)testShowSyncPassphraseAndDismiss {
-  // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
+// TODO(crbug.com/330012240): The test is flaky.
+- (void)DISABLED_testShowSyncPassphraseAndDismiss {
+  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{}
@@ -82,14 +72,14 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
                               relaunchPolicy:ForceRelaunchByCleanShutdown];
   }
 
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   GetInfoBarEnterPassphraseButtonLabelId())]
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
@@ -99,14 +89,15 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
 
 // Tests opening the sync passphrase view, then a new window and check that
 // enter passphrase message appears.
-- (void)testShowSyncPassphraseInNewWindowAndDismiss {
+// TODO(crbug.com/330758164): Test is failing.
+- (void)DISABLED_testShowSyncPassphraseInNewWindowAndDismiss {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
@@ -115,7 +106,7 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   [[EarlGrey selectElementWithMatcher:
                  MatchInWindowWithNumber(
                      1, ButtonWithAccessibilityLabelId(
-                            GetInfoBarEnterPassphraseButtonLabelId()))]
+                            IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL))]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
                                           1, NavigationBarCancelButton())]
@@ -132,8 +123,9 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
 
 // Tests Sync is on after opening settings from the Infobar and entering the
 // passphrase.
-- (void)testShowAddSyncPassphrase {
-  // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
+// TODO(crbug.com/330012240): Reenable this test.
+- (void)DISABLED_testShowAddSyncPassphrase {
+  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{}
@@ -143,14 +135,14 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
                               relaunchPolicy:ForceRelaunchByCleanShutdown];
   }
 
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   GetInfoBarEnterPassphraseButtonLabelId())]
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL)]
       performAction:grey_tap()];
 
   // Type and submit the sync passphrase.
@@ -158,10 +150,5 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   [ChromeEarlGreyUI openSettingsMenu];
   // Check the user is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // Check Sync On label is visible.
-    [SigninEarlGrey verifySyncUIEnabled:YES];
-  }
 }
 @end

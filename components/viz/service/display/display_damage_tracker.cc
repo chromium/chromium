@@ -198,14 +198,20 @@ void DisplayDamageTracker::OnSurfaceMarkedForDestruction(
   NotifyPendingSurfacesChanged();
 }
 
+bool DisplayDamageTracker::CheckForDisplayDamage(const SurfaceId& surface_id) {
+  return aggregator_->CheckForDisplayDamage(surface_id);
+}
+
 bool DisplayDamageTracker::OnSurfaceDamaged(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
     HandleInteraction handle_interaction) {
   bool display_damaged = false;
   if (ack.has_damage) {
-    display_damaged =
-        aggregator_->NotifySurfaceDamageAndCheckForDisplayDamage(surface_id);
+    // Display is damaged if we purged some resources or if this surface
+    // contributes to this display.
+    display_damaged = aggregator_->ForceReleaseResourcesIfNeeded(surface_id) ||
+                      CheckForDisplayDamage(surface_id);
 
     if (surface_id == root_surface_id_)
       display_damaged = true;

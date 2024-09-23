@@ -24,29 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unified_consent {
-namespace {
-
-class TestSyncService : public syncer::TestSyncService {
- public:
-  TestSyncService() = default;
-
-  TestSyncService(const TestSyncService&) = delete;
-  TestSyncService& operator=(const TestSyncService&) = delete;
-
-  void AddObserver(syncer::SyncServiceObserver* observer) override {
-    observer_ = observer;
-  }
-
-  void FireStateChanged() {
-    if (observer_)
-      observer_->OnStateChanged(this);
-  }
-
- private:
-  raw_ptr<syncer::SyncServiceObserver, DanglingUntriaged> observer_ = nullptr;
-};
-
-}  // namespace
 
 class UnifiedConsentServiceTest : public testing::Test {
  public:
@@ -77,12 +54,15 @@ class UnifiedConsentServiceTest : public testing::Test {
       case SyncState::kSignedInWithHistoryAndNoPassphrase:
         return "kSignedInWithHistoryAndNoPassphrase";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   UnifiedConsentServiceTest() {
     UnifiedConsentService::RegisterPrefs(pref_service_.registry());
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // `identity_test_environment_` starts signed-out while `sync_service_`
+    // starts signed-in, make them consistent.
+    sync_service_.SetSignedOut();
   }
 
   UnifiedConsentServiceTest(const UnifiedConsentServiceTest&) = delete;
@@ -119,30 +99,52 @@ class UnifiedConsentServiceTest : public testing::Test {
   }
 #endif
 
- protected:
+  void SignIn(signin::ConsentLevel consent_level) {
+    CoreAccountInfo account_info = identity_test_environment_.SetPrimaryAccount(
+        "testaccount@gmail.com", consent_level);
+    sync_service_.SetSignedIn(consent_level, account_info);
+  }
+
+  void SignOut() {
+    identity_test_environment_.ClearPrimaryAccount();
+    sync_service_.SetSignedOut();
+  }
+
+  void SetHistorySyncEnabled(bool enabled) {
+    sync_service_.GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
+  }
+
+  void FireSyncStateChanged() { sync_service_.FireStateChanged(); }
+
+  PrefService* pref_service() { return &pref_service_; }
+  UnifiedConsentService* consent_service() { return consent_service_.get(); }
+
+ private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  // identity_test_environment_ and sync_service_ must stay private and be
+  // controlled together by SignIn() and SignOut().
   signin::IdentityTestEnvironment identity_test_environment_;
-  TestSyncService sync_service_;
+  syncer::TestSyncService sync_service_;
   std::unique_ptr<UnifiedConsentService> consent_service_;
 };
 
 TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
 TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  SignIn(signin::ConsentLevel::kSync);
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
   // Enable services and check expectations.
-  consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
@@ -152,55 +154,48 @@ TEST_F(UnifiedConsentServiceTest,
        ReplaceSync_InitializeNoChangeToUrlKeyedAnonymizedDataCollection) {
   base::test::ScopedFeatureList scoped_feature_list(
       syncer::kReplaceSyncPromosWithSignInPromos);
-  sync_service_.SetHasSyncConsent(true);
 
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSignin);
+  SignIn(signin::ConsentLevel::kSignin);
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, true);
+  SetHistorySyncEnabled(true);
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSync);
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
 // Tests that `kUrlKeyedAnonymizedDataCollectionEnabled` does not change for
 // sync users when history sync opt-in state changes.
 TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSync);
   CreateConsentService();
-  consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  ASSERT_TRUE(pref_service_.GetBoolean(
+  consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
   base::test::ScopedFeatureList scoped_feature_list(
       syncer::kReplaceSyncPromosWithSignInPromos);
-  sync_service_.SetHasSyncConsent(true);
   CreateConsentService();
-  ASSERT_TRUE(pref_service_.GetBoolean(
+  ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, false);
-  sync_service_.FireStateChanged();
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  SetHistorySyncEnabled(false);
+  FireSyncStateChanged();
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
@@ -209,11 +204,10 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_HistorySyncIgnoredForSyncUsers) {
 // syncing user signs out, then in again and enabled history sync opt-in.
 TEST_F(UnifiedConsentServiceTest,
        ReplaceSync_SyncUserMovesToSigninWithHistorySyncEnabled) {
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSync);
   CreateConsentService();
-  consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  ASSERT_TRUE(pref_service_.GetBoolean(
+  consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
   ResetConsentService();
 
@@ -222,33 +216,26 @@ TEST_F(UnifiedConsentServiceTest,
   base::test::ScopedFeatureList scoped_feature_list(
       syncer::kReplaceSyncPromosWithSignInPromos);
   CreateConsentService();
-  ASSERT_TRUE(pref_service_.GetBoolean(
+  ASSERT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-  identity_test_environment_.ClearPrimaryAccount();
-  sync_service_.SetHasSyncConsent(false);
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, false);
-  sync_service_.FireStateChanged();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  SignOut();
+  FireSyncStateChanged();
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
   // Enabling history sync should enable
   // `kUrlKeyedAnonymizedDataCollectionEnabled`.
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSignin);
-  sync_service_.SetHasSyncConsent(false);
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, true);
-  sync_service_.FireStateChanged();
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  SignIn(signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  FireSyncStateChanged();
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
   // Disabling history sync should disable
   // `kUrlKeyedAnonymizedDataCollectionEnabled`.
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, false);
-  sync_service_.FireStateChanged();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  SetHistorySyncEnabled(false);
+  FireSyncStateChanged();
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -259,27 +246,22 @@ TEST_F(UnifiedConsentServiceTest,
        ReplaceSync_HistorySyncEnablesUrlKeyedAnonymizedDataCollection) {
   base::test::ScopedFeatureList scoped_feature_list(
       syncer::kReplaceSyncPromosWithSignInPromos);
-  sync_service_.SetHasSyncConsent(false);
 
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSignin);
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, false);
+  SignIn(signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(false);
 
   CreateConsentService();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, true);
-  sync_service_.FireStateChanged();
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  SetHistorySyncEnabled(true);
+  FireSyncStateChanged();
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, false);
-  sync_service_.FireStateChanged();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  SetHistorySyncEnabled(false);
+  FireSyncStateChanged();
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
@@ -382,19 +364,15 @@ TEST_F(UnifiedConsentServiceTest, ReplaceSync_StateTransitions) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
   // Create user that syncs history and has no custom passphrase.
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      false, {syncer::UserSelectableType::kHistory});
-  EXPECT_TRUE(sync_service_.IsSyncFeatureActive());
+  SignIn(signin::ConsentLevel::kSync);
   // Url keyed data collection is off before the migration.
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
   CreateConsentService();
   EXPECT_EQ(GetMigrationState(), unified_consent::MigrationState::kCompleted);
   // During the migration Url keyed data collection is enabled.
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
@@ -411,18 +389,17 @@ TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   base::HistogramTester histogram_tester;
 
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
-                                               signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSync);
 
   // Precondition: Enable unified consent.
-  consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-  EXPECT_TRUE(pref_service_.GetBoolean(
+  consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
   // Clearing primary account revokes unfied consent and a couple of other
   // non-personalized services.
-  identity_test_environment_.ClearPrimaryAccount();
-  EXPECT_FALSE(pref_service_.GetBoolean(
+  SignOut();
+  EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

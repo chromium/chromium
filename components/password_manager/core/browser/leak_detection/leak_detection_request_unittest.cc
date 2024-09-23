@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -88,7 +90,7 @@ TEST_F(LeakDetectionRequestTest, QuotaLimit) {
 }
 
 TEST_F(LeakDetectionRequestTest, MalformedServerResponse) {
-  static constexpr base::StringPiece kMalformedResponse = "\x01\x02\x03";
+  static constexpr std::string_view kMalformedResponse = "\x01\x02\x03";
   test_url_loader_factory()->AddResponse(
       LeakDetectionRequest::kLookupSingleLeakEndpoint,
       std::string(kMalformedResponse));

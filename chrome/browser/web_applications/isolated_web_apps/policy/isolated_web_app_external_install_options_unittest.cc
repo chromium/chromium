@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -12,8 +13,8 @@
 
 namespace {
 
-base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
-                              base::StringPiece update_manifest_url) {
+base::Value CreatePolicyEntry(std::string_view web_bundle_id,
+                              std::string_view update_manifest_url) {
   base::Value::Dict policy_entry =
       base::Value::Dict()
           .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id)

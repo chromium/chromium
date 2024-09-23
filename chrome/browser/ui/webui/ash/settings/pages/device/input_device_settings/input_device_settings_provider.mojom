@@ -6,6 +6,7 @@ module ash.settings.mojom;
 
 import "ash/public/mojom/input_device_settings.mojom";
 import "ash/public/mojom/accelerator_actions.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
 
 // Represents the options for user in the dropdown of button customization.
 struct ActionChoice {
@@ -69,6 +70,29 @@ interface GraphicsTabletSettingsObserver {
   OnGraphicsTabletListUpdated(array<ash.mojom.GraphicsTablet> graphics_tablets);
 };
 
+// Interface for observing keyboard brightness settings changes in OSSettings
+// SWA.
+interface KeyboardBrightnessObserver {
+  // Notifies KeyboardBrightnessObserver when the keyboard brightness changed.
+  OnKeyboardBrightnessChanged(double brightness_percent);
+};
+
+// Interface for observing keyboard ambient light sensor settings changes in
+// OSSettings SWA.
+interface KeyboardAmbientLightSensorObserver {
+  // OnKeyboardAmbientLightSensorEnabledChanged calls are triggered when the
+  // keyboard ambient light sensor is enabled or disabled.
+  OnKeyboardAmbientLightSensorEnabledChanged(
+    bool keyboard_ambient_light_sensor_enabled);
+};
+
+// Implemented by clients that wish to be notified when the lid state changes.
+interface LidStateObserver {
+  // OnLidStateChanged calls are triggered when the lid of the device opens or
+  // closes.
+  OnLidStateChanged(bool is_lid_open);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Registers an observer which will be notified every time
@@ -104,7 +128,22 @@ interface InputDeviceSettingsProvider {
   ObserveButtonPresses(
       pending_remote<ButtonPressObserver> observer);
 
-  // Restore the keyboard remappings to default base on its id.
+  // Registers an observer which is notified every time the keyboard brightness
+  // changed. The observer which is registered is immediately informed of the
+  // current state via its OnKeyboardBrightnessChanged function.
+  ObserveKeyboardBrightness(
+      pending_remote<KeyboardBrightnessObserver> observer);
+
+  // Registers an observer for keyboard ambient light sensor changes and
+  // returns whether the keyboard ambient light sensor is currently enabled.
+  ObserveKeyboardAmbientLightSensor(
+    pending_remote<KeyboardAmbientLightSensorObserver> observer);
+
+  // Registers an observer for lid state changes and returns lid initial state.
+  ObserveLidState(pending_remote<LidStateObserver> observer) =>
+    (bool is_lid_open);
+
+  // Restore the keyboard remappings to default based on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);
   // Sets the keyboard settings based on its id.
   SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
@@ -115,9 +154,15 @@ interface InputDeviceSettingsProvider {
   SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
   // Sets the touchpad settings based on its id.
   SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
-  // Sets the graphics tablet settings bsaed on its id.
+  // Sets the graphics tablet settings based on its id.
   SetGraphicsTabletSettings(
       uint32 device_id, ash.mojom.GraphicsTabletSettings settings);
+
+  // Sets the keyboard brightness to a specified level.
+  SetKeyboardBrightness(double percent);
+  // Sets whether to use ambient light sensor to automatically set the keyboard
+  // brightness.
+  SetKeyboardAmbientLightSensorEnabled(bool enabled);
 
   // Starts observing customizable button presses for the device with the given
   // `device_id`.
@@ -133,9 +178,32 @@ interface InputDeviceSettingsProvider {
   GetActionsForGraphicsTabletButtonCustomization() =>
       (array<ActionChoice> options);
 
-  // Returns whether any of the keyboards has launcher button.
-  // True if the keyboard has launcher button as meta key and we display the
-  // launcher icon in settings. False if the keyboard has other buttons as meta
-  // key and we display the search icon in settings.
-  HasLauncherButton() => (bool has_launcher_button);
+  // Returns the meta key to display in the UI to represent the overall current
+  // keyboard situation. This will only return either Launcher, Search, or
+  // LauncherRefresh.
+  GetMetaKeyToDisplay() => (ui.mojom.MetaKey meta_key);
+
+  // Returns whether the internal keyboard has a backlight.
+  HasKeyboardBacklight() => (bool has_keyboard_backlight);
+
+  // Returns whether the internal keyboard has ambient light sensor.
+  HasAmbientLightSensor() => (bool has_ambient_light_sensor);
+
+  // Returns whether the internal keyboard support RGB lighting.
+  IsRgbKeyboardSupported() => (bool is_rgb_keyboard_supported);
+
+  // Tracks clicks on the "Keyboard Color" link in Keyboard Settings, that
+  // navigates to the RGB Control in the Personalization Hub.
+  RecordKeyboardColorLinkClicked();
+
+  // Records metric each time user changes the keyboard brightness through
+  // the slider.
+  RecordKeyboardBrightnessChangeFromSlider(double percent);
+
+  // Returns the device image as a Data URL. Returns null if the device doesn't
+  // have a corresponding image.
+  GetDeviceIconImage(string device_key) => (string? data_url);
+
+  // Opens companion app for a connected peripheral.
+  LaunchCompanionApp(string package_id);
 };

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 
+#include <optional>
 #include <string>
 
 #include "base/types/strong_alias.h"
@@ -41,6 +42,32 @@ enum class CvcPosition {
   kMaxValue = kBackOfCard,
 };
 
+// Metadata from the server related to a VCN 3DS challenge option.
+struct Vcn3dsChallengeOptionMetadata {
+  Vcn3dsChallengeOptionMetadata();
+  Vcn3dsChallengeOptionMetadata(const Vcn3dsChallengeOptionMetadata&);
+  Vcn3dsChallengeOptionMetadata(Vcn3dsChallengeOptionMetadata&&);
+  Vcn3dsChallengeOptionMetadata& operator=(
+      const Vcn3dsChallengeOptionMetadata&);
+  Vcn3dsChallengeOptionMetadata& operator=(Vcn3dsChallengeOptionMetadata&&);
+  ~Vcn3dsChallengeOptionMetadata();
+
+  // URL that will be opened in the VCN 3DS pop-up.
+  GURL url_to_open;
+
+  // Name of the success query param. On every navigation inside of a VCN 3DS
+  // pop-up, this query param will be searched for. If found, it signals to
+  // Chrome that the authentication inside of the pop-up was successful. The
+  // value of the query param will be the context token that must be sent back
+  // to the server in the second UnmaskCardRequest call.
+  std::string success_query_param_name;
+
+  // Name of the failure query param. On every navigation inside of a VCN 3DS
+  // pop-up, this query param will be searched for. If found, it signals to
+  // Chrome that the authentication inside of the pop-up was a failure.
+  std::string failure_query_param_name;
+};
+
 // The struct used by Autofill components to represent a card unmask challenge
 // option. User must select a challenge option to unmask their credit card.
 // Currently, only CVC and SMS OTP are supported.
@@ -71,8 +98,9 @@ struct CardUnmaskChallengeOption {
   // option, such as the masked phone number that will receive an SMS, etc.
   std::u16string challenge_info = std::u16string();
 
-  // Used for challenge options that need to open a URL when initiated.
-  GURL url_to_open;
+  // Only present if `type` is
+  // `CardUnmaskChallengeOptionType::kThreeDomainSecure`.
+  std::optional<Vcn3dsChallengeOptionMetadata> vcn_3ds_metadata;
 
   // The predetermined length of the input of the challenge.
   size_t challenge_input_length = 0U;

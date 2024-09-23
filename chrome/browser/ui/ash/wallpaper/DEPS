@@ -1,0 +1,30 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/wallpaper",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/customization",
+  "+chrome/browser/ash/drive",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/ash/wallpaper_handlers",
+  "+chrome/browser/ash/wallpaper",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/signin",
+  "+chrome/browser/sync",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/webui/ash/settings",
+  "+chrome/common",
+  "+chrome/test",
+]

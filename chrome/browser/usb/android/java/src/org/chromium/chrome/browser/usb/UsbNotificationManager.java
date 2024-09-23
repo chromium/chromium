@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -48,12 +48,13 @@ public class UsbNotificationManager {
     public static final String NOTIFICATION_URL_EXTRA = "NotificationUrl";
 
     private UsbNotificationManagerDelegate mDelegate;
-    private NotificationManagerProxy mNotificationManager;
+    private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final List<Integer> mNotificationIds = new ArrayList<Integer>();
 
     public UsbNotificationManager(
-            NotificationManagerProxy notificationManager, UsbNotificationManagerDelegate delegate) {
+            BaseNotificationManagerProxy notificationManager,
+            UsbNotificationManagerDelegate delegate) {
         mDelegate = delegate;
         mNotificationManager = notificationManager;
         mSharedPreferences = ChromeSharedPreferences.getInstance();

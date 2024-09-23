@@ -89,7 +89,7 @@ void ScriptsRunInfo::LogRun(bool send_script_activity) {
       // TODO(rdevlin.cronin): Add histograms.
       break;
     case mojom::RunLocation::kUndefined:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

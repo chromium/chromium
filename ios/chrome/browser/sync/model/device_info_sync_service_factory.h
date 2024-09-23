@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_
 
-#include <memory>
-#include <vector>
+#import <memory>
+#import <vector>
 
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace base {
 template <typename T>
@@ -26,9 +25,10 @@ class DeviceInfoTracker;
 // ChromeBrowserState.
 class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::DeviceInfoSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static syncer::DeviceInfoSyncService* GetForBrowserState(ProfileIOS* profile);
 
+  static syncer::DeviceInfoSyncService* GetForProfile(ProfileIOS* profile);
   static DeviceInfoSyncServiceFactory* GetInstance();
 
   DeviceInfoSyncServiceFactory(const DeviceInfoSyncServiceFactory&) = delete;

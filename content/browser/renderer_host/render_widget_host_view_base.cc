@@ -14,6 +14,9 @@
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/input/event_with_latency_info.h"
+#include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_view_input_observer.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -21,19 +24,18 @@
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
-#include "content/browser/renderer_host/render_widget_host_view_base_observer.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -46,6 +48,10 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace content {
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
@@ -56,8 +62,8 @@ RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
       screen_infos_(display::ScreenInfos(display::ScreenInfo())) {}
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
-  DCHECK(!keyboard_locked_);
-  DCHECK(!IsPointerLocked());
+  CHECK(!keyboard_locked_);
+  CHECK(!IsPointerLocked());
   // We call this here to guarantee that observers are notified before we go
   // away. However, some subclasses may wish to call this earlier in their
   // shutdown process, e.g. to force removal from
@@ -90,36 +96,8 @@ void RenderWidgetHostViewBase::SetContentBackgroundColor(SkColor color) {
   UpdateBackgroundColor();
 }
 
-void RenderWidgetHostViewBase::NotifyObserversAboutShutdown() {
-  // Note: RenderWidgetHostInputEventRouter is an observer, and uses the
-  // following notification to remove this view from its surface owners map.
-  for (auto& observer : observers_)
-    observer.OnRenderWidgetHostViewBaseDestroyed(this);
-  // All observers are required to disconnect after they are notified.
-  DCHECK(observers_.empty());
-}
-
 MouseWheelPhaseHandler* RenderWidgetHostViewBase::GetMouseWheelPhaseHandler() {
   return nullptr;
-}
-
-void RenderWidgetHostViewBase::StopFlingingIfNecessary(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
-  // Reset view_stopped_flinging_for_test_ at the beginning of the scroll
-  // sequence.
-  if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin)
-    view_stopped_flinging_for_test_ = false;
-
-  bool processed = blink::mojom::InputEventResultState::kConsumed == ack_result;
-  if (!processed &&
-      event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate &&
-      event.data.scroll_update.inertial_phase ==
-          blink::WebGestureEvent::InertialPhaseState::kMomentum &&
-      event.SourceDevice() != blink::WebGestureDevice::kSyntheticAutoscroll) {
-    StopFling();
-    view_stopped_flinging_for_test_ = true;
-  }
 }
 
 void RenderWidgetHostViewBase::UpdateIntrinsicSizingInfo(
@@ -143,15 +121,9 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
         is_anchor_first);
 #else
-  NOTREACHED() << "Selection bounds should be routed through the compositor.";
+  NOTREACHED_IN_MIGRATION()
+      << "Selection bounds should be routed through the compositor.";
 #endif
-}
-
-int RenderWidgetHostViewBase::GetMouseWheelMinimumGranularity() const {
-  // Most platforms can specify the floating-point delta in the wheel event so
-  // they don't have a minimum granularity. Android is currently the only
-  // platform that overrides this.
-  return 0;
 }
 
 RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetRootView() {
@@ -179,10 +151,6 @@ ui::TextInputClient* RenderWidgetHostViewBase::GetTextInputClient() {
   return nullptr;
 }
 
-viz::FrameSinkId RenderWidgetHostViewBase::GetRootFrameSinkId() {
-  return viz::FrameSinkId();
-}
-
 bool RenderWidgetHostViewBase::IsSurfaceAvailableForCopy() {
   return false;
 }
@@ -200,7 +168,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
          "and popups are not supported.";
@@ -303,8 +271,8 @@ void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   // TODO(danakj): OPAQUE colors only make sense for main frame widgets,
   // as child frames are always transparent background. We should move this to
   // `blink::WebView` instead.
-  DCHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
-         SkColorGetA(color) == SK_AlphaTRANSPARENT);
+  CHECK(SkColorGetA(color) == SK_AlphaOPAQUE ||
+        SkColorGetA(color) == SK_AlphaTRANSPARENT);
   if (default_background_color_ == color)
     return;
 
@@ -358,6 +326,11 @@ bool RenderWidgetHostViewBase::IsPointerLocked() {
   return false;
 }
 
+const viz::DisplayHitTestQueryMap&
+RenderWidgetHostViewBase::GetDisplayHitTestQuery() const {
+  return GetHostFrameSinkManager()->GetDisplayHitTestQuery();
+}
+
 bool RenderWidgetHostViewBase::
     GetIsPointerLockedUnadjustedMovementForTesting() {
   return false;
@@ -391,82 +364,15 @@ RenderWidgetHostViewBase::GetKeyboardLayoutMap() {
   return base::flat_map<std::string, std::string>();
 }
 
-blink::mojom::InputEventResultState RenderWidgetHostViewBase::FilterInputEvent(
-    const blink::WebInputEvent& input_event) {
-  // By default, input events are simply forwarded to the renderer.
-  return blink::mojom::InputEventResultState::kNotConsumed;
-}
-
-void RenderWidgetHostViewBase::WheelEventAck(
-    const blink::WebMouseWheelEvent& event,
-    blink::mojom::InputEventResultState ack_result) {}
-
-void RenderWidgetHostViewBase::GestureEventAck(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {}
-
-void RenderWidgetHostViewBase::ChildDidAckGestureEvent(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {}
-
-void RenderWidgetHostViewBase::ForwardTouchpadZoomEventIfNecessary(
-    const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result) {
-  if (!event.IsTouchpadZoomEvent())
-    return;
-  if (!event.NeedsWheelEvent())
-    return;
-
-  switch (event.GetType()) {
-    case blink::WebInputEvent::Type::kGesturePinchBegin:
-      // Don't send the begin event until we get the first unconsumed update, so
-      // that we elide pinch gesture steams consisting of only a begin and end.
-      pending_touchpad_pinch_begin_ = event;
-      pending_touchpad_pinch_begin_->SetNeedsWheelEvent(false);
-      break;
-    case blink::WebInputEvent::Type::kGesturePinchUpdate:
-      if (ack_result != blink::mojom::InputEventResultState::kConsumed &&
-          !event.data.pinch_update.zoom_disabled) {
-        if (pending_touchpad_pinch_begin_) {
-          host()->ForwardGestureEvent(*pending_touchpad_pinch_begin_);
-          pending_touchpad_pinch_begin_.reset();
-        }
-        // Now that the synthetic wheel event has gone unconsumed, we have the
-        // pinch event actually change the page scale.
-        blink::WebGestureEvent pinch_event(event);
-        pinch_event.SetNeedsWheelEvent(false);
-        host()->ForwardGestureEvent(pinch_event);
-      }
-      break;
-    case blink::WebInputEvent::Type::kGesturePinchEnd:
-      if (pending_touchpad_pinch_begin_) {
-        pending_touchpad_pinch_begin_.reset();
-      } else {
-        blink::WebGestureEvent pinch_end_event(event);
-        pinch_end_event.SetNeedsWheelEvent(false);
-        host()->ForwardGestureEvent(pinch_end_event);
-      }
-      break;
-    case blink::WebInputEvent::Type::kGestureDoubleTap:
-      if (ack_result != blink::mojom::InputEventResultState::kConsumed) {
-        blink::WebGestureEvent double_tap(event);
-        double_tap.SetNeedsWheelEvent(false);
-        // TODO(mcnee): Support double-tap zoom gesture for OOPIFs. For now,
-        // we naively send this to the main frame. If this is over an OOPIF,
-        // then the iframe element will incorrectly be used for the scale
-        // calculation rather than the element in the OOPIF.
-        // https://crbug.com/758348
-        host()->ForwardGestureEvent(double_tap);
-      }
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 bool RenderWidgetHostViewBase::HasFallbackSurface() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
+}
+
+viz::SurfaceId RenderWidgetHostViewBase::GetFallbackSurfaceIdForTesting()
+    const {
+  NOTREACHED_IN_MIGRATION();
+  return viz::SurfaceId();
 }
 
 void RenderWidgetHostViewBase::SetWidgetType(WidgetType widget_type) {
@@ -498,12 +404,6 @@ bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
 
 bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
   return false;
-}
-
-void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
-    const TouchEventWithLatencyInfo& touch,
-    blink::mojom::InputEventResultState ack_result) {
-  NOTREACHED();
 }
 
 // Send system cursor size to the renderer via UpdateScreenInfo().
@@ -552,6 +452,32 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
              << " for capture.";
   }
 
+#if BUILDFLAG(IS_OZONE)
+  // There are platforms where no global screen coordinates are available for
+  // client applications, and scaling is done in a per-window basis (rather than
+  // per-display) and controlled by the display server. In such cases, the
+  // ScreenInfo Web API is mostly pointless. To avoid distorted graphics in web
+  // contents, override the display scale with the preferred window scale here.
+  // TODO(crbug.com/336007385): Consolidate screen representation and a less
+  // hacky scale handling in platforms that support per-window scaling.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_per_window_scaling) {
+    const float window_scale =
+        display::Screen::GetScreen()
+            ->GetPreferredScaleFactorForView(GetNativeView())
+            .value_or(1.0f);
+    auto& screen = new_screen_infos.mutable_current();
+    const float old = screen.device_scale_factor;
+    if (window_scale != old) {
+      VLOG(1) << __func__ << ": Overriding scale for screen '" << screen.label
+              << "' from " << old << " with windows scale " << window_scale;
+      screen.device_scale_factor = window_scale;
+      force_sync_visual_properties = true;
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+
   if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
     return;
 
@@ -588,7 +514,7 @@ void RenderWidgetHostViewBase::UpdateActiveState(bool active) {
 
 void RenderWidgetHostViewBase::DidUnregisterFromTextInputManager(
     TextInputManager* text_input_manager) {
-  DCHECK(text_input_manager && text_input_manager_ == text_input_manager);
+  CHECK(text_input_manager && text_input_manager_ == text_input_manager);
 
   text_input_manager_ = nullptr;
 }
@@ -639,8 +565,19 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
   return screen_infos_;
 }
 
+void RenderWidgetHostViewBase::ResetGestureDetection() {}
+
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
+}
+
+base::WeakPtr<input::RenderWidgetHostViewInput>
+RenderWidgetHostViewBase::GetInputWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+input::RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
+  return host()->GetRenderInputRouter();
 }
 
 void RenderWidgetHostViewBase::SetScaleOverrideForCapture(float scale) {
@@ -668,7 +605,8 @@ RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
   }
 
   DevicePostureProviderImpl* posture_provider =
-      host()->delegate()->GetDevicePostureProvider();
+      static_cast<DevicePostureProviderImpl*>(
+          host()->delegate()->GetDevicePostureProvider());
   if (!posture_provider) {
     return nullptr;
   }
@@ -684,16 +622,9 @@ void RenderWidgetHostViewBase::SetInsets(const gfx::Insets& insets) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void RenderWidgetHostViewBase::DisplayCursor(const ui::Cursor& cursor) {
-  return;
-}
-
-CursorManager* RenderWidgetHostViewBase::GetCursorManager() {
-  return nullptr;
-}
-
-void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
-  return;
+const viz::LocalSurfaceId&
+RenderWidgetHostViewBase::IncrementSurfaceIdForNavigation() {
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewBase::OnOldViewDidNavigatePreCommit() {}
@@ -707,23 +638,18 @@ void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
     host()->DidProcessFrame(frame_token, activation_time);
 }
 
-bool RenderWidgetHostViewBase::ScreenRectIsUnstableFor(
-    const blink::WebInputEvent& event) {
-  return false;
-}
-
-bool RenderWidgetHostViewBase::ScreenRectIsUnstableForIOv2For(
-    const blink::WebInputEvent& event) {
-  return false;
-}
-
 void RenderWidgetHostViewBase::ProcessMouseEvent(
     const blink::WebMouseEvent& event,
     const ui::LatencyInfo& latency) {
-  // TODO(crbug.com/814674): Figure out the reason |host| is null here in all
+  // TODO(crbug.com/40564125): Figure out the reason |host| is null here in all
   // Process* functions.
   if (!host())
     return;
+
+  // Ensure the event is not routed to a prerendered page.
+  if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
+    NOTREACHED();
+  }
 
   PreProcessMouseEvent(event);
   host()->ForwardMouseEventWithLatencyInfo(event, latency);
@@ -734,6 +660,12 @@ void RenderWidgetHostViewBase::ProcessMouseWheelEvent(
     const ui::LatencyInfo& latency) {
   if (!host())
     return;
+
+  // Ensure the event is not routed to a prerendered page.
+  if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
+    NOTREACHED();
+  }
+
   host()->ForwardWheelEventWithLatencyInfo(event, latency);
 }
 
@@ -743,8 +675,14 @@ void RenderWidgetHostViewBase::ProcessTouchEvent(
   if (!host())
     return;
 
+  // Ensure the event is not routed to a prerendered page.
+  if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
+    NOTREACHED();
+  }
+
   PreProcessTouchEvent(event);
-  host()->ForwardTouchEventWithLatencyInfo(event, latency);
+  host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(event,
+                                                                   latency);
 }
 
 void RenderWidgetHostViewBase::ProcessGestureEvent(
@@ -752,25 +690,19 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
     const ui::LatencyInfo& latency) {
   if (!host())
     return;
-  host()->ForwardGestureEventWithLatencyInfo(event, latency);
+
+  // Ensure the event is not routed to a prerendered page.
+  if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
+    NOTREACHED();
+  }
+
+  host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(event,
+                                                                     latency);
 }
 
 gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
     const gfx::PointF& point) {
   return point;
-}
-
-gfx::PointF RenderWidgetHostViewBase::TransformRootPointToViewCoordSpace(
-    const gfx::PointF& point) {
-  return point;
-}
-
-bool RenderWidgetHostViewBase::TransformPointToCoordSpaceForView(
-    const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
-    gfx::PointF* transformed_point) {
-  NOTREACHED();
-  return true;
 }
 
 bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {
@@ -793,9 +725,8 @@ bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {
   return true;
 }
 
-std::vector<std::unique_ptr<ui::TouchEvent>>
-RenderWidgetHostViewBase::ExtractAndCancelActiveTouches() {
-  return {};
+double RenderWidgetHostViewBase::GetCSSZoomFactor() const {
+  return 1.0;
 }
 
 void RenderWidgetHostViewBase::TextInputStateChanged(
@@ -835,29 +766,6 @@ TextInputManager* RenderWidgetHostViewBase::GetTextInputManager() {
   return text_input_manager_;
 }
 
-void RenderWidgetHostViewBase::StopFling() {
-  if (!host())
-    return;
-
-  host()->StopFling();
-
-  // In case of scroll bubbling tells the child's fling controller which is in
-  // charge of generating GSUs to stop flinging.
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()->delegate()->GetInputEventRouter()->StopFling();
-  }
-}
-
-void RenderWidgetHostViewBase::AddObserver(
-    RenderWidgetHostViewBaseObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RenderWidgetHostViewBase::RemoveObserver(
-    RenderWidgetHostViewBaseObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 TouchSelectionControllerClientManager*
 RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
   return nullptr;
@@ -870,7 +778,7 @@ void RenderWidgetHostViewBase::SynchronizeVisualProperties() {
 
 display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
   // RWHVChildFrame gets its ScreenInfos from the CrossProcessFrameConnector.
-  DCHECK(!IsRenderWidgetHostViewChildFrame());
+  CHECK(!IsRenderWidgetHostViewChildFrame());
 
   display::ScreenInfos screen_infos;
 
@@ -907,140 +815,6 @@ void RenderWidgetHostViewBase::SetTooltipObserverForTesting(
   tooltip_observer_for_testing_ = observer;
 }
 
-// TODO(wjmaclean): Would it simplify this function if we re-implemented it
-// using GetTransformToViewCoordSpace()?
-bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
-    RenderWidgetHostViewBase* original_view,
-    RenderWidgetHostViewBase* target_view,
-    const gfx::PointF& point,
-    gfx::PointF* transformed_point) const {
-  DCHECK(original_view);
-  DCHECK(target_view);
-  viz::FrameSinkId root_frame_sink_id = original_view->GetRootFrameSinkId();
-  if (!root_frame_sink_id.is_valid())
-    return false;
-  const auto& display_hit_test_query_map =
-      GetHostFrameSinkManager()->display_hit_test_query();
-  const auto iter = display_hit_test_query_map.find(root_frame_sink_id);
-  if (iter == display_hit_test_query_map.end())
-    return false;
-  viz::HitTestQuery* query = iter->second.get();
-
-  std::vector<viz::FrameSinkId> target_ancestors;
-  target_ancestors.push_back(target_view->GetFrameSinkId());
-
-  RenderWidgetHostViewBase* cur_view = target_view;
-  while (cur_view->IsRenderWidgetHostViewChildFrame()) {
-    cur_view =
-        static_cast<RenderWidgetHostViewChildFrame*>(cur_view)->GetParentView();
-    if (!cur_view)
-      return false;
-    target_ancestors.push_back(cur_view->GetFrameSinkId());
-  }
-  if (target_ancestors.back() != root_frame_sink_id)
-    target_ancestors.push_back(root_frame_sink_id);
-
-  float device_scale_factor = original_view->GetDeviceScaleFactor();
-  DCHECK_GT(device_scale_factor, 0.0f);
-  // TODO(crbug.com/966995): Optimize so that |point_in_pixels| doesn't need to
-  // be in the coordinate space of the root surface in HitTestQuery.
-  gfx::Transform transform_root_to_original;
-  query->GetTransformToTarget(original_view->GetFrameSinkId(),
-                              &transform_root_to_original);
-  const std::optional<gfx::PointF> point_in_pixels =
-      transform_root_to_original.InverseMapPoint(
-          gfx::ConvertPointToPixels(point, device_scale_factor));
-  if (!point_in_pixels.has_value())
-    return false;
-  gfx::PointF transformed_point_in_physical_pixels;
-  if (!query->TransformLocationForTarget(
-          target_ancestors, *point_in_pixels,
-          &transformed_point_in_physical_pixels)) {
-    return false;
-  }
-  *transformed_point = gfx::ConvertPointToDips(
-      transformed_point_in_physical_pixels, device_scale_factor);
-  return true;
-}
-
-bool RenderWidgetHostViewBase::GetTransformToViewCoordSpace(
-    RenderWidgetHostViewBase* target_view,
-    gfx::Transform* transform) {
-  DCHECK(transform);
-  if (target_view == this) {
-    transform->MakeIdentity();
-    return true;
-  }
-
-  viz::FrameSinkId root_frame_sink_id = GetRootFrameSinkId();
-  if (!root_frame_sink_id.is_valid())
-    return false;
-
-  const auto& display_hit_test_query_map =
-      GetHostFrameSinkManager()->display_hit_test_query();
-  const auto iter = display_hit_test_query_map.find(root_frame_sink_id);
-  if (iter == display_hit_test_query_map.end())
-    return false;
-  viz::HitTestQuery* query = iter->second.get();
-
-  gfx::Transform transform_this_to_root;
-  if (GetFrameSinkId() != root_frame_sink_id) {
-    gfx::Transform transform_root_to_this;
-    if (!query->GetTransformToTarget(GetFrameSinkId(), &transform_root_to_this))
-      return false;
-    if (!transform_root_to_this.GetInverse(&transform_this_to_root))
-      return false;
-  }
-  gfx::Transform transform_root_to_target;
-  if (!query->GetTransformToTarget(target_view->GetFrameSinkId(),
-                                   &transform_root_to_target)) {
-    return false;
-  }
-
-  // TODO(wjmaclean): In TransformPointToTargetCoordSpace the device scale
-  // factor is taken from the original view ... does that matter? Presumably
-  // all the views have the same dsf.
-  float device_scale_factor = GetDeviceScaleFactor();
-  gfx::Transform transform_to_pixel;
-  transform_to_pixel.Scale(device_scale_factor, device_scale_factor);
-  gfx::Transform transform_from_pixel;
-  transform_from_pixel.Scale(1.f / device_scale_factor,
-                             1.f / device_scale_factor);
-
-  // Note: gfx::Transform includes optimizations to early-out for scale = 1 or
-  // concatenating an identity matrix, so we don't add those checks here.
-  transform->MakeIdentity();
-
-  transform->PostConcat(transform_to_pixel);
-  transform->PostConcat(transform_this_to_root);
-  transform->PostConcat(transform_root_to_target);
-  transform->PostConcat(transform_from_pixel);
-
-  return true;
-}
-
-bool RenderWidgetHostViewBase::TransformPointToLocalCoordSpace(
-    const gfx::PointF& point,
-    const viz::SurfaceId& original_surface,
-    gfx::PointF* transformed_point) {
-  viz::FrameSinkId original_frame_sink_id = original_surface.frame_sink_id();
-  viz::FrameSinkId target_frame_sink_id = GetFrameSinkId();
-  if (!original_frame_sink_id.is_valid() || !target_frame_sink_id.is_valid())
-    return false;
-  if (original_frame_sink_id == target_frame_sink_id)
-    return true;
-  if (!host() || !host()->delegate())
-    return false;
-  auto* router = host()->delegate()->GetInputEventRouter();
-  if (!router)
-    return false;
-  *transformed_point = point;
-  return TransformPointToTargetCoordSpace(
-      router->FindViewFromFrameSinkId(original_frame_sink_id),
-      router->FindViewFromFrameSinkId(target_frame_sink_id), point,
-      transformed_point);
-}
-
 ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
   return nullptr;
 }
@@ -1059,6 +833,8 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     PageVisibilityState page_visibility) {
   if (!host())
     return;
+
+  EnsurePlatformVisibility(page_visibility);
 
   VisibleTimeRequestTrigger& visible_time_request_trigger =
       host_->GetVisibleTimeRequestTrigger();
@@ -1135,6 +911,11 @@ void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
     // register until ownership has been transferred.
     router->RemoveFrameSinkIdOwner(GetFrameSinkId());
   }
+}
+
+void RenderWidgetHostViewBase::SetViewTransitionResources(
+    std::unique_ptr<ScopedViewTransitionResources> resources) {
+  view_transition_resources_ = std::move(resources);
 }
 
 }  // namespace content

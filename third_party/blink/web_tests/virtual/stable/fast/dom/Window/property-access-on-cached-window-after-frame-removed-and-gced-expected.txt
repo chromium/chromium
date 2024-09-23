@@ -8,6 +8,7 @@ PASS childWindow.crossOriginIsolated is false
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.documentPictureInPicture.onenter is null
 PASS childWindow.documentPictureInPicture.window is null
+PASS childWindow.fence is null
 PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
 PASS childWindow.isSecureContext is true
@@ -126,6 +127,7 @@ PASS childWindow.ononline is null
 PASS childWindow.onpagehide is null
 PASS childWindow.onpagereveal is null
 PASS childWindow.onpageshow is null
+PASS childWindow.onpageswap is null
 PASS childWindow.onpause is null
 PASS childWindow.onplay is null
 PASS childWindow.onplaying is null
@@ -146,6 +148,8 @@ PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
+PASS childWindow.onscrollsnapchange is null
+PASS childWindow.onscrollsnapchanging is null
 PASS childWindow.onsearch is null
 PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
@@ -215,6 +219,7 @@ PASS childWindow.visualViewport.offsetLeft is 0
 PASS childWindow.visualViewport.offsetTop is 0
 PASS childWindow.visualViewport.onresize is null
 PASS childWindow.visualViewport.onscroll is null
+PASS childWindow.visualViewport.onscrollend is null
 PASS childWindow.visualViewport.pageLeft is 0
 PASS childWindow.visualViewport.pageTop is 0
 PASS childWindow.visualViewport.scale is 0

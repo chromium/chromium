@@ -1,0 +1,37 @@
+<style include="settings-shared">
+  :host {
+    align-items: center;
+    border-bottom: var(--card-separator);
+    color: var(--cros-text-color-primary);
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    font-weight: var(--cros-body-2-font-weight);
+    height: 48px;
+  }
+
+  .app-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-icon {
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 24px;
+    width: 32px;
+  }
+
+  .app-toggle {
+    margin-inline-end: 20px;
+  }
+</style>
+
+<img class="app-icon" src="[[getIconUrl_(app)]]"
+     alt="[[app.title]] app icon." aria-hidden="true">
+<div id="appTitle" class="app-title" aria-hidden="true">[[app.title]]</div>
+<cr-toggle class="app-toggle" checked="[[isAllowed_(app)]]"
+           on-change="onToggleChange_" aria-labelledby="appTitle">
+</cr-toggle>
+<slot name="right-content"></slot>

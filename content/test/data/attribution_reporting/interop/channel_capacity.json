@@ -8,8 +8,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -27,69 +26,26 @@
         ]
       },
       {
-        // Should not match to a source.
-        "timestamp": "1000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [
-          {
-            "url": "https://reporter.test/register-trigger",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
-                "event_trigger_data": [
-                  {
-                    "trigger_data": "1"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      {
         // Should not register due to exceeding max info gain bar.
         // Value: 13.37130 bits
-        "timestamp": "2000",
+        "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
-                "source_event_id": "123",
+                "source_event_id": "456",
                 "event_report_windows": {
                   "start_time": 0,
                   "end_times": [3600, 7200, 10800, 14400, 18000]
-                }
-              }
-            }
-          }
-        ]
-      },
-      {
-        // Should not match to a source.
-        "timestamp": "3000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "context_origin": "https://destination.test"
-        },
-        "responses": [
-          {
-            "url": "https://reporter.test/register-trigger",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {
-                "event_trigger_data": [
-                  {
-                    "trigger_data": "2"
-                  }
-                ]
+                },
+                "debug_reporting": true
               }
             }
           }
@@ -98,11 +54,10 @@
       {
         // Should register due to not exceeding max info gain bar.
         // Value: 9.73440 bits
-        "timestamp": "4000",
+        "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -123,9 +78,8 @@
       },
       {
         // Should result in an event-level report.
-        "timestamp": "5000",
+        "timestamp": "3000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -145,18 +99,16 @@
       },
       {
         // Max values for event_report_windows and max_event_level_reports,
-        // should register. Ensures `privacy_math.cc` doesn't kill the source
-        // registration when max values are provided.
-        // Value: 5.38066e-9 bits
-        "timestamp": "6000",
+        // should not register as it exceeds the 2^32 trigger cardinality limit.
+        "timestamp": "4000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
             "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination2.test",
@@ -165,7 +117,8 @@
                 "event_report_windows": {
                   "start_time": 0,
                   "end_times": [3600, 7200, 10800, 14400, 18000]
-                }
+                },
+                "debug_reporting": true
               }
             }
           }
@@ -173,9 +126,8 @@
       },
       {
         // Should result in an event-level report.
-        "timestamp": "7000",
+        "timestamp": "5000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -196,15 +148,15 @@
       {
         // Should not register due to exceeding max info gain bar.
         // Value: 8.84346 bits
-        "timestamp": "8000",
+        "timestamp": "6000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter3.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
             "url": "https://reporter3.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination3.test",
@@ -213,7 +165,8 @@
                 "event_report_windows": {
                   "start_time": 0,
                   "end_times": [3600, 7200, 10800]
-                }
+                },
+                "debug_reporting": true
               }
             }
           }
@@ -221,9 +174,8 @@
       },
       {
         // Should not match to a source.
-        "timestamp": "9000",
+        "timestamp": "7000",
         "registration_request": {
-          "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination3.test"
         },
         "responses": [
@@ -244,11 +196,10 @@
       {
         // Should register due to not exceeding max info gain bar.
         // Value: 2.80725 bits
-        "timestamp": "10000",
+        "timestamp": "8000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter3.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -268,9 +219,8 @@
       },
       {
         // Should result in an event-level report.
-        "timestamp": "11000",
+        "timestamp": "9000",
         "registration_request": {
-          "attribution_src_url": "https://reporter3.test/register-trigger",
           "context_origin": "https://destination3.test"
         },
         "responses": [
@@ -291,44 +241,82 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
-      // No debug reports are generated for exceeding channel capacity.
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": 11.46173,
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+           },
+           "type": "source-channel-capacity-limit"
+        } ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": 11.46173,
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+           },
+           "type": "source-channel-capacity-limit"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination2.test",
+              "limit": "4294967295",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+           },
+           "type": "source-trigger-state-cardinality-limit"
+        } ],
+        "report_time": "4000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test",
+              "limit": 6.5,
+              "source_event_id": "789",
+              "source_site": "https://source.test"
+           },
+           "type": "source-channel-capacity-limit"
+        } ],
+        "report_time": "6000",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0007154,
-          "scheduled_report_time": "3604",
+          "scheduled_report_time": "3602",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "3604000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination2.test",
-          "randomized_trigger_rate": 1,
-          "scheduled_report_time": "3606",
-          "source_event_id": "456",
-          "source_type": "navigation",
-          "trigger_data": "4"
-        },
-        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "3606000"
+        "report_time": "3602000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination3.test",
           "randomized_trigger_rate": 0.0000058,
-          "scheduled_report_time": "3610",
+          "scheduled_report_time": "3608",
           "source_event_id": "789",
           "source_type": "event",
           "trigger_data": "1"
         },
         "report_url": "https://reporter3.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "3610000"
+        "report_time": "3608000"
       }
     ]
   }

@@ -5,9 +5,12 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 
 #include "base/test/test_future.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+
+namespace {
 
 class BookmarkRemoverHelperUnitTest : public BookmarkIOSUnitTestSupport {
  public:
@@ -19,13 +22,36 @@ class BookmarkRemoverHelperUnitTest : public BookmarkIOSUnitTestSupport {
 TEST_F(BookmarkRemoverHelperUnitTest,
        TestRemoveAllUserBookmarksIOSBeforeIntialization) {
   base::test::TestFuture<bool> test_future;
-  BookmarkRemoverHelper helper(chrome_browser_state_.get());
-  helper.RemoveAllUserBookmarksIOS(test_future.GetCallback());
-  ASSERT_FALSE(test_future.IsReady());
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      local_or_syncable_bookmark_model_);
-  bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
-  ASSERT_TRUE(test_future.Get());
+  BookmarkRemoverHelper helper(profile_.get());
+  ASSERT_FALSE(bookmark_model_->loaded());
+  helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
+
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+  EXPECT_TRUE(test_future.Get());
 }
 
-// TODO(crbug.com/1480008): Add more tests for BookmarkRemoverHelper.
+TEST_F(BookmarkRemoverHelperUnitTest,
+       TestRemoveAllUserBookmarksIOSAfterIntialization) {
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+
+  base::test::TestFuture<bool> test_future;
+  BookmarkRemoverHelper helper(profile_.get());
+  ASSERT_TRUE(bookmark_model_->loaded());
+  helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST_F(BookmarkRemoverHelperUnitTest,
+       TestDeleteModelWhileOngoingRemoveAllUserBookmarksIOS) {
+  base::test::TestFuture<bool> test_future;
+  BookmarkRemoverHelper helper(profile_.get());
+  ASSERT_FALSE(bookmark_model_->loaded());
+  helper.RemoveAllUserBookmarksIOS(FROM_HERE, test_future.GetCallback());
+
+  // Mimic BookmarkModel being destructed.
+  helper.BookmarkModelBeingDeleted();
+
+  EXPECT_FALSE(test_future.Get());
+}
+
+}  // namespace

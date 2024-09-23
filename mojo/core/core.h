@@ -175,6 +175,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   MojoResult DestroyMessage(MojoMessageHandle message_handle);
   MojoResult SerializeMessage(MojoMessageHandle message_handle,
                               const MojoSerializeMessageOptions* options);
+  MojoResult ReserveMessageCapacity(MojoMessageHandle message_handle,
+                                    uint32_t payload_buffer_size,
+                                    uint32_t* buffer_size);
   MojoResult AppendMessageData(MojoMessageHandle message_handle,
                                uint32_t additional_payload_size,
                                const MojoHandle* handles,

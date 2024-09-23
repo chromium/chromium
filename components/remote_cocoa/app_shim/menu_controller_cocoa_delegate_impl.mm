@@ -13,7 +13,6 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -25,9 +24,7 @@ constexpr CGFloat kIPHDotSize = 6;
 NSImage* NewTagImage(const remote_cocoa::mojom::MenuControllerParams& params) {
   // 1. Make the attributed string.
 
-  NSString* badge_text = l10n_util::GetNSString(features::IsChromeRefresh2023()
-                                                    ? IDS_NEW_BADGE_UPPERCASE
-                                                    : IDS_NEW_BADGE);
+  NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
 
   NSColor* badge_text_color =
       skia::SkColorToSRGBNSColor(params.badge_text_color);
@@ -178,7 +175,7 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
 }
 
 - (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model {
-  absl::optional<size_t> alertedIndex;
+  std::optional<size_t> alertedIndex;
 
   // A map containing elements that need to be tracked, mapping from their
   // identifiers to their indexes in the menu.
@@ -211,23 +208,24 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       }
 
       if (@available(macOS 14.0, *)) {
-        // This early return handles two cases.
-        //
-        // 1. If this window isn't the window implementing the menu, this call
-        //    to get the frame will return an empty rect. Return, as this would
-        //    be the wrong window.
-        //
-        // 2. When the notification first fires, the layout isn't complete and
-        //    the menu item bounds will be reported to have a width of 10. If
-        //    the width is too small, early return, as the callback will happen
-        //    again, that time with the correct bounds.
-        if (strongMenu.numberOfItems &&
-            NSWidth([strongMenu itemAtIndex:0].accessibilityFrame) < 20) {
+        // Ensure that only notifications for the correct internal menu view
+        // class trigger this.
+        if (![[note.object className] isEqual:@"NSContextMenuItemView"]) {
           return;
+        }
+
+        // Ensure that the bounds for all the needed menu items are available.
+        // In testing, this was always true even for the first notification, so
+        // this is not expected to fail and is included for paranoia.
+        for (auto [elementId, index] : elementIds) {
+          NSRect frame = [strongMenu itemAtIndex:index].accessibilityFrame;
+          if (NSWidth(frame) < 10) {
+            return;
+          }
         }
       }
 
-      // The notification may fire more than once; only process the first
+      // These notifications will fire more than once; only process the first
       // time.
       if (menuShown) {
         return;
@@ -253,14 +251,11 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
         // macOS 13 and earlier use the old Carbon Menu Manager, and getting the
         // bounds of menus is pretty wackadoodle.
         //
-        // Even though with macOS 11 through macOS 13 watching for
-        // NSWindowDidOrderOnScreenAndFinishAnimatingNotification would work to
-        // guarantee that the menu is on the screen and can be queried for size,
-        // with macOS 10.15, there's no involvement from Cocoa, so there's no
-        // good notification that the menu window was shown. Therefore, rely on
-        // NSMenuDidBeginTrackingNotification, but then spin the event loop
-        // once. This practically guarantees that the menu is on screen and can
-        // be queried for size.
+        // Because menus are implemented in Carbon, the only notification that
+        // can be relied upon is `NSMenuDidBeginTrackingNotification`, but that
+        // is fired before layout is done. Therefore, spin the event loop once.
+        // This practically guarantees that the menu is on screen and can be
+        // queried for size.
         dispatch_after(
             dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
             dispatch_get_main_queue(), ^{
@@ -274,15 +269,25 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       };
     };
 
+    // Register for a notification to get a callback when the menu is shown.
+    // `NSMenuDidBeginTrackingNotification` might seem ideal, but it fires very
+    // early in menu tracking, before layout happens.
     if (@available(macOS 14.0, *)) {
-      NSString* notificationName =
-          @"NSWindowDidOrderOnScreenAndFinishAnimatingNotification";
-      [_menuObservers addObject:[NSNotificationCenter.defaultCenter
-                                    addObserverForName:notificationName
-                                                object:nil
-                                                 queue:nil
-                                            usingBlock:shownCallback]];
+      // With macOS 14+, menus are implemented with Cocoa. Because all the menu-
+      // specific notifications fire very early, before layout, rely on the
+      // NSViewFrameDidChangeNotification being fired for a specific menu
+      // implementation class.
+      [_menuObservers
+          addObject:[NSNotificationCenter.defaultCenter
+                        addObserverForName:NSViewFrameDidChangeNotification
+                                    object:nil
+                                     queue:nil
+                                usingBlock:shownCallback]];
     } else {
+      // Before macOS 14, menus were implemented with Carbon and only the basic
+      // notifications were hooked up. Therefore, as much as
+      // `NSMenuDidBeginTrackingNotification` is not ideal, register for it, and
+      // play `dispatch_after` games, above.
       [_menuObservers
           addObject:[NSNotificationCenter.defaultCenter
                         addObserverForName:NSMenuDidBeginTrackingNotification
@@ -300,13 +305,15 @@ NSImage* IPHDotImage(const remote_cocoa::mojom::MenuControllerParams& params) {
       }
 
       // We expect to see the following order of events:
+      //
       // - element shown
       // - element activated (optional)
       // - element hidden
-      // However, the code that detects menu item activation is called *after*
-      // the current callback. To make sure the events happen in the right order
-      // we'll defer processing of element hidden events until the end of the
-      // current system event queue.
+      //
+      // However, the OS notification for "element activated" fires *after* the
+      // NSMenuDidEndTrackingNotification notification that is used here for
+      // "element hidden". Therefore, to ensure correct ordering, defer
+      // processing "element hidden" by posting to the main dispatch queue.
       dispatch_after(
           dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
           dispatch_get_main_queue(), ^{

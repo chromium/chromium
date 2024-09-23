@@ -6,7 +6,7 @@
 #define MEDIA_GPU_ANDROID_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
 #include "base/functional/callback.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "media/gpu/android/codec_image_group.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
@@ -69,8 +69,8 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
 
     ~ImageRecord();
 
-    // Mailbox to which this shared image is bound.
-    gpu::Mailbox mailbox;
+    // ClientSharedImage for the current shared image.
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // Release callback.  When this is called (or dropped), the image will be
     // considered to be unused.

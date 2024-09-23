@@ -80,7 +80,7 @@ metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
     case OFF_STORE:
       return metrics::SystemProfileProto::HAS_OFFSTORE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::SystemProfileProto::NO_EXTENSIONS;
 }
 
@@ -156,7 +156,7 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
       return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Fall through.
   }
   return ExtensionInstallProto::UNKNOWN_TYPE;
@@ -219,7 +219,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 23),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 24),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -265,6 +265,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
       {extensions::disable_reason::
            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
        ExtensionInstallProto::PUBLISHED_IN_STORE_REQUIRED_BY_POLICY},
+      {extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
+       ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
@@ -310,7 +312,7 @@ ExtensionInstallProto::BlacklistState GetBlacklistState(
     case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
 }
 
@@ -333,8 +335,6 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(
       extension_management->UpdatesFromWebstore(extension));
-  // TODO(crbug.com/1065748): Remove this setter.
-  install.set_is_from_bookmark(false);
   install.set_is_converted_from_user_script(
       extension.converted_from_user_script());
   install.set_is_default_installed(extension.was_installed_by_default());

@@ -32,6 +32,10 @@ namespace cc {
 class RenderFrameMetadata;
 }
 
+namespace input {
+class RenderWidgetHostViewInput;
+}  // namespace input
+
 namespace ui {
 class Cursor;
 }
@@ -99,7 +103,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // above.
   RenderWidgetHostViewChildFrame* get_view_for_testing() { return view_; }
 
-  void SetView(RenderWidgetHostViewChildFrame* view);
+  void SetView(RenderWidgetHostViewChildFrame* view, bool allow_paint_holding);
 
   // Returns the parent RenderWidgetHostView or nullptr if it doesn't have one.
   virtual RenderWidgetHostViewBase* GetParentRenderWidgetHostView();
@@ -124,6 +128,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
       bool propagate = true);
+
+  double css_zoom_factor() const { return last_received_css_zoom_factor_; }
 
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {
@@ -158,16 +164,20 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Transform a point into the coordinate space of the root
   // RenderWidgetHostView, for the current view's coordinate space.
   // Returns false if |target_view| and |view_| do not have the same root
-  // RenderWidgetHostView.
-  bool TransformPointToCoordSpaceForView(const gfx::PointF& point,
-                                         RenderWidgetHostViewBase* target_view,
-                                         const viz::SurfaceId& local_surface_id,
-                                         gfx::PointF* transformed_point);
+  // RenderWidgetHostView. RenderWidgetHostViewInput is the abstract class that
+  // defines the interface for handling user input and is one to one with
+  // RenderWidgetHostViewBase in the browser.
+  bool TransformPointToCoordSpaceForView(
+      const gfx::PointF& point,
+      input::RenderWidgetHostViewInput* target_view,
+      const viz::SurfaceId& local_surface_id,
+      gfx::PointF* transformed_point);
 
   // Pass acked touchpad pinch or double tap gesture events to the root view
   // for processing.
   void ForwardAckedTouchpadZoomEvent(
       const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
 
   // A gesture scroll sequence that is not consumed by a child must be bubbled
@@ -179,9 +189,24 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   [[nodiscard]] virtual bool BubbleScrollEvent(
       const blink::WebGestureEvent& event);
 
+  // These values are written to logs. Do not renumber or delete existing items;
+  // add new entries to the end of the list.
+  enum class RootViewFocusState {
+    // RootView is NULL.
+    kNullView = 0,
+    // Root View is already focused.
+    kFocused = 1,
+    // Root View is not focused at TouchStart. Calls
+    // RenderWidgetHostViewChildFrame::Focus() to focus it.
+    kNotFocused = 2,
+    kMaxValue = kNotFocused
+  };
+
   // Determines whether the root RenderWidgetHostView (and thus the current
-  // page) has focus.
-  bool HasFocus();
+  // page) has focus. We need a tri-state enum as a return variable to
+  // differentiate between the cases where root view is NULL and when it's
+  // actually focused/unfocused. No behaviour change expected in focus handling.
+  RootViewFocusState HasFocus();
 
   // Cause the root RenderWidgetHostView to become focused.
   void FocusRootView();
@@ -415,6 +440,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The last zoom level received from parent renderer, which is used to check
   // if a new surface is created in case of zoom level change.
   double last_received_zoom_level_ = 0.0;
+
+  // Represents CSS zoom applied to the embedding element in the parent.
+  double last_received_css_zoom_factor_ = 1.0;
 
   // Closure that will be run whenever a sad frame is shown and its visibility
   // metrics have been logged. Used for testing only.

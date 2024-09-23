@@ -75,10 +75,12 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+#include <initguid.h>
 #include <windows.h>
 
-#include <initguid.h>
 #include "base/logging_win.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "content/shell/common/v8_crashpad_support_win.h"
 #endif
 
@@ -91,6 +93,14 @@
 #endif
 
 namespace {
+
+enum class LoggingDest {
+  kFile,
+  kStderr,
+#if BUILDFLAG(IS_WIN)
+  kHandle,
+#endif
+};
 
 #if !BUILDFLAG(IS_FUCHSIA)
 base::LazyInstance<content::ShellCrashReporterClient>::Leaky
@@ -115,20 +125,68 @@ const GUID kContentShellProviderName = {
 #endif
 
 void InitLogging(const base::CommandLine& command_line) {
-  base::FilePath log_filename =
-      command_line.GetSwitchValuePath(switches::kLogFile);
-  if (log_filename.empty()) {
+  LoggingDest dest = LoggingDest::kFile;
+
+  if (command_line.GetSwitchValueASCII(switches::kEnableLogging) == "stderr") {
+    dest = LoggingDest::kStderr;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows child process may be given a handle in the --log-file switch.
+  base::win::ScopedHandle log_handle;
+  if (command_line.GetSwitchValueASCII(switches::kEnableLogging) == "handle") {
+    auto handle_str = command_line.GetSwitchValueNative(switches::kLogFile);
+    uint32_t handle_value = 0;
+    if (base::StringToUint(handle_str, &handle_value)) {
+      // This handle is owned by the logging framework and is closed when the
+      // process exits.
+      HANDLE duplicate = nullptr;
+      if (::DuplicateHandle(GetCurrentProcess(),
+                            base::win::Uint32ToHandle(handle_value),
+                            GetCurrentProcess(), &duplicate, 0, FALSE,
+                            DUPLICATE_SAME_ACCESS)) {
+        log_handle.Set(duplicate);
+        dest = LoggingDest::kHandle;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  base::FilePath log_filename;
+  if (dest == LoggingDest::kFile) {
+    log_filename = command_line.GetSwitchValuePath(switches::kLogFile);
+    if (log_filename.empty()) {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-    base::PathService::Get(base::DIR_TEMP, &log_filename);
+      base::PathService::Get(base::DIR_TEMP, &log_filename);
 #else
-    base::PathService::Get(base::DIR_EXE, &log_filename);
+      base::PathService::Get(base::DIR_EXE, &log_filename);
 #endif
-    log_filename = log_filename.AppendASCII("content_shell.log");
+      log_filename = log_filename.AppendASCII("content_shell.log");
+    }
   }
 
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_ALL;
-  settings.log_file_path = log_filename.value().c_str();
+#if BUILDFLAG(IS_WIN)
+  if (dest == LoggingDest::kHandle) {
+    // TODO(crbug.com/328285906) Use a ScopedHandle in logging settings.
+    settings.log_file = log_handle.release();
+  } else {
+    settings.log_file = nullptr;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (dest == LoggingDest::kFile) {
+    settings.log_file_path = log_filename.value();
+  }
+
+  if (dest == LoggingDest::kStderr) {
+    settings.logging_dest =
+        logging::LOG_TO_STDERR | logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  } else {
+    // Includes both handle or provided filename on Windows.
+    settings.logging_dest = logging::LOG_TO_ALL;
+  }
+
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
   logging::SetLogItems(true /* Process ID */, true /* Thread ID */,
@@ -168,12 +226,7 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
 #if BUILDFLAG(IS_MAC)
   // Needs to happen before InitializeResourceBundle().
-  OverrideFrameworkBundlePath();
-  OverrideOuterBundlePath();
-  OverrideChildProcessPath();
-  OverrideSourceRootPath();
   EnsureCorrectResolutionSettings();
-  OverrideBundleID();
 #endif  // BUILDFLAG(IS_MAC)
 
   InitLogging(command_line);
@@ -212,7 +265,7 @@ void ShellMainDelegate::PreSandboxStartup() {
 
 // Disable platform crash handling and initialize the crash reporter, if
 // requested.
-// TODO(crbug.com/1226159): Implement crash reporter integration for Fuchsia.
+// TODO(crbug.com/40188745): Implement crash reporter integration for Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableCrashReporter)) {
@@ -325,7 +378,7 @@ void ShellMainDelegate::InitializeResourceBundle() {
     global_descriptors->Set(kShellPakDescriptor, pak_fd, pak_region);
   }
   DCHECK_GE(pak_fd, 0);
-  // TODO(crbug.com/330930): A better way to prevent fdsan error from a double
+  // TODO(crbug.com/40346051): A better way to prevent fdsan error from a double
   // close is to refactor GlobalDescriptors.{Get,MaybeGet} to return
   // "const base::File&" rather than fd itself.
   base::File android_pak_file(pak_fd);
@@ -376,7 +429,7 @@ std::optional<int> ShellMainDelegate::PostEarlyInitialization(
   // PoissonAllocationSampler in the ContentShell. Therefore, enforce inclusion
   // at the moment.
   //
-  // TODO(https://crbug.com/1411454): Clarify which users of
+  // TODO(crbug.com/40062835): Clarify which users of
   // PoissonAllocationSampler we have in the ContentShell. Do we really need to
   // enforce it?
   memory_system::Initializer()

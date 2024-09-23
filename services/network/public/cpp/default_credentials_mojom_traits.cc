@@ -16,7 +16,7 @@ EnumTraits<network::mojom::DefaultCredentials,
     case net::HttpAuthPreferences::DISALLOW_DEFAULT_CREDENTIALS:
       return network::mojom::DefaultCredentials::DISALLOW_DEFAULT_CREDENTIALS;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::DefaultCredentials::ALLOW_DEFAULT_CREDENTIALS;
 }
 

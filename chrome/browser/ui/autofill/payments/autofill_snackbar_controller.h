@@ -24,6 +24,8 @@ class AutofillSnackbarController {
   virtual std::u16string GetMessageText() const = 0;
   // Returns the text to be displayed in the action button of the snackbar.
   virtual std::u16string GetActionButtonText() const = 0;
+  // Return the duration for which the snackbar should be shown.
+  virtual base::TimeDelta GetDuration() const = 0;
   virtual content::WebContents* GetWebContents() const = 0;
 };
 

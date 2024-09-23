@@ -1,0 +1,211 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("users") {
+  sources = [
+    "affiliation.cc",
+    "affiliation.h",
+    "chrome_user_manager_impl.cc",
+    "chrome_user_manager_impl.h",
+    "chrome_user_manager_util.cc",
+    "chrome_user_manager_util.h",
+    "profile_user_manager_controller.cc",
+    "profile_user_manager_controller.h",
+    "test_users.cc",
+    "test_users.h",
+    "user_manager_delegate_impl.cc",
+    "user_manager_delegate_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/user_manager",
+    "//components/user_manager:common",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/extensions",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/timezone",
+    "//chromeos/components/onc",
+    "//chromeos/dbus/common",
+    "//components/crash/core/common",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//content/public/common",
+    "//google_apis",
+    "//ui/wm",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_chrome_user_manager.cc",
+    "fake_chrome_user_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+  ]
+
+  deps = [
+    ":users",
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/settings",
+    "//components/user_manager:common",
+    "//google_apis",
+    "//ui/base",
+    "//ui/chromeos/resources",
+    "//ui/gfx",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "wallpaper_policy_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/external_data:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/dbus/constants",
+    "//components/ownership",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//crypto",
+    "//net:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+
+    # Tests from subdirectories:
+    "avatar:browser_tests",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "multi_user_sign_in_policy_controller_unittest.cc",
+    "profile_user_manager_controller_unittest.cc",
+    "user_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":users",
+    "avatar",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+
+    # Tests from subdirectories:
+    "avatar:unit_tests",
+    "default_user_image:unit_tests",
+  ]
+}

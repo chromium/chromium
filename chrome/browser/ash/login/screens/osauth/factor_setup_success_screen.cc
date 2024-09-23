@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ash/login/screens/osauth/factor_setup_success_screen.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -63,6 +65,7 @@ const base::TimeDelta kTimeoutDiff = base::Seconds(10);
 
 // static
 std::string FactorSetupSuccessScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
@@ -71,6 +74,7 @@ std::string FactorSetupSuccessScreen::GetResultString(Result result) {
     case Result::kTimedOut:
       return "TimedOut";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 FactorSetupSuccessScreen::FactorSetupSuccessScreen(
@@ -88,7 +92,7 @@ bool FactorSetupSuccessScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
-  if (wizard_context.knowledge_factor_setup.modified_factors.Empty()) {
+  if (wizard_context.knowledge_factor_setup.modified_factors.empty()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

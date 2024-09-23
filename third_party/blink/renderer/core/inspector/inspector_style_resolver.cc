@@ -46,12 +46,10 @@ InspectorStyleResolver::InspectorStyleResolver(
   // Skip only if the pseudo element is not tree-abiding.
   // ::placeholder and ::file-selector-button are treated as regular elements
   // and hence don't need to be included here.
-  if (element_pseudo_id &&
-      !(element_pseudo_id == kPseudoIdBefore ||
-        element_pseudo_id == kPseudoIdAfter ||
-        element_pseudo_id == kPseudoIdMarker ||
-        (RuntimeEnabledFeatures::BackdropInheritOriginatingEnabled() &&
-         element_pseudo_id == kPseudoIdBackdrop))) {
+  if (element_pseudo_id && !(element_pseudo_id == kPseudoIdBefore ||
+                             element_pseudo_id == kPseudoIdAfter ||
+                             element_pseudo_id == kPseudoIdMarker ||
+                             element_pseudo_id == kPseudoIdBackdrop)) {
     return;
   }
 
@@ -135,7 +133,7 @@ void InspectorStyleResolver::AddPseudoElementRules(
   // If the pseudo-element doesn't exist, exclude UA rules to avoid cluttering
   // all elements.
   unsigned rules_to_include =
-      element_->GetNestedPseudoElement(pseudo_id, view_transition_name)
+      element_->GetStyledPseudoElement(pseudo_id, view_transition_name)
           ? StyleResolver::kAllCSSRules
           : StyleResolver::kAllButUACSSRules;
   RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(

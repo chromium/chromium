@@ -1,0 +1,128 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #import=../cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  font-size: var(--cr-tabs-font-size, 14px);
+  font-weight: 500;
+  height: var(--cr-tabs-height, 48px);
+  user-select: none;
+}
+
+.tab {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  flex: var(--cr-tabs-flex, auto);
+  height: 100%;
+  justify-content: center;
+  opacity: 1;
+  outline: none;
+  padding: 0 var(--cr-tabs-tab-inline-padding, 0);
+  position: relative;
+  transition: opacity 100ms cubic-bezier(.4, 0, 1, 1);
+}
+
+:host-context(.focus-outline-visible) .tab:focus {
+  outline: var(--cr-tabs-focus-outline, auto);
+  outline-offset: var(--cr-tabs-focus-outline-offset, 0);
+}
+
+.selected {
+  color: var(--cr-tabs-selected-color, var(--google-blue-600));
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .selected {
+    color: var(--cr-tabs-selected-color, var(--google-blue-300));
+  }
+}
+
+.tab-icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-tabs-icon-size, var(--cr-icon-size));
+  background-color: var(--cr-secondary-text-color);
+  display: none;
+  height: var(--cr-tabs-icon-size, var(--cr-icon-size));
+  margin-inline-end: var(--cr-tabs-icon-margin-end, var(--cr-icon-size));
+  width: var(--cr-tabs-icon-size, var(--cr-icon-size));
+}
+
+.selected .tab-icon {
+  background-color: var(--cr-tabs-selected-color, var(--google-blue-600));
+}
+
+@media (prefers-color-scheme: dark) {
+  .selected .tab-icon {
+    background-color: var(--cr-tabs-selected-color, var(--google-blue-300));
+  }
+}
+
+.tab-indicator,
+.tab-indicator-background {
+  bottom: 0;
+  height: var(--cr-tabs-selection-bar-width, 2px);
+  left: var(--cr-tabs-tab-inline-padding, 0);
+  position: absolute;
+  right: var(--cr-tabs-tab-inline-padding, 0);
+}
+
+.tab-indicator {
+  border-top-left-radius: var(--cr-tabs-selection-bar-radius,
+      var(--cr-tabs-selection-bar-width, 2px));
+  border-top-right-radius: var(--cr-tabs-selection-bar-radius,
+      var(--cr-tabs-selection-bar-width, 2px));
+  opacity: 0;
+  transform-origin: left center;
+  transition: transform;
+}
+
+.selected .tab-indicator {
+  background: var(--cr-tabs-selected-color, var(--google-blue-600));
+  opacity: 1;
+}
+
+.tab-indicator.expand {
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(.4, 0, 1, 1);
+}
+
+.tab-indicator.contract {
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0, 0, .2, 1);
+}
+
+.tab-indicator-background {
+  background: var(--cr-tabs-unselected-color, var(--google-blue-600));
+  opacity: var(--cr-tabs-selection-bar-unselected-opacity, 0);
+  z-index: -1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tab-indicator-background {
+    background: var(--cr-tabs-unselected-color, var(--google-blue-300));
+  }
+
+  .selected .tab-indicator {
+    background: var(--cr-tabs-selected-color, var(--google-blue-300));
+  }
+}
+
+@media (forced-colors: active) {
+  .tab-indicator {
+    background: SelectedItem;
+  }
+}

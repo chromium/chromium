@@ -126,8 +126,13 @@ class StringListPolicyHandler : public ListPolicyHandler {
 
 std::unique_ptr<SimpleJsonStringSchemaValidatingPolicyHandler>
 JsonStringHandlerForTesting() {
-  std::string error;
-  Schema validation_schema = Schema::Parse(kValidationSchemaJson, &error);
+  ASSIGN_OR_RETURN(
+      const auto validation_schema, Schema::Parse(kValidationSchemaJson),
+      [](const auto& e)
+          -> std::unique_ptr<SimpleJsonStringSchemaValidatingPolicyHandler> {
+        ADD_FAILURE() << e;
+        return nullptr;
+      });
   return std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
       kPolicyName, kTestPref, validation_schema,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -675,7 +680,6 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
-  std::string error;
   static const char kSchemaJson[] =
       "{"
       "  \"type\": \"object\","
@@ -691,8 +695,8 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
       "    }"
       "  }"
       "}";
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -710,14 +714,13 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
   policy_map.LoadFrom(parsed_json.GetDict(), POLICY_LEVEL_RECOMMENDED,
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
-  TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
+  TestSchemaValidatingPolicyHandler handler(*schema, SCHEMA_ALLOW_UNKNOWN);
   std::unique_ptr<base::Value> output_value;
   EXPECT_FALSE(handler.CheckAndGetValueForTest(policy_map, /*errors=*/nullptr,
                                                &output_value));
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
-  std::string error;
   static const char kSchemaJson[] =
       "{"
       "  \"type\": \"object\","
@@ -733,8 +736,8 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
       "    }"
       "  }"
       "}";
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -752,7 +755,7 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
   policy_map.LoadFrom(parsed_json.GetDict(), POLICY_LEVEL_RECOMMENDED,
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
-  TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
+  TestSchemaValidatingPolicyHandler handler(*schema, SCHEMA_ALLOW_UNKNOWN);
 
   // Test that CheckPolicySettings() is true but outputs warnings about unknown
   // properties.
@@ -804,9 +807,8 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
       "    }"
       "  }"
       "}";
-  std::string error;
-  Schema schema = Schema::Parse(kSchemaJson, &error);
-  ASSERT_TRUE(schema.valid()) << error;
+  const auto schema = Schema::Parse(kSchemaJson);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
   static const char kPolicyMapJson[] =
       "{"
@@ -830,22 +832,22 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
                                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   SimpleSchemaValidatingPolicyHandler handler_all(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED);
 
   SimpleSchemaValidatingPolicyHandler handler_recommended(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED);
 
   SimpleSchemaValidatingPolicyHandler handler_mandatory(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED);
 
   SimpleSchemaValidatingPolicyHandler handler_none(
-      kPolicyName, kTestPref, schema, SCHEMA_STRICT,
+      kPolicyName, kTestPref, *schema, SCHEMA_STRICT,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED);
 
@@ -1094,6 +1096,86 @@ TEST(SimpleDeprecatingPolicyHandlerTest, CheckDeprecatedUsedWhenNoNewValue) {
   expected = std::make_unique<base::Value>(1337);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
+}
+
+TEST(URLPolicyHandler, CheckOnlyValidURLApplied) {
+  PolicyMap policy_map;
+  PrefValueMap prefs;
+  std::unique_ptr<base::Value> expected;
+  const base::Value* value;
+  PolicyErrorMap errors;
+  PolicyHandlerParameters params;
+
+  URLPolicyHandler handler(kTestPolicy, kTestPref);
+
+  // Check that invalid url returns error.
+  policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                 POLICY_SOURCE_CLOUD, base::Value("not_a_url"), nullptr);
+  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_FALSE(errors.empty());
+  errors.Clear();
+  prefs.Clear();
+
+  // Check that valid url returns no error.
+  policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                 POLICY_SOURCE_CLOUD, base::Value("https://www.example.com/"),
+                 nullptr);
+  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  handler.ApplyPolicySettingsWithParameters(policy_map, params, &prefs);
+  expected = std::make_unique<base::Value>("https://www.example.com/");
+  EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
+  EXPECT_EQ(*expected, *value);
+}
+
+TEST(CloudUserOnlyPolicyHandler, CheckValidatesSource) {
+  PolicyMap policy_map;
+  PrefValueMap prefs;
+  std::unique_ptr<base::Value> expected;
+  const base::Value* value;
+  PolicyErrorMap errors;
+  PolicyHandlerParameters params;
+  CloudUserOnlyPolicyHandler handler(std::make_unique<SimplePolicyHandler>(
+      kTestPolicy, kTestPref, base::Value::Type::STRING));
+
+  std::vector<PolicySource> all_sources{
+      POLICY_SOURCE_ENTERPRISE_DEFAULT,
+      POLICY_SOURCE_COMMAND_LINE,
+      POLICY_SOURCE_ACTIVE_DIRECTORY,
+      POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
+      POLICY_SOURCE_CLOUD,
+      POLICY_SOURCE_PLATFORM,
+      POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
+      POLICY_SOURCE_MERGED,
+      POLICY_SOURCE_CLOUD_FROM_ASH,
+      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE};
+
+  std::vector<PolicyScope> all_scopes{POLICY_SCOPE_USER, POLICY_SCOPE_MACHINE};
+
+  for (const PolicyScope scope : all_scopes) {
+    for (const PolicySource source : all_sources) {
+      policy_map.Set(kTestPolicy, POLICY_LEVEL_MANDATORY, scope, source,
+                     base::Value("some_value"), nullptr);
+      if (scope == POLICY_SCOPE_USER &&
+          (source == POLICY_SOURCE_CLOUD ||
+           source == POLICY_SOURCE_CLOUD_FROM_ASH)) {
+        EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
+        EXPECT_TRUE(errors.empty());
+        errors.Clear();
+
+        handler.ApplyPolicySettingsWithParameters(policy_map, params, &prefs);
+        expected = std::make_unique<base::Value>("some_value");
+        EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
+        EXPECT_EQ(*expected, *value);
+
+      } else {
+        EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
+        EXPECT_FALSE(errors.empty());
+        errors.Clear();
+      }
+    }
+  }
 }
 
 }  // namespace policy

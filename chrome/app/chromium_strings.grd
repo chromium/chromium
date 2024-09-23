@@ -373,13 +373,13 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
         </message>
       </if>
-      <if expr="not chromeos_ash and not is_macosx">
+      <if expr="not is_chromeos and not is_macosx">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Network Sign-in - Chromium
         </message>
       </if>
-      <if expr="chromeos_ash">
+      <if expr="is_chromeos">
         <!-- Captive Portal Browser Window Title Format -->
         <message name="IDS_CAPTIVE_PORTAL_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in captive portal popup windows">
           Chromium - Network Sign-in - <ph name="PAGE_TITLE">$1<ex>Google</ex></ph>
@@ -562,6 +562,13 @@ If you want to use this account one-time only, you can use <ph name="GUEST_LINK_
 Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
         </message>
       </if>
+
+      <if expr="is_linux">
+        <message name="IDS_DESKTOP_SHORTCUT_COMMENT" desc="Description of the desktop shortcut file which will open a Chrome tab at a given url.">
+          Open <ph name="URL">$1<ex>https://www.example-url.com/</ex></ph> in a new tab in Chromium.
+        </message>
+      </if>
+
       <!-- Crash Recovery Dialog -->
       <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes." translateable="false">
         Chromium
@@ -609,6 +616,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
           Chromium wants to export your passwords. Type your Windows password to allow this.
         </message>
+        <message name="IDS_PASSWORDS_PAGE_DELETE_ALL_DATA_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before deleting all data from Google Password Manager.">
+          Chromium wants to delete your Password Manager data. Type your Windows password to allow this.
+        </message>
         <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before overriding passwords during Import.">
           Chromium is trying to replace existing passwords. Type your Windows password to allow this.
         </message>
@@ -648,6 +658,10 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_INSTALL_EXISTING_VERSION_LAUNCHED" desc="A message shown to users who try to install Chrome in their user profile directory when their computer already has Chrome installed for all users. In this case, the installer silently launches the existing version of Chrome for all users rather than installing a second version of Chrome.">
           Chromium is already installed for all users on your computer.
         </message>
+        <message name="IDS_ELEVATION_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows elevation service. Displayed in the Windows Services management console.">
+          Provides elevation services for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>.
+        </message>
       </if>
       <!-- Options Dialog -->
       <if expr="is_win">
@@ -667,41 +681,13 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
         Chromium isn't your default browser
       </message>
-      <if expr="is_win">
-        <!-- Try Chrome Toast Dialog -->
-        <message name="IDS_TRY_TOAST_HEADING" desc="Top line of the try-chrome-again dialog">
-          There is a new version of Chromium available.
-        </message>
-        <message name="IDS_TRY_TOAST_HEADING2" desc="Top line of the try-chrome-again dialog">
-          There's a new version of Chromium available, and it's faster than ever.
-        </message>
-        <message name="IDS_TRY_TOAST_HEADING3" desc="Top line of the try-chrome-again dialog">
-          There's a new, safer version of Chromium available.
-        </message>
-        <message name="IDS_TRY_TOAST_HEADING4" desc="Top line of the try-chrome-again dialog">
-          Chromium has been updated, but you haven't used it for at least 30 days.
-        </message>
-        <message name="IDS_TRY_TOAST_HEADING_SKYPE" desc="Top line of the try-chrome-again dialog">
-          Chromium lets you click a phone number on the web and call it with Skype!
-        </message>
-      </if>
-
+      <message name="IDS_DEFAULT_BROWSER_INFOBAR_REFRESH_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
+        Chromium isn't your default browser
+      </message>
       <!-- Download Bubble Items -->
-      <message name="IDS_DOWNLOAD_BUBBLE_DANGEROUS_FILE"
-               desc="Message shown to the user to validate the download of a dangerous file.">
-        Chromium blocked this file because this type of file is dangerous
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED"
-               desc="Message shown to the user to validate the download when the download url is classified to lead to malware by the safebrowsing database.">
-        Chromium blocked this file because it is dangerous
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">
         Extensions, apps, and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph>
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_MALWARE"
-               desc="Subpage summary for malware warning for the user.">
-        Chromium blocked this file because it has malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK"
                desc="Text for the link to the help page about why Chromium blocks some downloaded files.">
@@ -731,14 +717,6 @@ Permissions you've already given to websites and apps may apply to this account.
          desc="Message shown to the user to validate the download when the download content is classified to lead to malware by safebrowsing.">
         <ph name="FILE_NAME">$1<ex>malware.exe</ex></ph> is dangerous, so Chromium has blocked it.
       </message>
-      <message name="IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is malware.">
-        This file is dangerous, so Chromium has blocked it.
-      </message>
-      <message name="IDS_BLOCK_REASON_UNWANTED_DOWNLOAD"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is unwanted sofware.">
-        This file may be dangerous, so Chromium has blocked it.
-      </message>
       <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING"
          desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
         Chromium recommends scanning this file because it may be dangerous.
@@ -753,9 +731,21 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="On the chrome://downloads page, the description shown for a blocked file that is dangerous.">
         Chromium blocked this download because the file is dangerous
       </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is dangerous because of cookie theft.">
+        Chromium blocked this download because the file can harm your personal and social network accounts
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT"
+               desc="On the chrome://downloads page, the description with account info shown for a blocked file that is dangerous because of cookie theft.">
+        Chromium blocked this download because the file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
       <message name="IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON"
                desc="On the chrome://downloads page, the description shown for a blocked file that is uncommon.">
         Chromium blocked this download because the file isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON_SUSPICIOUS_ARCHIVE"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is suspicious archive.">
+        Chromium blocked this download because the archive file includes other files that may hide malware
       </message>
       <message name="IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED"
                desc="On the chrome://downloads page, the description shown for a blocked file that is potentially unwanted.">
@@ -770,10 +760,14 @@ Permissions you've already given to websites and apps may apply to this account.
         Chromium blocked this download because you turned Safe Browsing off and the file can't be verified
       </message>
 
-      <!-- chrome://downloads page bypass dangerous download warning dialog -->
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK"
-               desc="On the downloads page, the label for the link to the help center in the dialog to bypass a dangerous download warning.">
+      <!-- chrome://downloads page bypass dangerous download warning prompt-->
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK"
+               desc="On the downloads page, the label for the link to the help center in the prompt to bypass a dangerous download warning.">
         Learn why Chromium blocks some files
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK_ACCESSIBLE"
+               desc="On the downloads page, accessible text for the link to the help center in the prompt to bypass a dangerous download warning.">
+        Learn why Chromium blocks some files, opens in new tab
       </message>
 
       <!-- Abandon in-progress downloads confirmation dialog -->
@@ -818,6 +812,28 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE" desc="A statement that multiple extension/apps have been newly blocklisted for malware.">
           Chromium found that these items contain malware:
         </message>
+
+        <!-- Manifest V2 Deprecation dialog -->
+        <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION" desc="The description of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
+          This extension is no longer supported. Chromium recommends that you remove it instead.
+        </message>
+        <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION"  desc="The description of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
+          {NUM_EXTENSIONS, plural,
+          =1 {This extension is no longer supported. Chromium recommends that you remove it.}
+          other {These extensions are no longer supported. Chromium recommends that you remove them.}}
+        </message>
+        <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
+          Chromium recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the disabled stage.">
+          {NUM_EXTENSIONS, plural,
+            =1 {Chromium recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
+            other {Chromium recommends that you remove them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
+          }
+        </message>
+        <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_REMOVE_BUTTON_ACC_LABEL" desc="The (accessible) label for the button to remove an extension.">
+          Remove <ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph> from Chromium
+        </message>
       </if>
 
       <!-- Extension Safety Check Detail Page strings -->
@@ -833,15 +849,32 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL" desc="Alerts the user that the extension should be reviewed.">
         Chromium recommends you review this extension
       </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE" desc="Alerts the user that the extension is not from the Chrome web store.">
+        Chromium can't verify where this extension comes from, and it might be unsafe. Remove it from Chromium so it can no longer see and change your data on sites you visit, including personal info.
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON" desc="Alerts the user that the extension is not from the Chrome web store.">
+        On • Chromium can't verify where this extension comes from
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF" desc="Alerts the user that the extension is not from the Chrome web store.">
+        Off • Chromium can't verify where this extension comes from
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES" desc="Alerts the user that the extension has not disclosed its privacy practices.">
+        This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.
+      </message>
 
-      <!-- chrome://settings/extensions page -->
+      <!-- chrome://extensions page -->
+  <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">
+    {NUM_EXTENSIONS, plural,
+     =1 {Chromium recommends that you remove it}
+     other {Chromium recommends that you remove them}}
+  </message>
       <message name="IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR" desc="The label on the toggle to allow the extension to show site access requests in the toolbar.">
         Allow extension to show access requests in the Chromium toolbar
       </message>
       <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in Incognito mode. Displayed in extensions management UI after an extension is selected to be run in Incognito mode.">
         Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.
       </message>
-      <message name="IDS_EXTENSIONS_UNINSTALL" desc="The link for uninstalling extensions.">
+      <message name="IDS_EXTENSIONS_UNINSTALL" desc="The label for a control that triggers an extension uninstall.">
         Remove from Chromium
       </message>
       <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_IN_CHROME" desc="The label to indicate that a shortcut will be triggerable only from within the Chrome application.">
@@ -917,12 +950,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <if expr="is_win or is_macosx or is_linux">
-        <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item" translateable="false">
-        Not used in Chromium. Placeholder to keep resource maps in sync.
-        </message>
-      </if>
-
       <if expr="is_macosx">
         <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome." translateable="false">
           Chromium
@@ -991,6 +1018,30 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Management bubble -->
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED" desc="Disclosure that an unnamed organization is managing the browser.">
+        Your organization manages Chromium
+      </message>
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY" desc="Disclosure that a known organization is managing the browser.">
+        <ph name="MANAGER">$1<ex>The Company</ex></ph> manages Chromium
+      </message>
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS" desc="Disclosure that multiple organization are managing the browser and profile.">
+        Multiple organizations manage Chromium
+      </message>
+
+      <!-- Extension requests sign in to Chrome through chrome.identity API -->
+      <if expr="enable_extensions">
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+          The extension "<ph name="EXTENSION_NAME">$1<ex>Screencast</ex></ph>" wants you to sign in to Chromium
+        </message>
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY_PART_1" desc="This string is the body of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+         To use this extension as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph>, sign in to Chromium.
+        </message>
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE_FALLBACK" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account. Used when the extension name couldn't be retrieved.">
+          An extension wants you to sign in to Chromium
+        </message>
+      </if>
+
       <!-- about:browser-switch strings -->
       <if expr="toolkit_views and not chromeos_lacros and not chromeos_ash">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
@@ -1022,10 +1073,40 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Dice Web Signin Interception Bubble-->
+      <if expr="not use_titlecase">
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
+          desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
+          Sign in to Chromium?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Make Chromium your own
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
+          desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Use Chromium without an account
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT"
+          desc="Text asking the user to sign into Chromium while the Chromium Signin Bubble intercept is shown.">
+          Sign In to Chromium?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Make Chromium Your Own
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT"
+          desc="Label of the Decline button of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          Use Chromium Without an Account
+        </message>
+      </if>
+
       <if expr="not chromeos_ash and not is_android and not chromeos_lacros">
-        <!-- Dice Web Signin Interception Bubble-->
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2" desc="Title of the web signin interception bubble used when Explicit browser Sign in is enabled">
+          Sign in to Chromium in a new profile?
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE" desc="Title for the profile switch interception bubble">
           Switch to existing Chromium profile?
@@ -1033,29 +1114,71 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC" desc="Description for the profile switch interception bubble">
           A Chromium profile with this account already exists
         </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC_V2" desc="This string is the body text for a dialog that appears when the user is already signed in to Chromium, but they just tried to sign in to a Google service (like Gmail) with a different Google Account that already has its own Chromium profile on this device. The body text is after the 'Switch to existing Chromium profile?' string. The tone should be inviting and helpful.">
+          You're already signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph> in another Chromium profile
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC" desc="Body of the web signin interception bubble">
           <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in to this Chromium profile. To keep your browsing separate, Chromium can create your own profile for you.
         </message>
-          <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble on a managed device">
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC" desc="Body of the web signin interception bubble. It is shown when the user signs in on the web while they already have another account present in the current profile.">
+         <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in.  To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS">$2<ex>foo@gmail.com</ex></ph>.
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble on a managed device">
           <ph name="EXISTING_USER">$1<ex>Elisa</ex></ph> is already signed in to this Chromium profile. This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$2<ex>foo@gmail.com</ex></ph>
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble when the new account is personal and the existing account is managed on a managed device">
           This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2" desc="Body of the web signin interception bubble. It is shown when the user signs in on the web while they already have another account present in the current profile.">
-          Another account is already signed in. To keep your browsing separate, Chromium can create your own profile for you.
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
+          To get your passwords and more on all your devices, sign in to Chromium
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Make Chromium your own
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
+          Sign in to Chromium so that your parents can help you stay safe on the web
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Sign in to get the most out of Chromium
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER" desc="This string is the body text of a reminder message, which is intended to help users understand that they have been signed in to Chromium. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chromium as well, the user selected yes. After a period of time, this reminder message appears at the top right of Chromium (pointing at the Profile Menu) to remind the user that they made this choice a while ago. This body text string comes after the 'Welcome back, USER_NAME' string. We are focusing on the benefit that user enjoys, now that they're signed in to Chromium. The tone should be welcoming.">
+          While you're signed in, you can use your passwords and more from your Google Account in Chromium. You can change this at any time in settings.
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Use Chromium without an account
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER_SCREENREADER" desc="This string is the accessibility text of a reminder message, which is intended to help users understand that they have been signed in to Chrome.">
+          While you're signed in, you can use your passwords and more from your Google Account in Chromium. <ph name="SHORTCUT">$1<ex>CTRL+SHIFT+M</ex></ph> can change your Google services settings.
         </message>
-        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chromium while the Chrome Signin Bubble intercept is shown.">
-          Sign in to Chromium?
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_TITLE" desc="This is the title of a confirmation dialog and asks the user to confirm that they want to sign out of Chromium. It appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. This title is before the 'Your passwords and other Chromium data are saved to your Google Account, and will be removed from this device. To use them in the future, sign back in to Chromium.' string. The tone should be straightforward.">
+          Sign out of Chromium?
+        </message>
+        <message name="CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY" desc="This is the subtitle of a confirmation dialog that asks the user to confirm that they want to sign out of Chromium. It appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. This subtitle is after the 'Sign out of Chromium?' string. The tone should be calm, because we want to explain to the user that their data is saved; however, we want to set expectations by clarifying that the data will be removed from the device. This string provides a path to resolution because it explains how the user can see their data again (by signing back in).">
+          Your passwords and other Chromium data are saved in your Google Account, and will be removed from this device. To use them in the future, sign back in to Chromium.
+        </message>
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY" desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user has saved some data (like a password or payment method) to Chromium, but Chromium wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chromium. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chromium.">
+          Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.
+        </message>
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY"  desc="This is the subtitle of an error message dialog that appears when the user opens the Chromium Profile Menu and chooses 'Sign out of Chromium'. The error message appears when the user tries to sign out immediately after having saved saved some data (like a password or payment method) to Chromium and Chromium hasn't had time to save that data to the user's Google Account yet. This subtitle is after the 'Some data isn't saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string asks the user to wait a few minutes before trying to sign out again.">
+          Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+        </message>
+        <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
+          You’ll be signed out of most sites when you close all Chromium windows, except your Google Account if you’re signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
+        </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK" desc="">
+          clear the Chromium data in your account
+        </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_BODY" desc="">
+          Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google account.
+        </message>
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chromium Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chromium?' with a bubble shown under it.">
+          Click to close the Chromium sign-in dialog
+        </message>
+        <message name="IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when Chromium is in 'Sign-in pending' state. This state means that the account associated with Chromium does not have valid credentials anymore and needs to be re-authenticated.">
+          Chromium account requires re-authentication
+        </message>
+
+        <message name="IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL"
+          desc="Label of the 'Continue as' button of Chromium Signin promos">
+          Sign in to Chromium as <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+        </message>
+
+        <!-- Autofill Sign In Promo Bubble -->
+        <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD" desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chromium and is after the 'Password saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chromium' button at the bottom of this message. The tone should be motivating.">
+          To get your passwords and more on all your devices, sign in to Chromium. This password will be saved in your Google Account after you sign in.
         </message>
       </if>
 
@@ -1082,6 +1205,41 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
           ChromiumOS could not sync your data due to an error signing in.
+        </message>
+      </if>
+
+      <!-- Profile Menu -->
+      <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
+        Sign in to Chromium
+      </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chromium button in the Profile Menu when the user is in sign in pending state.">
+          Remove account from Chromium
+        </message>
+        <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chromium profiles'.">
+          Other Chromium profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chromium Profiles item in the Profile Menu.">
+          Manage Chromium profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_SIGN_OUT"
+          desc="The text label of the Sign out of Chromium button in the Profile Menu.">
+          Sign out of Chromium
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chromium button in the Profile Menu when the user is in sign in pending state.">
+          Remove Account from Chromium
+        </message>
+        <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chromium profiles'.">
+          Other Chromium Profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_MANAGE_PROFILES" desc="The text label of the Manage Chromium Profiles item in the Profile Menu.">
+          Manage Chromium Profiles
+        </message>
+        <message name="IDS_PROFILE_MENU_SIGN_OUT"
+          desc="The text label of the Sign out of Chromium button in the Profile Menu.">
+          Sign Out of Chromium
         </message>
       </if>
 
@@ -1203,6 +1361,16 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_BODY" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
           Add a shortcut to Password Manager
+        </message>
+      </if>
+
+      <if expr="not is_android">
+        <!-- Desktop User Education IPH Strings -->
+        <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the app menu.">
+          You can open bookmarks, reading mode, and more from the Chromium menu
+        </message>
+        <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to find side panel entry points in the app menu. The phrase 'top right' should read as 'top left' in rtl languages.">
+          You can open bookmarks, reading mode, and more from the Chromium menu at the top right
         </message>
       </if>
 
@@ -1330,6 +1498,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to update Chrome to fix the out-of-date Chrome client error.">
         Update Chromium
       </message>
+      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
+        To use and save Chromium data in your Google Account, enter your passphrase
+      </message>
 
       <!-- Sync errors. Android uses native UI to handle Sync settings -->
       <if expr="not is_android">
@@ -1374,6 +1545,21 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB" desc="Text for the button on the window picker dialog, clicking which takes one to tab sharing">
         Chromium Tab
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a screen." >
+        To share your screen, allow screen recording for Chromium in System Preferences
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_SCREEN_PERMISSION_TEXT_PERIOD_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a screen, ending with period to allow a supplementary text to follow." >
+        To share your screen, allow screen recording for Chromium in System Preferences.
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a window." >
+        To share your window, allow screen recording for Chromium in System Preferences
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_WINDOW_PERMISSION_TEXT_PERIOD_MAC" desc="Instructive text for how to enable screen recording on Mac when trying to share a window, ending with period to allow a supplementary text to follow." >
+        To share your window, allow screen recording for Chromium in System Preferences.
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_RESTART_TEXT_MAC" desc="Supplementary text about the need to restart Chrome, displayed below the message about enabling screen-recording permissions on Mac when those permissions are missing." >
+        You'll then need to restart Chromium.
+      </message>
 
       <!-- Runtime permission strings -->
       <if expr="is_android">
@@ -1382,6 +1568,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chromium needs permission to access your camera for this site
+        </message>
+        <message name="IDS_INFOBAR_MISSING_HAND_TRACKING_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to hand tracking capabilities, but Chrome is missing the Android hand tracking permission.">
+          Chromium needs permission to track your hands
         </message>
         <message name="IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
           Chromium needs permission to access your microphone for this site
@@ -1402,6 +1591,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chromium needs camera permission for this site
         </message>
+        <message name="IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android hand tracking permission.">
+          Chromium needs permission to track your hands
+        </message>
         <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
           Chromium needs microphone permission for this site
         </message>
@@ -1414,12 +1606,263 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
           Chromium needs storage access permission to download files
         </message>
+        <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android scene understanding and hand tracking permission.">
+          Chromium needs permission to map your surroundings and track your hands
+        </message>
       </if>
 
-      <if  expr="is_macosx">
+      <if expr="is_macosx">
         <message name="IDS_RUNTIME_PERMISSION_OS_REASON_TEXT" desc="Text provided to the macOS permission dialog, explaining why Chrome needs to access a protected resource (e.g., camera, microphone).">
           Once Chromium has access, websites will be able to ask you for access.
         </message>
+        <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_DESC" desc="Text shown in the macOS permission dialog, describing why Chrome needs the permission to access local network.">
+          This will allow you to select from available devices and display content on them.
+        </message>
+      </if>
+
+      <!-- Lens Overlay Strings -->
+      <if expr="not is_android">
+        <!-- Side Panel Pinnable Entrypoint Strings -->
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH"
+          desc="The body text of the IPH describing that the Lens Overlay panel is pinnable.">
+          You can pin Image Search for easy access
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel is pinnable."
+          is_accessibility_with_no_ui="true">
+          You can pin Image Search for easy access; click the Pin button at the top of the side panel
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH"
+          desc="The body text of the IPH describing that the Lens Overlay panel has been pinned.">
+          Pinned! Use Image Search again from the toolbar
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel has been pinned."
+          is_accessibility_with_no_ui="true">
+          Pinned! You can access Image Search again from the new button on the toolbar
+        </message>
+
+        <!-- Search Bubble Strings -->
+        <message name="IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE"
+          desc="The name of the lens search bubble dialog.">
+          Image Search Search Bubble
+        </message>
+
+        <!-- Overlay WebUI Strings -->
+        <message name="IDS_LENS_OVERLAY_COPY"
+          desc="Command in the Lens Overlay context menu to copy text.">
+          Copy
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_TOAST_MESSAGE"
+          desc="Notification shown in the Lens Overlay when the user has copied selected text to the clipboard.">
+          Text copied
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE_TOAST_MESSAGE"
+          desc="Notification shown in the Lens Overlay when the user has copied the selected image to the clipboard.">
+          Image copied
+        </message>
+        <message name="IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL"
+          desc="Text that is shown in the tooltip of the more options button in the Lens Overlay.">
+          More options
+        </message>
+        <message name="IDS_LENS_OVERLAY_MY_ACTIVITY"
+          desc="Text that is shown in the more options menu to open the user's activity page.">
+          My Activity
+        </message>
+        <message name="IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE"
+          desc="The label for the button that dismisses the toast message">
+          Dismiss
+        </message>
+        <message name="IDS_LENS_OVERLAY_TRANSLATE"
+          desc="Command in the Lens Overlay context menu to translate text.">
+          Translate
+        </message>
+        <message name="IDS_LENS_OVERLAY_SELECT_TEXT"
+          desc="Command in the Lens Overlay context menu to select text.">
+          Select text
+        </message>
+        <message name="IDS_LENS_OVERLAY_COPY_AS_IMAGE"
+          desc="Command in the Lens Overlay context menu to copy the selected screen region to the clipboard as an image.">
+          Copy as image
+        </message>
+        <message name="IDS_LENS_OVERLAY_SAVE_AS_IMAGE"
+          desc="Command in the Lens Overlay context menu to save the selected screen region to disk as an image file.">
+          Save as image
+        </message>
+        <message name="IDS_LENS_OVERLAY_LEARN_MORE"
+          desc="Text that is shown in the more options menu to open the help center article.">
+          Learn more
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_LABEL"
+          desc="Accessibility label for the initial user eduction bubble that appears at the top of the screen after the user invokes the Lens Overlay feature. Informs the user to select an object to search with Google Lens, or use the escape key to exit the feature.">
+          Select anything to search with Image Search or press escape to exit Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to tap an object or drag over the screen to select a region to search with Google Lens.">
+          Select anything to search with Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SELECT_TEXT"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature. Informs the user to drag over the screen to select text to search with Google Lens.">
+          Select text with Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_MESSAGE"
+          desc="Text that is shown in the Lens Overlay education bubble when starting the feature in an offline state. Informs the user that Lens is not currently available.">
+          Image Search is not available. Try again later.
+        </message>
+        <message name="IDS_LENS_OVERLAY_INITIAL_TOAST_ERROR_EXIT_BUTTON_TEXT"
+          desc="Text that is shown in the Lens Overlay education bubble exit button when starting the feature in an offline state.">
+          Exit
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to drag over the screen to select a region to search it.">
+          Drag to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to highlight text to search it.">
+          Select text to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_CLICK_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click on an object to search it.">
+          Click to search
+        </message>
+        <message name="IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE"
+          desc="Text that is shown in the Lens Overlay tooltip that appears beneath the cursor. Informs the user to click to exit Google Lens.">
+          Click to exit Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL"
+          desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
+          Auto-detect
+        </message>
+        <message name="IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL"
+          desc="Label for the translate button. Informs the user that the entire screen will be translated when clicked.">
+          Translate screen
+        </message>
+        <message name="IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE"
+          desc="Label for the source language picker menu title denoting that the user can select a language for the screen to be translated to.">
+          Translate from
+        </message>
+        <message name="IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE"
+          desc="Label for the target language picker menu title denoting that the user can select a language for the screen to be translated to.">
+          Translate to
+        </message>
+        <message name="IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL"
+          desc="Label in the language picker menu denoting that the following language menu items are ones that have been selected recently by the user.">
+          Recent languages
+        </message>
+        <message name="IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL"
+          desc="Label in the language picker menu denoting that the following language menu items are all of the possible selections that can be made.">
+          All languages
+        </message>
+        <message name="IDS_LENS_OVERLAY_DETECTED_LABEL"
+          desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+          Detected
+        </message>
+        <message name="IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL"
+          desc="Label in the language picker menu denoting that the following language is the one that has been detected.">
+          Detect language
+        </message>
+        <message name="IDS_LENS_SEND_FEEDBACK"
+          desc="Text that is shown in the more options menu to open the feedback dialog.">
+          Send feedback
+        </message>
+        <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER"
+          desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
+          Send feedback for search with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_RENDERER_LABEL"
+          desc="The label for the renderer process housing the Lens overlay.">
+          Image Search
+        </message>
+
+        <!-- Entrypoint Strings -->
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to search anything on the page via Google Lens.">
+          Search anything on this page
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to search any image or text via Google Lens.">
+          Search any image or text with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2"
+          desc="Text
+    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
+    to select images or text to search with Google Lens.">
+          Select images/text to search with Lens
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL"
+          desc="Label
+    for the Google Lens button in the CTRL+F dialog.">
+          Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1"
+          desc="Label
+    for the button in the CTRL+F dialog to open Google Lens.">
+          Open Image Search
+        </message>
+        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2"
+          desc="Label
+    for the button in the CTRL+F dialog inviting the user to try Google Lens.">
+          Try Image Search
+        </message>
+        <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
+          desc="The name of the Lens overlay command in the content area context menu">
+          Search with Image Search
+        </message>
+        <message name="IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL"
+          desc="The label of the Lens overlay entrypoint in the omnibox">
+          Image Search
+        </message>
+        <message name="IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP"
+          desc="The tooltip for the Lens overlay toolbar button.">
+          Search with Image Search
+        </message>
+
+        <!-- Lens Permission Bubble Dialog-->
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON"
+          desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
+          Cancel
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON"
+          desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
+          OK
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
+          desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
+          Identify things or places and copy or translate text. When you use Image Search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_LINK"
+          desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
+          Learn more
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
+          desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
+          New! An easy way to search what's on your screen
+        </message>
+
+        <!-- Title Case Dependent -->
+        <if expr="use_titlecase">
+          <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT"
+            desc="In Title Case: The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+            Always Show Image Search Shortcut
+          </message>
+          <message name="IDS_SHOW_LENS_OVERLAY"
+            desc="In Title Case: The text label of the Lens overlay menu item">
+            Search with Image Search
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_SHOW_LENS_OVERLAY" desc="The text label of the Lens overlay menu item">
+            Search with Image Search
+          </message>
+          <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT"
+            desc="The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+            Always show Image Search shortcut
+          </message>
+        </if>
       </if>
 
       <!-- OOBE -->
@@ -1557,13 +2000,26 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Chrome parent extension/app install blocking dialog. -->
-      <if expr="enable_extensions and enable_supervised_users">
+      <if expr="enable_extensions">
         <message name="IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
          Your parent has turned off "Permissions for sites, apps and extensions" for Chromium
         </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">
+        <!-- Enterprise profile welcome screen -->
+        <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
+          While we're setting up account access, you can still use Chromium. You may not be able to access some resources until setup is complete.
+        </message>
+
+        <!-- Supervised user profile signin IPH -->
+        <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
+        <message name="IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT"
+          desc="Informative text shown on the IPH bubble when a supervised user signs-in in a new profile or an existing local profile."
+          translateable="false">
+          The Chromium settings your parent chose in Family Link can help keep you safe online
+        </message>
+
         <!-- Profile Picker -->
         <if expr="chromeos_lacros">
           <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">
@@ -1629,14 +2085,6 @@ Permissions you've already given to websites and apps may apply to this account.
             desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
             Sign in to Chromium
           </message>
-          <message name="IDS_FRE_SIGN_IN_TITLE_1"
-            desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
-            Make Chromium your own
-          </message>
-          <message name="IDS_FRE_SIGN_IN_TITLE_2"
-            desc="This string appears as a heading on a full-page screen that tells users the benefits of signing in to Chromium. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
-            Do more with Chromium
-          </message>
         </if>
 
         <!-- Default Browser Promo -->
@@ -1649,6 +2097,15 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chromium as their default browser.">
           Chromium logo inside a computer screen.
         </message>
+        <message name="IDS_APP_MENU_TOOLTIP_DEFAULT_PROMPT" desc="The tooltip to show for the browser menu when the default browser prompt is displayed">
+          Customize and control Chromium. Set Chromium as your default.
+        </message>
+        <message name="IDS_APP_MENU_BUTTON_DEFAULT_PROMPT" desc="Text in the browser menu chip indicating that the user can change their default browser">
+          Set Chromium as your default
+        </message>
+        <message name="IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM" desc="Menu item that prompts user to set Chromium as their default browser.">
+          Set Chromium as your default browser
+        </message>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
@@ -1659,6 +2116,14 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH" desc="Body of the in Product Help for profile switching shown in the password manager web app.">
           You can switch to see passwords from another Chromium profile
+        </message>
+
+        <!-- Web Signout Intercept IPH -->
+        <message name="IDS_SIGNOUT_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNOUT_IPH_TEXT" desc="This confirmation message is intended to help users to understand that signing out of a Google service (like Gmail) will not sign them out of Chromium. It appears in a blue in-product help bubble, which points to the Chromium Profile Menu; it appears after the user signs out of a Google service (like Gmail). The user can open the Profile Menu and sign out of Chromium, if they wish to do so.">
+          To remove your Google Account from Chromium, sign out
+        </message>
+        <message name="IDS_SIGNOUT_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNOUT_IPH_TEXT_SCREENREADER" desc="Text announced by screenreaders related to the confirmation message is intended to help users to understand that signing out of a Google service (like Gmail) will not sign them out of Chromium. It appears in a blue in-product help bubble, which points to the Chromium Profile Menu; it appears after the user signs out of a Google service (like Gmail). The user can open the Profile Menu and sign out of Chromium, if they wish to do so.">
+          To remove your Google Account from Chromium, sign out of Chromium in the Settings page
         </message>
       </if>
 
@@ -1675,8 +2140,8 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Device Chooser Prompt -->
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
-        Chromium needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
+      <message name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Web Serial Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
+        Chromium needs Bluetooth access to explore &#10; Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
       </message>
 
       <!-- Tailored Security -->
@@ -1741,10 +2206,10 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SETTINGS_SECURITY_V8_LINK_DESCRIPTION" desc="Description for the link row of the V8 security settings page.">
         Turn on additional protection in Chromium’s JavaScript and WebAssembly engine
       </message>
-      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_DESCRIPTION" desc="Description of the JavaScript optimizer content setting.">
+      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_DESCRIPTION" desc="Description of the JavaScript optimizer content setting.">
         V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance
       </message>
-      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_JIT_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
+      <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED_SUB_LABEL" desc="Sub-label for the enabled option of the JavaScript optimizer content setting.">
         Chromium runs faster and features that use JavaScript should work as designed (recommended)
       </message>
 
@@ -1831,11 +2296,11 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CANCEL_INSTALLATION" desc="For button to cancel the installation.">
           Cancel Installation
         </message>
-        <message name="IDS_SPLASH_SCREEN_MESSAGE" desc="Main message on the splash screen.">
-          On your marks...
-        </message>
         <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
           Installation complete.
+        </message>
+        <message name="IDS_UPDATER_OS_NOT_SUPPORTED" desc="Error displayed if the OS is not supported">
+          Installation failed because your version of Windows is not supported.
         </message>
 
         <!--extra code-->
@@ -1844,10 +2309,28 @@ Permissions you've already given to websites and apps may apply to this account.
           Extra code: <ph name="EXTRA_CODE">$1<ex>0x80071234</ex></ph>.
         </message>
 
+        <!--Startup errors.-->
+        <message name="IDS_UNABLE_TO_GET_SETUP_LOCK"
+                 desc="Error message displayed in the main dialog when the updater is unable to get the setup lock at startup.">
+          Startup error: another instance of setup is currently running, please try again later.
+        </message>
+        <message name="IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run without administrative privileges to install a per-system application.">
+          Startup error: please run the installer as administrator.
+        </message>
+        <message name="IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR"
+                 desc="Error message displayed in the main dialog when the updater is run with administrative privileges to install a per-user application.">
+          Startup error: please run the installer as a regular user, not as administrator.
+        </message>
+        <message name="IDS_GENERIC_STARTUP_ERROR"
+                 desc="Error message displayed in the main dialog when an error is encountered at startup of the updater.">
+          Startup error: <ph name="STARTUP_ERROR">$1<ex>error-internal</ex></ph>.
+        </message>
+
         <!--Network errors.-->
         <message name="IDS_NO_NETWORK_PRESENT_ERROR"
                  desc="Error message displayed in the main dialog when the Updater is unable to connect to the network.">
-          Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME">$1<ex>ChromiumUpdater.exe</ex></ph>.
+          Unable to connect to the Internet. If you use a firewall, please ensure <ph name="PRODUCT_EXE_NAME">$1<ex>ChromiumUpdater.exe</ex></ph> is in the allowlist.
         </message>
         <message name="IDS_ERROR_HTTPSTATUS_UNAUTHORIZED"
                  desc="Error message displayed in the main dialog when an update check or download fails due to unauthorized access, usually due to proxy problems.">
@@ -1917,15 +2400,25 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
 
         <!--Service errors.-->
+        <message name="IDS_SERVICE_ERROR_CANCELLED"
+                 desc="Error message displayed in the main dialog when the installation is cancelled.">
+          The installation has been cancelled.
+        </message>
         <message name="IDS_GENERIC_SERVICE_ERROR"
                  desc="Error message displayed in the main dialog for runtime errors that occur in the update client service.">
           Service error: <ph name="SERVICE_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
 
-        <!--Install errors.-->
+        <!--update_client install errors.-->
         <message name="IDS_GENERIC_INSTALL_ERROR"
-                 desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
+                 desc="Error message displayed in the main dialog if update client encounters an error while installing.">
           Install error: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
+
+        <!--Installer errors.-->
+        <message name="IDS_GENERIC_INSTALLER_ERROR"
+                 desc="Error message displayed in the main dialog when the application installer returns an error.">
+          Installer error: <ph name="INSTALLER_ERROR">$1<ex>error-internal</ex></ph>
         </message>
         <message name="IDS_INSTALL_REBOOT"
                  desc="Message displayed in the main dialog when a system reboot is required or has been initiated after installing.">
@@ -1947,20 +2440,34 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the application installer does not complete in the allowed amount of time.">
           Install error: The installer did not complete. The installation has been aborted.
         </message>
+
+        <!--Metainstaller errors.-->
+        <message name="IDS_GENERIC_METAINSTALLER_ERROR"
+                 desc="Error message displayed when the metainstaller returns an error.">
+          Setup error: <ph name="METAINSTALLER_EXIT_CODE">$1<ex>error-internal</ex></ph>. <ph name="WINDOWS_ERROR">$2<ex>windows-error-description</ex></ph>
+        </message>
+        <message name="IDS_FAILED_TO_ELEVATE_METAINSTALLER" desc="Error displayed if the metainstaller could not be run with elevated privileges for a system install">
+          Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
+
+        <!--Windows service strings.-->
+        <message name="IDS_UPDATER_SERVICE_DISPLAY_NAME"
+                 desc="The name of the Windows service. Displayed in the Windows Services management console.">
+          Chromium Updater Service
+        </message>
+        <message name="IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME"
+                 desc="The name of the internal Windows service. Displayed in the Windows Services management console.">
+          Chromium Updater Internal Service
+        </message>
+        <message name="IDS_UPDATER_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows service. Displayed in the Windows Services management console.">
+          Keeps your Chromium software up to date. If this service is disabled or stopped, your Chromium software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Chromium software using it.
+        </message>
       </if>
+
       <!-- Memory Saver Chip strings -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_MEMORY_SAVER_DIALOG_TITLE" desc="In Title Case: Title text for a dialog describing that the Memory Saver setting is enabled">
-            Memory Saver Made Chromium Faster
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEMORY_SAVER_DIALOG_TITLE" desc="Title text for a dialog describing that the Memory Saver setting is enabled">
-            Memory Saver made Chromium faster
-          </message>
-        </if>
-        <message name="IDS_MEMORY_SAVER_DIALOG_BODY_V2" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
           While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.
         </message>
       </if>
@@ -1979,10 +2486,44 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
       </if>
 
-      <!-- Clear Browsing Data -->
-      <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN" desc="Description in the footer of the Clear Browsing Data dialog when the user is signed.">
-        To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out of Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
+      <!-- Performance Intervention Dialog strings -->
+      <if expr="not is_android">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          These tabs are using extra resources. To improve your performance, let Chromium make them inactive.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make these tabs inactive to improve your browsing experience and free up resources.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make these tabs inactive to improve your browsing experience and keep things fast.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          This tab is using extra resources. To improve your performance, let Chromium make it inactive.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make this tab inactive to improve your browsing experience and free up resources.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V3" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
+          Chromium can make this tab inactive to improve your browsing experience and keep things fast.
+        </message>
+      </if>
+
+      <!-- Delete Browsing Data -->
+      <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN" desc="Description in the footer of the Delete Browsing Data dialog when the user is signed.">
+        To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out of Chromium<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
+
+      <!-- New Create Shortcut View Strings -->
+      <if expr="not is_android and not is_chromeos">
+        <message name="IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_SUBTITLE" desc="Subtitle of the updated Create Shortcut dialog about how the site opens for Chromium">
+          Shortcuts open in Chromium
+        </message>
+      </if>
+      <if expr="is_macosx">
+        <message name="IDS_CHROMIUM_SHORCUT_DESCRIPTION" desc="Text to use as description for the '.crwebloc' file format, which is generated by the 'Save and Share' -> 'Create Shortcut' flow.">
+          Chromium Shortcut
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

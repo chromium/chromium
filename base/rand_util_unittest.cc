@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/rand_util.h"
 
 #include <stddef.h>
@@ -134,7 +139,6 @@ TEST(RandUtilTest, RandBytes) {
 // Verify that calling base::RandBytes with an empty buffer doesn't fail.
 TEST(RandUtilTest, RandBytes0) {
   base::RandBytes(span<uint8_t>());
-  base::RandBytes(nullptr, 0);
 }
 
 TEST(RandUtilTest, RandBytesAsVector) {
@@ -255,10 +259,11 @@ TEST(RandUtilTest, DISABLED_RandBytesPerf) {
   const int kTestIterations = 10;
   const size_t kTestBufferSize = 1 * 1024 * 1024;
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[kTestBufferSize]);
+  std::array<uint8_t, kTestBufferSize> buffer;
   const base::TimeTicks now = base::TimeTicks::Now();
-  for (int i = 0; i < kTestIterations; ++i)
-    base::RandBytes(make_span(buffer.get(), kTestBufferSize));
+  for (int i = 0; i < kTestIterations; ++i) {
+    base::RandBytes(buffer);
+  }
   const base::TimeTicks end = base::TimeTicks::Now();
 
   LOG(INFO) << "RandBytes(" << kTestBufferSize

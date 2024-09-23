@@ -36,7 +36,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
     task_runner_ = task_environment_.GetMainThreadTaskRunner();
 
     display_ = gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-        gl::GLImplementationParts(gl::ANGLEImplementation::kD3D11), false);
+        gl::GLImplementationParts(gl::ANGLEImplementation::kD3D11));
     surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     share_group_ = new gl::GLShareGroup();
     context_ = gl::init::CreateGLContext(share_group_.get(), surface_.get(),
@@ -85,10 +85,10 @@ TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, color_space_,
                                                            dxgi_format,
                                                            /*device=*/nullptr);
-  const D3D11Status init_result =
-      wrapper->Init(task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr,
-                    /*array_slice=*/0, /*picture_buffer=*/nullptr,
-                    /*gpu_resource_init_cb=*/base::DoNothing());
+  const D3D11Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*in_texture=*/nullptr,
+      /*array_slice=*/0, /*picture_buffer=*/nullptr,
+      /*picture_buffer_gpu_resource_init_done_cb=*/base::DoNothing());
   EXPECT_EQ(init_result.code(), D3D11Status::Codes::kOk);
 
   // TODO: verify that ProcessTexture processes both textures.
@@ -100,10 +100,10 @@ TEST_F(D3D11TextureWrapperUnittest, BGRA8InitSucceeds) {
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, color_space_,
                                                            dxgi_format,
                                                            /*device=*/nullptr);
-  const D3D11Status init_result =
-      wrapper->Init(task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr,
-                    /*array_slice=*/0, /*picture_buffer=*/nullptr,
-                    /*gpu_resource_init_cb=*/base::DoNothing());
+  const D3D11Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*in_texture=*/nullptr,
+      /*array_slice=*/0, /*picture_buffer=*/nullptr,
+      /*picture_buffer_gpu_resource_init_done_cb=*/base::DoNothing());
   EXPECT_EQ(init_result.code(), D3D11Status::Codes::kOk);
 }
 
@@ -113,10 +113,10 @@ TEST_F(D3D11TextureWrapperUnittest, FP16InitSucceeds) {
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, color_space_,
                                                            dxgi_format,
                                                            /*device=*/nullptr);
-  const D3D11Status init_result =
-      wrapper->Init(task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr,
-                    /*array_slice=*/0, /*picture_buffer=*/nullptr,
-                    /*gpu_resource_init_cb=*/base::DoNothing());
+  const D3D11Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*in_texture=*/nullptr,
+      /*array_slice=*/0, /*picture_buffer=*/nullptr,
+      /*picture_buffer_gpu_resource_init_done_cb=*/base::DoNothing());
   EXPECT_EQ(init_result.code(), D3D11Status::Codes::kOk);
 }
 
@@ -126,10 +126,10 @@ TEST_F(D3D11TextureWrapperUnittest, P010InitSucceeds) {
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, color_space_,
                                                            dxgi_format,
                                                            /*device=*/nullptr);
-  const D3D11Status init_result =
-      wrapper->Init(task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr,
-                    /*array_slice=*/0, /*picture_buffer=*/nullptr,
-                    /*gpu_resource_init_cb=*/base::DoNothing());
+  const D3D11Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*in_texture=*/nullptr,
+      /*array_slice=*/0, /*picture_buffer=*/nullptr,
+      /*picture_buffer_gpu_resource_init_done_cb=*/base::DoNothing());
   EXPECT_EQ(init_result.code(), D3D11Status::Codes::kOk);
 }
 
@@ -139,10 +139,10 @@ TEST_F(D3D11TextureWrapperUnittest, UnknownInitFails) {
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, color_space_,
                                                            dxgi_format,
                                                            /*device=*/nullptr);
-  const D3D11Status init_result =
-      wrapper->Init(task_runner_, get_helper_cb_, /*texture_d3d=*/nullptr,
-                    /*array_slice=*/0, /*picture_buffer=*/nullptr,
-                    /*gpu_resource_init_cb=*/base::DoNothing());
+  const D3D11Status init_result = wrapper->Init(
+      task_runner_, get_helper_cb_, /*in_texture=*/nullptr,
+      /*array_slice=*/0, /*picture_buffer=*/nullptr,
+      /*picture_buffer_gpu_resource_init_done_cb=*/base::DoNothing());
   EXPECT_NE(init_result.code(), D3D11Status::Codes::kOk);
 }
 

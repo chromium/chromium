@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+
+// [explainer]: https://github.com/explainers-by-googlers/document-isolation-policy
+// A document isolation policy value is one of three strings that controls the
+// fetching of cross-origin resources without explicit permission from resource
+// owners and the assignation of a document to an agent cluster.
+enum DocumentIsolationPolicyValue {
+  // This is the default value. When this value is used, cross-origin resources
+  // can be fetched without giving explicit permission through the CORS
+  // protocol or the `Cross-Origin-Resource-Policy` header. The document is
+  // assigned to an agent cluster without an isolation key.
+  kNone,
+
+  // When this value is used, fetching cross-origin resources requires the
+  // server's explicit permission through the CORS protocol or the
+  // `Cross-Origin-Resource-Policy` header. The document is assigned to an
+  // agent cluster with an isolation key matching a crossOriginIsolation level
+  // of logical or effective, depending on the platform capabilities.
+  kIsolateAndRequireCorp,
+
+  // When this value is used, fetching cross-origin no-CORS resources
+  // omits credentials. In exchange, an explicit `Cross-Origin-Resource-Policy`
+  // header is not required. Other requests sent with credentials require the
+  // server's explicit permission through the CORS protocol or the
+  // `Cross-Origin-Resource-Policy` header. The document is assigned to an
+  // agent cluster with an isolation key matching a crossOriginIsolation level
+  // of logical or effective, depending on the platform capabilities.
+  kIsolateAndCredentialless,
+};
+
+// [explainer]: https://github.com/explainers-by-googlers/document-isolation-policy
+// An document isolation policy consists of:
+struct DocumentIsolationPolicy {
+  // A `value`, which is a document isolation policy value, initially
+  // "none".
+  DocumentIsolationPolicyValue value = DocumentIsolationPolicyValue.kNone;
+  // A `reporting endpoint` string, initially the empty string.
+  string? reporting_endpoint;
+  // A `report only value`, which is a document isolation policy value,
+  // initially "none".
+  DocumentIsolationPolicyValue report_only_value =
+      DocumentIsolationPolicyValue.kNone;
+  // [spec]: A `report only reporting endpoint` string, initially the empty
+  // string.
+  string? report_only_reporting_endpoint;
+};

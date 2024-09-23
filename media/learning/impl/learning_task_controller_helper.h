@@ -33,8 +33,7 @@ class LearningTaskControllerHelperTest;
 // Since both the mojo LearningTaskController and LearningTaskControllerImpl
 // will need to do almost exactly the same thing, this class handles the common
 // logic for them.
-class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
-    : public base::SupportsWeakPtr<LearningTaskControllerHelper> {
+class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper final {
  public:
   // Callback to add labelled examples as training data.
   using AddExampleCB =
@@ -110,6 +109,8 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
 
   // Callback to which we'll send finished examples.
   AddExampleCB add_example_cb_;
+
+  base::WeakPtrFactory<LearningTaskControllerHelper> weak_ptr_factory_{this};
 
   friend class LearningTaskControllerHelperTest;
 };

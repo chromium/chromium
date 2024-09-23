@@ -32,6 +32,7 @@ class DummyInputMethod : public InputMethod {
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
+  void OnUrlChanged() override;
 #endif
 
   void SetFocusedTextInputClient(TextInputClient* client) override;
@@ -48,6 +49,8 @@ class DummyInputMethod : public InputMethod {
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
+  void SetVirtualKeyboardControllerForTesting(
+      std::unique_ptr<VirtualKeyboardController> controller) override;
 };
 
 }  // namespace ui

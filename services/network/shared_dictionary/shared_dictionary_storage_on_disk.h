@@ -13,13 +13,14 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
 #include "url/gurl.h"
@@ -63,27 +64,32 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const SharedDictionaryStorageOnDisk&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionarySync(
+  scoped_refptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) override;
-  void GetDictionary(const GURL& url,
-                     mojom::RequestDestination destination,
-                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
-                         callback) override;
-  scoped_refptr<SharedDictionaryWriter> CreateWriter(
+  void GetDictionary(
+      const GURL& url,
+      mojom::RequestDestination destination,
+      base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)> callback)
+      override;
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+  CreateWriter(const GURL& url,
+               base::Time last_fetch_time,
+               base::Time response_time,
+               base::TimeDelta expiration,
+               const std::string& match,
+               const std::set<mojom::RequestDestination>& match_dest,
+               const std::string& id,
+               std::unique_ptr<SimpleUrlPatternMatcher> matcher) override;
+  bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) override;
-  bool IsAlreadyRegistered(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) override;
+      const std::string& id,
+      base::Time last_fetch_time) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.
@@ -97,14 +103,11 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   friend class SharedDictionaryManagerTest;
   friend class SharedDictionaryManagerOnDiskTest;
 
-  class RefCountedSharedDictionary;
-  class WrappedSharedDictionary;
-
   void OnDatabaseRead(
       net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
   void OnDictionaryWritten(std::unique_ptr<SimpleUrlPatternMatcher> matcher,
                            net::SharedDictionaryInfo info);
-  void OnRefCountedSharedDictionaryDeleted(
+  void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
   const std::map<
@@ -124,7 +127,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
                WrappedDictionaryInfo>>
       dictionary_info_map_;
 
-  std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
+  std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
 
   bool get_dictionary_called_ = false;

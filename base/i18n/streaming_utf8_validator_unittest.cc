@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+//
+// Note: U8_NEXT couldn't be rewritten using the spanification_tool, because it
+// is a macro.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/i18n/streaming_utf8_validator.h"
 
 #include <stddef.h>
@@ -10,12 +18,13 @@
 #include <string.h>
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -43,11 +52,11 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
 
   // This uses the same logic as base::IsStringUTF8 except it considers
   // non-characters valid (and doesn't require a string as input).
-  static bool IsStringUtf8(const uint8_t* src, int32_t src_len) {
-    int32_t char_index = 0;
-    while (char_index < src_len) {
+  static bool IsStringUtf8(base::span<const uint8_t> src) {
+    size_t char_index = 0;
+    while (char_index < src.size()) {
       base_icu::UChar32 code_point;
-      U8_NEXT(src, char_index, src_len, code_point);
+      U8_NEXT(src, char_index, src.size(), code_point);
       if (!base::IsValidCodepoint(code_point))
         return false;
     }
@@ -61,8 +70,7 @@ class StreamingUtf8ValidatorThoroughTest : public ::testing::Test {
     uint8_t test[sizeof n];
     memcpy(test, &n, sizeof n);
     StreamingUtf8Validator validator;
-    EXPECT_EQ(IsStringUtf8(test, sizeof n),
-              validator.AddBytes(test) == VALID_ENDPOINT)
+    EXPECT_EQ(IsStringUtf8(test), validator.AddBytes(test) == VALID_ENDPOINT)
         << "Difference of opinion for \""
         << base::StringPrintf("\\x%02X\\x%02X\\x%02X\\x%02X", test[0], test[1],
                               test[2], test[3])
@@ -174,8 +182,8 @@ class PartialIterator {
     return *this;
   }
 
-  base::StringPiece operator*() const {
-    return base::StringPiece(valid[index_], prefix_length_);
+  std::string_view operator*() const {
+    return std::string_view(valid[index_], prefix_length_);
   }
 
   bool operator==(const PartialIterator& rhs) const {
@@ -208,14 +216,14 @@ class PartialIterator {
 // byte sequence) at a time.
 class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
  protected:
-  // Iterator must be convertible when de-referenced to StringPiece.
+  // Iterator must be convertible when de-referenced to std::string_view.
   template <typename Iterator>
   void CheckRange(Iterator begin,
                   Iterator end,
                   StreamingUtf8Validator::State expected) {
     for (Iterator it = begin; it != end; ++it) {
       StreamingUtf8Validator validator;
-      base::StringPiece sequence = *it;
+      std::string_view sequence = *it;
       EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(sequence)))
           << "Failed for \"" << sequence << "\"";
     }
@@ -228,10 +236,10 @@ class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
                              StreamingUtf8Validator::State expected) {
     for (Iterator it = begin; it != end; ++it) {
       StreamingUtf8Validator validator;
-      base::StringPiece sequence = *it;
+      std::string_view sequence = *it;
       StreamingUtf8Validator::State state = VALID_ENDPOINT;
       for (const auto& cit : sequence) {
-        state = validator.AddBytes(base::as_bytes(base::make_span(&cit, 1u)));
+        state = validator.AddBytes(base::byte_span_from_ref(cit));
       }
       EXPECT_EQ(expected, state) << "Failed for \"" << sequence << "\"";
     }
@@ -252,9 +260,9 @@ class StreamingUtf8ValidatorDoubleSequenceTest : public ::testing::Test {
                          StreamingUtf8Validator::State expected) {
     StreamingUtf8Validator validator;
     for (Iterator1 it1 = begin1; it1 != end1; ++it1) {
-      base::StringPiece c1 = *it1;
+      std::string_view c1 = *it1;
       for (Iterator2 it2 = begin2; it2 != end2; ++it2) {
-        base::StringPiece c2 = *it2;
+        std::string_view c2 = *it2;
         validator.AddBytes(base::as_byte_span(c1));
         EXPECT_EQ(expected, validator.AddBytes(base::as_byte_span(c2)))
             << "Failed for \"" << c1 << c2 << "\"";

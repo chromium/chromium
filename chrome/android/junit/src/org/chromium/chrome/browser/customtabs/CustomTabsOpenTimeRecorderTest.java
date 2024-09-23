@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -14,7 +19,6 @@ import android.text.TextUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,8 +26,10 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabsOpenTimeRecorder.CloseCause;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
@@ -35,8 +41,6 @@ import java.util.function.BooleanSupplier;
 public class CustomTabsOpenTimeRecorderTest {
     private static final String CHROME_PACKAGE_NAME = "chrome.package.name";
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Mock private Context mAppContext;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private CustomTabActivityNavigationController mNavigationController;
@@ -45,9 +49,13 @@ public class CustomTabsOpenTimeRecorderTest {
 
     private CustomTabsOpenTimeRecorder mRecorder;
 
+    @Rule public JniMocker jniMocker = new JniMocker();
+    @Mock private CustomTabsOpenTimeRecorder.Natives mNativeMock;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        jniMocker.mock(CustomTabsOpenTimeRecorderJni.TEST_HOOKS, mNativeMock);
         ContextUtils.initApplicationContextForTests(mAppContext);
     }
 
@@ -85,5 +93,20 @@ public class CustomTabsOpenTimeRecorderTest {
                 "Should return 1p package name",
                 CustomTabsOpenTimeRecorder.PACKAGE_NAME_EMPTY_1P,
                 mRecorder.getPackageName(true));
+    }
+
+    @Test
+    public void testAuthTabClose() {
+        when(mIntent.isAuthTab()).thenReturn(true);
+        when(mIsCctFinishing.getAsBoolean()).thenReturn(true);
+        createRecorder();
+        HistogramWatcher histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.CloseCause", CloseCause.AUTH_TAB);
+        mRecorder.onStartWithNative();
+        mRecorder.onStopWithNative();
+        histogram.assertExpected();
+        verify(mNativeMock)
+                .recordCustomTabSession(anyLong(), anyString(), anyLong(), eq(false), anyBoolean());
     }
 }

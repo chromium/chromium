@@ -5,6 +5,8 @@
 #ifndef CONTENT_TEST_TEST_CONTENT_CLIENT_H_
 #define CONTENT_TEST_TEST_CONTENT_CLIENT_H_
 
+#include <string_view>
+
 #include "content/public/common/content_client.h"
 
 namespace content {
@@ -19,7 +21,7 @@ class TestContentClient : public ContentClient {
   ~TestContentClient() override;
 
   // ContentClient:
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

@@ -14,10 +14,10 @@
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -75,6 +75,10 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
     const std::string& pref_name) const {
   // `modifier_key` and `device_id` are unused when the flag is disabled.
   if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    if (pref_name.empty()) {
+      return std::nullopt;
+    }
+
     // If we're at the login screen, try to get the pref from the global prefs
     // dictionary.
     int value;
@@ -241,7 +245,7 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
           {ui::KeyboardCode::VKEY_NEXT,
            prefs::kKeyEventRemappedToSixPackPageUp},
       });
-  auto* it = kSixPackKeyToPrefMap.find(key_code);
+  auto it = kSixPackKeyToPrefMap.find(key_code);
   CHECK(it != kSixPackKeyToPrefMap.end());
   int count = pref_service->GetInteger(it->second);
   // `alt_based` tells us whether this "six pack" event was produced by an
@@ -284,7 +288,7 @@ EventRewriterDelegateImpl::GetShortcutModifierForSixPackKey(
     case ui::KeyboardCode::VKEY_INSERT:
       return settings->six_pack_key_remappings->insert;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -347,6 +351,17 @@ EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
     return settings->f11;
   }
   return settings->f12;
+}
+
+void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedByFnKey(
+    ui::KeyboardCode key_code,
+    ui::mojom::SixPackShortcutModifier modifier) {
+  input_device_settings_notification_controller_->ShowSixPackKeyRewritingNudge(
+      key_code, modifier);
+}
+
+void EventRewriterDelegateImpl::NotifyTopRowRewriteBlockedByFnKey() {
+  input_device_settings_notification_controller_->ShowTopRowRewritingNudge();
 }
 
 }  // namespace ash

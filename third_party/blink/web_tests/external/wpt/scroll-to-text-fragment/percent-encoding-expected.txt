@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Test navigation with fragment: Percent char without hex digits is invalid..
+  assert_equals: expected "singlepercent" but got "noscroll"
+[FAIL] Test navigation with fragment: Percent char followed by percent char is invalid..
+  assert_equals: expected "doublepercent" but got "noscroll"
+[FAIL] Test navigation with fragment: Single digit percent-encoding is invalid..
+  assert_equals: expected "percentf" but got "noscroll"
+Harness: the test ran to completion.
+

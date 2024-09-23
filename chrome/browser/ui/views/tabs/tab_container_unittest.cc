@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
-
 #include <memory>
 
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
@@ -173,7 +174,8 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_container_controller_->set_tab_container(tab_container.get());
     tab_slot_controller_->set_tab_container(tab_container.get());
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     tab_container_ =
         widget_->GetRootView()->AddChildView(std::move(tab_container));
     drag_context_ =
@@ -399,6 +401,69 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
 }
 
+TEST_F(TabContainerTest, StaysInClosingModeBelowStandardWidth) {
+  AddTab(0, std::nullopt, TabActive::kActive);
+
+  // Create just enough tabs so tabs are not full size.
+  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
+    AddTab(0);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // Add one more so removing a tab leaves things below full size.
+  AddTab(0);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // The test closes two tabs, we need at least one left over after that.
+  ASSERT_GE(tab_container_->GetTabCount(), 3);
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(std::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  // Close the second-to-last tab; tab closing mode should remain active,
+  // constraining tab widths to below full size.
+  RemoveTab(tab_container_->GetTabCount() - 2);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+
+  // Close the last tab; tab closing mode should remain active, as there isn't
+  // enough room for tabs to be standard width.
+  RemoveTab(tab_container_->GetTabCount() - 1);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+}
+
+TEST_F(TabContainerTest, ClosingModeAffectsMinWidth) {
+  AddTab(0, std::nullopt, TabActive::kActive);
+
+  // Create just enough tabs so tabs are not full size.
+  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
+    AddTab(0);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // Add one more so removing a tab leaves things below full size.
+  AddTab(0);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(std::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  RemoveTab(tab_container_->GetTabCount() - 1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // In closing mode, minimum width and preferred width should be equal.
+  EXPECT_EQ(tab_container_->GetMinimumSize().width(),
+            tab_container_->GetIdealBounds(tab_container_->GetTabCount() - 1)
+                .right());
+}
+
 // After removing a tab followed by removing a tab in a tabgroup
 // Should bring the subsequent tab to its place as expected in
 // tab closing mode.
@@ -517,45 +582,71 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
       tab_container_->GetGroupViews(group)->header();
 
   using DropIndex = BrowserRootView::DropIndex;
+  using BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
+  using BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+  using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
 
   // Check dragging near the edge of each tab.
-  EXPECT_EQ((DropIndex{0, true, false}),
+  EXPECT_EQ((DropIndex{.index = 0,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab1->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{1, true, false}),
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab1->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{1, true, true}),
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab2->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab2->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab3->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{3, true, false}),
+  EXPECT_EQ((DropIndex{.index = 3,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 tab3->bounds().right_center() + gfx::Vector2d(-1, 0))));
 
   // Check dragging in the center of each tab.
-  EXPECT_EQ((DropIndex{0, false, false}),
+  EXPECT_EQ((DropIndex{.index = 0,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
                 MakeEventForDragLocation(tab1->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{1, false, false}),
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
                 MakeEventForDragLocation(tab2->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{2, false, false}),
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
                 MakeEventForDragLocation(tab3->bounds().CenterPoint())));
 
   // Check dragging over group header.
   // The left half of the header should drop outside the group.
-  EXPECT_EQ((DropIndex{1, true, false}),
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 group_header->bounds().CenterPoint() + gfx::Vector2d(-1, 0))));
   // The right half of the header should drop inside the group.
-  EXPECT_EQ((DropIndex{1, true, true}),
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kIncludeInGroup}),
             tab_container_->GetDropIndex(MakeEventForDragLocation(
                 group_header->bounds().CenterPoint() + gfx::Vector2d(1, 0))));
 }
@@ -879,7 +970,7 @@ TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
 
   // This test is only valid with scrolling off, since it pertains to tab
   // visibility stuff that scrolling doesn't do.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(tabs::kScrollableTabStrip));
 
   SetTabContainerWidth(200);
   // Add tabs to a single group until the last one is not visible.
@@ -915,7 +1006,7 @@ TEST_F(TabContainerTest, UnderlineBoundsCollapsedGroupHeaderVisibilityChange) {
 
   // This test is only valid with scrolling off, since it pertains to tab
   // visibility stuff that scrolling doesn't do.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(tabs::kScrollableTabStrip));
 
   SetTabContainerWidth(200);
   // Create a tab group with one tab and collapse it.
@@ -1072,4 +1163,17 @@ TEST_F(TabContainerTest, GetLeadingTrailingElementsForZOrdering) {
       tab_container_->GetGroupViews(group)->header();
   EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering()->view(),
             group_header);
+}
+
+TEST_F(TabContainerTest, TabGroupHeaderAccessibleProperties) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  AddTab(1, group);
+
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+  ui::AXNodeData data;
+
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
 }

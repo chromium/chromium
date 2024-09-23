@@ -38,7 +38,8 @@ class WebGPUInterfaceStub : public WebGPUInterface {
                         GLuint device_generation,
                         GLuint id,
                         GLuint generation,
-                        GLuint usage,
+                        uint64_t usage,
+                        uint64_t internal_usage,
                         const WGPUTextureFormat* view_formats,
                         GLuint view_format_count,
                         MailboxFlags flags,
@@ -48,9 +49,6 @@ class WebGPUInterfaceStub : public WebGPUInterface {
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_stub_autogen.h"
-
- protected:
-  DawnProcTable* procs();
 
  private:
   scoped_refptr<APIChannel> api_channel_;

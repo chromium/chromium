@@ -112,7 +112,7 @@ TEST_F(CrosBluetoothConfigTest, CallPowerFunctions) {
   remote->SetBluetoothEnabledState(true);
   base::RunLoop().RunUntilIdle();
 
-  remote->SetBluetoothHidDetectionActive();
+  remote->SetBluetoothEnabledWithoutPersistence();
   base::RunLoop().RunUntilIdle();
 
   remote->SetBluetoothHidDetectionInactive(/*is_using_bluetooth=*/false);

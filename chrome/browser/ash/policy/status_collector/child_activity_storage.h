@@ -31,7 +31,7 @@ class ChildActivityStorage : public ActivityStorage {
 
   // Adds an activity period.
   //
-  // TODO(crbug.com/827386): make a more appropriate signature once using
+  // TODO(crbug.com/40569404): make a more appropriate signature once using
   // SimpleClockTest (as the |now| parameter is mostly for testing).
   void AddActivityPeriod(base::Time start, base::Time end, base::Time now);
 

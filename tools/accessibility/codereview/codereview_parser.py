@@ -1,3 +1,6 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """Parser for a comments file."""
 
 import re
@@ -11,6 +14,7 @@ LINE_LINE_RE = re.compile("Line (?P<number>\d+): (?P<text>.*)\n")
 
 
 class Parser(object):
+
   def __init__(self, linesiter):
     self._lines = linesiter
 

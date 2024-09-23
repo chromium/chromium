@@ -15,7 +15,9 @@
           "PromptForDownloadLocation": false
         },
         "prefs": {
-          "download.prompt_for_download": {}
+          "download.prompt_for_download": {
+            "value": false
+          }
         }
       }
     ]

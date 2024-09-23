@@ -11,13 +11,11 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -28,6 +26,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -42,30 +41,19 @@ namespace views {
 namespace {
 
 // Constants are measured in dip.
-constexpr gfx::Size kTrackSize = gfx::Size(28, 12);
-// Margins from edge of track to edge of view.
-constexpr int kTrackVerticalMargin = 5;
-constexpr int kTrackHorizontalMargin = 6;
-// Inset from the rounded edge of the thumb to the rounded edge of the track.
-constexpr int kThumbInset = 2;
-
-// ChromeRefresh2023 specific values.
-constexpr gfx::Size kRefreshTrackSize = gfx::Size(26, 16);
-constexpr int kRefreshThumbInset = -4;
-constexpr int kRefreshThumbInsetSelected = -2;
-constexpr int kRefreshThumbPressedOutset = 1;
-constexpr int kRefreshHoverDiameter = 20;
+constexpr gfx::Size kTrackSize = gfx::Size(26, 16);
+constexpr int kThumbInset = -4;
+constexpr int kThumbInsetSelected = -2;
+constexpr int kThumbPressedOutset = 1;
+constexpr int kHoverDiameter = 20;
 constexpr float kBorderStrokeWidth = 1.0f;
 
 const gfx::Size GetTrackSize() {
-  return features::IsChromeRefresh2023() ? kRefreshTrackSize : kTrackSize;
+  return kTrackSize;
 }
 
 int GetThumbInset(bool is_on) {
-  if (features::IsChromeRefresh2023()) {
-    return is_on ? kRefreshThumbInsetSelected : kRefreshThumbInset;
-  }
-  return kThumbInset;
+  return is_on ? kThumbInsetSelected : kThumbInset;
 }
 
 std::optional<SkColor> GetSkColorFromVariant(
@@ -160,11 +148,11 @@ class ToggleButton::ThumbView : public View {
         ConvertVariantToSkColor(thumb_off_color_, color_provider);
     SkColor thumb_color =
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_);
-    if (features::IsChromeRefresh2023() && is_hovered_ && is_on_) {
-      // For Chrome Refresh this will blend and additional color into the "on"
-      // state thumb color while the view is hovered. This will also take into
-      // account both the off->on color animating along with the hover
-      // animation. Those animations are running independently.
+    if (is_hovered_ && is_on_) {
+      // This will blend and additional color into the "on" state thumb color
+      // while the view is hovered. This will also take into account both the
+      // off->on color animating along with the hover animation. Those
+      // animations are running independently.
       thumb_color = color_utils::AlphaBlend(
           color_provider->GetColor(ui::kColorToggleButtonThumbOnHover),
           thumb_color, hover_ratio_);
@@ -204,7 +192,6 @@ class ToggleButton::ThumbView : public View {
   absl::variant<ui::ColorId, SkColor> thumb_off_color_ =
       ui::kColorToggleButtonThumbOff;
 
-  // Thumb paints differently when on under ChromeRefresh2023.
   bool is_on_ = false;
   bool is_hovered_ = false;
 
@@ -221,8 +208,7 @@ class ToggleButton::ThumbView : public View {
 };
 
 ToggleButton::ToggleButton(PressedCallback callback)
-    : ToggleButton(std::move(callback),
-                   /*has_thumb_shadow=*/!features::IsChromeRefresh2023()) {}
+    : ToggleButton(std::move(callback), /*has_thumb_shadow=*/false) {}
 
 ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
     : Button(std::move(callback)) {
@@ -238,26 +224,21 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
   views::InstallEmptyHighlightPathGenerator(this);
   // InkDrop event triggering is handled in NotifyClick().
   SetHasInkDropActionOnClick(false);
-  InkDrop::UseInkDropForSquareRipple(
-      InkDrop::Get(this),
-      /*highlight_on_hover=*/features::IsChromeRefresh2023(),
-      /*highlight_on_focus=*/false,
-      /*show_highlight_on_ripple=*/features::IsChromeRefresh2023());
+  InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
+                                     /*highlight_on_hover=*/true,
+                                     /*highlight_on_focus=*/false,
+                                     /*show_highlight_on_ripple=*/true);
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](ToggleButton* host,
          gfx::Insets insets) -> std::unique_ptr<InkDropRipple> {
         gfx::Rect rect = host->thumb_view_->GetLocalBounds();
         rect.Inset(insets);
-        if (!features::IsChromeRefresh2023()) {
-          return InkDrop::Get(host)->CreateSquareRipple(rect.CenterPoint());
-        }
         const SkColor pressed_color = host->GetPressedColor();
         const float pressed_alpha = SkColorGetA(pressed_color);
         std::unique_ptr<SquareInkDropRipple> ripple =
             std::make_unique<SquareInkDropRipple>(
-                InkDrop::Get(host),
-                gfx::Size(kRefreshHoverDiameter, kRefreshHoverDiameter),
-                kRefreshHoverDiameter / 2, rect.size(), rect.height() / 2,
+                InkDrop::Get(host), gfx::Size(kHoverDiameter, kHoverDiameter),
+                kHoverDiameter / 2, rect.size(), rect.height() / 2,
                 rect.CenterPoint(), SkColorSetA(pressed_color, SK_AlphaOPAQUE),
                 pressed_alpha / SK_AlphaOPAQUE);
         ripple->set_activated_shape(
@@ -270,23 +251,20 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
         return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
       },
       this));
-  if (features::IsChromeRefresh2023()) {
-    InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-        [](ToggleButton* host) {
-          const gfx::Rect thumb_bounds = host->thumb_view_->GetLocalBounds();
-          const gfx::Size thumb_size(kRefreshHoverDiameter,
-                                     kRefreshHoverDiameter);
-          const SkColor hover_color = host->GetHoverColor();
-          const float hover_alpha = SkColorGetA(hover_color);
-          auto ink_drop_highlight = std::make_unique<InkDropHighlight>(
-              thumb_size, thumb_size.height() / 2,
-              gfx::PointF(thumb_bounds.CenterPoint()),
-              SkColorSetA(hover_color, SK_AlphaOPAQUE));
-          ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
-          return ink_drop_highlight;
-        },
-        this));
-  }
+  InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+      [](ToggleButton* host) {
+        const gfx::Rect thumb_bounds = host->thumb_view_->GetLocalBounds();
+        const gfx::Size thumb_size(kHoverDiameter, kHoverDiameter);
+        const SkColor hover_color = host->GetHoverColor();
+        const float hover_alpha = SkColorGetA(hover_color);
+        auto ink_drop_highlight = std::make_unique<InkDropHighlight>(
+            thumb_size, thumb_size.height() / 2,
+            gfx::PointF(thumb_bounds.CenterPoint()),
+            SkColorSetA(hover_color, SK_AlphaOPAQUE));
+        ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
+        return ink_drop_highlight;
+      },
+      this));
 
   // Even though ToggleButton doesn't paint anything, declare us as flipped in
   // RTL mode so that FocusRing correctly flips as well.
@@ -294,6 +272,8 @@ ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
   SetInstallFocusRingOnFocus(true);
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSwitch);
 }
 
 ToggleButton::~ToggleButton() {
@@ -307,10 +287,14 @@ void ToggleButton::AnimateIsOn(bool is_on) {
   if (GetIsOn() == is_on) {
     return;
   }
-  if (is_on)
+  if (is_on) {
     slide_animation_.Show();
-  else
+  } else {
     slide_animation_.Hide();
+  }
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   OnPropertyChanged(&slide_animation_, kPropertyEffectsNone);
 }
 
@@ -319,6 +303,9 @@ void ToggleButton::SetIsOn(bool is_on) {
     return;
   }
   slide_animation_.Reset(is_on ? 1.0 : 0.0);
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateThumb();
   OnPropertyChanged(&slide_animation_, kPropertyEffectsPaint);
 }
@@ -359,6 +346,18 @@ std::optional<SkColor> ToggleButton::GetTrackOffColor() const {
   return GetSkColorFromVariant(track_off_color_);
 }
 
+void ToggleButton::SetInnerBorderEnabled(bool enabled) {
+  if (inner_border_enabled_ == enabled) {
+    return;
+  }
+  inner_border_enabled_ = enabled;
+  OnPropertyChanged(&inner_border_enabled_, kPropertyEffectsPaint);
+}
+
+bool ToggleButton::GetInnerBorderEnabled() const {
+  return inner_border_enabled_;
+}
+
 void ToggleButton::SetAcceptsEvents(bool accepts_events) {
   if (GetAcceptsEvents() == accepts_events) {
     return;
@@ -371,10 +370,6 @@ bool ToggleButton::GetAcceptsEvents() const {
   return accepts_events_;
 }
 
-int ToggleButton::GetVisualHorizontalMargin() const {
-  return kTrackHorizontalMargin - kThumbInset;
-}
-
 void ToggleButton::AddLayerToRegion(ui::Layer* layer,
                                     views::LayerRegion region) {
   // Ink-drop layers should go above/below the ThumbView.
@@ -385,11 +380,9 @@ void ToggleButton::RemoveLayerFromRegions(ui::Layer* layer) {
   thumb_view_->RemoveLayerFromRegions(layer);
 }
 
-gfx::Size ToggleButton::CalculatePreferredSize() const {
+gfx::Size ToggleButton::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   gfx::Rect rect(GetTrackSize());
-  if (!features::IsChromeRefresh2023()) {
-    rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin, -kTrackHorizontalMargin));
-  }
   rect.Inset(-GetInsets());
   return rect.size();
 }
@@ -409,8 +402,8 @@ gfx::Rect ToggleButton::GetThumbBounds() const {
   // The thumb is a circle, so the width should match the height.
   thumb_bounds.set_width(thumb_bounds.height());
   thumb_bounds.Inset(thumb_view_->GetShadowOutsets());
-  if (GetState() == STATE_PRESSED && features::IsChromeRefresh2023()) {
-    thumb_bounds.Outset(kRefreshThumbPressedOutset);
+  if (GetState() == STATE_PRESSED) {
+    thumb_bounds.Outset(kThumbPressedOutset);
   }
   return thumb_bounds;
 }
@@ -424,7 +417,7 @@ void ToggleButton::UpdateThumb() {
                       static_cast<float>(slide_animation_.GetCurrentValue()),
                       static_cast<float>(hover_animation_.GetCurrentValue()),
                       GetIsOn(), IsMouseHovered());
-  if (features::IsChromeRefresh2023() && IsMouseHovered()) {
+  if (IsMouseHovered()) {
     InkDrop::Get(this)->GetInkDrop()->SetHovered(
         !slide_animation_.is_animating());
   }
@@ -465,16 +458,8 @@ void ToggleButton::OnThemeChanged() {
 void ToggleButton::NotifyClick(const ui::Event& event) {
   AnimateIsOn(!GetIsOn());
 
-  // Only trigger the action when we don't have focus. This lets the InkDrop
-  // remain and match the focus ring.
-  // TODO(pbos): Investigate triggering the ripple but returning back to the
-  // focused state correctly. This is set up to highlight on focus, but the
-  // highlight does not come back after the ripple is triggered. Then remove
-  // this and add back SetHasInkDropActionOnClick(true) in the constructor.
-  if (!HasFocus() || features::IsChromeRefresh2023()) {
-    InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
-                                       ui::LocatedEvent::FromIfValid(&event));
-  }
+  InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
+                                     ui::LocatedEvent::FromIfValid(&event));
 
   Button::NotifyClick(event);
 }
@@ -497,65 +482,25 @@ void ToggleButton::StateChanged(ButtonState old_state) {
   thumb_view_->SetEnabled(enabled);
 
   // Update thumb bounds.
-  if (features::IsChromeRefresh2023()) {
-    if (GetState() == STATE_PRESSED || old_state == STATE_PRESSED) {
-      UpdateThumb();
-    } else if (GetState() == STATE_HOVERED || old_state == STATE_HOVERED) {
-      if (old_state == STATE_HOVERED) {
-        hover_animation_.Hide();
-      } else {
-        hover_animation_.Show();
-      }
-      UpdateThumb();
+  if (GetState() == STATE_PRESSED || old_state == STATE_PRESSED) {
+    UpdateThumb();
+  } else if (GetState() == STATE_HOVERED || old_state == STATE_HOVERED) {
+    if (old_state == STATE_HOVERED) {
+      hover_animation_.Hide();
+    } else {
+      hover_animation_.Show();
     }
+    UpdateThumb();
   }
 }
 
 SkPath ToggleButton::GetFocusRingPath() const {
   SkPath path;
-  if (features::IsChromeRefresh2023()) {
-    gfx::RectF bounds(GetTrackBounds());
-    const SkRect sk_rect = gfx::RectFToSkRect(bounds);
-    const float corner_radius = sk_rect.height() / 2;
-    path.addRoundRect(sk_rect, corner_radius, corner_radius);
-  } else {
-    const gfx::Point center = GetThumbBounds().CenterPoint();
-    constexpr int kFocusRingRadius = 16;
-    path.addCircle(center.x(), center.y(), kFocusRingRadius);
-  }
+  gfx::RectF bounds(GetTrackBounds());
+  const SkRect sk_rect = gfx::RectFToSkRect(bounds);
+  const float corner_radius = sk_rect.height() / 2;
+  path.addRoundRect(sk_rect, corner_radius, corner_radius);
   return path;
-}
-
-void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-
-  node_data->role = ax::mojom::Role::kSwitch;
-  node_data->SetCheckedState(GetIsOn() ? ax::mojom::CheckedState::kTrue
-                                       : ax::mojom::CheckedState::kFalse);
-}
-
-void ToggleButton::OnFocus() {
-  Button::OnFocus();
-  if (!features::IsChromeRefresh2023()) {
-    InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_PENDING,
-                                       nullptr);
-    SchedulePaint();
-  }
-}
-
-void ToggleButton::OnBlur() {
-  Button::OnBlur();
-
-  if (!features::IsChromeRefresh2023()) {
-    // The ink drop may have already gone away if the user clicked after
-    // focusing.
-    if (InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
-        views::InkDropState::ACTION_PENDING) {
-      InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTION_TRIGGERED,
-                                         nullptr);
-    }
-    SchedulePaint();
-  }
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -574,7 +519,7 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
   track_flags.setColor(color_utils::AlphaBlend(
       GetTrackColor(true), GetTrackColor(false), color_ratio));
   canvas->DrawRoundRect(track_rect, radius, track_flags);
-  if (!GetIsOn() && features::IsChromeRefresh2023()) {
+  if (!GetIsOn() && inner_border_enabled_) {
     track_rect.Inset(kBorderStrokeWidth * dsf / 2.0f);
     track_flags.setColor(
         GetColorProvider()->GetColor(ui::kColorToggleButtonShadow));
@@ -586,8 +531,7 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void ToggleButton::AnimationEnded(const gfx::Animation* animation) {
-  if (features::IsChromeRefresh2023() && animation == &slide_animation_ &&
-      IsMouseHovered()) {
+  if (animation == &slide_animation_ && IsMouseHovered()) {
     InkDrop::Get(this)->GetInkDrop()->SetHovered(true);
   }
 }
@@ -603,11 +547,12 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
   Button::AnimationProgressed(animation);
 }
 
-BEGIN_METADATA(ToggleButton, ThumbView, View)
+BEGIN_METADATA(ToggleButton, ThumbView)
 END_METADATA
 
 BEGIN_METADATA(ToggleButton)
 ADD_PROPERTY_METADATA(bool, IsOn)
+ADD_PROPERTY_METADATA(bool, InnerBorderEnabled)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
 END_METADATA
 

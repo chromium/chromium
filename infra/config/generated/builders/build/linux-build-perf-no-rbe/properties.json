@@ -1,0 +1,67 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/build/linux-build-perf-no-rbe/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "build",
+              "builder": "linux-build-perf-no-rbe",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.build",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "build",
+          "builder": "linux-build-perf-no-rbe",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [
+      "no-fallback"
+    ],
+    "fail_if_reapi_used": true,
+    "project": "rbe-chromium-untrusted"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.build",
+  "recipe": "chrome_build/build_perf_without_rbe"
+}

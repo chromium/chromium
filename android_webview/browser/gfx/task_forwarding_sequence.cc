@@ -93,7 +93,7 @@ void TaskForwardingSequence::RunTask(
       TRACE_EVENT1("android_webview",
                    "TaskForwardingSequence::RunTask::WaitSyncToken",
                    "sequence_id", release_sequence_id.value());
-      gpu::Scheduler::ScopedAddWaitingPriority waiting(
+      gpu::Scheduler::ScopedSetSequencePriority waiting(
           scheduler, release_sequence_id, gpu::SchedulingPriority::kHigh);
       completion.Wait();
     }

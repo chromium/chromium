@@ -89,7 +89,7 @@ class MacNotificationServiceUNTest : public testing::Test {
             ([OCMArg invokeBlockWithArgs:@[], nil])]);
 
     service_ = std::make_unique<MacNotificationServiceUN>(
-        handler_receiver_.BindNewPipeAndPassRemote(),
+        handler_receiver_.BindNewPipeAndPassRemote(), base::DoNothing(),
         mock_notification_center_);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
     OCMStub([mock_notification_center_
@@ -117,6 +117,12 @@ class MacNotificationServiceUNTest : public testing::Test {
   }
 
   ~MacNotificationServiceUNTest() override {
+    if (service_) {
+      ResetService();
+    }
+  }
+
+  void ResetService() {
     // Expect the MacNotificationServiceUN dtor to clear the delegate from the
     // UNNotificationCenter.
     ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/false);
@@ -267,32 +273,20 @@ class MacNotificationServiceUNTest : public testing::Test {
         /*icon=*/gfx::ImageSkia());
   }
 
-  // Creates a new service and destroys it immediately. This is used to test any
-  // metrics logged during construction of the service. Tests can optionally
-  // pass in an |on_create| callback to do further checks before the service is
-  // destroyed.
-  void CreateAndDestroyService(
-      mojom::RequestPermissionResult result,
+  id CreateMockNotificationSettings(UNAuthorizationStatus status) {
+    id settings = OCMClassMock([UNNotificationSettings class]);
+    OCMStub([settings authorizationStatus]).andReturn(status);
+    return settings;
+  }
+
+  id CreateMockNotificationCenter(
+      id settings,
       NSArray<UNNotification*>* notifications = nil,
-      NSArray<UNNotificationCategory*>* categories = nil,
-      base::OnceCallback<void(MacNotificationServiceUN*)> on_create =
-          base::NullCallback()) {
+      NSArray<UNNotificationCategory*>* categories = nil) {
     id mock_notification_center =
         [OCMockObject mockForClass:[UNUserNotificationCenter class]];
-    MockNotificationActionHandler mock_handler;
-    mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
-        &mock_handler};
-    mojo::Remote<mojom::MacNotificationService> service_remote;
 
-    OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
-    id settings = OCMClassMock([UNNotificationSettings class]);
-    UNAuthorizationStatus status =
-        result == mojom::RequestPermissionResult::kPermissionPreviouslyDenied
-            ? UNAuthorizationStatusDenied
-        : result == mojom::RequestPermissionResult::kPermissionPreviouslyGranted
-            ? UNAuthorizationStatusAuthorized
-            : UNAuthorizationStatusNotDetermined;
-    OCMStub([settings authorizationStatus]).andReturn(status);
+    OCMStub([mock_notification_center setDelegate:[OCMArg any]]);
     OCMStub([mock_notification_center
         getNotificationSettingsWithCompletionHandler:
             ([OCMArg invokeBlockWithArgs:settings, nil])]);
@@ -304,13 +298,40 @@ class MacNotificationServiceUNTest : public testing::Test {
         getNotificationCategoriesWithCompletionHandler:
             ([OCMArg
                 invokeBlockWithArgs:(categories ? categories : @[]), nil])]);
+    return mock_notification_center;
+  }
+
+  // Creates a new service and destroys it immediately. This is used to test any
+  // metrics logged during construction of the service. Tests can optionally
+  // pass in an |on_create| callback to do further checks before the service is
+  // destroyed.
+  void CreateAndDestroyService(
+      mojom::RequestPermissionResult result,
+      NSArray<UNNotification*>* notifications = nil,
+      NSArray<UNNotificationCategory*>* categories = nil,
+      base::OnceCallback<void(MacNotificationServiceUN*)> on_create =
+          base::NullCallback()) {
+    UNAuthorizationStatus status =
+        result == mojom::RequestPermissionResult::kPermissionPreviouslyDenied
+            ? UNAuthorizationStatusDenied
+        : result == mojom::RequestPermissionResult::kPermissionPreviouslyGranted
+            ? UNAuthorizationStatusAuthorized
+            : UNAuthorizationStatusNotDetermined;
+    id mock_notification_center = CreateMockNotificationCenter(
+        CreateMockNotificationSettings(status), notifications, categories);
+
+    MockNotificationActionHandler mock_handler;
+    mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+        &mock_handler};
+    mojo::Remote<mojom::MacNotificationService> service_remote;
 
     if (result != mojom::RequestPermissionResult::kPermissionPreviouslyDenied &&
         result !=
             mojom::RequestPermissionResult::kPermissionPreviouslyGranted) {
       bool granted =
           result == mojom::RequestPermissionResult::kPermissionGranted;
-      id error = result == mojom::RequestPermissionResult::kRequestFailed
+      id error = (result == mojom::RequestPermissionResult::kRequestFailed ||
+                  result == mojom::RequestPermissionResult::kPermissionDenied)
                      ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
                      : NSNull.null;
       OCMExpect(
@@ -323,7 +344,8 @@ class MacNotificationServiceUNTest : public testing::Test {
     }
 
     auto service = std::make_unique<MacNotificationServiceUN>(
-        handler_receiver.BindNewPipeAndPassRemote(), mock_notification_center);
+        handler_receiver.BindNewPipeAndPassRemote(), base::DoNothing(),
+        mock_notification_center);
     service->Bind(service_remote.BindNewPipeAndPassReceiver());
     base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
     service->RequestPermission(permission_result.GetCallback());
@@ -331,7 +353,6 @@ class MacNotificationServiceUNTest : public testing::Test {
     if (on_create)
       std::move(on_create).Run(service.get());
 
-    OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
     service.reset();
     EXPECT_OCMOCK_VERIFY(mock_notification_center);
   }
@@ -631,7 +652,13 @@ TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
 
   auto profile_identifier =
       mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
-  service_remote_->CloseNotificationsForProfile(std::move(profile_identifier));
+  service_->CloseNotificationsForProfile(std::move(profile_identifier));
+
+  // Reset `service_` to verify that this still works if `service_` gets
+  // destroyed while waiting for UNUserNotificationCenter to reply back with
+  // the currently displaying notifications.
+  ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/false);
+  service_.reset();
 
   run_loop.Run();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
@@ -662,9 +689,10 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
     @"NSUserNotificationAlertStyle" : @"alert"
   });
 
+  // Test does not include kRequestFailed, as currently there is no code path
+  // that would result in that error.
   for (auto result :
-       {mojom::RequestPermissionResult::kRequestFailed,
-        mojom::RequestPermissionResult::kPermissionDenied,
+       {mojom::RequestPermissionResult::kPermissionDenied,
         mojom::RequestPermissionResult::kPermissionGranted,
         mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
         mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {
@@ -687,9 +715,10 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
     @"NSUserNotificationAlertStyle" : @"banner"
   });
 
+  // Test does not include kRequestFailed, as currently there is no code path
+  // that would result in that error.
   for (auto result :
-       {mojom::RequestPermissionResult::kRequestFailed,
-        mojom::RequestPermissionResult::kPermissionDenied,
+       {mojom::RequestPermissionResult::kPermissionDenied,
         mojom::RequestPermissionResult::kPermissionGranted,
         mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
         mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {
@@ -787,6 +816,131 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     inner_run_loop.Run();
     run_loop.Run();
   }
+}
+
+TEST_F(MacNotificationServiceUNTest, DidRecentlyHandledClickAction) {
+  EXPECT_FALSE(service_->DidRecentlyHandleClickAction());
+
+  // Simulate a notification click.
+  FakeUNNotification* notification =
+      CreateNotification("notificationId", "profileId",
+                         /*incognito=*/false);
+  id response = [OCMockObject mockForClass:[UNNotificationResponse class]];
+  OCMStub([response actionIdentifier])
+      .andReturn(UNNotificationDefaultActionIdentifier);
+  OCMStub([response notification]).andReturn(notification);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_handler_, OnNotificationAction)
+      .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+        run_loop.Quit();
+      });
+
+  [notification_center_delegate_
+              userNotificationCenter:mock_notification_center_
+      didReceiveNotificationResponse:response
+               withCompletionHandler:^(){
+               }];
+
+  EXPECT_TRUE(service_->DidRecentlyHandleClickAction());
+  run_loop.Run();
+  EXPECT_TRUE(service_->DidRecentlyHandleClickAction());
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  EXPECT_FALSE(service_->DidRecentlyHandleClickAction());
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       PermissionStateChangedCallback_RequestPermission) {
+  id mock_notification_center = CreateMockNotificationCenter(
+      CreateMockNotificationSettings(UNAuthorizationStatusNotDetermined));
+
+  MockNotificationActionHandler mock_handler;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+      &mock_handler};
+
+  base::test::TestFuture<mojom::PermissionStatus> status;
+  auto service = std::make_unique<MacNotificationServiceUN>(
+      handler_receiver.BindNewPipeAndPassRemote(),
+      status.GetRepeatingCallback(), mock_notification_center);
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kNotDetermined);
+
+  bool granted = true;
+  OCMExpect(
+      [mock_notification_center
+          requestAuthorizationWithOptions:0
+                        completionHandler:([OCMArg
+                                              invokeBlockWithArgs:@(granted),
+                                                                  NSNull.null,
+                                                                  nil])])
+      .ignoringNonObjectArgs();
+  base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+  service->RequestPermission(permission_result.GetCallback());
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kPromptPending);
+  EXPECT_EQ(permission_result.Get(),
+            mojom::RequestPermissionResult::kPermissionGranted);
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       PermissionStateChangedCallback_RequestPermissionPreviouslyDenied) {
+  id mock_notification_center = CreateMockNotificationCenter(
+      CreateMockNotificationSettings(UNAuthorizationStatusDenied));
+
+  MockNotificationActionHandler mock_handler;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+      &mock_handler};
+
+  mojom::PermissionStatus status = mojom::PermissionStatus::kNotDetermined;
+  base::RunLoop loop;
+  auto service = std::make_unique<MacNotificationServiceUN>(
+      handler_receiver.BindNewPipeAndPassRemote(),
+      base::BindLambdaForTesting([&](mojom::PermissionStatus new_status) {
+        status = new_status;
+        loop.Quit();
+      }),
+      mock_notification_center);
+  loop.Run();
+  EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+
+  base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+  service->RequestPermission(permission_result.GetCallback());
+  EXPECT_EQ(permission_result.Get(),
+            mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
+  EXPECT_EQ(status, mojom::PermissionStatus::kDenied);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       PermissionStateChangedCallback_Synchronization) {
+  // Reset the service created by the test harness so it doesn't interfere with
+  // the one created in this test.
+  ResetService();
+
+  UNAuthorizationStatus current_status = UNAuthorizationStatusAuthorized;
+  auto& status_ref = current_status;
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([settings authorizationStatus]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)(&status_ref)];
+  });
+  id mock_notification_center = CreateMockNotificationCenter(settings);
+
+  MockNotificationActionHandler mock_handler;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+      &mock_handler};
+
+  base::test::TestFuture<mojom::PermissionStatus> status;
+  auto service = std::make_unique<MacNotificationServiceUN>(
+      handler_receiver.BindNewPipeAndPassRemote(),
+      status.GetRepeatingCallback(), mock_notification_center);
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
+
+  current_status = UNAuthorizationStatusDenied;
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kDenied);
+
+  current_status = UNAuthorizationStatusNotDetermined;
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kNotDetermined);
+
+  current_status = UNAuthorizationStatusAuthorized;
+  EXPECT_EQ(status.Take(), mojom::PermissionStatus::kGranted);
 }
 
 }  // namespace mac_notifications

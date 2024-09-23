@@ -21,7 +21,7 @@ namespace webapps {
 // NO_ERROR_DETECTED) in its result. Clients may also add their own error codes,
 // and utilise LogToConsole to write a message to the devtools console. This
 // enum backs an UMA histogram, so it must be treated as append-only.
-enum InstallableStatusCode {
+enum class InstallableStatusCode {
   NO_ERROR_DETECTED = 0,
   RENDERER_EXITING = 1,
   RENDERER_CANCELLED = 2,
@@ -29,12 +29,16 @@ enum InstallableStatusCode {
   // NOT_IN_MAIN_FRAME = 4 (DEPRECATED),
   NOT_FROM_SECURE_ORIGIN = 5,
   NO_MANIFEST = 6,
-  MANIFEST_EMPTY = 7,
+  // The manifest failed to parse, the network failed, or the document is an
+  // opaque origin.
+  // Note: This was renamed from MANIFEST_EMPTY now that the document can return
+  // a default manifest.
+  MANIFEST_PARSING_OR_NETWORK_ERROR = 7,
   START_URL_NOT_VALID = 8,
   MANIFEST_MISSING_NAME_OR_SHORT_NAME = 9,
   MANIFEST_DISPLAY_NOT_SUPPORTED = 10,
   MANIFEST_MISSING_SUITABLE_ICON = 11,
-  NO_MATCHING_SERVICE_WORKER = 12,
+  // NO_MATCHING_SERVICE_WORKER = 12 (DEPRECATED),
   NO_ACCEPTABLE_ICON = 13,
   CANNOT_DOWNLOAD_ICON = 14,
   NO_ICON_AVAILABLE = 15,
@@ -51,13 +55,13 @@ enum InstallableStatusCode {
   FAILED_TO_CREATE_BANNER = 26,
   URL_NOT_SUPPORTED_FOR_WEBAPK = 27,
   IN_INCOGNITO = 28,
-  NOT_OFFLINE_CAPABLE = 29,
+  // NOT_OFFLINE_CAPABLE = 29 (DEPRECATED),
   WAITING_FOR_MANIFEST = 30,
   WAITING_FOR_INSTALLABLE_CHECK = 31,
   NO_GESTURE = 32,
   WAITING_FOR_NATIVE_DATA = 33,
   SHOWING_APP_INSTALLATION_DIALOG = 34,
-  NO_URL_FOR_SERVICE_WORKER = 35,
+  // NO_URL_FOR_SERVICE_WORKER = 35 (DEPRECATED),
   PREFER_RELATED_APPLICATIONS = 36,
   PREFER_RELATED_APPLICATIONS_SUPPORTED_ONLY_BETA_STABLE = 37,
   MANIFEST_URL_CHANGED = 38,
@@ -68,7 +72,8 @@ enum InstallableStatusCode {
   WEBAPK_INSTALL_FAILED = 43,
   // MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK = 44 (DEPRECATED),
   // SERVICE_WORKER_NOT_REQUIRED = 45 (DEPRECATED),
-  MAX_ERROR_CODE,
+  MAX_ERROR_CODE = WEBAPK_INSTALL_FAILED,
+  kMaxValue = MAX_ERROR_CODE,
 };
 
 // Returns a user-readable description for |code|, or an empty string if |code|

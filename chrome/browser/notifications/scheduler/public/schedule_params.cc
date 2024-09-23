@@ -10,6 +10,15 @@ ScheduleParams::ScheduleParams() : priority(Priority::kLow) {}
 
 ScheduleParams::ScheduleParams(const ScheduleParams& other) = default;
 
+ScheduleParams::ScheduleParams(ScheduleParams&& other) = default;
+
+ScheduleParams& ScheduleParams::operator=(const ScheduleParams& other) =
+    default;
+
+ScheduleParams& ScheduleParams::operator=(ScheduleParams&& other) = default;
+
+ScheduleParams::~ScheduleParams() = default;
+
 bool ScheduleParams::operator==(const ScheduleParams& other) const {
   return priority == other.priority &&
          impression_mapping == other.impression_mapping &&
@@ -17,7 +26,5 @@ bool ScheduleParams::operator==(const ScheduleParams& other) const {
          deliver_time_end == other.deliver_time_end &&
          ignore_timeout_duration == other.ignore_timeout_duration;
 }
-
-ScheduleParams::~ScheduleParams() = default;
 
 }  // namespace notifications

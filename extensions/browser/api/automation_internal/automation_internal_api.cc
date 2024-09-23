@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -44,6 +43,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -339,22 +339,21 @@ class AutomationWebContentsObserver
   }
 
   // content::WebContentsObserver overrides.
-  void AccessibilityEventReceived(const content::AXEventNotificationDetails&
-                                      content_event_bundle) override {
+  void AccessibilityEventReceived(
+      const ui::AXUpdatesAndEvents& content_event_bundle) override {
     gfx::Point mouse_location;
 #if defined(USE_AURA)
     mouse_location = aura::Env::GetInstance()->last_mouse_location();
 #endif
+
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     router->DispatchAccessibilityEvents(
-        std::move(content_event_bundle.ax_tree_id),
-        std::move(content_event_bundle.updates), mouse_location,
-        std::move(content_event_bundle.events));
+        content_event_bundle.ax_tree_id, content_event_bundle.updates,
+        mouse_location, content_event_bundle.events);
   }
 
   void AccessibilityLocationChangesReceived(
-      const std::vector<content::AXLocationChangeNotificationDetails>& details)
-      override {
+      const std::vector<ui::AXLocationChanges>& details) override {
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     for (const auto& src : details) {
       router->DispatchAccessibilityLocationChange(src);
@@ -368,7 +367,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    content::AXEventNotificationDetails content_event_bundle;
+    ui::AXUpdatesAndEvents content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -385,7 +384,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    content::AXEventNotificationDetails content_event_bundle;
+    ui::AXUpdatesAndEvents content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -453,7 +452,7 @@ class AutomationWebContentsObserver
         return;
       }
 
-      content::AXEventNotificationDetails content_event_bundle;
+      ui::AXUpdatesAndEvents content_event_bundle;
       content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
       content_event_bundle.events.resize(1);
       content_event_bundle.events[0].event_type =
@@ -563,7 +562,7 @@ AutomationInternalPerformActionFunction::PerformAction(
         // If |extension| is nullptr, then Lacros is receiving a crosapi request
         // from ash to perform an action. We make the assumption this this is
         // allowed.
-        // TODO(https://crbug.com/1185764): Confirm whether this assumption is
+        // TODO(crbug.com/40753344): Confirm whether this assumption is
         // valid.
       }
 

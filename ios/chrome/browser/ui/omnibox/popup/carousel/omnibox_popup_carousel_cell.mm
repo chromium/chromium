@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel/omnibox_popup_carousel_control.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/device_form_factor.h"
@@ -22,11 +21,17 @@ namespace {
 const NSUInteger kCarouselCapacity = 10;
 /// Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
+/// Leading margin of the StackView.
+const CGFloat kStackLeadingMargin = 16.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
-/// Width of the gradient applied on the leading and trailing edge of the
-/// carousel.
-const CGFloat kGradientWidth = 20.0f;
+
+UIColor* CarouselBackgroundColor() {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  return [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+}
 
 /// Horizontal UIScrollView used in OmniboxPopupCarouselCell.
 UIScrollView* CarouselScrollView() {
@@ -34,8 +39,7 @@ UIScrollView* CarouselScrollView() {
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.showsVerticalScrollIndicator = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
-  scrollView.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  scrollView.backgroundColor = CarouselBackgroundColor();
   return scrollView;
 }
 
@@ -47,27 +51,8 @@ UIStackView* CarouselStackView() {
   stackView.alignment = UIStackViewAlignmentTop;
   stackView.distribution = UIStackViewDistributionEqualSpacing;
   stackView.spacing = kMinStackSpacing;
-  stackView.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  stackView.backgroundColor = CarouselBackgroundColor();
   return stackView;
-}
-
-/// CAGradientLayer used in OmniboxPopupCarouselCell on iPad.
-CAGradientLayer* CarouselGradientLayer() {
-  CAGradientLayer* maskLayer = [CAGradientLayer layer];
-  UIColor* opaqueColor = [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-      colorWithAlphaComponent:1.0];
-  UIColor* transparentColor = [[UIColor
-      colorNamed:kGroupedSecondaryBackgroundColor] colorWithAlphaComponent:0.0];
-  maskLayer.colors = @[
-    (id)transparentColor.CGColor, (id)opaqueColor.CGColor,
-    (id)opaqueColor.CGColor, (id)transparentColor.CGColor
-  ];
-  // locations are computed with `kGradientWidth` in `updateGradient`.
-  maskLayer.anchorPoint = CGPointZero;
-  maskLayer.startPoint = CGPointMake(0, 0.5);
-  maskLayer.endPoint = CGPointMake(1, 0.5);
-  return maskLayer;
 }
 
 }  // namespace
@@ -78,14 +63,6 @@ CAGradientLayer* CarouselGradientLayer() {
 @property(nonatomic, strong) UIScrollView* scrollView;
 /// Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
-/// Indicates whether the view's marginLayoutGuide should be used.
-@property(nonatomic, assign, readonly) BOOL shouldApplyLayoutMarginsGuide;
-/// GradientLayer applied at the right edge of `scrollView`.
-@property(nonatomic, strong) CAGradientLayer* gradientLayer;
-/// The popout layout's scroll view width constraint for the Carousel
-@property(nonatomic, strong) NSLayoutConstraint* iPadPopoutWidthConstraint;
-/// The default layout's scroll view width constraint for the Carousel
-@property(nonatomic, strong) NSLayoutConstraint* defaultWidthConstraint;
 
 #pragma mark Dynamic Spacing
 /// Number of that that can be fully visible. Apply dynamic spacing only when
@@ -105,11 +82,9 @@ CAGradientLayer* CarouselGradientLayer() {
   if (self) {
     _scrollView = CarouselScrollView();
     _suggestionsStackView = CarouselStackView();
-    _gradientLayer = CarouselGradientLayer();
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
-    self.backgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    self.backgroundColor = CarouselBackgroundColor();
     self.accessibilityIdentifier = kOmniboxCarouselCellAccessibilityIdentifier;
   }
   return self;
@@ -124,10 +99,6 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (void)layoutSubviews {
-  if (self.shouldApplyLayoutMarginsGuide &&
-      !ShouldApplyOmniboxPopoutLayout(self.traitCollection)) {
-    [self updateGradient];
-  }
   if (base::i18n::IsRTL()) {
     self.scrollView.transform = CGAffineTransformMakeRotation(M_PI);
     self.suggestionsStackView.transform = CGAffineTransformMakeRotation(M_PI);
@@ -140,74 +111,28 @@ CAGradientLayer* CarouselGradientLayer() {
   [self.contentView addSubview:_scrollView];
   [_scrollView addSubview:_suggestionsStackView];
 
-  [self updateLayerMask];
-
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
-      NSDirectionalEdgeInsetsMake(kStackMargin, kStackMargin, kStackMargin,
-                                  kStackMargin));
+      NSDirectionalEdgeInsetsMake(kStackMargin, kStackLeadingMargin,
+                                  kStackMargin, kStackMargin));
 
-  id<LayoutGuideProvider> contentGuide =
-      self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide
-                                         : self.contentView;
-  AddSameCenterConstraints(_scrollView, contentGuide);
+  AddSameCenterConstraints(_scrollView, self.contentView);
 
-  _iPadPopoutWidthConstraint = [_scrollView.widthAnchor
-      constraintEqualToAnchor:self.contentView.widthAnchor];
-  _defaultWidthConstraint = [contentGuide.widthAnchor
-      constraintEqualToAnchor:_scrollView.widthAnchor];
-
-  [self activateWidthConstraint];
   [NSLayoutConstraint activateConstraints:@[
-    [contentGuide.heightAnchor
+    [self.contentView.heightAnchor
         constraintEqualToAnchor:_scrollView.heightAnchor],
     [_scrollView.heightAnchor
         constraintEqualToAnchor:_suggestionsStackView.heightAnchor
-                       constant:kStackMargin * 2]
+                       constant:kStackMargin * 2],
+    [self.contentView.widthAnchor
+        constraintEqualToAnchor:_scrollView.widthAnchor]
   ]];
-}
-
-// Adds or remove a gradient at the right edge to indicate a scrollable view,
-// based on whether we should apply the popout layout.
-- (void)updateLayerMask {
-  if (self.shouldApplyLayoutMarginsGuide &&
-      !ShouldApplyOmniboxPopoutLayout(self.traitCollection)) {
-    self.contentView.layer.mask = self.gradientLayer;
-  } else {
-    self.contentView.layer.mask = nil;
-  }
-}
-
-// Updates the width constraint based on whether we should apply the popout
-// layout.
-- (void)activateWidthConstraint {
-  if (ShouldApplyOmniboxPopoutLayout(self.traitCollection)) {
-    _iPadPopoutWidthConstraint.active = YES;
-    _defaultWidthConstraint.active = NO;
-  } else {
-    _iPadPopoutWidthConstraint.active = NO;
-    _defaultWidthConstraint.active = YES;
-  }
-}
-
-#pragma mark - UITraitEnvironment
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  [self updateLayerMask];
-  [self activateWidthConstraint];
 }
 
 #pragma mark - properties
 
 - (NSUInteger)tileCount {
   return self.suggestionsStackView.arrangedSubviews.count;
-}
-
-- (BOOL)shouldApplyLayoutMarginsGuide {
-  // Apply layoutMarginsGuide in Visual Treatment 1 only on Tablet because there
-  // is a minimum layoutMargin of 8 that we don't want on phones.
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 #pragma mark - Accessibility
@@ -363,7 +288,7 @@ CAGradientLayer* CarouselGradientLayer() {
   } else if (keyboardAction == previousTileAction) {
     nextHighlightedIndex = MAX(prevHighlightedIndex - 1, 0);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   allTiles[prevHighlightedIndex].selected = NO;
   allTiles[nextHighlightedIndex].selected = YES;
@@ -402,11 +327,10 @@ CAGradientLayer* CarouselGradientLayer() {
 // spacing.
 - (void)updateDynamicSpacing {
   CGFloat availableWidth = self.bounds.size.width - 2 * kStackMargin;
-  if (self.shouldApplyLayoutMarginsGuide) {
-    availableWidth -= self.contentView.layoutMargins.left +
-                      self.contentView.layoutMargins.right + kGradientWidth;
-  }
   CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
+
+  availableWidth = self.bounds.size.width - kStackLeadingMargin;
+  tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing;
 
   CGFloat maxVisibleTiles = availableWidth / tileWidth;
   CGFloat nearestHalfTile = maxVisibleTiles - 0.5;
@@ -439,21 +363,6 @@ CAGradientLayer* CarouselGradientLayer() {
   control.menuProvider = self.menuProvider;
 
   return control;
-}
-
-- (void)updateGradient {
-  DCHECK(self.shouldApplyLayoutMarginsGuide);
-  CGFloat contentWidth =
-      CGRectGetWidth(self.contentView.layoutMarginsGuide.layoutFrame);
-  CGRect gradientFrame = CGRectMake(self.contentView.layoutMargins.left, 0,
-                                    contentWidth, CGRectGetHeight(self.bounds));
-  CGFloat gradientWidth = kGradientWidth / contentWidth;
-  self.gradientLayer.frame = gradientFrame;
-  NSNumber* endOfFirstGradient = [NSNumber numberWithFloat:gradientWidth];
-  NSNumber* startOfSecondGradient =
-      [NSNumber numberWithFloat:1.0 - gradientWidth];
-  self.gradientLayer.locations =
-      @[ @0.0, endOfFirstGradient, startOfSecondGradient, @1.0 ];
 }
 
 @end

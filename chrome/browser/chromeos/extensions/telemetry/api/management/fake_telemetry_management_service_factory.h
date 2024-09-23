@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/management/fake_telemetry_management_service.h"
+#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

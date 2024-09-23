@@ -2,29 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/stack_trace.h"
+
 #include <stddef.h>
 
 #include <limits>
 #include <sstream>
 #include <string>
 
+#include "base/allocator/buildflags.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/debug/stack_trace.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-
-#include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -133,14 +135,14 @@ TEST_F(StackTraceTest, DebugPrintWithPrefixBacktrace) {
 // Make sure nullptr prefix doesn't crash. Output not examined, much
 // like the DebugPrintBacktrace test above.
 TEST_F(StackTraceTest, DebugPrintWithNullPrefixBacktrace) {
-  StackTrace().PrintWithPrefix(nullptr);
+  StackTrace().PrintWithPrefix({});
 }
 
 // Test OutputToStreamWithPrefix, mainly to make sure it doesn't
 // crash. Any "real" stack trace testing happens above.
 TEST_F(StackTraceTest, DebugOutputToStreamWithPrefix) {
   StackTrace trace;
-  const char* prefix_string = "[test]";
+  cstring_view prefix_string = "[test]";
   std::ostringstream os;
   trace.OutputToStreamWithPrefix(&os, prefix_string);
   std::string backtrace_message = os.str();
@@ -154,8 +156,8 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithPrefix) {
 TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
   StackTrace trace;
   std::ostringstream os;
-  trace.OutputToStreamWithPrefix(&os, nullptr);
-  trace.ToStringWithPrefix(nullptr);
+  trace.OutputToStreamWithPrefix(&os, {});
+  trace.ToStringWithPrefix({});
 }
 
 #endif  // !defined(__UCLIBC__) && !defined(_AIX)
@@ -163,7 +165,7 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 // Since Mac's base::debug::StackTrace().Print() is not malloc-free, skip
 // StackDumpSignalHandlerIsMallocFree if BUILDFLAG(IS_MAC).
-#if BUILDFLAG(USE_ALLOCATOR_SHIM) && !BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && !BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -171,40 +173,27 @@ namespace {
 // In an actual implementation, this could cause infinite recursion into the
 // signal handler or other problems. Because malloc() is not guaranteed to be
 // async signal safe.
-void* BadMalloc(const allocator_shim::AllocatorDispatch*, size_t, void*) {
+void* BadMalloc(size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadCalloc(const allocator_shim::AllocatorDispatch*,
-                size_t,
-                size_t,
-                void* context) {
+void* BadCalloc(size_t, size_t, void* context) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedAlloc(const allocator_shim::AllocatorDispatch*,
-                      size_t,
-                      size_t,
-                      void*) {
+void* BadAlignedAlloc(size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedRealloc(const allocator_shim::AllocatorDispatch*,
-                        void*,
-                        size_t,
-                        size_t,
-                        void*) {
+void* BadAlignedRealloc(void*, size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadRealloc(const allocator_shim::AllocatorDispatch*,
-                 void*,
-                 size_t,
-                 void*) {
+void* BadRealloc(void*, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void BadFree(const allocator_shim::AllocatorDispatch*, void*, void*) {
+void BadFree(void*, void*) {
   base::ImmediateCrash();
 }
 
@@ -214,6 +203,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadCalloc,         /* alloc_zero_initialized_function */
     &BadAlignedAlloc,   /* alloc_aligned_function */
     &BadRealloc,        /* realloc_function */
+    &BadRealloc,        /* realloc_unchecked_function */
     &BadFree,           /* free_function */
     nullptr,            /* get_size_estimate_function */
     nullptr,            /* good_size_function */
@@ -223,7 +213,9 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     nullptr,            /* free_definite_size_function */
     nullptr,            /* try_free_default_function */
     &BadAlignedAlloc,   /* aligned_malloc_function */
+    &BadAlignedAlloc,   /* aligned_malloc_unchecked_function */
     &BadAlignedRealloc, /* aligned_realloc_function */
+    &BadAlignedRealloc, /* aligned_realloc_unchecked_function */
     &BadFree,           /* aligned_free_function */
     nullptr,            /* next */
 };
@@ -246,7 +238,7 @@ TEST_F(StackTraceDeathTest, StackDumpSignalHandlerIsMallocFree) {
       }(),
       "\\[end of stack trace\\]\n");
 }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 namespace {
 
@@ -330,33 +322,13 @@ class CopyFunction : public StackCopier {
   using StackCopier::CopyStackContentsAndRewritePointers;
 };
 
-// Copies the current stack segment, starting from the frame pointer of the
-// caller frame. Also fills in |stack_end| for the copied stack.
-NOINLINE static std::unique_ptr<StackBuffer> CopyCurrentStackAndRewritePointers(
-    uintptr_t* out_fp,
-    uintptr_t* stack_end) {
-  const uint8_t* fp =
-      reinterpret_cast<const uint8_t*>(__builtin_frame_address(0));
-  uintptr_t original_stack_end = GetStackEnd();
-  size_t stack_size = original_stack_end - reinterpret_cast<uintptr_t>(fp);
-  auto buffer = std::make_unique<StackBuffer>(stack_size);
-  *out_fp = reinterpret_cast<uintptr_t>(
-      CopyFunction::CopyStackContentsAndRewritePointers(
-          fp, reinterpret_cast<const uintptr_t*>(original_stack_end),
-          StackBuffer::kPlatformStackAlignment, buffer->buffer()));
-  *stack_end = *out_fp + stack_size;
-  return buffer;
-}
-
 template <size_t Depth>
-NOINLINE NOOPT void ExpectStackFramePointers(const void** frames,
-                                             size_t max_depth,
-                                             bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers(span<const void*> frames) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
   EXPECT_NE(nullptr, __builtin_frame_address(0));
-  ExpectStackFramePointers<Depth - 1>(frames, max_depth, copy_stack);
+  ExpectStackFramePointers<Depth - 1>(frames);
 
   constexpr size_t frame_index = Depth - 1;
   const void* frame = frames[frame_index];
@@ -367,24 +339,13 @@ code_end:
 }
 
 template <>
-NOINLINE NOOPT void ExpectStackFramePointers<1>(const void** frames,
-                                                size_t max_depth,
-                                                bool copy_stack) {
+NOINLINE NOOPT void ExpectStackFramePointers<1>(span<const void*> frames) {
 code_start:
   // Calling __builtin_frame_address() forces compiler to emit
   // frame pointers, even if they are not enabled.
   EXPECT_NE(nullptr, __builtin_frame_address(0));
-  size_t count = 0;
-  if (copy_stack) {
-    uintptr_t stack_end = 0, fp = 0;
-    std::unique_ptr<StackBuffer> copy =
-        CopyCurrentStackAndRewritePointers(&fp, &stack_end);
-    count =
-        TraceStackFramePointersFromBuffer(fp, stack_end, frames, max_depth, 0);
-  } else {
-    count = TraceStackFramePointers(frames, max_depth, 0);
-  }
-  ASSERT_EQ(max_depth, count);
+  size_t count = TraceStackFramePointers(frames, 0u);
+  ASSERT_EQ(frames.size(), count);
 
   const void* frame = frames[0];
   EXPECT_GE(frame, &&code_start) << "For the top frame";
@@ -405,25 +366,7 @@ code_end:
 TEST_F(StackTraceTest, MAYBE_TraceStackFramePointers) {
   constexpr size_t kDepth = 5;
   const void* frames[kDepth];
-  ExpectStackFramePointers<kDepth>(frames, kDepth, /*copy_stack=*/false);
-}
-
-// The test triggers use-of-uninitialized-value errors on MSan bots.
-// This is expected because we're walking and reading the stack, and
-// sometimes we read fp / pc from the place that previously held
-// uninitialized value.
-// TODO(crbug.com/1132511): Enable this test on Fuchsia.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TraceStackFramePointersFromBuffer \
-  DISABLED_TraceStackFramePointersFromBuffer
-#else
-#define MAYBE_TraceStackFramePointersFromBuffer \
-  TraceStackFramePointersFromBuffer
-#endif
-TEST_F(StackTraceTest, MAYBE_TraceStackFramePointersFromBuffer) {
-  constexpr size_t kDepth = 5;
-  const void* frames[kDepth];
-  ExpectStackFramePointers<kDepth>(frames, kDepth, /*copy_stack=*/true);
+  ExpectStackFramePointers<kDepth>(frames);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)

@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.common;
 import org.chromium.url.GURL;
 
 /**
- * TODO(crbug.com/1481277) Move NTP related constants from UrlConstants.java
- * to here.
+ * TODO(crbug.com/40281619) Move NTP related constants from UrlConstants.java to here.
  *
- * Java side version of NTP related constants in chrome/common/url_constants.cc
+ * <p>Java side version of NTP related constants in chrome/common/url_constants.cc
  */
 public class ChromeUrlConstants {
     private static class Holder {

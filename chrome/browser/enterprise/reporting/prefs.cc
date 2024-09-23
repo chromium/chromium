@@ -41,7 +41,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
   registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterStringPref(kLastUploadVersion, std::string());
-  // TODO(crbug.com/1298258): We reuse the report frequency pref for profile
+  // TODO(crbug.com/40215470): We reuse the report frequency pref for profile
   // reporting for now. This might need to be changed in the future.
   registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
                                   kDefaultReportFrequency);

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 
 /**
  * Return DirectoryEntry of the first root directory (all volume display root
@@ -33,7 +33,8 @@ export async function findQueryMatchedDirectoryEntry(
       console.warn(error.stack || error);
     }
 
-    const scanner = dirModel.createScannerFactory(dirEntry, searchQuery)();
+    const scanner = dirModel.createScannerFactory(
+        dirEntry.toURL(), dirEntry, searchQuery)();
     await new Promise<void>(
         resolve => scanner.scan(entriesCallback, resolve, errorCallback));
     if (isEntryFound) {

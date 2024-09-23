@@ -8,7 +8,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -50,7 +49,7 @@ AppearanceProperties AppearancePropertiesForKey(const ColorProviderKey& key) {
 NSAppearance* AppearanceForKey(const ColorProviderKey& key) {
   AppearanceProperties properties = AppearancePropertiesForKey(key);
 
-  // TODO(crbug.com/1420707): How does this work? The documentation says that
+  // TODO(crbug.com/40258902): How does this work? The documentation says that
   // the high contrast appearance names are not valid to pass to `-[NSAppearance
   // appearanceNamed:]` and yet this code does so. This yields the same
   // `NSAppearance` objects that result from passing the non-high contrast names
@@ -79,14 +78,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
         0x66)};
   };
 
-  if (@available(macOS 11, *)) {
-    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else {
-    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
-    NSAppearance.currentAppearance = AppearanceForKey(key);
-    load_colors();
-    NSAppearance.currentAppearance = saved_appearance;
-  }
+  [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
 }
 
 void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
@@ -112,20 +104,12 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       mixer[kColorSysStateFocusRing] = PickGoogleColor(
           skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
           kColorSysBase, color_utils::kMinimumVisibleContrastRatio);
-    }
-    if (!features::IsChromeRefresh2023()) {
-      SkColor menu_separator_color =
-          properties.dark ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                          : SkColorSetA(SK_ColorBLACK, 0x26);
-      mixer[kColorMenuSeparator] = {menu_separator_color};
-    }
 
-    if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
       const SkColor system_highlight_color =
           skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
       mixer[kColorTextSelectionBackground] = {system_highlight_color};
 
-      // TODO(crbug.com/1491308): Address accessibility for mac highlight
+      // TODO(crbug.com/40074489): Address accessibility for mac highlight
       // colors.
       mixer[kColorSysStateTextHighlight] = {system_highlight_color};
       mixer[kColorSysStateOnTextHighlight] = {kColorSysOnSurface};
@@ -141,14 +125,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
                                                                : SK_ColorWHITE};
   };
 
-  if (@available(macOS 11, *)) {
-    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else {
-    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
-    NSAppearance.currentAppearance = AppearanceForKey(key);
-    load_colors();
-    NSAppearance.currentAppearance = saved_appearance;
-  }
+  [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider,
@@ -156,7 +133,7 @@ void AddNativePostprocessingMixer(ColorProvider* provider,
   // Ensure the system tint is applied by default for pre-refresh browsers. For
   // post-refresh only apply the tint if running old design system themes or the
   // color source is explicitly configured for grayscale.
-  if (features::IsChromeRefresh2023() && !key.custom_theme &&
+  if (!key.custom_theme &&
       key.user_color_source != ColorProviderKey::UserColorSource::kGrayscale) {
     return;
   }

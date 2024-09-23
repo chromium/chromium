@@ -1,0 +1,47 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "lens_overlay_snapshot_controller.h",
+    "lens_overlay_snapshot_controller.mm",
+    "lens_overlay_snapshot_controller_delegate.h",
+    "lens_overlay_tab_helper.h",
+    "lens_overlay_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_overlay_tab_helper_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/lens:enterprise_policy",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

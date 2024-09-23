@@ -6,7 +6,11 @@
 
 #include "base/notreached.h"
 #include "media/base/eme_constants.h"
+#include "media/base/key_systems.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 
@@ -19,6 +23,7 @@ const char kPersistentLicense[] = "persistent-license";
 
 }  // namespace
 
+// static
 media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
     const String& init_data_type) {
   if (init_data_type == "cenc")
@@ -32,6 +37,7 @@ media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
   return media::EmeInitDataType::UNKNOWN;
 }
 
+// static
 String EncryptedMediaUtils::ConvertFromInitDataType(
     media::EmeInitDataType init_data_type) {
   switch (init_data_type) {
@@ -47,7 +53,7 @@ String EncryptedMediaUtils::ConvertFromInitDataType(
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -73,11 +79,11 @@ String EncryptedMediaUtils::ConvertFromSessionType(
       return kPersistentLicense;
     case WebEncryptedMediaSessionType::kUnknown:
       // Unexpected session type from Chromium.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -101,8 +107,29 @@ String EncryptedMediaUtils::ConvertKeyStatusToString(
       return "internal-error";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "internal-error";
+}
+
+// static
+V8MediaKeyStatus EncryptedMediaUtils::ConvertKeyStatusToEnum(
+    const WebEncryptedMediaKeyInformation::KeyStatus status) {
+  switch (status) {
+    case WebEncryptedMediaKeyInformation::KeyStatus::kUsable:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kUsable);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kExpired:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kExpired);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kReleased:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kReleased);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputRestricted:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kOutputRestricted);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputDownscaled:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kOutputDownscaled);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kStatusPending);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kInternalError:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kInternalError);
+  }
 }
 
 // static
@@ -115,7 +142,7 @@ EncryptedMediaUtils::ConvertToMediaKeysRequirement(const String& requirement) {
   if (requirement == "not-allowed")
     return WebMediaKeySystemConfiguration::Requirement::kNotAllowed;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebMediaKeySystemConfiguration::Requirement::kOptional;
 }
 
@@ -131,55 +158,35 @@ String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
       return "not-allowed";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "not-allowed";
 }
 
 // static
-const char* EncryptedMediaUtils::GetInterfaceName(EmeApiType type) {
-  switch (type) {
-    case EmeApiType::kCreateMediaKeys:
-      return "MediaKeySystemAccess";
-    case EmeApiType::kSetServerCertificate:
-    case EmeApiType::kGetStatusForPolicy:
-      return "MediaKeys";
-    case EmeApiType::kGenerateRequest:
-    case EmeApiType::kLoad:
-    case EmeApiType::kUpdate:
-    case EmeApiType::kClose:
-    case EmeApiType::kRemove:
-      return "MediaKeySession";
-  }
-}
-
-// static
-const char* EncryptedMediaUtils::GetPropertyName(EmeApiType type) {
-  switch (type) {
-    case EmeApiType::kCreateMediaKeys:
-      return "createMediaKeys";
-    case EmeApiType::kSetServerCertificate:
-      return "setServerCertificate";
-    case EmeApiType::kGetStatusForPolicy:
-      return "getStatusForPolicy";
-    case EmeApiType::kGenerateRequest:
-      return "generateRequest";
-    case EmeApiType::kLoad:
-      return "load";
-    case EmeApiType::kUpdate:
-      return "update";
-    case EmeApiType::kClose:
-      return "close";
-    case EmeApiType::kRemove:
-      return "remove";
-  }
-}
-
 WebEncryptedMediaClient*
 EncryptedMediaUtils::GetEncryptedMediaClientFromLocalDOMWindow(
     LocalDOMWindow* window) {
   WebLocalFrameImpl* web_frame =
       WebLocalFrameImpl::FromFrame(window->GetFrame());
   return web_frame->Client()->EncryptedMediaClient();
+}
+
+// static
+void EncryptedMediaUtils::ReportUsage(EmeApiType api_type,
+                                      ExecutionContext* execution_context,
+                                      const String& key_system,
+                                      bool use_hardware_secure_codecs,
+                                      bool is_persistent_session) {
+  if (!execution_context) {
+    return;
+  }
+
+  ukm::builders::Media_EME_Usage builder(execution_context->UkmSourceID());
+  builder.SetKeySystem(media::GetKeySystemIntForUKM(key_system.Ascii()));
+  builder.SetUseHardwareSecureCodecs(use_hardware_secure_codecs);
+  builder.SetApi(static_cast<int>(api_type));
+  builder.SetIsPersistentSession(is_persistent_session);
+  builder.Record(execution_context->UkmRecorder());
 }
 
 }  // namespace blink

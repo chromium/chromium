@@ -131,7 +131,7 @@ public class AwShellActivity extends Activity {
     @Override
     public void onDestroy() {
         if (mDevToolsServer != null) {
-            mDevToolsServer.destroy();
+            mDevToolsServer.setRemoteDebuggingEnabled(false);
             mDevToolsServer = null;
         }
         super.onDestroy();

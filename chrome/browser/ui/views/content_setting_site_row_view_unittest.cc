@@ -16,7 +16,7 @@ class ContentSettingSiteRowViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->Show();
   }
 
@@ -28,8 +28,8 @@ class ContentSettingSiteRowViewTest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
   ui::MouseEvent click_event() {
-    return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                          ui::EventTimeForNow(), 0, 0);
+    return ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                          gfx::Point(), ui::EventTimeForNow(), 0, 0);
   }
 
  private:

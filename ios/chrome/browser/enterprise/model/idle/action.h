@@ -16,7 +16,7 @@
 #import "build/build_config.h"
 #import "components/enterprise/idle/action_type.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_idle {
 

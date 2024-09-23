@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -124,7 +125,7 @@ class AutofillPaymentMethodsDelegate {
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void cleanup(long nativeAutofillPaymentMethodsDelegate);
 

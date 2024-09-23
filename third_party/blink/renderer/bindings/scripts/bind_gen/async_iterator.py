@@ -90,7 +90,8 @@ def generate_async_iterator_blink_impl_class(iterator_class_like=None,
     ])
     headers.update(header_include_headers)
     for idl_type in key_value_type_list:
-        if idl_type.is_numeric or idl_type.is_string or idl_type.is_nullable:
+        if (idl_type.is_numeric or idl_type.is_string or idl_type.is_nullable
+                or idl_type.is_any):
             headers.add(
                 "third_party/blink/renderer/bindings/core/v8/idl_types.h")
     class_def.accumulate(CodeGenAccumulator.require_include_headers(headers))

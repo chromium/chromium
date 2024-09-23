@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
@@ -97,7 +96,7 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
 }
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
-    const content::AXLocationChangeNotificationDetails& details) {
+    const ui::AXLocationChanges& details) {
   if (remote_router_) {
     remote_router_->DispatchAccessibilityLocationChange(details);
     return;
@@ -141,7 +140,7 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
     remote->DispatchGetTextLocationResult(data, rect);
   }
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -253,9 +252,9 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
 
 void AutomationEventRouter::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate> updates,
+    const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
-    std::vector<ui::AXEvent> events) {
+    const std::vector<ui::AXEvent>& events) {
   if (remote_router_) {
     remote_router_->DispatchAccessibilityEvents(
         tree_id, std::move(updates), mouse_location, std::move(events));

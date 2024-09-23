@@ -23,8 +23,9 @@ class ContentSettingConstraintsTest : public testing::Test {
 TEST_F(ContentSettingConstraintsTest, CopyCtor) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(1234));
-  constraints.set_session_model(SessionModel::UserSession);
+  constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
+  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints copy = constraints;
   EXPECT_EQ(constraints, copy);
@@ -36,22 +37,15 @@ TEST_F(ContentSettingConstraintsTest, CopyCtor) {
   ContentSettingConstraints old_constraints;
   env().FastForwardBy(base::Seconds(1));
   ContentSettingConstraints new_constraints;
-  // The creation time differs, but there's no lifetime, so these are
-  // equivalent.
-  EXPECT_EQ(old_constraints, new_constraints);
-
-  old_constraints.set_lifetime(base::Days(1));
-  new_constraints.set_lifetime(base::Days(1));
-  // Now there is a lifetime associated with the constraint, so the different
-  // creation time makes a difference.
   EXPECT_NE(old_constraints, new_constraints);
 }
 
 TEST_F(ContentSettingConstraintsTest, MoveCtor) {
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(1234));
-  constraints.set_session_model(SessionModel::UserSession);
+  constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
+  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints copy = constraints;
   ContentSettingConstraints moved = std::move(constraints);

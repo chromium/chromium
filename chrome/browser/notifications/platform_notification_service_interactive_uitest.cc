@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_features.h"
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_EQ(notification_ids[0], first_id);
 }
 
-// TODO(crbug.com/1002602): Test is flaky on TSAN.
+// TODO(crbug.com/40098231): Test is flaky on TSAN.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_OrphanedNonPersistentNotificationCreatesForegroundTab \
   DISABLED_OrphanedNonPersistentNotificationCreatesForegroundTab
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(
 // display notifications whilst fullscreen is deferred to the operating system.
 #if !BUILDFLAG(IS_MAC)
 
-// TODO(https://crbug.com/1086169) Test is flaky on Linux TSan.
+// TODO(crbug.com/40132496) Test is flaky on Linux TSan.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     defined(THREAD_SANITIZER)
 #define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen
@@ -1072,6 +1072,7 @@ class PlatformNotificationServiceIncomingCallTest
   }
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

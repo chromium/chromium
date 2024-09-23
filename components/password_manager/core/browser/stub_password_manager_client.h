@@ -62,10 +62,11 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
-  AffiliationService* GetAffiliationService() override;
+  affiliations::AffiliationService* GetAffiliationService() override;
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;
+  const PasswordManagerInterface* GetPasswordManager() const override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
   const CredentialsFilter* GetStoreResultFilter() const override;
@@ -73,6 +74,20 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
   version_info::Channel GetChannel() const override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+  void OpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) override;
+  std::unique_ptr<
+      password_manager::PasswordCrossDomainConfirmationPopupController>
+  ShowCrossDomainConfirmationPopup(
+      const gfx::RectF& element_bounds,
+      base::i18n::TextDirection text_direction,
+      const GURL& domain,
+      const std::u16string& password_origin,
+      base::OnceClosure confirmation_callback) override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
@@ -84,6 +99,10 @@ class StubPasswordManagerClient : public PasswordManagerClient {
 
   ukm::SourceId GetUkmSourceId() override;
   PasswordManagerMetricsRecorder* GetMetricsRecorder() override;
+#if BUILDFLAG(IS_ANDROID)
+  FirstCctPageLoadPasswordsUkmRecorder* GetFirstCctPageLoadUkmRecorder()
+      override;
+#endif
   signin::IdentityManager* GetIdentityManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::NetworkContext* GetNetworkContext() const override;

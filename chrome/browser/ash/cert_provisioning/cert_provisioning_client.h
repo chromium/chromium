@@ -33,7 +33,8 @@ class CertProvisioningClient {
 
   // Information identifying a Certificate Provisioning Process.
   struct ProvisioningProcess {
-    ProvisioningProcess(CertScope cert_scope,
+    ProvisioningProcess(std::string process_id,
+                        CertScope cert_scope,
                         std::string cert_profile_id,
                         std::string policy_version,
                         std::vector<uint8_t> public_key);
@@ -48,6 +49,7 @@ class CertProvisioningClient {
     bool operator==(const ProvisioningProcess& other) const;
 
     // If you add/remove fields, don't forget to adapt kFieldCount!
+    std::string process_id;
     CertScope cert_scope;
     std::string cert_profile_id;
     std::string policy_version;
@@ -56,7 +58,7 @@ class CertProvisioningClient {
     // This must match the number of fields this struct has.
     // Used as a change detector to remind you to take a look e.g. at
     // operator==.
-    static constexpr int kFieldCount = 4;
+    static constexpr int kFieldCount = 5;
   };
 
   struct Error {

@@ -4,13 +4,15 @@
 
 #include "content/browser/preloading/preloading.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 
 namespace content {
 
-base::StringPiece PreloadingTypeToString(PreloadingType type) {
+std::string_view PreloadingTypeToString(PreloadingType type) {
   switch (type) {
     case PreloadingType::kUnspecified:
       return "Unspecified";
@@ -25,7 +27,7 @@ base::StringPiece PreloadingTypeToString(PreloadingType type) {
     case PreloadingType::kLinkPreview:
       return "LinkPreview";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PreloadingPredictor GetPredictorForPreloadingTriggerType(
@@ -45,9 +47,9 @@ PreloadingPredictor GetPredictorForPreloadingTriggerType(
       // for embedder trigger code-path (while you might want to be specific
       // about the `PreloadingPredictor` more than just "embedder").
       // Revisit if needed.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

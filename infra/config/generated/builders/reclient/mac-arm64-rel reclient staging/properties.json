@@ -28,6 +28,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "chromium_with_telemetry_dependencies",
                   "reclient_staging"
                 ],
                 "config": "chromium"
@@ -47,7 +48,7 @@
   },
   "$build/reclient": {
     "bootstrap_env": {
-      "GLOG_vmodule": "bridge*=2",
+      "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
       "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
       "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
       "RBE_fast_log_collection": "true",
@@ -59,6 +60,15 @@
       "RBE_exec_timeout": "2m"
     },
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

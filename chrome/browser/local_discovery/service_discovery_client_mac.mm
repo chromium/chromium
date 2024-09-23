@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
 
-#import <arpa/inet.h>
-#import <Foundation/Foundation.h>
-#import <net/if_dl.h>
+#include <Foundation/Foundation.h>
+#include <Network/Network.h>
+#include <arpa/inet.h>
+#include <net/if_dl.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,11 +20,15 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
@@ -70,6 +80,98 @@ const char kServiceDiscoveryThreadName[] = "Service Discovery Thread";
 
 const NSTimeInterval kResolveTimeout = 10.0;
 
+// Duration of time to wait for the users to responds to the permission dialog
+// before the permission state metric is recorded.
+constexpr base::TimeDelta kPermissionsMetricsDelay = base::Seconds(60);
+
+void SetUpServiceBrowser(
+    nw_browser_t browser,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    ServiceWatcher::UpdatedCallback services_update_callback,
+    base::RepeatingCallback<void(bool)> metrics_callback) {
+  nw_browser_set_queue(browser, dispatch_get_main_queue());
+
+  nw_browser_set_browse_results_changed_handler(
+      browser, ^(nw_browse_result_t old_result, nw_browse_result_t new_result,
+                 bool batch_complete) {
+        nw_browse_result_change_t change =
+            nw_browse_result_get_changes(old_result, new_result);
+        nw_endpoint_t new_endpoint = nw_browse_result_copy_endpoint(new_result);
+        nw_endpoint_t old_endpoint = nw_browse_result_copy_endpoint(old_result);
+        const char* new_service_name =
+            nw_endpoint_get_bonjour_service_name(new_endpoint);
+        const char* old_service_name =
+            nw_endpoint_get_bonjour_service_name(old_endpoint);
+
+        switch (change) {
+          case nw_browse_result_change_result_added:
+            CHECK(new_service_name);
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(services_update_callback,
+                               ServiceWatcher::UpdateType::UPDATE_ADDED,
+                               std::string(new_service_name)));
+            break;
+          case nw_browse_result_change_result_removed:
+            CHECK(old_service_name);
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(services_update_callback,
+                               ServiceWatcher::UpdateType::UPDATE_REMOVED,
+                               std::string(old_service_name)));
+            break;
+          case nw_browse_result_change_txt_record_changed:
+            CHECK(new_service_name);
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(services_update_callback,
+                               ServiceWatcher::UpdateType::UPDATE_CHANGED,
+                               std::string(new_service_name)));
+            break;
+          default:
+            break;
+        }
+      });
+
+  // Local Network Permission is available on macOS 15 or later.
+  if (base::mac::MacOSMajorVersion() < 15) {
+    return;
+  }
+
+  nw_browser_set_state_changed_handler(browser, ^(nw_browser_state_t state,
+                                                  nw_error_t error) {
+    // nw_browser always starts in the 'ready' state, but this doesn't mean
+    // permission is granted.
+    // Permission granted -> no change in the browser state.
+    // Permission denied -> transitions to the 'waiting' state with an error.
+    // Permission pending -> no change in the browser state.
+    // We use a delayed task to handle this: If permission is
+    // denied before the task runs, it's a no-op (permission is recorded once
+    // per session). Otherwise, we record the permission as granted. Note that
+    // it's possible that users deny the permission after the timer expires so
+    // there will be a few false positives.
+    switch (state) {
+      case nw_browser_state_ready:
+        task_runner->PostDelayedTask(FROM_HERE,
+                                     base::BindOnce(metrics_callback, true),
+                                     kPermissionsMetricsDelay);
+        break;
+      case nw_browser_state_waiting:
+        if (nw_error_get_error_code(error) == kDNSServiceErr_PolicyDenied) {
+          task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  services_update_callback,
+                  ServiceWatcher::UpdateType::UPDATE_PERMISSION_REJECTED, ""));
+          metrics_callback.Run(/*permission_granted*/ false);
+        }
+        break;
+      default:
+        break;
+    }
+  });
+}
+
 // These functions are used to PostTask with ObjC objects, without needing to
 // manage the lifetime of a C++ pointer for either the Watcher or Resolver.
 // Clients of those classes can delete the C++ object while operations on the
@@ -77,11 +179,26 @@ const NSTimeInterval kResolveTimeout = 10.0;
 // counted, the strong references passed to these functions ensure the object
 // remains alive until for the duration of the operation.
 
-void StartServiceBrowser(NetServiceBrowser* browser) {
+void StartServiceBrowser(
+    nw_browser_t browser,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  nw_browser_start(browser);
+}
+void StopServiceBrowser(
+    nw_browser_t browser,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  nw_browser_cancel(browser);
+}
+
+// DEPRECATED.
+void StartNetServiceBrowser(NetServiceBrowser* browser) {
   [browser discoverServices];
 }
 
-void StopServiceBrowser(NetServiceBrowser* browser) {
+// DEPRECATED.
+void StopNetServiceBrowser(NetServiceBrowser* browser) {
   [browser stop];
 }
 
@@ -93,77 +210,6 @@ void StopServiceResolver(NetServiceResolver* resolver) {
   [resolver stop];
 }
 
-// Extracts the instance name, name type and domain from a full service name or
-// the service type and domain from a service type. Returns true if successful.
-// TODO(justinlin): This current only handles service names with format
-// <name>._<protocol2>._<protocol1>.<domain>. Service names with
-// subtypes will not parse correctly:
-// <name>._<type>._<sub>._<protocol2>._<protocol1>.<domain>.
-bool ExtractServiceInfo(const std::string& service,
-                        bool is_service_name,
-                        NSString** instance,
-                        NSString** type,
-                        NSString** domain) {
-  if (service.empty())
-    return false;
-
-  const size_t last_period = service.find_last_of('.');
-  if (last_period == std::string::npos || service.length() <= last_period)
-    return false;
-
-  if (!is_service_name) {
-    *type = base::SysUTF8ToNSString(service.substr(0, last_period) + ".");
-  } else {
-    // Find third last period that delimits type and instance name.
-    size_t type_period = last_period;
-    for (int i = 0; i < 2; ++i) {
-      type_period = service.find_last_of('.', type_period - 1);
-      if (type_period == std::string::npos) {
-        return false;
-      }
-    }
-
-    *instance = base::SysUTF8ToNSString(service.substr(0, type_period));
-    *type = base::SysUTF8ToNSString(
-        service.substr(type_period + 1, last_period - type_period));
-  }
-  *domain = base::SysUTF8ToNSString(service.substr(last_period + 1) + ".");
-
-  return [*domain length] > 0 &&
-         [*type length] > 0 &&
-         (!is_service_name || [*instance length] > 0);
-}
-
-void ParseTxtRecord(NSData* record, std::vector<std::string>* output) {
-  if (record.length <= 1) {
-    return;
-  }
-
-  VLOG(1) << "ParseTxtRecord: " << record.length;
-
-  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(record.bytes);
-  size_t size = record.length;
-  size_t offset = 0;
-  while (offset < size) {
-    uint8_t record_size = bytes[offset++];
-    if (offset > size - record_size)
-      break;
-
-    NSString* txt_record =
-        [[NSString alloc] initWithBytes:&bytes[offset]
-                                 length:record_size
-                               encoding:NSUTF8StringEncoding];
-    if (txt_record) {
-      std::string txt_record_string = base::SysNSStringToUTF8(txt_record);
-      VLOG(1) << "TxtRecord: " << txt_record_string;
-      output->push_back(std::move(txt_record_string));
-    } else {
-      VLOG(1) << "TxtRecord corrupted at offset " << offset;
-    }
-
-    offset += record_size;
-  }
-}
 
 }  // namespace
 
@@ -222,28 +268,70 @@ ServiceWatcherImplMac::ServiceWatcherImplMac(
       service_discovery_runner_(service_discovery_runner) {}
 
 ServiceWatcherImplMac::~ServiceWatcherImplMac() {
-  service_discovery_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StopServiceBrowser, std::move(browser_)));
+  if (base::FeatureList::IsEnabled(
+          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
+    service_discovery_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StopServiceBrowser, nw_browser_,
+                                  service_discovery_runner_));
+    nw_browser_ = nil;
+  } else {
+    service_discovery_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StopNetServiceBrowser, browser_));
+    browser_ = nil;
+  }
 }
 
 void ServiceWatcherImplMac::Start() {
   DCHECK(!started_);
   VLOG(1) << "ServiceWatcherImplMac::Start";
 
-  browser_ = [[NetServiceBrowser alloc]
-      initWithServiceType:service_type_
-                 callback:base::BindRepeating(
-                              &ServiceWatcherImplMac::OnServicesUpdate,
-                              weak_factory_.GetWeakPtr())
-           callbackRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
+  if (base::FeatureList::IsEnabled(
+          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
+    std::optional<local_discovery::ServiceInfo> service_info =
+        local_discovery::ExtractServiceInfo(service_type_, false);
+    if (!service_info) {
+      VLOG(1) << "Failed to start discovery. Invalid service_type: '"
+              << service_type_ << "'";
+      return;
+    }
+    VLOG(1) << "Listening for service" << service_info.value();
+
+    nw_browse_descriptor_t descriptor =
+        nw_browse_descriptor_create_bonjour_service(
+            service_info->service_type.c_str(), service_info->domain.c_str());
+    nw_parameters_t parameters = nw_parameters_create_secure_tcp(
+        NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
+    nw_browser_ = nw_browser_create(descriptor, parameters);
+
+    SetUpServiceBrowser(
+        nw_browser_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
+                            weak_factory_.GetWeakPtr()));
+  } else {
+    browser_ = [[NetServiceBrowser alloc]
+        initWithServiceType:service_type_
+                   callback:base::BindRepeating(
+                                &ServiceWatcherImplMac::OnServicesUpdate,
+                                weak_factory_.GetWeakPtr())
+             callbackRunner:base::SingleThreadTaskRunner::GetCurrentDefault()];
+  }
   started_ = true;
 }
 
 void ServiceWatcherImplMac::DiscoverNewServices() {
   DCHECK(started_);
   VLOG(1) << "ServiceWatcherImplMac::DiscoverNewServices";
-  service_discovery_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StartServiceBrowser, browser_));
+  if (base::FeatureList::IsEnabled(
+          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
+    service_discovery_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
+                                  service_discovery_runner_));
+  } else {
+    service_discovery_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StartNetServiceBrowser, browser_));
+  }
 }
 
 void ServiceWatcherImplMac::SetActivelyRefreshServices(
@@ -261,6 +349,17 @@ void ServiceWatcherImplMac::OnServicesUpdate(ServiceWatcher::UpdateType update,
   VLOG(1) << "ServiceWatcherImplMac::OnServicesUpdate: "
           << service + "." + service_type_;
   callback_.Run(update, service + "." + service_type_);
+}
+
+void ServiceWatcherImplMac::RecordPermissionState(bool permission_granted) {
+  static bool permission_state_recorded_ = false;
+  if (permission_state_recorded_) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "MediaRouter.Discovery.LocalNetworkAccessPermissionGranted",
+      permission_granted);
+  permission_state_recorded_ = true;
 }
 
 // Service Resolver ////////////////////////////////////////////////////////////
@@ -313,22 +412,6 @@ void ServiceResolverImplMac::StopResolving() {
       FROM_HERE, base::BindOnce(&StopServiceResolver, std::move(resolver_)));
 }
 
-void ParseNetService(NSNetService* service, ServiceDescription& description) {
-  for (NSData* address in [service addresses]) {
-    const void* bytes = [address bytes];
-    int length = [address length];
-    const sockaddr* socket = static_cast<const sockaddr*>(bytes);
-    net::IPEndPoint end_point;
-    if (end_point.FromSockAddr(socket, length)) {
-      description.address = net::HostPortPair::FromIPEndPoint(end_point);
-      description.ip_address = end_point.address();
-      break;
-    }
-  }
-
-  ParseTxtRecord([service TXTRecordData], &description.metadata);
-}
-
 }  // namespace local_discovery
 
 // Service Watcher /////////////////////////////////////////////////////////////
@@ -369,19 +452,19 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
     [_browser setDelegate:self];
   }
 
-  NSString* instance;
-  NSString* type;
-  NSString* domain;
-  if (!local_discovery::ExtractServiceInfo(_serviceType, false, &instance,
-                                           &type, &domain)) {
+  std::optional<local_discovery::ServiceInfo> service_info =
+      local_discovery::ExtractServiceInfo(_serviceType, false);
+  if (!service_info) {
+    VLOG(1) << "Failed to start discovery. Invalid service_type: '"
+            << _serviceType << "'";
     return;
   }
+  VLOG(1) << "Listening for " << service_info.value();
 
-  DCHECK(![instance length]);
-  DVLOG(1) << "Listening for service type '" << type << "' on domain '"
-           << domain << "'";
+  NSString* service_type = base::SysUTF8ToNSString(service_info->service_type);
+  NSString* domain = base::SysUTF8ToNSString(service_info->domain);
 
-  [_browser searchForServicesOfType:type inDomain:domain];
+  [_browser searchForServicesOfType:service_type inDomain:domain];
 }
 
 - (void)stop {
@@ -479,19 +562,22 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
 }
 
 - (void)resolveService {
-  NSString* instance;
-  NSString* type;
-  NSString* domain;
-  if (!local_discovery::ExtractServiceInfo(_serviceName, true, &instance, &type,
-                                           &domain)) {
+  std::optional<local_discovery::ServiceInfo> service_info =
+      local_discovery::ExtractServiceInfo(_serviceName, true);
+
+  if (!service_info) {
+    VLOG(1) << "Failed to resolve service. Invalid service name:'"
+            << _serviceName << "'";
     [self updateServiceDescription:ServiceResolver::STATUS_KNOWN_NONEXISTENT];
     return;
   }
+  VLOG(1) << "-[ServiceResolver resolveService] " << _serviceName << ", "
+          << service_info.value();
 
-  VLOG(1) << "-[ServiceResolver resolveService] " << _serviceName
-          << ", instance: " << instance << ", type: " << type
-          << ", domain: " << domain;
-
+  CHECK(service_info->instance);
+  NSString* instance = base::SysUTF8ToNSString(service_info->instance.value());
+  NSString* type = base::SysUTF8ToNSString(service_info->service_type);
+  NSString* domain = base::SysUTF8ToNSString(service_info->domain);
   _service = [[NSNetService alloc] initWithDomain:domain
                                              type:type
                                              name:instance];

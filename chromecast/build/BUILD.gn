@@ -16,9 +16,7 @@ if (is_android) {
 
 group("archive") {
   testonly = true
-  if (chromecast_branding == "internal") {
-    deps = [ "//chromecast/internal/build:archive" ]
-  } else if (is_android) {
+  if (is_android) {
     deps = [ ":archive_public_cast_apk" ]
   }
 }

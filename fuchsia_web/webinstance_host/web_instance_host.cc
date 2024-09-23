@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -50,8 +50,8 @@ constexpr char kCollectionName[] = "web_instances";
 // The package URL for the current component cannot be obtained programmatically
 // (see fxbug.dev/51490), and this should always work in production, which is
 // when this is needed.
-// TODO(crbug.com/1211174): Remove when a different mechanism is available.
-// TODO(crbug.com/1395054): Replace with constant once `with_webui` is removed.
+// TODO(crbug.com/42050282): Remove when a different mechanism is available.
+// TODO(crbug.com/40248894): Replace with constant once `with_webui` is removed.
 std::string GetAbsoluteWebEnginePackageUrl(bool with_webui) {
   return base::StrCat({"fuchsia-pkg://fuchsia.com/",
                        (with_webui ? "web_engine_with_webui" : "web_engine")});
@@ -63,7 +63,7 @@ std::string GetAbsoluteWebEnginePackageUrl(bool with_webui) {
 // than the production `web_engine` package.
 std::string MakeWebInstanceComponentUrl(bool use_relative_url,
                                         bool with_webui,
-                                        base::StringPiece component_name) {
+                                        std::string_view component_name) {
   return base::StrCat(
       {(use_relative_url ? "" : GetAbsoluteWebEnginePackageUrl(with_webui)),
        "#meta/", component_name});
@@ -156,7 +156,7 @@ class InstanceBuilder {
   // `fuchsia.web/Debug` will be published in `outgoing_services_request` if
   // `SetDebugRequest()` has been called.
   Instance Build(
-      base::StringPiece instance_component_url,
+      std::string_view instance_component_url,
       fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request);
 
  private:
@@ -205,7 +205,7 @@ class InstanceBuilder {
   }
 
   // Returns the capability and directory name for `directory`.
-  static base::StringPiece GetDirectoryName(OptionalDirectory directory);
+  static std::string_view GetDirectoryName(OptionalDirectory directory);
 
   // Serves `fs_directory` as `directory`. `fs_directory` may be specific to
   // this instance (e.g., persistent data storage) or required only in
@@ -214,7 +214,7 @@ class InstanceBuilder {
   // be offered statically to the `web_instances` collection.
   void ServeOptionalDirectory(
       OptionalDirectory directory,
-      std::unique_ptr<vfs::internal::Directory> fs_directory,
+      std::unique_ptr<vfs::Node> fs_directory,
       fuchsia::io::Operations rights);
 
   // Offers the directory `directory` from `void`.
@@ -222,8 +222,8 @@ class InstanceBuilder {
 
   // Serves the directory `name` as `offer` in the instance's subtree as a
   // read-only or a read-write (if `writeable`) directory.
-  void ServeDirectory(base::StringPiece name,
-                      std::unique_ptr<vfs::internal::Directory> fs_directory,
+  void ServeDirectory(std::string_view name,
+                      std::unique_ptr<vfs::Node> fs_directory,
                       fuchsia::io::Operations rights);
 
   const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
@@ -363,7 +363,7 @@ void InstanceBuilder::SetDebugRequest(
 }
 
 Instance InstanceBuilder::Build(
-    base::StringPiece instance_component_url,
+    std::string_view instance_component_url,
     fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request) {
   ServeCommandLine();
 
@@ -450,10 +450,10 @@ void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
 }
 
 // static
-base::StringPiece InstanceBuilder::GetDirectoryName(
+std::string_view InstanceBuilder::GetDirectoryName(
     OptionalDirectory directory) {
   static constexpr auto kNames =
-      base::MakeFixedFlatMap<OptionalDirectory, base::StringPiece>({
+      base::MakeFixedFlatMap<OptionalDirectory, std::string_view>({
           {OptionalDirectory::kCdmData, "cdm_data"},
           {OptionalDirectory::kCommandLineConfig, "command-line-config"},
           {OptionalDirectory::kContentDirectories, "content-directories"},
@@ -466,7 +466,7 @@ base::StringPiece InstanceBuilder::GetDirectoryName(
 
 void InstanceBuilder::ServeOptionalDirectory(
     OptionalDirectory directory,
-    std::unique_ptr<vfs::internal::Directory> fs_directory,
+    std::unique_ptr<vfs::Node> fs_directory,
     fuchsia::io::Operations rights) {
   DCHECK(instance_dir_);
   DCHECK(!is_directory_served(directory));
@@ -490,8 +490,8 @@ void InstanceBuilder::OfferOptionalDirectoryFromVoid(
 }
 
 void InstanceBuilder::ServeDirectory(
-    base::StringPiece name,
-    std::unique_ptr<vfs::internal::Directory> fs_directory,
+    std::string_view name,
+    std::unique_ptr<vfs::Node> fs_directory,
     fuchsia::io::Operations rights) {
   DCHECK(instance_dir_);
   zx_status_t status =
@@ -579,7 +579,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     fuchsia::web::CreateContextParams params,
     fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request,
     base::CommandLine extra_args,
-    base::StringPiece component_name,
+    std::string_view component_name,
     std::vector<std::string> services_to_offer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -617,7 +617,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     return ZX_ERR_INVALID_ARGS;
   }
 
-  // TODO(crbug.com/1395774): Replace this with normal routing of tmp from
+  // TODO(crbug.com/40882309): Replace this with normal routing of tmp from
   // web_engine_shell's parent down to web_instance.
   if (tmp_dir_.is_valid()) {
     builder->ServeTmpDirectory(std::move(tmp_dir_));
@@ -646,7 +646,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     // programmatically (see fxbug.dev/51490). Use the default absolute package
     // URL for WebEngine; this should always work in production, which is
     // when registration is needed.
-    // TODO(crbug.com/1211174): Remove when a different mechanism is available.
+    // TODO(crbug.com/42050282): Remove when a different mechanism is available.
     component_url_to_register =
         MakeWebInstanceComponentUrl(false, with_webui, component_name);
   }

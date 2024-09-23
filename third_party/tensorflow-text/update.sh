@@ -16,6 +16,8 @@ files=(
   "tensorflow_text/core/kernels/regex_split.h"
   "tensorflow_text/core/kernels/wordpiece_tokenizer.cc"
   "tensorflow_text/core/kernels/wordpiece_tokenizer.h"
+  "tensorflow_text/core/kernels/mst_solver.h"
+  "tensorflow_text/core/kernels/disjoint_set_forest.h"
 )
 
 git clone --depth 1 https://github.com/tensorflow/text /tmp/text

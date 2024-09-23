@@ -7,6 +7,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -334,7 +335,6 @@ int32_t TCPSocketResourceBase::SetOptionImpl(
     }
     default: {
       NOTREACHED();
-      return PP_ERROR_BADARGUMENT;
     }
   }
 
@@ -482,10 +482,7 @@ void TCPSocketResourceBase::OnPluginMsgAcceptReply(
 
 void TCPSocketResourceBase::OnPluginMsgSetOptionReply(
     const ResourceMessageReplyParams& params) {
-  if (set_option_callbacks_.empty()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!set_option_callbacks_.empty());
   scoped_refptr<TrackedCallback> callback = set_option_callbacks_.front();
   set_option_callbacks_.pop();
   if (TrackedCallback::IsPending(callback))

@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 
+#include "base/compiler_specific.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_color_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_gradient.h"
@@ -12,6 +15,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-value.h"
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 
@@ -23,7 +33,7 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
   if (value->IsString()) {
     style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
                                                              exception_state);
-    if (UNLIKELY(exception_state.HadException())) {
+    if (exception_state.HadException()) [[unlikely]] {
       return false;
     }
     style.type = V8CanvasStyleType::kString;
@@ -49,8 +59,9 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
   // (such as numbers).
   style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
                                                            exception_state);
-  if (UNLIKELY(exception_state.HadException()))
+  if (exception_state.HadException()) [[unlikely]] {
     return false;
+  }
   style.type = V8CanvasStyleType::kString;
   return true;
 }

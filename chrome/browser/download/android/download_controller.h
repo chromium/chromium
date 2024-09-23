@@ -30,6 +30,8 @@
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 
 class DownloadController : public DownloadControllerBase {
  public:
@@ -72,6 +74,7 @@ class DownloadController : public DownloadControllerBase {
 
  private:
   friend struct base::DefaultSingletonTraits<DownloadController>;
+  friend class DownloadControllerTest;
   DownloadController();
   ~DownloadController() override;
 
@@ -83,6 +86,7 @@ class DownloadController : public DownloadControllerBase {
 
   // DownloadItem::Observer interface.
   void OnDownloadUpdated(download::DownloadItem* item) override;
+  void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   // The download item contains dangerous file types.
   void OnDangerousDownload(download::DownloadItem* item);
@@ -98,11 +102,26 @@ class DownloadController : public DownloadControllerBase {
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
+  // Callback after we prompt the user to enable app verification.
+  void EnableVerifyAppsDone(download::DownloadItem* item,
+                            safe_browsing::VerifyAppsEnabledResult result);
+
+  // Notify Java that download is complete, so the user can be informed.
+  void OnDownloadComplete(download::DownloadItem* item);
+
+  // Whether or not we should show an app verification prompt for `item`
+  bool ShouldShowAppVerificationPrompt(download::DownloadItem* item);
+
   std::string default_file_name_;
 
   DownloadCallbackValidator validator_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
+
+  // The item currently or previously doing an app verification
+  // prompt. Because we show at most one at a time, this does not need
+  // to be a set.
+  raw_ptr<download::DownloadItem> app_verification_prompt_download_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

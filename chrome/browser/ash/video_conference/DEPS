@@ -1,0 +1,34 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/video_conference",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/borealis",
+  "+chrome/browser/ash/camera_mic",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/plugin_vm",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/chromeos/video_conference",
+  "+chrome/browser/content_settings",
+  "+chrome/browser/media/webrtc",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/test/base",
+]

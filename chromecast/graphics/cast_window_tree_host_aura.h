@@ -5,6 +5,9 @@
 #ifndef CHROMECAST_GRAPHICS_CAST_WINDOW_TREE_HOST_AURA_H_
 #define CHROMECAST_GRAPHICS_CAST_WINDOW_TREE_HOST_AURA_H_
 
+#include <memory>
+
+#include "chromecast/starboard/chromecast/events/ui_event_source.h"
 #include "ui/aura/window_tree_host_platform.h"
 
 namespace chromecast {
@@ -29,6 +32,7 @@ class CastWindowTreeHostAura : public aura::WindowTreeHostPlatform {
 
  private:
   const bool enable_input_;
+  std::unique_ptr<UiEventSource> ui_event_source_;
 };
 
 }  // namespace chromecast

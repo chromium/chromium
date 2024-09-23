@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include <array>
+
 namespace base {
 
 // The output of an MD5 operation.
 struct MD5Digest {
-  uint8_t a[16];
+  std::array<uint8_t, 16> a;
 };
 
 // Used for storing intermediate data during an MD5 computation. Callers

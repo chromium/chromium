@@ -50,24 +50,31 @@ class QuicSessionPoolPeer {
   static bool HasActiveSession(
       QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key,
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
-      SessionUsage session_usage = SessionUsage::kDestination);
+      SessionUsage session_usage = SessionUsage::kDestination,
+      bool require_dns_https_alpn = false);
 
   static bool HasActiveJob(QuicSessionPool* factory,
                            const quic::QuicServerId& server_id,
+                           PrivacyMode privacy_mode,
                            bool require_dns_https_alpn = false);
 
   static QuicChromiumClientSession* GetPendingSession(
       QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       url::SchemeHostPort destination);
 
   static QuicChromiumClientSession* GetActiveSession(
       QuicSessionPool* factory,
       const quic::QuicServerId& server_id,
+      PrivacyMode privacy_mode,
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
+      const ProxyChain& proxy_chain = ProxyChain::Direct(),
+      SessionUsage session_usage = SessionUsage::kDestination,
       bool require_dns_https_alpn = false);
 
   static bool IsLiveSession(QuicSessionPool* factory,

@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -15,6 +15,9 @@ namespace {
 
 // Point size of the SF Symbol used for the logo.
 const CGFloat kSymbolPointSize = 17.0;
+
+// Horizontal spacing between the logo and the title label.
+const CGFloat kHorizontalSpacing = 9.0;
 
 }  // namespace
 
@@ -34,6 +37,8 @@ BrandedNavigationItemTitleView* CreatePasswordManagerTitleView(
 
   title_view.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL);
+
+  title_view.titleLogoSpacing = kHorizontalSpacing;
 
   return title_view;
 }

@@ -40,10 +40,10 @@ std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
     const net::ProxyList& proxy_list) {
   std::vector<crosapi::mojom::ProxyLocationPtr> proxy_ptr_list;
   for (const auto& proxy_chain : proxy_list.AllChains()) {
-    // TODO(crbug.com/1491092): Remove single hop check when multi-hop proxy
+    // TODO(crbug.com/40284947): Remove single hop check when multi-hop proxy
     // chains are supported.
     CHECK(proxy_chain.is_single_proxy());
-    net::ProxyServer proxy = proxy_chain.GetProxyServer(/*chain_index=*/0);
+    net::ProxyServer proxy = proxy_chain.First();
     crosapi::mojom::ProxyLocationPtr proxy_ptr;
     proxy_ptr = crosapi::mojom::ProxyLocation::New();
     proxy_ptr->host = proxy.host_port_pair().host();
@@ -177,7 +177,8 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
       // This mode means Chrome is getting the settings from the operating
       // system. On Chrome OS, ash-chrome is the source of truth for proxy
       // settings so this mode is never used.
-      NOTREACHED() << "The system mode doesn't apply to Ash-Chrome";
+      NOTREACHED_IN_MIGRATION()
+          << "The system mode doesn't apply to Ash-Chrome";
       break;
     default:
       LOG(ERROR) << "Incorrect proxy mode.";

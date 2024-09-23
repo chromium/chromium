@@ -84,6 +84,15 @@ AssertPageLoadMetricsObserver::OnPreviewStart(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+AssertPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
+    content::NavigationHandle* navigation_handle) {
+  CHECK(started_);
+  CHECK(!committed_);
+
+  return CONTINUE_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 AssertPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   CHECK(started_);
@@ -185,6 +194,11 @@ AssertPageLoadMetricsObserver::ShouldObserveMimeTypeByDefault(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+AssertPageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
+  return url.SchemeIsHTTPOrHTTPS() ? CONTINUE_OBSERVING : STOP_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 AssertPageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(committed_);
@@ -272,6 +286,13 @@ void AssertPageLoadMetricsObserver::OnParseStop(
   CHECK(started_);
   CHECK(timing.parse_timing->parse_stop.has_value());
 }
+
+void AssertPageLoadMetricsObserver::OnConnectStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnDomainLookupStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnDomainLookupEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
 
 void AssertPageLoadMetricsObserver::OnDomContentLoadedEventStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
@@ -388,7 +409,8 @@ void AssertPageLoadMetricsObserver::OnRenderFrameDeleted(
   CHECK(started_);
 }
 
-void AssertPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+void AssertPageLoadMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   CHECK(started_);
 }
 

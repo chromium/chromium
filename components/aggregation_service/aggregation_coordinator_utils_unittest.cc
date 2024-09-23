@@ -20,35 +20,59 @@ TEST(AggregationCoordinatorUtilsTest, GetDefaultAggregationCoordinatorOrigin) {
     url::Origin expected;
   } kTestCases[] = {
       {
-          "aws-valid",
+          "valid",
           "https://a.test",
           url::Origin::Create(GURL("https://a.test")),
       },
       {
-          "aws-valid-non-empty-path",
+          "valid-non-empty-path",
           "https://a.test/foo",
           url::Origin::Create(GURL("https://a.test")),
       },
       {
-          "aws-valid-subdomain",
+          "valid-subdomain",
           "https://a.b.test",
           url::Origin::Create(GURL("https://a.b.test")),
       },
       {
-          "aws-non-trustworthy",
+          "non-trustworthy",
           "http://a.test",
+          url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
+      },
+      {
+          "invalid-origin",
+          "a.test",
+          url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
+      },
+      {
+          "multiple",
+          "https://b.test,https://a.test",
+          url::Origin::Create(GURL("https://b.test")),
+      },
+      {
+          "any-invalid",
+          "https://b.test,http://a.test",
+          url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
+      },
+      {
+          "empty",
+          "",
           url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
       },
   };
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    ScopedAggregationCoordinatorAllowlistForTesting
+        scoped_coordinator_allowlist;
+
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-        {{"aws_cloud", test_case.feature_param}});
+        {{"allowlist", test_case.feature_param}});
 
-    EXPECT_EQ(GetDefaultAggregationCoordinatorOrigin(), test_case.expected)
-        << test_case.desc;
+    EXPECT_EQ(GetDefaultAggregationCoordinatorOrigin(), test_case.expected);
   }
 }
 
@@ -58,29 +82,27 @@ TEST(AggregationCoordinatorUtilsTest, IsAggregationCoordinatorOriginAllowed) {
     bool expected;
   } kTestCases[] = {
       {
-          .origin = url::Origin::Create(GURL("https://aws.example.test")),
-          .expected = true,
-      },
-      {
-          .origin = url::Origin::Create(GURL("https://gcp.example.test")),
-          .expected = true,
-      },
-      {
           .origin = url::Origin::Create(GURL("https://a.test")),
+          .expected = true,
+      },
+      {
+          .origin = url::Origin::Create(GURL("https://b.test")),
+          .expected = true,
+      },
+      {
+          .origin = url::Origin::Create(GURL("https://c.test")),
           .expected = false,
       },
   };
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  ScopedAggregationCoordinatorAllowlistForTesting scoped_coordinator_allowlist(
+      {url::Origin::Create(GURL("https://a.test")),
+       url::Origin::Create(GURL("https://b.test"))});
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.origin);
     EXPECT_EQ(IsAggregationCoordinatorOriginAllowed(test_case.origin),
-              test_case.expected)
-        << test_case.origin;
+              test_case.expected);
   }
 }
 

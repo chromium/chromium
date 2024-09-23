@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,7 +56,7 @@ class ScopedExperimentalStateToggle {
         break;
 
       case base::FeatureList::OVERRIDE_USE_DEFAULT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -73,7 +74,7 @@ class ScopedExperimentalStateToggle {
 };
 
 void ExpectAndRetrieveExactlyOneEnabledConfig(Configuration* actual_config) {
-  DCHECK(actual_config);
+  CHECK(actual_config);
   const auto config_list = GetEnabledConfigurations();
   ASSERT_EQ(1u, config_list->configs_by_decreasing_priority().size());
   *actual_config = config_list->configs_by_decreasing_priority().front();
@@ -81,7 +82,7 @@ void ExpectAndRetrieveExactlyOneEnabledConfig(Configuration* actual_config) {
 
 void ExpectAndRetrieveExactlyOneExtraEnabledConfig(
     Configuration* actual_config) {
-  DCHECK(actual_config);
+  CHECK(actual_config);
   const auto config_list = GetEnabledConfigurations();
   ASSERT_EQ(4u, config_list->configs_by_decreasing_priority().size());
   *actual_config = config_list->configs_by_decreasing_priority().back();

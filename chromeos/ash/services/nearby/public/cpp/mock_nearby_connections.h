@@ -159,6 +159,10 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
                presence::mojom::PresenceDevicePtr remote_device,
                DisconnectFromDeviceV3Callback callback),
               (override));
+  MOCK_METHOD(void,
+              RegisterServiceWithPresenceDeviceProvider,
+              (const std::string& service_id),
+              (override));
 
  private:
   mojo::ReceiverSet<NearbyConnectionsMojom> receiver_set_;

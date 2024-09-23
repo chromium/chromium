@@ -18,7 +18,6 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/mock_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
@@ -266,31 +265,6 @@ TEST_F(RTCRtpSenderImplTest, CreateSenderWithInsertableStreams) {
                          /*require_encoded_insertable_streams=*/true);
   EXPECT_TRUE(sender_->GetEncodedAudioStreamTransformer());
   // There should be no video transformer in audio senders.
-  EXPECT_FALSE(sender_->GetEncodedVideoStreamTransformer());
-}
-
-TEST_F(RTCRtpSenderImplTest,
-       CreateReceiverWithInsertableStreamsWithoutFeature) {
-  auto* component = CreateTrack("track_id");
-  ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kWebRtcEncodedTransformsPerStreamCreation);
-
-  sender_ = CreateSender(component,
-                         /*require_encoded_insertable_streams=*/true);
-  // Audio transformer should still be created.
-  EXPECT_TRUE(sender_->GetEncodedAudioStreamTransformer());
-}
-
-TEST_F(RTCRtpSenderImplTest,
-       CreateReceiverWithOutInsertableStreamsParamWithoutFeature) {
-  auto* component = CreateTrack("track_id");
-  ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kWebRtcEncodedTransformsPerStreamCreation);
-
-  sender_ = CreateSender(component,
-                         /*require_encoded_insertable_streams=*/false);
-  // No Transformers should be created.
-  EXPECT_FALSE(sender_->GetEncodedAudioStreamTransformer());
   EXPECT_FALSE(sender_->GetEncodedVideoStreamTransformer());
 }
 

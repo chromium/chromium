@@ -251,8 +251,7 @@ void SvgTextLayoutAttributesBuilder::Build(
   bool in_text_path = false;
   std::optional<unsigned> text_path_start;
   bool first_char_in_text_path = false;
-  const bool horizontal =
-      IsHorizontalWritingMode(block_flow_->StyleRef().GetWritingMode());
+  const bool horizontal = block_flow_->IsHorizontalWritingMode();
 
   attr_stack.Push(*block_flow_, in_text_path);
   if (HasValidTextLength(*block_flow_)) {

@@ -20,6 +20,7 @@ extern const char kChromeUIHistoryURL[];
 extern const char kChromeUIInspectURL[];
 extern const char kChromeUIIntersitialsURL[];
 extern const char kChromeUIManagementURL[];
+extern const char kChromeUIOnDeviceLlmInternalsURL[];
 extern const char kChromeUINewTabURL[];
 extern const char kChromeUINTPTilesInternalsURL[];
 extern const char kChromeUIOfflineURL[];
@@ -52,6 +53,7 @@ extern const char kChromeUINewTabHost[];
 extern const char kChromeUINTPTilesInternalsHost[];
 extern const char kChromeUIOfflineHost[];
 extern const char kChromeUIOmahaHost[];
+extern const char kChromeUIOnDeviceLlmInternalsHost[];
 extern const char kChromeUIPasswordManagerInternalsHost[];
 extern const char kChromeUIPolicyHost[];
 extern const char kChromeUIPopularSitesInternalsHost[];
@@ -63,6 +65,7 @@ extern const char kChromeUIURLKeyedMetricsHost[];
 extern const char kChromeUIUserActionsHost[];
 extern const char kChromeUIUserDefaultsInternalsHost[];
 extern const char kChromeUIVersionHost[];
+extern const char kChromeUIDownloadsHost[];
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
 extern const char* const kChromeHostURLs[];
@@ -138,5 +141,11 @@ extern const char kManagementLearnMoreURL[];
 // "Learn more" URL for the safe browsing setting in the privacy and security
 // section.
 extern const char kEnhancedSafeBrowsingLearnMoreURL[];
+
+// "My Activity" URL for managing the user's activity
+extern const char kMyActivityURL[];
+
+// "Learn more" URL for the Lens Overlay.
+extern const char kLearnMoreLensURL[];
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

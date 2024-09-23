@@ -51,10 +51,12 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{BookmarkModelFactory::GetInstance(),
-             BookmarkModelFactory::GetDefaultFactory()},
-            {ManagedBookmarkServiceFactory::GetInstance(),
-             ManagedBookmarkServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+                BookmarkModelFactory::GetInstance(),
+                BookmarkModelFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                ManagedBookmarkServiceFactory::GetInstance(),
+                ManagedBookmarkServiceFactory::GetDefaultFactory()}};
   }
 
   void UpdateRootMenu() {
@@ -101,7 +103,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
-  bridge_->BookmarkModelLoaded(model, false);
+  bridge_->BookmarkModelLoaded(false);
   UpdateRootMenu();
   // The bare menu after loading used to have a separator and an
   // "Other Bookmarks" submenu, but we no longer show those items if the
@@ -117,7 +119,7 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   // Remove the new bookmark and reload and we should have 0 items again
   // because the separator should have been removed as well.
   model->Remove(parent->children().front().get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   UpdateRootMenu();
   EXPECT_EQ(0, [menu_ numberOfItems]);
 }
@@ -147,7 +149,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
   model->AddURL(model->bookmark_bar_node(), 0, u"Google",
                 GURL("https://google.com"));
-  bridge_->BookmarkModelLoaded(model, false);
+  bridge_->BookmarkModelLoaded(false);
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -300,7 +302,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   const BookmarkNode* removed_node = folder->children()[0].get();
   EXPECT_EQ(2u, folder->children().size());
   model->Remove(folder->children()[0].get(),
-                bookmarks::metrics::BookmarkEditSource::kOther);
+                bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   EXPECT_EQ(1u, folder->children().size());
 
   EXPECT_FALSE(menu_is_valid());
@@ -360,7 +362,7 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
   [item setImage:nil];
-  bridge_->BookmarkNodeFaviconChanged(model, node);
+  bridge_->BookmarkNodeFaviconChanged(node);
   EXPECT_TRUE([item image]);
 }
 

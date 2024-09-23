@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/page_info_bottom_sheet_padding"
+    android:paddingBottom="@dimen/page_info_bottom_sheet_padding">
+
+  <include
+      android:id="@+id/bottom_sheet_handlebar"
+      layout="@layout/bottom_sheet_handlebar"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toBottomOf="@id/handlebar_bottom_guideline"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+  <!-- Guideline for the top handlebar, located 8dp below the top-->
+  <androidx.constraintlayout.widget.Guideline
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:id="@+id/handlebar_bottom_guideline"
+      app:layout_constraintGuide_begin="@dimen/page_info_bottom_sheet_handlebar_height" />
+
+  <TextView
+      android:id="@+id/sheet_title"
+      style="@style/TextAppearance.Headline.Primary"
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:gravity="center_vertical"
+      android:text="@string/share_with_summary_feedback_sheet_title"
+      app:layout_constraintTop_toBottomOf="@id/handlebar_bottom_guideline"
+      app:layout_constraintBottom_toTopOf="@id/header_bottom_barrier"
+      app:layout_constraintStart_toStartOf="parent" />
+
+  <!-- Barrier for the sheet header and back button, located 48dp below the handlebar guideline. -->
+  <androidx.constraintlayout.widget.Barrier
+      android:id="@+id/header_bottom_barrier"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:barrierDirection="bottom"
+      app:barrierMargin="@dimen/page_info_icon_button_size"
+      app:constraint_referenced_ids="handlebar_bottom_guideline"/>
+
+  <org.chromium.components.browser_ui.widget.RadioButtonLayout
+      android:id="@+id/radio_buttons"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/header_bottom_barrier"
+      android:layout_marginHorizontal="@dimen/page_info_sheet_content_margin" />
+
+  <TextView
+      android:id="@+id/learn_more_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/share_with_summary_feedback_disclaimer"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+      android:layout_marginTop="@dimen/page_summary_feedback_sheet_item_margin"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/radio_buttons"
+    />
+
+  <!-- Action buttons (OK, Cancel). -->
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/accept_button"
+      style="@style/FilledButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/page_summary_feedback_sheet_item_margin"
+      android:text="@string/share_with_summary_feedback_sheet_submit"
+      app:layout_constraintTop_toBottomOf="@id/learn_more_text"
+      app:layout_constraintEnd_toEndOf="parent" />
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/cancel_button"
+      style="@style/TextButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/page_info_sheet_content_margin"
+      android:layout_marginTop="@dimen/page_summary_feedback_sheet_item_margin"
+      android:text="@android:string/cancel"
+      app:layout_constraintTop_toBottomOf="@id/learn_more_text"
+      app:layout_constraintEnd_toStartOf="@id/accept_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

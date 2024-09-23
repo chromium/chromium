@@ -28,6 +28,8 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 
 #include <memory>
+
+#include "base/task/single_thread_task_runner.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -126,9 +128,9 @@ void EmptyLocalFrameClient::BeginNavigation(
     const std::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
-    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
+    mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
     bool is_container_initiated,
-    bool is_fullscreen_requested) {}
+    bool has_rel_opener) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 
@@ -180,7 +182,12 @@ Frame* EmptyLocalFrameClient::FindFrame(const AtomicString& name) const {
 
 AssociatedInterfaceProvider*
 EmptyLocalFrameClient::GetRemoteNavigationAssociatedInterfaces() {
-  return AssociatedInterfaceProvider::GetEmptyAssociatedInterfaceProvider();
+  if (!associated_interface_provider_) {
+    associated_interface_provider_ =
+        std::make_unique<AssociatedInterfaceProvider>(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+  return associated_interface_provider_.get();
 }
 
 std::unique_ptr<WebServiceWorkerProvider>

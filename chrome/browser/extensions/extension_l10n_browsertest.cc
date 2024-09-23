@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionL10nBrowserTest, CSSFilesAreLocalized) {
   test_dir.WriteFile(FILE_PATH_LITERAL("style.css"), kStyleCss);
   test_dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJs);
   {
-    // TODO(https://crbug.com/1135378): It's a bit clunky to write to nested
+    // TODO(crbug.com/40151844): It's a bit clunky to write to nested
     // files in a TestExtensionDir.
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath locales = test_dir.UnpackedPath().AppendASCII("_locales");

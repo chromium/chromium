@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_COMMON_PAGE_LOAD_METRICS_MOJOM_TRAITS_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_COMMON_PAGE_LOAD_METRICS_MOJOM_TRAITS_H_
 
+#include <cstdint>
+
+#include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
@@ -154,6 +157,31 @@ class StructTraits<
   static bool dictionary_fallback(
       const blink::ServiceWorkerSubresourceLoadMetrics& d) {
     return d.dictionary_fallback;
+  }
+
+  static uint32_t matched_cache_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_cache_router_source_count;
+  }
+
+  static uint32_t matched_fetch_event_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_fetch_event_router_source_count;
+  }
+
+  static uint32_t matched_network_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_network_router_source_count;
+  }
+
+  static uint32_t matched_race_network_and_fetch_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_race_network_and_fetch_router_source_count;
+  }
+
+  static base::TimeDelta total_router_evaluation_time_for_subresources(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.total_router_evaluation_time_for_subresources;
   }
 
   static bool Read(

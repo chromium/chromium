@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("permissions") {
+  sources = [
+    "permissions_infobar_modal_overlay_coordinator.h",
+    "permissions_infobar_modal_overlay_coordinator.mm",
+    "permissions_infobar_modal_overlay_mediator.h",
+    "permissions_infobar_modal_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
+    "//ios/chrome/browser/permissions/model:infobar_delegate",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals/permissions",
+    "//ios/web/public",
+    "//ios/web/public/permissions",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "permissions_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":permissions",
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/permissions/model:infobar_delegate",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/web/public/navigation",
+    "//ios/web/public/permissions",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

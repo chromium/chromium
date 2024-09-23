@@ -7,7 +7,6 @@ import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(toolkit_views)
-assert(is_chrome_branded)
 
 build_webui("build") {
   grd_prefix = "lens"
@@ -16,24 +15,4 @@ build_webui("build") {
     "region_search.css",
   ]
   non_web_component_files = [ "app.ts" ]
-}
-
-generate_grd("build_untrusted_grd") {
-  grd_prefix = "lens_untrusted"
-  out_grd = "$target_gen_dir/untrusted_resources.grd"
-  input_files = [ "region_search_untrusted.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-}
-
-grit("untrusted_resources") {
-  source = "$target_gen_dir/untrusted_resources.grd"
-  enable_input_discovery_for_gn_analyze = false
-  deps = [ ":build_untrusted_grd" ]
-  outputs = [
-    "grit/lens_untrusted_resources.h",
-    "grit/lens_untrusted_resources_map.cc",
-    "grit/lens_untrusted_resources_map.h",
-    "lens_untrusted_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
 }

@@ -6,6 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
@@ -13,6 +16,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/web_state.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 FullscreenMediator::FullscreenMediator(FullscreenController* controller,
                                        FullscreenModel* model)
@@ -117,6 +121,25 @@ void FullscreenMediator::FullscreenModelProgressUpdated(
   for (auto& observer : observers_) {
     observer.FullscreenProgressUpdated(controller_, model_->progress());
   }
+  if (should_record_metrics_) {
+    if (model_->progress() == 0) {
+      base::RecordAction(base::UserMetricsAction("MobileFullscreenEntered"));
+      should_record_metrics_ = false;
+    } else if (model_->progress() == 1) {
+      base::RecordAction(base::UserMetricsAction("MobileFullscreenExited"));
+
+      web::WebState* webState = resizer_.webState;
+      if (webState) {
+        ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
+        if (sourceID != ukm::kInvalidSourceId) {
+          ukm::builders::IOS_FullscreenActions(sourceID)
+              .SetHasExitedManually(false)
+              .Record(ukm::UkmRecorder::Get());
+        }
+      }
+      should_record_metrics_ = false;
+    }
+  }
 
   [resizer_ updateForCurrentState];
 }
@@ -136,6 +159,7 @@ void FullscreenMediator::FullscreenModelEnabledStateChanged(
 void FullscreenMediator::FullscreenModelScrollEventStarted(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
+  start_progress_ = model_->progress();
   StopAnimating(true /* update_model */);
   // Show the toolbars if the user begins a scroll past the bottom edge of the
   // screen and the toolbars have been fully collapsed.
@@ -149,9 +173,31 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
 void FullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  AnimateWithStyle(model_->progress() >= 0.5
-                       ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
-                       : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  should_record_metrics_ = true;
+  FullscreenAnimatorStyle animatorStyle;
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    AnimateWithStyle(model_->progress() >= 0.5
+                         ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
+                         : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
+  } else {
+    // Compute the direction to ensure to not enter fullscreen when the website
+    // is not long enough to have more than 0.5 progress and do not enter
+    // fullscreen when we scroll up.
+    float direction = model_->progress() - start_progress_;
+    animatorStyle = animator_.style;
+    if (model_->enabled() && model_->is_scrolled_to_bottom() &&
+        AreCGFloatsEqual(model_->progress(), 0.0) &&
+        model_->can_collapse_toolbar()) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+      base::RecordAction(
+          base::UserMetricsAction("MobileFullscreenExitedBottomReached"));
+    } else if (model_->progress() >= 0.5) {
+      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    } else if (direction < 0) {
+      animatorStyle = FullscreenAnimatorStyle::ENTER_FULLSCREEN;
+    }
+    AnimateWithStyle(animatorStyle);
+  }
 }
 
 void FullscreenMediator::FullscreenModelWasReset(FullscreenModel* model) {
@@ -200,6 +246,10 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
       return;
     mediator->model_->AnimationEndedWithProgress(final_progress);
     mediator->animator_ = nil;
+
+    for (auto& observer : mediator->observers_) {
+      observer.FullscreenDidAnimate(mediator->controller_, style);
+    }
   }];
 
   // Notify observers that the animation will occur.

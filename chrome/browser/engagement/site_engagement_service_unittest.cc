@@ -39,6 +39,7 @@
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/core/pref_names.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -137,7 +138,9 @@ class ObserverTester : public SiteEngagementObserver {
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
-                         EngagementType type) override {
+                         double old_score,
+                         EngagementType type,
+                         const std::optional<webapps::AppId>& app_id) override {
     EXPECT_EQ(web_contents_, web_contents);
     EXPECT_EQ(url_, url);
     EXPECT_DOUBLE_EQ(score_, score);
@@ -271,6 +274,15 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
                               const GURL& url,
                               double* score) {
     *score = SiteEngagementService::GetScoreFromSettings(settings_map, url);
+  }
+
+  void SetLastShortcutLaunchTime(content::WebContents* web_contents, GURL url) {
+    static const webapps::AppId kFakeAppId = "abcdefg";
+#if BUILDFLAG(IS_ANDROID)
+    service_->SetLastShortcutLaunchTime(web_contents, url);
+#else
+    service_->SetLastShortcutLaunchTime(web_contents, kFakeAppId, url);
+#endif
   }
 
   base::ScopedTempDir temp_dir_;
@@ -450,7 +462,7 @@ TEST_F(SiteEngagementServiceTest, GetTotalNotificationPoints) {
                                EngagementType::kNotificationInteraction, 4);
 }
 
-// TODO(https://crbug.com/1426914): Fix and enable this test.
+// TODO(crbug.com/40899584): Fix and enable this test.
 TEST_F(SiteEngagementServiceTest, DISABLED_RestrictedToHTTPAndHTTPS) {
   // The https and http versions of www.google.com should be separate.
   GURL url1("ftp://www.google.com/");
@@ -491,14 +503,14 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_EQ(0, service_->GetScore(url2));
   EXPECT_EQ(0, service_->GetScore(url3));
 
-  service_->SetLastShortcutLaunchTime(web_contents(), url2);
+  SetLastShortcutLaunchTime(web_contents(), url2);
   histograms.ExpectUniqueSample(SiteEngagementMetrics::kEngagementTypeHistogram,
                                 EngagementType::kWebappShortcutLaunch, 1);
 
   service_->AddPointsForTesting(url1, 2.0);
   service_->AddPointsForTesting(url2, 2.0);
   clock_.SetNow(current_day);
-  service_->SetLastShortcutLaunchTime(web_contents(), url2);
+  SetLastShortcutLaunchTime(web_contents(), url2);
 
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               4);
@@ -528,7 +540,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
 
-// TODO(https://crbug.com/1137759): Flaky test.
+// TODO(crbug.com/40724963): Flaky test.
 TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   base::HistogramTester histograms;
 
@@ -966,6 +978,23 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
   AssertInRange(0.6, service_->GetScore(url2));
 }
 
+// Tests behavior of CleanupEngagementScores() with a very short
+// DECAY_PERIOD_IN_HOURS.
+TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresShortDecayPeriod) {
+  SetParamValue(SiteEngagementScore::DECAY_PERIOD_IN_HOURS, 1);
+  SetParamValue(SiteEngagementScore::DECAY_POINTS, 0);
+  SetParamValue(SiteEngagementScore::LAST_ENGAGEMENT_GRACE_PERIOD_IN_HOURS, 0);
+
+  clock_.SetNow(GetReferenceTime());
+
+  GURL origin("http://www.google.com/");
+  service_->AddPointsForTesting(origin, 5);
+
+  clock_.Advance(base::Days(1));
+  service_->AddPointsForTesting(origin, 5);
+  EXPECT_EQ(10, service_->GetScore(origin));
+}
+
 TEST_F(SiteEngagementServiceTest, NavigationAccumulation) {
   GURL url("https://www.google.com/");
 
@@ -1338,7 +1367,7 @@ TEST_F(SiteEngagementServiceTest, Observers) {
   {
     ObserverTester tester(service_, web_contents(), url_score_5, 5.0,
                           EngagementType::kWebappShortcutLaunch);
-    service_->SetLastShortcutLaunchTime(web_contents(), url_score_5);
+    SetLastShortcutLaunchTime(web_contents(), url_score_5);
     tester.Wait();
 
     EXPECT_TRUE(tester.callback_called());
@@ -1623,12 +1652,43 @@ TEST_F(SiteEngagementServiceTest, GetAllDetailsIncludesBonusOnlyScores) {
   service_->ResetBaseScoreForURL(url1, 5);
 
   // Add a second site indirectly, via a shortcut launch.
-  service_->SetLastShortcutLaunchTime(web_contents(), url2);
+  SetLastShortcutLaunchTime(web_contents(), url2);
 
   // Verify that the URLs with engagement and a recent shortcut launch are
   // included.
   details = service_->GetAllDetails();
   EXPECT_EQ(2u, details.size());
+}
+
+TEST_F(SiteEngagementServiceTest, GetAllDetailsFilterByURLSets) {
+  GURL http_url("http://www.google.com/");
+  GURL webui_url("chrome://history");
+
+  EXPECT_EQ(0u, service_->GetAllDetails().size());
+
+  // Add a HTTP url.
+  service_->ResetBaseScoreForURL(http_url, 5);
+  // Add a WebUI url.
+  service_->ResetBaseScoreForURL(webui_url, 5);
+
+  {
+    // By default, GetAllDetails() returns http:// and https:// sites.
+    std::vector<mojom::SiteEngagementDetails> details =
+        service_->GetAllDetails();
+    EXPECT_EQ(1u, details.size());
+    EXPECT_EQ(http_url, details[0].origin);
+  }
+
+  {
+    // Request scores from both HTTP and WebUI sites.
+    std::vector<mojom::SiteEngagementDetails> details = service_->GetAllDetails(
+        site_engagement::SiteEngagementService::URLSets::HTTP |
+        site_engagement::SiteEngagementService::URLSets::WEB_UI);
+    EXPECT_EQ(2u, details.size());
+    EXPECT_TRUE(http_url == details[0].origin || http_url == details[1].origin);
+    EXPECT_TRUE(webui_url == details[0].origin ||
+                webui_url == details[1].origin);
+  }
 }
 
 }  // namespace site_engagement

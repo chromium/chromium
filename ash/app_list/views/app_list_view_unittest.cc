@@ -609,10 +609,10 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   void SimulateKeyPress(ui::KeyboardCode key_code,
                         bool shift_down,
                         bool ctrl_down = false) {
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, key_code,
-                           shift_down
-                               ? ui::EF_SHIFT_DOWN
-                               : ctrl_down ? ui::EF_CONTROL_DOWN : ui::EF_NONE);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, key_code,
+                           shift_down  ? ui::EF_SHIFT_DOWN
+                           : ctrl_down ? ui::EF_CONTROL_DOWN
+                                       : ui::EF_NONE);
     view_->GetWidget()->OnKeyEvent(&key_event);
   }
 
@@ -1121,11 +1121,11 @@ TEST_F(AppListViewFocusTest, SetFocusOnSearchboxWhenActivated) {
   EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
 
   // Activate the search box.
-  search_box_view()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  search_box_view()->SetSearchBoxActive(true, ui::EventType::kMousePressed);
   EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
 
   // Deactivate the search box won't move focus away.
-  search_box_view()->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+  search_box_view()->SetSearchBoxActive(false, ui::EventType::kMousePressed);
   EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
 }
 
@@ -1234,7 +1234,7 @@ TEST_F(AppListViewFocusTest, SelectionDoesNotShowInFolderIfNotSelected) {
       folder_item_view()->bounds().CenterPoint();
   ui::GestureEvent tap(folder_item_view_bounds.x(), folder_item_view_bounds.y(),
                        0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+                       ui::GestureEventDetails(ui::EventType::kGestureTap));
   folder_item_view()->OnGestureEvent(&tap);
   ASSERT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
 
@@ -1265,7 +1265,7 @@ TEST_F(AppListViewFocusTest, SelectionGoesIntoFolderIfSelected) {
       folder_item_view()->bounds().CenterPoint();
   ui::GestureEvent tap(folder_item_view_bounds.x(), folder_item_view_bounds.y(),
                        0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+                       ui::GestureEventDetails(ui::EventType::kGestureTap));
   folder_item_view()->OnGestureEvent(&tap);
   ASSERT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
 
@@ -1448,7 +1448,8 @@ TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
   EXPECT_TRUE(main_view->contents_view()->IsStateActive(
       ash::AppListState::kStateSearchResults));
 
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                         ui::EF_NONE);
   main_view->contents_view()->GetWidget()->OnKeyEvent(&key_event);
 
   EXPECT_TRUE(
@@ -1532,8 +1533,9 @@ TEST_F(AppListViewTest, ShowContextMenuBetweenAppsInTabletMode) {
 
   // Tap between two apps in tablet mode.
   const gfx::Point middle = GetPointBetweenTwoApps();
-  ui::GestureEvent tap(middle.x(), middle.y(), 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TWO_FINGER_TAP));
+  ui::GestureEvent tap(
+      middle.x(), middle.y(), 0, base::TimeTicks(),
+      ui::GestureEventDetails(ui::EventType::kGestureTwoFingerTap));
   view_->OnGestureEvent(&tap);
 
   // The wallpaper context menu should show.
@@ -1542,11 +1544,11 @@ TEST_F(AppListViewTest, ShowContextMenuBetweenAppsInTabletMode) {
 
   // Click between two apps in tablet mode.
   ui::MouseEvent click_mouse_event(
-      ui::ET_MOUSE_PRESSED, middle, middle, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, middle, middle, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON);
   view_->OnMouseEvent(&click_mouse_event);
   ui::MouseEvent release_mouse_event(
-      ui::ET_MOUSE_RELEASED, middle, middle, ui::EventTimeForNow(),
+      ui::EventType::kMouseReleased, middle, middle, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON);
   view_->OnMouseEvent(&release_mouse_event);
 
@@ -1627,7 +1629,7 @@ TEST_F(AppListViewTest, CloseFolderByClickingBackground) {
   EXPECT_TRUE(apps_container_view->IsInFolderView());
 
   // Simulate mouse press on folder background to close the folder.
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   apps_container_view->folder_background_view()->OnMouseEvent(&event);

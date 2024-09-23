@@ -26,7 +26,6 @@ component("auth") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-    "//chromeos/ash/components/login/hibernate:hibernate_manager",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/metrics",
     "//chromeos/dbus/constants",

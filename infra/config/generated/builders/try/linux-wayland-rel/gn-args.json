@@ -11,8 +11,11 @@
     "ozone_platform_wayland": true,
     "proprietary_codecs": true,
     "symbol_level": 0,
+    "target_cpu": "x64",
+    "target_os": "linux",
     "use_bundled_weston": true,
     "use_clang_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

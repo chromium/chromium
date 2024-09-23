@@ -113,7 +113,7 @@ class BlobDataHandleTest : public testing::Test {
     empty_blob_ = BlobDataHandle::Create();
 
     auto test_data = std::make_unique<BlobData>();
-    test_data->AppendBytes(large_test_data_.data(), large_test_data_.size());
+    test_data->AppendBytes(large_test_data_);
     test_blob_ =
         BlobDataHandle::Create(std::move(test_data), large_test_data_.size());
 
@@ -299,7 +299,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
 
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(small_test_data_.data(), 0);
+  data->AppendBytes(base::span(small_test_data_).subspan(0, 0));
   data->AppendBlob(empty_blob_, 0, 0);
 
   TestCreateBlob(std::move(data), {});
@@ -307,7 +307,7 @@ TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
 
 TEST_F(BlobDataHandleTest, CreateFromSmallBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
+  data->AppendBytes(small_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(ExpectedElement::EmbeddedBytes(small_test_data_));
@@ -317,7 +317,7 @@ TEST_F(BlobDataHandleTest, CreateFromSmallBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromLargeBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(large_test_data_.data(), large_test_data_.size());
+  data->AppendBytes(large_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(ExpectedElement::LargeBytes(large_test_data_));
@@ -327,8 +327,8 @@ TEST_F(BlobDataHandleTest, CreateFromLargeBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromMergedBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(medium_test_data_.data(), medium_test_data_.size());
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
+  data->AppendBytes(medium_test_data_);
+  data->AppendBytes(small_test_data_);
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = medium_test_data_;
@@ -343,8 +343,8 @@ TEST_F(BlobDataHandleTest, CreateFromMergedBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromMergedLargeAndSmallBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(large_test_data_.data(), large_test_data_.size());
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
+  data->AppendBytes(large_test_data_);
+  data->AppendBytes(small_test_data_);
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = large_test_data_;
@@ -359,8 +359,8 @@ TEST_F(BlobDataHandleTest, CreateFromMergedLargeAndSmallBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromMergedSmallAndLargeBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
-  data->AppendBytes(large_test_data_.data(), large_test_data_.size());
+  data->AppendBytes(small_test_data_);
+  data->AppendBytes(large_test_data_);
   EXPECT_EQ(1u, data->ElementsForTesting().size());
 
   Vector<uint8_t> expected_data = small_test_data_;
@@ -386,11 +386,11 @@ TEST_F(BlobDataHandleTest, CreateFromBlob) {
 TEST_F(BlobDataHandleTest, CreateFromBlobsAndBytes) {
   auto data = std::make_unique<BlobData>();
   data->AppendBlob(test_blob_, 10, 10);
-  data->AppendBytes(medium_test_data_.data(), medium_test_data_.size());
+  data->AppendBytes(medium_test_data_);
   data->AppendBlob(test_blob_, 0, 0);
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
+  data->AppendBytes(small_test_data_);
   data->AppendBlob(test_blob_, 0, 10);
-  data->AppendBytes(large_test_data_.data(), large_test_data_.size());
+  data->AppendBytes(large_test_data_);
 
   Vector<uint8_t> expected_data = medium_test_data_;
   expected_data.AppendVector(small_test_data_);
@@ -407,9 +407,9 @@ TEST_F(BlobDataHandleTest, CreateFromBlobsAndBytes) {
 
 TEST_F(BlobDataHandleTest, CreateFromSmallBytesAfterLargeBytes) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(large_test_data_.data(), large_test_data_.size());
+  data->AppendBytes(large_test_data_);
   data->AppendBlob(test_blob_, 0, 10);
-  data->AppendBytes(small_test_data_.data(), small_test_data_.size());
+  data->AppendBytes(small_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(ExpectedElement::LargeBytes(large_test_data_));
@@ -423,11 +423,11 @@ TEST_F(BlobDataHandleTest, CreateFromManyMergedBytes) {
   auto data = std::make_unique<BlobData>();
   Vector<uint8_t> merged_data;
   while (merged_data.size() <= DataElementBytes::kMaximumEmbeddedDataSize) {
-    data->AppendBytes(medium_test_data_.data(), medium_test_data_.size());
+    data->AppendBytes(medium_test_data_);
     merged_data.AppendVector(medium_test_data_);
   }
   data->AppendBlob(test_blob_, 0, 10);
-  data->AppendBytes(medium_test_data_.data(), medium_test_data_.size());
+  data->AppendBytes(medium_test_data_);
 
   Vector<ExpectedElement> expected_elements;
   expected_elements.push_back(

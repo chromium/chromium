@@ -17,6 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 
 #include "base/notreached.h"
@@ -27,11 +32,11 @@
 namespace blink {
 
 // Helper class that coalesces writes to a SVGPathByteStream to a local buffer.
-class CoalescingBuffer {
+class SVGPathByteStreamBuilder::CoalescingBuffer {
  public:
-  CoalescingBuffer(SVGPathByteStream& byte_stream)
-      : current_offset_(0), byte_stream_(byte_stream) {}
-  ~CoalescingBuffer() { byte_stream_.Append(bytes_, current_offset_); }
+  explicit CoalescingBuffer(SVGPathByteStreamBuilderStorage& result)
+      : current_offset_(0), result_(result) {}
+  ~CoalescingBuffer() { result_.Append(bytes_, current_offset_); }
 
   template <typename DataType>
   void WriteType(DataType value) {
@@ -56,15 +61,13 @@ class CoalescingBuffer {
   // Currently a cubic segment.
   wtf_size_t current_offset_;
   unsigned char bytes_[sizeof(uint16_t) + sizeof(gfx::PointF) * 3];
-  SVGPathByteStream& byte_stream_;
+  SVGPathByteStreamBuilderStorage& result_;
 };
 
-SVGPathByteStreamBuilder::SVGPathByteStreamBuilder(
-    SVGPathByteStream& byte_stream)
-    : byte_stream_(byte_stream) {}
+SVGPathByteStreamBuilder::SVGPathByteStreamBuilder() = default;
 
 void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
-  CoalescingBuffer buffer(byte_stream_);
+  CoalescingBuffer buffer(result_);
   buffer.WriteSegmentType(segment.command);
 
   switch (segment.command) {
@@ -111,8 +114,12 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
       buffer.WritePoint(segment.target_point);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
+}
+
+SVGPathByteStream SVGPathByteStreamBuilder::CopyByteStream() {
+  return SVGPathByteStream(result_);
 }
 
 }  // namespace blink

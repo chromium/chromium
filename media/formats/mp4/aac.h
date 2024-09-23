@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
@@ -27,6 +28,12 @@ namespace mp4 {
 // for more details.
 class MEDIA_EXPORT AAC {
  public:
+  // AAC has a few nested profile types, and we often have to add special
+  // behavior for XHE AAC typed media. Specifically, this is the USAC
+  // Audio-Object type from
+  // https://wiki.multimedia.cx/index.php/MPEG-4_Audio#Audio_Object_Types.
+  static constexpr uint8_t kXHeAAcType = 42;
+
   AAC();
   AAC(const AAC& other);
   ~AAC();
@@ -51,21 +58,12 @@ class MEDIA_EXPORT AAC {
   // AudioDecoderConfig.
   ChannelLayout GetChannelLayout(bool sbr_in_mimetype) const;
 
-  // This function converts a raw AAC frame into an AAC frame with an ADTS
-  // header. On success, the function returns true, stores the converted data
-  // in the `buffer`, and sets the header size in `adts_header_size`. Otherwise
-  // the function returns false and leaves the `buffer` and `adts_header_size`
-  // unchanged.
-  bool ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
-                         int* adts_header_size) const;
-
   // Converts a raw AAC frame into an AAC frame with an ADTS header. Allocates
   // new memory and copies the data from `buffer`, with the appropriate ADTS
   // header. The size of the returned array is `buffer.size` +
-  // `adts_header_size`. Returns nullptr on failure.
-  std::unique_ptr<uint8_t[]> CreateAdtsFromEsds(
-      base::span<const uint8_t> buffer,
-      int* adts_header_size);
+  // `adts_header_size`. Returns an empty HeapArray<uint8_t> on failure.
+  base::HeapArray<uint8_t> CreateAdtsFromEsds(base::span<const uint8_t> buffer,
+                                              int* adts_header_size) const;
 
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;

@@ -303,6 +303,7 @@ testing/data/move_caret.html
 testing/data/move_range.html
 testing/data/move_range_selection_extent.html
 testing/data/move_range_selection_extent_input_field.html
+testing/data/named-frame-a-b-c.html
 testing/data/navigate_to_same.html
 testing/data/navigation-api/onnavigate-preventDefault.html
 testing/data/navigation-api/onnavigate-window-stop.html
@@ -406,6 +407,7 @@ testing/data/priorities/injected-async.js
 testing/data/priorities/injected.js
 testing/data/promote_img_in_viewport_priority.html
 testing/data/push_state.html
+testing/data/push_state_empty.html
 testing/data/reload_post.html
 testing/data/resize_scroll_fixed_layout.html
 testing/data/resize_scroll_fixed_width.html
@@ -451,6 +453,7 @@ testing/data/smartclip_reversed_positions.html
 testing/data/smartclip_user_select_none.html
 testing/data/sometext.html
 testing/data/specify_size.html
+testing/data/speculation_rules/document_rule_prefetch.json
 testing/data/speculation_rules/single_url_prefetch.json
 testing/data/speculation_rules/single_url_prefetch_invalid_no_vary_search_hint.json
 testing/data/speculation_rules/single_url_prefetch_not_a_string_no_vary_search_hint.json

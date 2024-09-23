@@ -33,6 +33,11 @@ found in the LICENSE file.
         android:title="@string/clear_cache_title" />
 
     <org.chromium.chrome.browser.browsing_data.ClearBrowsingDataCheckBoxPreference
+        android:key="clear_tabs_checkbox"
+        android:persistent="false"
+        android:title="@string/clear_tabs_title" />
+
+    <org.chromium.chrome.browser.browsing_data.ClearBrowsingDataCheckBoxPreference
         android:key="clear_passwords_checkbox"
         android:persistent="false"
         android:title="@string/clear_passwords_title" />

@@ -9,11 +9,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/sharing/proto/optimization_guide_push_notification.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "components/optimization_guide/core/mock_push_notification_manager.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
+#include "components/sharing_message/proto/optimization_guide_push_notification.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,14 +38,14 @@ class OptimizationGuideMessageHandlerTest : public testing::Test {
   }
 
   // Build a SharingMessage proto.
-  chrome_browser_sharing::SharingMessage BuildMessage(
+  components_sharing_message::SharingMessage BuildMessage(
       const std::string& hint_notification_payload_bytes) {
-    chrome_browser_sharing::OptimizationGuidePushNotification*
+    components_sharing_message::OptimizationGuidePushNotification*
         opt_guide_push_notification =
-            new chrome_browser_sharing::OptimizationGuidePushNotification;
+            new components_sharing_message::OptimizationGuidePushNotification;
     opt_guide_push_notification->set_hint_notification_payload_bytes(
         hint_notification_payload_bytes);
-    chrome_browser_sharing::SharingMessage sharing_message;
+    components_sharing_message::SharingMessage sharing_message;
     sharing_message.set_allocated_optimization_guide_push_notification(
         opt_guide_push_notification);
     return sharing_message;
@@ -59,7 +59,7 @@ class OptimizationGuideMessageHandlerTest : public testing::Test {
     return bytes;
   }
 
-  void OnMessage(const chrome_browser_sharing::SharingMessage& message) {
+  void OnMessage(const components_sharing_message::SharingMessage& message) {
     base::MockCallback<SharingMessageHandler::DoneCallback> callback;
     EXPECT_CALL(callback, Run(_));
     message_handler_->OnMessage(message, callback.Get());

@@ -19,7 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -46,6 +46,7 @@ namespace ash {
 
 class HoldingSpaceDownloadsDelegate;
 class HoldingSpaceKeyedServiceDelegate;
+class HoldingSpaceSuggestionsDelegate;
 
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
@@ -96,6 +97,15 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
+  // Refreshes suggestions. Note that this intentionally does *not* invalidate
+  // the file suggest service's item suggest cache which is too expensive for
+  // holding space to invalidate.
+  void RefreshSuggestions();
+
+  // Removes suggestions associated with the specified `absolute_file_paths`.
+  void RemoveSuggestions(
+      const std::vector<base::FilePath>& absolute_file_paths);
+
   // Replaces the existing suggestions with `suggestions`. The order among
   // `suggestions` is respected, which means that if a suggestion A is in front
   // of a suggestion B in the given array, after calling this function, the
@@ -125,6 +135,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
       HoldingSpaceImage::PlaceholderImageSkiaResolver
           placeholder_image_skia_resolver = base::NullCallback());
+
+  // Returns whether a holding space item exists for the specified `id`.
+  bool ContainsItem(const std::string& id) const;
 
   // Returns an object which, upon its destruction, performs an atomic update to
   // the holding space item associated with the specified `id`. Returns
@@ -229,6 +242,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
 
   // The delegate, owned by `delegates_`, responsible for downloads.
   raw_ptr<HoldingSpaceDownloadsDelegate> downloads_delegate_ = nullptr;
+
+  // The delegate, owned by `delegates_`, responsible for suggestions.
+  raw_ptr<HoldingSpaceSuggestionsDelegate> suggestions_delegate_ = nullptr;
 
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.

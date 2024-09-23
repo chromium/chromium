@@ -1,0 +1,30 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/settings/pages/storage",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/borealis",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
+  "+chrome/browser/ui/webui/ash/settings/calculator",
+  "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
+  "+chrome/browser/ui/webui/ash/settings/pages/storage",
+  "+chrome/browser/ui/webui/ash/settings/search",
+  "+chrome/browser/ui/webui/settings",
+  "+chrome/browser/ui/webui/webui_util.h",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test",
+]

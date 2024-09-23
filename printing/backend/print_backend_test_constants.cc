@@ -5,6 +5,7 @@
 #include "printing/backend/print_backend_test_constants.h"
 
 #include <optional>
+
 #include "printing/backend/print_backend.h"
 
 namespace printing {

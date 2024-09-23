@@ -153,8 +153,8 @@ TEST_F(DriverTransportTest, Transmit) {
   auto [a, b] = CreateTransportPair(kTransport0, kTransport1);
 
   test::msg::BasicTestMessage message;
-  message.params().foo = 5;
-  message.params().bar = 7;
+  message.v0()->foo = 5;
+  message.v0()->bar = 7;
 
   EXPECT_CALL(driver(), Transmit(kTransport0, message.data_view().data(),
                                  message.data_view().size(), _, _, _, _))
@@ -175,7 +175,7 @@ TEST_F(DriverTransportTest, SerializationFailure) {
 
   constexpr IpczDriverHandle kFakeObject = 12345678;
   test::msg::MessageWithDriverObject message;
-  message.params().object =
+  message.v0()->object =
       message.AppendDriverObject(DriverObject(test::kMockDriver, kFakeObject));
 
   EXPECT_CALL(driver(), Serialize(kFakeObject, kTransport0, _, _, _, _, _, _))

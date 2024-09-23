@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
@@ -57,7 +58,8 @@ class BruschettaInstallerView
   bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
 
   // bruschetta::BruschettaInstaller::Observer implementation.
   void StateChanged(InstallerState state) override;
@@ -98,7 +100,8 @@ class BruschettaInstallerView
   int GetCurrentDialogButtons() const;
 
   // Returns the label for a dialog |button|, based on the current |state_|.
-  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(
+      ui::mojom::DialogButton button) const;
 
   // views::DialogDelegateView implementation.
   void AddedToWidget() override;

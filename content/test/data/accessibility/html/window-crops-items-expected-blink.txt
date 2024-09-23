@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++button size=(300, 150) name='Button fits'
 ++++++++staticText name='Button fits'
 ++++++++++inlineTextBox name='Button fits'

@@ -48,13 +48,14 @@ export class FocusHistory {
     }
     const cache = new SACache();
     // Create a list of ancestors.
-    const ancestorStack: Array<AutomationNode|SAChildNode|SARootNode> = [node];
+    const ancestorStack: AutomationNode[] = [node];
     while (node.parent) {
       ancestorStack.push(node.parent);
       node = node.parent;
     }
 
-    let group: SARootNode = DesktopNode.build(ancestorStack.pop());
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    let group: SARootNode = DesktopNode.build(ancestorStack.pop()!);
     const firstAncestor = ancestorStack[ancestorStack.length - 1];
     if (!SwitchAccessPredicate.isInterestingSubtree(firstAncestor, cache)) {
       // If the topmost ancestor (other than the desktop) is entirely

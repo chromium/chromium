@@ -5,6 +5,7 @@
 module device.mojom;
 
 import "services/device/public/mojom/geolocation.mojom";
+import "services/device/public/mojom/geolocation_client_id.mojom";
 import "services/device/public/mojom/geoposition.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -16,7 +17,8 @@ interface GeolocationContext {
   // Creates a Geolocation instance bound to `receiver`.
   // `requesting_url` is the URL of the top-level frame that made the request.
   BindGeolocation(pending_receiver<Geolocation> receiver,
-                  url.mojom.Url requesting_url);
+                  url.mojom.Url requesting_url,
+                  GeolocationClientId client_id);
 
   // Called when an origin has lost permission to access geolocation.
   // Unbinds all Geolocation instances that were bound from the origin.

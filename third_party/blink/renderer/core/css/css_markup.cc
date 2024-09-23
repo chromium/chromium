@@ -26,6 +26,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/css_markup.h"
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
@@ -46,23 +51,24 @@ static bool IsCSSTokenizerIdentifier(const StringView& string) {
     return false;
   }
 
-  return WTF::VisitCharacters(string, [](const auto* chars, unsigned length) {
-    const auto* end = chars + length;
+  return WTF::VisitCharacters(string, [](auto chars) {
+    const auto* p = chars.data();
+    const auto* end = p + chars.size();
 
     // -?
-    if (chars != end && chars[0] == '-') {
-      ++chars;
+    if (p != end && p[0] == '-') {
+      ++p;
     }
 
     // {nmstart}
-    if (chars == end || !IsNameStartCodePoint(chars[0])) {
+    if (p == end || !IsNameStartCodePoint(p[0])) {
       return false;
     }
-    ++chars;
+    ++p;
 
     // {nmchar}*
-    for (; chars != end; ++chars) {
-      if (!IsNameCodePoint(chars[0])) {
+    for (; p != end; ++p) {
+      if (!IsNameCodePoint(p[0])) {
         return false;
       }
     }

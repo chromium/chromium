@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -38,6 +39,7 @@ class OptimizationGuideLogger {
         int source_line,
         const std::string& message) = 0;
   };
+  static OptimizationGuideLogger* GetInstance();
   OptimizationGuideLogger();
   ~OptimizationGuideLogger();
 
@@ -54,6 +56,10 @@ class OptimizationGuideLogger {
 
   // Whether debug logs should allowed to be recorded.
   bool ShouldEnableDebugLogs() const;
+
+  base::WeakPtr<OptimizationGuideLogger> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Class that builds the log message and used when debugging is enabled via
   // command-line switch or the internals page.
@@ -89,6 +95,7 @@ class OptimizationGuideLogger {
 
  private:
   friend class optimization_guide::ModelExecutionInternalsPageBrowserTest;
+  friend class NewTabPageUtilBrowserTest;
 
   struct LogMessage {
     LogMessage(base::Time event_time,
@@ -111,6 +118,8 @@ class OptimizationGuideLogger {
   base::ObserverList<OptimizationGuideLogger::Observer> observers_;
 
   bool command_line_flag_enabled_ = false;
+
+  base::WeakPtrFactory<OptimizationGuideLogger> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_LOGGER_H_

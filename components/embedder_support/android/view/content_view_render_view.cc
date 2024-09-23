@@ -13,13 +13,15 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "cc/slim/layer.h"
-#include "components/embedder_support/android/view_jni_headers/ContentViewRenderView_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/view_jni_headers/ContentViewRenderView_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

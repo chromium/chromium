@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/base/models/image_model.h"
 
@@ -39,6 +39,11 @@ std::u16string TestToolbarActionViewController::GetActionName() const {
   return action_name_;
 }
 
+std::u16string TestToolbarActionViewController::GetActionTitle(
+    content::WebContents* web_contents) const {
+  return action_title_;
+}
+
 std::u16string TestToolbarActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   return accessible_name_;
@@ -67,11 +72,6 @@ bool TestToolbarActionViewController::IsEnabled(
 
 bool TestToolbarActionViewController::IsShowingPopup() const {
   return popup_showing_;
-}
-
-bool TestToolbarActionViewController::ShouldShowSiteAccessRequestInToolbar(
-    content::WebContents* web_contents) const {
-  return false;
 }
 
 void TestToolbarActionViewController::HidePopup() {
@@ -115,6 +115,12 @@ void TestToolbarActionViewController::ShowPopup(bool by_user) {
 void TestToolbarActionViewController::SetActionName(
     const std::u16string& name) {
   action_name_ = name;
+  UpdateDelegate();
+}
+
+void TestToolbarActionViewController::SetActionTitle(
+    const std::u16string& title) {
+  action_title_ = title;
   UpdateDelegate();
 }
 

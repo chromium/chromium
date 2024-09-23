@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -49,15 +48,6 @@ FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
         FontUniqueNameLookup::GetPlatformUniqueNameLookup();
   }
   return Get().font_unique_name_lookup_.get();
-}
-
-HarfBuzzFontCache& FontGlobalContext::GetHarfBuzzFontCache() {
-  std::unique_ptr<HarfBuzzFontCache>& global_context_harfbuzz_font_cache =
-      Get().harfbuzz_font_cache_;
-  if (!global_context_harfbuzz_font_cache) {
-    global_context_harfbuzz_font_cache = std::make_unique<HarfBuzzFontCache>();
-  }
-  return *global_context_harfbuzz_font_cache;
 }
 
 IdentifiableToken FontGlobalContext::GetOrComputeTypefaceDigest(

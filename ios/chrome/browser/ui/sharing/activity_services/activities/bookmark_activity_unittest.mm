@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -50,12 +51,11 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
 
   // Creates a BookmarkActivity instance with the given `URL`.
   BookmarkActivity* CreateActivity(const GURL& URL) {
-    return
-        [[BookmarkActivity alloc] initWithURL:URL
-                                        title:kTestTitle
-                                bookmarkModel:local_or_syncable_bookmark_model_
-                                      handler:mocked_handler_
-                                  prefService:&testing_pref_service_];
+    return [[BookmarkActivity alloc] initWithURL:URL
+                                           title:kTestTitle
+                                   bookmarkModel:bookmark_model_
+                                         handler:mocked_handler_
+                                     prefService:&testing_pref_service_];
   }
 
   TestingPrefServiceSimple testing_pref_service_;
@@ -95,21 +95,21 @@ TEST_F(BookmarkActivityTest, ActivityTitle_AddBookmark) {
 
   NSString* addBookmarkString =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS);
-  EXPECT_TRUE([addBookmarkString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(addBookmarkString, activity.activityTitle);
 }
 
 // Tests that the title of the activity is edit when URL is already bookmarked.
 TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   // Add a bookmark.
-  const bookmarks::BookmarkNode* bookmark = AddBookmark(
-      local_or_syncable_bookmark_model_->mobile_node(), u"activity_test");
-  ASSERT_TRUE(local_or_syncable_bookmark_model_->IsBookmarked(bookmark->url()));
+  const bookmarks::BookmarkNode* bookmark =
+      AddBookmark(bookmark_model_->mobile_node(), u"activity_test");
+  ASSERT_TRUE(bookmark_model_->IsBookmarked(bookmark->url()));
 
   BookmarkActivity* activity = CreateActivity(bookmark->url());
 
   NSString* editBookmarkString =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK);
-  EXPECT_TRUE([editBookmarkString isEqualToString:activity.activityTitle]);
+  EXPECT_NSEQ(editBookmarkString, activity.activityTitle);
 }
 
 TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {

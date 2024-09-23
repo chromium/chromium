@@ -77,14 +77,13 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemImpl
                   const base::FilePath& new_path,
                   RenameFileCallback callback) override;
   void LockFile(const base::FilePath& path, LockFileCallback callback) override;
-  void SetOpenedFileLength(base::File file,
-                           uint64_t length,
-                           SetOpenedFileLengthCallback callback) override;
 
-  // Helper used by LockFile() and FilesystemProxy::LockFile() for in
-  // unrestricted mode.
+  // Helper used by `LockFile()` and `FilesystemProxy::LockFile()` for in
+  // unrestricted mode. See `FileSystemProxy::LockFile()` for
+  // `same_process_failure` docs.
   static base::FileErrorOr<base::File> LockFileLocal(
-      const base::FilePath& path);
+      const base::FilePath& path,
+      bool* same_process_failure);
   static void UnlockFileLocal(const base::FilePath& path);
 
   // Helper used by GetPathAccess() and FilesystemProxy::GetPathAccess.

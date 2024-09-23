@@ -17,8 +17,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/configuration_provider.h"
+#include "components/feature_engagement/public/default_session_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -37,6 +39,11 @@ class ProtoDatabaseProvider;
 namespace feature_engagement {
 
 class Configuration;
+class Tracker;
+class SessionController;
+
+// Creates a Tracker that is usable for a demo mode.
+std::unique_ptr<Tracker> CreateDemoModeTracker(std::string chosen_feature_name);
 
 // A handle for the display lock. While this is unreleased, no in-product help
 // can be displayed.
@@ -153,10 +160,11 @@ class Tracker : public KeyedService, public base::SupportsUserData {
       const base::FilePath& storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
-      base::WeakPtr<TrackerEventExporter> event_exporter,
+      std::unique_ptr<TrackerEventExporter> event_exporter,
       const ConfigurationProviderList& configuration_providers =
-          GetDefaultConfigurationProviders());
-
+          GetDefaultConfigurationProviders(),
+      std::unique_ptr<SessionController> session_controller =
+          std::make_unique<DefaultSessionController>());
   // Possibly adds a command line argument for a child browser process to
   // communicate what IPH are allowed in a testing environment. Has no effect if
   // IPH behavior is not being modified for testing. If specific IPH features
@@ -294,13 +302,23 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // invoked exactly one time.
   virtual void AddOnInitializedCallback(OnInitializedCallback callback) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Updates the config of a specific feature after initialization. The new
+  // config will replace the existing cofig.
+  // Calling this method requires the Tracker to already have been initialized.
+  // See IsInitialized() and AddOnInitializedCallback(...) for how to ensure
+  // the call to this is delayed.
+  virtual void UpdateConfig(const base::Feature& feature,
+                            const ConfigurationProvider* provider) = 0;
+#endif
+
   // Returns the configuration associated with the tracker for testing purposes.
   virtual const Configuration* GetConfigurationForTesting() const = 0;
 
   // Set a testing clock for the tracker. It's recommended to use a
   // SimpleTestClock, so we can advacne the clock in test.
   virtual void SetClockForTesting(const base::Clock& clock,
-                                  base::Time& initial_now) = 0;
+                                  base::Time initial_now) = 0;
 
   // Returns the default set of configuration providers.
   static ConfigurationProviderList GetDefaultConfigurationProviders();

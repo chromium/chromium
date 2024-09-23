@@ -48,7 +48,6 @@ class CORE_EXPORT SharedWorkerThread : public WorkerThread {
   WorkerBackingThread& GetWorkerBackingThread() override {
     return *worker_backing_thread_;
   }
-  void ClearWorkerBackingThread() override;
 
  private:
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(

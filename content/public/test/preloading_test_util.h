@@ -138,6 +138,8 @@ class PreloadingConfigOverride {
   raw_ptr<PreloadingConfig> overridden_config_;
 };
 
+void SetHasSpeculationRulesPrerender(PreloadingData* preloading_data);
+
 }  // namespace test
 }  // namespace content
 

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -46,28 +47,32 @@ constexpr uint32_t BackgroundTabLoadingPolicy::kMinSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kMaxSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kCoresPerSimultaneousTabLoad;
 
-BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
-    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
-                                      bool has_notification_permission)
+BackgroundTabLoadingPolicy::PageNodeData::PageNodeData(
+    base::WeakPtr<PageNode> page_node,
+    GURL main_frame_url,
+    blink::mojom::PermissionStatus notification_permission_status)
     : page_node(std::move(page_node)),
-      has_notification_permission(has_notification_permission) {}
+      main_frame_url(std::move(main_frame_url)),
+      notification_permission_status(notification_permission_status) {}
 
-BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
-    PageNodeAndNotificationPermission(
-        const PageNodeAndNotificationPermission&
-            page_node_and_notification_permission) = default;
-
-BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
-    ~PageNodeAndNotificationPermission() = default;
+BackgroundTabLoadingPolicy::PageNodeData::PageNodeData(PageNodeData&& other) =
+    default;
+BackgroundTabLoadingPolicy::PageNodeData&
+BackgroundTabLoadingPolicy::PageNodeData::operator=(PageNodeData&& other) =
+    default;
+BackgroundTabLoadingPolicy::PageNodeData::PageNodeData(
+    const PageNodeData& other) = default;
+BackgroundTabLoadingPolicy::PageNodeData&
+BackgroundTabLoadingPolicy::PageNodeData::operator=(const PageNodeData& other) =
+    default;
+BackgroundTabLoadingPolicy::PageNodeData::~PageNodeData() = default;
 
 void ScheduleLoadForRestoredTabs(
     std::vector<content::WebContents*> web_contents_vector) {
   DCHECK(!web_contents_vector.empty());
 
-  std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
-      page_node_and_notification_permission_vector;
-  page_node_and_notification_permission_vector.reserve(
-      web_contents_vector.size());
+  std::vector<BackgroundTabLoadingPolicy::PageNodeData> page_node_data_vector;
+  page_node_data_vector.reserve(web_contents_vector.size());
   for (content::WebContents* content : web_contents_vector) {
     content::PermissionController* permission_controller =
         content->GetBrowserContext()->GetPermissionController();
@@ -78,33 +83,26 @@ void ScheduleLoadForRestoredTabs(
     DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
     DCHECK_NE(content->GetLastCommittedURL(), GURL());
 
-    bool has_notifications_permission =
+    page_node_data_vector.emplace_back(
+        PerformanceManager::GetPrimaryPageNodeForWebContents(content),
+        content->GetLastCommittedURL(),
         permission_controller
             ->GetPermissionResultForOriginWithoutContext(
                 blink::PermissionType::NOTIFICATIONS,
                 url::Origin::Create(content->GetLastCommittedURL()))
-            .status == blink::mojom::PermissionStatus::GRANTED;
-
-    BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
-        page_node_and_notification_permission(
-            PerformanceManager::GetPrimaryPageNodeForWebContents(content),
-            has_notifications_permission);
-
-    page_node_and_notification_permission_vector.push_back(
-        page_node_and_notification_permission);
+            .status);
   }
+
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
-          [](std::vector<
-                 BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
-                 page_node_and_notification_permission_vector,
+          [](std::vector<BackgroundTabLoadingPolicy::PageNodeData>
+                 page_node_data_vector,
              performance_manager::Graph* graph) {
             BackgroundTabLoadingPolicy::GetInstance()
-                ->ScheduleLoadForRestoredTabs(
-                    std::move(page_node_and_notification_permission_vector));
+                ->ScheduleLoadForRestoredTabs(std::move(page_node_data_vector));
           },
-          std::move(page_node_and_notification_permission_vector)));
+          std::move(page_node_data_vector)));
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
@@ -177,7 +175,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
       // initiated but hasn't started.
       const bool erased =
           ErasePageNodeToLoadData(page_node) ||
-          base::Erase(page_nodes_load_initiated_, page_node) != 0;
+          std::erase(page_nodes_load_initiated_, page_node) != 0;
 
       // Keep track of all PageNodes that are loading, even when the load isn't
       // initiated by this policy.
@@ -209,20 +207,27 @@ void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
 }
 
 void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
-    std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
-        page_node_and_permission_vector) {
+    std::vector<BackgroundTabLoadingPolicy::PageNodeData>
+        page_node_data_vector) {
   has_restored_tabs_to_load_ = true;
 
   const size_t page_nodes_to_load_initial_size = page_nodes_to_load_.size();
 
-  for (auto page_node_and_permission : page_node_and_permission_vector) {
-    PageNode* page_node = page_node_and_permission.page_node.get();
+  for (const auto& page_node_data : page_node_data_vector) {
+    PageNode* page_node = page_node_data.page_node.get();
     if (!page_node)
       continue;
 
     DCHECK_EQ(page_node->GetType(), PageType::kTab);
     DCHECK(!FindPageNodeToLoadData(page_node));
     DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+
+    // Setting main frame restored state ensures that the notification
+    // permission status and background title/favicon update properties are set
+    // correctly when `ScoreTab` scores the page.
+    PageNodeImpl::FromNode(page_node)->SetMainFrameRestoredState(
+        page_node_data.main_frame_url,
+        page_node_data.notification_permission_status);
 
     // No need to schedule a load if the page is already loading.
     if (base::Contains(page_nodes_loading_, page_node)) {
@@ -232,9 +237,8 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     }
 
     // Put the page in the queue for loading.
-    page_nodes_to_load_.push_back(std::make_unique<PageNodeToLoadData>(
-        page_node, /* has_notification_permission=*/page_node_and_permission
-                       .has_notification_permission));
+    page_nodes_to_load_.push_back(
+        std::make_unique<PageNodeToLoadData>(page_node));
   }
 
   // Asynchronously determine whether pages added to `page_nodes_to_load_` are
@@ -275,10 +279,8 @@ BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(
-    PageNode* page_node,
-    bool has_notification_permission)
-    : page_node(page_node),
-      has_notification_permission(has_notification_permission) {}
+    PageNode* page_node)
+    : page_node(page_node) {}
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::~PageNodeToLoadData() = default;
 
@@ -334,7 +336,7 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(const PageNode* page_node) {
     return false;
   }
 
-  // TODO(crbug.com/1071100): Enforce the site engagement score for tabs that
+  // TODO(crbug.com/40126611): Enforce the site engagement score for tabs that
   // don't make use of background communication mechanisms.
   return true;
 }
@@ -372,7 +374,7 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
   page_nodes_to_load_.clear();
   tabs_scored_ = 0;
 
-  // TODO(crbug.com/1071077): Interrupt all ongoing loads.
+  // TODO(crbug.com/40126598): Interrupt all ongoing loads.
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
@@ -392,10 +394,7 @@ void BackgroundTabLoadingPolicy::OnMemoryPressure(
 
 SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
     const PageNode* page_node) const {
-  auto* data = SiteDataRecorder::Data::FromPageNode(page_node);
-  if (!data)
-    return nullptr;
-  return data->reader();
+  return SiteDataRecorder::Data::GetReaderForPageNode(page_node);
 }
 
 void BackgroundTabLoadingPolicy::ScoreTab(
@@ -406,7 +405,8 @@ void BackgroundTabLoadingPolicy::ScoreTab(
   // Give higher priorities to tabs used in the background, and lowest
   // priority to internal tabs. Apps and pinned tabs are simply treated as
   // normal tabs.
-  if (page_node_to_load_data->has_notification_permission ||
+  if (page_node_to_load_data->page_node->GetNotificationPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED ||
       page_node_to_load_data->updates_title_or_favicon_in_bg.value()) {
     score = 2;
   } else if (!page_node_to_load_data->page_node->GetMainFrameUrl().SchemeIs(
@@ -473,7 +473,7 @@ void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
 
 void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
   ErasePageNodeToLoadData(page_node);
-  base::Erase(page_nodes_load_initiated_, page_node);
+  std::erase(page_nodes_load_initiated_, page_node);
   page_nodes_loading_.erase(page_node);
 
   // All restored tabs may be loaded.
@@ -550,9 +550,9 @@ bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
         // |tabs_scored_| count.
         DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
-        base::Erase(page_nodes_to_load_, page_node_to_load_data);
+        std::erase(page_nodes_to_load_, page_node_to_load_data);
       } else {
-        base::Erase(page_nodes_to_load_, page_node_to_load_data);
+        std::erase(page_nodes_to_load_, page_node_to_load_data);
 
         // If the PageNode has not been scored yet, then removing it may trigger
         // all tabs scored notification.

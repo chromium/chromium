@@ -46,11 +46,13 @@ enum WebAppInstallResultCode {
 // See |webapps::UninstallResultCode|.
 [Stable, Extensible]
 enum WebAppUninstallResultCode {
-  kSuccess,
+  kAppRemoved,
   kNoAppToUninstall,
   kCancelled,
   [Default] kError,
   [MinVersion=1] kShutdown,
+  [MinVersion=2] kInstallSourceRemoved,
+  [MinVersion=2] kInstallUrlRemoved,
 };
 
 // A subset of |WebAppInstallInfo| necessary to install a web app originated in
@@ -65,29 +67,37 @@ struct ArcWebAppInstallInfo {
   [MinVersion=1] array<string>? additional_policy_ids@5;
 };
 
-[Stable, Extensible]
-enum PreloadWebAppInstallSource {
+// Next version: 3
+[Stable, Extensible, RenamedFrom="crosapi.mojom.PreloadWebAppInstallSource"]
+enum WebAppInstallSource {
   // The app is preloaded by the device OEM.
   [Default] kOemPreload,
   // The app is preloaded by Google by default.
   kDefaultPreload,
+  // The app was installed via an almanac://install-app URI navigation.
+  [MinVersion=1] kAlmanacInstallAppUri,
+  // The app was installed from the recommended apps screen in OOBE.
+  [MinVersion=2] kOobeAppRecommendations,
 };
 
-// The set of information necessary to install a preloaded web app in Lacros.
-[Stable]
-struct PreloadWebAppInstallInfo {
+// The set of information necessary to install a web app in Lacros using
+// verified manifest data.
+[Stable, RenamedFrom="crosapi.mojom.PreloadWebAppInstallInfo"]
+struct WebAppVerifiedManifestInstallInfo {
   // The url from which the web app is installed.
   url.mojom.Url document_url@0;
 
   // The url from which the manifest is fetched.
-  url.mojom.Url manifest_url@1;
+  // Must be verified as being a rel="manifest" link of `document_url`.
+  url.mojom.Url verified_manifest_url@1;
 
   // The expected app id for the installed web app.
   string expected_app_id@2;
 
   // The standard web app manifest, encoded as a JSON string.
-  string manifest@3;
+  // Must be verified as representative of the contents of `manifest_url`.
+  string verified_manifest_contents@3;
 
   // The source of this app installation.
-  [MinVersion=1] PreloadWebAppInstallSource install_source@4;
+  [MinVersion=1] WebAppInstallSource install_source@4;
 };

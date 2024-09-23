@@ -22,7 +22,9 @@ struct Event {
   // definitions in structured.xml.
   map<string, MetricValue> metrics@2;
 
-  // Time passed (in microseconds) since boot time.
+  // Time passed (in microseconds) since boot time.  This is a timestamp
+  // that gets converted to system uptime before upload when the Event
+  // is passed from a WebUI Renderer process.
   [MinVersion=1] mojo_base.mojom.TimeDelta? system_uptime@3;
 
   // Whether this event is part of a sequence.

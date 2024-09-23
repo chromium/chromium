@@ -24,7 +24,7 @@ items:
   name: ROTATE_270
   value: 3
 owners:
-- phweiss@chromium.org
+- giovax@chromium.org
 schema:
   enum:
   - 0
@@ -36,3 +36,4 @@ supported_on:
 - chrome_os:48-
 tags: []
 type: int-enum
+generate_device_proto: False

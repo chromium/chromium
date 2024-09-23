@@ -137,7 +137,7 @@ NotificationLaunchId::NotificationLaunchId(const std::string& input) {
 
   profile_id_ = tokens[2];
   app_user_model_id_ = base::UTF8ToWide(tokens[3]);
-  incognito_ = tokens[4] == "1" ? true : false;
+  incognito_ = tokens[4] == "1";
   origin_url_ = GURL(tokens[5]);
 
   notification_id_.clear();

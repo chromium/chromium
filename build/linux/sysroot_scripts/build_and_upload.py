@@ -6,106 +6,97 @@
 """Automates running sysroot_creator.py for each supported arch.
 """
 
-
-import hashlib
+import concurrent.futures
 import json
-import multiprocessing
 import os
+import subprocess
 import sys
+import textwrap
 
 import sysroot_creator
 
-DEFAULT_URL_PREFIX = ("https://commondatastorage.googleapis.com/"
-                      "chrome-linux-sysroot/toolchain")
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def sha1sumfile(filename):
-    sha1 = hashlib.sha1()
-    with open(filename, "rb") as f:
-        while True:
-            data = f.read(65536)
-            if not data:
-                break
-            sha1.update(data)
-    return sha1.hexdigest()
-
-
-def build_and_upload(key, arch, lock):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-
-    sysroot_creator.build_sysroot(arch)
-    sysroot_creator.upload_sysroot(arch)
-
-    tarball = "%s_%s_%s_sysroot.tar.xz" % (
-        sysroot_creator.DISTRO,
-        sysroot_creator.RELEASE,
-        arch.lower(),
-    )
-    tarxz_path = os.path.join(
-        script_dir,
-        "..",
-        "..",
-        "..",
-        "out",
-        "sysroot-build",
-        sysroot_creator.RELEASE,
-        tarball,
-    )
-    sha1sum = sha1sumfile(tarxz_path)
-    sysroot_dir = "%s_%s_%s-sysroot" % (
-        sysroot_creator.DISTRO,
-        sysroot_creator.RELEASE,
-        arch.lower(),
-    )
-
-    sysroot_metadata = {
-        "Key": key,
-        "Sha1Sum": sha1sum,
-        "SysrootDir": sysroot_dir,
-        "Tarball": tarball,
-        "URL": DEFAULT_URL_PREFIX,
-    }
-    with lock:
-        fname = os.path.join(script_dir, "sysroots.json")
-        sysroots = json.load(open(fname))
-        with open(fname, "w") as f:
-            sysroots["%s_%s" % (sysroot_creator.RELEASE,
-                                arch.lower())] = sysroot_metadata
-            f.write(
-                json.dumps(sysroots,
-                           sort_keys=True,
-                           indent=4,
-                           separators=(",", ": ")))
-            f.write("\n")
+def build_and_upload(arch):
+    try:
+        sysroot_creator.build_sysroot(arch)
+        result = sysroot_creator.upload_sysroot(arch)
+        return (arch, True, result)  # (architecture, success, result)
+    except Exception as e:
+        return (arch, False, str(e))  # (architecture, failure, error message)
 
 
 def main():
-    key = "%s-%s" % (sysroot_creator.ARCHIVE_TIMESTAMP,
-                     sysroot_creator.SYSROOT_RELEASE)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Map the function over the architectures
+        futures = [
+            executor.submit(build_and_upload, arch)
+            for arch in sysroot_creator.TRIPLES
+        ]
 
-    procs = []
-    lock = multiprocessing.Lock()
-    for arch in sysroot_creator.TRIPLES:
-        proc = multiprocessing.Process(
-            target=build_and_upload,
-            args=(key, arch, lock),
-        )
-        procs.append((
-            "%s %s (%s)" %
-            (sysroot_creator.DISTRO, sysroot_creator.RELEASE, arch),
-            proc,
-        ))
-        proc.start()
-    for _, proc in procs:
-        proc.join()
+        failures = 0
+        results = {}
+        for future in concurrent.futures.as_completed(futures):
+            arch, success, result = future.result()
+            if not success:
+                failures += 1
+            name = (f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASE}" +
+                    f"_{arch.lower()}-sysroot")
+            results[name] = (success, result)
+
+    globals = {"Str": lambda x: x, "Var": lambda x: x}
+    deps = open(os.path.join(SCRIPT_DIR, "..", "..", "..", "DEPS")).read()
+    exec(deps, globals)
+    updates = {}
 
     print("SYSROOT CREATION SUMMARY")
-    failures = 0
-    for name, proc in procs:
-        if proc.exitcode:
-            failures += 1
-        status = "FAILURE" if proc.exitcode else "SUCCESS"
-        print("%s sysroot creation\t%s" % (name, status))
+    for name, (success, result) in results.items():
+        status = "SUCCESS" if success else "FAILURE"
+        print(name, status, sep=":\t")
+        key = f"src/build/linux/{name}"
+        updates[key] = globals["deps"][key]
+        if success:
+            result = " ".join(result.splitlines()[1:])
+            updates[key]["objects"] = json.loads(result)["path"]["objects"]
+
+    print("Updating DEPS files")
+    for key, objects in updates.items():
+        obj = objects[0]
+        object_info = ','.join([
+            obj['object_name'],
+            obj['sha256sum'],
+            str(obj['size_bytes']),
+            str(obj['generation']),
+        ])
+
+        print(f"Updating {key} in src/DEPS")
+        subprocess.call(["gclient", "setdep", "-r", f"{key}@{object_info}"])
+        prefix = 'src/build/'
+        substr_key = key[len(prefix):]
+        print(f"Updating {substr_key} in src/build/DEPS")
+        subprocess.call([
+            "gclient", "setdep", "-r", f"{substr_key}@{object_info}",
+            "--deps-file", "build/DEPS"
+        ])
+
+    if not failures:
+        key = (sysroot_creator.ARCHIVE_TIMESTAMP + "-" +
+               str(sysroot_creator.SYSROOT_RELEASE))
+        sysroot_gni = textwrap.dedent(f"""\
+            # Copyright 2024 The Chromium Authors
+            # Use of this source code is governed by a BSD-style license that
+            # can be found in the LICENSE file.
+
+            # This file was generated by
+            # build/linux/sysroot_scripts/build_and_upload.py
+
+            cr_sysroot_key = "{key}"
+        """)
+        fname = os.path.join(SCRIPT_DIR, "sysroot.gni")
+        with open(fname, "w") as f:
+            f.write(sysroot_gni)
+
     return failures
 
 

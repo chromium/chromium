@@ -18,8 +18,6 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.chromium.base.ApiCompatibilityUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +56,7 @@ public class CronetSampleActivity extends FragmentActivity {
         switchFragment(FRAGMENT_ID_HOME);
     }
 
+    @SuppressWarnings("deprecation")
     private void updateNavigationBarUI(int chosenFragmentId) {
         final int childCount = mBottomNav.getChildCount();
         for (int i = 0; i < childCount; ++i) {
@@ -67,8 +66,9 @@ public class CronetSampleActivity extends FragmentActivity {
             TextView textView = (TextView) view;
 
             boolean isSelectedFragment = chosenFragmentId == fragmentId;
-            ApiCompatibilityUtils.setTextAppearance(
-                    textView,
+            // TODO: Can remove first parameter and SuppressWarnings once minApiLevel >= 23.
+            textView.setTextAppearance(
+                    textView.getContext(),
                     isSelectedFragment
                             ? R.style.SelectedNavigationButton
                             : R.style.UnselectedNavigationButton);

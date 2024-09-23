@@ -40,7 +40,6 @@ class UpdateProtocolHandlerApprovalCommand : public WebAppCommand<AppLock> {
       const std::vector<custom_handlers::ProtocolHandler>&
           original_protocol_handlers,
       OsIntegrationManager& os_integration_manager);
-  void OnProtocolHandlersUpdated();
 
   std::unique_ptr<AppLock> lock_;
 

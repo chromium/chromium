@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(UNSAFE_BUFFERS_BUILD)
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "pdf/pdfium/pdfium_engine.h"
 
 #include <stdint.h>
@@ -19,12 +24,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "pdf/ui/thumbnail.h"
@@ -49,7 +56,6 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
-using ::testing::Not;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -61,48 +67,32 @@ MATCHER_P(LayoutWithOptions, options, "") {
   return arg.options() == options;
 }
 
-blink::WebMouseEvent CreateLeftClickWebMouseEventAtPositionWithClickCount(
-    const gfx::PointF& position,
-    int click_count_param) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseDown, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
-      click_count_param, blink::WebInputEvent::Modifiers::kLeftButtonDown,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-}
-
 blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
-  return CreateLeftClickWebMouseEventAtPositionWithClickCount(position, 1);
+  return MouseEventBuilder().CreateLeftClickAtPosition(position).Build();
 }
 
 blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseUp, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
-      /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder().CreateLeftMouseUpAtPosition(position).Build();
 }
 
 blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseDown, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kRight,
-      /*click_count_param=*/1,
-      blink::WebInputEvent::Modifiers::kRightButtonDown,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseDown)
+      .SetPosition(position)
+      .SetButton(blink::WebPointerProperties::Button::kRight)
+      .SetClickCount(1)
+      .Build();
 }
 
 blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseMove, /*position=*/position,
-      /*global_position=*/position,
-      blink::WebPointerProperties::Button::kNoButton, /*click_count_param=*/0,
-      blink::WebInputEvent::Modifiers::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseMove)
+      .SetPosition(position)
+      .Build();
 }
 
 class MockTestClient : public TestClient {
@@ -120,9 +110,16 @@ class MockTestClient : public TestClient {
               NavigateTo,
               (const std::string&, WindowOpenDisposition),
               (override));
+  MOCK_METHOD(void,
+              FormFieldFocusChange,
+              (PDFiumEngineClient::FocusFieldType),
+              (override));
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
+#if BUILDFLAG(ENABLE_PDF)
+  MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 }  // namespace
@@ -523,7 +520,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   ASSERT_EQ(2, engine->GetNumberOfPages());
 
   // A destination with a valid page object
-  std::optional<PDFEngine::NamedDestination> valid_page_obj =
+  std::optional<PDFiumEngine::NamedDestination> valid_page_obj =
       engine->GetNamedDestination("ValidPageObj");
   ASSERT_TRUE(valid_page_obj.has_value());
   EXPECT_EQ(0u, valid_page_obj->page);
@@ -532,18 +529,18 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_EQ(1.2f, valid_page_obj->params[2]);
 
   // A destination with an invalid page object
-  std::optional<PDFEngine::NamedDestination> invalid_page_obj =
+  std::optional<PDFiumEngine::NamedDestination> invalid_page_obj =
       engine->GetNamedDestination("InvalidPageObj");
   ASSERT_FALSE(invalid_page_obj.has_value());
 
   // A destination with a valid page number
-  std::optional<PDFEngine::NamedDestination> valid_page_number =
+  std::optional<PDFiumEngine::NamedDestination> valid_page_number =
       engine->GetNamedDestination("ValidPageNumber");
   ASSERT_TRUE(valid_page_number.has_value());
   EXPECT_EQ(1u, valid_page_number->page);
 
   // A destination with an out-of-range page number
-  std::optional<PDFEngine::NamedDestination> invalid_page_number =
+  std::optional<PDFiumEngine::NamedDestination> invalid_page_number =
       engine->GetNamedDestination("OutOfRangePageNumber");
   EXPECT_FALSE(invalid_page_number.has_value());
 }
@@ -819,8 +816,10 @@ TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
@@ -836,10 +835,85 @@ TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 3)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(3)
+                                           .Build()));
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
+
+TEST_P(PDFiumEngineTest, SelectTextWithMouse) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kStartPosition(50, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_P(PDFiumEngineTest, CtrlLeftClickShouldNotSelectTextOnMac) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  // In https://crbug.com/339681892, these are the events PDFiumEngine sees.
+  constexpr gfx::PointF kStartPosition(50, 110);
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  EXPECT_FALSE(engine->HandleInputEvent(builder.Build()));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  EXPECT_FALSE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  EXPECT_EQ("", engine->GetSelectedText());
+}
+#else
+TEST_P(PDFiumEngineTest, CtrlLeftClickSelectTextOnNonMac) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kStartPosition(50, 110);
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   NiceMock<MockTestClient> client;
@@ -936,8 +1010,10 @@ TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 
   DocumentLayout::Options options;
@@ -967,8 +1043,10 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 
   DocumentLayout::Options options;
@@ -985,6 +1063,38 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   engine->SetDocumentLayout(DocumentLayout::PageSpread::kOneUp);
   engine->ApplyDocumentLayout(options);
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, SetFormHighlight) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Removing form highlights should remove focus.
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->SetFormHighlight(false);
+}
+
+TEST_P(PDFiumEngineTest, ClearTextSelection) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  // Select text.
+  engine->SelectAll();
+  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+
+  // Clear selected text.
+  engine->ClearTextSelection();
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
@@ -1044,7 +1154,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
     return engine->last_focused_annot_index_;
   }
 
-  PDFEngine::FocusFieldType FormFocusFieldType(PDFiumEngine* engine) {
+  PDFiumEngineClient::FocusFieldType FormFocusFieldType(PDFiumEngine* engine) {
     return engine->focus_field_type_;
   }
 
@@ -1515,7 +1625,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kDocument,
             GetFocusedElementType(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kNoFocus,
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kNoFocus,
             FormFocusFieldType(engine.get()));
   EXPECT_FALSE(engine->CanEditText());
 
@@ -1524,7 +1634,8 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kText, FormFocusFieldType(engine.get()));
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kText,
+            FormFocusFieldType(engine.get()));
   EXPECT_TRUE(engine->CanEditText());
 
   // Bring focus to the button on the page.
@@ -1532,7 +1643,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kNonText,
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kNonText,
             FormFocusFieldType(engine.get()));
   EXPECT_FALSE(engine->CanEditText());
 }
@@ -1592,7 +1703,7 @@ class ScrollingTestClient : public TestClient {
   ScrollingTestClient(const ScrollingTestClient&) = delete;
   ScrollingTestClient& operator=(const ScrollingTestClient&) = delete;
 
-  // Mock PDFEngine::Client methods.
+  // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, ScrollToX, (int), (override));
   MOCK_METHOD(void, ScrollToY, (int), (override));
 };
@@ -1699,48 +1810,34 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
 
-class ReadOnlyTestClient : public TestClient {
- public:
-  ReadOnlyTestClient() = default;
-  ~ReadOnlyTestClient() override = default;
-  ReadOnlyTestClient(const ReadOnlyTestClient&) = delete;
-  ReadOnlyTestClient& operator=(const ReadOnlyTestClient&) = delete;
-
-  // Mock PDFEngine::Client methods.
-  MOCK_METHOD(void,
-              FormFieldFocusChange,
-              (PDFEngine::FocusFieldType),
-              (override));
-  MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
-};
-
 using PDFiumEngineReadOnlyTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
-  NiceMock<ReadOnlyTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
   // Setting read-only mode should kill form focus.
   EXPECT_FALSE(engine->IsReadOnly());
-  EXPECT_CALL(client,
-              FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus));
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->SetReadOnly(true);
 
   // Attempting to focus during read-only mode should once more trigger a
   // killing of form focus.
   EXPECT_TRUE(engine->IsReadOnly());
-  EXPECT_CALL(client,
-              FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus));
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->UpdateFocus(true);
 }
 
 TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
-  NiceMock<ReadOnlyTestClient> client;
+  TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   // Update the plugin size so that all the text is visible by
   // `SelectionChangeInvalidator`.
@@ -1748,14 +1845,72 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 
   // Select text before going into read-only mode.
   EXPECT_FALSE(engine->IsReadOnly());
-  EXPECT_CALL(client, SetSelectedText(Not(IsEmpty())));
   engine->SelectAll();
+  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
 
   // Setting read-only mode should unselect the text.
-  EXPECT_CALL(client, SetSelectedText(IsEmpty()));
   engine->SetReadOnly(true);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class AnnotationModeTestClient : public MockTestClient {
+ public:
+  AnnotationModeTestClient() = default;
+  AnnotationModeTestClient(const AnnotationModeTestClient&) = delete;
+  AnnotationModeTestClient& operator=(const AnnotationModeTestClient&) = delete;
+  ~AnnotationModeTestClient() override = default;
+
+  // PDFiumEngineClient overrides:
+  bool IsInAnnotationMode() const override { return annotation_mode_; }
+
+  void set_annotation_mode(bool annotation_mode) {
+    annotation_mode_ = annotation_mode;
+  }
+
+ private:
+  bool annotation_mode_ = false;
+};
+
+using PDFiumEngineAnnotationModeTest = PDFiumTestBase;
+
+TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
+  NiceMock<AnnotationModeTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  client.set_annotation_mode(true);
+
+  // Attempting to focus in annotation mode should once more trigger a killing
+  // of form focus.
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->UpdateFocus(true);
+}
+
+TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
+  NiceMock<AnnotationModeTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  client.set_annotation_mode(true);
+
+  // Attempting to select text should do nothing in annotation mode.
+  engine->SelectAll();
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineAnnotationModeTest, testing::Bool());
+
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

@@ -12,6 +12,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_path_mappings.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 import("//ui/webui/resources/tools/bundle_js_excludes.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -43,8 +44,10 @@ template("build_webui") {
   minify = optimize
   bundle = optimize && defined(invoker.optimize_webui_in_files)
 
-  enable_source_maps = enable_webui_inline_sourcemaps
-  if (defined(invoker.enable_source_maps)) {
+  has_ts_in_files = defined(invoker.web_component_files) ||
+                    defined(invoker.non_web_component_files)
+  enable_source_maps = enable_webui_inline_sourcemaps && has_ts_in_files
+  if (defined(invoker.enable_source_maps) && has_ts_in_files) {
     assert(!invoker.enable_source_maps || !optimize)
     enable_source_maps = invoker.enable_source_maps
   }
@@ -59,10 +62,11 @@ template("build_webui") {
 
   ### Compute the lists of files that are used across multiple targets.
 
-  # At least one of `web_component_files` or 'non_web_component_files` must be
-  # defined.
-  assert(defined(invoker.web_component_files) ||
-         defined(invoker.non_web_component_files))
+  # At least one of `web_component_files`, `css_files`, `mojo_files`, or
+  # 'non_web_component_files` must be defined. Otherwise, the build rule
+  # does not actually generate any input for TS compiler.
+  assert(has_ts_in_files || defined(invoker.css_files) ||
+         defined(invoker.mojo_files))
 
   ts_files = []
   if (defined(invoker.web_component_files)) {
@@ -130,6 +134,14 @@ template("build_webui") {
         filter_exclude(invoker.static_files, non_preprocessed_files_filter)
   }
 
+  preprocessor_defines = []
+  if (use_blink) {
+    preprocessor_defines += chrome_grit_defines
+  }
+  if (defined(invoker.preprocessor_defines)) {
+    preprocessor_defines += invoker.preprocessor_defines
+  }
+
   ### Define the various targets that are required by the build pipeline.
 
   # Specifically the order in which these targets are executed is:
@@ -150,9 +162,7 @@ template("build_webui") {
     preprocess_if_expr("preprocess_static_files") {
       visibility = [ ":$generate_grd_target_name" ]
 
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
+      defines = preprocessor_defines
 
       in_folder = "."
       out_folder = preprocess_dir
@@ -161,26 +171,26 @@ template("build_webui") {
     }
   }
 
-  preprocess_if_expr("preprocess_ts_files") {
-    visibility = [
-      ":build_ts",
-      ":html_wrapper_files",
-    ]
-    if (enable_source_maps) {
-      visibility += [ ":create_source_maps" ]
-    }
+  if (has_ts_in_files) {
+    preprocess_if_expr("preprocess_ts_files") {
+      visibility = [
+        ":build_ts",
+        ":html_wrapper_files",
+      ]
+      if (enable_source_maps) {
+        visibility += [ ":create_source_maps" ]
+      }
 
-    if (use_blink) {
-      defines = chrome_grit_defines
-    }
+      defines = preprocessor_defines
 
-    in_folder = "."
-    out_folder = preprocess_dir
-    if (enable_source_maps) {
-      out_folder = "${preprocess_dir}/_tmp"
-      enable_removal_comments = enable_source_maps
+      in_folder = "."
+      out_folder = preprocess_dir
+      if (enable_source_maps) {
+        out_folder = "${preprocess_dir}/_tmp"
+        enable_removal_comments = enable_source_maps
+      }
+      in_files = ts_files
     }
-    in_files = ts_files
   }
 
   if (enable_source_maps) {
@@ -194,7 +204,7 @@ template("build_webui") {
               [
                 "*.ts",
 
-                # TODO(crbug.com/1173575): Remove once we no longer pass JS
+                # TODO(crbug.com/40167175): Remove once we no longer pass JS
                 # files to build_webui.
                 "*.js",
               ])
@@ -217,9 +227,7 @@ template("build_webui") {
         ":html_wrapper_files",
       ]
 
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
+      defines = preprocessor_defines
 
       in_folder = "."
       out_folder = preprocess_dir
@@ -286,6 +294,18 @@ template("build_webui") {
     }
   }
 
+  if (defined(invoker.ts_deps)) {
+    webui_path_mappings("build_path_map") {
+      ts_deps = invoker.ts_deps
+      visibility = [ ":build_ts" ]
+
+      webui_context_type = "relative"
+      if (defined(invoker.webui_context_type)) {
+        webui_context_type = invoker.webui_context_type
+      }
+    }
+  }
+
   ts_library("build_ts") {
     root_dir = preprocess_dir
     out_dir = ts_out_dir
@@ -309,25 +329,38 @@ template("build_webui") {
 
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
-    } else {
-      if ((defined(invoker.web_component_files) ||
-           defined(invoker.icons_html_files)) &&
-          (!defined(invoker.html_to_wrapper_template) ||
-           invoker.html_to_wrapper_template != "native")) {
-        # Default tsconfig is tsconfig_base_polymer.json for Polymer UIs.
-        # tsconfig_base is left unset (defaults to
-        # //tools/typescript/tsconfig_base.json) for non-Polymer UIs.
+    } else if (defined(invoker.ts_deps)) {
+      # Default tsconfig is set to tsconfig_base_polymer.json for targets
+      # with a Polymer dependency, set to tsconfig_base_lit.json for
+      # targets with a Lit dependency and no Polymer dependency, and left
+      # unset (defaults to //tools/typescript/tsconfig_base.json) for other
+      # non-Polymer, non-Lit targets.
+      has_polymer =
+          filter_include(invoker.ts_deps,
+                         [ "//third_party/polymer/v3_0:library" ]) != []
+      if (has_polymer) {
         tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+      } else {
+        has_lit = filter_include(invoker.ts_deps,
+                                 [ "//third_party/lit/v3_0:build_ts" ]) != []
+        if (has_lit) {
+          tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
+        }
       }
     }
 
     in_files = ts_files
-    extra_deps = []
+    if (defined(invoker.ts_deps)) {
+      path_mappings_file = "$target_gen_dir/path_mappings_build_path_map.json"
+      extra_deps = [ ":build_path_map" ]
+    } else {
+      extra_deps = []
+    }
     if (enable_source_maps) {
       # ts_library()'s |enable_source_maps| param inherited from the outer
       # scope's enable_source_maps
       extra_deps += [ ":create_source_maps" ]
-    } else {
+    } else if (has_ts_in_files) {
       extra_deps += [ ":preprocess_ts_files" ]
     }
 
@@ -486,10 +519,6 @@ template("build_webui") {
 
   if (!generate_grdp) {
     grit("resources") {
-      if (use_blink) {
-        defines = chrome_grit_defines
-      }
-
       # These arguments are needed since the grd is generated at build time.
       enable_input_discovery_for_gn_analyze = false
       source = "$target_gen_dir/resources.grd"

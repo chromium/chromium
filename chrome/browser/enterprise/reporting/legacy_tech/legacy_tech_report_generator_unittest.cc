@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "base/time/time.h"
+#include "base/logging.h"
 #include "components/enterprise/common/proto/legacy_tech_events.pb.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,19 +16,6 @@ namespace enterprise_reporting {
 
 namespace {
 
-constexpr base::Time::Exploded kTestDate = {.year = 2023,
-                                            .month = 5,
-                                            .day_of_week = 4,
-                                            .day_of_month = 4,
-                                            .hour = 22,
-                                            .minute = 10,
-                                            .second = 15};
-
-constexpr base::Time::Exploded kTestDateInMidnight = {.year = 2023,
-                                                      .month = 5,
-                                                      .day_of_week = 4,
-                                                      .day_of_month = 4};
-
 constexpr char kType[] = "type";
 constexpr char kUrl[] = "https://www.example.com/path";
 constexpr char kFrameUrl[] = "https://www.frame.com/something";
@@ -37,10 +24,15 @@ constexpr char kFileName[] = "filename.js";
 constexpr uint64_t kLine = 10;
 constexpr uint64_t kColumn = 42;
 
-constexpr char kCookieTransferOrScriptUrl[] = "script url";
+constexpr char kCookieTransferOrScriptUrl[] = "https://example.com/magic.js";
+constexpr char kLongCookieTransferOrScriptUrl[] =
+    "https://username:password@example.com:8080/path/script.js?key=value#ref";
 constexpr char kCookieName[] = "cookie name";
 constexpr char kCookieDomain[] = "cookie domain";
 constexpr char kCookiePath[] = "cookie path";
+
+constexpr char kLongUrl[] =
+    "https://username:password@example.com:8080/path/file.html?key=value#ref";
 
 }  // namespace
 
@@ -53,7 +45,6 @@ class LegacyTechGeneratorTest : public ::testing::Test {
 TEST_F(LegacyTechGeneratorTest, Test) {
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -61,7 +52,6 @@ TEST_F(LegacyTechGeneratorTest, Test) {
       /*line=*/kLine,
       /*column=*/kColumn,
       /*cookie_issue_details=*/std::nullopt};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
@@ -75,16 +65,11 @@ TEST_F(LegacyTechGeneratorTest, Test) {
   EXPECT_EQ(kLine, report->line());
 
   EXPECT_FALSE(report->has_cookie_issue_details());
-
-  base::Time midnight;
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDateInMidnight, &midnight));
-  EXPECT_EQ(midnight.InMillisecondsSinceUnixEpoch(),
-            report->event_timestamp_millis());
 }
 
 TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
   content::LegacyTechCookieIssueDetails cookie_issue_details = {
-      kCookieTransferOrScriptUrl,
+      GURL(kCookieTransferOrScriptUrl),
       kCookieName,
       kCookieDomain,
       kCookiePath,
@@ -93,7 +78,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
 
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -102,7 +86,6 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
       /*column=*/kColumn,
       /*cookie_issue_details=*/
       std::move(cookie_issue_details)};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
@@ -117,18 +100,17 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsRead) {
             report->cookie_issue_details().access_operation());
 }
 
-TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
+TEST_F(LegacyTechGeneratorTest, TestDropScriptUrlDetails) {
   content::LegacyTechCookieIssueDetails cookie_issue_details = {
-      kCookieTransferOrScriptUrl,
+      GURL(kLongCookieTransferOrScriptUrl),
       kCookieName,
       kCookieDomain,
       kCookiePath,
-      content::LegacyTechCookieIssueDetails::AccessOperation::kWrite,
+      content::LegacyTechCookieIssueDetails::AccessOperation::kRead,
   };
 
   LegacyTechReportGenerator::LegacyTechData data = {
       /*type=*/kType,
-      /*timestamp=*/base::Time(),
       /*url=*/GURL(kUrl),
       /*frame_url=*/GURL(kFrameUrl),
       /*matched_url=*/kMatchedUrl,
@@ -137,13 +119,61 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
       /*column=*/kColumn,
       /*cookie_issue_details=*/
       std::move(cookie_issue_details)};
-  ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
+
+  LegacyTechReportGenerator generator;
+  std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
+
+  std::string expected_url = "https://example.com:8080/path/script.js";
+
+  EXPECT_TRUE(report->has_cookie_issue_details());
+  EXPECT_EQ(expected_url,
+            report->cookie_issue_details().transfer_or_script_url());
+}
+
+TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
+  content::LegacyTechCookieIssueDetails cookie_issue_details = {
+      GURL(kCookieTransferOrScriptUrl),
+      kCookieName,
+      kCookieDomain,
+      kCookiePath,
+      content::LegacyTechCookieIssueDetails::AccessOperation::kWrite,
+  };
+
+  LegacyTechReportGenerator::LegacyTechData data = {
+      /*type=*/kType,
+      /*url=*/GURL(kUrl),
+      /*frame_url=*/GURL(kFrameUrl),
+      /*matched_url=*/kMatchedUrl,
+      /*filename=*/kFileName,
+      /*line=*/kLine,
+      /*column=*/kColumn,
+      /*cookie_issue_details=*/std::move(cookie_issue_details)};
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
 
   EXPECT_EQ(CookieAccessOperation::COOKIE_ACCESS_OPERATION_WRITE,
             report->cookie_issue_details().access_operation());
+}
+
+TEST_F(LegacyTechGeneratorTest, TestDropUrlComponents) {
+  LegacyTechReportGenerator::LegacyTechData data = {
+      /*type=*/kType,
+      /*url=*/GURL(kLongUrl),
+      /*frame_url=*/GURL(kLongUrl),
+      /*matched_url=*/kMatchedUrl,
+      /*filename=*/kFileName,
+      /*line=*/kLine,
+      /*column=*/kColumn,
+      /*cookie_issue_details=*/std::nullopt};
+
+  LegacyTechReportGenerator generator;
+  std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
+
+  std::string expected_url = "https://example.com:8080/path/file.html";
+
+  EXPECT_EQ(expected_url, report->url());
+  EXPECT_EQ(expected_url, report->frame_url());
 }
 
 }  // namespace enterprise_reporting

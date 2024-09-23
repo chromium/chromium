@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -12,6 +13,8 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -25,10 +28,11 @@ ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     IbanBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetAcceptButtonText());
   SetExtraView(
       std::make_unique<views::MdTextButton>(
           base::BindRepeating(
@@ -145,7 +149,7 @@ void ManageSavedIbanBubbleView::Init() {
     AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-    // TODO(crbug.com/1349109): Revisit how the nickname will be shown if it's
+    // TODO(crbug.com/40233611): Revisit how the nickname will be shown if it's
     // too long.
     nickname_label_ = AddChildView(std::make_unique<views::Label>(
         controller_->GetIban().nickname(),
@@ -153,5 +157,8 @@ void ManageSavedIbanBubbleView::Init() {
     nickname_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
 }
+
+BEGIN_METADATA(ManageSavedIbanBubbleView)
+END_METADATA
 
 }  // namespace autofill

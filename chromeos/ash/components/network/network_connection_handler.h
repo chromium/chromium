@@ -214,6 +214,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       CellularConnectionHandler* cellular_connection_handler) = 0;
 
+  // Called when AutoConnectHandler initiates an auto connection.
+  virtual void OnAutoConnectedInitiated(int auto_connect_reasons) = 0;
+
   // Construct and initialize an instance for testing.
   static std::unique_ptr<NetworkConnectionHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler,

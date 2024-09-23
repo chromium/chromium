@@ -3,49 +3,21 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//testing/test.gni")
+import("//third_party/distributed_point_functions/features.gni")
 import("//third_party/protobuf/proto_library.gni")
-
-if (!defined(dpf_abseil_cpp_dir)) {
-  dpf_abseil_cpp_dir = "//third_party/abseil-cpp"
-}
-if (!defined(dpf_highway_cpp_dir)) {
-  dpf_highway_cpp_dir = "//third_party/highway"
-}
 
 # This is Chromium's interface with the third-party distributed_point_functions
 # library. Targets outside of //third_party/distributed_point_functions should
 # depend on this target rather than using the source directly. This extra layer
 # prevents macros from leaking into Chromium code via header includes.
 source_set("distributed_point_functions") {
-  sources = [
-    "shim/distributed_point_function_shim.cc",
-    "shim/distributed_point_function_shim.h",
-  ]
-  deps = [
-    ":internal",
-    "$dpf_abseil_cpp_dir:absl",
-    "//base",
-  ]
-  public_deps = [ ":proto" ]
-  configs += [ ":includes" ]
+  public_deps = [ "//third_party/distributed_point_functions/shim" ]
 }
 
 proto_library("proto") {
   sources = [ "code/dpf/distributed_point_function.proto" ]
   proto_out_dir = "third_party/distributed_point_functions/dpf"
   cc_generator_options = "lite"
-}
-
-test("distributed_point_functions_unittests") {
-  sources = [ "shim/distributed_point_function_shim_unittest.cc" ]
-  deps = [
-    ":distributed_point_functions",
-    "$dpf_abseil_cpp_dir:absl",
-    "//testing/gtest",
-    "//testing/gtest:gtest_main",
-    "//third_party/protobuf:protobuf_lite",
-  ]
 }
 
 fuzzer_test("dpf_fuzzer") {
@@ -59,9 +31,11 @@ fuzzer_test("dpf_fuzzer") {
   additional_configs += [ ":includes" ]
 }
 
-# The targets below this line are internal-only; they should only be visible to
-# targets in this directory.
-visibility = [ ":*" ]
+# Targets below this line are only visible within this file and shim/.
+visibility = [
+  ":*",
+  "//third_party/distributed_point_functions/shim:*",
+]
 
 config("includes") {
   include_dirs = [

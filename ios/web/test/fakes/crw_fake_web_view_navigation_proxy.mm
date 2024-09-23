@@ -8,6 +8,7 @@
 
 @implementation CRWFakeWebViewNavigationProxy {
   NSURL* _URL;
+  NSString* _title;
   CRWFakeBackForwardList* _backForwardList;
 }
 
@@ -33,6 +34,10 @@
 
 - (NSURL*)URL {
   return _URL;
+}
+
+- (NSString*)title {
+  return _title;
 }
 
 @end

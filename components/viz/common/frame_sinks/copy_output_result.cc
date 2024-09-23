@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -23,18 +22,8 @@ CopyOutputResult::TextureResult& CopyOutputResult::TextureResult::operator=(
 
 CopyOutputResult::TextureResult::TextureResult(
     const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
     const gfx::ColorSpace& color_space)
-    : color_space(color_space) {
-  mailbox_holders[0].mailbox = mailbox;
-  mailbox_holders[0].sync_token = sync_token;
-  mailbox_holders[0].texture_target = GL_TEXTURE_2D;
-}
-
-CopyOutputResult::TextureResult::TextureResult(
-    const std::array<gpu::MailboxHolder, kMaxPlanes>& mailbox_holders,
-    const gfx::ColorSpace& color_space)
-    : mailbox_holders(mailbox_holders), color_space(color_space) {}
+    : mailbox(mailbox), color_space(color_space) {}
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
@@ -45,7 +34,7 @@ CopyOutputResult::CopyOutputResult(Format format,
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
   DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
-         format == Format::NV12_PLANES || format == Format::NV12_MULTIPLANE);
+         format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
          destination_ == Destination::kNativeTextures);
 }
@@ -227,15 +216,7 @@ CopyOutputTextureResult::CopyOutputTextureResult(
       release_callbacks_(std::move(release_callbacks)) {
   // If we're constructing empty result, all mailbox_holders must be zero.
   // Otherwise, the first mailbox must be non-zero.
-  DCHECK_EQ(rect.IsEmpty(),
-            texture_result_.mailbox_holders[0].mailbox.IsZero());
-  if (format == Format::NV12_PLANES) {
-    DCHECK_EQ(rect.IsEmpty(),
-              texture_result_.mailbox_holders[1].mailbox.IsZero());
-  } else if (format == Format::NV12_MULTIPLANE) {
-    // In NV12_MULTIPLANE, a single mailbox stores all the planes.
-    DCHECK(texture_result_.mailbox_holders[1].mailbox.IsZero());
-  }
+  DCHECK_EQ(rect.IsEmpty(), texture_result_.mailbox.IsZero());
   // If we're constructing empty result, the callbacks must be empty.
   // From definition of implication: p => q  <=>  !p || q.
   DCHECK(!rect.IsEmpty() || release_callbacks_.empty());
@@ -259,14 +240,11 @@ CopyOutputTextureResult::GetTextureResult() const {
 
 CopyOutputResult::ReleaseCallbacks
 CopyOutputTextureResult::TakeTextureOwnership() {
-  texture_result_.mailbox_holders = {};
+  texture_result_.mailbox = {};
   texture_result_.color_space = {};
 
-  CopyOutputResult::ReleaseCallbacks result;
-  // std::swap is needed since we cannot just move from release_callbacks_ - the
-  // vector would be left in unspecified state, and we need to be able to
-  // iterate over it in the dtor.
-  std::swap(result, release_callbacks_);
+  CopyOutputResult::ReleaseCallbacks result = std::move(release_callbacks_);
+  release_callbacks_.clear();
 
   return result;
 }

@@ -6,6 +6,7 @@
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 
 #include <map>
+#include <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "ios/web/public/web_state_observer.h"
@@ -121,11 +122,12 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetIsLoading(bool is_loading);
   void OnPageLoaded(const GURL& url, bool load_success);
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
+  void OnUnderPageBackgroundColorChanged();
   void CreateWebUI(const GURL& url);
   void ClearWebUI();
   bool HasWebUI() const;
   void HandleWebUIMessage(const GURL& source_url,
-                          base::StringPiece message,
+                          std::string_view message,
                           const base::Value::List& args);
   void SetContentsMimeType(const std::string& mime_type);
   void ShouldAllowRequest(

@@ -11,11 +11,12 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:128-
 owners:
-- file://chrome/browser/web_applications/OWNERS
-- peletskyi@chromium.org
+- file://chrome/browser/web_applications/isolated_web_apps/OWNERS
+- iwa-team@google.com
+- simonha@google.com
 schema:
   items:
     properties:

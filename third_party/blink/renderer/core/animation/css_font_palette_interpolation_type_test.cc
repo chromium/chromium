@@ -27,7 +27,6 @@ class CSSFontPaletteInterpolationTypeTest : public PageTestBase {
  protected:
   std::unique_ptr<CSSFontPaletteInterpolationType>
   CreateFontPaletteInterpolationType() {
-    ScopedFontPaletteAnimationForTest scoped_feature(true);
     const CSSProperty& css_property =
         CSSProperty::Get(CSSPropertyID::kFontPalette);
     PropertyHandle property = PropertyHandle(css_property);
@@ -62,7 +61,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
 
   const InterpolableFontPalette* interpolable_font_palette =
       To<InterpolableFontPalette>(result.interpolable_value.Get());
-  scoped_refptr<FontPalette> font_palette =
+  scoped_refptr<const FontPalette> font_palette =
       interpolable_font_palette->GetFontPalette();
 
   EXPECT_EQ(font_palette->ToString(), "--palette1");
@@ -81,7 +80,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest, MaybeConvertValue) {
 
   const InterpolableFontPalette* interpolable_font_palette =
       To<InterpolableFontPalette>(result.interpolable_value.Get());
-  scoped_refptr<FontPalette> font_palette =
+  scoped_refptr<const FontPalette> font_palette =
       interpolable_font_palette->GetFontPalette();
 
   EXPECT_EQ(font_palette->ToString(), "--palette");

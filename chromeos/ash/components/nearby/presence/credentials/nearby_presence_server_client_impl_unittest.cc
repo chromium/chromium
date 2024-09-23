@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,8 +21,7 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
-#include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
-#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_shared_credentials_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -36,20 +37,9 @@ const char kPatch[] = "PATCH";
 const char kAccessToken[] = "access_token";
 const char kDeviceIdPath[] = "users/me/devices/deviceid";
 const char kEmail[] = "test@gmail.com";
-const char kPageToken1[] = "pagetoken1";
-const char kPageToken2[] = "pagetoken2";
-const char kPublicKey1[] = "publickey1";
-const char kSecretId1[] = "secretid1";
-const char kSecretId2[] = "secretid2";
-const char kSecretId1Encoded[] = "c2VjcmV0aWQx";
-const char kSecretId2Encoded[] = "c2VjcmV0aWQy";
-const char kSecretKey1[] = "secretkey1";
+const char kLocalDeviceDusi[] = "12345";
+const int64_t kId1 = 123;
 const char kTestGoogleApisUrl[] = "https://nearbypresence-pa.googleapis.com";
-const int32_t kNanos1 = 123123123;
-const int32_t kNanos2 = 321321321;
-const int32_t kPageSize1 = 1000;
-const int64_t kSeconds1 = 1594392109;
-const int64_t kSeconds2 = 1623336109;
 
 class FakeNearbyApiCallFlow : public ash::nearby::NearbyApiCallFlow {
  public:
@@ -263,71 +253,41 @@ TEST_F(NearbyPresenceServerClientImplTest, UpdateDeviceFailure) {
   EXPECT_EQ(NearbyHttpError::kInternalServerError, future.Get());
 }
 
-TEST_F(NearbyPresenceServerClientImplTest, ListPublicCertificatesSuccess) {
+TEST_F(NearbyPresenceServerClientImplTest, ListSharedCredentialsSuccess) {
   base::test::TestFuture<
-      const ash::nearby::proto::ListPublicCertificatesResponse&>
+      const ash::nearby::proto::ListSharedCredentialsResponse&>
       future;
-  ash::nearby::proto::ListPublicCertificatesRequest request_proto;
-  request_proto.set_parent(kDeviceIdPath);
-  request_proto.set_page_size(kPageSize1);
-  request_proto.set_page_token(kPageToken1);
-  request_proto.add_secret_ids();
-  request_proto.set_secret_ids(0, kSecretId1);
-  request_proto.add_secret_ids();
-  request_proto.set_secret_ids(1, kSecretId2);
+  ash::nearby::proto::ListSharedCredentialsRequest request_proto;
+  request_proto.set_dusi(kLocalDeviceDusi);
+  request_proto.set_identity_type(
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP);
 
-  client_->ListPublicCertificates(request_proto, future.GetCallback(),
-                                  base::BindOnce(&NotCalled<NearbyHttpError>));
+  client_->ListSharedCredentials(request_proto, future.GetCallback(),
+                                 base::BindOnce(&NotCalled<NearbyHttpError>));
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
           kAccessToken, base::Time::Max());
 
   EXPECT_EQ(kGet, http_method());
   EXPECT_EQ(request_url(), std::string(kTestGoogleApisUrl) + "/v1/presence/" +
-                               std::string(kDeviceIdPath) +
-                               "/publicCertificates");
+                               std::string(kLocalDeviceDusi) + "/1" +
+                               "/listSharedCredentials");
 
   EXPECT_EQ(
-      std::vector<std::string>{base::NumberToString(kPageSize1)},
-      ExpectQueryStringValues(request_as_query_parameters(), "page_size"));
-  EXPECT_EQ(
-      std::vector<std::string>{kPageToken1},
-      ExpectQueryStringValues(request_as_query_parameters(), "page_token"));
-  EXPECT_EQ(
-      (std::vector<std::string>{kSecretId1Encoded, kSecretId2Encoded}),
-      ExpectQueryStringValues(request_as_query_parameters(), "secret_ids"));
+      std::vector<std::string>{base::NumberToString(1)},
+      ExpectQueryStringValues(request_as_query_parameters(), "identity_type"));
+  EXPECT_EQ(std::vector<std::string>{kLocalDeviceDusi},
+            ExpectQueryStringValues(request_as_query_parameters(), "dusi"));
 
-  ash::nearby::proto::ListPublicCertificatesResponse response_proto;
-  response_proto.set_next_page_token(kPageToken2);
-  response_proto.add_public_certificates();
-  response_proto.mutable_public_certificates(0)->set_secret_id(kSecretId1);
-  response_proto.mutable_public_certificates(0)->set_secret_key(kSecretKey1);
-  response_proto.mutable_public_certificates(0)->set_public_key(kPublicKey1);
-  response_proto.mutable_public_certificates(0)
-      ->mutable_start_time()
-      ->set_seconds(kSeconds1);
-  response_proto.mutable_public_certificates(0)
-      ->mutable_start_time()
-      ->set_nanos(kNanos1);
-  response_proto.mutable_public_certificates(0)
-      ->mutable_end_time()
-      ->set_seconds(kSeconds2);
-  response_proto.mutable_public_certificates(0)->mutable_end_time()->set_nanos(
-      kNanos2);
+  ash::nearby::proto::ListSharedCredentialsResponse response_proto;
+  response_proto.add_shared_credentials();
+  response_proto.mutable_shared_credentials(0)->set_id(kId1);
   FinishApiCallFlow(&response_proto);
 
-  ash::nearby::proto::ListPublicCertificatesResponse result_proto =
+  ash::nearby::proto::ListSharedCredentialsResponse result_proto =
       future.Take();
-  EXPECT_EQ(kPageToken2, result_proto.next_page_token());
-  EXPECT_EQ(1, result_proto.public_certificates_size());
-  EXPECT_EQ(kSecretId1, result_proto.public_certificates(0).secret_id());
-  EXPECT_EQ(kSecretKey1, result_proto.public_certificates(0).secret_key());
-  EXPECT_EQ(kSeconds1,
-            result_proto.public_certificates(0).start_time().seconds());
-  EXPECT_EQ(kNanos1, result_proto.public_certificates(0).start_time().nanos());
-  EXPECT_EQ(kSeconds2,
-            result_proto.public_certificates(0).end_time().seconds());
-  EXPECT_EQ(kNanos2, result_proto.public_certificates(0).end_time().nanos());
+  EXPECT_EQ(1, result_proto.shared_credentials_size());
+  EXPECT_EQ(kId1, result_proto.shared_credentials(0).id());
 }
 
 TEST_F(NearbyPresenceServerClientImplTest, FetchAccessTokenFailure) {
@@ -387,10 +347,10 @@ TEST_F(NearbyPresenceServerClientImplTest,
   // With request pending, make second request.
   {
     base::test::TestFuture<NearbyHttpError> future2;
-    EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
-        ash::nearby::proto::ListPublicCertificatesRequest(),
+    EXPECT_DCHECK_DEATH(client_->ListSharedCredentials(
+        ash::nearby::proto::ListSharedCredentialsRequest(),
         base::BindOnce(&NotCalledConstRef<
-                       ash::nearby::proto::ListPublicCertificatesResponse>),
+                       ash::nearby::proto::ListSharedCredentialsResponse>),
         future2.GetCallback()));
   }
 
@@ -434,10 +394,10 @@ TEST_F(NearbyPresenceServerClientImplTest,
   // Second request fails.
   {
     base::test::TestFuture<NearbyHttpError> future;
-    EXPECT_DCHECK_DEATH(client_->ListPublicCertificates(
-        ash::nearby::proto::ListPublicCertificatesRequest(),
+    EXPECT_DCHECK_DEATH(client_->ListSharedCredentials(
+        ash::nearby::proto::ListSharedCredentialsRequest(),
         base::BindOnce(&NotCalledConstRef<
-                       ash::nearby::proto::ListPublicCertificatesResponse>),
+                       ash::nearby::proto::ListSharedCredentialsResponse>),
         future.GetCallback()));
   }
 }

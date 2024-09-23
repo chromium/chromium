@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_params.h"
@@ -66,10 +67,6 @@ class CONTENT_EXPORT SyntheticGestureController {
 
   void EnsureRendererInitialized(base::OnceClosure on_completed);
 
-  void UpdateSyntheticGestureTarget(
-      std::unique_ptr<SyntheticGestureTarget> gesture_target,
-      Delegate* delegate);
-
   // Returns true if the current gesture requires the RenderWidgetHost to be
   // visible in order to correctly dispatch events to it and the RWH is
   // currently hidden.
@@ -90,7 +87,7 @@ class CONTENT_EXPORT SyntheticGestureController {
       OnGestureCompleteCallback completion_callback,
       bool complete_immediately);
 
-  void StartTimer(bool high_frequency);
+  void StartOrUpdateTimer();
   void StartGesture();
   void StopGesture(const SyntheticGesture& gesture,
                    SyntheticGesture::Result result,
@@ -180,7 +177,10 @@ class CONTENT_EXPORT SyntheticGestureController {
   // widget becomes visible via StartIfNeeded().
   bool deferred_start_ = false;
 
-  base::MetronomeTimer dispatch_timer_;
+  base::TimeTicks event_timebase_;
+  base::TimeDelta event_interval_{base::Microseconds(8333)};
+
+  base::DeadlineTimer dispatch_timer_;
   base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_{this};
 };
 

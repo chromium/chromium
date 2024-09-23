@@ -6,7 +6,7 @@
 
 typedef [EnforceRange] unsigned long GPUTextureUsageFlags;
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
+    Exposed=(Window, Worker),
     SecureContext
 ] namespace GPUTextureUsage {
     const GPUFlagsConstant COPY_SRC = 1;

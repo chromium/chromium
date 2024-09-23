@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/mac/io_surface.h"
 
 #include <Availability.h>
@@ -81,7 +86,7 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_1010102:
     case gfx::BufferFormat::YVU_420:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -179,20 +184,12 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
                                 ColorSpace::TransferID::PQ,
                                 ColorSpace::MatrixID::BT2020_NCL,
                                 ColorSpace::RangeID::LIMITED)) {
-    if (__builtin_available(macos 11.0, *)) {
-      color_space_name = kCGColorSpaceITUR_2100_PQ;
-    } else {
-      return true;
-    }
+    color_space_name = kCGColorSpaceITUR_2100_PQ;
   } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
                                        ColorSpace::TransferID::HLG,
                                        ColorSpace::MatrixID::BT2020_NCL,
                                        ColorSpace::RangeID::LIMITED)) {
-    if (__builtin_available(macos 11.0, *)) {
-      color_space_name = kCGColorSpaceITUR_2100_HLG;
-    } else {
-      return true;
-    }
+    color_space_name = kCGColorSpaceITUR_2100_HLG;
   }
 
   // https://crbug.com/1488397: Set parameters that will be rendering YUV

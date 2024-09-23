@@ -4,84 +4,144 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.Matchers.allOf;
-
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
+import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.StringDescription;
 
-/** An Element representing a view characteristic of a ConditionalState. */
-public class ViewElement {
+import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
+import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 
-    private final Matcher<View> mViewMatcher;
-    private final boolean mOwned;
-    private final String mViewMatcherDescription;
+/**
+ * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
+ *
+ * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are
+ * created by calling {@link Elements.Builder#declareView(ViewSpec)}.
+ *
+ * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
+ * the right state.
+ */
+public class ViewElement extends Element<View> {
 
     /**
-     * Create a shared-ownership ViewElement that matches |viewMatcher|.
+     * Minimum percentage of the View that needs to be displayed for a ViewElement's enter
+     * Conditions to be considered fulfilled.
      *
-     * <p>Shared-ownership ViewElements should be gone after the ConditionalState is FINISHED when
-     * transitioning to a ConditionalState that does not own declare a ViewElement with the same
-     * matcher.
+     * <p>Matches Espresso's preconditions for ViewActions like click().
      */
-    public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, /* owned= */ true);
+    public static final int MIN_DISPLAYED_PERCENT = 90;
+
+    private final ViewSpec mViewSpec;
+    private final Options mOptions;
+
+    ViewElement(ViewSpec viewSpec, Options options) {
+        super(
+                "VE/"
+                        + (options.mElementId != null
+                                ? options.mElementId
+                                : viewSpec.getMatcherDescription()));
+        mViewSpec = viewSpec;
+        mOptions = options;
     }
 
     /**
-     * Create an unowned ViewElement that matches |viewMatcher|.
-     *
-     * <p>Unowned ViewElements are the most permissive; they may or may not be gone after the
-     * ConditionalState is FINISHED.
+     * @return an Options builder to customize the ViewElement further.
      */
-    public static ViewElement unownedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, /* owned= */ false);
+    public static ViewElement.Options.Builder newOptions() {
+        return new Options().new Builder();
     }
 
-    private ViewElement(Matcher<View> viewMatcher, boolean owned) {
-        mViewMatcher = viewMatcher;
-        mOwned = owned;
-
-        // Capture the description as soon as possible to compare ViewElements added to different
-        // states by their description. Espresso Matcher descriptions are not stable; the integer
-        // resource ids are translated when a View is provided. See examples in
-        // https://crbug.com/41494895#comment7.
-        mViewMatcherDescription = StringDescription.toString(mViewMatcher);
+    @Override
+    public ConditionWithResult<View> createEnterCondition() {
+        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
+        DisplayedCondition.Options conditionOptions =
+                DisplayedCondition.newOptions()
+                        .withExpectEnabled(mOptions.mExpectEnabled)
+                        .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
+                        .build();
+        return new DisplayedCondition(viewMatcher, conditionOptions);
     }
 
-    String getViewMatcherDescription() {
-        return mViewMatcherDescription;
+    @Override
+    public @Nullable Condition createExitCondition() {
+        if (mOptions.mScoped) {
+            return new NotDisplayedAnymoreCondition(mViewSpec.getViewMatcher());
+        } else {
+            return null;
+        }
     }
 
-    /**
-     * @return the Matcher<View> used to create this element
-     */
-    public Matcher<View> getViewMatcher() {
-        return mViewMatcher;
+    /** Extra options for declaring ViewElements. */
+    public static class Options {
+        static final Options DEFAULT = new Options();
+        protected boolean mScoped = true;
+        protected boolean mExpectEnabled = true;
+        protected String mElementId;
+        protected Integer mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+
+        protected Options() {}
+
+        public class Builder {
+            public Options build() {
+                return Options.this;
+            }
+
+            /** Don't except the View to necessarily disappear when exiting the ConditionalState. */
+            public Builder unscoped() {
+                mScoped = false;
+                return this;
+            }
+
+            /** Use a custom Element id instead of the Matcher<View> description. */
+            public Builder elementId(String id) {
+                mElementId = id;
+                return this;
+            }
+
+            /**
+             * Expect the View to be disabled instead of enabled.
+             *
+             * <p>This is different than passing an isEnabled() Matcher.If the matcher was, for
+             * example |allOf(withId(ID), isEnabled())|, the exit condition would be considered
+             * fulfilled if the View became disabled. Meanwhile, using this option makes the exit
+             * condition only be considered fulfilled if no Views |withId(ID)|, enabled or not, were
+             * displayed.
+             */
+            public Builder expectDisabled() {
+                mExpectEnabled = false;
+                return this;
+            }
+
+            /**
+             * Changes the minimum percentage of the View that needs be displayed to fulfill the
+             * enter Condition. Default is >=90% visible, which matches the minimum requirement for
+             * ViewInteractions like click().
+             */
+            public Builder displayingAtLeast(int percentage) {
+                mDisplayedPercentageRequired = percentage;
+                return this;
+            }
+        }
     }
 
-    boolean isOwned() {
-        return mOwned;
+    /** Convenience {@link Options} setting unscoped(). */
+    public static Options unscopedOption() {
+        return newOptions().unscoped().build();
     }
 
-    /**
-     * Start an Espresso interaction with a displayed View that matches this ViewElement's Matcher.
-     */
-    public ViewInteraction onView() {
-        return Espresso.onView(allOf(mViewMatcher, isDisplayed()));
+    /** Convenience {@link Options} setting elementId(). */
+    public static Options elementIdOption(String id) {
+        return newOptions().elementId(id).build();
     }
 
-    /**
-     * Perform an Espresso ViewAction on a displayed View that matches this ViewElement's Matcher.
-     */
-    public ViewInteraction perform(ViewAction action) {
-        return onView().perform(action);
+    /** Convenience {@link Options} setting expectDisabled(). */
+    public static Options expectDisabledOption() {
+        return newOptions().expectDisabled().build();
+    }
+
+    /** Convenience {@link Options} setting displayingAtLeast(). */
+    public static Options displayingAtLeastOption(int percentage) {
+        return newOptions().displayingAtLeast(percentage).build();
     }
 }

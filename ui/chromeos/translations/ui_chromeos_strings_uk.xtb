@@ -18,7 +18,7 @@
 <translation id="1150565364351027703">Сонцезахисні окуляри</translation>
 <translation id="115443833402798225">Клавіатура хангул (анмате)</translation>
 <translation id="1155759005174418845">Каталанська</translation>
-<translation id="1168100932582989117">Імена серверів – Google</translation>
+<translation id="1168100932582989117">Сервери імен Google</translation>
 <translation id="1172970565351728681">Залишилося приблизно <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1173916544412572294">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
 <translation id="3104793765551262433">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
-<translation id="3113153474486991170">Не вдалося відкрити файл "<ph name="PATH" />" з цієї папки. Скопіюйте його в папку "Мої файли".</translation>
 <translation id="3113592018909187986">Залишилась 1 спроба. Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код.</translation>
 <translation id="3124404833828281817">Замріяна людина</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="3691184985318546178">Сингальська</translation>
+<translation id="3702842351052426940">Вашу SIM-карту або профіль eSIM може бути деактивовано. Спробуйте змінити SIM-карту або профіль eSIM.</translation>
 <translation id="3722341589402358578">Сталася помилка. Можливо, видалено не всі об’єкти.</translation>
 <translation id="3726463242007121105">Не вдається відкрити пристрій, оскільки його файлова система не підтримується.</translation>
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Ваш адміністратор застосував цей проксі-сервер</translation>
 <translation id="3830674330436234648">Немає даних для відтворення</translation>
 <translation id="383652340667548381">Сербська</translation>
+<translation id="3839045880592694915">Ваш оператор не дозволяє підключатися до модема. Щоб дізнатися більше, зв’яжіться зі своїм оператором.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851491607336266896">Підключено, доступ до Інтернету обмежено</translation>
 <translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Нещодавно відкриті файли Microsoft переміщено в сервіс OneDrive</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4017788180641807848">Англійська (США), розкладка Workman</translation>
-<translation id="4019998208269143058">Закріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="4040753847560036377">Неправильний PUK-код</translation>
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
+<translation id="4101601646343868113">Увійдіть у свою мобільну мережу й переконайтеся, що ваш тарифний план мобільного Інтернету активний</translation>
 <translation id="4124731372776320263">Синхронізація 1 файлу на Диску</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
@@ -431,7 +431,7 @@
 <translation id="4439427728133035643">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4442424173763614572">Помилка пошуку DNS</translation>
 <translation id="4445896958353114391">Синхронізація файлів</translation>
-<translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
+<translation id="4462159676511157176">Сторонні сервери імен</translation>
 <translation id="4465725236958772856">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Мережею керує адміністратор. Підключитися</translation>
 <translation id="4470564870223067757">Клавіатура хангул із 2 наборами клавіш</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Слухати</translation>
+<translation id="5650895901941743674">Перевірте конфігурацію APN</translation>
 <translation id="5669691691057771421">Введіть новий PIN-код</translation>
 <translation id="5678784840044122290">Додаток Linux буде доступний в терміналі, а його значок може відображатися на панелі запуску.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не вдається від’єднатися від архіву чи віртуального диска<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6271903698064569429">Не вдається завантажити файли, оскільки на спільному диску "<ph name="SHARED_DRIVE_NAME" />" недостатньо пам’яті.</translation>
+<translation id="6279140785485544797">Можливо, строк дії вашого тарифного плану мобільного Інтернету закінчився. Якщо вам потрібна допомога, зв’яжіться зі своїм оператором.</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
 <translation id="6295542640242147836">Заблокувати SIM-карту</translation>
 <translation id="6296410173147755564">Недійсний PUK-код</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Архів .<ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Помах рукою</translation>
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
-<translation id="6337014272874260727">Відкріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Поточний каталог</translation>
 <translation id="6751256176799620176">Вибрано 1 папку</translation>
 <translation id="6755827872271341378">Пристрій з ОС Chrome Flex</translation>
+<translation id="6777029074498310250">Щоб дізнатися більше, відвідайте сторінку <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6794539005637808366">Відновіть об’єкт або перетягніть його з кошика в нову папку</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Тамільська, розкладка InScript</translation>
 <translation id="7088615885725309056">Давніше</translation>
 <translation id="7103992300314999525">Македонська</translation>
+<translation id="7104338189998813914">Не вдалось отримати доступ до облікового запису OneDrive</translation>
 <translation id="7106346894903675391">Придбати більше місця...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;шукати на Диску&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада, фонетична розкладка</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Зачекайте</translation>
 <translation id="7600126690270271294">Сербська</translation>
 <translation id="7603724359189955920">Сітка</translation>
+<translation id="7624010287655004652">Заблоковано іншим оператором мобільного зв’язку</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" вже існує. Перейменуйте його та повторіть спробу.</translation>
 <translation id="7628656427739290098">Завершено <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Довідка</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
 <translation id="8609695766746872526">Ісландська</translation>
+<translation id="8630384863424041081">Введіть PIN-код SIM-карти або PIN-код за умовчанням, наданий оператором. Якщо вам потрібна допомога, зв’яжіться з оператором.</translation>
 <translation id="863903787380594467">Неправильний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
 <translation id="8656407365183407932">Файли, доступні офлайн, було вилучено</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Цей файл конфіденційний і регулюється правилами адміністратора.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Мальтійська</translation>
-<translation id="8714138378966541668">Заблоковано постачальником</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Вибрано: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Хорватська</translation>

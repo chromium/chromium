@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 #define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 
-#include "chrome/browser/themes/theme_properties.h"
 #include "components/color/color_id.h"
 #include "ui/color/color_id.h"
 
@@ -22,16 +21,20 @@
   E_CPONLY(kColorAppMenuHighlightSeverityHigh) \
   E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
   E_CPONLY(kColorAppMenuHighlightDefault) \
+  E_CPONLY(kColorAppMenuHighlightPrimary) \
   E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
+  E_CPONLY(kColorAppMenuExpandedForegroundPrimary) \
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
-  /* TODO(crbug.com/1422119): Refactor the Avatar Button colors as Profile */ \
+  /* TODO(crbug.com/40259490): Refactor the Avatar Button colors as Profile */ \
   /* Menu Button colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightDefault) \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \
   E_CPONLY(kColorAvatarButtonHighlightSyncPaused) \
+  E_CPONLY(kColorAvatarButtonHighlightSigninPaused) \
+  E_CPONLY(kColorAvatarButtonHighlightExplicitText) \
   E_CPONLY(kColorAvatarButtonHighlightIncognito) \
   E_CPONLY(kColorAvatarButtonHighlightNormalForeground) \
   E_CPONLY(kColorAvatarButtonHighlightDefaultForeground) \
@@ -40,6 +43,8 @@
   E_CPONLY(kColorAvatarButtonIncognitoHover) \
   E_CPONLY(kColorAvatarButtonNormalRipple) \
   E_CPONLY(kColorAvatarStrokeLight) \
+  E_CPONLY(kColorAvatarStroke) \
+  E_CPONLY(kColorAvatarFillForContrast) \
   /* Bookmark bar colors. */ \
   E_CPONLY(kColorBookmarkBarBackground) \
   E_CPONLY(kColorBookmarkBarForeground) \
@@ -62,6 +67,33 @@
   E_CPONLY(kColorCapturedTabContentsBorder) \
   /* Cast dialog colors. */ \
   E_CPONLY(kColorCastDialogHelpIcon) \
+  /* Signin bubble colors. */ \
+  E_CPONLY(kColorChromeSigninBubbleBackground) \
+  E_CPONLY(kColorChromeSigninBubbleInfoBackground) \
+  /* Batch Upload colors. */ \
+  E_CPONLY(kColorBatchUploadBackground) \
+  E_CPONLY(kColorBatchUploadDataBackground) \
+  /* Compose colors */ \
+  E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogDivider) \
+  E_CPONLY(kColorComposeDialogError) \
+  E_CPONLY(kColorComposeDialogForegroundSubtle) \
+  E_CPONLY(kColorComposeDialogLink) \
+  E_CPONLY(kColorComposeDialogLogo) \
+  E_CPONLY(kColorComposeDialogResultBackground) \
+  E_CPONLY(kColorComposeDialogResultForeground) \
+  E_CPONLY(kColorComposeDialogResultForegroundWhileLoading) \
+  E_CPONLY(kColorComposeDialogResultIcon) \
+  E_CPONLY(kColorComposeDialogResultContainerScrollbarThumb) \
+  E_CPONLY(kColorComposeDialogScrollbarThumb) \
+  E_CPONLY(kColorComposeDialogTitle) \
+  E_CPONLY(kColorComposeDialogTextarea) \
+  E_CPONLY(kColorComposeDialogTextareaOutline) \
+  E_CPONLY(kColorComposeDialogTextareaPlaceholder) \
+  E_CPONLY(kColorComposeDialogTextareaReadonlyBackground) \
+  E_CPONLY(kColorComposeDialogTextareaReadonlyForeground) \
+  E_CPONLY(kColorComposeDialogTextareaIcon) \
+  E_CPONLY(kColorComposeDialogSelectOptionDisabled) \
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
@@ -75,6 +107,7 @@
   E_CPONLY(kColorDownloadBubbleInfoIcon) \
   E_CPONLY(kColorDownloadBubbleRowHover) \
   E_CPONLY(kColorDownloadBubbleShowAllDownloadsIcon) \
+  E_CPONLY(kColorDownloadBubblePrimaryIcon) \
   /* Download shelf colors. */ \
   E_CPONLY(kColorDownloadItemForeground) \
   E_CPONLY(kColorDownloadItemForegroundDangerous) \
@@ -105,7 +138,7 @@
   E_CPONLY(kColorExtensionMenuIconDisabled) \
   E_CPONLY(kColorExtensionMenuPinButtonIcon) \
   E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
-  E_CPONLY(kColorExtensionsMenuHighlightedBackground) \
+  E_CPONLY(kColorExtensionsMenuContainerBackground) \
   E_CPONLY(kColorExtensionsToolbarControlsBackground) \
   E_CPONLY(kColorExtensionsMenuText) \
   E_CPONLY(kColorExtensionsMenuSecondaryText) \
@@ -142,6 +175,11 @@
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
+  /* Hover Button colors */ \
+  E_CPONLY(kColorHoverButtonBackgroundHovered) \
+  /* Lens overlay colors. */ \
+  E_CPONLY(kColorLensOverlayToastBackground) \
+  E_CPONLY(kColorLensOverlayToastButtonText) \
   /* Location bar colors. */ \
   E_CPONLY(kColorLocationBarBackground) \
   E_CPONLY(kColorLocationBarBackgroundHovered) \
@@ -169,8 +207,6 @@
   E_CPONLY(kColorNewTabButtonCRForegroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonCRBackgroundFrameActive) \
   E_CPONLY(kColorNewTabButtonCRBackgroundFrameInactive) \
-  E_CPONLY(kColorTabSearchButtonCRForegroundFrameActive) \
-  E_CPONLY(kColorTabSearchButtonCRForegroundFrameInactive) \
   /* New Tab Page colors. */ \
   E_CPONLY(kColorNewTabPageActionButtonBackground) \
   E_CPONLY(kColorNewTabPageActionButtonBorder) \
@@ -218,6 +254,10 @@
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
   E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
+  E_CPONLY(kColorNewTabPageModuleCalendarEventTimeStatusBackground) \
+  E_CPONLY(kColorNewTabPageModuleCalendarAttachmentScrollbarThumb) \
+  E_CPONLY(kColorNewTabPageModuleCalendarDividerColor) \
+  E_CPONLY(kColorNewTabPageModuleIconBackground) \
   E_CPONLY(kColorNewTabPageModuleElementDivider) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
   E_CPONLY(kColorNewTabPageModuleItemBackground) \
@@ -245,6 +285,12 @@
   E_CPONLY(kColorNewTabPageText) \
   E_CPONLY(kColorNewTabPageTextUnthemed) \
   E_CPONLY(kColorNewTabPageTextLight) \
+  E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackground) \
+  E_CPONLY(kColorNewTabPageWallpaperSearchButtonBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageWallpaperSearchButtonForeground) \
+  /* New Tab Page Colors for Doodle Share Button. */ \
+  E_CPONLY(kColorNewTabPageDoodleShareButtonBackground) \
+  E_CPONLY(kColorNewTabPageDoodleShareButtonIcon) \
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxAnswerIconBackground) \
   E_CPONLY(kColorOmniboxAnswerIconForeground) \
@@ -252,18 +298,25 @@
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
   E_CPONLY(kColorOmniboxBubbleOutlineExperimentalKeywordMode) \
+  E_CPONLY(kColorOmniboxChipInUseActivityIndicatorBackground) \
+  E_CPONLY(kColorOmniboxChipInUseActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxChipBackground) \
+  E_CPONLY(kColorOmniboxChipBlockedActivityIndicatorBackground) \
+  E_CPONLY(kColorOmniboxChipBlockedActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
   E_CPONLY(kColorOmniboxChipInkDropHover) \
   E_CPONLY(kColorOmniboxChipInkDropRipple) \
-  E_CPONLY(kColorOmniboxKeywordSelected) \
-  E_CPONLY(kColorOmniboxKeywordSeparator) \
+  E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground) \
+  E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxIntentChipBackground) \
   E_CPONLY(kColorOmniboxIntentChipIcon) \
+  E_CPONLY(kColorOmniboxKeywordSelected) \
+  E_CPONLY(kColorOmniboxKeywordSeparator) \
   E_CPONLY(kColorOmniboxResultsBackground) \
   E_CPONLY(kColorOmniboxResultsBackgroundHovered) \
   E_CPONLY(kColorOmniboxResultsBackgroundSelected) \
+  E_CPONLY(kColorOmniboxResultsBackgroundIPH) \
   E_CPONLY(kColorOmniboxResultsButtonBorder) \
   E_CPONLY(kColorOmniboxResultsButtonIcon) \
   E_CPONLY(kColorOmniboxResultsButtonIconSelected) \
@@ -273,6 +326,7 @@
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowHovered) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowSelected) \
+  E_CPONLY(kColorOmniboxResultsChipBackground) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
   E_CPONLY(kColorOmniboxResultsIcon) \
   E_CPONLY(kColorOmniboxResultsIconGM3Background) \
@@ -307,11 +361,13 @@
   E_CPONLY(kColorPageInfoBackgroundTonal) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
+  E_CPONLY(kColorPageInfoForeground) \
+  E_CPONLY(kColorPageInfoForegroundTonal) \
   E_CPONLY(kColorPageInfoIconHover) \
   E_CPONLY(kColorPageInfoIconPressed) \
-  /* Experimentation */ \
-  E_CPONLY(kColorShoppingPageActionIconBackgroundVariant) \
-  E_CPONLY(kColorShoppingPageActionIconForegroundVariant) \
+  E_CPONLY(kColorPageInfoPermissionBlockedOnSystemLevelDisabled) \
+  E_CPONLY(kColorPageInfoPermissionForeground) \
+  E_CPONLY(kColorPageInfoPermissionUsedIcon) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \
   E_CPONLY(kColorPaymentsFeedbackTipBorder) \
@@ -328,6 +384,9 @@
   E_CPONLY(kColorPaymentsRequestRowBackgroundHighlighted) \
   /* Permission Prompt colors. */ \
   E_CPONLY(kColorPermissionPromptRequestText) \
+   /* Performance Intervention colors. */ \
+  E_CPONLY(kColorPerformanceInterventionButtonIconActive) \
+  E_CPONLY(kColorPerformanceInterventionButtonIconInactive) \
   /* Picture-in-Picture window colors. */ \
   E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
   E_CPONLY(kColorPipWindowBackground) \
@@ -338,6 +397,28 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* Product Specifications colors */ \
+  E_CPONLY(kColorProductSpecificationsButtonBackground) \
+  E_CPONLY(kColorProductSpecificationsCitationBackground) \
+  E_CPONLY(kColorProductSpecificationsDetailChipBackground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureGradientEnd) \
+  E_CPONLY(kColorProductSpecificationsDisclosureGradientStart) \
+  E_CPONLY(kColorProductSpecificationsDisclosureSummaryBackground) \
+  E_CPONLY(kColorProductSpecificationsDivider) \
+  E_CPONLY(kColorProductSpecificationsGradientIcon) \
+  E_CPONLY(kColorProductSpecificationsHorizontalCarouselScrollbarThumb) \
+  E_CPONLY(kColorProductSpecificationsIcon) \
+  E_CPONLY(kColorProductSpecificationsIconButtonBackground) \
+  E_CPONLY(kColorProductSpecificationsIconButtonHoveredBackground) \
+  E_CPONLY(kColorProductSpecificationsLink) \
+  E_CPONLY(kColorProductSpecificationsPageBackground) \
+  E_CPONLY(kColorProductSpecificationsPrimaryTitle) \
+  E_CPONLY(kColorProductSpecificationsSecondaryTitle) \
+  E_CPONLY(kColorProductSpecificationsSummaryBackground) \
+  E_CPONLY(kColorProductSpecificationsSummaryBackgroundDragging) \
+  E_CPONLY(kColorProductSpecificationsTonalButtonBackground) \
   /* Profile Menu colors. */ \
   E_CPONLY(kColorProfileMenuBackground) \
   E_CPONLY(kColorProfileMenuHeaderBackground) \
@@ -371,40 +452,118 @@
   /* Quick Answers colors. */ \
   E_CPONLY(kColorQuickAnswersReportQueryButtonBackground) \
   E_CPONLY(kColorQuickAnswersReportQueryButtonForeground) \
+    /* Read Anything colors. */ \
+  E_CPONLY(kColorReadAnythingBackground) \
+  E_CPONLY(kColorReadAnythingBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingBackgroundDark) \
+  E_CPONLY(kColorReadAnythingBackgroundLight) \
+  E_CPONLY(kColorReadAnythingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlight) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightBlue) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightDark) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightLight) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightYellow) \
+  E_CPONLY(kColorReadAnythingFocusRingBackground) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingForeground) \
+  E_CPONLY(kColorReadAnythingForegroundBlue) \
+  E_CPONLY(kColorReadAnythingForegroundDark) \
+  E_CPONLY(kColorReadAnythingForegroundLight) \
+  E_CPONLY(kColorReadAnythingForegroundYellow) \
+  E_CPONLY(kColorReadAnythingSeparator) \
+  E_CPONLY(kColorReadAnythingSeparatorBlue) \
+  E_CPONLY(kColorReadAnythingSeparatorDark) \
+  E_CPONLY(kColorReadAnythingSeparatorLight) \
+  E_CPONLY(kColorReadAnythingSeparatorYellow) \
+  E_CPONLY(kColorReadAnythingDropdownBackground) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundDark) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundLight) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingDropdownSelected) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedBlue) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
+  E_CPONLY(kColorReadAnythingTextSelection) \
+  E_CPONLY(kColorReadAnythingTextSelectionBlue) \
+  E_CPONLY(kColorReadAnythingTextSelectionDark) \
+  E_CPONLY(kColorReadAnythingTextSelectionLight) \
+  E_CPONLY(kColorReadAnythingTextSelectionYellow) \
+  E_CPONLY(kColorReadAnythingLinkDefault) \
+  E_CPONLY(kColorReadAnythingLinkDefaultBlue) \
+  E_CPONLY(kColorReadAnythingLinkDefaultDark) \
+  E_CPONLY(kColorReadAnythingLinkDefaultLight) \
+  E_CPONLY(kColorReadAnythingLinkDefaultYellow) \
+  E_CPONLY(kColorReadAnythingLinkVisited) \
+  E_CPONLY(kColorReadAnythingLinkVisitedBlue) \
+  E_CPONLY(kColorReadAnythingLinkVisitedDark) \
+  E_CPONLY(kColorReadAnythingLinkVisitedLight) \
+  E_CPONLY(kColorReadAnythingLinkVisitedYellow) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlight) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightBlue) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightDark) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightLight) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightYellow) \
   /* Realbox colors. */ \
-  E_CPONLY(kColorRealboxAnswerIconBackground) \
-  E_CPONLY(kColorRealboxAnswerIconForeground) \
-  E_CPONLY(kColorRealboxBackground) \
-  E_CPONLY(kColorRealboxBackgroundHovered) \
-  E_CPONLY(kColorRealboxBorder) \
-  E_CPONLY(kColorRealboxForeground) \
-  E_CPONLY(kColorRealboxLensVoiceIconBackground) \
-  E_CPONLY(kColorRealboxPlaceholder) \
-  E_CPONLY(kColorRealboxResultsActionChip) \
-  E_CPONLY(kColorRealboxResultsActionChipIcon) \
-  E_CPONLY(kColorRealboxResultsActionChipFocusOutline) \
-  E_CPONLY(kColorRealboxResultsBackground) \
-  E_CPONLY(kColorRealboxResultsBackgroundHovered) \
-  E_CPONLY(kColorRealboxResultsButtonHover) \
-  E_CPONLY(kColorRealboxResultsDimSelected) \
-  E_CPONLY(kColorRealboxResultsFocusIndicator) \
-  E_CPONLY(kColorRealboxResultsForeground) \
-  E_CPONLY(kColorRealboxResultsForegroundDimmed) \
-  E_CPONLY(kColorRealboxResultsIcon) \
-  E_CPONLY(kColorRealboxResultsIconFocusedOutline) \
-  E_CPONLY(kColorRealboxResultsIconSelected) \
-  E_CPONLY(kColorRealboxResultsUrl) \
-  E_CPONLY(kColorRealboxResultsUrlSelected) \
-  E_CPONLY(kColorRealboxSearchIconBackground) \
-  E_CPONLY(kColorRealboxSelectionBackground) \
-  E_CPONLY(kColorRealboxSelectionForeground) \
-  E_CPONLY(kColorRealboxShadow) \
+  E_CPONLY(kColorSearchboxAnswerIconBackground) \
+  E_CPONLY(kColorSearchboxAnswerIconForeground) \
+  E_CPONLY(kColorSearchboxBackground) \
+  E_CPONLY(kColorSearchboxBackgroundHovered) \
+  E_CPONLY(kColorSearchboxBorder) \
+  E_CPONLY(kColorSearchboxForeground) \
+  E_CPONLY(kColorSearchboxLensVoiceIconBackground) \
+  E_CPONLY(kColorSearchboxPlaceholder) \
+  E_CPONLY(kColorSearchboxResultsActionChip) \
+  E_CPONLY(kColorSearchboxResultsActionChipIcon) \
+  E_CPONLY(kColorSearchboxResultsActionChipFocusOutline) \
+  E_CPONLY(kColorSearchboxResultsBackground) \
+  E_CPONLY(kColorSearchboxResultsBackgroundHovered) \
+  E_CPONLY(kColorSearchboxResultsButtonHover) \
+  E_CPONLY(kColorSearchboxResultsDimSelected) \
+  E_CPONLY(kColorSearchboxResultsFocusIndicator) \
+  E_CPONLY(kColorSearchboxResultsForeground) \
+  E_CPONLY(kColorSearchboxResultsForegroundDimmed) \
+  E_CPONLY(kColorSearchboxResultsIcon) \
+  E_CPONLY(kColorSearchboxResultsIconFocusedOutline) \
+  E_CPONLY(kColorSearchboxResultsIconSelected) \
+  E_CPONLY(kColorSearchboxResultsUrl) \
+  E_CPONLY(kColorSearchboxResultsUrlSelected) \
+  E_CPONLY(kColorSearchboxSearchIconBackground) \
+  E_CPONLY(kColorSearchboxSelectionBackground) \
+  E_CPONLY(kColorSearchboxSelectionForeground) \
+  E_CPONLY(kColorSearchboxShadow) \
+  /* The colors used for saved tab group chips on the bookmark bar. */ \
+  E_CPONLY(kColorSavedTabGroupForegroundGrey) \
+  E_CPONLY(kColorSavedTabGroupForegroundBlue) \
+  E_CPONLY(kColorSavedTabGroupForegroundRed) \
+  E_CPONLY(kColorSavedTabGroupForegroundYellow) \
+  E_CPONLY(kColorSavedTabGroupForegroundGreen) \
+  E_CPONLY(kColorSavedTabGroupForegroundPink) \
+  E_CPONLY(kColorSavedTabGroupForegroundPurple) \
+  E_CPONLY(kColorSavedTabGroupForegroundCyan) \
+  E_CPONLY(kColorSavedTabGroupForegroundOrange) \
+  E_CPONLY(kColorSavedTabGroupOutlineGrey) \
+  E_CPONLY(kColorSavedTabGroupOutlineBlue) \
+  E_CPONLY(kColorSavedTabGroupOutlineRed) \
+  E_CPONLY(kColorSavedTabGroupOutlineYellow) \
+  E_CPONLY(kColorSavedTabGroupOutlineGreen) \
+  E_CPONLY(kColorSavedTabGroupOutlinePink) \
+  E_CPONLY(kColorSavedTabGroupOutlinePurple) \
+  E_CPONLY(kColorSavedTabGroupOutlineCyan) \
+  E_CPONLY(kColorSavedTabGroupOutlineOrange) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
+  /* Experimentation */ \
+  E_CPONLY(kColorShoppingPageActionIconBackgroundVariant) \
+  E_CPONLY(kColorShoppingPageActionIconForegroundVariant) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
@@ -460,6 +619,7 @@
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
   E_CPONLY(kColorSidePanelHeaderButtonIcon) \
   E_CPONLY(kColorSidePanelHeaderButtonIconDisabled) \
+  E_CPONLY(kColorSidePanelHoverResizeAreaHandle) \
   E_CPONLY(kColorSidePanelResizeAreaHandle) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
@@ -516,6 +676,37 @@
   E_CPONLY(kColorTabHoverCardBackground) \
   E_CPONLY(kColorTabHoverCardForeground) \
   E_CPONLY(kColorTabHoverCardSecondaryText) \
+  /* Tab group bookmark bar colors. */ \
+  E_CPONLY(kColorTabGroupBookmarkBarGrey) \
+  E_CPONLY(kColorTabGroupBookmarkBarBlue) \
+  E_CPONLY(kColorTabGroupBookmarkBarRed) \
+  E_CPONLY(kColorTabGroupBookmarkBarYellow) \
+  E_CPONLY(kColorTabGroupBookmarkBarGreen) \
+  E_CPONLY(kColorTabGroupBookmarkBarPink) \
+  E_CPONLY(kColorTabGroupBookmarkBarPurple) \
+  E_CPONLY(kColorTabGroupBookmarkBarCyan) \
+  E_CPONLY(kColorTabGroupBookmarkBarOrange) \
+  /* The colors used for tab groups in the context submenu. */ \
+  E_CPONLY(kColorTabGroupContextMenuBlue) \
+  E_CPONLY(kColorTabGroupContextMenuCyan) \
+  E_CPONLY(kColorTabGroupContextMenuGreen) \
+  E_CPONLY(kColorTabGroupContextMenuGrey) \
+  E_CPONLY(kColorTabGroupContextMenuOrange) \
+  E_CPONLY(kColorTabGroupContextMenuPink) \
+  E_CPONLY(kColorTabGroupContextMenuPurple) \
+  E_CPONLY(kColorTabGroupContextMenuRed) \
+  E_CPONLY(kColorTabGroupContextMenuYellow) \
+  /* The colors used for tab groups in the bubble dialog view. */ \
+  E_CPONLY(kColorTabGroupDialogGrey) \
+  E_CPONLY(kColorTabGroupDialogBlue) \
+  E_CPONLY(kColorTabGroupDialogRed) \
+  E_CPONLY(kColorTabGroupDialogYellow) \
+  E_CPONLY(kColorTabGroupDialogGreen) \
+  E_CPONLY(kColorTabGroupDialogPink) \
+  E_CPONLY(kColorTabGroupDialogPurple) \
+  E_CPONLY(kColorTabGroupDialogCyan) \
+  E_CPONLY(kColorTabGroupDialogOrange) \
+  E_CPONLY(kColorTabGroupDialogIconEnabled) \
   /* The colors used for tab groups in the tabstrip. */ \
   E_CPONLY(kColorTabGroupTabStripFrameActiveGrey) \
   E_CPONLY(kColorTabGroupTabStripFrameActiveBlue) \
@@ -535,55 +726,6 @@
   E_CPONLY(kColorTabGroupTabStripFrameInactivePurple) \
   E_CPONLY(kColorTabGroupTabStripFrameInactiveCyan) \
   E_CPONLY(kColorTabGroupTabStripFrameInactiveOrange) \
-  /* The colors used for tab groups in the bubble dialog view. */ \
-  E_CPONLY(kColorTabGroupDialogGrey) \
-  E_CPONLY(kColorTabGroupDialogBlue) \
-  E_CPONLY(kColorTabGroupDialogRed) \
-  E_CPONLY(kColorTabGroupDialogYellow) \
-  E_CPONLY(kColorTabGroupDialogGreen) \
-  E_CPONLY(kColorTabGroupDialogPink) \
-  E_CPONLY(kColorTabGroupDialogPurple) \
-  E_CPONLY(kColorTabGroupDialogCyan) \
-  E_CPONLY(kColorTabGroupDialogOrange) \
-  E_CPONLY(kColorTabGroupDialogIconEnabled) \
-  /* The colors used for tab groups in the context submenu. */ \
-  E_CPONLY(kColorTabGroupContextMenuBlue) \
-  E_CPONLY(kColorTabGroupContextMenuCyan) \
-  E_CPONLY(kColorTabGroupContextMenuGreen) \
-  E_CPONLY(kColorTabGroupContextMenuGrey) \
-  E_CPONLY(kColorTabGroupContextMenuOrange) \
-  E_CPONLY(kColorTabGroupContextMenuPink) \
-  E_CPONLY(kColorTabGroupContextMenuPurple) \
-  E_CPONLY(kColorTabGroupContextMenuRed) \
-  E_CPONLY(kColorTabGroupContextMenuYellow) \
-  /* The colors used for saved tab group chips on the bookmark bar. */ \
-  E_CPONLY(kColorSavedTabGroupForegroundGrey) \
-  E_CPONLY(kColorSavedTabGroupForegroundBlue) \
-  E_CPONLY(kColorSavedTabGroupForegroundRed) \
-  E_CPONLY(kColorSavedTabGroupForegroundYellow) \
-  E_CPONLY(kColorSavedTabGroupForegroundGreen) \
-  E_CPONLY(kColorSavedTabGroupForegroundPink) \
-  E_CPONLY(kColorSavedTabGroupForegroundPurple) \
-  E_CPONLY(kColorSavedTabGroupForegroundCyan) \
-  E_CPONLY(kColorSavedTabGroupForegroundOrange) \
-  E_CPONLY(kColorSavedTabGroupOutlineGrey) \
-  E_CPONLY(kColorSavedTabGroupOutlineBlue) \
-  E_CPONLY(kColorSavedTabGroupOutlineRed) \
-  E_CPONLY(kColorSavedTabGroupOutlineYellow) \
-  E_CPONLY(kColorSavedTabGroupOutlineGreen) \
-  E_CPONLY(kColorSavedTabGroupOutlinePink) \
-  E_CPONLY(kColorSavedTabGroupOutlinePurple) \
-  E_CPONLY(kColorSavedTabGroupOutlineCyan) \
-  E_CPONLY(kColorSavedTabGroupOutlineOrange) \
-  E_CPONLY(kColorTabGroupBookmarkBarGrey) \
-  E_CPONLY(kColorTabGroupBookmarkBarBlue) \
-  E_CPONLY(kColorTabGroupBookmarkBarRed) \
-  E_CPONLY(kColorTabGroupBookmarkBarYellow) \
-  E_CPONLY(kColorTabGroupBookmarkBarGreen) \
-  E_CPONLY(kColorTabGroupBookmarkBarPink) \
-  E_CPONLY(kColorTabGroupBookmarkBarPurple) \
-  E_CPONLY(kColorTabGroupBookmarkBarCyan) \
-  E_CPONLY(kColorTabGroupBookmarkBarOrange) \
   E_CPONLY(kColorTabStrokeFrameActive) \
   E_CPONLY(kColorTabStrokeFrameInactive) \
   E_CPONLY(kColorTabstripLoadingProgressBackground) \
@@ -592,9 +734,13 @@
   E_CPONLY(kColorTabThrobber) \
   E_CPONLY(kColorTabThrobberPreconnect) \
   /* Tab Search colors */ \
-  E_CPONLY(kColorTabSearchCardBackground) \
+  E_CPONLY(kColorTabSearchButtonBackground) \
   E_CPONLY(kColorTabSearchBackground) \
+  E_CPONLY(kColorTabSearchButtonCRForegroundFrameActive) \
+  E_CPONLY(kColorTabSearchButtonCRForegroundFrameInactive) \
+  E_CPONLY(kColorTabSearchCardBackground) \
   E_CPONLY(kColorTabSearchDivider) \
+  E_CPONLY(kColorTabSearchFooterBackground) \
   E_CPONLY(kColorTabSearchImageTabContentBottom) \
   E_CPONLY(kColorTabSearchImageTabContentTop) \
   E_CPONLY(kColorTabSearchImageTabText) \
@@ -650,6 +796,7 @@
   E_CPONLY(kColorToolbarInkDropHover) \
   E_CPONLY(kColorToolbarInkDropRipple) \
   E_CPONLY(kColorToolbarSeparator) \
+  E_CPONLY(kColorToolbarActionItemEngaged) \
   E_CPONLY(kColorToolbarSeparatorDefault) \
   E_CPONLY(kColorToolbarText) \
   E_CPONLY(kColorToolbarTextDefault) \
@@ -658,15 +805,15 @@
   E_CPONLY(kColorToolbarTopSeparatorFrameActive) \
   E_CPONLY(kColorToolbarTopSeparatorFrameInactive) \
   /* WebAuthn colors. */ \
+  E_CPONLY(kColorWebAuthnHoverButtonForeground) \
+  E_CPONLY(kColorWebAuthnHoverButtonForegroundDisabled) \
   E_CPONLY(kColorWebAuthnBackArrowButtonIcon) \
   E_CPONLY(kColorWebAuthnBackArrowButtonIconDisabled) \
   E_CPONLY(kColorWebAuthnIconColor) \
+  E_CPONLY(kColorWebAuthnIconColorDisabled) \
   E_CPONLY(kColorWebAuthnPinTextfieldBottomBorder) \
   E_CPONLY(kColorWebAuthnProgressRingBackground) \
   E_CPONLY(kColorWebAuthnProgressRingForeground) \
-  /* Signin bubble colors. */ \
-  E_CPONLY(kColorChromeSigninBubbleBackground) \
-  E_CPONLY(kColorChromeSigninBubbleInfoBackground) \
   /* Web contents colors. */ \
   E_CPONLY(kColorWebContentsBackground) \
   E_CPONLY(kColorWebContentsBackgroundLetterboxing) \
@@ -688,81 +835,6 @@
   /* Window control button background colors. */ \
   E_CPONLY(kColorWindowControlButtonBackgroundActive) \
   E_CPONLY(kColorWindowControlButtonBackgroundInactive) \
-  /* Read Anything colors. */ \
-  E_CPONLY(kColorReadAnythingBackground) \
-  E_CPONLY(kColorReadAnythingBackgroundBlue) \
-  E_CPONLY(kColorReadAnythingBackgroundDark) \
-  E_CPONLY(kColorReadAnythingBackgroundLight) \
-  E_CPONLY(kColorReadAnythingBackgroundYellow) \
-  E_CPONLY(kColorReadAnythingForeground) \
-  E_CPONLY(kColorReadAnythingForegroundBlue) \
-  E_CPONLY(kColorReadAnythingForegroundDark) \
-  E_CPONLY(kColorReadAnythingForegroundLight) \
-  E_CPONLY(kColorReadAnythingForegroundYellow) \
-  E_CPONLY(kColorReadAnythingSeparator) \
-  E_CPONLY(kColorReadAnythingSeparatorBlue) \
-  E_CPONLY(kColorReadAnythingSeparatorDark) \
-  E_CPONLY(kColorReadAnythingSeparatorLight) \
-  E_CPONLY(kColorReadAnythingSeparatorYellow) \
-  E_CPONLY(kColorReadAnythingDropdownBackground) \
-  E_CPONLY(kColorReadAnythingDropdownBackgroundBlue) \
-  E_CPONLY(kColorReadAnythingDropdownBackgroundDark) \
-  E_CPONLY(kColorReadAnythingDropdownBackgroundLight) \
-  E_CPONLY(kColorReadAnythingDropdownBackgroundYellow) \
-  E_CPONLY(kColorReadAnythingDropdownSelected) \
-  E_CPONLY(kColorReadAnythingDropdownSelectedBlue) \
-  E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
-  E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
-  E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
-  E_CPONLY(kColorReadAnythingTextSelection) \
-  E_CPONLY(kColorReadAnythingTextSelectionBlue) \
-  E_CPONLY(kColorReadAnythingTextSelectionDark) \
-  E_CPONLY(kColorReadAnythingTextSelectionLight) \
-  E_CPONLY(kColorReadAnythingTextSelectionYellow) \
-  E_CPONLY(kColorReadAnythingLinkDefault) \
-  E_CPONLY(kColorReadAnythingLinkDefaultBlue) \
-  E_CPONLY(kColorReadAnythingLinkDefaultDark) \
-  E_CPONLY(kColorReadAnythingLinkDefaultLight) \
-  E_CPONLY(kColorReadAnythingLinkDefaultYellow) \
-  E_CPONLY(kColorReadAnythingLinkVisited) \
-  E_CPONLY(kColorReadAnythingLinkVisitedBlue) \
-  E_CPONLY(kColorReadAnythingLinkVisitedDark) \
-  E_CPONLY(kColorReadAnythingLinkVisitedLight) \
-  E_CPONLY(kColorReadAnythingLinkVisitedYellow) \
-  E_CPONLY(kColorReadAnythingFocusRingBackground) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
-  E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
-  E_CPONLY(kColorCurrentReadAloudHighlight) \
-  E_CPONLY(kColorCurrentReadAloudHighlightBlue) \
-  E_CPONLY(kColorCurrentReadAloudHighlightDark) \
-  E_CPONLY(kColorCurrentReadAloudHighlightLight) \
-  E_CPONLY(kColorCurrentReadAloudHighlightYellow) \
-  E_CPONLY(kColorPreviousReadAloudHighlight) \
-  E_CPONLY(kColorPreviousReadAloudHighlightBlue) \
-  E_CPONLY(kColorPreviousReadAloudHighlightDark) \
-  E_CPONLY(kColorPreviousReadAloudHighlightLight) \
-  E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
-  /* Compose colors */ \
-  E_CPONLY(kColorComposeDialogBackground) \
-  E_CPONLY(kColorComposeDialogDivider) \
-  E_CPONLY(kColorComposeDialogError) \
-  E_CPONLY(kColorComposeDialogForegroundSubtle) \
-  E_CPONLY(kColorComposeDialogLink) \
-  E_CPONLY(kColorComposeDialogLogo) \
-  E_CPONLY(kColorComposeDialogResultBackground) \
-  E_CPONLY(kColorComposeDialogResultForeground) \
-  E_CPONLY(kColorComposeDialogResultForegroundWhileLoading) \
-  E_CPONLY(kColorComposeDialogResultIcon) \
-  E_CPONLY(kColorComposeDialogScrollbarThumb) \
-  E_CPONLY(kColorComposeDialogTitle) \
-  E_CPONLY(kColorComposeDialogTextarea) \
-  E_CPONLY(kColorComposeDialogTextareaOutline) \
-  E_CPONLY(kColorComposeDialogTextareaPlaceholder) \
-  E_CPONLY(kColorComposeDialogTextareaReadonlyBackground) \
-  E_CPONLY(kColorComposeDialogTextareaReadonlyForeground) \
-  E_CPONLY(kColorComposeDialogTextareaIcon) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \

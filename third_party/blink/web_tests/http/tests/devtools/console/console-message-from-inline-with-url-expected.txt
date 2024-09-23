@@ -4,6 +4,6 @@ foo.js:15 foo
 boo.js:1 Uncaught SyntaxError: Unexpected token '}' (at boo.js:1:1)
     at addInlineWithSyntaxError (foo.js:23:30)
 addInlineWithSyntaxError @ foo.js:23
-setTimeout (async)
+setTimeout
 (anonymous) @ console-message-from…line-with-url.js:31
 

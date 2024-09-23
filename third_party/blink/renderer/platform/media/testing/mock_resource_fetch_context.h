@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_TESTING_MOCK_RESOURCE_FETCH_CONTEXT_H_
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/platform/media/resource_fetch_context.h"
+#include "third_party/blink/public/web/web_associated_url_loader.h"
+#include "third_party/blink/public/web/web_associated_url_loader_options.h"
+#include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 
 namespace blink {
 

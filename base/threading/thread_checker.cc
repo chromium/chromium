@@ -7,6 +7,7 @@
 #if DCHECK_IS_ON()
 #include <memory>
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
@@ -25,7 +26,7 @@ ScopedValidateThreadChecker::ScopedValidateThreadChecker(
 
 ScopedValidateThreadChecker::ScopedValidateThreadChecker(
     const ThreadChecker& checker,
-    const StringPiece& msg) {
+    std::string_view msg) {
   std::unique_ptr<debug::StackTrace> bound_at;
   DCHECK(checker.CalledOnValidThread(&bound_at))
       << msg

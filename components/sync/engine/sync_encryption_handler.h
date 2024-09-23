@@ -9,15 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace sync_pb {
 class EncryptedData;
-}
+class NigoriSpecifics_TrustedVaultDebugInfo;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -29,16 +30,14 @@ enum class PassphraseType;
 // Sync's encryption handler. Handles tracking encrypted types, ensuring the
 // cryptographer encrypts with the proper key and has the most recent keybag,
 // and keeps the nigori node up to date.
-// Implementations of this class must be assumed to be non-thread-safe. All
-// methods must be invoked on the sync thread.
+// All methods must be invoked on the sync sequence.
 class SyncEncryptionHandler {
  public:
-  // All Observer methods are done synchronously from within a transaction and
-  // on the sync thread.
-  class Observer {
+  // All Observer methods are called on the sync sequence.
+  class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     // Called when user interaction is required to obtain a valid passphrase for
     // decryption.
@@ -77,7 +76,7 @@ class SyncEncryptionHandler {
     // Until this function is called, observers can assume that the
     // set of encrypted types is AlwaysEncryptedUserTypes() and that the
     // encrypt everything flag is false.
-    virtual void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+    virtual void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                          bool encrypt_everything) = 0;
 
     // The cryptographer has been updated and/or the presence of pending keys
@@ -102,7 +101,7 @@ class SyncEncryptionHandler {
 
   virtual void NotifyInitialStateToObservers() = 0;
 
-  virtual ModelTypeSet GetEncryptedTypes() = 0;
+  virtual DataTypeSet GetEncryptedTypes() = 0;
 
   virtual Cryptographer* GetCryptographer() = 0;
 
@@ -144,7 +143,7 @@ class SyncEncryptionHandler {
   virtual KeystoreKeysHandler* GetKeystoreKeysHandler() = 0;
 
   // Returns debug information related to trusted vault passphrase type.
-  virtual const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  virtual const sync_pb::NigoriSpecifics_TrustedVaultDebugInfo&
   GetTrustedVaultDebugInfo() = 0;
 };
 

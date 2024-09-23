@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Test window.fence.disableUntrustedNetwork + frame removal.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async(t) => {
+  const frame = await attachFencedFrameContext();
+  await frame.execute(async () => {
+    // This fenced frame will have network access. We will later remove this
+    // frame, and that removal will cause its ancestor's
+    // disableUntrustedNetwork() promise to resolve.
+    const nested_frame = await attachFencedFrameContext();
+
+    // Note that we do *not* await, because we need to operate in the top frame
+    // while the nested frame still hasn't disabled network access.
+    let disable_network_promise = window.fence.disableUntrustedNetwork();
+
+    let timeout_promise = new Promise(
+        resolve => setTimeout(() => {resolve('timeout')}, 1000));
+    const result =
+        await Promise.race([disable_network_promise, timeout_promise]);
+    assert_equals(result, 'timeout',
+        "The disableUntrustedNetwork() promise should not resolve.");
+
+    nested_frame.element.remove();
+
+    await disable_network_promise;
+  });
+}, 'disableUntrustedNetwork() resolves on nested fenced frame removal.');
+</script>
+</body>
+

@@ -66,7 +66,7 @@ chrome.test.runTests([
     //   2.  Pin 3rd tab (moves to 2nd tab, pinning)
     //   3.  Unpin 1st tab (moves to 2nd tab, unpinning)
     //   4.  Unpin (new) 1st tab (does not move. unpinning)
-    chrome.tabs.getAllInWindow(firstWindowId,
+    chrome.tabs.query({windowId:firstWindowId},
       pass(function(tabs) {
         assertEq(tabs.length, 3);
         for (var i = 0; i < tabs.length; i++)

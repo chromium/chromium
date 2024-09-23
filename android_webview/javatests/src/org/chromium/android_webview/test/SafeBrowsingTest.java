@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -55,17 +54,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
-import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
-import org.chromium.components.safe_browsing.SafetyNetApiHandler;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +68,6 @@ import java.util.Arrays;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@EnableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -94,8 +84,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                     }
                 };
     }
-
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private SafeBrowsingContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
@@ -142,71 +130,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
     private static final String WEB_UI_PHISHING_URL = "chrome://safe-browsing/match?type=phishing";
     private static final String WEB_UI_HOST = "safe-browsing";
-
-    /**
-     * A fake SafetyNetApiHandler which treats URLs ending in MALWARE_HTML_PATH as malicious URLs
-     * that should be blocked.
-     */
-    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
-        private Observer mObserver;
-        private static final String SAFE_METADATA = "{}";
-
-        // These codes are defined in "safebrowsing.proto".
-        private static final int PHISHING_CODE = 5;
-        private static final int MALWARE_CODE = 4;
-        private static final int UNWANTED_SOFTWARE_CODE = 3;
-        private static final int BILLING_CODE = 15;
-
-        // Mock time it takes for a lookup request to complete.
-        private static final long CHECK_DELTA_US = 10;
-
-        @Override
-        public boolean init(Observer result) {
-            mObserver = result;
-            return true;
-        }
-
-        private String buildMetadataFromCode(int code) {
-            return "{\"matches\":[{\"threat_type\":\"" + code + "\"}]}";
-        }
-
-        @Override
-        public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
-            final String metadata;
-            Arrays.sort(threatsOfInterest);
-
-            if (uri.endsWith(PHISHING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, PHISHING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(PHISHING_CODE);
-            } else if (uri.endsWith(MALWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, MALWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(MALWARE_CODE);
-            } else if (uri.endsWith(UNWANTED_SOFTWARE_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, UNWANTED_SOFTWARE_CODE) >= 0) {
-                metadata = buildMetadataFromCode(UNWANTED_SOFTWARE_CODE);
-            } else if (uri.endsWith(BILLING_HTML_PATH)
-                    && Arrays.binarySearch(threatsOfInterest, BILLING_CODE) >= 0) {
-                metadata = buildMetadataFromCode(BILLING_CODE);
-            } else {
-                metadata = SAFE_METADATA;
-            }
-
-            PostTask.runOrPostTask(
-                    TaskTraits.UI_DEFAULT,
-                    (Runnable)
-                            () ->
-                                    mObserver.onUrlCheckDone(
-                                            callbackId,
-                                            SafeBrowsingResult.SUCCESS,
-                                            metadata,
-                                            CHECK_DELTA_US));
-        }
-
-        @Override
-        public boolean startAllowlistLookup(final String uri, int threatType) {
-            return false;
-        }
-    }
 
     /**
      * A fake SafeBrowsingApiHandler which treats URLs ending in certain HTML paths as malicious
@@ -273,11 +196,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
     }
 
-    /** A fake AwBrowserContext which loads the MockSafetyNetApiHandler instead of the real one. */
+    /**
+     * A fake AwBrowserContext which loads the MockSafeBrowsingApiHandler instead of the real one.
+     */
     private static class MockAwBrowserContext extends AwBrowserContext {
         public MockAwBrowserContext() {
             super(0);
-            SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
             SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         }
     }
@@ -602,19 +526,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
-    public void testSafeBrowsingBlocksUnwantedSoftwarePagesWithSafetyNet() throws Throwable {
-        loadGreenPage();
-        loadPathAndWaitForInterstitial(UNWANTED_SOFTWARE_HTML_PATH);
-        assertGreenPageNotShowing();
-        assertTargetPageNotShowing(UNWANTED_SOFTWARE_PAGE_BACKGROUND_COLOR);
-        // Assume that we are rendering the interstitial, since we see neither the previous page nor
-        // the target page
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
     public void testSafeBrowsingBlocksBillingPages() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(BILLING_HTML_PATH);
@@ -735,7 +646,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     private void verifyAllowlistRule(final String rule, boolean expected) throws Throwable {
         final AllowlistHelper helper = new AllowlistHelper();
         final int count = helper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ArrayList<String> s = new ArrayList<String>();
                     s.add(rule);
@@ -760,14 +671,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingShowsInterstitialForSubresource() throws Throwable {
+    public void testSafeBrowsingNoInterstitialForSubresource() throws Throwable {
         loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ true);
-        assertGreenPageNotShowing();
-        // Assume that we are rendering the interstitial, since we see neither the previous page
-        // nor the target page
+        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
+        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
     }
 
     @Test
@@ -784,23 +693,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         // Check there is not an extra onSafeBrowsingHit call after proceeding.
         Assert.assertEquals(
                 onSafeBrowsingCountBeforeClick, mContentsClient.getOnSafeBrowsingHitCount());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingProceedThroughInterstitialForSubresource() throws Throwable {
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ false);
-        waitForInterstitialDomToLoad();
-        clickVisitUnsafePage();
-        // For subresources, the initial site finishes loading before the interstitial is shown,
-        // causing an extra onPageFinished call if committed interstitials are enabled (since the
-        // proceed action triggers a reload).
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount, 2);
-        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
     }
 
     @Test
@@ -836,24 +728,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         errorHelper.waitForCallback(errorCount);
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
         assertTargetPageNotShowing(MALWARE_PAGE_BACKGROUND_COLOR);
-        assertGreenPageShowing();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingDontProceedNavigatesBackForSubResource() throws Throwable {
-        loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ false);
-        waitForInterstitialDomToLoad();
-        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
-        int errorCount = errorHelper.getCallCount();
-        clickBackToSafety();
-        errorHelper.waitForCallback(errorCount);
-        mActivityTestRule.waitForVisualStateCallback(mAwContents);
-        assertTargetPageNotShowing(IFRAME_EMBEDDER_BACKGROUND_COLOR);
         assertGreenPageShowing();
     }
 
@@ -1050,80 +924,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingOnSafeBrowsingHitForSubresourceNoPreviousPage() throws Throwable {
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
-        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
-        final String subresourceUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
-
-        // We'll successfully load IFRAME_HTML_PATH, and will soon call onSafeBrowsingHit
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
-
-        final GURL aboutBlank = new GURL(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-
-        // Wait for the onSafeBrowsingHit to call BACK_TO_SAFETY and navigate back
-        mActivityTestRule.pollUiThread(() -> aboutBlank.equals(mAwContents.getUrl()));
-
-        // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingOnSafeBrowsingHitForSubresource() throws Throwable {
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
-        loadGreenPage();
-        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
-        final String subresourceUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
-
-        // We'll successfully load IFRAME_HTML_PATH, and will soon call onSafeBrowsingHit
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
-
-        // Wait for the onSafeBrowsingHit to call BACK_TO_SAFETY and navigate back
-        mActivityTestRule.pollUiThread(
-                () ->
-                        colorToString(GREEN_PAGE_BACKGROUND_COLOR)
-                                .equals(
-                                        colorToString(
-                                                GraphicsTestUtils.getPixelColorAtCenterOfView(
-                                                        mAwContents, mContainerView))));
-
-        // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.PROCEED);
-
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
-        mActivityTestRule.waitForVisualStateCallback(mAwContents);
-        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
-
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
     public void testSafeBrowsingOnSafeBrowsingHitHideReportingCheckbox() throws Throwable {
         mContentsClient.setReporting(false);
         loadGreenPage();
@@ -1272,7 +1072,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     }
 
     private String getSafeBrowsingLocaleOnUiThreadForTesting() throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> AwContents.getSafeBrowsingLocaleForTesting());
     }
 
@@ -1397,7 +1197,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                         .appendQueryParameter("hl", getSafeBrowsingLocaleOnUiThreadForTesting())
                         .fragment("safe-browsing-policies")
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrivacyPolicyUrl = AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl();
                 });
@@ -1423,7 +1223,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                 () -> {
                     try {
                         int awContentsCount =
-                                TestThreadUtils.runOnUiThreadBlocking(
+                                ThreadUtils.runOnUiThreadBlocking(
                                         () -> AwContents.getNativeInstanceCount());
                         Criteria.checkThat(awContentsCount, Matchers.is(0));
                     } catch (Exception e) {

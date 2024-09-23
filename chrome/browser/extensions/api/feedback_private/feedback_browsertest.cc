@@ -72,7 +72,7 @@ class TestFeedbackUploaderDelegate
   base::OnceClosure quit_callback_;
 };
 
-// TODO(crbug.com/1241504): disable tests.
+// TODO(crbug.com/40194697): disable tests.
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedback) {
   WaitForExtensionViewsToLoad();
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedback) {
   VerifyFeedbackAppLaunch();
 }
 
-// TODO(crbug.com/1241504): disable tests.
+// TODO(crbug.com/40194697): disable tests.
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowLoginFeedback) {
   WaitForExtensionViewsToLoad();
 
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowLoginFeedback) {
 }
 
 // Tests that there's an option in the email drop down box with a value ''.
-// TODO(crbug.com/1241504): disable tests.
+// TODO(crbug.com/40194697): disable tests.
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
   WaitForExtensionViewsToLoad();
 
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
 
 // Ensures that when extra diagnostics are provided with feedback, they are
 // injected properly in the system information.
-// TODO(crbug.com/1241504): disable tests.
+// TODO(crbug.com/40194697): disable tests.
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ExtraDiagnostics) {
   WaitForExtensionViewsToLoad();
 

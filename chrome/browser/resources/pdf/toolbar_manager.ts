@@ -4,7 +4,7 @@
 
 import {isRTL} from 'chrome://resources/js/util.js';
 
-import type {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
+import type {ViewerZoomToolbarElement} from './elements/viewer_zoom_toolbar.js';
 
 /**
  * Idle time in ms before the UI is hidden.

@@ -29,10 +29,7 @@
   padding: 0;
   position: relative;
   width: 52px;
-}
-
-.time-column::-webkit-scrollbar {
-  display: none;
+  scrollbar-width: none;
 }
 
 .time-cell {

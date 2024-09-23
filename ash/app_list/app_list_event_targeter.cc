@@ -25,8 +25,8 @@ bool AppListEventTargeter::SubtreeShouldBeExploredForEvent(
     return false;
 
   if (window->GetProperty(assistant::ui::kOnlyAllowMouseClickEvents)) {
-    if (event.type() != ui::ET_MOUSE_PRESSED &&
-        event.type() != ui::ET_MOUSE_RELEASED) {
+    if (event.type() != ui::EventType::kMousePressed &&
+        event.type() != ui::EventType::kMouseReleased) {
       return false;
     }
   }

@@ -63,16 +63,16 @@ void IPCDataSource::SetBitrate(int bitrate) {
 bool IPCDataSource::PassedTimingAllowOriginCheck() {
   // The mojo ipc channel doesn't support this yet, so cautiously return false,
   // for now.
-  // TODO(crbug/1377053): Rework this method to be asynchronous, if possible,
-  // so that the mojo interface can be queried.
+  // TODO(crbug.com/40243452): Rework this method to be asynchronous, if
+  // possible, so that the mojo interface can be queried.
   return false;
 }
 
 bool IPCDataSource::WouldTaintOrigin() {
   // The mojo ipc channel doesn't support this yet, so cautiously return true,
   // for now.
-  // TODO(crbug/1377053): Rework this method to be asynchronous, if possible,
-  // so that the mojo interface can be queried.
+  // TODO(crbug.com/40243452): Rework this method to be asynchronous, if
+  // possible, so that the mojo interface can be queried.
   return true;
 }
 

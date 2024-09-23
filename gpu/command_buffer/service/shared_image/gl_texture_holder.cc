@@ -10,7 +10,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
@@ -23,7 +23,7 @@ namespace {
 
 // This value can't be cached as it may change for different contexts.
 bool SupportsUnpackSubimage() {
-  return gl::g_current_gl_version->is_es3_capable ||
+  return gl::g_current_gl_version->IsAtLeastGLES(3, 0) ||
          gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage;
 }
 
@@ -35,7 +35,7 @@ bool SupportsPackSubimage() {
   // for that row.
   return false;
 #else
-  return gl::g_current_gl_version->is_es3_capable;
+  return gl::g_current_gl_version->IsAtLeastGLES(3, 0);
 #endif
 }
 
@@ -78,7 +78,7 @@ viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
       CHECK_EQ(num_channels, 1);
       return viz::SinglePlaneFormat::kR_F16;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 GLTextureHolder::GLTextureHolder(viz::SharedImageFormat format,

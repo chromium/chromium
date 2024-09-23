@@ -27,5 +27,5 @@
 
 [
     LegacyNoInterfaceObject
-] interface WebGLVertexArrayObjectOES {
+] interface WebGLVertexArrayObjectOES : WebGLObject {
 };

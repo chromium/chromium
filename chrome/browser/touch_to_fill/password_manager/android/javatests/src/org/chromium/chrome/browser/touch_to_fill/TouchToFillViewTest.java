@@ -5,17 +5,21 @@
 package org.chromium.chrome.browser.touch_to_fill;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
@@ -32,10 +36,12 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SH
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import static java.util.Arrays.asList;
 
 import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -51,13 +57,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
@@ -71,9 +79,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -140,7 +146,7 @@ public class TouchToFillViewTest {
                         .getBottomSheetController();
         mResourceProvider = new TouchToFillResourceProviderImpl();
         mSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
                     mTouchToFillView = new TouchToFillView(getActivity(), mBottomSheetController);
@@ -160,7 +166,7 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testVisibilityChangedByModel() {
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -174,7 +180,7 @@ public class TouchToFillViewTest {
         assertThat(mTouchToFillView.getContentView().isShown(), is(true));
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mTouchToFillView.getContentView().isShown(), is(false));
     }
@@ -182,7 +188,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testTitlePropagatesToView() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -224,7 +230,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testManageButtonTextPropagatesToView() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -268,7 +274,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSecureSubtitleUrlDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -296,7 +302,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testNonSecureSubtitleUrlDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -330,7 +336,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSubmissionSubtitleUrlDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -364,7 +370,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testNonSecureSubmissionSubtitleUrlDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -399,7 +405,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testCredentialsChangedByModel() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS).add(buildCredentialItem(ANA, mItemCollectionInfo));
                     mTouchToFillView.setVisible(true);
@@ -445,7 +451,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testCredentialsAreClickable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -466,7 +472,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSingleCredentialHasClickableButton() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -488,9 +494,87 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testCredentialClicksThroughObscuringSurfacesAreProcessed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ANA, mItemCollectionInfo),
+                                            buildConfirmationButton(ANA, false),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertNotNull(getCredentials().getChildAt(1));
+
+        onViewWaiting(withId(R.id.username))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testButtonClicksThroughObscuringSurfacesAreProcessed() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ANA, mItemCollectionInfo),
+                                            buildConfirmationButton(ANA, false),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertNotNull(getCredentials().getChildAt(1));
+
+        onViewWaiting(withId(R.id.touch_to_fill_button_title))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testClicksThroughObscuringSurfacesAreIgnoredWhenFeatureIsEnabled() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ANA, mItemCollectionInfo),
+                                            buildConfirmationButton(ANA, false),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertNotNull(getCredentials().getChildAt(1));
+
+        onViewWaiting(withId(R.id.username))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onViewWaiting(withId(R.id.username))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        onViewWaiting(withId(R.id.touch_to_fill_button_title))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onViewWaiting(withId(R.id.touch_to_fill_button_title))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        verify(mCredentialCallback, times(0)).onResult(any());
+    }
+
+    @Test
+    @MediumTest
     public void testButtonTitleWithoutAutoSubmission() {
         final boolean showSubmitButton = false;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -511,7 +595,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testButtonTitle() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -532,7 +616,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testManagePasswordsIsClickable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -545,7 +629,7 @@ public class TouchToFillViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // Swipe the sheet up to it's full state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
 
         TextView manageButton =
@@ -560,7 +644,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testDismissesWhenHidden() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -571,7 +655,7 @@ public class TouchToFillViewTest {
                     mModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
     }
@@ -579,7 +663,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testPasswordCredentialAccessibilityDescription() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -609,7 +693,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testPasskeyCredentialAccessibilityDescription() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -637,7 +721,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testCredentialAccessibilityDescriptionWithNoCollectionInfo() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -672,12 +756,12 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testSheetStartsInFullHeightForAccessibility() {
         // Enabling the accessibility settings.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -696,7 +780,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSheetStartsWithHalfHeight() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -722,7 +806,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testSheetScrollabilityDependsOnState() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS).add(buildCredentialItem(ANA, mItemCollectionInfo));
                     mModel.set(VISIBLE, true);
@@ -734,7 +818,7 @@ public class TouchToFillViewTest {
         assertEquals(!mBottomSheetController.isSmallScreen(), recyclerView.isLayoutSuppressed());
 
         // Expand the sheet to the full height and scrolling .
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSheetTestSupport.setSheetState(
                                 BottomSheetController.SheetState.FULL, false));
@@ -747,7 +831,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testHybridPropertyShowsHybridButton() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -785,7 +869,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testHybridButtonIsClickable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -797,7 +881,7 @@ public class TouchToFillViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
 
         TextView hybridButton =
@@ -812,7 +896,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     public void testMorePasskeysButtonIsClickable() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -823,7 +907,7 @@ public class TouchToFillViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
 
         TextView morePasskeysItem =
@@ -835,15 +919,8 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    public void testPasskeyCredentialSubheaderWhenGpmNotInCredManEnabled() {
-        CredManSupportProvider.setupForTesting(/*override*/ true);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, true);
-        testValues.addFieldTrialParamOverride(
-                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, "gpm_in_cred_man", "false");
-        FeatureList.setTestValues(testValues);
-
-        TestThreadUtils.runOnUiThreadBlocking(
+    public void testPasskeyCredentialSubheader() {
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
                             .addAll(
@@ -892,7 +969,7 @@ public class TouchToFillViewTest {
         return getCredentials().getChildAt(index).findViewById(R.id.credential_origin);
     }
 
-    public static <T> T waitForEvent(T mock) {
+    private static <T> T waitForEvent(T mock) {
         return verify(
                 mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));

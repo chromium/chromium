@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -166,6 +167,17 @@ bool LayoutEmbeddedContent::PointOverResizer(
   return false;
 }
 
+void LayoutEmbeddedContent::PropagateZoomFactor(double zoom_factor) {
+  if (GetDocument().StandardizedBrowserZoomEnabled()) {
+    const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode());
+    if (!fenced_frame) {
+      if (auto* embedded_content_view = GetEmbeddedContentView()) {
+        embedded_content_view->ZoomFactorChanged(zoom_factor);
+      }
+    }
+  }
+}
+
 bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
@@ -287,7 +299,7 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
     frame->UpdateInertIfPossible();
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
-    if (new_style.Visibility() != EVisibility::kVisible) {
+    if (new_style.UsedVisibility() != EVisibility::kVisible) {
       embedded_content_view->Hide();
     } else {
       embedded_content_view->Show();
@@ -298,8 +310,13 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
   if (!frame_owner)
     return;
 
-  if (old_style && new_style.UsedColorScheme() != old_style->UsedColorScheme())
+  if (old_style &&
+      new_style.UsedColorScheme() != old_style->UsedColorScheme()) {
     frame_owner->SetColorScheme(new_style.UsedColorScheme());
+  }
+  if (!old_style || new_style.EffectiveZoom() != old_style->EffectiveZoom()) {
+    PropagateZoomFactor(new_style.EffectiveZoom());
+  }
 
   if (old_style &&
       new_style.VisibleToHitTesting() == old_style->VisibleToHitTesting()) {
@@ -308,12 +325,6 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
 
   if (auto* frame = frame_owner->ContentFrame())
     frame->UpdateVisibleToHitTesting();
-}
-
-void LayoutEmbeddedContent::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-  ClearNeedsLayout();
 }
 
 void LayoutEmbeddedContent::PaintReplaced(
@@ -375,13 +386,17 @@ void LayoutEmbeddedContent::UpdateOnEmbeddedContentViewChange() {
     return;
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
-    if (!NeedsLayout())
+    if (!NeedsLayout()) {
       UpdateGeometry(*embedded_content_view);
-
-    if (StyleRef().Visibility() != EVisibility::kVisible)
-      embedded_content_view->Hide();
-    else
-      embedded_content_view->Show();
+    }
+    if (Style()) {
+      PropagateZoomFactor(StyleRef().EffectiveZoom());
+      if (StyleRef().UsedVisibility() != EVisibility::kVisible) {
+        embedded_content_view->Hide();
+      } else {
+        embedded_content_view->Show();
+      }
+    }
   }
 
   // One of the reasons of the following is that the layout tree in the new

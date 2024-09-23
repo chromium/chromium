@@ -18,6 +18,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/auction_result.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 
 namespace content {
 class NavigationHandle;
@@ -50,14 +52,20 @@ class MetricsWebContentsObserver
       public content::RenderWidgetHost::InputEventObserver,
       public mojom::PageLoadMetrics {
  public:
-  // Record a set of WebFeatures directly from the browser process. This
-  // should only be used for features that were detected browser-side; features
-  // sources from the renderer should go via MetricsRenderFrameObserver.
+  // Record a set of WebFeatures or WebDXFeatures directly from the browser
+  // process. This should only be used for features that were detected
+  // browser-side; features sources from the renderer should go via
+  // MetricsRenderFrameObserver.
   static void RecordFeatureUsage(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::WebFeature>& features);
   static void RecordFeatureUsage(content::RenderFrameHost* render_frame_host,
                                  blink::mojom::WebFeature feature);
+  static void RecordFeatureUsage(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::mojom::WebDXFeature>& features);
+  static void RecordFeatureUsage(content::RenderFrameHost* render_frame_host,
+                                 blink::mojom::WebDXFeature feature);
 
   // Note that the returned metrics is owned by the web contents.
   static MetricsWebContentsObserver* CreateForWebContents(
@@ -86,6 +94,8 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidUpdateNavigationHandleTiming(
+      content::NavigationHandle* navigation_handle) override;
   void NavigationStopped() override;
   void OnInputEvent(const blink::WebInputEvent& event) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -93,7 +103,7 @@ class MetricsWebContentsObserver
       base::TerminationStatus status) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
@@ -154,6 +164,9 @@ class MetricsWebContentsObserver
           subresource_load_metrics,
       mojom::SoftNavigationMetricsPtr);
 
+  void OnCustomUserTimingUpdated(content::RenderFrameHost* rfh,
+                                 mojom::CustomUserTimingMarkPtr custom_timing);
+
   // Informs the observers of the currently committed primary page load that
   // it's likely that prefetch will occur in this WebContents. This should
   // not be called within WebContentsObserver::DidFinishNavigation methods.
@@ -166,6 +179,16 @@ class MetricsWebContentsObserver
 
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
+
+  // Called when `sharedStorage.selectURL()` is called for some frame on a page
+  // whose main frame is `main_rfh`.
+  void OnSharedStorageSelectURLCalled(content::RenderFrameHost* main_rfh);
+
+  // Called when a Fledge auction completes.
+  void OnAdAuctionComplete(content::RenderFrameHost* rfh,
+                           bool is_server_auction,
+                           bool is_on_device_auction,
+                           content::AuctionResult result);
 
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();
@@ -190,7 +213,7 @@ class MetricsWebContentsObserver
   //
   // Don't use GetPageLoadTrackerLegacy in new code. See also the comment around
   // implementation.
-  // TODO(https://crbug.com/1301880): Remove this.
+  // TODO(crbug.com/40216775): Remove this.
   PageLoadTracker* GetPageLoadTrackerLegacy(content::RenderFrameHost* rfh);
   PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
   // Gets the alive PageLoadTracker corresponding to the nearest ancestral page
@@ -204,6 +227,9 @@ class MetricsWebContentsObserver
   //   ObservePolicy.
   PageLoadTracker* GetAncestralAlivePageLoadTracker(
       content::RenderFrameHost* rfh);
+
+  PageLoadTracker* GetPageLoadTrackerIfValid(
+      content::RenderFrameHost* render_frame_host);
 
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.
@@ -224,6 +250,8 @@ class MetricsWebContentsObserver
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       mojom::SoftNavigationMetricsPtr soft_navigation_metrics) override;
+  void AddCustomUserTiming(
+      mojom::CustomUserTimingMarkPtr custom_timing) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
@@ -355,6 +383,8 @@ class MetricsWebContentsObserver
   // the WebContents.
   base::flat_map<content::RenderFrameHost*, base::ReadOnlySharedMemoryRegion>
       ukm_smoothness_data_;
+
+  std::vector<mojom::CustomUserTimingMarkPtr> page_load_custom_timings_;
 
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;

@@ -20,8 +20,8 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,7 +29,6 @@
 class SkColorSpace;
 
 namespace gpu {
-class MailboxManager;
 class SharedContextState;
 class SharedImageRepresentationFactory;
 namespace gles2 {
@@ -91,7 +90,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   void BeginAccessIfNecessary(
       gpu::SharedContextState* context_state,
       gpu::SharedImageRepresentationFactory* representation_factory,
-      gpu::MailboxManager* mailbox_manager,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
   bool BeginRasterAccess(
@@ -100,8 +98,14 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
  private:
   void DeleteFallbackTextures();
+
+  // Creates a solid color fallback image that can be substituted for the
+  // original image. Note that this may fail if it's not possible to allocate a
+  // fallback image, for example if the original image was externally allocated.
+  // In this case the promise image fulfillment will fail and skia will abort
+  // drawing the entire render pass, so we rely on this being a transient state.
   void CreateFallbackImage(gpu::SharedContextState* context_state);
-  bool BeginAccessIfNecessaryForSharedImage(
+  bool BeginAccessIfNecessaryInternal(
       gpu::SharedContextState* context_state,
       gpu::SharedImageRepresentationFactory* representation_factory,
       std::vector<GrBackendSemaphore>* begin_semaphores,

@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("extensions") {
+  sources = [
+    "login_screen_extensions_content_script_manager.cc",
+    "login_screen_extensions_content_script_manager.h",
+    "login_screen_extensions_content_script_manager_factory.cc",
+    "login_screen_extensions_content_script_manager_factory.h",
+    "login_screen_extensions_lifetime_manager.cc",
+    "login_screen_extensions_lifetime_manager.h",
+    "login_screen_extensions_lifetime_manager_factory.cc",
+    "login_screen_extensions_lifetime_manager_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/session_manager/core",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//components/prefs",
+    "//components/session_manager:base",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "login_screen_extensions_content_script_manager_browsertest.cc",
+    "login_screen_extensions_lifetime_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/account_id",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//testing/gtest",
+  ]
+}

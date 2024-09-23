@@ -9,12 +9,16 @@
 
 namespace safe_browsing {
 
-extern const char kChromeUISafeBrowsingURL[];
-extern const char kChromeUISafeBrowsingHost[];
-extern const char kChromeUISafeBrowsingMatchBillingUrl[];
-extern const char kChromeUISafeBrowsingMatchMalwareUrl[];
-extern const char kChromeUISafeBrowsingMatchPhishingUrl[];
-extern const char kChromeUISafeBrowsingMatchUnwantedUrl[];
+inline constexpr char kChromeUISafeBrowsingURL[] = "chrome://safe-browsing/";
+inline constexpr char kChromeUISafeBrowsingHost[] = "safe-browsing";
+inline constexpr char kChromeUISafeBrowsingMatchBillingUrl[] =
+    "chrome://safe-browsing/match?type=billing";
+inline constexpr char kChromeUISafeBrowsingMatchMalwareUrl[] =
+    "chrome://safe-browsing/match?type=malware";
+inline constexpr char kChromeUISafeBrowsingMatchPhishingUrl[] =
+    "chrome://safe-browsing/match?type=phishing";
+inline constexpr char kChromeUISafeBrowsingMatchUnwantedUrl[] =
+    "chrome://safe-browsing/match?type=unwanted";
 
 bool IsSafeBrowsingWebUIUrl(const GURL& url);
 

@@ -34,6 +34,7 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_ANDROID_AUTOMOTIVE = 12;
       CAST_PRODUCT_TYPE_ANDROID = 13;
     }
+
     optional CastProductType type = 1;
 
     // The hardware revision of each product.

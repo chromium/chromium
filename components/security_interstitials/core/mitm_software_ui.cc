@@ -97,7 +97,7 @@ void MITMSoftwareUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION:
       // Not supported by the SSL error page.
-      NOTREACHED() << "Unsupported command: " << command;
+      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
       break;
     case CMD_ERROR:
     case CMD_TEXT_FOUND:

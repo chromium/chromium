@@ -29,7 +29,12 @@ bool DialUpdateService(const base::FilePath& updater, bool internal) {
   if (internal) {
     command_line.AppendSwitch("--internal");
   }
-  base::LaunchProcess(command_line, {});
+  std::string output;
+  if (!base::GetAppOutputAndError(command_line, &output)) {
+    VLOG(1) << __func__ << " launcher failure: " << output;
+    // If the launcher fails, abandon dialing - no server will appear.
+    return false;
+  }
 
   return true;
 }

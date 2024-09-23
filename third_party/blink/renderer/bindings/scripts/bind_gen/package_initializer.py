@@ -5,6 +5,7 @@
 import web_idl
 
 from . import style_format
+from .codegen_tracing import CodeGenTracing
 from .path_manager import PathManager
 
 
@@ -58,7 +59,8 @@ class PackageInitializer(object):
         return cls._the_instance
 
     def __init__(self, web_idl_database_path, root_src_dir, root_gen_dir,
-                 component_reldirs, enable_style_format):
+                 component_reldirs, enable_style_format,
+                 enable_code_generation_tracing):
         """
         Args:
             web_idl_database_path: File path to the web_idl.Database.
@@ -69,6 +71,9 @@ class PackageInitializer(object):
             component_reldirs: Pairs of component and output directory.
             enable_style_format: Enable style formatting of the generated
                 files.
+            enable_code_generation_tracing: Enable tracing of code generation
+                to see which Python code generates which line of generated
+                code.
         """
 
         self._web_idl_database_path = web_idl_database_path
@@ -76,6 +81,7 @@ class PackageInitializer(object):
         self._root_gen_dir = root_gen_dir
         self._component_reldirs = component_reldirs
         self._enable_style_format = enable_style_format
+        self._enable_code_generation_tracing = enable_code_generation_tracing
 
     def init(self):
         if PackageInitializer._the_instance:
@@ -91,13 +97,26 @@ class PackageInitializer(object):
         PackageInitializer._the_web_idl_database = (
             web_idl.Database.read_from_file(self._web_idl_database_path))
 
-        style_format.init(root_src_dir=self._root_src_dir,
-                          enable_style_format=self._enable_style_format)
-
         PathManager.init(
             root_src_dir=self._root_src_dir,
             root_gen_dir=self._root_gen_dir,
             component_reldirs=self._component_reldirs)
+
+        style_format.init(root_src_dir=self._root_src_dir,
+                          enable_style_format=self._enable_style_format)
+
+        if self._enable_code_generation_tracing:
+            CodeGenTracing.enable_code_generation_tracing()
+            # The following Python modules are generally not interesting, so
+            # skip the functions in the modules.
+            from . import code_node
+            from . import code_node_cxx
+            from . import codegen_utils
+            CodeGenTracing.add_modules_to_be_ignored([
+                code_node,
+                code_node_cxx,
+                codegen_utils,
+            ])
 
     def web_idl_database(self):
         """Returns the global instance of web_idl.Database."""

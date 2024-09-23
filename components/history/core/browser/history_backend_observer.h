@@ -55,11 +55,11 @@ class HistoryBackendObserver {
   // `expired` is set to true, if the URL deletion is due to expiration.
   // `deleted_rows` list of the deleted URLs.
   // `favicon_urls` list of favicon URLs that correspond to the deleted URLs.
-  virtual void OnURLsDeleted(HistoryBackend* history_backend,
-                             bool all_history,
-                             bool expired,
-                             const URLRows& deleted_rows,
-                             const std::set<GURL>& favicon_urls) = 0;
+  virtual void OnHistoryDeletions(HistoryBackend* history_backend,
+                                  bool all_history,
+                                  bool expired,
+                                  const URLRows& deleted_rows,
+                                  const std::set<GURL>& favicon_urls) = 0;
 
   // Called when a visit, or some of its annotations, are updated. `reason`
   // specifies what specifically was updated.

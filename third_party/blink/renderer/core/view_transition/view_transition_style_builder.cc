@@ -51,7 +51,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
     AnimationType type,
     const String& tag,
     const ContainerProperties& source_properties,
-    const CapturedCssProperties& animated_css_properties) {
+    const CapturedCssProperties& animated_css_properties,
+    const gfx::Transform& parent_inverse_transform) {
   switch (type) {
     case AnimationType::kOldOnly:
       AddRules(kOldImageTagName, tag,
@@ -75,7 +76,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
       AddRules(kImagePairTagName, tag, "isolation: isolate");
 
       const String& animation_name =
-          AddKeyframes(tag, source_properties, animated_css_properties);
+          AddKeyframes(tag, source_properties, animated_css_properties,
+                       parent_inverse_transform);
       StringBuilder rule_builder;
       rule_builder.Append("animation-name: ");
       rule_builder.Append(animation_name);
@@ -89,10 +91,23 @@ void ViewTransitionStyleBuilder::AddAnimations(
   }
 }
 
+namespace {
+std::string GetTransformString(
+    const ViewTransitionStyleBuilder::ContainerProperties& properties,
+    const gfx::Transform& parent_inverse_transform) {
+  gfx::Transform applied_transform(parent_inverse_transform);
+  applied_transform.PreConcat(properties.snapshot_matrix);
+  return ComputedStyleUtils::ValueForTransform(applied_transform, 1, false)
+      ->CssText()
+      .Utf8();
+}
+}  // namespace
+
 String ViewTransitionStyleBuilder::AddKeyframes(
     const String& tag,
     const ContainerProperties& source_properties,
-    const CapturedCssProperties& animated_css_properties) {
+    const CapturedCssProperties& animated_css_properties,
+    const gfx::Transform& parent_inverse_transform) {
   String keyframe_name = [&tag]() {
     StringBuilder builder;
     builder.Append(kKeyframeNamePrefix);
@@ -109,11 +124,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           width: %.3fpx;
           height: %3fpx;
       )CSS",
-      ComputedStyleUtils::ValueForTransform(source_properties.snapshot_matrix,
-                                            1, false)
-          ->CssText()
-          .Utf8()
-          .c_str(),
+      GetTransformString(source_properties, parent_inverse_transform).c_str(),
       source_properties.border_box_size_in_css_space.width.ToFloat(),
       source_properties.border_box_size_in_css_space.height.ToFloat());
 
@@ -130,7 +141,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
-    const CapturedCssProperties& captured_css_properties) {
+    const CapturedCssProperties& captured_css_properties,
+    const gfx::Transform& parent_inverse_transform) {
   StringBuilder rule_builder;
   rule_builder.AppendFormat(
       R"CSS(
@@ -140,11 +152,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
       )CSS",
       properties.border_box_size_in_css_space.width.ToFloat(),
       properties.border_box_size_in_css_space.height.ToFloat(),
-      ComputedStyleUtils::ValueForTransform(properties.snapshot_matrix, 1,
-                                            false)
-          ->CssText()
-          .Utf8()
-          .c_str());
+      GetTransformString(properties, parent_inverse_transform).c_str());
   for (const auto& [id, value] : captured_css_properties) {
     rule_builder.AppendFormat(
         "%s: %s;\n",

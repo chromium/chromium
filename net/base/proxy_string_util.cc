@@ -6,13 +6,18 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/buildflag.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
+#include "net/net_buildflags.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace net {
@@ -23,20 +28,24 @@ namespace {
 // This mapping is case-insensitive. If no type could be matched
 // returns SCHEME_INVALID.
 ProxyServer::Scheme GetSchemeFromPacTypeInternal(std::string_view type) {
-  if (base::EqualsCaseInsensitiveASCII(type, "proxy"))
+  if (base::EqualsCaseInsensitiveASCII(type, "proxy")) {
     return ProxyServer::SCHEME_HTTP;
+  }
   if (base::EqualsCaseInsensitiveASCII(type, "socks")) {
     // Default to v4 for compatibility. This is because the SOCKS4 vs SOCKS5
     // notation didn't originally exist, so if a client returns SOCKS they
     // really meant SOCKS4.
     return ProxyServer::SCHEME_SOCKS4;
   }
-  if (base::EqualsCaseInsensitiveASCII(type, "socks4"))
+  if (base::EqualsCaseInsensitiveASCII(type, "socks4")) {
     return ProxyServer::SCHEME_SOCKS4;
-  if (base::EqualsCaseInsensitiveASCII(type, "socks5"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(type, "socks5")) {
     return ProxyServer::SCHEME_SOCKS5;
-  if (base::EqualsCaseInsensitiveASCII(type, "https"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(type, "https")) {
     return ProxyServer::SCHEME_HTTPS;
+  }
 
   return ProxyServer::SCHEME_INVALID;
 }
@@ -70,7 +79,7 @@ PacResultElementToSchemeAndHostPort(std::string_view pac_result_element) {
   // And everything to the right of the space is the
   // <host>[":" <port>].
   std::string_view host_and_port = pac_result_element.substr(space);
-  return std::make_tuple(std::move(scheme), std::move(host_and_port));
+  return std::make_tuple(scheme, host_and_port);
 }
 
 }  // namespace
@@ -119,13 +128,14 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
 
 ProxyChain ProxyUriToProxyChain(std::string_view uri,
-                                ProxyServer::Scheme default_scheme) {
+                                ProxyServer::Scheme default_scheme,
+                                bool is_quic_allowed) {
   // If uri is direct, return direct proxy chain.
   uri = HttpUtil::TrimLWS(uri);
   size_t colon = uri.find("://");
@@ -136,11 +146,13 @@ ProxyChain ProxyUriToProxyChain(std::string_view uri,
     }
     return ProxyChain::Direct();
   }
-  return ProxyChain(ProxyUriToProxyServer(uri, default_scheme));
+  return ProxyChain(
+      ProxyUriToProxyServer(uri, default_scheme, is_quic_allowed));
 }
 
 ProxyServer ProxyUriToProxyServer(std::string_view uri,
-                                  ProxyServer::Scheme default_scheme) {
+                                  ProxyServer::Scheme default_scheme,
+                                  bool is_quic_allowed) {
   // We will default to |default_scheme| if no scheme specifier was given.
   ProxyServer::Scheme scheme = default_scheme;
 
@@ -151,7 +163,7 @@ ProxyServer ProxyUriToProxyServer(std::string_view uri,
   size_t colon = uri.find(':');
   if (colon != std::string_view::npos && uri.size() - colon >= 3 &&
       uri[colon + 1] == '/' && uri[colon + 2] == '/') {
-    scheme = GetSchemeFromUriScheme(uri.substr(0, colon));
+    scheme = GetSchemeFromUriScheme(uri.substr(0, colon), is_quic_allowed);
     uri = uri.substr(colon + 3);  // Skip past the "://"
   }
 
@@ -183,7 +195,7 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
                                      proxy_server.GetPort());
     default:
       // Got called with an invalid scheme.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -228,20 +240,74 @@ ProxyServer ProxySchemeHostAndPortToProxyServer(
   return ProxyServer::FromSchemeHostAndPort(scheme, hostname, port);
 }
 
-ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme) {
-  if (base::EqualsCaseInsensitiveASCII(scheme, "http"))
+ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme,
+                                           bool is_quic_allowed) {
+  if (base::EqualsCaseInsensitiveASCII(scheme, "http")) {
     return ProxyServer::SCHEME_HTTP;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "socks4"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(scheme, "socks4")) {
     return ProxyServer::SCHEME_SOCKS4;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "socks"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(scheme, "socks")) {
     return ProxyServer::SCHEME_SOCKS5;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "socks5"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(scheme, "socks5")) {
     return ProxyServer::SCHEME_SOCKS5;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "https"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(scheme, "https")) {
     return ProxyServer::SCHEME_HTTPS;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "quic"))
+  }
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  if (is_quic_allowed && base::EqualsCaseInsensitiveASCII(scheme, "quic")) {
     return ProxyServer::SCHEME_QUIC;
+  }
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
   return ProxyServer::SCHEME_INVALID;
 }
 
+ProxyChain MultiProxyUrisToProxyChain(std::string_view uris,
+                                      ProxyServer::Scheme default_scheme,
+                                      bool is_quic_allowed) {
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  // This function should not be called in non-debug modes.
+  CHECK(false);
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+  uris = HttpUtil::TrimLWS(uris);
+  if (uris.empty()) {
+    return ProxyChain();
+  }
+
+  bool has_multi_proxy_brackets = uris.front() == '[' && uris.back() == ']';
+  // Remove `[]` if present
+  if (has_multi_proxy_brackets) {
+    uris = HttpUtil::TrimLWS(uris.substr(1, uris.size() - 2));
+  }
+
+  std::vector<ProxyServer> proxy_server_list;
+  std::vector<std::string_view> uris_list = base::SplitStringPiece(
+      uris, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  size_t number_of_proxy_uris = uris_list.size();
+  bool has_invalid_format =
+      number_of_proxy_uris > 1 && !has_multi_proxy_brackets;
+
+  // If uris list is empty or has invalid formatting for multi-proxy chains, an
+  // invalid `ProxyChain` should be returned.
+  if (uris_list.empty() || has_invalid_format) {
+    return ProxyChain();
+  }
+
+  for (const auto& uri : uris_list) {
+    // If direct is found, it MUST be the only uri in the list. Otherwise, it is
+    // an invalid `ProxyChain()`.
+    if (base::EqualsCaseInsensitiveASCII(uri, "direct://")) {
+      return number_of_proxy_uris > 1 ? ProxyChain() : ProxyChain::Direct();
+    }
+
+    proxy_server_list.push_back(
+        ProxyUriToProxyServer(uri, default_scheme, is_quic_allowed));
+  }
+
+  return ProxyChain(std::move(proxy_server_list));
+}
 }  // namespace net

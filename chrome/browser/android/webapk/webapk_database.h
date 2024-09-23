@@ -12,25 +12,25 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
+class DataTypeStoreService;
 class ModelError;
 class MetadataBatch;
 class MetadataChangeList;
 }  // namespace syncer
 
 namespace webapk {
-class AbstractWebApkDatabaseFactory;
 struct RegistryUpdateData;
 
-// Provides Read/Write access to a ModelTypeStore DB.
+// Provides Read/Write access to a DataTypeStore DB.
 class WebApkDatabase {
  public:
   using ReportErrorCallback =
       base::RepeatingCallback<void(const syncer::ModelError&)>;
 
-  WebApkDatabase(AbstractWebApkDatabaseFactory* database_factory,
+  WebApkDatabase(syncer::DataTypeStoreService* data_type_store_service,
                  ReportErrorCallback error_callback);
   WebApkDatabase(const WebApkDatabase&) = delete;
   WebApkDatabase& operator=(const WebApkDatabase&) = delete;
@@ -50,30 +50,28 @@ class WebApkDatabase {
              CompletionCallback callback);
 
   void DeleteAllDataAndMetadata(
-      syncer::ModelTypeStore::CallbackWithResult callback);
+      syncer::DataTypeStore::CallbackWithResult callback);
 
   bool is_opened() const { return opened_; }
 
  private:
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
-                        std::unique_ptr<syncer::ModelTypeStore> store);
-  void OnAllDataRead(
+                        std::unique_ptr<syncer::DataTypeStore> store);
+  void OnAllDataAndMetadataRead(
       RegistryOpenedCallback callback,
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
-  void OnAllMetadataRead(
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-      RegistryOpenedCallback callback,
-      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
                      const std::optional<syncer::ModelError>& error);
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
-  const raw_ptr<AbstractWebApkDatabaseFactory, DanglingUntriaged>
-      database_factory_;
+  void RecordSyncedWebApkCountHistogram(int num_web_apks) const;
+
+  std::unique_ptr<syncer::DataTypeStore> store_;
+  const raw_ptr<syncer::DataTypeStoreService, DanglingUntriaged>
+      data_type_store_service_;
   ReportErrorCallback error_callback_;
 
   // Database is opened if store is created and all data read.

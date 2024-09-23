@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -55,6 +56,7 @@ DeviceSwitcherResultDispatcher::GetCachedClassificationResult() {
 }
 
 void DeviceSwitcherResultDispatcher::WaitForClassificationResult(
+    base::TimeDelta timeout,
     ClassificationResultCallback callback) {
   if (latest_result_) {
     std::move(callback).Run(std::move(*latest_result_));
@@ -64,6 +66,12 @@ void DeviceSwitcherResultDispatcher::WaitForClassificationResult(
   // This class does not support waiting for multiple requests.
   DCHECK(waiting_callback_.is_null());
   waiting_callback_ = std::move(callback);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DeviceSwitcherResultDispatcher::OnWaitTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      timeout);
 }
 
 // static
@@ -106,6 +114,13 @@ void DeviceSwitcherResultDispatcher::OnGotResult(
 
   if (!waiting_callback_.is_null()) {
     std::move(waiting_callback_).Run(result);
+  }
+}
+
+void DeviceSwitcherResultDispatcher::OnWaitTimeout() {
+  if (!waiting_callback_.is_null()) {
+    std::move(waiting_callback_)
+        .Run(ClassificationResult(PredictionStatus::kNotReady));
   }
 }
 

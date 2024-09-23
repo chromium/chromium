@@ -9,10 +9,9 @@ import type {ColorSchemeModeOption} from 'chrome://resources/cr_components/custo
 import {colorSchemeModeOptions, CustomizeColorSchemeModeElement} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
 import type {ColorSchemeMode, CustomizeColorSchemeModeClientRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
-import type {CrSegmentedButtonElement} from 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('CrComponentsCustomizeColorSchemeModeTest', () => {
   let handler: TestMock<CustomizeColorSchemeModeHandlerRemote>&
@@ -33,7 +32,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
     const element = new CustomizeColorSchemeModeElement();
     callbackRouter.setColorSchemeMode(colorSchemeMode);
     document.body.appendChild(element);
-    await waitAfterNextRender(element);
+    await microtasksFinished();
     return element;
   }
 
@@ -49,7 +48,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
             const checked = innerMode.id === mode.id;
             assertEquals(
                 element.shadowRoot!
-                    .querySelector(`cr-segmented-button-option[name="${
+                    .querySelector(`segmented-button-option[name="${
                         innerMode.id}"]`)!.hasAttribute('checked'),
                 checked);
           });
@@ -63,9 +62,10 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
 
               // Action.
               const button =
-                  element.shadowRoot!.querySelector('cr-segmented-button')! as
-                  CrSegmentedButtonElement;
+                  element.shadowRoot!.querySelector('segmented-button');
+              assertTrue(!!button);
               button.selected = mode.id;
+              await microtasksFinished();
 
               // Assert.
               assertEquals(1, handler.getCallCount('setColorSchemeMode'));

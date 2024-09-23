@@ -177,11 +177,7 @@ const char kTestFileContents[] = "test";
 }
 
 - (NSString*)UTI {
-  if (@available(macOS 11, *)) {
-    return UTTypeImage.identifier;
-  } else {
-    return base::apple::CFToNSPtrCast(kUTTypeImage);
-  }
+  return UTTypeImage.identifier;
 }
 
 - (NSDate*)modificationDate {
@@ -200,9 +196,7 @@ const char kTestFileContents[] = "test";
 
 namespace storage_monitor {
 
-class TestCameraListener
-    : public ImageCaptureDeviceListener,
-      public base::SupportsWeakPtr<TestCameraListener> {
+class TestCameraListener final : public ImageCaptureDeviceListener {
  public:
   TestCameraListener() = default;
   ~TestCameraListener() override = default;
@@ -230,12 +224,17 @@ class TestCameraListener
   bool removed() const { return removed_; }
   base::File::Error last_error() const { return last_error_; }
 
+  base::WeakPtr<ImageCaptureDeviceListener> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<std::string> items_;
   std::vector<std::string> downloads_;
   bool completed_ = false;
   bool removed_ = false;
   base::File::Error last_error_ = base::File::FILE_ERROR_INVALID_URL;
+  base::WeakPtrFactory<ImageCaptureDeviceListener> weak_ptr_factory_{this};
 };
 
 class ImageCaptureDeviceManagerTest : public testing::Test {

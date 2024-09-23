@@ -19,6 +19,7 @@
 
 namespace network {
 struct CrossOriginEmbedderPolicy;
+struct DocumentIsolationPolicy;
 }
 
 namespace storage {
@@ -55,6 +56,7 @@ class CacheStorageDispatcherHost {
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      const network::DocumentIsolationPolicy& document_isolation_policy,
       const blink::StorageKey& storage_key,
       const std::optional<storage::BucketLocator>& bucket,
       storage::mojom::CacheStorageOwner owner,

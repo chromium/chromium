@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_TYPES_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_TYPES_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,6 +29,9 @@ enum class ClusteringRequestSource {
 struct QueryClustersFilterParams {
   QueryClustersFilterParams();
   QueryClustersFilterParams(const QueryClustersFilterParams&);
+  QueryClustersFilterParams(QueryClustersFilterParams&&);
+  QueryClustersFilterParams& operator=(const QueryClustersFilterParams&);
+  QueryClustersFilterParams& operator=(QueryClustersFilterParams&&);
   ~QueryClustersFilterParams();
 
   // Parameters related to the minimum requirements for returned clusters.
@@ -69,8 +71,10 @@ struct QueryClustersFilterParams {
   // Whether to exclude visits that have interaction state equal to hidden.
   bool filter_hidden_visits = false;
 
-  // Whether to include synced visits.
-  bool include_synced_visits = false;
+  // Whether to include synced visits. Defaults to true because Full History
+  // Sync launched in early 2024. But NTP quests is still flag guarding this,
+  // so this boolean needs to still exist.
+  bool include_synced_visits = true;
 
   // Whether to return merged clusters that are similar based on content.
   bool group_clusters_by_content = false;

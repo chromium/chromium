@@ -226,6 +226,10 @@ test("sbox_integration_tests") {
   ]
 
   libs = [ "ktmw32.lib" ]
+
+  # It is necessary for tests validating win32k lockdown to delayload
+  # user32.dll, gdi32.dll, and others that depend on them.
+  configs += [ "//build/config/win:delayloads" ]
 }
 
 group("maybe_set_appcontainer_acls") {

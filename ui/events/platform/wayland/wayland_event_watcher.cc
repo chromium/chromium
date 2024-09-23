@@ -5,12 +5,14 @@
 #include "ui/events/platform/wayland/wayland_event_watcher.h"
 
 #include <wayland-client-core.h>
+
 #include <cstring>
 
 #include "base/check.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
@@ -33,17 +35,25 @@ void FormatErrorMessage(std::string* message) {
   }
 }
 
-// Wayland error log that will be stored if the client (Chromium) is
-// disconnected due to a protocol error.
-static std::string* g_error_log = nullptr;
+std::optional<std::string>& GetErrorLog() {
+  // Wayland error log that will be stored if the client (Chromium) is
+  // disconnected due to a protocol error.
+  static std::optional<std::string> g_error_log;
+  return g_error_log;
+}
 
 void wayland_log(const char* fmt, va_list argp) {
-  DCHECK(!g_error_log);
-  g_error_log = new std::string(base::StringPrintV(fmt, argp));
-  LOG(ERROR) << "libwayland: " << *g_error_log;
+  std::string error_log(base::StringPrintV(fmt, argp));
+  LOG(ERROR) << "libwayland: " << error_log;
   // Format the error message only after it's printed. Otherwise, object id will
   // be lost and local development and debugging will be harder to do.
-  FormatErrorMessage(g_error_log);
+  FormatErrorMessage(&error_log);
+  if (GetErrorLog().has_value()) {
+    GetErrorLog()->append("\n");
+    GetErrorLog()->append(std::move(error_log));
+  } else {
+    GetErrorLog() = std::move(error_log);
+  }
 }
 
 std::string GetWaylandProtocolError(int err, wl_display* display) {
@@ -206,7 +216,7 @@ void WaylandEventWatcher::RoundTripQueue() {
     // as its internal implementation also reads events, which may block if
     // there are more than one preparation for reading within the same thread.
     //
-    // TODO(crbug.com/1288181): this won't be needed once libevent is updated.
+    // TODO(crbug.com/40816750): this won't be needed once libevent is updated.
     // See WaylandEventWatcherFdWatch::OnFileCanReadWithoutBlocking for more
     // details.
     WlDisplayCancelRead();
@@ -241,6 +251,11 @@ void WaylandEventWatcher::StopProcessingEventsInternal() {
   watching_ = false;
 }
 
+void WaylandEventWatcher::Flush() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  wl_display_flush(display_);
+}
+
 bool WaylandEventWatcher::WlDisplayPrepareToRead() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (prepared_) {
@@ -256,7 +271,7 @@ bool WaylandEventWatcher::WlDisplayPrepareToRead() {
   prepared_ = true;
 
   // Automatic flush.
-  wl_display_flush(display_);
+  Flush();
 
   return true;
 }
@@ -319,13 +334,12 @@ void WaylandEventWatcher::WlDisplayCheckForErrors() {
     std::string error_string;
     // It's not expected that Wayland doesn't send a wayland log. However, to
     // avoid any possible cases (which are unknown. The unittests exercise all
-    // the known ways how a Wayland compositor sends errors) when g_error_log
-    // is NULL, get protocol errors (though, without an explicit description of
-    // an error) from the display.
-    if (g_error_log) {
-      error_string = *g_error_log;
-      delete g_error_log;
-      g_error_log = nullptr;
+    // the known ways how a Wayland compositor sends errors) when GetErrorLog()
+    // returns NULL, get protocol errors (though, without an explicit
+    // description of an error) from the display.
+    if (GetErrorLog().has_value()) {
+      error_string = std::move(*GetErrorLog());
+      GetErrorLog().reset();
     } else {
       error_string = GetWaylandProtocolError(err, display_);
     }

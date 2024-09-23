@@ -200,6 +200,18 @@ message AacEncoderConfig {
   optional AacFormat format = 1;
 }
 
+enum OpusSignal {
+  AUTO = 0;
+  MUSIC = 1;
+  VOICE = 2;
+}
+
+enum OpusApplication {
+  VOIP = 0;
+  AUDIO = 1;
+  LOWDELAY = 2;
+}
+
 message OpusEncoderConfig {
   optional uint64 frame_duration = 1;
 
@@ -210,6 +222,10 @@ message OpusEncoderConfig {
   optional bool useinbandfec = 4;
 
   optional bool usedtx = 5;
+
+  optional OpusSignal signal = 6;
+
+  optional OpusApplication application = 7;
 }
 
 message ConfigureAudioEncoder {

@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -25,7 +26,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -51,7 +51,7 @@ public class ToolbarProgressBarIntegrationTest {
                 mActivityTestRule.getActivity().getToolbarManager().getToolbar().getProgressBar();
 
         mProgressBar.resetStartCountForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mProgressBar.finish(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mProgressBar.finish(false));
     }
 
     /** Test that the progress bar only traverses the page a single time per navigation. */
@@ -67,8 +67,7 @@ public class ToolbarProgressBarIntegrationTest {
         final WebContents webContents = mActivityTestRule.getWebContents();
 
         TestWebContentsObserver observer =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new TestWebContentsObserver(webContents));
+                ThreadUtils.runOnUiThreadBlocking(() -> new TestWebContentsObserver(webContents));
         // Start and stop load events are carefully tracked; there should be two start-stop pairs
         // that do not overlap.
         OnPageStartedHelper startHelper = observer.getOnPageStartedHelper();

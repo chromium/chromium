@@ -6,11 +6,13 @@ import("//build/buildflag_header.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
 
 # This target exists to reference other test executables to bring these files
 # into the build.
 group("test") {
   testonly = true
+  deps = [ "renderer_fuzzing:test" ]
 }
 
 if (fuzzing_engine_supports_custom_main) {
@@ -24,7 +26,10 @@ if (fuzzing_engine_supports_custom_main) {
       ":in_process_fuzzer_buildflags",
       "//testing/libfuzzer:fuzzing_engine_no_main",
     ]
-    public_deps = [ "//chrome/test:test_support" ]
+    public_deps = [
+      "//chrome/test:chrome_test_launcher",
+      "//chrome/test:test_support",
+    ]
   }
 
   buildflag_header("in_process_fuzzer_buildflags") {
@@ -32,6 +37,7 @@ if (fuzzing_engine_supports_custom_main) {
     flags = [
       "IS_CENTIPEDE=$use_centipede",
       "IS_LIBFUZZER=$use_libfuzzer",
+      "IS_FUZZILLI=$use_fuzzilli",
 
       # crbug.com/1474421: remove these lines once the bug is fixed.
       "DEBUG_CLUSTERFUZZ_FAILURE=$use_libfuzzer",
@@ -52,6 +58,8 @@ if (!is_android) {
   }
   in_process_fuzzer("js_in_process_fuzzer") {
     sources = [ "js_in_process_fuzzer.cc" ]
+    deps = [ ":in_process_fuzzer_buildflags" ]
+    is_fuzzilli_compatible = true
   }
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]
@@ -75,6 +83,8 @@ if (!is_android) {
       ":in_process_fuzzer_buildflags",
       "//chrome:packed_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:ui_features",
     ]
 
     # Used for UI controls
@@ -86,6 +96,52 @@ if (!is_android) {
         "//ui/ozone",
         "//ui/platform_window/common:common",
       ]
+    }
+  }
+
+  # We cannot disable instrumenting protobuf generated files on MSAN builds,
+  # which makes the build time explode and fail the CQ.
+  if (!is_msan) {
+    domatolpm_fuzzer("domato_html_fuzzer_grammar") {
+      template_file = "//third_party/domato/src/template.html"
+      grammars = [
+        "jsfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/js.txt",
+        "cssfuzzer://third_party/domato/src/rules/css.txt",
+        "htmlfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/html.txt",
+      ]
+    }
+    in_process_fuzzer("domato_html_in_process_fuzzer") {
+      sources = [ "domato_html_in_process_fuzzer.cc" ]
+
+      deps = [
+        ":domato_html_fuzzer_grammar",
+        "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+        "//third_party/libprotobuf-mutator",
+      ]
+    }
+  }
+
+  domatolpm_fuzzer("webcodecs_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/webcodecs_in_process_fuzzer_grammar/template.html"
+    grammars = [ "webcodecs_fuzzer://chrome/test/fuzzing/webcodecs_in_process_fuzzer_grammar/webcodecs.txt" ]
+  }
+  in_process_fuzzer("webcodecs_in_process_fuzzer") {
+    sources = [ "webcodecs_in_process_fuzzer.cc" ]
+
+    deps = [
+      ":webcodecs_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+
+  if (is_linux) {
+    in_process_proto_fuzzer("atspi_in_process_fuzzer") {
+      sources = [ "atspi_in_process_fuzzer.cc" ]
+      libfuzzer_options = [ "max_len=4096" ]
+      proto_source = "atspi_in_process_fuzzer.proto"
+      deps = [ "//sql" ]
     }
   }
 }

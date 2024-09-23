@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './shared_style.css.js';
 import './checkup_list_item.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -65,6 +67,8 @@ export class CheckupDetailsSectionElement extends
     return {
       pageTitle_: String,
 
+      pageSubtitle_: String,
+
       insecurityType_: {
         type: String,
         observer: 'updateShownCredentials_',
@@ -102,6 +106,7 @@ export class CheckupDetailsSectionElement extends
   }
 
   private pageTitle_: string;
+  private pageSubtitle_: string;
   private insecurityType_: CheckupSubpage|undefined;
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
@@ -143,7 +148,9 @@ export class CheckupDetailsSectionElement extends
     this.insecurityType_ = route.details as unknown as CheckupSubpage;
     // Focus back button when it's not direct navigation.
     if (oldRoute !== undefined) {
-      this.$.backButton.focus();
+      setTimeout(() => {  // Async to allow page to load.
+        this.$.backButton.focus();
+      });
     }
   }
 
@@ -203,6 +210,14 @@ export class CheckupDetailsSectionElement extends
     this.pageTitle_ = await PluralStringProxyImpl.getInstance().getPluralString(
         this.insecurityType_.concat('Passwords'),
         this.shownInsecureCredentials_.length);
+    if (this.insecurityType_ === CheckupSubpage.COMPROMISED) {
+      this.pageSubtitle_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              `${this.insecurityType_}PasswordsTitle`,
+              this.shownInsecureCredentials_.length);
+    } else {
+      this.pageSubtitle_ = this.i18n(`${this.insecurityType_}PasswordsTitle`);
+    }
   }
 
   private getInsecurityType_(): chrome.passwordsPrivate.CompromiseType[] {
@@ -218,11 +233,6 @@ export class CheckupDetailsSectionElement extends
       case CheckupSubpage.WEAK:
         return [chrome.passwordsPrivate.CompromiseType.WEAK];
     }
-  }
-
-  private getSubTitle_() {
-    assert(this.insecurityType_);
-    return this.i18n(`${this.insecurityType_}PasswordsTitle`);
   }
 
   private getDescription_() {

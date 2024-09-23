@@ -103,7 +103,7 @@
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <div id="disclaimer" hidden="[[!shouldShowV2_]]">
-  $i18n{topicsPageDisclaimer}
+  $i18nRaw{topicsPageDisclaimerDesktop}
 </div>
 <template is="dom-if" if="[[!shouldShowV2EmptyState_]]" restamp>
   <template is="dom-if" if="[[!isTopicsPrefManaged_(
@@ -165,10 +165,10 @@
       expanded="{{blockedTopicsExpanded_}}">
     [[computeTopicsPageBlockedTopicsHeading_(shouldShowV2_)]]
     <div id="blockedTopicsDescriptionV2" hidden="[[!shouldShowV2_]]">
-      $i18n{topicsPageBlockedTopicsDescriptionV2}
+      $i18n{topicsPageBlockedTopicsDescriptionNew}
     </div>
   </cr-expand-button>
-  <iron-collapse opened="[[blockedTopicsExpanded_]]">
+  <cr-collapse opened="[[blockedTopicsExpanded_]]">
     <div id="blockedTopicsDescription"
         class$="[[getBlockedTopicsDescriptionClass_(
         blockedTopicsList_.length)]]"
@@ -195,7 +195,7 @@
         </privacy-sandbox-interest-item>
       </template>
     </div>
-  </iron-collapse>
+  </cr-collapse>
   <template is="dom-if" if="[[shouldShowV2_]]">
     <div id="manageTopicsSection" class="hr">
         <cr-link-row id="privacySandboxManageTopicsLinkRow"
@@ -242,7 +242,7 @@
   <settings-simple-confirmation-dialog id="blockTopicDialog"
       title-text="[[blockTopicDialogTitle_]]"
       body-text="[[blockTopicDialogBody_]]"
-      confirm-text="$i18n{manageTopicDialogBlockButtonText}"
+      confirm-text="$i18n{topicsPageBlockTopic}"
       on-close="onBlockTopicDialogClose_">
   </settings-simple-confirmation-dialog>
 </template>

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "media/base/media_switches.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -112,6 +113,8 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleHighContrast},
     {true, ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
      AcceleratorAction::kToggleSpokenFeedback},
+    {true, ui::VKEY_S, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kEnableSelectToSpeak},
     {true, ui::VKEY_D, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kEnableOrToggleDictation},
     {true, ui::VKEY_DICTATE, ui::EF_NONE,
@@ -126,6 +129,7 @@ const AcceleratorData kAcceleratorData[] = {
     {false, ui::VKEY_RSHIFT, ui::EF_NONE, AcceleratorAction::kDisableCapsLock},
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN, AcceleratorAction::kToggleCalendar},
     // Accelerators to toggle Caps Lock.
+    {true, ui::VKEY_CAPITAL, ui::EF_NONE, AcceleratorAction::kToggleCapsLock},
     // The following is triggered when Search is released while Alt is still
     // down. The key_code here is LWIN (for search) and Alt is a modifier.
     {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
@@ -242,7 +246,7 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_BROWSER_BACK, ui::EF_NONE,
      AcceleratorAction::kMinimizeTopWindowOnBack},
     {true, ui::VKEY_G, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup},
+     AcceleratorAction::kCreateSnapGroup},
     {true, ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore},
     {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,
@@ -257,6 +261,9 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleDockedMagnifier},
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
      AcceleratorAction::kToggleFullscreenMagnifier},
+
+    {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleMouseKeys},
 
     // Media Player shortcuts.
     {true, ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE,
@@ -313,6 +320,10 @@ const AcceleratorData kAcceleratorData[] = {
     // Projector shortcuts.
     {true, ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleProjectorMarker},
+
+    // Accessibility key.
+    {true, ui::VKEY_ACCESSIBILITY, ui::EF_NONE,
+     AcceleratorAction::kAccessibilityAction},
 };
 
 const size_t kAcceleratorDataLength = std::size(kAcceleratorData);
@@ -395,6 +406,29 @@ const AcceleratorData kToggleGameDashboardAcceleratorData[] = {
 
 const size_t kToggleGameDashboardAcceleratorDataLength =
     std::size(kToggleGameDashboardAcceleratorData);
+
+const AcceleratorData kTogglePickerAcceleratorData[] = {
+    {false, ui::VKEY_RIGHT_ALT, ui::EF_NONE, AcceleratorAction::kTogglePicker,
+     true},
+    {true, ui::VKEY_F, ui::EF_COMMAND_DOWN, AcceleratorAction::kTogglePicker},
+};
+
+const size_t kTogglePickerAcceleratorDataLength =
+    std::size(kTogglePickerAcceleratorData);
+
+const AcceleratorData kTilingWindowResizeAcceleratorData[] = {
+    {true, ui::VKEY_OEM_COMMA, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeLeft},
+    {true, ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeRight},
+    {true, ui::VKEY_OEM_1, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeUp},
+    {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeDown},
+};
+
+const size_t kTilingWindowResizeAcceleratorDataLength =
+    std::size(kTilingWindowResizeAcceleratorData);
 
 // static
 AcceleratorController* AcceleratorController::Get() {

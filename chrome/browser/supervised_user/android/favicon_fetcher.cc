@@ -99,7 +99,6 @@ void FaviconFetcher::OnGetFaviconFromCacheFinished(
     large_icon_service_
         ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
             url,
-            /*may_page_url_be_private=*/true,
             /*should_trim_page_url_path=*/false, traffic_annotation,
             base::BindOnce(&FaviconFetcher::OnFaviconDownloaded,
                            base::Unretained(this), url, std::move(callback),

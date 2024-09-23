@@ -72,7 +72,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   // Use an allowlist to only allow access to files residing in the list of
   // directories below.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
-      "/home/chronos/user/Downloads",
       "/home/chronos/user/MyFiles",
       "/home/chronos/user/WebRTC Logs",
       "/home/chronos/user/google-assistant-library/log",
@@ -100,8 +99,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   // switching to use explicit "$PROFILE_PATH/Xyz" path and here allow such
   // access.
   if (!profile_path.empty()) {
-    const base::FilePath downloads = profile_path.AppendASCII("Downloads");
-    allowlist.push_back(downloads);
     allowlist.push_back(profile_path.AppendASCII("MyFiles"));
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
     allowlist.push_back(webrtc_logs);

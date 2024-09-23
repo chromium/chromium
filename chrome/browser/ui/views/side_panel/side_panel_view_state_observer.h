@@ -12,6 +12,10 @@ class SidePanelViewStateObserver : public base::CheckedObserver {
   // Called after opening the SidePanel.
   virtual void OnSidePanelDidOpen() {}
 
+  // Called when the side panel was in the process of closing, but a call to
+  // open the side panel interrupted the closing process.
+  virtual void OnSidePanelCloseInterrupted() {}
+
   // Called after closing the SidePanel.
   virtual void OnSidePanelDidClose() {}
 

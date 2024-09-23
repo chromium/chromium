@@ -10,16 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/functional/bind.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
-#include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,17 +21,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registrar_observer.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
@@ -46,33 +32,21 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/permissions/permission_message.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_constants.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -81,74 +55,37 @@
 
 namespace {
 
-const char* kAppIdsWithHiddenMoreSettings[] = {
-    extensions::kWebStoreAppId,
-    extension_misc::kFilesManagerAppId,
-};
-
-const char* kAppIdsWithHiddenPinToShelf[] = {
-    app_constants::kChromeAppId,
-    app_constants::kLacrosAppId,
-};
-
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
-    arc::kPlayStoreAppId,
-};
-
-// In ICU library, undefined locale is treated as unknown language (ICU-20273).
-const char kUndefinedTranslatedLocaleName[] = "und";
-
-app_management::mojom::LocalePtr CreateLocaleForTag(
-    const std::string& locale_tag,
-    const std::string& system_locale) {
-  const std::string display_name =
-      base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-          locale_tag, system_locale, /*is_for_ui=*/true));
-  const std::string native_display_name = base::UTF16ToUTF8(
-      l10n_util::GetDisplayNameForLocale(locale_tag, locale_tag,
-                                         /*is_for_ui=*/true));
-
-  // In Android, it's possible for Apps to set custom locale tag, hence these
-  // locales might be untranslatable (based on ICU-20273).
-  // In this case, we'll pass empty string and let the UI decides what to
-  // display. For ARC, we'll display the `locale_tag` as is (this is safe
-  // within the limit specified by IETF BCP 47, as no malicious HTML tags
-  // could be formed).
-  return app_management::mojom::Locale::New(
-      locale_tag,
-      display_name == kUndefinedTranslatedLocaleName ? "" : display_name,
-      native_display_name == kUndefinedTranslatedLocaleName
-          ? ""
-          : native_display_name);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-app_management::mojom::ExtensionAppPermissionMessagePtr
-CreateExtensionAppPermissionMessage(
-    const extensions::PermissionMessage& message) {
-  std::vector<std::string> submessages;
-  for (const auto& submessage : message.submessages()) {
-    submessages.push_back(base::UTF16ToUTF8(submessage));
-  }
-  return app_management::mojom::ExtensionAppPermissionMessage::New(
-      base::UTF16ToUTF8(message.message()), std::move(submessages));
-}
-
 bool ShouldHideMoreSettings(const std::string app_id) {
-  return base::Contains(kAppIdsWithHiddenMoreSettings, app_id);
+  constexpr auto kAppIdsWithHiddenMoreSettings =
+      base::MakeFixedFlatSet<std::string_view>({
+          extensions::kWebStoreAppId,
+          extension_misc::kFilesManagerAppId,
+      });
+
+  return kAppIdsWithHiddenMoreSettings.contains(app_id);
 }
 
 bool ShouldHidePinToShelf(const std::string app_id) {
-  return base::Contains(kAppIdsWithHiddenPinToShelf, app_id);
+  constexpr auto kAppIdsWithHiddenPinToShelf =
+      base::MakeFixedFlatSet<std::string_view>({
+          app_constants::kChromeAppId,
+          app_constants::kLacrosAppId,
+      });
+
+  return kAppIdsWithHiddenPinToShelf.contains(app_id);
 }
 
 bool ShouldHideStoragePermission(const std::string app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::Contains(kAppIdsWithHiddenStoragePermission, app_id);
+  constexpr auto kAppIdsWithHiddenStoragePermission =
+      base::MakeFixedFlatSet<std::string_view>({
+          arc::kPlayStoreAppId,
+      });
+
+  return kAppIdsWithHiddenStoragePermission.contains(app_id);
 #else
   return false;
 #endif
@@ -165,80 +102,9 @@ bool CanShowDefaultAppAssociationsUi() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns a list of intent filters that support http/https given an app ID.
-apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
-                                                  const std::string& app_id) {
-  apps::IntentFilters intent_filters;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(app_id,
-                 [&app_id, &intent_filters](const apps::AppUpdate& update) {
-                   if (update.Readiness() == apps::Readiness::kReady) {
-                     for (auto& filter : update.IntentFilters()) {
-                       if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
-                         intent_filters.emplace_back(std::move(filter));
-                       }
-                     }
-                   }
-                 });
-  return intent_filters;
-}
-
-// Returns a list of URLs supported by an app given an app ID.
-std::vector<std::string> GetSupportedLinks(Profile* profile,
-                                           const std::string& app_id) {
-  std::set<std::string> supported_links;
-  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
-  for (auto& filter : intent_filters) {
-    for (const auto& link :
-         apps_util::GetSupportedLinksForAppManagement(filter)) {
-      supported_links.insert(link);
-    }
-  }
-
-  return std::vector<std::string>(supported_links.begin(),
-                                  supported_links.end());
-}
-#endif
-
-std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
-  if (bytes.has_value()) {
-    // ui::FormatBytes requires a non-negative signed integer. In general, we
-    // expect that converting from unsigned to signed int here should always
-    // yield a positive value, since overflowing into negative would require an
-    // implausibly large app (2^63 bytes ~= 9 exabytes).
-    int64_t signed_bytes = static_cast<int64_t>(bytes.value());
-    if (signed_bytes < 0) {
-      // TODO(crbug.com/1418590): Investigate ARC apps which have negative data
-      // sizes.
-      LOG(ERROR) << "Invalid app size: " << signed_bytes;
-      base::debug::DumpWithoutCrashing();
-      return std::nullopt;
-    }
-    return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
-  }
-
-  return std::nullopt;
-}
-
 }  // namespace
 
 AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
-
-void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
-                                                   bool pinned) {
-  app_management::mojom::AppPtr app = CreateApp(app_id);
-
-  // If an app with this id is not already installed, do nothing.
-  if (!app) {
-    return;
-  }
-
-  app->is_pinned = pinned;
-
-  page_->OnAppChanged(std::move(app));
-}
 
 void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;
@@ -261,70 +127,6 @@ void AppManagementPageHandlerBase::GetApp(const std::string& app_id,
   std::move(callback).Run(CreateApp(app_id));
 }
 
-void AppManagementPageHandlerBase::GetSubAppToParentMap(
-    GetSubAppToParentMapCallback callback) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  if (provider) {
-    // Web apps are managed in the current process (Ash or Lacros).
-    provider->scheduler().ScheduleCallbackWithResult(
-        "AppManagementPageHandlerBase::GetSubAppToParentMap",
-        web_app::AllAppsLockDescription(),
-        base::BindOnce(
-            [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
-              return lock.registrar().GetSubAppToParentMap();
-            }),
-        /*on_complete=*/std::move(callback),
-        /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Web app data needs to be fetched from the Lacros process.
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-  if (web_app_provider_bridge) {
-    web_app_provider_bridge->GetSubAppToParentMap(std::move(callback));
-    return;
-  }
-  LOG(ERROR) << "Could not find WebAppProviderBridge.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Reaching here means that WebAppProviderBridge and WebAppProvider were both
-  // not found.
-  std::move(callback).Run(base::flat_map<std::string, std::string>());
-}
-
-void AppManagementPageHandlerBase::GetExtensionAppPermissionMessages(
-    const std::string& app_id,
-    GetExtensionAppPermissionMessagesCallback callback) {
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile_);
-  const extensions::Extension* extension = registry->GetExtensionById(
-      app_id, extensions::ExtensionRegistry::ENABLED |
-                  extensions::ExtensionRegistry::DISABLED |
-                  extensions::ExtensionRegistry::BLOCKLISTED);
-  std::vector<app_management::mojom::ExtensionAppPermissionMessagePtr> messages;
-  if (extension) {
-    for (const auto& message :
-         extension->permissions_data()->GetPermissionMessages()) {
-      messages.push_back(CreateExtensionAppPermissionMessage(message));
-    }
-  }
-  std::move(callback).Run(std::move(messages));
-}
-
-void AppManagementPageHandlerBase::SetPinned(const std::string& app_id,
-                                             bool pinned) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  shelf_delegate_.SetPinned(app_id, pinned);
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AppManagementPageHandlerBase::SetPermission(
     const std::string& app_id,
     apps::PermissionPtr permission) {
@@ -332,21 +134,10 @@ void AppManagementPageHandlerBase::SetPermission(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::Uninstall(const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-      app_id, apps::UninstallSource::kAppManagement,
-      delegate_->GetUninstallAnchorWindow());
-}
-
 void AppManagementPageHandlerBase::OpenNativeSettings(
     const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
       app_id);
-}
-
-void AppManagementPageHandlerBase::UpdateAppSize(const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->UpdateAppSize(app_id);
 }
 
 void AppManagementPageHandlerBase::SetFileHandlingEnabled(
@@ -362,15 +153,10 @@ void AppManagementPageHandlerBase::SetFileHandlingEnabled(
 AppManagementPageHandlerBase::AppManagementPageHandlerBase(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
-    Profile* profile,
-    Delegate& delegate)
+    Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      shelf_delegate_(this, profile),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      delegate_(delegate) {
+      profile_(profile) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
@@ -425,45 +211,11 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
 
   app->description = update.Description();
 
-  app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
-  app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
-
-  // On other OS's, is_pinned defaults to std::nullopt, which is used to
-  // represent the fact that there is no concept of being pinned.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  app->is_pinned = shelf_delegate_.IsPinned(update.AppId());
-  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId());
-  app->resize_locked = update.ResizeLocked().value_or(false);
-  app->hide_resize_locked = !update.ResizeLocked().has_value();
-
-  if (ash::settings::IsPerAppLanguageEnabled(profile_)) {
-    const std::string& system_locale =
-        g_browser_process->GetApplicationLocale();
-    // Translate supported locales.
-    for (const std::string& locale_tag : update.SupportedLocales()) {
-      app->supported_locales.push_back(
-          CreateLocaleForTag(locale_tag, system_locale));
-    }
-    // Translate selected locale.
-    std::optional<std::string> locale_tag = update.SelectedLocale();
-    if (locale_tag.has_value()) {
-      app->selected_locale = CreateLocaleForTag(*locale_tag, system_locale);
-    }
-  }
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  app->is_preferred_app = apps::AppServiceProxyFactory::GetForProfile(profile_)
-                              ->PreferredAppsList()
-                              .IsPreferredAppForSupportedLinks(update.AppId());
-#endif  // BUILDFLAG(IS_CHROMEOS)
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
       !update.ShowInShelf().value_or(true) || ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  app->supported_links = GetSupportedLinks(profile_, app->id);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   auto run_on_os_login = update.RunOnOsLogin();
   if (run_on_os_login.has_value()) {
     app->run_on_os_login = std::make_unique<apps::RunOnOsLogin>(
@@ -542,7 +294,7 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
       if (!CanShowDefaultAppAssociationsUi()) {
         learn_more_url = GURL(kFileHandlingLearnMore);
       }
-      // TODO(crbug/1252505): add file handling policy support.
+      // TODO(crbug.com/40198786): add file handling policy support.
       app->file_handling_state = app_management::mojom::FileHandlingState::New(
           fh_enabled, /*is_managed=*/false, file_handling_types,
           file_handling_types_label, learn_more_url);
@@ -559,7 +311,14 @@ void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement().value_or(false) &&
         update.Readiness() == apps::Readiness::kReady) {
-      page_->OnAppAdded(std::move(app));
+      if (update.PriorReadiness() ==
+          apps::Readiness::kDisabledByLocalSettings) {
+        // If the app is installed and was previously blocked by local settings,
+        // this should be treated as an app changed event.
+        page_->OnAppChanged(std::move(app));
+      } else {
+        page_->OnAppAdded(std::move(app));
+      }
     }
 
     if (!update.ShowInManagement().value_or(true) ||

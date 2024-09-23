@@ -74,12 +74,9 @@ class FadeView : public views::View {
     return primary_view_->GetMinimumSize();
   }
 
-  gfx::Size CalculatePreferredSize() const override {
-    return primary_view_->CalculatePreferredSize();
-  }
-
-  int GetHeightForWidth(int width) const override {
-    return primary_view_->GetHeightForWidth(width);
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return primary_view_->CalculatePreferredSize(available_size);
   }
 
   gfx::Size GetMaximumSize() const override {
@@ -88,15 +85,9 @@ class FadeView : public views::View {
                                         primary_view_->GetPreferredSize());
   }
 
+  T* GetPrimaryViewForTesting() { return primary_view_; }
+
  protected:
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterUpdatesTabAlertStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsDiscardStatus);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardFooterShowsMemoryUsage);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
-                           HoverCardShowsMemoryOnMemoryRefresh);
   raw_ptr<T> primary_view_ = nullptr;
   raw_ptr<U> fade_out_view_ = nullptr;
   double percent_ = 1.0;

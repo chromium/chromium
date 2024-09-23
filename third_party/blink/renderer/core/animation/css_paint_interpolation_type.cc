@@ -35,7 +35,7 @@ bool GetColor(const CSSProperty& property,
     case CSSPropertyID::kStroke:
       return GetColorFromPaint(style.StrokePaint(), result);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -57,8 +57,13 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInitial(
                 state.GetDocument().GetStyleResolver().InitialStyle(),
                 initial_color))
     return nullptr;
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(initial_color));
+
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      initial_color, color_scheme, color_provider));
 }
 
 PairwiseInterpolationValue CSSPaintInterpolationType::MaybeMergeSingles(
@@ -85,6 +90,11 @@ class InheritedPaintChecker
   InheritedPaintChecker(const CSSProperty& property, const StyleColor& color)
       : property_(property), valid_color_(true), color_(color) {}
 
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(color_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -107,21 +117,32 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
   StyleColor parent_color;
   if (!GetColor(CssProperty(), *state.ParentStyle(), parent_color)) {
     conversion_checkers.push_back(
-        std::make_unique<InheritedPaintChecker>(CssProperty()));
+        MakeGarbageCollected<InheritedPaintChecker>(CssProperty()));
     return nullptr;
   }
   conversion_checkers.push_back(
-      std::make_unique<InheritedPaintChecker>(CssProperty(), parent_color));
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(parent_color));
+      MakeGarbageCollected<InheritedPaintChecker>(CssProperty(), parent_color));
+  mojom::blink::ColorScheme color_scheme =
+      state.StyleBuilder().UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      parent_color, color_scheme, color_provider));
 }
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
+  mojom::blink::ColorScheme color_scheme =
+      state ? state->StyleBuilder().UsedColorScheme()
+            : mojom::blink::ColorScheme::kLight;
+  const ui::ColorProvider* color_provider =
+      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
+            : nullptr;
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(value);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(
+          value, color_scheme, color_provider);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);
@@ -135,8 +156,9 @@ CSSPaintInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   StyleColor underlying_color;
   if (!GetColor(CssProperty(), style, underlying_color))
     return nullptr;
-  return InterpolationValue(
-      CSSColorInterpolationType::CreateInterpolableColor(underlying_color));
+  // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
+  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
+      underlying_color, style.UsedColorScheme(), /*color_provider=*/nullptr));
 }
 
 void CSSPaintInterpolationType::ApplyStandardPropertyValue(
@@ -156,7 +178,7 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
       builder.SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

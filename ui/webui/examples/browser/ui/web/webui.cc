@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/webui/examples/browser/ui/web/webui.h"
 
 #include "chrome/grit/webui_gallery_resources.h"
@@ -9,7 +14,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/webui/examples/grit/webui_examples_resources.h"
 
 namespace webui_examples {
@@ -25,8 +29,14 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "trusted-types parse-html-subset sanitize-inner-html static-types "
       // Add TrustedTypes policies for cr-lottie.
       "lottie-worker-script-loader "
+      // Add TrustedTypes policies used during tests.
+      "webui-test-script webui-test-html "
+      // Add TrustedTypes policy for creating the PDF plugin.
+      "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
-      "polymer-html-literal polymer-template-event-attribute-policy;");
+      "polymer-html-literal polymer-template-event-attribute-policy "
+      // Add TrustedTypes policies necessary for using Desktop's Lit bundle.
+      "lit-html-desktop;");
 }
 
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
@@ -45,9 +55,6 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           int default_resource) {
   SetJSModuleDefaults(source);
   EnableTrustedTypesCSP(source);
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
 }

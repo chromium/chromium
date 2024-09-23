@@ -13,9 +13,6 @@ namespace features {
 // Enables HTTPS-Only mode upgrades on iOS.
 BASE_DECLARE_FEATURE(kHttpsOnlyMode);
 
-// Enables mixed content autoupgrades on iOS.
-BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
-
 // Enables HTTPS upgrades on iOS.
 BASE_DECLARE_FEATURE(kHttpsUpgrades);
 

@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("shared") {
+  sources = [
+    "instructions_bottom_sheet_view_controller.h",
+    "instructions_bottom_sheet_view_controller.mm",
+    "tips_promo_view_controller.h",
+    "tips_promo_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("lens_promo") {
+  sources = [
+    "lens_promo_instructions_view_controller.h",
+    "lens_promo_instructions_view_controller.mm",
+    "lens_promo_view_controller.h",
+    "lens_promo_view_controller.mm",
+  ]
+  deps = [
+    ":shared",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tips_notifications/ui/resources",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("enhanced_safe_browsing_promo") {
+  sources = [
+    "enhanced_safe_browsing_promo_instructions_view_controller.h",
+    "enhanced_safe_browsing_promo_instructions_view_controller.mm",
+    "enhanced_safe_browsing_promo_view_controller.h",
+    "enhanced_safe_browsing_promo_view_controller.mm",
+  ]
+  deps = [
+    ":shared",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tips_notifications/ui/resources",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

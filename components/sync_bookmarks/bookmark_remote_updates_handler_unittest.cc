@@ -19,14 +19,14 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -132,8 +132,8 @@ sync_pb::BookmarkMetadata CreatePermanentNodeMetadata(
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const BookmarkModelView* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
 
   *model_metadata.add_bookmarks_metadata() =
@@ -200,9 +200,9 @@ syncer::UpdateResponseData CreateUpdateResponseData(
 
 syncer::UpdateResponseData CreateBookmarkRootUpdateData() {
   syncer::EntityData data;
-  data.id = syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
+  data.id = syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS);
   data.server_defined_unique_tag =
-      syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
+      syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS);
 
   data.specifics.mutable_bookmark();
 
@@ -243,7 +243,7 @@ syncer::UpdateResponseDataList CreatePermanentFoldersUpdateData() {
 class BookmarkRemoteUpdatesHandlerWithInitialMergeTest : public testing::Test {
  public:
   BookmarkRemoteUpdatesHandlerWithInitialMergeTest()
-      : tracker_(SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState())),
+      : tracker_(SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState())),
         updates_handler_(&bookmark_model_, &favicon_service_, tracker_.get()) {
     BookmarkModelMerger(CreatePermanentFoldersUpdateData(), &bookmark_model_,
                         &favicon_service_, tracker_.get())
@@ -1102,9 +1102,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
@@ -1171,9 +1171,9 @@ TEST_F(
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
@@ -1235,9 +1235,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldRecommitWhenEncryptionIsOutOfDate) {
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_encryption_key_name("encryption_key_name");
-  tracker()->set_model_type_state(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_encryption_key_name("encryption_key_name");
+  tracker()->set_data_type_state(data_type_state);
 
   syncer::UpdateResponseDataList updates;
   syncer::UpdateResponseData response_data =
@@ -1258,9 +1258,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldRecommitWhenEncryptionIsOutOfDateOnConflict) {
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_encryption_key_name("encryption_key_name");
-  tracker()->set_model_type_state(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_encryption_key_name("encryption_key_name");
+  tracker()->set_data_type_state(data_type_state);
 
   // Create a new node and remove it locally.
   syncer::UpdateResponseDataList updates;
@@ -1282,9 +1282,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity->bookmark_node()->uuid(), Eq(kGuid));
 
   auto* node = entity->bookmark_node();
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
-  bookmark_model()->Remove(node);
+  bookmark_model()->Remove(node, FROM_HERE);
 
   // Process an update with outdated encryption. This should cause a conflict
   // and the remote version must be applied. Local tombstone entity will be
@@ -1333,9 +1333,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(
     BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
     ShouldNotRecommitWhenEncryptionKeyNameMistmatchWithConflictWithDeletions) {
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_encryption_key_name("encryption_key_name");
-  tracker()->set_model_type_state(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_encryption_key_name("encryption_key_name");
+  tracker()->set_data_type_state(data_type_state);
 
   // Create the bookmark with same encryption key name.
   const std::string kTitle = "title";
@@ -1359,12 +1359,13 @@ TEST_F(
   ASSERT_THAT(entity, NotNull());
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(tracker()->GetEntityForUuid(kGuid)->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           FROM_HERE);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity with an out of date encryption
@@ -1438,12 +1439,13 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           FROM_HERE);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity.
@@ -1533,12 +1535,13 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
   // Mark the entity as deleted locally.
-  tracker()->MarkDeleted(entity);
+  tracker()->MarkDeleted(entity, FROM_HERE);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           FROM_HERE);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push an update for the same entity.

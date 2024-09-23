@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/sha1.h"
+#include "base/hash/hash.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/hash/hash.h"
+#include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +24,7 @@ namespace base {
 namespace {
 
 void Sha1Hash(base::span<const uint8_t> data) {
-  SHA1HashSpan(data);
+  SHA1Hash(data);
 }
 
 void FastHash(base::span<const uint8_t> data) {
@@ -49,7 +51,7 @@ void RunTest(const char* hash_name,
   TimeDelta total_test_time;
   {
     std::vector<uint8_t> buf(len);
-    RandBytes(buf.data(), len);
+    RandBytes(buf);
 
     for (int i = 0; i < kNumRuns; ++i) {
       const auto start = TimeTicks::Now();

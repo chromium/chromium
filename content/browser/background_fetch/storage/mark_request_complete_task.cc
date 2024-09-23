@@ -98,7 +98,7 @@ void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
     return;
   }
 
-  // TODO(crbug.com/884672): Move cross origin checks to when the response
+  // TODO(crbug.com/40593934): Move cross origin checks to when the response
   // headers are available.
   BackgroundFetchCrossOriginFilter filter(
       registration_id_.storage_key().origin(), *request_info_);
@@ -192,7 +192,7 @@ void MarkRequestCompleteTask::DidOpenCache(
   std::vector<blink::mojom::BatchOperationPtr> operations;
   operations.emplace_back(std::move(put));
 
-  // TODO(crbug.com/774054): The request blob stored in the cache is being
+  // TODO(crbug.com/40544433): The request blob stored in the cache is being
   // overwritten here, it should be written back.
   cache_storage_cache_remote()->Batch(
       std::move(operations), trace_id,

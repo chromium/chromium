@@ -5,6 +5,7 @@
 #include "net/quic/quic_http_stream.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -53,9 +54,6 @@ HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
     case quic::QUIC_VERSION_46:
       return HttpConnectionInfo::kQUIC_46;
-    case quic::QUIC_VERSION_50:
-      return quic_version.UsesTls() ? HttpConnectionInfo::kQUIC_T050
-                                    : HttpConnectionInfo::kQUIC_Q050;
     case quic::QUIC_VERSION_IETF_DRAFT_29:
       DCHECK(quic_version.UsesTls());
       return HttpConnectionInfo::kQUIC_DRAFT_29;
@@ -68,7 +66,7 @@ HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       DCHECK(quic_version.UsesTls());
       return HttpConnectionInfo::kQUIC_2_DRAFT_8;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
 }
 
@@ -342,7 +340,7 @@ const std::set<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
-base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
+std::string_view QuicHttpStream::GetAcceptChViaAlps() const {
   if (!request_info_) {
     return {};
   }
@@ -350,19 +348,21 @@ base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
   return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
-std::optional<quic::QuicErrorCode> QuicHttpStream::GetQuicErrorCode() const {
+std::optional<HttpStream::QuicErrorDetails>
+QuicHttpStream::GetQuicErrorDetails() const {
+  QuicErrorDetails details;
   if (stream_) {
-    return stream_->connection_error();
+    details.connection_error = stream_->connection_error();
+    details.stream_error = stream_->stream_error();
+    details.connection_wire_error = stream_->connection_wire_error();
+    details.ietf_application_error = stream_->ietf_application_error();
+  } else {
+    details.connection_error = connection_error_;
+    details.stream_error = stream_error_;
+    details.connection_wire_error = connection_wire_error_;
+    details.ietf_application_error = ietf_application_error_;
   }
-  return connection_error_;
-}
-
-std::optional<quic::QuicRstStreamErrorCode>
-QuicHttpStream::GetQuicRstStreamErrorCode() const {
-  if (stream_) {
-    return stream_->stream_error();
-  }
-  return stream_error_;
+  return details;
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {
@@ -454,7 +454,7 @@ int QuicHttpStream::DoLoop(int rv) {
         CHECK_EQ(OK, rv);
         break;
       default:
-        NOTREACHED() << "next_state_: " << next_state_;
+        NOTREACHED_IN_MIGRATION() << "next_state_: " << next_state_;
         break;
     }
   } while (next_state_ != STATE_NONE && next_state_ != STATE_OPEN &&
@@ -532,7 +532,7 @@ int QuicHttpStream::DoSendHeaders() {
     headers_bytes_sent_ += rv;
   }
 
-  request_headers_ = spdy::Http2HeaderBlock();
+  request_headers_ = quiche::HttpHeaderBlock();
   return rv;
 }
 
@@ -580,7 +580,7 @@ int QuicHttpStream::DoSendBody() {
   int len = request_body_buf_->BytesRemaining();
   if (len > 0 || eof) {
     next_state_ = STATE_SEND_BODY_COMPLETE;
-    base::StringPiece data(request_body_buf_->data(), len);
+    std::string_view data(request_body_buf_->data(), len);
     return stream_->WriteStreamData(
         data, eof,
         base::BindOnce(&QuicHttpStream::OnIOComplete,
@@ -608,7 +608,7 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 }
 
 int QuicHttpStream::ProcessResponseHeaders(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
   base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
                             rv == OK);
@@ -684,6 +684,8 @@ void QuicHttpStream::ResetStream() {
   closed_is_first_stream_ = stream_->IsFirstStream();
   connection_error_ = stream_->connection_error();
   stream_error_ = stream_->stream_error();
+  connection_wire_error_ = stream_->connection_wire_error();
+  ietf_application_error_ = stream_->ietf_application_error();
 }
 
 int QuicHttpStream::MapStreamError(int rv) {

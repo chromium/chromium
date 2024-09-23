@@ -10,6 +10,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -22,10 +23,12 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/test_platform_native_widget.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -43,10 +46,9 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
 
     anchor_widget_ = std::make_unique<ChromeTestWidget>();
     views::Widget::InitParams widget_params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_params.context = GetContext();
-    widget_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     anchor_widget_->Init(std::move(widget_params));
   }
 
@@ -58,22 +60,26 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()},
-        {commerce::ShoppingServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context) {
-           return commerce::MockShoppingService::Build();
-         })}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                 BookmarkModelFactory::GetInstance(),
+                 BookmarkModelFactory::GetDefaultFactory()},
+             TestingProfile::TestingFactory{
+                 commerce::ShoppingServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context) {
+                   return commerce::MockShoppingService::Build();
+                 })}});
   }
 
   void SetUpDependencies() {
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    // Pretend sync is on for bookmarks.
+    LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile())
+        ->SetIsTrackingMetadataForTesting();
 
     bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
                                   std::u16string());
@@ -100,13 +106,13 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     gfx::Point toggle_center = toggle_button->GetLocalBounds().CenterPoint();
     gfx::Point root_center = toggle_center;
     views::View::ConvertPointToWidget(price_tracking_view_, &root_center);
-    ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, toggle_center,
+    ui::MouseEvent pressed_event(ui::EventType::kMousePressed, toggle_center,
                                  root_center, base::TimeTicks(),
                                  ui::EF_LEFT_MOUSE_BUTTON, 0);
 
     toggle_button->OnMousePressed(pressed_event);
 
-    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, toggle_center,
+    ui::MouseEvent released_event(ui::EventType::kMouseReleased, toggle_center,
                                   root_center, base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0);
     toggle_button->OnMouseReleased(released_event);
@@ -116,7 +122,8 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   void VerifyToggleState(bool expected_toggle_on) {
     EXPECT_EQ(price_tracking_view_->IsToggleOn(), expected_toggle_on);
 
-    EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
+    EXPECT_EQ(price_tracking_view_->toggle_button_->GetViewAccessibility()
+                  .GetCachedName(),
               l10n_util::GetStringUTF16(
                   IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY));
   }

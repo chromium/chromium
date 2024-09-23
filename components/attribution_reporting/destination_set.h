@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) DestinationSet {
   DestinationSet& operator=(DestinationSet&&);
 
   const Destinations& destinations() const {
-    DCHECK(IsValid());
+    CHECK(IsValid());
     return destinations_;
   }
 

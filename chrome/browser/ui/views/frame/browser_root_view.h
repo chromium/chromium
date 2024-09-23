@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_ROOT_VIEW_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,23 +31,22 @@ class BrowserRootView : public views::internal::RootView {
 
  public:
   struct DropIndex {
-    // The index within the tabstrip to drop on/before (see
-    // |insert_before_index| below).
-    int value = 0;
+    // The index within the tabstrip to drop on/before (see `relative_to_index`
+    // below).
+    int index = 0;
 
-    // If true, the dropped item should be inserted before |tab_index|.
-    // If false, the dropped item should replace the tab at |tab_index|.
-    bool drop_before = false;
+    // Whether the dropped item should be inserted before `index` or replace
+    // the tab at `index`.
+    enum class RelativeToIndex { kInsertBeforeIndex, kReplaceIndex };
+    RelativeToIndex relative_to_index = RelativeToIndex::kReplaceIndex;
 
-    // If |drop_before| is true, and |value| is the first tab in a tab
-    // group, determines whether to drop in the group or just before it.
-    // This disambiguates a drop before or after a group header.
-    bool drop_in_group = false;
+    // If `relative_to_index` is `kInsertBeforeIndex`, and `index` is the first
+    // tab in a tab group, determines whether to drop in the group or just
+    // before it. This disambiguates a drop before or after a group header.
+    enum class GroupInclusion { kIncludeInGroup, kDontIncludeInGroup };
+    GroupInclusion group_inclusion = GroupInclusion::kDontIncludeInGroup;
 
-    bool operator==(const DropIndex& other) const {
-      return value == other.value && drop_before == other.drop_before &&
-             drop_in_group == other.drop_in_group;
-    }
+    bool operator==(const DropIndex& other) const = default;
   };
 
   class DropTarget {
@@ -53,7 +54,10 @@ class BrowserRootView : public views::internal::RootView {
     DropTarget(const DropTarget&) = delete;
     DropTarget& operator=(const DropTarget&) = delete;
 
-    virtual DropIndex GetDropIndex(const ui::DropTargetEvent& event) = 0;
+    // Returns a `DropIndex` for the drop. Returns `nullopt` if it is not
+    // possible to drop at this location.
+    virtual std::optional<DropIndex> GetDropIndex(
+        const ui::DropTargetEvent& event) = 0;
     virtual DropTarget* GetDropTarget(gfx::Point loc_in_local_coords) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
@@ -82,14 +86,17 @@ class BrowserRootView : public views::internal::RootView {
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  protected:
   // views::View:
   void PaintChildren(const views::PaintInfo& paint_info) override;
 
  private:
+  friend class BrowserRootViewBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, ClearDropInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, DropOrderingCorrect);
 
   // Used during a drop session of a url. Tracks the position of the drop.
   struct DropInfo {
@@ -98,38 +105,45 @@ class BrowserRootView : public views::internal::RootView {
 
     raw_ptr<DropTarget, DanglingUntriaged> target = nullptr;
 
-    // Where to drop the url.
+    // Where to drop the urls.
     std::optional<DropIndex> index;
 
-    // The URL for the drop event.
-    GURL url;
+    // The validated URLs for the drop event.
+    std::vector<GURL> urls;
 
-    // Whether the MIME type of the file pointed to by |url| is supported.
-    // TODO(sangwoo108) Try removing this memeber.
-    bool file_supported = true;
+    // An incrementing sequence number for `DropInfo`s.
+    int sequence = 0;
+
+    // Set to true when the filtering of the URLs being dropped is complete.
+    bool filtering_complete = false;
   };
 
-  // Converts the event from the hosts coordinate system to the view's
-  // coordinate system.
-  DropIndex GetDropIndexForEvent(const ui::DropTargetEvent& event,
-                                 const ui::OSExchangeData& data,
-                                 DropTarget* target);
+  // Converts `event` from the hosts coordinate system to the view's
+  // coordinate system, and gets the `DropIndex` for the drop.
+  std::optional<DropIndex> GetDropIndexForEvent(
+      const ui::DropTargetEvent& event,
+      const ui::OSExchangeData& data,
+      DropTarget* target);
 
   DropTarget* GetDropTarget(const ui::DropTargetEvent& event);
 
-  // Called to indicate whether the given URL is a supported file.
-  void OnFileSupported(const GURL& url, bool supported);
+  // Called when the filtering for supported URLs is complete.
+  void OnFilteringComplete(int sequence, std::vector<GURL> urls);
+
+  // Sets a callback for when URL filtering is complete. Be sure to wait for
+  // filtering to be complete before checking the drag operation returned by
+  // `OnDragUpdated()` or calling the drop callback in tests.
+  void SetOnFilteringCompleteClosureForTesting(base::OnceClosure closure);
 
   TabStrip* tabstrip() { return browser_view_->tabstrip(); }
   ToolbarView* toolbar() { return browser_view_->toolbar(); }
 
-  // Returns true if |data| has string contents and the user can "paste and go".
-  // If |url| is non-null and the user can "paste and go", |url| is set to the
-  // desired destination.
-  bool GetPasteAndGoURL(const ui::OSExchangeData& data, GURL* url);
+  // Returns a URL if |data| has string contents and the user can "paste and
+  // go".
+  std::optional<GURL> GetPasteAndGoURL(const ui::OSExchangeData& data);
 
-  // Navigates to the dropped URL.
-  void NavigateToDropUrl(
+  // Navigates to the dropped URLs.
+  void NavigateToDroppedUrls(
       std::unique_ptr<DropInfo> drop_info,
       const ui::DropTargetEvent& event,
       ui::mojom::DragOperation& output_drag_op,
@@ -144,6 +158,8 @@ class BrowserRootView : public views::internal::RootView {
   int scroll_remainder_y_ = 0;
 
   std::unique_ptr<DropInfo> drop_info_;
+
+  base::OnceClosure on_filtering_complete_closure_;
 
   base::WeakPtrFactory<BrowserRootView> weak_ptr_factory_{this};
 };

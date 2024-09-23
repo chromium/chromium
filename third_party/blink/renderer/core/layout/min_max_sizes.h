@@ -13,11 +13,6 @@
 
 namespace blink {
 
-// min/max-content take the CSS aspect-ratio property into account.
-// In some cases that's undesirable; this enum lets you choose not
-// to do that using |kIntrinsic|.
-enum class MinMaxSizesType { kContent, kIntrinsic };
-
 // A struct that holds a pair of two sizes, a "min" size and a "max" size.
 // Useful for holding a {min,max}-content size pair or a
 // {min,max}-{width,height}.
@@ -92,8 +87,21 @@ struct MinMaxSizesResult {
       : sizes(sizes),
         depends_on_block_constraints(depends_on_block_constraints) {}
 
+  // This constructor is only used within `BlockNode::ComputeMinMaxSizes` when
+  // the aspect-ratio has been applied.
+  //
+  // The `applied_aspect_ratio` flag is not propagated up the tree, unlike
+  // `depends_on_block_constraints`.
+  MinMaxSizesResult(MinMaxSizes sizes,
+                    bool depends_on_block_constraints,
+                    bool applied_aspect_ratio)
+      : sizes(sizes),
+        depends_on_block_constraints(depends_on_block_constraints),
+        applied_aspect_ratio(applied_aspect_ratio) {}
+
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
+  bool applied_aspect_ratio = false;
 };
 
 }  // namespace blink

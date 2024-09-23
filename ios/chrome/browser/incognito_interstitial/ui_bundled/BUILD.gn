@@ -1,0 +1,73 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "incognito_interstitial_constants.h",
+    "incognito_interstitial_constants.mm",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "incognito_interstitial_view_controller.h",
+    "incognito_interstitial_view_controller.mm",
+    "incognito_interstitial_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_interstitial/ui_bundled/resources",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:elements",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("coordinator") {
+  sources = [
+    "incognito_interstitial_coordinator.h",
+    "incognito_interstitial_coordinator.mm",
+    "incognito_interstitial_coordinator_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//base:base",
+    "//ios/chrome/app:mode",
+    "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito:util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "incognito_interstitial_egtest.mm" ]
+  deps = [
+    "//components/policy:generated",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

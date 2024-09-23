@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import
@@ -15,7 +16,7 @@ import "url/mojom/url.mojom";
 // The body and content-type of the request. The size of the content is used as
 // the content length when constructing headers.
 struct ObliviousHttpRequestBody {
-  string content;
+  mojo_base.mojom.ByteString content;
   string content_type;
 };
 
@@ -28,7 +29,7 @@ struct ObliviousHttpResponse {
   HttpResponseHeaders headers;
   // The response code of the inner gateway HTTP response. It is empty if
   // `response_code` is non-200.
-  string response_body;
+  mojo_base.mojom.ByteString response_body;
 };
 
 // The structure used to deliver result to Oblivious HTTP clients.

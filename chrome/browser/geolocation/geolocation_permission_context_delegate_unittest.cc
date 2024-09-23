@@ -51,8 +51,7 @@ class GeolocationPermissionContextDelegateTests
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 #if BUILDFLAG(IS_ANDROID)
     static_cast<permissions::GeolocationPermissionContextAndroid*>(
         PermissionManagerFactory::GetForProfile(profile())
@@ -128,7 +127,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/1318240): Flaky.
+// TODO(crbug.com/40835241): Flaky.
 TEST_F(GeolocationPermissionContextDelegateTests,
        DISABLED_SearchGeolocationInIncognito) {
   url::Origin requesting_frame_url = url::Origin::Create(GURL(kDSETestUrl));

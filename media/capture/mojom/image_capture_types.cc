@@ -28,6 +28,7 @@ media::mojom::PhotoStatePtr CreateEmptyPhotoState() {
   photo_capabilities->supported_background_blur_modes = {};
   photo_capabilities->supported_eye_gaze_correction_modes = {};
   photo_capabilities->supported_face_framing_modes = {};
+  photo_capabilities->supported_background_segmentation_mask_states = {};
   return photo_capabilities;
 }
 

@@ -2,8 +2,6 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-DROP VIEW IF EXISTS chrome_histograms;
-
 -- A helper view on top of the histogram events emitted by Chrome.
 -- Requires "disabled-by-default-histogram_samples" Chrome category.
 CREATE PERFETTO TABLE chrome_histograms(

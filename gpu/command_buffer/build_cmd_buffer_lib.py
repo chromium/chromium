@@ -29,6 +29,28 @@ _DO_NOT_EDIT_WARNING = """// This file is auto-generated from
 
 """
 
+# TODO(crbug.com/40285824): Remove this and generate code using safer
+# constructs.
+_ALLOW_UNSAFE_BUFFERS = """
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+"""
+_allow_unsafe_buffers_filenames = [
+    "gpu/command_buffer/client/gles2_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_impl_autogen.h",
+    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h",
+    "gpu/command_buffer/common/gles2_cmd_format_autogen.h",
+    "gpu/command_buffer/service/context_state_impl_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_autogen.h",
+    "gpu/command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h",
+    "gpu/command_buffer/service/raster_decoder_autogen.h",
+]
+
 # This string is copied directly out of the gl2.h file from GLES2.0
 #
 # Edits:
@@ -424,7 +446,6 @@ _STATE_INFO = {
         'type': 'GLenum',
         'enum': 'GL_GENERATE_MIPMAP_HINT',
         'default': 'GL_DONT_CARE',
-        'gl_version_flag': '!is_desktop_core_profile'
       },
       {
         'name': 'hint_fragment_shader_derivative',
@@ -795,8 +816,8 @@ class CWriter():
 
   To be used with the `with` statement. Returns a normal `file` type, open only
   for writing - any existing files with that name will be overwritten. It will
-  automatically write the contents of `_LICENSE` and `_DO_NOT_EDIT_WARNING`
-  at the beginning.
+  automatically write the contents of `_LICENSE`, `_DO_NOT_EDIT_WARNING` and
+  `_ALLOW_UNSAFE_BUFFERS` at the beginning.
 
   Example:
     with CWriter("file.cpp") as myfile:
@@ -806,6 +827,8 @@ class CWriter():
   def __init__(self, filename, year):
     self.filename = filename
     self._ENTER_MSG = _LICENSE % year + _DO_NOT_EDIT_WARNING % _lower_prefix
+    if (filename in _allow_unsafe_buffers_filenames):
+        self._ENTER_MSG += _ALLOW_UNSAFE_BUFFERS
     self._EXIT_MSG = ""
     try:
       os.makedirs(os.path.dirname(filename))
@@ -1057,7 +1080,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1072,7 +1094,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteImmediateServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1087,7 +1108,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
     if func.IsES31():
       return
     self.WriteHandlerExtensionCheck(func, f)
-    self.WriteHandlerDeferReadWrite(func, f);
     self.WriteBucketServiceHandlerArgGetCode(func, f)
     func.WriteHandlerValidation(f)
     func.WriteQueueTraceEvent(f)
@@ -1160,21 +1180,6 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
       f.write("  if (!features().%s) {\n" % func.GetInfo('extension_flag'))
       f.write("    return error::kUnknownCommand;")
       f.write("  }\n\n")
-
-  def WriteHandlerDeferReadWrite(self, func, f):
-    """Writes the code to handle deferring reads or writes."""
-    defer_draws = func.GetInfo('defer_draws')
-    defer_reads = func.GetInfo('defer_reads')
-    if defer_draws or defer_reads:
-      f.write("  error::Error error;\n")
-    if defer_draws:
-      f.write("  error = WillAccessBoundFramebufferForDraw();\n")
-      f.write("  if (error != error::kNoError)\n")
-      f.write("    return error;\n")
-    if defer_reads:
-      f.write("  error = WillAccessBoundFramebufferForRead();\n")
-      f.write("  if (error != error::kNoError)\n")
-      f.write("    return error;\n")
 
   def WriteValidUnitTest(self, func, f, test, *extras):
     """Writes a valid unit test for the service implementation."""
@@ -1781,7 +1786,7 @@ class StateSetNamedParameter(TypeHandler):
       f.write("      }\n")
       f.write("      break;\n")
     f.write("    default:\n")
-    f.write("      NOTREACHED();\n")
+    f.write("      NOTREACHED_IN_MIGRATION();\n")
     f.write("  }\n")
 
   def WriteImmediateCmdInit(self, func, f):
@@ -2954,7 +2959,9 @@ class GETnHandler(TypeHandler):
   result->SetNumResults(0);
   helper_->%(func_name)s(%(arg_string)s,
       GetResultShmId(), result.offset());
-  WaitForCmd();
+  if (!WaitForCmd()) {
+    return;
+  }
   result->CopyResult(%(last_arg_name)s);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -4456,7 +4463,9 @@ TEST_P(%(test_name)s, %(name)sInvalidArgsBadSharedMemoryId) {
       f.write(
           "  helper_->%s(%s, GetResultShmId(), result.offset());\n" %
               (func.name, arg_string))
-      f.write("  WaitForCmd();\n")
+      f.write("  if (!WaitForCmd()) {\n")
+      f.write("    return %s; \n" % error_value)
+      f.write("  }\n")
       f.write("  %s result_value = *result" % func.return_type)
       if func.return_type == "GLboolean":
         f.write(" != 0")
@@ -6461,7 +6470,7 @@ class GLGenerator():
 
       f.write("""\
               default:
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
                 return;
             }
             if (enable)
@@ -6711,7 +6720,7 @@ void ContextState::InitState(const ContextState *prev_state) const {
         f.write("    case GL_%s:\n" % capability['name'].upper())
         f.write("      return enable_flags.%s;\n" % capability['name'])
       f.write("""    default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -6807,7 +6816,7 @@ bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
               return false;
               """ % capability)
         f.write("""    default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -7257,43 +7266,7 @@ extern const NameToFunc g_gles2_function_table[] = {
 
   def WriteCommonUtilsImpl(self, filename):
     """Writes the gles2 common utility header."""
-    enum_re = re.compile(r'\#define\s+(GL_[a-zA-Z0-9_]+)\s+([0-9A-Fa-fx]+)')
-    define_dict = {}
-    for fname in ['third_party/khronos/GLES2/gl2.h',
-                  'third_party/khronos/GLES2/gl2ext.h',
-                  'third_party/khronos/GLES3/gl3.h',
-                  'third_party/khronos/GLES3/gl31.h',
-                  'gpu/GLES2/gl2chromium.h',
-                  'gpu/GLES2/gl2extchromium.h']:
-      fname = os.path.join(self.chromium_root_dir, fname)
-      lines = open(fname).readlines()
-      for line in lines:
-        m = enum_re.match(line)
-        if m:
-          name = m.group(1)
-          value = m.group(2)
-          if len(value) <= 10 and value.startswith('0x'):
-            if not value in define_dict:
-              define_dict[value] = name
-            # check our own _CHROMIUM macro conflicts with khronos GL headers.
-            elif EnumsConflict(define_dict[value], name):
-              self.Error("code collision: %s and %s have the same code %s" %
-                         (define_dict[value], name, value))
-
     with CHeaderWriter(filename, self.year) as f:
-      f.write("static const %sUtil::EnumToString "
-                 "enum_to_string_table[] = {\n" % _prefix)
-      for value in sorted(define_dict):
-        f.write('  { %s, "%s", },\n' % (value, define_dict[value]))
-      f.write("""};
-
-const %(p)sUtil::EnumToString* const %(p)sUtil::enum_to_string_table_ =
-    enum_to_string_table;
-const size_t %(p)sUtil::enum_to_string_table_len_ =
-    sizeof(enum_to_string_table) / sizeof(enum_to_string_table[0]);
-
-""" % { 'p' : _prefix})
-
       enums = sorted(self.named_type_info.keys())
       for enum in enums:
         if self.named_type_info[enum]['type'] == 'GLenum':

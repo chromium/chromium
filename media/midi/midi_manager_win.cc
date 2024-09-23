@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/midi/midi_manager_win.h"
 
 // clang-format off
@@ -55,7 +60,7 @@ class MidiManagerWin::PortManager {
   // Unregisters HMIDIIN handle.
   void UnregisterInHandle(HMIDIIN handle);
 
-  // Finds HMIDIIN handle and fullfil |out_index| with the port index.
+  // Finds HMIDIIN handle and fulfill |out_index| with the port index.
   bool FindInHandle(HMIDIIN hmi, size_t* out_index);
 
   // Restores used input buffer for the next data receive.
@@ -95,7 +100,7 @@ constexpr HMIDIIN kInvalidInHandle = nullptr;
 constexpr HMIDIOUT kInvalidOutHandle = nullptr;
 
 // Defines SysEx message size limit.
-// TODO(crbug.com/383578): This restriction should be removed once Web MIDI
+// TODO(crbug.com/40370059): This restriction should be removed once Web MIDI
 // defines a standardized way to handle large sysex messages.
 // Note for built-in USB-MIDI driver:
 // From an observation on Windows 7/8.1 with a USB-MIDI keyboard,
@@ -253,7 +258,7 @@ std::string GetManufacturerName(uint16_t id, const GUID& guid) {
   if (id == MM_MICROSOFT)
     return "Microsoft Corporation";
 
-  // TODO(crbug.com/472341): Support other manufacture IDs.
+  // TODO(crbug.com/41165639): Support other manufacture IDs.
   return "";
 }
 
@@ -634,11 +639,11 @@ MidiManagerWin::PortManager::HandleMidiInCallback(HMIDIIN hmi,
   // Exceptionally, we do not take the lock when this callback is invoked inside
   // midiInGetNumDevs() on the caller thread because the lock is already
   // obtained by the current caller thread.
-  std::unique_ptr<base::AutoLock> task_lock;
+  std::optional<base::AutoLock> task_lock;
   if (IsRunningInsideMidiInGetNumDevs())
     GetTaskLock()->AssertAcquired();
   else
-    task_lock = std::make_unique<base::AutoLock>(*GetTaskLock());
+    task_lock.emplace(*GetTaskLock());
   {
     base::AutoLock lock(*GetInstanceIdLock());
     if (instance_id != g_active_instance_id)
@@ -712,7 +717,7 @@ MidiManagerWin::MidiManagerWin(MidiService* service)
   base::AutoLock lock(*GetInstanceIdLock());
   CHECK_EQ(kInvalidInstanceId, g_active_instance_id);
 
-  // Obtains the task runner for the current thread that hosts this instnace.
+  // Obtains the task runner for the current thread that hosts this instance.
   thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 

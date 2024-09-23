@@ -1,8 +1,79 @@
 include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/app_list/search",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_discovery_service",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list",
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/drive",
+  "+chrome/browser/ash/extensions",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/file_suggest",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/release_notes",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/autocomplete",
+  "+chrome/browser/bitmap_fetcher",
+  "+chrome/browser/bookmarks",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/chromeos/launcher_search",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/favicon",
+  "+chrome/browser/history",
+  "+chrome/browser/metrics",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/profiles",
+  "+chrome/browser/screen_ai",
+  "+chrome/browser/search_engines",
+  "+chrome/browser/signin",
+  "+chrome/browser/sync",
+  "+chrome/browser/trusted_vault",
+  "+chrome/browser/ui/app_icon_loader_delegate.h",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/webui/ash/settings/calculator",
+  "+chrome/browser/ui/webui/ash/settings/pages/storage",
+  "+chrome/browser/ui/webui/ash/settings/search",
+  "+chrome/browser/ui/webui/ash/settings/services/settings_manager",
+  "+chrome/browser/ui/webui/ash/settings/test_support",
+  "+chrome/browser/ui/webui/chrome_web_ui_controller_factory.h",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/common/channel_info.h",
+  "+chrome/common/chrome_constants.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+
+  # Dependencies outside of //chrome:
   "+ash/accelerators",
   "+ash/assistant/model",
   "+ash/assistant/util",
-  "+ash/shortcut_viewer",
   "+ash/strings/grit",
   "+chromeos/ui/vector_icons",
+  "+chromeos/ash/components/launcher_search",
+  "+chromeos/ash/components/system_info",
+  "+third_party/omnibox_proto",
 ]

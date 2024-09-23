@@ -15,12 +15,15 @@ import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
+  EventsSenderRemote,
+  LidState,
+  OcrResult,
+  PdfBuilderRemote,
   ScreenState,
   StorageMonitorStatus,
-  ToteMetricFormat,
   WifiConfig,
 } from './mojo/type.js';
-import {MimeType} from './type.js';
+import {fakeEndpoint} from './mojo/util.js';
 import {expandPath} from './util.js';
 
 export class ChromeHelperFake extends ChromeHelper {
@@ -107,10 +110,6 @@ export class ChromeHelperFake extends ChromeHelper {
     /* Do nothing. */
   }
 
-  override notifyTote(_format: ToteMetricFormat, _name: string): void {
-    /* Do nothing. */
-  }
-
   override async monitorFileDeletion(_name: string, _callback: () => void):
       Promise<void> {
     /* Do nothing. */
@@ -130,12 +129,7 @@ export class ChromeHelperFake extends ChromeHelper {
   }
 
   override async convertToDocument(
-      _blob: Blob, _corners: Point[], _rotation: number,
-      _mimeType: MimeType): Promise<Blob> {
-    assertNotReached();
-  }
-
-  override async convertToPdf(_jpegBlobs: Blob[]): Promise<Blob> {
+      _blob: Blob, _corners: Point[], _rotation: number): Promise<Blob> {
     assertNotReached();
   }
 
@@ -159,6 +153,37 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override openWifiDialog(_config: WifiConfig): void {
     /* Do nothing. */
+  }
+
+  override async initLidStateMonitor(_onChange: (lidStatus: LidState) => void):
+      Promise<LidState> {
+    return LidState.kNotPresent;
+  }
+
+  override async initSWPrivacySwitchMonitor(
+      _onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
+    return false;
+  }
+
+  override async getEventsSender(): Promise<EventsSenderRemote> {
+    return fakeEndpoint();
+  }
+
+  override async initScreenLockedMonitor(
+      _onChange: (isScreenLocked: boolean) => void): Promise<boolean> {
+    return false;
+  }
+
+  override async renderPdfAsImage(_pdf: Blob): Promise<Blob> {
+    return new Blob();
+  }
+
+  override async performOcr(_jpeg: Blob): Promise<OcrResult> {
+    return {lines: []};
+  }
+
+  override createPdfBuilder(): PdfBuilderRemote {
+    assertNotReached();
   }
   /* eslint-enable @typescript-eslint/require-await */
 }

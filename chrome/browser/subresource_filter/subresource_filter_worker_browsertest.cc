@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -77,7 +76,7 @@ class SubresourceFilterWorkerFetchBrowserTest
   }
 };
 
-// TODO(https://crbug.com/1011208): Add more tests for workers like top-level
+// TODO(crbug.com/40101794): Add more tests for workers like top-level
 // worker script fetch and module script fetch.
 
 // Test if fetch() on dedicated workers is blocked by the subresource filter.

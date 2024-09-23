@@ -1,0 +1,9 @@
+Verifies that the request head has static routing information on the main resource.
+{
+    actualSourceType : cache
+    matchedSourceType : cache
+    ruleIdMatched : 1
+}
+workerRouterEvaluationStart exists: true
+workerCacheLookupStart exists: true
+

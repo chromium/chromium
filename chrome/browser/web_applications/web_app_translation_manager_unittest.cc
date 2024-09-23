@@ -83,14 +83,14 @@ class WebAppTranslationManagerTest : public WebAppTest {
 };
 
 TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
-  auto app_info1 = std::make_unique<WebAppInstallInfo>();
-  app_info1->start_url = GURL("https://example.com/path");
+  auto app_info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path"));
   app_info1->title = u"App1 name";
   const webapps::AppId app_id1 =
       test::InstallWebApp(profile(), std::move(app_info1));
 
-  auto app_info2 = std::make_unique<WebAppInstallInfo>();
-  app_info2->start_url = GURL("https://example.com/path2");
+  auto app_info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path2"));
   app_info2->title = u"App2 name";
   const webapps::AppId app_id2 =
       test::InstallWebApp(profile(), std::move(app_info2));
@@ -171,8 +171,8 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
 }
 
 TEST_F(WebAppTranslationManagerTest, UpdateTranslations) {
-  auto app_info1 = std::make_unique<WebAppInstallInfo>();
-  app_info1->start_url = GURL("https://example.com/path");
+  auto app_info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path"));
   app_info1->title = u"App1 name";
   const webapps::AppId app_id1 =
       test::InstallWebApp(profile(), std::move(app_info1));
@@ -227,8 +227,8 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
   item1.description = "description 1";
   translations["en"] = item1;
 
-  auto app_info = std::make_unique<WebAppInstallInfo>();
-  app_info->start_url = GURL("https://example.com/path");
+  auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/path"));
   app_info->scope = GURL("https://example.com/path");
   app_info->title = u"Web App";
   app_info->translations = translations;
@@ -248,7 +248,7 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
             std::string());
 }
 
-// TODO(crbug.com/1259777): Add a test for an app which is installed before the
+// TODO(crbug.com/40201597): Add a test for an app which is installed before the
 // translation manager is started.
 
 }  // namespace web_app

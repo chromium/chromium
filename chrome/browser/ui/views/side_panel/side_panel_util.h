@@ -9,15 +9,14 @@
 #include <type_traits>
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
 
 class Browser;
 class SidePanelRegistry;
 class SidePanelContentProxy;
-class SidePanelCoordinator;
 
 namespace views {
 class View;
@@ -26,6 +25,7 @@ class View;
 class SidePanelUtil {
  public:
   using SidePanelOpenTrigger = ::SidePanelOpenTrigger;
+  using SidePanelContentState = ::SidePanelContentState;
 
   static void PopulateGlobalEntries(Browser* browser,
                                     SidePanelRegistry* global_registry);
@@ -40,12 +40,6 @@ class SidePanelUtil {
   static std::unique_ptr<views::View> DeregisterAndReturnView(
       SidePanelRegistry* registry,
       SidePanelEntry::Key key);
-
-  static SidePanelCoordinator* GetSidePanelCoordinatorForBrowser(
-      Browser* browser);
-
-  static actions::ActionItem::InvokeActionCallback
-  CreateToggleSidePanelActionCallback(SidePanelEntryKey key, Browser* browser);
 
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);
@@ -65,10 +59,8 @@ class SidePanelUtil {
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordComboboxShown();
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
+  static void RecordSidePanelAnimationMetrics(
+      base::TimeDelta largest_step_time);
 };
-
-extern const ui::ClassProperty<
-    std::underlying_type_t<SidePanelOpenTrigger>>* const
-    kSidePanelOpenTriggerKey;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

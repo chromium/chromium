@@ -43,10 +43,15 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   void OnRequestMediaRemoting(int player_id) override {}
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
+  void OnRequestVisibility(
+      int player_id,
+      RequestVisibilityCallback request_visibility_callback) override {}
   bool IsPictureInPictureAvailable(int player_id) const override;
+  bool HasSufficientlyVisibleVideo(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;
+  bool IsPaused(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
   media::MediaContentType GetMediaContentType() const override;

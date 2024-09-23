@@ -14,54 +14,97 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/timezone.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
+#include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
+#include "chromeos/ash/services/federated/public/mojom/tables.mojom.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash::federated {
 namespace {
 
-// New clients should define their switches in ash/constants/ash_features.h/cc,
-// and adds entries {client_name, switch} to `kClientFeatureMap`.
-// TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-const auto kClientFeatureMap =
-    base::MakeFixedFlatMap<std::string_view, const base::Feature*>({
-        {"input_autocorrect_phh", &features::kAutocorrectFederatedPhh},
-        {"launcher_query_analytics_v1",
-         &features::kFederatedLauncherQueryAnalyticsTask},
-        {"launcher_query_analytics_v2",
-         &features::kFederatedLauncherQueryAnalyticsVersion2Task},
-        {"timezone_code_phh", &features::kFederatedTimezoneCodePhh},
-    });
+using chromeos::federated::mojom::ClientScheduleConfig;
+using chromeos::federated::mojom::ClientScheduleConfigPtr;
+using chromeos::federated::mojom::FederatedExampleTableId;
 
-// A client with empty launch stage ("") in the return value means
-// federated-service will not schedule tasks for it. Therefore, if a client's
-// feature is disabled, we set an empty stage for it to respect "disable".
-// While if the feature is enabled, we expect the client has a non-empty launch
-// stage, otherwise we drop it from the return value, leaving it a
-// federated-service side decision (federated-service has hardcoded launch stage
-// for each client).
-base::flat_map<std::string, std::string> GetClientLaunchStage() {
-  static const base::NoDestructor<base::flat_map<std::string, std::string>>
-      client_launch_stage_map([] {
-        std::vector<std::pair<std::string, std::string>> map;
-        for (const auto& [name, feature] : kClientFeatureMap) {
-          if (!base::FeatureList::IsEnabled(*feature)) {
-            map.push_back({std::string(name), std::string()});
-          } else {
-            base::FeatureParam<std::string> launch_stage{feature,
-                                                         "launch_stage", ""};
-            if (std::string stage = launch_stage.Get(); !stage.empty()) {
-              map.push_back({std::string(name), std::move(stage)});
-            }
-          }
-        }
-        return base::flat_map<std::string, std::string>(base::sorted_unique,
-                                                        std::move(map));
-      }());
+// Local client config struct that can be converted to mojom
+// ClientScheduleConfig.
+struct LocalClientConfig {
+  // A client uses its client_name and launch stage to make up the task group
+  // identifier when checking in with the server.
+  std::string_view client_name;
+  // The table_id is defined in
+  // chromeos/ash/services/federated/public/mojom/tables.mojom
+  FederatedExampleTableId table_id;
+  // The associated_feature is usually defined in
+  // ash/constants/ash_features.h/cc
+  raw_ptr<const base::Feature> associated_feature;
+  // The hardcoded_stage is set when a client is fully launched and no longer
+  // needs to be changed, in sucn cases the associated_featur should be nullptr,
+  // e.g.
+  // {"foo_client_name", FederatedExampleTableId::BAR_TABLE, nullptr, "prod"}
+  std::optional<std::string_view> hardcoded_stage;
+};
 
-  return *client_launch_stage_map;
+// Each federated client should have an entry in `kLocalClientConfigs` that
+// contains its client name, example table id and a feature with launch stage as
+// the associated parameter, or a hardcoded launch stage.
+const std::array<LocalClientConfig, 4> kLocalClientConfigs = {{
+    {"input_autocorrect_phh", FederatedExampleTableId::INPUT_AUTOCORRECT,
+     &features::kAutocorrectFederatedPhh},
+    {"launcher_query_analytics_v1", FederatedExampleTableId::LAUNCHER_QUERY,
+     &features::kFederatedLauncherQueryAnalyticsTask},
+    {"launcher_query_analytics_v2", FederatedExampleTableId::LAUNCHER_QUERY_V2,
+     &features::kFederatedLauncherQueryAnalyticsVersion2Task},
+    {"timezone_code_phh", FederatedExampleTableId::TIMEZONE_CODE,
+     &features::kFederatedTimezoneCodePhh},
+}};
+
+// Converts a LocalClientConfig to mojom ClientScheduleConfigPtr that can be
+// used for scheduling tasks via mojom interface.
+// The major logic here is to obtain a valid launch stage. If a client's
+// associated_feature is not null, tries to get the launch_stage from the
+// feature's parameter. Otherwise tries to use the hardcoded stage. If
+// eventually no valid launch_stage, the client is ignored.
+std::optional<ClientScheduleConfigPtr> ConvertLocalConfigToSchedulingConfig(
+    const LocalClientConfig& local_config) {
+  std::string launch_stage;
+  if (local_config.associated_feature != nullptr) {
+    base::FeatureParam<std::string> launch_stage_param{
+        local_config.associated_feature, "launch_stage", ""};
+    launch_stage = launch_stage_param.Get();
+  } else if (local_config.hardcoded_stage.has_value()) {
+    launch_stage = local_config.hardcoded_stage.value();
+  }
+
+  if (launch_stage.empty()) {
+    DVLOG(1) << "client " << local_config.client_name
+             << " has no valid launch stage, ignored.";
+    return std::nullopt;
+  }
+  auto schedule_config = ClientScheduleConfig::New();
+  schedule_config->client_name = local_config.client_name;
+  schedule_config->example_storage_table_id = local_config.table_id;
+  schedule_config->launch_stage = launch_stage;
+
+  return schedule_config;
+}
+
+// Prepare client configs for scheduling tasks.
+std::vector<ClientScheduleConfigPtr> PrepareClientScheduleConfigs() {
+  std::vector<ClientScheduleConfigPtr> client_schedule_configs;
+  for (const auto& local_config : kLocalClientConfigs) {
+    auto maybe_schedule_config =
+        ConvertLocalConfigToSchedulingConfig(local_config);
+    if (maybe_schedule_config.has_value()) {
+      client_schedule_configs.push_back(
+          std::move(maybe_schedule_config.value()));
+    }
+  }
+
+  return client_schedule_configs;
 }
 
 chromeos::federated::mojom::ExamplePtr CreateBrellaAnalyticsExamplePtr() {
@@ -94,14 +137,14 @@ FederatedServiceControllerImpl::~FederatedServiceControllerImpl() = default;
 
 void FederatedServiceControllerImpl::OnLoginStatusChanged(
     LoginStatus login_status) {
-  // Federated service daemon uses cryptohome as example store and we only treat
-  // it available when a proper primary user type has signed in.
+  // Federated service daemon uses cryptohome as example store and we only
+  // treat it available when a proper primary user type has signed in.
 
-  // Actually once `federated_service_` gets bound, even if availability is set
-  // false because of subsequent LoginStatus changes, it keeps bound and it's
-  // safe to call `federated_service_->ReportExample()`. But on the ChromeOS
-  // daemon side it loses a valid cryptohome hence no valid example storage, all
-  // reported examples are abandoned.
+  // Actually once `federated_service_` gets bound, even if availability is
+  // set false because of subsequent LoginStatus changes, it keeps bound and
+  // it's safe to call `federated_service_->ReportExampleToTable()`. But on the
+  // ChromeOS daemon side it loses a valid cryptohome hence no valid example
+  // storage, all reported examples are abandoned.
 
   auto* primary_user_session =
       Shell::Get()->session_controller()->GetPrimaryUserSession();
@@ -115,14 +158,16 @@ void FederatedServiceControllerImpl::OnLoginStatusChanged(
         federated_service_.BindNewPipeAndPassReceiver());
 
     if (features::IsFederatedServiceScheduleTasksEnabled()) {
-      federated_service_->StartScheduling(GetClientLaunchStage());
+      federated_service_->StartSchedulingWithConfig(
+          PrepareClientScheduleConfigs());
     }
 
     // On session first login, reports one example for "timezone_code_phh", a
     // trivial F.A. task for prove-out purpose.
     if (!reported_) {
-      federated_service_->ReportExample("timezone_code_phh",
-                                        CreateBrellaAnalyticsExamplePtr());
+      federated_service_->ReportExampleToTable(
+          FederatedExampleTableId::TIMEZONE_CODE,
+          CreateBrellaAnalyticsExamplePtr());
       reported_ = true;
     }
   }

@@ -19,9 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -31,7 +29,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -50,8 +47,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public final class OptionalNewTabButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
 

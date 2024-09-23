@@ -34,13 +34,15 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
-  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(9));
 
   client_report.upload_state =
       static_cast<ReportUploadState>(statement.ColumnInt(4));
   client_report.upload_time = statement.ColumnTime(5);
   client_report.skip_reason =
       static_cast<SkipUploadReason>(statement.ColumnInt(6));
+  client_report.has_trace_content = statement.ColumnBool(7);
+  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
+
   return client_report;
 }
 
@@ -171,7 +173,11 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
              : static_cast<int>(ReportUploadState::kNotUploaded));
   create_local_trace.BindNull(5);
   create_local_trace.BindInt(6, static_cast<int>(new_report.skip_reason));
-  create_local_trace.BindBlob(7, new_report.trace_content);
+  if (!new_report.trace_content.empty()) {
+    create_local_trace.BindBlob(7, new_report.trace_content);
+  } else {
+    create_local_trace.BindNull(7);
+  }
   create_local_trace.BindInt64(8, new_report.total_size);
   create_local_trace.BindBlob(9, new_report.system_profile);
 
@@ -355,21 +361,49 @@ bool TraceReportDatabase::DeleteTracesInDateRange(const base::Time start,
   return delete_traces_in_range.Run();
 }
 
-bool TraceReportDatabase::DeleteTracesOlderThan(base::TimeDelta days_old) {
+bool TraceReportDatabase::DeleteTraceReportsOlderThan(base::TimeDelta age) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return false;
   }
 
-  sql::Statement delete_traces_older_than(database_.GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM local_traces WHERE creation_time < ?"));
+  sql::Statement delete_reports_older_than(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        DELETE FROM local_traces
+        WHERE creation_time < ?)sql"));
 
-  delete_traces_older_than.BindTime(0,
-                                    base::Time(base::Time::Now() - days_old));
+  delete_reports_older_than.BindTime(0, base::Time(base::Time::Now() - age));
 
-  CHECK(delete_traces_older_than.is_valid());
+  CHECK(delete_reports_older_than.is_valid());
 
-  return delete_traces_older_than.Run();
+  return delete_reports_older_than.Run();
+}
+
+bool TraceReportDatabase::DeleteOldTraceContent(size_t max_traces) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return false;
+  }
+
+  sql::Statement delete_old_trace_content(
+      database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
+        UPDATE local_traces
+        SET trace_content = null
+        WHERE state=? and uuid not in (
+          SELECT uuid
+          FROM local_traces
+          WHERE trace_content IS NOT NULL
+          ORDER BY creation_time DESC
+          LIMIT ?)
+        )sql"));
+
+  delete_old_trace_content.BindInt(
+      0, static_cast<int>(ReportUploadState::kNotUploaded));
+  delete_old_trace_content.BindInt(1, static_cast<int>(max_traces));
+
+  CHECK(delete_old_trace_content.is_valid());
+
+  return delete_old_trace_content.Run();
 }
 
 bool TraceReportDatabase::AllPendingUploadSkipped(
@@ -440,7 +474,10 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
-      SELECT * FROM local_traces
+      SELECT uuid, creation_time, scenario_name, upload_rule_name,
+        state, upload_time, skip_reason,
+        trace_content IS NOT NULL as has_trace_content, file_size
+      FROM local_traces
       ORDER BY creation_time DESC
     )sql"));
   CHECK(statement.is_valid());
@@ -459,7 +496,10 @@ TraceReportDatabase::GetNextReportPendingUpload() {
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
-      SELECT * FROM local_traces WHERE state in (1,2)
+      SELECT uuid, creation_time, scenario_name, upload_rule_name,
+        state, upload_time, skip_reason,
+        trace_content IS NOT NULL as has_trace_content, file_size
+      FROM local_traces WHERE state in (1,2)
       ORDER BY creation_time DESC
     )sql"));
   CHECK(statement.is_valid());
@@ -495,7 +535,8 @@ std::optional<size_t> TraceReportDatabase::UploadCountSince(
   return std::nullopt;
 }
 
-base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
+base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCountsSince(
+    base::Time since) {
   base::flat_map<std::string, size_t> scenario_counts;
   if (!is_initialized()) {
     return scenario_counts;
@@ -504,7 +545,10 @@ base::flat_map<std::string, size_t> TraceReportDatabase::GetScenarioCounts() {
   sql::Statement statement(
       database_.GetCachedStatement(SQL_FROM_HERE,
                                    R"sql(SELECT scenario_name, COUNT(uuid) FROM
-                                   local_traces GROUP BY scenario_name)sql"));
+                                   local_traces
+                                   WHERE creation_time > ?
+                                   GROUP BY scenario_name)sql"));
+  statement.BindTime(0, since);
   CHECK(statement.is_valid());
 
   while (statement.Step()) {

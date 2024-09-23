@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -65,7 +66,11 @@ Browser* LaunchWebAppBrowserAndWait(
     WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
 // Launches a new tab for |app| in |profile|.
-Browser* LaunchBrowserForWebAppInTab(Profile*, const webapps::AppId&);
+Browser* LaunchBrowserForWebAppInTab(
+    Profile*,
+    const webapps::AppId&,
+    WindowOpenDisposition disposition =
+        WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
 // Launches the web app to the given URL.
 Browser* LaunchWebAppToURL(Profile* profile,
@@ -166,7 +171,7 @@ class UpdateAwaiter : public WebAppInstallManagerObserver {
 };
 
 // Creates a temporary file with the |extension|.
-base::FilePath CreateTestFileWithExtension(base::StringPiece extension);
+base::FilePath CreateTestFileWithExtension(std::string_view extension);
 
 // Wait for an IPH bubble to show up inside the browser, and return true or
 // false based on whether the bubble showed up.

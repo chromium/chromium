@@ -7,13 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string_view>
+
 #import "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "ios/chrome/browser/signin/model/constants.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -38,11 +39,9 @@ class ChromeAccountManagerService : public KeyedService,
     ~Observer() override {}
 
     // Handles identity list changed events.
-    // If `notify_user` is true, then the user is not at the origin of this
-    // change and should be notified.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
-    virtual void OnIdentityListChanged(bool notify_user) {}
+    virtual void OnIdentityListChanged() {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -61,6 +60,7 @@ class ChromeAccountManagerService : public KeyedService,
   };
 
   // Initializes the service.
+  // Filter identities according to the profile.
   explicit ChromeAccountManagerService(PrefService* pref_service);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
@@ -78,13 +78,13 @@ class ChromeAccountManagerService : public KeyedService,
   bool IsValidIdentity(id<SystemIdentity> identity) const;
 
   // Returns whether `email` is restricted.
-  bool IsEmailRestricted(base::StringPiece email) const;
+  bool IsEmailRestricted(std::string_view email) const;
 
   // Returns the SystemIdentity with gaia ID equals to `gaia_id` or nil if
   // no matching identity is found. There are two overloads to reduce the
   // need to convert between NSString* and std::string.
   id<SystemIdentity> GetIdentityWithGaiaID(NSString* gaia_id) const;
-  id<SystemIdentity> GetIdentityWithGaiaID(base::StringPiece gaia_id) const;
+  id<SystemIdentity> GetIdentityWithGaiaID(std::string_view gaia_id) const;
 
   // Returns all SystemIdentity objects, sorted by the ordering used in the
   // account manager, which is typically based on the keychain ordering of
@@ -111,7 +111,7 @@ class ChromeAccountManagerService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // SystemIdentityManagerObserver implementation.
-  void OnIdentityListChanged(bool notify_user) override;
+  void OnIdentityListChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
@@ -134,8 +134,6 @@ class ChromeAccountManagerService : public KeyedService,
   PrefChangeRegistrar registrar_;
 
   base::ObserverList<Observer, true> observer_list_;
-  base::ScopedObservation<SystemIdentityManager, SystemIdentityManagerObserver>
-      system_identity_manager_observation_{this};
 
   // ResizedAvatarCache for IdentityAvatarSize::TableViewIcon.
   ResizedAvatarCache* default_table_view_avatar_cache_;

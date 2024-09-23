@@ -7,7 +7,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -32,6 +34,8 @@ NSString* kDinoSearchString = @"dino game";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kIOSQuickDelete);
+
   return config;
 }
 
@@ -52,7 +56,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testDinoPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedaldino"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedaldino"];
 
   // Matcher for the dino pedal and search suggestions.
   id<GREYMatcher> dinoPedal =
@@ -81,7 +85,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testOpenNewIncognitoTabPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalincognitotab"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalincognitotab"];
 
   NSString* incognitoPedalString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO);
@@ -108,7 +112,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testManagePasswordsPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"passwords"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"passwords"];
 
   NSString* managePasswordsPedalString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS);
@@ -151,7 +155,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testClearBrowsingDataPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalclearbrowsing"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalclearbrowsing"];
 
   NSString* clearBrowsingDataPedalString = l10n_util::GetNSString(
       IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA);
@@ -167,16 +171,19 @@ NSString* kDinoSearchString = @"dino game";
   [[EarlGrey selectElementWithMatcher:clearBrowsingDataPedal]
       performAction:grey_tap()];
 
+  id<GREYMatcher> quickDeleteTitle = grey_allOf(
+      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
+      nil);
+
   // Clear browsing data page should be displayed.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      chrome_test_util::ClearBrowsingDataView()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:quickDeleteTitle];
 
   // Close the Clear browsing data page.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      chrome_test_util::ClearBrowsingDataView()];
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitle]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:quickDeleteTitle];
 
   [ChromeEarlGrey closeCurrentTab];
 }
@@ -186,7 +193,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testSetDefaultBrowserPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedaldefaultbrowser"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedaldefaultbrowser"];
 
   NSString* defaultBrowserPedalString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER);
@@ -223,7 +230,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testManageSettingsPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalsettings"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalsettings"];
 
   NSString* manageSettingsPedalString = l10n_util::GetNSString(
       IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS);
@@ -258,7 +265,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testManagePaymentMethodsPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalmanagepayment"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalmanagepayment"];
 
   NSString* managePaymenyMethodsPedalString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD);
@@ -294,7 +301,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testSafetyCheckPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalsafetycheck"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"pedalsafetycheck"];
 
   NSString* safetyCheckPedalString = l10n_util::GetNSString(
       IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
@@ -329,7 +336,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testVisitHistoryPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"history"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"history"];
 
   NSString* visitHistoryPedalString = l10n_util::GetNSString(
       IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY);
@@ -364,7 +371,7 @@ NSString* kDinoSearchString = @"dino game";
 - (void)testNoPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"nopedal"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"nopedal"];
 
   // Matcher for the dino pedal and search suggestions.
   id<GREYMatcher> dinoPedal =

@@ -5,10 +5,12 @@
 #include "net/disk_cache/blockfile/file.h"
 
 #include <stdint.h>
+
 #include <limits>
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -43,7 +45,8 @@ bool File::Read(void* buffer, size_t buffer_len, size_t offset) {
     return false;
   }
 
-  int ret = base_file_.Read(offset, static_cast<char*>(buffer), buffer_len);
+  int ret = UNSAFE_TODO(
+      base_file_.Read(offset, static_cast<char*>(buffer), buffer_len));
   return (static_cast<size_t>(ret) == buffer_len);
 }
 
@@ -54,8 +57,8 @@ bool File::Write(const void* buffer, size_t buffer_len, size_t offset) {
     return false;
   }
 
-  int ret = base_file_.Write(offset, static_cast<const char*>(buffer),
-                             buffer_len);
+  int ret = UNSAFE_TODO(
+      base_file_.Write(offset, static_cast<const char*>(buffer), buffer_len));
   return (static_cast<size_t>(ret) == buffer_len);
 }
 

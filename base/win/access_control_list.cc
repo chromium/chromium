@@ -4,8 +4,9 @@
 
 #include "base/win/access_control_list.h"
 
-#include <aclapi.h>
 #include <windows.h>
+
+#include <aclapi.h>
 
 #include <utility>
 #include <vector>
@@ -102,15 +103,15 @@ ExplicitAccessEntry& ExplicitAccessEntry::operator=(ExplicitAccessEntry&&) =
     default;
 ExplicitAccessEntry::~ExplicitAccessEntry() = default;
 
-absl::optional<AccessControlList> AccessControlList::FromPACL(ACL* acl) {
+std::optional<AccessControlList> AccessControlList::FromPACL(ACL* acl) {
   if (acl && !::IsValidAcl(acl)) {
     ::SetLastError(ERROR_INVALID_ACL);
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AccessControlList{acl};
 }
 
-absl::optional<AccessControlList> AccessControlList::FromMandatoryLabel(
+std::optional<AccessControlList> AccessControlList::FromMandatoryLabel(
     DWORD integrity_level,
     DWORD inheritance,
     DWORD mandatory_policy) {
@@ -123,12 +124,12 @@ absl::optional<AccessControlList> AccessControlList::FromMandatoryLabel(
   PACL sacl = reinterpret_cast<PACL>(sacl_ptr.get());
 
   if (!::InitializeAcl(sacl, length, ACL_REVISION)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!::AddMandatoryAce(sacl, ACL_REVISION, inheritance, mandatory_policy,
                          sid.GetPSID())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(::IsValidAcl(sacl));

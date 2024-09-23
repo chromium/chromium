@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/web_apps/deprecated_apps_dialog_view.h"
 
 #include <set>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
@@ -97,7 +97,7 @@ class DeprecatedAppsDialogViewBrowserTest
     return false;
   }
 
-  base::StringPiece ClickDeprecatedDialogLinkString() {
+  std::string_view ClickDeprecatedDialogLinkString() {
     return "document.querySelector('body > "
            "deprecated-apps-link').shadowRoot.querySelector('#deprecated-apps-"
            "link').click()";

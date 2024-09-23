@@ -31,13 +31,13 @@
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -110,13 +110,15 @@ String PagePopupController::formatWeek(int year,
 
 void PagePopupController::ClearPagePopupClient() {
   popup_client_ = nullptr;
+  popup_origin_.reset();
 }
 
 void PagePopupController::setWindowRect(int x, int y, int width, int height) {
   popup_.SetWindowRect(gfx::Rect(x, y, width, height));
 
+  popup_origin_ = gfx::Point(x, y);
   popup_client_->SetMenuListOptionsBoundsInAXTree(options_bounds_,
-                                                  gfx::Point(x, y));
+                                                  *popup_origin_);
 }
 
 void PagePopupController::Trace(Visitor* visitor) const {
@@ -125,12 +127,22 @@ void PagePopupController::Trace(Visitor* visitor) const {
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(
-    HeapVector<Member<DOMRect>>& options_bounds) {
+    HeapVector<Member<DOMRect>>& options_bounds,
+    bool children_updated) {
   options_bounds_.clear();
   for (auto option_bounds : options_bounds) {
     options_bounds_.emplace_back(
         gfx::Rect(option_bounds->x(), option_bounds->y(),
                   option_bounds->width(), option_bounds->height()));
+  }
+
+  // On the first layout, setWindowRect handles the first call to set the bounds
+  // in the tree. If there is a second layout (this happens when there are too
+  // many children to process in one layout), the updated bounds are sent to the
+  // tree here.
+  if (popup_origin_ && children_updated) {
+    popup_client_->SetMenuListOptionsBoundsInAXTree(options_bounds_,
+                                                    *popup_origin_);
   }
 }
 

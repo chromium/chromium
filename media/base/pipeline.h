@@ -112,7 +112,7 @@ class MEDIA_EXPORT Pipeline {
                      PipelineStatusCallback seek_cb) = 0;
 
   // Track switching works similarly for both audio and video. Callbacks are
-  // used to notify when it is time to procede to the next step, since many of
+  // used to notify when it is time to proceed to the next step, since many of
   // the operations are asynchronous.
   // ──────────────────── Track Switch Control Flow ───────────────────────
   //  pipeline | demuxer | demuxer_stream | renderer | video/audio_renderer
@@ -233,8 +233,8 @@ class MEDIA_EXPORT Pipeline {
 
   // Sets a flag indicating whether the audio stream was played with user
   // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
 
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().

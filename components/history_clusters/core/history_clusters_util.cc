@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <set>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
@@ -153,9 +153,9 @@ GURL ComputeURLForDeduping(const GURL& url) {
   GURL::Replacements replacements;
 
   // Strip out www, but preserve the eTLD+1. This matches the omnibox behavior.
-  // Make an explicit local, as a StringPiece can't point to a temporary.
+  // Make an explicit local, as a std::string_view can't point to a temporary.
   std::string stripped_host = url_formatter::StripWWW(url_for_deduping.host());
-  replacements.SetHostStr(base::StringPiece(stripped_host));
+  replacements.SetHostStr(std::string_view(stripped_host));
 
   // Replace http protocol with https. It's just for deduplication.
   if (url_for_deduping.SchemeIs(url::kHttpScheme))
@@ -236,7 +236,7 @@ void ApplySearchQuery(const std::string& query,
 
     if (DoesQueryMatchClusterKeywords(find_nodes, cluster.GetKeywords())) {
       // Arbitrarily chosen that cluster keyword matches are worth three points.
-      // TODO(crbug.com/1307071): Use relevancy score for each cluster keyword
+      // TODO(crbug.com/40218625): Use relevancy score for each cluster keyword
       // once support for that is added to the backend.
       cluster.search_match_score += 3.0;
     }
@@ -270,11 +270,11 @@ void CullNonProminentOrDuplicateClusters(
     // For the empty-query state, only show clusters with
     // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
     // NOT applied when the user is searching for a specific keyword.
-    base::EraseIf(clusters, [](const history::Cluster& cluster) {
+    std::erase_if(clusters, [](const history::Cluster& cluster) {
       return !cluster.should_show_on_prominent_ui_surfaces;
     });
   } else {
-    base::EraseIf(clusters, [&](const history::Cluster& cluster) {
+    std::erase_if(clusters, [&](const history::Cluster& cluster) {
       // Erase all duplicate single-visit non-prominent
       // clusters.
       if (!cluster.should_show_on_prominent_ui_surfaces &&
@@ -297,10 +297,10 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
   const size_t min_visits = is_zero_query_state ? 2 : 1;
 
   DCHECK_GT(min_visits, 0u);
-  base::EraseIf(clusters, [&](auto& cluster) {
+  std::erase_if(clusters, [&](auto& cluster) {
     int index = -1;
     size_t num_visits_below_fold = 0;
-    base::EraseIf(cluster.visits, [&](auto& visit) {
+    std::erase_if(cluster.visits, [&](auto& visit) {
       index++;
       // Easy cases: cull all zero-score and explicitly Hidden visits.
       if (visit.score == 0.0 ||
@@ -395,8 +395,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
 }
 
 bool ShouldUseNavigationContextClustersFromPersistence() {
-  return GetConfig().persist_clusters_in_history_db &&
-         GetConfig().use_navigation_context_clusters;
+  return GetConfig().use_navigation_context_clusters;
 }
 
 bool IsTransitionUserVisible(int32_t transition) {
@@ -422,7 +421,7 @@ std::string GetHistogramNameSliceForRequestSource(
     // If you add something here, add to the ClusteringRequestSource variant at
     // the top of history/histograms.xml.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

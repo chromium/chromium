@@ -168,7 +168,6 @@ common_android_library_deps = [
 
 common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
@@ -188,15 +187,15 @@ common_java_sources = [
 
 generate_product_config_srcjar("product_config_for_browser") {
   java_package = "org.chromium.chromecast.shell"
-  is_bundle_module = false
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
     "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
   ]
+
+  deps = [ "//components/android_autofill/browser:jni_headers_features" ]
 }
 
 android_library("cast_shell_java") {

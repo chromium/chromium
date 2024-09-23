@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
@@ -36,12 +37,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -58,10 +60,13 @@ public class LanguageSettingsTest {
             new SettingsActivityTestRule<>(LanguageSettings.class);
 
     private SettingsActivity mActivity;
+    private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
         mActivity = mSettingsActivityTestRule.startSettingsActivity();
+        mProfile =
+                ThreadUtils.runOnUiThreadBlocking(() -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private void addLanguage() {
@@ -101,7 +106,7 @@ public class LanguageSettingsTest {
                         .itemView;
 
         // Toggle popup menu to remove a language.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     newLangView.findViewById(R.id.more).performClick();
                 });
@@ -136,23 +141,23 @@ public class LanguageSettingsTest {
                         .get(originalAcceptLanguageCount);
 
         // Turn on "offer to translate".
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     newLangView.findViewById(R.id.more).performClick();
                 });
         onView(withText(R.string.languages_item_option_offer_to_translate)).perform(click());
 
         // Verify that the "offer to translate" is on.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             "Language should not be blocked when 'offer to translate' is on.",
-                            TranslateBridge.isBlockedLanguage(languageItem.getCode()));
+                            TranslateBridge.isBlockedLanguage(mProfile, languageItem.getCode()));
                 });
 
         RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
         // Open popup menu to verify the drawable (blue tick) is visible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     newLangView.findViewById(R.id.more).performClick();
                 });
@@ -176,15 +181,15 @@ public class LanguageSettingsTest {
         // Turn off "offer to translate".
         onView(withText(R.string.languages_item_option_offer_to_translate)).perform(click());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             "Language should be blocked when 'offer to translate' is off.",
-                            TranslateBridge.isBlockedLanguage(languageItem.getCode()));
+                            TranslateBridge.isBlockedLanguage(mProfile, languageItem.getCode()));
                 });
 
         // Open popup menu to verify the drawable (blue tick) is invisible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     newLangView.findViewById(R.id.more).performClick();
                 });
@@ -201,7 +206,7 @@ public class LanguageSettingsTest {
                         });
 
         // Reset states by toggling popup menu to remove a language.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     newLangView.findViewById(R.id.more).performClick();
                 });
@@ -218,7 +223,7 @@ public class LanguageSettingsTest {
 
         // Restore this after test.
         boolean enabledInDefault = pref.isChecked();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean enabled =
                             mSettingsActivityTestRule
@@ -233,16 +238,16 @@ public class LanguageSettingsTest {
                 });
 
         // Verify that "offer to translate" is hidden or visible.
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) moreButton::performClick);
+        ThreadUtils.runOnUiThreadBlocking((Runnable) moreButton::performClick);
         onView(withText(R.string.languages_item_option_offer_to_translate))
                 .check(enabledInDefault ? matches(isDisplayed()) : doesNotExist());
 
         // Dismiss the popup window.
-        TestThreadUtils.runOnUiThreadBlocking(moreButton::dismiss);
+        ThreadUtils.runOnUiThreadBlocking(moreButton::dismiss);
 
         // Toggle the switch.
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) pref::performClick);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking((Runnable) pref::performClick);
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Preference of 'offer to translate' should be toggled when switch "
@@ -254,13 +259,13 @@ public class LanguageSettingsTest {
                                     .getBoolean(Pref.OFFER_TRANSLATE_ENABLED));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) moreButton::performClick);
+        ThreadUtils.runOnUiThreadBlocking((Runnable) moreButton::performClick);
 
         onView(withText(R.string.languages_item_option_offer_to_translate))
                 .check(!enabledInDefault ? matches(isDisplayed()) : doesNotExist());
 
         // Reset state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSettingsActivityTestRule
                             .getFragment()

@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+source_set("timer_factory") {
+  sources = [
+    "timer_factory.h",
+    "timer_factory_impl.cc",
+    "timer_factory_impl.h",
+  ]
+  deps = [ "//base" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_one_shot_timer.cc",
+    "fake_one_shot_timer.h",
+    "fake_timer_factory.cc",
+    "fake_timer_factory.h",
+  ]
+
+  public_deps = [ ":timer_factory" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

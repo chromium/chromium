@@ -21,8 +21,9 @@ namespace message_center {
 // than ChromeOS. This view is used to displays all current types of
 // notification (web, basic, image, and list) except custom notification.
 class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
+  METADATA_HEADER(NotificationView, NotificationViewBase)
+
  public:
-  METADATA_HEADER(NotificationView);
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit NotificationView(const message_center::Notification& notification);
   NotificationView(const NotificationView&) = delete;

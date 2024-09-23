@@ -4,16 +4,26 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
 
 namespace ash {
 
@@ -36,13 +46,20 @@ void VideoConferenceTrayEffectsManager::RegisterDelegate(
   DCHECK(delegate);
   DCHECK(!IsDelegateRegistered(delegate));
   effect_delegates_.push_back(delegate);
+  // TODO(b/345831029): Test that a VcTileUiController is reset when an effect
+  // is removed.
+  if (features::IsVcDlcUiEnabled()) {
+    delegate->set_on_effect_will_be_removed_callback(base::BindRepeating(
+        &VideoConferenceTrayEffectsManager::RemoveTileControllers,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 void VideoConferenceTrayEffectsManager::UnregisterDelegate(
     VcEffectsDelegate* delegate) {
   DCHECK(delegate);
   size_t num_items_erased =
-      base::EraseIf(effect_delegates_,
+      std::erase_if(effect_delegates_,
                     [delegate](VcEffectsDelegate* d) { return delegate == d; });
   DCHECK_EQ(num_items_erased, 1UL);
 
@@ -135,6 +152,20 @@ void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
   }
 }
 
+void VideoConferenceTrayEffectsManager::NotifyEffectChanged(
+    VcEffectId effect_id,
+    bool is_on) {
+  for (auto& observer : observers_) {
+    observer.OnEffectChanged(effect_id, is_on);
+  }
+}
+
+void VideoConferenceTrayEffectsManager::NotifyVideoConferenceBubbleOpened() {
+  for (auto& observer : observers_) {
+    observer.OnVideoConferenceBubbleOpened();
+  }
+}
+
 void VideoConferenceTrayEffectsManager::RecordInitialStates() {
   for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     delegate->RecordInitialStates();
@@ -157,6 +188,39 @@ VideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
   return controller_for_effect_id_[effect_id].get();
 }
 
+std::vector<std::string>
+VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
+  switch (effect_id) {
+    case VcEffectId::kLiveCaption: {
+      PrefService* pref_service =
+          Shell::Get()->session_controller()->GetActivePrefService();
+      std::string locale = pref_service
+                               ? prefs::GetLiveCaptionLanguageCode(pref_service)
+                               : speech::kUsEnglishLocale;
+      std::string dlc_name =
+          speech::SodaInstaller::GetInstance()->GetLanguageDlcNameForLocale(
+              locale);
+
+      // Should always have a language DLC lib for a specific language.
+      CHECK(!dlc_name.empty());
+
+      // "Live caption" requires both a binary ("libsoda") as well as a specific
+      // language model (e.g. "libsoda-model-en-us") to operate.
+      return {"libsoda", dlc_name};
+    }
+    case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kFaceRetouch:
+    case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kStudioLook:
+      return {"ml-core-internal"};
+    case VcEffectId::kTestEffect:
+    case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kStyleTransfer:
+    case VcEffectId::kCameraFraming:
+      return {};
+  }
+}
+
 VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
@@ -167,12 +231,18 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
     }
   }
 
+  std::sort(effects.begin(), effects.end(),
+            [](const VcHostedEffect* lhs, const VcHostedEffect* rhs) {
+              return lhs->id() < rhs->id();
+            });
   return effects;
 }
 
 void VideoConferenceTrayEffectsManager::RemoveTileControllers(
     VcEffectsDelegate* delegate) {
-  CHECK(features::IsVcDlcUiEnabled());
+  if (!features::IsVcDlcUiEnabled()) {
+    return;
+  }
   for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     if (base::Contains(controller_for_effect_id_, id)) {

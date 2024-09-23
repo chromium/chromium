@@ -40,20 +40,14 @@ found in the LICENSE file.
             android:memtagMode="sync"
             android:name="org.chromium.native_test.NativeTestApplication">
     {% endif %}
-        <uses-library android:name="android.test.runner"/>
         {% if use_native_activity == 'true' %}
         <activity android:name=".NativeUnitTestNativeActivity"
                 android:label="NativeTest"
                 android:configChanges="orientation|keyboardHidden"
                 android:process=":test_process"
                 android:exported="true">
-            {% if is_component_build == 'true' %}
-            <meta-data android:name="android.app.lib_name"
-                       android:value="{{ native_library_name }}.cr" />
-            {% else %}
             <meta-data android:name="android.app.lib_name"
                        android:value="{{ native_library_name }}" />
-            {% endif %}
         {% else %}
         <activity android:name=".NativeUnitTestActivity"
                 android:label="NativeTest"
@@ -82,7 +76,6 @@ found in the LICENSE file.
 
     <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
             android:targetPackage="org.chromium.native_test"
-            android:label="Instrumentation entry point for org.chromium.native_test"
-            chromium-junit3="true"/>
+            android:label="Instrumentation entry point for org.chromium.native_test" />
 
 </manifest>

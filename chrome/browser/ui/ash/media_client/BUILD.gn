@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("media_client") {
+  sources = [
+    "media_client_impl.cc",
+    "media_client_impl.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ui:browser_list",
+    "//media/capture:capture_lib",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//services/video_capture/public/mojom",
+    "//ui/base",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/picture_in_picture",
+    "//components/account_id",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//media/capture/video/chromeos/public",
+    "//services/media_session/public/mojom",
+    "//ui/message_center/public/cpp",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "media_client_impl_unittest.cc" ]
+
+  deps = [
+    ":media_client",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/services/app_service",
+    "//components/user_manager:test_support",
+    "//media/capture:capture_base",
+    "//testing/gmock",
+    "//ui/base",
+  ]
+}

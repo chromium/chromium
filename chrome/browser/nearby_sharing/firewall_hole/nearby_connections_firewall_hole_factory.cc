@@ -42,7 +42,7 @@ void NearbyConnectionsFirewallHoleFactory::OnFirewallHoleOpened(
     return;
   }
 
-  mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole_remote;
+  mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole_remote;
   firewall_hole_receivers_.Add(
       std::make_unique<NearbyConnectionsFirewallHole>(std::move(firewall_hole)),
       firewall_hole_remote.InitWithNewPipeAndPassReceiver());

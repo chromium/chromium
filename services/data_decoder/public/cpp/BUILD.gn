@@ -84,11 +84,19 @@ source_set("test_support") {
   sources = [
     "test_support/in_process_data_decoder.cc",
     "test_support/in_process_data_decoder.h",
+    "test_support/fake_data_decoder_service.cc",
+    "test_support/fake_data_decoder_service.h",
   ]
 
   public_deps = [
     ":cpp",
     "//base",
+    "//mojo/public/cpp/bindings",
     "//services/data_decoder:lib",
+    "//services/data_decoder/public/mojom",
+  ]
+
+  deps = [
+    "//testing/gtest",
   ]
 }

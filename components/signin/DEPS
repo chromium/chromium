@@ -5,7 +5,7 @@ include_rules = [
   "+components/google/core",
   "+components/image_fetcher/core",
   "+components/keyed_service/core",
-  "+components/os_crypt/sync",
+  "+components/os_crypt/async",
   "+components/plus_addresses",
   "+components/prefs",
   "+components/sync_preferences",

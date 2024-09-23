@@ -174,6 +174,42 @@ void DeleteVkDeviceTraits::Free(VkDevice device) {
   vkDestroyDevice(device, nullptr);
 }
 
+VkPipeline DeleteVkPipelineTraits::InvalidValue() {
+  return VK_NULL_HANDLE;
+}
+void DeleteVkPipelineTraits::Free(VkPipeline pipeline) {
+  vkDestroyPipeline(vk_device, pipeline, nullptr);
+}
+
+VkPipelineLayout DeleteVkPipelineLayoutTraits::InvalidValue() {
+  return VK_NULL_HANDLE;
+}
+void DeleteVkPipelineLayoutTraits::Free(VkPipelineLayout pipeline_layout) {
+  vkDestroyPipelineLayout(vk_device, pipeline_layout, nullptr);
+}
+
+VkSampler DeleteVkSamplerTraits::InvalidValue() {
+  return VK_NULL_HANDLE;
+}
+void DeleteVkSamplerTraits::Free(VkSampler sampler) {
+  vkDestroySampler(vk_device, sampler, nullptr);
+}
+
+VkDescriptorSetLayout DeleteVkDescriptorSetLayoutTraits::InvalidValue() {
+  return VK_NULL_HANDLE;
+}
+void DeleteVkDescriptorSetLayoutTraits::Free(
+    VkDescriptorSetLayout descriptor_set_layout) {
+  vkDestroyDescriptorSetLayout(vk_device, descriptor_set_layout, nullptr);
+}
+
+VkDescriptorPool DeleteVkDescriptorPoolTraits::InvalidValue() {
+  return VK_NULL_HANDLE;
+}
+void DeleteVkDescriptorPoolTraits::Free(VkDescriptorPool descriptor_pool) {
+  vkDestroyDescriptorPool(vk_device, descriptor_pool, nullptr);
+}
+
 VkCommandPool DeleteVkCommandPoolTraits::InvalidValue() {
   return VK_NULL_HANDLE;
 }

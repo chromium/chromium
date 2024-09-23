@@ -107,8 +107,6 @@ interface PayloadListener {
 //
 // This should stay aligned with v3::ConnectionListener defined at:
 // //third_party/nearby/src/connections/v3/listeners.h
-//
-// TODO(b/308178927): Introduce functions when callback implementation begins.
 interface ConnectionListenerV3 {
   // A basic encrypted channel has been created between you and the device.
   // Both sides are now asked if they wish to accept or reject the connection
@@ -131,27 +129,58 @@ interface ConnectionListenerV3 {
   // device), call Core::AcceptConnectionV3() when you're ready to talk, or
   // Core::RejectConnectionV3() to close the connection.
   //
-  // remote_device - The object for the remote device.
+  // endpoint_id   - The endpoint identifier for the remote device.
   // info          - Other relevant information about the connection.
-  OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
-                        InitialConnectionInfoV3 info);
+  OnConnectionInitiatedV3(string endpoint_id, InitialConnectionInfoV3 info);
+
+  // Called when both sides have accepted or either side has rejected the
+  // connection. If the `ConnectionResolution` status is `kSuccess`, both sides
+  // have accepted the connection and may now send `Payload` to each other.
+  // Otherwise, the connection was rejected.
+  //
+  // endpoint_id   - The endpoint identifier for the remote device.
+  // resolution    - The resolution of the connection (accepted or rejected).
+  OnConnectionResultV3(string endpoint_id, Status resolution);
 
   // Called when a remote device is disconnected or has become unreachable.
   // At this point service (re-)discovery may start again.
   //
-  // remote_device - The object for the remote device.
-  OnDisconnected(ash.nearby.presence.mojom.PresenceDevice remote_device);
+  // endpoint_id   - The endpoint identifier for the remote device.
+  OnDisconnectedV3(string endpoint_id);
+
+  // Called when the connection's available bandwidth has changed.
+  //
+  // endpoint_id    - The endpoint identifier for the remote device.
+  // bandwidth_info - Bandwidth info about the new medium that was upgraded to.
+  OnBandwidthChangedV3(string endpoint_id, BandwidthInfo bandwidth_info);
 };
 
 // Listener for payload status, used by the V3 APIs. Methods in this interface
 // are called from utility process, and is used by the browser process to listen
 // for payload status associated with remote endpoints.
 //
-// This should stay aligned with v3::PayloadListener defined at:
+// This should stay loosely aligned with `v3::PayloadListener` defined at:
 // //third_party/nearby/src/connections/v3/listeners.h
-//
-// TODO(b/308178927): Introduce functions when callback implementation begins.
-interface PayloadListenerV3 {};
+interface PayloadListenerV3 {
+  // Called when a Payload is received from a remote endpoint. Depending
+  // on the type of the Payload, all of the data may or may not have been
+  // received at the time of this call. Use `OnPayloadTransferUpdateV3()` to
+  // get updates on the status of the data received.
+  //
+  // endpoint_id - The identifier for the remote endpoint that is sending or
+  //               receiving this payload.
+  // payload     - The Payload object received.
+  OnPayloadReceivedV3(string endpoint_id, Payload payload);
+
+  // Called with progress information about an active Payload transfer, either
+  // incoming or outgoing.
+  //
+  // endpoint_id - The identifier for the remote endpoint that is sending or
+  //               receiving this payload.
+  // update      - The PayloadTransferUpdate structure describing the status
+  //               of the transfer.
+  OnPayloadTransferUpdateV3(string endpoint_id, PayloadTransferUpdate update);
+};
 
 // Main interface to control the NearbyConnections library. Implemented in a
 // sandboxed process. This interface is used by the browser process to connect
@@ -492,4 +521,12 @@ interface NearbyConnections {
   DisconnectFromDeviceV3(string service_id,
                          ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
+
+  // Registers Nearby Presence's `LocalDeviceProvider` with the Nearby
+  // Connections Core associated with the given `service_id`. The registered
+  // `PresenceDeviceProvider` is used on future `ConnectV3()` calls made by
+  // Nearby Connections. A LocalDeviceProvider provides a representation of
+  // the local device (ChromeOS) as a NearbyDevice and is used for
+  // authentication during connection attempts.
+  RegisterServiceWithPresenceDeviceProvider(string service_id);
 };

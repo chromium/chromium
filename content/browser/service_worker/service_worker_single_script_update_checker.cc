@@ -101,7 +101,7 @@ class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
   ~WrappedIOBuffer() override = default;
 
   // This is to make sure that the vtable is not merged with other classes.
-  virtual void dummy() { NOTREACHED(); }
+  virtual void dummy() { NOTREACHED_IN_MIGRATION(); }
 };
 
 ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
@@ -159,7 +159,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   // Upgrade the request to an a priori authenticated URL, if appropriate.
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-request
-  // TODO(https://crbug.com/987491): Set |ResourceRequest::upgrade_if_insecure_|
+  // TODO(crbug.com/40637521): Set |ResourceRequest::upgrade_if_insecure_|
   // appropriately.
 
   if (service_worker_loader_helpers::ShouldValidateBrowserCacheForScript(
@@ -187,14 +187,14 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   // Service worker update checking doesn't have a relevant frame and tab, so
   // that `web_contents_getter` returns nullptr and the frame id is set to
-  // kNoFrameTreeNodeId.
+  // an invalid FrameTreeNodeId.
   base::RepeatingCallback<WebContents*()> web_contents_getter =
       base::BindRepeating([]() -> WebContents* { return nullptr; });
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           resource_request, browser_context, std::move(web_contents_getter),
-          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_ui_data=*/nullptr, FrameTreeNodeId(),
+          /*navigation_id=*/std::nullopt);
 
   network_client_remote_.Bind(
       network_client_receiver_.BindNewPipeAndPassRemote());
@@ -261,7 +261,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
              ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
                  script_url_)) {
       policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
-          // TODO(https://crbug.com/1366920): Ensure parsed headers are
+          // TODO(crbug.com/40867256): Ensure parsed headers are
           // available
           response_head->parsed_headers
               // This does not parse the referrer policy, which will be
@@ -298,7 +298,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect(
   // Step 9.5: "Set request's redirect mode to "error"."
   // https://w3c.github.io/ServiceWorker/#update-algorithm
   //
-  // TODO(https://crbug.com/889798): Follow redirects for imported scripts.
+  // TODO(crbug.com/40595655): Follow redirects for imported scripts.
   Fail(blink::ServiceWorkerStatusCode::kErrorNetwork,
        ServiceWorkerConsts::kServiceWorkerRedirectError,
        network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));
@@ -309,7 +309,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
   // The network request for update checking shouldn't have upload data.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
@@ -350,7 +350,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
         ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted;
     switch (header_writer_state_) {
       case ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Response header should be received before OnComplete()";
         break;
       case ServiceWorkerUpdatedScriptLoader::WriterState::kWriting:
@@ -547,7 +547,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
       network_watcher_.ArmOrNotify();
       return;
   }
-  NOTREACHED() << static_cast<int>(result);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
 }
 
 // |pending_buffer| is a buffer keeping a Mojo data pipe which is going to be

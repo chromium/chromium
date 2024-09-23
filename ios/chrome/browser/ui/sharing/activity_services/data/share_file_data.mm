@@ -7,7 +7,7 @@
 @implementation ShareFileData
 
 - (instancetype)initWithFilePath:(NSURL*)filePath {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _filePath = filePath;
   }
   return self;

@@ -5,6 +5,8 @@
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
 
 #include <stdint.h>
+
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -921,7 +923,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate_NoParent) {
             file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
   ASSERT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
-  constexpr base::StringPiece kTestFileData = "Lorem ipsum!";
+  constexpr std::string_view kTestFileData = "Lorem ipsum!";
   const FileSystemURL kDir(file_system.URL("dir"));
   const FileSystemURL kFile(file_system.URL("dir/file"));
 

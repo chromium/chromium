@@ -6,11 +6,11 @@
  * Class that provides the functionality for interacting with traffic counters.
  */
 
+import {CrosNetworkConfigInterface, FilterType, NO_LIMIT, TrafficCounter, UInt32Value} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
 import {MojoInterfaceProviderImpl} from '../network/mojo_interface_provider.js';
-import {TrafficCounter} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {CrosNetworkConfigInterface, FilterType, NO_LIMIT, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 /** Default traffic counter reset day. */
 const kDefaultResetDay = 1;
@@ -25,7 +25,6 @@ export interface Network {
   counters: TrafficCounter[];
   lastResetTime: Time|null;
   friendlyDate: string|null;
-  autoReset: boolean;
   userSpecifiedResetDay: number;
 }
 
@@ -40,7 +39,6 @@ function createNetwork(
     counters: TrafficCounter[],
     lastResetTime: Time|null,
     friendlyDate: string|null,
-    autoReset: boolean,
     userSpecifiedResetDay: number): Network {
   return {
     guid: guid,
@@ -49,7 +47,6 @@ function createNetwork(
     counters: counters,
     lastResetTime: lastResetTime,
     friendlyDate: friendlyDate,
-    autoReset: autoReset,
     userSpecifiedResetDay: userSpecifiedResetDay,
   };
 }
@@ -84,14 +81,11 @@ export class TrafficCountersAdapter {
           await this.requestLastResetTimeForNetwork(networkState.guid);
       const friendlyDate =
           await this.requestFriendlyDateForNetwork(networkState.guid);
-      const autoReset =
-          await this.requestEnableAutoResetBooleanForNetwork(networkState.guid);
       const userSpecifiedResetDay =
           await this.requestUserSpecifiedResetDayForNetwork(networkState.guid);
       networks.push(createNetwork(
           networkState.guid, networkState.name, networkState.type,
-          trafficCounters, lastResetTime, friendlyDate, autoReset,
-          userSpecifiedResetDay));
+          trafficCounters, lastResetTime, friendlyDate, userSpecifiedResetDay));
     }
     return networks;
   }
@@ -119,13 +113,20 @@ export class TrafficCountersAdapter {
   async requestLastResetTimeForNetwork(guid: string): Promise<Time|null> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
+
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
       return null;
     }
-    return managedPropertiesPromise.result.trafficCounterProperties
-               .lastResetTime ||
-        null;
+
+    const trafficCounterProperties =
+        managedPropertiesPromise.result.trafficCounterProperties;
+    if (!trafficCounterProperties) {
+      return null;
+    }
+
+    return trafficCounterProperties.lastResetTime || null;
   }
+
 
   /**
    * Requests a reader friendly date, corresponding to the last reset time,
@@ -134,25 +135,18 @@ export class TrafficCountersAdapter {
   async requestFriendlyDateForNetwork(guid: string): Promise<string|null> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
+
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
       return null;
     }
-    return managedPropertiesPromise.result.trafficCounterProperties
-               .friendlyDate ||
-        null;
-  }
 
-  /**
-   * Requests enable traffic counters auto reset boolean for the given network.
-   */
-  async requestEnableAutoResetBooleanForNetwork(
-    guid: string): Promise<boolean> {
-    const managedPropertiesPromise =
-        await this.networkConfig_.getManagedProperties(guid);
-    if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
-      return false;
+    const trafficCounterProperties =
+        managedPropertiesPromise.result.trafficCounterProperties;
+    if (!trafficCounterProperties) {
+      return null;
     }
-    return managedPropertiesPromise.result.trafficCounterProperties.autoReset;
+
+    return trafficCounterProperties.friendlyDate || null;
   }
 
   /**
@@ -161,21 +155,25 @@ export class TrafficCountersAdapter {
   async requestUserSpecifiedResetDayForNetwork(guid: string): Promise<number> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
+
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
       return kDefaultResetDay;
     }
-    return managedPropertiesPromise.result.trafficCounterProperties
-        .userSpecifiedResetDay;
+
+    const trafficCounterProperties =
+        managedPropertiesPromise.result.trafficCounterProperties;
+    if (!trafficCounterProperties) {
+      return kDefaultResetDay;
+    }
+
+    return trafficCounterProperties.userSpecifiedResetDay;
   }
 
   /**
    * Sets values for auto reset.
    */
-  async setTrafficCountersAutoResetForNetwork(
-    guid: string,
-    autoReset: boolean,
-    resetDay: UInt32Value|null): Promise<void> {
-    await this.networkConfig_.setTrafficCountersAutoReset(
-        guid, autoReset, resetDay);
+  async setTrafficCountersResetDayForNetwork(
+      guid: string, resetDay: UInt32Value|null): Promise<void> {
+    await this.networkConfig_.setTrafficCountersResetDay(guid, resetDay);
   }
 }

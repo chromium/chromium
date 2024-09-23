@@ -109,7 +109,9 @@ static CSSValuePair* BuildSerializablePositionOffset(CSSValue* offset,
     side = default_side;
     amount = CSSNumericLiteralValue::Create(
         50, CSSPrimitiveValue::UnitType::kPercentage);
-  } else if (!amount || (amount->IsLength() && amount->IsZero())) {
+  } else if (!amount ||
+             (amount->IsLength() &&
+              amount->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue)) {
     if (side == CSSValueID::kRight || side == CSSValueID::kBottom) {
       amount = CSSNumericLiteralValue::Create(
           100, CSSPrimitiveValue::UnitType::kPercentage);
@@ -301,7 +303,8 @@ String CSSBasicShapePolygonValue::CustomCSSText() const {
 
 bool CSSBasicShapePolygonValue::Equals(
     const CSSBasicShapePolygonValue& other) const {
-  return CompareCSSValueVector(values_, other.values_);
+  return wind_rule_ == other.wind_rule_ &&
+         CompareCSSValueVector(values_, other.values_);
 }
 
 void CSSBasicShapePolygonValue::TraceAfterDispatch(

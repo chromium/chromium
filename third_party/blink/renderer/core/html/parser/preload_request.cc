@@ -54,9 +54,11 @@ bool PreloadRequest::ExclusionInfo::ShouldExclude(
 }
 
 KURL PreloadRequest::CompleteURL(Document* document) {
-  if (!base_url_.IsEmpty())
-    return document->CompleteURLWithOverride(resource_url_, base_url_);
-  return document->CompleteURL(resource_url_);
+  if (!base_url_.IsEmpty()) {
+    return document->CompleteURLWithOverride(resource_url_, base_url_,
+                                             Document::kIsPreload);
+  }
+  return document->CompleteURL(resource_url_, Document::kIsPreload);
 }
 
 // static

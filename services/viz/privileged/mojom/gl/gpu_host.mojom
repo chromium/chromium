@@ -70,8 +70,11 @@ interface GpuHost {
 
   // Tells the GPU host to store the blob on the given cache handle.
   StoreBlobToDisk(gpu.mojom.GpuDiskCacheHandle cache_handle,
-                  string key,
+                  mojo_base.mojom.ByteString key,
                   mojo_base.mojom.ByteString blob);
 
   RecordLogMessage(int32 severity, string header, string message);
+
+  // Tells the GPU host to clear the shader disk cache.
+  ClearGrShaderDiskCache();
 };

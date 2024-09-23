@@ -114,7 +114,7 @@ struct DnsConfigOverrides {
 // requests. Handle is optional for all requests, and may be closed at any time
 // without affecting the request.
 //
-// TODO(crbug.com/821021): Add support to change priority.
+// TODO(crbug.com/41375980): Add support to change priority.
 interface ResolveHostHandle {
   // Requests cancellation of the resolution request. Doing so may have no
   // effect if a result was already sent. If successful, cancellation results in
@@ -261,7 +261,7 @@ struct ResolveHostParameters {
   // Enumeration for specifying the purpose of a host resolve request.
   // These values are used for UMA. Entries should not be reordered. Keep this
   // in sync with tools/metrics/histograms/enums.xml.
-  // TODO(crbug.com/1232623): Consider adding more values if kPreconnect isn't
+  // TODO(crbug.com/40191203): Consider adding more values if kPreconnect isn't
   // a majority of the purpose of host resolve requests.
   enum Purpose {
     kUnspecified,

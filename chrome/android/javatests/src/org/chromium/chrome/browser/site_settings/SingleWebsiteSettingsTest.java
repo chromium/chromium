@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -35,9 +36,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -52,8 +52,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -126,7 +125,7 @@ public class SingleWebsiteSettingsTest {
                         createWebsiteWithContentSettingException(
                                 ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SingleWebsiteSettings websitePreferences =
                             (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -148,7 +147,7 @@ public class SingleWebsiteSettingsTest {
                         createWebsiteWithContentSettingException(
                                 ContentSettingsType.REQUEST_DESKTOP_SITE,
                                 ContentSettingValues.ALLOW));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var websitePreferences =
                             (SingleWebsiteSettings) settingsActivity.getMainFragment();
@@ -202,7 +201,6 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)
     public void testStorageAccessPermission() {
         int type = ContentSettingsType.STORAGE_ACCESS;
         GURL example = new GURL("https://example.com");
@@ -254,11 +252,11 @@ public class SingleWebsiteSettingsTest {
             GURL primaryUrl,
             GURL secondaryUrl) {
         int[] result = {0};
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     result[0] =
                             WebsitePreferenceBridge.getContentSetting(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     contentSettingType,
                                     primaryUrl,
                                     secondaryUrl);
@@ -303,7 +301,7 @@ public class SingleWebsiteSettingsTest {
                             mContentSettingsType, mContentSettingValue);
             mSettingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(website);
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         SingleWebsiteSettings websitePreferences =
                                 (SingleWebsiteSettings) mSettingsActivity.getMainFragment();
@@ -334,7 +332,7 @@ public class SingleWebsiteSettingsTest {
                         type,
                         website.getAddress().getOrigin(),
                         value,
-                        "preference",
+                        ProviderType.PREF_PROVIDER,
                         /* isEmbargoed= */ false));
 
         return website;
@@ -350,13 +348,13 @@ public class SingleWebsiteSettingsTest {
                         origin,
                         embedder,
                         ContentSettingValues.ASK,
-                        /* source= */ "",
+                        ProviderType.NONE,
                         /* expiration= */ 0,
                         /* isEmbargoed= */ false);
         // Set setting explicitly to write it to prefs.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    info.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+                    info.setContentSetting(ProfileManager.getLastUsedRegularProfile(), setting);
                 });
         website.addEmbeddedPermission(info);
         return website;

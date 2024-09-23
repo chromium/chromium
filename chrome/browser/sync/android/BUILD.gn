@@ -25,6 +25,7 @@ generate_jni("jni_headers") {
   visibility = [
     ":*",
     "//chrome/browser",
+    "//chrome/browser/sync",
   ]
   sources =
       [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]

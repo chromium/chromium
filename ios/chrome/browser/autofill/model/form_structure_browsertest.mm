@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <WebKit/WebKit.h>
+#import "components/autofill/core/browser/form_structure.h"
+
+#import <string_view>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -19,7 +21,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/heuristic_source.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -29,20 +31,20 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/sync_user_events/fake_user_event_service.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
-#import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -103,7 +105,7 @@ const std::vector<base::FilePath> GetTestFiles() {
     return {};
   }
   std::vector<base::FilePath> result;
-  for (const base::StringPiece& piece :
+  for (std::string_view piece :
        base::SplitStringPiece(input_list_string, "\n", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     result.push_back(dir.AppendASCII(piece));
@@ -117,7 +119,7 @@ const std::vector<base::FilePath> GetTestFiles() {
 // file that contains one or more forms. The corresponding output file lists the
 // heuristically detected type for each field.
 // This is based on FormStructureBrowserTest from the Chromium Project.
-// TODO(crbug.com/245246): Unify the tests.
+// TODO(crbug.com/41015125): Unify the tests.
 class FormStructureBrowserTest
     : public PlatformTest,
       public testing::DataDrivenTest,
@@ -137,8 +139,8 @@ class FormStructureBrowserTest
 
   class TestAutofillManager : public BrowserAutofillManager {
    public:
-    TestAutofillManager(AutofillDriverIOS* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(AutofillDriverIOS* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
 
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -164,9 +166,10 @@ class FormStructureBrowserTest
 
   web::WebState* web_state() const { return web_state_.get(); }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
@@ -182,7 +185,7 @@ class FormStructureBrowserTest
 FormStructureBrowserTest::FormStructureBrowserTest()
     : DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName),
       web_client_(std::make_unique<ChromeWebClient>()) {
-  TestChromeBrowserState::Builder builder;
+  TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IOSChromeProfilePasswordStoreFactory::GetInstance(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
@@ -194,39 +197,32 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
             return std::make_unique<syncer::FakeUserEventService>();
           }));
-  browser_state_ = builder.Build();
+  profile_ = std::move(builder).Build();
 
-  web::WebState::CreateParams params(browser_state_.get());
+  web::WebState::CreateParams params(profile_.get());
   web_state_ = web::WebState::Create(params);
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/1076175) Remove once launched.
-          autofill::features::kAutofillUseNewSectioningMethod,
-          // TODO(crbug.com/1157405) Remove once launched.
-          features::kAutofillEnableDependentLocalityParsing,
-          // TODO(crbug.com/1165780): Remove once shared labels are launched.
+          // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/1150895) Remove once launched.
-          features::kAutofillParsingPatternProvider,
           features::kAutofillPageLanguageDetection,
-          // TODO(crbug.com/1311937): Remove once launched.
+          // TODO(crbug.com/40220393): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          // TODO(crbug.com/1441057): Remove once launched.
+          features::kAutofillInferCountryCallingCode,
+          // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/1474308): Clean up when launched.
-          features::kAutofillDefaultToCityAndNumber,
       },
       // Disabled
       {
-          // TODO(crbug.com/1311937): Remove once launched.
+          // TODO(crbug.com/40220393): Remove once launched.
           // This feature is part of the AutofillRefinedPhoneNumberTypes
           // rollout. As it is not supported on iOS yet, it is disabled.
           features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-          // TODO(crbug.com/1317961): Remove once launched. This feature is
+          // TODO(crbug.com/40222716): Remove once launched. This feature is
           // disabled since it is not supported on iOS.
           features::kAutofillAlwaysParsePlaceholders,
-          // TODO(crbug.com/1493145): Remove when/if launched. This feature
+          // TODO(crbug.com/40285735): Remove when/if launched. This feature
           // changes default parsing behavior, so must be disabled to avoid
           // fieldtrial_testing_config interference.
           features::kAutofillEnableEmailHeuristicOnlyAddressForms,
@@ -238,7 +234,6 @@ void FormStructureBrowserTest::SetUp() {
 
   // Create a PasswordController instance that will handle set up for renderer
   // ids.
-  UniqueIDDataTabHelper::CreateForWebState(web_state());
   password_controller_ =
       [[PasswordController alloc] initWithWebState:web_state()];
 
@@ -247,7 +242,7 @@ void FormStructureBrowserTest::SetUp() {
   AddressNormalizerFactory::GetInstance();
 
   autofill_agent_ =
-      [[AutofillAgent alloc] initWithPrefService:browser_state_->GetPrefs()
+      [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
                                         webState:web_state()];
   suggestion_controller_ =
       [[FormSuggestionController alloc] initWithWebState:web_state()
@@ -257,7 +252,7 @@ void FormStructureBrowserTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_ = std::make_unique<TestAutofillClient>(
-      browser_state_.get(), web_state(), infobar_manager, autofill_agent_);
+      profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(
@@ -275,35 +270,17 @@ void FormStructureBrowserTest::TearDown() {
 
 bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
     const std::string& html) {
-  bool success = web::test::LoadHtmlWithoutSubresources(
-      base::SysUTF8ToNSString(html), web_state());
-  if (!success) {
+  if (!web::test::LoadHtmlWithoutSubresources(base::SysUTF8ToNSString(html),
+                                              web_state())) {
     return false;
   }
 
   autofill::FormUtilJavaScriptFeature* feature =
       autofill::FormUtilJavaScriptFeature::GetInstance();
-
-  __block web::WebFrame* main_frame = nullptr;
-  success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     web::WebFramesManager* frames_manager =
         feature->GetWebFramesManager(web_state());
-    main_frame = frames_manager->GetMainWebFrame();
-    return main_frame != nullptr;
-  });
-  if (!success) {
-    return false;
-  }
-  DCHECK(main_frame);
-
-  uint32_t next_available_id = 1;
-  feature->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
-  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [web::test::ExecuteJavaScriptForFeature(
-               web_state(), @"document[__gCrWeb.fill.ID_SYMBOL]", feature)
-               intValue] == static_cast<int>(next_available_id);
+    return frames_manager->GetMainWebFrame() != nullptr;
   });
 }
 
@@ -328,14 +305,14 @@ std::string FormStructureBrowserTest::FormStructuresToString(
     const auto* form = form_kv.second.get();
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form) {
-      std::string name = base::UTF16ToUTF8(field->name);
+      std::string name = base::UTF16ToUTF8(field->name());
       if (base::StartsWith(name, "gChrome~field~",
                            base::CompareCase::SENSITIVE)) {
         // The name has been generated by iOS JavaScript. Output an empty name
         // to have a behavior similar to other platforms.
         name = "";
       }
-      std::string section = field->section.ToString();
+      std::string section = field->section().ToString();
       if (base::StartsWith(section, "gChrome~field~",
                            base::CompareCase::SENSITIVE)) {
         // The name has been generated by iOS JavaScript. Output an empty name
@@ -343,7 +320,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         size_t first_underscore = section.find_first_of('_');
         section = section.substr(first_underscore);
       }
-      if (field->section.is_from_fieldidentifier()) {
+      if (field->section().is_from_fieldidentifier()) {
         // Normalize the section by replacing the unique but platform-dependent
         // integers in `field->section` with consecutive unique integers.
         // The section string is of the form "fieldname_id1_id2-suffix", where
@@ -361,10 +338,11 @@ std::string FormStructureBrowserTest::FormStructuresToString(
               section_index);
         }
       }
-      form_string +=
-          base::StrCat({field->Type().ToStringView(), " | ", name, " | ",
-                        base::UTF16ToUTF8(field->label), " | ",
-                        base::UTF16ToUTF8(field->value), " | ", section, "\n"});
+      form_string += base::StrCat(
+          {field->Type().ToStringView(), " | ", name, " | ",
+           base::UTF16ToUTF8(field->label()), " | ",
+           base::UTF16ToUTF8(field->value(ValueSemantics::kCurrent)), " | ",
+           section, "\n"});
     }
     forms_string.push_back(form_string);
   }
@@ -379,14 +357,14 @@ namespace {
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
   static std::set<std::string> failing_test_names{
-      // TODO(crbug.com/1187842): These pages contains iframes. Until filling
+      // TODO(crbug.com/40266699): These pages contains iframes. Until filling
       // across iframes is also supported on iOS, iOS has has different
       // expectations compared to non-iOS platforms.
       "049_register_ebay.com.html",
       "148_payment_dickblick.com.html",
-      // TODO(crbug.com/1339277): These pages contain labels which are only
-      // inferred using AutofillImprovedLabelForInference. This feature is
-      // currently not available on iOS.
+      // TODO(crbug.com/40229922): These pages contain labels which are only
+      // inferred by the label detection improvements that haven't been
+      // implemented on iOS.
       "074_register_threadless.com.html",
       "097_register_alaskaair.com.html",
       "115_checkout_walgreens.com.html",
@@ -402,6 +380,12 @@ const auto& GetFailingTestNames() {
 // to GetFailingTestNames(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacyRegexes) {
+    GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
+                    "parsing patterns";
+  }
+#endif
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),

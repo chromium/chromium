@@ -204,6 +204,11 @@ void AssistantOptInFlowScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<AssistantOptInFlowScreenView>
+AssistantOptInFlowScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void AssistantOptInFlowScreenHandler::OnListeningHotword() {
   CallExternalAPI("onVoiceMatchUpdate", "listen");
 }

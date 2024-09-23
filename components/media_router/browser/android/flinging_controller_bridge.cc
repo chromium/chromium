@@ -6,6 +6,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/media_router/browser/android/jni_headers/FlingingControllerBridge_jni.h"
 #include "components/media_router/browser/android/jni_headers/MediaStatusBridge_jni.h"
 

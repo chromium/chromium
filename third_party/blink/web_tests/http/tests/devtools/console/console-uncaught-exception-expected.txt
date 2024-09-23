@@ -12,16 +12,16 @@ uncaught-in-iframe.html:11 Uncaught Error: Exception in 'load' event listener.
     at uncaught-in-iframe.html:13:5
 f @ uncaught-in-iframe.html:11
 (anonymous) @ uncaught-in-iframe.html:13
-load (async)
+load
 (anonymous) @ uncaught-in-iframe.html:2
 uncaught-in-iframe.html:6 Uncaught Error: Exception in setTimeout callback.
     at bar (uncaught-in-iframe.html:6:23)
     at uncaught-in-iframe.html:8:13
 bar @ uncaught-in-iframe.html:6
 (anonymous) @ uncaught-in-iframe.html:8
-setTimeout (async)
+setTimeout
 f @ uncaught-in-iframe.html:4
 (anonymous) @ uncaught-in-iframe.html:13
-load (async)
+load
 (anonymous) @ uncaught-in-iframe.html:2
 

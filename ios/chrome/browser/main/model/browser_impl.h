@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
 #define IOS_CHROME_BROWSER_MAIN_MODEL_BROWSER_IMPL_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
-#include "ios/chrome/browser/shared/model/browser/browser.h"
-#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-class ChromeBrowserState;
 @class SceneState;
 
 // BrowserImpl is the concrete implementation of the Browser interface.
@@ -29,7 +29,8 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
               CommandDispatcher* command_dispatcher,
               BrowserImpl* active_browser,
               InsertionPolicy insertion_policy,
-              ActivationPolicy activation_policy);
+              ActivationPolicy activation_policy,
+              Type type);
 
   BrowserImpl(const BrowserImpl&) = delete;
   BrowserImpl& operator=(const BrowserImpl&) = delete;
@@ -37,7 +38,11 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   ~BrowserImpl() final;
 
   // Browser.
+  Type type() const override;
+  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
+  // remove this method.
   ChromeBrowserState* GetBrowserState() final;
+  ChromeBrowserState* GetProfile() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
@@ -51,6 +56,9 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   void DestroyInactiveBrowser() final;
 
  private:
+  // The type of this browser.
+  const Type type_;
+
   // The ChromeBrowserState this Browser is attached to. Must not be null.
   raw_ptr<ChromeBrowserState> const browser_state_;
 

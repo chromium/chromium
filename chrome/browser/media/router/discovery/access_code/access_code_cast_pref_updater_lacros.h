@@ -48,7 +48,7 @@ class AccessCodeCastPrefUpdaterLacros : public AccessCodeCastPrefUpdater {
       base::OnceClosure on_sink_removed_callback) override;
   void ClearDevicesDict(base::OnceClosure on_cleared_callback) override;
   void ClearDeviceAddedTimeDict(base::OnceClosure on_cleared_callback) override;
-  void UpdateDevicesDictForTest(const MediaSinkInternal& sink) override;
+  void UpdateDevicesDictForTesting(const MediaSinkInternal& sink) override;
 
  private:
   // Prefs API returns a std::optional<base::Value> but

@@ -40,17 +40,30 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void addTeardown(V8VoidFunction*);
 
   // API attributes.
-  bool active() { return active_; }
-  AbortSignal* signal() { return signal_.Get(); }
+  bool active() const { return active_; }
+  AbortSignal* signal() const;
 
   void Trace(Visitor*) const override;
 
  private:
   class CloseSubscriptionAlgorithm;
 
-  // This method may be called more than once. See the documentation in the
-  // constructor implementation.
-  void CloseSubscription();
+  // This method is idempotent; it may be called more than once, re-entrantly,
+  // which is safe, because it is guarded by an `active_` check. See the
+  // implementation's documentation.
+  //
+  // The `abort_reason` parameter is an error value that serves as the abort
+  // reason for when this method aborts `subscription_controller_`. It is
+  // populated in two cases:
+  //   1. Consumer-initiated unsubscription: when `CloseSubscription()` is
+  //      called as a result of the downstream `AbortSignal` (passed in via
+  //      `SubscribeOptions` in the constructor) gets aborted.
+  //   2. Producer-initiated unsubscription: when `Subscriber::error()` is
+  //      called, `abort_reason` takes on the provided error value, so that the
+  //      producer error is communicated through to `this`'s signal and any
+  //      upstream signals.
+  void CloseSubscription(ScriptState* script_state,
+                         std::optional<ScriptValue> abort_reason);
 
   // The `ObservableInternalObserver` class encapsulates algorithms to call when
   // `this` produces values or actions that need to be pushed to the subscriber
@@ -73,18 +86,17 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   // `AbortSignal` that it passed into `Observable::subscribe()`.
   bool active_ = true;
 
-  // `complete_or_error_controller_` is aborted in response to `complete()` or
-  // `error()` methods being called on `this`. Specifically, the signal is
-  // aborted *after* the associated `Observer` callback is invoked. This
-  // controller's signal is one of the parent signals for `signal_` below.
-  Member<AbortController> complete_or_error_controller_;
-
-  // Never null. It is exposed via the `signal` WebIDL attribute, and represents
-  // whether or not the current subscription has been aborted or not. This
-  // signal is a dependent signal, constructed from two signals:
-  //  - The input `Observer#signal`, if present
-  //  - The signal associated with `complete_or_error_controller_` above
-  Member<AbortSignal> signal_;
+  // `subscription_controller_` is aborted in two cases:
+  //   1. Producer-initiated unsubscription: when `error()`/`complete()` are
+  //      called, they invoke `CloseSubscription()` directly, which aborts this
+  //      controller.
+  //   2. Consumer-initiated unsubscription: when the downstream `AbortSignal`
+  //      is aborted, the `CloseSubscriptionAlgorithm` runs, invoking
+  //      `CloseSubscription()`, which aborts this controller.
+  //
+  // This controller's signal is what `this` exposes as the `signal` WebIDL
+  // attribute.
+  Member<AbortController> subscription_controller_;
 
   // Non-null before `CloseSubscription()` is called.
   Member<AbortSignal::AlgorithmHandle> close_subscription_algorithm_handle_;

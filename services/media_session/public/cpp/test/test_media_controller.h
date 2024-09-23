@@ -33,9 +33,13 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   // mojom::MediaControllerImageObserver overrides.
   void MediaControllerImageChanged(mojom::MediaSessionImageType type,
                                    const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override;
 
   void WaitForExpectedImageOfType(mojom::MediaSessionImageType type,
                                   bool expect_null_value);
+
+  void WaitForExpectedChapterImage(int chapter_index, bool expect_null_image);
 
  private:
   // The bool is whether the image type should be a null value.
@@ -45,8 +49,12 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
 
   std::optional<ImageTypePair> expected_;
   std::optional<ImageTypePair> current_;
+  base::flat_map<int, bool> expected_chapter_images_;
+  base::flat_map<int, bool> current_chapter_images_;
 
   mojo::Receiver<mojom::MediaControllerImageObserver> receiver_{this};
+  mojo::Receiver<mojom::MediaControllerImageObserver>
+      chapter_image_observer_receiver_{this};
 };
 
 // A mock MediaControllerObsever that can be used for waiting for state changes.

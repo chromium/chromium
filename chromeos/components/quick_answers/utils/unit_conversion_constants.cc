@@ -4,8 +4,9 @@
 
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -15,10 +16,10 @@ namespace quick_answers {
 // Also update to pluralize dependent on unit amount (i.e. >= 1).
 std::string GetUnitDisplayText(const std::string& name) {
   constexpr auto kUnitDisplayTextMap =
-      base::MakeFixedFlatMap<base::StringPiece, int>(
+      base::MakeFixedFlatMap<std::string_view, int>(
           {{kPoundName, IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT}});
 
-  const auto* it = kUnitDisplayTextMap.find(name);
+  const auto it = kUnitDisplayTextMap.find(name);
   if (it == kUnitDisplayTextMap.end()) {
     return name;
   }

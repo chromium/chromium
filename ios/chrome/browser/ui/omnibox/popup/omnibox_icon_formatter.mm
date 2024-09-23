@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
@@ -16,30 +17,30 @@ namespace {
 OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
-  if (match.answer.has_value()) {
-    switch (match.answer.value().type()) {
-      case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+  omnibox::AnswerType answer_type = match.answer_type;
+  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
+    switch (answer_type) {
+      case omnibox::ANSWER_TYPE_DICTIONARY:
         return OmniboxSuggestionIconType::kDictionary;
-      case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+      case omnibox::ANSWER_TYPE_FINANCE:
         return OmniboxSuggestionIconType::kStock;
-      case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      case omnibox::ANSWER_TYPE_TRANSLATION:
         return OmniboxSuggestionIconType::kTranslation;
-      case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+      case omnibox::ANSWER_TYPE_WHEN_IS:
         return OmniboxSuggestionIconType::kWhenIs;
-      case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+      case omnibox::ANSWER_TYPE_CURRENCY:
         return OmniboxSuggestionIconType::kConversion;
-      case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+      case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
         return OmniboxSuggestionIconType::kSunrise;
-      case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
-      case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
-      case SuggestionAnswer::ANSWER_TYPE_SPORTS:
-      case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+      case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
+      case omnibox::ANSWER_TYPE_LOCAL_TIME:
+      case omnibox::ANSWER_TYPE_PLAY_INSTALL:
+      case omnibox::ANSWER_TYPE_SPORTS:
+      case omnibox::ANSWER_TYPE_WEATHER:
+      case omnibox::ANSWER_TYPE_WEB_ANSWER:
         return OmniboxSuggestionIconType::kFallbackAnswer;
-      case SuggestionAnswer::ANSWER_TYPE_INVALID:
-      case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
-        NOTREACHED();
+      case omnibox::ANSWER_TYPE_UNSPECIFIED:
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -56,10 +57,23 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
 @implementation OmniboxIconFormatter
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
-  BOOL isAnswer = match.answer.has_value();
+  BOOL suggestionAnswerMigrationEnabled =
+      omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled;
+  BOOL isAnswer = suggestionAnswerMigrationEnabled
+                      ? match.answer_template.has_value()
+                      : match.answer.has_value();
+  BOOL hasProtoAnswer =
+      suggestionAnswerMigrationEnabled && isAnswer &&
+      GURL(match.answer_template->answers(0).image().url()).is_valid();
+  BOOL hasLegacyAnswer = !suggestionAnswerMigrationEnabled && isAnswer &&
+                         match.answer->second_line().image_url().is_valid();
+
   OmniboxIconType iconType = OmniboxIconTypeSuggestionIcon;
   GURL imageURL = GURL();
-  if (isAnswer && match.answer->second_line().image_url().is_valid()) {
+  if (hasProtoAnswer) {
+    imageURL = GURL(match.answer_template->answers(0).image().url());
+    iconType = OmniboxIconTypeImage;
+  } else if (hasLegacyAnswer) {
     iconType = OmniboxIconTypeImage;
     imageURL = match.answer->second_line().image_url();
   } else if (!match.image_url.is_empty()) {

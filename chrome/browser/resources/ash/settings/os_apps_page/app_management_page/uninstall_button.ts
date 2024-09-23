@@ -37,26 +37,9 @@ export class AppManagementUninstallButtonElement extends PolymerElement {
 
   /**
    * Returns true if the button should be disabled due to app install type.
-   *
-   * If the compiler complains about the "lack of ending return statement",
-   * you maybe just added a new InstallReason and need to add a new case.
    */
   private getDisableState_(): boolean {
-    switch (this.app.installReason) {
-      case InstallReason.kSystem:
-      case InstallReason.kPolicy:
-      case InstallReason.kKiosk:
-        return true;
-      case InstallReason.kUnknown:
-      case InstallReason.kOem:
-      case InstallReason.kDefault:
-      case InstallReason.kSubApp:
-      case InstallReason.kSync:
-      case InstallReason.kUser:
-      case InstallReason.kSubApp:
-      case InstallReason.kCommandLine:
-        return false;
-    }
+    return this.app.installReason === InstallReason.kPolicy;
   }
 
   /**
@@ -70,7 +53,8 @@ export class AppManagementUninstallButtonElement extends PolymerElement {
    * Returns true if the uninstall button should be shown.
    */
   private showUninstallButton_(): boolean {
-    return this.app.installReason !== InstallReason.kSystem;
+    return this.app.allowUninstall ||
+        (this.app.installReason === InstallReason.kPolicy);
   }
 
   private onClick_(): void {

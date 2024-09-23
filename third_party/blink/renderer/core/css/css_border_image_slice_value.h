@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 namespace cssvalue {
 
@@ -37,7 +41,7 @@ class CSSBorderImageSliceValue : public CSSValue {
  public:
   CSSBorderImageSliceValue(CSSQuadValue* slices, bool fill);
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   // TODO(sashab): Change this to a quad of CSSPrimitiveValues, or add separate
   // methods for topSlice(), leftSlice(), etc.

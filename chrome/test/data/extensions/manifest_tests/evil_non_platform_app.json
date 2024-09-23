@@ -1,7 +1,9 @@
 {
   "name": "evil_non_platform_app.json",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "0.1",
   "description": "I request permissions available only to platform apps.",
-  "permissions": ["socket"]
+  "permissions": [
+    "socket"
+  ]
 }

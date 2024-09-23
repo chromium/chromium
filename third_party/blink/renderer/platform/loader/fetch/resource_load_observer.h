@@ -7,7 +7,7 @@
 
 #include <inttypes.h>
 
-#include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -72,7 +72,7 @@ class PLATFORM_EXPORT ResourceLoadObserver
 
   // Called when a response body chunk is received.
   virtual void DidReceiveData(uint64_t identifier,
-                              base::span<const char> chunk) = 0;
+                              base::SpanOrSize<const char> chunk) = 0;
 
   // Called when receiving an update for "network transfer size" for a request.
   virtual void DidReceiveTransferSizeUpdate(uint64_t identifier,
@@ -99,6 +99,11 @@ class PLATFORM_EXPORT ResourceLoadObserver
   virtual void DidChangeRenderBlockingBehavior(
       Resource* resource,
       const FetchParameters& params) = 0;
+
+  // Called when ResourceFetcher::DidLoadResourceFromMemoryCache is called to
+  // check if there is an inspector attached and if we should report information
+  // about all requests to the inspector.
+  virtual bool InterestedInAllRequests() = 0;
 
   virtual void Trace(Visitor*) const {}
 };

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
@@ -44,7 +45,24 @@ void LineBoxFragmentBuilder::SetIsEmptyLineBox() {
   line_box_type_ = PhysicalLineBoxFragment::kEmptyLineBox;
 }
 
-void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
+void LineBoxFragmentBuilder::PropagateChildrenData(
+    LogicalLineContainer& container) {
+  PropagateChildrenDataFromLineItems(container.BaseLine());
+  // Propagate annotation box fragments which are not in base box fragment
+  // items. Annotation box fragments inside base box fragments were propagated
+  // through the base box fragments. See BoxData::CreateBoxFragment().
+  for (auto& annotation : container.AnnotationLineList()) {
+    if (!annotation.line_items->WasPropagated()) {
+      PropagateChildrenDataFromLineItems(*annotation.line_items);
+      annotation.line_items->SetPropagated();
+    }
+  }
+  DCHECK(oof_positioned_descendants_.empty());
+  MoveOutOfFlowDescendantCandidatesToDescendants();
+}
+
+void LineBoxFragmentBuilder::PropagateChildrenDataFromLineItems(
+    LogicalLineItems& children) {
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
@@ -69,13 +87,10 @@ void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
           BlockNode(To<LayoutBox>(child.out_of_flow_positioned_box.Get())),
-          child.Offset(), child.container_direction);
+          child.Offset(), child.container_direction, child.is_hidden_for_paint);
       child.out_of_flow_positioned_box = nullptr;
     }
   }
-
-  DCHECK(oof_positioned_descendants_.empty());
-  MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
 const LayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {

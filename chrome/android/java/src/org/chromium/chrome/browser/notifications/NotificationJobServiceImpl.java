@@ -69,19 +69,24 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
     public boolean onStartJob(final JobParameters params) {
         PersistableBundle extras = params.getExtras();
         putJobStartedTimeInExtras(extras);
+
+        String action = extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION);
+        NotificationUmaTracker.getInstance()
+                .recordIntentHandlerJobStage(
+                        NotificationUmaTracker.IntentHandlerJobStage.ON_START_JOB, action);
+
         if (!extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)
                 || !extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)) {
             return false;
         }
 
-        Intent intent =
-                new Intent(extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION));
+        Intent intent = new Intent(action);
         intent.putExtras(new Bundle(extras));
 
         ThreadUtils.assertOnUiThread();
         NotificationServiceImpl.dispatchIntentOnUIThread(intent);
 
-        // TODO(crbug.com/685197): Return true here and call jobFinished to release the wake
+        // TODO(crbug.com/40503455): Return true here and call jobFinished to release the wake
         // lock only after the event has been completely handled by the service worker.
         return false;
     }
@@ -93,10 +98,16 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
 
     @Override
     public boolean onStopJob(JobParameters params) {
+        String action =
+                params.getExtras().getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION);
+        NotificationUmaTracker.getInstance()
+                .recordIntentHandlerJobStage(
+                        NotificationUmaTracker.IntentHandlerJobStage.ON_STOP_JOB, action);
+
         // As it stands, all our job processing is done synchronously in onStartJob so there is
         // nothing to do here. Even once we include further async processing in our jobs
         // (crbug.com/685197) it may by infeasible to cancel this halfway through.
-        // TODO(crbug.com/685197): Check what we can safely do here and update comment.
+        // TODO(crbug.com/40503455): Check what we can safely do here and update comment.
         return false;
     }
 }

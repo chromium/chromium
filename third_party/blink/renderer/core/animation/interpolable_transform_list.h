@@ -46,14 +46,17 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsTransformList() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
-  void Scale(double scale) final { NOTREACHED(); }
-  void Add(const InterpolableValue& other) final { NOTREACHED(); }
+  void Scale(double scale) final { NOTREACHED_IN_MIGRATION(); }
+  void Add(const InterpolableValue& other) final { NOTREACHED_IN_MIGRATION(); }
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
-  void Trace(Visitor* v) const override { InterpolableValue::Trace(v); }
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(operations_);
+  }
 
  private:
   InterpolableTransformList* RawClone() const final {
@@ -61,7 +64,7 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
         TransformOperations(operations_), box_size_dependent_);
   }
   InterpolableTransformList* RawCloneAndZero() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

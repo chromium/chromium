@@ -170,6 +170,8 @@ class WaylandKeyboard::Delegate {
                                       base::TimeTicks timestamp,
                                       int device_id,
                                       WaylandKeyboard::KeyEventKind kind) = 0;
+  virtual void OnSynthesizedKeyPressEvent(DomCode dom_code,
+                                          base::TimeTicks timestamp) = 0;
 
  protected:
   // Prevent deletion through a WaylandKeyboard::Delegate pointer.

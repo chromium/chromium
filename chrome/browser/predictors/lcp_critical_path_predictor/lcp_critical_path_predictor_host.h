@@ -45,7 +45,8 @@ class LCPCriticalPathPredictorHost
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts) override;
   void SetPreconnectOrigins(const std::vector<GURL>& origins) override;
-  void NotifyFetchedFont(const GURL& font_url) override;
+  void SetUnusedPreloads(const std::vector<GURL>& unused_preloads) override;
+  void NotifyFetchedFont(const GURL& font_url, bool hit) override;
   void NotifyFetchedSubresource(
       const GURL& subresource_url,
       base::TimeDelta subresource_load_start) override;

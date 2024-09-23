@@ -1,0 +1,241 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dlp") {
+  sources = [
+    "dlp_content_manager_ash.cc",
+    "dlp_content_manager_ash.h",
+    "dlp_extract_io_task_observer.cc",
+    "dlp_extract_io_task_observer.h",
+    "dlp_files_controller_ash.cc",
+    "dlp_files_controller_ash.h",
+    "dlp_files_controller_ash_utils.cc",
+    "dlp_files_controller_ash_utils.h",
+    "dlp_files_event_storage.cc",
+    "dlp_files_event_storage.h",
+    "dlp_window_observer.cc",
+    "dlp_window_observer.h",
+    "files_policy_notification_manager.cc",
+    "files_policy_notification_manager.h",
+    "files_policy_notification_manager_factory.cc",
+    "files_policy_notification_manager_factory.h",
+    "files_policy_string_util.cc",
+    "files_policy_string_util.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+    "//chromeos/ash/experiences/screenshot_area",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/ui/base",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/exo",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/services/app_service",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard:file_info",
+    "//ui/base/data_transfer_policy",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
+    "//ui/message_center/public/cpp",
+    "//ui/shell_dialogs",
+    "//ui/views",
+    "//ui/wm/public",
+    "//url",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/files_policy_notification_manager.cc
+    # instead after fixing cyclic dependency.
+    "//ash/components/arc/mojom:mojom",
+    "//chrome/app/vector_icons:vector_icons",
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/drivefs",
+    "//components/paint_preview/buildflags",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.cc
+    # instead after fixing cyclic dependency.
+    "//components/enterprise/buildflags",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/dlp_content_manager_ash.cc
+    # instead after fixing cyclic dependency.
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "dlp_content_manager_ash_unittest.cc",
+    "dlp_files_controller_ash_unittest.cc",
+    "dlp_files_event_storage_unittest.cc",
+    "files_policy_notification_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":dlp",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/browser/enterprise/data_controls:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/screenshot_area",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/ui/base",
+    "//components/drive",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/file_access",
+    "//components/reporting/client:test_support",
+    "//components/reporting/storage:test_support",
+    "//components/services/app_service",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "data_transfer_dlp_controller_ash_browsertest.cc",
+    "dlp_content_manager_ash_browsertest.cc",
+    "dlp_files_controller_ash_browsertest.cc",
+    "files_policy_notification_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":dlp",
+    "//ash/webui/file_manager:file_manager_ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/ash/policy/dlp/test:test_support",
+    "//chrome/browser/ash/policy/login:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/chromeos/policy/dlp/dialogs:test_support",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/browser/enterprise/data_controls:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/capture_mode",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/screenshot_area",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/base/data_transfer_policy",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//ui/shell_dialogs:test_support",
+    "//ui/views",
+    "//url",
+  ]
+}

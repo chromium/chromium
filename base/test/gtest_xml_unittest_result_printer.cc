@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/test/gtest_xml_unittest_result_printer.h"
 
 #include "base/base64.h"
@@ -139,6 +144,7 @@ void XmlUnitTestResultPrinter::OnTestSuiteStart(
 
 void XmlUnitTestResultPrinter::OnTestStart(
     const testing::TestInfo& test_info) {
+  DCHECK(!test_running_);
   // This is our custom extension - it helps to recognize which test was
   // running when the test binary crashed. Note that we cannot even open the
   // <testcase> tag here - it requires e.g. run time of the test to be known.
@@ -147,9 +153,11 @@ void XmlUnitTestResultPrinter::OnTestStart(
           test_info.name(), test_info.test_suite_name(),
           TimeFormatAsIso8601(Time::Now()).c_str());
   fflush(output_file_);
+  test_running_ = true;
 }
 
 void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
+  DCHECK(test_running_);
   fprintf(output_file_.get(),
           "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
           " classname=\"%s\" timestamp=\"%s\">\n",
@@ -193,6 +201,7 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
 
   fprintf(output_file_.get(), "    </testcase>\n");
   fflush(output_file_);
+  test_running_ = false;
 }
 
 void XmlUnitTestResultPrinter::OnTestSuiteEnd(
@@ -207,6 +216,11 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
     testing::TestPartResult::Type result_type,
     const std::string& summary,
     const std::string& message) {
+  // Don't write `<x-test-result-part>` if there's no associated
+  // `<x-teststart>` or open `<testcase>`.
+  if (!test_running_) {
+    return;
+  }
   const char* type = "unknown";
   switch (result_type) {
     case testing::TestPartResult::kSuccess:

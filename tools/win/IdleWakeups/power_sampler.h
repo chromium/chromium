@@ -5,10 +5,10 @@
 #ifndef TOOLS_WIN_IDLEWAKEUPS_POWER_SAMPLER_H_
 #define TOOLS_WIN_IDLEWAKEUPS_POWER_SAMPLER_H_
 
+#include <windows.h>
+
 #include <map>
 #include <string>
-
-#include <windows.h>
 
 // https://software.intel.com/en-us/blogs/2012/12/13/using-the-intel-power-gadget-api-on-mac-os-x
 typedef int (*IntelEnergyLibInitialize_t)();

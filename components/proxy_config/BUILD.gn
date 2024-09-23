@@ -13,7 +13,6 @@ component("proxy_config") {
     "proxy_config_dictionary.cc",
     "proxy_config_dictionary.h",
     "proxy_config_export.h",
-    "proxy_config_pref_names.cc",
     "proxy_config_pref_names.h",
     "proxy_prefs.cc",
     "proxy_prefs.h",
@@ -32,7 +31,7 @@ component("proxy_config") {
     "//url",
   ]
 
-  # TODO(https://crbug.com/562773): Break a header include cycle on ChromeOS
+  # TODO(crbug.com/40446749): Break a header include cycle on ChromeOS
   # and disable include checking so GN doesn't complain about the missing
   # dependency (it still links OK). This cycle should be fixed and header
   # checking enabled.

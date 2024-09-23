@@ -154,16 +154,11 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return false;
 #endif
 
-    case ITEM_GROUP_PASSWORD:
-      return (params_.form_control_type ==
-              blink::mojom::FormControlType::kInputPassword) ||
-             params_.is_password_type_by_heuristics;
-
     case ITEM_GROUP_AUTOFILL:
       return params_.form_control_type.has_value();
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

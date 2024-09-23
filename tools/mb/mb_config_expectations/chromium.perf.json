@@ -96,7 +96,6 @@
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
-      "is_high_end_android": true,
       "is_official_build": true,
       "proprietary_codecs": true,
       "strip_absolute_paths_from_debug_symbols": true,
@@ -112,7 +111,6 @@
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
-      "is_high_end_android": true,
       "is_official_build": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
@@ -235,6 +233,21 @@
       "use_remoteexec": true
     }
   },
+  "mac-arm-no-brp-builder-perf": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "enable_backup_ref_ptr_support": false,
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_raw_ptr_backup_ref_impl": false,
+      "use_remoteexec": true
+    }
+  },
   "mac-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
@@ -262,7 +275,7 @@
       "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "rbe_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
+      "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_remoteexec": true

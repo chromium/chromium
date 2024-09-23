@@ -1,0 +1,4 @@
+pointer-to-container.cpp:10:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 0;
+   ^
+1 error generated.

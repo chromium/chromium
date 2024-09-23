@@ -1,0 +1,9 @@
+# crbug.com/343800065
+-SigninManagerAndroidTest.*
+-SigninManagerAndroidWithLocalUpmTest.*
+-SigninManagerAndroidWithoutLocalUpmTest.WipePasswordsIfLocalUpmOff
+
+# crbug.com/343782003
+-ChromeBrowsingDataRemoverDelegateOriginTrialsTest.*
+-ChromeBrowsingDataRemoverDelegateTest.AllTypesAreGettingDeleted
+-ChromeBrowsingDataRemoverDelegateTest.RemovePersistentIsolatedOrigins

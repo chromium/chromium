@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/prerender_web_contents_delegate.h"
@@ -42,8 +43,11 @@ class PrerenderNewTabHandle {
 
   // Starts prerendering in `web_contents_`. Returns the root FrameTreeNode id
   // of the prerendered page, which can be used as the id of PrerenderHost, on
-  // success. Returns RenderFrameHost::kNoFrameTreeNodeId on failure.
-  int StartPrerendering(PreloadingPredictor preloading_predictor);
+  // success. Returns an invalid FrameTreeNodeId on failure.
+  FrameTreeNodeId StartPrerendering(
+      const PreloadingPredictor& creating_predictor,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence);
 
   // Cancels prerendering started in `web_contents_`.
   void CancelPrerendering(const PrerenderCancellationReason& reason);
@@ -87,7 +91,7 @@ class PrerenderNewTabHandle {
   // initiator's tab.
   std::unique_ptr<PrerenderWebContentsDelegate> web_contents_delegate_;
 
-  int prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  FrameTreeNodeId prerender_host_id_;
 };
 
 }  // namespace content

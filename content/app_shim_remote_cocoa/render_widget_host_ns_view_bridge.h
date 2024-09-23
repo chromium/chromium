@@ -14,6 +14,7 @@
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#import "content/app_shim_remote_cocoa/sharing_service_picker.h"
 #include "content/app_shim_remote_cocoa/sharing_service_picker.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/public/common/widget_type.h"
@@ -100,11 +101,17 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // display::DisplayObserver implementation.
   void OnDisplayAdded(const display::Display&) override;
-  void OnDisplayRemoved(const display::Display&) override;
+  void OnDisplaysRemoved(const display::Displays&) override;
   void OnDisplayMetricsChanged(const display::Display&, uint32_t) override;
+
+  void OnSharingServiceInvoked(ShowSharingServicePickerCallback callback,
+                               blink::mojom::ShareError error);
 
   // The NSView used for input and display.
   RenderWidgetHostViewCocoa* __strong cocoa_view_;
+
+  // NSSharingServicePicker for the navigator.share API.
+  SharingServicePicker* __strong sharing_service_picker_;
 
   // Once set, all calls to set the background color or CALayer content will
   // be ignored.

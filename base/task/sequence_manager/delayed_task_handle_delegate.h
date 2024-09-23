@@ -6,7 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_DELAYED_TASK_HANDLE_DELEGATE_H_
 
 #include "base/containers/intrusive_heap.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/delayed_task_handle.h"
@@ -42,8 +42,9 @@ class DelayedTaskHandleDelegate : public DelayedTaskHandle::Delegate {
 
  private:
   // The TaskQueueImpl where the task was posted.
-  const raw_ptr<TaskQueueImpl, AcrossTasksDanglingUntriaged> outer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION TaskQueueImpl* const outer_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The HeapHandle to the task, if the task is in the DelayedIncomingQueue,
   // invalid otherwise.

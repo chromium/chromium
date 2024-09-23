@@ -6,11 +6,12 @@
 
 #include <map>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,10 +66,9 @@ class ArcPipWindowThrottleObserverTest : public testing::Test {
         &dummy_delegate_, 1, gfx::Rect(), nullptr));
     chrome_window_.reset(aura::test::CreateTestWindowWithDelegate(
         &dummy_delegate_, 2, gfx::Rect(), nullptr));
-    arc_window_->SetProperty(aura::client::kAppType,
-                             static_cast<int>(ash::AppType::ARC_APP));
-    chrome_window_->SetProperty(aura::client::kAppType,
-                                static_cast<int>(ash::AppType::BROWSER));
+    arc_window_->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+    chrome_window_->SetProperty(chromeos::kAppTypeKey,
+                                chromeos::AppType::BROWSER);
   }
 
   void TearDown() override { wm_helper_.reset(); }

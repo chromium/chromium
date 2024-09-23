@@ -162,7 +162,7 @@ void SpellcheckHunspellDictionary::RetryDownloadDictionary(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (dictionary_file_.file.IsValid()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   browser_context_ = browser_context;
@@ -360,21 +360,22 @@ SpellcheckHunspellDictionary::OpenDictionaryFile(base::TaskRunner* task_runner,
   dictionary.path = path;
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Read the dictionary file and scan its data to check for corruption. The
-  // scoping closes the memory-mapped file before it is opened or deleted.
-  bool bdict_is_valid = false;
+  // Open the dictionary file and verify there is no corruption. If verification
+  // fails the file must be deleted.
 
-  {
-    base::MemoryMappedFile map;
-    bdict_is_valid = base::PathExists(dictionary.path) &&
-                     map.Initialize(dictionary.path) &&
-                     hunspell::BDict::Verify(map.bytes());
+  dictionary.file.Initialize(dictionary.path,
+                             base::File::FLAG_READ | base::File::FLAG_OPEN);
+  if (!dictionary.file.IsValid()) {
+    dictionary.file.Close();
+    base::DeleteFile(dictionary.path);
+    return dictionary;
   }
 
-  if (bdict_is_valid) {
-    dictionary.file.Initialize(dictionary.path,
-                               base::File::FLAG_READ | base::File::FLAG_OPEN);
-  } else {
+  std::vector<uint8_t> data;
+  data.resize(dictionary.file.GetLength());
+  if (!dictionary.file.ReadAndCheck(0, data) ||
+      !hunspell::BDict::Verify(data)) {
+    dictionary.file.Close();
     base::DeleteFile(dictionary.path);
   }
 
@@ -470,7 +471,7 @@ void SpellcheckHunspellDictionary::PlatformSupportsLanguageComplete(
       return;
     }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else {
     // Either the platform spellchecker is unavailable / disabled, or it doesn't
     // support this language. In either case, we must use Hunspell for this

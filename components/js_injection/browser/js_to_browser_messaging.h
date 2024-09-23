@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
@@ -37,6 +38,8 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   JsToBrowserMessaging(
       content::RenderFrameHost* rfh,
       mojo::PendingAssociatedReceiver<mojom::JsToBrowserMessaging> receiver,
+      mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
+          browser_to_js_factory,
       WebMessageHostFactory* factory,
       const OriginMatcher& origin_matcher);
 
@@ -45,7 +48,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
 
   ~JsToBrowserMessaging() override;
 
-  void OnBackForwardCacheStateChanged();
+  void OnRenderFrameHostActivated();
 
   // mojom::JsToBrowserMessaging implementation.
   void PostMessage(blink::WebMessagePayload message,
@@ -57,13 +60,15 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  private:
   class ReplyProxyImpl;
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
   raw_ptr<WebMessageHostFactory, AcrossTasksDanglingUntriaged>
       connection_factory_;
   OriginMatcher origin_matcher_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;
+  mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory>
+      browser_to_js_factory_;
 #if DCHECK_IS_ON()
   std::string top_level_origin_string_;
   std::string origin_string_;

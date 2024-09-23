@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_context.h"
@@ -213,14 +213,12 @@ void HostedAppBrowserController::OnTabInserted(content::WebContents* contents) {
 
   const Extension* extension = GetExtension();
   extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(extension);
-  web_app::SetAppPrefsForWebContents(contents);
 }
 
 void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
 
   extensions::TabHelper::FromWebContents(contents)->SetExtensionApp(nullptr);
-  web_app::ClearAppPrefsForWebContents(contents);
 }
 
 void HostedAppBrowserController::LoadAppIcon(

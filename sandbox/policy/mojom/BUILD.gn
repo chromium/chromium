@@ -4,10 +4,10 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 mojom("mojom") {
   generate_java = true
@@ -30,6 +30,9 @@ mojom("mojom") {
   }
   if (enable_ppapi) {
     enabled_features += [ "enable_ppapi" ]
+  }
+  if (is_linux || is_mac) {
+    enabled_features += [ "is_linux_or_mac" ]
   }
   if (is_linux || is_chromeos) {
     enabled_features += [

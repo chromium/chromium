@@ -43,8 +43,8 @@ std::unique_ptr<VrDeviceT> EnableRuntime(
                        static_cast<int>(device->GetId()));
   // "Device" here refers to a runtime + hardware pair, not necessarily
   // a physical device.
-  client->OnDeviceAdded(device->BindXRRuntime(), device->BindCompositorHost(),
-                        device->GetDeviceData(), device->GetId());
+  client->OnDeviceAdded(device->BindXRRuntime(), device->GetDeviceData(),
+                        device->GetId());
   return device;
 }
 

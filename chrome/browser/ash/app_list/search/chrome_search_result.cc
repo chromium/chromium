@@ -5,11 +5,14 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 
 #include <map>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
 #include "ui/base/models/image_model.h"
+#include "url/gurl.h"
 
 ChromeSearchResult::ChromeSearchResult()
     : metadata_(std::make_unique<ash::SearchResultMetadata>()) {}
@@ -154,6 +157,12 @@ void ChromeSearchResult::SetMetricsType(MetricsType metrics_type) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetContinueFileSuggestionType(
+    ash::ContinueFileSuggestionType type) {
+  metadata_->continue_file_suggestion_type = type;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   metadata_->is_recommendation = is_recommendation;
   SetSearchResultMetadata();
@@ -204,6 +213,12 @@ void ChromeSearchResult::SetFilePath(base::FilePath file_path) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetDisplayableFilePath(
+    base::FilePath displayable_file_path) {
+  metadata_->displayable_file_path = std::move(displayable_file_path);
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetMetadataLoaderCallback(
     MetadataLoaderCallback callback) {
   metadata_->file_metadata_loader.SetLoaderCallback(std::move(callback));
@@ -217,6 +232,10 @@ void ChromeSearchResult::SetSearchResultMetadata() {
 }
 
 std::optional<std::string> ChromeSearchResult::DriveId() const {
+  return std::nullopt;
+}
+
+std::optional<GURL> ChromeSearchResult::url() const {
   return std::nullopt;
 }
 

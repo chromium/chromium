@@ -32,7 +32,6 @@ build_dotfile_settings = {
     "//build/toolchain/apple/toolchain.gni",
     "//build/toolchain/BUILD.gn",
     "//build/toolchain/concurrent_links.gni",
-    "//build/toolchain/goma.gni",
     "//build/toolchain/nacl/BUILD.gn",
     "//build/toolchain/rbe.gni",
     "//build/toolchain/toolchain.gni",

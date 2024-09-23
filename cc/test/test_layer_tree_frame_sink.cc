@@ -61,8 +61,11 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
       debug_settings_(debug_settings),
       refresh_rate_(refresh_rate),
       frame_sink_id_(kLayerTreeFrameSinkId),
-      shared_image_manager_(std::make_unique<gpu::SharedImageManager>()),
+      shared_image_manager_(
+          std::make_unique<gpu::SharedImageManager>(/*thread_safe=*/true)),
       sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
+      gpu_scheduler_(
+          std::make_unique<gpu::Scheduler>(sync_point_manager_.get())),
       parent_local_surface_id_allocator_(
           new viz::ParentLocalSurfaceIdAllocator),
       client_provided_begin_frame_source_(begin_frame_source),
@@ -88,6 +91,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
       viz::FrameSinkManagerImpl::InitParams(shared_bitmap_manager_.get()));
+  frame_sink_manager_->SetSharedImageInterfaceProviderForTest(
+      &shared_image_interface_provider_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller;
@@ -135,8 +140,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   display_ = std::make_unique<viz::Display>(
       shared_bitmap_manager_.get(), shared_image_manager_.get(),
-      sync_point_manager_.get(), renderer_settings_, debug_settings_,
-      frame_sink_id_, std::move(display_controller),
+      sync_point_manager_.get(), gpu_scheduler_.get(), renderer_settings_,
+      debug_settings_, frame_sink_id_, std::move(display_controller),
       std::move(display_output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor_task_runner_);
 

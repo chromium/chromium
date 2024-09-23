@@ -5,14 +5,15 @@
 #ifndef MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_H_
 #define MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
+#include "media/formats/hls/tag_recorder.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "url/gurl.h"
@@ -51,8 +52,11 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   // in this playlist (or `Playlist::kDefaultVersion` if none), which may be
   // determined via `Playlist::IdentifyPlaylist`. If the playlist source is
   // invalid, returns an error.
-  static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
-  Parse(base::StringPiece source, GURL uri, types::DecimalInteger version);
+  static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>> Parse(
+      std::string_view source,
+      GURL uri,
+      types::DecimalInteger version,
+      TagRecorder* tag_recorder = nullptr);
 
  private:
   ~MultivariantPlaylist() override;

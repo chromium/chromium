@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package org.chromium.components.ip_protection_auth.common.proto;
+
+option optimize_for = LITE_RUNTIME;  // TODO(crbug.com/40557343): Remove this after proto 4.0
+option java_package = "org.chromium.components.ip_protection_auth.common.proto";
+option java_outer_classname = "IpProtectionAuthProtos";
+
+// TODO(abhijithnair): Currently this is a sample used to get the end to end
+// data flow set up. This will be modified with real fields.
+// Next tag: 2
+message GetInitialDataRequest {
+  string test_payload = 1;
+}
+
+// TODO(abhijithnair): Currently this is a sample used to get the end to end
+// data flow set up. This will be modified with real fields.
+// Next tag: 2
+message GetInitialDataResponse {
+  string test_payload = 1;
+}
+
+// TODO(abhijithnair): Currently this is a sample used to get the end to end
+// data flow set up. This will be modified with real fields.
+// Next tag: 2
+message AuthAndSignRequest {
+  string test_payload = 1;
+}
+
+// TODO(abhijithnair): Currently this is a sample used to get the end to end
+// data flow set up. This will be modified with real fields.
+// Next tag: 2
+message AuthAndSignResponse {
+  string test_payload = 1;
+}

@@ -42,7 +42,7 @@ class MockDownloadItemImpl : public DownloadItemImpl {
   MOCK_METHOD1(Cancel, void(bool));
   MOCK_METHOD0(MarkAsComplete, void());
   void OnAllDataSaved(int64_t, std::unique_ptr<crypto::SecureHash>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   MOCK_METHOD0(OnDownloadedFileRemoved, void());
   void Start(std::unique_ptr<DownloadFile> download_file,

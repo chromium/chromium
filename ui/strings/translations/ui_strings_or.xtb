@@ -14,7 +14,7 @@
 <translation id="1291104554099683393">ଛୋଟ ଛୋଟ ଭାଗରେ ଟେକ୍ସଟ୍ ସେୟାର୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">ବାମରୁ ଡାହାଣ</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
 <translation id="1398853756734560583">ସର୍ବାଧିକ କରନ୍ତୁ</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 ମିନିଟ ପୂର୍ବେ}other{# ମିନିଟ ପୂର୍ବେ}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ସେୟାର୍ କରାଯାଇ ପାରିବ ନାହିଁ</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">ସର୍ଭେ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
+<translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2388990488038464401">ଆପଣଙ୍କ ଫୋନ୍‌ରୁ ଏହି ନମ୍ବର୍‍କୁ କଲ୍ କରିବେ?</translation>
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="24452542372838207">ବିଜ୍ଞପ୍ତି ସଂପ୍ରସାରଣ କରନ୍ତୁ</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ନୂଆ</translation>
 <translation id="2666092431469916601">ଶୀର୍ଷ</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ରୁ ସେୟାର୍ କରାଯାଇଛି</translation>
-<translation id="271033894570825754">ନୂଆ</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ବର୍ଷ ପୂର୍ବେ}other{# ବର୍ଷ ପୂର୍ବେ}}</translation>
 <translation id="2878511608894704031">ସବୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 ଦିନରେ}other{# ଦିନରେ}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ସିଷ୍ଟମ୍</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5633029987065897167">ଖାଲି</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 ମିନିଟ୍}other{# ମିନିଟ୍}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ଆଜି ସକ୍ରିୟ ଅଛି}=1{1 ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}other{# ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ଦିନ ଏବଂ }other{# ଦିନ ଏବଂ }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF ବିଷୟବସ୍ତୁ</translation>
 <translation id="6539092367496845964">କିଛି ଭୁଲ ହୋଇଗଲା। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="654149438358937226">ସମସ୍ତ ବିଜ୍ଞପ୍ତିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
-<translation id="6612467943526193239">କାଲିବ୍ରାସେନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରିବାକୁ ଏସ୍କେପ୍‌ କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="6620110761915583480">ଫାଇଲ୍ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="6699343763173986273">ମିଡିଆ ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="6808150112686056157">ମିଡିଆ ବନ୍ଦ କରନ୍ତୁ</translation>

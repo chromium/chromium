@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -148,17 +149,6 @@ void CSSToStyleMap::MapFillOrigin(StyleResolverState&,
   layer->SetOrigin(identifier_value->ConvertTo<EFillBox>());
 }
 
-namespace {
-
-CSSPropertyID MaskImageProperty() {
-  if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    return CSSPropertyID::kWebkitMaskImage;
-  }
-  return CSSPropertyID::kMaskImage;
-}
-
-}  // namespace
-
 void CSSToStyleMap::MapFillImage(StyleResolverState& state,
                                  FillLayer* layer,
                                  const CSSValue& value) {
@@ -169,7 +159,7 @@ void CSSToStyleMap::MapFillImage(StyleResolverState& state,
 
   CSSPropertyID property = layer->GetType() == EFillLayerType::kBackground
                                ? CSSPropertyID::kBackgroundImage
-                               : MaskImageProperty();
+                               : CSSPropertyID::kMaskImage;
   layer->SetImage(
       state.GetStyleImage(property, state.ResolveLightDarkPair(value)));
 }
@@ -320,9 +310,11 @@ void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
 
 namespace {
 
-Timing::Delay MapAnimationTimingDelay(const CSSValue& value) {
+Timing::Delay MapAnimationTimingDelay(const CSSLengthResolver& length_resolver,
+                                      const CSSValue& value) {
   if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
-    return Timing::Delay(AnimationTimeDelta(primitive->ComputeSeconds()));
+    return Timing::Delay(
+        AnimationTimeDelta(primitive->ComputeSeconds(length_resolver)));
   }
 
   return Timing::Delay();
@@ -332,16 +324,18 @@ Timing::Delay MapAnimationTimingDelay(const CSSValue& value) {
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayStart(StyleResolverState& state,
                                                     const CSSValue& value) {
-  return MapAnimationTimingDelay(value);
+  return MapAnimationTimingDelay(state.CssToLengthConversionData(), value);
 }
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(const CSSValue& value) {
-  return MapAnimationTimingDelay(value);
+  // Note: using default length resolver here, as this function is only
+  // called from the serialization code.
+  return MapAnimationTimingDelay(CSSToLengthConversionData(), value);
 }
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(StyleResolverState& state,
                                                   const CSSValue& value) {
-  return MapAnimationDelayEnd(value);
+  return MapAnimationTimingDelay(state.CssToLengthConversionData(), value);
 }
 
 Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
@@ -357,7 +351,7 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
     case CSSValueID::kAlternateReverse:
       return Timing::PlaybackDirection::ALTERNATE_REVERSE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Timing::PlaybackDirection::NORMAL;
   }
 }
@@ -384,7 +378,7 @@ Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
     case CSSValueID::kBoth:
       return Timing::FillMode::BOTH;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Timing::FillMode::NONE;
   }
 }
@@ -576,7 +570,7 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
         return StepsTimingFunction::Preset(
             StepsTimingFunction::StepPosition::END);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CSSTimingData::InitialTimingFunction();
     }
   }
@@ -666,35 +660,35 @@ void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,
     // about percentages, since we don't even support those on real borders yet.
     if (image.BorderSlices().Top().IsLength() &&
         image.BorderSlices().Top().length().IsFixed()) {
-      builder.SetBorderTopWidth(
-          LayoutUnit(image.BorderSlices().Top().length().Pixels()));
+      builder.SetBorderTopWidth(image.BorderSlices().Top().length().Pixels());
     }
     if (image.BorderSlices().Right().IsLength() &&
         image.BorderSlices().Right().length().IsFixed()) {
       builder.SetBorderRightWidth(
-          LayoutUnit(image.BorderSlices().Right().length().Pixels()));
+          image.BorderSlices().Right().length().Pixels());
     }
     if (image.BorderSlices().Bottom().IsLength() &&
         image.BorderSlices().Bottom().length().IsFixed()) {
       builder.SetBorderBottomWidth(
-          LayoutUnit(image.BorderSlices().Bottom().length().Pixels()));
+          image.BorderSlices().Bottom().length().Pixels());
     }
     if (image.BorderSlices().Left().IsLength() &&
         image.BorderSlices().Left().length().IsFixed()) {
-      builder.SetBorderLeftWidth(
-          LayoutUnit(image.BorderSlices().Left().length().Pixels()));
+      builder.SetBorderLeftWidth(image.BorderSlices().Left().length().Pixels());
     }
   }
 }
 
-static Length ConvertBorderImageSliceSide(const CSSPrimitiveValue& value) {
+static Length ConvertBorderImageSliceSide(
+    const CSSLengthResolver& length_resolver,
+    const CSSPrimitiveValue& value) {
   if (value.IsPercentage()) {
-    return Length::Percent(value.GetDoubleValue());
+    return Length::Percent(value.ComputePercentage(length_resolver));
   }
-  return Length::Fixed(round(value.GetDoubleValue()));
+  return Length::Fixed(round(value.ComputeNumber(length_resolver)));
 }
 
-void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
+void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState& state,
                                            const CSSValue& value,
                                            NinePieceImage& image) {
   if (!IsA<cssvalue::CSSBorderImageSliceValue>(value)) {
@@ -708,13 +702,16 @@ void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
   // Set up a length box to represent our image slices.
   LengthBox box;
   const CSSQuadValue& slices = border_image_slice.Slices();
-  box.top_ = ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Top()));
+  box.top_ = ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                         To<CSSPrimitiveValue>(*slices.Top()));
   box.bottom_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Bottom()));
-  box.left_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Left()));
+      ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                  To<CSSPrimitiveValue>(*slices.Bottom()));
+  box.left_ = ConvertBorderImageSliceSide(
+      state.CssToLengthConversionData(), To<CSSPrimitiveValue>(*slices.Left()));
   box.right_ =
-      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Right()));
+      ConvertBorderImageSliceSide(state.CssToLengthConversionData(),
+                                  To<CSSPrimitiveValue>(*slices.Right()));
   image.SetImageSlices(box);
 
   // Set our fill mode.
@@ -725,13 +722,7 @@ static BorderImageLength ToBorderImageLength(const StyleResolverState& state,
                                              const CSSValue& value) {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsNumber()) {
-      if (auto* numeric_value =
-              DynamicTo<CSSNumericLiteralValue>(primitive_value)) {
-        return numeric_value->GetDoubleValue();
-      }
-      CHECK(primitive_value->IsMathFunctionValue());
-      return To<CSSMathFunctionValue>(primitive_value)
-          ->ComputeNumber(state.CssToLengthConversionData());
+      return primitive_value->ComputeNumber(state.CssToLengthConversionData());
     }
   }
   return StyleBuilderConverter::ConvertLengthOrAuto(state, value);

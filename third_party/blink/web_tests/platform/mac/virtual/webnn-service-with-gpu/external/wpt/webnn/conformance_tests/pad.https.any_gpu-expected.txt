@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] pad float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test pad float32 actual 22.75 should be close enough to expected 22.76361846923828 by the acceptable 0 ULP distance, but they have 7140 ULP distance expected true got false
+[FAIL] pad float32 1D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test pad float32 actual 22.75 should be close enough to expected 22.76361846923828 by the acceptable 0 ULP distance, but they have 7140 ULP distance expected true got false
+[FAIL] pad float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test pad float32 actual 22.75 should be close enough to expected 22.76361846923828 by the acceptable 0 ULP distance, but they have 7140 ULP distance expected true got false
+[FAIL] pad float32 2D tensor explicit options.mode='constant'
+  assert_true: assert_array_approx_equals_ulp: test pad float32 actual 22.75 should be close enough to expected 22.76361846923828 by the acceptable 0 ULP distance, but they have 7140 ULP distance expected true got false
+[FAIL] pad float32 2D tensor options.value default constant mode
+  assert_true: assert_array_approx_equals_ulp: test pad float32 actual 22.75 should be close enough to expected 22.76361846923828 by the acceptable 0 ULP distance, but they have 7140 ULP distance expected true got false
+[FAIL] pad float32 4D tensor options.mode='edge'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pad, padding for more than two dimensions only supports 'constant' mode."
+[FAIL] pad float32 4D tensor options.mode='reflection'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pad, padding for more than two dimensions only supports 'constant' mode."
+[FAIL] pad float32 4D tensor options.mode='symmetric'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported mode symmetric for pad."
+Harness: the test ran to completion.
+

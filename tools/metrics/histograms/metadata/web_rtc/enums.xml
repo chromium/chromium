@@ -102,6 +102,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown error"/>
 </enum>
 
+<enum name="GenerateCertificateAlgorithms">
+  <int value="0" label="ECDSA-P256"/>
+  <int value="1" label="RSA-1024"/>
+  <int value="2" label="RSA-2048"/>
+  <int value="3" label="RSA-4096"/>
+  <int value="4" label="RSA-8192"/>
+  <int value="5" label="RSA-other"/>
+</enum>
+
 <enum name="IceCandidatePairTypes">
   <int value="0" label="host_host"/>
   <int value="1" label="host_srflx"/>
@@ -139,12 +148,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="IceconnectionClosed"/>
 </enum>
 
-<enum name="MediaStreamRequestState">
-  <int value="0" label="Explicitly Cancelled"/>
-  <int value="1" label="Stream Not Generated"/>
-  <int value="2" label="Pending Media Tracks"/>
-</enum>
-
 <enum name="PeerConnectionBundlePolicy">
   <int value="0" label="balanced"/>
   <int value="1" label="max-bundle"/>
@@ -170,11 +173,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IPv6 BestConnection."/>
 </enum>
 
-<enum name="PeerConnectionKeyProtocol">
-  <int value="0" label="DTLS"/>
-  <int value="1" label="SDES"/>
-</enum>
-
 <enum name="PeerConnectionProvisionalAnswer">
   <int value="0" label="Not used"/>
   <int value="1" label="Local"/>
@@ -185,26 +183,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="No media"/>
-</enum>
-
-<enum name="PeerConnectionSdpFormatReceived">
-  <int value="0" label="No tracks"/>
-  <int value="1" label="Simple"/>
-  <int value="2" label="Complex (Plan B)"/>
-  <int value="3" label="Complex (Unified Plan)"/>
-</enum>
-
-<enum name="PeerConnectionSdpSemanticNegotiated">
-  <int value="0" label="None"/>
-  <int value="1" label="Plan B"/>
-  <int value="2" label="Unified Plan"/>
-  <int value="3" label="Mixed"/>
-</enum>
-
-<enum name="PeerConnectionSdpUsageCategory">
-  <int value="0" label="Safe"/>
-  <int value="1" label="Unsafe"/>
-  <int value="2" label="Unknown"/>
 </enum>
 
 <enum name="RTCAPIName">
@@ -498,6 +476,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="No integrity attribute"/>
   <int value="2" label="OK"/>
   <int value="3" label="Bad"/>
+</enum>
+
+<enum name="WebRtcTextLoggingStartError">
+  <int value="0" label="RendererClosing"/>
+  <int value="1" label="LogAlreadyOpen"/>
+  <int value="2" label="ApplyForStartFailed"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="RendererClosingInStartDone"/>
 </enum>
 
 <enum name="WebRtcVideoCodecs">

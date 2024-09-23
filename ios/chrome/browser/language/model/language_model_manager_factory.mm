@@ -17,7 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
@@ -41,9 +41,15 @@ LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
 
 // static
 language::LanguageModelManager* LanguageModelManagerFactory::GetForBrowserState(
-    ChromeBrowserState* const state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+language::LanguageModelManager* LanguageModelManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<language::LanguageModelManager*>(
-      GetInstance()->GetServiceForBrowserState(state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 LanguageModelManagerFactory::LanguageModelManagerFactory()

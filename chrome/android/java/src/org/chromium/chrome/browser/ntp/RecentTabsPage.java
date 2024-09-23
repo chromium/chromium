@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -19,9 +18,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
+import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -60,7 +61,8 @@ public class RecentTabsPage
     private boolean mIsAttachedToWindow;
 
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
-    private final Callback<Integer> mTabStripHeightChangeCallback;
+    private Callback<Integer> mTabStripHeightChangeCallback;
+    private SmoothTransitionDelegate mSmoothTransitionDelegate;
 
     /**
      * Constructor returns an instance of RecentTabsPage.
@@ -87,7 +89,7 @@ public class RecentTabsPage
         mRecentTabsManager.setUpdatedCallback(this);
         LayoutInflater inflater = LayoutInflater.from(activity);
         mView = (ViewGroup) inflater.inflate(R.layout.recent_tabs_page, null);
-        mListView = (ExpandableListView) mView.findViewById(R.id.odp_listview);
+        mListView = mView.findViewById(R.id.odp_listview);
         mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager);
         mListView.setAdapter(mAdapter);
         mListView.setOnChildClickListener(this);
@@ -136,7 +138,7 @@ public class RecentTabsPage
 
     @Override
     public int getBackgroundColor() {
-        return Color.WHITE;
+        return SemanticColorUtils.getDefaultBgColor(mActivity);
     }
 
     @Override
@@ -152,6 +154,14 @@ public class RecentTabsPage
     @Override
     public String getHost() {
         return UrlConstants.RECENT_TABS_HOST;
+    }
+
+    @Override
+    public SmoothTransitionDelegate enableSmoothTransition() {
+        if (mSmoothTransitionDelegate == null) {
+            mSmoothTransitionDelegate = new BasicSmoothTransitionDelegate(getView());
+        }
+        return mSmoothTransitionDelegate;
     }
 
     @Override
@@ -174,6 +184,11 @@ public class RecentTabsPage
 
     @Override
     public void updateForUrl(String url) {}
+
+    @Override
+    public int getHeightOverlappedWithTopControls() {
+        return mBrowserControlsStateProvider.getTopControlsHeight();
+    }
 
     // View.OnAttachStateChangeListener
     @Override
@@ -291,7 +306,8 @@ public class RecentTabsPage
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         updateMargins();
     }
 

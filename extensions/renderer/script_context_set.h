@@ -137,7 +137,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
 
   // Weak reference to all installed Extensions that are also active in this
   // process.
-  raw_ptr<ExtensionIdSet, ExperimentalRenderer> active_extension_ids_;
+  raw_ptr<ExtensionIdSet> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
   std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;

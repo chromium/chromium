@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/certificate_tag.h"
 
 #include <cstdint>
@@ -153,7 +158,7 @@ std::unique_ptr<PEBinary> PEBinary::Parse(base::span<const uint8_t> binary) {
   if (!CBS_skip(&bin_for_check, ret->certs_size_offset_) ||
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

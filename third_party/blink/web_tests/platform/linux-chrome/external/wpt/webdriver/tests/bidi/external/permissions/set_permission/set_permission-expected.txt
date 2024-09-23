@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_set_permission_origin_unknown[UNKNOWN]
-  AssertionError: assert 'denied' == 'prompt'
-[FAIL] test_set_permission_origin_unknown[]
-  AssertionError: assert 'denied' == 'prompt'
-Harness: the test ran to completion.

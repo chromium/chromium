@@ -1,14 +1,13 @@
 include_rules = [
-  "+ios/chrome/browser/ui/location_bar",
-  "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
+  "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
-  "+ios/chrome/browser/ui/orchestrator",
-  "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+  "+ios/chrome/browser/orchestrator/ui_bundled",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
   "+ios/chrome/browser/ui/toolbar/public",
 ]
 
 specific_include_rules = {
   "^omnibox_coordinator.mm": [
-    "+ios/chrome/browser/ui/bubble/bubble_presenter.h",
+    "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
   ],
 }

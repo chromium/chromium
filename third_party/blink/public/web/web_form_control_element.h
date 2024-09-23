@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 
+#include "base/i18n/rtl.h"
 #include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -67,15 +68,8 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   bool IsAutofilled() const;
   bool IsPreviewed() const;
   void SetAutofillState(enum WebAutofillState);
-  void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
-  bool PreventHighlightingOfAutofilledFields() const;
   bool UserHasEditedTheField() const;
   void SetUserHasEditedTheField(bool value);
-
-  // The autofill section to which this element belongs (e.g. billing address,
-  // shipping address, .. .)
-  WebString AutofillSection() const;
-  void SetAutofillSection(const WebString&);
 
   // Returns true if autocomplete attribute of the element is not set as "off".
   bool AutoComplete() const;
@@ -138,12 +132,15 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // element nor textarea element, 0 is returned.
   unsigned SelectionEnd() const;
 
+  // The text align values.
+  enum class Alignment { kNotSet, kLeft, kRight };
+
   // Returns text-align(only left and right are supported. see crbug.com/482339)
   // of text of element.
-  WebString AlignmentForFormData() const;
+  Alignment AlignmentForFormData() const;
 
   // Returns direction of text of element.
-  WebString DirectionForFormData() const;
+  base::i18n::TextDirection DirectionForFormData() const;
 
   // Returns the name that should be used for the specified |element| when
   // storing autofill data.  This is either the field name or its id, an empty

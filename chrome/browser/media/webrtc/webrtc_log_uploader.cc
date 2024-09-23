@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
 #include <cstdlib>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -41,7 +47,7 @@
 
 namespace {
 
-const int kLogCountLimit = 5;
+const int kLogCountLimit = 20;
 const uint32_t kIntermediateCompressionBufferBytes = 256 * 1024;  // 256 KB
 const int kLogListLimitLines = 50;
 
@@ -98,7 +104,7 @@ std::string GetLogUploadProduct() {
   const char product[] = "Chrome";
 #elif BUILDFLAG(IS_MAC)
   const char product[] = "Chrome_Mac";
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if !defined(ADDRESS_SANITIZER)
@@ -110,8 +116,6 @@ std::string GetLogUploadProduct() {
   const char product[] = "Chrome_Android";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   const char product[] = "Chrome_ChromeOS";
-#elif BUILDFLAG(IS_FUCHSIA)
-  const char product[] = "Chrome_Fuchsia";
 #else
 #error Platform not supported.
 #endif
@@ -154,11 +158,16 @@ WebRtcLogUploader::~WebRtcLogUploader() {
 
 bool WebRtcLogUploader::ApplyForStartLogging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  bool success = false;
   if (log_count_ < kLogCountLimit && !shutdown_) {
     ++log_count_;
-    return true;
+    base::UmaHistogramCounts100("WebRtcTextLogging.ConcurrentLogCount",
+                                log_count_);
+    success = true;
   }
-  return false;
+  base::UmaHistogramBoolean("WebRtcTextLogging.ApplyForStartLoggingSuccess",
+                            success);
+  return success;
 }
 
 void WebRtcLogUploader::LoggingStoppedDontUpload() {
@@ -280,7 +289,8 @@ void WebRtcLogUploader::UploadStoredLog(
             .AddExtension(FILE_PATH_LITERAL(".meta"));
     if (base::ReadFileToString(meta_path, &meta_data_contents) &&
         !meta_data_contents.empty()) {
-      base::Pickle pickle(&meta_data_contents[0], meta_data_contents.size());
+      base::Pickle pickle = base::Pickle::WithUnownedBuffer(
+          base::as_byte_span(meta_data_contents));
       base::PickleIterator it(pickle);
       std::string key, value;
       while (it.ReadString(&key) && it.ReadString(&value))

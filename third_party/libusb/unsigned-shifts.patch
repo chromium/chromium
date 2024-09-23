@@ -1,0 +1,94 @@
+diff --git a/third_party/libusb/src/libusb/core.c b/third_party/libusb/src/libusb/core.c
+index 34ed488216641..be7e479c29aa9 100644
+--- a/third_party/libusb/src/libusb/core.c
++++ b/third_party/libusb/src/libusb/core.c
+@@ -1538,12 +1538,12 @@ int API_EXPORTED libusb_claim_interface(libusb_device_handle *dev,
+ 		return LIBUSB_ERROR_NO_DEVICE;
+ 
+ 	usbi_mutex_lock(&dev->lock);
+-	if (dev->claimed_interfaces & (1 << interface_number))
++	if (dev->claimed_interfaces & (1U << interface_number))
+ 		goto out;
+ 
+ 	r = usbi_backend->claim_interface(dev, interface_number);
+ 	if (r == 0)
+-		dev->claimed_interfaces |= 1 << interface_number;
++		dev->claimed_interfaces |= 1U << interface_number;
+ 
+ out:
+ 	usbi_mutex_unlock(&dev->lock);
+@@ -1579,14 +1579,14 @@ int API_EXPORTED libusb_release_interface(libusb_device_handle *dev,
+ 		return LIBUSB_ERROR_INVALID_PARAM;
+ 
+ 	usbi_mutex_lock(&dev->lock);
+-	if (!(dev->claimed_interfaces & (1 << interface_number))) {
++	if (!(dev->claimed_interfaces & (1U << interface_number))) {
+ 		r = LIBUSB_ERROR_NOT_FOUND;
+ 		goto out;
+ 	}
+ 
+ 	r = usbi_backend->release_interface(dev, interface_number);
+ 	if (r == 0)
+-		dev->claimed_interfaces &= ~(1 << interface_number);
++		dev->claimed_interfaces &= ~(1U << interface_number);
+ 
+ out:
+ 	usbi_mutex_unlock(&dev->lock);
+@@ -1628,7 +1628,7 @@ int API_EXPORTED libusb_set_interface_alt_setting(libusb_device_handle *dev,
+ 		return LIBUSB_ERROR_NO_DEVICE;
+ 	}
+ 
+-	if (!(dev->claimed_interfaces & (1 << interface_number))) {
++	if (!(dev->claimed_interfaces & (1U << interface_number))) {
+ 		usbi_mutex_unlock(&dev->lock);
+ 		return LIBUSB_ERROR_NOT_FOUND;
+ 	}
+diff --git a/third_party/libusb/src/libusb/os/darwin_usb.c b/third_party/libusb/src/libusb/os/darwin_usb.c
+index 4d4024aaeee6a..0f5da1dd670b0 100644
+--- a/third_party/libusb/src/libusb/os/darwin_usb.c
++++ b/third_party/libusb/src/libusb/os/darwin_usb.c
+@@ -165,7 +165,7 @@ static int ep_to_pipeRef(struct libusb_device_handle *dev_handle, uint8_t ep, ui
+   for (iface = 0 ; iface < USB_MAXINTERFACES ; iface++) {
+     cInterface = &priv->interfaces[iface];
+ 
+-    if (dev_handle->claimed_interfaces & (1 << iface)) {
++    if (dev_handle->claimed_interfaces & (1U << iface)) {
+       for (i = 0 ; i < cInterface->num_endpoints ; i++) {
+         if (cInterface->endpoint_addrs[i] == ep) {
+           *pipep = i + 1;
+@@ -665,7 +665,7 @@ static int darwin_cache_device_descriptor (struct libusb_context *ctx, struct da
+       (void)(*device)->GetUSBDeviceInformation (device, &info);
+ 
+       /* note that the device was suspended */
+-      if (info & (1 << kUSBInformationDeviceIsSuspendedBit) || 0 == info)
++      if (info & (1U << kUSBInformationDeviceIsSuspendedBit) || 0 == info)
+         try_unsuspend = 1;
+ #endif
+ 
+@@ -995,7 +995,7 @@ static void darwin_close (struct libusb_device_handle *dev_handle) {
+ 
+   /* make sure all interfaces are released */
+   for (i = 0 ; i < USB_MAXINTERFACES ; i++)
+-    if (dev_handle->claimed_interfaces & (1 << i))
++    if (dev_handle->claimed_interfaces & (1U << i))
+       libusb_release_interface (dev_handle, i);
+ 
+   if (0 == dpriv->open_count) {
+@@ -1042,7 +1042,7 @@ static int darwin_set_configuration(struct libusb_device_handle *dev_handle, int
+   /* Setting configuration will invalidate the interface, so we need
+      to reclaim it. First, dispose of existing interfaces, if any. */
+   for (i = 0 ; i < USB_MAXINTERFACES ; i++)
+-    if (dev_handle->claimed_interfaces & (1 << i))
++    if (dev_handle->claimed_interfaces & (1U << i))
+       darwin_release_interface (dev_handle, i);
+ 
+   kresult = (*(dpriv->device))->SetConfiguration (dpriv->device, config);
+@@ -1051,7 +1051,7 @@ static int darwin_set_configuration(struct libusb_device_handle *dev_handle, int
+ 
+   /* Reclaim any interfaces. */
+   for (i = 0 ; i < USB_MAXINTERFACES ; i++)
+-    if (dev_handle->claimed_interfaces & (1 << i))
++    if (dev_handle->claimed_interfaces & (1U << i))
+       darwin_claim_interface (dev_handle, i);
+ 
+   dpriv->active_config = config;

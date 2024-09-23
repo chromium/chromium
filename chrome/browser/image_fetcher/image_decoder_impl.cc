@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
+
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 
@@ -88,6 +90,6 @@ void ImageDecoderImpl::RemoveDecodeImageRequest(DecodeImageRequest* request) {
   auto request_it =
       base::ranges::find(decode_image_requests_, request,
                          &std::unique_ptr<DecodeImageRequest>::get);
-  DCHECK(request_it != decode_image_requests_.end());
+  CHECK(request_it != decode_image_requests_.end(), base::NotFatalUntil::M130);
   decode_image_requests_.erase(request_it);
 }

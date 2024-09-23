@@ -22,7 +22,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
  public:
   explicit BrowsingHistoryBridge(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
-                                 const JavaParamRef<jobject>& j_profile);
+                                 Profile* profile);
 
   BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
   BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;
@@ -39,6 +39,10 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaParamRef<jobject>& obj,
                                 const JavaParamRef<jobject>& j_result_obj);
+
+  void GetAllAppIds(JNIEnv* env,
+                    const JavaParamRef<jobject>& obj,
+                    const JavaParamRef<jobject>& j_result_obj);
 
   void GetLastVisitToHostBeforeRecentNavigations(
       JNIEnv* env,
@@ -71,6 +75,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   void HistoryDeleted() override;
   void HasOtherFormsOfBrowsingHistory(
       bool has_other_forms, bool has_synced_results) override;
+  void OnGetAllAppIds(const std::vector<std::string>& app_ids) override;
 
   // ProfileBasedBrowsingHistoryDriver implementation.
   Profile* GetProfile() override;
@@ -81,6 +86,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
   base::android::ScopedJavaGlobalRef<jobject> j_history_service_obj_;
   base::android::ScopedJavaGlobalRef<jobject> j_query_result_obj_;
+  base::android::ScopedJavaGlobalRef<jobject> j_app_ids_result_obj_;
 
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove_;
 

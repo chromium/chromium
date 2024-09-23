@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -110,7 +111,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     auto* const dse = url_service->GetDefaultSearchProvider();
     int relevance = kMostVisitedTilesIndividualHighRelevance;
     for (const auto& tile : container) {
-      // TODO(crbug/1474087): pass this information from History layer via
+      // TODO(crbug.com/40279214): pass this information from History layer via
       // history::MostVisitedURL.
       bool is_search =
           url_service->IsSearchResultsPageFromDefaultSearchProvider(tile.url);
@@ -350,7 +351,7 @@ void MostVisitedSitesProvider::DeleteMatchElement(
 
   BlockURL(tile_to_delete.url);
   auto& tiles_to_update = matches_[0].suggest_tiles;
-  base::EraseIf(tiles_to_update, [&tile_to_delete](const auto& tile) {
+  std::erase_if(tiles_to_update, [&tile_to_delete](const auto& tile) {
     return tile.url == tile_to_delete.url;
   });
 

@@ -8,13 +8,13 @@
 #import <UIKit/UIKit.h>
 
 @class SetUpListItemViewData;
-@protocol SetUpListViewDelegate;
+@protocol SetUpListTapDelegate;
 
 // View controller to show the entire list of Set Up List elements
 @interface SetUpListShowMoreViewController : UIViewController
 
 - (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items
-                  tapDelegate:(id<SetUpListViewDelegate>)tapDelegate;
+                  tapDelegate:(id<SetUpListTapDelegate>)tapDelegate;
 
 @end
 

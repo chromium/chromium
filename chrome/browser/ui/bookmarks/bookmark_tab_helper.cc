@@ -14,11 +14,13 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -70,10 +72,16 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
       !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar))
     return false;
 
+  const bool has_bookmarks = bookmark_model_ && bookmark_model_->HasBookmarks();
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  const bool has_saved_tab_groups =
+      tab_group_service && !tab_group_service->GetAllGroups().empty();
+
   // The bookmark bar is only shown on the NTP if the user
   // has added something to it.
-  return IsNTP(web_contents()) && bookmark_model_ &&
-         bookmark_model_->HasBookmarks();
+  return IsNTP(web_contents()) && (has_bookmarks || has_saved_tab_groups);
 }
 
 void BookmarkTabHelper::AddObserver(BookmarkTabHelperObserver* observer) {
@@ -115,35 +123,31 @@ void BookmarkTabHelper::UpdateStarredStateForCurrentURL() {
 void BookmarkTabHelper::BookmarkModelChanged() {
 }
 
-void BookmarkTabHelper::BookmarkModelLoaded(BookmarkModel* model,
-                                            bool ids_reassigned) {
+void BookmarkTabHelper::BookmarkModelLoaded(bool ids_reassigned) {
   UpdateStarredStateForCurrentURL();
 }
 
-void BookmarkTabHelper::BookmarkNodeAdded(BookmarkModel* model,
-                                          const BookmarkNode* parent,
+void BookmarkTabHelper::BookmarkNodeAdded(const BookmarkNode* parent,
                                           size_t index,
                                           bool added_by_user) {
   UpdateStarredStateForCurrentURL();
 }
 
-void BookmarkTabHelper::BookmarkNodeRemoved(
-    BookmarkModel* model,
-    const BookmarkNode* parent,
-    size_t old_index,
-    const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+void BookmarkTabHelper::BookmarkNodeRemoved(const BookmarkNode* parent,
+                                            size_t old_index,
+                                            const BookmarkNode* node,
+                                            const std::set<GURL>& removed_urls,
+                                            const base::Location& location) {
   UpdateStarredStateForCurrentURL();
 }
 
 void BookmarkTabHelper::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   UpdateStarredStateForCurrentURL();
 }
 
-void BookmarkTabHelper::BookmarkNodeChanged(BookmarkModel* model,
-                                            const BookmarkNode* node) {
+void BookmarkTabHelper::BookmarkNodeChanged(const BookmarkNode* node) {
   UpdateStarredStateForCurrentURL();
 }
 

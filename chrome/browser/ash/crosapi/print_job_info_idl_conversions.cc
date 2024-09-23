@@ -24,7 +24,7 @@ idl::ColorMode ColorModeProtoToIdl(proto::PrintSettings_ColorMode color_proto) {
     case proto::PrintSettings_ColorMode_COLOR:
       return idl::ColorMode::kColor;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return idl::ColorMode::kBlackAndWhite;
 }
@@ -39,7 +39,7 @@ idl::DuplexMode DuplexModeProtoToIdl(
     case proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE:
       return idl::DuplexMode::kTwoSidedShortEdge;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return idl::DuplexMode::kOneSided;
 }
@@ -75,7 +75,7 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
     case proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP:
       return idl::PrintJobSource::kIsolatedWebApp;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return idl::PrintJobSource::kPrintPreview;
 }
@@ -90,7 +90,7 @@ idl::PrintJobStatus PrintJobStatusProtoToIdl(
     case proto::PrintJobInfo_PrintJobStatus_PRINTED:
       return idl::PrintJobStatus::kPrinted;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return idl::PrintJobStatus::kFailed;
 }
@@ -103,7 +103,7 @@ idl::PrinterSource PrinterSourceProtoToIdl(
     case proto::Printer_PrinterSource_POLICY:
       return idl::PrinterSource::kPolicy;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return idl::PrinterSource::kUser;
 }
@@ -147,7 +147,7 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return api::printing::PrinterStatus::kGenericIssue;
   }
   return api::printing::PrinterStatus::kGenericIssue;

@@ -32,8 +32,8 @@ export class KeyboardUtils {
 
   private handleMessageFromInjectedKeyboardUtils(event: MessageEvent) {
     const focusDir = event.data;
-    if (focusDir == FocusDirection.FORWARD ||
-        focusDir == FocusDirection.BACKWARD) {
+    if (focusDir === FocusDirection.FORWARD ||
+        focusDir === FocusDirection.BACKWARD) {
       this.onAdvanceFocus(focusDir);
     }
   }
@@ -57,8 +57,8 @@ export class KeyboardUtils {
       return;
     }
 
-    if (event.key == 'ArrowLeft' || event.key == 'ArrowRight' ||
-        event.key == 'ArrowUp' || event.key == 'ArrowDown') {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' ||
+        event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.stopPropagation();
       event.preventDefault();
     }
@@ -78,22 +78,22 @@ export class KeyboardUtils {
     // See crbug.com/1083145
     if (document.activeElement ===
             document.getElementById('network-selection') &&
-        document.activeElement?.shadowRoot?.activeElement?.tagName ==
+        document.activeElement?.shadowRoot?.activeElement?.tagName ===
             'NETWORK-SELECT-LOGIN' &&
-        (event.key == 'ArrowUp' || event.key == 'ArrowDown')) {
+        (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
       return;
     }
 
-    const arrowBackwards = event.key == 'ArrowLeft' || event.key == 'ArrowUp';
-    const arrowForwards = event.key == 'ArrowRight' || event.key == 'ArrowDown';
+    const arrowBackwards = event.key === 'ArrowLeft' || event.key === 'ArrowUp';
+    const arrowForwards = event.key === 'ArrowRight' || event.key === 'ArrowDown';
     if (arrowBackwards || arrowForwards) {
       // Event is being handled here.
       event.stopPropagation();
 
       // Do not map arrow key events to tab events if the user is currently
       // focusing an input element and presses on the left or right arrows.
-      if (document.activeElement?.tagName == 'INPUT' &&
-          (event.key == 'ArrowLeft' || event.key == 'ArrowRight')) {
+      if (document.activeElement?.tagName === 'INPUT' &&
+          (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
         // Default event handling will occur.
         return;
       }
@@ -153,8 +153,8 @@ export class InjectedKeyboardUtils extends KeyboardUtils {
    * @param event Message event posted from webview.
    */
   private onInitMessage(event: MessageEvent): void {
-    if (event.data == InjectedKeyboardUtils.INITIAL_MSG &&
-        event.origin == 'chrome://oobe') {
+    if (event.data === InjectedKeyboardUtils.INITIAL_MSG &&
+        event.origin === 'chrome://oobe') {
       this.hostWindow = event.source as chrome.webviewTag.ContentWindow;
       this.hostOrigin = event.origin;
     }

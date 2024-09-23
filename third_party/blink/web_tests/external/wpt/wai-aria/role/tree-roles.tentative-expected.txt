@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] orphaned treeitem outside the context of tree
+  assert_equals: <nav role="treeitem" data-testname="orphaned treeitem outside the context of tree" data-expectedrole="navigation" class="ex">x</nav> expected "navigation" but got "treeitem"
+[FAIL] orphaned button with treeitem role outside tree context
+  assert_equals: <button role="treeitem" data-testname="orphaned button with treeitem role outside tree context" data-expectedrole="button" class="ex">x</button> expected "button" but got "treeitem"
+Harness: the test ran to completion.
+

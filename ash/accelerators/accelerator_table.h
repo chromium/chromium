@@ -76,6 +76,10 @@ struct DeprecatedAcceleratorData {
   // Specifies whether the deprecated accelerator is still enabled to do its
   // associated action.
   bool deprecated_enabled;
+
+  // The accelerator name in the pref dict to check if a deprecated accelerator
+  // notification is displayed 3 times or within the last 24 hours.
+  const char* pref_name;
 };
 
 // This will be used for the UMA stats to measure the how many users are using

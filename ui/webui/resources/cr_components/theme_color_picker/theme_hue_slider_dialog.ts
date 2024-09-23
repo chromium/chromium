@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
-import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './theme_hue_slider_dialog.html.js';
+import {getCss} from './theme_hue_slider_dialog.css.js';
+import {getHtml} from './theme_hue_slider_dialog.html.js';
 
 const minHue = 0;
 const maxHue = 359;
@@ -18,14 +19,17 @@ const maxHue = 359;
 /**
  * Compute a CSS linear-gradient that starts with minHue and ends with maxHue.
  */
-const hueDivisions = 6;
-const hueGradientParts: string[] = [];
-for (let i = 0; i <= hueDivisions; i++) {
-  const percentage = i / hueDivisions;
-  const hsl = `hsl(${minHue + (maxHue - minHue) * percentage}, 100%, 50%)`;
-  hueGradientParts.push(`${hsl} ${percentage * 100}%`);
+
+function computeHueGradient(): string {
+  const hueDivisions = 6;
+  const hueGradientParts: string[] = [];
+  for (let i = 0; i <= hueDivisions; i++) {
+    const percentage = i / hueDivisions;
+    const hsl = `hsl(${minHue + (maxHue - minHue) * percentage}, 100%, 50%)`;
+    hueGradientParts.push(`${hsl} ${percentage * 100}%`);
+  }
+  return hueGradientParts.join(',');
 }
-const hueGradient = `linear-gradient(to right, ${hueGradientParts.join(',')})`;
 
 export interface ThemeHueSliderDialogElement {
   $: {
@@ -34,7 +38,7 @@ export interface ThemeHueSliderDialogElement {
   };
 }
 
-const ThemeHueSliderDialogElementBase = I18nMixin(PolymerElement);
+const ThemeHueSliderDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class ThemeHueSliderDialogElement extends
     ThemeHueSliderDialogElementBase {
@@ -42,44 +46,35 @@ export class ThemeHueSliderDialogElement extends
     return 'cr-theme-hue-slider-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /* Linear gradient for the background of the slider's track. */
-      hueGradient_: {
-        type: String,
-        value: hueGradient,
-      },
-      maxHue_: {
-        type: Number,
-        value: maxHue,
-      },
-      minHue_: {
-        type: Number,
-        value: minHue,
-      },
+      hueGradient_: {type: String, state: true},
+
+      maxHue_: {type: Number, state: true},
+      minHue_: {type: Number, state: true},
+
       /* The committed value of the slider. */
-      selectedHue: {
-        type: Number,
-        value: minHue,
-        observer: 'onSelectedHueChanged_',
-      },
+      selectedHue: {type: Number},
+
       /* The hue value to show in the knob during drag. */
-      knobHue_: {
-        type: Number,
-        value: minHue,
-      },
+      knobHue_: {type: Number, state: true},
     };
   }
 
-  private hueGradient_: string;
-  private maxHue_: number;
-  private minHue_: number;
-  selectedHue: number;
-  private knobHue_: number;
+  protected hueGradient_: string = computeHueGradient();
+  protected maxHue_: number = maxHue;
+  protected minHue_: number = minHue;
+  selectedHue: number = minHue;
+  protected knobHue_: number = minHue;
   private boundPointerdown_: (e: PointerEvent) => void;
 
   constructor() {
@@ -88,11 +83,15 @@ export class ThemeHueSliderDialogElement extends
     this.boundPointerdown_ = this.onDocumentPointerdown_.bind(this);
   }
 
-  private onSelectedHueChanged_() {
-    this.knobHue_ = this.selectedHue;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('selectedHue')) {
+      this.knobHue_ = this.selectedHue;
+    }
   }
 
-  private onCrSliderValueChanged_() {
+  protected onCrSliderValueChanged_() {
     this.knobHue_ = this.$.slider.value;
   }
 
@@ -128,7 +127,7 @@ export class ThemeHueSliderDialogElement extends
     this.hide();
   }
 
-  private updateSelectedHueValue_() {
+  protected updateSelectedHueValue_() {
     this.selectedHue = this.$.slider.value;
     this.dispatchEvent(new CustomEvent(
         'selected-hue-changed', {detail: {selectedHue: this.selectedHue}}));

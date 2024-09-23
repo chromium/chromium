@@ -5,48 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_MANAGER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "base/observer_list.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
-class IdentityManagerFactoryObserver;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace signin {
 class IdentityManager;
 }
 
 // Singleton that owns all IdentityManager instances and associates them with
-// BrowserStates.
-class IdentityManagerFactory : public BrowserStateKeyedServiceFactory {
+// Profiles.
+class IdentityManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static signin::IdentityManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static signin::IdentityManager* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  // Returns the IdentityManager instance associated with `profile`.
+  static signin::IdentityManager* GetForProfile(ProfileIOS* profile);
 
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
-
-  IdentityManagerFactory(const IdentityManagerFactory&) = delete;
-  IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
-
-  // Methods to register or remove observers of IdentityManager
-  // creation/shutdown.
-  void AddObserver(IdentityManagerFactoryObserver* observer);
-  void RemoveObserver(IdentityManagerFactoryObserver* observer);
 
  private:
   friend class base::NoDestructor<IdentityManagerFactory>;
 
   IdentityManagerFactory();
   ~IdentityManagerFactory() override;
-
-  // List of observers. Checks that list is empty on destruction.
-  base::ObserverList<IdentityManagerFactoryObserver,
-                     /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
-      observer_list_;
 
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

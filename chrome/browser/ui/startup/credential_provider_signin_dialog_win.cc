@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -321,8 +322,8 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
         email_domains_);
   }
 
-  ui::ModalType GetDialogModalType() const override {
-    return ui::MODAL_TYPE_WINDOW;
+  ui::mojom::ModalType GetDialogModalType() const override {
+    return ui::mojom::ModalType::kWindow;
   }
 
   std::u16string GetDialogTitle() const override { return std::u16string(); }
@@ -347,7 +348,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   void GetDialogSize(gfx::Size* size) const override {
-    // TODO(crbug.com/901947): Figure out exactly what size the dialog should
+    // TODO(crbug.com/40601014): Figure out exactly what size the dialog should
     // be.
     size->SetSize(448, 610);
   }
@@ -543,6 +544,7 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
       context, delegate.release(),
       std::make_unique<ChromeWebContentsHandler>());
   views::Widget::InitParams init_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   init_params.z_order = ui::ZOrderLevel::kFloatingWindow;
   views::WebDialogView* web_view = view.release();

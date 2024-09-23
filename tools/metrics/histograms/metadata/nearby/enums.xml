@@ -31,9 +31,59 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Upgraded"/>
 </enum>
 
+<enum name="NearbyBluetoothAdapterAdvertisingSupport">
+  <int value="0" label="Extended Advertising And Scatternet Dual Role"/>
+  <int value="1" label="Extended Advertising Only"/>
+  <int value="2" label="Scatternet Dual Role Only"/>
+  <int value="3"
+      label="Neither Extended Advertising or Scatternet Dual Role, only
+             Legacy Advertising"/>
+</enum>
+
+<enum name="NearbyConnectionsConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Auth Canceled"/>
+  <int value="2" label="Auth Failed"/>
+  <int value="3" label="Auth Rejected"/>
+  <int value="4" label="Auth Timeout"/>
+  <int value="5" label="Failed"/>
+  <int value="6" label="In Progress"/>
+  <int value="7" label="Unknown"/>
+  <int value="8" label="Unsupported Device"/>
+  <int value="9" label="Device No Longer In Range"/>
+  <int value="10" label="Not Ready"/>
+  <int value="11" label="Already Connected"/>
+  <int value="12" label="Already Exists"/>
+  <int value="13" label="Not Connected"/>
+  <int value="14" label="Does Not Exist"/>
+  <int value="15" label="Invalid Args"/>
+  <int value="16" label="Non Auth Timeout"/>
+  <int value="17" label="No memory"/>
+  <int value="18" label="JNI Environment"/>
+  <int value="19" label="JNI Thread Attach"/>
+  <int value="20" label="Wakelock"/>
+  <int value="21" label="Unexpected State"/>
+  <int value="22" label="Socket Error"/>
+</enum>
+
+<enum name="NearbyConnectionsGattResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="In Progress"/>
+  <int value="4" label="Invalid Length"/>
+  <int value="5" label="Not Permitted"/>
+  <int value="6" label="Not Authorized"/>
+  <int value="7" label="Not Paired"/>
+  <int value="8" label="Not Supported"/>
+  <int value="9" label="Service Not Found"/>
+  <int value="10" label="Characteristic Not Found"/>
+  <int value="11" label="Descriptor Not Found"/>
+</enum>
+
 <enum name="NearbyConnectionsMedium">
   <int value="0" label="Unknown"/>
-  <int value="1" label="mDNS"/>
+  <int value="1" label="mDNS (deprecated)"/>
   <int value="2" label="Bluetooth"/>
   <int value="3" label="WiFi hotspot"/>
   <int value="4" label="BLE"/>
@@ -42,6 +92,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="NFC"/>
   <int value="8" label="WiFi Direct"/>
   <int value="9" label="WebRTC"/>
+  <int value="10" label="BLE_L2CAP"/>
+  <int value="11" label="USB"/>
+</enum>
+
+<enum name="NearbyConnectionsStartAdvertisingFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No extended advertising support"/>
+  <int value="2" label="Adapter RegisterAdvertisement failed"/>
+  <int value="3" label="Failed to register GATT services in GATT server"/>
+</enum>
+
+<enum name="NearbyConnectionsStartScanningFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Adapter observation failed"/>
+  <int value="2" label="Start discovery session failed"/>
 </enum>
 
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
@@ -65,6 +130,41 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Mojo pipe disconnection (deprecated)"/>
   <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
   <int value="4" label="Utility process disconnected Connections mojo pipe"/>
+  <int value="5" label="Utility process disconnected Presence mojo pipe"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiDirectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Allowed"/>
+  <int value="2" label="Not Supported"/>
+  <int value="3" label="Not Connected"/>
+  <int value="4" label="Concurrency Not Supported"/>
+  <int value="5" label="Frequency Not Supported"/>
+  <int value="6" label="Auth Failure"/>
+  <int value="7" label="Group Not Found"/>
+  <int value="8" label="Already Connected"/>
+  <int value="9" label="Operation In Progress"/>
+  <int value="10" label="Invalid Arguments"/>
+  <int value="11" label="Timeout"/>
+  <int value="12" label="Invalid Result Code"/>
+  <int value="13" label="Invalid Group Properties"/>
+  <int value="14" label="Unknown Failure"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiDirectServiceError">
+  <int value="0" label="No Connection"/>
+  <int value="1" label="Failed To Create Platform Socket"/>
+  <int value="2" label="Failed To Associate Socket"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="Failed To Connect Socket"/>
+  <int value="5" label="Failed To Open Firewall Hole"/>
+  <int value="6" label="Failed To Listen to Socket"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiDirectSocketError">
+  <int value="0" label="Socket Closed"/>
+  <int value="1" label="Firewall Hole Disconnected"/>
+  <int value="2" label="Socket Failure"/>
 </enum>
 
 <enum name="NearbyConnectionsWifiLanConnectResult">
@@ -105,6 +205,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Upload Local Credentials Failure"/>
   <int value="4" label="Download Remote Credentials Failure"/>
   <int value="5" label="Save Remote Credentials Failure"/>
+</enum>
+
+<enum name="NearbyPresenceScanRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Unknown Error"/>
+  <int value="3" label="Invalid Argument"/>
+  <int value="4" label="Deadline Exceeded"/>
+  <int value="5" label="Not Found"/>
+  <int value="6" label="Already Exists"/>
+  <int value="7" label="Permission Denied"/>
+  <int value="8" label="Resource Exhausted"/>
+  <int value="9" label="Failed Precondition"/>
+  <int value="10" label="Aborted"/>
+  <int value="11" label="Out of Range"/>
+  <int value="12" label="Operation not Implemented"/>
+  <int value="13" label="Internal Error"/>
+  <int value="14" label="Service Unavailable"/>
+  <int value="15" label="Unrecoverable Data Loss"/>
+  <int value="16" label="Unauthenticated"/>
+  <int value="17" label="Failed to Start Process"/>
 </enum>
 
 <enum name="NearbyShareAttachmentType">
@@ -320,6 +441,7 @@ chromium-metrics-reviews@google.com.
   <int value="1414" label="Hidden visibility selected and confirmed"/>
   <int value="1415" label="Manage contacts selected"/>
   <int value="1416" label="Cancel selected on visibility page"/>
+  <int value="1417" label="Your devices visibility selected and confirmed"/>
 </enum>
 
 <enum name="NearbySharePairedKeyVerificationError">

@@ -74,10 +74,9 @@ class FakeWebPlugin : public WebPlugin {
     return false;
   }
   void DidReceiveResponse(const WebURLResponse&) override {}
-  void DidReceiveData(const char* data, size_t data_length) override {}
+  void DidReceiveData(base::span<const char> data) override {}
   void DidFinishLoading() override {}
   void DidFailLoading(const WebURLError&) override {}
-  bool IsPlaceholder() override { return false; }
 
  protected:
   ~FakeWebPlugin() override;

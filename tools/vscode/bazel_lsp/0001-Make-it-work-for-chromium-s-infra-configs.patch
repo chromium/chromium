@@ -1,0 +1,160 @@
+From 7d6b126a63d76f85b49909b52838eef413eb2ba0 Mon Sep 17 00:00:00 2001
+From: Peter Wen <wnwen@google.com>
+Date: Mon, 11 Mar 2024 15:09:25 -0400
+Subject: [PATCH] Make it work for chromium's infra configs
+
+- Add the arg --lucicfg_stdlib_path to specify the directory that
+  lucicfg's stdlib resides. If this is missing then "go to definition"
+  for globals like `time.hour` will not work.
+- Handle `//` (absolute) and `./` (relative) load path prefixes. The
+  global prefix in a file under //src/infra/config assumes `//` refers
+  to //src/infra/config, and in a file under
+  //src/internal/infra/config then `//` refers to that directory
+  instead. The relative path assumes it's rooted in the current file's
+  directory.
+- Handle `@stdlib` load path prefix when --lucicfg_stdlib_path is
+  specified.
+- Handle global symbol resolution when it's not a starlark builtin by
+  resolving it in a file with the same name in the stdlib or in the root
+  builtins.star for the `luci` symbol. This also requires the
+  --lucicfg_stdlib_path arg.
+---
+ src/bazel.rs | 64 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ src/main.rs  |  6 +++++
+ 2 files changed, 69 insertions(+), 1 deletion(-)
+
+diff --git a/src/bazel.rs b/src/bazel.rs
+index 5455c33..ba0edf9 100644
+--- a/src/bazel.rs
++++ b/src/bazel.rs
+@@ -139,6 +139,7 @@ struct FilesystemCompletionOptions {
+ pub(crate) struct BazelContext<Client> {
+     workspaces: RefCell<HashMap<PathBuf, Rc<BazelWorkspace>>>,
+     query_output_base: Option<PathBuf>,
++    lucicfg_stdlib_path: Option<PathBuf>,
+     pub(crate) mode: ContextMode,
+     pub(crate) print_non_none: bool,
+     pub(crate) prelude: Vec<FrozenModule>,
+@@ -156,6 +157,7 @@ impl<Client: BazelClient> BazelContext<Client> {
+         prelude: &[PathBuf],
+         module: bool,
+         query_output_base: Option<PathBuf>,
++        lucicfg_stdlib_path: Option<PathBuf>,
+     ) -> anyhow::Result<Self> {
+         let globals = globals();
+         let prelude: Vec<_> = prelude
+@@ -193,6 +195,7 @@ impl<Client: BazelClient> BazelContext<Client> {
+         Ok(Self {
+             workspaces: RefCell::new(HashMap::new()),
+             query_output_base,
++            lucicfg_stdlib_path,
+             mode,
+             print_non_none,
+             prelude,
+@@ -642,6 +645,41 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+         current_file: &LspUrl,
+         workspace_root: Option<&Path>,
+     ) -> anyhow::Result<LspUrl> {
++        let mut paths_to_test = Vec::new();
++        // Handle '//' and '@stdlib//' prefixes.
++        if path.starts_with("//") {
++            // Assuming workspace_root is //src.
++            let src_path = match workspace_root {
++                Some(root_path) => root_path.to_path_buf(),
++                None => PathBuf::from("/"),
++            };
++            let relative_path = path[2..].to_owned();
++            let current_file_path = current_file.path();
++            let path_string = current_file_path.to_string_lossy();
++            if path_string.contains("/internal/infra/config/") {
++                paths_to_test.push(src_path.join("internal/infra/config").join(&relative_path));
++            } else if path_string.contains("/infra/config/") {
++                paths_to_test.push(src_path.join("infra/config").join(&relative_path));
++            }
++        } else if path.starts_with("@stdlib//") {
++            if let Some(lucicfg_stdlib_path) = self.lucicfg_stdlib_path.as_deref() {
++                let relative_path = path[9..].to_owned();
++                paths_to_test.push(lucicfg_stdlib_path.join(&relative_path));
++            }
++        } else if path.starts_with("./") {
++            let cur_path = match current_file.path().parent() {
++                Some(path) => path.to_path_buf(),
++                None => PathBuf::from("/"),
++            };
++            let relative_path = path.to_owned();
++            paths_to_test.push(cur_path.join(&relative_path));
++        }
++        for path in paths_to_test {
++            if path.exists() {
++                return Ok(Url::from_file_path(path).unwrap().try_into()?);
++            }
++        }
++
+         let label = Label::parse(path)?;
+         let workspace = self.workspace(workspace_root, current_file)?;
+ 
+@@ -775,12 +813,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+         self.try_get_environment(uri).unwrap_or_default()
+     }
+ 
++
+     fn get_url_for_global_symbol(
+         &self,
+         _current_file: &LspUrl,
+         symbol: &str,
+     ) -> anyhow::Result<Option<LspUrl>> {
+-        Ok(self.builtin_symbols.get(symbol).cloned())
++        if self.builtin_symbols.contains_key(symbol) {
++            return Ok(self.builtin_symbols.get(symbol).cloned());
++        }
++
++        let mut mapping = HashMap::new();
++
++        if let Some(lucicfg_stdlib_path) = self.lucicfg_stdlib_path.as_deref() {
++            if symbol == "luci" {
++                return Ok(Some(LspUrl::File(lucicfg_stdlib_path.join("builtins.star"))));
++            }
++
++            for entry in fs::read_dir(lucicfg_stdlib_path.join("internal"))? {
++                let entry = entry?;
++                let path = entry.path();
++
++                if path.is_file() {
++                    if let Some(file_stem) = path.file_stem() {
++                        mapping.insert(file_stem.to_string_lossy().to_string(), LspUrl::File(path));
++                    }
++                }
++            }
++        }
++
++        Ok(mapping.get(symbol).cloned())
+     }
+ 
+     fn get_string_completion_options(
+diff --git a/src/main.rs b/src/main.rs
+index d3e7400..cc8fab9 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -35,6 +35,11 @@ struct Args {
+     /// temp directory.
+     #[arg(long)]
+     query_output_base: Option<PathBuf>,
++
++    /// The absolute path to .../lucicfg/starlark/stdlib (requires
++    /// passing the full path that includes the stdlib directory).
++    #[arg(long)]
++    lucicfg_stdlib_path: Option<PathBuf>,
+ }
+ 
+ fn main() -> anyhow::Result<()> {
+@@ -56,6 +61,7 @@ fn main() -> anyhow::Result<()> {
+         &[],
+         true,
+         query_output_base,
++        args.lucicfg_stdlib_path,
+     )?;
+ 
+     starlark_lsp::server::stdio_server(ctx)?;
+-- 
+2.44.0.683.g7961c838ac-goog
+

@@ -1,6 +1,27 @@
 include_rules = [
-  # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/extensions",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/arc",
   "+chrome/browser/ash/crosapi",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/extensions/extension_apitest.h",
+  "+chrome/browser/extensions/external_loader.h",
+  "+chrome/browser/lacros/embedded_a11y_manager_lacros.h",
+  "+chrome/browser/net",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/common",
 ]
 
 # Included in is_chromeos_ash blocks in //chrome/test targets.

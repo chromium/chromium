@@ -5,8 +5,8 @@
 #ifndef UI_GFX_RANGE_RANGE_F_H_
 #define UI_GFX_RANGE_RANGE_F_H_
 
+#include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <string>
 
 #include "ui/gfx/range/gfx_range_export.h"
@@ -35,6 +35,16 @@ class GFX_RANGE_EXPORT RangeF {
 
   // Checks if the range is valid through comparison to InvalidRange().
   constexpr bool IsValid() const { return *this != InvalidRange(); }
+
+  // Ensures that the direction of this range matches the direction of the
+  // provided range, reversing this range if necessary. Returns a reference to
+  // `this` to allow method chaining.
+  RangeF& MatchDirection(const RangeF& other) {
+    if (is_reversed() != other.is_reversed()) {
+      std::swap(start_, end_);
+    }
+    return *this;
+  }
 
   // Getters and setters.
   constexpr float start() const { return start_; }

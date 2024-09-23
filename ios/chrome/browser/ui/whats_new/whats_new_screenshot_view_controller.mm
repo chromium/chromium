@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_screenshot_view_controller.h"
 
 #import "base/values.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -13,6 +13,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -20,8 +21,6 @@ constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kLabelBottomMargin = -40;
 constexpr CGFloat kLabelFontSize = 15;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
-BOOL isIPad =
-    UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
 }  // namespace
 
 @interface WhatsNewScreenshotViewController ()
@@ -37,12 +36,14 @@ BOOL isIPad =
 @property(nonatomic, strong) UILabel* iPhoneOnlyLabel;
 // What's New item.
 @property(nonatomic, strong) WhatsNewItem* item;
-
+// What's New command handler.
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
 @implementation WhatsNewScreenshotViewController
 
-- (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item {
+- (instancetype)initWithWhatsNewItem:(WhatsNewItem*)item
+                     whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _item = item;
@@ -56,6 +57,7 @@ BOOL isIPad =
         setDictionaryTextProvider:_item.screenshotTextProvider];
     [_screenshotViewWrapperDarkMode
         setDictionaryTextProvider:_item.screenshotTextProvider];
+    self.whatsNewHandler = whatsNewHandler;
   }
   return self;
 }
@@ -80,14 +82,15 @@ BOOL isIPad =
 
   [self configureAnimationView];
   [self configureAlertScreen];
-  if (self.item.isIphoneOnly && isIPad) {
+  if (self.item.isIphoneOnly &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self configureLabelView];
   }
   [self layoutAlertScreen];
 }
 
 - (void)dismiss {
-  [self.delegate dismissWhatsNewScreenshotViewController:self];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -111,7 +114,8 @@ BOOL isIPad =
       [[ConfirmationAlertViewController alloc] init];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  if (!self.item.isIphoneOnly || !isIPad) {
+  if (!self.item.isIphoneOnly ||
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
     alertScreen.primaryActionString = primaryActionString;
     alertScreen.secondaryActionString = secondaryActionString;
   }

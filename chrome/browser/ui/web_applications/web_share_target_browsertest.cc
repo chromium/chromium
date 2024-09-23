@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
@@ -19,10 +25,11 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,7 +37,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -60,7 +66,7 @@
 
 namespace {
 
-// TODO(crbug.com/1225825): Support file sharing from Lacros.
+// TODO(crbug.com/40776025): Support file sharing from Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 base::FilePath PrepareWebShareDirectory(Profile* profile) {
   constexpr base::FilePath::CharType kWebShareDirname[] =
@@ -82,13 +88,13 @@ void RemoveWebShareDirectory(const base::FilePath& directory) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath StoreSharedFile(const base::FilePath& directory,
-                               const base::StringPiece name,
-                               const base::StringPiece content) {
+                               const std::string_view name,
+                               const std::string_view content) {
   const base::FilePath path = directory.Append(name);
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  EXPECT_EQ(file.WriteAtCurrentPos(content.begin(), content.size()),
+  EXPECT_EQ(file.WriteAtCurrentPos(content.data(), content.size()),
             static_cast<int>(content.size()));
   return path;
 }
@@ -159,7 +165,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
 
 namespace web_app {
 
-class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
+class WebShareTargetBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL share_target_url() const {
     return embedded_test_server()->GetURL("/web_share_target/share.html");
@@ -169,8 +175,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
                                             apps::IntentPtr&& intent,
                                             const GURL& expected_url) {
     DCHECK(intent);
-    ui_test_utils::UrlLoadObserver url_observer(
-        expected_url, content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver url_observer(expected_url);
 
     content::WebContents* const web_contents =
         LaunchWebAppWithIntent(profile(), app_id, std::move(intent));
@@ -187,13 +192,15 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
             profile(), contents->GetPrimaryMainFrame());
+    ash::RecentModelOptions options;
+    options.source_specs.emplace_back(ash::RecentSourceSpec{
+        .volume_type =
+            extensions::api::file_manager_private::VolumeType::kTesting,
+    });
     ash::RecentModelFactory::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),
-        /*query=*/"",
-        /*cutoff_days=*/base::Days(30),
-        /*file_type=*/ash::RecentModel::FileType::kAll,
-        /*invalidate_cache=*/false,
+        /*query=*/"", options,
         base::BindLambdaForTesting(
             [&result, &run_loop](const std::vector<ash::RecentFile>& files) {
               result = files.size();
@@ -207,7 +214,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
 
     // Replace the production sharesheet with a fake for testing.
     mojo::Remote<crosapi::mojom::Sharesheet>& remote =

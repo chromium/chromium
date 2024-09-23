@@ -16,9 +16,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <oleacc.h>
-#include <uiautomation.h>
 
 #include "third_party/iaccessible2/ia2_api_all.h"
+
+#include <uiautomation.h>
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace ui {

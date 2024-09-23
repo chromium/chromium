@@ -25,14 +25,28 @@ constexpr int kScrollAmount = 150;
 inline constexpr NSString* kPasswordStoreErrorMessage =
     @"Stored form was not found in the PasswordStore results.";
 
-// Default username used for password creation.
+// Default username used for password/passkey creation.
 inline constexpr NSString* kDefaultUsername = @"concrete username";
+
+// Default username used for password creation.
+inline constexpr NSString* kDefaultUserDisplayName =
+    @"concrete user display name";
 
 // Default password used for password creation.
 inline constexpr NSString* kDefaultPassword = @"concrete password";
 
 // Default site used for password creation.
 inline constexpr NSString* kDefaultSite = @"https://example.com/";
+
+// Default rp id used for passkey creation.
+inline constexpr NSString* kDefaultRpId = @"example.com";
+
+// Default user id used for passkey creation.
+inline constexpr NSString* kDefaultUserId = @"user_id";
+
+// Matcher for the Password Manager's view that's presented when the user
+// doesn't have any saved passwords.
+id<GREYMatcher> PasswordManagerEmptyView();
 
 // Matcher for a specific state of the Password Checkup cell in the
 // Password Manager.
@@ -121,6 +135,13 @@ void SaveMutedCompromisedPasswordFormToProfileStore(
     NSString* origin = kDefaultSite,
     NSString* username = kDefaultUsername,
     NSString* password = kDefaultPassword);
+
+// Saves a passkey to the store.
+void SaveExamplePasskeyToStore(
+    NSString* rpId = kDefaultRpId,
+    NSString* userId = kDefaultUserId,
+    NSString* username = kDefaultUsername,
+    NSString* userDisplayName = kDefaultUserDisplayName);
 
 // Opens the Password Manager page from the NTP.
 void OpenPasswordManager();

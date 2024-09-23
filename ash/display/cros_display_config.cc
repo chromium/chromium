@@ -5,6 +5,7 @@
 #include "ash/display/cros_display_config.h"
 
 #include <optional>
+#include <sstream>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -91,7 +92,6 @@ crosapi::mojom::DisplayLayoutPosition GetMojomDisplayLayoutPosition(
       return crosapi::mojom::DisplayLayoutPosition::kLeft;
   }
   NOTREACHED();
-  return crosapi::mojom::DisplayLayoutPosition::kLeft;
 }
 
 display::DisplayPlacement::Position GetDisplayPlacementPosition(
@@ -107,7 +107,6 @@ display::DisplayPlacement::Position GetDisplayPlacementPosition(
       return display::DisplayPlacement::LEFT;
   }
   NOTREACHED();
-  return display::DisplayPlacement::LEFT;
 }
 
 std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayLayouts() {
@@ -381,9 +380,24 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
     const display::Display& display) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
+  const crosapi::mojom::DisplayConfigProperties* prop_ptr = &properties;
+  auto dump_state = [display, prop_ptr]() -> std::string {
+    std::stringstream ss;
+    ss << "display={" << display.ToString() << "}";
+    ss << ", config properties={";
+    if (prop_ptr->overscan) {
+      ss << "overscan=" << prop_ptr->overscan->ToString() << ", ";
+    }
+    if (prop_ptr->bounds_origin) {
+      ss << "bounds_origin=" << prop_ptr->bounds_origin->ToString() << ", ";
+    }
+    ss << "zoom_factor=" << prop_ptr->display_zoom_factor;
+    return ss.str() + "}";
+  };
+
   int64_t id = display.id();
   if (id == display::kInvalidDisplayId) {
-    DISPLAY_LOG(ERROR) << "Invalid display id";
+    DISPLAY_LOG(ERROR) << "Invalid display id:" << dump_state();
     return crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError;
   }
 
@@ -391,14 +405,15 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
   // half of the screen size.
   if (properties.overscan) {
     if (display.IsInternal()) {
-      DISPLAY_LOG(ERROR) << "Overscan is not supported on the internal display";
+      DISPLAY_LOG(ERROR) << "Overscan is not supported on the internal display:"
+                         << dump_state();
       return crosapi::mojom::DisplayConfigResult::
           kNotSupportedOnInternalDisplayError;
     }
 
     if (properties.overscan->left() < 0 || properties.overscan->top() < 0 ||
         properties.overscan->right() < 0 || properties.overscan->bottom() < 0) {
-      DISPLAY_LOG(ERROR) << "Negative overscan";
+      DISPLAY_LOG(ERROR) << "Negative overscan:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError;
     }
 
@@ -410,9 +425,10 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
             screen_width ||
         (properties.overscan->top() + properties.overscan->bottom()) * 2 >
             screen_height) {
-      DISPLAY_LOG(ERROR) << "Overscan: " << properties.overscan->ToString()
-                         << " exceeds bounds: " << screen_width << "x"
-                         << screen_height;
+      DISPLAY_LOG(ERROR) << "Invalid Overscan: " << dump_state()
+                         << ", overscan (" << properties.overscan->ToString()
+                         << ") exceeds bounds (" << screen_width << "x"
+                         << screen_height << ")";
       return crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError;
     }
   }
@@ -423,6 +439,7 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
     const display::Display& primary =
         display::Screen::GetScreen()->GetPrimaryDisplay();
     if (id == primary.id() || properties.set_primary) {
+      LOG(ERROR) << "Not Supported on Internal Display:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::
           kNotSupportedOnInternalDisplayError;
     }
@@ -430,15 +447,17 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
         properties.bounds_origin->x() < -kMaxBoundsOrigin ||
         properties.bounds_origin->y() > kMaxBoundsOrigin ||
         properties.bounds_origin->y() < -kMaxBoundsOrigin) {
-      DISPLAY_LOG(ERROR) << "Bounds origin out of range";
+      DISPLAY_LOG(ERROR) << "Bounds origin out of range:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError;
     }
   }
 
-  if (properties.display_zoom_factor > 0) {
+  // In Unified mode, the actual zoom factor will be picked by the system.
+  if (properties.display_zoom_factor >
+      0) {  // && !display_manager->IsInUnifiedMode()) {
     display::ManagedDisplayMode current_mode;
     if (!display_manager->GetActiveModeForDisplayId(id, &current_mode)) {
-      DISPLAY_LOG(ERROR) << "No active mode for display: " << id;
+      DISPLAY_LOG(ERROR) << "No active mode for display:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError;
     }
     // This check is added to limit the range of display zoom that can be
@@ -455,7 +474,7 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
                         current_mode.device_scale_factor();
     if (current_width / properties.display_zoom_factor > max_allowed_width ||
         current_width / properties.display_zoom_factor < min_allowed_width) {
-      DISPLAY_LOG(ERROR) << "Display zoom factor out of range";
+      DISPLAY_LOG(ERROR) << "Display zoom factor out of range:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError;
     }
   }
@@ -563,7 +582,7 @@ class CrosDisplayConfig::ObserverImpl
     NotifyObserversDisplayConfigChanged();
   }
 
-  void OnDisplayRemoved(const display::Display& old_display) override {
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     NotifyObserversDisplayConfigChanged();
   }
 
@@ -904,6 +923,11 @@ void CrosDisplayConfig::OverscanCalibration(
       std::move(callback).Run(
           crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
       return;
+    case crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays:
+      DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
+      return;
   }
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
@@ -913,6 +937,31 @@ void CrosDisplayConfig::TouchCalibration(
     crosapi::mojom::DisplayConfigOperation op,
     crosapi::mojom::TouchCalibrationPtr calibration,
     TouchCalibrationCallback callback) {
+  // For native touch display mapping.
+  if (op ==
+      crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays) {
+    if (touch_calibrator_ && touch_calibrator_->IsCalibrating()) {
+      DISPLAY_LOG(ERROR) << "Touch calibration already active.";
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kCalibrationInProgressError);
+      return;
+    }
+    if (!touch_calibrator_) {
+      touch_calibrator_ = std::make_unique<TouchCalibratorController>();
+    }
+    // For native calibration, |callback| is not run until calibration
+    // completes.
+    touch_calibrator_->StartNativeTouchscreenMappingExperience(base::BindOnce(
+        [](TouchCalibrationCallback callback, bool result) {
+          std::move(callback).Run(
+              result ? crosapi::mojom::DisplayConfigResult::kSuccess
+                     : crosapi::mojom::DisplayConfigResult::
+                           kCalibrationFailedError);
+        },
+        std::move(callback)));
+    return;
+  }
+
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
     std::move(callback).Run(

@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("apps") {
+  sources = [
+    "apk_web_app_installer.cc",
+    "apk_web_app_installer.h",
+    "apk_web_app_service.cc",
+    "apk_web_app_service.h",
+    "apk_web_app_service_factory.cc",
+    "apk_web_app_service_factory.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//components/keyed_service/core",
+    "//components/services/app_service",
+    "//components/webapps/browser:constants",
+    "//components/webapps/common",
+  ]
+
+  deps = [
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//skia",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "apk_web_app_installer_browsertest.cc",
+    "apk_web_app_service_lacros_browsertest.cc",
+  ]
+
+  deps = [
+    ":apps",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/keyed_service/content",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/webapps/browser",
+    "//components/webapps/browser:constants",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "apk_web_app_installer_unittest.cc" ]
+
+  deps = [
+    ":apps",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/webapps/browser:constants",
+    "//components/webapps/common",
+    "//services/data_decoder/public/cpp:test_support",
+    "//url",
+  ]
+}

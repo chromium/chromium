@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_grid_track_size.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -21,14 +20,15 @@ InterpolableGridTrackRepeater::InterpolableGridTrackRepeater(
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::Create(
     const NGGridTrackRepeater& repeater,
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
+    const CSSProperty& property,
     float zoom) {
   DCHECK_EQ(repeater_track_sizes.size(), repeater.repeat_size);
 
   InterpolableList* values =
       MakeGarbageCollected<InterpolableList>(repeater_track_sizes.size());
   for (wtf_size_t i = 0; i < repeater_track_sizes.size(); ++i) {
-    InterpolableGridTrackSize* result =
-        InterpolableGridTrackSize::Create(repeater_track_sizes[i], zoom);
+    InterpolableGridTrackSize* result = InterpolableGridTrackSize::Create(
+        repeater_track_sizes[i], property, zoom);
     DCHECK(result);
     values->Set(i, std::move(result));
   }
@@ -51,14 +51,13 @@ Vector<GridTrackSize, 1> InterpolableGridTrackRepeater::CreateTrackSizes(
 }
 
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::RawClone() const {
-  InterpolableList* values(DynamicTo<InterpolableList>(values_->Clone()));
+  InterpolableList* values(values_->Clone());
   return MakeGarbageCollected<InterpolableGridTrackRepeater>(values, repeater_);
 }
 
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::RawCloneAndZero()
     const {
-  InterpolableList* values(
-      DynamicTo<InterpolableList>(values_->CloneAndZero()));
+  InterpolableList* values(values_->CloneAndZero());
   return MakeGarbageCollected<InterpolableGridTrackRepeater>(values, repeater_);
 }
 

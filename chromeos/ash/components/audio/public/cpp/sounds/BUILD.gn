@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("sounds") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_IMPL" ]
+
+  sources = [
+    "audio_stream_handler.cc",
+    "audio_stream_handler.h",
+    "sounds_manager.cc",
+    "sounds_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_data.cc",
+    "test_data.h",
+  ]
+
+  deps = [
+    ":sounds",
+    "//base",
+    "//media",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "audio_stream_handler_unittest.cc",
+    "sounds_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":sounds",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//media:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
+    "//testing/gtest",
+  ]
+
+  data = [ "//media/test/data/" ]
+}

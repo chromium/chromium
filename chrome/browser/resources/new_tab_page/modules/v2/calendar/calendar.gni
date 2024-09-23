@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that should be passed to html_to_wrapper().
+calendar_v2_web_component_files = [
+  "modules/v2/calendar/calendar.ts",
+  "modules/v2/calendar/calendar_event.ts",
+  "modules/v2/calendar/google_calendar_module.ts",
+  "modules/v2/calendar/outlook_calendar_module.ts",
+]
+
+# List of files that don't need to be passed to html_to_wrapper().
+calendar_v2_non_web_component_files = [
+  "modules/v2/calendar/common.ts",
+  "modules/v2/calendar/google_calendar_proxy.ts",
+  "modules/v2/calendar/outlook_calendar_proxy.ts",
+]
+
+calendar_css_files = [
+  "modules/v2/calendar/calendar.css",
+  "modules/v2/calendar/calendar_event.css",
+  "modules/v2/calendar/google_calendar_module.css",
+]

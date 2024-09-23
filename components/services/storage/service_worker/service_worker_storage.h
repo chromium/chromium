@@ -49,8 +49,11 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest,
 FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 }  // namespace service_worker_storage_unittest
 
-BASE_DECLARE_FEATURE(kServiceWorkerScopeCache);
-extern const base::FeatureParam<int> kServiceWorkerScopeCacheLimitPerKey;
+// The maximum scope URL count for cache per the storage key.
+inline constexpr size_t kMaxServiceWorkerScopeUrlCountPerStorageKey = 100;
+
+void OverrideMaxServiceWorkerScopeUrlCountForTesting(
+    std::optional<size_t> max_count);
 
 // This class provides an interface to store and retrieve ServiceWorker
 // registration data. The lifetime is equal to ServiceWorkerRegistry that is

@@ -32,6 +32,34 @@ const char kStandaloneBrowserPref[] = "standalone_browser_pref";
 
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST(PrefServiceUtilTest, GetAllDottedPaths) {
+  using pref_service_util::GetAllDottedPaths;
+
+  base::Value::Dict dict;
+  std::vector<std::string> paths;
+
+  GetAllDottedPaths(dict, paths);
+  // Expect paths to be [].
+  EXPECT_EQ(paths.size(), std::size_t(0));
+
+  dict.SetByDottedPath("one.two", base::Value(12));
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two"));
+
+  paths.clear();
+  dict.SetByDottedPath("one.three", base::Value(13));
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths, testing::UnorderedElementsAre("one.two", "one.three"));
+
+  paths.clear();
+  dict.SetByDottedPath("key", "value");
+  GetAllDottedPaths(dict, paths);
+  EXPECT_THAT(paths,
+              testing::UnorderedElementsAre("one.two", "one.three", "key"));
+}
+#endif
+
 TEST(PrefServiceTest, NoObserverFire) {
   TestingPrefServiceSimple prefs;
 
@@ -288,25 +316,25 @@ TEST(PrefServiceTest, SetTimeDeltaValue_ZeroTimeDelta) {
 // values to it.
 class WriteFlagChecker : public TestingPrefStore {
  public:
-  WriteFlagChecker() {}
+  WriteFlagChecker() = default;
 
-  void ReportValueChanged(const std::string& key, uint32_t flags) override {
+  void ReportValueChanged(std::string_view key, uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void SetValue(const std::string& key,
+  void SetValue(std::string_view key,
                 base::Value value,
                 uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void SetValueSilently(const std::string& key,
+  void SetValueSilently(std::string_view key,
                         base::Value value,
                         uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
-  void RemoveValue(const std::string& key, uint32_t flags) override {
+  void RemoveValue(std::string_view key, uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
@@ -365,8 +393,7 @@ TEST(PrefServiceTest, WriteablePrefStoreFlags) {
        PrefRegistry::LOSSY_PREF | kCustomRegistrationFlag,
        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG}};
 
-  for (size_t i = 0; i < std::size(kRegistrationToWriteFlags); ++i) {
-    RegistrationToWriteFlags entry = kRegistrationToWriteFlags[i];
+  for (const RegistrationToWriteFlags& entry : kRegistrationToWriteFlags) {
     registry->RegisterDictionaryPref(entry.pref_name,
                                      entry.registration_flags);
 
@@ -537,3 +564,21 @@ TEST_F(PrefStandaloneBrowserPrefsTest, CheckStandaloneBrowserPref) {
       kStandaloneBrowserPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_EQ(base::Value(4), *(preference->GetValue()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PrefStandaloneBrowserPrefsTest, RemoveAllStandaloneBrowserPrefs) {
+  const char int_pref_name[] = "int.name";
+  const char str_pref_name[] = "str.pref.name";
+  pref_registry_->RegisterIntegerPref(int_pref_name, 0);
+  pref_registry_->RegisterStringPref(str_pref_name, "");
+
+  pref_service_->SetStandaloneBrowserPref(int_pref_name, base::Value(4));
+  pref_service_->SetStandaloneBrowserPref(str_pref_name, base::Value("value"));
+  EXPECT_EQ(base::Value(4), pref_service_->GetValue(int_pref_name));
+  EXPECT_EQ(base::Value("value"), pref_service_->GetValue(str_pref_name));
+
+  pref_service_->RemoveAllStandaloneBrowserPrefs();
+  EXPECT_EQ(base::Value(0), pref_service_->GetValue(int_pref_name));
+  EXPECT_EQ(base::Value(""), pref_service_->GetValue(str_pref_name));
+}
+#endif

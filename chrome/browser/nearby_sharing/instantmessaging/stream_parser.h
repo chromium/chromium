@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_STREAM_PARSER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 
 namespace google {
@@ -39,7 +39,7 @@ class StreamParser {
   // empty vector is returned.
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
-  Append(base::StringPiece data);
+  Append(std::string_view data);
 
  private:
   enum class StreamParsingResult {

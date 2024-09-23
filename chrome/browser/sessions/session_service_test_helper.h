@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/sessions/session_service.h"
 #include "components/sessions/core/session_id.h"
 
 class Profile;
@@ -27,6 +26,7 @@ class SequencedTaskRunner;
 }
 
 namespace sessions {
+class CommandStorageManager;
 class SerializedNavigationEntry;
 struct SerializedUserAgentOverride;
 struct SessionTab;
@@ -108,15 +108,11 @@ class SessionServiceTestHelper {
 
   bool HasPendingSave();
 
-  void SetSavingEnabled(bool enabled) { service_->SetSavingEnabled(enabled); }
+  void SetSavingEnabled(bool enabled);
 
-  bool did_save_commands_at_least_once() const {
-    return service_->did_save_commands_at_least_once_;
-  }
+  bool did_save_commands_at_least_once() const;
 
-  sessions::CommandStorageManager* command_storage_manager() {
-    return service_->command_storage_manager_.get();
-  }
+  sessions::CommandStorageManager* command_storage_manager();
 
  private:
   raw_ptr<SessionService, DanglingUntriaged> service_;

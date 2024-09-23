@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:aapt="http://schemas.android.com/aapt">
+<aapt:attr name="android:drawable">
+  <!-- Create a vector with a visible area of 100x100. -->
+  <vector
+      android:height="100dp"
+      android:width="100dp"
+      android:viewportHeight="100"
+      android:viewportWidth="100">
+    <group android:name="scrollGradient">
+      <!-- Draw a rectangle with height of 100 and width of 500-->
+      <path android:pathData="M 0 0 L 500 0 L 500 100 L 0 100 Z">
+        <!--
+        Fill rectangle with a gradient that starts at (0,0) and ends at (100,100), set it to mirror outside that range.
+        Moving the rectangle changes the color that's visible at the top left corner.
+
+         | Scroll to the left | Color at top left corner |
+         | 0                  | First color (offset="0") |
+         | 100                | Second color             |
+         | 200                | Third color              |
+         | 300                | Second color             |
+         | 400                | First color              |
+
+        After scrolling 400 units to the left we end up with the same colors as we started, allowing us to restart an animation seamlessly.
+        -->
+        <aapt:attr name="android:fillColor">
+          <gradient
+              android:startX="0"
+              android:startY="0"
+              android:endX="100"
+              android:endY="100"
+              android:tileMode="mirror"
+              android:type="linear">
+            <item android:offset="0" android:color="@android:color/transparent"/>
+            <item android:offset="0.5" android:color="?attr/colorPrimaryContainer"/>
+            <item android:offset="1" android:color="?attr/colorTertiaryContainer"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+    </group>
+  </vector>
+</aapt:attr>
+
+<target android:name="scrollGradient">
+  <aapt:attr name="android:animation">
+    <objectAnimator
+        android:duration="2000"
+        android:propertyName="translateX"
+        android:repeatCount="-1"
+        android:repeatMode="restart"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:valueFrom="-400"
+        android:valueTo="0" />
+  </aapt:attr>
+</target>
+</animated-vector>

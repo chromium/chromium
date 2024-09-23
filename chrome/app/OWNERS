@@ -36,13 +36,16 @@ per-file profiles_strings.grdp=file://chrome/app/profiles_strings_grdp/OWNERS
 
 per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 per-file *settings*strings*.grdp=file://ui/webui/PLATFORM_OWNERS
-per-file *settings*strings*.grdp=sauski@google.com
+per-file *settings*strings*.grdp=rainhard@chromium.org
+per-file *settings*strings*.grdp=sideyilmaz@chromium.org
 
 per-file support_tool_strings.grdp=file://chrome/browser/support_tool/OWNERS
 
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
 per-file password_manager_ui_strings.grdp=file://chrome/browser/password_manager/OWNERS
+
+per-file certificate_manager.grdp=file://net/cert/OWNERS
 
 # Non-GRD rules.
 
@@ -53,17 +56,10 @@ per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 
 per-file chrome_crash_reporter_client*=file://components/crash/OWNERS
 
-per-file chrome_exe_main_mac.cc=mark@chromium.org
-per-file chrome_exe_main_mac.cc=rsesek@chromium.org
+per-file chrome_exe_main_mac.cc=file://ui/base/cocoa/OWNERS
 
 per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
 
 per-file framework.exports=file://build/mac/OWNERS
 per-file framework.order=file://build/mac/OWNERS
-
-# Security-review owners for Fuchsia Component Manifests.
-per-file *.cml=set noparent
-per-file *.cml=file://build/fuchsia/SECURITY_OWNERS
-per-file *.cmx=set noparent
-per-file *.cmx=file://build/fuchsia/SECURITY_OWNERS

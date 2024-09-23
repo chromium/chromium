@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("auth") {
+  sources = [
+    "arc_auth_code_fetcher.h",
+    "arc_auth_context.cc",
+    "arc_auth_context.h",
+    "arc_auth_service.cc",
+    "arc_auth_service.h",
+    "arc_background_auth_code_fetcher.cc",
+    "arc_background_auth_code_fetcher.h",
+    "arc_fetcher_base.cc",
+    "arc_fetcher_base.h",
+    "arc_robot_auth_code_fetcher.cc",
+    "arc_robot_auth_code_fetcher.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/account_manager_core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "arc_auth_service_browsertest.cc",
+    "arc_robot_auth_code_fetcher_browsertest.cc",
+  ]
+
+  deps = [
+    ":auth",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/login/demo_mode:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -87,7 +87,7 @@ void OnscreenContentProvider::RemoveConsumer(ContentCaptureConsumer& consumer) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ContentCaptureReceiver* OnscreenContentProvider::ContentCaptureReceiverForFrame(

@@ -152,6 +152,17 @@ void MediaSessionControllersManager::OnRemotePlaybackMetadataChange(
       std::move(remote_playback_metadata));
 }
 
+void MediaSessionControllersManager::OnVideoVisibilityChanged(
+    const MediaPlayerId& id,
+    bool meets_visibility_threshold) {
+  if (!IsMediaSessionEnabled()) {
+    return;
+  }
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnVideoVisibilityChanged(meets_visibility_threshold);
+}
+
 MediaSessionController* MediaSessionControllersManager::FindOrCreateController(
     const MediaPlayerId& id) {
   auto it = controllers_map_.find(id);

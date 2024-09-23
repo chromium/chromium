@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/mac/credential_metadata.h"
 
 #include <ostream>
@@ -123,7 +128,7 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     case Algorithm::kAes256GcmSiv:
       return crypto::Aead::AES_256_GCM_SIV;
     case Algorithm::kHmacSha256:
-      NOTREACHED() << "invalid AEAD";
+      NOTREACHED_IN_MIGRATION() << "invalid AEAD";
       return std::nullopt;
   }
 }

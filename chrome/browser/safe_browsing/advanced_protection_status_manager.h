@@ -171,7 +171,7 @@ class AdvancedProtectionStatusManager
   // Only called in tests.
   void SetMinimumRefreshDelay(const base::TimeDelta& delay);
 
-  // Gets the account ID of the unconsented primary account of |profile_|.
+  // Gets the account ID of the unconsented primary account.
   // Returns an empty string if user is not signed in.
   CoreAccountId GetUnconsentedPrimaryAccountId() const;
 
@@ -189,7 +189,7 @@ class AdvancedProtectionStatusManager
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
-  // Is the profile account under advanced protection.
+  // Is the primary account under advanced protection.
   bool is_under_advanced_protection_ = false;
 
   base::OneShotTimer timer_;

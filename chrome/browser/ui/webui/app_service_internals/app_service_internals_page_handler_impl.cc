@@ -29,9 +29,6 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"  // nogncheck
-#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -134,33 +131,6 @@ GetAppCapabilities(apps::AppServiceProxy* proxy) {
   return app_capabilities;
 }
 
-std::vector<mojom::app_service_internals::ShortcutInfoPtr> GetShortcuts(
-    apps::AppServiceProxy* proxy) {
-  std::vector<mojom::app_service_internals::ShortcutInfoPtr> shortcuts;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() ||
-      !proxy->ShortcutRegistryCache()) {
-    return shortcuts;
-  }
-
-  for (const auto& shortcut :
-       proxy->ShortcutRegistryCache()->GetAllShortcuts()) {
-    std::stringstream debug_info;
-    debug_info << shortcut->ToString();
-    shortcuts.emplace_back(
-        std::in_place, shortcut->shortcut_id.value(),
-        shortcut->name.has_value() ? shortcut->name.value() : "",
-        debug_info.str());
-  }
-
-  base::ranges::sort(shortcuts, std::less<>(),
-                     [](const auto& shortcut) { return shortcut->name; });
-
-#endif
-  return shortcuts;
-}
-
 }  // namespace
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
@@ -191,7 +161,6 @@ void AppServiceInternalsPageHandlerImpl::GetDebugInfo(
   result->preferred_app_list = GetPreferredApps(proxy);
   result->promise_app_list = GetPromiseApps(proxy);
   result->app_capability_list = GetAppCapabilities(proxy);
-  result->shortcut_list = GetShortcuts(proxy);
 
   std::move(callback).Run(std::move(result));
 }

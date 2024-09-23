@@ -12,7 +12,7 @@ class WebContents;
 }
 
 // Helps track whether the contents-border should be drawn.
-// TODO(crbug.com/1276822): Support dynamic borders for tabs that only
+// TODO(crbug.com/40207590): Support dynamic borders for tabs that only
 // have a single capturer.
 class TabCaptureContentsBorderHelper
     : public content::WebContentsUserData<TabCaptureContentsBorderHelper> {

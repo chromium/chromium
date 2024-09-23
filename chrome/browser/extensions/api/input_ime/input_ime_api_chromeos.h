@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/manifest_handlers/input_components_handler.h"
 
 namespace extensions {
 

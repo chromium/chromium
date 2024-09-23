@@ -1,31 +1,32 @@
 # Managing Chromium dependencies
 
-Chromium uses gclient (part of depot_tools) to manage dependencies. Information
-is stored in DEPS file located in the root of the project. In addition to DEPS
-file, gclient may read git submodules (see
+Chromium uses `gclient` (part of depot_tools) to manage dependencies (e.g. V8,
+WebRTC). Information such as URLs and hashes is stored in the `DEPS` file
+located in the root of the project. In addition to `DEPS`, `gclient` may read
+git submodules (see
 [depot_tools submodules support](https://docs.google.com/document/d/1N_fseFNOj10ETZG3pZ-I30R__w96rYNtvx5y_jFGJWw/view)).
 
-gclient supports two dependency types: git and [cipd](cipd_and_3pp.md).
+`gclient` supports three dependency types: git, [gcs](gcs_dependencies.md), and
+[cipd](cipd_and_3pp.md).
 
 [TOC]
 
 ## Adding dependencies
 
-Add your entry in DEPS file. Then, run `gclient gitmodules` to generate
-git submodules (it will contain .gitmodule change, and gitlink). Edit OWNERS
-file and add gitlink path. Then, run `git add DEPS OWNERS` to stage
+Add your entry in `DEPS`. Then run `gclient gitmodules` to generate git
+submodules; this will contain the `.gitmodule` change and gitlink. Edit the
+`OWNERS` file and add the gitlink path. Then, run `git add DEPS OWNERS` to stage
 those files for commit, followed by `git commit`. Your change is now ready to be
 sent for a review using `git cl upload`.
 
-
-For example, if new dependency is "src/foo/bar.git", its gitlink path is
-"foo/bar", and OWNERS entry at the top level is `per-file foo/bar=*`. You can
-confirm that by running `git status`. [Example CL](https://crrev.com/c/4923074).
+For example, if your new dependency is "src/foo/bar.git", its gitlink path is
+"foo/bar", and the top level `OWNERS` entry is `per-file foo/bar=*`. You can
+confirm this by running `git status`. [Example CL](https://crrev.com/c/4923074).
 
 ```
 # manual edit of DEPS and OWNERS file (see changes below).
 
- % gclient gitmodules                    
+ % gclient gitmodules
 .gitmodules and gitlinks updated. Please check `git diff --staged`and commit those staged changes (`git commit` without -a)
 
  % git add OWNERS DEPS # stage files
@@ -48,7 +49,7 @@ index 44fbc53a0d53a..05481be5066ed 100644
 +++ b/DEPS
 @@ -555,6 +555,10 @@ allowed_hosts = [
  ]
- 
+
  deps = {
 +  'src/foo/bar': {
 +      'url': Var('chromium_git') + '/foo/bar.git' + '@' +
@@ -63,7 +64,7 @@ index 55bfe60fcb03b..02b4117fca1ea 100644
 +++ b/OWNERS
 @@ -37,6 +37,7 @@ per-file README.md=*
  per-file WATCHLISTS=*
- 
+
  # git submodules
 +per-file foo/bar=*
  per-file third_party/clang-format/script=*
@@ -77,7 +78,7 @@ index 0000000000000..1111111111111
 @@ -0,0 +1 @@
 +Subproject commit 1111111111111111111111111111111111111111
 
- % git status 
+ % git status
 On branch test_newdep
 Your branch is up to date with 'origin/main'.
 
@@ -102,13 +103,37 @@ Changes not staged for commit:
  4 files changed, 9 insertions(+)
  create mode 160000 foo/bar
 
- % git cl upload   
+ % git cl upload
 Found change with 1 commit...
 Running Python 3 presubmit upload checks ...
 -- snip --
 remote:   https://chromium-review.googlesource.com/c/chromium/src/+/4923074 [DEPS] Example of new dependency [NEW]
 -- snip --
 ```
+
+## Making changes to dependencies {#changing-dependencies}
+
+If you need a change in a dependency, the general process is to first contribute
+the change upstream, then [roll into Chromium](#rolling-dependencies). Some
+projects (e.g. Skia) are autorolled, but it is good practice to manually roll
+after an upstream change to ensure your change can be successfully rolled and
+there are no resulting compile or test failures.
+
+Upstream projects have a variety of contribution workflows. The two most common
+are Gerrit-based reviews using `git cl upload` (like Chromium itself) and GitHub
+PRs. Some projects have a `CONTRIBUTING.md` file in their root that gives
+instructions.
+
+In most cases, creating a standalone checkout/clone of the project you're
+modifying, outside your Chromium checkout, is the best way to ensure you're
+contributing to upstream `HEAD` and can run the project's presubmit checks.
+Follow the project's contribution instructions (e.g. running `fetch` or
+`gclient sync` as needed, possibly after downloading or cloning the source). If
+you do attempt to create and upload changes directly inside submodules in your
+Chromium checkout, be careful not to commit the new submodule hashes to any
+Chromium changes. You may also need to
+[create symlinks to enable other projects' presubmits](#presubmit-symlinks), or
+else skip them by uploading with `--bypass-hooks`.
 
 ## Rolling dependencies
 
@@ -132,17 +157,11 @@ Under the hood, gclient understands DEPS file, and knows what needs to update.
 In the example above, it actually updates boringssl_revision variable that is
 used in boringssl deps declaration.
 
-Example of DEPS file:
-```
-vars = {
-  'boringssl_git': 'https://boringssl.googlesource.com',
-  'boringssl_revision': 'e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5',
-}
-deps = {
-  'src/third_party/boringssl/src':
-    Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),
-}
-```
+Example of DEPS file: `vars = { 'boringssl_git':
+'https://boringssl.googlesource.com', 'boringssl_revision':
+'e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5', } deps = {
+'src/third_party/boringssl/src': Var('boringssl_git') + '/boringssl.git' + '@' +
+Var('boringssl_revision'), }`
 
 It also updates gitlink if git submodules are used. Git status will show the
 following:
@@ -177,10 +196,8 @@ to directly insert the specified info into the index: 160000 is gitlink mode
 (used by git submodules), {hash} is a new commit hash you want to roll, and path
 is relative path to git submodule.
 
-
 Using the boringssl example above, the following will need to be run inside
 chromium/src worktree:
-
 
 ```
 git update-index --add --cacheinfo 160000,e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5,third_party/boringssl/src
@@ -233,3 +250,20 @@ gclient gitmodules
 The script will create a new .gitmodules files and update all gitlinks. Please
 note that old gitlinks won't be deleted, and you will need to remove them
 manually (see section above for deleting dependencies).
+
+## Appendix: Symlinks to enable other projects' presubmits {#presubmit-symlinks}
+
+Creating the following symlinks (POSIX: `ln -s DEST SRC`, Windows:
+`mklink /D SRC DEST` from an Admin `cmd` prompt) will get other projects'
+presubmit checks working, if you want to upload directly from inside your
+Chromium checkout and don't want to use `--bypass-hooks`. All directories assume
+you are in your Chromium `src` dir. This list is non-exhaustive; please add to
+it as necessary.
+
+* **V8:**
+  * Link `v8/buildtools` to `buildtools`
+  * Link `v8/third_party/depot_tools` to `depot_tools`
+* **WebRTC:**
+  * Link `third_party/webrtc/build` to `build`
+  * Link `third_party/webrtc/buildtools` to `buildtools`
+  * Link `third_party/src` to `.`

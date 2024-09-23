@@ -68,7 +68,7 @@ class ClientConnectionParametersImpl : public ClientConnectionParameters {
           nearby_connection_state_listener_receiver) override;
   void UpdateBleDiscoveryState(
       mojom::DiscoveryResult discovery_state,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code) override;
   void UpdateNearbyConnectionState(
       mojom::NearbyConnectionStep step,
       mojom::NearbyConnectionStepResult result) override;

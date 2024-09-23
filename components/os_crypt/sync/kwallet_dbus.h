@@ -84,20 +84,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
                                         const std::string& app_name,
                                         Type* entry_type_ptr);
 
-  // Read the entry key from the current folder.
-  [[nodiscard]] virtual Error ReadEntry(int wallet_handle,
-                                        const std::string& folder_name,
-                                        const std::string& key,
-                                        const std::string& app_name,
-                                        std::vector<uint8_t>* bytes_ptr);
-
-  // Return the list of keys of all entries in this folder.
-  [[nodiscard]] virtual Error EntryList(
-      int wallet_handle,
-      const std::string& folder_name,
-      const std::string& app_name,
-      std::vector<std::string>* entry_list_ptr);
-
   // Remove the entry key from the current folder.
   // |*return_code_ptr| is 0 on success.
   [[nodiscard]] virtual Error RemoveEntry(int wallet_handle,
@@ -105,15 +91,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
                                           const std::string& key,
                                           const std::string& app_name,
                                           int* return_code_ptr);
-
-  // Write a binary entry to the current folder.
-  // |*return_code_ptr| is 0 on success.
-  [[nodiscard]] virtual Error WriteEntry(int wallet_handle,
-                                         const std::string& folder_name,
-                                         const std::string& key,
-                                         const std::string& app_name,
-                                         base::span<const uint8_t> data,
-                                         int* return_code_ptr);
 
   // Determine if the folder |folder_name| exists in the wallet.
   [[nodiscard]] virtual Error HasFolder(int handle,

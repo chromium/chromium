@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1192844206376121885">ਇੰਝ ਕਰਨ ਨਾਲ <ph name="ORIGIN" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
+<translation id="1240190568154816272">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> 'ਤੇ ਪਰੋਇਆ ਗਿਆ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
 <translation id="1289742167380433257">ਤੁਹਾਡਾ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, Google ਨੇ ਇਸ ਪੰਨੇ ਦੇ ਚਿੱਤਰਾਂ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਹੈ।</translation>
@@ -21,9 +22,9 @@
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1384959399684842514">ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="1415402041810619267">URL ਛੋਟਾ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="1434873037477293673">ਕੀਮਤ ਵਿੱਚ ਗਿਰਾਵਟ ਵਾਲਾ ਕਾਰਡ</translation>
 <translation id="1448064542941920355">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ਸਾਈਟ}one{<ph name="SITE_COUNT" /> ਸਾਈਟ}other{<ph name="SITE_COUNT" /> ਸਾਈਟਾਂ}}</translation>
+<translation id="1500473259453106018">ਟੈਬ ਕਾਰਡ 'ਤੇ ਕੀਮਤ ਵਿੱਚ ਕਮੀਆਂ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="1510341833810331442">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="1547123415014299762">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="1568470248891039841">ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਹ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਤੋਂ ਸਮੱਗਰੀ ਨੂੰ ਜੋੜ ਸਕਦੀਆਂ ਹਨ, ਉਦਾਹਰਨ ਲਈ, ਚਿੱਤਰ, ਵਿਗਿਆਪਨ ਅਤੇ ਲਿਖਤ। ਇਹ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਟ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕੀਤੇ ਜਾਣ ਵੇਲੇ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਮੰਗ ਸਕਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK" />ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -31,7 +32,6 @@
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1633720957382884102">ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ</translation>
 <translation id="1644574205037202324">ਇਤਿਹਾਸ</translation>
-<translation id="1647582022260550163">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਅਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1652197001188145583">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ NFC ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ NFC ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="1660204651932907780">ਸਾਈਟਾਂ ਨੂੰ ਧੁਨੀ ਵਜਾਉਣ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="1677097821151855053">ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਤੁਹਾਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਉਦਾਹਰਨ ਦੇ ਤੌਰ 'ਤੇ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਜਾਂ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ। ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਦੇਖੋ।</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">ਸਾਈਟਾਂ ਨੂੰ ਕਿਸੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="1779089405699405702">ਇਮੇਜ ਡੀਕੋਡਰ</translation>
 <translation id="1785415724048343560">ਬਿਹਤਰੀਨ ਅਨੁਭਵ ਲਈ ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="1799920918471566157">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ਨੂੰ AR ਵਰਤਣ ਦੇਣ ਲਈ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕੈਮਰਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="1887786770086287077">ਇਸ ਡੀਵਾਈਸ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਬੰਦ ਹੈ। ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">'ਨਵੀਂ ਟੈਬ' ਪੰਨਾ ਕਾਰਡ</translation>
 <translation id="2241634353105152135">ਸਿਰਫ ਇੱਕ ਵਾਰ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ਹਟਾਓ</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ਸਾਈਟ ਬਲਾਕ ਕੀਤੀ ਗਈ}one{# ਸਾਈਟ ਬਲਾਕ ਕੀਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="228293613124499805">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਗਈਆਂ ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ, ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਜਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਟ 'ਤੇ ਸਾਂਝੀ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਕੇ ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਅਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਰੱਖਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦੇ ਹਾਂ।</translation>
 <translation id="2289270750774289114">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2315043854645842844">ਕਲਾਈਂਟ ਵੱਲੋਂ ਕੀਤੀ ਗਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਚੋਣ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">ਮਦਦ ਅਤੇ ਪ੍ਰਤੀਕਰਮ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="2546283357679194313">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ਕੁਕੀ ਬਲਾਕ ਕੀਤੀ ਗਈ}one{# ਕੁਕੀ ਬਲਾਕ ਕੀਤੀ ਗਈ}other{# ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ}}</translation>
 <translation id="2570922361219980984">ਇਸ ਡੀਵਾਈਸ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਵੀ ਬੰਦ ਹੈ। ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="257931822824936280">ਵਿਸਤ੍ਰਿਤ - ਸਮੇਟਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
+<translation id="2588271083332682494">ਟੈਬ ਗਰੁੱਪਾਂ ਨਾਲ ਆਪਣੇ ਕੰਮ ਨੂੰ ਵਿਵਸਥਿਤ ਰੱਖੋ</translation>
 <translation id="2597457036804169544">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਗੂ ਨਾ ਕਰੋ</translation>
 <translation id="2606760465469169465">ਸਵੈ-ਪੁਸ਼ਟੀਕਰਨ</translation>
 <translation id="2621115761605608342">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ JavaScript ਨੂੰ ਆਗਿਆ ਦਿਓ।</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="2903493209154104877">ਪਤੇ</translation>
 <translation id="2910701580606108292">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
+<translation id="2918484639460781603">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2932883381142163287">ਦੁਰਵਿਵਹਾਰ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="2939338015096024043">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਜਾਂ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਬਾਰੇ ਨਹੀਂ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="2968755619301702150">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿਊਅਰ</translation>
 <translation id="2979365474350987274">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
 <translation id="3008272652534848354">ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="301521992641321250">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
 <translation id="3114012059975132928">ਵੀਡੀਓ ਪਲੇਅਰ</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ਨੂੰ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
+<translation id="3232293466644486101">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
 <translation id="3242646949159196181">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਧੁਨੀ ਚਲਾ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਧੁਨੀ ਨਹੀਂ ਚਲਾ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="3273479183583863618">ਟੈਬਾਂ 'ਤੇ ਕੀਮਤ ਵਿੱਚ ਕਮੀਂ ਦੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="3277252321222022663">ਸਾਈਟਾਂ ਨੂੰ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3285500645985761267">ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਨੂੰ ਸਮੂਹ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੇਖਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="3295019059349372795">ਪਾਠ 11: ਔਜ਼ ਦਾ ਹੀਰਿਆਂ-ਪੰਨਿਆਂ ਵਾਲਾ ਨਿਰਾਲਾ ਸ਼ਹਿਰ</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome ਕੁਕੀਜ਼ ਨੂੰ ਕੱਲ੍ਹ ਦੁਬਾਰਾ ਬਲਾਕ ਕਰ ਦੇਵੇਗਾ}one{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਦੁਬਾਰਾ ਬਲਾਕ ਕਰ ਦੇਵੇਗਾ}other{Chrome ਕੁਕੀਜ਼ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਬਲਾਕ ਕਰ ਦੇਵੇਗਾ}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> ਅਧੀਨ ਸਾਈਟਾਂ</translation>
+<translation id="3523447078673133727">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਹੱਥ ਟਰੈਕ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="3536227077203206203">ਇਸ ਸਮੇਂ ਆਗਿਆ ਹੈ</translation>
 <translation id="3538390592868664640">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="3544058026430919413">ਕੰਪਨੀ ਅਜਿਹੀਆਂ ਸਾਈਟਾਂ ਦੇ ਸਮੂਹ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰ ਸਕਦੀ ਹੈ ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕੇ। ਇਹ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਬੰਦ ਹੈ।</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">ਧੁਨੀ ਵਜਾਉਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="3602290021589620013">ਪ੍ਰੀਵਿਊ</translation>
 <translation id="3628308229821498208">ਸੁਝਾਈਆਂ ਗਈਆਂ ਖੋਜਾਂ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}one{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}other{<ph name="RWS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀਆਂ <ph name="RWS_MEMBERS_COUNT" /> ਸਾਈਟਾਂ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="3697164069658504920">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ USB ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ USB ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="3707034683772193706">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਹ Chrome 'ਤੇ ਕੁਝ ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਮੁੱਖ ਤੌਰ 'ਤੇ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਬੋਟ ਨਹੀਂ ਹੋ</translation>
 <translation id="3721953990244350188">ਖਾਰਜ ਕਰੋ ਅਤੇ ਅਗਲੀ ਕਾਰਵਾਈ ਦਿਖਾਓ</translation>
 <translation id="3744111561329211289">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="3763247130972274048">10 ਸਕਿੰਟ ਅੱਗੇ ਜਾਂ ਪਿੱਛੇ ਜਾਣ ਲਈ ਵੀਡੀਓ 'ਤੇ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
+<translation id="3779154269823594982">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="3797520601150691162">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਗੂ ਨਾ ਕਰੋ</translation>
 <translation id="3803367742635802571">ਜਿਹੜੀਆਂ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖਦੇ ਹੋ, ਉਹ ਡਿਜ਼ਾਈਨ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
@@ -174,8 +178,11 @@
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="3859306556332390985">ਅੱਗੇ ਵੱਲ ਨੂੰ ਲੈ ਜਾਓ</translation>
 <translation id="3895926599014793903">ਜ਼ੂਮ ਨੂੰ ਚਾਲੂ ਕਰਨ 'ਤੇ ਜ਼ੋਰ ਦਿਓ</translation>
+<translation id="3905475044299942653">ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="3908288065506437185">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ਸ਼ਾਇਦ ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ। ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਹਾਲੇ ਵੀ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="3933121352599513978">ਅਣਚਾਹੀਆਂ ਬੇਨਤੀਆਂ ਨੂੰ ਸਮੇਟੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3955193568934677022">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3967822245660637423">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3974105241379491420">ਸਾਈਟਾਂ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਵਰਤਣ ਲਈ ਕਹਿ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -188,16 +195,15 @@
 <translation id="4149994727733219643">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="4151930093518524179">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਜ਼ੂਮ</translation>
 <translation id="4165986682804962316">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> ਲੁਕਾਓ</translation>
 <translation id="4169549551965910670">USB ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="4194328954146351878">ਸਾਈਟਾਂ ਨੂੰ NFC ਡੀਵਾਈਸਾਂ 'ਤੇ ਜਾਣਕਾਰੀ ਦੇਖਣ ਅਤੇ ਬਦਲਣ ਦੀ ਆਗਿਆ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="4200726100658658164">ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
-<translation id="4206661981211220935"><ph name="FROM_DEVICE" /> ਤੋਂ <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4226663524361240545">ਸੂਚਨਾਵਾਂ ਡੀਵਾਈਸ ਨੂੰ ਥਰਥਰਾਹਟ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4259722352634471385">ਨੈਵੀਗੇਸ਼ਨ ਬਲੌਕ ਕੀਤੀ ਹੈ: <ph name="URL" /></translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
 <translation id="429312253194641664">ਕੋਈ ਸਾਈਟ ਮੀਡੀਆ ਫ਼ਾਈਲ ਨੂੰ ਚਲਾ ਰਹੀ ਹੈ</translation>
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="4336566011000459927">Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਸੀਮਤ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="4402755511846832236">ਸਾਈਟਾਂ ਨੂੰ ਇਹ ਜਾਣਨ ਤੋਂ ਰੋਕਣ ਲਈ ਬਲਾਕ ਕਰੋ ਕਿ ਤੁਸੀਂ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਦੋਂ ਕਰਦੇ ਹੋ</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="4570913071927164677">ਵੇਰਵੇ</translation>
 <translation id="4598549027014564149">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਹੋਣ ਦੌਰਾਨ, ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਇੱਥੋਂ ਤੱਕ ਕਿ ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਵਿੱਚ ਵੀ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖਣ ਲਈ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ। ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਲਈ ਨਹੀਂ ਵਰਤੀ ਜਾਂਦੀ। ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ।</translation>
+<translation id="4619615317237390068">ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ</translation>
 <translation id="4644713492825682049">ਮਿਟਾਓ ਅਤੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="4645575059429386691">ਤੁਹਾਡੇ ਮਾਤਾ ਜਾਂ ਪਿਤਾ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="4670064810192446073">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ</translation>
+<translation id="4676059169848868271"><ph name="APP_NAME" /> ਨੂੰ ਹੱਥ ਦੀ ਟਰੈਕਿੰਗ ਦੀ ਸੁਵਿਧਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਦੇਣ ਲਈ, ਇਸ ਨੂੰ <ph name="BEGIN_LINK" />ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="4751476147751820511">ਗਤੀ ਜਾਂ ਰੋਸ਼ਨੀ ਦੇ ਸੈਂਸਰ</translation>
 <translation id="4755971844837804407">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਵਿਗਿਆਪਨ ਦਿਖਾ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਦਖਲਅੰਦਾਜ਼ੀ ਜਾਂ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਨਹੀਂ ਦਿਖਾ ਸਕਦੀਆਂ।</translation>
 <translation id="4779083564647765204">ਜ਼ੂਮ</translation>
+<translation id="4807122856660838973">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4811450222531576619">ਇਸਦੇ ਸ੍ਰੋਤ ਅਤੇ ਵਿਸ਼ੇ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="4836046166855586901">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਜਾਣਨਾ ਚਾਹੁੰਦੀ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਦੋਂ ਕਰਦੇ ਹੋ, ਉਸ ਵੇਲੇ ਪੁੱਛੋ</translation>
 <translation id="483914009762354899">ਇਸ ਡੋਮੇਨ ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4883854917563148705">ਪ੍ਰਬੰਧਿਤ ਕੀਤੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4887024562049524730">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
+<translation id="4936863036653376783">ਤੁਹਾਨੂੰ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਮੌਜੂਦ ਟੈਬ ਗਰੁੱਪ ਸੈਕਸ਼ਨ ਆਪਣੇ ਸਾਰੇ ਗਰੁੱਪ ਮਿਲ ਜਾਣਗੇ</translation>
 <translation id="4953688446973710931">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="4962975101802056554">ਡੀਵਾਈਸ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੱਦ ਕਰੋ</translation>
 <translation id="497421865427891073">ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="4996978546172906250">ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
+<translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
+<translation id="5014182796621173645">ਤੁਸੀਂ <ph name="RECENCY" /> ਗਏ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5048398596102334565">ਸਾਈਟਾਂ ਨੂੰ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
+<translation id="5048841907079026162">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5050380848339752099">ਇਹ ਸਾਈਟ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਐਪ ਦੇ ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਲੱਗੀ ਹੈ।</translation>
 <translation id="5063480226653192405">ਵਰਤੋਂ</translation>
 <translation id="5091013926750941408">ਮੋਬਾਈਲ ਸਾਈਟ</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ JavaScript ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ JavaScript ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5099358668261120049">ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ <ph name="ORIGIN" /> ਜਾਂ ਉਸਦੀ ਐਪ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5100237604440890931">ਸਮੇਟਿਆ ਗਿਆ - ਵਿਸਤਾਰ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
+<translation id="5116239826668864748">ਸੁਨੇਹੇ, ਦਸਤਾਵੇਜ਼ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਲਿੰਕ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ਤੁਹਾਡੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ 'ਤੇ ਕੀਮਤ ਘਟੀ}one{ਤੁਹਾਡੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ 'ਤੇ ਕੀਮਤ ਘਟੀ}other{ਤੁਹਾਡੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ 'ਤੇ ਕੀਮਤਾਂ ਘਟੀਆਂ}}</translation>
 <translation id="5186036860380548585">ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਨੇੜੇ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">ਸਾਈਟਾਂ ਨੂੰ JavaScript ਚਲਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="534295439873310000">NFC ਡੀਵਾਈਸਾਂ</translation>
 <translation id="5344522958567249764">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="5373874281522292782">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5389626883706033615">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਨੂੰ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਸਤੇ ਕਹਿਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ਹੋਰ)}one{(+ # ਹੋਰ)}other{(+ # ਹੋਰ)}}</translation>
 <translation id="5403592356182871684">ਨਾਮ</translation>
@@ -272,6 +287,7 @@
 <translation id="5553374991681107062">ਨਵੀਨਤਮ</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
 <translation id="5649053991847567735">ਆਟੋਮੈਟਿਕ ਡਾਊਨਲੋਡਸ</translation>
 <translation id="5668404140385795438">ਜ਼ੂਮ ਇਨ ਕਰਨ ਤੋਂ ਰੋਕਣ ਲਈ ਵੈੱਬਸਾਈਟ ਦੀ ਬੇਨਤੀ ਨੂੰ ਓਵਰਰਾਈਡ ਕਰੋ</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
@@ -282,12 +298,14 @@
 <translation id="5706552988683188916">ਇਸ ਨਾਲ <ph name="WEBSITE" /> ਲਈ ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ</translation>
 <translation id="5723967018671998714">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5740126560802162366">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="5750869797196646528">ਹੱਥ ਟਰੈਕ ਕਰਨਾ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5804241973901381774">ਅਨੁਮਤੀਆਂ</translation>
 <translation id="5844448279347999754">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀ ਲਿਖਤ ਜਾਂ ਚਿੱਤਰਾਂ ਨੂੰ ਨਹੀਂ ਦੇਖ ਸਕਦੀਆਂ।</translation>
 <translation id="5853982612236235577">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਨਹੀਂ ਭੇਜ ਸਕਦੀਆਂ।</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5876056640971328065">ਵੀਡੀਓ ਰੋਕੋ</translation>
+<translation id="5877248419911025165">ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="5884085660368669834">ਸਾਈਟ ਦੀ ਤਰਜੀਹ</translation>
 <translation id="5887687176710214216">ਪਿਛਲੀ ਵਾਰ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">ਮੁਕੰਮਲ ਹੋਏ ਡਾਊਨਲੋਡ</translation>
 <translation id="6071501408666570960">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6120483543004435978">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਨਹੀਂ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="6140839633433422817">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਅਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6171020522141473435">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6177111841848151710">ਮੌਜੂਦਾ ਖੋਜ ਇੰਜਣ ਲਈ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -338,14 +357,18 @@
 <translation id="6545864417968258051">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="6554732001434021288">ਪਿਛਲੀ ਵਾਰ <ph name="NUM_DAYS" /> ਦਿਨ ਪਹਿਲਾਂ ਦੇਖੀ ਗਈ</translation>
+<translation id="656065428026159829">ਹੋਰ ਦੇਖੋ</translation>
 <translation id="6561560012278703671">ਵਧੇਰੇ ਸ਼ਾਂਤ ਸੁਨੇਹਾ ਸੇਵਾ ਵਰਤੋ (ਤੁਹਾਡਾ ਧਿਆਨ ਭਟਕਾਉਣ ਵਾਲੇ ਸੂਚਨਾ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ)</translation>
 <translation id="6593061639179217415">ਡੈਸਕਟਾਪ ਸਾਈਟ</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}one{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="662080504995468778">ਇੱਥੇ ਰੁਕੋ</translation>
 <translation id="6653342741369270081">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਪਿੱਛੇ ਜਾਓ ਬਟਨ ਨੂੰ ਦਬਾਓ।</translation>
+<translation id="6683865262523156564">ਇਹ ਸਾਈਟ ਕਿਸੇ ਅਜਿਹੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਸਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਾਈ ਦੇ ਸਕਦੀ ਹੈ। ਇਹ ਗਰੁੱਪ <ph name="RWS_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6689172468748959065">ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6697925417670533197">ਕਿਰਿਆਸ਼ੀਲ ਡਾਊਨਲੋਡ</translation>
+<translation id="6709432001666529933">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਹੱਥ ਟਰੈਕ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="6722828510648505498">ਪਛਾਣ ਸੰਬੰਧੀ ਸੇਵਾਵਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
 <translation id="6746124502594467657">ਹੇਠਾਂ ਜਾਓ</translation>
 <translation id="6749077623962119521">ਕੀ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
@@ -353,12 +376,16 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ਲਈ ਕੋਈ ਵਿਕਲਪ ਚੁਣੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6818926723028410516">ਆਈਟਮਾਂ ਚੁਣੋ</translation>
+<translation id="6838525730752203626">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋ</translation>
+<translation id="6840760312327750441">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ, ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਫਿਰ, ਇਸਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ 'ਤੇ ਘਸੀਟੋ।</translation>
 <translation id="6864395892908308021">ਇਹ ਡੀਵਾਈਸ NFC ਨੂੰ ਨਹੀਂ ਪੜ੍ਹ ਸਕਦਾ</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" /> ਤੋਂ</translation>
+<translation id="6870169401250095575">ਸੁਰੱਖਿਆ ਜਾਂਚ ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ</translation>
+<translation id="6900883974539674431">ਅਜਿਹੇ ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ, ਜੋ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਹੁੰਦੇ ਹਨ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="6912998170423641340">ਸਾਈਟਾਂ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਲਿਖਤ ਪੜ੍ਹਨ ਅਤੇ ਚਿੱਤਰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6950072572526089586">ਤੁਸੀਂ ਜਿਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ ਤੁਹਾਡੀਆਂ ਕਾਰਵਾਈਆਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਤਾਂ ਜੋ ਇਹ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰੇ — ਉਦਾਹਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਕਿਸੇ ਸਾਈਟ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰੱਖਣ ਜਾਂ ਤੁਹਾਡੇ ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਵਿੱਚ ਆਈਟਮਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਾਸਤੇ। ਅਕਸਰ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਰੱਖਿਅਤ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6980861169612950611">ਕੀ ਸਾਈਟ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
 <translation id="6992289844737586249">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੀ ਇਜਾਜ਼ਤ ਲੈਣ ਨੂੰ ਜ਼ਰੂਰੀ ਬਣਾਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="7000754031042624318">Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕੀਤੀ ਗਈ</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">ਇਹ ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਮਨਪਸੰਦ ਚੀਜ਼ਾਂ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦਿੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ}one{# ਚੁਣੀ ਗਈ}other{# ਚੁਣੀਆਂ ਗਈਆਂ}}</translation>
+<translation id="708014373017851679">'<ph name="APP_NAME" />' ਦਾ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ। ਸਕ੍ਰੀਨ ਦੇ ਸਿਖਰ ਨੇੜੇ ਵਿਕਲਪ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="7141896414559753902">ਸਾਈਟਾਂ ਨੂੰ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦਿਖਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">ਕੋਈ ਸਾਈਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7368695150573390554">ਹਰੇਕ ਆਫ਼ਲਾਈਨ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> ਲਈ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="7399802613464275309">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
 <translation id="7406113532070524618">ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੀ ਪਛਾਣ ਕੀਤੇ ਬਿਨਾਂ ਜਾਂ ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇਖਣ ਦੀ ਆਗਿਆ ਦਿੱਤੇ ਬਿਨਾਂ ਕੰਮ ਕਰਦੀ ਹੈ, ਹਾਲਾਂਕਿ ਸਾਈਟਾਂ ਪੁਸ਼ਟੀਕਰਨ ਦੇ ਹਿੱਸੇ ਵਜੋਂ ਕੁਝ ਜਾਣਕਾਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="7423098979219808738">ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="7423538860840206698">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -396,11 +425,12 @@
 <translation id="7561196759112975576">ਹਮੇਸ਼ਾਂ</translation>
 <translation id="757524316907819857">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7594634374516752650">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
-<translation id="7641339528570811325">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ...</translation>
+<translation id="7617547684249261169">ਤੁਸੀਂ ਤੁਹਾਡੇ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਸਾਈਟ ਡਾਟੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਵਿੱਚੋਂ ਕੁਝ ਜਾਂ ਸਭ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7667547420449112975">ਔਜ਼ ਦਾ ਨਿਰਾਲਾ ਵਿਜ਼ਾਰਡ</translation>
 <translation id="7684642910516280563">ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="7688240020069572972">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ' ਕਾਰਡ ਲੁਕਾਓ</translation>
 <translation id="7719367874908701697">ਪੰਨਾ ਜ਼ੂਮ</translation>
 <translation id="7759147511335618829">MIDI ਡੀਵਾਈਸ ਕੰਟਰੋਲ ਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
@@ -416,10 +446,10 @@
 <translation id="7882806643839505685">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਧੁਨੀ ਵਜਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="789180354981963912">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ:</translation>
 <translation id="7940722705963108451">ਮੈਨੂੰ ਯਾਦ ਕਰਵਾਓ</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}one{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}other{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀਆਂ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟਾਂ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7990211076305263060">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{'ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ}one{'ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ}other{'ਇਨ੍ਹਾਂ ਟੈਬਾਂ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਕਾਰਡ ਨੂੰ ਲੁਕਾਓ}}</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8042586301629853791">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ:</translation>
 <translation id="8067883171444229417">ਵੀਡੀਓ ਚਲਾਓ</translation>
@@ -454,7 +484,7 @@
 <translation id="8441146129660941386">ਪਿੱਛੇ ਵੱਲ ਨੂੰ ਲੈ ਜਾਓ</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ਨੂੰ ਆਪਣੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਟਿਕਾਣਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8447861592752582886">ਡੀਵਾਈਸ 'ਤੇ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਰੱਦ ਕਰੋ</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ਕੁਕੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ}one{# ਕੁਕੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ}other{# ਕੁਕੀਜ਼ ਵਰਤੋਂ ਵਿੱਚ ਹਨ}}</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />' ਦਾ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਐਪ ਨੂੰ ਮੁੜ-ਸਥਾਪਤ ਕਰੋ।</translation>
 <translation id="8487700953926739672">ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ</translation>
 <translation id="848952951823693243">ਹਮੇਸ਼ਾਂ ਮੋਬਾਈਲ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="8499083585497694743">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਣਮਿਊਟ ਕਰੋ</translation>
@@ -462,20 +492,20 @@
 <translation id="851751545965956758">ਸਾਈਟਾਂ ਨੂੰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="8525306231823319788">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="8541410041357371550">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}}</translation>
 <translation id="857943718398505171">ਇਜਾਜ਼ਤ ਹੈ ( ਸਿਫ਼ਾਰਸ਼  ਕੀਤੇ)</translation>
 <translation id="8609465669617005112">ਉੱਪਰ ਜਾਓ</translation>
 <translation id="8617611086246832542">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਡੈਸਕਟਾਪ ਦ੍ਰਿਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ। ਬੰਦ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="8649036394979866943">Chrome ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ, ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਤਣ ਤੋਂ ਸੀਮਤ ਕਰਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਟਰੈਕਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ<ph name="END_LINK" /> ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="8676316391139423634">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਹੱਥ ਟਰੈਕ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਹੱਥ ਟਰੈਕ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8676374126336081632">ਇਨਪੁਟ ਹਟਾਓ</translation>
 <translation id="8681886425883659911">ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="868929229000858085">ਆਪਣੇ ਸੰਪਰਕ ਖੋਜੋ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
+<translation id="8715862698998036666">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਲਈ ਸਿਖਰ ਤੋਂ ਘਸੀਟ ਕੇ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਕੋਨੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ।</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ <ph name="APP_NAME" /> ਲਈ ਇਜਾਜ਼ਤ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8721719390026067591">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਖੋਜ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਖੋਜ ਨਹੀਂ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 ਸਾਈਟ ਨੂੰ ਆਗਿਆ ਦਿੱਤੀ ਗਈ}one{# ਸਾਈਟ ਨੂੰ ਆਗਿਆ ਦਿੱਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਨੂੰ ਆਗਿਆ ਦਿੱਤੀ ਗਈ}}</translation>
 <translation id="8751914237388039244">ਇੱਕ ਚਿੱਤਰ ਚੁਣੋ</translation>
 <translation id="8800034312320686233">ਕੀ ਸਾਈਟ ਕੰਮ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ?</translation>
 <translation id="8801436777607969138">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ JavaScript ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
@@ -494,12 +524,12 @@
 <translation id="8959122750345127698">ਨੈਵੀਗੇਸ਼ਨ ਨਾਪਹੁੰਚਯੋਗ ਹੈ: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ਭੁੱਲਣਾ</translation>
 <translation id="8990043154272859344">ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="8993853206419610596">ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="9002538116239926534">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟੇ ਦੀ ਬਚਤ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟੇ ਦੀ ਬਚਤ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="9019902583201351841">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="9039697262778250930">ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
-<translation id="9090268041676521955">ਇਹ ਸਾਈਟ ਕਿਸੇ ਅਜਿਹੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਣਯੋਗ ਹੈ। ਇਹ ਗਰੁੱਪ <ph name="FPS_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="9106233582039520022">ਕੀ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ <ph name="APP_NAME" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਚਾਲੂ ਕਰੋ।</translation>
@@ -507,5 +537,6 @@
 <translation id="9162462602695099906">ਇਹ ਪੰਨਾ ਖਤਰਨਾਕ ਹੈ</translation>
 <translation id="930525582205581608">ਕੀ ਇਸ ਸਾਈਟ ਨੂੰ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="947156494302904893">ਜਿਹੜੀਆਂ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ ਉਹ ਇਸ ਗੱਲ ਦੀ ਪੁਸ਼ਟੀ ਕਰ ਸਕਦੀਆਂ ਹਨ ਕਿ ਤੁਸੀਂ ਅਸਲ ਵਿਅਕਤੀ ਹੋ, ਬੋਟ ਨਹੀਂ</translation>
+<translation id="959682366969460160">ਸੰਗਠਿਤ ਰਹੋ</translation>
 <translation id="967624055006145463">ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ</translation>
 </translationbundle>

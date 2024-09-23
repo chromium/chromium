@@ -108,8 +108,8 @@ history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id,
       return AnnotatedVisitToClusterVisit(visit, score, engagement_score);
   }
 
-  NOTREACHED() << "GetHardcodedClusterVisit() could not find visit_id: "
-               << visit_id;
+  NOTREACHED_IN_MIGRATION()
+      << "GetHardcodedClusterVisit() could not find visit_id: " << visit_id;
   return {};
 }
 

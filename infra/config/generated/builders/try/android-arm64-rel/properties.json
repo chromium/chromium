@@ -13,12 +13,43 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Android Release (Nexus 5X)",
+              "builder": "Android Release (Pixel 2)",
               "project": "chromium"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
               "builder_group": "chromium.gpu",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_android_config": {
+                "config": "main_builder"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "download_xr_test_apks",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-14-arm64-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "main_builder"
@@ -77,7 +108,12 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Android Release (Nexus 5X)",
+          "builder": "Android Release (Pixel 2)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "android-14-arm64-rel",
           "project": "chromium"
         },
         {
@@ -99,6 +135,11 @@
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$build/siso": {
     "configs": [
       "builder"
@@ -106,7 +147,8 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

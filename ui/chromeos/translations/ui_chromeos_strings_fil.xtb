@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
-<translation id="3113153474486991170">Hindi mabuksan ang "<ph name="PATH" />" mula sa lokasyong ito. Pakikopya sa "Aking mga file" para buksan.</translation>
 <translation id="3113592018909187986">Mayroon ka na lang 1 natitirang pagsubok. Hindi mo magagamit ang network na ito hanggang sa mag-set up ka ng bagong PIN.</translation>
 <translation id="3124404833828281817">Taong nangangarap</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Kanselahin ang <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Hindi Naka-activate, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Posibleng na-deactivate ang iyong SIM card o profile ng eSIM. Subukang palitan ang SIM card mo o lumipat ng profile ng eSIM.</translation>
 <translation id="3722341589402358578">Nagkaroon ng error. Posibleng hindi na-trash ang ilang item.</translation>
 <translation id="3726463242007121105">Hindi mabuksan ang device na ito dahil hindi sinusuportahan ang filesystem nito.</translation>
 <translation id="3727148787322499904">Maaapektuhan ang lahat ng nakabahaging network kung babaguhin ang setting na ito</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Ipinapatupad ng iyong administrator ang proxy na ito</translation>
 <translation id="3830674330436234648">Walang available na playback</translation>
 <translation id="383652340667548381">Serbian</translation>
+<translation id="3839045880592694915">Hindi pinapayagan ng iyong carrier na kumonekta ang modem mo. Makipag-ugnayan sa iyong carrier para sa higit pang detalye.</translation>
 <translation id="385051799172605136">Bumalik</translation>
-<translation id="3851491607336266896">Nakakonekta, limitado ang koneksyon</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3866249974567520381">Paglalarawan</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Inilipat sa OneDrive ang mga kakabukas lang na Microsoft file</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4017788180641807848">English (US) na may Workman keyboard</translation>
-<translation id="4019998208269143058">I-pin sa mga mabilisang file</translation>
 <translation id="4040753847560036377">Mali ang PUK</translation>
 <translation id="4057991113334098539">Ina-activate...</translation>
 <translation id="4092890906744441904">Irish</translation>
+<translation id="4101601646343868113">Mag-sign in sa iyong mobile network at kumpirmahin kung aktibo ang mobile data plan mo</translation>
 <translation id="4124731372776320263">Sini-sync ang 1 file sa Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Ilipat sa trash ang mga item na hindi mo kailangan</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Kapag inilipat ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
+<translation id="5650895901941743674">Tingnan ang configuration ng APN mo</translation>
 <translation id="5669691691057771421">Ilagay ang bagong PIN</translation>
 <translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Kumonekta</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429">Hindi ma-upload ang mga file dahil walang sapat na storage ang "<ph name="SHARED_DRIVE_NAME" />."</translation>
+<translation id="6279140785485544797">Posibleng nag-expire na ang iyong mobile data plan. Makipag-ugnayan sa iyong carrier para sa suporta.</translation>
 <translation id="6287852322318138013">Pumili ng isang app upang buksan ang file na ito</translation>
 <translation id="6295542640242147836">I-lock ang SIM</translation>
 <translation id="6296410173147755564">Invalid ang PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> na archive</translation>
 <translation id="6321303798550928047">Kumakaway</translation>
 <translation id="6327785803543103246">Web proxy autodiscovery</translation>
-<translation id="6337014272874260727">I-unpin sa mga mabilisang file</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Kasalukuyang directory</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6755827872271341378">ChromeOS Flex device</translation>
+<translation id="6777029074498310250">Bisitahin ang <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> para sa higit pang impormasyon</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6794539005637808366">I-restore ang item o i-drag ito sa isang bagong folder sa labas ng trash</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamil na may InScript keyboard</translation>
 <translation id="7088615885725309056">Mas Nauna</translation>
 <translation id="7103992300314999525">Macedonian</translation>
+<translation id="7104338189998813914">May isyu sa pag-access ng iyong OneDrive account</translation>
 <translation id="7106346894903675391">Bumili ng higit pang storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;maghanap sa Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Phonetic</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Maghintay lamang ng isang segundo</translation>
 <translation id="7600126690270271294">Serbian</translation>
 <translation id="7603724359189955920">Mga Grid</translation>
+<translation id="7624010287655004652">Ni-lock ng ibang mobile provider</translation>
 <translation id="7627790789328695202">Whoops, umiiral na ang <ph name="FILE_NAME" />. Palitan ang pangalan nito at subukan ulit.</translation>
 <translation id="7628656427739290098">Kumpleto na nang <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Tulong</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
+<translation id="8630384863424041081">Ilagay ang PIN ng iyong SIM card o ang default na PIN na ibinigay ng carrier mo. Makipag-ugnayan sa iyong carrier para sa suporta.</translation>
 <translation id="863903787380594467">Mali ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">Kinailangang alisin ang iyong mga offline na file</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Ang file na ito ay kumpidensyal at napapailalim sa mga paghihigpit ng patakaran ng administrator.</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8713112442029511308">Maltese</translation>
-<translation id="8714138378966541668">Ni-lock ng provider</translation>
 <translation id="8714406895390098252">Bisikleta</translation>
 <translation id="8719721339511222681">Pinili ang <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>

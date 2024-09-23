@@ -11,8 +11,8 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/ownership/owner_settings_service.h"
 
 class PrefService;

@@ -95,6 +95,38 @@
               },
               "run_tests_serially": true
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Dawn Android arm64 Release (Samsung S24)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-dawn-archive",
+              "builder_group": "chromium.dawn",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "arm64_builder_rel_mb"
+              },
+              "legacy_chromium_config": {
+                "config": "android",
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "dawn_top_of_tree"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Dawn Android arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
           }
         ]
       },
@@ -115,6 +147,11 @@
           "bucket": "ci",
           "builder": "Dawn Android arm64 Release (Pixel 6)",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Dawn Android arm64 Release (Samsung S24)",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -125,15 +162,28 @@
         {
           "builder": "android-dawn-arm64-rel",
           "group": "tryserver.chromium.dawn"
+        },
+        {
+          "builder": "android-dawn-arm64-s24-rel",
+          "group": "tryserver.chromium.dawn"
         }
       ]
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -143,6 +193,9 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "gardener_rotations": [
+    "dawn"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "dawn"

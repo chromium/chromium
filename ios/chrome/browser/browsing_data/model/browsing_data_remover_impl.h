@@ -5,21 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
 
-#include "base/containers/queue.h"
-#include "base/functional/callback.h"
+#import "base/containers/queue.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/time/time.h"
-#include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/prefs/pref_member.h"
-#include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
-#include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "base/time/time.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/prefs/pref_member.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @class WKWebView;
+
+class Browser;
 
 namespace net {
 class URLRequestContextGetter;
@@ -45,11 +47,18 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   bool IsRemoving() const override;
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
-              base::OnceClosure callback) override;
+              base::OnceClosure callback,
+              RemovalParams params = RemovalParams::Default()) override;
   void RemoveInRange(base::Time start_time,
                      base::Time end_time,
                      BrowsingDataRemoveMask mask,
-                     base::OnceClosure callback) override;
+                     base::OnceClosure callback,
+                     RemovalParams params = RemovalParams::Default()) override;
+  // May be called with a meaningful value prior to using `Remove` or
+  // `RemoveInRange` if `BrowsingDataRemoveMask::CLOSE_TABS` is selected, to
+  // avoid having to fetch this info from persisted storage again.
+  void SetCachedTabsInfo(
+      tabs_closure_util::WebStateIDToTime cached_tabs_info) override;
 
  private:
   // Represents a single removal task. Contains all parameters to execute it.
@@ -57,7 +66,8 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
     RemovalTask(base::Time delete_begin,
                 base::Time delete_end,
                 BrowsingDataRemoveMask mask,
-                base::OnceClosure callback);
+                base::OnceClosure callback,
+                RemovalParams params);
     RemovalTask(RemovalTask&& other) noexcept;
     ~RemovalTask();
 
@@ -65,6 +75,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
     base::Time delete_end;
     BrowsingDataRemoveMask mask;
     base::OnceClosure callback;
+    RemovalParams params;
     base::Time task_started;
   };
 
@@ -82,6 +93,13 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // or directly from Remove.
   void RunNextTask();
 
+  // If necessary, shows an activity indicator while the deletion is ongoing.
+  void PrepareForRemoval(BrowsingDataRemoveMask mask, RemovalParams params);
+
+  // If necessary, removes the activity indicator, reloads all web states and
+  // resets NTPs.
+  void CleanupAfterRemoval(BrowsingDataRemoveMask mask, RemovalParams params);
+
   // Removes the specified items related to browsing.
   void RemoveImpl(base::Time delete_begin,
                   base::Time delete_end,
@@ -90,6 +108,21 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // Removes the browsing data stored in WKWebsiteDataStore if needed.
   void RemoveDataFromWKWebsiteDataStore(base::Time delete_begin,
                                         BrowsingDataRemoveMask mask);
+
+  // Implementation for `BrowsingDataRemoveMask::CLOSE_TABS`: If
+  // `cached_tabs_info_` has been set, uses that to determine which tabs to
+  // close and closes them. Otherwise, fetches the relevant information from
+  // persisted storage first.
+  void MaybeFetchTabsInfoThenCloseTabs(base::Time delete_begin,
+                                       base::Time delete_end);
+
+  // Called when the information about tabs from a single browser has been
+  // loaded from persisted storage. Closes tabs from that browser.
+  void OnTabsInformationLoaded(base::WeakPtr<Browser> weak_browser,
+                               base::Time delete_begin,
+                               base::Time delete_end,
+                               base::OnceClosure callback,
+                               tabs_closure_util::WebStateIDToTime result);
 
   // Invokes the current task callback that the removal has completed.
   void NotifyRemovalComplete();
@@ -115,6 +148,12 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
 
   // Used to delete data from HTTP cache.
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
+
+  // Holds the cached information for tabs. It's used when closing tabs is
+  // selected. May be set with a meaningful value in order to more efficiently
+  // close tabs.
+  tabs_closure_util::WebStateIDToTime cached_tabs_info_;
+  bool cached_tabs_info_initialized_;
 
   // Is the object currently in the process of removing data?
   bool is_removing_ = false;

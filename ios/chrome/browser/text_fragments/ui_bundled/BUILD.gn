@@ -1,0 +1,48 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "text_fragments_coordinator.h",
+    "text_fragments_coordinator.mm",
+    "text_fragments_mediator.h",
+    "text_fragments_mediator.mm",
+  ]
+  deps = [
+    "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/web/public/text_fragments",
+    "//ui/base:base",
+    "//ui/strings",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "text_fragments_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base:base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -87,6 +87,8 @@ struct CORE_EXPORT CachedDocumentParameters {
  public:
   explicit CachedDocumentParameters(Document*);
   CachedDocumentParameters() = default;
+  static void SetLcppPreloadLazyLoadImageTypeForTesting(
+      std::optional<features::LcppPreloadLazyLoadImageType> type);
 
   bool do_html_preload_scanning;
   Length default_viewport_min_width;
@@ -99,6 +101,8 @@ struct CORE_EXPORT CachedDocumentParameters {
   // that has a lazy loading indicator, ignore it and create preload request.
   // This will override |lazy_load_image_setting| behavior.
   features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type;
+  static std::optional<features::LcppPreloadLazyLoadImageType>
+      preload_lazy_load_image_type_for_testing;
   HashSet<String> disabled_image_types;
 };
 
@@ -183,8 +187,7 @@ class TokenPreloadScanner {
   element_locator::TokenStreamMatcher lcp_element_matcher_;
 };
 
-class CORE_EXPORT HTMLPreloadScanner
-    : public base::SupportsWeakPtr<HTMLPreloadScanner> {
+class CORE_EXPORT HTMLPreloadScanner final {
   USING_FAST_MALLOC(HTMLPreloadScanner);
 
  public:
@@ -220,7 +223,8 @@ class CORE_EXPORT HTMLPreloadScanner
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,
                      TakePreloadFn take_preload = TakePreloadFn(),
-                     Vector<ElementLocator> locators = {});
+                     Vector<ElementLocator> locators = {},
+                     bool disable_preload_scanning = false);
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
@@ -234,6 +238,12 @@ class CORE_EXPORT HTMLPreloadScanner
   void ScanInBackground(const String& source,
                         const KURL& document_base_element_url);
 
+  static bool IsSkipPreloadScanEnabled(const Document* document);
+
+  base::WeakPtr<HTMLPreloadScanner> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
@@ -241,6 +251,8 @@ class CORE_EXPORT HTMLPreloadScanner
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;
   TakePreloadFn take_preload_;
+  bool skip_preload_scanning_;
+  base::WeakPtrFactory<HTMLPreloadScanner> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

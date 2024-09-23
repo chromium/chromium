@@ -35,6 +35,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/connection_attempts.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 
 namespace net {
@@ -77,6 +78,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void StopCaching() override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
+  int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
@@ -95,8 +97,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
   void SetModifyRequestHeadersCallback(
-      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
-      override;
+      base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
@@ -116,14 +117,17 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
                       const NetErrorDetails& net_error_details,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override;
-  void OnCertificateError(int status,
-                          const SSLInfo& ssl_info) override;
+  void OnCertificateError(int status, const SSLInfo& ssl_info) override;
   void OnNeedsProxyAuth(const HttpResponseInfo& response_info,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override;
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override;
 
   void OnQuicBroken() override;
+
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamPoolSwitchingInfo switching_info) override;
+
   ConnectionAttempts GetConnectionAttempts() const override;
 
  private:
@@ -137,7 +141,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
                            SetProxyInfoInResponse_Empty);
   FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
-                           SetProxyInfoInResponse_IpProtection);
+                           SetProxyInfoInResponse_IpProtectionProxied);
+  FRIEND_TEST_ALL_PREFIXES(HttpNetworkTransactionTest,
+                           SetProxyInfoInResponse_IpProtectionDirect);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateReceived);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateSent);
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest, WindowUpdateOverflow);
@@ -355,12 +361,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     kMaxValue = kRetryAltServiceNotBroken,
   };
 
-  void RecordQuicProtocolErrorMetrics(
-      QuicProtocolErrorRetryStatus retry_status);
-
-  void RecordMetricsIfError(int rv);
-  void RecordMetrics(int rv);
-
   static void SetProxyInfoInResponse(const ProxyInfo& proxy_info,
                                      HttpResponseInfo* response_info);
 
@@ -423,8 +423,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::string request_referrer_;
   std::string request_user_agent_;
   int request_reporting_upload_depth_ = 0;
-#endif
   base::TimeTicks start_timeticks_;
+#endif
 
   // The size in bytes of the buffer we use to drain the response body that
   // we want to throw away.  The response body is typically a small error
@@ -442,6 +442,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Total number of bytes sent on all destroyed HttpStreams for this
   // transaction.
   int64_t total_sent_bytes_ = 0;
+
+  // When the transaction started creating a stream.
+  base::TimeTicks create_stream_start_time_;
 
   // When the transaction started / finished sending the request, including
   // the body, if present. |send_start_time_| is set to |base::TimeTicks()|
@@ -480,8 +483,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // The callback to modify the request header. They will be called just before
   // sending the request to the network.
-  base::RepeatingCallback<void(net::HttpRequestHeaders*)>
-      modify_headers_callbacks_;
+  base::RepeatingCallback<void(HttpRequestHeaders*)> modify_headers_callbacks_;
 
   ConnectionAttempts connection_attempts_;
   IPEndPoint remote_endpoint_;
@@ -505,7 +507,17 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
 
-  std::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
+  // If set, these values are used as DNS resolution times, rather than
+  // using DNS times coming from the established stream.
+  base::TimeTicks dns_resolution_start_time_override_;
+  base::TimeTicks dns_resolution_end_time_override_;
+
+  base::TimeTicks blocked_initialize_stream_start_time_;
+  base::TimeTicks blocked_generate_proxy_auth_token_start_time_;
+  base::TimeTicks blocked_generate_server_auth_token_start_time_;
+
+  // The number of bytes of the body received from network.
+  int64_t received_body_bytes_ = 0;
 };
 
 }  // namespace net

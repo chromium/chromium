@@ -1,0 +1,58 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android && !is_ios)
+
+mojom("mojo_bindings") {
+  sources = [ "searchbox.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//components/omnibox/browser:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+build_webui("build") {
+  grd_prefix = "cr_components_searchbox"
+  web_component_files = [
+    "searchbox.ts",
+    "searchbox_action.ts",
+    "searchbox_dropdown.ts",
+    "searchbox_icon.ts",
+    "searchbox_match.ts",
+    "searchbox_thumbnail.ts",
+  ]
+  non_web_component_files = [
+    "searchbox_browser_proxy.ts",
+    "utils.ts",
+  ]
+  css_files = [ "searchbox_dropdown_shared_style.css" ]
+
+  mojo_files_deps = [
+    ":mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
+    "$root_gen_dir/ui/webui/resources/cr_components/searchbox/searchbox.mojom-webui.ts",
+  ]
+
+  ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/searchbox"
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "relative"
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+}

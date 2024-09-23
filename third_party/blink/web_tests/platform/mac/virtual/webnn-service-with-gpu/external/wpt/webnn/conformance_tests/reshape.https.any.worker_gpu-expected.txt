@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] reshape float32 tensor to a new shape (reorder all dimensions)
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 2D tensor by eliminating one dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 3D tensor by eliminating one dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 3D tensor by eliminating two dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 4D tensor by eliminating two dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 4D tensor by eliminating all dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -33.8125 should be close enough to expected -33.82555389404297 by the acceptable 0 ULP distance, but they have 3422 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 5D tensor by eliminating four dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 2D tensor by eliminating 1st dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 3D tensor by eliminating 2nd and 3rd dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 4D tensor by eliminating 1st and 4th dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (squeeze) float32 5D tensor by eliminating 1st, 2nd and 5th dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 0D tensor to 4D
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -33.8125 should be close enough to expected -33.82555389404297 by the acceptable 0 ULP distance, but they have 3422 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 1D tensor by adding one dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 1D tensor by adding two dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 1D tensor to 5D
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 1D tensor by adding 2nd and 3rd dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 2D tensor by adding one dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 2D tensor by adding two dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 2D tensor by adding 1st dimension
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 2D tensor by adding 1st and 4th dimensions
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+[FAIL] reshape (unsqueeze) float32 5D tensor by adding 4th dimension
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for reshape. It should be between 0 to 5."
+[FAIL] reshape (flatten) float32 3D tensor to 2D
+  assert_true: assert_array_approx_equals_ulp: test reshape float32 actual -30.046875 should be close enough to expected -30.0561466217041 by the acceptable 0 ULP distance, but they have 4861 ULP distance expected true got false
+Harness: the test ran to completion.
+

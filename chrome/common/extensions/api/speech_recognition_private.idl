@@ -65,14 +65,16 @@ namespace speechRecognitionPrivate {
     // Starts listening to audio from the user. The callback is invoked when
     // speech recognition has started. If speech recognition is already active
     // when calling start(), the callback is run with an error.
-    [supportsPromises] static void start(StartOptions options,
-                                         OnStartCallback callback);
+    static void start(
+        StartOptions options,
+        OnStartCallback callback);
 
     // Stops listening to audio from the user. The callback is invoked when
     // speech recognition has stopped. If speech recognition has already stopped
     // when calling stop(), the callback is run with an error.
-    [supportsPromises] static void stop(StopOptions options,
-                                        OnStopCallback callback);
+    static void stop(
+        StopOptions options,
+        OnStopCallback callback);
   };
 
   interface Events {

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PerformanceLongTaskTiming interface: attribute startTime
   assert_own_property: expected property "startTime" missing
 [FAIL] PerformanceLongTaskTiming interface: attribute duration
@@ -20,23 +20,5 @@ Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "entryType" missing
 [FAIL] TaskAttributionTiming interface: default toJSON operation on [object TaskAttributionTiming]
   assert_true: property "id" should be present in the output of TaskAttributionTiming.prototype.toJSON() expected true got false
-[FAIL] PerformanceLongAnimationFrameTiming interface: attribute startTime
-  assert_own_property: expected property "startTime" missing
-[FAIL] PerformanceLongAnimationFrameTiming interface: attribute duration
-  assert_own_property: expected property "duration" missing
-[FAIL] PerformanceLongAnimationFrameTiming interface: attribute name
-  assert_own_property: expected property "name" missing
-[FAIL] PerformanceLongAnimationFrameTiming interface: attribute entryType
-  assert_own_property: expected property "entryType" missing
-[FAIL] PerformanceScriptTiming interface: attribute startTime
-  assert_own_property: expected property "startTime" missing
-[FAIL] PerformanceScriptTiming interface: attribute duration
-  assert_own_property: expected property "duration" missing
-[FAIL] PerformanceScriptTiming interface: attribute name
-  assert_own_property: expected property "name" missing
-[FAIL] PerformanceScriptTiming interface: attribute entryType
-  assert_own_property: expected property "entryType" missing
-[FAIL] PerformanceScriptTiming interface: attribute sourceLocation
-  assert_true: The prototype object must have a property "sourceLocation" expected true got false
 Harness: the test ran to completion.
 

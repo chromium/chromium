@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -34,12 +35,6 @@
 namespace web_app {
 
 class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
- public:
-  WebAppUiManagerImplBrowserTest()
-      : fake_web_app_provider_creator_(base::BindRepeating(
-            &WebAppUiManagerImplBrowserTest::CreateFakeWebAppProvider,
-            base::Unretained(this))) {}
-
  protected:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -51,8 +46,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
 
   webapps::AppId InstallWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
@@ -66,17 +61,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
-    auto provider = std::make_unique<FakeWebAppProvider>(profile);
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile);
-    auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
-        profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
-    provider->SetOsIntegrationManager(std::move(os_integration_manager));
-    provider->StartWithSubsystems();
-    return provider;
-  }
-
-  FakeWebAppProviderCreator fake_web_app_provider_creator_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,

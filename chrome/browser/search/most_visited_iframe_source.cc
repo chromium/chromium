@@ -4,8 +4,9 @@
 
 #include "chrome/browser/search/most_visited_iframe_source.h"
 
+#include <string_view>
+
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
@@ -38,7 +39,8 @@ void MostVisitedIframeSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path(url.path());
 
   if (path == kTitleHTMLPath) {
@@ -56,7 +58,7 @@ void MostVisitedIframeSource::StartDataRequest(
 }
 
 std::string MostVisitedIframeSource::GetMimeType(const GURL& url) {
-  base::StringPiece path = url.path_piece();
+  std::string_view path = url.path_piece();
   if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII))
     return "application/javascript";
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII))

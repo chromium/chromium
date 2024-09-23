@@ -17,7 +17,7 @@ class BrowserContext;
 
 namespace safe_browsing {
 
-class ChromeEnterpriseRealTimeUrlLookupService;
+class RealTimeUrlLookupServiceBase;
 
 // Singleton that owns ChromeEnterpriseRealTimeUrlLookupService objects, one for
 // each active Profile. It listens to profile destroy events and destroy its
@@ -28,7 +28,15 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
-  static ChromeEnterpriseRealTimeUrlLookupService* GetForProfile(
+  //
+  // This method returns RealTimeUrlLookupServiceBase* instead of
+  // ChromeEnterpriseRealTimeUrlLookupService* to fix a UBSAN error in browser
+  // tests (b/331696208).  RealTimeUrlLookupServiceBase is the common base
+  // class of ChromeEnterpriseRealTimeUrlLookupService and
+  // FakeRealTimeUrlLookupService.  Callers of GetForProfile() only need the
+  // public interface of the real-time URL lookup service defined by the
+  // base class.
+  static RealTimeUrlLookupServiceBase* GetForProfile(
       Profile* profile);
 
   // Get the singleton instance.

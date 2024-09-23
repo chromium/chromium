@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/network/public/cpp/cors/cors.h"
 
 #include <set>
@@ -157,7 +162,7 @@ base::expected<void, CorsErrorStatus> CheckAccess(
     // Since the credential is a concept for network schemes, we perform the
     // wildcard check only for HTTP and HTTPS. This is a quick hack to allow
     // data URL (see https://crbug.com/315152).
-    // TODO(https://crbug.com/736308): Once the callers exist only in the
+    // TODO(crbug.com/40088171): Once the callers exist only in the
     // browser process or network service, this check won't be needed any more
     // because it is always for network requests there.
     if (response_url.SchemeIsHTTPOrHTTPS()) {
@@ -362,9 +367,9 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // although there may be internal UI in the future.
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
       "sec-ch-prefers-reduced-motion",
-      // The `Sec-CH-UA-Form-Factor` header field provides information on the
-      // form factor of the user agent device.
-      "sec-ch-ua-form-factor",
+      // The `Sec-CH-UA-Form-Factors` header field provides information on the
+      // form factors of the user agent device.
+      "sec-ch-ua-form-factors",
       // The `Sec-CH-Prefers-Reduced-Transparency` header field is modeled after
       // the prefers-reduced-transparency user preference media feature. It
       // reflects the user’s desire that the page minimizes the amount of

@@ -1,0 +1,19 @@
+include_rules = [
+  "+ios/chrome/browser/tabs/model",
+  "+ios/chrome/browser/web_state_list/model",
+  "+third_party/protobuf",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/40820398): Remove these dependencies.
+  "^session_saving_scene_agent.h": [
+    "+ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h",
+  ],
+  "^session_util.mm": [
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
+  ],
+  "^.*_unittest.mm": [
+    "+ios/chrome/browser/web/model/chrome_web_client.h",
+  ]
+}
+

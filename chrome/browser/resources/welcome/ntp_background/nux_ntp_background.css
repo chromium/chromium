@@ -1,0 +1,152 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../shared/animations.css.js
+ * #import=../shared/chooser_shared.css.js
+ * #include=animations chooser-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  text-align: center;
+}
+
+#backgroundPreview {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: background 300ms, opacity 400ms;
+}
+
+#backgroundPreview.active {
+  opacity: 1;
+}
+
+#backgroundPreview::before {
+  /* Copied from browser/resources/local_ntp/custom_backgrounds.js */
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .3));
+  /* Pseudo element needs some content (even an empty string) to be
+   * displayed. */
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.content {
+  /* Put a non-static position on the content so that it can have a
+   * higher stacking level than its previous sibling,
+   * the #backgroundPreview element. */
+  position: relative;
+}
+
+.ntp-background-logo {
+  background-image: url(../images/module_icons/pick_a_background.svg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 110px 110px;
+  height: 110px;
+  margin: auto;
+  margin-bottom: 32px;
+  width: 110px;
+}
+
+h1 {
+  color: var(--cr-primary-text-color);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+  margin-bottom: 46px;
+  outline: none;
+  transition: color 400ms;
+}
+
+#backgroundPreview.active + .content h1 {
+  color: white;
+}
+
+.ntp-backgrounds-grid {
+  display: grid;
+  grid-gap: 32px;
+  grid-template-columns: repeat(3, 176px);
+  grid-template-rows: repeat(2, 176px);
+  width: 592px;
+}
+
+.option {
+  align-items: stretch;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  text-align: start;
+  transition: border-color 400ms, box-shadow 500ms;
+  width: 100%;
+}
+
+#backgroundPreview.active + .content .option {
+  border-color: var(--google-grey-700);
+}
+
+/* Remove outline when button is focused using the mouse. */
+.option:focus:not(.keyboard-focused) {
+  outline: none;
+}
+
+.ntp-background-thumbnail {
+  background-color: var(--cr-card-background-color);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex: 1;
+}
+
+.option-name {
+  border-top: var(--cr-separator-line);
+  color: var(--navi-wallpaper-text-color);
+  height: 3rem;
+  line-height: 3rem;
+  overflow: hidden;
+  padding: 0 .75rem;
+  text-overflow: ellipsis;
+}
+
+.option[active] .option-name {
+  background: var(--cr-checked-color);
+  color: var(--cr-card-background-color);
+}
+
+.button-bar {
+  margin-top: 56px;
+}
+
+/* Wallpaper Thumbnails */
+.art {
+  background-image: url(../images/ntp_thumbnails/art.jpg);
+}
+
+.cityscape {
+  background-image: url(../images/ntp_thumbnails/cityscape.jpg);
+}
+
+.earth {
+  background-image: url(../images/ntp_thumbnails/earth.jpg);
+}
+
+.geometric-shapes {
+  background-image: url(../images/ntp_thumbnails/geometric_shapes.jpg);
+}
+
+.landscape {
+  background-image: url(../images/ntp_thumbnails/landscape.jpg);
+}

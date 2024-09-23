@@ -4,7 +4,8 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
+assert(is_linux || is_chromeos || is_win || is_mac)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 build_webui("build") {
   grd_prefix = "new_tab_page_instant"

@@ -144,7 +144,7 @@ class DnsRequest {
   int Start() {
     net::HostResolver::ResolveHostParameters parameters;
 
-    auto* query_types_it = net::kDnsQueryTypes.cbegin();
+    auto query_types_it = net::kDnsQueryTypes.cbegin();
     std::advance(query_types_it, data_provider_->ConsumeIntegralInRange<size_t>(
                                      0, net::kDnsQueryTypes.size() - 1));
     parameters.dns_query_type = query_types_it->first;

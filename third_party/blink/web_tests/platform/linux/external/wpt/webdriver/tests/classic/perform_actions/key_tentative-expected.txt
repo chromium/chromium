@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_grapheme_cluster[\\u0e01\\u0e33]
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
+[FAIL] test_grapheme_cluster[\\U0001f937\\U0001f3fd\\u200d\\u2640\\ufe0f]
+  webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
+Harness: the test ran to completion.

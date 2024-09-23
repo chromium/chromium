@@ -20,14 +20,11 @@ import android.widget.TextView;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
@@ -60,7 +57,7 @@ public class ChipView extends LinearLayout {
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
-    private final @IdRes int mSecondaryTextAppearanceId;
+    private final @StyleRes int mSecondaryTextAppearanceId;
     private final int mEndIconWidth;
     private final int mEndIconHeight;
     private final int mEndIconStartPadding;
@@ -220,11 +217,11 @@ public class ChipView extends LinearLayout {
         // Setting this enforces 16dp padding at the end and 8dp at the start (unless overridden).
         // For text, the start padding needs to be 16dp which is why a ChipTextView contributes the
         // remaining 8dp.
-        ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, endPadding, 0);
+        this.setPaddingRelative(leadingElementPadding, 0, endPadding, 0);
 
         mPrimaryText =
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
-        ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
+        mPrimaryText.setTextAppearance(primaryTextAppearance);
 
         // If false fall back to single line defined in XML styles.
         if (allowMultipleLines) {
@@ -368,8 +365,33 @@ public class ChipView extends LinearLayout {
 
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
-        ViewCompat.setPaddingRelative(
-                this, getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+    }
+
+    /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
+    public void addDropdownIcon() {
+        if (mEndIconWrapper != null) return;
+
+        ChromeImageView endIcon = new ChromeImageView(getContext());
+        endIcon.setImageResource(R.drawable.mtrl_dropdown_arrow);
+        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
+
+        mEndIconWrapper = new FrameLayout(getContext());
+
+        FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(mEndIconWidth, mEndIconHeight);
+        layoutParams.setMarginStart(mEndIconStartPadding);
+        layoutParams.setMarginEnd(mEndIconEndPadding);
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        mEndIconWrapper.addView(endIcon, layoutParams);
+        addView(
+                mEndIconWrapper,
+                new LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        // Remove the end padding from the chip to make X icon touch target extend till the end of
+        // the chip.
+        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
     }
 
     /**
@@ -408,7 +430,7 @@ public class ChipView extends LinearLayout {
             mSecondaryText =
                     new AppCompatTextView(
                             new ContextThemeWrapper(getContext(), R.style.ChipTextView));
-            ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
+            mSecondaryText.setTextAppearance(mSecondaryTextAppearanceId);
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.
             mSecondaryText.setSelected(isSelected());
@@ -532,6 +554,6 @@ public class ChipView extends LinearLayout {
         // At this time the Omnibox continues to retain focus, but Chip should be highlighted, as
         // pressing <Enter> on the keyboard will activate the Chip.
         // Make sure the highlight is properly reflected.
-        return super.isFocused() || (isSelected() && !isInTouchMode());
+        return super.isFocused() || isSelected();
     }
 }

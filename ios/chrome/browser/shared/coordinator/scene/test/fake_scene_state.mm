@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -36,25 +36,30 @@
 
 - (instancetype)initWithAppState:(AppState*)appState
                     browserState:(ChromeBrowserState*)browserState {
-  if (self = [super initWithAppState:appState]) {
-    DCHECK(browserState);
-    DCHECK(!browserState->IsOffTheRecord());
+  return [self initWithAppState:appState profile:browserState];
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+                         profile:(ProfileIOS*)profile {
+  if ((self = [super initWithAppState:appState])) {
+    DCHECK(profile);
+    DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
     self.appState = appState;
 
-    _browser = std::make_unique<TestBrowser>(browserState);
+    _browser = std::make_unique<TestBrowser>(profile, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
 
-    _inactive_browser = std::make_unique<TestBrowser>(browserState);
+    _inactive_browser = std::make_unique<TestBrowser>(profile, self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .inactiveBrowser = _inactive_browser.get();
 
-    _incognito_browser = std::make_unique<TestBrowser>(
-        browserState->GetOffTheRecordChromeBrowserState());
+    _incognito_browser =
+        std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
     base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.incognitoBrowserProvider)
         .browser = _incognito_browser.get();
@@ -65,10 +70,14 @@
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
                                     browserState:
                                         (ChromeBrowserState*)browserState {
+  return [FakeSceneState sceneArrayWithCount:count profile:browserState];
+}
+
++ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
+                                         profile:(ProfileIOS*)profile {
   NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
   for (int i = 0; i < count; i++) {
-    [scenes addObject:[[self alloc] initWithAppState:nil
-                                        browserState:browserState]];
+    [scenes addObject:[[self alloc] initWithAppState:nil profile:profile]];
   }
   return [scenes copy];
 }

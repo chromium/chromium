@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -37,7 +37,7 @@ import java.util.Set;
 /**
  * Mediator for the price change module which can be embedded by surfaces like NTP or Start surface.
  */
-public class PriceChangeModuleMediator {
+public class PriceChangeModuleMediator implements TabModelSelectorObserver {
 
     private final Context mContext;
     private final ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
@@ -86,14 +86,18 @@ public class PriceChangeModuleMediator {
 
     /** Show the price change module. */
     public void showModule() {
+        if (!mTabModelSelector.isTabStateInitialized()) {
+            mTabModelSelector.addObserver(this);
+            return;
+        }
+
         if (!mShoppingPersistedTabDataService.isInitialized()) {
             SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
             Set<Tab> tabList = new HashSet<>();
             for (String tabIdString :
                     manager.readStringSet(PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP)) {
                 tabList.add(
-                        TabModelUtils.getTabById(
-                                mTabModelSelector.getModel(false), Integer.valueOf(tabIdString)));
+                        mTabModelSelector.getModel(false).getTabById(Integer.valueOf(tabIdString)));
             }
 
             mShoppingPersistedTabDataService.initialize(tabList);
@@ -108,9 +112,7 @@ public class PriceChangeModuleMediator {
                     Tab tab = res.get(0).getTab();
                     // Check if tab is in the current tab model for multi-window case.
                     if (tab == null
-                            || TabModelUtils.getTabById(
-                                            mTabModelSelector.getModel(false), tab.getId())
-                                    == null) {
+                            || mTabModelSelector.getModel(false).getTabById(tab.getId()) == null) {
                         mModuleDelegate.onDataFetchFailed(mModuleType);
                         return;
                     }
@@ -194,9 +196,16 @@ public class PriceChangeModuleMediator {
     void destroy() {
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
                 mPriceAnnotationsPrefListener);
+        mTabModelSelector.removeObserver(this);
     }
 
     int getModuleType() {
         return mModuleType;
+    }
+
+    @Override
+    public void onTabStateInitialized() {
+        mTabModelSelector.removeObserver(this);
+        showModule();
     }
 }

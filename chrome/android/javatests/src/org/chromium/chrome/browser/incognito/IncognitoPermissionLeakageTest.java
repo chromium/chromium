@@ -10,7 +10,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.core.AnyOf.anyOf;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -24,11 +28,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -43,9 +49,8 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -61,7 +66,8 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
+@Batch(Batch.PER_CLASS)
 public class IncognitoPermissionLeakageTest {
     private static final String PERMISSION_HTML_PATH =
             "/content/test/data/android/geolocation.html";
@@ -88,19 +94,18 @@ public class IncognitoPermissionLeakageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     @After
     public void tearDown() {
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
         // If tab is frozen then getWebContents may return null
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -108,7 +113,7 @@ public class IncognitoPermissionLeakageTest {
     }
 
     private void assertDialogIsShown() throws NoMatchingViewException {
-        Espresso.onView(withId(R.id.text)).check(matches(withText(containsString("location"))));
+        onViewWaiting(withId(R.id.text)).check(matches(withText(containsString("location"))));
     }
 
     private void assertDialogIsNotShown() throws NoMatchingViewException {
@@ -116,11 +121,12 @@ public class IncognitoPermissionLeakageTest {
     }
 
     private void grantPermission() {
-        Espresso.onView(withText(containsString("Allow"))).perform(click());
+        Espresso.onView(withText(anyOf(is("Allow"), is("Allow this time")))).perform(click());
     }
 
     private void blockPermission() {
-        Espresso.onView(withText(containsString("Block"))).perform(click());
+        Espresso.onView(withText(anyOf(containsString("Block"), containsString("Don't allow"))))
+                .perform(click());
     }
 
     /**
@@ -168,7 +174,6 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)
-    @DisabledTest(message = "crbug.com/1148556")
     public void testAllowPermissionDoNotLeakFromIncognitoToIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         // At least one of the incognitoActivity is an incognito CCT.
@@ -199,7 +204,6 @@ public class IncognitoPermissionLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)
-    @DisabledTest(message = "crbug.com/1148556")
     public void testBlockPermissionDoNotLeakFromIncognitoToIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws Exception {
         ActivityType incognitoActivity1 = ActivityType.valueOf(incognitoActivityType1);

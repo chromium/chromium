@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test onerror event on device error in AudioContext</title>
+  <style type="text/css">
+    body {
+      font-family: sans-serif;
+      padding: 1em;
+    }
+
+    .row {
+      margin-top: 1em;
+    }
+
+    #appView {
+      margin-top: 1em;
+      font-family: monospace;
+    }
+
+    #log {
+      line-height: 2em;
+      font-size: 1.0em;
+      padding: 0.5em;
+      border: 1px solid #aaa;
+      color: #333;
+      background-color: #ddd;
+    }
+
+    #device-dropdown {
+      font-size: 1.0em;
+      padding: 0.5em;
+      border-radius: 0.25em;
+    }
+
+    #device-change {
+      font-size: 1.0em;
+      padding: 0.6em 1.0em;
+      border: 0;
+      border-radius: 0.25em;
+      color: #fff;
+      background-color: #2962ff;
+    }
+
+    #device-change:disabled {
+      background-color: #bbdefb;
+    }
+
+    #inspector {
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>AudioContext.onerror Manual Test</h1>
+    <p>Select a non-default & external (USB, etc) audio device from the
+      dropdown list. Then press the START TESTING button to start rendering.
+      When you here the audio (sine wave) disconnect the audio device.
+    </p>
+    <p>The expected result: your should see <code>onerror</code> and then
+      <code>onstatechange</code> dispatched in that order.</p>
+    <div id="appView">
+      <div id="log"></div>
+      <div class="row">
+        <select id="device-dropdown" disabled>
+          <option value="">Getting device information...</option>
+        </select>
+        <button id="device-change" disabled>START TESTING</button>
+      </div>
+      <div class="row">
+        <div id="inspector"></div>
+      </div>
+    </div>
+  <script type="text/javascript">
+    // Handles the button click to activate `setSinkId()` method.
+    const onTestStarted = async (event, audioContext, appView) => {
+      let isOnErrorDispatched = false;
+
+      audioContext.onerror = () => {
+        isOnErrorDispatched = true;
+        appView.inspector.textContent +=
+            `Success: "onerror" dispatched correctly.\n`;
+      };
+
+      audioContext.onstatechange = () => {
+        if (!isOnErrorDispatched) {
+          return;
+        }
+
+        appView.inspector.textContent +=
+            `Success: "onstatechange" dispatched correctly. `
+            + `(context state: ${audioContext.state})\n`;
+      };
+
+      const deviceId = appView.dropdown.value;
+      if (deviceId === 'default') {
+        audioContext.setSinkId('');
+      } else if (deviceId === 'silent') {
+        audioContext.setSinkId({type: 'none'});
+      } else {
+        audioContext.setSinkId(deviceId);
+      }
+
+      appView.log.textContent =
+          'Test started. Disconnect the device to see onerror and ' +
+          'onstatechange are dispatched.';
+    };
+
+    // The manual test body
+    const startManualTestApp = async () => {
+      const appView = {
+        log: document.getElementById('log'),
+        inspector: document.getElementById('inspector'),
+        dropdown: document.getElementById('device-dropdown'),
+        changeButton: document.getElementById('device-change')
+      };
+
+      const audioContext = new AudioContext();
+      const osc = new OscillatorNode(audioContext);
+      const amp = new GainNode(audioContext, {gain: 0.25});
+      osc.connect(amp).connect(audioContext.destination);
+      osc.start();
+
+      if (typeof audioContext.setSinkId !== 'function' ||
+          typeof audioContext.sinkId != 'string') {
+        appView.log.textContent =
+            'This browser does not support AudioContext.setSinkId()';
+        return;
+      }
+
+      // Get a permission, enumerate devices, and set up the UI.
+      try {
+        const stream =
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (stream) {
+          const deviceList = await navigator.mediaDevices.enumerateDevices();
+          let deviceListString = '';
+          deviceList.forEach((device) => {
+            if (device.kind === 'audiooutput') {
+              deviceListString +=
+                  `<option value="${device.deviceId}">${device.label}</option>`;
+            }
+          });
+          deviceListString +=
+              `<option value="silent">none (silent output)</option>`;
+          appView.dropdown.innerHTML = deviceListString;
+          appView.changeButton.addEventListener('click', (event) => {
+            audioContext.resume();
+            onTestStarted(event, audioContext, appView);
+          });
+          appView.dropdown.disabled = false;
+          appView.changeButton.disabled = false;
+          appView.log.textContent =
+              'Device information successfully retrieved. Select ' +
+              'a non-default device and start testing.';
+        } else {
+          appView.log.textContent =
+              'navigator.mediaDevices.getUserMedia() failed.';
+        }
+      } catch (error) {
+        // The permission dialog was dismissed, or acquiring a stream from
+        // getUserMedia() failed.
+        console.error(error);
+        appView.log.textContent = `The initialization failed: ${error}`;
+      }
+    };
+
+    // Entry point
+    window.addEventListener('load', startManualTestApp);
+  </script>
+</body>
+</html>

@@ -69,13 +69,13 @@ class PepperAudioOutputHost : public ppapi::host::ResourceHost {
   void SendOpenReply(int32_t result);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHostImpl> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext open_context_;
 
   // Audio output object that we delegate audio IPC through.
   // We don't own this pointer but are responsible for calling Shutdown on it.
-  raw_ptr<PepperPlatformAudioOutputDev, ExperimentalRenderer> audio_output_;
+  raw_ptr<PepperPlatformAudioOutputDev> audio_output_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
 };

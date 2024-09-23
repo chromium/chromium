@@ -1,0 +1,35 @@
+<a id="header" href="${this.event.url.url}" @click="${this.recordHeaderClick_}">
+  <div id="hoverContainer"></div>
+  <span id="startTime">${this.formattedStartTime_}</span>
+  <span id="title">${this.event.title}</span>
+  <span id="timeStatus" ?hidden="${!this.timeStatus_}">
+    ${this.timeStatus_}
+  </span>
+</a>
+${this.expanded ? html`
+  <div id="expandedInfo">
+    <div id="location" ?hidden="${!this.showLocation_()}">
+      <div id="location-icon" class="cr-icon"></div>
+      <p>${this.event.location}</p>
+    </div>
+    <div id="attachments" ?hidden="${!this.showAttachments_()}">
+      <div id="attachment-icon" class="cr-icon"></div>
+      <div id="attachmentList" class="${this.attachmentListClass_}">
+        ${this.event.attachments.map((item, index) => html`
+          <cr-chip data-index="${index}" @click="${this.openAttachment_}"
+              chip-role="link" class="attachment" title="${item.title}">
+            <img is="cr-auto-img" auto-src="${item.iconUrl.url}" alt="">
+            <div class="attachment-text">${item.title}</div>
+          </cr-chip>
+        `)}
+      </div>
+    </div>
+    <div id="conference" ?hidden="${!this.showConferenceButton_()}">
+      <cr-button role="link"
+          @click="${this.openVideoConference_}"
+          class="action-button">
+        $i18n{modulesCalendarJoinMeetingButtonText}
+      </cr-button>
+    </div>
+  </div>
+` : ''}

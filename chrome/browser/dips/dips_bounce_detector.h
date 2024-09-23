@@ -9,15 +9,19 @@
 #include <string>
 #include <variant>
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/supports_user_data.h"
+#include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -35,8 +39,16 @@ class Clock;
 class TickClock;
 }  // namespace base
 
+namespace content {
+class WebContents;
+}
+
+namespace url {
+class Origin;
+}
+
 using DIPSIssueHandler =
-    base::RepeatingCallback<void(const std::set<std::string>& sites)>;
+    base::RepeatingCallback<void(std::set<std::string> sites)>;
 using DIPSIssueReportingCallback =
     base::RepeatingCallback<void(const std::set<std::string>& sites)>;
 
@@ -63,7 +75,8 @@ class ClientBounceDetectionState {
 
 // Either the URL navigated away from (starting a new chain), or the client-side
 // redirect connecting the navigation to the currently-committed chain.
-using DIPSNavigationStart = absl::variant<GURL, DIPSRedirectInfoPtr>;
+// TODO: crbug.com/324573484 - rename to remove association with DIPS.
+using DIPSNavigationStart = absl::variant<UrlAndSourceId, DIPSRedirectInfoPtr>;
 
 // In case of a client-side redirect loop, we need to impose a limit on the
 // stored redirect chain to avoid boundless memory use. Past this limit,
@@ -76,11 +89,12 @@ inline constexpr int kAllSitesFollowingFirstPartyLookbackLength = 10;
 
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
 // calls to EndChain().
+// TODO: crbug.com/324573484 - rename to remove association with DIPS.
 class DIPSRedirectContext {
  public:
   DIPSRedirectContext(DIPSRedirectChainHandler handler,
                       DIPSIssueHandler issue_handler,
-                      const GURL& initial_url,
+                      const UrlAndSourceId& initial_url,
                       size_t redirect_prefix_count);
   ~DIPSRedirectContext();
 
@@ -88,15 +102,14 @@ class DIPSRedirectContext {
   // navigation. It will take into account the length and initial URL of the
   // current chain (without modifying it).
   void HandleUncommitted(DIPSNavigationStart navigation_start,
-                         std::vector<DIPSRedirectInfoPtr> server_redirects,
-                         GURL final_url);
+                         std::vector<DIPSRedirectInfoPtr> server_redirects);
 
   // Either calls for termination of the in-progress redirect chain, with a
   // start of a new one, or extends it, according to the value of
   // `navigation_start`.
   void AppendCommitted(DIPSNavigationStart navigation_start,
                        std::vector<DIPSRedirectInfoPtr> server_redirects,
-                       const GURL& final_url,
+                       const UrlAndSourceId& final_url,
                        bool current_page_has_sticky_activation);
 
   // Trims |trim_count| redirect from the front of the in-progress redirect
@@ -109,15 +122,16 @@ class DIPSRedirectContext {
   // also starts a fresh redirect chain with `final_url` whilst clearing the
   // state of the terminated chain.
   // NOTE: A chain is valid if it has a non-empty `initial_url_`.
-  void EndChain(GURL final_url, bool current_page_has_sticky_activation);
+  void EndChain(UrlAndSourceId final_url,
+                bool current_page_has_sticky_activation);
 
   void ReportIssue(const GURL& final_url);
 
-  [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op);
+  [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
 
   size_t size() const { return redirects_.size(); }
 
-  GURL GetInitialURLForTesting() const { return initial_url_; }
+  const GURL& GetInitialURLForTesting() const { return initial_url_.url; }
 
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     handler_ = handler;
@@ -125,6 +139,10 @@ class DIPSRedirectContext {
 
   size_t GetRedirectChainLength() const {
     return redirects_.size() + redirect_prefix_count_;
+  }
+
+  const DIPSRedirectInfo& AtForTesting(size_t i) const {
+    return *redirects_.at(i);
   }
 
   std::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
@@ -143,7 +161,8 @@ class DIPSRedirectContext {
   // only sites in `allowed_sites` should be included.
   std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
       const GURL& first_party_url,
-      std::optional<std::set<std::string>> allowed_sites) const;
+      base::optional_ref<std::set<std::string>> allowed_sites,
+      bool require_current_interaction) const;
 
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
@@ -154,39 +173,32 @@ class DIPSRedirectContext {
   DIPSIssueHandler issue_handler_;
   // Represents the start of a chain and also indicates the presence of a valid
   // chain.
-  GURL initial_url_;
+  UrlAndSourceId initial_url_;
   // Whether the initial_url_ had an interaction while loaded.
   bool initial_url_had_user_activation_;
   // TODO(amaliev): Make redirects_ a circular queue to handle the memory bound
   // more gracefully.
   std::vector<DIPSRedirectInfoPtr> redirects_;
   std::set<std::string> redirectors_;
-  // The index of the last redirect to have a known cookie access. When adding
-  // late cookie accesses, we only consider redirects from this offset onwards.
-  size_t update_offset_ = 0;
   // The number of redirects preceding this chain, that should be counted toward
   // this chain's total length. Includes both committed redirects (for an
   // uncommitted chain) and trimmed redirects.
   size_t redirect_prefix_count_ = 0;
 };
 
-// A simplified interface to WebContents and DIPSService that can be faked in
-// tests. Needed to allow unit testing DIPSBounceDetector.
+// A simplified interface to WebContents and DIPSServiceImpl that can be faked
+// in tests. Needed to allow unit testing DIPSBounceDetector.
+// TODO: crbug.com/324573484 - rename to remove association with DIPS.
 class DIPSBounceDetectorDelegate {
  public:
   virtual ~DIPSBounceDetectorDelegate();
-  virtual const GURL& GetLastCommittedURL() const = 0;
-  virtual ukm::SourceId GetPageUkmSourceId() const = 0;
+  virtual UrlAndSourceId GetLastCommittedURL() const = 0;
   virtual void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                                    DIPSRedirectChainInfoPtr chain) = 0;
-  virtual void ReportRedirectorsWithoutInteraction(
-      const std::set<std::string>& sites) = 0;
-  virtual void RecordEvent(DIPSRecordedEvent event,
-                           const GURL& url,
-                           const base::Time& time) = 0;
-  virtual void IncrementPageSpecificBounceCount(const GURL& final_url) = 0;
-  virtual std::set<std::string> AllSitesFollowingFirstParty(
-      const GURL& first_party_url) = 0;
+  virtual void ReportRedirectors(std::set<std::string> sites) = 0;
+  virtual void OnSiteStorageAccessed(const GURL& first_party_url,
+                                     CookieOperation op,
+                                     bool http_cookie) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -211,12 +223,14 @@ class ServerBounceDetectionState
 
 // A simplified interface to content::NavigationHandle that can be faked in
 // tests. Needed to allow unit testing DIPSBounceDetector.
+// TODO: crbug.com/324573484 - rename to remove association with DIPS.
 class DIPSNavigationHandle {
  public:
   virtual ~DIPSNavigationHandle();
 
   // See content::NavigationHandle for an explanation of these methods:
   const GURL& GetURL() const { return GetRedirectChain().back(); }
+  virtual ukm::SourceId GetNextPageUkmSourceId() = 0;
   virtual const GURL& GetPreviousPrimaryMainFrameURL() const = 0;
   virtual bool HasCommitted() const = 0;
   virtual const std::vector<GURL>& GetRedirectChain() const = 0;
@@ -243,13 +257,10 @@ class DIPSNavigationHandle {
 
 // Detects client/server-side bounces and handles them (currently by collecting
 // metrics and storing them in the DIPSDatabase).
+// TODO: crbug.com/324573484 - rename this to avoid confusion with
+// RedirectChainDetector and remove its association with DIPS.
 class DIPSBounceDetector {
  public:
-  // The amount of time since a page last received user interaction before a
-  // subsequent user interaction event may be recorded to DIPS Storage for the
-  // same page.
-  static const base::TimeDelta kTimestampUpdateInterval;
-
   explicit DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
                               const base::TickClock* tick_clock,
                               const base::Clock* clock);
@@ -267,7 +278,6 @@ class DIPSBounceDetector {
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
-  void OnWorkerInitialized(const GURL& url);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
   // Only records a new user activation event once per
   // |kTimestampUpdateInterval| for a given page.
@@ -283,8 +293,16 @@ class DIPSBounceDetector {
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
-  DIPSRedirectContext& CommittedRedirectContext() {
+  const DIPSRedirectContext& CommittedRedirectContext() const {
     return committed_redirect_context_;
+  }
+
+  [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op) {
+    bool was_late = committed_redirect_context_.AddLateCookieAccess(url, op);
+    if (was_late) {
+      OnServerCookiesAccessed(/*navigation_handle=*/nullptr, url, op);
+    }
+    return was_late;
   }
 
   // Makes a call to process the current chain on
@@ -306,102 +324,100 @@ class DIPSBounceDetector {
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 
-// A thin wrapper around DIPSBounceDetector to use it as a WebContentsObserver.
-class DIPSWebContentsObserver
-    : public content_settings::PageSpecificContentSettings::SiteDataObserver,
-      public content::WebContentsObserver,
-      public content::WebContentsUserData<DIPSWebContentsObserver>,
-      public content::SharedWorkerService::Observer,
-      public content::DedicatedWorkerService::Observer,
+class DelayedChainHandler {
+ public:
+  explicit DelayedChainHandler(DIPSRedirectChainHandler handler);
+  ~DelayedChainHandler();
+
+  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain);
+  [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
+  void HandlePreviousChainNow() {
+    HandlePreviousChainNowImpl(/*timer_fired=*/false);
+  }
+
+ private:
+  void HandlePreviousChainNowImpl(bool timer_fired);
+
+  DIPSRedirectChainHandler handler_;
+  std::optional<
+      std::pair<std::vector<DIPSRedirectInfoPtr>, DIPSRedirectChainInfoPtr>>
+      prev_chain_pair_;
+  base::RetainingOneShotTimer timer_;
+};
+
+// Detects chains of server- and client redirects, and notifies observers.
+// TODO: crbug.com/324573485 - move to separate file.
+class RedirectChainDetector
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<RedirectChainDetector>,
       public DIPSBounceDetectorDelegate {
  public:
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a navigation has committed and the redirect context has been
+    // updated. (If you override WebContentsObserver::DidFinishNavigation()
+    // directly, you could be called before the context has been updated.)
+    virtual void OnNavigationCommitted() {}
+    // Called when any redirect chain ends, including ones that end with an
+    // uncommitted navigation.
+    virtual void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>&,
+                                      const DIPSRedirectChainInfo&) {}
+    // Called before OnRedirectChainEnded() with set of redirector sites in the
+    // chain, omitting the initial and final sites.
+    // TODO(rtarpine) - replace with more general purpose method
+    virtual void ReportRedirectors(const std::set<std::string>& sites) {}
+    // Called when most types of storage are accessed (including cookies,
+    // the Web Storage API, IndexedDB, etc). Does not report 3PCs, and
+    // attributes partitioned storage to the top-level URL.
+    virtual void OnSiteStorageAccessed(const GURL& first_party_url,
+                                       CookieOperation op,
+                                       bool http_cookie) {}
+  };
 
-  ~DIPSWebContentsObserver() override;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
+
+  ~RedirectChainDetector() override;
 
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
     detector_.SetRedirectChainHandlerForTesting(handler);
   }
 
-  // Use the passed handler instead of DIPSWebContentsObserver::EmitDIPSIssue().
-  void SetIssueReportingCallbackForTesting(
-      DIPSIssueReportingCallback callback) {
-    issue_reporting_callback_ = callback;
+  const DIPSRedirectContext& CommittedRedirectContext() const {
+    return detector_.CommittedRedirectContext();
   }
 
   void SetClockForTesting(base::Clock* clock) {
     detector_.SetClockForTesting(clock);
-    DCHECK(dips_service_);
-    dips_service_->storage()
-        ->AsyncCall(&DIPSStorage::SetClockForTesting)
-        .WithArgs(clock);
-  }
-
-  std::set<std::string> AllSitesFollowingFirstPartyForTesting(
-      const GURL& first_party_url) {
-    return AllSitesFollowingFirstParty(first_party_url);
   }
 
  private:
-  DIPSWebContentsObserver(content::WebContents* web_contents,
-                          DIPSService* dips_service);
+  explicit RedirectChainDetector(content::WebContents* web_contents);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class content::WebContentsUserData<DIPSWebContentsObserver>;
-
-  void EmitDIPSIssue(const std::set<std::string>& sites);
-
-  // Record a RedirectHeuristic event for a cookie access, if eligible. This
-  // applies when the tracking site has appeared previously in the current
-  // redirect context.
-  void MaybeRecordRedirectHeuristic(
-      const ukm::SourceId& first_party_source_id,
-      const content::CookieAccessDetails& details);
-  void RecordRedirectHeuristic(
-      const ukm::SourceId& first_party_source_id,
-      const ukm::SourceId& third_party_source_id,
-      const content::CookieAccessDetails& details,
-      const size_t sites_passed_count,
-      bool is_current_interaction,
-      std::optional<base::Time> last_user_interaction_time);
-
-  // Create all eligible RedirectHeuristic grants for the current redirect
-  // chain. This may create a storage access grant for any site in the redirect
-  // chain on the last committed site, if it meets the criteria.
-  void CreateAllRedirectHeuristicGrants(const GURL& first_party_url);
-  void CreateRedirectHeuristicGrant(const GURL& url,
-                                    const GURL& first_party_url,
-                                    base::TimeDelta grant_duration,
-                                    bool has_interaction);
+  friend class content::WebContentsUserData<RedirectChainDetector>;
 
   // DIPSBounceDetectorDelegate overrides:
-  const GURL& GetLastCommittedURL() const override;
-  ukm::SourceId GetPageUkmSourceId() const override;
+  UrlAndSourceId GetLastCommittedURL() const override;
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain) override;
-  void ReportRedirectorsWithoutInteraction(
-      const std::set<std::string>& sites) override;
-  void RecordEvent(DIPSRecordedEvent event,
-                   const GURL& url,
-                   const base::Time& time) override;
-  void IncrementPageSpecificBounceCount(const GURL& final_url) override;
-  std::set<std::string> AllSitesFollowingFirstParty(
-      const GURL& first_party_url) override;
+  void ReportRedirectors(std::set<std::string> sites) override;
+  void OnSiteStorageAccessed(const GURL& first_party_url,
+                             CookieOperation op,
+                             bool http_cookie) override;
+  // End DIPSBounceDetectorDelegate overrides.
 
   // Start WebContentsObserver overrides:
+  void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
-  void OnServiceWorkerAccessed(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
-  void OnServiceWorkerAccessed(
-      content::NavigationHandle* navigation_handle,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
+  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+                             blink::mojom::StorageTypeAccessed storage_type,
+                             bool blocked) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
@@ -411,11 +427,95 @@ class DIPSWebContentsObserver
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
 
-  // Start SiteDataObserver overrides:
-  void OnSiteDataAccessed(
-      const content_settings::AccessDetails& access_details) override;
-  void OnStatefulBounceDetected() override;
-  // End SiteDataObserver overrides.
+  void NotifyOnRedirectChainEnded(std::vector<DIPSRedirectInfoPtr> redirects,
+                                  DIPSRedirectChainInfoPtr chain);
+
+  DIPSBounceDetector detector_;
+  DelayedChainHandler delayed_handler_;
+  base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<RedirectChainDetector> weak_factory_{this};
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+// Populates the DIPS Database with site metadata, for the DIPS Service to
+// recognize and delete the storage of sites that perform bounce tracking.
+class DIPSWebContentsObserver
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<DIPSWebContentsObserver>,
+      public content::SharedWorkerService::Observer,
+      public content::DedicatedWorkerService::Observer,
+      public RedirectChainDetector::Observer,
+      public base::SupportsUserData {
+ public:
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
+  ~DIPSWebContentsObserver() override;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+    virtual void OnStatefulBounce(content::WebContents*) {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
+
+  // Use the passed handler instead of DIPSWebContentsObserver::EmitDIPSIssue().
+  void SetIssueReportingCallbackForTesting(
+      DIPSIssueReportingCallback callback) {
+    issue_reporting_callback_ = callback;
+  }
+
+  // TODO(rtarpine): make this take a Clock&.
+  void SetClockForTesting(base::Clock* clock) {
+    DCHECK(dips_service_);
+    dips_service_->storage()
+        ->AsyncCall(&DIPSStorage::SetClockForTesting)
+        .WithArgs(clock);
+    RedirectChainDetector::FromWebContents(web_contents())
+        ->SetClockForTesting(clock);
+    clock_ = *clock;
+  }
+
+ private:
+  DIPSWebContentsObserver(content::WebContents* web_contents,
+                          DIPSServiceImpl* dips_service);
+  // So WebContentsUserData::CreateForWebContents() can call the constructor.
+  friend class content::WebContentsUserData<DIPSWebContentsObserver>;
+
+  void EmitDIPSIssue(const std::set<std::string>& sites);
+
+  void RecordEvent(DIPSRecordedEvent event,
+                   const GURL& url,
+                   const base::Time& time);
+  void OnStatefulBounce(const GURL& final_url);
+
+  // Start RedirectChainDetector::Observer overrides:
+  void ReportRedirectors(const std::set<std::string>& sites) override;
+  void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>& redirects,
+                            const DIPSRedirectChainInfo& chain) override;
+  void OnSiteStorageAccessed(const GURL& first_party_url,
+                             CookieOperation op,
+                             bool http_cookie) override;
+  // End RedirectChainDetector::Observer overrides.
+
+  // Start WebContentsObserver overrides:
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnServiceWorkerAccessed(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(
+      content::NavigationHandle* navigation_handle,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override;
+  void WebAuthnAssertionRequestSucceeded(
+      content::RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
+  // End WebContentsObserver overrides:
 
   // Start SharedWorkerService.Observer overrides:
   void OnClientAdded(
@@ -423,6 +523,7 @@ class DIPSWebContentsObserver
       content::GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
   }
   void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
@@ -436,6 +537,7 @@ class DIPSWebContentsObserver
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
@@ -445,23 +547,38 @@ class DIPSWebContentsObserver
       const GURL& url) override {}
   // End DedicatedWorkerService.Observer overrides.
 
-  // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
-  // with the BrowserContext/Profile which will outlive the WebContents that
-  // DIPSWebContentsObserver is observing.
-  raw_ptr<DIPSService> dips_service_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  DIPSBounceDetector detector_;
+  raw_ptr<RedirectChainDetector> detector_;
+  // raw_ptr<> is safe here because DIPSServiceImpl is a KeyedService,
+  // associated with the BrowserContext/Profile which will outlive the
+  // WebContents that DIPSWebContentsObserver is observing.
+  raw_ptr<DIPSServiceImpl> dips_service_;
+  raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   DIPSIssueReportingCallback issue_reporting_callback_;
 
   std::optional<std::string> last_committed_site_;
-  std::optional<base::Time> last_commit_timestamp_;
+  std::optional<base::Time> last_storage_timestamp_;
+  std::optional<base::Time> last_interaction_timestamp_;
 
+  base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
+namespace dips {
+
 ukm::SourceId GetInitialRedirectSourceId(
     content::NavigationHandle* navigation_handle);
+
+bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host);
+
+// Sets the `has_3pc_exception` field of each element of `redirects`.
+void Populate3PcExceptions(content::BrowserContext* browser_context,
+                           content::WebContents* web_contents,
+                           const GURL& initial_url,
+                           const GURL& final_url,
+                           base::span<DIPSRedirectInfoPtr> redirects);
+
+}  // namespace dips
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_

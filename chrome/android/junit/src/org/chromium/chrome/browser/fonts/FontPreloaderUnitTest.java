@@ -31,7 +31,6 @@ import org.robolectric.annotation.Resetter;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.fonts.FontPreloaderUnitTest.ShadowResourcesCompat;
 
@@ -96,7 +95,6 @@ public class FontPreloaderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
-        UmaRecorderHolder.resetForTesting();
         ShadowResourcesCompat.reset();
         when(mContext.getApplicationContext()).thenReturn(mContext);
         mFontPreloader = new FontPreloader(FONTS);

@@ -29,13 +29,11 @@ template("compute_fuchsia_package_sizes") {
     }
 
     # Declares the files that are needed for test execution on the
-    # swarming test client.
-    # TODO(crbug.com/1347172): Remove arm64 once the execution of fuchsia_sizes
-    # has been migrated to x64 machines.
+    # swarming test client. Note, fuchsia-arm64 is also running binary-sizes,
+    # so the arm64 tools are included.
     data += [
       "//build/fuchsia/",
       "//tools/fuchsia/size_tests/",
-      "//third_party/fuchsia-sdk/sdk/arch/",
       "//third_party/fuchsia-sdk/sdk/tools/arm64/",
       "//third_party/fuchsia-sdk/sdk/tools/x64/",
     ]

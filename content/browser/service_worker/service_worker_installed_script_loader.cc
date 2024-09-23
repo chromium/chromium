@@ -26,7 +26,7 @@ ServiceWorkerInstalledScriptLoader::ServiceWorkerInstalledScriptLoader(
     scoped_refptr<ServiceWorkerVersion>
         version_for_main_script_http_response_info,
     const GURL& request_url)
-    : client_(std::move(client)), request_start_(base::TimeTicks::Now()) {
+    : client_(std::move(client)), request_start_time_(base::TimeTicks::Now()) {
   // Normally, the main script info is set by ServiceWorkerNewScriptLoader for
   // new service workers and ServiceWorkerInstalledScriptsSender for installed
   // service workes. But some embedders might preinstall scripts to the
@@ -96,7 +96,7 @@ void ServiceWorkerInstalledScriptLoader::OnFinished(FinishedReason reason) {
       net_error = net::ERR_FAILED;
       break;
     case FinishedReason::kNotFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   client_->OnComplete(network::URLLoaderCompletionStatus(net_error));
@@ -109,7 +109,7 @@ void ServiceWorkerInstalledScriptLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {
   // This class never returns a redirect response to its client, so should never
   // be asked to follow one.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServiceWorkerInstalledScriptLoader::SetPriority(

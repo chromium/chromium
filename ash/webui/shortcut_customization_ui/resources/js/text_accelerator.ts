@@ -126,7 +126,7 @@ export class TextAcceleratorElement extends PolymerElement {
     key.keyState = keyState;
     key.narrow = this.narrow;
     key.highlighted = this.highlighted;
-    key.hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    key.metaKey = this.lookupManager.getMetaKeyToDisplay();
     return key;
   }
 

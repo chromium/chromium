@@ -1,0 +1,78 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("event_based_logs") {
+  sources = [
+    "event_based_log_manager.cc",
+    "event_based_log_manager.h",
+    "event_based_log_uploader.cc",
+    "event_based_log_uploader.h",
+    "event_observer_base.cc",
+    "event_observer_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+    "//chrome/browser/ash/policy/reporting/os_updates",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//components/reporting/util:status",
+    "//services/preferences/public/cpp",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+    "//chrome/browser/ash/policy/reporting/os_updates",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "event_observer_base_unittest.cc" ]
+
+  deps = [
+    ":event_based_logs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "event_based_log_manager_browsertest.cc" ]
+
+  deps = [
+    ":event_based_logs",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chromeos/ash/components/settings",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

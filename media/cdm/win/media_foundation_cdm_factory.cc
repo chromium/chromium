@@ -90,12 +90,13 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
     const std::unique_ptr<MediaFoundationCdmData> media_foundation_cdm_data) {
   if (!media_foundation_cdm_data) {
     std::move(cdm_created_cb)
-        .Run(nullptr, "Failed to get the CDM preference data.");
+        .Run(nullptr, CreateCdmStatus::kGetCdmPrefDataFailed);
     return;
   }
 
   if (media_foundation_cdm_data->origin_id.is_empty()) {
-    std::move(cdm_created_cb).Run(nullptr, "Failed to get the CDM origin ID.");
+    std::move(cdm_created_cb)
+        .Run(nullptr, CreateCdmStatus::kGetCdmOriginIdFailed);
     return;
   }
 
@@ -137,11 +138,11 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
   if (FAILED(hr)) {
     base::UmaHistogramSparse(uma_prefix + "Initialize", hr);
     std::move(bound_cdm_created_cb)
-        .Run(nullptr, "Failed to initialize CDM: " + PrintHr(hr));
+        .Run(nullptr, CreateCdmStatus::kInitCdmFailed);
     return;
   }
 
-  std::move(bound_cdm_created_cb).Run(cdm, "");
+  std::move(bound_cdm_created_cb).Run(cdm, CreateCdmStatus::kSuccess);
 }
 
 HRESULT MediaFoundationCdmFactory::GetCdmFactory(

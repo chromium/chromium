@@ -5,11 +5,11 @@
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,10 +23,10 @@ using cast_util::StringToEnum;
 
 namespace cast_util {
 
-using ::cast::channel::AuthChallenge;
-using ::cast::channel::CastMessage;
 using cast_channel::CastMessageType;
 using cast_channel::GetAppAvailabilityResult;
+using ::openscreen::cast::proto::AuthChallenge;
+using ::openscreen::cast::proto::CastMessage;
 
 template <>
 const EnumTable<CastMessageType>& EnumTable<CastMessageType>::GetInstance() {
@@ -112,7 +112,7 @@ namespace cast_channel {
 
 namespace {
 
-constexpr base::StringPiece kCastReservedNamespacePrefix =
+constexpr std::string_view kCastReservedNamespacePrefix =
     "urn:x-cast:com.google.cast.";
 
 constexpr const char* kReservedNamespaces[] = {
@@ -151,7 +151,7 @@ void FillCommonCastMessageFields(CastMessage* message,
   message->set_namespace_(message_namespace);
 }
 
-CastMessage CreateKeepAliveMessage(base::StringPiece keep_alive_type) {
+CastMessage CreateKeepAliveMessage(std::string_view keep_alive_type) {
   base::Value::Dict type_dict;
   type_dict.Set("type", keep_alive_type);
   return CreateCastMessage(kHeartbeatNamespace,
@@ -180,8 +180,7 @@ int GetVirtualConnectPlatformValue() {
 // Cast V2 protocol.  This is necessary because the protocol defines messages
 // with the same type in different namespaces, and the namespace is lost when
 // messages are passed using a CastInternalMessage object.
-base::StringPiece GetRemappedMediaRequestType(
-    base::StringPiece v2_message_type) {
+std::string_view GetRemappedMediaRequestType(std::string_view v2_message_type) {
   std::optional<V2MessageType> type =
       StringToEnum<V2MessageType>(v2_message_type);
   DCHECK(type && IsMediaRequestMessageType(*type));
@@ -233,14 +232,14 @@ bool IsCastMessageValid(const CastMessage& message_proto) {
     return false;
   }
   return (message_proto.payload_type() ==
-              cast::channel::CastMessage_PayloadType_STRING &&
+              openscreen::cast::proto::CastMessage_PayloadType_STRING &&
           message_proto.has_payload_utf8()) ||
          (message_proto.payload_type() ==
-              cast::channel::CastMessage_PayloadType_BINARY &&
+              openscreen::cast::proto::CastMessage_PayloadType_BINARY &&
           message_proto.has_payload_binary());
 }
 
-bool IsCastReservedNamespace(base::StringPiece message_namespace) {
+bool IsCastReservedNamespace(std::string_view message_namespace) {
   // Note: Any namespace with the prefix is theoretically reserved for internal
   // messages, but there is at least one namespace in widespread use that uses
   // the "reserved" prefix for app-level messages, so after matching the main
@@ -249,7 +248,7 @@ bool IsCastReservedNamespace(base::StringPiece message_namespace) {
     return false;
 
   const auto prefix_length = kCastReservedNamespacePrefix.length();
-  for (base::StringPiece reserved_namespace : kReservedNamespaces) {
+  for (std::string_view reserved_namespace : kReservedNamespaces) {
     DCHECK(base::StartsWith(reserved_namespace, kCastReservedNamespacePrefix));
     // This comparison skips the first |prefix_length| characters
     // because we already know they match.
@@ -322,10 +321,11 @@ void CreateAuthChallengeMessage(CastMessage* message_proto,
   CHECK(message_proto);
   DeviceAuthMessage auth_message;
 
-  cast::channel::AuthChallenge* challenge = auth_message.mutable_challenge();
+  openscreen::cast::proto::AuthChallenge* challenge =
+      auth_message.mutable_challenge();
   DCHECK(challenge);
   challenge->set_sender_nonce(auth_context.nonce());
-  challenge->set_hash_algorithm(cast::channel::SHA256);
+  challenge->set_hash_algorithm(openscreen::cast::proto::SHA256);
 
   std::string auth_message_string;
   auth_message.SerializeToString(&auth_message_string);
@@ -333,7 +333,7 @@ void CreateAuthChallengeMessage(CastMessage* message_proto,
   FillCommonCastMessageFields(message_proto, kPlatformSenderId,
                               kPlatformReceiverId, kAuthNamespace);
   message_proto->set_payload_type(
-      cast::channel::CastMessage_PayloadType_BINARY);
+      openscreen::cast::proto::CastMessage_PayloadType_BINARY);
   message_proto->set_payload_binary(auth_message_string);
 }
 

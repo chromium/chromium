@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
@@ -17,8 +18,10 @@
 #include "net/cert/ct_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "net/cert/multi_log_ct_verifier.h"
@@ -105,19 +108,22 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     return CreateNewCertVerifyProc(
         cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
         std::move(ct_policy_enforcer),
-        base::OptionalToPtr(impl_params.root_store_data), instance_params);
+        base::OptionalToPtr(impl_params.root_store_data), instance_params,
+        impl_params.time_tracker);
 #else
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
           cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
           std::move(ct_policy_enforcer),
-          base::OptionalToPtr(impl_params.root_store_data), instance_params);
+          base::OptionalToPtr(impl_params.root_store_data), instance_params,
+          impl_params.time_tracker);
     }
 #endif
-    return CreateOldCertVerifyProc(
-        cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
-        std::move(ct_policy_enforcer), instance_params);
+    return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set,
+                                   std::move(ct_verifier),
+                                   std::move(ct_policy_enforcer),
+                                   instance_params, impl_params.time_tracker);
 #endif
   }
 
@@ -134,12 +140,13 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       scoped_refptr<net::CRLSet> crl_set,
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      const net::CertVerifyProc::InstanceParams& instance_params,
+      std::optional<network_time::TimeTracker> time_tracker) {
 #if BUILDFLAG(IS_FUCHSIA)
     return net::CreateCertVerifyProcBuiltin(
         std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
         std::move(ct_policy_enforcer), net::CreateSslSystemTrustStore(),
-        instance_params);
+        instance_params, std::move(time_tracker));
 #else
     return net::CertVerifyProc::CreateSystemVerifyProc(
         std::move(cert_net_fetcher), std::move(crl_set));
@@ -156,7 +163,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
       const net::ChromeRootStoreData* root_store_data,
-      const net::CertVerifyProc::InstanceParams& instance_params) {
+      const net::CertVerifyProc::InstanceParams& instance_params,
+      std::optional<network_time::TimeTracker> time_tracker) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root =
         root_store_data
             ? std::make_unique<net::TrustStoreChrome>(*root_store_data)
@@ -164,12 +172,15 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)
-    trust_store =
-        net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-            std::move(chrome_root),
-            user_slot_restriction_ ? crypto::ScopedPK11Slot(PK11_ReferenceSlot(
-                                         user_slot_restriction_.get()))
-                                   : nullptr);
+    if (user_slot_restriction_) {
+      trust_store =
+          net::CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
+              std::move(chrome_root), crypto::ScopedPK11Slot(PK11_ReferenceSlot(
+                                          user_slot_restriction_.get())));
+    } else {
+      trust_store =
+          net::CreateChromeOnlySystemTrustStore(std::move(chrome_root));
+    }
 #else
     if (instance_params.include_system_trust_store) {
       trust_store =
@@ -196,7 +207,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 #endif
     return net::CreateCertVerifyProcBuiltin(
         std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
-        std::move(ct_policy_enforcer), std::move(trust_store), instance_params);
+        std::move(ct_policy_enforcer), std::move(trust_store), instance_params,
+        std::move(time_tracker));
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
@@ -229,6 +241,60 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
       proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params,
                                          instance_params),
       proc_factory);
+}
+
+void UpdateCertVerifierInstanceParams(
+    const mojom::AdditionalCertificatesPtr& additional_certificates,
+    net::CertVerifyProc::InstanceParams* instance_params) {
+  instance_params->additional_trust_anchors =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->trust_anchors));
+
+  instance_params->additional_untrusted_authorities =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->all_certificates));
+
+  instance_params->additional_trust_anchors_with_enforced_constraints =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates
+                  ->trust_anchors_with_enforced_constraints));
+
+  instance_params->additional_distrusted_spkis =
+      additional_certificates->distrusted_spkis;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  instance_params->include_system_trust_store =
+      additional_certificates->include_system_trust_store;
+#endif
+
+  for (const auto& cert_with_constraints_mojo :
+       additional_certificates->trust_anchors_with_additional_constraints) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+        net::x509_util::CreateCryptoBuffer(
+            base::as_byte_span(cert_with_constraints_mojo->certificate));
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            std::move(cert_buffer),
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!cert) {
+      continue;
+    }
+
+    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+    cert_with_constraints.certificate = std::move(cert);
+    cert_with_constraints.permitted_dns_names =
+        cert_with_constraints_mojo->permitted_dns_names;
+
+    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+    }
+
+    instance_params->additional_trust_anchors_with_constraints.push_back(
+        std::move(cert_with_constraints));
+  }
 }
 
 }  // namespace cert_verifier

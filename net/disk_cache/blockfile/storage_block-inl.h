@@ -59,7 +59,7 @@ template<typename T> int StorageBlock<T>::offset() const {
 template<typename T> bool StorageBlock<T>::LazyInit(MappedFile* file,
                                                     Addr address) {
   if (file_ || address_.is_initialized()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   file_ = file;
@@ -78,7 +78,7 @@ template<typename T> void  StorageBlock<T>::Discard() {
   if (!data_)
     return;
   if (!own_data_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   DeleteData();

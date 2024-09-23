@@ -29,7 +29,7 @@ const char* StartSituationToSuffix(
   // logs.
   switch (situation) {
     case ServiceWorkerMetrics::StartSituation::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ".Unknown";
     case ServiceWorkerMetrics::StartSituation::DURING_STARTUP:
       return ".DuringStartup";
@@ -40,7 +40,7 @@ const char* StartSituationToSuffix(
     case ServiceWorkerMetrics::StartSituation::EXISTING_READY_PROCESS:
       return ".ExistingReadyProcess";
   }
-  NOTREACHED() << static_cast<int>(situation);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(situation);
   return ".Unknown";
 }
 
@@ -51,7 +51,7 @@ const char* StartSituationToDeprecatedSuffix(
   // logs.
   switch (situation) {
     case ServiceWorkerMetrics::StartSituation::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "_Unknown";
     case ServiceWorkerMetrics::StartSituation::DURING_STARTUP:
       return "_DuringStartup";
@@ -62,7 +62,7 @@ const char* StartSituationToDeprecatedSuffix(
     case ServiceWorkerMetrics::StartSituation::EXISTING_READY_PROCESS:
       return "_ExistingReadyProcess";
   }
-  NOTREACHED() << static_cast<int>(situation);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(situation);
   return "_Unknown";
 }
 
@@ -209,7 +209,8 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
     case ServiceWorkerMetrics::EventType::STATIC_ROUTER:
       return "Static Routing";
   }
-  NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
+  NOTREACHED_IN_MIGRATION()
+      << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
 }
 
@@ -227,8 +228,8 @@ const char* ServiceWorkerMetrics::StartSituationToString(
     case StartSituation::EXISTING_READY_PROCESS:
       return "Existing ready process";
   }
-  NOTREACHED() << "Got unexpected start situation: "
-               << static_cast<int>(start_situation);
+  NOTREACHED_IN_MIGRATION() << "Got unexpected start situation: "
+                            << static_cast<int>(start_situation);
   return "error";
 }
 
@@ -397,7 +398,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::STATIC_ROUTER:
     // Static Routing should not be sent as an event.
     case EventType::UNKNOWN:
-      NOTREACHED() << "Invalid event type";
+      NOTREACHED_IN_MIGRATION() << "Invalid event type";
       break;
   }
 }

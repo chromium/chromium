@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -118,9 +119,13 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
 
   ~GLOzoneEGLGbm() override = default;
 
-  bool CanImportNativePixmap() override {
-    return gl::GLSurfaceEGL::GetGLDisplayEGL()
-        ->ext->b_EGL_EXT_image_dma_buf_import;
+  bool CanImportNativePixmap(gfx::BufferFormat format) override {
+    if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
+             ->ext->b_EGL_EXT_image_dma_buf_import) {
+      return false;
+    }
+
+    return NativePixmapEGLBinding::IsBufferFormatSupported(format);
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
@@ -278,7 +283,7 @@ GbmSurfaceless* GbmSurfaceFactory::GetSurface(
     gfx::AcceleratedWidget widget) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = widget_to_surface_map_.find(widget);
-  DCHECK(it != widget_to_surface_map_.end());
+  CHECK(it != widget_to_surface_map_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -286,7 +291,6 @@ std::vector<gl::GLImplementationParts>
 GbmSurfaceFactory::GetAllowedGLImplementations() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return std::vector<gl::GLImplementationParts>{
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
       gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
 }
@@ -308,7 +312,7 @@ GbmSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                               bool allow_protected_memory) {
   DCHECK(!use_swiftshader)
       << "Vulkan Swiftshader is not supported on this platform.";
-  return std::make_unique<VulkanImplementationGbm>();
+  return std::make_unique<VulkanImplementationGbm>(allow_protected_memory);
 }
 
 scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(

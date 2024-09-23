@@ -1,0 +1,11 @@
+# crbug.com/330918119
+-All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/CrossOrigin_BFCacheEnabled
+-All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/SameOrigin_BFCacheDisabled
+-All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/SameOrigin_BFCacheEnabled
+-CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
+
+# crbug.com/343335591
+-FormControlsBrowserTest.Button
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select

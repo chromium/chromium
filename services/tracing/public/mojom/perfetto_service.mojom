@@ -4,6 +4,7 @@
 
 module tracing.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -58,7 +59,7 @@ struct ChunksToMove {
 struct ChunkPatch {
   // Offset relative to the chunk defined in ChunksToPatch.
   uint32 offset;
-  string data;
+  mojo_base.mojom.ByteString data;
 };
 
 struct ChunksToPatch {
@@ -81,8 +82,8 @@ struct CommitDataRequest {
 
 // Passed as part of DataSourceConfig
 struct ChromeConfig {
-  // TODO(crbug/928687): Once we've completed removing the old IPC layer we
-  // should convert this into a struct that represents a
+  // TODO(crbug.com/41439336): Once we've completed removing the old IPC layer
+  // we should convert this into a struct that represents a
   // base::trace_event::TraceConfig object rather then the json encoded string
   // used currently.
   string trace_config;
@@ -125,7 +126,8 @@ struct DataSourceConfig {
   ChromeConfig chrome_config;
   InterceptorConfig? interceptor_config;
   string legacy_config;
-  string track_event_config_raw;
+  mojo_base.mojom.ByteString track_event_config_raw;
+  mojo_base.mojom.ByteString etw_config_raw;
 };
 
 struct DataSourceRegistration {

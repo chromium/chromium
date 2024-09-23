@@ -30,6 +30,8 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -39,6 +41,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -200,8 +203,16 @@ class InstallerDialogView : public views::BoxLayoutView {
     SetInsideBorderInsets(views::LayoutProvider::Get()->GetInsetsMetric(
         views::InsetsMetric::INSETS_DIALOG));
     SetCollapseMarginsSpacing(true);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMain);
 
-    icon_ = AddChildView(std::make_unique<NonAccessibleImageView>());
+    auto* header = AddChildView(std::make_unique<views::BoxLayoutView>());
+    header->SetOrientation(views::BoxLayout::Orientation::kVertical);
+    header->SetDefaultFlex(0);
+    header->GetViewAccessibility().SetRole(
+        ax::mojom::Role::kRegion,
+        l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_BODY_SCREENREADER_NAME));
+
+    icon_ = header->AddChildView(std::make_unique<NonAccessibleImageView>());
     icon_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
     icon_->SetImageSize(gfx::Size(kIconSize, kIconSize));
     icon_->SetProperty(
@@ -209,11 +220,12 @@ class InstallerDialogView : public views::BoxLayoutView {
         BottomPadding(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
     SetIcon(icon_model);
 
-    title_label_ = AddChildView(CreateLabelWithContextAndStyle(
+    title_label_ = header->AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+    title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
     SetTitle(title);
 
-    subtitle_label_ = AddChildView(CreateLabelWithContextAndStyle(
+    subtitle_label_ = header->AddChildView(CreateLabelWithContextAndStyle(
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
     SetSubtitle(subtitle_id, subtitle_param, subtitle_link_callback);
   }
@@ -246,17 +258,31 @@ class InstallerDialogView : public views::BoxLayoutView {
   }
 
   template <typename T>
-  T* SetContentsView(std::unique_ptr<T> contents_view) {
+  T* SetContentsView(std::unique_ptr<T> contents_view,
+                     std::optional<int> region_name_id) {
     CHECK(!contents_wrapper_);
     contents_wrapper_ = AddChildView(std::make_unique<views::BoxLayoutView>());
     contents_wrapper_->SetOrientation(views::BoxLayout::Orientation::kVertical);
     contents_wrapper_->SetMainAxisAlignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
+    contents_wrapper_->SetInsideBorderInsets(
+        views::LayoutProvider::Get()
+            ->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG)
+            .set_left_right(0, 0));
+
     contents_wrapper_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                         0));
+    if (region_name_id.has_value()) {
+      contents_wrapper_->GetViewAccessibility().SetRole(
+          ax::mojom::Role::kRegion,
+          l10n_util::GetStringUTF16(region_name_id.value()));
+    } else {
+      contents_wrapper_->GetViewAccessibility().SetRole(
+          ax::mojom::Role::kRegion);
+    }
     SetFlexForView(contents_wrapper_, 1);
     return contents_wrapper_->AddChildView(std::move(contents_view));
   }
@@ -304,7 +330,8 @@ class GetMetadataView : public InstallerDialogView {
     auto progress_bar =
         std::make_unique<AnnotatedProgressBar>(l10n_util::GetPluralStringFUTF16(
             IDS_IWA_INSTALLER_VERIFICATION_STATUS, 0));
-    progress_bar_ = SetContentsView(std::move(progress_bar));
+    progress_bar_ = SetContentsView(
+        std::move(progress_bar), IDS_IWA_INSTALLER_PROGRESS_SCREENREADER_NAME);
   }
 
   void UpdateProgress(double percent) {
@@ -334,7 +361,8 @@ class ShowMetadataView : public InstallerDialogView {
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL, u""},
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL, u""},
     };
-    info_pane_ = SetContentsView(std::make_unique<InfoPane>(info));
+    info_pane_ = SetContentsView(std::make_unique<InfoPane>(info),
+                                 IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME);
   }
 
   void UpdateInfoPaneContents(
@@ -361,7 +389,8 @@ class InstallView : public InstallerDialogView {
             IDS_IWA_INSTALLER_INSTALL_SUBTITLE) {
     auto progress_bar = std::make_unique<AnnotatedProgressBar>(
         l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_INSTALL_PROGRESS));
-    progress_bar_ = SetContentsView(std::move(progress_bar));
+    progress_bar_ = SetContentsView(
+        std::move(progress_bar), IDS_IWA_INSTALLER_PROGRESS_SCREENREADER_NAME);
   }
 
   void UpdateProgress(double percent) {
@@ -387,7 +416,7 @@ class InstallSuccessView : public InstallerDialogView {
             IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {
     auto image = std::make_unique<NonAccessibleImageView>();
     image->SetImage(ui::ImageModel::FromResourceId(IDR_IWA_INSTALL_SUCCESS));
-    SetContentsView(std::move(image));
+    SetContentsView(std::move(image), /*region_name_id=*/std::nullopt);
   }
 };
 
@@ -438,14 +467,15 @@ void IsolatedWebAppInstallerView::SetDialogButtons(
     return;
   }
 
-  int buttons = ui::DIALOG_BUTTON_CANCEL;
+  int buttons = static_cast<int>(ui::mojom::DialogButton::kCancel);
   dialog_delegate->SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(close_button_label_id));
   if (accept_button_label_id.has_value()) {
-    buttons |= ui::DIALOG_BUTTON_OK;
+    buttons = static_cast<int>(ui::mojom::DialogButton::kOk) |
+              static_cast<int>(ui::mojom::DialogButton::kCancel);
     dialog_delegate->SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(accept_button_label_id.value()));
   }
   dialog_delegate->SetButtons(buttons);
@@ -642,7 +672,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
 
   std::unique_ptr<views::BubbleDialogModelHost> bubble =
       views::BubbleDialogModelHost::CreateModal(dialog_model_builder.Build(),
-                                                ui::MODAL_TYPE_CHILD);
+                                                ui::mojom::ModalType::kChild);
   bubble->SetAnchorView(GetWidget()->GetContentsView());
   bubble->SetArrow(views::BubbleBorder::FLOAT);
   bubble->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

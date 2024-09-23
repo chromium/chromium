@@ -3,8 +3,7 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=vars
- * #import=//resources/polymer/v3_0/paper-styles/color.js
+ * #type=vars-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -78,12 +77,16 @@ html {
   --google-purple-900-rgb: 104, 29, 168;  /* #681da8 */
   --google-purple-900: rgb(var(--google-purple-900-rgb));
 
+  --google-red-100-rgb: 244, 199, 195;  /* #f4c7c3 */
+  --google-red-100: rgb(var(--google-red-100-rgb));
   --google-red-300-rgb: 242, 139, 130;  /* #f28b82 */
   --google-red-300: rgb(var(--google-red-300-rgb));
   --google-red-500-rgb: 234, 67, 53;  /* #ea4335 */
   --google-red-500: rgb(var(--google-red-500-rgb));
   --google-red-600-rgb: 217, 48, 37;  /* #d93025 */
   --google-red-600: rgb(var(--google-red-600-rgb));
+  --google-red-700-rgb: 197, 57, 41;  /* #c53929 */
+  --google-red-700: rgb(var(--google-red-700-rgb));
 
   --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
   --google-yellow-50: rgb(var(--google-yellow-50-rgb));
@@ -97,13 +100,10 @@ html {
   --google-yellow-400: rgb(var(--google-yellow-400-rgb));
   --google-yellow-500-rgb: 251, 188, 4;  /* #fbbc04 */
   --google-yellow-500: rgb(var(--google-yellow-500-rgb));
-
-  --cr-primary-text-color: var(--google-grey-900);
-  --cr-secondary-text-color: var(--google-grey-700);
+  --google-yellow-700-rgb: 240, 147, 0;  /* #f09300 */
+  --google-yellow-700: rgb(var(--google-yellow-700-rgb));
 
   --cr-card-background-color: white;
-
-  --cr-shadow-color: var(--google-grey-800);
 
   /* Vars to help define --cr-elevation-* vars. Components should use the
    * --cr-elevation-* variables instead of these colors directly. */
@@ -125,38 +125,25 @@ html {
 
   --cr-card-shadow: var(--cr-elevation-2);
 
-  --cr-checked-color: var(--google-blue-600);
   --cr-focused-item-color: var(--google-grey-300);
   --cr-form-field-label-color: var(--google-grey-700);
   --cr-hairline-rgb: 0, 0, 0;
   --cr-iph-anchor-highlight-color: rgba(var(--google-blue-600-rgb), 0.1);
-  --cr-link-color: var(--google-blue-700);
   --cr-menu-background-color: white;
   --cr-menu-background-focus-color: var(--google-grey-400);
-  --cr-menu-shadow: 0 2px 6px var(--paper-grey-500);
+  --cr-menu-shadow: var(--cr-elevation-2);
   --cr-separator-color: rgba(0, 0, 0, .06);
   --cr-title-text-color: rgb(90, 90, 90);
-  --cr-toolbar-background-color: white;
-
-  --cr-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
-  --cr-active-background-color: rgba(var(--google-grey-900-rgb), .16);
-  --cr-focus-outline-color: rgba(var(--google-blue-600-rgb), .4);
+  --scrollable-border-color: var(--google-grey-300);
 }
 
 @media (prefers-color-scheme: dark) {
   html {
-    --cr-primary-text-color: var(--google-grey-200);
-    --cr-secondary-text-color: var(--google-grey-500);
-
     --cr-card-background-color: var(--google-grey-900-white-4-percent);
-    --cr-card-shadow-color-rgb: 0, 0, 0;
-
-    --cr-checked-color: var(--google-blue-300);
     --cr-focused-item-color: var(--google-grey-800);
     --cr-form-field-label-color: var(--dark-secondary-color);
     --cr-hairline-rgb: 255, 255, 255;
     --cr-iph-anchor-highlight-color: rgba(var(--google-grey-100-rgb), 0.1);
-    --cr-link-color: var(--google-blue-300);
     --cr-menu-background-color: var(--google-grey-900);
     --cr-menu-background-focus-color: var(--google-grey-700);
     --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
@@ -164,11 +151,7 @@ html {
                       rgba(0, 0, 0, .15) 0 3px 6px 2px;
     --cr-separator-color: rgba(255, 255, 255, .1);
     --cr-title-text-color: var(--cr-primary-text-color);
-    --cr-toolbar-background-color: var(--google-grey-900-white-4-percent);
-
-    --cr-hover-background-color: rgba(255, 255, 255, .1);
-    --cr-active-background-color: rgba(var(--google-grey-200-rgb), .16);
-    --cr-focus-outline-color: rgba(var(--google-blue-300-rgb), .4);
+    --scrollable-border-color: var(--google-grey-700);
   }
 }
 
@@ -187,7 +170,6 @@ html {
 
 html {
   --cr-button-edge-spacing: 12px;
-  --cr-button-height: 32px;
 
   /* Spacing between policy (controlledBy) indicator and control. */
   --cr-controlled-by-spacing: 24px;
@@ -246,7 +228,7 @@ html {
   --cr-form-field-label-line-height: 1;
 }
 
-html[chrome-refresh-2023] {
+html {
   /* Colors: These variables should never be overridden and should only be used
      as fallback values for shared cr_elements or in UIs that do not have
      the color pipeline. */
@@ -265,6 +247,8 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-neutral-outline: rgb(199, 199, 199);
 
   --cr-fallback-color-surface: rgb(255, 255, 255);
+  --cr-fallback-color-surface1: rgb(248, 250, 253);
+  --cr-fallback-color-surface2: rgb(243, 246, 252);
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
   --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
 
@@ -297,7 +281,7 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-state-ripple-primary_: rgba(
       var(--cr-fallback-color-state-ripple-primary-rgb_), 0.32);
 
-  --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
+  --cr-fallback-color-base-container: rgb(236, 239, 247);
 
   --cr-fallback-color-disabled-background: rgba(
       var(--cr-fallback-color-on-surface-rgb), .12);
@@ -339,10 +323,15 @@ html[chrome-refresh-2023] {
 
   /* Elevation */
   --cr-shadow-color: var(--color-sys-shadow, rgb(0, 0, 0));
+
+  /* Common UI colors. */
+  --cr-checked-color: var(
+      --color-checkbox-foreground-checked,
+      var(--cr-fallback-color-primary));
 }
 
 @media (prefers-color-scheme: dark) {
-  html[chrome-refresh-2023] {
+  html {
     /* Colors */
     --cr-fallback-color-outline: rgb(142, 145, 143);
     --cr-fallback-color-primary: rgb(168, 199, 250);
@@ -351,9 +340,11 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-primary-container: rgb(211, 227, 253);
     --cr-fallback-color-secondary-container: rgb(0, 74, 119);
     --cr-fallback-color-on-secondary-container: rgb(194, 231, 255);
-    --cr-fallback-color-neutral-container: rgb(42, 42, 42);
+    --cr-fallback-color-neutral-container: rgb(40, 40, 40);
     --cr-fallback-color-neutral-outline: rgb(117, 117, 117);
-    --cr-fallback-color-surface: rgb(26, 27, 30);
+    --cr-fallback-color-surface: rgb(31, 31, 31);
+    --cr-fallback-color-surface1: rgb(39, 40, 42);
+    --cr-fallback-color-surface2: rgb(45, 47, 49);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
@@ -363,9 +354,9 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-inverse-on-surface: rgb(31, 31, 31);
     --cr-fallback-color-tonal-container: rgb(0, 74, 119);
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
-    --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
+    --cr-fallback-color-tonal-outline: rgb(4, 125, 183);
     --cr-fallback-color-error: rgb(242, 184, 181);
-    --cr-fallback-color-divider: rgb(71, 71, 71);
+    --cr-fallback-color-divider: rgb(94, 94, 94);
     --cr-fallback-color-state-hover-on-prominent_: rgba(31, 31, 31, .06);
     --cr-fallback-color-state-on-subtle-rgb_: 253, 252, 251;
     --cr-fallback-color-state-hover-on-subtle_: rgba(
@@ -379,7 +370,7 @@ html[chrome-refresh-2023] {
 
 /* Overrides to ensure disabled elements show up disabled. */
 @media (forced-colors: active) {
-  html[chrome-refresh-2023] {
+  html {
     --cr-fallback-color-disabled-background: Canvas;
     --cr-fallback-color-disabled-foreground: GrayText;
   }

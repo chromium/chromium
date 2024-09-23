@@ -49,7 +49,8 @@ DCOMPTextureHost::~DCOMPTextureHost() {
   // to ensure this is ordered correctly with regards to previous deferred
   // messages, such as CreateSharedImage.
   uint32_t flush_id = channel_->EnqueueDeferredMessage(
-      gpu::mojom::DeferredRequestParams::NewDestroyDcompTexture(route_id_));
+      gpu::mojom::DeferredRequestParams::NewDestroyDcompTexture(route_id_),
+      /*sync_token_fences=*/{}, /*release_count=*/0);
   channel_->EnsureFlush(flush_id);
 }
 

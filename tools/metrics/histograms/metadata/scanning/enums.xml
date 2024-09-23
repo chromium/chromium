@@ -77,6 +77,33 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Rescan page"/>
 </enum>
 
+<!--
+Values match the OperationResult enum from
+third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+If additional values are added there, they need to be added
+here as well.
+-->
+
+<enum name="ScannerOperationResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Unsupported operation"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="Scanner is busy"/>
+  <int value="5" label="Invalid data or argument"/>
+  <int value="6" label="Wrong value type"/>
+  <int value="7" label="End of data"/>
+  <int value="8" label="Jammed document feeder"/>
+  <int value="9" label="Empty document feeder"/>
+  <int value="10" label="Open flatbed cover"/>
+  <int value="11" label="I/O Error"/>
+  <int value="12" label="Access denied"/>
+  <int value="13" label="Out of memory"/>
+  <int value="14" label="Scanner unreachable"/>
+  <int value="15" label="Handle not found"/>
+  <int value="16" label="Internal error"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

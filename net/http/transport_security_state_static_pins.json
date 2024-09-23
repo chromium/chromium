@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2024-02-12 12:55 UTC
+// Last updated: 2024-09-22 12:56 UTC
 //
 {
   "pinsets": [
@@ -58,20 +58,6 @@
         "GlobalSignExtendedValidationCA_SHA256_G2"
       ],
       "report_uri": "http://clients3.google.com/cert_upload_json"
-    },
-    {
-      "name": "tor",
-      "static_spki_hashes": [
-        "RapidSSL",
-        "DigiCertEVRoot",
-        "Tor1",
-        "Tor2",
-        "Tor3",
-        "LetsEncryptAuthorityPrimary_X1_X3",
-        "LetsEncryptAuthorityBackup_X2_X4",
-        "R3LetsEncrypt",
-        "R4LetsEncrypt"
-      ]
     },
     {
       "name": "facebook",
@@ -1959,31 +1945,6 @@
       "name": "www.messenger.com",
       "include_subdomains": true,
       "pins": "facebook"
-    },
-    {
-      "name": "torproject.org",
-      "include_subdomains": false,
-      "pins": "tor"
-    },
-    {
-      "name": "blog.torproject.org",
-      "include_subdomains": true,
-      "pins": "tor"
-    },
-    {
-      "name": "check.torproject.org",
-      "include_subdomains": true,
-      "pins": "tor"
-    },
-    {
-      "name": "www.torproject.org",
-      "include_subdomains": true,
-      "pins": "tor"
-    },
-    {
-      "name": "dist.torproject.org",
-      "include_subdomains": true,
-      "pins": "tor"
     }
   ]
 }

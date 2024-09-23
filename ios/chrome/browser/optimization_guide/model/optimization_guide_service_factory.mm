@@ -6,7 +6,6 @@
 
 #import "base/feature_list.h"
 #import "base/path_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_store.h"
@@ -17,61 +16,65 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
+// Returns the BackgroundDownloadService for `weak_profile`.
+download::BackgroundDownloadService* GetBackgroundDownloadService(
+    base::WeakPtr<ProfileIOS> weak_profile) {
+  if (ProfileIOS* profile = weak_profile.get()) {
+    return BackgroundDownloadServiceFactory::GetForBrowserState(profile);
+  }
+
+  return nullptr;
+}
+
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     web::BrowserState* context) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  ChromeBrowserState* original_browser_state =
-      chrome_browser_state->GetOriginalChromeBrowserState();
-  DCHECK(chrome_browser_state);
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    return nullptr;
+  }
+
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  ProfileIOS* original_profile = profile->GetOriginalChromeBrowserState();
+
   // Regardless of whether the profile is off the record or not, initialize the
   // Optimization Guide with the database associated with the original profile.
-  auto* proto_db_provider = original_browser_state->GetProtoDatabaseProvider();
-  base::FilePath profile_path = original_browser_state->GetStatePath();
+  auto* proto_db_provider = original_profile->GetProtoDatabaseProvider();
+  base::FilePath profile_path = original_profile->GetStatePath();
 
   base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
-  if (chrome_browser_state->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     OptimizationGuideService* original_ogs =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            original_browser_state);
+        OptimizationGuideServiceFactory::GetForProfile(original_profile);
     DCHECK(original_ogs);
     hint_store = original_ogs->GetHintsManager()->hint_store();
   }
 
-  return std::make_unique<OptimizationGuideService>(
-      proto_db_provider, profile_path, chrome_browser_state->IsOffTheRecord(),
+  auto service = std::make_unique<OptimizationGuideService>(
+      proto_db_provider, profile_path, profile->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocale(), hint_store,
-      chrome_browser_state->GetPrefs(),
-      BrowserListFactory::GetForBrowserState(chrome_browser_state),
-      chrome_browser_state->GetSharedURLLoaderFactory(),
-      base::BindOnce(
-          [](ChromeBrowserState* browser_state) {
-            return BackgroundDownloadServiceFactory::GetForBrowserState(
-                browser_state);
-          },
-          // base::Unretained is safe here because the callback is owned
-          // by PredictionManager which is a transitively owned by
-          // OptimizationGuideService (a keyed service that is
-          // killed before ChromeBrowserState is deallocated).
-          base::Unretained(chrome_browser_state)),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
-}
+      profile->GetPrefs(), BrowserListFactory::GetForBrowserState(profile),
+      profile->GetSharedURLLoaderFactory(),
+      base::BindOnce(&GetBackgroundDownloadService, profile->AsWeakPtr()),
+      IdentityManagerFactory::GetForProfile(profile));
+
+  service->DoFinalInit(
+      BackgroundDownloadServiceFactory::GetForBrowserState(profile));
+  return service;
 }
 
+}  // namespace
+
 // static
-OptimizationGuideService* OptimizationGuideServiceFactory::GetForBrowserState(
-    ChromeBrowserState* context) {
-  if (!optimization_guide::features::IsOptimizationHintsEnabled())
-    return nullptr;
-  return static_cast<OptimizationGuideService*>(
-      GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
+OptimizationGuideService* OptimizationGuideServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<OptimizationGuideService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -92,9 +95,10 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "OptimizationGuideService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("OptimizationGuideService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests,
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -112,17 +116,4 @@ std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildOptimizationGuideService(context);
-}
-
-bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return optimization_guide::features::IsOptimizationHintsEnabled();
-}
-
-web::BrowserState* OptimizationGuideServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool OptimizationGuideServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

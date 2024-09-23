@@ -41,7 +41,7 @@ class BaseAudioContext;
 // They have different rendering mechanisms, so the AudioDestinationHandler
 // (ADH), which is a counterpart of the destination node, encapsulates a
 // different rendering backend.
-class AudioDestinationNode : public AudioNode {
+class MODULES_EXPORT AudioDestinationNode : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

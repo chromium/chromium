@@ -18,6 +18,8 @@ export class FakePrintManagementHandler implements
     this.lastLaunchSource = source;
   }
 
+  recordGetPrintJobsRequestDuration(): void {}
+
   getLaunchPrinterSettingsCount(): number {
     return this.launchPrinterSettingsCount;
   }

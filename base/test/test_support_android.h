@@ -17,6 +17,10 @@ BASE_EXPORT void InitAndroidTestPaths(const FilePath& test_data_dir);
 // Init the message loop for tests on Android.
 BASE_EXPORT void InitAndroidTestMessageLoop();
 
+// Counts how many times MessagePumpAndroid::DoNonDelayedLooperWork() has been
+// entered.
+BASE_EXPORT uint32_t GetAndroidNonDelayedWorkEnterCount();
+
 }  // namespace base
 
 #endif  // BASE_TEST_TEST_SUPPORT_ANDROID_H_

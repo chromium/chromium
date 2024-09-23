@@ -5,9 +5,11 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_unit_test.gni")
 
-# The //build directory is re-used for non-Chromium products. We do not support
-# cxx bindings in such contexts, because //third_party may be missing.
-if (build_with_chromium) {
+# The //build directory is re-used for non-Chromium projects. Do not support
+# cxx bindings in such contexts by default, because //third_party may be
+# missing. Projects that wish to use cxx bindings must explicitly set the
+# enable_rust_cxx GN arg to true.
+if (enable_rust_cxx) {
   import("//third_party/rust/cxx/chromium_integration/rust_cxx.gni")
 }
 
@@ -183,7 +185,7 @@ template("rust_target") {
   # generate Rust code internally, depending on what bindings are declared. If
   # set, it's a set of rust files that include Cxx bindings declarations.
   _cxx_bindings = []
-  assert(!defined(invoker.cxx_bindings) || enable_cxx,
+  assert(!defined(invoker.cxx_bindings) || enable_rust_cxx,
          "cxx bindings are not supported when building rust targets " +
              "outside the Chromium build.")
   if (defined(invoker.cxx_bindings)) {
@@ -199,7 +201,7 @@ template("rust_target") {
   # not a requirement for rustc. The reason is to ensure that tools
   # such as `gn deps` give the correct answer, and thus we trigger
   # the right test suites etc. on code change.
-  # TODO(crbug.com/1256930) - verify this is correct
+  # TODO(crbug.com/40200431) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
   if (invoker.target_type == "rust_proc_macro" &&

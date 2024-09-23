@@ -1,0 +1,116 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package chromeos_input;
+
+message FetchJapaneseDictionaryRequest {}
+
+message FetchJapaneseDictionaryResponse {
+  repeated JapaneseDictionary dictionaries = 1;
+}
+
+message EditJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional int32 entry_index = 2;
+  optional JapaneseDictionary.Entry entry = 3;
+}
+
+message AddJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional JapaneseDictionary.Entry entry = 2;
+}
+
+message DeleteJapaneseDictionaryEntryRequest {
+  optional int64 dictionary_id = 1;
+  optional int32 entry_index = 2;
+}
+
+message CreateJapaneseDictionaryRequest {
+  optional string name = 1;
+}
+
+message RenameJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+  optional string name = 2;
+}
+
+message DeleteJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+}
+
+message ExportJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+}
+
+// Based on:
+// https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto
+message JapaneseDictionary {
+  enum PosType {
+    // Use this when the POS tag is not provided or unknown.
+    NO_POS = 0;  // "品詞なし"
+
+    NOUN = 1;                            // "名詞"
+    ABBREVIATION = 2;                    // "短縮よみ"
+    SUGGESTION_ONLY = 3;                 // "サジェストのみ"
+    PROPER_NOUN = 4;                     // "固有名詞"
+    PERSONAL_NAME = 5;                   // "人名"
+    FAMILY_NAME = 6;                     // "姓"
+    FIRST_NAME = 7;                      // "名"
+    ORGANIZATION_NAME = 8;               // "組織"
+    PLACE_NAME = 9;                      // "地名"
+    SA_IRREGULAR_CONJUGATION_NOUN = 10;  // "名詞サ変"
+    ADJECTIVE_VERBAL_NOUN = 11;          // "名詞形動"
+    NUMBER = 12;                         // "数"
+    ALPHABET = 13;                       // "アルファベット"
+    SYMBOL = 14;                         // "記号"
+    EMOTICON = 15;                       // "顔文字"
+
+    ADVERB = 16;              // "副詞"
+    PRENOUN_ADJECTIVAL = 17;  // "連体詞"
+    CONJUNCTION = 18;         // "接続詞"
+    INTERJECTION = 19;        // "感動詞"
+
+    PREFIX = 20;              // "接頭語"
+    COUNTER_SUFFIX = 21;      // "助数詞"
+    GENERIC_SUFFIX = 22;      // "接尾一般"
+    PERSON_NAME_SUFFIX = 23;  // "接尾人名"
+    PLACE_NAME_SUFFIX = 24;   // "接尾地名"
+
+    WA_GROUP1_VERB = 25;    // "動詞ワ行五段"
+    KA_GROUP1_VERB = 26;    // "動詞カ行五段"
+    SA_GROUP1_VERB = 27;    // "動詞サ行五段"
+    TA_GROUP1_VERB = 28;    // "動詞タ行五段"
+    NA_GROUP1_VERB = 29;    // "動詞ナ行五段"
+    MA_GROUP1_VERB = 30;    // "動詞マ行五段"
+    RA_GROUP1_VERB = 31;    // "動詞ラ行五段"
+    GA_GROUP1_VERB = 32;    // "動詞ガ行五段"
+    BA_GROUP1_VERB = 33;    // "動詞バ行五段"
+    HA_GROUP1_VERB = 34;    // "動詞ハ行四段"
+    GROUP2_VERB = 35;       // "動詞一段"
+    KURU_GROUP3_VERB = 36;  // "動詞カ変"
+    SURU_GROUP3_VERB = 37;  // "動詞サ変"
+    ZURU_GROUP3_VERB = 38;  // "動詞ザ変"
+    RU_GROUP3_VERB = 39;    // "動詞ラ変"
+
+    ADJECTIVE = 40;                 // "形容詞"
+    SENTENCE_ENDING_PARTICLE = 41;  // "終助詞"
+    PUNCTUATION = 42;               // "句読点"
+    FREE_STANDING_WORD = 43;        // "独立語"
+
+    SUPPRESSION_WORD = 44;  // "抑制単語"
+  }
+
+  message Entry {
+    optional string key = 1;
+    optional string value = 2;
+    optional PosType pos = 3;
+    optional string comment = 4;
+  }
+
+  optional uint64 id = 1;
+  optional string name = 2;
+  repeated Entry entries = 3;
+}

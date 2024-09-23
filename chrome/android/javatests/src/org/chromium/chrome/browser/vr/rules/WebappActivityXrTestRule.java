@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 
@@ -15,19 +12,10 @@ import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
  * WebappActivity to a blank page.
  */
 public class WebappActivityXrTestRule extends WebappActivityTestRule implements XrTestRule {
-    private boolean mTrackerDirty;
-
     @Override
-    public Statement apply(final Statement base, final Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        startWebappActivity();
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        startWebappActivity();
     }
 
     @Override

@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/trace_event/trace_event.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DownloadTaskScheduler_jni.h"
 
 namespace download {

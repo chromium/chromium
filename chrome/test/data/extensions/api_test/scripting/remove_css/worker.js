@@ -100,7 +100,7 @@ async function checkColors() {
 
 // Loads `url` in a new tab, waits for it to finish loading, and returns the
 // tabId of the newly-created tab.
-// TODO(https://crbug.com/824647): Update this to use
+// TODO(crbug.com/40568208): Update this to use
 // test_resources/tabs_util.js when extension service workers support
 // modules.
 async function createTab(url) {

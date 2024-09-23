@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  static_library("test_support") {
+    testonly = true
+
+    sources = [
+      "fake_magic_arch.cc",
+      "fake_magic_arch.h",
+      "fake_recovery_key_store.cc",
+      "fake_recovery_key_store.h",
+      "fake_security_domain_service.cc",
+      "fake_security_domain_service.h",
+      "test_util.cc",
+      "test_util.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/trusted_vault",
+      "//components/trusted_vault/proto:proto",
+      "//device/fido:fido",
+      "//net:net",
+      "//url",
+    ]
+
+    data_deps = [ "//third_party/cloud_authenticator/test/local_service:cloud_authenticator_test_service" ]
+  }
+}

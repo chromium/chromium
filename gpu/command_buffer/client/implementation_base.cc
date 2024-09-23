@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/client/implementation_base.h"
 
 #include <algorithm>
@@ -87,8 +92,8 @@ void ImplementationBase::GenSyncToken(GLbyte* sync_token) {
     return;
   }
 
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSync(fence_sync);
+  uint64_t fence_sync = helper_->InsertFenceSync(
+      [this]() { return gpu_control_->GenerateFenceSyncRelease(); });
   helper_->CommandBufferHelper::OrderingBarrier();
   gpu_control_->EnsureWorkVisible();
 
@@ -106,8 +111,8 @@ void ImplementationBase::GenUnverifiedSyncToken(GLbyte* sync_token) {
     return;
   }
 
-  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
-  helper_->InsertFenceSync(fence_sync);
+  uint64_t fence_sync = helper_->InsertFenceSync(
+      [this]() { return gpu_control_->GenerateFenceSyncRelease(); });
   helper_->CommandBufferHelper::OrderingBarrier();
 
   // Copy the data over after setting the data to ensure alignment.
@@ -204,7 +209,7 @@ bool ImplementationBase::OnMemoryDump(
           ->GetTracingProcessId();
 
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(base::StringPrintf(
-      "gpu/transfer_buffer_memory/buffer_%d", transfer_buffer_->GetShmId()));
+      "gpu/transfer_buffer_memory/buffer_0x%x", transfer_buffer_->GetShmId()));
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes,
                   transfer_buffer_->GetSize());
@@ -409,12 +414,12 @@ bool ImplementationBase::HasGrContextSupport() const {
 
 void ImplementationBase::WillCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ImplementationBase::DidCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace gpu

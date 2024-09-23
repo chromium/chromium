@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/gfx/image/image.h"
 
 class AccountId;
 class PrefService;
@@ -34,7 +35,8 @@ bool IsValidModifier(int val);
 
 // Builds `device_key` for use in storing device settings in prefs.
 ASH_EXPORT std::string BuildDeviceKey(const ui::InputDevice& device);
-
+// Builds a unique device key string based on vendor and product IDs.
+ASH_EXPORT std::string BuildDeviceKey(uint16_t vendor_id, uint16_t product_id);
 // Decides based on the existing settings storage and default value if the given
 // setting should be persisted.
 // Settings should be persisted if any of the following are true:
@@ -134,10 +136,17 @@ ConvertListToButtonRemappingArray(
     const base::Value::List& list,
     mojom::CustomizationRestriction customization_restriction);
 
-ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
-
 // Returns whether the given keyboard is ChromeOS layout keyboard.
 ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
+
+// Returns whether the given keyboard is a split modifier keyboard.
+ASH_EXPORT bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard);
+ASH_EXPORT bool IsSplitModifierKeyboard(int keyboard_id);
+
+// Rewrites `device_key` to a known, supported device key if the
+// `kWelcomeExperienceTestUnsupportedDevices` flag is enabled.
+ASH_EXPORT std::string GetDeviceKeyForMetadataRequest(
+    const std::string& device_key);
 
 }  // namespace ash
 

@@ -705,37 +705,21 @@ TEST(AXNodeTest, GetTextContentRangeBounds) {
   const AXNode* text3_node = root_node->GetUnignoredChildAtIndex(2);
   ASSERT_EQ(text_data3.id, text3_node->id());
 
-  // Bounds should be the same between UTF-8 and UTF-16 for `kEnglishText`.
-  EXPECT_EQ(gfx::RectF(0, 0, 27, 0),
-            text1_node->GetTextContentRangeBoundsUTF8(0, 3));
-  EXPECT_EQ(gfx::RectF(12, 0, 7, 0),
-            text1_node->GetTextContentRangeBoundsUTF8(1, 2));
-  EXPECT_EQ(gfx::RectF(), text1_node->GetTextContentRangeBoundsUTF8(2, 4));
+  // Offsets correspond to code units in UTF-16
+  // Each character is a single glyph in `kEnglishText`.
   EXPECT_EQ(gfx::RectF(0, 0, 27, 0),
             text1_node->GetTextContentRangeBoundsUTF16(0, 3));
   EXPECT_EQ(gfx::RectF(12, 0, 7, 0),
             text1_node->GetTextContentRangeBoundsUTF16(1, 2));
   EXPECT_EQ(gfx::RectF(), text1_node->GetTextContentRangeBoundsUTF16(2, 4));
 
-  // Offsets are manually converted between UTF-8 and UTF-16.
-  //
-  // `kHindiText` is 6 code units in UTF-16 and 18 in UTF-8.
-  EXPECT_EQ(gfx::RectF(0, 0, 59, 0),
-            text2_node->GetTextContentRangeBoundsUTF8(0, 18));
-  EXPECT_EQ(gfx::RectF(0, 0, 19, 0),
-            text2_node->GetTextContentRangeBoundsUTF8(6, 12));
+  // `kHindiText` is 6 code units in UTF-16.
   EXPECT_EQ(gfx::RectF(0, 0, 59, 0),
             text2_node->GetTextContentRangeBoundsUTF16(0, 6));
   EXPECT_EQ(gfx::RectF(0, 0, 19, 0),
             text2_node->GetTextContentRangeBoundsUTF16(2, 4));
 
-  // Offsets are manually converted between UTF-8 and UTF-16.
-  //
-  // `kThaiText` is 6 code units in UTF-16 and 18 in UTF-8.
-  EXPECT_EQ(gfx::RectF(0, 0, 0, 85),
-            text3_node->GetTextContentRangeBoundsUTF8(0, 18));
-  EXPECT_EQ(gfx::RectF(0, 66, 0, 10),
-            text3_node->GetTextContentRangeBoundsUTF8(6, 12));
+  // `kThaiText` is 6 code units in UTF-16.
   EXPECT_EQ(gfx::RectF(0, 0, 0, 85),
             text3_node->GetTextContentRangeBoundsUTF16(0, 6));
   EXPECT_EQ(gfx::RectF(0, 66, 0, 10),

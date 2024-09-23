@@ -15,6 +15,9 @@
 
 namespace ui {
 
+// A flag to ensure that accessibility fatal errors crash immediately.
+bool AXTreeManager::is_fail_fast_mode_ = false;
+
 // static
 AXTreeManagerMap& AXTreeManager::GetMap() {
   static base::NoDestructor<AXTreeManagerMap> map;
@@ -130,10 +133,11 @@ AXNode* AXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
   return manager ? manager->GetNode(node_id) : nullptr;
 }
 
-void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
+void AXTreeManager::Initialize(const AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
-               << ax_tree()->error();
+               << ax_tree()->error() << ", AXTreeUpdate info: "
+               << initial_tree.ToString().substr(0, 500);
   }
 }
 
@@ -246,8 +250,6 @@ AXTreeManager::~AXTreeManager() {
   if (ax_tree_)
     ax_tree_->Destroy();
 
-  CleanUp();
-
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();
   if (HasValidTreeID()) {
@@ -263,12 +265,12 @@ AXTreeManager::~AXTreeManager() {
 
 std::unique_ptr<AXTree> AXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
   if (!tree) {
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "Attempting to set a new tree, but no tree has been provided.";
   }
 
   if (tree->GetAXTreeID().type() == ax::mojom::AXTreeIDType::kUnknown) {
-    NOTREACHED_NORETURN() << "Invalid tree ID.\n" << tree->ToString();
+    NOTREACHED() << "Invalid tree ID.\n" << tree->ToString();
   }
 
   if (ax_tree_) {
@@ -410,8 +412,8 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
       parent, RetargetEventType::RetargetEventTypeGenerated);
   DCHECK(parent) << "RetargetForEvents shouldn't return a "
                     "null pointer when |parent| is not null.";
-  parent_manager->FireGeneratedEvent(
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+  parent_manager->FireGeneratedEvent(AXEventGenerator::Event::CHILDREN_CHANGED,
+                                     parent);
 }
 
 void AXTreeManager::EnsureParentConnectionIfNotRootManager() {

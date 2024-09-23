@@ -5,20 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_SHARING_SHARE_DOWNLOAD_OVERLAY_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SHARING_SHARE_DOWNLOAD_OVERLAY_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import <UIKit/UIKit.h>
 
-namespace web {
-class WebState;
-}
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator to present download overlay.
 @interface ShareDownloadOverlayCoordinator : ChromeCoordinator
 
 // Initializes a coordinator for displaying an overlay on the current displayed
-// webview. `webState` must not be null.
+// `webView` which must not be null.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState
+                                   webView:(UIView*)webView
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

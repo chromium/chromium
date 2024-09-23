@@ -87,7 +87,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   ~TestSafeBrowsingService() override;
   SafeBrowsingUIManager* CreateUIManager() override;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  bool SendDownloadReport(
+  void SendDownloadReport(
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,

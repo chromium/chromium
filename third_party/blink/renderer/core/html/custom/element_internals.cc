@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_state_set.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -83,7 +84,7 @@ const V8ControlValue* RestoreFromFormControlState(
       restored_value = MakeGarbageCollected<V8ControlValue>(form_data);
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return restored_value;
 }
@@ -570,8 +571,7 @@ FormControlState ElementInternals::SaveFormControlState() const {
     state.Append("Value");
     AppendToFormControlState(*value_, state);
   }
-  if (RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled() &&
-      state_) {
+  if (state_) {
     state.Append("State");
     AppendToFormControlState(*state_, state);
   }
@@ -587,13 +587,6 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (const V8ControlValue* restored_value = RestoreFromFormControlState(
           *execution_context, state, "Value", index)) {
     value_ = restored_value;
-  }
-  if (!RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled()) {
-    if (value_) {
-      CustomElement::EnqueueFormStateRestoreCallback(Target(), value_,
-                                                     "restore");
-    }
-    return;
   }
 
   const V8ControlValue* restored_state =

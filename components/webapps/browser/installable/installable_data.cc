@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 
 namespace webapps {
@@ -44,7 +42,7 @@ InstallableData::~InstallableData() = default;
 
 InstallableStatusCode InstallableData::GetFirstError() const {
   if (errors.empty()) {
-    return NO_ERROR_DETECTED;
+    return InstallableStatusCode::NO_ERROR_DETECTED;
   }
   return errors[0];
 }

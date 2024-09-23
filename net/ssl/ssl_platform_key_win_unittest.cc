@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/ssl/ssl_platform_key_win.h"
 
 #include <string>
@@ -13,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
+#include "crypto/unexportable_key.h"
 #include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
@@ -39,26 +45,33 @@ struct TestKey {
   const char* cert_file;
   const char* key_file;
   int type;
-  bool is_rsa_1024;
 };
 
 const TestKey kTestKeys[] = {
-    {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA,
-     /*is_rsa_1024=*/false},
-    {"P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC,
-     /*is_rsa_1024=*/false},
-    {"P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC,
-     /*is_rsa_1024=*/false},
-    {"P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC,
-     /*is_rsa_1024=*/false},
-    {"RSA1024", "client_7.pem", "client_7.pk8", EVP_PKEY_RSA,
-     /*is_rsa_1024=*/true},
+    {.name = "RSA",
+     .cert_file = "client_1.pem",
+     .key_file = "client_1.pk8",
+     .type = EVP_PKEY_RSA},
+    {.name = "P256",
+     .cert_file = "client_4.pem",
+     .key_file = "client_4.pk8",
+     .type = EVP_PKEY_EC},
+    {.name = "P384",
+     .cert_file = "client_5.pem",
+     .key_file = "client_5.pk8",
+     .type = EVP_PKEY_EC},
+    {.name = "P521",
+     .cert_file = "client_6.pem",
+     .key_file = "client_6.pk8",
+     .type = EVP_PKEY_EC},
+    {.name = "RSA1024",
+     .cert_file = "client_7.pem",
+     .key_file = "client_7.pk8",
+     .type = EVP_PKEY_RSA},
 };
 
-std::string TestParamsToString(
-    const testing::TestParamInfo<std::tuple<TestKey, bool>>& params) {
-  return std::string(std::get<0>(params.param).name) +
-         (std::get<1>(params.param) ? "" : "NoSHA1Probe");
+std::string TestParamsToString(const testing::TestParamInfo<TestKey>& params) {
+  return params.param.name;
 }
 
 // Appends |bn| to |cbb|, represented as |len| bytes in little-endian order,
@@ -233,24 +246,10 @@ bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
 }  // namespace
 
 class SSLPlatformKeyWinTest
-    : public testing::TestWithParam<std::tuple<TestKey, bool>>,
+    : public testing::TestWithParam<TestKey>,
       public WithTaskEnvironment {
  public:
-  SSLPlatformKeyWinTest() {
-    if (SHA256ProbeEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPlatformKeyProbeSHA256);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPlatformKeyProbeSHA256);
-    }
-  }
-
-  const TestKey& GetTestKey() const { return std::get<0>(GetParam()); }
-  bool SHA256ProbeEnabled() const { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const TestKey& GetTestKey() const { return GetParam(); }
 };
 
 TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
@@ -291,21 +290,9 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
       WrapCNGPrivateKey(cert.get(), std::move(ncrypt_key));
   ASSERT_TRUE(key);
 
-  if (test_key.is_rsa_1024 && !SHA256ProbeEnabled()) {
-    // For RSA-1024 and below, if SHA-256 probing is disabled, we conservatively
-    // prefer to sign SHA-1 hashes. See https://crbug.com/278370.
-    std::vector<uint16_t> expected = {
-        SSL_SIGN_RSA_PKCS1_SHA1,   SSL_SIGN_RSA_PKCS1_SHA256,
-        SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
-        SSL_SIGN_RSA_PSS_SHA256,   SSL_SIGN_RSA_PSS_SHA384,
-        SSL_SIGN_RSA_PSS_SHA512};
-    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
-  } else {
-    EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
-                                                         /*supports_pss=*/true),
-              key->GetAlgorithmPreferences());
-  }
-
+  EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
+                                                       /*supports_pss=*/true),
+            key->GetAlgorithmPreferences());
   TestSSLPrivateKeyMatches(key.get(), pkcs8);
 }
 
@@ -349,33 +336,40 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       WrapCAPIPrivateKey(cert.get(), std::move(prov), AT_SIGNATURE);
   ASSERT_TRUE(key);
 
-  if (SHA256ProbeEnabled()) {
-    std::vector<uint16_t> expected = {
-        SSL_SIGN_RSA_PKCS1_SHA256,
-        SSL_SIGN_RSA_PKCS1_SHA384,
-        SSL_SIGN_RSA_PKCS1_SHA512,
-        SSL_SIGN_RSA_PKCS1_SHA1,
-    };
-    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
-  } else {
-    // When the SHA-256 probe is disabled, we conservatively assume every CAPI
-    // key may be SHA-1-only.
-    std::vector<uint16_t> expected = {
-        SSL_SIGN_RSA_PKCS1_SHA1,
-        SSL_SIGN_RSA_PKCS1_SHA256,
-        SSL_SIGN_RSA_PKCS1_SHA384,
-        SSL_SIGN_RSA_PKCS1_SHA512,
-    };
-    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
-  }
-
+  std::vector<uint16_t> expected = {
+      SSL_SIGN_RSA_PKCS1_SHA256,
+      SSL_SIGN_RSA_PKCS1_SHA384,
+      SSL_SIGN_RSA_PKCS1_SHA512,
+      SSL_SIGN_RSA_PKCS1_SHA1,
+  };
+  EXPECT_EQ(expected, key->GetAlgorithmPreferences());
   TestSSLPrivateKeyMatches(key.get(), pkcs8);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SSLPlatformKeyWinTest,
-                         testing::Combine(testing::ValuesIn(kTestKeys),
-                                          testing::Bool()),
+                         testing::ValuesIn(kTestKeys),
                          TestParamsToString);
+
+TEST(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
+  auto provider = crypto::GetUnexportableKeyProvider({});
+  if (!provider) {
+    GTEST_SKIP() << "Hardware-backed keys are not supported.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  auto key = provider->GenerateSigningKeySlowly(algorithms);
+  if (!key) {
+    // Could be hitting crbug.com/41494935. Fine to skip the test as the
+    // UnexportableKeyProvider logic is covered in another test suite.
+    GTEST_SKIP()
+        << "Workaround for https://issues.chromium.org/issues/41494935";
+  }
+
+  auto ssl_private_key = WrapUnexportableKeySlowly(*key);
+  ASSERT_TRUE(ssl_private_key);
+}
 
 }  // namespace net

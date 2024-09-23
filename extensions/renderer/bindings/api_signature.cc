@@ -151,12 +151,9 @@ class ArgumentParser {
   virtual void SetCallback(v8::Local<v8::Function> callback) = 0;
 
   v8::Local<v8::Context> context_;
-  const raw_ref<const std::vector<std::unique_ptr<ArgumentSpec>>,
-                ExperimentalRenderer>
-      signature_;
-  const raw_ref<const v8::LocalVector<v8::Value>, ExperimentalRenderer>
-      provided_arguments_;
-  const raw_ref<const APITypeReferenceMap, ExperimentalRenderer> type_refs_;
+  const raw_ref<const std::vector<std::unique_ptr<ArgumentSpec>>> signature_;
+  const raw_ref<const v8::LocalVector<v8::Value>> provided_arguments_;
+  const raw_ref<const APITypeReferenceMap> type_refs_;
   PromisesAllowed promises_allowed_;
   binding::AsyncResponseType async_type_ = binding::AsyncResponseType::kNone;
   std::string error_;

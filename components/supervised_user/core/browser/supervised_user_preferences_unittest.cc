@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -40,7 +38,7 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
       pref_service_.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
       static_cast<int>(supervised_user::FilteringBehavior::kAllow));
   EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), true);
-  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
+  EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
   // TODO(b/306376651): When we migrate more preference reading methods in this
   // library, add more test cases for their correct default values.
 }
@@ -57,20 +55,19 @@ TEST_F(SupervisedUserPreferencesTest, ToggleParentalControls) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
-  kids_chrome_management::ListFamilyMembersResponse
-      list_family_members_response;
+  kidsmanagement::ListMembersResponse list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(),
-      kids_chrome_management::HEAD_OF_HOUSEHOLD, "username_hoh");
+      kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(),
-      kids_chrome_management::PARENT, "username_parent");
+      list_family_members_response.add_members(), kidsmanagement::PARENT,
+      "username_parent");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(), kids_chrome_management::CHILD,
+      list_family_members_response.add_members(), kidsmanagement::CHILD,
       "username_child");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(),
-      kids_chrome_management::MEMBER, "username_member");
+      list_family_members_response.add_members(), kidsmanagement::MEMBER,
+      "username_member");
 
   supervised_user::RegisterFamilyPrefs(pref_service_,
                                        list_family_members_response);
@@ -83,14 +80,13 @@ TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
 
 TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   {
-    kids_chrome_management::ListFamilyMembersResponse
-        list_family_members_response;
+    kidsmanagement::ListMembersResponse list_family_members_response;
     supervised_user::SetFamilyMemberAttributesForTesting(
         list_family_members_response.add_members(),
-        kids_chrome_management::HEAD_OF_HOUSEHOLD, "username_hoh");
+        kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
     supervised_user::SetFamilyMemberAttributesForTesting(
-        list_family_members_response.add_members(),
-        kids_chrome_management::PARENT, "username_parent");
+        list_family_members_response.add_members(), kidsmanagement::PARENT,
+        "username_parent");
 
     supervised_user::RegisterFamilyPrefs(pref_service_,
                                          list_family_members_response);
@@ -101,25 +97,13 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   }
 
   {
-    kids_chrome_management::ListFamilyMembersResponse
-        list_family_members_response;
+    kidsmanagement::ListMembersResponse list_family_members_response;
     supervised_user::RegisterFamilyPrefs(pref_service_,
                                          list_family_members_response);
     for (const char* property : supervised_user::kCustodianInfoPrefs) {
       EXPECT_THAT(pref_service_.GetString(property), IsEmpty());
     }
   }
-}
-
-TEST_F(SupervisedUserPreferencesTest, IsChildAccountSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                            supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(supervised_user::IsChildAccount(pref_service_));
-}
-
-TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
@@ -143,176 +127,21 @@ TEST_F(SupervisedUserPreferencesTest, IsSafeSitesDisabled) {
   EXPECT_FALSE(supervised_user::IsSafeSitesEnabled(pref_service_));
 }
 
-enum class UrlFilteringStatus { kEnabled, kDisabled };
-
-// Tests for the method IsSubjectToParentalControlsForSupervisedUser which
-// depends on enabling platform-specific feature flags.
-class SupervisedUserPreferencesTestWithUrlFilteringFeature
-    : public ::testing::Test,
-      public testing::WithParamInterface<UrlFilteringStatus> {
- public:
-  void SetUp() override {
-    auto* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_IOS)
-    if (IsURLFilteringEnabled()) {
-      feature_list_.InitWithFeatures(
-          {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-           supervised_user::kEnableManagedByParentUi},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {},
-          {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-           supervised_user::kEnableManagedByParentUi});
-    }
-#endif
-  }
-
-  bool IsURLFilteringEnabled() {
-    return GetParam() == UrlFilteringStatus::kEnabled;
-  }
-
- protected:
-  TestingPrefServiceSimple pref_service_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
+TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForSupervisedUser) {
   // Set supervised user preference.
   pref_service_.SetString(prefs::kSupervisedUserId,
                           supervised_user::kChildAccountSUID);
-  EXPECT_EQ(supervised_user::IsSubjectToParentalControls(pref_service_),
-            IsURLFilteringEnabled());
+  EXPECT_TRUE(supervised_user::IsSubjectToParentalControls(pref_service_));
 }
 
-TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
+TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForNonSupervisedUser) {
   // Set non-supervised user preference.
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
   EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
 }
 
-TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
-       IsUrlFilteringEnabledForSupervisedUser) {
-  // Set supervised user preference.
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                          supervised_user::kChildAccountSUID);
-  EXPECT_EQ(supervised_user::IsUrlFilteringEnabled(pref_service_),
-            IsURLFilteringEnabled());
-}
-
-TEST_P(SupervisedUserPreferencesTestWithUrlFilteringFeature,
-       IsUrlFilteringEnabledForNonSupervisedUser) {
-  // Set non-supervised user preference.
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-  EXPECT_FALSE(supervised_user::IsUrlFilteringEnabled(pref_service_));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SupervisedUserPreferencesTestWithUrlFilteringFeature,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_IOS)
-    testing::Values(UrlFilteringStatus::kDisabled,
-                    UrlFilteringStatus::kEnabled),
-#else
-    // Android and ChromeOS have supervised user filteting on by
-    // default.
-    testing::Values(UrlFilteringStatus::kEnabled),
-#endif
-    [](const testing::TestParamInfo<UrlFilteringStatus> info) {
-      // Generate the test suffix from boolean param.
-      switch (info.param) {
-        case UrlFilteringStatus::kEnabled:
-          return "with_enabled_url_filtering";
-        case UrlFilteringStatus::kDisabled:
-          return "with_disabled_url_filtering";
-      }
-    });
-
-enum class ExtensionsPermissionStatus { kEnabled, kDisabled };
-
-// Tests for the method AreExtensionsPermissionsEnabled which
-// depends on enabling platform-specific feature flags.
-class SupervisedUserPreferencesTestWithExtensionsPermissionsFeature
-    : public ::testing::Test,
-      public testing::WithParamInterface<ExtensionsPermissionStatus> {
- public:
-  void SetUp() override {
-    auto* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    if (AreExtensionsPermitted()) {
-      feature_list_.InitAndEnableFeature(
-          supervised_user::
-              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          supervised_user::
-              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-    }
-#endif
-  }
-
-  bool AreExtensionsPermitted() const {
-    return GetParam() == ExtensionsPermissionStatus::kEnabled;
-  }
-
- protected:
-  TestingPrefServiceSimple pref_service_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
-       AreExtensionsPermissionsEnabledWithSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                          supervised_user::kChildAccountSUID);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_EQ(supervised_user::AreExtensionsPermissionsEnabled(pref_service_),
-            AreExtensionsPermitted());
-#else
-  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(pref_service_));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
-
-TEST_P(SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
-       AreExtensionsPermissionsEnabledWithNonSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-
-  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(pref_service_));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SupervisedUserPreferencesTestWithExtensionsPermissionsFeature,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    testing::Values(ExtensionsPermissionStatus::kEnabled,
-                    ExtensionsPermissionStatus::kDisabled),
-#else
-    // ChromeOS has supervised user extension permissions on by default.
-    testing::Values(ExtensionsPermissionStatus::kEnabled),
-#endif
-    [](const testing::TestParamInfo<ExtensionsPermissionStatus> info) {
-      // Generate the test suffix from boolean param.
-      switch (info.param) {
-        case ExtensionsPermissionStatus::kEnabled:
-          return "with_enabled_extension_permissions";
-        case ExtensionsPermissionStatus::kDisabled:
-          return "with_disabled_extension_permissions";
-      }
-    });
 
 }  // namespace
 }  // namespace supervised_user

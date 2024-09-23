@@ -45,7 +45,6 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   bool InitializeConfig(sandbox::TargetConfig* config) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool CetCompatible() override;
-  bool AllowWindowsFontsDir() override;
 
   // SandboxedProcessLauncherDelegate:
   bool ShouldUseUntrustedMojoInvitation() override;

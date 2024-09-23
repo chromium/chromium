@@ -15,7 +15,7 @@ namespace ash {
 
 // Interface for dependency injection between PinSetupScreen and its
 // WebUI representation.
-class PinSetupScreenView : public base::SupportsWeakPtr<PinSetupScreenView> {
+class PinSetupScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"pin-setup",
                                                        "PinSetupScreen"};
@@ -23,14 +23,20 @@ class PinSetupScreenView : public base::SupportsWeakPtr<PinSetupScreenView> {
   virtual ~PinSetupScreenView() = default;
 
   // Shows the contents of the screen, using |token| to access QuickUnlock API.
-  virtual void Show(const std::string& token, bool is_child_account) = 0;
+  virtual void Show(const std::string& token,
+                    bool is_child_account,
+                    bool has_login_support,
+                    bool using_pin_as_main_factor) = 0;
 
   virtual void SetLoginSupportAvailable(bool available) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<PinSetupScreenView> AsWeakPtr() = 0;
 };
 
 // The sole implementation of the PinSetupScreenView, using WebUI.
-class PinSetupScreenHandler : public BaseScreenHandler,
-                              public PinSetupScreenView {
+class PinSetupScreenHandler final : public BaseScreenHandler,
+                                    public PinSetupScreenView {
  public:
   using TView = PinSetupScreenView;
 
@@ -46,8 +52,15 @@ class PinSetupScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // PinSetupScreenView:
-  void Show(const std::string& token, bool is_child_account) override;
+  void Show(const std::string& token,
+            bool is_child_account,
+            bool has_login_support,
+            bool using_pin_as_main_factor) override;
   void SetLoginSupportAvailable(bool available) override;
+  base::WeakPtr<PinSetupScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<PinSetupScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

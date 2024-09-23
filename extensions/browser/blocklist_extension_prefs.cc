@@ -5,6 +5,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 
 #include <optional>
+
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"
@@ -78,14 +79,15 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
     case BLOCKLISTED_POTENTIALLY_UNWANTED:
       return BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
     case BLOCKLISTED_UNKNOWN:
-      NOTREACHED() << "The unknown state should not be added into prefs.";
+      NOTREACHED_IN_MIGRATION()
+          << "The unknown state should not be added into prefs.";
       return BitMapBlocklistState::NOT_BLOCKLISTED;
   }
 }
 
 BitMapBlocklistState GetExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   BitMapBlocklistState sb_state =
       GetSafeBrowsingExtensionBlocklistState(extension_id, extension_prefs);
   BitMapBlocklistState extension_telemetry_service_state =
@@ -119,8 +121,9 @@ void AddOmahaBlocklistState(const ExtensionId& extension_id,
                             BitMapBlocklistState state,
                             ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
-      extension_id, static_cast<int>(state), ExtensionPrefs::BIT_MAP_PREF_ADD,
-      kPrefOmahaBlocklistState, static_cast<int>(kDefaultBitMapBlocklistState));
+      extension_id, static_cast<int>(state),
+      ExtensionPrefs::BitMapPrefOperation::kAdd, kPrefOmahaBlocklistState,
+      static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
 void RemoveOmahaBlocklistState(const ExtensionId& extension_id,
@@ -128,13 +131,13 @@ void RemoveOmahaBlocklistState(const ExtensionId& extension_id,
                                ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, static_cast<int>(state),
-      ExtensionPrefs::BIT_MAP_PREF_REMOVE, kPrefOmahaBlocklistState,
+      ExtensionPrefs::BitMapPrefOperation::kRemove, kPrefOmahaBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
 bool HasOmahaBlocklistState(const ExtensionId& extension_id,
                             BitMapBlocklistState state,
-                            ExtensionPrefs* extension_prefs) {
+                            const ExtensionPrefs* extension_prefs) {
   int current_states = extension_prefs->GetBitMapPrefBits(
       extension_id, kPrefOmahaBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
@@ -153,7 +156,8 @@ void AddAcknowledgedBlocklistState(const ExtensionId& extension_id,
                                    BitMapBlocklistState state,
                                    ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
-      extension_id, static_cast<int>(state), ExtensionPrefs::BIT_MAP_PREF_ADD,
+      extension_id, static_cast<int>(state),
+      ExtensionPrefs::BitMapPrefOperation::kAdd,
       kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
@@ -164,7 +168,8 @@ void RemoveAcknowledgedBlocklistState(
     extensions::ExtensionPrefs* extension_prefs) {
   extension_prefs->ModifyBitMapPrefBits(
       extension_id, static_cast<int>(state),
-      ExtensionPrefs::BIT_MAP_PREF_REMOVE, kPrefAcknowledgedBlocklistState,
+      ExtensionPrefs::BitMapPrefOperation::kRemove,
+      kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
@@ -218,7 +223,7 @@ void SetSafeBrowsingExtensionBlocklistState(
 
 BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   int int_value = -1;
   if (extension_prefs->ReadPrefAsInteger(extension_id, kPrefBlocklistState,
                                          &int_value) &&
@@ -249,7 +254,7 @@ void SetExtensionTelemetryServiceBlocklistState(
 
 BitMapBlocklistState GetExtensionTelemetryServiceBlocklistState(
     const ExtensionId& extension_id,
-    ExtensionPrefs* extension_prefs) {
+    const ExtensionPrefs* extension_prefs) {
   int int_value = -1;
   if (extension_prefs->ReadPrefAsInteger(
           extension_id, kPrefExtensionTelemetryServiceBlocklistState,

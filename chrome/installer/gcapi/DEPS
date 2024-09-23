@@ -10,6 +10,7 @@ include_rules = [
   # Take care not to allow any dependence beyond constants.
   "+chrome/installer/util/google_update_constants.h",
   "+chrome/installer/util/util_constants.h",
+  "+chrome/updater/app/server/win/updater_legacy_idl.h",
 ]
 specific_include_rules = {
   ".*_test\.cc": [

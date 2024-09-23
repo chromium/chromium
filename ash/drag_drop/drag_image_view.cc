@@ -31,13 +31,13 @@ DragImageView::~DragImageView() = default;
 std::unique_ptr<views::Widget> DragImageView::Create(
     aura::Window* root_window,
     ui::mojom::DragEventSource event_source) {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_TOOLTIP;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_TOOLTIP);
   params.name = "DragWidget";
   params.accept_events = false;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent =
       root_window->GetChildById(kShellWindowId_DragImageAndTooltipContainer);
   if (!params.parent)

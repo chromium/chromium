@@ -22,17 +22,17 @@
     {
       name: "ParseSingleValue",
       return_type: "const CSSValue*",
-      parameters: "(CSSParserTokenRange&, const CSSParserContext&, const CSSParserLocalContext&)",
+      parameters: "(CSSParserTokenStream&, const CSSParserContext&, const CSSParserLocalContext&)",
     },
     {
       name: "ParseShorthand",
       return_type: "bool",
-      parameters: "(bool, CSSParserTokenRange&, const CSSParserContext&, const CSSParserLocalContext&, HeapVector<CSSPropertyValue, 64>&)",
+      parameters: "(bool, CSSParserTokenStream&, const CSSParserContext&, const CSSParserLocalContext&, HeapVector<CSSPropertyValue, 64>&)",
     },
     {
       name: "CSSValueFromComputedStyleInternal",
       return_type: "const CSSValue*",
-      parameters: "(const ComputedStyle&, const LayoutObject*, bool allow_visited_style)",
+      parameters: "(const ComputedStyle&, const LayoutObject*, bool allow_visited_style, CSSValuePhase value_phase)",
     },
     {
       name: "ColorIncludingFallback",

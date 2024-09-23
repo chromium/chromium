@@ -25,12 +25,12 @@ class InflateTransformer final : public TransformStreamTransformer {
 
   ~InflateTransformer() override;
 
-  ScriptPromise Transform(v8::Local<v8::Value> chunk,
-                          TransformStreamDefaultController*,
-                          ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Transform(v8::Local<v8::Value> chunk,
+                                        TransformStreamDefaultController*,
+                                        ExceptionState&) override;
 
-  ScriptPromise Flush(TransformStreamDefaultController*,
-                      ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Flush(TransformStreamDefaultController*,
+                                    ExceptionState&) override;
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 

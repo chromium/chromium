@@ -146,7 +146,7 @@ class PrivacySandboxAdsPageLoadMetricsObserverTest
     timing.paint_timing->first_image_paint = base::Milliseconds(80);
     timing.paint_timing->first_contentful_paint = base::Milliseconds(100);
 
-    auto largest_contentful_paint = mojom::LargestContentfulPaintTiming::New();
+    auto largest_contentful_paint = CreateLargestContentfulPaintTiming();
     largest_contentful_paint->largest_image_paint = base::Milliseconds(100);
     largest_contentful_paint->largest_image_paint_size = 100;
     timing.paint_timing->largest_contentful_paint =

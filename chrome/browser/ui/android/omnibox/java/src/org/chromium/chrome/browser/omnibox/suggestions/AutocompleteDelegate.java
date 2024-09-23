@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Provides the additional functionality to trigger and interact with autocomplete suggestions. */
@@ -22,12 +24,9 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
     /**
      * Notified that suggestions have changed.
      *
-     * @param autocompleteText The inline autocomplete text that can be appended to the currently
-     *     entered user text.
-     * @param defaultMatchIsSearch Whether the default match is a search (as opposed to a URL). This
-     *     is true if there are no suggestions.
+     * @param defaultMatch default AutocompleteMatch.
      */
-    void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch);
+    void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch);
 
     /**
      * Requests the keyboard visibility update.

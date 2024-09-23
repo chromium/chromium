@@ -65,7 +65,7 @@ class MEDIA_EXPORT BitstreamBuffer {
   scoped_refptr<DecoderBuffer> ToDecoderBuffer();
   scoped_refptr<DecoderBuffer> ToDecoderBuffer(off_t offset, size_t size);
 
-  // TODO(crbug.com/813845): As this is only used by Android, include
+  // TODO(crbug.com/40563697): As this is only used by Android, include
   // EncryptionScheme and optional EncryptionPattern when updating for Android.
   void SetDecryptionSettings(const std::string& key_id,
                              const std::string& iv,
@@ -76,8 +76,8 @@ class MEDIA_EXPORT BitstreamBuffer {
 
   // If a region needs to be taken from a const BitstreamBuffer, it must be
   // duplicated. This function makes that explicit.
-  // TODO(crbug.com/793446): this is probably only needed by legacy IPC, and can
-  // be removed once that is converted to the new shared memory API.
+  // TODO(crbug.com/40553989): this is probably only needed by legacy IPC, and
+  // can be removed once that is converted to the new shared memory API.
   base::UnsafeSharedMemoryRegion DuplicateRegion() const {
     return region_.Duplicate();
   }

@@ -71,7 +71,10 @@ class StorageAccessWebsitePreference extends WebsitePreference {
     protected void maybeSetImageView() {
         setImageView(
                 R.drawable.ic_delete_white_24dp,
-                R.string.webstorage_delete_data_dialog_title,
+                getContext()
+                        .getResources()
+                        .getString(
+                                R.string.webstorage_delete_data_content_description, buildTitle()),
                 (OnClickListener)
                         view -> {
                             mSite.setContentSetting(

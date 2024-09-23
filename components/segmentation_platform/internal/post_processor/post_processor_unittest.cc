@@ -69,8 +69,8 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
       {kVoiceUser, kVoiceUserTTL},
       {kShoppingUser, kShoppingUserTTL},
   };
-  writer.AddOutputConfigForMultiClassClassifier(labels.begin(), labels.size(),
-                                                top_k_outputs, threshold);
+  writer.AddOutputConfigForMultiClassClassifier(labels, top_k_outputs,
+                                                threshold);
   writer.AddPredictedResultTTLInOutputConfig(ttl_for_labels, kDefaultTTL,
                                              proto::TimeUnit::DAY);
   return model_metadata.output_config();
@@ -78,8 +78,7 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
     int top_k_outputs,
-    const float* per_class_thresholds,
-    size_t per_class_thresholds_length) {
+    const base::span<float> per_class_thresholds) {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
@@ -91,9 +90,8 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
       {kVoiceUser, kVoiceUserTTL},
       {kShoppingUser, kShoppingUserTTL},
   };
-  writer.AddOutputConfigForMultiClassClassifier(
-      labels.begin(), labels.size(), top_k_outputs, per_class_thresholds,
-      per_class_thresholds_length);
+  writer.AddOutputConfigForMultiClassClassifier(labels, top_k_outputs,
+                                                per_class_thresholds);
   writer.AddPredictedResultTTLInOutputConfig(ttl_for_labels, kDefaultTTL,
                                              proto::TimeUnit::DAY);
   return model_metadata.output_config();
@@ -237,8 +235,7 @@ TEST(PostProcessorTest, MultiClassClassifierWithPerClassThresholds) {
           /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
           GetTestOutputConfigForMultiClassClassifier(
               /*top_k-outputs=*/4,
-              /*per_class_thresholds = */ per_class_thresholds.begin(),
-              per_class_thresholds.size()),
+              /*per_class_thresholds=*/per_class_thresholds),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1));
   // Return labels greater or equal than its threshold sorted by score.
   EXPECT_THAT(top_k_labels, testing::ElementsAre(kShareUser, kNewTabUser));

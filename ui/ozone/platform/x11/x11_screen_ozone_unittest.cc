@@ -46,7 +46,8 @@ struct MockDisplayObserver : public display::DisplayObserver {
   ~MockDisplayObserver() override = default;
 
   MOCK_METHOD1(OnDisplayAdded, void(const display::Display& new_display));
-  MOCK_METHOD1(OnDisplayRemoved, void(const display::Display& old_display));
+  MOCK_METHOD1(OnDisplaysRemoved,
+               void(const display::Displays& removed_displays));
   MOCK_METHOD2(OnDisplayMetricsChanged,
                void(const display::Display& display, uint32_t changed_metrics));
 };
@@ -132,7 +133,7 @@ TEST_F(X11ScreenOzoneTest, AddRemoveListDisplays) {
   // Initially only primary display is expected to be in place
   EXPECT_EQ(1u, screen()->GetAllDisplays().size());
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(2);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(2);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(2);
 
   auto display_2 = CreateDisplay(gfx::Rect(800, 0, 1280, 720));
   AddDisplayForTest(*display_2);
@@ -230,7 +231,7 @@ TEST_F(X11ScreenOzoneTest, GetDisplayMatchingMultiple) {
 TEST_F(X11ScreenOzoneTest, BoundsChangeSingleMonitor) {
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   std::vector<display::Display> displays;
   displays.emplace_back(primary_display().id(), gfx::Rect(0, 0, 1024, 768));
@@ -240,7 +241,7 @@ TEST_F(X11ScreenOzoneTest, BoundsChangeSingleMonitor) {
 TEST_F(X11ScreenOzoneTest, AddMonitorToTheRight) {
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(0);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(1);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   std::vector<display::Display> displays;
   displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
@@ -251,7 +252,7 @@ TEST_F(X11ScreenOzoneTest, AddMonitorToTheRight) {
 TEST_F(X11ScreenOzoneTest, AddMonitorToTheLeft) {
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(1);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   std::vector<display::Display> displays;
   displays.emplace_back(primary_display().id(), gfx::Rect(0, 0, 1024, 768));
@@ -267,7 +268,7 @@ TEST_F(X11ScreenOzoneTest, RemoveMonitorOnRight) {
 
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(0);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(1);
 
   displays.clear();
   displays.emplace_back(primary_display().id(), kPrimaryDisplayBounds);
@@ -282,7 +283,7 @@ TEST_F(X11ScreenOzoneTest, RemoveMonitorOnLeft) {
 
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(1);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(1);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(1);
 
   displays.clear();
   displays.emplace_back(kSecondDisplay, gfx::Rect(0, 0, 1024, 768));
@@ -377,7 +378,7 @@ TEST_F(X11ScreenOzoneTest, RotationChange) {
 
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(5);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   displays[0].set_rotation(display::Display::ROTATE_90);
   UpdateDisplayListForTest(displays);
@@ -405,7 +406,7 @@ TEST_F(X11ScreenOzoneTest, WorkareaChange) {
 
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(4);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   displays[0].set_work_area(gfx::Rect(0, 0, 300, 300));
   UpdateDisplayListForTest(displays);
@@ -433,7 +434,7 @@ TEST_F(X11ScreenOzoneTest, DeviceScaleFactorChange) {
 
   EXPECT_CALL(display_observer_, OnDisplayMetricsChanged(_, _)).Times(4);
   EXPECT_CALL(display_observer_, OnDisplayAdded(_)).Times(0);
-  EXPECT_CALL(display_observer_, OnDisplayRemoved(_)).Times(0);
+  EXPECT_CALL(display_observer_, OnDisplaysRemoved(_)).Times(0);
 
   displays[0].set_device_scale_factor(2.5f);
   UpdateDisplayListForTest(displays);

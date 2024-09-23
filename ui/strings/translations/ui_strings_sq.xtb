@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Anketa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Po kontrollon lidhjen e internetit</translation>
+<translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2388990488038464401">Do ta telefonosh këtë numër nga telefoni yt?</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="24452542372838207">Zgjero njoftimin</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">E RE</translation>
 <translation id="2666092431469916601">I sipërm</translation>
 <translation id="2701330563083355633">Ndarë nga <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">E re</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 vit më parë}other{# vite më parë}}</translation>
 <translation id="2878511608894704031">Fshi të gjitha</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{në 1 ditë}other{në # ditë}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Sistemi <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5613020302032141669">Shigjeta majtas</translation>
+<translation id="5633029987065897167">Bosh</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktive sot}=1{Aktive 1 ditë më parë}other{Aktive # ditë më parë}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ditë e }other{# ditë e }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Përmbajtja në formatin RTF</translation>
 <translation id="6539092367496845964">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="654149438358937226">Blloko të gjitha njoftimet</translation>
-<translation id="6612467943526193239">Për të dalë nga kalibrimi, shtyp Esc.</translation>
 <translation id="6620110761915583480">Ruaj skedarin</translation>
 <translation id="6699343763173986273">Pjesa tjetër e medias</translation>
 <translation id="6808150112686056157">Ndalimi i medias</translation>

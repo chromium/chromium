@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/video_renderer_algorithm.h"
 
 #include <stddef.h>
@@ -143,7 +148,7 @@ class VideoRendererAlgorithmTest : public testing::Test {
     algorithm_.EnqueueFrame(CreateFrame(frame_tg.interval(1)));
     EXPECT_TRUE(RenderAndStep(&display_tg, &frames_dropped));
 
-    // Store cadence before reseting the algorithm.
+    // Store cadence before resetting the algorithm.
     const std::string cadence =
         algorithm_.cadence_estimator_.GetCadenceForTesting();
     time_source_.StopTicking();
@@ -1447,7 +1452,7 @@ TEST_F(VideoRendererAlgorithmTest, UglyTimestampsHaveCadence) {
       17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 17, 16, 17, 17, 16, 17, 17,
       16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 17};
 
-  // Run throught ~1.6 seconds worth of frames.
+  // Run through ~1.6 seconds worth of frames.
   bool cadence_detected = false;
   base::TimeDelta timestamp;
   for (size_t i = 0; i < std::size(kBadTimestampsMs) * 2; ++i) {

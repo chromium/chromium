@@ -45,9 +45,6 @@ void WidgetSchedulerImpl::Shutdown() {
 
   if (!hidden_) {
     render_widget_signals_->DecNumVisibleRenderWidgets();
-    if (has_touch_handler_) {
-      render_widget_signals_->DecNumVisibleRenderWidgetsWithTouchHandlers();
-    }
   }
 }
 
@@ -95,13 +92,10 @@ void WidgetSchedulerImpl::WillHandleInputEventOnMainThread(
 
 void WidgetSchedulerImpl::DidHandleInputEventOnMainThread(
     const WebInputEvent& web_input_event,
-    WebInputEventResult result) {
-  main_thread_scheduler_->DidHandleInputEventOnMainThread(web_input_event,
-                                                          result);
-}
-
-void WidgetSchedulerImpl::DidAnimateForInputOnCompositorThread() {
-  main_thread_scheduler_->DidAnimateForInputOnCompositorThread();
+    WebInputEventResult result,
+    bool frame_requested) {
+  main_thread_scheduler_->DidHandleInputEventOnMainThread(
+      web_input_event, result, frame_requested);
 }
 
 void WidgetSchedulerImpl::DidRunBeginMainFrame() {}
@@ -114,30 +108,8 @@ void WidgetSchedulerImpl::SetHidden(bool hidden) {
 
   if (hidden_) {
     render_widget_signals_->DecNumVisibleRenderWidgets();
-    if (has_touch_handler_) {
-      render_widget_signals_->DecNumVisibleRenderWidgetsWithTouchHandlers();
-    }
   } else {
     render_widget_signals_->IncNumVisibleRenderWidgets();
-    if (has_touch_handler_) {
-      render_widget_signals_->IncNumVisibleRenderWidgetsWithTouchHandlers();
-    }
-  }
-}
-
-void WidgetSchedulerImpl::SetHasTouchHandler(bool has_touch_handler) {
-  if (has_touch_handler_ == has_touch_handler)
-    return;
-
-  has_touch_handler_ = has_touch_handler;
-
-  if (hidden_)
-    return;
-
-  if (has_touch_handler_) {
-    render_widget_signals_->IncNumVisibleRenderWidgetsWithTouchHandlers();
-  } else {
-    render_widget_signals_->DecNumVisibleRenderWidgetsWithTouchHandlers();
   }
 }
 

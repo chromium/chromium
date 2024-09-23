@@ -5,10 +5,8 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_URL_LOADER_CLIENT_CHECKER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_URL_LOADER_CLIENT_CHECKER_H_
 
-#include "base/debug/dump_without_crashing.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
-#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -33,9 +31,7 @@ class URLLoaderClientCheckedRemote final {
     explicit Proxy(mojo::PendingRemote<network::mojom::URLLoaderClient> client);
     ~Proxy();
 
-    void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) {
-      client_->OnReceiveEarlyHints(std::move(early_hints));
-    }
+    void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
     void OnReceiveResponse(
         network::mojom::URLResponseHeadPtr head,
         mojo::ScopedDataPipeConsumerHandle body,
@@ -55,19 +51,8 @@ class URLLoaderClientCheckedRemote final {
       client_->OnUploadProgress(current_position, total_size,
                                 std::move(callback));
     }
-    void OnTransferSizeUpdated(int32_t transfer_size_diff) {
-      network::RecordOnTransferSizeUpdatedUMA(
-          network::OnTransferSizeUpdatedFrom::kURLLoaderClientCheckedRemote);
-      client_->OnTransferSizeUpdated(transfer_size_diff);
-    }
-    NOINLINE void OnComplete(const network::URLLoaderCompletionStatus& status) {
-      if (status.error_code == net::OK && !on_receive_response_called_) {
-        NOTREACHED();
-        base::debug::DumpWithoutCrashing();
-        NO_CODE_FOLDING();
-      }
-      client_->OnComplete(status);
-    }
+    void OnTransferSizeUpdated(int32_t transfer_size_diff);
+    void OnComplete(const network::URLLoaderCompletionStatus& status);
 
     explicit operator bool() const { return static_cast<bool>(client_); }
 

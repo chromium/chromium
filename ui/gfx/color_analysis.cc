@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -130,11 +132,11 @@ class KMeanCluster {
   }
 
  private:
-  uint8_t centroid_[3];
+  std::array<uint8_t, 3> centroid_;
 
   // Holds the sum of all the points that make up this cluster. Used to
   // generate the next centroid as well as to check for convergence.
-  uint32_t aggregate_[3];
+  std::array<uint32_t, 3> aggregate_;
   uint32_t counter_;
 
   // The weight of the cluster, determined by how many points were used
@@ -186,7 +188,7 @@ class ColorBox {
         case BLUE:
           return SkColorGetB(a) < SkColorGetB(b);
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SkColorGetB(a) < SkColorGetB(b);
     };
     // Just the portion of |color_space_| that's covered by this box should be
@@ -427,7 +429,7 @@ int GridSampler::GetSample(int width, int height) {
   return index % (width * height);
 }
 
-SkColor FindClosestColor(const uint8_t* image,
+SkColor FindClosestColor(base::span<const uint8_t> image,
                          int width,
                          int height,
                          SkColor color) {
@@ -437,7 +439,7 @@ SkColor FindClosestColor(const uint8_t* image,
   // Search using distance-squared to avoid expensive sqrt() operations.
   int best_distance_squared = std::numeric_limits<int32_t>::max();
   SkColor best_color = color;
-  const uint8_t* byte = image;
+  auto byte = image.begin();
   for (int i = 0; i < width * height; ++i) {
     uint8_t b = *(byte++);
     uint8_t g = *(byte++);
@@ -461,7 +463,7 @@ SkColor FindClosestColor(const uint8_t* image,
 // For a 16x16 icon on an Intel Core i5 this function takes approximately
 // 0.5 ms to run.
 // TODO(port): This code assumes the CPU architecture is little-endian.
-SkColor CalculateKMeanColorOfBuffer(uint8_t* decoded_data,
+SkColor CalculateKMeanColorOfBuffer(base::span<const uint8_t> decoded_data,
                                     int img_width,
                                     int img_height,
                                     const HSL& lower_bound,
@@ -532,8 +534,9 @@ SkColor CalculateKMeanColorOfBuffer(uint8_t* decoded_data,
         ++iteration) {
 
       // Loop through each pixel so we can place it in the appropriate cluster.
-      uint8_t* pixel = decoded_data;
-      uint8_t* decoded_data_end = decoded_data + (img_width * img_height * 4);
+      auto pixel = decoded_data.begin();
+      auto decoded_data_end =
+          decoded_data.begin() + (img_width * img_height * 4);
       while (pixel < decoded_data_end) {
         uint8_t b = *(pixel++);
         uint8_t g = *(pixel++);
@@ -617,7 +620,7 @@ SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
   if (!png.empty() &&
       gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
                             &decoded_data, &img_width, &img_height)) {
-    return CalculateKMeanColorOfBuffer(&decoded_data[0], img_width, img_height,
+    return CalculateKMeanColorOfBuffer(decoded_data, img_width, img_height,
                                        lower_bound, upper_bound, sampler, true);
   }
   return color;
@@ -644,19 +647,25 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   // above uses non-pre-multiplied alpha. Transform the bitmap before we
   // analyze it because the function reads each pixel multiple times.
   int pixel_count = bitmap.width() * height;
-  std::unique_ptr<uint32_t[]> image(new uint32_t[pixel_count]);
+  base::HeapArray<uint32_t> image =
+      base::HeapArray<uint32_t>::Uninit(pixel_count);
 
-  // Un-premultiplies each pixel in bitmap into the buffer. Requires
-  // approximately 10 microseconds for a 16x16 icon on an Intel Core i5.
-  uint32_t* in = static_cast<uint32_t*>(bitmap.getPixels());
-  uint32_t* out = image.get();
-  for (int i = 0; i < pixel_count; ++i)
-    *out++ = SkUnPreMultiply::PMColorToColor(*in++);
+  // SAFETY: We know that height <= bitmap.height() and pixel_bound ==
+  // bitmap.width() * height, so pixel_count <= the amount of actual pixels in
+  // the buffer here. However, Skia has no span-based API for this.
+  // TODO(https://crbug.com/357905831): switch to SkSpan when possible.
+  UNSAFE_BUFFERS(
+      base::span<uint32_t> in(static_cast<uint32_t*>(bitmap.getPixels()),
+                              base::checked_cast<size_t>(pixel_count)));
+
+  // Un-premultiply into the out buffer.
+  std::transform(in.begin(), in.end(), image.begin(),
+                 SkUnPreMultiply::PMColorToColor);
 
   GridSampler sampler;
-  return CalculateKMeanColorOfBuffer(reinterpret_cast<uint8_t*>(image.get()),
-                                     bitmap.width(), height, lower_bound,
-                                     upper_bound, &sampler, find_closest);
+  return CalculateKMeanColorOfBuffer(base::as_byte_span(image), bitmap.width(),
+                                     height, lower_bound, upper_bound, &sampler,
+                                     find_closest);
 }
 
 SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap) {
@@ -691,15 +700,15 @@ std::vector<Swatch> CalculateColorSwatches(
   // distributed throughout the image). This has a very minor impact on the
   // outcome but improves runtime substantially for large images. 10,007 is a
   // prime number to reduce the chance of picking an unrepresentative sample.
-  const int pixel_increment =
-      std::max(1, pixel_count / kMaxConsideredPixelsForSwatches);
+  const float pixel_increment = std::max(
+      1.0f, static_cast<float>(pixel_count) / kMaxConsideredPixelsForSwatches);
   std::unordered_map<SkColor, int> color_counts(
       kMaxConsideredPixelsForSwatches);
 
   // First extract all colors into counts.
-  for (int i = 0; i < pixel_count; i += pixel_increment) {
-    const int x = region.x() + (i % region.width());
-    const int y = region.y() + (i / region.width());
+  for (float f = 0; f < pixel_count; f += pixel_increment) {
+    const int x = region.x() + static_cast<int>(f) % region.width();
+    const int y = region.y() + static_cast<int>(f) / region.width();
 
     const SkColor pixel = bitmap.getColor(x, y);
     if (SkColorGetA(pixel) == SK_AlphaTRANSPARENT)

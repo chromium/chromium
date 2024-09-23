@@ -164,6 +164,20 @@ std::string NetworkTestHelperBase::GetServiceStringProperty(
   return std::string();
 }
 
+std::optional<base::Value::List> NetworkTestHelperBase::GetServiceListProperty(
+    const std::string& service_path,
+    const std::string& key) {
+  const base::Value::Dict* properties =
+      service_test_->GetServiceProperties(service_path);
+  if (properties) {
+    const base::Value::List* result = properties->FindList(key);
+    if (result) {
+      return result->Clone();
+    }
+  }
+  return std::nullopt;
+}
+
 void NetworkTestHelperBase::SetServiceProperty(const std::string& service_path,
                                                const std::string& key,
                                                const base::Value& value) {

@@ -121,20 +121,20 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
       GetAllBindingsCallback callback,
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
 
+  // Returns if app is audio only.
+  bool IsAudioOnly() const;
+
   // Returns if current session is enabled for dev.
   bool IsEnabledForDev() const;
 
-  // Returns if remote control mode is enabled.
-  bool IsRemoteControlMode() const;
+  // Returns if touch input is allowed.
+  bool IsTouchInputAllowed() const;
 
   // Returns renderer features.
   base::Value::Dict GetRendererFeatures() const;
 
-  // Returns if app is audio only.
-  bool IsAudioOnly() const;
-
   // Returns whether feature permissions should be enforced.
-  bool GetEnforceFeaturePermissions() const;
+  bool IsFeaturePermissionsEnforced() const;
 
   // CastWebContents::Observer overrides.
   void InnerContentsCreated(CastWebContents* inner_contents,

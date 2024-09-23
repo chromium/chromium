@@ -55,7 +55,8 @@ void FrameContentAsText(wtf_size_t max_chars,
         (layout_view->PhysicalLocation().top + layout_view->Size().height <=
          0) ||
         (owner_layout_object && owner_layout_object->Style() &&
-         owner_layout_object->Style()->Visibility() != EVisibility::kVisible)) {
+         owner_layout_object->Style()->UsedVisibility() !=
+             EVisibility::kVisible)) {
       continue;
     }
 

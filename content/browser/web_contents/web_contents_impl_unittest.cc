@@ -14,9 +14,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -29,6 +32,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -62,9 +66,13 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_handle.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/test/test_network_context.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +84,9 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -156,17 +166,21 @@ class TestWebContentsObserver : public WebContentsObserver {
     last_vertical_scroll_direction_ = scroll_direction;
   }
 
-  void OnIsConnectedToBluetoothDeviceChanged(
-      bool is_connected_to_bluetooth_device) override {
-    ++num_is_connected_to_bluetooth_device_changed_;
-    last_is_connected_to_bluetooth_device_ = is_connected_to_bluetooth_device;
-  }
+  MOCK_METHOD(void,
+              OnDeviceConnectionTypesChanged,
+              (DeviceConnectionType connection_type, bool used),
+              (override));
 
   void OnCaptureHandleConfigUpdate(
       const blink::mojom::CaptureHandleConfig& config) override {
     ASSERT_TRUE(expected_capture_handle_config_) << "Unexpected call.";
     EXPECT_EQ(config, *expected_capture_handle_config_);
     expected_capture_handle_config_ = nullptr;
+  }
+
+  void OnTextCopiedToClipboard(RenderFrameHost* render_frame_host,
+                               const std::u16string& copied_text) override {
+    text_copied_to_clipboard_ = copied_text;
   }
 
   void ExpectOnCaptureHandleConfigUpdate(
@@ -185,11 +199,9 @@ class TestWebContentsObserver : public WebContentsObserver {
   bool observed_did_first_visually_non_empty_paint() const {
     return observed_did_first_visually_non_empty_paint_;
   }
-  int num_is_connected_to_bluetooth_device_changed() const {
-    return num_is_connected_to_bluetooth_device_changed_;
-  }
-  bool last_is_connected_to_bluetooth_device() const {
-    return last_is_connected_to_bluetooth_device_;
+
+  const std::u16string text_copied_to_clipboard() const {
+    return text_copied_to_clipboard_;
   }
 
  private:
@@ -197,9 +209,8 @@ class TestWebContentsObserver : public WebContentsObserver {
   int theme_color_change_calls_ = 0;
   std::optional<viz::VerticalScrollDirection> last_vertical_scroll_direction_;
   bool observed_did_first_visually_non_empty_paint_ = false;
-  int num_is_connected_to_bluetooth_device_changed_ = 0;
-  bool last_is_connected_to_bluetooth_device_ = false;
   blink::mojom::CaptureHandleConfigPtr expected_capture_handle_config_;
+  std::u16string text_copied_to_clipboard_;
 };
 
 class MockWebContentsDelegate : public WebContentsDelegate {
@@ -303,11 +314,37 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
                             response_data.original_bitmap_sizes);
   }
 
+  void DownloadImageFromAxNode(
+      int32_t ax_node_id,
+      const ::gfx::Size& preferred_size,
+      uint32_t max_bitmap_size,
+      bool bypass_cache,
+      DownloadImageFromAxNodeCallback callback) override {
+    if (!base::Contains(fake_response_data_per_ax_node_id_, ax_node_id)) {
+      // This could return a 404, but there is no test that currently relies on
+      // it.
+      return;
+    }
+
+    const FakeResponseData& response_data =
+        fake_response_data_per_ax_node_id_[ax_node_id];
+    std::move(callback).Run(/*http_status_code=*/0, response_data.bitmaps,
+                            response_data.original_bitmap_sizes);
+  }
+
   void SetFakeResponseData(
       const GURL& url,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) {
     fake_response_data_per_url_[url] =
+        FakeResponseData{bitmaps, original_bitmap_sizes};
+  }
+
+  void SetFakeResponseData(
+      const int ax_node_id,
+      const std::vector<SkBitmap>& bitmaps,
+      const std::vector<gfx::Size>& original_bitmap_sizes) {
+    fake_response_data_per_ax_node_id_[ax_node_id] =
         FakeResponseData{bitmaps, original_bitmap_sizes};
   }
 
@@ -324,6 +361,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
 
   mojo::Receiver<blink::mojom::ImageDownloader> receiver_{this};
   std::map<GURL, FakeResponseData> fake_response_data_per_url_;
+  std::map<int, FakeResponseData> fake_response_data_per_ax_node_id_;
 };
 
 class MockPageBroadcast : public TestPageBroadcast {
@@ -337,13 +375,13 @@ class MockPageBroadcast : public TestPageBroadcast {
 
 class TestColorProviderSource : public ui::ColorProviderSource {
  public:
-  TestColorProviderSource() { provider_.GenerateColorMap(); }
+  TestColorProviderSource() = default;
 
   const ui::ColorProvider* GetColorProvider() const override {
     return &provider_;
   }
 
-  const ui::RendererColorMap GetRendererColorMap(
+  ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
       ui::ColorProviderKey::ForcedColors forced_colors) const override {
     if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
@@ -364,6 +402,21 @@ class TestColorProviderSource : public ui::ColorProviderSource {
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorBLACK}};
   const ui::RendererColorMap forced_colors_map{
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorCYAN}};
+};
+
+class MockNetworkContext : public network::TestNetworkContext {
+ public:
+  explicit MockNetworkContext(
+      mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  MOCK_METHOD(
+      void,
+      NotifyExternalCacheHit,
+      (const GURL&, const std::string&, const net::NetworkIsolationKey&, bool),
+      (override));
+
+ private:
+  mojo::Receiver<network::mojom::NetworkContext> receiver_;
 };
 
 }  // namespace
@@ -426,8 +479,8 @@ TEST_F(WebContentsImplTest, UpdateTitleWhileFirstNavigationIsPending) {
 
 TEST_F(WebContentsImplTest, DontUsePendingEntryUrlAsTitle) {
   const GURL kGURL(GetWebUIURL("blah"));
-  controller().LoadURL(
-      kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_EQ(std::u16string(), contents()->GetTitle());
 }
 
@@ -529,10 +582,9 @@ TEST_F(WebContentsImplTest, SimpleNavigation) {
   EXPECT_EQ(instance1, orig_rfh->GetSiteInstance());
   // Controller's pending entry will have a null site instance until we assign
   // it in Commit.
-  EXPECT_EQ(
-      nullptr,
-      NavigationEntryImpl::FromNavigationEntry(controller().GetVisibleEntry())->
-          site_instance());
+  EXPECT_EQ(nullptr, NavigationEntryImpl::FromNavigationEntry(
+                         controller().GetVisibleEntry())
+                         ->site_instance());
 
   navigation->Commit();
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
@@ -540,20 +592,19 @@ TEST_F(WebContentsImplTest, SimpleNavigation) {
   EXPECT_EQ(instance1, orig_rfh->GetSiteInstance());
   // Controller's entry should now have the SiteInstance, or else we won't be
   // able to find it later.
-  EXPECT_EQ(
-      instance1,
-      NavigationEntryImpl::FromNavigationEntry(controller().GetVisibleEntry())->
-          site_instance());
+  EXPECT_EQ(instance1, NavigationEntryImpl::FromNavigationEntry(
+                           controller().GetVisibleEntry())
+                           ->site_instance());
 }
 
 // Test that we reject NavigateToEntry if the url is over kMaxURLChars.
 TEST_F(WebContentsImplTest, NavigateToExcessivelyLongURL) {
   // Construct a URL that's kMaxURLChars + 1 long of all 'a's.
-  const GURL url(std::string("http://example.org/").append(
-      url::kMaxURLChars + 1, 'a'));
+  const GURL url(
+      std::string("http://example.org/").append(url::kMaxURLChars + 1, 'a'));
 
-  controller().LoadURL(
-      url, Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 }
 
@@ -561,13 +612,13 @@ TEST_F(WebContentsImplTest, NavigateToExcessivelyLongURL) {
 TEST_F(WebContentsImplTest, NavigateToInvalidURL) {
   // Invalid URLs should not trigger a navigation.
   const GURL invalid_url("view-source:http://example%00.com/");
-  controller().LoadURL(
-      invalid_url, Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(invalid_url, Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 
   // Empty URLs are supported and should start a navigation.
-  controller().LoadURL(
-      GURL(), Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+  controller().LoadURL(GURL(), Referrer(), ui::PAGE_TRANSITION_GENERATED,
+                       std::string());
   EXPECT_NE(nullptr, controller().GetPendingEntry());
 }
 
@@ -975,7 +1026,6 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
 // Test that we can find an opener RVH even if it's pending.
 // http://crbug.com/176252.
 TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
-
   // Navigate to a URL.
   const GURL url("http://www.google.com");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url);
@@ -996,7 +1046,7 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
       TestWebContents::Create(browser_context(), instance));
   popup->SetOpener(contents());
   contents()->GetRenderManager()->CreateOpenerProxies(
-      instance, nullptr, pending_rfh->browsing_context_state());
+      instance->group(), nullptr, pending_rfh->browsing_context_state());
 
   // If swapped out is forbidden, a new proxy should be created for the opener
   // in the group |instance| belongs to, and we should ensure that its routing
@@ -1092,8 +1142,8 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   orig_rfh->SimulateBeforeUnloadCompleted(false);
   EXPECT_FALSE(orig_rfh->is_waiting_for_beforeunload_completion());
@@ -1101,8 +1151,8 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   EXPECT_EQ(orig_rfh, main_test_rfh());
 
   // Navigate again, but simulate an onbeforeunload approval.
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   auto navigation =
       NavigationSimulator::CreateFromPending(contents()->GetController());
@@ -1138,8 +1188,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationPreempted) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
   EXPECT_TRUE(contents()->CrossProcessNavigationPending());
 
@@ -1196,7 +1246,7 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(url1, entry1->GetURL());
   EXPECT_EQ(instance1,
             NavigationEntryImpl::FromNavigationEntry(entry1)->site_instance());
-  EXPECT_TRUE(webui_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(webui_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Navigate to new site.
   const GURL url2("http://www.google.com");
@@ -1211,7 +1261,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   EXPECT_EQ(url2, entry2->GetURL());
   EXPECT_EQ(instance2,
             NavigationEntryImpl::FromNavigationEntry(entry2)->site_instance());
-  EXPECT_FALSE(google_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_FALSE(
+      google_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Navigate to third page on same site.
   const GURL url3("http://google.com/foo");
@@ -1288,8 +1339,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationNotPreemptedByFrame) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  controller().LoadURL(
-      url2, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
 
   // Simulate a sub-frame navigation arriving and ensure the RVH is still
   // waiting for a before unload response.
@@ -1514,10 +1565,11 @@ TEST_F(WebContentsImplTest, HistoryNavigationExitsFullscreen) {
     EXPECT_TRUE(fake_delegate.IsFullscreenForTabOrPending(contents()));
 
     // Navigate backward (or forward).
-    if (i == 0)
+    if (i == 0) {
       NavigationSimulator::GoBack(contents());
-    else
+    } else {
       NavigationSimulator::GoForward(contents());
+    }
 
     // Confirm fullscreen has exited.
     EXPECT_FALSE(contents()->IsFullscreen());
@@ -1673,24 +1725,24 @@ TEST_F(WebContentsImplTest, CaptureHoldsWakeLock) {
   };
 
   // Add capturer which doesn't care to stay awake.
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/false);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/false, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   ASSERT_FALSE(contents()->capture_wake_lock_);
 
   // Add capturer and ensure wake lock is held.
-  auto handle2 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   ASSERT_TRUE(contents()->capture_wake_lock_);
   expect_wake_lock(true);
 
   // Add another capturer and ensure the wake lock is still held.
-  auto handle3 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                         /*stay_awake=*/true);
+  auto handle3 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   expect_wake_lock(true);
 
@@ -1720,18 +1772,18 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
 
   // Increment capturer count, but without specifying a capture size.  Expect
   // a "not set" preferred size.
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(gfx::Size(), contents()->GetPreferredSize());
 
   // Increment capturer count again, but with an overriding capture size.
   // Expect preferred size to now be overridden to the capture size.
   const gfx::Size capture_size(1280, 720);
-  auto handle2 =
-      contents()->IncrementCapturerCount(capture_size, /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      capture_size, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
@@ -1740,7 +1792,8 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
   const gfx::Size another_capture_size(720, 480);
   auto handle3 = contents()->IncrementCapturerCount(another_capture_size,
                                                     /*stay_hidden=*/false,
-                                                    /*stay_awake=*/true);
+                                                    /*stay_awake=*/true,
+                                                    /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
@@ -1890,9 +1943,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 
   // Add a capturer when the contents is visible and then hide the contents.
   // |view| should remain visible.
-  auto handle1 =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                       /*stay_awake=*/true);
+  auto handle1 = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   contents->UpdateWebContentsVisibility(hidden_or_occluded);
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
@@ -1909,9 +1962,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
   }
 
   // Add a capturer when the contents is hidden. |view| should be unoccluded.
-  auto handle2 =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                       /*stay_awake=*/true);
+  auto handle2 = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_FALSE(view->is_occluded());
 
   // Show the contents. The view should be visible.
@@ -1945,14 +1998,14 @@ TEST_F(WebContentsImplTest, HiddenCapture) {
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
   EXPECT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
 
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                         /*stay_awake=*/true);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
-  auto handle2 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
   handle1.RunAndReset();
@@ -1972,7 +2025,8 @@ TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
   // Reset the last active time to a known value.
   // This is done because the clock in these tests is frozen,
   // so recording the value and comparing against it later is meaningless.
-  contents()->last_active_time_ = base::TimeTicks();
+  contents()->last_active_time_ticks_ = base::TimeTicks();
+  contents()->last_active_time_ = base::Time();
 
   auto handle = contents()->IncrementCapturerCount(
       gfx::Size(), /*stay_hidden=*/true,
@@ -1980,14 +2034,15 @@ TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
   ASSERT_TRUE(rwhv->is_showing());
 
   // The value returned by GetLastActiveTime() should not have been updated.
+  EXPECT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
   EXPECT_TRUE(contents()->GetLastActiveTime().is_null());
 }
 
-// Tests that GetLastActiveTime starts with a real, non-zero time and updates
-// on activity.
-TEST_F(WebContentsImplTest, GetLastActiveTime) {
+// Tests that GetLastActiveTimeTicks starts with a real, non-zero time and
+// updates on activity.
+TEST_F(WebContentsImplTest, GetLastActiveTimeTicks) {
   // The WebContents starts with a valid creation time.
-  EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
+  EXPECT_FALSE(contents()->GetLastActiveTimeTicks().is_null());
 
   contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
@@ -1996,11 +2051,14 @@ TEST_F(WebContentsImplTest, GetLastActiveTime) {
   // Reset the last active time to a known-bad value.
   // This is done because the clock in these tests is frozen,
   // so recording the value and comparing against it later is meaningless.
-  contents()->last_active_time_ = base::TimeTicks();
+  contents()->last_active_time_ticks_ = base::TimeTicks();
+  ASSERT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
+  contents()->last_active_time_ = base::Time();
   ASSERT_TRUE(contents()->GetLastActiveTime().is_null());
 
   // Simulate activating the WebContents. The active time should update.
   contents()->WasShown();
+  EXPECT_FALSE(contents()->GetLastActiveTimeTicks().is_null());
   EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
 }
 
@@ -2018,9 +2076,7 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
     return count;
   }
 
-  bool last_zoom_in() const {
-    return last_zoom_in_;
-  }
+  bool last_zoom_in() const { return last_zoom_in_; }
 
   // WebContentsDelegate:
   void ContentsZoomChange(bool zoom_in) override {
@@ -2131,8 +2187,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountBasic) {
 // Tests that GetRelatedActiveContentsCount is preserved correctly across
 // same-site and cross-site navigations.
 TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
-  scoped_refptr<SiteInstance> instance(
-      SiteInstance::Create(browser_context()));
+  scoped_refptr<SiteInstance> instance(SiteInstance::Create(browser_context()));
 
   EXPECT_EQ(0u, instance->GetRelatedActiveContentsCount());
 
@@ -2211,8 +2266,7 @@ TEST_F(WebContentsImplTest, ActiveContentsCountNavigate) {
 // Tests that GetRelatedActiveContentsCount tracks BrowsingInstance changes
 // from WebUI.
 TEST_F(WebContentsImplTest, ActiveContentsCountChangeBrowsingInstance) {
-  scoped_refptr<SiteInstance> instance(
-      SiteInstance::Create(browser_context()));
+  scoped_refptr<SiteInstance> instance(SiteInstance::Create(browser_context()));
 
   EXPECT_EQ(0u, instance->GetRelatedActiveContentsCount());
 
@@ -2512,6 +2566,18 @@ TEST_F(WebContentsImplTest, MediaWakeLock) {
   EXPECT_FALSE(has_audio_wake_lock());
 }
 
+// Test that the WebContentsObserver is notified when text is copied to the
+// clipboard for a given RenderFrameHost.
+TEST_F(WebContentsImplTest, OnTextCopiedToClipboard) {
+  TestWebContentsObserver observer(contents());
+  TestRenderFrameHost* rfh = main_test_rfh();
+  const std::u16string copied_text = u"copied_text";
+
+  rfh->OnTextCopiedToClipboard(copied_text);
+
+  EXPECT_EQ(copied_text, observer.text_copied_to_clipboard());
+}
+
 TEST_F(WebContentsImplTest, ThemeColorChangeDependingOnFirstVisiblePaint) {
   TestWebContentsObserver observer(contents());
   TestRenderFrameHost* rfh = main_test_rfh();
@@ -2573,6 +2639,61 @@ TEST_F(WebContentsImplTest, ParseDownloadHeaders) {
   ASSERT_EQ(0u, request_headers.size());
 }
 
+// CHECKs should occur when `WebContentsImpl::DidLoadResourceFromMemoryCache()`
+// is called with RequestDestinations that can only correspond to navigations.
+TEST_F(WebContentsImplTest, DidLoadResourceFromMemoryCache_NavigationCheck) {
+  const GURL kImgUrl("https://www.example.com/image.png");
+
+  EXPECT_CHECK_DEATH(contents()->DidLoadResourceFromMemoryCache(
+      main_test_rfh(), kImgUrl, "GET", "image/png",
+      network::mojom::RequestDestination::kDocument,
+      /*include_credentials=*/false));
+
+  EXPECT_CHECK_DEATH(contents()->DidLoadResourceFromMemoryCache(
+      main_test_rfh(), kImgUrl, "GET", "image/png",
+      network::mojom::RequestDestination::kIframe,
+      /*include_credentials=*/false));
+}
+
+// Regression test for crbug.com/347934841#comment3 to ensure that if
+// `WebContentsImpl::DidLoadResourceFromMemoryCache()` is called with a
+// `request_destination` parameter value of
+// `network::mojom::RequestDestination::kObject` or
+// `network::mojom::RequestDestination::kEmbed`, a CHECK does not occur since
+// those can correspond to both navigations and resource loads.
+TEST_F(WebContentsImplTest,
+       DidLoadResourceFromMemoryCache_BypassNavigationCheck) {
+  mojo::PendingRemote<network::mojom::NetworkContext> network_context_remote;
+  MockNetworkContext mock_network_context(
+      network_context_remote.InitWithNewPipeAndPassReceiver());
+  auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+      GetBrowserContext()->GetDefaultStoragePartition());
+  storage_partition_impl->SetNetworkContextForTesting(
+      std::move(network_context_remote));
+
+  const GURL kImgUrl("https://www.example.com/image.png");
+  const std::string kGet = "GET";
+
+  for (const auto destination : {network::mojom::RequestDestination::kObject,
+                                 network::mojom::RequestDestination::kEmbed}) {
+    SCOPED_TRACE(static_cast<int>(destination));
+
+    base::test::TestFuture<void> signal;
+
+    // If the NotifyExternalCacheHit call is reached then we know the CHECKs
+    // were evaluated but didn't trigger.
+    EXPECT_CALL(
+        mock_network_context,
+        NotifyExternalCacheHit(kImgUrl, kGet, ::testing::_, ::testing::_))
+        .WillOnce(base::test::InvokeFuture(signal));
+
+    contents()->DidLoadResourceFromMemoryCache(main_test_rfh(), kImgUrl, kGet,
+                                               "image/png", destination,
+                                               /*include_credentials=*/false);
+    EXPECT_TRUE(signal.Wait());
+  }
+}
+
 namespace {
 
 class TestJavaScriptDialogManager : public JavaScriptDialogManager {
@@ -2610,10 +2731,10 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
     return true;
   }
 
-  void CancelDialogs(WebContents* web_contents,
-                     bool reset_state) override {
-    if (reset_state)
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {
+    if (reset_state) {
       ++reset_count_;
+    }
   }
 
  private:
@@ -2811,19 +2932,127 @@ TEST_F(WebContentsImplTest, RegisterProtocolHandlerInvalidURLSyntax) {
   contents()->SetDelegate(nullptr);
 }
 
+TEST_F(WebContentsImplTest, Usb) {
+  testing::StrictMock<TestWebContentsObserver> observer(contents());
+  EXPECT_FALSE(contents()->IsConnectedToUsbDevice());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kUSB, true))
+      .WillOnce(testing::Invoke([&]() {
+        // Accessor must return the updated state when the observer is notified.
+        EXPECT_TRUE(contents()->IsConnectedToUsbDevice());
+      }));
+  contents()->TestIncrementUsbActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(contents()->IsConnectedToUsbDevice());
+
+  // Additional increment/decrement don't modify state.
+  contents()->TestIncrementUsbActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToUsbDevice());
+  contents()->TestDecrementUsbActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToUsbDevice());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kUSB, false))
+      .WillOnce(testing::Invoke(
+          [&]() { EXPECT_FALSE(contents()->IsConnectedToUsbDevice()); }));
+  contents()->TestDecrementUsbActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(contents()->IsConnectedToUsbDevice());
+}
+
+TEST_F(WebContentsImplTest, Hid) {
+  testing::StrictMock<TestWebContentsObserver> observer(contents());
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kHID, true))
+      .WillOnce(testing::Invoke([&]() {
+        // Accessor must return the updated state when the observer is notified.
+        EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+      }));
+  contents()->TestIncrementHidActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+
+  // Additional increment/decrement don't modify state.
+  contents()->TestIncrementHidActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+  contents()->TestDecrementHidActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kHID, false))
+      .WillOnce(testing::Invoke(
+          [&]() { EXPECT_FALSE(contents()->IsConnectedToHidDevice()); }));
+  contents()->TestDecrementHidActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+}
+
+TEST_F(WebContentsImplTest, Serial) {
+  testing::StrictMock<TestWebContentsObserver> observer(contents());
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kSerial, true))
+      .WillOnce(testing::Invoke([&]() {
+        // Accessor must return the updated state when the observer is notified.
+        EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+      }));
+  contents()->TestIncrementSerialActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  // Additional increment/decrement don't modify state.
+  contents()->TestIncrementSerialActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+  contents()->TestDecrementSerialActiveFrameCount();
+  EXPECT_TRUE(contents()->IsConnectedToSerialPort());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kSerial, false))
+      .WillOnce(testing::Invoke(
+          [&]() { EXPECT_FALSE(contents()->IsConnectedToSerialPort()); }));
+  contents()->TestDecrementSerialActiveFrameCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(contents()->IsConnectedToSerialPort());
+}
+
 TEST_F(WebContentsImplTest, Bluetooth) {
-  TestWebContentsObserver observer(contents());
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 0);
+  testing::StrictMock<TestWebContentsObserver> observer(contents());
   EXPECT_FALSE(contents()->IsConnectedToBluetoothDevice());
 
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kBluetooth, true))
+      .WillOnce(testing::Invoke([&]() {
+        // Accessor must return the updated state when the observer is notified.
+        EXPECT_TRUE(contents()->IsConnectedToBluetoothDevice());
+      }));
   contents()->TestIncrementBluetoothConnectedDeviceCount();
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device());
+  testing::Mock::VerifyAndClearExpectations(&observer);
   EXPECT_TRUE(contents()->IsConnectedToBluetoothDevice());
 
+  // Additional increment/decrement don't modify state.
+  contents()->TestIncrementBluetoothConnectedDeviceCount();
+  EXPECT_TRUE(contents()->IsConnectedToBluetoothDevice());
   contents()->TestDecrementBluetoothConnectedDeviceCount();
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 2);
-  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device());
+  EXPECT_TRUE(contents()->IsConnectedToBluetoothDevice());
+
+  EXPECT_CALL(observer,
+              OnDeviceConnectionTypesChanged(
+                  WebContentsObserver::DeviceConnectionType::kBluetooth, false))
+      .WillOnce(testing::Invoke(
+          [&]() { EXPECT_FALSE(contents()->IsConnectedToBluetoothDevice()); }));
+  contents()->TestDecrementBluetoothConnectedDeviceCount();
+  testing::Mock::VerifyAndClearExpectations(&observer);
   EXPECT_FALSE(contents()->IsConnectedToBluetoothDevice());
 }
 
@@ -3122,7 +3351,8 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
       /*requested_video_device_ids=*/{},
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
   bool callback_run = false;
   contents()->RequestMediaAccessPermission(
       dummy_request,
@@ -3144,12 +3374,12 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
   // By default, input events should not be ignored.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
   std::optional<WebContents::ScopedIgnoreInputEvents> ignore_1 =
-      contents()->IgnoreInputEvents();
+      contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
 
   // A second request to ignore should continue to ignore events.
   WebContents::ScopedIgnoreInputEvents ignore_2 =
-      contents()->IgnoreInputEvents();
+      contents()->IgnoreInputEvents(std::nullopt);
   EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
 
   // Releasing one of them should not change anything.
@@ -3164,7 +3394,7 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
     // Cannot create an empty `ScopedIgnoreInputEvents`, so get a new one and
     // move-assign over it to verify that we end up with one outstanding token.
     WebContents::ScopedIgnoreInputEvents ignore_4 =
-        contents()->IgnoreInputEvents();
+        contents()->IgnoreInputEvents(std::nullopt);
     ignore_4 = std::move(ignore_3);
     EXPECT_TRUE(contents()->ShouldIgnoreInputEvents());
     // `ignore_4` goes out of scope.
@@ -3190,6 +3420,71 @@ TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
   EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_provider_colors))
       .Times(2);
   mock_page_broadcast.FlushForTesting();
+}
+
+TEST_F(WebContentsImplTest, InvalidNetworkHandleAsDefault) {
+  WebContents::CreateParams params(browser_context());
+  std::unique_ptr<WebContents> contents(WebContents::Create(params));
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, CreateWebContentsWithNetworkHandle) {
+  int64_t test_target_network_handle = 100;
+  WebContents::CreateParams params(browser_context());
+  params.target_network = test_target_network_handle;
+
+  std::unique_ptr<WebContents> contents(WebContents::Create(params));
+  EXPECT_EQ(test_target_network_handle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, CreateWebContentsWithOpenerAndNetworkHandle) {
+  int64_t test_target_network_handle = 100;
+  WebContents::CreateParams params(browser_context());
+  params.target_network = test_target_network_handle;
+
+  std::unique_ptr<WebContentsImpl> contents(
+      WebContentsImpl::CreateWithOpener(params, /*opener_rfh=*/nullptr));
+  EXPECT_EQ(test_target_network_handle, contents->GetTargetNetwork());
+}
+
+TEST_F(WebContentsImplTest, BadDownloadImageFromAXNodeId) {
+  // Avoid using TestWebContents, which fakes image download logic without
+  // exercising the code in WebContentsImpl.
+  scoped_refptr<SiteInstance> instance =
+      SiteInstance::Create(GetBrowserContext());
+  instance->GetProcess()->Init();
+  WebContents::CreateParams create_params(GetBrowserContext(),
+                                          std::move(instance));
+  create_params.desired_renderer_state = WebContents::CreateParams::
+      CreateParams::kInitializeAndWarmupRendererProcess;
+  std::unique_ptr<WebContentsImpl> contents(
+      WebContentsImpl::CreateWithOpener(create_params, /*opener_rfh=*/nullptr));
+  ASSERT_FALSE(
+      contents->GetPrimaryMainFrame()->GetProcess()->ShutdownRequested());
+
+  // Set up the fake image downloader.
+  FakeImageDownloader fake_image_downloader;
+  fake_image_downloader.Init(
+      contents->GetPrimaryMainFrame()->GetRemoteInterfaces());
+
+  int img_node_id = 3;
+  fake_image_downloader.SetFakeResponseData(img_node_id, {},
+                                            {gfx::Size(30, 30)});
+
+  base::RunLoop run_loop;
+  contents->DownloadImageFromAxNode(
+      contents->GetPrimaryMainFrame()->GetAXTreeID(), img_node_id, gfx::Size(),
+      0, false,
+      base::BindLambdaForTesting([&](int download_id, int http_status_code,
+                                     const GURL& url,
+                                     const std::vector<SkBitmap>& bitmaps,
+                                     const std::vector<gfx::Size>& sizes) {
+        EXPECT_EQ(400, http_status_code);
+        EXPECT_TRUE(bitmaps.empty());
+        EXPECT_TRUE(sizes.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace content

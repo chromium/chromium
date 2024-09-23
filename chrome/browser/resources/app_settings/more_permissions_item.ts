@@ -2,38 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './more_permissions_item.html.js';
+import {getCss} from './more_permissions_item.css.js';
+import {getHtml} from './more_permissions_item.html.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-export class AppManagementMorePermissionsItemElement extends PolymerElement {
+export class MorePermissionsItemElement extends CrLitElement {
   static get is() {
     return 'app-management-more-permissions-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      app: Object,
-      morePermissionsLabel: String,
+      app: {type: Object},
+      morePermissionsLabel: {type: String},
     };
   }
 
-  app: App;
-  morePermissionsLabel: string;
+  app: App = createDummyApp();
+  morePermissionsLabel: string = '';
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_);
   }
 
@@ -46,11 +50,9 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-more-permissions-item':
-        AppManagementMorePermissionsItemElement;
+    'app-management-more-permissions-item': MorePermissionsItemElement;
   }
 }
 
 customElements.define(
-    AppManagementMorePermissionsItemElement.is,
-    AppManagementMorePermissionsItemElement);
+    MorePermissionsItemElement.is, MorePermissionsItemElement);

@@ -20,18 +20,16 @@ enum class BackGestureEventSwipeEdge { LEFT, RIGHT };
 // navigation.
 class EVENTS_EXPORT BackGestureEvent {
  public:
-  BackGestureEvent(const gfx::PointF& location, float progress);
+  explicit BackGestureEvent(float progress);
 
   BackGestureEvent(const BackGestureEvent&) = default;
   BackGestureEvent& operator=(const BackGestureEvent&) = default;
 
   ~BackGestureEvent() = default;
 
-  const gfx::PointF& location() const { return location_; }
   float progress() const { return progress_; }
 
  private:
-  gfx::PointF location_;
   float progress_;
 };
 

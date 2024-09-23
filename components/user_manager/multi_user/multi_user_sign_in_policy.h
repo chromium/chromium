@@ -12,6 +12,8 @@
 
 namespace user_manager {
 
+class User;
+
 enum class MultiUserSignInPolicy {
   // The user is allowed to be either a primary user or secondary user in
   // multi user sign-in sessions.
@@ -31,6 +33,11 @@ USER_MANAGER_EXPORT std::string_view MultiUserSignInPolicyToPrefValue(
 // Parses the pref stored string into enum value. Returns nullopt on failure.
 USER_MANAGER_EXPORT std::optional<MultiUserSignInPolicy>
 ParseMultiUserSignInPolicyPref(std::string_view s);
+
+// Returns the policy for the given User. If the pref is not available
+// returns std::nullopt.
+USER_MANAGER_EXPORT std::optional<MultiUserSignInPolicy>
+GetMultiUserSignInPolicy(const User* user);
 
 }  // namespace user_manager
 

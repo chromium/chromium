@@ -16,16 +16,14 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /** Util class for survey related testing. */
 public class TestSurveyUtils {
@@ -67,8 +65,8 @@ public class TestSurveyUtils {
         SurveyClientImpl.setForceShowSurveyForTesting(doForce);
     }
 
-    static TestSurveyFactory setUpTestSurveyFactory() throws ExecutionException {
-        TestSurveyFactory factory = TestThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
+    static TestSurveyFactory setUpTestSurveyFactory() {
+        TestSurveyFactory factory = ThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
         SurveyClientFactory.setInstanceForTesting(factory);
         return factory;
     }
@@ -109,12 +107,8 @@ public class TestSurveyUtils {
                     CommandLine.getInstance()
                             .appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
 
-                    try {
-                        mTestSurveyFactory = setUpTestSurveyFactory();
-                        base.evaluate();
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    }
+                    mTestSurveyFactory = setUpTestSurveyFactory();
+                    base.evaluate();
                 }
             };
         }
@@ -123,13 +117,11 @@ public class TestSurveyUtils {
     /** Test impl of factory that generate SurveyClient using test set up. */
     static class TestSurveyFactory extends SurveyClientFactory {
         private final AlwaysSucceedSurveyController mTestController;
-        private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
         private final SharedPreferences mMetadata;
 
         TestSurveyFactory() {
             super(null);
             mTestController = new AlwaysSucceedSurveyController();
-            mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
             mCrashUploadPermissionSupplier.set(true);
 
             mMetadata = new InMemorySharedPreferences();

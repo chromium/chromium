@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -62,30 +69,13 @@ void CSSVariableData::ExtractFeatures(const CSSParserToken& token,
   has_line_height_units |= IsLineHeightUnitToken(token);
 }
 
-scoped_refptr<CSSVariableData> CSSVariableData::Create(
-    CSSTokenizedValue value,
-    bool is_animation_tainted,
-    bool needs_variable_resolution) {
+CSSVariableData* CSSVariableData::Create(const String& original_text,
+                                         bool is_animation_tainted,
+                                         bool needs_variable_resolution) {
   bool has_font_units = false;
   bool has_root_font_units = false;
   bool has_line_height_units = false;
-  while (!value.range.AtEnd()) {
-    ExtractFeatures(value.range.Consume(), has_font_units, has_root_font_units,
-                    has_line_height_units);
-  }
-  return Create(value.text, is_animation_tainted, needs_variable_resolution,
-                has_font_units, has_root_font_units, has_line_height_units);
-}
-
-scoped_refptr<CSSVariableData> CSSVariableData::Create(
-    const String& original_text,
-    bool is_animation_tainted,
-    bool needs_variable_resolution) {
-  bool has_font_units = false;
-  bool has_root_font_units = false;
-  bool has_line_height_units = false;
-  CSSTokenizer tokenizer(original_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(original_text);
   while (!stream.AtEnd()) {
     ExtractFeatures(stream.ConsumeRaw(), has_font_units, has_root_font_units,
                     has_line_height_units);
@@ -95,6 +85,7 @@ scoped_refptr<CSSVariableData> CSSVariableData::Create(
 }
 
 String CSSVariableData::Serialize() const {
+  const bool is_tainted = IsAttrTainted(OriginalText());
   if (length_ > 0 && OriginalText()[length_ - 1] == '\\') {
     // https://drafts.csswg.org/css-syntax/#consume-escaped-code-point
     // '\' followed by EOF is consumed as U+FFFD.
@@ -108,8 +99,7 @@ String CSSVariableData::Serialize() const {
     serialized_text.Append(OriginalText());
     serialized_text.Resize(serialized_text.length() - 1);
 
-    CSSTokenizer tokenizer(OriginalText());
-    CSSParserTokenStream stream(tokenizer);
+    CSSParserTokenStream stream(OriginalText());
     CSSParserTokenType last_token_type = kEOFToken;
     for (;;) {
       CSSParserTokenType token_type = stream.ConsumeRaw().GetType();
@@ -132,17 +122,29 @@ String CSSVariableData::Serialize() const {
       serialized_text.Append(')');
     }
 
-    return serialized_text.ReleaseString();
+    return is_tainted ? RemoveAttrTaintToken(serialized_text.ReleaseString())
+                      : serialized_text.ReleaseString();
   }
 
-  return OriginalText().ToString();
+  return is_tainted ? RemoveAttrTaintToken(OriginalText())
+                    : OriginalText().ToString();
 }
 
 bool CSSVariableData::operator==(const CSSVariableData& other) const {
   return OriginalText() == other.OriginalText();
 }
 
-CSSVariableData::CSSVariableData(StringView original_text,
+bool CSSVariableData::EqualsIgnoringTaint(const CSSVariableData& other) const {
+  if (IsAttrTainted(OriginalText()) || IsAttrTainted(other.OriginalText())) {
+    return Serialize() == other.Serialize();
+  } else {
+    // Faster, since we don't have to allocate a new string.
+    return OriginalText() == other.OriginalText();
+  }
+}
+
+CSSVariableData::CSSVariableData(PassKey,
+                                 StringView original_text,
                                  bool is_animation_tainted,
                                  bool needs_variable_resolution,
                                  bool has_font_units,
@@ -171,10 +173,7 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  CSSTokenizer tokenizer(OriginalText());
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return syntax.Parse(CSSTokenizedValue{range, OriginalText()},
+  return syntax.Parse(OriginalText(),
                       *StrictCSSParserContext(secure_context_mode),
                       is_animation_tainted_);
 }

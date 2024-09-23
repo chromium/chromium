@@ -60,7 +60,7 @@ class PepperCameraDeviceHost : public ppapi::host::ResourceHost {
 
   std::unique_ptr<PepperPlatformCameraDevice> platform_camera_device_;
 
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHostImpl> renderer_ppapi_host_;
 
   ppapi::host::ReplyMessageContext open_reply_context_;
 

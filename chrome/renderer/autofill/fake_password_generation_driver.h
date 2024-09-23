@@ -33,22 +33,29 @@ class FakePasswordGenerationDriver
   void Flush();
 
   // autofill::mojom::PasswordGenerationDriver:
-  MOCK_METHOD1(
-      AutomaticGenerationAvailable,
-      void(const autofill::password_generation::PasswordGenerationUIData&));
-  MOCK_METHOD4(ShowPasswordEditingPopup,
-               void(const gfx::RectF&,
-                    const autofill::FormData&,
-                    autofill::FieldRendererId,
-                    const std::u16string&));
-  MOCK_METHOD0(PasswordGenerationRejectedByTyping, void());
-  MOCK_METHOD2(PresaveGeneratedPassword,
-               void(const autofill::FormData& form_data,
-                    const std::u16string& generated_password));
-  MOCK_METHOD1(PasswordNoLongerGenerated,
-               void(const autofill::FormData& form_data));
-  MOCK_METHOD0(FrameWasScrolled, void());
-  MOCK_METHOD0(GenerationElementLostFocus, void());
+  MOCK_METHOD(void,
+              AutomaticGenerationAvailable,
+              (const autofill::password_generation::PasswordGenerationUIData&),
+              (override));
+  MOCK_METHOD(void,
+              ShowPasswordEditingPopup,
+              (const gfx::RectF&,
+               const autofill::FormData&,
+               autofill::FieldRendererId,
+               const std::u16string&),
+              (override));
+  MOCK_METHOD(void, PasswordGenerationRejectedByTyping, (), (override));
+  MOCK_METHOD(void,
+              PresaveGeneratedPassword,
+              (const autofill::FormData& form_data,
+               const std::u16string& generated_password),
+              (override));
+  MOCK_METHOD(void,
+              PasswordNoLongerGenerated,
+              (const autofill::FormData& form_data),
+              (override));
+  MOCK_METHOD(void, FrameWasScrolled, (), (override));
+  MOCK_METHOD(void, GenerationElementLostFocus, (), (override));
 
  private:
   mojo::AssociatedReceiver<autofill::mojom::PasswordGenerationDriver> receiver_{

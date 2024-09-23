@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='abstract' name='doc-abstract'
 ++android.view.View role_description='acknowledgments' name='doc-acknowledgments'
 ++android.view.View role_description='afterword' name='doc-afterword'

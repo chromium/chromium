@@ -57,6 +57,9 @@ enum ChromeDownloadOpenMethod {
   // The download was opened using a rename handler.
   DOWNLOAD_OPEN_METHOD_RENAME_HANDLER,
 
+  // The download was opened with the Media App on ChromeOS.
+  DOWNLOAD_OPEN_METHOD_MEDIA_APP,
+
   DOWNLOAD_OPEN_METHOD_LAST_ENTRY
 };
 

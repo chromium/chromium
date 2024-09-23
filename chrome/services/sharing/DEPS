@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/ash/services/nearby",
   "+chromeos/ash/services/network_config/public/cpp",
+  "+chromeos/ash/services/wifi_direct/public/mojom",
   "+chromeos/services/network_config/public/mojom",
   "+components/webrtc",
   "+device/bluetooth/public/mojom",

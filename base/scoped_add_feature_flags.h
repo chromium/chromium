@@ -6,6 +6,7 @@
 #define BASE_SCOPED_ADD_FEATURE_FLAGS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -34,8 +35,8 @@ class BASE_EXPORT ScopedAddFeatureFlags {
   void EnableIfNotSet(const Feature& feature);
   void DisableIfNotSet(const Feature& feature);
   void EnableIfNotSetWithParameter(const Feature& feature,
-                                   StringPiece name,
-                                   StringPiece value);
+                                   std::string_view name,
+                                   std::string_view value);
 
   // Check if the feature is enabled from command line or functions above
   bool IsEnabled(const Feature& feature);
@@ -44,12 +45,12 @@ class BASE_EXPORT ScopedAddFeatureFlags {
   // from command line or functions above. An empty parameter name means that we
   // are checking if the feature is enabled without any parameter.
   bool IsEnabledWithParameter(const Feature& feature,
-                              StringPiece parameter_name,
-                              StringPiece parameter_value);
+                              std::string_view parameter_name,
+                              std::string_view parameter_value);
 
  private:
   void AddFeatureIfNotSet(const Feature& feature,
-                          StringPiece suffix,
+                          std::string_view suffix,
                           bool enable);
 
   const raw_ptr<CommandLine> command_line_;

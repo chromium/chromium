@@ -9,15 +9,21 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
+import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
 
+import com.android.webview.chromium.PrefetchParams;
 import com.android.webview.chromium.Profile;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.support_lib_boundary.PrefetchParamsBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
+import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
+
+import java.lang.reflect.InvocationHandler;
 
 /** The support-lib glue implementation for Profile, delegates all the calls to {@link Profile}. */
 @Lifetime.Profile
@@ -61,5 +67,61 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     public ServiceWorkerController getServiceWorkerController() {
         recordApiCall(ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER);
         return mProfileImpl.getServiceWorkerController();
+    }
+
+    @Override
+    public void prefetchUrl(
+            String url,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    resultCallback) {
+        recordApiCall(ApiCall.PREFETCH_URL);
+        mProfileImpl.prefetchUrl(
+                url,
+                null,
+                value ->
+                        resultCallback.onReceiveValue(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibPrefetchOperationResult(value))));
+    }
+
+    @Override
+    public void prefetchUrl(
+            String url,
+            /* PrefetchParamsBoundaryInterface */ InvocationHandler callbackInvocation,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    resultCallback) {
+        recordApiCall(ApiCall.PREFETCH_URL_WITH_PARAMS);
+        PrefetchParamsBoundaryInterface prefetchParams =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        PrefetchParamsBoundaryInterface.class, callbackInvocation);
+        mProfileImpl.prefetchUrl(
+                url,
+                new PrefetchParams(
+                        prefetchParams.getAdditionalHeaders(),
+                        prefetchParams.getNoVarySearchHint()),
+                value ->
+                        resultCallback.onReceiveValue(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibPrefetchOperationResult(value))));
+    }
+
+    @Override
+    public void cancelPrefetch(String url) {
+        recordApiCall(ApiCall.CANCEL_PREFETCH);
+        mProfileImpl.cancelPrefetch(url);
+    }
+
+    @Override
+    public void clearPrefetch(
+            String url,
+            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
+                    resultCallback) {
+        recordApiCall(ApiCall.CLEAR_PREFETCH);
+        mProfileImpl.clearPrefetch(
+                url,
+                value ->
+                        resultCallback.onReceiveValue(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibPrefetchOperationResult(value))));
     }
 }

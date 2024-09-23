@@ -13,7 +13,7 @@
 @synthesize animators = _animators;
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _animators = [[NSMutableArray alloc] init];
   }
   return self;

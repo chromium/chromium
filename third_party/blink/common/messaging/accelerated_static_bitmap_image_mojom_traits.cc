@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h"
 
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -54,6 +55,14 @@ mojo::PendingRemote<blink::mojom::ImageReleaseCallback> StructTraits<
   return callback;
 }
 
+bool StructTraits<blink::mojom::SharedImageUsageSet::DataView,
+                  gpu::SharedImageUsageSet>::
+    Read(blink::mojom::SharedImageUsageSet::DataView data,
+         gpu::SharedImageUsageSet* out) {
+  *out = gpu::SharedImageUsageSet(data.usage());
+  return true;
+}
+
 bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                   blink::AcceleratedImageInfo>::
     Read(blink::mojom::AcceleratedStaticBitmapImage::DataView data,
@@ -63,7 +72,9 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
     return false;
   }
 
-  out->usage = data.usage();
+  if (!data.ReadUsage(&out->usage)) {
+    return false;
+  }
   out->is_origin_top_left = data.is_origin_top_left();
   out->supports_display_compositing = data.supports_display_compositing();
   out->is_overlay_candidate = data.is_overlay_candidate();

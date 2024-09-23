@@ -23,10 +23,11 @@
 #include <wbemidl.h>
 #include <wrl/client.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/base_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -52,8 +53,8 @@ BASE_EXPORT extern const wchar_t kSecurityCenter2ServerName[];
 // Connects to a server named `server_name` on the local computer through COM
 // and run the given WQL `query`. Sets `enumerator` with the values returned by
 // that `query`. Will return a WmiError value if an error occurs, else returns
-// absl::nullopt.
-BASE_EXPORT absl::optional<WmiError> RunWmiQuery(
+// std::nullopt.
+BASE_EXPORT std::optional<WmiError> RunWmiQuery(
     const std::wstring& server_name,
     const std::wstring& query,
     Microsoft::WRL::ComPtr<IEnumWbemClassObject>* enumerator);

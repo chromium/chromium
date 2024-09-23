@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
-#include "third_party/blink/renderer/core/frame/frame_serializer_delegate_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_frame_serializer_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -92,13 +91,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
   TRACE_EVENT_BEGIN0("page-serialization",
                      "WebFrameSerializer::generateMHTMLParts serializing");
   Deque<SerializedResource> resources;
-  {
-    HeapHashSet<WeakMember<const Element>> shadow_template_elements;
-    FrameSerializerDelegateImpl core_delegate(*web_delegate,
-                                              shadow_template_elements);
-    FrameSerializer serializer(resources, core_delegate);
-    serializer.SerializeFrame(*frame);
-  }
+  FrameSerializer::SerializeFrame(resources, *web_delegate, *frame);
 
   TRACE_EVENT_END1("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts serializing",
@@ -114,8 +107,8 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
     // Frame is the 1st resource (see FrameSerializer::serializeFrame doc
     // comment). Frames get a Content-ID header.
     MHTMLArchive::GenerateMHTMLPart(
-        boundary, FrameSerializerDelegateImpl::GetContentID(frame),
-        encoding_policy, resources.TakeFirst(), *output->MutableData());
+        boundary, FrameSerializer::GetContentID(frame), encoding_policy,
+        resources.TakeFirst(), *output->MutableData());
     while (!resources.empty()) {
       TRACE_EVENT0("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts encoding");

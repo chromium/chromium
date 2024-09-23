@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/ntp/ui_bundled",
+  "+ios/chrome/browser/url_loading/model",
+]

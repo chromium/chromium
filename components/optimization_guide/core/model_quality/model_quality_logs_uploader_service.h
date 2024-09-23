@@ -10,10 +10,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
 
@@ -24,6 +25,9 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
+
+class MqlsFeatureMetadata;
+class ModelQualityLogEntry;
 
 class ModelQualityLogsUploaderService {
  public:
@@ -36,12 +40,32 @@ class ModelQualityLogsUploaderService {
   ModelQualityLogsUploaderService& operator=(
       const ModelQualityLogsUploaderService&) = delete;
 
-  ~ModelQualityLogsUploaderService();
+  virtual ~ModelQualityLogsUploaderService();
 
-  void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry);
+  // Does various checks like metrics consent, enterprise check before uploading
+  // the logs.
+  virtual bool CanUploadLogs(const MqlsFeatureMetadata* metadata);
+
+  // Sets system metadata, including the UMA system profile.
+  virtual void SetSystemMetadata(proto::LoggingMetadata* logging_metadata);
+
+  // Returns the WeakPtr for uploading logs during model qualtiy logs
+  // destruction.
+  base::WeakPtr<ModelQualityLogsUploaderService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // Test-only setter. Pairs well with TestUrlLoaderFactory.
+  void SetUrlLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+ protected:
+  virtual void UploadFinalizedLog(std::unique_ptr<proto::LogAiDataRequest> log,
+                                  proto::LogAiDataRequest::FeatureCase feature);
 
  private:
   friend class ModelQualityLogsUploaderServiceTest;
+  friend class ModelQualityLogEntry;
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request);

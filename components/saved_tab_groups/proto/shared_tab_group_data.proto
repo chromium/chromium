@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package tab_groups.proto;
+
+import "components/sync/protocol/shared_tab_group_data_specifics.proto";
+
+// Message to store local-only data for a shared tab group entity. The message
+// is binary compatible with LocalTabGroupData.
+message LocalSharedTabGroupData {
+  // Local tab group ID. Stored as a serialized base::Token.
+  optional string local_group_id = 1;
+}
+
+// Message to store shared tab groups in DataTypeStore.
+message SharedTabGroupData {
+  // Data from sync, contains either a SavedTabGroup or SavedTabGroupTab
+  // (determined by the "entity" oneof field within). Contains only shared tab
+  // group data.
+  optional sync_pb.SharedTabGroupDataSpecifics specifics = 1;
+
+  // Local-only metadata for the shared tab group. Only populated if the
+  // `specifics` field contains a group entity.
+  optional LocalSharedTabGroupData local_group_data = 2;
+}

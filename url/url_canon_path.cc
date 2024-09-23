@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <limits.h>
 
 #include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "url/url_canon.h"
@@ -289,7 +295,7 @@ bool DoPartialPath(const CHAR* spec,
   out_path->begin = output->length();
   bool success = DoPartialPathInternal<CHAR, UCHAR>(
       spec, path, out_path->begin,
-      // TODO(crbug.com/1416006): Support Non-special URLs.
+      // TODO(crbug.com/40063064): Support Non-special URLs.
       CanonMode::kSpecialURL, output);
   out_path->len = output->length() - out_path->begin;
   return success;

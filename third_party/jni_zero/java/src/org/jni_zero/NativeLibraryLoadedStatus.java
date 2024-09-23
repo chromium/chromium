@@ -4,8 +4,6 @@
 
 package org.jni_zero;
 
-import org.chromium.build.BuildConfig;
-
 /**
  * Exposes native library loading status.
  */

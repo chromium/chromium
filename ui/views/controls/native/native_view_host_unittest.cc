@@ -105,8 +105,8 @@ TEST_F(NativeViewHostTest, NativeViewHierarchyChanged) {
   NativeViewHierarchyChangedTestView* test_view =
       new NativeViewHierarchyChangedTestView;
   NativeViewHost* host = new NativeViewHost;
-  std::unique_ptr<Widget> child(CreateChildForHost(
-      toplevel()->GetNativeView(), toplevel()->GetRootView(), test_view, host));
+  std::unique_ptr<Widget> child = CreateChildForHost(
+      toplevel()->GetNativeView(), toplevel()->GetRootView(), test_view, host);
 #if defined(USE_AURA)
   // Two notifications are generated from inserting the native view into the
   // clipping window and then inserting the clipping window into the root
@@ -164,14 +164,14 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHost) {
   // Add two children widgets attached to a NativeViewHost, and a test
   // grandchild as child widget of host0.
   NativeViewHost* host0 = new NativeViewHost;
-  std::unique_ptr<Widget> child0(CreateChildForHost(
-      toplevel()->GetNativeView(), toplevel()->GetRootView(), new View, host0));
+  std::unique_ptr<Widget> child0 = CreateChildForHost(
+      toplevel()->GetNativeView(), toplevel()->GetRootView(), new View, host0);
   NativeViewHost* host1 = new NativeViewHost;
-  std::unique_ptr<Widget> child1(CreateChildForHost(
-      toplevel()->GetNativeView(), toplevel()->GetRootView(), new View, host1));
+  std::unique_ptr<Widget> child1 = CreateChildForHost(
+      toplevel()->GetNativeView(), toplevel()->GetRootView(), new View, host1);
   ViewHierarchyChangedTestHost* test_host = new ViewHierarchyChangedTestHost;
-  std::unique_ptr<Widget> test_child(
-      CreateChildForHost(host0->native_view(), host0, new View, test_host));
+  std::unique_ptr<Widget> test_child =
+      CreateChildForHost(host0->native_view(), host0, new View, test_host);
 
   // Remove test_host from host0, expect 1 parent change.
   test_host->ResetParentChanges();
@@ -223,11 +223,11 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHostParent) {
 
   // To each child view, add a child widget.
   ViewHierarchyChangedTestHost* host0 = new ViewHierarchyChangedTestHost;
-  std::unique_ptr<Widget> child0(
-      CreateChildForHost(toplevel()->GetNativeView(), view0, new View, host0));
+  std::unique_ptr<Widget> child0 =
+      CreateChildForHost(toplevel()->GetNativeView(), view0, new View, host0);
   ViewHierarchyChangedTestHost* host1 = new ViewHierarchyChangedTestHost;
-  std::unique_ptr<Widget> child1(
-      CreateChildForHost(toplevel()->GetNativeView(), view1, new View, host1));
+  std::unique_ptr<Widget> child1 =
+      CreateChildForHost(toplevel()->GetNativeView(), view1, new View, host1);
 
   // Remove view0 from top level, expect 1 parent change.
   host0->ResetParentChanges();

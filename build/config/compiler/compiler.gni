@@ -11,7 +11,6 @@ import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -39,7 +38,8 @@ declare_args() {
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
-  optimize_for_size = !is_high_end_android && (is_android || is_castos)
+  optimize_for_size =
+      !is_high_end_android && (is_android || is_castos || is_fuchsia)
 }
 
 declare_args() {
@@ -73,12 +73,8 @@ declare_args() {
   # with some utilities such as icecc and ccache. Requires gold and
   # gcc >= 4.8 or clang.
   # http://gcc.gnu.org/wiki/DebugFission
-  #
-  # This is a placeholder value indicating that the code below should set
-  # the default.  This is necessary to delay the evaluation of the default
-  # value expression until after its input values such as use_gold have
-  # been set, e.g. by a toolchain_args() block.
-  use_debug_fission = "default"
+  use_debug_fission = !is_android && !is_fuchsia && !is_apple && !is_win &&
+                      use_lld && cc_wrapper == ""
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
@@ -94,9 +90,6 @@ declare_args() {
                   (is_ios && use_lld && !is_cronet_build) ||
                   (is_android && target_os != "chromeos") ||
                   (is_chromeos && is_chromeos_device)))
-
-  # If true, use Goma for ThinLTO code generation where applicable.
-  use_goma_thin_lto = false
 
   # Whether we're using a sample profile collected on an architecture different
   # than the one we're compiling for.
@@ -200,10 +193,7 @@ if (is_chromeos) {
       # but overall shrinks binaries considerably by avoiding huge unwind
       # tables.
       (current_cpu == "x86" && !exclude_unwind_tables && optimize_for_size) ||
-      using_sanitizer ||
-      # For caller-callee instrumentation version which needs frame pointers to
-      # get the caller address.
-      use_call_graph
+      using_sanitizer
 } else if (is_fuchsia) {
   # Fuchsia on arm64 could use shadow call stack for unwinding.
   enable_frame_pointers = current_cpu != "arm64"
@@ -236,26 +226,13 @@ can_unwind_with_cfi_table = is_android && !is_component_build &&
                             !enable_frame_pointers && current_cpu == "arm"
 
 # Whether or not cfi table should be enabled on arm.
-# TODO(crbug.com/1090409): Replace can_unwind_with_cfi_table with this once
+# TODO(crbug.com/40133751): Replace can_unwind_with_cfi_table with this once
 # sampling profiler is enabled on android.
 enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
-declare_args() {
-  # Whether to use the gold linker from binutils instead of lld or bfd.
-  use_gold = !use_lld && !(is_castos &&
-                           (current_cpu == "arm" || current_cpu == "mipsel")) &&
-             (((is_linux || is_chromeos_lacros) &&
-               (current_cpu == "x64" || current_cpu == "x86" ||
-                current_cpu == "arm" || current_cpu == "arm64" ||
-                current_cpu == "mipsel" || current_cpu == "mips64el")) ||
-              (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
-                              current_cpu == "arm" || current_cpu == "arm64" ||
-                              current_cpu == "riscv64")))
-}
-
 # Use relative paths for debug info. This is important to make the build
 # results independent of the checkout and build directory names, which
-# in turn is important for goma compile hit rate.
+# in turn is important for reclient compile hit rate.
 # Setting this to true may make it harder to debug binaries on Linux, see
 # https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md#Source-level-debug-with-fdebug_compilation_dir
 # It's not clear if the crash server will correctly handle dSYMs with relative
@@ -276,14 +253,26 @@ if (strip_absolute_paths_from_debug_symbols_default) {
   }
 }
 
-# If it wasn't manually set, then default use_debug_fission to false.
-assert(
-    use_debug_fission == "default" || use_debug_fission || !use_debug_fission,
-    "Invalid use_debug_fission.")
-if (use_debug_fission == "default") {
-  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
-                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
+# When absolute_paths in debug symbols, we need to use input root
+# absolute path to execute remotely in RBE.
+clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
+
+if (clang_need_input_root_absolute_path) {
+  compiler_logs = [ "clang_need_input_root_absolute_path=true" ]
+} else {
+  compiler_logs = [ "clang_need_input_root_absolute_path=false" ]
 }
+
+# TODO: https://issues.chromium.org/40120210 - remove this
+# once we can use relative path in hmap.
+clang_need_input_root_absolute_path_for_objc =
+    clang_need_input_root_absolute_path
+if (target_os == "ios") {
+  # objc/objcxx uses hmap, which contains absolute path
+  # see also b/256536089
+  clang_need_input_root_absolute_path_for_objc = true
+}
+compiler_logs += [ "clang_need_input_root_absolute_path_for_objc=$clang_need_input_root_absolute_path_for_objc" ]
 
 # If it wasn't manually set, set to an appropriate default.
 assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
@@ -334,12 +323,12 @@ use_debug_fission = use_debug_fission && symbol_level == 2
 if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
-          is_component_build || !is_debug || is_ios || use_debug_fission ||
-          host_os == "win",
-      "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
+          is_component_build || is_fuchsia || is_apple || use_debug_fission ||
+          is_android || is_chromeos || host_os == "win",
+      "Can't do non-component builds at symbol_level=2 without use_debug_fission=true")
 }
 
-# TODO(crbug.com/1341436) For Windows, to assemble lzma_sdk's assembly files,
+# TODO(crbug.com/40230692) For Windows, to assemble lzma_sdk's assembly files,
 # ml64.exe needs to be utilized as llvm-ml cannot yet assemble it. Once llvm-ml
 # is able to assemble lzma_sdk assembly files, remove this.
 # LzmaDecOpt.asm only works on x64 and not x86.

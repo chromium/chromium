@@ -33,13 +33,11 @@
 
 namespace blink {
 
-VTTScanner::VTTScanner(const String& line) : is_8bit_(line.Is8Bit()) {
-  if (is_8bit_) {
-    data_.characters8 = line.Characters8();
-    end_.characters8 = data_.characters8 + line.length();
+VTTScanner::VTTScanner(const String& line) {
+  if (line.Is8Bit()) {
+    state_.emplace<base::span<const LChar>>(line.Span8());
   } else {
-    data_.characters16 = line.Characters16();
-    end_.characters16 = data_.characters16 + line.length();
+    state_.emplace<base::span<const UChar>>(line.Span16());
   }
 }
 
@@ -50,82 +48,47 @@ bool VTTScanner::Scan(char c) {
   return true;
 }
 
-bool VTTScanner::Scan(const LChar* characters, wtf_size_t characters_count) {
-  wtf_size_t match_length =
-      is_8bit_
-          ? static_cast<wtf_size_t>(end_.characters8 - data_.characters8)
-          : static_cast<wtf_size_t>(end_.characters16 - data_.characters16);
-  if (match_length < characters_count)
+bool VTTScanner::Scan(StringView str) {
+  const auto characters = str.Span8();
+  if (Remaining() < characters.size()) {
     return false;
-  bool matched;
-  if (is_8bit_)
-    matched = WTF::Equal(data_.characters8, characters, characters_count);
-  else
-    matched = WTF::Equal(data_.characters16, characters, characters_count);
-  if (matched)
-    Advance(characters_count);
-  return matched;
+  }
+  return Invoke([&characters](auto& buf) {
+    auto [to_match, rest] = buf.split_at(characters.size());
+    if (to_match != characters) {
+      return false;
+    }
+    buf = rest;
+    return true;
+  });
 }
 
-bool VTTScanner::ScanRun(const Run& run, const String& to_match) {
-  DCHECK_EQ(run.Start(), GetPosition());
-  DCHECK_LE(run.Start(), end());
-  DCHECK_GE(run.end(), run.Start());
-  DCHECK_LE(run.end(), end());
-  wtf_size_t match_length = run.length();
-  if (to_match.length() > match_length)
-    return false;
-  bool matched;
-  if (is_8bit_)
-    matched = WTF::Equal(to_match.Impl(), data_.characters8, match_length);
-  else
-    matched = WTF::Equal(to_match.Impl(), data_.characters16, match_length);
-  if (matched)
-    SeekTo(run.end());
-  return matched;
-}
-
-void VTTScanner::SkipRun(const Run& run) {
-  DCHECK_LE(run.Start(), end());
-  DCHECK_GE(run.end(), run.Start());
-  DCHECK_LE(run.end(), end());
-  SeekTo(run.end());
-}
-
-String VTTScanner::ExtractString(const Run& run) {
-  DCHECK_EQ(run.Start(), GetPosition());
-  DCHECK_LE(run.Start(), end());
-  DCHECK_GE(run.end(), run.Start());
-  DCHECK_LE(run.end(), end());
-  String s;
-  if (is_8bit_)
-    s = String(data_.characters8, run.length());
-  else
-    s = String(data_.characters16, run.length());
-  SeekTo(run.end());
-  return s;
+String VTTScanner::ExtractString(size_t length) {
+  return Invoke([length](auto& buf) {
+    auto [string_data, rest] = buf.split_at(length);
+    buf = rest;
+    return String(string_data);
+  });
 }
 
 String VTTScanner::RestOfInputAsString() {
-  Run rest(GetPosition(), end(), is_8bit_);
-  return ExtractString(rest);
+  return ExtractString(Remaining());
 }
 
-unsigned VTTScanner::ScanDigits(unsigned& number) {
-  Run run_of_digits = CollectWhile<IsASCIIDigit>();
-  if (run_of_digits.IsEmpty()) {
+size_t VTTScanner::ScanDigits(unsigned& number) {
+  const size_t num_digits = CountWhile<IsASCIIDigit>();
+  if (num_digits == 0) {
     number = 0;
     return 0;
   }
   bool valid_number;
-  wtf_size_t num_digits = run_of_digits.length();
-  if (is_8bit_) {
-    number = CharactersToUInt(data_.characters8, num_digits,
-                              WTF::NumberParsingOptions(), &valid_number);
-  } else {
-    number = CharactersToUInt(data_.characters16, num_digits,
-                              WTF::NumberParsingOptions(), &valid_number);
-  }
+  number = Invoke([num_digits, &valid_number](auto& buf) {
+    auto [number_data, rest] = buf.split_at(num_digits);
+    // Consume the digits.
+    buf = rest;
+    return CharactersToUInt(number_data, WTF::NumberParsingOptions(),
+                            &valid_number);
+  });
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and
   // hence that's what got passed to charactersToUInt()), the remaining
@@ -133,38 +96,35 @@ unsigned VTTScanner::ScanDigits(unsigned& number) {
   // not true, then set |number| to the maximum unsigned value.
   if (!valid_number)
     number = std::numeric_limits<unsigned>::max();
-  // Consume the digits.
-  SeekTo(run_of_digits.end());
   return num_digits;
 }
 
 bool VTTScanner::ScanDouble(double& number) {
-  Run integer_run = CollectWhile<IsASCIIDigit>();
-  SeekTo(integer_run.end());
-  Run decimal_run(GetPosition(), GetPosition(), is_8bit_);
+  const State start_state = state_;
+  const size_t num_integer_digits = CountWhile<IsASCIIDigit>();
+  AdvanceIfNonZero(num_integer_digits);
+  size_t length_of_double = num_integer_digits;
+  size_t num_decimal_digits = 0;
   if (Scan('.')) {
-    decimal_run = CollectWhile<IsASCIIDigit>();
-    SeekTo(decimal_run.end());
+    length_of_double++;
+    num_decimal_digits = CountWhile<IsASCIIDigit>();
+    AdvanceIfNonZero(num_decimal_digits);
+    length_of_double += num_decimal_digits;
   }
 
   // At least one digit required.
-  if (integer_run.IsEmpty() && decimal_run.IsEmpty()) {
+  if (num_integer_digits == 0 && num_decimal_digits == 0) {
     // Restore to starting position.
-    SeekTo(integer_run.Start());
+    state_ = start_state;
     return false;
   }
 
-  size_t length_of_double =
-      Run(integer_run.Start(), GetPosition(), is_8bit_).length();
   bool valid_number;
-  if (is_8bit_) {
-    number = CharactersToDouble(integer_run.Start(), length_of_double,
-                                &valid_number);
-  } else {
-    number =
-        CharactersToDouble(reinterpret_cast<const UChar*>(integer_run.Start()),
-                           length_of_double, &valid_number);
-  }
+  number = Invoke(
+      [length_of_double, &valid_number](auto& buf) {
+        return CharactersToDouble(buf.first(length_of_double), &valid_number);
+      },
+      start_state);
 
   if (number == std::numeric_limits<double>::infinity())
     return false;
@@ -175,13 +135,14 @@ bool VTTScanner::ScanDouble(double& number) {
 }
 
 bool VTTScanner::ScanPercentage(double& percentage) {
-  Position saved_position = GetPosition();
+  const State saved_state = state_;
   if (!ScanDouble(percentage))
     return false;
   if (Scan('%'))
     return true;
   // Restore scanner position.
-  SeekTo(saved_position);
+  state_ = saved_state;
   return false;
 }
+
 }  // namespace blink

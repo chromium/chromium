@@ -4,13 +4,23 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include <optional>
+#include <ostream>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
+#include "base/types/optional_util.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -18,30 +28,24 @@
 
 namespace web_app {
 
-// static
-base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
-UpdateManifest::CreateFromJson(const base::Value& json,
-                               const GURL& update_manifest_url) {
-  if (!json.is_dict()) {
-    return base::unexpected(JsonFormatError::kRootNotADictionary);
-  }
+namespace {
 
-  const base::Value::List* versions =
-      json.GetDict().FindList(kUpdateManifestAllVersionsKey);
-  if (!versions) {
-    return base::unexpected(JsonFormatError::kVersionsNotAnArray);
-  }
-
-  base::flat_map<base::Version, VersionEntry> version_entry_map;
-  for (const auto& version_entry_value : *versions) {
+base::expected<std::vector<UpdateManifest::VersionEntry>,
+               UpdateManifest::JsonFormatError>
+ParseVersions(const base::Value::List& version_entries_value,
+              const GURL& update_manifest_url) {
+  base::flat_map<base::Version, UpdateManifest::VersionEntry> version_entry_map;
+  for (const auto& version_entry_value : version_entries_value) {
     const base::Value::Dict* version_entry_dict =
         version_entry_value.GetIfDict();
     if (!version_entry_dict) {
-      return base::unexpected(JsonFormatError::kVersionEntryNotADictionary);
+      return base::unexpected(
+          UpdateManifest::JsonFormatError::kVersionEntryNotADictionary);
     }
 
-    base::expected<VersionEntry, absl::monostate> version_entry =
-        VersionEntry::ParseFromJson(*version_entry_dict, update_manifest_url);
+    base::expected<UpdateManifest::VersionEntry, absl::monostate>
+        version_entry = UpdateManifest::VersionEntry::ParseFromJson(
+            *version_entry_dict, update_manifest_url);
     if (!version_entry.has_value()) {
       // Each version entry must at least contain the version number and URL. If
       // a version entry cannot be parsed, it is ignored for forward
@@ -57,24 +61,109 @@ UpdateManifest::CreateFromJson(const base::Value& json,
                                        *version_entry);
   }
 
-  std::vector<VersionEntry> version_entries;
-  for (auto& [version, version_entry] : version_entry_map) {
-    version_entries.emplace_back(std::move(version_entry));
-  }
-
-  if (version_entries.empty()) {
-    // The update manifest must contain at least one version entry, otherwise it
-    // is treated as invalid.
-    return base::unexpected(JsonFormatError::kNoApplicableVersion);
-  }
-
-  return UpdateManifest(std::move(version_entries));
+  return base::ToVector(std::move(version_entry_map), [](auto map_entry) {
+    auto [version, version_entry] = std::move(map_entry);
+    return version_entry;
+  });
 }
 
-UpdateManifest::UpdateManifest(std::vector<VersionEntry> version_entries)
-    : version_entries_(std::move(version_entries)) {
-  CHECK(!version_entries_.empty());
+base::expected<base::flat_map<UpdateChannelId, UpdateManifest::ChannelMetadata>,
+               UpdateManifest::JsonFormatError>
+ParseChannels(const base::Value::Dict& channels_value) {
+  base::flat_map<UpdateChannelId, UpdateManifest::ChannelMetadata>
+      channels_metadata;
+  for (const auto [channel_id, channel_value] : channels_value) {
+    const base::Value::Dict* channel_dict = channel_value.GetIfDict();
+    if (!channel_dict) {
+      return base::unexpected(
+          UpdateManifest::JsonFormatError::kChannelNotADictionary);
+    }
+    auto id = UpdateChannelId::Create(channel_id);
+    if (!id.has_value()) {
+      continue;
+    }
+    std::optional<std::string> name = base::OptionalFromPtr(
+        channel_dict->FindString(kUpdateManifestChannelNameKey));
+    channels_metadata.emplace(*id, UpdateManifest::ChannelMetadata(*id, name));
+  }
+  return channels_metadata;
 }
+
+}  // namespace
+
+// static
+const UpdateChannelId& UpdateChannelId::default_id() {
+  static const base::NoDestructor<UpdateChannelId> kDefaultChannelId(
+      [] { return *UpdateChannelId::Create("default"); }());
+  return *kDefaultChannelId;
+}
+
+// static
+base::expected<UpdateChannelId, absl::monostate> UpdateChannelId::Create(
+    std::string input) {
+  if (input.empty() || !base::IsStringUTF8(input)) {
+    return base::unexpected(absl::monostate());
+  }
+  return UpdateChannelId(std::move(input));
+}
+
+void PrintTo(const UpdateChannelId& id, std::ostream* os) {
+  *os << id.ToString();
+}
+
+UpdateChannelId::UpdateChannelId(std::string id) : id_(std::move(id)) {}
+
+UpdateChannelId::UpdateChannelId(const UpdateChannelId&) = default;
+
+UpdateChannelId::UpdateChannelId(UpdateChannelId&&) = default;
+
+UpdateChannelId& UpdateChannelId::operator=(const UpdateChannelId&) = default;
+
+UpdateChannelId& UpdateChannelId::operator=(UpdateChannelId&&) = default;
+
+UpdateChannelId::~UpdateChannelId() = default;
+
+bool UpdateChannelId::operator==(const UpdateChannelId& other) const = default;
+auto UpdateChannelId::operator<=>(const UpdateChannelId& other) const = default;
+bool UpdateChannelId::operator<(const UpdateChannelId& other) const = default;
+
+// static
+base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
+UpdateManifest::CreateFromJson(const base::Value& json,
+                               const GURL& update_manifest_url) {
+  if (!json.is_dict()) {
+    return base::unexpected(JsonFormatError::kRootNotADictionary);
+  }
+
+  const base::Value::List* versions =
+      json.GetDict().FindList(kUpdateManifestAllVersionsKey);
+  if (!versions) {
+    return base::unexpected(JsonFormatError::kVersionsNotAnArray);
+  }
+
+  ASSIGN_OR_RETURN(std::vector<VersionEntry> version_entries,
+                   ParseVersions(*versions, update_manifest_url));
+
+  base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata;
+  const base::Value* channels =
+      json.GetDict().Find(kUpdateManifestAllChannelsKey);
+  if (channels) {
+    if (!channels->is_dict()) {
+      return base::unexpected(JsonFormatError::kChannelsNotADictionary);
+    }
+
+    ASSIGN_OR_RETURN(channels_metadata, ParseChannels(channels->GetDict()));
+  }
+
+  return UpdateManifest(std::move(version_entries),
+                        std::move(channels_metadata));
+}
+
+UpdateManifest::UpdateManifest(
+    std::vector<VersionEntry> version_entries,
+    base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata)
+    : version_entries_(std::move(version_entries)),
+      channels_metadata_(std::move(channels_metadata)) {}
 
 UpdateManifest::UpdateManifest(const UpdateManifest& other) = default;
 
@@ -82,6 +171,34 @@ UpdateManifest& UpdateManifest::operator=(const UpdateManifest& other) =
     default;
 
 UpdateManifest::~UpdateManifest() = default;
+
+std::optional<UpdateManifest::VersionEntry> UpdateManifest::GetLatestVersion(
+    const UpdateChannelId& channel_id) const {
+  std::optional<VersionEntry> latest_version_entry;
+  for (const VersionEntry& version_entry : version_entries_) {
+    if (!version_entry.channel_ids().contains(channel_id)) {
+      // Ignore version entries that are not part of the provided
+      // `channel_id`.
+      continue;
+    }
+    if (!latest_version_entry.has_value() ||
+        latest_version_entry->version() <= version_entry.version()) {
+      latest_version_entry = version_entry;
+    }
+  }
+  return latest_version_entry;
+}
+
+UpdateManifest::ChannelMetadata UpdateManifest::GetChannelMetadata(
+    const UpdateChannelId& channel_id) const {
+  const ChannelMetadata* channel_metadata =
+      base::FindOrNull(channels_metadata_, channel_id);
+  if (!channel_metadata) {
+    return ChannelMetadata(channel_id,
+                           /*name=*/std::nullopt);
+  }
+  return *channel_metadata;
+}
 
 // static
 base::expected<UpdateManifest::VersionEntry, absl::monostate>
@@ -94,11 +211,50 @@ UpdateManifest::VersionEntry::ParseFromJson(
   ASSIGN_OR_RETURN(auto src, ParseAndValidateSrc(
                                  version_entry_dict.Find(kUpdateManifestSrcKey),
                                  update_manifest_url));
-  return VersionEntry(src, version);
+  ASSIGN_OR_RETURN(auto channel_ids,
+                   ParseAndValidateChannels(
+                       version_entry_dict.Find(kUpdateManifestChannelsKey)));
+  return VersionEntry(std::move(src), std::move(version),
+                      std::move(channel_ids));
 }
 
-UpdateManifest::VersionEntry::VersionEntry(GURL src, base::Version version)
-    : src_(src), version_(version) {}
+UpdateManifest::ChannelMetadata::ChannelMetadata(
+    UpdateChannelId id,
+    std::optional<std::string> name)
+    : id_(std::move(id)), name_(std::move(name)) {}
+
+UpdateManifest::ChannelMetadata::ChannelMetadata(const ChannelMetadata& other) =
+    default;
+UpdateManifest::ChannelMetadata& UpdateManifest::ChannelMetadata::operator=(
+    const ChannelMetadata& other) = default;
+
+UpdateManifest::ChannelMetadata::~ChannelMetadata() = default;
+
+bool UpdateManifest::ChannelMetadata::operator==(
+    const ChannelMetadata& other) const = default;
+
+void PrintTo(const UpdateManifest::ChannelMetadata& channel_metadata,
+             std::ostream* os) {
+  *os << base::Value::Dict()
+             .Set("id", base::ToString(channel_metadata.id_))
+             .Set("name", channel_metadata.name_.has_value()
+                              ? base::Value(*channel_metadata.name_)
+                              : base::Value());
+}
+
+UpdateManifest::VersionEntry::VersionEntry(
+    GURL src,
+    base::Version version,
+    base::flat_set<UpdateChannelId> channel_ids)
+    : src_(std::move(src)),
+      version_(std::move(version)),
+      channel_ids_(std::move(channel_ids)) {}
+
+UpdateManifest::VersionEntry::VersionEntry(const VersionEntry& other) = default;
+UpdateManifest::VersionEntry& UpdateManifest::VersionEntry::operator=(
+    const VersionEntry& other) = default;
+
+UpdateManifest::VersionEntry::~VersionEntry() = default;
 
 GURL UpdateManifest::VersionEntry::src() const {
   CHECK(src_.is_valid());
@@ -110,6 +266,11 @@ base::Version UpdateManifest::VersionEntry::version() const {
   return version_;
 }
 
+const base::flat_set<UpdateChannelId>&
+UpdateManifest::VersionEntry::channel_ids() const {
+  return channel_ids_;
+}
+
 // static
 base::expected<base::Version, absl::monostate>
 UpdateManifest::VersionEntry::ParseAndValidateVersion(
@@ -118,15 +279,9 @@ UpdateManifest::VersionEntry::ParseAndValidateVersion(
     return base::unexpected(absl::monostate());
   }
 
-  base::expected<std::vector<uint32_t>, IwaVersionParseError>
-      version_components =
-          ParseIwaVersionIntoComponents(version_value->GetString());
-  if (!version_components.has_value()) {
-    return base::unexpected(absl::monostate());
-  }
-  base::Version version(std::move(*version_components));
-  CHECK(version.IsValid());
-  return version;
+  return ParseIwaVersion(version_value->GetString()).transform_error([](auto) {
+    return absl::monostate();
+  });
 }
 
 // static
@@ -155,13 +310,35 @@ UpdateManifest::VersionEntry::ParseAndValidateSrc(
   return src;
 }
 
-UpdateManifest::VersionEntry GetLatestVersionEntry(
-    const UpdateManifest& update_manifest) {
-  return base::ranges::max(
-      update_manifest.versions(), base::ranges::less(),
-      [](const UpdateManifest::VersionEntry& version_entry) {
-        return version_entry.version();
-      });
+// static
+base::expected<base::flat_set<UpdateChannelId>, absl::monostate>
+UpdateManifest::VersionEntry::ParseAndValidateChannels(
+    base::optional_ref<const base::Value> channels_value) {
+  if (!channels_value.has_value()) {
+    // If the "channels" field is not present in the version entry of the Update
+    // Manifest, we treat it as if it was present and contained a single
+    // "default" channel.
+    return base::flat_set<UpdateChannelId>{UpdateChannelId::default_id()};
+  }
+
+  if (!channels_value->is_list()) {
+    return base::unexpected(absl::monostate());
+  }
+
+  std::vector<UpdateChannelId> channel_ids;
+  for (const auto& channel_value : channels_value->GetList()) {
+    const std::string* channel_id_string = channel_value.GetIfString();
+    if (!channel_id_string) {
+      return base::unexpected(absl::monostate());
+    }
+    auto channel_id = UpdateChannelId::Create(*channel_id_string);
+    if (!channel_id.has_value()) {
+      return base::unexpected(absl::monostate());
+    }
+    channel_ids.emplace_back(*channel_id);
+  }
+
+  return channel_ids;
 }
 
 bool operator==(const UpdateManifest::VersionEntry& lhs,
@@ -169,9 +346,15 @@ bool operator==(const UpdateManifest::VersionEntry& lhs,
 
 std::ostream& operator<<(std::ostream& os,
                          const UpdateManifest::VersionEntry& version_entry) {
+  base::Value::List channel_ids;
+  for (const auto& channel_id : version_entry.channel_ids()) {
+    channel_ids.Append(channel_id.ToString());
+  }
   return os << base::Value::Dict()
                    .Set(kUpdateManifestSrcKey, version_entry.src().spec())
                    .Set(kUpdateManifestVersionKey,
-                        version_entry.version().GetString());
+                        version_entry.version().GetString())
+                   .Set(kUpdateManifestChannelsKey, std::move(channel_ids));
 }
+
 }  // namespace web_app

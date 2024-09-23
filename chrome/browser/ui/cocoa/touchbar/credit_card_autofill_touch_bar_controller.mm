@@ -11,11 +11,11 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#import "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/grit/components_scaled_resources.h"
 #import "ui/base/cocoa/touch_bar_util.h"
@@ -97,9 +97,9 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   for (int i = 0; i < _controller->GetLineCount() && i < maxTouchBarItems;
        i++) {
     const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(i);
-    if (suggestion.popup_item_id != autofill::PopupItemId::kAutocompleteEntry &&
-        suggestion.popup_item_id != autofill::PopupItemId::kAddressEntry &&
-        suggestion.popup_item_id != autofill::PopupItemId::kCreditCardEntry) {
+    if (suggestion.type != autofill::SuggestionType::kAutocompleteEntry &&
+        suggestion.type != autofill::SuggestionType::kAddressEntry &&
+        suggestion.type != autofill::SuggestionType::kCreditCardEntry) {
       continue;
     }
 
@@ -126,11 +126,11 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (NSButton*)createCreditCardButtonAtRow:(int)row {
-  NSString* label =
-      base::SysUTF16ToNSString(_controller->GetSuggestionMainTextAt(row));
+  const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(row);
+  NSString* label = base::SysUTF16ToNSString(suggestion.main_text.value);
   NSString* subtext = nil;
   std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
-      _controller->GetSuggestionLabelsAt(row);
+      suggestion.labels;
   if (!suggestion_labels.empty()) {
     CHECK_GT(suggestion_labels.size(), 0U);
     CHECK_GT(suggestion_labels[0].size(), 0U);
@@ -144,7 +144,6 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
                        : label;
 
   // Create the button.
-  const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(row);
   NSImage* cardIconImage =
       GetCreditCardTouchBarImage(autofill::GetIconResourceID(suggestion.icon));
   NSButton* button = nil;
@@ -189,7 +188,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag], base::TimeTicks::Now());
+  _controller->AcceptSuggestion([sender tag]);
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {

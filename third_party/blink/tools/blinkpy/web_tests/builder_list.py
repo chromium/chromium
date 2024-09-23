@@ -106,44 +106,9 @@ class BuilderList:
     def builders_for_rebaselining(self) -> Set[str]:
         try_builders = {
             builder
-            for builder in self.filter_builders(is_try=True,
-                                                exclude_specifiers={'android'})
+            for builder in self.filter_builders(is_try=True)
         }
-        # Remove CQ builders whose port is a duplicate of a *-blink-rel builder
-        # to avoid wasting resources.
-        for blink_builder, cq_builder in self.try_bots_with_cq_mirror():
-            if blink_builder in try_builders and cq_builder in try_builders:
-                try_builders.remove(cq_builder)
         return try_builders
-
-    def try_bots_with_cq_mirror(self):
-        """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
-
-        When all steps in a cq trybot exist in a blink-rel trybot and the port
-        name matches, we say that blink-rel trybot has a cq mirror, and thus there
-        is no need to trigger the cq trybot together with the blink-rel trybot.
-
-        As of today, this should return:
-        [("linux-blink-rel", "linux-rel"),
-         ("mac12.0-blink-rel", "mac-rel"),
-         ("win10.20h2-blink-rel", "win-rel")]
-        """
-        rv = []
-        all_blink_rel_trybots = sorted(
-            set(self.all_try_builder_names()) -
-            set(self.all_cq_try_builder_names()))
-        for builder_name in all_blink_rel_trybots:
-            step_names = set(self.step_names_for_builder(builder_name))
-            for cq_builder_name in self.all_cq_try_builder_names():
-                if (self.port_name_for_builder_name(cq_builder_name) !=
-                        self.port_name_for_builder_name(builder_name)):
-                    continue
-                cq_step_names = set(
-                    self.step_names_for_builder(cq_builder_name))
-                if cq_step_names.issubset(step_names):
-                    rv.append((builder_name, cq_builder_name))
-                    break
-        return rv
 
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
@@ -192,10 +157,6 @@ class BuilderList:
         port_names = set()
         for builder_name, builder in self._builders.items():
             port_names.add(builder['port_name'])
-            for step in self.step_names_for_builder(builder_name):
-                product = self.product_for_build_step(builder_name, step)
-                if product != 'content_shell':
-                    port_names.add(product)
         return sorted(port_names)
 
     def bucket_for_builder(self, builder_name):
@@ -224,13 +185,6 @@ class BuilderList:
 
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
-
-    def product_for_build_step(self, builder_name: str, step_name: str) -> str:
-        try:
-            steps = self._steps(builder_name)
-            return steps[step_name].get('product', 'content_shell')
-        except KeyError:
-            return 'content_shell'
 
     def has_experimental_steps(self, builder_name):
         steps = self.step_names_for_builder(builder_name)
@@ -279,13 +233,6 @@ class BuilderList:
         the version specifier for the first builder that matches, even
         if it's a try bot builder.
         """
-        # TODO(crbug.com/41484800): Remove this special logic by either:
-        #  1. Implement better way of defining port as per-suite, not
-        #     per-builder, property in `BuilderList`
-        #  2. Replace the `chrome` port with regular platform ports with
-        #     chrome-specific logic (detected via the `driver_name` option).
-        if target_port_name == 'chrome':
-            return 'Chrome'
         for _, builder_info in sorted(self._builders.items()):
             if builder_info['port_name'] == target_port_name:
                 return builder_info['specifiers'][0]

@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -84,7 +83,7 @@ base::FilePath QuotaManagerProxy::GetClientBucketPath(
 void QuotaManagerProxy::RegisterClient(
     mojo::PendingRemote<mojom::QuotaClient> client,
     QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
+    const base::flat_set<blink::mojom::StorageType>& storage_types) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
@@ -576,8 +575,9 @@ void QuotaManagerProxy::GetBucketSpaceRemaining(
 
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+
   if (!quota_manager_impl_) {
-    std::move(respond).Run(false);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 

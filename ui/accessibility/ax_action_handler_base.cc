@@ -13,7 +13,7 @@ bool AXActionHandlerBase::RequiresPerformActionPointInPixels() const {
 }
 
 AXActionHandlerBase::AXActionHandlerBase()
-    : AXActionHandlerBase(ui::AXTreeIDUnknown()) {}
+    : AXActionHandlerBase(AXTreeIDUnknown()) {}
 
 AXActionHandlerBase::AXActionHandlerBase(const AXTreeID& ax_tree_id)
     : tree_id_(ax_tree_id) {}
@@ -23,7 +23,7 @@ AXActionHandlerBase::~AXActionHandlerBase() {
 }
 
 void AXActionHandlerBase::SetAXTreeID(AXTreeID new_ax_tree_id) {
-  DCHECK_NE(new_ax_tree_id, ui::AXTreeIDUnknown());
+  DCHECK_NE(new_ax_tree_id, AXTreeIDUnknown());
   AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
   tree_id_ = new_ax_tree_id;
   AXActionHandlerRegistry::GetInstance()->SetAXTreeID(tree_id_, this);

@@ -24,8 +24,6 @@ source_set("common") {
     "me2me_native_messaging_host.h",
     "pin_validator.cc",
     "pin_validator.h",
-    "service_client.cc",
-    "service_client.h",
     "test_util.cc",
     "test_util.h",
   ]
@@ -91,18 +89,39 @@ source_set("start_host_main_headers") {
   deps = [ "//remoting/host:host_main_headers" ]
 }
 
-source_set("start_host_main") {
+source_set("start_host_common") {
   sources = [
-    "corp_host_starter.cc",
-    "corp_host_starter.h",
     "host_starter.cc",
     "host_starter.h",
-    "host_stopper.cc",
-    "host_stopper.h",
+    "host_starter_base.cc",
+    "host_starter_base.h",
+    "host_starter_oauth_helper.cc",
+    "host_starter_oauth_helper.h",
+  ]
+
+  deps = [
+    ":common",
+    "//google_apis",
+    "//net",
+    "//remoting/base:base",
+    "//remoting/host:common",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+  ]
+}
+
+source_set("start_host_main") {
+  sources = [
+    "cloud_host_starter.cc",
+    "cloud_host_starter.h",
+    "corp_host_starter.cc",
+    "corp_host_starter.h",
+    "oauth_host_starter.cc",
+    "oauth_host_starter.h",
     "start_host_main.cc",
   ]
 
-  if (!is_win) {
+  if (is_linux) {
     sources += [
       "start_host_as_root.cc",
       "start_host_as_root.h",
@@ -111,14 +130,18 @@ source_set("start_host_main") {
 
   deps = [
     ":buildflags",
+    ":start_host_common",
     "//google_apis",
     "//mojo/core/embedder",
     "//net",
+    "//remoting/base:authorization",
     "//remoting/base:base",
     "//remoting/base:breakpad",
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
+    "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
+    "//remoting/proto/remoting/v1:cloud_proto",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//third_party/libjingle_xmpp:rtc_xmllite",

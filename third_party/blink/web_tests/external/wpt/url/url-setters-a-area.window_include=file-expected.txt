@@ -11,18 +11,10 @@ This is a testharness.js-based test.
   assert_equals: expected "file:///" but got "file://localhost/"
 [FAIL] <area>: Setting <file://y/>.host = 'loc%41lhost'
   assert_equals: expected "file:///" but got "file://localhost/"
-[FAIL] <a>: Setting <file://hi/x>.host = ''
-  assert_equals: expected "file:///x" but got "file://hi/x"
-[FAIL] <area>: Setting <file://hi/x>.host = ''
-  assert_equals: expected "file:///x" but got "file://hi/x"
 [FAIL] <a>: Setting <file://y/>.hostname = 'loc%41lhost'
   assert_equals: expected "file:///" but got "file://localhost/"
 [FAIL] <area>: Setting <file://y/>.hostname = 'loc%41lhost'
   assert_equals: expected "file:///" but got "file://localhost/"
-[FAIL] <a>: Setting <file://hi/x>.hostname = ''
-  assert_equals: expected "file:///x" but got "file://hi/x"
-[FAIL] <area>: Setting <file://hi/x>.hostname = ''
-  assert_equals: expected "file:///x" but got "file://hi/x"
 [FAIL] <a>: Setting <file://localhost/>.port = '12'
   assert_equals: expected "file:///" but got "file://localhost/"
 [FAIL] <area>: Setting <file://localhost/>.port = '12'

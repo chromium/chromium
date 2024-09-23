@@ -12,6 +12,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "url/gurl.h"
 
 namespace drive {
 namespace {

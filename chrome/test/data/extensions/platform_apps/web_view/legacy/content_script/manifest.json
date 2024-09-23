@@ -1,11 +1,13 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Legacy hosted app that force loads content scripts",
   "version": "1",
   "minimum_chrome_version": "23",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "all_frames": true,
       "js": [
         "content_script.js"

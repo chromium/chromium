@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/content/common/visual_utils.h"
 
-#include <optional>
 #include <unordered_map>
 #include <vector>
 

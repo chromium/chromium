@@ -9,6 +9,7 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 class ExtensionKeybindingRegistryViews;
 
@@ -44,7 +45,7 @@ class ChromeNativeAppWindowViews
 
   // ui::BaseWindow implementation.
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   ui::ZOrderLevel GetZOrderLevel() const override;
 
   // WidgetDelegate implementation.

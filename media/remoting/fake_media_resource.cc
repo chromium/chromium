@@ -84,8 +84,7 @@ void FakeDemuxerStream::CreateFakeFrame(size_t size,
   base::TimeDelta pts = base::Milliseconds(pts_ms);
 
   // To DecoderBuffer
-  scoped_refptr<DecoderBuffer> input_buffer =
-      DecoderBuffer::CopyFrom(buffer.data(), size);
+  scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CopyFrom(buffer);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(key_frame);
 
@@ -104,9 +103,8 @@ FakeMediaResource::FakeMediaResource()
 
 FakeMediaResource::~FakeMediaResource() = default;
 
-std::vector<raw_ptr<DemuxerStream, VectorExperimental>>
-FakeMediaResource::GetAllStreams() {
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams;
+std::vector<DemuxerStream*> FakeMediaResource::GetAllStreams() {
+  std::vector<DemuxerStream*> streams;
   streams.push_back(audio_stream_.get());
   streams.push_back(video_stream_.get());
   return streams;

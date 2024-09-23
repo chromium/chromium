@@ -12,12 +12,8 @@ namespace ui {
 ComboboxModel::ComboboxModel() = default;
 
 ComboboxModel::~ComboboxModel() {
-  for (auto& observer : observers_)
-    observer.OnComboboxModelDestroying(this);
-}
-
-std::u16string ComboboxModel::GetDropDownTextAt(size_t index) const {
-  return GetItemAt(index);
+  observers_.Notify(&ui::ComboboxModelObserver::OnComboboxModelDestroying,
+                    this);
 }
 
 std::u16string ComboboxModel::GetDropDownSecondaryTextAt(size_t index) const {

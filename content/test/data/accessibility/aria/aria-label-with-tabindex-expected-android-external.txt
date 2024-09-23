@@ -1,0 +1,7 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"test-label" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
+++++TextView text:"Test" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
+++++TextView text:"This is test content within a section, tab index negative 1. I am missing on Android." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View text:"test-label-2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
+++++TextView text:"Test" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
+++++TextView text:"This is test content within a section, no tab index." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

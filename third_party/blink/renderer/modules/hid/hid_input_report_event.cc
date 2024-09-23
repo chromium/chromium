@@ -17,7 +17,7 @@ HIDInputReportEvent::HIDInputReportEvent(const AtomicString& type,
     : Event(type, Bubbles::kNo, Cancelable::kNo),
       device_(device),
       report_id_(report_id) {
-  DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(data.data(), data.size());
+  DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(data);
   data_ = DOMDataView::Create(dom_buffer, 0, data.size());
 }
 

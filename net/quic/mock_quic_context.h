@@ -14,6 +14,7 @@ namespace net {
 class MockQuicContext : public QuicContext {
  public:
   MockQuicContext();
+  ~MockQuicContext() override = default;
 
   void AdvanceTime(quic::QuicTime::Delta delta);
 

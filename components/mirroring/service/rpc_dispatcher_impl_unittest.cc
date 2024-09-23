@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 #include "third_party/openscreen/src/cast/streaming/message_fields.h"
-#include "third_party/openscreen/src/cast/streaming/session_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/session_messenger.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 using ::testing::_;
@@ -63,7 +63,7 @@ class RpcDispatcherImplTest : public ::testing::Test {
   RpcDispatcherImplTest()
       : task_environment_runner_(task_environment_.GetMainThreadTaskRunner()),
         messenger_(
-            &mock_message_port_,
+            mock_message_port_,
             kSourceId,
             kReceiverId,
             [this](openscreen::Error error) { OnMessengerError(error); },

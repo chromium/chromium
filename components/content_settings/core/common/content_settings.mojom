@@ -4,6 +4,7 @@
 
 module content_settings.mojom;
 
+import "components/content_settings/core/common/content_settings_enums.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
@@ -55,28 +56,7 @@ enum ContentSetting {
   BLOCK,
   ASK,
   SESSION_ONLY,
-  DETECT_IMPORTANT_CONTENT
-};
-
-// This mirrors the C++ type in content_settings_constraints.h.
-enum SessionModel {
-  DURABLE = 0,
-  USER_SESSION,
-  NON_RESTORABLE_USER_SESSION,
-  ONE_TIME,
-};
-
-// TODO(http://b/324406007): The impl is currently specific to the TPCD
-// Metadata Source and is expected to be cleaned up with the mitigation cleanup.
-enum TpcdMetadataRuleSource {
- SOURCE_UNSPECIFIED = 0,
- SOURCE_TEST,
- SOURCE_1P_DT,
- SOURCE_3P_DT,
- SOURCE_DOGFOOD,
- SOURCE_CRITICAL_SECTOR,
- SOURCE_CUJ,
- SOURCE_GOV_EDU_TLD,
+  DETECT_IMPORTANT_CONTENT,
 };
 
 // This mirrors the C++ type in content_settings_metadata.h.
@@ -87,7 +67,10 @@ struct RuleMetaData {
   mojo_base.mojom.Time expiration;
   SessionModel session_model;
   mojo_base.mojom.TimeDelta lifetime;
+  // TODO(https://crbug.com/356148020): Migrate RWS-related metadata.
   TpcdMetadataRuleSource tpcd_metadata_rule_source;
+  TpcdMetadataCohort tpcd_metadata_cohort;
+  bool decided_by_related_website_sets;
 };
 
 // This mirrors the C++ type in content_settings.h.
@@ -96,16 +79,12 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern secondary_pattern;
   mojo_base.mojom.Value setting_value;
   RuleMetaData metadata;
-  string source;
+  ProviderType source;
   bool incognito;
 };
 
 // This mirrors the C++ type in content_settings.h.
-// TODO(https://crbug.com/1485360): This should be removed.
+// TODO(crbug.com/40282541): This should be removed.
 struct RendererContentSettingRules {
-  array<ContentSettingPatternSource> image_rules;
-  array<ContentSettingPatternSource> script_rules;
-  array<ContentSettingPatternSource> popup_redirect_rules;
   array<ContentSettingPatternSource> mixed_content_rules;
-  array<ContentSettingPatternSource> auto_dark_content_rules;
 };

@@ -135,6 +135,17 @@ TEST_P(RoundedScrollBarTest, FadesAfterScroll) {
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
 }
 
+TEST_P(RoundedScrollBarTest, AlwaysShowThumbIsTrue) {
+  scroll_bar_->SetAlwaysShowThumb(true);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(),
+            GetParam() ? kActiveOpacity : kDefaultOpacity);
+  scroll_bar_->ScrollByAmount(views::ScrollBar::ScrollAmount::kNextLine);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(),
+            GetParam() ? kActiveOpacity : kDefaultOpacity);
+  generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
+}
+
 TEST_P(RoundedScrollBarTest, MoveToThumbShowsActiveOpacity) {
   generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);

@@ -17,23 +17,29 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 constexpr char kUrl1[] = "https://example1.com:443";
-const base::Time kPastTime = base::Time::Now() - base::Days(60);
+const base::TimeDelta kLifetime = base::Days(60);
+const base::Time kPastTime = base::Time::Now() - kLifetime;
 
-// TODO(crbug.com/1443466): Use a mock result instead.
+// TODO(crbug.com/40267370): Use a mock result instead.
 std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
 CreateUnusedSitePermissionsResult(base::Value::List urls) {
   auto result = std::make_unique<
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
-    auto origin = ContentSettingsPattern::FromString(url_val.GetString());
-    std::set<ContentSettingsType> permission_types(
-        {ContentSettingsType::GEOLOCATION});
-    result->AddRevokedPermission(origin, permission_types, kPastTime);
+    permissions_data.primary_pattern =
+        ContentSettingsPattern::FromString(url_val.GetString());
+    permissions_data.permission_types = {ContentSettingsType::GEOLOCATION};
+    permissions_data.constraints =
+        content_settings::ContentSettingConstraints(kPastTime);
+    permissions_data.constraints.set_lifetime(kLifetime);
+    result->AddRevokedPermission(permissions_data);
   }
   return result;
 }
@@ -77,7 +83,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
   std::unique_ptr<UnusedSitePermissionsService> service_;
 };
 
-TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
@@ -86,7 +93,7 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   notification->impression_count_ = 42;
   notification->first_impression_time_ = kPastTime;
   notification->last_impression_time_ = last;
-  notification->result_ =
+  notification->current_result_ =
       CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
 
   // When transforming the notification to a Dict, the properties of the
@@ -108,9 +115,9 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
       dict.FindDict(safety_hub::kSafetyHubMenuNotificationResultKey);
   EXPECT_TRUE(result_dict->contains(kUnusedSitePermissionsResultKey));
   EXPECT_EQ(1U, result_dict->FindList(kUnusedSitePermissionsResultKey)->size());
-  base::Value::Dict& revoked_perm =
-      result_dict->FindList(kUnusedSitePermissionsResultKey)->front().GetDict();
-  EXPECT_EQ(kUrl1, *revoked_perm.FindString(kSafetyHubOriginKey));
+  base::Value::List& revoked_origins =
+      *result_dict->FindList(kUnusedSitePermissionsResultKey);
+  EXPECT_EQ(kUrl1, revoked_origins.front());
 
   // Using the dict from before, we can create another menu notification object
   // that should have the same properties as when it was initially created.
@@ -121,17 +128,15 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   EXPECT_EQ(42, new_notification->impression_count_);
   EXPECT_EQ(kPastTime, new_notification->first_impression_time_);
   EXPECT_EQ(last, new_notification->last_impression_time_);
-  EXPECT_NE(nullptr, new_notification->result_);
-  // Similarly, the result should contain the same properties as the one that
-  // was transformed into a Dict.
-  auto* new_result =
-      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
-          new_notification->result_.get());
-  EXPECT_EQ(1U, new_result->GetRevokedPermissions().size());
-  EXPECT_EQ(kUrl1, new_result->GetRevokedOrigins().begin()->ToString());
+  EXPECT_FALSE(new_notification->prev_stored_result_.empty());
+  EXPECT_EQ(kUrl1, new_notification->prev_stored_result_
+                       .FindList(kUnusedSitePermissionsResultKey)
+                       ->front()
+                       .GetString());
 }
 
-TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
   base::TimeDelta interval = base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
@@ -219,7 +224,8 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
   ASSERT_FALSE(other_notification->ShouldBeShown(interval));
 }
 
-TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_IsCurrentlyActive) {
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
@@ -240,5 +246,5 @@ TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
   ASSERT_FALSE(notification->IsCurrentlyActive());
 }
 
-// TODO(crbug.com/1443466): Add tests for other types of Safety Hub services and
-// Safety Hub results.
+// TODO(crbug.com/40267370): Add tests for other types of Safety Hub services
+// and Safety Hub results.

@@ -17,7 +17,8 @@ namespace {
 
 infobars::InfoBarDelegate::NavigationDetails CreateNavigationDetails(
     web::NavigationItem* navigation_item,
-    bool is_same_document) {
+    bool is_same_document,
+    bool has_user_gesture) {
   infobars::InfoBarDelegate::NavigationDetails navigation_details;
   navigation_details.entry_id = navigation_item->GetUniqueID();
   const ui::PageTransition transition = navigation_item->GetTransitionType();
@@ -31,6 +32,7 @@ infobars::InfoBarDelegate::NavigationDetails CreateNavigationDetails(
   navigation_details.is_redirect = ui::PageTransitionIsRedirect(transition);
   navigation_details.is_form_submission =
       ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_FORM_SUBMIT);
+  navigation_details.has_user_gesture = has_user_gesture;
   return navigation_details;
 }
 
@@ -63,13 +65,14 @@ void InfoBarManagerImpl::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
-  // TODO(crbug.com/931841): Remove GetLastCommittedItem nil check once
+  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
   // HasComitted has been fixed.
   if (navigation_context->HasCommitted() &&
       web_state->GetNavigationManager()->GetLastCommittedItem()) {
     OnNavigation(CreateNavigationDetails(
         web_state->GetNavigationManager()->GetLastCommittedItem(),
-        navigation_context->IsSameDocument()));
+        navigation_context->IsSameDocument(),
+        navigation_context->HasUserGesture()));
   }
 }
 

@@ -1,0 +1,224 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("net") {
+  sources = [
+    "alwayson_vpn_pre_connect_url_allowlist_service.cc",
+    "alwayson_vpn_pre_connect_url_allowlist_service.h",
+    "alwayson_vpn_pre_connect_url_allowlist_service_factory.cc",
+    "alwayson_vpn_pre_connect_url_allowlist_service_factory.h",
+    "apn_migrator.cc",
+    "apn_migrator.h",
+    "ash_dns_over_https_config_source.cc",
+    "ash_dns_over_https_config_source.h",
+    "ash_proxy_monitor.cc",
+    "ash_proxy_monitor.h",
+    "bluetooth_pref_state_observer.cc",
+    "bluetooth_pref_state_observer.h",
+    "client_cert_filter.cc",
+    "client_cert_filter.h",
+    "client_cert_store_ash.cc",
+    "client_cert_store_ash.h",
+    "client_cert_store_kcer.cc",
+    "client_cert_store_kcer.h",
+    "delay_network_call.cc",
+    "delay_network_call.h",
+    "dhcp_wpad_url_client.cc",
+    "dhcp_wpad_url_client.h",
+    "network_portal_detector_impl.cc",
+    "network_portal_detector_impl.h",
+    "network_portal_detector_test_impl.cc",
+    "network_portal_detector_test_impl.h",
+    "network_pref_state_observer.cc",
+    "network_pref_state_observer.h",
+    "network_throttling_observer.cc",
+    "network_throttling_observer.h",
+    "secure_dns_manager.cc",
+    "secure_dns_manager.h",
+    "system_proxy_manager.cc",
+    "system_proxy_manager.h",
+    "vpn_list_forwarder.cc",
+    "vpn_list_forwarder.h",
+    "xdr_manager.cc",
+    "xdr_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/kcer",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/net/dns_over_https",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/sync_wifi",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
+    "//chromeos/services/network_config/public/cpp",
+    "//components/captive_portal/core",
+    "//components/country_codes",
+    "//components/device_event_log",
+    "//components/keyed_service/core",
+    "//components/policy/content",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_prefs",
+    "//components/variations",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//crypto",
+    "//dbus",
+    "//extensions/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/system",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "network_portal_detector_test_utils.cc",
+    "network_portal_detector_test_utils.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "apn_migrator_unittest.cc",
+    "client_cert_store_ash_unittest.cc",
+    "client_cert_store_kcer_unittest.cc",
+    "network_portal_detector_impl_unittest.cc",
+    "network_pref_state_observer_unittest.cc",
+    "network_throttling_observer_unittest.cc",
+    "secure_dns_manager_unittest.cc",
+    "system_proxy_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":net",
+    ":test_support",
+    "//ash/components/kcer:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/net/dns_over_https",
+    "//chrome/browser/ash/net/dns_over_https:unit_tests",
+    "//chrome/browser/ash/net/network_diagnostics:unit_tests",
+    "//chrome/browser/ash/net/rollback_network_config:unit_tests",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/network_config",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//components/captive_portal/core",
+    "//components/onc",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//crypto:test_support",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "alwayson_vpn_pre_connect_url_allowlist_service_browsertest.cc",
+    "ash_proxy_monitor_browsertest.cc",
+    "device_event_log_error_browsertest.cc",
+    "network_portal_detector_impl_browsertest.cc",
+    "system_proxy_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":net",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/network",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/system_proxy",
+    "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
+    "//chromeos/ash/components/network",
+    "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/device_event_log",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//content/test:test_support",
+    "//dbus",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

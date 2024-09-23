@@ -9,7 +9,8 @@ import unittest
 import perf_device_trigger
 
 
-class Args(object): # pylint: disable=useless-object-inheritance
+class Args(object):  # pylint: disable=useless-object-inheritance
+
     def __init__(self):
         self.shards = 1
         self.shard_index = None
@@ -20,10 +21,11 @@ class Args(object): # pylint: disable=useless-object-inheritance
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
+
     def __init__(self, args, swarming_args, files, list_bots_result,
                  list_tasks_results):
         self._bot_statuses = []
-        self._swarming_runs = []
+        self.swarming_runs = []
         self._files = files
         self._temp_file_id = 0
         self._triggered_with_swarming_go = 0
@@ -53,19 +55,16 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     def write_json_to_file(self, merged_json, output_file):
         self._files[output_file] = merged_json
 
-    def list_bots(self,
-                  dimensions,
-                  server='chromium-swarm.appspot.com'):
+    def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         return self._list_bots_result
 
-    def list_tasks(self, tags, limit=None,
-                   server='chromium-swarm.appspot.com'):
+    def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         res, self._list_tasks_results = self._list_tasks_results[
             0], self._list_tasks_results[1:]
         return res
 
     def run_swarming(self, args):
-        self._swarming_runs.append(args)
+        self.swarming_runs.append(args)
 
     def run_swarming_go(self,
                         args,
@@ -78,6 +77,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
 
 
 class UnitTest(unittest.TestCase):
+
     def setup_and_trigger(self,
                           previous_task_assignment_map,
                           alive_bots,
@@ -174,7 +174,7 @@ class UnitTest(unittest.TestCase):
 
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
-        for run in triggerer._swarming_runs:
+        for run in triggerer.swarming_runs:
             if not 'trigger' in run:
                 continue
             bot_id = run[(run.index('id') + 1)]
@@ -195,13 +195,13 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
-        self.assertEquals(len(set(expected_task_assignment.values())), 3)
+        self.assertEqual(len(set(expected_task_assignment.values())), 3)
 
         # All three bots were healthy so we should expect the task assignment to
         # stay the same
-        self.assertEquals(expected_task_assignment.get(0), 'build3')
-        self.assertEquals(expected_task_assignment.get(1), 'build4')
-        self.assertEquals(expected_task_assignment.get(2), 'build5')
+        self.assertEqual(expected_task_assignment.get(0), 'build3')
+        self.assertEqual(expected_task_assignment.get(1), 'build4')
+        self.assertEqual(expected_task_assignment.get(2), 'build5')
 
     def test_no_bot_returned(self):
         with self.assertRaises(ValueError) as context:
@@ -223,13 +223,13 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
-        self.assertEquals(len(set(expected_task_assignment.values())), 3)
+        self.assertEqual(len(set(expected_task_assignment.values())), 3)
 
         # The first two should be assigned to one of the unassigned healthy bots
         new_healthy_bots = ['build4', 'build5']
         self.assertIn(expected_task_assignment.get(0), new_healthy_bots)
         self.assertIn(expected_task_assignment.get(1), new_healthy_bots)
-        self.assertEquals(expected_task_assignment.get(2), 'build3')
+        self.assertEqual(expected_task_assignment.get(2), 'build3')
 
     def test_not_enough_healthy_bots(self):
         triggerer = self.setup_and_trigger(
@@ -243,17 +243,17 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
-        self.assertEquals(len(set(expected_task_assignment.values())), 5)
+        self.assertEqual(len(set(expected_task_assignment.values())), 5)
 
         # We have 5 shards and 5 bots that ran them, but two
         # are now dead and there aren't any other healthy bots
         # to swap out to.  Make sure they still assign to the
         # same shards.
-        self.assertEquals(expected_task_assignment.get(0), 'build1')
-        self.assertEquals(expected_task_assignment.get(1), 'build2')
-        self.assertEquals(expected_task_assignment.get(2), 'build3')
-        self.assertEquals(expected_task_assignment.get(3), 'build4')
-        self.assertEquals(expected_task_assignment.get(4), 'build5')
+        self.assertEqual(expected_task_assignment.get(0), 'build1')
+        self.assertEqual(expected_task_assignment.get(1), 'build2')
+        self.assertEqual(expected_task_assignment.get(2), 'build3')
+        self.assertEqual(expected_task_assignment.get(3), 'build4')
+        self.assertEqual(expected_task_assignment.get(4), 'build5')
 
     def test_not_enough_healthy_bots_shard_not_seen(self):
         triggerer = self.setup_and_trigger(
@@ -267,18 +267,18 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
-        self.assertEquals(len(set(expected_task_assignment.values())), 5)
+        self.assertEqual(len(set(expected_task_assignment.values())), 5)
 
         # Not enough healthy bots so make sure shard 0 is still assigned to its
         # same dead bot.
-        self.assertEquals(expected_task_assignment.get(0), 'build1')
+        self.assertEqual(expected_task_assignment.get(0), 'build1')
         # Shard 1 had not been triggered yet, but there weren't enough
         # healthy bots.  Make sure it got assigned to the other dead bot.
-        self.assertEquals(expected_task_assignment.get(1), 'build2')
+        self.assertEqual(expected_task_assignment.get(1), 'build2')
         # The rest of the assignments should stay the same.
-        self.assertEquals(expected_task_assignment.get(2), 'build3')
-        self.assertEquals(expected_task_assignment.get(3), 'build4')
-        self.assertEquals(expected_task_assignment.get(4), 'build5')
+        self.assertEqual(expected_task_assignment.get(2), 'build3')
+        self.assertEqual(expected_task_assignment.get(3), 'build4')
+        self.assertEqual(expected_task_assignment.get(4), 'build5')
 
     def test_shards_not_triggered_yet(self):
         # First time this configuration has been seen.  Choose three
@@ -292,7 +292,7 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
-        self.assertEquals(len(set(expected_task_assignment.values())), 3)
+        self.assertEqual(len(set(expected_task_assignment.values())), 3)
         new_healthy_bots = ['build3', 'build4', 'build5']
         self.assertIn(expected_task_assignment.get(0), new_healthy_bots)
         self.assertIn(expected_task_assignment.get(1), new_healthy_bots)
@@ -313,8 +313,8 @@ class UnitTest(unittest.TestCase):
         # Test that the new assignment will add a new bot to avoid
         # assign 'build3' to both shard 0 & shard 1 as before.
         # It also replaces the dead 'build6' bot.
-        self.assertEquals(set(expected_task_assignment.values()),
-                          {'build3', 'build4', 'build5', 'build7'})
+        self.assertEqual(set(expected_task_assignment.values()),
+                         {'build3', 'build4', 'build5', 'build7'})
 
     def test_dynamic_sharding(self):
         triggerer = self.setup_and_trigger(
@@ -329,8 +329,8 @@ class UnitTest(unittest.TestCase):
             use_dynamic_shards=True)
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
-        self.assertEquals(set(expected_task_assignment.values()),
-                          {'build1', 'build2', 'build3', 'build4', 'build5'})
+        self.assertEqual(set(expected_task_assignment.values()),
+                         {'build1', 'build2', 'build3', 'build4', 'build5'})
 
     def test_dynamic_sharding_with_dead_bots(self):
         triggerer = self.setup_and_trigger(
@@ -345,8 +345,8 @@ class UnitTest(unittest.TestCase):
             use_dynamic_shards=True)
         expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
-        self.assertEquals(set(expected_task_assignment.values()),
-                          {'build2', 'build3', 'build5'})
+        self.assertEqual(set(expected_task_assignment.values()),
+                         {'build2', 'build3', 'build5'})
 
 
 if __name__ == '__main__':

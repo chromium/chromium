@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom";
 import "third_party/blink/public/mojom/frame/color_scheme.mojom";
+import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 
 struct FrameOwnerProperties {
   // Browsing context container's name
@@ -24,4 +25,8 @@ struct FrameOwnerProperties {
   bool is_display_none;
   // The used value of color-scheme for the frame element.
   ColorScheme color_scheme = ColorScheme.kLight;
+  // The preferred color-scheme to be used for the embedded document, inferred
+  // from the used color-scheme of the FrameOwner element, the FrameOwner
+  // element's page's supported color-schemes, and preferred color-scheme.
+  PreferredColorScheme preferred_color_scheme = PreferredColorScheme.kLight;
 };

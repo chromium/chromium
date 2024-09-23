@@ -71,8 +71,8 @@ void ExtensionGCMAppHandler::ShutdownHandler() {
 }
 
 void ExtensionGCMAppHandler::OnStoreReset() {
-  // TODO(crbug.com/661660): Notify the extension somehow that its registration
-  // was invalidated and deleted?
+  // TODO(crbug.com/40491756): Notify the extension somehow that its
+  // registration was invalidated and deleted?
 }
 
 void ExtensionGCMAppHandler::OnMessage(const std::string& app_id,

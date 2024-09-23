@@ -333,9 +333,6 @@
   <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED" desc="Error message when an archive mount operation failed.">
     Could not open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>"
   </message>
-  <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_INVALID_PATH" desc="Error message when trying to mount an archive from an unsupported path.">
-    Could not open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>" from this location. Please copy to "My files" to open.
-  </message>
   <message name="IDS_FILE_BROWSER_UNMOUNT_FAILED" desc="Title of the error dialog when device unmount operation failed.">
    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Don't remove your device just yet!<ph name="END_BOLD">&lt;/b&gt;</ph>
    <ph name="LINE_BREAKS">&lt;br/&gt;&lt;br/&gt;</ph>
@@ -1383,10 +1380,10 @@
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_CRX" desc="Message shown when a user tries to open a *.crx file, which we don't handle in the Files app.">
     We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK">&lt;a target='_blank' href='https://support.google.com/chrome_webstore/answer/2664769?p=crx_warning&amp;rd=1'&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the crostini container.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE" desc="Message title shown when a user shares the root of a volume with the Crostini container.">
     Share folder with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the crostini container.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI" desc="Confirmation message shown when a user shares the root of a volume with the Crostini container.">
     Give Linux apps permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the crostini container.">
@@ -1398,10 +1395,10 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the crostini container.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the Parallels.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume with Parallels.">
     Share folder with Parallels Desktop
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with Parallels." >
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume with Parallels." >
     Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with Parallels.">
@@ -1413,10 +1410,10 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with Parallels.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Parallels Desktop
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume with the VM type codenamed Bruschetta.">
     Share folder with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta" >
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares the root of a volume with the VM type codenamed Bruschetta." >
     Give <ph name="VM_NAME">$1<ex>MyVm</ex></ph> permission to access files in the <ph name="FOLDER_NAME">$2<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the VM type codenamed Bruschetta.">
@@ -1638,12 +1635,6 @@
   </message>
 
 <!-- Holding space -->
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space.">
-    Pin to quick files
-  </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL" desc="Label for the command which unpins one or more files from the holding space.">
-    Unpin from quick files
-  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space in the shelf.">
     Pin to shelf
   </message>
@@ -1870,7 +1861,7 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER" desc="Error message displayed when the Google Drive bulk pinning feature cannot be enabled because battery saver mode is active">
     Battery saver mode on. Try again when battery saver mode is turned off.
   </message>
-  <!-- Empty state inside OneDrive folder -->
+  <!-- Empty states inside OneDrive folder -->
   <message name="IDS_FILE_BROWSER_ONEDRIVE_LOGGED_OUT_TITLE" desc="Title of an empty state section displayed in OneDrive folder when the user has been logged out from OneDrive.">
     You've been logged out
   </message>
@@ -1879,5 +1870,11 @@
   </message>
   <message name="IDS_FILE_BROWSER_ONEDRIVE_SIGN_IN_LINK" desc="Text of a link in an empty state section displayed in OneDrive folder when the user has been logged out from OneDrive.">
     Sign in
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_TITLE" desc="Title of an empty state section displayed in OneDrive folder when the user's OneDrive account is frozen.">
+    There is an issue accessing your OneDrive account
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE" desc="Subtitle of an empty state section displayed in OneDrive folder when the user's OneDrive account is frozen.">
+    Visit <ph name="LINK_BEGIN">&lt;a href="https://onedrive.live.com" target="_blank"&gt;</ph>onedrive.live.com<ph name="LINK_END">&lt;/a&gt;</ph> for more information
   </message>
 </grit-part>

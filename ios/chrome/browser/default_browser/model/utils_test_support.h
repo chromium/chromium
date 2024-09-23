@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/time/time.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 
 // Clear all default browser promo data for testing.
 void ClearDefaultBrowserPromoData();
@@ -19,5 +20,17 @@ void ResetStorageAndSetTimestampForKey(NSString* key, base::Time timestamp);
 // Overwrites the dictionary under the default browser utils key with the
 // provided one.
 void SetValuesInStorage(NSDictionary<NSString*, NSObject*>* data);
+
+// Overwrite local storage with the provided interaction information.
+void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
+                                       BOOL interactedWithFRE,
+                                       int genericCount,
+                                       int tailoredCount,
+                                       int totalCount);
+
+// Overwrite local storage with the provided promo interest information.
+void SimulateUserInterestedDefaultBrowserUserActivity(
+    DefaultPromoType type,
+    const base::TimeDelta& timeAgo);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_TEST_SUPPORT_H_

@@ -13,35 +13,35 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_change_processor.h"
 
 namespace sync_pb {
-class EntitySpecifics;
+class PersistedEntityData;
 }
 
 namespace syncer {
 
+class DataTypeLocalChangeProcessor;
 class MetadataBatch;
-class ModelTypeChangeProcessor;
 class SyncableService;
 
-// Implementation of ModelTypeSyncBridge that allows integrating legacy
+// Implementation of DataTypeSyncBridge that allows integrating legacy
 // datatypes that implement SyncableService. Internally, it uses a database to
 // persist and mimic the legacy Directory's behavior, but as opposed to the
 // legacy Directory, it's not exposed anywhere outside this bridge, and is
 // considered an implementation detail.
-class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
+class SyncableServiceBasedBridge : public DataTypeSyncBridge {
  public:
-  using InMemoryStore = std::map<std::string, sync_pb::EntitySpecifics>;
+  using InMemoryStore = std::map<std::string, sync_pb::PersistedEntityData>;
 
   // Pointers must not be null and |syncable_service| must outlive this object.
   SyncableServiceBasedBridge(
-      ModelType type,
-      OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      DataType type,
+      OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       SyncableService* syncable_service);
 
   SyncableServiceBasedBridge(const SyncableServiceBasedBridge&) = delete;
@@ -50,7 +50,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   ~SyncableServiceBasedBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -58,8 +58,9 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_change_list) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const EntityData& entity_data) override;
   std::string GetStorageKey(const EntityData& entity_data) override;
   bool SupportsGetClientTag() const override;
@@ -73,14 +74,14 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   // For testing.
   static std::unique_ptr<SyncChangeProcessor>
-  CreateLocalChangeProcessorForTesting(ModelType type,
-                                       ModelTypeStore* store,
+  CreateLocalChangeProcessorForTesting(DataType type,
+                                       DataTypeStore* store,
                                        InMemoryStore* in_memory_store,
-                                       ModelTypeChangeProcessor* other);
+                                       DataTypeLocalChangeProcessor* other);
 
  private:
   void OnStoreCreated(const std::optional<ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
+                      std::unique_ptr<DataTypeStore> store);
   void OnReadAllDataForInit(std::unique_ptr<InMemoryStore> in_memory_store,
                             const std::optional<ModelError>& error);
   void OnReadAllMetadataForInit(const std::optional<ModelError>& error,
@@ -90,25 +91,15 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   SyncChangeList StoreAndConvertRemoteChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList input_entity_change_list);
-  void OnReadDataForProcessor(
-      DataCallback callback,
-      const std::optional<ModelError>& error,
-      std::unique_ptr<ModelTypeStore::RecordList> record_list,
-      std::unique_ptr<ModelTypeStore::IdList> missing_id_list);
-  void OnReadAllDataForProcessor(
-      DataCallback callback,
-      const std::optional<ModelError>& error,
-      std::unique_ptr<ModelTypeStore::RecordList> record_list);
   void ReportErrorIfSet(const std::optional<ModelError>& error);
 
-  const ModelType type_;
+  const DataType type_;
   const raw_ptr<SyncableService> syncable_service_;
 
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
   bool syncable_service_started_ = false;
 
-  // In-memory copy of |store_|, needed for remote deletions, because we need to
-  // provide specifics of the deleted entity to the SyncableService.
+  // In-memory copy of |store_|.
   InMemoryStore in_memory_store_;
 
   // Time when this object was created, and store creation/loading was started.

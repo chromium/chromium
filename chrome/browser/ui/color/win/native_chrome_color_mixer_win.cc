@@ -12,9 +12,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/win/titlebar_config.h"
+#include "chrome/browser/win/mica_titlebar.h"
 #include "chrome/grit/theme_resources.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -101,11 +100,9 @@ void FrameColorHelper::AddNativeChromeColors(
       SkColorSetRGB(0xE8, 0xE8, 0xE8);
   constexpr SkColor kSystemMicaDarkFrameColor = SkColorSetRGB(0x20, 0x20, 0x20);
 
-  // Dwm colors should always be applied if present for pervasive accent colors
-  // pre-refresh. With refresh enabled we should only attempt to paint
-  // system-style frames if configured to do so in the key.
+  // We should only attempt to paint system-style frames if configured to do so
+  // in the key.
   const bool use_native_colors =
-      !features::IsChromeRefresh2023() ||
       (key.frame_type == ui::ColorProviderKey::FrameType::kChromium &&
        key.frame_style == ui::ColorProviderKey::FrameStyle::kSystem);
 
@@ -215,16 +212,18 @@ void FrameColorHelper::OnAccentColorUpdated() {
   FetchAccentColors();
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
   ui::NativeTheme::GetInstanceForDarkUI()->NotifyOnNativeThemeUpdated();
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
 }
 
 void FrameColorHelper::FetchAccentColors() {
   // Update the NativeTheme's user_color to reflect the system accent color.
-  // TODO(crbug.com/1477908): Explore moving FrameColorHelper logic into
+  // TODO(crbug.com/40280436): Explore moving FrameColorHelper logic into
   // NativeThemeWin.
   const auto* accent_color_observer = ui::AccentColorObserver::Get();
   const auto accent_color = accent_color_observer->accent_color();
   ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
   ui::NativeTheme::GetInstanceForDarkUI()->set_user_color(accent_color);
+  ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
 
   if (!accent_color_observer->use_dwm_frame_color()) {
     dwm_accent_border_color_ = SK_ColorWHITE;

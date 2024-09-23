@@ -11,7 +11,7 @@
 namespace chrome_test_util {
 
 BOOL VerifyAccessibilityForCurrentScreen(NSError* __strong* error) {
-  // TODO(crbug.com/972681): The GTX analytics ping is preventing the app from
+  // TODO(crbug.com/41464129): The GTX analytics ping is preventing the app from
   // idling, causing EG tests to fail.  Disabling analytics will allow tests to
   // run, but may not be the correct long-term solution.
   [GTXAnalytics setEnabled:NO];

@@ -10,6 +10,9 @@
 
 namespace blink {
 
+enum class LogicalAxis : uint8_t { kInline = 0b01, kBlock = 0b10 };
+enum class PhysicalAxis : uint8_t { kHorizontal = 0b01, kVertical = 0b10 };
+
 using PhysicalAxes = base::StrongAlias<class PhysicalAxesTag, uint8_t>;
 using LogicalAxes = base::StrongAlias<class LogicalAxesTag, uint8_t>;
 
@@ -58,25 +61,29 @@ inline constexpr PhysicalAxes operator^=(PhysicalAxes& a, PhysicalAxes b) {
   return a;
 }
 
-inline constexpr LogicalAxes kLogicalAxisNone = LogicalAxes(0);
-inline constexpr LogicalAxes kLogicalAxisInline = LogicalAxes(1 << 0);
-inline constexpr LogicalAxes kLogicalAxisBlock = LogicalAxes(1 << 1);
-inline constexpr LogicalAxes kLogicalAxisBoth =
-    kLogicalAxisInline | kLogicalAxisBlock;
+inline constexpr LogicalAxes kLogicalAxesNone = LogicalAxes(0);
+inline constexpr LogicalAxes kLogicalAxesInline =
+    LogicalAxes(static_cast<uint8_t>(LogicalAxis::kInline));
+inline constexpr LogicalAxes kLogicalAxesBlock =
+    LogicalAxes(static_cast<uint8_t>(LogicalAxis::kBlock));
+inline constexpr LogicalAxes kLogicalAxesBoth =
+    kLogicalAxesInline | kLogicalAxesBlock;
 
-inline constexpr PhysicalAxes kPhysicalAxisNone = PhysicalAxes(0);
-inline constexpr PhysicalAxes kPhysicalAxisHorizontal = PhysicalAxes(1 << 0);
-inline constexpr PhysicalAxes kPhysicalAxisVertical = PhysicalAxes(1 << 1);
-inline constexpr PhysicalAxes kPhysicalAxisBoth =
-    kPhysicalAxisHorizontal | kPhysicalAxisVertical;
+inline constexpr PhysicalAxes kPhysicalAxesNone = PhysicalAxes(0);
+inline constexpr PhysicalAxes kPhysicalAxesHorizontal =
+    PhysicalAxes(static_cast<uint8_t>(PhysicalAxis::kHorizontal));
+inline constexpr PhysicalAxes kPhysicalAxesVertical =
+    PhysicalAxes(static_cast<uint8_t>(PhysicalAxis::kVertical));
+inline constexpr PhysicalAxes kPhysicalAxesBoth =
+    kPhysicalAxesHorizontal | kPhysicalAxesVertical;
 
 // ConvertAxes relies on the fact that the underlying values for
 // for Inline/Horizontal are the same, and that the underlying values for
 // Block/Vertical are the same.
-static_assert(kLogicalAxisNone.value() == kPhysicalAxisNone.value());
-static_assert(kLogicalAxisInline.value() == kPhysicalAxisHorizontal.value());
-static_assert(kLogicalAxisBlock.value() == kPhysicalAxisVertical.value());
-static_assert(kLogicalAxisBoth.value() == kPhysicalAxisBoth.value());
+static_assert(kLogicalAxesNone.value() == kPhysicalAxesNone.value());
+static_assert(kLogicalAxesInline.value() == kPhysicalAxesHorizontal.value());
+static_assert(kLogicalAxesBlock.value() == kPhysicalAxesVertical.value());
+static_assert(kLogicalAxesBoth.value() == kPhysicalAxesBoth.value());
 
 template <typename FromType, typename ToType>
 inline ToType ConvertAxes(FromType from, WritingMode mode) {

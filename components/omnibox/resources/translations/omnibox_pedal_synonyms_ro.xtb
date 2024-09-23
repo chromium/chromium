@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
-<translation id="101606685846791463">golește memoria cache a browserului, șterge istoricul, șterge cookie-urile, șterge istoricul de navigare</translation>
 <translation id="132297926492792130">controlează contul google, remediază contul google, gestionează contul google</translation>
 <translation id="1455865776268085776">intră în modul incognito, fereastră incognito nouă, deschide o filă incognito</translation>
 <translation id="1545931455576308147">distribuie pagina, distribuie fila</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">adaugă o adresă, modifică adresa de expediere, editează adresele, gestionează adresele</translation>
 <translation id="7242693601647412075">gestionează setările de securitate</translation>
 <translation id="7441773108452086364">schimbă parola gmail, schimbă parola contului gmail, schimbă parola google, resetează parola contului gmail</translation>
+<translation id="7469628627013714019">șterge memoria cache a browserului, șterge istoricul, șterge cookie-urile, șterge istoricul de navigare</translation>
 <translation id="7660956169713698963">personalizează accesibilitatea pentru so chrome, gestionează setările de accesibilitate</translation>
 <translation id="7700496593710078083">vezi istoricul chrome, vezi istoricul de navigare</translation>
 <translation id="7739523284295786564">gestionează descărcările chrome, vezi descărcările</translation>

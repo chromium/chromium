@@ -33,7 +33,6 @@
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/performance_tracker.h"
-#include "remoting/protocol/token_validator.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
@@ -163,17 +162,6 @@ class ChromotingSession::Core : public ClientUserInterface,
       const protocol::SecretFetchedCallback& secret_fetched_callback);
   void HandleOnSecretFetched(const protocol::SecretFetchedCallback& callback,
                              const std::string secret);
-
-  // Pops up a UI to fetch the third party token.
-  void FetchThirdPartyToken(
-      const std::string& host_public_key,
-      const std::string& token_url,
-      const std::string& scopes,
-      const protocol::ThirdPartyTokenFetchedCallback& token_fetched_callback);
-  void HandleOnThirdPartyTokenFetched(
-      const protocol::ThirdPartyTokenFetchedCallback& callback,
-      const std::string& token,
-      const protocol::TokenValidator::ValidationResult& validation_result);
 
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() {
     return runtime_->ui_task_runner();
@@ -500,9 +488,9 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
   if (session_context_->info.host_ftl_id.empty()) {
     // Simulate a CONNECTING state to make sure it doesn't skew telemetry.
     OnConnectionState(protocol::ConnectionToHost::State::CONNECTING,
-                      protocol::OK);
+                      ErrorCode::OK);
     OnConnectionState(protocol::ConnectionToHost::State::FAILED,
-                      protocol::INCOMPATIBLE_PROTOCOL);
+                      ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
@@ -538,10 +526,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
           runtime_->url_loader_factory(),
-          /* oauth_token_getter= */ nullptr,
-          protocol::NetworkSettings(
-              protocol::NetworkSettings::NAT_TRAVERSAL_FULL),
-          protocol::TransportRole::CLIENT);
+          /* oauth_token_getter= */ nullptr, protocol::TransportRole::CLIENT);
 
   if (session_context_->info.pairing_id.length() &&
       session_context_->info.pairing_secret.length()) {
@@ -552,9 +537,6 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
   client_auth_config.host_id = session_context_->info.host_id;
   client_auth_config.pairing_client_id = session_context_->info.pairing_id;
   client_auth_config.pairing_secret = session_context_->info.pairing_secret;
-  client_auth_config.fetch_third_party_token_callback =
-      base::BindRepeating(&Core::FetchThirdPartyToken, GetWeakPtr(),
-                          session_context_->info.host_pubkey);
   client_auth_config.fetch_secret_callback =
       base::BindRepeating(&Core::FetchSecret, GetWeakPtr());
 
@@ -601,47 +583,6 @@ void ChromotingSession::Core::HandleOnSecretFetched(
   logger_->SetAuthMethod(ChromotingEvent::AuthMethod::PIN);
 
   callback.Run(secret);
-}
-
-void ChromotingSession::Core::FetchThirdPartyToken(
-    const std::string& host_public_key,
-    const std::string& token_url,
-    const std::string& scopes,
-    const protocol::ThirdPartyTokenFetchedCallback& token_fetched_callback) {
-  DCHECK(network_task_runner()->BelongsToCurrentThread());
-
-  // TODO(yuweih): Use bindOnce once SecretFetchedCallback becomes OnceCallback.
-  auto token_fetched_callback_for_ui_thread = base::BindRepeating(
-      [](scoped_refptr<AutoThreadTaskRunner> network_task_runner,
-         base::WeakPtr<ChromotingSession::Core> core,
-         const protocol::ThirdPartyTokenFetchedCallback& callback,
-         const std::string& token,
-         const protocol::TokenValidator::ValidationResult& validation_result) {
-        DCHECK(!network_task_runner->BelongsToCurrentThread());
-        network_task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &ChromotingSession::Core::HandleOnThirdPartyTokenFetched, core,
-                callback, token, validation_result));
-      },
-      network_task_runner(), GetWeakPtr(), token_fetched_callback);
-
-  ui_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ChromotingSession::Delegate::FetchThirdPartyToken,
-                     session_context_->delegate, token_url, host_public_key,
-                     scopes, token_fetched_callback_for_ui_thread));
-}
-
-void ChromotingSession::Core::HandleOnThirdPartyTokenFetched(
-    const protocol::ThirdPartyTokenFetchedCallback& callback,
-    const std::string& token,
-    const protocol::TokenValidator::ValidationResult& validation_result) {
-  DCHECK(network_task_runner()->BelongsToCurrentThread());
-
-  logger_->SetAuthMethod(ChromotingEvent::AuthMethod::THIRD_PARTY);
-
-  callback.Run(token, validation_result);
 }
 
 // ChromotingSession implementation.

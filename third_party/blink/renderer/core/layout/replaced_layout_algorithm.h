@@ -19,11 +19,12 @@ class CORE_EXPORT ReplacedLayoutAlgorithm
  public:
   explicit ReplacedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const LayoutResult* Layout() override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+  const LayoutResult* Layout();
 
  private:
   void LayoutMediaChildren();
+  void LayoutCanvasChildren();
 };
 
 }  // namespace blink

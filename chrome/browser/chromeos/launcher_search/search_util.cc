@@ -4,17 +4,24 @@
 
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/search_terms_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/page_transition_types.h"
 
 namespace crosapi {
@@ -26,20 +33,20 @@ using RemoteConsumer = mojo::Remote<crosapi::mojom::SearchResultConsumer>;
 using RequestSource = SearchTermsData::RequestSource;
 
 SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
-  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+  switch (static_cast<omnibox::AnswerType>(type)) {
+    case omnibox::ANSWER_TYPE_WEATHER:
       return SearchResult::AnswerType::kWeather;
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+    case omnibox::ANSWER_TYPE_CURRENCY:
       return SearchResult::AnswerType::kCurrency;
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+    case omnibox::ANSWER_TYPE_DICTIONARY:
       return SearchResult::AnswerType::kDictionary;
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+    case omnibox::ANSWER_TYPE_FINANCE:
       return SearchResult::AnswerType::kFinance;
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
       return SearchResult::AnswerType::kSunrise;
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+    case omnibox::ANSWER_TYPE_TRANSLATION:
       return SearchResult::AnswerType::kTranslation;
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+    case omnibox::ANSWER_TYPE_WHEN_IS:
       return SearchResult::AnswerType::kWhenIs;
     default:
       return SearchResult::AnswerType::kDefaultAnswer;
@@ -54,6 +61,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS:
     case AutocompleteMatchType::NAVSUGGEST:
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
@@ -86,10 +94,31 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::OPEN_TAB:
       return SearchResult::OmniboxType::kOpenTab;
 
-    default:
-      NOTREACHED();
+    // Currently unhandled enum values.
+    // If you came here from a compile error, please contact
+    // chromeos-launcher-search@google.com to determine what the correct
+    // `OmniboxType` should be.
+    case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
+    case AutocompleteMatchType::CALCULATOR:
+    case AutocompleteMatchType::NULL_RESULT_MESSAGE:
+    case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+    // TILE types seem to be mobile-only.
+    case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
+    case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
+      LOG(ERROR) << "Unhandled AutocompleteMatchType value: "
+                 << AutocompleteMatchType::ToString(type);
       return SearchResult::OmniboxType::kDomain;
+
+    case AutocompleteMatchType::NUM_TYPES:
+      // NUM_TYPES is not a valid enumerator value, so fall through below.
+      break;
   }
+  // https://abseil.io/tips/147: Handle non-enumerator values.
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected AutocompleteMatchType value: " << static_cast<int>(type);
+  return SearchResult::OmniboxType::kDomain;
 }
 
 SearchResult::MetricsType MatchTypeToMetricsType(
@@ -130,6 +159,18 @@ SearchResult::TextType TextStyleToType(
     case SuggestionAnswer::TextStyle::POSITIVE:
       return SearchResult::TextType::kPositive;
     case SuggestionAnswer::TextStyle::NEGATIVE:
+      return SearchResult::TextType::kNegative;
+    default:
+      return SearchResult::TextType::kUnset;
+  }
+}
+
+SearchResult::TextType ColorTypeToType(
+    omnibox::FormattedString::ColorType type) {
+  switch (type) {
+    case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
+      return SearchResult::TextType::kPositive;
+    case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
       return SearchResult::TextType::kNegative;
     default:
       return SearchResult::TextType::kUnset;
@@ -188,15 +229,36 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
 }  // namespace
 
 int ProviderTypes() {
-  // We use all the default providers except for the document provider, which
-  // suggests Drive files on enterprise devices. This is disabled to avoid
-  // duplication with search results from DriveFS.
+  // We use all the default providers except for the document provider,
+  // which suggests Drive files on enterprise devices. This is disabled to
+  // avoid duplication with search results from DriveFS.
   int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
                   ~AutocompleteProvider::TYPE_DOCUMENT;
 
-  // The open tab provider is not included in the default providers, so add it
-  // in manually.
+  // The open tab provider is not included in the default providers, so add
+  // it in manually.
   providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+
+  return providers;
+}
+
+int ProviderTypesPicker(bool bookmarks, bool history, bool open_tabs) {
+  int providers = 0;
+
+  if (bookmarks) {
+    providers |= AutocompleteProvider::TYPE_BOOKMARK;
+  }
+
+  if (history) {
+    providers |= AutocompleteProvider::TYPE_HISTORY_QUICK |
+                 AutocompleteProvider::TYPE_HISTORY_URL |
+                 AutocompleteProvider::TYPE_HISTORY_FUZZY |
+                 AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
+  }
+
+  if (open_tabs) {
+    providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+  }
 
   return providers;
 }
@@ -210,14 +272,14 @@ ui::PageTransition PageTransitionToUiPageTransition(
     case SearchResult::PageTransition::kGenerated:
       return ui::PAGE_TRANSITION_GENERATED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ui::PAGE_TRANSITION_FIRST;
   }
 }
 
 SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
-                                   base::StringPiece16 query,
+                                   std::u16string_view query,
                                    const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
@@ -225,7 +287,7 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
 
   // Special case: calculator results (are the only answer results to) have no
   // explicit answer data.
-  if (!match.answer.has_value()) {
+  if (match.answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED) {
     DCHECK_EQ(match.type, AutocompleteMatchType::CALCULATOR);
     result->answer_type = SearchResult::AnswerType::kCalculator;
 
@@ -248,7 +310,38 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     return result;
   }
 
-  result->answer_type = MatchTypeToAnswerType(match.answer->type());
+  result->answer_type = MatchTypeToAnswerType(match.answer_type);
+  result->contents = match.contents;
+
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      match.answer_template) {
+    const auto& headline = match.answer_template->answers(0).headline();
+    if (headline.fragments_size() > 1) {
+      // Only use the second fragment as the first is equivalent to
+      // |match.contents|.
+      result->additional_contents =
+          base::UTF8ToUTF16(headline.fragments(1).text());
+      result->additional_contents_type =
+          ColorTypeToType(headline.fragments(1).color());
+    }
+    const auto& subhead = match.answer_template->answers(0).subhead();
+    if (subhead.fragments_size() > 0) {
+      result->description = base::UTF8ToUTF16(subhead.fragments(0).text());
+      result->description_type = ColorTypeToType(subhead.fragments(0).color());
+    }
+    if (subhead.fragments_size() > 1) {
+      result->additional_description =
+          base::UTF8ToUTF16(subhead.fragments(1).text());
+      result->additional_description_type =
+          ColorTypeToType(subhead.fragments(1).color());
+    }
+    if (result->answer_type == SearchResult::AnswerType::kWeather) {
+      result->image_url = GURL(match.answer_template->answers(0).image().url());
+      result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
+    }
+
+    return result;
+  }
 
   if (result->answer_type == SearchResult::AnswerType::kWeather) {
     result->image_url = match.answer->image_url();
@@ -258,8 +351,6 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     if (a11y_label)
       result->description_a11y_label = *a11y_label;
   }
-
-  result->contents = match.contents;
 
   const auto& first = match.answer->first_line();
   if (first.additional_text()) {

@@ -76,7 +76,7 @@ void FakeConsentAuditor::RecordGaiaConsent(
   recorded_statuses_.push_back(status);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeConsentAuditor::GetControllerDelegate() {
   NOTIMPLEMENTED();
   return nullptr;

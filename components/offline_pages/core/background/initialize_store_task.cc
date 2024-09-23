@@ -51,10 +51,11 @@ void InitializeStoreTask::TryToResetStore() {
 }
 
 void InitializeStoreTask::OnStoreResetDone(bool success) {
-  if (success)
+  if (success) {
     InitializeStore();
-  else
+  } else {
     TryToResetStore();
+  }
 }
 
 }  // namespace offline_pages

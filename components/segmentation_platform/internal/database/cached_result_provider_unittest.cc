@@ -49,8 +49,7 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier() {
   MetadataWriter writer(&model_metadata);
 
   writer.AddOutputConfigForMultiClassClassifier(
-      kMultiClassLabels.begin(),
-      /*class_labels_length=*/kMultiClassLabels.size(),
+      kMultiClassLabels,
       /*top_k_outputs=*/kMultiClassLabels.size(), /*threshold=*/0.1);
 
   return model_metadata.output_config();

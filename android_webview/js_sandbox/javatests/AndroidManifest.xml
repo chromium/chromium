@@ -10,13 +10,6 @@
 
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
 
-    <!-- We add an application tag here just so that we can indicate that this
-         package needs to link against the android.test library, which is
-         needed when building test cases. -->
-    <application>
-        <uses-library android:name="android.test.runner" />
-    </application>
-
     <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
         android:targetPackage="androidx.javascriptengine.test"
         android:label="Tests for androidx.javascriptengine.test"/>

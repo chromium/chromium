@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,11 +21,10 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 
 using testing::_;
@@ -354,7 +354,7 @@ TEST_F(RasterImplementationGLESTest, GetQueryObjectui64vEXT) {
 
 TEST_F(RasterImplementationGLESTest, CreateAndConsumeForGpuRaster) {
   const GLuint kTextureId = 23;
-  const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  const auto mailbox = gpu::Mailbox::Generate();
   EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name))
       .WillOnce(Return(kTextureId));
   GLuint texture_id = ri_->CreateAndConsumeForGpuRaster(mailbox);

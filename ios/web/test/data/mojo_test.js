@@ -19,9 +19,14 @@ TestPageImpl.prototype = {
   /** @override */
   handleNativeMessage: function(result) {
     if (result.message == 'ack') {
-      // Native code has replied with "ack", send "fin" to complete the
-      // test.
-      browserProxy.handleJsMessage('fin');
+      // Expect "ack2" reply to syn2 via the callback.
+      browserProxy.handleJsMessageWithCallback('syn2').then((r) =>
+      {
+        if (r.result.message == 'ack2') {
+          // Send "fin" to complete the test.
+          browserProxy.handleJsMessage('fin');
+        }
+      });
     }
   },
 };

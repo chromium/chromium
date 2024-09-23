@@ -2,7 +2,7 @@
 
 include_rules = [
   "+components/discardable_memory/public/mojom",
-  "+components/ml/webnn",
+  "+components/input/render_input_router.mojom.h",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
   "+gpu/config",

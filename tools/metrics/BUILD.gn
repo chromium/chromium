@@ -2,14 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-action("histograms_xml") {
-  script = "histograms/merge_xml.py"
-  output = "$root_out_dir/histograms.xml"
-  outputs = [ output ]
-  args = [
-    "--output",
-    rebase_path(output, root_build_dir),
-  ]
+import("//build/config/gclient_args.gni")
+import("//tools/metrics/histograms/histograms_xml_files.gni")
+
+# Only include histograms_xml if we have access to dirmd data, which
+# is used to populate ownership information. This is only set to false
+# for non-git checkouts.
+# TODO(crbug.com/329080012): Remove this once dirmd works in non-git
+# checkouts.
+if (generate_location_tags) {
+  action("histograms_xml") {
+    script = "histograms/merge_xml.py"
+    output = "$root_out_dir/histograms.xml"
+    outputs = [ output ]
+    inputs = histograms_xml_files
+    args = [
+      "--output",
+      rebase_path(output, root_build_dir),
+    ]
+  }
 }
 
 copy("actions_xml") {
@@ -25,9 +36,17 @@ copy("ukm_xml") {
 group("metrics_metadata") {
   deps = [
     ":actions_xml",
-    ":histograms_xml",
     ":ukm_xml",
   ]
+
+  # Only include histograms_xml if we have access to dirmd data, which
+  # is used to populate ownership information. This is only set to false
+  # for non-git checkouts.
+  # TODO(crbug.com/329080012): Remove this once dirmd works in non-git
+  # checkouts.
+  if (generate_location_tags) {
+    deps += [ ":histograms_xml" ]
+  }
 }
 
 # This group defines the isolate files needed to run metrics_python_tests.py on
@@ -69,12 +88,26 @@ group("metrics_python_tests") {
     "//tools/metrics/actions/extract_actions.py",
     "//tools/metrics/actions/extract_actions_test.py",
 
+    "//tools/metrics/common/codegen_shared_test.py",
+    "//tools/metrics/common/codegen_shared.py",
     "//tools/metrics/common/diff_util.py",
+    "//tools/metrics/common/model_shared.py",
     "//tools/metrics/common/models.py",
     "//tools/metrics/common/path_util.py",
     "//tools/metrics/common/presubmit_util.py",
     "//tools/metrics/common/pretty_print_xml.py",
     "//tools/metrics/common/etree_util.py",
+
+    "//tools/metrics/dwa/builders_template.py",
+    "//tools/metrics/dwa/decode_template.py",
+    "//tools/metrics/dwa/dwa.xml",
+    "//tools/metrics/dwa/codegen.py",
+    "//tools/metrics/dwa/dwa_model.py",
+    "//tools/metrics/dwa/dwa_model_test.py",
+    "//tools/metrics/dwa/dwa_xml_validations.py",
+    "//tools/metrics/dwa/dwa_xml_validations_test.py",
+    "//tools/metrics/dwa/gen_builders.py",
+    "//tools/metrics/dwa/gen_builders_test.py",
 
     "//tools/metrics/histograms/test_data/enums.xml",
     "//tools/metrics/histograms/test_data/histograms.xml",
@@ -86,12 +119,11 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/extract_histograms_test.py",
     "//tools/metrics/histograms/generate_expired_histograms_array.py",
     "//tools/metrics/histograms/generate_expired_histograms_array_unittest.py",
-    "//tools/metrics/histograms/generate_histograms_variants_allowlist.py",
-    "//tools/metrics/histograms/generate_histograms_variants_allowlist_unittest.py",
+    "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py",
+    "//tools/metrics/histograms/generate_allowlist_from_histograms_file_unittest.py",
     "//tools/metrics/histograms/generate_flag_enums.py",
     "//tools/metrics/histograms/generate_flag_enums_test.py",
     "//tools/metrics/histograms/histogram_ownership.py",
-    "//tools/metrics/histograms/histograms.xml",
     "//tools/metrics/histograms/histogram_configuration_model.py",
     "//tools/metrics/histograms/histogram_configuration_model_test_enums.py",
     "//tools/metrics/histograms/histogram_configuration_model_test_histograms.py",
@@ -109,7 +141,6 @@ group("metrics_python_tests") {
 
     "//tools/metrics/ukm/ukm.xml",
     "//tools/metrics/ukm/codegen.py",
-    "//tools/metrics/ukm/codegen_test.py",
     "//tools/metrics/ukm/builders_template.py",
     "//tools/metrics/ukm/decode_template.py",
     "//tools/metrics/ukm/gen_builders.py",

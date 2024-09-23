@@ -1,0 +1,12 @@
+Test that an attributionsrc request triggers an issue for an invalid info header.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : preferred-platform=abc
+            request : <object>
+            violationType : InvalidInfoHeader
+        }
+    }
+}
+

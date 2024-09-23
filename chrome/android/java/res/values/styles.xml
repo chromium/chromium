@@ -87,6 +87,8 @@ found in the LICENSE file.
 
         <!-- Text style attributes used by the preference_material.xml layout. -->
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
     <style name="Base.V27.Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
@@ -111,13 +113,22 @@ found in the LICENSE file.
     The background is translucent since the parent activity content should be
     visible when the bottom sheet or the non-full-screen history sync opt-in
     dialog is shown on tablet. -->
-    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
+    <style name="Base.Theme.Chromium.SigninAndHistorySyncActivity"
         parent="Theme.Chromium.Activity.Fullscreen">
-        <item name="android:windowBackground">@color/default_scrim_color</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@null</item>
-        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
+        <item name="android:windowAnimationStyle">@style/SigninAndHistorySyncActivityAnimation</item>
+    </style>
+    <style name="Theme.Chromium.SigninAndHistorySyncActivity"
+        parent="Base.Theme.Chromium.SigninAndHistorySyncActivity" />
+
+    <!-- TODO(crbug.com/345176436): This animation style is used to set the
+         enter animation for the history sync dialog. This animation should be
+         configured using ModalDialogProperties instead. -->
+    <style name="SigninAndHistorySyncActivityAnimation" parent="@android:style/Animation.Dialog">
+      <item name="android:windowExitAnimation">@null</item>
+      <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
     </style>
 
     <!-- Trusted Web Activities -->
@@ -130,7 +141,7 @@ found in the LICENSE file.
     </style>
 
     <!-- First Run and Bookmark/recent-tabs dialogs.
-        TODO(https://crbug.com/819142): Remove textAppearance when all TextViews have text style
+        TODO(crbug.com/41374924): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
     <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
         parent="Theme.BrowserUI.DialogWhenLarge.DayNight">
@@ -186,7 +197,7 @@ found in the LICENSE file.
 
 
     <!-- Settings -->
-    <style name="SettingsToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+    <style name="SettingsToolbarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="navigationIconTint">?attr/colorOnSurface</item>
@@ -315,6 +326,11 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
+    <!-- Autofill IBAN -->
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
+    </style>
+
     <!-- Tab Layout -->
     <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:background">@android:color/transparent</item>
@@ -328,18 +344,6 @@ found in the LICENSE file.
         <item name="tabTextAppearance">@style/TextAppearance.TextMediumThick</item>
         <item name="tabTextColor">@color/default_text_color_secondary_list</item>
         <item name="tabSelectedTextColor">@macro/tab_layout_selected_tab_color</item>
-    </style>
-
-    <style name="HistoryToggleTabLayoutStyle" parent="TabLayoutStyle">
-        <item name="android:background">@drawable/tab_layout_background</item>
-        <item name="tabGravity">center</item>
-        <item name="tabPaddingEnd">7dp</item>
-        <item name="tabPaddingStart">14dp</item>
-        <item name="tabBackground">@drawable/section_tab_background</item>
-        <item name="tabIndicatorColor">@android:color/transparent</item>
-        <item name="tabSelectedTextColor">@color/default_text_color_list</item>
-        <item name="tabTextColor">@color/default_text_color_list</item>
-        <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
     </style>
 
     <!-- Misc styles -->
@@ -369,10 +373,10 @@ found in the LICENSE file.
     </style>
 
     <!-- Misc text appearance styles -->
-    <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
+    <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.MediumStyle">
         <item name="android:textColor">@macro/default_text_color_link</item>
     </style>
-    <!-- TODO(crbug.com/1081933): Replace with a standard text appearance. -->
+    <!-- TODO(crbug.com/40691622): Replace with a standard text appearance. -->
     <style name="TextAppearance.ClearBrowsingDataText">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
@@ -386,17 +390,10 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/location_bar_url_text_size</item>
     </style>
 
-    <style name="TextAppearance.SearchBoxText.NewTabPage">
-        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
-        <item name="android:textColorHint">@macro/search_box_hint</item>
-    </style>
-    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishColorful">
-        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
-        <item name="android:textColorHint">@macro/search_box_hint_polish_colorful</item>
-    </style>
-    <style name="TextAppearance_SearchBoxText_NewTabPage_SurfacePolishNeutral">
-        <item name="android:textSize">@dimen/location_bar_url_text_size_polish</item>
-        <item name="android:textColorHint">@macro/search_box_hint_polish_neutral</item>
+
+    <style name="TextAppearance.FakeSearchBoxText">
+        <item name="android:textSize">@dimen/ntp_fake_search_box_text_size</item>
+        <item name="android:textColorHint">@macro/ntp_search_box_hint</item>
     </style>
 
     <!-- Launcher widgets can't use theme attributes, so this should use the baseline colors for
@@ -406,10 +403,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Bookmarks -->
-    <style name="TextAppearance.BookmarkEditFolderName"
-        parent="@style/TextAppearance.AppCompat.Medium">
-        <item name="android:textColor">@color/default_icon_color_tint_list</item>
-    </style>
     <style name="BookmarkSaveFlowContainer">
         <item name="android:paddingVertical">18dp</item>
         <item name="android:paddingStart">12dp</item>
@@ -496,7 +489,11 @@ found in the LICENSE file.
     <style name="TextAppearance.ShoppingPriceDropText" parent="TextAppearance.TextMedium.Secondary">
         <item name="android:textColor">@color/price_drop_annotation_text_green</item>
     </style>
-    <style name="TextAppearance.FolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
+    <style name="TextAppearance.SpecialFolderChildCount" parent="TextAppearance.TextLarge.Primary.OnAccent1Container" tools:ignore="SpUsage">
+        <!-- The same as the regular style, but using dp instead of sp. -->
+        <item name="android:textSize">16dp</item>
+    </style>
+        <style name="TextAppearance.RegularFolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
     </style>
@@ -507,7 +504,7 @@ found in the LICENSE file.
     </style>
 
     <!--
-        TODO(crbug.com/1429043): Tinting the drawable for the popup theme doesn't work in clank.
+        TODO(crbug.com/40900841): Tinting the drawable for the popup theme doesn't work in clank.
         The "colorAccent" attribute works in a standalone Android project, but it doesn't have any
         effect in clank.
     -->

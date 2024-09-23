@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// TODO(crbug.com/359910414): Move back to ui_base_types.mojom and delete
+// this file.
+// Dialog button identifiers used to specify which buttons to show the user.
+enum DialogButton {
+  kNone,
+  kOk,
+  kCancel
+};

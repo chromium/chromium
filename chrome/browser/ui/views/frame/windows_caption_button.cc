@@ -36,7 +36,7 @@ WindowsCaptionButton::WindowsCaptionButton(
   SetAnimateOnStateChange(true);
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
   SetID(button_type);
 }
 
@@ -50,7 +50,8 @@ WindowsCaptionButton::CreateIconPainter() {
   return std::make_unique<Windows10IconPainter>();
 }
 
-gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
+gfx::Size WindowsCaptionButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int width =
       WindowFrameUtil::kWindowsCaptionButtonWidth + GetBetweenButtonSpacing();
 
@@ -154,30 +155,24 @@ int WindowsCaptionButton::GetBetweenButtonSpacing() const {
 
 int WindowsCaptionButton::GetButtonDisplayOrderIndex() const {
   int button_display_order = 0;
-  const bool tab_search_enabled =
-      WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
-          frame_view_->browser_view()->browser());
   switch (button_type_) {
-    case VIEW_ID_TAB_SEARCH_BUTTON:
-      button_display_order = 0;
-      break;
     case VIEW_ID_MINIMIZE_BUTTON:
-      button_display_order = 0 + (tab_search_enabled ? 1 : 0);
+      button_display_order = 0;
       break;
     case VIEW_ID_MAXIMIZE_BUTTON:
     case VIEW_ID_RESTORE_BUTTON:
-      button_display_order = 1 + (tab_search_enabled ? 1 : 0);
+      button_display_order = 1;
       break;
     case VIEW_ID_CLOSE_BUTTON:
-      button_display_order = 2 + (tab_search_enabled ? 1 : 0);
+      button_display_order = 2;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Reverse the ordering if we're in RTL mode
   if (base::i18n::IsRTL()) {
-    const int max_index = tab_search_enabled ? 3 : 2;
+    const int max_index = 2;
     button_display_order = max_index - button_display_order;
   }
 
@@ -245,12 +240,8 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       return;
     }
 
-    case VIEW_ID_TAB_SEARCH_BUTTON:
-      icon_painter_->PaintTabSearchIcon(canvas, symbol_rect, flags);
-      return;
-
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

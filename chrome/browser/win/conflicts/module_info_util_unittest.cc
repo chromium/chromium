@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -38,15 +39,17 @@ bool CreateTruncatedModule(const base::FilePath& location) {
 
   const size_t kSizeOfTruncatedDll = 256;
   char buffer[kSizeOfTruncatedDll];
-  if (file_exe.Read(0, buffer, kSizeOfTruncatedDll) != kSizeOfTruncatedDll)
+  if (UNSAFE_TODO(file_exe.Read(0, buffer, kSizeOfTruncatedDll)) !=
+      kSizeOfTruncatedDll) {
     return false;
+  }
 
   base::File target_file(location,
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!target_file.IsValid())
     return false;
 
-  return target_file.Write(0, buffer, kSizeOfTruncatedDll) ==
+  return UNSAFE_TODO(target_file.Write(0, buffer, kSizeOfTruncatedDll)) ==
          kSizeOfTruncatedDll;
 }
 
@@ -97,7 +100,7 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
 
 const struct CollapsePathList {
   std::u16string expected_result;
-  std::u16string test_case;
+  std::u16string path;
 } kCollapsePathList[] = {
     // Negative testing (should not collapse this path).
     {u"c:\\a\\a.dll", u"c:\\a\\a.dll"},
@@ -114,10 +117,10 @@ TEST(ModuleInfoUtilTest, CollapseMatchingPrefixInPath) {
       std::make_pair(u"c:\\foo\\bar", u"%x%"),
   };
 
-  for (size_t i = 0; i < std::size(kCollapsePathList); ++i) {
-    std::u16string test_case = kCollapsePathList[i].test_case;
-    CollapseMatchingPrefixInPath(string_mapping, &test_case);
-    EXPECT_EQ(kCollapsePathList[i].expected_result, test_case);
+  for (const auto& test_case : kCollapsePathList) {
+    std::u16string path = test_case.path;
+    CollapseMatchingPrefixInPath(string_mapping, &path);
+    EXPECT_EQ(test_case.expected_result, path);
   }
 }
 

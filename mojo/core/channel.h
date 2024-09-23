@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/memory/nonscannable_memory.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
@@ -62,7 +62,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   struct Message;
 
   using MessagePtr = std::unique_ptr<Message>;
-  using AlignedBuffer = std::unique_ptr<char, base::NonScannableDeleter>;
+  using AlignedBuffer = std::unique_ptr<char>;
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
@@ -74,7 +74,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     enum class MessageType : uint16_t {
       // An old format normal message, that uses the LegacyHeader.
       // Only used on Android and ChromeOS.
-      // TODO(https://crbug.com/695645): remove legacy support when Arc++ has
+      // TODO(crbug.com/41303999): remove legacy support when Arc++ has
       // updated to Mojo with normal versioned messages.
       NORMAL_LEGACY = 0,
 #if BUILDFLAG(IS_IOS)
@@ -132,7 +132,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     };
 
     // Header used for all messages when the Channel backs an ipcz transport.
-    struct ALIGNAS(8) IpczHeader {
+    //
+    // Note: This struct *must* be forward and backward compatible. Changes are
+    // append-only, must add a new "struct {} vx" member, and code must be able
+    // to deal with newer and older versions of this header.
+    struct IpczHeader {
       // The size of this header in bytes. Used for versioning.
       uint16_t size;
 
@@ -143,7 +147,20 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       // Total size of this message in bytes. This is the size of this header
       // plus the size of any message data immediately following it.
       uint32_t num_bytes;
+
+      struct {
+        // When this header was created, relative to the reference of
+        // base::TimeTicks().
+        int64_t creation_timeticks_us;
+      } v2;
+      NO_UNIQUE_ADDRESS struct {
+      } v2_marker;
     };
+
+    static constexpr size_t kMinIpczHeaderSize = offsetof(IpczHeader, v2);
+    static bool IsAtLeastV2(const IpczHeader& header) {
+      return header.size >= offsetof(IpczHeader, v2_marker);
+    }
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     struct MachPortsEntry {
@@ -412,7 +429,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // If the channel was created with DispatchBufferPolicy::kUnmanaged, the
   // implementation should call this directly. If it was created with kManaged,
   // OnReadComplete() will call this. |*size_hint| will be set to a recommended
-  // size for the next read done by the implementation.
+  // size for the next read done by the implementation. If `received_handles` is
+  // not null, the provided handles are taken as handles which accompanied the
+  // bytes in `buffer`. Otherwise the implementation must make handles available
+  // via GetReadPlatformHandles/ForIpcz() as needed.
   enum class DispatchResult {
     // The message was dispatched and consumed. |size_hint| contains the size
     // of the message.
@@ -428,6 +448,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   };
   DispatchResult TryDispatchMessage(base::span<const char> buffer,
                                     size_t* size_hint);
+  DispatchResult TryDispatchMessage(
+      base::span<const char> buffer,
+      std::optional<std::vector<PlatformHandle>> received_handles,
+      size_t* size_hint);
 
   // Called by the implementation when something goes horribly wrong. It is NOT
   // OK to call this synchronously from any public interface methods.
@@ -503,6 +527,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // pseudo-random numbers which leaves the synchronization to the client and is
   // not thread-safe, hence guarded by lock here.
   base::MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
+
+  FRIEND_TEST_ALL_PREFIXES(ChannelTest, IpczHeaderCompatibilityTest);
 };
 
 }  // namespace mojo::core

@@ -32,8 +32,7 @@ class URLRequestContext;
 
 // For a given adapter, this class takes care of first doing a DHCP lookup
 // to get the PAC URL, then if there is one, trying to fetch it.
-class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
-    : public base::SupportsWeakPtr<DhcpPacFileAdapterFetcher> {
+class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher {
  public:
   DhcpPacFileAdapterFetcher() = delete;
 
@@ -193,9 +192,11 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   // Implements a timeout on the call to the Win32 DHCP API.
   base::OneShotTimer wait_timer_;
 
-  const raw_ptr<URLRequestContext, DanglingUntriaged> url_request_context_;
+  const raw_ptr<URLRequestContext> url_request_context_;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<DhcpPacFileAdapterFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace net

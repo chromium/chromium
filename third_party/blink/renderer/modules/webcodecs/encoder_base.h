@@ -63,7 +63,7 @@ class MODULES_EXPORT EncoderBase
               const EncodeOptionsType* opts,
               ExceptionState& exception_state);
 
-  ScriptPromise flush(ExceptionState&);
+  ScriptPromise<IDLUndefined> flush(ExceptionState&);
 
   void reset(ExceptionState&);
 
@@ -113,7 +113,8 @@ class MODULES_EXPORT EncoderBase
     uint32_t reset_count = 0;
     Member<InputType> input;                     // used by kEncode
     Member<const EncodeOptionsType> encodeOpts;  // used by kEncode
-    Member<ScriptPromiseResolver> resolver;      // used by kFlush
+    // used by kFlush
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver;
     Member<InternalConfigType> config;  // used by kConfigure and kReconfigure
 
 #if DCHECK_IS_ON()

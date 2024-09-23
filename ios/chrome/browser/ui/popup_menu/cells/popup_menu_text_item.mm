@@ -88,7 +88,7 @@ NSMutableAttributedString* GetAttributedString(NSString* imageName,
 #pragma mark - PopupMenuItem
 
 - (CGSize)cellSizeForWidth:(CGFloat)width {
-  // TODO(crbug.com/828357): This should be done at the table view level.
+  // TODO(crbug.com/41380449): This should be done at the table view level.
   static PopupMenuTextCell* cell;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

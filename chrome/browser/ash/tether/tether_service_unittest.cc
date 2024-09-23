@@ -68,20 +68,6 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 
 const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
-const size_t kNumTestDevices = 5;
-
-multidevice::RemoteDeviceRefList CreateTestDevices() {
-  multidevice::RemoteDeviceRefList list;
-  for (size_t i = 0; i < kNumTestDevices; ++i) {
-    list.push_back(multidevice::RemoteDeviceRefBuilder()
-                       .SetSupportsMobileHotspot(true)
-                       .SetSoftwareFeatureState(
-                           multidevice::SoftwareFeature::kBetterTogetherHost,
-                           multidevice::SoftwareFeatureState::kSupported)
-                       .Build());
-  }
-  return list;
-}
 
 class TestTetherService : public TetherService {
  public:
@@ -197,25 +183,25 @@ class FakeRemoteDeviceProviderFactory
 class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
  public:
   FakeTetherHostFetcherFactory(
-      const multidevice::RemoteDeviceRefList& initial_devices)
-      : initial_devices_(initial_devices) {}
+      const multidevice::RemoteDeviceRef& initial_device)
+      : initial_device_(initial_device) {}
   virtual ~FakeTetherHostFetcherFactory() = default;
 
   FakeTetherHostFetcher* last_created() { return last_created_; }
 
-  void SetNoInitialDevices() { initial_devices_.clear(); }
+  void SetNoInitialDevices() { initial_device_ = std::nullopt; }
 
   // TetherHostFetcherImpl::Factory :
   std::unique_ptr<TetherHostFetcher> CreateInstance(
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
       override {
-    last_created_ = new FakeTetherHostFetcher(initial_devices_);
+    last_created_ = new FakeTetherHostFetcher(initial_device_);
     return base::WrapUnique(last_created_.get());
   }
 
  private:
-  multidevice::RemoteDeviceRefList initial_devices_;
+  std::optional<multidevice::RemoteDeviceRef> initial_device_;
   raw_ptr<FakeTetherHostFetcher, DanglingUntriaged> last_created_ = nullptr;
 };
 
@@ -285,7 +271,8 @@ class TetherServiceTest : public testing::Test {
   TetherServiceTest& operator=(const TetherServiceTest&) = delete;
 
  protected:
-  TetherServiceTest() : test_devices_(CreateTestDevices()) {}
+  TetherServiceTest()
+      : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
   ~TetherServiceTest() override {}
 
   void SetUp() override {
@@ -355,7 +342,7 @@ class TetherServiceTest : public testing::Test {
         fake_remote_device_provider_factory_.get());
 
     fake_tether_host_fetcher_factory_ =
-        base::WrapUnique(new FakeTetherHostFetcherFactory(test_devices_));
+        base::WrapUnique(new FakeTetherHostFetcherFactory(test_device_));
     TetherHostFetcherImpl::Factory::SetFactoryForTesting(
         fake_tether_host_fetcher_factory_.get());
 
@@ -434,8 +421,9 @@ class TetherServiceTest : public testing::Test {
   }
 
   void ShutdownTetherService() {
-    if (tether_service_)
+    if (tether_service_) {
       tether_service_->Shutdown();
+    }
   }
 
   void SetTetherTechnologyStateEnabled(bool enabled) {
@@ -472,8 +460,9 @@ class TetherServiceTest : public testing::Test {
 
   void SetIsBluetoothPowered(bool powered) {
     is_adapter_powered_ = powered;
-    for (auto& observer : mock_adapter_->GetObservers())
+    for (auto& observer : mock_adapter_->GetObservers()) {
       observer.AdapterPoweredChanged(mock_adapter_.get(), powered);
+    }
   }
 
   void set_is_adapter_present(bool present) { is_adapter_present_ = present; }
@@ -525,7 +514,7 @@ class TetherServiceTest : public testing::Test {
     return NetworkHandler::Get()->network_state_handler();
   }
 
-  const multidevice::RemoteDeviceRefList test_devices_;
+  const multidevice::RemoteDeviceRef test_device_;
   const content::BrowserTaskEnvironment task_environment_;
 
   NetworkHandlerTestHelper network_handler_test_helper_;
@@ -681,8 +670,8 @@ TEST_F(TetherServiceTest,
                 NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
-  fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts(
-      test_devices_);
+  fake_tether_host_fetcher_factory_->last_created()->SetTetherHost(
+      test_device_);
   fake_multidevice_setup_client_->SetFeatureState(
       multidevice_setup::mojom::Feature::kInstantTethering,
       multidevice_setup::mojom::FeatureState::kEnabledByUser);
@@ -704,7 +693,8 @@ TEST_F(TetherServiceTest, TestMultiDeviceSetupClientLosesVerifiedHost) {
                 NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
-  fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts({});
+  fake_tether_host_fetcher_factory_->last_created()->SetTetherHost(
+      std::nullopt);
   fake_multidevice_setup_client_->SetFeatureState(
       multidevice_setup::mojom::Feature::kInstantTethering,
       multidevice_setup::mojom::FeatureState::
@@ -991,9 +981,8 @@ TEST_F(TetherServiceTest, TestMetricsFalsePositives) {
                 NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
-  fake_tether_host_fetcher_factory_->last_created()->set_tether_hosts(
-      test_devices_);
-  fake_tether_host_fetcher_factory_->last_created()->NotifyTetherHostsUpdated();
+  fake_tether_host_fetcher_factory_->last_created()->SetTetherHost(
+      test_device_);
 
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(

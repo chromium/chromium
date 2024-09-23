@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Clicking an <img> with a 'usemap' attribute doesn't open <details>
+  assert_false: expected false got true
+[FAIL] Clicking a <video> doesn't open <details>
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

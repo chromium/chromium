@@ -83,7 +83,7 @@ TrackDefault* TrackDefault::Create(const AtomicString& type,
       }
     }
   } else {
-    NOTREACHED();  // IDL enforcement should prevent this case.
+    NOTREACHED_IN_MIGRATION();  // IDL enforcement should prevent this case.
     return nullptr;
   }
 

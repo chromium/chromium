@@ -6,8 +6,8 @@
 
 #include "ash/display/output_protection_delegate.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 

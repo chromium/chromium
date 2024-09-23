@@ -22,12 +22,15 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace bookmarks {
 namespace {
+
+using base::ASCIIToUTF16;
+using testing::ElementsAre;
+using testing::Pair;
 
 const char16_t kUrl1Title[] = u"url1";
 const char kUrl1Url[] = "http://www.url1.com";
@@ -521,6 +524,11 @@ TEST_F(BookmarkCodecTest, DecodeWithDuplicateIds) {
   EXPECT_EQ(decoder.release_assigned_ids(),
             std::set<int64_t>({1, 2, 3, 4, 5, 6, 7, 8, 9}));
   EXPECT_EQ(10, decoded_model->next_node_id());
+
+  EXPECT_THAT(
+      decoder.release_reassigned_ids_per_old_id(),
+      ElementsAre(Pair(1, 1), Pair(3, 2), Pair(4, 4), Pair(4, 5), Pair(5, 3),
+                  Pair(6, 6), Pair(7, 8), Pair(9, 9), Pair(10, 7)));
 }
 
 TEST_F(BookmarkCodecTest, DecodeWithAlreadyAssignedIds) {
@@ -626,15 +634,45 @@ TEST_F(BookmarkCodecTest, CanDecodeMetaInfoAsString) {
 TEST_F(BookmarkCodecTest, EncodeAndDecodeSyncMetadata) {
   std::unique_ptr<BookmarkModel> model(CreateTestModel1());
 
-  // Since metadata str serialized proto, it could contain no ASCII characters.
+  // Since metadata str serialized proto, it could contain non-ASCII characters.
   std::string sync_metadata_str("a/2'\"");
   std::string checksum;
   base::Value::Dict value =
       EncodeModel(model.get(), sync_metadata_str, &checksum);
 
-  std::string decoded_sync_metadata_str;
   // Decode and verify.
+  std::string decoded_sync_metadata_str;
   DecodeHelper(value, checksum, &checksum, false, &decoded_sync_metadata_str);
+  EXPECT_EQ(sync_metadata_str, decoded_sync_metadata_str);
+}
+
+TEST_F(BookmarkCodecTest, EncodeAndDecodeSyncMetadataWithoutPermanentNodes) {
+  // Since metadata str serialized proto, it could contain non-ASCII characters.
+  std::string sync_metadata_str("a/2'\"");
+
+  BookmarkCodec encoder;
+  base::Value::Dict value(encoder.Encode(/*bookmark_bar_node=*/nullptr,
+                                         /*other_folder_node=*/nullptr,
+                                         /*mobile_folder_node=*/nullptr,
+                                         sync_metadata_str));
+  const std::string& computed_checksum = encoder.ComputedChecksumForTest();
+  const std::string& stored_checksum = encoder.StoredChecksumForTest();
+
+  // Computed and stored checksums should not be empty and should be equal.
+  EXPECT_FALSE(computed_checksum.empty());
+  EXPECT_FALSE(stored_checksum.empty());
+  EXPECT_EQ(computed_checksum, stored_checksum);
+
+  // Decode and verify.
+  std::string decoded_sync_metadata_str;
+  BookmarkCodec decoder;
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+
+  // Note that the decoder returns this as a failure case, although
+  // `decoded_sync_metadata_str` is still populated.
+  EXPECT_FALSE(Decode(&decoder, value, /*already_assigned_ids=*/{}, model.get(),
+                      &decoded_sync_metadata_str));
+
   EXPECT_EQ(sync_metadata_str, decoded_sync_metadata_str);
 }
 

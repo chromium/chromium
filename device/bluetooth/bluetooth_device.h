@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -94,7 +93,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. This enum should be kept in sync
   // with the BluetoothDeviceConnectErrorCode enum in
-  // src/tools/metrics/histograms/enums.xml.
+  // src/tools/metrics/histograms/metadata/bluetooth/enums.xml.
   enum ConnectErrorCode {
     ERROR_AUTH_CANCELED = 0,
     ERROR_AUTH_FAILED = 1,
@@ -110,6 +109,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     ERROR_DEVICE_UNCONNECTED = 11,
     ERROR_DOES_NOT_EXIST = 12,
     ERROR_INVALID_ARGS = 13,
+    ERROR_NON_AUTH_TIMEOUT = 14,
+    ERROR_NO_MEMORY = 15,
+    ERROR_JNI_ENVIRONMENT = 16,
+    ERROR_JNI_THREAD_ATTACH = 17,
+    ERROR_WAKELOCK = 18,
+    ERROR_UNEXPECTED_STATE = 19,
+    ERROR_SOCKET = 20,
     NUM_CONNECT_ERROR_CODES,  // Keep as last enum.
   };
 
@@ -403,7 +409,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // if a device stops advertising manufacturer data for a Manufacturer Id, this
   // function will still return the cached value for that Id.
   //
-  // TODO(crbug.com/661814) Support this on platforms that don't use BlueZ.
+  // TODO(crbug.com/41284350) Support this on platforms that don't use BlueZ.
   // Only BlueZ supports this now. This method returns an empty map on platforms
   // that don't use BlueZ.
   const ManufacturerDataMap& GetManufacturerData() const;
@@ -646,6 +652,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Returns the time of the last call to UpdateTimestamp(), or base::Time() if
   // it hasn't been called yet.
   virtual base::Time GetLastUpdateTime() const;
+
+#if BUILDFLAG(IS_APPLE)
+  // Returns true if this device is a Low Energy device.
+  virtual bool IsLowEnergyDevice() = 0;
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Called by BluetoothAdapter when a new Advertisement is seen for this
   // device. This replaces previously seen Advertisement Data. The order of

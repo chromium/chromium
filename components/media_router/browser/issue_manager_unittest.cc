@@ -28,10 +28,8 @@ class IssueManagerTest : public ::testing::Test {
  protected:
   IssueManagerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    manager_.set_task_runner_for_test(
-        task_environment_.GetMainThreadTaskRunner());
   }
-  ~IssueManagerTest() override {}
+  ~IssueManagerTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
   IssueManager manager_;
@@ -43,7 +41,7 @@ TEST_F(IssueManagerTest, AddAndClearIssue) {
   // Add initial issue.
   manager_.AddIssue(issue_info1);
 
-  Issue issue1((IssueInfo()));
+  Issue issue1 = Issue::CreateIssueWithIssueInfo(IssueInfo());
   MockIssuesObserver observer(&manager_);
   EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue1));
   observer.Init();
@@ -51,7 +49,7 @@ TEST_F(IssueManagerTest, AddAndClearIssue) {
   EXPECT_EQ(issue_info1, issue1.info());
 
   IssueInfo issue_info2 = CreateTestIssue(IssueInfo::Severity::NOTIFICATION);
-  Issue issue2((IssueInfo()));
+  Issue issue2 = Issue::CreateIssueWithIssueInfo(IssueInfo());
   manager_.AddIssue(issue_info2);
 
   // Clear |issue1|. Observer will be notified with |issue2|.
@@ -66,11 +64,32 @@ TEST_F(IssueManagerTest, AddAndClearIssue) {
   manager_.ClearIssue(issue2.id());
 }
 
+TEST_F(IssueManagerTest, AddPermissionIssue) {
+  IssueInfo issue_info1 = CreateTestIssue(IssueInfo::Severity::WARNING);
+
+  // Add initial issue.
+  Issue issue1 = Issue::CreateIssueWithIssueInfo(IssueInfo());
+  MockIssuesObserver observer(&manager_);
+  EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue1));
+  manager_.AddIssue(issue_info1);
+  observer.Init();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(issue_info1, issue1.info());
+
+  // The permission rejected issue will clear out existing issues and be the top
+  // issue.
+  Issue issue2 = Issue::CreateIssueWithIssueInfo(IssueInfo());
+  EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue2));
+  manager_.AddPermissionRejectedIssue();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(issue2.is_permission_rejected_issue());
+}
+
 TEST_F(IssueManagerTest, IssuesDeletionShouldNotAffectOrder) {
   MockIssuesObserver observer(&manager_);
   observer.Init();
 
-  Issue issue1((IssueInfo()));
+  Issue issue1 = Issue::CreateIssueWithIssueInfo(IssueInfo());
   EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue1));
 
   IssueInfo issue_info1 = CreateTestIssue(IssueInfo::Severity::NOTIFICATION);
@@ -85,7 +104,7 @@ TEST_F(IssueManagerTest, IssuesDeletionShouldNotAffectOrder) {
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer));
   EXPECT_EQ(issue_info1, issue1.info());
 
-  Issue issue2((IssueInfo()));
+  Issue issue2 = Issue::CreateIssueWithIssueInfo(IssueInfo());
   EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue2));
   manager_.ClearIssue(issue1.id());
   EXPECT_EQ(issue_info2, issue2.info());
@@ -99,7 +118,7 @@ TEST_F(IssueManagerTest, AddSameIssueInfoHasNoEffect) {
   MockIssuesObserver observer(&manager_);
   observer.Init();
 
-  Issue issue((IssueInfo()));
+  Issue issue = Issue::CreateIssueWithIssueInfo(IssueInfo());
   EXPECT_CALL(observer, OnIssue(_)).WillOnce(SaveArg<0>(&issue));
   manager_.AddIssue(issue_info);
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer));
@@ -142,7 +161,7 @@ TEST_F(IssueManagerTest, IssueAutoDismissNoopsIfAlreadyCleared) {
   MockIssuesObserver observer(&manager_);
   observer.Init();
 
-  Issue issue1((IssueInfo()));
+  Issue issue1 = Issue::CreateIssueWithIssueInfo(IssueInfo());
   EXPECT_CALL(observer, OnIssue(_)).Times(1).WillOnce(SaveArg<0>(&issue1));
   IssueInfo issue_info1 = CreateTestIssue(IssueInfo::Severity::NOTIFICATION);
   manager_.AddIssue(issue_info1);
@@ -155,7 +174,7 @@ TEST_F(IssueManagerTest, IssueAutoDismissNoopsIfAlreadyCleared) {
   EXPECT_CALL(observer, OnIssuesCleared()).Times(0);
   base::TimeDelta timeout = IssueManager::GetAutoDismissTimeout(issue_info1);
   EXPECT_FALSE(timeout.is_zero());
-  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+  task_environment_.FastForwardBy(timeout);
 }
 
 TEST_F(IssueManagerTest, ClearAllIssues) {
@@ -168,6 +187,41 @@ TEST_F(IssueManagerTest, ClearAllIssues) {
 
   EXPECT_CALL(observer, OnIssuesCleared()).Times(1);
   manager_.ClearAllIssues();
+}
+
+TEST_F(IssueManagerTest, ClearTopIssueForSink) {
+  const char sink_id_1[] = "sink_1";
+  const char sink_id_2[] = "sink_2";
+  IssueInfo issue_info1("title", IssueInfo::Severity::WARNING, sink_id_1);
+  IssueInfo issue_info2("title", IssueInfo::Severity::NOTIFICATION, sink_id_2);
+  manager_.AddIssue(issue_info1);
+  manager_.AddIssue(issue_info2);
+
+  // issue_info1 is the top issue.
+  MockIssuesObserver observer(&manager_);
+  EXPECT_CALL(observer, OnIssue)
+      .WillOnce([&issue_info1](const Issue& received_issue) {
+        EXPECT_EQ(issue_info1, received_issue.info());
+      });
+  observer.Init();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // No-op since the top issue isn't associated with sink_id_2.
+  EXPECT_CALL(observer, OnIssue).Times(0);
+  manager_.ClearTopIssueForSink(sink_id_2);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Clear top issue makes issue_info2 the top issue.
+  EXPECT_CALL(observer, OnIssue)
+      .WillOnce([&issue_info2](const Issue& received_issue) {
+        EXPECT_EQ(issue_info2, received_issue.info());
+      });
+  manager_.ClearTopIssueForSink(sink_id_1);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnIssuesCleared);
+  manager_.ClearTopIssueForSink(sink_id_2);
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace media_router

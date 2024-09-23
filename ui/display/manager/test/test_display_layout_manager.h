@@ -44,8 +44,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
       const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
-      RefreshRateThrottleState new_throttle_state,
-      bool new_vrr_enabled_state,
+      const base::flat_set<int64_t>& new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> GetDisplayStates()
       const override;

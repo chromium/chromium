@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_COOKIE_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_COOKIE_H_
+#ifndef PARTITION_ALLOC_PARTITION_COOKIE_H_
+#define PARTITION_ALLOC_PARTITION_COOKIE_H_
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
@@ -14,7 +14,7 @@ namespace partition_alloc::internal {
 static constexpr size_t kCookieSize = 16;
 
 // Cookie is enabled for debug builds.
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 inline constexpr unsigned char kCookieValue[kCookieSize] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xD0, 0x0D,
@@ -42,8 +42,8 @@ PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address) {}
 
 PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
 
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_COOKIE_H_
+#endif  // PARTITION_ALLOC_PARTITION_COOKIE_H_

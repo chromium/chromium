@@ -11,22 +11,22 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync_user_events/global_id_mapper.h"
 
 namespace syncer {
 
-class UserEventSyncBridge : public ModelTypeSyncBridge {
+class UserEventSyncBridge : public DataTypeSyncBridge {
  public:
   UserEventSyncBridge(
-      OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       GlobalIdMapper* global_id_mapper);
 
   UserEventSyncBridge(const UserEventSyncBridge&) = delete;
@@ -34,7 +34,7 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
 
   ~UserEventSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -42,8 +42,9 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const EntityData& entity_data) override;
   std::string GetStorageKey(const EntityData& entity_data) override;
   void ApplyDisableSyncChanges(
@@ -53,30 +54,26 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
 
   static std::string GetStorageKeyFromSpecificsForTest(
       const sync_pb::UserEventSpecifics& specifics);
-  std::unique_ptr<ModelTypeStore> StealStoreForTest();
+  std::unique_ptr<DataTypeStore> StealStoreForTest();
 
  private:
+  using StoreWithCache =
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
+
   void RecordUserEventImpl(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics);
 
-  void OnStoreCreated(const std::optional<ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
-  void OnReadAllMetadata(const std::optional<ModelError>& error,
-                         std::unique_ptr<MetadataBatch> metadata_batch);
-  void OnCommit(const std::optional<ModelError>& error);
-  void OnReadData(DataCallback callback,
-                  const std::optional<ModelError>& error,
-                  std::unique_ptr<ModelTypeStore::RecordList> data_records,
-                  std::unique_ptr<ModelTypeStore::IdList> missing_id_list);
-  void OnReadAllData(DataCallback callback,
-                     const std::optional<ModelError>& error,
-                     std::unique_ptr<ModelTypeStore::RecordList> data_records);
+  void OnStoreLoaded(const std::optional<syncer::ModelError>& error,
+                     std::unique_ptr<StoreWithCache> store,
+                     std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnStoreCommit(const std::optional<ModelError>& error);
 
   void HandleGlobalIdChange(int64_t old_global_id, int64_t new_global_id);
 
   // Persistent storage for in flight events. Should remain quite small, as we
   // delete upon commit confirmation.
-  std::unique_ptr<ModelTypeStore> store_;
+  // Null upon construction, until the store is successfully initialized.
+  std::unique_ptr<StoreWithCache> store_;
 
   // The key is the global_id of the navigation the event is linked to.
   std::multimap<int64_t, sync_pb::UserEventSpecifics>

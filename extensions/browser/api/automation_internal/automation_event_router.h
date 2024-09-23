@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/uuid.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 class BrowserContext;
@@ -94,12 +94,13 @@ class AutomationEventRouter
   bool HasObserver(AutomationEventRouterObserver* observer);
 
   // AutomationEventRouterInterface:
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   std::vector<ui::AXTreeUpdate> updates,
-                                   const gfx::Point& mouse_location,
-                                   std::vector<ui::AXEvent> events) override;
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
-      const content::AXLocationChangeNotificationDetails& details) override;
+      const ui::AXLocationChanges& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
   void DispatchActionResult(
       const ui::AXActionData& data,

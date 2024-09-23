@@ -54,31 +54,11 @@ def __step_config(ctx, step_config):
             "exclude_input_patterns": [
                 "*.stamp",
             ],
-            # TODO(b/288523418): missing inputs for mojom_parser?
-            "outputs_map": {
-                "./gen/mojo/public/interfaces/bindings/tests/sample_import2.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-                "./gen/mojo/public/interfaces/bindings/tests/math_calculator.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-                "./gen/mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom-module": {
-                    "inputs": [
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
-                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
-                    ],
-                },
-            },
             # TODO: b/285078792 - Win cross compile on Linux worker doesn't work with input_root_absolute_path=true.
             "remote": runtime.os != "windows",
             "canonicalize_dir": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
         },
@@ -87,6 +67,7 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/validate_typemap_config.py",
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
         },
@@ -95,6 +76,7 @@ def __step_config(ctx, step_config):
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/generate_type_mappings.py",
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
         },

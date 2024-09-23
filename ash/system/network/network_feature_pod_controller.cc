@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -30,6 +31,8 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/view_class_properties.h"
 
 using chromeos::network_config::mojom::ActivationStateType;
 using chromeos::network_config::mojom::CellularStateProperties;
@@ -182,12 +185,13 @@ std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile(
       base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
-  tile_->SetID(VIEW_ID_FEATURE_TILE_NETWORK);
   tile_->SetIconClickable(true);
   tile_->SetIconClickCallback(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_->CreateDecorativeDrillInArrow();
+  tile_->drill_in_arrow()->SetProperty(
+      views::kElementIdentifierKey, kNetworkFeatureTileDrillInArrowElementId);
   UpdateTileStateIfExists();
   TrackVisibilityUMA();
   return tile;

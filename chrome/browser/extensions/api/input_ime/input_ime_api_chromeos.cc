@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -374,7 +373,7 @@ class ImeObserverChromeOS
         engine->AddPendingKeyEvent(component_id, std::move(callback));
 
     input_ime::KeyboardEvent keyboard_event;
-    keyboard_event.type = (event.type() == ui::ET_KEY_RELEASED)
+    keyboard_event.type = (event.type() == ui::EventType::kKeyReleased)
                               ? input_ime::KeyboardEventType::kKeyup
                               : input_ime::KeyboardEventType::kKeydown;
 
@@ -665,7 +664,7 @@ class ImeObserverChromeOS
   }
 
   // Returns true if there are any listeners on the given event.
-  // TODO(https://crbug.com/835699): Merge this with |ExtensionHasListener|.
+  // TODO(crbug.com/41384866): Merge this with |ExtensionHasListener|.
   bool HasListener(const std::string& event_name) const {
     return extensions::EventRouter::Get(profile_)->HasEventListener(event_name);
   }

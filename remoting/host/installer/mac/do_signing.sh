@@ -54,8 +54,13 @@ setup() {
   PKGPROJ_HOST_SERVICE="ChromotingHostService.pkgproj"
   PKGPROJ_HOST_UNINSTALLER="ChromotingHostUninstaller.pkgproj"
 
-  # The app entitlements file.
-  APP_ENTITLEMENTS="app-entitlements.plist"
+  # Bundle-specific entitlements which include restricted entitlements. These
+  # can only be used for signing specific bundles with official credentials.
+  ME2ME_ENTITLEMENTS="me2me-entitlements.plist"
+
+  # The default entitlements file. This contains unrestricted entitlements that
+  # can safely be applied for local signing.
+  DEFAULT_ENTITLEMENTS="app-entitlements.plist"
 
   # Final (user-visible) pkg name.
   PKG_FINAL="${HOST_PKG}.pkg"
@@ -114,24 +119,11 @@ verify_clean_dir() {
   fi
 }
 
-linker_signed_arm64_needs_force() {
-  major=$(sw_vers -productVersion | sed -Ee 's/^([0-9]+)\..*$/\1/')
-  if (( ${major} >= 11 )) ; then
-    return 1
-  fi
-  flags=$(codesign --display --verbose --arch=arm64 -- "${1}" 2>&1 |
-          sed -Ene 's/^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$/\1/p')
-  if [[ -z "${flags}" ]]; then
-    return 1
-  fi
-  (( rv=${flags} & 0x20000 ))
-  return ${rv}
-}
-
 sign() {
   local name="${1}"
   local keychain="${2}"
   local id="${3}"
+  local entitlements="${4:-}"
 
   if [[ ! -e "${name}" ]]; then
     err_exit "Input file doesn't exist: ${name}"
@@ -144,12 +136,11 @@ sign() {
   # Expanding a zero-size array with "set -u" aborts with "unbound variable".
   local args=(-vv --sign "${id}")
   if [[ -n "${keychain}" ]]; then
-      args+=(--keychain "${keychain}")
+    args+=(--keychain "${keychain}")
   fi
-  if linker_signed_arm64_needs_force "${name}"; then
-      args+=(--force)
+  if [[ -n "${entitlements}" ]]; then
+    args+=(--entitlements "${input_dir}/${entitlements}")
   fi
-  args+=(--entitlements "${input_dir}/${APP_ENTITLEMENTS}")
   args+=(--timestamp --options runtime "${name}")
   codesign "${args[@]}"
   codesign -v "${name}"
@@ -168,7 +159,15 @@ sign_binaries() {
     "${UNINSTALLER}" \
   )
   for binary in "${binaries[@]}"; do
-    sign "${input_dir}/${binary}" "${keychain}" "${id}"
+    local entitlements="${DEFAULT_ENTITLEMENTS}"
+
+    # Restricted entitlements must only be claimed for builds signed with
+    # official credentials. Locally-signed development packages do not use any
+    # productsign_id.
+    if [[ -n "${productsign_id}" && "${binary}" == "${ME2ME_HOST}" ]]; then
+      entitlements="${ME2ME_ENTITLEMENTS}"
+    fi
+    sign "${input_dir}/${binary}" "${keychain}" "${id}" "${entitlements}"
   done
 }
 

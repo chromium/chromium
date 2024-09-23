@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.consent_auditor;
 
 import androidx.annotation.StringRes;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -63,7 +64,7 @@ public final class ConsentAuditorBridge {
     interface Natives {
         void recordConsent(
                 ConsentAuditorBridge caller,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 CoreAccountId accountId,
                 int feature,
                 int[] consentDescription,

@@ -23,8 +23,9 @@ DialogTestBrowserWindow::DialogTestBrowserWindow() {
   // using the WebContents since creating a Widget here requires an Aura
   // RootWindow for context and it's tricky to get one here.
   host_window_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   host_window_->Init(std::move(params));
   // Leave the window hidden: unit tests shouldn't need it to be visible.
 #endif
@@ -74,7 +75,7 @@ Browser* DialogTestBrowserWindow::FindBrowser() const {
     if (browser->window() == this)
       return browser;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

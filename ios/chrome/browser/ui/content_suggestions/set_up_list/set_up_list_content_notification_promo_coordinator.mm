@@ -21,8 +21,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_view_controller.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -31,11 +30,11 @@ using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
 @interface SetUpListContentNotificationPromoCoordinator () <
-    NotificationsAlertPresenter>
+    NotificationsOptInAlertCoordinatorDelegate>
 
 // Alert Coordinator used to display the notifications system prompt.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
-
+@property(nonatomic, strong)
+    NotificationsOptInAlertCoordinator* optInAlertCoordinator;
 @end
 
 @implementation SetUpListContentNotificationPromoCoordinator {
@@ -73,9 +72,6 @@ using base::UserMetricsAction;
 }
 
 - (void)stop {
-  if (self.alertCoordinator) {
-    [self dimissAlertCoordinator];
-  }
   _viewController.presentationController.delegate = nil;
 
   ProceduralBlock completion = nil;
@@ -91,6 +87,8 @@ using base::UserMetricsAction;
       logHistogramForEvent:ContentNotificationSetUpListPromoEvent::kDismissed];
   _viewController = nil;
   self.delegate = nil;
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = nil;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -99,40 +97,8 @@ using base::UserMetricsAction;
   RecordAction(
       UserMetricsAction("ContentNotifications.Promo.SetUpList.Accepted"));
   [self logHistogramForAction:ContentNotificationSetUpListPromoAction::kAccept];
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  PushNotificationService* service =
-      GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
-                         true);
+  [self presentPushNotificationPermissionAlert];
   _markItemComplete = YES;
-
-  __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
-  [PushNotificationUtil requestPushNotificationPermission:^(
-                            BOOL granted, BOOL promptShown, NSError* error) {
-    if (!error && !promptShown && !granted) {
-      // This callback can be executed on a background thread, make sure the UI
-      // is displayed on the main thread.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf presentPushNotificationPermissionAlert];
-        [weakSelf logHistogramForEvent:ContentNotificationSetUpListPromoEvent::
-                                           kPromptShown];
-      });
-    } else if (!error && granted) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
-        [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
-      });
-    } else {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
-      });
-    }
-  }];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -155,55 +121,51 @@ using base::UserMetricsAction;
 #pragma mark - NotificationsAlertPresenter
 
 - (void)presentPushNotificationPermissionAlert {
-  NSString* settingURL = UIApplicationOpenSettingsURLString;
-  if (@available(iOS 15.4, *)) {
-    settingURL = UIApplicationOpenNotificationSettingsURLString;
-  }
-  NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
-  NSString* alertMessage = l10n_util::GetNSString(
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
+  _optInAlertCoordinator.clientIds = std::vector{
+      PushNotificationClientId::kContent, PushNotificationClientId::kSports};
+  _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(
       IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL);
-  NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT);
+  _optInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE);
+  _optInAlertCoordinator.delegate = self;
+  [_optInAlertCoordinator start];
+}
 
-  __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
-  [self.alertCoordinator stop];
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
-                                                   browser:self.browser
-                                                     title:alertTitle
-                                                   message:alertMessage];
-  [self.alertCoordinator
-      addItemWithTitle:cancelTitle
-                action:^{
-                  [weakSelf
-                      logHistogramForPromptAction:
-                          ContentNotificationPromptAction::kNoThanksTapped];
-                  RecordAction(UserMetricsAction(
-                      "ContentNotifications.Promo.Prompt.NoThanksTapped"));
-                  [weakSelf
-                          .delegate setUpListContentNotificationPromoDidFinish];
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.alertCoordinator
-      addItemWithTitle:settingsTitle
-                action:^{
-                  [[UIApplication sharedApplication]
-                                openURL:[NSURL URLWithString:settingURL]
-                                options:{}
-                      completionHandler:nil];
-                  [weakSelf
-                      logHistogramForPromptAction:
-                          ContentNotificationPromptAction::kGoToSettingsTapped];
-                  RecordAction(UserMetricsAction(
-                      "ContentNotifications.Promo.Prompt.GoToSettingsTapped"));
-                  [weakSelf
-                          .delegate setUpListContentNotificationPromoDidFinish];
-                }
-                 style:UIAlertActionStyleDefault];
-  [self.alertCoordinator start];
+#pragma mark - NotificationsOptInAlertCoordinatorDelegate
+
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
+  CHECK_EQ(_optInAlertCoordinator, alertCoordinator);
+  std::vector<PushNotificationClientId> clientIds =
+      alertCoordinator.clientIds.value();
+  [_optInAlertCoordinator stop];
+  _optInAlertCoordinator = nil;
+  [self logHistogramForEvent:ContentNotificationSetUpListPromoEvent::
+                                 kPromptShown];
+  switch (result) {
+    case NotificationsOptInAlertResult::kPermissionDenied:
+      [self logHistogramForPromptAction:ContentNotificationPromptAction::
+                                            kNoThanksTapped];
+      break;
+    case NotificationsOptInAlertResult::kCanceled:
+    case NotificationsOptInAlertResult::kError:
+      break;
+    case NotificationsOptInAlertResult::kOpenedSettings:
+      [self logHistogramForPromptAction:ContentNotificationPromptAction::
+                                            kGoToSettingsTapped];
+      break;
+    case NotificationsOptInAlertResult::kPermissionGranted:
+      [self logHistogramForPromptAction:ContentNotificationPromptAction::
+                                            kAccepted];
+      break;
+  }
+  [self.delegate setUpListContentNotificationPromoDidFinish];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -226,13 +188,6 @@ using base::UserMetricsAction;
 
 - (void)logHistogramForEvent:(ContentNotificationSetUpListPromoEvent)event {
   UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Event", event);
-}
-
-#pragma mark - Private
-
-- (void)dimissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
 }
 
 @end

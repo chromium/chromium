@@ -44,13 +44,14 @@ NSArray<NSString*>* convertToNSArray(const char** array) {
 
   @try {
     NSTask* task = [[NSTask alloc] init];
-    task.launchPath = @(cmd);
+    task.executableURL = [NSURL fileURLWithPath:@(cmd)];
     task.arguments = arg_array;
     task.standardInput = [NSPipe pipe];
     task.standardOutput = output;
-    [task launch];
+    [task launchAndReturnError:nil];
 
-    NSData* data = [output.fileHandleForReading readDataToEndOfFile];
+    NSData* data =
+        [output.fileHandleForReading readDataToEndOfFileAndReturnError:nil];
 
     [task waitUntilExit];
 

@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("preferences") {
+  sources = [
+    "preferences.cc",
+    "preferences.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/language_preferences",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//components/user_manager",
+    "//mojo/public/cpp/bindings",
+    "//ui/base/ime/ash",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base:i18n",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/child_accounts/parent_access_code",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ui/ash/system",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/update_engine:proto",
+    "//chromeos/ash/components/geolocation",
+    "//chromeos/ash/components/peripheral_notification",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/components/timezone",
+    "//chromeos/components/disks:prefs",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/constants",
+    "//components/feedback/content",
+    "//components/language/core/browser",
+    "//components/policy/proto",
+    "//components/pref_registry",
+    "//content/public/browser",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//third_party/icu",
+    "//ui/events",
+    "//ui/events:event_constants",
+    "//ui/events/ash",
+    "//ui/events/ash/mojom",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/system" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "preferences_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base/ime/ash",
+    "//ui/events",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "preferences_unittest.cc" ]
+
+  deps = [
+    ":preferences",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
+    "//url",
+  ]
+}

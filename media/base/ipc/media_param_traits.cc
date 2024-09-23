@@ -11,6 +11,7 @@
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
 
@@ -81,6 +82,7 @@ void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
   WriteParam(m, p.max_frames_per_buffer);
   WriteParam(m, p.bitstream_formats);
   WriteParam(m, p.require_encapsulation);
+  WriteParam(m, p.require_audio_offload);
 }
 
 bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
@@ -91,16 +93,25 @@ bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
   bool require_encapsulation;
   int max_frames_per_buffer;
   int min_frames_per_buffer;
+  bool require_audio_offload;
   if (!ReadParam(m, iter, &min_frames_per_buffer) ||
       !ReadParam(m, iter, &max_frames_per_buffer) ||
       !ReadParam(m, iter, &bitstream_formats) ||
-      !ReadParam(m, iter, &require_encapsulation)) {
+      !ReadParam(m, iter, &require_encapsulation) ||
+      !ReadParam(m, iter, &require_audio_offload)) {
     return false;
   }
+#if BUILDFLAG(IS_WIN)
+  if (require_audio_offload &&
+      !base::FeatureList::IsEnabled(media::kAudioOffload)) {
+    return false;
+  }
+#endif
   r->min_frames_per_buffer = min_frames_per_buffer;
   r->max_frames_per_buffer = max_frames_per_buffer;
   r->bitstream_formats = bitstream_formats;
   r->require_encapsulation = require_encapsulation;
+  r->require_audio_offload = require_audio_offload;
   return true;
 }
 

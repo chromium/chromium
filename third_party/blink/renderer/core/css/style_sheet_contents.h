@@ -74,7 +74,10 @@ class CORE_EXPORT StyleSheetContents final
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
-  ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
+  ParseSheetResult ParseString(const String&,
+                               bool allow_import_rules = true,
+                               CSSDeferPropertyParsing defer_property_parsing =
+                                   CSSDeferPropertyParsing::kNo);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;
@@ -111,9 +114,6 @@ class CORE_EXPORT StyleSheetContents final
 
   void SetHasFontFaceRule() { has_font_face_rule_ = true; }
   bool HasFontFaceRule() const { return has_font_face_rule_; }
-
-  void SetHasViewportRule() { has_viewport_rule_ = true; }
-  bool HasViewportRule() const { return has_viewport_rule_; }
 
   void ParserAddNamespace(const AtomicString& prefix, const AtomicString& uri);
   void ParserAppendRule(StyleRuleBase*);
@@ -272,7 +272,6 @@ class CORE_EXPORT StyleSheetContents final
   bool did_load_error_occur_ : 1;
   bool is_mutable_ : 1;
   bool has_font_face_rule_ : 1;
-  bool has_viewport_rule_ : 1;
   bool has_media_queries_ : 1;
   bool has_single_owner_document_ : 1;
   bool is_used_from_text_cache_ : 1;

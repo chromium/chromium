@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_HOME_APP_HOME_UI_H_
 
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -14,11 +15,20 @@
 
 namespace webapps {
 class AppHomePageHandler;
+class AppHomeUI;
 }  // namespace webapps
 
 namespace base {
 class RefCountedMemory;
 }  // namespace base
+
+class AppHomeUIConfig : public content::DefaultWebUIConfig<webapps::AppHomeUI> {
+ public:
+  AppHomeUIConfig();
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 namespace webapps {
 

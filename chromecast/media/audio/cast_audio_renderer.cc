@@ -22,7 +22,7 @@
 #include "media/base/renderer_client.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 #include "net/base/io_buffer.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 #define RUN_ON_MAIN_THREAD(method, ...)                     \
   main_task_runner_->PostTask(                              \
@@ -208,8 +208,8 @@ void CastAudioRenderer::SetPreservesPitch(bool preverves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void CastAudioRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void CastAudioRenderer::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
   NOTIMPLEMENTED();
 }
 
@@ -475,7 +475,7 @@ void CastAudioRenderer::OnNewBuffer(
 
   DCHECK_EQ(status, ::media::DemuxerStream::kOk);
 
-  size_t filled_bytes = buffer->end_of_stream() ? 0 : buffer->data_size();
+  size_t filled_bytes = buffer->end_of_stream() ? 0 : buffer->size();
   size_t io_buffer_size =
       audio_output_service::OutputSocket::kAudioMessageHeaderSize +
       filled_bytes;
@@ -488,7 +488,7 @@ void CastAudioRenderer::OnNewBuffer(
   last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
   memcpy(io_buffer->data() +
              audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-         buffer->data(), buffer->data_size());
+         buffer->data(), buffer->size());
 
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)

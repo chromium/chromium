@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-// TODO(crbug.com/1245180): Flaky on Lacros.
+// TODO(crbug.com/40788468): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TokenExpiry DISABLED_TokenExpiry
 #else
@@ -367,9 +367,9 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
-  const syncer::ModelTypeSet active_types =
+  const syncer::DataTypeSet active_types =
       GetSyncService(0)->GetActiveDataTypes();
-  ASSERT_FALSE(active_types.Empty());
+  ASSERT_FALSE(active_types.empty());
 
   // Enter the "Sync paused" state.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
   EXPECT_FALSE(GetSyncService(0)->IsEngineInitialized());
 
   // The active data types should now be empty.
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Empty());
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
   // Clear the "Sync paused" state again.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();

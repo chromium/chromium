@@ -42,7 +42,7 @@ void TypographyExample::CreateExampleView(View* container) {
           .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                      TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
                      600, 0)
-          .AddRows(5, TableLayout::kFixedSize, 0)
+          .AddRows(6, TableLayout::kFixedSize, 0)
           .AddChildren(
               Builder<Label>().SetText(u"HeadLine1"),
               Builder<Label>()
@@ -68,6 +68,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetTextStyle(style::STYLE_HEADLINE_4),
+              Builder<Label>().SetText(u"HeadLine4Bold"),
+              Builder<Label>()
+                  .SetText(headline_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_HEADLINE_4_BOLD),
               Builder<Label>().SetText(u"HeadLine5"),
               Builder<Label>()
                   .SetText(headline_text)
@@ -205,7 +211,8 @@ void TypographyExample::CreateExampleView(View* container) {
 
   auto scroll_view = std::make_unique<ScrollView>();
   scroll_view->SetContents(std::move(wrapper));
-  // TODO(crbug.com/1479113): no calling ClipHeightTo() will result in 0 height.
+  // TODO(crbug.com/40280756): no calling ClipHeightTo() will result in 0
+  // height.
   scroll_view->ClipHeightTo(0, 0);
   container->AddChildView(std::move(scroll_view));
 }

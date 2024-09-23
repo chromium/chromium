@@ -68,7 +68,6 @@ icu::UnicodeString getHoursPattern(const icu::UnicodeString& unicode_pattern) {
   }
 
   NOTREACHED() << "Hours pattern not found.";
-  return icu::UnicodeString("HH");
 }
 
 }  // namespace
@@ -127,7 +126,16 @@ icu::SimpleDateFormat DateHelper::CreateHoursFormatter(const char* pattern) {
   icu::UnicodeString generated_pattern =
       generator->getBestPattern(icu::UnicodeString(pattern), status);
   DCHECK(U_SUCCESS(status));
-
+  // Since ICU 74, getBestPattern can return a gibberish pattern ""H
+  // ├'Minute': m┤ ├'Dayperiod': a┤"" if the locale resource is missing. Instead
+  // of using the gibberish pattern, this should fallback to the proposed
+  // pattern.
+  std::string gen_string;
+  generated_pattern.toUTF8String(gen_string);
+  if (base::Contains(gen_string, "├")) {
+    // Fallback to the suggested pattern.
+    generated_pattern = icu::UnicodeString(pattern);
+  }
   // Extract the hours from the generated pattern.
   icu::UnicodeString hours_pattern = getHoursPattern(generated_pattern);
   icu::SimpleDateFormat formatter(hours_pattern, status);
@@ -302,8 +310,6 @@ void DateHelper::CalculateLocalWeekTitles() {
     if (safe_index == calendar_utils::kDateInOneWeek) {
       NOTREACHED() << "Should already find the first day within 7 times, since "
                       "there are only 7 days in a week";
-      week_titles_ = kDefaultWeekTitle;
-      return;
     }
   }
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+Testing.h"
 
 #import <optional>
 
@@ -18,16 +17,18 @@
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
+#import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
-#import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator_items_provider.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -37,19 +38,20 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/legacy_grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -68,21 +70,9 @@ class ScopedScrollingTimeLogger {
   base::TimeTicks start_;
 };
 
-// Needed for subclassing.
-NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
-
 namespace {
-NSString* const kSuggestedActionsSectionIdentifier =
-    @"SuggestedActionsSectionIdentifier";
-NSString* const kGridTabGroupsSectionIdentifier =
-    @"GridTabGroupsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
-
-// Creates an NSIndexPath with `index` in section 0.
-NSIndexPath* CreateIndexPath(NSInteger index) {
-  return [NSIndexPath indexPathForItem:index inSection:0];
-}
 
 // Returns the accessibility identifier to set on a GridCell when positioned at
 // the given index.
@@ -108,34 +98,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The collection view's data source.
 @property(nonatomic, strong) GridDiffableDataSource* diffableDataSource;
-// The cell registration for grid cells.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* gridCellRegistration;
-// The cell registration for grid group cells.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* groupGridCellRegistration;
-// The cell registration for the Suggested Actions cell.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* suggestedActionsCellRegistration;
-// The supplementary view registration for the grid header.
-@property(nonatomic, strong)
-    UICollectionViewSupplementaryRegistration* gridHeaderRegistration;
-// Identifier of the selected item. This value is disregarded if the collection
-// view is empty. This bookkeeping is done to set the correct selection on
-// `-viewWillAppear:`.
-@property(nonatomic, assign) web::WebStateID selectedItemID;
+// Identifier of the selected item. This should only be used for lookup or
+// equality checks, in that it is usually not possible to fetch its images
+// (favicon, snapshot). Use the GridItemIdentifier from the data source that
+// matches instead.
+@property(nonatomic, strong) GridItemIdentifier* selectedItemIdentifier;
 // Index of the selected item.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, assign) web::WebStateID lastInsertedItemID;
-// Latest dragged item. This property is set when the item is
-// long pressed which does not always result in a drag action.
-@property(nonatomic, strong) TabSwitcherItem* draggedItem;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
-@property(nonatomic, strong) UICollectionViewLayout* gridLayout;
+@property(nonatomic, strong) GridLayout* gridLayout;
 // The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
@@ -161,14 +137,31 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   std::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
+
+  // The cell registration for grid cells.
+  UICollectionViewCellRegistration* _gridCellRegistration;
+  // The cell registration for grid group cells.
+  UICollectionViewCellRegistration* _groupGridCellRegistration;
+  // The cell registration for the Suggested Actions cell.
+  UICollectionViewCellRegistration* _suggestedActionsCellRegistration;
+
+  // The supplementary view registration for the grid header.
+  UICollectionViewSupplementaryRegistration* _gridHeaderRegistration;
+
+  // Latest dragged item identifier. This property is set when the item is
+  // long pressed which does not always result in a drag action.
+  GridItemIdentifier* _draggedItemIdentifier;
+
+  // Current mode of the Tab Grid. Should be set through consumer protocol.
+  TabGridMode _mode;
 }
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
-    _mode = TabGridModeNormal;
+    _mode = TabGridMode::kNormal;
 
     // Register for VoiceOver notifications.
     [[NSNotificationCenter defaultCenter]
@@ -191,44 +184,46 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    self.gridLayout = [[GridLayout alloc] init];
-  } else {
-    self.gridLayout = [[LegacyGridLayout alloc] init];
-  }
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+
+  GridLayout* gridLayout = [[GridLayout alloc] init];
+  self.gridLayout = gridLayout;
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:self.gridLayout];
+                         collectionViewLayout:gridLayout];
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
-  collectionView.alwaysBounceVertical =
-      base::FeatureList::IsEnabled(kTabGridAlwaysBounce);
+  collectionView.alwaysBounceVertical = YES;
 
   [self createRegistrations];
 
   __weak __typeof(self) weakSelf = self;
-  self.diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
-      initWithCollectionView:collectionView
-                cellProvider:^UICollectionViewCell*(
-                    UICollectionView* innerCollectionView,
-                    NSIndexPath* indexPath,
-                    GridItemIdentifier* itemIdentifier) {
-                  return [weakSelf cellForItemAtIndexPath:indexPath
-                                           itemIdentifier:itemIdentifier];
-                }];
-  self.diffableDataSource.supplementaryViewProvider =
-      ^UICollectionReusableView*(UICollectionView* innerCollectionView,
-                                 NSString* elementKind,
-                                 NSIndexPath* indexPath) {
-        return [weakSelf headerForSectionAtIndexPath:indexPath];
-      };
-  collectionView.dataSource = self.diffableDataSource;
+  GridDiffableDataSource* diffableDataSource =
+      [[UICollectionViewDiffableDataSource alloc]
+          initWithCollectionView:collectionView
+                    cellProvider:^UICollectionViewCell*(
+                        UICollectionView* innerCollectionView,
+                        NSIndexPath* indexPath,
+                        GridItemIdentifier* itemIdentifier) {
+                      return [weakSelf cellForItemAtIndexPath:indexPath
+                                               itemIdentifier:itemIdentifier];
+                    }];
+  self.diffableDataSource = diffableDataSource;
+
+  gridLayout.diffableDataSource = diffableDataSource;
+
+  diffableDataSource.supplementaryViewProvider = ^UICollectionReusableView*(
+      UICollectionView* innerCollectionView, NSString* elementKind,
+      NSIndexPath* indexPath) {
+    return [weakSelf headerForSectionAtIndexPath:indexPath];
+  };
+  collectionView.dataSource = diffableDataSource;
 
   GridSnapshot* snapshot = [[GridSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
-  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+  [diffableDataSource applySnapshotUsingReloadData:snapshot];
 
   // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
   // registered.
@@ -281,6 +276,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
+  // Dismisses the confirmation dialog for tab group if it's displayed.
+  [self.tabGroupConfirmationHandler dismissTabGroupConfirmation];
+
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
   [coordinator
       animateAlongsideTransition:^(
@@ -288,6 +286,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         [self.collectionView.collectionViewLayout invalidateLayout];
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        if (ios::provider::IsRaccoonEnabled()) {
+          for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+            [self setHoverEffectToCell:cell];
+          }
+        }
         [self.collectionView setNeedsLayout];
         [self.collectionView layoutIfNeeded];
       }];
@@ -301,6 +304,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (BOOL)isScrolledToBottom {
   return IsScrollViewScrolledToBottom(self.collectionView);
+}
+
+- (BOOL)isGridScrollsToTopEnabled {
+  return self.collectionView.scrollsToTop;
+}
+
+- (void)setGridScrollsToTopEnabled:(BOOL)gridScrollsToTopEnabled {
+  self.collectionView.scrollsToTop = gridScrollsToTopEnabled;
 }
 
 - (void)setEmptyStateView:(UIView<GridEmptyView>*)emptyStateView {
@@ -336,7 +347,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return YES;
 }
 
-- (void)setMode:(TabGridMode)mode {
+- (void)setTabGridMode:(TabGridMode)mode {
   if (_mode == mode) {
     return;
   }
@@ -348,7 +359,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self shouldEnableDrapAndDropInteraction];
   self.emptyStateView.tabGridMode = _mode;
 
-  if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
+  if (mode == TabGridMode::kSearch && self.suggestedActionsDelegate) {
     if (!self.suggestedActionsViewController) {
       self.suggestedActionsViewController =
           [[SuggestedActionsViewController alloc] initWithDelegate:self];
@@ -359,23 +370,24 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Reconfigure all tabs.
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  [self updateSnapshotForModeUpdate:snapshot];
   [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   [self.gridLayout invalidateLayout];
 
   NSUInteger selectedIndex = self.selectedIndex;
-  if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
+  if (previousMode != TabGridMode::kSelection && mode == TabGridMode::kNormal &&
       selectedIndex != NSNotFound &&
       static_cast<NSInteger>(selectedIndex) < [self numberOfTabs]) {
     // Scroll to the selected item here, so the action of reloading and
     // scrolling happens at once.
     [self.collectionView
-        scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
+        scrollToItemAtIndexPath:[self indexPathForTabIndex:selectedIndex]
                atScrollPosition:UICollectionViewScrollPositionTop
                        animated:NO];
   }
 
-  if (mode == TabGridModeNormal) {
+  if (mode == TabGridMode::kNormal) {
     // After transition from other modes to the normal mode, the selection
     // border doesn't show around the selected item, because reloading
     // operations lose the selected items. The collection view needs to be
@@ -383,10 +395,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
     self.searchText = nil;
-  } else if (mode == TabGridModeSelection) {
-    // The selected state is not visible in TabGridModeSelection mode, but
+  } else if (mode == TabGridMode::kSelection) {
+    // The selected state is not visible in TabGridMode::kSelection mode, but
     // VoiceOver surfaces it. Deselects all the collection view items.
-    // The selection will be reinstated when moving off of TabGridModeSelection.
+    // The selection will be reinstated when moving off of
+    // TabGridMode::kSelection.
     NSArray<NSIndexPath*>* indexPathsForSelectedItems =
         [self.collectionView indexPathsForSelectedItems];
     for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
@@ -409,26 +422,21 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (selectedIndex == NSNotFound) {
     return NO;
   }
-  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
   return [self.collectionView.indexPathsForVisibleItems
       containsObject:selectedIndexPath];
 }
 
 - (void)setContentInsets:(UIEdgeInsets)contentInsets {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    // Set the vertical insets on the collection view…
-    self.collectionView.contentInset =
-        UIEdgeInsetsMake(contentInsets.top, 0, contentInsets.bottom, 0);
-    // … and the horizontal insets on the layout sections.
-    // This is a workaround, as setting the horizontal insets on the collection
-    // view isn't honored by the layout when computing the item sizes (items are
-    // too big in landscape iPhones with a notch or Dynamic Island).
-    ObjCCastStrict<GridLayout>(self.gridLayout).sectionInsets =
-        NSDirectionalEdgeInsetsMake(0, contentInsets.left, 0,
-                                    contentInsets.right);
-  } else {
-    self.collectionView.contentInset = contentInsets;
-  }
+  // Set the vertical insets on the collection view…
+  self.collectionView.contentInset =
+      UIEdgeInsetsMake(contentInsets.top, 0, contentInsets.bottom, 0);
+  // … and the horizontal insets on the layout sections.
+  // This is a workaround, as setting the horizontal insets on the collection
+  // view isn't honored by the layout when computing the item sizes (items are
+  // too big in landscape iPhones with a notch or Dynamic Island).
+  self.gridLayout.sectionInsets = NSDirectionalEdgeInsetsMake(
+      0, contentInsets.left, 0, contentInsets.right);
   _contentInsets = contentInsets;
 }
 
@@ -447,7 +455,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     UICollectionViewCell* collectionViewCell =
         [self.collectionView cellForItemAtIndexPath:path];
     if (![collectionViewCell isKindOfClass:[GridCell class]]) {
-      // TODO(crbug.com/1513165): Remove once the transition annimation for the
+      // TODO(crbug.com/334885429): Update once the transition animation for the
       // group cells is available.
       continue;
     }
@@ -458,7 +466,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // change to the other properties such as center, bounds, etc.
     attributes.frame = [self.collectionView convertRect:attributes.frame
                                                  toView:nil];
-    if (cell.itemIdentifier == self.selectedItemID) {
+    if ([cell.itemIdentifier isEqual:self.selectedItemIdentifier]) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
       activeItem =
@@ -467,7 +475,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                   size:attributes.size];
       // If the active item is the last inserted item, it needs to be animated
       // differently.
-      if (cell.itemIdentifier == self.lastInsertedItemID) {
+      if (cell.itemIdentifier.tabSwitcherItem.identifier ==
+          self.lastInsertedItemID) {
         activeItem.isAppearing = YES;
       }
       selectionItem = [LegacyGridTransitionItem
@@ -489,7 +498,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (TabGridTransitionItem*)transitionItemForActiveCell {
   [self.collectionView layoutIfNeeded];
 
-  NSIndexPath* selectedItemIndexPath = CreateIndexPath(self.selectedIndex);
+  NSIndexPath* selectedItemIndexPath =
+      [self indexPathForTabIndex:self.selectedIndex];
   if (![self.collectionView.indexPathsForVisibleItems
           containsObject:selectedItemIndexPath]) {
     return nil;
@@ -497,7 +507,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/1501837): Handle once the annimations are available for
+    // TODO(crbug.com/40942154): Handle once the annimations are available for
     // group cells.
     return nil;
   }
@@ -520,11 +530,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = YES;
-  } else {
-    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = YES;
-  }
+  self.gridLayout.animatesItemUpdates = YES;
   // Selection is invalid if there are no items.
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
@@ -533,9 +539,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
-  // Update the delegate, in case it wasn't before.
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
   [self removeEmptyStateAnimated:NO];
   self.lastInsertedItemID = web::WebStateID();
 }
@@ -543,10 +546,32 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)prepareForDismissal {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = NO;
-  } else {
-    ObjCCastStrict<LegacyGridLayout>(self.gridLayout).animatesItemUpdates = NO;
+  self.gridLayout.animatesItemUpdates = NO;
+}
+
+- (void)centerVisibleCellsToPoint:(CGPoint)center
+            translationCompletion:(CGFloat)translationCompletion
+                        withScale:(CGFloat)scale {
+  // Make sure to layout the collection view to ensure that the correct cells
+  // are displayed.
+  [self.collectionView layoutIfNeeded];
+
+  for (UIView* cell in self.collectionView.visibleCells) {
+    CGPoint transformedOrigin = [self.collectionView convertPoint:center
+                                                         fromView:self.view];
+    CGFloat dX =
+        (transformedOrigin.x - cell.center.x) * (1 - translationCompletion);
+    CGFloat dY =
+        (transformedOrigin.y - cell.center.y) * (1 - translationCompletion);
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(dX, dY);
+    transform = CGAffineTransformScale(transform, scale, scale);
+    cell.transform = transform;
+  }
+}
+
+- (void)resetVisibleCellsCenterAndScale {
+  for (UIView* cell in self.collectionView.visibleCells) {
+    cell.transform = CGAffineTransformIdentity;
   }
 }
 
@@ -562,14 +587,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     gridHeader.value =
         l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                 base::SysNSStringToUTF16(resultsCount));
-  } else if (base::FeatureList::IsEnabled(kTabGroupsInGrid) &&
-             [sectionIdentifier
-                 isEqualToString:kGridTabGroupsSectionIdentifier]) {
-    gridHeader.title = l10n_util::GetNSString(
-        IDS_IOS_TABS_SEARCH_TAB_GROUPS_SECTION_HEADER_TITLE);
-    // TODO(crbug.com/1501837): Add the right number of found tabs.
-    gridHeader.value = l10n_util::GetNSStringF(
-        IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT, base::SysNSStringToUTF16(@"0"));
   } else if ([sectionIdentifier
                  isEqualToString:kSuggestedActionsSectionIdentifier]) {
     gridHeader.title =
@@ -577,68 +594,19 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-// Returns a configured cell for the given index path and item identifier.
-- (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
-                                 itemIdentifier:
-                                     (GridItemIdentifier*)itemIdentifier {
-  switch (itemIdentifier.type) {
-    case GridItemType::Tab: {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-        UICollectionViewCellRegistration* registration =
-            self.groupGridCellRegistration;
-        return [self.collectionView
-            dequeueConfiguredReusableCellWithRegistration:registration
-                                             forIndexPath:indexPath
-                                                     item:itemIdentifier
-                                                              .tabSwitcherItem];
-      }
-      UICollectionViewCellRegistration* registration =
-          self.gridCellRegistration;
-      return [self.collectionView
-          dequeueConfiguredReusableCellWithRegistration:registration
-                                           forIndexPath:indexPath
-                                                   item:itemIdentifier
-                                                            .tabSwitcherItem];
-    }
-    case GridItemType::SuggestedActions:
-      UICollectionViewCellRegistration* registration =
-          self.suggestedActionsCellRegistration;
-      return [self.collectionView
-          dequeueConfiguredReusableCellWithRegistration:registration
-                                           forIndexPath:indexPath
-                                                   item:itemIdentifier];
-  }
-}
-
 #pragma mark - UICollectionViewDelegate
 
-// This method is used instead of -didSelectItemAtIndexPath, because any
-// selection events will be signaled through the model layer and handled in
+// Selection events will be signaled through the model layer and handled in
 // the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16, *)) {
-    // This is handled by
-    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16. The
-    // method comment should be updated once iOS 15 is dropped.
-    return YES;
-  } else {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-  // Tapping on a non-selected cell should not select it immediately. The
-  // delegate will trigger a transition to show the item.
   return NO;
 }
 
+// Selection events will be signaled through the model layer and handled in
+// the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldDeselectItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16, *)) {
-    // This is handled by
-    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16.
-  } else {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-  // Tapping on the current selected cell should not deselect it.
   return NO;
 }
 
@@ -651,19 +619,24 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
   // Context menu shouldn't appear in the selection mode.
-  if (_mode == TabGridModeSelection) {
+  if (_mode == TabGridMode::kSelection) {
     return nil;
   }
 
-  // No context menu on suggested actions section.
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  // No context menu on suggested actions or inactive tabs section.
+  if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
     return nil;
   }
+
+  [self.delegate gridViewControllerDidRequestContextMenu:self];
 
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
+
+  // GroupGridCell case.
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
     return [self.menuProvider
         contextMenuConfigurationForTabGroupCell:ObjCCastStrict<GroupGridCell>(
@@ -672,16 +645,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                        kMenuScenarioHistogramTabGroupGridEntry];
   }
 
+  // GridCell case.
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
-  MenuScenarioHistogram scenario;
-  if (_mode == TabGridModeSearch) {
-    scenario = kMenuScenarioHistogramTabGridSearchResult;
-  } else if (_mode == TabGridModeInactive) {
-    scenario = kMenuScenarioHistogramInactiveTabsEntry;
-  } else {
-    scenario = kMenuScenarioHistogramTabGridEntry;
-  }
+  MenuScenarioHistogram scenario = [self scenarioForContextMenu];
 
   return [self.menuProvider contextMenuConfigurationForTabCell:cell
                                                   menuScenario:scenario];
@@ -696,68 +663,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // safe because the animation state of GridCells is set in
     // `configureCell:withItem:atIndex:` whenever a cell is used.
     [ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
-  }
-}
-
-// TODO(crbug.com/1504112): Remove the entire code section when the
-// compositional layout is fully landed.
-#pragma mark - UICollectionViewDelegateFlowLayout
-
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                    layout:(UICollectionViewLayout*)collectionViewLayout
-    sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1504112): Remove the entire method when the compositional
-  // layout is fully landed.
-  CHECK(!IsTabGridCompositionalLayoutEnabled());
-  if (self.isClosingAllOrUndoRunning) {
-    return CGSizeZero;
-  }
-  // `collectionViewLayout` should always be a flow layout.
-  UICollectionViewFlowLayout* layout =
-      ObjCCastStrict<UICollectionViewFlowLayout>(collectionViewLayout);
-  CGSize itemSize = layout.itemSize;
-  // The SuggestedActions cell can't use the item size that is set in
-  // `prepareLayout` of the layout class. For that specific cell calculate the
-  // anticipated size from the layout section insets and the content view insets
-  // and return it.
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
-    UIEdgeInsets sectionInset = layout.sectionInset;
-    UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
-    CGFloat width = layout.collectionView.frame.size.width - sectionInset.left -
-                    sectionInset.right - contentInset.left - contentInset.right;
-    CGFloat height = self.suggestedActionsViewController.contentHeight;
-    return CGSizeMake(width, height);
-  }
-  return itemSize;
-}
-
-- (CGSize)collectionView:(UICollectionView*)collectionView
-                             layout:
-                                 (UICollectionViewLayout*)collectionViewLayout
-    referenceSizeForHeaderInSection:(NSInteger)section {
-  // TODO(crbug.com/1504112): Remove the entire method when the compositional
-  // layout is fully landed.
-  CHECK(!IsTabGridCompositionalLayoutEnabled());
-  switch (_mode) {
-    case TabGridModeNormal:
-    case TabGridModeSelection:
-    case TabGridModeGroup:
-      return CGSizeZero;
-    case TabGridModeSearch: {
-      if (_searchText.length == 0) {
-        return CGSizeZero;
-      }
-
-      CGFloat height = UIContentSizeCategoryIsAccessibilityCategory(
-                           self.traitCollection.preferredContentSizeCategory)
-                           ? kGridHeaderAccessibilityHeight
-                           : kGridHeaderHeight;
-      return CGSizeMake(collectionView.bounds.size.width, height);
-    }
-    case TabGridModeInactive:
-      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
   }
 }
 
@@ -781,28 +686,67 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForItem:_draggedItem];
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
-  base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
-                                DragDropTabs::kDragBegin);
 
-  [self.delegate gridViewControllerDragSessionWillBegin:self];
+  if (!_draggedItemIdentifier) {
+    CHECK_EQ(_mode, TabGridMode::kSelection);
+    base::UmaHistogramEnumeration(kUmaGridViewDragDropMultiSelectEvent,
+                                  DragDropItem::kDragBegin);
+    [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
+    return;
+  }
+  switch (_draggedItemIdentifier.type) {
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED();
+    case GridItemType::kTab: {
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
+                                    DragDropItem::kDragBegin);
+      [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
+      break;
+    }
+    case GridItemType::kGroup: {
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
+                                    DragDropItem::kDragBegin);
+      [self.delegate gridViewControllerDragSessionWillBeginForTabGroup:self];
+      break;
+    }
+    case GridItemType::kSuggestedActions:
+      NOTREACHED();
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
   self.localDragActionInProgress = NO;
 
-  DragDropTabs dragEvent = self.dragEndAtNewIndex
-                               ? DragDropTabs::kDragEndAtNewIndex
-                               : DragDropTabs::kDragEndAtSameIndex;
+  DragDropItem dragEvent = self.dragEndAtNewIndex
+                               ? DragDropItem::kDragEndAtNewIndex
+                               : DragDropItem::kDragEndAtSameIndex;
   // If a drop animation is in progress and the drag didn't end at a new index,
   // that means the item has been dropped outside of its collection view.
   if (_dropAnimationInProgress && !_dragEndAtNewIndex) {
-    dragEvent = DragDropTabs::kDragEndInOtherCollection;
+    dragEvent = DragDropItem::kDragEndInOtherCollection;
   }
-  base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs, dragEvent);
+
+  if (_draggedItemIdentifier) {
+    switch (_draggedItemIdentifier.type) {
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED();
+      case GridItemType::kTab:
+        base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
+        break;
+      case GridItemType::kGroup:
+        base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
+                                      dragEvent);
+        break;
+      case GridItemType::kSuggestedActions:
+        NOTREACHED();
+    }
+  } else {
+    base::UmaHistogramEnumeration(kUmaGridViewDragDropMultiSelectEvent,
+                                  dragEvent);
+  }
 
   // Used to let the Taptic Engine return to its idle state.
   // To preserve power, the Taptic Engine remains in a prepared state for only a
@@ -822,23 +766,38 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // Don't support dragging items if the drag&drop handler is not set.
     return @[];
   }
-  if (_mode == TabGridModeSearch) {
-    // TODO(crbug.com/1300369): Enable dragging items from search results.
+  if (_mode == TabGridMode::kSearch) {
+    // TODO(crbug.com/40824160): Enable dragging items from search results.
     return @[];
   }
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
-    // Return an empty array because ther suggested actions cell should not be
-    // dragged.
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+    // Return an empty array because the suggested actions cell or the inactive
+    // tabs button should not be dragged.
     return @[];
   }
-  GridItemIdentifier* itemIdentifier =
+  GridItemIdentifier* draggedItem =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
-  CHECK(itemIdentifier.type == GridItemType::Tab);
-  if (_mode != TabGridModeSelection) {
-    _draggedItem = itemIdentifier.tabSwitcherItem;
-    UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
+  if (_mode != TabGridMode::kSelection) {
+    UIDragItem* dragItem;
+    _draggedItemIdentifier = draggedItem;
+    switch (_draggedItemIdentifier.type) {
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED();
+      case GridItemType::kTab:
+        dragItem = [self.dragDropHandler
+            dragItemForItem:_draggedItemIdentifier.tabSwitcherItem];
+        break;
+
+      case GridItemType::kGroup:
+        dragItem = [self.dragDropHandler
+            dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
+        break;
+      case GridItemType::kSuggestedActions:
+        NOTREACHED();
+    }
     if (!dragItem) {
       return @[];
     }
@@ -847,8 +806,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
-  web::WebStateID pressedItemID = itemIdentifier.tabSwitcherItem.identifier;
-  [self.mutator addToSelectionItemID:pressedItemID];
+  [self.mutator addToSelectionItemID:draggedItem];
+  [self reconfigureItem:draggedItem];
   return [self.dragDropHandler allSelectedDragItems];
 }
 
@@ -856,7 +815,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
             itemsForAddingToDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath
                                   point:(CGPoint)point {
-  // TODO(crbug.com/1087848): Allow multi-select.
+  // TODO(crbug.com/40695113): Allow multi-select.
   // Prevent more items from getting added to the drag session.
   return @[];
 }
@@ -874,8 +833,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
   if ([collectionViewCell isKindOfClass:[GroupGridCell class]]) {
-    // TODO(crbug.com/1513165): Remove once the annimations for group cells are
-    // available.
     return nil;
   }
   GridCell* gridCell = ObjCCastStrict<GridCell>(collectionViewCell);
@@ -891,17 +848,26 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return NO;
   }
   // Prevent dropping tabs into grid while displaying search results.
-  return (_mode != TabGridModeSearch);
+  return (_mode != TabGridMode::kSearch);
 }
 
 - (UICollectionViewDropProposal*)
               collectionView:(UICollectionView*)collectionView
         dropSessionDidUpdate:(id<UIDropSession>)session
     withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  if ([[self.diffableDataSource
+          sectionIdentifierForIndex:destinationIndexPath.section]
+          isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+    // Disallow dropping in the inactive tab section.
+    return [[UICollectionViewDropProposal alloc]
+        initWithDropOperation:UIDropOperationForbidden
+                       intent:UICollectionViewDropIntentUnspecified];
+  }
   // This is how the explicit forbidden icon or (+) copy icon is shown. Move has
   // no explicit icon.
-  UIDropOperation dropOperation =
-      [self.dragDropHandler dropOperationForDropSession:session];
+  UIDropOperation dropOperation = [self.dragDropHandler
+      dropOperationForDropSession:session
+                          toIndex:destinationIndexPath.item];
   return [[UICollectionViewDropProposal alloc]
       initWithDropOperation:dropOperation
                      intent:
@@ -926,7 +892,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     self.dragEndAtNewIndex = YES;
 
-    NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
+    NSIndexPath* dropIndexPath = [self indexPathForTabIndex:destinationIndex];
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
       _dropAnimationInProgress = YES;
@@ -965,13 +931,33 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                               placeholderContext:context];
     }
   }
+  [self.delegate gridViewControllerDragSessionDidEnd:self];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidEnter:(id<UIDropSession>)session {
   if (IsPinnedTabsEnabled()) {
+    if (_draggedItemIdentifier &&
+        _draggedItemIdentifier.type == GridItemType::kGroup) {
+      // Don't notify the delegate if the dragged item is a local tab group.
+      return;
+    }
     // Notify the delegate that a drag cames from another app.
-    [self.delegate gridViewControllerDragSessionWillBegin:self];
+    [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
+  }
+  if (!_localDragActionInProgress) {
+    // Disable buttons toolbar if no items are dragged in the current collection
+    // view.
+    [self.delegate gridViewControllerDropSessionDidEnter:self];
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidExit:(id<UIDropSession>)session {
+  if (!_localDragActionInProgress) {
+    // Enable back toolbar buttons if no items are dragged in the current
+    // collection view.
+    [self.delegate gridViewControllerDropSessionDidExit:self];
   }
 }
 
@@ -990,7 +976,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
-  [self.delegate gridViewControllerWillBeginDragging:self];
   base::RecordAction(base::UserMetricsAction("MobileTabGridUserScrolled"));
   _scopedScrollingTimeLogger = ScopedScrollingTimeLogger();
 }
@@ -1017,22 +1002,22 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
-  [self.delegate gridViewController:self
-                 didCloseItemWithID:cell.itemIdentifier];
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseControlTappedDuringSearch"));
   }
+  [self.mutator closeItemWithIdentifier:cell.itemIdentifier];
 }
 
 #pragma mark - GroupGridCellDelegate
 
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
-  [self.delegate gridViewController:self
-                 didCloseItemWithID:cell.itemIdentifier];
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseTabGroupControlTapped"));
+  [self.mutator closeItemWithIdentifier:cell.itemIdentifier];
 }
 
 #pragma mark - SuggestedActionsViewControllerDelegate
@@ -1049,52 +1034,45 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchHistory"));
-  [self.suggestedActionsDelegate searchHistoryForText:self.searchText];
+  [self.tabGridHandler showHistoryForText:self.searchText];
 }
 
 - (void)didSelectSearchRecentTabsInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.RecentTabs"));
-  [self.suggestedActionsDelegate searchRecentTabsForText:self.searchText];
+  [self.tabGridHandler showRecentTabsForText:self.searchText];
 }
 
 - (void)didSelectSearchWebInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
-  [self.suggestedActionsDelegate searchWebForText:self.searchText];
+  [self.tabGridHandler showWebSearchForText:self.searchText];
 }
 
 #pragma mark - TabCollectionConsumer
 
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
-       selectedItemID:(web::WebStateID)selectedItemID {
-  CHECK(!HasDuplicateIdentifiers(items));
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  CHECK(!HasDuplicateGroupsAndTabsIdentifiers(items));
   // Call self.view to ensure that the collection view is created.
   [self view];
   CHECK(self.diffableDataSource);
 
-  self.selectedItemID = selectedItemID;
+  self.selectedItemIdentifier = selectedItemIdentifier;
 
   GridSnapshot* snapshot = [[GridSnapshot alloc] init];
 
   // Open Tabs section.
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
-  NSMutableArray<GridItemIdentifier*>* itemIdentifiers =
-      [NSMutableArray arrayWithCapacity:items.count];
-  for (TabSwitcherItem* item in items) {
-    [itemIdentifiers addObject:[GridItemIdentifier tabIdentifier:item]];
-  }
-  [snapshot appendItemsWithIdentifiers:itemIdentifiers];
+  [snapshot appendItemsWithIdentifiers:items];
+
+  // Give subclasses the opportunity to contribute to the snapshot.
+  [self addAdditionalItemsToSnapshot:snapshot];
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
-    if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-      [snapshot
-          appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
-    }
-
     [snapshot
         appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
     GridItemIdentifier* itemIdentifier =
@@ -1102,19 +1080,21 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
   }
 
-  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:items];
+  [self.diffableDataSource applySnapshot:snapshot
+                    animatingDifferences:YES
+                              completion:nil];
 
-  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
+  [self updateVisibleCellIdentifiers];
 
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
   } else {
     [self removeEmptyStateAnimated:YES];
   }
-  // Whether the view is visible or not, the delegate must be updated.
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
-  if (_mode == TabGridModeSearch) {
+
+  if (_mode == TabGridMode::kSearch) {
     if (_searchText.length) {
       [self updateSearchResultsHeader];
     }
@@ -1126,10 +1106,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-- (void)insertItem:(TabSwitcherItem*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(web::WebStateID)selectedItemID {
-  if (_mode == TabGridModeSearch) {
+- (void)insertItem:(GridItemIdentifier*)item
+              beforeItemID:(GridItemIdentifier*)nextItemIdentifier
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  if (_mode == TabGridMode::kSearch) {
     // Prevent inserting items while viewing search results.
     return;
   }
@@ -1137,113 +1117,117 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForInsertionOfItem:item
-                                                     atIndex:index
-                                              selectedItemID:selectedItemID
-                                                    snapshot:snapshot];
+        [weakSelf
+            applyModelAndViewUpdatesForInsertionOfItem:item
+                                          beforeItemID:nextItemIdentifier
+                                selectedItemIdentifier:selectedItemIdentifier
+                                              snapshot:snapshot];
       }
       completion:^{
-        [weakSelf modelAndViewUpdatesForInsertionDidCompleteAtIndex:index];
+        [weakSelf
+            modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:item];
       }];
 }
 
-- (void)removeItemWithID:(web::WebStateID)removedItemID
-          selectedItemID:(web::WebStateID)selectedItemID {
-  NSIndexPath* removedItemIndexPath = [self indexPathForID:removedItemID];
+- (void)removeItemWithIdentifier:(GridItemIdentifier*)removedItem
+          selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  NSIndexPath* removedItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:removedItem];
 
   // Do not remove if not showing the item (i.e. showing search results).
   if (!removedItemIndexPath) {
-    [self selectItemWithID:selectedItemID];
+    [self selectItemWithIdentifier:selectedItemIdentifier];
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItemID
-                                                  selectedItemID:selectedItemID
+        [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItem
+                                          selectedItemIdentifier:
+                                              selectedItemIdentifier
                                                         snapshot:snapshot];
       }
       completion:^{
         [weakSelf modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
-                      removedItemID];
+                      removedItem.tabSwitcherItem.identifier];
       }];
 
-  if (_searchText.length) {
+  if (_mode == TabGridMode::kSearch && _searchText.length) {
     [self updateSearchResultsHeader];
   }
 }
 
-- (void)selectItemWithID:(web::WebStateID)selectedItemID {
-  if (self.selectedItemID == selectedItemID) {
+- (void)selectItemWithIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  if ([self.selectedItemIdentifier isEqual:selectedItemIdentifier]) {
     return;
   }
 
-  self.selectedItemID = selectedItemID;
+  self.selectedItemIdentifier = selectedItemIdentifier;
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
-- (void)replaceItemID:(web::WebStateID)existingItemID
-             withItem:(TabSwitcherItem*)newItem {
-  NSIndexPath* existingItemIndexPath = [self indexPathForID:existingItemID];
+- (void)replaceItem:(GridItemIdentifier*)item
+    withReplacementItem:(GridItemIdentifier*)replacementItem {
+  CHECK((item.type != GridItemType::kSuggestedActions) &&
+        (replacementItem.type != GridItemType::kSuggestedActions));
+
+  NSIndexPath* existingItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
 
   if (!existingItemIndexPath) {
     return;
   }
 
-  GridItemIdentifier* newItemIdentifier =
-      [GridItemIdentifier tabIdentifier:newItem];
-  GridItemIdentifier* existingItemIdentifier = [self.diffableDataSource
-      itemIdentifierForIndexPath:existingItemIndexPath];
+  BOOL replacementItemIsEqualToItem = [replacementItem isEqual:item];
 
-  // Consistency check: `newItem`'s ID is either `existingItemID` or not in
-  // the collection view.
-  CHECK(
-      newItem.identifier == existingItemID ||
-      ![self.diffableDataSource indexPathForItemIdentifier:newItemIdentifier]);
+  // Consistency check: `replacementItem` is either equal to item or not in the
+  // collection view.
+  CHECK(replacementItemIsEqualToItem ||
+        ![self.diffableDataSource indexPathForItemIdentifier:replacementItem]);
 
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-  if (existingItemID == newItem.identifier) {
-    [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
+  if (replacementItemIsEqualToItem) {
+    [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
   } else {
     // Add the new item before the existing item.
-    [snapshot insertItemsWithIdentifiers:@[ newItemIdentifier ]
-                beforeItemWithIdentifier:existingItemIdentifier];
-    [snapshot deleteItemsWithIdentifiers:@[ existingItemIdentifier ]];
+    [snapshot insertItemsWithIdentifiers:@[ replacementItem ]
+                beforeItemWithIdentifier:item];
+    [snapshot deleteItemsWithIdentifiers:@[ item ]];
   }
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
-- (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
-  if (_mode == TabGridModeSearch) {
+- (void)moveItem:(GridItemIdentifier*)item
+      beforeItem:(GridItemIdentifier*)nextItemIdentifier {
+  if (_mode == TabGridMode::kSearch) {
     // Prevent moving items while viewing search results.
     return;
   }
 
-  NSInteger section = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-
-  NSIndexPath* fromIndexPath = [self indexPathForID:itemID];
-  NSIndexPath* toIndexPath = [NSIndexPath indexPathForItem:toIndex
-                                                 inSection:section];
-  // If this move would be a no-op, early return and avoid spurious UI updates.
-  if (toIndex == NSNotFound || [fromIndexPath isEqual:toIndexPath] ||
-      !fromIndexPath) {
+  if (!item) {
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForMoveOfItemWithID:itemID
-                                                    fromIndex:fromIndexPath
-                                                      toIndex:toIndexPath
-                                                     snapshot:snapshot];
+        [weakSelf applyModelAndViewUpdatesForMoveOfItem:item
+                                             beforeItem:nextItemIdentifier
+                                               snapshot:snapshot];
       }
       completion:^{
-        [weakSelf modelAndViewUpdatesForMoveDidCompleteForItemWithID:itemID
-                                                             toIndex:toIndex];
+        [weakSelf modelAndViewUpdatesForMoveDidComplete];
       }];
+}
+
+- (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated {
+  NSIndexPath* indexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
+  [self.collectionView
+      scrollToItemAtIndexPath:indexPath
+             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                     animated:animated];
 }
 
 - (void)dismissModals {
@@ -1274,18 +1258,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
-#pragma mark - Actions
-
-// Called when the Inactive Tabs button is tapped.
-- (void)didTapInactiveTabsButton {
-  [self.delegate didTapInactiveTabsButtonInGridViewController:self];
-}
-
-// Called when the Inactive Tabs settings link is tapped.
-- (void)didTapInactiveTabsSettingsLink {
-  [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
-}
-
 #pragma mark - Suggested Actions Section
 
 - (void)updateSuggestedActionsSection {
@@ -1297,12 +1269,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // actions section is not yet added, add it. Otherwise remove the section if
   // it exists and the search mode is not active.
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-  if (self.mode == TabGridModeSearch && self.searchText.length) {
+  if (self.mode == TabGridMode::kSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-        [snapshot
-            appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
-      }
       [snapshot appendSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
@@ -1314,10 +1282,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
   } else {
     if (self.showingSuggestedActions) {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-        [snapshot
-            deleteSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
-      }
       [snapshot deleteSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
@@ -1347,9 +1311,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                 }
                               }];
 
-  [self.delegate gridViewController:self
-                 didChangeItemCount:[self numberOfTabs]];
-
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
   } else {
@@ -1359,13 +1320,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateVisibleCellIdentifiers];
 }
 
-// Makes the required changes to the data source when a new item is inserted.
-- (void)applyModelAndViewUpdatesForInsertionOfItem:(TabSwitcherItem*)item
-                                           atIndex:(NSUInteger)index
-                                    selectedItemID:
-                                        (web::WebStateID)selectedItemID
+// Makes the required changes to the data source when a new item is inserted
+// before the given `nextItemIdentifier`. If `nextItemIdentifier` is nil,
+// `item` is append at the end of the section.
+- (void)applyModelAndViewUpdatesForInsertionOfItem:(GridItemIdentifier*)item
+                                      beforeItemID:(GridItemIdentifier*)
+                                                       nextItemIdentifier
+                            selectedItemIdentifier:
+                                (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
-  // TODO(crbug.com/1473625): There are crash reports that show there could be
+  CHECK(item.type == GridItemType::kTab || item.type == GridItemType::kGroup);
+  // TODO(crbug.com/40069795): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
   // don't perform the update.
   NSInteger section =
@@ -1376,71 +1341,42 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return;
   }
 
-  GridItemIdentifier* itemIdentifier = [GridItemIdentifier tabIdentifier:item];
-
   // Consistency check: `item`'s ID is not in the collection view.
-  CHECK(![self.diffableDataSource indexPathForItemIdentifier:itemIdentifier]);
+  CHECK(![self.diffableDataSource indexPathForItemIdentifier:item]);
 
-  // Store the identifier of the current item at the given index, if any, prior
-  // to model updates.
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:index
-                                               inSection:section];
-  GridItemIdentifier* previousItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+  self.selectedItemIdentifier = selectedItemIdentifier;
+  if (item.type == GridItemType::kTab) {
+    self.lastInsertedItemID = item.tabSwitcherItem.identifier;
+  } else if (item.type == GridItemType::kGroup) {
+    self.lastInsertedItemID = web::WebStateID();
+  }
 
-  self.selectedItemID = selectedItemID;
-  self.lastInsertedItemID = item.identifier;
-
-  // The snapshot API doesn't provide a way to insert at a given index (that's
-  // its purpose actually), only before/after an existing item, or by
-  // appending to an existing section.
-  // If the new item is taking the spot of an existing item, insert the new
-  // one before it. Otherwise (if the section is empty, or the new index is
-  // the new last position), append at the end of the section.
-  if (previousItemIdentifier) {
-    [snapshot insertItemsWithIdentifiers:@[ itemIdentifier ]
-                beforeItemWithIdentifier:previousItemIdentifier];
+  if (nextItemIdentifier) {
+    [snapshot insertItemsWithIdentifiers:@[ item ]
+                beforeItemWithIdentifier:nextItemIdentifier];
   } else {
-    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
+    [snapshot appendItemsWithIdentifiers:@[ item ]
                intoSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
   }
 }
 
 // Makes the required changes when a new item has been inserted.
-- (void)modelAndViewUpdatesForInsertionDidCompleteAtIndex:(NSUInteger)index {
-  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
-
-  NSInteger numberOfTabs = [self numberOfTabs];
-  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
-
-  // Check `index` boundaries in order to filter out possible race conditions
-  // while mutating the collection.
-  if (index == NSNotFound ||
-      static_cast<NSInteger>(index) >= [self numberOfTabs]) {
-    return;
-  }
-
-  [self.collectionView
-      scrollToItemAtIndexPath:CreateIndexPath(index)
-             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                     animated:YES];
+- (void)modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:
+    (GridItemIdentifier*)item {
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
 // Makes the required changes to the data source when an existing item is
 // removed.
 - (void)applyModelAndViewUpdatesForRemovalOfItemWithID:
-            (web::WebStateID)removedItemID
-                                        selectedItemID:
-                                            (web::WebStateID)selectedItemID
+            (GridItemIdentifier*)removedItemIdentifier
+                                selectedItemIdentifier:
+                                    (GridItemIdentifier*)selectedItemIdentifier
                                               snapshot:(GridSnapshot*)snapshot {
-  // The items are using the underlying web::WebStateID to do the equality, so
-  // it is possible to create a new one here to remove the existing one.
-  GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
-      tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:removedItemID]];
-  self.selectedItemID = selectedItemID;
-  [self.mutator removeFromSelectionItemID:removedItemID];
+  self.selectedItemIdentifier = selectedItemIdentifier;
+  [self.mutator removeFromSelectionItemID:removedItemIdentifier];
 
-  [snapshot deleteItemsWithIdentifiers:@[ lookupItemIdentifier ]];
+  [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
 }
 
 // Makes the required changes when a new item has been removed.
@@ -1450,44 +1386,53 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (numberOfTabs > 0) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   }
-  [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
-  [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
+  [self.delegate gridViewController:self didRemoveItemWithID:removedItemID];
 }
 
 // Makes the required changes to the data source when an existing item is moved.
-- (void)applyModelAndViewUpdatesForMoveOfItemWithID:(web::WebStateID)itemID
-                                          fromIndex:(NSIndexPath*)fromIndex
-                                            toIndex:(NSIndexPath*)toIndex
-                                           snapshot:(GridSnapshot*)snapshot {
-  GridItemIdentifier* fromItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:fromIndex];
-  GridItemIdentifier* toItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:toIndex];
-  if (fromIndex.item < toIndex.item) {
-    [snapshot moveItemWithIdentifier:fromItemIdentifier
-             afterItemWithIdentifier:toItemIdentifier];
+- (void)applyModelAndViewUpdatesForMoveOfItem:(GridItemIdentifier*)item
+                                   beforeItem:
+                                       (GridItemIdentifier*)nextItemIdentifier
+                                     snapshot:(GridSnapshot*)snapshot {
+  if (nextItemIdentifier) {
+    [snapshot moveItemWithIdentifier:item
+            beforeItemWithIdentifier:nextItemIdentifier];
   } else {
-    [snapshot moveItemWithIdentifier:fromItemIdentifier
-            beforeItemWithIdentifier:toItemIdentifier];
+    NSInteger section = [self.diffableDataSource
+        indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+    NSIndexPath* lastIndexPath =
+        [NSIndexPath indexPathForItem:[self numberOfTabs] - 1
+                            inSection:section];
+    GridItemIdentifier* lastItem =
+        [self.diffableDataSource itemIdentifierForIndexPath:lastIndexPath];
+    if (lastItem == item) {
+      return;
+    }
+
+    // If the moved item was pinned, it does not belong to the collection view
+    // yet.
+    if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+      [snapshot insertItemsWithIdentifiers:@[ item ]
+                   afterItemWithIdentifier:lastItem];
+    } else {
+      [snapshot moveItemWithIdentifier:item afterItemWithIdentifier:lastItem];
+    }
   }
 }
 
-// Makes the required changes when a new item has been moved.
-- (void)modelAndViewUpdatesForMoveDidCompleteForItemWithID:
-            (web::WebStateID)itemID
-                                                   toIndex:(NSUInteger)toIndex {
-  [self.delegate gridViewController:self
-                  didMoveItemWithID:itemID
-                            toIndex:toIndex];
+// Makes the required changes when an item has been moved.
+- (void)modelAndViewUpdatesForMoveDidComplete {
+  [self.delegate gridViewControllerDidMoveItem:self];
 }
 
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
-  if (!self.selectedItemID.valid()) {
+  if (!self.selectedItemIdentifier) {
     return NSNotFound;
   }
-  NSIndexPath* selectedIndexPath = [self indexPathForID:self.selectedItemID];
+  NSIndexPath* selectedIndexPath = [self.diffableDataSource
+      indexPathForItemIdentifier:self.selectedItemIdentifier];
   if (selectedIndexPath) {
     return selectedIndexPath.item;
   }
@@ -1496,25 +1441,30 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - Protected
 
+- (TabGridMode)mode {
+  return _mode;
+}
+
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
-
-  auto configureGroupGridCell =
-      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
-        [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
-      };
-  self.groupGridCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[GroupGridCell class]
-           configurationHandler:configureGroupGridCell];
 
   // Register GridCell.
   auto configureGridCell =
       ^(GridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
         [weakSelf configureCell:cell withItem:item atIndex:indexPath.item];
       };
-  self.gridCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[GridCell class]
+  _gridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:GridCell.class
            configurationHandler:configureGridCell];
+
+  // Register GroupGridCell.
+  auto configureGroupGridCell =
+      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabGroupItem* item) {
+        [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
+      };
+  _groupGridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:GroupGridCell.class
+           configurationHandler:configureGroupGridCell];
 
   // Register SuggestedActionsGridCell.
   auto configureSuggestedActionsCell =
@@ -1524,8 +1474,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         suggestedActionsCell.suggestedActionsView =
             weakSelf.suggestedActionsViewController.view;
       };
-  self.suggestedActionsCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[SuggestedActionsGridCell class]
+  _suggestedActionsCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:SuggestedActionsGridCell.class
            configurationHandler:configureSuggestedActionsCell];
 
   // Register GridHeader.
@@ -1536,7 +1486,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         [weakSelf configureGridHeader:gridHeader
                  forSectionIdentifier:sectionIdentifier];
       };
-  self.gridHeaderRegistration = [UICollectionViewSupplementaryRegistration
+  _gridHeaderRegistration = [UICollectionViewSupplementaryRegistration
       registrationWithSupplementaryClass:[GridHeader class]
                              elementKind:UICollectionElementKindSectionHeader
                     configurationHandler:configureGridHeader];
@@ -1546,20 +1496,55 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     (NSIndexPath*)indexPath {
   UICollectionViewSupplementaryRegistration* registration;
   switch (_mode) {
-    case TabGridModeNormal:
-    case TabGridModeInactive:
-      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
-    case TabGridModeSelection:
-    case TabGridModeGroup:
-      NOTREACHED();
-      break;
-    case TabGridModeSearch:
-      registration = self.gridHeaderRegistration;
+    case TabGridMode::kNormal:
+      if (IsInactiveTabButtonRefactoringEnabled()) {
+        return nil;
+      } else {
+        NOTREACHED() << "Should be implemented in a subclass.";
+      }
+    case TabGridMode::kSelection:
+      NOTREACHED() << "Should not happen.";
+    case TabGridMode::kSearch:
+      registration = _gridHeaderRegistration;
       break;
   }
   return [self.collectionView
       dequeueConfiguredReusableSupplementaryViewWithRegistration:registration
                                                     forIndexPath:indexPath];
+}
+
+- (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
+                                 itemIdentifier:
+                                     (GridItemIdentifier*)itemIdentifier {
+  switch (itemIdentifier.type) {
+    case GridItemType::kInactiveTabsButton:
+      // Must be handled in the subclasses.
+      NOTREACHED();
+    case GridItemType::kTab: {
+      UICollectionViewCellRegistration* registration = _gridCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier
+                                                            .tabSwitcherItem];
+    }
+    case GridItemType::kGroup: {
+      UICollectionViewCellRegistration* registration =
+          _groupGridCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier
+                                                            .tabGroupItem];
+    }
+    case GridItemType::kSuggestedActions:
+      UICollectionViewCellRegistration* registration =
+          _suggestedActionsCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier];
+  }
 }
 
 - (void)updateSelectedCollectionViewItemRingAndBringIntoView:
@@ -1580,7 +1565,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       selectedIndex >= [self numberOfTabs]) {
     return;
   }
-  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
   UICollectionViewScrollPosition scrollPosition =
       shouldBringItemIntoView ? UICollectionViewScrollPositionTop
                               : UICollectionViewScrollPositionNone;
@@ -1590,29 +1575,39 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)updateTabsSectionHeaderType {
-  if (IsTabGridCompositionalLayoutEnabled()) {
-    ObjCCastStrict<GridLayout>(self.gridLayout).tabsSectionHeaderType =
-        [self tabsSectionHeaderTypeForMode:_mode];
-  }
+  self.gridLayout.tabsSectionHeaderType =
+      [self tabsSectionHeaderTypeForMode:_mode];
+  [self.gridLayout invalidateLayout];
 }
 
 - (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
-  CHECK(IsTabGridCompositionalLayoutEnabled());
   switch (mode) {
-    case TabGridModeNormal:
-    case TabGridModeSelection:
-    case TabGridModeGroup:
+    case TabGridMode::kNormal:
+    case TabGridMode::kSelection:
       return TabsSectionHeaderType::kNone;
-    case TabGridModeSearch:
+    case TabGridMode::kSearch:
       if (_searchText.length == 0) {
         return TabsSectionHeaderType::kNone;
       }
       return TabsSectionHeaderType::kSearch;
-    case TabGridModeInactive:
-      if (!IsInactiveTabsEnabled()) {
-        return TabsSectionHeaderType::kNone;
-      }
-      return TabsSectionHeaderType::kInactiveTabs;
+  }
+}
+
+- (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
+  // Base class implementation is doing nothing.
+}
+
+- (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot {
+  // Base class implementation is doing nothing.
+}
+
+- (MenuScenarioHistogram)scenarioForContextMenu {
+  switch (_mode) {
+    case TabGridMode::kSearch:
+      return kMenuScenarioHistogramTabGridSearchResult;
+    case TabGridMode::kNormal:
+    case TabGridMode::kSelection:
+      return kMenuScenarioHistogramTabGridEntry;
   }
 }
 
@@ -1628,16 +1623,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Returns YES if drag and drop is enabled.
-// TODO(crbug.com/1300369): Enable dragging items from search results.
+// TODO(crbug.com/40824160): Enable dragging items from search results.
 - (BOOL)shouldEnableDrapAndDropInteraction {
   // Don't enable drag and drop when voice over is enabled.
   return !UIAccessibilityIsVoiceOverRunning()
          // Dragging multiple tabs to reorder them is not supported. So there is
          // no need to enable dragging when multiple items are selected in
          // devices that don't support multiple windows.
-         && ((self.mode == TabGridModeSelection &&
+         && ((self.mode == TabGridMode::kSelection &&
               base::ios::IsMultipleScenesSupported()) ||
-             self.mode == TabGridModeNormal);
+             self.mode == TabGridMode::kNormal);
 }
 
 // Configures `groupCell`'s identifier and title synchronously, and pass the
@@ -1645,19 +1640,21 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // the `cell`'s theme to this view controller's theme. This view controller
 // becomes the delegate for the cell.
 - (void)configureGroupCell:(GroupGridCell*)cell
-                  withItem:(TabSwitcherItem*)item
+                  withItem:(TabGroupItem*)item
                    atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
+  GridItemIdentifier* groupItemIdentifier =
+      [[GridItemIdentifier alloc] initWithGroupItem:item];
   cell.delegate = self;
   cell.theme = self.theme;
-  cell.itemIdentifier = item.identifier;
-  // TODO(crbug.com/1501837): Add the right title when the model is available.
-  cell.title = @"Temporary Title";
-  cell.titleHidden = item.hidesTitle;
+  cell.itemIdentifier = groupItemIdentifier;
+  cell.groupColor = item.groupColor;
+  cell.tabsCount = item.numberOfTabsInGroup;
+  cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
-  if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider isItemSelected:item.identifier]) {
+  if (self.mode == TabGridMode::kSelection) {
+    if ([self.gridProvider isItemSelected:groupItemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1665,32 +1662,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     cell.state = GridCellStateNotEditing;
   }
-  [item fetchFavicon:^(TabSwitcherItem* itemForFavicon, UIImage* favicon) {
-    [item fetchSnapshot:^(TabSwitcherItem* itemForSnapshot, UIImage* snapshot) {
-      // Only update the icon if the cell is not already reused for another
-      // item.
-      if (cell.itemIdentifier == itemForFavicon.identifier and
-          cell.itemIdentifier == itemForSnapshot.identifier) {
-        // TODO(crbug.com/1501837): Remove once the group color is available
-        // throught the group model. Keep for now for testing purposes.
-        cell.groupColorName = kYellow500Color;
-        GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
-        snapshotFavicon.snapshot = snapshot;
-        snapshotFavicon.favicon = favicon;
-        // The `snapshotFavicon` is for demo purposes only, it will be replaced
-        // when the group tab model is available, the objects in `groupTabInfos`
-        // can be updated manually to view the different group tab
-        // configurations.
-        NSArray<GroupTabInfo*>* groupTabInfos = @[
-          snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-          snapshotFavicon, snapshotFavicon
-        ];
-        [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
-      }
-    }];
-  }];
 
-  cell.opacity = 1.0f;
+  [item fetchGroupTabInfos:^(TabGroupItem* innerItem,
+                             NSArray<GroupTabInfo*>* groupTabInfos) {
+    if ([cell.itemIdentifier.tabGroupItem isEqual:innerItem]) {
+      [cell configureWithGroupTabInfos:groupTabInfos
+                        totalTabsCount:innerItem.numberOfTabsInGroup];
+    }
+  }];
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and
@@ -1702,14 +1681,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
               atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
+  GridItemIdentifier* itemIdentifier =
+      [[GridItemIdentifier alloc] initWithTabItem:item];
   cell.delegate = self;
   cell.theme = self.theme;
-  cell.itemIdentifier = item.identifier;
+  cell.itemIdentifier = itemIdentifier;
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
-  if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider isItemSelected:item.identifier]) {
+  if (self.mode == TabGridMode::kSelection) {
+    if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1719,14 +1700,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
     // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
+    if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.icon = icon;
     }
   }];
 
   [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
     // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
+    if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
       cell.snapshot = snapshot;
     }
   }];
@@ -1735,7 +1716,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.priceCardDataSource
       priceCardForIdentifier:itemID
                   completion:^(PriceCardItem* priceCardItem) {
-                    if (priceCardItem && cell.itemIdentifier == itemID) {
+                    if (priceCardItem &&
+                        cell.itemIdentifier.tabSwitcherItem.identifier ==
+                            itemID) {
                       [cell setPriceDrop:priceCardItem.price
                            previousPrice:priceCardItem.previousPrice];
                     }
@@ -1752,6 +1735,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // number of reusable grid cells in memory.
     [self.pointerInteractionCells addObject:cell];
   }
+  if (ios::provider::IsRaccoonEnabled()) {
+    [self setHoverEffectToCell:cell];
+  }
 }
 
 // Tells the delegate that the user tapped the item with identifier
@@ -1764,31 +1750,54 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return;
   }
 
-  CHECK_EQ(indexPath.section,
-           [self.diffableDataSource
-               indexForSectionIdentifier:kGridOpenTabsSectionIdentifier]);
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  CHECK(
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kGridOpenTabsSectionIdentifier]);
 
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
-  CHECK_EQ(GridItemType::Tab, itemIdentifier.type);
+  CHECK(itemIdentifier.type == GridItemType::kInactiveTabsButton ||
+        itemIdentifier.type == GridItemType::kGroup ||
+        itemIdentifier.type == GridItemType::kTab);
 
-  web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
-  [self.mutator userTappedOnItemID:itemID];
-  if (_mode == TabGridModeSelection) {
+  [self.mutator userTappedOnItemID:itemIdentifier];
+  if (_mode == TabGridMode::kSelection) {
     // Reconfigure the item.
-    GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-    [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
-    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+    [self reconfigureItem:itemIdentifier];
   }
 
-  [self.delegate gridViewController:self didSelectItemWithID:itemID];
+  switch (itemIdentifier.type) {
+    case GridItemType::kInactiveTabsButton: {
+      CHECK(IsInactiveTabButtonRefactoringEnabled());
+      [self.delegate didTapInactiveTabsButtonInGridViewController:self];
+      break;
+    }
+    case GridItemType::kTab: {
+      web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
+      [self.delegate gridViewController:self didSelectItemWithID:itemID];
+      break;
+    }
+    case GridItemType::kGroup: {
+      base::RecordAction(
+          base::UserMetricsAction("MobileTabGridTabGroupCellTapped"));
+      const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
+      if (group) {
+        [self.delegate gridViewController:self didSelectGroup:group];
+      }
+      break;
+    }
+    case GridItemType::kSuggestedActions:
+      NOTREACHED();
+  }
 }
 
 // Animates the empty state into view.
 - (void)animateEmptyStateIn {
-  // TODO(crbug.com/820410) : Polish the animation, and put constants where they
-  // belong.
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   self.emptyStateAnimator = [[UIViewPropertyAnimator alloc]
       initWithDuration:1.0 - self.emptyStateView.alpha
@@ -1802,8 +1811,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Removes the empty state out of view, with animation if `animated` is YES.
 - (void)removeEmptyStateAnimated:(BOOL)animated {
-  // TODO(crbug.com/820410) : Polish the animation, and put constants where they
-  // belong.
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
   [self.emptyStateAnimator stopAnimation:YES];
   auto removeEmptyState = ^{
     self.emptyStateView.alpha = 0.0;
@@ -1844,13 +1853,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Updates the number of results found on the search open tabs section header.
 - (void)updateSearchResultsHeader {
+  CHECK_EQ(_mode, TabGridMode::kSearch, base::NotFatalUntil::M129);
+  CHECK_GT(_searchText.length, 0ul, base::NotFatalUntil::M129);
   NSInteger tabSectionIndex = [self.diffableDataSource
       indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  GridHeader* headerView = (GridHeader*)[self.collectionView
+  GridHeader* headerView = base::apple::ObjCCast<
+      GridHeader>([self.collectionView
       supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                           atIndexPath:[NSIndexPath
                                           indexPathForRow:0
-                                                inSection:tabSectionIndex]];
+                                                inSection:tabSectionIndex]]);
   if (!headerView) {
     return;
   }
@@ -1869,10 +1881,45 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Returns the IndexPath of the item having the `ID`.
 - (NSIndexPath*)indexPathForID:(web::WebStateID)ID {
-  GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
-      tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:ID]];
+  TabSwitcherItem* tabItem = [[TabSwitcherItem alloc] initWithIdentifier:ID];
+  GridItemIdentifier* lookupItemIdentifier =
+      [[GridItemIdentifier alloc] initWithTabItem:tabItem];
   return
       [self.diffableDataSource indexPathForItemIdentifier:lookupItemIdentifier];
+}
+
+// Returns the indexPath for the tab at `index`.
+- (NSIndexPath*)indexPathForTabIndex:(NSInteger)index {
+  NSInteger sectionIndex = [_diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  return [NSIndexPath indexPathForItem:index inSection:sectionIndex];
+}
+
+// Sets the hover effect to a cell. The shape of the hover effect is exactly the
+// same as the border of a selected tab.
+- (void)setHoverEffectToCell:(UICollectionViewCell*)cell {
+  DCHECK(ios::provider::IsRaccoonEnabled());
+  if (@available(iOS 17.0, *)) {
+    CGFloat margin =
+        kGridCellSelectionRingTintWidth + kGridCellSelectionRingGapWidth;
+    cell.hoverStyle = [UIHoverStyle
+        styleWithShape:[UIShape
+                           fixedRectShapeWithRect:CGRectMake(
+                                                      -margin, -margin,
+                                                      cell.bounds.size.width +
+                                                          margin * 2,
+                                                      cell.bounds.size.height +
+                                                          margin * 2)
+                                     cornerRadius:kGridCellCornerRadius +
+                                                  margin]];
+  }
+}
+
+// Reconfigures `itemIdentifier`.
+- (void)reconfigureItem:(GridItemIdentifier*)itemIdentifier {
+  GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 @end

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Note: any code in this file MUST be async-signal safe.
 
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -468,7 +473,12 @@ intptr_t SIGSYSSocketcallHandler(const struct arch_seccomp_data& args,
   if (args.nr == __NR_socketcall && 0 < call && call <= kLastSocketcall) {
     const size_t real_args_arr_len =
         socketcall_args[call].num_args + socketcall_args[call].num_zeroes;
+// The length of this array is bounded by the entries in the array above,
+// but the compiler isn't smart enough to figure that out.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvla-extension"
     unsigned long real_args_arr[real_args_arr_len];
+#pragma clang diagnostic pop
     memcpy(real_args_arr, reinterpret_cast<unsigned long*>(args.args[1]),
            real_args_arr_len * sizeof(unsigned long));
     memset(real_args_arr + socketcall_args[call].num_args, 0,

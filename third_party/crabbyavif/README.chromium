@@ -1,0 +1,15 @@
+Name: CrabbyAvif - Library for decoding AVIF files.
+Short Name: crabbyavif
+URL: https://github.com/webmproject/CrabbyAvif
+Version: N/A
+Revision: DEPS
+License: Apache 2.0
+License File: LICENSE
+Security Critical: yes
+Shipped: yes
+
+Description:
+This contains the source to the AV1 image format demuxer in Rust, used for
+demuxing and decoding .avif files in Chromium.
+
+Local Modifications: None

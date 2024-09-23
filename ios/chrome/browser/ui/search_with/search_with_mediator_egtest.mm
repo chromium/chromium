@@ -120,7 +120,7 @@ void LongPressElement(const char* element_id) {
 }
 
 // Convenient function to trigger the Edit Menu on `kElementToLongPress`.
-// TODO(crbug.com/1434686): extract this function and have all edit menu
+// TODO(crbug.com/40264849): extract this function and have all edit menu
 // tests use it.
 void TriggerEditMenu() {
   [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface editMenuMatcher]]

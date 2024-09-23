@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 
@@ -57,7 +57,7 @@ std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
 
 void OpenSettingsInBrowser(Browser* browser) {
   if (!browser) {
-    // TODO(crbug.com/1374315): Make sure we do something or log an error if
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
     // opening a browser window was not possible.
     base::debug::DumpWithoutCrashing();
     return;
@@ -88,11 +88,15 @@ ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
     const SigninUIError& error) {
   LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
+
+  // If the controller is null we cannot treat the error.
+  if (!controller_) {
+    return;
+  }
+
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile onboarding is silently skipped if there's any error.
-    if (controller_) {
-      controller_->FinishAndOpenBrowser(PostHostClearedCallback());
-    }
+    controller_->FinishAndOpenBrowser(PostHostClearedCallback());
     return;
   }
 
@@ -101,17 +105,26 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   // profile.
   if (error.type() ==
       SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
-    if (controller_) {
-      controller_->SwitchToProfileSwitch(error.another_profile_path());
-    }
+    controller_->SwitchToProfileSwitch(error.another_profile_path());
+    return;
+  }
+
+  // Abort the flow completely and reset the host in case of ForceSignin if the
+  // user is not allowed to sign in by policy with this account. In
+  // non-ForceSignin, the user can still browse and be signed in but cannot
+  // enable sync.
+  if (signin_util::IsForceSigninEnabled() &&
+      error.type() ==
+          SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
+    controller_->ResetHostAndShowErrorDialog(
+        ForceSigninUIError::SigninPatternNotMatching(
+            base::UTF16ToUTF8(error.email())));
     return;
   }
 
   // Open the browser and when it's done, show the login error.
-  if (controller_) {
-    controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
-        &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
-  }
+  controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
+      &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
@@ -119,7 +132,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
   // A brand new profile cannot have a conflict in sync accounts.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
@@ -201,7 +214,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
 void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
   // A brand new profile cannot have preexisting syncable data and thus
   // switching to another profile does never get offered.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
@@ -214,9 +227,9 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
   // If the user declines enabling sync while browser sign-in is forced, prevent
   // them from going further by cancelling the creation of this profile.
   // It does not apply to managed accounts.
-  // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+  // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
   if (signin_util::IsForceSigninEnabled() &&
-      !chrome::enterprise_util::ProfileCanBeManaged(profile_) &&
+      !enterprise_util::ProfileCanBeManaged(profile_) &&
       result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
     CHECK(base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
     HandleCancelSigninChoice(
@@ -228,10 +241,6 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       GetSyncOutcome(enterprise_account_, sync_disabled_, result);
   if (outcome) {
     LogOutcome(*outcome);
-  } else if (IsLacrosPrimaryProfileFirstRun(profile_) &&
-             result == LoginUIService::UI_CLOSED) {
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
-        ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
   }
 
   FinishSyncConfirmation(result);
@@ -316,10 +325,10 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
       // entries to better match the situation.
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
-      NOTREACHED_NORETURN()
-          << "The profile picker should not show a managed user "
-             "notice that prompts for profile creation";
+      NOTREACHED() << "The profile picker should not show a managed user "
+                      "notice that prompts for profile creation";
   }
 }
 
@@ -337,9 +346,7 @@ void ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed(
 
 void ProfilePickerTurnSyncOnDelegate::LogOutcome(
     ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
-    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(outcome);
-  } else {
+  if (!IsLacrosPrimaryProfileFirstRun(profile_)) {
     ProfileMetrics::LogProfileAddSignInFlowOutcome(outcome);
   }
 }

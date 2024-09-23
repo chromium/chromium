@@ -13,8 +13,7 @@ class LacrosDataBackwardMigrationScreen;
 
 // Interface for dependency injection between LacrosDataBackwardMigrationScreen
 // and its WebUI representation.
-class LacrosDataBackwardMigrationScreenView
-    : public base::SupportsWeakPtr<LacrosDataBackwardMigrationScreenView> {
+class LacrosDataBackwardMigrationScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "lacros-data-backward-migration", "LacrosDataBackwardMigrationScreen"};
@@ -23,15 +22,11 @@ class LacrosDataBackwardMigrationScreenView
 
   virtual void Show() = 0;
 
-  // Updates the progress bar.
-  // progress is a percentage.
-  virtual void SetProgressValue(int progress) = 0;
-
-  // Show an error message.
-  virtual void SetFailureStatus() = 0;
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<LacrosDataBackwardMigrationScreenView> AsWeakPtr() = 0;
 };
 
-class LacrosDataBackwardMigrationScreenHandler
+class LacrosDataBackwardMigrationScreenHandler final
     : public BaseScreenHandler,
       public LacrosDataBackwardMigrationScreenView {
  public:
@@ -50,8 +45,12 @@ class LacrosDataBackwardMigrationScreenHandler
 
   // LacrosDataBackwardMigrationScreenView:
   void Show() override;
-  void SetProgressValue(int progress) override;
-  void SetFailureStatus() override;
+
+  base::WeakPtr<LacrosDataBackwardMigrationScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<LacrosDataBackwardMigrationScreenView> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

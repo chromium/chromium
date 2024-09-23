@@ -58,14 +58,13 @@ public class WebContentsStateBridge {
                 WebContentsStateBridgeJni.get()
                         .deleteNavigationEntries(
                                 webContentsState.buffer(), webContentsState.version(), predicate);
-        if (newBuffer == null) return null;
-        WebContentsState newState = new WebContentsState(newBuffer);
-        newState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        return newState;
+        return newWebContentsStateFromByteBuffer(newBuffer);
     }
 
     /**
      * Creates a WebContentsState for a tab that will be loaded lazily.
+     *
+     * @param title The title to display.
      * @param url URL that is pending.
      * @param referrerUrl URL for the referrer.
      * @param referrerPolicy Policy for the referrer.
@@ -74,6 +73,7 @@ public class WebContentsStateBridge {
      * @return ByteBuffer that represents a state representing a single pending URL.
      */
     public static ByteBuffer createSingleNavigationStateAsByteBuffer(
+            String title,
             String url,
             String referrerUrl,
             int referrerPolicy,
@@ -81,11 +81,47 @@ public class WebContentsStateBridge {
             boolean isIncognito) {
         return WebContentsStateBridgeJni.get()
                 .createSingleNavigationStateAsByteBuffer(
-                        url, referrerUrl, referrerPolicy, initiatorOrigin, isIncognito);
+                        title, url, referrerUrl, referrerPolicy, initiatorOrigin, isIncognito);
+    }
+
+    /**
+     * Creates a WebContentsState for a tab that will be loaded lazily.
+     *
+     * @param webContentState The webContentsState to modify.
+     * @param title The title to display.
+     * @param url URL that is pending.
+     * @param referrerUrl URL for the referrer.
+     * @param referrerPolicy Policy for the referrer.
+     * @param initiatorOrigin Initiator of the navigation.
+     * @param isOffTheRecord Whether or not the state is meant to be off the record (e.g.
+     *     encrypted).
+     * @return ByteBuffer that represents a state with the pending navigation attached.
+     */
+    public static WebContentsState appendPendingNavigation(
+            WebContentsState webContentsState,
+            String title,
+            String url,
+            String referrerUrl,
+            int referrerPolicy,
+            @Nullable Origin initiatorOrigin,
+            boolean isOffTheRecord) {
+        ByteBuffer buffer =
+                WebContentsStateBridgeJni.get()
+                        .appendPendingNavigation(
+                                webContentsState.buffer(),
+                                webContentsState.version(),
+                                title,
+                                url,
+                                referrerUrl,
+                                referrerPolicy,
+                                initiatorOrigin,
+                                isOffTheRecord);
+        return newWebContentsStateFromByteBuffer(buffer);
     }
 
     /**
      * Returns the WebContents' state as a ByteBuffer.
+     *
      * @param webContents WebContents to pickle.
      * @return ByteBuffer containing the state of the WebContents.
      */
@@ -105,6 +141,14 @@ public class WebContentsStateBridge {
                 .getVirtualUrlFromByteBuffer(contentsState.buffer(), contentsState.version());
     }
 
+    private static @Nullable WebContentsState newWebContentsStateFromByteBuffer(
+            @Nullable ByteBuffer buffer) {
+        if (buffer == null) return null;
+        WebContentsState newState = new WebContentsState(buffer);
+        newState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        return newState;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -119,6 +163,17 @@ public class WebContentsStateBridge {
         ByteBuffer deleteNavigationEntries(ByteBuffer state, int saveStateVersion, long predicate);
 
         ByteBuffer createSingleNavigationStateAsByteBuffer(
+                String title,
+                String url,
+                String referrerUrl,
+                int referrerPolicy,
+                Origin initiatorOrigin,
+                boolean isIncognito);
+
+        ByteBuffer appendPendingNavigation(
+                ByteBuffer buffer,
+                int savedStateVersion,
+                String title,
                 String url,
                 String referrerUrl,
                 int referrerPolicy,

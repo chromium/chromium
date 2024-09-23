@@ -104,6 +104,10 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
   // Callback for jobs that failed.
   void OnJobFailed(FetchJob* job);
 
+  // |true| once the destructor starts. Prevents jobs from being started during
+  // shutdown.
+  bool shutting_down_ = false;
+
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const std::unique_ptr<ExternalPolicyDataFetcher>
       external_policy_data_fetcher_;
@@ -121,10 +125,6 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
   // Map that owns all existing jobs, regardless of whether they are currently
   // queued, running or waiting for a retry.
   std::map<std::string, std::unique_ptr<FetchJob>> job_map_;
-
-  // |true| once the destructor starts. Prevents jobs from being started during
-  // shutdown.
-  bool shutting_down_ = false;
 };
 
 }  // namespace policy

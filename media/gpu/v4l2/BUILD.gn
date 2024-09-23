@@ -15,25 +15,11 @@ assert(use_v4l2_codec)
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "decode_surface_handler.h",
     "legacy/v4l2_video_decode_accelerator.cc",
     "legacy/v4l2_video_decode_accelerator.h",
-    "stateless/device.cc",
-    "stateless/device.h",
-    "stateless/queue.cc",
-    "stateless/queue.h",
-    "stateless/stateless_decode_surface.cc",
-    "stateless/stateless_decode_surface.h",
-    "stateless/stateless_decode_surface_handler.h",
-    "stateless/stateless_device.cc",
-    "stateless/stateless_device.h",
-    "stateless/utils.cc",
-    "stateless/utils.h",
-    "stateless/v4l2_stateless_video_decoder.cc",
-    "stateless/v4l2_stateless_video_decoder.h",
-    "stateless/vp8_delegate.cc",
-    "stateless/vp8_delegate.h",
-    "stateless/vp9_delegate.cc",
-    "stateless/vp9_delegate.h",
+    "legacy/v4l2_video_decoder_backend_stateful.cc",
+    "legacy/v4l2_video_decoder_backend_stateful.h",
     "v4l2_decode_surface.cc",
     "v4l2_decode_surface.h",
     "v4l2_decode_surface_handler.h",
@@ -57,8 +43,6 @@ source_set("v4l2") {
     "v4l2_video_decoder.h",
     "v4l2_video_decoder_backend.cc",
     "v4l2_video_decoder_backend.h",
-    "v4l2_video_decoder_backend_stateful.cc",
-    "v4l2_video_decoder_backend_stateful.h",
     "v4l2_video_decoder_backend_stateless.cc",
     "v4l2_video_decoder_backend_stateless.h",
     "v4l2_video_decoder_delegate_h264.cc",
@@ -89,8 +73,6 @@ source_set("v4l2") {
   if (is_chromeos) {
     sources += [
       # AV1 delegate depends on header files only in ChromeOS SDK
-      "stateless/av1_delegate.cc",
-      "stateless/av1_delegate.h",
       "v4l2_video_decoder_delegate_av1.cc",
       "v4l2_video_decoder_delegate_av1.h",
 
@@ -122,7 +104,6 @@ source_set("v4l2") {
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
     "//media/gpu/chromeos:common",
-    "//media/parsers",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//ui/gfx/geometry",
@@ -216,7 +197,6 @@ executable("v4l2_stateless_decoder") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
-    "//media/parsers",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
   ]
@@ -224,13 +204,14 @@ executable("v4l2_stateless_decoder") {
 
 test("v4l2_unittest") {
   testonly = true
-  sources = [ "test/v4l2_unittest.cc" ]
+  sources = [ "v4l2_unittest.cc" ]
 
   deps = [
     ":v4l2",
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//media:test_support",
+    "//media/gpu/chromeos:chromeos",
     "//testing/gtest",
     "//ui/gfx/linux:gbm",
   ]

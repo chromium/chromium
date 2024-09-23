@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_WIN_LOGGING_H_
 
 #include <windows.h>
+
 #include <ostream>
 
 #include "third_party/microsoft_webauthn/webauthn.h"

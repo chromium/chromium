@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] matmul float32 2D and 2D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 3D and 3D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 4D and 4D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 3D and 3D (broadcast) tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 3D and 2D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 4D and 4D (broadcast) tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 4D and 3D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 5D and 5D tensors, broadcast the two leftmost dimensions of inputB
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 5D and 5D tensors, broadcast the leftmost dimensions of inputB
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+[FAIL] matmul float32 5D and 2D tensors
+  Unable to create context for gpu variant. NotSupportedError: Failed to execute 'createContext' on 'ML': WebNN is not compatible with device.
+Harness: the test ran to completion.
+

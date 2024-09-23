@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -18,10 +19,10 @@
 #include "ash/shell.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -102,7 +103,8 @@ constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
     ui::VKEY_LEFT,
     ui::VKEY_RIGHT,
     ui::VKEY_ASSISTANT,
-    ui::VKEY_SETTINGS};
+    ui::VKEY_SETTINGS,
+    ui::VKEY_RIGHT_ALT};
 
 // Returns true if `key_code` is a non-modifier key for which a `KeyComboViewer`
 // can be shown even if there are no modifier keys are currently pressed.
@@ -112,7 +114,9 @@ bool ShouldConsiderKey(ui::KeyboardCode key_code) {
 
 views::Widget::InitParams CreateWidgetParams(
     VideoRecordingWatcher* video_recording_watcher) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.parent =
       video_recording_watcher->GetOnCaptureSurfaceWidgetParentWindow();
   params.child = true;
@@ -143,12 +147,12 @@ CaptureModeDemoToolsController::~CaptureModeDemoToolsController() {
 }
 
 void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_RELEASED) {
+  if (event->type() == ui::EventType::kKeyReleased) {
     OnKeyUpEvent(event);
     return;
   }
 
-  DCHECK_EQ(event->type(), ui::ET_KEY_PRESSED);
+  DCHECK_EQ(event->type(), ui::EventType::kKeyPressed);
   OnKeyDownEvent(event);
 }
 
@@ -201,16 +205,16 @@ void CaptureModeDemoToolsController::OnTouchEvent(
     ui::PointerId pointer_id,
     const gfx::PointF& event_location_in_window) {
   switch (event_type) {
-    case ui::ET_TOUCH_PRESSED: {
+    case ui::EventType::kTouchPressed: {
       OnTouchDown(pointer_id, event_location_in_window);
       return;
     }
-    case ui::ET_TOUCH_RELEASED:
-    case ui::ET_TOUCH_CANCELLED: {
+    case ui::EventType::kTouchReleased:
+    case ui::EventType::kTouchCancelled: {
       OnTouchUp(pointer_id, event_location_in_window);
       return;
     }
-    case ui::ET_TOUCH_MOVED: {
+    case ui::EventType::kTouchMoved: {
       OnTouchDragged(pointer_id, event_location_in_window);
       return;
     }
@@ -225,7 +229,11 @@ void CaptureModeDemoToolsController::OnTextInputStateChanged(
 }
 
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
-  const ui::KeyboardCode key_code = event->key_code();
+  // The RightAlt key is diferentiated via the Right alt proprerty attached to
+  // the event. If we see this property, we must overwrite the keycode for the
+  // purposes of showing the icon visually.
+  const ui::KeyboardCode key_code =
+      ui::HasRightAltProperty(*event) ? ui::VKEY_RIGHT_ALT : event->key_code();
 
   if (IsKeyEventFromVirtualKeyboard(event)) {
     // The virtual keyboard does not send key up events for modifier keys, such
@@ -299,7 +307,11 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
   }
 
   if (modifier_flag == ui::EF_NONE) {
-    last_non_modifier_key_ = key_code;
+    // The RightAlt key is diferentiated via the Right alt proprerty attached to
+    // the event. If we see this property, we must overwrite the keycode for the
+    // purposes of showing the icon visually.
+    last_non_modifier_key_ =
+        ui::HasRightAltProperty(*event) ? ui::VKEY_RIGHT_ALT : key_code;
   }
 
   RefreshKeyComboViewer();
@@ -380,7 +392,7 @@ void CaptureModeDemoToolsController::UpdateTextInputType(
 
 void CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded(
     PointerHighlightLayer* pointer_highlight_layer_ptr) {
-  base::EraseIf(mouse_highlight_layers_,
+  std::erase_if(mouse_highlight_layers_,
                 base::MatchesUniquePtr(pointer_highlight_layer_ptr));
 
   if (on_mouse_highlight_animation_ended_callback_for_test_)

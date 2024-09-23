@@ -8,6 +8,7 @@ syntax = "proto2";
 
 package content.fuzzing.ad_auction_service.proto;
 
+import "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.proto";
 import "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.mojolpm.proto";
 
 // Bind a new AdAuctionService remote
@@ -33,12 +34,18 @@ message RunThreadAction {
 // can run on the UI thread.
 message RunUntilIdle {}
 
+message NetResponseAction {
+  optional content.fuzzing.ad_auction_service.proto.Script script = 1;
+  // TODO(crbug.com/41490389): Add more response types.
+}
+
 // Actions that can be performed by the fuzzer.
 message Action {
   oneof action {
     NewAdAuctionServiceAction new_ad_auction_service = 1;
     RunThreadAction run_thread = 2;
     RunUntilIdle run_until_idle = 4;
+    NetResponseAction net_response_action = 5;
     mojolpm.blink.mojom.AdAuctionService.RemoteAction
         ad_auction_service_remote_action = 3;
   }

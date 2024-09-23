@@ -33,7 +33,7 @@ void NoRendererCrashesAssertion::Suspensions::RemoveSuspension(int process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = process_id_to_suspension_count_.find(process_id);
-  DCHECK(it != process_id_to_suspension_count_.end());
+  CHECK(it != process_id_to_suspension_count_.end());
   DCHECK_LT(0, it->second);
   --it->second;
   if (0 == it->second)

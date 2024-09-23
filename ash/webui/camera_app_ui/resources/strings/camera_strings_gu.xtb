@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2244252133441425811">વીડિયો FPS પિકર ચાલુ કરો</translation>
 <translation id="2271433936731426666">પૂર્ણ કદના વીડિયો સ્નૅપશૉટની સુવિધા ચાલુ કરો</translation>
+<translation id="2281736597583450397">નાનું-મોટું કરવાની વધારાની સુવિધા વડે વધુ બહેતર વિગતો મેળવો</translation>
 <translation id="2320741269052147773">ડાબે બાજુએ ફેરવો</translation>
+<translation id="2360840973209616515">કૅમેરા ઍપને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે.
+        વિગતો માટે, ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
+<translation id="2442754296994859145">કન્ટેન્ટની ચકાસણી કરવા માટે કૉપિ કરો અથવા સ્કૅન કરવાની પ્રક્રિયા રોકવા માટે મોટું કરો.</translation>
+<translation id="2486151619109781620">સંવાદ નાનો કરો અને સ્કૅન કરવાની પ્રક્રિયા શરૂ કરો</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2501853267655415902">રેકોર્ડિંગ બંધ કર્યું</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
 <translation id="2577915835281444458">ટૂંક સમયમાં રેકોર્ડિંગ બંધ થઈ જશે. સ્પેસ ખાલી કરવા માટે ડિવાઇસના સ્ટોરેજમાં જાઓ.</translation>
 <translation id="2599796128805996109">પાછળનો કૅમેરા</translation>
+<translation id="2654491636277477479">ભાળ મેળવેલી ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> સેકન્ડ</translation>
 <translation id="2761536921376153655">સ્કૅનનો પ્રકાર</translation>
 <translation id="28682968802727151">મિરરનો પ્રીવ્યૂ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> પ્લગ-ઇન કરેલું છે.</translation>
 <translation id="3067436040345934772">જમણી બાજુએ ફેરવો</translation>
 <translation id="3081586908890909590">વીડિયો રેકોર્ડ કરવા માટે સ્વિચ કરો</translation>
+<translation id="3091480460059548935">પ્રીવ્યૂમાં ટેક્સ્ટની ભાળ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">તમે હવે તમારા ફોટામાં ટેક્સ્ટને સીધી કૉપિ કરી શકો છો</translation>
 <translation id="3158534262962737808">"<ph name="WIFINAME" />"માં જોડાઓ</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">રેકોર્ડિંગ થોભાવો</translation>
 <translation id="4121305183798804752">દસ્તાવેજની ભાળ મળી</translation>
 <translation id="414641094616694804">આ કૅમેરા રિઝોલ્યુશનમાં ફેરફાર કરી શકતો નથી</translation>
-<translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="428234092390943511">પેજ થંબનેલ</translation>
-<translation id="4349714250734879769">Chrome દ્વારા ફ્રેમ સ્કેલ કરો</translation>
 <translation id="4383571725254449280">કાર્યપ્રદર્શનના લૉગ પ્રિન્ટ કરો</translation>
 <translation id="4445542136948522167">ફોટા લેવાનું બંધ કરો</translation>
 <translation id="4570032796877367747">આગળનો કૅમેરા</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">સ્કૅન કરેલા પેજની સૂચિ</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">લિંકનું ઍડ્રેસ <ph name="URL" /> કૉપિ કરો</translation>
-<translation id="491895758387112773">મલ્ટિ-સ્ટ્રીમ સુવિધા વડે વીડિયો રેકોર્ડિંગ કરવું</translation>
 <translation id="495170559598752135">ક્રિયાઓ</translation>
 <translation id="4984613436295737187">ક્વોડ HD (1440p)</translation>
 <translation id="5034763830503483128">ફોટોનો સાપેક્ષ ગુણોત્તર</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5320594929574852403">ડાબી દિશામાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">સંવાદ મોટો કરો અને સ્કૅન કરવાની પ્રક્રિયા રોકો</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="5671277269877808209">ચોરસ</translation>
 <translation id="574392208103952083">મધ્યમ</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976160379964388480">અન્ય લોકો</translation>
 <translation id="6073451960410192870">રેકોર્ડિંગ બંધ કરો</translation>
+<translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6197807149213783179">મેટાડેટા સાચવો</translation>
 <translation id="6233780560267770709">3 બાય 3</translation>
 <translation id="6243827288366940320">ગોલ્ડન રેશિયો</translation>
@@ -115,11 +122,14 @@
 જો તમારો પ્રતિસાદ કોઈ છબી અથવા વીડિયો ક્વૉલિટી વિશે હોય, તો કૃપા કરીને ફોટો અથવા વીડિયોનો કોઈ નમૂનો શામેલ કરો અને સમસ્યાનું વર્ણન કરો. (ઉદાહરણ તરીકે, ફોટો ઘણા ઓછા પ્રકાશમાં લેવામાં આવ્યો છે અથવા તે ફોકસમાં નથી.)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />માં જોડાઓ</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
+<translation id="6586509689874700895">સૌથી પહેલા, મોટું કરવા માટે <ph name="BUTTON_NAME" /> દબાવો. ત્યારબાદ, તમે ફોટો લઈ લો પછી તમને વધારાની વિગતો દેખાશે.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> કૉપિ કર્યું</translation>
 <translation id="6617916774429601017">બધા નિરાકરણો બતાવો</translation>
 <translation id="6631515515009660915">મિરર કરવાનું બંધ કરો</translation>
 <translation id="6652737148136672975">ઍરો કી વડે ખૂણાની સ્થિતિને ખસેડો</translation>
 <translation id="667999046851023355">દસ્તાવેજ</translation>
 <translation id="6681668084120808868">ફોટો લો</translation>
+<translation id="6692092766759105707">કન્ટેન્ટની ચકાસણી કરવા માટે કૉપિ કરો.</translation>
 <translation id="6778482348691154169">ફોટો લઈ શકાતો નથી</translation>
 <translation id="6888362557094394345">સૌથી નીચેની દિશામાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="695140971690006676">બધુ રીસેટ કરો</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">ફાઇલ સિસ્ટમની ભૂલો.</translation>
 <translation id="7450541714075000668">ટેક્સ્ટ કૉપિ કરી</translation>
 <translation id="7488619942230388918">GIF વીડિયો રેકોર્ડ કરો</translation>
+<translation id="7527714402753141485">ટેક્સ્ટ અને કૉપિ કરવા માટે બટન બતાવે છે</translation>
 <translation id="7557677699350329807">આગલા કૅમેરા પર સ્વિચ કરો</translation>
-<translation id="7562584071994185503">ટેક્સ્ટ <ph name="TEXT" /> કૉપિ કરો</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7608223098072244877">4 બાય 4</translation>
 <translation id="761421184377987513">સૌથી નીચે ડાબી દિશામાં ખસેડી રહ્યાં છીએ</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">ફોટો લેવા માટે સ્વિચ કરો</translation>
 <translation id="8167081290930651932">ફોટો તરીકે સાચવો</translation>
 <translation id="8239780215768881278">વીડિયો સ્નૅપશૉટ લો</translation>
-<translation id="8346544573713510785">કૅમેરા HAL દ્વારા ફ્રેમ સ્કેલ કરો</translation>
 <translation id="8425673304802773841">નીચે ટિલ્ટ કરો</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8609951387004618906"><ph name="URL" /> ખોલો</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો. મ્યૂટ બટન ચાલુ છે</translation>
+<translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8732462232047530626">મેટાડેટાનું પ્રીવ્યૂ કરો</translation>
 <translation id="874854738381978209">વાઇ-ફાઇ નેટવર્કની ભાળ મળી.</translation>

@@ -33,6 +33,7 @@
 
 #include <optional>
 
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -94,14 +95,30 @@ class CORE_EXPORT InspectorPageAgent final
     kOtherResource
   };
 
+  class CORE_EXPORT PageReloadScriptInjection {
+   private:
+    String script_to_evaluate_on_load_once_;
+    String target_url_for_active_script_;
+    InspectorAgentState::String pending_script_to_evaluate_on_load_once_;
+    InspectorAgentState::String target_url_for_pending_script_;
+
+   public:
+    explicit PageReloadScriptInjection(InspectorAgentState&);
+
+    void clear();
+    void SetPending(String script, const KURL& target_url);
+    void PromoteToLoadOnce();
+    String GetScriptForInjection(const KURL& target_url);
+  };
+
   static bool CachedResourceContent(const Resource*,
                                     String* result,
                                     bool* base64_encoded);
-  static bool SharedBufferContent(scoped_refptr<const SharedBuffer>,
-                                  const String& mime_type,
-                                  const String& text_encoding_name,
-                                  String* result,
-                                  bool* base64_encoded);
+  static bool SegmentedBufferContent(const SegmentedBuffer*,
+                                     const String& mime_type,
+                                     const String& text_encoding_name,
+                                     String* result,
+                                     bool* base64_encoded);
 
   static String ResourceTypeJson(ResourceType);
   static ResourceType ToResourceType(const blink::ResourceType);
@@ -131,7 +148,8 @@ class CORE_EXPORT InspectorPageAgent final
       const String& identifier) override;
   protocol::Response setLifecycleEventsEnabled(bool) override;
   protocol::Response reload(Maybe<bool> bypass_cache,
-                            Maybe<String> script_to_evaluate_on_load) override;
+                            Maybe<String> script_to_evaluate_on_load,
+                            Maybe<String> loader_id) override;
   protocol::Response stopLoading() override;
   protocol::Response setAdBlockingEnabled(bool) override;
   protocol::Response getResourceTree(
@@ -201,7 +219,8 @@ class CORE_EXPORT InspectorPageAgent final
 
   // InspectorInstrumentation API
   void DidCreateMainWorldContext(LocalFrame*);
-  void DidNavigateWithinDocument(LocalFrame*);
+  void DidNavigateWithinDocument(LocalFrame*,
+                                 mojom::blink::SameDocumentNavigationType);
   void DomContentLoadedEventFired(LocalFrame*);
   void LoadEventFired(LocalFrame*);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
@@ -211,6 +230,7 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*,
       const std::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
+  void FrameSubtreeWillBeDetached(Frame* frame);
   void FrameStoppedLoading(LocalFrame*);
   void FrameRequestedNavigation(Frame* target_frame,
                                 const KURL&,
@@ -255,7 +275,19 @@ class CORE_EXPORT InspectorPageAgent final
   void Trace(Visitor*) const override;
 
  private:
-  struct IsolatedWorldRequest;
+  struct IsolatedWorldRequest {
+    IsolatedWorldRequest() = delete;
+    IsolatedWorldRequest(String world_name,
+                         bool grant_universal_access,
+                         std::unique_ptr<CreateIsolatedWorldCallback> callback)
+        : world_name(world_name),
+          grant_universal_access(grant_universal_access),
+          callback(std::move(callback)) {}
+
+    const String world_name;
+    const bool grant_universal_access;
+    std::unique_ptr<CreateIsolatedWorldCallback> callback;
+  };
 
   void GetResourceContentAfterResourcesContentLoaded(
       const String& frame_id,
@@ -268,10 +300,9 @@ class CORE_EXPORT InspectorPageAgent final
       bool case_sensitive,
       bool is_regex,
       std::unique_ptr<SearchInResourceCallback>);
-  scoped_refptr<DOMWrapperWorld> EnsureDOMWrapperWorld(
-      LocalFrame* frame,
-      const String& world_name,
-      bool grant_universal_access);
+  DOMWrapperWorld* EnsureDOMWrapperWorld(LocalFrame* frame,
+                                         const String& world_name,
+                                         bool grant_universal_access);
 
   static KURL UrlWithoutFragment(const KURL&);
 
@@ -301,13 +332,13 @@ class CORE_EXPORT InspectorPageAgent final
 
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
-  using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
-  HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
+  using FrameIsolatedWorlds = HeapHashMap<String, Member<DOMWrapperWorld>>;
+  HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
+      isolated_worlds_;
   HashMap<String, std::unique_ptr<blink::AdScriptIdentifier>>
       ad_script_identifiers_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
-  String script_to_evaluate_on_load_once_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;
   InspectorAgentState::Boolean intercept_file_chooser_;
@@ -315,7 +346,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
-  InspectorAgentState::String pending_script_to_evaluate_on_load_once_;
   InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
   InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
   InspectorAgentState::BooleanMap
@@ -323,6 +353,7 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
   InspectorAgentState::Bytes script_font_families_cbor_;
+  PageReloadScriptInjection script_injection_on_load_;
 };
 
 }  // namespace blink

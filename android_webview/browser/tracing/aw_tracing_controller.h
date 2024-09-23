@@ -12,7 +12,7 @@ namespace android_webview {
 
 class AwTracingController {
  public:
-  AwTracingController(JNIEnv* env, jobject obj);
+  AwTracingController(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
 
   AwTracingController(const AwTracingController&) = delete;
   AwTracingController& operator=(const AwTracingController&) = delete;

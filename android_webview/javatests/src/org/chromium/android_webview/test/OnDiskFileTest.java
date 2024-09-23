@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.content.Context;
 
 import androidx.test.InstrumentationRegistry;
@@ -20,6 +22,7 @@ import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -83,6 +86,7 @@ public class OnDiskFileTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView"})
     public void testCookiePathIsInsideDataDir() {
         File webViewCookiePath =
@@ -105,12 +109,13 @@ public class OnDiskFileTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView"})
     public void testProfilesHaveSeparateDirectories() throws Throwable {
         mActivityTestRule.startBrowserProcess();
 
         // Check Default uses its own constant directory.
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Default",
@@ -131,7 +136,7 @@ public class OnDiskFileTest extends AwParameterizedTest {
                                     .getPath(),
                             relativePath);
 
-            mActivityTestRule.runOnUiThread(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         contextPath.delete();
 

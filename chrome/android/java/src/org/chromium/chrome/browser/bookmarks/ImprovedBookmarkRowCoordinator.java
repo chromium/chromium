@@ -18,7 +18,11 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
+import java.util.Objects;
 
 /** Business logic for the improved bookmark row. */
 public class ImprovedBookmarkRowCoordinator {
@@ -72,15 +76,28 @@ public class ImprovedBookmarkRowCoordinator {
 
         // Description and content description.
         boolean isFolder = bookmarkItem.isFolder();
+        boolean isLocalBookmark =
+                mBookmarkModel.areAccountBookmarkFoldersActive()
+                        && !bookmarkItem.isAccountBookmark();
+        propertyModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, isLocalBookmark);
         propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !isFolder);
         if (isFolder) {
-            propertyModel.set(
-                    ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION,
+            String contentDescription =
                     String.format(
                             "%s %s",
                             bookmarkItem.getTitle(),
                             BookmarkUtils.getFolderDescriptionText(
-                                    bookmarkId, mBookmarkModel, mContext.getResources())));
+                                    bookmarkId, mBookmarkModel, mContext.getResources()));
+            if (isLocalBookmark) {
+                contentDescription =
+                        String.format(
+                                "%s %s",
+                                contentDescription,
+                                mContext.getResources()
+                                        .getString(R.string.local_bookmarks_section_header));
+            }
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION, contentDescription);
         } else {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.DESCRIPTION, bookmarkItem.getUrlForDisplay());
@@ -93,7 +110,7 @@ public class ImprovedBookmarkRowCoordinator {
         propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, bookmarkItem.isEditable());
 
         // Shopping coordinator setup.
-        if (PowerBookmarkUtils.isShoppingListItem(meta)) {
+        if (PowerBookmarkUtils.isShoppingListItem(mShoppingService, meta)) {
             ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
                     new ShoppingAccessoryCoordinator(
                             mContext, meta.getShoppingSpecifics(), mShoppingService);
@@ -110,26 +127,19 @@ public class ImprovedBookmarkRowCoordinator {
         // Icon.
         resolveImagesForBookmark(propertyModel, bookmarkItem);
 
-        if (BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
-            propertyModel.set(
-                    ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK,
-                    !bookmarkItem.isAccountBookmark());
-        }
-
         return propertyModel;
     }
 
     private void resolveImagesForBookmark(PropertyModel propertyModel, BookmarkItem item) {
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        boolean useImages = displayPref == BookmarkRowDisplayPref.VISUAL;
         propertyModel.set(
                 ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                item.isFolder() && useImages
+                item.isFolder() && displayPref == BookmarkRowDisplayPref.VISUAL
                         ? ImageVisibility.FOLDER_DRAWABLE
                         : ImageVisibility.DRAWABLE);
 
-        if (item.isFolder() && useImages) {
+        if (item.isFolder() && displayPref == BookmarkRowDisplayPref.VISUAL) {
             populateVisualFolderProperties(propertyModel, item);
         } else if (item.isFolder()) {
             propertyModel.set(
@@ -153,7 +163,7 @@ public class ImprovedBookmarkRowCoordinator {
                             set(
                                     BookmarkUtils.getFolderIcon(
                                             mContext, item.getId(), mBookmarkModel, displayPref));
-                        } else if (useImages) {
+                        } else if (shouldShowImagesForBookmark(item, displayPref)) {
                             mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                                     item, this::set);
                         } else {
@@ -169,6 +179,11 @@ public class ImprovedBookmarkRowCoordinator {
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                 BookmarkUtils.getChildCountForDisplay(bookmarkItem.getId(), mBookmarkModel));
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
+                BookmarkUtils.isSpecialFolder(mBookmarkModel, bookmarkItem)
+                        ? R.style.TextAppearance_SpecialFolderChildCount
+                        : R.style.TextAppearance_RegularFolderChildCount);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
                 BookmarkUtils.getIconBackground(mContext, mBookmarkModel, bookmarkItem));
@@ -186,8 +201,7 @@ public class ImprovedBookmarkRowCoordinator {
                 new LazyOneshotSupplierImpl<>() {
                     @Override
                     public void doSet() {
-                        if (BookmarkUtils.shouldShowImagesForFolder(
-                                mBookmarkModel, bookmarkItem.getId())) {
+                        if (shouldShowImagesForFolder(bookmarkItem.getId())) {
                             mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(
                                     bookmarkItem, this::set);
                         } else {
@@ -198,5 +212,38 @@ public class ImprovedBookmarkRowCoordinator {
         propertyModel.set(
                 ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
                 drawablesSupplier);
+    }
+
+    /**
+     * Returns whether images should be shown for a given bookmark, which is true if the user has
+     * selected the visual display preference and the bookmark is synced with google.
+     */
+    boolean shouldShowImagesForBookmark(
+            BookmarkItem item, @BookmarkRowDisplayPref int displayPref) {
+        // Local bookmarks shouldn't get images, even if they're cached. This is only relevant when
+        // account bookmarks are enabled.
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
+                && !item.isAccountBookmark()) {
+            return false;
+        }
+        return displayPref == BookmarkRowDisplayPref.VISUAL;
+    }
+
+    /**
+     * Returns whether images should be shown for a given folder, which is true if the user has
+     * selected the visual display preference and the folder is synced with google.
+     */
+    boolean shouldShowImagesForFolder(BookmarkId folder) {
+        BookmarkId rootNodeId = mBookmarkModel.getRootFolderId();
+        BookmarkId desktopNodeId = mBookmarkModel.getDesktopFolderId();
+        BookmarkId mobileNodeId = mBookmarkModel.getMobileFolderId();
+        BookmarkId othersNodeId = mBookmarkModel.getOtherFolderId();
+
+        List<BookmarkId> specialFoldersIds = mBookmarkModel.getTopLevelFolderIds();
+        return !Objects.equals(folder, rootNodeId)
+                && !Objects.equals(folder, desktopNodeId)
+                && !Objects.equals(folder, mobileNodeId)
+                && !Objects.equals(folder, othersNodeId)
+                && !specialFoldersIds.contains(folder);
     }
 }

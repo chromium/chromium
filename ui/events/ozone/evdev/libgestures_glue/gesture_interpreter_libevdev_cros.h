@@ -64,9 +64,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
       const base::RepeatingCallback<void(bool)>& callback) override;
   void SetReceivedValidKeyboardInputCallback(
       base::RepeatingCallback<void(uint64_t)> callback) override;
-
   void SetReceivedValidMouseInputCallback(
       base::RepeatingCallback<void(int)> callback) override;
+  void SetBlockModifiers(bool block_modifiers) override;
 
   // Handler for gesture events generated from libgestures.
   void OnGestureReady(const Gesture* gesture);
@@ -105,6 +105,7 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void ReleaseKeys(stime_t timestamp);
   bool SetMouseButtonState(unsigned int button, bool down);
   void ReleaseMouseButtons(stime_t timestamp);
+  void RecordClickMetric(stime_t duration, float movement);
 
   // The unique device id.
   int id_;
@@ -113,6 +114,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   // and multi-touch mice.
   bool is_mouse_ = false;
   bool is_pointing_stick_ = false;
+
+  // Whether modifier keys should be blocked from the input device.
+  bool block_modifiers_;
 
   // Shared cursor state.
   CursorDelegateEvdev* cursor_;
@@ -132,6 +136,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   // Last mouse button state.
   static const int kMouseButtonCount = BTN_JOYSTICK - BTN_MOUSE;
   std::bitset<kMouseButtonCount> mouse_button_state_;
+
+  stime_t click_down_time_;
+  gfx::Vector2dF click_movement_;
 
   // Device pointer.
   Evdev* evdev_ = nullptr;

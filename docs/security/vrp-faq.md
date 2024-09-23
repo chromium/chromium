@@ -4,11 +4,23 @@
 
 ## News and Updates
 
-**Chromium has migrated to a new issue tracker.** Please report all Chromium
-security bugs in the new tracker using [this
-form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
+Please report all Chromium security bugs in the new tracker using [this
+form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
+or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
+
+* 20 June 2024: All Google VRPs, including **Chrome VRP, have a new payments
+  processing option through Bugcrowd**. To use the Bugcrowd option to receive
+  your Chrome VRP reward payments, you must:
+    * Set up your profile in bughunters.google.com and associate it with the
+      email address you use to report issues in chromium.issues.com.
+    * Be registered or [register with](https://bugcrowd.com/user/sign_up)
+      Bugcrowd.
+    * In your [Bughunters profile](https://bughunters.google.com/profile),
+      select `Bugcrowd` under `Payment Options` and enter the email address for
+      your Bugcrowd account.
+    * Hit `Save` on your profile and you're ready to roll!
 
 * 4 February 2024: The Chromium issue tracker migration is now complete. Please
   submit all issues using the [new issue tracker](https://issues.chromium.org)
@@ -16,22 +28,12 @@ Please check here for any news and updates about the Chrome VRP.
   form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
   for directly reporting security issue to the security team.
 
-* 1 February 2024: Chromium issue tracker migration will begin on Friday, 2
-  February 2024. During the migration new issues will not be able to be
-  reported. As of 4 February 2024, all security bugs should be reported using
-  [this form](https://issues.chromium.org/new), and select 'Security' from the
-  "Which of the following best describes the issue being reported?" dropdown.
-
-* 26 January 2024: Chromium is moving to a new issue tracker. This is currently
-  scheduled for 5 February 2024. More information will be provided next week
-  before the migration.
-
 * 25 January 2024: We have updated our VRP policy on duplicates and collisions
   for actionable versus non-actionable reports. Please see the [Chrome VRP
   qualifying vulnerabilities](https://g.co/chrome/vrp/#qualifying-vulnerabilities)
   for details.
 
-* December 2023: We announced the [Chrome VRP Top Reseachers of
+* December 2023: We announced the [Chrome VRP Top Researchers of
   2023](https://crbug.com/1509898). Congratulations to all who made the list!
   Thank you to all of our researchers for your contributions in 2023 and helping
   us make Chrome Browser more secure for all users.
@@ -49,6 +51,9 @@ Here are some interesting write-ups of past Chrome security bugs:
 * [A Bug's Life: CVE-2021-21225](https://tiszka.com/blog/CVE_2021_21225.html)
 * [Exploiting CVE-2021-21225 and disabling
   W^X](https://tiszka.com/blog/CVE_2021_21225_exploit.html)
+* [ZIP embedding attack on Google Chrome
+  extension](https://readme.synack.com/exploits-explained-zip-embedding-attack-on-google-chrome-extensions),
+  by Malcolm Stagg, reporter of CVE-2024-0333
 
 We only post links to articles with the author's consent. Please let us know if
 you would like your work to be shared here.
@@ -76,9 +81,9 @@ reports:
   immediately for triage.
 * Ensure the PoC is as minimized as possible.
   * This is useful in root cause analysis and also improves the changes of
-    reproduciton by ClusterFuzz or the Security Shepherd triaging your report.
-* Please format your PoCs to they do not require running python as root.
-  * You PoC should be constructed to reproduce locally when at all possible.
+    reproduction by ClusterFuzz or the Security Shepherd triaging your report.
+* Please format your PoCs so they do not require running python as root.
+  * Your PoC should be constructed to reproduce locally when at all possible.
 * Do *not* provide links (public or unlisted) to / as PoCs.
   * The PoC should ALWAYS be a file directly attached to the report, even if it
     cannot be reproduced in ClusterFuzz.
@@ -108,7 +113,7 @@ reports:
     * We do not need to see you loading Chrome or displaying the version page
       multiple times in a video.
   * DO feel free to include music, sound effects, or animal pics in your
-    your videos. :)
+    videos. :)
 
 ### Bug Reporting
 
@@ -129,9 +134,10 @@ reports:
   (Stable/Beta/Dev) on which you discovered and reproduced the issue you are
   reporting.
   * For an opportunity at increasing your potential reward amount to receive a
-    [Bisect Bonus](https://g.go/chrome/vrp/#bisect-bonus), please consider
-    performing a full bisection, detailing the commit the introduced the issue
-    and / or all the active release channels impacted by the bug.
+    [Bisect Bonus](https://g.co/chrome/vrp/#bisect-bonus),
+    please consider performing a full bisection, detailing the commit that
+    introduced the issue and / or all the active release channels impacted by
+    the bug.
 
 ### Suggested Fix / Patch Rewards
 
@@ -139,7 +145,7 @@ reports:
   the report as its own attachment.
 * We reward [bonuses for your patches](https://g.co/chrome/vrp/#patch-bonus)
   that end up being used as the fix.
-  * Bonuses are $500 - $2000 dpending on how substantial the patch is.
+  * Bonuses are $500 - $2000 depending on how substantial the patch is.
   * To maximize your patch rewards, please commit the patch directly to Chromium
     and include the Gerrit (Chromium code review tool) link in the report or
     report comment.
@@ -153,7 +159,7 @@ reports:
 
 #### How do I know if my bug report is possibly eligible for a VRP reward?
 
-* All valididated, [qualifying vulnerability
+* All validated, [qualifying vulnerability
   reports](https://g.co/chrome/vrp/#qualifying-vulnerabilities) are
   automatically considered for a reward once they are fixed. At which point you
   will see the reward-topanel hotlist signifier added to your bug report. This
@@ -163,8 +169,8 @@ reports:
 
 #### I want to report a bug through a broker / not directly to you.
 
-* We believe it is against the spirit of the program to privately disclosure
-  security vulnerabities to third parties for purposes other than fixing the
+* We believe it is against the spirit of the program to privately disclose
+  security vulnerabilities to third parties for purposes other than fixing the
   bug. Consequently, such reports will not qualify for a reward.
 
 #### What if someone else reported the same bug?
@@ -188,7 +194,7 @@ reports:
 
 #### Are bugs in unlaunched features / behind command line flags VRP-eligible?
 
-* Yes, we are intested in bugs in any code that has shipped to even a fraction
+* Yes, we are interested in bugs in any code that has shipped to even a fraction
   of our users.
 * *The only exception at this time are security bugs in V8 behind
   --experimental*; this flag is for early and experimental V8 development
@@ -267,7 +273,7 @@ Is there a time limit for submitting an exploit?
   older version of Chrome, and it was the first actionable report of that
   issue, your bug will be issued a CVE at the time the fix ships in a Stable
   channel update of Chrome.
-* The CVE number will be updated directly on the the report itself and listed in
+* The CVE number will be updated directly on the report itself and listed in
   the Chrome Browser release notes for that Stable channel update.
 
 ### Disclosure / Report Visibility
@@ -285,7 +291,7 @@ Is there a time limit for submitting an exploit?
 #### When will the bug I reported be publicly disclosed?
 
 * Most security bugs are automatically opened for public access 14 weeks after
-  the bug is clsoed as Fixed, meaning the fix commit is landed on Chromium main.
+  the bug is closed as Fixed, meaning the fix commit is landed on Chromium main.
 * Our automation removes the view restrictions, opening the report for public
   visibility at that time.
 
@@ -297,13 +303,14 @@ Is there a time limit for submitting an exploit?
   let us know in the report or before the issue is listed in the release notes.
   * We will credit the finding to "anonymous" researcher or we are happy to
     credit it to whatever pseudonym or tag you provide to us.
-* If you receive a VRP reward for your report and accept it, Google will need
-  to privately collect some identifying information to process your reward
+* If you receive a VRP reward for your report and accept it, Google or Bugcrowd
+  (depending on who you select to process your VRP reward) will need to
+  privately collect some identifying information to process your reward
   payment.
 
 #### Can you keep my report under Security Embargo?
 
-* Security Embargo prevents isseus from being disclosed beyond the security team
+* Security Embargo prevents issues from being disclosed beyond the security team
   and engineers working to resolve the bug. Once the issue is fixed, the
   (Security Notify) community of embedders and developers of other
   Chromium-based products are reliant on the access to bug reports. Because
@@ -338,7 +345,7 @@ Is there a time limit for submitting an exploit?
   world, the opportunity to publicly discuss/blog/present/share your amazing
   work, and *the knowledge that you are helping keep Chrome secure for billions
   of people across the world*!
-* Also, many of our researches receive gifts of swag and are invited to events.
+* Also, many of our researchers receive gifts of swag and are invited to events.
 * You'll additionally have the peace of mind to know your bug findings were
   never used by shady people for nefarious purposes.
 
@@ -346,12 +353,39 @@ Is there a time limit for submitting an exploit?
 
 * Once the bug has been assessed by the VRP Panel, the bug report is updated
   with a reward decision and information.
-* If this is your first VRP reward for a Google program, a member of the finance
-  p2p-vrp team will reach out to enroll you in the Google payment system.
-* VRP payments are handled by the p2p-vrp finance team. Once you have been
-  enrolled, you will receive you payment within 1-2 weeks of a reward decision.
-* Please reach out to p2p-vrp@google.com with questions about the payment
-  enrollment process or assistance with any payments issues.
+* There are two options for payment of a VRP Reward -- direct through Google
+  or through Bugcrowd.
+  * Through Google:
+    * If this is your first VRP reward for a Google program, a member of the
+      finance p2p-vrp team will reach out to enroll you in the Google payment
+      system.
+    * VRP payments are handled by the p2p-vrp finance team. Once you have been
+       enrolled, you will receive you payment within 1-2 weeks of a reward
+      decision.
+    * Please reach out to p2p-vrp@google.com with questions about the payment
+      enrollment process or assistance with any payments issues.
+  * Through Bugcrowd:
+    * You must already have or create a new Google
+      [Bughunters](https://bughunters.google.com/profile) profile.
+      (Please note, you can set your Bughunters profile to be private if you
+      prefer to not have a public profile).
+    * Associate your Bughunters profile with the email address you use for
+      reporting Chrome security issues.
+    * Have a Bugcrowd account or [register](https://bugcrowd.com/user/sign_up)
+      with Bugcrowd.
+    * In your [Bughunters profile](https://bughunters.google.com/profile)
+      change your `Payment Options` from `Legacy` to `Bugcrowd` and enter the
+      email address for your Bugcrowd account (and hit `Save`)!
+    * Future reward payments will be sent to Bugcrowd for processing and you
+      will receive an email directly from Bugcrowd to accept those rewards.
+*  If at any point you want to change the method by which you receive VRP reward
+   payments, this can be done through your Google Bughunters profile > `Payments
+   Options`:
+    * Select `Legacy` to receive your payments through Google p2p payments
+       processing.
+    * Select `Bugcrowd` to select payments through Bugcrowd. Remember you must
+      register with Bugcrowd first and enter your Bugcrowd account email in your
+      Bughunters profile.
 
 #### I don't agree with the reward amount. Can I get the reward reassessed?
 

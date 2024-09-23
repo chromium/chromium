@@ -88,7 +88,7 @@ void InstallChromeApp(const std::string& app_id) {
   content::OpenURLParams params(GetAppInstallUrl(app_id), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser->profile());
   // Skip if this app is already installed or blocklisted. For disabled or

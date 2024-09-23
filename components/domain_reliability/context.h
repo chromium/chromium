@@ -20,7 +20,7 @@
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "components/domain_reliability/scheduler.h"
 #include "components/domain_reliability/uploader.h"
-#include "net/base/network_anonymization_key.h"
+#include "net/base/isolation_info.h"
 
 class GURL;
 
@@ -121,12 +121,17 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   std::list<std::unique_ptr<DomainReliabilityBeacon>> beacons_;
 
   size_t uploading_beacons_size_;
-  // The NetworkAnonymizationKey associated with the beacons being uploaded. The
-  // first `uploading_beacons_size_` beacons that have NIK equal to
-  // `uploading_beacons_network_anonymization_key_` are currently being
-  // uploaded. It's possible for this number to be 0 when there's still an
-  // active upload if all currently uploading beacons have been evicted.
-  net::NetworkAnonymizationKey uploading_beacons_network_anonymization_key_;
+  // The IsolationInfo associated with the beacons being uploaded. The first
+  // `uploading_beacons_size_` beacons that have NIK equal to the NIK of
+  // `uploading_beacons_isolation_info_` are currently being uploaded. It's
+  // possible for this number to be 0 when there's still an active upload if
+  // all currently uploading beacons have been evicted.
+  //
+  // Note that requests technically expose top level origins, which may be
+  // different than the top-level site used by the NetworkIsolationKey to
+  // partition uploads. This shouldn't affect anything in practice (e.g., cookie
+  // blocking), since uploads will only ever use uncredentialed requests.
+  net::IsolationInfo uploading_beacons_isolation_info_;
 
   base::TimeTicks upload_time_;
   base::TimeTicks last_upload_time_;

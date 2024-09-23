@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,13 +26,13 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/ui_base_features.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -45,6 +46,9 @@
 #endif
 
 namespace {
+
+constexpr char kPrefixedVideoFullscreenApiEnabled[] = "enabled";
+constexpr char kPrefixedVideoFullscreenApiDisabled[] = "disabled";
 
 // Parses a string |range| with a port range in the form "<min>-<max>".
 // If |range| is not in the correct format or contains an invalid range, zero
@@ -119,7 +123,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #if !BUILDFLAG(IS_ANDROID)
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-  content::BrowserAccessibilityState::GetInstance()->SetCaretBrowsingState(
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);
 #endif
 
@@ -196,6 +200,18 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #else
   prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
 #endif
+
+  std::string fullscreen_video_api_availability =
+      pref_service->GetString(prefs::kPrefixedVideoFullscreenApiAvailability);
+
+  if (fullscreen_video_api_availability == kPrefixedVideoFullscreenApiEnabled) {
+    prefs->prefixed_fullscreen_video_api_availability = true;
+  } else if (fullscreen_video_api_availability ==
+             kPrefixedVideoFullscreenApiDisabled) {
+    prefs->prefixed_fullscreen_video_api_availability = false;
+  } else {
+    prefs->prefixed_fullscreen_video_api_availability = std::nullopt;
+  }
 }
 
 }  // namespace renderer_preferences_util

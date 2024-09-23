@@ -238,8 +238,9 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     item->Read(base::BindOnce(&ReadCallback, run_loop.QuitClosure(), &result,
                               &read_content));
     run_loop.Run();
-    if (data)
+    if (data) {
       *data = std::move(read_content);
+    }
     return result;
   }
 

@@ -5,6 +5,7 @@
 #include "components/mirroring/service/video_capture_client.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -19,7 +20,7 @@ namespace {
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& DeviceId() {
-  // TODO(https://crbug.com/1406986): Investigate whether there's a better way
+  // TODO(crbug.com/40252974): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken device_id(
       base::UnguessableToken::Deserialize(1, 1).value());
@@ -28,7 +29,7 @@ const base::UnguessableToken& DeviceId() {
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& SessionId() {
-  // TODO(https://crbug.com/1406986): Investigate whether there's a better way
+  // TODO(crbug.com/40252974): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken session_id(
       base::UnguessableToken::Deserialize(1, 1).value());
@@ -188,8 +189,8 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
 
   // If the timestamp is not prepared, we use reference time to make a rough
   // estimate. e.g. ThreadSafeCaptureOracle::DidCaptureFrame().
-  // TODO(crbug.com/618407): Fix upstream capturers to always set timestamp and
-  // reference time.
+  // TODO(crbug.com/40472286): Fix upstream capturers to always set timestamp
+  // and reference time.
   if (buffer->info->timestamp.is_zero())
     buffer->info->timestamp = reference_time - first_frame_ref_time_;
 
@@ -216,7 +217,7 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
             &VideoCaptureClient::OnClientBufferFinished,
             weak_factory_.GetWeakPtr(), buffer->buffer_id, MappingKeepAlive()));
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else if (buffer_iter->second->is_unsafe_shmem_region()) {
     base::WritableSharedMemoryMapping mapping =
@@ -235,8 +236,11 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
             &VideoCaptureClient::OnClientBufferFinished,
             weak_factory_.GetWeakPtr(), buffer->buffer_id, std::move(mapping)));
   } else {
-    base::ReadOnlySharedMemoryMapping mapping =
-        buffer_iter->second->get_read_only_shmem_region().Map();
+    // Duplicate base::ReadOnlySharedMemoryRegion here because there is no
+    // guarantee on lifetime between |client_buffers_| and |frame|.
+    base::ReadOnlySharedMemoryRegion shm_region =
+        buffer_iter->second->get_read_only_shmem_region().Duplicate();
+    base::ReadOnlySharedMemoryMapping mapping = shm_region.Map();
     const size_t frame_allocation_size = media::VideoFrame::AllocationSize(
         buffer->info->pixel_format, buffer->info->coded_size);
     if (mapping.IsValid() && mapping.size() >= frame_allocation_size) {
@@ -245,11 +249,15 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
           buffer->info->visible_rect, buffer->info->visible_rect.size(),
           mapping.GetMemoryAs<uint8_t>(), frame_allocation_size,
           buffer->info->timestamp);
+      if (frame) {
+        frame->BackWithOwnedSharedMemory(std::move(shm_region),
+                                         std::move(mapping));
+      }
     }
-    buffer_finished_callback =
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &VideoCaptureClient::OnClientBufferFinished,
-            weak_factory_.GetWeakPtr(), buffer->buffer_id, std::move(mapping)));
+    buffer_finished_callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&VideoCaptureClient::OnClientBufferFinished,
+                       weak_factory_.GetWeakPtr(), buffer->buffer_id,
+                       base::ReadOnlySharedMemoryMapping()));
   }
 
   if (!frame) {

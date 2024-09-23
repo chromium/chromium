@@ -1,0 +1,66 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/build/config.gni")
+
+source_set("child_process_bridge_header") {
+  sources = [ "child_process_bridge.h" ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("child_process_bridge") {
+  sources = [ "child_process_bridge.mm" ]
+
+  deps = [
+    ":child_process_bridge_header",
+    "//base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+swift_source_set("content_process") {
+  sources = [ "content_process.swift" ]
+  bridge_header = "child_process_bridge.h"
+
+  frameworks = [
+    "Foundation.framework",
+    "ExtensionFoundation.framework",
+    "BrowserEngineCore.framework",
+    "BrowserEngineKit.framework",
+  ]
+
+  deps = [ ":child_process_bridge_header" ]
+}
+
+swift_source_set("network_process") {
+  sources = [ "network_process.swift" ]
+  bridge_header = "child_process_bridge.h"
+
+  frameworks = [
+    "Foundation.framework",
+    "ExtensionFoundation.framework",
+    "BrowserEngineCore.framework",
+    "BrowserEngineKit.framework",
+  ]
+
+  deps = [ ":child_process_bridge_header" ]
+}
+
+swift_source_set("gpu_process") {
+  sources = [ "gpu_process.swift" ]
+  bridge_header = "child_process_bridge.h"
+
+  frameworks = [
+    "Foundation.framework",
+    "ExtensionFoundation.framework",
+    "BrowserEngineCore.framework",
+    "BrowserEngineKit.framework",
+  ]
+
+  deps = [ ":child_process_bridge_header" ]
+}

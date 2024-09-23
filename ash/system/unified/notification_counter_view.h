@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 
+#include <optional>
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/memory/raw_ptr.h"
@@ -39,8 +42,8 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
 
   void Update();
 
-  // Returns a string describing the current state for accessibility.
-  std::u16string GetAccessibleNameString() const;
+  // Returns a string describing the current state for accessibility, if any.
+  std::optional<std::u16string> GetAccessibleNameString() const;
 
   // TrayItemView:
   void HandleLocaleChange() override;
@@ -68,6 +71,8 @@ class QuietModeView : public TrayItemView {
   ~QuietModeView() override;
   QuietModeView(const QuietModeView&) = delete;
   QuietModeView& operator=(const QuietModeView&) = delete;
+
+  const std::u16string& GetAccessibleNameString() const;
 
   void Update();
 

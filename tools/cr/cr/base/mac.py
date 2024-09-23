@@ -38,7 +38,3 @@ class MacPlatform(cr.Platform):
   @property
   def priority(self):
     return 2
-
-  @property
-  def paths(self):
-    return ['{GOMA_DIR}']

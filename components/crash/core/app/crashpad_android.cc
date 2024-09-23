@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/crash/core/app/crashpad.h"
 
 #include <dlfcn.h>
@@ -11,9 +16,8 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <string_view>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
@@ -33,13 +37,15 @@
 #include "base/synchronization/lock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/crash/android/jni_headers/PackagePaths_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "content/public/common/content_descriptors.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/tagging.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/client_argv_handling.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
+#include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/simulate_crash_linux.h"
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #include "third_party/crashpad/crashpad/util/linux/exception_handler_client.h"
@@ -48,6 +54,9 @@
 #include "third_party/crashpad/crashpad/util/linux/scoped_pr_set_dumpable.h"
 #include "third_party/crashpad/crashpad/util/misc/from_pointer_cast.h"
 #include "third_party/crashpad/crashpad/util/posix/signals.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/crash/android/package_paths_jni/PackagePaths_jni.h"
 
 namespace crashpad {
 namespace {
@@ -357,7 +366,7 @@ void MakePackagePaths(std::string* classpath, std::string* libpath) {
 
   base::android::ScopedJavaLocalRef<jstring> arch =
       base::android::ConvertUTF8ToJavaString(env,
-                                             base::StringPiece(CURRENT_ABI));
+                                             std::string_view(CURRENT_ABI));
   base::android::ScopedJavaLocalRef<jobjectArray> paths =
       Java_PackagePaths_makePackagePaths(env, arch);
 
@@ -697,25 +706,37 @@ bool PlatformCrashpadInitialization(
 
   g_is_browser = browser_process;
 
-  bool dump_at_crash = true;
   base::android::SetJavaExceptionCallback(SetJavaExceptionInfo);
 
+  CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
+  bool dump_at_crash = true;
   unsigned int dump_percentage =
-      GetCrashReporterClient()->GetCrashDumpPercentage();
+      crash_reporter_client->GetCrashDumpPercentage();
   if (dump_percentage < 100 &&
       static_cast<unsigned int>(base::RandInt(0, 99)) >= dump_percentage) {
     dump_at_crash = false;
   }
 
+  // In the not-large-dumps case, record enough extra memory to be able to save
+  // dereferenced memory from all registers on the crashing thread. Crashpad may
+  // save 512-bytes per register, and the largest register set (not including
+  // stack pointers) is ARM64 with 32 registers. Hence, 16 KiB.
+  const uint32_t indirect_memory_limit =
+      crash_reporter_client->GetShouldDumpLargerDumps() ? 4 * 1024 * 1024
+                                                        : 16 * 1024;
+  crashpad::CrashpadInfo::GetCrashpadInfo()
+      ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
+                                                indirect_memory_limit);
+
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
     *database_path = starter->Initialize(dump_at_crash);
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     // Handler gets called in SignalHandler::HandleOrReraiseSignal() after
     // reporting the crash.
     crashpad::CrashpadClient::SetLastChanceExceptionHandler(
         partition_alloc::PermissiveMte::HandleCrash);
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     return true;
   }
 
@@ -723,10 +744,10 @@ bool PlatformCrashpadInitialization(
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   handler->SetLastChanceExceptionHandler(
       partition_alloc::PermissiveMte::HandleCrash);
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
   *database_path = base::FilePath();
   return true;

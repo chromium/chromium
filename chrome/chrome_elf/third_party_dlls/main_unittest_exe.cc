@@ -1,9 +1,9 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include <windows.h>
-
 #include "chrome/chrome_elf/third_party_dlls/main_unittest_exe.h"
+
+#include <windows.h>
 
 #include <shellapi.h>
 #include <stdlib.h>

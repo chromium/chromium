@@ -1,0 +1,7 @@
+include_rules = [
+  "+ash/strings",
+  "+ui/base",
+  "+ash/public/cpp",
+  "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/login",
+]

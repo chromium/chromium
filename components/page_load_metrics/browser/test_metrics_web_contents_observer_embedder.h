@@ -51,6 +51,10 @@ class TestMetricsWebContentsObserverEmbedder
       const {
     return updated_subframe_timings_;
   }
+  const std::vector<mojom::CustomUserTimingMarkPtr>&
+  updated_custom_user_timings() const {
+    return updated_custom_user_timings_;
+  }
 
   // currently_committed_urls passed to OnStart().
   const std::vector<GURL>& observed_committed_urls_from_on_start() const {
@@ -87,6 +91,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<mojom::PageLoadTimingPtr> updated_subframe_timings_;
   std::vector<mojom::PageLoadTimingPtr> complete_timings_;
   std::vector<mojom::CpuTimingPtr> updated_cpu_timings_;
+  std::vector<mojom::CustomUserTimingMarkPtr> updated_custom_user_timings_;
   std::vector<GURL> observed_committed_urls_;
   std::vector<GURL> observed_aborted_urls_;
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;

@@ -81,8 +81,15 @@ class CaptivePortalTabHelper
   // login page.
   void SetIsLoginTab();
 
-  bool is_captive_portal_window() const { return is_captive_portal_window_; }
-  void set_is_captive_portal_window() { is_captive_portal_window_ = true; }
+  bool is_captive_portal_window() const {
+    return window_type_ == CaptivePortalWindowType::kPopup;
+  }
+  bool is_captive_portal_tab() const {
+    return window_type_ == CaptivePortalWindowType::kTab;
+  }
+  void set_window_type(CaptivePortalWindowType window_type) {
+    window_type_ = window_type;
+  }
 
  private:
   friend class ::CaptivePortalBrowserTest;
@@ -115,7 +122,7 @@ class CaptivePortalTabHelper
 
   // Whether this tab is part of a window that was constructed for captive
   // portal resolution.
-  bool is_captive_portal_window_;
+  CaptivePortalWindowType window_type_ = CaptivePortalWindowType::kNone;
 
   base::CallbackListSubscription subscription_;
 

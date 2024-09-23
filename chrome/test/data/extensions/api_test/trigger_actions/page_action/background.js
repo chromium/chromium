@@ -4,10 +4,12 @@
 
 // Show the page action icon for all tabs.
 chrome.tabs.onCreated.addListener(function(tab) {
-  chrome.tabs.getAllInWindow(null, function(tabs) {
-    for (var i = 0, t; t = tabs[i]; i++) {
-      chrome.pageAction.show(t.id);
-    }
+  chrome.windows.getCurrent(null, function(window) {
+    chrome.tabs.query({windowId:window.id}, function(tabs) {
+      for (var i = 0, t; t = tabs[i]; i++) {
+       chrome.pageAction.show(t.id);
+      }
+    });
   });
 });
 

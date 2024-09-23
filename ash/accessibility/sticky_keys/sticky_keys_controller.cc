@@ -12,6 +12,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace ash {
@@ -21,8 +22,9 @@ namespace {
 // Returns true if the type of mouse event should be modified by sticky keys.
 bool ShouldModifyMouseEvent(const ui::MouseEvent& event) {
   ui::EventType type = event.type();
-  return type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED ||
-         type == ui::ET_MOUSEWHEEL;
+  return type == ui::EventType::kMousePressed ||
+         type == ui::EventType::kMouseReleased ||
+         type == ui::EventType::kMousewheel;
 }
 
 // Handle the common tail of event rewriting.
@@ -55,7 +57,10 @@ ui::EventRewriteStatus RewriteUpdate(
 ///////////////////////////////////////////////////////////////////////////////
 //  StickyKeys
 StickyKeysController::StickyKeysController()
-    : enabled_(false), mod3_enabled_(false), altgr_enabled_(false) {}
+    : enabled_(false),
+      mod3_enabled_(false),
+      altgr_enabled_(false),
+      fn_enabled_(false) {}
 
 StickyKeysController::~StickyKeysController() = default;
 
@@ -69,15 +74,20 @@ void StickyKeysController::Enable(bool enabled) {
       shift_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_SHIFT_DOWN);
       alt_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_ALT_DOWN);
+      alt_sticky_key_->set_altgr_active(altgr_enabled_);
       altgr_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_ALTGR_DOWN);
+      altgr_sticky_key_->set_altgr_active(altgr_enabled_);
       ctrl_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_CONTROL_DOWN);
       mod3_sticky_key_ = std::make_unique<StickyKeysHandler>(ui::EF_MOD3_DOWN);
       search_sticky_key_ =
           std::make_unique<StickyKeysHandler>(ui::EF_COMMAND_DOWN);
+      fn_sticky_key_ =
+          std::make_unique<StickyKeysHandler>(ui::EF_FUNCTION_DOWN);
 
       overlay_ = std::make_unique<StickyKeysOverlay>();
+      overlay_->SetModifierVisible(ui::EF_FUNCTION_DOWN, fn_enabled_);
       overlay_->SetModifierVisible(ui::EF_ALTGR_DOWN, altgr_enabled_);
       overlay_->SetModifierVisible(ui::EF_MOD3_DOWN, mod3_enabled_);
     } else if (overlay_) {
@@ -86,13 +96,26 @@ void StickyKeysController::Enable(bool enabled) {
   }
 }
 
-void StickyKeysController::SetModifiersEnabled(bool mod3_enabled,
-                                               bool altgr_enabled) {
+void StickyKeysController::SetMod3AndAltGrModifiersEnabled(bool mod3_enabled,
+                                                           bool altgr_enabled) {
   mod3_enabled_ = mod3_enabled;
   altgr_enabled_ = altgr_enabled;
   if (overlay_) {
     overlay_->SetModifierVisible(ui::EF_ALTGR_DOWN, altgr_enabled_);
     overlay_->SetModifierVisible(ui::EF_MOD3_DOWN, mod3_enabled_);
+  }
+  if (altgr_sticky_key_) {
+    altgr_sticky_key_->set_altgr_active(altgr_enabled);
+  }
+  if (alt_sticky_key_) {
+    alt_sticky_key_->set_altgr_active(altgr_enabled);
+  }
+}
+
+void StickyKeysController::SetFnModifierEnabled(bool fn_enabled) {
+  fn_enabled_ = fn_enabled;
+  if (overlay_) {
+    overlay_->SetModifierVisible(ui::EF_FUNCTION_DOWN, fn_enabled_);
   }
 }
 
@@ -124,7 +147,6 @@ ui::EventRewriteStatus StickyKeysController::RewriteEvent(
     return RewriteScrollEvent(*event.AsScrollEvent(), rewritten_event);
 
   NOTREACHED();
-  return ui::EVENT_REWRITE_CONTINUE;
 }
 
 ui::EventRewriteStatus StickyKeysController::NextDispatchEvent(
@@ -137,7 +159,8 @@ ui::EventRewriteStatus StickyKeysController::NextDispatchEvent(
                   altgr_sticky_key_->GetModifierUpEvent(new_event) +
                   ctrl_sticky_key_->GetModifierUpEvent(new_event) +
                   mod3_sticky_key_->GetModifierUpEvent(new_event) +
-                  search_sticky_key_->GetModifierUpEvent(new_event);
+                  search_sticky_key_->GetModifierUpEvent(new_event) +
+                  fn_sticky_key_->GetModifierUpEvent(new_event);
   if (!new_event)
     return ui::EVENT_REWRITE_CONTINUE;
   if (remaining)
@@ -157,7 +180,8 @@ ui::EventRewriteStatus StickyKeysController::RewriteKeyEvent(
       altgr_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released) ||
       ctrl_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released) ||
       mod3_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released) ||
-      search_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released);
+      search_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released) ||
+      fn_sticky_key_->HandleKeyEvent(event, &mod_down_flags, &released);
   UpdateOverlay();
   return RewriteUpdate(consumed, released, mod_down_flags, event,
                        rewritten_event);
@@ -174,7 +198,8 @@ ui::EventRewriteStatus StickyKeysController::RewriteMouseEvent(
       alt_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released) ||
       altgr_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released) ||
       ctrl_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released) ||
-      mod3_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released);
+      mod3_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released) ||
+      fn_sticky_key_->HandleMouseEvent(event, &mod_down_flags, &released);
   return RewriteUpdate(consumed, released, mod_down_flags, event,
                        rewritten_event);
 }
@@ -190,7 +215,8 @@ ui::EventRewriteStatus StickyKeysController::RewriteScrollEvent(
       alt_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released) ||
       altgr_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released) ||
       ctrl_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released) ||
-      mod3_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released);
+      mod3_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released) ||
+      fn_sticky_key_->HandleScrollEvent(event, &mod_down_flags, &released);
   return RewriteUpdate(consumed, released, mod_down_flags, event,
                        rewritten_event);
 }
@@ -208,6 +234,8 @@ void StickyKeysController::UpdateOverlay() {
                                 altgr_sticky_key_->current_state());
   overlay_->SetModifierKeyState(ui::EF_MOD3_DOWN,
                                 mod3_sticky_key_->current_state());
+  overlay_->SetModifierKeyState(ui::EF_FUNCTION_DOWN,
+                                fn_sticky_key_->current_state());
 
   bool key_in_use =
       shift_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED ||
@@ -215,7 +243,8 @@ void StickyKeysController::UpdateOverlay() {
       altgr_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED ||
       ctrl_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED ||
       search_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED ||
-      mod3_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED;
+      mod3_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED ||
+      fn_sticky_key_->current_state() != STICKY_KEY_STATE_DISABLED;
 
   overlay_->Show(enabled_ && key_in_use);
 }
@@ -242,7 +271,6 @@ bool StickyKeysHandler::HandleKeyEvent(const ui::KeyEvent& event,
       return HandleLockedState(event, mod_down_flags, released);
   }
   NOTREACHED();
-  return false;
 }
 
 bool StickyKeysHandler::HandleMouseEvent(const ui::MouseEvent& event,
@@ -261,7 +289,7 @@ bool StickyKeysHandler::HandleMouseEvent(const ui::MouseEvent& event,
   *mod_down_flags |= modifier_flag_;
   // Only disable on the mouse released event in normal, non-locked mode.
   if (current_state_ == STICKY_KEY_STATE_ENABLED &&
-      event.type() != ui::ET_MOUSE_PRESSED) {
+      event.type() != ui::EventType::kMousePressed) {
     current_state_ = STICKY_KEY_STATE_DISABLED;
     *released = true;
     return false;
@@ -283,7 +311,7 @@ bool StickyKeysHandler::HandleScrollEvent(const ui::ScrollEvent& event,
   // and the offset of the current scroll event has the opposing sign.
   bool direction_changed = false;
   if (current_state_ == STICKY_KEY_STATE_ENABLED &&
-      event.type() == ui::ET_SCROLL) {
+      event.type() == ui::EventType::kScroll) {
     int offset = event.y_offset();
     if (scroll_delta_)
       direction_changed = offset * scroll_delta_ <= 0;
@@ -297,7 +325,7 @@ bool StickyKeysHandler::HandleScrollEvent(const ui::ScrollEvent& event,
   // with a fling start event. We also stop when the scroll sequence changes
   // direction.
   if (current_state_ == STICKY_KEY_STATE_ENABLED &&
-      (event.type() == ui::ET_SCROLL_FLING_START || direction_changed)) {
+      (event.type() == ui::EventType::kScrollFlingStart || direction_changed)) {
     current_state_ = STICKY_KEY_STATE_DISABLED;
     scroll_delta_ = 0;
     *released = true;
@@ -320,10 +348,16 @@ int StickyKeysHandler::GetModifierUpEvent(
 
 StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
     ui::EventType type,
-    ui::KeyboardCode key_code) {
+    ui::KeyboardCode key_code,
+    ui::DomCode dom_code) {
   bool is_target_key = false;
-  if (key_code == ui::VKEY_SHIFT || key_code == ui::VKEY_LSHIFT ||
-      key_code == ui::VKEY_RSHIFT) {
+  if (altgr_active_ && dom_code == ui::DomCode::ALT_RIGHT) {
+    // Must check dom_code before key_code for alt, as
+    // alt right has the same key_code as alt, but different
+    // dom_code.
+    is_target_key = (modifier_flag_ == ui::EF_ALTGR_DOWN);
+  } else if (key_code == ui::VKEY_SHIFT || key_code == ui::VKEY_LSHIFT ||
+             key_code == ui::VKEY_RSHIFT) {
     is_target_key = (modifier_flag_ == ui::EF_SHIFT_DOWN);
   } else if (key_code == ui::VKEY_CONTROL || key_code == ui::VKEY_LCONTROL ||
              key_code == ui::VKEY_RCONTROL) {
@@ -331,25 +365,28 @@ StickyKeysHandler::KeyEventType StickyKeysHandler::TranslateKeyEvent(
   } else if (key_code == ui::VKEY_MENU || key_code == ui::VKEY_LMENU ||
              key_code == ui::VKEY_RMENU) {
     is_target_key = (modifier_flag_ == ui::EF_ALT_DOWN);
-  } else if (key_code == ui::VKEY_ALTGR) {
+  } else if (altgr_active_ && key_code == ui::VKEY_ALTGR) {
     is_target_key = (modifier_flag_ == ui::EF_ALTGR_DOWN);
   } else if (key_code == ui::VKEY_OEM_8) {
     is_target_key = (modifier_flag_ == ui::EF_MOD3_DOWN);
   } else if (key_code == ui::VKEY_LWIN || key_code == ui::VKEY_RWIN) {
     is_target_key = (modifier_flag_ == ui::EF_COMMAND_DOWN);
+  } else if (key_code == ui::VKEY_FUNCTION) {
+    is_target_key = (modifier_flag_ == ui::EF_FUNCTION_DOWN);
   } else {
-    return type == ui::ET_KEY_PRESSED ? NORMAL_KEY_DOWN : NORMAL_KEY_UP;
+    return type == ui::EventType::kKeyPressed ? NORMAL_KEY_DOWN : NORMAL_KEY_UP;
   }
 
   if (is_target_key) {
-    return type == ui::ET_KEY_PRESSED ? TARGET_MODIFIER_DOWN
-                                      : TARGET_MODIFIER_UP;
+    return type == ui::EventType::kKeyPressed ? TARGET_MODIFIER_DOWN
+                                              : TARGET_MODIFIER_UP;
   }
-  return type == ui::ET_KEY_PRESSED ? OTHER_MODIFIER_DOWN : OTHER_MODIFIER_UP;
+  return type == ui::EventType::kKeyPressed ? OTHER_MODIFIER_DOWN
+                                            : OTHER_MODIFIER_UP;
 }
 
 bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case TARGET_MODIFIER_UP:
       if (preparing_to_enable_) {
         preparing_to_enable_ = false;
@@ -371,13 +408,12 @@ bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
       return false;
   }
   NOTREACHED();
-  return false;
 }
 
 bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
                                            int* mod_down_flags,
                                            bool* released) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case NORMAL_KEY_UP:
     case TARGET_MODIFIER_DOWN:
       return false;
@@ -396,13 +432,12 @@ bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
       return false;
   }
   NOTREACHED();
-  return false;
 }
 
 bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
                                           int* mod_down_flags,
                                           bool* released) {
-  switch (TranslateKeyEvent(event.type(), event.key_code())) {
+  switch (TranslateKeyEvent(event.type(), event.key_code(), event.code())) {
     case TARGET_MODIFIER_DOWN:
       return true;
     case TARGET_MODIFIER_UP:
@@ -417,7 +452,6 @@ bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
       return false;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace ash

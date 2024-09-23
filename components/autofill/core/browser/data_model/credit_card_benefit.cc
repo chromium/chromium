@@ -8,46 +8,36 @@
 
 namespace autofill {
 
-CreditCardBenefit::~CreditCardBenefit() = default;
-
-bool CreditCardBenefit::operator==(
-    const CreditCardBenefit& other_benefit) const = default;
-bool CreditCardBenefit::operator!=(
-    const CreditCardBenefit& other_benefit) const = default;
-
-bool CreditCardBenefit::IsValid() const {
-  if (linked_card_instrument_id_.is_null()) {
-    return false;
-  }
-
-  if ((*benefit_id_).empty()) {
-    return false;
-  }
-
-  if (benefit_description_.empty()) {
-    return false;
-  }
-
-  if (AutofillClock::Now() > expiry_time_) {
-    return false;
-  }
-
-  return true;
-}
-
-CreditCardBenefit::CreditCardBenefit(
+CreditCardBenefitBase::CreditCardBenefitBase(
     BenefitId benefit_id,
     LinkedCardInstrumentId linked_card_instrument_id,
-    BenefitType benefit_type,
     std::u16string benefit_description,
     base::Time start_time,
     base::Time expiry_time)
     : benefit_id_(std::move(benefit_id)),
       linked_card_instrument_id_(linked_card_instrument_id),
-      benefit_type_(benefit_type),
       benefit_description_(std::move(benefit_description)),
       start_time_(start_time),
       expiry_time_(expiry_time) {}
+
+CreditCardBenefitBase::CreditCardBenefitBase(const CreditCardBenefitBase&) =
+    default;
+CreditCardBenefitBase& CreditCardBenefitBase::operator=(
+    const CreditCardBenefitBase&) = default;
+CreditCardBenefitBase::CreditCardBenefitBase(CreditCardBenefitBase&&) = default;
+CreditCardBenefitBase& CreditCardBenefitBase::operator=(
+    CreditCardBenefitBase&&) = default;
+CreditCardBenefitBase::~CreditCardBenefitBase() = default;
+
+bool CreditCardBenefitBase::IsActiveBenefit() const {
+  base::Time current_time = AutofillClock::Now();
+  return current_time >= start_time_ && current_time < expiry_time_;
+}
+
+bool CreditCardBenefitBase::IsValidForWriteFromSync() const {
+  return linked_card_instrument_id_ && !benefit_id_->empty() &&
+         !benefit_description_.empty() && AutofillClock::Now() < expiry_time_;
+}
 
 CreditCardFlatRateBenefit::CreditCardFlatRateBenefit(
     BenefitId benefit_id,
@@ -55,27 +45,24 @@ CreditCardFlatRateBenefit::CreditCardFlatRateBenefit(
     std::u16string benefit_description,
     base::Time start_time,
     base::Time expiry_time)
-    : CreditCardBenefit(benefit_id,
-                        linked_card_instrument_id,
-                        BenefitType::kFlatRateBenefit,
-                        benefit_description,
-                        start_time,
-                        expiry_time) {}
+    : CreditCardBenefitBase(benefit_id,
+                            linked_card_instrument_id,
+                            benefit_description,
+                            start_time,
+                            expiry_time) {}
+
+CreditCardFlatRateBenefit::CreditCardFlatRateBenefit(
+    const CreditCardFlatRateBenefit&) = default;
+CreditCardFlatRateBenefit& CreditCardFlatRateBenefit::operator=(
+    const CreditCardFlatRateBenefit&) = default;
+CreditCardFlatRateBenefit::CreditCardFlatRateBenefit(
+    CreditCardFlatRateBenefit&&) = default;
+CreditCardFlatRateBenefit& CreditCardFlatRateBenefit::operator=(
+    CreditCardFlatRateBenefit&&) = default;
 CreditCardFlatRateBenefit::~CreditCardFlatRateBenefit() = default;
 
-bool CreditCardFlatRateBenefit::operator==(
-    const CreditCardBenefit& other_benefit) const {
-  return CreditCardBenefit::operator==(other_benefit);
-}
-
-bool CreditCardFlatRateBenefit::operator!=(
-    const CreditCardBenefit& other_benefit) const {
-  return CreditCardBenefit::operator!=(other_benefit);
-}
-
-bool CreditCardFlatRateBenefit::IsValid() const {
-  return CreditCardBenefit::IsValid() &&
-         benefit_type_ == BenefitType::kFlatRateBenefit;
+bool CreditCardFlatRateBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync();
 }
 
 CreditCardCategoryBenefit::CreditCardCategoryBenefit(
@@ -85,39 +72,25 @@ CreditCardCategoryBenefit::CreditCardCategoryBenefit(
     std::u16string benefit_description,
     base::Time start_time,
     base::Time expiry_time)
-    : CreditCardBenefit(benefit_id,
-                        linked_card_instrument_id,
-                        BenefitType::kCategoryBenefit,
-                        benefit_description,
-                        start_time,
-                        expiry_time),
+    : CreditCardBenefitBase(benefit_id,
+                            linked_card_instrument_id,
+                            benefit_description,
+                            start_time,
+                            expiry_time),
       benefit_category_(benefit_category) {}
+
+CreditCardCategoryBenefit::CreditCardCategoryBenefit(
+    const CreditCardCategoryBenefit&) = default;
+CreditCardCategoryBenefit& CreditCardCategoryBenefit::operator=(
+    const CreditCardCategoryBenefit&) = default;
+CreditCardCategoryBenefit::CreditCardCategoryBenefit(
+    CreditCardCategoryBenefit&&) = default;
+CreditCardCategoryBenefit& CreditCardCategoryBenefit::operator=(
+    CreditCardCategoryBenefit&&) = default;
 CreditCardCategoryBenefit::~CreditCardCategoryBenefit() = default;
 
-bool CreditCardCategoryBenefit::operator==(
-    const CreditCardBenefit& other_benefit) const {
-  if (!CreditCardBenefit::operator==(other_benefit)) {
-    return false;
-  }
-
-  // Safe to cast since base checks for type.
-  const CreditCardCategoryBenefit& converted_other_benefit =
-      static_cast<const CreditCardCategoryBenefit&>(other_benefit);
-  if (benefit_category_ != converted_other_benefit.benefit_category_) {
-    return false;
-  }
-
-  return true;
-}
-
-bool CreditCardCategoryBenefit::operator!=(
-    const CreditCardBenefit& other_benefit) const {
-  return !(*this == other_benefit);
-}
-
-bool CreditCardCategoryBenefit::IsValid() const {
-  return CreditCardBenefit::IsValid() &&
-         benefit_type_ == BenefitType::kCategoryBenefit &&
+bool CreditCardCategoryBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync() &&
          benefit_category_ != BenefitCategory::kUnknownBenefitCategory;
 }
 
@@ -128,39 +101,25 @@ CreditCardMerchantBenefit::CreditCardMerchantBenefit(
     base::flat_set<url::Origin> merchant_domains,
     base::Time start_time,
     base::Time expiry_time)
-    : CreditCardBenefit(benefit_id,
-                        linked_card_instrument_id,
-                        BenefitType::kMerchantBenefit,
-                        benefit_description,
-                        start_time,
-                        expiry_time),
+    : CreditCardBenefitBase(benefit_id,
+                            linked_card_instrument_id,
+                            benefit_description,
+                            start_time,
+                            expiry_time),
       merchant_domains_(std::move(merchant_domains)) {}
+
+CreditCardMerchantBenefit::CreditCardMerchantBenefit(
+    const CreditCardMerchantBenefit&) = default;
+CreditCardMerchantBenefit& CreditCardMerchantBenefit::operator=(
+    const CreditCardMerchantBenefit&) = default;
+CreditCardMerchantBenefit::CreditCardMerchantBenefit(
+    CreditCardMerchantBenefit&&) = default;
+CreditCardMerchantBenefit& CreditCardMerchantBenefit::operator=(
+    CreditCardMerchantBenefit&&) = default;
 CreditCardMerchantBenefit::~CreditCardMerchantBenefit() = default;
 
-bool CreditCardMerchantBenefit::operator==(
-    const CreditCardBenefit& other_benefit) const {
-  if (!CreditCardBenefit::operator==(other_benefit)) {
-    return false;
-  }
-
-  // Safe to cast since base checks for type.
-  const CreditCardMerchantBenefit& converted_other_benefit =
-      static_cast<const CreditCardMerchantBenefit&>(other_benefit);
-  if (merchant_domains_ != converted_other_benefit.merchant_domains_) {
-    return false;
-  }
-
-  return true;
-}
-
-bool CreditCardMerchantBenefit::operator!=(
-    const CreditCardBenefit& other_benefit) const {
-  return !(*this == other_benefit);
-}
-
-bool CreditCardMerchantBenefit::IsValid() const {
-  return CreditCardBenefit::IsValid() &&
-         benefit_type_ == BenefitType::kMerchantBenefit &&
+bool CreditCardMerchantBenefit::IsValidForWriteFromSync() const {
+  return CreditCardBenefitBase::IsValidForWriteFromSync() &&
          !merchant_domains_.empty();
 }
 

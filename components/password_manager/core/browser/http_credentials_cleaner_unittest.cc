@@ -136,12 +136,12 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
     std::string histogram_name;
   };
 
-  static const std::string signon_realm[2] = {"https://example.org/realm/",
-                                              "https://example.org/"};
+  static const std::array<std::string, 2> signon_realm = {
+      "https://example.org/realm/", "https://example.org/"};
 
-  static const std::u16string username[2] = {u"user0", u"user1"};
+  static const std::array<std::u16string, 2> username = {u"user0", u"user1"};
 
-  static const std::u16string password[2] = {u"pass0", u"pass1"};
+  static const std::array<std::u16string, 2> password = {u"pass0", u"pass1"};
 
   base::test::TaskEnvironment task_environment;
   store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
@@ -228,7 +228,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   if (test.is_hsts_enabled &&
       test.expected != HttpCredentialType::kConflicting) {
     // HTTP credentials have to be removed.
-    EXPECT_TRUE(current_store.find(http_form.signon_realm)->second.empty());
+    EXPECT_FALSE(current_store.contains(http_form.signon_realm));
 
     // For no matching case https credentials were added and for an equivalent
     // case they already existed.

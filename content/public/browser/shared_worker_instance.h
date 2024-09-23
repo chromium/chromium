@@ -64,12 +64,18 @@ class CONTENT_EXPORT SharedWorkerInstance {
     return credentials_mode_;
   }
   const blink::StorageKey& storage_key() const { return storage_key_; }
+  const url::Origin& renderer_origin() const { return renderer_origin_; }
   blink::mojom::SharedWorkerCreationContextType creation_context_type() const {
     return creation_context_type_;
   }
 
   blink::mojom::SharedWorkerSameSiteCookies same_site_cookies() const {
     return same_site_cookies_;
+  }
+  bool DoesRequireCrossSiteRequestForCookies() const {
+    return storage_key_.IsThirdPartyContext() ||
+           same_site_cookies_ ==
+               blink::mojom::SharedWorkerSameSiteCookies::kNone;
   }
 
  private:
@@ -86,6 +92,12 @@ class CONTENT_EXPORT SharedWorkerInstance {
   // details.
   // https://html.spec.whatwg.org/multipage/workers.html#concept-sharedworkerglobalscope-constructor-origin
   const blink::StorageKey storage_key_;
+
+  // The origin used by this shared worker on the renderer side. This will
+  // be the same as the storage key's origin, except in the case of data: URL
+  // workers, as described in the linked bug.
+  // TODO(crbug.com/40051700): Make the storage key's origin always match this.
+  const url::Origin renderer_origin_;
 
   const blink::mojom::SharedWorkerCreationContextType creation_context_type_;
 

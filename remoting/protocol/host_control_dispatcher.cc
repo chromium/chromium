@@ -134,8 +134,18 @@ void HostControlDispatcher::OnIncomingMessage(
     host_stub_->ControlPeerConnection(message->peer_connection_parameters());
   } else if (message->has_video_layout()) {
     host_stub_->SetVideoLayout(message->video_layout());
+  } else if (message->has_cursor_shape()) {
+    LOG(WARNING) << "Unexpected control message received: CursorShape";
+  } else if (message->has_pairing_response()) {
+    LOG(WARNING) << "Unexpected control message received: PairingResponse";
+  } else if (message->has_keyboard_layout()) {
+    LOG(WARNING) << "Unexpected control message received: KeyboardLayout";
+  } else if (message->has_transport_info()) {
+    LOG(WARNING) << "Unexpected control message received: TransportInfo";
+  } else if (message->has_active_display_changed()) {
+    LOG(WARNING) << "Unexpected control message received: ActiveDisplayChanged";
   } else {
-    LOG(WARNING) << "Unknown control message received.";
+    LOG(WARNING) << "Unknown control message received";
   }
 }
 

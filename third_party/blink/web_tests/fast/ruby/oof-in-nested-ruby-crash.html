@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// crbug.com/341126031
+test(() => {
+  document.body.insertAdjacentHTML('beforeend',
+      '<ruby><ruby><rt><select style="position:fixed"></select></ruby></ruby>');
+  document.body.offsetWidth;
+}, 'No crash with an oof box in nested rubies');
+</script>
+</body>

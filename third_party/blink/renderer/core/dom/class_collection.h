@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/dom/space_split_string_wrapper.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 
 namespace blink {
@@ -46,8 +47,13 @@ class ClassCollection final : public HTMLCollection {
 
   bool ElementMatches(const Element&) const;
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(class_names_);
+    HTMLCollection::Trace(visitor);
+  }
+
  private:
-  SpaceSplitString class_names_;
+  Member<SpaceSplitStringWrapper> class_names_;
 };
 
 template <>
@@ -60,9 +66,10 @@ struct DowncastTraits<ClassCollection> {
 inline bool ClassCollection::ElementMatches(const Element& test_element) const {
   if (!test_element.HasClass())
     return false;
-  if (!class_names_.size())
+  if (!class_names_->value.size()) {
     return false;
-  return test_element.ClassNames().ContainsAll(class_names_);
+  }
+  return test_element.ClassNames().ContainsAll(class_names_->value);
 }
 
 }  // namespace blink

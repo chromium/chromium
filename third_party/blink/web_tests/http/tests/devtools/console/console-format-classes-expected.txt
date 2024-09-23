@@ -6,17 +6,17 @@ console-format-classes.js:32 Error: custom error with link www.chromium.org
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           object-value-error source-code
-            devtools-link
-            devtools-link
+            devtools-link text-button link-style
+            devtools-link text-button link-style
 console-format-classes.js:32 (6) [1, empty × 2, 2, (...), empty] 
   console-row-wrapper
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-array source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -38,7 +38,7 @@ console-format-classes.js:32 {a: 1}
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-object source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -56,7 +56,7 @@ console-format-classes.js:32 {str: '', nan: NaN, posInf: Infinity, negInf: -Infi
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-object source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -82,7 +82,7 @@ console-format-classes.js:32 {null: null, undef: undefined, re: /^[regexp]$/g, c
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-object source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -108,7 +108,7 @@ console-format-classes.js:32 Proxy(Object) {a: 1}
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-proxy source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -127,7 +127,7 @@ console-format-classes.js:32 HTMLAllCollection(4) [html, head, base, body]
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-array source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow
@@ -153,7 +153,7 @@ console-format-classes.js:36 (7) [Error: custom error with link www.chromium.or
     console-message
       source-code
         console-message-anchor
-          devtools-link
+          devtools-link text-button link-style
         console-message-text
           console-view-object-properties-section object-value-array source-code
             tree-outline-disclosure tree-outline-disclosure-hide-overflow

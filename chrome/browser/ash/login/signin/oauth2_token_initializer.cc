@@ -25,7 +25,7 @@ void OAuth2TokenInitializer::Start(const UserContext& user_context,
       this, g_browser_process->system_network_context_manager()
                 ->GetSharedURLLoaderFactory());
   if (user_context.GetDeviceId().empty())
-    NOTREACHED() << "Device ID is not set";
+    NOTREACHED_IN_MIGRATION() << "Device ID is not set";
   oauth2_token_fetcher_->StartExchangeFromAuthCode(user_context.GetAuthCode(),
                                                    user_context.GetDeviceId());
 }

@@ -117,7 +117,7 @@ which demonstrates how to trigger it.
 
 ### Force-disable all prerender triggers
 
-- The simplest and most aggressive way is disabling preloading on chrome://settings/preloading.
+- The simplest and most aggressive way is disabling preloading on chrome://settings/performance.
 - If you only want to disable Prerender2, you can use
   chrome://flags/#prerender2, or `--disable-features=Prerender2`.
 

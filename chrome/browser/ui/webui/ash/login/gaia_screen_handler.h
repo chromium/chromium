@@ -12,18 +12,19 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
+#include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
-#include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -42,8 +43,9 @@ namespace ash {
 
 class PublicSamlUrlFetcher;
 class ErrorScreensHistogramHelper;
+class SamlChallengeKeyHandler;
 
-class GaiaView : public base::SupportsWeakPtr<GaiaView> {
+class GaiaView {
  public:
   enum class GaiaLoginVariant {
     // These values are persisted to logs. Entries should not be renumbered and
@@ -103,17 +105,20 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void ShowSigninScreenForTest(const std::string& username,
                                        const std::string& password,
                                        const std::string& services) = 0;
-  virtual void SetQuickStartEnabled() = 0;
+  virtual void SetQuickStartEntryPointVisibility(bool visible) = 0;
   // Sets if Gaia password is required during login. If the password is
   // required, Gaia passwordless login will be disallowed.
   virtual void SetIsGaiaPasswordRequired(bool is_required) = 0;
 
   // Reset authenticator.
   virtual void Reset() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<GaiaView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class GaiaScreenHandler
+class GaiaScreenHandler final
     : public BaseScreenHandler,
       public GaiaView,
       public chromeos::SecurityTokenPinDialogHost,
@@ -121,15 +126,6 @@ class GaiaScreenHandler
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   using TView = GaiaView;
-
-  // The possible modes that the Gaia signin screen can be in.
-  enum GaiaScreenMode {
-    // Default Gaia authentication will be used.
-    GAIA_SCREEN_MODE_DEFAULT = 0,
-
-    // SAML authentication will be used by default.
-    GAIA_SCREEN_MODE_SAML_REDIRECT = 1,
-  };
 
   enum FrameState {
     FRAME_STATE_UNKNOWN = 0,
@@ -162,10 +158,11 @@ class GaiaScreenHandler
                                const std::string& password,
                                const std::string& services) override;
 
-  void SetQuickStartEnabled() override;
+  void SetQuickStartEntryPointVisibility(bool visible) override;
   void SetIsGaiaPasswordRequired(bool is_required) override;
 
   void Reset() override;
+  base::WeakPtr<GaiaView> AsWeakPtr() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -184,7 +181,8 @@ class GaiaScreenHandler
 
   // Returns the initial mode of the Gaia signin screen for a given user email
   // address. Note this also affects which Gaia endpoint is used.
-  static GaiaScreenMode GetGaiaScreenMode(const std::string& email);
+  static WizardContext::GaiaScreenMode GetGaiaScreenMode(
+      const std::string& email);
 
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
@@ -204,6 +202,8 @@ class GaiaScreenHandler
   // to learn of the relevant state transitions e.g. with an Observer class.
   bool IsLoadedForTesting() const;
   bool IsNavigationBlockedForTesting() const;
+
+  ash::AuthenticationFlowAutoReloadManager& GetAutoReloadManagerForTesting();
 
  private:
   void LoadGaia(const login::GaiaContext& context);
@@ -268,10 +268,6 @@ class GaiaScreenHandler
   void RecordCompleteAuthenticationMetrics(
       const ash::login::OnlineSigninArtifacts& artifacts);
 
-  void HandleCompleteLogin(const std::string& gaia_id,
-                           const std::string& typed_email,
-                           const std::string& password,
-                           bool using_saml);
   void HandleLaunchSAMLPublicSession(const std::string& email);
 
   // Handles SAML/GAIA login flow metrics
@@ -309,12 +305,6 @@ class GaiaScreenHandler
 
   // Called when Gaia sends us a "getDeviceId" message.
   void HandleGetDeviceId(const std::string& callback_id);
-
-  // Really handles the complete login message.
-  void DoCompleteLogin(const std::string& gaia_id,
-                       const std::string& typed_email,
-                       const std::string& password,
-                       bool using_saml);
 
   // Kick off cookie / local storage cleanup.
   void StartClearingCookies(base::OnceClosure on_clear_callback);
@@ -360,9 +350,11 @@ class GaiaScreenHandler
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
 
-  // After proxy auth information has been supplied, this function re-enables
-  // responding to network state notifications.
-  void ReenableNetworkStateUpdatesAfterProxyAuth();
+  // After proxy auth is cancelled or information has been supplied, this
+  // function re-enables responding to network state notifications, and
+  // reactivates the authentication flow autoreload functionality (if enabled by
+  // policy).
+  void OnProxyAuthDone();
 
   // Error screen hide callback which records error screen metrics and shows
   // GAIA.
@@ -429,7 +421,8 @@ class GaiaScreenHandler
       untrusted_authority_certs_cache_;
 
   // The type of Gaia page to show.
-  GaiaScreenMode screen_mode_ = GAIA_SCREEN_MODE_DEFAULT;
+  WizardContext::GaiaScreenMode screen_mode_ =
+      WizardContext::GaiaScreenMode::kDefault;
 
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;
@@ -515,6 +508,8 @@ class GaiaScreenHandler
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   bool is_gaia_password_required_ = false;
+
+  ash::AuthenticationFlowAutoReloadManager auth_flow_auto_reload_manager_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };

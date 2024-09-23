@@ -1,0 +1,4 @@
+# crbug/338436747
+-SkiaOutputSurfaceImplTest.CopyOutputBitmapSupportedColorSpace
+-SkiaOutputSurfaceImplTest.CopyOutputBitmapUnsupportedColorSpace
+-SkiaOutputSurfaceImplTest.EndPaint

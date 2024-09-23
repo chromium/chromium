@@ -72,7 +72,8 @@ class Volume {
   static std::unique_ptr<Volume> CreateForDownloads(
       base::FilePath downloads_path,
       base::FilePath optional_fusebox_path = {},
-      const char* optional_fusebox_volume_label = nullptr);
+      const char* optional_fusebox_volume_label = nullptr,
+      bool read_only = false);
 
   static std::unique_ptr<Volume> CreateForRemovable(
       const ash::disks::DiskMountManager::MountPoint& mount_point,
@@ -215,12 +216,11 @@ class Volume {
 
   // The source path of the volume.
   // E.g.:
-  // - /home/chronos/user/Downloads/zipfile_path.zip
+  // - /home/chronos/user/MyFiles/Downloads/zipfile_path.zip
   base::FilePath source_path_;
 
   // The mount path of the volume.
   // E.g.:
-  // - /home/chronos/user/Downloads
   // - /media/removable/usb1
   // - /media/archive/zip1
   base::FilePath mount_path_;

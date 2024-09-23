@@ -116,9 +116,9 @@ std::optional<EventType> ConvertKeyEventType(
     fuchsia_ui_input3::KeyEventType type) {
   switch (type) {
     case fuchsia_ui_input3::KeyEventType::kPressed:
-      return ET_KEY_PRESSED;
+      return EventType::kKeyPressed;
     case fuchsia_ui_input3::KeyEventType::kReleased:
-      return ET_KEY_RELEASED;
+      return EventType::kKeyReleased;
     case fuchsia_ui_input3::KeyEventType::kSync:
     case fuchsia_ui_input3::KeyEventType::kCancel:
       // SYNC and CANCEL should not generate ui::Events.
@@ -126,7 +126,6 @@ std::optional<EventType> ConvertKeyEventType(
     default:
       NOTREACHED() << "Unknown KeyEventType received: "
                    << static_cast<int>(type);
-      return std::nullopt;
   }
 }
 
@@ -213,7 +212,7 @@ bool KeyboardClient::ProcessKeyEvent(
 
     // Derive the legacy key_code. At present this only takes into account the
     // DOM Code, and event flags, so requires that key() be set.
-    // TODO(crbug.com/1187257): Take into account the KeyMeaning, similarly to
+    // TODO(crbug.com/42050247): Take into account the KeyMeaning, similarly to
     // the X11 event conversion implementation.
     // TODO(fxbug.dev/106600): Remove default-derivation of DOM Key, once the
     // platform defines the missing values.

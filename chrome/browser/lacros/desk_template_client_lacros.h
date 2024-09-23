@@ -11,7 +11,10 @@
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "url/gurl.h"
+
+class Profile;
 
 // This class gathers desk template data for Ash.
 class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
@@ -24,15 +27,21 @@ class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
   // DeskTemplateClient:
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
-      const ui::WindowShowState show_state,
+      const ui::mojom::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state) override;
   void GetBrowserInformation(uint32_t serial,
                              const std::string& window_unique_id,
                              GetBrowserInformationCallback callback) override;
   void GetFaviconImage(const GURL& url,
+                       std::optional<uint64_t> profile_id,
                        GetFaviconImageCallback callback) override;
 
  private:
+  // Loads the favicon for the given `url` and `profile`.
+  void GetFaviconImageWithProfile(const GURL& url,
+                                  GetFaviconImageCallback callback,
+                                  Profile* profile);
+
   // The cancelable task tracker used for retrieving icons from the favicon
   // service.
   base::CancelableTaskTracker task_tracker_;

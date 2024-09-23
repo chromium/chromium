@@ -93,9 +93,9 @@ public class MenuButton extends FrameLayout implements TintObserver {
     /**
      * Sets the update badge to visible.
      *
-     * @param visible Whether the update badge should be visible. Always sets visibility to GONE
-     *                if the update type does not require a badge.
-     * TODO(crbug.com/865801): Clean this up when MenuButton and UpdateMenuItemHelper is MVCed.
+     * @param visible Whether the update badge should be visible. Always sets visibility to GONE if
+     *     the update type does not require a badge. TODO(crbug.com/40585866): Clean this up when
+     *     MenuButton and UpdateMenuItemHelper is MVCed.
      */
     private void setUpdateBadgeVisibility(boolean visible) {
         if (mUpdateBadgeView == null) return;
@@ -280,7 +280,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
                         ViewCompat.getPaddingEnd(mMenuImageButton),
                         mMenuImageButton.getPaddingBottom());
             }
-            // TODO(https://crbug.com/1233703) This doesn't work well with website themes.
+            // TODO(crbug.com/40191664) This doesn't work well with website themes.
             boolean isLightPulseColor =
                     mBrandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
                             || mBrandedColorScheme == BrandedColorScheme.INCOGNITO;
@@ -314,7 +314,10 @@ public class MenuButton extends FrameLayout implements TintObserver {
     }
 
     @Override
-    public void onTintChanged(ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+    public void onTintChanged(
+            ColorStateList tintList,
+            ColorStateList activityFocusTintList,
+            @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mMenuImageButton, tintList);
         mBrandedColorScheme = brandedColorScheme;
         updateImageResources();

@@ -16,7 +16,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 
 namespace {
 // This rounding is required because 'LargestDrawQuadSize' and
@@ -84,11 +83,6 @@ QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
       return InsertBeforeAndInvalidateAllPointers<VideoHoleDrawQuad>(at, count,
                                                                      copy);
     }
-    case DrawQuad::Material::kYuvVideoContent: {
-      const auto copy = *YUVVideoDrawQuad::MaterialCast(*at);
-      return InsertBeforeAndInvalidateAllPointers<YUVVideoDrawQuad>(at, count,
-                                                                    copy);
-    }
     case DrawQuad::Material::kSharedElement: {
       const auto copy = *SharedElementDrawQuad::MaterialCast(*at);
       return InsertBeforeAndInvalidateAllPointers<SharedElementDrawQuad>(
@@ -98,7 +92,7 @@ QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
     case DrawQuad::Material::kAggregatedRenderPass:
     case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
-      NOTREACHED();  // Invalid DrawQuad material.
+      NOTREACHED_IN_MIGRATION();  // Invalid DrawQuad material.
       return at;
   }
 }

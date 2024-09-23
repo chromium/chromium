@@ -165,7 +165,7 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
   void SetTimeout() { timeout_ = true; }
 
   bool HasActiveClients() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

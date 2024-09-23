@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -105,7 +105,7 @@ std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
       "A future version of Chrome may remove this ad";
   const char kInterventionMessage[] = "Ad was removed";
 
-  base::StringPiece intervention_mode =
+  std::string_view intervention_mode =
       will_unload_adframe ? kInterventionMessage : kReportingOnlyMessage;
 
   switch (frame_data.heavy_ad_status_with_noise()) {
@@ -122,7 +122,7 @@ std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
                            " because its peak CPU usage exceeded the limit. ",
                            kChromeStatusMessage});
     case HeavyAdStatus::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -145,7 +145,7 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(HeavyAdStatus status) {
     case HeavyAdStatus::kPeakCpu:
       return blink::mojom::HeavyAdReason::kCpuPeakLimit;
     case HeavyAdStatus::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return blink::mojom::HeavyAdReason::kNetworkTotalLimit;
   }
 }
@@ -209,7 +209,7 @@ bool AdsPageLoadMetricsObserver::IsFrameSameOriginToOutermostMainFrame(
   DCHECK(host);
   // In navigation for prerendering, `AdsPageLoadMetricsObserver` is removed
   // from PageLoadTracker.
-  // TODO(https://crbug.com/1317494): Enable it if possible.
+  // TODO(crbug.com/40222513): Enable it if possible.
   DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
             host->GetLifecycleState());
   content::RenderFrameHost* outermost_main_host = host->GetOutermostMainFrame();
@@ -306,7 +306,7 @@ PageLoadMetricsObserver::ObservePolicy
 AdsPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1317494): Handle Prerendering cases.
+  // TODO(crbug.com/40222513): Handle Prerendering cases.
   return STOP_OBSERVING;
 }
 
@@ -363,13 +363,30 @@ void AdsPageLoadMetricsObserver::OnTimingUpdate(
   bool has_new_fcp = ancestor_data->SetEarliestFirstContentfulPaint(
       timing.paint_timing->first_contentful_paint);
 
-  // If this is the earliest FCP for any frame in the root ad frame's subtree,
-  // set Creative Origin Status.
   if (has_new_fcp) {
+    // If this is the earliest FCP for any frame in the root ad frame's subtree,
+    // set Creative Origin Status.
     OriginStatus origin_status =
         IsFrameSameOriginToOutermostMainFrame(frame_rfh) ? OriginStatus::kSame
                                                          : OriginStatus::kCross;
     ancestor_data->set_creative_origin_status(origin_status);
+
+    // Determine the offset of this ad-frame FCP from main frame navigation
+    // start, and remember it if it's the lowest. The time calculation is
+    // (frame_fcp + frame_nav_start) - main_frame_nav_start.
+    auto id_and_start =
+        frame_navigation_starts_.find(frame_rfh->GetFrameTreeNodeId());
+    if (id_and_start != frame_navigation_starts_.end()) {
+      base::TimeDelta time_since_top_nav_start =
+          (id_and_start->second +
+           timing.paint_timing->first_contentful_paint.value()) -
+          GetDelegate().GetNavigationStart();
+
+      ancestor_data->SetEarliestFirstContentfulPaintSinceTopNavStart(
+          time_since_top_nav_start);
+      aggregate_frame_data_->UpdateFirstAdFCPSinceNavStart(
+          time_since_top_nav_start);
+    }
   }
 }
 
@@ -398,7 +415,8 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
     content::NavigationHandle* navigation_handle,
     bool is_adframe,
     bool should_ignore_detected_ad) {
-  const FrameTreeNodeId ad_id = navigation_handle->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId ad_id =
+      navigation_handle->GetFrameTreeNodeId();
   // If an existing subframe is navigating and it was an ad previously that
   // hasn't navigated yet, then we need to update it.
   const auto& id_and_data = ad_frames_data_.find(ad_id);
@@ -409,7 +427,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   if (previous_data) {
     // Frames that are no longer ad frames or are ignored as ad frames due to
     // restricted navigation ad tagging should have their tracked data reset.
-    // TODO(crbug.com/1101584): Simplify the condition when restricted
+    // TODO(crbug.com/40138413): Simplify the condition when restricted
     // navigation ad tagging is moved to subresource_filter/.
     if (!is_adframe || (should_ignore_detected_ad &&
                         (ad_id == previous_data->root_frame_tree_node_id()))) {
@@ -503,7 +521,7 @@ void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
     return;
   // Prerendering navigation doesn't get here since this observer in
   // prerendering is removed from PageLoadTracker.
-  // TODO(https://crbug.com/1317494): Consider enabling this observer for
+  // TODO(crbug.com/40222513): Consider enabling this observer for
   // prerendering.
   DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   process_display_state_updates_ = false;
@@ -521,10 +539,13 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
           FromNavigationHandle(*navigation_handle);
   DCHECK(throttle_manager);
 
+  frame_navigation_starts_[navigation_handle->GetFrameTreeNodeId()] =
+      navigation_handle->NavigationStart();
+
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
       navigation_handle->GetFrameTreeNodeId());
 
-  // TODO(https://crbug.com/1030325): The following block is a hack to ignore
+  // TODO(crbug.com/40109934): The following block is a hack to ignore
   // certain frames that are detected by AdTagging. These frames are ignored
   // specifically for ad metrics and for the heavy ad intervention. The frames
   // ignored here are still considered ads by the heavy ad intervention. This
@@ -655,7 +676,8 @@ void AdsPageLoadMetricsObserver::MediaStartedPlaying(
 void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Rect& main_frame_intersection_rect) {
-  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   if (render_frame_host->IsInPrimaryMainFrame()) {
     page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
@@ -666,7 +688,7 @@ void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
   FrameTreeData* ancestor_data = FindFrameData(frame_tree_node_id);
   if (ancestor_data &&
       frame_tree_node_id == ancestor_data->root_frame_tree_node_id()) {
-    RectId rect_id = RectId(RectType::kIFrame, frame_tree_node_id);
+    RectId rect_id = RectId(RectType::kIFrame, frame_tree_node_id.value());
 
     // Only add frames if they are visible.
     if (!ancestor_data->is_display_none()) {
@@ -697,7 +719,7 @@ void AdsPageLoadMetricsObserver::OnMainFrameImageAdRectsChanged(
       main_frame_image_ad_rects);
 }
 
-// TODO(https://crbug.com/1142669): Evaluate imposing width requirements
+// TODO(crbug.com/40727873): Evaluate imposing width requirements
 // for ad density violations.
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #if BUILDFLAG(IS_ANDROID)
@@ -725,7 +747,10 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #endif
 }
 
-void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
+void AdsPageLoadMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  frame_navigation_starts_.erase(frame_tree_node_id);
+
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())
     return;
@@ -763,7 +788,8 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
     if (!render_frame_host)
       continue;
 
-    FrameTreeNodeId frame_node_id = render_frame_host->GetFrameTreeNodeId();
+    content::FrameTreeNodeId frame_node_id =
+        render_frame_host->GetFrameTreeNodeId();
     FrameTreeData* ad_frame_data = FindFrameData(frame_node_id);
 
     if (ad_frame_data) {
@@ -776,6 +802,14 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
           update.delta_bytes);
     }
   }
+}
+
+void AdsPageLoadMetricsObserver::OnAdAuctionComplete(
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
+  aggregate_frame_data_->OnAdAuctionComplete(is_server_auction,
+                                             is_on_device_auction, result);
 }
 
 void AdsPageLoadMetricsObserver::OnSubresourceFilterGoingAway() {
@@ -795,7 +829,7 @@ void AdsPageLoadMetricsObserver::OnPageActivationComputed(
       activation_state.activation_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
     // Prerendering navigation is filtered out by checking `navigation_id_`.
-    // TODO(https://crbug.com/1317494): Consider enabling this observer for
+    // TODO(crbug.com/40222513): Consider enabling this observer for
     // prerendering.
     DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
     DCHECK(!subresource_filter_is_enabled_);
@@ -951,6 +985,55 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
     }
   }
 
+  std::optional<base::TimeDelta> first_ad_fcp_after_main_nav_start =
+      aggregate_frame_data_->first_ad_fcp_after_main_nav_start();
+  if (first_ad_fcp_after_main_nav_start) {
+    PAGE_LOAD_HISTOGRAM(
+        "PageLoad.Clients.Ads.AdPaintTiming."
+        "TopFrameNavigationToFirstAdFirstContentfulPaint",
+        first_ad_fcp_after_main_nav_start.value());
+
+    std::string fcp_after_auction_metric_name;
+    if (aggregate_frame_data_->completed_fledge_server_auction_before_fcp()) {
+      if (aggregate_frame_data_
+              ->completed_fledge_on_device_auction_before_fcp()) {
+        fcp_after_auction_metric_name =
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+            "ServerAndDeviceAuctions";
+      } else {
+        fcp_after_auction_metric_name =
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAuction";
+        if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+          PAGE_LOAD_HISTOGRAM(
+              "PageLoad.Clients.Ads.AdPaintTiming."
+              "TopFrameNavigationToFirstAdFirstContentfulPaintAfterWinning"
+              "ServerAuction",
+              first_ad_fcp_after_main_nav_start.value());
+        }
+      }
+    } else if (aggregate_frame_data_
+                   ->completed_fledge_on_device_auction_before_fcp()) {
+      fcp_after_auction_metric_name =
+          "PageLoad.Clients.Ads.AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterDeviceAuction";
+      if (aggregate_frame_data_->completed_only_winning_fledge_auctions()) {
+        PAGE_LOAD_HISTOGRAM(
+            "PageLoad.Clients.Ads.AdPaintTiming."
+            "TopFrameNavigationToFirstAdFirstContentfulPaintAfter"
+            "WinningDeviceAuction",
+            first_ad_fcp_after_main_nav_start.value());
+      }
+    } else {
+      fcp_after_auction_metric_name =
+          "PageLoad.Clients.Ads.AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction";
+    }
+    PAGE_LOAD_HISTOGRAM(fcp_after_auction_metric_name,
+                        first_ad_fcp_after_main_nav_start.value());
+  }
+
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kNonVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kAnyVisibility);
@@ -971,7 +1054,7 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
   FrameVisibility visibility = FrameVisibility::kAnyVisibility;
 
   // Record the aggregate data, which is never considered activated.
-  // TODO(crbug/1109754): Does it make sense to include an aggregate peak
+  // TODO(crbug.com/40141881): Does it make sense to include an aggregate peak
   // windowed percent?  Obviously this would be a max of maxes, but might be
   // useful to have that for comparisons as well.
   ADS_HISTOGRAM("Cpu.AdFrames.Aggregate.TotalUsage2", PAGE_LOAD_HISTOGRAM,
@@ -1169,6 +1252,13 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                     PAGE_LOAD_LONG_HISTOGRAM, visibility,
                     first_contentful_paint.value());
     }
+
+    if (auto earliest_fcp_since_top_nav_start =
+            ad_frame_data.earliest_fcp_since_top_nav_start()) {
+      ADS_HISTOGRAM("AdPaintTiming.TopFrameNavigationToFirstContentfulPaint",
+                    PAGE_LOAD_LONG_HISTOGRAM, visibility,
+                    earliest_fcp_since_top_nav_start.value());
+    }
   }
 }
 
@@ -1205,7 +1295,8 @@ void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
   ongoing_navigation_resources_.erase(frame_id_and_request);
 }
 
-FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(FrameTreeNodeId id) {
+FrameTreeData* AdsPageLoadMetricsObserver::FindFrameData(
+    content::FrameTreeNodeId id) {
   const auto& id_and_data = ad_frames_data_.find(id);
   if (id_and_data == ad_frames_data_.end())
     return nullptr;
@@ -1430,7 +1521,7 @@ void AdsPageLoadMetricsObserver::UpdateAggregateMemoryUsage(
 }
 
 void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
-    FrameTreeNodeId id,
+    content::FrameTreeNodeId id,
     FrameTreeData* frame_data,
     bool update_density_tracker,
     bool record_metrics) {
@@ -1441,7 +1532,7 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
     RecordPerFrameMetrics(*frame_data, GetDelegate().GetPageUkmSourceId());
 
   if (update_density_tracker) {
-    page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id),
+    page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id.value()),
                                         /*recalculate_viewport_density=*/true);
   }
 }

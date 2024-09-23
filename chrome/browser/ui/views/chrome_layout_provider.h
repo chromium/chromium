@@ -21,8 +21,6 @@ enum ChromeInsetsMetric {
   INSETS_OMNIBOX_PILL_BUTTON,
   // Padding used in an page info hover button.
   INSETS_PAGE_INFO_HOVER_BUTTON,
-  // Padding used in Infobar view.
-  INSETS_INFOBAR_VIEW,
 };
 
 enum ChromeDistanceMetric {
@@ -36,11 +34,6 @@ enum ChromeDistanceMetric {
   DISTANCE_CONTENT_LIST_VERTICAL_MULTI,
   // Vertical spacing between a list of multiple controls in one column.
   DISTANCE_CONTROL_LIST_VERTICAL,
-  // Width of the space in a dropdown button between its label and down arrow.
-  DISTANCE_DROPDOWN_BUTTON_LABEL_ARROW_SPACING,
-  // Width of the horizontal padding in a dropdown button between the down arrow
-  // and the button's border.
-  DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
   // Width of the extensions menu.
   DISTANCE_EXTENSIONS_MENU_WIDTH,
   // Width and height of a button's icon in the extensions menu.
@@ -71,8 +64,6 @@ enum ChromeDistanceMetric {
   DISTANCE_TOAST_CONTROL_VERTICAL,
   // Vertical margin for labels in a toast.
   DISTANCE_TOAST_LABEL_VERTICAL,
-  // Horizontal spacing between controls that are logically unrelated.
-  DISTANCE_UNRELATED_CONTROL_HORIZONTAL,
   // Larger horizontal spacing between unrelated controls.
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE,
   // Larger vertical spacing between unrelated controls.
@@ -89,9 +80,6 @@ enum ChromeDistanceMetric {
   DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL,
   // Vertical padding at the top and bottom of the an omnibox match row.
   DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING,
-  // Horizontal overlap between an activity indicator chip and a permission
-  // request chip.
-  DISTANCE_OMNIBOX_CHIPS_OVERLAP,
   // Vertical padding at the top and bottom of the an omnibox match row for two
   // line layout.
   DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING,
@@ -105,11 +93,34 @@ enum ChromeDistanceMetric {
   DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW,
   // Horizontal padding applied between the icon and label in the infobar.
   DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING,
+  // Height of info bars.
+  DISTANCE_INFOBAR_HEIGHT,
   // Horizontal padding applied between the icon and label in the permission
   // prompt.
   DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,
   // Horizontal spacing between icon and label in the rich hover button.
   DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL,
+  // Distance between most child elements inside the toast.
+  DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
+  // Distance between the toast label and action button.
+  DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING,
+  // Height of the toast.
+  DISTANCE_TOAST_BUBBLE_HEIGHT,
+  // Height of toast action buttons.
+  DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON,
+  // Height of the toast text and icon.
+  DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT,
+  // Distance between left border of the toast and the icon.
+  DISTANCE_TOAST_BUBBLE_MARGIN_LEFT,
+  // Distance between the right border of the toast and the action button, if
+  // the action button is the rightmost element.
+  DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_ACTION_BUTTON,
+  // Distance between the right border of the toast and the close button, if the
+  // close button is the rightmost element.
+  DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON,
+  // Distance between the right border of the toast and the label, if the label
+  // is the rightmost element.
+  DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

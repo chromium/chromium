@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 
@@ -14,6 +16,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
   // This function returns only
   // - An OPTION child of select_, or
   // - An OPTION child of an OPTGROUP child of select_.
+  // - An OPTION descendant of select_ if SelectParserRelaxation is enabled.
 
   Element* current;
   if (previous) {
@@ -27,11 +30,21 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       current_ = option;
       return;
     }
-    if (IsA<HTMLOptGroupElement>(current) && current->parentNode() == select_) {
-      if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current)))
-        return;
+    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (IsA<HTMLSelectElement>(current)) {
+        current = ElementTraversal::NextSkippingChildren(*current, select_);
+      } else {
+        current = ElementTraversal::Next(*current, select_);
+      }
+    } else {
+      if (IsA<HTMLOptGroupElement>(current) &&
+          current->parentNode() == select_) {
+        if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current))) {
+          return;
+        }
+      }
+      current = ElementTraversal::NextSkippingChildren(*current, select_);
     }
-    current = ElementTraversal::NextSkippingChildren(*current, select_);
   }
   current_ = nullptr;
 }

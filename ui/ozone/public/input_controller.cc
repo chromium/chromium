@@ -24,6 +24,21 @@ class StubInputController : public InputController {
 
   ~StubInputController() override = default;
 
+  class ScopedDisableInputDevicesImpl : public ScopedDisableInputDevices {
+   public:
+    explicit ScopedDisableInputDevicesImpl(StubInputController& parent)
+        : parent_(parent) {
+      parent_->num_scoped_input_devices_disablers_++;
+    }
+
+    ~ScopedDisableInputDevicesImpl() override {
+      parent_->num_scoped_input_devices_disablers_--;
+    }
+
+   private:
+    raw_ref<StubInputController> parent_;
+  };
+
   // InputController:
   bool HasMouse() override { return false; }
   bool HasPointingStick() override { return false; }
@@ -38,7 +53,11 @@ class StubInputController : public InputController {
                          const base::TimeDelta& interval) override {}
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override {}
-  void SetCurrentLayoutByName(const std::string& layout_name) override {}
+  void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(false);
+  }
   void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
@@ -120,6 +139,19 @@ class StubInputController : public InputController {
       HapticTouchpadEffect effect_type,
       HapticTouchpadEffectStrength strength) override {}
   bool AreAnyKeysPressed() override { return false; }
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
+
+  bool AreInputDevicesEnabled() const override {
+    return num_scoped_input_devices_disablers_ == 0;
+  }
+  std::unique_ptr<ScopedDisableInputDevices> DisableInputDevices() override {
+    return std::make_unique<ScopedDisableInputDevicesImpl>(*this);
+  }
+
+  void DisableKeyboardImposterCheck() override {}
+
+ private:
+  int num_scoped_input_devices_disablers_ = 0;
 };
 
 }  // namespace

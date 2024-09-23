@@ -52,8 +52,9 @@ RemovableStorageProvider::PopulateDeviceList() {
 
     bool is_suitable = IsSuitableRemovableStorageDevice(
         disk_obj.get(), &bsd_name, &size_in_bytes, &removable);
-    if (!is_suitable)
+    if (!is_suitable) {
       continue;
+    }
 
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
     if (IORegistryEntryCreateCFProperties(disk_obj.get(), dict.InitializeInto(),

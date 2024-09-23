@@ -11,6 +11,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
@@ -108,6 +109,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   void OnCaptureStarted() override;
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
+               const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override;
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
@@ -173,6 +175,8 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   bool force_report_nonzero_energy_ = false;
 
   bool allow_invalid_render_frame_id_for_testing_;
+
+  media::AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
   // Provides weak pointers for tasks posted by this instance.
   base::WeakPtrFactory<ProcessedLocalAudioSource> weak_factory_{this};

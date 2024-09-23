@@ -29,11 +29,6 @@
 @implementation IntentDonationHelper
 
 + (void)donateIntent:(IntentType)intentType {
-  if (!base::FeatureList::IsEnabled(kSpotlightDonateNewIntents) &&
-      intentType != IntentType::kSearchInChrome) {
-    return;
-  }
-
   base::UmaHistogramEnumeration("IOS.Spotlight.DonatedIntentType", intentType);
 
   base::ThreadPool::PostTask(
@@ -172,7 +167,7 @@
       return interaction;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
     }
   }

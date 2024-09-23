@@ -26,6 +26,7 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -48,31 +49,42 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+std::string GetBoundSessionExpirationString(base::Time expiration_time) {
+  return (expiration_time > base::Time::Now() ? "Expires at " : "Expired at ") +
+         base::TimeFormatAsIso8601(expiration_time);
+}
+
 void AppendBoundSessionInfo(
     base::Value::Dict& signin_status,
     BoundSessionCookieRefreshService* bound_session_service) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
-  // TODO(b/299884315): expose extra info that is not available in
-  // BoundSessionThrottlerParams, like session ID or a bound cookie names.
-  base::Value::Dict bound_session_entry;
+  static constexpr std::string_view kSessionIdKey = "sessionID";
+  base::Value::List bound_sessions_list;
   if (!bound_session_service) {
-    bound_session_entry.Set("domain", "Bound session service is disabled.");
-  } else if (chrome::mojom::BoundSessionThrottlerParamsPtr
-                 bound_session_throttler_params =
-                     bound_session_service->GetBoundSessionThrottlerParams();
-             !bound_session_throttler_params) {
-    bound_session_entry.Set("domain", "No active bound sessions.");
+    bound_sessions_list.Append(base::Value::Dict().Set(
+        kSessionIdKey, "Bound session service is disabled."));
+  } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
+                 bound_session_service->GetBoundSessionDebugInfo();
+             bound_session_info.empty()) {
+    bound_sessions_list.Append(
+        base::Value::Dict().Set(kSessionIdKey, "No active bound sessions."));
   } else {
-    bound_session_entry.Set("domain", bound_session_throttler_params->domain);
-    bound_session_entry.Set("path", bound_session_throttler_params->path);
-    bound_session_entry.Set(
-        "expirationTime",
-        base::TimeFormatAsIso8601(
-            bound_session_throttler_params->cookie_expiry_date));
+    for (const auto& info : bound_session_info) {
+      bound_sessions_list.Append(
+          base::Value::Dict()
+              .Set(kSessionIdKey, info.session_id)
+              .Set("domain", info.domain)
+              .Set("path", info.path)
+              .Set("expirationTime",
+                   GetBoundSessionExpirationString(info.expiration_time))
+              .Set("throttlingPaused", info.throttling_paused)
+              .Set("boundCookieNames", info.bound_cookie_names)
+              .Set("refreshUrl", info.refresh_url.spec()));
+    }
   }
-  signin_status.Set("boundSessionInfo",
-                    base::Value::List().Append(std::move(bound_session_entry)));
+  signin_status.Set("boundSessionInfo", std::move(bound_sessions_list));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -100,8 +112,9 @@ void SignInInternalsHandler::OnJavascriptAllowed() {
   if (profile) {
     AboutSigninInternals* about_signin_internals =
         AboutSigninInternalsFactory::GetForProfile(profile);
-    if (about_signin_internals)
+    if (about_signin_internals) {
       about_signin_internals_observeration_.Observe(about_signin_internals);
+    }
   }
 }
 
@@ -137,7 +150,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       about_signin_internals ? about_signin_internals->GetSigninStatus()
                              : base::Value::Dict();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled()) {
+  if (switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     AppendBoundSessionInfo(
         signin_status,
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
@@ -164,7 +177,8 @@ void SignInInternalsHandler::OnSigninStateChanged(
     const base::Value::Dict& info) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile && switches::IsBoundSessionCredentialsEnabled()) {
+  if (profile &&
+      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     base::Value::Dict signin_status = info.Clone();
     AppendBoundSessionInfo(
         signin_status,

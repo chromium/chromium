@@ -42,7 +42,7 @@ struct PermissionInfo {
   const char* pref_name;
 };
 
-// TODO(crbug.com/1198390): Update to use a switch to map between two enum.
+// TODO(crbug.com/40760689): Update to use a switch to map between two enum.
 constexpr PermissionInfo permission_infos[] = {
     {apps::PermissionType::kPrinting,
      plugin_vm::prefs::kPluginVmPrintersAllowed},
@@ -96,7 +96,7 @@ apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
 
   // Show when installed, even if disabled by policy, to give users the choice
   // to uninstall and free up space.
-  app->show_in_management =
+  app->show_in_management = app->allow_uninstall =
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile);
   return app;
 }
@@ -113,8 +113,8 @@ apps::IntentFilters CreateIntentFilterForPluginVm(
   apps::IntentFilters intent_filters;
   intent_filters.push_back(apps_util::CreateFileFilter(
       {apps_util::kIntentActionView}, /*mime_types=*/{}, extension_types,
-      // TODO(crbug/1349974): Remove activity_name when default file handling
-      // preferences for Files App are migrated.
+      // TODO(crbug.com/40233967): Remove activity_name when default file
+      // handling preferences for Files App are migrated.
       /*activity_name=*/apps_util::kGuestOsActivityName));
 
   return intent_filters;
@@ -249,7 +249,7 @@ void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
 
-  // TODO(crbug.com/1244506): Add launch return value.
+  // TODO(crbug.com/40787924): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
 
@@ -365,7 +365,7 @@ void PluginVmApps::OnPluginVmAvailabilityChanged(bool is_allowed,
   auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   SetAppAllowed(is_allowed, *app);
-  app->show_in_management = is_configured;
+  app->show_in_management = app->allow_uninstall = is_configured;
   AppPublisher::Publish(std::move(app));
 }
 

@@ -29,7 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   BrowserSupport& operator=(const BrowserSupport&) = delete;
 
   // Initializes the global instance of BrowserSupport for the Primary User.
-  static void InitializeForPrimaryUser(const policy::PolicyMap& policy_map);
+  static void InitializeForPrimaryUser(const policy::PolicyMap& policy_map,
+                                       bool is_new_profile,
+                                       bool is_regular_profile);
 
   // Destroys the global instance of BrowserSupport.
   static void Shutdown();
@@ -53,9 +55,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   bool IsAllowed() const { return is_allowed_; }
 
   // Temporarily exposing internal function for transition period.
-  // TODO(crbug.com/1494005): Hide the function along with refactoring.
-  static bool IsAllowedInternal(const user_manager::User* user,
-                                LacrosAvailability lacros_availability);
+  // TODO(crbug.com/40286020): Hide the function along with refactoring.
+  static bool IsEnabledInternal(const user_manager::User* user,
+                                LacrosAvailability lacros_availability,
+                                bool check_migration_status);
 
  private:
   BrowserSupport(bool is_allowed);

@@ -89,6 +89,11 @@ CSSStyleSheet* StyleSheetList::AnonymousNamedGetter(const AtomicString& name) {
   return sheet;
 }
 
+bool StyleSheetList::NamedPropertyQuery(const AtomicString& name,
+                                        ExceptionState&) {
+  return AnonymousNamedGetter(name);
+}
+
 void StyleSheetList::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(style_sheet_vector_);

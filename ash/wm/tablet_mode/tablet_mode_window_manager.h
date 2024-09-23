@@ -18,6 +18,8 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display_observer.h"
@@ -112,7 +114,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& display) override;
-  void OnDisplayRemoved(const display::Display& display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -191,11 +193,12 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   WindowToState window_state_map_;
 
   // All container windows which have to be tracked.
-  std::unordered_set<aura::Window*> observed_container_windows_;
+  std::unordered_set<raw_ptr<aura::Window, CtnExperimental>>
+      observed_container_windows_;
 
   // Windows added to the container, but not yet shown or tracked. They will be
   // attempted to be tracked when the window is shown.
-  std::unordered_set<aura::Window*> windows_to_track_;
+  std::unordered_set<raw_ptr<aura::Window, CtnExperimental>> windows_to_track_;
 
   // All accounts that have been active at least once since tablet mode started.
   base::flat_set<AccountId> accounts_since_entering_tablet_;
@@ -210,6 +213,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // True when tablet mode is about to end.
   bool is_exiting_ = false;
+
+  base::WeakPtrFactory<TabletModeWindowManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

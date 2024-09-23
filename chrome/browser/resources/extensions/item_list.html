@@ -14,7 +14,8 @@
     padding: 24px 60px 64px;
   }
 
-  #content-wrapper:has(extensions-review-panel) {
+  #content-wrapper:has(extensions-review-panel),
+  #content-wrapper:has(extensions-mv2-deprecation-panel) {
     padding-top: 14px;
   }
 
@@ -24,12 +25,6 @@
     font-weight: 500;
     margin-top: 80px;
     text-align: center;
-  }
-
-  .extension-title-container {
-    font-size: 15px;
-    font-weight: 400;
-    margin: 0 0 16px 5px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -50,12 +45,13 @@
         var(--grid-gutter) * var(--max-columns));
   }
 
-  .items-container.review-panel-container :first-child {
+  .items-container.panel :first-child {
     max-width: calc(var(--extensions-card-width) * 2 + var(--grid-gutter) * 2);
     grid-column: 1 / -1;
   }
 
-  extensions-review-panel {
+  extensions-review-panel,
+  extensions-mv2-deprecation-panel {
     margin: 15px auto;
     width: 100%;
   }
@@ -71,7 +67,7 @@
     grid-row-start: auto;
   }
 
-  #app-title {
+  .section-header {
     color: var(--cr-primary-text-color);
     font-size: 123%;
     font-weight: 400;
@@ -99,13 +95,26 @@
 <div id="container">
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
-    <div class="items-container review-panel-container">
-      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
-        <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
+    <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
+      <div class="items-container panel">
+        <extensions-review-panel
+            extensions="[[unsafeExtensions_]]"
+            delegate="[[delegate]]">
         </extensions-review-panel>
-        <h2 class="extension-title-container">$i18n{safetyCheckAllExtensions}</h2>
-      </template>
-    </div>
+      </div>
+    </template>
+
+    <template is="dom-if" if="[[showMv2DeprecationPanel_]]" restamp>
+      <div class="items-container panel">
+        <extensions-mv2-deprecation-panel
+            extensions="[[mv2DeprecatedExtensions_]]"
+            delegate="[[delegate]]"
+            mv2-experiment-stage="[[mv2ExperimentStage_]]"
+            show-title="[[showSafetyCheckReviewPanel_]]">
+        </extensions-mv2-deprecation-panel>
+      </div>
+    </template>
+
     <div id="no-items" class="empty-list-message"
         hidden$="[[!shouldShowEmptyItemsMessage_(
             apps.length, extensions.length)]]">
@@ -118,24 +127,33 @@
             shownAppsCount_, shownExtensionsCount_, apps, extensions)]]">
       <span>$i18n{noSearchResults}</span>
     </div>
-    <div class="items-container" hidden="[[!shownExtensionsCount_]]">
-      <!-- Render only a few items first, to improve initial render time,
-        then render the remaining items on a different frame. Value of 3
-        was chosen by experimentation, and it is a good trade-off between
-        initial render time and total render time. -->
-      <template is="dom-repeat" items="[[extensions]]" initial-count="3"
-          filter="[[computedFilter_]]"
-          rendered-item-count="{{shownExtensionsCount_::dom-change}}">
-        <extensions-item id="[[item.id]]" data="[[item]]"
-            safety-check-showing="[[hasSafetyCheckTriggeringExtension_]]"
-            delegate="[[delegate]]" in-dev-mode="[[inDevMode]]">
-        </extensions-item>
-      </template>
-    </div>
-    <div hidden="[[!shownAppsCount_]]">
-      <!-- app-title needs to left-align with the grid content below, and
+
+    <div id="extensions-section" hidden="[[!shownExtensionsCount_]]">
+      <!-- section-header needs to left-align with the grid content below, and
            the easiest way to achieve this is to make it a grid as well. -->
-      <h2 id="app-title" class="items-container">$i18n{appsTitle}</h2>
+      <h2 class="section-header items-container">
+        $i18n{extensionsSectionHeader}
+      </h2>
+      <div class="items-container">
+        <!-- Render only a few items first, to improve initial render time,
+             then render the remaining items on a different frame. Value of 3
+             was chosen by experimentation, and it is a good trade-off between
+             initial render time and total render time. -->
+        <template is="dom-repeat" items="[[extensions]]" initial-count="3"
+            filter="[[computedFilter_]]"
+            rendered-item-count="{{shownExtensionsCount_::dom-change}}">
+          <extensions-item id="[[item.id]]" data="[[item]]"
+              safety-check-showing="[[hasSafetyCheckTriggeringExtension_]]"
+              delegate="[[delegate]]" in-dev-mode="[[inDevMode]]">
+          </extensions-item>
+          </template>
+      </div>
+    </div>
+
+    <div id="chrome-apps-section" hidden="[[!shownAppsCount_]]">
+      <!-- section-header needs to left-align with the grid content below, and
+           the easiest way to achieve this is to make it a grid as well. -->
+      <h2 class="section-header items-container">$i18n{appsTitle}</h2>
       <div class="items-container">
         <template is="dom-repeat" items="[[apps]]" initial-count="3"
             filter="[[computedFilter_]]"

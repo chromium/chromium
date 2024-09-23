@@ -1,0 +1,116 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("magic_boost") {
+  sources = [
+    "magic_boost_controller_ash.cc",
+    "magic_boost_controller_ash.h",
+    "magic_boost_metrics.cc",
+    "magic_boost_metrics.h",
+    "magic_boost_state_ash.cc",
+    "magic_boost_state_ash.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/mahi:mahi_availability",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//ui/views",
+
+    # TODO: Use //chrome/browser/ash/input_method after fixing cyclic dependency.
+    "//chrome/common:buildflags",
+    "//chromeos/ash/services/orca/public/mojom",
+    "//components/lens:buildflags",
+    "//components/paint_preview/buildflags",
+    "//components/translate/content/common",
+    "//content/common:buildflags",
+    "//content/public/common:interfaces",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_editor_panel_manager.cc",
+    "mock_editor_panel_manager.h",
+    "mock_magic_boost_state.cc",
+    "mock_magic_boost_state.h",
+  ]
+
+  deps = [
+    ":magic_boost",
+    "//base",
+    "//chrome/browser/ash/input_method",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "magic_boost_controller_ash_unittest.cc",
+    "magic_boost_state_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":magic_boost",
+    ":test_support",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//components/sync_preferences:test_support",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/display",
+    "//ui/lottie",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "magic_boost_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/input_method:input_method",
+    "//chrome/browser/ash/mahi:test_util",
+    "//chrome/browser/ui/chromeos/magic_boost:magic_boost",
+    "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
+    "//chrome/browser/ui/views/mahi:mahi",
+    "//chrome/browser/ui/webui/ash/mako",
+    "//chrome/test:test_support",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/constants",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

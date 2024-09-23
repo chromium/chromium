@@ -639,24 +639,6 @@ Testing console.clear with optional args while paused
             }
         ]
         executionContextId : <number>
-        stackTrace : {
-            callFrames : [
-                [0] : {
-                    columnNumber : 8
-                    functionName : eval
-                    lineNumber : 0
-                    scriptId : <string>
-                    url : 
-                }
-                [1] : {
-                    columnNumber : 0
-                    functionName : 
-                    lineNumber : 0
-                    scriptId : <string>
-                    url : 
-                }
-            ]
-        }
         timestamp : <number>
         type : clear
     }
@@ -672,24 +654,6 @@ Testing console.clear with optional args while paused
             }
         ]
         executionContextId : <number>
-        stackTrace : {
-            callFrames : [
-                [0] : {
-                    columnNumber : 8
-                    functionName : eval
-                    lineNumber : 0
-                    scriptId : <string>
-                    url : 
-                }
-                [1] : {
-                    columnNumber : 0
-                    functionName : 
-                    lineNumber : 0
-                    scriptId : <string>
-                    url : 
-                }
-            ]
-        }
         timestamp : <number>
         type : clear
     }

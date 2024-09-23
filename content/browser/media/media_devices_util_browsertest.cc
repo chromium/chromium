@@ -41,7 +41,7 @@ namespace {
 bool IsSpecialAudioDeviceId(MediaDeviceType device_type,
                             const std::string& device_id) {
   return (device_type == MediaDeviceType::kMediaAudioInput ||
-          device_type == MediaDeviceType::kMediaAudioOuput) &&
+          device_type == MediaDeviceType::kMediaAudioOutput) &&
          (media::AudioDeviceDescription::IsDefaultDevice(device_id) ||
           media::AudioDeviceDescription::IsCommunicationsDevice(device_id));
 }
@@ -75,13 +75,18 @@ blink::StreamControls GetAudioStreamControls(std::string hmac_device_id) {
   return stream_controls;
 }
 
+blink::mojom::StreamSelectionInfoPtr NewSearchBySessionId(
+    base::flat_map<std::string, base::UnguessableToken> session_id_map) {
+  return blink::mojom::StreamSelectionInfo::NewSearchBySessionId(
+      blink::mojom::SearchBySessionId::New(session_id_map));
+}
+
 }  // namespace
 
 class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
   void SetUpOnMainThread() override {
@@ -108,7 +113,7 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
         FROM_HERE, base::BindLambdaForTesting([&]() {
           MediaDevicesManager::BoolDeviceTypes types;
           types[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] = true;
-          types[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] = true;
+          types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] = true;
           types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] = true;
           base::test::TestFuture<const MediaDeviceEnumeration&> future;
           media_stream_manager->media_devices_manager()->EnumerateDevices(
@@ -143,10 +148,7 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
             controls, salt_and_origin,
             /*user_gesture=*/false,
             /*audio_stream_selection_info_ptr=*/
-            blink::mojom::StreamSelectionInfo::New(
-                /*strategy=*/blink::mojom::StreamSelectionStrategy::
-                    FORCE_NEW_STREAM,
-                std::nullopt),
+            NewSearchBySessionId({}),
             base::BindPostTaskToCurrentDefault(std::move(generate_stream_cb)),
             /*device_stopped_cb=*/base::DoNothing(),
             /*device_changed_cb=*/base::DoNothing(),
@@ -181,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
       std::optional<MediaStreamType> stream_type =
           ToMediaStreamType(device_type);
       EXPECT_EQ(stream_type.has_value(),
-                device_type != MediaDeviceType::kMediaAudioOuput);
+                device_type != MediaDeviceType::kMediaAudioOutput);
       if (!stream_type.has_value()) {
         continue;
       }
@@ -288,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   const MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
   const std::string existing_raw_device_id =
       device_enumeration_[static_cast<size_t>(
-          MediaDeviceType::kMediaAudioOuput)][0]
+          MediaDeviceType::kMediaAudioOutput)][0]
           .device_id;
   const std::string existing_hmac_device_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
@@ -296,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   base::test::TestFuture<const std::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                                MediaDeviceType::kMediaAudioOuput,
+                                MediaDeviceType::kMediaAudioOutput,
                                 salt_and_origin, existing_hmac_device_id,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
                                 future.GetCallback()));
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                     MediaDeviceType::kMediaAudioOuput, GetSaltAndOrigin(),
+                     MediaDeviceType::kMediaAudioOutput, GetSaltAndOrigin(),
                      "nonexisting_hmac_device_id",
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      future.GetCallback()));

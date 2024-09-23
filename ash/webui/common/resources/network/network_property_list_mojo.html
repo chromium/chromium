@@ -33,7 +33,9 @@
     <!-- Uneditable property value -->
     <template is="dom-if" restamp
         if="[[!showEditable_(item, editFieldTypes, propertyDict)]]">
-      <div class$="[[getPropertyValueCssClasses_(item, prefix, propertyDict)]]" data-key$="[[item]]">
+      <div id="[[item]]"
+          class$="[[getPropertyValueCssClasses_(item, prefix, propertyDict)]]"
+          data-key$="[[item]]">
         [[getPropertyValue_(item, prefix, propertyDict)]]
       </div>
     </template>

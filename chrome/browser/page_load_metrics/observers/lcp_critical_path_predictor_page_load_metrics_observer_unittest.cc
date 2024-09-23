@@ -82,9 +82,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
         loading_predictor->resource_prefetch_predictor());
     initializer.WaitUntilInitialized();
 
-    max_lcpp_histogram_buckets_ = base::GetFieldTrialParamByFeatureAsInt(
-        features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
-        10);
+    max_lcpp_histogram_buckets_ =
+        blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get();
   }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
@@ -125,9 +124,10 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context()));
-    std::optional<predictors::LcppData> lcpp_data =
-        loading_predictor->resource_prefetch_predictor()->GetLcppData(url);
-    EXPECT_EQ(learn_lcpp, lcpp_data.has_value()) << location.ToString();
+    std::optional<predictors::LcppStat> lcpp_stat =
+        loading_predictor->resource_prefetch_predictor()->GetLcppStat(
+            /*initiator_origin=*/std::nullopt, url);
+    EXPECT_EQ(learn_lcpp, lcpp_stat.has_value()) << location.ToString();
 
     base::Histogram::Count expected_count = record_uma ? 1 : 0;
     tester()->histogram_tester().ExpectTotalCount(
@@ -202,7 +202,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     CHECK(predictor);
     predictors::LcppDataInputs lcpp_data_inputs;
     lcpp_data_inputs.lcp_element_locator = "lcp_previous";
-    predictor->LearnLcpp(main_frame_url.host(), lcpp_data_inputs);
+    predictor->LearnLcpp(/*initiator_origin=*/std::nullopt, main_frame_url,
+                         lcpp_data_inputs);
 
     // Predict LCP with the learned result.
     NavigationWithLCPPHint(main_frame_url, /*provide_lcpp_hint=*/true);

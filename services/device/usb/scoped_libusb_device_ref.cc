@@ -9,13 +9,43 @@
 
 namespace device {
 
+ScopedLibusbDeviceRef::ScopedLibusbDeviceRef() = default;
+
 ScopedLibusbDeviceRef::ScopedLibusbDeviceRef(libusb_device* device,
                                              scoped_refptr<UsbContext> context)
     : device_(device), context_(std::move(context)) {}
 
-ScopedLibusbDeviceRef::ScopedLibusbDeviceRef(ScopedLibusbDeviceRef&& other)
-    : device_(other.device_), context_(std::move(other.context_)) {
+ScopedLibusbDeviceRef::ScopedLibusbDeviceRef(
+    const ScopedLibusbDeviceRef& other) {
+  *this = other;
+}
+
+ScopedLibusbDeviceRef& ScopedLibusbDeviceRef::operator=(
+    const ScopedLibusbDeviceRef& other) {
+  if (this == &other) {
+    return *this;
+  }
+  Reset();
+  device_ = other.device_;
+  context_ = other.context_;
+  libusb_ref_device(device_);
+  return *this;
+}
+
+ScopedLibusbDeviceRef::ScopedLibusbDeviceRef(ScopedLibusbDeviceRef&& other) {
+  *this = std::move(other);
+}
+
+ScopedLibusbDeviceRef& ScopedLibusbDeviceRef::operator=(
+    ScopedLibusbDeviceRef&& other) {
+  if (this == &other) {
+    return *this;
+  }
+  Reset();
+  device_ = other.device_;
+  context_ = std::move(other.context_);
   other.device_ = nullptr;
+  return *this;
 }
 
 ScopedLibusbDeviceRef::~ScopedLibusbDeviceRef() {
@@ -24,7 +54,6 @@ ScopedLibusbDeviceRef::~ScopedLibusbDeviceRef() {
 
 void ScopedLibusbDeviceRef::Reset() {
   libusb_unref_device(device_.ExtractAsDangling());
-  context_.reset();
 }
 
 bool ScopedLibusbDeviceRef::IsValid() const {

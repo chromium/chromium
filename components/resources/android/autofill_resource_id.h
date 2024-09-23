@@ -37,6 +37,7 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MASTERCARD, R.drawable.mc_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MIR, R.drawable.mir_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY, R.drawable.troy_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY, R.drawable.unionpay_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_AMEX, R.drawable.amex_metadata_card)
@@ -56,7 +57,9 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_MIR, R.drawable.mir_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_TROY, R.drawable.troy_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
                  R.drawable.unionpay_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VERVE, R.drawable.verve_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN, R.drawable.iban_icon)
 
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,
@@ -70,7 +73,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN,
 
 // Note that R.drawable.plus_addresses_logo is always present, but the icon in
 // branded builds is different from the one in unbranded builds,
-DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS, R.drawable.plus_addresses_logo)
+DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
+                    R.drawable.ic_plus_addresses_logo_16dp)
 
 // We display settings and edit icon for keyboard accessory using Android's
 // |VectorDrawableCompat|. We do not display these icons for autofill popup.

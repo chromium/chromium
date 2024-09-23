@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.commerce;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -16,7 +17,8 @@ import org.chromium.chrome.browser.profiles.Profile;
  * A set of utilities to facilitate price tracking features. This is the Java version of the
  * commerce component's core price tracking utils.
  */
-// TODO(1351830): This should live in the commerce component once BookmarkModel is moved to its
+// TODO(crbug.com/40234642): This should live in the commerce component once BookmarkModel is moved
+// to its
 //                appropriate component.
 @JNINamespace("commerce")
 public class PriceTrackingUtils {
@@ -48,12 +50,13 @@ public class PriceTrackingUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void setPriceTrackingStateForBookmark(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 long bookmarkId,
                 boolean enabled,
                 Callback<Boolean> callback,
                 boolean bookmarkCreatedForPriceTracking);
 
-        void isBookmarkPriceTracked(Profile profile, long bookmarkId, Callback<Boolean> callback);
+        void isBookmarkPriceTracked(
+                @JniType("Profile*") Profile profile, long bookmarkId, Callback<Boolean> callback);
     }
 }

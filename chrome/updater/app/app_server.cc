@@ -129,8 +129,9 @@ base::OnceClosure AppServer::ModeCheck() {
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
   config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
-  return base::BindOnce(&AppServer::ActiveDuty, this,
-                        base::MakeRefCounted<UpdateServiceImpl>(config_));
+  return base::BindOnce(
+      &AppServer::ActiveDuty, this,
+      base::MakeRefCounted<UpdateServiceImpl>(updater_scope(), config_));
 }
 
 void AppServer::TaskStarted() {
@@ -198,9 +199,6 @@ void AppServer::MaybeUninstall() {
       if (IsSystemInstall(updater_scope())) {
         command_line.AppendSwitch(kSystemSwitch);
       }
-      command_line.AppendSwitch(kEnableLoggingSwitch);
-      command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                     kLoggingModuleSwitchValue);
       VLOG(2) << "Launching uninstall command: "
               << command_line.GetCommandLineString();
 

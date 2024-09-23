@@ -1,0 +1,133 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cert_provisioning") {
+  sources = [
+    "cert_provisioning_client.cc",
+    "cert_provisioning_client.h",
+    "cert_provisioning_common.cc",
+    "cert_provisioning_common.h",
+    "cert_provisioning_invalidator.cc",
+    "cert_provisioning_invalidator.h",
+    "cert_provisioning_metrics.cc",
+    "cert_provisioning_metrics.h",
+    "cert_provisioning_platform_keys_helpers.cc",
+    "cert_provisioning_platform_keys_helpers.h",
+    "cert_provisioning_scheduler.cc",
+    "cert_provisioning_scheduler.h",
+    "cert_provisioning_scheduler_user_service.cc",
+    "cert_provisioning_scheduler_user_service.h",
+    "cert_provisioning_serializer.cc",
+    "cert_provisioning_serializer.h",
+    "cert_provisioning_worker.cc",
+    "cert_provisioning_worker.h",
+    "cert_provisioning_worker_dynamic.cc",
+    "cert_provisioning_worker_dynamic.h",
+    "cert_provisioning_worker_static.cc",
+    "cert_provisioning_worker_static.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/network",
+    "//components/invalidation/public",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/invalidation",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//components/invalidation:invalidation",
+    "//components/invalidation/impl",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager:user_manager",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cert_provisioning_client_unittest.cc",
+    "cert_provisioning_common_unittest.cc",
+    "cert_provisioning_invalidator_unittest.cc",
+    "cert_provisioning_invalidator_with_listener_unittest.cc",
+    "cert_provisioning_platform_keys_helpers_unittest.cc",
+    "cert_provisioning_scheduler_unittest.cc",
+    "cert_provisioning_test_helpers.cc",
+    "cert_provisioning_test_helpers.h",
+    "cert_provisioning_worker_dynamic_unittest.cc",
+    "cert_provisioning_worker_static_unittest.cc",
+  ]
+
+  deps = [
+    ":cert_provisioning",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys:test_support",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/platform_keys/key_permissions:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//components/invalidation:test_support",
+    "//components/invalidation/impl:test_support",
+    "//crypto:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_cert_provisioning_client.cc",
+    "mock_cert_provisioning_client.h",
+    "mock_cert_provisioning_invalidator.cc",
+    "mock_cert_provisioning_invalidator.h",
+    "mock_cert_provisioning_scheduler.cc",
+    "mock_cert_provisioning_scheduler.h",
+    "mock_cert_provisioning_worker.cc",
+    "mock_cert_provisioning_worker.h",
+  ]
+
+  deps = [
+    ":cert_provisioning",
+    "//base/test:test_support",
+    "//testing/gmock",
+  ]
+}

@@ -1,46 +1,65 @@
 <style>
-  #seaPenContainer {
+  :host {
+    --sea-pen-top-container-min-height: 168px;
+    --sea-pen-freeform-top-container-min-height: 160px;
+  }
+
+  #topContainer {
+    background-color: var(--cros-sys-app_base_shaded);
     display: grid;
     grid-template-areas:
-      'leftspacertop    selected  rightspacertop'
+      '. middle .';
+    grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
+    position: fixed;
+    top: 56px;
+    width: 100%;
+    z-index: 1;
+  }
+
+  #topContainer:has(sea-pen-input-query) {
+    position: static;
+    z-index: auto;
+  }
+
+  #bottomContainer {
+    display: grid;
+    grid-template-areas:
       'leftspacerbottom imagegrid rightspacerbottom';
     grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
-    min-height: var(--sea-pen-router-min-height);
+    min-height: calc(var(--sea-pen-router-min-height) - var(--sea-pen-top-container-min-height));
     position: relative;
     width: 100%;
   }
 
-  sea-pen-input-query,
-  sea-pen-template-query {
-    background-color: var(--cros-sys-app_base_shaded);
-    grid-area: selected;
-    height: 172px;
-    position: sticky;
-    top: 56px;
-    z-index: 1;
+  #bottomContainer:has(sea-pen-freeform) {
+    min-height: calc(var(--sea-pen-router-min-height) - var(--sea-pen-freeform-top-container-min-height));
+    position: static;
   }
 
-  #seaPenBottomContainer {
+  sea-pen-template-query {
+    grid-area: middle;
+    min-height: var(--sea-pen-top-container-min-height);
+  }
+
+  sea-pen-input-query {
+    grid-area: middle;
+    min-height: var(--sea-pen-freeform-top-container-min-height);
+  }
+
+  ::slotted(wallpaper-selected) {
+    grid-area: middle;
+    height: var(--sea-pen-top-container-min-height);
+  }
+
+  sea-pen-input-query {
+    margin: 0 58px;
+  }
+
+  #bottomInnerContainer {
     background-color: var(--cros-bg-color);
     grid-area: imagegrid;
-    padding: 10px 0;
-  }
-
-  div[class$='spacertop'] {
-    background-color: var(--cros-sys-app_base_shaded);
-    position: sticky;
-    top: 56px;
-    z-index: 1;
-  }
-
-  .leftspacertop {
-    grid-area: leftspacertop;
-  }
-
-  .rightspacertop {
-    grid-area: rightspacertop;
+    padding-bottom: 10px;
   }
 
   div[class$='spacerbottom'] {
@@ -56,39 +75,76 @@
     border-radius: 0 12px 12px 0;
     grid-area: rightspacerbottom;
   }
-</style>
 
-<div id="seaPenContainer">
+  /* Reserves space for the top section which may include the selected wallpaper
+   or the query.
+   Note: :has() doesn't detect slotted content, so we fallback to using the
+   presence of always-show-top class.
+   */
+  :host(.always-show-top) #bottomContainer,
+  #topContainer:has(sea-pen-template-query, sea-pen-input-query) + #bottomContainer {
+    top: var(--sea-pen-top-container-min-height);
+  }
+
+  sea-pen-recent-wallpapers {
+    margin-top: 8px;
+  }
+
+  #topContainer:has(sea-pen-template-query[is-selecting-options]) + #bottomContainer sea-pen-images::after {
+    background-color: var(--cros-sys-scrim);
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  sea-pen-toast {
+    bottom: 16px;
+    left: 16px;
+    max-width: 380px;
+    position: fixed;
+  }
+</style>
+<div id="topContainer">
+  <slot></slot>
+  <template is="dom-if" if="[[shouldShowSeaPenFreeform_(relativePath_)]]" restamp>
+    <sea-pen-input-query></sea-pen-input-query>
+  </template>
+  <template is="dom-if" if="[[shouldShowTemplateQuery_(relativePath_, queryParams_.seaPenTemplateId)]]" restamp>
+    <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]">
+    </sea-pen-template-query>
+  </template>
+</div>
+<div id="bottomContainer" on-click="onBottomContainerClicked_">
   <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
   </iron-location>
   <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
   </iron-query-params>
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
-  <div class="leftspacertop"></div>
   <div class="leftspacerbottom"></div>
-  <template is="dom-if" if="[[shouldShowTextInputQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
-    <sea-pen-input-query path="[[relativePath_]]"></sea-pen-input-query>
-  </template>
-  <template is="dom-if" if="[[shouldShowTemplateQuery_(relativePath_, queryParams_.seaPenTemplateId)]]">
-    <sea-pen-template-query template-id="[[queryParams_.seaPenTemplateId]]" path="[[relativePath_]]">
-    </sea-pen-template-query>
-  </template>
-  <div id="seaPenBottomContainer">
-    <template is="dom-if" if="[[shouldShowSeaPenRoot_(relativePath_)]]" restamp>
+  <div id="bottomInnerContainer">
+    <template is="dom-if" if="[[shouldShowSeaPenTemplates_(relativePath_)]]" restamp>
       <sea-pen-templates></sea-pen-templates>
-      <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
+      <sea-pen-recent-wallpapers
+          on-sea-pen-recent-image-delete="onRecentTemplateImageDelete_">
+      </sea-pen-recent-wallpapers>
     </template>
-    <template is="dom-if" if="[[shouldShowSeaPenImages_(relativePath_)]]">
+    <template is="dom-if" if="[[shouldShowSeaPenTemplateImages_(relativePath_)]]" restamp>
       <sea-pen-images template-id="[[getTemplateIdFromQueryParams_(queryParams_.seaPenTemplateId)]]">
       </sea-pen-images>
     </template>
+    <template is="dom-if" if="[[shouldShowSeaPenFreeform_(relativePath_)]]" restamp>
+      <sea-pen-freeform></sea-pen-freeform>
+    </template>
   </div>
-  <template is="dom-if" if="[[showSeaPenTermsOfServiceDialog_]]" restamp>
-    <sea-pen-terms-of-service-dialog
-        on-sea-pen-terms-dialog-accept="onAcceptSeaPenTerms_">
-    </sea-pen-terms-of-service-dialog>
+  <template is="dom-if" if="[[showSeaPenIntroductionDialog_]]" restamp>
+    <sea-pen-introduction-dialog
+        on-sea-pen-introduction-dialog-close="onCloseSeaPenIntroductionDialog_">
+    </sea-pen-introduction-dialog>
   </template>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
-  <div class="rightspacertop"></div>
   <div class="rightspacerbottom"></div>
+  <sea-pen-toast></sea-pen-toast>
 </div>

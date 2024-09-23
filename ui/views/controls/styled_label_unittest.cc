@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
@@ -84,7 +85,7 @@ class StyledLabelInWidgetTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   }
 
   void TearDown() override {
@@ -110,7 +111,7 @@ TEST_F(StyledLabelTest, NoWrapping) {
   const std::string text("This is a test block of text");
   StyledLabel* styled = InitStyledLabel(text);
   Label label(ASCIIToUTF16(text));
-  const gfx::Size label_preferred_size = label.GetPreferredSize();
+  const gfx::Size label_preferred_size = label.GetPreferredSize({});
   EXPECT_EQ(label_preferred_size.height(),
             StyledLabelContentHeightForWidth(styled,
                                              label_preferred_size.width() * 2));
@@ -154,7 +155,7 @@ TEST_F(StyledLabelTest, CorrectWrapAtNewline) {
   const std::string multiline_text(first_line + "\n" + second_line);
   StyledLabel* styled = InitStyledLabel(multiline_text);
   Label label(ASCIIToUTF16(first_line));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
   // Correct handling of \n and label width limit encountered at the same place
   styled->SetBounds(0, 0, label_preferred_size.width(), 1000);
   test::RunScheduledLayout(styled);
@@ -170,7 +171,7 @@ TEST_F(StyledLabelTest, FirstLineNotEmptyWhenLeadingWhitespaceTooLong) {
   StyledLabel* styled = InitStyledLabel(text);
 
   Label label(ASCIIToUTF16(text));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
 
   styled->SetBounds(0, 0, label_preferred_size.width() / 2, 1000);
   test::RunScheduledLayout(styled);
@@ -185,7 +186,7 @@ TEST_F(StyledLabelTest, BasicWrapping) {
   const std::string text("This is a test block of text");
   StyledLabel* styled = InitStyledLabel(text);
   Label label(ASCIIToUTF16(text.substr(0, text.size() * 2 / 3)));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
   EXPECT_EQ(
       label_preferred_size.height() * 2,
       StyledLabelContentHeightForWidth(styled, label_preferred_size.width()));
@@ -220,7 +221,7 @@ TEST_F(StyledLabelTest, WrapLongWords) {
   const std::string text("ThisIsTextAsASingleWord");
   StyledLabel* styled = InitStyledLabel(text);
   Label label(ASCIIToUTF16(text.substr(0, text.size() * 2 / 3)));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
   EXPECT_EQ(
       label_preferred_size.height() * 2,
       StyledLabelContentHeightForWidth(styled, label_preferred_size.width()));
@@ -314,10 +315,10 @@ TEST_F(StyledLabelTest, StyledRangeTextStyleBold) {
   // Calculate the bold text width if it were a pure label view, both with bold
   // and normal style.
   Label label(ASCIIToUTF16(bold_text));
-  const gfx::Size normal_label_size = label.GetPreferredSize();
+  const gfx::Size normal_label_size = label.GetPreferredSize({});
   label.SetFontList(
       label.font_list().DeriveWithWeight(gfx::Font::Weight::BOLD));
-  const gfx::Size bold_label_size = label.GetPreferredSize();
+  const gfx::Size bold_label_size = label.GetPreferredSize({});
 
   ASSERT_GE(bold_label_size.width(), normal_label_size.width());
 
@@ -480,7 +481,7 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
   // Break line inside the range with the tooltip.
   Label label(
       ASCIIToUTF16(text + tooltip_text.substr(0, tooltip_text.size() - 3)));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
   int pref_height = styled->GetHeightForWidth(label_preferred_size.width());
   EXPECT_EQ(label_preferred_size.height() * 3,
             pref_height - styled->GetInsets().height());
@@ -516,12 +517,12 @@ TEST_F(StyledLabelTest, SetTextContextAndDefaultStyle) {
   Label label(ASCIIToUTF16(text), style::CONTEXT_DIALOG_TITLE,
               style::STYLE_DISABLED);
 
-  styled->SetBounds(0, 0, label.GetPreferredSize().width(),
-                    label.GetPreferredSize().height());
+  gfx::Size preferred_size = label.GetPreferredSize({});
+  styled->SetBounds(0, 0, preferred_size.width(), preferred_size.height());
 
   // Make sure we have the same sizing as a label with the same style.
-  EXPECT_EQ(label.GetPreferredSize().height(), styled->height());
-  EXPECT_EQ(label.GetPreferredSize().width(), styled->width());
+  EXPECT_EQ(preferred_size.height(), styled->height());
+  EXPECT_EQ(preferred_size.width(), styled->width());
 
   test::RunScheduledLayout(styled);
   ASSERT_EQ(1u, styled->children().size());
@@ -619,16 +620,16 @@ TEST_F(StyledLabelTest, Border) {
   const std::string text("One line");
   StyledLabel* styled = InitStyledLabel(text);
   Label label(ASCIIToUTF16(text));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
+  gfx::Size label_preferred_size = label.GetPreferredSize({});
   styled->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(5, 10, 6, 20)));
   styled->SetBounds(0, 0, 1000, 0);
   test::RunScheduledLayout(styled);
   EXPECT_EQ(
       label_preferred_size.height() + 5 /*top border*/ + 6 /*bottom border*/,
-      styled->GetPreferredSize().height());
+      styled->GetPreferredSize(SizeBounds(1000, {})).height());
   EXPECT_EQ(
       label_preferred_size.width() + 10 /*left border*/ + 20 /*right border*/,
-      styled->GetPreferredSize().width());
+      styled->GetPreferredSize(SizeBounds(1000, {})).width());
 }
 
 TEST_F(StyledLabelTest, LineHeightWithShorterCustomView) {
@@ -719,7 +720,7 @@ TEST_F(StyledLabelTest, AlignmentInLTR) {
   styled->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   test::RunScheduledLayout(styled);
   Label label(ASCIIToUTF16(text));
-  EXPECT_EQ((1000 - label.GetPreferredSize().width()) / 2,
+  EXPECT_EQ((1000 - label.GetPreferredSize({}).width()) / 2,
             children.front()->bounds().x());
 }
 
@@ -759,7 +760,7 @@ TEST_F(StyledLabelTest, AlignmentInRTL) {
   styled->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   test::RunScheduledLayout(styled);
   Label label(ASCIIToUTF16(text));
-  EXPECT_EQ((1000 - label.GetPreferredSize().width()) / 2,
+  EXPECT_EQ((1000 - label.GetPreferredSize({}).width()) / 2,
             children.front()->bounds().x());
 }
 
@@ -785,7 +786,8 @@ TEST_F(StyledLabelTest, ViewsCenteredWithLinkAndCustomView) {
 
   styled->SetBounds(0, 0, 1000, 500);
   test::RunScheduledLayout(styled);
-  const int height = styled->GetPreferredSize().height();
+  const int height =
+      styled->GetPreferredSize(SizeBounds(styled->size())).height();
   for (const views::View* child : styled->children()) {
     EXPECT_EQ(height / 2, child->bounds().CenterPoint().y());
   }
@@ -796,8 +798,9 @@ TEST_F(StyledLabelTest, ViewsCenteredForEvenAndOddSizes) {
   for (int height : {60, 61}) {
     StyledLabel* styled = InitStyledLabel("abc");
 
-    const int view_heights[] = {height, height / 2, height / 2 + 1};
-    for (uint32_t i = 0; i < 3; ++i) {
+    const auto view_heights =
+        std::to_array<int>({height, height / 2, height / 2 + 1});
+    for (uint32_t i = 0; i < view_heights.size(); ++i) {
       auto view = std::make_unique<StaticSizedView>(
           gfx::Size(kViewWidth, view_heights[i]));
       StyledLabel::RangeStyleInfo style_info;
@@ -849,19 +852,19 @@ TEST_F(StyledLabelTest, SizeToFit) {
 TEST_F(StyledLabelTest, PreferredSizeNonEmpty) {
   const std::string text("text");
   StyledLabel* styled = InitStyledLabel(text);
-  EXPECT_FALSE(styled->GetPreferredSize().IsEmpty());
+  EXPECT_FALSE(styled->GetPreferredSize({}).IsEmpty());
 }
 
 // Verifies that GetPreferredSize() respects the existing wrapping.
 TEST_F(StyledLabelTest, PreferredSizeRespectsWrapping) {
   const std::string text("Long text that can be split across lines");
   StyledLabel* styled = InitStyledLabel(text);
-  gfx::Size size = styled->GetPreferredSize();
+  gfx::Size size = styled->GetPreferredSize({});
   size.set_width(size.width() / 2);
   size.set_height(styled->GetHeightForWidth(size.width()));
   styled->SetSize(size);
   test::RunScheduledLayout(styled);
-  const gfx::Size new_size = styled->GetPreferredSize();
+  const gfx::Size new_size = styled->GetPreferredSize(SizeBounds(size));
   EXPECT_LE(new_size.width(), size.width());
   EXPECT_EQ(new_size.height(), size.height());
 }
@@ -870,41 +873,82 @@ TEST_F(StyledLabelTest, PreferredSizeRespectsWrapping) {
 TEST_F(StyledLabelTest, PreferredSizeAcrossConstCall) {
   const std::string text("Long text that can be split across lines");
   StyledLabel* styled = InitStyledLabel(text);
-  const gfx::Size size = styled->GetPreferredSize();
+  const gfx::Size size = styled->GetPreferredSize({});
   styled->GetHeightForWidth(size.width() / 2);
-  EXPECT_EQ(size, styled->GetPreferredSize());
+  EXPECT_EQ(size, styled->GetPreferredSize({}));
 }
 
 TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   const std::string text("Text");
   StyledLabel* styled = InitStyledLabel(text);
-  EXPECT_EQ(styled->GetAccessibleName(), base::UTF8ToUTF16(text));
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kStaticText);
+
+  IgnoreMissingWidgetForTestingScopedSetter a11y_ignore_missing_widget_(
+      styled->GetViewAccessibility());
+
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
+            base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kStaticText);
 
   ui::AXNodeData data;
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 
   styled->SetTextContext(style::CONTEXT_DIALOG_TITLE);
-  EXPECT_EQ(styled->GetAccessibleName(), base::UTF8ToUTF16(text));
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
+
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
+            base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTitleBar);
 
   data = ui::AXNodeData();
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), text);
   EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
 
   styled->SetText(u"New Text");
-  styled->SetAccessibleRole(ax::mojom::Role::kLink);
-  EXPECT_EQ(styled->GetAccessibleName(), u"New Text");
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kLink);
+  styled->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(), u"New Text");
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kLink);
 
   data = ui::AXNodeData();
-  styled->GetAccessibleNodeData(&data);
+  styled->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"New Text");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
+}
+
+// Regression test for crbug.com/361639416.
+// Tests that the child views (text fragments) are still alive after layout.
+TEST_F(StyledLabelTest, OldChildViewsAreAliveAfterLayout) {
+  class ViewDestroyObserser : public ViewObserver {
+   public:
+    MOCK_METHOD(void, OnViewIsDeleting, (View*), (override));
+  };
+
+  ViewDestroyObserser view_destroy_observer;
+
+  const std::string text("This is a test block of text.");
+  StyledLabel* styled = InitStyledLabel(text);
+
+  styled->AddStyleRange(
+      gfx::Range(0, 1),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+
+  EXPECT_EQ(styled->GetFirstLinkForTesting(), nullptr);
+  styled->SetBounds(0, 0, 1000, 1000);
+  test::RunScheduledLayout(styled);
+
+  views::View* link = styled->GetFirstLinkForTesting();
+  EXPECT_NE(link, nullptr);
+  link->AddObserver(&view_destroy_observer);
+  EXPECT_CALL(view_destroy_observer, OnViewIsDeleting(testing::_)).Times(0);
+  styled->SetBounds(0, 0, 10, 1000);
+  test::RunScheduledLayout(styled);
+
+  link->RemoveObserver(&view_destroy_observer);
 }
 
 }  // namespace views

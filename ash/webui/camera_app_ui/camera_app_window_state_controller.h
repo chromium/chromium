@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,12 +56,16 @@ class CameraAppWindowStateController
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
+  using WindowStateTypeSet = base::EnumSet<WindowStateType,
+                                           WindowStateType::kMinValue,
+                                           WindowStateType::kMaxValue>;
+
   void OnWindowStateChanged();
   void OnWindowFocusChanged(bool is_focus);
-  base::flat_set<WindowStateType> GetCurrentWindowStates();
+  WindowStateTypeSet GetCurrentWindowStates() const;
 
   raw_ptr<views::Widget> widget_;
-  base::flat_set<WindowStateType> window_states_;
+  WindowStateTypeSet window_states_;
   mojo::ReceiverSet<camera_app::mojom::WindowStateController> receivers_;
   std::vector<mojo::Remote<WindowStateMonitor>> monitors_;
   std::queue<base::OnceClosure> minimize_callbacks_;

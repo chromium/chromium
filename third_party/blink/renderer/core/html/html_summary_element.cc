@@ -66,8 +66,12 @@ bool HTMLSummaryElement::IsMainSummary() const {
   return false;
 }
 
-bool HTMLSummaryElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  return IsMainSummary() || HTMLElement::SupportsFocus(update_behavior);
+FocusableState HTMLSummaryElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsMainSummary()) {
+    return FocusableState::kFocusable;
+  }
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 int HTMLSummaryElement::DefaultTabIndex() const {

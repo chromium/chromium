@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -24,12 +25,14 @@ class UpgradeDetector;
 // AppMenuIconController encapsulates the logic for badging the app menu icon
 // as a result of various events - such as available updates, errors, etc.
 class AppMenuIconController : public GlobalErrorObserver,
+                              public DefaultBrowserPromptManager::Observer,
                               public UpgradeObserver {
  public:
   enum class IconType {
     NONE,
     UPGRADE_NOTIFICATION,
     GLOBAL_ERROR,
+    DEFAULT_BROWSER_PROMPT,
   };
   enum class Severity {
     NONE,
@@ -42,6 +45,7 @@ class AppMenuIconController : public GlobalErrorObserver,
   struct TypeAndSeverity {
     IconType type;
     Severity severity;
+    bool use_primary_colors = false;
   };
 
   // Delegate interface for receiving icon update notifications.
@@ -50,9 +54,6 @@ class AppMenuIconController : public GlobalErrorObserver,
     // Notifies the UI to update the icon to have the specified
     // |type_and_severity|.
     virtual void UpdateTypeAndSeverity(TypeAndSeverity type_and_severity) = 0;
-
-    // Get the appropriate colors for various severity levels.
-    virtual SkColor GetDefaultColorForSeverity(Severity severity) const = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -79,17 +80,15 @@ class AppMenuIconController : public GlobalErrorObserver,
   // Returns the icon type and severity based on the current state.
   TypeAndSeverity GetTypeAndSeverity() const;
 
-  // Gets the color to be used for the app menu's icon.
-  // |severity_none_color|, if provided, will be used when the Severity is NONE.
-  // Otherwise the basic toolbar button icon color will be used.
-  SkColor GetIconColor(const std::optional<SkColor>& severity_none_color) const;
-
  private:
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
 
   // UpgradeObserver:
   void OnUpgradeRecommended() override;
+
+  // DefaultBrowserPromptManager::Observer
+  void OnShowAppMenuPromptChanged() override;
 
   // True for desktop Chrome on dev and canary channels.
   const bool is_unstable_channel_;
@@ -98,6 +97,11 @@ class AppMenuIconController : public GlobalErrorObserver,
   const raw_ptr<Delegate> delegate_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
+#if !BUILDFLAG(IS_CHROMEOS)
+  base::ScopedObservation<DefaultBrowserPromptManager,
+                          DefaultBrowserPromptManager::Observer>
+      default_browser_prompt_observation_{this};
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_ICON_CONTROLLER_H_

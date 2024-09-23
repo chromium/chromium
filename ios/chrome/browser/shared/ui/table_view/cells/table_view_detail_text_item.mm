@@ -160,6 +160,14 @@
   return self;
 }
 
+#pragma mark - Properties
+
+- (void)setAllowMultilineDetailText:(BOOL)allowMultilineDetailText {
+  _allowMultilineDetailText = allowMultilineDetailText;
+
+  _detailTextLabel.numberOfLines = _allowMultilineDetailText ? 0 : 1;
+}
+
 #pragma mark - UIReusableView
 
 - (void)prepareForReuse {

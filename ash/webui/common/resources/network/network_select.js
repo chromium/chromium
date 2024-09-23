@@ -12,9 +12,9 @@ import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './network_list.js';
 
 import {assert} from '//resources/ash/common/assert.js';
+import {CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {NetworkList} from './network_list_types.js';

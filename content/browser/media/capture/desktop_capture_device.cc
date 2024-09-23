@@ -49,6 +49,7 @@
 #include "third_party/webrtc/modules/desktop_capture/cropping_window_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/fake_desktop_capturer.h"
@@ -72,6 +73,21 @@ const int kDefaultMaximumCpuConsumptionPercentage = 50;
 // Constant which sets the cutoff frequency in an an exponential moving average
 // (EMA) filter used to calculate the current frame rate (in frames per second).
 constexpr float kAlpha = 0.1;
+
+const char* DesktopMediaTypeToString(DesktopMediaID::Type type) {
+  switch (type) {
+    case DesktopMediaID::TYPE_NONE:
+      return "NONE";
+    case DesktopMediaID::TYPE_SCREEN:
+      return "SCREEN";
+    case DesktopMediaID::TYPE_WINDOW:
+      return "WINDOW";
+    case DesktopMediaID::TYPE_WEB_CONTENTS:
+      return "WEB_CONTENTS";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 webrtc::DesktopRect ComputeLetterboxRect(
     const webrtc::DesktopSize& max_size,
@@ -631,7 +647,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
           gfx::Size(output_size.width(), output_size.height()),
           requested_frame_rate_, media::PIXEL_FORMAT_ARGB),
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
-      now - first_ref_time_);
+      now - first_ref_time_, std::nullopt);
 
   ScheduleNextCaptureFrame();
 }
@@ -715,7 +731,7 @@ void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
 void DesktopCaptureDevice::Core::RequestWakeLock() {
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
   auto receiver = wake_lock_provider.BindNewPipeAndPassReceiver();
-  // TODO(https://crbug.com/823869): Fix DesktopCaptureDeviceTest and remove
+  // TODO(crbug.com/41377723): Fix DesktopCaptureDeviceTest and remove
   // this conditional.
   if (BrowserThread::IsThreadInitialized(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
@@ -737,6 +753,7 @@ base::TimeTicks DesktopCaptureDevice::Core::NowTicks() const {
 // static
 std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     const DesktopMediaID& source) {
+  VLOG(1) << __func__ << "(source=" << source.ToString() << ")";
   auto options = desktop_capture::CreateDesktopCaptureOptions();
   std::unique_ptr<webrtc::DesktopCapturer> capturer;
   std::unique_ptr<media::VideoCaptureDevice> result;
@@ -751,7 +768,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   // the captured frame in combination with DXGI; hence most cursors will be
   // added separately by a desktop and cursor composer even if this option is
   // set to true. GDI does not use this option.
-  // TODO(crbug.com/1421656): Possibly remove this flag. Keeping for now to
+  // TODO(crbug.com/40259358): Possibly remove this flag. Keeping for now to
   // force non embedded cursor for all capture APIs on Windows.
   static BASE_FEATURE(kAllowWinCursorEmbedded, "AllowWinCursorEmbedded",
                       base::FEATURE_ENABLED_BY_DEFAULT);
@@ -768,14 +785,25 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     // changed or not. DesktopFrame::updated_region() will be empty if nothing
     // has changed and contain one (damage) region corresponding to the complete
     // screen or window being captured if any change is detected.
-    options.set_allow_wgc_zero_hertz(
-        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
+    if (source.type == DesktopMediaID::TYPE_SCREEN) {
+      options.set_allow_wgc_zero_hertz(
+          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz));
+    }
   }
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
     options.set_allow_wgc_window_capturer(true);
-    options.set_allow_wgc_zero_hertz(
-        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
+    if (source.type == DesktopMediaID::TYPE_WINDOW) {
+      options.set_allow_wgc_zero_hertz(
+          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
+    }
   }
+  VLOG(1) << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
+          << options.prefer_cursor_embedded() << ", allow_wgc_screen_capturer: "
+          << options.allow_wgc_screen_capturer()
+          << ", allow_wgc_window_capturer: "
+          << options.allow_wgc_window_capturer()
+          << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
+          << "}";
 #endif
 
   // For browser tests, to create a fake desktop capturer.
@@ -788,7 +816,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(https://crbug.com/1094460): Handle options.
+      // TODO(crbug.com/40135428): Handle options.
       std::unique_ptr<webrtc::DesktopCapturer> screen_capturer =
           std::make_unique<DesktopCapturerLacros>(
               DesktopCapturerLacros::CaptureType::kScreen,
@@ -825,7 +853,9 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
       break;
     }
 
-    default: { NOTREACHED(); }
+    default: {
+      NOTREACHED_IN_MIGRATION();
+    }
   }
 
   if (capturer)
@@ -880,6 +910,7 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     std::unique_ptr<webrtc::DesktopCapturer> capturer,
     DesktopMediaID::Type type)
     : thread_("desktopCaptureThread") {
+  DVLOG(1) << __func__ << "(type=" << DesktopMediaTypeToString(type) << ")";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows/OSX the thread must be a UI thread.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
@@ -888,10 +919,11 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 #endif
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
-  const bool wgc_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz);
-  // TODO(https://crbug.com/1421656): 0Hz mode seems to cause a flickering
+  const bool wgc_screen_zero_hertz =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
+  const bool wgc_window_zero_hertz =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
+  // TODO(crbug.com/40259358): 0Hz mode seems to cause a flickering
   // cursor in some setups. This flag allows us to disable 0Hz when needed.
   const bool dxgi_gdi_zero_hertz =
       base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
@@ -903,14 +935,20 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     zero_hertz_is_supported = dxgi_gdi_zero_hertz;
   } else if (!wgc_window_capturer && wgc_screen_capturer) {
     zero_hertz_is_supported = (type == DesktopMediaID::TYPE_SCREEN)
-                                  ? wgc_zero_hertz
+                                  ? wgc_screen_zero_hertz
                                   : dxgi_gdi_zero_hertz;
   } else if (wgc_window_capturer && !wgc_screen_capturer) {
     zero_hertz_is_supported = (type == DesktopMediaID::TYPE_WINDOW)
-                                  ? wgc_zero_hertz
+                                  ? wgc_window_zero_hertz
                                   : dxgi_gdi_zero_hertz;
   } else {
-    zero_hertz_is_supported = wgc_zero_hertz;
+    if (type == DesktopMediaID::TYPE_SCREEN) {
+      zero_hertz_is_supported = wgc_screen_zero_hertz;
+    } else if (type == DesktopMediaID::TYPE_WINDOW) {
+      zero_hertz_is_supported = wgc_window_zero_hertz;
+    } else {
+      zero_hertz_is_supported = false;
+    }
   }
   VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
           << "]";

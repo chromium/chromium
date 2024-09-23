@@ -39,37 +39,32 @@ bool IsCredentialUnmutedCompromised(const CredentialUIEntry& credential) {
 }
 
 WarningType GetWarningOfHighestPriority(
-    const std::vector<CredentialUIEntry>& insecure_credentials) {
-  bool has_reused_passwords = false;
-  bool has_weak_passwords = false;
-  bool has_muted_warnings = false;
-
-  for (const auto& credential : insecure_credentials) {
-    if (credential.IsMuted()) {
-      has_muted_warnings = true;
-    } else if (IsCompromised(credential)) {
-      return WarningType::kCompromisedPasswordsWarning;
-    }
-
-    // A reused password warning is of higher priority than a weak password
-    // warning. So, if the credential is reused, there is no need to verify if
-    // it is also weak.
-    if (credential.IsReused()) {
-      has_reused_passwords = true;
-    } else if (credential.IsWeak()) {
-      has_weak_passwords = true;
-    }
+    InsecurePasswordCounts insecure_password_counts) {
+  if (insecure_password_counts.compromised_count > 0) {
+    return WarningType::kCompromisedPasswordsWarning;
   }
 
-  if (has_reused_passwords) {
+  if (insecure_password_counts.reused_count > 0) {
     return WarningType::kReusedPasswordsWarning;
-  } else if (has_weak_passwords) {
+  }
+
+  if (insecure_password_counts.weak_count > 0) {
     return WarningType::kWeakPasswordsWarning;
-  } else if (has_muted_warnings) {
+  }
+
+  if (insecure_password_counts.dismissed_count > 0) {
     return WarningType::kDismissedWarningsWarning;
   }
 
   return WarningType::kNoInsecurePasswordsWarning;
+}
+
+WarningType GetWarningOfHighestPriority(
+    const std::vector<CredentialUIEntry>& insecure_credentials) {
+  InsecurePasswordCounts insecure_password_counts =
+      CountInsecurePasswordsPerInsecureType(insecure_credentials);
+
+  return GetWarningOfHighestPriority(insecure_password_counts);
 }
 
 InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
@@ -117,32 +112,27 @@ int GetPasswordCountForWarningType(
 }
 
 NSString* FormatElapsedTimeSinceLastCheck(
-    std::optional<base::Time> last_completed_check,
-    bool use_title_case) {
+    std::optional<base::Time> last_completed_check) {
   if (!last_completed_check.has_value()) {
     // The title case format is only used in the Password Checkup Homepage as of
     // now and it is currently not possible to reach this page if no check has
     // yet been completed. There is therefore no need for now to have a title
-    // case version of "Check never run."
+    // case version of "Check never run"
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }
 
   base::TimeDelta elapsed_time =
       base::Time::Now() - last_completed_check.value();
 
-  std::u16string timestamp;
-  // If check finished in less than `kJustCheckedTimeThreshold` show
-  // "just now" instead of timestamp.
+  // If check finished in less than `kJustCheckedTimeThreshold` show "Checked
+  // just now" instead of timestamp.
   if (elapsed_time < kJustCheckedTimeThreshold) {
-    timestamp = l10n_util::GetStringUTF16(
-        use_title_case ? IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE
-                       : IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  } else {
-    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        use_title_case ? ui::TimeFormat::FORMAT_TITLE_CASE_ELAPSED
-                       : ui::TimeFormat::FORMAT_ELAPSED,
-        ui::TimeFormat::LENGTH_LONG, elapsed_time, true);
+    return l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   }
+
+  std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG, elapsed_time,
+      true);
 
   return l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
                                  timestamp);
@@ -175,7 +165,7 @@ std::vector<CredentialUIEntry> GetPasswordsForWarningType(
                             std::mem_fn(&CredentialUIEntry::IsMuted));
       break;
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return filtered_credentials;

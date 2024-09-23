@@ -3,6 +3,21 @@
     --cr-dialog-width: 416px;
   }
 
+  /* When there's an update in progress, set a fixed dialog height to avoid
+   * mid-update visual "jitter" when the dialog height would oscillate as the
+   * dialog title wraps (more of an issue with verbose languages). */
+  :host(:not([update-is-done])) ::part(wrapper) {
+    min-height: 300px;
+  }
+
+  :host(:not([update-is-done])) [slot='footer'] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+
   [slot='button-container'] {
     display: flex;
     justify-content: flex-end;

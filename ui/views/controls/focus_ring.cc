@@ -99,6 +99,7 @@ void FocusRing::Install(View* host) {
   auto ring = base::WrapUnique<FocusRing>(new FocusRing());
   ring->InvalidateLayout();
   ring->SchedulePaint();
+  ring->SetProperty(kViewIgnoredByLayoutKey, true);
   host->SetProperty(kFocusRingIdKey, host->AddChildView(std::move(ring)));
 }
 
@@ -253,7 +254,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   paint.setAntiAlias(true);
   paint.setStyle(cc::PaintFlags::kStroke_Style);
   if (!ShouldSetOutsetFocusRing()) {
-    // TODO(crbug.com/1417057): kDrawFocusRingBackgroundOutline should be
+    // TODO(crbug.com/40257162): kDrawFocusRingBackgroundOutline should be
     // removed when ChromeRefresh is fully rolled out.
     if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
       // Draw with full stroke width + 2x outline thickness to effectively paint
@@ -308,12 +309,16 @@ void FocusRing::OnViewBlurred(View* view) {
   RefreshLayer();
 }
 
+void FocusRing::OnViewLayoutInvalidated(View* view) {
+  InvalidateLayout();
+}
+
 FocusRing::FocusRing() {
   // Don't allow the view to process events.
   SetCanProcessEventsWithinSubtree(false);
 
   // This should never be included in the accessibility tree.
-  GetViewAccessibility().OverrideIsIgnored(true);
+  GetViewAccessibility().SetIsIgnored(true);
 }
 
 void FocusRing::AdjustBounds(SkRect& rect) const {
@@ -364,11 +369,11 @@ void FocusRing::RefreshLayer() {
 }
 
 bool FocusRing::ShouldSetOutsetFocusRing() const {
-  // TODO(crbug.com/1417057): Some places set a custom `halo_inset_` value to
+  // TODO(crbug.com/40257162): Some places set a custom `halo_inset_` value to
   // move the focus ring away from the host. If those places want to outset the
   // focus ring in the chrome refresh style, they need to be audited separately
   // with UX.
-  return features::IsChromeRefresh2023() && !outset_focus_ring_disabled_ &&
+  return !outset_focus_ring_disabled_ &&
          halo_inset_ == FocusRing::kDefaultHaloInset;
 }
 

@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "text_zoom_coordinator.h",
+    "text_zoom_coordinator.mm",
+    "text_zoom_mediator.h",
+    "text_zoom_mediator.mm",
+  ]
+  deps = [
+    ":ui",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/browser/ui/toolbar/accessory",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model/font_size",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "text_zoom_consumer.h",
+    "text_zoom_view_controller.h",
+    "text_zoom_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/text_zoom/ui_bundled/resources",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "text_zoom_constants.h",
+    "text_zoom_constants.mm",
+  ]
+}

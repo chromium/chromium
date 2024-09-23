@@ -7,8 +7,9 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "partition_alloc/oom.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
@@ -30,22 +31,26 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     ArrayBufferContents contents(num_elements, element_byte_size,
                                  ArrayBufferContents::kNotShared,
                                  ArrayBufferContents::kZeroInitialize);
-    if (UNLIKELY(!contents.Data())) {
+    if (!contents.Data()) [[unlikely]] {
       OOM_CRASH(num_elements * element_byte_size);
     }
     return Create(std::move(contents));
   }
-  static DOMArrayBuffer* Create(const void* source, size_t byte_length) {
-    ArrayBufferContents contents(byte_length, 1,
+  static DOMArrayBuffer* Create(base::span<const uint8_t> source) {
+    ArrayBufferContents contents(source.size(), 1,
                                  ArrayBufferContents::kNotShared,
                                  ArrayBufferContents::kDontInitialize);
-    if (UNLIKELY(!contents.Data())) {
-      OOM_CRASH(byte_length);
+    if (!contents.Data()) [[unlikely]] {
+      OOM_CRASH(source.size());
     }
-    const uint8_t* source_bytes = static_cast<const uint8_t*>(source);
-    std::copy(source_bytes, source_bytes + byte_length,
-              static_cast<uint8_t*>(contents.Data()));
+    contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
+  }
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
+  static DOMArrayBuffer* Create(const void* source, size_t byte_length) {
+    // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
+    return Create(UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(source), byte_length)));
   }
 
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
@@ -53,7 +58,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);
-  static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length);
+  static DOMArrayBuffer* CreateOrNull(base::span<const uint8_t> source);
 
   // Only for use by XMLHttpRequest::responseArrayBuffer,
   // Internals::serializeObject, and
@@ -91,6 +96,17 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   void Trace(Visitor*) const override;
 
+  bool IsDetached() const override;
+
+  v8::Local<v8::Object> AssociateWithWrapper(
+      v8::Isolate* isolate,
+      const WrapperTypeInfo* wrapper_type_info,
+      v8::Local<v8::Object> wrapper) override;
+
+  bool has_non_main_world_wrappers() const {
+    return has_non_main_world_wrappers_;
+  }
+
  private:
   v8::Maybe<bool> TransferDetachable(v8::Isolate*,
                                      v8::Local<v8::Value> detach_key,
@@ -101,6 +117,8 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // support only v8::String as the detach key type. It's also convenient that
   // we can write `array_buffer->SetDetachKey(isolate, "my key")`.
   TraceWrapperV8Reference<v8::String> detach_key_;
+
+  bool has_non_main_world_wrappers_ = false;
 };
 
 }  // namespace blink

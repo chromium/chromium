@@ -15,9 +15,13 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/media/quick_settings_media_view_controller.h"
+#include "ash/system/model/fake_power_status.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/power/tray_power.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -44,6 +48,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -70,11 +75,10 @@ class UnifiedSystemTrayTest : public AshTestBase,
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
 
-    enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     if (IsVcControlsUiEnabled()) {
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
-      enabled_features.push_back(features::kVideoConference);
+      enabled_features.push_back(features::kFeatureManagementVideoConference);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
     AshTestBase::SetUp();
@@ -254,7 +258,9 @@ TEST_P(UnifiedSystemTrayTest, SliderBubbleMovesOnShelfAutohide) {
   // Create a test widget to make auto-hiding work. Auto-hidden shelf will
   // remain visible if no windows are shown, making it impossible to properly
   // test.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   views::Widget* widget = new views::Widget;
@@ -344,7 +350,7 @@ TEST_P(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
 
   gfx::Rect time_bounds = time_view()
                               ->time_view()
-                              ->horizontal_time_label_for_test()
+                              ->GetHorizontalTimeLabelForTesting()
                               ->GetBoundsInScreen();
   gfx::Rect ime_bounds = ime_mode_view()->label()->GetBoundsInScreen();
 
@@ -681,14 +687,9 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  if (chromeos::features::IsJellyEnabled()) {
-    EXPECT_EQ(tray->layer()->background_color(),
-              widget->GetColorProvider()->GetColor(
-                  cros_tokens::kCrosSysSystemBaseElevated));
-  } else {
-    EXPECT_EQ(tray->layer()->background_color(),
-              ShelfConfig::Get()->GetShelfControlButtonColor(widget));
-  }
+  EXPECT_EQ(tray->layer()->background_color(),
+            widget->GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemBaseElevated));
 
   tablet_mode_controller->SetEnabledForTest(false);
   EXPECT_EQ(tray->layer()->background_color(),
@@ -773,9 +774,9 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   // Set a large enough screen size.
   UpdateDisplay("1600x900");
 
-  // The following code adds 2 more row in the tile section and 1 media control
-  // view to the qs bubble. In this case the main page should be larger than the
-  // default detailed page height.
+  // The following code adds 2 more row in the tile section and 1 media view to
+  // the qs bubble. In this case the main page should be larger than the default
+  // detailed page height.
 
   // Enables nearby sharing to show the tile.
   auto* test_delegate = static_cast<TestNearbyShareDelegate*>(
@@ -790,14 +791,25 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   locale_list.emplace_back("en-US", u"English (United States)");
   Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
                                                    "en-US");
-  // Adds the media control view.
+  // Adds the media view.
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
   auto* qs_view = tray->bubble()->quick_settings_view();
-  auto media_conroller = std::make_unique<UnifiedMediaControlsController>(
-      tray->bubble()->unified_system_tray_controller());
-  qs_view->AddMediaControlsView(media_conroller->CreateView());
-  qs_view->ShowMediaControls();
+  auto* tray_controller = tray->bubble()->unified_system_tray_controller();
+  auto media_controller =
+      std::make_unique<QuickSettingsMediaViewController>(tray_controller);
+
+  // Outside tests the QuickSettingsMediaViewController is set in
+  // UnifiedSystemTrayController::CreateQuickSettingsView() which is not
+  // called here, but we need to reference QuickSettingsMediaViewController in
+  // QuickSettingsMediaViewContainer::MaybeShowMediaView() when calling
+  // QuickSettingsView::SetShowMediaView(), so we need to manually set the
+  // controller for testing.
+  tray_controller->SetMediaViewControllerForTesting(
+      std::move(media_controller));
+
+  qs_view->AddMediaView(tray_controller->media_view_controller()->CreateView());
+  qs_view->SetShowMediaView(true);
 
   auto* bubble_view = tray->bubble()->GetBubbleView();
 
@@ -838,6 +850,74 @@ TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
 
   tray->ShowDisplayDetailedViewBubble();
   EXPECT_FALSE(IsBubbleShown());
+}
+
+class PowerTrayViewTest : public UnifiedSystemTrayTest {
+ public:
+  FakePowerStatus* GetFakePowerStatus() {
+    return scoped_fake_power_status_.get()->fake_power_status();
+  }
+
+  PowerTrayView* power_tray_view() {
+    return GetPrimaryUnifiedSystemTray()->power_tray_view_;
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    scoped_fake_power_status_.reset();
+    AshTestBase::TearDown();
+  }
+
+ private:
+  std::unique_ptr<ScopedFakePowerStatus> scoped_fake_power_status_;
+};
+
+TEST_F(PowerTrayViewTest, BatteryVisibility) {
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsBatteryPresent(false);
+
+  // OnPowerStatusChanged() is called in an asynchronous method, but for the
+  // purpose of this test, it is called explicitly to ensure that the visibility
+  // is set before the check.
+  power_tray_view()->OnPowerStatusChanged();
+
+  EXPECT_FALSE(power_tray_view()->GetVisible());
+}
+
+TEST_F(PowerTrayViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+}
+
+TEST_F(PowerTrayViewTest, AccessibleName) {
+  ui::AXNodeData data;
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true));
+
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetIsBatteryPresent(false);
+
+  // `OnPowerStatusChanged` is called in an asynchronous method, but for the
+  // purpose of this test, it is called explicitly to ensure that the visibility
+  // is set before the check.
+  power_tray_view()->OnPowerStatusChanged();
+  data = ui::AXNodeData();
+
+  power_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true));
 }
 
 }  // namespace ash

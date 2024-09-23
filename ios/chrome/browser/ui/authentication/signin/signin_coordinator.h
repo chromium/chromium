@@ -9,18 +9,21 @@
 
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
 class Browser;
+@protocol SystemIdentity;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
+namespace trusted_vault {
+enum class SecurityDomainId;
+}  // namespace trusted_vault
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-@protocol SystemIdentity;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
@@ -34,6 +37,11 @@ class PrefRegistrySyncable;
 // Used for histogram only.
 @property(nonatomic, readonly) signin_metrics::AccessPoint accessPoint;
 
+// TODO(crbug.com/40071586): Need to remove this property when the bug is
+// closed.
+// This property returns the time ticks when the instance was created.
+@property(nonatomic, readonly, assign) base::TimeTicks creationTimeTicks;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                accessPoint:
@@ -45,21 +53,6 @@ class PrefRegistrySyncable;
 
 // Registers preferences related to sign-in coordinator.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
-
-// Returns a coordinator for user sign-in workflow.
-// `viewController` presents the sign-in.
-// `identity` is the identity preselected with the sign-in opens.
-// `accessPoint` is the view where the sign-in button was displayed.
-// `promoAction` is promo button used to trigger the sign-in.
-+ (instancetype)
-    userSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                        browser:(Browser*)browser
-                                       identity:(id<SystemIdentity>)identity
-                                    accessPoint:
-                                        (signin_metrics::AccessPoint)accessPoint
-                                    promoAction:(signin_metrics::PromoAction)
-                                                    promoAction;
 
 // Returns a coordinator to sign-in the user without taps if the identity has
 // been selected with `identity`. Otherwise, it will ask the user to select
@@ -85,40 +78,12 @@ class PrefRegistrySyncable;
                                       accessPoint:(signin_metrics::AccessPoint)
                                                       accessPoint;
 
-// Returns a coordinator for the sign-in and sync workflow. The views will be
-// the newer FRE style views. `viewController` presents the sign-in.
-+ (instancetype)
-    twoScreensSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                              browser:(Browser*)browser
-                                          accessPoint:
-                                              (signin_metrics::AccessPoint)
-                                                  accessPoint
-                                          promoAction:
-                                              (signin_metrics::PromoAction)
-                                                  promoAction;
-
 // Returns a coordinator for upgrade sign-in workflow.
 // `viewController` presents the sign-in.
 + (instancetype)upgradeSigninPromoCoordinatorWithBaseViewController:
                     (UIViewController*)viewController
                                                             browser:(Browser*)
                                                                         browser;
-
-// Returns a coordinator for advanced sign-in settings workflow.
-// `viewController` presents the sign-in.
-// `signinState` defines the user's sign-in state prior to all SigninCoordinator
-//               manipulations.
-+ (instancetype)
-    advancedSettingsSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                                    browser:(Browser*)browser
-                                                signinState:
-                                                    (IdentitySigninState)
-                                                        signinState
-                                                accessPoint:(signin_metrics::
-                                                                 AccessPoint)
-                                                                accessPoint;
 
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
@@ -167,7 +132,9 @@ class PrefRegistrySyncable;
 // Related to IOSTrustedVaultClient.
 // `viewController` presents the sign-in.
 // `intent` Dialog to present.
+// `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
+// `accessPoint` Identifies where the dialog is initiated from.
 + (instancetype)
     trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -176,6 +143,10 @@ class PrefRegistrySyncable;
                                                            intent:
                                                                (SigninTrustedVaultDialogIntent)
                                                                    intent
+                                                 securityDomainID:
+                                                     (trusted_vault::
+                                                          SecurityDomainId)
+                                                         securityDomainID
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)

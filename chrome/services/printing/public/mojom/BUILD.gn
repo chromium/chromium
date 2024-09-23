@@ -14,14 +14,11 @@ mojom("mojom") {
     "printing_service.mojom",
   ]
 
-  deps = [
-    "//printing/mojom",
-    "//ui/gfx/geometry/mojom",
-  ]
-
   public_deps = [
     "//mojo/public/mojom/base",
+    "//printing/mojom",
     "//sandbox/policy/mojom",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
@@ -29,11 +26,6 @@ mojom("mojom") {
 
   if (is_chromeos) {
     sources += [ "pdf_flattener.mojom" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "pdf_thumbnailer.mojom" ]
-    deps += [ "//skia/public/mojom" ]
   }
 
   if (is_win) {
@@ -48,9 +40,7 @@ mojom("mojom") {
     sources += [ "print_backend_service.mojom" ]
     public_deps += [
       "//printing/backend/mojom",
-      "//printing/mojom",
       "//printing/mojom:printing_context",
-      "//ui/gfx/geometry/mojom",
     ]
     if (is_win) {
       sources += [ "printer_xml_parser.mojom" ]

@@ -341,6 +341,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kPreviousSessionInfoAppWillTerminate];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPreviousSessionInfoAvailableDeviceStorage];
 
   [defaults setObject:[NSDate date] forKey:kPreviousSessionInfoStartTime];
 
@@ -446,17 +448,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
 - (UIApplicationState*)applicationState {
   return _applicationState.get();
-}
-
-- (void)updateAvailableDeviceStorage:(NSInteger)availableStorage {
-  if (!self.recordingCurrentSession)
-    return;
-
-  [[NSUserDefaults standardUserDefaults]
-      setInteger:availableStorage
-          forKey:kPreviousSessionInfoAvailableDeviceStorage];
-
-  [self updateSessionEndTime];
 }
 
 - (void)updateSessionEndTime {

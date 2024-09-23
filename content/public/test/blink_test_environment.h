@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,7 @@ class TestBlinkWebUnitTestSupport;
 // testing::Environment* const blink_env =
 //   testing::AddGlobalTestEnvironment(new BlinkTestEnvironment);
 //
-// TODO(crbug.com/1315595): Move this to blink/renderer/controllers/tests/
+// TODO(crbug.com/40221845): Move this to blink/renderer/controllers/tests/
 class BlinkTestEnvironment : public ::testing::Environment {
  public:
   BlinkTestEnvironment();
@@ -37,6 +38,7 @@ class BlinkTestEnvironment : public ::testing::Environment {
  protected:
   virtual void InitializeBlinkTestSupport();
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
   std::optional<content::TestContentClientInitializer> content_initializer_;
   std::unique_ptr<content::TestBlinkWebUnitTestSupport> blink_test_support_;

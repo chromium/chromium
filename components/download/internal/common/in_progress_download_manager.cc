@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/download/database/download_db_entry.h"
@@ -39,6 +40,10 @@
 namespace download {
 
 namespace {
+#if BUILDFLAG(IS_ANDROID)
+// PDF MIME type.
+constexpr char kPdfMimeType[] = "application/pdf";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
     DownloadItemImplDelegate* delegate,
@@ -133,7 +138,8 @@ void CreateDownloadHandlerForNavigation(
         pending_url_loader_factory,
     const URLSecurityPolicy& url_security_policy,
     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
-    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
+    bool is_transient) {
   DCHECK(GetIOTaskRunner()->BelongsToCurrentThread());
 
   ResourceDownloader::InterceptNavigationResponse(
@@ -144,7 +150,8 @@ void CreateDownloadHandlerForNavigation(
       std::move(url_loader_client_endpoints),
       network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory)),
-      url_security_policy, std::move(wake_lock_provider), main_task_runner);
+      url_security_policy, std::move(wake_lock_provider), main_task_runner,
+      is_transient);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -347,7 +354,8 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
+        pending_url_loader_factory,
+    bool is_transient) {
   mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider;
   if (wake_lock_provider_binder_) {
     wake_lock_provider_binder_.Run(
@@ -365,7 +373,7 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
           std::move(url_loader_client_endpoints),
           std::move(pending_url_loader_factory), url_security_policy_,
           std::move(wake_lock_provider),
-          base::SingleThreadTaskRunner::GetCurrentDefault()));
+          base::SingleThreadTaskRunner::GetCurrentDefault(), is_transient));
 }
 
 void InProgressDownloadManager::Initialize(
@@ -531,7 +539,8 @@ void InProgressDownloadManager::StartDownload(
     StartDownloadWithItem(
         std::move(stream), std::move(url_loader_factory_provider),
         std::move(cancel_request_callback), std::move(info),
-        static_cast<DownloadItemImpl*>(GetDownloadByGuid(guid)), false);
+        static_cast<DownloadItemImpl*>(GetDownloadByGuid(guid)),
+        base::FilePath(), false);
   }
 }
 
@@ -542,6 +551,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
     DownloadJob::CancelRequestCallback cancel_request_callback,
     std::unique_ptr<DownloadCreateInfo> info,
     DownloadItemImpl* download,
+    const base::FilePath& duplicate_download_file_path,
     bool should_persist_new_download) {
   if (!download) {
     // If the download is no longer known to the DownloadManager, then it was
@@ -574,7 +584,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
     DCHECK(stream);
     download_file.reset(file_factory_->CreateFile(
         std::move(info->save_info), default_download_directory,
-        std::move(stream), download->GetId(),
+        std::move(stream), download->GetId(), duplicate_download_file_path,
         download->DestinationObserverAsWeakPtr()));
   }
   // It is important to leave info->save_info intact in the case of an interrupt
@@ -586,6 +596,13 @@ void InProgressDownloadManager::StartDownloadWithItem(
 
   if (download_start_observer_)
     download_start_observer_->OnDownloadStarted(download);
+#if BUILDFLAG(IS_ANDROID)
+  if (info->transient && !info->is_must_download &&
+      base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
+    base::UmaHistogramBoolean("Download.Android.OpenPdfFromDuplicates",
+                              !duplicate_download_file_path.empty());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void InProgressDownloadManager::OnDBInitialized(

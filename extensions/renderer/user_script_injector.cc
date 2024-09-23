@@ -13,7 +13,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/extension_frame_helper.h"
@@ -28,10 +27,15 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/common/mojom/guest_view.mojom.h"
+#endif
+
 namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 struct RoutingInfoKey {
   blink::LocalFrameToken frame_token;
   std::string script_id;
@@ -57,6 +61,8 @@ using RoutingInfoMap = std::map<RoutingInfoKey, bool>;
 // |script_id| and |routing_id| pair.
 base::LazyInstance<RoutingInfoMap>::DestructorAtExit g_routing_info_map =
     LAZY_INSTANCE_INITIALIZER;
+
+#endif
 
 // Greasemonkey API source that is injected with the scripts.
 struct GreasemonkeyApiJsString {
@@ -136,6 +142,11 @@ mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
   return script_->execution_world();
 }
 
+const std::optional<std::string>& UserScriptInjector::GetExecutionWorldId()
+    const {
+  return script_->world_id();
+}
+
 blink::mojom::WantResultOption UserScriptInjector::ExpectsResults() const {
   return blink::mojom::WantResultOption::kNoResult;
 }
@@ -181,6 +192,7 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
   if (!script_)
     return PermissionsData::PageAccess::kAllowed;
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (script_->consumer_instance_type() ==
           UserScript::ConsumerInstanceType::WEBVIEW) {
     auto* render_frame = content::RenderFrame::FromWebFrame(web_frame);
@@ -209,6 +221,7 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
     return allowed ? PermissionsData::PageAccess::kAllowed
                    : PermissionsData::PageAccess::kDenied;
   }
+#endif
 
   GURL effective_document_url =
       ScriptContext::GetEffectiveDocumentURLForInjection(

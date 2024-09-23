@@ -61,7 +61,6 @@ static_library("database") {
     "//components/database_utils",
     "//components/favicon_base",
     "//sql",
-    "//third_party/sqlite",
     "//ui/gfx",
     "//url",
   ]
@@ -117,7 +116,6 @@ source_set("unit_tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/sqlite",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx:test_support",

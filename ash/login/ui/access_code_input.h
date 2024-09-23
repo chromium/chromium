@@ -101,6 +101,8 @@ class FlexCodeInput : public AccessCodeInput {
 
   void RequestFocus() override;
 
+  void SetAccessibleNameOnTextfield(const std::u16string& name);
+
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -110,8 +112,6 @@ class FlexCodeInput : public AccessCodeInput {
                       const ui::KeyEvent& key_event) override;
 
  private:
-  void OnAccessibleNameChanged(const std::u16string& new_name) override;
-
   raw_ptr<SystemTextfield> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted
@@ -200,6 +200,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // Inserts |value| into the |active_field_| and moves focus to the next field
   // if it exists.
   void InsertDigit(int value) override;
+  void OnTextSelectionChanged();
 
   // Clears input from the |active_field_|. If |active_field| is empty moves
   // focus to the previous field (if exists) and clears input there.
@@ -258,6 +259,12 @@ class FixedLengthCodeInput : public AccessCodeInput {
   void SetAllowArrowNavigation(bool allowed);
 
   int active_input_index() { return active_input_index_; }
+
+  base::CallbackListSubscription AddActiveInputIndexChanged(
+      views::PropertyChangedCallback callback) {
+    return AddPropertyChangedCallback(&active_input_index_,
+                                      std::move(callback));
+  }
 
  private:
   // Moves focus to the current input field.

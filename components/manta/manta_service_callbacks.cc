@@ -6,9 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -28,7 +31,7 @@ constexpr char kExpectedEndPointDomain[] = "aratea-pa.googleapis.com";
 std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
     const std::string& reason) {
   static constexpr auto reason_map =
-      base::MakeFixedFlatMap<base::StringPiece, MantaStatusCode>({
+      base::MakeFixedFlatMap<std::string_view, MantaStatusCode>({
           {"MISSING_INPUT", MantaStatusCode::kInvalidInput},
           {"INVALID_INPUT", MantaStatusCode::kInvalidInput},
           {"UNSUPPORTED_LANGUAGE", MantaStatusCode::kUnsupportedLanguage},
@@ -36,7 +39,7 @@ std::optional<MantaStatusCode> MapServerFailureReasonToMantaStatusCode(
           {"RESOURCE_EXHAUSTED", MantaStatusCode::kResourceExhausted},
           {"PER_USER_QUOTA_EXCEEDED", MantaStatusCode::kPerUserQuotaExceeded},
       });
-  const auto* iter = reason_map.find(reason);
+  const auto iter = reason_map.find(reason);
 
   return iter != reason_map.end() ? std::optional<MantaStatusCode>(iter->second)
                                   : std::nullopt;
@@ -52,24 +55,88 @@ std::optional<MantaStatusCode> MapServerStatusCodeToMantaStatusCode(
           {3 /*INVALID_ARGUMENT*/, MantaStatusCode::kInvalidInput},
           {8 /*RESOURCE_EXHAUSTED*/, MantaStatusCode::kResourceExhausted},
       });
-  const auto* iter = code_map.find(server_status_code);
+  const auto iter = code_map.find(server_status_code);
 
   return iter != code_map.end() ? std::optional<MantaStatusCode>(iter->second)
                                 : std::nullopt;
 }
+
+void LogTimeCost(const MantaMetricType request_type,
+                 const base::TimeDelta& time_cost) {
+  switch (request_type) {
+    case MantaMetricType::kOrca:
+      base::UmaHistogramTimes("Ash.MantaService.OrcaProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kSnapper:
+      base::UmaHistogramTimes("Ash.MantaService.SnapperProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kMahiSummary:
+      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kMahiQA:
+      base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
+                              time_cost);
+      break;
+    case manta::MantaMetricType::kSparky:
+      base::UmaHistogramTimes("Ash.MantaService.SparkyProvider.TimeCost",
+                              time_cost);
+      break;
+    case MantaMetricType::kAnchovy:
+      base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
+                              time_cost);
+      break;
+  }
+}
+
+void LogMantaStatusCode(const MantaMetricType request_type,
+                        const MantaStatusCode status_code) {
+  switch (request_type) {
+    case MantaMetricType::kOrca:
+      base::UmaHistogramEnumeration("Ash.MantaService.OrcaProvider.StatusCode",
+                                    status_code);
+      break;
+    case MantaMetricType::kSnapper:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.SnapperProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiSummary:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiQA:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.QA.StatusCode", status_code);
+      break;
+    case manta::MantaMetricType::kSparky:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.SparkyProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kAnchovy:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
+      break;
+  }
+}
 }  // namespace
 
 void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
+                               const base::Time& start_time,
+                               const MantaMetricType request_type,
                                std::unique_ptr<EndpointFetcher> fetcher,
                                std::unique_ptr<EndpointResponse> responses) {
-  // TODO(b/301185733): Log error code to UMA.
   // Tries to parse the response as a Response proto and return to the
   // `callback` together with a OK status, or capture the errors and return a
   // proper error status.
 
-  std::string message = std::string();
+  base::TimeDelta time_cost = base::Time::Now() - start_time;
+
+  std::string message, locale;
 
   if (!responses) {
+    LogMantaStatusCode(request_type, MantaStatusCode::kBackendFailure);
     std::move(callback).Run(nullptr,
                             {MantaStatusCode::kBackendFailure, message});
     return;
@@ -91,6 +158,7 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
     if (!rpc_status.ParseFromString(responses->response)) {
       DVLOG(1) << "Got unexpected failed response but failed to parse a "
                   "RpcStatus proto";
+      LogMantaStatusCode(request_type, manta_status_code);
       std::move(callback).Run(nullptr, {manta_status_code, message});
       return;
     }
@@ -119,10 +187,12 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
         proto::RpcLocalizedMessage localize_message;
         localize_message.ParseFromString(detail.value());
         message = localize_message.message();
+        locale = localize_message.locale();
       }
     }
 
-    std::move(callback).Run(nullptr, {manta_status_code, message});
+    LogMantaStatusCode(request_type, manta_status_code);
+    std::move(callback).Run(nullptr, {manta_status_code, message, locale});
 
     return;
   }
@@ -130,11 +200,14 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
   auto manta_response = std::make_unique<proto::Response>();
   if (!manta_response->ParseFromString(responses->response)) {
     DVLOG(1) << "Failed to parse MantaResponse as a Response proto";
+    LogMantaStatusCode(request_type, MantaStatusCode::kMalformedResponse);
     std::move(callback).Run(nullptr,
                             {MantaStatusCode::kMalformedResponse, message});
     return;
   }
 
+  LogTimeCost(request_type, time_cost);
+  LogMantaStatusCode(request_type, MantaStatusCode::kOk);
   std::move(callback).Run(std::move(manta_response),
                           {MantaStatusCode::kOk, message});
 }

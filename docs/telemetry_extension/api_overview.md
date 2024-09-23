@@ -1,9 +1,51 @@
 # Telemetry Extension API overview
 
 This document gives a function-level documentation of the Telemetry Extension
-API. It is separated in the three namespaces **telemetry**, **diagnostics**, **events** and **management**.
+API. It is separated in the three namespaces **telemetry**, **diagnostics**,
+**events** and **management**.
 
 [TOC]
+
+# Dictionary-based union types
+
+There are functions with similar signatures. It's useful to simplify the
+interfaces by merging these functions into one. For example,
+`postFooData(arg: FooType)` and `postBarData(arg: BarType)` could be merged into
+`postData(arg: ExampleUnionType)`. We use a *dictionary-based union type* for
+this purpose. Such a union object represents exactly one of the `N` candidate
+types, in the form of a dictionary with `N` optional fields, each corresponding
+to one candidate type.
+
+Let's see an example. The following table describes a union type
+`ExampleUnionType` that is either a `FooType` or a `BarType`.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| foo | FooType | Information about foo |
+| bar | BarType | Information about bar |
+
+To invoke a function `os.exampleFunction()` that accepts an `ExampleUnionType`
+* with an object of `FooType`
+    ```
+    os.exampleFunction(
+      arg: {
+         foo: aFooObject
+      }
+    )
+    ```
+* with an object of `BarType`
+    ```
+    os.exampleFunction(
+      arg: {
+         bar: aBarObject
+      }
+    )
+    ```
+
+Notice that exactly one field should be set. That is, the object is invalid
+when either
+* more than one field is set, or
+* no field is set.
 
 # Diagnostics
 
@@ -28,7 +70,6 @@ extension-event based interface in M119. The interface is described in
 | disk_read |
 | dns_resolution |
 | memory |
-| nvme_wear_level |
 | smartctl_check |
 | lan_connectivity |
 | signal_strength |
@@ -134,11 +175,6 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | timeout_seconds | number | A timeout for the routine |
 
-### RunNvmeWearLevelRequest
-| Property Name | Type | Description |
------------- | ------- | ----------- |
-| wear_level_threshold | number | Threshold number in percentage which routine examines wear level status against |
-
 ### RunNvmeSelfTestRequest
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -178,40 +214,379 @@ extension-event based interface in M119. The interface is described in
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version |
------------- | ------------- | ------------- | ------------- |
-| getAvailableRoutines | () => Promise<GetAvailableRoutinesResponse\> | `os.diagnostics` | M96 |
-| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse\> | `os.diagnostics` | M96 |
-| runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M105 |
-| runAudioDriverRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
-| runBatteryCapacityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runBatteryHealthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runBluetoothDiscoveryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M118 |
-| runBluetoothPairingRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
-| runBluetoothPowerRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
-| runBluetoothScanningRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics`, `os.bluetooth_peripherals_info` | M118 |
-| runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |
-| runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M99 |
-| runCpuStressRoutine | (params: RunCpuRoutineRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runDiskReadRoutine | (params: RunDiskReadRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
-| runDnsResolutionRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
-| runDnsResolverPresentRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
-| runEmmcLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M121 |
-| runFingerprintAliveRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runGatewayCanBePingedRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
-| runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
-| runMemoryRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M96 |
-| runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
-| runPowerButtonRoutine | (params: RunPowerButtonRequest) => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
-| runSensitiveSensorRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runSignalStrengthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
-| runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise<RunRoutineResponse\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
-| runUfsLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+### getAvailableRoutines()
+```
+chrome.os.diagnostics.getAvailableRoutines() => Promise<GetAvailableRoutinesResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### getRoutineUpdate()
+```
+chrome.os.diagnostics.getRoutineUpdate(
+  request: GetRoutineUpdateRequest,
+) => Promise<GetRoutineUpdateResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runAcPowerRoutine()
+```
+chrome.os.diagnostics.runAcPowerRoutine(
+  request: RunAcPowerRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M105
+
+#### Required permission
+*   `os.diagnostics`
+
+### runAudioDriverRoutine()
+```
+chrome.os.diagnostics.runAudioDriverRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M117
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBatteryCapacityRoutine()
+```
+chrome.os.diagnostics.runBatteryCapacityRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+
+
+### runBatteryChargeRoutine()
+```
+chrome.os.diagnostics.runBatteryChargeRoutine(
+  request: RunBatteryChargeRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBatteryDischargeRoutine()
+```
+chrome.os.diagnostics.runBatteryDischargeRoutine(
+  request: RunBatteryDischargeRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBatteryHealthRoutine()
+```
+chrome.os.diagnostics.runBatteryHealthRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBluetoothDiscoveryRoutine()
+```
+chrome.os.diagnostics.runBluetoothDiscoveryRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M118
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBluetoothPairingRoutine()
+```
+chrome.os.diagnostics.runBluetoothPairingRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M118
+
+#### Required permission
+*   `os.diagnostics`
+*   `os.bluetooth_peripherals_info`
+
+### runBluetoothPowerRoutine()
+```
+chrome.os.diagnostics.runBluetoothPowerRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M117
+
+#### Required permission
+*   `os.diagnostics`
+
+### runBluetoothScanningRoutine()
+```
+chrome.os.diagnostics.runBluetoothScanningRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M118
+
+#### Required permission
+*   `os.diagnostics`
+*   `os.bluetooth_peripherals_info`
+
+### runCpuCacheRoutine()
+```
+chrome.os.diagnostics.runCpuCacheRoutine(
+  request: RunCpuRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runCpuFloatingPointAccuracyRoutine()
+```
+chrome.os.diagnostics.runCpuFloatingPointAccuracyRoutine(
+  request: RunCpuRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M99
+
+#### Required permission
+*   `os.diagnostics`
+
+### runCpuPrimeSearchRoutine()
+```
+chrome.os.diagnostics.runCpuPrimeSearchRoutine(
+  request: RunCpuRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M99
+
+#### Required permission
+*   `os.diagnostics`
+
+### runCpuStressRoutine()
+```
+chrome.os.diagnostics.runCpuStressRoutine(
+  request: RunCpuRoutineRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runDiskReadRoutine()
+```
+chrome.os.diagnostics.runDiskReadRoutine(
+  request: RunDiskReadRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M102
+
+#### Required permission
+*   `os.diagnostics`
+
+### runDnsResolutionRoutine()
+```
+chrome.os.diagnostics.runDnsResolutionRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permission
+*   `os.diagnostics`
+
+### runDnsResolverPresentRoutine()
+```
+chrome.os.diagnostics.runDnsResolverPresentRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permission
+*   `os.diagnostics`
+
+### runEmmcLifetimeRoutine()
+```
+chrome.os.diagnostics.runEmmcLifetimeRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M110
+
+#### Required permission
+*   `os.diagnostics`
+
+### runFanRoutine()
+```
+chrome.os.diagnostics.runFanRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M121
+
+#### Required permission
+*   `os.diagnostics`
+
+### runFingerprintAliveRoutine()
+```
+chrome.os.diagnostics.runFingerprintAliveRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M110
+
+#### Required permission
+*   `os.diagnostics`
+
+### runGatewayCanBePingedRoutine()
+```
+chrome.os.diagnostics.runGatewayCanBePingedRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permission
+*   `os.diagnostics`
+
+### runLanConnectivityRoutine()
+```
+chrome.os.diagnostics.runLanConnectivityRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M102
+
+#### Required permission
+*   `os.diagnostics`
+
+### runMemoryRoutine()
+```
+chrome.os.diagnostics.runMemoryRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permission
+*   `os.diagnostics`
+
+### runNvmeSelfTestRoutine()
+```
+chrome.os.diagnostics.runNvmeSelfTestRoutine(
+  request: RunNvmeSelfTestRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M110
+
+#### Required permission
+*   `os.diagnostics`
+
+### runPowerButtonRoutine()
+```
+chrome.os.diagnostics.runPowerButtonRoutine(
+  request: RunPowerButtonRequest,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M117
+
+#### Required permission
+*   `os.diagnostics`
+
+### runSensitiveSensorRoutine()
+```
+chrome.os.diagnostics.runSensitiveSensorRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M110
+
+#### Required permission
+*   `os.diagnostics`
+
+### runSignalStrengthRoutine()
+```
+chrome.os.diagnostics.runSignalStrengthRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permission
+*   `os.diagnostics`
+
+### runSmartctlCheckRoutine()
+```
+chrome.os.diagnostics.runSmartctlCheckRoutine(
+  request: RunSmartctlCheckRequest?,
+) => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M102
+
+Optional parameter `request` added in M110.
+
+The parameter is only available if "smartctl_check_with_percentage_used" is
+returned from `GetAvailableRoutines()`.
+
+#### Required permission
+*   `os.diagnostics`
+
+### runUfsLifetimeRoutine()
+```
+chrome.os.diagnostics.runUfsLifetimeRoutine() => Promise<RunRoutineResponse>
+```
+
+#### Released in Chrome version
+M117.
+
+#### Required permission
+*   `os.diagnostics`
 
 # V2 Diagnostics API
 
@@ -221,7 +596,7 @@ extension-event based interface in M119. The interface is described in
 | Property Name |
 ------------ |
 | waiting_to_be_scheduled |
-| waiting_user_input |
+| waiting_for_interaction |
 
 ### Enum ExceptionReason
 | Property Name |
@@ -230,6 +605,7 @@ extension-event based interface in M119. The interface is described in
 | unexpected |
 | unsupported |
 | app_ui_closed |
+| camera_frontend_not_opened |
 
 ### Enum MemtesterTestItemEnum
 | Property Name |
@@ -271,6 +647,37 @@ extension-event based interface in M119. The interface is described in
 | uuid | string | UUID of the routine that entered this state  |
 | percentage | number | Current percentage of the routine status (0-100) |
 
+### CheckLedLitUpStateInquiry
+Details regarding the inquiry to check the LED lit up state. Clients should
+inspect the target LED and report its state using `CheckLedLitUpStateReply`
+as the argument of `replyToRoutineInquiry`.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
+### CheckKeyboardBacklightStateInquiry
+Details regarding the inquiry to check the keyboard backlight LED state. Clients
+should inspect the keyboard backlight and report its state using
+`CheckKeyboardBacklightStateReply` as the argument of `replyToRoutineInquiry`.
+
+| Property Name | Type | Description |
+| ------------- | ---- | ----------- |
+
+### RoutineInquiryUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| checkLedLitUpState | CheckLedLitUpStateInquiry | See `CheckLedLitUpStateInquiry`. |
+| checkKeyboardBacklightState | CheckKeyboardBacklightStateInquiry | See `CheckKeyboardBacklightStateInquiry`. |
+
+### RoutineInteractionUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| inquiry | RoutineInquiryUnion | Routine inquiries need to be replied to with the `replyToRoutineInquiry` method |
+
 ### RoutineWaitingInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -278,6 +685,14 @@ extension-event based interface in M119. The interface is described in
 | percentage | number | Current percentage of the routine status (0-100) |
 | reason | RoutineWaitingReason | Reason why the routine waits |
 | message | string | Additional information, may be used to pass instruction or explanation |
+| interaction | RoutineInteractionUnion | The requested interaction. When set, clients must respond to the interaction for the routine to proceed. See `RoutineInteractionUnion` to learn about how to respond to each interaction. |
+
+### RoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| hasPassed | boolean | Whether the routine finished successfully |
+| detail | RoutineFinishedDetailUnion | Extra details about a finished routine |
 
 ### ExceptionInfo
 | Property Name | Type | Description |
@@ -286,21 +701,42 @@ extension-event based interface in M119. The interface is described in
 | reason | ExceptionReason | Reason why the routine threw an exception |
 | debugMessage | string | A human readable message for debugging. Don't rely on the content because it could change anytime |
 
+### RoutineFinishedDetailUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| memory | MemoryRoutineFinishedDetail | Extra detail for a finished memory routine  |
+| fan | FanRoutineFinishedDetail | Extra detail for a finished fan routine |
+| cameraFrameAnalysis | CameraFrameAnalysisRoutineFinishedDetail | Extra detail for a finished camera frame analysis routine |
+
 ### MemtesterResult
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| passedItems | Array<MemtesterTestItemEnum\> | Passed test items |
+| failedItems | Array<MemtesterTestItemEnum\> | Failed test items |
+
+### LegacyMemtesterResult
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | passed_items | Array<MemtesterTestItemEnum\> | Passed test items |
 | failed_items | Array<MemtesterTestItemEnum\> | Failed test items |
 
-### MemoryRoutineFinishedInfo
+### MemoryRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| bytesTested | number | Number of bytes tested in the memory routine |
+| result | MemtesterResult | Contains the memtester test results |
+
+### LegacyMemoryRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
 | has_passed | boolean | Whether the routine finished successfully |
 | bytesTested | number | Number of bytes tested in the memory routine |
-| result | MemtesterResult | Contains the memtester test results |
+| result | LegacyMemtesterResult | Contains the memtester test results |
 
-### RunMemoryRoutineArguments
+### CreateMemoryRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
@@ -312,7 +748,14 @@ extension-event based interface in M119. The interface is described in
 | not_matched |
 | not_configured |
 
-### FanRoutineFinishedInfo
+### FanRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| passedFanIds | Array<number\> | The ids of fans that can be controlled |
+| failedFanIds | Array<number\> | The ids of fans that cannot be controlled |
+| fanCountStatus | HardwarePresenceStatus | Whether the number of fan probed is matched |
+
+### LegacyFanRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
@@ -321,7 +764,7 @@ extension-event based interface in M119. The interface is described in
 | failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
 | fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
 
-### RunFanRoutineArguments
+### CreateFanRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
@@ -331,17 +774,127 @@ extension-event based interface in M119. The interface is described in
 | volume_up |
 | volume_down |
 
-### VolumeButtonRoutineFinishedInfo
+### LegacyVolumeButtonRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
 | has_passed | boolean | Whether the routine finished successfully |
 
-### RunVolumeButtonRoutineArguments
+### LegacyCreateVolumeButtonRoutineArguments
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | button_type | VolumeButtonType | The volume button to be tested |
 | timeout_seconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
+
+### CreateVolumeButtonRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| buttonType | VolumeButtonType | The volume button to be tested |
+| timeoutSeconds | number | Length of time to listen to the volume button events. The value should be positive and less or equal to 600 seconds |
+
+### CreateNetworkBandwidthRoutineArguments
+
+Checks the network bandwidth and reports the speed info.
+
+This routine is supported when `oem-name` in cros-config is set and not empty
+string. The external service for the routine is not available for the
+unrecognized devices.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
+### Enum LedName
+| Property Name |
+------------ |
+| battery |
+| power |
+| adapter |
+| left |
+| right |
+
+### Enum LedColor
+| Property Name |
+------------ |
+| red |
+| green |
+| blue |
+| yellow |
+| white |
+| amber |
+
+### CreateLedLitUpRoutineArguments
+The routine lights up the target LED in the specified color and requests
+the caller to verify the change.
+
+This routine is supported if and only if the device has a ChromeOS EC.
+
+When an LED name or LED color is not supported by the EC, it will cause a
+routine exception (by emitting an `onRoutineException` event) at runtime.
+
+The routine proceeds with the following steps:
+1. Set the specified LED with the specified color and enter the waiting
+   state with the `CheckLedLitUpStateInquiry` interaction request.W
+2. After receiving `CheckLedLitUpStateReply` with the observed LED state,
+   the color of the LED will be reset (back to auto control). Notice that
+   there is no timeout so the routine will be in the waiting state
+   indefinitely.
+3. The routine passes if the LED is lit up in the correct color. Otherwise,
+   the routine fails.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| name | LedName | The LED to be lit up |
+| color | LedColor | The color to be lit up |
+
+### CreateCameraFrameAnalysisRoutineArguments
+The routine checks the frames captured by camera. The frontend should ensure the
+camera is opened during the execution of the routine.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
+### CreateKeyboardBacklightRoutineArguments
+This routine checks whether the keyboard backlight can be lit up at any
+brightness level.
+
+| Property Name | Type | Description |
+| ------------- | ---- | ----------- |
+
+### Enum CameraFrameAnalysisIssue
+| Property Name |
+------------ |
+| no_issue |
+| camera_service_not_available |
+| blocked_by_privacy_shutter |
+| lens_are_dirty |
+
+### Enum CameraSubtestResult
+| Property Name |
+------------ |
+| not_run |
+| passed |
+| failed |
+
+### CameraFrameAnalysisRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| issue | CameraFrameAnalysisIssue | The issue caught by the routine. See the fields for each subtest for their details. |
+| privacyShutterOpenTest | CameraSubtestResult | The result is `failed` if the len is blocked by the privacy shutter. To mitigate the issue, users are suggested to open the privacy shutter to unveil the len. |
+| lensNotDirtyTest | CameraSubtestResult | The result is `failed` if the frames are blurred. To mitigate the issue, users are suggested to clean the lens. |
+
+### CreateRoutineArgumentsUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Released in Chrome version | Description | Additional permission needed to access |
+------------ | ------- | ----------- | ----------- | ----------- |
+| memory | CreateMemoryRoutineArguments | M125 | Arguments to create a memory routine | None |
+| volumeButton | CreateVolumeButtonRoutineArguments | M125 | Arguments to create a volume button routine | None |
+| fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine | None |
+| networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
+| ledLitUp | CreateLedLitUpRoutineArguments | M125 | Arguments to create a LED lit up routine | None |
+| cameraFrameAnalysis | CreateCameraFrameAnalysisRoutineArguments | M129 | Arguments to create a camera frame analysis routine | None |
+| keyboardBacklight | CreateKeyboardBacklightRoutineArguments | M128 | Arguments to create a keyboard backlight routine | None |
+
 
 ### CreateRoutineResponse
 | Property Name | Type | Description |
@@ -358,6 +911,43 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that shall be created |
 
+### Enum LedLitUpState
+| Property Name |
+------------ |
+| correct_color |
+| not_lit_up |
+
+### Enum KeyboardBacklightState
+| Property Name |
+------------ |
+| ok |
+| any_not_lit_up |
+
+### CheckLedLitUpStateReply
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| state | LedLitUpState | State of the target LED |
+
+### CheckKeyboardBacklightStateReply
+| Property Name | Type                   | Description                         |
+| ------------- | ---------------------- | ----------------------------------- |
+| state         | KeyboardBacklightState | State of the keyboard backlight LED |
+
+### RoutineInquiryReplyUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be replied |
+| checkLedLitUpState | CheckLedLitUpStateReply | Reply to a `CheckLedLitUpStateInquiry` |
+| checkKeyboardBacklightState | CheckKeyboardBacklightStateReply | Reply to a `CheckKeyboardBacklightStateInquiry` |
+
+### ReplyToRoutineInquiryRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be replied |
+| reply | RoutineInquiryReplyUnion | Reply to an inquiry in the routine waiting info |
+
 ### CancelRoutineRequest
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -365,28 +955,324 @@ extension-event based interface in M119. The interface is described in
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version |
------------- | ------------- | ------------- | ------------- |
-| startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
-| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
-| createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
-| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
-| isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
-| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+### cancelRoutine()
+```
+chrome.os.diagnostics.cancelRoutine(
+  request: CancelRoutineRequest,
+) => Promise<void>
+```
+
+Stops executing the routine identified by `UUID` and removes all related
+resources from the system.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### createRoutine()
+```
+chrome.os.diagnostics.createRoutine(
+  args: CreateRoutineArgumentsUnion,
+) => Promise<CreateRoutineResponse>
+```
+
+Create a routine with `CreateRoutineArgumentsUnion`. Exactly one routine should
+be set in `CreateRoutineArgumentsUnion`.
+
+#### Released in Chrome version
+M125
+
+#### Required permission
+*   `os.diagnostics`
+
+### isRoutineArgumentSupported()
+```
+chrome.os.diagnostics.isRoutineArgumentSupported(
+  args: CreateRoutineArgumentsUnion,
+) => Promise<RoutineSupportStatusInfo>
+```
+
+Checks whether a certain `CreateRoutineArgumentsUnion` is supported on the
+platform. Exactly one routine should be set in `CreateRoutineArgumentsUnion`.
+
+#### Released in Chrome version
+M125
+
+#### Required permission
+*   `os.diagnostics`
+
+### replyToRoutineInquiry()
+```
+chrome.os.diagnostics.replyToRoutineInquiry(
+  request: ReplyToRoutineInquiryRequest,
+) => Promise<void>
+```
+
+Replies to a routine inquiry. This can only work when the routine with `UUID` is
+in the waiting state and has set an inquiry in the waiting info.
+
+#### Released in Chrome version
+M125
+
+#### Required permission
+*   `os.diagnostics`
+
+### startRoutine()
+```
+chrome.os.diagnostics.startRoutine(
+  request: StartRoutineRequest,
+) => Promise<void>
+```
+
+Starts execution of a routine. This can only be expected to work after the
+`onRoutineInitialized` event was emitted for the routine with `UUID`.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) createFanRoutine()
+```
+chrome.os.diagnostics.createFanRoutine(
+  args: CreateFanRoutineArguments,
+) => Promise<CreateRoutineResponse>
+```
+
+Create a fan routine.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `createRoutine()` with a `fan` arg.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) createMemoryRoutine()
+```
+chrome.os.diagnostics.createMemoryRoutine(
+  args: CreateMemoryRoutineArguments,
+) => Promise<CreateRoutineResponse>
+```
+
+Create a memory routine.
+
+#### Released in Chrome version
+M119
+
+Deprecated in M125, use `createRoutine()` with a `memory` arg.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) createVolumeButtonRoutine()
+```
+chrome.os.diagnostics.createVolumeButtonRoutine(
+  args: LegacyCreateVolumeButtonRoutineArguments,
+) => Promise<CreateRoutineResponse>
+```
+
+Create a volume button routine.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `createRoutine()` with a `volumeButton` arg.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) isFanRoutineArgumentSupported()
+```
+chrome.os.diagnostics.isFanRoutineArgumentSupported(
+  args: CreateFanRoutineArguments,
+) => Promise<RoutineSupportStatusInfo>
+```
+
+Checks whether a certain `CreateFanRoutineArguments` is supported on the
+platform.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `isRoutineArgumentSupported()` with a `fan` arg.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) isMemoryRoutineArgumentSupported()
+```
+chrome.os.diagnostics.isMemoryRoutineArgumentSupported(
+  args: CreateMemoryRoutineArguments,
+) => Promise<RoutineSupportStatusInfo>
+```
+
+Checks whether a certain `CreateMemoryRoutineArguments` is supported on the
+platform.
+
+#### Released in Chrome version
+M119
+
+Deprecated in M125, use `isRoutineArgumentSupported()` with a `memory` arg.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) isVolumeButtonRoutineArgumentSupported()
+```
+chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported(
+  args: LegacyCreateVolumeButtonRoutineArguments,
+) => Promise<RoutineSupportStatusInfo>
+```
+
+Checks whether a certain `LegacyCreateVolumeButtonRoutineArguments` is supported
+on the platform.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `isRoutineArgumentSupported()` with a `volumeButton`
+arg.
+
+#### Required permission
+*   `os.diagnostics`
 
 ## Events
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
------------- | ------------- | ------------- | ------------- | ------------- |
-| onRoutineInitialized | function(RoutineInitializedInfo) | `os.diagnostics` | M119 | Informs the extension that a routine was initialized |
-| onRoutineRunning | function(RoutineRunningInfo) | `os.diagnostics` | M119 | Informs the extension that a routine started running. This can happen in two situations: 1. `startRoutine` was called and the routine successfully started execution. 2. The routine exited the "waiting" state and returned to running |
-| onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
-| onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
-| onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
-| onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
-| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a volume button routine finished |
+### onRoutineException
+```
+chrome.os.diagnostics.onRoutineException(
+  function(ExceptionInfo),
+)
+```
+
+Fired when an exception occurs. The error passed in `ExceptionInfo` is
+non-recoverable.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### onRoutineFinished
+```
+chrome.os.diagnostics.onRoutineFinished(
+  function(RoutineFinishedInfo),
+)
+```
+
+Fired when a routine finishes.
+
+#### Released in Chrome version
+M125
+
+#### Required permission
+*   `os.diagnostics`
+
+### onRoutineInitialized
+```
+chrome.os.diagnostics.onRoutineInitialized(
+  function(RoutineInitializedInfo),
+)
+```
+
+Fired when a routine is initialized.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### onRoutineRunning
+```
+chrome.os.diagnostics.onRoutineRunning(
+  function(RoutineRunningInfo),
+)
+```
+
+Fired when a routine starts running. This can happen in two situations:
+1.  `startRoutine` was called and the routine successfully started execution.
+2.  The routine exited the "waiting" state and returned to running.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### onRoutineWaiting
+```
+chrome.os.diagnostics.onRoutineWaiting(
+  function(RoutineWaitingInfo),
+)
+```
+
+Fired when a routine stops execution and waits for an action, for example, user
+interaction. `RoutineWaitingInfo` contains information about what the routine is
+waiting for.
+
+#### Released in Chrome version
+M119
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) onFanRoutineFinished
+```
+chrome.os.diagnostics.onFanRoutineFinished(
+  function(LegacyFanRoutineFinishedInfo),
+)
+```
+
+Fired when a fan routine finishes.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `onRoutineFinished`.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) onMemoryRoutineFinished
+```
+chrome.os.diagnostics.onMemoryRoutineFinished(
+  function(LegacyMemoryRoutineFinishedInfo),
+)
+```
+
+Fired when a memory routine finishes.
+
+#### Released in Chrome version
+M119
+
+Deprecated in M125, use `onRoutineFinished`.
+
+#### Required permission
+*   `os.diagnostics`
+
+### (Deprecated) onVolumeButtonRoutineFinished
+```
+chrome.os.diagnostics.onVolumeButtonRoutineFinished(
+  function(LegacyVolumeButtonRoutineFinishedInfo),
+)
+```
+
+Fired when a volume button routine finishes.
+
+#### Released in Chrome version
+M121
+
+Deprecated in M125, use `onRoutineFinished`.
+
+#### Required permission
+*   `os.diagnostics`
 
 # Events
 
@@ -616,7 +1502,7 @@ extension-event based interface in M119. The interface is described in
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | button | InputTouchButton | The input button that was interacted with |
-| button | InputTouchButtonState | The new state of the button |
+| state | InputTouchButtonState | The new state of the button |
 
 ### TouchPointInfo
 | Property Name | Type | Description |
@@ -674,31 +1560,284 @@ extension-event based interface in M119. The interface is described in
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
------------- | ------------- | ------------- | ------------- | ------------- |
-| isEventSupported | (category: EventCategory) => Promise<EventSupportStatusInfo\> | `os.events` | M115 | Checks whether an event is supported. The information returned by this method is valid across reboots of the device |
-| startCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Starts capturing events for `EventCategory`. After calling this method, an extension can expect to be updated about events through invocations of `on<EventCategory>Event`, until either the PWA is closed or `stopCapturingEvents` is called. Note that an extension is only able to subscribe to events if the PWA is currently open |
-| stopCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Stops capturing `EventCategory` events. This means `on<EventCategory>Event` won't be invoked until `startCapturingEvents` is successfully called |
+### isEventSupported()
+```
+chrome.os.events.isEventSupported(
+  category: EventCategory,
+) => Promise<EventSupportStatusInfo>
+```
+
+Checks whether an event is supported. The information returned by this method is
+valid across reboots of the device.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
+
+### startCapturingEvents()
+```
+chrome.os.events.startCapturingEvents(
+  category: EventCategory,
+) => Promise<void>
+```
+
+Starts capturing events for `EventCategory`. After calling this method, an
+extension can expect to be updated about events through invocations of
+`on<EventCategory>Event`, until either the PWA is closed or
+`stopCapturingEvents()` is called. Note that an extension is only able to
+subscribe to events if the PWA is currently open.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
+
+### stopCapturingEvents()
+```
+chrome.os.events.stopCapturingEvents(
+  category: EventCategory,
+) => Promise<void>
+```
+
+Stops capturing `EventCategory` events. This means `on<EventCategory>Event`
+won't be invoked until `startCapturingEvents()` is successfully called.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
 
 ## Events
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
------------- | ------------- | ------------- | ------------- | ------------- |
-| onAudioJackEvent | function(AudioJackEventInfo) | `os.events` | M115 | An audio device was plugged in or out |
-| onKeyboardDiagnosticEvent | function(KeyboardDiagnosticEventInfo) | `os.events` | M117 | Informs the extension that a Keyboard diagnostic has been completed in the first party diagnostic tool |
-| onLidEvent | function(LidEventInfo) | `os.events` | M115 | The device lid was opened or closed |
-| onUsbEvent | function(UsbEventInfo) | `os.events` | M115 | Informs the extension that a `Usb` event occurred |
-| onExternalDisplayEvent | function(ExternalDisplayEventInfo) | `os.events` | M117 | Informs the extension that a `ExternalDisplay` event occurred |
-| onSdCardEvent | function(SdCardEventInfo) | `os.events` | M117 | Informs the extension that a `SD Card` event occurred |
-| onPowerEvent | function(PowerEventInfo) | `os.events` | M117 | Informs the extension that a `Power` event occurred |
-| onStylusGarageEvent | function(StylusGarageEventInfo) | `os.events` | M117 | Informs the extension that a `Stylus Garage` event occurred |
-| onTouchpadButtonEvent | function(TouchpadButtonEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Button` event occurred |
-| onTouchpadTouchEvent | function(TouchpadTouchEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Touch` event occurred |
-| onTouchpadConnectedEvent | function(TouchpadConnectedEventInfo) | `os.events` | M117 | Informs the extension that a `Touchpad Connected` event occurred |
-| onTouchscreenTouchEvent | function(TouchscreenTouchEventInfo) | `os.events` | M118 | Informs the extension that a `Touchscreen Touch` event occurred |
-| onTouchscreenConnectedEvent | function(TouchscreenConnectedEventInfo) | `os.events` | M118 | Informs the extension that a `Touchscreen Connected` event occurred |
-| onStylusTouchEvent | function(StylusTouchEventInfo) | `os.events` | M117 | Informs the extension that a `Stylus Touch` event occurred |
-| onStylusConnectedEvent | function(StylusConnectedEventInfo) | `os.events` | M117 | Informs the extension that a `Stylus Connected` event occurred |
+### onAudioJackEvent
+```
+chrome.os.events.onAudioJackEvent(
+  function(AudioJackEventInfo),
+)
+```
+
+Fired when an audio device is plugged in or out.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
+
+### onExternalDisplayEvent
+```
+chrome.os.events.onExternalDisplayEvent(
+  function(ExternalDisplayEventInfo),
+)
+```
+
+Fired when an `ExternalDisplay` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onKeyboardDiagnosticEvent
+```
+chrome.os.events.onKeyboardDiagnosticEvent(
+  function(KeyboardDiagnosticEventInfo),
+)
+```
+
+Fired when a keyboard diagnostic has been completed in the first party
+diagnostic tool.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onLidEvent
+```
+chrome.os.events.onLidEvent(
+  function(LidEventInfo),
+)
+```
+
+Fired when the device lid is opened or closed.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
+
+### onPowerEvent
+```
+chrome.os.events.onPowerEvent(
+  function(PowerEventInfo),
+)
+```
+
+Fired when a `Power` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onSdCardEvent
+```
+chrome.os.events.onSdCardEvent(
+  function(SdCardEventInfo),
+)
+```
+
+Fired when an `SD Card` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onStylusConnectedEvent
+```
+chrome.os.events.onStylusConnectedEvent(
+  function(StylusConnectedEventInfo),
+)
+```
+
+Fired when a `Stylus Connected` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onStylusGarageEvent
+```
+chrome.os.events.onStylusGarageEvent(
+  function(StylusGarageEventInfo),
+)
+```
+
+Fired when a `Stylus Garage` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onStylusTouchEvent
+```
+chrome.os.events.onStylusTouchEvent(
+  function(StylusTouchEventInfo),
+)
+```
+
+Fired when a `Stylus Touch` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onTouchpadButtonEvent
+```
+chrome.os.events.onTouchpadButtonEvent(
+  function(TouchpadButtonEventInfo),
+)
+```
+
+Fired when a `Touchpad Button` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onTouchpadConnectedEvent
+```
+chrome.os.events.onTouchpadConnectedEvent(
+  function(TouchpadConnectedEventInfo),
+)
+```
+
+Fired when a `Touchpad Connected` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onTouchpadTouchEvent
+```
+chrome.os.events.onTouchpadTouchEvent(
+  function(TouchpadTouchEventInfo),
+)
+```
+
+Fired when a `Touchpad Touch` event occurs.
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.events`
+
+### onTouchscreenConnectedEvent
+```
+chrome.os.events.onTouchscreenConnectedEvent(
+  function(TouchscreenConnectedEventInfo),
+)
+```
+
+Fired when a `Touchscreen Connected` event occurs.
+
+#### Released in Chrome version
+M118
+
+#### Required permissions
+*   `os.events`
+
+### onTouchscreenTouchEvent
+```
+chrome.os.events.onTouchscreenTouchEvent(
+  function(TouchscreenTouchEventInfo),
+)
+```
+
+Fired when a `Touchscreen Touch` event occurs.
+
+#### Released in Chrome version
+M118
+
+#### Required permissions
+*   `os.events`
+
+### onUsbEvent
+```
+chrome.os.events.onUsbEvent(
+  function(UsbEventInfo),
+)
+```
+
+Fired when a `Usb` event occurs.
+
+#### Released in Chrome version
+M115
+
+#### Required permissions
+*   `os.events`
 
 # Telemetry
 
@@ -1061,23 +2200,177 @@ Source:
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version |
------------- | ------------- | ------------- | ------------- |
-| getVpdInfo | () => Promise<VpdInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M96 |
-| getOemData | () => Promise<OemDataInfo\> | `os.telemetry`, `os.telemetry.serial_number` for the whole result | M96 |
-| getCpuInfo | () => Promise<CpuInfo\> | `os.telemetry` | M99 |
-| getDisplayInfo | () => Promise<DisplayInfo\> | `os.telemetry` | M117 |
-| getMemoryInfo | () => Promise<MemoryInfo\> | `os.telemetry` | M99 |
-| getBatteryInfo | () => Promise<BatteryInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M102 |
-| getStatefulPartitionInfo | () => Promise<StatefulPartitionInfo\> | `os.telemetry` | M105 |
-| getOsVersionInfo | () => Promise<OsVersionInfo\> | `os.telemetry` | M105 |
-| getNonRemovableBlockDevicesInfo | () => Promise<NonRemovableBlockDeviceInfoResponse\> | `os.telemetry` | M108 |
-| getInternetConnectivityInfo | () => Promise<InternetConnectivityInfo\> | `os.telemetry`, `os.telemetry.network_info` for MAC address field | M108 - Mac address in M111 |
-| getTpmInfo | () => Promise<TpmInfo\> | `os.telemetry` | M108 |
-| getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
-| getMarketingInfo | () => Promise<MarketingInfo\> | `os.telemetry` | M111 |
-| getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
-| getThermalInfo | () => Promise<ThermalInfo\> | `os.telemetry` | M122 |
+### getAudioInfo()
+```
+chrome.os.telemetry.getAudioInfo() => Promise<AudioInfo>
+```
+
+#### Released in Chrome version
+M111
+
+#### Required permissions
+*   `os.telemetry`
+
+### getBatteryInfo()
+```
+chrome.os.telemetry.getBatteryInfo() => Promise<BatteryInfo>
+```
+
+#### Released in Chrome version
+M102
+
+#### Required permissions
+*   `os.telemetry`
+*   `os.telemetry.serial_number` for serial number field
+
+### getCpuInfo()
+```
+chrome.os.telemetry.getCpuInfo() => Promise<CpuInfo>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permissions
+*   `os.telemetry`
+
+### getDisplayInfo()
+```
+chrome.os.telemetry.getDisplayInfo() => Promise<DisplayInfo>
+```
+
+#### Released in Chrome version
+M117
+
+#### Required permissions
+*   `os.telemetry`
+
+### getInternetConnectivityInfo()
+```
+chrome.os.telemetry.getInternetConnectivityInfo() => Promise<InternetConnectivityInfo>
+```
+
+#### Released in Chrome version
+M108
+
+Mac address added in M111.
+
+#### Required permissions
+*   `os.telemetry`
+*   `os.telemetry.network_info` for MAC address field
+
+### getMarketingInfo()
+```
+chrome.os.telemetry.getMarketingInfo() => Promise<MarketingInfo>
+```
+
+#### Released in Chrome version
+M111
+
+#### Required permissions
+*   `os.telemetry`
+
+### getMemoryInfo()
+```
+chrome.os.telemetry.getMemoryInfo() => Promise<MemoryInfo>
+```
+
+#### Released in Chrome version
+M99
+
+#### Required permissions
+*   `os.telemetry`
+
+### getNonRemovableBlockDevicesInfo()
+```
+chrome.os.telemetry.getNonRemovableBlockDevicesInfo() => Promise<NonRemovableBlockDeviceInfoResponse>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permissions
+*   `os.telemetry`
+
+### getOemData()
+```
+chrome.os.telemetry.getOemData() => Promise<OemDataInfo>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permissions
+*   `os.telemetry`
+*   `os.telemetry.serial_number`
+
+### getOsVersionInfo()
+```
+chrome.os.telemetry.getOsVersionInfo() => Promise<OsVersionInfo>
+```
+
+#### Released in Chrome version
+M105
+
+#### Required permissions
+*   `os.telemetry`
+
+### getStatefulPartitionInfo()
+```
+chrome.os.telemetry.getStatefulPartitionInfo() => Promise<StatefulPartitionInfo>
+```
+
+#### Released in Chrome version
+M105
+
+#### Required permissions
+*   `os.telemetry`
+
+### getThermalInfo()
+```
+chrome.os.telemetry.getThermalInfo() => Promise<ThermalInfo>
+```
+
+#### Released in Chrome version
+M122
+
+#### Required permissions
+*   `os.telemetry`
+
+### getTpmInfo()
+```
+chrome.os.telemetry.getTpmInfo() => Promise<TpmInfo>
+```
+
+#### Released in Chrome version
+M108
+
+#### Required permissions
+*   `os.telemetry`
+
+### getUsbBusInfo()
+```
+chrome.os.telemetry.getUsbBusInfo() => Promise<UsbDevicesInfo>
+```
+
+#### Released in Chrome version
+M114
+
+#### Required permissions
+*   `os.telemetry`
+*   `os.attached_device_info`
+
+### getVpdInfo()
+```
+chrome.os.telemetry.getVpdInfo() => Promise<VpdInfo>
+```
+
+#### Released in Chrome version
+M96
+
+#### Required permissions
+*   `os.telemetry`
+*   `os.telemetry.serial_number` for serial number field
 
 # Management
 
@@ -1098,7 +2391,34 @@ Source:
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
------------- | ------------- | ------------- | ------------- | ------------- |
-| setAudioGain | (args: SetAudioGainArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified input audio device's gain to value. Returns false if `args.nodeId` is invalid |
-| setAudioVolume | (args: SetAudioVolumeArguments) => Promise<boolean\> | `os.management.audio` | M122 | Sets the specified output audio device's volume and mute state to the given value. Returns false if `args.nodeId` is invalid |
+### setAudioGain()
+```
+chrome.os.management.setAudioGain(
+  args: SetAudioGainArguments,
+) => Promise<boolean>
+```
+
+Sets the specified input audio device's gain to value. Returns false if
+`args.nodeId` is invalid.
+
+#### Released in Chrome version
+M122
+
+#### Required permissions
+*   `os.management.audio`
+
+### setAudioVolume()
+```
+chrome.os.management.setAudioGain(
+  args: SetAudioVolumeArguments,
+) => Promise<boolean>
+```
+
+Sets the specified output audio device's volume and mute state to the given
+value. Returns false if `args.nodeId` is invalid.
+
+#### Released in Chrome version
+M122
+
+#### Required permissions
+*   `os.management.audio`

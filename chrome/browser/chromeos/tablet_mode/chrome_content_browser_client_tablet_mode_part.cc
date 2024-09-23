@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +25,7 @@
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "extensions/common/constants.h"
 #endif
@@ -94,7 +96,7 @@ bool UseDefaultFontSize(const GURL& url) {
     return chrome::IsSystemWebUIHost(url.host_piece());
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    base::StringPiece extension_id = url.host_piece();
+    std::string_view extension_id = url.host_piece();
     return extension_misc::IsSystemUIApp(extension_id);
   }
   return false;

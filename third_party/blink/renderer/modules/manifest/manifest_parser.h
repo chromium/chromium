@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 
 #include "base/types/strong_alias.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -70,6 +71,38 @@ class MODULES_EXPORT ManifestParser {
  private:
   // Used to indicate whether to strip whitespace when parsing a string.
   using Trim = base::StrongAlias<class TrimTag, bool>;
+
+  // Partially represents `URLPatternInit` in the URL Pattern spec.
+  // https://urlpattern.spec.whatwg.org/#dictdef-urlpatterninit
+  struct PatternInit {
+    PatternInit(std::optional<String> protocol,
+                std::optional<String> username,
+                std::optional<String> password,
+                std::optional<String> hostname,
+                std::optional<String> port,
+                std::optional<String> pathname,
+                std::optional<String> search,
+                std::optional<String> hash,
+                KURL base_url);
+    ~PatternInit();
+    PatternInit(const PatternInit&) = delete;
+    PatternInit& operator=(const PatternInit&) = delete;
+    PatternInit(PatternInit&&);
+    PatternInit& operator=(PatternInit&&);
+
+    // Returns true if any of protocol, hostname, or port are filled.
+    bool IsAbsolute() const;
+
+    std::optional<String> protocol;
+    std::optional<String> username;
+    std::optional<String> password;
+    std::optional<String> hostname;
+    std::optional<String> port;
+    std::optional<String> pathname;
+    std::optional<String> search;
+    std::optional<String> hash;
+    KURL base_url;
+  };
 
   // Indicate restrictions to be placed on the parsed URL with respect to the
   // document URL or manifest scope.
@@ -151,6 +184,11 @@ class MODULES_EXPORT ManifestParser {
                            Enum (*parse_enum)(const std::string&),
                            Enum invalid_value);
 
+  // Parses the 'dir' field of the manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-process-the-dir-member
+  // Returns the parsed TextDirection.
+  mojom::blink::Manifest::TextDirection ParseDir(const JSONObject* object);
+
   // Parses the 'name' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-name-member
   // Returns the parsed string if any, a null string if the parsing failed.
@@ -176,10 +214,16 @@ class MODULES_EXPORT ManifestParser {
   // and query if there is no defined scope or if the parsing failed.
   KURL ParseScope(const JSONObject* object, const KURL& start_url);
 
+  enum class ParseStartUrlResult {
+    // The start_url was parsed from the json entry without errors.
+    kParsedFromJson,
+    // There was no start_url entry or parsing failed.
+    kDefaultDocumentUrl
+  };
   // Parses the 'start_url' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-start_url-member
-  // Returns the parsed KURL if any, an empty KURL if the parsing failed.
-  KURL ParseStartURL(const JSONObject* object);
+  std::pair<KURL, ParseStartUrlResult> ParseStartURL(const JSONObject* object,
+                                                     const KURL& document_url);
 
   // Parses the 'display' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-display-member
@@ -514,24 +558,6 @@ class MODULES_EXPORT ManifestParser {
   HashMap<String, mojom::blink::ManifestTranslationItemPtr> ParseTranslations(
       const JSONObject* object);
 
-  // Parses individual preferences from the 'user_preferences' field.
-  // Returns nullptr if not present or parsing failed.
-  mojom::blink::ManifestUserPreferenceOverridesPtr ParsePreferenceOverrides(
-      const JSONObject* object,
-      const String& preference);
-
-  // Parse the 'user_preferences' field of the manifest as defined in:
-  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
-  // Returns nullptr if parsing fails.
-  mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
-      const JSONObject* object);
-
-  // Parse the override fields for theme_color and background_color as defined
-  // in: https://github.com/w3c/manifest/issues/1045
-  // Returns the dark mode color if any, or a null optional otherwise.
-  std::optional<RGBA32> ParseDarkColorOverride(const JSONObject* object,
-                                               const String& key);
-
   // Parses the 'tab_strip' field of the manifest as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
   mojom::blink::ManifestTabStripPtr ParseTabStrip(const JSONObject* object);
@@ -542,6 +568,13 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
   // of the manifest.
   Vector<SafeUrlPattern> ParseScopePatterns(const JSONObject* object);
+
+  // Helper method to parse individual scope patterns.
+  std::optional<SafeUrlPattern> ParseScopePattern(const PatternInit& init,
+                                                  const KURL& base_url);
+
+  std::optional<PatternInit> MaybeCreatePatternInit(
+      const JSONObject* pattern_object);
 
   String ParseVersion(const JSONObject* object);
 

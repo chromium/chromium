@@ -77,7 +77,7 @@ class Modem3gppProxy {
       std::move(callback).Run(CarrierLockResult::kInvalidSignature);
     } else if (error_name.ends_with("InvalidImei")) {
       std::move(callback).Run(CarrierLockResult::kInvalidImei);
-    } else if (error_name.ends_with("InvalidTimeStamp")) {
+    } else if (error_name.ends_with("InvalidTimestamp")) {
       std::move(callback).Run(CarrierLockResult::kInvalidTimeStamp);
     } else if (error_name.ends_with("NetworkListTooLarge")) {
       std::move(callback).Run(CarrierLockResult::kNetworkListTooLarge);
@@ -152,7 +152,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) Modem3gppClientImpl
 // Modem3gppClient
 
 Modem3gppClient::Modem3gppClient() {
-  DCHECK(features::IsCellularCarrierLockEnabled());
   DCHECK(!g_instance);
   g_instance = this;
 }

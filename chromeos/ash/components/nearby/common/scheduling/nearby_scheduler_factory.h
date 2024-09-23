@@ -30,6 +30,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback on_request_callback,
+      Feature logging_feature,
       const base::Clock* clock = base::DefaultClock::GetInstance());
 
   static std::unique_ptr<NearbyScheduler> CreateOnDemandScheduler(
@@ -38,6 +39,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock = base::DefaultClock::GetInstance());
 
   static std::unique_ptr<NearbyScheduler> CreatePeriodicScheduler(
@@ -47,6 +49,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock = base::DefaultClock::GetInstance());
 
   static void SetFactoryForTesting(NearbySchedulerFactory* test_factory);
@@ -61,6 +64,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback on_request_callback,
+      Feature logging_feature,
       const base::Clock* clock) = 0;
 
   virtual std::unique_ptr<NearbyScheduler> CreateOnDemandSchedulerInstance(
@@ -69,6 +73,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock) = 0;
 
   virtual std::unique_ptr<NearbyScheduler> CreatePeriodicSchedulerInstance(
@@ -78,6 +83,7 @@ class NearbySchedulerFactory {
       const std::string& pref_name,
       PrefService* pref_service,
       NearbyScheduler::OnRequestCallback callback,
+      Feature logging_feature,
       const base::Clock* clock) = 0;
 
  private:

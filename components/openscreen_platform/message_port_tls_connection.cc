@@ -4,6 +4,8 @@
 
 #include "components/openscreen_platform/message_port_tls_connection.h"
 
+#include <string_view>
+
 #include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
@@ -25,9 +27,9 @@ void MessagePortTlsConnection::SetClient(TlsConnection::Client* client) {
   client_ = client;
 }
 
-bool MessagePortTlsConnection::Send(const void* data, size_t len) {
-  return message_port_->PostMessage(
-      base::StringPiece(static_cast<const char*>(data), len));
+bool MessagePortTlsConnection::Send(openscreen::ByteView data) {
+  return message_port_->PostMessage(std::string_view(
+      reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
 openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
@@ -35,17 +37,16 @@ openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
 }
 
 bool MessagePortTlsConnection::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DCHECK(ports.empty());
 
   if (client_) {
     if (!task_runner_->IsRunningOnTaskRunner()) {
-      task_runner_->PostTask([ptr = weak_ptr_factory_.GetWeakPtr(),
-                              m = std::move(message)]() {
+      task_runner_->PostTask([ptr = weak_ptr_factory_.GetWeakPtr(), message]() {
         if (ptr) {
           ptr->OnMessage(
-              std::move(m),
+              message,
               std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>());
         }
       });

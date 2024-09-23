@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
@@ -550,11 +551,11 @@ public final class DownloadInfo {
 
     @CalledByNative
     private static DownloadInfo createDownloadInfo(
-            String downloadGuid,
-            String fileName,
-            String filePath,
-            GURL url,
-            String mimeType,
+            @JniType("std::string") String downloadGuid,
+            @JniType("std::string") String fileName,
+            @JniType("std::string") String filePath,
+            @JniType("GURL") GURL url,
+            @JniType("std::string") String mimeType,
             long bytesReceived,
             long bytesTotalSize,
             OTRProfileID otrProfileId,
@@ -564,8 +565,8 @@ public final class DownloadInfo {
             boolean hasUserGesture,
             boolean isResumable,
             boolean isParallelDownload,
-            GURL originalUrl,
-            GURL referrerUrl,
+            @JniType("GURL") GURL originalUrl,
+            @JniType("GURL") GURL referrerUrl,
             long timeRemainingInMs,
             long lastAccessTime,
             boolean isDangerous,

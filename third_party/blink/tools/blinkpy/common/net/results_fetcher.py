@@ -52,7 +52,8 @@ class TestResultsFetcher:
     """
 
     _test_id_pattern = re.compile(
-        r'ninja://\S*(blink|chrome)_(web|wpt)_tests/(?P<name>\S+)')
+        r'ninja://\S*((blink|chrome)_(web|wpt)_tests|(chrome_public_wpt|trichrome_webview_wpt_64))/(?P<name>\S+)'
+    )
 
     def __init__(self, web, luci_auth):
         self.web = web
@@ -65,15 +66,12 @@ class TestResultsFetcher:
     @memoized
     def gather_results(self,
                        build: Build,
-                       step_name: str,
+                       suite: str,
                        exclude_exonerated: bool = False,
                        only_unexpected: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, f'{build} must set a build ID'
-        suite = step_name
-        if suite.endswith('(with patch)'):
-            suite = suite[:-len('(with patch)')].strip()
-
+        assert not suite.endswith('(with patch)'), suite
         test_result_predicate = {
             # TODO(crbug.com/1428727): Using `read_mask` with
             # `VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS` throws an internal server
@@ -108,11 +106,10 @@ class TestResultsFetcher:
                 'artifactIdRegexp': 'actual_.*'
             })
         artifacts_by_run = self._group_artifacts_by_test_run(artifacts)
-        return WebTestResults.from_rdb_responses(
-            test_results_by_name,
-            artifacts_by_run,
-            step_name=step_name,
-            builder_name=build.builder_name)
+        return WebTestResults.from_rdb_responses(test_results_by_name,
+                                                 artifacts_by_run,
+                                                 step_name=suite,
+                                                 build=build)
 
     def _group_test_results_by_test_name(self, test_results):
         test_results_by_name = collections.defaultdict(list)

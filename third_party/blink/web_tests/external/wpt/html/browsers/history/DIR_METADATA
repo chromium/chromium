@@ -1,7 +1,7 @@
 monorail: {
   component: "Blink>History"
 }
-team_email: "navigation-dev@chromium.org, dom-dev@chromium.org"
+team_email: "navigation-dev@chromium.org, dom-dev@google.com"
 wpt: {
   notify: YES
 }

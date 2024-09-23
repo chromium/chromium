@@ -6,6 +6,7 @@
 #define BASE_POWER_MONITOR_BATTERY_STATE_SAMPLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -15,7 +16,6 @@
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/power_monitor/sampling_event_source.h"
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -29,7 +29,7 @@ class BASE_EXPORT BatteryStateSampler {
     // that want to ignore those stale samples should ignore the first call to
     // OnBatteryStateSampled.
     virtual void OnBatteryStateSampled(
-        const absl::optional<BatteryLevelProvider::BatteryState>&
+        const std::optional<BatteryLevelProvider::BatteryState>&
             battery_state) = 0;
   };
 
@@ -74,14 +74,14 @@ class BASE_EXPORT BatteryStateSampler {
   // Called when the first battery sampled is obtained. Notifies current
   // observers as they are waiting on the cached battery state.
   void OnInitialBatteryStateSampled(
-      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
+      const std::optional<BatteryLevelProvider::BatteryState>& battery_state);
 
   // Triggers the sampling of the battery state.
   void OnSamplingEvent();
 
   // Notifies observers of the sampled battery state.
   void OnBatteryStateSampled(
-      const absl::optional<BatteryLevelProvider::BatteryState>& battery_state);
+      const std::optional<BatteryLevelProvider::BatteryState>& battery_state);
 
   std::unique_ptr<SamplingEventSource> sampling_event_source_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -97,7 +97,7 @@ class BASE_EXPORT BatteryStateSampler {
   bool has_last_battery_state_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The value of the last sample taken.
-  absl::optional<BatteryLevelProvider::BatteryState> last_battery_state_
+  std::optional<BatteryLevelProvider::BatteryState> last_battery_state_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

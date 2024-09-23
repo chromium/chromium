@@ -18,6 +18,7 @@ public class PublicTransitConfig {
     private static long sTransitionPause;
     private static Runnable sOnExceptionCallback;
     private static boolean sFreezeOnException;
+    private static boolean sOnExceptionCallbackIsRecurring;
 
     /**
      * Set a pause for all transitions for debugging.
@@ -35,10 +36,18 @@ public class PublicTransitConfig {
      * <p>Useful to print debug information for failures that can't be reproduced with a debugger.
      *
      * @param onExceptionCallback the callback to run on exception.
+     * @param recurring if {@link #setFreezeOnException()} is also set, run the callback multiple
+     *     times on an exponential backoff. Useful to check if asynchronous updates have happened
+     *     after the failure, e.g. the View hierarchy has changed.
      */
-    public static void setOnExceptionCallback(Runnable onExceptionCallback) {
+    public static void setOnExceptionCallback(Runnable onExceptionCallback, boolean recurring) {
         sOnExceptionCallback = onExceptionCallback;
-        ResettersForTesting.register(() -> sOnExceptionCallback = null);
+        sOnExceptionCallbackIsRecurring = recurring;
+        ResettersForTesting.register(
+                () -> {
+                    sOnExceptionCallback = null;
+                    sOnExceptionCallbackIsRecurring = false;
+                });
     }
 
     /**
@@ -55,10 +64,10 @@ public class PublicTransitConfig {
         ResettersForTesting.register(() -> sFreezeOnException = false);
     }
 
-    static void maybePauseAfterTransition(ConditionalState state) {
+    static void maybePauseAfterTransition(Transition transition) {
         long pauseMs = sTransitionPause;
         if (pauseMs > 0) {
-            String toastText = buildToastText(state);
+            String toastText = buildToastText(transition);
             ThreadUtils.runOnUiThread(
                     () -> {
                         Toast.makeText(
@@ -69,7 +78,7 @@ public class PublicTransitConfig {
                                 .show();
                     });
             try {
-                Log.e(TAG, "Pause for sightseeing %s for %dms", state, pauseMs);
+                Log.e(TAG, "Pause for %dms after %s", pauseMs, transition.toDebugString());
                 Thread.sleep(pauseMs);
             } catch (InterruptedException e) {
                 Log.e(TAG, "Interrupted pause", e);
@@ -77,7 +86,7 @@ public class PublicTransitConfig {
         }
     }
 
-    private static String buildToastText(ConditionalState state) {
+    private static String buildToastText(Transition transition) {
         StringBuilder textToDisplay = new StringBuilder();
         String currentTestCase = TrafficControl.getCurrentTestCase();
         if (currentTestCase != null) {
@@ -85,13 +94,17 @@ public class PublicTransitConfig {
             textToDisplay.append(currentTestCase);
             textToDisplay.append("]\n");
         }
-        textToDisplay.append(state.toString());
-        String textToDisplayString = textToDisplay.toString();
-        return textToDisplayString;
+        textToDisplay.append("Finished ").append(transition.toDebugString());
+        return textToDisplay.toString();
     }
 
     static void onTravelException(TravelException travelException) {
+        if (sFreezeOnException) {
+            Log.e(TAG, "Frozen on TravelException:", travelException);
+        }
+
         triggerOnExceptionCallback();
+
         if (sFreezeOnException) {
             int backoffTimer = 1000;
             int totalMsFrozen = 0;
@@ -106,7 +119,9 @@ public class PublicTransitConfig {
                 totalMsFrozen += backoffTimer;
                 backoffTimer = 2 * backoffTimer;
                 Log.e(TAG, "Frozen for %sms on TravelException:", totalMsFrozen, travelException);
-                triggerOnExceptionCallback();
+                if (sOnExceptionCallbackIsRecurring) {
+                    triggerOnExceptionCallback();
+                }
             }
         }
     }

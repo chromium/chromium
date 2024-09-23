@@ -28,7 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
+// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
@@ -93,7 +93,7 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
-// TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
+// TODO(crbug.com/40520585): Use a dedicated build flag for GuestView.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       launcher_render_process_id, launcher_render_frame_id);
@@ -314,7 +314,7 @@ void NoStatePrefetchLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
@@ -329,7 +329,7 @@ void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NoStatePrefetchLinkManager::Shutdown() {
@@ -344,8 +344,5 @@ void NoStatePrefetchLinkManager::OnPrefetchStop(
   RemoveLinkTrigger(trigger);
   StartLinkTriggers();
 }
-
-void NoStatePrefetchLinkManager::OnPrefetchNetworkBytesChanged(
-    NoStatePrefetchHandle* no_state_prefetch_handle) {}
 
 }  // namespace prerender

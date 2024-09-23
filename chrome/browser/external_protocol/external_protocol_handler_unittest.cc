@@ -29,7 +29,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
-#endif
+#else
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class FakeExternalProtocolHandlerWorker
     : public shell_integration::DefaultSchemeClientWorker {
@@ -172,6 +174,10 @@ class ExternalProtocolHandlerTest : public testing::Test {
     rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
+#if !BUILDFLAG(IS_ANDROID)
+    web_modal::WebContentsModalDialogManager::CreateForWebContents(
+        web_contents_.get());
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {
@@ -180,7 +186,7 @@ class ExternalProtocolHandlerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
-  enum class Action { PROMPT, LAUNCH, BLOCK };
+  enum class Action { PROMPT, LAUNCH, BLOCK, NONE };
 
   void DoTest(ExternalProtocolHandler::BlockState block_state,
               shell_integration::DefaultWebClientState os_state,
@@ -329,6 +335,16 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscape) {
   // characters have been escaped.
   EXPECT_EQ("alert:test%20message%22%20--bad%2B%20%E6%96%87%E6%9C%AC%20%22file",
             delegate_.launch_or_prompt_url());
+}
+
+TEST_F(ExternalProtocolHandlerTest, TestNoDialogWithoutManager) {
+  // WebContents without a dialog manager should not prompt crbug.com/40064553.
+  GetWebContents()->SetUserData(
+      web_modal::WebContentsModalDialogManager::UserDataKey(), nullptr);
+  EXPECT_EQ(nullptr, web_modal::WebContentsModalDialogManager::FromWebContents(
+                         GetWebContents()));
+  DoTest(ExternalProtocolHandler::UNKNOWN, shell_integration::UNKNOWN_DEFAULT,
+         Action::NONE);
 }
 
 #else  // if !BUILDFLAG(IS_ANDROID)

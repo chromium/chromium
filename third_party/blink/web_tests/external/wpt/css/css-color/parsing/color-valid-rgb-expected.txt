@@ -1,0 +1,48 @@
+This is a testharness.js-based test.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "rgb(calc(50% + (sign(1em - 10px) * 10%)), 0%, 0%, 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50% + (sign(1em - 10px) * 10%)), 0%, 0%, 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgb(calc(50 + (sign(1em - 10px) * 10)), 0, 0, 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50 + (sign(1em - 10px) * 10)), 0, 0, 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgb(0%, 0%, 0%, calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] e.style['color'] = "rgba(0%, 0%, 0%, calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] e.style['color'] = "rgb(0, 0, 0, calc(0.75 + (sign(1em - 10px) * 0.1)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(0.75 + (0.1 * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] e.style['color'] = "rgba(0, 0, 0, calc(0.75 + (sign(1em - 10px) * 0.1)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(0.75 + (0.1 * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] e.style['color'] = "rgb(calc(50% + (sign(1em - 10px) * 10%)) 0% 0% / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50% + (sign(1em - 10px) * 10%)) 0% 0% / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgb(calc(50 + (sign(1em - 10px) * 10)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50 + (sign(1em - 10px) * 10)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgb(0% 0% 0% / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] e.style['color'] = "rgba(0% 0% 0% / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] e.style['color'] = "rgb(0 0 0 / calc(0.75 + (sign(1em - 10px) * 0.1)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(0.75 + (0.1 * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] e.style['color'] = "rgba(0 0 0 / calc(0.75 + (sign(1em - 10px) * 0.1)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(0.75 + (0.1 * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] e.style['color'] = "rgba(calc(50% + (sign(1em - 10px) * 10%)) 0 0% / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(0% 0 0% / calc(0.75 + (sign(1em - 10px) * 0.1)))" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(0 0 0 / calc(0.75 + (0.1 * sign(1em - 10px))))" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] e.style['color'] = "rgba(calc(50 + (sign(1em - 10px) * 10)) 400 -400 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 255 0 / 0.5)" but got "rgba(40, 255, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50% + (sign(1em - 10px) * 10%)) 400% -400% / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 255 0 / 0.5)" but got "rgba(102, 255, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50 + (sign(1em - 10px) * 10)), 400, -400, 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50 + (10 * sign(1em - 10px))) 255 0 / 0.5)" but got "rgba(40, 255, 0, 0.5)"
+[FAIL] e.style['color'] = "rgba(calc(50% + (sign(1em - 10px) * 10%)), 400%, -400%, 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "rgb(calc(50% + (10% * sign(1em - 10px))) 255 0 / 0.5)" but got "rgba(102, 255, 0, 0.5)"
+Harness: the test ran to completion.
+

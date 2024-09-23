@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/test/launcher/test_results_tracker.h"
 
 #include <stddef.h>
@@ -10,7 +15,9 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +34,7 @@
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -163,10 +171,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   CHECK(thread_checker_.CalledOnValidThread());
 
   // Prevent initializing twice.
-  if (out_) {
-    NOTREACHED();
-    return false;
-  }
+  CHECK(!out_);
 
   print_temp_leaks_ =
       command_line.HasSwitch(switches::kTestLauncherPrintTempLeaks);
@@ -587,14 +592,14 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     return false;
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
-  if (!output.IsValid())
+  if (!output.IsValid()) {
     return false;
-
-  int json_size = static_cast<int>(json.size());
-  if (output.WriteAtCurrentPos(json.data(), json_size) != json_size) {
+  }
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json))) {
     return false;
   }
 
+#if BUILDFLAG(IS_FUCHSIA)
   // File::Flush() will call fsync(). This is important on Fuchsia to ensure
   // that the file is written to the disk - the system running under qemu will
   // shutdown shortly after the test completes. On Fuchsia fsync() times out
@@ -613,6 +618,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
 
   return false;
+#else
+  return true;
+#endif
 }
 
 TestResultsTracker::TestStatusMap

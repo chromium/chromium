@@ -39,7 +39,7 @@
       android:id="@+id/notification_permission_rationale_positive_button"
       android:layout_marginTop="28dp"
       android:layout_marginHorizontal="16dp"
-      style="@style/FilledButton.Flat"
+      style="@style/FilledButton"
       android:text="@string/notification_permission_rationale_accept_button_text"/>
 
   <org.chromium.ui.widget.ButtonCompat

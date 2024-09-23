@@ -13,4 +13,7 @@ enum SameDocumentNavigationType {
   kHistoryApi = 1,
   // Navigating with the navigation API's NavigateEvent's intercept()
   kNavigationApiIntercept = 2,
+  // Navigating when matching a prerender via No-Vary-Search during prerender
+  // activation.
+  kPrerenderNoVarySearchActivation = 3,
 };

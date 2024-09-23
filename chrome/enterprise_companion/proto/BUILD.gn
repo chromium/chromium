@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+# This wrapper with empty `sources` is required to add "protobuf_config" as
+# `all_dependent_configs`, in order to set proper `include_dirs` and `defines`.
+# A "proto_library" target cannot set `all_dependent_configs` variable.
+group("proto") {
+  all_dependent_configs = [ "//third_party/protobuf:protobuf_config" ]
+  public_deps = [
+    ":proto_internal",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+proto_library("proto_internal") {
+  sources = [
+    "enterprise_companion_event.proto",
+    "log_request.proto",
+  ]
+  proto_out_dir = "chrome/enterprise_companion/proto"
+  visibility = [ ":proto" ]
+}

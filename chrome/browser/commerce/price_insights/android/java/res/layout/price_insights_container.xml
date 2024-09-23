@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/price_insights_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingBottom="@dimen/price_insights_bottom_padding"
+    android:paddingStart="@dimen/price_insights_general_padding"
+    android:paddingEnd="@dimen/price_insights_general_padding"
+    android:background="@drawable/price_insights_sheet_background">
+
+    <!-- The handle bar section -->
+    <include layout="@layout/bottom_sheet_handlebar"/>
+
+    <!-- The scroll view wrapper -->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:clickable="true">
+
+            <!-- Price tracking section -->
+            <include layout="@layout/price_tracking_layout"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/price_insights_divider_height"/>
+
+            <!-- Price history section -->
+            <include layout="@layout/price_history_layout"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/price_insights_divider_height"/>
+
+            <!-- Jackpot url section -->
+            <TextView
+                android:id="@+id/open_jackpot_url_button"
+                android:contentDescription="@string/price_insights_open_url_button_content_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/price_insights_open_url_title"
+                app:drawableEndCompat="@drawable/ic_open_in_new_20dp"
+                android:paddingStart="@dimen/open_jackpot_url_button_text_horizontal_padding"
+                android:paddingEnd="@dimen/price_insights_general_padding"
+                android:paddingVertical="@dimen/open_jackpot_url_button_text_vertical_padding"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:background="@drawable/price_insights_sheet_bottom_corner_background"
+                android:foreground="?attr/selectableItemBackground"
+                android:visibility="gone"/>
+
+    <!-- End of scroll view wrapper -->
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

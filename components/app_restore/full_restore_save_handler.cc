@@ -4,7 +4,6 @@
 
 #include "components/app_restore/full_restore_save_handler.h"
 
-#include "ash/constants/app_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -53,6 +52,11 @@ FullRestoreSaveHandler::FullRestoreSaveHandler() {
 }
 
 FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
+
+void FullRestoreSaveHandler::InsertIgnoreApplicationId(
+    const std::string& app_id) {
+  ignore_applications_ids_.insert(app_id);
+}
 
 void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
@@ -113,9 +117,10 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
-  if (!SessionID::IsValidValue(window_id))
+  const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
+  if (!SessionID::IsValidValue(window_id)) {
     return;
+  }
 
   observed_windows_.AddObservation(window);
 
@@ -168,6 +173,10 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
             });
           }
         }
+      }
+
+      if (base::Contains(ignore_applications_ids_, app_launch_info->app_id)) {
+        return;
       }
     }
   }

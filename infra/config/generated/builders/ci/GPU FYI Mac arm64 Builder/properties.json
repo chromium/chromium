@@ -63,6 +63,36 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Mac FYI Experimental Retina Release (Apple M2)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Mac arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Mac FYI Release (Apple M1)",
               "project": "chromium"
             },
@@ -137,6 +167,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Mac FYI Experimental Retina Release (Apple M2)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Mac FYI Release (Apple M1)",
           "project": "chromium"
         },
@@ -156,6 +191,10 @@
           "group": "tryserver.chromium.mac"
         },
         {
+          "builder": "gpu-fyi-try-mac-arm64-apple-m2-exp",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "gpu-fyi-try-mac-arm64-apple-m2-retina-rel",
           "group": "tryserver.chromium.mac"
         }
@@ -164,9 +203,18 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -176,6 +224,9 @@
     ]
   },
   "builder_group": "chromium.gpu.fyi",
+  "gardener_rotations": [
+    "chromium.gpu"
+  ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [

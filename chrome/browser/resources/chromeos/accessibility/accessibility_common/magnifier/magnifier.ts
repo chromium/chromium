@@ -7,6 +7,7 @@ import {ChromeEventHandler} from '/common/chrome_event_handler.js';
 import {EventHandler} from '/common/event_handler.js';
 import {FlagName, Flags} from '/common/flags.js';
 import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
@@ -23,10 +24,21 @@ export class Magnifier {
    */
   private screenMagnifierFocusFollowing_: boolean|undefined;
   /**
-   * Whether magnifier is current initializing, and so should ignore
+   * Whether ChromeVox focus following is enabled or not.
+   * settings.a11y.screen_magnifier_chromevox_focus_following preference.
+   */
+  private screenMagnifierFollowsChromeVox_ = true;
+  /**
+   * Whether Select to Speak focus following is enabled or not.
+   * settings.a11y.screen_magnifier_select_to_speak_focus_following preference.
+   */
+  private screenMagnifierFollowsSts_ = true;
+  /**
+   * Whether magnifier is currently initializing, and so should ignore
    * focus updates.
    */
   private isInitializing_ = true;
+
   /** Last time mouse has moved (from last onMouseMovedOrDragged). */
   private lastMouseMovedTime_: Date|undefined;
   private lastFocusSelectionOrCaretMove_: Date|undefined;
@@ -36,11 +48,14 @@ export class Magnifier {
   private onCaretBoundsChangedHandler: EventHandler;
   private onMagnifierBoundsChangedHandler_:
       ChromeEventHandler<[bounds: ScreenRect]>;
+  private onChromeVoxFocusChangedHandler_:
+      ChromeEventHandler<[bounds: ScreenRect]>;
   private onSelectToSpeakFocusChangedHandler_:
       ChromeEventHandler<[bounds: ScreenRect]>;
   private updateFromPrefsHandler_: ChromeEventHandler<[prefs: PrefObject[]]>;
   private onMouseMovedHandler_: EventHandler;
   private onMouseDraggedHandler_: EventHandler;
+  private lastChromeVoxBounds_: ScreenRect|undefined;
   private lastSelectToSpeakBounds_: ScreenRect|undefined;
   private onLoadDesktopCallbackForTest_: (() => void)|null;
 
@@ -64,6 +79,10 @@ export class Magnifier {
     this.onMagnifierBoundsChangedHandler_ = new ChromeEventHandler(
         chrome.accessibilityPrivate.onMagnifierBoundsChanged,
         bounds => this.onMagnifierBoundsChanged_(bounds));
+
+    this.onChromeVoxFocusChangedHandler_ = new ChromeEventHandler(
+        chrome.accessibilityPrivate.onChromeVoxFocusChanged,
+        bounds => this.onChromeVoxFocusChanged_(bounds));
 
     this.onSelectToSpeakFocusChangedHandler_ = new ChromeEventHandler(
         chrome.accessibilityPrivate.onSelectToSpeakFocusChanged,
@@ -93,11 +112,13 @@ export class Magnifier {
     this.selectionHandler_.stop();
     this.onCaretBoundsChangedHandler.stop();
     this.onMagnifierBoundsChangedHandler_.stop();
+    this.onChromeVoxFocusChangedHandler_.stop();
     this.onSelectToSpeakFocusChangedHandler_.stop();
     this.updateFromPrefsHandler_.stop();
     this.onMouseMovedHandler_.stop();
     this.onMouseDraggedHandler_.stop();
     this.lastMouseMovedTime_ = undefined;
+    this.lastChromeVoxBounds_ = undefined;
     this.lastSelectToSpeakBounds_ = undefined;
     this.lastFocusSelectionOrCaretMove_ = undefined;
   }
@@ -127,6 +148,7 @@ export class Magnifier {
     });
 
     this.onMagnifierBoundsChangedHandler_.start();
+    this.onChromeVoxFocusChangedHandler_.start();
     this.onSelectToSpeakFocusChangedHandler_.start();
 
     chrome.accessibilityPrivate.enableMouseEvents(true);
@@ -154,9 +176,35 @@ export class Magnifier {
     }
   }
 
+  private onChromeVoxFocusChanged_(bounds: ScreenRect): void {
+    // Don't follow ChromeVox if focus following is off.
+    if (!this.shouldFollowChromeVoxFocus()) {
+      return;
+    }
+
+    // Don't follow ChromeVox focus if the mouse, keyboard focus or caret
+    // has moved too recently.
+    // TODO(b/259363112): Add a test for this.
+    const now = new Date().getTime();
+    if ((this.lastMouseMovedTime_ !== undefined &&
+         now - this.lastMouseMovedTime_.getTime() <
+             Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS) ||
+        (this.lastFocusSelectionOrCaretMove_ !== undefined &&
+         now - this.lastFocusSelectionOrCaretMove_.getTime() <
+             Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS)) {
+      return;
+    }
+
+    // Ignore repeated updates from ChromeVox.
+    if (bounds !== this.lastChromeVoxBounds_) {
+      this.lastChromeVoxBounds_ = bounds;
+      chrome.accessibilityPrivate.moveMagnifierToRect(bounds);
+    }
+  }
+
   private onSelectToSpeakFocusChanged_(bounds: ScreenRect): void {
     // Don't follow select to speak if focus following is off.
-    if (!this.shouldFollowFocus()) {
+    if (!this.shouldFollowStsFocus()) {
       return;
     }
 
@@ -166,10 +214,10 @@ export class Magnifier {
     const now = new Date().getTime();
     if ((this.lastMouseMovedTime_ !== undefined &&
          now - this.lastMouseMovedTime_.getTime() <
-             Magnifier.IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS) ||
+             Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS) ||
         (this.lastFocusSelectionOrCaretMove_ !== undefined &&
          now - this.lastFocusSelectionOrCaretMove_.getTime() <
-             Magnifier.IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS)) {
+             Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS)) {
       return;
     }
 
@@ -188,11 +236,26 @@ export class Magnifier {
     this.isInitializing_ = isInitializing;
   }
 
+  /**
+   * Sets |IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS| inside tests to ensure all
+   * automated input is received.
+   */
+  setIgnoreAssistiveTechnologyUpdatesAfterOtherMoveDurationForTest(
+      duration: number): void {
+    Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS = duration;
+  }
+
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
+        case Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING:
+          this.screenMagnifierFollowsChromeVox_ = Boolean(pref.value);
+          break;
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
           this.screenMagnifierFocusFollowing_ = Boolean(pref.value);
+          break;
+        case Magnifier.Prefs.SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING:
+          this.screenMagnifierFollowsSts_ = Boolean(pref.value);
           break;
         default:
           return;
@@ -204,7 +267,7 @@ export class Magnifier {
    * Returns whether magnifier viewport should follow focus. Exposed for
    * testing.
    *
-   * TODO(crbug.com/1146595): Add Chrome OS preference to allow disabling focus
+   * TODO(crbug.com/40730171): Add Chrome OS preference to allow disabling focus
    * following for docked magnifier.
    */
   shouldFollowFocus(): boolean {
@@ -213,6 +276,14 @@ export class Magnifier {
         (this.type === Magnifier.Type.DOCKED ||
          this.type === Magnifier.Type.FULL_SCREEN &&
              this.screenMagnifierFocusFollowing_));
+  }
+
+  shouldFollowChromeVoxFocus(): boolean {
+    return !this.isInitializing_ && this.screenMagnifierFollowsChromeVox_;
+  }
+
+  shouldFollowStsFocus(): boolean {
+    return !this.isInitializing_ && this.screenMagnifierFollowsSts_;
   }
 
   /**
@@ -329,7 +400,11 @@ export namespace Magnifier {
   /** Preferences that are configurable for Magnifier. */
   export enum Prefs {
     SCREEN_MAGNIFIER_FOCUS_FOLLOWING =
-        'settings.a11y.screen_magnifier_focus_following'
+        'settings.a11y.screen_magnifier_focus_following',
+    SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING =
+        'settings.a11y.screen_magnifier_chromevox_focus_following',
+    SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING =
+        'settings.a11y.screen_magnifier_select_to_speak_focus_following',
   }
 
   /**
@@ -345,8 +420,11 @@ export namespace Magnifier {
   export const IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;
 
   /**
-   * Duration of time directly after a mouse move or drag to ignore Select
-   * to Speak focus updates, to prevent the magnified region from jumping.
+   * Duration of time directly after a mouse move or drag to ignore focus
+   * updates from assistive technologies like Select to Speak and ChromeVox, to
+   * prevent the magnified region from jumping.
    */
-  export const IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
+  export var IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
 }
+
+TestImportManager.exportForTesting(Magnifier);

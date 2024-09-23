@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
+#include "base/containers/heap_array.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -12,19 +18,20 @@ namespace {
 
 class MemoryBuffer : public ScopedD3DBuffer {
  public:
-  explicit MemoryBuffer(size_t size) : raw_data_(new uint8_t[size]) {
-    data_ = base::span<uint8_t>(raw_data_.get(), size);
+  explicit MemoryBuffer(size_t size)
+      : raw_data_(base::HeapArray<uint8_t>::Uninit(size)) {
+    data_ = raw_data_.as_span();
   }
 
   bool Commit() override {
-    raw_data_.reset();
+    raw_data_ = base::HeapArray<uint8_t>();
     return true;
   }
 
   bool Commit(uint32_t) override { return Commit(); }
 
  private:
-  std::unique_ptr<uint8_t[]> raw_data_;
+  base::HeapArray<uint8_t> raw_data_;
 };
 
 }  // namespace

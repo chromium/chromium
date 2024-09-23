@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"

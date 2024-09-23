@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/content_settings/generated_permission_prompting_behavior_pref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -43,7 +44,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
        iter != settings.end(); ++iter) {
     if (iter->primary_pattern == ContentSettingsPattern::Wildcard() &&
         iter->secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        iter->source != "preference") {
+        iter->source != content_settings::ProviderType::kPrefProvider) {
       continue;
     }
 
@@ -59,7 +60,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
     notifiers.emplace_back(
         notifier_id, name,
         notifier_state_tracker->IsNotifierEnabled(notifier_id),
-        info.source == content_settings::SETTING_SOURCE_POLICY,
+        info.source == content_settings::SettingSource::kPolicy,
         gfx::ImageSkia());
     patterns_[url_pattern] = iter->primary_pattern;
     // Note that favicon service obtains the favicon from history. This means

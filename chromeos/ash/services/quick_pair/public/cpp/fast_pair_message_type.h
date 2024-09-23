@@ -14,8 +14,12 @@ enum class FastPairMessageType {
   kKeyBasedPairingRequest,
   // Key-based Pairing Response.
   kKeyBasedPairingResponse,
+  // Key-based Pairing Extended Response.
+  kKeyBasedPairingExtendedResponse,
   // Seeker's passkey.
-  kSeekersPasskey,
+  // Note: This and Key-based Pairing Extended Response are both equal to 2, but
+  // they are messages for different characteristics.
+  kSeekersPasskey = 2,
   // Provider's passkey.
   kProvidersPasskey,
 };

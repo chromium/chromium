@@ -47,7 +47,7 @@ class IncognitoReauthViewBinder {
                 .setVisibility(isFullscreen ? View.VISIBLE : View.GONE);
         // For non-full screen we have a slight modification on top of the default
         // to remove the incognito icon only for small screen size.
-        // TODO(crbug.com/1227656): Add logic to remove Incognito icon for
+        // TODO(crbug.com/40056462): Add logic to remove Incognito icon for
         // small screen.
     }
 

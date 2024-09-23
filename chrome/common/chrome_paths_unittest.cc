@@ -17,10 +17,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/file_utils.h"
-#endif
-
 namespace chrome {
 
 // Test the behavior of chrome::GetUserCacheDirectory.
@@ -32,12 +28,6 @@ TEST(ChromePaths, UserCacheDir) {
 #if BUILDFLAG(IS_WIN)
   test_profile_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
   expected_cache_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
-#elif BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia uses the Component's cache directory as the base.
-  expected_cache_dir = base::FilePath(base::kPersistedCacheDirectoryPath);
-  test_profile_dir =
-      base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
-  expected_cache_dir = expected_cache_dir.Append("foobar");
 #elif BUILDFLAG(IS_MAC)
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));
   test_profile_dir = test_profile_dir.Append("foobar");

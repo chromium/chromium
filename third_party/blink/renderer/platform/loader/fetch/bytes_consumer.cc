@@ -18,7 +18,7 @@ class ErroredBytesConsumer final : public BytesConsumer {
     return Result::kError;
   }
   Result EndRead(size_t read_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Result::kError;
   }
   void SetClient(BytesConsumer::Client*) override {}
@@ -41,7 +41,7 @@ class ClosedBytesConsumer final : public BytesConsumer {
     return Result::kDone;
   }
   Result EndRead(size_t read_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Result::kError;
   }
   void SetClient(BytesConsumer::Client*) override {}
@@ -50,7 +50,7 @@ class ClosedBytesConsumer final : public BytesConsumer {
   void Cancel() override {}
   PublicState GetPublicState() const override { return PublicState::kClosed; }
   Error GetError() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Error();
   }
   String DebugName() const override { return "ClosedBytesConsumer"; }
@@ -76,7 +76,7 @@ std::ostream& operator<<(std::ostream& out,
     case BytesConsumer::PublicState::kErrored:
       return out << "kErrored";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -91,7 +91,7 @@ std::ostream& operator<<(std::ostream& out,
     case BytesConsumer::Result::kError:
       return out << "kError";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

@@ -4,55 +4,75 @@
 
 module webnn.mojom;
 
-import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/features.mojom";
+import "services/webnn/public/mojom/webnn_context.mojom";
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
-import "services/webnn/public/mojom/webnn_graph.mojom";
-
-enum PowerPreference {
-  // Let the user agent select the most suitable behavior.
-  kDefault = 0,
-  // Prioritizes execution speed over power consumption.
-  kHighPerformance = 1,
-  // Prioritizes power consumption over other considerations such as execution
-  // speed.
-  kLowPower = 2,
-};
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents options of creating `WebNNContext` interface.
 struct CreateContextOptions {
+  enum Device {
+    // Provides the broadest compatibility and usability across all client
+    // devices with varying degrees of performance.
+    kCpu,
+    // Provides the broadest range of achievable performance across graphics
+    // hardware platforms from consumer devices to professional workstations.
+    kGpu,
+    // NPU (neural processing unit) is a class of specialized hardware
+    // accelerator designed to accelerate artificial intelligence and machine
+    // learning applications. Unlike more general-purpose devices such as the
+    // GPU and CPU, an NPU supports a limited finite set of operations and may
+    // not have programmability support. The fallback behavior is being
+    // discussed by WG at:
+    // https://github.com/webmachinelearning/webnn/issues/623.
+    // This Enum value is introduced for testing purpose that will inform
+    // the WG.
+    kNpu,
+  };
+
+  enum PowerPreference {
+    // Let the user agent select the most suitable behavior.
+    kDefault,
+    // Prioritizes execution speed over power consumption.
+    kHighPerformance,
+    // Prioritizes power consumption over other considerations such as execution
+    // speed.
+    kLowPower,
+  };
+
+  // Indicates the kind of device used for the context.
+  Device device;
   // The power preference for power consumption.
   PowerPreference power_preference;
+
+  // Hint for the number of threads to use for inference, with zero indicating a
+  // preference to defer this decision to the backend. A backend may also choose
+  // to ignore this value entirely.
+  //
+  // TODO(crbug.com/338162119): This is not the final expected API shape. Spec
+  // discussion on how this information should be communicated is happening
+  // here: https://github.com/webmachinelearning/webnn/issues/436
+  uint8 thread_count_hint;
 };
 
-// Represents the return value of `WebNNContext::CreateGraph()`. Let it be
-// `graph_remote` if the graph was successfully created and `error` otherwise.
-union CreateGraphResult {
-  pending_remote<WebNNGraph>? graph_remote;
-  Error error;
+// Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.
+struct CreateContextSuccess {
+  pending_remote<WebNNContext>? context_remote;
+  ContextProperties context_properties;
+  // context_handle is a generated token used as handle to identify the
+  // the context from the renderer. The token is only valid for the lifetime
+  // of the context and is used to resolve a buffer in the service using the
+  // context corresponding to this handle.
+  blink.mojom.WebNNContextToken context_handle;
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
-// Let it be `context_remote` if WebNNContext was successfully created and
-// `error` otherwise.
+// Let it be `success` if a WebNNContext was successfully created and `error`
+// otherwise.
 union CreateContextResult {
-  pending_remote<WebNNContext>? context_remote;
+  CreateContextSuccess success;
   Error error;
-};
-
-// Represents the `MLContext` object in the WebIDL definition that is a global
-// state of neural network compute workload and execution processes. This
-// interface runs in the GPU process and is called from the renderer process.
-[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
-interface WebNNContext {
-  // Called by the renderer process to create `WebNNGraph` message pipe for
-  // executing computational graph, the WebNN graph will be validated and
-  // compiled. Initializes the compiled graph for optimal performance of the
-  // subsequent graph executions if the initialization is a necessary step.
-  //
-  // TODO(crbug.com/1488162): Remove [Sync] if the standards group decides that
-  // the WebNN sync APIs are not required.
-  [Sync]
-  CreateGraph(GraphInfo graph_info) => (CreateGraphResult result);
 };
 
 // This interface runs in the GPU process and is called from the renderer
@@ -64,10 +84,6 @@ interface WebNNContextProvider {
   // Called by the renderer process to create a message pipe for `MLContext`,
   // the `CreateContextResult` will be `Error` with error messages if the
   // configuration of options isn't supported.
-  //
-  // TODO(crbug.com/1488162): Remove [Sync] if the standards group decides that
-  // the WebNN sync APIs are not required.
-  [Sync]
   CreateWebNNContext(CreateContextOptions options)
       => (CreateContextResult result);
 };

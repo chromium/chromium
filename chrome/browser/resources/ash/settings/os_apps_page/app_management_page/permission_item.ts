@@ -3,20 +3,31 @@
 // found in the LICENSE file.
 import './app_management_cros_shared_style.css.js';
 import './toggle_row.js';
+import '../../os_privacy_page/privacy_hub_allow_sensor_access_dialog.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {App, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './permission_item.html.js';
-import {AppManagementToggleRowElement} from './toggle_row.js';
+import {MediaDevicesProxy} from '../../common/media_devices_proxy.js';
 
-export class AppManagementPermissionItemElement extends PolymerElement {
+import {getTemplate} from './permission_item.html.js';
+import {PrivacyHubMixin} from './privacy_hub_mixin.js';
+import {AppManagementToggleRowElement} from './toggle_row.js';
+import {getPermissionDescriptionString, isSensorAvailable} from './util.js';
+
+const AppManagementPermissionItemElementBase =
+    PrivacyHubMixin(PrefsMixin(PolymerElement));
+
+export class AppManagementPermissionItemElement extends
+    AppManagementPermissionItemElementBase {
   static get is() {
     return 'app-management-permission-item';
   }
@@ -69,6 +80,27 @@ export class AppManagementPermissionItemElement extends PolymerElement {
         computed: 'isDisabled_(app, permissionType)',
         reflectToAttribute: true,
       },
+
+      /**
+       * When true, the permission state is described in the sublabel.
+       */
+      showPermissionDescriptionString_: {
+        type: Boolean,
+        computed: 'computeShowPermissionDescriptionString_(permissionType)',
+      },
+
+      showAllowSensorAccessDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether sensor relevant to the `permissionType` is available.
+       */
+      sensorAvailable_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -79,12 +111,23 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   private syncPermissionManually: boolean;
   private available_: boolean;
   private disabled_: boolean;
-
+  private sensorAvailable_: boolean;
+  private showAllowSensorAccessDialog_: boolean;
+  private showPermissionDescriptionString_: boolean;
 
   override ready(): void {
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.togglePermission_);
+
+    this.updateSensorAvailability_();
+    MediaDevicesProxy.getMediaDevices().addEventListener('devicechange', () => {
+      this.updateSensorAvailability_();
+    });
+  }
+
+  private async updateSensorAvailability_(): Promise<void> {
+    this.sensorAvailable_ = await isSensorAvailable(this.permissionType);
   }
 
   private isAvailable_(
@@ -120,6 +163,28 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     }
 
     return this.isManaged_(app, permissionType);
+  }
+
+  private computeShowPermissionDescriptionString_(
+      permissionType: PermissionTypeIndex): boolean {
+    if (permissionType === undefined) {
+      return false;
+    }
+
+    switch (PermissionType[permissionType]) {
+      case PermissionType.kCamera:
+      case PermissionType.kLocation:
+      case PermissionType.kMicrophone:
+      case PermissionType.kContacts:
+      case PermissionType.kStorage:
+        return loadTimeData.getBoolean('privacyHubAppPermissionsV2Enabled');
+      case PermissionType.kNotifications:
+      case PermissionType.kPrinting:
+      case PermissionType.kFileHandling:
+        return false;
+      default:
+        assertNotReached();
+    }
   }
 
   private getValue_(
@@ -270,6 +335,27 @@ export class AppManagementPermissionItemElement extends PolymerElement {
       default:
         assertNotReached();
     }
+  }
+
+  private getPermissionDescriptionString_(
+      app: App|undefined,
+      permissionType: PermissionTypeIndex|undefined): string {
+    return getPermissionDescriptionString(
+        app, permissionType, this.sensorAvailable_,
+        this.isSensorBlocked(permissionType),
+        this.microphoneHardwareToggleActive,
+        this.microphoneMutedBySecurityCurtain, this.cameraSwitchForceDisabled);
+  }
+
+  private launchAllowSensorAccessDialog_(e: CustomEvent): void {
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+
+    this.showAllowSensorAccessDialog_ = true;
+  }
+
+  private onAllowSensorAccessDialogClose_(): void {
+    this.showAllowSensorAccessDialog_ = false;
   }
 }
 

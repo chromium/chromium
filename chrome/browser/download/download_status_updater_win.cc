@@ -5,9 +5,12 @@
 #include "chrome/browser/download/download_status_updater.h"
 
 #include <objbase.h>
+
 #include <shobjidl.h>
-#include <string>
+
 #include <wrl/client.h>
+
+#include <string>
 
 #include "base/logging.h"
 #include "chrome/browser/ui/browser.h"

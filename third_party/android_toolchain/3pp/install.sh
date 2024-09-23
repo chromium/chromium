@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# THIS MUST BE KEPT IN SYNC WITH ../../android_toolchain_canary/3pp/install.sh.
-
 set -e
 set -x
 set -o pipefail
@@ -12,7 +10,6 @@ set -o pipefail
 # An auto-created directory whose content will ultimately be uploaded to CIPD.
 # The commands below should output the built product to this directory.
 PREFIX="$1"
-CLANG_VERSION="14.0.7"
 
 # Glob patterns to include from the NDK.
 GLOB_INCLUDES=(
@@ -41,6 +38,9 @@ GLOB_EXCLUDES=(
   toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/netfilter/xt_TCPMSS.h
 )
 
+# Fix an compile error in the Android NDK (crbug.com/352592408).
+sed -i 's/1UL << 32/1ULL << 32/g' toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/hardware_buffer.h
+
 # Move included files from the working directory to the staging directory.
 for pattern in "${GLOB_INCLUDES[@]}"; do
   cp --parents -r $pattern "$PREFIX"
@@ -50,3 +50,4 @@ done
 for pattern in "${GLOB_EXCLUDES[@]}"; do
   rm -rf "${PREFIX}/${pattern}"
 done
+

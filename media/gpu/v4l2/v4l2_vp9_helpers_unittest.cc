@@ -10,8 +10,8 @@
 #include "base/files/memory_mapped_file.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
-#include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
+#include "media/parsers/ivf_parser.h"
+#include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -56,18 +56,17 @@ TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
       *header = 0x8f;
       offset += frame_size;
     }
-    auto decoder_buffer =
-        DecoderBuffer::CopyFrom(tmp_buffer.data(), tmp_buffer.size());
+    auto decoder_buffer = DecoderBuffer::CopyFrom(tmp_buffer);
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);
     if (frame_sizes.size() == 1) {
-      EXPECT_EQ(decoder_buffer->data_size(), buffer_size);
+      EXPECT_EQ(decoder_buffer->size(), buffer_size);
       continue;
     }
 
-    EXPECT_GT(decoder_buffer->data_size(), buffer_size);
-    size_t superframe_index_size = decoder_buffer->data_size() - buffer_size;
+    EXPECT_GT(decoder_buffer->size(), buffer_size);
+    size_t superframe_index_size = decoder_buffer->size() - buffer_size;
     EXPECT_EQ(superframe_index_size,
               2 + expected_bytes_per_framesize * frame_sizes.size());
   }
@@ -103,19 +102,18 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     merged_buffer.resize(offset + buffers[i].size());
     memcpy(merged_buffer.data() + offset, buffers[i].data(), buffers[i].size());
 
-    auto decoder_buffer =
-        DecoderBuffer::CopyFrom(merged_buffer.data(), merged_buffer.size());
+    auto decoder_buffer = DecoderBuffer::CopyFrom(merged_buffer);
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);
 
     Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
-    vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->data_size(),
+    vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->size(),
                          /*stream_config=*/nullptr);
 
     // Parse the merged buffer with the created superframe index.
     for (size_t j = 0; j <= i; j++) {
-      Vp9FrameHeader frame_header{};
+      Vp9FrameHeader frame_header;
       gfx::Size allocate_size;
       std::unique_ptr<DecryptConfig> frame_decrypt_config;
       EXPECT_EQ(vp9_parser.ParseNextFrame(&frame_header, &allocate_size,

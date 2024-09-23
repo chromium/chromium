@@ -96,11 +96,11 @@ bool MediaKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
   CHROME_MSG msg = {nullptr, static_cast<UINT>(w_param), vk,
                     GetLParamFromScanCode(scan_code), time_stamp};
   EventType event_type = EventTypeFromMSG(msg);
-  if (event_type == ET_KEY_PRESSED) {
+  if (event_type == EventType::kKeyPressed) {
     is_repeat = (last_key_down_ == vk);
     last_key_down_ = vk;
   } else {
-    DCHECK_EQ(event_type, ET_KEY_RELEASED);
+    DCHECK_EQ(event_type, EventType::kKeyReleased);
     last_key_down_ = 0;
   }
 

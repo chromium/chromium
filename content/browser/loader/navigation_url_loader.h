@@ -88,7 +88,7 @@ class CONTENT_EXPORT NavigationURLLoader {
   // not used for prerendered page activation as it needs to run a specific
   // loader to satisfy its unique requirement. See the implementation comment in
   // NavigationURLLoader::Create() for details.
-  // TODO(https://crbug.com/1226442): Update this comment for restoration from
+  // TODO(crbug.com/40188852): Update this comment for restoration from
   // BackForwardCache when it also starts depending on the requirement.
   static void SetFactoryForTesting(NavigationURLLoaderFactory* factory);
 
@@ -113,6 +113,10 @@ class CONTENT_EXPORT NavigationURLLoader {
   // started successfully. Repeated calls will be ignored (they won't reset the
   // timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+  // Cancels the request timeout for this navigation. If the navigation is still
+  // happening, it will continue as if the timer wasn't set. Otherwise, this is
+  // a no-op.
+  virtual void CancelNavigationTimeout() = 0;
 
   static uint32_t GetURLLoaderOptions(bool is_outermost_main_frame);
 

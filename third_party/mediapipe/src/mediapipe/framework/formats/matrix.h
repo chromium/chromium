@@ -21,6 +21,15 @@
 #ifndef MEDIAPIPE_FRAMEWORK_FORMATS_MATRIX_H_
 #define MEDIAPIPE_FRAMEWORK_FORMATS_MATRIX_H_
 
+// TODO: Eigen looks for __EXCEPTIONS to determine if exceptions are enabled.
+// This file may be compiled with -ObjC++ on macOS, which sets __EXCEPTIONS,
+// causing the build to fail. The right solution is likely to change Eigen
+// to look for a different define, or perhaps an override to ignore
+// __EXCEPTIONS.
+#if defined(__EXCEPTIONS)
+#undef __EXCEPTIONS
+#endif
+
 #include <string>
 
 #include "Eigen/Core"
@@ -38,7 +47,8 @@ void MatrixDataProtoFromMatrix(const Matrix& matrix, MatrixData* matrix_data);
 // audio into a Matrix proto.
 void MatrixFromMatrixDataProto(const MatrixData& matrix_data, Matrix* matrix);
 
-#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE)
+#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE) && \
+    !defined(MEDIAPIPE_PROTO_LITE)
 // Produce a Text format MatrixData string.  Mainly useful for test code.
 std::string MatrixAsTextProto(const Matrix& matrix);
 // Produce a Matrix from a text format MatrixData proto representation.

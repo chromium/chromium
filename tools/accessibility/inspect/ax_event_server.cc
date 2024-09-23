@@ -15,9 +15,11 @@ namespace tools {
 AXEventServer::AXEventServer(base::ProcessId pid,
                              const ui::AXTreeSelector& selector,
                              const ui::AXInspectScenario& scenario)
-    : recorder_(content::AXInspectFactory::CreatePlatformRecorder(nullptr,
-                                                                  pid,
-                                                                  selector)) {
+    : recorder_(content::AXInspectFactory::CreateRecorder(
+          content::AXInspectFactory::DefaultPlatformRecorderType(),
+          nullptr,
+          pid,
+          selector)) {
   recorder_->SetPropertyFilters(scenario.property_filters);
   recorder_->ListenToEvents(
       base::BindRepeating(&AXEventServer::OnEvent, base::Unretained(this)));

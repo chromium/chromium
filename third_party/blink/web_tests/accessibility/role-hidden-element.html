@@ -1,0 +1,28 @@
+<!doctype html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+
+<div id='hidden-layout' style='display: none'></div>
+<div id='hidden-aria' style='display: none' aria-hidden="true"></div>
+<script>
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('hidden-layout'));
+  assert_equals(role, "none");
+}, "Element hidden with display: none has role 'none'");
+
+promise_test(async t => {
+  const role = await test_driver.get_computed_role(document.getElementById('hidden-aria'));
+  assert_equals(role, "none");
+}, "Element hidden to accessibility with aria-hidden has role 'none'");
+
+promise_test(async t => {
+  const div = document.createElement("div");
+  const label = await test_driver.get_computed_role(div);
+  assert_equals(label, "none");
+}, "Detached element has role 'none'");
+
+</script>

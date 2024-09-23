@@ -4,8 +4,11 @@
 
 package org.chromium.content.app;
 
+import org.chromium.build.annotations.UsedByReflection;
+
 /**
- * Privileged (unsandboxed) Services inherit from this class. We enforce the
- * privileged/sandboxed distinction by type-checking objects against this parent class.
+ * Privileged (unsandboxed) Services inherit from this class. We enforce the privileged/sandboxed
+ * distinction by type-checking objects against this parent class.
  */
+@UsedByReflection("Subclass names constructed by appending a number to this class's name")
 public class PrivilegedProcessService extends ContentChildProcessService {}

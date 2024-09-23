@@ -1,0 +1,289 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash)
+
+static_library("remote_commands") {
+  sources = [
+    "affiliated_remote_commands_invalidator.cc",
+    "affiliated_remote_commands_invalidator.h",
+    "device_command_fetch_status_job.cc",
+    "device_command_fetch_status_job.h",
+    "device_command_fetch_support_packet_job.cc",
+    "device_command_fetch_support_packet_job.h",
+    "device_command_get_available_routines_job.cc",
+    "device_command_get_available_routines_job.h",
+    "device_command_get_routine_update_job.cc",
+    "device_command_get_routine_update_job.h",
+    "device_command_reboot_job.cc",
+    "device_command_reboot_job.h",
+    "device_command_refresh_machine_certificate_job.cc",
+    "device_command_refresh_machine_certificate_job.h",
+    "device_command_remote_powerwash_job.cc",
+    "device_command_remote_powerwash_job.h",
+    "device_command_reset_euicc_job.cc",
+    "device_command_reset_euicc_job.h",
+    "device_command_run_routine_job.cc",
+    "device_command_run_routine_job.h",
+    "device_command_screenshot_job.cc",
+    "device_command_screenshot_job.h",
+    "device_command_set_volume_job.cc",
+    "device_command_set_volume_job.h",
+    "device_command_wipe_users_job.cc",
+    "device_command_wipe_users_job.h",
+    "device_commands_factory_ash.cc",
+    "device_commands_factory_ash.h",
+    "fake_screenshot_delegate.cc",
+    "fake_screenshot_delegate.h",
+    "screenshot_delegate.cc",
+    "screenshot_delegate.h",
+    "user_command_arc_job.cc",
+    "user_command_arc_job.h",
+    "user_commands_factory_ash.cc",
+    "user_commands_factory_ash.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/invalidation",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/policy/uploading",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/components/kiosk",
+    "//chromeos/dbus/power",
+    "//components/feedback/redaction_tool",
+    "//components/policy/core/common",
+    "//components/policy/proto:",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_factory",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//content/public/browser",
+    "//dbus",
+    "//net",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//ui/snapshot",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "device_command_fetch_support_packet_job_test_util.cc",
+    "device_command_fetch_support_packet_job_test_util.h",
+    "fake_cros_network_config.cc",
+    "fake_cros_network_config.h",
+    "fake_cros_network_config_base.cc",
+    "fake_cros_network_config_base.h",
+    "user_session_type_test_util.cc",
+    "user_session_type_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//components/account_id",
+    "//components/reporting/storage:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_command_fetch_support_packet_job_unittest.cc",
+    "device_command_get_available_routines_job_unittest.cc",
+    "device_command_get_routine_update_job_unittest.cc",
+    "device_command_reboot_job_test_util.cc",
+    "device_command_reboot_job_test_util.h",
+    "device_command_reboot_job_unittest.cc",
+    "device_command_reboot_job_with_scheduled_reboot_policy_test.cc",
+    "device_command_refresh_machine_certificate_job_unittest.cc",
+    "device_command_remote_powerwash_job_unittest.cc",
+    "device_command_reset_euicc_job_unittest.cc",
+    "device_command_run_routine_job_unittest.cc",
+    "device_command_screenshot_job_unittest.cc",
+    "device_command_set_volume_job_unittest.cc",
+    "device_command_wipe_users_job_unittest.cc",
+    "user_command_arc_job_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/policy/remote_commands",
+    "//chrome/browser/ash/policy/remote_commands:test_support",
+    "//chrome/browser/ash/policy/scheduled_task_handler",
+    "//chrome/browser/ash/policy/scheduled_task_handler/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/dbus/power",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/account_id",
+    "//components/feedback/redaction_tool",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/prefs:test_support",
+    "//components/reporting/storage:storage_module_interface",
+    "//components/reporting/storage:test_support",
+    "//components/reporting/util:status",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//services/device/public/cpp:test_support",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/codec",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "curtain_mode_chromeos_browsertest.cc",
+    "device_command_fetch_support_packet_job_browsertest.cc",
+    "device_command_reboot_job_browsertest.cc",
+    "device_command_set_volume_job_browsertest.cc",
+  ]
+
+  deps = [
+    ":remote_commands",
+    ":test_support",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/components/kiosk",
+    "//chromeos/dbus/power",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/reporting/storage:test_support",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//remoting/host:common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:view_pixel_diff_test_support",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("policy_remote_commands_fuzzer") {
+    sources = [ "remote_commands_fuzzer.cc" ]
+
+    deps = [
+      ":remote_commands",
+      "//base",
+      "//base:i18n",
+      "//chrome/browser",
+      "//chrome/browser/ash/policy/remote_commands/crd",
+      "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+      "//components/exo/wayland:test_controller_stub",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/policy/proto",
+    ]
+  }
+}

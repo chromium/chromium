@@ -7,13 +7,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "components/viz/common/frame_timing_details.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -103,9 +104,10 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
 // Records histogram and trace event for the unfolding latency.
 void RecordUnfoldHistogramAndTraceEvent(
     base::TimeTicks begin_timestamp,
-    base::TimeTicks presentation_timestamp) {
+    const viz::FrameTimingDetails& frame_timing_details) {
+  base::TimeTicks presentation_timestamp =
+      frame_timing_details.presentation_feedback.timestamp;
   DCHECK((begin_timestamp != base::TimeTicks()));
-
   if (IsLatencyTraceCategoryEnabled()) {
     const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
                                 perfetto::ProcessTrack::Current());
@@ -158,7 +160,8 @@ ContentToVisibleTimeReporter::TabWasShown(
   // |tab_switch_start_state_| is only reset by RecordHistogramsAndTraceEvents
   // once the metrics have been emitted.
   return base::BindOnce(
-      &ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents,
+      &ContentToVisibleTimeReporter::
+          RecordHistogramsAndTraceEventsWithFrameTimingDetails,
       weak_ptr_factory_.GetWeakPtr(), TabSwitchResult::kSuccess,
       tab_switch_start_state_->show_reason_tab_switching,
       tab_switch_start_state_->show_reason_bfcache_restore);
@@ -197,6 +200,17 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
   ResetTabSwitchStartState();
 }
 
+void ContentToVisibleTimeReporter::
+    RecordHistogramsAndTraceEventsWithFrameTimingDetails(
+        TabSwitchResult tab_switch_result,
+        bool show_reason_tab_switching,
+        bool show_reason_bfcache_restore,
+        const viz::FrameTimingDetails& frame_timing_details) {
+  RecordHistogramsAndTraceEvents(
+      tab_switch_result, show_reason_tab_switching, show_reason_bfcache_restore,
+      frame_timing_details.presentation_feedback.timestamp);
+}
+
 void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     TabSwitchResult tab_switch_result,
     bool show_reason_tab_switching,
@@ -207,11 +221,8 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   // for recording the event.
   DCHECK(show_reason_bfcache_restore || show_reason_tab_switching);
 
-  // Reset tab switch information on exit. Unretained is safe because the
-  // closure is invoked synchronously.
-  base::ScopedClosureRunner reset_state(
-      base::BindOnce(&ContentToVisibleTimeReporter::ResetTabSwitchStartState,
-                     base::Unretained(this)));
+  // Make sure to reset tab switch information when this function returns.
+  absl::Cleanup reset_state = [this] { ResetTabSwitchStartState(); };
 
   if (show_reason_bfcache_restore) {
     RecordBackForwardCacheRestoreMetric(

@@ -1,0 +1,183 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("signin") {
+  sources = [
+    "auth_error_observer.cc",
+    "auth_error_observer.h",
+    "auth_error_observer_factory.cc",
+    "auth_error_observer_factory.h",
+    "authentication_flow_auto_reload_manager.cc",
+    "authentication_flow_auto_reload_manager.h",
+    "merge_session_navigation_throttle.cc",
+    "merge_session_navigation_throttle.h",
+    "merge_session_throttling_utils.cc",
+    "merge_session_throttling_utils.h",
+    "oauth2_login_manager.cc",
+    "oauth2_login_manager.h",
+    "oauth2_login_manager_factory.cc",
+    "oauth2_login_manager_factory.h",
+    "oauth2_token_fetcher.cc",
+    "oauth2_token_fetcher.h",
+    "oauth2_token_initializer.cc",
+    "oauth2_token_initializer.h",
+    "offline_signin_limiter.cc",
+    "offline_signin_limiter.h",
+    "offline_signin_limiter_factory.cc",
+    "offline_signin_limiter_factory.h",
+    "signin_error_notifier.cc",
+    "signin_error_notifier.h",
+    "signin_error_notifier_factory.cc",
+    "signin_error_notifier_factory.h",
+    "token_handle_fetcher.cc",
+    "token_handle_fetcher.h",
+    "token_handle_util.cc",
+    "token_handle_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/account_id",
+    "//components/account_manager_core",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//google_apis",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/proximity_auth",
+    "//components/google/core/common",
+    "//components/keyed_service/content",
+    "//components/signin/public/base",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "device_id_browsertest.cc",
+    "oauth2_browsertest.cc",
+  ]
+
+  deps = [
+    ":signin",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/dbus/constants",
+    "//components/account_id",
+    "//components/javascript_dialogs",
+    "//components/prefs",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync/base",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//google_apis",
+    "//net",
+    "//net:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "offline_signin_limiter_unittest.cc",
+    "signin_error_notifier_unittest.cc",
+  ]
+
+  deps = [
+    ":signin",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//google_apis",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}

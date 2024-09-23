@@ -30,21 +30,23 @@ using content::WebContents;
 
 namespace {
 
-BrowserList::BrowserVector GetBrowsersToClose(Profile* profile) {
-  BrowserList::BrowserVector browsers_to_close;
+BrowserList::BrowserWeakVector GetBrowsersToClose(Profile* profile) {
+  BrowserList::BrowserWeakVector browsers_to_close;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
-        profile->GetOriginalProfile())
-      browsers_to_close.push_back(browser);
+        profile->GetOriginalProfile()) {
+      browsers_to_close.push_back(browser->AsWeakPtr());
+    }
   }
   return browsers_to_close;
 }
 
-BrowserList::BrowserVector GetIncognitoBrowsersToClose(Profile* profile) {
-  BrowserList::BrowserVector browsers_to_close;
+BrowserList::BrowserWeakVector GetIncognitoBrowsersToClose(Profile* profile) {
+  BrowserList::BrowserWeakVector browsers_to_close;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile)
-      browsers_to_close.push_back(browser);
+    if (browser->profile() == profile) {
+      browsers_to_close.push_back(browser->AsWeakPtr());
+    }
   }
   return browsers_to_close;
 }
@@ -190,8 +192,7 @@ void BrowserList::CloseAllBrowsersWithIncognitoProfile(
     const CloseCallback& on_close_aborted,
     bool skip_beforeunload) {
   DCHECK(profile->IsOffTheRecord());
-  BrowserList::BrowserVector browsers_to_close =
-      GetIncognitoBrowsersToClose(profile);
+  auto browsers_to_close = GetIncognitoBrowsersToClose(profile);
 
   // When closing devtools browser related to incognito browser, do not skip
   // calling before unload handlers.
@@ -203,14 +204,15 @@ void BrowserList::CloseAllBrowsersWithIncognitoProfile(
 }
 
 // static
-void BrowserList::TryToCloseBrowserList(const BrowserVector& browsers_to_close,
-                                        const CloseCallback& on_close_success,
-                                        const CloseCallback& on_close_aborted,
-                                        const base::FilePath& profile_path,
-                                        const bool skip_beforeunload) {
-  for (auto it = browsers_to_close.begin(); it != browsers_to_close.end();
-       ++it) {
-    if ((*it)->TryToCloseWindow(
+void BrowserList::TryToCloseBrowserList(
+    const BrowserWeakVector& browsers_to_close,
+    const CloseCallback& on_close_success,
+    const CloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    const bool skip_beforeunload) {
+  for (auto& weak_browser : browsers_to_close) {
+    if (weak_browser &&
+        weak_browser->TryToCloseWindow(
             skip_beforeunload,
             base::BindRepeating(&BrowserList::PostTryToCloseBrowserWindow,
                                 browsers_to_close, on_close_success,
@@ -223,17 +225,18 @@ void BrowserList::TryToCloseBrowserList(const BrowserVector& browsers_to_close,
   if (on_close_success)
     on_close_success.Run(profile_path);
 
-  for (Browser* b : browsers_to_close) {
+  for (auto& weak_b : browsers_to_close) {
     // BeforeUnload handlers may close browser windows, so we need to explicitly
     // check whether they still exist.
-    if (b->window())
-      b->window()->Close();
+    if (weak_b && weak_b->window()) {
+      weak_b->window()->Close();
+    }
   }
 }
 
 // static
 void BrowserList::PostTryToCloseBrowserWindow(
-    const BrowserVector& browsers_to_close,
+    const BrowserWeakVector& browsers_to_close,
     const CloseCallback& on_close_success,
     const CloseCallback& on_close_aborted,
     const base::FilePath& profile_path,
@@ -249,9 +252,12 @@ void BrowserList::PostTryToCloseBrowserWindow(
                           profile_path, skip_beforeunload);
   } else if (!resetting_handlers) {
     base::AutoReset<bool> resetting_handlers_scoper(&resetting_handlers, true);
-    for (auto it = browsers_to_close.begin(); it != browsers_to_close.end();
-         ++it) {
-      (*it)->ResetTryToCloseWindow();
+    for (auto& weak_browser : browsers_to_close) {
+      // This function is called asynchronously, so that the Browser may have
+      // been destroyed by the time we get here.
+      if (weak_browser) {
+        weak_browser->ResetTryToCloseWindow();
+      }
     }
     if (on_close_aborted)
       on_close_aborted.Run(profile_path);

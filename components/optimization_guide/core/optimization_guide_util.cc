@@ -5,28 +5,24 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 #include "base/containers/flat_set.h"
-#include "base/hash/hash.h"
-#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
-#include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "url/url_canon.h"
 
 namespace {
 
 constexpr char kAuthHeaderBearer[] = "Bearer ";
-constexpr char kApiKeyHeader[] = "X-Goog-Api-Key";
 
 optimization_guide::proto::Platform GetPlatform() {
 #if BUILDFLAG(IS_WIN)
@@ -46,36 +42,25 @@ optimization_guide::proto::Platform GetPlatform() {
 #endif
 }
 
-// Generates a new client id and stores it in prefs.
-int64_t GenerateAndStoreClientId(PrefService* pref_service) {
-  int64_t client_id = 0;
-
-  // If no value is stored in prefs, GetInt64 returns 0, so we need to use a
-  // non-zero ID to differentiate the case where no ID is set versus the ID is
-  // 0. We offset by a positive number to return a non-zero client-id.
-  int64_t number;
-  base::RandBytes(&number, sizeof(number));
-  client_id = number;
-  if (client_id == 0) {
-    // Reassign client_id to a non-zero number.
-    client_id = base::RandInt(1, 10000);
-  }
-
-  pref_service->SetInt64(
-      optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
-      client_id);
-  return client_id;
-}
-
-std::string TimeToYYYYMMDDString(base::Time ts) {
-  // Converts a Time object to a YYYY-MM-DD string.
-  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMMdd",
-                                                icu::TimeZone::getGMT());
-}
-
 }  // namespace
 
 namespace optimization_guide {
+
+std::string_view GetStringNameForModelExecutionFeature(
+    std::optional<UserVisibleFeatureKey> feature) {
+  if (!feature) {
+    return GetStringNameForModelExecutionFeature(
+        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED);
+  }
+  return GetStringNameForModelExecutionFeature(
+      ToModelExecutionFeatureProto(*feature));
+}
+
+std::string_view GetStringNameForModelExecutionFeature(
+    ModelBasedCapabilityKey feature) {
+  return GetStringNameForModelExecutionFeature(
+      ToModelExecutionFeatureProto(feature));
+}
 
 std::string_view GetStringNameForModelExecutionFeature(
     proto::ModelExecutionFeature feature) {
@@ -88,6 +73,20 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "Compose";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
       return "Test";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
+      return "TextSafety";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API:
+      return "PromptApi";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SUMMARIZE:
+      return "Summarize";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
+      return "HistorySearch";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
+      return "FormsPredictions";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
+      return "FormsAnnotations";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
@@ -97,8 +96,9 @@ std::string_view GetStringNameForModelExecutionFeature(
 }
 
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
-  if (net::HostStringIsLocalhost(host))
+  if (net::HostStringIsLocalhost(host)) {
     return false;
+  }
   url::CanonHostInfo host_info;
   std::string canonicalized_host(net::CanonicalizeHost(host, &host_info));
   if (host_info.IsIPAddress() ||
@@ -118,7 +118,7 @@ std::string GetStringForOptimizationGuideDecision(
     case OptimizationGuideDecision::kFalse:
       return "False";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -131,8 +131,9 @@ optimization_guide::proto::OriginInfo GetClientOriginInfo() {
 void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
                          bool is_off_the_record,
                          PrefService* pref_service) {
-  if (!optimization_guide::switches::IsDebugLogsEnabled())
+  if (!optimization_guide::switches::IsDebugLogsEnabled()) {
     return;
+  }
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
     OPTIMIZATION_GUIDE_LOG(
         optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
@@ -177,34 +178,7 @@ void PopulateAuthorizationRequestHeader(
 void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
                                  std::string_view api_key) {
   CHECK(!api_key.empty());
-  resource_request->headers.SetHeader(kApiKeyHeader, api_key);
-}
-
-int64_t GetHashedModelQualityClientId(proto::ModelExecutionFeature feature,
-                                      base::Time day,
-                                      int64_t client_id) {
-  std::string date = TimeToYYYYMMDDString(day);
-  return base::FastHash(
-      base::NumberToString(client_id + static_cast<int>(feature)) + date);
-}
-
-int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
-                                        PrefService* pref_service) {
-  if (!pref_service) {
-    return 0;
-  }
-  int64_t client_id = pref_service->GetInt64(
-      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
-  if (!client_id) {
-    client_id = GenerateAndStoreClientId(pref_service);
-    pref_service->SetInt64(
-        optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
-        client_id);
-  }
-
-  // Hash the client id with the date so that it changes everyday for every
-  // feature.
-  return GetHashedModelQualityClientId(feature, base::Time::Now(), client_id);
+  google_apis::AddAPIKeyToRequest(*resource_request, api_key);
 }
 
 bool ShouldStartModelValidator() {

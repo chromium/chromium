@@ -4,9 +4,10 @@
 
 #include "chrome/updater/win/installer/string.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <string>
 

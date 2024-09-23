@@ -10,6 +10,7 @@
     "imports": {
       "trailer/": null
     },
-    "scopes": {}
+    "scopes": {},
+    "integrity": {}
   }
 }

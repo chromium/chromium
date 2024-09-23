@@ -29,6 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 
 #include "build/build_config.h"
@@ -94,7 +99,7 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
     return;
 
   if (new_len == from.length()) {
-    buffer.Append(from.c_str(), from.length());
+    buffer.AppendSpan(base::span(from));
     return;
   }
 

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] It is possible to transition an unregistered custom property using "transition-behavior: allows-discrete"
+  assert_equals: A single "transitionstart" event was dispatched expected 1 but got 0
+[FAIL] It is possible to transition an unregistered custom property using "transition-behavior: allows-discrete" when setting "transition-property" in the style change that yields the transition
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'transitionProperty')"
+Harness: the test ran to completion.
+

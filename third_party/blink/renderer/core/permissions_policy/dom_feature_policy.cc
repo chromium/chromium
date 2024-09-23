@@ -19,9 +19,11 @@
 namespace blink {
 
 bool FeatureAvailable(const String& feature, ExecutionContext* ec) {
-  return GetDefaultFeatureNameMap().Contains(feature) &&
+  bool is_isolated_context = ec && ec->IsIsolatedContext();
+  return GetDefaultFeatureNameMap(is_isolated_context).Contains(feature) &&
          (!DisabledByOriginTrial(feature, ec)) &&
-         (!IsFeatureForMeasurementOnly(GetDefaultFeatureNameMap().at(feature)));
+         (!IsFeatureForMeasurementOnly(
+             GetDefaultFeatureNameMap(is_isolated_context).at(feature)));
 }
 
 DOMFeaturePolicy::DOMFeaturePolicy(ExecutionContext* context)
@@ -36,7 +38,10 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
                         ? WebFeature::kFeaturePolicyJSAPIAllowsFeatureIFrame
                         : WebFeature::kFeaturePolicyJSAPIAllowsFeatureDocument);
   if (FeatureAvailable(feature, execution_context)) {
-    auto feature_name = GetDefaultFeatureNameMap().at(feature);
+    bool is_isolated_context =
+        execution_context && execution_context->IsIsolatedContext();
+    auto feature_name =
+        GetDefaultFeatureNameMap(is_isolated_context).at(feature);
     return GetPolicy()->IsFeatureEnabled(feature_name);
   }
 
@@ -69,7 +74,9 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
     return false;
   }
 
-  auto feature_name = GetDefaultFeatureNameMap().at(feature);
+  bool is_isolated_context =
+      execution_context && execution_context->IsIsolatedContext();
+  auto feature_name = GetDefaultFeatureNameMap(is_isolated_context).at(feature);
   return GetPolicy()->IsFeatureEnabledForOrigin(feature_name,
                                                 origin->ToUrlOrigin());
 }
@@ -94,8 +101,11 @@ Vector<String> DOMFeaturePolicy::allowedFeatures(
           ? WebFeature::kFeaturePolicyJSAPIAllowedFeaturesIFrame
           : WebFeature::kFeaturePolicyJSAPIAllowedFeaturesDocument);
   Vector<String> allowed_features;
+  bool is_isolated_context =
+      execution_context && execution_context->IsIsolatedContext();
   for (const String& feature : GetAvailableFeatures(execution_context)) {
-    auto feature_name = GetDefaultFeatureNameMap().at(feature);
+    auto feature_name =
+        GetDefaultFeatureNameMap(is_isolated_context).at(feature);
     if (GetPolicy()->IsFeatureEnabled(feature_name))
       allowed_features.push_back(feature);
   }
@@ -111,8 +121,11 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
                     IsIFramePolicy()
                         ? WebFeature::kFeaturePolicyJSAPIGetAllowlistIFrame
                         : WebFeature::kFeaturePolicyJSAPIGetAllowlistDocument);
+  bool is_isolated_context =
+      execution_context && execution_context->IsIsolatedContext();
   if (FeatureAvailable(feature, execution_context)) {
-    auto feature_name = GetDefaultFeatureNameMap().at(feature);
+    auto feature_name =
+        GetDefaultFeatureNameMap(is_isolated_context).at(feature);
 
     const PermissionsPolicy::Allowlist allowlist =
         GetPolicy()->GetAllowlistForFeature(feature_name);

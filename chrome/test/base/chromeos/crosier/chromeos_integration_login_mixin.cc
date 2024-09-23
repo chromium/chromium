@@ -9,11 +9,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
-#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/chromeos/crosier/gaia_host_util.h"
 #include "chrome/test/base/chromeos/crosier/test_accounts.h"
@@ -222,16 +221,7 @@ void ChromeOSIntegrationLoginMixin::DoTestLogin() {
 void ChromeOSIntegrationLoginMixin::DoGaiaLogin() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Skip to login screen.
-  ash::WizardController::default_controller()->SkipToLoginForTesting();
-  ash::OobeScreenWaiter(ash::GaiaView::kScreenId).Wait();
-
-  // Wait for Gaia page to load.
-  while (!crosier::GetGaiaHost()) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
-    run_loop.Run();
-  }
+  crosier::SkipToGaiaScreenAndWait();
 
   std::string email;
   std::string password;

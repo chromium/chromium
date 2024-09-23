@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 
 #include <cstdint>
@@ -17,6 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/grit/optimization_guide_internals_resources.h"
 #include "components/grit/optimization_guide_internals_resources_map.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_quality/model_quality_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
@@ -49,7 +56,7 @@ OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() = default;
 void OptimizationGuideInternalsUI::BindInterface(
     mojo::PendingReceiver<
         optimization_guide_internals::mojom::PageHandlerFactory> receiver) {
-  // TODO(https://crbug.com/1297362): Remove the reset which is needed now since
+  // TODO(crbug.com/40215132): Remove the reset which is needed now since
   // |this| is reused on internals page reloads.
   optimization_guide_internals_page_factory_receiver_.reset();
   optimization_guide_internals_page_factory_receiver_.Bind(std::move(receiver));
@@ -94,8 +101,9 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
 
-  int64_t client_id = local_state->GetInt64(
-      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
+  int64_t client_id =
+      local_state->GetInt64(optimization_guide::model_execution::prefs::
+                                localstate::kModelQualityLogggingClientId);
 
   // If the client id is zero no client id is set, in that case do nothing.
   if (client_id == 0) {
@@ -114,14 +122,13 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     // feature.
     int64_t client_id_i_compose =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_COMPOSE,
+            optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose,
             day_i, client_id);
 
     int64_t client_id_i_tab_organization =
         optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+            optimization_guide::proto::LogAiDataRequest::FeatureCase::
+                kTabOrganization,
             day_i, client_id);
 
     logged_client_ids.push_back(

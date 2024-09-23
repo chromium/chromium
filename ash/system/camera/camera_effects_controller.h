@@ -14,6 +14,8 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -33,10 +35,12 @@ enum class VcEffectId;
 
 // CameraEffectsController is the interface for any object in ash to
 // enable/change camera effects.
-class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
-                                           public media::CameraEffectObserver,
-                                           public SessionObserver,
-                                           public VcEffectsDelegate {
+class ASH_EXPORT CameraEffectsController
+    : public AutozoomObserver,
+      public media::CameraEffectObserver,
+      public SessionObserver,
+      public VcEffectsDelegate,
+      public VideoConferenceTrayEffectsManager::Observer {
  public:
   // Enum that represents the value persisted  to `prefs::kBackgroundBlur`,
   // which is the "ultimate source of truth" for the background blur setting.
@@ -57,7 +61,7 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // is used for metrics collection (we cannot use `BackgroundBlurPrefValue`
   // since `base::UmaHistogramEnumeration` cannot take a negative value for
   // an enum). Note to keep in sync with enum in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class BackgroundBlurState {
     kOff = 0,
     kLowest = 1,
@@ -74,16 +78,21 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     base::Time creation_time;
     base::Time last_accessed;
     base::FilePath basename;
-    std::string jpeg_bytes;
+    gfx::ImageSkia image;
     std::string metadata;
 
     BackgroundImageInfo(const BackgroundImageInfo& info);
     BackgroundImageInfo(const base::Time& creation_time,
                         const base::Time& last_accessed,
                         const base::FilePath& basename,
-                        const std::string& jpeg_bytes,
+                        const gfx::ImageSkia& image,
                         const std::string& metadata);
   };
+
+  // Called inside ash/ash_prefs.cc to register related prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  static base::FilePath SeaPenIdToRelativePath(uint32_t id);
 
   CameraEffectsController();
 
@@ -100,9 +109,6 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Returns currently applied camera effects.
   // Should only be called after user logs in.
   cros::mojom::EffectsConfigPtr GetCameraEffects();
-
-  // Called inside ash/ash_prefs.cc to register related prefs.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets an image as the camera background.
   // The `relative_path` is relative to `camera_background_img_dir_` and the
@@ -140,6 +146,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
       base::OnceCallback<void(const std::optional<BackgroundImageInfo>&)>
           callback);
 
+  bool IsEligibleForBackgroundReplace();
+
+  bool IsVcBackgroundAllowedByEnterprise();
+
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -157,6 +167,16 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void OnCameraEffectChanged(
       const cros::mojom::EffectsConfigPtr& new_effects) final;
 
+  // VideoConferenceTrayEffectsManager::Observer
+  // When video conference bubble is opened, update background blur effect in
+  // two cases:
+  // - Add Image state when the background replace eligible state changes from
+  // false -> true. This happens at most one time for enterprise users.
+  // - Disable/enable Image state button when background replace is already
+  // eligibled and enterprise policy setting changes. VC Background policy is
+  // dynamic-refreshed and UI should update if any changes.
+  void OnVideoConferenceBubbleOpened() override;
+
   void bypass_set_camera_effects_for_testing(bool in_testing_mode) {
     in_testing_mode_ = in_testing_mode;
   }
@@ -169,6 +189,14 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void set_camera_background_run_dir_for_testing(
       const base::FilePath& camera_background_run_dir) {
     camera_background_run_dir_ = camera_background_run_dir;
+  }
+
+  // Background images are resized to have this width when they are used as icon
+  // in the sysui or webui.
+  static constexpr int kImageAsIconWidth = 512;
+
+  bool is_eligible_for_background_replace() const {
+    return is_eligible_for_background_replace_;
   }
 
  private:
@@ -216,12 +244,16 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // exposed via the UI.
   void InitializeEffectControls();
 
+  void AddBackgroundBlurEffect();
+
   // Adds a `std::unique_ptr<VcEffectState>` to `effect`, where `effect` is
   // assumed to be that of camera background blur.
   void AddBackgroundBlurStateToEffect(VcHostedEffect* effect,
                                       const gfx::VectorIcon& icon,
                                       int state_value,
-                                      int string_id);
+                                      int string_id,
+                                      int view_id,
+                                      bool is_disabled_by_enterprise);
 
   // A helper for easier binding.
   void SetCameraEffectsInCameraHalDispatcherImpl(
@@ -230,6 +262,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Used to bypass the CameraHalDispatcherImpl::SetCameraEffects for
   // testing purpose.
   bool in_testing_mode_ = false;
+
+  bool is_eligible_for_background_replace_ = false;
+
+  bool is_background_replace_disabled_by_enterprise_ = false;
 
   // Directory that stores the camera background images.
   base::FilePath camera_background_img_dir_;
@@ -246,6 +282,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
 
   // This task runner is used to run io work.
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  base::ScopedObservation<media::CameraHalDispatcherImpl,
+                          media::CameraEffectObserver>
+      scoped_camera_effect_observation_{this};
 
   // Records current effects that is applied to camera hal server.
   cros::mojom::EffectsConfigPtr current_effects_;

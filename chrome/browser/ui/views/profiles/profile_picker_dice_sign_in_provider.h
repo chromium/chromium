@@ -38,7 +38,7 @@ class ProfilePickerDiceSignInProvider
   // in its `IdentityManager`, but the account may not be set as primary yet.
   // If the flow gets canceled by closing the window, the callback never gets
   // called.
-  // TODO(crbug.com/1240650): Properly support saml sign in so that the special
+  // TODO(crbug.com/40785551): Properly support saml sign in so that the special
   // casing is not needed here.
   using SignedInCallback =
       base::OnceCallback<void(Profile*,
@@ -84,16 +84,16 @@ class ProfilePickerDiceSignInProvider
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
-  bool HandleKeyboardEvent(
+  content::WebContents* AddNewContents(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;
 
@@ -156,7 +156,7 @@ class ProfilePickerDiceSignInProvider
 
   // Because of ProfileOAuth2TokenService intricacies, the sign in should not
   // finish before both the notification gets called.
-  // TODO(crbug.com/1249488): Remove this if the bug gets resolved.
+  // TODO(crbug.com/40791271): Remove this if the bug gets resolved.
   bool refresh_token_updated_ = false;
 
   base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};

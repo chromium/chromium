@@ -221,6 +221,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2490721194269245365">گلابی بھورا</translation>
 <translation id="249330843868392562">ٹیکسٹ ٹو اسپیچ ترتیبات کھولیں</translation>
 <translation id="2497706219848005458">سبز پیلا</translation>
+<translation id="2512979179176933762">ونڈوز دکھائیں</translation>
 <translation id="2523609930580546572">‏ChromeVox ٹیوٹوریل</translation>
 <translation id="2525706221823668172">‏Chromebook کی بورڈ شارٹ کٹس</translation>
 <translation id="2553108862507765288">قواعد کی غلطی</translation>
@@ -265,7 +266,6 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="2783001728278437613">{COUNT,plural, =1{‎+#‎}other{‎+#‎}}</translation>
 <translation id="2792200646155001340">آپ گزشتہ آئٹم پر جانے کے لیے ایک انگلی کو دائیں سے بائیں بھی سوائپ کر سکتے ہیں۔ اسے ابھی آزمائیں۔</translation>
 <translation id="280499067616661124">‏ChromeVox صفحہ میں تلاش کریں</translation>
-<translation id="2811019999044652585">‏اسکرین کے دوسرے حصوں پر جانے کیلئے، مثلاً ٹول بارز یا سسٹم ٹرے، Control+فارورڈ کو دبائیں۔ Chromebook پر، فارورڈ کلید بالکل نمبر 2 کلید کے اوپر ہوتی ہے۔</translation>
 <translation id="2811204574343810641">قطار</translation>
 <translation id="2816868829355607410">پریکٹیس کرنے کی جگہ: جمپ کمانڈز</translation>
 <translation id="2841013758207633010">وقت</translation>
@@ -499,6 +499,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4246217262268234757">اسٹیل نیلا</translation>
 <translation id="4253168017788158739">نوٹ</translation>
 <translation id="4254798249533888099">ٹری</translation>
+<translation id="4259220820964911921">فیس کنٹرول فعال کریں؟</translation>
 <translation id="4271220233568730077">اگلی ریاضی</translation>
 <translation id="4275397969489577657">ایونٹ اسٹریم لاگنگ کو فعال کریں</translation>
 <translation id="4278486392851938658">کوئی سابقہ ملاحظہ کردہ لنک نہیں ہے</translation>
@@ -521,6 +522,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="4432457053224379116">انڈین سرخ</translation>
 <translation id="4432896207833262240">نشان زد کردہ مواد</translation>
 <translation id="4437615272777527928">مینوز میں تلاش کے لیے ٹائپ کریں۔ ایک نتیجے سے دوسرے نتیجے پر جانے کیلئے اوپر اور نیچے کے تیروں کا استعمال کریں۔ ٹیکسٹ کیرٹ کو ایڈجسٹ اور مینوز کے درمیان کرسر کو حرکت دینے کے لیے دائیں اور بائیں والے تیروں کا استعمال کریں۔</translation>
+<translation id="4453530046591759283">‏اسکرین کے دیگر حصوں پر جانے کیلئے، جیسے ٹول بارز یا سسٹم ٹرے، Control+F1 دبائیں۔ ‫Escape کلید کی دائیں طرف پہلی کلید F1 ہے۔</translation>
 <translation id="4457472090507035117">موجودہ آواز منتخب کریں:</translation>
 <translation id="4476183483923481720">نئی لکیر</translation>
 <translation id="4479068155583208887">آگ کی اینٹ نما</translation>
@@ -711,6 +713,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="5760594853119905566">ضمیمہ</translation>
 <translation id="5761219715606611783">‏بہت خوب! آپ نے ChromeVox ٹچ کی بنیادی باتیں جان لی ہیں۔ آپ دوبارہ ٹیوٹوریل دیکھ سکتے ہیں یا نیچے دیے گئے بٹنز کا استعمال کر کے اس ٹیوٹوریل سے باہر نکل سکتے ہیں۔</translation>
 <translation id="5776001898637896684">‏Google کے بہتر کردہ نیٹ ورک کی ٹیکسٹ ٹو اسپیچ ایکسٹینشن</translation>
+<translation id="5783252477644995371">فیس کنٹرول آپ کو مسکراہٹ جیسے چہرے کے اشاروں سے بائیں جانب کلک کرنے جیسی کارروائیاں انجام دینے کیلئے فیس پوائنٹنگ اور اہلیت کے ساتھ کرسر کا کنٹرول فراہم کرتا ہے</translation>
 <translation id="5805940204952508776">دو انگلیوں سے تھپتھپائیں</translation>
 <translation id="5819072574982403430">ٹری آئٹم</translation>
 <translation id="5822819874379903994">گہرا فیروزی</translation>
@@ -881,6 +884,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="7091296112653361280">نارنجی مائل سفید</translation>
 <translation id="7095834689119144465">صرف نمبر والے متن میں ترمیم کریں</translation>
 <translation id="7096001299300236431">پچھلی میڈیا</translation>
+<translation id="7096668131290451939">‏سیکھنے کے موڈ سے باہر نکلنے کیلئے دوبارہ Escape دبائیں</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">لفظ کی ایکو</translation>
 <translation id="7137397390322864165">سرخی مائل نارنجی</translation>
@@ -1073,7 +1077,6 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="847040613207937740">کوئی اگلا چیک باکس نہیں ہے</translation>
 <translation id="8473540203671727883">ماؤس کے نیچے موجود ٹیکسٹ بولیں</translation>
 <translation id="8476408756881832830">‏ChromeVox کے بولتے وقت پلے بیک موقوف کریں</translation>
-<translation id="8476508772960940536">ونڈو کا عمومی جائزہ</translation>
 <translation id="8480873377842220259">‏اب آپ چند بنیادی نیویگیشن سیکھیں گے۔ آپ Search کو ہولڈ کر سکتے ہیں اور اسکرین کے ارد گرد گھمانے کیلئے تیر کے نشان والی کلیدوں کو دبائیں۔ جاری رکھنے کیلئے Search + دائیں تیر کے نشان کو دبائیں۔</translation>
 <translation id="8503360654911991865">نیویگیشن گرینولیریٹی گھٹائیں</translation>
 <translation id="8520472399088452386">اسپن بٹن</translation>

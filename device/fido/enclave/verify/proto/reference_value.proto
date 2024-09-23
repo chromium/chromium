@@ -1,0 +1,209 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+import "digest.proto";
+import "tcb_version.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message SkipVerification {}
+
+// Verifies the transparency log entry, including signatures and the digest.
+message EndorsementReferenceValue {
+  // The endorser's public signing key for signature verification.
+  bytes endorser_public_key = 1;
+
+  // Rekor's public signing key for signature verification.
+  bytes rekor_public_key = 2;
+}
+
+message BinaryReferenceValue {
+  oneof type {
+    // Deliberately skips a verification step, rather than failing. For example:
+    //     root_layer { stage0 { skip {} } }
+    // will skip the verification, contrasting
+    //     root_layer { stage0 {} }
+    // which will make the verification fail.
+    SkipVerification skip = 1;
+
+    // Verifies the endorsement of the underlying binary.
+    EndorsementReferenceValue endorsement = 2;
+
+    // Explicitly verifies digests if the client has them.
+    Digests digests = 3;
+  }
+}
+
+// Similar to the `Digests` message, but allows to specify digests for the
+// split components of the bzImage separately.
+message KernelDigests {
+  // Contains admissible digests for the kernel image part of the kernel.
+  Digests image = 2;
+
+  // Contains admissible digests for the setup data part of the kernel.
+  Digests setup_data = 3;
+}
+
+// Follows the lines of `BinaryReferenceValue`, but provides a custom proto
+// to facilitate the digest matching.
+message KernelBinaryReferenceValue {
+  oneof type {
+    SkipVerification skip = 1;
+    EndorsementReferenceValue endorsement = 2;
+    KernelDigests digests = 3;
+  }
+}
+
+// Reference value for a file including its digests.
+message FileReferenceValue {
+  // Allowable digests for the file.
+  Digests digests = 1;
+
+  // Absolute path to the file in question, or just the file name. Relative
+  // paths are not supported.
+  string path = 2;
+}
+
+// Verifies that a particular string is equal to at least one of the specified
+// ones. No checks are performed if this is empty.
+message StringReferenceValue {
+  // Use TextReferenceValue instead.
+  option deprecated = true;
+
+  repeated string values = 1;
+}
+
+message Regex {
+  string value = 1;
+}
+
+// A match in at least one value is considered a success. At least one value
+// must be specified, otherwise verification fails.
+message StringLiterals {
+  repeated string value = 1;
+}
+
+message RegexReferenceValue {
+  // Use TextReferenceValue instead.
+  option deprecated = true;
+
+  oneof type {
+    SkipVerification skip = 1;
+    Regex regex = 2;
+  }
+}
+
+// Reference value to match text via endorsement, or directly via constants
+// or a regular expression.
+message TextReferenceValue {
+  oneof type {
+    SkipVerification skip = 1;
+    EndorsementReferenceValue endorsement = 4;
+    Regex regex = 2;
+    StringLiterals string_literals = 3;
+  }
+}
+
+message RootLayerReferenceValues {
+  // Switches between AMD SEV-SNP and Intel TDX based on TeePlatform value.
+  // Verification is skipped when not running in a TEE.
+  AmdSevReferenceValues amd_sev = 1;
+  IntelTdxReferenceValues intel_tdx = 2;
+  // When insecure is set no verification of the TEE platform is performed. This
+  // can be used when not running in a TEE or when the client is agnostic about
+  // the platform and doesn't care about the hardware verification.
+  InsecureReferenceValues insecure = 3;
+}
+
+message AmdSevReferenceValues {
+  // Minimum accepted versions of all TCB components.
+  TcbVersion min_tcb_version = 5;
+
+  // If true, will skip the check that the TEE is not in debug mode.
+  bool allow_debug = 3;
+
+  // Verifies the stage0 binary implicitly contained in the root layer.
+  BinaryReferenceValue stage0 = 4;
+}
+
+message IntelTdxReferenceValues {}
+
+message InsecureReferenceValues {}
+
+// Verifies that the field contains at least one of the given digests.
+// No checks are performed if this is empty. A match in at least one
+// digest is considered a success.
+message Digests {
+  repeated RawDigest digests = 1;
+}
+
+// Reference values of the kernel layer, as measured by stage0.
+message KernelLayerReferenceValues {
+  // Verifies the kernel based on endorsement.
+  KernelBinaryReferenceValue kernel = 1;
+
+  // Verifies the kernel command line, i.e. the parameters passed to the
+  // kernel on boot.
+  TextReferenceValue kernel_cmd_line_text = 9;
+
+  // Fields are deprecated and kept only for backwards compatibility. They are
+  // not being used by the verifier. Remove ASAP.
+  BinaryReferenceValue kernel_setup_data = 3 [deprecated = true];
+  BinaryReferenceValue kernel_image = 7 [deprecated = true];
+  RegexReferenceValue kernel_cmd_line_regex = 8 [deprecated = true];
+  BinaryReferenceValue kernel_cmd_line = 2 [deprecated = true];
+
+  // Verifies the stage1 binary if running as Oak Containers.
+  BinaryReferenceValue init_ram_fs = 4;
+
+  BinaryReferenceValue memory_map = 5;
+
+  BinaryReferenceValue acpi = 6;
+}
+
+message SystemLayerReferenceValues {
+  // Verifies the system image binary based on endorsement.
+  BinaryReferenceValue system_image = 1;
+}
+
+// Represents an application running under Oak Restricted Kernel.
+message ApplicationLayerReferenceValues {
+  // Verifies the application binary based on endorsement.
+  BinaryReferenceValue binary = 1;
+
+  // Verifies configuration with respect to the application binary.
+  BinaryReferenceValue configuration = 2;
+}
+
+message ContainerLayerReferenceValues {
+  // Verifies the container binary based on endorsement.
+  BinaryReferenceValue binary = 1;
+
+  // Verifies configuration with respect to the container binary.
+  BinaryReferenceValue configuration = 2;
+}
+
+message OakRestrictedKernelReferenceValues {
+  RootLayerReferenceValues root_layer = 1;
+  KernelLayerReferenceValues kernel_layer = 2;
+  ApplicationLayerReferenceValues application_layer = 3;
+}
+
+message OakContainersReferenceValues {
+  RootLayerReferenceValues root_layer = 1;
+  KernelLayerReferenceValues kernel_layer = 2;
+  SystemLayerReferenceValues system_layer = 3;
+  ContainerLayerReferenceValues container_layer = 4;
+}
+
+message ReferenceValues {
+  oneof type {
+    OakRestrictedKernelReferenceValues oak_restricted_kernel = 1;
+    OakContainersReferenceValues oak_containers = 2;
+  }
+}

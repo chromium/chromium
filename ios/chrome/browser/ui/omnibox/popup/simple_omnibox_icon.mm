@@ -79,7 +79,7 @@
       return self.defaultSearchEngineIsGoogle &&
              [self fallbackAnswerBrandedIcon];
     case OmniboxSuggestionIconType::kCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return NO;
   }
 }

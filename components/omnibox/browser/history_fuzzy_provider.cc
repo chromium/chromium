@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -168,7 +169,7 @@ void Edit::ApplyTo(std::u16string& text) const {
     }
     case Kind::KEEP:
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }
@@ -651,7 +652,7 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // so ranking of the final result set will be more nuanced than ranking here.
   ACMatches::const_iterator it = std::min_element(
       matches.begin(), matches.end(), AutocompleteMatch::MoreRelevant);
-  DCHECK(it != matches.end());
+  CHECK(it != matches.end(), base::NotFatalUntil::M130);
   matches_.push_back(*it);
 
   // Update match in place. Note, `match.provider` will be reassigned after
@@ -694,7 +695,7 @@ void HistoryFuzzyProvider::OnURLVisited(
   }
 }
 
-void HistoryFuzzyProvider::OnURLsDeleted(
+void HistoryFuzzyProvider::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   // Note, this implementation is conservative in terms of user privacy; it

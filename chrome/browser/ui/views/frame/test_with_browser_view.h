@@ -14,6 +14,12 @@
 
 class BrowserView;
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details. If you want to write a test that has both a Browser and a
+// BrowserView, create a browser_test. If you want to write a unit_test, your
+// code must not reference Browser*.
+//
 // Base class for BrowserView based unit tests. TestWithBrowserView creates
 // a Browser with a valid BrowserView and BrowserFrame with as little else as
 // possible.

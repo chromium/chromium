@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -32,16 +33,15 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
-#import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
@@ -550,8 +550,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   InlinePromoItem* inlinePromoItem =
       [[InlinePromoItem alloc] initWithType:ItemTypeInlinePromo];
-  inlinePromoItem.promoImage =
-      [UIImage imageNamed:@"password_manager_widget_promo"];
+  inlinePromoItem.promoImage = [UIImage imageNamed:WidgetPromoImageName()];
   inlinePromoItem.promoText =
       @"Text to promote some cool stuff in Settings. Can be on multiple lines.";
   inlinePromoItem.moreInfoButtonTitle = @"Show Me How";
@@ -573,11 +572,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   autofillHeader.text = @"Autofill";
   [model setHeader:autofillHeader
       forSectionWithIdentifier:SectionIdentifierAutofill];
-
-  CopiedToChromeItem* copiedToChrome =
-      [[CopiedToChromeItem alloc] initWithType:ItemTypeAutofillData];
-  [model addItem:copiedToChrome
-      toSectionWithIdentifier:SectionIdentifierAutofill];
 
   // SectionIdentifierAccount.
   UIImage* signinPromoAvatar = ios::provider::GetSigninDefaultAvatar();

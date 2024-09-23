@@ -207,6 +207,8 @@ class ASH_EXPORT FloatController : public display::DisplayObserver,
   // session. `kFloatWindowMoveToAnotherDeskCountsHistogramName`
   int floated_window_move_to_another_desk_counter_ = 0;
 
+  bool disable_tuck_education_for_testing_{false};
+
   base::ScopedMultiSourceObservation<ScreenRotationAnimator,
                                      ScreenRotationAnimatorObserver>
       screen_rotation_observations_{this};

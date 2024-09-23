@@ -10,6 +10,8 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+using signin_metrics::SourceForRefreshTokenOperation;
+
 namespace {
 
 const net::BackoffEntry::Policy kBackoffPolicy = {
@@ -27,6 +29,49 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 
     false /* bool always_use_initial_delay */,
 };
+
+std::string SourceToString(SourceForRefreshTokenOperation source) {
+  switch (source) {
+    case SourceForRefreshTokenOperation::kUnknown:
+      return "Unknown";
+    case SourceForRefreshTokenOperation::kTokenService_LoadCredentials:
+      return "TokenService::LoadCredentials";
+    case SourceForRefreshTokenOperation::kInlineLoginHandler_Signin:
+      return "InlineLoginHandler::Signin";
+    case SourceForRefreshTokenOperation::kPrimaryAccountManager_ClearAccount:
+      return "PrimaryAccountManager::ClearAccount";
+    case SourceForRefreshTokenOperation::kUserMenu_SignOutAllAccounts:
+      return "UserMenu::SignOutAllAccounts";
+    case SourceForRefreshTokenOperation::kSettings_Signout:
+      return "Settings::Signout";
+    case SourceForRefreshTokenOperation::kSettings_PauseSync:
+      return "Settings::PauseSync";
+    case SourceForRefreshTokenOperation::
+        kAccountReconcilor_GaiaCookiesDeletedByUser:
+      return "AccountReconcilor::GaiaCookiesDeletedByUser";
+    case SourceForRefreshTokenOperation::kAccountReconcilor_GaiaCookiesUpdated:
+      return "AccountReconcilor::GaiaCookiesUpdated";
+    case SourceForRefreshTokenOperation::kAccountReconcilor_Reconcile:
+      return "AccountReconcilor::Reconcile";
+    case SourceForRefreshTokenOperation::kDiceResponseHandler_Signin:
+      return "DiceResponseHandler::Signin";
+    case SourceForRefreshTokenOperation::kDiceResponseHandler_Signout:
+      return "DiceResponseHandler::Signout";
+    case SourceForRefreshTokenOperation::kTurnOnSyncHelper_Abort:
+      return "TurnOnSyncHelper::Abort";
+    case SourceForRefreshTokenOperation::kMachineLogon_CredentialProvider:
+      return "MachineLogon::CredentialProvider";
+    case SourceForRefreshTokenOperation::kTokenService_ExtractCredentials:
+      return "TokenService::ExtractCredentials";
+    case SourceForRefreshTokenOperation::kLogoutTabHelper_PrimaryPageChanged:
+      return "LogoutTabHelper::PrimaryPageChanged";
+    case SourceForRefreshTokenOperation::kForceSigninReauthWithDifferentAccount:
+      return "ForceSigninReauthWithDifferentAccount";
+    case SourceForRefreshTokenOperation::
+        kAccountReconcilor_RevokeTokensNotInCookies:
+      return "AccountReconcilor::RevokeTokensNotInCookies";
+  }
+}
 
 }  // namespace
 
@@ -102,6 +147,26 @@ void ProfileOAuth2TokenServiceDelegate::FireEndBatchChanges() {
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   DCHECK(!account_id.empty());
+
+  // Check if the newly-updated token is valid (invalid tokens are inserted when
+  // the user signs out on the web with DICE enabled).
+  bool is_valid = true;
+  GoogleServiceAuthError token_error = GetAuthError(account_id);
+  if (token_error == GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                             CREDENTIALS_REJECTED_BY_CLIENT)) {
+    is_valid = false;
+  }
+
+  signin_metrics::RecordRefreshTokenUpdatedFromSource(
+      is_valid, update_refresh_token_source_);
+
+  std::string source_string = SourceToString(update_refresh_token_source_);
+  if (on_refresh_token_available_callback_) {
+    on_refresh_token_available_callback_.Run(account_id, is_valid,
+                                             source_string);
+  }
+
   ScopedBatchChange batch(this);
   for (auto& observer : observer_list_)
     observer.OnRefreshTokenAvailable(account_id);
@@ -110,12 +175,27 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
     const CoreAccountId& account_id) {
   DCHECK(!account_id.empty());
+
+  signin_metrics::RecordRefreshTokenRevokedFromSource(
+      update_refresh_token_source_);
+  std::string source_string = SourceToString(update_refresh_token_source_);
+  if (on_refresh_token_revoked_callback_) {
+    on_refresh_token_revoked_callback_.Run(account_id, source_string);
+  }
+
   ScopedBatchChange batch(this);
   for (auto& observer : observer_list_)
     observer.OnRefreshTokenRevoked(account_id);
+
+  CHECK(on_refresh_token_revoked_notified_callback_);
+  on_refresh_token_revoked_notified_callback_.Run(account_id);
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded() {
+  // Reset the state for update refresh token operations to Unknown as this
+  // was the original state before LoadCredentials was called.
+  update_refresh_token_source_ = SourceForRefreshTokenOperation::kUnknown;
+
   for (auto& observer : observer_list_)
     observer.OnRefreshTokensLoaded();
 }
@@ -125,7 +205,8 @@ void ProfileOAuth2TokenServiceDelegate::FireAuthErrorChanged(
     const GoogleServiceAuthError& error) {
   DCHECK(!account_id.empty());
   for (auto& observer : observer_list_)
-    observer.OnAuthErrorChanged(account_id, error);
+    observer.OnAuthErrorChanged(account_id, error,
+                                update_refresh_token_source_);
 }
 
 std::string ProfileOAuth2TokenServiceDelegate::GetTokenForMultilogin(
@@ -151,19 +232,65 @@ const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
 void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
-  NOTREACHED()
-      << "ProfileOAuth2TokenServiceDelegate does not load credentials. "
-         "Subclasses that need to load credentials must provide "
-         "an implemenation of this method";
+  DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
+            update_refresh_token_source_);
+  // AutoReset is not used here since the call to loading the credentials is
+  // asynchronous. The source will be reset in `FireRefreshTokensLoaded()`.
+  update_refresh_token_source_ =
+      SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
+  LoadCredentialsInternal(primary_account_id, is_syncing);
 }
 
 void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
-  NOTREACHED();
+  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
+      &update_refresh_token_source_,
+      SourceForRefreshTokenOperation::kTokenService_ExtractCredentials);
+  ExtractCredentialsInternal(to_service, account_id);
 }
 
-bool ProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
+void ProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
+    ProfileOAuth2TokenService* to_service,
+    const CoreAccountId& account_id) {
+  NOTREACHED_IN_MIGRATION();
+}
+
+void ProfileOAuth2TokenServiceDelegate::RevokeAllCredentials(
+    SourceForRefreshTokenOperation source) {
+  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
+      &update_refresh_token_source_, source);
+  RevokeAllCredentialsInternal(source);
+}
+
+void ProfileOAuth2TokenServiceDelegate::RevokeCredentials(
+    const CoreAccountId& account_id,
+    SourceForRefreshTokenOperation source) {
+  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
+      &update_refresh_token_source_, source);
+  RevokeCredentialsInternal(account_id);
+}
+
+void ProfileOAuth2TokenServiceDelegate::UpdateCredentials(
+    const CoreAccountId& account_id,
+    const std::string& refresh_token,
+    SourceForRefreshTokenOperation source
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    ,
+    const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+) {
+  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
+      &update_refresh_token_source_, source);
+  UpdateCredentialsInternal(account_id, refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                            ,
+                            wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
+}
+
+bool ProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
   return false;
 }
 
@@ -241,9 +368,29 @@ GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::BackOffError() const {
 
 void ProfileOAuth2TokenServiceDelegate::ResetBackOffEntry() {
   if (!backoff_entry_) {
-    NOTREACHED() << "Should be called only if `use_backoff` was true in the "
-                    "constructor.";
+    NOTREACHED_IN_MIGRATION()
+        << "Should be called only if `use_backoff` was true in the "
+           "constructor.";
     return;
   }
   backoff_entry_->Reset();
+}
+
+void ProfileOAuth2TokenServiceDelegate::
+    SetRefreshTokenAvailableFromSourceCallback(
+        RefreshTokenAvailableFromSourceCallback callback) {
+  on_refresh_token_available_callback_ = callback;
+}
+
+void ProfileOAuth2TokenServiceDelegate::
+    SetRefreshTokenRevokedFromSourceCallback(
+        RefreshTokenRevokedFromSourceCallback callback) {
+  on_refresh_token_revoked_callback_ = callback;
+}
+
+void ProfileOAuth2TokenServiceDelegate::SetOnRefreshTokenRevokedNotified(
+    base::RepeatingCallback<void(const CoreAccountId&)> callback) {
+  CHECK(callback);
+  CHECK(!on_refresh_token_revoked_notified_callback_);
+  on_refresh_token_revoked_notified_callback_ = std::move(callback);
 }

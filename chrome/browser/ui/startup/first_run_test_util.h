@@ -7,10 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 class Profile;
 class FirstRunService;
@@ -56,11 +54,6 @@ class FirstRunServiceBrowserTestBase : public InProcessBrowserTest {
   bool IsProfileNameDefault() const;
 
  private:
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Only Dice guards the FRE behind a feature flag.
-  base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
-#endif
-
   ProfileNameResolver::ScopedInfoFetchTimeoutOverride
       profile_name_fetch_timeout_override_ =
           ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(

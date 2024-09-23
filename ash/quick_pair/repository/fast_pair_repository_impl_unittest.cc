@@ -885,7 +885,7 @@ TEST_F(FastPairRepositoryImplTest, RetriesForgetDevice_AfterNetworkAvailable) {
   ASSERT_EQ(0u, pending_write_store_->GetPendingDeletes().size());
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_RetriesForgetDevice_AlreadyDeleted \
   DISABLED_RetriesForgetDevice_AlreadyDeleted
@@ -1170,7 +1170,7 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
   ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_UpdateOptInStatus_OptedIn DISABLED_UpdateOptInStatus_OptedIn
 #else
@@ -1206,7 +1206,7 @@ TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedOut) {
   fast_pair_repository_->CheckOptInStatus(callback2.Get());
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_UpdateOptInStatus_StatusUnknown \
   DISABLED_UpdateOptInStatus_StatusUnknown
@@ -1238,7 +1238,7 @@ TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_NoFootprintsResponse) {
   fast_pair_repository_->CheckOptInStatus(callback.Get());
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_UpdateOptInStatus_OptedInUpdateFailed \
   DISABLED_UpdateOptInStatus_OptedInUpdateFailed
@@ -1377,7 +1377,7 @@ TEST_F(FastPairRepositoryImplTest,
   EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_IsAccountKeyPairedLocally_PairedNotSavedLocally \
   DISABLED_IsAccountKeyPairedLocally_PairedNotSavedLocally
@@ -1460,7 +1460,7 @@ TEST_F(FastPairRepositoryImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_IsDeviceSavedToAccount_IgnoreForgetPattern \
   DISABLED_IsDeviceSavedToAccount_IgnoreForgetPattern
@@ -1542,7 +1542,7 @@ TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingAccountKey) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_IsDeviceSavedToAccount_MissingSha \
   DISABLED_IsDeviceSavedToAccount_MissingSha
@@ -1618,7 +1618,7 @@ TEST_F(FastPairRepositoryImplTest,
   ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
 }
 
-// TODO(crbug.com/1434879): Re-enable this test
+// TODO(crbug.com/40264951): Re-enable this test
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_RetriesWriteDevice_AfterNetworkAvailable \
   DISABLED_RetriesWriteDevice_AfterNetworkAvailable

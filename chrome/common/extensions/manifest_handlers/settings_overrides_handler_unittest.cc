@@ -5,6 +5,7 @@
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
@@ -119,7 +120,7 @@ scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
   return extension;
 }
 
-scoped_refptr<Extension> CreateExtension(base::StringPiece manifest,
+scoped_refptr<Extension> CreateExtension(std::string_view manifest,
                                          std::string* error) {
   JSONStringValueDeserializer json(manifest);
   std::unique_ptr<base::Value> root(json.Deserialize(nullptr, error));

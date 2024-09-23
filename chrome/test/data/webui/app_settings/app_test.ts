@@ -4,18 +4,21 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import type {App, AppManagementPermissionItemElement, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, AppManagementToggleRowElement, PermissionTypeIndex, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import type {App, AppElement, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
 
 type AppConfig = Partial<App>;
 
 suite('AppSettingsAppTest', () => {
-  let appSettingsApp: WebAppSettingsAppElement;
+  let appSettingsApp: AppElement;
   let app: App;
   let testProxy: TestAppManagementBrowserProxy;
 
@@ -52,6 +55,11 @@ suite('AppSettingsAppTest', () => {
       formattedOrigin: '',
       scopeExtensions: [],
       supportedLocales: [],
+      isPinned: null,
+      isPolicyPinned: null,
+      selectedLocale: null,
+      showSystemNotificationsSettingsLink: false,
+      allowUninstall: true,
     };
 
     if (optConfig) {
@@ -79,18 +87,16 @@ suite('AppSettingsAppTest', () => {
     return testProxy.fakeHandler;
   }
 
-  function getSupportedLinksElement(): AppManagementSupportedLinksItemElement|
-      null {
-    return appSettingsApp.shadowRoot!
-        .querySelector<AppManagementSupportedLinksItemElement>(
-            'app-management-supported-links-item');
+  function getSupportedLinksElement(): SupportedLinksItemElement|null {
+    return appSettingsApp.shadowRoot!.querySelector<SupportedLinksItemElement>(
+        'app-management-supported-links-item');
   }
 
   async function reloadPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appSettingsApp = document.createElement('web-app-settings-app');
     document.body.appendChild(appSettingsApp);
-    await waitAfterNextRender(appSettingsApp);
+    await microtasksFinished();
   }
 
   setup(async () => {
@@ -101,7 +107,7 @@ suite('AppSettingsAppTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appSettingsApp = document.createElement('web-app-settings-app');
     document.body.appendChild(appSettingsApp);
-    await waitAfterNextRender(appSettingsApp);
+    await microtasksFinished();
   });
 
   test('Elements are present', function() {
@@ -118,7 +124,7 @@ suite('AppSettingsAppTest', () => {
         'app-management-more-permissions-item'));
   });
 
-  test('Toggle Run on OS Login', function() {
+  test('Toggle Run on OS Login', async function() {
     const runOnOsLoginItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-run-on-os-login-item')!;
     assertTrue(!!runOnOsLoginItem);
@@ -126,58 +132,66 @@ suite('AppSettingsAppTest', () => {
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode,
         RunOnOsLoginMode.kWindowed);
 
     runOnOsLoginItem.click();
+    await eventToPromise('change', runOnOsLoginItem);
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
   });
 
   // Serves as a basic test of the presence of the File Handling item. More
   // comprehensive tests are located in the cross platform app_management test.
-  test('Toggle File Handling', function() {
+  test('Toggle File Handling', async function() {
     const fileHandlingItem = appSettingsApp.shadowRoot!.querySelector(
         'app-management-file-handling-item')!;
     assertTrue(!!fileHandlingItem);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
 
     const toggleRow =
-        fileHandlingItem.shadowRoot!
-            .querySelector<AppManagementToggleRowElement>('#toggle-row')!;
+        fileHandlingItem.shadowRoot!.querySelector<ToggleRowElement>(
+            '#toggle-row')!;
     assertTrue(!!toggleRow);
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
 
     toggleRow.click();
+    await eventToPromise('change', toggleRow);
     assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
   });
 
-  test('Toggle window mode', function() {
+  test('Toggle window mode', async function() {
     const windowModeItem =
         appSettingsApp.shadowRoot!.querySelector('app-management-window-mode-item')!;
     assertTrue(!!windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kWindow);
 
     windowModeItem.click();
+    await eventToPromise('change', windowModeItem);
     assertEquals(windowModeItem.app.windowMode, WindowMode.kBrowser);
   });
 
-  test('Toggle permissions', function() {
+  test('Toggle permissions', async function() {
     const permsisionTypes: PermissionTypeIndex[] =
         ['kNotifications', 'kLocation', 'kCamera', 'kMicrophone'];
     for (const permissionType of permsisionTypes) {
-      const permissionItem = appSettingsApp.shadowRoot!.querySelector<
-          AppManagementPermissionItemElement>(
-          `app-management-permission-item[permission-type=${permissionType}]`)!;
+      const permissionItem =
+          appSettingsApp.shadowRoot!.querySelector<PermissionItemElement>(
+              `app-management-permission-item[permission-type=${
+                  permissionType}]`)!;
       assertTrue(!!permissionItem);
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertTrue(getPermissionValueBool(permissionItem.app, permissionType));
 
       permissionItem.click();
+      await eventToPromise('change', permissionItem);
       assertFalse(getPermissionValueBool(permissionItem.app, permissionType));
     }
   });
@@ -205,7 +219,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!browserRadioButton);
     await browserRadioButton.click();
     await fakeHandler().whenCalled('setPreferredApp');
-    await flushTasks();
+    await microtasksFinished();
 
     const selectedApp = await fakeHandler().getApp('app1');
     assertTrue(!!selectedApp.app);
@@ -240,7 +254,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!preferredRadioButton);
     await preferredRadioButton.click();
     await fakeHandler().whenCalled('setPreferredApp');
-    await flushTasks();
+    await microtasksFinished();
 
     const selectedApp = await fakeHandler().getApp('app1');
     assertTrue(!!selectedApp.app);
@@ -284,20 +298,21 @@ suite('AppSettingsAppTest', () => {
     await preferredRadioButton.click();
     await promise;
     await fakeHandler().flushPipesForTesting();
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(!!getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapDialog'));
 
     // Accept change
     promise = fakeHandler().whenCalled('setPreferredApp');
-    const overlapDialog = getSupportedLinksElement()!.shadowRoot!.querySelector<
-        AppManagementSupportedLinksOverlappingAppsDialogElement>(
-        '#overlapDialog');
+    const overlapDialog =
+        getSupportedLinksElement()!.shadowRoot!
+            .querySelector<SupportedLinksOverlappingAppsDialogElement>(
+                '#overlapDialog');
     assertTrue(!!overlapDialog);
     overlapDialog.$.dialog.close();
     await promise;
     await fakeHandler().flushPipesForTesting();
-    await flushTasks();
+    await microtasksFinished();
 
     assertNull(getSupportedLinksElement()!.shadowRoot!.querySelector(
         '#overlapDialog'));
@@ -448,7 +463,18 @@ suite('AppSettingsAppTest', () => {
 
     // Check that the dialog is shown after clicking on the app content row.
     assertTrue(appContentItem.showAppContentDialog);
-    assertTrue(!!appContentItem.shadowRoot!.querySelector(
-        'app-management-app-content-dialog'));
+    const appContentDialogElement = appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog');
+    assertTrue(!!appContentDialogElement);
+
+    const dialog = appContentDialogElement.shadowRoot!.querySelector('#dialog');
+    assertTrue(!!dialog);
+    const closeButton =
+        dialog.shadowRoot!.querySelector<CrIconButtonElement>('#close');
+    assertTrue(!!closeButton);
+
+    // Check that the focus stays on the close button.
+    keyDownOn(appContentDialogElement, 0, undefined, 'Tab');
+    assertEquals(getDeepActiveElement(), closeButton);
   });
 });

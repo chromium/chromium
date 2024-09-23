@@ -175,8 +175,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
       << events.front();
 }
 
-// TODO(crbug.com/1164014): special handling is needed for new-tab-page tests on
-// Android, as it uses a different new-tab URL.
+// TODO(crbug.com/40740494): special handling is needed for new-tab-page tests
+// on Android, as it uses a different new-tab URL.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests metadata for chrome://newtab NTP navigation.
 TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
@@ -347,9 +347,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
       << events.back();
 }
 
-// TODO(crbug.com/1164014): special handling is needed for new-tab-page tests on
-// Android, as it uses a different new-tab URL.
-// Tests NTP page load.
+// TODO(crbug.com/40740494): special handling is needed for new-tab-page tests
+// on Android, as it uses a different new-tab URL. Tests NTP page load.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
   ASSERT_EQ(0u, GetNumEvents());

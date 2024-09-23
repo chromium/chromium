@@ -22,8 +22,8 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {Feature, Status} from './emoji_picker.mojom-webui.js';
-import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
+import {Category, Feature, Status} from './emoji_picker.mojom-webui.js';
+import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
@@ -97,7 +97,6 @@ export class EmojiPickerApp extends PolymerElement {
         computed: 'isTextSubcategoryBarEnabled(category)',
         reflectToAttribute: true,
       },
-      searchExtensionEnabled: {type: Boolean, value: false},
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
       sealSupport: {type: Boolean, value: false},
@@ -123,14 +122,13 @@ export class EmojiPickerApp extends PolymerElement {
   private pagination: number;
   private searchLazyIndexing: boolean;
   private textSubcategoryBarEnabled: boolean;
-  private searchExtensionEnabled: boolean;
   private incognito: boolean;
   private gifSupport: boolean;
   private sealSupport: boolean;
   private variantGroupingSupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
-  private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
+  private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxy.getInstance();
   private autoScrollingToGroup: boolean = false;
   private highlightBarMoving: boolean = false;
   private nextGifPos: {[key: string]: string};
@@ -190,9 +188,9 @@ export class EmojiPickerApp extends PolymerElement {
     };
   }
 
-  private initHistoryUi(incognito: boolean) {
+  private async initHistoryUi(incognito: boolean) {
     if (incognito !== this.incognito) {
-      this.updateIncognitoState(incognito);
+      await this.updateIncognitoState(incognito);
     }
     this.updateHistoryTabDisabledProperty();
     // Make highlight bar visible (now we know where it should be) and
@@ -463,8 +461,6 @@ export class EmojiPickerApp extends PolymerElement {
   }
 
   private setActiveFeatures(featureList: Feature[]) {
-    this.searchExtensionEnabled =
-        featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
     this.useMojoSearch = featureList.includes(Feature.EMOJI_PICKER_MOJO_SEARCH);
     this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
@@ -585,7 +581,28 @@ export class EmojiPickerApp extends PolymerElement {
 
       afterNextRender(
           this,
-          () => {
+          async () => {
+            switch ((await this.apiProxy.getInitialCategory()).category) {
+              // by default, do nothing.
+              default:
+              case Category.kEmojis:
+                break;
+              case Category.kSymbols:
+                await this.onCategoryButtonClick(CategoryEnum.SYMBOL);
+                break;
+              case Category.kEmoticons:
+                await this.onCategoryButtonClick(CategoryEnum.EMOTICON);
+                break;
+              case Category.kGifs:
+                await this.onCategoryButtonClick(CategoryEnum.GIF);
+                break;
+            }
+
+            const initialQuery = (await this.apiProxy.getInitialQuery()).query;
+            if (initialQuery !== '') {
+              this.$['search-container'].setSearchQuery(initialQuery);
+            }
+
             this.apiProxy.onUiFullyLoaded();
             this.dispatchEvent(
                 events.createCustomEvent(events.EMOJI_PICKER_READY, {}));
@@ -1152,14 +1169,18 @@ export class EmojiPickerApp extends PolymerElement {
    * change of incognito state.
    *
    */
-  updateIncognitoState(incognito: boolean) {
+  async updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
     this.updateEmojiPreferencesStore();
 
     // Load the history item for each category.
+    // Initialise all objects before async for extra safety.
     for (const category of Object.values(CategoryEnum)) {
       this.categoriesHistory[category] =
-          incognito ? null : new RecentlyUsedStore(`${category}-recently-used`);
+          incognito ? null : new RecentlyUsedStore(category);
+    }
+    for (const category of Object.values(CategoryEnum)) {
+      await this.categoriesHistory[category]?.mergeWithPrefsHistory();
       this.categoryHistoryUpdated(category);
     }
   }
@@ -1350,10 +1371,7 @@ export class EmojiPickerApp extends PolymerElement {
    *
    */
   private getEmojiGroupPreference(category: CategoryEnum): PreferenceMapping {
-    return this.incognito ? {} :
-                            // ! is safe as categories history must contain
-                            // entries for all categories.
-        this.categoriesHistory[category]!.getPreferenceMapping();
+    return this.categoriesHistory[category]?.getPreferenceMapping() ?? {};
   }
 
   private onShowEmojiVariants(ev: events.EmojiVariantsShownEvent) {

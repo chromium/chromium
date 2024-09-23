@@ -7,12 +7,14 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/desks_test_api.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -23,6 +25,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -89,7 +92,7 @@ void ScrollToSwitchDesks(bool scroll_left,
   // Start off with a fling cancel (touchpad start) to start the touchpad
   // swipe sequence.
   base::TimeTicks timestamp = ui::EventTimeForNow();
-  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
                                timestamp, 0, 0, 0, 0, 0,
                                kNumFingersForDesksSwitch);
   event_generator->Dispatch(&fling_cancel);
@@ -102,8 +105,8 @@ void ScrollToSwitchDesks(bool scroll_left,
   const int direction = scroll_left ? -1 : 1;
   const int initial_move_x =
       (WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) * direction;
-  ui::ScrollEvent initial_move(ui::ET_SCROLL, gfx::Point(), timestamp, 0,
-                               initial_move_x, 0, initial_move_x, 0,
+  ui::ScrollEvent initial_move(ui::EventType::kScroll, gfx::Point(), timestamp,
+                               0, initial_move_x, 0, initial_move_x, 0,
                                kNumFingersForDesksSwitch);
   event_generator->Dispatch(&initial_move);
 
@@ -125,13 +128,13 @@ void ScrollToSwitchDesks(bool scroll_left,
     float dx = x_offset / steps;
     for (int i = 0; i < steps; ++i) {
       timestamp += step_delay;
-      ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, dx, 0, dx,
-                           0, kNumFingersForDesksSwitch);
+      ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0,
+                           dx, 0, dx, 0, kNumFingersForDesksSwitch);
       event_generator->Dispatch(&move);
     }
 
     // End the swipe and wait for the animation to finish.
-    ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+    ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
                                 timestamp, 0, x_offset, 0, x_offset, 0,
                                 kNumFingersForDesksSwitch);
     DeskSwitchAnimationWaiter animation_finished_waiter;
@@ -149,7 +152,7 @@ void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation) {
   run_loop.Run();
 }
 
-const LegacyDeskBarView* GetPrimaryRootDesksBarView() {
+const OverviewDeskBarView* GetPrimaryRootDesksBarView() {
   auto* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());
@@ -163,8 +166,9 @@ const CloseButton* GetCloseDeskButtonForMiniView(
   // When there are no windows on the desk, the `combine_desks_button` is not
   // visible, so we need to use the `close_all_button`
   const DeskActionView* desk_action_view = mini_view->desk_action_view();
-  return desk_action_view->combine_desks_button()->GetVisible()
-             ? desk_action_view->combine_desks_button()
+  auto* combine_desks_button = desk_action_view->combine_desks_button();
+  return IsLazyInitViewVisible(combine_desks_button)
+             ? combine_desks_button
              : desk_action_view->close_all_button();
 }
 
@@ -205,6 +209,16 @@ void LongGestureTap(const gfx::Point& screen_location,
 
   if (release_touch)
     event_generator->ReleaseTouch();
+}
+
+void SimulateWaitForCloseAll() {
+  DesksController::Get()->MaybeCommitPendingDeskRemoval();
+  WaitForMilliseconds(
+      DesksTestApi::GetCloseAllWindowCloseTimeout().InMilliseconds());
+}
+
+bool IsLazyInitViewVisible(const views::View* view) {
+  return view && view->GetVisible();
 }
 
 }  // namespace ash

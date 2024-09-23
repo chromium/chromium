@@ -20,9 +20,10 @@
 #include "base/observer_list_types.h"
 #include "base/task/task_runner.h"
 #include "base/trace_event/tracing_agent.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/message.h"
+#include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace cryptohome {
@@ -141,6 +142,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       const cryptohome::AccountIdentifier& id,
       const std::vector<debugd::FeedbackLogType>& requested_logs,
       GetLogsCallback callback) = 0;
+
+  // Gets feedback binary logs from debugd.
+  // |id|: Cryptohome Account identifier for the user to get logs for.
+  // |log_type_fds|: The map of FeedbackBinaryLogType and its FD pair.
+  // |callback|: The callback to be invoked once the debugd method is completed.
+  virtual void GetFeedbackBinaryLogs(
+      const cryptohome::AccountIdentifier& id,
+      const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>&
+          log_type_fds,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Retrieves the ARC bug report for user identified by |userhash|
   // and saves it in debugd daemon store.
@@ -337,6 +348,15 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   virtual void PacketCaptureStartSignalReceived(dbus::Signal* signal) = 0;
   virtual void PacketCaptureStopSignalReceived(dbus::Signal* signal) = 0;
+
+  // A callback to handle the result of
+  // BluetoothStartBtsnoop/BluetoothStopBtsnoop.
+  using BluetoothBtsnoopCallback = base::OnceCallback<void(bool success)>;
+  // Starts capturing btsnoop logs, which is kept inside daemon-store
+  virtual void BluetoothStartBtsnoop(BluetoothBtsnoopCallback callback) = 0;
+  // Stops capturing btsnoop logs and copy it to the Downloads directory.
+  virtual void BluetoothStopBtsnoop(int fd,
+                                    BluetoothBtsnoopCallback callback) = 0;
 
  protected:
   // For creating a second instance of DebugDaemonClient on another thread for

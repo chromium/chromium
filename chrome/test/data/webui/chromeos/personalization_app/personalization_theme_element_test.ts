@@ -6,15 +6,19 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {CrTooltipIconElement, emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, setGeolocationIsUserModifiableAction, SetGeolocationIsUserModifiableActionForTheme, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
+
+const LIGHT_MODE_BUTTON_ID = 'lightMode';
+const DARK_MODE_BUTTON_ID = 'darkMode';
+const AUTO_MODE_BUTTON_ID = 'autoMode';
 
 suite('PersonalizationThemeTest', function() {
   let personalizationThemeElement: PersonalizationThemeElement|null;
@@ -43,8 +47,8 @@ suite('PersonalizationThemeTest', function() {
     personalizationThemeElement = initElement(PersonalizationThemeElement);
     await waitAfterNextRender(personalizationThemeElement);
 
-    const radioButton =
-        personalizationThemeElement.shadowRoot!.getElementById('darkMode');
+    const radioButton = personalizationThemeElement.shadowRoot!.getElementById(
+        DARK_MODE_BUTTON_ID);
     assertTrue(!!radioButton);
   });
 
@@ -78,8 +82,8 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationThemeElement);
-    const radioButton =
-        personalizationThemeElement.shadowRoot!.getElementById('darkMode');
+    const radioButton = personalizationThemeElement.shadowRoot!.getElementById(
+        DARK_MODE_BUTTON_ID);
     assertTrue(!!radioButton);
     assertEquals(radioButton.getAttribute('aria-checked'), 'true');
   });
@@ -90,8 +94,8 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationThemeElement);
-    const radioButton =
-        personalizationThemeElement.shadowRoot!.getElementById('darkMode');
+    const radioButton = personalizationThemeElement.shadowRoot!.getElementById(
+        DARK_MODE_BUTTON_ID);
     assertTrue(!!radioButton);
     assertEquals(radioButton.getAttribute('aria-checked'), 'false');
 
@@ -112,8 +116,8 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationThemeElement);
-    const radioButton =
-        personalizationThemeElement.shadowRoot!.getElementById('autoMode');
+    const radioButton = personalizationThemeElement.shadowRoot!.getElementById(
+        AUTO_MODE_BUTTON_ID);
     assertTrue(!!radioButton);
     assertEquals(radioButton.getAttribute('aria-checked'), 'false');
 
@@ -133,135 +137,269 @@ suite('PersonalizationThemeTest', function() {
     assertEquals(radioButton.getAttribute('aria-checked'), 'true');
   });
 
-  test('shows geolocation warning on location disabled', async () => {
-    personalizationThemeElement = initElement(PersonalizationThemeElement);
+  async function setThemeColorMode(colorModeButtonId: string) {
+    const colorModeButton: CrButtonElement =
+        personalizationThemeElement!.shadowRoot!.getElementById(
+            colorModeButtonId)! as CrButtonElement;
+    colorModeButton.click();
+    await flushTasks();
+    await waitAfterNextRender(personalizationThemeElement!);
+  }
 
-    // Disable Privacy Hub feature flag.
-    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: false});
+  function isAutoModeLocationWarningIconPresent(): boolean {
+    return !!personalizationThemeElement!.shadowRoot!.getElementById(
+        'locationDeniedInfoIcon');
+  }
 
-    // Check that geolocation content is not displayed on any configuration.
-    for (const geolocationPermission of [true, false]) {
-      for (const darkModeEnabled of [true, false]) {
-        for (const autoScheduleEnabled of [true, false]) {
-          personalizationStore.data.theme.geolocationPermissionEnabled =
-              geolocationPermission;
-          personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
-          personalizationStore.data.theme.colorModeAutoScheduleEnabled =
-              autoScheduleEnabled;
-          personalizationStore.notifyObservers();
-          await waitAfterNextRender(personalizationThemeElement);
+  function isAutoModeLocationWarningIconManaged(): boolean {
+    const tooltip = personalizationThemeElement!.shadowRoot!.getElementById(
+                        'locationDeniedInfoIcon') as CrTooltipIconElement;
+    return tooltip.iconClass! === 'personalization:managed';
+  }
 
-          const warningElement =
-              personalizationThemeElement.shadowRoot!.getElementById(
-                  'geolocationWarningDiv');
-          assertFalse(!!warningElement);
-        }
-      }
-    }
+  // Use this helper method to set the geolocation permission in the
+  // `personalizationStore`. `isManaged` is an optional parameter, used for
+  // testing managed scenarios.
+  async function setGeolocationPermission(
+      enabled: boolean, isManaged: boolean = false) {
+    personalizationStore.expectAction(
+        ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
+    personalizationStore.dispatch(
+        setGeolocationPermissionEnabledAction(enabled));
+    let action: any = await personalizationStore.waitForAction(
+                          ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
+        SetGeolocationPermissionEnabledActionForTheme;
+    assertEquals(enabled, action.enabled);
 
-    // Enable Privacy Hub feature flag.
-    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+    personalizationStore.expectAction(
+        ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE);
+    personalizationStore.dispatch(
+        setGeolocationIsUserModifiableAction(!isManaged));
+    action = await personalizationStore.waitForAction(
+                 ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE) as
+        SetGeolocationIsUserModifiableActionForTheme;
+    assertEquals(!isManaged, action.isUserModifiable);
+  }
 
-    // Check that warning should not be present when geolocation permission
-    // is granted.
-    personalizationStore.data.theme.geolocationPermissionEnabled = true;
-    // Iterate over all color mode variations.
-    for (const darkModeEnabled of [true, false]) {
-      for (const autoScheduleEnabled of [true, false]) {
-        personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
-        personalizationStore.data.theme.colorModeAutoScheduleEnabled =
-            autoScheduleEnabled;
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(personalizationThemeElement);
+  test(
+      'geolocation warning tooltip should be hidden when PrivacyHub disabled',
+      async () => {
+        // Disable Privacy Hub feature flag.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: false});
 
-        const warningElement =
-            personalizationThemeElement.shadowRoot!.getElementById(
-                'geolocationWarningDiv');
-        assertFalse(!!warningElement);
-      }
-    }
+        personalizationThemeElement = initElement(PersonalizationThemeElement);
+        personalizationStore.setReducersEnabled(true);
 
-    // Disable geolocation.
-    personalizationStore.data.theme.geolocationPermissionEnabled = false;
-    // Check that warning is only shown when Auto Schedule is selected.
-    // Iterate over all color mode variations.
-    for (const darkModeEnabled of [true, false]) {
-      for (const autoScheduleEnabled of [true, false]) {
-        personalizationStore.data.theme.darkModeEnabled = darkModeEnabled;
-        personalizationStore.data.theme.colorModeAutoScheduleEnabled =
-            autoScheduleEnabled;
-        personalizationStore.notifyObservers();
-        await waitAfterNextRender(personalizationThemeElement);
+        // Check that geolocation content is not displayed on any configuration.
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when PH is disabled');
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when PH is disabled');
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when PH is disabled');
+      });
 
-        const warningElement =
-            personalizationThemeElement.shadowRoot!.getElementById(
-                'geolocationWarningDiv');
-        if (autoScheduleEnabled) {
-          assertTrue(!!warningElement);
-        } else {
-          assertFalse(!!warningElement);
-        }
-      }
-    }
-  });
+
+  test(
+      'shows geolocation warning tooltip on location disabled by user ' +
+          '(PrivacyHub enabled)',
+      async () => {
+        // Enable Privacy Hub feature flag.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+        personalizationThemeElement = initElement(PersonalizationThemeElement);
+        personalizationStore.setReducersEnabled(true);
+
+        // Enable geolocation.
+        await setGeolocationPermission(/*enabled=*/ true);
+        // Check that tooltip is not shown on any configuration.
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is enabled');
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is enabled');
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is enabled');
+
+        // Disable geolocation.
+        await setGeolocationPermission(/*enabled=*/ false);
+        // Check that tooltip is only shown when Auto Schedule is selected.
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertTrue(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip not shown when AutoMode is selected');
+        assertFalse(isAutoModeLocationWarningIconManaged());
+        assertTrue(isGeolocationDialogVisible());
+      });
+
+  test(
+      'show managed tooltip when location is managed by the admin',
+      async () => {
+        // Enable Privacy Hub feature flag.
+        loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+        personalizationThemeElement = initElement(PersonalizationThemeElement);
+        personalizationStore.setReducersEnabled(true);
+
+        // Force-enable geolocation, tooltip should never be displayed.
+        await setGeolocationPermission(/*enabled=*/ true, /*managed=*/ true);
+        await flushTasks();
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when system geolocation is force-enabled');
+        assertFalse(isGeolocationDialogVisible());
+
+        // Force-disable geolocation.
+        await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ true);
+        await flushTasks();
+        // Check that tooltip is only shown when Auto Schedule is selected.
+        await setThemeColorMode(LIGHT_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(DARK_MODE_BUTTON_ID);
+        assertFalse(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip shown when AutoMode not selected');
+        assertFalse(isGeolocationDialogVisible());
+        await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+        assertTrue(
+            isAutoModeLocationWarningIconPresent(),
+            'Tooltip not shown when AutoMode is selected');
+        assertTrue(isAutoModeLocationWarningIconManaged(), 'wrong tooltip');
+        assertFalse(isGeolocationDialogVisible());
+      });
+
+  function isGeolocationDialogVisible(): boolean {
+    return !!personalizationThemeElement!.shadowRoot!.getElementById(
+        'geolocationDialog');
+  }
 
   test('show Geolocation dialog and click allow', async () => {
-    personalizationThemeElement = initElement(PersonalizationThemeElement);
-
     // Enable Privacy Hub feature flag.
     loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
 
-    // Disable geolocation and select Auto Schedule; This should show the
-    // warning message.
-    personalizationStore.data.theme.geolocationPermissionEnabled = false;
-    personalizationStore.data.theme.colorModeAutoScheduleEnabled = true;
+    // Load personalization theme element.
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+
+    // Set the default sunrise/sunset time.
+    personalizationStore.data.theme.sunriseTime = '6:00AM';
+    personalizationStore.data.theme.sunsetTime = '6:00PM';
     personalizationStore.notifyObservers();
+    await flushTasks();
+
+    personalizationStore.setReducersEnabled(true);
+    // Disable geolocation and select Auto Schedule; This should show the
+    // warning tooltip.
+    await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ false);
     await waitAfterNextRender(personalizationThemeElement);
+    // personalizationStore.expectAction(
+    //     ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED);
+    await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+    assertTrue(isAutoModeLocationWarningIconPresent(), 'tooltip missing');
+    // Check that the dialog has popped up.
+    assertTrue(isGeolocationDialogVisible(), 'dialog not being displayed');
 
-    // Check warning message is present.
-    let warningElement = personalizationThemeElement.shadowRoot!.getElementById(
-        'geolocationWarningDiv');
-    assertTrue(!!warningElement);
-
-    // Click the anchor to display the geolocation dialog.
-    const localizedLink = warningElement.querySelector('localized-link');
-    assertTrue(!!localizedLink);
-    const testDetail = {event: {preventDefault: () => {}}};
-    localizedLink.dispatchEvent(
-        new CustomEvent('link-clicked', {bubbles: false, detail: testDetail}));
-    flush();
-    await waitAfterNextRender(personalizationThemeElement);
-
-    // Check dialog has popped up.
-    let geolocationDialog =
+    // Check that the dialog mentions the sunset/sunrise times.
+    const geolocationDialog =
         personalizationThemeElement.shadowRoot!.getElementById(
-            'geolocationDialog');
-    assertTrue(!!geolocationDialog);
+            'geolocationDialog')!;
+    const dialogBodyText =
+        geolocationDialog.shadowRoot!
+            .querySelector<HTMLDivElement>('#dialogBody')!.innerText;
+    assertTrue(
+        dialogBodyText.includes('6:00AM-6:00PM'),
+        'dialog body doesn\'t include sunrise/sunset times');
+
+    // Confirm the dialog; this should enable the geolocation permission,
+    // resulting in both the dialog and warning tooltip disappearing.
     const confirmButton =
         geolocationDialog.shadowRoot!.getElementById('confirmButton');
     assertTrue(!!confirmButton);
-
-    // Confirm the dialog; this should enable the geolocation permission,
-    // resulting in both the dialog and warning text disappearing.
-    personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
         ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED);
     confirmButton.click();
     const action = await personalizationStore.waitForAction(
                        ThemeActionName.SET_GEOLOCATION_PERMISSION_ENABLED) as
         SetGeolocationPermissionEnabledActionForTheme;
-
-    // Check the geolocation permission value has updated.
     assertTrue(action.enabled);
-    assertTrue(personalizationStore.data.theme.geolocationPermissionEnabled);
-
-    // Check that both warning text and dialog has diappeared.
+    // personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationThemeElement);
-    warningElement = personalizationThemeElement.shadowRoot!.getElementById(
-        'geolocationWarningDiv');
-    geolocationDialog = personalizationThemeElement.shadowRoot!.getElementById(
-        'geolocationDialog');
-    assertFalse(!!warningElement);
-    assertFalse(!!geolocationDialog);
+
+    // Check that both warning tooltip and dialog has diappeared.
+    assertFalse(
+        isAutoModeLocationWarningIconPresent(), 'tooltip didn\'t disappear');
+    assertFalse(isGeolocationDialogVisible(), 'dialog didn\'t disappear');
+  });
+
+  test('Do not show geolocation dialog when location is managed', async () => {
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+    personalizationStore.setReducersEnabled(true);
+
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+
+    await setThemeColorMode(AUTO_MODE_BUTTON_ID);
+    await setGeolocationPermission(/*enabled=*/ false, /*managed=*/ true);
+    await flushTasks();
+
+    // Check that managed icon is present, but the dialog is not triggered.
+    assertTrue(isAutoModeLocationWarningIconPresent());
+    assertFalse(isGeolocationDialogVisible());
+  });
+
+  test('iron-selector excludes geolocation warning', async () => {
+    // Enable Privacy Hub feature flag.
+    loadTimeData.overrideValues({isCrosPrivacyHubLocationEnabled: true});
+    personalizationStore.data.theme.geolocationPermissionEnabled = false;
+    personalizationStore.data.theme.colorModeAutoScheduleEnabled = true;
+
+    personalizationThemeElement = initElement(PersonalizationThemeElement);
+    await waitAfterNextRender(personalizationThemeElement!);
+
+    assertEquals(
+        'true',
+        personalizationThemeElement.shadowRoot?.getElementById('autoMode')
+            ?.ariaChecked,
+        'auto mode button is checked');
+    assertTrue(
+        isAutoModeLocationWarningIconPresent(),
+        'location warning icon is present');
+
+    assertDeepEquals(
+        ['lightMode', 'darkMode', 'autoMode'],
+        personalizationThemeElement.$.selector.items?.map(item => item.id),
+        'only theme buttons are selectable by iron-selector');
   });
 });

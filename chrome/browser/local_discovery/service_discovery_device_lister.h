@@ -28,6 +28,7 @@ class ServiceDiscoveryDeviceLister {
     virtual void OnDeviceRemoved(const std::string& service_type,
                                  const std::string& service_name) = 0;
     virtual void OnDeviceCacheFlushed(const std::string& service_type) = 0;
+    virtual void OnPermissionRejected() = 0;
   };
 
   virtual ~ServiceDiscoveryDeviceLister() = default;

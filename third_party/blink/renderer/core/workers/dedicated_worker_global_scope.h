@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/types/pass_key.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
@@ -85,14 +86,15 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
+          back_forward_cache_controller_host,
+      base::TimeTicks dedicated_worker_start_time);
 
   ~DedicatedWorkerGlobalScope() override;
 
   // Implements ExecutionContext.
   void SetIsInBackForwardCache(bool) override;
   bool IsDedicatedWorkerGlobalScope() const override { return true; }
-  bool HasStorageAccess() const override;
+  net::StorageAccessApiStatus GetStorageAccessApiStatus() const override;
 
   // Implements EventTarget
   // (via WorkerOrWorkletGlobalScope -> EventTarget).
@@ -130,6 +132,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       network::mojom::CredentialsMode,
       RejectCoepUnsafeNone reject_coep_unsafe_none) override;
   bool IsOffMainThreadScriptFetchDisabled() override;
+  void WorkerScriptFetchFinished(
+      Script& worker_script,
+      std::optional<v8_inspector::V8StackTraceId> stack_id) override;
 
   // Implements scheduler::WorkerScheduler::Delegate.
   void UpdateBackForwardCacheDisablingFeatures(
@@ -184,7 +189,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   struct ParsedCreationParams {
     std::unique_ptr<GlobalScopeCreationParams> creation_params;
     ExecutionContextToken parent_context_token;
-    bool parent_has_storage_access;
+    net::StorageAccessApiStatus parent_storage_access_api_status;
   };
 
   static ParsedCreationParams ParseCreationParams(
@@ -207,7 +212,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
+          back_forward_cache_controller_host,
+      base::TimeTicks dedicated_worker_start_time);
 
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
@@ -235,9 +241,15 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // gets out of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
-  // Whether this worker has storage access (inherited from the parent
+  // The worker's Storage Access API status (inherited from the parent
   // ExecutionContext).
-  bool has_storage_access_;
+  net::StorageAccessApiStatus storage_access_api_status_;
+
+  // The timestamp taken when FetchAndRunClassicScript() is called.
+  base::TimeTicks fetch_classic_script_start_time_;
+
+  // The timestamp taken when DedicatedWorker::Start() was called.
+  base::TimeTicks dedicated_worker_start_time_;
 };
 
 template <>

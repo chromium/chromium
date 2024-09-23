@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -127,7 +128,7 @@ class ScriptInjection {
   std::unique_ptr<ScriptInjector> injector_;
 
   // The RenderFrame into which this should inject the script.
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame, DanglingUntriaged> render_frame_;
 
   // The associated injection host.
   std::unique_ptr<const InjectionHost> injection_host_;

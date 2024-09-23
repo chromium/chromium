@@ -107,6 +107,7 @@ char k3GPPVideoMimeType[] = "video/3gpp";
 char k3GPPAudioMimeType[] = "audio/3gpp";
 char k3GPP2VideoMimeType[] = "video/3gpp2";
 char k3GPP2AudioMimeType[] = "audio/3gpp2";
+char kAnimatedPortableNetworkGraphicsImageMimeType[] = "image/apng";
 
 bool IsUsdzFileFormat(const std::string& mime_type,
                       const base::FilePath& suggested_path) {

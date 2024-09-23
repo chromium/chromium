@@ -1,6 +1,7 @@
 Name: simplejson
 URL: https://github.com/simplejson/simplejson
 Version: 2.6.2
+Revision: 57d980277f8d1d6324904edd43e1a730572b64b6
 CPEPrefix: cpe:/a:simplejson_project:simplejson:2.6.2::~~~python~~
 License: MIT
 License File: LICENSE.txt

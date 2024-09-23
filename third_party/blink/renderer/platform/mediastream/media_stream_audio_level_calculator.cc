@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 
 #include <cmath>
 #include <limits>
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
 
 namespace blink {
@@ -28,9 +35,10 @@ float MaxAmplitude(const float* audio_data, int length) {
 
 }  // namespace
 
-MediaStreamAudioLevelCalculator::Level::Level() : level_(0.0f) {}
+MediaStreamAudioLevelCalculator::Level::Level(
+    base::PassKey<MediaStreamAudioLevelCalculator>) {}
 
-MediaStreamAudioLevelCalculator::Level::~Level() {}
+MediaStreamAudioLevelCalculator::Level::~Level() = default;
 
 float MediaStreamAudioLevelCalculator::Level::GetCurrent() const {
   base::AutoLock auto_lock(lock_);
@@ -43,7 +51,8 @@ void MediaStreamAudioLevelCalculator::Level::Set(float level) {
 }
 
 MediaStreamAudioLevelCalculator::MediaStreamAudioLevelCalculator()
-    : counter_(0), max_amplitude_(0.0f), level_(new Level()) {}
+    : level_(base::MakeRefCounted<Level>(
+          base::PassKey<MediaStreamAudioLevelCalculator>())) {}
 
 MediaStreamAudioLevelCalculator::~MediaStreamAudioLevelCalculator() {
   level_->Set(0.0f);

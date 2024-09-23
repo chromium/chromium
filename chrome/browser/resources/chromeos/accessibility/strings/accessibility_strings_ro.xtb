@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Maro roz</translation>
 <translation id="249330843868392562">Deschide setările redării vocale a textului</translation>
 <translation id="2497706219848005458">Galben verzui</translation>
+<translation id="2512979179176933762">afișează ferestrele</translation>
 <translation id="2523609930580546572">Tutorial ChromeVox</translation>
 <translation id="2525706221823668172">Comenzile rapide de la tastatură pentru Chromebook</translation>
 <translation id="2553108862507765288">greșeală gramaticală</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}few{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Poți să glisezi cu un deget de la dreapta la stânga pentru a trece la elementul următor. Încearcă acum.</translation>
 <translation id="280499067616661124">Găsește în pagină cu ChromeVox</translation>
-<translation id="2811019999044652585">Pentru a trece la alte părți ale ecranului, cum ar fi bare de instrumente sau bara de sistem, apasă pe Ctrl + tasta Înainte. Pe Chromebook, tasta Înainte se află imediat deasupra tastei 2.</translation>
 <translation id="2811204574343810641">Rând</translation>
 <translation id="2816868829355607410">Zonă pentru exersare: comenzi de navigare</translation>
 <translation id="2841013758207633010">Oră</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Albastru oțel</translation>
 <translation id="4253168017788158739">Notă</translation>
 <translation id="4254798249533888099">Arbore</translation>
+<translation id="4259220820964911921">Activezi controlul facial?</translation>
 <translation id="4271220233568730077">Expresia matematică următoare</translation>
 <translation id="4275397969489577657">Activează înregistrarea fluxului de evenimente</translation>
 <translation id="4278486392851938658">Nu există niciun link accesat anterior</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Roșu indian</translation>
 <translation id="4432896207833262240">Conținut marcat</translation>
 <translation id="4437615272777527928">Tastează pentru a căuta în meniuri. Folosește săgețile în sus și în jos pentru a răsfoi rezultatele. Folosește săgețile spre dreapta și spre stânga pentru a ajusta cursorul pentru text și pentru a trece de la un meniu la altul.</translation>
+<translation id="4453530046591759283">Pentru a trece la alte părți ale ecranului, cum ar fi bare de instrumente sau bara de sistem, apasă pe Control + F1. F1 este prima tastă din dreapta tastei escape.</translation>
 <translation id="4457472090507035117">Selectează vocea actuală:</translation>
 <translation id="4476183483923481720">rând nou</translation>
 <translation id="4479068155583208887">Roșu cărămiziu</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Anexă</translation>
 <translation id="5761219715606611783">Felicitări! Ai învățat noțiunile de bază cu privire la gesturile de atingere din ChromeVox. Poți să parcurgi din nou tutorialul sau să-l închizi folosind butoanele de mai jos.</translation>
 <translation id="5776001898637896684">Extensie pentru redarea vocală a textului în rețeaua îmbunătățită Google</translation>
+<translation id="5783252477644995371">Controlul facial îți oferă posibilitatea de a controla cursorul cu ajutorul privirii și de a realiza acțiuni, cum ar fi un clic stânga, cu ajutorul expresiilor faciale, precum zâmbetul</translation>
 <translation id="5805940204952508776">Atinge cu două degete</translation>
 <translation id="5819072574982403430">Element arbore</translation>
 <translation id="5822819874379903994">Turcoaz închis</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Alb Navajo</translation>
 <translation id="7095834689119144465">Câmp text de editare exclusiv numeric</translation>
 <translation id="7096001299300236431">Conținut media anterior</translation>
+<translation id="7096668131290451939">Apasă din nou Escape pentru a ieși din Modul de învățare</translation>
 <translation id="7116595520562830928">linii multiple</translation>
 <translation id="712735679809149106">ecou cuvânt</translation>
 <translation id="7137397390322864165">Roz portocaliu</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Nu există o casetă de selectare următoare</translation>
 <translation id="8473540203671727883">Rostește textul de sub cursor</translation>
 <translation id="8476408756881832830">Întrerupe redarea când ChromeVox vorbește</translation>
-<translation id="8476508772960940536">prezentarea ferestrei</translation>
 <translation id="8480873377842220259">Acum vei afla câteva noțiuni de bază despre navigare. Poți să ții apăsată tasta de căutare și să apeși tastele săgeată ca să te deplasezi pe ecran. Pentru a continua, apasă tasta de căutare + săgeata spre dreapta.</translation>
 <translation id="8503360654911991865">Scădeți granularitatea de navigare</translation>
 <translation id="8520472399088452386">Buton numeric</translation>

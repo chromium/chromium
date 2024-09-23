@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
@@ -60,8 +61,8 @@ import java.util.Set;
  * shareable between Clank and WebLayer. The Clank specific logic lives in
  * org.chromium.chrome.browser.payments.ChromePaymentRequestService.
  *
- * <p>TODO(crbug.com/1102522): ChromePaymentRequestService is under refactoring, with the purpose of
- * moving the business logic of ChromePaymentRequestService into PaymentRequestService and
+ * <p>TODO(crbug.com/40138829): ChromePaymentRequestService is under refactoring, with the purpose
+ * of moving the business logic of ChromePaymentRequestService into PaymentRequestService and
  * eventually moving ChromePaymentRequestService. Note that the callers of the instances of this
  * class need to close them with {@link PaymentRequestService#close()}, after which no usage is
  * allowed.
@@ -260,12 +261,11 @@ public class PaymentRequestService
         /**
          * Creates a journey logger.
          *
-         * @param isIncognito Whether the user profile is incognito.
          * @param webContents The web contents where PaymentRequest API is invoked. Should not be
          *     null.
          */
-        default JourneyLogger createJourneyLogger(boolean isIncognito, WebContents webContents) {
-            return new JourneyLogger(isIncognito, webContents);
+        default JourneyLogger createJourneyLogger(WebContents webContents) {
+            return new JourneyLogger(webContents);
         }
 
         /**
@@ -460,7 +460,7 @@ public class PaymentRequestService
             return false;
         }
         mPaymentRequestSecurityOrigin = mRenderFrameHost.getLastCommittedOrigin();
-        // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
+        // TODO(crbug.com/41475385): replace UrlFormatter with GURL operations.
         mPaymentRequestOrigin =
                 mDelegate.formatUrlForSecurityDisplay(mRenderFrameHost.getLastCommittedURL());
 
@@ -469,13 +469,13 @@ public class PaymentRequestService
             abortForInvalidDataFromRenderer(ErrorStrings.NO_WEB_CONTENTS);
             return false;
         }
-        // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
+        // TODO(crbug.com/41475385): replace UrlFormatter with GURL operations.
         mTopLevelOrigin = mDelegate.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = mDelegate.getCertificateChain(mWebContents);
         mIsOffTheRecord = mDelegate.isOffTheRecord();
-        mJourneyLogger = mDelegate.createJourneyLogger(mIsOffTheRecord, mWebContents);
+        mJourneyLogger = mDelegate.createJourneyLogger(mWebContents);
 
         if (mClient == null) {
             abortForInvalidDataFromRenderer(ErrorStrings.INVALID_STATE);
@@ -605,7 +605,7 @@ public class PaymentRequestService
         PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
         if (spcMethodData.securePaymentConfirmation == null) return false;
 
-        // TODO(crbug.com/1342686): Update checks to match desktop browser-side logic.
+        // TODO(crbug.com/40231121): Update checks to match desktop browser-side logic.
         if ((spcMethodData.securePaymentConfirmation.payeeOrigin == null
                         && spcMethodData.securePaymentConfirmation.payeeName == null)
                 || (spcMethodData.securePaymentConfirmation.payeeName != null
@@ -899,8 +899,10 @@ public class PaymentRequestService
         mIsFinishedQueryingPaymentApps = true;
 
         mHasEnrolledInstrument |= mCanMakePaymentEvenWithoutApps;
-        // Always return false when can make payment is disabled.
-        mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
+        // The kCanMakePaymentEnabled pref does not apply to SPC, where hasEnrolledInstrument() is
+        // only used for feature detection and does not communicate with any applications.
+        mHasEnrolledInstrument &=
+                (mDelegate.prefsCanMakePayment() || mSpec.isSecurePaymentConfirmationRequested());
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
@@ -1066,7 +1068,7 @@ public class PaymentRequestService
 
     private boolean isSecurePaymentConfirmationApplicable() {
         PaymentApp selectedApp = mBrowserPaymentRequest.getSelectedPaymentApp();
-        // TODO(crbug.com/1211947): Deduplicate this part with
+        // TODO(crbug.com/40767878): Deduplicate this part with
         // SecurePaymentConfirmationController::SetupModelAndShowDialogIfApplicable().
         return selectedApp != null
                 && selectedApp.getPaymentAppType() == PaymentAppType.INTERNAL
@@ -1167,13 +1169,6 @@ public class PaymentRequestService
         if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
         mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
 
-        if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
-                || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
-            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.GOOGLE);
-        } else {
-            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.OTHER);
-        }
-
         mPendingApps.add(paymentApp);
     }
 
@@ -1183,13 +1178,20 @@ public class PaymentRequestService
 
         mIsCanMakePaymentResponsePending = false;
 
-        boolean response = mCanMakePayment && mDelegate.prefsCanMakePayment();
+        // The kCanMakePaymentEnabled pref does not apply to SPC, where canMakePayment() is only
+        // used for feature detection and does not communicate with any applications.
+        boolean allowedByPref = true;
+        if (!mSpec.isSecurePaymentConfirmationRequested()) {
+            allowedByPref = mDelegate.prefsCanMakePayment();
+            RecordHistogram.recordBooleanHistogram(
+                    "PaymentRequest.CanMakePayment.CallAllowedByPref", allowedByPref);
+        }
+
+        boolean response = mCanMakePayment && allowedByPref;
         mClient.onCanMakePayment(
                 response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
                         : CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT);
-
-        mJourneyLogger.setCanMakePaymentValue(response || mIsOffTheRecord);
 
         if (sObserverForTest != null) {
             sObserverForTest.onPaymentRequestServiceCanMakePaymentQueryResponded();
@@ -1202,11 +1204,20 @@ public class PaymentRequestService
     /** Responds to the HasEnrolledInstrument query from the merchant page. */
     public void respondHasEnrolledInstrumentQuery() {
         if (mClient == null) return;
+
+        // The pref is checked in onDoneCreatingPaymentApps, but we explicitly want to measure
+        // calls to hasEnrolledInstrument() that are affected by it.
+        if (!mSpec.isSecurePaymentConfirmationRequested()) {
+            RecordHistogram.recordBooleanHistogram(
+                    "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+                    mDelegate.prefsCanMakePayment());
+        }
+
         boolean response = mHasEnrolledInstrument;
         mIsHasEnrolledInstrumentResponsePending = false;
 
         int result;
-        if (CanMakePaymentQuery.canQuery(
+        if (HasEnrolledInstrumentQuery.canQuery(
                 mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
             result =
                     response
@@ -1221,8 +1232,6 @@ public class PaymentRequestService
                             : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT;
         }
         mClient.onHasEnrolledInstrument(result);
-
-        mJourneyLogger.setHasEnrolledInstrumentValue(response || mIsOffTheRecord);
 
         if (sObserverForTest != null) {
             sObserverForTest.onPaymentRequestServiceHasEnrolledInstrumentQueryResponded();
@@ -1943,7 +1952,6 @@ public class PaymentRequestService
         assert stringifiedDetails != null;
         if (mPaymentResponseHelper == null || mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onInstrumentDetailsReady();
-        mJourneyLogger.setReceivedInstrumentDetails();
         mPaymentResponseHelper.generatePaymentResponse(
                 methodName, stringifiedDetails, payerData, /* resultCallback= */ this);
     }

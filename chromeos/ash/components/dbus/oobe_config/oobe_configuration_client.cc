@@ -10,11 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
-#include "chromeos/ash/components/dbus/oobe_config/oobe_config.pb.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_metrics.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/oobe_config/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -43,6 +44,15 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&OobeConfigurationClientImpl::OnData,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void DeleteFlexOobeConfig() override {
+    dbus::MethodCall method_call(oobe_config::kOobeConfigRestoreInterface,
+                                 oobe_config::kDeleteFlexOobeConfigMethod);
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&OobeConfigurationClientImpl::OnDeleteFlexOobeConfig,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void Init(dbus::Bus* bus) override {
@@ -82,6 +92,32 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
       return;
     }
     std::move(callback).Run(true, response_proto.chrome_config_json());
+  }
+
+  void OnDeleteFlexOobeConfig(dbus::Response* response,
+                              dbus::ErrorResponse* error_response) {
+    if (response &&
+        response->GetMessageType() == dbus::Message::MESSAGE_METHOD_RETURN) {
+      VLOG(0) << "Successfully deleted Flex OOBE config";
+      RecordDeleteFlexOobeConfigDBusResult(
+          DeleteFlexOobeConfigDBusResult::kSuccess);
+      return;
+    }
+
+    if (!error_response) {
+      LOG(ERROR)
+          << "No error response for unsuccessful DeleteFlexOobeConfig call";
+      RecordDeleteFlexOobeConfigDBusResult(
+          DeleteFlexOobeConfigDBusResult::kErrorUnknown);
+      return;
+    }
+    std::string error_code = error_response->GetErrorName();
+
+    DeleteFlexOobeConfigDBusResult result =
+        ConvertDeleteFlexOobeConfigDBusError(error_code);
+    LOG(ERROR) << "DeleteFlexOobeConfig DBus result: "
+               << static_cast<int>(result);
+    RecordDeleteFlexOobeConfigDBusResult(result);
   }
 
   raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;

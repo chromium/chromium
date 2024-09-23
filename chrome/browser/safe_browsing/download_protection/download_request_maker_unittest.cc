@@ -244,9 +244,11 @@ TEST_F(DownloadRequestMakerTest, PopulatesReferrerChain) {
   ReferrerChainEntry* entry2 = referrer_chain->Add();
   entry2->set_url("entry2_url");
   entry2->set_type(ReferrerChainEntry::RECENT_NAVIGATION);
-  ReferrerChainData referrer_chain_data(std::move(referrer_chain),
-                                        /*referrer_chain_length=*/2,
-                                        /*recent_navigation_to_collect=*/1);
+  ReferrerChainData referrer_chain_data(
+      ReferrerChainProvider::AttributionResult::SUCCESS,
+      std::move(referrer_chain),
+      /*referrer_chain_length=*/2,
+      /*recent_navigation_to_collect=*/1);
 
   DownloadRequestMaker request_maker(
       mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
@@ -382,8 +384,7 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
       /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
       /*previous_token=*/"", base::DoNothing());
 
-  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
-      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _)).Times(1);
   EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
       .WillRepeatedly(Return(true));
 
@@ -400,7 +401,7 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
   run_loop.Run();
 
   ASSERT_NE(request, nullptr);
-  EXPECT_EQ(request->tailored_info().version(), 3);
+  EXPECT_EQ(request->tailored_info().version(), 5);
 }
 
 TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {
@@ -623,7 +624,8 @@ TEST_F(DownloadRequestMakerTest, SetsIsEncrypted) {
       run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_TRUE(DownloadItemWarningData::IsEncryptedArchive(&mock_download_item));
+  EXPECT_TRUE(
+      DownloadItemWarningData::IsTopLevelEncryptedArchive(&mock_download_item));
 }
 
 TEST_F(DownloadRequestMakerTest, UsesPassword) {

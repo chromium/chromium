@@ -15,26 +15,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -45,7 +45,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.SKIP_LOCAL_UPM_GMS_CORE_VERSION_CHECK_FOR_TESTING,
 })
 @Batch(Batch.PER_CLASS)
 public class BrowsingDataTest {
@@ -72,9 +71,9 @@ public class BrowsingDataTest {
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingData(
                                     helper::notifyCalled, new int[] {dataType}, timePeriod);
                 });
@@ -91,13 +90,13 @@ public class BrowsingDataTest {
                     out[0] = result;
                     helper.notifyCalled();
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     counter[0] =
                             new BrowsingDataCounterBridge(
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     callback,
-                                    BrowsingDataType.COOKIES,
+                                    BrowsingDataType.SITE_DATA,
                                     ClearBrowsingDataTab.ADVANCED);
                 });
         helper.waitForCallback(0);
@@ -130,7 +129,7 @@ public class BrowsingDataTest {
         Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(1, getCookieCount());
 
-        clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+        clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
         Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(0, getCookieCount());
     }
@@ -157,12 +156,12 @@ public class BrowsingDataTest {
             Assert.assertEquals(type, 1, getCookieCount());
             Assert.assertEquals(type, "true", runJavascriptAsync("has" + type + "Async()"));
 
-            clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+            clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
             Assert.assertEquals(type, 0, getCookieCount());
             Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "Async()"));
 
             // Some types create data by checking for them, so we need to do a cleanup at the end.
-            clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+            clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
         }
     }
 
@@ -176,15 +175,15 @@ public class BrowsingDataTest {
         // TODO(roagarwal) : Crashes on BrowsingDataType.SITE_SETTINGS, BrowsingDataType.BOOKMARKS
         // data types.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowsingDataBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                             .clearBrowsingDataIncognitoForTesting(
                                     helper::notifyCalled,
                                     new int[] {
                                         BrowsingDataType.HISTORY,
                                         BrowsingDataType.CACHE,
-                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.SITE_DATA,
                                         BrowsingDataType.PASSWORDS,
                                         BrowsingDataType.FORM_DATA
                                     },
@@ -196,17 +195,16 @@ public class BrowsingDataTest {
     /** Test that both local and account passwords are deleted. */
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION
-    })
+    @Restriction({GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15})
+    @RequiresRestart("crbug.com/358427311")
     public void testLocalAndAccountPasswordsDeleted() throws Exception {
         // Set up a syncing user with one password in each store.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordStoreBridge bridge =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> new PasswordStoreBridge());
-        TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new PasswordStoreBridge(sActivityTestRule.getProfile(false)));
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bridge.insertPasswordCredentialInProfileStore(
                             new PasswordStoreCredential(

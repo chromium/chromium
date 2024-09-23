@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash)
+
+build_webui("build") {
+  grd_prefix = "ash_focus_mode"
+
+  static_files = [ "focus_mode.html" ]
+  non_web_component_files = [ "app.ts" ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  mojo_files =
+      [ "$root_gen_dir/ash/webui/focus_mode/mojom/focus_mode.mojom-webui.ts" ]
+  mojo_files_deps = [ "//ash/webui/focus_mode/mojom:mojom_ts__generator" ]
+
+  webui_context_type = "trusted"
+  grit_output_dir = "$root_gen_dir/ash/webui"
+}

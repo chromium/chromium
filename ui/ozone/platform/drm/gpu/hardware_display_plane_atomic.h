@@ -13,6 +13,7 @@
 #include <xf86drmMode.h>
 
 namespace gfx {
+class ColorSpace;
 class Rect;
 }  // namespace gfx
 
@@ -38,11 +39,15 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
                                 const gfx::Rect& src_rect,
                                 const gfx::Rect& damage_rect,
                                 const gfx::OverlayTransform transform,
+                                const gfx::ColorSpace& color_space,
                                 int in_fence_fd,
                                 uint32_t format_fourcc,
                                 bool is_original_buffer);
   // Sets the props on |property_set| for commit.
   bool SetPlaneProps(drmModeAtomicReq* property_set);
+
+  // Saves the props to disable the plane locally to be committed later.
+  void AssignDisableProps();
 
   uint32_t AssignedCrtcId() const;
 

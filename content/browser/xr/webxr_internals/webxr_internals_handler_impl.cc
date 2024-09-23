@@ -41,9 +41,11 @@ std::string GetOSVersion() {
 }  // namespace
 
 WebXrInternalsHandlerImpl::WebXrInternalsHandlerImpl(
-    mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver)
+    mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver,
+    WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
-      runtime_manager_(XRRuntimeManagerImpl::GetOrCreateInstance()) {}
+      runtime_manager_(
+          XRRuntimeManagerImpl::GetOrCreateInstance(*web_contents)) {}
 
 WebXrInternalsHandlerImpl::~WebXrInternalsHandlerImpl() = default;
 

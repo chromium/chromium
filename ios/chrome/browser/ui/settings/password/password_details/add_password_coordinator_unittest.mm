@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
+
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
@@ -9,25 +11,23 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -46,9 +46,6 @@ class AddPasswordCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-
     TestChromeBrowserState::Builder builder;
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
@@ -64,7 +61,7 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -86,13 +83,17 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
-    mock_reauth_module_.shouldReturnSynchronously = NO;
+    mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+
+    // Replace reauthentication module with mock implementation for testing.
+    scoped_reauth_module_override_ =
+        ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
+            mock_reauth_module_);
 
     coordinator_ = [[AddPasswordCoordinator alloc]
         initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()
-                      reauthModule:mock_reauth_module_];
+                           browser:browser_.get()];
 
     scoped_window_.Get().rootViewController = base_view_controller_;
 
@@ -137,6 +138,8 @@ class AddPasswordCoordinatorTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
+  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
+      scoped_reauth_module_override_;
   UIViewController* base_view_controller_ = nil;
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;

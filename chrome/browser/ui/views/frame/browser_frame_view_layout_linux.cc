@@ -27,8 +27,9 @@ constexpr unsigned int kExtraTopBorder = 3;
 BrowserFrameViewLayoutLinux::BrowserFrameViewLayoutLinux() = default;
 BrowserFrameViewLayoutLinux::~BrowserFrameViewLayoutLinux() = default;
 
-gfx::Insets BrowserFrameViewLayoutLinux::MirroredFrameBorderInsets() const {
-  auto border = FrameBorderInsets(false);
+gfx::Insets BrowserFrameViewLayoutLinux::RestoredMirroredFrameBorderInsets()
+    const {
+  auto border = RestoredFrameBorderInsets();
   return base::i18n::IsRTL() ? gfx::Insets::TLBR(border.top(), border.right(),
                                                  border.bottom(), border.left())
                              : border;
@@ -73,7 +74,5 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameEdgeInsets() const {
 }
 
 int BrowserFrameViewLayoutLinux::NonClientExtraTopThickness() const {
-  return (features::IsChromeRefresh2023() && delegate_->IsTabStripVisible())
-             ? 0
-             : kExtraTopBorder;
+  return delegate_->IsTabStripVisible() ? 0 : kExtraTopBorder;
 }

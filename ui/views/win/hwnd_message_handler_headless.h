@@ -5,13 +5,14 @@
 #ifndef UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_HEADLESS_H_
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_HEADLESS_H_
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <optional>
 #include <string>
 
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
@@ -40,8 +41,9 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
 
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
 
   void SetSize(const gfx::Size& size) override;
   void CenterWindow(const gfx::Size& size) override;
@@ -51,7 +53,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void StackAbove(HWND other_hwnd) override;
   void StackAtTop() override;
 
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& pixel_restore_bounds) override;
   void Hide() override;
 
@@ -106,13 +108,14 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   bool is_visible_ = false;
   bool is_active_ = false;
   bool is_always_on_top_ = false;
+  bool was_active_before_minimize_ = false;
 
-  enum WindowState {
+  enum class WindowState {
     kNormal,
     kMinimized,
     kMaximized,
     kFullscreen,
-  } window_state_ = kNormal;
+  } window_state_ = WindowState::kNormal;
 
   gfx::Rect bounds_;
   std::optional<gfx::Rect> restored_bounds_;

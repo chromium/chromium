@@ -66,7 +66,7 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   ppapi::proxy::ResourceMessageTestSink sink_;
   ppapi::host::PpapiHost ppapi_host_;
 
-  raw_ptr<RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrame> render_frame_;
   PP_Instance pp_instance_;
 
   bool has_user_gesture_;

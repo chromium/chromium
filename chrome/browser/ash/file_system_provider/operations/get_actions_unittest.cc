@@ -96,12 +96,12 @@ class FileSystemProviderOperationsGetActionsTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
     entry_paths_.clear();
-    entry_paths_.push_back(base::FilePath(kDirectoryPath));
-    entry_paths_.push_back(base::FilePath(kFilePath));
+    entry_paths_.emplace_back(kDirectoryPath);
+    entry_paths_.emplace_back(kFilePath);
   }
 
   ProvidedFileSystemInfo file_system_info_;
@@ -111,7 +111,7 @@ class FileSystemProviderOperationsGetActionsTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsGetActionsTest, Execute) {
   using extensions::api::file_system_provider::GetActionsRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
@@ -142,7 +142,7 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsGetActionsTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   CallbackLogger callback_logger;
 
   GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
@@ -153,7 +153,7 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsGetActionsTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,
@@ -209,7 +209,7 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, OnSuccess) {
 }
 
 TEST_F(FileSystemProviderOperationsGetActionsTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   GetActions get_actions(&dispatcher, file_system_info_, entry_paths_,

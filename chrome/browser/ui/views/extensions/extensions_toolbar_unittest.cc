@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "components/crx_file/id_util.h"
@@ -25,20 +26,8 @@
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
-
-base::Value::List ToListValue(const std::vector<std::string>& permissions) {
-  base::Value::List builder;
-  for (const std::string& permission : permissions) {
-    builder.Append(permission);
-  }
-  return builder;
-}
-
-}  // namespace
 
 ExtensionsToolbarUnitTest::ExtensionsToolbarUnitTest() = default;
 
@@ -111,8 +100,8 @@ ExtensionsToolbarUnitTest::InstallExtension(
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
           .SetLocation(location)
-          .AddPermissions(permissions)
-          .SetManifestKey("host_permissions", ToListValue(host_permissions))
+          .AddAPIPermissions(permissions)
+          .AddHostPermissions(host_permissions)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extension_service()->AddExtension(extension.get());
@@ -164,11 +153,11 @@ void ExtensionsToolbarUnitTest::WithholdHostPermissions(
 }
 
 void ExtensionsToolbarUnitTest::ClickButton(views::Button* button) const {
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             0);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMousePressed(press_event);
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
                                gfx::Point(), ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   button->OnMouseReleased(release_event);
@@ -191,6 +180,22 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
   permissions_manager_->UpdateUserSiteSetting(url::Origin::Create(url),
                                               site_setting);
   waiter.WaitForUserPermissionsSettingsChange();
+}
+
+void ExtensionsToolbarUnitTest::AddSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents,
+    const std::optional<URLPattern>& filter) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension,
+                                             filter);
+}
+
+void ExtensionsToolbarUnitTest::RemoveSiteAccessRequest(
+    const extensions::Extension& extension,
+    content::WebContents* web_contents) {
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager_->RemoveSiteAccessRequest(tab_id, extension.id());
 }
 
 PermissionsManager::UserSiteSetting
@@ -219,7 +224,7 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
     if (views::IsViewClass<ToolbarActionView>(child)) {
       ToolbarActionView* const action = static_cast<ToolbarActionView*>(child);
 #if BUILDFLAG(IS_MAC)
-      // TODO(crbug.com/1045212): Use IsActionVisibleOnToolbar() because it
+      // TODO(crbug.com/40670141): Use IsActionVisibleOnToolbar() because it
       // queries the underlying model and not GetVisible(), as that relies on an
       // animation running, which is not reliable in unit tests on Mac.
       const bool is_visible = extensions_container()->IsActionVisibleOnToolbar(
@@ -235,15 +240,14 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
 }
 
 std::vector<std::string> ExtensionsToolbarUnitTest::GetPinnedExtensionNames() {
-  return base::test::ToVector(
-      GetPinnedExtensionViews(), [](ToolbarActionView* view) {
-        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-      });
+  return base::ToVector(GetPinnedExtensionViews(), [](ToolbarActionView* view) {
+    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+  });
 }
 
 void ExtensionsToolbarUnitTest::WaitForAnimation() {
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
+  // TODO(crbug.com/40670141): we avoid using animations on Mac due to the lack
   // of support in unit tests. Therefore this is a no-op.
 #else
   views::test::WaitForAnimatingLayoutManager(extensions_container());

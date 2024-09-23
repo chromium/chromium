@@ -17,6 +17,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/privacy_sandbox:privacy_sandbox_settings_headers",
     "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox:tpcd",
     "//components/privacy_sandbox:tracking_protection_onboarding",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//content/test:test_support",

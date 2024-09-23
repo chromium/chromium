@@ -37,7 +37,7 @@ static WebSourceBufferClient::ParseWarning ParseWarningToBlink(
         kGroupEndTimestampDecreaseWithinMediaSegment);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebSourceBufferClient::ParseWarning::kKeyframeTimeGreaterThanDependant;
 
 #undef CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE
@@ -110,7 +110,7 @@ bool WebSourceBufferImpl::SetMode(WebSourceBuffer::AppendMode mode) {
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -134,9 +134,9 @@ bool WebSourceBufferImpl::EvictCodedFrames(double currentPlaybackTime,
                                     newDataSize);
 }
 
-bool WebSourceBufferImpl::AppendToParseBuffer(const unsigned char* data,
-                                              size_t length) {
-  return demuxer_->AppendToParseBuffer(id_, data, length);
+bool WebSourceBufferImpl::AppendToParseBuffer(
+    base::span<const unsigned char> data) {
+  return demuxer_->AppendToParseBuffer(id_, data);
 }
 
 media::StreamParser::ParseStatus WebSourceBufferImpl::RunSegmentParserLoop(
@@ -252,7 +252,7 @@ WebMediaPlayer::TrackType mediaTrackTypeToBlink(media::MediaTrack::Type type) {
     case media::MediaTrack::Type::kVideo:
       return WebMediaPlayer::kVideoTrack;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebSourceBufferImpl::InitSegmentReceived(
@@ -264,9 +264,9 @@ void WebSourceBufferImpl::InitSegmentReceived(
   for (const auto& track : tracks->tracks()) {
     WebSourceBufferClient::MediaTrackInfo trackInfo;
     trackInfo.track_type = mediaTrackTypeToBlink(track->type());
-    trackInfo.id = WebString::FromUTF8(track->id().value());
+    trackInfo.id = WebString::FromUTF8(track->track_id().value());
     trackInfo.byte_stream_track_id =
-        WebString::FromUTF8(base::NumberToString(track->bytestream_track_id()));
+        WebString::FromUTF8(base::NumberToString(track->stream_id()));
     trackInfo.kind = WebString::FromUTF8(track->kind().value());
     trackInfo.label = WebString::FromUTF8(track->label().value());
     trackInfo.language = WebString::FromUTF8(track->language().value());

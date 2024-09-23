@@ -33,7 +33,8 @@ class BluetoothDevicePairConfirmView : public views::DialogDelegateView {
                     const std::optional<std::u16string>& pin);
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // WidgetDelegate:
   std::u16string GetWindowTitle() const override;

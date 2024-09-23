@@ -236,7 +236,7 @@ TEST_F(TextFinderTest, FindTextNotFound) {
 TEST_F(TextFinderTest, FindTextInShadowDOM) {
   GetDocument().body()->setInnerHTML("<b>FOO</b><i slot='bar'>foo</i>");
   ShadowRoot& shadow_root =
-      GetDocument().body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      GetDocument().body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<slot name='bar'></slot><u>Foo</u><slot></slot>");
   Node* text_in_b_element = GetDocument().body()->firstChild()->firstChild();
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();
@@ -399,7 +399,7 @@ TEST_F(TextFinderTest, ScopeTextMatchesRepeated) {
 TEST_F(TextFinderTest, ScopeTextMatchesWithShadowDOM) {
   GetDocument().body()->setInnerHTML("<b>FOO</b><i slot='bar'>foo</i>");
   ShadowRoot& shadow_root =
-      GetDocument().body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      GetDocument().body()->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<slot name='bar'></slot><u>Foo</u><slot></slot>");
   Node* text_in_b_element = GetDocument().body()->firstChild()->firstChild();
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +19,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -31,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -49,7 +55,7 @@ namespace {
 class CertNodeBuilder {
  public:
   // Starts the node with "label" set to |label|.
-  explicit CertNodeBuilder(base::StringPiece label);
+  explicit CertNodeBuilder(std::string_view label);
 
   // Convenience version: Converts |label_id| to the corresponding resource
   // string, then delegates to the other constructor.
@@ -62,7 +68,7 @@ class CertNodeBuilder {
   // expressions.
 
   // Sets the "payload.val" field. Call this at most once.
-  CertNodeBuilder& Payload(base::StringPiece payload);
+  CertNodeBuilder& Payload(std::string_view payload);
 
   // Adds |child| in the list keyed "children". Can be called multiple times.
   CertNodeBuilder& Child(base::Value::Dict child);
@@ -83,14 +89,14 @@ class CertNodeBuilder {
   bool built_ = false;
 };
 
-CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
+CertNodeBuilder::CertNodeBuilder(std::string_view label) {
   node_.Set("label", label);
 }
 
 CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
-CertNodeBuilder& CertNodeBuilder::Payload(base::StringPiece payload) {
+CertNodeBuilder& CertNodeBuilder::Payload(std::string_view payload) {
   DCHECK(!node_.FindByDottedPath("payload.val"));
   node_.SetByDottedPath("payload.val", payload);
   return *this;
@@ -260,7 +266,7 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
   for (const auto& cert : nss_certs) {
     nicknames.push_back(x509_certificate_model::GetRawNickname(cert.get()));
     cert_buffers.push_back(net::x509_util::CreateCryptoBuffer(
-        base::make_span(cert->derCert.data, cert->derCert.len)));
+        net::x509_util::CERTCertificateAsSpan(cert.get())));
   }
   return ShowConstrained(std::move(cert_buffers), std::move(nicknames),
                          web_contents, parent);
@@ -314,7 +320,7 @@ CertificateViewerDialog::CertificateViewerDialog(
   set_can_close(true);
   set_delete_on_close(false);
   set_dialog_args(DialogArgsForCertList(certs));
-  set_dialog_modal_type(ui::MODAL_TYPE_NONE);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_content_url(GURL(chrome::kChromeUICertificateViewerURL));
   set_dialog_size(kDefaultSize);
   set_dialog_title(l10n_util::GetStringFUTF16(

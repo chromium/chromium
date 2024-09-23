@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
 
 namespace ash {
@@ -58,12 +59,14 @@ void AppListTestViewDelegate::OpenSearchResult(
     switch (launched_from) {
       case ash::AppListLaunchedFrom::kLaunchedFromSearchBox:
       case ash::AppListLaunchedFrom::kLaunchedFromRecentApps:
+      case ash::AppListLaunchedFrom::kLaunchedFromAppsCollections:
         RecordAppLaunched(launched_from);
         return;
       case ash::AppListLaunchedFrom::kLaunchedFromGrid:
       case ash::AppListLaunchedFrom::kLaunchedFromShelf:
       case ash::AppListLaunchedFrom::kLaunchedFromContinueTask:
       case ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
+      case ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
         return;
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
@@ -95,7 +98,8 @@ void AppListTestViewDelegate::SetIsTabletModeEnabled(bool is_tablet_mode) {
 void AppListTestViewDelegate::ActivateItem(
     const std::string& id,
     int event_flags,
-    ash::AppListLaunchedFrom launched_from) {
+    ash::AppListLaunchedFrom launched_from,
+    bool is_app_above_the_fold) {
   AppListItem* item = model_->FindItem(id);
   if (!item)
     return;

@@ -71,6 +71,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
 
  private:
   friend class HotspotControllerTest;
+  friend class HotspotControllerConcurrencyApiTest;
   friend class HotspotEnabledStateNotifierTest;
 
   // Represents hotspot enable or disable control request parameters. Requests
@@ -101,7 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
 
-  void CheckTetheringReadiness();
   void OnCheckTetheringReadiness(
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult result);
   void PerformSetTetheringEnabled(bool enabled);

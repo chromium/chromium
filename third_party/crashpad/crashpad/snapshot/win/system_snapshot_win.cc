@@ -361,7 +361,6 @@ uint32_t SystemSnapshotWin::CPUX86Signature() const {
   return cpu_info[0];
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -376,7 +375,6 @@ uint64_t SystemSnapshotWin::CPUX86Features() const {
          static_cast<uint64_t>(cpu_info[3]);
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -392,7 +390,6 @@ uint64_t SystemSnapshotWin::CPUX86ExtendedFeatures() const {
          static_cast<uint64_t>(cpu_info[3]);
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -411,7 +408,6 @@ uint32_t SystemSnapshotWin::CPUX86Leaf7Features() const {
   return cpu_info[1];
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -442,7 +438,6 @@ bool SystemSnapshotWin::CPUX86SupportsDAZ() const {
   return (mxcsr_mask & (1 << 6)) != 0;
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 

@@ -19,7 +19,7 @@ enum GinJavaBridgeError {
 };
 
 // Interface for adding objects to a frame in the renderer.
-// TODO(crbug.com/794320): This interface mirrors
+// TODO(crbug.com/40554401): This interface mirrors
 // `blink.mojom.RemoteObjectGateway` and should be removed once
 // crbug.com/794320 is complete.
 interface GinJavaBridge {
@@ -36,7 +36,7 @@ interface GinJavaBridge {
 
 // Implemented in the process hosting the remote object. Allows methods to be
 // synchronously invoked on the object.
-// TODO(crbug.com/794320): This interface mirrors `blink.mojom.RemoteObject`
+// TODO(crbug.com/40554401): This interface mirrors `blink.mojom.RemoteObject`
 // but without the serialization changes. This should be merged with that
 // definition once crbug.com/794320 is complete.
 interface GinJavaBridgeRemoteObject {
@@ -67,7 +67,7 @@ interface GinJavaBridgeRemoteObject {
 
 // Implemented in the process hosting the remote objects. Allows access to an
 // object graph.
-// TODO(crbug.com/794320): This class mirrors `blink.mojom.RemoteObjectHost`
+// TODO(crbug.com/40554401): This class mirrors `blink.mojom.RemoteObjectHost`
 // and should be removed once crbug.com/794320 is complete.
 interface GinJavaBridgeHost {
   // Binds |receiver| to an implementation of RemoteObject corresponding to

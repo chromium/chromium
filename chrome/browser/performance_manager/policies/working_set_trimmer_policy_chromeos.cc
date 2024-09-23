@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/synchronization/lock.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -29,7 +31,7 @@ namespace performance_manager {
 namespace policies {
 
 namespace {
-// TODO(crbug.com/1189677): Remove the global static variable and make it
+// TODO(crbug.com/40755583): Remove the global static variable and make it
 // GraphOwned once performance_manager code is migrated to UI thread.
 WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate* g_arcvm_delegate_for_testing =
     nullptr;
@@ -74,6 +76,8 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
   trim_arcvm_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcVmOnMemoryPressure);
+  disable_trim_while_suspended_ =
+      base::FeatureList::IsEnabled(features::kDisableTrimmingWhileSuspended);
 
   params_ = features::TrimOnMemoryPressureParams::GetParams();
 
@@ -99,6 +103,10 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
       trim_arcvm_on_memory_pressure_ = false;
     }
   }
+
+  if (disable_trim_while_suspended_) {
+    power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
+  }
 }
 
 WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
@@ -108,6 +116,26 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // at least the backoff period.
 void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
+  bool skip_trimming_due_to_suspend = false;
+  if (disable_trim_while_suspended_) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::AutoLock lock(mutex_);
+    skip_trimming_due_to_suspend =
+        is_system_suspended_ ||
+        (last_suspend_done_time_ &&
+         now - *last_suspend_done_time_ < params_.suspend_backoff_time);
+  }
+  // We define idle as the last visible time be greater than some threshold.
+  // Since the monotonic clock can keep on ticking during suspend (by dark
+  // resume) when we resume it can look like the tab has not been used in some
+  // huge amount of time. In reality, the user hasn't been doing anything.
+  // Waiting for kSuspendBackoffTimeSec after resuming ensures that enough time
+  // has elapsed so that inappropriately added time from dark resume can no
+  // longer affect whether or not a tab has been invisible for long enough to be
+  // eligible for trimming.
+  if (skip_trimming_due_to_suspend) {
+    return;
+  }
   if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
@@ -144,7 +172,7 @@ void WorkingSetTrimmerPolicyChromeOS::set_arcvm_delegate_for_testing(
 
 void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
   const base::TimeTicks now_ticks = base::TimeTicks::Now();
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     if (!page_node->IsVisible() &&
         page_node->GetTimeSinceLastVisibilityChange() >
             params_.node_invisible_time) {
@@ -291,7 +319,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcProcesses() {
 void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   DCHECK_NE(level, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
-  // TODO(crbug.com/1189677): Remove the PostTask once performance_manager code
+  // TODO(crbug.com/40755583): Remove the PostTask once performance_manager code
   // is migrated to UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&TrimArcVmProcessesOnUIThread, level, params_,
@@ -304,7 +332,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
     features::TrimOnMemoryPressureParams params,
     base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1189677): Let the policy own WorkingSetTrimmerPolicyArcVm
+  // TODO(crbug.com/40755583): Let the policy own WorkingSetTrimmerPolicyArcVm
   // instance once performance_manager code is migrated to UI thread.
   auto* arcvm_delegate = g_arcvm_delegate_for_testing
                              ? g_arcvm_delegate_for_testing
@@ -370,7 +398,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
     }
   }
 
-  // TODO(crbug.com/1189677): Remove the PostTask once performance_manager code
+  // TODO(crbug.com/40755583): Remove the PostTask once performance_manager code
   // is migrated to UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindRepeating(&DoTrimArcVmOnUIThread,
@@ -430,7 +458,6 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
 
 void WorkingSetTrimmerPolicyChromeOS::OnTakenFromGraph(Graph* graph) {
   memory_pressure_listener_.reset();
-  graph_ = nullptr;
   WorkingSetTrimmerPolicy::OnTakenFromGraph(graph);
 }
 
@@ -439,6 +466,19 @@ void WorkingSetTrimmerPolicyChromeOS::OnAllFramesInProcessFrozen(
   if (trim_on_freeze_) {
     WorkingSetTrimmerPolicy::OnAllFramesInProcessFrozen(process_node);
   }
+}
+
+void WorkingSetTrimmerPolicyChromeOS::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  base::AutoLock lock(mutex_);
+  is_system_suspended_ = true;
+}
+
+void WorkingSetTrimmerPolicyChromeOS::SuspendDone(base::TimeDelta duration) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::AutoLock lock(mutex_);
+  is_system_suspended_ = false;
+  last_suspend_done_time_ = now;
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
@@ -450,7 +490,6 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
       base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,
                           base::Unretained(this)));
 
-  graph_ = graph;
   WorkingSetTrimmerPolicy::OnPassedToGraph(graph);
 }
 

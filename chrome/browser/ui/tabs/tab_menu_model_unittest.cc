@@ -13,19 +13,22 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
-#include "components/feed/feed_feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 
 class TabMenuModelTest : public MenuModelTest,
                          public BrowserWithTestWindowTest {
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabMenuModelTest, Basics) {
@@ -47,10 +50,7 @@ TEST_F(TabMenuModelTest, Basics) {
 TEST_F(TabMenuModelTest, OrganizeTabs) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kTabOrganization, features::kChromeRefresh2023,
-       features::kChromeWebuiRefresh2023},
-      {});
+  feature_list.InitWithFeatures({features::kTabOrganization}, {});
 
   chrome::NewTab(browser());
   TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
@@ -59,6 +59,151 @@ TEST_F(TabMenuModelTest, OrganizeTabs) {
   // Verify that CommandOrganizeTabs is in the menu.
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandOrganizeTabs)
                   .has_value());
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> https_web_content =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(https_web_content.get())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+
+  tab_strip->AppendWebContents(std::move(https_web_content), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+  EXPECT_TRUE(model
+                  .GetIndexOfCommandId(
+                      TabStripModel::CommandCommerceProductSpecifications)
+                  .has_value());
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecsIncognito) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+
+  TestingProfile::Builder incognito_profile_builder;
+  auto* incognito_profile = incognito_profile_builder.BuildIncognito(profile());
+
+  Browser::CreateParams native_params(incognito_profile, true);
+  native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
+  std::unique_ptr<Browser> browser =
+      CreateBrowserWithTestWindowForParams(native_params);
+  Browser* incognito_browser = browser.get();
+
+  AddTab(incognito_browser, GURL("https://example.com"));
+  AddTab(incognito_browser, GURL("https://example2.com"));
+
+  TabStripModel* tab_strip = incognito_browser->tab_strip_model();
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+
+  TabMenuModel model(&delegate_, incognito_browser->tab_menu_model_delegate(),
+                     incognito_browser->tab_strip_model(), 0);
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+
+  // All tabs must be closed before the object is destroyed.
+  incognito_browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecsInvalidScheme) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> chrome_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  content::WebContentsTester::For(chrome_web_contents.get())
+      ->NavigateAndCommit(GURL("chrome://bookmarks"));
+
+  tab_strip->AppendWebContents(std::move(chrome_web_contents), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecsHttp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+
+  std::unique_ptr<content::WebContents> http_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(http_web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com"));
+
+  tab_strip->AppendWebContents(std::move(http_web_contents), true);
+  chrome::NewTab(browser());
+
+  tab_strip->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_TRUE(model
+                  .GetIndexOfCommandId(
+                      TabStripModel::CommandCommerceProductSpecifications)
+                  .has_value());
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecsFeatureCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {commerce::kProductSpecifications});
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  tab_strip->AddSelectionFromAnchorTo(1);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
+}
+
+TEST_F(TabMenuModelTest, CommerceProductSpecsInsuffcientSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({commerce::kProductSpecifications}, {});
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
+
+  EXPECT_FALSE(model
+                   .GetIndexOfCommandId(
+                       TabStripModel::CommandCommerceProductSpecifications)
+                   .has_value());
 }
 
 TEST_F(TabMenuModelTest, MoveToNewWindow) {
@@ -166,116 +311,6 @@ TEST_F(TabMenuModelTest, AddToExistingGroupAfterGroupDestroyed) {
 
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(0).has_value());
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(1).has_value());
-}
-
-TEST_F(TabMenuModelTest, FollowOrUnfollow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(feed::kWebUiFeed);
-
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-
-  content::WebContents* web_contents0 = tab_strip->GetWebContentsAt(0);
-  feed::WebFeedTabHelper::CreateForWebContents(web_contents0);
-  feed::WebFeedTabHelper* web_feed_tab_helper0 =
-      feed::WebFeedTabHelper::FromWebContents(web_contents0);
-
-  content::WebContents* web_contents1 = tab_strip->GetWebContentsAt(1);
-  feed::WebFeedTabHelper::CreateForWebContents(web_contents1);
-  feed::WebFeedTabHelper* web_feed_tab_helper1 =
-      feed::WebFeedTabHelper::FromWebContents(web_contents1);
-
-  content::WebContents* web_contents2 = tab_strip->GetWebContentsAt(2);
-  feed::WebFeedTabHelper::CreateForWebContents(web_contents2);
-  feed::WebFeedTabHelper* web_feed_tab_helper2 =
-      feed::WebFeedTabHelper::FromWebContents(web_contents2);
-
-  tab_strip->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  tab_strip->ExtendSelectionTo(2);
-
-  // Neither "Follow site" nor "Unfollow site" should be added when there is at
-  // least one site in kUnknown state.
-  {
-    web_feed_tab_helper0->SetWebFeedInfoForTesting(
-        web_contents0->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper1->SetWebFeedInfoForTesting(
-        web_contents1->GetLastCommittedURL(),
-        TabWebFeedFollowState::kNotFollowed, std::string());
-    web_feed_tab_helper2->SetWebFeedInfoForTesting(
-        web_contents2->GetLastCommittedURL(), TabWebFeedFollowState::kUnknown,
-        std::string());
-    TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
-                      tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
-  }
-
-  // "Unfollow site" should be added when all sites are in kFollowed state.
-  {
-    web_feed_tab_helper0->SetWebFeedInfoForTesting(
-        web_contents0->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper1->SetWebFeedInfoForTesting(
-        web_contents1->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper2->SetWebFeedInfoForTesting(
-        web_contents2->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
-                      tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_TRUE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                    .has_value());
-  }
-
-  // "Follow site" should be added when not all sites are in kFollowed state.
-  {
-    web_feed_tab_helper0->SetWebFeedInfoForTesting(
-        web_contents0->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper1->SetWebFeedInfoForTesting(
-        web_contents1->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper2->SetWebFeedInfoForTesting(
-        web_contents2->GetLastCommittedURL(),
-        TabWebFeedFollowState::kNotFollowed, std::string());
-    TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
-                      tab_strip, 0);
-    EXPECT_TRUE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
-  }
-
-  // Neither "Follow site" nor "Unfollow site" should be added when the recorded
-  // URL in WebFeedTabHelper does not match with the last committed URL in
-  // web contents.
-  {
-    web_feed_tab_helper0->SetWebFeedInfoForTesting(
-        GURL("http://example.org/test"), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper1->SetWebFeedInfoForTesting(
-        web_contents1->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    web_feed_tab_helper2->SetWebFeedInfoForTesting(
-        web_contents2->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
-        std::string());
-    TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
-                      tab_strip, 0);
-    EXPECT_FALSE(
-        menu.GetIndexOfCommandId(TabStripModel::CommandFollowSite).has_value());
-    EXPECT_FALSE(menu.GetIndexOfCommandId(TabStripModel::CommandUnfollowSite)
-                     .has_value());
-  }
 }
 
 class TabMenuModelTestTabStripModelDelegate : public TestTabStripModelDelegate {

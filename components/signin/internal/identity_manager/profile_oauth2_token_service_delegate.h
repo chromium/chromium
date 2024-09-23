@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -42,6 +43,15 @@ class ProfileOAuth2TokenService;
 // CreateAccessTokenFetcher properly.
 class ProfileOAuth2TokenServiceDelegate {
  public:
+  // Equivalent typedefs in `ProfileOAuth2TokenService`.
+  typedef base::RepeatingCallback<void(const CoreAccountId& /* account_id */,
+                                       bool /* is_refresh_token_valid */,
+                                       const std::string& /* source */)>
+      RefreshTokenAvailableFromSourceCallback;
+  typedef base::RepeatingCallback<void(const CoreAccountId& /* account_id */,
+                                       const std::string& /* source */)>
+      RefreshTokenRevokedFromSourceCallback;
+
   explicit ProfileOAuth2TokenServiceDelegate(bool use_backoff);
 
   ProfileOAuth2TokenServiceDelegate(const ProfileOAuth2TokenServiceDelegate&) =
@@ -72,12 +82,20 @@ class ProfileOAuth2TokenServiceDelegate {
                                const GoogleServiceAuthError& error,
                                bool fire_auth_error_changed = true);
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns the wrapped binding key of a refresh token associated with
+  // `account_id`, if any.
+  // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
+  // and (b) the refresh token is bound to a device.
+  virtual std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const = 0;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // Returns a list of accounts for which a refresh token is maintained by
   // |this| instance, in the order the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
   virtual std::vector<CoreAccountId> GetAccounts() const;
-  virtual void RevokeAllCredentials() {}
 
   virtual void OnAccessTokenInvalidated(
       const CoreAccountId& account_id,
@@ -92,16 +110,7 @@ class ProfileOAuth2TokenServiceDelegate {
       const CoreAccountId& failed_account) {}
 
   virtual void Shutdown() {}
-  virtual void UpdateCredentials(
-      const CoreAccountId& account_id,
-      const std::string& refresh_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  ) {
-  }
-  virtual void RevokeCredentials(const CoreAccountId& account_id) {}
+
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const;
 
@@ -128,12 +137,40 @@ class ProfileOAuth2TokenServiceDelegate {
   // Methods that are only used by ProfileOAuth2TokenService.
   // -----------------------------------------------------------------------
 
+  // Redirects to `UpdateCredentialsInternal()` which can be overridden by
+  // subclasses. Sets the source for the refresh token operation.
+  void UpdateCredentials(
+      const CoreAccountId& account_id,
+      const std::string& refresh_token,
+      signin_metrics::SourceForRefreshTokenOperation source =
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
+
+  // Redirects to `RevokeCredentialsInternal()` which can be overridden by
+  // subclasses. Sets the source for the refresh token operation.
+  void RevokeCredentials(
+      const CoreAccountId& account_id,
+      signin_metrics::SourceForRefreshTokenOperation source =
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  // Redirects to `RevokeAllCredentialsInternal()` which can be overridden by
+  // subclasses. Sets the source for the refresh token operation.
+  void RevokeAllCredentials(
+      signin_metrics::SourceForRefreshTokenOperation source =
+          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
   // Loads the credentials from disk. Called only once when the token service
   // is initialized. Default implementation is NOTREACHED - subsclasses that
   // are used by the ProfileOAuth2TokenService must provide an implementation
   // for this method.
-  virtual void LoadCredentials(const CoreAccountId& primary_account_id,
-                               bool is_syncing);
+  // Redirects to `LoadCredentialsInternal()` which can be overridden by
+  // subclasses. Sets the source for the refresh token operation.
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing);
 
   // Returns the state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state() const {
@@ -144,12 +181,15 @@ class ProfileOAuth2TokenServiceDelegate {
   // and moves them to |to_service|. The credentials are not revoked on the
   // server, but the OnRefreshTokenRevoked() notification is sent to the
   // observers.
-  virtual void ExtractCredentials(ProfileOAuth2TokenService* to_service,
-                                  const CoreAccountId& account_id);
+  // Redirects to `ExtractCredentialsInternal()` which can be overridden by
+  // subclasses. Sets the source for the refresh token operation.
+  void ExtractCredentials(ProfileOAuth2TokenService* to_service,
+                          const CoreAccountId& account_id);
 
-  // Attempts to fix the error if possible.  Returns true if the error was fixed
-  // and false otherwise.
-  virtual bool FixRequestErrorIfPossible();
+  // Attempts to fix account error. This is only possible for some cases where
+  // signin happens with a credential provider. See
+  // `signin_util::SigninWithCredentialProviderIfPossible()`.
+  virtual bool FixAccountErrorIfPossible();
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
@@ -172,6 +212,23 @@ class ProfileOAuth2TokenServiceDelegate {
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif
+
+  // If set, this callback will be invoked when a new refresh token is
+  // available. Contains diagnostic information about the source of the update
+  // credentials operation.
+  void SetRefreshTokenAvailableFromSourceCallback(
+      RefreshTokenAvailableFromSourceCallback callback);
+
+  // If set, this callback will be invoked when a refresh token is revoked.
+  // Contains diagnostic information about the source that initiated the
+  // revocation operation.
+  void SetRefreshTokenRevokedFromSourceCallback(
+      RefreshTokenRevokedFromSourceCallback callback);
+
+  // This callback will be invoked when a refresh token is revoked and observers
+  // have been notified.
+  void SetOnRefreshTokenRevokedNotified(
+      base::RepeatingCallback<void(const CoreAccountId&)> callback);
 
   // -----------------------------------------------------------------------
   // End of methods that are only used by ProfileOAuth2TokenService
@@ -212,17 +269,42 @@ class ProfileOAuth2TokenServiceDelegate {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
+                           FireRefreshTokenRevoked);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                            BackOffIsTriggerredForTransientErrors);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
-                           UpdateAuthError_TransientErrors);
+                           UpdateAuthErrorTransientErrors);
+
+  // Internal implementations of the methods that can be overridden by
+  // subclasses.
+
+  virtual void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                                       bool is_syncing) = 0;
+
+  virtual void UpdateCredentialsInternal(
+      const CoreAccountId& account_id,
+      const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  ) {
+  }
+
+  virtual void RevokeCredentialsInternal(const CoreAccountId& account_id) {}
+
+  virtual void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) {}
+
+  virtual void ExtractCredentialsInternal(ProfileOAuth2TokenService* to_service,
+                                          const CoreAccountId& account_id);
 
   // List of observers to notify when refresh token availability changes.
   // Makes sure list is empty on destruction.
-  base::ObserverList<ProfileOAuth2TokenServiceObserver, true>::Unchecked
-      observer_list_;
+  base::ObserverList<ProfileOAuth2TokenServiceObserver, true> observer_list_;
 
   // The state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state_ =
@@ -242,6 +324,15 @@ class ProfileOAuth2TokenServiceDelegate {
 
   // A map from account id to the last seen error for that account.
   std::map<CoreAccountId, GoogleServiceAuthError> errors_;
+
+  // Callbacks to invoke, if set, for refresh token-related events.
+  RefreshTokenAvailableFromSourceCallback on_refresh_token_available_callback_;
+  RefreshTokenRevokedFromSourceCallback on_refresh_token_revoked_callback_;
+  base::RepeatingCallback<void(const CoreAccountId&)>
+      on_refresh_token_revoked_notified_callback_;
+
+  signin_metrics::SourceForRefreshTokenOperation update_refresh_token_source_ =
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

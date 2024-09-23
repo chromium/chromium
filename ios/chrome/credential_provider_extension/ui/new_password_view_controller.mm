@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       cell.accessibilityTraits |= UIAccessibilityTraitButton;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       cellType = NewPasswordTableCellTypeSuggestStrongPassword;
       break;
   }
@@ -381,9 +381,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSString* password = self.passwordText;
   NSString* note = self.noteText;
 
+  // TODO(crbug.com/330355124): Get the gaia ID if there's only 1 account OR
+  // show some UI so that the user can pick which account to create the password
+  // in.
+  NSString* gaia = nil;
+
   [self.credentialHandler saveCredentialWithUsername:username
                                             password:password
                                                 note:note
+                                                gaia:gaia
                                        shouldReplace:shouldReplace];
 }
 
@@ -502,7 +508,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)credentialSaved:(ArchivableCredential*)credential {
   CPENewCredentialUsername usernameType =
-      (credential.user.length)
+      (credential.username.length)
           ? CPENewCredentialUsername::kCredentialWithUsername
           : CPENewCredentialUsername::kCredentialWithoutUsername;
   UpdateHistogramCount(@"IOS.CredentialExtension.NewCredentialUsername",
@@ -534,27 +540,31 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
     (FormInputAccessoryView*)sender {
   return [[FormInputAccessoryViewTextData alloc]
-                initWithCloseButtonTitle:
-                    NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DONE",
-                                      @"Done")
-           closeButtonAccessibilityLabel:NSLocalizedString(
-                                             @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
-                                             @"PASSWORD_HIDE_KEYBOARD_HINT",
-                                             @"Hide Keyboard")
-            nextButtonAccessibilityLabel:
-                NSLocalizedString(
-                    @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_NEXT_FIELD_HINT",
-                    @"Next field")
-        previousButtonAccessibilityLabel:
-            NSLocalizedString(
-                @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_PREVIOUS_FIELD_HINT",
-                @"Previous field")
-      manualFillButtonAccessibilityLabel:nil];
+                          initWithCloseButtonTitle:
+                              NSLocalizedString(
+                                  @"IDS_IOS_CREDENTIAL_PROVIDER_DONE", @"Done")
+                     closeButtonAccessibilityLabel:
+                         NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                           @"PASSWORD_HIDE_KEYBOARD_HINT",
+                                           @"Hide Keyboard")
+                      nextButtonAccessibilityLabel:
+                          NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                            @"PASSWORD_NEXT_FIELD_HINT",
+                                            @"Next field")
+                  previousButtonAccessibilityLabel:
+                      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                        @"PASSWORD_PREVIOUS_FIELD_HINT",
+                                        @"Previous field")
+                manualFillButtonAccessibilityLabel:nil
+        passwordManualFillButtonAccessibilityLabel:nil
+      creditCardManualFillButtonAccessibilityLabel:nil
+         addressManualFillButtonAccessibilityLabel:nil];
 }
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED() << "The typing shield should only be present on web";
+  NOTREACHED_IN_MIGRATION()
+      << "The typing shield should only be present on web";
 }
 
 @end

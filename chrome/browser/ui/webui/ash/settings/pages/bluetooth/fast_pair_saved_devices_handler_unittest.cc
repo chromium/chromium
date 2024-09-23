@@ -43,15 +43,13 @@ const char kSavedDeviceImageUrlKey[] = "imageUrl";
 const char kSavedDeviceAccountKeyKey[] = "accountKey";
 
 const char kDisplayUrlBase64[] =
-    "data:image/"
-    "png;base64,"
-    "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABAElEQVR4nO3RQQ0AIBDAsAP/"
-    "nuGNAvZoFSzZmjNnyNi/"
-    "A3gZEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhs"
-    "QYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQY"
-    "EmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEm"
-    "NIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNI"
-    "zAXrTQLGi/OgEwAAAABJRU5ErkJggg==";
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/"
+    "gAIDAAAA5klEQVR4nO3QQQkAIADAQLV/"
+    "Z63gXiLcJRibYw8urdcBPzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMC"
+    "swKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCsw"
+    "KzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKz"
+    "ArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCs4iV8Bx6UARfcA"
+    "AAAASUVORK5CYII=";
 
 const char kDeviceName1[] = "I16max";
 const char kImageBytes1[] = "01010101001010101010101010101";
@@ -114,7 +112,7 @@ std::string EncodeKey(const std::vector<uint8_t>& decoded_key) {
   return base::HexEncode(decoded_key);
 }
 
-bool VerifyDeviceInList(const base::Value& device,
+void AssertDeviceInList(const base::Value& device,
                         const std::string& expected_device_name,
                         const std::string& expected_base64_image_url,
                         const std::vector<uint8_t> expected_account_key) {
@@ -125,9 +123,9 @@ bool VerifyDeviceInList(const base::Value& device,
   const base::Value* device_account_key =
       device_dict->Find(kSavedDeviceAccountKeyKey);
 
-  return (expected_device_name == device_name->GetString()) &&
-         (expected_base64_image_url == device_url->GetString()) &&
-         (EncodeKey(expected_account_key) == device_account_key->GetString());
+  ASSERT_EQ(expected_device_name, device_name->GetString());
+  ASSERT_EQ(expected_base64_image_url, device_url->GetString());
+  ASSERT_EQ(EncodeKey(expected_account_key), device_account_key->GetString());
 }
 
 class TestFastPairSavedDevicesHandler : public FastPairSavedDevicesHandler {
@@ -224,21 +222,18 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
         saved_devices_list_call_data.arg2()->GetIfList();
     ASSERT_EQ(3u, saved_devices_list->size());
 
-    ASSERT_TRUE(
-        VerifyDeviceInList(/*device=*/*(saved_devices_list->begin()),
-                           /*expected_device_name=*/device_name1,
-                           /*expected_base64_image_url=*/expected_device_url1,
-                           /*expected_account_key=*/account_key1));
-    ASSERT_TRUE(
-        VerifyDeviceInList(/*device=*/*(saved_devices_list->begin() + 1),
-                           /*expected_device_name=*/device_name2,
-                           /*expected_base64_image_url=*/expected_device_url2,
-                           /*expected_account_key=*/account_key2));
-    ASSERT_TRUE(
-        VerifyDeviceInList(/*device=*/*(saved_devices_list->begin() + 2),
-                           /*expected_device_name=*/device_name3,
-                           /*expected_base64_image_url=*/expected_device_url3,
-                           /*expected_account_key=*/account_key3));
+    AssertDeviceInList(/*device=*/*(saved_devices_list->begin()),
+                       /*expected_device_name=*/device_name1,
+                       /*expected_base64_image_url=*/expected_device_url1,
+                       /*expected_account_key=*/account_key1);
+    AssertDeviceInList(/*device=*/*(saved_devices_list->begin() + 1),
+                       /*expected_device_name=*/device_name2,
+                       /*expected_base64_image_url=*/expected_device_url2,
+                       /*expected_account_key=*/account_key2);
+    AssertDeviceInList(/*device=*/*(saved_devices_list->begin() + 2),
+                       /*expected_device_name=*/device_name3,
+                       /*expected_base64_image_url=*/expected_device_url3,
+                       /*expected_account_key=*/account_key3);
   }
 
   void VerifyEmptySavedDevicesList(
@@ -599,16 +594,14 @@ TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
   const base::Value::List* saved_devices_list =
       test_web_ui()->call_data()[3]->arg2()->GetIfList();
   ASSERT_EQ(2u, saved_devices_list->size());
-  ASSERT_TRUE(
-      VerifyDeviceInList(/*device=*/*(saved_devices_list->begin()),
-                         /*expected_device_name=*/kDeviceName1,
-                         /*expected_base64_image_url=*/kDisplayUrlBase64,
-                         /*expected_account_key=*/kAccountKey1));
-  ASSERT_TRUE(
-      VerifyDeviceInList(/*device=*/*(saved_devices_list->begin() + 1),
-                         /*expected_device_name=*/kDeviceName2,
-                         /*expected_base64_image_url=*/kDisplayUrlBase64,
-                         /*expected_account_key=*/kAccountKey2));
+  AssertDeviceInList(/*device=*/*(saved_devices_list->begin()),
+                     /*expected_device_name=*/kDeviceName1,
+                     /*expected_base64_image_url=*/kDisplayUrlBase64,
+                     /*expected_account_key=*/kAccountKey1);
+  AssertDeviceInList(/*device=*/*(saved_devices_list->begin() + 1),
+                     /*expected_device_name=*/kDeviceName2,
+                     /*expected_base64_image_url=*/kDisplayUrlBase64,
+                     /*expected_account_key=*/kAccountKey2);
 
   histogram_tester().ExpectBucketCount(kSavedDeviceRemoveResultMetricName,
                                        /*success=*/true, 1);

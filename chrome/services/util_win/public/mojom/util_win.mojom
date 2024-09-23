@@ -89,6 +89,39 @@ struct AntiVirusProduct {
   AntiVirusProductState state;
 };
 
+struct TpmIdentifier {
+  // The ID used to identify the manufacturer of the TPM. It will be matched
+  // against the list of trusted manufacturers reported by the Trusted
+  // Computing Group.
+  uint32 manufacturer_id;
+
+  // The hardware version is used to identify the physical TPM
+  // chip provided by the manufacturer. This might not be recorded, see
+  // ShouldReportFullNames() in
+  // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+  string? manufacturer_version;
+
+  // Information regarding the type of TPM on the machine, such as if the
+  // chip is a virtual TPM or a physical one. This might not be recorded,
+  // see ShouldReportFullNames() in
+  // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+  string? manufacturer_version_info;
+
+  // The TPM software specification version (2.0 or 1.2) and sub version.
+  // This might not be recorded, see ShouldReportFullNames() in
+  // chrome/browser/metrics/tpm_metrics_provider_win.cc.
+  string? tpm_specific_version;
+
+  // Hash value of the manufacturer_version value.
+  uint32 manufacturer_version_hash;
+
+  // Hash value of the manufacturer_version_info value.
+  uint32 manufacturer_version_info_hash;
+
+  // Hash value of the tpm_specific_version value.
+  uint32 tpm_specific_version_hash;
+};
+
 struct ClsId {
   array<uint8, 16> bytes;
 };
@@ -139,19 +172,16 @@ enum ShortcutOperation {
 [ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface UtilWin {
   // Returns the pinned state of the current executable.
-  IsPinnedToTaskbar() => (bool succeeded,
-                          bool is_pinned_to_taskbar);
+  IsPinnedToTaskbar() => (bool succeeded, bool is_pinned_to_taskbar);
 
   // Unpins all shortcuts in `shortcut_paths`.
-  UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)
-    => ();
+  UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths) => ();
 
   // Creates or updates shortcuts. Returns true if all operations succeeded,
   // false if any failed.
   CreateOrUpdateShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths,
-                              array<ShortcutProperties> properties,
-                                ShortcutOperation operation) =>
-      (bool succeeded);
+                          array<ShortcutProperties> properties,
+                          ShortcutOperation operation) => (bool succeeded);
 
   // Executes a select file operation that can be executed on a utility process.
   // |owner|:
@@ -180,21 +210,25 @@ interface UtilWin {
                         mojo_base.mojom.FilePath default_path,
                         array<FileFilterSpec> filter,
                         int32 file_type_index,
-                        mojo_base.mojom.String16 default_extension) =>
-      (array<mojo_base.mojom.FilePath> paths,
-       int32 file_type_index);
+                        mojo_base.mojom.String16 default_extension)
+      => (array<mojo_base.mojom.FilePath> paths, int32 file_type_index);
 
   // Given a module located at |module_path|, returns a populated
   // ModuleInspectionResult that contains detailed information about the module
   // on disk.
-  InspectModule(mojo_base.mojom.FilePath module_path) =>
-      (InspectionResult inspection_result);
+  InspectModule(mojo_base.mojom.FilePath module_path)
+      => (InspectionResult inspection_result);
 
   // Returns the list of all antivirus software installed on the user's machine.
   // |report_full_names| controls whether or not the full name of each software
   // is included in the list, in order to preserve privacy.
-  GetAntiVirusProducts(bool report_full_names) =>
-      (array<AntiVirusProduct> av_products);
+  GetAntiVirusProducts(bool report_full_names)
+      => (array<AntiVirusProduct> av_products);
+
+  // Returns TPM identifying information on the user's machine.
+  // `report_full_names` controls whether or not the full identifying
+  // fields are included or just the hashes.
+  GetTpmIdentifier(bool report_full_names) => (TpmIdentifier? tpm_identifier);
 };
 
 // Hosted by a utility service in kNoSandbox (with CET allowed). Called on

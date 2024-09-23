@@ -33,9 +33,6 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   // Used when calling the "legacy" Process() method with buffers that are
   // managed by the processor. The first argument is the index of the returned
   // buffer.
-  using LegacyFrameReadyCB =
-      base::OnceCallback<void(size_t, scoped_refptr<VideoFrame>)>;
-  // FrameResource version of LegacyFrameReadyCB
   using LegacyFrameResourceReadyCB =
       base::OnceCallback<void(size_t, scoped_refptr<FrameResource>)>;
 
@@ -52,27 +49,19 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   struct MEDIA_GPU_EXPORT PortConfig {
     PortConfig() = delete;
     PortConfig(const PortConfig&);
-    PortConfig(
-        Fourcc fourcc,
-        const gfx::Size& size,
-        const std::vector<ColorPlaneLayout>& planes,
-        const gfx::Rect& visible_rect,
-        const std::vector<VideoFrame::StorageType>& preferred_storage_types);
+    PortConfig(Fourcc fourcc,
+               const gfx::Size& size,
+               const std::vector<ColorPlaneLayout>& planes,
+               const gfx::Rect& visible_rect,
+               const VideoFrame::StorageType storage_type);
     ~PortConfig();
 
     bool operator==(const PortConfig& other) const {
       return fourcc == other.fourcc && size == other.size &&
              planes == other.planes && visible_rect == other.visible_rect &&
-             preferred_storage_types == other.preferred_storage_types;
+             storage_type == other.storage_type;
     }
     bool operator!=(const PortConfig& other) const { return !(*this == other); }
-
-    // Get the first |preferred_storage_types|.
-    // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.
-    VideoFrame::StorageType storage_type() const {
-      return preferred_storage_types.empty() ? VideoFrame::STORAGE_UNKNOWN
-                                             : preferred_storage_types.front();
-    }
 
     // Output human readable string of PortConfig.
     // Example:
@@ -92,8 +81,9 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
     // Layout property (stride, offset, size of bytes) for each color plane.
     const std::vector<ColorPlaneLayout> planes;
     const gfx::Rect visible_rect;
-    // List of preferred storage types.
-    const std::vector<VideoFrame::StorageType> preferred_storage_types;
+
+    // Video frame storage type.
+    const VideoFrame::StorageType storage_type;
   };
 
   // Process |input_frame| and store in |output_frame|. Only used when output
@@ -111,15 +101,6 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   virtual void ProcessFrame(scoped_refptr<FrameResource> input_frame,
                             scoped_refptr<FrameResource> output_frame,
                             FrameResourceReadyCB cb) = 0;
-
-  // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
-  // used when output mode is ALLOCATE. After processing, call |cb| with the
-  // buffer.
-  // If ALLOCATE mode is not supported, the implementation is optional. In this
-  // case, this method should not be called and the default implementation will
-  // panic.
-  virtual void ProcessLegacy(scoped_refptr<VideoFrame> frame,
-                             LegacyFrameReadyCB cb);
 
   // Process |frame| and store in in a ImageProcessor-owned output buffer. Only
   // used when output mode is ALLOCATE. After processing, call |cb| with the
@@ -181,7 +162,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
 namespace std {
 
-// Specialize std::default_delete to call Destroy().
+// Specialize std::default_delete to call Destroy() on the right sequence.
 template <>
 struct MEDIA_GPU_EXPORT default_delete<media::ImageProcessorBackend> {
   constexpr default_delete() = default;

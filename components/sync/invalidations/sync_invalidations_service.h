@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 class FCMRegistrationTokenObserver;
@@ -27,7 +27,7 @@ class SyncInvalidationsService : public KeyedService {
   // Data types which are newly marked as interesting will be passed to the
   // callback.
   using InterestedDataTypesAppliedCallback =
-      base::RepeatingCallback<void(const ModelTypeSet&)>;
+      base::RepeatingCallback<void(const DataTypeSet&)>;
 
   // Starts handling incoming invalidations and obtains an FCM token if it
   // doesn't have one.
@@ -69,8 +69,8 @@ class SyncInvalidationsService : public KeyedService {
   // Get or set for which data types should the device receive invalidations.
   // GetInterestedDataTypes() will return base::nullptr until
   // SetInterestedDataTypes() has been called at least once.
-  virtual std::optional<ModelTypeSet> GetInterestedDataTypes() const = 0;
-  virtual void SetInterestedDataTypes(const ModelTypeSet& data_types) = 0;
+  virtual std::optional<DataTypeSet> GetInterestedDataTypes() const = 0;
+  virtual void SetInterestedDataTypes(const DataTypeSet& data_types) = 0;
   virtual void SetCommittedAdditionalInterestedDataTypesCallback(
       InterestedDataTypesAppliedCallback callback) = 0;
 };

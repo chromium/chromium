@@ -8,8 +8,10 @@
 #include "base/notreached.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/child_iterator.h"
 #include "ui/accessibility/platform/child_iterator_base.h"
 
@@ -17,7 +19,7 @@ namespace ui {
 
 AXPlatformNodeDelegate::AXPlatformNodeDelegate() : node_(nullptr) {}
 
-AXPlatformNodeDelegate::AXPlatformNodeDelegate(ui::AXNode* node) : node_(node) {
+AXPlatformNodeDelegate::AXPlatformNodeDelegate(AXNode* node) : node_(node) {
   DCHECK(node);
   DCHECK(node->IsDataValid());
 }
@@ -27,7 +29,7 @@ void AXPlatformNodeDelegate::SetNode(AXNode& node) {
   node_ = &node;
 }
 
-ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
+AXNodeID AXPlatformNodeDelegate::GetId() const {
   if (node_)
     return node_->id();
   return kInvalidAXNodeID;
@@ -67,7 +69,7 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   // compute the text of a non-leaf text field from the text contents of its
   // children, even though we currently know of no such text field in Views.
   //
-  // TODO(https://crbug.com/1030703): The check for `IsInvisibleOrIgnored()`
+  // TODO(crbug.com/40662009): The check for `IsInvisibleOrIgnored()`
   // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
   // supposed to skip over nodes that are invisible or ignored, but
   // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
@@ -86,6 +88,15 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
     text_content += child->GetDelegate()->GetTextContentUTF16();
   }
   return text_content;
+}
+
+int AXPlatformNodeDelegate::GetTextContentLengthUTF16() const {
+  // TODO(accessibility): Simplify once ViewsAX is complete.
+  if (node_) {
+    return node_->GetTextContentLengthUTF16();
+  }
+
+  return GetTextContentUTF16().length();
 }
 
 std::u16string AXPlatformNodeDelegate::GetValueForControl() const {
@@ -128,17 +139,17 @@ AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreateTextPositionAt(
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNSWindow() {
-  NOTREACHED() << "Only available on macOS.";
+  NOTREACHED_IN_MIGRATION() << "Only available on macOS.";
   return nullptr;
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
-  // TODO(crbug.com/703369) On Windows, where we have started to migrate to an
+  // TODO(crbug.com/41308426) On Windows, where we have started to migrate to an
   // AXPlatformNode implementation, the BrowserAccessibilityWin subclass has
   // overridden this method. On all other platforms, this method should not be
   // called yet. In the future, when all subclasses have moved over to be
   // implemented by AXPlatformNode, we may make this method completely virtual.
-  NOTREACHED() << "https://crbug.com/703369";
+  NOTREACHED_IN_MIGRATION() << "https://crbug.com/703369";
   return nullptr;
 }
 
@@ -403,7 +414,7 @@ bool AXPlatformNodeDelegate::SetHypertextSelection(int start_offset,
 
 TextAttributeMap AXPlatformNodeDelegate::ComputeTextAttributeMap(
     const TextAttributeList& default_attributes) const {
-  ui::TextAttributeMap attributes_map;
+  TextAttributeMap attributes_map;
   attributes_map[0] = default_attributes;
   return attributes_map;
 }
@@ -479,7 +490,7 @@ AXPlatformNode* AXPlatformNodeDelegate::GetFromNodeID(int32_t id) {
 }
 
 AXPlatformNode* AXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
-    const ui::AXTreeID& ax_tree_id,
+    const AXTreeID& ax_tree_id,
     int32_t id) {
   return nullptr;
 }
@@ -503,19 +514,20 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
     ax::mojom::IntListAttribute attr) {
   DCHECK(IsNodeIdIntListAttribute(attr));
-  std::vector<int32_t> target_ids;
-  if (!GetIntListAttribute(attr, &target_ids))
+  if (!HasIntListAttribute(attr)) {
     return std::vector<AXPlatformNode*>();
+  }
 
   // If we use std::set to eliminate duplicates, the resulting set will be
   // sorted by the id and we will lose the original order which may be of
   // interest to ATs. The number of ids should be small.
 
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
+  const std::vector<int32_t>& target_ids = GetIntListAttribute(attr);
+
   for (int32_t target_id : target_ids) {
-    ui::AXPlatformNode* target = GetFromNodeID(target_id);
-    if (target && IsValidRelationTarget(target) &&
-        !base::Contains(nodes, target)) {
+    AXPlatformNode* target = GetFromNodeID(target_id);
+    if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
       nodes.push_back(target);
     }
   }
@@ -540,14 +552,13 @@ AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
   return std::vector<AXPlatformNode*>();
 }
 
-std::vector<ui::AXPlatformNode*>
-AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
+std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
     const std::set<AXNodeID>& ids) {
-  std::vector<ui::AXPlatformNode*> nodes;
+  std::vector<AXPlatformNode*> nodes;
 
   for (AXNodeID node_id : ids) {
-    ui::AXPlatformNode* node = GetFromNodeID(node_id);
-    if (node && IsValidRelationTarget(node)) {
+    AXPlatformNode* node = GetFromNodeID(node_id);
+    if (IsValidRelationTarget(node)) {
       nodes.push_back(node);
     }
   }
@@ -556,27 +567,35 @@ AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
 
 bool AXPlatformNodeDelegate::IsValidRelationTarget(
     AXPlatformNode* target) const {
-  DCHECK_GT(GetUniqueId(), kInvalidAXUniqueId);
+  if (!target) {
+    // This can occur when the target of the relation was not included in the
+    // tree, e.g. it was display:none or role="none".
+    // By returning false here, the relation will not be included in the
+    // relations reported via platform APIs.
+    return false;
+  }
+  DCHECK_GT(GetUniqueId(), AXPlatformNodeId());
   DCHECK(target);
-  DCHECK_GT(target->GetUniqueId(), kInvalidAXUniqueId);
+  DCHECK_GT(target->GetUniqueId(), AXPlatformNodeId());
   // We should ignore reflexive relations.
   return GetUniqueId() != target->GetUniqueId();
 }
 
 std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
   if (node_)
-    return node_->GetHtmlAttribute("id");
+    return node_->GetString16Attribute(ax::mojom::StringAttribute::kHtmlId);
   return std::u16string();
 }
 
-const AXUniqueId& AXPlatformNodeDelegate::GetUniqueId() const {
-  static base::NoDestructor<AXUniqueId> empty_unique_id;
-  return *empty_unique_id;
+AXPlatformNodeId AXPlatformNodeDelegate::GetUniqueId() const {
+  static const base::NoDestructor<AXUniqueId> empty_unique_id(
+      AXUniqueId::Create());
+  return empty_unique_id->Get();
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {
   AXPlatformNode* parent_node =
-      ui::AXPlatformNode::FromNativeViewAccessible(GetParent());
+      AXPlatformNode::FromNativeViewAccessible(GetParent());
   if (parent_node)
     return parent_node->GetDelegate();
   return nullptr;
@@ -699,9 +718,11 @@ const std::string& AXPlatformNodeDelegate::GetStringAttribute(
 bool AXPlatformNodeDelegate::GetStringAttribute(
     ax::mojom::StringAttribute attribute,
     std::string* value) const {
-  if (node_)
-    return node_->GetStringAttribute(attribute, value);
-  return GetData().GetStringAttribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetStringAttribute(attribute);
+  }
+  return found;
 }
 
 std::u16string AXPlatformNodeDelegate::GetString16Attribute(
@@ -714,9 +735,11 @@ std::u16string AXPlatformNodeDelegate::GetString16Attribute(
 bool AXPlatformNodeDelegate::GetString16Attribute(
     ax::mojom::StringAttribute attribute,
     std::u16string* value) const {
-  if (node_)
-    return node_->GetString16Attribute(attribute, value);
-  return GetData().GetString16Attribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetString16Attribute(attribute);
+  }
+  return found;
 }
 
 const std::string& AXPlatformNodeDelegate::GetInheritedStringAttribute(
@@ -761,9 +784,11 @@ const std::vector<int32_t>& AXPlatformNodeDelegate::GetIntListAttribute(
 bool AXPlatformNodeDelegate::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute,
     std::vector<int32_t>* value) const {
-  if (node_)
-    return node_->GetIntListAttribute(attribute, value);
-  return GetData().GetIntListAttribute(attribute, value);
+  bool found = HasIntListAttribute(attribute);
+  if (found) {
+    *value = GetIntListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasStringListAttribute(
@@ -783,9 +808,11 @@ const std::vector<std::string>& AXPlatformNodeDelegate::GetStringListAttribute(
 bool AXPlatformNodeDelegate::GetStringListAttribute(
     ax::mojom::StringListAttribute attribute,
     std::vector<std::string>* value) const {
-  if (node_)
-    return node_->GetStringListAttribute(attribute, value);
-  return GetData().GetStringListAttribute(attribute, value);
+  bool found = HasStringListAttribute(attribute);
+  if (found) {
+    *value = GetStringListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasHtmlAttribute(const char* attribute) const {
@@ -891,7 +918,7 @@ std::vector<ax::mojom::Action> AXPlatformNodeDelegate::GetSupportedActions()
   std::vector<ax::mojom::Action> supported_actions;
 
   // The default action must be listed at index 0.
-  // TODO(crbug.com/1370076): Do this only if (HasDefaultActionVerb()), After
+  // TODO(crbug.com/40869533): Do this only if (HasDefaultActionVerb()), After
   // some time tracking the DCHECK at
   // BrowserAccessibilityManager::DoDefaultAction()
   supported_actions.push_back(ax::mojom::Action::kDoDefault);
@@ -1099,10 +1126,24 @@ std::optional<int32_t> AXPlatformNodeDelegate::GetCellId(int row_index,
   return std::nullopt;
 }
 
+std::optional<int32_t> AXPlatformNodeDelegate::GetCellIdAriaCoords(
+    int aria_row_index,
+    int aria_col_index) const {
+  if (node_) {
+    AXNode* cell =
+        node()->GetTableCellFromAriaCoords(aria_row_index, aria_col_index);
+    if (!cell) {
+      return std::nullopt;
+    }
+    return cell->id();
+  }
+  return std::nullopt;
+}
+
 std::optional<int32_t> AXPlatformNodeDelegate::CellIndexToId(
     int cell_index) const {
   if (node_) {
-    ui::AXNode* cell = node()->GetTableCellFromIndex(cell_index);
+    AXNode* cell = node()->GetTableCellFromIndex(cell_index);
     if (!cell)
       return std::nullopt;
     return cell->id();
@@ -1165,7 +1206,7 @@ AXPlatformNodeDelegate::GetTargetForNativeAccessibilityEvent() {
 }
 
 bool AXPlatformNodeDelegate::AccessibilityPerformAction(
-    const ui::AXActionData& data) {
+    const AXActionData& data) {
   return false;
 }
 
@@ -1241,8 +1282,8 @@ bool AXPlatformNodeDelegate::IsUIANodeSelected() const {
 
 const std::vector<gfx::NativeViewAccessible>
 AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
-    ui::AXPlatformNodeDelegate* start,
-    ui::AXPlatformNodeDelegate* end) {
+    AXPlatformNodeDelegate* start,
+    AXPlatformNodeDelegate* end) {
   return {};
 }
 

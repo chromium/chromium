@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -531,19 +531,19 @@ TEST(BreakIteratorTest, GetStringAfterSetText) {
   EXPECT_EQ(u",", iter.GetString());
 }
 
-TEST(BreakIteratorTest, GetStringPiece) {
+TEST(BreakIteratorTest, GetStringView) {
   const std::u16string initial_string(u"some string");
   BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(iter.GetString(), iter.GetStringPiece());
-  EXPECT_EQ(StringPiece16(u"some"), iter.GetStringPiece());
+  EXPECT_EQ(iter.GetString(), iter.GetStringView());
+  EXPECT_EQ(std::u16string_view(u"some"), iter.GetStringView());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(iter.GetString(), iter.GetStringPiece());
-  EXPECT_EQ(StringPiece16(u"string"), iter.GetStringPiece());
+  EXPECT_EQ(iter.GetString(), iter.GetStringView());
+  EXPECT_EQ(std::u16string_view(u"string"), iter.GetStringView());
 }
 
 // Make sure that when not in RULE_BASED or BREAK_WORD mode we're getting

@@ -11,23 +11,30 @@
 
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/prioritized_dispatcher.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_client.h"
+#include "net/dns/dns_task_results_manager.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_manager_request_impl.h"
+#include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_nat64_task.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
@@ -68,15 +75,6 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
   return false;
 }
 
-base::Value ToLogStringValue(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
-  }
-
-  return base::Value(absl::get<std::string>(host));
-}
-
 // Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
 base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
                                         RequestPriority priority) {
@@ -86,19 +84,19 @@ base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
   return dict;
 }
 
-bool IsSchemeHttpsOrWss(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (!absl::holds_alternative<url::SchemeHostPort>(host)) {
+bool IsSchemeHttpsOrWss(const HostResolver::Host& host) {
+  if (!host.HasScheme()) {
     return false;
   }
-  base::StringPiece scheme = absl::get<url::SchemeHostPort>(host).scheme();
+  const std::string& scheme = host.GetScheme();
   return scheme == url::kHttpsScheme || scheme == url::kWssScheme;
 }
 
 }  // namespace
 
-HostResolverManager::JobKey::JobKey(ResolveContext* resolve_context)
-    : resolve_context(resolve_context->GetWeakPtr()) {}
+HostResolverManager::JobKey::JobKey(HostResolver::Host host,
+                                    ResolveContext* resolve_context)
+    : host(std::move(host)), resolve_context(resolve_context->GetWeakPtr()) {}
 
 HostResolverManager::JobKey::~JobKey() = default;
 
@@ -121,20 +119,26 @@ bool HostResolverManager::JobKey::operator==(const JobKey& other) const {
 }
 
 HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
-  if (query_types.Size() != 1) {
+  if (query_types.size() != 1) {
     // This function will produce identical cache keys for `JobKey` structs
     // that differ only in their (non-singleton) `query_types` fields. When we
     // enable new query types, this behavior could lead to subtle bugs. That
     // is why the following DCHECK restricts the allowable query types.
     DCHECK(Difference(query_types, {DnsQueryType::A, DnsQueryType::AAAA,
                                     DnsQueryType::HTTPS})
-               .Empty());
+               .empty());
   }
-  const DnsQueryType query_type_for_key = query_types.Size() == 1
+  const DnsQueryType query_type_for_key = query_types.size() == 1
                                               ? *query_types.begin()
                                               : DnsQueryType::UNSPECIFIED;
-  HostCache::Key key(host, query_type_for_key, flags, source,
-                     network_anonymization_key);
+  absl::variant<url::SchemeHostPort, std::string> host_for_cache;
+  if (host.HasScheme()) {
+    host_for_cache = host.AsSchemeHostPort();
+  } else {
+    host_for_cache = std::string(host.GetHostnameWithoutBrackets());
+  }
+  HostCache::Key key(std::move(host_for_cache), query_type_for_key, flags,
+                     source, network_anonymization_key);
   key.secure = secure;
   return key;
 }
@@ -170,6 +174,11 @@ HostResolverManager::Job::Job(
   net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB, [&] {
     return NetLogJobCreationParams(source_net_log.source());
   });
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
+        this, key_.host, key_.query_types, net_log_);
+  }
 }
 
 HostResolverManager::Job::~Job() {
@@ -194,6 +203,13 @@ HostResolverManager::Job::~Job() {
     req->RemoveFromList();
     CHECK(key_ == req->GetJobKey());
     req->OnJobCancelled(key_);
+  }
+
+  while (!service_endpoint_requests_.empty()) {
+    ServiceEndpointRequestImpl* request =
+        service_endpoint_requests_.head()->value();
+    request->RemoveFromList();
+    request->OnJobCancelled();
   }
 }
 
@@ -220,27 +236,15 @@ void HostResolverManager::Job::AddRequest(RequestImpl* request) {
   // HostCache. Since the ResolveContext is part of the JobKey, any request
   // added to any existing Job should share the same HostCache.
   DCHECK_EQ(host_cache_, request->host_cache());
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
+  // TODO(crbug.com/40181080): Check equality of whole host once Jobs are
   // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
+  DCHECK_EQ(key_.host.GetHostnameWithoutBrackets(),
             request->request_host().GetHostnameWithoutBrackets());
 
   request->AssignJob(weak_ptr_factory_.GetSafeRef());
 
-  priority_tracker_.Add(request->priority());
-
-  request->source_net_log().AddEventReferencingSource(
-      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_ATTACH, net_log_.source());
-
-  net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH,
-                    [&] {
-                      return NetLogJobAttachParams(
-                          request->source_net_log().source(), priority());
-                    });
-
-  if (!request->parameters().is_speculative) {
-    had_non_speculative_request_ = true;
-  }
+  AddRequestCommon(request->priority(), request->source_net_log(),
+                   request->parameters().is_speculative);
 
   requests_.Append(request);
 
@@ -249,10 +253,7 @@ void HostResolverManager::Job::AddRequest(RequestImpl* request) {
 
 void HostResolverManager::Job::ChangeRequestPriority(RequestImpl* req,
                                                      RequestPriority priority) {
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
-  // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
-            req->request_host().GetHostnameWithoutBrackets());
+  DCHECK_EQ(key_.host, req->request_host());
 
   priority_tracker_.Remove(req->priority());
   req->set_priority(priority);
@@ -261,18 +262,10 @@ void HostResolverManager::Job::ChangeRequestPriority(RequestImpl* req,
 }
 
 void HostResolverManager::Job::CancelRequest(RequestImpl* request) {
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
-  // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
-            request->request_host().GetHostnameWithoutBrackets());
+  DCHECK_EQ(key_.host, request->request_host());
   DCHECK(!requests_.empty());
 
-  priority_tracker_.Remove(request->priority());
-  net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH,
-                    [&] {
-                      return NetLogJobAttachParams(
-                          request->source_net_log().source(), priority());
-                    });
+  CancelRequestCommon(request->priority(), request->source_net_log());
 
   if (num_active_requests() > 0) {
     UpdatePriority();
@@ -284,6 +277,43 @@ void HostResolverManager::Job::CancelRequest(RequestImpl* request) {
     CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED,
                               /*task_type=*/std::nullopt);
   }
+}
+
+void HostResolverManager::Job::AddServiceEndpointRequest(
+    ServiceEndpointRequestImpl* request) {
+  CHECK_EQ(host_cache_, request->host_cache());
+
+  request->AssignJob(weak_ptr_factory_.GetSafeRef());
+
+  AddRequestCommon(request->priority(), request->net_log(),
+                   request->parameters().is_speculative);
+
+  service_endpoint_requests_.Append(request);
+
+  UpdatePriority();
+}
+
+void HostResolverManager::Job::CancelServiceEndpointRequest(
+    ServiceEndpointRequestImpl* request) {
+  CancelRequestCommon(request->priority(), request->net_log());
+
+  if (num_active_requests() > 0) {
+    UpdatePriority();
+    request->RemoveFromList();
+  } else {
+    // See comments in CancelRequest().
+    CompleteRequestsWithError(ERR_DNS_REQUEST_CANCELLED,
+                              /*task_type=*/std::nullopt);
+  }
+}
+
+void HostResolverManager::Job::ChangeServiceEndpointRequestPriority(
+    ServiceEndpointRequestImpl* request,
+    RequestPriority priority) {
+  priority_tracker_.Remove(request->priority());
+  request->set_priority(priority);
+  priority_tracker_.Add(request->priority());
+  UpdatePriority();
 }
 
 void HostResolverManager::Job::Abort() {
@@ -343,7 +373,7 @@ void HostResolverManager::Job::OnEvicted() {
 bool HostResolverManager::Job::ServeFromHosts() {
   DCHECK_GT(num_active_requests(), 0u);
   std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-      HostResolver::GetHostname(key_.host), key_.query_types,
+      key_.host.GetHostnameWithoutBrackets(), key_.query_types,
       key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
   if (results) {
     // This will destroy the Job.
@@ -356,7 +386,7 @@ bool HostResolverManager::Job::ServeFromHosts() {
 
 void HostResolverManager::Job::OnAddedToJobMap(JobMap::iterator iterator) {
   DCHECK(!self_iterator_);
-  DCHECK(iterator != resolver_->jobs_.end());
+  CHECK(iterator != resolver_->jobs_.end(), base::NotFatalUntil::M130);
   self_iterator_ = iterator;
 }
 
@@ -446,7 +476,7 @@ void HostResolverManager::Job::RunNextTask() {
     case TaskType::HOSTS:
       // These task types should have been handled synchronously in
       // ResolveLocally() prior to Job creation.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -455,7 +485,7 @@ base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
     const NetLogSource& source) {
   base::Value::Dict dict;
   source.AddToEventParameters(dict);
-  dict.Set("host", ToLogStringValue(key_.host));
+  dict.Set("host", key_.host.ToString());
   base::Value::List query_types_list;
   for (DnsQueryType query_type : key_.query_types) {
     query_types_list.Append(kDnsQueryTypes.at(query_type));
@@ -504,6 +534,7 @@ void HostResolverManager::Job::KillDnsTask() {
     }
     dns_task_.reset();
   }
+  dns_task_results_manager_.reset();
 }
 
 void HostResolverManager::Job::ReduceByOneJobSlot() {
@@ -520,8 +551,34 @@ void HostResolverManager::Job::ReduceByOneJobSlot() {
     }
     --num_occupied_job_slots_;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
+}
+
+void HostResolverManager::Job::AddRequestCommon(
+    RequestPriority request_priority,
+    const NetLogWithSource& request_net_log,
+    bool is_speculative) {
+  priority_tracker_.Add(request_priority);
+  request_net_log.AddEventReferencingSource(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_ATTACH, net_log_.source());
+  net_log_.AddEvent(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH, [&] {
+        return NetLogJobAttachParams(request_net_log.source(), priority());
+      });
+  if (!is_speculative) {
+    had_non_speculative_request_ = true;
+  }
+}
+
+void HostResolverManager::Job::CancelRequestCommon(
+    RequestPriority request_priority,
+    const NetLogWithSource& request_net_log) {
+  priority_tracker_.Remove(request_priority);
+  net_log_.AddEvent(
+      NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH, [&] {
+        return NetLogJobAttachParams(request_net_log.source(), priority());
+      });
 }
 
 void HostResolverManager::Job::UpdatePriority() {
@@ -559,11 +616,17 @@ void HostResolverManager::Job::StartSystemTask() {
   DCHECK_EQ(1, num_occupied_job_slots_);
   DCHECK(HasAddressType(key_.query_types));
 
+  std::optional<HostResolverSystemTask::CacheParams> cache_params;
+  if (key_.resolve_context->host_resolver_cache()) {
+    cache_params.emplace(*key_.resolve_context->host_resolver_cache(),
+                         key_.network_anonymization_key);
+  }
+
   system_task_ = HostResolverSystemTask::Create(
-      std::string(HostResolver::GetHostname(key_.host)),
+      std::string(key_.host.GetHostnameWithoutBrackets()),
       HostResolver::DnsQueryTypeSetToAddressFamily(key_.query_types),
       key_.flags, resolver_->host_resolver_system_params_, net_log_,
-      key_.GetTargetNetwork());
+      key_.GetTargetNetwork(), std::move(cache_params));
 
   // Start() could be called from within Resolve(), hence it must NOT directly
   // call OnSystemTaskComplete, for example, on synchronous failure.
@@ -638,6 +701,7 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   DCHECK_EQ(secure, !dispatched_);
   DCHECK_EQ(dispatched_ ? 1 : 0, num_occupied_job_slots_);
   DCHECK(!resolver_->ShouldForceSystemResolverDueToTestOverride());
+
   // Need to create the task even if we're going to post a failure instead of
   // running it, as a "started" job needs a task to be properly cleaned up.
   dns_task_ = std::make_unique<HostResolverDnsTask>(
@@ -750,7 +814,9 @@ void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
                    secure ? TaskType::SECURE_DNS : TaskType::DNS);
 }
 
-void HostResolverManager::Job::OnIntermediateTransactionsComplete() {
+void HostResolverManager::Job::OnIntermediateTransactionsComplete(
+    std::optional<HostResolverDnsTask::SingleTransactionResults>
+        single_transaction_results) {
   if (dispatched_) {
     DCHECK_GE(num_occupied_job_slots_,
               dns_task_->num_transactions_in_progress());
@@ -779,11 +845,31 @@ void HostResolverManager::Job::OnIntermediateTransactionsComplete() {
   } else if (dns_task_->num_additional_transactions_needed() >= 1) {
     dns_task_->StartNextTransaction();
   }
+
+  if (dns_task_results_manager_ && single_transaction_results.has_value()) {
+    dns_task_results_manager_->ProcessDnsTransactionResults(
+        single_transaction_results->query_type,
+        single_transaction_results->results);
+    // `this` may be deleted. Do not add code below.
+  }
 }
 
 void HostResolverManager::Job::AddTransactionTimeQueued(
     base::TimeDelta time_queued) {
   total_transaction_time_queued_ += time_queued;
+}
+
+void HostResolverManager::Job::OnServiceEndpointsUpdated() {
+  // Requests could be destroyed while executing callbacks. Post tasks
+  // instead of calling callbacks synchronously to prevent requests from being
+  // destroyed in the following for loop.
+  for (auto* request = service_endpoint_requests_.head();
+       request != service_endpoint_requests_.end(); request = request->next()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceEndpointRequestImpl::OnServiceEndpointsChanged,
+                       request->value()->GetWeakPtr()));
+  }
 }
 
 void HostResolverManager::Job::StartMdnsTask() {
@@ -795,7 +881,7 @@ void HostResolverManager::Job::StartMdnsTask() {
   MDnsClient* client = nullptr;
   int rv = resolver_->GetOrCreateMdnsClient(&client);
   mdns_task_ = std::make_unique<HostResolverMdnsTask>(
-      client, std::string{HostResolver::GetHostname(key_.host)},
+      client, std::string(key_.host.GetHostnameWithoutBrackets()),
       key_.query_types);
 
   if (rv == OK) {
@@ -812,7 +898,7 @@ void HostResolverManager::Job::StartMdnsTask() {
 
 void HostResolverManager::Job::OnMdnsTaskComplete() {
   DCHECK(mdns_task_);
-  // TODO(crbug.com/846423): Consider adding MDNS-specific logging.
+  // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
   HostCache::Entry results = mdns_task_->GetResults();
 
@@ -821,7 +907,7 @@ void HostResolverManager::Job::OnMdnsTaskComplete() {
     return;
   }
   // MDNS uses a separate cache, so skip saving result to cache.
-  // TODO(crbug.com/926300): Consider merging caches.
+  // TODO(crbug.com/40611558): Consider merging caches.
   CompleteRequestsWithoutCache(results, std::nullopt /* stale_info */,
                                TaskType::MDNS);
 }
@@ -836,7 +922,7 @@ void HostResolverManager::Job::OnMdnsImmediateFailure(int rv) {
 void HostResolverManager::Job::StartNat64Task() {
   DCHECK(!nat64_task_);
   nat64_task_ = std::make_unique<HostResolverNat64Task>(
-      HostResolver::GetHostname(key_.host), key_.network_anonymization_key,
+      key_.host.GetHostnameWithoutBrackets(), key_.network_anonymization_key,
       net_log_, &*key_.resolve_context, resolver_);
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                     weak_ptr_factory_.GetWeakPtr()));
@@ -908,7 +994,7 @@ void HostResolverManager::Job::RecordJobHistograms(
         // successful queries are reported as errors, which would skew the
         // metrics.
         IsSchemeHttpsOrWss(key_.host) &&
-        IsGoogleHostWithAlpnH3(HostResolver::GetHostname(key_.host))) {
+        IsGoogleHostWithAlpnH3(key_.host.GetHostnameWithoutBrackets())) {
       bool has_metadata = !results.GetMetadatas().empty();
       base::UmaHistogramExactLinear(
           "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
@@ -987,7 +1073,17 @@ void HostResolverManager::Job::CompleteRequests(
     }
   }
 
-  // TODO(crbug.com/1200908): Call StartBootstrapFollowup() if any of the
+  while (!service_endpoint_requests_.empty()) {
+    ServiceEndpointRequestImpl* request =
+        service_endpoint_requests_.head()->value();
+    request->RemoveFromList();
+    request->OnJobCompleted(results, secure);
+    if (!resolver_.get()) {
+      return;
+    }
+  }
+
+  // TODO(crbug.com/40178456): Call StartBootstrapFollowup() if any of the
   // requests have the Bootstrap policy.  Note: A naive implementation could
   // cause an infinite loop if the bootstrap result has TTL=0.
 }

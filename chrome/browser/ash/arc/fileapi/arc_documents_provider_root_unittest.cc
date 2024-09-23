@@ -1562,7 +1562,7 @@ TEST_F(ArcDocumentsProviderRootTest, WatchChanged) {
   // make installation finish we run the message loop until idle. This depends
   // on the behavior of FakeFileSystemInstance.
   //
-  // TODO(crbug.com/698624): Remove the hack to make AddWatcher() return
+  // TODO(crbug.com/40509383): Remove the hack to make AddWatcher() return
   // immediately.
   base::RunLoop().RunUntilIdle();
 
@@ -1612,7 +1612,7 @@ TEST_F(ArcDocumentsProviderRootTest, WatchDeleted) {
   // make installation finish we run the message loop until idle. This depends
   // on the behavior of FakeFileSystemInstance.
   //
-  // TODO(crbug.com/698624): Remove the hack to make AddWatcher() return
+  // TODO(crbug.com/40509383): Remove the hack to make AddWatcher() return
   // immediately.
   base::RunLoop().RunUntilIdle();
 

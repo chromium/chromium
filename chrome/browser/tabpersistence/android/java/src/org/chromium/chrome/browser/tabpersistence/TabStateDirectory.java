@@ -11,14 +11,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 
 import java.io.File;
 
 /**
  * Manages the directory where tab state is saved.
  *
- * TODO(crbug.com/1097396): Deduplicate code between tabbed mode and custom tabs.
+ * <p>TODO(crbug.com/40136597): Deduplicate code between tabbed mode and custom tabs.
  */
 public class TabStateDirectory {
     private static final String TAG = "tabpersistence";
@@ -50,11 +49,8 @@ public class TabStateDirectory {
             if (sTabbedModeStateDirectory == null) {
                 sTabbedModeStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), TABBED_MODE_DIRECTORY);
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    if (!sTabbedModeStateDirectory.exists()
-                            && !sTabbedModeStateDirectory.mkdirs()) {
-                        Log.e(TAG, "Failed to create state folder: " + sTabbedModeStateDirectory);
-                    }
+                if (!sTabbedModeStateDirectory.exists() && !sTabbedModeStateDirectory.mkdirs()) {
+                    Log.e(TAG, "Failed to create state folder: " + sTabbedModeStateDirectory);
                 }
             }
         }
@@ -70,11 +66,8 @@ public class TabStateDirectory {
             if (sCustomTabsStateDirectory == null) {
                 sCustomTabsStateDirectory =
                         new File(getOrCreateBaseStateDirectory(), CUSTOM_TABS_DIRECTORY);
-                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                    if (!sCustomTabsStateDirectory.exists()
-                            && !sCustomTabsStateDirectory.mkdirs()) {
-                        Log.e(TAG, "Failed to create state folder: " + sCustomTabsStateDirectory);
-                    }
+                if (!sCustomTabsStateDirectory.exists() && !sCustomTabsStateDirectory.mkdirs()) {
+                    Log.e(TAG, "Failed to create state folder: " + sCustomTabsStateDirectory);
                 }
             }
         }

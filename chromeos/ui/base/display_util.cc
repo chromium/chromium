@@ -50,7 +50,7 @@ OrientationType RotationToOrientation(OrientationType natural,
         return OrientationType::kLandscapeSecondary;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return OrientationType::kAny;
 }
 
@@ -88,7 +88,7 @@ display::Display::Rotation OrientationToRotation(OrientationType natural,
         break;
     }
   }
-  NOTREACHED() << static_cast<int>(orientation);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(orientation);
   return display::Display::ROTATE_0;
 }
 

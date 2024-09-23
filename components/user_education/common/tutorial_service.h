@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -23,7 +24,6 @@ class TutorialInteractiveUitest;
 
 namespace user_education {
 
-class HelpBubble;
 class HelpBubbleFactoryRegistry;
 class TutorialRegistry;
 
@@ -42,6 +42,7 @@ class TutorialService {
 
   using CompletedCallback = base::OnceClosure;
   using AbortedCallback = base::OnceClosure;
+  using RestartedCallback = base::RepeatingClosure;
 
   // Returns true if there is a currently running tutorial.
   // If `id` is specified, specifically returns whether *that* tutorial is
@@ -63,7 +64,8 @@ class TutorialService {
       TutorialIdentifier id,
       ui::ElementContext context,
       CompletedCallback completed_callback = base::DoNothing(),
-      AbortedCallback aborted_callback = base::DoNothing());
+      AbortedCallback aborted_callback = base::DoNothing(),
+      RestartedCallback restart_callback = base::DoNothing());
 
   void LogIPHLinkClicked(TutorialIdentifier id, bool iph_link_was_clicked);
   virtual void LogStartedFromWhatsNewPage(TutorialIdentifier id,
@@ -111,7 +113,8 @@ class TutorialService {
 
   // Called when a non-final bubble is closed. Used to trigger the broken
   // tutorial timeout.
-  void OnNonFinalBubbleClosed(HelpBubble* bubble);
+  void OnNonFinalBubbleClosed(HelpBubble* bubble,
+                              HelpBubble::CloseReason reason);
 
   // Calls the completion code for the running tutorial.
   // TODO (dpenning): allow for registering a callback that performs any
@@ -146,6 +149,9 @@ class TutorialService {
 
   // Called if the current tutorial is aborted.
   AbortedCallback aborted_callback_ = base::DoNothing();
+
+  // Called if the current tutorial is restarted.
+  RestartedCallback restarted_callback_ = base::DoNothing();
 
   // The current help bubble displayed by the tutorial. This is owned by the
   // service so that when the tutorial exits, the bubble can continue existing.

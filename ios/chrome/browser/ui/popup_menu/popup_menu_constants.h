@@ -56,6 +56,8 @@ extern NSString* const kToolsMenuRequestMobileId;
 extern NSString* const kToolsMenuReadLater;
 // AddBookmark item accessibility Identifier.
 extern NSString* const kToolsMenuAddToBookmarks;
+// Open lens overlay item accessibility Identifier.
+extern NSString* const kToolsMenuOpenLensOverlay;
 // EditBookmark item accessibility Identifier.
 extern NSString* const kToolsMenuEditBookmark;
 // SiteInformation item accessibility Identifier.

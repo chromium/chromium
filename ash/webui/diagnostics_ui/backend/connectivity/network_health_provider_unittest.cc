@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -171,8 +170,6 @@ class NetworkHealthProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     SystemTokenCertDbStorage::Initialize();
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(features::kCellularCarrierLock);
 
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<user_manager::FakeUserManager>());
@@ -547,7 +544,6 @@ class NetworkHealthProviderTest : public AshTestBase {
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(NetworkHealthProviderTest, ZeroNetworksAvailable) {

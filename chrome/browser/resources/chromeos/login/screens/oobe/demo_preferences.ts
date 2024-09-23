@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_i18n_dropdown.js';
@@ -16,11 +15,11 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 
@@ -32,12 +31,7 @@ const RETAILER_NAME_INPUT_MAX_LENGTH = 256;
 const STORE_NUMBER_INPUT_MAX_LENGTH = 256;
 
 const DemoPreferencesScreenBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   static get is() {
@@ -138,11 +132,6 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     this.updateLocalizedContent();
   }
 
-  /** Overridden from LoginScreenBehavior. */
-  override get EXTERNAL_API(): string[] {
-    return [];
-  }
-
   /** Returns a control which should receive an initial focus. */
   override get defaultControl(): HTMLElement {
     return this.shadowRoot!.getElementById('demoPreferencesDialog')!;
@@ -150,6 +139,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
 
   /** Called when dialog is shown */
   override onBeforeShow(): void {
+    super.onBeforeShow();
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
   }
 
@@ -195,7 +185,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   private setCountryList_(countries: OobeTypes.DemoCountryDsc[]): void {
     this.countries = countries;
     this.shadowRoot!.getElementById('countryDropdownContainer')!.hidden =
-        countries.length == 0;
+        countries.length === 0;
     for (let i = 0; i < countries.length; ++i) {
       const country = countries[i];
       if (country.selected && country.value !== this.countryNotSelectedId) {
@@ -255,7 +245,7 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   }
 
   private onInputKeyDown_(e: KeyboardEvent): void {
-    if (e.key == 'Enter' &&
+    if (e.key === 'Enter' &&
         this.userCanContinue_(
             this.retailerNameInput, this.storeNumberInput,
             this.isCountrySelected)) {

@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -153,7 +153,7 @@ void SettingsUiBindings::ReconnectMojo() {
   if (settings_platform_ptr_.is_bound())
     settings_platform_ptr_.reset();
 
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       settings_platform_ptr_.BindNewPipeAndPassReceiver());
   settings_platform_ptr_.set_disconnect_handler(base::BindOnce(
       &SettingsUiBindings::OnMojoConnectionError, weak_factory_.GetWeakPtr()));

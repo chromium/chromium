@@ -4,50 +4,30 @@
 
 package org.chromium.components.module_installer.util;
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.text.TextUtils;
 
-import com.google.android.play.core.splitinstall.SplitInstallManager;
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
 /** CrashKey Recorder for installed modules. */
 class CrashKeyRecorder {
     public static void updateCrashKeys() {
-        Context context = ContextUtils.getApplicationContext();
-        CrashKeys ck = CrashKeys.getInstance();
-
         // Get modules that are fully installed as split APKs (excluding base which is always
         // installed). Tree set to have ordered and, thus, deterministic results.
-        Set<String> fullyInstalledModules = new TreeSet<>();
+        Set<String> installedModules = new TreeSet<>();
         PackageInfo packageInfo = PackageUtils.getApplicationPackageInfo(0);
         if (packageInfo.splitNames != null) {
-            fullyInstalledModules.addAll(Arrays.asList(packageInfo.splitNames));
+            Collections.addAll(installedModules, packageInfo.splitNames);
         }
 
-        // Create temporary split install manager to retrieve both fully installed and emulated
-        // modules. Then remove fully installed ones to get emulated ones only. Querying the
-        // installed modules can only be done if splitcompat has already been called. Otherwise,
-        // emulation of later modules won't work. If splitcompat has not been called no modules
-        // are emulated. Therefore, use an empty set in that case.
-        Set<String> emulatedModules = new TreeSet<>();
-        if (SplitCompatInitializer.isInitialized()) {
-            SplitInstallManager manager = SplitInstallManagerFactory.create(context);
-            emulatedModules.addAll(manager.getInstalledModules());
-            emulatedModules.removeAll(fullyInstalledModules);
-        }
-
-        ck.set(CrashKeyIndex.INSTALLED_MODULES, encodeCrashKeyValue(fullyInstalledModules));
-        ck.set(CrashKeyIndex.EMULATED_MODULES, encodeCrashKeyValue(emulatedModules));
+        CrashKeys ck = CrashKeys.getInstance();
+        ck.set(CrashKeyIndex.INSTALLED_MODULES, encodeCrashKeyValue(installedModules));
     }
 
     private static String encodeCrashKeyValue(Set<String> moduleNames) {

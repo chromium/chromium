@@ -11,11 +11,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -47,6 +48,7 @@
 
 namespace content {
 
+class ServiceWorkerContainerHostForServiceWorker;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 struct ServiceWorkerVersionBaseInfo;
@@ -56,11 +58,12 @@ struct ServiceWorkerVersionBaseInfo;
 // execution context instance.
 //
 // Lives on the UI thread.
-class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
+class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
+                                         public base::SupportsUserData {
  public:
   ServiceWorkerHost(mojo::PendingAssociatedReceiver<
                         blink::mojom::ServiceWorkerContainerHost> host_receiver,
-                    ServiceWorkerVersion* version,
+                    ServiceWorkerVersion& version,
                     base::WeakPtr<ServiceWorkerContextCore> context);
 
   ServiceWorkerHost(const ServiceWorkerHost&) = delete;
@@ -99,7 +102,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   void BindUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  content::ServiceWorkerContainerHost* container_host() {
+  ServiceWorkerContainerHostForServiceWorker* container_host() {
     return container_host_.get();
   }
 
@@ -134,12 +137,17 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void GetSandboxedFileSystemForBucket(
       const storage::BucketInfo& bucket,
+      const std::vector<std::string>& directory_path_components,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
-  GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
+  storage::BucketClientInfo GetBucketClientInfo() const override;
+
+  void BindAIManager(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
-  int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  RenderProcessHost* GetProcessHost() const;
+
+  int worker_process_id_;
 
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.
@@ -165,7 +173,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 
-  std::unique_ptr<ServiceWorkerContainerHost> container_host_;
+  std::unique_ptr<ServiceWorkerContainerHostForServiceWorker> container_host_;
 
   service_manager::InterfaceProvider remote_interfaces_{
       base::SingleThreadTaskRunner::GetCurrentDefault()};

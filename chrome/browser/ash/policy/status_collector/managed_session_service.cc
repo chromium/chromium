@@ -7,10 +7,11 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
@@ -19,11 +20,6 @@ namespace policy {
 namespace {
 
 constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
-
-ash::KioskLaunchController* GetKioskLaunchController() {
-  auto* host = ash::LoginDisplayHost::default_host();
-  return host ? host->GetKioskLaunchController() : nullptr;
-}
 
 }  // namespace
 
@@ -50,9 +46,9 @@ ManagedSessionService::~ManagedSessionService() {
         ->RemoveLoginStatusConsumer(this);
   }
 
-  if (GetKioskLaunchController()) {
-    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
-  }
+  // `ManagedSessionService` is part of the profile and the kiosk (launch)
+  // controller must be destroyed before the profile, so we can not call
+  // `RemoveKioskProfileLoadFailedObserver` observer here.
 
   if (ash::SessionTerminationManager::Get()) {
     ash::SessionTerminationManager::Get()->RemoveObserver(this);
@@ -169,12 +165,13 @@ void ManagedSessionService::OnAuthAttemptStarted() {
         this);
   }
 
-  if (GetKioskLaunchController()) {
+  ash::KioskController& kiosk_controller = ash::KioskController::Get();
+  if (kiosk_controller.IsSessionStarting()) {
     // Remove observer first in case the auth attempt is because of a retry, and
     // the observation was added, if it was not added removing the observer will
     // be a no-op.
-    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
-    GetKioskLaunchController()->AddKioskProfileLoadFailedObserver(this);
+    kiosk_controller.RemoveProfileLoadFailedObserver(this);
+    kiosk_controller.AddProfileLoadFailedObserver(this);
   }
 }
 

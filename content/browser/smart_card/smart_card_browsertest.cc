@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -182,9 +183,8 @@ class SmartCardTestContentBrowserClient
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
   std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
 
  private:
   std::unique_ptr<SmartCardDelegate> delegate_;
@@ -227,35 +227,31 @@ class SmartCardTest : public ContentBrowserTest {
       mock_transaction.ExpectEndTransaction(SmartCardDisposition::kReset);
     }
 
-    std::string js_snippet = std::format(R"(
-      (async () => {{
+    std::string js_snippet = base::StringPrintf(R"(
+      (async () => {
         let context = await navigator.smartCard.establishContext();
 
         let connection =
           (await context.connect("Fake reader", "shared",
-            {{preferredProtocols: ["t1"]}})).connection;
+            {preferredProtocols: ["t1"]})).connection;
 
-        let transaction = {};
+        let transaction = %s;
 
         let transactionPromise = connection.startTransaction(transaction);
-        try {{
+        try {
           await transactionPromise;
-        }} catch (e) {{
-          return `startTransaction: ${{e.name}}, ${{e.message}}`;
-        }}
+        } catch (e) {
+          return `startTransaction: ${e.name}, ${e.message}`;
+        }
 
         return "ok";
-      }})())",
-                                         transaction_callback);
+      })())",
+                                                transaction_callback.c_str());
 
     EXPECT_EQ(expected_result, EvalJs(shell(), js_snippet));
   }
 
  private:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-  }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -315,7 +311,7 @@ bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 
 std::optional<blink::ParsedPermissionsPolicy>
 SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
+    WebContents* web_contents,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
       blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
@@ -1614,7 +1610,7 @@ class NoCoiPermissionSmartCardTestContentBrowserClient
  public:
   std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kSmartCard,

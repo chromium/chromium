@@ -7,9 +7,10 @@
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/fuchsia/process_context.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "components/version_info/version_info.h"
@@ -23,15 +24,15 @@ constexpr char kAbsoluteComponentUrlSchemPrefix[] = "fuchsia-pkg://";
 }  // namespace
 
 void RegisterProductDataForCrashReporting(
-    base::StringPiece absolute_component_url,
-    base::StringPiece crash_product_name) {
+    std::string_view absolute_component_url,
+    std::string_view crash_product_name) {
   DCHECK(base::StartsWith(absolute_component_url,
                           kAbsoluteComponentUrlSchemPrefix));
 
   fuchsia::feedback::CrashReportingProduct product_data;
   product_data.set_name(std::string(crash_product_name));
   product_data.set_version(std::string(version_info::GetVersionNumber()));
-  // TODO(https://crbug.com/1077428): Use the actual channel when appropriate.
+  // TODO(crbug.com/42050100): Use the actual channel when appropriate.
   // For now, always set it to the empty string to avoid reporting "missing".
   product_data.set_channel("");
 
@@ -53,10 +54,10 @@ void RegisterProductDataForCrashReporting(
 #endif
 }
 
-void RegisterProductDataForFeedback(base::StringPiece component_namespace) {
+void RegisterProductDataForFeedback(std::string_view component_namespace) {
   fuchsia::feedback::ComponentData component_data;
   component_data.set_namespace_(std::string(component_namespace));
-  // TODO(https://crbug.com/1077428): Add release channel to the annotations.
+  // TODO(crbug.com/42050100): Add release channel to the annotations.
   component_data.mutable_annotations()->push_back(
       {"version", std::string(version_info::GetVersionNumber())});
   base::ComponentContextForProcess()

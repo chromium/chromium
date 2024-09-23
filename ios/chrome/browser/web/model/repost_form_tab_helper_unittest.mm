@@ -52,26 +52,37 @@
   EXPECT_FALSE(_presentingDialog);
   _presentingDialog = YES;
   _location = location;
-  _completionHandler = [completionHandler copy];
+  _completionHandler = completionHandler;
 }
 
 - (void)repostFormTabHelperDismissRepostFormDialog:
     (RepostFormTabHelper*)helper {
   EXPECT_EQ(_tabHelper, helper);
   EXPECT_TRUE(_presentingDialog);
+  void (^completionHandler)(BOOL) = nil;
+  std::swap(_completionHandler, completionHandler);
   _presentingDialog = NO;
-  _completionHandler = nil;
+  if (completionHandler) {
+    completionHandler(NO);
+  }
 }
 
 @end
 
 namespace {
+
 // Test location passed to RepostFormTabHelper.
 const CGFloat kDialogHLocation = 10;
 const CGFloat kDialogVLocation = 20;
 
-// No-op callback for RepostFormTabHelper.
-void IgnoreBool(bool) {}
+// Helper returning a callback capturing a bool to an optional. The optional
+// must outlive the callback.
+base::OnceCallback<void(bool)> CaptureBool(std::optional<bool>& output) {
+  return base::BindOnce(
+      [](std::optional<bool>* captured, bool boolean) { *captured = boolean; },
+      base::Unretained(&output));
+}
+
 }  // namespace
 
 // Test fixture for RepostFormTabHelper class.
@@ -99,44 +110,38 @@ class RepostFormTabHelperTest : public PlatformTest {
 // Tests presentation location.
 TEST_F(RepostFormTabHelperTest, Location) {
   EXPECT_FALSE(CGPointEqualToPoint(delegate_.location, location_));
-  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::DoNothing());
   EXPECT_TRUE(CGPointEqualToPoint(delegate_.location, location_));
 }
 
 // Tests cancelling repost.
 TEST_F(RepostFormTabHelperTest, CancelRepost) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  __block bool callback_called = false;
-  tab_helper()->PresentDialog(location_, base::BindOnce(^(bool repost) {
-                                EXPECT_FALSE(repost);
-                                callback_called = true;
-                              }));
+  std::optional<bool> callback_result;
+  tab_helper()->PresentDialog(location_, CaptureBool(callback_result));
   EXPECT_TRUE(delegate_.presentingDialog);
 
-  ASSERT_FALSE(callback_called);
+  ASSERT_EQ(callback_result, std::optional<bool>(std::nullopt));
   [delegate_ allowRepost:NO];
-  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(callback_result, std::optional<bool>(NO));
 }
 
 // Tests allowing repost.
 TEST_F(RepostFormTabHelperTest, AllowRepost) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  __block bool callback_called = false;
-  tab_helper()->PresentDialog(location_, base::BindOnce(^(bool repost) {
-                                EXPECT_TRUE(repost);
-                                callback_called = true;
-                              }));
+  std::optional<bool> callback_result;
+  tab_helper()->PresentDialog(location_, CaptureBool(callback_result));
   EXPECT_TRUE(delegate_.presentingDialog);
 
-  ASSERT_FALSE(callback_called);
+  ASSERT_EQ(callback_result, std::optional<bool>(std::nullopt));
   [delegate_ allowRepost:YES];
-  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(callback_result, std::optional<bool>(YES));
 }
 
 // Tests that dialog is dismissed when WebState is hidden.
 TEST_F(RepostFormTabHelperTest, DismissingOnWebStateHidden) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::DoNothing());
   EXPECT_TRUE(delegate_.presentingDialog);
   web_state_->WasHidden();
   EXPECT_FALSE(delegate_.presentingDialog);
@@ -145,7 +150,7 @@ TEST_F(RepostFormTabHelperTest, DismissingOnWebStateHidden) {
 // Tests that dialog is dismissed when WebState is destroyed.
 TEST_F(RepostFormTabHelperTest, DismissingOnWebStateDestruction) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::DoNothing());
   EXPECT_TRUE(delegate_.presentingDialog);
   web_state_.reset();
   EXPECT_FALSE(delegate_.presentingDialog);
@@ -154,8 +159,29 @@ TEST_F(RepostFormTabHelperTest, DismissingOnWebStateDestruction) {
 // Tests that dialog is dismissed after provisional navigation has started.
 TEST_F(RepostFormTabHelperTest, DismissingOnNavigationStart) {
   ASSERT_FALSE(delegate_.presentingDialog);
-  tab_helper()->PresentDialog(location_, base::BindOnce(&IgnoreBool));
+  tab_helper()->PresentDialog(location_, base::DoNothing());
   EXPECT_TRUE(delegate_.presentingDialog);
   web_state_->OnNavigationStarted(nullptr /* navigation_context */);
   EXPECT_FALSE(delegate_.presentingDialog);
+}
+
+// Tests that calling PresentDialog(...) twice cause the first dialog to
+// be dismissed before presenting the second dialog.
+TEST_F(RepostFormTabHelperTest, DismissOnPresentDialogWhilePresentInProgress) {
+  ASSERT_FALSE(delegate_.presentingDialog);
+  std::optional<bool> callback_result1;
+  tab_helper()->PresentDialog(location_, CaptureBool(callback_result1));
+  EXPECT_TRUE(delegate_.presentingDialog);
+
+  std::optional<bool> callback_result2;
+  tab_helper()->PresentDialog(location_, CaptureBool(callback_result2));
+
+  // Check that the first callback was invoked and the result "false".
+  EXPECT_EQ(callback_result1, std::optional<bool>(false));
+  EXPECT_EQ(callback_result2, std::optional<bool>(std::nullopt));
+
+  // Check that calling `-allowRepost` only invoked the second callback.
+  [delegate_ allowRepost:YES];
+  EXPECT_EQ(callback_result1, std::optional<bool>(false));
+  EXPECT_EQ(callback_result2, std::optional<bool>(true));
 }

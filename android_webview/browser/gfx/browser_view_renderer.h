@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 
-#include <optional>
 #include "android_webview/browser/gfx/begin_frame_source_webview.h"
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
@@ -59,7 +59,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   BrowserViewRenderer(
       BrowserViewRendererClient* client,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
+      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
 
   BrowserViewRenderer(const BrowserViewRenderer&) = delete;
   BrowserViewRenderer& operator=(const BrowserViewRenderer&) = delete;
@@ -86,6 +87,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // frame is produced.
   bool OnDrawHardware();
   bool OnDrawSoftware(SkCanvas* canvas);
+
+  float GetVelocityInPixelsPerSecond();
 
   bool NeedToDrawBackgroundColor();
 
@@ -162,6 +165,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   void AddBeginFrameCompletionCallback(base::OnceClosure callback) override;
 
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+
   // CompositorFrameProducer overrides
   base::WeakPtr<CompositorFrameProducer> GetWeakPtr() override;
   void RemoveCompositorFrameConsumer(
@@ -223,6 +228,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // For debug tracing or logging. Return the string representation of this
   // view renderer's state.
   std::string ToString() const;
+
+  void SetBrowserIOThreadId(base::PlatformThreadId thread_id);
 
   const raw_ptr<BrowserViewRendererClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
@@ -288,7 +295,10 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
 
-  base::WeakPtrFactory<CompositorFrameProducer> weak_ptr_factory_{this};
+  std::vector<int32_t> renderer_thread_ids_;
+  base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
+
+  base::WeakPtrFactory<BrowserViewRenderer> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview

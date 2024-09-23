@@ -19,33 +19,29 @@
 
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 Document* DOMParser::parseFromString(const String& str,
-                                     const String& type,
-                                     const ParseFromStringOptions* options) {
+                                     const AtomicString& type) {
   Document* doc = DocumentInit::Create()
                       .WithURL(window_->Url())
                       .WithTypeFrom(type)
                       .WithExecutionContext(window_)
                       .WithAgent(*window_->GetAgent())
                       .CreateDocument();
-  bool include_shadow_roots =
-      options->hasIncludeShadowRoots() && options->includeShadowRoots();
-  doc->setAllowDeclarativeShadowRoots(include_shadow_roots);
+  doc->setAllowDeclarativeShadowRoots(false);
   doc->CountUse(mojom::blink::WebFeature::kParseFromString);
-  if (include_shadow_roots) {
-    doc->CountUse(mojom::blink::WebFeature::kParseFromStringIncludeShadows);
-  }
   doc->SetContentFromDOMParser(str);
-  doc->SetMimeType(AtomicString(type));
+  doc->SetMimeType(type);
   return doc;
 }
 

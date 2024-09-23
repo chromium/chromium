@@ -59,9 +59,9 @@ std::optional<std::string> CreateChallengeResponseString(
   ChallengeResponse response_pb;
   *response_pb.mutable_challenge() = signed_challenge_data;
 
-  crypto::RandBytes(base::WriteInto(response_pb.mutable_nonce(),
-                                    kChallengeResponseNonceBytesSize + 1),
-                    kChallengeResponseNonceBytesSize);
+  std::string* nonce = response_pb.mutable_nonce();
+  nonce->resize(kChallengeResponseNonceBytesSize);
+  crypto::RandBytes(base::as_writable_byte_span(*nonce));
 
   std::string key;
   if (!CryptoUtility::EncryptWithSeed(

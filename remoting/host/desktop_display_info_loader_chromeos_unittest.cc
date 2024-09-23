@@ -109,11 +109,11 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnMultipleDisplays) {
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
-       ShouldReturnNativeResolutionEvenWhenDeviceScaleFactorIsSet) {
-  ash_proxy().AddDisplayFromSpecWithId("1000x500*2.25", kAnyId);
+       ShouldReturnLogicalResolutionWhenDeviceScaleFactorIsSet) {
+  ash_proxy().AddDisplayFromSpecWithId("1000x500*2", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
-              IsSingleDisplayWith(Dimensions(1000, 500)));
+              IsSingleDisplayWith(Dimensions(500, 250)));
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,

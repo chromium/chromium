@@ -31,11 +31,16 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
+#include <iosfwd>
+
+#include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_dom_event.h"
 #include "v8/include/v8-forward.h"
 
 namespace blink {
@@ -54,6 +59,10 @@ class WebPluginContainer;
 // reason, subclasses must not add any additional data members.
 class BLINK_EXPORT WebNode {
  public:
+  enum class EventType {
+    kSelectionchange,
+  };
+
   static WebNode FromDomNodeId(int dom_node_id);
 
   virtual ~WebNode();
@@ -71,6 +80,7 @@ class BLINK_EXPORT WebNode {
   bool LessThan(const WebNode&) const;
 
   bool IsNull() const;
+  explicit operator bool() const { return !IsNull(); }
 
   bool IsConnected() const;
 
@@ -93,6 +103,10 @@ class BLINK_EXPORT WebNode {
   bool IsElementNode() const;
   void SimulateClick();
 
+  // Returns the top-most ancestor such this WebNode and that ancestor and all
+  // nodes in between are contenteditable.
+  WebElement RootEditableElement() const;
+
   // See cc/paint/element_id.h for the definition of these ids.
   cc::ElementId ScrollingElementIdForTesting() const;
 
@@ -105,10 +119,14 @@ class BLINK_EXPORT WebNode {
 
   WebVector<WebElement> QuerySelectorAll(const WebString& selector) const;
 
-  // Returns the contents of the first descendant element, if any, that contains
-  // only text, a part of which is the given substring. The search is
-  // case-sensitive.
-  WebString FindTextInElementWith(const WebString& substring) const;
+
+  // Returns the contents of the first descendant that is either (1) an element
+  // containing only text or (2) a readonly text input, whose text contains the
+  // given substring, if the validity checker returns true for it. The substring
+  // search is ASCII case insensitive.
+  WebString FindTextInElementWith(
+      const WebString& substring,
+      base::FunctionRef<bool(const WebString&)> validity_checker) const;
 
   bool Focused() const;
 
@@ -120,6 +138,12 @@ class BLINK_EXPORT WebNode {
 
   int GetDomNodeId() const;
 
+  // Adds a listener to this node.
+  // Returns a RAII object that removes the listener.
+  base::ScopedClosureRunner AddEventListener(
+      EventType event_type,
+      base::RepeatingCallback<void(WebDOMEvent)> handler);
+
   // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
   // not legal. The returned `T` will always be non-null if `this` is non-null.
   template <typename T>
@@ -129,6 +153,8 @@ class BLINK_EXPORT WebNode {
   // be performed.
   template <typename T>
   T DynamicTo() const;
+
+  BLINK_EXPORT friend std::ostream& operator<<(std::ostream&, const WebNode&);
 
 #if INSIDE_BLINK
   WebNode(Node*);

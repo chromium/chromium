@@ -63,7 +63,7 @@ void Key::ClearSecret() {
 
 void Key::Transform(KeyType target_key_type, const std::string& salt) {
   if (key_type_ != KEY_TYPE_PASSWORD_PLAIN) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

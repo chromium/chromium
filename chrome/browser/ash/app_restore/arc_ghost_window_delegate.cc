@@ -92,7 +92,8 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
     int64_t display_id,
     const gfx::Rect& bounds_in_screen,
     bool is_resize,
-    int bounds_change) {
+    int bounds_change,
+    bool is_adjusted_bounds) {
   auto* window_state =
       WindowState::Get(shell_surface_->GetWidget()->GetNativeWindow());
 
@@ -130,7 +131,7 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
       return;
     default:
       if (requested_state != window_state->GetStateType()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
   }
 

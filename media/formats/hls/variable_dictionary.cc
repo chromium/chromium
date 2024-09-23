@@ -4,7 +4,8 @@
 
 #include "media/formats/hls/variable_dictionary.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
@@ -26,7 +27,7 @@ struct GetNextVariableResult {
 GetNextVariableResult GetNextVariable(const SourceString input) {
   // Iterate through occurrences of "{$" in the string.
   for (size_t ref_start = input.Str().find("{$");
-       ref_start != base::StringPiece::npos;
+       ref_start != std::string_view::npos;
        ref_start = input.Str().find("{$", ref_start + 2)) {
     auto remaining_input = input;
 
@@ -37,7 +38,7 @@ GetNextVariableResult GetNextVariable(const SourceString input) {
     // Find the end of the variable reference sequence. If this fails there will
     // be no more valid variable references.
     const auto ref_end = remaining_input.Str().find_first_of('}');
-    if (ref_end == base::StringPiece::npos) {
+    if (ref_end == std::string_view::npos) {
       break;
     }
 
@@ -73,7 +74,7 @@ VariableDictionary::VariableDictionary(VariableDictionary&&) = default;
 VariableDictionary& VariableDictionary::operator=(VariableDictionary&&) =
     default;
 
-std::optional<base::StringPiece> VariableDictionary::Find(
+std::optional<std::string_view> VariableDictionary::Find(
     types::VariableName name) const& {
   auto iter = entries_.find(name.GetName());
   if (iter == entries_.end()) {

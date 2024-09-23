@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+dictionary AIAssistantInitialPrompt {
+  required AIAssistantInitialPromptRole role;
+  required DOMString content;
+};
+
+dictionary AIAssistantCreateOptions {
+  [EnforceRange] unsigned long topK;
+  float temperature;
+  DOMString systemPrompt;
+  sequence<AIAssistantInitialPrompt> initialPrompts;
+};

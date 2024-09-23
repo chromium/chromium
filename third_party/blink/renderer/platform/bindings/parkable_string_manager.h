@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_PARKABLE_STRING_MANAGER_H_
 
@@ -17,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -54,7 +60,7 @@ class PLATFORM_EXPORT ParkableStringManagerDumpProvider
 // possible to temporarily have an unparked `ParkableString` inaccessible
 // through `unparked_strings_`. This can cause aging of the string to be
 // delayed or a variation on the sizes recorded in 'ComputeStatistics()`.
-class PLATFORM_EXPORT ParkableStringManager {
+class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
   USING_FAST_MALLOC(ParkableStringManager);
 
  public:
@@ -63,7 +69,10 @@ class PLATFORM_EXPORT ParkableStringManager {
   static ParkableStringManager& Instance();
   ParkableStringManager(const ParkableStringManager&) = delete;
   ParkableStringManager& operator=(const ParkableStringManager&) = delete;
-  ~ParkableStringManager();
+  ~ParkableStringManager() override;
+
+  void SetRendererBackgrounded(bool backgrounded);
+  void OnRAILModeChanged(RAILMode rail_mode) override;
 
   void PurgeMemory();
   // Number of parked and unparked strings. Public for testing.
@@ -74,15 +83,7 @@ class PLATFORM_EXPORT ParkableStringManager {
   // Whether a string is parkable or not. Can be called from any thread.
   static bool ShouldPark(const StringImpl& string);
 
-  // Public for testing.
-  //
-  // Arbitrarily chosen, was shown to not regress metrics in a field experiment
-  // in 2019 on desktop and Android. From local testing, strings are either
-  // requested in a very rapid succession (during compilation), or almost
-  // never. We want to allow strings to be dropped quickly, to reduce peak
-  // memory usage, particularly as reading and decompressing strings is
-  // typically very cheap.
-  constexpr static base::TimeDelta kAgingInterval = base::Seconds(2);
+  static base::TimeDelta AgingInterval();
 
   // According to UMA data (as of 2021-11-09) ~70% of renderers exist for less
   // than 60 seconds. Using this as a delay of the first parking attempts
@@ -194,8 +195,22 @@ class PLATFORM_EXPORT ParkableStringManager {
 
   void AssertRemoved(ParkableStringImpl* string);
   void ResetForTesting();
+  bool IsPaused() const;
+  bool HasPendingWork() const;
   ParkableStringManager();
 
+  // Arbitrarily chosen, was shown to not regress metrics in a field experiment
+  // in 2019 on desktop and Android. From local testing, strings are either
+  // requested in a very rapid succession (during compilation), or almost
+  // never. We want to allow strings to be dropped quickly, to reduce peak
+  // memory usage, particularly as reading and decompressing strings is
+  // typically very cheap.
+  constexpr static base::TimeDelta kAgingInterval = base::Seconds(2);
+  constexpr static base::TimeDelta kLessAggressiveAgingInterval =
+      base::Seconds(10);
+
+  bool backgrounded_ = false;
+  RAILMode rail_mode_ = RAILMode::kIdle;
   bool has_pending_aging_task_ = false;
   bool has_posted_unparking_time_accounting_task_ = false;
   bool did_register_memory_pressure_listener_ = false;

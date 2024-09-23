@@ -10,13 +10,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
@@ -105,7 +105,7 @@ class UnsentLogStore : public LogStore {
     // will be compressed and stored in |compressed_log_data|. |log_timestamp|
     // is stored as is. |log_metadata| is any optional metadata that will be
     // attached to the log.
-    // TODO(crbug/1052796): Make this a ctor instead.
+    // TODO(crbug.com/40119012): Make this a ctor instead.
     void Init(const std::string& log_data,
               const std::string& log_timestamp,
               const std::string& signing_key,
@@ -113,7 +113,7 @@ class UnsentLogStore : public LogStore {
 
     // Same as above, but the |timestamp| field will be filled with the current
     // time.
-    // TODO(crbug/1052796): Make this a ctor instead.
+    // TODO(crbug.com/40119012): Make this a ctor instead.
     void Init(const std::string& log_data,
               const std::string& signing_key,
               const LogMetadata& log_metadata);
@@ -146,7 +146,7 @@ class UnsentLogStore : public LogStore {
   std::optional<uint64_t> staged_log_user_id() const override;
   const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
-  void DiscardStagedLog(base::StringPiece reason = "") override;
+  void DiscardStagedLog(std::string_view reason = "") override;
   void MarkStagedLogAsSent() override;
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
@@ -154,7 +154,7 @@ class UnsentLogStore : public LogStore {
   // Adds a log to the list. |log_metadata| refers to metadata associated with
   // the log. Before being stored, the data will be compressed, and a hash and
   // signature will be computed.
-  // TODO(crbug/1052796): Remove this function, and use StoreLogInfo()
+  // TODO(crbug.com/40119012): Remove this function, and use StoreLogInfo()
   // everywhere instead.
   void StoreLog(const std::string& log_data,
                 const LogMetadata& log_metadata,
@@ -225,11 +225,11 @@ class UnsentLogStore : public LogStore {
   void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs,
                          MetricsLogsEventManager::CreateReason reason);
   void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
-                      base::StringPiece log_hash,
-                      base::StringPiece message = "");
+                      std::string_view log_hash,
+                      std::string_view message = "");
   void NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
                        MetricsLogsEventManager::LogEvent event,
-                       base::StringPiece message = "");
+                       std::string_view message = "");
 
   // An object for recording UMA metrics.
   std::unique_ptr<UnsentLogStoreMetrics> metrics_;

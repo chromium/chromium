@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/shared_buffer_dispatcher.h"
 
 #include <stddef.h>
@@ -356,7 +361,6 @@ bool SharedBufferDispatcher::EndSerialize(void* destination,
       break;
     default:
       NOTREACHED();
-      return false;
   }
 
   const base::UnguessableToken& guid = region_.GetGUID();

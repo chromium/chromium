@@ -74,7 +74,7 @@ fetching resources. This may negatively affect Chrome's loading performance.
 Therefore, we are conducting experiments to ensure that this does not cause
 regressions before rolling it out to all users.
 
-TODO(crbug.com/1413922): When we enable the backend for all Chrome, remove this
+TODO(crbug.com/40255884): When we enable the backend for all Chrome, remove this
 section.
 
 ## Feature detection
@@ -83,11 +83,13 @@ If you want to check whether the Compression Dictionary Transport feature is
 enabled or not, you can try the following code:
 
 ```javascript
-document.createElement('link').relList.supports('dictionary')
+document.createElement('link').relList.supports('compression-dictionary')
 ```
 
 If the code above returns true, the Compression Dictionary Transport feature is
 enabled.
+
+Note: Until M126, `dictionary` was used instead of `compression-dictionary`.
 
 ## Registering dictionaries
 
@@ -95,28 +97,17 @@ When Chrome receives a HTTP response with `use-as-dictionary: <options>` header,
 and if the the response type is not opaque, Chrome registers the response as a
 dictionary.
 
-Chrome supports following options (see [the explainer][explainer] for more
-details):
+Chrome supports following options (see [the explainer][explainer] and [the
+spec draft][httpbis-draft] for more details):
 
 - **match**
-  - URL-matching pattern for the dictionary to apply to.
-  - In the explainer, this field only supports the asterisk `*` wildcard. But
-    currently Chrome supports both the asterisk `*` wildcard expansion and the
-    question `?`.
-  - In the explainer, this field supports relative URLs (eg: `./js/*`). But
-    currently Chrome only supports absolute paths (eg: `/map/js/*`).
-- **expires**
-  - Expiration time in seconds for the dictionary.
-  - This field is optional and defaults to `31536000` (1 year).
-  - While running the Origin Trial experiment, the max expiration time is
-    limited to 30 days. This limitation can be removed by enabling
-    [chrome://flags/#enable-compression-dictionary-transport][flag].
-- **algorithms**
-  - List of supported hash algorithms in order of server preference.
-  - This field is optional and defaults to `(sha-256)`.
-  - Currently Chrome only supports `sha-256`. So if this field is set but it
-    doesn't contain `sha-256`, Chrome doesn't register the response as a
-    dictionary.
+  - The URL Pattern [URLPattern] to use for request matching.
+- **match-dest**
+  - List of request destinations for the dictionary to match.
+- **id**
+  - The dictionary ID.
+  - This ID is sent to the server in a "Dictionary-ID" request header when the
+    dictionary is available.
 - **type**
   - Dictionary format.
   - This field is optional and defaults to `raw`.
@@ -127,22 +118,32 @@ details):
 Note: These options fields are expected to change when we officially launch this
 feature, depending on the outcome of [the spec discussion][httpbis-draft].
 
+## Dictionary lifetime
+
+The lifetime of registered dictionary is calculated from the response's
+[freshness](https://datatracker.ietf.org/doc/html/rfc9111#name-freshness).
+
+While running the Origin Trial experiment, the max expiration time is
+limited to 30 days. This limitation can be removed by enabling
+[chrome://flags/#enable-compression-dictionary-transport][flag].
+
 ## Fetching dedicated dictionaries
 
 Chrome fetches a dedicated dictionary when it detects
-`<link rel="dictionary" href="DICTIONARY_URL">` in the page, or
-`Link: <DICTIONARY_URL>; rel="dictionary"` HTTP response header is set in the
-response of the page's HTML file.
+`<link rel="compression-dictionary" href="DICTIONARY_URL">` in the page, or
+`Link: <DICTIONARY_URL>; rel="compression-dictionary"` HTTP response header is
+set in the response of the page's HTML file.
+
+Note: Until M126, `dictionary` was used instead of `compression-dictionary`.
 
 ## Using dictionaries
 
 While fetching a HTTP request, Chrome match the request against the available
-dictionary `match` URL patterns. If there are multiple matching dictionaries,
-Chrome currently uses the dictionary with the longest `match` URL pattern.
+dictionary `match` URL patterns.
 
-If a dictionary is available for the request, Chrome will add `sbr` the
-`Accept-Encoding` request header, as well as a
-`sec-available-dictionary: <SHA-256>` header with the hash of the dictionary.
+If a dictionary is available for the request, Chrome will add `dcb` and `dcz`in
+the `Accept-Encoding` request header, as well as a
+`Available-Dictionary: <SHA-256>` header with the hash of the dictionary.
 
 ## Supported compression scheme
 
@@ -152,18 +153,27 @@ Chrome 117.0.5857.0 introduced support for Shared Brotli, and Chrome
 Shared Zstandard can be enabled/disabled from
 [chrome://flags/#enable-shared-zstd][shared-zstd-flag].
 
+Until M126, `br-d` and `zstd-d` encoding was used. After M127, `dcb` and `dcz`
+encodings are used. See [this spec
+change](https://github.com/httpwg/http-extensions/pull/2784) for more details
+about this change of the encoding.
+
 ## Supported HTTP protocol
 
 From Chrome 121, Chrome may not use stored shared dictionares when the
-connection is using HTTP/1 for non-localhost requests. Also Chrome may not use
-shared dictionares when the HTTPS connection's certificate is not rooted by a
-well known root CA (eg: using a user installed root certificate). This is for
-an investigation for an issue that some network appliances are interfering with
-HTTPS traffic by inspecting encrypted responses but failing to properly decode
-the shared dictionary encoded content.
+connection is using HTTP/1 for non-localhost requests. From Chrome 125, Chrome
+may not use stored shared dictionares when the connection is using HTTP/2 for
+non-localhost requests.
+Also Chrome may not use shared dictionares when the HTTPS connection's
+certificate is not rooted by a well known root CA (eg: using a user installed
+root certificate). This is for an investigation for an issue that some network
+appliances are interfering with HTTPS traffic by inspecting encrypted responses
+but failing to properly decode the shared dictionary encoded content.
 
 If you want to use shared dictionaries with HTTP/1, please enable
-[chrome://flags/#enable-compression-dictionary-transport-over-http1][over-http1-flag].
+[chrome://flags/#enable-compression-dictionary-transport-allow-http1][allow-http1-flag].
+If you want to use shared dictionaries with HTTP/2, please enable
+[chrome://flags/#enable-compression-dictionary-transport-allow-http2][allow-http2-flag].
 Also if you want to use shared dictionaries over the HTTPS connection which
 certificate is not rooted by a well known root CA, please disable
 [chrome://flags/#enable-compression-dictionary-transport-require-known-root-cert][require-known-root-ca-flag].
@@ -178,7 +188,7 @@ Developers can manage the registered dictionaries in
 ### DevTools
 
 Developers can check the related HTTP request and response headers
-(`Use-As-Dictionary`, `Sec-Available-Dictionary`, `Accept-Encoding` and
+(`Use-As-Dictionary`, `Available-Dictionary`, `Accept-Encoding` and
 `Content-Encoding`) using DevTools' Network tab.
 
 ## Known issues
@@ -187,11 +197,6 @@ Developers can check the related HTTP request and response headers
   `transferSize` property of `PerformanceResourceTiming` for shared dictionary
   compressed response are wrong. Currently it returns as if the response is not
   compressed.
-- [crbug.com/1479465](crbug.com/1479465): Can't store large (>40 MB)
-  dictionaries. Fixed in M118, by setting a [100 MB size limit](100mb-limit-line)
-  if there is enough disk space.
-- [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionaries
-  for Shared Zstd. Fixed in M118.
 
 ## Changes in M123
 
@@ -209,6 +214,16 @@ changes in specifications.
 - Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
 - Added support for match-dest option
 
+## Changes in M127
+
+The following changes have been made to Chrome since M127 to keep up with the
+changes in specifications.
+
+- `compression-dictionary` rel attribute is used for HTML `link` element and
+  HTTP `Link:` header instead of `dictionary`.
+- Changed Content-Encoding to use "dcb" and "dcz".
+  See [this spec change](https://github.com/httpwg/http-extensions/pull/2784).
+
 ## Demo sites
 
 There are a few demo sites that you can use to test the feature:
@@ -222,13 +237,14 @@ There are a few demo sites that you can use to test the feature:
 [flag]: chrome://flags/#enable-compression-dictionary-transport
 [backend-flag]: chrome://flags/#enable-compression-dictionary-transport-backend
 [shared-zstd-flag]: chrome://flags/#enable-shared-zstd
-[over-http1-flag]: chrome://flags/#enable-compression-dictionary-transport-over-http1
+[allow-http1-flag]: chrome://flags/#enable-compression-dictionary-transport-allow-http1
+[allow-http2-flag]: chrome://flags/#enable-compression-dictionary-transport-allow-http2
 [require-known-root-ca-flag]: chrome://flags/#enable-compression-dictionary-transport-require-known-root-cert
 [shared_dictionary_readme]: ../../services/network/shared_dictionary/README.md#flags
 [ot-blog]: https://developer.chrome.com/blog/origin-trials/
 [ot-console]: https://developer.chrome.com/origintrials/#/trials/active
 [third-party-ot-dd]: https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit#heading=h.bvw2lcb2dczg
-[httpbis-draft]: https://datatracker.ietf.org/doc/draft-meenan-httpbis-compression-dictionary/
+[httpbis-draft]: https://datatracker.ietf.org/doc/draft-ietf-httpbis-compression-dictionary/
 [net-internals-sd]: chrome://net-internals/#sharedDictionary
 [type-option-cl]: https://chromiumdash.appspot.com/commit/169031f4af2cbdc529f48160f1df20b4ca8b6cc1
-[100mb-limit-line]: https://source.chromium.org/chromium/chromium/src/+/main:services/network/shared_dictionary/shared_dictionary_constants.cc;l=14;drc=eef4762779d05708d5dfc7d5fe4ea16288069a35
+[URLPattern]: https://urlpattern.spec.whatwg.org/

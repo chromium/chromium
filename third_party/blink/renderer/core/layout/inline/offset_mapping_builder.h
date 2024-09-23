@@ -86,6 +86,10 @@ class CORE_EXPORT OffsetMappingBuilder {
   // annotation to the builder.
   void AppendIdentityMapping(unsigned length);
 
+  // Cancel the last AppendIdentityMapping(1) call.
+  // This works only for kOpenRubyColumn.
+  void RevertIdentityMapping1();
+
   // Append a collapsed offset mapping from the specified length with null
   // annotation to the builder.
   void AppendCollapsedMapping(unsigned length);

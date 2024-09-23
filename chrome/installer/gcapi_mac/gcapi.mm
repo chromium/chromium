@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/gcapi_mac/gcapi.h"
 
 #import <Cocoa/Cocoa.h>
@@ -86,8 +91,8 @@ bool IsMacOSVersionSupported() {
     macos_version = 100 * (darwin_major_version - 9);
   }
 
-  // Chrome is known to work on 10.13 - 13.x.
-  return macos_version >= 1013 && macos_version < 1400;
+  // Chrome is known to work on 11.0 - 15.x.
+  return macos_version >= 1100 && macos_version < 1600;
 }
 
 // Returns the pid/gid of the logged-in user, even if getuid() claims that the

@@ -37,18 +37,23 @@ enum class RequestType {
   kFileSystemAccess,
 #endif
   kGeolocation,
+  kHandTracking,
+  kIdentityProvider,
   kIdleDetection,
 #if !BUILDFLAG(IS_ANDROID)
   kLocalFonts,
 #endif
   kMicStream,
-  kMidi,
   kMidiSysex,
   kMultipleDownloads,
 #if BUILDFLAG(IS_ANDROID)
   kNfcDevice,
 #endif
   kNotifications,
+#if !BUILDFLAG(IS_ANDROID)
+  kKeyboardLock,
+  kPointerLock,
+#endif
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   kProtectedMediaIdentifier,
 #endif
@@ -60,6 +65,9 @@ enum class RequestType {
 #endif
   kStorageAccess,
   kVrSession,
+#if !BUILDFLAG(IS_ANDROID)
+  kWebAppInstallation,
+#endif
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   kWebPrinting,
 #endif

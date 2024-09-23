@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp"
+        android:bottom="4dp"
+        android:drawable="@drawable/oval_surface_1" />
+    <item
+        android:drawable="@drawable/account_circle"
+        android:gravity="center"
+        android:height="22dp"
+        android:width="22dp" />
+</layer-list>

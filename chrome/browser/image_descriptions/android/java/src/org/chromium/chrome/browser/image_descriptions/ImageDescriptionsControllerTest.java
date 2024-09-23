@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -46,7 +47,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -95,7 +95,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> DeviceConditions.sForceConnectionTypeForTesting = false);
     }
 
@@ -106,7 +106,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
     }
 
     private void simulateMenuItemClick() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.onImageDescriptionsMenuItemSelected(
                             getActivity(), mModalDialogManager, mWebContents);
@@ -240,7 +240,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
                 mController.onlyOnWifiEnabled(mProfile));
 
         // Setup no wifi condition.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DeviceConditions.sForceConnectionTypeForTesting = true;
                     DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;

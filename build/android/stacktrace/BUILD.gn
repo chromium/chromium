@@ -9,7 +9,7 @@ java_library("java_deobfuscate_java") {
 
   # Avoid using java_prebuilt() to ensure all uses go through the checked-in
   # wrapper script.
-  input_jars_paths = [ "//third_party/r8/lib/r8.jar" ]
+  input_jars_paths = [ "//third_party/r8/cipd/lib/r8.jar" ]
 }
 
 # Use the checked-in copy of the wrapper script & .jar rather than the built
@@ -18,7 +18,7 @@ group("java_deobfuscate") {
   data = [
     "java_deobfuscate.py",
     "java_deobfuscate_java.jar",
-    "//third_party/r8/lib/r8.jar",
+    "//third_party/r8/cipd/lib/r8.jar",
   ]
   deps = [ "//third_party/jdk:java_data" ]
 }

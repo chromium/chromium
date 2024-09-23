@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/accelerator_table.h"
 
 #include <stddef.h>
@@ -18,7 +23,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
@@ -194,6 +201,10 @@ class GetAcceleratorListTest : public ::testing::Test {
 TEST_F(GetAcceleratorListTest, DevToolsAreDisabledInLacrosOnlyByDefault) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
+
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
       fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
@@ -223,6 +234,9 @@ TEST_F(GetAcceleratorListTest, DevToolsAreEnebledInLacrosOnlyIfFlagIsEnabled) {
       ash::standalone_browser::GetFeatureRefs();
   enabled.push_back(ash::features::kAllowDevtoolsInSystemUI);
   features.InitWithFeatures(enabled, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =

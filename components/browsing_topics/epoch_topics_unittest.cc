@@ -6,8 +6,12 @@
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -37,10 +41,11 @@ std::vector<TopicAndDomains> CreateTestTopTopics() {
   return top_topics_and_observing_domains;
 }
 
-EpochTopics CreateTestEpochTopics() {
+EpochTopics CreateTestEpochTopics(
+    base::Time calculation_time = kCalculationTime) {
   EpochTopics epoch_topics(CreateTestTopTopics(), kPaddedTopTopicsStartIndex,
                            kConfigVersion, kTaxonomyVersion, kModelVersion,
-                           kCalculationTime,
+                           calculation_time,
                            /*from_manually_triggered_calculation=*/true);
 
   return epoch_topics;
@@ -48,7 +53,15 @@ EpochTopics CreateTestEpochTopics() {
 
 }  // namespace
 
-class EpochTopicsTest : public testing::Test {};
+class EpochTopicsTest : public testing::Test {
+ public:
+  EpochTopicsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
+};
 
 TEST_F(EpochTopicsTest, CandidateTopicForSite_InvalidIndividualTopics) {
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -337,6 +350,7 @@ TEST_F(EpochTopicsTest, EmptyEpochTopics_ToAndFromDictValue) {
   EXPECT_EQ(read_epoch_topics.taxonomy_version(), 0);
   EXPECT_EQ(read_epoch_topics.model_version(), 0);
   EXPECT_EQ(read_epoch_topics.calculation_time(), kCalculationTime);
+  EXPECT_FALSE(read_epoch_topics.calculator_result_status());
 
   CandidateTopic candidate_topic = epoch_topics.CandidateTopicForSite(
       /*top_domain=*/"foo.com", HashedDomain(1), kTestKey);
@@ -361,10 +375,61 @@ TEST_F(EpochTopicsTest, PopulatedEpochTopics_ToAndFromValue) {
   EXPECT_TRUE(epoch_topics.from_manually_triggered_calculation());
   EXPECT_FALSE(read_epoch_topics.from_manually_triggered_calculation());
 
+  // The kSuccess `calculator_result_status` should persist after being written.
+  EXPECT_EQ(epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+  EXPECT_EQ(read_epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+
   CandidateTopic candidate_topic = epoch_topics.CandidateTopicForSite(
       /*top_domain=*/"foo.com", HashedDomain(1), kTestKey);
 
   EXPECT_EQ(candidate_topic.topic(), Topic(2));
+}
+
+TEST_F(EpochTopicsTest,
+       EmptyEpochTopicsWithCalculatorResultStatus_ToAndFromDictValue) {
+  EpochTopics epoch_topics(
+      kCalculationTime,
+      CalculatorResultStatus::kFailureAnnotationExecutionError);
+
+  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
+
+  EXPECT_TRUE(read_epoch_topics.empty());
+
+  // The failure `calculator_result_status` should persist after being written.
+  EXPECT_EQ(epoch_topics.calculator_result_status(),
+            CalculatorResultStatus::kFailureAnnotationExecutionError);
+  EXPECT_FALSE(read_epoch_topics.calculator_result_status());
+}
+
+TEST_F(EpochTopicsTest, ScheduleExpiration) {
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{blink::features::kBrowsingTopics, {}},
+       {blink::features::kBrowsingTopicsParameters,
+        {{"epoch_retention_duration", "28s"}}}},
+      /*disabled_features=*/{});
+
+  base::Time start_time = base::Time::Now();
+  EpochTopics epoch_topics = CreateTestEpochTopics(start_time);
+
+  bool expiration_callback_invoked = false;
+  base::OnceClosure expiration_callback =
+      base::BindLambdaForTesting([&]() { expiration_callback_invoked = true; });
+
+  // Schedule expiration 1 second after the calculation time.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  epoch_topics.ScheduleExpiration(std::move(expiration_callback));
+
+  // Verify the callback isn't invoked prematurely.
+  task_environment_.FastForwardBy(base::Seconds(26));
+  EXPECT_FALSE(expiration_callback_invoked);
+
+  // Verify the callback is invoked at the expected expiration time.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(expiration_callback_invoked);
 }
 
 }  // namespace browsing_topics

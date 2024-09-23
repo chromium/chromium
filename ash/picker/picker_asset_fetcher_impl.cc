@@ -7,23 +7,24 @@
 #include <utility>
 
 #include "ash/picker/picker_asset_fetcher.h"
-#include "ash/public/cpp/image_util.h"
-#include "base/functional/bind.h"
+#include "ash/picker/picker_asset_fetcher_impl_delegate.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "url/gurl.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
-PickerAssetFetcherImpl::PickerAssetFetcherImpl(GifUrlLoader gif_url_loader)
-    : gif_url_loader_(std::move(gif_url_loader)) {}
+PickerAssetFetcherImpl::PickerAssetFetcherImpl(
+    PickerAssetFetcherImplDelegate* delegate)
+    : delegate_(delegate) {}
 
 PickerAssetFetcherImpl::~PickerAssetFetcherImpl() = default;
 
-void PickerAssetFetcherImpl::FetchGifFromUrl(
-    const GURL& url,
-    PickerGifFetchedCallback callback) {
-  gif_url_loader_.Run(url, base::BindOnce(&image_util::DecodeAnimationData,
-                                          std::move(callback)));
+void PickerAssetFetcherImpl::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {
+  delegate_->FetchFileThumbnail(path, size, std::move(callback));
 }
 
 }  // namespace ash

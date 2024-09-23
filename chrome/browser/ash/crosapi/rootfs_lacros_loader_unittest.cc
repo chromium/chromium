@@ -49,7 +49,7 @@ class RootfsLacrosLoaderTest : public testing::Test {
   std::unique_ptr<RootfsLacrosLoader> rootfs_lacros_loader_;
 };
 
-TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacros) {
+TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacrosSelectedByCompatibilityCheck) {
   bool callback_called = false;
   fake_upstart_client_.set_start_job_cb(base::BindRepeating(
       [](bool* callback_called, const std::string& job,
@@ -60,12 +60,78 @@ TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacros) {
       },
       &callback_called));
 
+  EXPECT_EQ(RootfsLacrosLoader::State::kNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // If rootfs is selected by compatibility check, it first calls GetVersion to
+  // read the version, and then Load is requested. Inside GetVersion, Load won't
+  // complete.
+  base::test::TestFuture<const base::Version&> future1;
+  rootfs_lacros_loader_->GetVersion(
+      future1.GetCallback<const base::Version&>());
+  EXPECT_EQ(base::Version(version_str), future1.Get<0>());
+  EXPECT_EQ(RootfsLacrosLoader::State::kVersionReadyButNotLoaded,
+            rootfs_lacros_loader_->GetState());
+  EXPECT_FALSE(callback_called);
+
+  // Load is called after version is calculated.
+  base::test::TestFuture<base::Version, const base::FilePath&> future2;
+  rootfs_lacros_loader_->Load(
+      future2.GetCallback<base::Version, const base::FilePath&>(),
+      /*forced=*/false);
+  EXPECT_EQ(base::Version(version_str), future2.Get<0>());
+  EXPECT_TRUE(callback_called);
+
+  EXPECT_EQ(RootfsLacrosLoader::State::kLoaded,
+            rootfs_lacros_loader_->GetState());
+}
+
+TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacrosSelectedByPolicy) {
+  bool callback_called = false;
+  fake_upstart_client_.set_start_job_cb(base::BindRepeating(
+      [](bool* callback_called, const std::string& job,
+         const std::vector<std::string>& upstart_env) {
+        EXPECT_EQ(job, kLacrosMounterUpstartJob);
+        *callback_called = true;
+        return ash::FakeUpstartClient::StartJobResult(true /* success */);
+      },
+      &callback_called));
+
+  EXPECT_EQ(RootfsLacrosLoader::State::kNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // If rootfs is selected by policy, it does not call GetVersion. Instead, it
+  // calls Load directly and compute read the version inside Load together.
   base::test::TestFuture<base::Version, const base::FilePath&> future;
   rootfs_lacros_loader_->Load(
       future.GetCallback<base::Version, const base::FilePath&>(),
       /*forced=*/false);
   EXPECT_EQ(base::Version(version_str), future.Get<0>());
   EXPECT_TRUE(callback_called);
+
+  EXPECT_EQ(RootfsLacrosLoader::State::kLoaded,
+            rootfs_lacros_loader_->GetState());
+}
+
+TEST_F(RootfsLacrosLoaderTest, UnloadRequestedOnVersionReady) {
+  EXPECT_EQ(RootfsLacrosLoader::State::kNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // First, request loader to get version and stops at
+  // `kVersionReadyButNotLoaded`.
+  base::test::TestFuture<const base::Version&> future1;
+  rootfs_lacros_loader_->GetVersion(
+      future1.GetCallback<const base::Version&>());
+  EXPECT_EQ(base::Version(version_str), future1.Get<0>());
+  EXPECT_EQ(RootfsLacrosLoader::State::kVersionReadyButNotLoaded,
+            rootfs_lacros_loader_->GetState());
+
+  // Simulate the case that stateful is selected by compatibility check so that
+  // it requests rootfs lacros loader to unload.
+  base::test::TestFuture<void> future2;
+  rootfs_lacros_loader_->Unload(future2.GetCallback());
+  EXPECT_EQ(RootfsLacrosLoader::State::kUnloaded,
+            rootfs_lacros_loader_->GetState());
 }
 
 }  // namespace

@@ -62,13 +62,6 @@ export function isDriveFsBulkPinningEnabled() {
   return isFlagEnabled('DRIVE_FS_BULK_PINNING');
 }
 
-/**
- * Whether the new directory tree flag is enabled.
- */
-export function isNewDirectoryTreeEnabled() {
-  return isFlagEnabled('NEW_DIRECTORY_TREE');
-}
-
 export function isArcUsbStorageUIEnabled() {
   return isFlagEnabled('ARC_USB_STORAGE_UI_ENABLED');
 }
@@ -79,4 +72,18 @@ export function isArcVmEnabled() {
 
 export function isPluginVmEnabled() {
   return isFlagEnabled('PLUGIN_VM_ENABLED');
+}
+
+/**
+ * Returns true if FilesMaterializedViews flag is enabled.
+ */
+export function isMaterializedViewsEnabled() {
+  return isFlagEnabled('MATERIALIZED_VIEWS');
+}
+
+/**
+ * Returns true if SkyVaultV2 flag is enabled.
+ */
+export function isSkyvaultV2Enabled() {
+  return isFlagEnabled('SKYVAULT_V2_ENABLED');
 }

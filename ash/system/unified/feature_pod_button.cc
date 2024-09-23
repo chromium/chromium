@@ -57,7 +57,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                  is_togglable,
                  /*has_border=*/true) {
   SetFlipCanvasOnPaintForRTLUI(false);
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 }
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
@@ -71,7 +71,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
       sub_label_(new views::Label),
       detailed_view_arrow_(new views::ImageView) {
   SetBorder(views::CreateEmptyBorder(kUnifiedFeaturePodHoverPadding));
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 
   label_->SetLineHeight(kUnifiedFeaturePodLabelLineHeight);
   label_->SetMultiLine(true);
@@ -122,12 +122,15 @@ void FeaturePodLabelButton::Layout(PassKey) {
       arrow_size));
 }
 
-gfx::Size FeaturePodLabelButton::CalculatePreferredSize() const {
+gfx::Size FeaturePodLabelButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Minimum width of the button
   int width = kUnifiedFeaturePodLabelWidth + GetInsets().width();
   if (detailed_view_arrow_->GetVisible()) {
-    const int label_width = std::min(kUnifiedFeaturePodLabelWidth,
-                                     label_->GetPreferredSize().width());
+    const int label_width = std::min(
+        kUnifiedFeaturePodLabelWidth,
+        label_->GetPreferredSize(views::SizeBounds(label_->width(), {}))
+            .width());
     // Symmetrically increase the width to accommodate the arrow
     const int extra_space_for_arrow =
         2 * (kUnifiedFeaturePodArrowSpacing +
@@ -137,14 +140,20 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize() const {
   }
 
   // Make sure there is sufficient margin around the label.
-  int horizontal_margin = width - label_->GetPreferredSize().width();
+  int horizontal_margin =
+      width -
+      label_->GetPreferredSize(views::SizeBounds(label_->width(), {})).width();
   if (horizontal_margin < 2 * kUnifiedFeaturePodMinimumHorizontalMargin)
     width += 2 * kUnifiedFeaturePodMinimumHorizontalMargin - horizontal_margin;
 
-  int height = label_->GetPreferredSize().height() + GetInsets().height();
+  int height = label_->GetPreferredSize(views::SizeBounds(label_->width(), {}))
+                   .height() +
+               GetInsets().height();
   if (sub_label_->GetVisible()) {
-    height += kUnifiedFeaturePodInterLabelPadding +
-              sub_label_->GetPreferredSize().height();
+    height +=
+        kUnifiedFeaturePodInterLabelPadding +
+        sub_label_->GetPreferredSize(views::SizeBounds(sub_label_->width(), {}))
+            .height();
   }
 
   return gfx::Size(width, height);
@@ -181,6 +190,7 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 }
 
 void FeaturePodLabelButton::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor primary_text_color =
       color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);
@@ -202,7 +212,8 @@ void FeaturePodLabelButton::OnEnabledChanged() {
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
   gfx::Rect contents_bounds = GetContentsBounds();
-  gfx::Size preferred_size = child->GetPreferredSize();
+  gfx::Size preferred_size =
+      child->GetPreferredSize(views::SizeBounds(child->width(), {}));
   int child_width =
       std::min(kUnifiedFeaturePodLabelWidth, preferred_size.width());
   child->SetBounds(

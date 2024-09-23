@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/win/midl.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 midl("elevation_service_idl") {
@@ -52,6 +53,7 @@ executable("elevation_service") {
     ":version_resources",
     "//base",
     "//build/win:default_exe_manifest",
+    "//chrome/common/win:eventlog_provider",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crx_file",
@@ -86,10 +88,16 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//base/version_info:channel",
+    "//base/version_info:version_info",
     "//chrome/install_static:install_static_util",
     "//components/crx_file:crx_file",
     "//third_party/zlib/google:zip",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/elevation_service/internal" ]
+  }
 
   public_deps = [ ":public_headers" ]
 
@@ -141,8 +149,23 @@ test("elevation_service_unittests") {
     "//third_party/zlib/google:zip",
   ]
 
+  if (is_chrome_branded) {
+    deps += [ "//chrome/elevation_service/internal:unittests" ]
+  }
+
   data_deps = [
     ":elevation_service",
     ":elevation_service_unittests_files",
   ]
+}
+
+fuzzer_test("caller_validation_fuzzer") {
+  deps = [
+    ":lib",
+    "//base",
+  ]
+
+  dict = "fuzz.dict"
+
+  sources = [ "caller_validation_fuzzer.cc" ]
 }

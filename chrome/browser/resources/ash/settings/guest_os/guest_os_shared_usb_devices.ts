@@ -11,12 +11,18 @@
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import './guest_os_shared_usb_devices_add_dialog.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertExists, cast} from '../assert_extras.js';
+import {assertExists, cast, castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {Route, routes} from '../router.js';
 
 import {ContainerInfo, getVMNameForGuestOsType, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, GuestOsType} from './guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from './guest_os_container_select.js';
@@ -28,7 +34,8 @@ interface SharedUsbDevice {
 }
 
 const SettingsGuestOsSharedUsbDevicesElementBase =
-    I18nMixin(WebUiListenerMixin(PolymerElement));
+    RouteObserverMixin(DeepLinkingMixin(
+        I18nMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsGuestOsSharedUsbDevicesElement extends
     SettingsGuestOsSharedUsbDevicesElementBase {
@@ -42,6 +49,14 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
 
   static get properties() {
     return {
+      showGuestUsbNotificationDialog_: {
+        type: Boolean,
+        value: false,
+      },
+      showGuestUsbPersistentPassthroughDialog_: {
+        type: Boolean,
+        value: false,
+      },
       /**
        * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
        */
@@ -104,6 +119,17 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
           return [];
         },
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kGuestUsbNotification,
+          Setting.kGuestUsbPersistentPassthrough,
+        ]),
+      },
     };
   }
 
@@ -115,6 +141,8 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   private reassignDevice_: GuestOsSharedUsbDevice|null;
   private sharedUsbDevices_: SharedUsbDevice[];
   private showAddUsbDialog_: boolean;
+  private showGuestUsbNotificationDialog_: boolean;
+  private showGuestUsbPersistentPassthroughDialog_: boolean;
 
   constructor() {
     super();
@@ -129,6 +157,14 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         'guest-os-shared-usb-devices-changed',
         this.onGuestOsSharedUsbDevicesChanged_.bind(this));
     this.browserProxy_.notifyGuestOsSharedUsbDevicesPageReady();
+  }
+
+  override currentRouteChanged(newRoute: Route): void {
+    if (newRoute !== routes.CROSTINI_SHARED_USB_DEVICES) {
+      return;
+    }
+
+    this.attemptDeepLink();
   }
 
   protected onContainerInfo_(containerInfos: ContainerInfo[]): void {
@@ -168,6 +204,18 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
       this.reassignDevice_ = device;
       return;
     }
+
+    const persistentPassthroughEnabled =
+        this.get('prefs.guest_os.usb_persistent_passthrough_enabled.value');
+    if (!target.checked && persistentPassthroughEnabled) {
+      const deviceIdentifier = `${parseInt(device.vendorId, 16)}:${
+          parseInt(device.productId)}:${device.serialNumber}`;
+      // Return value of deletion is agnostic to presence of key existence, so
+      // nothing to return/check here.
+      this.deletePrefDictEntry(
+          'guest_os.usb_persistent_passthrough_devices', deviceIdentifier);
+    }
+
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name, device.guid,
         target.checked);
@@ -221,6 +269,70 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
       this.browserProxy_.setGuestOsUsbDeviceShared(
           device.guestId.vm_name, '', device.guid, false);
     }
+  }
+
+  private getGuestUsbNotificationToggle_(): SettingsToggleButtonElement {
+    return castExists(
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#guestShowUsbNotificationToggle'));
+  }
+
+  private getNotificationDialogText_(): string {
+    const toggle = this.getGuestUsbNotificationToggle_();
+    // `checked` state here is the *new* desired state
+    return toggle.checked ?
+        this.i18n('guestOsSharedUsbDevicesNotificationDialogTitleEnable') :
+        this.i18n('guestOsSharedUsbDevicesNotificationDialogTitleDisable');
+  }
+
+  private onGuestUsbNotificationChange_(): void {
+    this.showGuestUsbNotificationDialog_ = true;
+  }
+
+  private onGuestUsbNotificationDialogClose_(e: CustomEvent): void {
+    const toggle = this.getGuestUsbNotificationToggle_();
+    if (e.detail.accepted) {
+      toggle.sendPrefChange();
+    } else {
+      toggle.resetToPrefValue();
+    }
+
+    this.showGuestUsbNotificationDialog_ = false;
+  }
+
+  private getGuestUsbPersistentPassthroughToggle_():
+      SettingsToggleButtonElement {
+    return castExists(
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#guestUsbPersistentPassthroughToggle'));
+  }
+
+  private getGuestUsbPersistentPassthroughDialogText_(): string {
+    const toggle = this.getGuestUsbPersistentPassthroughToggle_();
+    // `checked` state here is the *new* desired state
+    return toggle.checked ?
+        this.i18n('guestOsSharedUsbPersistentPassthroughDialogTitleEnable') :
+        this.i18n('guestOsSharedUsbPersistentPassthroughDialogTitleDisable');
+  }
+
+  private onGuestUsbPersistentPassthroughChange_(): void {
+    this.showGuestUsbPersistentPassthroughDialog_ = true;
+  }
+
+  private onGuestUsbPersistentPassthroughDialogClose_(e: CustomEvent): void {
+    const toggle = this.getGuestUsbPersistentPassthroughToggle_();
+    if (e.detail.accepted) {
+      toggle.sendPrefChange();
+      if (!toggle.checked) {
+        // Persistent passthrough has been turned off, reset list of devices.
+        this.setPrefValue('guest_os.usb_persistent_passthrough_devices', {});
+      }
+    } else {
+      toggle.resetToPrefValue();
+    }
+
+
+    this.showGuestUsbPersistentPassthroughDialog_ = false;
   }
 }
 

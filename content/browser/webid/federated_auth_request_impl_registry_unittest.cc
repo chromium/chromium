@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -35,6 +34,7 @@
 
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using blink::mojom::RegisterIdpStatus;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -110,16 +110,54 @@ class FederatedAuthRequestImplRegistryTest
 TEST_F(FederatedAuthRequestImplRegistryTest, RegistersIdPSuccessfully) {
   GURL configURL = GURL(kIdpUrl);
 
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
+  auto controller =
+      std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+      .WillOnce(::testing::WithArg<1>(
+          [](base::OnceCallback<void(bool accepted)> callback) {
+            std::move(callback).Run(true);
+          }));
+
+  federated_auth_request_impl_->SetDialogControllerForTests(
+      std::move(controller));
+
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
   EXPECT_CALL(*mock_permission_delegate_, RegisterIdP(_)).WillOnce(Return());
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(true, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kSuccess, result);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+// Test Registering denied without user activation.
+TEST_F(FederatedAuthRequestImplRegistryTest,
+       RegistersIdPDeniedWithoutUserActivation) {
+  GURL configURL = GURL(kIdpUrl);
+
+  auto controller =
+      std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+
+  federated_auth_request_impl_->SetDialogControllerForTests(
+      std::move(controller));
+
+  feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
+
+  base::RunLoop loop;
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorNoTransientActivation, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -127,12 +165,15 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersIdPSuccessfully) {
 TEST_F(FederatedAuthRequestImplRegistryTest, RegistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
 
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(false, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorFeatureDisabled, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -140,14 +181,17 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersWithoutFeature) {
 TEST_F(FederatedAuthRequestImplRegistryTest, RegistersCrossOriginNotAllowed) {
   GURL configURL = GURL("https://another.example");
 
+  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
+
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(false, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorCrossOriginConfig, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 

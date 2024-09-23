@@ -52,8 +52,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
 
   // TimeSource implementation.
   void StartTicking() override;
@@ -111,7 +111,7 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // Callback for input_buffer_collection_.AcquireBuffers().
   void OnBuffersAcquired(
       std::vector<media::VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+      const fuchsia::sysmem2::SingleBufferSettings& buffer_settings);
 
   // Initializes |stream_sink_|. Called during initialization and every time
   // configuration changes.
@@ -168,7 +168,7 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
 
   // SysmemBufferStream::Sink implementation.
   void OnSysmemBufferStreamBufferCollectionToken(
-      fuchsia::sysmem::BufferCollectionTokenPtr token) override;
+      fuchsia::sysmem2::BufferCollectionTokenPtr token) override;
   void OnSysmemBufferStreamOutputPacket(
       media::StreamProcessorHelper::IoPacket packet) override;
   void OnSysmemBufferStreamEndOfStream() override;

@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_legacy_cookie_access_allowed_for_domains": {}
+          "profile.managed_legacy_cookie_access_allowed_for_domains": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

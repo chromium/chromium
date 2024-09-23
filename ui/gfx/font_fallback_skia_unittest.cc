@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/font_fallback.h"
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/font_fallback.h"
 
 namespace gfx {
 
@@ -29,7 +29,7 @@ TEST(FontFallbackSkiaTest, EmptyStringFallback) {
   Font base_font;
   Font fallback_font;
   bool result = GetFallbackFont(base_font, kDefaultApplicationLocale,
-                                base::StringPiece16(), &fallback_font);
+                                std::u16string_view(), &fallback_font);
   EXPECT_FALSE(result);
 }
 

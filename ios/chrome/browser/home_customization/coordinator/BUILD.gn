@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "home_customization_coordinator+Testing.h",
+    "home_customization_coordinator.h",
+    "home_customization_coordinator.mm",
+    "home_customization_delegate.h",
+    "home_customization_mediator.h",
+    "home_customization_mediator.mm",
+    "home_customization_navigation_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/home_customization/ui",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/parcel_tracking:features",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/chrome/browser/url_loading/model",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "home_customization_coordinator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/home_customization/ui",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

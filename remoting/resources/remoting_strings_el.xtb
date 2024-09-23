@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Απέτυχε το άνοιγμα του <ph name="URL" /> στον υπολογιστή πελάτη.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2366718077645204424">Δεν ήταν δυνατή η επικοινωνία με τον κεντρικό υπολογιστή. Αυτό ενδέχεται να οφείλεται στη διαμόρφωση του δικτύου που χρησιμοποιείτε.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Τελευταία φορά στο διαδίκτυο <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Παραχώρηση άδειας Προσβασιμότητα στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Σε σύνδεση με: <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Θέλετε να μοιραστείτε αυτόν τον υπολογιστή με έναν άλλο χρήστη, ο οποίος θα μπορεί να τον βλέπει και να τον ελέγχει;</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Διαδικασία απομακρυσμένης επικοινωνίας Κλειδιού ασφαλείας</translation>
 <translation id="3581045510967524389">Δεν ήταν δυνατή η σύνδεση στο δίκτυο. Βεβαιωθείτε ότι η συσκευή σας έχει συνδεθεί στο διαδίκτυο.</translation>
 <translation id="3596628256176442606">Αυτή η υπηρεσία ενεργοποιεί τις εισερχόμενες συνδέσεις από υπολογιστές-πελάτες Chromoting.</translation>
-<translation id="369442766917958684">Εκτός σύνδεσης</translation>
 <translation id="3695446226812920698">Μάθετε πώς</translation>
 <translation id="3776024066357219166">Η περίοδος σύνδεσης στην Απομακρυσμένη επιφάνεια εργασίας Chrome τερματίστηκε.</translation>
 <translation id="3858860766373142691">Όνομα</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Αυτήν τη στιγμή πραγματοποιείται κοινή χρήση της επιφάνειας εργασίας σας με τον χρήστη <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Έχετε συνδεθεί ως <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Επανασύνδεση</translation>
 <translation id="5810269635982033450">Η οθόνη λειτουργεί ως trackpad</translation>
 <translation id="5823554426827907568">Ο χρήστης <ph name="CLIENT_USERNAME" /> ζήτησε πρόσβαση για προβολή της οθόνης σας και έλεγχο του πληκτρολογίου και του ποντικιού σας. Πατήστε ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' εάν δεν περιμένετε αυτό το αίτημα. Διαφορετικά, όταν είστε έτοιμοι, επιλέξτε ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' για να επιτρέψετε τη σύνδεση.</translation>

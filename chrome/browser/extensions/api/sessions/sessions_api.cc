@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/session_id.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -36,9 +35,11 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -46,6 +47,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace extensions {
 
@@ -140,21 +142,22 @@ api::sessions::Session CreateSessionModelHelper(
   } else if (window) {
     session_struct.window = std::move(*window);
   } else if (group) {
-    NOTREACHED();  // TODO(crbug.com/1192309): Implement group support.
+    // TODO(crbug.com/40757179): Implement group support.
+    NOTIMPLEMENTED();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return session_struct;
 }
 
-bool is_window_entry(const sessions::TabRestoreService::Entry& entry) {
-  return entry.type == sessions::TabRestoreService::WINDOW;
+bool is_window_entry(const sessions::tab_restore::Entry& entry) {
+  return entry.type == sessions::tab_restore::Type::WINDOW;
 }
 
 }  // namespace
 
 api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
-    const sessions::TabRestoreService::Tab& tab,
+    const sessions::tab_restore::Tab& tab,
     bool active) {
   return CreateTabModelHelper(tab.navigations[tab.current_navigation_index],
                               base::NumberToString(tab.id.id()),
@@ -163,7 +166,7 @@ api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
 }
 
 api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
-    const sessions::TabRestoreService::Window& window) {
+    const sessions::tab_restore::Window& window) {
   DCHECK(!window.tabs.empty());
 
   std::vector<api::tabs::Tab> tabs;
@@ -178,30 +181,30 @@ api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
 }
 
 api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
-    const sessions::TabRestoreService::Group& group) {
+    const sessions::tab_restore::Group& group) {
   DCHECK(!group.tabs.empty());
 
-  return tab_groups_util::CreateTabGroupObject(group.group_id,
-                                               group.visual_data);
+  return ExtensionTabUtil::CreateTabGroupObject(group.group_id,
+                                                group.visual_data);
 }
 
 api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
-    const sessions::TabRestoreService::Entry& entry) {
+    const sessions::tab_restore::Entry& entry) {
   std::optional<api::tabs::Tab> tab;
   std::optional<api::windows::Window> window;
   std::optional<api::tab_groups::TabGroup> group;
   switch (entry.type) {
-    case sessions::TabRestoreService::TAB:
+    case sessions::tab_restore::Type::TAB:
       tab = CreateTabModel(
-          static_cast<const sessions::TabRestoreService::Tab&>(entry), false);
+          static_cast<const sessions::tab_restore::Tab&>(entry), false);
       break;
-    case sessions::TabRestoreService::WINDOW:
+    case sessions::tab_restore::Type::WINDOW:
       window = CreateWindowModel(
-          static_cast<const sessions::TabRestoreService::Window&>(entry));
+          static_cast<const sessions::tab_restore::Window&>(entry));
       break;
-    case sessions::TabRestoreService::GROUP:
+    case sessions::tab_restore::Type::GROUP:
       group = CreateGroupModel(
-          static_cast<const sessions::TabRestoreService::Group&>(entry));
+          static_cast<const sessions::tab_restore::Group&>(entry));
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
                                   std::move(window), std::move(group));
@@ -235,11 +238,10 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // uninteresting entries.
   int counter = 0;
   for (const auto& entry : tab_restore_service->entries()) {
-    // TODO(crbug.com/1192309): Support group entries in the Sessions API,
+    // TODO(crbug.com/40757179): Support group entries in the Sessions API,
     // rather than sharding the group out into individual tabs.
-    if (entry->type == sessions::TabRestoreService::GROUP) {
-      auto& group =
-          static_cast<const sessions::TabRestoreService::Group&>(*entry);
+    if (entry->type == sessions::tab_restore::Type::GROUP) {
+      auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);
       for (const auto& tab : group.tabs)
         if (counter++ < max_results)
           result.push_back(CreateSessionModel(*tab));
@@ -299,8 +301,15 @@ SessionsGetDevicesFunction::CreateWindowModel(
 
   std::vector<api::tabs::Tab> tabs;
   for (size_t i = 0; i < tabs_in_window.size(); ++i) {
-    tabs.push_back(CreateTabModel(session_tag, *tabs_in_window[i], i,
-                                  window.selected_tab_index == (int)i));
+    bool is_active = false;
+    if (window.selected_tab_index != -1) {
+      SessionID selected_tab_id =
+          window.tabs[window.selected_tab_index]->tab_id;
+      SessionID current_tab_id = tabs_in_window[i]->tab_id;
+      is_active = selected_tab_id == current_tab_id;
+    }
+    tabs.push_back(
+        CreateTabModel(session_tag, *tabs_in_window[i], i, is_active));
   }
 
   std::string session_id =
@@ -324,26 +333,26 @@ SessionsGetDevicesFunction::CreateWindowModel(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sessions::SessionWindow::TYPE_CUSTOM_TAB:
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   api::windows::WindowState state = api::windows::WindowState::kNone;
   switch (window.show_state) {
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       state = api::windows::WindowState::kNormal;
       break;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       state = api::windows::WindowState::kMinimized;
       break;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       state = api::windows::WindowState::kMaximized;
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       state = api::windows::WindowState::kFullscreen;
       break;
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_INACTIVE:
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kEnd:
       break;
   }
 
@@ -445,16 +454,15 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::GetRestoredTabResult(
 
 ExtensionFunction::ResponseValue
 SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
-  Browser* browser = nullptr;
+  WindowController* window_controller = nullptr;
   std::string error;
-  if (!windows_util::GetBrowserFromWindowID(this, window_id, 0, &browser,
-                                            &error)) {
+  if (!windows_util::GetControllerFromWindowID(this, window_id, 0,
+                                               &window_controller, &error)) {
     return Error(error);
   }
   base::Value::Dict window_value =
-      ExtensionTabUtil::CreateWindowValueForExtension(
-          *browser, extension(), ExtensionTabUtil::kPopulateTabs,
-          source_context_type());
+      window_controller->CreateWindowValueForExtension(
+          extension(), WindowController::kPopulateTabs, source_context_type());
   std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);
   DCHECK(window);

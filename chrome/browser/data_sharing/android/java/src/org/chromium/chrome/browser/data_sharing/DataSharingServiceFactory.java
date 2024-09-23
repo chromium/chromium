@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_sharing;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -47,6 +48,6 @@ public final class DataSharingServiceFactory {
 
     @NativeMethods
     interface Natives {
-        DataSharingService getForProfile(Profile profile);
+        DataSharingService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_dismissed_beforeunload
-  webdriver.error.UnexpectedAlertOpenException: unexpected alert open (500): unexpected alert open: {Alert text : }
-Harness: the test ran to completion.

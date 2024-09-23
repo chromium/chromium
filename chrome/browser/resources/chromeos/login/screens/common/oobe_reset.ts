@@ -18,12 +18,12 @@ import '../../components/buttons/oobe_text_button.js';
 import {getInstance as getAnnouncerInstance} from '//resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './oobe_reset.html.js';
 
@@ -39,7 +39,7 @@ enum ResetScreenUiState {
 }
 
 /**
- * The order should be in sync with the ResetView::State enum.
+ * The order should be in sync with the ResetScreen::State enum.
  */
 const ResetScreenUiStateMapping = [
   ResetScreenUiState.RESTART_REQUIRED,
@@ -84,12 +84,7 @@ const POWERWASH_MODE_DETAILS: Map<number, DialogRessources> = new Map([
 ]);
 
 const ResetScreenElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 
 export class OobeReset extends ResetScreenElementBase {
@@ -190,6 +185,10 @@ export class OobeReset extends ResetScreenElementBase {
     };
   }
 
+  static get observers(): string[] {
+    return ['onScreenStateChanged(uiStep)'];
+  }
+
   private isRollbackAvailable_: boolean;
   private isRollbackRequested_: boolean;
   private tpmUpdateAvailable_: boolean;
@@ -204,7 +203,15 @@ export class OobeReset extends ResetScreenElementBase {
   private powerwashMode_: number;
   private inRevertState_: boolean;
 
+  constructor() {
+    super();
 
+    this.isRollbackAvailable_ = false;
+    this.isRollbackRequested_ = false;
+    this.tpmUpdateAvailable_ = false;
+    this.tpmUpdateChecked_ = false;
+    this.tpmUpdateEditable_ = true;
+  }
 
   /** Overridden from LoginScreenBehavior. */
   override get EXTERNAL_API(): string[] {
@@ -229,20 +236,22 @@ export class OobeReset extends ResetScreenElementBase {
     return ResetScreenUiState;
   }
 
-
   override ready(): void {
     super.ready();
+    // Set initial states.
+    this.reset();
+    this.setShouldShowConfirmationDialog(false);
     this.initializeLoginScreen('ResetScreen');
   }
 
   reset(): void {
     this.setUIStep(ResetScreenUiState.RESTART_REQUIRED);
-    this.onScreenStateChanged();
-
     this.powerwashMode_ = PowerwashMode.POWERWASH_ONLY;
-    this.tpmUpdateAvailable_ = false;
     this.isRollbackAvailable_ = false;
     this.isRollbackRequested_ = false;
+    this.tpmUpdateAvailable_ = false;
+    this.tpmUpdateChecked_ = false;
+    this.tpmUpdateEditable_ = true;
   }
 
   /* ---------- EXTERNAL API BEGIN ---------- */
@@ -283,7 +292,6 @@ export class OobeReset extends ResetScreenElementBase {
 
   setScreenState(state: number): void {
     this.setUIStep(ResetScreenUiStateMapping[state]);
-    this.onScreenStateChanged();
   }
   /* ---------- EXTERNAL API END ---------- */
 
@@ -302,13 +310,13 @@ export class OobeReset extends ResetScreenElementBase {
   }
 
   private onScreenStateChanged(): void {
-    if (this.uiStep == ResetScreenUiState.REVERT_PROMISE) {
+    if (this.uiStep === ResetScreenUiState.REVERT_PROMISE) {
       getAnnouncerInstance().announce(this.i18n('resetRevertSpinnerMessage'));
       this.classList.add('revert-promise-view');
     } else {
       this.classList.remove('revert-promise-view');
     }
-    this.inRevertState_ = this.uiStep == ResetScreenUiState.REVERT_PROMISE;
+    this.inRevertState_ = this.uiStep === ResetScreenUiState.REVERT_PROMISE;
   }
 
   /**
@@ -340,7 +348,7 @@ export class OobeReset extends ResetScreenElementBase {
   private isPowerwashDisabled(
       _mode: PowerwashMode, _tpmUpdateChecked: boolean): boolean {
     return this.tpmUpdateChecked_ &&
-        (this.powerwashMode_ == PowerwashMode.POWERWASH_WITH_ROLLBACK);
+        (this.powerwashMode_ === PowerwashMode.POWERWASH_WITH_ROLLBACK);
   }
 
   /* ---------- CONFIRMATION DIALOG ---------- */

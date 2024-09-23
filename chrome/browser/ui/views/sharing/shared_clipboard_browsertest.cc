@@ -10,12 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/sharing_constants.h"
-#include "chrome/browser/sharing/sharing_metrics.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/ui/views/sharing/sharing_browsertest.h"
+#include "components/sharing_message/features.h"
+#include "components/sharing_message/sharing_constants.h"
+#include "components/sharing_message/sharing_metrics.h"
+#include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
@@ -42,7 +42,7 @@ class SharedClipboardBrowserTestBase : public SharingBrowserTest {
   }
 
   void CheckLastSharingMessageSent(const std::string& expected_text) const {
-    chrome_browser_sharing::SharingMessage sharing_message =
+    components_sharing_message::SharingMessage sharing_message =
         GetLastSharingMessageSent();
     ASSERT_TRUE(sharing_message.has_shared_clipboard_message());
     ASSERT_EQ(expected_text, sharing_message.shared_clipboard_message().text());

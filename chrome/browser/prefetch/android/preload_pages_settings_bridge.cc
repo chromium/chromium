@@ -4,38 +4,34 @@
 
 #include <jni.h>
 
-#include "chrome/browser/prefetch/android/jni_headers/PreloadPagesSettingsBridge_jni.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace {
-
-PrefService* GetPrefService() {
-  return ProfileManager::GetActiveUserProfile()
-      ->GetOriginalProfile()
-      ->GetPrefs();
-}
-
-}  // namespace
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/prefetch/android/jni_headers/PreloadPagesSettingsBridge_jni.h"
 
 namespace prefetch {
 
-static jint JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env) {
-  return static_cast<int>(prefetch::GetPreloadPagesState(*GetPrefService()));
+static jint JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env,
+                                                    Profile* profile) {
+  return static_cast<int>(prefetch::GetPreloadPagesState(*profile->GetPrefs()));
 }
 
 static jboolean JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
-    JNIEnv* env) {
-  return GetPrefService()->IsManagedPreference(
+    JNIEnv* env,
+    Profile* profile) {
+  return profile->GetPrefs()->IsManagedPreference(
       prefetch::prefs::kNetworkPredictionOptions);
 }
 
-static void JNI_PreloadPagesSettingsBridge_SetState(JNIEnv* env, jint state) {
+static void JNI_PreloadPagesSettingsBridge_SetState(JNIEnv* env,
+                                                    Profile* profile,
+                                                    jint state) {
   prefetch::SetPreloadPagesState(
-      GetPrefService(), static_cast<prefetch::PreloadPagesState>(state));
+      profile->GetPrefs(), static_cast<prefetch::PreloadPagesState>(state));
 }
 
 }  // namespace prefetch

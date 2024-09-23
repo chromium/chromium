@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /** This class is used to get a singleton instance of {@link SigninChecker}. */
 public final class SigninCheckerProvider {
@@ -26,17 +25,14 @@ public final class SigninCheckerProvider {
     @MainThread
     public static SigninChecker get(Profile profile) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
-        return sProfileMap.getForProfile(
-                profile,
-                () -> {
-                    // SyncErrorNotifier must be explicitly initialized.
-                    // TODO(crbug.com/1156620): Move the initializations elsewhere.
-                    SyncErrorNotifier.get();
-                    return new SigninChecker(
-                            IdentityServicesProvider.get().getSigninManager(profile),
-                            IdentityServicesProvider.get().getAccountTrackerService(profile),
-                            SyncServiceFactory.getForProfile(profile));
-                });
+        return sProfileMap.getForProfile(profile, SigninCheckerProvider::buildForProfile);
+    }
+
+    private static SigninChecker buildForProfile(Profile profile) {
+        // SyncErrorNotifier must be explicitly initialized.
+        // TODO(crbug.com/40736034): Move the initializations elsewhere.
+        SyncErrorNotifier.getForProfile(profile);
+        return new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile));
     }
 
     @MainThread

@@ -15,11 +15,10 @@ include_rules = [
   "+components/grit",
   "+components/power_monitor",
   "+components/services/font",
+  "+components/services/font_data",
   "+components/services/filesystem",
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",
-  "+components/services/screen_ai/buildflags",
-  "+components/services/screen_ai/public/cpp",
   "+components/services/storage",
   "+components/services/storage/public",
   "+components/session_manager/core",
@@ -27,7 +26,6 @@ include_rules = [
   "+components/link_header_util",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
-  "+components/miracle_parameter",
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
@@ -66,21 +64,26 @@ include_rules = [
   "+components/vector_icons",
   "+ui/linux",
   "+ui/strings/grit/ax_strings.h",
+  "+ui/strings/grit/auto_image_annotation_strings.h",
   "+ui/webui",
 
-  # TODO(crbug.com/1079201): Consider removing "+serivces". Each service should
+  # TODO(crbug.com/40129825): Consider removing "+services". Each service should
   # have explicit rules to allow services/*/public rather than adding a blanket
   # dependency.
   "+services",
   "-services/content",
   "+services/content/service.h",
   "+services/content/service_delegate.h",
+  "+services/device/public/cpp/compute_pressure",
   "-services/network",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "-services/cert_verifier",
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
+  "+services/screen_ai/buildflags",
+  "+services/screen_ai/public/cpp",
+  "+services/video_effects/public/cpp/buildflags.h",
 
   # In general, //content shouldn't depend on //device.
   # This is the an exception.
@@ -96,6 +99,7 @@ include_rules = [
   "+third_party/khronos",   # For enum definitions only
   "+third_party/libaom/av1_buildflags.h",
   "+third_party/re2",
+  "+third_party/rust/cxx",
   "+third_party/zlib",
 
   # Allow non-browser Chrome OS code to be used.
@@ -116,7 +120,6 @@ include_rules = [
   "+third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h",
   "+third_party/blink/public/platform/modules/sms/webotp_service.mojom.h",
   "+third_party/blink/public/public_buildflags.h",
-  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",
@@ -133,17 +136,17 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\.cc": [
-    "+components/os_crypt/async/browser/test_utils.h",
+    "+components/os_crypt/async",
     "+services/network/test",
   ],
-  ".*test_utils\.(h|cc)": [
+  ".*test_utils?(_.+)?\.(h|cc)": [
     "+services/network/test",
   ],
   "browser_interface_binders\.cc": [
-    "+components/ml/webnn/features.mojom-features.h",
+    "+services/webnn/public/mojom/features.mojom-features.h",
   ],
   "browser_main_loop\.cc": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
   ],
@@ -162,7 +165,7 @@ specific_include_rules = {
   "network_service_instance_impl\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
     "+services/cert_verifier/cert_verifier_service_factory.h",
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/network_service.h",
   ],
   "signed_exchange_handler_unittest\.cc": [
@@ -192,6 +195,11 @@ specific_include_rules = {
   ],
   "utility_sandbox_delegate_win\.cc": [
     "+content/utility/sandbox_delegate_data.mojom.h"
+  ],
+  "web_app_system_media_controls_manager.cc": [
+    "+components/remote_cocoa/browser"
+  ],
+  "render_widget_host_view_aura.cc": [
+    "+components/stylus_handwriting/win/features.h"
   ]
-
 }

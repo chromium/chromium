@@ -8,15 +8,18 @@
 
 #include "components/storage_monitor/portable_device_watcher_win.h"
 
-#include <dbt.h>
 #include <objbase.h>
+
+#include <dbt.h>
 #include <portabledevice.h>
 #include <wrl/client.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -422,8 +425,9 @@ bool EnumerateAttachedDevicesOnBlockingThread(
   if (FAILED(hr))
     return false;
 
-  std::unique_ptr<wchar_t*[]> pnp_device_ids(new wchar_t*[pnp_device_count]);
-  hr = portable_device_mgr->GetDevices(pnp_device_ids.get(), &pnp_device_count);
+  auto pnp_device_ids = base::HeapArray<wchar_t*>::Uninit(pnp_device_count);
+  hr =
+      portable_device_mgr->GetDevices(pnp_device_ids.data(), &pnp_device_count);
   if (FAILED(hr))
     return false;
 
@@ -665,7 +669,7 @@ void PortableDeviceWatcherWin::HandleDeviceDetachEvent(
        ++storage_object_iter) {
     std::string storage_id = storage_object_iter->object_persistent_id;
     MTPStorageMap::iterator storage_map_iter = storage_map_.find(storage_id);
-    DCHECK(storage_map_iter != storage_map_.end());
+    CHECK(storage_map_iter != storage_map_.end(), base::NotFatalUntil::M130);
     if (storage_notifications_) {
       storage_notifications_->ProcessDetach(
           storage_map_iter->second.device_id());

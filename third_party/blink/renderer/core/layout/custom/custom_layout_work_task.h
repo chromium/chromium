@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_layout_constraints_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -16,9 +17,8 @@ class ConstraintSpace;
 class CustomLayoutChild;
 class CustomLayoutToken;
 class LayoutInputNode;
-class LayoutUnit;
 class SerializedScriptValue;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 
 // Contains all the information needed to resolve a promise with a fragment or
 // intrinsic-sizes.
@@ -33,13 +33,13 @@ class CustomLayoutWorkTask final
   // Used when resolving a promise with intrinsic-sizes.
   CustomLayoutWorkTask(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       ScriptPromiseResolver*,
+                       ScriptPromiseResolverBase*,
                        const TaskType type);
 
   // Used when resolving a promise with a fragment.
   CustomLayoutWorkTask(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       ScriptPromiseResolver*,
+                       ScriptPromiseResolverBase*,
                        const CustomLayoutConstraintsOptions*,
                        scoped_refptr<SerializedScriptValue> constraint_data,
                        const TaskType type);
@@ -55,7 +55,7 @@ class CustomLayoutWorkTask final
  private:
   Member<CustomLayoutChild> child_;
   Member<CustomLayoutToken> token_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   Member<const CustomLayoutConstraintsOptions> options_;
   scoped_refptr<SerializedScriptValue> constraint_data_;
   TaskType type_;

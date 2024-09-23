@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <algorithm>
@@ -25,6 +30,10 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
   Message message(kTestMessageName, kTestMessageFlags, 0, kTestPayloadSize,
                   nullptr);
   message.header()->trace_nonce = 0;
+  if (message.version() >= 3) {
+    message.header_v3()->creation_timeticks_us = 0;
+  }
+
   bytes->resize(message.data_num_bytes());
   std::copy(message.data(), message.data() + message.data_num_bytes(),
             bytes->begin());

@@ -52,8 +52,11 @@ class MojoMjpegDecodeAcceleratorServiceTest : public ::testing::Test {
 
 TEST_F(MojoMjpegDecodeAcceleratorServiceTest, InitializeAndDecode) {
   mojo::Remote<chromeos_camera::mojom::MjpegDecodeAccelerator> jpeg_decoder;
+  base::RepeatingCallback<void(std::optional<base::RepeatingClosure>)>
+      mjpeg_decode_begin_frame_cb;
   MojoMjpegDecodeAcceleratorService::Create(
-      jpeg_decoder.BindNewPipeAndPassReceiver());
+      jpeg_decoder.BindNewPipeAndPassReceiver(),
+      std::move(mjpeg_decode_begin_frame_cb));
 
   base::RunLoop run_loop;
   jpeg_decoder->Initialize(

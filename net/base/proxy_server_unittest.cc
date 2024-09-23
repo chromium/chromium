@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/proxy_server.h"
 
 #include <optional>
@@ -62,6 +67,7 @@ TEST(ProxyServerTest, FromSchemeHostAndPort) {
       {ProxyServer::SCHEME_QUIC, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS4, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS5, "foopy", 111, "111", "foopy", 111},
+      {ProxyServer::SCHEME_HTTPS, " foopy \n", 111, "111", "foopy", 111},
 
       // Default ports
       {ProxyServer::SCHEME_HTTP, "foopy", std::nullopt, "", "foopy", 80},

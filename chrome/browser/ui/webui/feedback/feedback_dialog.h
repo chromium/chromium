@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_DIALOG_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "extensions/common/api/feedback_private.h"
@@ -15,6 +15,7 @@
 
 class Profile;
 
+// This class will be self-deleted, happening when the dialog is closed.
 class FeedbackDialog : public ui::WebDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFeedbackDialogForTesting);
@@ -57,6 +58,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   // Prevent Profile destruction until the dialog is closed, to prevent a
   // dangling RenderProcessHost crash.
   ScopedProfileKeepAlive profile_keep_alive_;
+  base::WeakPtrFactory<FeedbackDialog> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_DIALOG_H_

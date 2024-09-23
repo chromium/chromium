@@ -13,13 +13,11 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -55,9 +53,7 @@ SidePanelService::SidePanelService(content::BrowserContext* context)
 
 bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
                                                 TabId tab_id) {
-  if (!OpenSidePanelOnIconClick(extension.id()) ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
+  if (!OpenSidePanelOnIconClick(extension.id())) {
     return false;
   }
 
@@ -67,12 +63,6 @@ bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
 bool SidePanelService::HasSidePanelContextMenuActionForTab(
     const Extension& extension,
     TabId tab_id) {
-  if (!features::IsSidePanelPinningEnabled() ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    return false;
-  }
-
   return HasSidePanelAvailableForTab(extension, tab_id);
 }
 
@@ -201,6 +191,8 @@ void SidePanelService::RemoveExtensionOptions(const ExtensionId& id) {
 bool SidePanelService::OpenSidePanelOnIconClick(
     const ExtensionId& extension_id) {
   bool open_side_panel_on_icon_click = false;
+  // TODO(tjudkins): This should be taking in a browser context to read the pref
+  // on, rather than using the one the service was created with.
   ExtensionPrefs::Get(browser_context_)
       ->ReadPrefAsBoolean(extension_id, kOpenSidePanelOnIconClickPref,
                           &open_side_panel_on_icon_click);
@@ -210,6 +202,8 @@ bool SidePanelService::OpenSidePanelOnIconClick(
 void SidePanelService::SetOpenSidePanelOnIconClick(
     const ExtensionId& extension_id,
     bool open_side_panel_on_icon_click) {
+  // TODO(tjudkins): This should be taking in a browser context to set the pref
+  // on, rather than using the one the service was created with.
   ExtensionPrefs::Get(browser_context_)
       ->SetBooleanPref(extension_id, kOpenSidePanelOnIconClickPref,
                        open_side_panel_on_icon_click);
@@ -217,13 +211,15 @@ void SidePanelService::SetOpenSidePanelOnIconClick(
 
 base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
     const Extension& extension,
+    content::BrowserContext* context,
     int window_id,
     bool include_incognito_information) {
   std::string error;
-  Browser* browser = ExtensionTabUtil::GetBrowserInProfileWithId(
-      Profile::FromBrowserContext(browser_context_), window_id,
-      include_incognito_information, &error);
-  if (!browser) {
+  WindowController* window_controller =
+      ExtensionTabUtil::GetControllerInProfileWithId(
+          Profile::FromBrowserContext(context), window_id,
+          include_incognito_information, &error);
+  if (!window_controller) {
     return base::unexpected(error);
   }
 
@@ -235,19 +231,21 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
   }
 
   side_panel_util::OpenGlobalExtensionSidePanel(
-      *browser, /*web_contents=*/nullptr, extension.id());
+      *window_controller->GetBrowser(), /*web_contents=*/nullptr,
+      extension.id());
   return true;
 }
 
 base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
     const Extension& extension,
+    content::BrowserContext* context,
     int tab_id,
     std::optional<int> window_id,
     bool include_incognito_information) {
   // First, find the corresponding tab.
   Browser* browser = nullptr;
   content::WebContents* web_contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context_,
+  if (!ExtensionTabUtil::GetTabById(tab_id, context,
                                     include_incognito_information, &browser,
                                     nullptr, &web_contents, nullptr)) {
     return base::unexpected(

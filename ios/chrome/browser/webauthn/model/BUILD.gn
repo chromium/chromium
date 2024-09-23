@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_passkey_model_factory.cc",
+    "ios_passkey_model_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/keyed_service/ios",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/sync/model",
+    "//components/webauthn/core/browser",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/web/public",
+  ]
+}

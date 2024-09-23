@@ -22,17 +22,19 @@ class MemoryClusterTelemetry(perf_benchmark.PerfBenchmark):
   def AddBenchmarkCommandLineArgs(cls, parser):
     super(MemoryClusterTelemetry, cls).AddBenchmarkCommandLineArgs(parser)
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
-    parser.add_option(
-        '--wait-time',  action='store', type='int',
-        default=60, help=('Number of seconds to wait for after navigation '
-                          'and before taking memory dump.'))
-    parser.add_option(
-        '--traffic-setting',  choices=cls._ALL_NET_CONFIGS,
+    parser.add_argument('--wait-time',
+                        type=int,
+                        default=60,
+                        help=('Number of seconds to wait for after navigation '
+                              'and before taking memory dump.'))
+    parser.add_argument(
+        '--traffic-setting',
+        choices=cls._ALL_NET_CONFIGS,
         default=traffic_setting.REGULAR_4G,
-        help='Traffic condition (string). Default to "%%default". Can be: %s' %
-         ', '.join(cls._ALL_NET_CONFIGS))
-    parser.add_option(
-        '--disable-heap-profiling', action='store_true',
+        help='Traffic condition (string). Default to "%(default)s".')
+    parser.add_argument(
+        '--disable-heap-profiling',
+        action='store_true',
         help=('Disable heap profiling to reduce perf overhead. Notes that this '
               'makes test more realistic but give less accurate memory '
               'metrics'))

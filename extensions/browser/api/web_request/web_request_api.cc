@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,7 +28,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -43,7 +46,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
@@ -65,6 +67,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -187,7 +193,7 @@ void WebRequestAPI::ProxySet::RemoveProxy(Proxy* proxy) {
   }
 
   auto proxy_it = proxies_.find(proxy);
-  DCHECK(proxy_it != proxies_.end());
+  CHECK(proxy_it != proxies_.end(), base::NotFatalUntil::M130);
   proxies_.erase(proxy_it);
 }
 
@@ -240,6 +246,13 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
                            request_id.request_id, std::move(callback));
 }
 
+void WebRequestAPI::ProxySet::OnDNRExtensionUnloaded(
+    const Extension* extension) {
+  for (const auto& proxy : proxies_) {
+    proxy->OnDNRExtensionUnloaded(extension);
+  }
+}
+
 WebRequestAPI::RequestIDGenerator::RequestIDGenerator() = default;
 WebRequestAPI::RequestIDGenerator::~RequestIDGenerator() = default;
 
@@ -273,7 +286,7 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
       proxies_(std::make_unique<ProxySet>()),
       may_have_proxies_(MayHaveProxies()) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  // TODO(crbug.com/433136): Once ExtensionWebRequestEventRouter is a per-
+  // TODO(crbug.com/40393861): Once ExtensionWebRequestEventRouter is a per-
   // BrowserContext instance, it can observe these events itself. That's a
   // bit tricky right now because the singleton instance would need to
   // observe the EventRouter for each BrowserContext that has webRequest
@@ -291,7 +304,7 @@ void WebRequestAPI::Shutdown() {
   proxies_.reset();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
   extensions::ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
-  // TODO(https://crbug.com/1433136): Remove this once WebRequestEventRouter
+  // TODO(crbug.com/40264286): Remove this once WebRequestEventRouter
   // implements `KeyedService::Shutdown` correctly.
   WebRequestEventRouter::Get(browser_context_)
       ->OnBrowserContextShutdown(browser_context_);
@@ -379,9 +392,11 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
     bool use_proxy = false;
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
-    // TODO(https://crbug.com/1500060): Remove the scheme check once we're sure
+    // TODO(crbug.com/40288053): Remove the scheme check once we're sure
     // that WebUIs with WebView run in real WebUI processes and check the
     // context type using |IsAvailableToWebViewEmbedderFrame()| below.
     if (WebViewGuest::IsGuest(frame)) {
@@ -402,12 +417,13 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         use_proxy = IsAvailableToWebViewEmbedderFrame(frame);
       }
     }
+#endif
 
     // Create a proxy URLLoader even when there is no CRX
     // installed with webRequest permissions. This allows the extension
     // requests to be intercepted for CRX telemetry service if enabled.
     // Only proxy if the new RHC interception logic is disabled.
-    // TODO(crbug.com/1447587): Clean up collection logic here once new RHC
+    // TODO(crbug.com/40913716): Clean up collection logic here once new RHC
     // interception logic is fully launched.
     const std::string& request_scheme = request_initiator.scheme();
     if (extensions::kExtensionScheme == request_scheme &&
@@ -470,10 +486,16 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     bool is_main_frame,
     AuthRequestCallback callback,
     WebViewGuest* web_view_guest) {
-  if (!MayHaveProxies() &&
-      (!web_view_guest || !IsAvailableToWebViewEmbedderFrame(
-                              web_view_guest->GetGuestMainFrame()))) {
-    return false;
+  if (!MayHaveProxies()) {
+    bool needed_for_webview = false;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    needed_for_webview =
+        web_view_guest &&
+        IsAvailableToWebViewEmbedderFrame(web_view_guest->GetGuestMainFrame());
+#endif
+    if (!needed_for_webview) {
+      return false;
+    }
   }
 
   content::GlobalRequestID proxied_request_id = request_id;
@@ -560,7 +582,7 @@ bool WebRequestAPI::MayHaveProxies() const {
 }
 
 bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
-  // TODO(crbug.com/1447587): Clean up once new RHC interception logic is fully
+  // TODO(crbug.com/40913716): Clean up once new RHC interception logic is fully
   // launched.
   return ExtensionsBrowserClient::Get()->IsExtensionTelemetryServiceEnabled(
              browser_context_) &&
@@ -576,6 +598,7 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
     content::RenderFrameHost* render_frame_host) const {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (!render_frame_host || !WebViewGuest::IsGuest(render_frame_host)) {
     return false;
   }
@@ -599,6 +622,9 @@ bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
           CheckAliasStatus::ALLOWED, util::GetBrowserContextId(browser_context),
           BrowserFrameContextData(embedder_frame));
   return availability.is_available();
+#else
+  return false;
+#endif
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
@@ -630,18 +656,25 @@ void WebRequestAPI::OnExtensionUnloaded(
     --web_request_extension_count_;
     UpdateMayHaveProxies();
   }
+
+  if (declarative_net_request::HasAnyDNRPermission(*extension)) {
+    proxies_->OnDNRExtensionUnloaded(extension);
+  }
 }
 
 void WebRequestAPI::UpdateActiveListener(
-    content::BrowserContext* browser_context,
+    void* browser_context_id,
     WebRequestEventRouter::ListenerUpdateType update_type,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
     int worker_thread_id,
     int64_t service_worker_version_id) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
     return;
   }
+
+  content::BrowserContext* browser_context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_id);
   WebRequestEventRouter::Get(browser_context)
       ->UpdateActiveListener(browser_context, update_type, extension_id,
                              sub_event_name, worker_thread_id,

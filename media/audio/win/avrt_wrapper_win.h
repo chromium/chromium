@@ -18,6 +18,7 @@
 #define MEDIA_AUDIO_WIN_AVRT_WRAPPER_WIN_H_
 
 #include <windows.h>
+
 #include <avrt.h>
 
 namespace avrt {

@@ -9,7 +9,9 @@
           "IncognitoModeAvailability": 1
         },
         "prefs": {
-          "incognito.mode_availability": {}
+          "incognito.mode_availability": {
+            "value": 1
+          }
         }
       },
       {
@@ -17,7 +19,9 @@
           "IncognitoModeAvailability": 2
         },
         "prefs": {
-          "incognito.mode_availability": {}
+          "incognito.mode_availability": {
+            "value": 2
+          }
         }
       }
     ]

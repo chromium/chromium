@@ -7,8 +7,8 @@
 
 #include <iosfwd>
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -40,18 +40,18 @@ class UrlPattern {
 
     ~UrlInfo();
 
-    base::StringPiece spec() const { return spec_; }
-    base::StringPiece GetLowerCaseSpec() const;
+    std::string_view spec() const { return spec_; }
+    std::string_view GetLowerCaseSpec() const;
     url::Component host() const { return host_; }
-    base::StringPiece GetStringHost() const;
+    std::string_view GetStringHost() const;
 
    private:
     // The url spec.
-    const base::StringPiece spec_;
+    const std::string_view spec_;
     // String to hold the lazily computed lower cased spec.
     mutable std::string lower_case_spec_owner_;
     // Reference to the lower case spec. Computed lazily.
-    mutable std::optional<base::StringPiece> lower_case_spec_cached_;
+    mutable std::optional<std::string_view> lower_case_spec_cached_;
 
     // The url host component.
     const url::Component host_;
@@ -60,12 +60,12 @@ class UrlPattern {
   UrlPattern();
 
   // Creates a |url_pattern| of a certain |type| and case-sensitivity.
-  UrlPattern(base::StringPiece url_pattern,
+  UrlPattern(std::string_view url_pattern,
              proto::UrlPatternType type = proto::URL_PATTERN_TYPE_WILDCARDED,
              MatchCase match_case = MatchCase::kFalse);
 
   // Creates a WILDCARDED |url_pattern| with the specified anchors.
-  UrlPattern(base::StringPiece url_pattern,
+  UrlPattern(std::string_view url_pattern,
              proto::AnchorType anchor_left,
              proto::AnchorType anchor_right);
 
@@ -78,7 +78,7 @@ class UrlPattern {
   ~UrlPattern();
 
   proto::UrlPatternType type() const { return type_; }
-  base::StringPiece url_pattern() const { return url_pattern_; }
+  std::string_view url_pattern() const { return url_pattern_; }
   proto::AnchorType anchor_left() const { return anchor_left_; }
   proto::AnchorType anchor_right() const { return anchor_right_; }
   bool match_case() const { return match_case_ == MatchCase::kTrue; }
@@ -96,7 +96,7 @@ class UrlPattern {
   // TODO(pkalinnikov): Store flat:: types instead of proto::, in order to avoid
   // conversions in IndexedRuleset.
   proto::UrlPatternType type_ = proto::URL_PATTERN_TYPE_UNSPECIFIED;
-  base::StringPiece url_pattern_;
+  std::string_view url_pattern_;
 
   proto::AnchorType anchor_left_ = proto::ANCHOR_TYPE_NONE;
   proto::AnchorType anchor_right_ = proto::ANCHOR_TYPE_NONE;

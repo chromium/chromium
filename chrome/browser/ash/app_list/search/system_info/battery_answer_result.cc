@@ -6,7 +6,8 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
-#include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
+#include "chromeos/ash/components/launcher_search/system_info/launcher_util.h"
+#include "chromeos/ash/components/system_info/battery_health.h"
 
 namespace app_list {
 namespace {
@@ -54,9 +55,10 @@ void BatteryAnswerResult::PowerChanged(
   if (calculating) {
     return;
   }
-  std::unique_ptr<BatteryHealth> new_battery_health =
-      std::make_unique<BatteryHealth>();
-  PopulatePowerStatus(power_supply_properties, *new_battery_health.get());
+  std::unique_ptr<system_info::BatteryHealth> new_battery_health =
+      std::make_unique<system_info::BatteryHealth>();
+  launcher_search::PopulatePowerStatus(power_supply_properties,
+                                       *new_battery_health.get());
   UpdateTitleAndDetails(/*title=*/std::u16string(),
                         new_battery_health->GetPowerTime(),
                         new_battery_health->GetAccessibilityLabel());

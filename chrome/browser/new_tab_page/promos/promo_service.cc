@@ -318,7 +318,7 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
     promo_data_ = PromoData();
     promo_status_ = Status::OK_BUT_BLOCKED;
     NotifyObservers();
-    // TODO(crbug.com/1003508): hide promos on existing, already-opened NTPs.
+    // TODO(crbug.com/40098612): hide promos on existing, already-opened NTPs.
   }
 }
 

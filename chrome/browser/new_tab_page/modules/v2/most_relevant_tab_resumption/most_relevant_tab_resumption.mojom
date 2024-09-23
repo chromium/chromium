@@ -1,0 +1,36 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module ntp.most_relevant_tab_resumption.mojom;
+import "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom";
+import "url/mojom/url.mojom";
+
+// components/visited_url_ranking/public/visited_url_ranking_service.h.
+// This should be updated when the enum at the above file is updated.
+enum ScoredURLUserAction {
+  kUnknown = 0,
+  kSeen = 1,
+  kActivated = 2,
+  kDismissed = 3,
+};
+
+// Browser-side handler for requests from the NTP Tab Resumption WebUI page.
+interface PageHandler {
+  // Queries for url visits.
+  GetURLVisits() => (array<URLVisit> url_visits);
+
+  // Dismisses module until new url_visits are found.
+  DismissModule(array<URLVisit> url_visits);
+
+  // Dismisses a single entry.
+  DismissURLVisit(URLVisit url_visit);
+
+  // Restores the module immediately.
+  RestoreModule(array<URLVisit> url_visits);
+
+  // Restores a single entry that was dismissed.
+  RestoreURLVisit(URLVisit url_visit);
+
+  // Records the action taken on a tab.
+  RecordAction(ScoredURLUserAction action, string url_key, int64 visit_request_id);
+};

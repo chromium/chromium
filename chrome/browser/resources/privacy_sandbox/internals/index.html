@@ -14,16 +14,11 @@
 </header>
 <main>
 
-<cr-tab-box id="ps-page">
+<cr-frame-list id="ps-page">
   <div slot="tab" id="ps-cookie-content-settings">
-    Tracking Protection / 3PCD
+    Tracking Protection / 3PCD Prefs
   </div>
-  <div slot="tab" id="ps-cookie-content-settings">Advertising</div>
-  <div slot="tab" id="ps-cookie-content-settings">Cookie Content Settings</div>
-  <div slot="tab" id="ps-tpcd-metdata-grants">3PCD Metadata Grants</div>
-  <div slot="tab" id="ps-tpcd-heuristics-grants">3PCD Heuristics Grants</div>
-  <div slot="tab" id="ps-tpcd-trial">3PCD Trial</div>
-  <div slot="tab" id="ps-top-level-tpcd-trial">Top Level 3PCD Trial</div>
+  <div slot="tab" id="ps-cookie-content-settings">Advertising Prefs</div>
   <div slot="panel">
     <h3>Tracking Protection Service Prefs</h3>
     <div id="tracking-protection-prefs"></div>
@@ -34,12 +29,7 @@
     <h3>Advertising Prefs</h3>
     <div id="advertising-prefs"></div>
   </div>
-  <div slot="panel" id="cookie-content-settings" style="content-settings"></div>
-  <div slot="panel" id="tpcd-metadata-grants" style="content-settings"></div>
-  <div slot="panel" id="tpcd-heuristics-grants" style="content-settings"></div>
-  <div slot="panel" id="tpcd-trial" style="content-settings"></div>
-  <div slot="panel" id="top-level-tpcd-trial" style="content-settings"></div>
-</cr-tab-box>
+</cr-frame-list>
 
 </main>
 <script type="module" src="index.js"></script>

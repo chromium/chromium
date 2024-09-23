@@ -9,6 +9,7 @@ import android.os.Looper;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -116,13 +117,15 @@ public class ContextualPageActionController {
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {
         mActionProviders.clear();
-        if (AdaptiveToolbarFeatures.isPriceTrackingPageActionEnabled()) {
-            mActionProviders.add(
-                    new PriceTrackingActionProvider(
-                            shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
+        mActionProviders.add(
+                new PriceTrackingActionProvider(
+                        shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
+        mActionProviders.add(new ReaderModeActionProvider());
+        if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
+            mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         }
-        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
-            mActionProviders.add(new ReaderModeActionProvider());
+        if (AdaptiveToolbarFeatures.isDiscountsPageActionEnabled()) {
+            mActionProviders.add(new DiscountsActionProvider(shoppingServiceSupplier));
         }
     }
 
@@ -166,6 +169,12 @@ public class ContextualPageActionController {
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
                 ProcessedValue.fromFloat(signalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+        inputContext.addEntry(
+                Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
+        inputContext.addEntry(
+                Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()
@@ -180,7 +189,6 @@ public class ContextualPageActionController {
                                             && mTabSupplier.get().getId() == tab.getId();
                             if (!isSameTab) return;
 
-                            if (!AdaptiveToolbarFeatures.isContextualPageActionUiEnabled()) return;
                             showDynamicAction(result);
                         });
     }
@@ -190,7 +198,7 @@ public class ContextualPageActionController {
             actionProvider.onActionShown(mTabSupplier.get(), action);
         }
 
-        // TODO(crbug/1373891): Add logic to inform reader mode backend.
+        // TODO(crbug.com/40242242): Add logic to inform reader mode backend.
         mAdaptiveToolbarButtonController.showDynamicAction(action);
     }
 
@@ -205,6 +213,8 @@ public class ContextualPageActionController {
     @NativeMethods
     interface Natives {
         void computeContextualPageAction(
-                Profile profile, InputContext inputContext, Callback<Integer> callback);
+                @JniType("Profile*") Profile profile,
+                InputContext inputContext,
+                Callback<Integer> callback);
     }
 }

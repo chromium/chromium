@@ -9,6 +9,8 @@ mojom("mojom") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
+  webui_module_path = "/"
+
   cpp_typemaps = [
     {
       types = [

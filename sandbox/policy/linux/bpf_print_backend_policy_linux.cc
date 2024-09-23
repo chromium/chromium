@@ -19,7 +19,7 @@ bpf_dsl::ResultExpr PrintBackendProcessPolicy::EvaluateSyscall(
     return sandbox_linux->HandleViaBroker(sysno);
   }
 
-  // TODO(crbug.com/1421088): write a better syscall filter.
+  // TODO(crbug.com/40896074): write a better syscall filter.
   return bpf_dsl::Allow();
 }
 

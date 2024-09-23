@@ -20,6 +20,9 @@
   readonly attribute WebTransportDatagramDuplexStream datagrams;
 
   void close(optional WebTransportCloseInfo closeInfo = {});
-  readonly attribute Promise<void> ready;
-  readonly attribute Promise<WebTransportCloseInfo> closed;
+  [CallWith=ScriptState] readonly attribute Promise<undefined> ready;
+  [CallWith=ScriptState] readonly attribute Promise<WebTransportCloseInfo> closed;
+
+  [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
+  Promise<WebTransportConnectionStats> getStats();
 };

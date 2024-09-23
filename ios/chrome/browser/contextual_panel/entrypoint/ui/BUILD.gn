@@ -8,6 +8,24 @@ source_set("ui") {
     "contextual_panel_entrypoint_mutator.h",
     "contextual_panel_entrypoint_view_controller.h",
     "contextual_panel_entrypoint_view_controller.mm",
+    "contextual_panel_entrypoint_visibility_delegate.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui/resources",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/ui/fullscreen:ui",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+  ]
 }

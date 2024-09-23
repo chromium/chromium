@@ -39,7 +39,7 @@ std::unique_ptr<PulseLoopbackManager> PulseLoopbackManager::Create(
   pa_context_set_subscribe_callback(manager->context_, &EventCallback,
                                     manager.get());
 
-  // TODO(crbug.com/1480216): Check if subscription was reported as successful
+  // TODO(crbug.com/40281249): Check if subscription was reported as successful
   // in pulse::ContextSuccessCallback.
   pa_operation* operation =
       pa_context_subscribe(manager->context_, PA_SUBSCRIPTION_MASK_SERVER,
@@ -67,12 +67,39 @@ PulseLoopbackManager::~PulseLoopbackManager() {
 
 PulseLoopbackAudioStream* PulseLoopbackManager::MakeLoopbackStream(
     const AudioParameters& params,
-    AudioManager::LogCallback log_callback) {
+    AudioManager::LogCallback log_callback,
+    bool should_mute_system_audio) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Check if we're trying to create a loopback-with-muting when other loopbacks
+  // are in progress
+  // TODO(crbug.com/359102845): Support simultaneous loopback-with-muting
+  // streams
+  if (should_mute_system_audio && !streams_.empty()) {
+    LOG(ERROR) << "Cannot create loopback-with-muting: other loopbacks are in "
+                  "progress.";
+    return nullptr;
+  }
+
+  // Check if we're trying to create a loopback-without-muting when a
+  // loopback-with-muting exists
+  if (!should_mute_system_audio && has_muting_loopback_) {
+    LOG(ERROR) << "Cannot create loopback-without-muting: a "
+                  "loopback-with-muting is in progress.";
+    return nullptr;
+  }
+
   auto* stream = new PulseLoopbackAudioStream(
       release_stream_callback_, GetLoopbackSourceName(), params, mainloop_,
-      context_, std::move(log_callback));
+      context_, std::move(log_callback), should_mute_system_audio);
+
   streams_.emplace_back(stream);
+
+  if (should_mute_system_audio) {
+    has_muting_loopback_ = true;
+    pulse::MuteAllSinksExcept(mainloop_, context_, GetLoopbackSourceName());
+  }
+
   return stream;
 }
 
@@ -134,6 +161,9 @@ void PulseLoopbackManager::OnServerChangeEvent() {
   if (default_monitor_name == default_monitor_name_) {
     return;
   }
+  if (has_muting_loopback_) {
+    pulse::UnmuteAllSinks(mainloop_, context_);
+  }
 
   // There is no data race here, as OnServerChangeEvent() and
   // GetLoopbackSourceName() must run on the same `task_runner_`.
@@ -141,11 +171,15 @@ void PulseLoopbackManager::OnServerChangeEvent() {
 
   for (PulseLoopbackAudioStream* stream : streams_) {
     stream->ChangeStreamSource(default_monitor_name_);
-    // TODO(crbug.com/1480216): Support
+    // TODO(crbug.com/40281249): Support
     // AudioDeviceDescription::kLoopbackWithMuteDeviceId. Store the original
     // device name, i.e., AudioDeviceDescription::kLoopback*, and check it here
     // to determine if muting was requested for any of the streams, and mute the
     // default sink accordingly.
+  }
+  // Reapply muting with the new default monitor name
+  if (has_muting_loopback_) {
+    pulse::MuteAllSinksExcept(mainloop_, context_, default_monitor_name);
   }
 }
 

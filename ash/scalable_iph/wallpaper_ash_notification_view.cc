@@ -37,7 +37,7 @@ int GetResourceId(int preview_index) {
     default:
       CHECK(false);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
 

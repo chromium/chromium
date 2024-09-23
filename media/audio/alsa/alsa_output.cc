@@ -32,6 +32,11 @@
 // view, it will seem that the device has just clogged and stopped requesting
 // data.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/alsa/alsa_output.h"
 
 #include <stddef.h>
@@ -199,7 +204,7 @@ bool AlsaPcmOutputStream::Open() {
     return false;
 
   if (!CanTransitionTo(kIsOpened)) {
-    NOTREACHED() << "Invalid state: " << state();
+    NOTREACHED_IN_MIGRATION() << "Invalid state: " << state();
     return false;
   }
 
@@ -745,9 +750,10 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
   // downmixing.
   uint32_t default_channels = channels_;
   if (default_channels > 2) {
-    channel_mixer_ = std::make_unique<ChannelMixer>(
-        channel_layout_, kDefaultOutputChannelLayout);
     default_channels = 2;
+    channel_mixer_ = std::make_unique<ChannelMixer>(channel_layout_, channels_,
+                                                    kDefaultOutputChannelLayout,
+                                                    default_channels);
     mixed_audio_bus_ = AudioBus::Create(
         default_channels, audio_bus_->frames());
   }
@@ -804,7 +810,8 @@ AlsaPcmOutputStream::TransitionTo(InternalState to) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanTransitionTo(to)) {
-    NOTREACHED() << "Cannot transition from: " << state_ << " to: " << to;
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot transition from: " << state_ << " to: " << to;
     state_ = kInError;
   } else {
     state_ = to;

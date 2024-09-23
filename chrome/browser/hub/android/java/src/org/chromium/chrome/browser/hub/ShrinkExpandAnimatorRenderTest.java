@@ -27,12 +27,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -40,7 +40,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.util.Locale;
 
 /** Render tests for {@link ShrinkExpandAnimator}. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase {
@@ -65,7 +65,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
         Activity activity = getActivity();
 
         CallbackHelper onFirstLayout = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRootView = new FrameLayout(activity);
                     activity.setContentView(
@@ -80,7 +80,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                 });
 
         // Ensure layout has completed so getWidth() and getHeight() are non-zero.
-        onFirstLayout.waitForFirst();
+        onFirstLayout.waitForOnly();
     }
 
     @Test
@@ -177,7 +177,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
 
     private ShrinkExpandAnimator createAnimator(
             Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShrinkExpandAnimator animator =
                             new ShrinkExpandAnimator(mView, startValue, endValue);
@@ -213,7 +213,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
         float fractionPerStep = 1.0f / (steps - 1);
 
         ObjectAnimator animator =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ObjectAnimator.ofObject(
                                     rectAnimator,
@@ -227,7 +227,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
         // step size and timing.
         for (int step = 0; step < steps; step++) {
             final float animationFraction = fractionPerStep * step;
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         animator.setCurrentFraction(animationFraction);
                     });
@@ -246,7 +246,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
      */
     private void setupShrinkExpandImageView(Rect startValue) throws Exception {
         CallbackHelper onNextLayout = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout.LayoutParams layoutParams =
                             (FrameLayout.LayoutParams) mView.getLayoutParams();

@@ -80,7 +80,7 @@ void CompositedTouchHandleDrawable::SetOrientation(
   float scale_y = mirror_vertical ? -1.f : 1.f;
 
   layer_->SetTransformOrigin(
-      gfx::Point3F(layer_width * 0.5f, layer_height * 0.5f, 0));
+      gfx::PointF(layer_width * 0.5f, layer_height * 0.5f));
   transform.Scale(scale_x, scale_y);
   layer_->SetTransform(transform);
 }

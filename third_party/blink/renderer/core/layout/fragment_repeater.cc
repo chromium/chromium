@@ -26,7 +26,7 @@ void RemoveClonedResults(LayoutBox& layout_box) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UpdateBreakTokens(LayoutBox& layout_box) {
@@ -213,7 +213,7 @@ const LayoutResult* FragmentRepeater::GetClonableLayoutResult(
     if (!break_token || break_token->IsRepeated())
       return result;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

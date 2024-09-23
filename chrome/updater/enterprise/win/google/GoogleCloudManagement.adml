@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<policyDefinitionResources revision="1.0" schemaVersion="1.0">
+  <displayName/>
+  <description/>
+  <resources>
+
+    <stringTable>
+      <string id="Sup_GoogleUpdate1_3_34_3">At least Google Update 1.3.34.3</string>
+      <string id="Cat_CloudManagement">Cloud Management</string>
+      <string id="Pol_EnrollmentMandatory">Cloud management enrollment mandatory</string>
+      <string id="Pol_EnrollmentToken">Cloud management enrollment token</string>
+      <string id="Explain_CloudManagement">Policies to control cloud management of Google applications.</string>
+      <string id="Explain_EnrollmentMandatory">If this policy is enabled, cloud management enrollment is mandatory and blocks product installation in case of failure.
+
+If this policy is left unset or is disabled, cloud management enrollment is optional and does not block product installation.</string>
+      <string id="Explain_EnrollmentToken">If this policy is set, Google Update will attempt to enroll the machine in cloud management.
+
+The value of this policy is an Enrollment token retrieved from the Google Admin console.</string>
+    </stringTable>
+
+    <presentationTable>
+      <presentation id="Pol_EnrollmentMandatory"/>
+      <presentation id="Pol_EnrollmentToken">
+        <textBox refId="Part_EnrollmentToken">
+          <label>Enrollment token</label>
+        </textBox>
+      </presentation>
+    </presentationTable>
+
+  </resources>
+</policyDefinitionResources>

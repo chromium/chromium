@@ -12,6 +12,8 @@ source_set("services") {
     "services/paint_preview_tab_service_file_mixin.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//chrome/browser/profiles",
     "//components/keyed_service/core",

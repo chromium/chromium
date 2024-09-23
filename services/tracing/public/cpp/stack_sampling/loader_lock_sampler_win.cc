@@ -25,7 +25,7 @@ namespace {
 // (TracingSampleProfilerTest.SampleLoaderLockAlwaysHeld fails for an unknown
 // reason.)
 //
-// TODO(crbug.com/1065879): Read the critical section directly, as crashpad
+// TODO(crbug.com/40124365): Read the critical section directly, as crashpad
 // does in third_party/crashpad/crashpad/util/win/loader_lock.cc. This should
 // work on all versions since it's stable enough to ship with crashpad.
 

@@ -40,6 +40,10 @@ struct BLINK_COMMON_EXPORT
     return r.zoom_level;
   }
 
+  static double css_zoom_factor(const blink::FrameVisualProperties& r) {
+    return r.css_zoom_factor;
+  }
+
   static double page_scale_factor(const blink::FrameVisualProperties& r) {
     DCHECK_GT(r.page_scale_factor, 0);
     return r.page_scale_factor;
@@ -72,9 +76,9 @@ struct BLINK_COMMON_EXPORT
     return r.max_size_for_auto_resize;
   }
 
-  static const std::vector<gfx::Rect>& root_widget_window_segments(
+  static const std::vector<gfx::Rect>& root_widget_viewport_segments(
       const blink::FrameVisualProperties& r) {
-    return r.root_widget_window_segments;
+    return r.root_widget_viewport_segments;
   }
 
   static const gfx::Rect& compositor_viewport(

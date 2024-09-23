@@ -7,6 +7,8 @@ package org.chromium.net.impl;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.TruthJUnit.assume;
 
+import static org.junit.Assert.fail;
+
 import static org.chromium.net.ExperimentalOptionsTranslationTestUtil.assertJsonEquals;
 import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseConnectionMigrationOptions;
 import static org.chromium.net.impl.AndroidHttpEngineBuilderWrapper.parseDnsOptions;
@@ -27,14 +29,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
+import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ExperimentalOptionsTranslationTestUtil.MockCronetBuilderImpl;
+import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.telemetry.ExperimentalOptions;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
-@OptIn(markerClass = {org.chromium.net.ConnectionMigrationOptions.Experimental.class})
+@OptIn(
+        markerClass = {
+            org.chromium.net.ConnectionMigrationOptions.Experimental.class,
+            org.chromium.net.DnsOptions.Experimental.class,
+            org.chromium.net.QuicOptions.Experimental.class
+        })
 public class AndroidHttpEngineBuilderWrapperTest {
     private static final String EXPECTED_EARLY_MIGRATION_ENABLED_STRING =
             "{\"QUIC\":{\"allow_port_migration\":true,\"migrate_sessions_early_v2\":true,\"migrate_"
@@ -71,8 +81,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
     // ConnectionMigrationOptions configuration does not allow enabling early_migration without
     // port_migration ie allowNonDefaultNetworkUsage requires PathDegradationMigration. So
     // setting migrate_sessions_early_v2 also turns on port migration. These tests below confirm
-    // that
-    // both options are populated and being translated back to json correctly.
+    // that both options are populated and being translated back to json correctly.
 
     @Test
     @SmallTest
@@ -294,6 +303,123 @@ public class AndroidHttpEngineBuilderWrapperTest {
         assertThat(quicOptions.hasInMemoryServerConfigsCacheSize()).isFalse();
         assertThat(quicOptions.getHandshakeUserAgent()).isNull();
         assertThat(quicOptions.getIdleConnectionTimeout()).isNull();
+    }
+
+    @Test
+    @SmallTest
+    public void testConnectionMigrationOptions_someSet_setExperimentalOptionsIsCalled() {
+        AtomicBoolean setExperimentalOptionsCalled = new AtomicBoolean(false);
+        // Because set*Options is not directly implemented in the wrapper, this test serves as a
+        // guard to prevent breaking this feature if we change how set*Options is implemented.
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(
+                        new AndroidHttpEngineBuilderWrapper(null) {
+                            @Override
+                            public ICronetEngineBuilder setExperimentalOptions(String options) {
+                                setExperimentalOptionsCalled.set(true);
+                                return this;
+                            }
+
+                            @Override
+                            public ExperimentalCronetEngine build() {
+                                return null;
+                            }
+                        });
+        org.chromium.net.ConnectionMigrationOptions.Builder optionsBuilder =
+                org.chromium.net.ConnectionMigrationOptions.builder();
+        optionsBuilder.allowNonDefaultNetworkUsage(true);
+        optionsBuilder.allowServerMigration(true);
+        optionsBuilder.enablePathDegradationMigration(true);
+        builder.setConnectionMigrationOptions(optionsBuilder.build());
+        builder.build();
+
+        assertThat(setExperimentalOptionsCalled.get()).isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testDnsOptions_someSet_setExperimentalOptionsIsCalled() {
+        AtomicBoolean setExperimentalOptionsCalled = new AtomicBoolean(false);
+        // Because set*Options is not directly implemented in the wrapper, this test serves as a
+        // guard to prevent breaking this feature if we change how set*Options is implemented.
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(
+                        new AndroidHttpEngineBuilderWrapper(null) {
+                            @Override
+                            public ICronetEngineBuilder setExperimentalOptions(String options) {
+                                setExperimentalOptionsCalled.set(true);
+                                return this;
+                            }
+
+                            @Override
+                            public ExperimentalCronetEngine build() {
+                                return null;
+                            }
+                        });
+        org.chromium.net.DnsOptions.Builder optionsBuilder = org.chromium.net.DnsOptions.builder();
+        optionsBuilder.enableStaleDns(true);
+        optionsBuilder.persistHostCache(true);
+        optionsBuilder.useBuiltInDnsResolver(true);
+        optionsBuilder.preestablishConnectionsToStaleDnsResults(true);
+        optionsBuilder.setStaleDnsOptions(org.chromium.net.DnsOptions.StaleDnsOptions.builder());
+        builder.setDnsOptions(optionsBuilder.build());
+        builder.build();
+
+        assertThat(setExperimentalOptionsCalled.get()).isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testQuicOptions_someSet_setExperimentalOptionsIsCalled() {
+        AtomicBoolean setExperimentalOptionsCalled = new AtomicBoolean(false);
+        // Because set*Options is not directly implemented in the wrapper, this test serves as a
+        // guard to prevent breaking this feature if we change how set*Options is implemented.
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(
+                        new AndroidHttpEngineBuilderWrapper(null) {
+                            @Override
+                            public ICronetEngineBuilder setExperimentalOptions(String options) {
+                                setExperimentalOptionsCalled.set(true);
+                                return this;
+                            }
+
+                            @Override
+                            public ExperimentalCronetEngine build() {
+                                return null;
+                            }
+                        });
+        org.chromium.net.QuicOptions.Builder optionsBuilder =
+                org.chromium.net.QuicOptions.builder();
+        optionsBuilder.addAllowedQuicHost("test.com");
+        optionsBuilder.setInMemoryServerConfigsCacheSize(1);
+        optionsBuilder.setHandshakeUserAgent("test");
+        optionsBuilder.setIdleConnectionTimeout(Duration.ZERO);
+        builder.setQuicOptions(optionsBuilder.build());
+        builder.build();
+
+        assertThat(setExperimentalOptionsCalled.get()).isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testOptions_noneSet_setExperimentalOptionsNotCalled() {
+        // Because set*Options is not directly implemented in the wrapper, this test serves as a
+        // guard to prevent breaking this feature if we change how set*Options is implemented.
+        CronetEngine.Builder builder =
+                new CronetEngine.Builder(
+                        new AndroidHttpEngineBuilderWrapper(null) {
+                            @Override
+                            public ICronetEngineBuilder setExperimentalOptions(String options) {
+                                fail();
+                                return this;
+                            }
+
+                            @Override
+                            public ExperimentalCronetEngine build() {
+                                return null;
+                            }
+                        });
+        builder.build();
     }
 
     /**

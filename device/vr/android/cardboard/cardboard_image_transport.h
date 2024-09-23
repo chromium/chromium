@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
 
   ~CardboardImageTransport() override;
 
-  // TODO(https://crbug.com/1429088): We should probably just have some way to
+  // TODO(crbug.com/40900864): We should probably just have some way to
   // get this out of the CardboardSDK object and we can then pass an unowned
   // pointer to the SDK here and in CardboardRenderLoop to get this, but we need
   // to consider that design.
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   void Render(WebXrPresentationState* webxr, GLuint framebuffer);
 
  private:
-  void DoRuntimeInitialization() override;
+  void DoRuntimeInitialization(int texture_target) override;
   void UpdateDistortionMesh();
 
   // Display size is the size of the actual display in pixels, and is needed for
@@ -55,10 +55,12 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   // framebufferScaleFactor.
   gfx::Size display_size_ = {0, 0};
 
-  // TODO(https://crbug.com/1429088): We should avoid holding cardboard types
+  // TODO(crbug.com/40900864): We should avoid holding cardboard types
   // directly if possible.
   CardboardEyeTextureDescription left_eye_description_;
   CardboardEyeTextureDescription right_eye_description_;
+
+  uint32_t eye_texture_target_ = 0;
   internal::ScopedCardboardObject<CardboardDistortionRenderer*> renderer_;
   internal::ScopedCardboardObject<CardboardLensDistortion*> lens_distortion_;
 

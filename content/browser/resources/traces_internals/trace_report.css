@@ -1,0 +1,191 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 3fr auto 250px auto;
+  grid-auto-flow: column;
+  grid-column-gap: 12px;
+  grid-row-gap: 0;
+  padding: 8px 16px;
+  margin-bottom: 12px;
+  background-color: var(--cr-card-background-color);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 4px;
+  height: 52px;
+  align-items: center;
+  min-width: 0;
+  position: relative;
+}
+
+:host > div {
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* remove default button styling */
+.clickable-field {
+  text-align: start;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  outline: inherit;
+  color: var(--cr-primary-text-color);
+}
+
+.clickable-field.copiable {
+  cursor: copy;
+}
+
+.trace-upload-state-container {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.upload-state-card {
+  border-radius: 1000px;
+  font-size: 14px;
+  display: flex;
+  height: 34px;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.upload-state-card:disabled {
+  opacity: var(--cr-disabled-opacity);
+  pointer-events: none;
+}
+
+.upload-state-card > iron-icon {
+  --iron-icon-width: 18px;
+  --iron-icon-height: 18px;
+  margin-inline-start: 16px;
+  margin-inline-end: 8px;
+}
+
+.state-default {
+  border: none;
+  color: blue;
+  background-color: lightblue;
+}
+
+.state-default > iron-icon {
+  --iron-icon-fill-color: blue;
+}
+
+.state-success {
+  background-color: rgb(173, 255, 173);
+  color: rgb(6, 95, 6);
+}
+
+.state-success > iron-icon {
+  --iron-icon-fill-color: rgb(6, 95, 6);
+}
+
+.state-pending {
+  background-color: orange;
+  color: rgb(204, 85, 0);
+}
+
+.state-pending > iron-icon {
+  --iron-icon-fill-color: rgb(204, 85, 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .action-button {
+    border: 1px solid DarkGray;
+    color: DarkGray;
+    background-color: transparent;
+  }
+
+  .action-button:not([disabled]):hover {
+    --cr-icon-button-fill-color: var(--cr-card-background-color);
+    background-color: DarkGray;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .action-button {
+    border-color: transparent;
+    color: DarkGray;
+    background-color: rgb(239, 239, 239);
+  }
+
+  .action-button:not([disabled]):hover {
+    --cr-icon-button-fill-color: black;
+  }
+}
+
+.actions-container {
+  width: 150px;
+  justify-content: end;
+  display: flex;
+}
+
+.action-button {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  margin-inline-start: 0px;
+  margin-inline-end: 8px;
+}
+
+.action-button.download {
+  pointer-events: visible;
+}
+
+.info {
+  font-size: 13px;
+  color: var(--cr-secondary-text-color);
+}
+
+.date-creation-value,
+.trace-skip-value,
+.trace-size-value {
+  color: var(--cr-primary-text-color)
+}
+
+.trace-spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+}
+
+.spinner {
+  --spinner-size: 20px;
+  mask-image: url(chrome://resources/images/throbber_small.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--google-blue-500);
+  mask-size: var(--spinner-size) var(--spinner-size);
+  height: var(--spinner-size);
+  width: var(--spinner-size);
+}
+
+@media (prefers-color-scheme: dark) {
+  .spinner {
+    background-color: var(--google-blue-300);
+  }
+}

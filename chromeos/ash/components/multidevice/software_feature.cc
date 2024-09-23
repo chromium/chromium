@@ -44,10 +44,10 @@ SoftwareFeature FromCryptAuthFeature(
     case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
       return SoftwareFeature::kPhoneHubCameraRollClient;
     case cryptauth::SoftwareFeature::UNKNOWN_FEATURE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SoftwareFeature::kBetterTogetherHost;
 }
 
@@ -89,7 +89,7 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
       return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST;
 }
 

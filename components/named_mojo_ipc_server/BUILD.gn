@@ -33,12 +33,14 @@ static_library("named_mojo_ipc_server") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
   ]
+  libs = []
   if (is_linux) {
     sources += [ "named_mojo_server_endpoint_connector_linux.cc" ]
   } else if (is_win) {
     sources += [ "named_mojo_server_endpoint_connector_win.cc" ]
   } else if (is_mac) {
     sources += [ "named_mojo_server_endpoint_connector_mac.cc" ]
+    libs += [ "bsm" ]
   } else {
     sources += [ "named_mojo_server_endpoint_connector_unsupported.cc" ]
   }

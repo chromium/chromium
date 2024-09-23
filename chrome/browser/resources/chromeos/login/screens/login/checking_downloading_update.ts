@@ -37,8 +37,6 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
@@ -46,19 +44,16 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './checking_downloading_update.html.js';
 
 const CheckingDownloadingUpdateBase =
-    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior],
-      PolymerElement) as { new (): PolymerElement
-        & OobeDialogHostBehaviorInterface
-        & OobeI18nBehaviorInterface,
-    };
+    OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
   static get is() {

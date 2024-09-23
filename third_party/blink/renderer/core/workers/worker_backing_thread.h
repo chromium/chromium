@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -48,8 +47,7 @@ class CORE_EXPORT WorkerBackingThread final {
 
   static void MemoryPressureNotificationToWorkerThreadIsolates(
       v8::MemoryPressureLevel);
-  static void IsolateInBackgroundNotificationToWorkerThreadIsolates();
-  static void IsolateInForegroundNotificationToWorkerThreadIsolates();
+  static void SetWorkerThreadIsolatesPriority(v8::Isolate::Priority priority);
   static void SetBatterySaverModeForWorkerThreadIsolates(
       bool battery_saver_mode_enabled);
 

@@ -77,14 +77,17 @@ void SVGPropertyTearOffBase::Bind(SVGAnimatedPropertyBase* binding) {
   binding_ = binding;
 }
 
-void SVGPropertyTearOffBase::CommitChange() {
+void SVGPropertyTearOffBase::CommitChange(SVGPropertyCommitReason reason) {
   // Immutable (or animVal) objects should never mutate, so this hook should
   // never be called in those cases.
   DCHECK(!IsImmutable());
   DCHECK(!IsAnimVal());
   if (!binding_)
     return;
-  binding_->BaseValueChanged();
+  binding_->BaseValueChanged(
+      reason == SVGPropertyCommitReason::kListCleared
+          ? SVGAnimatedPropertyBase::BaseValueChangeType::kRemoved
+          : SVGAnimatedPropertyBase::BaseValueChangeType::kUpdated);
 }
 
 void SVGPropertyTearOffBase::EnsureAnimValUpdated() {

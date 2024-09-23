@@ -20,16 +20,14 @@
     on-settings-boolean-control-change="setQuietMode_"
     deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[showAppBadgingToggle_]]">
-  <settings-toggle-button
-      id="appBadgingToggleButton"
-      class="hr"
-      label="$i18n{appBadgingToggleLabel}"
-      sub-label="$i18n{appBadgingToggleSublabel}"
-      pref="{{prefs.ash.app_notification_badging_enabled}}"
-      deep-link-focus-id$="[[Setting.kAppBadgingOnOff]]">
-  </settings-toggle-button>
-</template>
+<settings-toggle-button
+    id="appBadgingToggleButton"
+    class="hr"
+    label="$i18n{appBadgingToggleLabel}"
+    sub-label="$i18n{appBadgingToggleSublabel}"
+    pref="{{prefs.ash.app_notification_badging_enabled}}"
+    deep-link-focus-id$="[[Setting.kAppBadgingOnOff]]">
+</settings-toggle-button>
 
 <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
   <div id="appNotificationsList" class="hr">

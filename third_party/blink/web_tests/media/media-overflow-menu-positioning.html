@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>Overflow menu positioning</title>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src='media-controls.js'></script>
+
+<video controls id=first></video>
+<video controls></video>
+<video controls id=third></video>
+<style> video { width: 200px; } </style>
+
+<script>
+const escapeKey = '\uE00C';
+Array.from(document.querySelectorAll('video')).forEach(video => {
+  enableTestMode(video);
+  video.src = 'content/test.ogv';
+});
+async function videoReady(v) {
+  if (v.readyState < /*HAVE_ENOUGH_DATA*/ 2) {
+    await new Promise(resolve => v.addEventListener('loadeddata',resolve));
+  }
+}
+promise_test(async t => {
+  const firstVideo = document.getElementById('first');
+  await videoReady(firstVideo);
+  await new Promise(resolve => singleTapOnControl(overflowButton(firstVideo), resolve));
+  const menu = overflowMenu(firstVideo);
+  assert_not_equals(getComputedStyle(menu).display, 'none');
+  // Overflow menu should be over the left-hand video element:
+  assert_equals(menu.offsetLeft,4,'Menu should be over the left element');
+  // Clean up:
+  await test_driver.send_keys(firstVideo, escapeKey);
+},'click the left/first element');
+
+promise_test(async t => {
+  const lastVideo = document.getElementById('third');
+  await videoReady(lastVideo);
+  await new Promise(resolve => singleTapOnControl(overflowButton(lastVideo), resolve));
+  const menu = overflowMenu(lastVideo);
+  assert_not_equals(getComputedStyle(menu).display, 'none');
+  // Overflow menu should be over the right-hand video element:
+  assert_equals(menu.offsetLeft,412,'Menu should be over the right element');
+  // Clean up:
+  await test_driver.send_keys(lastVideo, escapeKey);
+},'click the third/right element');
+</script>

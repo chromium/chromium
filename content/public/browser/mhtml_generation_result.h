@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MHTML_GENERATION_RESULT_H_
 #define CONTENT_PUBLIC_BROWSER_MHTML_GENERATION_RESULT_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 

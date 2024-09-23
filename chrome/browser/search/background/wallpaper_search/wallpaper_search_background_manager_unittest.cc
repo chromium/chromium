@@ -80,12 +80,6 @@ class WallpaperSearchBackgroundManagerTest : public testing::Test {
         pref_service_(profile_->GetPrefs()) {}
 
   void SetUp() override {
-    // Register |WallpaperSearchBackgroundManager| prefs. Enabling flag here
-    // so that it should be registered by |NtpCustomBackgroundService|
-    // doesn't work. NtpCustomBackgroundService::RegisterProfilePrefs must be
-    // called before this.
-    WallpaperSearchBackgroundManager::RegisterProfilePrefs(
-        profile_->GetTestingPrefService()->registry());
     wallpaper_search_background_manager_ =
         std::make_unique<WallpaperSearchBackgroundManager>(profile_.get());
   }
@@ -295,6 +289,23 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 
   // Check that the args were passed to |NtpCustomBackgroundService|.
   EXPECT_EQ(SK_ColorRED, image_arg.ToSkBitmap()->getColor(0, 0));
+}
+
+TEST_F(WallpaperSearchBackgroundManagerTest, IsCurrentBackground) {
+  base::Token token = base::Token::CreateRandom();
+  CustomBackground custom_background;
+  custom_background.local_background_id = token;
+  ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
+      .WillByDefault(Return(std::make_optional(custom_background)));
+
+  bool is_current_background =
+      wallpaper_search_background_manager().IsCurrentBackground(
+          base::Token::CreateRandom());
+  EXPECT_FALSE(is_current_background);
+
+  is_current_background =
+      wallpaper_search_background_manager().IsCurrentBackground(token);
+  EXPECT_TRUE(is_current_background);
 }
 
 TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {

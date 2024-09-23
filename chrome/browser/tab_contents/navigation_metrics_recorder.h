@@ -36,12 +36,6 @@ class NavigationMetricsRecorder
       delete;
 
   ~NavigationMetricsRecorder() override;
-
-  // Turns on a synthetic field trial that is set on any navigation to a site
-  // that requires a dedicated process.  Normally this is only used on Android,
-  // but tests on other platforms can also turn this behavior on.
-  void EnableSiteIsolationSyntheticTrialForTesting();
-
  private:
   explicit NavigationMetricsRecorder(content::WebContents* web_contents);
   friend class content::WebContentsUserData<NavigationMetricsRecorder>;
@@ -54,7 +48,6 @@ class NavigationMetricsRecorder
 
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  bool is_synthetic_isolation_trial_enabled_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

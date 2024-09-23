@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] test that PAC metadata is respected
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-Harness: the test ran to completion.

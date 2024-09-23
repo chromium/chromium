@@ -12,7 +12,7 @@ specific_include_rules = {
   ".*(test|_fuzzer)\.cc": [
     "+cc",
   ],
-  "paint_op_buffer_fuzzer.cc": [
+  "paint_op_raster_fuzzer.cc": [
     "+components/viz/test",
     "+gpu/command_buffer",
   ],
@@ -25,5 +25,11 @@ specific_include_rules = {
   "oop_pixeltest.cc": [
     "+components/viz/service/gl",
     "+gpu/command_buffer",
+  ],
+  "paint_op.cc": [
+    "+third_party/skia/src/core/SkCanvasPriv.h",
+  ],
+  "skia_paint_canvas.cc": [
+    "+third_party/skia/src/core/SkCanvasPriv.h",
   ],
 }

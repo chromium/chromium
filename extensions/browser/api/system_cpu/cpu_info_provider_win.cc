@@ -5,6 +5,7 @@
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
 #include <windows.h>
+
 #include <winternl.h>
 
 #include <memory>

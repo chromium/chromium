@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_SYSTEM_ANCHORED_NUDGE_DATA_H_
 #define ASH_PUBLIC_CPP_SYSTEM_ANCHORED_NUDGE_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -21,7 +21,8 @@
 
 namespace views {
 class View;
-}
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -41,8 +42,7 @@ enum class NudgeDuration {
   kMaxValue = kLongDuration
 };
 
-using HoverStateChangeCallback =
-    base::RepeatingCallback<void(bool is_hovering)>;
+using HoverChangedCallback = base::RepeatingCallback<void(bool is_hovered)>;
 using NudgeClickCallback = base::RepeatingCallback<void()>;
 using NudgeDismissCallback = base::RepeatingCallback<void()>;
 
@@ -81,8 +81,8 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   ui::ImageModel image_model;
   std::u16string title_text;
   std::vector<ui::KeyboardCode> keyboard_codes;
-  absl::optional<ui::ColorId> background_color_id;
-  absl::optional<ui::ColorId> image_background_color_id;
+  std::optional<ui::ColorId> background_color_id;
+  std::optional<ui::ColorId> image_background_color_id;
 
   // Callback for close button pressed.
   base::RepeatingClosure close_button_callback;
@@ -117,8 +117,24 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // is required for lottie images, which need their size to be set directly.
   bool fill_image_size = false;
 
-  // Nudge action callbacks.
-  HoverStateChangeCallback hover_state_change_callback;
+  // Highlight anchor button by default.
+  bool highlight_anchor_button = true;
+
+  // If true, set the `anchor_view` as parent.
+  bool set_anchor_view_as_parent = false;
+
+  // If false, the ChromeVox will not announce `body_text`.
+  bool announce_chromevox = true;
+
+  // If not null, the nudge will anchor inside the `anchor_widget`, which is a
+  // `views::Widget`. Used together with the `views::BubbleBorder::Arrow`, but
+  // currently only support anchoring to the bottom corners of the
+  // `anchor_widget`. NOTE: This is a new type of anchoring, which is different
+  // than the `anchor_view`. At most only one of them can be set.
+  raw_ptr<views::Widget> anchor_widget = nullptr;
+
+  // Nudge action custom callbacks.
+  HoverChangedCallback hover_changed_callback;
   NudgeClickCallback click_callback;
   NudgeDismissCallback dismiss_callback;
 

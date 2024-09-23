@@ -51,9 +51,8 @@ class MediaItemUIDeviceSelectorView
   METADATA_HEADER(MediaItemUIDeviceSelectorView,
                   global_media_controls::MediaItemUIDeviceSelector)
  public:
-
   // media_color_theme is only set when this device selector view is used on
-  // Chrome OS ash and media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  // Chrome OS ash.
   MediaItemUIDeviceSelectorView(
       const std::string& item_id,
       MediaItemUIDeviceSelectorDelegate* delegate,
@@ -92,12 +91,15 @@ class MediaItemUIDeviceSelectorView
   // mojom::DeviceObserver
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
+  void OnPermissionRejected() override {}
 
   // MediaItemUIFooterView::Delegate
   void OnDeviceSelected(int tag) override;
   void OnDropdownButtonClicked() override;
 
   // views::View
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
   void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
@@ -147,6 +149,7 @@ class MediaItemUIDeviceSelectorView
   raw_ptr<ExpandDeviceSelectorLabel> expand_label_ = nullptr;
   raw_ptr<ExpandDeviceSelectorButton> dropdown_button_ = nullptr;
   raw_ptr<views::View> device_entry_views_container_ = nullptr;
+  raw_ptr<views::View> permission_error_view_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;

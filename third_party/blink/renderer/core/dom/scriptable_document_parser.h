@@ -46,10 +46,6 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   virtual bool IsExecutingScript() const { return false; }
 
   virtual void ExecuteScriptsWaitingForResources() = 0;
-  // |NotifyNoRemainingAsyncScripts()| is only used for
-  // |kDOMContentLoadedWaitForAsyncScript|. Notify the parser that it might be
-  // ready to proceed to |end()| because now we might have no async scripts.
-  virtual void NotifyNoRemainingAsyncScripts() = 0;
 
   virtual bool IsWaitingForScripts() const = 0;
   virtual void DidAddPendingParserBlockingStylesheet() = 0;

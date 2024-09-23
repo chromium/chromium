@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "extensions/common/api/virtual_keyboard.h"

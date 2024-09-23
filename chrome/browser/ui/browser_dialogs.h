@@ -15,7 +15,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -113,6 +115,10 @@ void ShowCreateChromeAppShortcutsDialog(
     const std::string& web_app_id,
     base::OnceCallback<void(bool /* created */)> close_callback);
 
+// Shows a tab modal dialog based on `dialog_model`.
+void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents);
+
 #if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
@@ -140,8 +146,15 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
 #if BUILDFLAG(ENABLE_COMPOSE)
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     content::WebContents& web_contents,
-    const gfx::RectF& element_bounds_in_screen);
+    const gfx::RectF& element_bounds_in_screen,
+    compose::ComposeClient::FieldIdentifier field_ids);
 #endif
+
+// Shows the 'Create Shortcut' dialog to create fire and forget entities on the
+// desktop of the OS. Before the dialog is shown, the necessary metadata is
+// gathered from the browser's active WebContents.
+// Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
+void CreateDesktopShortcutForActiveWebContents(Browser* browser);
 
 }  // namespace chrome
 

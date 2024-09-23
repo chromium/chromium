@@ -10,29 +10,25 @@ rootWebArea focusable
 ++++++++++staticText editable
 ++++++++++++inlineTextBox editable
 ++++++comboBoxSelect collapsed editable focusable multiline nonAtomicTextFieldRoot=true
-++++++++menuListPopup invisible
+++++++++menuListPopup invisible ispopup=auto
 ++++++++++menuListOption editable focusable multiline nonAtomicTextFieldRoot=true selected=true
 ++++++lineBreak editable focusable multiline nonAtomicTextFieldRoot=true
-++++++++inlineTextBox editable focusable
+++++++++inlineTextBox editable
 ++++++splitter editable focusable horizontal multiline nonAtomicTextFieldRoot=true
 ++++++image editable focusable multiline nonAtomicTextFieldRoot=true
 ++++++staticText
 ++++++++inlineTextBox
 ++++++video editable focusable multiline restriction=disabled nonAtomicTextFieldRoot=true
-++++++++genericContainer
-++++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
+++++++++++group ignored invisible
 ++++++++++genericContainer
 ++++++++++++button ignored invisible
 ++++++++++genericContainer ignored
-++++++++++++genericContainer
+++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer
 ++++++++++++++++button inputType='button' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
@@ -47,43 +43,11 @@ rootWebArea focusable
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++progressIndicator editable focusable multiline nonAtomicTextFieldRoot=true minValueForRange=0.00 maxValueForRange=1.00

@@ -4,7 +4,13 @@
 
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 
+#include <string>
+
 #include "base/strings/escape.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_database.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -14,6 +20,8 @@
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+
 // Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM.
 // While there are no other occupants of this section, the Relevance score
 // remains important, because the Verbatim Match may get de-duplicated to other,
@@ -26,14 +34,14 @@ const int kVerbatimMatchRelevanceScore = 1602;
 // Only offer verbatim match on a site visit and SRP (no NTP etc).
 bool IsVerbatimMatchEligible(
     metrics::OmniboxEventProto::PageClassification context) {
+  using OEP = metrics::OmniboxEventProto;
   // Only offer verbatim match on a site visit and SRP (no NTP etc).
-  return context == metrics::OmniboxEventProto::
-                        SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
-         context == metrics::OmniboxEventProto::
-                        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
-         context == metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET ||
-         context == metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET ||
-         context == metrics::OmniboxEventProto::OTHER;
+  return context == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+         context == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
+         context == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
+         context == OEP::ANDROID_SEARCH_WIDGET ||
+         context == OEP::ANDROID_SHORTCUTS_WIDGET ||
+         context == OEP::OTHER_ON_CCT || context == OEP::OTHER;
 }
 }  // namespace
 
@@ -67,17 +75,60 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
     return;
   }
 
+  std::u16string title = input.current_title();
+  bool title_empty = title.empty();
+  CreateVerbatimMatch(input, std::move(title));
+
+  // It is possible for `title` to be empty if the page is currently loading.
+  // If title is empty and async matches are permitted, make an effort to
+  // retrieve page title from history database.
+  if (!title_empty || input.omit_asynchronous_matches()) {
+    return;
+  }
+
+  history::HistoryService* const history_service = client_->GetHistoryService();
+  if (!history_service) {
+    return;
+  }
+
+  // Attempt to retrieve `title` from historical records.
+  done_ = false;
+  history_service->QueryURL(
+      input.current_url(), false,
+      base::BindOnce(&ZeroSuggestVerbatimMatchProvider::OnPageTitleRetrieved,
+                     request_weak_ptr_factory_.GetWeakPtr(), input),
+      &task_tracker_);
+}
+
+void ZeroSuggestVerbatimMatchProvider::Stop(bool clear_cached_results,
+                                            bool due_to_user_inactivity) {
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+  request_weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void ZeroSuggestVerbatimMatchProvider::OnPageTitleRetrieved(
+    const AutocompleteInput& input,
+    history::QueryURLResult result) {
+  done_ = true;
+  // Re-create the item with a title collected from History service.
+  matches_.clear();
+  CreateVerbatimMatch(input, result.row.title());
+}
+
+void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
+    const AutocompleteInput& input,
+    std::u16string page_title) {
   AutocompleteInput verbatim_input = input;
   verbatim_input.set_prevent_inline_autocomplete(true);
   verbatim_input.set_allow_exact_keyword_match(false);
 
   AutocompleteMatch match =
-      VerbatimMatchForURL(this, client_, verbatim_input, page_url,
-                          input.current_title(), kVerbatimMatchRelevanceScore);
+      VerbatimMatchForURL(this, client_, verbatim_input, input.current_url(),
+                          std::move(page_title), kVerbatimMatchRelevanceScore);
   // Make sure the URL is formatted the same was as most visited sites.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
   match.suggestion_group_id = omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX;
-  match.contents = url_formatter::FormatUrl(page_url, format_types,
+  match.contents = url_formatter::FormatUrl(input.current_url(), format_types,
                                             base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
 
@@ -94,8 +145,7 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   // If the URL suggestion comes from the default search engine, extract the
   // original search query and place it in fill_into_edit, to permit re-use of
   // the query for manual refinement.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kSearchReadyOmniboxAllowQueryEdit)) {
+  if constexpr (is_android) {
     auto* const url_service = client_->GetTemplateURLService();
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(
             match.destination_url)) {

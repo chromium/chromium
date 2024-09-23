@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_COMPRESSED_POINTER_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_COMPRESSED_POINTER_H_
+#ifndef PARTITION_ALLOC_COMPRESSED_POINTER_H_
+#define PARTITION_ALLOC_COMPRESSED_POINTER_H_
 
-#include <bit>
 #include <climits>
 #include <type_traits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
-#if !BUILDFLAG(GLUE_CORE_POOLS)
+#if !PA_BUILDFLAG(GLUE_CORE_POOLS)
 #error "Pointer compression only works with glued pools"
 #endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error "Pointer compression currently supports constant pool size"
 #endif
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 namespace partition_alloc {
 
@@ -33,7 +33,7 @@ template <typename T1, typename T2>
 constexpr bool IsDecayedSame =
     std::is_same_v<std::decay_t<T1>, std::decay_t<T2>>;
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Pointer compression works by storing only the 'useful' 32-bit part of the
 // pointer. The other half (the base) is stored in a global variable
@@ -78,7 +78,7 @@ constexpr bool IsDecayedSame =
 class CompressedPointerBaseGlobal final {
  public:
   static constexpr size_t kUsefulBits =
-      std::countr_zero(PartitionAddressSpace::CorePoolsSize());
+      base::bits::CountrZero(PartitionAddressSpace::CorePoolsSize());
   static_assert(kUsefulBits >= sizeof(uint32_t) * CHAR_BIT);
   static constexpr size_t kBitsToShift =
       kUsefulBits - sizeof(uint32_t) * CHAR_BIT;
@@ -102,11 +102,11 @@ class CompressedPointerBaseGlobal final {
   static constexpr uintptr_t kUsefulBitsMask =
       PartitionAddressSpace::CorePoolsSize() - 1;
 
-  static union alignas(kPartitionCachelineSize)
+  PA_CONSTINIT static union alignas(kPartitionCachelineSize)
       PA_COMPONENT_EXPORT(PARTITION_ALLOC) Base {
     uintptr_t base;
     char cache_line[kPartitionCachelineSize];
-  } g_base_ PA_CONSTINIT;
+  } g_base_;
 
   PA_ALWAYS_INLINE static bool IsBaseConsistent() {
     return kUsefulBitsMask == (g_base_.base & kUsefulBitsMask);
@@ -118,11 +118,11 @@ class CompressedPointerBaseGlobal final {
   friend class PartitionAddressSpace;
 };
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 }  // namespace internal
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 template <typename T>
 class PA_TRIVIAL_ABI CompressedPointer final {
@@ -150,7 +150,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     } else {
       // When the types are different, perform the round, because the pointer
       // may need to be adjusted.
-      // TODO(1376980): Avoid the cycle here.
+      // TODO(crbug.com/40243421): Avoid the cycle here.
       value_ = Compress(other.get());
     }
   }
@@ -232,7 +232,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     static constexpr size_t kMinimalRequiredAlignment = 8;
     static_assert((1 << kOverallBitsToShift) == kMinimalRequiredAlignment);
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_DCHECK(reinterpret_cast<uintptr_t>(ptr) % kMinimalRequiredAlignment ==
               0);
     PA_DCHECK(internal::CompressedPointerBaseGlobal::IsSet());
@@ -243,7 +243,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     PA_DCHECK(!ptr ||
               (base & kCorePoolsBaseMask) ==
                   (reinterpret_cast<uintptr_t>(ptr) & kCorePoolsBaseMask));
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
     const auto uptr = reinterpret_cast<uintptr_t>(ptr);
     // Shift the pointer and truncate.
@@ -252,7 +252,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     // it on decompression. Assuming compression is a significantly less
     // frequent operation, we let more work here in favor of faster
     // decompression.
-    // TODO(1376980): Avoid this by overreserving the heap.
+    // TODO(crbug.com/40243421): Avoid this by overreserving the heap.
     if (compressed) {
       compressed |= (1u << (sizeof(uint32_t) * CHAR_BIT - 1));
     }
@@ -292,7 +292,7 @@ PA_ALWAYS_INLINE bool operator==(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() == b.get();
   }
 }
@@ -361,7 +361,7 @@ PA_ALWAYS_INLINE constexpr bool operator<(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() < b.get();
   }
 }
@@ -389,7 +389,7 @@ PA_ALWAYS_INLINE constexpr bool operator<=(CompressedPointer<T> a,
   } else {
     // When the types are different, compare decompressed pointers, because the
     // pointers may need to be adjusted.
-    // TODO(1376980): Avoid decompression here.
+    // TODO(crbug.com/40243421): Avoid decompression here.
     return a.get() <= b.get();
   }
 }
@@ -444,7 +444,7 @@ PA_ALWAYS_INLINE constexpr bool operator>=(T* a, CompressedPointer<U> b) {
   return static_cast<CompressedPointer<T>>(a) >= b;
 }
 
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Simple wrapper over the raw pointer.
 template <typename T>
@@ -665,4 +665,4 @@ PA_ALWAYS_INLINE constexpr bool operator>=(T* a, UncompressedPointer<U> b) {
 
 }  // namespace partition_alloc
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_COMPRESSED_POINTER_H_
+#endif  // PARTITION_ALLOC_COMPRESSED_POINTER_H_

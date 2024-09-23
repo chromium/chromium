@@ -19,7 +19,7 @@ SharedBitmap::~SharedBitmap() {}
 
 // static
 SharedBitmapId SharedBitmap::GenerateId() {
-  return gpu::Mailbox::GenerateLegacyMailboxForSharedBitmap();
+  return SharedBitmapId::Generate();
 }
 
 }  // namespace viz

@@ -154,8 +154,7 @@ class DiskCacheLPMFuzzer {
     EntryInfo(const EntryInfo&) = delete;
     EntryInfo& operator=(const EntryInfo&) = delete;
 
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of, #constexpr-ctor-field-initializer
+    // RAW_PTR_EXCLUSION: #addr-of
     RAW_PTR_EXCLUSION disk_cache::Entry* entry_ptr = nullptr;
     std::unique_ptr<TestEntryResultCompletionCallback> tcb;
   };

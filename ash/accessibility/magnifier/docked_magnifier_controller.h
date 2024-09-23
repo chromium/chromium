@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/base/cursor/cursor_size.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -44,7 +45,7 @@ class ASH_EXPORT DockedMagnifierController
     : public SessionObserver,
       public ui::EventHandler,
       public views::WidgetObserver,
-      public WindowTreeHostManager::Observer {
+      public display::DisplayManagerObserver {
  public:
   DockedMagnifierController();
   DockedMagnifierController(const DockedMagnifierController&) = delete;
@@ -93,8 +94,8 @@ class ASH_EXPORT DockedMagnifierController
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // ash::WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // Getters and setters of the enabled status of the Fullscreen Magnifier.
   // We need these so that we can guarantee that both magnifiers are mutually

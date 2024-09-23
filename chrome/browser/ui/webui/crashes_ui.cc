@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/crashes_ui.h"
 
 #include <stddef.h>
@@ -90,6 +95,7 @@ class CrashesDOMHandler : public WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   void OnUploadListAvailable();
@@ -143,6 +149,10 @@ void CrashesDOMHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void CrashesDOMHandler::OnJavascriptDisallowed() {
+  upload_list_->CancelLoadCallback();
+}
+
 void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   AllowJavascript();
   if (first_load_) {
@@ -190,7 +200,7 @@ void CrashesDOMHandler::UpdateUI() {
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   if (identity_manager) {
     is_internal = gaia::IsGoogleInternalAccountEmail(
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email);
   }
 

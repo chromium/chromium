@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 
@@ -15,9 +16,19 @@ namespace content_settings {
 
 RuleMetaData::RuleMetaData() = default;
 
+RuleMetaData::RuleMetaData(const RuleMetaData& other) = default;
+
+RuleMetaData::RuleMetaData(RuleMetaData&& other) = default;
+
+RuleMetaData& RuleMetaData::operator=(const RuleMetaData& other) = default;
+
+RuleMetaData& RuleMetaData::operator=(RuleMetaData&& other) = default;
+
 void RuleMetaData::SetFromConstraints(
     const ContentSettingConstraints& constraints) {
   session_model_ = constraints.session_model();
+  decided_by_related_website_sets_ =
+      constraints.decided_by_related_website_sets();
   SetExpirationAndLifetime(constraints.expiration(), constraints.lifetime());
 }
 
@@ -29,16 +40,11 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
   lifetime_ = lifetime;
 }
 
-bool RuleMetaData::IsExpired() const {
-  return !expiration().is_null() && expiration() < base::Time::Now();
+bool RuleMetaData::IsExpired(const base::Clock* clock) const {
+  return !expiration().is_null() && expiration() <= clock->Now();
 }
 
-bool RuleMetaData::operator==(const RuleMetaData& other) const {
-  return std::tie(last_modified_, last_used_, last_visited_, expiration_,
-                  session_model_, lifetime_) ==
-         std::tie(other.last_modified_, other.last_used_, other.last_visited_,
-                  other.expiration_, other.session_model_, other.lifetime_);
-}
+bool RuleMetaData::operator==(const RuleMetaData& other) const = default;
 
 // static
 base::TimeDelta RuleMetaData::ComputeLifetime(base::TimeDelta lifetime,

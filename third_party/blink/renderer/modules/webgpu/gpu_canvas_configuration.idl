@@ -9,6 +9,15 @@ enum GPUCanvasAlphaMode {
     "premultiplied",
 };
 
+enum GPUCanvasToneMappingMode {
+    "standard",
+    "extended",
+};
+
+dictionary GPUCanvasToneMapping {
+  GPUCanvasToneMappingMode mode = "standard";
+};
+
 dictionary GPUCanvasConfiguration {
     required GPUDevice device;
     required GPUTextureFormat format;
@@ -16,5 +25,8 @@ dictionary GPUCanvasConfiguration {
     sequence<GPUTextureFormat> viewFormats = [];
     PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode = "opaque";
+    [RuntimeEnabled=WebGPUHDR] GPUCanvasToneMapping toneMapping = {};
+    // TODO(https://crbug.com/333967627): Remove support for this older version
+    // of the API once the new API lands.
     [RuntimeEnabled=CanvasHDR] CanvasHighDynamicRangeOptions hdrOptions;
 };

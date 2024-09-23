@@ -21,10 +21,12 @@
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
-#include "printing/printing_jni_headers/PrintingContext_jni.h"
 #include "printing/units.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "printing/printing_jni_headers/PrintingContext_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

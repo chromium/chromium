@@ -5,17 +5,16 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ExceptionAddDialogElement, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('TabDiscardExceptionsDialog', function() {
-  let dialog: ExceptionAddDialogElement|ExceptionTabbedAddDialogElement|
-      ExceptionEditDialogElement;
+  let dialog: ExceptionTabbedAddDialogElement|ExceptionEditDialogElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
@@ -38,8 +37,7 @@ suite('TabDiscardExceptionsDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupDialog(dialog: ExceptionAddDialogElement|
-                       ExceptionTabbedAddDialogElement|
+  function setupDialog(dialog: ExceptionTabbedAddDialogElement|
                        ExceptionEditDialogElement) {
     dialog.set('prefs', {
       performance_tuning: {
@@ -53,13 +51,6 @@ suite('TabDiscardExceptionsDialog', function() {
     });
     document.body.appendChild(dialog);
     flush();
-  }
-
-  function setupAddDialog(): ExceptionAddDialogElement {
-    const addDialog: ExceptionAddDialogElement =
-        document.createElement('tab-discard-exception-add-dialog');
-    setupDialog(addDialog);
-    return addDialog;
   }
 
   async function setupTabbedAddDialog():
@@ -84,6 +75,7 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.reset();
     const trimmedRule = rule.trim();
     dialog.$.input.$.input.value = rule;
+    await dialog.$.input.$.input.updateComplete;
     dialog.$.input.$.input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     if (trimmedRule &&
@@ -113,15 +105,6 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(dialog.$.actionButton.disabled);
   }
 
-  test('testExceptionAddDialogState', async function() {
-    dialog = setupAddDialog();
-    assertTrue(dialog.$.dialog.open);
-    assertFalse(dialog.$.input.$.input.invalid);
-    assertTrue(dialog.$.actionButton.disabled);
-
-    await testValidation();
-  });
-
   test('testExceptionTabbedAddDialogState', async function() {
     dialog = await setupTabbedAddDialog();
     assertTrue(dialog.$.dialog.open);
@@ -150,12 +133,6 @@ suite('TabDiscardExceptionsDialog', function() {
         [EXISTING_RULE]);
   }
 
-  test('testExceptionAddDialogCancel', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(VALID_RULE);
-    assertCancel();
-  });
-
   test('testExceptionTabbedAddDialogCancel', async function() {
     dialog = await setupTabbedAddDialog();
     await assertUserInputValidated(VALID_RULE);
@@ -176,21 +153,6 @@ suite('TabDiscardExceptionsDialog', function() {
         Object.keys(dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value),
         expectedRules);
   }
-
-  test('testExceptionAddDialogSubmit', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(VALID_RULE);
-    assertSubmit([EXISTING_RULE, VALID_RULE]);
-    const action =
-        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(MemorySaverModeExceptionListAction.ADD_MANUAL, action);
-  });
-
-  test('testExceptionAddDialogSubmitExisting', async function() {
-    dialog = setupAddDialog();
-    await assertUserInputValidated(EXISTING_RULE);
-    assertSubmit([EXISTING_RULE]);
-  });
 
   test('testExceptionTabbedAddDialogSubmit', async function() {
     dialog = await setupTabbedAddDialog();
@@ -282,9 +244,14 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(ExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
     assertRulesListEquals(dialog, expectedRules);
     assertTrue(dialog.$.actionButton.disabled);
-    getRulesListEntry(dialog, 2).click();
+    let checkbox = getRulesListEntry(dialog, 2);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
+
     assertFalse(dialog.$.actionButton.disabled);
-    getRulesListEntry(dialog, 4).click();
+    checkbox = getRulesListEntry(dialog, 4);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     assertSubmit([EXISTING_RULE, 'rule2', 'rule4']);
   });
 
@@ -295,25 +262,31 @@ suite('TabDiscardExceptionsDialog', function() {
     const tab = tabs[tabId];
     assertTrue(!!tab);
     tab.click();
+    return microtasksFinished();
   }
 
-  test('testExceptionTabbedAddDialogSwitchTabs', async function() {
+  // Flaky on all OSes. TODO(crbug.com/356848453): Fix and enable the test.
+  test.skip('testExceptionTabbedAddDialogSwitchTabs', async function() {
     performanceBrowserProxy.setCurrentOpenSites([VALID_RULE]);
     dialog = await setupTabbedAddDialog();
     flush();
+    await microtasksFinished();
 
-    getRulesListEntry(dialog, 0).click();
+    const checkbox = getRulesListEntry(dialog, 0);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertFalse(dialog.$.actionButton.disabled);
 
-    getRulesListEntry(dialog, 0).click();
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
+    await switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertTrue(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');

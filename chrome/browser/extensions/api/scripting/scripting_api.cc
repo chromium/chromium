@@ -16,8 +16,6 @@
 #include "chrome/common/extensions/api/scripting.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_registry.h"
@@ -26,6 +24,8 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/browser/scripting_constants.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/scripts_internal.h"
@@ -529,13 +529,12 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
       [](api::extension_types::ExecutionWorld world) {
         switch (world) {
           case api::extension_types::ExecutionWorld::kNone:
-            NOTREACHED_NORETURN()
+            NOTREACHED()
                 << "Execution world should always be present in serialization.";
           case api::extension_types::ExecutionWorld::kIsolated:
             return api::scripting::ExecutionWorld::kIsolated;
           case api::extension_types::ExecutionWorld::kUserScript:
-            NOTREACHED_NORETURN()
-                << "ISOLATED worlds are not supported in this API.";
+            NOTREACHED() << "ISOLATED worlds are not supported in this API.";
           case api::extension_types::ExecutionWorld::kMain:
             return api::scripting::ExecutionWorld::kMain;
         }
@@ -689,7 +688,7 @@ bool ScriptingExecuteScriptFunction::Execute(
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
       mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-          std::move(sources), execution_world,
+          std::move(sources), execution_world, /*world_id=*/std::nullopt,
           blink::mojom::WantResultOption::kWantResult,
           user_gesture() ? blink::mojom::UserActivationOption::kActivate
                          : blink::mojom::UserActivationOption::kDoNotActivate,
@@ -1122,8 +1121,8 @@ ScriptingUnregisterContentScriptsFunction::Run() {
 
   std::optional<api::scripting::ContentScriptFilter>& filter = params->filter;
   std::optional<std::vector<std::string>> ids = std::nullopt;
-  // TODO(crbug.com/1300657): `ids` should have an empty list when filter ids is
-  // empty, instead of a nullopt. Otherwise, we are incorrectly removing all
+  // TODO(crbug.com/40216362): `ids` should have an empty list when filter ids
+  // is empty, instead of a nullopt. Otherwise, we are incorrectly removing all
   // content scripts when ids is empty.
   if (filter && filter->ids && !filter->ids->empty()) {
     ids = std::move(filter->ids);

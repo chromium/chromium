@@ -48,7 +48,8 @@ class ASH_EXPORT LockScreenMediaView
   ~LockScreenMediaView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // media_session::mojom::MediaControllerObserver:
@@ -68,6 +69,8 @@ class ASH_EXPORT LockScreenMediaView
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override;
 
   // media_message_center::MediaNotificationContainer:
   void OnExpanded(bool expanded) override {}
@@ -95,6 +98,9 @@ class ASH_EXPORT LockScreenMediaView
 
   void SetMediaControllerForTesting(
       mojo::Remote<media_session::mojom::MediaController> media_controller);
+
+  void SetSwitchMediaDelayTimerForTesting(
+      std::unique_ptr<base::OneShotTimer> test_timer);
 
   views::Button* GetDismissButtonForTesting();
 

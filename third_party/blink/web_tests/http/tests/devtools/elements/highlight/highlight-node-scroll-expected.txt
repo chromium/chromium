@@ -93,7 +93,7 @@ inspectedElement1{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }
@@ -190,7 +190,7 @@ inspectedElement2{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }

@@ -26,7 +26,9 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
    public:
     using DataSourceCb = base::OnceCallback<void(std::unique_ptr<DataSource>)>;
     virtual ~DataSourceFactory() = 0;
-    virtual void CreateDataSource(GURL uri, DataSourceCb cb) = 0;
+    virtual void CreateDataSource(GURL uri,
+                                  bool ignore_cache,
+                                  DataSourceCb cb) = 0;
   };
 
   ~HlsDataSourceProviderImpl() override;
@@ -42,6 +44,8 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
   void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
+  void UpdateStreamMetadata(HlsDataSourceStream::StreamId,
+                            HlsDataSourceStream& stream);
   void OnDataSourceCreated(std::unique_ptr<HlsDataSourceStream> stream,
                            ReadCb callback,
                            std::unique_ptr<DataSource> data_source);
@@ -57,6 +61,8 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
   base::flat_map<HlsDataSourceStream::StreamId, std::unique_ptr<DataSource>>
       data_source_map_;
 
+  bool would_taint_origin_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HlsDataSourceProviderImpl> weak_factory_{this};
@@ -64,4 +70,4 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
 
 }  // namespace media
 
-#endif  // #ifndef MEDIA_FILTERS_HLS_DATA_SOURCE_PROVIDER_IMPL_H_
+#endif  // MEDIA_FILTERS_HLS_DATA_SOURCE_PROVIDER_IMPL_H_

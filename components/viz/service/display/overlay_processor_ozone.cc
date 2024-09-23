@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
 #include <algorithm>
@@ -14,18 +19,26 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_switches.h"
+#endif
 
 #if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
@@ -35,14 +48,51 @@ namespace viz {
 
 namespace {
 
+gfx::ColorSpace GetColorSpaceForOzone(gfx::BufferFormat format,
+                                      const gfx::ColorSpace& orig_color_space) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // The goal here is to ensure that the hw overlay path and the compositing
+  // path produce visually identical results. Otherwise, the user would perceive
+  // flickering when a particular resource (like a video) goes in and out of hw
+  // overlays repeatedly (for whatever reason).
+  //
+  // The Vulkan path is able to treat YUV 4:2:0 BT.601 and BT.709 resources
+  // correctly (see gpu::CreateVulkanYcbcrConversionInfo()). The GL path
+  // currently doesn't and just treats YUV 4:2:0 BT.709 resources as if they
+  // were BT.601 (but see the TODO below). Therefore, when Vulkan is enabled,
+  // we allow the overlay path to also distinguish between the two YUV
+  // encodings. Otherwise, we always use BT.601. This should ensure visual
+  // consistency between the compositing and the hw overlays path in both GL
+  // and Vulkan ChromeOS devices.
+  //
+  // TODO(b/233667677): the only reason the GL path treats YUV 4:2:0 BT.709
+  // resources as BT.601 is because of https://crrev.com/c/2336347. If we can
+  // be confident that hw overlays on all platforms can deal with BT.601 and
+  // BT.709 correctly, then we don't need GetColorSpaceForOzone() at all and we
+  // can just the pass the color space as-is to Ozone (and we would also need to
+  // change the GL path to distinguish between BT.601 and BT.709, see
+  // NativePixmapEGLBinding::InitializeFromNativePixmap()).
+  if ((format == gfx::BufferFormat::YUV_420_BIPLANAR) &&
+      (!base::FeatureList::IsEnabled(features::kVulkan) ||
+       !base::FeatureList::IsEnabled(features::kDefaultANGLEVulkan) ||
+       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
+    return orig_color_space.GetWithMatrixAndRange(
+        gfx::ColorSpace::MatrixID::SMPTE170M, orig_color_space.GetRangeID());
+  }
+#endif
+  return orig_color_space;
+}
+
 // TODO(weiliangc): When difference between primary plane and non-primary plane
 // can be internalized, merge these two helper functions.
 void ConvertToOzoneOverlaySurface(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane& primary_plane,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = primary_plane.transform;
-  ozone_candidate->format = primary_plane.format;
-  ozone_candidate->color_space = primary_plane.color_space;
+  ozone_candidate->format =
+      SinglePlaneSharedImageFormatToBufferFormat(primary_plane.format);
+  ozone_candidate->color_space = GetColorSpaceForOzone(
+      ozone_candidate->format, /*orig_color_space=*/primary_plane.color_space);
   ozone_candidate->display_rect = primary_plane.display_rect;
   ozone_candidate->crop_rect = primary_plane.uv_rect;
   ozone_candidate->clip_rect.reset();
@@ -58,8 +108,10 @@ void ConvertToOzoneOverlaySurface(
     const OverlayCandidate& overlay_candidate,
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = overlay_candidate.transform;
-  ozone_candidate->format = overlay_candidate.format;
-  ozone_candidate->color_space = overlay_candidate.color_space;
+  ozone_candidate->format = gpu::ToBufferFormat(overlay_candidate.format);
+  ozone_candidate->color_space =
+      GetColorSpaceForOzone(ozone_candidate->format,
+                            /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
   ozone_candidate->clip_rect = overlay_candidate.clip_rect;
@@ -70,7 +122,8 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->requires_overlay = overlay_candidate.requires_overlay;
   ozone_candidate->priority_hint = overlay_candidate.priority_hint;
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
-  // TODO(crbug.com/1308932): OverlaySurfaceCandidate to SkColor4f
+  ozone_candidate->overlay_type = overlay_candidate.overlay_type;
+  // TODO(crbug.com/40219248): OverlaySurfaceCandidate to SkColor4f
   // That can be a solid color quad.
   if (!overlay_candidate.is_solid_color && ozone_candidate->background_color &&
       overlay_candidate.color) {
@@ -83,10 +136,12 @@ void ConvertToTiledOzoneOverlaySurface(
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = gfx::OVERLAY_TRANSFORM_NONE;
   ozone_candidate->format = gfx::BufferFormat::RGBA_8888;
-  ozone_candidate->color_space = overlay_candidate.color_space;
+  ozone_candidate->color_space =
+      GetColorSpaceForOzone(ozone_candidate->format,
+                            /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = gfx::RectF(1.0, 1.0);
-  ozone_candidate->clip_rect = absl::nullopt;
+  ozone_candidate->clip_rect = std::nullopt;
   ozone_candidate->is_opaque = overlay_candidate.is_opaque;
   ozone_candidate->opacity = overlay_candidate.opacity;
   ozone_candidate->plane_z_order = overlay_candidate.plane_z_order;
@@ -97,6 +152,7 @@ void ConvertToTiledOzoneOverlaySurface(
   ozone_candidate->priority_hint = overlay_candidate.priority_hint;
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
   ozone_candidate->native_pixmap = nullptr;
+  ozone_candidate->overlay_type = overlay_candidate.overlay_type;
 }
 
 uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
@@ -111,7 +167,7 @@ bool IsYUVColorSpace(const gfx::ColorSpace& color_space) {
 }
 
 bool AllowColorSpaceCombination(
-    gfx::BufferFormat source_format,
+    SharedImageFormat source_format,
     const gfx::ColorSpace& source_color_space,
     const gfx::ColorSpace& destination_color_space) {
   // Allow invalid source color spaces because the assumption is that the
@@ -146,9 +202,9 @@ bool AllowColorSpaceCombination(
   // DCHECK() once LaCrOS plumbs the correct color space.
   bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
                             IsYUVColorSpace(source_color_space);
-  if ((source_format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-       source_format == gfx::BufferFormat::YVU_420 ||
-       source_format == gfx::BufferFormat::P010) &&
+  if ((source_format == MultiPlaneFormat::kNV12 ||
+       source_format == MultiPlaneFormat::kYV12 ||
+       source_format == MultiPlaneFormat::kP010) &&
       is_yuv_color_space &&
       (source_color_space.GetMatrixID() ==
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
@@ -202,7 +258,7 @@ OverlayProcessorOzone::OverlayProcessorOzone(
         break;
 #endif
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -215,6 +271,35 @@ bool OverlayProcessorOzone::IsOverlaySupported() const {
 
 bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
   return true;
+}
+
+bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
+  // TODO(petermcneeley): Test and enable for ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return false;
+#elif BUILDFLAG(IS_CASTOS)
+  return false;
+#else
+  return false;
+#endif
+}
+
+void OverlayProcessorOzone::NotifyOverlayPromotion(
+    DisplayResourceProvider* display_resource_provider,
+    const OverlayCandidateList& candidate_list,
+    const QuadList& quad_list) {
+  if (!overlay_candidates_) {
+    return;
+  }
+
+  std::vector<gfx::OverlayType> promoted_overlay_types;
+  promoted_overlay_types.reserve(candidate_list.size());
+  for (const auto& candidate : candidate_list) {
+    promoted_overlay_types.emplace_back(candidate.overlay_type);
+  }
+
+  overlay_candidates_->NotifyOverlayPromotion(
+      std::move(promoted_overlay_types));
 }
 
 void OverlayProcessorOzone::CheckOverlaySupportImpl(
@@ -236,7 +321,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
     // For ozone-cast, there will not be a primary_plane.
     if (primary_plane) {
       ConvertToOzoneOverlaySurface(*primary_plane, &(*ozone_surface_iterator));
-      // TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
+      // TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
       // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
       if (shared_image_interface_) {
@@ -403,9 +488,9 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
     has_independent_cursor_plane_ =
         hardware_capabilities.has_independent_cursor_plane;
 
-    UMA_HISTOGRAM_COUNTS_100(
-        "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",
-        hardware_capabilities.num_overlay_capable_planes);
+    DCHECK(overlay_candidates_);
+    overlay_candidates_->SetSupportedBufferFormats(
+        std::move(hardware_capabilities.supported_buffer_formats));
   } else {
     // Default to attempting 1 overlay if we get an invalid response.
     max_overlays_considered_ = 1;
@@ -427,15 +512,17 @@ void OverlayProcessorOzone::RegisterOverlayRequirement(bool requires_overlay) {
     overlay_candidates_->RegisterOverlayRequirement(requires_overlay);
 }
 
+void OverlayProcessorOzone::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  if (overlay_candidates_) {
+    overlay_candidates_->OnSwapBuffersComplete(swap_result);
+  }
+}
+
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,
     bool is_primary) {
   DCHECK(shared_image_interface_);
-
-  if (!mailbox.IsSharedImage())
-    return false;
-
   scoped_refptr<gfx::NativePixmap> native_pixmap =
       shared_image_interface_->GetNativePixmap(mailbox);
 

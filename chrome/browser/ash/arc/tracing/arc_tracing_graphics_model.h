@@ -15,6 +15,17 @@
 
 namespace arc {
 
+//
+// Keys for reading the model JSON.
+//
+
+// Key for summary data in <top>.information.
+inline constexpr char kKeyInformation[] = "information";
+
+// Keys in information JSON.
+inline constexpr char kKeyDuration[] = "duration";
+inline constexpr char kKeyPerceivedFps[] = "perceived_fps";
+
 class ArcTracingModel;
 class PresentFramesTracer;
 
@@ -209,8 +220,12 @@ class ArcTracingGraphicsModel {
   ViewMap view_buffers_;
   // To avoid overlapping events are stored interlaced.
   EventsContainer chrome_top_level_;
-  // Total duration of this model.
+  // Total duration of this model in microseconds.
   uint32_t duration_ = 0;
+  // Effective FPS - counts only swapped frames with new app commits.
+  double perceived_fps_ = 0;
+  // App FPS, which is the number of commits from ARC Wayland client per second.
+  double app_fps_ = 0;
   // Title of the traced app.
   std::string app_title_;
   // PNG content of traced app.

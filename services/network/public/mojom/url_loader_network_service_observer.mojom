@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/optional_bool.mojom";
 import "url/mojom/origin.mojom";
@@ -146,7 +147,7 @@ interface URLLoaderNetworkServiceObserver {
   // frame.
   OnAuthRequired(
       mojo_base.mojom.UnguessableToken? window_id,
-      uint32 request_id,
+      int32 request_id,
       url.mojom.Url url,
       bool first_auth_attempt,
       AuthChallengeInfo auth_info,
@@ -173,7 +174,7 @@ interface URLLoaderNetworkServiceObserver {
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
   // https://www.w3.org/TR/clear-site-data/
-  // TODO(crbug.com/876931): We might want to move header parsing work to
+  // TODO(crbug.com/41409604): We might want to move header parsing work to
   // Network Service for security concerns (e.g. |header_value| => booleans).
   OnClearSiteData(url.mojom.Url url,
                   string header_value,
@@ -215,7 +216,7 @@ interface URLLoaderNetworkServiceObserver {
   // the implementation (e.g. in the browser process) before invoking the
   // actual Shared Storage operations.
   //
-  // TODO(crbug.com/1434529): Make the `OnSharedStorageHeaderReceived()` call
+  // TODO(crbug.com/40064101): Make the `OnSharedStorageHeaderReceived()` call
   // synchronous so that we can guarantee that order is preserved between calls
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.
@@ -226,4 +227,8 @@ interface URLLoaderNetworkServiceObserver {
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
   // observer).
   Clone(pending_receiver<URLLoaderNetworkServiceObserver> listener);
+
+  // Called when a WebSocket is connected to a private or local IP address
+  // space.
+  OnWebSocketConnectedToPrivateNetwork(IPAddressSpace ip_address_space);
 };

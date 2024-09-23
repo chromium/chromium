@@ -51,7 +51,6 @@ namespace {
 // Please try to keep this comment up to date when changing behaviour on one of
 // the platforms supported by the browser.
 bool SystemNotificationsEnabled(Profile* profile) {
-#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return true;
 #elif BUILDFLAG(IS_WIN)
@@ -69,9 +68,6 @@ bool SystemNotificationsEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kNativeNotifications) &&
          base::FeatureList::IsEnabled(features::kSystemNotifications);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 }
 
 NotificationPlatformBridge* GetSystemNotificationPlatformBridge(
@@ -137,7 +133,7 @@ void NotificationPlatformBridgeDelegator::Close(
 
 void NotificationPlatformBridgeDelegator::GetDisplayed(
     GetDisplayedNotificationsCallback callback) const {
-  // TODO(crbug.com/1245242): We currently only query one of the bridges for
+  // TODO(crbug.com/40788519): We currently only query one of the bridges for
   // displayed notifications which may not return TRANSIENT style ones. Ideally
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
@@ -149,7 +145,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
 void NotificationPlatformBridgeDelegator::GetDisplayedForOrigin(
     const GURL& origin,
     GetDisplayedNotificationsCallback callback) const {
-  // TODO(crbug.com/1245242): We currently only query one of the bridges for
+  // TODO(crbug.com/40788519): We currently only query one of the bridges for
   // displayed notifications which may not return TRANSIENT style ones. Ideally
   // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
@@ -168,11 +164,9 @@ void NotificationPlatformBridgeDelegator::DisplayServiceShutDown() {
 NotificationPlatformBridge*
 NotificationPlatformBridgeDelegator::GetBridgeForType(
     NotificationHandler::Type type) {
-#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   // Prefer the system bridge if available and it can handle |type|.
   if (system_bridge_ && NotificationPlatformBridge::CanHandleType(type))
     return system_bridge_;
-#endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   return message_center_bridge_;
 }
 

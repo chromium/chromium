@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cast_config") {
+  sources = [
+    "cast_config_controller_media_router.cc",
+    "cast_config_controller_media_router.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//components/media_router/browser",
+    "//components/session_manager/core",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//components/media_router/common",
+    "//components/user_manager",
+    "//third_party/icu",
+    "//third_party/icu:icuuc_public",
+  ]
+}

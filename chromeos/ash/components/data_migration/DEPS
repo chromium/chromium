@@ -1,0 +1,24 @@
+include_rules = [
+  "+chrome/browser/nearby_sharing/common",
+  "+chrome/browser/nearby_sharing/public",
+  "+chromeos/ash/services/nearby/public",
+  "+components/keyed_service/core",
+  "+chromeos/ash/components/nearby/common/connections_manager",
+
+  # data_migration generally does not depend directly on the third_party/nearby
+  # library. It uses chrome/browser/nearby_sharing/public instead. However,
+  # there are a couple byte parsing utilities in the nearby library that it
+  # needs to use, so they have been specifically allowlisted here.
+  #
+  # TODO(b/331395160): Wrap these functions somewhere in
+  # chrome/browser/nearby_sharing/public so that we don't have to depend
+  # directly on third_party/nearby.
+  "+third_party/nearby/src/internal/platform/byte_array.h",
+  "+third_party/nearby/src/internal/platform/byte_utils.h",
+]
+
+specific_include_rules = {
+   '.*_unittest\.cc': [
+      '+chrome/browser/nearby_sharing/nearby_connections_manager_impl.h',
+   ],
+}

@@ -180,7 +180,7 @@ action("mini_installer_archive") {
     # Optional arguments to generate diff installer.
     #'--last_chrome_installer=C:/Temp/base',
     #'--setup_exe_format=DIFF',
-    #'--diff_algorithm=COURGETTE',
+    #'--diff_algorithm=ZUCCHINI',
 
     # Optional argument for verbose archiving output.
     #"--verbose",
@@ -194,7 +194,6 @@ action("mini_installer_archive") {
     "//chrome/browser/extensions/default_extensions",
     "//chrome/common/win:eventlog_provider",
     "//chrome/installer/setup",
-    "//mojo/core:shared_library",
     "//third_party/icu:icudata",
   ]
 
@@ -232,7 +231,8 @@ action("mini_installer_archive") {
     if (use_v8_context_snapshot) {
       inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
       deps += [ "//tools/v8_context_snapshot" ]
-    } else {
+    }
+    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
       inputs += [ "$root_out_dir/snapshot_blob.bin" ]
       args += [ "--include_snapshotblob=1" ]
     }

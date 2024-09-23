@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/wm/window_animations.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -97,7 +98,7 @@ std::optional<ash::ShelfAction> AdvanceApp(
   // bounce the window to signal nothing happened.
   if (items.size() == 1u && active_item) {
     DCHECK(active_item_window);
-    ash_util::BounceWindow(active_item_window);
+    ash::BounceWindow(active_item_window);
     return ash::SHELF_ACTION_NONE;
   }
 
@@ -126,7 +127,8 @@ class AppMatcher {
     DCHECK(profile);
     if (web_app::WebAppProvider* provider =
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
-      if (provider->registrar_unsafe().IsLocallyInstalled(app_id)) {
+      if (provider->registrar_unsafe().IsInstallState(
+              app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
         registrar_ = &provider->registrar_unsafe();
       }
     }
@@ -270,27 +272,29 @@ void AppShortcutShelfItemController::ItemSelected(
   // activate the next item in line if an item of our list is already active.
   //
   // Here we check the implicit assumption that the type of the event that gets
-  // passed in is never ui::ET_KEY_PRESSED. One may find it strange as usually
-  // ui::ET_KEY_RELEASED comes in pair with ui::ET_KEY_PRESSED, i.e, if we need
-  // to handle ui::ET_KEY_RELEASED, then we probably need to handle
-  // ui::ET_KEY_PRESSED too. However this is not the case here. The ui::KeyEvent
-  // that gets passed in is manufactured as an ui::ET_KEY_RELEASED typed
-  // KeyEvent right before being passed in. This is similar to the situations of
-  // BrowserShortcutShelfItemController and BrowserAppShelfItemController.
+  // passed in is never ui::EventType::kKeyPressed. One may find it strange as
+  // usually ui::EventType::kKeyReleased comes in pair with
+  // ui::EventType::kKeyPressed, i.e, if we need to handle
+  // ui::EventType::kKeyReleased, then we probably need to handle
+  // ui::EventType::kKeyPressed too. However this is not the case here. The
+  // ui::KeyEvent that gets passed in is manufactured as an
+  // ui::EventType::kKeyReleased typed KeyEvent right before being passed in.
+  // This is similar to the situations of BrowserShortcutShelfItemController and
+  // BrowserAppShelfItemController.
   //
   // One other thing regarding the KeyEvent here that one may find confusing is
-  // that even though the code here says ET_KEY_RELEASED, one only needs to
-  // conduct a press action (e.g., pressing Alt+1 on a physical device without
-  // letting go) to trigger this ItemSelected() function call. The subsequent
-  // key release action is not required. This naming disparity comes from the
-  // fact that while the key accelerator is triggered and handled by
+  // that even though the code here says EventType::kKeyReleased, one only needs
+  // to conduct a press action (e.g., pressing Alt+1 on a physical device
+  // without letting go) to trigger this ItemSelected() function call. The
+  // subsequent key release action is not required. This naming disparity comes
+  // from the fact that while the key accelerator is triggered and handled by
   // ui::AcceleratorManager::Process() with a KeyEvent instance as one of its
   // inputs, further down the callstack, the same KeyEvent instance is not
   // passed over into ash::Shelf::ActivateShelfItemOnDisplay(). Instead, a new
   // KeyEvent instance is fabricated inside
   // ash::Shelf::ActivateShelfItemOnDisplay(), with its type being
-  // ET_KEY_RELEASED, to represent the original KeyEvent, whose type is
-  // ET_KEY_PRESSED.
+  // EventType::kKeyReleased, to represent the original KeyEvent, whose type is
+  // EventType::kKeyPressed.
   //
   // The fabrication of the release typed key event was first introduced in this
   // CL in 2013.
@@ -298,7 +302,7 @@ void AppShortcutShelfItemController::ItemSelected(
   //
   // That said, there also exist other UX where the original KeyEvent instance
   // gets passed down intact. And in those UX, we should still expect a
-  // ET_KEY_PRESSED type. This type of UX can happen when the user keeps
+  // EventType::kKeyPressed type. This type of UX can happen when the user keeps
   // pressing the Tab key to move to the next icon, and then presses the Enter
   // key to launch the app. It can also happen in a ChromeVox session, in which
   // the Space key can be used to activate the app. More can be found in this
@@ -306,7 +310,7 @@ void AppShortcutShelfItemController::ItemSelected(
   //
   // A bug is filed to track future works for fixing this confusing naming
   // disparity. https://crbug.com/1473895
-  if (event && event->type() == ui::ET_KEY_RELEASED) {
+  if (event && event->type() == ui::EventType::kKeyReleased) {
     auto optional_action = AdvanceToNextApp(filter_predicate);
     if (optional_action.has_value()) {
       std::move(callback).Run(optional_action.value(), {});
@@ -618,7 +622,8 @@ bool AppShortcutShelfItemController::IsWindowedWebApp() {
           web_app::WebAppProvider::GetForLocalAppsUnchecked(
               ChromeShelfController::instance()->profile())) {
     web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-    if (registrar.IsLocallyInstalled(app_id())) {
+    if (registrar.IsInstallState(
+            app_id(), {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
       return registrar.GetAppUserDisplayMode(app_id()) !=
              web_app::mojom::UserDisplayMode::kBrowser;
     }

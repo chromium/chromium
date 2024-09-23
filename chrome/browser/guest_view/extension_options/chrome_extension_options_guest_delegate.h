@@ -27,7 +27,9 @@ class ChromeExtensionOptionsGuestDelegate
                          const content::ContextMenuParams& params) override;
 
   content::WebContents* OpenURLInNewTab(
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 };
 
 }  // namespace extensions

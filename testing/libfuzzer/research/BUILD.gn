@@ -1,1 +1,12 @@
-visibility = [ "//testing/libfuzzer/research:*" ]
+visibility = [
+  "//testing/libfuzzer:research",
+  "//testing/libfuzzer/research:*",
+]
+
+group("research") {
+  testonly = true
+  deps = [
+    "domatolpm:research",
+    "fuzzilli_idl_fuzzing:research",
+  ]
+}

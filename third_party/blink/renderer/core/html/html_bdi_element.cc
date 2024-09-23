@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_bdi_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+
 namespace blink {
 
 HTMLBDIElement::HTMLBDIElement(Document& document)
@@ -12,9 +14,6 @@ HTMLBDIElement::HTMLBDIElement(Document& document)
   // https://html.spec.whatwg.org/C/#the-bdi-element
   SetSelfOrAncestorHasDirAutoAttribute();
   GetDocument().SetHasDirAttribute();
-  if (RuntimeEnabledFeatures::BdiElementDirInheritanceEnabled()) {
-    SetDirAutoInheritsFromParent();
-  }
 }
 
 }  // namespace blink

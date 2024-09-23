@@ -12,8 +12,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-ExtensionPermissionsView::ExtensionPermissionsView(int available_width)
-    : available_width_(available_width) {
+ExtensionPermissionsView::ExtensionPermissionsView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -28,7 +27,6 @@ void ExtensionPermissionsView::AddItem(
       views::style::STYLE_SECONDARY);
   permission_label->SetMultiLine(true);
   permission_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  permission_label->SizeToFit(available_width_);
   AddChildView(std::move(permission_label));
   if (!permission_details.empty()) {
     // If we have more details to provide, show them in collapsed form.

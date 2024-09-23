@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
-<translation id="101606685846791463">borrar la caché del navegador, borrar caché, borrar el historial, borrar historial, eliminar historial, borrar las cookies, borrar historial de navegación, eliminar cookies</translation>
 <translation id="132297926492792130">controlar mi cuenta de google, gestionar cuenta de google, solucionar problemas con la cuenta de google, gestionar mi cuenta de google</translation>
 <translation id="1455865776268085776">usar modo de incógnito, abrir ventana de incógnito, nueva ventana de incógnito, abrir pestaña de incógnito</translation>
 <translation id="1545931455576308147">compartir esta página, compartir esta pestaña, cómo compartir en el navegador, compartir pestañas, compartir páginas</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">añadir dirección, cambiar dirección, gestionar dirección de envío, cambiar dirección de envío, modificar dirección, añadir direcciones, gestionar direcciones, cambiar direcciones</translation>
 <translation id="7242693601647412075">gestionar ajustes de seguridad, ajustes de seguridad</translation>
 <translation id="7441773108452086364">cambiar la contraseña de gmail, cambiar contraseña de gmail, cambiar la contraseña de google, cambiar la contraseña de la cuenta de gmail</translation>
+<translation id="7469628627013714019">borrar la caché del navegador, eliminar la caché del navegador, borrar caché, eliminar el historial, borrar el historial, borrar historial, eliminar historial, eliminar las cookies, borrar las cookies, borrar historial de navegación, eliminar cookies, borrar cookies</translation>
 <translation id="7660956169713698963">personalizar la accesibilidad de Chrome OS, gestionar los ajustes de accesibilidad, modificar la configuración de accesibilidad, cambiar los ajustes de accesibilidad, ajustes de accesibilidad</translation>
 <translation id="7700496593710078083">consultar el historial de Chrome, ver el historial de navegación, ver el historial</translation>
 <translation id="7739523284295786564">gestionar descargas de Chrome, ver las descargas, consultar los archivos descargados, ir a descargas</translation>

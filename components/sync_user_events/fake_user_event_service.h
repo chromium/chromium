@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/sync_user_events/user_event_service.h"
 
 namespace syncer {
@@ -29,14 +29,14 @@ class FakeUserEventService : public UserEventService {
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
   void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   const std::vector<sync_pb::UserEventSpecifics>& GetRecordedUserEvents() const;
 
  private:
   std::vector<sync_pb::UserEventSpecifics> recorded_user_events_;
-  FakeModelTypeControllerDelegate fake_controller_delegate_;
+  FakeDataTypeControllerDelegate fake_controller_delegate_;
 };
 
 }  // namespace syncer

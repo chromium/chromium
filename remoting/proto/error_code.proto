@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.proto;
+
+// Error codes associated with Chromoting that are used across all critical user
+// journeys.  In this way, we don't need to rewrite error code translation logic
+// for the same error for each new user journey.
+//
+// Changes made in this file should be synced into the internal error code proto
+// file.
+enum ErrorCode {
+  // No error was specified when the protobuf was logged. This value should
+  // never be set explicitly.
+  UNSPECIFIED_ERROR = 0;
+
+  // An error occurred but was not of any type represented by the values below.
+  UNEXPECTED = 18;
+
+  // No errors.
+  NONE = 1;
+
+  // Connection rejected since the host is not started.
+  SESSION_REJECTED = 3;
+
+  // The protocol does not match between host and client.
+  INCOMPATIBLE_PROTOCOL = 4;
+
+  // Authentication has failed for the connection.
+  AUTHENTICATION_FAILED = 8;
+
+  // Connection rejected by the host due to an overload of failed login
+  // attempts.
+  HOST_OVERLOAD = 9;
+
+  // There has been an issue connecting peer-to-peer.
+  P2P_FAILURE = 10;
+
+  // Maximum session duration has been reached.
+  MAX_SESSION_LENGTH = 13;
+
+  // Host failed to initialize the session.
+  HOST_CONFIGURATION_ERROR = 14;
+
+  // Host security policies do not allow connections from client.
+  INVALID_ACCOUNT = 16;
+
+  // Connection fails due to an error in connecting the signaling channel.
+  SIGNALING_ERROR = 26;
+
+  // Connection fails due to the jingle messages timing out.
+  SIGNALING_TIMEOUT = 27;
+
+  // The user was not authorized to connect to the host (per BeyondCorp policy).
+  AUTHZ_POLICY_CHECK_FAILED = 40;
+
+  // The user was not authorized to connect to the host (not policy related).
+  UNAUTHORIZED_ACCOUNT = 42;
+
+  // The SessionAuthz connection reauthorization failed.
+  REAUTHORIZATION_FAILED = 43;
+
+  // The client has gone offline.
+  CLIENT_IS_OFFLINE = 44;
+
+  // The host failed to launch an elevated process.
+  ELEVATION_ERROR = 45;
+
+  // The host failed to generate a certificate.
+  HOST_CERTIFICATE_ERROR = 46;
+
+  // Host registration failed.
+  HOST_REGISTRATION_ERROR = 47;
+
+  // Failure to start the session as there is an existing admin session ongoing
+  // on the host device.
+  EXISTING_ADMIN_SESSION = 48;
+
+  // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  // policy is disabled.
+  DISALLOWED_BY_POLICY = 49;
+
+  // Failure because the client is not authorized to connect to the host device
+  // based on their current location due to a policy defined by the third party
+  // auth service.
+  LOCATION_AUTHZ_POLICY_CHECK_FAILED = 50;
+
+  // Failed to find an authentication method that is supported by both the host
+  // and the client.
+  NO_COMMON_AUTH_METHOD = 62;
+
+  reserved 2, 11, 12, 15, 17, 41;
+  reserved 5 to 7, 19 to 25, 28 to 39, 51 to 61;
+
+  // [400, 699] are reserved for internal errors.
+  reserved 400 to 699;
+}

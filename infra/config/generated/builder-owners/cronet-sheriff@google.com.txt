@@ -1,0 +1,2 @@
+ci/android-cronet-riscv64-dbg
+ci/android-cronet-riscv64-rel

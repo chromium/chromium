@@ -20,17 +20,17 @@
       </if>
       <include name="IDR_UASTYLE_PERMISSION_ELEMENT_CSS" file="../renderer/core/html/resources/permission.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_INLINE_FLEX_CSS" file="../renderer/core/html/resources/input_multiple_fields_inline_flex.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SELECTLIST_CSS" file="../renderer/core/html/resources/selectlist.css" flattenhtml="true" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_CSS" file="../renderer/core/html/resources/customizable_select.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_LINUX_CSS" file="../renderer/core/html/resources/customizable_select_linux.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_CUSTOMIZABLE_SELECT_FORCED_COLORS_CSS" file="../renderer/core/html/resources/customizable_select_forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MARKER_CSS" file="../renderer/core/css/marker.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MATHML_CSS" file="../renderer/core/css/mathml.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_FULLSCREEN_CSS" file="../renderer/core/css/fullscreen.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_CSS" file="../renderer/core/css/transition.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS" file="../renderer/core/css/transition_animations.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS" file="../renderer/core/css/form_controls_not_vertical.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS_TEXT" file="../renderer/core/css/form_controls_not_vertical_text.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_CSS" file="../renderer/core/xml/DocumentXMLTreeViewer.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_DOCUMENTXMLTREEVIEWER_JS" file="../renderer/core/xml/DocumentXMLTreeViewer.js" type="BINDATA" compress="brotli"/>
       <include name="IDR_VALIDATION_BUBBLE_ICON" file="../renderer/core/html/forms/resources/input_alert.svg" type="BINDATA" compress="brotli"/>

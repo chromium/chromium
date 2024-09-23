@@ -9,7 +9,7 @@
 void MediaItemUIDeviceSelectorDelegateAsh::OnAudioSinkChosen(
     const std::string& id,
     const std::string& sink_id) {
-  // TODO(crbug.com/1427284): Implement this.
+  // TODO(crbug.com/40261717): Implement this.
   NOTIMPLEMENTED();
 }
 
@@ -17,7 +17,7 @@ base::CallbackListSubscription MediaItemUIDeviceSelectorDelegateAsh::
     RegisterAudioOutputDeviceDescriptionsCallback(
         MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
             CallbackType callback) {
-  // TODO(crbug.com/1427284): Implement this.
+  // TODO(crbug.com/40261717): Implement this.
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
@@ -26,13 +26,13 @@ base::CallbackListSubscription MediaItemUIDeviceSelectorDelegateAsh::
     RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
         const std::string& id,
         base::RepeatingCallback<void(bool)> callback) {
-  // TODO(crbug.com/1427284): Implement this.
+  // TODO(crbug.com/40261717): Implement this.
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
 void MediaItemUIDeviceSelectorDelegateAsh::OnMediaRemotingRequested(
     const std::string& item_id) {
-  // TODO(crbug.com/1427284): Implement this.
+  // TODO(crbug.com/40261717): Implement this.
   NOTIMPLEMENTED();
 }

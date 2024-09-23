@@ -2,7 +2,8 @@
 chromium-sync-reviews@google.com
 
 # Note: When adding owners here, remember to also update the gwsq config for
-# chromium-sync-reviews@google.com!
+# chromium-sync-reviews@google.com, as well as the corresponding file in the
+# website repo (docs/website/site/developers/design-documents/sync/OWNERS).
 
 ankushkush@google.com    #{LAST_RESORT_SUGGESTION}
 jood@google.com          #{LAST_RESORT_SUGGESTION}

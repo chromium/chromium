@@ -3,7 +3,7 @@
 # filled, but does. This only occurs in the test, not in a real browser.
 # For now, don't check invalid state in this test.
 @BLINK-DENY:invalidState*
-@WAIT-FOR:ready
+@WAIT-FOR:done
 -->
 <!-- Ensure that alert is removed after form is made valid-->
 <!DOCTYPE html>
@@ -17,5 +17,6 @@
   setTimeout(() => {
     in1.blur();
     in1.value = 'ready';
+    document.title = 'done';
   }, 100);
 </script>

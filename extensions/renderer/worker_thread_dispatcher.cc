@@ -28,14 +28,13 @@
 #include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/worker_script_context_set.h"
 #include "extensions/renderer/worker_thread_util.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace extensions {
 
 namespace {
 
-ABSL_CONST_INIT thread_local extensions::ServiceWorkerData*
-    service_worker_data = nullptr;
+constinit thread_local extensions::ServiceWorkerData* service_worker_data =
+    nullptr;
 
 ServiceWorkerData* GetServiceWorkerDataChecked() {
   ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();
@@ -111,12 +110,13 @@ void WorkerThreadDispatcher::AddWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
     const std::optional<base::UnguessableToken>& activation_sequence,
+    const blink::ServiceWorkerToken& service_worker_token,
     ScriptContext* script_context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system) {
   if (!service_worker_data) {
     service_worker_data = new ServiceWorkerData(
         proxy, service_worker_version_id, std::move(activation_sequence),
-        script_context, std::move(bindings_system));
+        service_worker_token, script_context, std::move(bindings_system));
   }
 
   int worker_thread_id = content::WorkerThread::GetCurrentId();

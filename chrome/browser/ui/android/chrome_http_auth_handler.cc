@@ -13,6 +13,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeHttpAuthHandler_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -125,5 +127,5 @@ void ChromeHttpAuthHandler::SetAuthSync(const std::u16string& username,
 }
 
 void ChromeHttpAuthHandler::CancelAuthSync() {
-  observer_->CancelAuth();
+  observer_->CancelAuth(/*notify_others=*/true);
 }

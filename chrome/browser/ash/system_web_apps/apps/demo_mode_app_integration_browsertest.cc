@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/shell.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -12,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker_impl.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -28,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -82,6 +88,11 @@ class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
 class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
  public:
   using DemoModeAppIntegrationTestBase::DemoModeAppIntegrationTestBase;
+  DemoModeAppIntegrationTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDemoModeAppLandscapeLocked},
+        /*disabled_features=*/{});
+  }
 
  protected:
   // ash::SystemWebAppIntegrationTest:
@@ -98,6 +109,7 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
   // and DeviceStateMixin also sets the owner key.
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Class that waits for, then asserts, that a widget has entered or exited
@@ -189,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, WebUIDoesNotLaunch) {
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
   const GURL url(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(SystemWebAppType::DEMO_MODE,
-                                                  url, "Demo Mode App"));
+                                                  url, "ChromeOS Highlights"));
 }
 
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
@@ -244,22 +256,29 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 // the metricsPrivateIndividualApis extension API
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        DemoModeAppRecordMetricsFromComponentContent) {
+  constexpr int kAttractLoopTimestamp = 5000, kEasyPageDuration = 6500,
+                kProcessorPageDuration = 7300;
   const std::string kTestJs =
       "import {metricsService, Page, PillarButton, DetailsPage} from "
       "'./demo_mode_metrics_service.js'; "
       "document.addEventListener('DOMContentLoaded', () => {"
       "  metricsService.recordAttractLoopBreak();"
-      "  metricsService.recordAttractLoopBreakTimestamp(10000);"
+      "  metricsService.recordAttractLoopBreakTimestamp(" +
+      base::ToString(kAttractLoopTimestamp) +
+      ");"
       "  metricsService.recordAttractLoopBreakTimestamp(NaN);"
       "  metricsService.recordHomePageButtonClick(Page.EASY); "
       "  metricsService.recordHomePageButtonClick(Page.CHROMEOS); "
-      "  metricsService.recordPageViewDuration(Page.EASY, 10000); "
+      "  metricsService.recordPageViewDuration(Page.EASY, " +
+      base::ToString(kEasyPageDuration) +
+      "); "
       "  metricsService.recordPageViewDuration(Page.EASY, NaN); "
       "  metricsService.recordPillarPageButtonClick(PillarButton.NEXT); "
       "  metricsService.recordNavbarButtonClick(Page.FAST); "
       "  metricsService.recordDetailsPageClicked(DetailsPage.MOBILE_GAMING); "
-      "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, "
-      "10000); "
+      "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, " +
+      base::ToString(kProcessorPageDuration) +
+      "); "
       "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, "
       "NaN); "
       "});";
@@ -299,12 +318,14 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   histogram_tester_.ExpectBucketCount("DemoMode.Highlights.FirstInteraction",
                                       2 /* Fast button click */, 0);
   histogram_tester_.ExpectTimeBucketCount(
-      "DemoMode.Highlights.PageStayDuration.EasyPage", base::Seconds(10), 1);
+      "DemoMode.AttractLoop.Timestamp",
+      base::Milliseconds(kAttractLoopTimestamp), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "DemoMode.Highlights.PageStayDuration.EasyPage",
+      base::Milliseconds(kEasyPageDuration), 1);
   histogram_tester_.ExpectTimeBucketCount(
       "DemoMode.Highlights.DetailsPageStayDuration.ProcessorPage",
-      base::Seconds(10), 1);
-  histogram_tester_.ExpectTimeBucketCount("DemoMode.AttractLoop.Timestamp",
-                                          base::Seconds(10), 1);
+      base::Milliseconds(kProcessorPageDuration), 1);
   histogram_tester_.ExpectBucketCount(
       "DemoMode.Highlights.Error", 0 /* Invalid attract loop break timestamp */,
       1);
@@ -333,11 +354,17 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 }
 
+// Launch the demo mode web app from the component content, and verify that
+// the orientation is locked to landscape.
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        LaunchWebAppFromComponentContent) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  // Configure WebUI to serve HTML/JS invoking LaunchApp Mojo API
+  // Configure WebUI to serve HTML/JS invoking LaunchApp Mojo API, which calls
+  // DemoModeUntrustedPageHandler::LaunchApp(app_id) ->
+  // ChromeDemoModeAppDelegate::LaunchApp(app_id) ->
+  // AppServiceProxyBase::Launch(app_id, 0, apps::LaunchSource::kFromOtherApp)
+  // in its call hierarchy.
   const std::string kTestJs = content::JsReplace(
       "import {pageHandler} from './page_handler.js'; "
       "document.addEventListener('DOMContentLoaded', () => {"
@@ -353,10 +380,16 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 
   // Launch SWA
   WaitForTestSystemAppInstall();
+  // There should be no DemoMode.AppLaunchSource recorded at the start.
+  histogram_tester_.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
+
   apps::AppLaunchParams params =
       LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
   params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
                              file_path.BaseName().MaybeAsASCII());
+  // The launch source of the demo mode app should be kFromChromeInternal in
+  // demo session.
+  params.launch_source = apps::LaunchSource::kFromChromeInternal;
 
   // Assert that AppServiceProxy::Launch is called by using a mock AppPublisher.
   // We mock here instead of testing that an actual app is launched due to this
@@ -365,11 +398,65 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   base::RunLoop run_loop;
   MockWebAppPublisher mock_web_app_publisher(
       apps::AppServiceProxyFactory::GetForProfile(profile));
+  // We expect the call hierarchy described in the comments of `kTestJs` will
+  // be gone through by verifying the last function
+  // Launch(app_id, 0, apps::LaunchSource::kFromOtherApp) is called.
   EXPECT_CALL(mock_web_app_publisher,
               Launch(kFakeAppId, 0, apps::LaunchSource::kFromOtherApp, _))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  // Launch the mock demo mode app.
   LaunchApp(std::move(params));
   run_loop.Run();
+
+  // Since we launched the fake app using the LaunchApp Mojo API, we expect to
+  // see one count in AppLaunchSource::kDemoModeApp, but no others.
+  histogram_tester_.ExpectTotalCount("DemoMode.AppLaunchSource", 1);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.AppLaunchSource", DemoSession::AppLaunchSource::kDemoModeApp,
+      1);
+
+  // Set up the display.
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  ash::ScreenOrientationController* screen_orientation_controller =
+      ash::Shell::Get()->screen_orientation_controller();
+
+  // Enable the tablet mode to allow the auto rotation and the screen
+  // orientation lock.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
+  EXPECT_TRUE(screen_orientation_controller->IsAutoRotationAllowed());
+
+  // Since we locked the orientation of the app to landscape, the current
+  // rotation should be the default 0 degree (kLandscapePrimary).
+  EXPECT_TRUE(screen_orientation_controller->rotation_locked());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+
+  // We locked the orientation of the app, but we did not lock the orientation
+  // of the device.
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+
+  // Simulate rotating device to portrait.
+  screen_orientation_controller->SetLockToRotation(display::Display::ROTATE_90);
+
+  // The app orientation is locked to landscape so remains unchanged.
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+  // Since we locked the device to 90 degrees, the device rotation is locked.
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
+
+  // Simulate rotating device to upside-down landscape.
+  screen_orientation_controller->SetLockToRotation(
+      display::Display::ROTATE_180);
+
+  // The app orientation is changed to 180 degrees (kLandscapeSecondary), which
+  // is still locked in landscape.
+  EXPECT_EQ(chromeos::OrientationType::kLandscapeSecondary,
+            screen_orientation_controller->GetCurrentOrientation());
+  // Since we locked the device to 180 degrees, the device rotation is locked.
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
 }
 
 // Test that the Demo Mode Highlight App has a minimum window size of 800 pixels

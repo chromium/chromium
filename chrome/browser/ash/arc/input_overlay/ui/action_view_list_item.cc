@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 
-#include "ash/style/rounded_container.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
@@ -22,21 +22,28 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 
 ActionViewListItem::~ActionViewListItem() = default;
 
-void ActionViewListItem::PerformPulseAnimation() {
-  labels_view_->PerformPulseAnimationOnFirstLabel();
-}
-
 void ActionViewListItem::ClickCallback() {
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kPressListItem);
   controller_->AddButtonOptionsMenuWidget(action_);
 }
 
 void ActionViewListItem::OnMouseEntered(const ui::MouseEvent& event) {
   controller_->AddActionHighlightWidget(action_);
   controller_->AddDeleteEditShortcutWidget(this);
+  RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                     EditingListFunction::kHoverListItem);
 }
 
 void ActionViewListItem::OnMouseExited(const ui::MouseEvent& event) {
-  controller_->HideActionHighlightWidget();
+  if (auto* focus_manager = GetFocusManager()) {
+    auto* focused_view = focus_manager->GetFocusedView();
+    // Hide the highlight when no view is focused or the focused view is not
+    // this view or any view inside.
+    if (!focused_view || !(focused_view == this || Contains(focused_view))) {
+      controller_->HideActionHighlightWidgetForAction(action_);
+    }
+  }
 }
 
 bool ActionViewListItem::OnKeyPressed(const ui::KeyEvent& event) {
@@ -45,26 +52,17 @@ bool ActionViewListItem::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 
-  // Don't hide the action view highlight because the focus may traverse inside
-  // of this view. If the next focus view is not inside of this view, then hide
-  // the action view highlight.
-  if (views::FocusManager::IsTabTraversalKeyEvent(event)) {
-    auto* focus_manager = GetFocusManager();
-    if (auto* next_view = focus_manager->GetNextFocusableView(
-            /*starting_view=*/focus_manager->GetFocusedView(),
-            /*starting_widget=*/GetWidget(), /*reverse=*/event.IsShiftDown(),
-            /*dont_loop=*/false);
-        !next_view || !Contains(next_view)) {
-      controller_->HideActionHighlightWidget();
-    }
-    // Tab key is not considered as processed here, so it falls to the end to
-    // return false.
-  }
-  return false;
+  return ActionEditView::OnKeyPressed(event);
 }
 
 void ActionViewListItem::OnFocus() {
   controller_->AddActionHighlightWidget(action_);
+}
+
+void ActionViewListItem::OnBlur() {
+  if (!IsMouseHovered()) {
+    controller_->HideActionHighlightWidgetForAction(action_);
+  }
 }
 
 BEGIN_METADATA(ActionViewListItem)

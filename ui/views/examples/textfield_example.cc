@@ -16,6 +16,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -33,7 +34,14 @@ namespace views::examples {
 TextfieldExample::TextfieldExample()
     : ExampleBase(GetStringUTF8(IDS_TEXTFIELD_SELECT_LABEL).c_str()) {}
 
-TextfieldExample::~TextfieldExample() = default;
+TextfieldExample::~TextfieldExample() {
+  if (name_) {
+    name_->set_controller(nullptr);
+  }
+  if (password_) {
+    password_->set_controller(nullptr);
+  }
+}
 
 void TextfieldExample::CreateExampleView(View* container) {
   TableLayout* layout =
@@ -52,7 +60,8 @@ void TextfieldExample::CreateExampleView(View* container) {
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL)));
   name_ = container->AddChildView(std::make_unique<Textfield>());
   name_->set_controller(this);
-  name_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL));
+  name_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_NAME_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL)));
@@ -61,7 +70,7 @@ void TextfieldExample::CreateExampleView(View* container) {
   password_->SetPlaceholderText(
       GetStringUTF16(IDS_TEXTFIELD_PASSWORD_PLACEHOLDER));
   password_->set_controller(this);
-  password_->SetAccessibleName(
+  password_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_PASSWORD_LABEL));
 
   container->AddChildView(
@@ -69,7 +78,7 @@ void TextfieldExample::CreateExampleView(View* container) {
   disabled_ = container->AddChildView(std::make_unique<Textfield>());
   disabled_->SetEnabled(false);
   disabled_->SetText(GetStringUTF16(IDS_TEXTFIELD_DISABLED_PLACEHOLDER));
-  disabled_->SetAccessibleName(
+  disabled_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_DISABLED_LABEL));
 
   container->AddChildView(
@@ -77,14 +86,14 @@ void TextfieldExample::CreateExampleView(View* container) {
   read_only_ = container->AddChildView(std::make_unique<Textfield>());
   read_only_->SetReadOnly(true);
   read_only_->SetText(GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_PLACEHOLDER));
-  read_only_->SetAccessibleName(
+  read_only_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_READ_ONLY_LABEL));
 
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL)));
   invalid_ = container->AddChildView(std::make_unique<Textfield>());
   invalid_->SetInvalid(true);
-  invalid_->SetAccessibleName(
+  invalid_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL));
   invalid_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_PLACEHOLDER));
@@ -92,7 +101,8 @@ void TextfieldExample::CreateExampleView(View* container) {
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL)));
   rtl_ = container->AddChildView(std::make_unique<Textfield>());
   rtl_->ChangeTextDirectionAndLayoutAlignment(base::i18n::RIGHT_TO_LEFT);
-  rtl_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL));
+  rtl_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL));
 
   show_password_ =
       container->AddChildView(std::make_unique<LabelButton>(

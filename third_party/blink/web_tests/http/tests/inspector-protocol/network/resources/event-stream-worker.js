@@ -3,6 +3,7 @@ self.addEventListener('activate', function(event) {
 });
 
 let streamController;
+let cache = [];
 
 const encoder = new TextEncoder();
 
@@ -11,6 +12,10 @@ self.addEventListener('fetch', function(event) {
     const stream = new ReadableStream({
       start(controller) {
         streamController = controller;
+        for (const item of cache) {
+          streamController.enqueue(encoder.encode(item));
+        }
+        cache = [];
       }
     });
 
@@ -22,10 +27,15 @@ self.addEventListener('fetch', function(event) {
   }
 });
 
-function enqueue(data) {
-  streamController.enqueue(encoder.encode(data));
+async function enqueue(data) {
+  try {
+    streamController.enqueue(encoder.encode(data));
+  } catch {
+    cache.push(data);
+  }
 }
 
 function close() {
   streamController.close();
+  cache = [];
 }

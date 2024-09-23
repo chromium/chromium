@@ -15,5 +15,5 @@
     readonly attribute UUID uuid;
     readonly attribute DataView? value;
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteDescriptorReadValue] Promise<DataView> readValue();
-    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteDescriptorWriteValue] Promise<void> writeValue(BufferSource value);
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteDescriptorWriteValue] Promise<undefined> writeValue(BufferSource value);
 };

@@ -31,6 +31,8 @@
           ir nustatykite konfigūraciją kaip „Nėra tarpinio serverio“ arba „Tiesioginis“.</translation>
 <translation id="6549378540556750549">„Chromium“ taip pat pasiekiama naudojant kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Pakeitimai įsigalios kitą kartą iš naujo paleidus „Chromium“.</translation>
+<translation id="691026815377248078">„Chromium“ reikia pasiekti „Bluetooth“, kad galėtų sieti 
+ toliau. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">„Chromium“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą.</translation>
 <translation id="7861509383340276692">Eikite į
         „Chromium“ meniu &gt;

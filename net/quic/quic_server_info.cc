@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
@@ -65,8 +66,9 @@ bool QuicServerInfo::ParseInner(const string& data) {
     return false;
   }
 
-  base::Pickle p(data.data(), data.size());
-  base::PickleIterator iter(p);
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
+  base::PickleIterator iter(pickle);
 
   int version = -1;
   if (!iter.ReadInt(&version)) {

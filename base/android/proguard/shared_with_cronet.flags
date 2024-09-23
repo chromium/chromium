@@ -1,0 +1,33 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains flags that we want to apply not only to Chromium APKs, but also to
+# third-party apps that bundle the Cronet library.
+
+# WARNING: rules in this file are applied to entire third-party APKs, not just
+# Chromium code. They MUST be scoped appropriately to avoid side effects on app
+# code that we do not own.
+
+# Keep all CREATOR fields within Parcelable that are kept.
+-keepclassmembers class !cr_allowunused,org.chromium.** implements android.os.Parcelable {
+  public static *** CREATOR;
+}
+
+# Don't obfuscate Parcelables as they might be marshalled outside Chrome.
+# If we annotated all Parcelables that get put into Bundles other than
+# for saveInstanceState (e.g. PendingIntents), then we could actually keep the
+# names of just those ones. For now, we'll just keep them all.
+-keepnames,allowaccessmodification class !cr_allowunused,org.chromium.** implements android.os.Parcelable {}
+
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum !cr_allowunused,org.chromium.** {
+    public static **[] values();
+}
+
+# Required to remove fields until b/274802355 is resolved.
+-assumevalues class !cr_allowunused,** {
+  final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
+}

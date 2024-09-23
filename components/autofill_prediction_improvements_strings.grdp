@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Trigger suggestion -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT" desc="Suggestion shown when the user focuses a prediction improvements field." translateable="false">
+    Prediction Improvements
+  </message>
+
+  <!-- Fill suggestion -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT" desc="Suggestion shown when the user focuses a prediction improvements field." translateable="false">
+    Fill all
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_SUGGESTION_AND_MORE" desc="Text displayed as label to indicate more fields will be filled." translateable="false">
+    &amp; more
+  </message>
+
+  <!-- Save prompt -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_TITLE" desc="Text displayed on the top of the save improved predictions dialog." translateable="false">
+    Save info to improved predictions
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the save dialog." translateable="false">
+    No thanks
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON" desc="Text displayed on the accept/save button of the save dialog." translateable="false">
+    Save
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how prediction improvements are saved." translateable="false">
+    Saved prediction information will be saved.
+  </message>
+
+  <!-- Error state-->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_ERROR_POPUP_MAIN_TEXT" desc="Text displayed on the prediction improvements error suggestions" translateable="false">
+    There was a problem filling your prediction improvements.
+  </message>
+
+  <!-- General -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" desc="Text displayed on different surfaces that is a link which will redirect the user to the settings page." translateable="false">
+    Manage prediction improvements
+  </message>
+
+  <!-- Prediction improvements details -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_MAIN_TEXT" desc="Text displayed on the prediction improvements details suggestions" translateable="false">
+    Use prediction improvements. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT" desc="Accessibility text announced by the screenreader when the user focuses on a improveprediction details suggestion" translateable="false">
+    Use prediction improvements. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>
+  </message>
+
+  <!-- Feedback -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT" desc="Text displayed on prediction improvements feedback suggestion." translateable="false">
+    Prediction improvements feedback, <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage prediction improvements</ex></ph>.
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_A11Y_HINT" desc="Accessibility text announced by the screenreader when the user focuses on a prediction improvements feedback view." translateable="false">
+    <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT">$1<ex>Prediction improvements feedback, </ex></ph> press enter to manage prediction improvements
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs up button tooltip." translateable="false">
+    Thumbs up
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs down button tooltip." translateable="false">
+    Thumbs down
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER"
+    desc="Placeholder text for the Autofill prediction improvements feedback form."
+    translateable="false">
+    Send feedback for Autofill prediction improvements.
+  </message>
+</grit-part>

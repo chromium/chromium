@@ -36,13 +36,13 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/fonts/font_platform_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -75,7 +75,6 @@ class FontFaceCreationParams;
 class FontFallbackMap;
 class FontGlobalContext;
 class FontPlatformData;
-class FontPlatformDataCache;
 class SimpleFontData;
 class WebFontPrewarmer;
 
@@ -86,9 +85,11 @@ enum class AlternateFontName {
   kLastResort
 };
 
-// "und-Zsye", the special locale for retrieving the color emoji font defined
-// in UTS #51: https://unicode.org/reports/tr51/#Emoji_Script
+// "und-Zsye" and "und-Zsym", the special locale for retrieving the color emoji
+// font and text emoji font correspondingly defined in UTS #51:
+// https://unicode.org/reports/tr51/#Emoji_Script
 extern const char kColorEmojiLocale[];
+extern const char kMonoEmojiLocale[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[];
@@ -107,9 +108,7 @@ class PLATFORM_EXPORT FontCache final {
 
   void Trace(Visitor*) const;
 
-  void ReleaseFontData(const SimpleFontData*);
-
-  scoped_refptr<SimpleFontData> FallbackFontForCharacter(
+  const SimpleFontData* FallbackFontForCharacter(
       const FontDescription&,
       UChar32,
       const SimpleFontData* font_data_to_substitute,
@@ -118,14 +117,11 @@ class PLATFORM_EXPORT FontCache final {
   // Also implemented by the platform.
   void PlatformInit();
 
-  scoped_refptr<SimpleFontData> GetFontData(
+  const SimpleFontData* GetFontData(
       const FontDescription&,
       const AtomicString&,
-      AlternateFontName = AlternateFontName::kAllowAlternate,
-      ShouldRetain = kRetain);
-  scoped_refptr<SimpleFontData> GetLastResortFallbackFont(const FontDescription&,
-                                                   ShouldRetain = kRetain);
-  SimpleFontData* GetNonRetainedLastResortFallbackFont(const FontDescription&);
+      AlternateFontName = AlternateFontName::kAllowAlternate);
+  const SimpleFontData* GetLastResortFallbackFont(const FontDescription&);
 
   // Should be used in determining whether family names listed in font-family:
   // ... are available locally. Only returns true if family name matches.
@@ -168,6 +164,8 @@ class PLATFORM_EXPORT FontCache final {
 #else
   static void PrewarmFamily(const AtomicString& family_name) {}
 #endif
+
+  static void MaybePreloadSystemFonts();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // These are needed for calling QueryRenderStyleForStrike, since
@@ -218,12 +216,12 @@ class PLATFORM_EXPORT FontCache final {
     return *status_font_family_name_;
   }
 
-  scoped_refptr<SimpleFontData> GetFallbackFamilyNameFromHardcodedChoices(
+  const SimpleFontData* GetFallbackFamilyNameFromHardcodedChoices(
       const FontDescription&,
       UChar32 codepoint,
       FontFallbackPriority fallback_priority);
 
-  scoped_refptr<SimpleFontData> GetDWriteFallbackFamily(
+  const SimpleFontData* GetDWriteFallbackFamily(
       const FontDescription&,
       UChar32 codepoint,
       FontFallbackPriority fallback_priority);
@@ -251,9 +249,8 @@ class PLATFORM_EXPORT FontCache final {
                                   gfx::FallbackFontData*);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  scoped_refptr<SimpleFontData> FontDataFromFontPlatformData(
+  const SimpleFontData* FontDataFromFontPlatformData(
       const FontPlatformData*,
-      ShouldRetain = kRetain,
       bool subpixel_ascent_descent = false);
 
   void InvalidateShapeCache();
@@ -261,7 +258,6 @@ class PLATFORM_EXPORT FontCache final {
   static void CrashWithFontInfo(const FontDescription*);
 
   // Memory reporting
-  void DumpFontPlatformDataCache(base::trace_event::ProcessMemoryDump*);
   void DumpShapeResultCache(base::trace_event::ProcessMemoryDump*);
 
   FontFallbackMap& GetFontFallbackMap();
@@ -276,7 +272,7 @@ class PLATFORM_EXPORT FontCache final {
   // elements.
   using Bcp47Vector = WTF::Vector<const char*, 4>;
 
-  scoped_refptr<SimpleFontData> PlatformFallbackFontForCharacter(
+  const SimpleFontData* PlatformFallbackFontForCharacter(
       const FontDescription&,
       UChar32,
       const SimpleFontData* font_data_to_substitute,
@@ -291,26 +287,26 @@ class PLATFORM_EXPORT FontCache final {
   friend class FontGlobalContext;
   FontCache();
 
-  void Purge(PurgeSeverity = kPurgeIfNeeded);
+  void Purge();
 
   void DisablePurging() { purge_prevent_count_++; }
   void EnablePurging() {
     DCHECK(purge_prevent_count_);
     if (!--purge_prevent_count_)
-      Purge(kPurgeIfNeeded);
+      Purge();
   }
 
   // FIXME: This method should eventually be removed.
-  FontPlatformData* GetFontPlatformData(
+  const FontPlatformData* GetFontPlatformData(
       const FontDescription&,
       const FontFaceCreationParams&,
       AlternateFontName = AlternateFontName::kAllowAlternate);
 #if !BUILDFLAG(IS_MAC)
-  FontPlatformData* SystemFontPlatformData(const FontDescription&);
+  const FontPlatformData* SystemFontPlatformData(const FontDescription&);
 #endif  // !BUILDFLAG(IS_MAC)
 
   // These methods are implemented by each platform.
-  std::unique_ptr<FontPlatformData> CreateFontPlatformData(
+  const FontPlatformData* CreateFontPlatformData(
       const FontDescription&,
       const FontFaceCreationParams&,
       float font_size,
@@ -329,9 +325,8 @@ class PLATFORM_EXPORT FontCache final {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-  scoped_refptr<SimpleFontData> FallbackOnStandardFontStyle(
-      const FontDescription&,
-      UChar32);
+  const SimpleFontData* FallbackOnStandardFontStyle(const FontDescription&,
+                                                    UChar32);
 
   // Don't purge if this count is > 0;
   int purge_prevent_count_ = 0;
@@ -365,17 +360,16 @@ class PLATFORM_EXPORT FontCache final {
   uint16_t generation_ = 0;
   bool platform_init_ = false;
   HeapHashSet<WeakMember<FontCacheClient>> font_cache_clients_;
-  std::unique_ptr<FontPlatformDataCache> font_platform_data_cache_;
+  FontPlatformDataCache font_platform_data_cache_;
   HeapHashMap<FallbackListCompositeKey,
               WeakMember<ShapeCache>,
               FallbackListCompositeKeyTraits>
       fallback_list_shaper_cache_;
 
-  std::unique_ptr<FontDataCache> font_data_cache_;
+  FontDataCache font_data_cache_;
 
   Member<FontFallbackMap> font_fallback_map_;
 
-  void PurgePlatformFontDataCache();
   void PurgeFallbackListShaperCache();
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData

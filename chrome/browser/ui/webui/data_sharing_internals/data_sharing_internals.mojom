@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module data_sharing_internals.mojom;
+
+import "components/data_sharing/public/protocol/group_data.mojom";
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page, pending_receiver<PageHandler>
+    handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Gets whether the service is empty.
+  IsEmptyService() => (bool is_empty);
+
+  // Gets information about all groups.
+  GetAllGroups() => (bool is_success,
+                     array<data_sharing.mojom.GroupData> data);
+};
+
+// Renderer-side handler for internal page to process the updates from
+// the data sharing service.
+interface Page {
+};

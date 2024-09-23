@@ -8,7 +8,7 @@
  * as Geolocation, for a given origin.
  */
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
@@ -98,6 +98,17 @@ export class SiteDetailsPermissionElement extends
         type: String,
         value: ChooserType.NONE,
       },
+
+      /**
+       * If the permission for this category permission is blocked on the system
+       * level, this will be populated with the key that can be used to look up
+       * the warning to be shown in the UI.
+       */
+      systemPermissionWarningKey_: {
+        type: String,
+        value: null,
+        observer: 'attachSystemPermissionSettingsLinkClick_',
+      },
     };
   }
 
@@ -112,6 +123,7 @@ export class SiteDetailsPermissionElement extends
   site: RawSiteException;
   private chooserExceptions_: ChooserException[];
   chooserType: ChooserType;
+  private systemPermissionWarningKey_: string;
   private defaultSetting_: ContentSetting;
   label: string;
   icon: string;
@@ -131,6 +143,11 @@ export class SiteDetailsPermissionElement extends
             this.updateChooserExceptions_();
           }
         });
+
+    this.addWebUiListener(
+        'osGlobalPermissionChanged', (messages: ContentSettingsTypes[]) => {
+          this.setSystemPermissionWarningKey_(messages);
+        });
   }
 
   /**
@@ -140,11 +157,18 @@ export class SiteDetailsPermissionElement extends
     if (!this.site || this.chooserType === ChooserType.NONE) {
       return;
     }
-    // TODO(crbug.com/1407296): Use a backend handler to get chooser
+    // TODO(crbug.com/40887747): Use a backend handler to get chooser
     // exceptions with a given origin so avoid complex logic in
     // processChooserExceptions_.
     this.browserProxy.getChooserExceptionList(this.chooserType)
         .then(exceptionList => this.processChooserExceptions_(exceptionList));
+  }
+
+  private updateOsPermissionWarning_() {
+    this.browserProxy.getSystemDeniedPermissions().then(
+        (messages: ContentSettingsTypes[]) => {
+          this.setSystemPermissionWarningKey_(messages);
+        });
   }
 
   /**
@@ -153,7 +177,7 @@ export class SiteDetailsPermissionElement extends
    * sites of exception that doesn't match |this.site|.
    */
   private processChooserExceptions_(exceptionList: RawChooserException[]) {
-    // TODO(crbug.com/1407296): Move this processing logic to the backend and
+    // TODO(crbug.com/40887747): Move this processing logic to the backend and
     // remove this function.
     const siteFilter = (site: RawSiteException) => {
       // Site's origin from backend will have forward slash ending,
@@ -196,6 +220,8 @@ export class SiteDetailsPermissionElement extends
     if (!site) {
       return;
     }
+
+    this.updateOsPermissionWarning_();
 
     if (site.source === SiteSettingSource.DEFAULT) {
       this.defaultSetting_ = site.setting;
@@ -344,7 +370,8 @@ export class SiteDetailsPermissionElement extends
   private permissionInfoStringClass_(
       source: SiteSettingSource, category: ContentSettingsTypes,
       setting: ContentSetting): string {
-    return this.hasPermissionInfoString_(source, category, setting) ?
+    return (this.hasPermissionInfoString_(source, category, setting) ||
+            this.hasSystemPermissionWarning_()) ?
         'two-line' :
         '';
   }
@@ -354,12 +381,12 @@ export class SiteDetailsPermissionElement extends
    * @return Whether this permission can be controlled by the user.
    */
   private isPermissionUserControlled_(source: SiteSettingSource): boolean {
-    return !(
-        source === SiteSettingSource.ALLOWLIST ||
-        source === SiteSettingSource.POLICY ||
-        source === SiteSettingSource.EXTENSION ||
-        source === SiteSettingSource.KILL_SWITCH ||
-        source === SiteSettingSource.INSECURE_ORIGIN);
+    return !(source === SiteSettingSource.ALLOWLIST ||
+             source === SiteSettingSource.POLICY ||
+             source === SiteSettingSource.EXTENSION ||
+             source === SiteSettingSource.KILL_SWITCH ||
+             source === SiteSettingSource.INSECURE_ORIGIN) &&
+        !this.hasSystemPermissionWarning_();
   }
 
   /**
@@ -404,6 +431,105 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
+   * @param messages The message with the blocked permission types.
+   * @return The key to lookup the warning. Null if the warning is not to be
+   * shown.
+   */
+  private setSystemPermissionWarningKey_(messages: ContentSettingsTypes[]) {
+    this.set(
+        'systemPermissionWarningKey_', ((category: ContentSettingsTypes) => {
+          // We return null as warningKey in case the category is not one of
+          // the listed, as the warning in case of an OS level block is
+          // supported only for camera, microphone and location permissions.
+          if (!messages.includes(category)) {
+            return null;
+          }
+          switch (category) {
+            case ContentSettingsTypes.CAMERA:
+              return 'siteSettingsCameraBlockedByOs';
+            case ContentSettingsTypes.MIC:
+              return 'siteSettingsMicrophoneBlockedByOs';
+            case ContentSettingsTypes.GEOLOCATION:
+              return 'siteSettingsLocationBlockedByOs';
+            default:
+              return null;
+          }
+        })(this.category));
+  }
+
+  /** Attempts to open the system permission settings. */
+  private onSystemPermissionSettingsLinkClick_(event: MouseEvent) {
+    // Prevents navigation to href='#'.
+    event.preventDefault();
+    if (this.category !== null) {
+      this.browserProxy.openSystemPermissionSettings(this.category);
+    }
+  }
+
+  /**
+   * @param category The permission type.
+   * @return The text of the warning. Null if the warning is not to be shown.
+   */
+  private getSystemPermissionWarning_(): TrustedHTML {
+    if (this.systemPermissionWarningKey_ !== null) {
+      return this.i18nAdvanced(
+          this.systemPermissionWarningKey_, {tags: ['a'], attrs: ['id']});
+    }
+    return sanitizeInnerHtml('');
+  }
+
+  /** Attaches the click action to the anchor element. */
+  private attachSystemPermissionSettingsLinkClick_() {
+    const element: HTMLElement|null|undefined =
+        this.shadowRoot?.querySelector('#openSystemSettingsLink');
+    if (element !== null && element !== undefined) {
+      element.addEventListener('click', (me: MouseEvent) => {
+        this.onSystemPermissionSettingsLinkClick_(me);
+      });
+      // Set the correct aria label describing the link target.
+      const settingsPageName: string|null = (() => {
+        switch (this.category) {
+          case ContentSettingsTypes.CAMERA:
+            return 'Camera';
+          case ContentSettingsTypes.MIC:
+            return 'Microphone';
+          case ContentSettingsTypes.GEOLOCATION:
+            return 'Location';
+          default:
+            return null;
+        }
+      })();
+      if (settingsPageName) {
+        element.setAttribute(
+            'aria-label', `System Settings: ${settingsPageName}`);
+      }
+    }
+  }
+
+  /**
+   * @return The text of the warning. Null if the permission is not blocked by
+   *     the OS.
+   */
+  private hasSystemPermissionWarning_(): boolean {
+    return (this.systemPermissionWarningKey_ !== null);
+  }
+
+  /**
+   * @param category The permission type.
+   * @return The text of the warning. Null if the permission is not to be
+   *     displayed.
+   */
+  private showSystemPermissionWarning_(
+      source: SiteSettingSource, category: ContentSettingsTypes,
+      setting: ContentSetting): boolean {
+    if (this.hasPermissionInfoString_(source, category, setting)) {
+      return false;
+    }
+    return this.hasSystemPermissionWarning_();
+  }
+
+
+  /**
    * Returns true if the permission is set to a non-default 'ask'. Currently,
    * this only gets called when |this.site| is updated.
    * @param setting The setting of the permission.
@@ -440,10 +566,10 @@ export class SiteDetailsPermissionElement extends
    */
   private permissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting, allowlistString: string|null,
-      adsBlocklistString: string|null, adsBlockString: string|null,
-      embargoString: string|null, insecureOriginString: string|null,
-      killSwitchString: string|null,
+      setting: ContentSetting,
+      allowlistString: string|null, adsBlocklistString: string|null,
+      adsBlockString: string|null, embargoString: string|null,
+      insecureOriginString: string|null, killSwitchString: string|null,
       // <if expr="is_win and _google_chrome">
       protectedContentIdentifierAllowedString: string|null,
       // </if>

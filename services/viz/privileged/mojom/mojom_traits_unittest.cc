@@ -26,6 +26,9 @@ TEST_F(StructTraitsTest, RendererSettings) {
   input.should_clear_root_render_pass = false;
   input.release_overlay_resources_after_gpu_query = true;
   input.highp_threshold_min = -1;
+  input.occlusion_culler_settings.quad_split_limit = 10;
+  input.occlusion_culler_settings.maximum_occluder_complexity = 1;
+  input.occlusion_culler_settings.minimum_fragments_reduced = 100;
 
   RendererSettings output;
   mojom::RendererSettings::Deserialize(
@@ -40,6 +43,12 @@ TEST_F(StructTraitsTest, RendererSettings) {
   EXPECT_EQ(input.release_overlay_resources_after_gpu_query,
             output.release_overlay_resources_after_gpu_query);
   EXPECT_EQ(input.highp_threshold_min, output.highp_threshold_min);
+  EXPECT_EQ(input.occlusion_culler_settings.quad_split_limit,
+            output.occlusion_culler_settings.quad_split_limit);
+  EXPECT_EQ(input.occlusion_culler_settings.maximum_occluder_complexity,
+            output.occlusion_culler_settings.maximum_occluder_complexity);
+  EXPECT_EQ(input.occlusion_culler_settings.minimum_fragments_reduced,
+            output.occlusion_culler_settings.minimum_fragments_reduced);
 }
 
 TEST_F(StructTraitsTest, DebugRendererSettings) {

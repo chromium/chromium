@@ -1,0 +1,25 @@
+features:
+- name: abs-sign
+  files:
+  - signs-abs-*
+- name: cap
+  files:
+  - cap-*
+- name: exp-functions
+  files:
+  - exp-log-*
+  - hypot-pow-sqrt-*
+- name: ic
+  files:
+  - ic-*
+- name: lh
+  files:
+  - lh-*
+- name: round-mod-rem
+  files:
+  - round-function.html
+  - round-mod-rem-*
+- name: trig-functions
+  files:
+  - acos-asin-atan-atan2-*
+  - sin-cos-tan-*

@@ -123,26 +123,6 @@ NodeAggregationType GetNodeAggregationType(const url::Origin& requesting_origin,
   }
 }
 
-// Returns |frame_node|'s origin based on its current url.
-// An about:blank iframe inherits the origin of its parent. See:
-// https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
-url::Origin GetOrigin(const FrameNode* frame_node) {
-  if (frame_node->GetParentFrameNode()) {
-    return url::Origin::Resolve(
-        frame_node->GetURL(),
-        url::Origin::Create(frame_node->GetParentFrameNode()->GetURL()));
-  } else {
-    return url::Origin::Create(frame_node->GetURL());
-  }
-}
-
-#if DCHECK_IS_ON()
-// Returns |worker_node|'s origin based on its current url.
-url::Origin GetOrigin(const WorkerNode* worker_node) {
-  return url::Origin::Create(worker_node->GetURL());
-}
-#endif
-
 // Returns a mutable pointer to the WebMemoryAttribution structure in the given
 // |breakdown|.
 mojom::WebMemoryAttribution* GetAttributionFromBreakdown(
@@ -172,8 +152,8 @@ AttributionScope AttributionScopeFromWorkerType(
       return AttributionScope::kDedicatedWorker;
     case WorkerNode::WorkerType::kShared:
     case WorkerNode::WorkerType::kService:
-      // TODO(crbug.com/1169168): Support service and shared workers.
-      NOTREACHED();
+      // TODO(crbug.com/40165276): Support service and shared workers.
+      NOTREACHED_IN_MIGRATION();
       return AttributionScope::kDedicatedWorker;
   }
 }
@@ -272,7 +252,9 @@ void AggregationPointVisitor::OnRootExited() {
 void AggregationPointVisitor::OnFrameEntered(const FrameNode* frame_node) {
   DCHECK(!enclosing_.empty());
   DCHECK(frame_node);
-  url::Origin node_origin = GetOrigin(frame_node);
+  // If the frame's origin isn't known yet, use a unique opaque origin.
+  const url::Origin node_origin =
+      frame_node->GetOrigin().value_or(url::Origin());
   NodeAggregationType aggregation_type = GetNodeAggregationType(
       requesting_origin_, enclosing_.top().origin, node_origin);
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
@@ -335,32 +317,26 @@ void AggregationPointVisitor::OnFrameExited(const FrameNode* frame_node) {
 void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   DCHECK(!enclosing_.empty());
   DCHECK(worker_node);
-  // TODO(crbug.com/1169168): Support service and shared workers.
+  // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
   // A dedicated worker is guaranteed to have the same origin as its parent,
   // which means that a dedicated worker cannot be a cross-origin aggregation
   // point.
-  // TODO(crbug.com/1169178): The URL of a worker node is currently not
-  // available without PlzDedicatedWorker, which is disabled by default.
-  // Until then we use the origin of the parent.
-  url::Origin node_origin = enclosing_.top().origin;
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
   DCHECK(base::ranges::all_of(
-      client_frames, [node_origin](const FrameNode* client) {
-        return node_origin.IsSameOriginWith(GetOrigin(client));
+      client_frames, [worker_node](const FrameNode* client) {
+        return client->GetOrigin().has_value() &&
+               client->GetOrigin()->IsSameOriginWith(worker_node->GetOrigin());
       }));
   auto client_workers = worker_node->GetClientWorkers();
   DCHECK(base::ranges::all_of(
-      client_workers, [node_origin](const WorkerNode* client) {
-        // TODO(crbug.com/1169178): Remove the is_empty guard
-        // once worker worker URLs are available.
-        return client->GetURL().is_empty() ||
-               node_origin.IsSameOriginWith(GetOrigin(client));
+      client_workers, [worker_node](const WorkerNode* client) {
+        return client->GetOrigin().IsSameOriginWith(worker_node->GetOrigin());
       }));
 #endif
   NodeAggregationType aggregation_type = GetNodeAggregationType(
-      requesting_origin_, enclosing_.top().origin, node_origin);
+      requesting_origin_, enclosing_.top().origin, worker_node->GetOrigin());
 
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
   switch (aggregation_type) {
@@ -371,9 +347,9 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       // url.
       std::string url = worker_node->GetURL().spec();
       if (url.empty()) {
-        // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-        // the browser does not know URLs of dedicated workers, so we pass them
-        // together with the measurement result.
+        // TODO(crbug.com/40093136): Remove this once PlzDedicatedWorker ships.
+        // Until then the browser does not know URLs of dedicated workers, so we
+        // pass them together with the measurement result.
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node);
         if (data && data->url()) {
@@ -394,7 +370,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       break;
 
     case NodeAggregationType::kCrossOriginAggregationPoint:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -405,7 +381,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node),
       worker_node->GetProcessNode() == requesting_process_node_);
 
-  enclosing_.push(Enclosing{node_origin, aggregation_point});
+  enclosing_.push(Enclosing{worker_node->GetOrigin(), aggregation_point});
 }
 
 void AggregationPointVisitor::OnWorkerExited(const WorkerNode* worker_node) {
@@ -417,7 +393,7 @@ void AggregationPointVisitor::OnWorkerExited(const WorkerNode* worker_node) {
 // WebMemoryAggregator
 
 WebMemoryAggregator::WebMemoryAggregator(const FrameNode* requesting_node)
-    : requesting_origin_(GetOrigin(requesting_node)),
+    : requesting_origin_(requesting_node->GetOrigin().value()),
       requesting_process_node_(requesting_node->GetProcessNode()),
       main_process_node_(GetMainProcess(requesting_node)),
       browsing_instance_id_(requesting_node->GetBrowsingInstanceId()) {}
@@ -436,19 +412,16 @@ double GetBrowsingInstanceV8BytesFraction(
     content::BrowsingInstanceId browsing_instance_id) {
   uint64_t bytes_used = 0;
   uint64_t total_bytes_used = 0;
-  process_node->VisitFrameNodes(
-      [&bytes_used, &total_bytes_used,
-       browsing_instance_id](const FrameNode* frame_node) {
-        const auto* data =
-            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
-        if (data) {
-          if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
-            bytes_used += data->v8_bytes_used();
-          }
-          total_bytes_used += data->v8_bytes_used();
-        }
-        return true;
-      });
+  for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
+    const auto* data =
+        V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+    if (data) {
+      if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
+        bytes_used += data->v8_bytes_used();
+      }
+      total_bytes_used += data->v8_bytes_used();
+    }
+  }
   DCHECK_LE(bytes_used, total_bytes_used);
   return total_bytes_used == 0
              ? 1
@@ -462,21 +435,19 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<const FrameNode*> top_frames;
-  main_process_node_->VisitFrameNodes(
-      [&top_frames,
-       browsing_instance_id = browsing_instance_id_](const FrameNode* node) {
-        if (node->GetBrowsingInstanceId() == browsing_instance_id &&
-            !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
-          top_frames.push_back(node);
-        }
-        return true;
-      });
+  for (const FrameNode* node : main_process_node_->GetFrameNodes()) {
+    if (node->GetBrowsingInstanceId() == browsing_instance_id_ &&
+        !node->GetParentFrameNode() && node->GetOrigin() &&
+        !node->GetOrigin()->opaque()) {
+      top_frames.push_back(node);
+    }
+  }
 
   CHECK(!top_frames.empty());
-  url::Origin main_origin = GetOrigin(top_frames[0]);
+  const url::Origin main_origin = top_frames.front()->GetOrigin().value();
   DCHECK(
       base::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
-        return GetOrigin(node).IsSameOriginWith(main_origin);
+        return node->GetOrigin()->IsSameOriginWith(main_origin);
       }));
 
   AggregationPointVisitor ap_visitor(requesting_origin_,
@@ -511,42 +482,45 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   return aggregation_result;
 }
 
-bool WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
+void WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
                                      const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_node);
   if (frame_node->GetBrowsingInstanceId() != browsing_instance_id_) {
     // Ignore frames from other browsing contexts.
-    return true;
+    return;
   }
   ap_visitor->OnFrameEntered(frame_node);
-  frame_node->VisitChildDedicatedWorkers(
-      [this, ap_visitor](const WorkerNode* worker_node) {
-        return this->VisitWorker(ap_visitor, worker_node);
-      });
-  frame_node->VisitChildFrameNodes(
-      [this, ap_visitor](const FrameNode* frame_node) {
-        return this->VisitFrame(ap_visitor, frame_node);
-      });
+  for (const WorkerNode* child_worker_node :
+       frame_node->GetChildWorkerNodes()) {
+    if (child_worker_node->GetWorkerType() !=
+        WorkerNode::WorkerType::kDedicated) {
+      continue;
+    }
+    VisitWorker(ap_visitor, child_worker_node);
+  }
+  for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
+    VisitFrame(ap_visitor, child_frame_node);
+  }
   ap_visitor->OnFrameExited(frame_node);
-
-  return true;
 }
 
-bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
+void WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
                                       const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1169168): Support service and shared workers.
+  // TODO(crbug.com/40165276): Support service and shared workers.
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
 
   ap_visitor->OnWorkerEntered(worker_node);
-  worker_node->VisitChildDedicatedWorkers(
-      [this, ap_visitor](const WorkerNode* worker_node) {
-        return this->VisitWorker(ap_visitor, worker_node);
-      });
-  ap_visitor->OnWorkerExited(worker_node);
+  for (const WorkerNode* child_worker_node : worker_node->GetChildWorkers()) {
+    if (child_worker_node->GetWorkerType() !=
+        WorkerNode::WorkerType::kDedicated) {
+      continue;
+    }
 
-  return true;
+    VisitWorker(ap_visitor, child_worker_node);
+  }
+  ap_visitor->OnWorkerExited(worker_node);
 }
 
 // static

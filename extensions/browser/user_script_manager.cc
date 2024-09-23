@@ -6,12 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/scripting_constants.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
@@ -30,8 +30,9 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
 
   StateStore* store =
       ExtensionSystem::Get(browser_context_)->dynamic_user_scripts_store();
-  if (store)
+  if (store) {
     store->RegisterKey(scripting::kRegisteredScriptsStorageKey);
+  }
 }
 
 UserScriptManager::~UserScriptManager() = default;
@@ -74,7 +75,7 @@ EmbedderUserScriptLoader* UserScriptManager::GetUserScriptLoaderForEmbedder(
     case mojom::HostID::HostType::kExtensions:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -128,8 +129,9 @@ void UserScriptManager::OnInitialExtensionLoadComplete(
 void UserScriptManager::RemovePendingExtensionLoadAndSignal(
     const ExtensionId& extension_id) {
   int erased = pending_initial_extension_loads_.erase(extension_id);
-  if (!erased || !pending_initial_extension_loads_.empty())
+  if (!erased || !pending_initial_extension_loads_.empty()) {
     return;  // Not a relevant extension, or still waiting on more.
+  }
 
   // All our extensions are loaded!
   ExtensionsBrowserClient::Get()->SignalContentScriptsLoaded(browser_context_);

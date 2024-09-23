@@ -4,45 +4,50 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
+
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -50,7 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
-/** A helper class for showing PasswordSettings. TODO(crbug.com/1345232): Split up this class */
+/** A helper class for showing PasswordSettings. TODO(crbug.com/40853413): Split up this class */
 public class PasswordManagerHelper {
     // Key for the argument with which PasswordsSettings will be launched. The value for
     // this argument should be part of the ManagePasswordsReferrer enum, which contains
@@ -77,17 +82,9 @@ public class PasswordManagerHelper {
 
     private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
 
-    // Referrer string for the Google Play Store when installing GMS Core package
-    private static final String STORE_REFERER = "chrome_upm";
-
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
     private static final long LOADING_DIALOG_DISMISS_DELAY_MS = 300L;
-
-    // |PasswordSettings| full class name to open the fragment. Will be changed to
-    // |PasswordSettings.class.getName()| once it's modularized.
-    private static final String PASSWORD_SETTINGS_CLASS =
-            "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
 
     /**
      * The identifier of the loading dialog outcome.
@@ -120,27 +117,83 @@ public class PasswordManagerHelper {
         int NUM_ENTRIES = 4;
     }
 
+    private static ProfileKeyedMap<PasswordManagerHelper> sProfileMap;
+
+    private final Profile mProfile;
+
+    @VisibleForTesting
+    PasswordManagerHelper(Profile profile) {
+        assert profile != null;
+        mProfile = profile;
+    }
+
+    /**
+     * Return the {@link PasswordManagerHelper} associated with the passed in {@link
+     * Profile#getOriginalProfile()}.
+     */
+    public static PasswordManagerHelper getForProfile(Profile profile) {
+        if (sProfileMap == null) {
+            sProfileMap =
+                    new ProfileKeyedMap<>(
+                            ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                            ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+        }
+        return sProfileMap.getForProfile(profile, PasswordManagerHelper::new);
+    }
+
     /**
      * Launches the password settings or, if available, the credential manager from Google Play
      * Services.
      *
      * @param context used to show the UI to manage passwords.
+     * @param referrer indicates where the request to show the password settings UI comes from.
+     * @param modalDialogManagerSupplier provides a {@link ModalDialogManager}. Used to show error
+     *     modal dialogs or a loading dialog if opening the UI takes too long.
      * @param managePasskeys indicates whether passkey management is needed, which when true will
      *     attempt to launch the credential manager even without syncing enabled.
+     * @param account the account for which to open the UI. An empty or null account signals that
+     *     the UI should be opened for the local storage.
+     * @param customTabIntentHelper provides an intent to open a custom tab displaying a help center
+     *     article.
      */
-    public static void showPasswordSettings(
+    public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher,
-            SyncService syncService,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            boolean managePasskeys) {
+            boolean managePasskeys,
+            @Nullable String account,
+            CustomTabIntentHelper customTabIntentHelper) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
                 ManagePasswordsReferrer.MAX_VALUE + 1);
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
 
-        if (canUseUpm()) {
+        @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
+        if (warningType != PasswordAccessLossWarningType.NONE) {
+            // Always start export flow from Chrome main settings. If this is already being called
+            // from main settings, then launch export flow right away.
+            Runnable startExportFlow =
+                    referrer == ManagePasswordsReferrer.CHROME_SETTINGS
+                            ? () -> launchExportFlow(context, modalDialogManagerSupplier)
+                            : () -> PasswordExportLauncher.showMainSettingsAndStartExport(context);
+            new PasswordAccessLossDialogSettingsCoordinator()
+                    .showPasswordAccessLossDialog(
+                            context,
+                            modalDialogManagerSupplier.get(),
+                            warningType,
+                            GmsUpdateLauncher::launch,
+                            startExportFlow,
+                            customTabIntentHelper);
+            return;
+        }
+
+        // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
+        // Password settings will fail and instead the blocking dialog with the suggestion to update
+        // will be displayed.
+        if (canUseUpm()
+                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(prefService, syncService)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -148,7 +201,8 @@ public class PasswordManagerHelper {
                     syncService,
                     loadingDialogCoordinator,
                     modalDialogManagerSupplier,
-                    context);
+                    context,
+                    account);
             return;
         }
 
@@ -172,7 +226,7 @@ public class PasswordManagerHelper {
                     (syncService != null)
                             ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
                             : "";
-            // TODO(crbug.com/1507785): Find an alternative to account settings intent.
+            // TODO(crbug.com/40948486): Find an alternative to account settings intent.
             credentialManagerLauncher.getAccountSettingsIntent(
                     accountName,
                     (intent) ->
@@ -183,8 +237,9 @@ public class PasswordManagerHelper {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
-                settingsLauncher.createSettingsActivityIntent(
-                        context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+                SettingsLauncherFactory.createSettingsLauncher()
+                        .createSettingsActivityIntent(
+                                context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**
@@ -192,24 +247,18 @@ public class PasswordManagerHelper {
      * trying to use UPM methods. Checks for the UPM to be anabled and downstream backend to be
      * available.
      *
-     * <p>TODO(crbug.com/1327294): Make sure we rely on the same util in all places that need to
+     * <p>TODO(crbug.com/40226137): Make sure we rely on the same util in all places that need to
      * check whether UPM can be used (for password check as well as for all other cases that share
      * the same preconditions, e.g. launching the credential manager).
      *
-     * <p>TODO(crbug.com/1345232): pass syncService and prefService instances as parameters
-     *
      * @return True if Unified Password Manager can be used, false otherwise.
      */
-    public static boolean canUseUpm() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        PrefService prefService = UserPrefs.get(profile);
-        // TODO(crbug.com/1327294): Reevaluate if passing the syncService instead of the boolean is
-        // better.
-        // TODO(crbug.com/1327294): Move the syncService and backend presence checks in the util.
-        boolean isPwdSyncEnabled = hasChosenToSyncPasswords(syncService);
+    public boolean canUseUpm() {
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
+        // TODO(crbug.com/40226137): Move the backend presence checks in the util.
         return syncService != null
-                && PasswordManagerUtilBridge.canUseUPMBackend(isPwdSyncEnabled, prefService)
+                && PasswordManagerUtilBridge.shouldUseUpmWiring(syncService, prefService)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
@@ -224,8 +273,7 @@ public class PasswordManagerHelper {
      * @return True if the AccountSettings intent is available for use, false otherwise.
      */
     public static boolean canUseAccountSettings() {
-        return ChromeFeatureList.isEnabled(PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
-                && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
+        return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
     /**
@@ -233,7 +281,6 @@ public class PasswordManagerHelper {
      *
      * @param context used to show the loading dialog.
      * @param referrer the place that requested to show the UI.
-     * @param syncService the service to query about the sync status.
      * @param modalDialogManagerSupplier The supplier of the ModalDialogManager to be used by
      *     loading dialog.
      * @param accountEmail is the email of the account syncing passwords. If it's empty, the checkup
@@ -241,16 +288,14 @@ public class PasswordManagerHelper {
      *     storage if the password checkup is launched from the leak detection dialog and the leaked
      *     credential is only saved in the local password storage.
      */
-    public static void showPasswordCheckup(
+    public void showPasswordCheckup(
             Context context,
             @PasswordCheckReferrer int referrer,
-            SyncService syncService,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail) {
         assert accountEmail == null || !accountEmail.isEmpty();
-        assert canUseUpm();
 
-        // TODO(crbug.com/1504551): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
+        // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
         // take the accountEmail as String.
         Optional<String> account =
                 accountEmail == null ? Optional.empty() : Optional.of(accountEmail);
@@ -272,13 +317,11 @@ public class PasswordManagerHelper {
      * @param successCallback callback called when password check finishes successfully
      * @param failureCallback callback called if password check encountered an error
      */
-    public static void runPasswordCheckupInBackground(
+    public void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
             String accountName,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
-        assert canUseUpm();
-
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.RUN_PASSWORD_CHECKUP);
@@ -313,13 +356,11 @@ public class PasswordManagerHelper {
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    public static void getBreachedCredentialsCount(
+    public void getBreachedCredentialsCount(
             @PasswordCheckReferrer int referrer,
             String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
-        assert canUseUpm();
-
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT);
@@ -346,32 +387,15 @@ public class PasswordManagerHelper {
     }
 
     /**
-     * Checks whether the sync feature is enabled and the user has chosen to sync passwords. Note
-     * that this doesn't mean that passwords are actively syncing.
+     * Checks whether the user has chosen to store passwords in their Google Account (no matter
+     * whether sync-the-feature is on or not). Note that this doesn't mean that passwords are
+     * actively syncing.
      *
      * @param syncService the service to query about the sync status.
      * @return true if syncing passwords is enabled
      */
     public static boolean hasChosenToSyncPasswords(SyncService syncService) {
-        return syncService != null
-                && syncService.isSyncFeatureEnabled()
-                && syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS);
-    }
-
-    /**
-     * Checks whether the sync feature is enabled, the user has chosen to sync passwords and they
-     * haven't set up a custom passphrase. The caller should make sure that the sync engine is
-     * initialized before calling this method.
-     *
-     * <p>Note that this doesn't mean that passwords are actively syncing.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if syncing passwords is enabled without custom passphrase.
-     */
-    public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
-        assert syncService.isEngineInitialized();
-        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && !syncService.isUsingExplicitPassphrase();
+        return PasswordManagerHelperJni.get().hasChosenToSyncPasswords(syncService);
     }
 
     /**
@@ -384,15 +408,15 @@ public class PasswordManagerHelper {
     public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
         assert syncService.isEngineInitialized();
         if (syncService == null || !syncService.hasSyncConsent()) return false;
-        if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
+        if (!syncService.getActiveDataTypes().contains(DataType.PASSWORDS)) return false;
         if (syncService.isUsingExplicitPassphrase()) return false;
         return true;
     }
 
     // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
     // as this is covered by chrome://password-manager-internals page.
-    public static void resetUpmUnenrollment() {
-        PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    public void resetUpmUnenrollment() {
+        PrefService prefs = UserPrefs.get(mProfile);
 
         // Exit early if the user is not unenrolled.
         if (!prefs.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)) return;
@@ -402,35 +426,23 @@ public class PasswordManagerHelper {
         prefs.setBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS, false);
     }
 
-    public static void launchGmsUpdate(Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        String deepLinkUrl =
-                "market://details?id="
-                        + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE
-                        + "&referrer="
-                        + STORE_REFERER;
+    public void launchExportFlow(
+            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
+        assert activity != null : "Context is expected to be a fragment activity";
 
-        intent.setPackage("com.android.vending");
-        intent.setData(Uri.parse(deepLinkUrl));
-        intent.putExtra("callerId", context.getPackageName());
-
-        // Request for overlay flow, Play Store will fallback to the default
-        // behaviour if overlay is not available.
-        // TODO(crbug.com/1348506): Use AlleyOop v3 overlay UI after fixing Chrome restart
-        // during the GMS Core installation.
-        // intent.putExtra("overlay", true);
-
-        context.startActivity(intent);
+        new PasswordAccessLossExportFlowCoordinator(activity, mProfile, modalDialogManagerSupplier)
+                .startExportFlow();
     }
 
     @VisibleForTesting
-    static void launchTheCredentialManager(
+    public void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,
             SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Context context) {
-        assert canUseUpm();
+            Context context,
+            @Nullable String account) {
         assert syncService != null;
 
         CredentialManagerLauncher credentialManagerLauncher;
@@ -446,9 +458,7 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
 
         long startTimeMs = SystemClock.elapsedRealtime();
-        String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
-        if (hasChosenToSyncPasswords(syncService)) {
-            assert account != null;
+        if (!TextUtils.isEmpty(account)) {
             credentialManagerLauncher.getAccountCredentialManagerIntent(
                     referrer,
                     account,
@@ -473,14 +483,12 @@ public class PasswordManagerHelper {
     }
 
     @VisibleForTesting
-    static void launchPasswordCheckup(
+    void launchPasswordCheckup(
             @PasswordCheckReferrer int referrer,
             Optional<String> account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Context context) {
-        assert canUseUpm();
-
         PasswordCheckupClientHelper checkupClient;
         try {
             checkupClient = getPasswordCheckupClientHelper();
@@ -495,7 +503,7 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
-        // TODO(crbug.com/1504551): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
+        // TODO(crbug.com/40945093): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
         // take the accountEmail as String.
         checkupClient.getPasswordCheckupIntent(
                 referrer,
@@ -671,66 +679,98 @@ public class PasswordManagerHelper {
                         modalDialogManager,
                         context,
                         isAccepted -> {
-                            if (isAccepted) launchGmsUpdate(context);
+                            if (isAccepted) GmsUpdateLauncher.launch(context);
                         });
         dialog.show();
     }
 
-    // TODO(crbug.com/1327578): Exceptions should be thrown by factory, remove this method.
-    private static PasswordCheckupClientHelper getPasswordCheckupClientHelper()
+    // TODO(crbug.com/40841269): Exceptions should be thrown by factory, remove this method.
+    private PasswordCheckupClientHelper getPasswordCheckupClientHelper()
             throws PasswordCheckBackendException {
-        PasswordCheckupClientHelper helper =
-                PasswordCheckupClientHelperFactory.getInstance().createHelper();
-        if (helper != null) return helper;
-
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new PasswordCheckBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
             throw new PasswordCheckBackendException(
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
+        // This checks against GMSCore version required for using the account store (technically it
+        // also checks if the internal backend is present, but the check above guarantees that if
+        // this is executed then it is).
+        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
+            throw new PasswordCheckBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+        // This checks against the account store GMSCore version if the user is syncing and against
+        // the local version if the user is not syncing.
+        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
+            throw new PasswordCheckBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+
+        PasswordCheckupClientHelper helper =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+        if (helper != null) return helper;
 
         throw new PasswordCheckBackendException(
                 "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);
     }
 
-    // TODO(crbug.com/1346239): Exceptions should be thrown by factory, remove this method.
-    private static CredentialManagerLauncher getCredentialManagerLauncher()
+    // TODO(crbug.com/40854052): Exceptions should be thrown by factory, remove this method.
+    private CredentialManagerLauncher getCredentialManagerLauncher()
             throws CredentialManagerBackendException {
-        CredentialManagerLauncher launcher =
-                CredentialManagerLauncherFactory.getInstance().createLauncher();
-        if (launcher != null) return launcher;
-
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new CredentialManagerBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
             throw new CredentialManagerBackendException(
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
+        if (!PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
+            throw new CredentialManagerBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+        // This checks against the account store GMSCore version if the user is syncing and against
+        // the local version if the user is not syncing.
+        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
+            throw new CredentialManagerBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+
+        CredentialManagerLauncher launcher =
+                CredentialManagerLauncherFactory.getInstance().createLauncher();
+        if (launcher != null) return launcher;
 
         throw new CredentialManagerBackendException(
                 "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);
     }
 
     private static void startAccountSettingsActivity(Context context, Intent intent) {
-        boolean success = false;
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity != null) {
             try {
                 activity.startActivityForResult(intent, 0);
-                success = true;
             } catch (ActivityNotFoundException e) {
             }
         }
-        RecordHistogram.recordBooleanHistogram(
-                PasswordMetricsUtil.ACCOUNT_SETTINGS_ACTIVITY_HISTOGRAM, success);
+    }
+
+    public static @PasswordAccessLossWarningType int getAccessLossWarningType(
+            PrefService prefService) {
+        // TODO(crbug.com/323149739): Enable this feature flag in SafetyCheckMediatorTest and
+        // PasswordManagerHelperTest in all tests before launch.
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList
+                        .UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            return PasswordAccessLossWarningType.NONE;
+        }
+        return PasswordManagerUtilBridge.getPasswordAccessLossWarningType(prefService);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        boolean hasChosenToSyncPasswords(@JniType("syncer::SyncService*") SyncService syncService);
     }
 }

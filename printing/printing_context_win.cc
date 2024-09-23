@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "printing/printing_context_win.h"
 
 #include <winspool.h>
@@ -421,7 +426,7 @@ mojom::ResultCode PrintingContextWin::PrintDocument(
     const MetafilePlayer& metafile,
     const PrintSettings& settings,
     uint32_t num_pages) {
-  // TODO(crbug.com/1008222)
+  // TODO(crbug.com/40100562)
   NOTIMPLEMENTED();
   return mojom::ResultCode::kFailed;
 }

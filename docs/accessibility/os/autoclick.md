@@ -101,20 +101,21 @@ synthetic event is generated as follows:
 
 ### Left-click, right-click and double-click
 
-Synthetic mouse events for ui::ET_MOUSE_PRESSED and ui::ET_MOUSE_RELEASED are
-created with the appropriate mouse button flags, and sent to the WindowTreeHost
-under the target point for processing. For double-click, a second press and
-release pair are also sent.
+Synthetic mouse events for ui::EventType::kMousePressed and
+ui::EventType::kMouseReleased are created with the appropriate mouse button
+flags, and sent to the WindowTreeHost under the target point for processing.
+For double-click, a second press and release pair are also sent.
 
 ### Click-and-drag
 
-A synthetic mouse event for ui::ET_MOUSE_PRESSED is created at the first dwell.
-An AutoclickDragEventRewriter is enabled and begins re-writing all MOUSE_MOVED
-events to MOUSE_DRAGGED events to create the illusion of a drag. This occurs
-in AutoclickDragEventRewriter::RewriteEvent.
+A synthetic mouse event for ui::EventType::kMousePressed is created at the first
+dwell. An AutoclickDragEventRewriter is enabled and begins re-writing all
+ui::EventType::kMouseMoved events to ui::EventType::kMouseDragged events to
+create the illusion of a drag. This occurs in
+AutoclickDragEventRewriter::RewriteEvent.
 
-A final synthetic mouse event for ui::ET_MOUSE_RELEASED is created at the
-second dwell, and the AutoclickDragEventRewriter is disabled.
+A final synthetic mouse event for ui::EventType::kMouseReleased is created at
+the second dwell, and the AutoclickDragEventRewriter is disabled.
 
 ### Scroll
 

@@ -5,10 +5,10 @@
 #ifndef CONTENT_PUBLIC_COMMON_PSEUDONYMIZATION_UTIL_H_
 #define CONTENT_PUBLIC_COMMON_PSEUDONYMIZATION_UTIL_H_
 
-#include "stdint.h"
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
+#include "stdint.h"
 
 // Forward-declarations of classes approved for using the PseudonymizationUtil.
 //
@@ -31,7 +31,7 @@ class CONTENT_EXPORT PseudonymizationUtil {
  public:
   // This is a test only interface that is identical to the public interface,
   // but does not require friending.
-  static uint32_t PseudonymizeStringForTesting(base::StringPiece string);
+  static uint32_t PseudonymizeStringForTesting(std::string_view string);
 
  private:
   // Pseudonymizes the input `string` by passing it through a one-way hash
@@ -46,7 +46,7 @@ class CONTENT_EXPORT PseudonymizationUtil {
   // and Renderer processes).
   //
   // This method is thread-safe - it can be called on any thread.
-  static uint32_t PseudonymizeString(base::StringPiece string);
+  static uint32_t PseudonymizeString(std::string_view string);
 
   // NOTE: All usages of the PseudonymizationUtil class should be reviewed by
   // chrome-privacy-core@google.com (and when approved added to the friend list

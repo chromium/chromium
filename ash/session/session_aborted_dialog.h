@@ -22,7 +22,8 @@ class SessionAbortedDialog : public views::DialogDelegateView {
   SessionAbortedDialog& operator=(const SessionAbortedDialog&) = delete;
 
   // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   SessionAbortedDialog();

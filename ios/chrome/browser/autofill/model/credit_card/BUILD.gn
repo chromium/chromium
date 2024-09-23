@@ -14,3 +14,26 @@ source_set("credit_card") {
   public_deps = [ "//components/autofill/core/browser" ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("infobar_delegate") {
+  sources = [
+    "autofill_save_card_infobar_delegate_ios.h",
+    "autofill_save_card_infobar_delegate_ios.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_save_card_infobar_delegate_unittest.mm" ]
+  deps = [
+    ":infobar_delegate",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/common",
+  ]
+}

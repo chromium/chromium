@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1192844206376121885">এইটোৱে <ph name="ORIGIN" />এ ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব।</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
+<translation id="1240190568154816272">Chromeৰ কিটিপ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />ত এম্বেড কৰা হৈছে</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
 <translation id="1289742167380433257">আপোনাৰ ডেটা ৰাহি কৰিবলৈ Googleএ এই পৃষ্ঠাখনৰ প্ৰতিচ্ছবিসমূহ অপ্টিমাইজ কৰিছে।</translation>
@@ -18,12 +19,12 @@
 <translation id="1343356790768851700">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে</translation>
 <translation id="1369915414381695676">ছাইট <ph name="SITE_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="1371239764779356792">এটা ছাইটক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিবলৈ দিয়ক</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1384959399684842514">ডাইনল’ড পজ কৰা হৈছে</translation>
 <translation id="1415402041810619267">URL চুটি কৰা হ’ল</translation>
-<translation id="1434873037477293673">দাম কমিলে দেখুওৱা কাৰ্ড</translation>
 <translation id="1448064542941920355">জুম কমাওক</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> টা ছাইট}one{<ph name="SITE_COUNT" /> টা ছাইট}other{<ph name="SITE_COUNT" /> টা ছাইট}}</translation>
+<translation id="1500473259453106018">টেবৰ কাৰ্ডত দাম কমাটো লুকুৱাওক</translation>
 <translation id="1510341833810331442">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ অনুমতি দিয়া নহয়</translation>
 <translation id="1547123415014299762">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়া হয়</translation>
 <translation id="1568470248891039841">আপুনি চোৱা ছাইটসমূহে অন্য এটা ছাইটৰ পৰা প্ৰতিচ্ছবি, বিজ্ঞাপন আৰু পাঠৰ দৰে সমল এম্বেড কৰিব পাৰে। এই ছাইটসমূহে আপুনি ছাইটটো ব্ৰাউজ কৰাৰ সময়ত আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰাৰ অনুমতি বিচাৰিব পাৰে। <ph name="BEGIN_LINK" />এম্বেড কৰা সমলৰ বিষয়ে অধিক জানক<ph name="END_LINK" /></translation>
@@ -31,7 +32,6 @@
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1633720957382884102">সম্পৰ্কিত ছাইটসমূহ</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
-<translation id="1647582022260550163">আপুনি অনুমতিসমূহ ৰিছেট কৰি কুকি আৰু ছাইটৰ ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="1652197001188145583">অন কৰা থাকিলে, ছাইটে NFC ডিভাইচ ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে NFC ডিভাইচ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="1660204651932907780">ছাইটবোৰক ধ্বনি প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="1677097821151855053">কুকিসমূহ আৰু ছাইটৰ অন্য ডেটা আপোনাক মনত ৰাখিবলৈ ব্যৱহাৰ কৰা হয়, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰাবলৈ অথবা বিজ্ঞাপনসমূহ ব্যক্তিগতকৰণ কৰিবলৈ। সকলো ছাইটৰ বাবে কুকিসমূহ পৰিচালনা কৰিবলৈ <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" /> চাওক।</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">ছাইটসমূহে কোনো ডিভাইচৰ সৈতে সংযুক্ত হোৱাৰ পূর্বে অনুমতি বিচাৰক (চুপাৰিছ কৰা)</translation>
 <translation id="1779089405699405702">প্রতিচ্ছবি ডিক’ড কৰোঁতা</translation>
 <translation id="1785415724048343560">শ্ৰেষ্ঠ অভিজ্ঞতাৰ বাবে চুপাৰিছ কৰা হয়</translation>
+<translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="1887786770086287077">এই ডিভাইচটোত অৱস্থান এক্সেছ বন্ধ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">নতুন টেবৰ পৃষ্ঠাৰ কার্ড</translation>
 <translation id="2241634353105152135">মাত্ৰ এবাৰ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> আঁতৰাওক</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{১ টা ছাইট অৱৰোধ কৰা হৈছে}one{# টা ছাইট অৱৰোধ কৰা হৈছে}other{# টা ছাইট অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="228293613124499805">আপুনি ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা আপোনাৰ অগ্ৰাধিকাৰ অথবা তথ্য ছেভ কৰি প্ৰায়েই আপোনাৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপুনি চোৱা বেছিভাগ ছাইটে সম্ভৱতঃ আপোনাৰ ডিভাইচত ডেটা ছেভ কৰে। আমি এই ছেটিংটো অন কৰি ৰাখিবলৈ চুপাৰিছ কৰোঁ।</translation>
 <translation id="2289270750774289114">কোনো ছাইটে নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ পাব বিচাৰিলে সোধক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="2315043854645842844">অপাৰেটিং ছিষ্টেমটোৱে ক্লায়েণ্টৰ ফালৰ প্ৰমাণপত্ৰ বাছনি কৰা সুবিধাটো সমৰ্থন নকৰে।</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">সহায় আৰু মতামত</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{১ টা কুকি অৱৰোধ কৰা হৈছে}one{# টা কুকি অৱৰোধ কৰা হৈছে}other{# টা কুকি অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="2570922361219980984">এই ডিভাইচটোৰ বাবে অৱস্থান এক্সেছো অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ অন কৰক।</translation>
 <translation id="257931822824936280">বিস্তাৰ কৰা আছে - সংকোচন কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
+<translation id="2588271083332682494">টেবৰ গোটসমূহেৰে সংগঠিত কৰক</translation>
 <translation id="2597457036804169544">ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ নকৰিব</translation>
 <translation id="2606760465469169465">স্বয়ংক্ৰিয় সত্যাপন</translation>
 <translation id="2621115761605608342">নিৰ্দিষ্ট ছাইটৰ বাবে JavaScriptক অনুমতি দিয়ক।</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">এটা ছাইটক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ পৰা অৱৰোধ কৰক</translation>
 <translation id="2903493209154104877">ঠিকনা</translation>
 <translation id="2910701580606108292">ছাইটক প্রতিবন্ধিত সমল প্লে' কৰিব দিয়াৰ আগত সোধক</translation>
+<translation id="2918484639460781603">ছেটিঙলৈ যাওক</translation>
 <translation id="2932883381142163287">দুৰ্ব্যৱহাৰৰ অভিযোগ দিয়ক</translation>
 <translation id="2939338015096024043">অন কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ অথবা আপোনাৰ আশে-পাশে থকা বস্তুবোৰৰ বিষয়ে জানিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰাৰ স্থান ট্ৰেক কৰিব অথবা আপোনাৰ আশে-পাশে থকা বস্তুবোৰৰ বিষয়ে জানিব নোৱাৰে।</translation>
 <translation id="2968755619301702150">প্ৰমাণপত্ৰ ভিউৱাৰ</translation>
 <translation id="2979365474350987274">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">নিৰ্দিষ্ট কোনো ছাইটৰ বাবে তৃতীয় পক্ষৰ ছাইন ইনৰ অনুমতি দিয়ক।</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="310297983047869047">পূৰ্বৱৰ্তী শ্লাইড</translation>
 <translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
 <translation id="3114012059975132928">ভিডিঅ’ প্লে’য়াৰ</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ডেটা ষ্ট’ৰ কৰা আছে</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />ক আপোনালৈ জাননী পঠিয়াবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো জাননী অন কৰক।</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
+<translation id="3232293466644486101">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
 <translation id="3242646949159196181">অন কৰা থাকিলে, ছাইটে ধ্বনি প্লে' কৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ধ্বনি প্লে' কৰিব নোৱাৰে।</translation>
+<translation id="3273479183583863618">টেবত দাম কমা</translation>
 <translation id="3277252321222022663">ছেন্সৰসমূহলৈ এক্সেছ পাবলৈ ছাইটসমূহক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="3285500645985761267">জড়িত হৈ থকা ছাইটসমূহক গোটত আপুনি কৰা কাৰ্যকলাপ চাবলৈ অনুমতি দিয়ক</translation>
 <translation id="3295019059349372795">অধ্যায় ১১: অষ্ট্ৰেলিয়াৰ বিস্ময়কৰ পান্নাৰ মহানগৰ</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">অন কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chromeএ কাইলৈ পুনৰ কুকি অৱৰোধ কৰিব}one{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}other{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />ৰ অধীনত থকা ছাইট</translation>
+<translation id="3523447078673133727">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ নিদিব</translation>
 <translation id="3536227077203206203">এইবাৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="3538390592868664640">ছাইটসমূহক আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰাৰ পৰা অথবা কেমেৰাৰ স্থান ট্ৰেক কৰাৰ পৰা অৱৰোধ কৰক</translation>
 <translation id="3544058026430919413">এটা কোম্পানীয়ে গোটটোত আপোনাৰ কাৰ্যকলাপ শ্বেয়াৰ কৰিবলৈ কুকি ব্যৱহাৰ কৰিব পৰা ছাইটৰ এটা গোট সংজ্ঞায়িত কৰিব পাৰে। এয়া ইনক’গনিট’ত অফ কৰা আছে।</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">ধ্বনি প্লে’ কৰা ছাটসমূহ মিউট কৰক</translation>
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
 <translation id="3628308229821498208">পৰামৰ্শিত সন্ধানসমূহ</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="RWS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}one{<ph name="RWS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="RWS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}other{<ph name="RWS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="RWS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}}</translation>
 <translation id="3697164069658504920">অন কৰা থাকিলে, ছাইটে ইউএছবি ডিভাইচ ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ইউএছবি ডিভাইচ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="3707034683772193706">আপুনি চোৱা এটা ছাইটে Chromeৰ জৰিয়তে সামান্য পৰিমাণৰ তথ্য ছেভ কৰিব পাৰে, যি প্ৰধানকৈ আপুনি ব’ট নহয় বুলি সত্যাপন কৰে</translation>
 <translation id="3721953990244350188">পৰৱৰ্তী উপলব্ধ কাৰ্য অগ্ৰাহ্য কৰক আৰু দেখুৱাওক</translation>
 <translation id="3744111561329211289">নেপথ্যত ছিংক কৰা</translation>
 <translation id="3763247130972274048">১০ ছেকেণ্ড এৰি যাবলৈ ভিডিঅ’টোত সোঁ অথবা বাওঁফালে দুবাৰ টিপক</translation>
+<translation id="3779154269823594982">পাছৱৰ্ডসমূহ সলনি কৰক</translation>
 <translation id="3797520601150691162">কোনো নিৰ্দিষ্ট ছাইটৰ বাবে গাঢ় ৰঙৰ থীম প্ৰয়োগ নকৰিব</translation>
 <translation id="3803367742635802571">আপুনি চোৱা ছাইটসমূহে ডিজাইন কৰা ধৰণে কাম কৰা বন্ধ কৰিব পাৰে</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
@@ -174,8 +178,11 @@
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3859306556332390985">আগলৈ যাওক</translation>
 <translation id="3895926599014793903">বলেৰে জুম সক্ষম কৰক</translation>
+<translation id="3905475044299942653">বহুতো জাননী বন্ধ কৰক</translation>
 <translation id="3908288065506437185">ইনক’গনিট’ ম’ডত তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰক</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">কিছুমান সুবিধাই কাম নকৰিবও পাৰে। প্ৰাসংগিক ছাইটসমূহে তথাপি তৃতীয় পক্ষৰ কুকি ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="3933121352599513978">অনাকাংক্ষিত অনুৰোধ সংকোচন কৰক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3955193568934677022">ছাইটসমূহক সুৰক্ষিত সমল প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3974105241379491420">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
@@ -188,16 +195,15 @@
 <translation id="4149994727733219643">ৱেবপৃষ্ঠাৰ বাবে সৰলকৰণ কৰা ভিউ</translation>
 <translation id="4151930093518524179">ডিফ’ল্ট জুম</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
-<translation id="4169019654293892025"><ph name="TITLE_OF_MODULE" /> লুকুৱাওক</translation>
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
 <translation id="429312253194641664">ছাইটটোৱে মিডিয়া প্লে’ কৰি আছে</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{কাইলৈ ম্যাদ উকলিব}one{# দিনত ম্যাদ উকলিব}other{# দিনত ম্যাদ উকলিব}}</translation>
 <translation id="4336566011000459927">Chromeএ আজি পুনৰ কুকি সীমিত কৰিব</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />ৰ অধীনত থকা আটাইবোৰ ছাইট</translation>
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
 <translation id="4570913071927164677">সবিশেষ</translation>
 <translation id="4598549027014564149">ইনক’গনিট’ ম’ডত থাকিলে, সমগ্ৰ ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ ছাইটসমূহে আপোনাৰ কুকি ব্যৱহাৰ কৰিব নোৱাৰে, আনকি প্ৰাসংগিক ছাইটৰ ক্ষেত্ৰতো এয়া প্ৰযোজ্য। আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ বিজ্ঞাপন ব্যক্তিগতকৰণ কৰাৰ দৰে কাৰ্যৰ বাবে ব্যৱহাৰ কৰা নহয়। কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>
+<translation id="4619615317237390068">অন্য ডিভাইচৰ টেব</translation>
 <translation id="4644713492825682049">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
+<translation id="4676059169848868271"><ph name="APP_NAME" />ক হাতৰ ট্ৰেকিং ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ৰ পৰাও হাতৰ ট্ৰেকিং অন কৰক।</translation>
 <translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="4755971844837804407">অন কৰা থাকিলে, ছাইটে আপোনাক যিকোনো বিজ্ঞাপন দেখুৱাব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাক অননুমোদিত অথবা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱাব নোৱাৰে।</translation>
 <translation id="4779083564647765204">জুম কৰক</translation>
+<translation id="4807122856660838973">সুৰক্ষিত ব্ৰাউজিং অন কৰক</translation>
 <translation id="4811450222531576619">ইয়াৰ উৎস আৰু বিষয়বস্তুৰ সম্পৰ্কে অধিক জানক</translation>
 <translation id="4836046166855586901">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে কোনো ছাইটে সেয়া জানিব বিচাৰিলে সোধক</translation>
 <translation id="483914009762354899">এই ডমেইনটোৰ অন্তৰ্গত থকা আটাইবোৰ ছাইট অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="4883854917563148705">পৰিচালিত ছেটিংসমূহ ৰিছেট কৰিব নোৱাৰি</translation>
 <translation id="4887024562049524730">ছাইটসমূহক আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰিবলৈ অনুমতি দিয়াৰ পূর্বে সোধক (চুপাৰিছ কৰা)</translation>
+<translation id="4936863036653376783">আপুনি আপোনাৰ আটাইবোৰ ডিভাইচৰ টেবৰ গোটৰ শাখাটোত নিজৰ গোটসমূহ বিচাৰি পাব</translation>
 <translation id="4953688446973710931">অন কৰা থাকিলে, ছাইটে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰিব নোৱাৰে।</translation>
 <translation id="4962975101802056554">ডিভাইচৰ বাবে সকলো অনুমতি প্ৰত্যাহাৰ কৰক</translation>
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">কোনো সম্পৰ্ক বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4996978546172906250">ইয়াৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="5001526427543320409">তৃতীয় পক্ষৰ কুকি</translation>
+<translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
+<translation id="5014182796621173645">আপুনি <ph name="RECENCY" />ত গৈছিল</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5048398596102334565">ম'শ্বন ছেন্সৰসমূহলৈ এক্সেছ পাবলৈ ছাইটসমূহক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
+<translation id="5048841907079026162">আপোনাৰ ব্ৰাউজিঙৰ ডেটা পৰিচলনা কৰক</translation>
 <translation id="5050380848339752099">এই ছাইটটোৱে ইনক’গনিট’ ম’ডৰ বাহিৰৰ এটা এপৰ সৈতে তথ্য শ্বেয়াৰ কৰিবলৈ লৈছে।</translation>
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
 <translation id="5091013926750941408">ম’বাইল ছাইট</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">অন কৰা থাকিলে, ছাইটে JavaScript ব্যৱহাৰ কৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে JavaScript ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="5099358668261120049">এইটোৱে আপোনাৰ গৃহ স্ক্ৰীনত <ph name="ORIGIN" />এ অথবা ইয়াৰ এপ্‌টোৱে ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব।</translation>
 <translation id="5100237604440890931">সংকুচিত - সম্প্ৰসাৰণ কৰিবলৈ টিপক</translation>
+<translation id="5116239826668864748">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}one{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}other{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}}</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">JavaScript চলাবলৈ ছাইটক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
+<translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
 <translation id="5389626883706033615">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
@@ -272,6 +287,7 @@
 <translation id="5553374991681107062">শেহতীয়া</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> অৱৰোধ কৰা আছে</translation>
+<translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="5649053991847567735">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
 <translation id="5668404140385795438">ৱেবছাইটোৱে জুম ইনৰ ক্ষেত্ৰত বাধা দিবলৈ কৰা অনুৰোধ অ’ভাৰৰাইড কৰে</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
@@ -282,12 +298,14 @@
 <translation id="5706552988683188916">এইটোৱে <ph name="WEBSITE" />ৰ বাবে কুকি আৰু ছাইটৰ অন্য ডেটা মচে</translation>
 <translation id="5723967018671998714">ইনক'গনিট' ম'ডত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হয়</translation>
 <translation id="5740126560802162366">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিব পাৰে</translation>
+<translation id="5750869797196646528">হাতৰ ট্ৰেকিং</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5844448279347999754">অন কৰা থাকিলে, ছাইটে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাব নোৱাৰে।</translation>
 <translation id="5853982612236235577">অন কৰা থাকিলে, ছাইটে জাননী পঠিয়াবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে জাননী পঠিয়াব নোৱাৰে।</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5876056640971328065">ভিডিঅ’ পজ কৰক</translation>
+<translation id="5877248419911025165">আটাইবোৰ অনুৰোধ সংকোচন কৰক</translation>
 <translation id="5884085660368669834">ছাইটৰ অগ্ৰাধিকাৰ</translation>
 <translation id="5887687176710214216">শেষবাৰ কালি চাইছিল</translation>
 <translation id="5916664084637901428">অন আছে</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">সম্পূৰ্ণ হোৱা ডাউনল’ডসমূহ</translation>
 <translation id="6071501408666570960">আপোনাক এই ছাইটটোৰ পৰা ছাইন আউট কৰোৱা হ’ব পাৰে</translation>
 <translation id="6120483543004435978">অন কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিব নোৱাৰে।</translation>
+<translation id="6140839633433422817">আপুনি অনুমতিসমূহ ৰিছেট কৰি কুকি আৰু ছাইটৰ ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6171020522141473435">অন কৰা থাকিলে, ছাইটে ব্লুটুথ ডিভাইচ ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ব্লুটুথ ডিভাইচ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="6177111841848151710">বর্তমান ব্যৱহাৰ কৰি থকা সন্ধানৰ ইঞ্জিনৰ বাবে অৱৰোধ কৰা হৈছে</translation>
@@ -338,14 +357,18 @@
 <translation id="6545864417968258051">ব্লুটুথ স্কেনিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিনৰ পূৰ্বে শেষবাৰ চাইছিল</translation>
+<translation id="656065428026159829">অধিক চাওক</translation>
 <translation id="6561560012278703671">নীৰৱ বাৰ্তা আদান-প্ৰদানৰ সুবিধা ব্যৱহাৰ কৰক (জাননীৰ প্ৰম্প্‌টসমূহে আপোনাৰ বাবে ব্যাঘাত সৃষ্টি কৰিব নোৱৰাকৈ সেইবোৰ অৱৰোধ কৰে)</translation>
 <translation id="6593061639179217415">ডেস্কটপৰ ছাইট</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> টা <ph name="RWS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}one{<ph name="RWS_MEMBERS_COUNT" /> টা <ph name="RWS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}other{<ph name="RWS_MEMBERS_COUNT" /> টা <ph name="RWS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>
 <translation id="6612358246767739896">সুৰক্ষিত সমল</translation>
 <translation id="662080504995468778">ইয়াতে থাকক</translation>
 <translation id="6653342741369270081">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ পিছলৈ যোৱাৰ বুটামটো টিপক।</translation>
+<translation id="6683865262523156564">এই ছাইটটো এনে এটা গোটত আছে যিটোৱে আপোনাৰ কাৰ্যকলাপ চাব পাৰে। গোটটো <ph name="RWS_OWNER" />এ সংজ্ঞায়িত কৰে</translation>
 <translation id="6689172468748959065">প্র’ফাইল ফট’সমূহ</translation>
 <translation id="6697925417670533197">সক্রিয় ডাউনল’ডসমূহ</translation>
+<translation id="6709432001666529933">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ দিয়াৰ আগতে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="6722828510648505498">পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট অৱৰোধ কৰক।</translation>
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
@@ -353,12 +376,16 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" />ৰ বাবে এটা বিকল্প বাছনি কৰক</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6818926723028410516">বস্তু বাছনি কৰক</translation>
+<translation id="6838525730752203626">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
+<translation id="6840760312327750441">টেববোৰ একগোট কৰিবলৈ, এটা টেবত স্পৰ্শ কৰি ধৰি ৰাখক। তাৰপাছত, এইটো অন্য এটা টেবলৈ টানি আনি এৰক।</translation>
 <translation id="6864395892908308021">এই ডিভাইচটোৱে NFC পঢ়িব নোৱাৰে</translation>
-<translation id="6867014948848323204"><ph name="FROM_DEVICE" />ৰ পৰা</translation>
+<translation id="6870169401250095575">সুৰক্ষা পৰীক্ষাৰ কাৰ্ডখন লুকুৱাওক</translation>
+<translation id="6900883974539674431">আপোনাৰ আটাইবোৰ ডিভাইচত স্বয়ংক্ৰিয়ভাৱে ছেভ আৰু আপডে’ট হোৱা টেবৰ গোটসমূহ সৃষ্টি কৰক</translation>
 <translation id="6912998170423641340">ছাইটসমূহৰ ক্লিপব’ৰ্ডৰ পাঠ আৰু ছবি পঢ়াৰ সুবিধা অৱৰোধ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6950072572526089586">আপুনি চোৱা কোনো ছাইটে আপুনি কি কৰি আছে সেই সম্পৰ্কীয় তথ্য ছেভ কৰিব পাৰে, যাতে এইটোৱে আপুনি আশা কৰা ধৰণে কাম কৰিব পাৰে — উদাহৰণস্বৰূপে, আপোনাক কোনো ছাইটত ছাইন ইন কৰাই ৰখা অথবা আপোনাৰ শ্বপিং কাৰ্টত বস্তু ছেভ কৰা। ছাইটসমূহে প্ৰায়েই আপোনাৰ ডিভাইচত সাময়িকভাৱে এই তথ্য ছেভ কৰে।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6980861169612950611">ছাইটৰ ডেটা মচিবনে? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="6992289844737586249">ছাইটসমূহে আপোনাৰ ডিভাইচৰ মাইক্ৰফ'ন ব্যৱহাৰ কৰাৰ পূর্বে অনুমতি ল'বলৈ দিয়ক (এয়া চুপাৰিছ কৰা হয়)</translation>
 <translation id="7000754031042624318">Androidৰ ছেটিংসমূহত অফ কৰা আছে</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টা বস্তু বাছনি কৰা হ’ল}one{#টা বস্তু বাছনি কৰা হ’ল}other{#টা বস্তু বাছনি কৰা হ’ল}}</translation>
+<translation id="708014373017851679">’<ph name="APP_NAME" />’ৰ ম্যাদ উকলিল। অনুগ্ৰহ কৰি এপ্‌টো আপডে’ট কৰক।</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />টা বাছনি কৰা হ’ল।  স্ক্ৰীনৰ ওপৰৰ অংশত কাষত থকা বিকল্পসমূহ</translation>
 <translation id="7141896414559753902">ছাইটসমূহে পপ্‌-আপ দেখুওৱাটো আৰু বেলেগ লিংকলৈ লৈ যোৱাটো অৱৰোধ কৰক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কে.বি.</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">এটা ছাইট যোগ দিয়ক</translation>
 <translation id="7368695150573390554">যিকোনো অফলাইন ডেটা মচা হ'ব</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" />ৰ ছেটিং</translation>
+<translation id="7399802613464275309">সুৰক্ষা পৰীক্ষা</translation>
 <translation id="7406113532070524618">এই ছেটিংটোৱে আপোনাক চিনাক্ত নকৰাকৈ অথবা ছাইটসমূহক আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চোৱাৰ অনুমতি নিদিয়াকৈ কাম কৰে, যদিও ছাইটসমূহে সত্যাপন প্ৰক্ৰিয়াৰ অংশ হিচাপে সামান্য পৰিমাণৰ তথ্য শ্বেয়াৰ কৰিব পাৰে</translation>
 <translation id="7423098979219808738">প্ৰথমে সোধক</translation>
 <translation id="7423538860840206698">ক্লিপব’ৰ্ড পঢ়াৰ সুবিধা অৱৰোধ কৰা হৈছে</translation>
@@ -396,12 +425,14 @@
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="757524316907819857">সুৰক্ষিত সমল প্লে’ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="7594634374516752650">এটা ব্লুটুথ ডিভাইচৰ সৈতে সংযুক্ত হৈছে</translation>
-<translation id="7641339528570811325">ব্ৰাউজ কৰা ডেটা মচক…</translation>
+<translation id="7617547684249261169">আপুনি আপোনাৰ কিছুমান বা আটাইবোৰ ইতিহাস, কুকি ছাইটৰ ডেটা আৰু অধিক বস্তু মচিব পাৰে</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7667547420449112975">অষ্ট্ৰেলিয়াৰ বিস্ময়কৰ যাদুকৰ</translation>
 <translation id="7684642910516280563">এটা ছাইটক তৃতীয় পক্ষৰ কুকি ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
+<translation id="7688240020069572972">Chromeৰ কিটিপ সম্পৰ্কীয় কাৰ্ড লুকুৱাওক</translation>
 <translation id="7719367874908701697">পৃষ্ঠাৰ জুম</translation>
+<translation id="7759147511335618829">MIDI ডিভাইচৰ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক}one{এই টেবসমূহৰ জৰিয়তে অব্যাহত ৰাখক}other{এই টেবসমূহৰ জৰিয়তে অব্যাহত ৰাখক}}</translation>
@@ -415,10 +446,10 @@
 <translation id="7882806643839505685">নির্দিষ্ট ছাইটৰ বাবে ধ্বনিৰ অনুমতি দিয়ক।</translation>
 <translation id="789180354981963912">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰক:</translation>
 <translation id="7940722705963108451">মোক মনত পেলাই দিব</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}one{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}other{<ph name="FPS_OWNER" />ৰ ছাইটসমূহৰ গোটৰ <ph name="FPS_MEMBERS_COUNT" /> টা ছাইটে গোটটোত আপোনাৰ কাৰ্যকলাপ চাব পাৰে}}</translation>
 <translation id="7986741934819883144">সম্পৰ্ক এটা বাছনি কৰক</translation>
 <translation id="7990211076305263060">অন কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="8007176423574883786">এই ডিভাইচটোৰ বাবে অফ কৰা হৈছে</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{এই টেবটোৰ কাৰ্ডখনেৰে অব্যাহত ৰখাটো লুকুৱাওক}one{এই টেবসমূহৰ কাৰ্ডখনেৰে অব্যাহত ৰখাটো লুকুৱাওক}other{এই টেবসমূহৰ কাৰ্ডখনেৰে অব্যাহত ৰখাটো লুকুৱাওক}}</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8042586301629853791">এই অনুসৰি সজাওক:</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>
@@ -453,7 +484,7 @@
 <translation id="8441146129660941386">পিছলৈ ছীক কৰক</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />ক আপোনাৰ অৱস্থান এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো অৱস্থান অন কৰক।</translation>
 <translation id="8447861592752582886">ডিভাইচৰ অনুমতি প্ৰত্যাহাৰ কৰক</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১ টা কুকি ব্যৱহাৰ হৈ আছে}one{# টা কুকি ব্যৱহাৰ হৈ আছে}other{# টা কুকি ব্যৱহাৰ হৈ আছে}}</translation>
+<translation id="8473055640493819707">’<ph name="APP_NAME" />’ৰ ম্যাদ উকলিছে। অনুগ্ৰহ কৰি এপ্‌টো পুনৰ ইনষ্টল কৰক।</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="848952951823693243">সদায়েই ম’বাইল ছাইট অনুৰোধ কৰিব</translation>
 <translation id="8499083585497694743">মাইক্ৰ’ফ’ন আনমিউট কৰক</translation>
@@ -461,20 +492,20 @@
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীন</translation>
 <translation id="8541410041357371550">আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰা আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> টা <ph name="FPS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}one{<ph name="FPS_MEMBERS_COUNT" /> টা <ph name="FPS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}other{<ph name="FPS_MEMBERS_COUNT" /> টা <ph name="FPS_OWNER" /> ছাইটৰ বাবে কুকিৰ অনুমোদন জনোৱা হৈছে}}</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>
 <translation id="8609465669617005112">ওপৰলৈ নিয়ক</translation>
 <translation id="8617611086246832542">অন কৰা থাকিলে, ৱেবছাইটটোৰ ডেস্কটপ ভিউ দেখুওৱা হয়। অফ কৰা থাকিলে, ৱেবছাইটটোৰ ম’বাইল ভিউ দেখুওৱা হয়।</translation>
 <translation id="8649036394979866943">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ বেছিভাগ ছাইটে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ সীমিত কৰে। <ph name="BEGIN_LINK" />আপোনাৰ ট্ৰেকিঙৰ সুৰক্ষাসমূহ পৰিচালনা কৰিবলৈ<ph name="END_LINK" />লৈ ছেটিঙলৈ যাওক</translation>
+<translation id="8676316391139423634">অন কৰা থাকিলে, ছাইটসমূহে আপোনাৰ হাত ট্ৰেক কৰিব বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটসমূহে আপোনাৰ হাত ট্ৰেক কৰিব নোৱাৰে।</translation>
 <translation id="8676374126336081632">ইনপুট মচক</translation>
 <translation id="8681886425883659911">বিনা অনুমতিত অথবা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুওৱাৰ বাবে জনাজাত ছাইটসমূহত বিজ্ঞাপন অৱৰোধ কৰা হয়</translation>
 <translation id="868929229000858085">সম্পৰ্কসূচীত থকা ব্যক্তি সন্ধান কৰক</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
+<translation id="8715862698998036666">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ ওপৰৰ পৰা টানি আনি এৰক আৰু বাওঁফাল বা সোঁফালৰ কাষৰ পৰা ছোৱাইপ কৰক।</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতি অন কৰক।</translation>
 <translation id="8721719390026067591">অন কৰা থাকিলে, ছাইটে ব্লুটুথ ডিভাইচ বিচৰাৰ অনুমতি বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ব্লুটুথ ডিভাইচ বিচাৰিব নোৱাৰে।</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{১ টা ছাইটক অনুমতি দিয়া হৈছে}one{# টা ছাইটক অনুমতি দিয়া হৈছে}other{# টা ছাইটক অনুমতি দিয়া হৈছে}}</translation>
 <translation id="8751914237388039244">কোনো প্ৰতিচ্ছবি বাছনি কৰক</translation>
 <translation id="8800034312320686233">ছাইটটোৱে কাম কৰা নাই নেকি?</translation>
 <translation id="8801436777607969138">কোনো নির্দিষ্ট ছাইটৰ বাবে JavaScript অৱৰোধ কৰক।</translation>
@@ -493,12 +524,12 @@
 <translation id="8959122750345127698">ইয়ালৈ নেভিগেশ্বন পাব পৰা অৱস্থাত নাই: <ph name="URL" /></translation>
 <translation id="8986362086234534611">পাহৰক</translation>
 <translation id="8990043154272859344">আপোনাক সকলো ছাইটৰ পৰা ছাইন আউট কৰোৱা হ’ব</translation>
+<translation id="8993853206419610596">আটাইবোৰ অনুৰোধ বিস্তাৰ কৰক</translation>
 <translation id="9002538116239926534">অন কৰা থাকিলে, ছাইটে আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিব নোৱাৰে।</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" />ৰ অনুমতি দিয়া আছে</translation>
 <translation id="9019902583201351841">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="9039697262778250930">আপোনাক এই ছাইটসমূহৰ পৰা ছাইন আউট কৰোৱা হ’ব পাৰে</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
-<translation id="9090268041676521955">এই ছাইটটো এনে এটা গোটত আছে যিটোৱে আপোনাৰ কাৰ্যকলাপ চাব পাৰে। গোটটো <ph name="FPS_OWNER" />এ সংজ্ঞায়িত কৰে</translation>
 <translation id="9106233582039520022">কুকিসমূহ মচিবনে?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতিসমূহ অন কৰক।</translation>
@@ -506,5 +537,6 @@
 <translation id="9162462602695099906">এই পৃষ্ঠাখন বিপজ্জনক</translation>
 <translation id="930525582205581608">এই ছাইটটো পাহৰি যাব নেকি?</translation>
 <translation id="947156494302904893">আপুনি চোৱা ছাইটসমূহে আপুনি এগৰাকী প্ৰকৃত ব্যক্তি আৰু ব’ট নহয় বুলি সত্যাপন কৰিব পাৰে</translation>
+<translation id="959682366969460160">সংগঠিত হৈ থাকক</translation>
 <translation id="967624055006145463">ডেটা ষ্ট’ৰ কৰা হ’ল</translation>
 </translationbundle>

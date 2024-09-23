@@ -1,0 +1,159 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("lens_overlay_availability") {
+  sources = [
+    "lens_overlay_availability.h",
+    "lens_overlay_availability.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/lens:enterprise_policy",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ui/base",
+  ]
+}
+
+source_set("coordinator") {
+  sources = [
+    "lens_omnibox_client.h",
+    "lens_omnibox_client.mm",
+    "lens_omnibox_client_delegate.h",
+    "lens_overlay_coordinator.h",
+    "lens_overlay_coordinator.mm",
+    "lens_overlay_mediator.h",
+    "lens_overlay_mediator.mm",
+    "lens_result_page_mediator.h",
+    "lens_result_page_mediator.mm",
+    "lens_result_page_web_state_delegate.h",
+    "lens_web_provider.h",
+  ]
+  deps = [
+    ":lens_overlay_availability",
+    "//base",
+    "//components/favicon/ios",
+    "//components/feature_engagement/public",
+    "//components/search_engines",
+    "//components/security_state/ios",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/context_menu/ui_bundled:coordinator",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/lens_overlay/ui:protocols",
+    "//ios/chrome/browser/lens_overlay/ui:view_controller",
+    "//ios/chrome/browser/orchestrator/ui_bundled",
+    "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/omnibox",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/omnibox/popup",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:delegate",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "lens_omnibox_client_unittest.mm",
+    "lens_overlay_coordinator_unittest.mm",
+    "lens_overlay_mediator_unittest.mm",
+    "lens_result_page_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/lens:enterprise_policy",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//components/omnibox/common",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//ios/chrome/browser/lens_overlay/model",
+    "//ios/chrome/browser/lens_overlay/ui:protocols",
+    "//ios/chrome/browser/lens_overlay/ui:view_controller",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:test_utils",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/providers/lens",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//ios/testing:nserror_support",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_chrome_lens_overlay.h",
+    "fake_chrome_lens_overlay.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

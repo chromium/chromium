@@ -7,21 +7,30 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
@@ -64,6 +73,9 @@ ToReadResponseHeadError(
       return base::unexpected(
           IsolatedWebAppReaderRegistry::ReadResponseHeadError::
               kResponseNotFoundError);
+    case IsolatedWebAppResponseReader::Error::Type::kNotTrusted:
+      return base::unexpected(
+          IsolatedWebAppReaderRegistry::ReadResponseHeadError::kAppNotTrusted);
   }
 }
 
@@ -78,13 +90,12 @@ void CloseReader(std::unique_ptr<IsolatedWebAppResponseReader> reader,
 }  // namespace
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
-    std::unique_ptr<IsolatedWebAppValidator> validator,
-    base::RepeatingCallback<
-        std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
-        signature_verifier_factory)
-    : reader_factory_(std::make_unique<IsolatedWebAppResponseReaderFactory>(
-          std::move(validator),
-          std::move(signature_verifier_factory))) {}
+    Profile& profile,
+    std::unique_ptr<IsolatedWebAppResponseReaderFactory> reader_factory)
+    : profile_(profile), reader_factory_(std::move(reader_factory)) {
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
+}
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,15 +103,17 @@ IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
 
 void IsolatedWebAppReaderRegistry::ReadResponse(
     const base::FilePath& web_bundle_path,
+    bool dev_mode,
     const web_package::SignedWebBundleId& web_bundle_id,
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(web_bundle_id.type(),
-            web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+  DCHECK(!web_bundle_id.is_for_proxy_mode());
+
+  Cache::Key cache_key{.path = web_bundle_path, .dev_mode = dev_mode};
 
   {
-    auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+    auto cache_entry_it = reader_cache_.Find(cache_key);
     bool found = cache_entry_it != reader_cache_.End();
 
     base::UmaHistogramEnumeration(
@@ -132,7 +145,7 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
                     web_bundle_id.id()}));
 
   auto [cache_entry_it, was_insertion] =
-      reader_cache_.Emplace(web_bundle_path, Cache::Entry());
+      reader_cache_.Emplace(cache_key, Cache::Entry());
   DCHECK(was_insertion);
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
@@ -149,18 +162,86 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   bool skip_signature_verification = verified_files_.contains(web_bundle_path);
 #endif
 
+  IsolatedWebAppResponseReaderFactory::Flags flags;
+  if (dev_mode) {
+    flags.Put(IsolatedWebAppResponseReaderFactory::Flag::kDevModeBundle);
+  }
+  if (skip_signature_verification) {
+    flags.Put(
+        IsolatedWebAppResponseReaderFactory::Flag::kSkipSignatureVerification);
+  }
+
   reader_factory_->CreateResponseReader(
-      web_bundle_path, web_bundle_id, skip_signature_verification,
+      web_bundle_path, web_bundle_id, flags,
       base::BindOnce(&IsolatedWebAppReaderRegistry::OnResponseReaderCreated,
                      // `base::Unretained` can be used here since `this` owns
                      // `reader_factory`.
-                     base::Unretained(this), web_bundle_path, web_bundle_id));
+                     base::Unretained(this), web_bundle_path, dev_mode,
+                     web_bundle_id));
+}
+
+// Processes a component update event and queues close requests for readers
+// corresponding to bundles that might be affected by key rotation. These
+// requests will be fulfilled once the app closes.
+void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
+    const base::Version& component_version) {
+  auto* provider = WebAppProvider::GetForWebApps(&profile_.get());
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas = GetInstalledIwas(provider->registrar_unsafe());
+
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    const auto& isolation_data = *iwa.get().isolation_data();
+    auto result = LookupRotatedKey(web_bundle_id);
+    switch (result) {
+      case KeyRotationLookupResult::kNoKeyRotation:
+        continue;
+      case KeyRotationLookupResult::kKeyBlocked:
+        break;
+      case KeyRotationLookupResult::kKeyFound: {
+        if (GetKeyRotationData(web_bundle_id, isolation_data)
+                .current_installation_has_rk) {
+          continue;
+        }
+      } break;
+    }
+
+    auto iwa_source = IwaSourceWithMode::FromStorageLocation(
+        profile_->GetPath(), isolation_data.location());
+    WebAppUiManager& ui_manager = provider->ui_manager();
+    absl::visit(base::Overloaded{
+                    [&](const IwaSourceBundle& bundle) {
+                      const auto& app_id = iwa.get().app_id();
+                      if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
+                        ClearCacheForPath(bundle.path(), base::DoNothing());
+                        return;
+                      }
+                      ui_manager.NotifyOnAllAppWindowsClosed(
+                          app_id,
+                          base::BindOnce(
+                              &IsolatedWebAppReaderRegistry::ClearCacheForPath,
+                              weak_ptr_factory_.GetWeakPtr(), bundle.path(),
+                              base::DoNothing()));
+                    },
+                    [](const IwaSourceProxy&) {}},
+                iwa_source.variant());
+  }
 }
 
 void IsolatedWebAppReaderRegistry::ClearCacheForPath(
     const base::FilePath& web_bundle_path,
     base::OnceClosure callback) {
-  auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+  auto callbacks = base::BarrierClosure(2, std::move(callback));
+  ClearCacheForPathImpl(web_bundle_path, /*dev_mode=*/false, callbacks);
+  ClearCacheForPathImpl(web_bundle_path, /*dev_mode=*/true, callbacks);
+}
+
+void IsolatedWebAppReaderRegistry::ClearCacheForPathImpl(
+    const base::FilePath& web_bundle_path,
+    bool dev_mode,
+    base::OnceClosure callback) {
+  auto cache_entry_it =
+      reader_cache_.Find({.path = web_bundle_path, .dev_mode = dev_mode});
   const bool found = cache_entry_it != reader_cache_.End();
   if (!found) {
     std::move(callback).Run();
@@ -180,12 +261,14 @@ void IsolatedWebAppReaderRegistry::ClearCacheForPath(
 
 void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     const base::FilePath& web_bundle_path,
+    bool dev_mode,
     const web_package::SignedWebBundleId& web_bundle_id,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                    UnusableSwbnFileError> reader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto cache_entry_it = reader_cache_.Find(web_bundle_path);
+  auto cache_entry_it =
+      reader_cache_.Find({.path = web_bundle_path, .dev_mode = dev_mode});
   DCHECK(cache_entry_it != reader_cache_.End());
   DCHECK_EQ(cache_entry_it->second.state(), Cache::Entry::State::kPending);
 
@@ -217,7 +300,7 @@ void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
   // The `SignedWebBundleReader` is now ready to read responses. Inform all
   // consumers that were waiting for this `SignedWebBundleReader` to become
   // available.
-  verified_files_.insert(cache_entry_it->first);
+  verified_files_.insert(cache_entry_it->first.path);
   cache_entry_it->second.set_reader(std::move(*reader));
   for (auto& [resource_request, callback] : pending_requests) {
     DoReadResponse(cache_entry_it->second.GetReader(), resource_request,
@@ -285,29 +368,29 @@ IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
     const IsolatedWebAppResponseReader::Error& error) {
   switch (error.type) {
     case IsolatedWebAppResponseReader::Error::Type::kParserInternalError:
-      return ForOtherError(base::StringPrintf(
-          "Failed to parse response head: %s", error.message.c_str()));
     case IsolatedWebAppResponseReader::Error::Type::kFormatError:
+    case IsolatedWebAppResponseReader::Error::Type::kNotTrusted:
       return ForOtherError(base::StringPrintf(
           "Failed to parse response head: %s", error.message.c_str()));
     case IsolatedWebAppResponseReader::Error::Type::kResponseNotFound:
       return ForResponseNotFound(base::StringPrintf(
-          "Failed to read response: %s", error.message.c_str()));
+          "Failed to read response from Signed Web Bundle: %s",
+          error.message.c_str()));
   }
 }
 
 IsolatedWebAppReaderRegistry::Cache::Cache() = default;
 IsolatedWebAppReaderRegistry::Cache::~Cache() = default;
 
-base::flat_map<base::FilePath,
+base::flat_map<IsolatedWebAppReaderRegistry::Cache::Key,
                IsolatedWebAppReaderRegistry::Cache::Entry>::iterator
-IsolatedWebAppReaderRegistry::Cache::Find(const base::FilePath& file_path) {
+IsolatedWebAppReaderRegistry::Cache::Find(const Key& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return cache_.find(file_path);
+  return cache_.find(key);
 }
 
-base::flat_map<base::FilePath,
+base::flat_map<IsolatedWebAppReaderRegistry::Cache::Key,
                IsolatedWebAppReaderRegistry::Cache::Entry>::iterator
 IsolatedWebAppReaderRegistry::Cache::End() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -316,7 +399,7 @@ IsolatedWebAppReaderRegistry::Cache::End() {
 }
 
 template <class... Args>
-std::pair<base::flat_map<base::FilePath,
+std::pair<base::flat_map<IsolatedWebAppReaderRegistry::Cache::Key,
                          IsolatedWebAppReaderRegistry::Cache::Entry>::iterator,
           bool>
 IsolatedWebAppReaderRegistry::Cache::Emplace(Args&&... args) {
@@ -328,7 +411,8 @@ IsolatedWebAppReaderRegistry::Cache::Emplace(Args&&... args) {
 }
 
 void IsolatedWebAppReaderRegistry::Cache::Erase(
-    base::flat_map<base::FilePath, Entry>::iterator iterator) {
+    base::flat_map<IsolatedWebAppReaderRegistry::Cache::Key, Entry>::iterator
+        iterator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cache_.erase(iterator);
@@ -362,21 +446,24 @@ void IsolatedWebAppReaderRegistry::Cache::CleanupOldEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::TimeTicks now = base::TimeTicks::Now();
-  cache_.erase(
-      base::ranges::remove_if(
-          cache_,
-          [&now](const Entry& cache_entry) -> bool {
-            // If a `SignedWebBundleReader` is ready to read responses and has
-            // not been used for at least `kCleanupInterval`, remove it from the
-            // cache.
-            return cache_entry.state() == Entry::State::kReady &&
-                   now - cache_entry.last_access() > kCleanupInterval;
-          },
-          [](const std::pair<base::FilePath, Entry>& entry) -> const Entry& {
-            return entry.second;
-          }),
-      cache_.end());
+  base::EraseIf(cache_, [&now](std::pair<Key, Entry>& entry_pair) {
+    auto& cache_entry = entry_pair.second;
+    // If a `SignedWebBundleReader` is ready to read responses
+    // and has not been used for at least `kCleanupInterval`,
+    // close it and remove it from the cache.
+    if (cache_entry.state() == Entry::State::kReady &&
+        now - cache_entry.last_access() > kCleanupInterval) {
+      CloseReader(cache_entry.StealReader(), base::DoNothing());
+      return true;
+    }
+    return false;
+  });
   StopCleanupTimerIfCacheIsEmpty();
+}
+
+bool IsolatedWebAppReaderRegistry::Cache::Key::operator<(
+    const Key& other) const {
+  return std::tie(path, dev_mode) < std::tie(other.path, other.dev_mode);
 }
 
 void IsolatedWebAppReaderRegistry::Cache::Entry::SetCloseReaderCallback(

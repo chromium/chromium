@@ -1,0 +1,90 @@
+{
+  "$build/archive": {
+    "source_side_spec_path": [
+      "src",
+      "infra",
+      "archive_config",
+      "android-desktop-x64-archive-rel.json"
+    ]
+  },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-desktop-x64-archive-rel/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-desktop-x64-archive-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_android_config": {
+                "config": "x64_builder"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "clobber",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "android",
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "android-desktop-x64-archive-rel",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-desktop-x64-clobber-rel",
+          "group": "tryserver.chromium.android"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-archive-rel/targets"
+    }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 500
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium",
+  "recipe": "chromium"
+}

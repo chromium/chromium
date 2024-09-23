@@ -1,0 +1,39 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: var(--md-background-color);
+        }
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <base href="chrome://certificate-manager">
+    <script type="module" src="./strings.m.js"></script>
+    <script type="module" src="chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js"></script>
+    <title>$i18n{certificateManagerV2Title}</title>
+    <link rel="icon" type="image/svg" sizes="24x24"
+        href="chrome://resources/cr_components/certificate_manager/favicon.svg">
+  </head>
+
+  <body>
+    <certificate-manager-v2></certificate-manager-v2>
+  </body>
+
+</html>

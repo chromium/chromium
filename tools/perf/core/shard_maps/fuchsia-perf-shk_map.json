@@ -13,13 +13,21 @@
             }
         }
     },
+    "2": {
+        "benchmarks": {
+            "speedometer3": {
+                "abridged": false
+            }
+        }
+    },
     "extra_infos": {
-        "num_stories": 17,
-        "predicted_min_shard_time": 261.0,
+        "num_stories": 18,
+        "predicted_min_shard_time": 240.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 374.0,
-        "predicted_max_shard_index": 1,
-        "shard #0": 261.0,
-        "shard #1": 374.0
+        "predicted_max_shard_time": 507.0,
+        "predicted_max_shard_index": 2,
+        "shard #0": 240.0,
+        "shard #1": 352.0,
+        "shard #2": 507.0
     }
 }

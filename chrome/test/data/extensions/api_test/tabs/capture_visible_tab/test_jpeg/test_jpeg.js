@@ -39,8 +39,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
                    kWindowRect,
                    pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId, pass(function(imgDataUrl) {
               // The URL should be a data URL with has a JPEG mime type.
               assertIsStringWithPrefix('data:image/jpeg;base64,', imgDataUrl);
@@ -61,8 +63,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
                    kWindowRect,
                    pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId, pass(function(imgDataUrl) {
               // The URL should be a data URL with has a JPEG mime type.
               assertIsStringWithPrefix('data:image/jpeg;base64,', imgDataUrl);
@@ -81,11 +85,13 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
     },
 
     function captureVisibleTabChromeExtensionScheme() {
-      var url = chrome.extension.getURL("/white.html");
+      var url = chrome.runtime.getURL("/white.html");
       createWindow([url], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId, pass(function(imgDataUrl) {
               // The URL should be a data URL with has a JPEG mime type.
               assertIsStringWithPrefix('data:image/jpeg;base64,', imgDataUrl);
@@ -105,8 +111,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
                    kWindowRect,
                    pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId,
                                           {quality: 100},
                                           pass(function(imgDataUrl) {

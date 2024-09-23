@@ -82,7 +82,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                   templateURLService:(TemplateURLService*)templateURLService
                            incognito:(BOOL)incognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     CHECK(webStateList);
     _webStateList = webStateList->AsWeakPtr();
     _incognito = incognito;

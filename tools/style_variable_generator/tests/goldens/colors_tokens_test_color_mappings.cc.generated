@@ -81,7 +81,6 @@ std::string ColorIdName(ui::ColorId id) {
       return "--cros-sys-blend_a_blend";
   }
   NOTREACHED();
-  return "";
 }
 
 }  // namespace test_tokens

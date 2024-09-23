@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -66,15 +67,13 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
-#include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -458,7 +457,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
 
       base::FilePath path = base::FilePath::FromUTF8Unsafe(*external_crx);
       if (path.value().find(base::FilePath::kParentDirectory) !=
-          base::StringPiece::npos) {
+          std::string_view::npos) {
         install_stage_tracker->ReportFailure(
             extension_id, InstallStageTracker::FailureReason::
                               MALFORMED_EXTENSION_DICT_FILE_PATH);
@@ -574,7 +573,8 @@ bool ExternalProviderImpl::GetExtensionDetails(
       *version = std::make_unique<base::Version>(*external_version);
 
   } else {
-    NOTREACHED();  // Chrome should not allow prefs to get into this state.
+    NOTREACHED_IN_MIGRATION();  // Chrome should not allow prefs to get into
+                                // this state.
     return false;
   }
 
@@ -668,20 +668,22 @@ void ExternalProviderImpl::CreateExternalProviders(
   bool is_chrome_os_public_session = false;
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  policy::DeviceLocalAccount::Type account_type;
-  if (user && connector->IsDeviceEnterpriseManaged() &&
-      policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
-                                       &account_type)) {
-    if (account_type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION)
-      is_chrome_os_public_session = true;
-    policy::DeviceLocalAccountPolicyBroker* broker =
-        connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
-            user->GetAccountId().GetUserEmail());
-    if (broker) {
-      external_loader = broker->extension_loader();
-      crx_location = ManifestLocation::kExternalPolicy;
-    } else {
-      NOTREACHED();
+  if (user && connector->IsDeviceEnterpriseManaged()) {
+    auto account_type =
+        policy::GetDeviceLocalAccountType(user->GetAccountId().GetUserEmail());
+    if (account_type.has_value()) {
+      if (account_type == policy::DeviceLocalAccountType::kPublicSession) {
+        is_chrome_os_public_session = true;
+      }
+      policy::DeviceLocalAccountPolicyBroker* broker =
+          connector->GetDeviceLocalAccountPolicyService()->GetBrokerForUser(
+              user->GetAccountId().GetUserEmail());
+      if (broker) {
+        external_loader = broker->extension_loader();
+        crx_location = ManifestLocation::kExternalPolicy;
+      } else {
+        NOTREACHED_IN_MIGRATION();
+      }
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -714,7 +716,7 @@ void ExternalProviderImpl::CreateExternalProviders(
 
   // Load the KioskAppExternalProvider when running in the Chrome App kiosk
   // mode.
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (profiles::IsChromeAppKioskSession()) {
       ManifestLocation location = ManifestLocation::kExternalPolicy;
@@ -810,25 +812,9 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload, oem_extension_creation_flags));
   }
 
-  // For Chrome OS demo sessions, add pre-installed demo extensions and apps.
-  if (ash::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
-    base::FilePath cache_dir;
-    CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
-                                 &cache_dir));
-    auto loader =
-        base::MakeRefCounted<ash::DemoExtensionsExternalLoader>(cache_dir);
-    std::unique_ptr<ExternalProviderImpl> demo_apps_provider =
-        std::make_unique<ExternalProviderImpl>(
-            service, loader, profile, ManifestLocation::kExternalPolicy,
-            ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
-    demo_apps_provider->set_auto_acknowledge(true);
-    demo_apps_provider->set_install_immediately(true);
-    ash::DemoSession::Get()->SetExtensionsExternalLoader(loader);
-    provider_list->push_back(std::move(demo_apps_provider));
-  }
 #endif
   if (!profile->GetPrefs()->GetBoolean(pref_names::kBlockExternalExtensions)) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(

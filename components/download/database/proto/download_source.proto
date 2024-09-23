@@ -23,4 +23,5 @@ enum DownloadSource {
   CONTEXT_MENU = 9;
   RETRY = 10;
   RETRY_FROM_BUBBLE = 11;
+  TOOLBAR_MENU = 12;
 }

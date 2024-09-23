@@ -145,7 +145,7 @@ void DevToolsHost::DisconnectClient() {
 float DevToolsHost::zoomFactor() {
   if (!frontend_frame_)
     return 1;
-  float zoom_factor = frontend_frame_->PageZoomFactor();
+  float zoom_factor = frontend_frame_->LayoutZoomFactor();
   // Cancel the device scale factor applied to the zoom factor.
   const ChromeClient* client =
       frontend_frame_->View()->GetChromeClient();
@@ -254,7 +254,7 @@ void DevToolsHost::showContextMenuAtPoint(
   auto* menu_provider =
       MakeGarbageCollected<FrontendMenuProvider>(this, std::move(menu_items));
   menu_provider_ = menu_provider;
-  float zoom = target_frame->PageZoomFactor();
+  float zoom = target_frame->LayoutZoomFactor();
   {
     ContextMenuAllowedScope scope;
     target_frame->GetPage()->GetContextMenuController().ClearContextMenu();

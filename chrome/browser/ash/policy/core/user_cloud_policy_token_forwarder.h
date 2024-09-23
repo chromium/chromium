@@ -67,6 +67,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
+  std::string_view name() const override;
 
   // Returns whether OAuth token fetch is currently in progress.
   bool IsTokenFetchInProgressForTesting() const;

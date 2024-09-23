@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 #include "base/debug/gdi_debug_util_win.h"
 
-#include <algorithm>
-#include <cmath>
+#include <windows.h>
 
 #include <TlHelp32.h>
 #include <psapi.h>
 #include <stddef.h>
-#include <windows.h>
 #include <winternl.h>
+
+#include <algorithm>
+#include <cmath>
+#include <optional>
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
@@ -18,7 +20,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -287,11 +288,11 @@ base::debug::GdiHandleCounts CountHandleTypesFromTable(
 }
 
 template <typename ProcessType>
-absl::optional<base::debug::GdiHandleCounts> CollectGdiHandleCountsImpl(
+std::optional<base::debug::GdiHandleCounts> CollectGdiHandleCountsImpl(
     DWORD pid) {
   base::Process process = base::Process::OpenWithExtraPrivileges(pid);
   if (!process.IsValid())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<GdiTableEntry<typename ProcessType::NativePointerType>>
       gdi_entries = GetGdiTableEntries<ProcessType>(process);
@@ -300,7 +301,7 @@ absl::optional<base::debug::GdiHandleCounts> CollectGdiHandleCountsImpl(
 
 // Returns the GDI Handle counts from the GDI Shared handle table. Empty on
 // failure.
-absl::optional<base::debug::GdiHandleCounts> CollectGdiHandleCounts(DWORD pid) {
+std::optional<base::debug::GdiHandleCounts> CollectGdiHandleCounts(DWORD pid) {
   if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
     return CollectGdiHandleCountsImpl<WowProcessTypes>(pid);
   }
@@ -460,7 +461,7 @@ void CollectGDIUsageAndDie(BITMAPINFOHEADER* header, HANDLE shared_section) {
   base::debug::Alias(&num_global_gdi_handles);
   base::debug::Alias(&num_global_user_handles);
 
-  absl::optional<GdiHandleCounts> optional_handle_counts =
+  std::optional<GdiHandleCounts> optional_handle_counts =
       CollectGdiHandleCounts(GetCurrentProcessId());
   bool handle_counts_set = optional_handle_counts.has_value();
   GdiHandleCounts handle_counts =
@@ -504,7 +505,7 @@ void CollectGDIUsageAndDie(BITMAPINFOHEADER* header, HANDLE shared_section) {
 }
 
 GdiHandleCounts GetGDIHandleCountsInCurrentProcessForTesting() {
-  absl::optional<GdiHandleCounts> handle_counts =
+  std::optional<GdiHandleCounts> handle_counts =
       CollectGdiHandleCounts(GetCurrentProcessId());
   DCHECK(handle_counts.has_value());
   return handle_counts.value_or(GdiHandleCounts());

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] tan float32 0D scalar
+  assert_array_approx_equals: test tan float32 property 0, expected -0.8582430481910706 +/- 0.0009765625, expected -0.8582430481910706 but got -0.8763164281845093
+[FAIL] tan float32 1D constant tensor
+  assert_array_approx_equals: test tan float32 property 0, expected -0.8582430481910706 +/- 0.0009765625, expected -0.8582430481910706 but got -0.8763164281845093
+Harness: the test ran to completion.
+

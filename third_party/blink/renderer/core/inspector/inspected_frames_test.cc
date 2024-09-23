@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -36,12 +37,13 @@ TEST_F(InspectedFramesTest, FindsFrameForGivenStorageKey) {
   LocalDOMWindow* dom_window = page_holder->GetFrame().DomWindow();
   dom_window->SetStorageKey(blink_storage_key);
 
-  InspectedFrames inspected_frames(&page_holder->GetFrame());
+  InspectedFrames* inspected_frames =
+      MakeGarbageCollected<InspectedFrames>(&page_holder->GetFrame());
   std::string storage_key =
       static_cast<StorageKey>(blink_storage_key).Serialize();
 
   EXPECT_EQ(page_holder->GetFrame(),
-            inspected_frames.FrameWithStorageKey(WTF::String(storage_key)));
+            inspected_frames->FrameWithStorageKey(WTF::String(storage_key)));
 }
 
 }  // namespace blink

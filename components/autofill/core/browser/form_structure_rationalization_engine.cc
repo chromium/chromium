@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -113,6 +114,20 @@ RationalizationRuleBuilder::SetOtherFieldConditions(
       this->SetOtherFieldConditions(std::move(other_field_conditions)));
 }
 
+RationalizationRuleBuilder&
+RationalizationRuleBuilder::SetFieldsWithConditionsDoNotExist(
+    std::vector<FieldCondition> fields_with_conditions_do_not_exist) & {
+  rule.fields_with_conditions_do_not_exist =
+      std::move(fields_with_conditions_do_not_exist);
+  return *this;
+}
+RationalizationRuleBuilder&&
+RationalizationRuleBuilder::SetFieldsWithConditionsDoNotExist(
+    std::vector<FieldCondition> fields_with_conditions_do_not_exist) && {
+  return std::move(this->SetFieldsWithConditionsDoNotExist(
+      std::move(fields_with_conditions_do_not_exist)));
+}
+
 RationalizationRuleBuilder& RationalizationRuleBuilder::SetActions(
     std::vector<SetTypeAction> actions) & {
   rule.actions = std::move(actions);
@@ -154,7 +169,7 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
   if (condition.regex_reference_match.has_value()) {
     base::span<const MatchPatternRef> patterns =
         GetMatchPatterns(condition.regex_reference_match.value(),
-                         context.page_language, context.pattern_source);
+                         context.page_language, context.pattern_file);
     if (!FormFieldParser::FieldMatchesMatchPatternRef(context, patterns,
                                                       field)) {
       return false;
@@ -175,7 +190,7 @@ std::optional<size_t> FindFieldMeetingCondition(
       case FieldLocation::kLastClassifiedPredecessor:
         return -1;
       case FieldLocation::kTriggerField:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case FieldLocation::kNextClassifiedSuccessor:
       case FieldLocation::kSuccessor:
         return 1;
@@ -240,6 +255,22 @@ void ApplyRuleIfApplicable(
       continue;
     }
 
+    bool found_field_with_condition_that_must_not_exist = false;
+    for (const FieldCondition& field_with_condition_do_not_exist :
+         rule.fields_with_conditions_do_not_exist) {
+      CHECK_NE(field_with_condition_do_not_exist.location,
+               FieldLocation::kTriggerField);
+      if (FindFieldMeetingCondition(context, fields, i,
+                                    field_with_condition_do_not_exist)) {
+        found_field_with_condition_that_must_not_exist = true;
+        break;
+      }
+    }
+    // Don't proceed if the condition which shouldn't be met was satisfied.
+    if (found_field_with_condition_that_must_not_exist) {
+      continue;
+    }
+
     found_fields[FieldLocation::kTriggerField] = i;
 
     // Apply actions.
@@ -277,8 +308,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("MX")})
-                    .SetFeature(
-                        &features::kAutofillEnableRationalizationEngineForMX)
                     .Build())
 
             // This is the core field to which the rule applies.
@@ -320,25 +349,146 @@ void ApplyRationalizationEngineRules(
                     .SetCountryList({GeoIpCountryCode("DE")})
                     .SetFeature(&features::kAutofillUseDEAddressModel)
                     .Build())
-
             .SetTriggerField(FieldCondition{
                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_OVERFLOW}})
             .SetOtherFieldConditions({
                 FieldCondition{
-                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .location = FieldLocation::kPredecessor,
                     .possible_overall_types =
                         FieldTypeSet{ADDRESS_HOME_STREET_ADDRESS,
-                                     ADDRESS_HOME_STREET_LOCATION},
+                                     ADDRESS_HOME_STREET_LOCATION,
+                                     ADDRESS_HOME_LINE1},
                 },
             })
             .SetActions({
                 SetTypeAction{
-                    .target = FieldLocation::kLastClassifiedPredecessor,
+                    .target = FieldLocation::kPredecessor,
                     .set_overall_type = ADDRESS_HOME_LINE1,
                 },
                 SetTypeAction{
                     .target = FieldLocation::kTriggerField,
                     .set_overall_type = ADDRESS_HOME_LINE2,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Rationalize ADDRESS_HOME_LINE1 into "
+                         "ADDRESS_HOME_STREET_ADDRESS for DE")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("DE")})
+                    .SetFeature(&features::kAutofillUseDEAddressModel)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kSuccessor,
+                    .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_HOUSE_NUMBER_AND_APT for PL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("PL")})
+                    .SetFeature(&features::kAutofillUsePLAddressModel)
+                    .Build())
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{ADDRESS_HOME_HOUSE_NUMBER}})
+            .SetOtherFieldConditions({
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_STREET_NAME},
+                },
+            })
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM,
+                                     ADDRESS_HOME_APT_TYPE, UNKNOWN_TYPE,
+                                     ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+                                     ADDRESS_HOME_LINE3}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_LINE1 for PL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("PL")})
+                    .SetFeature(&features::kAutofillUsePLAddressModel)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix consecutive ADDRESS_HOME_LINE1 for IT")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("IT")})
+                    .SetFeature(&features::kAutofillUseITAddressModel)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetOtherFieldConditions({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
+                },
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kNextClassifiedSuccessor,
+                    .set_overall_type = ADDRESS_HOME_LINE2,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_LINE1 without following "
+                         "ADDRESS_HOME_LINE2 for IT")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("IT")})
+                    .SetFeature(&features::kAutofillUseITAddressModel)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types =
+                        FieldTypeSet{UNKNOWN_TYPE, ADDRESS_HOME_LINE2}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
                 },
             })
             .Build(),

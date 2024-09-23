@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace ash::assistant {
 struct AndroidAppInfo;

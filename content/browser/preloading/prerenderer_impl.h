@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDERER_IMPL_H_
 
+#include <tuple>
+
 #include "base/scoped_observation.h"
+#include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerenderer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -30,8 +33,10 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
       override;
 
-  bool MaybePrerender(
-      const blink::mojom::SpeculationCandidatePtr& candidate) override;
+  bool MaybePrerender(const blink::mojom::SpeculationCandidatePtr& candidate,
+                      const PreloadingPredictor& enacting_predictor,
+                      PreloadingConfidence confidence) override;
+  void OnLCPPredicted() override;
 
   bool ShouldWaitForPrerenderResult(const GURL& url) override;
 
@@ -41,7 +46,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
       PrerenderCancellationCallback callback) override;
 
   // PrerenderHostRegistry::Observer implementations:
-  void OnCancel(int host_frame_tree_node_id,
+  void OnCancel(FrameTreeNodeId host_frame_tree_node_id,
                 const PrerenderCancellationReason& reason) override;
   void OnRegistryDestroyed() override;
 
@@ -85,6 +90,15 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   // content::PreloadingDecider, which inherits content::DocumentUserData, owns
   // `this`, so `this` can access `render_frame_host_` safely.
   const raw_ref<RenderFrameHost> render_frame_host_;
+
+  // Below two fields are used to defer starting prerenders until LCP timing
+  // and are only used under LCPTimingPredictorPrerender2.
+  bool blocked_ = false;
+  using BlockedCandidateInfo =
+      std::tuple<blink::mojom::SpeculationCandidatePtr /*candidate*/,
+                 PreloadingPredictor /*enacting_predictor*/,
+                 PreloadingConfidence /*confidence*/>;
+  std::vector<BlockedCandidateInfo> blocked_candidates_;
 };
 
 }  // namespace content

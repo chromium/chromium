@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <tuple>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/time/time.h"
 
 namespace network {
@@ -18,7 +18,7 @@ void RetainSoonestToExpireTrustTokenKeys(
   DCHECK(keys);
 
   auto now = base::Time::Now();
-  base::EraseIf(*keys, [now](const mojom::TrustTokenVerificationKeyPtr& key) {
+  std::erase_if(*keys, [now](const mojom::TrustTokenVerificationKeyPtr& key) {
     return key->expiry <= now;
   });
 

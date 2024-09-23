@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+import "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom";
+import "chrome/services/pdf/public/mojom/pdf_searchifier.mojom";
+import "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom";
+import "services/screen_ai/public/mojom/screen_ai_service.mojom";
+import "skia/public/mojom/bitmap.mojom";
+
+// Interface for OCR, providing the functionalities related to OCR.
+interface Ocr {
+  // Takes an image and returns OCR results. Use the "Sync" attribute to support
+  // the underlying implementation that uses synchronous OCR callbacks.
+  [Sync]
+  PerformOcr(skia.mojom.BitmapN32 image)
+    => (screen_ai.mojom.VisualAnnotation visual_annotation);
+};
+
+// The main interface to Chrome's PDF Service, which performs various PDF
+// conversion operations in an isolated sandboxed process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface PdfService {
+  // Binds an interface that is used to convert images to a searchable PDF. OCR
+  // remotes passed to `BindPdfProgressiveSearchifier` may be called multiple
+  // times.
+  [EnableIf=is_chromeos_ash]
+  BindPdfProgressiveSearchifier(
+    pending_receiver<PdfProgressiveSearchifier> receiver,
+    pending_remote<Ocr> ocr);
+
+  // Binds an interface that is used to make inaccessible text in PDFs
+  // searchable. OCR remotes passed to `BindPdfSearchifier` may be called
+  // multiple times.
+  [EnableIf=is_chromeos_ash]
+  BindPdfSearchifier(
+    pending_receiver<PdfSearchifier> receiver,
+    pending_remote<Ocr> ocr);
+
+  // Binds an interface that is used to generate thumbnails for PDF content.
+  [EnableIf=is_chromeos_ash]
+  BindPdfThumbnailer(pending_receiver<PdfThumbnailer> receiver);
+};

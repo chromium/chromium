@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -29,6 +30,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -50,26 +52,12 @@ const int kProfileImageSize = 128;
 
 // Derives screen mode of sync opt in screen from the
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
-bool UseMinorModeRestrictions() {
+constexpr bool UseMinorModeRestrictions() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOS handles minor modes separately.
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-      ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-#endif
-}
-
-// After this time delta, user must see a screen. If it was impossible to get
-// the CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability before
-// the deadline, the screen should be configured in minor-safe way.
-base::TimeDelta GetMinorModeRestrictionsDeadline() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Not implemented for those platforms.
-  NOTREACHED_NORETURN();
-#else
-  return base::Milliseconds(
-      ::switches::kMinorModeRestrictionsFetchDeadlineMs.Get());
+  return true;
 #endif
 }
 
@@ -78,6 +66,65 @@ inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
          SyncConfirmationScreenMode::kPending;
 }
 
+SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
+  if (!value.is_int()) {
+    return SyncConfirmationScreenMode::kUnsupported;
+  }
+  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
+}
+
+// Records the button click in the `mode` context. `equal` denotes button to
+// record in kRestricted `mode`, and `notEqual` denotes button to record in
+// kUnrestricted `mode`.
+void RecordButtonClicked(SyncConfirmationScreenMode mode,
+                         signin_metrics::SyncButtonClicked equal,
+                         signin_metrics::SyncButtonClicked not_equal) {
+  if (mode == SyncConfirmationScreenMode::kUnsupported) {
+    // Do not record metrics from SyncConfirmation screens that don't support
+    // minor modes.
+    return;
+  }
+
+  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+    case SyncConfirmationScreenMode::kDeadlined:
+      button_clicked = equal;
+      break;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      button_clicked = not_equal;
+      break;
+    case SyncConfirmationScreenMode::kPending:
+      // Special case: the only button that can be clicked in this mode is the
+      // settings button.
+      button_clicked =
+          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
+      break;
+    default:
+      NOTREACHED_IN_MIGRATION();
+  }
+
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
+}
+
+// Translates screen `mode` to the corresponding metric describing what type of
+// buttons are presented.
+signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
+    SyncConfirmationScreenMode mode) {
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability;
+    case SyncConfirmationScreenMode::kDeadlined:
+      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      return signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
+
+    // Metric is not emitted for these cases:
+    case SyncConfirmationScreenMode::kUnsupported:
+    case SyncConfirmationScreenMode::kPending:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 SyncConfirmationScreenMode GetScreenMode(
@@ -150,20 +197,38 @@ void SyncConfirmationHandler::RegisterMessages() {
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
-  RecordConsent(args);
+  RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 }
 
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
+
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
-  RecordConsent(args);
+  RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::CONFIGURE_SYNC_FIRST);
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[0]),
+      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -190,11 +255,9 @@ void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
 }
 #endif
 
-void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  const base::Value::List& consent_description = args[0].GetList();
-  const std::string& consent_confirmation = args[1].GetString();
-
+void SyncConfirmationHandler::RecordConsent(
+    const base::Value::List& consent_description,
+    const std::string& consent_confirmation) {
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
   // this has privacy and legal implications, CHECK the integrity of the strings
@@ -243,7 +306,8 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
 
 void SyncConfirmationHandler::OnScreenModeChanged(
     SyncConfirmationScreenMode mode) {
-  DCHECK(mode != SyncConfirmationScreenMode::kPending);
+  DCHECK_NE(mode, SyncConfirmationScreenMode::kPending);
+  DCHECK_NE(mode, SyncConfirmationScreenMode::kUnsupported);
   DCHECK(!screen_mode_notified_) << "Must be called only once";
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();
@@ -270,12 +334,19 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   }
 
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown",
+                                GetButtonTypeMetricValue(mode));
 }
 
 void SyncConfirmationHandler::OnDeadline() {
-  if (!screen_mode_notified_) {
-    OnScreenModeChanged(SyncConfirmationScreenMode::kRestricted);
+  if (screen_mode_notified_ || !IsJavascriptAllowed()) {
+    // Do not override already configured screen mode, and ignore update attempt
+    // when the UI is no longer present. Note: this is called from a timer
+    // routine rather than directly from being handled from the UI app.
+    return;
   }
+
+  OnScreenModeChanged(SyncConfirmationScreenMode::kDeadlined);
 }
 
 void SyncConfirmationHandler::DispatchAccountInfoUpdate(
@@ -297,6 +368,7 @@ void SyncConfirmationHandler::DispatchAccountInfoUpdate(
     return;
   }
 
+  // Subsequent code will send updates to the UI.
   AllowJavascript();
 
   if (info.IsValid() && !avatar_notified_) {
@@ -384,7 +456,8 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
 
   if (!screen_mode_notified_ && UseMinorModeRestrictions()) {
     // Deadline timer for the case when screen mode doesn't arrive in time.
-    screen_mode_deadline_.Start(FROM_HERE, GetMinorModeRestrictionsDeadline(),
+    screen_mode_deadline_.Start(FROM_HERE,
+                                signin::GetMinorModeRestrictionsDeadline(),
                                 this, &SyncConfirmationHandler::OnDeadline);
   }
 

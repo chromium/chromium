@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_
 
 #include <new>
 #include <type_traits>
@@ -122,9 +122,7 @@ class NoDestructor {
       new (storage_) T(std::forward<Args>(args)...);
     }
 
-    const T* get() const {
-      return const_cast<PlacementStorage*>(this)->storage();
-    }
+    const T* get() const { return const_cast<PlacementStorage*>(this)->get(); }
     T* get() { return reinterpret_cast<T*>(storage_); }
 
    private:
@@ -143,4 +141,4 @@ class NoDestructor {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_NO_DESTRUCTOR_H_

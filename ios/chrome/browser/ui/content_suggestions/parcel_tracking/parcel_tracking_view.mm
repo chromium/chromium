@@ -48,7 +48,12 @@ const CGFloat kStatusBarViewSpacing = 6.0f;
 const CGFloat kStatusBarWidth = 61.0f;
 const CGFloat kStatusBarHeight = 6.0f;
 const CGFloat kStatusBarCornerRadius = 3.0f;
-const CGFloat kStatusBarMarginFromBottom = 5.0f;
+const CGFloat kStatusBarBottomMarginViewHeight = .01f;
+
+BOOL isInProgressState(ParcelState state) {
+  return state == ParcelState::kPickedUp || state == ParcelState::kHandedOff ||
+         state == ParcelState::kWithCarrier;
+}
 
 }  // namespace
 
@@ -113,6 +118,17 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   if (self) {
     [self constructView];
     self.isAccessibilityElement = YES;
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceStyle.self, UITraitPreferredContentSizeCategory.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -150,20 +166,16 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       stringWithFormat:@"%@, %@", _titleLabel.text, _subtitleLabel.text];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    _imageContainer.layer.borderColor =
-        [UIColor colorNamed:kGrey200Color].CGColor;
-    _imageContainer.layer.borderWidth = [self iconBorderWidth];
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    _titleLabel.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
-  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)constructView {
   _titleLabel = [[UILabel alloc] init];
@@ -203,9 +215,17 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   UIView* emptySpaceFiller = [[UIView alloc] init];
   [emptySpaceFiller setContentHuggingPriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
+  // Add empty view to trigger spacing between status bars and bottom alignment
+  // with the image.
+  UIView* statusBarBottomMarginView = [[UIView alloc] init];
+  [NSLayoutConstraint activateConstraints:@[
+    [statusBarBottomMarginView.heightAnchor
+        constraintEqualToConstant:kStatusBarBottomMarginViewHeight]
+  ]];
   UIStackView* rightVerticalStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _titleLabel, _subtitleLabel, emptySpaceFiller, statusBarStackView
+        _titleLabel, _subtitleLabel, emptySpaceFiller, statusBarStackView,
+        statusBarBottomMarginView
       ]];
   rightVerticalStackView.axis = UILayoutConstraintAxisVertical;
   rightVerticalStackView.alignment = UIStackViewAlignmentLeading;
@@ -217,6 +237,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
 
   // Container allows for margins between icon a border.
   _imageContainer = [[UIView alloc] init];
+  _imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _imageContainer.layer.cornerRadius = kIconContainerCornerRadius;
   _imageContainer.layer.masksToBounds = YES;
   _imageContainer.layer.borderColor =
@@ -236,23 +257,14 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   horizontalStackView.alignment = UIStackViewAlignmentTrailing;
   horizontalStackView.spacing = kIconContainerTextSpacing;
   [self addSubview:horizontalStackView];
+  AddSameConstraints(horizontalStackView, self);
 
   [NSLayoutConstraint activateConstraints:@[
     [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
     [_imageContainer.heightAnchor
         constraintEqualToAnchor:_imageContainer.widthAnchor],
-    [rightVerticalStackView.bottomAnchor
-        constraintEqualToAnchor:_imageContainer.bottomAnchor
-                       constant:-kStatusBarMarginFromBottom],
     [rightVerticalStackView.topAnchor
         constraintLessThanOrEqualToAnchor:_imageContainer.topAnchor],
-    [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [horizontalStackView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-    [horizontalStackView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [horizontalStackView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
   ]];
 
   // Set up the tap gesture recognizer.
@@ -293,12 +305,22 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
 // Updates the title and status bars based on the parcel `status` and
 // `estimatedDeliveryTime`.
 - (void)updateViewForParcelStatus:(ParcelState)status
-                     deliveryTime:(base::Time)estimatedDeliveryTime {
+                     deliveryTime:
+                         (std::optional<base::Time>)estimatedDeliveryTime {
   NSString* dateString =
-      base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
-          estimatedDeliveryTime, "EEEE MMMM d"));
+      estimatedDeliveryTime.has_value()
+          ? base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
+                *estimatedDeliveryTime, "EEEE MMMM d"))
+          : nil;
   NSString* imageColorName;
   NSString* imageContainerColorName;
+
+  // If the parcel is in progress but the estimated delivered date was not set
+  // on the server side, we cannot show the user much useful information. As
+  // such, we treat those cases visually like they are in the new parcel state.
+  if (!estimatedDeliveryTime.has_value() && isInProgressState(status)) {
+    status = ParcelState::kNew;
+  }
 
   // Configure the status bars (and title text color if needed) depending on
   // status.
@@ -310,7 +332,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kLabelCreated:
       _titleLabel.text = l10n_util::GetNSString(
@@ -319,26 +341,32 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       [_secondStatusBar configureAsError:NO lighterTone:YES];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kFinished: {
-      // Use Today date descriptor if the delivery day matches the current day
-      if ([[NSCalendar currentCalendar] isDate:estimatedDeliveryTime.ToNSDate()
-                               inSameDayAsDate:[NSDate date]]) {
-        dateString = l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY);
+      if (!estimatedDeliveryTime.has_value()) {
+        _titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS);
+      } else {
+        // Use Today date descriptor if the delivery day matches the current day
+        if ([[NSCalendar currentCalendar]
+                         isDate:estimatedDeliveryTime->ToNSDate()
+                inSameDayAsDate:[NSDate date]]) {
+          dateString = l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY);
+        }
+        _titleLabel.text = [NSString
+            stringWithFormat:
+                @"%@ %@",
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS),
+                dateString];
       }
-      _titleLabel.text = [NSString
-          stringWithFormat:
-              @"%@ %@",
-              l10n_util::GetNSString(
-                  IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS),
-              dateString];
       [_firstStatusBar configureAsError:NO lighterTone:NO];
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     }
     case ParcelState::kAtPickupLocation:
@@ -348,7 +376,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:NO];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kPickedUp:
     case ParcelState::kHandedOff:
@@ -360,7 +388,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kOutForDelivery:
       _titleLabel.text = l10n_util::GetNSStringF(
@@ -371,7 +399,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
       [_secondStatusBar configureAsError:NO lighterTone:NO];
       [_thirdStatusBar configureAsError:NO lighterTone:YES];
       imageColorName = kGreen300Color;
-      imageContainerColorName = kGreen50Color;
+      imageContainerColorName = kStaticGreen50Color;
       break;
     case ParcelState::kDeliveryFailed:
       _titleLabel.text = l10n_util::GetNSString(
@@ -451,6 +479,28 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
     return 0;
   }
   return 1;
+}
+
+// Updates properties of some elements of the UI when UITraitUserInterfaceStyle
+// or UITraitPreferredContentSizeCategories are changed.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    _imageContainer.layer.borderColor =
+        [UIColor colorNamed:kGrey200Color].CGColor;
+    _imageContainer.layer.borderWidth = [self iconBorderWidth];
+  }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    _titleLabel.font =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
+  }
+}
+
+#pragma mark - Testing category methods
+
+- (NSString*)titleLabelTextForTesting {
+  return self->_titleLabel.text;
 }
 
 @end

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] html5lib_tests2.html 3067a820b0195f9c08b8d0fe1dd7f8d800e10779
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <optgroup>\\n|         <option>\\n|       <option>\\n|     <option>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <optgroup>\\n|         <option>\\n|       <option>\\n|     <select>\\n|       <option>"
+[FAIL] html5lib_tests2.html e1011849d36ebf9d1577c53d940a75c462dcb1e7
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <optgroup>\\n|         <option>\\n|       <optgroup>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <optgroup>\\n|         <option>\\n|         <optgroup>"
+Harness: the test ran to completion.
+

@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+// Step 6 (wpt_internal/cookies/dt-coexist.{}.sub.https.window.js)
+let visible_data = "";
+if (document.cookie.includes("test")) {
+    visible_data += "Cookie,";
+}
+if (window.localStorage.getItem("test") == "test") {
+    visible_data += "LocalStorage,";
+}
+
+// Step 7 (wpt_internal/cookies/dt-coexist.{}.sub.https.window.js)
+window.top.postMessage({type: "HadData", message:visible_data}, "*");
+</script>

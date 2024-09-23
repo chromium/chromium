@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -39,25 +41,36 @@ class IbanBubbleControllerImpl
   IbanBubbleControllerImpl& operator=(const IbanBubbleControllerImpl&) = delete;
   ~IbanBubbleControllerImpl() override;
 
+  // Time to wait before auto-closing confirmation bubble.
+  static constexpr base::TimeDelta kAutoCloseConfirmationBubbleWaitSec =
+      base::Seconds(3);
+
   // Sets up the controller and offers to save the `iban` locally.
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
   // with respect to the offer-to-save prompt.
-  void OfferLocalSave(
-      const Iban& iban,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
+  void OfferLocalSave(const Iban& iban,
+                      bool should_show_prompt,
+                      payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                          save_iban_prompt_callback);
 
   // Sets up the controller and offers to save the `iban` to the GPay server.
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
   // with respect to the offer-to-upload save prompt.
-  void OfferUploadSave(
-      const Iban& iban,
-      LegalMessageLines legal_message_lines,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
+  void OfferUploadSave(const Iban& iban,
+                       LegalMessageLines legal_message_lines,
+                       bool should_show_prompt,
+                       payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                           save_iban_prompt_callback);
 
   // No-op if the bubble is already shown, otherwise, shows the bubble.
   void ReshowBubble();
+
+  // Shows upload result to users. `iban_saved` indicates if the IBAN is
+  // successfully saved. `hit_max_strikes` indicates whether the upload save
+  // offer for this IBAN has reached the max strike. If successfully saved, a
+  // timer is started to auto-close the confirmation bubble if the user doesn't
+  // close the bubble before `kAutoCloseConfirmationBubbleWaitSec`.
+  void ShowConfirmationBubbleView(bool iban_saved, bool hit_max_strikes);
 
   // IbanBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -66,6 +79,8 @@ class IbanBubbleControllerImpl
   std::u16string GetDeclineButtonText() const override;
   AccountInfo GetAccountInfo() override;
   const Iban& GetIban() const override;
+  base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() override;
 
   void OnAcceptButton(const std::u16string& nickname) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
@@ -80,8 +95,9 @@ class IbanBubbleControllerImpl
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
-  PaymentBubbleType GetPaymentBubbleType() const override;
   int GetSaveSuccessAnimationStringId() const override;
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const override;
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {
@@ -94,6 +110,7 @@ class IbanBubbleControllerImpl
   // AutofillBubbleControllerBase:
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+  using AutofillBubbleControllerBase::HideBubble;
 
  private:
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
@@ -125,7 +142,8 @@ class IbanBubbleControllerImpl
 
   // Callback to run once the user makes a decision with respect to the local
   // or GPay server IBAN offer-to-save prompt.
-  AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback_;
+  payments::PaymentsAutofillClient::SaveIbanPromptCallback
+      save_iban_prompt_callback_;
 
   // Whether the bubble is shown after user interacted with the omnibox icon.
   bool is_reshow_ = false;
@@ -138,6 +156,16 @@ class IbanBubbleControllerImpl
 
   // If no legal message should be shown, then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
+
+  // UI parameters needed to display the save IBAN confirmation view.
+  std::optional<SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams>
+      confirmation_ui_params_;
+
+  // Timer that controls auto closure of confirmation bubble.
+  base::OneShotTimer auto_close_confirmation_timer_;
+
+  // Weak pointer factory for this save IBAN bubble controller.
+  base::WeakPtrFactory<IbanBubbleControllerImpl> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <cstdio>
 #include <cstring>
 #include <memory>
@@ -56,7 +61,7 @@ int main(int argc, char** argv) {
       continue;
     }
     // Unknown argument.
-    NOTREACHED() << "Invalid argument " << argv[i];
+    NOTREACHED_IN_MIGRATION() << "Invalid argument " << argv[i];
   }
   CHECK_EQ(i, argc);
   base::WriteFile(base::FilePath::FromUTF8Unsafe(mock_nacl_gdb_file), kPass);

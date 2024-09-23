@@ -6,14 +6,18 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
+    "history_app_test.ts",
     "history_clusters/utils.ts",
     "history_drawer_test.ts",
+    "history_embeddings_promo_test.ts",
     "history_item_focus_test.ts",
     "history_item_test.ts",
     "history_list_focus_test.ts",
     "history_list_test.ts",
     "history_metrics_test.ts",
     "history_overflow_menu_test.ts",
+    "history_product_specifications_item_test.ts",
+    "history_product_specifications_list_test.ts",
     "history_routing_test.ts",
     "history_routing_with_query_param_test.ts",
     "history_supervised_user_test.ts",
@@ -39,7 +43,9 @@ build_webui_tests("build") {
   ]
   ts_deps = [
     "//chrome/browser/resources/history:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

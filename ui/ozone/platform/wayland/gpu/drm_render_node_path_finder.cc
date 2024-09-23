@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 
 #include <fcntl.h>
@@ -10,6 +15,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <string>
 
 #include "base/files/scoped_file.h"
 #include "base/strings/stringprintf.h"
@@ -50,9 +57,13 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
     if (len < 0 || len == sizeof(device_link))
       continue;
 
-    /* readlink does not place a nul byte at the end of the string. */
-    if (len >= 4 && memcmp(device_link + len - 4, "vgem", 4) == 0)
+    // Convert device_link to a string for safe substring comparison.
+    std::string device_link_str(device_link, len);
+
+    // readlink does not place a nul byte at the end of the string.
+    if (std::string(device_link, len).ends_with("vgem")) {
       continue;
+    }
 
     std::string dri_render_node(base::StringPrintf(kDriRenderNodeTemplate, i));
     base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));

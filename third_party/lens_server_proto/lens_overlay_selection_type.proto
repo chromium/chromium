@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Possible selection types for Lens overlay.
+enum LensOverlaySelectionType {
+  UNKNOWN_SELECTION_TYPE = 0;
+  TAP_ON_EMPTY = 1;
+  SELECT_TEXT_HIGHLIGHT = 3;
+  REGION_SEARCH = 7;
+  INJECTED_IMAGE = 10;
+  TAP_ON_REGION_GLEAM = 15;
+  MULTIMODAL_SEARCH = 18;
+  TAP_ON_OBJECT = 22;
+  MULTIMODAL_SUGGEST_TYPEAHEAD = 25;
+  MULTIMODAL_SUGGEST_ZERO_PREFIX = 26;
+}

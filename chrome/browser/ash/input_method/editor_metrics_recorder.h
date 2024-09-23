@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
@@ -18,16 +19,20 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason);
 
 EditorStates ToEditorStatesMetric(orca::mojom::TextQueryErrorCode error_code);
 
+std::optional<EditorStates> ToEditorStatesMetric(
+    orca::mojom::MetricEvent metric_event);
+
+EditorTone ToEditorMetricTone(orca::mojom::TriggerContextPtr trigger_context);
+
 class EditorMetricsRecorder {
  public:
-  explicit EditorMetricsRecorder(EditorOpportunityMode mode);
+  EditorMetricsRecorder(EditorContext* context, EditorOpportunityMode mode);
 
   void SetMode(EditorOpportunityMode mode);
   void SetTone(std::optional<std::string_view> preset_query_id,
                std::optional<std::string_view> freeform_text);
   void SetTone(EditorTone tone);
   void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
-
   void LogEditorState(EditorStates state);
   void LogNumberOfCharactersInserted(int number_of_characters);
   void LogNumberOfCharactersSelectedForInsert(int number_of_characters);
@@ -35,6 +40,11 @@ class EditorMetricsRecorder {
   void LogLengthOfLongestResponseFromServer(int number_of_characters);
 
  private:
+  void LogEditorCriticalState(const EditorCriticalStates& critical_state);
+
+  // Not owned by this class
+  raw_ptr<EditorContext> context_;
+
   EditorOpportunityMode mode_;
   EditorTone tone_ = EditorTone::kUnset;
 };

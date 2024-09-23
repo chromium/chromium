@@ -38,37 +38,18 @@ namespace blink {
 
 SharedBufferChunkReader::SharedBufferChunkReader(
     scoped_refptr<const SharedBuffer> buffer,
-    const Vector<char>& separator)
+    std::string_view separator)
     : buffer_(std::move(buffer)),
       buffer_position_(0),
-      segment_(nullptr),
-      segment_length_(0),
-      segment_index_(0),
-      reached_end_of_file_(false),
-      separator_(separator),
-      separator_index_(0) {}
-
-SharedBufferChunkReader::SharedBufferChunkReader(
-    scoped_refptr<const SharedBuffer> buffer,
-    const char* separator)
-    : buffer_(std::move(buffer)),
-      buffer_position_(0),
-      segment_(nullptr),
-      segment_length_(0),
       segment_index_(0),
       reached_end_of_file_(false),
       separator_index_(0) {
   SetSeparator(separator);
 }
 
-void SharedBufferChunkReader::SetSeparator(const Vector<char>& separator) {
-  separator_ = separator;
-}
-
-void SharedBufferChunkReader::SetSeparator(const char* separator) {
+void SharedBufferChunkReader::SetSeparator(std::string_view separator) {
   separator_.clear();
-  separator_.Append(separator,
-                    base::checked_cast<wtf_size_t>(strlen(separator)));
+  separator_.AppendSpan(base::span(separator));
 }
 
 bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
@@ -78,12 +59,11 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
 
   chunk.clear();
   while (true) {
-    while (segment_index_ < segment_length_) {
+    while (segment_index_ < segment_.size()) {
       char current_character = segment_[segment_index_++];
       if (current_character != separator_[separator_index_]) {
         if (separator_index_ > 0) {
-          SECURITY_DCHECK(separator_index_ <= separator_.size());
-          chunk.Append(separator_.data(), separator_index_);
+          chunk.AppendSpan(base::span(separator_).first(separator_index_));
           separator_index_ = 0;
         }
         chunk.push_back(current_character);
@@ -100,20 +80,18 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
 
     // Read the next segment.
     segment_index_ = 0;
-    buffer_position_ += segment_length_;
+    buffer_position_ += segment_.size();
     auto it = buffer_->GetIteratorAt(buffer_position_);
     if (it == buffer_->cend()) {
-      segment_ = nullptr;
-      segment_length_ = 0;
+      segment_ = {};
       reached_end_of_file_ = true;
       if (separator_index_ > 0)
-        chunk.Append(separator_.data(), separator_index_);
+        chunk.AppendSpan(base::span(separator_).first(separator_index_));
       return !chunk.empty();
     }
-    segment_ = it->data();
-    segment_length_ = base::checked_cast<uint32_t>(it->size());
+    segment_ = *it;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -128,28 +106,26 @@ String SharedBufferChunkReader::NextChunkAsUTF8StringWithLatin1Fallback(
              : g_empty_string;
 }
 
-uint32_t SharedBufferChunkReader::Peek(Vector<char>& data,
-                                       uint32_t requested_size) {
+size_t SharedBufferChunkReader::Peek(Vector<char>& data,
+                                     size_t requested_size) {
   data.clear();
-  if (requested_size <= segment_length_ - segment_index_) {
-    data.Append(segment_ + segment_index_, requested_size);
+  auto data_fragment = segment_.subspan(segment_index_);
+  if (requested_size <= data_fragment.size()) {
+    data.AppendSpan(data_fragment.first(requested_size));
     return requested_size;
   }
 
-  uint32_t read_bytes_count = segment_length_ - segment_index_;
-  data.Append(segment_ + segment_index_, read_bytes_count);
+  data.AppendSpan(data_fragment);
 
-  for (auto it = buffer_->GetIteratorAt(buffer_position_ + segment_length_);
+  for (auto it = buffer_->GetIteratorAt(buffer_position_ + segment_.size());
        it != buffer_->cend(); ++it) {
-    if (requested_size <= read_bytes_count + it->size()) {
-      data.Append(it->data(), requested_size - read_bytes_count);
-      read_bytes_count += (requested_size - read_bytes_count);
+    if (requested_size <= data.size() + it->size()) {
+      data.AppendSpan((*it).first(requested_size - data.size()));
       break;
     }
-    data.Append(it->data(), base::checked_cast<wtf_size_t>(it->size()));
-    read_bytes_count += it->size();
+    data.AppendSpan(*it);
   }
-  return read_bytes_count;
+  return data.size();
 }
 
 }  // namespace blink

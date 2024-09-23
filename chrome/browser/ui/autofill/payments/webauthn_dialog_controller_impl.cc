@@ -29,7 +29,8 @@ WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
 }
 
 void WebauthnDialogControllerImpl::ShowOfferDialog(
-    AutofillClient::WebauthnDialogCallback offer_dialog_callback) {
+    payments::PaymentsAutofillClient::WebauthnDialogCallback
+        offer_dialog_callback) {
   DCHECK(!dialog_model_);
 
   callback_ = std::move(offer_dialog_callback);
@@ -38,7 +39,8 @@ void WebauthnDialogControllerImpl::ShowOfferDialog(
 }
 
 void WebauthnDialogControllerImpl::ShowVerifyPendingDialog(
-    AutofillClient::WebauthnDialogCallback verify_pending_dialog_callback) {
+    payments::PaymentsAutofillClient::WebauthnDialogCallback
+        verify_pending_dialog_callback) {
   DCHECK(!dialog_model_);
 
   callback_ = std::move(verify_pending_dialog_callback);
@@ -58,7 +60,7 @@ bool WebauthnDialogControllerImpl::CloseDialog() {
 void WebauthnDialogControllerImpl::UpdateDialog(
     WebauthnDialogState dialog_state) {
   dialog_model_->SetDialogState(dialog_state);
-  // TODO(crbug.com/991037): Handle callback resetting for verify pending
+  // TODO(crbug.com/40639086): Handle callback resetting for verify pending
   // dialog. Right now this function should only be passed in
   // WebauthnDialogState::kOfferError.
   DCHECK_EQ(dialog_state, WebauthnDialogState::kOfferError);
@@ -97,7 +99,7 @@ void WebauthnDialogControllerImpl::OnCancelButtonClicked() {
     case WebauthnDialogState::kUnknown:
     case WebauthnDialogState::kInactive:
     case WebauthnDialogState::kOfferError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

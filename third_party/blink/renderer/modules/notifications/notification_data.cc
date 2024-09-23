@@ -32,7 +32,7 @@ mojom::blink::NotificationDirection ToDirectionEnumValue(
     return mojom::blink::NotificationDirection::RIGHT_TO_LEFT;
   if (direction == "auto")
     return mojom::blink::NotificationDirection::AUTO;
-  NOTREACHED() << "Unknown direction: " << direction;
+  NOTREACHED_IN_MIGRATION() << "Unknown direction: " << direction;
   return mojom::blink::NotificationDirection::AUTO;
 }
 
@@ -41,7 +41,7 @@ mojom::blink::NotificationScenario ToScenarioEnumValue(const String& scenario) {
     return mojom::blink::NotificationScenario::DEFAULT;
   if (scenario == "incoming-call")
     return mojom::blink::NotificationScenario::INCOMING_CALL;
-  NOTREACHED() << "Unknown scenario: " << scenario;
+  NOTREACHED_IN_MIGRATION() << "Unknown scenario: " << scenario;
   return mojom::blink::NotificationScenario::DEFAULT;
 }
 
@@ -101,8 +101,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
         VibrationController::SanitizeVibrationPattern(options->vibrate());
   }
   notification_data->vibration_pattern = Vector<int32_t>();
-  notification_data->vibration_pattern->Append(vibration_pattern.data(),
-                                               vibration_pattern.size());
+  notification_data->vibration_pattern->AppendSpan(
+      base::span(vibration_pattern));
 
   notification_data->timestamp =
       options->hasTimestamp()
@@ -130,10 +130,7 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     }
 
     notification_data->data = Vector<uint8_t>();
-    notification_data->data->Append(
-        serialized_script_value->Data(),
-        base::checked_cast<wtf_size_t>(
-            serialized_script_value->DataLengthInBytes()));
+    notification_data->data->AppendSpan(serialized_script_value->GetWireData());
   }
 
   Vector<mojom::blink::NotificationActionPtr> actions;
@@ -152,8 +149,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     } else if (action->type() == "text") {
       notification_action->type = mojom::blink::NotificationActionType::TEXT;
     } else {
-      NOTREACHED() << "Unknown action type: "
-                   << IDLEnumAsString(action->type());
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown action type: " << IDLEnumAsString(action->type());
     }
 
     if (!action->placeholder().IsNull() &&

@@ -4,48 +4,48 @@
 /**
  * @fileoverview A lightweight toast.
  */
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss} from './cr_toast.css.js';
+import {getHtml} from './cr_toast.html.js';
 
-import {getTemplate} from './cr_toast.html.js';
-
-export interface CrToastElement {
-  _setOpen(open: boolean): void;
-}
-
-export class CrToastElement extends PolymerElement {
+export class CrToastElement extends CrLitElement {
   static get is() {
     return 'cr-toast';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       duration: {
         type: Number,
-        value: 0,
       },
 
       open: {
-        readOnly: true,
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  duration: number;
-  open: boolean;
+  duration: number = 0;
+  open: boolean = false;
   private hideTimeoutId_: number|null = null;
 
-  static get observers() {
-    return ['resetAutoHide_(duration, open)'];
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('duration') || changedProperties.has('open')) {
+      this.resetAutoHide_();
+    }
   }
 
   /**
@@ -69,7 +69,7 @@ export class CrToastElement extends PolymerElement {
    * passed. If the toast is currently being shown, any preexisting auto-hide
    * is cancelled and replaced with a new auto-hide.
    */
-  show() {
+  async show() {
     // Force autohide to reset if calling show on an already shown toast.
     const shouldResetAutohide = this.open;
 
@@ -84,7 +84,8 @@ export class CrToastElement extends PolymerElement {
     // contents of an opened toast.
     this.removeAttribute('aria-hidden');
 
-    this._setOpen(true);
+    this.open = true;
+    await this.updateComplete;
     this.setAttribute('role', 'alert');
 
     if (shouldResetAutohide) {
@@ -96,9 +97,10 @@ export class CrToastElement extends PolymerElement {
    * Hides the toast and ensures that screen readers cannot its contents while
    * hidden.
    */
-  hide() {
+  async hide() {
     this.setAttribute('aria-hidden', 'true');
-    this._setOpen(false);
+    this.open = false;
+    await this.updateComplete;
   }
 }
 

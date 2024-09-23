@@ -4,8 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -120,7 +121,7 @@ export class PrivacySandboxDialogAppElement extends PolymerElement {
         this.didStartWithScrollbar_ || newVal ? 'can-scroll' : 'hide-scrollbar';
 
     // Wait for collapse section transition to complete 70%.
-    const collapseElement = this.$.expandSection.querySelector('iron-collapse');
+    const collapseElement = this.$.expandSection.querySelector('cr-collapse');
     if (collapseElement) {
       const computedStyle = window.getComputedStyle(collapseElement);
       const duration = parseFloat(computedStyle.getPropertyValue(

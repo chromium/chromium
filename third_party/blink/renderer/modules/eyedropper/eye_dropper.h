@@ -9,6 +9,7 @@
 
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -16,11 +17,10 @@ namespace blink {
 
 class AbortSignal;
 class ColorSelectionOptions;
+class ColorSelectionResult;
 enum class DOMExceptionCode;
 class ExceptionState;
 class ScopedAbortState;
-class ScriptPromise;
-class ScriptPromiseResolver;
 
 // The EyeDropper API enables developers to use a browser-supplied eyedropper
 // in their web applications. This feature is still
@@ -40,9 +40,9 @@ class EyeDropper final : public ScriptWrappable {
 
   // Opens the eyedropper and replaces the cursor with a browser-defined
   // preview.
-  ScriptPromise open(ScriptState*,
-                     const ColorSelectionOptions*,
-                     ExceptionState&);
+  ScriptPromise<ColorSelectionResult> open(ScriptState*,
+                                           const ColorSelectionOptions*,
+                                           ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -51,14 +51,14 @@ class EyeDropper final : public ScriptWrappable {
 
   void AbortCallback(AbortSignal* signal);
   void EyeDropperResponseHandler(std::unique_ptr<ScopedAbortState>,
-                                 ScriptPromiseResolver*,
+                                 ScriptPromiseResolver<ColorSelectionResult>*,
                                  bool,
                                  uint32_t);
   void EndChooser(std::unique_ptr<ScopedAbortState>);
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolver<ColorSelectionResult>> resolver_;
 };
 
 }  // namespace blink

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/feature_engagement/public/group_list.h"
 
 #include "build/build_config.h"
@@ -15,7 +20,11 @@ const base::Feature* const kAllGroups[] = {
 #if BUILDFLAG(IS_IOS)
     &kiOSFullscreenPromosGroup,
     &kiOSDefaultBrowserPromosGroup,
+    &kiOSTailoredDefaultBrowserPromosGroup,
 #endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    &kClankDefaultBrowserPromosGroup,
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 }  // namespace
 

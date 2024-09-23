@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Service to expose ShoppingPersistedTabData with price drop information. TODO(crbug.com/1501138):
+ * Service to expose ShoppingPersistedTabData with price drop information. TODO(crbug.com/40941391):
  * This service should be moved out of current folder when we finish the ShoppingPersistedTabData
  * refactor that will move it out of current folder.
  */
@@ -95,12 +95,12 @@ public class ShoppingPersistedTabDataService {
                     new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileToPriceDropService.getForProfile(
-                profile, ShoppingPersistedTabDataService::new);
+                profile, (unused) -> new ShoppingPersistedTabDataService());
     }
 
     /**
      * Initialize the service by passing in the tabs that could have price drop.
-     * TODO(crbug.com/1501138): This method could be part of the constructor once
+     * TODO(crbug.com/40941391): This method could be part of the constructor once
      * ShoppingPersistedTabData is in a separate target.
      *
      * @param tabs the tabs that could have price drop.

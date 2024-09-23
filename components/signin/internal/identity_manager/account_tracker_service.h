@@ -64,6 +64,9 @@ class AccountTrackerService {
   // Keep in sync with OAuth2LoginAccountRevokedMigrationState histogram enum.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // TODO(crbug.com/40268200): Remove the migration code after enough users
+  // have migrated.
   enum AccountIdMigrationState {
     MIGRATION_NOT_STARTED = 0,
     MIGRATION_IN_PROGRESS = 1,
@@ -132,16 +135,6 @@ class AccountTrackerService {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  // Returns a reference to the corresponding Java AccountTrackerService object.
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-
-  // Seeds the accounts with |core_account_infos|.
-  void LegacySeedAccountsInfo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& core_account_infos);
 #endif
 
   // If set, this callback will be invoked whenever the details of a tracked
@@ -257,11 +250,6 @@ class AccountTrackerService {
 
   // Task runner used for file operations on avatar images.
   scoped_refptr<base::SequencedTaskRunner> image_storage_task_runner_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // A reference to the Java counterpart of this object.
-  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

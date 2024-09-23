@@ -35,6 +35,10 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
+
 using blink::mojom::FileSystemAccessEntry;
 using blink::mojom::FileSystemAccessEntryPtr;
 using blink::mojom::FileSystemAccessHandle;
@@ -49,35 +53,6 @@ using PathType = FileSystemAccessPermissionContext::PathType;
 using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
-
-namespace {
-// Returns whether the specified extension receives special handling by the
-// Windows shell.
-bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
-  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
-
-  // .lnk and .scf files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively). '.url' files can be used to read
-  // arbitrary files (see https://crbug.com/1307930 and
-  // https://crbug.com/1354518).
-  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
-      extension_lower == FILE_PATH_LITERAL("scf") ||
-      extension_lower == FILE_PATH_LITERAL("url")) {
-    return true;
-  }
-
-  // Setting a file's extension to a CLSID may conceal its actual file type on
-  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
-  if (!extension_lower.empty() &&
-      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
-    return true;
-  }
-  return false;
-}
-
-}  // namespace
 
 struct FileSystemAccessDirectoryHandleImpl::
     FileSystemAccessDirectoryEntriesListenerHolder
@@ -103,6 +78,21 @@ struct FileSystemAccessDirectoryHandleImpl::
       const FileSystemAccessDirectoryEntriesListenerHolder&) = delete;
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener> listener;
+
+  // Tracks the number of invocation of
+  // FileSystemAccessDirectoryHandleImpl::DidReadDirectory.
+  int32_t total_batch_count{0};
+
+  // The termination of each call of
+  // FileSystemAccessDirectoryHandleImpl::DidReadDirectory will trigger a call
+  // to FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady. This
+  // counter tracks the number of calls to
+  // FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady.
+  int32_t processed_batch_count{0};
+
+  // Tracks whether the final entries have been received. This is used to
+  // determine whether the listener should expect more entries.
+  bool has_received_final_batch{false};
 
  private:
   ~FileSystemAccessDirectoryEntriesListenerHolder() = default;
@@ -295,7 +285,7 @@ void FileSystemAccessDirectoryHandleImpl::Move(
     MoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1250534): Implement move for directory handles.
+  // TODO(crbug.com/40198034): Implement move for directory handles.
   std::move(callback).Run(file_system_access_error::FromStatus(
       blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
@@ -305,7 +295,7 @@ void FileSystemAccessDirectoryHandleImpl::Rename(
     RenameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1250534): Implement rename for directory handles.
+  // TODO(crbug.com/40198034): Implement rename for directory handles.
   std::move(callback).Run(file_system_access_error::FromStatus(
       blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
@@ -526,6 +516,9 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     return;
   }
 
+  ++listener_holder->total_batch_count;
+  listener_holder->has_received_final_batch = !has_more_entries;
+
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessDirectoryIterationBlocklistCheck) &&
       manager()->permission_context()) {
@@ -534,10 +527,9 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     // since then, pointing to a blocklisted file or directory. Before merging
     // a child into a result vector, check for sensitive entry access, which is
     // run on the resolved path.
-    auto final_callback =
-        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::AllEntriesReady,
-                       weak_factory_.GetWeakPtr(), has_more_entries,
-                       std::move(listener_holder));
+    auto final_callback = base::BindOnce(
+        &FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady,
+        weak_factory_.GetWeakPtr(), std::move(listener_holder));
 
     // Barrier callback is used to wait for checking each path in the
     // `file_list` and creating a `FileSystemAccessEntryPtr` if the path is
@@ -547,8 +539,9 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     // barrier callback with a valid `FileSystemAccessEntryPtr` or nullptr.
     auto barrier_callback = base::BarrierCallback<FileSystemAccessEntryPtr>(
         file_list.size(),
-        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::MergeAllEntries,
-                       weak_factory_.GetWeakPtr(), std::move(final_callback)));
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::MergeCurrentBatchEntries,
+            weak_factory_.GetWeakPtr(), std::move(final_callback)));
 
     for (const auto& entry : file_list) {
       std::string basename = storage::FilePathToString(entry.name);
@@ -564,8 +557,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
       }
 
       if (entry.type == filesystem::mojom::FsFileType::DIRECTORY) {
-        auto directory_result_entry =
-            CreateEntry(basename, child_url, HandleType::kDirectory);
+        auto directory_result_entry = CreateEntry(
+            entry.name, entry.display_name, child_url, HandleType::kDirectory);
         barrier_callback.Run(std::move(directory_result_entry));
         continue;
       }
@@ -581,8 +574,8 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
           context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
-                         weak_factory_.GetWeakPtr(), std::move(basename),
-                         child_url, barrier_callback));
+                         weak_factory_.GetWeakPtr(), entry.name,
+                         entry.display_name, child_url, barrier_callback));
     }
     return;
   }
@@ -602,17 +595,17 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
     }
 
     entries.push_back(
-        CreateEntry(basename, child_url,
+        CreateEntry(entry.name, entry.display_name, child_url,
                     entry.type == filesystem::mojom::FsFileType::DIRECTORY
                         ? HandleType::kDirectory
                         : HandleType::kFile));
   }
-  AllEntriesReady(has_more_entries, std::move(listener_holder),
-                  std::move(entries));
+  CurrentBatchEntriesReady(std::move(listener_holder), std::move(entries));
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
-    std::string basename,
+    base::FilePath basename,
+    base::FilePath display_name,
     storage::FileSystemURL child_url,
     base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
     FileSystemAccessPermissionContext::SensitiveEntryResult
@@ -624,11 +617,12 @@ void FileSystemAccessDirectoryHandleImpl::DidVerifySensitiveAccessForFileEntry(
     return;
   }
 
-  auto entry = CreateEntry(basename, child_url, HandleType::kFile);
+  auto entry =
+      CreateEntry(basename, display_name, child_url, HandleType::kFile);
   std::move(barrier_callback).Run(std::move(entry));
 }
 
-void FileSystemAccessDirectoryHandleImpl::MergeAllEntries(
+void FileSystemAccessDirectoryHandleImpl::MergeCurrentBatchEntries(
     base::OnceCallback<void(std::vector<FileSystemAccessEntryPtr>)>
         final_callback,
     std::vector<FileSystemAccessEntryPtr> entries) {
@@ -644,104 +638,26 @@ void FileSystemAccessDirectoryHandleImpl::MergeAllEntries(
   std::move(final_callback).Run(std::move(filtered_entries));
 }
 
-void FileSystemAccessDirectoryHandleImpl::AllEntriesReady(
-    bool has_more_entries,
+void FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady(
     scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
         listener_holder,
     std::vector<FileSystemAccessEntryPtr> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!listener_holder->listener) {
     return;
   }
 
-  listener_holder->listener->DidReadDirectory(
-      file_system_access_error::Ok(), std::move(entries), has_more_entries);
-}
+  ++listener_holder->processed_batch_count;
 
-// static
-bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
-    storage::FileSystemType type,
-    const std::string& name) {
-  // This method is similar to net::IsSafePortablePathComponent, with a few
-  // notable differences where the net version does not consider names safe
-  // while here we do want to allow them. These cases are:
-  //  - Files in sandboxed file systems are subject to far fewer restrictions,
-  //    i.e. base::i18n::IsFilenameLegal is not called.
-  //  - Names starting with a '.'. These would be hidden files in most file
-  //    managers, but are something we explicitly want to support for the
-  //    File System Access API, for names like .git.
-  //  - Names that end in '.local'. For downloads writing to such files is
-  //    dangerous since it might modify what code is executed when an executable
-  //    is ran from the same directory. For the File System Access API this
-  //    isn't really a problem though, since if a website can write to a .local
-  //    file via a FileSystemDirectoryHandle they can also just modify the
-  //    executables in the directory directly.
-  //
-  // TODO(https://crbug.com/1154757): Unify this with
-  // net::IsSafePortablePathComponent, with the result probably ending up in
-  // base/i18n/file_util_icu.h.
+  const bool all_batches_are_processed =
+      listener_holder->processed_batch_count ==
+      listener_holder->total_batch_count;
+  const bool more_batches_are_expected =
+      !all_batches_are_processed || !listener_holder->has_received_final_batch;
 
-  const base::FilePath component = storage::StringToFilePath(name);
-  // Empty names, or names that contain path separators are invalid.
-  if (component.empty() ||
-      component != storage::VirtualPath::BaseName(component) ||
-      component != component.StripTrailingSeparators()) {
-    return false;
-  }
-
-  std::u16string component16;
-#if BUILDFLAG(IS_WIN)
-  component16.assign(component.value().begin(), component.value().end());
-#else
-  std::string component8 = component.AsUTF8Unsafe();
-  if (!base::UTF8ToUTF16(component8.c_str(), component8.size(), &component16)) {
-    return false;
-  }
-#endif
-
-  // The names of files in sandboxed file systems are obfuscated before they end
-  // up on disk (if they ever end up on disk). We don't need to worry about
-  // platform-specific restrictions. More restrictions would need to be added if
-  // we ever revisit allowing file moves across the local/sandboxed file system
-  // boundary. See https://crbug.com/1408211.
-  if (type == storage::kFileSystemTypeTemporary) {
-    // Check for both '/' and '\' as path separators, regardless of what OS
-    // we're running on.
-    return component16 != u"." && component16 != u".." &&
-           !base::Contains(component16, '/') &&
-           !base::Contains(component16, '\\');
-  }
-
-  // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
-  // a leading '.' before passing it to that method.
-  // TODO(mek): Consider making IsFilenameLegal more flexible to support this
-  // use case.
-  if (component16[0] == '.') {
-    component16 = component16.substr(1);
-  }
-  if (!base::i18n::IsFilenameLegal(component16)) {
-    return false;
-  }
-
-  base::FilePath::StringType extension = component.Extension();
-  if (!extension.empty()) {
-    extension.erase(extension.begin());  // Erase preceding '.'.
-  }
-  if (IsShellIntegratedExtension(extension)) {
-    return false;
-  }
-
-  if (base::TrimString(component.value(), FILE_PATH_LITERAL("."),
-                       base::TRIM_TRAILING) != component.value()) {
-    return false;
-  }
-
-  if (net::IsReservedNameOnWindows(component.value())) {
-    return false;
-  }
-
-  return true;
+  listener_holder->listener->DidReadDirectory(file_system_access_error::Ok(),
+                                              std::move(entries),
+                                              more_batches_are_expected);
 }
 
 blink::mojom::FileSystemAccessErrorPtr
@@ -751,14 +667,28 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const storage::FileSystemURL& parent = url();
-  if (!IsSafePathComponent(parent.type(), basename)) {
+  if (!manager()->IsSafePathComponent(parent.type(), basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  base::FilePath child_path =
+      parent.virtual_path().IsContentUri()
+          ? ContentUriBuildDocumentUriUsingTree(parent.virtual_path(), basename)
+          : parent.virtual_path().Append(basename);
+  // If parent is not a Document Tree URI and basename not a document-id,
+  // child_path will not be valid.
+  if (child_path.empty()) {
+    return file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
+  }
+#else
+  base::FilePath child_path =
+      parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename));
+#endif
   *result = file_system_context()->CreateCrackedFileSystemURL(
-      parent.storage_key(), parent.mount_type(),
-      parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename)));
+      parent.storage_key(), parent.mount_type(), child_path);
   // Child URLs inherit their parent's storage bucket.
   if (parent.bucket()) {
     result->SetBucket(parent.bucket().value());
@@ -767,21 +697,24 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
 }
 
 FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
-    const std::string& basename,
+    const base::FilePath& basename,
+    const base::FilePath& display_name,
     const storage::FileSystemURL& url,
     HandleType handle_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::string name =
+      storage::FilePathToString(display_name.empty() ? basename : display_name);
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(
             manager()->CreateDirectoryHandle(context(), url, handle_state())),
-        basename);
+        name);
   }
   return FileSystemAccessEntry::New(
       FileSystemAccessHandle::NewFile(
           manager()->CreateFileHandle(context(), url, handle_state())),
-      basename);
+      name);
 }
 
 void FileSystemAccessDirectoryHandleImpl::GetUniqueId(

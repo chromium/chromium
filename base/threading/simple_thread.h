@@ -225,7 +225,7 @@ class BASE_EXPORT DelegateSimpleThreadPool
   const std::string name_prefix_;
   size_t num_threads_;
   std::vector<std::unique_ptr<DelegateSimpleThread>> threads_;
-  base::queue<Delegate*> delegates_;
+  base::queue<raw_ptr<Delegate, CtnExperimental>> delegates_;
   base::Lock lock_;            // Locks delegates_
   WaitableEvent dry_;    // Not signaled when there is no work to do.
 };

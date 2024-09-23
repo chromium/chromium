@@ -12,7 +12,12 @@
           }
         },
         "prefs": {
-          "plugin_vm.image": {}
+          "plugin_vm.image": {
+            "value": {
+              "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32",
+              "url": "http://localhost/"
+            }
+          }
         }
       }
     ]

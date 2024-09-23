@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -219,7 +218,7 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kStopped);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 

@@ -8,7 +8,6 @@ rootWebArea
 ++++++group name='Current illegal' ariaCurrentState=true
 ++++++group name='Disabled illegal' restriction=disabled
 ++++++treeItem expanded name='Expanded illegal' selected=false
-++++++group name='Grabbed illegal'
 ++++++button name='Haspopup illegal'
 ++++++group name='Invalid illegal' invalidState=true
 ++++++log containerLiveRelevant='additions text' containerLiveStatus='X-ILLEGAL' name='Live illegal' liveRelevant='additions text' liveStatus='X-ILLEGAL' containerLiveAtomic=false containerLiveBusy=false liveAtomic=false

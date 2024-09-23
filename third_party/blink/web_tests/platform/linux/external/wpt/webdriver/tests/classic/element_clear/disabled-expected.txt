@@ -1,0 +1,42 @@
+This is a wdspec test.
+[FAIL] test_input[color]
+  assert 500 == 400
+[FAIL] test_input[date]
+  assert 500 == 400
+[FAIL] test_input[datetime-local]
+  assert 500 == 400
+[FAIL] test_input[email]
+  assert 500 == 400
+[FAIL] test_input[file]
+  assert 500 == 400
+[FAIL] test_input[month]
+  assert 500 == 400
+[FAIL] test_input[number]
+  assert 500 == 400
+[FAIL] test_input[password]
+  assert 500 == 400
+[FAIL] test_input[range]
+  assert 500 == 400
+[FAIL] test_input[search]
+  assert 500 == 400
+[FAIL] test_input[tel]
+  assert 500 == 400
+[FAIL] test_input[text]
+  assert 500 == 400
+[FAIL] test_input[time]
+  assert 500 == 400
+[FAIL] test_input[url]
+  assert 500 == 400
+[FAIL] test_input[week]
+  assert 500 == 400
+[FAIL] test_textarea
+  assert 500 == 400
+[FAIL] test_fieldset_descendant
+  assert 500 == 400
+[FAIL] test_fieldset_descendant_not_first_legend
+  assert 500 == 400
+[FAIL] test_xhtml[input]
+  assert 500 == 400
+[FAIL] test_xhtml[textarea]
+  assert 500 == 400
+Harness: the test ran to completion.

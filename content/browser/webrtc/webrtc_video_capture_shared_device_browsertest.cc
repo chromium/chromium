@@ -39,6 +39,9 @@ namespace content {
 
 namespace {
 
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+
 static const char kVideoCaptureHtmlFile[] = "/media/video_capture_test.html";
 static const char kStartVideoCaptureAndVerify[] =
     "startVideoCaptureAndVerifySize(%d, %d)";
@@ -53,10 +56,7 @@ static const gfx::Size kVideoSize(320, 200);
 // test exercises through JavaScript.
 class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
  public:
-  WebRtcVideoCaptureSharedDeviceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
-  }
-
+  WebRtcVideoCaptureSharedDeviceBrowserTest() = default;
   WebRtcVideoCaptureSharedDeviceBrowserTest(
       const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
   WebRtcVideoCaptureSharedDeviceBrowserTest& operator=(
@@ -113,7 +113,9 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
  private:
   void OnSourceInfosReceived(
       media::VideoCaptureBufferType buffer_type_to_request,
+      GetSourceInfosResult result,
       const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+    ASSERT_EQ(result, GetSourceInfosResult::kSuccess);
     ASSERT_FALSE(infos.empty());
     video_source_provider_->GetVideoSource(
         infos[0].descriptor.device_id,
@@ -140,8 +142,6 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(result_code->is_success_code());
     subscription_->Activate();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;

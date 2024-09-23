@@ -48,6 +48,7 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
 
   void SetCursorRect(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::string& text,
+                          const gfx::Range& preedit_range,
                           const gfx::Range& selection_range) override;
   bool HasAdvancedSurroundingTextSupport() const override;
   void SetSurroundingTextOffsetUtf16(uint32_t offset_utf16) override;
@@ -155,6 +156,13 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,
       const char* src);
+  static void OnInsertImageWithLargeURL(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      const char* mime_type,
+      const char* charset,
+      const int32_t raw_fd,
+      const uint32_t size);
 
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;

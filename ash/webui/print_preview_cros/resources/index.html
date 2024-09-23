@@ -6,6 +6,17 @@
   <head>
     <meta charset="utf-8">
     <title>Print</title>
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=sys">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
+    <style>
+      html, body {
+        background-color: var(--cros-sys-app_base_shaded);
+        font: var(--cros-body-0-font);
+        height: 100%;
+        margin: 0;
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
     <print-preview-cros-app></print-preview-cros-app>

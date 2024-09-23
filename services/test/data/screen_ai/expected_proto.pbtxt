@@ -1,0 +1,341 @@
+ui_elements {
+  id: 0
+  type: ROOT
+  parent_id: -1
+  child_ids: 1
+  child_ids: 3
+  child_ids: 5
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 1
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "rootWebArea"
+  }
+  attributes {
+    name: "text"
+    string_value: ""
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 1
+  type: VIEW
+  parent_id: 0
+  child_ids: 2
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 2
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "paragraph"
+  }
+  attributes {
+    name: "text"
+    string_value: ""
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 2
+  type: VIEW
+  parent_id: 1
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 3
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "staticText"
+  }
+  attributes {
+    name: "text"
+    string_value: "StaticText00"
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 3
+  type: VIEW
+  parent_id: 0
+  child_ids: 4
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 4
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "paragraph"
+  }
+  attributes {
+    name: "text"
+    string_value: ""
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 4
+  type: VIEW
+  parent_id: 3
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 5
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "staticText"
+  }
+  attributes {
+    name: "text"
+    string_value: "StaticText10"
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 5
+  type: VIEW
+  parent_id: 0
+  child_ids: 6
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 6
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "paragraph"
+  }
+  attributes {
+    name: "text"
+    string_value: ""
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 6
+  type: VIEW
+  parent_id: 5
+  child_ids: 7
+  child_ids: 8
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 7
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "link"
+  }
+  attributes {
+    name: "text"
+    string_value: ""
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 7
+  type: VIEW
+  parent_id: 6
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 8
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "staticText"
+  }
+  attributes {
+    name: "text"
+    string_value: "StaticText200"
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}
+ui_elements {
+  id: 8
+  type: VIEW
+  parent_id: 6
+  bounding_box {
+    top: 0.333333343
+    left: 0.210526317
+    bottom: 1
+    right: 1
+  }
+  attributes {
+    name: "axnode_id"
+    int_value: 9
+  }
+  attributes {
+    name: "/extras/styles/visibility"
+    bool_value: true
+  }
+  attributes {
+    name: "class_name"
+    string_value: "chrome.unicorn"
+  }
+  attributes {
+    name: "chrome_role"
+    string_value: "staticText"
+  }
+  attributes {
+    name: "text"
+    string_value: "StaticText201"
+  }
+  bounding_box_pixels {
+    top: 8
+    left: 4
+    bottom: 24
+    right: 19
+  }
+}

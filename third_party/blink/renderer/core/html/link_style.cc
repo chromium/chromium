@@ -288,8 +288,9 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
   if (!owner_->Media().empty() && frame) {
     MediaQuerySet* media =
         MediaQuerySet::Create(owner_->Media(), GetExecutionContext());
-    MediaQueryEvaluator evaluator(frame);
-    media_query_matches = evaluator.Eval(*media);
+    MediaQueryEvaluator* evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(frame);
+    media_query_matches = evaluator->Eval(*media);
   }
 
   // Don't hold up layout tree construction and script execution on

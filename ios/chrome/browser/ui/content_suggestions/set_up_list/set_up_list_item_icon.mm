@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 
-#import "base/feature_list.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -17,14 +15,14 @@
 namespace {
 
 // Constants related to icon sizing.
-constexpr CGFloat kIconSize = 36;
 constexpr CGFloat kMagicStackIconSize = 30;
 constexpr CGFloat kCompactIconSize = 26;
 constexpr CGFloat kSymbolPointSize = 18;
-constexpr CGFloat kSparkleSize = 72;
-constexpr CGFloat kSparkleOffset = (kSparkleSize - kIconSize) / 2;
-constexpr CGFloat kMagicStackSparkleOffset =
-    (kSparkleSize - kMagicStackIconSize) / 2;
+constexpr CGFloat kSparkleSize = 60;
+constexpr CGFloat kCompactSparkleSize = 52;
+constexpr CGFloat kSparkleOffset = (kSparkleSize - kMagicStackIconSize) / 2;
+constexpr CGFloat kCompactSparkleOffset =
+    (kCompactSparkleSize - kCompactIconSize) / 2;
 constexpr CGFloat kIconSquareContainerRadius = 7.0f;
 
 // The amount of rotation for the icons, during the animation.
@@ -39,7 +37,7 @@ CGFloat IconSize(BOOL compact_layout) {
   if (compact_layout) {
     return kCompactIconSize;
   }
-  return IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
+  return kMagicStackIconSize;
 }
 
 // Returns a UIImageView for the given SF Symbol, and with a color named
@@ -254,19 +252,10 @@ UIView* IconInSquare(NSString* symbol,
 - (UIView*)createTypeIcon {
   switch (_type) {
     case SetUpListItemType::kSignInSync: {
-      if (base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)) {
-        return _inSquare ? IconInSquare(kPersonCropCircleSymbol, _compactLayout,
-                                        kGreen500Color)
-                         : IconInCircle(kPersonCropCircleSymbol, _compactLayout,
-                                        kGreen500Color);
-      }
-
-      UIImageView* iconImage = IconForSymbol(
-          kSyncCircleSymbol, _compactLayout,
-          @[ [UIColor whiteColor], [UIColor colorNamed:kGreen500Color] ]);
-      return _inSquare ? IconInSquareContainer(iconImage, kGreen500Color)
-                       : iconImage;
+      return _inSquare ? IconInSquare(kPersonCropCircleSymbol, _compactLayout,
+                                      kGreen500Color)
+                       : IconInCircle(kPersonCropCircleSymbol, _compactLayout,
+                                      kGreen500Color);
     }
     case SetUpListItemType::kDefaultBrowser: {
       UIImageView* iconImage = DefaultBrowserIcon(_compactLayout || _inSquare);
@@ -292,8 +281,8 @@ UIView* IconInSquare(NSString* symbol,
           @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
     }
     case SetUpListItemType::kFollow:
-      // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
-      NOTREACHED();
+      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
+      NOTREACHED_IN_MIGRATION();
       return nil;
   }
 }
@@ -303,10 +292,9 @@ UIView* IconInSquare(NSString* symbol,
   // This image view does not initially have an image. The animation frames
   // are loaded on demand.
   UIImageView* imageView = [[UIImageView alloc] initWithImage:nil];
-  CGFloat sparkleOffset =
-      IsMagicStackEnabled() ? kMagicStackSparkleOffset : kSparkleOffset;
-  imageView.frame =
-      CGRectMake(-sparkleOffset, -sparkleOffset, kSparkleSize, kSparkleSize);
+  CGFloat offset = _compactLayout ? kCompactSparkleOffset : kSparkleOffset;
+  CGFloat size = _compactLayout ? kCompactSparkleSize : kSparkleSize;
+  imageView.frame = CGRectMake(-offset, -offset, size, size);
   return imageView;
 }
 

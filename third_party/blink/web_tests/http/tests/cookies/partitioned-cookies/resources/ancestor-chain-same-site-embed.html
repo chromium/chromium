@@ -11,7 +11,7 @@
 
 test(() => {
   assert_false(document.cookie.includes("__Host-same=site"));
-  assert_true(document.cookie.includes("__Host-foo=bar"));
+  assert_false(document.cookie.includes("__Host-foo=bar"));
 }, "Same-site embed partitioned cookie access");
 
 </script>

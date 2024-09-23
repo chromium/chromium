@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/compressed_icon_getter.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/resource/resource_scale_factor.h"
 

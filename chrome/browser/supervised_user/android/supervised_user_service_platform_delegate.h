@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_ANDROID_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_ANDROID_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "chrome/browser/supervised_user/chrome_supervised_user_service_platform_delegate_base.h"
 
 class SupervisedUserServicePlatformDelegate
-    : public supervised_user::SupervisedUserService::PlatformDelegate {
+    : public ChromeSupervisedUserServicePlatformDelegateBase {
  public:
-  SupervisedUserServicePlatformDelegate();
+  explicit SupervisedUserServicePlatformDelegate(Profile& profile);
 
   // SupervisedUserService::PlatformDelegate
   void CloseIncognitoTabs() override;

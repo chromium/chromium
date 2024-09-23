@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/zoom/zoom_controller.h"
-#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
@@ -27,10 +27,12 @@ class RectF;
 // Controls how Compose dialogs are shown and hidden, and animations related to
 // both actions.
 class ChromeComposeDialogController : public compose::ComposeDialogController,
-                                      views::WidgetObserver,
-                                      zoom::ZoomObserver {
+                                      views::WidgetObserver {
  public:
-  explicit ChromeComposeDialogController(content::WebContents* contents);
+  using ComposeClient = compose::ComposeClient;
+
+  ChromeComposeDialogController(content::WebContents* contents,
+                                ComposeClient::FieldIdentifier field_ids);
   ~ChromeComposeDialogController() override;
 
   // Create and show the dialog view.
@@ -42,44 +44,43 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
   WebUIContentsWrapperT<ComposeUntrustedUI>* GetBubbleWrapper() const;
 
   // Shows the current dialog view, if there is one.
-  void ShowUI() override;
+  // TODO(b/328730979): `focus_lost_callback` is called after some delay after
+  // the compose dialog loses focus. The delay is configurable via
+  // ComposeConfig. The purpose of the delay is so that `focus_lost_callback` is
+  // called after all focus-related events have been processed.
+  void ShowUI(base::OnceClosure focus_lost_callback) override;
 
   void Close() override;
 
   bool IsDialogShowing() override;
 
   // views::WidgetObserver implementation.
-  // Invoked when `widget` changes bounds.
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
-
-  // views::WidgetObserver implementation.
   // The destroying event occurs immediately before the widget is destroyed.
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // zoom::ZoomObserver implementation.
-  // Notification that the zoom percentage has changed.
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
-
-  // zoom::ZoomObserver implementation.
-  // Fired when the ZoomController is destructed.
-  void OnZoomControllerDestroyed(
-      zoom::ZoomController* zoom_controller) override;
+  // Returns an identifier for the field that this dialog is acting upon.  This
+  // can be used to connect to the correct session.
+  const ComposeClient::FieldIdentifier& GetFieldIds() override;
 
  private:
   friend class ChromeComposeDialogControllerTest;
 
+  // Called after the compose dialog loses focus.
+  void OnAfterWidgetDestroyed();
+
   base::WeakPtr<ComposeDialogView> bubble_;
   base::WeakPtr<content::WebContents> web_contents_;
 
-  // Observer for the parent widget.
+  // Identifies the field that this dialog is acting upon.
+  ComposeClient::FieldIdentifier field_ids_;
+
+  // Called when focus is lost on the compose dialog. This is not called in any
+  // action that deletes a compose session, such as clicking the close button.
+  base::OnceClosure focus_lost_callback_;
+
+  // Observer for the compose widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
-
-  // Observer for the zoom controller.
-  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
-      zoom_observation_{this};
 
   base::WeakPtrFactory<ChromeComposeDialogController> weak_ptr_factory_{this};
 };

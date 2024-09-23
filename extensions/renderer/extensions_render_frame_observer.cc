@@ -98,9 +98,10 @@ void ExtensionsRenderFrameObserver::BindAppWindowReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void ExtensionsRenderFrameObserver::SetSupportsAppRegion(
-    bool supports_app_region) {
-  render_frame()->GetWebView()->SetSupportsAppRegion(supports_app_region);
+void ExtensionsRenderFrameObserver::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {
+  render_frame()->GetWebView()->SetSupportsDraggableRegions(
+      supports_draggable_regions);
 }
 
 void ExtensionsRenderFrameObserver::SetVisuallyDeemphasized(bool deemphasized) {

@@ -10,7 +10,7 @@ CardUnmaskPromptOptions::CardUnmaskPromptOptions() = default;
 
 CardUnmaskPromptOptions::CardUnmaskPromptOptions(
     const std::optional<CardUnmaskChallengeOption>& challenge_option,
-    AutofillClient::UnmaskCardReason reason)
+    payments::PaymentsAutofillClient::UnmaskCardReason reason)
     : challenge_option(challenge_option), reason(reason) {}
 
 CardUnmaskPromptOptions::CardUnmaskPromptOptions(

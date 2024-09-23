@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 
 #include <tuple>
@@ -11,7 +16,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_sentinel.h"
@@ -36,7 +41,7 @@ void RunWithStack(base::RunLoop* run_loop) {
 }
 
 // Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
-// function that invokes |callback| when a ScriptPromise is resolved.
+// function that invokes |callback| when a ScriptPromiseUntyped is resolved.
 class ClosureRunnerCallable final : public ScriptFunction::Callable {
  public:
   explicit ClosureRunnerCallable(base::OnceClosure callback)
@@ -218,7 +223,7 @@ void MockPermissionService::RegisterPageEmbeddedPermissionControl(
 void MockPermissionService::RequestPageEmbeddedPermission(
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
     RequestPageEmbeddedPermissionCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockPermissionService::RequestPermission(
@@ -243,26 +248,33 @@ void MockPermissionService::RequestPermissions(
     Vector<PermissionDescriptorPtr> permissions,
     bool user_gesture,
     mojom::blink::PermissionService::RequestPermissionsCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockPermissionService::RevokePermission(PermissionDescriptorPtr permission,
                                              RevokePermissionCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockPermissionService::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+}
+
+void MockPermissionService::AddPageEmbeddedPermissionObserver(
+    PermissionDescriptorPtr permission,
+    mojom::blink::PermissionStatus last_known_status,
+    mojo::PendingRemote<mojom::blink::PermissionObserver>) {
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockPermissionService::NotifyEventListener(
     PermissionDescriptorPtr permission,
     const String& event_type,
     bool is_added) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 // WakeLockTestingContext
 
@@ -304,7 +316,8 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
   return permission_service_;
 }
 
-void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
+void WakeLockTestingContext::WaitForPromiseFulfillment(
+    ScriptPromiseUntyped promise) {
   base::RunLoop run_loop;
   promise.Then(MakeGarbageCollected<ScriptFunction>(
       GetScriptState(),
@@ -317,7 +330,8 @@ void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
 }
 
 // Synchronously waits for |promise| to be rejected.
-void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
+void WakeLockTestingContext::WaitForPromiseRejection(
+    ScriptPromiseUntyped promise) {
   base::RunLoop run_loop;
   promise.Then(
       nullptr,
@@ -335,21 +349,22 @@ void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
 
 // static
 v8::Promise::PromiseState ScriptPromiseUtils::GetPromiseState(
-    const ScriptPromise& promise) {
+    const ScriptPromise<WakeLockSentinel>& promise) {
   return promise.V8Promise()->State();
 }
 
 // static
 DOMException* ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
-    const ScriptPromise& promise) {
-  return V8DOMException::ToWrappable(promise.GetIsolate(),
-                                     promise.V8Promise()->Result());
+    v8::Isolate* isolate,
+    const ScriptPromise<WakeLockSentinel>& promise) {
+  return V8DOMException::ToWrappable(isolate, promise.V8Promise()->Result());
 }
 
 // static
 WakeLockSentinel* ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
-    const ScriptPromise& promise) {
-  return V8WakeLockSentinel::ToWrappable(promise.GetIsolate(),
+    v8::Isolate* isolate,
+    const ScriptPromise<WakeLockSentinel>& promise) {
+  return V8WakeLockSentinel::ToWrappable(isolate,
                                          promise.V8Promise()->Result());
 }
 

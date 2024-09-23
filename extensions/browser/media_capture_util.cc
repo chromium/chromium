@@ -77,8 +77,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices(),
         request.requested_audio_device_ids);
-    if (device)
+    if (device) {
       devices.audio_device = *device;
+    }
   }
 
   if (request.video_type ==
@@ -87,8 +88,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices(),
         request.requested_video_device_ids);
-    if (device)
+    if (device) {
       devices.video_device = *device;
+    }
   }
 
   // TODO(jamescook): Should we show a recording icon somewhere? If so, where?
@@ -114,16 +116,6 @@ void VerifyMediaAccessPermission(blink::mojom::MediaStreamType type,
     CHECK(permissions_data->HasAPIPermission(APIPermissionID::kVideoCapture))
         << "Video capture request but no videoCapture permission in manifest.";
   }
-}
-
-bool CheckMediaAccessPermission(blink::mojom::MediaStreamType type,
-                                const Extension* extension) {
-  const PermissionsData* permissions_data = extension->permissions_data();
-  if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    return permissions_data->HasAPIPermission(APIPermissionID::kAudioCapture);
-  }
-  DCHECK(type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  return permissions_data->HasAPIPermission(APIPermissionID::kVideoCapture);
 }
 
 }  // namespace media_capture_util

@@ -23,18 +23,20 @@ interface AutofillAgent {
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  ApplyFormAction(ActionType action_type,
-                  ActionPersistence action_persistence,
-                  FormData_FillData form);
+  ApplyFieldsAction(FormActionType action_type,
+                    ActionPersistence action_persistence,
+                    array<FormFieldData_FillData> fields);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  // `text_replacement` indicates whether to replace the field's entire value
-  // or only the current selection. For non-text fields, this parameter has no
-  // effect. This must not be `kReplaceSelection` if `action_persistence` is
-  // `kPreview`. Enabling this is desirable but not implemented, yet.
-  ApplyFieldAction(ActionPersistence action_persistence,
-                   TextReplacement text_replacement,
+  // `action_type` indicates whether to replace the field's entire value
+  // or only the current selection or select all text inside the field.
+  // For non-text fields, this parameter has no effect. This must not be
+  // `kReplaceSelection` if `action_persistence` is `kPreview`.
+  // Enabling this is desirable but not implemented, yet.
+  // If `action_type` is `kSelectAll`, then the `value` must be empty.
+  ApplyFieldAction(FieldActionType action_type,
+                   ActionPersistence action_persistence,
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 
@@ -44,11 +46,6 @@ interface AutofillAgent {
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
-
-  // Clears the currently displayed Autofill results of the current section.
-  // The current section is the section to which the element corresponding to
-  // the last request belongs.
-  ClearSection();
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
@@ -64,42 +61,38 @@ interface AutofillAgent {
   // its coordinates to be re-extracted.
   // Assuming the `field` is found, the driver's `AskForValuesToFill()` will be
   // called.
-  TriggerSuggestions(FieldRendererId field,
-                     AutofillSuggestionTriggerSource trigger_source);
+  TriggerSuggestions(
+      FieldRendererId field, AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the autofill/autocomplete suggestion availability of |field| (if it is
+  // Sets the autofill/autocomplete suggestion availability of `field` (if it is
   // still the currently selected node).
   SetSuggestionAvailability(
-    FieldRendererId field,
-    AutofillSuggestionAvailability suggestion_availability);
+      FieldRendererId field,
+      AutofillSuggestionAvailability suggestion_availability);
 
-  // Sets the value of |field| (if it is still the currently selected node).
+  // Sets the value of `field` (if it is still the currently selected node).
   // to the given data list value.
-  AcceptDataListSuggestion(FieldRendererId field,
-                           mojo_base.mojom.String16 value);
+  AcceptDataListSuggestion(
+      FieldRendererId field, mojo_base.mojom.String16 value);
 
   // Tells the renderer to preview the username and password with the given
   // values.
-  PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
-                            mojo_base.mojom.String16 password);
+  PreviewPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
 
   // Tells the renderer to preview the generated password.
   PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
-
-  // Allows heavy scraping of form data (e.g., button titles for
-  // unowned forms).
-  EnableHeavyFormDataScraping();
 
   // Returns a vector of four digit combinations present in the DOM of a
   // webpage. Used to check for the presence of the virtual card last four in
   // the DOM prior to offering CVC autofill for a virtual card saved on a
   // merchant website.
-  GetPotentialLastFourCombinationsForStandaloneCvc() =>
-      (array<string> potential_matches);
+  GetPotentialLastFourCombinationsForStandaloneCvc()
+      => (array<string> potential_matches);
 };
 
 // There is one instance of this interface per render frame in the render
-// process.
+// process. This renderer interface is called by the browser.
 interface PasswordAutofillAgent {
   // Provides fill information for a password form, which can fill the form and
   // prepare field autocomplete for multiple matching logins. Lets the renderer
@@ -107,25 +100,46 @@ interface PasswordAutofillAgent {
   // the popup UI.
   SetPasswordFillData(PasswordFormFillData form_data);
 
-  // Tells the renderer to fill the username and password with with given
-  // values.
-  FillPasswordSuggestion(mojo_base.mojom.String16 username,
-                         mojo_base.mojom.String16 password);
+  // Fills the username and password with with given values.
+  FillPasswordSuggestion(
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
 
-  // Lets the renderer know that there are no saved credentials for filling.
+  // Similar to FillPasswordSuggestion, but is also provided the
+  // FieldRendererIds of the elements to be filled.
+  FillPasswordSuggestionById(FieldRendererId username_element_id,
+                             FieldRendererId password_element_id,
+                             mojo_base.mojom.String16 username,
+                             mojo_base.mojom.String16 password);
+
+  // Previews the username and password, determined from the given
+  // FieldRendererIds, with the given values.
+  PreviewPasswordSuggestionById(FieldRendererId username_element_id,
+                                FieldRendererId password_element_id,
+                                mojo_base.mojom.String16 username,
+                                mojo_base.mojom.String16 password);
+
+  // Informs that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
-  // Fills the given |credential| into the last focused text input.
-  FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
+  // Fills the given `credential` into the last focused text input.
+  FillIntoFocusedField(
+      bool is_password, mojo_base.mojom.String16 credential);
 
-  // Notification to start (|active| == true) or stop (|active| == false)
+  // Previews the given `value` into the field identified by `field_id`.
+  PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+
+  // Fills the given `value` into the field identified by `field_id`.
+  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+
+  // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
 
-  // Informs the renderer that the Keyboard Replacing Surface has been closed.
+  // Informs that the Keyboard Replacing Surface has been closed.
   // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug/1462532): Remove this API once PasswordSuggestionBottomSheetV2
+  // TODO(crbug.com/40274966): Remove this API once
+  // PasswordSuggestionBottomSheetV2
   // is launched.
   [EnableIf=is_android]
   KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
@@ -152,7 +166,7 @@ interface PasswordGenerationAgent {
   TriggeredGeneratePassword() => (PasswordGenerationUIData? data);
 
   // Tells the renderer that a password can be generated on the fields
-  // identified by |form|.
+  // identified by `form`.
   FoundFormEligibleForGeneration(PasswordFormGenerationData form);
 
   // Tells the renderer to advance focus to the next field after password fields

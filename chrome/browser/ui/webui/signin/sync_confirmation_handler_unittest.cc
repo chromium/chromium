@@ -50,26 +50,6 @@ const int kExpectedProfileImageSize = 128;
 // really matter in unit tests.
 const double kDefaultDialogHeight = 350.0;
 
-using MinorModeRestrictionsEnabled =
-    base::StrongAlias<class MinorModeRestrictionsEnabledTag, bool>;
-
-void ConfigureMinorModeRestrictionFeature(
-    MinorModeRestrictionsEnabled minor_mode_restrictions_enabled,
-    base::test::ScopedFeatureList& feature_flag_) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (minor_mode_restrictions_enabled.value()) {
-    feature_flag_.InitAndEnableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  } else {
-    feature_flag_.InitAndDisableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-#else
-  CHECK(!minor_mode_restrictions_enabled.value())
-      << "This feature can be only enabled for selected platforms.";
-#endif
-}
-
 class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
  public:
   TestingSyncConfirmationHandler(
@@ -94,10 +74,8 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
   using SyncConfirmationHandler::RecordConsent;
 };
 
-class SyncConfirmationHandlerTest
-    : public BrowserWithTestWindowTest,
-      public LoginUIService::Observer,
-      public ::testing::WithParamInterface<MinorModeRestrictionsEnabled> {
+class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
+                                    public LoginUIService::Observer {
  public:
   static const char kConsentText1[];
   static const char kConsentText2[];
@@ -105,13 +83,9 @@ class SyncConfirmationHandlerTest
   static const char kConsentText4[];
   static const char kConsentText5[];
 
-  static MinorModeRestrictionsEnabled IsMinorModeRequested() {
-    return GetParam();
-  }
-
   static bool IsMinorModeEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    return IsMinorModeRequested().value();
+    return true;
 #else
     return false;
 #endif
@@ -124,8 +98,6 @@ class SyncConfirmationHandlerTest
         on_sync_confirmation_ui_closed_called_(false),
         sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
         web_ui_(new content::TestWebUI) {
-    ConfigureMinorModeRestrictionFeature(IsMinorModeRequested(),
-                                         scoped_feature_list_);
   }
 
   SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
@@ -187,12 +159,11 @@ class SyncConfirmationHandlerTest
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {ConsentAuditorFactory::GetInstance(),
-         base::BindRepeating(&BuildFakeConsentAuditor)}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                ConsentAuditorFactory::GetInstance(),
+                base::BindRepeating(&BuildFakeConsentAuditor)}});
   }
 
   const std::unordered_map<std::string, int>& GetStringToGrdIdMap() {
@@ -281,7 +252,7 @@ const char SyncConfirmationHandlerTest::kConsentText3[] = "consentText3";
 const char SyncConfirmationHandlerTest::kConsentText4[] = "consentText4";
 const char SyncConfirmationHandlerTest::kConsentText5[] = "consentText5";
 
-TEST_P(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
+TEST_F(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
       account_info_.account_id, account_info_.email, account_info_.gaia, "",
       "full_name", "given_name", "locale",
@@ -306,7 +277,7 @@ TEST_P(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
   }
 }
 
-TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangedWhenCapabilityReady) {
+TEST_F(SyncConfirmationHandlerTest, TestScreenModeChangedWhenCapabilityReady) {
   // Both account info and capability are required to trigger SetAccountInfo.
   AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
@@ -330,7 +301,7 @@ TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangedWhenCapabilityReady) {
   }
 }
 
-TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
+TEST_F(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
   // Both account info and capability are required to trigger SetAccountInfo.
   AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
@@ -362,7 +333,7 @@ TEST_P(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
   EXPECT_EQ(1U, web_ui()->call_data().size());
 }
 
-TEST_P(SyncConfirmationHandlerTest,
+TEST_F(SyncConfirmationHandlerTest,
        TestAvatarChangeWhenPrimaryAccountReadyLater) {
   base::Value::List args;
   args.Append(kDefaultDialogHeight);
@@ -389,7 +360,7 @@ TEST_P(SyncConfirmationHandlerTest,
   ExpectAccountInfoChanged(*web_ui()->call_data()[call_count - 1]);
 }
 
-TEST_P(SyncConfirmationHandlerTest,
+TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
   base::Value::List args;
   args.Append(kDefaultDialogHeight);
@@ -427,7 +398,7 @@ TEST_P(SyncConfirmationHandlerTest,
   ExpectAccountInfoChanged(*web_ui()->call_data()[call_count - 1]);
 }
 
-TEST_P(SyncConfirmationHandlerTest,
+TEST_F(SyncConfirmationHandlerTest,
        TestAvatarChangeManagedWhenPrimaryAccountReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
       account_info_.account_id, account_info_.email, account_info_.gaia,
@@ -452,8 +423,11 @@ TEST_P(SyncConfirmationHandlerTest,
   }
 }
 
-TEST_P(SyncConfirmationHandlerTest, TestHandleUndo) {
-  handler()->HandleUndo(base::Value::List());
+TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
+  base::Value::List args;
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
+
+  handler()->HandleUndo(args);
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
@@ -465,7 +439,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleUndo) {
       "Signin_Signin_WithAdvancedSyncSettings"));
 }
 
-TEST_P(SyncConfirmationHandlerTest, TestHandleConfirm) {
+TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   // The consent description consists of strings 1, 2, and 4.
   base::Value::List consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText1);
@@ -479,6 +453,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirm) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleConfirm(args);
   did_user_explicitly_interact_ = true;
@@ -503,7 +478,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirm) {
   EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
 }
 
-TEST_P(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
+TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   // The consent description consists of strings 2, 3, and 5.
   base::Value::List consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
@@ -517,6 +492,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleGoToSettings(args);
   did_user_explicitly_interact_ = true;
@@ -540,7 +516,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
 }
 
-TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
   if (!IsMinorModeEnabled()) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
@@ -567,7 +543,7 @@ TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
               base::BucketsInclude(base::Bucket(/*min=*/true, /*count=*/1)));
 }
 
-TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedLater) {
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedLater) {
   if (!IsMinorModeEnabled()) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
@@ -603,7 +579,7 @@ TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedLater) {
               ::testing::SizeIs(1));
 }
 
-TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
   if (!IsMinorModeEnabled()) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
@@ -641,7 +617,7 @@ TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
               ::testing::SizeIs(1));
 }
 
-TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedPastDeadline) {
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedPastDeadline) {
   if (!IsMinorModeEnabled()) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
@@ -662,19 +638,5 @@ TEST_P(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedPastDeadline) {
                   "Signin.AccountCapabilities.FetchLatency"),
               ::testing::SizeIs(1));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SyncConfirmationHandlerTest,
-                         testing::Values(MinorModeRestrictionsEnabled(false)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-                                             ,
-                                         MinorModeRestrictionsEnabled(true)
-#endif
-                                             ),
-                         [](const auto& info) {
-                           return base::StringPrintf(
-                               "%sMinorModeRestrictions",
-                               info.param.value() ? "With" : "Without");
-                         });
 
 }  // namespace

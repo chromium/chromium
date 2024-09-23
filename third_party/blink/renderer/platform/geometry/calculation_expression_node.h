@@ -31,7 +31,9 @@ enum class CalculationOperator {
   kAbs,
   kSign,
   kProgress,
+  kContainerProgress,
   kCalcSize,
+  kMediaProgress,
   kInvalid
 };
 
@@ -41,8 +43,7 @@ enum class CalculationOperator {
 class PLATFORM_EXPORT CalculationExpressionNode
     : public RefCounted<CalculationExpressionNode> {
  public:
-  virtual float Evaluate(float max_value,
-                         const Length::EvaluationInput&) const = 0;
+  virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
   }
@@ -50,15 +51,29 @@ class PLATFORM_EXPORT CalculationExpressionNode
     return !operator==(other);
   }
 
-  bool HasAnchorQueries() const { return has_anchor_queries_; }
+  bool HasAuto() const { return has_auto_; }
   bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }
+  bool HasAutoOrContentOrIntrinsicSize() const {
+    return has_auto_ || has_content_or_intrinsic_;
+  }
+  bool HasStretch() const { return has_stretch_; }
+  // HasPercent returns whether this node's value expression should be
+  // treated as having a percent.  Note that this means that percentages
+  // inside of the calculation part of a calc-size() do not make the
+  // calc-size() act as though it has a percent.
+  bool HasPercent() const { return has_percent_; }
+  bool HasPercentOrStretch() const { return has_percent_ || has_stretch_; }
+
+  virtual bool HasMinContent() const { return false; }
+  virtual bool HasMaxContent() const { return false; }
+  virtual bool HasFitContent() const { return false; }
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
   virtual bool IsSizingKeyword() const { return false; }
+  virtual bool IsColorChannelKeyword() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
-  virtual bool IsAnchorQuery() const { return false; }
 
   virtual scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const = 0;
@@ -77,8 +92,10 @@ class PLATFORM_EXPORT CalculationExpressionNode
  protected:
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
 
-  bool has_anchor_queries_ = false;
   bool has_content_or_intrinsic_ = false;
+  bool has_auto_ = false;
+  bool has_percent_ = false;
+  bool has_stretch_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
@@ -93,7 +110,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
   float Value() const { return value_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -128,13 +145,13 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
   const AtomicString& Value() const { return identifier_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final {
+  float Evaluate(float max_value, const EvaluationInput&) const final {
     return 0.0f;
   }
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsIdentifier() &&
-           DynamicTo<CalculationExpressionIdentifierNode>(other)->Value() ==
-               Value();
+    auto* other_identifier =
+        DynamicTo<CalculationExpressionIdentifierNode>(other);
+    return other_identifier && other_identifier->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
@@ -163,7 +180,8 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   enum class Keyword : uint8_t {
     kSize,
     kAny,
-    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    kAuto,
+    kContent,
 
     // The keywords below should match those accepted by
     // css_parsing_utils::ValidWidthOrHeightKeyword.
@@ -181,11 +199,11 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   Keyword Value() const { return keyword_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final {
-    return other.IsSizingKeyword() &&
-           DynamicTo<CalculationExpressionSizingKeywordNode>(other)->Value() ==
-               Value();
+    auto* other_sizing_keyword =
+        DynamicTo<CalculationExpressionSizingKeywordNode>(other);
+    return other_sizing_keyword && other_sizing_keyword->Value() == Value();
   }
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final {
@@ -194,6 +212,19 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
     return this;
   }
   bool IsSizingKeyword() const final { return true; }
+
+  bool HasMinContent() const final {
+    return keyword_ == Keyword::kMinContent ||
+           keyword_ == Keyword::kWebkitMinContent;
+  }
+  bool HasMaxContent() const final {
+    return keyword_ == Keyword::kMaxContent ||
+           keyword_ == Keyword::kWebkitMaxContent;
+  }
+  bool HasFitContent() const final {
+    return keyword_ == Keyword::kFitContent ||
+           keyword_ == Keyword::kWebkitFitContent;
+  }
 
 #if DCHECK_IS_ON()
   ResultType ResolvedResultType() const final {
@@ -212,6 +243,43 @@ struct DowncastTraits<CalculationExpressionSizingKeywordNode> {
   }
 };
 
+class PLATFORM_EXPORT CalculationExpressionColorChannelKeywordNode final
+    : public CalculationExpressionNode {
+ public:
+  explicit CalculationExpressionColorChannelKeywordNode(
+      ColorChannelKeyword channel);
+
+  ColorChannelKeyword Value() const { return channel_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool Equals(const CalculationExpressionNode& other) const final {
+    auto* other_color_channel_keyword =
+        DynamicTo<CalculationExpressionColorChannelKeywordNode>(other);
+    return other_color_channel_keyword &&
+           other_color_channel_keyword->Value() == Value();
+  }
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final {
+    return this;
+  }
+  bool IsColorChannelKeyword() const final { return true; }
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final { return ResultType::kNumber; }
+#endif
+
+ private:
+  ColorChannelKeyword channel_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionColorChannelKeywordNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsColorChannelKeyword();
+  }
+};
+
 class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
     : public CalculationExpressionNode {
  public:
@@ -220,6 +288,9 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
 #if DCHECK_IS_ON()
     result_type_ = ResultType::kPixelsAndPercent;
 #endif
+    if (value.has_explicit_percent) {
+      has_percent_ = true;
+    }
   }
 
   float Pixels() const { return value_.pixels; }
@@ -229,7 +300,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   bool HasExplicitPercent() const { return value_.has_explicit_percent; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -267,11 +338,14 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
   CalculationOperator GetOperator() const { return operator_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
+  float Evaluate(float max_value, const EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
   bool IsOperation() const final { return true; }
+  bool HasMinContent() const final;
+  bool HasMaxContent() const final;
+  bool HasFitContent() const final;
   ~CalculationExpressionOperationNode() final = default;
 
 #if DCHECK_IS_ON()

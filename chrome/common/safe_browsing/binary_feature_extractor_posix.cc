@@ -19,7 +19,7 @@ void BinaryFeatureExtractor::CheckSignature(
 
 #if !BUILDFLAG(IS_MAC)
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
-    const uint8_t* data, size_t data_size,
+    base::span<const uint8_t> data,
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {

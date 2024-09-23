@@ -175,9 +175,7 @@ class SiteEngagementScore {
 
   // Get/set the last time this origin recorded an engagement change.
   base::Time last_engagement_time() const { return last_engagement_time_; }
-  void set_last_engagement_time(const base::Time& time) {
-    last_engagement_time_ = time;
-  }
+  void SetLastEngagementTime(const base::Time& time);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementScoreTest, FirstDailyEngagementBonus);

@@ -8,8 +8,10 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -31,7 +33,6 @@ class ContentProtectionManager;
 class DisplayLayoutManager;
 class DisplayMode;
 class DisplaySnapshot;
-class GammaCurve;
 class ManagedDisplayMode;
 class NativeDisplayDelegate;
 class UpdateDisplayConfigurationTask;
@@ -49,24 +50,29 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
  public:
   using ConfigurationCallback = base::OnceCallback<void(bool /* success */)>;
   using DisplayControlCallback = base::OnceCallback<void(bool success)>;
+  using GetSeamlessRefreshRatesCallback =
+      base::OnceCallback<void(const std::optional<std::vector<float>>&)>;
 
   using DisplayStateList =
       std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;
+  // Map of display id to a refresh rate override.
+  using RefreshRateOverrideMap = std::unordered_map<int64_t, float>;
 
   class Observer {
    public:
     virtual ~Observer() = default;
 
-    // Called after the display mode has been changed. |display| contains the
-    // just-applied configuration. Note that the X server is no longer grabbed
-    // when this method is called, so the actual configuration could've changed
-    // already.
-    virtual void OnDisplayModeChanged(const DisplayStateList& displays) {}
+    // Called after the display configuration has been changed. |display|
+    // contains the just-applied configuration. Note that the X server is no
+    // longer grabbed when this method is called, so the actual configuration
+    // could've changed already.
+    virtual void OnDisplayConfigurationChanged(
+        const DisplayStateList& displays) {}
 
-    // Called after a display mode change attempt failed. |displays| contains
-    // displays that are detected when failed.
-    // |failed_new_state| is the new state which the system failed to enter.
-    virtual void OnDisplayModeChangeFailed(
+    // Called after a display configuration change attempt failed. |displays|
+    // contains displays that are detected when failed. |failed_new_state| is
+    // the new state which the system failed to enter.
+    virtual void OnDisplayConfigurationChangeFailed(
         const DisplayStateList& displays,
         MultipleDisplayState failed_new_state) {}
 
@@ -240,16 +246,30 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
                        int flags,
                        ConfigurationCallback callback);
 
-  // Force switching the display mode to |new_state|. Returns false if
+  // Force switching the display state to |new_state|. Returns false if
   // switching failed (possibly because |new_state| is invalid for the
   // current set of connected displays).
-  void SetDisplayMode(MultipleDisplayState new_state);
+  void SetMultipleDisplayState(MultipleDisplayState new_state);
 
-  // Request the display's refresh rate to be throttled. Currently
-  // only supports internal displays. If the underlying panel/display driver
-  // do not support this, it is a no-op.
-  void MaybeSetRefreshRateThrottleState(int64_t display_id,
-                                        RefreshRateThrottleState state);
+  // Request a description of the refresh rates to which the display can support
+  // a configuration without a full modeset.
+  // The supported refresh rates depend on the current configuration of the
+  // display driver and hardware.
+  //
+  // It's possible that there could be some configuration change such that a
+  // seamless modeset to a refresh rate returned from here succeeds at one time,
+  // and fails at another due to some configuration change in the display
+  // driver. The caller should re-query the supported refresh rates whenever
+  // there is a full modeset, or when a seamless refresh rate change fails, to
+  // ensure that the caller has an up-to-date picture of which refresh rates are
+  // supported.
+  //
+  // A result of nullopt indicates that the request failed for some reason such
+  // as an invalid display_id. An empty vector indicates that there
+  // are no modes to which the display can be configured seamlessly. This could
+  // happen if the display is currently turned off.
+  void GetSeamlessRefreshRates(int64_t display_id,
+                               GetSeamlessRefreshRatesCallback callback);
 
   // NativeDisplayObserver:
   void OnConfigurationChanged() override;
@@ -280,18 +300,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void SetColorCalibration(int64_t display_id,
                            const ColorCalibration& calibration);
 
-  // Sets the given 3x3 |color_matrix| on the display with |display_id|.
-  // This doesn't affect gamma or degamma. It returns true if the color matrix
-  // was sent to the GPU process successfully.
-  bool SetColorMatrix(int64_t display_id,
-                      const std::vector<float>& color_matrix);
-
-  // Sets the given |gamma_lut| and |degamma_lut| on the display with
-  // |display_id|.
-  bool SetGammaCorrection(int64_t display_id,
-                          const GammaCurve& degamma,
-                          const GammaCurve& gamma);
-
   // Enable/disable the privacy screen on display with |display_id|.
   // For this to succeed, privacy screen must be supported by the display.
   // After privacy screen is set, |callback| is called with the outcome
@@ -312,9 +320,18 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     return requested_power_state_;
   }
 
-  // Requests to enable or disable variable refresh rates across all capable
-  // displays, and schedules a configuration change as needed.
-  void SetVrrEnabled(bool enable_vrr);
+  // Requests to enable variable refresh rates on the specified displays and to
+  // disable variable refresh rates on all other displays, and schedules a
+  // seamless configuration change as needed.
+  void SetVrrEnabled(const base::flat_set<int64_t>& display_ids);
+
+  // Requests to override the refresh rate of the specified displays and
+  // schedule a seamless configuration change if needed. If a display is not in
+  // |overrides| then then the display may be configured back to its native
+  // refresh rate, if the configuration can happen without a modeset. If the
+  // affected displays are already configured according to |overrides|, then no
+  // configuration will occur.
+  void SetRefreshRateOverrides(const RefreshRateOverrideMap& overrides);
 
  private:
   friend class test::DisplayManagerTestApi;
@@ -358,8 +375,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
       const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
           unassociated_displays,
       MultipleDisplayState new_display_state,
-      chromeos::DisplayPowerState new_power_state,
-      bool new_vrr_state);
+      chromeos::DisplayPowerState new_power_state);
 
   // Updates the current and pending power state and notifies observers.
   void UpdatePowerState(chromeos::DisplayPowerState new_power_state);
@@ -400,15 +416,29 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void SendRelinquishDisplayControl(DisplayControlCallback callback,
                                     bool success);
 
-  // Returns the requested VRR state, or the current state by default.
-  bool GetRequestedVrrState() const;
+  // Returns the requested VRR state listing the display ids which should have
+  // VRR enabled, defaulting to the current state as needed.
+  const base::flat_set<int64_t> GetRequestedVrrState() const;
 
   // Returns whether a configuration should occur on account of a pending VRR
   // request.
   bool ShouldConfigureVrr() const;
 
-  raw_ptr<StateController> state_controller_;
-  raw_ptr<SoftwareMirroringController> mirroring_controller_;
+  // Returns the per-display refresh rate overrides which should be used for
+  // a configuration attempt. If there is a full configuration pending,
+  // there will be no overrides set. If no new overrides have been requested,
+  // this will return the current state.
+  RefreshRateOverrideMap GetRequestedRefreshRateOverrides() const;
+
+  // Returns the current state of refresh rate overrides. This is determined
+  // by comparing the refresh rates of the currently configured mode and the
+  // display's native mode.
+  RefreshRateOverrideMap GetCurrentRefreshRateOverrideState() const;
+
+  // Dangling in DemoIntegrationTest.NewTab on chromeos-amd64-generic-rel-gtest.
+  raw_ptr<StateController, DanglingUntriaged> state_controller_;
+  // Dangling in DemoIntegrationTest.NewTab on chromeos-amd64-generic-rel-gtest.
+  raw_ptr<SoftwareMirroringController, DanglingUntriaged> mirroring_controller_;
   std::unique_ptr<NativeDisplayDelegate> native_display_delegate_;
 
   // Used to enable modes which rely on panel fitting.
@@ -442,8 +472,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Bitwise-or value of the |kSetDisplayPower*| flags defined above.
   int pending_power_flags_;
 
-  // Stores the requested refresh rate throttle state.
-  std::optional<RefreshRateThrottleState> pending_refresh_rate_throttle_state_;
+  // Per-display pending refresh rate override requests. Displays not included
+  // in this map will have their refresh rates set to their native refresh
+  // rates.
+  std::optional<RefreshRateOverrideMap> pending_refresh_rate_overrides_;
 
   // List of callbacks from callers waiting for the display configuration to
   // start/finish. Note these callbacks belong to the pending request, not a
@@ -487,10 +519,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // notification will be created to inform user.
   bool has_unassociated_display_;
 
-  // Stores the current variable refresh rate enabled state.
-  bool current_vrr_state_ = false;
-  // Stores the requested variable refresh rate enabled state.
-  std::optional<bool> pending_vrr_state_;
+  // Stores the requested variable refresh rate state as a set of display ids
+  // for which VRR should be enabled. All omitted displays should have VRR
+  // disabled. Absent if there is no pending state.
+  std::optional<base::flat_set<int64_t>> pending_vrr_state_ = std::nullopt;
 
   // This must be the last variable.
   base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_{this};

@@ -46,8 +46,13 @@ interface VizMain {
       pending_remote<GpuHost> gpu_host,
       pending_remote<discardable_memory.mojom.DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count,
-      gfx.mojom.SubpixelRendering subpixel_rendering);
+      mojo_base.mojom.UnsafeSharedMemoryRegion? use_shader_cache_shm_count);
+
+  // Sets parameters necessary for rendering.
+  SetRenderParams(
+      gfx.mojom.SubpixelRendering subpixel_rendering,
+      float text_contrast,
+      float text_gamma);
 
   // Create a GPU info collection service provided by the info-collection GPU
   // process.

@@ -5,56 +5,48 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 
-#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace resource_coordinator {
 
 // TabManager::ResourceCoordinatorSignalObserver forwards data from the
-// performance manager graph.
+// performance manager graph. All functions run on the PerformanceManager
+// sequence unless otherwise noted.
 // TODO(chrisha): Kill this thing entirely and move all of tab manager into the
 // performance manager.
-class TabManager::ResourceCoordinatorSignalObserver
+class TabManagerResourceCoordinatorSignalObserver
     : public performance_manager::GraphOwned,
-      public performance_manager::ProcessNode::ObserverDefaultImpl,
       public performance_manager::PageNode::ObserverDefaultImpl {
  public:
   using Graph = performance_manager::Graph;
   using PageNode = performance_manager::PageNode;
-  using ProcessNode = performance_manager::ProcessNode;
-  using WebContentsProxy = performance_manager::WebContentsProxy;
 
-  explicit ResourceCoordinatorSignalObserver(
-      const base::WeakPtr<TabManager>& tab_manager);
+  TabManagerResourceCoordinatorSignalObserver() = default;
+  ~TabManagerResourceCoordinatorSignalObserver() override = default;
 
-  ResourceCoordinatorSignalObserver(const ResourceCoordinatorSignalObserver&) =
-      delete;
-  ResourceCoordinatorSignalObserver& operator=(
-      const ResourceCoordinatorSignalObserver&) = delete;
-
-  ~ResourceCoordinatorSignalObserver() override;
+  TabManagerResourceCoordinatorSignalObserver(
+      const TabManagerResourceCoordinatorSignalObserver&) = delete;
+  TabManagerResourceCoordinatorSignalObserver& operator=(
+      const TabManagerResourceCoordinatorSignalObserver&) = delete;
 
   // PageNode::ObserverDefaultImpl:
-  // This function run on the performance manager sequence.
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
-  // GraphOwned implementation:
+  // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
   // Posted to the UI thread from the GraphObserver functions above.
-  static void OnPageStoppedLoadingOnUi(const WebContentsProxy& contents_proxy);
-
-  // Can only be dereferenced on the UI thread. When the tab manager dies this
-  // is used to drop messages received from the performance manager. Ideally
-  // we'd also then tear down this observer on the perf manager sequence itself,
-  // but when one dies they're both about to die.
-  base::WeakPtr<TabManager> tab_manager_;
+  static void OnPageStoppedLoadingOnUi(
+      base::WeakPtr<content::WebContents> contents);
 };
 
 }  // namespace resource_coordinator

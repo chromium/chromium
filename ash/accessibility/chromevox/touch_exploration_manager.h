@@ -72,9 +72,6 @@ class ASH_EXPORT TouchExplorationManager
                                uint32_t changed_metrics) override;
 
   // TouchAccessibilityEnablerDelegate overrides:
-  void OnTwoFingerTouchStart() override;
-  void OnTwoFingerTouchStop() override;
-  void PlaySpokenFeedbackToggleCountdown(int tick_count) override;
   void PlayTouchTypeEarcon() override;
   void ToggleSpokenFeedback() override;
 

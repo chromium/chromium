@@ -7,13 +7,13 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/embedder_support/origin_trials/features.h"
 #include "components/embedder_support/switches.h"
@@ -69,7 +69,7 @@ OriginTrialPolicyImpl::GetPublicKeys() const {
   return public_keys_;
 }
 
-bool OriginTrialPolicyImpl::IsFeatureDisabled(base::StringPiece feature) const {
+bool OriginTrialPolicyImpl::IsFeatureDisabled(std::string_view feature) const {
   if (allow_only_deprecation_trials_) {
     if (!blink::origin_trials::IsDeprecationTrial(feature)) {
       return true;
@@ -79,7 +79,7 @@ bool OriginTrialPolicyImpl::IsFeatureDisabled(base::StringPiece feature) const {
 }
 
 bool OriginTrialPolicyImpl::IsTokenDisabled(
-    base::StringPiece token_signature) const {
+    std::string_view token_signature) const {
   return disabled_tokens_.count(std::string(token_signature)) > 0;
 }
 
@@ -87,7 +87,7 @@ bool OriginTrialPolicyImpl::IsTokenDisabled(
 // trial. Users from experiment group/default group will have access to the
 // origin trial.
 bool OriginTrialPolicyImpl::IsFeatureDisabledForUser(
-    base::StringPiece feature) const {
+    std::string_view feature) const {
   struct OriginTrialFeatureToBaseFeatureMap {
     const char* origin_trial_feature_name;
     const raw_ref<const base::Feature> field_trial_feature;
@@ -153,7 +153,7 @@ bool OriginTrialPolicyImpl::SetDisabledTokens(
   std::set<std::string> new_disabled_tokens;
   for (const std::string& ascii_token : tokens) {
     std::string token_signature;
-    // TODO(crbug.com/1431177): Investigate storing the decoded strings. If so,
+    // TODO(crbug.com/40263412): Investigate storing the decoded strings. If so,
     // this decode logic can be removed.
     if (!base::Base64Decode(ascii_token, &token_signature))
       continue;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/shell_integration_linux.h"
 
 #include <stddef.h>
@@ -9,6 +14,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <map>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -18,7 +25,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -48,11 +56,11 @@ class MockEnvironment : public base::Environment {
   MockEnvironment(const MockEnvironment&) = delete;
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
-  void Set(base::StringPiece name, const std::string& value) {
+  void Set(std::string_view name, const std::string& value) {
     variables_[std::string(name)] = value;
   }
 
-  bool GetVar(base::StringPiece variable_name, std::string* result) override {
+  bool GetVar(std::string_view variable_name, std::string* result) override {
     if (base::Contains(variables_, std::string(variable_name))) {
       *result = variables_[std::string(variable_name)];
       return true;
@@ -61,13 +69,13 @@ class MockEnvironment : public base::Environment {
     return false;
   }
 
-  bool SetVar(base::StringPiece variable_name,
+  bool SetVar(std::string_view variable_name,
               const std::string& new_value) override {
     ADD_FAILURE();
     return false;
   }
 
-  bool UnSetVar(base::StringPiece variable_name) override {
+  bool UnSetVar(std::string_view variable_name) override {
     ADD_FAILURE();
     return false;
   }
@@ -196,26 +204,69 @@ TEST(ShellIntegrationTest, GetExistingProfileShortcutFilenames) {
                           base::FilePath(kApp2Filename)));
 }
 
-TEST(ShellIntegrationTest, GetWebShortcutFilename) {
-  const struct {
-    const char* const path;
-    const char* const url;
-  } test_cases[] = {
-    { "http___foo_.desktop", "http://foo" },
-    { "http___foo_bar_.desktop", "http://foo/bar/" },
-    { "http___foo_bar_a=b&c=d.desktop", "http://foo/bar?a=b&c=d" },
+TEST(ShellIntegrationTest, GetUniqueWebShortcutFilenameFromUrl) {
+  std::vector<std::pair<std::string, GURL>> test_cases = {
+      {"http___foo_.desktop", GURL("http://foo")},
+      {"http___foo_bar_.desktop", GURL("http://foo/bar/")},
+      {"http___foo_bar_a=b&c=d.desktop", GURL("http://foo/bar?a=b&c=d")},
 
-    // Now we're starting to be more evil...
-    { "http___foo_.desktop", "http://foo/bar/baz/../../../../../" },
-    { "http___foo_.desktop", "http://foo/bar/././../baz/././../" },
-    { "http___.._.desktop", "http://../../../../" },
+      // Now we're starting to be more evil...
+      {"http___foo_.desktop", GURL("http://foo/bar/baz/../../../../../")},
+      {"http___foo_.desktop", GURL("http://foo/bar/././../baz/././../")},
+      {"http___.._.desktop", GURL("http://../../../../")},
   };
-  for (size_t i = 0; i < std::size(test_cases); i++) {
-    EXPECT_EQ(std::string(chrome::kBrowserProcessExecutableName) + "-" +
-              test_cases[i].path,
-              GetWebShortcutFilename(GURL(test_cases[i].url)).value()) <<
-        " while testing " << test_cases[i].url;
+  for (const auto& [expected, gurl_input] : test_cases) {
+    std::optional<base::SafeBaseName> file_base_name =
+        GetUniqueWebShortcutFilename(gurl_input.spec());
+    ASSERT_TRUE(file_base_name);
+    EXPECT_EQ(
+        base::StrCat({chrome::kBrowserProcessExecutableName, "-", expected}),
+        file_base_name->path().value())
+        << " while testing " << gurl_input.spec();
   }
+}
+
+TEST(ShellIntegrationTest, GetUniqueWebShortcutFilename) {
+  std::vector<std::pair<std::string, std::string>> test_cases = {
+      {"Test_test.desktop", "Test test"},
+      {"What_about__newlines.desktop", "What\nabout\n\rnewlines"},
+      {"______.desktop", "\\//\\//"},
+  };
+  for (const auto& [expected, input] : test_cases) {
+    std::optional<base::SafeBaseName> file_base_name =
+        GetUniqueWebShortcutFilename(input);
+    ASSERT_TRUE(file_base_name);
+    EXPECT_EQ(
+        base::StrCat({chrome::kBrowserProcessExecutableName, "-", expected}),
+        file_base_name->path().value())
+        << " while testing " << input;
+  }
+}
+TEST(ShellIntegrationTest, GetUniqueWebShortcutUnique) {
+  const std::string kTestName = "Test test";
+
+  base::ScopedPathOverride profile_override(base::DIR_USER_DESKTOP);
+  base::FilePath desktop_dir =
+      base::PathService::CheckedGet(base::DIR_USER_DESKTOP);
+
+  // Create the first file option.
+  std::optional<base::SafeBaseName> file_base_name =
+      GetUniqueWebShortcutFilename(kTestName);
+  ASSERT_TRUE(file_base_name);
+  std::string expected_name = base::StrCat(
+      {chrome::kBrowserProcessExecutableName, "-Test_test.desktop"});
+  EXPECT_EQ(expected_name, file_base_name->path().value());
+  ASSERT_TRUE(
+      base::WriteFile(desktop_dir.Append(file_base_name->path()), "test data"));
+
+  // The second call should guarantee uniqueness, and change the name without a
+  // whitespace.
+  std::optional<base::SafeBaseName> second_file_base_name =
+      GetUniqueWebShortcutFilename(kTestName);
+  ASSERT_TRUE(second_file_base_name);
+  std::string expected_second_name = base::StrCat(
+      {chrome::kBrowserProcessExecutableName, "-Test_test_1.desktop"});
+  EXPECT_EQ(expected_second_name, second_file_base_name->path().value());
 }
 
 TEST(ShellIntegrationTest, GetDesktopFileContents) {

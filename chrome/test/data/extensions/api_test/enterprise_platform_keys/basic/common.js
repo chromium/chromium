@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1154680): Refactor enterprise.platformKeys test extension.
+// TODO(crbug.com/40735021): Refactor enterprise.platformKeys test extension.
 
 'use strict';
 
@@ -551,6 +551,10 @@ async function generateRsaKeyAndVerify(subtleCrypto, algorithm) {
       /*debugMessage=*/ 'First signing attempt');
 }
 
+// Generates an EC key with the |generateKey| algorithm in params. Signs random
+// data using the new key and verifies the signature using WebCrypto. Returns an
+// array with the first element as the generated key pair and the second element
+// as the SubjectPublicKeyInfo.
 async function generateEcKeyAndVerify(subtleCrypto, params) {
   let keyPair;
   try {
@@ -584,6 +588,18 @@ async function generateEcKeyAndVerify(subtleCrypto, params) {
       /*debugMessage=*/ 'First signing attempt');
 }
 
+// Generates an AES key with the |algorithm| parameters.
+async function generateAesKey(subtleCrypto, algorithm) {
+  // TODO(b/288880151): Update test below, after AES key generation is supported
+  // in the internal API.
+  try {
+    await subtleCrypto.generateKey(algorithm, false, []);
+    fail('generateKey should fail because it\'s still unsupported internally');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
+  }
+}
 
 function testInitiallyNoCerts(token) {
   assertCertsStored(token, []);
@@ -628,10 +644,8 @@ async function testGenerateRsaKeyAndSignAllowedOnce(subtleCrypto) {
       await generateRsaKeyAndVerify(subtleCrypto, RSA_GEN_ALGORITHM);
 
   // Try to sign data with the same key a second time, which must fail.
-  let signature;
   try {
-    signature =
-        await subtleCrypto.sign(RSA_SIGN_ALGORITHM, keyPair.privateKey, DATA);
+    await subtleCrypto.sign(RSA_SIGN_ALGORITHM, keyPair.privateKey, DATA);
     fail('Second sign call was expected to fail.');
   } catch (error) {
     assertTrue(error instanceof Error);
@@ -686,11 +700,9 @@ async function testGenerateEcKeyAndSignAllowedOnce(subtleCrypto) {
   const [keyPair, spki] =
       await generateEcKeyAndVerify(subtleCrypto, ALL_ECDSA_PARAMS);
 
-  let signature;
   try {
     // Try to sign data with the same key a second time, which must fail.
-    signature = await subtleCrypto.sign(
-        ALL_ECDSA_PARAMS.sign, keyPair.privateKey, DATA);
+    await subtleCrypto.sign(ALL_ECDSA_PARAMS.sign, keyPair.privateKey, DATA);
     fail('Second sign call was expected to fail.');
   } catch (error) {
     assertTrue(error instanceof Error);
@@ -714,12 +726,26 @@ async function testGenerateEcKeyAndSignAllowedMultipleTimes(subtleCrypto) {
   succeed();
 }
 
-// Generates a key and signs some data with other parameters. Verifies the
-// signature using WebCrypto.
-async function testGenerateKeyAndSignOtherParameters(subtleCrypto) {
+// An example of a dictionary that is specified on AES key generation. The
+// parameters are defined by WebCrypto as the AesKeyGenParams. For more
+// information about AES key generation parameters, please refer to:
+// https://www.w3.org/TR/WebCryptoAPI/#aes-keygen-params
+const AES_GEN_ALGORITHM = {
+  name: 'AES-CBC',
+  length: 256
+};
+
+// Tests the generation of AES keys.
+async function testGenerateAesKey(subtleCrypto) {
+  await generateAesKey(subtleCrypto, AES_GEN_ALGORITHM);
+  succeed();
+}
+
+// Generates a key and signs some data with other params. Verifies the signature
+// using WebCrypto.
+async function testGenerateRsaKeyAndSignOtherParams(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
-    // RsaHashedKeyGenParams
     modulusLength: 1024,
     // Equivalent to 65537.
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
@@ -733,8 +759,8 @@ async function testGenerateKeyAndSignOtherParameters(subtleCrypto) {
   succeed();
 }
 
-// Call generate key with invalid algorithm parameter, missing modulusLength.
-async function testAlgorithmParameterMissingModulusLength(subtleCrypto) {
+// Call generate RSA key with invalid algorithm param, missing modulusLength.
+async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     // Equivalent to 65537.
@@ -754,8 +780,28 @@ async function testAlgorithmParameterMissingModulusLength(subtleCrypto) {
   }
 }
 
-// Call generate key with invalid algorithm parameter, missing hash.
-async function testAlgorithmParameterMissingHash(subtleCrypto) {
+// Call generate RSA key with invalid algorithm param, missing publicExponent.
+async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
+  var algorithm = {
+    name: 'RSASSA-PKCS1-v1_5',
+    modulusLength: 512,
+    hash: {
+      name: 'SHA-1',
+    }
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+// Call generate RSA key with invalid algorithm param, missing hash.
+async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 512,
@@ -767,16 +813,15 @@ async function testAlgorithmParameterMissingHash(subtleCrypto) {
     await subtleCrypto.generateKey(algorithm, false, ['sign']);
     fail('generateKey was expected to fail');
   } catch (error) {
-    assertEq(
-        new Error('Error: A required parameter was missing our out-of-range'),
-        error);
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
     succeed();
   }
 }
 
-// Call generate key with invalid algorithm parameter, unsupported public
+// Call generate RSA key with invalid algorithm param, unsupported public
 // exponent.
-async function testAlgorithmParameterUnsupportedPublicExponent(subtleCrypto) {
+async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
   var algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 512,
@@ -790,6 +835,70 @@ async function testAlgorithmParameterUnsupportedPublicExponent(subtleCrypto) {
   } catch (error) {
     assertTrue(error instanceof Error);
     assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+async function testGenerateEcKeyParamMissingNamedCurve(subtleCrypto) {
+  var algorithm = {
+    name: 'ECDSA',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+async function testGenerateEcKeyParamUnsupportedNamedCurve(subtleCrypto) {
+  var algorithm = {
+    name: 'ECDSA',
+    namedCurve: 'P-384',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
+    succeed();
+  }
+}
+
+// Call generate AES key with invalid algorithm param, missing length.
+async function testGenerateAesKeyParamMissingLength(subtleCrypto) {
+  var algorithm = {
+    name: 'AES-CBC',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, []);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+// Call generate AES key with invalid algorithm param, unsupported length.
+async function testGenerateAesKeyParamUnsupportedLength(subtleCrypto) {
+  var algorithm = {
+    name: 'AES-CBC',
+    length: 128,
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, []);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
     succeed();
   }
 }
@@ -856,10 +965,16 @@ function getTestsForToken(token, signMultipleTimes) {
 function getTestsForSubtleCrypto(subtleCrypto, signMultipleTimes) {
   const tests = [
     testHasSubtleCryptoMethods,
-    testGenerateKeyAndSignOtherParameters,
-    testAlgorithmParameterMissingModulusLength,
-    testAlgorithmParameterMissingHash,
-    testAlgorithmParameterUnsupportedPublicExponent,
+    testGenerateRsaKeyAndSignOtherParams,
+    testGenerateRsaKeyParamMissingModulusLength,
+    testGenerateRsaKeyParamMissingPublicExponent,
+    testGenerateRsaKeyParamMissingHash,
+    testGenerateRsaKeyParamUnsupportedPublicExponent,
+    testGenerateEcKeyParamMissingNamedCurve,
+    testGenerateEcKeyParamUnsupportedNamedCurve,
+    testGenerateAesKey,
+    testGenerateAesKeyParamMissingLength,
+    testGenerateAesKeyParamUnsupportedLength,
   ];
 
   const generateAndSignTests = getGenerateAndSignTests(signMultipleTimes);

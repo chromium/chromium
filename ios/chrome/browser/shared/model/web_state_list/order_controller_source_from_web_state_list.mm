@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -55,4 +56,27 @@ bool OrderControllerSourceFromWebStateList::IsOpenerOfItemAt(
   const int navigation_index =
       web_state->GetNavigationManager()->GetLastCommittedItemIndex();
   return opener.navigation_index == navigation_index;
+}
+
+TabGroupRange OrderControllerSourceFromWebStateList::GetGroupRangeOfItemAt(
+    int index) const {
+  const TabGroup* group = web_state_list_->GetGroupOfWebStateAt(index);
+  if (group) {
+    return TabGroupRange(group->range());
+  }
+  return TabGroupRange::InvalidRange();
+}
+
+std::set<int> OrderControllerSourceFromWebStateList::GetCollapsedGroupIndexes()
+    const {
+  std::set<const TabGroup*> groups = web_state_list_->GetGroups();
+  std::set<int> collapsed_indexes;
+
+  for (const auto& group : groups) {
+    if (group->visual_data().is_collapsed()) {
+      std::set<int> group_indexes = TabGroupRange(group->range()).AsSet();
+      collapsed_indexes.insert(group_indexes.begin(), group_indexes.end());
+    }
+  }
+  return collapsed_indexes;
 }

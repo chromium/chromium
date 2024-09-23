@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "storage/browser/blob/blob_reader.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -12,6 +19,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,6 +28,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,7 +42,6 @@
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -674,22 +683,24 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
   MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
-  int bytes_read = net::ERR_UNEXPECTED;
-  reader_->ReadSingleMojoDataItem(
-      std::move(producer),
-      base::BindLambdaForTesting([&](int result) { bytes_read = result; }));
-  base::RunLoop().RunUntilIdle();
+  std::optional<int> read_result;
+  base::RunLoop read_loop;
+  reader_->ReadSingleMojoDataItem(std::move(producer),
+                                  base::BindLambdaForTesting([&](int result) {
+                                    read_result = result;
+                                    read_loop.Quit();
+                                  }));
+  read_loop.Run();
 
-  ASSERT_EQ(kData.size(), static_cast<size_t>(bytes_read));
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(*read_result, net::OK);
 
-  std::vector<uint8_t> buffer(bytes_read);
-  uint32_t num_bytes = bytes_read;
+  size_t num_bytes = kData.size();
+  std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
-  ASSERT_EQ(MOJO_RESULT_OK, read_result);
-  ASSERT_EQ(kData.size(), num_bytes);
+  EXPECT_EQ(MOJO_RESULT_OK, consumer->ReadData(flags, buffer, num_bytes));
 
-  EXPECT_EQ(0, memcmp(buffer.data(), kData.c_str(), kData.size()));
+  EXPECT_EQ(base::as_string_view(base::as_byte_span(buffer)), kData);
 }
 
 // This test is the same as ReadableDataHandleSingle, but adds the
@@ -721,23 +732,26 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingleRange) {
   MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
-  int bytes_read = net::ERR_UNEXPECTED;
-  reader_->ReadSingleMojoDataItem(
-      std::move(producer),
-      base::BindLambdaForTesting([&](int result) { bytes_read = result; }));
-  base::RunLoop().RunUntilIdle();
+  std::optional<int> read_result;
+  base::RunLoop read_loop;
+  reader_->ReadSingleMojoDataItem(std::move(producer),
+                                  base::BindLambdaForTesting([&](int result) {
+                                    read_result = result;
+                                    read_loop.Quit();
+                                  }));
+  read_loop.Run();
 
-  ASSERT_EQ(range_length, static_cast<uint64_t>(bytes_read));
+  ASSERT_TRUE(read_result.has_value());
+  EXPECT_EQ(*read_result, net::OK);
 
-  std::vector<uint8_t> buffer(bytes_read);
-  uint32_t num_bytes = bytes_read;
+  size_t num_bytes = range_length;
+  std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-  MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
-  ASSERT_EQ(MOJO_RESULT_OK, read_result);
-  ASSERT_EQ(range_length, num_bytes);
+  EXPECT_EQ(MOJO_RESULT_OK, consumer->ReadData(flags, buffer, num_bytes));
 
-  EXPECT_EQ(0,
-            memcmp(buffer.data(), kData.c_str() + range_start, range_length));
+  EXPECT_EQ(
+      base::as_string_view(base::as_byte_span(buffer)).substr(0, num_bytes),
+      kData.substr(range_start, range_length));
 }
 
 TEST_F(BlobReaderTest, ReadableDataHandleMultipleSlices) {
@@ -882,15 +896,15 @@ TEST_F(BlobReaderTest, FileSomeAsyncSegmentedOffsetsUnknownSizes) {
   current_value = 0;
   for (size_t i = 0; i < kNumItems; i++) {
     uint64_t offset = i % 3 == 0 ? 1 : 0;
-    std::unique_ptr<char[]> buf(new char[kItemSize + offset]);
+    auto buf = base::HeapArray<char>::Uninit(kItemSize + offset);
     if (offset > 0) {
-      memset(buf.get(), 7, offset);
+      memset(buf.data(), 7, offset);
     }
     for (size_t j = 0; j < kItemSize; j++) {
-      buf.get()[j + offset] = current_value++;
+      buf.data()[j + offset] = current_value++;
     }
     std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(
-        std::string(buf.get() + offset, kItemSize), kItemSize + offset));
+        std::string(buf.data() + offset, kItemSize), buf.size()));
     if (i % 4 != 0) {
       reader->SetAsyncRunner(
           base::SingleThreadTaskRunner::GetCurrentDefault().get());

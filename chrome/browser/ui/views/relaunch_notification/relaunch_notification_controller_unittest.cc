@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -32,7 +33,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/display/manager/display_configurator.h"
@@ -195,7 +196,7 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
     // Unittests failed when the system is on battery. This class is using a
     // mock power monitor source `power_monitor_source_` to ensure no real
     // power state or power notifications are delivered to the unittests.
-    EXPECT_FALSE(base::PowerMonitor::IsOnBatteryPower());
+    EXPECT_FALSE(base::PowerMonitor::GetInstance()->IsOnBatteryPower());
   }
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
@@ -245,7 +246,7 @@ TEST_F(RelaunchNotificationControllerTest, CreateDestroy) {
 // should not be observing the UpgradeDetector, and should therefore never
 // attempt to show any notifications.
 
-// TODO(1004568) Disabled due to race condition.
+// TODO(crbug.com/40099078) Disabled due to race condition.
 #if defined(THREAD_SANATIZER)
 #define MAYBE_PolicyUnset DISABLED_PolicyUnset
 #else
@@ -1194,6 +1195,15 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   // The query should happen once the notification is potentially seen.
   EXPECT_CALL(callback, Run()).WillOnce(Return(deadline));
   ASSERT_NO_FATAL_FAILURE(SetVisibility(true));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // We should not depend on BrowserView::Show() (called by SetVisibility(true))
+  // to call BrowserList::SetLastActive() to set the associated browser to be
+  // last active one. We are planning to remove that call for Lacros to make
+  // updating of last active browser completely asynchronous (b/325634285).
+  // Therefore, for the unit test depending on browser() to be set as the last
+  // active one, we need to explicit set it as the last active one.
+  BrowserList::GetInstance()->SetLastActive(browser());
+#endif
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 
   ASSERT_NO_FATAL_FAILURE(SetVisibility(false));

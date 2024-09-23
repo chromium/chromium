@@ -6,7 +6,6 @@ package org.chromium.webapk.shell_apk;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,17 +33,16 @@ public class HostBrowserLauncher {
      * the host browser in tabbed mode.
      */
     public static void launch(Activity activity, HostBrowserLauncherParams params) {
-        if (HostBrowserUtils.shouldLaunchInTab(params)) {
-            launchInTab(activity.getApplicationContext(), params);
-            return;
-        }
-
-        launchBrowserInWebApkMode(
+        launchBrowserInWebApkModeIfSupported(
                 activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, /* expectResult= */ false);
     }
 
-    /** Launches host browser in WebAPK mode. */
-    public static void launchBrowserInWebApkMode(
+    /**
+     * Launches host browser in WebAPK mode if the WebAPK is bound to a host browser via its
+     * AndroidManifest. Otherwise, launches a VIEW intent to the default browser, which will launch
+     * in WebAPK mode if it supports WebAPKs.
+     */
+    public static void launchBrowserInWebApkModeIfSupported(
             Activity activity,
             HostBrowserLauncherParams params,
             Bundle extraExtras,
@@ -52,8 +50,14 @@ public class HostBrowserLauncher {
             boolean expectResult) {
         ManageDataLauncherActivity.updateSiteSettingsShortcut(
                 activity.getApplicationContext(), params);
-        Intent intent = new Intent();
-        intent.setAction(ACTION_START_WEBAPK);
+        Intent intent;
+        if (HostBrowserUtils.isHostBrowserFromManifest(
+                activity.getApplicationContext(), params.getHostBrowserPackageName())) {
+            intent = new Intent();
+            intent.setAction(ACTION_START_WEBAPK);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
+        }
         intent.setPackage(params.getHostBrowserPackageName());
         intent.setFlags(flags);
 
@@ -103,20 +107,6 @@ public class HostBrowserLauncher {
         } catch (ActivityNotFoundException e) {
             Log.w(TAG, "Unable to launch browser in WebAPK mode.");
             e.printStackTrace();
-        }
-    }
-
-    /** Launches a WebAPK in its runtime host browser as a tab. */
-    private static void launchInTab(Context context, HostBrowserLauncherParams params) {
-        ManageDataLauncherActivity.updateSiteSettingsShortcut(context, params);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
-        intent.setPackage(params.getHostBrowserPackageName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true)
-                .putExtra(WebApkConstants.EXTRA_SOURCE, params.getSource());
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
         }
     }
 }

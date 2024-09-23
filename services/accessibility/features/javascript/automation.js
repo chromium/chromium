@@ -67,7 +67,6 @@ const exceptionHandler = {
 
 // Access the native bindings installed on the global template.
 const natives = nativeAutomationInternal;
-const IsInteractPermitted = natives.IsInteractPermitted;
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -1432,27 +1431,21 @@ class AutomationNode {
       return;
     }
 
-    // Check permissions.
-    if (!IsInteractPermitted()) {
-      throw new Error(
-          actionType + ' requires {"desktop": true} in the ' +
-          '"automation" manifest key.');
-    }
-
     let requestID = -1;
     if (opt_callback) {
       requestID = this.rootImpl_.addActionResultCallback(
           actionType, opt_args, opt_callback);
     }
 
-    chrome.automation.performAction_(
-        {
-          treeID: this.rootImpl_.treeID,
-          automationNodeID: this.id,
-          actionType: actionType,
-          requestID: requestID,
-        },
-        opt_args || {});
+    let actionData = automationUtil.getDefaultAXActionData();
+    actionData.targetTreeId =
+        automationUtil.stringAXTreeIDToMojo(this.rootImpl_.treeID);
+    actionData.targetNodeId = this.id;
+    actionData.action = automationUtil.StringActionToMojo(actionType);
+    actionData.requestId = requestID;
+
+    // TODO(b:333790806): Convert opt_args to AxActionData format.
+    chrome.automation.automationClientRemote.performAction(actionData);
   }
 
   findInternal_(params, opt_results) {
@@ -1813,6 +1806,7 @@ class AutomationRootNode extends AutomationNode {
     // Don't return undefined, because the id is often passed directly
     // as an argument to a native binding that expects only a valid number.
     if (id === undefined) {
+      console.warn('id of root node was undefined. Setting to -1.');
       id = -1;
     }
     return id;
@@ -2018,7 +2012,7 @@ class AutomationRootNode extends AutomationNode {
           eventParams.eventFromAction, eventParams.mouseX, eventParams.mouseY,
           eventParams.intents);
     } else {
-      logging.WARNING(
+      console.warn(
           'Got ' + eventParams.eventType + ' event on unknown node: ' +
           eventParams.targetID + '; this: ' + this.id);
     }
@@ -2142,15 +2136,153 @@ AutomationRootNode.actionRequestCounter = 0;
  */
 AutomationRootNode.actionRequestIDToCallback = {};
 
+// A class to export utility functions to other files in automation.
+class AutomationUtil {
+  constructor() {
+    /**
+     * Global map of tree change observers.
+     * @public {Object<number, TreeChangeObserver>}
+     */
+    this.treeChangeObserverMap = {};
+
+    /**
+     * The id for the next tree change observer.
+     * @public
+     * @type {number}
+     */
+    this.nextTreeChangeObserverId = 1;
+
+    this.idToCallback = {};
+  }
+
+  stringAXTreeIDToMojo(stringTreeID) {
+    let token = natives.StringAXTreeIDToUnguessableToken(stringTreeID);
+    let mojoTreeID = {
+      token: {
+        high: BigInt(token.high),
+        low: BigInt(token.low),
+      }
+    };
+    return mojoTreeID;
+  }
+
+  storeTreeCallback(id, callback) {
+    if (!callback) {
+      throw new Error('callback can not be null');
+    }
+
+    const targetTree = AutomationRootNode.get(id);
+    if (!targetTree) {
+      // If we haven't cached the tree, hold the callback until the tree is
+      // populated by the initial onAccessibilityEvent call.
+      if (id in this.idToCallback) {
+        this.idToCallback[id].push(callback);
+      } else {
+        this.idToCallback[id] = [callback];
+      }
+    } else {
+      callback(targetTree);
+    }
+  }
+
+  getDefaultAXActionData() {
+    let actionData = new ax.mojom.AXActionData();
+    let treeID = {
+      unknown: 0,
+    };
+    actionData.targetTreeId = treeID;
+    actionData.sourceExtensionId = '';
+    actionData.requestId = 0;
+    actionData.targetNodeId = 0;
+    actionData.targetRole = ax.mojom.Role.kUnknown;
+    actionData.flags = 0;
+    actionData.action = ax.mojom.Action.kNone;
+    actionData.anchorNodeId = 0;
+    actionData.focusNodeId = 0;
+    actionData.anchorOffset = 0;
+    actionData.focusOffset = 0;
+    actionData.customActionId = 0;
+    let rect = new gfx.mojom.Rect();
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = 0;
+    rect.height = 0;
+    actionData.targetRect = rect;
+    let point = new gfx.mojom.Point();
+    point.x = 0;
+    point.y = 0;
+    actionData.targetPoint = point;
+    actionData.value = '';
+    actionData.hitTestEventToFire = ax.mojom.Event.kNone;
+    actionData.horizontalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
+    actionData.verticalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
+    actionData.scrollBehavior = ax.mojom.ScrollBehavior.kNone;
+
+    return actionData;
+  }
+
+  StringActionToMojo(action) {
+    // Action types are represented as strings because features are using ATP
+    // automation and extensions automation (which uses the old IDL formats).
+    // See ActionType in extensions/common/api/automation.idl.
+    if (action == 'hitTest') {
+      return ax.mojom.Action.kHitTest;
+    }
+
+    // TODO(b:327258691): Share const strings between c++ and js for action
+    // names.
+    return ax.mojom.Action.kNone;
+  }
+
+  removeTreeChangeObserver(observer) {
+    for (const id in this.treeChangeObserverMap) {
+      if (this.treeChangeObserverMap[id] === observer) {
+        natives.RemoveTreeChangeObserver(id);
+        delete this.treeChangeObserverMap[id];
+        return;
+      }
+    }
+  }
+
+  addTreeChangeObserver(filter, observer) {
+    this.removeTreeChangeObserver(observer);
+    const id = this.nextTreeChangeObserverId++;
+    natives.AddTreeChangeObserver(id, filter);
+    this.treeChangeObserverMap[id] = observer;
+  }
+}
+
+automationUtil = new AutomationUtil();
+
 // Shim class for Automation API. Compare to
 // extensions/renderer/resources/automation/automation_custom_bindings.js.
 class AtpAutomation {
   constructor() {
-    const AutomationInternalApi = ax.mojom.AutomationClient;
-    this.automationClientRemote_ = AutomationInternalApi.getRemote();
+    const AutomationClient = ax.mojom.AutomationClient;
+    this.automationClientRemote_ = AutomationClient.getRemote();
 
     /** @private {?string} */
     this.desktopId_ = null;
+  }
+
+  get automationClientRemote() {
+    return this.automationClientRemote_;
+  }
+
+  get desktopId() {
+    return this.desktopId_;
+  }
+
+  reset() {
+    this.automationClientRemote_.disable();
+    this.desktopId_ = undefined;
+    this.desktopTree_ = undefined;
+    automationUtil.idToCallback = {};
+    AutomationRootNode.destroyAll();
+  }
+
+  get desktopTree() {
+    return this.desktopTree_;
   }
 
   getDesktop(callback) {
@@ -2159,6 +2291,7 @@ class AtpAutomation {
     }
     if (this.desktopTree_) {
         callback(this.desktopTree_);
+        return;
     }
     return new Promise(async resolve => {
       await this.automationClientRemote_.enable().then(enableResult => {
@@ -2190,6 +2323,7 @@ class AtpAutomation {
         } else {
           console.error('Unexpected result from AutomationClient::Enable');
           this.desktopId_ = null;
+          this.desktopTree_ = null;
           AutomationRootNode.destroy(treeId);
           nativeAutomationInternal.SetDesktopID('');
           callback();
@@ -2212,7 +2346,199 @@ class AtpAutomation {
     }
   }
 
-  // TODO(b/262638176): Add other chrome.automation methods.
+  getAccessibilityFocus(callback) {
+    let focusedNodeInfo = natives.GetAccessibilityFocus();
+    if (!focusedNodeInfo) {
+      callback(null);
+      return;
+    }
+    const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
+    if (tree) {
+      callback(tree.get(focusedNodeInfo.nodeId));
+      return;
+    }
+  }
+
+  removeTreeChangeObserver(observer) {
+    automationUtil.removeTreeChangeObserver(observer);
+  }
+
+  addTreeChangeObserver(filter, observer) {
+    automationUtil.addTreeChangeObserver(filter, observer);
+  }
+
+  setDocumentSelection(params) {
+    const anchorNode = params.anchorObject;
+    const focusNode = params.focusObject;
+    if (anchorNode.treeID !== focusNode.treeID) {
+      console.error('Selection anchor and focus must be in the same tree.');
+      return;
+    }
+    if (anchorNode.treeID === this.desktopId_) {
+      console.error(
+          'Use AutomationNode.setSelection to set the selection ' +
+          'in the desktop tree.');
+      return;
+    }
+
+    // Note: the AXActionData must have all its fields defined to be sent over
+    // mojo, so the next call is mandatory.
+    let actionData = automationUtil.getDefaultAXActionData();
+    actionData.targetTreeId =
+        automationUtil.stringAXTreeIDToMojo(anchorNode.treeID);
+    actionData.targetNodeId = anchorNode.id;
+    actionData.action = ax.mojom.Action.kSetSelection;
+    actionData.anchorNodeId = anchorNode.id;
+    actionData.focusNodeId = focusNode.id;
+    actionData.anchorOffset = params.anchorOffset;
+    actionData.focusOffset = params.focusOffset;
+
+    this.automationClientRemote_.performAction(actionData);
+  }
 };
+
+
+automationInternal.onChildTreeID.addListener((childTreeId) => {
+  const targetTree = AutomationRootNode.get(childTreeId);
+
+  // If the tree is already loaded, or if we previously requested it be loaded
+  // (i.e. have a callback for it), don't try to do so again.
+  if (targetTree || automationUtil.idToCallback[childTreeId]) {
+    return;
+  }
+
+  // A WebView in the desktop tree has a different AX tree as its child.
+  // When we encounter a WebView with a child AX tree id that we don't
+  // currently have cached, explicitly request that AX tree from the
+  // browser process and set up a callback when it loads to attach that
+  // tree as a child of this node and fire appropriate events.
+  automationUtil.storeTreeCallback(childTreeId, function(root) {
+    root.dispatchEvent('loadComplete', 'page');
+    if (root.parent) {
+      root.parent.dispatchEvent('childrenChanged');
+    }
+  }, true);
+
+  chrome.automation.automationClientRemote.enableChildTree(
+      automationUtil.stringAXTreeIDToMojo(childTreeId));
+});
+
+automationInternal.onTreeChange.addListener(
+    (observerID, treeID, nodeID, changeType) => {
+      const tree = AutomationRootNode.getOrCreate(treeID);
+      if (!tree) {
+        return;
+      }
+
+      const node = tree.get(nodeID);
+      if (!node) {
+        return;
+      }
+
+      const observer = automationUtil.treeChangeObserverMap[observerID];
+      if (!observer) {
+        return;
+      }
+
+      try {
+        observer({target: node, type: changeType});
+      } catch (e) {
+        exceptionHandler.handle(
+            'Error in tree change observer for ' + changeType, e);
+      }
+    });
+
+automationInternal.onNodesRemoved.addListener((treeID, nodeIDs) => {
+  const tree = AutomationRootNode.getOrCreate(treeID);
+  if (!tree) {
+    return;
+  }
+
+  for (let i = 0; i < nodeIDs.length; i++) {
+    tree.remove(nodeIDs[i]);
+  }
+});
+
+automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
+  if (!chrome.automation.desktopId) {
+    return;
+  }
+  chrome.automation.reset();
+});
+
+/**
+ * Dispatch accessibility events fired on individual nodes to its
+ * corresponding AutomationNode.
+ */
+automationInternal.onAccessibilityEvent.addListener((eventParams) => {
+  const id = eventParams.treeID;
+  const targetTree = AutomationRootNode.getOrCreate(id);
+  if (eventParams.eventType == 'mediaStartedPlaying' ||
+      eventParams.eventType == 'mediaStoppedPlaying') {
+    // These events are global to the tree.
+    eventParams.targetID = targetTree.id;
+  }
+
+  targetTree.onAccessibilityEvent(eventParams);
+
+  // If we're not waiting on a callback, we can early out here.
+  if (!(id in automationUtil.idToCallback)) {
+    return;
+  }
+
+  // We usually get a 'placeholder' tree first, which doesn't have any url
+  // attribute or child nodes. If we've got that, wait for the full tree before
+  // calling the callback.
+  if (id != chrome.automation.desktopId && !targetTree.url &&
+      targetTree.children.length == 0) {
+    return;
+  }
+
+  // If the tree wasn't available, the callback will have been cached in
+  // idToCallback, so call and delete it now that we have the complete tree.
+  for (let i = 0; i < automationUtil.idToCallback[id].length; i++) {
+    const callback = automationUtil.idToCallback[id][i];
+    callback(targetTree);
+  }
+  delete automationUtil.idToCallback[id];
+});
+
+automationInternal.onAccessibilityTreeDestroyed.addListener((id) => {
+  // Destroy the AutomationRootNode.
+  const targetTree = AutomationRootNode.get(id);
+  if (targetTree) {
+    targetTree.destroy();
+    AutomationRootNode.destroy(id);
+  } else {
+    console.warn('no targetTree to destroy');
+  }
+
+  // Destroy the native cache of the accessibility tree.
+  natives.DestroyAccessibilityTree(id);
+});
+
+automationInternal.onAccessibilityTreeSerializationError.addListener((id) => {
+  // TODO(b:332975670): Investigate the usage of automationInternal.enableTree
+  // to reset on serialization problems.
+  chrome.automation.automationClientRemote.enableChildTree(
+      automationUtil.stringAXTreeIDToMojo(id));
+});
+
+automationInternal.onActionResult.addListener((treeID, requestID, result) => {
+  const targetTree = AutomationRootNode.get(treeID);
+  if (!targetTree) {
+    return;
+  }
+  targetTree.onActionResult(requestID, result);
+});
+
+automationInternal.onGetTextLocationResult.addListener((textLocationParams) => {
+  const targetTree = AutomationRootNode.get(textLocationParams.treeID);
+  if (!targetTree) {
+    return;
+  }
+
+  targetTree.onGetTextLocationResult(textLocationParams);
+});
 
 chrome.automation = new AtpAutomation();

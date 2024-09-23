@@ -10,4 +10,8 @@
 extern NSString* const kTableViewIllustratedEmptyViewID;
 extern NSString* const kTableViewEmptyViewID;
 
+// Header height used as a padding between the first cell and the navigation
+// bar.
+extern const CGFloat kTableViewFirstHeaderHeight;
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_TABLE_VIEW_CONSTANTS_H_

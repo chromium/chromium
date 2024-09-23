@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
@@ -29,6 +30,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -41,14 +43,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -72,7 +77,7 @@ public class AccessorySheetViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AsyncViewStub viewStub =
                             mActivityTestRule
@@ -103,7 +108,7 @@ public class AccessorySheetViewTest {
         assertNull(mViewPager.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, true);
                 });
@@ -111,7 +116,7 @@ public class AccessorySheetViewTest {
         assertEquals(viewPager.getVisibility(), View.VISIBLE);
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(VISIBLE, false);
                 });
@@ -122,7 +127,7 @@ public class AccessorySheetViewTest {
     @MediumTest
     public void testAddingTabToModelRendersTabsView() throws InterruptedException {
         final String kSampleAction = "Some Action";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS)
                             .add(
@@ -159,7 +164,7 @@ public class AccessorySheetViewTest {
         assertNull(mViewPager.poll());
 
         // Setting visibility should cause the Tab to be rendered.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         assertNotNull(mViewPager.take());
 
         onView(withText(kSampleAction)).check(matches(isDisplayed()));
@@ -170,7 +175,7 @@ public class AccessorySheetViewTest {
     public void testSettingActiveTabIndexChangesTab() {
         final String kFirstTab = "First Tab";
         final String kSecondTab = "Second Tab";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
                     mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
@@ -180,7 +185,7 @@ public class AccessorySheetViewTest {
 
         onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(ACTIVE_TAB_INDEX, 1));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(ACTIVE_TAB_INDEX, 1));
 
         onViewWaiting(withText(kSecondTab));
     }
@@ -190,7 +195,7 @@ public class AccessorySheetViewTest {
     public void testRemovingTabDeletesItsView() {
         final String kFirstTab = "First Tab";
         final String kSecondTab = "Second Tab";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
                     mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
@@ -200,8 +205,7 @@ public class AccessorySheetViewTest {
 
         onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.get(TABS).remove(mModel.get(TABS).get(0)));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.get(TABS).remove(mModel.get(TABS).get(0)));
 
         onView(withText(kFirstTab)).check(doesNotExist());
     }
@@ -210,7 +214,7 @@ public class AccessorySheetViewTest {
     @MediumTest
     public void testReplaceLastTab() {
         final String kFirstTab = "First Tab";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView(kFirstTab));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
@@ -219,7 +223,7 @@ public class AccessorySheetViewTest {
 
         // Remove the last tab.
         onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).remove(mModel.get(TABS).get(0));
                 });
@@ -227,7 +231,7 @@ public class AccessorySheetViewTest {
 
         // Add a new first tab.
         final String kSecondTab = "Second Tab";
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
@@ -238,7 +242,7 @@ public class AccessorySheetViewTest {
     @Test
     @MediumTest
     public void testTopShadowVisiblitySetByModel() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView("SomeTab"));
                     mModel.set(TOP_SHADOW_VISIBLE, false);
@@ -247,10 +251,10 @@ public class AccessorySheetViewTest {
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, true));
         onView(withId(R.id.accessory_sheet_shadow)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
     }
@@ -260,7 +264,7 @@ public class AccessorySheetViewTest {
     public void testHeader() {
         Runnable runnable = mock(Runnable.class);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(TABS).add(createTestTabWithTextView("Header"));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
@@ -274,6 +278,49 @@ public class AccessorySheetViewTest {
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
         onViewWaiting(withId(R.id.sheet_header_shadow));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testProcessesTouchesWhenObscured() {
+        Runnable runnable = mock(Runnable.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS).add(createTestTabWithTextView("Header"));
+                    mModel.set(ACTIVE_TAB_INDEX, 0);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(VISIBLE, true);
+                });
+
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        verify(runnable, times(1)).run();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testFiltersTouchesWhenObscured() {
+        Runnable runnable = mock(Runnable.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS).add(createTestTabWithTextView("Header"));
+                    mModel.set(ACTIVE_TAB_INDEX, 0);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(VISIBLE, true);
+                });
+
+        // Any clicks should be ignored when the sheet view is fully of partially obscured.
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        verify(runnable, times(0)).run();
+
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        verify(runnable, times(0)).run();
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {

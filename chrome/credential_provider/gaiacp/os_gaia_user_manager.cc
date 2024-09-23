@@ -4,9 +4,10 @@
 
 #include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
 
+#include <windows.h>
+
 #include <lm.h>  // Needed for PNTSTATUS
 #include <ntstatus.h>
-#include <windows.h>
 #include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>

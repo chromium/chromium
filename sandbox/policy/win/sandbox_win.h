@@ -43,16 +43,15 @@ namespace policy {
 
 class SANDBOX_POLICY_EXPORT SandboxWin {
  public:
-  // Create a sandboxed process `process` with the specified `cmd_line` of type
-  // `process_type` (e.g. 'renderer' or 'utility'). `handles_to_inherit`
-  // specifies a set of handles to inherit. `delegate` specifies the sandbox
-  // delegate to use when resolving specific sandbox policy.
+  // Create a sandboxed process `process` with the specified `cmd_line`.
+  // `handles_to_inherit` specifies a set of handles to inherit.
+  // `delegate` specifies the sandbox delegate to use when resolving specific
+  // sandbox policy.
   //
   // Returns SBOX_ALL_OK if the process was successfully created.
   // Otherwise, returns one of sandbox::ResultCode for any other error.
   static ResultCode StartSandboxedProcess(
       const base::CommandLine& cmd_line,
-      const std::string& process_type,
       const base::HandlesToInheritVector& handles_to_inherit,
       SandboxDelegate* delegate,
       base::Process* process);
@@ -66,7 +65,6 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // of sandbox::ResultCode for any other error while constructing the policy.
   static ResultCode GeneratePolicyForSandboxedProcess(
       const base::CommandLine& cmd_line,
-      const std::string& process_type,
       const base::HandlesToInheritVector& handles_to_inherit,
       SandboxDelegate* delegate,
       TargetPolicy* policy);

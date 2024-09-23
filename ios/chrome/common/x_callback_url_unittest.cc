@@ -4,8 +4,10 @@
 
 #include "ios/chrome/common/x_callback_url.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/url_features.h"
 
 namespace {
 
@@ -22,7 +24,26 @@ struct XCallbackURLEncodeTestCase {
 
 using XCallbackURLTest = PlatformTest;
 
-TEST_F(XCallbackURLTest, IsXCallbackURL) {
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class XCallbackURLParamTest : public ::testing::TestWithParam<bool> {
+ public:
+  XCallbackURLParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+ protected:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(XCallbackURLParamTest, IsXCallbackURL) {
   EXPECT_TRUE(IsXCallbackURL(GURL("chrome://x-callback-url")));
   EXPECT_TRUE(IsXCallbackURL(GURL("https://x-callback-url")));
   EXPECT_TRUE(IsXCallbackURL(GURL("exotic-scheme://x-callback-url")));
@@ -35,6 +56,8 @@ TEST_F(XCallbackURLTest, IsXCallbackURL) {
   EXPECT_FALSE(IsXCallbackURL(GURL("chrome://version")));
   EXPECT_FALSE(IsXCallbackURL(GURL("https://www.google.com")));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, XCallbackURLParamTest, ::testing::Bool());
 
 TEST_F(XCallbackURLTest, URLWithScheme) {
   const XCallbackURLEncodeTestCase test_cases[] = {

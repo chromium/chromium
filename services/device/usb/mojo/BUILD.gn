@@ -24,6 +24,7 @@ source_set("mojo") {
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
     "//services/device/usb",
+    "//third_party/blink/public/common",
   ]
 
   if (is_chromeos_ash) {

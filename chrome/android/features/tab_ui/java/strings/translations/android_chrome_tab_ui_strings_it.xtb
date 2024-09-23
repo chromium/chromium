@@ -1,116 +1,199 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creato <ph name="NUM_WEEKS_ONE" /> settimana fa}other{Creato <ph name="NUM_WEEKS_MANY" /> settimane fa}}</translation>
+<translation id="1063300264396686489">Apri automaticamente i gruppi di schede da altri dispositivi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="1155815720264022949">Vuoi chiudere le vecchie schede?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_YEARS_ONE" /> anno fa}other{Creato <ph name="NUM_YEARS_MANY" /> anni fa}}</translation>
+<translation id="1173894706177603556">Rinomina</translation>
 <translation id="1197088940767939838">Arancione</translation>
-<translation id="1215127405478249895">Rivedi le schede</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
-<translation id="1326271443836399892">Rivedi le attuali impostazioni di pulizia.</translation>
+<translation id="1273910660700874265">Opzioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Lascia il gruppo</translation>
+<translation id="1419023007528516122">Il gruppo verrà eliminato definitivamente dal tuo dispositivo</translation>
+<translation id="1486715732399361704">Qui troverai tutti i tuoi gruppi di schede</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Creato <ph name="NUM_MINS_ONE" /> minuto fa}other{Creato <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
+<translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="161042844686301425">Ciano</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> di schede raggruppate</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
+<translation id="1713541401465507417">Chiudi tutte le schede e tutti i gruppi</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Scopri di più<ph name="END_LINK1" /></translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> scheda raggruppata</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aggiungi <ph name="TABS_COUNT_ONE" /> scheda selezionata ai preferiti}other{Aggiungi <ph name="TABS_COUNT_MANY" /> schede selezionate ai preferiti}}</translation>
 <translation id="2118649612461486615">Informazioni sul negozio</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda di navigazione in incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
+<translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aggiungi scheda a preferiti}other{Aggiungi schede a preferiti}}</translation>
+<translation id="2359808026110333948">Continua</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
+<translation id="2498435670446402865">Rinomina gruppo di schede</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
-<translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
-<translation id="2759453070259087442">Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede.</translation>
+<translation id="2677748264148917807">Esci</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CHANGED" /> modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CHANGED" /> modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creato <ph name="NUM_HOURS_ONE" /> ora fa}other{Creato <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> scheda chiusa}other{<ph name="MANY_CLOSED" /> schede chiuse}}</translation>
+<translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
+<translation id="29919168204617356">Le schede non attive verranno chiuse automaticamente. Puoi trovarle nella cronologia in qualsiasi momento.</translation>
 <translation id="3008554597174452548">Interrompi il monitoraggio del prodotto</translation>
+<translation id="3026391124054406831">Crea gruppi per organizzare le tue schede.</translation>
+<translation id="3051031624272448591">Puoi ripristinarle nella cronologia in qualsiasi momento</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> scheda archiviata}other{Hai <ph name="TABS_COUNT_MANY" /> schede archiviate}}</translation>
+<translation id="3078350928901129212">Icona del colore del gruppo di schede <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">valutazione</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CHANGED" /> modificata}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CHANGED" /> modificate}}</translation>
 <translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
+<translation id="3547352561153509682">Il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Nascondi finestra di dialogo schede non attive</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura dell'anteprima del foglio di condivisione.</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
+<translation id="381219490185664296">Separare il gruppo di schede?</translation>
 <translation id="3882834874697329510">Attiva le notifiche nelle Impostazioni per ricevere un avviso quando ci sarà un prezzo più basso in una scheda aperta.</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Raggruppa scheda}other{Raggruppa schede}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda non attiva}other{<ph name="TABS_COUNT_MANY" /> schede non attive}}</translation>
+<translation id="3969565576924904454">Apri <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3996880007329611795">Ricevi notifiche</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Creato <ph name="NUM_DAYS_ONE" /> giorno fa}other{Creato <ph name="NUM_DAYS_MANY" /> giorni fa}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
+<translation id="4139634748112164403">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato definitivamente</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Viola</translation>
-<translation id="4212246570487010370">Continua la navigazione</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
-<translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_CHANGED" /> schede modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
+<translation id="4371591986692297148">Non attivo</translation>
+<translation id="4460014764210899310">Separa</translation>
+<translation id="4590027107044272416">Ora puoi aprire una nuova scheda qui</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chiudere 1 scheda inattiva?}other{Chiudere <ph name="TAB_COUNT_MANY" /> schede inattive?}}</translation>
+<translation id="4686942373615810936">Creato un attimo fa</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Chiudi dopo 1 giorno}other{Chiudi dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
+<translation id="4777866634702576038">Eliminare il gruppo di schede?</translation>
+<translation id="4783638485675352219">Condividi i titoli e gli URL delle schede aperte da questo dispositivo con il sistema operativo</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
+<translation id="4871719318659334896">Chiudi gruppo</translation>
+<translation id="4881695831933465202">Apri</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
+<translation id="4908147833782857886"><ph name="USER_EMAIL" /> gruppi salvati (le schede verranno chiuse e i gruppi eliminati)</translation>
 <translation id="492284538114688557">Prezzo in calo rilevato</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5082793167783849073">Confronta rapidamente le pagine creando un gruppo. Innanzitutto, tocca e tieni premuto un link.</translation>
+<translation id="5094423602314093681">Rimuovere le schede ed eliminare il gruppo?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta}other{<ph name="MANY_ADDED" /> schede aggiunte}}</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> scheda non utilizzata di recente}other{Hai <ph name="TABS_COUNT_MANY" /> schede non utilizzate di recente}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
-<translation id="5545379293264651575">Chiudi senza rivedere</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
-<translation id="5558362125926932819">Chiudi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
-<translation id="5580090775658607195"><ph name="TAB_COUNT" /> schede raggruppate</translation>
+<translation id="5627941783489838464">Nessun aggiornamento della scheda</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Ripristina la scheda}other{Ripristina le schede}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="575494663145460764">Vuoi ricevere avvisi sui cali di prezzo?</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
-<translation id="5846292395804797011">Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5972844218283131174">Deseleziona tutte</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6040143037577758943">Chiudi</translation>
+<translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Perderai immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
+<translation id="6271513594716432922">Chiudi tutte le schede non attive</translation>
 <translation id="6333260925957816943">Informazioni su questo negozio</translation>
+<translation id="6381032505162537930">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. La scheda di navigazione in incognito non sarà disponibile.}other{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
+<translation id="6527303717912515753">Condividi</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Dopo 1 giorno}other{Dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
+<translation id="6590332670428149473">Apri il menu Azioni del gruppo di schede condiviso <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrami</translation>
-<translation id="661742612106409204">Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome.</translation>
-<translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata}other{<ph name="MANY_CHANGED" /> schede modificate}}</translation>
+<translation id="6694634756612002311">Gestisci condivisione</translation>
+<translation id="6744956528665271406">Modifica il colore del gruppo</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Condividi scheda}other{Condividi schede}}</translation>
 <translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="7204204600596740190">Modalità di selezione multipla</translation>
+<translation id="7211038039686180558">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso</translation>
+<translation id="731648547091221002">Colore <ph name="COLOR_NAME" /> selezionato</translation>
 <translation id="7326879924029668159">Visualizza le norme sui resi e non solo</translation>
 <translation id="7352298686197644113">Scopri quale articolo nelle schede aperte ha un prezzo più basso</translation>
+<translation id="7421293530411019405">Uscire dal gruppo di schede?</translation>
+<translation id="7452985128687107478">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
+<translation id="747459581954555080">Ripristina tutto</translation>
 <translation id="753732157349120914">Selettore di schede</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensione da Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensioni da Google}}</translation>
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
+<translation id="7658239707568436148">Annulla</translation>
+<translation id="7688386659311034820">Finestra di dialogo delle schede non attive</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Condividi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Condividi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
+<translation id="7773714564112603605">Rimuovi scheda ed elimina gruppo</translation>
 <translation id="7792771145871471484">Controlla i suggerimenti.</translation>
+<translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Raggruppa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Raggruppa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
+<translation id="7853202427316060426">Attività</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
+<translation id="7939917283308035850">Colore <ph name="COLOR_NAME" /> non selezionato</translation>
 <translation id="7942349550061667556">Rosso</translation>
+<translation id="7961015016161918242">Mai</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
+<translation id="799469866974412355">Nuovo gruppo dall'altro dispositivo</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
+<translation id="8076492880354921740">Schede</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
+<translation id="8261506727792406068">Elimina</translation>
+<translation id="8338427544764842461">I tuoi gruppi di schede vengono salvati qui e vengono aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Espandi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
+<translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_ADDED" /> schede aggiunte, <ph name="ANY_CLOSED" /> chiuse}}</translation>
+<translation id="8631711675211020168">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" />, che verrà eliminato da tutti i dispositivi</translation>
+<translation id="8633025649649592204">Attività recente</translation>
+<translation id="870736955561925754">Chiudere la scheda ed eliminare il gruppo?</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
+<translation id="8730621377337864115">Fine</translation>
 <translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_MONTHS_ONE" /> mese fa}other{Creato <ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
+<translation id="8887921976452567404">Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede.</translation>
+<translation id="8915916167043355778">Chiudi tutte</translation>
+<translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
+<translation id="9111228330448174435">Mostra la finestra di dialogo alla creazione di un nuovo gruppo di schede</translation>
+<translation id="9114502155681725011">Apri il menu Azioni del gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Passa da una scheda all'altra del gruppo di schede nella parte inferiore dello schermo</translation>
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
-<translation id="955558140275419384">Apri questo editor per esaminare tutte le schede archiviate ai fini della pulizia.</translation>
-<translation id="959682366969460160">Organizzazione</translation>
+<translation id="9216898458513705996">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

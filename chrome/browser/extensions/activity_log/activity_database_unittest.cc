@@ -42,7 +42,6 @@ class ActivityDatabaseTestPolicy : public ActivityDatabase::Delegate {
  public:
   ActivityDatabaseTestPolicy() {}
 
-  static const char kTableName[];
   static const char* const kTableContentFields[];
   static const char* const kTableFieldTypes[];
 
@@ -57,34 +56,32 @@ class ActivityDatabaseTestPolicy : public ActivityDatabase::Delegate {
   std::vector<scoped_refptr<Action> > queue_;
 };
 
-const char ActivityDatabaseTestPolicy::kTableName[] = "actions";
 const char* const ActivityDatabaseTestPolicy::kTableContentFields[] = {
     "extension_id", "time", "action_type", "api_name"};
 const char* const ActivityDatabaseTestPolicy::kTableFieldTypes[] = {
     "LONGVARCHAR NOT NULL", "INTEGER", "INTEGER", "LONGVARCHAR"};
 
 bool ActivityDatabaseTestPolicy::InitDatabase(sql::Database* db) {
-  return ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
+  return ActivityDatabase::InitializeTable(db, "actions", kTableContentFields,
                                            kTableFieldTypes,
                                            std::size(kTableContentFields));
 }
 
 bool ActivityDatabaseTestPolicy::FlushDatabase(sql::Database* db) {
-  std::string sql_str =
-      "INSERT INTO " + std::string(kTableName) +
-      " (extension_id, time, action_type, api_name) VALUES (?,?,?,?)";
 
   std::vector<scoped_refptr<Action> >::size_type i;
   for (i = 0; i < queue_.size(); i++) {
     const Action& action = *queue_[i];
-    sql::Statement statement(db->GetCachedStatement(
-        sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+    sql::Statement statement(
+        db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE),
+                               "INSERT INTO actions (extension_id, time, "
+                               "action_type, api_name) VALUES (?,?,?,?)"));
     statement.BindString(0, action.extension_id());
     statement.BindTime(1, action.time());
     statement.BindInt(2, static_cast<int>(action.action_type()));
     statement.BindString(3, action.api_name());
     if (!statement.Run()) {
-      LOG(ERROR) << "Activity log database I/O failed: " << sql_str;
+      LOG(ERROR) << "Activity log database I/O failed";
       return false;
     }
   }
@@ -136,13 +133,13 @@ class ActivityDatabaseTest : public ChromeRenderViewHostTestHarness {
   }
 
   int CountActions(sql::Database* db, const std::string& api_name_pattern) {
-    if (!db->DoesTableExist(ActivityDatabaseTestPolicy::kTableName))
+    if (!db->DoesTableExist("actions")) {
       return -1;
-    std::string sql_str = "SELECT COUNT(*) FROM " +
-                          std::string(ActivityDatabaseTestPolicy::kTableName) +
-                          " WHERE api_name LIKE ?";
-    sql::Statement statement(db->GetCachedStatement(
-        sql::StatementID(SQL_FROM_HERE), sql_str.c_str()));
+    }
+    sql::Statement statement(
+        db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE),
+                               "SELECT COUNT(*) FROM actions"
+                               " WHERE api_name LIKE ?"));
     statement.BindString(0, api_name_pattern);
     if (!statement.Step())
       return -1;
@@ -166,7 +163,7 @@ TEST_F(ActivityDatabaseTest, Init) {
 
   sql::Database db;
   ASSERT_TRUE(db.Open(db_file));
-  ASSERT_TRUE(db.DoesTableExist(ActivityDatabaseTestPolicy::kTableName));
+  ASSERT_TRUE(db.DoesTableExist("actions"));
   db.Close();
 }
 

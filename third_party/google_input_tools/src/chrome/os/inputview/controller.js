@@ -998,8 +998,6 @@ Controller.prototype.executeCommand_ = function(command, opt_arg) {
     case CommandEnum.SWITCH_KEYSET:
       var keyset = opt_arg;
       if (keyset) {
-        this.recordStatsForClosing_(
-            'InputMethod.VirtualKeyboard.LayoutSwitch', 1, 25, 25);
         this.switchToKeyset(keyset);
       }
       break;
@@ -1459,8 +1457,6 @@ Controller.prototype.handlePointerEventForSoftKey_ = function(softKey, e) {
       key = /** @type {!i18n.input.chrome.inputview.elements.content.
           SwitcherKey} */ (softKey);
       if (e.type == EventType.POINTER_UP) {
-        this.recordStatsForClosing_(
-            'InputMethod.VirtualKeyboard.LayoutSwitch', 1, 25, 25);
         if (this.isSubKeyset_(key.toKeyset, this.currentKeyset_)) {
           this.model_.stateManager.reset();
           this.container_.update();

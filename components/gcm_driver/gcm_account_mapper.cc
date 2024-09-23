@@ -116,7 +116,7 @@ void GCMAccountMapper::ShutdownHandler() {
 }
 
 void GCMAccountMapper::OnStoreReset() {
-  // TODO(crbug.com/661660): Tell server to remove the mapping. But can't use
+  // TODO(crbug.com/40491756): Tell server to remove the mapping. But can't use
   // upstream GCM send for that since the store got reset.
   ShutdownHandler();
 }

@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_translate_stickiness_signals.proto";
+
+// A message representing the function call of an answers intent query.
+message FunctionCall {
+  // Name of this function call.
+  string name = 1;
+
+  // A list of arguments of this function call.
+  repeated Argument argument = 2;
+
+  // Signals at the function call level
+  FunctionCallSignals signals = 4;
+}
+
+// Signals at the function call level
+message FunctionCallSignals {
+  TranslateStickinessSignals translate_stickiness_signals = 311378150;
+}
+
+// A message representing the function argument.
+message Argument {
+  // Name of this argument.
+  string name = 1;
+
+  // The value of this argument.
+  ArgumentValue value = 2;
+}
+
+// A message representing the value of an argument.
+message ArgumentValue {
+  oneof value {
+    SimpleValue simple_value = 3;
+  }
+}
+
+// A message representing a simple literal value.
+message SimpleValue {
+  oneof value {
+    string string_value = 1;
+  }
+}

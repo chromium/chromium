@@ -6,10 +6,9 @@
 #define COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -26,20 +25,20 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   DefaultPrefStore& operator=(const DefaultPrefStore&) = delete;
 
   // PrefStore implementation:
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
 
-  // Sets a |value| for |key|. Should only be called if a value has not been
+  // Sets a `value` for `key`. Should only be called if a value has not been
   // set yet; otherwise call ReplaceDefaultValue().
-  void SetDefaultValue(const std::string& key, base::Value value);
+  void SetDefaultValue(std::string_view key, base::Value value);
 
-  // Replaces the the value for |key| with a new value. Should only be called
-  // if a value has alreday been set; otherwise call SetDefaultValue().
-  void ReplaceDefaultValue(const std::string& key, base::Value value);
+  // Replaces the the value for `key` with a new value. Should only be called
+  // if a value has already been set; otherwise call SetDefaultValue().
+  void ReplaceDefaultValue(std::string_view key, base::Value value);
 
   const_iterator begin() const;
   const_iterator end() const;
@@ -49,7 +48,7 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
 
   PrefValueMap prefs_;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 };
 
 #endif  // COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_

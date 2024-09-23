@@ -1,0 +1,70 @@
+{
+  "description": "Storage limit is reported when both storage limit and global destination rate limit are reached",
+  "api_config": {
+    "max_sources_per_origin": "1",
+    "max_destinations_per_rate_limit_window": "1",
+    "max_destinations_per_rate_limit_window_reporting_site": "1"
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "111"
+              }
+            }
+          }
+        ]
+      },
+      // Should be dropped due to storage limit.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "222",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination2.test",
+              "limit": "1",
+              "source_event_id": "222",
+              "source_site": "https://source.test"
+            },
+            "type": "source-storage-limit"
+          }
+        ],
+        "report_time": "1000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

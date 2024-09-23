@@ -7,13 +7,16 @@
 #include <limits.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -26,8 +29,7 @@
 #define NAME_MAX 255
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -48,22 +50,17 @@ FilePath GetProcPidDir(pid_t pid) {
   return FilePath(kProcDir).Append(NumberToString(pid));
 }
 
-pid_t ProcDirSlotToPid(const char* d_name) {
-  int i;
-  for (i = 0; i < NAME_MAX && d_name[i]; ++i) {
-    if (!IsAsciiDigit(d_name[i])) {
-      return 0;
-    }
-  }
-  if (i == NAME_MAX)
+pid_t ProcDirSlotToPid(std::string_view d_name) {
+  if (d_name.size() >= NAME_MAX ||
+      !std::ranges::all_of(d_name, &IsAsciiDigit<char>)) {
     return 0;
+  }
 
   // Read the process's command line.
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
     NOTREACHED();
-    return 0;
   }
   return pid;
 }
@@ -75,14 +72,13 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
   ScopedAllowBlocking scoped_allow_blocking;
 
   if (!ReadFileToString(file, buffer)) {
-    DLOG(WARNING) << "Failed to read " << file.MaybeAsASCII();
     return false;
   }
   return !buffer->empty();
 }
 
 bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      StringPiece filename,
+                                      std::string_view filename,
                                       StringPairs* key_value_pairs) {
   std::string status_data;
   FilePath status_file = GetProcPidDir(pid).Append(filename);
@@ -94,7 +90,7 @@ bool ReadProcFileToTrimmedStringPairs(pid_t pid,
   return true;
 }
 
-size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
   StringPairs pairs;
   if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
     return 0;
@@ -107,16 +103,14 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
       continue;
     }
 
-    std::vector<StringPiece> split_value_str =
+    std::vector<std::string_view> split_value_str =
         SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
       NOTREACHED();
-      return 0;
     }
     size_t value;
     if (!StringToSizeT(split_value_str[0], &value)) {
       NOTREACHED();
-      return 0;
     }
     return value;
   }
@@ -126,7 +120,7 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
 }
 
 bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
-                                       StringPiece field,
+                                       std::string_view field,
                                        uint64_t* result) {
   StringPairs pairs;
   if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
@@ -173,7 +167,6 @@ bool ParseProcStats(const std::string& stats_data,
       open_parens_idx > close_parens_idx) {
     DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
     NOTREACHED();
-    return false;
   }
   open_parens_idx++;
 
@@ -206,10 +199,17 @@ void ParseProcStat(const std::string& contents, ProcStatMap* output) {
 int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
                                  ProcStatsFields field_num) {
   DCHECK_GE(field_num, VM_PPID);
-  CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
+  return GetProcStatsFieldAsOptionalInt64(proc_stats, field_num).value_or(0);
+}
 
+std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
+    base::span<const std::string> proc_stats,
+    ProcStatsFields field_num) {
   int64_t value;
-  return StringToInt64(proc_stats[field_num], &value) ? value : 0;
+  if (StringToInt64(proc_stats[size_t{field_num}], &value)) {
+    return value;
+  }
+  return std::nullopt;
 }
 
 size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
@@ -242,8 +242,7 @@ int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num) {
   return ReadStatFileAndGetFieldAsInt64(stat_file, field_num);
 }
 
-size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid,
-                                       ProcStatsFields field_num) {
+size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num) {
   std::string stats_data;
   if (!ReadProcStats(pid, &stats_data))
     return 0;
@@ -309,5 +308,4 @@ TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

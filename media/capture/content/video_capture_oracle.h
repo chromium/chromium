@@ -256,7 +256,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
 
   // The current capture size.  |resolution_chooser_| may hold an updated value
   // because the oracle prevents this size from changing too frequently.  This
-  // avoids over-stressing consumers (e.g., when a window is being activly
+  // avoids over-stressing consumers (e.g., when a window is being actively
   // drag-resized) and allowing the end-to-end system time to stabilize.
   gfx::Size capture_size_;
 

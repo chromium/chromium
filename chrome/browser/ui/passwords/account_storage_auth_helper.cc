@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -41,6 +42,9 @@ AccountStorageAuthHelper::~AccountStorageAuthHelper() = default;
 void AccountStorageAuthHelper::TriggerOptInReauth(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
+  // Reauth is only required if promos are allowed, see the predicate docs.
+  CHECK(password_manager::features_util::AreAccountStorageOptInPromosAllowed());
+
   SigninViewController* signin_view_controller =
       signin_view_controller_getter_.Run();
   if (!signin_view_controller) {
@@ -84,7 +88,8 @@ void AccountStorageAuthHelper::OnOptInReauthCompleted(
   reauth_abort_handle_.reset();
 
   bool succeeded = result == signin::ReauthResult::kSuccess;
-  if (succeeded)
+  if (succeeded) {
     password_feature_manager_->OptInToAccountStorage();
+  }
   std::move(reauth_callback).Run(ReauthSucceeded(succeeded));
 }

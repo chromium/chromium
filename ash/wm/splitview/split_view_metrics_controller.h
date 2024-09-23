@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/window_state_observer.h"

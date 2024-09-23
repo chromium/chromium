@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/url_formatter/elide_url.h"
@@ -42,7 +42,8 @@ UiCredential::UiCredential(const PasswordForm& form,
       sender_name_(form.sender_name),
       sender_profile_image_url_(form.sender_profile_image_url),
       sharing_notification_displayed_(form.sharing_notification_displayed) {
-  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  auto facet_uri =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
   if (facet_uri.IsValidAndroidFacetURI()) {
     origin_ = affiliated_origin;
     display_name_ = form.app_display_name.empty()
@@ -87,6 +88,9 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential) {
       break;
     case password_manager_util::GetLoginMatchType::kPSL:
       match_type = "PSL match";
+      break;
+    case password_manager_util::GetLoginMatchType::kGrouped:
+      match_type = "grouped match";
       break;
   }
   return os << "(user: \"" << credential.username() << "\", " << "pwd: \""

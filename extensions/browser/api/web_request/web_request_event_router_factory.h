@@ -14,7 +14,7 @@ class BrowserContext;
 
 namespace extensions {
 
-class KeyedWebRequestEventRouter;
+class WebRequestEventRouter;
 
 class WebRequestEventRouterFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -22,7 +22,7 @@ class WebRequestEventRouterFactory : public BrowserContextKeyedServiceFactory {
   WebRequestEventRouterFactory& operator=(const WebRequestEventRouterFactory&) =
       delete;
 
-  static KeyedWebRequestEventRouter* GetForBrowserContext(
+  static WebRequestEventRouter* GetForBrowserContext(
       content::BrowserContext* context);
   static WebRequestEventRouterFactory* GetInstance();
 

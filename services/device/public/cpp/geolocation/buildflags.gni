@@ -8,5 +8,5 @@ import("//build/buildflag_header.gni")
 declare_args() {
   # Specifies if we support the OS level global geolocation permission for the current platform.
   # This is exposed with the macro OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED.
-  os_level_geolocation_permission_supported = is_chromeos || is_mac
+  os_level_geolocation_permission_supported = is_chromeos || is_apple || is_win
 }

@@ -110,102 +110,6 @@ public class MessageAnimationCoordinatorUnitTest {
         when(mContainer.isIsInitializingLayout()).thenReturn(false);
     }
 
-    @Test
-    @SmallTest
-    public void testDoNothing_withoutStacking() {
-        MessageState m1 = buildMessageState();
-
-        // Initial setup
-        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
-
-        // Again with same candidates.
-        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
-
-        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
-        verify(m1.handler).show(anyInt(), anyInt());
-    }
-
-    @Test
-    @SmallTest
-    public void testShowMessages_withoutStacking() throws TimeoutException {
-        // Initial values should be null.
-        var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
-        Assert.assertNull(currentMessage);
-
-        MessageState m1 = buildMessageState();
-        MessageState m2 = buildMessageState();
-        CallbackHelper callbackHelper = new CallbackHelper();
-        var animator = ValueAnimator.ofInt(0, 1);
-        animator.setDuration(100);
-        doReturn(animator).when(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        mAnimationCoordinator.updateWithoutStacking(m1, false, callbackHelper::notifyCalled);
-
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
-
-        verify(mContainer).runAfterInitialMessageLayout(captor.capture());
-        Assert.assertEquals(
-                "Callback should only be triggered when animation is finished.",
-                0,
-                callbackHelper.getCallCount());
-        captor.getValue().run();
-
-        shadowOf(getMainLooper()).idle();
-        callbackHelper.waitForCallback(0);
-        currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
-        Assert.assertEquals(m1, currentMessage);
-    }
-
-    @Test
-    @SmallTest
-    public void testHideMessage_withoutStacking() {
-        MessageState m1 = buildMessageState();
-        MessageState m2 = buildMessageState();
-        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
-
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m2.handler, never()).show(Position.INVISIBLE, Position.FRONT);
-
-        mAnimationCoordinator.updateWithoutStacking(
-                m2,
-                false,
-                () -> {
-                    mAnimationCoordinator.updateWithoutStacking(m2, false, () -> {});
-                });
-        verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
-        verify(m2.handler).show(Position.INVISIBLE, Position.FRONT);
-
-        var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
-        Assert.assertEquals(m2, currentMessage);
-    }
-
-    /** The child animator is finished but the parent animator has not triggered the callback yet. */
-    @Test
-    @SmallTest
-    public void testSuspendBeforeHideCallbackIsTriggered_withoutStacking() {
-        MessageState m1 = buildMessageState();
-        setMessageIdentifier(m1, 1);
-        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
-
-        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
-        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
-        var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
-        Assert.assertEquals(m1, currentMessage);
-
-        var animator = ValueAnimator.ofInt(0, 1);
-        animator.setDuration(100000);
-        doReturn(animator).when(m1.handler).hide(anyInt(), anyInt(), anyBoolean());
-        mAnimationCoordinator.updateWithoutStacking(null, false, () -> {});
-
-        var hidingAnimatorSet = mAnimationCoordinator.getAnimatorSetForTesting();
-        Assert.assertTrue(hidingAnimatorSet.isStarted());
-        mAnimationCoordinator.updateWithoutStacking(null, true, () -> {});
-        // The animation should be ended and the callback should be triggered.
-        Assert.assertFalse(hidingAnimatorSet.isRunning());
-        Assert.assertNull(mAnimationCoordinator.getCurrentDisplayedMessage());
-    }
-
     // Test incoming candidates are same with current displayed ones.
     // [m1, m2] -> [m1, m2]
     @Test
@@ -222,7 +126,7 @@ public class MessageAnimationCoordinatorUnitTest {
         runnableCaptor.getValue().run();
         verify(mQueueDelegate).onAnimationStart();
         shadowOf(getMainLooper()).idle();
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         verify(mQueueDelegate).onAnimationEnd();
 
         // Again with same candidates.
@@ -477,7 +381,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test pushing front message to back.
     // [m1, null] -> [m2, null]
-    // TODO(crbug.com/1382275): simplify this into one step.
+    // TODO(crbug.com/40877229): simplify this into one step.
     // This should be done in two steps:  [m1, null] -> [null, null] -> [m2, null]
     @Test
     @SmallTest

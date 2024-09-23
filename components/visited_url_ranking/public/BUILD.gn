@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "decoration.cc",
+    "decoration.h",
+    "features.cc",
+    "features.h",
+    "fetch_options.cc",
+    "fetch_options.h",
+    "fetch_result.cc",
+    "fetch_result.h",
+    "fetcher_config.cc",
+    "fetcher_config.h",
+    "url_visit.cc",
+    "url_visit.h",
+    "url_visit_aggregates_transformer.h",
+    "url_visit_data_fetcher.h",
+    "url_visit_schema.cc",
+    "url_visit_schema.h",
+    "url_visit_util.cc",
+    "url_visit_util.h",
+    "visited_url_ranking_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/segmentation_platform/public",
+    "//components/strings",
+    "//components/sync_device_info",
+    "//components/url_deduplication",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "url_visit_util_unittest.cc" ]
+
+  deps = [
+    ":public",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser:browser",
+    "//components/history/core/browser",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sessions",
+    "//components/sync_sessions",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+    "testing/mock_visited_url_ranking_service.cc",
+    "testing/mock_visited_url_ranking_service.h",
+  ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//components/history/core/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

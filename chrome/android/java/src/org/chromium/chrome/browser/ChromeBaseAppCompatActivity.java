@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +38,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -104,6 +106,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         int NONE = -1;
     }
 
+    public static final String DEFAULT_FONT_FAMILY_TESTING_PARAM = "dev_testing";
+    public static final BooleanCachedFieldTrialParameter DEFAULT_FONT_FAMILY_TESTING =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_GOOGLE_SANS_TEXT,
+                    DEFAULT_FONT_FAMILY_TESTING_PARAM,
+                    false);
+
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     private NightModeStateProvider mNightModeStateProvider;
@@ -159,8 +168,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
-        super.onCreate(savedInstanceState);
+
+        // onCreate may initialize some views, need to apply themes before that can happen.
         applyThemeOverlays();
+        super.onCreate(savedInstanceState);
 
         // Activity level locale overrides must be done in onCreate.
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
@@ -310,6 +321,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
+        // Note that if you're adding new overlays here, it's quite likely they're needed
+        // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
+        // UI that's pre-inflated using a themed application context as part of CCT warmup.
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()
@@ -338,6 +352,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
             getTheme().applyStyle(elegantTextHeightOverlay, true);
             mThemeResIds.add(elegantTextHeightOverlay);
+        }
+
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
+                && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
+            int defaultFontFamilyOverlay =
+                    DEFAULT_FONT_FAMILY_TESTING.getValue()
+                            ? R.style.ThemeOverlay_BrowserUI_DevTestingDefaultFontFamilyThemeOverlay
+                            : R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
+            getTheme().applyStyle(defaultFontFamilyOverlay, true);
+            mThemeResIds.add(defaultFontFamilyOverlay);
         }
     }
 
@@ -410,8 +434,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
-            linearLayout.addView(
-                    view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         } else {
             super.setContentView(view);
         }
@@ -426,8 +449,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
-            linearLayout.addView(
-                    view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         } else {
             super.setContentView(view, params);
         }

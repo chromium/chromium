@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_node.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
 #include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
+#include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_public.h"
 
@@ -104,23 +106,30 @@ std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {
   const auto* frame = To<LocalDOMWindow>(GetExecutionContext())->GetFrame();
   DCHECK(frame);
 
-  return CreateWorkletThreadWithConstraints(
-      WorkletObjectProxy(),
-      worklet_->GetBaseAudioContext()->HasRealtimeConstraint(),
-      frame->IsOutermostMainFrame());
+  std::optional<base::TimeDelta> realtime_buffer_duration;
+  if (worklet_->GetBaseAudioContext()->HasRealtimeConstraint()) {
+    AudioContext* context =
+        static_cast<AudioContext*>(worklet_->GetBaseAudioContext());
+    realtime_buffer_duration = context->PlatformBufferDuration();
+  }
+
+  return CreateWorkletThreadWithConstraints(WorkletObjectProxy(),
+                                            realtime_buffer_duration,
+                                            frame->IsOutermostMainFrame());
 }
 
 std::unique_ptr<WorkerThread>
 AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
     WorkerReportingProxy& worker_reporting_proxy,
-    const bool has_realtime_constraint,
+    std::optional<base::TimeDelta> realtime_buffer_duration,
     const bool is_outermost_main_frame) {
-  if (!has_realtime_constraint) {
+  if (!realtime_buffer_duration) {
     return std::make_unique<OfflineAudioWorkletThread>(worker_reporting_proxy);
   }
 
   if (is_outermost_main_frame) {
-    return std::make_unique<RealtimeAudioWorkletThread>(worker_reporting_proxy);
+    return std::make_unique<RealtimeAudioWorkletThread>(
+        worker_reporting_proxy, *realtime_buffer_duration);
   }
 
   return std::make_unique<SemiRealtimeAudioWorkletThread>(

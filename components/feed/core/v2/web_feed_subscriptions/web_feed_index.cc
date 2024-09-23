@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <ostream>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
@@ -30,7 +30,7 @@ class HostSuffixMatcher {
     bool operator<(const Entry& rhs) const {
       return host_suffix < rhs.host_suffix;
     }
-    bool operator<(base::StringPiece other_host_suffix) const {
+    bool operator<(std::string_view other_host_suffix) const {
       return host_suffix < other_host_suffix;
     }
     std::string host_suffix;
@@ -46,7 +46,7 @@ class HostSuffixMatcher {
   // `match_set`.
   void FindMatches(const std::string& host_string,
                    std::set<base::MatcherStringPattern::ID>& match_set) {
-    base::StringPiece host(host_string);
+    std::string_view host(host_string);
     if (host.empty())
       return;
     // Ignore a trailing dot for a FQDN.
@@ -63,7 +63,7 @@ class HostSuffixMatcher {
   }
 
  private:
-  void FindExactMatches(base::StringPiece prefix,
+  void FindExactMatches(std::string_view prefix,
                         std::set<base::MatcherStringPattern::ID>& match_set) {
     auto iter = std::lower_bound(entries_.begin(), entries_.end(), prefix);
     while (iter != entries_.end() && iter->host_suffix == prefix) {
@@ -429,7 +429,7 @@ void WebFeedIndex::Populate(
 
   EntrySetBuilder builder;
 
-  // TODO(crbug/1152592): Record UMA for subscribed and recommended lists.
+  // TODO(crbug.com/40158714): Record UMA for subscribed and recommended lists.
   // Note that flat_map will keep only the first entry with a given key.
   for (const auto& info : subscribed_feeds.feeds()) {
     builder.AddSubscribed(info);

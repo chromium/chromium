@@ -65,6 +65,7 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   ~RegexRulesMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
@@ -131,11 +132,11 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetHeadersReceivedActionIgnoringAncestors(
-      const RequestParams& params) const override;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
+  std::optional<RequestAction> GetActionIgnoringAncestors(
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
 
   // Returns a RequestAction for the given matched regex rule `info`.
   std::optional<RequestAction> CreateActionFromInfo(
@@ -147,6 +148,10 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
       const RequestParams& params,
       const RegexRuleInfo& info) const;
 
+  // Returns the corresponding rule matching helper for the given rule matching
+  // `stage`.
+  const MatchHelper& GetMatcherForStage(RulesetMatchingStage stage) const;
+
   // A helper for matching regex rules in the onBeforeRequest stage.
   MatchHelper before_request_matcher_;
 
@@ -155,6 +160,7 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
   const raw_ptr<const ExtensionMetadataList> metadata_list_;
 
+  // Whether this matcher contains rules that will match on, or modify headers.
   const bool is_extra_headers_matcher_;
 };
 

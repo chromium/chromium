@@ -4,23 +4,19 @@
 
 #include "components/autofill/core/common/autofill_util.h"
 
-#include <stddef.h>
-
-#include <algorithm>
-#include <numeric>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -28,56 +24,15 @@ using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
-namespace {
-
-constexpr base::StringPiece16 kSplitCharacters = u" .,-_@";
-
-template <typename Char>
-struct Compare : base::CaseInsensitiveCompareASCII<Char> {
-  explicit Compare(bool case_sensitive) : case_sensitive_(case_sensitive) {}
-  bool operator()(Char x, Char y) const {
-    return case_sensitive_
-               ? (x == y)
-               : base::CaseInsensitiveCompareASCII<Char>::operator()(x, y);
-  }
-
- private:
-  bool case_sensitive_;
-};
-
-}  // namespace
-
 bool IsShowAutofillSignaturesEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kShowAutofillSignatures);
 }
 
-bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
-                                     const std::u16string& prefix) {
-  return full_string.starts_with(prefix + u"@");
-}
-
-size_t GetTextSelectionStart(const std::u16string& suggestion,
-                             const std::u16string& field_contents,
-                             bool case_sensitive) {
-  // Loop until we find either the |field_contents| is a prefix of |suggestion|
-  // or character right before the match is one of the splitting characters.
-  for (std::u16string::const_iterator it = suggestion.begin();
-       (it = std::search(
-            it, suggestion.end(), field_contents.begin(), field_contents.end(),
-            Compare<std::u16string::value_type>(case_sensitive))) !=
-       suggestion.end();
-       ++it) {
-    if (it == suggestion.begin() ||
-        kSplitCharacters.find(it[-1]) != std::string::npos) {
-      // Returns the character position right after the |field_contents| within
-      // |suggestion| text as a caret position for text selection.
-      return it - suggestion.begin() + field_contents.size();
-    }
-  }
-
-  // Unable to find the |field_contents| in |suggestion| text.
-  return std::u16string::npos;
+bool IsPrefixOfEmailEndingWithAtSign(std::u16string_view full_string,
+                                     std::u16string_view prefix) {
+  return full_string.size() > prefix.size() &&
+         full_string.starts_with(prefix) && full_string[prefix.size()] == u'@';
 }
 
 bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
@@ -92,13 +47,14 @@ void SetCheckStatus(FormFieldData* form_field_data,
                     bool isCheckable,
                     bool isChecked) {
   if (isChecked) {
-    form_field_data->check_status = FormFieldData::CheckStatus::kChecked;
+    form_field_data->set_check_status(FormFieldData::CheckStatus::kChecked);
   } else {
     if (isCheckable) {
-      form_field_data->check_status =
-          FormFieldData::CheckStatus::kCheckableButUnchecked;
+      form_field_data->set_check_status(
+          FormFieldData::CheckStatus::kCheckableButUnchecked);
     } else {
-      form_field_data->check_status = FormFieldData::CheckStatus::kNotCheckable;
+      form_field_data->set_check_status(
+          FormFieldData::CheckStatus::kNotCheckable);
     }
   }
 }
@@ -110,13 +66,27 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-std::u16string RemoveWhitespace(const std::u16string& value) {
+std::u16string RemoveWhitespace(std::u16string_view value) {
   std::u16string stripped_value;
   base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
   return stripped_value;
 }
 
-bool SanitizedFieldIsEmpty(const std::u16string& value) {
+std::u16string SanitizeCreditCardFieldValue(std::u16string_view value) {
+  std::u16string sanitized;
+  // We remove whitespace as well as some invisible unicode characters.
+  base::TrimWhitespace(value, base::TRIM_ALL, &sanitized);
+  base::TrimString(sanitized,
+                   std::u16string({base::i18n::kRightToLeftMark,
+                                   base::i18n::kLeftToRightMark}),
+                   &sanitized);
+  // Some sites have ____-____-____-____ in their credit card number fields, for
+  // example.
+  base::RemoveChars(sanitized, u"-_", &sanitized);
+  return sanitized;
+}
+
+bool SanitizedFieldIsEmpty(std::u16string_view value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
@@ -127,15 +97,6 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
                     base::kWhitespaceUTF16}));
 
   return base::ContainsOnlyChars(value, *formatting);
-}
-
-bool ShouldAutoselectFirstSuggestionOnArrowDown() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  return true;
-#else
-  return false;
-#endif
 }
 
 bool IsFillable(FocusedFieldType focused_field_type) {
@@ -151,7 +112,7 @@ bool IsFillable(FocusedFieldType focused_field_type) {
     case FocusedFieldType::kUnknown:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
@@ -172,7 +133,7 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SubmissionIndicatorEvent::NONE;
 }
 
@@ -208,6 +169,20 @@ bool IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
   return trigger_source ==
          AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+}
+
+bool IsPlusAddressesManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses;
+}
+
+bool IsAddressFieldSwappingEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping);
+#else
+  return true;
+#endif
 }
 
 }  // namespace autofill

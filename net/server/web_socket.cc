@@ -4,6 +4,7 @@
 
 #include "net/server/web_socket.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -99,9 +100,9 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
       NetworkTrafficAnnotationTag(traffic_annotation));
 }
 
-WebSocket::ParseResult WebSocket::Read(std::string* message) {
+WebSocketParseResult WebSocket::Read(std::string* message) {
   if (closed_)
-    return FRAME_CLOSE;
+    return WebSocketParseResult::FRAME_CLOSE;
 
   if (!encoder_) {
     // RFC6455, section 4.1 says "Once the client's opening handshake has been
@@ -111,17 +112,17 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     // a server handshake. Either way, the client clearly couldn't have gotten
     // a proper server handshake, so error out, especially since this method
     // can't proceed without an |encoder_|.
-    return FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
   }
 
-  ParseResult result = FRAME_OK_MIDDLE;
+  WebSocketParseResult result = WebSocketParseResult::FRAME_OK_MIDDLE;
   HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
-  base::StringPiece frame(read_buf->StartOfBuffer(), read_buf->GetSize());
+  std::string_view frame(read_buf->StartOfBuffer(), read_buf->GetSize());
   int bytes_consumed = 0;
   result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
   read_buf->DidConsume(bytes_consumed);
 
-  if (result == FRAME_CLOSE) {
+  if (result == WebSocketParseResult::FRAME_CLOSE) {
     // The current websocket implementation does not initiate the Close
     // handshake before closing the connection.
     // Therefore the received Close frame most likely belongs to the client that
@@ -141,15 +142,15 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     closed_ = true;
   }
 
-  if (result == FRAME_PING) {
+  if (result == WebSocketParseResult::FRAME_PING) {
     if (!traffic_annotation_)
-      return FRAME_ERROR;
+      return WebSocketParseResult::FRAME_ERROR;
     Send(*message, WebSocketFrameHeader::kOpCodePong, *traffic_annotation_);
   }
   return result;
 }
 
-void WebSocket::Send(base::StringPiece message,
+void WebSocket::Send(std::string_view message,
                      WebSocketFrameHeader::OpCodeEnum op_code,
                      const NetworkTrafficAnnotationTag traffic_annotation) {
   if (closed_)
@@ -166,7 +167,7 @@ void WebSocket::Send(base::StringPiece message,
 
     default:
       // Only Pong and Text frame types are supported.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   server_->SendRaw(connection_->id(), encoded, traffic_annotation);
 }

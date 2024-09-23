@@ -137,6 +137,20 @@ chromium-metrics-reviews@google.com.
     Ephemeral users were enabled. Removed all profiles except those currently
     mounted, belonging to the owner or non-ephemeral.
   </int>
+  <int value="14" label="Daemon store cache cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="15" label="Daemon store cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
+  <int value="16" label="Mounted daemon store cache cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="17" label="Mounted daemon store cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
 </enum>
 
 <enum name="CryptohomeDiskCleanupResult">
@@ -144,6 +158,42 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Error">Cleanup failed.</int>
   <int value="3" label="Skip">
     Cleanup skipped, enough free space is available.
+  </int>
+</enum>
+
+<enum name="CryptohomeDownloadsMigrationStatus">
+  <int value="0" label="Success">The migration just finished successfully</int>
+  <int value="1" label="Fix Xattr">
+    The migration was previously done, but the xattr was left as
+    &quot;migrating&quot;
+  </int>
+  <int value="2" label="Cannot Set Xattr To Migrating">
+    Cannot set the xattr to &quot;migrating&quot;
+  </int>
+  <int value="3" label="Cannot Clean Up">
+    Cannot clean up the old backup folder
+  </int>
+  <int value="4" label="Cannot Back Up">
+    Cannot back up the existing ~/MyFiles/Downloads folder
+  </int>
+  <int value="5" label="Cannot Restore">
+    Cannot restore the backup folder to ~/MyFiles/Downloads
+  </int>
+  <int value="6" label="Cannot Move To MyFiles">
+    Cannot move ~/Downloads to ~/MyFiles/Downloads
+  </int>
+  <int value="7" label="Cannot Set Xattr To Migrated">
+    Cannot set the xattr to &quot;migrated&quot;
+  </int>
+  <int value="8" label="Reappeared">
+    Folder ~/MyFiles/Downloads is already marked as &quot;migrated&quot;, but a
+    new ~/Downloads folder somehow reappeared
+  </int>
+  <int value="9" label="New CryptoHome">
+    There is nothing to migrate. Simply set the xattr to &quot;migrated&quot;.
+  </int>
+  <int value="10" label="Already Migrated">
+    Folder ~/MyFiles/Downloads is already marked as &quot;migrated&quot;
   </int>
 </enum>
 
@@ -211,8 +261,10 @@ chromium-metrics-reviews@google.com.
   <int value="124" label="kLocChalCredDecryptCreateUnsealingSessionFailed"/>
   <int value="125" label="kLocChalCredDecryptSaltResponseNoSignature"/>
   <int value="126" label="kLocChalCredDecryptUnsealingResponseNoSignature"/>
+  <int value="127" label="kLocChalCredDecryptUnsealFailed"/>
   <int value="129" label="kUserDataAuthInvalidAuthBlockTypeInCreateKeyBlobs"/>
   <int value="130" label="kUserDataAuthInvalidAuthBlockTypeInDeriveKeyBlobs"/>
+  <int value="131" label="kUserDataAuthNoAuthBlockStateInDeriveKeyBlobs"/>
   <int value="136" label="kLocTpmNotBoundToPcrAuthBlockTpmNotReadyInDerive"/>
   <int value="138" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDerive"/>
   <int value="139"
@@ -227,8 +279,13 @@ chromium-metrics-reviews@google.com.
   <int value="160" label="kLocAuthBlockUtilDeriveFailedInDeriveKeyBlobs"/>
   <int value="161" label="kLocAuthBlockUtilNoAuthBlockInDeriveKeyBlobsAsync"/>
   <int value="165" label="kLocAuthBlockUtilNoChalInGetAsyncAuthBlockWithType"/>
+  <int value="172"
+      label="kLocRecoveryAuthBlockGenerateHSMPayloadFailedInCreate"/>
   <int value="175" label="kLocRecoveryAuthBlockRevocationCreateFailedInCreate"/>
+  <int value="178" label="kLocRecoveryAuthBlockDecryptFailedInDerive"/>
+  <int value="179" label="kLocRecoveryAuthBlockRecoveryFailedInDerive"/>
   <int value="181" label="kLocRecoveryAuthBlockRevocationDeriveFailedInDerive"/>
+  <int value="186" label="kLocChalCredAuthBlockServiceGenerateFailedInCreate"/>
   <int value="193" label="kLocChalCredAuthBlockServiceDeriveFailedInDerive"/>
   <int value="196" label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash"/>
   <int value="197" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
@@ -272,7 +329,12 @@ chromium-metrics-reviews@google.com.
   <int value="284" label="kLocLECredManConvertTpmError"/>
   <int value="286" label="kLocUserDataAuthSessionNotFoundInAuthAuthSession"/>
   <int value="288" label="kLocUserDataAuthSessionNotFoundInExtendAuthSession"/>
+  <int value="290"
+      label="kLocUserDataAuthSessionNotFoundInCreatePersistentUser"/>
+  <int value="291" label="kLocUserDataAuthUserExistsInCreatePersistentUser"/>
   <int value="293" label="kLocUserDataAuthCreateFailedInCreatePersistentUser"/>
+  <int value="294"
+      label="kLocUserDataAuthFinalizeFailedInCreatePersistentUser"/>
   <int value="295" label="kLocUserDataAuthSessionNotFoundInAuthAuthFactor"/>
   <int value="298" label="kLocAuthSessionGetCredFailedInAddCred"/>
   <int value="301" label="kLocAuthSessionInvalidBlockTypeInAddKeyset"/>
@@ -282,6 +344,7 @@ chromium-metrics-reviews@google.com.
   <int value="314" label="kLocAuthSessionInvalidBlockTypeInUpdate"/>
   <int value="317" label="kLocAuthSessionCreateFailedInUpdateKeyset"/>
   <int value="318" label="kLocAuthSessionUpdateWithBlobFailedInUpdateKeyset"/>
+  <int value="319" label="kLocAuthSessionGetCredFailedInAuth"/>
   <int value="322" label="kLocAuthSessionFactorNotFoundInAuthAuthFactor"/>
   <int value="325" label="kLocAuthSessionVKConverterFailedInAuthAuthFactor"/>
   <int value="326" label="kLocAuthSessionInvalidBlockTypeInAuthViaVaultKey"/>
@@ -293,9 +356,11 @@ chromium-metrics-reviews@google.com.
   <int value="335" label="kLocAuthSessionNoInputInAddAuthFactor"/>
   <int value="339" label="kLocAuthSessionAddMainKeyFailedInAddSecretToUSS"/>
   <int value="341" label="kLocAuthSessionPersistFactorFailedInPersistToUSS"/>
+  <int value="342" label="kLocAuthSessionPersistUSSFailedInPersistToUSS"/>
   <int value="346" label="kLocAuthSessionLoadUSSFailedInLoadUSS"/>
   <int value="347" label="kLocAuthSessionDecryptUSSFailedInLoadUSS"/>
   <int value="353" label="kLocAuthFactorManagerWriteFailedInSave"/>
+  <int value="355" label="kLocAuthFactorManagerReadFailedInLoad"/>
   <int value="364" label="kLocVaultKeysetWrapAESDFailedInEncryptEx"/>
   <int value="371" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapVKK"/>
   <int value="373" label="kLocVaultKeysetChapsDecryptFailedInUnwrapVKK"/>
@@ -306,6 +371,7 @@ chromium-metrics-reviews@google.com.
   <int value="390" label="kLocVaultKeysetUnwrapVKKFailedInUnwrapVK"/>
   <int value="391" label="kLocVaultKeysetUnwrapScryptFailedInUnwrapVK"/>
   <int value="398" label="kLocChalCredOperationNoResponseInOnSigResponse"/>
+  <int value="402" label="kLocChalCredVerifyGetRandomFailed"/>
   <int value="404" label="kLocChalCredVerifyChallengeFailed"/>
   <int value="406" label="kLocChalCredHelperConcurrencyNotAllowed"/>
   <int value="407" label="kLocChalCredNewAborted"/>
@@ -331,6 +397,8 @@ chromium-metrics-reviews@google.com.
   <int value="455" label="kLocUserSessionMountFailedInMountVault"/>
   <int value="456" label="kLocUserSessionOwnerNotSupportedInMountEphemeral"/>
   <int value="457" label="kLocUserSessionMountFailedInMountEphemeral"/>
+  <int value="463" label="kLocFailedGenerateRecoveryRequest"/>
+  <int value="467" label="kLocCryptoFailedInGenerateRecoveryRequest"/>
   <int value="473" label="kLocUserDataAuthSessionNotFoundInGetAuthedAS"/>
   <int value="475" label="kLocUserDataAuthGuestAlreadyMountedInGetMountableUS"/>
   <int value="476"
@@ -338,6 +406,8 @@ chromium-metrics-reviews@google.com.
   <int value="478"
       label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
   <int value="479" label="kLocUserDataAuthMountFailedInPrepareGuestVault"/>
+  <int value="480"
+      label="kLocUserDataAuthNoAuthSessionInPrepareEphemeralVault"/>
   <int value="481"
       label="kLocUserDataAuthGetSessionFailedInPrepareEphemeralVault"/>
   <int value="482" label="kLocUserDataAuthMountFailedInPrepareEphemeralVault"/>
@@ -347,16 +417,21 @@ chromium-metrics-reviews@google.com.
   <int value="485"
       label="kLocUserDataAuthGetSessionFailedInPreparePersistentVault"/>
   <int value="486" label="kLocUserDataAuthMountFailedInPreparePersistentVault"/>
-  <int value="487" label="kLocUserDataAuthNoAuthSessionInAddAuthFactor"/>
+  <int value="487" label="kLocUserDataAuthAuthSessionNotFoundInAddAuthFactor"/>
+  <int value="489" label="kLocUSSStorageWriteFailedInPersist"/>
   <int value="490" label="kLocUSSStorageReadFailedInLoadPersisted"/>
   <int value="498" label="kLocUSSDeserializeFailedInGetContainerFromFB"/>
+  <int value="501" label="kLocUSSNoCiphertextInGetContainerFromFB"/>
+  <int value="508" label="kLocUSSWrappedBlockNotFoundInUnwrapMKFromBlocks"/>
   <int value="513" label="kLocUSSDecryptFailedInUnwrapMKFromBlocks"/>
+  <int value="517" label="kLocUSSAesGcmFailedInFromEncPayload"/>
   <int value="518" label="kLocUSSDeserializeFailedInFromEncPayload"/>
   <int value="520" label="kLocUSSGetFromFBFailedInFromEncContainerWithWK"/>
   <int value="521" label="kLocUSSUnwrapMKFailedInFromEncContainerWithWK"/>
   <int value="522" label="kLocUSSFromPayloadFailedInFromEncContainerWithWK"/>
-  <int value="527" label="kLocUSSDuplicateWrappingInAddWrappedMainKey"/>
+  <int value="527" label="kLocUSSDuplicateWrappingInInsertWrappedMainKey"/>
   <int value="532" label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="547" label="kLocScryptAuthBlockScryptFailedInDeriveFromSalt"/>
   <int value="548"
       label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt"/>
   <int value="553" label="kLocLECredManPinWeaverFailedInCheckSecret"/>
@@ -373,6 +448,7 @@ chromium-metrics-reviews@google.com.
   <int value="580" label="kLocUserDataAuthInitChalRespFailedInAddCredentials"/>
   <int value="581" label="kLocUserDataAuthRemoveAllMountsFailedInUnmount"/>
   <int value="584" label="kLocUserDataAuthUserNonexistentInListKeys"/>
+  <int value="585" label="kLocUserDataAuthListFailedInListKeys"/>
   <int value="586" label="kLocUserDataAuthNoIDInRemove"/>
   <int value="589" label="kLocUserDataAuthUserActiveInRemove"/>
   <int value="590" label="kLocUserDataAuthRemoveFailedInRemove"/>
@@ -389,14 +465,20 @@ chromium-metrics-reviews@google.com.
       label="kLocAuthSessionRemoveMainKeyFailedInRemoveSecretFromUss"/>
   <int value="614" label="kLocAuthSessionInvalidBlockTypeInAddAuthFactor"/>
   <int value="616" label="kLocAuthSessionCreateFailedInPersistToUSS"/>
+  <int value="618" label="kLocAuthFactorManagerLoadFailedInUpdate"/>
+  <int value="619" label="kLocAuthFactorManagerSaveFailedInUpdate"/>
   <int value="620"
       label="kLocAuthFactorManagerPrepareForRemovalFailedInUpdate"/>
+  <int value="622" label="kLocAuthSessionNullParamInLoadUSS"/>
   <int value="623" label="kLocAuthSessionDeriveFailedInLoadUSS"/>
+  <int value="624" label="kLocChalCredAuthBlockNoInputAuthInDerive"/>
+  <int value="625" label="kLocChalCredDecryptNoHwsecBackend"/>
   <int value="626" label="kLocChalCredDecryptUnsealingResponseNoChallenge"/>
   <int value="628" label="kLocUserDataAuthHwsecNotReadyInInitChalRespAuth"/>
   <int value="629" label="kLocUserDataAuthUserNonexistentInListAuthFactors"/>
-  <int value="630" label="kLocUserDataAuthNoAuthSessionInUpdateAuthFactor"/>
+  <int value="630" label="kLocUserDataAuthSessionNotFoundInUpdateAuthFactor"/>
   <int value="634" label="kLocAuthSessionFactorNotFoundInUpdateAuthFactor"/>
+  <int value="638" label="kLocAuthSessionNoInputInUpdateAuthFactor"/>
   <int value="639" label="kLocAuthSessionInvalidBlockTypeInUpdateAuthFactor"/>
   <int value="640" label="kLocAuthSessionAddVaultKeysetFailedinAddAuthFactor"/>
   <int value="642" label="kLocAuthSessionCreateFailedInUpdateViaUSS"/>
@@ -411,6 +493,7 @@ chromium-metrics-reviews@google.com.
   <int value="661" label="kLocCreateFailedInAuthInputForAuth"/>
   <int value="662" label="kLocCreateFailedInAuthInputForAdd"/>
   <int value="663" label="kLocNoVkInAuthInputForAdd"/>
+  <int value="664" label="kLocNoUserInputInAddFactorForEphemeral"/>
   <int value="665" label="kLocVerifierAlreadySetInAddFactorForEphemeral"/>
   <int value="666" label="kLocVerifierSettingErrorInAddFactorForEphemeral"/>
   <int value="668" label="kLocUserDataAuthUserInactiveInResetAppContainer"/>
@@ -423,12 +506,24 @@ chromium-metrics-reviews@google.com.
   <int value="711" label="kLocAuthSessionPrepareWebAuthnSecretNoUserSession"/>
   <int value="712" label="kLocFpServiceStartSessionFailure"/>
   <int value="717" label="kLocFpServiceStartConcurrentSession"/>
+  <int value="720" label="kLocUserDataAuthFactorExtendedInfoTypeFailure"/>
   <int value="723" label="kLocAuthBlockUtilNoTpmInGetAuthBlockWithType"/>
+  <int value="747"
+      label="kLocUserDataAuthAuthFactorNotFoundInAuthenticateAuthFactor"/>
   <int value="1502" label="kLocLECredManInvalidLESecretInConvertTpmError"/>
   <int value="1504" label="kLocLECredManTooManyAttemptsInConvertTpmError"/>
   <int value="1505" label="kLocLECredManPCRNotMatchInConvertTpmError"/>
   <int value="1506" label="kLocLECredManHashTreeInConvertTpmError"/>
+  <int value="1901" label="kLocRecoveryCryptoResponseErrInDecryptResponse"/>
+  <int value="1911" label="kLocRecoveryCryptoBadLedgerSignedProof"/>
+  <int value="2101" label="kLocScryptVerifierVerifyScryptFailed"/>
   <int value="2103" label="kLocScryptVerifierVerifySecretMismatch"/>
+  <int value="2121" label="kLocRecoveryAuthBlockNoUserGaiaIdInCreate"/>
+  <int value="2122" label="kLocAuthSessionFactorAlreadyExistsInAddAuthFactor"/>
+  <int value="2171"
+      label="kLocUserDataAuthSessionNotFoundInPreparePersistentVault"/>
+  <int value="2191" label="kLocUssManagerAddDecryptedWhenEncryptedExists"/>
+  <int value="2192" label="kLocUssManagerAddDecryptedWhenDecryptedExists"/>
   <int value="2307" label="kLocSmartCardVerifierCannotVerify"/>
   <int value="2310" label="kLocAuthSessionManagerAuthSessionNotFound"/>
   <int value="2311" label="kLocPinWeaverAuthBlockCheckCredTPMLockedInDerive"/>
@@ -453,24 +548,39 @@ chromium-metrics-reviews@google.com.
       label="kLocAuthBlockUtilNotSupportedInGetAuthBlockWithType"/>
   <int value="2720"
       label="kLocAuthBlockUtilNotSupportedInGetAsyncAuthBlockWithType"/>
+  <int value="2722" label="kLocPinWeaverAuthBlockHwsecReadyErrorInIsSupported"/>
   <int value="2723" label="kLocPinWeaverAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="2726" label="kLocPinWeaverAuthBlockNullLeManagerInIsSupported"/>
   <int value="3390" label="kLocLECredManUnSyncedTreeInRemoveCred"/>
+  <int value="3411" label="kLocUserDataAuthTerminateAuthFactorNoAuthSession"/>
+  <int value="3506"
+      label="kLocCryptohomeRecoveryAuthBlockNoRecoveryIdInCreate"/>
   <int value="3508" label="kLocAuthSessionUpdateKeysetFailedInUpdateWithUSS"/>
   <int value="3521"
       label="kLocAuthSessionAuthInputParseFailed3InAuthAuthFactor"/>
+  <int value="3540"
+      label="kLocAuthSessionFailedSaveInUpdateAuthFactorMetadata"/>
+  <int value="3542" label="kLocPinWeaverAuthBlockRemoveCredential"/>
   <int value="65537" label="TPM_E_AUTHFAIL"/>
+  <int value="65544" label="TPM_E_DISABLED_CMD"/>
   <int value="65545" label="TPM_E_FAIL"/>
   <int value="65559" label="TPM_E_SIZE"/>
+  <int value="65560" label="TPM_E_WRONGPCRVAL"/>
+  <int value="65564" label="TPM_E_FAILEDSELFTEST"/>
   <int value="65565" label="TPM_E_AUTH2FAIL"/>
+  <int value="65568" label="TPM_E_ENCRYPT_ERROR"/>
   <int value="65569" label="TPM_E_DECRYPT_ERROR"/>
   <int value="65570" label="TPM_E_INVALID_AUTHHANDLE"/>
   <int value="65574" label="TPM_E_INVALID_POSTINIT"/>
+  <int value="65664" label="Handle 0: Unknown Error 0x080"/>
+  <int value="65666" label="TPM_RC_ATTRIBUTES"/>
   <int value="65667" label="TPM_RC_HASH"/>
   <int value="65668" label="TPM_RC_VALUE"/>
   <int value="65674" label="TPM_RC_TYPE"/>
   <int value="65682" label="TPM_RC_SCHEME"/>
   <int value="65685" label="TPM_RC_SIZE"/>
   <int value="65686" label="TPM_RC_SYMMETRIC"/>
+  <int value="65688" label="TPM_RC_SELECTOR"/>
   <int value="65690" label="TPM_RC_INSUFFICIENT"/>
   <int value="65692" label="TPM_RC_KEY"/>
   <int value="65695" label="TPM_RC_INTEGRITY"/>
@@ -482,34 +592,558 @@ chromium-metrics-reviews@google.com.
   <int value="65859" label="TPM_RC_COMMAND_CODE"/>
   <int value="65876" label="TPM_RC_NO_RESULT"/>
   <int value="65877" label="TPM_RC_SENSITIVE"/>
+  <int value="65907" label="Unknown Error 0x173"/>
   <int value="65923" label="Handle 1: TPM_RC_HASH"/>
   <int value="65929" label="Handle 1: TPM_RC_MODE"/>
   <int value="65930" label="Handle 1: TPM_RC_TYPE"/>
   <int value="65931" label="Handle 1: TPM_RC_HANDLE"/>
+  <int value="65932" label="Handle 1: TPM_RC_KDF"/>
   <int value="65941" label="Handle 1: TPM_RC_SIZE"/>
   <int value="65942" label="Handle 1: TPM_RC_SYMMETRIC"/>
   <int value="66015" label="Parameter 1: TPM_RC_INTEGRITY"/>
+  <int value="66023" label="Parameter 1: TPM_RC_ECC_POINT"/>
+  <int value="66187" label="Handle 2: TPM_RC_HANDLE"/>
+  <int value="66244" label="Parameter 2: TPM_RC_VALUE"/>
+  <int value="66820" label="Unknown Error 0x504"/>
   <int value="67587" label="TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="67842" label="TPM_RC_OBJECT_MEMORY"/>
   <int value="67843" label="TPM_RC_SESSION_MEMORY"/>
   <int value="67856" label="TPM_RC_REFERENCE_H0"/>
   <int value="67864" label="TPM_RC_REFERENCE_S0"/>
   <int value="67874" label="TPM_RC_RETRY"/>
+  <int value="67972" label="Session 1: TPM_RC_VALUE"/>
+  <int value="67989" label="Session 1: TPM_RC_SIZE"/>
   <int value="67990" label="Session 1: TPM_RC_SYMMETRIC"/>
   <int value="67997" label="Session 1: TPM_RC_POLICY_FAIL"/>
   <int value="68002" label="Session 1: TPM_RC_BAD_AUTH"/>
   <int value="69767" label="TDDL: TDDL_E_IOERROR"/>
   <int value="73930" label="TCS: TCS_E_KM_LOADFAILED"/>
   <int value="94209" label="TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="94210" label="TRUNKS_RC_ENCRYPTION_FAILED"/>
   <int value="94212" label="TRUNKS_RC_WRITE_ERROR"/>
+  <int value="96257" label="TPM Manager Error 0x01"/>
+  <int value="96641" label="PinWeaver Error 0x01"/>
+  <int value="96643" label="PinWeaver Error 0x03"/>
+  <int value="96644" label="PinWeaver Error 0x04"/>
+  <int value="96645" label="PinWeaver Error 0x05"/>
+  <int value="96647" label="PinWeaver Error 0x07"/>
+  <int value="97280" label="Hashed Error 0x0000"/>
+  <int value="97282" label="Hashed Error 0x0002"/>
+  <int value="97283" label="Hashed Error 0x0003"/>
+  <int value="97285" label="Hashed Error 0x0005"/>
+  <int value="97286" label="Hashed Error 0x0006"/>
+  <int value="97287" label="Hashed Error 0x0007"/>
+  <int value="97288" label="Hashed Error 0x0008"/>
+  <int value="97289" label="Hashed Error 0x0009"/>
+  <int value="97291" label="Hashed Error 0x000b"/>
+  <int value="97293" label="Hashed Error 0x000d"/>
+  <int value="97295" label="Hashed Error 0x000f"/>
+  <int value="97297" label="Hashed Error 0x0011"/>
+  <int value="97299" label="Hashed Error 0x0013"/>
+  <int value="97300" label="Hashed Error 0x0014"/>
+  <int value="97303" label="Hashed Error 0x0017"/>
+  <int value="97305" label="Hashed Error 0x0019"/>
+  <int value="97306" label="Hashed Error 0x001a"/>
+  <int value="97309" label="Hashed Error 0x001d"/>
+  <int value="97310" label="Hashed Error 0x001e"/>
+  <int value="97312" label="Hashed Error 0x0020"/>
+  <int value="97313" label="Hashed Error 0x0021"/>
+  <int value="97315" label="Hashed Error 0x0023"/>
+  <int value="97319" label="Hashed Error 0x0027"/>
+  <int value="97320" label="Hashed Error 0x0028"/>
+  <int value="97322" label="Hashed Error 0x002a"/>
+  <int value="97325" label="Hashed Error 0x002d"/>
+  <int value="97326" label="Hashed Error 0x002e"/>
+  <int value="97328" label="Hashed Error 0x0030"/>
+  <int value="97330" label="Hashed Error 0x0032"/>
+  <int value="97331" label="Hashed Error 0x0033"/>
+  <int value="97332" label="Hashed Error 0x0034"/>
+  <int value="97333" label="Hashed Error 0x0035"/>
+  <int value="97334" label="Hashed Error 0x0036"/>
+  <int value="97335" label="Hashed Error 0x0037"/>
+  <int value="97336" label="Hashed Error 0x0038"/>
+  <int value="97338" label="Hashed Error 0x003a"/>
+  <int value="97339" label="Hashed Error 0x003b"/>
+  <int value="97340" label="Hashed Error 0x003c"/>
+  <int value="97342" label="Hashed Error 0x003e"/>
+  <int value="97346" label="Hashed Error 0x0042"/>
+  <int value="97348" label="Hashed Error 0x0044"/>
+  <int value="97349" label="Hashed Error 0x0045"/>
+  <int value="97351" label="Hashed Error 0x0047"/>
+  <int value="97354" label="Hashed Error 0x004a"/>
+  <int value="97357" label="Hashed Error 0x004d"/>
+  <int value="97359" label="Hashed Error 0x004f"/>
+  <int value="97363" label="Hashed Error 0x0053"/>
+  <int value="97364" label="Hashed Error 0x0054"/>
+  <int value="97365" label="Hashed Error 0x0055"/>
+  <int value="97369" label="Hashed Error 0x0059"/>
+  <int value="97370" label="Hashed Error 0x005a"/>
+  <int value="97371" label="Hashed Error 0x005b"/>
+  <int value="97372" label="Hashed Error 0x005c"/>
+  <int value="97374" label="Hashed Error 0x005e"/>
+  <int value="97375" label="Hashed Error 0x005f"/>
+  <int value="97376" label="Hashed Error 0x0060"/>
+  <int value="97385" label="Hashed Error 0x0069"/>
+  <int value="97389" label="Hashed Error 0x006d"/>
+  <int value="97390" label="Hashed Error 0x006e"/>
+  <int value="97392" label="Hashed Error 0x0070"/>
+  <int value="97396" label="Hashed Error 0x0074"/>
+  <int value="97397" label="Hashed Error 0x0075"/>
+  <int value="97398" label="Hashed Error 0x0076"/>
+  <int value="97399" label="Hashed Error 0x0077"/>
+  <int value="97400" label="Hashed Error 0x0078"/>
+  <int value="97402" label="Hashed Error 0x007a"/>
+  <int value="97403" label="Hashed Error 0x007b"/>
+  <int value="97404" label="Hashed Error 0x007c"/>
+  <int value="97408" label="Hashed Error 0x0080"/>
+  <int value="97409" label="Hashed Error 0x0081"/>
+  <int value="97413" label="Hashed Error 0x0085"/>
+  <int value="97414" label="Hashed Error 0x0086"/>
+  <int value="97416" label="Hashed Error 0x0088"/>
+  <int value="97418" label="Hashed Error 0x008a"/>
+  <int value="97420" label="Hashed Error 0x008c"/>
+  <int value="97422" label="Hashed Error 0x008e"/>
+  <int value="97423" label="Hashed Error 0x008f"/>
+  <int value="97424" label="Hashed Error 0x0090"/>
+  <int value="97425" label="Hashed Error 0x0091"/>
+  <int value="97426" label="Hashed Error 0x0092"/>
+  <int value="97427" label="Hashed Error 0x0093"/>
+  <int value="97428" label="Hashed Error 0x0094"/>
+  <int value="97429" label="Hashed Error 0x0095"/>
+  <int value="97433" label="Hashed Error 0x0099"/>
+  <int value="97438" label="Hashed Error 0x009e"/>
+  <int value="97440" label="Hashed Error 0x00a0"/>
+  <int value="97441" label="Hashed Error 0x00a1"/>
   <int value="97443" label="Hashed Error 0x00a3"/>
+  <int value="97444" label="Hashed Error 0x00a4"/>
+  <int value="97445" label="Hashed Error 0x00a5"/>
+  <int value="97446" label="Hashed Error 0x00a6"/>
+  <int value="97447" label="Hashed Error 0x00a7"/>
+  <int value="97448" label="Hashed Error 0x00a8"/>
+  <int value="97449" label="Hashed Error 0x00a9"/>
+  <int value="97450" label="Hashed Error 0x00aa"/>
+  <int value="97452" label="Hashed Error 0x00ac"/>
+  <int value="97453" label="Hashed Error 0x00ad"/>
+  <int value="97454" label="Hashed Error 0x00ae"/>
+  <int value="97457" label="Hashed Error 0x00b1"/>
+  <int value="97458" label="Hashed Error 0x00b2"/>
+  <int value="97460" label="Hashed Error 0x00b4"/>
+  <int value="97462" label="Hashed Error 0x00b6"/>
+  <int value="97463" label="Hashed Error 0x00b7"/>
   <int value="97466" label="Hashed Error 0x00ba"/>
+  <int value="97468" label="Hashed Error 0x00bc"/>
+  <int value="97470" label="Hashed Error 0x00be"/>
+  <int value="97472" label="Hashed Error 0x00c0"/>
+  <int value="97473" label="Hashed Error 0x00c1"/>
+  <int value="97475" label="Hashed Error 0x00c3"/>
+  <int value="97477" label="Hashed Error 0x00c5"/>
+  <int value="97481" label="Hashed Error 0x00c9"/>
+  <int value="97482" label="Hashed Error 0x00ca"/>
+  <int value="97483" label="Hashed Error 0x00cb"/>
+  <int value="97485" label="Hashed Error 0x00cd"/>
+  <int value="97487" label="Hashed Error 0x00cf"/>
+  <int value="97497" label="Hashed Error 0x00d9"/>
+  <int value="97499" label="Hashed Error 0x00db"/>
+  <int value="97501" label="Hashed Error 0x00dd"/>
+  <int value="97504" label="Hashed Error 0x00e0"/>
+  <int value="97507" label="Hashed Error 0x00e3"/>
+  <int value="97508" label="Hashed Error 0x00e4"/>
+  <int value="97509" label="Hashed Error 0x00e5"/>
+  <int value="97510" label="Hashed Error 0x00e6"/>
+  <int value="97511" label="Hashed Error 0x00e7"/>
+  <int value="97517" label="Hashed Error 0x00ed"/>
+  <int value="97519" label="Hashed Error 0x00ef"/>
+  <int value="97530" label="Hashed Error 0x00fa"/>
+  <int value="97531" label="Hashed Error 0x00fb"/>
+  <int value="97532" label="Hashed Error 0x00fc"/>
+  <int value="97534" label="Hashed Error 0x00fe"/>
+  <int value="97539" label="Hashed Error 0x0103"/>
+  <int value="97544" label="Hashed Error 0x0108"/>
+  <int value="97547" label="Hashed Error 0x010b"/>
+  <int value="97551" label="Hashed Error 0x010f"/>
+  <int value="97552" label="Hashed Error 0x0110"/>
+  <int value="97553" label="Hashed Error 0x0111"/>
+  <int value="97556" label="Hashed Error 0x0114"/>
+  <int value="97558" label="Hashed Error 0x0116"/>
+  <int value="97559" label="Hashed Error 0x0117"/>
+  <int value="97560" label="Hashed Error 0x0118"/>
+  <int value="97561" label="Hashed Error 0x0119"/>
+  <int value="97564" label="Hashed Error 0x011c"/>
+  <int value="97567" label="Hashed Error 0x011f"/>
+  <int value="97568" label="Hashed Error 0x0120"/>
+  <int value="97569" label="Hashed Error 0x0121"/>
   <int value="97573" label="Hashed Error 0x0125"/>
+  <int value="97574" label="Hashed Error 0x0126"/>
+  <int value="97576" label="Hashed Error 0x0128"/>
+  <int value="97577" label="Hashed Error 0x0129"/>
+  <int value="97580" label="Hashed Error 0x012c"/>
+  <int value="97582" label="Hashed Error 0x012e"/>
+  <int value="97584" label="Hashed Error 0x0130"/>
+  <int value="97586" label="Hashed Error 0x0132"/>
+  <int value="97589" label="Hashed Error 0x0135"/>
+  <int value="97590" label="Hashed Error 0x0136"/>
+  <int value="97592" label="Hashed Error 0x0138"/>
+  <int value="97593" label="Hashed Error 0x0139"/>
+  <int value="97597" label="Hashed Error 0x013d"/>
+  <int value="97598" label="Hashed Error 0x013e"/>
+  <int value="97600" label="Hashed Error 0x0140"/>
+  <int value="97601" label="Hashed Error 0x0141"/>
+  <int value="97602" label="Hashed Error 0x0142"/>
+  <int value="97603" label="Hashed Error 0x0143"/>
+  <int value="97604" label="Hashed Error 0x0144"/>
+  <int value="97607" label="Hashed Error 0x0147"/>
+  <int value="97610" label="Hashed Error 0x014a"/>
+  <int value="97612" label="Hashed Error 0x014c"/>
   <int value="97613" label="Hashed Error 0x014d"/>
+  <int value="97616" label="Hashed Error 0x0150"/>
+  <int value="97618" label="Hashed Error 0x0152"/>
+  <int value="97620" label="Hashed Error 0x0154"/>
   <int value="97622" label="Hashed Error 0x0156"/>
+  <int value="97624" label="Hashed Error 0x0158"/>
+  <int value="97627" label="Hashed Error 0x015b"/>
+  <int value="97628" label="Hashed Error 0x015c"/>
+  <int value="97630" label="Hashed Error 0x015e"/>
+  <int value="97632" label="Hashed Error 0x0160"/>
+  <int value="97634" label="Hashed Error 0x0162"/>
+  <int value="97635" label="Hashed Error 0x0163"/>
+  <int value="97636" label="Hashed Error 0x0164"/>
+  <int value="97637" label="Hashed Error 0x0165"/>
+  <int value="97638" label="Hashed Error 0x0166"/>
+  <int value="97641" label="Hashed Error 0x0169"/>
+  <int value="97645" label="Hashed Error 0x016d"/>
+  <int value="97646" label="Hashed Error 0x016e"/>
+  <int value="97647" label="Hashed Error 0x016f"/>
+  <int value="97649" label="Hashed Error 0x0171"/>
+  <int value="97654" label="Hashed Error 0x0176"/>
+  <int value="97655" label="Hashed Error 0x0177"/>
+  <int value="97657" label="Hashed Error 0x0179"/>
+  <int value="97660" label="Hashed Error 0x017c"/>
+  <int value="97662" label="Hashed Error 0x017e"/>
+  <int value="97663" label="Hashed Error 0x017f"/>
+  <int value="97664" label="Hashed Error 0x0180"/>
+  <int value="97666" label="Hashed Error 0x0182"/>
+  <int value="97668" label="Hashed Error 0x0184"/>
+  <int value="97671" label="Hashed Error 0x0187"/>
+  <int value="97672" label="Hashed Error 0x0188"/>
+  <int value="97673" label="Hashed Error 0x0189"/>
+  <int value="97674" label="Hashed Error 0x018a"/>
+  <int value="97675" label="Hashed Error 0x018b"/>
+  <int value="97677" label="Hashed Error 0x018d"/>
+  <int value="97680" label="Hashed Error 0x0190"/>
+  <int value="97682" label="Hashed Error 0x0192"/>
+  <int value="97685" label="Hashed Error 0x0195"/>
+  <int value="97686" label="Hashed Error 0x0196"/>
+  <int value="97687" label="Hashed Error 0x0197"/>
+  <int value="97688" label="Hashed Error 0x0198"/>
+  <int value="97690" label="Hashed Error 0x019a"/>
+  <int value="97691" label="Hashed Error 0x019b"/>
+  <int value="97692" label="Hashed Error 0x019c"/>
+  <int value="97693" label="Hashed Error 0x019d"/>
+  <int value="97694" label="Hashed Error 0x019e"/>
+  <int value="97695" label="Hashed Error 0x019f"/>
+  <int value="97697" label="Hashed Error 0x01a1"/>
+  <int value="97698" label="Hashed Error 0x01a2"/>
+  <int value="97700" label="Hashed Error 0x01a4"/>
+  <int value="97701" label="Hashed Error 0x01a5"/>
+  <int value="97702" label="Hashed Error 0x01a6"/>
+  <int value="97703" label="Hashed Error 0x01a7"/>
+  <int value="97705" label="Hashed Error 0x01a9"/>
+  <int value="97708" label="Hashed Error 0x01ac"/>
+  <int value="97709" label="Hashed Error 0x01ad"/>
+  <int value="97713" label="Hashed Error 0x01b1"/>
+  <int value="97715" label="Hashed Error 0x01b3"/>
+  <int value="97719" label="Hashed Error 0x01b7"/>
+  <int value="97720" label="Hashed Error 0x01b8"/>
+  <int value="97725" label="Hashed Error 0x01bd"/>
+  <int value="97727" label="Hashed Error 0x01bf"/>
+  <int value="97733" label="Hashed Error 0x01c5"/>
+  <int value="97737" label="Hashed Error 0x01c9"/>
+  <int value="97738" label="Hashed Error 0x01ca"/>
+  <int value="97742" label="Hashed Error 0x01ce"/>
+  <int value="97743" label="Hashed Error 0x01cf"/>
+  <int value="97744" label="Hashed Error 0x01d0"/>
+  <int value="97745" label="Hashed Error 0x01d1"/>
+  <int value="97746" label="Hashed Error 0x01d2"/>
+  <int value="97747" label="Hashed Error 0x01d3"/>
+  <int value="97750" label="Hashed Error 0x01d6"/>
+  <int value="97753" label="Hashed Error 0x01d9"/>
+  <int value="97754" label="Hashed Error 0x01da"/>
+  <int value="97756" label="Hashed Error 0x01dc"/>
+  <int value="97757" label="Hashed Error 0x01dd"/>
+  <int value="97762" label="Hashed Error 0x01e2"/>
+  <int value="97764" label="Hashed Error 0x01e4"/>
+  <int value="97765" label="Hashed Error 0x01e5"/>
+  <int value="97768" label="Hashed Error 0x01e8"/>
+  <int value="97769" label="Hashed Error 0x01e9"/>
+  <int value="97770" label="Hashed Error 0x01ea"/>
+  <int value="97773" label="Hashed Error 0x01ed"/>
+  <int value="97774" label="Hashed Error 0x01ee"/>
+  <int value="97776" label="Hashed Error 0x01f0"/>
+  <int value="97777" label="Hashed Error 0x01f1"/>
+  <int value="97778" label="Hashed Error 0x01f2"/>
+  <int value="97779" label="Hashed Error 0x01f3"/>
+  <int value="97780" label="Hashed Error 0x01f4"/>
+  <int value="97782" label="Hashed Error 0x01f6"/>
+  <int value="97785" label="Hashed Error 0x01f9"/>
+  <int value="97786" label="Hashed Error 0x01fa"/>
+  <int value="97792" label="Hashed Error 0x0200"/>
+  <int value="97793" label="Hashed Error 0x0201"/>
+  <int value="97796" label="Hashed Error 0x0204"/>
+  <int value="97800" label="Hashed Error 0x0208"/>
+  <int value="97804" label="Hashed Error 0x020c"/>
+  <int value="97805" label="Hashed Error 0x020d"/>
+  <int value="97806" label="Hashed Error 0x020e"/>
+  <int value="97808" label="Hashed Error 0x0210"/>
+  <int value="97810" label="Hashed Error 0x0212"/>
+  <int value="97811" label="Hashed Error 0x0213"/>
+  <int value="97817" label="Hashed Error 0x0219"/>
+  <int value="97818" label="Hashed Error 0x021a"/>
+  <int value="97819" label="Hashed Error 0x021b"/>
+  <int value="97824" label="Hashed Error 0x0220"/>
+  <int value="97825" label="Hashed Error 0x0221"/>
+  <int value="97829" label="Hashed Error 0x0225"/>
+  <int value="97830" label="Hashed Error 0x0226"/>
+  <int value="97833" label="Hashed Error 0x0229"/>
+  <int value="97834" label="Hashed Error 0x022a"/>
+  <int value="97835" label="Hashed Error 0x022b"/>
+  <int value="97836" label="Hashed Error 0x022c"/>
+  <int value="97837" label="Hashed Error 0x022d"/>
+  <int value="97841" label="Hashed Error 0x0231"/>
+  <int value="97843" label="Hashed Error 0x0233"/>
+  <int value="97845" label="Hashed Error 0x0235"/>
+  <int value="97848" label="Hashed Error 0x0238"/>
+  <int value="97852" label="Hashed Error 0x023c"/>
+  <int value="97854" label="Hashed Error 0x023e"/>
+  <int value="97857" label="Hashed Error 0x0241"/>
+  <int value="97858" label="Hashed Error 0x0242"/>
+  <int value="97860" label="Hashed Error 0x0244"/>
+  <int value="97861" label="Hashed Error 0x0245"/>
+  <int value="97865" label="Hashed Error 0x0249"/>
+  <int value="97866" label="Hashed Error 0x024a"/>
+  <int value="97867" label="Hashed Error 0x024b"/>
+  <int value="97871" label="Hashed Error 0x024f"/>
+  <int value="97877" label="Hashed Error 0x0255"/>
+  <int value="97878" label="Hashed Error 0x0256"/>
+  <int value="97882" label="Hashed Error 0x025a"/>
+  <int value="97888" label="Hashed Error 0x0260"/>
+  <int value="97889" label="Hashed Error 0x0261"/>
+  <int value="97890" label="Hashed Error 0x0262"/>
+  <int value="97891" label="Hashed Error 0x0263"/>
+  <int value="97896" label="Hashed Error 0x0268"/>
+  <int value="97898" label="Hashed Error 0x026a"/>
+  <int value="97902" label="Hashed Error 0x026e"/>
+  <int value="97904" label="Hashed Error 0x0270"/>
+  <int value="97906" label="Hashed Error 0x0272"/>
+  <int value="97908" label="Hashed Error 0x0274"/>
+  <int value="97911" label="Hashed Error 0x0277"/>
+  <int value="97914" label="Hashed Error 0x027a"/>
+  <int value="97916" label="Hashed Error 0x027c"/>
+  <int value="97917" label="Hashed Error 0x027d"/>
+  <int value="97919" label="Hashed Error 0x027f"/>
+  <int value="97920" label="Hashed Error 0x0280"/>
+  <int value="97921" label="Hashed Error 0x0281"/>
+  <int value="97924" label="Hashed Error 0x0284"/>
+  <int value="97926" label="Hashed Error 0x0286"/>
+  <int value="97928" label="Hashed Error 0x0288"/>
+  <int value="97930" label="Hashed Error 0x028a"/>
+  <int value="97931" label="Hashed Error 0x028b"/>
+  <int value="97932" label="Hashed Error 0x028c"/>
+  <int value="97933" label="Hashed Error 0x028d"/>
+  <int value="97934" label="Hashed Error 0x028e"/>
+  <int value="97935" label="Hashed Error 0x028f"/>
+  <int value="97936" label="Hashed Error 0x0290"/>
+  <int value="97937" label="Hashed Error 0x0291"/>
+  <int value="97938" label="Hashed Error 0x0292"/>
+  <int value="97939" label="Hashed Error 0x0293"/>
+  <int value="97941" label="Hashed Error 0x0295"/>
+  <int value="97942" label="Hashed Error 0x0296"/>
+  <int value="97943" label="Hashed Error 0x0297"/>
+  <int value="97944" label="Hashed Error 0x0298"/>
+  <int value="97945" label="Hashed Error 0x0299"/>
+  <int value="97947" label="Hashed Error 0x029b"/>
+  <int value="97948" label="Hashed Error 0x029c"/>
+  <int value="97952" label="Hashed Error 0x02a0"/>
+  <int value="97954" label="Hashed Error 0x02a2"/>
+  <int value="97956" label="Hashed Error 0x02a4"/>
+  <int value="97957" label="Hashed Error 0x02a5"/>
+  <int value="97958" label="Hashed Error 0x02a6"/>
+  <int value="97960" label="Hashed Error 0x02a8"/>
+  <int value="97964" label="Hashed Error 0x02ac"/>
+  <int value="97967" label="Hashed Error 0x02af"/>
+  <int value="97969" label="Hashed Error 0x02b1"/>
+  <int value="97973" label="Hashed Error 0x02b5"/>
+  <int value="97976" label="Hashed Error 0x02b8"/>
+  <int value="97978" label="Hashed Error 0x02ba"/>
+  <int value="97979" label="Hashed Error 0x02bb"/>
+  <int value="97980" label="Hashed Error 0x02bc"/>
+  <int value="97981" label="Hashed Error 0x02bd"/>
+  <int value="97986" label="Hashed Error 0x02c2"/>
+  <int value="97987" label="Hashed Error 0x02c3"/>
+  <int value="97988" label="Hashed Error 0x02c4"/>
+  <int value="97989" label="Hashed Error 0x02c5"/>
+  <int value="97990" label="Hashed Error 0x02c6"/>
+  <int value="97994" label="Hashed Error 0x02ca"/>
+  <int value="97996" label="Hashed Error 0x02cc"/>
+  <int value="97998" label="Hashed Error 0x02ce"/>
+  <int value="97999" label="Hashed Error 0x02cf"/>
+  <int value="98000" label="Hashed Error 0x02d0"/>
+  <int value="98004" label="Hashed Error 0x02d4"/>
+  <int value="98005" label="Hashed Error 0x02d5"/>
+  <int value="98009" label="Hashed Error 0x02d9"/>
+  <int value="98010" label="Hashed Error 0x02da"/>
+  <int value="98012" label="Hashed Error 0x02dc"/>
+  <int value="98014" label="Hashed Error 0x02de"/>
+  <int value="98016" label="Hashed Error 0x02e0"/>
+  <int value="98019" label="Hashed Error 0x02e3"/>
+  <int value="98020" label="Hashed Error 0x02e4"/>
+  <int value="98021" label="Hashed Error 0x02e5"/>
+  <int value="98024" label="Hashed Error 0x02e8"/>
+  <int value="98027" label="Hashed Error 0x02eb"/>
+  <int value="98028" label="Hashed Error 0x02ec"/>
+  <int value="98029" label="Hashed Error 0x02ed"/>
+  <int value="98031" label="Hashed Error 0x02ef"/>
+  <int value="98034" label="Hashed Error 0x02f2"/>
+  <int value="98035" label="Hashed Error 0x02f3"/>
+  <int value="98036" label="Hashed Error 0x02f4"/>
+  <int value="98037" label="Hashed Error 0x02f5"/>
+  <int value="98040" label="Hashed Error 0x02f8"/>
+  <int value="98042" label="Hashed Error 0x02fa"/>
+  <int value="98046" label="Hashed Error 0x02fe"/>
+  <int value="98048" label="Hashed Error 0x0300"/>
+  <int value="98049" label="Hashed Error 0x0301"/>
+  <int value="98051" label="Hashed Error 0x0303"/>
+  <int value="98052" label="Hashed Error 0x0304"/>
+  <int value="98053" label="Hashed Error 0x0305"/>
+  <int value="98054" label="Hashed Error 0x0306"/>
+  <int value="98055" label="Hashed Error 0x0307"/>
+  <int value="98056" label="Hashed Error 0x0308"/>
+  <int value="98057" label="Hashed Error 0x0309"/>
+  <int value="98059" label="Hashed Error 0x030b"/>
+  <int value="98061" label="Hashed Error 0x030d"/>
+  <int value="98062" label="Hashed Error 0x030e"/>
+  <int value="98064" label="Hashed Error 0x0310"/>
+  <int value="98066" label="Hashed Error 0x0312"/>
+  <int value="98067" label="Hashed Error 0x0313"/>
+  <int value="98070" label="Hashed Error 0x0316"/>
+  <int value="98071" label="Hashed Error 0x0317"/>
+  <int value="98075" label="Hashed Error 0x031b"/>
+  <int value="98076" label="Hashed Error 0x031c"/>
+  <int value="98078" label="Hashed Error 0x031e"/>
+  <int value="98080" label="Hashed Error 0x0320"/>
+  <int value="98083" label="Hashed Error 0x0323"/>
+  <int value="98084" label="Hashed Error 0x0324"/>
+  <int value="98085" label="Hashed Error 0x0325"/>
+  <int value="98088" label="Hashed Error 0x0328"/>
+  <int value="98097" label="Hashed Error 0x0331"/>
+  <int value="98102" label="Hashed Error 0x0336"/>
+  <int value="98103" label="Hashed Error 0x0337"/>
+  <int value="98104" label="Hashed Error 0x0338"/>
+  <int value="98106" label="Hashed Error 0x033a"/>
+  <int value="98108" label="Hashed Error 0x033c"/>
+  <int value="98109" label="Hashed Error 0x033d"/>
+  <int value="98111" label="Hashed Error 0x033f"/>
+  <int value="98113" label="Hashed Error 0x0341"/>
+  <int value="98114" label="Hashed Error 0x0342"/>
+  <int value="98122" label="Hashed Error 0x034a"/>
+  <int value="98125" label="Hashed Error 0x034d"/>
+  <int value="98126" label="Hashed Error 0x034e"/>
+  <int value="98127" label="Hashed Error 0x034f"/>
+  <int value="98131" label="Hashed Error 0x0353"/>
+  <int value="98132" label="Hashed Error 0x0354"/>
+  <int value="98133" label="Hashed Error 0x0355"/>
+  <int value="98135" label="Hashed Error 0x0357"/>
+  <int value="98137" label="Hashed Error 0x0359"/>
+  <int value="98138" label="Hashed Error 0x035a"/>
+  <int value="98139" label="Hashed Error 0x035b"/>
+  <int value="98140" label="Hashed Error 0x035c"/>
+  <int value="98142" label="Hashed Error 0x035e"/>
+  <int value="98145" label="Hashed Error 0x0361"/>
+  <int value="98146" label="Hashed Error 0x0362"/>
   <int value="98147" label="Hashed Error 0x0363"/>
+  <int value="98148" label="Hashed Error 0x0364"/>
+  <int value="98149" label="Hashed Error 0x0365"/>
+  <int value="98150" label="Hashed Error 0x0366"/>
+  <int value="98154" label="Hashed Error 0x036a"/>
+  <int value="98155" label="Hashed Error 0x036b"/>
+  <int value="98157" label="Hashed Error 0x036d"/>
+  <int value="98158" label="Hashed Error 0x036e"/>
+  <int value="98160" label="Hashed Error 0x0370"/>
+  <int value="98161" label="Hashed Error 0x0371"/>
+  <int value="98162" label="Hashed Error 0x0372"/>
+  <int value="98164" label="Hashed Error 0x0374"/>
+  <int value="98165" label="Hashed Error 0x0375"/>
+  <int value="98166" label="Hashed Error 0x0376"/>
+  <int value="98167" label="Hashed Error 0x0377"/>
+  <int value="98168" label="Hashed Error 0x0378"/>
+  <int value="98169" label="Hashed Error 0x0379"/>
+  <int value="98173" label="Hashed Error 0x037d"/>
+  <int value="98174" label="Hashed Error 0x037e"/>
+  <int value="98175" label="Hashed Error 0x037f"/>
+  <int value="98176" label="Hashed Error 0x0380"/>
+  <int value="98177" label="Hashed Error 0x0381"/>
+  <int value="98178" label="Hashed Error 0x0382"/>
+  <int value="98180" label="Hashed Error 0x0384"/>
+  <int value="98182" label="Hashed Error 0x0386"/>
+  <int value="98184" label="Hashed Error 0x0388"/>
+  <int value="98186" label="Hashed Error 0x038a"/>
+  <int value="98189" label="Hashed Error 0x038d"/>
+  <int value="98190" label="Hashed Error 0x038e"/>
+  <int value="98191" label="Hashed Error 0x038f"/>
+  <int value="98193" label="Hashed Error 0x0391"/>
+  <int value="98194" label="Hashed Error 0x0392"/>
+  <int value="98197" label="Hashed Error 0x0395"/>
+  <int value="98198" label="Hashed Error 0x0396"/>
+  <int value="98200" label="Hashed Error 0x0398"/>
+  <int value="98202" label="Hashed Error 0x039a"/>
+  <int value="98203" label="Hashed Error 0x039b"/>
+  <int value="98211" label="Hashed Error 0x03a3"/>
+  <int value="98214" label="Hashed Error 0x03a6"/>
+  <int value="98215" label="Hashed Error 0x03a7"/>
+  <int value="98216" label="Hashed Error 0x03a8"/>
+  <int value="98217" label="Hashed Error 0x03a9"/>
+  <int value="98218" label="Hashed Error 0x03aa"/>
+  <int value="98219" label="Hashed Error 0x03ab"/>
+  <int value="98223" label="Hashed Error 0x03af"/>
+  <int value="98224" label="Hashed Error 0x03b0"/>
+  <int value="98226" label="Hashed Error 0x03b2"/>
+  <int value="98227" label="Hashed Error 0x03b3"/>
+  <int value="98232" label="Hashed Error 0x03b8"/>
+  <int value="98234" label="Hashed Error 0x03ba"/>
+  <int value="98235" label="Hashed Error 0x03bb"/>
+  <int value="98236" label="Hashed Error 0x03bc"/>
+  <int value="98239" label="Hashed Error 0x03bf"/>
+  <int value="98241" label="Hashed Error 0x03c1"/>
+  <int value="98242" label="Hashed Error 0x03c2"/>
+  <int value="98243" label="Hashed Error 0x03c3"/>
+  <int value="98246" label="Hashed Error 0x03c6"/>
+  <int value="98248" label="Hashed Error 0x03c8"/>
+  <int value="98249" label="Hashed Error 0x03c9"/>
+  <int value="98253" label="Hashed Error 0x03cd"/>
+  <int value="98254" label="Hashed Error 0x03ce"/>
+  <int value="98255" label="Hashed Error 0x03cf"/>
+  <int value="98256" label="Hashed Error 0x03d0"/>
+  <int value="98259" label="Hashed Error 0x03d3"/>
+  <int value="98263" label="Hashed Error 0x03d7"/>
+  <int value="98264" label="Hashed Error 0x03d8"/>
+  <int value="98266" label="Hashed Error 0x03da"/>
+  <int value="98267" label="Hashed Error 0x03db"/>
+  <int value="98269" label="Hashed Error 0x03dd"/>
+  <int value="98270" label="Hashed Error 0x03de"/>
+  <int value="98272" label="Hashed Error 0x03e0"/>
   <int value="98273" label="Hashed Error 0x03e1"/>
+  <int value="98277" label="Hashed Error 0x03e5"/>
+  <int value="98278" label="Hashed Error 0x03e6"/>
+  <int value="98280" label="Hashed Error 0x03e8"/>
+  <int value="98281" label="Hashed Error 0x03e9"/>
+  <int value="98283" label="Hashed Error 0x03eb"/>
+  <int value="98286" label="Hashed Error 0x03ee"/>
+  <int value="98287" label="Hashed Error 0x03ef"/>
   <int value="98290" label="Hashed Error 0x03f2"/>
+  <int value="98293" label="Hashed Error 0x03f5"/>
+  <int value="98295" label="Hashed Error 0x03f7"/>
+  <int value="98301" label="Hashed Error 0x03fd"/>
+  <int value="98302" label="Hashed Error 0x03fe"/>
+  <int value="98303" label="Hashed Error 0x03ff"/>
   <int value="102401" label="SAPI_RC_INVALID_SESSIONS"/>
   <int value="102404" label="SAPI_RC_BAD_PARAMETER"/>
   <int value="102408" label="SAPI_RC_NO_RESPONSE_RECEIVED"/>
@@ -540,6 +1174,13 @@ chromium-metrics-reviews@google.com.
   -->
 
   <int value="0" label="Success"/>
+  <int value="2" label="Unknown Loc 0 - TPM_E_BADINDEX"/>
+  <int value="3" label="Unknown Loc 0 - TPM_E_BAD_PARAMETER"/>
+  <int value="4" label="Unknown Loc 0 - TPM_E_AUDITFAILURE"/>
+  <int value="5" label="Unknown Loc 0 - TPM_E_CLEAR_DISABLED"/>
+  <int value="6" label="Unknown Loc 0 - TPM_E_DEACTIVATED"/>
+  <int value="7" label="Unknown Loc 0 - TPM_E_DISABLED"/>
+  <int value="8" label="Unknown Loc 0 - TPM_E_DISABLED_CMD"/>
   <int value="6553600" label="kLocUserSessionMountEphemeralFailed"/>
   <int value="8155140"
       label="kLocChalCredDecryptCreateUnsealingSessionFailed -
@@ -547,6 +1188,18 @@ chromium-metrics-reviews@google.com.
   <int value="8159075"
       label="kLocChalCredDecryptCreateUnsealingSessionFailed - Hashed Error
              0x0363"/>
+  <int value="8163344"
+      label="kLocChalCredDecryptCreateUnsealingSessionFailed -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="8323723"
+      label="kLocChalCredDecryptUnsealFailed - Handle 2: TPM_RC_HANDLE"/>
+  <int value="8351748"
+      label="kLocChalCredDecryptUnsealFailed - TRUNKS_RC_WRITE_ERROR"/>
+  <int value="8359952"
+      label="kLocChalCredDecryptUnsealFailed - SAPI_RC_NO_CONNECTION"/>
+  <int value="8368267"
+      label="kLocChalCredDecryptUnsealFailed - Resource Manager: Handle 0:
+             TPM_RC_HANDLE"/>
   <int value="9109504"
       label="kLocTpmNotBoundToPcrAuthBlockNoCryptohomeKeyInCreate"/>
   <int value="9240735"
@@ -563,6 +1216,9 @@ chromium-metrics-reviews@google.com.
   <int value="9437217"
       label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
              TPM_E_DECRYPT_ERROR"/>
+  <int value="9437222"
+      label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
+             TPM_E_INVALID_POSTINIT"/>
   <int value="9437316"
       label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt -
              TPM_RC_VALUE"/>
@@ -602,19 +1258,1625 @@ chromium-metrics-reviews@google.com.
   <int value="9502719"
       label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt - Unknown
              Error 0xffff"/>
+  <int value="9765018"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="9795972"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - PinWeaver
+             Error 0x04"/>
+  <int value="9795975"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - PinWeaver
+             Error 0x07"/>
+  <int value="9796633"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0019"/>
+  <int value="9796634"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x001a"/>
+  <int value="9796656"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0030"/>
+  <int value="9796702"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x005e"/>
+  <int value="9796732"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x007c"/>
+  <int value="9796785"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x00b1"/>
+  <int value="9796901"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0125"/>
+  <int value="9796912"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0130"/>
+  <int value="9796929"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0141"/>
+  <int value="9796932"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0144"/>
+  <int value="9796938"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x014a"/>
+  <int value="9796965"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0165"/>
+  <int value="9796969"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0169"/>
+  <int value="9796974"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x016e"/>
+  <int value="9797005"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x018d"/>
+  <int value="9797023"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x019f"/>
+  <int value="9797053"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x01bd"/>
+  <int value="9797078"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x01d6"/>
+  <int value="9797097"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x01e9"/>
+  <int value="9797146"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x021a"/>
+  <int value="9797249"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0281"/>
+  <int value="9797252"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0284"/>
+  <int value="9797254"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0286"/>
+  <int value="9797314"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x02c2"/>
+  <int value="9797340"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x02dc"/>
+  <int value="9797374"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x02fe"/>
+  <int value="9797411"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0323"/>
+  <int value="9797510"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0386"/>
+  <int value="9797514"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x038a"/>
+  <int value="9797518"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x038e"/>
+  <int value="9797526"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x0396"/>
+  <int value="9797531"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x039b"/>
+  <int value="9797552"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x03b0"/>
+  <int value="9797631"
+      label="kLocPinWeaverAuthBlockInsertCredentialFailedInCreate - Hashed
+             Error 0x03ff"/>
+  <int value="10092698"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive -
+             TPM_RC_INSUFFICIENT"/>
+  <int value="10123649"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - PinWeaver Error
+             0x01"/>
+  <int value="10123652"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - PinWeaver Error
+             0x04"/>
+  <int value="10123653"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - PinWeaver Error
+             0x05"/>
+  <int value="10123655"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - PinWeaver Error
+             0x07"/>
+  <int value="10124288"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0000"/>
+  <int value="10124290"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0002"/>
+  <int value="10124291"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0003"/>
+  <int value="10124293"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0005"/>
+  <int value="10124294"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0006"/>
+  <int value="10124295"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0007"/>
+  <int value="10124296"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0008"/>
+  <int value="10124297"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0009"/>
+  <int value="10124299"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x000b"/>
+  <int value="10124301"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x000d"/>
+  <int value="10124303"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x000f"/>
+  <int value="10124305"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0011"/>
+  <int value="10124306"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0012"/>
+  <int value="10124307"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0013"/>
+  <int value="10124308"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0014"/>
+  <int value="10124311"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0017"/>
+  <int value="10124317"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x001d"/>
+  <int value="10124318"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x001e"/>
+  <int value="10124320"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0020"/>
+  <int value="10124321"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0021"/>
+  <int value="10124323"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0023"/>
+  <int value="10124327"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0027"/>
+  <int value="10124328"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0028"/>
+  <int value="10124330"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x002a"/>
+  <int value="10124333"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x002d"/>
+  <int value="10124334"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x002e"/>
+  <int value="10124336"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0030"/>
+  <int value="10124338"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0032"/>
+  <int value="10124339"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0033"/>
+  <int value="10124340"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0034"/>
+  <int value="10124341"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0035"/>
+  <int value="10124342"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0036"/>
+  <int value="10124343"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0037"/>
+  <int value="10124344"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0038"/>
+  <int value="10124346"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x003a"/>
+  <int value="10124347"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x003b"/>
+  <int value="10124348"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x003c"/>
+  <int value="10124350"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x003e"/>
+  <int value="10124354"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0042"/>
+  <int value="10124356"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0044"/>
+  <int value="10124357"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0045"/>
+  <int value="10124359"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0047"/>
+  <int value="10124362"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x004a"/>
+  <int value="10124365"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x004d"/>
+  <int value="10124367"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x004f"/>
+  <int value="10124371"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0053"/>
+  <int value="10124372"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0054"/>
+  <int value="10124373"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0055"/>
+  <int value="10124378"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x005a"/>
+  <int value="10124379"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x005b"/>
+  <int value="10124380"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x005c"/>
+  <int value="10124382"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x005e"/>
+  <int value="10124383"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x005f"/>
+  <int value="10124384"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0060"/>
+  <int value="10124393"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0069"/>
+  <int value="10124397"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x006d"/>
+  <int value="10124398"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x006e"/>
+  <int value="10124400"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0070"/>
+  <int value="10124404"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0074"/>
+  <int value="10124405"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0075"/>
+  <int value="10124406"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0076"/>
+  <int value="10124407"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0077"/>
+  <int value="10124408"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0078"/>
+  <int value="10124410"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x007a"/>
+  <int value="10124411"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x007b"/>
+  <int value="10124412"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x007c"/>
+  <int value="10124416"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0080"/>
+  <int value="10124417"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0081"/>
+  <int value="10124421"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0085"/>
+  <int value="10124422"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0086"/>
+  <int value="10124424"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0088"/>
+  <int value="10124426"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x008a"/>
+  <int value="10124428"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x008c"/>
+  <int value="10124430"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x008e"/>
+  <int value="10124431"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x008f"/>
+  <int value="10124432"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0090"/>
+  <int value="10124433"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0091"/>
+  <int value="10124435"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0093"/>
+  <int value="10124436"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0094"/>
+  <int value="10124437"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0095"/>
+  <int value="10124441"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0099"/>
+  <int value="10124446"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x009e"/>
+  <int value="10124448"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a0"/>
+  <int value="10124449"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a1"/>
+  <int value="10124451"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a3"/>
+  <int value="10124452"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a4"/>
+  <int value="10124453"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a5"/>
+  <int value="10124454"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a6"/>
+  <int value="10124455"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a7"/>
+  <int value="10124456"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a8"/>
+  <int value="10124457"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00a9"/>
+  <int value="10124458"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00aa"/>
+  <int value="10124460"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ac"/>
+  <int value="10124461"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ad"/>
+  <int value="10124462"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ae"/>
+  <int value="10124466"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00b2"/>
+  <int value="10124468"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00b4"/>
+  <int value="10124470"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00b6"/>
+  <int value="10124471"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00b7"/>
+  <int value="10124476"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00bc"/>
+  <int value="10124478"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00be"/>
+  <int value="10124480"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00c0"/>
+  <int value="10124481"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00c1"/>
+  <int value="10124483"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00c3"/>
+  <int value="10124485"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00c5"/>
+  <int value="10124489"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00c9"/>
+  <int value="10124490"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ca"/>
+  <int value="10124491"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00cb"/>
+  <int value="10124493"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00cd"/>
+  <int value="10124495"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00cf"/>
+  <int value="10124505"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00d9"/>
+  <int value="10124506"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00da"/>
+  <int value="10124507"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00db"/>
+  <int value="10124509"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00dd"/>
+  <int value="10124512"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e0"/>
+  <int value="10124515"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e3"/>
+  <int value="10124516"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e4"/>
+  <int value="10124517"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e5"/>
+  <int value="10124518"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e6"/>
+  <int value="10124519"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00e7"/>
+  <int value="10124525"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ed"/>
+  <int value="10124527"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00ef"/>
+  <int value="10124538"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00fa"/>
+  <int value="10124539"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00fb"/>
+  <int value="10124540"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x00fc"/>
+  <int value="10124547"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0103"/>
+  <int value="10124552"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0108"/>
+  <int value="10124555"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x010b"/>
+  <int value="10124559"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x010f"/>
+  <int value="10124560"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0110"/>
+  <int value="10124561"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0111"/>
+  <int value="10124564"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0114"/>
+  <int value="10124566"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0116"/>
+  <int value="10124567"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0117"/>
+  <int value="10124568"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0118"/>
+  <int value="10124569"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0119"/>
+  <int value="10124572"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x011c"/>
+  <int value="10124575"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x011f"/>
+  <int value="10124576"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0120"/>
+  <int value="10124577"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0121"/>
+  <int value="10124581"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0125"/>
+  <int value="10124582"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0126"/>
+  <int value="10124584"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0128"/>
+  <int value="10124585"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0129"/>
+  <int value="10124588"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x012c"/>
+  <int value="10124590"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x012e"/>
+  <int value="10124594"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0132"/>
+  <int value="10124597"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0135"/>
+  <int value="10124598"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0136"/>
+  <int value="10124600"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0138"/>
+  <int value="10124601"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0139"/>
+  <int value="10124605"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x013d"/>
+  <int value="10124606"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x013e"/>
+  <int value="10124608"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0140"/>
+  <int value="10124609"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0141"/>
+  <int value="10124610"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0142"/>
+  <int value="10124611"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0143"/>
+  <int value="10124612"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0144"/>
+  <int value="10124615"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0147"/>
+  <int value="10124620"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x014c"/>
+  <int value="10124621"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x014d"/>
+  <int value="10124626"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0152"/>
+  <int value="10124628"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0154"/>
+  <int value="10124635"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x015b"/>
+  <int value="10124636"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x015c"/>
+  <int value="10124638"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x015e"/>
+  <int value="10124642"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0162"/>
+  <int value="10124643"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0163"/>
+  <int value="10124644"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0164"/>
+  <int value="10124645"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0165"/>
+  <int value="10124646"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0166"/>
+  <int value="10124649"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0169"/>
+  <int value="10124653"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x016d"/>
+  <int value="10124654"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x016e"/>
+  <int value="10124655"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x016f"/>
+  <int value="10124662"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0176"/>
+  <int value="10124663"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0177"/>
+  <int value="10124665"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0179"/>
+  <int value="10124668"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x017c"/>
+  <int value="10124670"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x017e"/>
+  <int value="10124671"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x017f"/>
+  <int value="10124672"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0180"/>
+  <int value="10124674"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0182"/>
+  <int value="10124676"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0184"/>
+  <int value="10124679"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0187"/>
+  <int value="10124680"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0188"/>
+  <int value="10124681"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0189"/>
+  <int value="10124682"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x018a"/>
+  <int value="10124683"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x018b"/>
+  <int value="10124685"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x018d"/>
+  <int value="10124688"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0190"/>
+  <int value="10124690"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0192"/>
+  <int value="10124693"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0195"/>
+  <int value="10124694"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0196"/>
+  <int value="10124695"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0197"/>
+  <int value="10124696"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0198"/>
+  <int value="10124698"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019a"/>
+  <int value="10124699"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019b"/>
+  <int value="10124700"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019c"/>
+  <int value="10124701"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019d"/>
+  <int value="10124702"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019e"/>
+  <int value="10124703"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x019f"/>
+  <int value="10124705"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a1"/>
+  <int value="10124706"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a2"/>
+  <int value="10124708"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a4"/>
+  <int value="10124709"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a5"/>
+  <int value="10124710"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a6"/>
+  <int value="10124711"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a7"/>
+  <int value="10124713"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01a9"/>
+  <int value="10124716"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ac"/>
+  <int value="10124717"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ad"/>
+  <int value="10124721"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01b1"/>
+  <int value="10124723"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01b3"/>
+  <int value="10124727"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01b7"/>
+  <int value="10124728"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01b8"/>
+  <int value="10124733"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01bd"/>
+  <int value="10124735"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01bf"/>
+  <int value="10124741"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01c5"/>
+  <int value="10124745"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01c9"/>
+  <int value="10124746"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ca"/>
+  <int value="10124750"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ce"/>
+  <int value="10124751"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01cf"/>
+  <int value="10124752"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d0"/>
+  <int value="10124753"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d1"/>
+  <int value="10124754"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d2"/>
+  <int value="10124755"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d3"/>
+  <int value="10124758"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d6"/>
+  <int value="10124761"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01d9"/>
+  <int value="10124762"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01da"/>
+  <int value="10124764"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01dc"/>
+  <int value="10124765"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01dd"/>
+  <int value="10124770"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01e2"/>
+  <int value="10124772"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01e4"/>
+  <int value="10124773"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01e5"/>
+  <int value="10124776"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01e8"/>
+  <int value="10124778"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ea"/>
+  <int value="10124781"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ed"/>
+  <int value="10124782"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01ee"/>
+  <int value="10124784"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f0"/>
+  <int value="10124785"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f1"/>
+  <int value="10124786"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f2"/>
+  <int value="10124787"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f3"/>
+  <int value="10124788"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f4"/>
+  <int value="10124790"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f6"/>
+  <int value="10124793"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01f9"/>
+  <int value="10124794"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01fa"/>
+  <int value="10124796"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x01fc"/>
+  <int value="10124800"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0200"/>
+  <int value="10124801"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0201"/>
+  <int value="10124804"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0204"/>
+  <int value="10124808"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0208"/>
+  <int value="10124812"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x020c"/>
+  <int value="10124813"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x020d"/>
+  <int value="10124814"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x020e"/>
+  <int value="10124816"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0210"/>
+  <int value="10124818"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0212"/>
+  <int value="10124819"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0213"/>
+  <int value="10124825"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0219"/>
+  <int value="10124827"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x021b"/>
+  <int value="10124832"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0220"/>
+  <int value="10124833"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0221"/>
+  <int value="10124837"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0225"/>
+  <int value="10124838"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0226"/>
+  <int value="10124841"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0229"/>
+  <int value="10124842"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x022a"/>
+  <int value="10124843"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x022b"/>
+  <int value="10124844"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x022c"/>
+  <int value="10124845"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x022d"/>
+  <int value="10124851"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0233"/>
+  <int value="10124853"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0235"/>
+  <int value="10124856"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0238"/>
+  <int value="10124860"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x023c"/>
+  <int value="10124862"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x023e"/>
+  <int value="10124865"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0241"/>
+  <int value="10124866"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0242"/>
+  <int value="10124868"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0244"/>
+  <int value="10124869"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0245"/>
+  <int value="10124873"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0249"/>
+  <int value="10124874"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x024a"/>
+  <int value="10124875"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x024b"/>
+  <int value="10124879"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x024f"/>
+  <int value="10124885"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0255"/>
+  <int value="10124886"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0256"/>
+  <int value="10124890"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x025a"/>
+  <int value="10124892"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x025c"/>
+  <int value="10124896"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0260"/>
+  <int value="10124897"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0261"/>
+  <int value="10124898"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0262"/>
+  <int value="10124899"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0263"/>
+  <int value="10124904"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0268"/>
+  <int value="10124906"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x026a"/>
+  <int value="10124910"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x026e"/>
+  <int value="10124912"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0270"/>
+  <int value="10124914"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0272"/>
+  <int value="10124916"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0274"/>
+  <int value="10124919"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0277"/>
+  <int value="10124922"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x027a"/>
+  <int value="10124925"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x027d"/>
+  <int value="10124927"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x027f"/>
+  <int value="10124928"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0280"/>
+  <int value="10124929"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0281"/>
+  <int value="10124936"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0288"/>
+  <int value="10124938"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028a"/>
+  <int value="10124939"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028b"/>
+  <int value="10124940"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028c"/>
+  <int value="10124941"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028d"/>
+  <int value="10124942"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028e"/>
+  <int value="10124943"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x028f"/>
+  <int value="10124945"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0291"/>
+  <int value="10124946"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0292"/>
+  <int value="10124947"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0293"/>
+  <int value="10124949"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0295"/>
+  <int value="10124950"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0296"/>
+  <int value="10124951"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0297"/>
+  <int value="10124952"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0298"/>
+  <int value="10124953"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0299"/>
+  <int value="10124955"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x029b"/>
+  <int value="10124956"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x029c"/>
+  <int value="10124960"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a0"/>
+  <int value="10124962"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a2"/>
+  <int value="10124964"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a4"/>
+  <int value="10124965"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a5"/>
+  <int value="10124966"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a6"/>
+  <int value="10124968"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02a8"/>
+  <int value="10124972"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ac"/>
+  <int value="10124975"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02af"/>
+  <int value="10124977"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02b1"/>
+  <int value="10124981"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02b5"/>
+  <int value="10124984"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02b8"/>
+  <int value="10124986"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ba"/>
+  <int value="10124987"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02bb"/>
+  <int value="10124988"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02bc"/>
+  <int value="10124989"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02bd"/>
+  <int value="10124994"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02c2"/>
+  <int value="10124995"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02c3"/>
+  <int value="10124996"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02c4"/>
+  <int value="10124997"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02c5"/>
+  <int value="10124998"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02c6"/>
+  <int value="10125004"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02cc"/>
+  <int value="10125006"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ce"/>
+  <int value="10125007"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02cf"/>
+  <int value="10125008"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02d0"/>
+  <int value="10125012"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02d4"/>
+  <int value="10125013"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02d5"/>
+  <int value="10125017"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02d9"/>
+  <int value="10125018"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02da"/>
+  <int value="10125020"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02dc"/>
+  <int value="10125022"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02de"/>
+  <int value="10125024"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02e0"/>
+  <int value="10125027"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02e3"/>
+  <int value="10125028"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02e4"/>
+  <int value="10125029"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02e5"/>
+  <int value="10125032"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02e8"/>
+  <int value="10125034"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ea"/>
+  <int value="10125035"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02eb"/>
+  <int value="10125036"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ec"/>
+  <int value="10125037"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ed"/>
+  <int value="10125039"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02ef"/>
+  <int value="10125042"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02f2"/>
+  <int value="10125043"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02f3"/>
+  <int value="10125044"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02f4"/>
+  <int value="10125045"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02f5"/>
+  <int value="10125048"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02f8"/>
+  <int value="10125050"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02fa"/>
+  <int value="10125054"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x02fe"/>
+  <int value="10125056"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0300"/>
+  <int value="10125057"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0301"/>
+  <int value="10125058"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0302"/>
+  <int value="10125059"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0303"/>
+  <int value="10125060"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0304"/>
+  <int value="10125061"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0305"/>
+  <int value="10125062"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0306"/>
+  <int value="10125063"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0307"/>
+  <int value="10125064"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0308"/>
+  <int value="10125065"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0309"/>
+  <int value="10125067"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x030b"/>
+  <int value="10125069"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x030d"/>
+  <int value="10125070"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x030e"/>
+  <int value="10125072"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0310"/>
+  <int value="10125074"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0312"/>
+  <int value="10125075"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0313"/>
+  <int value="10125079"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0317"/>
+  <int value="10125083"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x031b"/>
+  <int value="10125084"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x031c"/>
+  <int value="10125086"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x031e"/>
+  <int value="10125088"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0320"/>
+  <int value="10125093"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0325"/>
+  <int value="10125096"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0328"/>
+  <int value="10125105"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0331"/>
+  <int value="10125110"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0336"/>
+  <int value="10125111"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0337"/>
+  <int value="10125112"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0338"/>
+  <int value="10125114"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x033a"/>
+  <int value="10125116"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x033c"/>
+  <int value="10125117"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x033d"/>
+  <int value="10125119"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x033f"/>
+  <int value="10125121"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0341"/>
+  <int value="10125122"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0342"/>
+  <int value="10125130"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x034a"/>
+  <int value="10125133"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x034d"/>
+  <int value="10125134"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x034e"/>
+  <int value="10125135"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x034f"/>
+  <int value="10125139"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0353"/>
+  <int value="10125141"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0355"/>
+  <int value="10125143"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0357"/>
+  <int value="10125145"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0359"/>
+  <int value="10125146"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x035a"/>
+  <int value="10125147"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x035b"/>
+  <int value="10125148"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x035c"/>
+  <int value="10125150"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x035e"/>
+  <int value="10125153"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0361"/>
+  <int value="10125154"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0362"/>
+  <int value="10125156"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0364"/>
+  <int value="10125157"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0365"/>
+  <int value="10125158"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0366"/>
+  <int value="10125162"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x036a"/>
+  <int value="10125163"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x036b"/>
+  <int value="10125165"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x036d"/>
+  <int value="10125168"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0370"/>
+  <int value="10125170"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0372"/>
+  <int value="10125172"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0374"/>
+  <int value="10125173"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0375"/>
+  <int value="10125174"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0376"/>
+  <int value="10125175"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0377"/>
+  <int value="10125176"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0378"/>
+  <int value="10125177"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0379"/>
+  <int value="10125181"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x037d"/>
+  <int value="10125182"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x037e"/>
+  <int value="10125183"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x037f"/>
+  <int value="10125184"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0380"/>
+  <int value="10125185"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0381"/>
+  <int value="10125186"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0382"/>
+  <int value="10125188"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0384"/>
+  <int value="10125192"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0388"/>
+  <int value="10125197"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x038d"/>
+  <int value="10125198"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x038e"/>
+  <int value="10125199"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x038f"/>
+  <int value="10125201"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0391"/>
+  <int value="10125202"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0392"/>
+  <int value="10125205"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0395"/>
+  <int value="10125208"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x0398"/>
+  <int value="10125210"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x039a"/>
+  <int value="10125219"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03a3"/>
+  <int value="10125222"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03a6"/>
+  <int value="10125223"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03a7"/>
+  <int value="10125224"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03a8"/>
+  <int value="10125225"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03a9"/>
+  <int value="10125226"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03aa"/>
+  <int value="10125227"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03ab"/>
+  <int value="10125231"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03af"/>
+  <int value="10125234"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03b2"/>
+  <int value="10125235"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03b3"/>
+  <int value="10125240"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03b8"/>
+  <int value="10125242"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03ba"/>
+  <int value="10125243"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03bb"/>
+  <int value="10125244"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03bc"/>
+  <int value="10125247"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03bf"/>
+  <int value="10125249"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c1"/>
+  <int value="10125250"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c2"/>
+  <int value="10125251"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c3"/>
+  <int value="10125254"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c6"/>
+  <int value="10125256"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c8"/>
+  <int value="10125257"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03c9"/>
+  <int value="10125261"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03cd"/>
+  <int value="10125262"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03ce"/>
+  <int value="10125263"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03cf"/>
+  <int value="10125264"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03d0"/>
+  <int value="10125267"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03d3"/>
+  <int value="10125271"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03d7"/>
+  <int value="10125272"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03d8"/>
+  <int value="10125274"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03da"/>
+  <int value="10125275"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03db"/>
+  <int value="10125277"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03dd"/>
+  <int value="10125278"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03de"/>
+  <int value="10125281"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03e1"/>
+  <int value="10125285"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03e5"/>
+  <int value="10125286"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03e6"/>
+  <int value="10125288"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03e8"/>
+  <int value="10125289"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03e9"/>
+  <int value="10125291"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03eb"/>
+  <int value="10125294"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03ee"/>
+  <int value="10125295"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03ef"/>
+  <int value="10125301"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03f5"/>
+  <int value="10125303"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03f7"/>
+  <int value="10125309"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03fd"/>
+  <int value="10125310"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Hashed Error
+             0x03fe"/>
+  <int value="10129417"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - SAPI_RC_BAD_SIZE"/>
+  <int value="10131203"
+      label="kLocPinWeaverAuthBlockCheckCredFailedInDerive - Unknown Error
+             0x9703"/>
+  <int value="11272192"
+      label="kLocRecoveryAuthBlockGenerateHSMPayloadFailedInCreate"/>
+  <int value="11730944" label="kLocRecoveryAuthBlockRecoveryFailedInDerive"/>
   <int value="12845195"
       label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - TPM_RC_HANDLE"/>
   <int value="12845218"
       label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash -
              TPM_RC_BAD_AUTH"/>
+  <int value="12877019"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - Hashed Error
+             0x00db"/>
   <int value="12877142"
       label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash - Hashed Error
              0x0156"/>
   <int value="12910592" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
   <int value="13107200"
       label="kLocTpmAuthBlockUtilsNoCryptohomeKeyInCheckReadiness"/>
+  <int value="13369344"
+      label="kLocTpmBoundToPcrAuthBlockNoCryptohomeKeyInCreate"/>
+  <int value="13631489"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_AUTHFAIL"/>
   <int value="13631511"
       label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate - TPM_E_SIZE"/>
+  <int value="13631516"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_FAILEDSELFTEST"/>
+  <int value="13631520"
+      label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
+             TPM_E_ENCRYPT_ERROR"/>
   <int value="13631522"
       label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
              TPM_E_INVALID_AUTHHANDLE"/>
@@ -630,6 +2892,9 @@ chromium-metrics-reviews@google.com.
   <int value="13660164"
       label="kLocTpmBoundToPcrAuthBlockDefaultSealFailedInCreate -
              TRUNKS_RC_WRITE_ERROR"/>
+  <int value="13697025"
+      label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
+             TPM_E_AUTHFAIL"/>
   <int value="13697047"
       label="kLocTpmBoundToPcrAuthBlockExtendedSealFailedInCreate -
              TPM_E_SIZE"/>
@@ -701,6 +2966,12 @@ chromium-metrics-reviews@google.com.
       label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_FAIL"/>
   <int value="14549015"
       label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - TPM_E_SIZE"/>
+  <int value="14549016"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_WRONGPCRVAL"/>
+  <int value="14549020"
+      label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
+             TPM_E_FAILEDSELFTEST"/>
   <int value="14549021"
       label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt -
              TPM_E_AUTH2FAIL"/>
@@ -775,9 +3046,19 @@ chromium-metrics-reviews@google.com.
   <int value="14614527"
       label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt - Unknown Error
              0xffff"/>
+  <int value="15138816"
+      label="kLocTpmEccAuthBlockCryptohomeKeyLoadFailedInCreate"/>
+  <int value="15466626"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_ATTRIBUTES"/>
+  <int value="15466628"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TPM_RC_VALUE"/>
   <int value="15466642"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TPM_RC_SCHEME"/>
+  <int value="15466645"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - TPM_RC_SIZE"/>
   <int value="15466650"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TPM_RC_INSUFFICIENT"/>
@@ -804,15 +3085,27 @@ chromium-metrics-reviews@google.com.
   <int value="15466836"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TPM_RC_NO_RESULT"/>
+  <int value="15466983"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Parameter
+             1: TPM_RC_ECC_POINT"/>
   <int value="15468816"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TPM_RC_REFERENCE_H0"/>
+  <int value="15468962"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Session 1:
+             TPM_RC_BAD_AUTH"/>
   <int value="15495169"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="15495170"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
+             TRUNKS_RC_ENCRYPTION_FAILED"/>
   <int value="15495172"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              TRUNKS_RC_WRITE_ERROR"/>
+  <int value="15499030"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Hashed
+             Error 0x0316"/>
   <int value="15503361"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate -
              SAPI_RC_INVALID_SESSIONS"/>
@@ -828,12 +3121,20 @@ chromium-metrics-reviews@google.com.
   <int value="15511691"
       label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Resource
              Manager: Handle 0: TPM_RC_HANDLE"/>
+  <int value="15511703"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Resource
+             Manager: Handle 0: TPM_RC_TAG"/>
+  <int value="15511706"
+      label="kLocTpmEccAuthBlockPersistentGetAuthFailedInCreate - Resource
+             Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
   <int value="15728772"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_VALUE"/>
   <int value="15728789"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_SIZE"/>
   <int value="15728794"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_INSUFFICIENT"/>
+  <int value="15728962"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - TPM_RC_COMMAND_SIZE"/>
   <int value="15729027"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
              TPM_RC_HASH"/>
@@ -846,6 +3147,9 @@ chromium-metrics-reviews@google.com.
   <int value="15729046"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Handle 1:
              TPM_RC_SYMMETRIC"/>
+  <int value="15729348"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Parameter 2:
+             TPM_RC_VALUE"/>
   <int value="15730947"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
              TPM_RC_SESSION_MEMORY"/>
@@ -868,6 +3172,12 @@ chromium-metrics-reviews@google.com.
   <int value="15765505"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
              SAPI_RC_INVALID_SESSIONS"/>
+  <int value="15765520"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate -
+             SAPI_RC_NO_CONNECTION"/>
+  <int value="15773835"
+      label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Resource Manager:
+             Handle 0: TPM_RC_HANDLE"/>
   <int value="15773845"
       label="kLocTpmEccAuthBlockHVKKMSealFailedInCreate - Resource Manager:
              Handle 0: TPM_RC_SIZE"/>
@@ -899,6 +3209,9 @@ chromium-metrics-reviews@google.com.
              Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
   <int value="15990784" label="kLocTpmEccAuthBlockLoadKeyFailedInDerive"/>
   <int value="16187392" label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK"/>
+  <int value="16187520"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 0: Unknown
+             Error 0x080"/>
   <int value="16187523"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_HASH"/>
   <int value="16187524"
@@ -907,6 +3220,8 @@ chromium-metrics-reviews@google.com.
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_TYPE"/>
   <int value="16187541"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SIZE"/>
+  <int value="16187544"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SELECTOR"/>
   <int value="16187546"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
              TPM_RC_INSUFFICIENT"/>
@@ -924,6 +3239,9 @@ chromium-metrics-reviews@google.com.
              TPM_RC_COMMAND_CODE"/>
   <int value="16187733"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_SENSITIVE"/>
+  <int value="16187763"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Unknown Error
+             0x173"/>
   <int value="16187779"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
              TPM_RC_HASH"/>
@@ -933,6 +3251,9 @@ chromium-metrics-reviews@google.com.
   <int value="16187787"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
              TPM_RC_HANDLE"/>
+  <int value="16187788"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
+             TPM_RC_KDF"/>
   <int value="16187797"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Handle 1:
              TPM_RC_SIZE"/>
@@ -947,9 +3268,18 @@ chromium-metrics-reviews@google.com.
              TPM_RC_REFERENCE_H0"/>
   <int value="16189730"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - TPM_RC_RETRY"/>
+  <int value="16189828"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Session 1:
+             TPM_RC_VALUE"/>
+  <int value="16216065"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
+             TRUNKS_RC_AUTHORIZATION_FAILED"/>
   <int value="16216068"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
              TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16220159"
+      label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Hashed Error
+             0x03ff"/>
   <int value="16224264"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK -
              SAPI_RC_NO_RESPONSE_RECEIVED"/>
@@ -968,6 +3298,10 @@ chromium-metrics-reviews@google.com.
   <int value="16232602"
       label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK - Resource Manager:
              Handle 0: TPM_RC_INSUFFICIENT"/>
+  <int value="16580609"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_E_AUTHFAIL"/>
+  <int value="16580739"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_HASH"/>
   <int value="16580740"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_VALUE"/>
   <int value="16580757"
@@ -984,6 +3318,8 @@ chromium-metrics-reviews@google.com.
   <int value="16580864"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              TPM_RC_INITIALIZE"/>
+  <int value="16580865"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_FAILURE"/>
   <int value="16580911"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              TPM_RC_AUTH_UNAVAILABLE"/>
@@ -995,9 +3331,18 @@ chromium-metrics-reviews@google.com.
              TPM_RC_COMMAND_CODE"/>
   <int value="16580948"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - TPM_RC_NO_RESULT"/>
+  <int value="16581095"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Parameter 1:
+             TPM_RC_ECC_POINT"/>
+  <int value="16582914"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TPM_RC_OBJECT_MEMORY"/>
   <int value="16582928"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              TPM_RC_REFERENCE_H0"/>
+  <int value="16583061"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Session 1:
+             TPM_RC_SIZE"/>
   <int value="16583062"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Session 1:
              TPM_RC_SYMMETRIC"/>
@@ -1007,9 +3352,18 @@ chromium-metrics-reviews@google.com.
   <int value="16609281"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              TRUNKS_RC_AUTHORIZATION_FAILED"/>
+  <int value="16609282"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
+             TRUNKS_RC_ENCRYPTION_FAILED"/>
   <int value="16609284"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              TRUNKS_RC_WRITE_ERROR"/>
+  <int value="16612988"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Hashed Error
+             0x027c"/>
+  <int value="16613344"
+      label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM - Hashed Error
+             0x03e0"/>
   <int value="16617473"
       label="kLocTpmEccAuthBlockGetAuthFailedInDeriveHVKKM -
              SAPI_RC_INVALID_SESSIONS"/>
@@ -1098,34 +3452,73 @@ chromium-metrics-reviews@google.com.
       label="kLocLECredManTpmFailedInInsertCred - Hashed Error 0x0125"/>
   <int value="17792993"
       label="kLocLECredManTpmFailedInInsertCred - Hashed Error 0x03e1"/>
+  <int value="17825792" label="kLocLECredManStoreFailedInInsertCred"/>
   <int value="18022400" label="kLocLECredManRemoveCredFailedInRemoveCred"/>
   <int value="18087936" label="kLocLECredManRemoveLabelFailedInRemoveCred"/>
   <int value="18153472" label="kLocLECredManInvalidTreeInCheckSecret"/>
   <int value="18219008" label="kLocLECredManInvalidMetadataInCheckSecret"/>
+  <int value="18284544" label="kLocLECredManStoreLabelFailedInCheckSecret"/>
   <int value="18481152" label="kLocLECredManNonexistentInRetrieveLabel"/>
+  <int value="19070976"
+      label="kLocUserDataAuthUserExistsInCreatePersistentUser"/>
   <int value="19202048"
       label="kLocUserDataAuthCreateFailedInCreatePersistentUser"/>
+  <int value="21102592" label="kLocAuthSessionFactorNotFoundInAuthAuthFactor"/>
+  <int value="21299200"
+      label="kLocAuthSessionVKConverterFailedInAuthAuthFactor"/>
+  <int value="23134208" label="kLocAuthFactorManagerWriteFailedInSave"/>
+  <int value="23265280" label="kLocAuthFactorManagerReadFailedInLoad"/>
   <int value="24576000"
       label="kLocVaultKeysetKeysetDecryptFailedInUnwrapScrypt"/>
+  <int value="24641536"
+      label="kLocVaultKeysetChapsDecryptFailedInUnwrapScrypt"/>
+  <int value="24707072"
+      label="kLocVaultKeysetResetSeedDecryptFailedInUnwrapScrypt"/>
+  <int value="26382352"
+      label="kLocChalCredVerifyGetRandomFailed - SAPI_RC_NO_CONNECTION"/>
+  <int value="27197440"
+      label="kLocKeyChallengeServiceKnownDBusErrorInChallengeKey"/>
   <int value="29818880" label="kLocUserSessionMountFailedInMountVault"/>
+  <int value="29884416"
+      label="kLocUserSessionOwnerNotSupportedInMountEphemeral"/>
   <int value="29949952" label="kLocUserSessionMountFailedInMountEphemeral"/>
+  <int value="30343168" label="kLocFailedGenerateRecoveryRequest"/>
   <int value="31129600"
       label="kLocUserDataAuthGuestAlreadyMountedInGetMountableUS"/>
   <int value="31195136"
       label="kLocUserDataAuthSessionAlreadyMountedInGetMountableUS"/>
   <int value="31326208"
       label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
+  <int value="31719424"
+      label="kLocUserDataAuthNonExistentInPreparePersistentVault"/>
+  <int value="32047104" label="kLocUSSStorageWriteFailedInPersist"/>
   <int value="32112640" label="kLocUSSStorageReadFailedInLoadPersisted"/>
+  <int value="32636928" label="kLocUSSDeserializeFailedInGetContainerFromFB"/>
+  <int value="32833536" label="kLocUSSNoCiphertextInGetContainerFromFB"/>
+  <int value="33292288"
+      label="kLocUSSWrappedBlockNotFoundInUnwrapMKFromBlocks"/>
   <int value="33619968" label="kLocUSSDecryptFailedInUnwrapMKFromBlocks"/>
-  <int value="34537472" label="kLocUSSDuplicateWrappingInAddWrappedMainKey"/>
+  <int value="33882112" label="kLocUSSAesGcmFailedInFromEncPayload"/>
+  <int value="34537472" label="kLocUSSDuplicateWrappingInInsertWrappedMainKey"/>
   <int value="34865152"
       label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="35848192"
+      label="kLocScryptAuthBlockScryptFailedInDeriveFromSalt"/>
+  <int value="35913736"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_E_DISABLED_CMD"/>
+  <int value="35913858"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_ATTRIBUTES"/>
   <int value="35913860"
       label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
              TPM_RC_VALUE"/>
   <int value="35913877"
       label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
              TPM_RC_SIZE"/>
+  <int value="35913882"
+      label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
+             TPM_RC_INSUFFICIENT"/>
   <int value="35913884"
       label="kLocTpmBoundToPcrAuthBlockGetAuthValueFailedInDecrypt -
              TPM_RC_KEY"/>
@@ -1179,35 +3572,204 @@ chromium-metrics-reviews@google.com.
              Manager: Handle 0: TPM_RC_INSUFFICIENT"/>
   <int value="36241562"
       label="kLocLECredManPinWeaverFailedInCheckSecret - TPM_RC_INSUFFICIENT"/>
+  <int value="36242692"
+      label="kLocLECredManPinWeaverFailedInCheckSecret - Unknown Error 0x504"/>
   <int value="36278281"
       label="kLocLECredManPinWeaverFailedInCheckSecret - SAPI_RC_BAD_SIZE"/>
+  <int value="38273024" label="kLocUserDataAuthUserNonexistentInListKeys"/>
+  <int value="38338560" label="kLocUserDataAuthListFailedInListKeys"/>
   <int value="38404096" label="kLocUserDataAuthNoIDInRemove"/>
   <int value="38600704" label="kLocUserDataAuthUserActiveInRemove"/>
   <int value="38666240" label="kLocUserDataAuthRemoveFailedInRemove"/>
+  <int value="38762881"
+      label="kLocPinWeaverAuthBlockCheckCredLockedInDerive - PinWeaver Error
+             0x01"/>
   <int value="39452672"
       label="kLocAuthSessionFactorNotFoundInRemoveAuthFactor"/>
+  <int value="39976960"
+      label="kLocAuthSessionRemoveVKFailedInRemoveAuthFactor"/>
+  <int value="41222142"
+      label="kLocUserDataAuthHwsecNotReadyInInitChalRespAuth - Unknown Error
+             0xfffe"/>
+  <int value="41222143"
+      label="kLocUserDataAuthHwsecNotReadyInInitChalRespAuth - Unknown Error
+             0xffff"/>
   <int value="41222144"
       label="kLocUserDataAuthUserNonexistentInListAuthFactors"/>
+  <int value="41222145"
+      label="kLocUserDataAuthUserNonexistentInListAuthFactors -
+             TPM_E_AUTHFAIL"/>
+  <int value="41222146"
+      label="kLocUserDataAuthUserNonexistentInListAuthFactors -
+             TPM_E_BADINDEX"/>
+  <int value="41222147"
+      label="kLocUserDataAuthUserNonexistentInListAuthFactors -
+             TPM_E_BAD_PARAMETER"/>
+  <int value="41222149"
+      label="kLocUserDataAuthUserNonexistentInListAuthFactors -
+             TPM_E_CLEAR_DISABLED"/>
   <int value="41549824"
       label="kLocAuthSessionFactorNotFoundInUpdateAuthFactor"/>
   <int value="42795008"
       label="kLocUserDataAuthOtherSessionActiveInPrepareEphemeralVault"/>
+  <int value="43319296" label="kLocCreateFailedInAuthInputForAuth"/>
+  <int value="43384832" label="kLocCreateFailedInAuthInputForAdd"/>
+  <int value="43515904" label="kLocNoUserInputInAddFactorForEphemeral"/>
+  <int value="43581440" label="kLocVerifierAlreadySetInAddFactorForEphemeral"/>
+  <int value="43646976"
+      label="kLocVerifierSettingErrorInAddFactorForEphemeral"/>
+  <int value="43778048"
+      label="kLocUserDataAuthUserInactiveInResetAppContainer"/>
   <int value="43843584" label="kLocUserDataAuthUserFailedResetAppContainer"/>
   <int value="44040192" label="kLocAuthSessionMismatchedAuthTypes"/>
+  <int value="45644164"
+      label="kLocRevocationInsertCredentialFailedInCreate - PinWeaver Error
+             0x04"/>
+  <int value="45644167"
+      label="kLocRevocationInsertCredentialFailedInCreate - PinWeaver Error
+             0x07"/>
+  <int value="45644848"
+      label="kLocRevocationInsertCredentialFailedInCreate - Hashed Error
+             0x0030"/>
+  <int value="45644960"
+      label="kLocRevocationInsertCredentialFailedInCreate - Hashed Error
+             0x00a0"/>
+  <int value="45645361"
+      label="kLocRevocationInsertCredentialFailedInCreate - Hashed Error
+             0x0231"/>
+  <int value="45645456"
+      label="kLocRevocationInsertCredentialFailedInCreate - Hashed Error
+             0x0290"/>
+  <int value="45645514"
+      label="kLocRevocationInsertCredentialFailedInCreate - Hashed Error
+             0x02ca"/>
+  <int value="45971844"
+      label="kLocRevocationCheckCredentialFailedInDerive - PinWeaver Error
+             0x04"/>
+  <int value="45971847"
+      label="kLocRevocationCheckCredentialFailedInDerive - PinWeaver Error
+             0x07"/>
+  <int value="45972485"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0005"/>
+  <int value="45972528"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0030"/>
+  <int value="45972551"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0047"/>
+  <int value="45972563"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0053"/>
+  <int value="45972569"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0059"/>
+  <int value="45972626"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0092"/>
+  <int value="45972638"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x009e"/>
+  <int value="45972675"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x00c3"/>
+  <int value="45972699"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x00db"/>
+  <int value="45972782"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x012e"/>
+  <int value="45972798"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x013e"/>
+  <int value="45972816"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0150"/>
+  <int value="45972832"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0160"/>
+  <int value="45972834"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0162"/>
+  <int value="45972849"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0171"/>
+  <int value="45972920"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x01b8"/>
+  <int value="45972968"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x01e8"/>
+  <int value="45972973"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x01ed"/>
+  <int value="45973006"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x020e"/>
+  <int value="45973104"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0270"/>
+  <int value="45973111"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0277"/>
+  <int value="45973156"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x02a4"/>
+  <int value="45973220"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x02e4"/>
+  <int value="45973284"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0324"/>
+  <int value="45973332"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0354"/>
+  <int value="45973358"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x036e"/>
+  <int value="45973361"
+      label="kLocRevocationCheckCredentialFailedInDerive - Hashed Error
+             0x0371"/>
   <int value="46596096"
       label="kLocAuthSessionPrepareWebAuthnSecretNoUserSession"/>
+  <int value="46661632" label="kLocFpServiceStartSessionFailure"/>
   <int value="46989312" label="kLocFpServiceStartConcurrentSession"/>
+  <int value="47185920" label="kLocUserDataAuthFactorExtendedInfoTypeFailure"/>
+  <int value="48955392"
+      label="kLocUserDataAuthAuthFactorNotFoundInAuthenticateAuthFactor"/>
   <int value="98435072" label="kLocLECredManInvalidLESecretInConvertTpmError"/>
   <int value="98566144" label="kLocLECredManTooManyAttemptsInConvertTpmError"/>
+  <int value="98631680" label="kLocLECredManPCRNotMatchInConvertTpmError"/>
   <int value="98697216" label="kLocLECredManHashTreeInConvertTpmError"/>
+  <int value="124583936"
+      label="kLocRecoveryCryptoResponseErrInDecryptResponse"/>
+  <int value="125239296" label="kLocRecoveryCryptoBadLedgerSignedProof"/>
+  <int value="137691136" label="kLocScryptVerifierVerifyScryptFailed"/>
+  <int value="137822203"
+      label="kLocScryptVerifierVerifyWrongScryptOutputSize - Unknown Error
+             0xfffb"/>
   <int value="137822208" label="kLocScryptVerifierVerifySecretMismatch"/>
+  <int value="139001856" label="kLocRecoveryAuthBlockNoUserGaiaIdInCreate"/>
+  <int value="139067392"
+      label="kLocAuthSessionFactorAlreadyExistsInAddAuthFactor"/>
+  <int value="143589376" label="kLocUssManagerAddDecryptedWhenEncryptedExists"/>
+  <int value="143654912" label="kLocUssManagerAddDecryptedWhenDecryptedExists"/>
   <int value="151388160" label="kLocAuthSessionManagerAuthSessionNotFound"/>
+  <int value="151484803"
+      label="kLocPinWeaverAuthBlockCheckCredTPMLockedInDerive - PinWeaver
+             Error 0x03"/>
+  <int value="177043457"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - TPM
+             Manager Error 0x01"/>
   <int value="177044643"
       label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
              Error 0x00a3"/>
   <int value="177044666"
       label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
              Error 0x00ba"/>
+  <int value="177044734"
+      label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
+             Error 0x00fe"/>
   <int value="177044813"
       label="kLocTpmBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - Hashed
              Error 0x014d"/>
@@ -1215,6 +3777,9 @@ chromium-metrics-reviews@google.com.
       label="kLocTpmBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
   <int value="177143808"
       label="kLocTpmBoundToPcrAuthBlockCannotUnsealWithUserAuthInIsSupported"/>
+  <int value="177305601"
+      label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported - TPM
+             Manager Error 0x01"/>
   <int value="177306810"
       label="kLocTpmNotBoundToPcrAuthBlockHwsecReadyErrorInIsSupported -
              Hashed Error 0x00ba"/>
@@ -1226,22 +3791,66 @@ chromium-metrics-reviews@google.com.
              Hashed Error 0x03f2"/>
   <int value="177340416"
       label="kLocTpmNotBoundToPcrAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="177537024"
+      label="kLocChalCredAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="177633281"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - TPM Manager
+             Error 0x01"/>
   <int value="177634490"
       label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
              0x00ba"/>
+  <int value="177634558"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x00fe"/>
   <int value="177634637"
       label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
              0x014d"/>
+  <int value="177635076"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x0304"/>
+  <int value="177635213"
+      label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
+             0x038d"/>
   <int value="177635314"
       label="kLocTpmEccAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
              0x03f2"/>
+  <int value="177668096" label="kLocTpmEccAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="177895425"
+      label="kLocRecoveryAuthBlockHwsecReadyErrorInIsSupported - TPM Manager
+             Error 0x01"/>
   <int value="177896634"
       label="kLocRecoveryAuthBlockHwsecReadyErrorInIsSupported - Hashed Error
              0x00ba"/>
+  <int value="177930240"
+      label="kLocRecoveryAuthBlockHwsecNotReadyInIsSupported"/>
+  <int value="178419713"
+      label="kLocPinWeaverAuthBlockHwsecReadyErrorInIsSupported - TPM Manager
+             Error 0x01"/>
+  <int value="178421069"
+      label="kLocPinWeaverAuthBlockHwsecReadyErrorInIsSupported - Hashed
+             Error 0x014d"/>
   <int value="178454528"
       label="kLocPinWeaverAuthBlockHwsecNotReadyInIsSupported"/>
   <int value="222167040" label="kLocLECredManUnSyncedTreeInRemoveCred"/>
+  <int value="229769216"
+      label="kLocCryptohomeRecoveryAuthBlockNoRecoveryIdInCreate"/>
+  <int value="232128666"
+      label="kLocPinWeaverAuthBlockRemoveCredential - TPM_RC_INSUFFICIENT"/>
+  <int value="232159620"
+      label="kLocPinWeaverAuthBlockRemoveCredential - PinWeaver Error 0x04"/>
+  <int value="232159623"
+      label="kLocPinWeaverAuthBlockRemoveCredential - PinWeaver Error 0x07"/>
+  <int value="232160304"
+      label="kLocPinWeaverAuthBlockRemoveCredential - Hashed Error 0x0030"/>
+  <int value="232160600"
+      label="kLocPinWeaverAuthBlockRemoveCredential - Hashed Error 0x0158"/>
+  <int value="615514112" label="Unknown Loc 9392"/>
   <int value="2013331456" label="Unknown Loc 30721"/>
+  <int value="2038497280" label="Unknown Loc 31105"/>
+  <int value="2038628352" label="Unknown Loc 31107"/>
+  <int value="2038693888" label="Unknown Loc 31108"/>
+  <int value="2038759424" label="Unknown Loc 31109"/>
+  <int value="2038890496" label="Unknown Loc 31111"/>
 </enum>
 
 <enum name="CryptohomeFingerprintScanResult">
@@ -1256,33 +3865,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Too fast"/>
   <int value="9" label="Immobile"/>
   <int value="10" label="Enroll other"/>
-</enum>
-
-<enum name="CryptohomeLECredError">
-  <summary>
-    The result when a Low Entropy CheckCredential operation was performed.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid LE secret"/>
-  <int value="2" label="Invalid Reset Secret"/>
-  <int value="3" label="Too many attempts"/>
-  <int value="4" label="Hash tree error"/>
-  <int value="5" label="Invalid LE label"/>
-  <int value="6" label="No free LE label"/>
-  <int value="7" label="Invalid Metadata"/>
-  <int value="8" label="Unclassified Error"/>
-  <int value="9" label="LE Locked"/>
-</enum>
-
-<enum name="CryptohomeLEReplayError">
-  <summary>
-    The result when a Low Entropy LogReplay operation was performed.
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid log entry type"/>
-  <int value="2" label="Individual operation error"/>
-  <int value="3" label="Hash mismatch after replay"/>
-  <int value="4" label="Failed to remove leaf inserted during replay"/>
 </enum>
 
 <enum name="CryptohomeLoginDiskCleanupProgress">
@@ -1528,7 +4110,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Ready"/>
   <int value="1" label="Resume"/>
   <int value="2" label="LowStorage"/>
-  <int value="3" label="ArcKiosk"/>
+  <int value="3" label="(Obsolete) ArcKiosk - Removed in 2024/06"/>
   <int value="4" label="StartAutomatically"/>
   <int value="5" label="ResumeMinimal"/>
   <int value="6" label="StartAutomaticallyMinimal"/>
@@ -1543,10 +4125,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Request failure in resumed migration"/>
   <int value="6" label="Mount failure in new migration"/>
   <int value="7" label="Mount failure in resumed migration"/>
-  <int value="8" label="Success in arc kiosk migration"/>
-  <int value="9" label="General failure in arc kiosk migration"/>
-  <int value="10" label="Request failure in arc kiosk migration"/>
-  <int value="11" label="Mount failure in arc kiosk migration"/>
+  <int value="8"
+      label="(Obsolete) Success in arc kiosk migration - Removed in 2024/06"/>
+  <int value="9"
+      label="(Obsolete) General failure in arc kiosk migration - Removed in
+             2024/06"/>
+  <int value="10"
+      label="(Obsolete) Request failure in arc kiosk migration - Removed in
+             2024/06"/>
+  <int value="11"
+      label="(Obsolete) Mount failure in arc kiosk migration - Removed in
+             2024/06"/>
 </enum>
 
 <enum name="MigrationUIRemoveCryptohomeResult">
@@ -1554,8 +4143,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success in resumed migration"/>
   <int value="2" label="Failure in new migration"/>
   <int value="3" label="Failure in resumed migration"/>
-  <int value="4" label="Success in arc kiosk migration"/>
-  <int value="5" label="Failure in arc kiosk migration"/>
+  <int value="4"
+      label="(Obsolete) Success in arc kiosk migration - Removed in 2024/06"/>
+  <int value="5"
+      label="(Obsolete) Failure in arc kiosk migration - Removed in 2024/06"/>
 </enum>
 
 <enum name="MigrationUIScreen">

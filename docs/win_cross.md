@@ -48,7 +48,7 @@ fails with an error:
     Please follow the instructions at
     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/win_cross.md
 
-then you may need to re-authenticate via:
+then you may need to re-authenticate via (with your google.com account):
 
     cd path/to/chrome/src
     # Follow instructions, enter 0 as project id.
@@ -111,9 +111,9 @@ Then just build, e.g.
 
     ninja -C out/gnwin base_unittests.exe
 
-## Goma
+## RBE
 
-This should be supported by the default (Goma RBE) backend.
+This should be supported by the default RBE (remote execution).
 
 ## Copying and running chrome
 
@@ -133,6 +133,6 @@ You can run the Windows binaries you built on swarming, like so:
 See the contents of run-swarmed.py for how to do this manually.
 
 The
-[linux-win_cross-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-win_cross-rel)
+[linux-win-cross-rel](https://ci.chromium.org/p/chromium/builders/ci/linux-win-cross-rel)
 buildbot does 64-bit release cross builds, and also runs tests. You can look at
 it to get an idea of which tests pass in the cross build.

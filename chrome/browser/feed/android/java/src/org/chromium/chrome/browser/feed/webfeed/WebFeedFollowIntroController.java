@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.app.Activity;
 import android.os.Handler;
 import android.util.Base64;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -24,7 +22,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -72,16 +69,11 @@ public class WebFeedFollowIntroController {
     private static final String INTRO_STYLE_ACCELERATOR = "accelerator";
     // In-page time delay to show the intro.
     private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
-    private static final String PARAM_WAIT_TIME_MILLIS = "intro-wait-time-millis";
     // Visit history requirements.
     private static final int DEFAULT_DAILY_VISIT_MIN = 3;
     private static final int DEFAULT_NUM_VISIT_MIN = 3;
-    private static final String PARAM_DAILY_VISIT_MIN = "intro-daily-visit-min";
-    private static final String PARAM_NUM_VISIT_MIN = "intro-num-visit-min";
     // Time between appearances.
     private static final int DEFAULT_APPEARANCE_THRESHOLD_MINUTES = 15;
-    private static final String PARAM_APPEARANCE_THRESHOLD_MINUTES =
-            "intro-appearance-threshold-minutes";
     // Time between appearances for the same WebFeedId.
     private static final long WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS = TimeUnit.DAYS.toMillis(1);
     // Maximum number of times a WebFeedId is promoted.
@@ -95,9 +87,10 @@ public class WebFeedFollowIntroController {
     private Clock mClock = System::currentTimeMillis;
 
     private final Activity mActivity;
+    private final Profile mProfile;
     private final CurrentTabObserver mCurrentTabObserver;
     private final EmptyTabObserver mTabObserver;
-    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    private final PrefService mPrefService;
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
     private final Tracker mFeatureEngagementTracker;
@@ -106,8 +99,7 @@ public class WebFeedFollowIntroController {
     private final ObservableSupplier<Tab> mTabSupplier;
     private final WebFeedRecommendationFollowAcceleratorController
             mRecommendationFollowAcceleratorController;
-    private final RecommendationInfoFetcher mRecommendationFetcher =
-            new RecommendationInfoFetcher(mPrefService);
+    private final RecommendationInfoFetcher mRecommendationFetcher;
 
     private final long mAppearanceThresholdMillis;
 
@@ -123,6 +115,7 @@ public class WebFeedFollowIntroController {
      * Constructs an instance of {@link WebFeedFollowIntroController}.
      *
      * @param activity The current {@link Activity}.
+     * @param profile The {@link Profile} associated with the web feed.
      * @param appMenuHandler The {@link AppMenuHandler} to highlight the Web Feed menu item.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
@@ -132,12 +125,16 @@ public class WebFeedFollowIntroController {
      */
     public WebFeedFollowIntroController(
             Activity activity,
+            Profile profile,
             AppMenuHandler appMenuHandler,
             ObservableSupplier<Tab> tabSupplier,
             View menuButtonAnchorView,
             FeedLauncher feedLauncher,
             ModalDialogManager dialogManager,
             SnackbarManager snackbarManager) {
+        mPrefService = UserPrefs.get(profile);
+        mRecommendationFetcher = new RecommendationInfoFetcher(mPrefService);
+
         mRecommendationFollowAcceleratorController =
                 new WebFeedRecommendationFollowAcceleratorController(
                         activity,
@@ -149,9 +146,9 @@ public class WebFeedFollowIntroController {
                         snackbarManager);
 
         mActivity = activity;
+        mProfile = profile;
         mTabSupplier = tabSupplier;
-        mFeatureEngagementTracker =
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        mFeatureEngagementTracker = TrackerFactory.getTrackerForProfile(profile);
         mWebFeedSnackbarController =
                 new WebFeedSnackbarController(
                         activity, feedLauncher, dialogManager, snackbarManager);
@@ -164,11 +161,7 @@ public class WebFeedFollowIntroController {
                         this::introWasDismissed);
 
         mAppearanceThresholdMillis =
-                TimeUnit.MINUTES.toMillis(
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                                ChromeFeatureList.WEB_FEED,
-                                PARAM_APPEARANCE_THRESHOLD_MINUTES,
-                                DEFAULT_APPEARANCE_THRESHOLD_MINUTES));
+                TimeUnit.MINUTES.toMillis(DEFAULT_APPEARANCE_THRESHOLD_MINUTES);
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -192,7 +185,8 @@ public class WebFeedFollowIntroController {
                         // load event because some pages never fully load even though they are
                         // perfectly interactive.
                         GURL url = tab.getUrl();
-                        // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser
+                        // TODO(crbug.com/40158714): Also check for certificate errors or
+                        // SafeBrowser
                         // warnings.
                         if (tab.isIncognito()) {
                             Log.i(TAG, "No intro: tab is incognito");
@@ -267,52 +261,13 @@ public class WebFeedFollowIntroController {
         // FeatureEngagementTrackerbased based on the configuration used for this IPH. See the
         // kIPHWebFeedFollowFeature entry in
         // components/feature_engagement/public/feature_configurations.cc.
-        if (isIntroStyle(INTRO_STYLE_IPH)) {
-            maybeShowIPH(recommendedInfo);
-        } else if (isIntroStyle(INTRO_STYLE_ACCELERATOR)) {
-            maybeShowAccelerator(recommendedInfo);
-        } else {
-            Log.i(TAG, "No intro: not enabled by Finch controls");
-        }
-    }
-
-    private boolean isIntroStyle(String style) {
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.WEB_FEED, PARAM_INTRO_STYLE)
-                .equals(style);
+        maybeShowIPH(recommendedInfo);
     }
 
     private void maybeShowIPH(RecommendedWebFeedInfo recommendedInfo) {
-        UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
+        UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, new Handler());
         mWebFeedFollowIntroView.showIPH(
                 helper, () -> introWasShown(recommendedInfo), this::introWasNotShown);
-    }
-
-    private void maybeShowAccelerator(RecommendedWebFeedInfo recommendedInfo) {
-        GestureDetector gestureDetector =
-                new GestureDetector(
-                        mActivity.getApplicationContext(),
-                        new GestureDetector.SimpleOnGestureListener() {
-                            private boolean mPressed;
-
-                            @Override
-                            public boolean onSingleTapUp(MotionEvent motionEvent) {
-                                if (!mPressed) {
-                                    mPressed = true;
-                                    performFollowWithAccelerator(recommendedInfo);
-                                }
-                                return true;
-                            }
-                        });
-        View.OnTouchListener onTouchListener =
-                (view, motionEvent) -> {
-                    view.performClick();
-                    gestureDetector.onTouchEvent(motionEvent);
-                    return true;
-                };
-
-        mWebFeedFollowIntroView.showAccelerator(
-                onTouchListener, () -> introWasShown(recommendedInfo), this::introWasNotShown);
     }
 
     private void performFollowWithAccelerator(RecommendedWebFeedInfo recommendedInfo) {
@@ -447,21 +402,15 @@ public class WebFeedFollowIntroController {
 
         RecommendationInfoFetcher(PrefService prefService) {
             mPrefService = prefService;
-            mNumVisitMin =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                            ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
-            mDailyVisitMin =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                            ChromeFeatureList.WEB_FEED,
-                            PARAM_DAILY_VISIT_MIN,
-                            DEFAULT_DAILY_VISIT_MIN);
+            mNumVisitMin = DEFAULT_NUM_VISIT_MIN;
+            mDailyVisitMin = DEFAULT_DAILY_VISIT_MIN;
         }
 
         /**
          * Fetch RecommendedWebFeedInfo for `url` if it is a recommended WebFeed, and meets the
-         * visit requirement. Calls `callback` with the result after the appropriate
-         * PARAM_WAIT_TIME_MILLIS. If beginFetch() is called again before the result is returned,
-         * the old callback will not be called.
+         * visit requirement. Calls `callback` with the result after the appropriate wait time. If
+         * beginFetch() is called again before the result is returned, the old callback will not be
+         * called.
          */
         void beginFetch(Tab tab, GURL url, Callback<RecommendedWebFeedInfo> callback) {
             Request request = new Request();
@@ -482,10 +431,7 @@ public class WebFeedFollowIntroController {
                             fetchVisitCounts(request);
                         }
                     },
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                            ChromeFeatureList.WEB_FEED,
-                            PARAM_WAIT_TIME_MILLIS,
-                            DEFAULT_WAIT_TIME_MILLIS));
+                    DEFAULT_WAIT_TIME_MILLIS);
         }
 
         /** Abort a previous `beginFetch()` call, its callback will not be invoked. */
@@ -506,8 +452,8 @@ public class WebFeedFollowIntroController {
                         if (!meetsVisitRequirement) {
                             Log.i(
                                     TAG,
-                                    "No intro: visit requirement not met. totalVisits=%s (minToShow=%s), "
-                                            + " dailyVisits=%s (minToShow=%s)",
+                                    "No intro: visit requirement not met. totalVisits=%s"
+                                            + " (minToShow=%s),  dailyVisits=%s (minToShow=%s)",
                                     result.visits,
                                     mNumVisitMin,
                                     result.dailyVisits,

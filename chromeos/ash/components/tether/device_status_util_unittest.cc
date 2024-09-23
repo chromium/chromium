@@ -10,14 +10,11 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
-#include "chromeos/ash/components/tether/fake_tether_host_fetcher.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 class DeviceStatusUtilTest : public testing::Test {
  public:
@@ -114,6 +111,4 @@ TEST_F(DeviceStatusUtilTest, TestValidValues) {
   EXPECT_EQ(50, signal_strength);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

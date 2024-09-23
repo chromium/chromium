@@ -19,8 +19,8 @@ ParsedParams::ParsedParams() = default;
 ParsedParams::ParsedParams(const ParsedParams& other) = default;
 ParsedParams& ParsedParams::operator=(const ParsedParams& other) = default;
 
-ParsedParams::ParsedParams(ParsedParams&& other) = default;
-ParsedParams& ParsedParams::operator=(ParsedParams&& other) = default;
+ParsedParams::ParsedParams(ParsedParams&& other) noexcept = default;
+ParsedParams& ParsedParams::operator=(ParsedParams&& other) noexcept = default;
 
 ParsedParams::~ParsedParams() = default;
 

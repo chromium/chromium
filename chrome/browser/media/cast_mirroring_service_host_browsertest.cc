@@ -272,12 +272,13 @@ class CastMirroringServiceHostBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    int web_contents_source_tab_id =
+    content::FrameTreeNodeId web_contents_source_tab_id =
         web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     ASSERT_NE(host_->GetTabSourceId(), web_contents_source_tab_id);
     ASSERT_NE(host_->web_contents(), web_contents);
-    host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents));
+    host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents),
+                                    /*captured_surface_control_active=*/false);
     ASSERT_EQ(host_->web_contents(), web_contents);
     ASSERT_EQ(host_->GetTabSourceId(), web_contents_source_tab_id);
   }
@@ -402,8 +403,7 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, CaptureTabAudio) {
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
-              ::testing::IsEmpty());
+  ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
 
   // A TabStripModelObserver that quits the MessageLoop whenever the
   // UI's model is sent an event that might change the indicator status.
@@ -431,17 +431,16 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
   };
 
   IndicatorChangeObserver observer(browser());
-  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
-              ::testing::IsEmpty());
+  ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
   StartTabMirroring();
 
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!base::Contains(chrome::GetTabAlertStatesForContents(contents),
+  while (!base::Contains(GetTabAlertStatesForContents(contents),
                          TabAlertState::TAB_CAPTURING)) {
     if (base::TimeTicks::Now() - start_time >
         TestTimeouts::action_max_timeout()) {
-      EXPECT_THAT(chrome::GetTabAlertStatesForContents(contents),
+      EXPECT_THAT(GetTabAlertStatesForContents(contents),
                   ::testing::Contains(TabAlertState::TAB_CAPTURING));
       return;
     }

@@ -24,7 +24,6 @@ namespace blink {
 class CSSStyleSheet;
 class Document;
 class ExecutionContext;
-class StyleRuleKeyframe;
 class StyleSheetContents;
 enum class SecureContextMode;
 
@@ -75,7 +74,7 @@ class CORE_EXPORT CSSParserContext final
                    const Referrer& referrer,
                    bool is_html_document,
                    SecureContextMode,
-                   scoped_refptr<const DOMWrapperWorld> world,
+                   const DOMWrapperWorld* world,
                    const Document* use_counter_document,
                    ResourceFetchRestriction resource_fetch_restriction);
 
@@ -122,15 +121,7 @@ class CORE_EXPORT CSSParserContext final
   const Document* GetDocument() const;
   const ExecutionContext* GetExecutionContext() const;
 
-  const scoped_refptr<const DOMWrapperWorld>& JavascriptWorld() const {
-    return world_;
-  }
-
-  // TODO(ekaramad): We currently only report @keyframes violations. We need to
-  // report CSS transitions as well (https://crbug.com/906147).
-  // TODO(ekaramad): We should provide a source location in the violation
-  // report (https://crbug.com/906150, ).
-  void ReportLayoutAnimationsViolationIfNeeded(const StyleRuleKeyframe&) const;
+  const DOMWrapperWorld* JavascriptWorld() const { return world_.Get(); }
 
   bool IsForMarkupSanitization() const;
 
@@ -157,7 +148,7 @@ class CORE_EXPORT CSSParserContext final
 
   KURL base_url_;
 
-  scoped_refptr<const DOMWrapperWorld> world_;
+  const Member<const DOMWrapperWorld> world_;
 
   // If true, allows reading and modifying of the CSS rules.
   // https://drafts.csswg.org/cssom/#concept-css-style-sheet-origin-clean-flag

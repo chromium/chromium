@@ -19,14 +19,13 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
-
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace send_tab_to_self {
@@ -62,13 +61,13 @@ class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
 
   SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_mock_; }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return fake_delegate_.GetWeakPtr();
   }
 
  protected:
-  syncer::FakeModelTypeControllerDelegate fake_delegate_;
+  syncer::FakeDataTypeControllerDelegate fake_delegate_;
   SendTabToSelfModelMock model_mock_;
 };
 

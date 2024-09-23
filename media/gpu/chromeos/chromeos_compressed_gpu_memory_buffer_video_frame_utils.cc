@@ -27,10 +27,11 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp) {
+  CHECK(gpu_memory_buffer);
   const std::optional<VideoPixelFormat> format =
       GfxBufferFormatToVideoPixelFormat(gpu_memory_buffer->GetFormat());
   if (!format ||
-      (*format != PIXEL_FORMAT_NV12 && *format != PIXEL_FORMAT_P016LE)) {
+      (*format != PIXEL_FORMAT_NV12 && *format != PIXEL_FORMAT_P010LE)) {
     return nullptr;
   }
 
@@ -105,8 +106,8 @@ std::string IntelMediaCompressedModifierToString(uint64_t modifier) {
     case I915_FORMAT_MOD_4_TILED_MTL_MC_CCS:
       return "I915_FORMAT_MOD_4_TILED_MTL_MC_CCS";
   }
-  NOTREACHED() << "Invalid Intel Media Compressed modifier provided: "
-               << modifier;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid Intel Media Compressed modifier provided: " << modifier;
   return "";
 }
 

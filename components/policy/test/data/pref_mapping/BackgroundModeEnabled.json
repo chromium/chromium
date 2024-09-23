@@ -5,27 +5,14 @@
       "win",
       "linux"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "background_mode.enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "BackgroundModeEnabled": false
-        },
-        "prefs": {
-          "background_mode.enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "background_mode.enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

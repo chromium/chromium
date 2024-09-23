@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
@@ -29,8 +30,8 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
 
 BrowserFrameViewLinux::~BrowserFrameViewLinux() = default;
 
-gfx::Insets BrowserFrameViewLinux::MirroredFrameBorderInsets() const {
-  return layout_->MirroredFrameBorderInsets();
+gfx::Insets BrowserFrameViewLinux::RestoredMirroredFrameBorderInsets() const {
+  return layout_->RestoredMirroredFrameBorderInsets();
 }
 
 gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
@@ -40,7 +41,7 @@ gfx::Insets BrowserFrameViewLinux::GetInputInsets() const {
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {
-    gfx::InsetsF border(layout_->MirroredFrameBorderInsets());
+    gfx::InsetsF border(layout_->RestoredMirroredFrameBorderInsets());
     bounds_dip.Inset(border);
   }
   float radius_dip = GetRestoredCornerRadiusDip();
@@ -55,6 +56,33 @@ gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues(bool active) {
   int elevation = ChromeLayoutProvider::Get()->GetShadowElevationMetric(
       active ? views::Emphasis::kMaximum : views::Emphasis::kMedium);
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
+}
+
+void BrowserFrameViewLinux::PaintRestoredFrameBorder(
+    gfx::Canvas* canvas) const {
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = frame()->tiled();
+#else
+  const bool tiled = false;
+#endif
+  auto shadow_values =
+      tiled ? gfx::ShadowValues() : GetShadowValues(ShouldPaintAsActive());
+  PaintRestoredFrameBorderLinux(
+      *canvas, *this, frame_background(), GetRestoredClipRegion(),
+      ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
+      layout_->RestoredMirroredFrameBorderInsets(), shadow_values, tiled);
+}
+
+void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
+                                          SkPath* window_mask) {
+  // This class uses transparency to draw rounded corners, so a
+  // window mask is not necessary.
+}
+
+bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
+  return static_cast<DesktopBrowserFrameAuraLinux*>(
+             frame()->native_browser_frame())
+      ->ShouldDrawRestoredFrameShadow();
 }
 
 void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
@@ -75,33 +103,6 @@ void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
   }
 }
 
-void BrowserFrameViewLinux::PaintRestoredFrameBorder(
-    gfx::Canvas* canvas) const {
-#if BUILDFLAG(IS_LINUX)
-  const bool tiled = frame()->tiled();
-#else
-  const bool tiled = false;
-#endif
-  auto shadow_values =
-      tiled ? gfx::ShadowValues() : GetShadowValues(ShouldPaintAsActive());
-  PaintRestoredFrameBorderLinux(
-      *canvas, *this, frame_background(), GetRestoredClipRegion(),
-      ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
-      layout_->MirroredFrameBorderInsets(), shadow_values, tiled);
-}
-
-void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
-                                          SkPath* window_mask) {
-  // This class uses transparency to draw rounded corners, so a
-  // window mask is not necessary.
-}
-
-bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
-  return static_cast<DesktopBrowserFrameAuraLinux*>(
-             frame()->native_browser_frame())
-      ->ShouldDrawRestoredFrameShadow();
-}
-
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 #if BUILDFLAG(IS_LINUX)
   const bool tiled = frame()->tiled();
@@ -119,3 +120,6 @@ float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
   return 0;
 }
+
+BEGIN_METADATA(BrowserFrameViewLinux)
+END_METADATA

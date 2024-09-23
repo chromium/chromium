@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "feed"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [
+    "attachment.svg",
+    "location.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  resource_path_prefix = "modules/v2/calendar/icons"
+}

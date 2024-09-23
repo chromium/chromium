@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] orphaned option outside the context of listbox
+  assert_equals: <nav role="option" data-testname="orphaned option outside the context of listbox" data-expectedrole="navigation" class="ex">x\n</nav> expected "navigation" but got "option"
+Harness: the test ran to completion.
+

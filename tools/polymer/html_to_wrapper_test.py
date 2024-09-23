@@ -84,6 +84,13 @@ class HtmlToWrapperTest(unittest.TestCase):
                    'html_to_wrapper/expected/foo_lit.html.ts',
                    template='detect')
 
+  def testHtmlToWrapperLitElement_Minify(self):
+    self._run_test('html_to_wrapper/foo_lit.html',
+                   'html_to_wrapper/foo_lit.html.ts',
+                   'html_to_wrapper/expected/foo_lit.html.ts',
+                   template='lit',
+                   minify=True)
+
   def testHtmlToWrapperLitElement_WithImports(self):
     self._run_test('html_to_wrapper/foo_lit_with_imports.html',
                    'html_to_wrapper/foo_lit_with_imports.html.ts',
@@ -106,6 +113,24 @@ class HtmlToWrapperTest(unittest.TestCase):
     self._run_test('html_to_wrapper/icons.html',
                    'html_to_wrapper/icons.html.ts',
                    'html_to_wrapper/expected/icons.html.ts')
+
+  def testHtmlToWrapperIconsLit(self):
+    self._run_test('html_to_wrapper/cr_icons.html',
+                   'html_to_wrapper/cr_icons.html.ts',
+                   'html_to_wrapper/expected/cr_icons.html.ts',
+                   template='lit')
+
+  def testHtmlToWrapperIconsLit_Detect(self):
+    self._run_test('html_to_wrapper/cr_icons.html',
+                   'html_to_wrapper/cr_icons.html.ts',
+                   'html_to_wrapper/expected/cr_icons.html.ts',
+                   template='detect')
+
+  def testHtmlToWrapperLitFromPolymer(self):
+    self._run_test('html_to_wrapper/icons_lit.html',
+                   'html_to_wrapper/icons_lit.html.ts',
+                   'html_to_wrapper/expected/cr_icons.html.ts',
+                   template='detect')
 
   def testHtmlToWrapper_Minify(self):
     self._run_test('html_to_wrapper/foo.html',

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
-<translation id="101606685846791463">브라우저 캐시 지우기, 방문 기록 삭제, 쿠키 삭제, 방문 기록 삭제</translation>
 <translation id="132297926492792130">Google 계정 관리, Google 계정 문제 해결, Google 계정 관리, 내 Google 계정 관리</translation>
 <translation id="1455865776268085776">시크릿 모드 입력, 새 시크릿 창, 시크릿 탭 열기</translation>
 <translation id="1545931455576308147">이 페이지 공유, 이 탭 공유</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">주소 추가, 배송지 주소 변경, 주소 수정, 주소 관리</translation>
 <translation id="7242693601647412075">보안 설정 관리</translation>
 <translation id="7441773108452086364">Gmail 비밀번호 변경, 내 Gmail 비밀번호 변경, Google 비밀번호 변경, Gmail 계정 비밀번호 재설정</translation>
+<translation id="7469628627013714019">브라우저 캐시 삭제, 방문 기록 삭제, 쿠키 삭제, 방문 기록 삭제</translation>
 <translation id="7660956169713698963">Chromeos 접근성 맞춤설정, Chromeos 접근성 설정, 크롬os 접근성 맞춤설정, 크롬os 접근성 설정, 접근성 설정 관리, 접근성 설정, 크롬 접근성 설정</translation>
 <translation id="7700496593710078083">chrome 방문 기록 보기, 크롬 방문 기록 보기, 방문 기록 보기, 웹 방문 기록, 크롬 방문 기록</translation>
 <translation id="7739523284295786564">chrome 다운로드 관리, 크롬 다운로드 관리, 다운로드 보기</translation>

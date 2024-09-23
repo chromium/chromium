@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package web_app;
+
+message IwaKeyRotations {
+  message KeyRotationInfo {
+    // base64-encoded public key that this IWA’s bundle must be signed with.
+    // Leaving this field empty disables the IWA.
+    optional string expected_key = 1;
+  }
+
+  // A list of key rotations mapping web bundle IDs to expected keys.
+  map<string, KeyRotationInfo> key_rotations = 1;
+}

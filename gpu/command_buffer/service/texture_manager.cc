@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/texture_manager.h"
 
 #include <stddef.h>
@@ -15,9 +20,11 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -28,7 +35,6 @@
 #include "gpu/command_buffer/service/error_state.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "ui/gl/gl_context.h"
@@ -340,7 +346,7 @@ GLenum GetSwizzleForChannel(GLenum channel,
     case GL_ALPHA:
       return swizzle->alpha;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GL_NONE;
   }
 }
@@ -353,13 +359,6 @@ bool SizedFormatAvailable(const FeatureInfo* feature_info,
 
   if (feature_info->feature_flags().ext_texture_norm16 &&
       internal_format == GL_R16_EXT) {
-    return true;
-  }
-
-  if ((feature_info->feature_flags().chromium_image_ycbcr_420v &&
-       internal_format == GL_RGB_YCBCR_420V_CHROMIUM) ||
-      (feature_info->feature_flags().chromium_image_ycbcr_p010 &&
-       internal_format == GL_RGB_YCBCR_P010_CHROMIUM)) {
     return true;
   }
 
@@ -413,6 +412,8 @@ class ScopedResetPixelUnpackBuffer{
 };
 
 class ScopedMemTrackerChange {
+  STACK_ALLOCATED();
+
  public:
   explicit ScopedMemTrackerChange(Texture* texture)
       : texture_(texture),
@@ -430,8 +431,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  raw_ptr<Texture> texture_;
-  raw_ptr<MemoryTypeTracker> previous_tracker_;
+  Texture* texture_;
+  MemoryTypeTracker* previous_tracker_;
   uint32_t previous_size_;
 };
 
@@ -506,7 +507,6 @@ TexturePassthrough::TexturePassthrough(GLuint service_id, GLenum target)
 }
 
 TexturePassthrough::~TexturePassthrough() {
-  DeleteFromMailboxManager();
   if (have_context_) {
     glDeleteTextures(1, &owned_service_id_);
   }
@@ -546,9 +546,7 @@ Texture::Texture(GLuint service_id)
     : TextureBase(service_id),
       owned_service_id_(service_id) {}
 
-Texture::~Texture() {
-  DeleteFromMailboxManager();
-}
+Texture::~Texture() = default;
 
 void Texture::AddTextureRef(TextureRef* ref) {
   DCHECK(!base::Contains(refs_, ref));
@@ -566,7 +564,7 @@ void Texture::RemoveTextureRef(TextureRef* ref, bool have_context) {
     size_t result = refs_.erase(ref);
     DCHECK_EQ(result, 1u);
     if (!memory_tracking_ref_ && !refs_.empty())
-      memory_tracking_ref_ = *refs_.begin();
+      memory_tracking_ref_ = (*refs_.begin()).get();
   }
   MaybeDeleteThis(have_context);
 }
@@ -1120,15 +1118,6 @@ void Texture::UpdateNumMipLevels() {
   UpdateCanRenderCondition();
 }
 
-void Texture::ApplyClampedBaseLevelAndMaxLevelToDriver() {
-  if (base_level_ != unclamped_base_level_) {
-    glTexParameteri(target_, GL_TEXTURE_BASE_LEVEL, base_level_);
-  }
-  if (max_level_ != unclamped_max_level_) {
-    glTexParameteri(target_, GL_TEXTURE_MAX_LEVEL, max_level_);
-  }
-}
-
 void Texture::SetLevelInfo(GLenum target,
                            GLint level,
                            GLenum internal_format,
@@ -1427,7 +1416,7 @@ GLenum Texture::SetParameteri(
     case GL_REQUIRED_TEXTURE_IMAGE_UNITS_OES:
       return GL_INVALID_ENUM;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GL_INVALID_ENUM;
   }
   Update();
@@ -1763,12 +1752,7 @@ bool Texture::CanRenderTo(const FeatureInfo* feature_info, GLint level) const {
   if (target_ == 0)
     return false;
   if (target_ == GL_TEXTURE_EXTERNAL_OES) {
-    if (level != 0 || !feature_info->feature_flags().oes_egl_image_external ||
-        !feature_info->feature_flags().ext_yuv_target)
-      return false;
-    auto format = face_infos_[0].level_infos[0].internal_format;
-    return format == GL_RGB_YCBCR_420V_CHROMIUM ||
-           format == GL_RGB_YCRCB_420_CHROMIUM;
+    return false;
   }
   DCHECK_LT(0u, face_infos_.size());
   // In GLES2, cube completeness is not required for framebuffer completeness.
@@ -1939,12 +1923,12 @@ void TextureManager::RemoveFramebufferManager(
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TextureManager::Initialize() {
   // Reset PIXEL_UNPACK_BUFFER to avoid unrelated GL error on some GL drivers.
-  if (feature_info_->gl_version_info().is_es3_capable) {
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0)) {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
 
@@ -2465,7 +2449,7 @@ TextureRef* TextureManager::GetTextureInfoForTarget(
       texture = unit.bound_texture_2d_array.get();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
   return texture;
@@ -2628,13 +2612,12 @@ void TextureManager::DoCubeMapWorkaround(
     }
   }
   DoTexImageArguments new_args = args;
-  std::unique_ptr<char[]> zero(new char[args.pixels_size]);
-  memset(zero.get(), 0, args.pixels_size);
+  auto zero = base::HeapArray<char>::WithSize(args.pixels_size);
   // Need to clear PIXEL_UNPACK_BUFFER and UNPACK params for data uploading.
   state->PushTextureUnpackState();
   for (GLenum face : undefined_faces) {
     new_args.target = face;
-    new_args.pixels = zero.get();
+    new_args.pixels = zero.data();
     DoTexImage(texture_state, state, error_state, framebuffer_state,
                function_name, texture_ref, new_args);
     texture->MarkLevelAsInternalWorkaround(face, args.level);
@@ -3262,7 +3245,7 @@ GLenum TextureManager::AdjustTexInternalFormat(
             return GL_RG8;
         }
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -3272,14 +3255,6 @@ GLenum TextureManager::AdjustTexInternalFormat(
 // static
 GLenum TextureManager::AdjustTexFormat(const gles2::FeatureInfo* feature_info,
                                        GLenum format) {
-  // TODO(bajones): GLES 3 allows for internal format and format to differ.
-  // This logic may need to change as a result.
-  if (!feature_info->gl_version_info().is_es) {
-    if (format == GL_SRGB_EXT)
-      return GL_RGB;
-    if (format == GL_SRGB_ALPHA_EXT)
-      return GL_RGBA;
-  }
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
     const Texture::CompatibilitySwizzle* swizzle =
         GetCompatibilitySwizzleInternal(format);
@@ -3539,8 +3514,6 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_RGB9_E5:
     case GL_RGB16F:
     case GL_RGB32F:
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCRCB_420_CHROMIUM:
       return GL_RGB;
     case GL_RGB8UI:
     case GL_RGB8I:
@@ -3888,7 +3861,7 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
 }
 
 void Texture::IncrementManagerServiceIdGeneration() {
-  for (auto* ref : refs_) {
+  for (TextureRef* ref : refs_) {
     TextureManager* manager = ref->manager();
     manager->IncrementServiceIdGeneration();
   }
@@ -3954,7 +3927,7 @@ bool Texture::CompatibleWithSamplerUniformType(
       category = SAMPLER_SHADOW;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   const LevelInfo* level_info = GetBaseLevelInfo();
@@ -4013,11 +3986,11 @@ bool Texture::CompatibleWithSamplerUniformType(
       // Unsigned integer formats.
       return category == SAMPLER_UNSIGNED;
     default:
-      NOTREACHED() << "Type: " << GLES2Util::GetStringEnum(level_info->type)
-                   << " Format: "
-                   << GLES2Util::GetStringEnum(level_info->format)
-                   << "  Internal format: "
-                   << GLES2Util::GetStringEnum(level_info->internal_format);
+      NOTREACHED_IN_MIGRATION()
+          << "Type: " << GLES2Util::GetStringEnum(level_info->type)
+          << " Format: " << GLES2Util::GetStringEnum(level_info->format)
+          << "  Internal format: "
+          << GLES2Util::GetStringEnum(level_info->internal_format);
   }
   return false;
 }

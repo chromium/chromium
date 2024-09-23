@@ -3,51 +3,21 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.personalization.keyboard_backlight_color": {
-            "check_for_recommended": true,
-            "default_value": 0,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "ash.personalization.keyboard_backlight_color": {
-            "check_for_recommended": true,
-            "default_value": 0,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceKeyboardBacklightColor": 1
-        },
-        "prefs": {
-          "ash.personalization.keyboard_backlight_color": {
-            "check_for_recommended": true,
-            "location": "local_state",
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceKeyboardBacklightColor": 1
-        },
-        "prefs": {
-          "ash.personalization.keyboard_backlight_color": {
-            "check_for_recommended": true,
-            "location": "user_profile",
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.personalization.keyboard_backlight_color",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        100
+      ]
+    }
   }
 ]

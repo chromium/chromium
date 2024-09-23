@@ -23,7 +23,7 @@ class AudioFocusDelegateAndroidBrowserTest : public ContentBrowserTest {};
 // is the only way found to actually reproduce the crash so as a result, the
 // test will only run on builds without DCHECK's.
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-// TODO(crbug.com/602787) The test is flaky, disabling it everywhere.
+// TODO(crbug.com/40464766) The test is flaky, disabling it everywhere.
 #define MAYBE_OnAudioFocusChangeAfterDtorCrash \
   DISABLED_OnAudioFocusChangeAfterDtorCrash
 #else

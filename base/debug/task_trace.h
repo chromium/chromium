@@ -6,12 +6,12 @@
 #define BASE_DEBUG_TASK_TRACE_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace debug {
@@ -55,7 +55,7 @@ class BASE_EXPORT TaskTrace {
   size_t GetAddresses(span<const void*> addresses) const;
 
  private:
-  absl::optional<StackTrace> stack_trace_;
+  std::optional<StackTrace> stack_trace_;
   bool trace_overflow_ = false;
 };
 

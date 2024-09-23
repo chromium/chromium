@@ -4,12 +4,12 @@
 
 #include "partition_alloc/shim/allocator_shim.h"
 
-#include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-
 #include <unistd.h>
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
@@ -48,7 +48,7 @@
 // quite likely to keep working in the future. For instance, LLVM for LSAN uses
 // this mechanism.
 
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 

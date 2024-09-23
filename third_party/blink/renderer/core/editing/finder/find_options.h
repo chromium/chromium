@@ -28,18 +28,69 @@
 
 namespace blink {
 
-enum FindOptionFlag {
-  kCaseInsensitive = 1 << 0,
-  kBackwards = 1 << 1,
-  kWrapAround = 1 << 2,
-  kStartInSelection = 1 << 3,
-  kWholeWord = 1 << 4,
-  // TODO(yosin) Once find UI works on flat tree and it doesn't use
-  // |rangeOfString()|, we should get rid of |FindAPICall| enum member.
-  kFindAPICall = 1 << 5,  // Used for Window.find or execCommand('find')
-};
+// This represents a set of flags for string search.
+// An object of this class is very small, and we don't need to use
+// `const FindOptions&` to pass an object to a function.
+class FindOptions {
+ public:
+  constexpr FindOptions() = default;
+  FindOptions(const FindOptions& another) = default;
+  FindOptions& operator=(const FindOptions& another) = default;
 
-typedef unsigned FindOptions;
+  bool IsCaseInsensitive() const { return case_insensitive_; }
+  constexpr FindOptions& SetCaseInsensitive(bool flag) {
+    case_insensitive_ = flag;
+    return *this;
+  }
+
+  bool IsBackwards() const { return backwards_; }
+  constexpr FindOptions& SetBackwards(bool flag) {
+    backwards_ = flag;
+    return *this;
+  }
+
+  bool IsWrappingAround() const { return wrapping_around_; }
+  constexpr FindOptions& SetWrappingAround(bool flag) {
+    wrapping_around_ = flag;
+    return *this;
+  }
+
+  bool IsStartingInSelection() const { return starting_in_selection_; }
+  constexpr FindOptions& SetStartingInSelection(bool flag) {
+    starting_in_selection_ = flag;
+    return *this;
+  }
+
+  bool IsWholeWord() const { return whole_word_; }
+  constexpr FindOptions& SetWholeWord(bool flag) {
+    whole_word_ = flag;
+    return *this;
+  }
+
+  // Used for window.find() or execCommand('find').
+  // TODO(yosin) Once find UI works on flat tree and it doesn't use
+  // `rangeOfString()`, we should get rid of the FindApiCall flag.
+  bool IsFindApiCall() const { return find_api_call_; }
+  constexpr FindOptions& SetFindApiCall(bool flag) {
+    find_api_call_ = flag;
+    return *this;
+  }
+
+  bool IsRubySupported() const { return ruby_supported_; }
+  constexpr FindOptions& SetRubySupported(bool flag) {
+    ruby_supported_ = flag;
+    return *this;
+  }
+
+ private:
+  bool case_insensitive_ : 1 = false;
+  bool backwards_ : 1 = false;
+  bool wrapping_around_ : 1 = false;
+  bool starting_in_selection_ : 1 = false;
+  bool whole_word_ : 1 = false;
+  bool find_api_call_ : 1 = false;
+  bool ruby_supported_ : 1 = false;
+};
 
 }  // namespace blink
 

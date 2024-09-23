@@ -1,0 +1,183 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bottom_sheet") {
+  sources = [
+    "password_suggestion_bottom_sheet_coordinator.h",
+    "password_suggestion_bottom_sheet_coordinator.mm",
+    "password_suggestion_bottom_sheet_exit_reason.h",
+    "password_suggestion_bottom_sheet_mediator.h",
+    "password_suggestion_bottom_sheet_mediator.mm",
+  ]
+  deps = [
+    ":bottom_sheet_ui",
+    ":common",
+    "//base",
+    "//components/autofill/ios/form_util",
+    "//components/feature_engagement/public",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/ios",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/ios",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:password_controller_delegate",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/settings/password/password_sharing:password_sharing_util",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("bottom_sheet_ui") {
+  sources = [
+    "password_suggestion_bottom_sheet_consumer.h",
+    "password_suggestion_bottom_sheet_delegate.h",
+    "password_suggestion_bottom_sheet_handler.h",
+    "password_suggestion_bottom_sheet_view_controller.h",
+    "password_suggestion_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/ios",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/base",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
+    "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/password_manager/core/common:features",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
+    "//ios/chrome/browser/passwords/model/metrics",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "password_suggestion_bottom_sheet_app_interface.h",
+    "password_suggestion_bottom_sheet_app_interface.mm",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "password_suggestion_bottom_sheet_app_interface.h",
+    "password_suggestion_bottom_sheet_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_suggestion_bottom_sheet_mediator_unittest.mm" ]
+  deps = [
+    ":bottom_sheet",
+    ":bottom_sheet_ui",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/ios",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -25,14 +25,14 @@ namespace updater {
 TEST(WakeTask, NotModified) {
   NSDictionary<NSString*, id>* expected;
 
-  switch (GetTestScope()) {
+  switch (GetUpdaterScopeForTesting()) {
     case UpdaterScope::kSystem:
       expected = @{
         @LAUNCH_JOBKEY_LABEL : base::SysUTF8ToNSString(
             MAC_BUNDLE_IDENTIFIER_STRING ".wake.system"),
         @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
           base::SysUTF8ToNSString(base::StrCat(
-              {GetInstallDirectory(GetTestScope())->value(),
+              {GetInstallDirectory(GetUpdaterScopeForTesting())->value(),
                "/Current/" PRODUCT_FULLNAME_STRING, kExecutableSuffix,
                ".app/Contents/MacOS/" PRODUCT_FULLNAME_STRING,
                kExecutableSuffix})),
@@ -52,7 +52,7 @@ TEST(WakeTask, NotModified) {
             base::SysUTF8ToNSString(MAC_BUNDLE_IDENTIFIER_STRING ".wake"),
         @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
           base::SysUTF8ToNSString(base::StrCat(
-              {GetInstallDirectory(GetTestScope())->value(),
+              {GetInstallDirectory(GetUpdaterScopeForTesting())->value(),
                "/Current/" PRODUCT_FULLNAME_STRING, kExecutableSuffix,
                ".app/Contents/MacOS/" PRODUCT_FULLNAME_STRING,
                kExecutableSuffix})),
@@ -66,8 +66,8 @@ TEST(WakeTask, NotModified) {
       };
       break;
   }
-  EXPECT_TRUE(
-      [expected isEqualToDictionary:CreateWakeLaunchdPlist(GetTestScope())]);
+  EXPECT_TRUE([expected
+      isEqualToDictionary:CreateWakeLaunchdPlist(GetUpdaterScopeForTesting())]);
 }
 
 }  // namespace updater

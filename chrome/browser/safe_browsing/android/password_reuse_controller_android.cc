@@ -133,7 +133,7 @@ void PasswordReuseControllerAndroid::OnGaiaPasswordChanged() {
   delete this;
   // Chrome on Android should not be able to capture Gaia password change
   // events.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasswordReuseControllerAndroid::OnMarkingSiteAsLegitimate(
@@ -141,7 +141,7 @@ void PasswordReuseControllerAndroid::OnMarkingSiteAsLegitimate(
   if (url_.GetWithEmptyPath() == url.GetWithEmptyPath())
     delete this;
   // Modal dialog on Android is above the screen, this function can't be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasswordReuseControllerAndroid::InvokeActionForTesting(

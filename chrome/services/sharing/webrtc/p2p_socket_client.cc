@@ -35,7 +35,7 @@ P2PSocketClient::P2PSocketClient(
       random_socket_id_(0),
       next_packet_id_(0) {
   DCHECK(socket_manager_.is_bound());
-  crypto::RandBytes(&random_socket_id_, sizeof(random_socket_id_));
+  crypto::RandBytes(base::byte_span_from_ref(random_socket_id_));
 }
 
 P2PSocketClient::~P2PSocketClient() {
@@ -59,7 +59,7 @@ void P2PSocketClient::Init(network::P2PSocketType type,
       type, local_address, network::P2PPortRange(min_port, max_port),
       remote_address,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
-      /*devtools_token=*/absl::nullopt, receiver_.BindNewPipeAndPassRemote(),
+      /*devtools_token=*/std::nullopt, receiver_.BindNewPipeAndPassRemote(),
       socket_.BindNewPipeAndPassReceiver());
   receiver_.set_disconnect_handler(base::BindOnce(
       &P2PSocketClient::OnConnectionError, base::Unretained(this)));

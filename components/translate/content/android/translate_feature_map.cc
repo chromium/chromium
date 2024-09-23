@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/language/core/common/language_experiments.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/translate/content/android/jni_headers/TranslateFeatureMap_jni.h"
 
 namespace translate::android {

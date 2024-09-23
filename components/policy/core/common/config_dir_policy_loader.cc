@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/policy/core/common/config_dir_policy_loader.h"
 
 #include <stddef.h>
@@ -110,12 +115,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
   for (base::FilePath config_file_path = file_enumerator.Next();
        !config_file_path.empty(); config_file_path = file_enumerator.Next()) {
     files.insert(config_file_path);
-    LOG_POLICY(INFO, POLICY_FETCHING)
+    VLOG_POLICY(1, POLICY_FETCHING)
         << "Found " << policy_level << " policy file: " << config_file_path;
   }
 
   if (files.empty()) {
-    LOG_POLICY(INFO, POLICY_FETCHING)
+    VLOG_POLICY(1, POLICY_FETCHING)
         << "Skipping " << policy_level
         << " platform policies because no policy file was found at: " << path;
     return;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
+import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 interface NetworkIpConfigElement extends LegacyElementMixin, HTMLElement {
   disabled: boolean;

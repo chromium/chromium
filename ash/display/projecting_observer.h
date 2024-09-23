@@ -26,7 +26,7 @@ class ASH_EXPORT ProjectingObserver
   ~ProjectingObserver() override;
 
   // DisplayConfigurator::Observer implementation:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
 
   // ash::ShellObserver implementation:

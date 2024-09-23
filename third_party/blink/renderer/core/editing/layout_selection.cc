@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_wbr_element.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -142,19 +143,20 @@ static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
     case SelectionMode::kNone:
       return {};
     case SelectionMode::kRange: {
-      const PositionInFlatTree& base =
-          ToPositionInFlatTree(selection_in_dom.Base());
-      const PositionInFlatTree& extent =
-          ToPositionInFlatTree(selection_in_dom.Extent());
-      if (base.IsNull() || extent.IsNull() || base == extent ||
-          !base.IsValidFor(frame_selection.GetDocument()) ||
-          !extent.IsValidFor(frame_selection.GetDocument()))
+      const PositionInFlatTree& anchor =
+          ToPositionInFlatTree(selection_in_dom.Anchor());
+      const PositionInFlatTree& focus =
+          ToPositionInFlatTree(selection_in_dom.Focus());
+      if (anchor.IsNull() || focus.IsNull() || anchor == focus ||
+          !anchor.IsValidFor(frame_selection.GetDocument()) ||
+          !focus.IsValidFor(frame_selection.GetDocument())) {
         return {};
-      return base <= extent ? EphemeralRangeInFlatTree(base, extent)
-                            : EphemeralRangeInFlatTree(extent, base);
+      }
+      return anchor <= focus ? EphemeralRangeInFlatTree(anchor, focus)
+                             : EphemeralRangeInFlatTree(focus, anchor);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -417,7 +419,7 @@ static OldSelectedNodes ResetOldSelectedNodes(
           break;
         }
         default: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         }
       }
@@ -608,7 +610,7 @@ static LayoutTextSelectionStatus ComputeSelectionStatusForNode(
       return {start_offset.value(), end_offset.value(),
               SelectionIncludeEnd::kNotInclude};
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {0, 0, SelectionIncludeEnd::kNotInclude};
   }
 }

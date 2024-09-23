@@ -9,6 +9,7 @@ import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://boreal
 import {InstallResult} from 'chrome://borealis-installer/borealis_types.mojom-webui.js';
 import {BrowserProxy} from 'chrome://borealis-installer/browser_proxy.js';
 import {BorealisInstallerErrorDialogElement} from 'chrome://borealis-installer/error_dialog.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -82,28 +83,39 @@ suite('<borealis-installer-app>', async () => {
 
 
   test('install', async () => {
+    assertEquals(
+        shadowRoot().querySelector('#installLaunch')!.textContent!.trim(),
+        'Install');
+
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
 
-    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
+    fakeBrowserProxy.page.onProgressUpdate(0.56789, '3 seconds left');
     await flushTasks();
-    assertEquals(shadowRoot().querySelector('paper-progress')!.value, 50);
+    assertEquals(shadowRoot().querySelector('paper-progress')!.value, 57);
     assertEquals(
         shadowRoot().querySelector('#progress-message')!.textContent!.trim(),
-        '50% completed | 3 seconds left');
+        '57% completed | 3 seconds left');
     fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
     await flushTasks();
 
+    assertEquals(
+        getDeepActiveElement(),
+        shadowRoot().querySelector('#installLaunch')!);
+    assertEquals(
+        shadowRoot().querySelector('#installLaunch')!.textContent!.trim(),
+        'Open Steam');
+
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 0);
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
-    await clickButton('launch');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });
 
   test('errorAndRetry', async () => {
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
     await flushTasks();
@@ -119,7 +131,7 @@ suite('<borealis-installer-app>', async () => {
   });
 
   test('errorOpenStorage', async () => {
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
     await flushTasks();
@@ -134,7 +146,7 @@ suite('<borealis-installer-app>', async () => {
   });
 
   test('errorAndCancel', async () => {
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
     await flushTasks();
@@ -152,7 +164,7 @@ suite('<borealis-installer-app>', async () => {
   test('cancelBeforeLaunch', async () => {
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
 
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
 
     fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
@@ -165,7 +177,7 @@ suite('<borealis-installer-app>', async () => {
   test('cancelDuringInstall', async () => {
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
 
-    await clickButton('install');
+    await clickButton('installLaunch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
 
     await clickButton('cancel');

@@ -16,14 +16,14 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/workspace/workspace_window_resizer.h"
+#include "ash/wm/workspace/workspace_window_resizer_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
@@ -111,10 +111,11 @@ TEST_F(HapticsUtilTest, HapticFeedbackForNormalWindowSnap) {
     event_generator->set_current_screen_location(start);
     event_generator->PressLeftButton();
     event_generator->MoveMouseTo(test_case.first);
-    WorkspaceWindowResizer* workspace_resizer =
-        WorkspaceWindowResizer::GetInstanceForTest();
-    if (workspace_resizer->dwell_countdown_timer_.IsRunning())
-      workspace_resizer->dwell_countdown_timer_.FireNow();
+    auto& dwell_countdown_timer =
+        WorkspaceWindowResizerTestApi().GetDwellCountdownTimer();
+    if (dwell_countdown_timer.IsRunning()) {
+      dwell_countdown_timer.FireNow();
+    }
     EXPECT_EQ((int)i + 1, input_controller->GetSentHapticCount(
                               HapticTouchpadEffect::kSnap,
                               HapticTouchpadEffectStrength::kMedium));

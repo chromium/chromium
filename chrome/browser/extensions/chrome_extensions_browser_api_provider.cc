@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 
+#include "chrome/browser/extensions/api/commands/commands.h"
 #include "chrome/browser/extensions/api/generated_api_registration.h"
-#include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "extensions/browser/extension_function_registry.h"
 
 namespace extensions {
@@ -17,10 +17,8 @@ ChromeExtensionsBrowserAPIProvider::~ChromeExtensionsBrowserAPIProvider() =
 
 void ChromeExtensionsBrowserAPIProvider::RegisterExtensionFunctions(
     ExtensionFunctionRegistry* registry) {
-  // Preferences.
-  registry->RegisterFunction<GetPreferenceFunction>();
-  registry->RegisterFunction<SetPreferenceFunction>();
-  registry->RegisterFunction<ClearPreferenceFunction>();
+  // Commands
+  registry->RegisterFunction<GetAllCommandsFunction>();
 
   // Generated APIs from Chrome.
   api::ChromeGeneratedFunctionRegistry::RegisterAll(registry);

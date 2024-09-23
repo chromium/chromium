@@ -310,7 +310,7 @@ void VersionUpdater::UpdateStatusChanged(
     case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (time_estimator_.HasTotalTime(status.current_operation())) {
@@ -416,11 +416,8 @@ void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
       error_state = NetworkError::ERROR_STATE_PORTAL;
       network_name = network->name();
       break;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      error_state = NetworkError::ERROR_STATE_PROXY;
-      break;
     case NetworkState::PortalState::kOnline:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   delegate_->UpdateErrorMessage(state, error_state, network_name);

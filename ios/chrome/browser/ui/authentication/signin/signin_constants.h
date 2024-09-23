@@ -97,7 +97,7 @@ extern const int kDefaultWebSignInDismissalCount;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When you add a new entry or when you
 // deprecate an existing one, also update SSOPromoUserAction in enums.xml and
-// SyncModelType suffix in histograms.xml.
+// SyncDataType suffix in histograms.xml.
 typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
   PromoActionDismissed = 0,
   PromoActionEnabledSSOAccount = 1,
@@ -116,12 +116,12 @@ extern NSString* const kDisplayedSSORecallForMajorVersionKey;
 extern NSString* const kLastShownAccountGaiaIdVersionKey;
 // Key in the UserDefaults to record the number of times the sign-in promo has
 // been shown.
-// TODO(crbug.com/1312345): Need to merge with kDisplayedSSORecallPromoCountKey.
-// Exposed for testing.
+// TODO(crbug.com/40831586): Need to merge with
+// kDisplayedSSORecallPromoCountKey. Exposed for testing.
 extern NSString* const kSigninPromoViewDisplayCountKey;
 // Key in the UserDefaults to track how many times the SSO Recall promo has been
 // displayed.
-// TODO(crbug.com/1312345): Need to merge with kSigninPromoViewDisplayCountKey.
+// TODO(crbug.com/40831586): Need to merge with kSigninPromoViewDisplayCountKey.
 // Exposed for testing.
 extern NSString* const kDisplayedSSORecallPromoCountKey;
 // Name of the UMA SSO Recall histogram.

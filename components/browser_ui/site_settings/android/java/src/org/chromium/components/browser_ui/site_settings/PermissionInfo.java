@@ -19,14 +19,14 @@ public class PermissionInfo implements Serializable {
     private final String mEmbedder;
     private final String mOrigin;
     private final @ContentSettingsType.EnumType int mContentSettingsType;
-    private final @SessionModel int mSessionModel;
+    private final @SessionModel.EnumType int mSessionModel;
 
     public PermissionInfo(
             @ContentSettingsType.EnumType int type,
             String origin,
             String embedder,
             boolean isEmbargoed,
-            @SessionModel int sessionModel) {
+            @SessionModel.EnumType int sessionModel) {
         assert WebsitePermissionsFetcher.getPermissionsType(type)
                         == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
                 : "invalid type: " + type;
@@ -57,7 +57,7 @@ public class PermissionInfo implements Serializable {
         return mIsEmbargoed;
     }
 
-    public @SessionModel int getSessionModel() {
+    public @SessionModel.EnumType int getSessionModel() {
         return mSessionModel;
     }
 

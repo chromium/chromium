@@ -9,13 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "tools/android/forwarder2/socket.h"
-
-using base::StringPiece;
 
 namespace {
 
@@ -59,24 +58,25 @@ bool ReadCommandWithTimeout(Socket* socket,
   int bytes_read = socket->ReadNumBytesWithTimeout(
       command_buffer, kCommandStringSize, timeout_secs);
   if (bytes_read != kCommandStringSize) {
-    if (bytes_read < 0)
-      LOG(ERROR) << "Read() error: " << base::safe_strerror(errno);
-    else if (!bytes_read)
+    if (bytes_read < 0) {
+      PLOG(ERROR) << "Read() error";
+    } else if (!bytes_read) {
       LOG(ERROR) << "Read() error, endpoint was unexpectedly closed.";
-    else
+    } else {
       LOG(ERROR) << "Read() error, not enough data received from the socket.";
+    }
     return false;
   }
 
-  StringPiece port_str(command_buffer, kPortStringSize);
+  std::string_view port_str(command_buffer, kPortStringSize);
   if (!base::StringToInt(port_str, port_out)) {
     LOG(ERROR) << "Could not parse the command port string: "
                << port_str;
     return false;
   }
 
-  StringPiece command_type_str(
-      &command_buffer[kPortStringSize + 1], kCommandTypeStringSize);
+  std::string_view command_type_str(&command_buffer[kPortStringSize + 1],
+                                    kCommandTypeStringSize);
   int command_type;
   if (!base::StringToInt(command_type_str, &command_type)) {
     LOG(ERROR) << "Could not parse the command type string: "

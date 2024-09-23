@@ -54,28 +54,6 @@ class HotspotAllowedFlagHandlerTest : public ::testing::Test {
   std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
 };
 
-TEST_F(HotspotAllowedFlagHandlerTest, FeatureEnabled) {
-  feature_list_.InitAndEnableFeature(features::kHotspot);
-  hotspot_allowed_flag_handler_->Init();
-  base::RunLoop().RunUntilIdle();
-  ShillManagerClient::Get()->GetProperties(
-      base::BindOnce(&HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
-                     base::Unretained(this), shill::kTetheringAllowedProperty,
-                     /*expected_value=*/true));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(HotspotAllowedFlagHandlerTest, FeatureDisabled) {
-  feature_list_.InitAndDisableFeature(features::kHotspot);
-  hotspot_allowed_flag_handler_->Init();
-  base::RunLoop().RunUntilIdle();
-  ShillManagerClient::Get()->GetProperties(
-      base::BindOnce(&HotspotAllowedFlagHandlerTest::OnGetManagerCallback,
-                     base::Unretained(this), shill::kTetheringAllowedProperty,
-                     /*expected_value=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(HotspotAllowedFlagHandlerTest, ExperimentalCarriersEnabled) {
   feature_list_.InitAndEnableFeature(
       features::kTetheringExperimentalFunctionality);

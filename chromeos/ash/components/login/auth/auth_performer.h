@@ -46,9 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                               std::optional<AuthenticationError>)>;
 
   using AuthSessionStatusCallback =
-      base::OnceCallback<void(AuthSessionStatus status,
-                              base::TimeDelta lifetime,
-                              std::unique_ptr<UserContext>,
+      base::OnceCallback<void(std::unique_ptr<UserContext>,
                               std::optional<AuthenticationError>)>;
   using RecoveryRequestCallback =
       base::OnceCallback<void(std::optional<RecoveryRequest>,
@@ -141,6 +139,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                            AuthOperationCallback callback);
 
+  // Attempts to authenticate session with fingerprint auth factor.
+  // Session will become authenticated upon success.
+  void AuthenticateWithFingerprint(std::unique_ptr<UserContext> context,
+                                   AuthOperationCallback callback);
+
+  void AuthenticateWithLegacyFingerprint(std::unique_ptr<UserContext> context,
+                                         AuthOperationCallback callback);
+
   void GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                             AuthSessionStatusCallback callback);
 
@@ -212,7 +218,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void OnGetRecoveryRequest(
       RecoveryRequestCallback callback,
       std::unique_ptr<UserContext> context,
-      std::optional<user_data_auth::GetRecoveryRequestReply> reply);
+      std::optional<user_data_auth::PrepareAuthFactorReply> reply);
 
   void OnExtendAuthSession(
       base::Time request_start,

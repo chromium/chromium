@@ -35,14 +35,15 @@ bool MoveWithoutFallback(const base::FilePath& source,
   auto result = ::MoveFileEx(source.value().c_str(), target.value().c_str(), 0);
   PLOG_IF(ERROR, !result) << source << " -> " << target;
   return result;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   // Windows compatibility: if |target| exists, |source| and |target|
   // must be the same type, either both files, or both directories.
   base::stat_wrapper_t target_info;
-  if (base::File::Stat(target.value().c_str(), &target_info) == 0) {
+  if (base::File::Stat(target, &target_info) == 0) {
     base::stat_wrapper_t source_info;
-    if (base::File::Stat(source.value().c_str(), &source_info) != 0)
+    if (base::File::Stat(source, &source_info) != 0) {
       return false;
+    }
     if (S_ISDIR(target_info.st_mode) != S_ISDIR(source_info.st_mode))
       return false;
   }

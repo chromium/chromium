@@ -174,17 +174,8 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   ui::GrabSnapshotImageCallback screenshot_callback =
       base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
                      result_code, bounds);
-#if BUILDFLAG(IS_MAC)
-  // TODO: Why is the view captured on the Mac but the window captured on all
-  // other platforms?
-  const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
-  ui::GrabViewSnapshotAsync(native_view, region,
-                            std::move(screenshot_callback));
-#else
-  const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
-  ui::GrabWindowSnapshotAsync(native_window, region,
-                              std::move(screenshot_callback));
-#endif
+  ui::GrabViewSnapshot(web_contents_->GetNativeView(), region,
+                       std::move(screenshot_callback));
 }
 
 void ScreenshotFlow::CancelCapture() {
@@ -194,7 +185,7 @@ void ScreenshotFlow::CancelCapture() {
 }
 
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() == ui::ET_KEY_PRESSED &&
+  if (event->type() == ui::EventType::kKeyPressed &&
       event->key_code() == ui::VKEY_ESCAPE) {
     event->StopPropagation();
     CompleteCapture(ScreenshotCaptureResultCode::USER_ESCAPE_EXIT, gfx::Rect());
@@ -225,11 +216,11 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
   location.set_y(location.y() + (widget_bounds.y() - web_contents_bounds.y()));
 #endif
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
+    case ui::EventType::kMouseMoved:
       SetCursor(ui::mojom::CursorType::kCross);
       event->SetHandled();
       break;
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       if (event->IsOnlyLeftMouseButton()) {
         // Don't capture initial clicks on browser ui outside the webcontents.
         if (location.x() < 0 || location.y() < 0 ||
@@ -243,14 +234,14 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
         event->SetHandled();
       }
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       if (event->IsOnlyLeftMouseButton() && is_dragging_) {
         drag_end_ = location;
         RequestRepaint(gfx::Rect());
         event->SetHandled();
       }
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
            capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
           is_dragging_) {
@@ -260,7 +251,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
       }
       break;
     // This event type is never called on Mac.
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
            capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
           event->AsMouseWheelEvent()->y_offset() > 0 && is_dragging_) {
@@ -277,9 +268,10 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
 void ScreenshotFlow::OnScrollEvent(ui::ScrollEvent* event) {
   // A single tap can create a scroll event, so ignore scroll starts and
   // cancels but complete capture when scrolls actually occur.
-  if (event->type() == ui::EventType::ET_SCROLL_FLING_START ||
-      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL)
+  if (event->type() == ui::EventType::kScrollFlingStart ||
+      event->type() == ui::EventType::kScrollFlingCancel) {
     return;
+  }
 
   gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
   if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||

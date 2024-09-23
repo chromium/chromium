@@ -40,8 +40,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                                                int label_text_id)
     : views::Button(
           base::BindRepeating(&SwitchAccessMenuButton::OnButtonPressed,
-                              base::Unretained(this))),
-      action_name_(action_name) {
+                              base::Unretained(this))) {
   std::u16string label_text = l10n_util::GetStringUTF16(label_text_id);
   views::Builder<SwitchAccessMenuButton>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
@@ -67,7 +66,8 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
       kLabelTopPaddingDefaultDip);
 
   // The layout padding changes with the size of the text label.
-  gfx::Size label_size = label_->CalculatePreferredSize();
+  gfx::Size label_size =
+      label_->CalculatePreferredSize(views::SizeBounds(label_->width(), {}));
   int left_padding_dip = (kWidthDip - label_size.width()) / 2;
   int right_padding_dip = kWidthDip - left_padding_dip - label_size.width();
   int bottom_padding_dip = kButtonBottomPaddingDefaultDip;
@@ -80,14 +80,13 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                         bottom_padding_dip, right_padding_dip));
   SetLayoutManager(std::move(layout));
 
-  GetViewAccessibility().OverrideName(label_text);
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetName(label_text, ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetIsLeaf(true);
+  GetViewAccessibility().SetValue(action_name);
 }
 
 void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                action_name_);
 }
 
 void SwitchAccessMenuButton::OnButtonPressed() {

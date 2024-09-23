@@ -82,7 +82,7 @@ base::Value::Dict MetricsReportingHandler::CreateMetricsReportingDict() {
 void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
     const base::Value::List& args) {
   if (IsMetricsReportingPolicyManaged()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // NOTE: ChangeMetricsReportingState() already checks whether metrics
     // reporting is managed by policy. Also, the UI really shouldn't be able to
     // send this message when managed. However, in this specific case, there's a

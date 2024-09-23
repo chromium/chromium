@@ -29,7 +29,8 @@ void EmitUpdateCount(int num_updates,
   base::UmaHistogramCounts100(
       base::StrCat({source_str, ".CriticalUpdateCount"}), num_critical_updates);
   base::UmaHistogramCounts100(
-      base::StrCat({source_str, ".NonCriticalUpdateCount"}), num_updates);
+      base::StrCat({source_str, ".NonCriticalUpdateCount"}),
+      num_updates - num_critical_updates);
 }
 
 void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status) {
@@ -37,9 +38,14 @@ void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status) {
       "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus", last_fwupd_status);
 }
 
-void EmitInstallResult(FirmwareUpdateInstallResult result) {
-  base::UmaHistogramEnumeration("ChromeOS.FirmwareUpdateUi.InstallResult",
-                                result);
+void EmitInstallResult(MethodResult result) {
+  base::UmaHistogramSparse("ChromeOS.FirmwareUpdateUi.InstallResult",
+                           static_cast<int>(result));
+}
+
+void EmitRefreshRemoteResult(MethodResult result) {
+  base::UmaHistogramSparse("ChromeOS.FirmwareUpdateUi.RefreshRemoteResult",
+                           static_cast<int>(result));
 }
 
 void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request) {

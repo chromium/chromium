@@ -95,12 +95,34 @@ source_set("metrics_pref_names") {
 }
 
 if (!is_cronet_build || is_ios) {
+  # histogram_controller.cc contains a singleton. If this would be part of a static library
+  # linked into multiple components (such as //content and //chrome), each component would get
+  # their own copy of this singleton, causing issues. For that reason make sure it is part of
+  # a component that can be linked to by multiple other components.
+  component("metrics_component") {
+    sources = [
+      "histogram_child_process.h",
+      "histogram_controller.cc",
+      "histogram_controller.h",
+      "histogram_subscriber.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
+    ]
+
+    defines = [ "IS_METRICS_IMPL" ]
+  }
+
   static_library("metrics") {
     sources = [
       "android_metrics_helper.cc",
       "android_metrics_helper.h",
       "call_stacks/call_stack_profile_metrics_provider.cc",
       "call_stacks/call_stack_profile_metrics_provider.h",
+      "child_histogram_fetcher_impl.cc",
+      "child_histogram_fetcher_impl.h",
       "clean_exit_beacon.cc",
       "clean_exit_beacon.h",
       "cloned_install_detector.cc",
@@ -133,6 +155,8 @@ if (!is_cronet_build || is_ios) {
       "field_trials_provider.h",
       "file_metrics_provider.cc",
       "file_metrics_provider.h",
+      "install_date_provider.cc",
+      "install_date_provider.h",
       "log_decoder.cc",
       "log_decoder.h",
       "log_store.h",
@@ -207,6 +231,7 @@ if (!is_cronet_build || is_ios) {
     }
 
     public_deps = [
+      ":metrics_component",
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",
       "//third_party/metrics_proto",
@@ -221,6 +246,8 @@ if (!is_cronet_build || is_ios) {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//components/flags_ui:switches",
+      "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
       "//components/network_time",
       "//components/prefs",
       "//components/variations",
@@ -228,6 +255,7 @@ if (!is_cronet_build || is_ios) {
       "//components/version_info:version_info",
       "//crypto",
       "//extensions/buildflags",
+      "//mojo/public/cpp/base:protobuf_support",
       "//third_party/icu",
       "//url",
     ]
@@ -431,11 +459,8 @@ if (!is_cronet_build) {
     ]
   }
 
-  source_set("call_stack_profile_params") {
-    public = [
-      "call_stacks/call_stack_profile_encoding.h",
-      "call_stacks/call_stack_profile_params.h",
-    ]
+  source_set("call_stack_profile_encoding") {
+    public = [ "call_stacks/call_stack_profile_encoding.h" ]
     sources = [ "call_stacks/call_stack_profile_encoding.cc" ]
 
     deps = [
@@ -456,10 +481,11 @@ if (!is_cronet_build) {
       "call_stacks/call_stack_profile_metadata.cc",
       "call_stacks/child_call_stack_profile_collector.cc",
     ]
-    public_deps = [ ":call_stack_profile_params" ]
+    public_deps = [ ":call_stack_profile_encoding" ]
     deps = [
       "//base",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//mojo/public/cpp/base:protobuf_support",
       "//third_party/metrics_proto",
     ]
 
@@ -482,7 +508,6 @@ if (!is_cronet_build) {
       "call_stacks/call_stack_profile_collector.h",
     ]
     deps = [
-      ":call_stack_profile_params",
       ":metrics",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
     ]
@@ -568,6 +593,7 @@ if (!is_cronet_build) {
       "//components/variations",
       "//components/variations:test_support",
       "//extensions/buildflags",
+      "//mojo/public/cpp/base:protobuf_support",
       "//mojo/public/cpp/bindings",
       "//net:test_support",
       "//services/network:test_support",

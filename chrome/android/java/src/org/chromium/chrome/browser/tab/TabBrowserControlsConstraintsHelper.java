@@ -9,9 +9,13 @@ import androidx.annotation.Nullable;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -27,6 +31,14 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
+
+    private @BrowserControlsState int mPreviousConstraints;
+
+    // This OffsetTag is used in:
+    //   - Browser, to tag the layers that move with top controls to be moved by viz.
+    //   - Renderer, to tag the corresponding scroll offset in the compositor frame's metadata.
+    // When visibility of the browser controls are forced by the browser, this token will be null.
+    private OffsetTag mTopControlsOffsetTag;
 
     public static void createForTab(Tab tab) {
         tab.getUserDataHost()
@@ -93,7 +105,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     /** Constructor */
     private TabBrowserControlsConstraintsHelper(Tab tab) {
         mTab = (TabImpl) tab;
-        mConstraintsChangedCallback = (constraints) -> updateEnabledState();
+        mConstraintsChangedCallback =
+                (constraints) -> {
+                    updateEnabledState();
+                    mPreviousConstraints = constraints;
+                };
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @Override
@@ -138,6 +154,20 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                     }
 
                     @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            unregisterOffsetTags();
+                        }
+                    }
+
+                    @Override
+                    public void onShown(Tab tab, @TabHidingType int type) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            updateEnabledState();
+                        }
+                    }
+
+                    @Override
                     public void onWebContentsSwapped(
                             Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                         updateAfterRendererProcessSwitch(tab, true);
@@ -167,20 +197,66 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         }
     }
 
+    private boolean isStateForced(int state) {
+        return state == BrowserControlsState.HIDDEN || state == BrowserControlsState.SHOWN;
+    }
+
+    private boolean wasPreviousStateForced() {
+        return isStateForced(mPreviousConstraints);
+    }
+
     private void updateEnabledState() {
         if (mTab.isFrozen()) return;
         update(BrowserControlsState.BOTH, getConstraints() != BrowserControlsState.HIDDEN);
     }
 
+    /** Unregister all OffsetTags (for now, only the top controls have an OffsetTag.) */
+    private void unregisterOffsetTags() {
+        updateOffsetTags(null, getConstraints());
+    }
+
+    private void updateOffsetTags(
+            OffsetTag newTopControlsOffsetTag, @BrowserControlsState int constraints) {
+        if (newTopControlsOffsetTag == mTopControlsOffsetTag) {
+            return;
+        }
+
+        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+        while (observers.hasNext()) {
+            observers
+                    .next()
+                    .onBrowserControlsConstraintsChanged(
+                            mTab,
+                            new BrowserControlsOffsetTagsInfo(mTopControlsOffsetTag),
+                            new BrowserControlsOffsetTagsInfo(newTopControlsOffsetTag),
+                            constraints);
+        }
+
+        mTopControlsOffsetTag = newTopControlsOffsetTag;
+    }
+
+    private void generateOffsetTags(
+            @BrowserControlsState int current, @BrowserControlsState int constraints) {
+        if (mTab.isHidden()) {
+            return;
+        }
+
+        boolean isNewStateForced = isStateForced(constraints);
+        if (mTopControlsOffsetTag == null && !isNewStateForced) {
+            updateOffsetTags(OffsetTag.createRandom(), constraints);
+        } else if (mTopControlsOffsetTag != null && isNewStateForced) {
+            updateOffsetTags(null, constraints);
+        }
+    }
+
     /**
-     * Updates the browser controls state for this tab.  As these values are set at the renderer
-     * level, there is potential for this impacting other tabs that might share the same
-     * process.
+     * Updates the browser controls state for this tab. As these values are set at the renderer
+     * level, there is potential for this impacting other tabs that might share the same process.
      *
-     * @param current The desired current state for the controls.  Pass
-     *                {@link BrowserControlsState#BOTH} to preserve the current position.
+     * @param current The desired current state for the controls. Pass {@link
+     *     BrowserControlsState#BOTH} to preserve the current position.
      * @param animate Whether the controls should animate to the specified ending condition or
-     *                should jump immediately.
+     *     should jump immediately.
      */
     public void update(int current, boolean animate) {
         assert mTab.getWebContents() != null : "Shouldn't update a Tab with a null WebContents.";
@@ -193,11 +269,21 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         && current == BrowserControlsState.HIDDEN)) {
             return;
         }
+
+        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+            generateOffsetTags(current, constraints);
+        }
+
+        if (current == BrowserControlsState.SHOWN || constraints == BrowserControlsState.SHOWN) {
+            mTab.willShowBrowserControls();
+        }
+
         if (mNativeTabBrowserControlsConstraintsHelper == 0) {
             mNativeTabBrowserControlsConstraintsHelper =
                     TabBrowserControlsConstraintsHelperJni.get()
                             .init(TabBrowserControlsConstraintsHelper.this);
         }
+
         TabBrowserControlsConstraintsHelperJni.get()
                 .updateState(
                         mNativeTabBrowserControlsConstraintsHelper,
@@ -205,7 +291,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         mTab.getWebContents(),
                         constraints,
                         current,
-                        animate);
+                        animate,
+                        new BrowserControlsOffsetTagsInfo(mTopControlsOffsetTag));
     }
 
     private @BrowserControlsState int getConstraints() {
@@ -230,6 +317,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 WebContents webContents,
                 int contraints,
                 int current,
-                boolean animate);
+                boolean animate,
+                BrowserControlsOffsetTagsInfo offsetTagsInfo);
     }
 }

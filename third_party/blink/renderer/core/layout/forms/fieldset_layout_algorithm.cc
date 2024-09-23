@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
-#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 
@@ -27,8 +26,9 @@ enum class LegendBlockAlignment {
   kEnd,
 };
 
-// This function is very similar to BlockAlignment() in length_utils.cc, but
-// it supports text-align:left/center/right.
+// Legends aren't inline-level. Yet they may be aligned within the fieldset
+// block-start border using the text-align property (in addition to using auto
+// margins).
 inline LegendBlockAlignment ComputeLegendBlockAlignment(
     const ComputedStyle& legend_style,
     const ComputedStyle& fieldset_style) {
@@ -80,8 +80,9 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   // scrollbars are handled by the anonymous child box, and since padding is
   // inside the scrollport, padding also needs to be handled by the anonymous
   // child.
-  intrinsic_block_size_ =
-      IsBreakInside(GetBreakToken()) ? LayoutUnit() : Borders().block_start;
+  if (ShouldIncludeBlockStartBorderPadding(container_builder_)) {
+    intrinsic_block_size_ = Borders().block_start;
+  }
 
   if (InvolvedInBlockFragmentation(container_builder_)) {
     container_builder_.SetBreakTokenData(
@@ -95,15 +96,16 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
     return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
   }
 
-  intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      GetConstraintSpace(), Node(), GetBreakToken(), BorderScrollbarPadding(),
-      intrinsic_block_size_ + Borders().block_end);
+  intrinsic_block_size_ =
+      ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), GetBreakToken(),
+                              Borders() + Scrollbar() + Padding(),
+                              intrinsic_block_size_ + Borders().block_end);
 
   // Recompute the block-axis size now that we know our content size.
-  border_box_size_.block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(),
-      intrinsic_block_size_ + consumed_block_size_,
-      border_box_size_.inline_size);
+  border_box_size_.block_size =
+      ComputeBlockSizeForFragment(GetConstraintSpace(), Node(), BorderPadding(),
+                                  intrinsic_block_size_ + consumed_block_size_,
+                                  border_box_size_.inline_size);
 
   // The above computation utility knows nothing about fieldset weirdness. The
   // legend may eat from the available content box block size. Make room for
@@ -124,10 +126,8 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(all_fragments_block_size);
   container_builder_.SetIsFieldsetContainer();
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    BreakStatus status = FinishFragmentation(
-        Node(), GetConstraintSpace(), Borders().block_end,
-        FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
+    BreakStatus status = FinishFragmentation(&container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
@@ -145,12 +145,12 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
 #endif
   }
 
-  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
+  container_builder_.HandleOofsAndSpecialDescendants();
 
   const auto& style = Style();
-  if (style.LogicalHeight().IsPercentOrCalc() ||
-      style.LogicalMinHeight().IsPercentOrCalc() ||
-      style.LogicalMaxHeight().IsPercentOrCalc()) {
+  if (style.LogicalHeight().MayHavePercentDependence() ||
+      style.LogicalMinHeight().MayHavePercentDependence() ||
+      style.LogicalMaxHeight().MayHavePercentDependence()) {
     // The height of the fieldset content box depends on the percent-height of
     // the fieldset. So we should assume the fieldset has a percent-height
     // descendant.
@@ -286,38 +286,32 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
   // pushed so that the center of the border will be flush with the center
   // of the border-box of the legend.
 
-  LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
-      legend.Style(),
+  LayoutUnit legend_border_box_inline_size =
       LogicalFragment(writing_direction_, result->GetPhysicalFragment())
-          .InlineSize(),
-      legend_margins, Style(), BorderScrollbarPadding().inline_start,
-      ChildAvailableSize().inline_size);
-  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+          .InlineSize();
 
-  container_builder_.AddResult(*result, legend_offset);
-}
-
-LayoutUnit FieldsetLayoutAlgorithm::ComputeLegendInlineOffset(
-    const ComputedStyle& legend_style,
-    LayoutUnit legend_border_box_inline_size,
-    const BoxStrut& legend_margins,
-    const ComputedStyle& fieldset_style,
-    LayoutUnit fieldset_border_padding_inline_start,
-    LayoutUnit fieldset_content_inline_size) {
+  // Padding is mostly ignored for the fieldset container, but rather set on the
+  // anonymous fieldset content wrapper child (which is reflected in the
+  // BorderScrollbarPadding() of the builders). However, legends should honor
+  // it. Scrollbars should never occur at the inline-start, so no need to add
+  // that.
   LayoutUnit legend_inline_start =
-      fieldset_border_padding_inline_start + legend_margins.inline_start;
-  // The following logic is very similar to ResolveInlineMargins(), but it uses
-  // ComputeLegendBlockAlignment().
+      Borders().inline_start + Scrollbar().inline_start +
+      Padding().inline_start + legend_margins.inline_start;
+
   const LayoutUnit available_space =
-      fieldset_content_inline_size - legend_border_box_inline_size;
+      ChildAvailableSize().inline_size - legend_border_box_inline_size;
   if (available_space > LayoutUnit()) {
-    auto alignment = ComputeLegendBlockAlignment(legend_style, fieldset_style);
+    auto alignment = ComputeLegendBlockAlignment(legend.Style(), Style());
     if (alignment == LegendBlockAlignment::kCenter)
       legend_inline_start += available_space / 2;
     else if (alignment == LegendBlockAlignment::kEnd)
       legend_inline_start += available_space - legend_margins.inline_end;
   }
-  return legend_inline_start;
+
+  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+
+  container_builder_.AddResult(*result, legend_offset);
 }
 
 BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
@@ -326,7 +320,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
   const EarlyBreak* early_break_in_child = nullptr;
-  if (UNLIKELY(early_break_)) {
+  if (early_break_) [[unlikely]] {
     if (IsEarlyBreakTarget(*early_break_, container_builder_,
                            fieldset_content)) {
       container_builder_.AddBreakBeforeChild(fieldset_content,
@@ -345,9 +339,9 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
 
   LayoutUnit max_content_block_size = LayoutUnit::Max();
   if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
-    max_content_block_size =
-        ResolveMaxBlockLength(GetConstraintSpace(), Style(), BorderPadding(),
-                              Style().LogicalMaxHeight());
+    max_content_block_size = ResolveInitialMaxBlockLength(
+        GetConstraintSpace(), Style(), BorderPadding(),
+        Style().LogicalMaxHeight());
   }
 
   // If we are past the block-end and had previously laid out the content with a
@@ -403,9 +397,9 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
   BreakStatus break_status = BreakStatus::kContinue;
   if (GetConstraintSpace().HasBlockFragmentation() && !early_break_) {
     break_status = BreakBeforeChildIfNeeded(
-        GetConstraintSpace(), fieldset_content, *result,
-        GetConstraintSpace().FragmentainerOffset() + intrinsic_block_size_,
-        /* has_container_separation */ false, &container_builder_);
+        fieldset_content, *result,
+        FragmentainerOffsetForChildren() + intrinsic_block_size_,
+        /*has_container_separation=*/false);
   }
 
   if (break_status == BreakStatus::kContinue) {
@@ -437,8 +431,8 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
 LayoutUnit FieldsetLayoutAlgorithm::FragmentainerSpaceAvailable() const {
   // The legend may have extended past the end of the fragmentainer. Clamp to
   // zero if this is the case.
-  return std::max(LayoutUnit(), FragmentainerSpaceLeft(GetConstraintSpace()) -
-                                    intrinsic_block_size_);
+  return std::max(LayoutUnit(),
+                  FragmentainerSpaceLeftForChildren() - intrinsic_block_size_);
 }
 
 void FieldsetLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {
@@ -456,8 +450,13 @@ MinMaxSizesResult FieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   bool has_inline_size_containment = Node().ShouldApplyInlineSizeContainment();
   if (has_inline_size_containment) {
     // Size containment does not consider the legend for sizing.
+    //
+    // Add borders, scrollbar and padding separately, since padding for most
+    // purposes are ignored on fieldset containers, and are therefore not
+    // included in BorderScrollbarPadding().
     std::optional<MinMaxSizesResult> result_without_children =
-        CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());
+        CalculateMinMaxSizesIgnoringChildren(
+            Node(), Borders() + Scrollbar() + Padding());
     if (result_without_children)
       return *result_without_children;
   } else {
@@ -542,10 +541,8 @@ FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       GetConstraintSpace().GetBaselineAlgorithmType());
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
-    SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), fieldset_content, block_offset, &builder,
-        /* is_new_fc */ true,
-        container_builder_.RequiresContentBeforeBreaking());
+    SetupSpaceBuilderForFragmentation(container_builder_, fieldset_content,
+                                      block_offset, &builder);
   }
   return builder.ToConstraintSpace();
 }

@@ -9,12 +9,12 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 /**
  * An interface that provides the fundamental internal API for incognito re-authentication.
  *
- * The derived classes must ensure that they are created and destroyed, each time
- * the incognito re-auth screen is shown/hidden respectively. This allows to release any un-used
- * resource when the re-auth is not shown.
+ * <p>The derived classes must ensure that they are created and destroyed, each time the incognito
+ * re-auth screen is shown/hidden respectively. This allows to release any un-used resource when the
+ * re-auth is not shown.
  *
- * TODO(crbug.com/1227656): This and any other internal re-auth related files should be put
- * in an internal folder. Ideally only the controller would be potentially exposed.
+ * <p>TODO(crbug.com/40056462): This and any other internal re-auth related files should be put in
+ * an internal folder. Ideally only the controller would be potentially exposed.
  */
 interface IncognitoReauthCoordinator {
     /** A method responsible to fire the re-auth screen. */
@@ -23,11 +23,11 @@ interface IncognitoReauthCoordinator {
     /**
      * A method responsible to hide the re-auth screen.
      *
-     * TODO(crbug.com/1227656): Refactor this since not all the clients who implement this
+     * <p>TODO(crbug.com/40056462): Refactor this since not all the clients who implement this
      * interface are dialog based.
      *
      * @param dismissalCause The {@link DialogDismissalCause} for the dismissal of the re-auth
-     *                       screen.
+     *     screen.
      */
     void hide(@DialogDismissalCause int dismissalCause);
 

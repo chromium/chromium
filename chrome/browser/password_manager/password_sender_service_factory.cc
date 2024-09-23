@@ -6,18 +6,17 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 // static
 PasswordSenderServiceFactory* PasswordSenderServiceFactory::GetInstance() {
@@ -41,7 +40,7 @@ PasswordSenderServiceFactory::PasswordSenderServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
@@ -49,10 +48,11 @@ PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableSenderService)) {
-    return nullptr;
-  }
+// Password sending on Android is handled in GMSCore, and hence no service
+// should be instantiated.
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -62,7 +62,7 @@ PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
   CHECK(profile->IsRegularProfile());
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));
@@ -73,4 +73,5 @@ PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<password_manager::PasswordSenderServiceImpl>(
       std::move(sync_bridge));
+#endif  // BUILDFLAG(IS_ANDROID)
 }

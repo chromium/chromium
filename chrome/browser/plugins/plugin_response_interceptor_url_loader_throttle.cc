@@ -7,8 +7,9 @@
 #include <tuple>
 #include <utility>
 
-#include "base/feature_list.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
@@ -31,12 +32,11 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
-
-constexpr uint32_t kFullPageMimeHandlerDataPipeSize = 512U;
 
 void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   response_head->headers->RemoveHeader("Content-Security-Policy");
@@ -92,7 +92,7 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
 PluginResponseInterceptorURLLoaderThrottle::
     PluginResponseInterceptorURLLoaderThrottle(
         network::mojom::RequestDestination request_destination,
-        int frame_tree_node_id)
+        content::FrameTreeNodeId frame_tree_node_id)
     : request_destination_(request_destination),
       frame_tree_node_id_(frame_tree_node_id) {}
 
@@ -122,7 +122,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (extension_id.empty())
     return;
 
-  // TODO(1205920): Support prerendering of MimeHandlerViews.
+  // TODO(crbug.com/40180674): Support prerendering of MimeHandlerViews.
   if (web_contents->IsPrerenderedFrame(frame_tree_node_id_)) {
     delegate_->CancelWithError(
         net::Error::ERR_BLOCKED_BY_CLIENT,
@@ -155,9 +155,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   const std::string internal_id = base::UnguessableToken::Create().ToString();
 
 #if BUILDFLAG(ENABLE_PDF)
-  const bool is_for_oopif_pdf =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      response_head->mime_type == "application/pdf";
+  const bool is_for_oopif_pdf = chrome_pdf::features::IsOopifPdfEnabled() &&
+                                response_head->mime_type == pdf::kPDFMimeType;
 #else
   constexpr bool is_for_oopif_pdf = false;
 #endif
@@ -181,17 +180,15 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  CHECK_EQ(mojo::CreateDataPipe(kFullPageMimeHandlerDataPipeSize,
-                                producer_handle, consumer_handle),
-           MOJO_RESULT_OK);
+  CHECK_EQ(
+      mojo::CreateDataPipe(payload.size(), producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
 
-  uint32_t len = static_cast<uint32_t>(payload.size());
   CHECK_EQ(MOJO_RESULT_OK,
-           producer_handle->WriteData(payload.c_str(), &len,
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteAllData(base::as_byte_span(payload)));
 
   network::URLLoaderCompletionStatus status(net::OK);
-  status.decoded_body_length = len;
+  status.decoded_body_length = base::checked_cast<int64_t>(payload.size());
   new_client->OnComplete(status);
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;

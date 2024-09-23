@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/services/isolated_xr_device/xr_test_hook_wrapper.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace device {
 
-// TODO(https://crbug.com/891832): Remove these as conversion functions as part
+// TODO(crbug.com/41418750): Remove these as conversion functions as part
 // of the switch to only mojom types.
 ControllerRole MojoToDeviceControllerRole(
     device_test::mojom::ControllerRole role) {
@@ -167,6 +172,20 @@ ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
         ret.axis_data[i].x = data->axis_data[i]->x;
         ret.axis_data[i].y = data->axis_data[i]->y;
         ret.axis_data[i].axis_type = data->axis_data[i]->axis_type;
+      }
+      if (data->hand_data) {
+        ret.has_hand_data = true;
+        auto& joint_data = ret.hand_data;
+        CHECK_GE(std::size(joint_data),
+                 data->hand_data->hand_joint_data.size());
+
+        for (const auto& joint_entry : data->hand_data->hand_joint_data) {
+          uint32_t joint_index = static_cast<uint32_t>(joint_entry->joint);
+
+          joint_data[joint_index] = {joint_entry->joint,
+                                     joint_entry->mojo_from_joint,
+                                     joint_entry->radius};
+        }
       }
       return ret;
     }

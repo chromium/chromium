@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/files/file.h"
 
 // The only 32-bit platform that uses this file is Android. On Android APIs
@@ -18,7 +23,12 @@
 
 static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 
+#include <atomic>
+#include <optional>
+
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -26,7 +36,6 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/os_compat_android.h"
@@ -40,6 +49,30 @@ static_assert(File::FROM_BEGIN == SEEK_SET && File::FROM_CURRENT == SEEK_CUR &&
               "whence mapping must match the system headers");
 
 namespace {
+
+#if BUILDFLAG(IS_APPLE)
+// When enabled, `F_FULLFSYNC` is not used in `File::Flush`. Instead,
+// `F_BARRIERFSYNC` or `flush()` is used (depending on the
+// "MacEfficientFileFlushUseBarrier" param). The feature exists to measure the
+// cost of `F_FULLFSYNC` compared to other solutions (not ready to enable by
+// default as-is). See
+// https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
+BASE_FEATURE(kMacEfficientFileFlush,
+             "MacEfficientFileFlush",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
+    &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};
+
+enum class MacFileFlushMechanism {
+  kFlush,
+  kFullFsync,
+  kBarrierFsync,
+};
+
+std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
+    MacFileFlushMechanism::kFullFsync};
+#endif  // BUILDFLAG(IS_APPLE)
 
 // NaCl doesn't provide the following system calls, so either simulate them or
 // wrap them in order to minimize the number of #ifdef's in this file.
@@ -76,7 +109,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
-short FcntlFlockType(absl::optional<File::LockMode> mode) {
+short FcntlFlockType(std::optional<File::LockMode> mode) {
   if (!mode.has_value())
     return F_UNLCK;
   switch (mode.value()) {
@@ -89,7 +122,7 @@ short FcntlFlockType(absl::optional<File::LockMode> mode) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           absl::optional<File::LockMode> mode) {
+                           std::optional<File::LockMode> mode) {
   struct flock lock;
   lock.l_type = FcntlFlockType(std::move(mode));
   lock.l_whence = SEEK_SET;
@@ -121,7 +154,7 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 }
 
 File::Error CallFcntlFlock(PlatformFile file,
-                           absl::optional<File::LockMode> mode) {
+                           std::optional<File::LockMode> mode) {
   NOTIMPLEMENTED();  // NaCl doesn't implement flock struct.
   return File::FILE_ERROR_INVALID_OPERATION;
 }
@@ -367,7 +400,7 @@ int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
       HANDLE_EINTR(write(file_.get(), data, static_cast<size_t>(size))));
 }
 
-int64_t File::GetLength() {
+int64_t File::GetLength() const {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE("GetLength");
@@ -421,7 +454,7 @@ File::Error File::Lock(File::LockMode mode) {
 
 File::Error File::Unlock() {
   SCOPED_FILE_TRACE("Unlock");
-  return CallFcntlFlock(file_.get(), absl::optional<File::LockMode>());
+  return CallFcntlFlock(file_.get(), std::optional<File::LockMode>());
 }
 #endif
 
@@ -437,6 +470,22 @@ File File::Duplicate() const {
 
   return File(std::move(other_fd), async());
 }
+
+#if BUILDFLAG(IS_APPLE)
+void File::InitializeFeatures() {
+  if (FeatureList::IsEnabled(kMacEfficientFileFlush)) {
+    // "relaxed" because there is no dependency between these memory operations
+    // and other memory operations.
+    if (kMacEfficientFileFlushUseBarrier.Get()) {
+      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kBarrierFsync,
+                                       std::memory_order_relaxed);
+    } else {
+      g_mac_file_flush_mechanism.store(MacFileFlushMechanism::kFlush,
+                                       std::memory_order_relaxed);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 // Static.
 File::Error File::OSErrorToFileError(int saved_errno) {
@@ -500,9 +549,6 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
 
   if (!open_flags && !(flags & FLAG_OPEN) && !(flags & FLAG_OPEN_ALWAYS)) {
     NOTREACHED();
-    errno = EOPNOTSUPP;
-    error_details_ = FILE_ERROR_FAILED;
-    return;
   }
 
   if (flags & FLAG_WRITE && flags & FLAG_READ) {
@@ -575,18 +621,41 @@ bool File::Flush() {
   // On macOS and iOS, fsync() is guaranteed to send the file's data to the
   // underlying storage device, but may return before the device actually writes
   // the data to the medium. When used by database systems, this may result in
-  // unexpected data loss.
-  // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
-  if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC)))
-    return true;
-
-  // Some filesystms do not support fcntl(F_FULLFSYNC). We handle these cases by
-  // falling back to fsync(). Unfortunately, lack of F_FULLFSYNC support results
-  // in various error codes, so we cannot use the error code as a definitive
-  // indicator that F_FULLFSYNC was not supported. So, if fcntl() errors out for
-  // any reason, we may end up making an unnecessary system call.
+  // unexpected data loss. Depending on experiment state, this function may use
+  // F_BARRIERFSYNC or F_FULLFSYNC to provide stronger guarantees than fsync().
   //
-  // See the CL description at https://crrev.com/c/1400159 for details.
+  // See documentation:
+  // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
+  //
+  // "relaxed" because there is no dependency between this memory operation and
+  // other memory operations.
+  switch (g_mac_file_flush_mechanism.load(std::memory_order_relaxed)) {
+    case MacFileFlushMechanism::kBarrierFsync: {
+      if (!HANDLE_EINTR(fcntl(file_.get(), F_BARRIERFSYNC))) {
+        return true;
+      }
+      // Fall back to `fsync()` in case of failure.
+      break;
+    }
+    case MacFileFlushMechanism::kFullFsync: {
+      if (!HANDLE_EINTR(fcntl(file_.get(), F_FULLFSYNC))) {
+        return true;
+      }
+      // Fall back to `fsync()` in case of failure.
+      break;
+    }
+    case MacFileFlushMechanism::kFlush: {
+      // Fall back to `fsync()`.
+      break;
+    }
+  }
+
+  // `fsync()` if `F_BARRIERFSYNC` or `F_FULLFSYNC` failed, or if the mechanism
+  // is `kFlush`. Some file systems do not support `F_FULLFSYNC` /
+  // `F_BARRIERFSYNC` but we cannot use the error code as a definitive indicator
+  // that it's the case, so we'll keep trying `F_FULLFSYNC` / `F_BARRIERFSYNC`
+  // for every call to this method when it's the case. See the CL description at
+  // https://crrev.com/c/1400159 for details.
   return !HANDLE_EINTR(fsync(file_.get()));
 #else
   return !HANDLE_EINTR(fsync(file_.get()));
@@ -603,17 +672,17 @@ File::Error File::GetLastFileError() {
   return base::File::OSErrorToFileError(errno);
 }
 
-int File::Stat(const char* path, stat_wrapper_t* sb) {
+int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return stat(path, sb);
+  return stat(path.value().c_str(), sb);
 }
 int File::Fstat(int fd, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return fstat(fd, sb);
 }
-int File::Lstat(const char* path, stat_wrapper_t* sb) {
+int File::Lstat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return lstat(path, sb);
+  return lstat(path.value().c_str(), sb);
 }
 
 }  // namespace base

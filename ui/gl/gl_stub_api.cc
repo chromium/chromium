@@ -32,20 +32,12 @@ void GLStubApi::glGenBuffersARBFn(GLsizei n, GLuint* buffers) {
 
 void GLStubApi::glGenerateMipmapEXTFn(GLenum target) {}
 
-void GLStubApi::glGenFencesAPPLEFn(GLsizei n, GLuint* fences) {
-  GenHelper(n, fences);
-}
-
 void GLStubApi::glGenFencesNVFn(GLsizei n, GLuint* fences) {
   GenHelper(n, fences);
 }
 
 void GLStubApi::glGenFramebuffersEXTFn(GLsizei n, GLuint* framebuffers) {
   GenHelper(n, framebuffers);
-}
-
-GLuint GLStubApi::glGenPathsNVFn(GLsizei range) {
-  return 1;
 }
 
 void GLStubApi::glGenQueriesFn(GLsizei n, GLuint* ids) {
@@ -272,19 +264,11 @@ GLboolean GLStubApi::glIsEnabledFn(GLenum cap) {
   return GL_TRUE;
 }
 
-GLboolean GLStubApi::glIsFenceAPPLEFn(GLuint fence) {
-  return GL_TRUE;
-}
-
 GLboolean GLStubApi::glIsFenceNVFn(GLuint fence) {
   return GL_TRUE;
 }
 
 GLboolean GLStubApi::glIsFramebufferEXTFn(GLuint framebuffer) {
-  return GL_TRUE;
-}
-
-GLboolean GLStubApi::glIsPathNVFn(GLuint path) {
   return GL_TRUE;
 }
 
@@ -321,10 +305,6 @@ GLboolean GLStubApi::glIsTransformFeedbackFn(GLuint id) {
 }
 
 GLboolean GLStubApi::glIsVertexArrayOESFn(GLuint array) {
-  return GL_TRUE;
-}
-
-GLboolean GLStubApi::glTestFenceAPPLEFn(GLuint fence) {
   return GL_TRUE;
 }
 

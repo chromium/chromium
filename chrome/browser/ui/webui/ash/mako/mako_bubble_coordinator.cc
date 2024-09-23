@@ -7,7 +7,10 @@
 #include <algorithm>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_consent_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
@@ -16,6 +19,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -30,6 +35,12 @@ std::string_view ToOrcaModeParamValue(MakoEditorMode mode) {
   return mode == MakoEditorMode::kWrite ? kOrcaWriteMode : kOrcaRewriteMode;
 }
 
+std::string GetSystemLocale() {
+  return g_browser_process != nullptr
+             ? g_browser_process->GetApplicationLocale()
+             : "";
+}
+
 }  // namespace
 
 MakoBubbleCoordinator::MakoBubbleCoordinator() = default;
@@ -39,9 +50,12 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
 }
 
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
+  GURL url = net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoPrivacyURL),
+                                                kOrcaHostLanguageParamKey,
+                                                GetSystemLocale());
+
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       GURL(kChromeUIMakoPrivacyURL), profile, IDS_ACCNAME_ORCA);
-  contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoConsentView>(contents_wrapper_.get(),
                                         context_caret_bounds_));
@@ -50,6 +64,8 @@ void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
 void MakoBubbleCoordinator::LoadEditorUI(
     Profile* profile,
     MakoEditorMode mode,
+    bool can_fallback_to_center_position,
+    bool feedback_enabled,
     std::optional<std::string_view> preset_query_id,
     std::optional<std::string_view> freeform_text) {
   if (IsShowingUI()) {
@@ -63,14 +79,29 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            preset_query_id);
   url = net::AppendOrReplaceQueryParameter(url, kOrcaFreeformParamKey,
                                            freeform_text);
+  url = net::AppendOrReplaceQueryParameter(url, kOrcaHostLanguageParamKey,
+                                           GetSystemLocale());
+  url = net::AppendOrReplaceQueryParameter(url, kOrcaFeedbackEnabledParamKey,
+                                           feedback_enabled ? "true" : "false");
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  url = net::AppendOrReplaceQueryParameter(
+      url, kOrcaMagicBoostParamKey,
+      magic_boost_state && magic_boost_state->IsMagicBoostAvailable()
+          ? "true"
+          : "false");
+
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport)) {
+    url = net::AppendOrReplaceQueryParameter(url, kOrcaResizingEnabledParamKey,
+                                             "true");
+  }
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
-      url, profile, IDS_ACCNAME_ORCA, /*webui_resizes_host=*/true,
+      url, profile, IDS_ACCNAME_ORCA,
       /*esc_closes_ui=*/false);
-  contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
-                                        context_caret_bounds_));
+                                        context_caret_bounds_,
+                                        can_fallback_to_center_position));
 }
 
 void MakoBubbleCoordinator::ShowUI() {

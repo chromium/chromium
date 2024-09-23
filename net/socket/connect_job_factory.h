@@ -100,8 +100,8 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
 
-  // TODO(crbug.com/1206799): Rename to discourage use except in cases where the
-  // scheme is non-standard or unknown.
+  // TODO(crbug.com/40181080): Rename to discourage use except in cases where
+  // the scheme is non-standard or unknown.
   std::unique_ptr<ConnectJob> CreateConnectJob(
       bool using_ssl,
       HostPortPair endpoint,

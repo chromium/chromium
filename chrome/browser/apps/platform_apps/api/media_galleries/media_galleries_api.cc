@@ -229,18 +229,16 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
         ui::SelectFileDialog::SELECT_FOLDER,
         l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY_TITLE),
         default_path, nullptr, 0, base::FilePath::StringType(),
-        platform_util::GetTopLevel(web_contents_->GetNativeView()), nullptr);
+        platform_util::GetTopLevel(web_contents_->GetNativeView()));
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     callback_.Run(file.path());
     Release();  // Balanced in Show().
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     callback_.Run(base::FilePath());
     Release();  // Balanced in Show().
   }
@@ -437,7 +435,7 @@ void MediaGalleriesGetMediaFileSystemsFunction::OnPreferencesInit(
       GetAndReturnGalleries();
       return;
     case MediaGalleries::GetMediaFileSystemsInteractivity::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   Respond(Error("Error initializing Media Galleries preferences."));
 }
@@ -659,13 +657,13 @@ void MediaGalleriesGetMetadataFunction::OnPreferencesInit(
 void MediaGalleriesGetMetadataFunction::GetMetadata(
     MediaGalleries::GetMetadataType metadata_type,
     const std::string& blob_uuid,
-    std::unique_ptr<std::string> blob_header,
+    std::string blob_header,
     int64_t total_blob_length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string mime_type;
   bool mime_type_sniffed =
-      net::SniffMimeTypeFromLocalData(*blob_header, &mime_type);
+      net::SniffMimeTypeFromLocalData(blob_header, &mime_type);
 
   if (!mime_type_sniffed) {
     Respond(Error("Could not determine MIME type."));

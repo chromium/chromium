@@ -206,8 +206,7 @@ TEST(RegistryDictTest, ConvertToJSON) {
   test_dict.SetValue("string-to-int", string_zero.Clone());
   test_dict.SetValue("string-to-dict", string_dict.Clone());
 
-  std::string error;
-  Schema schema = Schema::Parse(
+  const auto schema = Schema::Parse(
       "{"
       "  \"type\": \"object\","
       "  \"properties\": {"
@@ -222,11 +221,10 @@ TEST(RegistryDictTest, ConvertToJSON) {
       "    \"string-to-int\": { \"type\": \"integer\" },"
       "    \"string-to-dict\": { \"type\": \"object\" }"
       "  }"
-      "}",
-      &error);
-  ASSERT_TRUE(schema.valid()) << error;
+      "}");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
-  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;
@@ -261,8 +259,7 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
   list->SetValue("4", base::Value("4").Clone());
   test_dict.SetKey("dict-to-list", std::move(list));
 
-  std::string error;
-  Schema schema = Schema::Parse(
+  const auto schema = Schema::Parse(
       "{"
       "  \"type\": \"object\","
       "  \"properties\": {"
@@ -271,11 +268,10 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
       "      \"items\": { \"type\": \"string\" }"
       "    }"
       "  }"
-      "}",
-      &error);
-  ASSERT_TRUE(schema.valid()) << error;
+      "}");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
-  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;
@@ -307,8 +303,7 @@ TEST(RegistryDictTest, PatternPropertySchema) {
   policy_dict->SetValue("invalid_key", string_dict.Clone());
   test_dict.SetKey("ExtensionSettings", std::move(policy_dict));
 
-  std::string error;
-  Schema schema = Schema::Parse(
+  const auto schema = Schema::Parse(
       "{"
       "  \"type\": \"object\","
       "  \"properties\": {"
@@ -337,11 +332,10 @@ TEST(RegistryDictTest, PatternPropertySchema) {
       "      },"
       "    },"
       "  },"
-      "}",
-      &error);
-  ASSERT_TRUE(schema.valid()) << error;
+      "}");
+  ASSERT_TRUE(schema.has_value()) << schema.error();
 
-  std::optional<base::Value> actual(test_dict.ConvertToJSON(schema));
+  std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
   base::Value::Dict expected;

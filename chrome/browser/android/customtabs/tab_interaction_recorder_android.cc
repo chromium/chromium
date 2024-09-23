@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -23,6 +22,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 
 namespace customtabs {
 
@@ -58,7 +60,7 @@ AutofillObserverImpl::~AutofillObserverImpl() {
 }
 
 void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
-                                           autofill::FormGlobalId) {
+                                           const autofill::FormData&) {
   OnFormInteraction();
 }
 
@@ -84,7 +86,8 @@ void AutofillObserverImpl::OnAfterTextFieldDidScroll(autofill::AutofillManager&,
 
 void AutofillObserverImpl::OnAfterFormsSeen(
     AutofillManager& manager,
-    base::span<const autofill::FormGlobalId> forms) {
+    base::span<const autofill::FormGlobalId> updated_forms,
+    base::span<const autofill::FormGlobalId> removed_forms) {
   RenderFrameHost* rfh = RenderFrameHost::FromID(global_id_);
   // Only mark has form associated data for the RFH observed. This is to
   // metigate the fact that AutofillManager will dispatch |OnAfterFormsSeen| to
@@ -95,7 +98,7 @@ void AutofillObserverImpl::OnAfterFormsSeen(
 
   // Check whether the form seen lives in the observed RFH.
   bool forms_in_rfh = false;
-  for (auto form_id : forms) {
+  for (auto form_id : updated_forms) {
     if (form_id.frame_token ==
         autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
       forms_in_rfh = true;

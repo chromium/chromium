@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <string>
+
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace content_settings {
@@ -47,30 +49,33 @@ const gfx::VectorIcon& CookieControlsUtil::GetEnforcedIcon(
     CookieControlsEnforcement enforcement) {
   switch (enforcement) {
     case CookieControlsEnforcement::kEnforcedByExtension:
-      return vector_icons::kExtensionIcon;
+      return vector_icons::kExtensionChromeRefreshIcon;
     case CookieControlsEnforcement::kEnforcedByPolicy:
-      return vector_icons::kBusinessIcon;
+      return vector_icons::kBusinessChromeRefreshIcon;
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      return vector_icons::kSettingsIcon;
+      return vector_icons::kSettingsChromeRefreshIcon;
     case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 // static
-int CookieControlsUtil::GetEnforcedTooltipTextId(
+std::u16string CookieControlsUtil::GetEnforcedTooltip(
     CookieControlsEnforcement enforcement) {
   switch (enforcement) {
     case CookieControlsEnforcement::kEnforcedByExtension:
-      return IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
+      return l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION);
     case CookieControlsEnforcement::kEnforcedByPolicy:
-      return IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
+      return l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY);
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      return IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP;
+      return l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP);
     case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

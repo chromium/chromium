@@ -64,7 +64,8 @@ class WebTestPermissionManager
       const url::Origin& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host) override;
+      content::RenderFrameHost* render_frame_host,
+      bool should_include_device_status) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
       blink::PermissionType permission,
       RenderProcessHost* render_process_host,
@@ -73,16 +74,11 @@ class WebTestPermissionManager
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& overridden_origin) override;
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      RenderProcessHost* render_process_host,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-  void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) override;
+  void OnPermissionStatusChangeSubscriptionAdded(
+      content::PermissionController::SubscriptionId subscription_id) override;
 
+  void UnsubscribeFromPermissionStatusChange(
+      content::PermissionController::SubscriptionId subscription_id) override;
   void SetPermission(
       blink::PermissionType permission,
       blink::mojom::PermissionStatus status,
@@ -116,6 +112,9 @@ class WebTestPermissionManager
     bool operator==(const PermissionDescription& other) const;
     bool operator!=(const PermissionDescription& other) const;
 
+    bool operator==(PermissionStatusSubscription* other) const;
+    bool operator!=(PermissionStatusSubscription* other) const;
+
     // Hash operator for hash maps.
     struct Hash {
       size_t operator()(const PermissionDescription& description) const;
@@ -126,9 +125,6 @@ class WebTestPermissionManager
     GURL embedding_origin;
   };
 
-  struct Subscription;
-  using SubscriptionsMap =
-      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
   using PermissionsMap = std::unordered_map<PermissionDescription,
                                             blink::mojom::PermissionStatus,
                                             PermissionDescription::Hash>;
@@ -166,10 +162,6 @@ class WebTestPermissionManager
       {blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS,
        blink::mojom::PermissionStatus::ASK},
   };
-
-  // List of subscribers currently listening to permission changes.
-  SubscriptionsMap subscriptions_;
-  SubscriptionId::Generator subscription_id_generator_;
 
   mojo::ReceiverSet<blink::test::mojom::PermissionAutomation> receivers_;
 };

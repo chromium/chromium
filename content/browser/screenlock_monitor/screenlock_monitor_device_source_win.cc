@@ -10,7 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
-#include "base/win/message_window.h"
+#include "ui/gfx/win/singleton_hwnd.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace content {
 namespace {
@@ -58,42 +59,32 @@ void ScreenlockMonitorDeviceSource::SessionMessageWindow::
 }
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
-  // Create a window for receiving session change notifications.
-  window_ = std::make_unique<base::win::MessageWindow>();
-  if (!window_->Create(base::BindRepeating(&SessionMessageWindow::OnWndProc,
-                                           base::Unretained(this)))) {
-    DLOG(ERROR) << "Failed to create the screenlock monitor window.";
-    window_.reset();
-    return;
-  }
+  // Create a singleton observer for receiving session change notifications.
+  // base:Unretained() is safe because the observer handles the correct
+  // cleanup if either the SingletonHwnd or forwarded object is destroyed
+  // first.
+  singleton_hwnd_observer_ =
+      std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
+          &ScreenlockMonitorDeviceSource::SessionMessageWindow::OnWndProc,
+          base::Unretained(this)));
 
   // Use NOTIFY_FOR_THIS_SESSION so we only receive events from the current
   // session, and not from other users connected to the same session host.
   bool registered = register_session_notification_function_(
-      window_->hwnd(), NOTIFY_FOR_THIS_SESSION);
+      gfx::SingletonHwnd::GetInstance()->hwnd(), NOTIFY_FOR_THIS_SESSION);
   DCHECK(registered);
 }
 
-ScreenlockMonitorDeviceSource::SessionMessageWindow::~SessionMessageWindow() {
-  // There should be no race condition between this code and the worker thread.
-  // |unregister_session_notification_function_| is only called from destruction
-  // as we are in shutdown, which means no other worker threads can be running.
-  if (window_) {
-    bool unregistered =
-        unregister_session_notification_function_(window_->hwnd());
-    DCHECK(unregistered);
-  }
-}
+ScreenlockMonitorDeviceSource::SessionMessageWindow::~SessionMessageWindow() {}
 
-bool ScreenlockMonitorDeviceSource::SessionMessageWindow::OnWndProc(
+void ScreenlockMonitorDeviceSource::SessionMessageWindow::OnWndProc(
+    HWND hwnd,
     UINT message,
     WPARAM wparam,
-    LPARAM lparam,
-    LRESULT* result) {
+    LPARAM lparam) {
   if (message == WM_WTSSESSION_CHANGE) {
     ProcessWTSSessionLockMessage(wparam);
   }
-  return false;
 }
 
 void ScreenlockMonitorDeviceSource::SessionMessageWindow::

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {

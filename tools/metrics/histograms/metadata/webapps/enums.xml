@@ -117,32 +117,8 @@ chromium-metrics-reviews@google.com.
       label="From a browser command, currently the App Menu in the menu bar
              on Mac OS"/>
   <int value="3" label="From a sub apps install dialog"/>
-</enum>
-
-<enum name="AppTypeToMenuEntry">
-  <int value="0" label="WebApk install, menu item unknown (failure mode)"/>
-  <int value="1"
-      label="WebApk install, menu showed 'Add To Homescreen' (failure mode)"/>
-  <int value="2" label="WebApk install, menu showed 'Install'"/>
-  <int value="3" label="Shortcut install, menu item unknown (failure mode)"/>
-  <int value="4" label="Shortcut install, menu showed 'Add To Homescreen'"/>
-  <int value="5"
-      label="Shortcut install, menu showed 'Install' (failure mode)"/>
-</enum>
-
-<enum name="CalculatorAppErasureScanResult">
-  <obsolete>
-    Code removed 2023-06.
-  </obsolete>
-  <int value="0" label="NoWebAppsForProcess"/>
-  <int value="1" label="BothAppsInstalled"/>
-  <int value="2" label="WebAppInstalled"/>
-  <int value="3" label="ChromeAppInstalled"/>
-  <int value="4" label="BothAppsNotUserUninstalled"/>
-  <int value="5" label="WebAppNotUserUninstalled"/>
-  <int value="6" label="ChromeAppNotUserUninstalled"/>
-  <int value="7" label="FixAlreadyAppliedAndWantedToApplyAgain"/>
-  <int value="8" label="FixApplied"/>
+  <int value="4" label="From the settings button on a notification"/>
+  <int value="5" label="From the page specific site data dialog"/>
 </enum>
 
 <enum name="DefaultOfflineClosingReason">
@@ -194,6 +170,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Shortcut"/>
 </enum>
 
+<enum name="IsolatedWebAppCleanupOrphanedIWAsError">
+  <int value="1" label="Could not delete all orphaned isolated web apps."/>
+  <int value="2" label="Skipped execution during system shutdown."/>
+</enum>
+
+<enum name="IsolatedWebAppInstallError">
+  <int value="1" label="Cannot copy to profile directory"/>
+  <int value="2" label="Trust check failed"/>
+  <int value="3" label="Failed to load install URL"/>
+  <int value="4" label="App is not installable"/>
+  <int value="5" label="Failed to validate manifest"/>
+  <int value="6" label="Failed to retrieve icons"/>
+  <int value="7" label="Failed to install"/>
+</enum>
+
 <enum name="IsolatedWebAppReadResponseHeadError">
   <int value="1" label="Response head parsing: Internal error"/>
   <int value="2" label="Response head parsing: Format error"/>
@@ -218,6 +209,24 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Metadata parsing: Format error"/>
   <int value="8" label="Metadata parsing: Version error"/>
   <int value="9" label="Metadata validation error"/>
+</enum>
+
+<enum name="IsolatedWebAppUpdateError">
+  <int value="1" label="Cannot calculate IsolatedWebAppUrlInfo"/>
+  <int value="2" label="Update manifest download failed"/>
+  <int value="3" label="Update manifest invalid json"/>
+  <int value="4" label="Invalid update manifest"/>
+  <int value="5" label="Update manifest no applicable version"/>
+  <int value="6" label="IWA not installed"/>
+  <int value="7" label="Download path creation failed"/>
+  <int value="8" label="Bundle download error"/>
+  <int value="9" label="Update dry run failed"/>
+  <int value="10" label="Update apply failed"/>
+</enum>
+
+<enum name="LaunchedAppType">
+  <int value="0" label="DIY app launched"/>
+  <int value="1" label="Crafted app launched"/>
 </enum>
 
 <enum name="LaunchFromHomeScreen">
@@ -307,12 +316,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Completed"/>
   <int value="1" label="PrimaryPageChanged"/>
   <int value="2" label="AbortedDueToFailure"/>
-</enum>
-
-<enum name="WebAppInstallIphResult">
-  <int value="0" label="Installed"/>
-  <int value="1" label="Clicked Install icon then canceled install"/>
-  <int value="2" label="Ignored"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

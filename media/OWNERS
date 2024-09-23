@@ -19,6 +19,9 @@ tguilbert@chromium.org
 tmathmeyer@chromium.org
 xhwang@chromium.org
 
+# EU coverage for straightforward changes
+blundell@chromium.org
+
 # For Fuchsia-specific changes:
 per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 

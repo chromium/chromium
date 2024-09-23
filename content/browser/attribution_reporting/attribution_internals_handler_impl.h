@@ -6,14 +6,24 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace attribution_reporting {
+struct OsRegistrationItem;
+}  // namespace attribution_reporting
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -45,14 +55,9 @@ class AttributionInternalsHandlerImpl
   void IsAttributionReportingEnabled(
       attribution_internals::mojom::Handler::
           IsAttributionReportingEnabledCallback callback) override;
-  void GetActiveSources(
-      attribution_internals::mojom::Handler::GetActiveSourcesCallback callback)
-      override;
-  void GetReports(attribution_internals::mojom::Handler::GetReportsCallback
+  void SendReport(AttributionReport::Id,
+                  attribution_internals::mojom::Handler::SendReportCallback
                       callback) override;
-  void SendReports(const std::vector<AttributionReport::Id>& ids,
-                   attribution_internals::mojom::Handler::SendReportsCallback
-                       callback) override;
   void ClearStorage(attribution_internals::mojom::Handler::ClearStorageCallback
                         callback) override;
 
@@ -71,14 +76,21 @@ class AttributionInternalsHandlerImpl
   void OnDebugReportSent(const AttributionDebugReport&,
                          int status,
                          base::Time) override;
-  void OnTriggerHandled(const AttributionTrigger& trigger,
-                        std::optional<uint64_t> cleared_debug_key,
+  void OnAggregatableDebugReportSent(
+      const AggregatableDebugReport&,
+      base::ValueView report_body,
+      attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
+      const SendAggregatableDebugReportResult&) override;
+  void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;
   void OnOsRegistration(
       base::Time time,
-      const OsRegistration&,
+      const attribution_reporting::OsRegistrationItem&,
+      const url::Origin& top_level_origin,
+      attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) override;
+  void OnDebugModeChanged(bool debug_mode) override;
 
   void OnObserverDisconnected();
 
@@ -90,6 +102,8 @@ class AttributionInternalsHandlerImpl
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       manager_observation_{this};
+
+  base::WeakPtrFactory<AttributionInternalsHandlerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

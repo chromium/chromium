@@ -21,14 +21,14 @@ void TestSmallerThanOperator(const UnguessableToken& a,
 }
 
 TEST(UnguessableTokenTest, VerifyEveryBit) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(1, 2);
+  std::optional<UnguessableToken> token = UnguessableToken::Deserialize(1, 2);
   ASSERT_TRUE(token.has_value());
   uint64_t high = 1;
   uint64_t low = 2;
 
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_high = high ^ bit;
-    absl::optional<UnguessableToken> new_token =
+    std::optional<UnguessableToken> new_token =
         UnguessableToken::Deserialize(new_high, low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
@@ -36,7 +36,7 @@ TEST(UnguessableTokenTest, VerifyEveryBit) {
 
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_low = low ^ bit;
-    absl::optional<UnguessableToken> new_token =
+    std::optional<UnguessableToken> new_token =
         UnguessableToken::Deserialize(high, new_low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
@@ -96,7 +96,7 @@ TEST(UnguessableTokenTest, VerifySerialization) {
   EXPECT_TRUE(high);
   EXPECT_TRUE(low);
 
-  absl::optional<UnguessableToken> Deserialized =
+  std::optional<UnguessableToken> Deserialized =
       UnguessableToken::Deserialize(high, low);
   ASSERT_TRUE(Deserialized.has_value());
   EXPECT_EQ(token, *Deserialized);
@@ -141,7 +141,7 @@ TEST(UnguessableTokenTest, VerifyToStringUniqueness) {
 }
 
 TEST(UnguessableTokenTest, VerifyDeserializeZeroes) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(0, 0);
+  std::optional<UnguessableToken> token = UnguessableToken::Deserialize(0, 0);
 
   EXPECT_FALSE(token.has_value());
 }

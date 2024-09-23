@@ -1,78 +1,24 @@
-<style include="cr-shared-style settings-shared">
-  .high-efficiency-radio-group {
-    display: flex;
-    flex-direction: column;
-    padding: 0 var(--cr-section-padding);
-  }
-
-  .badge {
-    align-items: center;
-    background: var(--google-grey-600);
-    border-radius: 4px;
-    color: white;
-    display: inline-flex;
-    font-size: 10px;
-    height: 15px;
-    margin-inline-start: 15px;
-    padding: 0 4px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .badge {
-      background: var(--google-grey-500);
-      color: var(--google-grey-900);
-    }
-  }
-
-  #enabledOnTimerButton::part(labelWrapper) {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-  }
-</style>
-<settings-toggle-button id="toggleButton" on-change="onChange_"
-    pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
-    label="$i18n{memorySaverModeLabel}"
-    sub-label="$i18n{memorySaverModeDescription}"
-    learn-more-url="$i18n{memorySaverLearnMoreUrl}"
-    numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[toggleButtonCheckedValue_(
-        isMemorySaverMultistateModeEnabled_)]]">
-</settings-toggle-button>
-<template is="dom-if" if="[[isMemorySaverMultistateModeEnabled_]]">
-  <iron-collapse id="radioGroupCollapse"
-      opened="[[isMemorySaverModeEnabled_(
-          prefs.performance_tuning.high_efficiency_mode.state.value)]]">
-    <div class="high-efficiency-radio-group">
-      <settings-radio-group id="radioGroup" on-change="onChange_"
-          pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
-          group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
-        <controlled-radio-button
-            label="$i18n{memorySaverModeHeuristicsLabel}"
-            name="[[memorySaverModeStateEnum_.ENABLED]]"
-            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
-          <div class="badge"
-              hidden$="[[!showMemorySaverHeuristicModeRecommendedBadge_]]">
-            $i18n{memorySaverModeRecommendedBadge}
-          </div>
-        </controlled-radio-button>
-        <controlled-radio-button id="enabledOnTimerButton"
-            label="$i18n{memorySaverModeOnTimerLabel}"
-            name="[[memorySaverModeStateEnum_.ENABLED_ON_TIMER]]"
-            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]"
-            exportparts="labelWrapper">
-          <settings-dropdown-menu id="discardTimeDropdown"
-              label="$i18n{memorySaverChooseDiscardTimeAriaLabel}"
-              disabled="[[!isMemorySaverModeEnabledOnTimer_(
-                  prefs.performance_tuning.high_efficiency_mode.state.value)]]"
-              pref="{{prefs.performance_tuning.high_efficiency_mode.time_before_discard_in_minutes}}"
-              menu-options="[[discardTimerOptions_]]"
-              on-click="onDropdownClick_">
-          </settings-dropdown-menu>
-        </controlled-radio-button>
-      </settings-radio-group>
-    </div>
-  </iron-collapse>
+<template is="dom-if" if="[[isPerformanceInterventionUiEnabled_]]">
+  <settings-toggle-button id="performanceInterventionToggleButton"
+      on-change="onPerformanceInterventionToggleButtonChange_"
+      pref="{{prefs.performance_tuning.intervention_notification.enabled}}"
+      label="$i18n{performanceInterventionEnabledLabel}"
+      sub-label-with-link="$i18n{performanceInterventionEnabledDescription}"
+      on-sub-label-link-clicked="onPerformanceInterventionLearnMoreLinkClick_">
+  </settings-toggle-button>
 </template>
+<settings-toggle-button id="discardRingTreatmentToggleButton"
+  on-change="onDiscardRingChange_"
+  pref="{{prefs.performance_tuning.discard_ring_treatment.enabled}}"
+  label="$i18n{discardRingTreatmentEnabledLabel}"
+  sub-label-with-link="
+        $i18n{discardRingTreatmentEnabledDescriptionWithLearnLink}"
+  on-sub-label-link-clicked="onDiscardRingTreatmentLearnMoreLinkClick_">
+</settings-toggle-button>
+<cr-link-row
+    label="$i18n{tabHoverPreviewCardLinkTitle}"
+    sub-label="$i18n{tabHoverPreviewCardLinkSubtitle}"
+    on-click="onTabHoverPreviewCardLinkClick_" external>
+</cr-link-row>
 <tab-discard-exception-list id="exceptionList" prefs="{{prefs}}">
 </tab-discard-exception-list>

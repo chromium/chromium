@@ -39,6 +39,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -68,7 +69,7 @@ class ImeListItemView : public views::Button {
                   const std::u16string& label,
                   bool selected,
                   const ui::ColorId button_color_id)
-      : ime_list_view_(list_view), selected_(selected) {
+      : ime_list_view_(list_view) {
     SetCallback(base::BindRepeating(&ImeListItemView::PerformAction,
                                     base::Unretained(this)));
     TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
@@ -121,7 +122,11 @@ class ImeListItemView : public views::Button {
           kHollowCheckCircleIcon, button_color_id, kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    SetAccessibleName(label_view->GetText());
+    GetViewAccessibility().SetName(label_view->GetText());
+    GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetCheckedState(
+        selected ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
   }
   ImeListItemView(const ImeListItemView&) = delete;
   ImeListItemView& operator=(const ImeListItemView&) = delete;
@@ -135,23 +140,15 @@ class ImeListItemView : public views::Button {
     }
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kCheckBox;
-    node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
-                                         : ax::mojom::CheckedState::kFalse);
-  }
-
   void PerformAction(const ui::Event& event) {
     ime_list_view_->set_last_item_selected_with_keyboard(
         ime_list_view_->should_focus_ime_after_selection_with_keyboard() &&
-        event.type() == ui::EventType::ET_KEY_PRESSED);
+        event.type() == ui::EventType::kKeyPressed);
     ime_list_view_->HandleViewClicked(this);
   }
 
  private:
   raw_ptr<ImeListView> ime_list_view_;
-  bool selected_;
 };
 
 BEGIN_METADATA(ImeListItemView)
@@ -202,7 +199,7 @@ class KeyboardStatusRow : public views::View {
 
     // The on-screen keyboard toggle button.
     auto qs_toggle = std::make_unique<Switch>(std::move(callback));
-    qs_toggle->SetAccessibleName(l10n_util::GetStringUTF16(
+    qs_toggle->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
     qs_toggle->SetIsOn(keyboard::IsKeyboardEnabled());
     qs_toggle_ = qs_toggle.release();

@@ -20,7 +20,7 @@ namespace {
 
 void ReportClientMessageParseError(const MediaRoute::Id& route_id,
                                    const std::string& error) {
-  // TODO(crbug.com/905002): Record UMA metric for parse result.
+  // TODO(crbug.com/41426190): Record UMA metric for parse result.
   DLOG(ERROR) << "Failed to parse Cast client message for " << route_id << ": "
               << error;
 }
@@ -49,11 +49,12 @@ void RemoveNullFields(base::Value& value) {
 
 }  // namespace
 
-CastSessionClientImpl::CastSessionClientImpl(const std::string& client_id,
-                                             const url::Origin& origin,
-                                             int frame_tree_node_id,
-                                             AutoJoinPolicy auto_join_policy,
-                                             CastActivity* activity)
+CastSessionClientImpl::CastSessionClientImpl(
+    const std::string& client_id,
+    const url::Origin& origin,
+    content::FrameTreeNodeId frame_tree_node_id,
+    AutoJoinPolicy auto_join_policy,
+    CastActivity* activity)
     : CastSessionClient(client_id, origin, frame_tree_node_id),
       auto_join_policy_(auto_join_policy),
       activity_(activity) {}
@@ -98,7 +99,7 @@ void CastSessionClientImpl::SendMediaMessageToClient(
 
 bool CastSessionClientImpl::MatchesAutoJoinPolicy(
     url::Origin other_origin,
-    int other_frame_tree_node_id) const {
+    content::FrameTreeNodeId other_frame_tree_node_id) const {
   switch (auto_join_policy_) {
     case AutoJoinPolicy::kPageScoped:
       return false;
@@ -258,7 +259,7 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
     SendMessageToClient(
         CreateV2Message(client_id(), base::Value::Dict(), sequence_number));
   } else {
-    // TODO(crbug.com/951089): Send correct error codes.  The original
+    // TODO(crbug.com/41452006): Send correct error codes.  The original
     // implementation isn't much help here because it sends incorrectly
     // formatted error messages without a valid error code in a lot of cases.
     SendErrorCodeToClient(sequence_number,

@@ -23,10 +23,13 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 
+namespace ui {
+class BrowserAccessibilityManager;
+class BrowserAccessibility;
+}  // namespace ui
+
 namespace content {
 
-class BrowserAccessibility;
-class BrowserAccessibilityManager;
 
 // Base class for an accessibility browsertest that takes an HTML file as
 // input, loads it into a tab, dumps some accessibility data in text format,
@@ -92,7 +95,7 @@ class DumpAccessibilityTestBase
   template <ApiTypeVector TestPasses(), ui::AXApiType::TypeConstant type>
   static ApiTypeVector TestPassesExcept() {
     ApiTypeVector passes = TestPasses();
-    base::Erase(passes, type);
+    std::erase(passes, type);
     return passes;
   }
 
@@ -162,13 +165,13 @@ class DumpAccessibilityTestBase
   // Retrieve the accessibility node that matches the accessibility name. There
   // is an optional search_root parameter that defaults to the document root if
   // not provided.
-  BrowserAccessibility* FindNode(
+  ui::BrowserAccessibility* FindNode(
       const std::string& name,
-      BrowserAccessibility* search_root = nullptr) const;
+      ui::BrowserAccessibility* search_root = nullptr) const;
 
   // Retrieve the browser accessibility manager object for the current web
   // contents.
-  BrowserAccessibilityManager* GetManager() const;
+  ui::BrowserAccessibilityManager* GetManager() const;
 
   std::unique_ptr<ui::AXTreeFormatter> CreateFormatter() const;
 
@@ -187,12 +190,9 @@ class DumpAccessibilityTestBase
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  bool HasHtmlAttribute(BrowserAccessibility& node,
-                        const char* attr,
-                        const std::string& value) const;
-
-  BrowserAccessibility* FindNodeByHTMLAttribute(const char* attr,
-                                                const std::string& value) const;
+  ui::BrowserAccessibility* FindNodeByStringAttribute(
+      const ax::mojom::StringAttribute attr,
+      const std::string& value) const;
 
  protected:
   ui::AXInspectTestHelper test_helper_;
@@ -230,12 +230,12 @@ class DumpAccessibilityTestBase
   }
 
  private:
-  BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
-                                          const std::string& name) const;
+  ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
+                                              const std::string& name) const;
 
-  BrowserAccessibility* FindNodeByHTMLAttributeInSubtree(
-      BrowserAccessibility& node,
-      const char* attr,
+  ui::BrowserAccessibility* FindNodeByStringAttributeInSubtree(
+      ui::BrowserAccessibility& node,
+      const ax::mojom::StringAttribute attr,
       const std::string& value) const;
 
   // The entries in skip_urls will be omitted from the result. This is used,
@@ -245,7 +245,7 @@ class DumpAccessibilityTestBase
       const std::vector<std::string>& skip_urls);
 
   // Wait until all initial content is completely loaded, included within
-  // subframes, objects and portals with given AXMode.
+  // subframes and objects with given AXMode.
   void WaitForAllFramesLoaded(ui::AXMode mode);
 
   void OnEventRecorded(const std::string& event) const {

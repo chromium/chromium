@@ -6,5 +6,5 @@
 // frames, and then in the top-level frame. This requires document_start or
 // document_end.
 window.addEventListener('load', function() {
-  chrome.extension.sendRequest(window.parent === window ? 'parent' : 'child');
+  chrome.runtime.sendMessage(window.parent === window ? 'parent' : 'child');
 });

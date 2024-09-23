@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/queue.h"
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -38,6 +38,7 @@ class DecoderBufferTranscryptor {
   // will be called with a nullptr in the event of failure.
   DecoderBufferTranscryptor(CdmContext* cdm_context,
                             VideoDecoderMixin& decoder,
+                            bool needs_vp9_superframe_splitting,
                             OnBufferTranscryptedCB transcrypt_callback,
                             WaitingCB waiting_callback);
   DecoderBufferTranscryptor(const DecoderBufferTranscryptor&) = delete;
@@ -98,7 +99,7 @@ class DecoderBufferTranscryptor {
   bool key_added_while_decrypting_ = false;
 
   // Queue containing all requested transcrypt tasks.
-  base::queue<TranscryptTask> transcrypt_task_queue_;
+  base::circular_deque<TranscryptTask> transcrypt_task_queue_;
   // The transcrypt task we're currently trying to execute.
   std::optional<TranscryptTask> current_transcrypt_task_;
 
@@ -110,6 +111,10 @@ class DecoderBufferTranscryptor {
   // don't end up with a backlog of Decrypt requests that need to be processed
   // before moving on after a Reset.
   bool transcrypt_pending_ = false;
+
+  // If true, then we should split VP9 superframes up into individual frames
+  // before decryption/decode.
+  const bool needs_vp9_superframe_splitting_;
 
   // We need to use a CdmContextRef so that we destruct
   // |cdm_event_cb_registration_| before the CDM is destructed. The CDM has

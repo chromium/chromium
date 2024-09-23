@@ -44,7 +44,7 @@ class AXWidgetObjWrapper : public AXAuraObjWrapper, public WidgetObserver {
  private:
   raw_ptr<Widget> widget_;
 
-  const ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };

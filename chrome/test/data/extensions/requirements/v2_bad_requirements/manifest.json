@@ -1,10 +1,12 @@
 {
   "name": "Extension Service Requirements Test",
   "version": "1.2",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "requirements": {
     "3D": {
-      "features": ["webgl"]
+      "features": [
+        "webgl"
+      ]
     }
   }
 }

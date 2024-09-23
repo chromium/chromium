@@ -325,17 +325,12 @@
 #define glDrawElementsInstancedBaseVertexBaseInstanceANGLE \
   GLES2_GET_FUN(DrawElementsInstancedBaseVertexBaseInstanceANGLE)
 #define glVertexAttribDivisorANGLE GLES2_GET_FUN(VertexAttribDivisorANGLE)
-#define glProduceTextureDirectCHROMIUM \
-  GLES2_GET_FUN(ProduceTextureDirectCHROMIUM)
-#define glCreateAndConsumeTextureCHROMIUM \
-  GLES2_GET_FUN(CreateAndConsumeTextureCHROMIUM)
 #define glBindUniformLocationCHROMIUM GLES2_GET_FUN(BindUniformLocationCHROMIUM)
 #define glTraceBeginCHROMIUM GLES2_GET_FUN(TraceBeginCHROMIUM)
 #define glTraceEndCHROMIUM GLES2_GET_FUN(TraceEndCHROMIUM)
 #define glDiscardFramebufferEXT GLES2_GET_FUN(DiscardFramebufferEXT)
 #define glLoseContextCHROMIUM GLES2_GET_FUN(LoseContextCHROMIUM)
 #define glDrawBuffersEXT GLES2_GET_FUN(DrawBuffersEXT)
-#define glDiscardBackbufferCHROMIUM GLES2_GET_FUN(DiscardBackbufferCHROMIUM)
 #define glFlushDriverCachesCHROMIUM GLES2_GET_FUN(FlushDriverCachesCHROMIUM)
 #define glGetLastFlushIdCHROMIUM GLES2_GET_FUN(GetLastFlushIdCHROMIUM)
 #define glSetActiveURLCHROMIUM GLES2_GET_FUN(SetActiveURLCHROMIUM)
@@ -370,12 +365,6 @@
   GLES2_GET_FUN(BeginSharedImageAccessDirectCHROMIUM)
 #define glEndSharedImageAccessDirectCHROMIUM \
   GLES2_GET_FUN(EndSharedImageAccessDirectCHROMIUM)
-#define glConvertRGBAToYUVAMailboxesINTERNAL \
-  GLES2_GET_FUN(ConvertRGBAToYUVAMailboxesINTERNAL)
-#define glConvertYUVAMailboxesToRGBINTERNAL \
-  GLES2_GET_FUN(ConvertYUVAMailboxesToRGBINTERNAL)
-#define glConvertYUVAMailboxesToTextureINTERNAL \
-  GLES2_GET_FUN(ConvertYUVAMailboxesToTextureINTERNAL)
 #define glCopySharedImageINTERNAL GLES2_GET_FUN(CopySharedImageINTERNAL)
 #define glCopySharedImageToTextureINTERNAL \
   GLES2_GET_FUN(CopySharedImageToTextureINTERNAL)

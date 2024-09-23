@@ -31,6 +31,10 @@ message SessionSpecifics {
 
 // Properties of session sync objects.
 message SessionHeader {
+  // The timestamp when this session was started, i.e. when the user signed in
+  // or turned on the sessions data type. Introduced in M130, and not populated
+  // for sessions created/started before that milestone.
+  optional int64 session_start_time_unix_epoch_millis = 6;
   // Each session is composed of windows.
   repeated SessionWindow window = 2;
   // A non-unique but human-readable name to describe this client.

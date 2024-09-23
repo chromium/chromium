@@ -2,57 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
-#include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/view_utils.h"
 
 namespace {
-constexpr char due_date[] = "2 Aug 2025 10:00 GMT";
+constexpr char kDueDate[] = "2 Aug 2025 10:00 GMT";
 }
 
 namespace ash {
 
-class GlanceablesPixelTest : public AshTestBase {
+class GlanceablesTasksPixelTest : public AshTestBase {
  public:
-  GlanceablesPixelTest() = default;
-  GlanceablesPixelTest(const GlanceablesPixelTest&) = delete;
-  GlanceablesPixelTest& operator=(const GlanceablesPixelTest&) = delete;
-  ~GlanceablesPixelTest() override = default;
+  GlanceablesTasksPixelTest() {
+    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        []() {
+          base::Time date;
+          bool result = base::Time::FromString("28 Jul 2023 10:00 GMT", &date);
+          DCHECK(result);
+          return date;
+        },
+        /*time_ticks_override=*/nullptr,
+        /*thread_ticks_override=*/nullptr);
+  }
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
     SimulateUserLogin(account_id_);
 
-    widget_ = CreateFramelessTestWidget();
-    widget_->SetContentsView(std::make_unique<views::View>());
-    widget_->SetFullscreen(true);
-    widget_->GetContentsView()->AddChildView(GetDateTray());
-    GetDateTray()->SetVisiblePreferred(true);
-
     base::Time date;
-    ASSERT_TRUE(base::Time::FromString(due_date, &date));
+    ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
     fake_glanceables_tasks_client_ =
-        std::make_unique<api::FakeTasksClient>(date);
+        glanceables_tasks_test_util::InitializeFakeTasksClient(date);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
@@ -62,7 +61,6 @@ class GlanceablesPixelTest : public AshTestBase {
   void TearDown() override {
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{});
-    widget_.reset();
     AshTestBase::TearDown();
   }
 
@@ -76,119 +74,114 @@ class GlanceablesPixelTest : public AshTestBase {
     return GetPrimaryShelf()->GetStatusAreaWidget()->date_tray();
   }
 
-  GlanceableTrayBubble* GetGlanceableTrayBubble() {
-    return GetDateTray()->bubble_.get();
-  }
-
-  void OpenGlanceables() { LeftClickOn(GetDateTray()); }
-
-  api::FakeTasksClient* fake_glanceables_tasks_client() {
-    return fake_glanceables_tasks_client_.get();
-  }
+  void ToggleGlanceables() { LeftClickOn(GetDateTray()); }
 
  protected:
-  base::test::ScopedFeatureList features_{ash::features::kGlanceablesV2};
-
- private:
-  std::unique_ptr<views::Widget> widget_;
-  AccountId account_id_ =
+  const AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
+
+ private:
+  base::test::ScopedFeatureList features_{
+      ash::features::kGlanceablesTimeManagementTasksView};
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
 
-// Pixel test for glanceables when no data is available.
-TEST_F(GlanceablesPixelTest, GlanceablesZeroState) {
-  base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        base::Time date;
-        bool result = base::Time::FromString("28 Jul 2023 10:00 GMT", &date);
-        DCHECK(result);
-        return date;
-      },
-      /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
-
+// Pixel test for default / basic glanceables functionality.
+TEST_F(GlanceablesTasksPixelTest, Smoke) {
   ASSERT_FALSE(GetDateTray()->is_active());
-  OpenGlanceables();
+  ToggleGlanceables();
   ASSERT_TRUE(GetDateTray()->is_active());
-  // Scroll to the top of the glanceables view.
-  GetGlanceableTrayBubble()->GetTasksView()->ScrollViewToVisible();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_zero_state", /*revision_number=*/7,
-      GetGlanceableTrayBubble()->GetBubbleView()));
+      "glanceables_smoke", /*revision_number=*/0,
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 
-// Pixel test verifying initial UI for tasks glanceable as well as UI updates
-// when a task is marked as completed.
-TEST_F(GlanceablesPixelTest, GlanceablesTasksMarkAsCompleted) {
-  base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        base::Time date;
-        bool result = base::Time::FromString("28 Jul 2023 10:00 GMT", &date);
-        DCHECK(result);
-        return date;
-      },
-      /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
+class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
+ public:
+  GlanceablesTimeManagementPixelTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kGlanceablesTimeManagementTasksView,
+         features::kGlanceablesTimeManagementClassroomStudentView},
+        /*disabled_features=*/{});
+  }
 
-  ASSERT_FALSE(GetDateTray()->is_active());
-  OpenGlanceables();
-  ASSERT_TRUE(GetDateTray()->is_active());
-  // Scroll to the top of the glanceables view.
-  GetGlanceableTrayBubble()->GetTasksView()->ScrollViewToVisible();
+  // AshTestBase:
+  void SetUp() override {
+    GlanceablesTasksPixelTest::SetUp();
 
-  GlanceablesTaskView* task_view = views::AsViewClass<GlanceablesTaskView>(
-      views::AsViewClass<views::View>(
-          GetGlanceableTrayBubble()->GetTasksView()->GetViewByID(
-              base::to_underlying(
-                  GlanceablesViewId::kTasksBubbleListContainer)))
-          ->children()[0]);
-  ASSERT_TRUE(task_view);
-  task_view->GetWidget()->LayoutRootViewIfNecessary();
-  ASSERT_FALSE(task_view->GetCompletedForTest());
-  ASSERT_EQ(0u,
-            fake_glanceables_tasks_client()->pending_completed_tasks().size());
+    base::Time date;
+    ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
+    // tasks client was initialized in GlanceablesTasksPixelTest.
+    classroom_client_ = std::make_unique<FakeGlanceablesClassroomClient>();
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
+                         .classroom_client = classroom_client_.get(),
+                         .tasks_client = fake_glanceables_tasks_client_.get()});
 
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetClassroomClient());
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetTasksClient());
+
+    GetDateTray()->ShowGlanceableBubble(/*from_keyboard=*/false);
+    view_ = views::AsViewClass<GlanceableTrayBubbleView>(
+        GetDateTray()->glanceables_bubble_for_test()->GetBubbleView());
+  }
+
+  void TearDown() override {
+    GetDateTray()->HideGlanceableBubble();
+    view_ = nullptr;
+    GlanceablesTasksPixelTest::TearDown();
+  }
+
+  GlanceablesTasksView* GetTasksView() const {
+    return views::AsViewClass<GlanceablesTasksView>(view_->GetTasksView());
+  }
+
+  views::ScrollView* GetTasksScrollView() const {
+    return views::AsViewClass<views::ScrollView>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+  }
+
+  GlanceablesClassroomStudentView* GetClassroomView() const {
+    return views::AsViewClass<GlanceablesClassroomStudentView>(
+        view_->GetClassroomStudentView());
+  }
+
+  views::ScrollView* GetClassroomScrollView() const {
+    return views::AsViewClass<views::ScrollView>(
+        GetClassroomView()->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  std::unique_ptr<FakeGlanceablesClassroomClient> classroom_client_;
+
+  raw_ptr<GlanceableTrayBubbleView> view_ = nullptr;
+};
+
+// Pixel test for default / basic glanceables functionality.
+TEST_F(GlanceablesTimeManagementPixelTest, Smoke) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_task_view_no_completed_tasks", /*revision_number=*/3,
-      GetGlanceableTrayBubble()->GetTasksView()));
-
-  GestureTapOn(task_view->GetButtonForTest());
-  ASSERT_TRUE(task_view->GetCompletedForTest());
-  ASSERT_EQ(1u,
-            fake_glanceables_tasks_client()->pending_completed_tasks().size());
-
+      "expanded_tasks_top", /*revision_number=*/1,
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
+  GetTasksScrollView()->ScrollToPosition(
+      GetTasksScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_task_view_one_completed_task", /*revision_number=*/3,
-      GetGlanceableTrayBubble()->GetTasksView()));
-}
+      "expanded_tasks_bottom", /*revision_number=*/1,
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
-// Pixel test for calendar bubble height with `kGlanceablesV2CalendarView`
-// enabled.
-TEST_F(GlanceablesPixelTest, GlanceablesCalendarHeight) {
-  features_.Reset();
-  features_.InitWithFeatures({ash::features::kGlanceablesV2,
-                              ash::features::kGlanceablesV2CalendarView},
-                             /*disabled_features=*/{});
-
-  base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        base::Time date;
-        bool result = base::Time::FromString("28 Jul 2023 10:00 GMT", &date);
-        DCHECK(result);
-        return date;
-      },
-      /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
-
-  ASSERT_FALSE(GetDateTray()->is_active());
-  OpenGlanceables();
-  ASSERT_TRUE(GetDateTray()->is_active());
-
+  GetClassroomView()->SetExpandState(true, /*expand_by_overscroll=*/false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_calendar_height", /*revision_number=*/2,
-      GetGlanceableTrayBubble()->GetBubbleView()));
+      "expanded_classroom_top", /*revision_number=*/1,
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
+  GetClassroomScrollView()->ScrollToPosition(
+      GetClassroomScrollView()->vertical_scroll_bar(), INT_MAX);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "expanded_classroom_bottom", /*revision_number=*/1,
+      GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 
 }  // namespace ash

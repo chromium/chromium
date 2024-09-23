@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -20,9 +19,15 @@
 const char kIdentityProviderDomain[] = "google.com";
 
 DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
+    base::PassKey<DIPSBrowserSigninDetectorFactory>,
     DIPSService* dips_service,
     signin::IdentityManager* identity_manager)
     : dips_service_(dips_service), identity_manager_(identity_manager) {
+  CHECK(dips_service_);
+  if (!identity_manager_) {
+    // If there's no identity manager, then don't try to observe it.
+    return;
+  }
   scoped_observation_.Observe(identity_manager_.get());
 
   // No need to check the cookie jar if there's no presence of a primary
@@ -43,17 +48,17 @@ DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
 
 DIPSBrowserSigninDetector::~DIPSBrowserSigninDetector() = default;
 
+void DIPSBrowserSigninDetector::Shutdown() {
+  scoped_observation_.Reset();
+  dips_service_ = nullptr;
+  identity_manager_ = nullptr;
+}
+
 // Evaluates whether an information is relevant for DIPS. An info is relevant if
 // its core infos are non empty and the |hosted_domain| info is provided.
 bool IsInfoRelevant(const AccountInfo& info) {
   // Note: extended infos such as |hosted_domain| are filled asynchronously.
   return !info.CoreAccountInfo::IsEmpty() && !info.hosted_domain.empty();
-}
-
-// Provides a URL from the provided |domain|, adequate for DIPS storage API.
-// Note: The provided |domain| are of type eTLD+1s.
-GURL GetURL(const std::string domain) {
-  return GURL(base::StrCat({"http://", domain}));
 }
 
 void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
@@ -62,16 +67,11 @@ void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
     return;
   }
 
-  base::Time now = base::Time::Now();
-
   // Record an interaction for `kIdentityProviderDomain`.
   // Note: All accounts in the identity manager are GAIA accounts. Thus,
   // non-enterprise accounts (ex. "gmail.com", "yahoo.com") will be treated as
   // having an interaction with `kIdentityProviderDomain`.
-  dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::RecordInteraction)
-      .WithArgs(GetURL(kIdentityProviderDomain), now,
-                dips_service_->GetCookieMode());
+  dips_service_->RecordBrowserSignIn(kIdentityProviderDomain);
 
   // Skip handled cases.
   if (info.hosted_domain == kNoHostedDomainFound ||
@@ -81,10 +81,7 @@ void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
 
   // Record an interaction for the |info.host_domain| of all enterprise
   // accounts.
-  dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::RecordInteraction)
-      .WithArgs(GetURL(info.hosted_domain), now,
-                dips_service_->GetCookieMode());
+  dips_service_->RecordBrowserSignIn(info.hosted_domain);
 }
 
 void DIPSBrowserSigninDetector::OnExtendedAccountInfoUpdated(

@@ -20,22 +20,6 @@ class ComputedStyle;
 class EarlyBreak;
 class LayoutResult;
 
-// Operations provided by a layout algorithm.
-class LayoutAlgorithmOperations {
- public:
-  // Actual layout function. Lays out the children and descendants within the
-  // constraints given by the ConstraintSpace. Returns a layout result with
-  // the resulting layout information.
-  // TODO(layout-dev): attempt to make this function const.
-  virtual const LayoutResult* Layout() = 0;
-
-  // Computes the min-content and max-content intrinsic sizes for the given box.
-  // The result will not take any min-width, max-width or width properties into
-  // account.
-  virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) = 0;
-};
-
 // Parameters to pass when creating a layout algorithm for a block node.
 struct LayoutAlgorithmParams {
   STACK_ALLOCATED();
@@ -65,11 +49,25 @@ struct LayoutAlgorithmParams {
   const HeapVector<Member<EarlyBreak>>* additional_early_breaks;
 };
 
-// Base class for all LayoutNG algorithms.
+// Base class template for all layout algorithms.
+//
+// Subclassed template specializations (actual layout algorithms) are required
+// to define the following two functions:
+//
+//   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
+//   const LayoutResult* Layout();
+//
+// ComputeMinMaxSizes() should compute the min-content and max-content intrinsic
+// sizes for the given box. The result should not take any min-width, max-width
+// or width properties into account.
+//
+// Layout() is the actual layout function. Lays out the children and descendants
+// within the constraints given by the ConstraintSpace. Returns a layout result
+// with the resulting layout information.
 template <typename InputNodeType,
           typename BoxFragmentBuilderType,
           typename BreakTokenType>
-class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
+class CORE_EXPORT LayoutAlgorithm {
   STACK_ALLOCATED();
  public:
   LayoutAlgorithm(InputNodeType node,
@@ -78,37 +76,39 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
                   TextDirection direction,
                   const BreakTokenType* break_token)
       : node_(node),
-        break_token_(break_token),
         container_builder_(node,
                            style,
                            space,
-                           {space.GetWritingMode(), direction}) {}
+                           {space.GetWritingMode(), direction},
+                           break_token) {}
 
   // Constructor for algorithms that use BoxFragmentBuilder and
   // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<InputNodeType>(params.node)),
         early_break_(params.early_break),
-        break_token_(params.break_token),
         container_builder_(
             params.node,
             &params.node.Style(),
             params.space,
-            {params.space.GetWritingMode(), params.space.Direction()}),
+            {params.space.GetWritingMode(), params.space.Direction()},
+            params.break_token),
         additional_early_breaks_(params.additional_early_breaks) {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation() ||
-                 IsBreakInside(params.break_token))) {
+    if (params.space.HasBlockFragmentation() ||
+        IsBreakInside(params.break_token)) [[unlikely]] {
       SetupFragmentBuilderForFragmentation(
           params.space, params.node, params.break_token, &container_builder_);
     }
   }
 
-  virtual ~LayoutAlgorithm() = default;
-
  protected:
+  // Protected (non-virtual) destructor, to make sure that the destructor is
+  // invoked directly on subclasses.
+  ~LayoutAlgorithm() = default;
+
   const ConstraintSpace& GetConstraintSpace() const {
     return container_builder_.GetConstraintSpace();
   }
@@ -123,9 +123,12 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
   const InputNodeType& Node() const { return node_; }
 
-  const BreakTokenType* GetBreakToken() const { return break_token_; }
+  const BreakTokenType* GetBreakToken() const {
+    return container_builder_.PreviousBreakToken();
+  }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
+  const BoxStrut& Scrollbar() const { return container_builder_.Scrollbar(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
   const BoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
@@ -142,6 +145,45 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
 
   ExclusionSpace& GetExclusionSpace() {
     return container_builder_.GetExclusionSpace();
+  }
+
+  LayoutUnit FragmentainerCapacityForChildren() const {
+    return FragmentainerCapacity(container_builder_, /*is_for_children=*/true);
+  }
+
+  LayoutUnit FragmentainerOffsetForChildren() const {
+    return FragmentainerOffset(container_builder_, /*is_for_children=*/true);
+  }
+
+  LayoutUnit FragmentainerSpaceLeftForChildren() const {
+    return FragmentainerSpaceLeft(container_builder_, /*is_for_children=*/true);
+  }
+
+  BreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,
+                                       const LayoutResult& layout_result,
+                                       LayoutUnit fragmentainer_block_offset,
+                                       bool has_container_separation) {
+    return ::blink::BreakBeforeChildIfNeeded(
+        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        FragmentainerCapacityForChildren(), has_container_separation,
+        &container_builder_);
+  }
+
+  bool MovePastBreakpoint(LayoutInputNode child,
+                          const LayoutResult& layout_result,
+                          LayoutUnit fragmentainer_block_offset,
+                          BreakAppeal appeal_before) {
+    return ::blink::MovePastBreakpoint(
+        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
+  }
+
+  bool MovePastBreakpoint(const LayoutResult& layout_result,
+                          LayoutUnit fragmentainer_block_offset,
+                          BreakAppeal appeal_before) {
+    return ::blink::MovePastBreakpoint(
+        GetConstraintSpace(), layout_result, fragmentainer_block_offset,
+        FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
   }
 
   // Lay out again, this time with a predefined good breakpoint that we
@@ -208,9 +250,6 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // When set, this will specify where to break before or inside. If not set,
   // the algorithm will need to figure out where to break on its own.
   const EarlyBreak* early_break_ = nullptr;
-
-  // The break token from which we are currently resuming layout.
-  const BreakTokenType* break_token_;
 
   BoxFragmentBuilderType container_builder_;
 

@@ -47,8 +47,8 @@ There are two types of checks.
    that all built files needed to run tests on swarming are identical in the
    two build directories. The full determinism check is currently used on
    Linux and Windows bots. (`Deterministic Linux (dbg)` has one more check:
-   it doesn't use goma for the incremental build, to check that using goma
-   doesn't affect built files either.)
+   it doesn't use reclient for the incremental build, to check that using
+   reclient doesn't affect built files either.)
 
 2. The simple determinism check does a clobber build in `out/Release`, moves
    this to a different location (`out/Release.1`), then does another clobber

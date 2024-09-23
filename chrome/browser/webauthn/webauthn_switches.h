@@ -17,6 +17,9 @@ extern const char kRemoteProxiedRequestsAllowedAdditionalOrigin[];
 // creating a WebAuthn credential.
 extern const char kPermitEnterpriseAttestationOriginList[];
 
+// The reauth URL for changing the Password Manager PIN.
+extern const char kGpmPinResetReauthUrlSwitch[];
+
 }  // namespace webauthn::switches
 
 #endif  // CHROME_BROWSER_WEBAUTHN_WEBAUTHN_SWITCHES_H_

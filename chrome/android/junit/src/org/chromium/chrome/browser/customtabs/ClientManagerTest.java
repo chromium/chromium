@@ -48,7 +48,9 @@ import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVeri
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierJni;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.OriginVerifierJni;
 import org.chromium.components.content_relationship_verification.OriginVerifierUnitTestSupport;
@@ -94,6 +96,8 @@ public class ClientManagerTest {
 
     @Mock private Profile mProfile;
 
+    @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -108,7 +112,15 @@ public class ClientManagerTest {
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 
-        Profile.setLastUsedProfileForTesting(mProfile);
+        Mockito.doAnswer(
+                        args -> {
+                            ((Runnable) args.getArgument(0)).run();
+                            return null;
+                        })
+                .when(mChromeBrowserInitializer)
+                .runNowOrAfterFullBrowserStarted(Mockito.any());
+
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         RequestThrottler.purgeAllEntriesForTesting();
 
@@ -119,7 +131,9 @@ public class ClientManagerTest {
 
         mClientManager =
                 new ClientManager(
-                        new ChromeOriginVerifierFactoryImpl(), mInstalledAppProviderWrapper);
+                        new ChromeOriginVerifierFactoryImpl(),
+                        mInstalledAppProviderWrapper,
+                        mChromeBrowserInitializer);
 
         ChromeOriginVerifier.clearCachedVerificationsForTesting();
         UmaRecorderHolder.resetForTesting();
@@ -338,7 +352,7 @@ public class ClientManagerTest {
         cm.verifyAndInitializeWithPostMessageOriginForSession(
                 mSession, origin, null, CustomTabsService.RELATION_HANDLE_ALL_URLS);
 
-        //        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        //        ThreadUtils.runOnUiThreadBlocking(() -> {
         Uri verifiedOrigin = cm.getPostMessageOriginForSessionForTesting(mSession);
         Assert.assertEquals(IntentUtils.ANDROID_APP_REFERRER_SCHEME, verifiedOrigin.getScheme());
         // initializeWithPostMessageOriginForSession should override without checking

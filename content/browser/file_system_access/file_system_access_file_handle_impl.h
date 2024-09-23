@@ -17,8 +17,8 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom.h"
 
 namespace content {
 
@@ -193,6 +193,11 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   // file is created. This sets the limit on the number of swap files per
   // handle.
   int max_swap_files_ = 100;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Directory in app cache dir for writing swap files.
+  base::FilePath swap_dir_;
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // Used to test that swap file creation attempts to use file cloning in some

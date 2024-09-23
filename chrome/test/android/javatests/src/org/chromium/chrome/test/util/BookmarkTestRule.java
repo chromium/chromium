@@ -13,6 +13,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -79,7 +79,7 @@ public class BookmarkTestRule implements TestRule {
             runOnUiThreadBlocking(() -> tab.addObserver(obs));
             showBookmarkManagerInternal(chromeActivity);
             try {
-                callbackHelper.waitForFirst();
+                callbackHelper.waitForOnly();
             } catch (TimeoutException e) {
                 throw new RuntimeException(e);
             }
@@ -105,7 +105,7 @@ public class BookmarkTestRule implements TestRule {
     }
 
     private void showBookmarkManagerInternal(ChromeActivity chromeActivity) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> BookmarkUtils.showBookmarkManager(chromeActivity, /* isIncognito= */ false));
     }
 

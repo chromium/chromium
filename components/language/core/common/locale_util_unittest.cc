@@ -4,6 +4,8 @@
 
 #include "components/language/core/common/locale_util.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +17,7 @@ namespace {
 typedef testing::Test LocaleUtilTest;
 
 TEST_F(LocaleUtilTest, SplitIntoMainAndTail) {
-  typedef std::pair<base::StringPiece, base::StringPiece> StringPiecePair;
+  typedef std::pair<std::string_view, std::string_view> StringPiecePair;
 
   EXPECT_EQ(StringPiecePair("", ""), SplitIntoMainAndTail(""));
   EXPECT_EQ(StringPiecePair("en", ""), SplitIntoMainAndTail("en"));

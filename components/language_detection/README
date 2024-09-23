@@ -1,0 +1,5 @@
+- this is the TFLite-based language detection component.
+
+- it is in the process of being extracted from the translate
+  component. The code to acquire a model file is still in the
+  translate component but will move into this one.

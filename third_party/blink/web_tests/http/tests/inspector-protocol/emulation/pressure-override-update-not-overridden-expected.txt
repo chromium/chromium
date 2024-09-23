@@ -1,0 +1,3 @@
+Tests setPressureStateOverride fails if pressure source is not overridden
+PASS: Setting state override fails
+

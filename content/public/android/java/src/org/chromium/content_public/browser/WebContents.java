@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -11,7 +12,10 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -19,31 +23,26 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
-import java.util.List;
-
 /**
  * The WebContents Java wrapper to allow communicating with the native WebContents object.
  *
- * Note about serialization and {@link Parcelable}:
- *   This object is serializable and deserializable as long as it is done in the same process.  That
- * means it can be passed between Activities inside this process, but not preserved beyond the
- * process lifetime.  This class will automatically deserialize into {@code null} if a deserialize
- * attempt happens in another process.
+ * <p>Note about serialization and {@link Parcelable}: This object is serializable and
+ * deserializable as long as it is done in the same process. That means it can be passed between
+ * Activities inside this process, but not preserved beyond the process lifetime. This class will
+ * automatically deserialize into {@code null} if a deserialize attempt happens in another process.
  *
- * To properly deserialize a custom Parcelable the right class loader must be used.  See below for
+ * <p>To properly deserialize a custom Parcelable the right class loader must be used. See below for
  * some examples.
  *
- * Intent Serialization/Deserialization Example:
- * intent.putExtra("WEBCONTENTSKEY", webContents);
+ * <p>Intent Serialization/Deserialization Example: intent.putExtra("WEBCONTENTSKEY", webContents);
  * // ... send to other location ...
- * intent.setExtrasClassLoader(WebContents.class.getClassLoader());
- * webContents = intent.getParcelableExtra("WEBCONTENTSKEY");
+ * intent.setExtrasClassLoader(WebContents.class.getClassLoader()); webContents =
+ * intent.getParcelableExtra("WEBCONTENTSKEY");
  *
- * Bundle Serialization/Deserialization Example:
- * bundle.putParcelable("WEBCONTENTSKEY", webContents);
- * // ... send to other location ...
- * bundle.setClassLoader(WebContents.class.getClassLoader());
- * webContents = bundle.get("WEBCONTENTSKEY");
+ * <p>Bundle Serialization/Deserialization Example: bundle.putParcelable("WEBCONTENTSKEY",
+ * webContents); // ... send to other location ...
+ * bundle.setClassLoader(WebContents.class.getClassLoader()); webContents =
+ * bundle.get("WEBCONTENTSKEY");
  */
 public interface WebContents extends Parcelable {
     /**
@@ -82,7 +81,6 @@ public interface WebContents extends Parcelable {
     }
 
     /**
-     * TODO(ctzsm): Rename this method to setDelegates()
      *
      * Initialize various content objects of {@link WebContents} lifetime.
      *
@@ -96,7 +94,7 @@ public interface WebContents extends Parcelable {
      * @param windowAndroid An instance of the WindowAndroid.
      * @param internalsHolder A holder of objects used internally by WebContents.
      */
-    void initialize(
+    void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,
@@ -181,15 +179,10 @@ public interface WebContents extends Parcelable {
 
     /**
      * @return The root level view from the renderer, or {@code null} in some cases where there is
-     *         none.
+     *     none.
      */
     @Nullable
     RenderWidgetHostView getRenderWidgetHostView();
-
-    /**
-     * @return The WebContents that are nested within this one.
-     */
-    List<? extends WebContents> getInnerWebContents();
 
     /**
      * @return The WebContents Visibility. See native WebContents::GetVisibility.
@@ -230,10 +223,15 @@ public interface WebContents extends Parcelable {
     boolean isLoading();
 
     /**
-     * @return Whether this WebContents is loading and expects any loading UI to
-     * be displayed.
+     * @return Whether this WebContents is loading and expects any loading UI to be displayed.
      */
     boolean shouldShowLoadingUI();
+
+    /**
+     * Returns whether this WebContents's primary frame tree node is navigating, i.e. it has an
+     * associated NavigationRequest.
+     */
+    boolean hasUncommittedNavigationInPrimaryMainFrame();
 
     /**
      * Runs the beforeunload handler, if any. The tab will be closed if there's no beforeunload
@@ -273,6 +271,11 @@ public interface WebContents extends Parcelable {
      * @param mute Set to true to mute the WebContents, false to unmute.
      */
     void setAudioMuted(boolean mute);
+
+    /**
+     * @return Whether all audio output from this WebContents is muted.
+     */
+    boolean isAudioMuted();
 
     /**
      * @return Whether the location bar should be focused by default for this page.
@@ -402,22 +405,32 @@ public interface WebContents extends Parcelable {
     MessagePort[] createMessageChannel();
 
     /**
-     * Returns whether the initial empty page has been accessed by a script from another
-     * page. Always false after the first commit.
+     * Returns whether the initial empty page has been accessed by a script from another page.
+     * Always false after the first commit.
      *
      * @return Whether the initial empty page has been accessed by a script.
      */
     boolean hasAccessedInitialDocument();
 
     /**
+     * Returns whether the current page has opted into same-origin view transitions.
+     *
+     * @return Whether the current page has the same-origin view transition opt-in.
+     */
+    boolean hasViewTransitionOptIn();
+
+    /**
      * This returns the theme color as set by the theme-color meta tag.
-     * <p>
-     * The color returned may retain non-fully opaque alpha components.  A value of
-     * {@link android.graphics.Color#TRANSPARENT} means there was no theme color specified.
+     *
+     * <p>The color returned may retain non-fully opaque alpha components. A value of {@link
+     * android.graphics.Color#TRANSPARENT} means there was no theme color specified.
      *
      * @return The theme color for the content as set by the theme-color meta tag.
      */
     int getThemeColor();
+
+    /** This returns the background color for the web contents. */
+    int getBackgroundColor();
 
     /**
      * @return Current page load progress on a scale of 0 to 1.
@@ -580,9 +593,44 @@ public interface WebContents extends Parcelable {
     void tearDownDialogOverlays();
 
     /**
-     * This function checks all frames in this WebContents (not just the main
-     * frame) and returns true if at least one frame has either a beforeunload or
-     * an unload/pagehide/visibilitychange handler.
+     * This function checks all frames in this WebContents (not just the main frame) and returns
+     * true if at least one frame has either a beforeunload or an unload/pagehide/visibilitychange
+     * handler.
      */
     boolean needToFireBeforeUnloadOrUnloadEvents();
+
+    /**
+     * For cases where the content for a navigation entry is being drawn by the embedder (instead of
+     * the web page), this notifies when the embedder has rendered the UI at its final state. This
+     * is only called if the WebContents is showing an invoke animation for back forward
+     * transitions, see {@link
+     * org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid#didBackForwardTransitionAnimationChange},
+     * when the navigation entry showing embedder provided UI commits.
+     */
+    void onContentForNavigationEntryShown();
+
+    /**
+     * @return {@link AnimationStage} the current stage of back forward transition.
+     */
+    @AnimationStage
+    int getCurrentBackForwardTransitionStage();
+
+    /**
+     * Let long press on links select the link text instead of triggering context menu. Disabled by
+     * default i.e. the context menu gets triggered.
+     *
+     * @param enabled {@code true} to enabled the behavior.
+     */
+    void setLongPressLinkSelectText(boolean enabled);
+
+    /**
+     * Notify that the constraints of the browser controls have changed. This means that the the
+     * browser controls went from being forced fully visible/hidden to not being forced (or
+     * vice-versa).
+     */
+    void notifyControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo);
+
+    void captureContentAsBitmapForTesting(Callback<Bitmap> callback);
 }

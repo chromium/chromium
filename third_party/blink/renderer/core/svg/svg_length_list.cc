@@ -18,6 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
@@ -74,8 +79,8 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   if (value.empty())
     return SVGParseStatus::kNoError;
 
-  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-    return ParseInternal(chars, chars + length);
+  return WTF::VisitCharacters(value, [&](auto chars) {
+    return ParseInternal(chars.data(), chars.data() + chars.size());
   });
 }
 

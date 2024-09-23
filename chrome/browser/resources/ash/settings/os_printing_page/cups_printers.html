@@ -17,16 +17,7 @@
     padding: 20px;
   }
 
-  #addPrinterText {
-    flex: 1;
-  }
-
-  .add-manual-printer-icon {
-    --cr-icon-button-fill-color: var(--cros-sys-primary);
-    --cr-icon-button-margin-end: 0;
-  }
-
-  #addManualPrinterButtonRevamp {
+  #addManualPrinterButton {
     background: none;
   }
 
@@ -55,26 +46,17 @@
   #savedPrintersContainer {
     border-bottom: var(--cr-separator-line);
     padding-bottom: 8px;
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) #savedPrintersContainer {
     padding-inline-start: var(--cr-section-padding);
   }
 
   #savedPrintersDescription {
     height: 64px;
     margin-bottom: 8px;
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) #savedPrintersDescription {
     padding-inline-start: 0;
   }
 
   #enterprisePrintersContainer {
     border-top: var(--cr-separator-line);
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) #enterprisePrintersContainer {
     padding-inline-start: var(--cr-section-padding);
   }
 
@@ -84,7 +66,7 @@
     pointer-events: none;
   }
 
-  #nearbyPrintersRevamp {
+  #nearbyPrinters {
     display: flex;
   }
 
@@ -96,7 +78,7 @@
     margin: 0;
   }
 
-  :host([is-printer-settings-revamp-enabled_]) #collapsibleSection {
+  #collapsibleSection {
     padding-inline-end: 0;
     padding-inline-start: 20px;
     padding-bottom: 20px;
@@ -138,12 +120,12 @@
     padding-inline-start: 20px;
   }
 
-  #addPrinterSectionRevamp {
+  #addPrinterSection {
     height: 64px;
     padding-inline: 0;
   }
 
-  #addPrinterSectionRevampContainer {
+  #addPrinterSectionContainer {
     padding-inline-start: 10px;
     padding-top: 8px;
   }
@@ -156,7 +138,7 @@
     padding-inline: 12px 16px;
   }
 
-  :host([is-printer-settings-revamp-enabled_]) .section-title {
+  .section-title {
     font: var(--cros-button-2-font);
   }
 </style>
@@ -169,7 +151,8 @@
       using-slotted-label
       sub-label="$i18n{printJobsSublabel}"
       deep-link-focus-id$="[[Setting.kPrintJobs]]">
-    <div slot="label" class="section-title">$i18n{printJobsTitle}</div>
+    <div slot="label" class="section-title">$i18n{printJobsTitle}
+    </div>
   </cr-link-row>
   <div class="hr"></div>
 </template>
@@ -179,63 +162,44 @@
       class="layout horizontal padded">
     <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
     <div id="connectionMessage" class="layout vertical">
-      <div class="section-title">$i18n{noInternetConnection}</div>
+      <div role="heading" aria-level="2"
+           class="section-title">$i18n{noInternetConnection}</div>
       <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
     </div>
   </div>
 </template>
 
-<template is="dom-if" if="[[showSavedPrintersSection_(savedPrinters_)]]"
-    restamp>
-  <div id="savedPrintersContainer">
-    <div id="savedPrintersDescription" class="settings-box first">
-      <div class="start">
-        <span aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
-          $i18n{savedPrintersTitle}
-        </span>
-        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]"
-            aria-hidden="true">
-          $i18n{savedPrintersSubtext}
-        </div>
+<div id="savedPrintersContainer">
+  <div id="savedPrintersDescription" class="settings-box first">
+    <div class="start">
+      <span role="heading" aria-level="2"
+            aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
+        $i18n{savedPrintersTitle}
+      </span>
+      <div class="secondary" aria-hidden="true">
+        $i18n{savedPrintersSubtext}
       </div>
     </div>
-    <div id="noSavedPrinters" class="list-frame secondary"
-        hidden="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]">
-      $i18n{noSavedPrinters}
-    </div>
+  </div>
+  <div id="noSavedPrinters" class="list-frame secondary"
+      hidden="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]">
+    $i18n{noSavedPrinters}
+  </div>
 
-    <settings-cups-saved-printers id="savedPrinters"
-        active-printer="{{activePrinter}}"
-        search-term="[[searchTerm]]"
-        printers-count="{{savedPrinterCount_}}">
-    </settings-cups-saved-printers>
-  </div>
-</template>
+  <settings-cups-saved-printers id="savedPrinters"
+      active-printer="{{activePrinter}}"
+      search-term="[[searchTerm]]"
+      printers-count="{{savedPrinterCount_}}">
+  </settings-cups-saved-printers>
+</div>
 <template is="dom-if" if="[[attemptedLoadingPrinters_]]">
-  <div id="nearbyPrinters" class="padded first nearby-printers-section"
-      hidden="[[isPrinterSettingsRevampEnabled_]]">
-    <div aria-label$="[[nearbyPrintersAriaLabel_]]" class="section-title">
-      $i18n{nearbyPrintersListTitle}
-    </div>
-    <localized-link class="secondary"
-        localized-string="$i18n{nearbyPrintersListDescription}"
-        link-url="$i18n{printingCUPSPrintLearnMoreUrl}">
-    </localized-link>
-    <template is="dom-if" if="[[!addPrinterButtonActive_(
-        hasActiveNetworkConnection,
-        prefs.native_printing.user_native_printers_allowed.value)]]">
-      <cr-policy-pref-indicator
-          pref="[[prefs.native_printing.user_native_printers_allowed]]"
-          icon-aria-label="$i18n{printingPageTitle}">
-      </cr-policy-pref-indicator>
-    </template>
-  </div>
-  <div id="nearbyPrintersRevamp" class="padded first nearby-printers-section"
-      hidden="[[!showNearbyPrintersRevampSection_(
-          isPrinterSettingsRevampEnabled_, hasActiveNetworkConnection)]]">
+  <div id="nearbyPrintersRevamp"
+      class="settings-box first nearby-printers-section"
+      hidden="[[!hasActiveNetworkConnection]]">
     <div id="nearbyPrintersDescription" aria-hidden="true">
       <div id="availablePrintersReadyTitle"
           aria-label$="[[nearbyPrintersAriaLabel_]]"
+          role="heading" aria-level="2"
           class="section-title">
         $i18n{availablePrintersReadyTitle}
       </div>
@@ -260,30 +224,10 @@
     </cr-policy-pref-indicator>
   </div>
 
-  <!-- When the revamp flag is enabled hide this Add printer section so
-        the revamp Add printer section will be shown in the correct order. -->
-  <div id="addPrinterSection" class="list-frame add-printer-section"
-      hidden="[[isPrinterSettingsRevampEnabled_]]">
-    <div class="layout horizontal center custom-list-item-bottom">
-      <div id="addPrinterText" aria-hidden="true">
-        $i18n{addCupsPrinter}
-      </div>
-      <cr-icon-button id="addManualPrinterIcon"
-          class="action-button add-manual-printer-icon"
-          iron-icon="os-settings:printer-add"
-          on-click="onAddPrinterClick_"
-          disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
-              prefs.native_printing.user_native_printers_allowed.value)]]"
-          title="$i18n{addCupsPrinter}"
-          deep-link-focus-id$="[[Setting.kAddPrinter]]">
-      </cr-icon-button>
-    </div>
-  </div>
-
   <template is="dom-if" if="[[hasActiveNetworkConnection]]" restamp>
     <div id="collapsibleSection"
         hidden="[[!nearbyPrintersExpanded_]]">
-      <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+      <div id="helpSection">
         <div id="helpIconSection">
           <iron-icon icon="os-settings:printer-setup"></iron-icon>
         </div>
@@ -306,11 +250,10 @@
           active-printer="{{activePrinter}}"
           printers-count="{{nearbyPrinterCount_}}">
       </settings-cups-nearby-printers>
-      <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
-          hidden="[[!isPrinterSettingsRevampEnabled_]]">
-        <div id="addPrinterSectionRevampContainer"
+      <div id="addPrinterSection" class="list-frame add-printer-section">
+        <div id="addPrinterSectionContainer"
             class="layout horizontal center custom-list-item-top">
-          <cr-button id="addManualPrinterButtonRevamp"
+          <cr-button id="addManualPrinterButton"
               class="prefix-icon" on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(hasActiveNetworkConnection,
                   prefs.native_printing.user_native_printers_allowed.value)]]"

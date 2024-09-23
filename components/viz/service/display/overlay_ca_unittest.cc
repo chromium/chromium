@@ -24,7 +24,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/ca_layer_overlay.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
@@ -76,8 +75,8 @@ static ResourceId CreateResourceInLayerTree(
     const gfx::Size& size,
     bool is_overlay_candidate) {
   auto resource = TransferableResource::MakeGpu(
-      gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D, gpu::SyncToken(),
-      size, SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(), size,
+      SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());
@@ -87,7 +86,7 @@ static ResourceId CreateResourceInLayerTree(
 
 ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           ClientResourceProvider* child_resource_provider,
-                          ContextProvider* child_context_provider,
+                          RasterContextProvider* child_context_provider,
                           const gfx::Size& size,
                           bool is_overlay_candidate) {
   ResourceId resource_id = CreateResourceInLayerTree(
@@ -117,7 +116,7 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
 TextureDrawQuad* CreateCandidateQuadAt(
     DisplayResourceProvider* parent_resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider,
+    RasterContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
@@ -143,27 +142,16 @@ TextureDrawQuad* CreateCandidateQuadAt(
   return overlay_quad;
 }
 
-TextureDrawQuad* CreateCandidateQuadAt(
-    DisplayResourceProvider* parent_resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider,
-    const SharedQuadState* shared_quad_state,
-    AggregatedRenderPass* render_pass,
-    const gfx::Rect& rect) {
-  return CreateCandidateQuadAt(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      shared_quad_state, render_pass, rect, gfx::ProtectedVideoType::kClear);
-}
-
 TextureDrawQuad* CreateFullscreenCandidateQuad(
     DisplayResourceProvider* parent_resource_provider,
     ClientResourceProvider* child_resource_provider,
-    ContextProvider* child_context_provider,
+    RasterContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass) {
   return CreateCandidateQuadAt(
       parent_resource_provider, child_resource_provider, child_context_provider,
-      shared_quad_state, render_pass, render_pass->output_rect);
+      shared_quad_state, render_pass, render_pass->output_rect,
+      gfx::ProtectedVideoType::kClear);
 }
 
 SkM44 GetIdentityColorMatrix() {
@@ -359,44 +347,26 @@ TEST_F(CALayerOverlayTest, SkipNonVisible) {
   EXPECT_EQ(0U, ca_layer_list.size());
 }
 
-TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
-  const gfx::Size y_size(640, 480);
-  const gfx::Size uv_size(320, 240);
-  const gfx::Size uv_sample_size(2, 2);
+TEST_F(CALayerOverlayTest, TextureDrawQuadVideoOverlay) {
+  const gfx::Size size(640, 480);
   bool is_overlay_candidate = true;
-  ResourceId y_resource_id =
+  ResourceId resource_id =
       CreateResource(resource_provider_.get(), child_resource_provider_.get(),
-                     child_provider_.get(), y_size, is_overlay_candidate);
+                     child_provider_.get(), size, is_overlay_candidate);
 
-  ResourceId u_resource_id =
-      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
-                     child_provider_.get(), uv_size, is_overlay_candidate);
-
-  ResourceId v_resource_id =
-      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
-                     child_provider_.get(), uv_size, is_overlay_candidate);
-
-  ResourceId uv_resource_id =
-      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
-                     child_provider_.get(), uv_size, is_overlay_candidate);
-
-  // NV12 frames should be promoted to overlays.
+  // Video frames of TextureDrawQuad should be promoted to overlays.
   {
     auto pass = CreateRenderPass();
-    auto* yuv_quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-    yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
-                     gfx::Rect(y_size),
-                     /*needs_blending=*/false,
-                     /*coded_size=*/y_size,
-                     /*video_frame_visible_rect=*/gfx::Rect(0, 0, 320, 240),
-                     /*video_frame_uv_sample_size=*/uv_sample_size,
-                     y_resource_id, uv_resource_id, uv_resource_id,
-                     kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
-                     /*offset=*/0.0f,
-                     /*multiplier=*/1.0f,
-                     /*bits_per_channel=*/8,
-                     /*video_type=*/gfx::ProtectedVideoType::kClear,
-                     /*metadata=*/std::nullopt);
+    auto* texture_video_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    texture_video_quad->SetNew(pass->shared_quad_state_list.back(),
+                               gfx::Rect(size), gfx::Rect(size),
+                               /*needs_blending=*/false, resource_id,
+                               /*premultiplied_alpha=*/false, kUVTopLeft,
+                               kUVBottomRight, SkColors::kTransparent,
+                               /*flipped=*/false, /*nearest_neighbor=*/false,
+                               /*secure_output_only=*/false,
+                               /*video_type=*/gfx::ProtectedVideoType::kClear);
+    texture_video_quad->is_video_frame = true;
 
     OverlayCandidateList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -412,42 +382,6 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
         &damage_rect_, &content_bounds_);
     EXPECT_EQ(gfx::Rect(), damage_rect_);
     EXPECT_EQ(1U, ca_layer_list.size());
-  }
-
-  // If seprate Y, U, and V resources are specified, then we cannot represent
-  // them as overlays. Only Y and U==V resources are supported.
-  // https://crbug.com/1216345
-  {
-    auto pass = CreateRenderPass();
-    auto* yuv_quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-    yuv_quad->SetNew(pass->shared_quad_state_list.back(), gfx::Rect(y_size),
-                     gfx::Rect(y_size),
-                     /*needs_blending=*/false,
-                     /*coded_size=*/y_size,
-                     /*video_frame_visible_rect=*/gfx::Rect(0, 0, 320, 240),
-                     /*video_frame_uv_sample_size=*/uv_sample_size,
-                     y_resource_id, u_resource_id, v_resource_id,
-                     kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
-                     /*offset=*/0.0f,
-                     /*multiplier=*/1.0f,
-                     /*bits_per_channel=*/8,
-                     /*video_type=*/gfx::ProtectedVideoType::kClear,
-                     /*metadata=*/std::nullopt);
-
-    OverlayCandidateList ca_layer_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    AggregatedRenderPassList pass_list;
-    pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
-
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list), nullptr, &ca_layer_list,
-        &damage_rect_, &content_bounds_);
-    EXPECT_EQ(gfx::Rect(), damage_rect_);
-    EXPECT_EQ(0U, ca_layer_list.size());
   }
 }
 

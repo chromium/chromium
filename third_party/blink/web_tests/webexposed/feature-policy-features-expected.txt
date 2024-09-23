@@ -20,7 +20,7 @@ ch-save-data
 ch-ua
 ch-ua-arch
 ch-ua-bitness
-ch-ua-form-factor
+ch-ua-form-factors
 ch-ua-full-version
 ch-ua-full-version-list
 ch-ua-mobile
@@ -35,7 +35,8 @@ clipboard-read
 clipboard-write
 compute-pressure
 cross-origin-isolated
-direct-sockets
+deferred-fetch
+digital-credentials-get
 display-capture
 encrypted-media
 execution-while-not-rendered
@@ -53,11 +54,13 @@ join-ad-interest-group
 keyboard-map
 local-fonts
 magnetometer
+media-playback-while-not-visible
 microphone
 midi
 otp-credentials
 payment
 picture-in-picture
+popins
 private-aggregation
 private-state-token-issuance
 private-state-token-redemption
@@ -69,15 +72,13 @@ serial
 shared-autofill
 shared-storage
 shared-storage-select-url
-smart-card
+speaker-selection
 storage-access
-sub-apps
 sync-xhr
 unload
 usb
-usb-unrestricted
 vertical-scroll
-web-printing
+web-app-installation
 window-management
 xr-spatial-tracking
 

@@ -24,7 +24,6 @@ const char* ShutdownReasonToString(ShutdownReason reason) {
       return "debug accelerator";
   }
   NOTREACHED() << "Invalid reason " << static_cast<int>(reason);
-  return "invalid";
 }
 
 }  // namespace ash

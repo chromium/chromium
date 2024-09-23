@@ -1,0 +1,15 @@
+Name: Domato
+URL: https://github.com/googleprojectzero/domato/
+Version: N/A
+Date: 2024-08-01
+Revision: 739329a915173ab001880ec313659c3125a1c8fe
+License: Apache 2.0
+License File: src/LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+Domato is based on an engine that, given a context-free grammar in a simple
+format, generates samples from that grammar. It is broadly used in Chrome
+Fuzzing in ClusterFuzz.
+

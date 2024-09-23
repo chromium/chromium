@@ -24,7 +24,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using password_manager::AffiliationService;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStoreInterface;
@@ -149,7 +148,7 @@ void WebViewPasswordManagerClient::AutomaticPasswordSave(
 }
 
 void WebViewPasswordManagerClient::PromptUserToEnableAutosignin() {
-  // TODO(crbug.com/435048): Implement this method.
+  // TODO(crbug.com/40394758): Implement this method.
   NOTIMPLEMENTED();
 }
 
@@ -180,7 +179,8 @@ const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService()
   return sync_service_;
 }
 
-AffiliationService* WebViewPasswordManagerClient::GetAffiliationService() {
+affiliations::AffiliationService*
+WebViewPasswordManagerClient::GetAffiliationService() {
   // Not used on IOS web view.
   return nullptr;
 }
@@ -205,7 +205,7 @@ void WebViewPasswordManagerClient::NotifyUserAutoSignin(
     const url::Origin& origin) {
   DCHECK(!local_forms.empty());
   helper_.NotifyUserAutoSignin();
-  // TODO(crbug.com/865114): Implement remaining logic.
+  // TODO(crbug.com/40585559): Implement remaining logic.
 }
 
 void WebViewPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
@@ -299,7 +299,7 @@ bool WebViewPasswordManagerClient::IsNewTabPage() const {
 
 safe_browsing::PasswordProtectionService*
 WebViewPasswordManagerClient::GetPasswordProtectionService() const {
-  // TODO(crbug.com/1148229): Enable PhishGuard in web_view.
+  // TODO(crbug.com/40731177): Enable PhishGuard in web_view.
   return nullptr;
 }
 

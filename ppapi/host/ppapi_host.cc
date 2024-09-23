@@ -149,7 +149,6 @@ int PpapiHost::AddPendingResourceHost(
   // The resource ID should not be assigned.
   if (!resource_host.get() || resource_host->pp_resource() != 0) {
     NOTREACHED();
-    return 0;
   }
 
   if (pending_resource_hosts_.size() + resources_.size()

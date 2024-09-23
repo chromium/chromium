@@ -50,6 +50,10 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   // Return true if the accelerator is deprecated.
   virtual bool IsDeprecated(const ui::Accelerator& accelerator) const = 0;
 
+  // Return true if the accelerator data does not allow users to modify.
+  virtual bool IsAcceleratorLocked(
+      const ui::Accelerator& accelerator) const = 0;
+
   // Add a new user defined accelerator.
   virtual mojom::AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,

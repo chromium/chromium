@@ -67,8 +67,8 @@ void RequestProxyResolvingSocketFactory(
 }
 #endif
 
-BrowserContextKeyedServiceFactory::TestingFactory& GetTestingFactory() {
-  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+GCMProfileServiceFactory::GlobalTestingFactory& GetTestingFactory() {
+  static base::NoDestructor<GCMProfileServiceFactory::GlobalTestingFactory>
       testing_factory;
   return *testing_factory;
 }
@@ -76,14 +76,14 @@ BrowserContextKeyedServiceFactory::TestingFactory& GetTestingFactory() {
 }  // namespace
 
 GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
-    ScopedTestingFactoryInstaller(TestingFactory testing_factory) {
+    ScopedTestingFactoryInstaller(GlobalTestingFactory testing_factory) {
   DCHECK(!GetTestingFactory());
   GetTestingFactory() = std::move(testing_factory);
 }
 
 GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
     ~ScopedTestingFactoryInstaller() {
-  GetTestingFactory() = BrowserContextKeyedServiceFactory::TestingFactory();
+  GetTestingFactory() = GlobalTestingFactory();
 }
 
 // static
@@ -119,6 +119,9 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -135,9 +138,9 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
   DCHECK(!profile->IsOffTheRecord());
 #endif
 
-  TestingFactory& testing_factory = GetTestingFactory();
-  if (testing_factory)
+  if (GlobalTestingFactory& testing_factory = GetTestingFactory()) {
     return testing_factory.Run(context).release();
+  }
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -161,7 +164,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       content::GetIOThreadTaskRunner({}), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // TODO(crbug.com/1424920): Removing image fetcher references here breaks
+  // TODO(crbug.com/40260641): Removing image fetcher references here breaks
   // tests: org.chromium.chrome.browser.ImageFetcherIntegrationTest Users of
   // image fetcher may be depending on this service to initialize the image
   // fetcher factory. [FATAL:scoped_refptr.h(291)] Check failed: ptr_.

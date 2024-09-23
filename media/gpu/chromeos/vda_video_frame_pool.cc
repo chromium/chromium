@@ -17,7 +17,9 @@ namespace media {
 VdaVideoFramePool::VdaVideoFramePool(
     base::WeakPtr<VdaDelegate> vda,
     scoped_refptr<base::SequencedTaskRunner> vda_task_runner)
-    : vda_(std::move(vda)), vda_task_runner_(std::move(vda_task_runner)) {
+    : vda_(std::move(vda)),
+      vda_task_runner_(std::move(vda_task_runner)),
+      vda_frame_storage_type_(vda_->GetFrameStorageType()) {
   DVLOGF(3);
   DETACH_FROM_SEQUENCE(parent_sequence_checker_);
 
@@ -116,7 +118,7 @@ void VdaVideoFramePool::OnRequestFramesDone(
 void VdaVideoFramePool::ImportFrameThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
-    scoped_refptr<VideoFrame> frame) {
+    scoped_refptr<FrameResource> frame) {
   DVLOGF(3);
   DCHECK(weak_this);
 
@@ -125,7 +127,7 @@ void VdaVideoFramePool::ImportFrameThunk(
                                 std::move(frame)));
 }
 
-void VdaVideoFramePool::ImportFrame(scoped_refptr<VideoFrame> frame) {
+void VdaVideoFramePool::ImportFrame(scoped_refptr<FrameResource> frame) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
@@ -139,21 +141,21 @@ void VdaVideoFramePool::ImportFrame(scoped_refptr<VideoFrame> frame) {
   CallFrameAvailableCbIfNeeded();
 }
 
-scoped_refptr<VideoFrame> VdaVideoFramePool::GetFrame() {
+scoped_refptr<FrameResource> VdaVideoFramePool::GetFrame() {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
   if (IsExhausted())
     return nullptr;
 
-  scoped_refptr<VideoFrame> origin_frame = std::move(frame_pool_.front());
+  scoped_refptr<FrameResource> origin_frame = std::move(frame_pool_.front());
   frame_pool_.pop();
 
   // Update visible_rect and natural_size.
-  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-      origin_frame, origin_frame->format(), visible_rect_, natural_size_);
+  scoped_refptr<FrameResource> wrapped_frame =
+      origin_frame->CreateWrappingFrame(visible_rect_, natural_size_);
   if (!wrapped_frame) {
-    DLOG(WARNING) << __func__ << "Failed to wrap a VideoFrame";
+    DLOG(WARNING) << __func__ << "Failed to wrap a FrameResource";
     return nullptr;
   }
 
@@ -161,6 +163,10 @@ scoped_refptr<VideoFrame> VdaVideoFramePool::GetFrame() {
       base::BindOnce(&VdaVideoFramePool::ImportFrameThunk, parent_task_runner_,
                      weak_this_, std::move(origin_frame)));
   return wrapped_frame;
+}
+
+VideoFrame::StorageType VdaVideoFramePool::GetFrameStorageType() const {
+  return vda_frame_storage_type_;
 }
 
 bool VdaVideoFramePool::IsExhausted() {

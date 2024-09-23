@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/accessibility/disable_trackpad_event_rewriter.h"
+#include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mirror_window_controller.h"
@@ -19,13 +21,17 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/command_line.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/caps_lock_event_rewriter.h"
+#include "ui/events/ash/discard_key_event_rewriter.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
 namespace ash {
 namespace {
@@ -37,7 +43,7 @@ class KeyboardModifierEventRewriterDelegateImpl
       ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
       : event_rewriter_delegate_(event_rewriter_delegate) {}
 
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {
@@ -122,24 +128,68 @@ void EventRewriterControllerImpl::Initialize(
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
+  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
+    std::unique_ptr<DisableTrackpadEventRewriter>
+        disable_trackpad_event_rewriter =
+            std::make_unique<DisableTrackpadEventRewriter>();
+    disable_trackpad_event_rewriter_ = disable_trackpad_event_rewriter.get();
+    // The DisableTrackpadEventRewriter needs to be notified first, as it
+    // should stop all trackpad events from propagating further into the system.
+    AddEventRewriter(std::move(disable_trackpad_event_rewriter));
   }
-  AddEventRewriter(std::move(prerewritten_event_forwarder));
-  AddEventRewriter(std::move(accessibility_event_rewriter));
-  AddEventRewriter(std::move(keyboard_driven_event_rewriter));
+  if (::features::IsAccessibilityFilterKeysEnabled()) {
+    std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
+        std::make_unique<FilterKeysEventRewriter>();
+    filter_keys_event_rewriter_ = filter_keys_event_rewriter.get();
+    // The FilterKeysEventRewriter needs to be notified before any other
+    // rewriters that modify key events, as it should delay or cancel all key
+    // events from propagating further into the system.
+    AddEventRewriter(std::move(filter_keys_event_rewriter));
+  }
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   if (features::IsKeyboardRewriterFixEnabled()) {
     auto keyboard_modifier_event_rewriter =
         std::make_unique<ui::KeyboardModifierEventRewriter>(
             std::make_unique<KeyboardModifierEventRewriterDelegateImpl>(
                 event_rewriter_delegate),
+            ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
             Shell::Get()->keyboard_capability(),
             ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
     AddEventRewriter(std::move(keyboard_modifier_event_rewriter));
   }
+  // CapsLock event rewriter must come after modifier rewriting as it can effect
+  // its result. This means with the rewritter fix enabled, it must come before
+  // EventRewriterAsh, but with the fix disabled, it must come after.
+  if (features::IsKeyboardRewriterFixEnabled() &&
+      features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
+        ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+        Shell::Get()->keyboard_capability(),
+        ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
+  }
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
+  }
+  AddEventRewriter(std::move(prerewritten_event_forwarder));
+  // Accessibility rewriter is applied between modifier event rewriters and
+  // EventRewriterAsh. Specifically, Search modifier is captured by the
+  // accessibility rewriter, that should be the ones after modifier remapping.
+  // However, accessibility rewriter wants to capture it before it is rewritten
+  // into 6-pack keys, which is done in EventRewriterAsh.
+  AddEventRewriter(std::move(accessibility_event_rewriter));
+  AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
+  if (!features::IsKeyboardRewriterFixEnabled() &&
+      features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::CapsLockEventRewriter>(
+        ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+        Shell::Get()->keyboard_capability(),
+        ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
+  }
+  if (features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::DiscardKeyEventRewriter>());
+  }
 }
 
 void EventRewriterControllerImpl::AddEventRewriter(

@@ -5,6 +5,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -23,7 +24,6 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -82,20 +82,12 @@ class URLLoaderInterceptor::IOState
 
   void Shutdown(base::OnceClosure closure) {
     DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
-    url_loader_factory_getter_wrappers_.clear();
     subresource_wrappers_.clear();
+    url_loader_factory::SetHasInterceptorOnIOThreadForTesting(false);
 
-    URLLoaderFactoryGetter::SetGetNetworkFactoryCallbackForTesting(
-        URLLoaderFactoryGetter::GetNetworkFactoryCallback());
     if (closure)
       std::move(closure).Run();
   }
-
-  // Callback on IO thread whenever a
-  // URLLoaderFactoryGetter::GetNetworkContext is called on an object that
-  // doesn't have a test factory set up.
-  void GetNetworkFactoryCallback(
-      scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter);
 
   void CreateURLLoaderFactoryForRenderProcess(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -130,10 +122,6 @@ class URLLoaderInterceptor::IOState
 
   URLLoaderCompletionStatusCallback completion_status_callback_;
 
-  // For intercepting requests via network service. There is one per
-  // StoragePartition. Only accessed on IO thread.
-  std::set<std::unique_ptr<URLLoaderFactoryGetterWrapper>>
-      url_loader_factory_getter_wrappers_;
   // For intercepting requests via network service. There is one per factory
   // created via RenderProcessHost::CreateURLLoaderFactory. Only accessed on IO
   // thread.
@@ -279,36 +267,6 @@ class URLLoaderInterceptor::Interceptor
   base::OnceClosure error_handler_;
   std::vector<std::unique_ptr<URLLoaderClientInterceptor>>
       url_loader_client_interceptors_;
-};
-
-// This class intercepts calls to each StoragePartition's URLLoaderFactoryGetter
-// so that it can intercept frame requests.
-class URLLoaderInterceptor::URLLoaderFactoryGetterWrapper {
- public:
-  URLLoaderFactoryGetterWrapper(
-      scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter,
-      URLLoaderInterceptor::IOState* parent)
-      : url_loader_factory_getter_(std::move(url_loader_factory_getter)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    frame_interceptor_ = std::make_unique<Interceptor>(
-        parent, base::BindRepeating([]() { return 0; }),
-        base::BindLambdaForTesting([=]() -> network::mojom::URLLoaderFactory* {
-          return url_loader_factory_getter_
-              ->original_network_factory_for_testing()
-              ->get();
-        }));
-    url_loader_factory_getter_->SetNetworkFactoryForTesting(
-        frame_interceptor_.get());
-  }
-
-  ~URLLoaderFactoryGetterWrapper() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    url_loader_factory_getter_->SetNetworkFactoryForTesting(nullptr);
-  }
-
- private:
-  std::unique_ptr<Interceptor> frame_interceptor_;
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
 };
 
 class URLLoaderInterceptor::Wrapper final {
@@ -467,8 +425,8 @@ URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
 }
 
 void URLLoaderInterceptor::WriteResponse(
-    base::StringPiece headers,
-    base::StringPiece body,
+    std::string_view headers,
+    std::string_view body,
     network::mojom::URLLoaderClient* client,
     std::optional<net::SSLInfo> ssl_info,
     std::optional<GURL> url) {
@@ -497,10 +455,9 @@ void URLLoaderInterceptor::WriteResponse(
       CreateDataPipe(&options, producer_handle, consumer_handle);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  uint32_t bytes_written = body.size();
-  result = producer_handle->WriteData(body.data(), &bytes_written,
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  result = producer_handle->WriteAllData(base::as_byte_span(body));
   CHECK_EQ(result, MOJO_RESULT_OK);
+  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
 
   client->OnReceiveResponse(std::move(response), std::move(consumer_handle),
                             std::nullopt);
@@ -600,7 +557,7 @@ bool URLLoaderInterceptor::Intercept(RequestParams* params) {
 void URLLoaderInterceptor::IOState::WrapperBindingError(Wrapper* wrapper) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
   auto it = subresource_wrappers_.find(wrapper);
-  DCHECK(it != subresource_wrappers_.end());
+  CHECK(it != subresource_wrappers_.end());
   subresource_wrappers_.erase(it);
 }
 
@@ -608,21 +565,9 @@ void URLLoaderInterceptor::IOState::Initialize(
     const URLLoaderCompletionStatusCallback& completion_status_callback,
     base::OnceClosure closure) {
   completion_status_callback_ = std::move(completion_status_callback);
-  URLLoaderFactoryGetter::SetGetNetworkFactoryCallbackForTesting(
-      base::BindRepeating(
-          &URLLoaderInterceptor::IOState::GetNetworkFactoryCallback,
-          base::Unretained(this)));
-
+  url_loader_factory::SetHasInterceptorOnIOThreadForTesting(true);
   if (closure)
     std::move(closure).Run();
-}
-
-void URLLoaderInterceptor::IOState::GetNetworkFactoryCallback(
-    scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
-  url_loader_factory_getter_wrappers_.emplace(
-      std::make_unique<URLLoaderFactoryGetterWrapper>(url_loader_factory_getter,
-                                                      this));
 }
 
 void URLLoaderInterceptor::IOState::CreateURLLoaderFactoryForRenderProcess(

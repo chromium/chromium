@@ -7,6 +7,7 @@
 #include "media/base/key_systems.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -21,66 +22,76 @@
 
 namespace blink {
 
-ExceptionCode WebCdmExceptionToExceptionCode(
-    WebContentDecryptionModuleException cdm_exception) {
+void WebCdmExceptionToPromiseRejection(
+    ScriptPromiseResolverBase* resolver,
+    WebContentDecryptionModuleException cdm_exception,
+    const String& message) {
   switch (cdm_exception) {
     case kWebContentDecryptionModuleExceptionTypeError:
-      return ToExceptionCode(ESErrorType::kTypeError);
+      resolver->RejectWithTypeError(message);
+      return;
     case kWebContentDecryptionModuleExceptionNotSupportedError:
-      return ToExceptionCode(DOMExceptionCode::kNotSupportedError);
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                       message);
+      return;
     case kWebContentDecryptionModuleExceptionInvalidStateError:
-      return ToExceptionCode(DOMExceptionCode::kInvalidStateError);
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       message);
+      return;
     case kWebContentDecryptionModuleExceptionQuotaExceededError:
-      return ToExceptionCode(DOMExceptionCode::kQuotaExceededError);
+      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
+                                       message);
+      return;
   }
 
-  NOTREACHED();
-  return ToExceptionCode(DOMExceptionCode::kUnknownError);
+  NOTREACHED_IN_MIGRATION();
 }
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
-    ScriptState* script_state,
+    ScriptPromiseResolverBase* resolver,
     const MediaKeysConfig& config,
     EmeApiType api_type)
-    : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      config_(config),
-      api_type_(api_type) {}
+    : resolver_(resolver), config_(config), api_type_(api_type) {}
 
 ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;
 
 void ContentDecryptionModuleResultPromise::Complete() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
-  Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
-         "Unexpected completion.");
+  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "Unexpected completion.");
+  resolver_.Clear();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithContentDecryptionModule(
-    WebContentDecryptionModule* cdm) {
-  NOTREACHED();
+    std::unique_ptr<WebContentDecryptionModule> cdm) {
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
-  Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
-         "Unexpected completion.");
+  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "Unexpected completion.");
+  resolver_.Clear();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithSession(
     WebContentDecryptionModuleResult::SessionStatus status) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
-  Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
-         "Unexpected completion.");
+  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "Unexpected completion.");
+  resolver_.Clear();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithKeyStatus(
     WebEncryptedMediaKeyInformation::KeyStatus) {
   if (!IsValidToFulfillPromise())
     return;
-  Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
-         "Unexpected completion.");
+  resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                    "Unexpected completion.");
+  resolver_.Clear();
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithError(
@@ -120,26 +131,8 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
     result.Append(')');
   }
 
-  Reject(WebCdmExceptionToExceptionCode(exception_code), result.ToString());
-}
-
-ScriptPromise ContentDecryptionModuleResultPromise::Promise() {
-  return resolver_->Promise();
-}
-
-void ContentDecryptionModuleResultPromise::Reject(ExceptionCode code,
-                                                  const String& error_message) {
-  DCHECK(IsValidToFulfillPromise());
-
-  ScriptState::Scope scope(resolver_->GetScriptState());
-  ExceptionState exception_state(
-      resolver_->GetScriptState()->GetIsolate(),
-      ExceptionContextType::kOperationInvoke,
-      EncryptedMediaUtils::GetInterfaceName(api_type_),
-      EncryptedMediaUtils::GetPropertyName(api_type_));
-  exception_state.ThrowException(code, error_message);
-  resolver_->Reject(exception_state);
-
+  WebCdmExceptionToPromiseRejection(resolver_, exception_code,
+                                    result.ToString());
   resolver_.Clear();
 }
 

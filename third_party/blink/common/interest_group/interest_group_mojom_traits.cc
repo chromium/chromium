@@ -18,6 +18,8 @@ bool StructTraits<
       !data.ReadBuyerReportingId(&out->buyer_reporting_id) ||
       !data.ReadBuyerAndSellerReportingId(
           &out->buyer_and_seller_reporting_id) ||
+      !data.ReadSelectableBuyerAndSellerReportingIds(
+          &out->selectable_buyer_and_seller_reporting_ids) ||
       !data.ReadMetadata(&out->metadata) ||
       !data.ReadAdRenderId(&out->ad_render_id) ||
       !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins)) {
@@ -49,6 +51,9 @@ bool StructTraits<blink::mojom::AuctionServerRequestFlagsDataView,
   if (data.include_full_ads()) {
     out->Put(blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
   }
+  if (data.omit_user_bidding_signals()) {
+    out->Put(blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals);
+  }
   return true;
 }
 
@@ -73,6 +78,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadUpdateUrl(&out->update_url) ||
       !data.ReadTrustedBiddingSignalsUrl(&out->trusted_bidding_signals_url) ||
       !data.ReadTrustedBiddingSignalsKeys(&out->trusted_bidding_signals_keys) ||
+      !data.ReadTrustedBiddingSignalsCoordinator(
+          &out->trusted_bidding_signals_coordinator) ||
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||
       !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components) ||
       !data.ReadAdSizes(&out->ad_sizes) ||

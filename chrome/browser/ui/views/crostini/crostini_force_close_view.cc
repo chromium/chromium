@@ -8,6 +8,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -59,11 +61,11 @@ CrostiniForceCloseView::CrostiniForceCloseView(
           : l10n_util::GetStringFUTF16(IDS_CROSTINI_FORCE_CLOSE_TITLE_KNOWN,
                                        app_name));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CROSTINI_FORCE_CLOSE_ACCEPT_BUTTON));
   SetAcceptCallback(std::move(force_close_callback));
 
-  SetModalType(ui::ModalType::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

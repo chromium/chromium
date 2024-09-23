@@ -9,6 +9,12 @@
 
 namespace ash {
 
+namespace {
+
+inline constexpr size_t kDefaultAssignmentsCount = 3;
+
+}  // namespace
+
 class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
  public:
   FakeGlanceablesClassroomClient();
@@ -18,7 +24,10 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
       const FakeGlanceablesClassroomClient&) = delete;
   ~FakeGlanceablesClassroomClient() override;
 
+  void SetAssignmentsCount(size_t assignments_count);
+
   // GlanceablesClassroomClient:
+  bool IsDisabledByAdmin() const override;
   void IsStudentRoleActive(IsRoleEnabledCallback callback) override;
   void GetCompletedStudentAssignments(GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithApproachingDueDate(
@@ -28,6 +37,15 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
   void OnGlanceablesBubbleClosed() override;
+
+  void set_is_disabled_by_admin(bool is_disabled_by_admin) {
+    is_disabled_by_admin_ = is_disabled_by_admin;
+  }
+
+ private:
+  size_t assignments_count_ = kDefaultAssignmentsCount;
+
+  bool is_disabled_by_admin_ = false;
 };
 
 }  // namespace ash

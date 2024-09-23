@@ -106,10 +106,19 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // chrome://policy/logs.
   void HandleGetPolicyLogs(const base::Value::List& args);
 
+  // Called to handle the "getAppliedTestPolicies" WebUI message from
+  // chrome://policy/test. This returns the policies that have been set through
+  // the page.
+  void HandleGetAppliedTestPolicies(const base::Value::List& args);
+
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, dictionaries containing the value and additional
   // metadata are sent.
   void SendPolicies();
+
+  // Send the current policy schema to the UI: the list of supported Chrome &
+  // policies, and their types.
+  void SendSchema();
 
   // Get a value dictionary of cloud policies' status information for each scope
   // that has cloud policy enabled (device and/or user).

@@ -64,7 +64,7 @@ class MEDIA_GPU_EXPORT HRDBuffer {
   // Sets the HRD buffer main parameters: buffer size and output data
   // bitrate. `peak_bitrate` and `ease_hrd_reduction` parameters are used
   // in smooth size transition, when the buffer size is reduced.
-  void SetParameters(size_t hrd_buffer_size,
+  void SetParameters(size_t buffer_size,
                      uint32_t avg_bitrate,
                      uint32_t peak_bitrate,
                      bool ease_hrd_reduction);

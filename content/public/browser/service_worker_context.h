@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,6 +46,8 @@ class GURL;
 namespace content {
 
 class ServiceWorkerContextObserver;
+
+struct ServiceWorkerRunningInfo;
 struct StorageUsageInfo;
 
 enum class ServiceWorkerCapability {
@@ -81,6 +84,20 @@ enum class StartServiceWorkerForNavigationHintResult {
 using ServiceWorkerScriptExecutionCallback =
     base::OnceCallback<void(base::Value value,
                             const std::optional<std::string>& error)>;
+
+// An observer very similar to `ServiceWorkerContextCoreObserver`, but meant to
+// only be used by extension service workers. Its methods are called
+// synchronously with changes in //content.
+class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
+ public:
+  // Called when the service worker with id `version_id` has stopped running.
+  virtual void OnStopped(int64_t version_id,
+                         const ServiceWorkerRunningInfo& worker_info) {}
+
+  // TODO(crbug.com/334940006): Add the rest of the extensions methods
+  // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt
+  // `ServiceWorkerTaskQueue` to use this observer exclusively.
+};
 
 // Represents the per-StoragePartition service worker data.
 //
@@ -131,8 +148,14 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // worker's script.
   static base::TimeDelta GetUpdateDelay();
 
+  // Add/remove an observer that is asynchronously notified.
   virtual void AddObserver(ServiceWorkerContextObserver* observer) = 0;
   virtual void RemoveObserver(ServiceWorkerContextObserver* observer) = 0;
+  // Add/remove an observer that is synchronously notified.
+  virtual void AddSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) {}
+  virtual void RemoveSyncObserver(
+      ServiceWorkerContextObserverSynchronous* observer) {}
 
   // Equivalent to calling navigator.serviceWorker.register(script_url,
   // options) for a given `key`. `callback` is passed true when the JS promise
@@ -150,20 +173,24 @@ class CONTENT_EXPORT ServiceWorkerContext {
       StatusCodeCallback callback) = 0;
 
   // Equivalent to calling ServiceWorkerRegistration#unregister on the
-  // registration for `scope`. `callback` is passed true when the JS promise is
-  // fulfilled or false when the JS promise is rejected.
+  // registration for `scope`.
   //
   // Unregistration can fail if:
   //  * No registration exists for `scope`.
   //  * Something unexpected goes wrong, like a renderer crash.
+  //
+  // `callback` provides the status code result of the unregistration.
+  // `blink::ServiceWorkerStatusCode::kOk` means the request to unregister was
+  // sent. It does not mean the worker has been fully unregistered though.
   virtual void UnregisterServiceWorker(const GURL& scope,
                                        const blink::StorageKey& key,
-                                       ResultCallback callback) = 0;
+                                       StatusCodeCallback callback) = 0;
   // As above, but clears the service worker registration immediately rather
   // than waiting if the service worker is active and has controllees.
-  virtual void UnregisterServiceWorkerImmediately(const GURL& scope,
-                                                  const blink::StorageKey& key,
-                                                  ResultCallback callback) = 0;
+  virtual void UnregisterServiceWorkerImmediately(
+      const GURL& scope,
+      const blink::StorageKey& key,
+      StatusCodeCallback callback) = 0;
 
   // Mechanism for embedder to increment/decrement ref count of a service
   // worker.
@@ -310,6 +337,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // `IsLiveRunningServiceWorker()` returns false.
   virtual blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) = 0;
+
+  // Sets the devtools force update on page load flag for service workers. See
+  // ServiceWorkerContextCore::force_update_on_page_load() for details.
+  virtual void SetForceUpdateOnPageLoadForTesting(
+      bool force_update_on_page_load) = 0;
 
  protected:
   ServiceWorkerContext() {}

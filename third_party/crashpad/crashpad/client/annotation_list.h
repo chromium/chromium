@@ -15,6 +15,8 @@
 #ifndef CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 #define CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 
+#include <iterator>
+
 #include "build/build_config.h"
 #include "client/annotation.h"
 
@@ -61,46 +63,45 @@ class AnnotationList {
   void Add(Annotation* annotation);
 
   //! \brief An InputIterator for the AnnotationList.
-  class Iterator {
+  template <typename T>
+  class IteratorBase {
    public:
-    ~Iterator();
+    using difference_type = signed int;
+    using value_type = T*;
+    using reference = T*;
+    using pointer = void;
+    using iterator_category = std::input_iterator_tag;
 
-    Annotation* operator*() const;
-    Iterator& operator++();
-    bool operator==(const Iterator& other) const;
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
+    IteratorBase(const IteratorBase& other) = default;
+    IteratorBase(IteratorBase&& other) = default;
 
-   private:
-    friend class AnnotationList;
-    Iterator(Annotation* head, const Annotation* tail);
+    ~IteratorBase() = default;
 
-    Annotation* curr_;
-    const Annotation* const tail_;
+    IteratorBase& operator=(const IteratorBase& other) = default;
+    IteratorBase& operator=(IteratorBase&& other) = default;
 
-    // Copy and assign are required.
-  };
+    T* operator*() const;
+    T* operator->() const;
 
-  //! \brief An InputIterator for iterating a const AnnotationList.
-  class ConstIterator {
-   public:
-    ~ConstIterator();
+    IteratorBase& operator++();
+    IteratorBase operator++(int);
 
-    const Annotation* operator*() const;
-    ConstIterator& operator++();
-    bool operator==(const ConstIterator& other) const;
-    bool operator!=(const ConstIterator& other) const {
-      return !(*this == other);
+    bool operator==(const IteratorBase& other) const {
+      return curr_ == other.curr_;
     }
 
+    bool operator!=(const IteratorBase& other) const;
+
    private:
     friend class AnnotationList;
-    ConstIterator(const Annotation* head, const Annotation* tail);
+    IteratorBase(T* head, const Annotation* tail);
 
-    const Annotation* curr_;
-    const Annotation* const tail_;
-
-    // Copy and assign are required.
+    T* curr_ = nullptr;
+    const Annotation* tail_ = nullptr;
   };
+
+  using Iterator = IteratorBase<Annotation>;
+  using ConstIterator = IteratorBase<const Annotation>;
 
   //! \brief Returns an iterator to the first element of the annotation list.
   Iterator begin();

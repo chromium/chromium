@@ -19,7 +19,7 @@ enum class OmniboxActionId {
   HISTORY_CLUSTERS,
   ACTION_IN_SUGGEST,
   TAB_SWITCH,
-
+  ANSWER_ACTION,
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

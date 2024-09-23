@@ -12,53 +12,64 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/updater/configurator.h"
-#include "chrome/updater/device_management/dm_client.h"
-#include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "url/gurl.h"
 
 namespace updater {
 
-// The PolicyFetcher handles registration and DM policy refreshes.
+// Base class for the policy fetchers.
 class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
  public:
-  PolicyFetcher(
-      const GURL& server_url,
-      const std::optional<PolicyServiceProxyConfiguration>& proxy_configuration,
-      const std::optional<bool>& override_is_managed_device);
+  virtual void FetchPolicies(
+      base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
+          callback) = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<PolicyFetcher>;
+  virtual ~PolicyFetcher() = default;
+};
+
+// A wrapper class that contains a number of `PolicyFetchers` and falls back
+// between them when one encounters an error.
+class FallbackPolicyFetcher : public PolicyFetcher {
+ public:
+  FallbackPolicyFetcher() = delete;
+  FallbackPolicyFetcher(const FallbackPolicyFetcher&) = delete;
+  FallbackPolicyFetcher& operator=(const FallbackPolicyFetcher&) = delete;
+  FallbackPolicyFetcher(scoped_refptr<PolicyFetcher> impl,
+                        scoped_refptr<PolicyFetcher> next);
+
+  // Overrides of `PolicyFetcher`.
   void FetchPolicies(
       base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
-          callback);
+          callback) override;
 
  private:
-  friend class base::RefCountedThreadSafe<PolicyFetcher>;
-  virtual ~PolicyFetcher();
-
-  void RegisterDevice(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      base::OnceCallback<void(bool, DMClient::RequestResult)> callback);
-  void OnRegisterDeviceRequestComplete(
-      base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
-          callback,
-      bool is_enrollment_mandatory,
-      DMClient::RequestResult result);
-
-  void FetchPolicy(
-      base::OnceCallback<void(scoped_refptr<PolicyManagerInterface>)> callback);
-  scoped_refptr<PolicyManagerInterface> OnFetchPolicyRequestComplete(
-      DMClient::RequestResult result,
-      const std::vector<PolicyValidationResult>& validation_results);
+  ~FallbackPolicyFetcher() override;
+  void PolicyFetched(int result,
+                     scoped_refptr<PolicyManagerInterface> policy_manager);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const GURL server_url_;
-  const std::optional<PolicyServiceProxyConfiguration>
-      policy_service_proxy_configuration_;
-  const std::optional<bool> override_is_managed_device_;
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  scoped_refptr<PolicyFetcher> impl_;
+  scoped_refptr<PolicyFetcher> next_;
+  base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
+      fetch_complete_callback_;
 };
+
+// Creates an out-of-process policy fetcher that delegates fetch tasks to the
+// enterprise companion app.
+[[nodiscard]] scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
+    bool usage_stats_enabled,
+    std::optional<bool> override_is_managed_device);
+
+// Creates an in-process policy fether.
+//   `server_url`: the DM server endpoint.
+//   `proxy_configuration`: Proxy configurations set by the existing policies.
+[[nodiscard]] scoped_refptr<PolicyFetcher> CreateInProcessPolicyFetcher(
+    const GURL& server_url,
+    std::optional<PolicyServiceProxyConfiguration> proxy_configuration,
+    std::optional<bool> override_is_managed_device);
 
 }  // namespace updater
 

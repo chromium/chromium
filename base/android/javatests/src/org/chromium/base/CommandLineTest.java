@@ -46,13 +46,13 @@ public class CommandLineTest {
 
     @Before
     public void setUp() {
-        CommandLine.resetForTesting();
+        CommandLine.resetForTesting(false);
     }
 
     void loadJni() {
-        Assert.assertFalse(CommandLine.getInstance().isNativeImplementation());
+        Assert.assertFalse(CommandLine.isNativeImplementationForTesting());
         LibraryLoader.getInstance().ensureInitialized();
-        Assert.assertTrue(CommandLine.getInstance().isNativeImplementation());
+        Assert.assertTrue(CommandLine.isNativeImplementationForTesting());
     }
 
     void checkInitSwitches() {

@@ -14,9 +14,9 @@
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -113,7 +113,7 @@ class ClipboardHistoryTextItemView::TextContentsView
     const auto height = std::max(contents_bounds.height(),
                                  ClipboardHistoryViews::kCornerCutoutHeight);
 
-    return SkPathBuilder()
+    return SkPath()
         // Start at the top-left corner.
         .moveTo(0.f, 0.f)
         // Draw a vertical line to the bottom-left corner.
@@ -130,12 +130,11 @@ class ClipboardHistoryTextItemView::TextContentsView
         .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
         // Draw a horizontal line back to the starting point.
         .lineTo(0.f, 0.f)
-        .close()
-        .detach();
+        .close();
   }
 };
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView, ContentsView)
+BEGIN_METADATA(ClipboardHistoryTextItemView, TextContentsView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +146,7 @@ ClipboardHistoryTextItemView::ClipboardHistoryTextItemView(
     views::MenuItemView* container)
     : ClipboardHistoryItemView(item_id, clipboard_history, container),
       text_(GetClipboardHistoryItem()->display_text()) {
-  SetAccessibleName(text_);
+  GetViewAccessibility().SetName(text_);
 }
 
 ClipboardHistoryTextItemView::~ClipboardHistoryTextItemView() = default;
@@ -157,7 +156,7 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   return std::make_unique<TextContentsView>(this);
 }
 
-BEGIN_METADATA(ClipboardHistoryTextItemView, ClipboardHistoryItemView)
+BEGIN_METADATA(ClipboardHistoryTextItemView)
 END_METADATA
 
 }  // namespace ash

@@ -82,6 +82,11 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     policy_applier_ = nullptr;
   }
 
+  void GetBinderMapInterfacesForTesting(std::vector<std::string>& out) {
+    binder_map_.GetInterfacesForTesting(out);
+    binder_map_with_context_.GetInterfacesForTesting(out);
+  }
+
  private:
   void BindInterface(mojo::GenericPendingReceiver receiver) {
     if (!binder_map_.TryBind(&receiver)) {

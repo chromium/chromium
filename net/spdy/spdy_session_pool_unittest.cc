@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/spdy/spdy_session_pool.h"
 
 #include <cstddef>
@@ -40,6 +45,7 @@
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,10 +54,9 @@
 using base::trace_event::MemoryAllocatorDump;
 using net::test::IsError;
 using net::test::IsOk;
+using testing::ByRef;
 using testing::Contains;
 using testing::Eq;
-using testing::Contains;
-using testing::ByRef;
 
 namespace net {
 
@@ -199,23 +204,22 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
  public:
   SessionOpeningDelegate(SpdySessionPool* spdy_session_pool,
                          const SpdySessionKey& key)
-      : spdy_session_pool_(spdy_session_pool),
-        key_(key) {}
+      : spdy_session_pool_(spdy_session_pool), key_(key) {}
 
   ~SessionOpeningDelegate() override = default;
 
   void OnHeadersSent() override {}
 
-  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override {}
+  void OnEarlyHintsReceived(const quiche::HttpHeaderBlock& headers) override {}
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {}
+      const quiche::HttpHeaderBlock& response_headers) override {}
 
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override {}
 
   void OnDataSent() override {}
 
-  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
+  void OnTrailers(const quiche::HttpHeaderBlock& trailers) override {}
 
   void OnClose(int status) override {
     std::ignore = CreateFakeSpdySession(spdy_session_pool_, key_);
@@ -245,7 +249,7 @@ TEST_F(SpdySessionPoolTest, CloseCurrentSessions) {
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
@@ -420,7 +424,7 @@ TEST_F(SpdySessionPoolTest, CloseAllSessions) {
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
@@ -570,7 +574,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
-    MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
   StaticSocketDataProvider data1(reads, base::span<MockWrite>());
@@ -796,7 +800,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -961,7 +966,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -1137,7 +1143,7 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   test::StreamDelegateDoNothing delegateA(spdy_streamA);
   spdy_streamA->SetDelegate(&delegateA);
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util.ConstructGetHeaderBlock(urlA.spec()));
   spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
@@ -1265,7 +1271,7 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   test::StreamDelegateDoNothing delegateA(spdy_streamA);
   spdy_streamA->SetDelegate(&delegateA);
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util.ConstructGetHeaderBlock(urlA.spec()));
   spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
@@ -1364,7 +1370,8 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();
@@ -1423,7 +1430,8 @@ TEST_F(SpdySessionPoolTest, HandleGracefulGoawayThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   // Send headers.
@@ -1456,7 +1464,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
     std::string iplist;
     SpdySessionKey key;
   } test_hosts[] = {
-      {"www.example.org", "192.168.0.1"}, {"mail.example.org", "192.168.0.1"},
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
   };
 
   // Populate the HostResolver cache.
@@ -1523,7 +1532,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();
@@ -1601,8 +1611,9 @@ class TestOnRequestDeletedCallback {
   void OnRequestDeleted() {
     EXPECT_FALSE(invoked_);
     invoked_ = true;
-    if (request_deleted_callback_)
+    if (request_deleted_callback_) {
       std::move(request_deleted_callback_).Run();
+    }
     run_loop_.Quit();
   }
 
@@ -1855,13 +1866,15 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
 
 // Tests the OnSSLConfigForServersChanged() method matches SpdySessions
 // containing proxy chains.
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {
       MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
   };
 
-  ProxyChain proxy_chain({
+  auto proxy_chain = ProxyChain::ForIpProtection({
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
                                          "proxya", 443),
       ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
@@ -1960,7 +1973,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
       IsError(ERR_IO_PENDING));
 
   // Activate the first stream by sending data.
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   active_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
   base::RunLoop().RunUntilIdle();
 
@@ -1984,14 +1998,14 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   EXPECT_TRUE(session->IsGoingAway());
 
   // The pending and created stream are cancelled.
-  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  // TODO(crbug.com/40768859): Ideally, this would be recoverable.
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_THAT(created_stream_delegate.WaitForClose(),
               IsError(ERR_NETWORK_CHANGED));
 
   // Close the active stream.
   active_stream->Close();
-  // TODO(https://crbug.com/982499): The invalidated session should be closed
+  // TODO(crbug.com/41469912): The invalidated session should be closed
   // after a RunUntilIdle(), but it is not.
 }
 
@@ -2050,7 +2064,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
   base::RunLoop().RunUntilIdle();
 
   // The pending stream is cancelled.
-  // TODO(https://crbug.com/1213609): Ideally, this would be recoverable.
+  // TODO(crbug.com/40768859): Ideally, this would be recoverable.
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_FALSE(session);
 }

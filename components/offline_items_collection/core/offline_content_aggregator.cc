@@ -61,6 +61,7 @@ void OfflineContentAggregator::UnregisterProvider(
     const std::string& name_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto provider_it = providers_.find(name_space);
+  CHECK(provider_it != providers_.end());
 
   OfflineContentProvider* provider = provider_it->second;
   providers_.erase(provider_it);

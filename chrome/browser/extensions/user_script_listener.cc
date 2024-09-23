@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -206,8 +206,8 @@ void UserScriptListener::CollectURLPatterns(content::BrowserContext* context,
   }
 
   // Retrieve patterns from persistent dynamic user scripts.
-  // TODO(crbug.com/1271758): Intersect these patterns with the extension's host
-  // permissions.
+  // TODO(crbug.com/40205839): Intersect these patterns with the extension's
+  // host permissions.
   URLPatternSet dynamic_patterns =
       scripting::GetPersistentScriptURLPatterns(context, extension->id());
   patterns->insert(patterns->end(), dynamic_patterns.begin(),
@@ -247,7 +247,7 @@ void UserScriptListener::OnExtensionUnloaded(
   if (profile_data_.count(browser_context) == 0)
     return;
 
-  // TODO(crbug.com/1273184): These patterns may have changed since the
+  // TODO(crbug.com/40206239): These patterns may have changed since the
   // extension was loaded as they are associated with dynamic scripts. Once this
   // class is split so URLPatterns are maintained per (profile, extension), we
   // would only look up these patterns when the extension is loaded.

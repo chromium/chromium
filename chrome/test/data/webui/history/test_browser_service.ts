@@ -122,9 +122,13 @@ export class TestBrowserService extends TestBrowserProxy implements
     this.queryResult_ = queryResult;
   }
 
-  queryHistory(searchTerm: string) {
+  queryHistory(searchTerm: string, afterDate?: number) {
     if (!this.ignoreNextQuery_) {
-      this.methodCalled('queryHistory', searchTerm);
+      if (afterDate) {
+        this.methodCalled('queryHistory', searchTerm, afterDate);
+      } else {
+        this.methodCalled('queryHistory', searchTerm);
+      }
     } else {
       this.ignoreNextQuery_ = false;
     }
@@ -144,7 +148,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       this.actionMap[action] = 0;
     }
 
-    this.actionMap[action]++;
+    this.actionMap[action]!++;
   }
 
   recordHistogram(histogram: string, value: number, max: number) {
@@ -158,7 +162,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       this.histogramMap[histogram]![value] = 0;
     }
 
-    this.histogramMap[histogram]![value]++;
+    this.histogramMap[histogram]![value]!++;
     this.methodCalled('recordHistogram');
   }
 

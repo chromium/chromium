@@ -41,7 +41,7 @@ bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
 }  // namespace
 
 bool IsAudioServiceSandboxEnabled() {
-// TODO(crbug.com/1052397): Remove !IS_CHROMEOS_LACROS once lacros starts being
+// TODO(crbug.com/40118868): Remove !IS_CHROMEOS_LACROS once lacros starts being
 // built with OS_CHROMEOS instead of OS_LINUX.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -53,7 +53,7 @@ bool IsAudioServiceSandboxEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1374069): Remove the kAudioProcessHighPriorityEnabled policy
+// TODO(crbug.com/40242320): Remove the kAudioProcessHighPriorityEnabled policy
 // and the code enabled by this function.
 bool IsAudioProcessHighPriorityEnabled() {
   const base::Value* value =

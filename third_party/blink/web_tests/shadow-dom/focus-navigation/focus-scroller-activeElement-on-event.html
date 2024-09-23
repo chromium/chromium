@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../resources/shadow-dom.js'></script>
+<script src='../resources/focus-utils.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<!-- Note: Do not move this test to WPT, as "keyboard focusable scrollers"
+     does not have standard behavior across browsers. -->
+<button id=before>Start button</button>
+<div id=scroller>
+  <div id=content>A<br>B<br>C<br>D<br>E<br>F<br>G<br></div>
+  <button id=button class=invisible>Button</button>
+</div>
+<button id=after>End button</button>
+
+<style>
+  #scroller {
+    overflow:scroll;
+    width:50px;
+    height:50px;
+  }
+  #content {
+    width:30px;
+    height:1000px;
+    background: lightblue;
+  }
+  .invisible {
+    display:none;
+  }
+</style>
+
+<script>
+function clickOn(element) {
+  const point = pointInElement(element, 1, 1);
+  return mouseClickOn(point.x, point.y);
+}
+function resetScrolltop() {
+  scroller.scrollTo({top: 0, behavior: "instant"});
+  assert_equals(scroller.scrollTop,0);
+}
+function runTest(setup, expectedTabStops, scrollerClickFocus, description) {
+  promise_test(async (t) => {
+    setup(t);
+
+    // Check programmatic focusability.
+    scroller.focus();
+    assert_equals(document.activeElement, scroller,
+        'scrollers are always focusable via element.focus()');
+    document.activeElement.blur();
+    assert_equals(document.activeElement, document.body);
+
+    // Check keyboard-focusability.
+    assert_focus_navigation_bidirectional(['before',...expectedTabStops,'after']);
+
+    // Check click-focusability.
+    const expectedFocusElement = scrollerClickFocus ? scroller : document.body;
+    resetScrolltop(); // Ensure scroller is at the top before clicking.
+    await clickOn(scroller);
+    assert_equals(document.activeElement, expectedFocusElement,
+        `scroller is ${scrollerClickFocus ? "" : "*not* "}` +
+        `click-focusable (user click)`);
+    document.activeElement.blur();
+    resetScrolltop(); // Ensure scroller is at the top before clicking.
+    await clickOn(content);
+    assert_equals(document.activeElement, expectedFocusElement,
+        `scroller is ${scrollerClickFocus ? "" : "*not* "}` +
+        `click-focusable (user click on content)`);
+    document.activeElement.blur();
+    scroller.click();
+    assert_equals(document.activeElement, document.body,
+        `scroller is *never* programmatically click()-focusable`);
+    document.activeElement.blur();
+    content.click();
+    assert_equals(document.activeElement, document.body,
+        `scroller is *never* programmatically click()-focusable (content)`);
+    document.activeElement.blur();
+
+    // Check that the scroller scrolls with arrow keys.
+    await clickOn(scroller);
+    const scroll_before = scroller.scrollTop;
+    // For the contenteditable case, we need to arrow down a few times to
+    // move the cursor past the end of the scroller.
+    eventSender.keyDown("ArrowDown");
+    eventSender.keyDown("ArrowDown");
+    eventSender.keyDown("ArrowDown");
+    await waitForEvent(scroller, 'scrollend');
+    assert_not_equals(scroller.scrollTop, scroll_before, 'arrow keys scroll');
+  }, description);
+}
+
+runTest(() => {},
+  ['scroller'],
+  /*scrollerClickFocus*/false,
+  'scroller without focusable content');
+
+runTest((t) => {
+    t.add_cleanup(() => {scroller.removeAttribute('tabindex')});
+    scroller.setAttribute('tabindex','0');
+  },
+  ['scroller'],
+  /*scrollerClickFocus*/true,
+  'scroller with tabindex=0');
+
+runTest((t) => {
+    t.add_cleanup(() => {scroller.removeAttribute('tabindex')});
+    scroller.setAttribute('tabindex','-1');
+  },
+  [],
+  /*scrollerClickFocus*/true,
+  'scroller with tabindex=-1');
+
+runTest((t) => {
+    t.add_cleanup(() => {button.className = 'invisible'});
+    button.className = '';
+  },
+  ['button'],
+  /*scrollerClickFocus*/false,
+  'scroller with focusable content');
+
+runTest((t) => {
+  t.add_cleanup(() => {
+      button.className = 'invisible';
+      scroller.removeAttribute('tabindex');
+    });
+    button.className = '';
+    scroller.setAttribute('tabindex','0');
+  },
+  ['scroller','button'],
+  /*scrollerClickFocus*/true,
+  'scroller with focusable content and tabindex=0');
+
+runTest((t) => {
+    t.add_cleanup(() => {scroller.contentEditable = 'false'});
+    scroller.contentEditable = 'true';
+  },
+  ['scroller'],
+  /*scrollerClickFocus*/true,
+  'contenteditable scroller');
+
+runTest((t) => {
+    t.add_cleanup(() => {
+      scroller.contentEditable = 'false';
+      button.className = 'invisible';
+    });
+    scroller.contentEditable = 'true';
+    button.className = '';
+  },
+  ['scroller','button'],
+  /*scrollerClickFocus*/true,
+  'contenteditable scroller with focusable content');
+</script>

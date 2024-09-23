@@ -1,0 +1,10 @@
+invalidation-in-loops.cpp:10:54: error: [iterator-checker] Potentially invalid iterator used.
+  for (auto it = std::begin(v); it != std::end(v); ++it) {
+                                                     ^
+invalidation-in-loops.cpp:28:7: error: [iterator-checker] Potentially invalid iterator used.
+    ++it;
+      ^
+invalidation-in-loops.cpp:34:15: error: [iterator-checker] Potentially invalid iterator used.
+  for (int& x : v) {
+              ^
+3 errors generated.

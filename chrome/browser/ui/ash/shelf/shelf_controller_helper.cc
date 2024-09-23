@@ -20,7 +20,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
-#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
+#include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
@@ -39,16 +38,14 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -152,23 +149,6 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     }
   }
 
-  if (IsAppServiceShortcut(profile, app_id)) {
-    std::optional<std::string> shortcut_name =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->ShortcutRegistryCache()
-            ->GetShortcut(apps::ShortcutId(app_id))
-            ->name;
-
-    std::u16string shortcut_title;
-    if (shortcut_name.has_value()) {
-      shortcut_title = base::UTF8ToUTF16(shortcut_name.value());
-    }
-
-    if (!shortcut_title.empty()) {
-      return shortcut_title;
-    }
-  }
-
   // Get the title for the extension which is not managed by AppService.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -253,13 +233,32 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kDisabledByPolicy)
+        if (apps_util::IsDisabled(update.Readiness())) {
           status = ash::AppStatus::kBlocked;
-        else if (update.Paused().value_or(false))
+        } else if (update.Paused().value_or(false)) {
           status = ash::AppStatus::kPaused;
+        }
       });
 
   return status;
+}
+
+// static
+bool ShelfControllerHelper::IsAppDefaultInstalled(Profile* profile,
+                                                  const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  bool default_installed = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&default_installed](const apps::AppUpdate& update) {
+        default_installed =
+            update.InstallReason() == apps::InstallReason::kDefault ||
+            update.InstallReason() == apps::InstallReason::kSystem;
+      });
+  return default_installed;
 }
 
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
@@ -333,46 +332,6 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
   }
 }
 
-// static
-bool ShelfControllerHelper::IsAppServiceShortcut(Profile* profile,
-                                                 const std::string& id) {
-  return chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
-         apps::AppServiceProxyFactory::GetForProfile(profile)
-             ->ShortcutRegistryCache()
-             ->HasShortcut(apps::ShortcutId(id));
-}
-
-// static
-std::u16string ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
-    Profile* profile,
-    const apps::ShortcutId& shortcut_id) {
-  apps::ShortcutRegistryCache* cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->ShortcutRegistryCache();
-  std::string shortcut_name =
-      cache->GetShortcut(shortcut_id)->name.value_or("");
-  std::string host_app_id = cache->GetShortcutHostAppId(shortcut_id);
-  std::u16string host_app_name;
-  // TODO(b/312103925): Currently app service does not publish the ash Chrome
-  // Browser full name as "Google Chrome", and we don't want to affect other
-  // usages without auditing. Therefore we hardcoded the full name here (similar
-  // to the shelf tooltip for Chrome Browser). Will clean this up after auditing
-  // all use cases and fix the issue in the upstream.
-  if (host_app_id == app_constants::kChromeAppId) {
-    host_app_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->AppRegistryCache()
-        .ForOneApp(host_app_id,
-                   [&host_app_name](const apps::AppUpdate& update) {
-                     host_app_name = base::UTF8ToUTF16(update.Name());
-                   });
-  }
-  return l10n_util::GetStringFUTF16(IDS_APP_SHORTCUT_ACCESSIBILITY_LABEL,
-                                    base::UTF8ToUTF16(shortcut_name),
-                                    host_app_name);
-}
-
 bool ShelfControllerHelper::IsValidIDForCurrentUser(
     const std::string& app_id) const {
   if (IsValidIDForArcApp(app_id))
@@ -386,12 +345,6 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
                                       int event_flags,
                                       int64_t display_id,
                                       bool new_window) {
-  // Handle recording app launch source from the Shelf in Demo Mode.
-  if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
-    ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-        ash::DemoSession::AppLaunchSource::kShelf);
-  }
-
   const std::string& app_id = id.app_id;
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
@@ -427,13 +380,6 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
     proxy->Launch(app_id, event_flags,
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   std::make_unique<apps::WindowInfo>(display_id));
-    return;
-  }
-
-  // Launch the shortcut if the shelf item is a shortcut to an app.
-  if (IsAppServiceShortcut(profile_, app_id)) {
-    apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kShelf);
-    proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
     return;
   }
 
@@ -519,6 +465,11 @@ bool ShelfControllerHelper::IsValidIDForArcApp(
         arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile())) {
       return false;
     }
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(profile_);
+    if (!registry->GetInstalledExtension(arc::kPlayStoreAppId)) {
+      return false;
+    }
     return true;
   }
 
@@ -543,8 +494,5 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
         }
       });
 
-  if (IsAppServiceShortcut(profile_, app_id)) {
-    is_valid = true;
-  }
   return is_valid;
 }

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_side_panel_test_utils.h"
+
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -14,15 +16,8 @@
 namespace extensions {
 
 void OpenExtensionSidePanel(Browser& browser, const ExtensionId& id) {
-  SidePanelUI::GetSidePanelUIForBrowser(&browser)->Show(
+  browser.GetFeatures().side_panel_ui()->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id));
-}
-
-content::WebContents* GetExtensionSidePanelWebContents(Browser& browser,
-                                                       const ExtensionId& id) {
-  return ExtensionSidePanelManager::GetOrCreateForBrowser(&browser)
-      ->GetExtensionCoordinatorForTesting(id)
-      ->GetHostWebContentsForTesting();
 }
 
 }  // namespace extensions

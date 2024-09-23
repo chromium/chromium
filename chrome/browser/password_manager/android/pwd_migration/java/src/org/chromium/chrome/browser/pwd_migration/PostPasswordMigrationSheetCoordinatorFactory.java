@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -26,7 +27,8 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
      */
     @Nullable
     public static PostPasswordMigrationSheetCoordinator
-            maybeGetOrCreatePostPasswordMigrationSheetCoordinator(WindowAndroid windowAndroid) {
+            maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                    WindowAndroid windowAndroid, Profile profile) {
         if (sCoordinatorInstanceForTesting != null) {
             return sCoordinatorInstanceForTesting;
         }
@@ -39,7 +41,7 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
         if (context == null) {
             return null;
         }
-        return new PostPasswordMigrationSheetCoordinator(context, bottomSheetController);
+        return new PostPasswordMigrationSheetCoordinator(context, bottomSheetController, profile);
     }
 
     public static void setCoordinatorInstanceForTesting(

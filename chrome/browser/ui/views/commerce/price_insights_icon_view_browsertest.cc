@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -28,18 +31,14 @@ const char kTestURL[] = "about:blank";
 class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
  public:
   PriceInsightsIconViewBrowserTest() {
+    MockCommerceUiTabHelper::ReplaceFactory();
     test_features_.InitWithFeatures(
         {commerce::kPriceInsights, commerce::kCommerceAllowChipExpansion}, {});
   }
 
   // UiBrowserTest:
   void PreShow() override {
-    MockCommerceUiTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    MockCommerceUiTabHelper* mock_tab_helper =
-        static_cast<MockCommerceUiTabHelper*>(
-            MockCommerceUiTabHelper::FromWebContents(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+    MockCommerceUiTabHelper* mock_tab_helper = getTabHelper();
     EXPECT_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
         .Times(testing::AnyNumber());
     ON_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
@@ -52,17 +51,14 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     EXPECT_CALL(*mock_tab_helper, ShouldExpandPageActionIcon)
         .WillRepeatedly(testing::Return(true));
 
-    PriceInsightsIconView::PriceInsightsIconLabelType label_type =
-        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+    PriceInsightsIconLabelType label_type = PriceInsightsIconLabelType::kNone;
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
-      label_type =
-          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
+      label_type = PriceInsightsIconLabelType::kPriceIsLow;
     } else if (test_name ==
                "InvokeUi_show_price_insights_icon_with_high_price_label") {
-      label_type =
-          PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
+      label_type = PriceInsightsIconLabelType::kPriceIsHigh;
     }
 
     EXPECT_CALL(*mock_tab_helper, GetPriceInsightsIconLabelTypeForPage)
@@ -71,8 +67,10 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
 
   MockCommerceUiTabHelper* getTabHelper() {
     return static_cast<MockCommerceUiTabHelper*>(
-        MockCommerceUiTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
+        browser()
+            ->GetActiveTabInterface()
+            ->GetTabFeatures()
+            ->commerce_ui_tab_helper());
   }
 
   void ShowUi(const std::string& name) override {
@@ -84,7 +82,8 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     if (!price_insights_chip) {
       return false;
     }
-    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+    EXPECT_EQ(base::ToLowerASCII(
+                  price_insights_chip->GetViewAccessibility().GetCachedName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
 
@@ -183,7 +182,8 @@ class PriceInsightsIconViewWithLabelBrowserTest
 
       // TODO(meiliang): Add pixel test.
     }
-    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+    EXPECT_EQ(base::ToLowerASCII(
+                  price_insights_chip->GetViewAccessibility().GetCachedName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
     return true;

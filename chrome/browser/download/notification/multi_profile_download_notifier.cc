@@ -5,6 +5,7 @@
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -100,7 +101,7 @@ void MultiProfileDownloadNotifier::OnManagerGoingDown(
 
   auto it = base::ranges::find(download_notifiers_, manager,
                                &download::AllDownloadItemNotifier::GetManager);
-  DCHECK(it != download_notifiers_.end());
+  CHECK(it != download_notifiers_.end(), base::NotFatalUntil::M130);
   download_notifiers_.erase(it);
 }
 

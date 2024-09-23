@@ -238,7 +238,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
            "file-system-last-picked-directory", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FEDERATED_IDENTITY_SHARING, "fedcm-share",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
@@ -248,7 +249,7 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::HTTP_ALLOWED, "http-allowed", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
-           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::HTTPS_ENFORCED, "https-enforced", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, ALL_PLATFORMS,
@@ -273,7 +274,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW,
            "notification-permission-review", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
            "private-network-chooser-data", base::Value(),
@@ -289,7 +291,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
            "unused-site-permissions", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
@@ -310,6 +313,12 @@ void WebsiteSettingsRegistry::Init() {
            // Add more platforms as implementation progresses.
            // Target is DESKTOP.
            PLATFORM_CHROMEOS, WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+           "abusive-notification-permissions", base::Value(),
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.content.Context;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -20,25 +21,24 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.base.StreamUtil;
-import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
@@ -52,31 +52,23 @@ public class RestoreMigrateTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
-        byte[] data =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        new Callable<byte[]>() {
+        TabModelSelectorMetadata data =
+                ThreadUtils.runOnUiThreadBlocking(
+                        new Callable<TabModelSelectorMetadata>() {
                             @Override
-                            public byte[] call() throws Exception {
-                                return TabPersistentStore.serializeTabModelSelector(
-                                                selector, null, false)
-                                        .listData;
+                            public TabModelSelectorMetadata call() throws Exception {
+                                return TabPersistentStore.saveTabModelSelectorMetadata(
+                                        selector, null);
                             }
                         });
+
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        FileOutputStream fos = null;
-        try {
-            fos =
-                    new FileOutputStream(
-                            new File(
-                                    f,
-                                    TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(
-                                            index)));
-            fos.write(data);
-        } finally {
-            StreamUtil.closeQuietly(fos);
-        }
+        TabPersistentStore.saveListToFile(
+                new File(f, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(index)),
+                data);
     }
 
     private int getMaxId(TabModelSelector selector) {
@@ -101,6 +93,8 @@ public class RestoreMigrateTest {
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
         TabIdManager.resetInstanceForTesting();
+
+        mCipherFactory = new CipherFactory();
     }
 
     static class AdvancedMockContextWithTestDir extends AdvancedMockContext {
@@ -132,16 +126,19 @@ public class RestoreMigrateTest {
 
     private TabPersistentStore buildTabPersistentStore(
             final TabModelSelector selector, final int selectorIndex) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                new Callable<TabPersistentStore>() {
-                    @Override
-                    public TabPersistentStore call() {
-                        TabPersistencePolicy persistencePolicy =
-                                new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
-                        TabPersistentStore store =
-                                new TabPersistentStore(persistencePolicy, selector, null);
-                        return store;
-                    }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabPersistencePolicy persistencePolicy =
+                            new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
+                    TabPersistentStore store =
+                            new TabPersistentStore(
+                                    TabPersistentStore.CLIENT_TAG_REGULAR,
+                                    persistencePolicy,
+                                    selector,
+                                    null,
+                                    TabWindowManagerSingleton.getInstance(),
+                                    mCipherFactory);
+                    return store;
                 });
     }
 

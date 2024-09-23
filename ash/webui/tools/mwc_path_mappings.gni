@@ -17,6 +17,14 @@ mwc_path_mappings = [
     "lit/*",
     "$_node_modules_path/lit/*",
   ],
+  [
+    "@lit/task",
+    "$_node_modules_path/@lit/task/task.d.ts",
+  ],
+  [
+    "@lit/*",
+    "$_node_modules_path/@lit/*",
+  ],
 
   # When tsc encounters a decorator it'll try to import the code to support
   # decorators from tslib. As such all code that uses decorators will attempt

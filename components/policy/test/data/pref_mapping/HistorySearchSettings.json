@@ -1,0 +1,77 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HistorySearchSettings": 0
+        },
+        "prefs": {
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "HistorySearchSettings": 1
+        },
+        "prefs": {
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "HistorySearchSettings": 2
+        },
+        "prefs": {
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "optimization_guide.model_execution.history_search_enterprise_policy_allowed": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

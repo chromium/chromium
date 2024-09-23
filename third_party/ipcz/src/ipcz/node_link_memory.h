@@ -5,6 +5,7 @@
 #ifndef IPCZ_SRC_IPCZ_NODE_LINK_MEMORY_H_
 #define IPCZ_SRC_IPCZ_NODE_LINK_MEMORY_H_
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -14,9 +15,11 @@
 #include "ipcz/buffer_pool.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
+#include "ipcz/features.h"
 #include "ipcz/fragment_descriptor.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/link_side.h"
 #include "ipcz/ref_counted_fragment.h"
 #include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
@@ -43,12 +46,19 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   // reserved for use by initial portals.
   static constexpr size_t kMaxInitialPortals = 12;
 
+  // The side of the node link to which this NodeLinkMemory belongs.
+  LinkSide link_side() const { return link_side_; }
+
+  // The set of runtime features available to both nodes using this memory.
+  const Features& available_features() const { return available_features_; }
+
   // Sets a reference to the NodeLink using this NodeLinkMemory. This is called
   // by the NodeLink itself before any other methods can be called on the
   // NodeLinkMemory, and it's only reset to null once the NodeLink is
   // deactivated. This link may be used to share information with the remote
   // node, where another NodeLinkMemory is cooperatively managing the same
-  // memory pool as this one.
+  // memory pool as this one. `link` must belong to the same side of the node
+  // link as this object.
   void SetNodeLink(Ref<NodeLink> link);
 
   // Allocates a new DriverMemory object and initializes its contents to be
@@ -60,6 +70,8 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   // as `primary_buffer_memory`. The buffer must have been created and
   // initialized by a prior call to AllocateMemory() above.
   static Ref<NodeLinkMemory> Create(Ref<Node> node,
+                                    LinkSide side,
+                                    const Features& remote_features,
                                     DriverMemoryMapping primary_buffer_memory);
 
   // Returns a new BufferId which should still be unused by any buffer in this
@@ -145,7 +157,10 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   // Constructs a new NodeLinkMemory over `mapping`, which must correspond to
   // a DriverMemory whose contents have already been initialized as a
   // NodeLinkMemory primary buffer.
-  NodeLinkMemory(Ref<Node> node, DriverMemoryMapping mapping);
+  NodeLinkMemory(Ref<Node> node,
+                 LinkSide side,
+                 const Features& remote_features,
+                 DriverMemoryMapping mapping);
   ~NodeLinkMemory();
 
   // Indicates whether the NodeLinkMemory should be allowed to expand its
@@ -165,7 +180,14 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
       const Fragment& fragment);
 
   const Ref<Node> node_;
+  const LinkSide link_side_;
+  const Features available_features_;
   const bool allow_memory_expansion_for_parcel_data_;
+
+  // Atomic ID generators for buffers and sublinks allocated by this side of the
+  // link when memv2 is enabled.
+  std::atomic<uint64_t> next_buffer_id_{1};
+  std::atomic<uint64_t> next_sublink_id_{kMaxInitialPortals};
 
   // The underlying BufferPool. Note that this object is itself thread-safe, so
   // access to it is not synchronized by NodeLinkMemory.

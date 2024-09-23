@@ -94,9 +94,7 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
     const FontHeight text_metrics = paragraph_style.GetFontHeight();
     FontHeight line_metrics = text_metrics;
     FontHeight leading_space = CalculateLeadingSpace(
-        paragraph_style.ComputedLineHeightAsFixed(), line_metrics,
-        initial_letter_box_style.TextBoxTrim(),
-        paragraph_style.GetWritingMode());
+        paragraph_style.ComputedLineHeightAsFixed(), line_metrics);
     line_metrics.AddLeading(leading_space);
     const LayoutUnit descent = line_metrics.descent;
     return block_offset - descent;
@@ -136,7 +134,8 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
     BfcOffset origin,
     const BfcOffset& border_box_offset,
     const LogicalSize& border_box_size,
-    const BoxStrut& margins) {
+    const BoxStrut& margins,
+    bool is_hidden_for_paint) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
   // negative, left top of `ExclusionSpace` are out of `ConstraintSpace`.
   const BfcOffset local_start_offset(
@@ -178,7 +177,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
           margin_box_size.block_size);
 
   return ExclusionArea::CreateForInitialLetterBox(
-      BfcRect(start_offset, end_offset), float_type);
+      BfcRect(start_offset, end_offset), float_type, is_hidden_for_paint);
 }
 
 }  // namespace
@@ -251,7 +250,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
     LogicalLineItems* line_box,
     const BfcOffset& line_origin,
     LineInfo* line_info) {
-  LogicalLineItem* const initial_letter_line_item = std::find_if(
+  auto initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 
@@ -318,7 +317,8 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       BfcOffset(initial_letter_border_box_inline_offset,
                 initial_letter_border_box_block_offset +
                     line_info->ComputeInitialLetterBoxBlockStartAdjustment()),
-      initial_letter_box_size, initial_letter_box_margins);
+      initial_letter_box_size, initial_letter_box_margins,
+      initial_letter_box_fragment.IsHiddenForPaint());
 
   line_info->SetInitialLetterBoxBlockSize(exclusion->rect.BlockSize());
   return exclusion;

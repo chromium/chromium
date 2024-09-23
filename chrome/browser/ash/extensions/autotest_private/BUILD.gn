@@ -1,0 +1,152 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("autotest_private") {
+  sources = [
+    "autotest_private_api.cc",
+    "autotest_private_api.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/tracing",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/default_pinned_apps",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chrome/browser/ui/views/bruschetta",
+    "//chrome/browser/ui/views/crostini",
+    "//chrome/browser/ui/views/plugin_vm",
+    "//chrome/browser/ui/webui/ash/crostini_installer",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/metrics",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/assistant:lib",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants",
+    "//chromeos/printing",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
+    "//components/device_event_log",
+    "//components/session_manager/core",
+    "//components/update_client",
+    "//components/user_manager",
+    "//components/variations",
+    "//components/viz/host",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/viz/public/mojom",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+    "//ui/ozone",
+    "//ui/snapshot",
+    "//ui/views",
+    "//ui/wm",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "autotest_private_apitest.cc" ]
+
+  deps = [
+    ":autotest_private",
+    "//ash",
+    "//ash:test_support",
+    "//ash/app_list",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/test:browser_test_support",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/tracing",
+    "//chrome/browser/ash/arc/tracing/test:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/test:test_support",
+    "//components/device_event_log",
+    "//components/feature_engagement/public",
+    "//components/language/core/browser",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/viz/privileged/mojom/compositing:features_shared_cpp_sources",
+    "//ui/aura",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

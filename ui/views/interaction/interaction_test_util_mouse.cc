@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -129,10 +130,9 @@ class InteractionTestUtilMouse::DragEnder
                "on  ChromeOS-on-Linux.\n"
             << "This is not necessarily a serious error if the test functions "
                "normally; however, if you see this too often or your test "
-               "flakes as a result of the cancel you may need to  insert "
-               "additional FlushEvents() steps into your test, or restructure "
-               "it so that you can be sure the drag has started before "
-               "attempting to invoke  ReleaseMouse().";
+               "flakes as a result of the cancel you may need to restructure "
+               "the test so that you can be sure the drag has started before "
+               "attempting to invoke ReleaseMouse().";
         client->DragCancel();
         return true;
       }
@@ -408,7 +408,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
 
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     if (MouseButtonGesture* const button =
-            absl::get_if<MouseButtonGesture>(&gesture)) {
+            std::get_if<MouseButtonGesture>(&gesture)) {
       switch (button->second) {
         case ui_controls::UP: {
           CHECK(buttons_down_.erase(button->first));
@@ -475,7 +475,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
           break;
       }
     } else {
-      const auto& move = absl::get<MouseMoveGesture>(gesture);
+      const auto& move = std::get<MouseMoveGesture>(gesture);
 #if defined(USE_AURA)
       if (!buttons_down_.empty()) {
         CHECK(base::Contains(buttons_down_, ui_controls::LEFT));

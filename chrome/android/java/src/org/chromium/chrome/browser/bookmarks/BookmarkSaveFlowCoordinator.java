@@ -82,31 +82,20 @@ public class BookmarkSaveFlowCoordinator {
         mDestroyChecker = new DestroyChecker();
         mProfile = profile;
 
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel = new PropertyModel(ImprovedBookmarkSaveFlowProperties.ALL_KEYS);
-            mBookmarkSaveFlowView =
-                    LayoutInflater.from(mContext)
-                            .inflate(R.layout.improved_bookmark_save_flow, /* root= */ null);
-            mChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            mPropertyModel,
-                            (ImprovedBookmarkSaveFlowView) mBookmarkSaveFlowView,
-                            ImprovedBookmarkSaveFlowViewBinder::bind);
-        } else {
-            mPropertyModel = new PropertyModel(BookmarkSaveFlowProperties.ALL_KEYS);
-            mBookmarkSaveFlowView =
-                    LayoutInflater.from(mContext)
-                            .inflate(R.layout.bookmark_save_flow, /* root= */ null);
-            mChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            mPropertyModel,
-                            mBookmarkSaveFlowView,
-                            new BookmarkSaveFlowViewBinder());
-        }
+        mPropertyModel = new PropertyModel(ImprovedBookmarkSaveFlowProperties.ALL_KEYS);
+        mBookmarkSaveFlowView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.improved_bookmark_save_flow, /* root= */ null);
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel,
+                        (ImprovedBookmarkSaveFlowView) mBookmarkSaveFlowView,
+                        ImprovedBookmarkSaveFlowViewBinder::bind);
 
         Resources res = mContext.getResources();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
+                        profile,
                         context,
                         mBookmarkModel,
                         ImageFetcherFactory.createImageFetcher(
@@ -225,8 +214,7 @@ public class BookmarkSaveFlowCoordinator {
                                 FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
                                 R.string.iph_shopping_list_save_flow,
                                 R.string.iph_shopping_list_save_flow)
-                        .setAnchorView(
-                                mBookmarkSaveFlowView.findViewById(R.id.bookmark_select_folder))
+                        .setAnchorView(mBookmarkSaveFlowView.findViewById(R.id.edit_chev))
                         .build());
     }
 

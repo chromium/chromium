@@ -8,10 +8,14 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace message_center {
 class MessageCenter;
@@ -23,7 +27,10 @@ class BatteryNotification;
 class DualRoleNotification;
 
 // Controller class to manage power/battery notifications.
-class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
+class ASH_EXPORT PowerNotificationController
+    : public PowerStatus::Observer,
+      public chromeos::PowerManagerClient::Observer,
+      public ash::ShellObserver {
  public:
   enum NotificationState {
     NOTIFICATION_NONE,
@@ -39,6 +46,24 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
     // Critically low battery charge.
     NOTIFICATION_CRITICAL,
+  };
+
+  enum CriticalNotificationOutcome {
+    // The device crashes, it includes the case when the battery is empty and
+    // powerd does not have time to perform a graceful shutdown.
+    Crashed = 1,
+    // The device automatically shut down due to a low battery.
+    LowBatteryShutdown = 2,
+    // The critical notification is shown, its count should be greater than or
+    // equal to the sum of all other outcomes.
+    NotificationShown = 0,
+    // The device is connected to a power source.
+    PluggedIn = 3,
+    // The device enters a suspended state.
+    Suspended = 4,
+    // The device is shut down gracefully by user.
+    UserShutdown = 5,
+    kMaxValue = UserShutdown,
   };
 
   // Time-based notification thresholds when on battery power.
@@ -60,6 +85,9 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   ~PowerNotificationController() override;
 
+  // static:
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   void NotifyUsbNotificationClosedByUser();
   void SetUserOptStatus(bool status);
 
@@ -80,12 +108,25 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Overridden from PowerStatus::Observer.
   void OnPowerStatusChanged() override;
 
+  // Overridden from PowerManagerClient::Observer:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void ShutdownRequested(power_manager::RequestShutdownReason reason) override;
+  void RestartRequested(power_manager::RequestRestartReason reason) override;
+
+  // Overridden from ash::ShellObserver:
+  void OnShellDestroying() override;
+
   // Shows a notification that a low-power USB charger has been connected.
   // Returns true if a notification was shown or explicitly hidden.
   bool MaybeShowUsbChargerNotification();
 
   // Shows a notification when dual-role devices are connected.
   void MaybeShowDualRoleNotification();
+
+  // Records the outcome of a critical notification.
+  void MaybeRecordCriticalNotificationOutcome(
+      PowerNotificationController::CriticalNotificationOutcome outcome,
+      base::TimeDelta duration);
 
   // Determines whether a Battery Saver Notification should be shown. Returns
   // true if a notification should be shown, or nullopt if none of the bsm
@@ -98,8 +139,19 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   bool UpdateNotificationStateForRemainingPercentage();
   bool UpdateNotificationStateForRemainingPercentageBatterySaver();
 
+  // Whether the device is plugged in during a critical battery state.
+  bool PluggedInCriticalState();
+
+  // Start a timer and update the kCriticalStateDuration every 15 seconds.
+  void StartPeriodicUpdate();
+  void UpdateCriticalNotificationDurationPrefs();
+
+  // Reset the timestamp related to critical notification.
+  void ResetCriticalNotificationTimestamp();
+
   static const char kUsbNotificationId[];
 
+  raw_ptr<PrefService> local_state_;                             // Unowned.
   const raw_ptr<message_center::MessageCenter> message_center_;  // Unowned.
   std::unique_ptr<BatteryNotification> battery_notification_;
   std::unique_ptr<DualRoleNotification> dual_role_notification_;
@@ -114,6 +166,15 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   // Was line power connected the last time onPowerStatusChanged() was called?
   bool line_power_was_connected_ = false;
+
+  // Was the battery in critical state the last time onPowerStatusChanged() was
+  // called?
+  bool was_in_critical_state_ = false;
+
+  // The remaining battery time the last time OnPowerStatusChanged() was called.
+  // This value is utilized to determine the remaining battery time at the
+  // moment the charger is connected.
+  std::optional<base::TimeDelta> remaining_time_to_empty_from_critical_state_;
 
   // Has the user already dismissed a low-power notification? Should be set
   // back to false when all power sources are disconnected.
@@ -134,6 +195,17 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   const int critical_percentage_;
   const int low_power_percentage_;
   const int no_warning_percentage_;
+
+  // After critical notification shows, trigger
+  // `UpdateCriticalNotificationDurationPrefs` periodically.
+  base::RepeatingTimer timer_;
+
+  // The time at which a critical notification is shown.
+  base::TimeTicks critical_notification_shown_time_ = base::TimeTicks();
+
+  // The observation on `ash::Shell`.
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 };
 
 }  // namespace ash

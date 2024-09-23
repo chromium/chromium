@@ -7,7 +7,7 @@
  * search engine with its name, domain and query URL.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import './search_engine_entry.css.js';
@@ -15,6 +15,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,7 +31,10 @@ export interface SettingsSearchEngineEntryElement {
   };
 }
 
-export class SettingsSearchEngineEntryElement extends PolymerElement {
+const SettingsSearchEngineEntryElementBase = I18nMixin(PolymerElement);
+
+export class SettingsSearchEngineEntryElement extends
+    SettingsSearchEngineEntryElementBase {
   static get is() {
     return 'settings-search-engine-entry';
   }
@@ -77,7 +81,8 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   }
 
   private computeShowEditIcon_(): boolean {
-    return !this.engine.canBeActivated && !this.engine.isManaged;
+    return !this.engine.isStarterPack && !this.engine.canBeActivated &&
+        !this.engine.isManaged;
   }
 
   private onDeleteClick_(e: Event) {
@@ -143,6 +148,21 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.modelIndex, /*is_active=*/ false);
+  }
+
+  private getMoreActionsAriaLabel_(): string {
+    return this.i18n(
+        'searchEnginesMoreActionsAriaLabel', this.engine.displayName);
+  }
+
+  private getActivateButtonAriaLabel_(): string {
+    return this.i18n(
+        'searchEnginesActivateButtonAriaLabel', this.engine.displayName);
+  }
+
+  private getEditButtonAriaLabel_(): string {
+    return this.i18n(
+        'searchEnginesEditButtonAriaLabel', this.engine.displayName);
   }
 }
 

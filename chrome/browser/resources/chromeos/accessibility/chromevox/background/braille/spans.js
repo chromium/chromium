@@ -6,6 +6,7 @@
  * @fileoverview Objects used in spannables as annotations for ARIA values
  * and selections.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Spannable} from '../../common/spannable.js';
 
@@ -74,3 +75,6 @@ export class BrailleTextStyleSpan {
     this.formType = formType;
   }
 }
+
+TestImportManager.exportForTesting(
+    BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan);

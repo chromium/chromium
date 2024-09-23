@@ -33,8 +33,9 @@ struct BASE_EXPORT ReentryGuard {
   }
 
   ALWAYS_INLINE ~ReentryGuard() {
-    if (LIKELY(allowed_))
+    if (allowed_) [[likely]] {
       pthread_setspecific(entered_key_, nullptr);
+    }
   }
 
   explicit operator bool() const noexcept { return allowed_; }

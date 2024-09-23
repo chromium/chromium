@@ -111,7 +111,13 @@ enum class CrostiniResult {
   STOP_VM_NO_RESPONSE = 76,
   SIGNAL_NOT_CONNECTED = 77,
   INSTALL_TERMINA_CANCELLED = 78,
-  kMaxValue = INSTALL_TERMINA_CANCELLED,
+  START_TIMED_OUT = 79,
+  DISK_IMAGE_NO_RESPONSE = 80,
+  DISK_IMAGE_IN_PROGRESS = 81,
+  DISK_IMAGE_FAILED = 82,
+  DISK_IMAGE_FAILED_NO_SPACE = 83,
+  DISK_IMAGE_CANCELLED = 84,
+  kMaxValue = DISK_IMAGE_CANCELLED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
@@ -145,6 +151,11 @@ enum class UninstallPackageProgressStatus {
   SUCCEEDED,
   FAILED,
   UNINSTALLING,  // In progress
+};
+
+enum class DiskImageProgressStatus {
+  IN_PROGRESS,
+  FAILURE_SPACE,
 };
 
 enum class ImportContainerProgressStatus {

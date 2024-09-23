@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -13,31 +14,42 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 import org.w3c.dom.Document;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /** Tests the WebApkSyncService class */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {BackgroundShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkSyncServiceTest {
     private static final String START_URL = "https://example.com/start";
     private static final String MANIFEST_ID = "https://example.com/id";
@@ -52,6 +64,8 @@ public class WebApkSyncServiceTest {
     private static final String ICON_URL2 = "https://example.com/icon2.png";
 
     @Mock private Resources mMockResources;
+
+    @Rule public FakeTimeTestRule mFakeClockRule = new FakeTimeTestRule();
 
     private String mPrimaryIconXmlContents;
 
@@ -77,8 +91,32 @@ public class WebApkSyncServiceTest {
         }
     }
 
+    public WebappDataStorage registerWebappAndGetStorage(String packageName) throws Exception {
+        String webappId = WebappIntentUtils.getIdForWebApkPackage(packageName);
+        try {
+            CallbackHelper helper = new CallbackHelper();
+            WebappRegistry.getInstance()
+                    .register(
+                            webappId,
+                            new WebappRegistry.FetchWebappDataStorageCallback() {
+                                @Override
+                                public void onWebappDataStorageRetrieved(
+                                        WebappDataStorage storage) {
+                                    helper.notifyCalled();
+                                }
+                            });
+            BackgroundShadowAsyncTask.runBackgroundTasks();
+            ShadowLooper.runUiThreadTasks();
+            helper.waitForOnly();
+        } catch (TimeoutException e) {
+            fail();
+        }
+
+        return WebappRegistry.getInstance().getWebappDataStorage(webappId);
+    }
+
     @Test
-    public void testGetWebApkSyncSpecifics() {
+    public void testGetWebApkSyncSpecifics() throws Exception {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(PACKAGE_NAME, START_URL)
                         .setWebApkManifestId(MANIFEST_ID)
@@ -87,33 +125,35 @@ public class WebApkSyncServiceTest {
                         .setToolbarColor(TOOLBAR_COLOR)
                         .setScope(SCOPE)
                         .build();
-
         WebappInfo webApkInfo = WebappInfo.create(intentDataProvider);
-        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+        WebappDataStorage storage = registerWebappAndGetStorage(PACKAGE_NAME);
+        storage.updateLastUsedTime();
+
+        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
 
         assertEquals(MANIFEST_ID, webApkSpecifics.getManifestId());
         assertEquals(START_URL, webApkSpecifics.getStartUrl());
         assertEquals(SCOPE, webApkSpecifics.getScope());
-
         assertTrue(webApkSpecifics.hasName());
         assertEquals(NAME, webApkSpecifics.getName());
-
         assertTrue(webApkSpecifics.hasThemeColor());
         assertEquals(TOOLBAR_COLOR, webApkSpecifics.getThemeColor());
-
         assertEquals(0, webApkSpecifics.getIconInfosCount());
+        // From 1653000000000L May 19 2022 18:40:00 GMT-0400.
+        assertEquals(13297473600000000L, webApkSpecifics.getLastUsedTimeWindowsEpochMicros());
     }
 
     @Test
-    public void testGetSyncSpecificsWithEmptyValues() {
+    public void testGetSyncSpecificsWithEmptyValues() throws Exception {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(PACKAGE_NAME, START_URL)
                         .setWebApkManifestId(MANIFEST_ID)
                         .setShortName(SHORT_NAME)
                         .build();
-
         WebappInfo webApkInfo = WebappInfo.create(intentDataProvider);
-        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+        WebappDataStorage storage = registerWebappAndGetStorage(PACKAGE_NAME);
+
+        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
 
         assertEquals(MANIFEST_ID, webApkSpecifics.getManifestId());
         assertEquals(START_URL, webApkSpecifics.getStartUrl());
@@ -150,9 +190,10 @@ public class WebApkSyncServiceTest {
                         .setPrimaryIcon(testIcon)
                         .setShellApkVersion(WebappIcon.ICON_WITH_URL_AND_HASH_SHELL_VERSION)
                         .build();
-
         WebappInfo webApkInfo = WebappInfo.create(intentDataProvider);
-        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+        WebappDataStorage storage = registerWebappAndGetStorage(PACKAGE_NAME);
+
+        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
 
         assertEquals(1, webApkSpecifics.getIconInfosCount());
         assertEquals(ICON_URL, webApkSpecifics.getIconInfos(0).getUrl());
@@ -170,9 +211,10 @@ public class WebApkSyncServiceTest {
                         .setPrimaryIcon(testIcon)
                         .setIconUrlToMurmur2HashMap(iconUrlAndIconMurmur2HashMap)
                         .build();
-
         WebappInfo webApkInfo = WebappInfo.create(intentDataProvider);
-        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+        WebappDataStorage storage = registerWebappAndGetStorage(PACKAGE_NAME);
+
+        WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
 
         assertEquals(2, webApkSpecifics.getIconInfosCount());
         assertEquals(ICON_URL, webApkSpecifics.getIconInfos(0).getUrl());

@@ -24,9 +24,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/allowed_domains_for_apps_policy_handler.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -449,7 +449,6 @@ void ProfilePolicyConnector::Init(
   migrators.push_back(
       std::make_unique<browser_switcher::BrowserSwitcherPolicyMigrator>());
 #endif
-  migrators.push_back(std::make_unique<AllowedDomainsForAppsPolicyMigrator>());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ConfigurationPolicyProvider* user_policy_delegate_candidate =
@@ -477,12 +476,14 @@ void ProfilePolicyConnector::Init(
         policy_providers_, std::move(migrators),
         user_policy_delegate_candidate);
   } else {
-    policy_service_ = std::make_unique<PolicyServiceImpl>(policy_providers_,
-                                                          std::move(migrators));
+    policy_service_ = std::make_unique<PolicyServiceImpl>(
+        policy_providers_, PolicyServiceImpl::ScopeForMetrics::kUser,
+        std::move(migrators));
   }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_service_ = std::make_unique<PolicyServiceImpl>(policy_providers_,
-                                                        std::move(migrators));
+  policy_service_ = std::make_unique<PolicyServiceImpl>(
+      policy_providers_, PolicyServiceImpl::ScopeForMetrics::kUser,
+      std::move(migrators));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (local_test_policy_provider_ && local_test_policy_provider_->is_active()) {
@@ -534,7 +535,7 @@ bool ProfilePolicyConnector::IsManaged() const {
   // device account (via IsManagedDeviceAccount).
   // Desktop's way is used for secondary profiles and is using dice, which
   // can be read directly from the profile.
-  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  // TODO(crbug.com/40788404): Remove this once Lacros only uses mirror.
   if (browser_policy_connector_ && IsMainProfile())
     return browser_policy_connector_->IsMainUserManaged();
 #endif
@@ -545,7 +546,7 @@ bool ProfilePolicyConnector::IsManaged() const {
 bool ProfilePolicyConnector::IsMainProfile() const {
   // If there is only a single profile or this connector object is owned by the
   // main profile, it must be the main profile.
-  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  // TODO(crbug.com/40788404): Remove this once Lacros only uses mirror.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager->GetNumberOfProfiles() <= 1)
     return true;
@@ -573,6 +574,9 @@ void ProfilePolicyConnector::TriggerProxiedPoliciesWaitTimeoutForTesting() {
 
 base::flat_set<std::string> ProfilePolicyConnector::user_affiliation_ids()
     const {
+  if (!user_affiliation_ids_for_testing_.empty()) {
+    return user_affiliation_ids_for_testing_;
+  }
   auto* store = GetActualPolicyStore();
   if (!store || !store->has_policy())
     return {};
@@ -580,33 +584,19 @@ base::flat_set<std::string> ProfilePolicyConnector::user_affiliation_ids()
   return {ids.begin(), ids.end()};
 }
 
+void ProfilePolicyConnector::SetUserAffiliationIdsForTesting(
+    const base::flat_set<std::string>& user_affiliation_ids) {
+  user_affiliation_ids_for_testing_ = user_affiliation_ids;
+}
+
 void ProfilePolicyConnector::OnPolicyServiceInitialized(PolicyDomain domain) {
   DCHECK_EQ(domain, POLICY_DOMAIN_CHROME);
-  ReportChromePolicyInitialized();
+  RecordAffiliationMetrics();
 }
 
 void ProfilePolicyConnector::DoPostInit() {
   DCHECK(policy_service_);
-  creation_time_for_metrics_ = base::TimeTicks::Now();
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
-  if (policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
-    ReportChromePolicyInitialized();
-  }
-}
-
-void ProfilePolicyConnector::ReportChromePolicyInitialized() {
-  // Protect against multiple notifications: we want to report the metric only
-  // once per profile session.
-  if (!creation_time_for_metrics_.has_value()) {
-    return;
-  }
-  std::string metric_suffix = GetTimeToFirstPolicyLoadMetricSuffix();
-  if (!metric_suffix.empty()) {
-    base::UmaHistogramMediumTimes(
-        "Enterprise.TimeToFirstPolicyLoad.Profile." + metric_suffix,
-        base::TimeTicks::Now() - creation_time_for_metrics_.value());
-  }
-  creation_time_for_metrics_.reset();
 }
 
 const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {
@@ -677,7 +667,6 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
     case user_manager::UserType::kPublicAccount:
       return "ManagedGuestSession";
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return "Kiosk";
     case user_manager::UserType::kGuest:
@@ -716,6 +705,31 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   }
 }
 
+bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
+  return local_test_policy_provider_ &&
+         local_test_policy_provider_->is_active();
+}
+
+void ProfilePolicyConnector::RecordAffiliationMetrics() {
+  const PolicyMap& chrome_policies = policy_service()->GetPolicies(
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+
+  base::UmaHistogramBoolean("Enterprise.ProfileAffiliation.IsAffiliated",
+                            chrome_policies.IsUserAffiliated());
+
+  if (!chrome_policies.IsUserAffiliated()) {
+    const auto reason = enterprise_util::GetUnaffiliatedReason(this);
+    base::UmaHistogramEnumeration(
+        "Enterprise.ProfileAffiliation.UnaffiliatedReason", reason);
+  }
+
+  // base::Unretained is safe because `this` owns the timer.
+  management_status_metrics_timer_.Start(
+      FROM_HERE, base::Days(7),
+      base::BindRepeating(&ProfilePolicyConnector::RecordAffiliationMetrics,
+                          base::Unretained(this)));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<PolicyService>
 ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
@@ -726,7 +740,8 @@ ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
   DCHECK(user_policy_delegate);
 
   auto policy_service = PolicyServiceImpl::CreateWithThrottledInitialization(
-      policy_providers, std::move(migrators));
+      policy_providers, PolicyServiceImpl::ScopeForMetrics::kUser,
+      std::move(migrators));
 
   // base::Unretained is OK for |this| because
   // |proxied_policies_propagated_watcher_| is guaranteed not to call its

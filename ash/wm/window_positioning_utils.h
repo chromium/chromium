@@ -41,20 +41,18 @@ enum class SnapViewType { kPrimary, kSecondary };
 ASH_EXPORT void AdjustBoundsSmallerThan(const gfx::Size& max_size,
                                         gfx::Rect* bounds);
 
-// Move the given bounds inside the given |visible_area| in parent coordinates,
-// including a safety margin given by |min_width| and |min_height|.
-// This also ensures that the top of the bounds is visible.
-ASH_EXPORT void AdjustBoundsToEnsureWindowVisibility(
-    const gfx::Rect& visible_area,
-    int min_width,
-    int min_height,
-    gfx::Rect* bounds);
-
-// Move the given bounds inside the given |visible_area| in parent coordinates,
-// including a safety margin given by |kMinimumOnScreenArea|.
-// This also ensures that the top of the bounds is visible.
+// Adjusts the given `bounds` to guarantee its minimum visibility inside the
+// `visible_area`. If `client_controlled` is true (e.g., arc apps), one more dip
+// will be applied to the minimum size to keep a different minimum size as the
+// non-client controlled bounds adjustment. This is done to avoid bounds
+// adjustment loop, which might happen as setting the bounds of a
+// client-controlled app is a 'request' and client might adjust the value on
+// their side. This also ensures that the top of the `bounds` is visible. Note,
+// the coordinate of the given `visible_area` and `bounds` should be aligned,
+// either both in the screen coordinate or both in the parent coordinate.
 ASH_EXPORT void AdjustBoundsToEnsureMinimumWindowVisibility(
     const gfx::Rect& visible_area,
+    bool client_controlled,
     gfx::Rect* bounds);
 
 // Returns the bounds of a snapped window for a given snap |type| and

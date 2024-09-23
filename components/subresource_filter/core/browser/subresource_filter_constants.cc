@@ -4,30 +4,31 @@
 
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
+#include <string_view>
+
+#include "base/files/file_path.h"
+
 namespace subresource_filter {
 
-const base::FilePath::CharType kTopLevelDirectoryName[] =
-    FILE_PATH_LITERAL("Subresource Filter");
-
-const base::FilePath::CharType kIndexedRulesetBaseDirectoryName[] =
+constexpr base::FilePath::CharType kIndexedRulesetBaseDirectoryName[] =
     FILE_PATH_LITERAL("Indexed Rules");
 
-const base::FilePath::CharType kUnindexedRulesetBaseDirectoryName[] =
+constexpr base::FilePath::CharType kUnindexedRulesetBaseDirectoryName[] =
     FILE_PATH_LITERAL("Unindexed Rules");
 
-const base::FilePath::CharType kRulesetDataFileName[] =
+constexpr base::FilePath::CharType kRulesetDataFileName[] =
     FILE_PATH_LITERAL("Ruleset Data");
 
-const base::FilePath::CharType kLicenseFileName[] =
+constexpr base::FilePath::CharType kLicenseFileName[] =
     FILE_PATH_LITERAL("LICENSE");
 
-const base::FilePath::CharType kSentinelFileName[] =
+constexpr base::FilePath::CharType kSentinelFileName[] =
     FILE_PATH_LITERAL("Indexing in Progress");
 
-const base::FilePath::CharType kUnindexedRulesetLicenseFileName[] =
+constexpr base::FilePath::CharType kUnindexedRulesetLicenseFileName[] =
     FILE_PATH_LITERAL("LICENSE");
 
-const base::FilePath::CharType kUnindexedRulesetDataFileName[] =
+constexpr base::FilePath::CharType kUnindexedRulesetDataFileName[] =
     FILE_PATH_LITERAL("Filtering Rules");
 
 }  // namespace subresource_filter

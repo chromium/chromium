@@ -44,14 +44,7 @@ public final class CommandLineInitUtil {
 
     /**
      * Initializes the CommandLine class, pulling command line arguments from {@code fileName}.
-     * @param fileName The name of the command line file to pull arguments from.
-     */
-    public static void initCommandLine(String fileName) {
-        initCommandLine(fileName, null);
-    }
-
-    /**
-     * Initializes the CommandLine class, pulling command line arguments from {@code fileName}.
+     *
      * @param fileName The name of the command line file to pull arguments from.
      * @param shouldUseDebugFlags If non-null, returns whether debug flags are allowed to be used.
      */

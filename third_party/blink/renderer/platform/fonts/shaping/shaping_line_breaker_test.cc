@@ -30,7 +30,7 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
                              const ShapeResult* result,
                              const LazyLineBreakIterator* break_iterator,
                              const Hyphenation* hyphenation)
-      : ShapingLineBreaker(result, break_iterator, hyphenation),
+      : ShapingLineBreaker(result, break_iterator, hyphenation, font),
         shaper_(shaper),
         font_(font) {}
 
@@ -63,21 +63,10 @@ class ShapingLineBreakerTest : public FontTestBase {
   }
 
   void SelectLucidaFont() {
-    FontFamily lucida_family;
-    // Windows 10
-    lucida_family.SetFamily(AtomicString("Lucida Grande"),
-                            FontFamily::Type::kFamilyName);
-    // Windows 7
-    lucida_family.AppendFamily(AtomicString("Lucida Grande"),
-                               FontFamily::Type::kFamilyName);
-    // Linux
-    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
-                               FontFamily::Type::kFamilyName);
-    // Mac
-    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
-                               FontFamily::Type::kFamilyName);
-
-    font_description.SetFamily(lucida_family);
+    font_description.SetFamily(
+        FontFamily(AtomicString("Lucida Grande"), FontFamily::Type::kFamilyName,
+                   SharedFontFamily::Create(AtomicString("Lucida Medium"),
+                                            FontFamily::Type::kFamilyName)));
   }
 
   void TearDown() override {}
@@ -118,8 +107,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 
   String string = To16Bit(
       "Test run with multiple words and breaking "
-      "opportunities.",
-      56);
+      "opportunities.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
@@ -195,7 +183,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
   Font font(font_description);
 
-  String string = To16Bit("Line breaking test case.", 24);
+  String string = To16Bit("Line breaking test case.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
@@ -225,7 +213,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
   Font font(font_description);
 
-  String string = To16Bit("Testing break type-break all.", 29);
+  String string = To16Bit("Testing break type-break all.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kBreakAll);
   TextDirection direction = TextDirection::kLtr;
@@ -330,6 +318,32 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
   line = ShapeLine(&breaker, 13, segment2->SnappedWidth(), &break_offset);
   EXPECT_EQ(31u, break_offset);
   EXPECT_EQ(segment1->Width(), line->Width());
+}
+
+TEST_F(ShapingLineBreakerTest, HanKerningCloseUnsafe) {
+  // Create a condition where all of the following are true:
+  // 1. `ShouldTrimEnd(text_spacing_trim_)` (default).
+  // 2. The candidate break is `Character::MaybeHanKerningClose`; e.g., U+FF09.
+  // 3. After the candidate break is breakable.
+  Font font(font_description);
+  String string{u"x\uFF09\u3042"};
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+  // 4. `ShapeResult::StartIndex` isn't 0.
+  const unsigned start_offset = 1;
+  ShapeResult* sub_result = result->SubRange(start_offset, result->EndIndex());
+  // 5. The candidate break isn't safe to break.
+  const unsigned unsafe_offsets[]{1};
+  sub_result->AddUnsafeToBreak(unsafe_offsets);
+  const LayoutUnit available_width =
+      LayoutUnit::FromFloatFloor(sub_result->PositionForOffset(1)) - 1;
+
+  LazyLineBreakIterator break_iterator(string);
+  HarfBuzzShapingLineBreaker breaker(&shaper, &font, sub_result,
+                                     &break_iterator, nullptr);
+  unsigned break_offset = 0;
+  ShapeLine(&breaker, start_offset, available_width, &break_offset);
+  EXPECT_EQ(break_offset, 2u);
 }
 
 struct BreakOpportunityTestData {

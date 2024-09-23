@@ -12,8 +12,11 @@
 
 namespace resource_attribution {
 
-CPUProportionTracker::CPUProportionTracker(ContextFilterCallback context_filter)
-    : context_filter_(std::move(context_filter)) {}
+CPUProportionTracker::CPUProportionTracker(
+    ContextFilterCallback context_filter,
+    CPUProportionType cpu_proportion_type)
+    : cpu_proportion_type_(cpu_proportion_type),
+      context_filter_(std::move(context_filter)) {}
 
 CPUProportionTracker::~CPUProportionTracker() = default;
 
@@ -130,7 +133,7 @@ std::map<ResourceContext, double> CPUProportionTracker::StartNextInterval(
       // Case 5.
       continue;
     }
-    base::TimeDelta current_cpu = result.cpu_time_result->cumulative_cpu;
+    base::TimeDelta current_cpu = GetCumulativeCPU(*result.cpu_time_result);
     if (result.cpu_time_result->start_time < interval_start) {
       // Case 2 or 3.
       const auto it = previous_measurements.find(context);
@@ -140,7 +143,7 @@ std::map<ResourceContext, double> CPUProportionTracker::StartNextInterval(
         // interval. Skip it.
         continue;
       }
-      current_cpu -= it->second.cpu_time_result->cumulative_cpu;
+      current_cpu -= GetCumulativeCPU(*it->second.cpu_time_result);
     }
     CHECK(!current_cpu.is_negative());
     cpu_usage_map.emplace(context, current_cpu / measurement_interval);
@@ -156,6 +159,16 @@ void CPUProportionTracker::Stop() {
 
 bool CPUProportionTracker::IsTracking() const {
   return last_measurement_time_.has_value();
+}
+
+base::TimeDelta CPUProportionTracker::GetCumulativeCPU(
+    const CPUTimeResult& cpu_time_result) const {
+  switch (cpu_proportion_type_) {
+    case CPUProportionType::kAll:
+      return cpu_time_result.cumulative_cpu;
+    case CPUProportionType::kBackground:
+      return cpu_time_result.cumulative_background_cpu;
+  }
 }
 
 }  // namespace resource_attribution

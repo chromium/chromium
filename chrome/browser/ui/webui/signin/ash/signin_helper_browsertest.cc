@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -61,6 +63,11 @@ const char kSecureConnectApiGetSecondaryGoogleAccountUsageURL[] =
     "v1:getManagedAccountsSigninRestriction?policy_name="
     "SecondaryGoogleAccountUsage";
 
+const char kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyURL[] =
+    "https://secureconnect-pa.clients6.google.com/"
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryAccountAllowedInArcPolicy";
+
 // Fake responses for the URL requests that are part of the sign-in flow.
 const char kOnClientOAuthSuccessBody[] =
     R"({
@@ -79,7 +86,7 @@ constexpr char kSecondaryGoogleAccountUsageLatencyHistogramName[] =
     "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency";
 
 void NotReached() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 class TestSigninHelper : public SigninHelper {
@@ -158,25 +165,31 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   void CreateSigninHelper(const base::RepeatingClosure& exit_closure,
                           const base::RepeatingClosure& close_dialog_closure) {
+    std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+        std::make_unique<SigninHelper::ArcHelper>(
+            /*is_available_in_arc=*/false, /*is_account_addition=*/false,
+            /*account_apps_availability=*/nullptr);
     new TestSigninHelper(exit_closure, account_manager(),
                          account_manager_mojo_service(), close_dialog_closure,
                          /*show_signin_error=*/base::DoNothing(),
-                         shared_url_loader_factory(),
-                         /*arc_helper=*/nullptr, kFakeGaiaId, kFakeEmail,
-                         kFakeAuthCode, kFakeDeviceId);
+                         shared_url_loader_factory(), std::move(arc_helper),
+                         kFakeGaiaId, kFakeEmail, kFakeAuthCode, kFakeDeviceId);
   }
 
   void CreateSigninHelperWithSiginErrorClosure(
       const base::RepeatingClosure& exit_closure,
       const base::RepeatingClosure& show_signin_error) {
+    std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+        std::make_unique<SigninHelper::ArcHelper>(
+            /*is_available_in_arc=*/false, /*is_account_addition=*/false,
+            /*account_apps_availability=*/nullptr);
     new TestSigninHelper(
         exit_closure, account_manager(), account_manager_mojo_service(),
         /*close_dialog_closure=*/base::DoNothing(),
         base::IgnoreArgs<const std::string&, const std::string&>(
             show_signin_error),
-        shared_url_loader_factory(),
-        /*arc_helper=*/nullptr, kFakeGaiaId, kFakeEmail, kFakeAuthCode,
-        kFakeDeviceId);
+        shared_url_loader_factory(), std::move(arc_helper), kFakeGaiaId,
+        kFakeEmail, kFakeAuthCode, kFakeDeviceId);
   }
 
   GaiaAuthConsumer::ClientOAuthResult GetFakeOAuthResult() {
@@ -221,6 +234,17 @@ class SigninHelperTest : public InProcessBrowserTest,
       const std::string& policy_value) {
     loader_factory().AddResponse(
         kSecureConnectApiGetSecondaryGoogleAccountUsageURL,
+        /*content=*/
+        base::StringPrintf(
+            kSecureConnectApiGetSecondaryGoogleAccountUsageURLBody,
+            policy_value.c_str()),
+        net::HTTP_OK);
+  }
+
+  void AddResponseGetSecondaryAccountAllowedInArcPolicy(
+      const std::string& policy_value) {
+    loader_factory().AddResponse(
+        kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyURL,
         /*content=*/
         base::StringPrintf(
             kSecureConnectApiGetSecondaryGoogleAccountUsageURLBody,
@@ -312,6 +336,8 @@ class SigninHelperTestWithArcAccountRestrictions
   SigninHelperTestWithArcAccountRestrictions() {
     feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
                                    {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   ~SigninHelperTestWithArcAccountRestrictions() override = default;
@@ -320,7 +346,7 @@ class SigninHelperTestWithArcAccountRestrictions
     if (browser() == nullptr) {
       // Create a new Ash browser window so test code using browser() can work
       // even when Lacros is the only browser.
-      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
@@ -408,6 +434,7 @@ class SigninHelperTestWithArcAccountRestrictions
   raw_ptr<ash::AccountAppsAvailability, DanglingUntriaged>
       account_apps_availability_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 // Account is available in ARC after account addition if `is_available_in_arc`
@@ -517,25 +544,31 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
 class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
   SigninHelperTestSecondaryGoogleAccountUsage() {
-    feature_list_.InitWithFeatures({},
-                                   ash::standalone_browser::GetFeatureRefs());
+    feature_list_.InitWithFeatures(
+        {features::kSecondaryAccountAllowedInArcPolicy},
+        /*disabled_features=*/{});
   }
 
   ~SigninHelperTestSecondaryGoogleAccountUsage() override = default;
 
-  void CreateSigninHelper(const base::RepeatingClosure& exit_closure,
-                          const base::RepeatingClosure& close_dialog_closure,
-                          const base::RepeatingClosure& show_signin_error,
-                          const std::string& gaia_id,
-                          const std::string& email) {
+  TestSigninHelper* CreateSigninHelper(
+      const base::RepeatingClosure& exit_closure,
+      const base::RepeatingClosure& close_dialog_closure,
+      const base::RepeatingClosure& show_signin_error,
+      const std::string& gaia_id,
+      const std::string& email) {
+    std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+        std::make_unique<SigninHelper::ArcHelper>(
+            /*is_available_in_arc=*/false, /*is_account_addition=*/false,
+            /*account_apps_availability=*/nullptr);
     // The `TestSigninHelper` deletes itself after its work is complete.
-    new TestSigninHelper(
+    return new TestSigninHelper(
         exit_closure, account_manager(), account_manager_mojo_service(),
         /*close_dialog_closure=*/close_dialog_closure,
         /*show_signin_error=*/
         base::IgnoreArgs<const std::string&, const std::string&>(
             show_signin_error),
-        shared_url_loader_factory(), /*arc_helper=*/nullptr, gaia_id, email,
+        shared_url_loader_factory(), std::move(arc_helper), gaia_id, email,
         kFakeAuthCode, kFakeDeviceId);
   }
 
@@ -586,16 +619,22 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
   AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
   // Set SecondaryGoogleAccountUsage policy fetch to unset.
   AddResponseGetSecondaryGoogleAccountUsage("unset");
+  // Set SecondaryAccountAllowedInArcPolicy fetch to true.
+  AddResponseGetSecondaryAccountAllowedInArcPolicy("true");
 
   base::test::RepeatingTestFuture exit_future, close_dialog_future;
   // Enterprise account tries to sign in.
-  CreateSigninHelper(exit_future.GetCallback(),
-                     close_dialog_future.GetCallback(),
-                     /*show_signin_error=*/
-                     base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
-                     kFakeEnterpriseEmail);
+  raw_ptr<TestSigninHelper> signin_helper = CreateSigninHelper(
+      exit_future.GetCallback(), close_dialog_future.GetCallback(),
+      /*show_signin_error=*/
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
+      kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   EXPECT_TRUE(close_dialog_future.Wait());
+
+  EXPECT_TRUE(signin_helper->IsAvailableInArc());
+
+  signin_helper = nullptr;
   // Wait until SigninHelper finishes and deletes itself.
   EXPECT_TRUE(exit_future.Wait());
 
@@ -621,16 +660,22 @@ IN_PROC_BROWSER_TEST_F(
   AddResponseGetUserInfoWithHostedDomain(kFakeEnterpriseDomain);
   // Set SecondaryGoogleAccountUsage policy fetch to all.
   AddResponseGetSecondaryGoogleAccountUsage("all");
+  // Set SecondaryAccountAllowedInArcPolicy fetch to true.
+  AddResponseGetSecondaryAccountAllowedInArcPolicy("false");
 
   base::test::RepeatingTestFuture exit_future, close_dialog_future;
   // Enterprise account tries to sign in.
-  CreateSigninHelper(exit_future.GetCallback(),
-                     close_dialog_future.GetCallback(),
-                     /*show_signin_error=*/
-                     base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
-                     kFakeEnterpriseEmail);
+  raw_ptr<TestSigninHelper> signin_helper = CreateSigninHelper(
+      exit_future.GetCallback(), close_dialog_future.GetCallback(),
+      /*show_signin_error=*/
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
+      kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   EXPECT_TRUE(close_dialog_future.Wait());
+
+  EXPECT_FALSE(signin_helper->IsAvailableInArc());
+
+  signin_helper = nullptr;
   // Wait until SigninHelper finishes and deletes itself.
   EXPECT_TRUE(exit_future.Wait());
 

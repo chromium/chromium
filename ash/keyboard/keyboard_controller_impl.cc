@@ -242,7 +242,7 @@ void KeyboardControllerImpl::SetKeyboardLocked(bool locked) {
 
 void KeyboardControllerImpl::SetOccludedBounds(
     const std::vector<gfx::Rect>& bounds) {
-  // TODO(https://crbug.com/826617): Support occluded bounds with multiple
+  // TODO(crbug.com/41379402): Support occluded bounds with multiple
   // rectangles.
   keyboard_ui_controller_->SetOccludedBounds(bounds.empty() ? gfx::Rect()
                                                             : bounds[0]);

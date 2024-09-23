@@ -49,7 +49,7 @@ String ContentHintToString(
     case WebMediaStreamTrack::ContentHintType::kVideoText:
       return kContentHintStringVideoText;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kContentHintStringNone;
 }
 
@@ -63,7 +63,7 @@ String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
     case MediaStreamSource::kReadyStateEnded:
       return "ended";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -124,10 +124,10 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   // TODO(1288839): What happens if GetOpenDevice fails?
   DCHECK(track);
   if (track->GetWrapperTypeInfo() != data.track_impl_subtype) {
-    NOTREACHED() << "transferred track should be "
-                 << data.track_impl_subtype->interface_name
-                 << " but instead it is "
-                 << track->GetWrapperTypeInfo()->interface_name;
+    NOTREACHED_IN_MIGRATION()
+        << "transferred track should be "
+        << data.track_impl_subtype->interface_name << " but instead it is "
+        << track->GetWrapperTypeInfo()->interface_name;
     return nullptr;
   }
   return track;

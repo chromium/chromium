@@ -25,11 +25,19 @@ class MockPasswordManagerErrorMessageHelperBridge
               (content::WebContents * web_contents),
               (override));
   MOCK_METHOD(bool,
-              ShouldShowErrorUI,
+              ShouldShowSignInErrorUI,
+              (content::WebContents * web_contents),
+              (override));
+  MOCK_METHOD(bool,
+              ShouldShowUpdateGMSCoreErrorUI,
               (content::WebContents * web_contents),
               (override));
   MOCK_METHOD(void,
               SaveErrorUIShownTimestamp,
+              (content::WebContents * web_contents),
+              (override));
+  MOCK_METHOD(void,
+              LaunchGmsUpdate,
               (content::WebContents * web_contents),
               (override));
 };

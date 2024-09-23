@@ -19,13 +19,12 @@ namespace resource_attribution {
 
 using PerformanceManagerTabHelper =
     performance_manager::PerformanceManagerTabHelper;
-using WebContentsProxy = performance_manager::WebContentsProxy;
 
 PageContext::PageContext(base::UnguessableToken token,
-                         WebContentsProxy web_contents_proxy,
+                         base::WeakPtr<content::WebContents> weak_web_contents,
                          base::WeakPtr<PageNode> weak_node)
     : token_(std::move(token)),
-      web_contents_proxy_(std::move(web_contents_proxy)),
+      weak_web_contents_(std::move(weak_web_contents)),
       weak_node_(std::move(weak_node)) {
   CHECK(!token_.is_empty());
 }
@@ -53,14 +52,13 @@ std::optional<PageContext> PageContext::FromWebContents(
   }
   PageNodeImpl* node_impl = tab_helper->primary_page_node();
   CHECK(node_impl);
-  return PageContext(node_impl->page_token().value(),
-                     node_impl->contents_proxy(),
+  return PageContext(node_impl->page_token().value(), contents->GetWeakPtr(),
                      node_impl->GetWeakPtrOnUIThread());
 }
 
 content::WebContents* PageContext::GetWebContents() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return web_contents_proxy_.Get();
+  return weak_web_contents_.get();
 }
 
 base::WeakPtr<PageNode> PageContext::GetWeakPageNode() const {
@@ -75,7 +73,7 @@ PageContext PageContext::FromPageNode(const PageNode* node) {
   auto* node_impl = PageNodeImpl::FromNode(node);
 
   return PageContext(node_impl->page_token().value(),
-                     node_impl->contents_proxy(), node_impl->GetWeakPtr());
+                     node_impl->GetWebContents(), node_impl->GetWeakPtr());
 }
 
 // static

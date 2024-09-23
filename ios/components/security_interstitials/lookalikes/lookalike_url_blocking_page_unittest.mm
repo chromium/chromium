@@ -92,7 +92,7 @@ class LookalikeUrlBlockingPageTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::IO_MAINLOOP};
+      web::WebTaskEnvironment::MainThreadType::IO};
   FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;

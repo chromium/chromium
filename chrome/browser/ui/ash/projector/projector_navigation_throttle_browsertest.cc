@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -98,8 +97,14 @@ class ProjectorNavigationThrottleTestParameterized
 // https://screencast.apps.chrome/xyz?resourceKey=abc redirects to
 // chrome://projector/app/xyz?timestamp=[timestamp]&resourceKey=abc and launches
 // the SWA.
+// TODO(crbug.com/327056386): Re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_PwaNavigationRedirects DISABLED_PwaNavigationRedirects
+#else
+#define MAYBE_PwaNavigationRedirects PwaNavigationRedirects
+#endif
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
-                       PwaNavigationRedirects) {
+                       MAYBE_PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;

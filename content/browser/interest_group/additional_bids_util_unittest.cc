@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/interest_group/additional_bids_util.h"
 
 #include <stdint.h>
@@ -23,7 +28,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
-#include "crypto/openssl_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -58,8 +62,6 @@ namespace {
 // }
 //
 // TEST_F(AdditionalBidsUtilTest, GenerateKeyPair) {
-//   crypto::EnsureOpenSSLInit();
-//
 //   uint8_t public_key[32];
 //   uint8_t private_key[64];
 //   ED25519_keypair(public_key, private_key);
@@ -1123,8 +1125,6 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSigLength) {
 
 TEST_F(AdditionalBidsUtilTest, VerifySignature) {
   const int kKeys = 4;
-
-  crypto::EnsureOpenSSLInit();
 
   struct {
     uint8_t public_key[32];

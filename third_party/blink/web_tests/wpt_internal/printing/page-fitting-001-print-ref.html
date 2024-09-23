@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setShouldCenterAndShrinkToFitPaper(false);
+  }
+</script>
+<style>
+  @page {
+    size: 400px 300px;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+  }
+  .page {
+    display: flex;
+    overflow: clip;
+    height: 100vh;
+  }
+  .page > div {
+    margin: auto;
+    background: yellow;
+  }
+</style>
+<div class="page">
+  <div style="width:160px; height:160px;">
+    Small, centered on "paper".
+  </div>
+</div>
+<div class="page">
+  <div style="width:360px; height:260px;">
+    The second page has the default size.
+  </div>
+</div>
+</div>
+<div class="page">
+  <!-- Margins are also downscaled. -->
+  <div style="width:280px; height:280px;">
+    <div style="transform-origin:top left; scale:0.5; width:200%;">
+      The third page is large, and scaled down and centered on "paper".
+    </div>
+  </div>
+</div>

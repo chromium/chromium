@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 14
+Version: 16
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -87,7 +87,6 @@ c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0 | CN=Microsoft 
 8a866fd1b276b57e578e921c65828a2bed58e9f2f288054134b7f1f4bfc9cc74 | CN=QuoVadis Root CA 1 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840 | CN=QuoVadis Root CA 2 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6 | OU=Security Communication RootCA2,O=SECOM Trust Systems CO.\,LTD.,C=JP | 2009-05-29 | 2029-05-29
-e75e72ed9f560eec6eb4800073a43fc3ad19195a392282017895974a99026b6c | OU=Security Communication RootCA1,O=SECOM Trust.net,C=JP | 2003-09-30 | 2023-09-30
 1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e | CN=COMODO Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2011-01-01 | 2030-12-31
 1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7 | CN=COMODO ECC Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2008-03-06 | 2038-01-18
 4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a | CN=USERTrust ECC Certification Authority,O=The USERTRUST Network,L=Jersey City,ST=New Jersey,C=US | 2010-02-01 | 2038-01-18
@@ -138,3 +137,5 @@ b2fae53e14ccd7ab9212064701ae279c1d8988facb775fa8a008914e663988a8 | CN=Atos Trust
 81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f | CN=Atos TrustedRoot Root CA RSA TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17
 c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383 | CN=Sectigo Public Server Authentication Root E46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
 7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06 | CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
+c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143 | CN=SSL.com TLS ECC Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
+8faf7d2e2cb4709bb8e0b33666bf75a5dd45b5de480f8ea8d4bfe6bebc17f2ed | CN=SSL.com TLS RSA Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19

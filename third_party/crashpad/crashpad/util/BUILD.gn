@@ -320,6 +320,8 @@ crashpad_static_library("util") {
 
   if (crashpad_is_apple) {
     sources += [
+      "mac/sysctl.cc",
+      "mac/sysctl.h",
       "mac/xattr.cc",
       "mac/xattr.h",
       "mach/composite_mach_message_server.cc",
@@ -356,8 +358,6 @@ crashpad_static_library("util") {
       "mac/mac_util.h",
       "mac/service_management.cc",
       "mac/service_management.h",
-      "mac/sysctl.cc",
-      "mac/sysctl.h",
       "mach/bootstrap.cc",
       "mach/bootstrap.h",
       "mach/child_port_handshake.cc",
@@ -604,6 +604,10 @@ crashpad_static_library("util") {
     ]
   }
 
+  if (crashpad_is_ios) {
+    configs += [ "../build:crashpad_is_ios_app_extension" ]
+  }
+
   if (crashpad_is_win) {
     libs = [
       "user32.lib",
@@ -733,7 +737,10 @@ if (!crashpad_is_android && !crashpad_is_ios) {
 source_set("no_cfi_icall") {
   sources = [ "misc/no_cfi_icall.h" ]
   public_configs = [ "..:crashpad_config" ]
-  public_deps = [ "$mini_chromium_source_parent:build" ]
+  public_deps = [
+    "$mini_chromium_source_parent:base",
+    "$mini_chromium_source_parent:build",
+  ]
 }
 
 source_set("util_test") {

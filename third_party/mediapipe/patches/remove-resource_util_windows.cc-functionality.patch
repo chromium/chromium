@@ -1,17 +1,17 @@
-From 084e0adde16ccd84c43b49d589a7c721deb6bc11 Mon Sep 17 00:00:00 2001
-From: Robert Ogden <robertogden@chromium.org>
-Date: Mon, 31 Jul 2023 18:55:18 -0700
+From abea986e218e8c512da9c76b2990c110ac8cff20 Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Mon, 15 Apr 2024 10:52:49 -0700
 Subject: [PATCH] remove resource_util_windows.cc functionality
 
 ---
- .../mediapipe/util/resource_util_windows.cc   | 64 +------------------
- 1 file changed, 3 insertions(+), 61 deletions(-)
+ .../mediapipe/util/resource_util_windows.cc   | 63 +------------------
+ 1 file changed, 3 insertions(+), 60 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc b/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
-index 34806da494dab..536314315d447 100644
+index 6d620e58c498f..536314315d447 100644
 --- a/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
 +++ b/third_party/mediapipe/src/mediapipe/util/resource_util_windows.cc
-@@ -12,80 +12,22 @@
+@@ -12,79 +12,22 @@
  // See the License for the specific language governing permissions and
  // limitations under the License.
  
@@ -35,6 +35,7 @@ index 34806da494dab..536314315d447 100644
 -using mediapipe::file::GetContents;
 -using mediapipe::file::JoinPath;
 -
+ namespace internal {
 -namespace {
 -
 -class RunfilesHolder {
@@ -58,14 +59,12 @@ index 34806da494dab..536314315d447 100644
 -  std::unique_ptr<::bazel::tools::cpp::runfiles::Runfiles> runfiles_;
 -};
 -
--}  // namespace
--
- namespace internal {
- 
 -std::string PathToResourceAsFileInternal(const std::string& path) {
 -  return Singleton<RunfilesHolder>::get()->Rlocation(path);
 -}
 -
+-}  // namespace
+ 
  absl::Status DefaultGetResourceContents(const std::string& path,
                                          std::string* output,
                                          bool read_as_binary) {
@@ -96,5 +95,5 @@ index 34806da494dab..536314315d447 100644
  
  }  // namespace mediapipe
 -- 
-2.41.0.585.gd2178a4bd4-goog
+2.44.0.683.g7961c838ac-goog
 

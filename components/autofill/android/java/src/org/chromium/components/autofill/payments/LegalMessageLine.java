@@ -8,9 +8,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** Legal message line with links to show in the autofill ui. */
 @JNINamespace("autofill")
@@ -39,13 +41,27 @@ public class LegalMessageLine {
             this.end = end;
             this.url = url;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Link link = (Link) o;
+            return start == link.start && end == link.end && url.equals(link.url);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(start, end, url);
+        }
     }
 
     /** The plain text legal message line. */
     public String text;
 
     /** A collection of links in the legal message line. */
-    public final List<Link> links = new LinkedList<Link>();
+    public final List<Link> links = new ArrayList<Link>();
 
     /**
      * Creates a new instance of the legal message line.
@@ -53,7 +69,7 @@ public class LegalMessageLine {
      * @param text The plain text legal message.
      */
     @CalledByNative
-    public LegalMessageLine(String text) {
+    public LegalMessageLine(@JniType("std::u16string") String text) {
         this.text = text;
     }
 
@@ -78,17 +94,29 @@ public class LegalMessageLine {
         links.add(link);
     }
 
+    /**
+     * Adds a link to this legal message.
+     *
+     * @param start The starting inclusive index of the link position in the text.
+     * @param end The ending exclusive index of the link position in the text.
+     * @param url The URL of the link.
+     */
     @CalledByNative
-    /*package*/ static LinkedList<LegalMessageLine> addToList_createListIfNull(
-            LinkedList<LegalMessageLine> list, String text) {
-        if (list == null) list = new LinkedList<>();
-        list.add(new LegalMessageLine(text));
-        return list;
+    private void addLink(int start, int end, @JniType("std::string") String url) {
+        links.add(new Link(start, end, url));
     }
 
-    @CalledByNative
-    /*package*/ static void addLinkToLastInList(
-            LinkedList<LegalMessageLine> list, int start, int end, String url) {
-        list.getLast().addLink(new Link(start, end, url));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LegalMessageLine that = (LegalMessageLine) o;
+        return text.equals(that.text) && links.equals(that.links);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text, links);
     }
 }

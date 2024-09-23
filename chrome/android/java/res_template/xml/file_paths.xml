@@ -12,6 +12,7 @@ found in the LICENSE file.
     <files-path name="images" path="images/"/>
     <cache-path name="cache" path="net-export/"/>
     <cache-path name="passwords" path="passwords/"/>
+    <cache-path name="pdfs" path="pdfs/"/>
     <cache-path name="traces" path="traces/"/>
     <cache-path name="webapk" path="webapks/" />
     <cache-path name="offline-cache" path="Offline Pages/archives/" />

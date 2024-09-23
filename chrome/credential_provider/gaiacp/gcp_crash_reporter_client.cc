@@ -83,7 +83,7 @@ bool GcpCrashReporterClient::GetShouldDumpLargerDumps() {
 
 int GcpCrashReporterClient::GetResultCodeRespawnFailed() {
   // The restart dialog is never shown for GCPW.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -106,7 +106,7 @@ bool GcpCrashReporterClient::GetCollectStatsConsent() {
 bool GcpCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This function is only called on Linux which the GCPW does not support.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

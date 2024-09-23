@@ -68,42 +68,58 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dark"/>
 </enum>
 
-<enum name="EnterpriseCloudReportingDestination">
-<!-- This must be kept in sync with
-     //components/reporting/proto/synced/record_constants.proto's
-     Destination. -->
-
-  <int value="0" label="UNDEFINED_DESTINATION"/>
-  <int value="1" label="UPLOAD_EVENTS"/>
-  <int value="2" label="MEET_DEVICE_TELEMETRY"/>
-  <int value="3" label="WEB_PROTECT"/>
-  <int value="4" label="ARC_INSTALL"/>
-  <int value="5" label="POLICY_VALIDATION"/>
-  <int value="6" label="EXTENSION_INSTALL"/>
-  <int value="7" label="REPORTING_RECORD"/>
-  <int value="9" label="PRINT_JOBS"/>
-  <int value="10" label="EXTENSIONS_WORKFLOW"/>
-  <int value="11" label="DLP_EVENTS"/>
-  <int value="12" label="LOGIN_LOGOUT_EVENTS"/>
-  <int value="13" label="HEARTBEAT_EVENTS"/>
-  <int value="14" label="INFO_METRIC"/>
-  <int value="15" label="TELEMETRY_METRIC"/>
-  <int value="16" label="EVENT_METRIC"/>
-  <int value="17" label="ADDED_REMOVED_EVENTS"/>
-  <int value="18" label="CRD_EVENTS"/>
-  <int value="19" label="PERIPHERAL_EVENTS"/>
-  <int value="20" label="SUSPICIOUS_EVENTS"/>
-  <int value="21" label="LOCK_UNLOCK_EVENTS"/>
-  <int value="22" label="CROS_SECURITY_AGENT"/>
-  <int value="23" label="CROS_SECURITY_PROCESS"/>
-  <int value="24" label="OS_EVENTS"/>
-  <int value="25" label="LEGACY_TECH"/>
-  <int value="26" label="CROS_SECURITY_NETWORK"/>
-  <int value="27" label="LOG_UPLOAD"/>
-  <int value="28" label="CROS_SECURITY_USER"/>
-  <int value="29" label="KIOSK_HEARTBEAT_EVENTS"/>
-  <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
-  <int value="31" label="CRASH_EVENTS"/>
+<enum name="DataLossErrorReasonBrowser">
+  <summary>
+    Defined as DataLossErrorReason in
+    components/reporting/util/reporting_errors.h.
+  </summary>
+  <int value="0" label="REPORT_UPLOAD_FAILED"/>
+  <int value="1" label="REPORT_CLIENT_EMPTY_RESPONSE"/>
+  <int value="2" label="REPORT_CLIENT_BAD_RESPONSE_CODE"/>
+  <int value="3" label="NO_HEADERS_FOUND"/>
+  <int value="4" label="UNEXPECTED_UPLOAD_STATUS"/>
+  <int value="5" label="POST_REQUEST_FAILED"/>
+  <int value="6" label="NO_GRANULARITTY_RETURNED"/>
+  <int value="7" label="UNEXPECTED_GRANULARITY"/>
+  <int value="8" label="NO_UPLOAD_URL_RETURNED"/>
+  <int value="9" label="FAILED_TO_OPEN_UPLOAD_FILE"/>
+  <int value="10" label="CORRUPT_SESSION_TOKEN"/>
+  <int value="11" label="FILE_SIZE_MISMATCH"/>
+  <int value="12" label="CANNOT_READ_FILE"/>
+  <int value="13" label="NO_UPLOAD_SIZE_RETURNED"/>
+  <int value="14" label="UNEXPECTED_UPLOAD_RECEIVED_CODE"/>
+  <int value="15" label="NO_UPLOAD_ID_RETURNED"/>
+  <int value="16" label="UPLOAD_JOB_REMOVED"/>
+  <int value="17" label="JOB_LOST_SESSION_TOKEN"/>
+  <int value="18" label="JOB_BACKTRACKED"/>
+  <int value="19" label="JOB_INCOMPLETE"/>
+  <int value="20" label="CORRUPT_RESUMABLE_UPLOAD_URL"/>
+  <int value="21" label="FAILED_UPLOAD_CONTAINS_INVALID_SEQUENCE_INFORMATION"/>
+  <int value="22"
+      label="SPECULATIVE_REPORT_QUEUE_DESTRUCTED_BEFORE_RECORDS_ENQUEUED"/>
+  <int value="23" label="FAILED_TO_CREATE_ENCRYPTION_KEY"/>
+  <int value="24" label="FAILED_TO_READ_HEALTH_DATA"/>
+  <int value="25" label="MISSING_GENERATION_ID"/>
+  <int value="26" label="FAILED_TO_PASE_GENERATION_ID"/>
+  <int value="27" label="INVALID_GENERATION_ID"/>
+  <int value="28" label="ALL_FILE_PATHS_MISSING_GENERATION_ID"/>
+  <int value="29" label="FAILED_TO_OPEN_STORAGE_QUEUE_FILE"/>
+  <int value="30" label="FAILED_TO_WRITE_METADATA"/>
+  <int value="31" label="FAILED_TO_READ_METADATA"/>
+  <int value="32" label="METADATA_GENERATION_ID_OUT_OF_RANGE"/>
+  <int value="33" label="METADATA_GENERATION_MISMATCH"/>
+  <int value="34" label="METADATA_LAST_RECORD_DIGEST_IS_CORRUPT"/>
+  <int value="35" label="FAILED_TO_RESTORE_LAST_RECORD_DIGEST"/>
+  <int value="36" label="FAILED_TO_SERIALIZE_WRAPPED_RECORD"/>
+  <int value="37" label="FAILED_TO_SERIALIZE_ENCRYPTED_RECORD"/>
+  <int value="38" label="FAILED_TO_OPEN_FILE"/>
+  <int value="39" label="FAILED_TO_GET_SIZE_OF_FILE"/>
+  <int value="40" label="FAILED_TO_READ_FILE"/>
+  <int value="41" label="FAILED_TO_WRITE_FILE"/>
+  <int value="42" label="FAILED_TO_OPEN_KEY_FILE"/>
+  <int value="43" label="FAILED_TO_SERIALIZE_KEY"/>
+  <int value="44" label="FAILED_TO_WRITE_KEY"/>
+  <int value="45" label="FAILED_TO_READ_FILE_INFO"/>
 </enum>
 
 <enum name="EnterpriseCloudReportingMetricEventType">
@@ -127,6 +143,14 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="URL_OPENED"/>
   <int value="19" label="URL_CLOSED"/>
   <int value="20" label="KIOSK_HEARTBEAT"/>
+</enum>
+
+<enum name="EnterpriseReportingMissiveClientDbusError">
+  <summary>Defined as code in chromeos/dbus/missive/missive_client.cc</summary>
+  <int value="0" label="OK"/>
+  <int value="1" label="SERVICE_UNAVAILABLE"/>
+  <int value="2" label="NO_RESPONSE"/>
+  <int value="3" label="UNKNOWN"/>
 </enum>
 
 <enum name="EnterpriseReportingPsrResult">
@@ -289,12 +313,14 @@ chromium-metrics-reviews@google.com.
   <int value="111" label="TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE"/>
   <int value="112" label="CHROME_FOR_TESTING_INFOBAR_DELEGATE"/>
   <int value="113" label="EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE"/>
-  <int value="114" label="TAB_PICKUP_INFOBAR_DELEGATE"/>
+  <int value="114" label="TAB_PICKUP_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="115" label="LOCAL_TEST_POLICIES_APPLIED_INFOBAR"/>
   <int value="116"
       label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE"/>
   <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE"/>
   <int value="118" label="TEST_THIRD_PARTY_COOKIE_PHASEOUT_DELEGATE"/>
+  <int value="119" label="ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE"/>
+  <int value="120" label="DEV_TOOLS_SHARED_PROCESS_DELEGATE"/>
 </enum>
 
 <enum name="RendererType">
@@ -331,6 +357,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="In Observer Callback">
     Delays until all observer callbacks completed.
   </int>
+  <int value="11" label="NavigationStateKeepAlive">
+    There are NavigationStateKeepAlives in this process.
+  </int>
 </enum>
 
 <enum name="SpareProcessMaybeTakeAction">
@@ -351,6 +380,20 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="6" label="RefusedForPdfContent"/>
 </enum>
+
+<!-- LINT.IfChange(SpareProcessRefusedByEmbedderReason) -->
+
+<enum name="SpareProcessRefusedByEmbedderReason">
+  <int value="0" label="DefaultDisabled"/>
+  <int value="1" label="NoProfile"/>
+  <int value="2" label="TopFrameChromeWebUI"/>
+  <int value="3" label="InstantRendererForNewTabPage"/>
+  <int value="4" label="ExtensionProcess"/>
+  <int value="5" label="JitDisabled"/>
+  <int value="6" label="V8OptDisabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/public/browser/content_browser_client.h:SpareProcessRefusedByEmbedderReason) -->
 
 <enum name="SupportToolWebUIActionType">
   <summary>
@@ -400,6 +443,28 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="Tab hidden before a frame is presented"/>
   <int value="2" label="Tab shown twice without being hidden"/>
+</enum>
+
+<enum name="UnavailableErrorReasonBrowser">
+  <summary>
+    Defined as UnavailableErrorReason in
+    components/reporting/util/reporting_errors.h.
+  </summary>
+  <int value="0" label="CANNOT_GET_CLOUD_POLICY_MANAGER_FOR_BROWSER"/>
+  <int value="1" label="CANNOT_GET_CLOUD_POLICY_MANAGER_FOR_PROFILE"/>
+  <int value="2" label="CLIENT_NOT_CONNECTED_TO_MISSIVE"/>
+  <int value="3" label="DEVICE_DM_TOKEN_NOT_SET"/>
+  <int value="4" label="FAILED_TO_CREATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="5" label="FILE_NOT_OPEN"/>
+  <int value="6" label="FILE_UPLOAD_DELEGATE_IS_NULL"/>
+  <int value="7" label="FILE_UPLOAD_JOB_DELEGATE_IS_NULL"/>
+  <int value="8" label="REPORTING_CLIENT_IS_NULL"/>
+  <int value="9" label="REPORT_QUEUE_DESTRUCTED"/>
+  <int value="10" label="REPORT_QUEUE_IS_NULL"/>
+  <int value="11" label="REPORT_QUEUE_PROVIDER_DESTRUCTED"/>
+  <int value="12" label="STORAGE_QUEUE_SHUTDOWN"/>
+  <int value="13" label="UNABLE_TO_BUILD_REPORT_QUEUE"/>
+  <int value="14" label="UPLOAD_PROVIDER_IS_NULL"/>
 </enum>
 
 </enums>

@@ -99,7 +99,7 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
   SetTransform(transform);
 }
 
-BEGIN_METADATA(StatusAreaOverflowButtonTray, IconView, views::ImageView)
+BEGIN_METADATA(StatusAreaOverflowButtonTray, IconView)
 END_METADATA
 
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
@@ -120,7 +120,8 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}
 
-void StatusAreaOverflowButtonTray::ClickedOutsideBubble() {}
+void StatusAreaOverflowButtonTray::ClickedOutsideBubble(
+    const ui::LocatedEvent& event) {}
 
 std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(

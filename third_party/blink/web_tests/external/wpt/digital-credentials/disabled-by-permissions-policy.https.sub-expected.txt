@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Header-set policy is overridden in cross-origin iframe using allow attribute.
+  assert_true: Digital Credential API expected true got false
+Harness: the test ran to completion.
+

@@ -52,6 +52,7 @@ def _CheckSemanticColors(input_api, output_api):
         input_api.os_path.join(*style_root, 'cros_shadows.json5'),
         input_api.os_path.join(*style_root, 'cros_sys_colors.json5'),
         input_api.os_path.join(*style_root, 'cros_typography.json5'),
+        input_api.os_path.join(*style_root, 'cros_gm3_shadows.json5'),
     ]
 
     cros_prefixes, cros_variables = ExtractPrefixesAndVariables(cros_styles)

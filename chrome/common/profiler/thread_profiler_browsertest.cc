@@ -15,16 +15,11 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -129,12 +124,13 @@ class ThreadProfilerBrowserTest : public PlatformBrowserTest {
 bool WaitForProfile(metrics::SampledProfile::TriggerEvent trigger_event,
                     metrics::Process process,
                     metrics::Thread thread) {
-  // Profiling is only enabled for trunk builds and canary and dev channels.
+  // Profiling is only enabled for trunk builds and non-stable channels.
   // Perform an early return and pass the test for the other channels.
   switch (chrome::GetChannel()) {
     case version_info::Channel::UNKNOWN:
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
       break;
 
     default:

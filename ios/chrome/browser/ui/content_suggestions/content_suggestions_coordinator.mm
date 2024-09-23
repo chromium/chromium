@@ -7,20 +7,28 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/public/features.h"
-#import "components/sync/base/features.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
@@ -28,19 +36,30 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -48,9 +67,9 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -62,6 +81,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -75,6 +95,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
@@ -82,12 +103,17 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -96,24 +122,18 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -123,15 +143,19 @@
 #import "url/gurl.h"
 
 @interface ContentSuggestionsCoordinator () <
+    ContentSuggestionsCommands,
     ContentSuggestionsViewControllerAudience,
+    MagicStackCollectionViewControllerAudience,
     MagicStackHalfSheetTableViewControllerDelegate,
+    MagicStackModuleContainerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     NotificationsConfirmationPresenter,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
+    NotificationsSettingsObserverDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
-    SetUpListViewDelegate>
+    SetUpListTapDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
@@ -150,9 +174,6 @@
 @end
 
 @implementation ContentSuggestionsCoordinator {
-  // Observer bridge for mediator to listen to
-  // StartSurfaceRecentTabObserverBridge.
-  std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
 
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
@@ -165,9 +186,6 @@
   // The coordinator that displays the opt-in notification settings view for the
   // Set Up List.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
-
-  // The coordinator used to present an action sheet for the Set Up List menu.
-  ActionSheetCoordinator* _actionSheetCoordinator;
 
   // The Show More Menu presented from the Set Up List in the Magic Stack.
   SetUpListShowMoreViewController* _setUpListShowMoreViewController;
@@ -188,6 +206,10 @@
   // The coordinator used to present an alert to enable Tips notifications.
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 
+  // An observer that tracks whether push notification permission settings have
+  // been modified.
+  NotificationsSettingsObserver* _notificationsObserver;
+
   MagicStackRankingModel* _magicStackRankingModel;
 
   // Module mediators.
@@ -195,61 +217,89 @@
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
+  PriceTrackingPromoMediator* _priceTrackingPromoMediator;
+
+  MagicStackCollectionViewController* _magicStackCollectionView;
+
+  segmentation_platform::SegmentationPlatformService* _segmentationService;
+  segmentation_platform::DeviceSwitcherResultDispatcher*
+      _deviceSwitcherResultDispatcher;
 }
 
 - (void)start {
   DCHECK(self.browser);
-  DCHECK(self.NTPMetricsDelegate);
-
+  DCHECK(self.NTPActionsDelegate);
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
   }
-
   _started = YES;
 
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  _segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          browserState);
+  _deviceSwitcherResultDispatcher = segmentation_platform::
+      SegmentationPlatformServiceFactory::GetDispatcherForProfile(browserState);
+
+  self.authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+
+  // Conditionally register for provisional Safety Check notifications if the
+  // feature is enabled.
+  //
+  // TODO(crbug.com/366182129): Move Safety Check provisional notification
+  // enrollment to `SafetyCheckNotificationClient` once
+  // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    _notificationsObserver = [[NotificationsSettingsObserver alloc]
+        initWithPrefService:ChromeBrowserState::FromBrowserState(browserState)
+                                ->GetPrefs()
+                 localState:GetApplicationContext()->GetLocalState()];
+
+    _notificationsObserver.delegate = self;
+
+    [ProvisionalPushNotificationUtil
+        enrollUserToProvisionalNotificationsForClientIds:
+            {PushNotificationClientId::kSafetyCheck}
+                             clientEnabledForProvisional:NO
+                                         withAuthService:self.authService
+                                   deviceInfoSyncService:nil];
+  }
 
   PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+      ChromeBrowserState::FromBrowserState(browserState)->GetPrefs();
 
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+
+  LargeIconCache* cache =
+      IOSChromeLargeIconCacheFactory::GetForBrowserState(browserState);
+
   std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
-      IOSMostVisitedSitesFactory::NewForBrowserState(
-          self.browser->GetBrowserState());
+      IOSMostVisitedSitesFactory::NewForBrowserState(browserState);
+
   ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ReadingListModelFactory::GetForBrowserState(browserState);
 
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc]
           initWithLocalState:GetApplicationContext()->GetLocalState()];
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForBrowserState(browserState);
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(browserState);
 
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      commerce::ShoppingServiceFactory::GetForBrowserState(browserState);
 
-  self.contentSuggestionsMediator =
-      [[ContentSuggestionsMediator alloc] initWithBrowser:self.browser];
-  self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
+  self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc] init];
 
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
@@ -261,12 +311,14 @@
        URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
                                   self.browser)];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
+  _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
   _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
              scenario:kMenuScenarioHistogramMostVisitedEntry];
   _mostVisitedTilesMediator.snackbarHandler =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  _mostVisitedTilesMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+  _mostVisitedTilesMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   [moduleMediators addObject:_mostVisitedTilesMediator];
   self.contentSuggestionsMediator.mostVisitedTilesMediator =
       _mostVisitedTilesMediator;
@@ -274,33 +326,16 @@
   _shortcutsMediator = [[ShortcutsMediator alloc]
       initWithReadingListModel:readingListModel
       featureEngagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())
+                                   GetForBrowserState(browserState)
                    authService:authenticationService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  _shortcutsMediator.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCoordinatorCommands>>(
-          self.browser->GetCommandDispatcher());
+  _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+  _shortcutsMediator.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
+      self.browser->GetCommandDispatcher());
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
-
-  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
-      GetApplicationContext()->GetLocalState());
-  if (isSetupListEnabled) {
-    _setUpListMediator = [[SetUpListMediator alloc]
-          initWithPrefService:prefs
-                  syncService:syncService
-              identityManager:identityManager
-        authenticationService:authenticationService
-                   sceneState:self.browser->GetSceneState()];
-    _setUpListMediator.commandHandler = self;
-    _setUpListMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    _setUpListMediator.delegate = self.delegate;
-    self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
-    [moduleMediators addObject:_setUpListMediator];
-  }
 
   if (IsTabResumptionEnabled()) {
     _tabResumptionMediator = [[TabResumptionMediator alloc]
@@ -308,83 +343,121 @@
                prefService:prefs
            identityManager:identityManager
                    browser:self.browser];
-    _tabResumptionMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+    _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_tabResumptionMediator];
   }
+  if (IsPriceTrackingPromoCardEnabled(shoppingService)) {
+    _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
+        initWithShoppingService:commerce::ShoppingServiceFactory::
+                                    GetForBrowserState(
+                                        self.browser->GetBrowserState())
+                    prefService:prefs
+        pushNotificationService:GetApplicationContext()
+                                    ->GetPushNotificationService()
+          authenticationService:self.authService];
+    _priceTrackingPromoMediator.dispatcher =
+        static_cast<id<ApplicationCommands, SnackbarCommands>>(
+            self.browser->GetCommandDispatcher());
+    [moduleMediators addObject:_priceTrackingPromoMediator];
+  }
+
   if (IsIOSParcelTrackingEnabled() &&
-      !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+      !IsParcelTrackingDisabled(
+          IsHomeCustomizationEnabled()
+              ? prefs
+              : GetApplicationContext()->GetLocalState())) {
     _parcelTrackingMediator = [[ParcelTrackingMediator alloc]
         initWithShoppingService:shoppingService
          URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
-                                    self.browser)];
-    _parcelTrackingMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
+                                    self.browser)
+                    prefService:IsHomeCustomizationEnabled()
+                                    ? prefs
+                                    : GetApplicationContext()->GetLocalState()];
+    _parcelTrackingMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_parcelTrackingMediator];
   }
   if (IsSafetyCheckMagicStackEnabled()) {
     IOSChromeSafetyCheckManager* safetyCheckManager =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browserState);
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
+                         userState:prefs
                           appState:self.browser->GetSceneState().appState];
-    _safetyCheckMediator.presentationDelegate = self;
+    _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
   }
-
-  if (IsMagicStackEnabled()) {
-    _magicStackRankingModel = [[MagicStackRankingModel alloc]
-        initWithSegmentationService:
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetForBrowserState(self.browser->GetBrowserState())
-                        prefService:prefs
-                         localState:GetApplicationContext()->GetLocalState()
-                    moduleMediators:moduleMediators];
-    _magicStackRankingModel.contentSuggestionsMetricsRecorder =
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+    ContentSuggestionsViewController* viewController =
+        [[ContentSuggestionsViewController alloc] init];
+    viewController.audience = self;
+    viewController.urlLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+    viewController.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
-    self.contentSuggestionsMediator.magicStackRankingModel =
-        _magicStackRankingModel;
+    self.contentSuggestionsViewController = viewController;
   }
-
-  self.contentSuggestionsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
-
-  self.contentSuggestionsViewController =
-      [[ContentSuggestionsViewController alloc] init];
-  self.contentSuggestionsViewController.suggestionCommandHandler =
-      self.contentSuggestionsMediator;
-  self.contentSuggestionsViewController.audience = self;
-  self.contentSuggestionsViewController.urlLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
+  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
+      GetApplicationContext()->GetLocalState(), prefs);
+  if (isSetupListEnabled) {
+    const TemplateURL* defaultSearchURLTemplate =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+            ->GetDefaultSearchProvider();
+    BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
+                                 defaultSearchURLTemplate->prepopulate_id() ==
+                                     TemplateURLPrepopulateData::google.id;
+    _setUpListMediator = [[SetUpListMediator alloc]
+                   initWithPrefService:prefs
+                           syncService:syncService
+                       identityManager:identityManager
+                 authenticationService:authenticationService
+                            sceneState:self.browser->GetSceneState()
+                 isDefaultSearchEngine:isDefaultSearchEngine
+                   segmentationService:_segmentationService
+        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      [_setUpListMediator retrieveUserSegment];
+    }
+    _setUpListMediator.commandHandler = self;
+    _setUpListMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    _setUpListMediator.delegate = self.delegate;
+    self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
+    [moduleMediators addObject:_setUpListMediator];
+  }
+  _magicStackRankingModel = [[MagicStackRankingModel alloc]
+      initWithSegmentationService:_segmentationService
+                  shoppingService:commerce::ShoppingServiceFactory::
+                                      GetForBrowserState(
+                                          self.browser->GetBrowserState())
+                      prefService:prefs
+                       localState:GetApplicationContext()->GetLocalState()
+                  moduleMediators:moduleMediators];
+  _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  self.contentSuggestionsViewController.setUpListViewDelegate = self;
-  self.contentSuggestionsViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  self.contentSuggestionsViewController.parcelTrackingCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ParcelTrackingOptInCommands);
+  self.contentSuggestionsMediator.magicStackRankingModel =
+      _magicStackRankingModel;
+  _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
+  _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
 
-  if (_magicStackRankingModel) {
-    _magicStackRankingModel.consumer = self.contentSuggestionsViewController;
-  }
-  _shortcutsMediator.consumer = self.contentSuggestionsViewController;
-  _safetyCheckMediator.consumer = self.contentSuggestionsViewController;
+  _magicStackCollectionView = [[MagicStackCollectionViewController alloc] init];
+  _magicStackCollectionView.audience = self;
   _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
-  _setUpListMediator.consumer = self.contentSuggestionsViewController;
+
+  self.contentSuggestionsMediator.magicStackConsumer =
+      _magicStackCollectionView;
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ContentSuggestionsCommands)];
 }
 
 - (void)stop {
-  // Reset the observer bridge object before setting
-  // `contentSuggestionsMediator` nil.
-  if (_startSurfaceObserver) {
-    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-        ->RemoveObserver(_startSurfaceObserver.get());
-    _startSurfaceObserver.reset();
-  }
+  _segmentationService = nullptr;
+  _deviceSwitcherResultDispatcher = nullptr;
   [self.parcelTrackingMediator disconnect];
   self.parcelTrackingMediator = nil;
   [_shortcutsMediator disconnect];
@@ -397,6 +470,8 @@
   _mostVisitedTilesMediator = nil;
   [_tabResumptionMediator disconnect];
   _tabResumptionMediator = nil;
+  [_magicStackRankingModel disconnect];
+  _magicStackRankingModel = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];
@@ -413,43 +488,141 @@
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
   [self dismissParcelTrackingAlertCoordinator];
+  _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
+  _notificationsObserver = nil;
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(ContentSuggestionsCommands)];
   _started = NO;
 }
 
-- (UIViewController*)viewController {
+- (ContentSuggestionsViewController*)viewController {
   return self.contentSuggestionsViewController;
 }
 
 #pragma mark - Public methods
 
 - (void)refresh {
+  [_magicStackCollectionView reset];
   // Refresh in case there are new MVT to show.
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
+  [_safetyCheckMediator reset];
+  [_parcelTrackingMediator reset];
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  // Fetch after resetting ranking since parcels could be returned
+  // synchronously.
+  [_parcelTrackingMediator fetchTrackedParcels];
+}
+
+#pragma mark - ContentSuggestionsCommands
+
+- (void)showSetUpListSeeMoreMenu {
+  [_setUpListShowMoreViewController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+  NSArray<SetUpListItemViewData*>* items = [self.setUpListMediator allItems];
+  _setUpListShowMoreViewController =
+      [[SetUpListShowMoreViewController alloc] initWithItems:items
+                                                 tapDelegate:self];
+  _setUpListShowMoreViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _setUpListShowMoreViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = 16;
+  [_magicStackCollectionView
+      presentViewController:_setUpListShowMoreViewController
+                   animated:YES
+                 completion:nil];
 }
 
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)viewWillDisappear {
-  DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
+  DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
       ->SetIsShownOnStartSurface(false);
-  [self.contentSuggestionsMediator hideRecentTabTile];
 }
 
-- (void)returnToRecentTabWasAdded {
-  [self.NTPDelegate updateFeedLayout];
-  [self.NTPDelegate setContentOffsetToTop];
+#pragma mark - MagicStackCollectionViewAudience
+
+- (void)didTapMagicStackEditButton {
+  base::RecordAction(base::UserMetricsAction("IOSMagicStackSettingsOpened"));
+  if (IsHomeCustomizationEnabled()) {
+    [self.delegate openMagicStackCustomizationMenu];
+  } else {
+    _magicStackHalfSheetTableViewController =
+        [[MagicStackHalfSheetTableViewController alloc] init];
+
+    _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()];
+    _magicStackHalfSheetMediator.consumer =
+        _magicStackHalfSheetTableViewController;
+    _magicStackHalfSheetTableViewController.delegate = self;
+    _magicStackHalfSheetTableViewController.modelDelegate =
+        _magicStackHalfSheetMediator;
+
+    UINavigationController* navViewController = [[UINavigationController alloc]
+        initWithRootViewController:_magicStackHalfSheetTableViewController];
+
+    navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    UISheetPresentationController* presentationController =
+        navViewController.sheetPresentationController;
+    presentationController.prefersEdgeAttachedInCompactHeight = YES;
+    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
+        YES;
+    presentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+    [_magicStackCollectionView presentViewController:navViewController
+                                            animated:YES
+                                          completion:nil];
+  }
 }
 
-- (void)moduleWasRemoved {
-  [self.NTPDelegate updateFeedLayout];
+- (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card {
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, card);
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForBrowserState(self.browser->GetBrowserState());
+
+  switch (card) {
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      registry->NotifyCardShown(
+          segmentation_platform::kPriceTrackingNotificationPromo);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [self.browser->GetSceneState()
-              .window.rootViewController.view safeAreaInsets];
+#pragma mark - MagicStackModuleContainerDelegate
+
+- (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
+  [self.customizationDelegate dismissCustomizationMenu];
+  switch (type) {
+    case ContentSuggestionsModuleType::kSafetyCheck:
+      [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
+      break;
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      [self showSetUpListSeeMoreMenu];
+      break;
+    case ContentSuggestionsModuleType::kParcelTracking:
+      [self showMagicStackParcelList];
+      break;
+    case ContentSuggestionsModuleType::kTabResumption:
+      [self showMagicStackRecentTabs];
+      break;
+    default:
+      break;
+  }
 }
 
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
@@ -476,81 +649,117 @@
   }
 }
 
-- (void)enableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List modules.
-  CHECK(IsSetUpListModuleType(type));
+// Returns the `PushNotificationClientId` associated with the specified `type`.
+// Currently, push notifications are exclusively supported by the Set Up List
+// and Safety Check modules.
+- (PushNotificationClientId)pushNotificationClientId:
+    (ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
 
-  // Ask user for permission to opt-in notifications.
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return PushNotificationClientId::kSafetyCheck;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return PushNotificationClientId::kTips;
+  }
+
+  NOTREACHED();
+}
+
+// Retrieves the message ID for the push notification feature title associated
+// with the specified `ContentSuggestionsModuleType`. Currently, push
+// notifications are exclusively supported by the Set Up List and Safety Check
+// modules.
+- (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  if (type == ContentSuggestionsModuleType::kSafetyCheck) {
+    return IDS_IOS_SAFETY_CHECK_TITLE;
+  }
+
+  if (IsSetUpListModuleType(type)) {
+    return content_suggestions::SetUpListTitleStringID();
+  }
+
+  NOTREACHED();
+}
+
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
+
+  // Ask user for permission to opt-in to notifications.
   [_notificationsOptInAlertCoordinator stop];
+
   _notificationsOptInAlertCoordinator =
       [[NotificationsOptInAlertCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
-  _notificationsOptInAlertCoordinator.clientIds =
-      std::vector{PushNotificationClientId::kTips};
-  _notificationsOptInAlertCoordinator.confirmationMessage =
-      l10n_util::GetNSStringF(
-          IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
-          l10n_util::GetStringUTF16(
-              content_suggestions::SetUpListTitleStringID()));
+
   _notificationsOptInAlertCoordinator.delegate = self;
+
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:type];
+
+  _notificationsOptInAlertCoordinator.clientIds = std::vector{clientId};
+
+  int featureTitle = [self pushNotificationTitleMessageId:type];
+
+  _notificationsOptInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSStringF(IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+                              l10n_util::GetStringUTF16(featureTitle));
+
   [_notificationsOptInAlertCoordinator start];
 }
 
-- (void)didTapMagicStackEditButton {
-  _magicStackHalfSheetTableViewController =
-      [[MagicStackHalfSheetTableViewController alloc] init];
+- (void)disableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) ||
+        type == ContentSuggestionsModuleType::kSafetyCheck);
 
-  _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
-      initWithPrefService:GetApplicationContext()->GetLocalState()];
-  _magicStackHalfSheetMediator.consumer =
-      _magicStackHalfSheetTableViewController;
-  _magicStackHalfSheetTableViewController.delegate = self;
-  _magicStackHalfSheetTableViewController.modelDelegate =
-      _magicStackHalfSheetMediator;
+  id<SystemIdentity> identity =
+      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  UINavigationController* navViewController = [[UINavigationController alloc]
-      initWithRootViewController:_magicStackHalfSheetTableViewController];
+  const PushNotificationClientId clientId =
+      [self pushNotificationClientId:type];
 
-  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      navViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  [self.viewController presentViewController:navViewController
-                                    animated:YES
-                                  completion:nil];
+  GetApplicationContext()->GetPushNotificationService()->SetPreference(
+      identity.gaiaID, clientId, false);
+
+  // Show confirmation snackbar.
+  NSString* buttonText =
+      l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
+
+  int featureTitle = [self pushNotificationTitleMessageId:type];
+
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE_OFF,
+                              l10n_util::GetStringUTF16(featureTitle));
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
+  __weak id<SettingsCommands> weakSettingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+
+  [snackbarHandler showSnackbarWithMessage:message
+                                buttonText:buttonText
+                             messageAction:^{
+                               [weakSettingsHandler showNotificationsSettings];
+                             }
+                          completionAction:nil];
 }
 
-- (void)showMagicStackParcelList {
-  _parcelListHalfSheetTableViewController =
-      [[MagicStackParcelListHalfSheetTableViewController alloc]
-          initWithParcels:[self.parcelTrackingMediator allParcelTrackingItems]];
-  _parcelListHalfSheetTableViewController.delegate = self;
-
-  UINavigationController* navViewController = [[UINavigationController alloc]
-      initWithRootViewController:_parcelListHalfSheetTableViewController];
-
-  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      navViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  [self.viewController presentViewController:navViewController
-                                    animated:YES
-                                  completion:nil];
-}
-
-- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
-  [self didSelectSetUpListItem:view.type];
+- (void)customizeCardsWasTapped {
+  [self didTapMagicStackEditButton];
 }
 
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
@@ -603,7 +812,7 @@
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
   CHECK(IsSafetyCheckMagicStackEnabled());
 
-  [self.NTPMetricsDelegate safetyCheckOpened];
+  [self.NTPActionsDelegate safetyCheckOpened];
   Browser* browser = self.browser;
   [_magicStackRankingModel logMagicStackEngagementForType:
                                ContentSuggestionsModuleType::kSafetyCheck];
@@ -625,10 +834,16 @@
       break;
     }
     case SafetyCheckItemType::kPassword: {
-      std::vector<password_manager::CredentialUIEntry> credentials =
+      std::vector<password_manager::CredentialUIEntry> insecure_credentials =
           safetyCheckManager->GetInsecureCredentials();
-      HandleSafetyCheckPasswordTap(credentials, applicationHandler,
+
+      password_manager::InsecurePasswordCounts insecure_password_counts =
+          safetyCheckManager->GetInsecurePasswordCounts();
+
+      HandleSafetyCheckPasswordTap(insecure_credentials,
+                                   insecure_password_counts, applicationHandler,
                                    settingsHandler);
+
       break;
     }
     case SafetyCheckItemType::kSafeBrowsing:
@@ -639,16 +854,18 @@
     case SafetyCheckItemType::kDefault:
       password_manager::PasswordCheckReferrer referrer =
           password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
-      [settingsHandler showAndStartSafetyCheckInHalfSheet:YES
-                                                 referrer:referrer];
+      [settingsHandler showAndStartSafetyCheckForReferrer:referrer];
       break;
   }
 }
 
-#pragma mark - SetUpListViewDelegate
+#pragma mark - SetUpListTapDelegate
+
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
+  [self didSelectSetUpListItem:view.type];
+}
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
-  if (IsMagicStackEnabled()) {
     if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
       [_magicStackRankingModel
           logMagicStackEngagementForType:ContentSuggestionsModuleType::
@@ -658,9 +875,8 @@
           logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
                                              type)];
     }
-  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
-  [self.NTPMetricsDelegate setUpListItemOpened];
+  [self.NTPActionsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();
   set_up_list_prefs::RecordInteraction(localState);
 
@@ -685,8 +901,8 @@
         break;
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
-        // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
-        NOTREACHED();
+        // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
+        NOTREACHED_IN_MIGRATION();
     }
   };
 
@@ -698,36 +914,6 @@
   } else {
     completionBlock();
   }
-}
-
-- (void)showSetUpListMenuWithButton:(UIButton*)button {
-  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                            rect:button.bounds
-                            view:button];
-
-  __weak ContentSuggestionsMediator* weakMediator =
-      self.contentSuggestionsMediator;
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF)
-                action:^{
-                  [weakMediator.setUpListMediator disableModule];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL)
-                action:nil
-                 style:UIAlertActionStyleCancel];
-  [_actionSheetCoordinator start];
-}
-
-- (void)setUpListViewHeightDidChange {
-  [self.delegate contentSuggestionsWasUpdated];
 }
 
 - (void)dismissSeeMoreViewController {
@@ -746,11 +932,23 @@
   // dismiss a previous instance and then clicks the item again the
   // previous instance may not have been stopped yet due to the animation.
   [_defaultBrowserPromoCoordinator stop];
-  _defaultBrowserPromoCoordinator =
-      [[SetUpListDefaultBrowserPromoCoordinator alloc]
-          initWithBaseViewController:[self viewController]
-                             browser:self.browser
-                         application:[UIApplication sharedApplication]];
+  if (IsSegmentedDefaultBrowserPromoEnabled()) {
+    _defaultBrowserPromoCoordinator =
+        [[SetUpListDefaultBrowserPromoCoordinator alloc]
+                initWithBaseViewController:[self viewController]
+                                   browser:self.browser
+                               application:[UIApplication sharedApplication]
+                       segmentationService:_segmentationService
+            deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+  } else {
+    _defaultBrowserPromoCoordinator =
+        [[SetUpListDefaultBrowserPromoCoordinator alloc]
+                initWithBaseViewController:[self viewController]
+                                   browser:self.browser
+                               application:[UIApplication sharedApplication]
+                       segmentationService:nullptr
+            deviceSwitcherResultDispatcher:nullptr];
+  }
   _defaultBrowserPromoCoordinator.delegate = self;
   [_defaultBrowserPromoCoordinator start];
 }
@@ -766,18 +964,13 @@
                                               SetUpListItemType::kSignInSync);
         }
       };
+  // If there are 0 identities, kInstantSignin requires less taps.
   AuthenticationOperation operation =
-      AuthenticationOperation::kSigninAndSyncWithTwoScreens;
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // If there are 0 identities, kInstantSignin requires less taps.
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
-    operation =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
-                ->HasIdentities()
-            ? AuthenticationOperation::kSigninOnly
-            : AuthenticationOperation::kInstantSignin;
-  }
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+              ->HasIdentities()
+          ? AuthenticationOperation::kSigninOnly
+          : AuthenticationOperation::kInstantSignin;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
@@ -796,27 +989,6 @@
                       CredentialProviderPromoCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SetUpList];
-}
-
-- (void)showSetUpListShowMoreMenu {
-  NSArray<SetUpListItemViewData*>* items = [self.setUpListMediator allItems];
-  _setUpListShowMoreViewController =
-      [[SetUpListShowMoreViewController alloc] initWithItems:items
-                                                 tapDelegate:self];
-  _setUpListShowMoreViewController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      _setUpListShowMoreViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  presentationController.preferredCornerRadius = 16;
-  [self.viewController presentViewController:_setUpListShowMoreViewController
-                                    animated:YES
-                                  completion:nil];
 }
 
 - (void)showContentNotificationBottomSheet {
@@ -845,7 +1017,11 @@
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate
 
-- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+- (void)notificationsOptInAlertCoordinator:
+            (NotificationsOptInAlertCoordinator*)alertCoordinator
+                                    result:
+                                        (NotificationsOptInAlertResult)result {
+  CHECK_EQ(_notificationsOptInAlertCoordinator, alertCoordinator);
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
 }
@@ -857,6 +1033,20 @@
   CHECK_EQ(coordinator, _notificationsOptInCoordinator);
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = nil;
+}
+
+#pragma mark - NotificationsSettingsObserverDelegate
+
+- (void)notificationsSettingsDidChangeForClient:
+    (PushNotificationClientId)clientID {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
+    // When Safety Check notification permissions change, refresh the Magic
+    // Stack. This ensures the Safety Check container accurately reflects the
+    // user's notification settings.
+    [self refresh];
+  }
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate
@@ -897,32 +1087,34 @@
 
 #pragma mark - Helpers
 
-- (void)configureStartSurfaceIfNeeded {
-  SceneState* scene = self.browser->GetSceneState();
-  if (!NewTabPageTabHelper::FromWebState(self.webState)
-           ->ShouldShowStartSurface()) {
-    return;
-  }
+- (void)showMagicStackParcelList {
+  _parcelListHalfSheetTableViewController =
+      [[MagicStackParcelListHalfSheetTableViewController alloc]
+          initWithParcels:[self.parcelTrackingMediator allParcelTrackingItems]];
+  _parcelListHalfSheetTableViewController.delegate = self;
 
-  web::WebState* most_recent_tab =
-      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-          ->most_recent_tab();
-  CHECK(most_recent_tab);
-  [self.contentSuggestionsMetricsRecorder recordReturnToRecentTabTileShown];
-  DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
-      ->SetIsShownOnStartSurface(true);
-  NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
-  [self.contentSuggestionsMediator
-      configureMostRecentTabItemWithWebState:most_recent_tab
-                                   timeLabel:time_label];
-  if (!_startSurfaceObserver) {
-    _startSurfaceObserver =
-        std::make_unique<StartSurfaceRecentTabObserverBridge>(
-            self.contentSuggestionsMediator);
-    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-        ->AddObserver(_startSurfaceObserver.get());
-  }
+  UINavigationController* navViewController = [[UINavigationController alloc]
+      initWithRootViewController:_parcelListHalfSheetTableViewController];
+
+  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      navViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  [_magicStackCollectionView presentViewController:navViewController
+                                          animated:YES
+                                        completion:nil];
+}
+
+- (void)showMagicStackRecentTabs {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> browserCoordinatorCommands =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorCommands showRecentTabs];
 }
 
 // Presents the parcel tracking alert modal.

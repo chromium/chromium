@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/content_settings/core/browser/content_settings_utils.h"
 
 #include <stddef.h>
@@ -123,35 +128,16 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  rules->image_rules = map->GetSettingsForOneType(ContentSettingsType::IMAGES);
   rules->mixed_content_rules =
       map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT);
-  // Auto dark web content settings is available only for Android, so ALLOW rule
-  // is added for all origins.
-  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingToValue(CONTENT_SETTING_ALLOW), std::string(),
-      map->IsOffTheRecord()));
 #else
-  // Android doesn't use image content settings, so ALLOW rule is added for
-  // all origins.
-  rules->image_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingToValue(CONTENT_SETTING_ALLOW), std::string(),
-      map->IsOffTheRecord()));
   // In Android active mixed content is hard blocked, with no option to allow
   // it.
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingToValue(CONTENT_SETTING_BLOCK), std::string(),
+      ContentSettingToValue(CONTENT_SETTING_BLOCK), ProviderType::kNone,
       map->IsOffTheRecord()));
-  rules->auto_dark_content_rules =
-      map->GetSettingsForOneType(ContentSettingsType::AUTO_DARK_WEB_CONTENT);
 #endif
-  rules->script_rules =
-      map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT);
-  rules->popup_redirect_rules =
-      map->GetSettingsForOneType(ContentSettingsType::POPUPS);
 }
 
 bool IsMorePermissive(ContentSetting a, ContentSetting b) {
@@ -163,15 +149,15 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
     if (setting == a)
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
-// Currently only SessionModel::Durable constraints need to be persistent
+// Currently only mojom::SessionModel::DURABLE constraints need to be persistent
 // as they are only bounded by time and can persist through multiple browser
 // sessions.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
-  return constraints.session_model() == SessionModel::Durable;
+  return constraints.session_model() == mojom::SessionModel::DURABLE;
 }
 
 bool CanTrackLastVisit(ContentSettingsType type) {
@@ -255,10 +241,43 @@ bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return metadata.session_model() == SessionModel::NonRestorableUserSession;
+      return metadata.decided_by_related_website_sets() ||
+             // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
+             // removed.
+             metadata.session_model() ==
+                 mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
     default:
       return false;
   }
+}
+
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
+  static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
+#if !BUILDFLAG(IS_ANDROID)
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+#endif
+      ContentSettingsType::KEYBOARD_LOCK,
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::HAND_TRACKING,
+      ContentSettingsType::SMART_CARD_DATA,
+  }};
+  return *types;
+}
+
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
+  static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
+#if !BUILDFLAG(IS_ANDROID)
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+#endif
+      ContentSettingsType::KEYBOARD_LOCK,
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::HAND_TRACKING,
+  }};
+  return *types;
 }
 
 }  // namespace content_settings

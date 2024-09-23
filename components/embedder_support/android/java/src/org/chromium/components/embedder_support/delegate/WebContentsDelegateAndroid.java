@@ -4,11 +4,16 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import android.graphics.Bitmap;
 import android.view.KeyEvent;
+
+import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -198,19 +203,82 @@ public class WebContentsDelegateAndroid {
         return displayMode;
     }
 
-    /** @return The {@link DisplayMode} value. */
+    @CalledByNative
+    public void didBackForwardTransitionAnimationChange() {}
+
+    @CalledByNative
+    private boolean maybeCopyContentAreaAsBitmap(long nativeCallback) {
+        return maybeCopyContentAreaAsBitmap(
+                (bitmap) -> {
+                    WebContentsDelegateAndroidJni.get()
+                            .maybeCopyContentAreaAsBitmapOutcome(nativeCallback, bitmap);
+                });
+    }
+
+    /**
+     * Used to fetch the color info to compose the fallback UX for the navigation transitions when
+     * no valid screenshots are available.
+     *
+     * @return The rounded rectangle's color.
+     */
+    @CalledByNative
+    public int getBackForwardTransitionFallbackUXFaviconBackgroundColor() {
+        return 0;
+    }
+
+    /**
+     * Used to fetch the color info to compose the fallback UX for the navigation transitions when
+     * no valid screenshots are available.
+     *
+     * @return The fallback UX's background color.
+     */
+    @CalledByNative
+    public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
+        return 0;
+    }
+
+    /**
+     * Capture current visible native view as a bitmap.
+     *
+     * @param callback Executed asynchronously with the captured screenshot if this returns true.
+     *     Note this callback is guaranteed to not retain a reference to this bitmap once it
+     *     returns.
+     * @return True if a native view such as an NTP is presenting.
+     */
+    public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
+        return false;
+    }
+
+    /**
+     * Synchronous version of {@link #maybeCopyContentAreaAsBitmap(long)}
+     *
+     * @return Null if there is no native view corresponding to the currently committed navigation
+     *     entry or capture fails; otherwise, a bitmap object.
+     */
+    @Nullable
+    @CalledByNative
+    public Bitmap maybeCopyContentAreaAsBitmapSync() {
+        return null;
+    }
+
+    /**
+     * @return The {@link DisplayMode} value.
+     */
     public int getDisplayMode() {
         return DisplayMode.UNDEFINED;
     }
 
     /**
-     * CloseWatcher web API support. If the currently focused frame has a
-     * CloseWatcher registered in JavaScript, the CloseWatcher should receive
-     * the next "close" operation, based on what the OS convention for
-     * closing is. This function is called when the focused frame changes or a
-     * CloseWatcher registered/unregistered to update whether the CloseWatcher
-     * should intercept.
+     * CloseWatcher web API support. If the currently focused frame has a CloseWatcher registered in
+     * JavaScript, the CloseWatcher should receive the next "close" operation, based on what the OS
+     * convention for closing is. This function is called when the focused frame changes or a
+     * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
      */
     @CalledByNative
     public void didChangeCloseSignalInterceptStatus() {}
+
+    @NativeMethods
+    public interface Natives {
+        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, Bitmap bitmap);
+    }
 }

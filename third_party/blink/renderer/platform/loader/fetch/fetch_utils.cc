@@ -4,8 +4,13 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 
+#include <string_view>
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -17,6 +22,23 @@
 namespace blink {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Must remain in sync with FetchKeepAliveRequestMetricType in
+// tools/metrics/histograms/enums.xml.
+// LINT.IfChange
+enum class FetchKeepAliveRequestMetricType {
+  kFetch = 0,
+  kBeacon = 1,
+  kPing = 2,
+  kReporting = 3,
+  kAttribution = 4,
+  kBackgroundFetchIcon = 5,
+  kMaxValue = kBackgroundFetchIcon,
+};
+// LINT.ThenChange(//content/browser/loader/keep_alive_url_loader.h)
 
 bool IsHTTPWhitespace(UChar chr) {
   return chr == ' ' || chr == '\n' || chr == '\t' || chr == '\r';
@@ -98,7 +120,8 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kFrame:
     case network::mojom::RequestDestination::kFencedframe:
     case network::mojom::RequestDestination::kWebIdentity:
-      NOTREACHED();
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
 
     case network::mojom::RequestDestination::kEmpty:
@@ -174,6 +197,137 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
   }
 
   return net::NetworkTrafficAnnotationTag::NotReached();
+}
+
+// static
+void FetchUtils::LogFetchKeepAliveRequestMetric(
+    const mojom::blink::RequestContextType& request_context_type,
+    const FetchKeepAliveRequestState& request_state,
+    bool is_context_detached) {
+  FetchKeepAliveRequestMetricType sample_type;
+  switch (request_context_type) {
+    case mojom::blink::RequestContextType::FETCH:
+      sample_type = FetchKeepAliveRequestMetricType::kFetch;
+      break;
+    case mojom::blink::RequestContextType::BEACON:
+      sample_type = FetchKeepAliveRequestMetricType::kBeacon;
+      break;
+    case mojom::blink::RequestContextType::PING:
+      sample_type = FetchKeepAliveRequestMetricType::kPing;
+      break;
+    case mojom::blink::RequestContextType::CSP_REPORT:
+      sample_type = FetchKeepAliveRequestMetricType::kReporting;
+      break;
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
+      sample_type = FetchKeepAliveRequestMetricType::kAttribution;
+      break;
+    case mojom::blink::RequestContextType::IMAGE:
+      sample_type = FetchKeepAliveRequestMetricType::kBackgroundFetchIcon;
+      break;
+    case mojom::blink::RequestContextType::UNSPECIFIED:
+    case mojom::blink::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::EMBED:
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+    case mojom::blink::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::FONT:
+    case mojom::blink::RequestContextType::FORM:
+    case mojom::blink::RequestContextType::FRAME:
+    case mojom::blink::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::IMAGE_SET:
+    case mojom::blink::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::JSON:
+    case mojom::blink::RequestContextType::LOCATION:
+    case mojom::blink::RequestContextType::MANIFEST:
+    case mojom::blink::RequestContextType::OBJECT:
+    case mojom::blink::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
+    case mojom::blink::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE:
+    case mojom::blink::RequestContextType::STYLE:
+    case mojom::blink::RequestContextType::TRACK:
+    case mojom::blink::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::XSLT:
+      NOTREACHED();
+  }
+
+  std::string_view request_state_name;
+  switch (request_state) {
+    case FetchKeepAliveRequestState::kTotal:
+      request_state_name = "Total";
+      break;
+    case FetchKeepAliveRequestState::kStarted:
+      request_state_name = "Started";
+      base::UmaHistogramBoolean(
+          "FetchKeepAlive.Requests2.Started.IsContextDetached.Renderer",
+          is_context_detached);
+      break;
+    case FetchKeepAliveRequestState::kSucceeded:
+      request_state_name = "Succeeded";
+      base::UmaHistogramBoolean(
+          "FetchKeepAlive.Requests2.Succeeded.IsContextDetached.Renderer",
+          is_context_detached);
+      break;
+    case FetchKeepAliveRequestState::kFailed:
+      request_state_name = "Failed";
+      break;
+  }
+  CHECK(!request_state_name.empty());
+
+  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests2.",
+                                              request_state_name, ".Renderer"}),
+                                sample_type);
+}
+
+void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
+    const network::ResourceRequest& resource_request) {
+  auto resource_type =
+      static_cast<mojom::blink::ResourceType>(resource_request.resource_type);
+  FetchKeepAliveRequestMetricType sample_type;
+  // See also blink::UpgradeResourceRequestForLoader().
+  switch (resource_type) {
+    case mojom::blink::ResourceType::kXhr:
+      sample_type = FetchKeepAliveRequestMetricType::kFetch;
+      break;
+    // Includes BEACON/PING/ATTRIBUTION_SRC types
+    case mojom::blink::ResourceType::kPing:
+      sample_type = FetchKeepAliveRequestMetricType::kPing;
+      break;
+    case mojom::blink::ResourceType::kCspReport:
+      sample_type = FetchKeepAliveRequestMetricType::kReporting;
+      break;
+    case mojom::blink::ResourceType::kImage:
+      sample_type = FetchKeepAliveRequestMetricType::kBackgroundFetchIcon;
+      break;
+    case mojom::blink::ResourceType::kMainFrame:
+    case mojom::blink::ResourceType::kSubFrame:
+    case mojom::blink::ResourceType::kStylesheet:
+    case mojom::blink::ResourceType::kScript:
+    case mojom::blink::ResourceType::kFontResource:
+    case mojom::blink::ResourceType::kSubResource:
+    case mojom::blink::ResourceType::kObject:
+    case mojom::blink::ResourceType::kMedia:
+    case mojom::blink::ResourceType::kWorker:
+    case mojom::blink::ResourceType::kSharedWorker:
+    case mojom::blink::ResourceType::kPrefetch:
+    case mojom::blink::ResourceType::kFavicon:
+    case mojom::blink::ResourceType::kServiceWorker:
+    case mojom::blink::ResourceType::kPluginResource:
+    case mojom::blink::ResourceType::kNavigationPreloadMainFrame:
+    case mojom::blink::ResourceType::kNavigationPreloadSubFrame:
+    case mojom::blink::ResourceType::kJson:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      "FetchKeepAlive.Requests2.SentToService.Renderer", sample_type);
 }
 
 }  // namespace blink

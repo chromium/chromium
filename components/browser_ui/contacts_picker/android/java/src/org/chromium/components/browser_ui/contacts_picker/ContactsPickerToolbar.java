@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.widget.ButtonCompat;
@@ -40,7 +39,7 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
 
     /** Shows the Back arrow navigation button in the upper left corner. */
     public void showBackArrow() {
-        setNavigationButton(NavigationButton.BACK);
+        setNavigationButton(NavigationButton.SEARCH_BACK);
     }
 
     /** Sets whether any filter chips are |selected| in the dialog. */
@@ -52,9 +51,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     // SelectableListToolbar:
 
     @Override
-    public void onNavigationBack() {
+    public void onSearchNavigationBack() {
         if (isSearching()) {
-            super.onNavigationBack();
+            super.onSearchNavigationBack();
         } else {
             mDelegate.onNavigationBackCallback();
         }
@@ -88,11 +87,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         done.setEnabled(doneEnabled);
 
         if (doneEnabled) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Secondary);
+            done.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
         } else {
-            ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Disabled);
+            done.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
             if (contactsSelected) {
                 setNavigationButton(NavigationButton.SELECTION_BACK);
             } else {

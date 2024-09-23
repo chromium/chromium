@@ -4,8 +4,6 @@
 <dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>UIApplicationShortcutWidget</key>
-	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

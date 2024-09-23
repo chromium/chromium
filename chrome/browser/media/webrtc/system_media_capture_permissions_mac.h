@@ -5,38 +5,16 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_SYSTEM_MEDIA_CAPTURE_PERMISSIONS_MAC_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_SYSTEM_MEDIA_CAPTURE_PERMISSIONS_MAC_H_
 
-#include "base/functional/callback_forward.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 
 namespace system_media_permissions {
 
-class MediaAuthorizationWrapper;
-
-// System permission state. These are also used in stats - do not remove or
-// re-arrange the values.
-enum class SystemPermission {
-  kNotDetermined = 0,
-  kRestricted = 1,
-  kDenied = 2,
-  kAllowed = 3,
-  kMaxValue = kAllowed
-};
-
-// Returns the system permission to capture audio or video.
-SystemPermission CheckSystemAudioCapturePermission();
-SystemPermission CheckSystemVideoCapturePermission();
-
 // Returns the system permission to capture the screen.
-SystemPermission CheckSystemScreenCapturePermission();
+system_permission_settings::SystemPermission
+CheckSystemScreenCapturePermission();
 
-// Requests the system permission to capture audio or video. This call
-// immediately returns. When requesting permission, the OS will show a user
-// dialog and respond asynchronously. At the response, |callback| is posted as a
-// reply on the requesting thread.
-void RequestSystemAudioCapturePermission(base::OnceClosure callback);
-void RequestSystemVideoCapturePermission(base::OnceClosure callback);
-
-// Sets the wrapper object for OS calls. For test mocking purposes.
-void SetMediaAuthorizationWrapperForTesting(MediaAuthorizationWrapper* wrapper);
+// Returns whether a system-level permission is needed to capture the screen.
+bool ScreenCaptureNeedsSystemLevelPermissions();
 
 }  // namespace system_media_permissions
 

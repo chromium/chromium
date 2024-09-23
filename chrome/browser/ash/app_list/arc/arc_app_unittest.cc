@@ -426,7 +426,7 @@ int GetAppListIconDimensionForScaleFactor(
                  .default_grid_icon_dimension() *
              2;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -1407,7 +1407,7 @@ class ArcPlayStoreManagedUserAppTest : public ArcPlayStoreAppTest {
       case ArcState::ARC_WITHOUT_PLAY_STORE:
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -1741,71 +1741,6 @@ TEST_P(ArcAppModelBuilderTest, RestartPreserveApps) {
   arc_test()->StopArcInstance();
   CreateBuilder();
   ValidateAppReadyState(fake_apps(), false);
-}
-
-TEST_P(ArcAppModelBuilderTest, IsUnknownBasic) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
-  ASSERT_NE(nullptr, prefs);
-  EXPECT_TRUE(prefs->IsUnknownPackage("com.package.notreallyapackage"));
-}
-
-TEST_P(ArcDefaultAppTest, IsUnknownDefaultApps) {
-  // Note we run as a default test here so that we can use the fake default apps
-  // list.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
-  ASSERT_NE(nullptr, prefs);
-  for (const auto& app : fake_default_apps())
-    EXPECT_FALSE(prefs->IsUnknownPackage(app->package_name));
-}
-
-TEST_P(ArcAppModelBuilderTest, IsUnknownSyncTest) {
-  app_instance()->SendRefreshPackageList(
-      ArcAppTest::ClonePackages(fake_packages()));
-
-  const std::string sync_package_name = "com.google.fakesyncpack";
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
-  ASSERT_NE(nullptr, prefs);
-
-  // Check that this is indeed unknown before adding to sync.
-  ASSERT_TRUE(prefs->IsUnknownPackage(sync_package_name));
-
-  // Add to sync, then check unknown.
-  auto data_list = syncer::SyncDataList();
-  sync_pb::EntitySpecifics specifics;
-  specifics.mutable_arc_package()->set_package_name(sync_package_name);
-  data_list.push_back(syncer::SyncData::CreateRemoteData(
-      specifics, syncer::ClientTagHash::FromHashed("unused")));
-  auto* sync_service = arc::ArcPackageSyncableServiceFactory::GetInstance()
-                           ->GetForBrowserContext(profile_.get());
-  ASSERT_NE(nullptr, sync_service);
-  sync_service->MergeDataAndStartSyncing(
-      syncer::ARC_PACKAGE, data_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>());
-
-  EXPECT_FALSE(prefs->IsUnknownPackage(sync_package_name));
-}
-
-TEST_P(ArcAppModelBuilderTest, IsUnknownInstalling) {
-  const std::string package_name = "com.fakepackage.name";
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
-  ASSERT_NE(nullptr, prefs);
-  EXPECT_TRUE(prefs->IsUnknownPackage(package_name));
-  app_instance()->SendInstallationStarted(package_name);
-  EXPECT_FALSE(prefs->IsUnknownPackage(package_name));
-  AddPackage(CreatePackage(package_name));
-  app_instance()->SendInstallationFinished(package_name, true /* success */);
-  EXPECT_FALSE(prefs->IsUnknownPackage(package_name));
-}
-
-TEST_P(ArcAppModelBuilderTest, IsUnknownAfterUninstall) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
-  ASSERT_NE(nullptr, prefs);
-  ASSERT_GE(fake_packages().size(), 1U);
-  app_instance()->SendRefreshPackageList(
-      ArcAppTest::ClonePackages(fake_packages()));
-  EXPECT_FALSE(prefs->IsUnknownPackage(fake_packages()[0]->package_name));
-  app_instance()->UninstallPackage(fake_packages()[0]->package_name);
-  EXPECT_TRUE(prefs->IsUnknownPackage(fake_packages()[0]->package_name));
 }
 
 TEST_P(ArcAppModelBuilderTest, MetricsIncremented) {
@@ -2496,9 +2431,7 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
   bool pai_started = false;
 
   arc::ArcPaiStarter starter1(profile_.get());
-  arc::ArcPaiStarter starter2(profile_.get());
   EXPECT_FALSE(starter1.started());
-  EXPECT_FALSE(starter2.started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 0);
 
   starter1.AddOnStartCallback(
@@ -2517,8 +2450,6 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
   ASSERT_TRUE(session_manager->pai_starter());
   EXPECT_FALSE(session_manager->pai_starter()->started());
 
-  starter2.AcquireLock();
-
   SendPlayStoreApp();
 
   EXPECT_TRUE(starter1.started());
@@ -2530,17 +2461,12 @@ TEST_P(ArcPlayStoreAppTest, PaiStarter) {
       base::BindOnce(&OnPaiStartedCallback, &pai_started));
   EXPECT_TRUE(pai_started);
 
-  EXPECT_FALSE(starter2.started());
   EXPECT_TRUE(session_manager->pai_starter()->started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 2);
 
-  starter2.ReleaseLock();
+  arc::ArcPaiStarter starter2(profile_.get());
   EXPECT_TRUE(starter2.started());
   EXPECT_EQ(app_instance()->start_pai_request_count(), 3);
-
-  arc::ArcPaiStarter starter3(profile_.get());
-  EXPECT_TRUE(starter3.started());
-  EXPECT_EQ(app_instance()->start_pai_request_count(), 4);
 }
 
 // Validates that PAI is started on the next session start if it was not started
@@ -2556,10 +2482,7 @@ TEST_P(ArcPlayStoreAppTest, StartPaiOnNextRun) {
   ASSERT_TRUE(pai_starter);
   EXPECT_FALSE(pai_starter->started());
 
-  // Finish session with lock. This would prevent running PAI.
-  pai_starter->AcquireLock();
-  SendPlayStoreApp();
-  EXPECT_FALSE(pai_starter->started());
+  // Session ended without PAI starts.
   session_manager->Shutdown();
 
   // Simulate ARC restart.
@@ -2570,7 +2493,6 @@ TEST_P(ArcPlayStoreAppTest, StartPaiOnNextRun) {
   session_manager = arc::ArcSessionManager::Get();
   pai_starter = session_manager->pai_starter();
   ASSERT_TRUE(pai_starter);
-  EXPECT_FALSE(pai_starter->locked());
 
   SendPlayStoreApp();
   EXPECT_TRUE(pai_starter->started());
@@ -3116,7 +3038,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidation) {
   EXPECT_TRUE(app_instance()->icon_requests().empty());
 }
 
-// TODO(crbug.com/1345154): Flaky.
+// TODO(crbug.com/40853365): Flaky.
 TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnFrameworkUpdate) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
@@ -3169,7 +3091,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnFrameworkUpdate) {
 
 // This verifies that app icons are invalidated in case icon version was
 // changed which means ARC sends icons using updated processing.
-// TODO(crbug.com/1364812): Flaky.
+// TODO(crbug.com/40865778): Flaky.
 TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnIconVersionUpdate) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
@@ -3639,7 +3561,7 @@ TEST_P(ArcDefaultAppTest, DisableDefaultApps) {
   EXPECT_FALSE(prefs->GetApp(app_id));
 }
 
-// TODO(crbug.com/1112319): Flaky.
+// TODO(crbug.com/40709649): Flaky.
 TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);

@@ -191,7 +191,7 @@ circle{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }
@@ -386,7 +386,7 @@ circle{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGBlockFlow",
+    "layoutObjectName": "LayoutBlockFlow",
     "showAccessibilityInfo": true
   }
 }

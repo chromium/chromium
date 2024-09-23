@@ -42,7 +42,9 @@ class MediaStreamAudioDestinationHandler final : public AudioHandler {
   void UpdatePullStatusIfNeeded() override;
 
   uint32_t MaxChannelCount() const;
-  void SendLogMessage(const String& message);
+
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name, const String& message);
 
   // MediaStreamSource is held alive by MediaStreamAudioDestinationNode.
   // Accessed by main thread and during audio thread processing.
@@ -54,7 +56,7 @@ class MediaStreamAudioDestinationHandler final : public AudioHandler {
 
   // This internal mix bus is for up/down mixing the input to the actual
   // number of channels in the destination.
-  scoped_refptr<AudioBus> mix_bus_ GUARDED_BY(process_lock_);
+  scoped_refptr<AudioBus> mix_bus_;
 
   // When setting to true, handler will be pulled automatically by
   // BaseAudioContext before the end of each render quantum.

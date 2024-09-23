@@ -6,13 +6,13 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/schema.h"
@@ -67,7 +67,7 @@ class PolicyErrorMap::PendingError {
   }
 
   std::u16string GetMessageContent() const {
-    // TODO(crbug.com/1313477): remove this together with
+    // TODO(crbug.com/40832324): remove this together with
     // AddError(policy, message, error_path) and add a DCHECK
     if (message_id_ >= 0) {
       std::vector<std::u16string> utf_16_replacements;
@@ -161,7 +161,7 @@ bool PolicyErrorMap::HasFatalError(const std::string& policy) {
 std::u16string PolicyErrorMap::GetErrorMessages(const std::string& policy) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
-  std::vector<base::StringPiece16> list;
+  std::vector<std::u16string_view> list;
   for (auto it = range.first; it != range.second; ++it)
     list.push_back(it->second.message);
   return base::JoinString(list, u"\n");

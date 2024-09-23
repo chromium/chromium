@@ -5,7 +5,7 @@
 #ifndef TOOLS_MEMORY_PARTITION_ALLOCATOR_INSPECT_UTILS_H_
 #define TOOLS_MEMORY_PARTITION_ALLOCATOR_INSPECT_UTILS_H_
 
-// This file includes utilities used in partition alloc tools, also
+// This file includes utilities used in PartitionAlloc tools, also
 // found in this directory.
 
 #include <fcntl.h>

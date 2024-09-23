@@ -25,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,6 +43,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
@@ -74,7 +76,6 @@ class ScopedAcquireExternalContext {
     if (is_angle_) {
       // When using ANGLE, need to make sure ANGLE's internals are in sync
       // with the external context.
-      base::TimeTicks start_time = base::TimeTicks::Now();
 
       // If the context has changed, make sure it gets current now.
       if (!state_->context()->IsCurrent(surface_)) {
@@ -83,11 +84,6 @@ class ScopedAcquireExternalContext {
 
       eglAcquireExternalContextANGLE(state_->display()->GetDisplay(),
                                      surface_->GetHandle());
-
-      auto delta = base::TimeTicks::Now() - start_time;
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.AcquireExternalContextANGLEMicroseconds", delta,
-          base::Microseconds(1), base::Seconds(1), 100);
     } else {
       // When not using ANGLE, fake context and surface are used, so the
       // MakeCurrent calls are cheap.
@@ -96,14 +92,7 @@ class ScopedAcquireExternalContext {
   }
   ~ScopedAcquireExternalContext() {
     if (is_angle_) {
-      base::TimeTicks start_time = base::TimeTicks::Now();
-
       eglReleaseExternalContextANGLE(state_->display()->GetDisplay());
-
-      auto delta = base::TimeTicks::Now() - start_time;
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Android.WebView.Gfx.ReleaseExternalContextANGLEMicroseconds", delta,
-          base::Microseconds(1), base::Seconds(1), 100);
     } else {
       state_->ReleaseCurrent(surface_);
     }
@@ -182,7 +171,9 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                         const gfx::ColorSpace& color_space,
                         bool overlays_enabled_by_hwui,
                         ChildFrame* child_frame);
-  void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
+  void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details,
+                     std::vector<pid_t>* rendering_thread_ids,
+                     base::TimeDelta* preferred_frame_interval);
   void RemoveOverlaysOnViz();
   void MarkAllowContextLossOnViz();
 
@@ -227,6 +218,10 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   // threads. Can be null, if overlays are disabled.
   raw_ptr<OverlayProcessorWebView> overlay_processor_webview_ = nullptr;
 
+  base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
+
+  base::TimeDelta preferred_frame_interval_;
+
   THREAD_CHECKER(viz_thread_checker_);
 };
 
@@ -236,8 +231,8 @@ HardwareRenderer::OnViz::OnViz(
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
       viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          ::features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          ::features::UseWebViewNewInvalidateHeuristic()) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -252,11 +247,40 @@ HardwareRenderer::OnViz::OnViz(
       output_surface_provider->debug_settings(), frame_sink_id_,
       std::move(display_controller), std::move(output_surface),
       GetFrameSinkManager(), without_gpu_.get());
-  display_->Initialize(this, GetFrameSinkManager()->surface_manager(), true);
+  display_->Initialize(this, GetFrameSinkManager()->surface_manager());
   overlay_processor_webview_ = display_->overlay_processor();
 
   display_->SetVisible(true);
   display_->DisableGPUAccessByDefault();
+
+  if (viz::FrameIntervalDecider* decider = display_->frame_interval_decider()) {
+    viz::FrameIntervalDecider::Settings settings;
+    std::vector<std::unique_ptr<viz::FrameIntervalMatcher>> matchers;
+    matchers.push_back(std::make_unique<viz::InputBoostMatcher>());
+    matchers.push_back(std::make_unique<viz::OnlyVideoMatcher>());
+    matchers.push_back(std::make_unique<viz::OnlyAnimatingImageMatcher>());
+
+    // Raw `self` pointer is safe because this owns viz::Display which owns
+    // viz::FrameIntervalDecider. So this pointer is guaranteed to be valid for
+    // the lifetime of viz::FrameIntervalDecider.
+    settings.result_callback = base::BindRepeating(
+        [](HardwareRenderer::OnViz* self,
+           viz::FrameIntervalDecider::Result result,
+           viz::FrameIntervalMatcherType matcher_type) {
+          self->preferred_frame_interval_ = absl::visit(
+              base::Overloaded(
+                  [](viz::FrameIntervalDecider::FrameIntervalClass
+                         frame_interval_class) {
+                    // Zero currently is interpreted by WebView as no opinion,
+                    // which allows system to use its default heuristics.
+                    return base::Milliseconds(0);
+                  },
+                  [](base::TimeDelta interval) { return interval; }),
+              result);
+        },
+        this);
+    decider->UpdateSettings(std::move(settings), std::move(matchers));
+  }
 }
 
 HardwareRenderer::OnViz::~OnViz() {
@@ -290,6 +314,10 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   if (child_frame->frame) {
     DCHECK(!viz_frame_submission_);
     DCHECK(!child_frame->rendered);
+    // Browser thread is trusted, and can be saved straight away.
+    // Renderer threads are not trusted, and need to go through verification
+    // in SubmitChildCompositorFrame before being reported to the ADPF session.
+    browser_io_thread_id_ = child_frame->browser_io_thread_id;
     without_gpu_->SubmitChildCompositorFrame(child_frame);
   }
 
@@ -457,8 +485,25 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
 }
 
 void HardwareRenderer::OnViz::PostDrawOnViz(
-    viz::FrameTimingDetailsMap* timing_details) {
+    viz::FrameTimingDetailsMap* timing_details,
+    std::vector<pid_t>* rendering_thread_ids,
+    base::TimeDelta* preferred_frame_interval) {
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
+
+  auto renderer_thread_ids = without_gpu_->GetChildFrameRendererThreadIds();
+  *rendering_thread_ids = std::vector<pid_t>(renderer_thread_ids.begin(),
+                                             renderer_thread_ids.end());
+
+  auto gpu_thread_ids =
+      VizCompositorThreadRunnerWebView::GetInstance()->GetThreadIds();
+  std::copy(gpu_thread_ids.begin(), gpu_thread_ids.end(),
+            std::back_inserter(*rendering_thread_ids));
+
+  if (browser_io_thread_id_ != base::kInvalidThreadId) {
+    rendering_thread_ids->push_back(browser_io_thread_id_);
+  }
+
+  *preferred_frame_interval = preferred_frame_interval_;
 }
 
 void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
@@ -579,7 +624,9 @@ HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
                                    AwVulkanContextProvider* context_provider)
     : render_thread_manager_(state),
       last_egl_context_(eglGetCurrentContext()),
-      output_surface_provider_(context_provider) {
+      output_surface_provider_(context_provider),
+      report_rendering_threads_(
+          base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
@@ -610,7 +657,7 @@ HardwareRenderer::~HardwareRenderer() {
   if (child_frame_) {
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         ParentCompositorDrawConstraints(), child_frame_->frame_sink_id,
-        viz::FrameTimingDetailsMap(), 0u);
+        viz::FrameTimingDetailsMap(), 0u, preferred_frame_interval_);
   }
   for (auto& child_frame : child_frame_queue_) {
     child_frame->WaitOnFutureIfNeeded();
@@ -629,8 +676,10 @@ bool HardwareRenderer::IsUsingANGLEOverGL() const {
                                  ->IsANGLEExternalContextAndSurfaceSupported();
 }
 
-void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
-                                   const OverlaysParams& overlays_params) {
+void HardwareRenderer::DrawAndSwap(
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params,
+    ReportRenderingThreadsCallback report_rendering_threads_callback) {
   TRACE_EVENT1("android_webview", "HardwareRenderer::Draw", "vulkan",
                IsUsingVulkan());
 
@@ -676,8 +725,8 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
       // TODO(vasilyt): Move frame timing details delivery over to
       // RootFrameSink.
       render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
-          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(),
-          0);
+          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(), 0,
+          preferred_frame_interval_);
     }
     return;
   }
@@ -731,16 +780,28 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   // Implement proper damage tracking, then deliver FrameTimingDetails
   // through the common begin frame path.
+  std::vector<pid_t> rendering_thread_ids;
+  base::TimeDelta preferred_frame_interval;
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRenderer::OnViz::PostDrawOnViz,
-                     base::Unretained(on_viz_.get()), &timing_details));
+                     base::Unretained(on_viz_.get()), &timing_details,
+                     &rendering_thread_ids, &preferred_frame_interval));
+  if (report_rendering_threads_ && report_rendering_threads_callback) {
+    std::move(report_rendering_threads_callback)
+        .Run(rendering_thread_ids.data(), rendering_thread_ids.size());
+  }
 
-  if (need_to_update_draw_constraints || !timing_details.empty()) {
+  bool frame_interval_changed =
+      preferred_frame_interval_ != preferred_frame_interval;
+  preferred_frame_interval_ = preferred_frame_interval;
+
+  if (need_to_update_draw_constraints || !timing_details.empty() ||
+      frame_interval_changed) {
     // |frame_token| will be reported through the FrameSinkManager so we pass 0
     // here.
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         draw_constraints, child_frame_->frame_sink_id,
-        std::move(timing_details), 0);
+        std::move(timing_details), 0, preferred_frame_interval_);
   }
 
   // If using ANGLE we have not reset Skia's state at the beginning of the draw,
@@ -832,8 +893,10 @@ void HardwareRenderer::ReportDrawMetric(
   did_submit_compositor_frame_ = false;
 }
 
-void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
-                            const OverlaysParams& overlays_params) {
+void HardwareRenderer::Draw(
+    const HardwareRendererDrawParams& params,
+    const OverlaysParams& overlays_params,
+    ReportRenderingThreadsCallback report_rendering_threads_callback) {
   TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
 
   for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_)) {
@@ -869,7 +932,8 @@ void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
     }
   }
 
-  DrawAndSwap(params, overlays_params);
+  DrawAndSwap(params, overlays_params,
+              std::move(report_rendering_threads_callback));
 }
 
 void HardwareRenderer::ReturnChildFrame(

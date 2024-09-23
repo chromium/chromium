@@ -4,8 +4,8 @@
 
 #include "partition_alloc/compressed_pointer.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,14 +47,14 @@ std::unique_ptr<T[], PADeleter> make_pa_array_unique(PartitionAllocator& alloc,
 }
 
 // Test that pointer types are trivial.
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_assignable_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_assignable_v<CompressedPointer<Base>>);
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<UncompressedPointer<Base>>);
 static_assert(
@@ -72,16 +72,16 @@ struct CompressedTypeTag {};
 template <typename TagType>
 class CompressedPointerTest : public ::testing::Test {
  public:
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   template <typename T>
   using PointerType =
       std::conditional_t<std::is_same_v<TagType, CompressedTypeTag>,
                          CompressedPointer<T>,
                          UncompressedPointer<T>>;
-#else   // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#else   // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   template <typename T>
   using PointerType = UncompressedPointer<T>;
-#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
   CompressedPointerTest() : allocator_(PartitionOptions{}) {}
 
@@ -89,7 +89,7 @@ class CompressedPointerTest : public ::testing::Test {
   PartitionAllocator allocator_;
 };
 
-#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 using ObjectTypes = ::testing::Types<UncompressedTypeTag, CompressedTypeTag>;
 #else
 using ObjectTypes = ::testing::Types<UncompressedTypeTag>;

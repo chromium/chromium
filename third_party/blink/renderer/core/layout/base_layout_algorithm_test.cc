@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/forms/fieldset_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -75,7 +75,7 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
 }
 
 const PhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
-    const LayoutNGBlockFlow* block_flow) {
+    const LayoutBlockFlow* block_flow) {
   return block_flow->GetPhysicalFragment(0);
 }
 

@@ -7,11 +7,8 @@
 
 #include <memory>
 
-namespace network {
-namespace mojom {
-class NetworkContext;
-}  // namespace mojom
-}  // namespace network
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ui_devtools {
 class UiDevToolsServer;
@@ -25,7 +22,8 @@ namespace shell {
 // --enable-ui-devtools is passed.
 class CastUIDevTools {
  public:
-  explicit CastUIDevTools(network::mojom::NetworkContext* network_context);
+  explicit CastUIDevTools(
+      scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner);
 
   CastUIDevTools(const CastUIDevTools&) = delete;
   CastUIDevTools& operator=(const CastUIDevTools&) = delete;
@@ -34,7 +32,7 @@ class CastUIDevTools {
 
  private:
   std::unique_ptr<ui_devtools::UiDevToolsServer> CreateServer(
-      network::mojom::NetworkContext* network_context) const;
+      scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner) const;
 
   std::unique_ptr<ui_devtools::UiDevToolsServer> devtools_server_;
 };

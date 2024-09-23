@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/muxers/webm_muxer.h"
 
 #include <algorithm>
@@ -120,7 +125,8 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
     case VideoCodec::kH264:
       return kH264CodecId;
     default:
-      NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported codec " << GetCodecName(video_codec);
       return "";
   }
 }
@@ -262,7 +268,7 @@ void WebmMuxer::AddVideoTrack(
   video_track_index_ =
       segment_.AddVideoTrack(frame_size.width(), frame_size.height(), 0);
   if (video_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED() << "Error adding video track";
+    NOTREACHED_IN_MIGRATION() << "Error adding video track";
     return;
   }
 
@@ -307,7 +313,7 @@ void WebmMuxer::AddAudioTrack(const AudioParameters& params) {
   audio_track_index_ =
       segment_.AddAudioTrack(params.sample_rate(), params.channels(), 0);
   if (audio_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED() << "Error adding audio track";
+    NOTREACHED_IN_MIGRATION() << "Error adding audio track";
     return;
   }
 
@@ -373,6 +379,8 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
         << GetCodecName(video_params->codec);
 
     if (!video_track_index_) {
+      CHECK(frame.is_keyframe);
+
       // |track_index_|, cannot be zero (!), initialize WebmMuxer in that case.
       // http://www.matroska.org/technical/specs/index.html#Tracks
       video_codec_ = video_params->codec;
@@ -438,7 +446,7 @@ void WebmMuxer::MaybeForceNewCluster() {
     return;
   }
 
-  // TODO(crbug.com/1381323): consider if cluster output should be based on
+  // TODO(crbug.com/40876732): consider if cluster output should be based on
   // media timestamps
   if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
       max_data_output_interval_) {

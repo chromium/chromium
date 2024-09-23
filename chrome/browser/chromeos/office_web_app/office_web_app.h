@@ -15,6 +15,9 @@ enum class InstallResultCode;
 
 namespace chromeos {
 
+// The URL to install the Microsoft365 app.
+extern const char kMicrosoft365WebAppUrl[];
+
 void InstallMicrosoft365(
     Profile* profile,
     base::OnceCallback<void(webapps::InstallResultCode)> callback);

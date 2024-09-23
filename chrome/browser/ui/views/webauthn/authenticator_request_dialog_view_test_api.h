@@ -7,7 +7,7 @@
 
 #include <memory>
 
-class AuthenticatorRequestDialogModel;
+struct AuthenticatorRequestDialogModel;
 class AuthenticatorRequestDialogView;
 class AuthenticatorRequestSheetView;
 

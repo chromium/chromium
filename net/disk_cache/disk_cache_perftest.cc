@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <limits>
 #include <memory>
 #include <string>
@@ -509,7 +514,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851083): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/41393579): Fix this test on Fuchsia and re-enable.
 #define MAYBE_CacheBackendPerformance DISABLED_CacheBackendPerformance
 #else
 #define MAYBE_CacheBackendPerformance CacheBackendPerformance
@@ -519,7 +524,7 @@ TEST_F(DiskCachePerfTest, MAYBE_CacheBackendPerformance) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851083): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/41393579): Fix this test on Fuchsia and re-enable.
 #define MAYBE_SimpleCacheBackendPerformance \
   DISABLED_SimpleCacheBackendPerformance
 #else
@@ -658,7 +663,7 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1318120): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/40222788): Fix this test on Fuchsia and re-enable.
 #define MAYBE_EvictionPerformance DISABLED_EvictionPerformance
 #else
 #define MAYBE_EvictionPerformance EvictionPerformance

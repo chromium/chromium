@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/341324165): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/sandbox_ipc_linux.h"
 
 #include <fcntl.h>
@@ -88,25 +93,26 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   // kMaxSandboxIPCMessagePayloadSize set to 64 should be plenty.
   // 128 bytes padding are necessary so recvmsg() does not return MSG_TRUNC
   // error for a maximum length message.
-  char buf[kMaxSandboxIPCMessagePayloadSize + 128];
+  uint8_t buf[kMaxSandboxIPCMessagePayloadSize + 128];
 
   const ssize_t len =
       base::UnixDomainSocket::RecvMsg(fd, buf, sizeof(buf), &fds);
   if (len == -1) {
     // TODO: should send an error reply, or the sender might block forever.
     if (errno == EMSGSIZE) {
-      NOTREACHED() << "Sandbox host message is larger than "
-                      "kMaxSandboxIPCMessagePayloadSize";
+      NOTREACHED_IN_MIGRATION() << "Sandbox host message is larger than "
+                                   "kMaxSandboxIPCMessagePayloadSize";
     } else {
       PLOG(ERROR) << "Recvmsg failed";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return;
   }
   if (fds.empty())
     return;
 
-  base::Pickle pickle(buf, len);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(
+      base::span(buf, base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -123,7 +129,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
     HandleMakeSharedMemorySegment(fd, iter, fds);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SandboxIPCHandler::HandleMakeSharedMemorySegment(
@@ -133,7 +139,7 @@ void SandboxIPCHandler::HandleMakeSharedMemorySegment(
   uint32_t size;
   if (!iter.ReadUInt32(&size))
     return;
-  // TODO(crbug.com/982879): executable shared memory should be removed when
+  // TODO(crbug.com/41470149): executable shared memory should be removed when
   // NaCl is unshipped.
   bool executable;
   if (!iter.ReadBool(&executable))

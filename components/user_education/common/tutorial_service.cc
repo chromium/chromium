@@ -46,7 +46,8 @@ TutorialService::~TutorialService() = default;
 void TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context,
                                     CompletedCallback completed_callback,
-                                    AbortedCallback aborted_callback) {
+                                    AbortedCallback aborted_callback,
+                                    RestartedCallback restarted_callback) {
   CancelTutorialIfRunning();
 
   // Get the description from the tutorial registry.
@@ -61,6 +62,7 @@ void TutorialService::StartTutorial(TutorialIdentifier id,
   // Set the external callbacks.
   completed_callback_ = std::move(completed_callback);
   aborted_callback_ = std::move(aborted_callback);
+  restarted_callback_ = std::move(restarted_callback);
 
   // Save the params for creating the tutorial to be used when restarting.
   running_tutorial_creation_params_ =
@@ -156,6 +158,8 @@ bool TutorialService::RestartTutorial() {
   running_tutorial_was_restarted_ = true;
   running_tutorial_->Start();
 
+  restarted_callback_.Run();
+
   return true;
 }
 
@@ -196,7 +200,8 @@ void TutorialService::AbortTutorial(std::optional<int> abort_step) {
   }
 }
 
-void TutorialService::OnNonFinalBubbleClosed(HelpBubble* bubble) {
+void TutorialService::OnNonFinalBubbleClosed(HelpBubble* bubble,
+                                             HelpBubble::CloseReason) {
   if (bubble != currently_displayed_bubble_.get()) {
     return;
   }
@@ -233,7 +238,7 @@ void TutorialService::SetCurrentBubble(std::unique_ptr<HelpBubble> bubble,
     is_final_bubble_ = true;
     bubble_closed_subscription_ =
         currently_displayed_bubble_->AddOnCloseCallback(base::BindOnce(
-            [](TutorialService* service, user_education::HelpBubble*) {
+            [](TutorialService* service, HelpBubble*, HelpBubble::CloseReason) {
               service->CompleteTutorial();
             },
             base::Unretained(this)));

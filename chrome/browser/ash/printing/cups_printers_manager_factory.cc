@@ -54,7 +54,7 @@ CupsPrintersManagerFactory::BuildServiceInstanceForBrowserContext(
   // This condition still needs to be explicitly stated here despite having
   // ProfileKeyedService logic implemented because `IsGuestSession()` and
   // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
-  // TODO(crbug.com/1348572): remove this condition when `IsGuestSession() is
+  // TODO(crbug.com/40233408): remove this condition when `IsGuestSession() is
   // fixed.
   //
   // In Guest Mode, only use the OffTheRecord profile.

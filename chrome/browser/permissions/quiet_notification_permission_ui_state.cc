@@ -14,7 +14,7 @@
 // static
 void QuietNotificationPermissionUiState::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(crbug.com/1001857): Consider making this syncable.
+  // TODO(crbug.com/40097905): Consider making this syncable.
   registry->RegisterBooleanPref(prefs::kEnableQuietNotificationPermissionUi,
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(prefs::kEnableQuietGeolocationPermissionUi,

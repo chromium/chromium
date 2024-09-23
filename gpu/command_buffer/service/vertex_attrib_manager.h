@@ -32,7 +32,7 @@ class VertexArrayManager;
 // glDrawXXX time.
 class GPU_GLES2_EXPORT VertexAttrib {
  public:
-  typedef std::list<VertexAttrib*> VertexAttribList;
+  typedef std::list<raw_ptr<VertexAttrib, CtnExperimental>> VertexAttribList;
 
   VertexAttrib();
   VertexAttrib(const VertexAttrib& other);
@@ -192,7 +192,7 @@ class GPU_GLES2_EXPORT VertexAttrib {
 class GPU_GLES2_EXPORT VertexAttribManager
     : public base::RefCounted<VertexAttribManager> {
  public:
-  typedef std::list<VertexAttrib*> VertexAttribList;
+  typedef std::list<raw_ptr<VertexAttrib, CtnExperimental>> VertexAttribList;
 
   explicit VertexAttribManager(bool do_buffer_refcounting);
 

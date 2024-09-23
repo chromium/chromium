@@ -8,11 +8,100 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    std::u16string_view username,
+    std::u16string_view password,
+    std::string_view signon_realm,
+    std::u16string_view display_signon_realm,
+    bool is_cross_domain)
+    : username(username),
+      password(password),
+      signon_realm(signon_realm),
+      display_signon_realm(display_signon_realm),
+      is_cross_domain(is_cross_domain) {}
+
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    const PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails&
+Suggestion::PasswordSuggestionDetails::operator=(
+    const PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails&
+Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
+    default;
+Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload() = default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(
+    std::optional<std::u16string> address)
+    : address(std::move(address)) {}
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(const PlusAddressPayload&) =
+    default;
+
+Suggestion::PlusAddressPayload::PlusAddressPayload(PlusAddressPayload&&) =
+    default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    const PlusAddressPayload&) = default;
+
+Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
+    PlusAddressPayload&&) = default;
+
+Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload() =
+    default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
+    const FieldTypeSet& field_types_to_fill,
+    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
+    : values_to_fill(std::move(values_to_fill)),
+      field_types_to_fill(std::move(field_types_to_fill)),
+      ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    const PredictionImprovementsPayload&) = default;
+
+Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+    PredictionImprovementsPayload&&) = default;
+
+Suggestion::PredictionImprovementsPayload&
+Suggestion::PredictionImprovementsPayload::operator=(
+    const PredictionImprovementsPayload&) = default;
+
+Suggestion::PredictionImprovementsPayload&
+Suggestion::PredictionImprovementsPayload::operator=(
+    PredictionImprovementsPayload&&) = default;
+
+Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
+    default;
+
+Suggestion::PaymentsPayload::PaymentsPayload() = default;
+
+Suggestion::PaymentsPayload::PaymentsPayload(
+    bool should_display_terms_available)
+    : should_display_terms_available(should_display_terms_available) {}
+
+Suggestion::PaymentsPayload::PaymentsPayload(const PaymentsPayload&) = default;
+
+Suggestion::PaymentsPayload::PaymentsPayload(PaymentsPayload&&) = default;
+
+Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
+    const PaymentsPayload&) = default;
+
+Suggestion::PaymentsPayload& Suggestion::PaymentsPayload::operator=(
+    PaymentsPayload&&) = default;
+
+Suggestion::PaymentsPayload::~PaymentsPayload() = default;
 
 Suggestion::Text::Text() = default;
 
@@ -34,18 +123,16 @@ Suggestion::Suggestion() = default;
 Suggestion::Suggestion(std::u16string main_text)
     : main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
-Suggestion::Suggestion(PopupItemId popup_item_id)
-    : popup_item_id(popup_item_id) {}
+Suggestion::Suggestion(SuggestionType type) : type(type) {}
 
-Suggestion::Suggestion(std::u16string main_text, PopupItemId popup_item_id)
-    : popup_item_id(popup_item_id),
-      main_text(std::move(main_text), Text::IsPrimary(true)) {}
+Suggestion::Suggestion(std::u16string main_text, SuggestionType type)
+    : type(type), main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
 Suggestion::Suggestion(std::string_view main_text,
                        std::string_view label,
                        Icon icon,
-                       PopupItemId popup_item_id)
-    : popup_item_id(popup_item_id),
+                       SuggestionType type)
+    : type(type),
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
       icon(icon) {
   if (!label.empty())
@@ -55,8 +142,8 @@ Suggestion::Suggestion(std::string_view main_text,
 Suggestion::Suggestion(std::string_view main_text,
                        std::vector<std::vector<Text>> labels,
                        Icon icon,
-                       PopupItemId popup_item_id)
-    : popup_item_id(popup_item_id),
+                       SuggestionType type)
+    : type(type),
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
       labels(std::move(labels)),
       icon(icon) {}
@@ -65,8 +152,8 @@ Suggestion::Suggestion(std::string_view main_text,
                        std::string_view minor_text,
                        std::string_view label,
                        Icon icon,
-                       PopupItemId popup_item_id)
-    : popup_item_id(popup_item_id),
+                       SuggestionType type)
+    : type(type),
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
       minor_text(base::UTF8ToUTF16(minor_text)),
       icon(icon) {
@@ -98,12 +185,18 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kDevice";
     case Suggestion::Icon::kEdit:
       return "kEdit";
+    case Suggestion::Icon::kEmail:
+      return "kEmail";
     case Suggestion::Icon::kEmpty:
       return "kEmpty";
+    case Suggestion::Icon::kError:
+      return "kError";
     case Suggestion::Icon::kGlobe:
       return "kGlobe";
     case Suggestion::Icon::kGoogle:
       return "kGoogle";
+    case Suggestion::Icon::kGoogleMonochrome:
+      return "kGoogleMonochrome";
     case Suggestion::Icon::kGooglePasswordManager:
       return "kGooglePasswordManager";
     case Suggestion::Icon::kGooglePay:
@@ -152,26 +245,30 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kCardTroy";
     case Suggestion::Icon::kCardUnionPay:
       return "kCardUnionPay";
+    case Suggestion::Icon::kCardVerve:
+      return "kCardVerve";
     case Suggestion::Icon::kCardVisa:
       return "kCardVisa";
+    case Suggestion::Icon::kIban:
+      return "kIban";
     case Suggestion::Icon::kPlusAddress:
       return "kPlusAddress";
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {
   *os << std::endl
-      << "Suggestion (popup_item_id:"
-      << base::to_underlying(suggestion.popup_item_id) << ", main_text:\""
+      << "Suggestion (type:" << suggestion.type << ", main_text:\""
       << suggestion.main_text.value << "\""
       << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
+      << ", apply_deactivated_style: \"" << suggestion.apply_deactivated_style
+      << "\"" << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
       << ", trailing_icon:"
       << ConvertIconToPrintableString(suggestion.trailing_icon) << ")";
 }

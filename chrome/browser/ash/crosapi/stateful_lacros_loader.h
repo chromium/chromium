@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_STATEFUL_LACROS_LOADER_H_
 
 #include <optional>
+#include <ostream>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -16,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace component_updater {
 class ComponentUpdateService;
@@ -28,33 +29,51 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
  public:
   // Constructor for production.
   explicit StatefulLacrosLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager);
+      scoped_refptr<component_updater::ComponentManagerAsh> manager);
   // Constructor for testing.
   explicit StatefulLacrosLoader(
-      scoped_refptr<component_updater::CrOSComponentManager> manager,
+      scoped_refptr<component_updater::ComponentManagerAsh> manager,
       component_updater::ComponentUpdateService* updater,
       const std::string& lacros_component_name);
   StatefulLacrosLoader(const StatefulLacrosLoader&) = delete;
   StatefulLacrosLoader& operator=(const StatefulLacrosLoader&) = delete;
   ~StatefulLacrosLoader() override;
 
+  // The state representing the loading state.
+  enum class State {
+    // Loader is not running any task.
+    kNotLoaded,
+
+    // Loader is in the process of loading lacros-chrome.
+    kLoading,
+
+    // Loader has loaded lacros-chrome and `version_` and `path_` is ready.
+    kLoaded,
+
+    // Loader is in the process of unloading lacros-chrome.
+    kUnloading,
+
+    // Loader has unloaded the lacros-chrome. State must NOT change once it
+    // becomes kUnloaded.
+    kUnloaded,
+  };
+
+  State GetState() const { return state_; }
+
   // LacrosSelectionLoader:
   void Load(LoadCompletionCallback callback, bool forced) override;
-  void Unload() override;
-  void Reset() override;
+  void Unload(base::OnceClosure callback) override;
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
+  bool IsUnloading() const override;
+  bool IsUnloaded() const override;
 
  private:
   void LoadInternal(LoadCompletionCallback callback, bool forced);
 
-  // Returns true if the stateful lacros-chrome is already loaded and both
-  // `version_` and `path_` are ready.
-  bool IsReady();
-
   // Called after Load.
   void OnLoad(LoadCompletionCallback callback,
-              component_updater::CrOSComponentManager::Error error,
+              component_updater::ComponentManagerAsh::Error error,
               const base::FilePath& path);
 
   // Called in GetVersion sequence on IsInstalledMayBlock returns result.
@@ -62,18 +81,14 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
       base::OnceCallback<void(const base::Version&)> callback,
       bool is_installed);
 
-  // Called after gettin version from CrOSComponentManager::GetVersion.
-  void OnGetVersionFromComponentManager(
-      base::OnceCallback<void(const base::Version&)> callback,
-      const base::Version& version);
-
   // Called in Unload sequence.
   // Unloading hops threads. This is called after we check whether Lacros was
   // installed and maybe clean up the user directory.
-  void OnCheckInstalledToUnload(bool was_installed);
+  void OnCheckInstalledToUnload(base::OnceClosure callback, bool was_installed);
 
   // Unloads the component. Called after system salt is available.
-  void UnloadAfterCleanUp(const std::string& ignored_salt);
+  void UnloadAfterCleanUp(base::OnceClosure callback,
+                          const std::string& ignored_salt);
 
   // If `version_` is null, it implies the version is not yet calculated.
   // For cases where it failed to read the version, invalid `base::Version()` is
@@ -82,7 +97,7 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   // Cache the path to installed lacros-chrome path.
   std::optional<base::FilePath> path_;
 
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager_;
 
   // May be null in tests.
   const raw_ptr<component_updater::ComponentUpdateService>
@@ -90,11 +105,17 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
 
   const std::string lacros_component_name_;
 
+  base::OnceClosure pending_unload_;
+
+  State state_ = State::kNotLoaded;
+
   // Used for DCHECKs to ensure method calls executed in the correct thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StatefulLacrosLoader> weak_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream&, StatefulLacrosLoader::State);
 
 }  // namespace crosapi
 

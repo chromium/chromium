@@ -10,17 +10,18 @@ FakeFcmTopicSubscriber::FakeFcmTopicSubscriber() = default;
 
 FakeFcmTopicSubscriber::~FakeFcmTopicSubscriber() = default;
 
-void FakeFcmTopicSubscriber::RequestToken(NotificationCallback notification,
-                                          Callback callback) {
+bool FakeFcmTopicSubscriber::Initialize(NotificationCallback notification) {
   notification_callback_ = std::move(notification);
+  return true;
+}
+
+void FakeFcmTopicSubscriber::RequestToken(Callback callback) {
   std::move(callback).Run(token_.empty() ? Result::kConnectionError
                                          : Result::kSuccess);
 }
 
 void FakeFcmTopicSubscriber::SubscribeTopic(const std::string& topic,
-                                            NotificationCallback notification,
                                             Callback callback) {
-  notification_callback_ = std::move(notification);
   std::move(callback).Run(result_);
 }
 

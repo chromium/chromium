@@ -83,7 +83,7 @@ update
     * [PermissionDescriptorInfoToPermissionType()](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/common/permissions/permission_utils.cc;l=126;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
 6. In [permission_controller_impl.cc](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/permissions/permission_controller_impl.cc)
 update [PermissionToSchedulingFeature()](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/permissions/permission_controller_impl.cc;l=31;drc=a989b8968ead0d1a80b285eef0a2acf9feb71c82)
-. By default the new feature should return `absl::nullopt`. That means it will
+. By default the new feature should return `std::nullopt`. That means it will
 not block back-forward cache. If your feature needs to block it, make sure it is
 explicitly mentioned in a design doc as that needs to be reviewed.
 7. In [aw_permission_manager.cc](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/aw_permission_manager.cc)

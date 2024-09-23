@@ -31,7 +31,7 @@ const std::map<S2LatLng, std::string> GetData(int rank) {
   base::FilePath data_dir =
       source_dir.AppendASCII("components/test/data/language/");
   base::FilePath data_filepath = data_dir.AppendASCII(
-      "celltolang-data_rank" + std::to_string(rank) + ".csv");
+      "celltolang-data_rank" + base::NumberToString(rank) + ".csv");
 
   if (!base::ReadFileToString(data_filepath, &data))
     LOG(FATAL) << "Could not read data from `" << data_filepath << "`.";

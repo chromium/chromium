@@ -52,7 +52,8 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    views::Widget::InitParams parent_params;
+    views::Widget::InitParams parent_params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     parent_params.context = views_helper_.GetContext();
     parent_window_ = new views::Widget();
     parent_window_->Init(std::move(parent_params));
@@ -60,8 +61,7 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
     content::WebContents* web_contents = web_contents_helper_.web_contents();
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents,
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
     bubble_ = CreateSafetyTipBubbleForTesting(
         parent_window_->GetNativeView(), web_contents,

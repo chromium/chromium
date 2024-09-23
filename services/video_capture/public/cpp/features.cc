@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 namespace video_capture::features {
 
 // Enables video capture device monitoring in video capture service instead of
-// the browser process. Currently implemented only for mac.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kCameraMonitoringInVideoCaptureService,
-             "CameraMonitoringInVideoCaptureService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// the browser process. Implementing now for Windows.
+// Using a different feature name so as not to confuse with the old one used for
+// Mac.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kWinCameraMonitoringInVideoCaptureService,
+             "WinCameraMonitoringInVideoCaptureService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace video_capture::features

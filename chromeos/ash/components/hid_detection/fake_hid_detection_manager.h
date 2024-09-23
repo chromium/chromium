@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
 
-#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
-
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
 namespace ash::hid_detection {
 
@@ -21,6 +21,8 @@ class FakeHidDetectionManager : public HidDetectionManager {
   void SetHidStatusPointerMetadata(InputMetadata metadata);
   void SetHidStatusKeyboardMetadata(InputMetadata metadata);
   void SetPairingState(std::optional<BluetoothHidPairingState> pairing_state);
+
+  base::WeakPtr<FakeHidDetectionManager> GetWeakPtr();
 
   bool is_hid_detection_active() const { return is_hid_detection_active_; }
 
@@ -39,6 +41,8 @@ class FakeHidDetectionManager : public HidDetectionManager {
   InputMetadata keyboard_metadata_;
   bool touchscreen_detected_ = false;
   std::optional<BluetoothHidPairingState> pairing_state_;
+
+  base::WeakPtrFactory<FakeHidDetectionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::hid_detection

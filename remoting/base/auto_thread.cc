@@ -13,11 +13,11 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -203,7 +203,7 @@ void AutoThread::ThreadMain() {
 
   // Complete the initialization of our AutoThread object.
   base::PlatformThread::SetName(name_);
-  ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
+  ABSL_ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
 
   // Return an AutoThreadTaskRunner that will cleanly quit this thread when
   // no more references to it remain.

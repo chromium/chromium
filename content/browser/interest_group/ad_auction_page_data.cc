@@ -4,12 +4,15 @@
 
 #include "content/browser/interest_group/ad_auction_page_data.h"
 
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -123,6 +126,21 @@ data_decoder::DataDecoder* AdAuctionPageData::GetDecoderFor(
   return decoder.get();
 }
 
+std::optional<std::pair<base::TimeTicks, double>>
+AdAuctionPageData::GetRealTimeReportingQuota(const url::Origin& origin) {
+  auto it = real_time_reporting_quota_.find(origin);
+  if (it == real_time_reporting_quota_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+void AdAuctionPageData::UpdateRealTimeReportingQuota(
+    const url::Origin& origin,
+    std::pair<base::TimeTicks, double> quota) {
+  real_time_reporting_quota_[origin] = quota;
+}
+
 void AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted(
     std::vector<std::string> errors) {
   for (const std::string& error : errors) {
@@ -136,11 +154,14 @@ AdAuctionRequestContext::AdAuctionRequestContext(
     url::Origin seller,
     base::flat_map<url::Origin, std::vector<std::string>> group_names,
     quiche::ObliviousHttpRequest::Context context,
-    base::TimeTicks start_time)
+    base::TimeTicks start_time,
+    base::flat_map<blink::InterestGroupKey, url::Origin>
+        group_pagg_coordinators)
     : seller(std::move(seller)),
       group_names(std::move(group_names)),
       context(std::move(context)),
-      start_time(start_time) {}
+      start_time(start_time),
+      group_pagg_coordinators(std::move(group_pagg_coordinators)) {}
 AdAuctionRequestContext::AdAuctionRequestContext(
     AdAuctionRequestContext&& other) = default;
 AdAuctionRequestContext::~AdAuctionRequestContext() = default;

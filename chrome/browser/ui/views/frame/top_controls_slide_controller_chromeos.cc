@@ -9,16 +9,17 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/url_constants.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -45,7 +46,7 @@ bool IsSpokenFeedbackEnabled() {
   return accessibility_manager &&
          accessibility_manager->IsSpokenFeedbackEnabled();
 #else
-  // TODO(https://crbug.com/1165746): Enable accessibility (a11y) support for
+  // TODO(crbug.com/40741702): Enable accessibility (a11y) support for
   // Lacros.
   NOTIMPLEMENTED() << "Enable accessibility support for Lacros.";
   return false;
@@ -592,7 +593,7 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
   const cc::BrowserControlsState current_state =
       cc::BrowserControlsState::kShown;
   web_contents->UpdateBrowserControlsState(constraints_state, current_state,
-                                           animate);
+                                           animate, std::nullopt);
 }
 
 bool TopControlsSlideControllerChromeOS::CanEnable(
@@ -759,7 +760,7 @@ void TopControlsSlideControllerChromeOS::OnBeginSliding() {
   // the layout now, before any transforms are installed. To do otherwise
   // results in NativeViewHost positioning the WebContents at the wrong
   // location.
-  // TODO(https://crbug.com/950981): this is rather fragile, and the code should
+  // TODO(crbug.com/40622302): this is rather fragile, and the code should
   // deal with layout being performed during the slide.
   root_view->GetWidget()->LayoutRootViewIfNecessary();
 

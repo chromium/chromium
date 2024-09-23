@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 
 #include "base/memory/raw_ptr.h"
@@ -104,7 +109,7 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
       const std::vector<std::string>& permissions) {
     auto extension = ExtensionBuilder(extension_id)
                          .SetID(extension_id)
-                         .AddPermissions(permissions)
+                         .AddAPIPermissions(permissions)
                          .Build();
     registry_->AddEnabled(extension);
 

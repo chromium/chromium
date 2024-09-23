@@ -107,7 +107,8 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
     controller_ =
         std::make_unique<TestToolbarActionViewController>("fake controller");
     action_view_delegate_ = std::make_unique<TestToolbarActionViewDelegate>();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 
   void TearDown() override {
@@ -181,7 +182,7 @@ TEST_F(ToolbarActionViewUnitTest,
 // a controller's state.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1042220): Test is flaky on Mac, Linux and Win10.
+// TODO(crbug.com/40668368): Test is flaky on Mac, Linux and Win10.
 #define MAYBE_BasicToolbarActionViewTest DISABLED_BasicToolbarActionViewTest
 #else
 #define MAYBE_BasicToolbarActionViewTest BasicToolbarActionViewTest

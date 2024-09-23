@@ -4,9 +4,11 @@
 
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+export {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-export {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
+export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {Cdd, ColorOption, DpiOption, DuplexOption, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientationOption, SelectOption, VendorCapabilityValueType} from './data/cdd.js';
 export {ColorMode, createDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, RecentDestination} from './data/destination.js';
 // <if expr="is_chromeos">
@@ -83,9 +85,12 @@ export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin
 export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 // <if expr="is_chromeos">
-export {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
+export {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
 // </if>
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
+// <if expr="is_chromeos">
+export {SearchableDropDownCrosElement} from './ui/searchable_drop_down_cros.js';
+// </if>
 export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';
 export {SettingsMixinInterface} from './ui/settings_mixin.js';
 export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';

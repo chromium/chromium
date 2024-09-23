@@ -13,7 +13,7 @@
 #include "base/version.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/registration_data.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
@@ -24,6 +24,7 @@
 
 #include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace updater {
@@ -32,8 +33,8 @@ TEST(PersistedDataTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
   EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
@@ -69,8 +70,8 @@ TEST(PersistedDataTest, MixedCase) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   metadata->SetProductVersion("someappid", base::Version("1.0"));
   metadata->SetProductVersion("SOMEAPPID2", base::Version("2.0"));
@@ -84,11 +85,176 @@ TEST(PersistedDataTest, MixedCase) {
                metadata->GetProductVersion("someappid2").GetString().c_str());
 }
 
-TEST(PersistedDataTest, RegistrationRequest) {
+TEST(PersistedDataTest, SharedPref) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  metadata->SetProductVersion("someappid", base::Version("1.0"));
+  EXPECT_STREQ("1.0",
+               metadata->GetProductVersion("someappid").GetString().c_str());
+
+  // Now, create a new PersistedData reading from the same path, verify
+  // that it loads the value.
+  metadata = base::MakeRefCounted<PersistedData>(GetUpdaterScopeForTesting(),
+                                                 pref.get(), nullptr);
+  EXPECT_STREQ("1.0",
+               metadata->GetProductVersion("someappid").GetString().c_str());
+}
+
+TEST(PersistedDataTest, RemoveAppId) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  RegistrationRequest data;
+  data.app_id = "someappid";
+  data.brand_code = "somebrand";
+  data.ap = "arandom-ap=likethis";
+  data.version = base::Version("1.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+
+  metadata->RegisterApp(data);
+
+  data.app_id = "someappid2";
+  data.brand_code = "somebrand";
+  data.ap = "arandom-ap=likethis";
+  data.version = base::Version("2.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+
+  metadata->RegisterApp(data);
+  EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
+
+  metadata->RemoveApp("someAPPID");
+  EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
+
+  metadata->RemoveApp("someappid2");
+  EXPECT_TRUE(metadata->GetAppIds().empty());
+}
+
+TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  RegistrationRequest data;
+  data.app_id = "someappid";
+  data.brand_code = "somebrand";
+  data.ap = "arandom-ap=likethis";
+  data.version = base::Version("1.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), -1);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), -1);
+
+  data.version = base::Version("2.0");
+  data.dla = 1221;
+  data.dlrc = 1221;
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
+
+  data.version = base::Version("3.0");
+  data.dla = std::nullopt;
+  data.dlrc = std::nullopt;
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST(PersistedDataTest, LastOSVersion) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  EXPECT_EQ(metadata->GetLastOSVersion(), std::nullopt);
+
+  // This will persist the current OS version into the persisted data.
+  metadata->SetLastOSVersion();
+  EXPECT_NE(metadata->GetLastOSVersion(), std::nullopt);
+
+  // Compare the persisted data OS version to the version from `::GetVersionEx`.
+  const OSVERSIONINFOEX metadata_os = metadata->GetLastOSVersion().value();
+
+  OSVERSIONINFOEX os = {};
+  os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+#pragma clang diagnostic pop
+
+  EXPECT_EQ(metadata_os.dwOSVersionInfoSize, os.dwOSVersionInfoSize);
+  EXPECT_EQ(metadata_os.dwMajorVersion, os.dwMajorVersion);
+  EXPECT_EQ(metadata_os.dwMinorVersion, os.dwMinorVersion);
+  EXPECT_EQ(metadata_os.dwBuildNumber, os.dwBuildNumber);
+  EXPECT_EQ(metadata_os.dwPlatformId, os.dwPlatformId);
+  EXPECT_STREQ(metadata_os.szCSDVersion, os.szCSDVersion);
+  EXPECT_EQ(metadata_os.wServicePackMajor, os.wServicePackMajor);
+  EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
+  EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
+  EXPECT_EQ(metadata_os.wProductType, os.wProductType);
+}
+
+TEST(PersistedDataTest, SetEulaRequired) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  EXPECT_FALSE(metadata->GetEulaRequired());
+
+  // This will set "eula_required=true" in the persisted data and also persist
+  // `eulaaccepted=0` in the registry.
+  metadata->SetEulaRequired(/*eula_required=*/true);
+  EXPECT_TRUE(metadata->GetEulaRequired());
+  DWORD eula_accepted = 0;
+  const HKEY root = UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting());
+  EXPECT_EQ(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                .ReadValueDW(L"eulaaccepted", &eula_accepted),
+            ERROR_SUCCESS);
+  EXPECT_EQ(eula_accepted, 0ul);
+
+  // This will set "eula_required=false" in the persisted data and also delete
+  // the `eulaaccepted` value in the registry.
+  metadata->SetEulaRequired(/*eula_required=*/false);
+  EXPECT_FALSE(metadata->GetEulaRequired());
+  EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                   .HasValue(L"eulaaccepted"));
+}
+#endif
+
+class PersistedDataRegistrationRequestTest : public ::testing::Test {
+#if BUILDFLAG(IS_WIN)
+ protected:
+  void SetUp() override { DeleteBrandCodeValueInRegistry(); }
+  void TearDown() override { DeleteBrandCodeValueInRegistry(); }
+
+ private:
+  void DeleteBrandCodeValueInRegistry() {
+    base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                      GetAppClientStateKey(L"someappid").c_str(),
+                      Wow6432(KEY_SET_VALUE))
+        .DeleteValue(kRegValueBrandCode);
+  }
+#endif
+};
+
+TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   RegistrationRequest data;
   data.app_id = "someappid";
@@ -109,13 +275,23 @@ TEST(PersistedDataTest, RegistrationRequest) {
             metadata->GetExistenceCheckerPath("someappid").value());
   EXPECT_STREQ("arandom-ap=likethis", metadata->GetAP("someappid").c_str());
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid").c_str());
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(
+      base::win::RegKey(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
+                        GetAppClientStateKey(L"someappid").c_str(),
+                        Wow6432(KEY_SET_VALUE))
+          .WriteValue(kRegValueBrandCode, L"nbrnd"),
+      ERROR_SUCCESS);
+  EXPECT_STREQ(metadata->GetBrandCode("someappid").c_str(), "nbrnd");
+#endif
+
   EXPECT_STREQ("testcohort", metadata->GetCohort("someappid").c_str());
   EXPECT_STREQ("testcohortname", metadata->GetCohortName("someappid").c_str());
   EXPECT_STREQ("testcohorthint", metadata->GetCohortHint("someappid").c_str());
 
 #if BUILDFLAG(IS_WIN)
   base::win::RegKey key;
-  EXPECT_EQ(key.Open(UpdaterScopeToHKeyRoot(GetTestScope()),
+  EXPECT_EQ(key.Open(UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting()),
                      GetAppClientStateKey(L"someappid").c_str(),
                      Wow6432(KEY_QUERY_VALUE)),
             ERROR_SUCCESS);
@@ -125,11 +301,11 @@ TEST(PersistedDataTest, RegistrationRequest) {
 #endif
 }
 
-TEST(PersistedDataTest, RegistrationRequestPartial) {
+TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
   RegistrationRequest data;
   data.app_id = "someappid";
@@ -171,126 +347,5 @@ TEST(PersistedDataTest, RegistrationRequestPartial) {
   EXPECT_STREQ("", metadata->GetAP("someappid3").c_str());
   EXPECT_STREQ("somebrand", metadata->GetBrandCode("someappid3").c_str());
 }
-
-TEST(PersistedDataTest, SharedPref) {
-  auto pref = std::make_unique<TestingPrefServiceSimple>();
-  update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
-
-  metadata->SetProductVersion("someappid", base::Version("1.0"));
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
-
-  // Now, create a new PersistedData reading from the same path, verify
-  // that it loads the value.
-  metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
-  EXPECT_STREQ("1.0",
-               metadata->GetProductVersion("someappid").GetString().c_str());
-}
-
-TEST(PersistedDataTest, RemoveAppId) {
-  auto pref = std::make_unique<TestingPrefServiceSimple>();
-  update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
-
-  RegistrationRequest data;
-  data.app_id = "someappid";
-  data.brand_code = "somebrand";
-  data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
-  data.existence_checker_path =
-      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
-
-  metadata->RegisterApp(data);
-
-  data.app_id = "someappid2";
-  data.brand_code = "somebrand";
-  data.ap = "arandom-ap=likethis";
-  data.version = base::Version("2.0");
-  data.existence_checker_path =
-      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
-
-  metadata->RegisterApp(data);
-  EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
-
-  metadata->RemoveApp("someappid");
-  EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
-
-  metadata->RemoveApp("someappid2");
-  EXPECT_TRUE(metadata->GetAppIds().empty());
-}
-
-TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
-  auto pref = std::make_unique<TestingPrefServiceSimple>();
-  update_client::RegisterPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
-
-  RegistrationRequest data;
-  data.app_id = "someappid";
-  data.brand_code = "somebrand";
-  data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
-  data.existence_checker_path =
-      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
-  metadata->RegisterApp(data);
-  EXPECT_EQ(metadata->GetDateLastActive("someappid"), -1);
-  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), -1);
-
-  data.version = base::Version("2.0");
-  data.dla = 1221;
-  data.dlrc = 1221;
-  metadata->RegisterApp(data);
-  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
-  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
-
-  data.version = base::Version("3.0");
-  data.dla = std::nullopt;
-  data.dlrc = std::nullopt;
-  metadata->RegisterApp(data);
-  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
-  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
-}
-
-#if BUILDFLAG(IS_WIN)
-TEST(PersistedDataTest, LastOSVersion) {
-  auto pref = std::make_unique<TestingPrefServiceSimple>();
-  update_client::RegisterPrefs(pref->registry());
-  RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
-
-  EXPECT_EQ(metadata->GetLastOSVersion(), std::nullopt);
-
-  // This will persist the current OS version into the persisted data.
-  metadata->SetLastOSVersion();
-  EXPECT_NE(metadata->GetLastOSVersion(), std::nullopt);
-
-  // Compare the persisted data OS version to the version from `::GetVersionEx`.
-  const OSVERSIONINFOEX metadata_os = metadata->GetLastOSVersion().value();
-
-  OSVERSIONINFOEX os = {};
-  os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
-#pragma clang diagnostic pop
-
-  EXPECT_EQ(metadata_os.dwOSVersionInfoSize, os.dwOSVersionInfoSize);
-  EXPECT_EQ(metadata_os.dwMajorVersion, os.dwMajorVersion);
-  EXPECT_EQ(metadata_os.dwMinorVersion, os.dwMinorVersion);
-  EXPECT_EQ(metadata_os.dwBuildNumber, os.dwBuildNumber);
-  EXPECT_EQ(metadata_os.dwPlatformId, os.dwPlatformId);
-  EXPECT_STREQ(metadata_os.szCSDVersion, os.szCSDVersion);
-  EXPECT_EQ(metadata_os.wServicePackMajor, os.wServicePackMajor);
-  EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
-  EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
-  EXPECT_EQ(metadata_os.wProductType, os.wProductType);
-}
-#endif
 
 }  // namespace updater

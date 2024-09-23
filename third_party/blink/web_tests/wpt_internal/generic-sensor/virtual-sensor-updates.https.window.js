@@ -168,6 +168,11 @@ promise_test(async t => {
         new EventWatcher(t, iframeSensor, ['activate', 'error', 'reading']);
 
     iframe.contentWindow.focus();
+    t.add_cleanup(() => {
+      // Make sure the main window is focused again so that other tests do not
+      // fail.
+      window.focus();
+    });
     iframeSensor.start();
     await iframeSensorWatcher.wait_for(['activate', 'reading']);
     assert_sensor_reading_equals(iframeSensor, {x: 1, y: 2, z: 3});

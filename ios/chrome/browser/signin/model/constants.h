@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/enum_set.h"
+
 // Error domain for authentication error.
 extern NSString* kAuthenticationErrorDomain;
 
@@ -23,30 +25,26 @@ typedef enum {
   TIMED_OUT_FETCH_POLICY = -210,
 } AuthenticationErrorCode;
 
-typedef enum {
-  SHOULD_CLEAR_DATA_USER_CHOICE,
-  SHOULD_CLEAR_DATA_CLEAR_DATA,
-  SHOULD_CLEAR_DATA_MERGE_DATA,
-} ShouldClearData;
-
 // Enum is used to represent the action to be taken by the authentication once
 // the user is successfully signed in.
 enum class PostSignInAction {
   // No post action after sign-in.
   kNone,
+  kFirstType = kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
-  // TODO(crbug.com/40067025): Turn on sync was deprecated. Delete this enum
-  // after phase 2 launches on iOS. See ConsentLevel::kSync documentation for
-  // details.
-  // Starts sign-in flow for a sync consent.
-  // The owner of `AuthenticationFlow` still needs to:
-  //  * Record the sync dialog strings.
-  //  * Grand the sync consent in AuthenticationService.
-  //  * Record the first setup complete.
-  // Related crbug.com/1254359.
-  kCommitSync,
+  // Enables SelectableType::kBookmarks for the account that just signed-in from
+  // the bookmarks manager.
+  kEnableUserSelectableTypeBookmarks,
+  // Enables SelectableType::kReadingList for the account that just signed-in
+  // from the reading list manager.
+  kEnableUserSelectableTypeReadingList,
+  kLastType = kEnableUserSelectableTypeReadingList
 };
+
+using PostSignInActionSet = base::EnumSet<PostSignInAction,
+                                          PostSignInAction::kFirstType,
+                                          PostSignInAction::kLastType>;
 
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
 // the enum value to point.
@@ -61,7 +59,11 @@ namespace signin_ui {
 
 // Completion callback for a sign-in operation.
 // `success` is YES if the operation was successful.
-typedef void (^CompletionCallback)(BOOL success);
+using SigninCompletionCallback = void (^)(BOOL success);
+
+// Completion callback for a sign-out operation.
+// `success` is YES if the operation was successful.
+using SignoutCompletionCallback = void (^)(BOOL success);
 
 }  // namespace signin_ui
 

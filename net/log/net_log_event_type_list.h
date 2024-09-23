@@ -53,8 +53,8 @@ EVENT_TYPE(REQUEST_ALIVE)
 //                               the host cache>,
 //     "is_speculative": <Whether this request was started by the DNS
 //                        prefetcher>,
-//     "network_isolation_key": <NetworkAnonymizationKey associated with the
-//                               request>,
+//     "network_anonymization_key": <NetworkAnonymizationKey associated with the
+//                                   request>,
 //     "secure_dns_policy": <SecureDnsPolicy of the request>,
 //   }
 //
@@ -106,9 +106,10 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)
 //   {
 //     "dns_query_type": <DnsQueryType of the job>,
 //     "host": <Serialized scheme/host/port associated with the job>,
-//     "network_isolation_key": <NetworkAnonymizationKey associated with the
-//     job>, "secure_dns_mode": <SecureDnsMode of the job>, "source_dependency":
-//     <Source id, if any, of what created the job>,
+//     "network_anonymization_key": <NetworkAnonymizationKey associated with the
+//                                   job>,
+//     "secure_dns_mode": <SecureDnsMode of the job>,
+//     "source_dependency": <Source id, if any, of what created the job>,
 //   }
 //
 // The END phase will contain these parameters:
@@ -257,6 +258,26 @@ EVENT_TYPE(HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS)
 //     }],
 //   }
 EVENT_TYPE(HOST_RESOLVER_DNS_TASK_TIMEOUT)
+
+// Logged when a DnsTaskResultsManager updates intermediate service
+// endpoints. Contains the following parameters:
+//
+//   {
+//      "endpoints": [{
+//        "ipv4_endpoints": <List of IPv4 endpoint>,
+//        "ipv6_endpoints": <List of IPv6 endpoint>,
+//        "metadata": <ConnectionEndpointMetadata of this service endpoint>
+//      }]
+//   }
+EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED)
+
+// Logged when a DnsTaskResultsManager's resolution timer is timed out,
+// or AAAA response is received before the timer timed out.
+//   {
+//      "timedout": <Whether or not the timer is timed out>,
+//      "elapsed": <Elapsed time in milliseconds>
+//   }
+EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY)
 
 // ------------------------------------------------------------------------
 // InitProxyResolver
@@ -933,6 +954,50 @@ EVENT_TYPE(SOCKET_POOL_CONNECTING_N_SOCKETS)
 EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 
 // ------------------------------------------------------------------------
+// StreamAttempt and subclasses
+// ------------------------------------------------------------------------
+
+// Emitted when a StreamAttempt is created by HttpStreamPool.
+EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
+
+// Marks the creation/destruction of a TcpStreamAttempt.
+// For the BEGIN phase, the following parameter is attached:
+//   {
+//      "ip_endpoint": <The IPEndPoint to connect>,
+//   }
+//
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TCP_STREAM_ATTEMPT_ALIVE)
+
+// Marks the creation/destruction of a TlsStreamAttempt.
+// For the BEGIN phase, the following parameter is attached:
+//   {
+//      "host_port": <The host and port of the destination>,
+//   }
+//
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TLS_STREAM_ATTEMPT_ALIVE)
+
+// Measures the time TlsStreamAttempt was waiting SSLConfig to be ready.
+EVENT_TYPE(TLS_STREAM_ATTEMPT_WAIT_FOR_SSL_CONFIG)
+
+// Measures the time TlsStreamAttempt took to connect (TLS handshake).
+// For the END phase, if there was an error, the following parameters are
+// attached:
+//   {
+//      "net_error": <Net error code of the failure>,
+//   }
+EVENT_TYPE(TLS_STREAM_ATTEMPT_CONNECT)
+
+// ------------------------------------------------------------------------
 // URLRequest
 // ------------------------------------------------------------------------
 
@@ -970,6 +1035,10 @@ EVENT_TYPE(URL_REQUEST_START_JOB)
 //     "location": <The URL that was redirected to>,
 //   }
 EVENT_TYPE(URL_REQUEST_REDIRECTED)
+
+// This event is sent once a net::URLRequest receives a (valid)
+// `Activate-Storage-Access: retry` response header.
+EVENT_TYPE(URL_REQUEST_RETRY_WITH_STORAGE_ACCESS)
 
 // Measures the time between when a net::URLRequest calls a delegate that can
 // block it, and when the delegate allows the request to resume. Each delegate
@@ -1184,9 +1253,17 @@ EVENT_TYPE(HTTP_STREAM_REQUEST)
 //   {
 //      "source_dependency": <Source identifier for the Request with started
 //                            this Job>,
-//      "original_url": <The URL to create a stream for>,
-//      "url": <The URL actually being used, possibly different from
-//              original_url if using an alternate service>,
+//      "logical_destination":
+//          <The scheme + origin + port that the connection is logically to.
+//           This has any host mapping rules already applied, and for https/wss
+//           is the host required for certificate validation>,
+//      "destination":
+//          <The scheme + origin + port that the connection will actually be
+//           made to. The difference from `logical_destination` is that
+//           this is after applying alternate protocol, if applicable, and
+//           replacing ws/wss with http/https. Host mappy rules have also been
+//           applied a second time, if there was an applicable alternate
+//           protocol applied>,
 //      "expect_spdy": <Boolean indicating whether the Job will use SPDY>,
 //      "using_quic": <Boolean indicating whether the Job will use QUIC>,
 //      "priority": <The priority of the Job>,
@@ -1226,15 +1303,6 @@ EVENT_TYPE(HTTP_STREAM_JOB_INIT_CONNECTION)
 //   }
 EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_JOB)
 
-// Identifies the NetLogSource() for the QuicSessionPool::Job that the
-// HttpStreamFactory::Job was attached to.
-// The event parameters are:
-//  {
-//      "source_dependency": <Source identifier for the QuicSessionPool::Job
-//                            to which we were attached>,
-//  }
-EVENT_TYPE(HTTP_STREAM_JOB_BOUND_TO_QUIC_SESSION_POOL_JOB)
-
 // Identifies the NetLogSource() for the Request that the Job was attached to.
 // The event parameters are:
 //   {
@@ -1269,6 +1337,8 @@ EVENT_TYPE(HTTP_STREAM_JOB_RESUMED)
 // The following parameters are attached:
 //   {
 //      "url": <String of request URL>,
+//      "url_after_host_mapping": <URL after applying hostmapping.
+//                                 Only present if different from URL>,
 //      "is_preconnect": <True if controller is created for a preconnect>,
 //      "private_mode": <Privacy mode of the request>,
 //   }
@@ -1296,6 +1366,104 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_PROXY_SERVER_RESOLVED)
 //      "broken": <boolean>
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
+
+// ------------------------------------------------------------------------
+// HttpStreamPool
+// ------------------------------------------------------------------------
+
+// Logged when the HttpStreamPool is closing a StreamSocket:
+//   {
+//      "reason": <Reason the socket was closed>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
+
+// Marks the start/end of a HttpStreamPool::Group.
+// The following parameters are attached:
+//   {
+//      "stream_key": <The HttpStreamKey of the group>,
+//      "force_quic": <True when QUIC is forced for the group>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
+
+// Emitted when a group starts a stream. The event parameters are:
+//   {
+//     "priority": <The priority of the erquest>,
+//     "allowed_bad_certs": <The list of allowed bad certs>,
+//     "enable_ip_based_pooling": <True when the request enables IP based
+//                                 pooling>,
+//     "quic_version": <The QUIC version to attempt>,
+//     "source_dependency": <The source identifier of the request>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_START_JOB)
+
+// Emitted when a group is requested a preconnect. The event parameter is:
+//   {
+//      "num_streams": <The number of streams requested>,
+//      "quic_version": <The QUIC version to attempt>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
+
+// Records on the caller's NetLog to indicate that an HttpStreamPool::Group
+// starts a Job.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_BOUND)
+
+// Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+
+// Emitted when an HttpStreamPool::AttemptManager is destroyed. Used to add a
+// reference to HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
+
+// Marks the start/end of a HttpStreamPool::AttemptManager.
+// For the BEGIN event, the event parameters are:
+//   {
+//     "stream_attempt_delay": <The stream attempt delay in milliseconds>,
+//     "source_dependency": <The source identifier of the parent group>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
+
+// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
+
+// Emitted when an HttpStreamPool::AttemptManager received completion from a
+// StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
+
+// Emitted when the stream attempt delay has passed on an
+// HttpStreamPool::AttemptManager. The event parameter is:
+//   {
+//     "stream_attempt_delay": <The stream attempt delay in milliseconds>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
+
+// Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
+// HttpStreamPool::QuicTask is bound to the AttemptManager.
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
+
+// Marks the start/end of a HttpStreamPool::QuicTask.
+// For the BEGIN event, the event parameters are:
+//   {
+//     "quic_version": <The known QUIC version>,
+//     "source_dependency": <The source identifier of the parent AttemptManager>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_TASK_ALIVE)
+
+// Emitted when an HttpStreamPool::QuicTask started a QuicSessionAttempt.
+// The event parameters are:
+//   {
+//     "quic_version": <The QUIC version of the attempt>,
+//     "ip_endpoint": <The IPEndPoint to connect>,
+//     "metadata": <ConnectionEndpointMetadata of the attempt>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_START)
+
+// Emitted when an HttpStreamPool::QuicTask received completion from a
+// QuicSessionAttempt. The event parameter is:
+//   {
+//      "net_error": <Net error code integer>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_QUIC_ATTEMPT_END)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction
@@ -1787,6 +1955,22 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 // QuicSessionPool
 // ------------------------------------------------------------------------
 
+// This event is emitted when a session request ends up using an existing
+// session.
+//   {
+//     "destination": <The destination of the request>,
+//     "reason": <The reason for using the existing session>,
+//     "source_dependency": <Source identifier for the session>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_USE_EXISTING_SESSION)
+
+// This event is emitted for an existing session when an HttpStreamFactory::Job
+// is attached to the session.
+//   {
+//     "source_dependency": <Source identifier for the HttpStreamFactory::Job>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_ATTACH_HTTP_STREAM_JOB_TO_EXISTING_SESSION)
+
 // This event is emitted whenever a platform notification is received that
 // could possibly trigger connection migration.
 //   {
@@ -1797,8 +1981,39 @@ EVENT_TYPE(QUIC_SESSION_POOL_PLATFORM_NOTIFICATION)
 
 // These events track QuicSessionPool's handling of OnIPAddressChanged and
 // whether QuicSessions are closed or marked as going away.
+
 EVENT_TYPE(QUIC_SESSION_POOL_ON_IP_ADDRESS_CHANGED)
+
+// This event is emitted when a session request ends up using an existing
+// session with the same IP after DNS resolution.
+EVENT_TYPE(QUIC_SESSION_POOL_MATCHING_IP_SESSION_FOUND)
+
+// This event is emitted when a session request ends up using an existing
+// session with different IP after DNS resolution. This scenario occurs when the
+// existing session receives an ORIGIN frame, and the received origins encompass
+// the request's destination.
+EVENT_TYPE(QUIC_SESSION_POOL_POOLED_WITH_DIFFERENT_IP_SESSION)
+
+// This event is emitted when a session request can use an existing session but
+// not due to IP mismatch.
+EVENT_TYPE(QUIC_SESSION_POOL_CAN_POOL_BUT_DIFFERENT_IP)
+
+// This event is emitted when a session request cannot use an existing session.
+EVENT_TYPE(QUIC_SESSION_POOL_CANNOT_POOL_WITH_EXISTING_SESSIONS)
+
+//   {
+//     "net_error": <Net error code for the closure>,
+//     "quic_error": <quic::QuicErrorCode in the frame>,
+//     "before_active_sessions_size": <The number of active session before
+//                                     closing>,
+//     "before_all_sessions_size": <The number of all session before
+//                                  closing>,
+//     "after_active_sessions_size": <The number of active session after
+//                                    closing>,
+//     "after_all_sessions_size": <The number of all session after closing>,
+//   }
 EVENT_TYPE(QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS)
+
 EVENT_TYPE(QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
 
 // ------------------------------------------------------------------------
@@ -1811,26 +2026,44 @@ EVENT_TYPE(QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
 //     "host": <The origin hostname that the Job serves>,
 //     "port": <The origin port>,
 //     "privacy_mode": <The privacy mode of the Job>,
+//     "proxy_chain": <The proxy chain of the Job>
 //     "network_anonymization_key": <The NetworkAnonymizationKey of the Job>,
 //   }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB)
 
-// Identifies the NetLogSource() for the HttpStreamFactory::Job that the Job was
-// attached to.
+// Identifies the NetLogSource() requesting the Job. A Job may serve multiple
+// sources.
+//
 // The event parameters are:
 //  {
-//     "source_dependency": <Source identifier for the HttpStreamFactory::Job to
+//     "source_dependency": <Source identifier for the NetLogSource to
 //                           which we were attached>,
 //  }
-EVENT_TYPE(QUIC_SESSION_POOL_JOB_BOUND_TO_HTTP_STREAM_JOB)
+EVENT_TYPE(QUIC_SESSION_POOL_JOB_BOUND_TO)
 
-// Measures the time taken to establish a QUIC connection.
+// Identifies the NetLogSource() for the QuicSessionPool::Job that the
+// this source was bound to.
+// The event parameters are:
+//  {
+//      "source_dependency": <Source identifier for the QuicSessionPool::Job
+//                            to which we were attached>,
+//  }
+EVENT_TYPE(BOUND_TO_QUIC_SESSION_POOL_JOB)
+
+// Measures the time taken by a DirectJob to establish a QUIC connection.
 // The event parameters are:
 //  {
 //     "require_confirmation": <True if we require handshake confirmation
 //                              in the connection>
 //  }
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_CONNECT)
+
+// Measures the time taken by a ProxyJob to establish a connection to its
+// endpoint through the proxy.
+EVENT_TYPE(QUIC_SESSION_POOL_PROXY_JOB_CONNECT)
+
+// Measures the time taken by a ProxyJob to establish a session to the proxy.
+EVENT_TYPE(QUIC_SESSION_POOL_PROXY_JOB_CREATE_PROXY_SESSION)
 
 // This event indicates that the connection on the default network has failed
 // before the handshake completed and a new connection on the alternate network
@@ -1849,6 +2082,14 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_NO_MATCH)
 // This event indicates that stale host matches with fresh resolution.
 EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_MATCHED)
 
+// This event indicates that a QuicSessionPool::Job has created a session.
+//
+// The event parameters are:
+//   {
+//      "source_dependency": <Source identifier for session that was used>,
+//   }
+EVENT_TYPE(QUIC_SESSION_POOL_JOB_RESULT)
+
 // ------------------------------------------------------------------------
 // quic::QuicSession
 // ------------------------------------------------------------------------
@@ -1857,16 +2098,36 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_STALE_HOST_RESOLUTION_MATCHED)
 //   {
 //     "host": <The origin hostname string>,
 //     "port": <The origin port>,
-//     "privacy_mode": <The privacy mode of the session>,
-//     "network_anonymization_key": <The NetworkAnonymizationKey of the
-//                                   session>,
+//     "connection_id": <The connection ID>,
+//     "versions": <The supported QUIC versions>,
 //     "require_confirmation": <True if the session will wait for a
 //                              successful QUIC handshake before vending
 //                              streams>,
 //     "cert_verify_flags": <The certificate verification flags for the
 //                           session>,
+//     "server_id_privacy_mode": <The privacy mode from the server ID>,
+//     "privacy_mode": <The privacy mode of the session>,
+//     "proxy_chain": <The proxy chain of the session>,
+//     "session_usage": <If the session is used for a connection to the
+//                       destination or through a proxy>,
+//     "network_anonymization_key": <The NetworkAnonymizationKey of the
+//                                   session>,
+//     "secure_dns_policy": <The policy for Secure DNS usage>,
+//     "require_dns_https_alpn": <True if the session requires the alpn value of
+//                                the HTTPS DNS record to exist>,
+//     "client_connection_id": <optional, The client connection ID if not
+//                              empty>,
+//     "ech_config_list": <optional, The ECH config list if not empty>,
+//     "source_dependency": <Source identifier for the attached Job>,
 //   }
 EVENT_TYPE(QUIC_SESSION)
+
+// This event is logged for the associated QuicSessionPool::Job to indicate
+// that a session is created.
+//   {
+//     "source_dependency": <Source identifier for the attached session>,
+//   }
+EVENT_TYPE(QUIC_SESSION_CREATED)
 
 // Session is closing because of an error.
 //   {
@@ -2423,6 +2684,11 @@ EVENT_TYPE(QUIC_SESSION_ATTEMPTING_TO_PROCESS_UNDECRYPTABLE_PACKET)
 // }
 EVENT_TYPE(QUIC_SESSION_KEY_UPDATE)
 
+// Session received an ORIGIN frame
+// {
+//   "origins" : <list of received origins>
+EVENT_TYPE(QUIC_SESSION_ORIGIN_FRAME_RECEIVED)
+
 // ------------------------------------------------------------------------
 // QuicHttpStream
 // ------------------------------------------------------------------------
@@ -2971,6 +3237,35 @@ EVENT_TYPE(NETWORK_CONNECTIVITY_CHANGED)
 //   }
 EVENT_TYPE(NETWORK_CHANGED)
 
+// This event is emitted whenever the macOS's dynamic store entries of network
+// interface related keys (SCEntNetInterface, SCEntNetIPv4, and SCEntNetIPv6)
+// has been changed.
+//   {
+//     "result":              <Whether to notify as IP address changed>,
+//     "net_ipv4_key":        <Boolean indicating whether SCEntNetIPv4 entry has
+//                             been changed>,
+//     "net_ipv6_key":        <Boolean indicating whether SCEntNetIPv6 entry has
+//                             been changed>,
+//     "net_interface_key":   <Boolean indicating whether SCEntNetInterface
+//                             entry has been changed>,
+//     "reduce_notification": <Boolean indicating whether
+//                             ReduceIPAddressChangeNotification feature is
+//                             enabled>,
+//     "old_ipv4_interface":  <The IPv4 primary interface name obtained before
+//                             the dynamic store entry change event>,
+//     "old_ipv6_interface":  <The IPv6 primary interface name obtained before
+//                             the dynamic store entry change event>,
+//     "new_ipv4_interface":  <The IPv4 primary interface name obtained after
+//                             the dynamic store entry change event>,
+//     "new_ipv6_interface":  <The IPv6 primary interface name obtained after
+//                             the dynamic store entry change event>,
+//     "old_interfaces":      <The list of network interfaces obtained before
+//                             the dynamic store entry change event>,
+//     "new_interfaces":      <The list of network interfaces obtained after
+//                             the dynamic store entry change event>
+//   }
+EVENT_TYPE(NETWORK_MAC_OS_CONFIG_CHANGED)
+
 // This event is emitted whenever DnsClient receives a new DnsConfig or
 // DnsConfigOverrides.
 //   {
@@ -3050,6 +3345,18 @@ EVENT_TYPE(CERTIFICATE_DATABASE_CLIENT_CERT_STORE_CHANGED)
 //    "is_cleared": <boolean>,
 // }
 EVENT_TYPE(CLEAR_CACHED_CLIENT_CERT)
+
+// This event is logged when a request to conditionally clear the cached client
+// certificate matching a given certificate has been received. It contains the
+// following parameters:
+// {
+//    "hosts": <A list of serialized scheme/host/port which had a matching
+//             cached client certificate.>,
+//    "certificates": <A list of PEM encoded certificates, the first one
+//                    being the client certificate being matched and the
+//                    remaining being its certificate chain.>,
+// }
+EVENT_TYPE(CLEAR_MATCHING_CACHED_CLIENT_CERT)
 
 // ------------------------------------------------------------------------
 // Exponential back-off throttling events
@@ -3343,6 +3650,10 @@ EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 //      "digest_policy": <Specifies which digest methods are accepted in this
 //                        attempt.>
 //      "is_ev_attempt": <True if this is an EV verification attempt.>
+//      "is_network_time_attempt": <True if this attempt used the network time.>
+//      "network_time_value": <Int - time in milliseconds since the unix epoch,
+//                             only populated if is_network_time_attempt is
+//                             true.>
 // }
 //
 // The END phase contains the following information:
@@ -3936,6 +4247,7 @@ EVENT_TYPE(COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE)
 //    "name": <Name of the cookie>,
 //    "domain": <Domain of the cookie>,
 //    "path": <Path of the cookie>,
+//    "partition_key": <partition key of the cookie, if any>
 //    "operation": <Operation, either "send" or "store">
 //  }
 EVENT_TYPE(COOKIE_INCLUSION_STATUS)

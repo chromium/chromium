@@ -11,8 +11,7 @@
 
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    RuntimeEnabled=EditContext
+    ActiveScriptWrappable
 ] interface EditContext : EventTarget {
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);

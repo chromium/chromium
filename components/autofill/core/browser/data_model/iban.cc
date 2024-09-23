@@ -4,13 +4,16 @@
 
 #include "components/autofill/core/browser/data_model/iban.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -19,103 +22,11 @@ namespace autofill {
 
 namespace {
 
-// IBAN lengths taken from:
-// https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country.
-static constexpr auto kCountryToIbanLength =
-    base::MakeFixedFlatMap<std::string_view, size_t>({
-        {"AD", 24},  // Andorra
-        {"AE", 23},  // United Arab Emirates
-        {"AL", 28},  // Albania
-        {"AT", 20},  // Austria
-        {"AZ", 28},  // Azerbaijan
-        {"BA", 20},  // Bosnia and Herzegovina
-        {"BE", 16},  // Belgium
-        {"BG", 22},  // Bulgaria
-        {"BH", 22},  // Bahrain
-        {"BR", 29},  // Brazil
-        {"BY", 28},  // Belarus
-        {"CH", 21},  // Switzerland
-        {"CR", 22},  // Costa Rica
-        {"CY", 28},  // Cyprus
-        {"CZ", 24},  // Czech Republic
-        {"DE", 22},  // Germany
-        {"DK", 18},  // Denmark
-        {"DO", 28},  // Dominican Republic
-        {"EE", 20},  // Estonia
-        {"EG", 29},  // Egypt
-        {"ES", 24},  // Spain
-        {"FI", 18},  // Finland
-        {"FO", 18},  // Faroe Islands
-        {"FR", 27},  // France
-        {"GE", 22},  // Georgia
-        {"GB", 22},  // United Kingdom
-        {"GI", 23},  // Gibraltar
-        {"GL", 18},  // Greenland
-        {"GR", 27},  // Greece
-        {"GT", 28},  // Guatemala
-        {"HR", 21},  // Croatia
-        {"HU", 28},  // Hungary
-        {"IL", 23},  // Israel
-        {"IQ", 23},  // Iraq
-        {"IS", 26},  // Iceland
-        {"IT", 27},  // Italy
-        {"JO", 30},  // Jordan
-        {"KW", 30},  // Kuwait
-        {"KZ", 20},  // Kazakhstan
-        {"LB", 28},  // Lebanon
-        {"LC", 32},  // Saint Lucia
-        {"LI", 21},  // Liechtenstein
-        {"LT", 20},  // Lithuania
-        {"LU", 20},  // Luxembourg
-        {"LY", 25},  // Libya
-        {"LV", 21},  // Latvia
-        {"MC", 27},  // Monaco
-        {"MD", 24},  // Moldova
-        {"ME", 22},  // Montenegro
-        {"MK", 19},  // North Macedonia
-        {"MR", 27},  // Mauritania
-        {"MT", 31},  // Malta
-        {"MU", 30},  // Mauritius
-        {"NL", 18},  // Netherlands
-        {"PK", 24},  // Pakistan
-        {"PL", 28},  // Poland
-        {"PS", 29},  // Palestinian territories
-        {"PT", 25},  // Portugal
-        {"QA", 29},  // Qatar
-        {"RO", 24},  // Romania
-        {"RU", 33},  // Russia
-        {"RS", 22},  // Serbia
-        {"SA", 24},  // Saudi Arabia
-        {"SC", 31},  // Seychelles
-        {"SD", 18},  // Sudan
-        {"SE", 24},  // Sweden
-        {"SI", 19},  // Slovenia
-        {"SK", 24},  // Slovakia
-        {"SM", 27},  // San Marino
-        {"ST", 25},  // São Tomé and Príncipe
-        {"TN", 24},  // Tunisia
-        {"TR", 26},  // Turkey
-        {"SV", 28},  // El Salvador
-        {"TL", 23},  // East Timor
-        {"UA", 29},  // Ukraine
-        {"VA", 22},  // Vatican City
-        {"VG", 24},  // Virgin Islands, British
-        {"XK", 20},  // Kosovo
-    });
-
 // This prefix and suffix length are for local-based IBANs only. Server-based
 // IBANs should generally use the same value but the client will respect
 // whatever it receives from the server.
-static constexpr int kPrefixLength = 4;
+static constexpr int kPrefixLength = 2;
 static constexpr int kSuffixLength = 4;
-
-int GetIbanCountryToLength(std::string_view country_code) {
-  auto* it = kCountryToIbanLength.find(country_code);
-  if (it == kCountryToIbanLength.end()) {
-    return 0;
-  }
-  return it->second;
-}
 
 // This method does the following steps:
 // 1. Move the four initial characters to the end of the string.
@@ -167,7 +78,7 @@ int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
   return remainder;
 }
 
-std::u16string RemoveIbanSeparators(base::StringPiece16 value) {
+std::u16string RemoveIbanSeparators(std::u16string_view value) {
   std::u16string stripped_value;
   base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
   return stripped_value;
@@ -199,9 +110,9 @@ Iban::~Iban() = default;
 
 Iban& Iban::operator=(const Iban& iban) = default;
 
-AutofillMetadata Iban::GetMetadata() const {
+PaymentsMetadata Iban::GetMetadata() const {
   CHECK_NE(record_type_, Iban::kUnknown);
-  AutofillMetadata metadata = AutofillDataModel::GetMetadata();
+  PaymentsMetadata metadata(*this);
   metadata.id = record_type_ == Iban::kLocalIban
                     ? guid()
                     : base::NumberToString(instrument_id());
@@ -224,9 +135,10 @@ bool Iban::IsValid(const std::u16string& value) {
   }
 
   // IBAN length must match the length of IBANs in the country the IBAN is from.
-  size_t iban_value_length =
-      GetIbanCountryToLength(base::UTF16ToUTF8(iban_value.substr(0, 2)));
-  if (iban_value_length == 0 || iban_value_length != iban_value.length()) {
+  const std::string country_code = base::UTF16ToUTF8(iban_value.substr(0, 2));
+  if (!IsIbanApplicableInCountry(country_code) ||
+      GetLengthOfIbanCountry(GetIbanSupportedCountry(country_code)) !=
+          iban_value.length()) {
     return false;
   }
 
@@ -235,14 +147,357 @@ bool Iban::IsValid(const std::u16string& value) {
 }
 
 // static
-bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
-  auto* it = kCountryToIbanLength.find(country_code);
-  return it != kCountryToIbanLength.end();
+std::string Iban::GetCountryCode(const std::u16string& iban_value) {
+  CHECK(iban_value.length() >= 2);
+  return base::UTF16ToUTF8(base::i18n::ToUpper(iban_value.substr(0, 2)));
 }
 
-bool Iban::SetMetadata(const AutofillMetadata& metadata) {
+// static
+bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
+  return GetIbanSupportedCountry(country_code) !=
+         IbanSupportedCountry::kUnsupported;
+}
+
+// static
+Iban::IbanSupportedCountry Iban::GetIbanSupportedCountry(
+    std::string_view country_code) {
+  if (country_code == "AD") {
+    return IbanSupportedCountry::kAD;
+  } else if (country_code == "AE") {
+    return IbanSupportedCountry::kAE;
+  } else if (country_code == "AL") {
+    return IbanSupportedCountry::kAL;
+  } else if (country_code == "AT") {
+    return IbanSupportedCountry::kAT;
+  } else if (country_code == "AZ") {
+    return IbanSupportedCountry::kAZ;
+  } else if (country_code == "BA") {
+    return IbanSupportedCountry::kBA;
+  } else if (country_code == "BE") {
+    return IbanSupportedCountry::kBE;
+  } else if (country_code == "BG") {
+    return IbanSupportedCountry::kBG;
+  } else if (country_code == "BH") {
+    return IbanSupportedCountry::kBH;
+  } else if (country_code == "BR") {
+    return IbanSupportedCountry::kBR;
+  } else if (country_code == "BY") {
+    return IbanSupportedCountry::kBY;
+  } else if (country_code == "CH") {
+    return IbanSupportedCountry::kCH;
+  } else if (country_code == "CR") {
+    return IbanSupportedCountry::kCR;
+  } else if (country_code == "CY") {
+    return IbanSupportedCountry::kCY;
+  } else if (country_code == "CZ") {
+    return IbanSupportedCountry::kCZ;
+  } else if (country_code == "DE") {
+    return IbanSupportedCountry::kDE;
+  } else if (country_code == "DK") {
+    return IbanSupportedCountry::kDK;
+  } else if (country_code == "DO") {
+    return IbanSupportedCountry::kDO;
+  } else if (country_code == "EE") {
+    return IbanSupportedCountry::kEE;
+  } else if (country_code == "EG") {
+    return IbanSupportedCountry::kEG;
+  } else if (country_code == "ES") {
+    return IbanSupportedCountry::kES;
+  } else if (country_code == "FI") {
+    return IbanSupportedCountry::kFI;
+  } else if (country_code == "FO") {
+    return IbanSupportedCountry::kFO;
+  } else if (country_code == "FR") {
+    return IbanSupportedCountry::kFR;
+  } else if (country_code == "GB") {
+    return IbanSupportedCountry::kGB;
+  } else if (country_code == "GE") {
+    return IbanSupportedCountry::kGE;
+  } else if (country_code == "GI") {
+    return IbanSupportedCountry::kGI;
+  } else if (country_code == "GL") {
+    return IbanSupportedCountry::kGL;
+  } else if (country_code == "GR") {
+    return IbanSupportedCountry::kGR;
+  } else if (country_code == "GT") {
+    return IbanSupportedCountry::kGT;
+  } else if (country_code == "HR") {
+    return IbanSupportedCountry::kHR;
+  } else if (country_code == "HU") {
+    return IbanSupportedCountry::kHU;
+  } else if (country_code == "IL") {
+    return IbanSupportedCountry::kIL;
+  } else if (country_code == "IQ") {
+    return IbanSupportedCountry::kIQ;
+  } else if (country_code == "IS") {
+    return IbanSupportedCountry::kIS;
+  } else if (country_code == "IT") {
+    return IbanSupportedCountry::kIT;
+  } else if (country_code == "JO") {
+    return IbanSupportedCountry::kJO;
+  } else if (country_code == "KW") {
+    return IbanSupportedCountry::kKW;
+  } else if (country_code == "KZ") {
+    return IbanSupportedCountry::kKZ;
+  } else if (country_code == "LB") {
+    return IbanSupportedCountry::kLB;
+  } else if (country_code == "LC") {
+    return IbanSupportedCountry::kLC;
+  } else if (country_code == "LI") {
+    return IbanSupportedCountry::kLI;
+  } else if (country_code == "LT") {
+    return IbanSupportedCountry::kLT;
+  } else if (country_code == "LU") {
+    return IbanSupportedCountry::kLU;
+  } else if (country_code == "LV") {
+    return IbanSupportedCountry::kLV;
+  } else if (country_code == "LY") {
+    return IbanSupportedCountry::kLY;
+  } else if (country_code == "MC") {
+    return IbanSupportedCountry::kMC;
+  } else if (country_code == "MD") {
+    return IbanSupportedCountry::kMD;
+  } else if (country_code == "ME") {
+    return IbanSupportedCountry::kME;
+  } else if (country_code == "MK") {
+    return IbanSupportedCountry::kMK;
+  } else if (country_code == "MR") {
+    return IbanSupportedCountry::kMR;
+  } else if (country_code == "MT") {
+    return IbanSupportedCountry::kMT;
+  } else if (country_code == "MU") {
+    return IbanSupportedCountry::kMU;
+  } else if (country_code == "NL") {
+    return IbanSupportedCountry::kNL;
+  } else if (country_code == "PK") {
+    return IbanSupportedCountry::kPK;
+  } else if (country_code == "PL") {
+    return IbanSupportedCountry::kPL;
+  } else if (country_code == "PS") {
+    return IbanSupportedCountry::kPS;
+  } else if (country_code == "PT") {
+    return IbanSupportedCountry::kPT;
+  } else if (country_code == "QA") {
+    return IbanSupportedCountry::kQA;
+  } else if (country_code == "RO") {
+    return IbanSupportedCountry::kRO;
+  } else if (country_code == "RS") {
+    return IbanSupportedCountry::kRS;
+  } else if (country_code == "RU") {
+    return IbanSupportedCountry::kRU;
+  } else if (country_code == "SA") {
+    return IbanSupportedCountry::kSA;
+  } else if (country_code == "SC") {
+    return IbanSupportedCountry::kSC;
+  } else if (country_code == "SD") {
+    return IbanSupportedCountry::kSD;
+  } else if (country_code == "SE") {
+    return IbanSupportedCountry::kSE;
+  } else if (country_code == "SI") {
+    return IbanSupportedCountry::kSI;
+  } else if (country_code == "SK") {
+    return IbanSupportedCountry::kSK;
+  } else if (country_code == "SM") {
+    return IbanSupportedCountry::kSM;
+  } else if (country_code == "ST") {
+    return IbanSupportedCountry::kST;
+  } else if (country_code == "SV") {
+    return IbanSupportedCountry::kSV;
+  } else if (country_code == "TL") {
+    return IbanSupportedCountry::kTL;
+  } else if (country_code == "TN") {
+    return IbanSupportedCountry::kTN;
+  } else if (country_code == "TR") {
+    return IbanSupportedCountry::kTR;
+  } else if (country_code == "UA") {
+    return IbanSupportedCountry::kUA;
+  } else if (country_code == "VA") {
+    return IbanSupportedCountry::kVA;
+  } else if (country_code == "VG") {
+    return IbanSupportedCountry::kVG;
+  } else if (country_code == "XK") {
+    return IbanSupportedCountry::kXK;
+  } else {
+    return IbanSupportedCountry::kUnsupported;
+  }
+}
+
+// static
+// IBAN lengths taken from:
+// https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country.
+size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
+  switch (supported_country) {
+    case IbanSupportedCountry::kAD:
+      return 24;
+    case IbanSupportedCountry::kAE:
+      return 23;
+    case IbanSupportedCountry::kAL:
+      return 28;
+    case IbanSupportedCountry::kAT:
+      return 20;
+    case IbanSupportedCountry::kAZ:
+      return 28;
+    case IbanSupportedCountry::kBA:
+      return 20;
+    case IbanSupportedCountry::kBE:
+      return 16;
+    case IbanSupportedCountry::kBG:
+      return 22;
+    case IbanSupportedCountry::kBH:
+      return 22;
+    case IbanSupportedCountry::kBR:
+      return 29;
+    case IbanSupportedCountry::kBY:
+      return 28;
+    case IbanSupportedCountry::kCH:
+      return 21;
+    case IbanSupportedCountry::kCR:
+      return 22;
+    case IbanSupportedCountry::kCY:
+      return 28;
+    case IbanSupportedCountry::kCZ:
+      return 24;
+    case IbanSupportedCountry::kDE:
+      return 22;
+    case IbanSupportedCountry::kDK:
+      return 18;
+    case IbanSupportedCountry::kDO:
+      return 28;
+    case IbanSupportedCountry::kEE:
+      return 20;
+    case IbanSupportedCountry::kEG:
+      return 29;
+    case IbanSupportedCountry::kES:
+      return 24;
+    case IbanSupportedCountry::kFI:
+      return 18;
+    case IbanSupportedCountry::kFO:
+      return 18;
+    case IbanSupportedCountry::kFR:
+      return 27;
+    case IbanSupportedCountry::kGB:
+      return 22;
+    case IbanSupportedCountry::kGE:
+      return 22;
+    case IbanSupportedCountry::kGI:
+      return 23;
+    case IbanSupportedCountry::kGL:
+      return 18;
+    case IbanSupportedCountry::kGR:
+      return 27;
+    case IbanSupportedCountry::kGT:
+      return 28;
+    case IbanSupportedCountry::kHR:
+      return 21;
+    case IbanSupportedCountry::kHU:
+      return 28;
+    case IbanSupportedCountry::kIL:
+      return 23;
+    case IbanSupportedCountry::kIQ:
+      return 23;
+    case IbanSupportedCountry::kIS:
+      return 26;
+    case IbanSupportedCountry::kIT:
+      return 27;
+    case IbanSupportedCountry::kJO:
+      return 30;
+    case IbanSupportedCountry::kKW:
+      return 30;
+    case IbanSupportedCountry::kKZ:
+      return 20;
+    case IbanSupportedCountry::kLB:
+      return 28;
+    case IbanSupportedCountry::kLC:
+      return 32;
+    case IbanSupportedCountry::kLI:
+      return 21;
+    case IbanSupportedCountry::kLT:
+      return 20;
+    case IbanSupportedCountry::kLU:
+      return 20;
+    case IbanSupportedCountry::kLV:
+      return 21;
+    case IbanSupportedCountry::kLY:
+      return 25;
+    case IbanSupportedCountry::kMC:
+      return 27;
+    case IbanSupportedCountry::kMD:
+      return 24;
+    case IbanSupportedCountry::kME:
+      return 22;
+    case IbanSupportedCountry::kMK:
+      return 19;
+    case IbanSupportedCountry::kMR:
+      return 27;
+    case IbanSupportedCountry::kMT:
+      return 31;
+    case IbanSupportedCountry::kMU:
+      return 30;
+    case IbanSupportedCountry::kNL:
+      return 18;
+    case IbanSupportedCountry::kPK:
+      return 24;
+    case IbanSupportedCountry::kPL:
+      return 28;
+    case IbanSupportedCountry::kPS:
+      return 29;
+    case IbanSupportedCountry::kPT:
+      return 25;
+    case IbanSupportedCountry::kQA:
+      return 29;
+    case IbanSupportedCountry::kRO:
+      return 24;
+    case IbanSupportedCountry::kRU:
+      return 33;
+    case IbanSupportedCountry::kRS:
+      return 22;
+    case IbanSupportedCountry::kSA:
+      return 24;
+    case IbanSupportedCountry::kSC:
+      return 31;
+    case IbanSupportedCountry::kSD:
+      return 18;
+    case IbanSupportedCountry::kSE:
+      return 24;
+    case IbanSupportedCountry::kSI:
+      return 19;
+    case IbanSupportedCountry::kSK:
+      return 24;
+    case IbanSupportedCountry::kSM:
+      return 27;
+    case IbanSupportedCountry::kST:
+      return 25;
+    case IbanSupportedCountry::kSV:
+      return 28;
+    case IbanSupportedCountry::kTL:
+      return 23;
+    case IbanSupportedCountry::kTN:
+      return 24;
+    case IbanSupportedCountry::kTR:
+      return 26;
+    case IbanSupportedCountry::kUA:
+      return 29;
+    case IbanSupportedCountry::kVA:
+      return 22;
+    case IbanSupportedCountry::kVG:
+      return 24;
+    case IbanSupportedCountry::kXK:
+      return 20;
+    case IbanSupportedCountry::kUnsupported:
+      NOTREACHED();
+  }
+}
+
+bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
   // Make sure the ids match.
-  return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
+  if (metadata.id != (record_type_ == RecordType::kLocalIban
+                          ? guid()
+                          : base::NumberToString(instrument_id()))) {
+    return false;
+  }
+  set_use_count(metadata.use_count);
+  set_use_date(metadata.use_date);
+  return true;
 }
 
 std::u16string Iban::GetRawInfo(FieldType type) const {
@@ -250,7 +505,7 @@ std::u16string Iban::GetRawInfo(FieldType type) const {
     return value_;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -260,7 +515,7 @@ void Iban::SetRawInfoWithVerificationStatus(FieldType type,
   if (type == IBAN_VALUE) {
     set_value(value);
   } else {
-    NOTREACHED() << "Attempting to set unknown info-type" << type;
+    NOTREACHED_IN_MIGRATION() << "Attempting to set unknown info-type" << type;
   }
 }
 
@@ -303,10 +558,6 @@ int Iban::Compare(const Iban& iban) const {
     return comparison;
   }
 
-  if (length_ != iban.length_) {
-    return 1;
-  }
-
   if (record_type_ != iban.record_type_) {
     return 1;
   }
@@ -341,19 +592,15 @@ void Iban::set_value(const std::u16string& value) {
     return;
   }
   CHECK_NE(record_type_, Iban::kServerIban);
-  // Get rid of all separators in the value before storing.
+  // Get rid of all separators in the value and capitalize them before storing.
   value_ = RemoveIbanSeparators(value);
-  static_assert(
-      base::ranges::min_element(kCountryToIbanLength, {},
-                                [](const auto& entry) { return entry.second; })
-          ->second >= kPrefixLength + kSuffixLength);
+  value_ = base::ToUpperASCII(value_);
   // The `IsValid()` call above ensures we have a valid IBAN length. We should
   // never set the `kPrefixLength` and `kSuffixLength` in a way where they can
   // be longer than the total length of the IBAN.
   CHECK(value_.length() >= kPrefixLength + kSuffixLength);
   prefix_ = value_.substr(0, kPrefixLength);
   suffix_ = value_.substr(value_.length() - kSuffixLength);
-  length_ = value_.length();
 }
 
 void Iban::set_nickname(const std::u16string& nickname) {
@@ -370,17 +617,14 @@ void Iban::set_nickname(const std::u16string& nickname) {
 
 void Iban::set_prefix(std::u16string prefix) {
   CHECK_NE(record_type_, Iban::kLocalIban);
-  prefix_ = std::move(prefix);
+  std::u16string capitalized_prefix = base::ToUpperASCII(prefix);
+  prefix_ = std::move(capitalized_prefix);
 }
 
 void Iban::set_suffix(std::u16string suffix) {
   CHECK_NE(record_type_, Iban::kLocalIban);
-  suffix_ = std::move(suffix);
-}
-
-void Iban::set_length(int length) {
-  CHECK_NE(record_type_, Iban::kLocalIban);
-  length_ = length;
+  std::u16string capitalized_suffix = base::ToUpperASCII(suffix);
+  suffix_ = std::move(capitalized_suffix);
 }
 
 bool Iban::IsValid() {
@@ -388,9 +632,14 @@ bool Iban::IsValid() {
   return record_type_ == kServerIban || IsValid(value_);
 }
 
+std::string Iban::GetCountryCode() const {
+  CHECK(prefix_.length() >= 2);
+  return GetCountryCode(prefix_);
+}
+
 void Iban::RecordAndLogUse() {
   autofill_metrics::LogDaysSinceLastIbanUse(*this);
-  set_use_date(AutofillClock::Now());
+  RecordUseDate(AutofillClock::Now());
   set_use_count(use_count() + 1);
 }
 
@@ -401,50 +650,40 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
   if (value_.empty() && record_type_ == kLocalIban) {
     return value_;
   }
-  // Displaying the full IBAN value is not possible for server-based IBANs.
-  CHECK(is_value_masked || record_type_ != Iban::kServerIban);
-  CHECK(length_ >= int(prefix_.length() + suffix_.length()));
 
-  // If masked IBAN value is needed, the IBAN identifier string can be
-  // constructed by adding ellipsis dots in the middle based on the middle
-  // length (which can be calculated from subtracting `prefix_.length()` and
-  // `suffix_.length()` from `length_`). Otherwise, `iban_identifier` can be
-  // directly set to the full value.
-  std::u16string iban_identifier;
   if (is_value_masked) {
-    iban_identifier = base::StrCat(
-        {prefix_,
-         std::u16string(length_ - prefix_.length() - suffix_.length(),
-                        kEllipsisOneDot),
-         suffix_});
-  } else {
-    iban_identifier = value_;
+    const std::u16string one_space = std::u16string(1, kEllipsisOneSpace);
+    const std::u16string two_dots = std::u16string(2, kEllipsisOneDot);
+    return base::StrCat({prefix(), one_space, two_dots, suffix()});
   }
 
-  // Now that the IBAN identifier string has been constructed, the remaining
-  // step is to add space separators.
+  // Displaying the full IBAN value is not possible for server-based IBANs.
+  CHECK(record_type_ != Iban::kServerIban);
+
+  // Add space separators into the IBAN identifier to display it in groups of
+  // four characters. For example, an IBAN with value of DE91100000000123456789
+  // will be displayed as: DE91 1000 0000 0123 4567 89.
   std::u16string output;
-  output.reserve(length_ + (length_ - 1) / 4);
-  for (int i = 0; i < length_; ++i) {
+  output.reserve(value_.length() + (value_.length() - 1) / 4);
+  for (size_t i = 0; i < value_.length(); ++i) {
     if (i % 4 == 0 && i > 0) {
       output.push_back(kEllipsisOneSpace);
     }
-    output.push_back(iban_identifier[i]);
+    output.push_back(value_[i]);
   }
 
   return output;
 }
 
-bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
+bool Iban::MatchesPrefixAndSuffix(const Iban& iban) const {
   // Unlike the `Compare()` function, which seeks an exact match between
-  // `prefix_`, `suffix_`, and `length_`, the comparison performed here involves
-  // matching the prefixes between each other and similarly comparing the
-  // suffixes between each other This approach is adopted because the `prefix`,
-  // `suffix`, and `length` received from the server are considered the
-  // source of truth. Therefore, even if the values of `kPrefixLength` or
-  // `kSuffixLength` change later, leading to differences in length between the
-  // client and server, it remains essential to match substrings and identify
-  // the matched IBAN.
+  // `prefix_` and `suffix_`, the comparison performed here involves matching
+  // the prefixes between each other and similarly comparing the suffixes
+  // between each other This approach is adopted because the `prefix` and
+  // `suffix` received from the server are considered the source of truth.
+  // Therefore, even if the values of `kPrefixLength` or `kSuffixLength` change
+  // later, leading to differences in length between the client and server, it
+  // remains essential to match substrings and identify the matched IBAN.
   bool prefix_matched = base::StartsWith(prefix(), iban.prefix()) ||
                         base::StartsWith(iban.prefix(), prefix());
   if (!prefix_matched) {
@@ -457,7 +696,7 @@ bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
     return false;
   }
 
-  return length() == iban.length();
+  return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban) {
@@ -472,7 +711,6 @@ std::ostream& operator<<(std::ostream& os, const Iban& iban) {
             << ", value: " << base::UTF16ToUTF8(iban.GetRawInfo(IBAN_VALUE))
             << ", prefix: " << base::UTF16ToUTF8(iban.prefix())
             << ", suffix: " << base::UTF16ToUTF8(iban.suffix())
-            << ", length: " << iban.length()
             << ", nickname: " << base::UTF16ToUTF8(iban.nickname()) << "]";
 }
 

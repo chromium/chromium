@@ -5,12 +5,11 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DCOMP_SURFACE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DCOMP_SURFACE_IMAGE_BACKING_H_
 
+#include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
-#include <windows.h>
 #include <wrl/client.h>
-
-#include <dawn/native/D3DBackend.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_representation.h"
@@ -37,7 +36,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label);
 
   DCompSurfaceImageBacking(const DCompSurfaceImageBacking&) = delete;
@@ -85,7 +84,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface);
 
@@ -109,14 +108,13 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
                                    const gfx::Rect& update_rect);
   void EndDrawGanesh();
 
-#if BUILDFLAG(USE_DAWN)
   // For DCompSurfaceDawnImageRepresentation implementation.
   friend class DCompSurfaceDawnImageRepresentation;
   wgpu::Texture BeginDrawDawn(const wgpu::Device& device,
                               const wgpu::TextureUsage usage,
+                              const wgpu::TextureUsage internal_usage,
                               const gfx::Rect& update_rect);
   void EndDrawDawn(const wgpu::Device& device, wgpu::Texture texture);
-#endif  // BUILDFLAG(USE_DAWN)
 
   // Used to restore the surface that was current before BeginDraw at EndDraw.
   std::optional<ui::ScopedMakeCurrent> scoped_make_current_;
@@ -142,12 +140,10 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   // The update_offset returned from |dcomp_surface_|'s BeginDraw.
   gfx::Point dcomp_update_offset_;
 
-#if BUILDFLAG(USE_DAWN)
-  // ExternalImageDXGI is created from |dcomp_surface_|'s draw texture between
-  // |BeginDrawGraphite| and |EndDrawGraphite|. This |external_image_| wraps the
-  // ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
-  std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
-#endif
+  // SharedTextureMemory is created from |dcomp_surface_|'s draw texture between
+  // |BeginDrawGraphite| and |EndDrawGraphite|. This |shared_texture_memory_|
+  // wraps the ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
+  wgpu::SharedTextureMemory shared_texture_memory_;
 
   // This is a number that increments once for every EndDraw on a surface, and
   // is used to determine when the contents have changed so Commit() needs to

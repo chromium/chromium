@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -181,7 +182,7 @@ void StartSuggestService::SuggestResponseLoaded(
   // Ensure the request succeeded and that the provider used is still available.
   // A verbatim match cannot be generated without this provider, causing errors.
   const bool request_succeeded = response && loader->NetError() == net::OK;
-  base::EraseIf(loaders_, [loader](const auto& loader_ptr) {
+  std::erase_if(loaders_, [loader](const auto& loader_ptr) {
     return loader == loader_ptr.get();
   });
   if (!request_succeeded) {

@@ -51,6 +51,15 @@ const invalidConfigs = [
       height: 480,
     },
   },
+  {
+    comment: 'bitrate is present but zero',
+    config: {
+      codec: 'vp8',
+      width: 640,
+      height: 480,
+      bitrate: 0
+    },
+  },
 ];
 
 invalidConfigs.forEach(entry => {
@@ -85,6 +94,14 @@ const validButUnsupportedConfigs = [
     comment: 'Unrecognized codec',
     config: {
       codec: 'bogus',
+      width: 640,
+      height: 480,
+    },
+  },
+  {
+  comment: 'VP8 codec string not accepted by Web Codecs',
+    config: {
+      codec: 'vp08.00.10.08',
       width: 640,
       height: 480,
     },

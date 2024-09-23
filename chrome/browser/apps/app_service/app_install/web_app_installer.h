@@ -88,14 +88,15 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
 
   struct PendingCrosapiRequest {
     PendingCrosapiRequest(
-        crosapi::mojom::PreloadWebAppInstallInfoPtr info,
-        crosapi::mojom::WebAppProviderBridge::InstallPreloadWebAppCallback
-            callback);
+        crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info,
+        crosapi::mojom::WebAppProviderBridge::
+            InstallWebAppFromVerifiedManifestCallback callback);
     PendingCrosapiRequest(PendingCrosapiRequest&&);
     ~PendingCrosapiRequest();
 
-    crosapi::mojom::PreloadWebAppInstallInfoPtr info;
-    crosapi::mojom::WebAppProviderBridge::InstallPreloadWebAppCallback callback;
+    crosapi::mojom::WebAppVerifiedManifestInstallInfoPtr info;
+    crosapi::mojom::WebAppProviderBridge::
+        InstallWebAppFromVerifiedManifestCallback callback;
   };
   std::vector<PendingCrosapiRequest> pending_crosapi_requests_;
 

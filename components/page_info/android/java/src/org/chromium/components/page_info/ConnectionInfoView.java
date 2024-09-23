@@ -25,7 +25,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
@@ -121,9 +120,14 @@ public class ConnectionInfoView implements OnClickListener {
     private View addSection(int iconId, String headline, String description, int iconColorId) {
         View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info, null);
         ImageView i = section.findViewById(R.id.connection_info_icon);
-        i.setImageResource(iconId);
-        ImageViewCompat.setImageTintList(
-                i, AppCompatResources.getColorStateList(mContext, iconColorId));
+        if (iconId == 0) {
+            assert iconColorId == 0;
+            i.setVisibility(View.INVISIBLE);
+        } else {
+            i.setImageResource(iconId);
+            ImageViewCompat.setImageTintList(
+                    i, AppCompatResources.getColorStateList(mContext, iconColorId));
+        }
 
         TextView d = section.findViewById(R.id.connection_info_description);
         d.setText(description);
@@ -137,8 +141,7 @@ public class ConnectionInfoView implements OnClickListener {
         assert mCertificateViewerTextView == null;
         mCertificateViewerTextView = new AppCompatTextView(mContext);
         mCertificateViewerTextView.setText(label);
-        ApiCompatibilityUtils.setTextAppearance(
-                mCertificateViewerTextView, R.style.TextAppearance_TextSmall_Link);
+        mCertificateViewerTextView.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mCertificateViewerTextView.setOnClickListener(this);
         mCertificateViewerTextView.setPadding(0, mPaddingVertical, 0, 0);
         mCertificateLayout.addView(mCertificateViewerTextView);
@@ -164,8 +167,7 @@ public class ConnectionInfoView implements OnClickListener {
         mMoreInfoLink = new AppCompatTextView(mContext);
         mLinkUrl = HELP_URL;
         mMoreInfoLink.setText(linkText);
-        ApiCompatibilityUtils.setTextAppearance(
-                mMoreInfoLink, R.style.TextAppearance_TextSmall_Link);
+        mMoreInfoLink.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
         mMoreInfoLink.setPadding(0, mPaddingVertical, 0, 0);
         mMoreInfoLink.setOnClickListener(this);
         mDescriptionLayout.addView(mMoreInfoLink);
@@ -210,7 +212,7 @@ public class ConnectionInfoView implements OnClickListener {
     }
 
     private void showConnectionSecurityInfo() {
-        // TODO(crbug.com/1077766): We probably don't want to dismiss the new PageInfo UI here?
+        // TODO(crbug.com/40129299): We probably don't want to dismiss the new PageInfo UI here?
         mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         try {
             Intent i = Intent.parseUri(mLinkUrl, Intent.URI_INTENT_SCHEME);

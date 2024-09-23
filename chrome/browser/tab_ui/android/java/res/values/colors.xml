@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <color name="incognito_tab_title_color">@color/baseline_neutral_90</color>
+  <color name="incognito_tab_title_selected_color">@color/baseline_primary_20</color>
+
+  <color name="incognito_tab_thumbnail_placeholder_color">@color/baseline_neutral_variant_80_alpha_15</color>
+  <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_90</color>
+
+  <color name="incognito_tab_bg_color">@color/default_bg_color_dark_elev_4_baseline</color>
+  <color name="incognito_tab_bg_selected_color">@color/baseline_primary_80</color>
+</resources>

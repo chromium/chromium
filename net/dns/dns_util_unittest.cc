@@ -4,6 +4,8 @@
 
 #include "net/dns/dns_util.h"
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -17,7 +19,7 @@ namespace net {
 namespace {
 // Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
 // `provider`. Crashes if there is no matching entry.
-const DohProviderEntry& GetDohProviderEntry(base::StringPiece provider) {
+const DohProviderEntry& GetDohProviderEntry(std::string_view provider) {
   auto provider_list = DohProviderEntry::GetList();
   auto it =
       base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
@@ -51,7 +53,7 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromDotHostname) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          GetDohProviderEntry("CleanBrowsingFamily").feature});
+          GetDohProviderEntry("CleanBrowsingFamily").feature.get()});
   doh_servers = GetDohUpgradeServersFromDotHostname(
       "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(0u, doh_servers.size());
@@ -91,8 +93,9 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{GetDohProviderEntry("CleanBrowsingSecure").feature,
-                             GetDohProviderEntry("Cloudflare").feature});
+      /*disabled_features=*/{
+          GetDohProviderEntry("CleanBrowsingSecure").feature.get(),
+          GetDohProviderEntry("Cloudflare").feature.get()});
 
   doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
   EXPECT_THAT(doh_servers,

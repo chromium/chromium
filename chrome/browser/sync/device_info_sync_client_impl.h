@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 
 class Profile;
@@ -30,6 +31,10 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   bool GetSendTabToSelfReceivingEnabled() const override;
 
   // syncer::DeviceInfoSyncClient:
+  sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
+      const override;
+
+  // syncer::DeviceInfoSyncClient:
   std::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override;
 
@@ -37,7 +42,7 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   std::optional<std::string> GetFCMRegistrationToken() const override;
 
   // syncer::DeviceInfoSyncClient:
-  std::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override;
+  std::optional<syncer::DataTypeSet> GetInterestedDataTypes() const override;
 
   // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo

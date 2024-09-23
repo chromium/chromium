@@ -44,22 +44,21 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     Data->Cmd.FileArgs.AddString(L"*");
     Data->Cmd.KeepBroken=(r->OpFlags&ROADOF_KEEPBROKEN)!=0;
 
-    char AnsiArcName[NM];
-    *AnsiArcName=0;
-    if (r->ArcName!=NULL)
+    std::string AnsiArcName;
+    if (r->ArcName!=nullptr)
     {
-      strncpyz(AnsiArcName,r->ArcName,ASIZE(AnsiArcName));
+      AnsiArcName=r->ArcName;
 #ifdef _WIN_ALL
       if (!AreFileApisANSI())
-      {
-        OemToCharBuffA(r->ArcName,AnsiArcName,ASIZE(AnsiArcName));
-        AnsiArcName[ASIZE(AnsiArcName)-1]=0;
-      }
+        IntToExt(r->ArcName,AnsiArcName);
 #endif
     }
 
-    wchar ArcName[NM];
-    GetWideName(AnsiArcName,r->ArcNameW,ArcName,ASIZE(ArcName));
+    std::wstring ArcName;
+    if (r->ArcNameW!=nullptr && *r->ArcNameW!=0)
+      ArcName=r->ArcNameW;
+    else
+      CharToWide(AnsiArcName,ArcName);
 
     Data->Cmd.AddArcName(ArcName);
     Data->Cmd.Overwrite=OVERWRITE_ALL;
@@ -113,35 +112,35 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     if (Data->Arc.FirstVolume)
       r->Flags|=ROADF_FIRSTVOLUME;
 
-    Array<wchar> CmtDataW;
-    if (r->CmtBufSize!=0 && Data->Arc.GetComment(&CmtDataW))
+    std::wstring CmtDataW;
+    if (r->CmtBufSize!=0 && Data->Arc.GetComment(CmtDataW))
     {
       if (r->CmtBufW!=NULL)
       {
-        CmtDataW.Push(0);
-        size_t Size=wcslen(&CmtDataW[0])+1;
+//        CmtDataW.push_back(0);
+        size_t Size=wcslen(CmtDataW.data())+1;
 
         r->CmtState=Size>r->CmtBufSize ? ERAR_SMALL_BUF:1;
         r->CmtSize=(uint)Min(Size,r->CmtBufSize);
-        memcpy(r->CmtBufW,&CmtDataW[0],(r->CmtSize-1)*sizeof(*r->CmtBufW));
+        memcpy(r->CmtBufW,CmtDataW.data(),(r->CmtSize-1)*sizeof(*r->CmtBufW));
         r->CmtBufW[r->CmtSize-1]=0;
       }
       else
         if (r->CmtBuf!=NULL)
         {
-          Array<char> CmtData(CmtDataW.Size()*4+1);
-          memset(&CmtData[0],0,CmtData.Size());
-          WideToChar(&CmtDataW[0],&CmtData[0],CmtData.Size()-1);
-          size_t Size=strlen(&CmtData[0])+1;
+          std::vector<char> CmtData(CmtDataW.size()*4+1);
+          WideToChar(&CmtDataW[0],&CmtData[0],CmtData.size()-1);
+          size_t Size=strlen(CmtData.data())+1;
 
           r->CmtState=Size>r->CmtBufSize ? ERAR_SMALL_BUF:1;
           r->CmtSize=(uint)Min(Size,r->CmtBufSize);
-          memcpy(r->CmtBuf,&CmtData[0],r->CmtSize-1);
+          memcpy(r->CmtBuf,CmtData.data(),r->CmtSize-1);
           r->CmtBuf[r->CmtSize-1]=0;
         }
     }
     else
       r->CmtState=r->CmtSize=0;
+
     Data->Extract.ExtractArchiveInit(Data->Arc);
     return (HANDLE)Data;
   }
@@ -183,8 +182,7 @@ int PASCAL RARCloseArchive(HANDLE hArcData)
 
 int PASCAL RARReadHeader(HANDLE hArcData,struct RARHeaderData *D)
 {
-  struct RARHeaderDataEx X;
-  memset(&X,0,sizeof(X));
+  struct RARHeaderDataEx X{};
 
   int Code=RARReadHeaderEx(hArcData,&X);
 
@@ -242,14 +240,18 @@ int PASCAL RARReadHeaderEx(HANDLE hArcData,struct RARHeaderDataEx *D)
       else
         return Code;
     }
-    wcsncpy(D->ArcNameW,Data->Arc.FileName,ASIZE(D->ArcNameW));
+    wcsncpyz(D->ArcNameW,Data->Arc.FileName.c_str(),ASIZE(D->ArcNameW));
     WideToChar(D->ArcNameW,D->ArcName,ASIZE(D->ArcName));
+    if (D->ArcNameEx!=nullptr)
+      wcsncpyz(D->ArcNameEx,Data->Arc.FileName.c_str(),D->ArcNameExSize);
 
-    wcsncpy(D->FileNameW,hd->FileName,ASIZE(D->FileNameW));
+    wcsncpyz(D->FileNameW,hd->FileName.c_str(),ASIZE(D->FileNameW));
     WideToChar(D->FileNameW,D->FileName,ASIZE(D->FileName));
 #ifdef _WIN_ALL
     CharToOemA(D->FileName,D->FileName);
 #endif
+    if (D->FileNameEx!=nullptr)
+      wcsncpyz(D->FileNameEx,hd->FileName.c_str(),D->FileNameExSize);
 
     D->Flags=0;
     if (hd->SplitBefore)
@@ -311,7 +313,7 @@ int PASCAL RARReadHeaderEx(HANDLE hArcData,struct RARHeaderDataEx *D)
     // this RedirNameSize check sometimes later.
     if (hd->RedirType!=FSREDIR_NONE && D->RedirName!=NULL &&
         D->RedirNameSize>0 && D->RedirNameSize<100000)
-      wcsncpyz(D->RedirName,hd->RedirName,D->RedirNameSize);
+      wcsncpyz(D->RedirName,hd->RedirName.c_str(),D->RedirNameSize);
     D->DirTarget=hd->DirTarget;
   }
   catch (RAR_EXIT ErrCode)
@@ -346,50 +348,52 @@ int PASCAL ProcessFile(HANDLE hArcData,int Operation,char *DestPath,char *DestNa
     {
       Data->Cmd.DllOpMode=Operation;
 
-      *Data->Cmd.ExtrPath=0;
-      *Data->Cmd.DllDestName=0;
+      Data->Cmd.ExtrPath.clear();
+      Data->Cmd.DllDestName.clear();
 
       if (DestPath!=NULL)
       {
-        char ExtrPathA[NM];
-        strncpyz(ExtrPathA,DestPath,ASIZE(ExtrPathA)-2);
+        std::string ExtrPathA=DestPath;
 #ifdef _WIN_ALL
         // We must not apply OemToCharBuffA directly to DestPath,
         // because we do not know DestPath length and OemToCharBuffA
         // does not stop at 0.
-        OemToCharA(ExtrPathA,ExtrPathA);
+        IntToExt(ExtrPathA,ExtrPathA);
 #endif
-        CharToWide(ExtrPathA,Data->Cmd.ExtrPath,ASIZE(Data->Cmd.ExtrPath));
-        AddEndSlash(Data->Cmd.ExtrPath,ASIZE(Data->Cmd.ExtrPath));
+        CharToWide(ExtrPathA,Data->Cmd.ExtrPath);
+        AddEndSlash(Data->Cmd.ExtrPath);
       }
       if (DestName!=NULL)
       {
-        char DestNameA[NM];
-        strncpyz(DestNameA,DestName,ASIZE(DestNameA)-2);
+        std::string DestNameA=DestName;
 #ifdef _WIN_ALL
         // We must not apply OemToCharBuffA directly to DestName,
         // because we do not know DestName length and OemToCharBuffA
         // does not stop at 0.
-        OemToCharA(DestNameA,DestNameA);
+        IntToExt(DestNameA,DestNameA);
 #endif
-        CharToWide(DestNameA,Data->Cmd.DllDestName,ASIZE(Data->Cmd.DllDestName));
+        CharToWide(DestNameA,Data->Cmd.DllDestName);
       }
 
       if (DestPathW!=NULL)
       {
-        wcsncpy(Data->Cmd.ExtrPath,DestPathW,ASIZE(Data->Cmd.ExtrPath));
-        AddEndSlash(Data->Cmd.ExtrPath,ASIZE(Data->Cmd.ExtrPath));
+        Data->Cmd.ExtrPath=DestPathW;
+        AddEndSlash(Data->Cmd.ExtrPath);
       }
 
       if (DestNameW!=NULL)
-        wcsncpyz(Data->Cmd.DllDestName,DestNameW,ASIZE(Data->Cmd.DllDestName));
+        Data->Cmd.DllDestName=DestNameW;
 
-      wcsncpyz(Data->Cmd.Command,Operation==RAR_EXTRACT ? L"X":L"T",ASIZE(Data->Cmd.Command));
+      Data->Cmd.Command=Operation==RAR_EXTRACT ? L"X":L"T";
       Data->Cmd.Test=Operation!=RAR_EXTRACT;
       bool Repeat=false;
       Data->Extract.ExtractCurrentFile(Data->Arc,Data->HeaderSize,Repeat);
 
       // Now we process extra file information if any.
+      // It is important to do it in the same ProcessFile(), because caller
+      // app can rely on this behavior, for example, to overwrite
+      // the extracted Mark of the Web with propagated from archive
+      // immediately after ProcessFile() call.
       //
       // Archive can be closed if we process volumes, next volume is missing
       // and current one is already removed or deleted. So we need to check
@@ -456,7 +460,7 @@ void PASCAL RARSetPassword(HANDLE hArcData,char *Password)
 #ifndef RAR_NOCRYPT
   DataSet *Data=(DataSet *)hArcData;
   wchar PasswordW[MAXPASSWORD];
-  GetWideName(Password,NULL,PasswordW,ASIZE(PasswordW));
+  CharToWide(Password,PasswordW,ASIZE(PasswordW));
   Data->Cmd.Password.Set(PasswordW);
   cleandata(PasswordW,sizeof(PasswordW));
 #endif

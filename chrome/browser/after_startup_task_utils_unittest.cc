@@ -41,7 +41,7 @@ class WrappedTaskRunner : public base::SequencedTaskRunner {
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
     // Not implemented.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

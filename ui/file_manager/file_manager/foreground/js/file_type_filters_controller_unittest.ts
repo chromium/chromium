@@ -5,11 +5,12 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {EntryList, FakeEntry, FakeEntryImpl, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry, FilesAppDirEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 
-import {DirectoryModel} from './directory_model.js';
+import type {DirectoryModel} from './directory_model.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 

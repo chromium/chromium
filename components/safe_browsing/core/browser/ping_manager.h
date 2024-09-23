@@ -12,9 +12,11 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/files/file_util.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -32,12 +34,28 @@ namespace safe_browsing {
 
 class PingManager : public KeyedService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class ReportThreatDetailsResult {
     SUCCESS = 0,
     // There was a problem serializing the report to a string.
     SERIALIZATION_ERROR = 1,
     // The report is empty, so it is not sent.
     EMPTY_REPORT = 2,
+    kMaxValue = EMPTY_REPORT,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PersistThreatDetailsResult {
+    // The task to persist the report has posted. The actual file write
+    // operation may still fail.
+    kPersistTaskPosted = 0,
+    // There was a problem serializing the report to a string.
+    kSerializationError = 1,
+    // The report is empty, so it is not sent.
+    kEmptyReport = 2,
+    kMaxValue = kEmptyReport,
   };
 
   // Interface via which a client of this class can surface relevant events in
@@ -54,6 +72,37 @@ class PingManager : public KeyedService {
     virtual void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) = 0;
   };
 
+  // Helper class to read/write a report on disk.
+  class Persister {
+   public:
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum class WriteResult {
+      kSuccess = 0,
+      kFailedCreateDirectory = 1,
+      kFailedWriteFile = 2,
+      kMaxValue = kFailedWriteFile,
+    };
+
+    explicit Persister(const base::FilePath& persister_root_path);
+    Persister(const Persister&) = delete;
+    Persister& operator=(const Persister&) = delete;
+
+    ~Persister() = default;
+
+    // Writes |serialized_report| to a new file in |dir_path_|.
+    void WriteReport(const std::string& serialized_report);
+
+    // Reads all persisted reports in |dir_path_|. The reports are deleted
+    // regardless of whether the read was successful or not.
+    // Returns a list of string representation of the reports.
+    std::vector<std::string> ReadAndDeleteReports();
+
+   private:
+    // The directory that the files will be written in.
+    base::FilePath dir_path_;
+  };
+
   explicit PingManager(
       const V4ProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -65,7 +114,9 @@ class PingManager : public KeyedService {
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
-      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+      const base::FilePath& persister_root_path,
+      base::RepeatingCallback<bool()> get_should_send_persisted_report);
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
@@ -83,7 +134,9 @@ class PingManager : public KeyedService {
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
           get_page_load_token_callback,
-      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate,
+      const base::FilePath& persister_root_path,
+      base::RepeatingCallback<bool()> get_should_send_persisted_report);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -103,6 +156,11 @@ class PingManager : public KeyedService {
   // contained URLs, and adding extra details to the report. The returned object
   // provides details on whether the report was successful.
   virtual ReportThreatDetailsResult ReportThreatDetails(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+
+  // Similar to |ReportThreatDetails|, but persists the report on disk and sends
+  // it on next startup.
+  virtual PersistThreatDetailsResult PersistThreatDetailsAndReportOnNextStartup(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Launches a survey and attaches ThreatDetails to the survey response.
@@ -151,6 +209,12 @@ class PingManager : public KeyedService {
   void ReportThreatDetailsOnGotAccessToken(const std::string& serialized_report,
                                            const std::string& access_token);
 
+  // Reads persisted reports from disk.
+  void ReadPersistedReports();
+
+  // Sends `serialized_reports` to Safe Browsing.
+  void OnReadPersistedReportsDone(std::vector<std::string> serialized_reports);
+
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
@@ -182,6 +246,11 @@ class PingManager : public KeyedService {
 
   // Launches HaTS surveys.
   std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate_;
+
+  base::SequenceBound<Persister> persister_;
+
+  // Determines whether the user has opted in to send persisted reports.
+  base::RepeatingCallback<bool()> get_should_send_persisted_report_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

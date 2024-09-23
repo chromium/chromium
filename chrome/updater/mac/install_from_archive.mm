@@ -217,7 +217,10 @@ int RunExecutable(const base::FilePath& existence_checker_path,
 
     int exit_code = 0;
     VLOG(1) << "Running " << command.GetCommandLineString();
-    base::Process proc = base::LaunchProcess(command, options);
+    const base::Process proc = base::LaunchProcess(command, options);
+    if (!proc.IsValid()) {
+      return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
+    }
 
     // Close write_fd to generate EOF in the read loop below.
     write_fd.reset();

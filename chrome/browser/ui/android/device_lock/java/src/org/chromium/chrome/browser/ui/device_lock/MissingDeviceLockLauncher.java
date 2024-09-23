@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -145,14 +145,14 @@ public class MissingDeviceLockLauncher {
     @VisibleForTesting
     PasswordStoreBridge getPasswordStoreBridge() {
         if (mPasswordStoreBridge == null) {
-            mPasswordStoreBridge = new PasswordStoreBridge();
+            mPasswordStoreBridge = new PasswordStoreBridge(mProfile);
         }
         return mPasswordStoreBridge;
     }
 
     private void deletePasswordsAndCreditCards() {
         getPasswordStoreBridge().clearAllPasswords();
-        PersonalDataManager.getInstance().deleteAllLocalCreditCards();
+        PersonalDataManagerFactory.getForProfile(mProfile).deleteAllLocalCreditCards();
     }
 
     /**

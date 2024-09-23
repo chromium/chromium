@@ -4,29 +4,27 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../settings_shared.css.js';
-import './exception_add_dialog.js';
 import './exception_edit_dialog.js';
 import './exception_entry.js';
 import './exception_tabbed_add_dialog.js';
 
-import type {PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -44,13 +42,13 @@ export const TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE: number = 5;
 export interface ExceptionListElement {
   $: {
     addButton: CrButtonElement,
-    collapse: IronCollapseElement,
+    collapse: CrCollapseElement,
     expandButton: CrExpandButtonElement,
     list: DomRepeat,
     overflowList: DomRepeat,
     menu: CrLazyRenderElement<CrActionMenuElement>,
     noSitesAdded: HTMLElement,
-    tooltip: PaperTooltipElement,
+    tooltip: CrTooltipElement,
   };
 }
 
@@ -89,20 +87,6 @@ export class ExceptionListElement extends
         value: '',
       },
 
-      isDiscardExceptionsImprovementsEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isDiscardExceptionsImprovementsEnabled');
-        },
-      },
-
-      showAddDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
       showTabbedAddDialog_: {
         type: Boolean,
         value: false,
@@ -127,8 +111,6 @@ export class ExceptionListElement extends
   private siteList_: ExceptionEntry[];
   private overflowSiteListExpanded: boolean;
   private selectedRule_: string;
-  private isDiscardExceptionsImprovementsEnabled_: boolean;
-  private showAddDialog_: boolean;
   private showTabbedAddDialog_: boolean;
   private showEditDialog_: boolean;
   private tooltipText_: string;
@@ -156,11 +138,7 @@ export class ExceptionListElement extends
 
   private onAddClick_() {
     assert(!this.showEditDialog_);
-    if (this.isDiscardExceptionsImprovementsEnabled_) {
-      this.showTabbedAddDialog_ = true;
-    } else {
-      this.showAddDialog_ = true;
-    }
+    this.showTabbedAddDialog_ = true;
   }
 
   private onMenuClick_(e: CustomEvent<{target: HTMLElement, site: string}>) {
@@ -171,7 +149,6 @@ export class ExceptionListElement extends
 
   private onEditClick_() {
     assert(this.selectedRule_);
-    assert(!this.showAddDialog_);
     assert(!this.showTabbedAddDialog_);
     this.showEditDialog_ = true;
     this.$.menu.get().close();
@@ -182,10 +159,6 @@ export class ExceptionListElement extends
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.REMOVE);
     this.$.menu.get().close();
-  }
-
-  private onAddDialogClose_() {
-    this.showAddDialog_ = false;
   }
 
   private onTabbedAddDialogClose_() {

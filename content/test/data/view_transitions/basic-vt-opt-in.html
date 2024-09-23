@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<style>
+  @view-transition {
+    navigation: auto;
+  }
+</style>
+<script>
+  let had_incoming_transition = false;
+  addEventListener('pagereveal', e => {
+    if (e.viewTransition)
+      had_incoming_transition = true;
+  });
+</script>
+<body></body>
+</html>

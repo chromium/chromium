@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../../build_webui_tests.gni")
+
+assert(!is_android)
+
+build_webui_tests("build") {
+  files = [
+    "app_test.ts",
+    "container_test.ts",
+    "toolbar_test.ts",
+    "test_api_proxy.ts",
+    "test_data.ts",
+    "list_item_test.ts",
+    "sidebar_test.ts",
+    "site_favicon_test.ts",
+  ]
+
+  ts_path_mappings = [ "chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js|" +
+                       rebase_path(
+                          "$root_gen_dir/chrome/browser/resources/privacy_sandbox/internals/related_website_sets/tsc/related_website_sets.d.ts",
+                           target_gen_dir) ]
+
+  ts_deps = [
+    "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

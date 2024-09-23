@@ -197,6 +197,19 @@ class CodeSignConfig(object):
         """
         return False
 
+    @property
+    def main_executable_pinned_geometry(self):
+        """An optional tuple of pinned architecture offset pairs. If set the
+        pinned offsets will be compared with the apps signed main executable
+        offsets. If they do not match an exception will be thrown. Offsets are
+        compared in the order they are provided.
+        Provide the tuple in the following format:
+        (('x86_64', 16384), ('arm64', 294912))
+        Provide the tuple of pinned offsets in bytes and in the desired order.
+        For non-universal binaries this format can be used: (('arm64', 0),)
+        """
+        return None
+
     # Computed Properties ######################################################
 
     @property

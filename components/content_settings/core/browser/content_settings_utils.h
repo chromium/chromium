@@ -46,6 +46,7 @@ class MapValueIterator {
 const char kChromeDevToolsScheme[] = "devtools";
 const char kChromeUIScheme[] = "chrome";
 const char kExtensionScheme[] = "chrome-extension";
+const char kChromeUIUntrustedScheme[] = "chrome-untrusted";
 
 std::string ContentSettingToString(ContentSetting setting);
 
@@ -95,6 +96,21 @@ bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type);
 // to a permission decision that was made by Related Website Sets.
 bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
                                    const RuleMetaData& metadata);
+
+// Returns the list of ContentSettingsTypes that can be granted for a short
+// period of time. This means the following:
+// - Permission prompts will have a button that is labeled along the lines of
+//   "Allow this time".
+// - The `permissions.query` API will report PermissionStatus.state as
+//   "granted" within this short time window.
+// - Subsequent requests to the permission-gated API in this time window will
+//   succeed without user mediation.
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants();
+
+// Returns a subset of GetTypesWithTemporaryGrants() that are stored in
+// OneTimePermissionProvider in HostContentSettingsMap. Other types not stored
+// in the provider have their own custom grant expiry logic.
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
 
 }  // namespace content_settings
 

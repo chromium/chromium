@@ -30,6 +30,7 @@ namespace viz {
 
 // Provides human readable quad material names for gtest/gmock.
 void PrintTo(DrawQuad::Material material, ::std::ostream* os);
+void PrintTo(const OffsetTag& offset_tag, ::std::ostream* os);
 
 // Matches a SolidColorDrawQuad.
 testing::Matcher<const DrawQuad*> IsSolidColorQuad();
@@ -39,9 +40,6 @@ testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor4f expected_color);
 
 // Matches a TextureDrawQuad.
 testing::Matcher<const DrawQuad*> IsTextureQuad();
-
-// Matches a YuvVideoDrawQuad.
-testing::Matcher<const DrawQuad*> IsYuvVideoQuad();
 
 // Matches a SurfaceDrawQuad.
 testing::Matcher<const DrawQuad*> IsSurfaceQuad();
@@ -67,6 +65,13 @@ testing::Matcher<const DrawQuad*> HasOpacity(float opacity);
 
 // Matches a DrawQuad with expected SharedQuadState::are_contents_opaque.
 testing::Matcher<const DrawQuad*> AreContentsOpaque(bool opaque);
+
+// Matches a DrawQuad with expected SharedQuadState::clip_rect.
+testing::Matcher<const DrawQuad*> HasClipRect(
+    std::optional<gfx::Rect> clip_rect);
+
+// Matches a DrawQuad with expected SharedQuadState::offset_tag.
+testing::Matcher<const DrawQuad*> HasOffsetTag(OffsetTag offset_tag);
 
 // Matches a DrawQuad with expected SharedQuadState::layer_id.
 testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id);

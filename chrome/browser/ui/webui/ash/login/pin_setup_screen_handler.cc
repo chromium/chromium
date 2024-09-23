@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -23,7 +24,7 @@ PinSetupScreenHandler::~PinSetupScreenHandler() = default;
 
 void PinSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(crbug.com/1104120): clean up constant names
+  // TODO(crbug.com/40139544): clean up constant names
   builder->Add("discoverPinSetup", IDS_DISCOVER_PIN_SETUP);
 
   builder->Add("discoverPinSetupDone", IDS_DISCOVER_PIN_SETUP_DONE);
@@ -49,6 +50,13 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN);
   builder->Add("discoverPinSetupSubtitle3WithLoginForChild",
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN_CHILD);
+  builder->Add("discoverPinSetupPinAsMainFactorTitle",
+               IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE);
+  builder->AddF("discoverPinSetupPinAsMainFactorSubtitle",
+                IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("discoverPinSetupPinAsMainFactorSkip",
+               IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP);
 
   // Format numbers to be used on the pin keyboard.
   for (int j = 0; j <= 9; j++) {
@@ -68,20 +76,29 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_LONG);
   builder->Add("configurePinWeakPin",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_WEAK_PIN);
+  builder->Add("configurePinNondigit",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_NONDIGIT);
   builder->Add("internalError",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR);
 }
 
 void PinSetupScreenHandler::Show(const std::string& token,
-                                 bool is_child_account) {
-  base::Value::Dict data;
-  data.Set("auth_token", base::Value(token));
-  data.Set("is_child_account", is_child_account);
-  ShowInWebUI(std::move(data));
+                                 bool is_child_account,
+                                 bool has_login_support,
+                                 bool using_pin_as_main_factor) {
+  ShowInWebUI(base::Value::Dict()
+                  .Set("authToken", base::Value(token))
+                  .Set("isChildAccount", is_child_account)
+                  .Set("hasLoginSupport", has_login_support)
+                  .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor));
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
   CallExternalAPI("setHasLoginSupport", available);
+}
+
+base::WeakPtr<PinSetupScreenView> PinSetupScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

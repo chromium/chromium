@@ -15,14 +15,16 @@
 declare namespace chrome {
   export namespace imageLoaderPrivate {
 
-    export function getDriveThumbnail(url: string, cropToSquare: boolean):
-        Promise<string>;
+    export function getDriveThumbnail(
+        url: string, cropToSquare: boolean,
+        callback: (thumbnailDataUrl: string) => void): void;
 
-    export function getPdfThumbnail(url: string, width: number, height: number):
-        Promise<string>;
+    export function getPdfThumbnail(
+        url: string, width: number, height: number,
+        callback: (thumbnailDataUrl: string) => void): void;
 
     export function getArcDocumentsProviderThumbnail(
-        url: string, widthHint: number, heightHint: number): Promise<string>;
-
+        url: string, widthHint: number, heightHint: number,
+        callback: (thumbnailDataUrl: string) => void): void;
   }
 }

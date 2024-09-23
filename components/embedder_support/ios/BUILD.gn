@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("web_contents_delegate") {
+  sources = [
+    "delegate/color_chooser/color_chooser_consumer_ios.h",
+    "delegate/color_chooser/color_chooser_controller_ios.h",
+    "delegate/color_chooser/color_chooser_controller_ios.mm",
+    "delegate/color_chooser/color_chooser_coordinator_ios.h",
+    "delegate/color_chooser/color_chooser_coordinator_ios.mm",
+    "delegate/color_chooser/color_chooser_delegate_ios.h",
+    "delegate/color_chooser/color_chooser_ios.h",
+    "delegate/color_chooser/color_chooser_ios.mm",
+    "delegate/color_chooser/color_chooser_mediator_ios.h",
+    "delegate/color_chooser/color_chooser_mediator_ios.mm",
+    "delegate/file_chooser/file_select_helper_ios.h",
+    "delegate/file_chooser/file_select_helper_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/shell_dialogs:shell_dialogs",
+    "//url",
+  ]
+}

@@ -128,15 +128,13 @@ export class InternetDetailDialogElement extends
         },
       },
 
-      /**
-       * Return true if Jelly feature flag is enabled.
-       */
-      isJellyEnabled_: {
+      isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
-        readOnly: true,
         value() {
-          return loadTimeData.valueExists('isJellyEnabled') &&
-              loadTimeData.getBoolean('isJellyEnabled');
+          return loadTimeData.valueExists(
+                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
+              loadTimeData.getBoolean(
+                  'isApnRevampAndAllowApnModificationPolicyEnabled');
         },
       },
 
@@ -170,7 +168,7 @@ export class InternetDetailDialogElement extends
   private globalPolicy_: GlobalPolicy;
   private apnExpanded_: boolean;
   private isApnRevampEnabled_: boolean;
-  private isJellyEnabled_: boolean;
+  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private errorToastMessage_: string;
   private didSetFocus_: boolean = false;
@@ -208,16 +206,9 @@ export class InternetDetailDialogElement extends
 
     this.browserProxy_ = InternetDetailDialogBrowserProxyImpl.getInstance();
     const dialogArgs = this.browserProxy_.getDialogArguments();
-    if (this.isJellyEnabled_) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
-      (function() {
-        ColorChangeUpdater.forDocument().start();
-      })();
-    }
+
+    ColorChangeUpdater.forDocument().start();
+
     let type;
     let name;
     if (dialogArgs) {
@@ -281,7 +272,7 @@ export class InternetDetailDialogElement extends
       return;
     }
     // If the network was or is active, request an update.
-    if (this.managedProperties_.connectionState !=
+    if (this.managedProperties_.connectionState !==
             ConnectionStateType.kNotConnected ||
         networks.find(network => network.guid === this.guid)) {
       this.getNetworkDetails_();
@@ -371,10 +362,10 @@ export class InternetDetailDialogElement extends
 
     if (OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
       if (this.isPortalState_(managedProperties.portalState)) {
+        if (managedProperties.type === NetworkType.kCellular) {
+          return this.i18n('networkListItemCellularSignIn');
+        }
         return this.i18n('networkListItemSignIn');
-      }
-      if (managedProperties.portalState === PortalState.kPortalSuspected) {
-        return this.i18n('networkListItemConnectedLimited');
       }
       if (managedProperties.portalState === PortalState.kNoInternet) {
         return this.i18n('networkListItemConnectedNoConnectivity');
@@ -464,6 +455,16 @@ export class InternetDetailDialogElement extends
     return getApnDisplayName(
         this.i18n.bind(this),
         managedProperties.typeProperties.cellular!.connectedApn);
+  }
+
+  private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
+    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
+      return false;
+    }
+    if (!globalPolicy) {
+      return false;
+    }
+    return !globalPolicy.allowApnModification;
   }
 
   private showCellularSim_(managedProperties: ManagedProperties): boolean {
@@ -723,16 +724,13 @@ export class InternetDetailDialogElement extends
     return OncMojo.deviceIsInhibited(this.deviceState_);
   }
 
-  /**
-   * Return true if portalState is either kPortal or kProxyAuthRequired.
-   */
   private isPortalState_(portalState: PortalState): boolean {
     return portalState === PortalState.kPortal ||
-        portalState === PortalState.kProxyAuthRequired;
+        portalState === PortalState.kPortalSuspected;
   }
 
   /**
-   * Handles UI requests to add new APN.
+   * Handles UI requests to create new custom APN.
    */
   private onCreateCustomApnClicked_() {
     if (this.isNumCustomApnsLimitReached_) {
@@ -743,6 +741,20 @@ export class InternetDetailDialogElement extends
     const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
     assert(apnList);
     apnList.openApnDetailDialogInCreateMode();
+  }
+
+  /**
+   * Handles UI requests to discover known APNs.
+   */
+  private onDiscoverMoreApnsClicked_() {
+    if (this.isNumCustomApnsLimitReached_) {
+      return;
+    }
+
+    assert(!!this.guid);
+    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    assert(apnList);
+    apnList.openApnSelectionDialog();
   }
 
   private computeIsNumCustomApnsLimitReached_(): boolean {
@@ -756,6 +768,19 @@ export class InternetDetailDialogElement extends
     const customApnList =
         this.managedProperties_.typeProperties.cellular.customApnList;
     return !!customApnList && customApnList.length >= MAX_NUM_CUSTOM_APNS;
+  }
+
+  private shouldDisableApnButtons_(): boolean {
+    if (!this.isApnRevampEnabled_) {
+      return true;
+    }
+
+    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
+      return this.isNumCustomApnsLimitReached_;
+    }
+
+    return this.isNumCustomApnsLimitReached_ ||
+        this.isApnManaged_(this.globalPolicy_);
   }
 
   private onShowErrorToast_(event: CustomEvent<string>) {

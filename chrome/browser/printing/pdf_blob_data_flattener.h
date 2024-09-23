@@ -59,7 +59,7 @@ class PdfBlobDataFlattener {
 
  private:
   void OnPdfRead(ReadAndFlattenPdfCallback callback,
-                 std::unique_ptr<std::string> data,
+                 std::string data,
                  int64_t blob_total_size);
   void OnPdfFlattened(ReadAndFlattenPdfCallback callback,
                       mojom::FlattenPdfResultPtr result);

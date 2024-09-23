@@ -10,7 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/vsync_provider.h"
 
 namespace viz {
@@ -66,6 +68,14 @@ int SoftwareOutputDevice::MaxFramesPending() const {
 
 bool SoftwareOutputDevice::SupportsOverridePlatformSize() const {
   return false;
+}
+
+SkBitmap SoftwareOutputDevice::ReadbackForTesting() {
+  SkBitmap bitmap;
+  bitmap.allocPixels(
+      surface_->imageInfo().makeColorSpace(SkColorSpace::MakeSRGB()));
+  CHECK(surface_->readPixels(bitmap, 0, 0));
+  return bitmap;
 }
 
 }  // namespace viz

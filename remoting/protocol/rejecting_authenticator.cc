@@ -17,6 +17,15 @@ RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
 
 RejectingAuthenticator::~RejectingAuthenticator() = default;
 
+CredentialsType RejectingAuthenticator::credentials_type() const {
+  return CredentialsType::UNKNOWN;
+}
+
+const Authenticator& RejectingAuthenticator::implementing_authenticator()
+    const {
+  return *this;
+}
+
 Authenticator::State RejectingAuthenticator::state() const {
   return state_;
 }
@@ -41,18 +50,19 @@ void RejectingAuthenticator::ProcessMessage(
 std::unique_ptr<jingle_xmpp::XmlElement>
 RejectingAuthenticator::GetNextMessage() {
   NOTREACHED();
-  return nullptr;
 }
 
 const std::string& RejectingAuthenticator::GetAuthKey() const {
   NOTREACHED();
-  return auth_key_;
+}
+
+const SessionPolicies* RejectingAuthenticator::GetSessionPolicies() const {
+  NOTREACHED();
 }
 
 std::unique_ptr<ChannelAuthenticator>
 RejectingAuthenticator::CreateChannelAuthenticator() const {
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace remoting::protocol

@@ -7,7 +7,6 @@
 #include <utility>
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "gpu/config/dx_diag_node.h"
 #include "gpu/config/gpu_info_collector.h"
 
 namespace viz {
@@ -33,7 +32,7 @@ InfoCollectionGpuServiceImpl::InfoCollectionGpuServiceImpl(
 
 InfoCollectionGpuServiceImpl::~InfoCollectionGpuServiceImpl() {
   // Info Collection GPU process exits atomically.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InfoCollectionGpuServiceImpl::BindOnIO(
@@ -44,30 +43,33 @@ void InfoCollectionGpuServiceImpl::BindOnIO(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-void InfoCollectionGpuServiceImpl::GetGpuSupportedDx12VersionAndDevicePerfInfo(
-    GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback) {
+void InfoCollectionGpuServiceImpl::
+    GetGpuSupportedDirectXVersionAndDevicePerfInfo(
+        GetGpuSupportedDirectXVersionAndDevicePerfInfoCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
 
   main_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&InfoCollectionGpuServiceImpl::
-                         GetGpuSupportedDx12VersionAndDevicePerfInfoOnMain,
+                         GetGpuSupportedDirectXVersionAndDevicePerfInfoOnMain,
                      base::Unretained(this), std::move(callback)));
 }
 
 void InfoCollectionGpuServiceImpl::
-    GetGpuSupportedDx12VersionAndDevicePerfInfoOnMain(
-        GetGpuSupportedDx12VersionAndDevicePerfInfoCallback callback) {
+    GetGpuSupportedDirectXVersionAndDevicePerfInfoOnMain(
+        GetGpuSupportedDirectXVersionAndDevicePerfInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
 
   uint32_t d3d12_feature_level = 0;
   uint32_t highest_shader_model_version = 0;
-  gpu::GetGpuSupportedD3D12Version(d3d12_feature_level,
-                                   highest_shader_model_version);
+  uint32_t directml_feature_level = 0;
+  gpu::GetGpuSupportedDirectXVersion(d3d12_feature_level,
+                                     highest_shader_model_version,
+                                     directml_feature_level);
   io_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), d3d12_feature_level,
-                     highest_shader_model_version, device_perf_info_));
+      FROM_HERE, base::BindOnce(std::move(callback), d3d12_feature_level,
+                                highest_shader_model_version,
+                                directml_feature_level, device_perf_info_));
 }
 
 void InfoCollectionGpuServiceImpl::GetGpuSupportedVulkanVersionInfo(
@@ -88,42 +90,6 @@ void InfoCollectionGpuServiceImpl::GetGpuSupportedVulkanVersionInfoOnMain(
   uint32_t vulkan_version = gpu::GetGpuSupportedVulkanVersion(gpu_device_);
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), vulkan_version));
-}
-
-void InfoCollectionGpuServiceImpl::RequestDxDiagNodeInfo(
-    RequestDxDiagNodeInfoCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
-
-  main_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&InfoCollectionGpuServiceImpl::RequestDxDiagNodeInfoOnMain,
-                     base::Unretained(this), std::move(callback)));
-}
-
-void InfoCollectionGpuServiceImpl::RequestDxDiagNodeInfoOnMain(
-    RequestDxDiagNodeInfoCallback callback) {
-  DCHECK(main_runner_->BelongsToCurrentThread());
-
-  // We can continue on shutdown here because we're not writing any critical
-  // state in this task.
-  base::ThreadPool::CreateCOMSTATaskRunner(
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
-      ->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce([]() {
-            gpu::DxDiagNode dx_diag_node;
-            gpu::GetDxDiagnostics(&dx_diag_node);
-            return dx_diag_node;
-          }),
-          base::BindOnce(
-              [](RequestDxDiagNodeInfoCallback callback,
-                 scoped_refptr<base::SingleThreadTaskRunner> io_runner,
-                 const gpu::DxDiagNode& dx_diag_node) {
-                io_runner->PostTask(
-                    FROM_HERE,
-                    base::BindOnce(std::move(callback), dx_diag_node));
-              },
-              std::move(callback), io_runner_));
 }
 
 }  // namespace viz

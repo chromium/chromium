@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "google_apis/gaia/oauth_request_signer.h"
 
 #include <stddef.h>
@@ -58,7 +63,6 @@ const std::string HttpMethodName(OAuthRequestSigner::HttpMethod method) {
       return "POST";
   }
   NOTREACHED();
-  return std::string();
 }
 
 const std::string SignatureMethodName(
@@ -72,7 +76,6 @@ const std::string SignatureMethodName(
       return "PLAINTEXT";
   }
   NOTREACHED();
-  return std::string();
 }
 
 std::string BuildBaseString(const GURL& request_base_url,

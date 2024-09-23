@@ -13,6 +13,11 @@ function testNumberKeyoperations(writingMode, initialValue) {
       stepUpKey = 'ArrowUp';
       moveToNextDigit = 'ArrowRight';
       moveToPrevDigit = 'ArrowLeft';
+    } else if (writingMode == 'sideways-lr') {
+      stepDownKey = 'ArrowRight';
+      stepUpKey = 'ArrowLeft';
+      moveToNextDigit = 'ArrowUp';
+      moveToPrevDigit = 'ArrowDown';
     } else {
       stepDownKey = 'ArrowLeft';
       stepUpKey = 'ArrowRight';

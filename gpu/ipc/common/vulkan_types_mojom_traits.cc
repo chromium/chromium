@@ -17,7 +17,7 @@ bool StructTraits<
     gpu::mojom::VkExtensionPropertiesDataView,
     VkExtensionProperties>::Read(gpu::mojom::VkExtensionPropertiesDataView data,
                                  VkExtensionProperties* out) {
-  base::StringPiece extensionName;
+  std::string_view extensionName;
   if (!data.ReadExtensionName(&extensionName))
     return false;
   extensionName.copy(out->extensionName, sizeof(out->extensionName));
@@ -30,7 +30,7 @@ bool StructTraits<
 // static
 bool StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties>::
     Read(gpu::mojom::VkLayerPropertiesDataView data, VkLayerProperties* out) {
-  base::StringPiece layerName;
+  std::string_view layerName;
   if (!data.ReadLayerName(&layerName))
     return false;
   layerName.copy(out->layerName, sizeof(out->layerName));
@@ -39,7 +39,7 @@ bool StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties>::
 
   out->implementationVersion = data.implementationVersion();
 
-  base::StringPiece description;
+  std::string_view description;
   if (!data.ReadDescription(&description))
     return false;
   description.copy(out->description, sizeof(out->description));
@@ -63,7 +63,7 @@ bool StructTraits<gpu::mojom::VkPhysicalDevicePropertiesDataView,
   if (!data.ReadDeviceType(&out->deviceType))
     return false;
 
-  base::StringPiece deviceName;
+  std::string_view deviceName;
   if (!data.ReadDeviceName(&deviceName))
     return false;
   deviceName.copy(out->deviceName, sizeof(out->deviceName));

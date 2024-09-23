@@ -68,10 +68,4 @@ DeviceManagementServiceConfigurationIOS::GetEncryptedReportingServerUrl()
   return encrypted_reporting_server_url_;
 }
 
-std::string
-DeviceManagementServiceConfigurationIOS::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) const {
-  return std::string();
-}
-
 }  // namespace policy

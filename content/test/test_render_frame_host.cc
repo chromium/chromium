@@ -33,6 +33,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -455,7 +456,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation,
           false /* is_container_initiated */,
-          false /* is_fullscreen_requested */, false /* has_storage_access */);
+          net::StorageAccessApiStatus::kNone, false /* has_rel_opener */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = url;
   common_params->initiator_origin = GetLastCommittedOrigin();
@@ -601,6 +602,10 @@ void TestRenderFrameHost::CreateWebUsbServiceForTesting(
   RenderFrameHostImpl::CreateWebUsbService(std::move(receiver));
 }
 
+void TestRenderFrameHost::ResetLocalFrame() {
+  local_frame_.reset();
+}
+
 void TestRenderFrameHost::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
@@ -718,7 +723,8 @@ TestRenderFrameHost::BuildDidCommitInterfaceParams(bool is_same_document) {
 }
 
 void TestRenderFrameHost::AbortCommit(NavigationRequest* navigation_request) {
-  NavigationRequestCancelled(navigation_request);
+  NavigationRequestCancelled(navigation_request,
+                             NavigationDiscardReason::kExplicitCancellation);
 }
 
 // static

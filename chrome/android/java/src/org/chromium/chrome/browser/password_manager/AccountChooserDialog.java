@@ -30,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -91,23 +92,24 @@ public class AccountChooserDialog
     }
 
     /**
-     *  Creates and shows the dialog which allows user to choose credentials for login.
-     *  @param credentials Credentials to display in the dialog.
-     *  @param title Title message for the dialog, which can contain Smart Lock branding.
-     *  @param titleLinkStart Start of a link in case title contains Smart Lock branding.
-     *  @param titleLinkEnd End of a link in case title contains Smart Lock branding.
-     *  @param origin Address of the web page, where dialog was triggered.
+     * Creates and shows the dialog which allows user to choose credentials for login.
+     *
+     * @param credentials Credentials to display in the dialog.
+     * @param title Title message for the dialog, which can contain Smart Lock branding.
+     * @param titleLinkStart Start of a link in case title contains Smart Lock branding.
+     * @param titleLinkEnd End of a link in case title contains Smart Lock branding.
+     * @param origin Address of the web page, where dialog was triggered.
      */
     @CalledByNative
     private static AccountChooserDialog createAndShowAccountChooser(
             WindowAndroid windowAndroid,
             long nativeAccountChooserDialog,
             Credential[] credentials,
-            String title,
+            @JniType("std::u16string") String title,
             int titleLinkStart,
             int titleLinkEnd,
-            String origin,
-            String signinButtonText) {
+            @JniType("std::string") String origin,
+            @JniType("std::u16string") String signinButtonText) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
         AccountChooserDialog chooser =
@@ -144,7 +146,7 @@ public class AccountChooserDialog
 
                 Credential credential = getItem(position);
 
-                ImageView avatarView = (ImageView) convertView.findViewById(R.id.profile_image);
+                ImageView avatarView = convertView.findViewById(R.id.profile_image);
                 Drawable avatar = credential.getAvatar();
                 if (avatar == null) {
                     avatar =
@@ -153,9 +155,8 @@ public class AccountChooserDialog
                 }
                 avatarView.setImageDrawable(avatar);
 
-                TextView mainNameView = (TextView) convertView.findViewById(R.id.main_name);
-                TextView secondaryNameView =
-                        (TextView) convertView.findViewById(R.id.secondary_name);
+                TextView mainNameView = convertView.findViewById(R.id.main_name);
+                TextView secondaryNameView = convertView.findViewById(R.id.secondary_name);
                 if (credential.getFederation().isEmpty()) {
                     // Not federated credentials case
                     if (credential.getDisplayName().isEmpty()) {
@@ -172,8 +173,7 @@ public class AccountChooserDialog
                     secondaryNameView.setVisibility(View.VISIBLE);
                 }
 
-                ImageButton pslInfoButton =
-                        (ImageButton) convertView.findViewById(R.id.psl_info_btn);
+                ImageButton pslInfoButton = convertView.findViewById(R.id.psl_info_btn);
                 final String originUrl = credential.getOriginUrl();
 
                 if (!originUrl.isEmpty()) {
@@ -198,9 +198,9 @@ public class AccountChooserDialog
     private void show() {
         View titleView =
                 LayoutInflater.from(mContext).inflate(R.layout.account_chooser_dialog_title, null);
-        TextView origin = (TextView) titleView.findViewById(R.id.origin);
+        TextView origin = titleView.findViewById(R.id.origin);
         origin.setText(mOrigin);
-        TextView titleMessageText = (TextView) titleView.findViewById(R.id.title);
+        TextView titleMessageText = titleView.findViewById(R.id.title);
         if (mTitleLinkStart != 0 && mTitleLinkEnd != 0) {
             SpannableString spanableTitle = new SpannableString(mTitle);
             spanableTitle.setSpan(
@@ -319,7 +319,7 @@ public class AccountChooserDialog
             // Profile image is in the visible range.
             View credentialView = view.getChildAt(index - view.getFirstVisiblePosition());
             if (credentialView == null) return;
-            ImageView avatarView = (ImageView) credentialView.findViewById(R.id.profile_image);
+            ImageView avatarView = credentialView.findViewById(R.id.profile_image);
             avatarView.setImageDrawable(avatar);
         }
     }

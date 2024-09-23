@@ -103,8 +103,8 @@ class SubtractImplicitBypassesRule : public SchemeHostPortMatcherRule {
 };
 
 std::unique_ptr<SchemeHostPortMatcherRule> ParseRule(
-    base::StringPiece raw_untrimmed) {
-  base::StringPiece raw =
+    std::string_view raw_untrimmed) {
+  std::string_view raw =
       base::TrimWhitespaceASCII(raw_untrimmed, base::TRIM_ALL);
 
   // <local> and <-loopback> are special syntax used by WinInet's bypass list
@@ -192,7 +192,7 @@ void ProxyBypassRules::PrependRuleToBypassSimpleHostnames() {
   matcher_.AddAsFirstRule(std::make_unique<BypassSimpleHostnamesRule>());
 }
 
-bool ProxyBypassRules::AddRuleFromString(base::StringPiece raw_untrimmed) {
+bool ProxyBypassRules::AddRuleFromString(std::string_view raw_untrimmed) {
   auto rule = ParseRule(raw_untrimmed);
 
   if (rule) {

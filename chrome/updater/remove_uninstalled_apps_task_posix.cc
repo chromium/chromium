@@ -22,7 +22,7 @@ namespace {
 
 bool PathOwnedByRoot(const base::FilePath& path) {
   base::stat_wrapper_t stat_info = {};
-  if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
+  if (base::File::Lstat(path, &stat_info) != 0) {
     VPLOG(1) << "Failed to get information on path " << path.value();
     return false;
   }

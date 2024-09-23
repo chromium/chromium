@@ -9,6 +9,9 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":shopping_service_jni" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentController.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentProperties.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentProvider.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceNotificationSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
@@ -27,6 +30,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/commerce/core/android:core_java",
@@ -38,6 +42,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
@@ -45,8 +50,35 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.commerce"
 }
 
+android_library("commerce_bottom_sheet_content_java") {
+  resources_package = "org.chromium.chrome.browser.commerce"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentBinder.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentCoordinator.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentMediator.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_java",
+  ]
+}
+
 android_resources("java_resources") {
-  sources = [ "java/res/xml/price_notification_preferences.xml" ]
+  sources = [
+    "java/res/drawable/commerce_content_item_container_background.xml",
+    "java/res/layout/commerce_bottom_sheet_content_container.xml",
+    "java/res/layout/commerce_bottom_sheet_content_item_container.xml",
+    "java/res/values/dimens.xml",
+    "java/res/xml/price_notification_preferences.xml",
+  ]
 
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -56,14 +88,18 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce"
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/commerce/PriceNotificationSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/commerce/PriceUtilsTest.java",
   ]
 
   deps = [
+    ":commerce_bottom_sheet_content_java",
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
@@ -73,16 +109,22 @@ android_library("javatests") {
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
     "//components/payments/content/android:java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
   ]
 }
 
@@ -90,5 +132,22 @@ generate_jni("shopping_service_jni") {
   sources = [
     "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce"
+
+  sources = [ "junit/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentMediatorUnitTest.java" ]
+
+  deps = [
+    ":commerce_bottom_sheet_content_java",
+    ":java",
+    "//base:base_junit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

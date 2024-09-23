@@ -39,6 +39,7 @@ class Element;
 class GraphicsContext;
 class LocalFrame;
 class Node;
+class PropertyTreeStateOrAlias;
 
 class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
  public:
@@ -49,7 +50,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
   // These are only valid when inside print mode.
   virtual wtf_size_t PageCount() const;
-  gfx::Rect PageRect(wtf_size_t page_number) const;
+  gfx::Rect PageRect(wtf_size_t page_index) const;
 
   // Enter print mode, updating layout for paginated layout. WebPrintParams
   // provides a default page size and margins, but this may be overridden by
@@ -66,25 +67,21 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   // Returns -1 if page isn't found.
   static int PageNumberForElement(Element*,
                                   const gfx::SizeF& page_size_in_pixels);
-  static String PageProperty(LocalFrame*,
-                             const char* property_name,
-                             uint32_t page_number);
   static int NumberOfPages(LocalFrame*, const gfx::SizeF& page_size_in_pixels);
 
   virtual void Trace(Visitor*) const;
 
-  bool use_printing_layout() const;
-
  protected:
   friend class PrintContextTest;
 
-  void OutputLinkedDestinations(GraphicsContext&, const gfx::Rect& page_rect);
+  void OutputLinkedDestinations(GraphicsContext&,
+                                const PropertyTreeStateOrAlias&,
+                                const gfx::Rect& page_rect);
   bool IsFrameValid() const;
 
   Member<LocalFrame> frame_;
 
-  // True when printing layout needs to be applied.
-  bool use_printing_layout_ = true;
+  bool use_paginated_layout_ = true;
 
  private:
   void ComputePageCount();

@@ -80,7 +80,8 @@ class ToolbarActionView : public views::MenuButton,
   friend class ToolbarActionHoverCardBubbleViewUITest;
 
   // views::MenuButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

@@ -10,7 +10,9 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -135,7 +137,7 @@ class ClickableView : public views::View {
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     views::View::OnGestureEvent(event);
-    if (event->type() == ui::ET_GESTURE_TAP) {
+    if (event->type() == ui::EventType::kGestureTap) {
       event->SetHandled();
       click_callback_.Run();
     }
@@ -152,7 +154,6 @@ END_METADATA
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
-    ApplicationDragAndDropHost* drag_and_drop_host,
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
     AppListFolderController* folder_controller,
@@ -163,7 +164,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           std::make_unique<AppListKeyboardController>(this)),
       app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
   DCHECK(view_delegate);
-  DCHECK(drag_and_drop_host);
   DCHECK(a11y_announcer);
   DCHECK(folder_controller);
 
@@ -181,8 +181,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
-  // Scroll view will have a gradient mask layer.
-  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  // Scroll view will have a gradient mask layer, and is animated during
+  // hide/show.
+  scroll_view_->SetPaintToLayer();
+  scroll_view_->layer()->SetFillsBoundsOpaquely(false);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -234,11 +236,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   separator_ =
       scroll_contents->AddChildView(std::make_unique<views::Separator>());
   separator_->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
-  if (chromeos::features::IsJellyEnabled()) {
-    separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-  } else {
-    separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  }
+  separator_->SetColorId(cros_tokens::kCrosSysSeparator);
 
   // Add a empty container view. A toast view should be added to
   // `toast_container_` when the app list starts temporary sorting.
@@ -255,8 +253,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           a11y_announcer, view_delegate,
           /*folder_delegate=*/nullptr, scroll_view_, folder_controller,
           app_list_keyboard_controller_.get()));
-  scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
   scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
   scrollable_apps_grid_view_->SetMaxColumns(5);
   AppListModel* const model = AppListModelProvider::Get()->model();
@@ -271,6 +267,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   UpdateSuggestions();
   UpdateContinueSectionVisibility();
+
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &AppListBubbleAppsPage::OnPageScrolled, base::Unretained(this)));
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
@@ -390,13 +390,12 @@ void AppListBubbleAppsPage::AnimateShowPage() {
   // Ensure the view is visible.
   SetVisible(true);
 
-  // Scroll contents has a layer, so animate that.
-  views::View* scroll_contents = scroll_view_->contents();
-  DCHECK(scroll_contents->layer());
-  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+  ui::Layer* scroll_view_layer = scroll_view_->layer();
+  DCHECK(scroll_view_layer);
+  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
 
   ui::AnimationThroughputReporter reporter(
-      scroll_contents->layer()->GetAnimator(),
+      scroll_view_layer->GetAnimator(),
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.ShowAppsPage", value);
@@ -413,7 +412,7 @@ void AppListBubbleAppsPage::AnimateShowPage() {
         if (!self)
           return;
         self->SetVisible(true);
-        ui::Layer* layer = self->scroll_view()->contents()->layer();
+        ui::Layer* layer = self->scroll_view()->layer();
         layer->SetOpacity(1.f);
         layer->SetTransform(gfx::Transform());
       },
@@ -425,15 +424,15 @@ void AppListBubbleAppsPage::AnimateShowPage() {
       .OnEnded(set_visible_true)
       .OnAborted(set_visible_true)
       .Once()
-      .SetOpacity(scroll_contents, 0.f)
-      .SetTransform(scroll_contents, translate_down)
+      .SetOpacity(scroll_view_layer, 0.f)
+      .SetTransform(scroll_view_layer, translate_down)
       .At(kShowPageAnimationDelay)
       .SetDuration(kShowPageAnimationTransformDuration)
-      .SetTransform(scroll_contents, gfx::Transform(),
+      .SetTransform(scroll_view_layer, gfx::Transform(),
                     gfx::Tween::LINEAR_OUT_SLOW_IN)
       .At(kShowPageAnimationDelay)
       .SetDuration(kShowPageAnimationOpacityDuration)
-      .SetOpacity(scroll_contents, 1.f);
+      .SetOpacity(scroll_view_layer, 1.f);
 }
 
 void AppListBubbleAppsPage::AnimateHidePage() {
@@ -451,19 +450,18 @@ void AppListBubbleAppsPage::AnimateHidePage() {
         if (!self)
           return;
         self->SetVisible(false);
-        ui::Layer* layer = self->scroll_view()->contents()->layer();
+        ui::Layer* layer = self->scroll_view()->layer();
         layer->SetOpacity(1.f);
         layer->SetTransform(gfx::Transform());
       },
       weak_factory_.GetWeakPtr());
 
-  // Scroll contents has a layer, so animate that.
-  views::View* scroll_contents = scroll_view_->contents();
-  DCHECK(scroll_contents->layer());
-  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+  ui::Layer* scroll_view_layer = scroll_view_->layer();
+  DCHECK(scroll_view_layer);
+  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
 
   ui::AnimationThroughputReporter reporter(
-      scroll_contents->layer()->GetAnimator(),
+      scroll_view_layer->GetAnimator(),
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.HideAppsPage", value);
@@ -472,7 +470,7 @@ void AppListBubbleAppsPage::AnimateHidePage() {
   // The animation spec says 40 dips down over 250ms, but the opacity animation
   // renders the view invisible after 50ms, so animate the visible fraction.
   gfx::Transform translate_down;
-  constexpr int kVerticalOffset = 40 * 250 / 50;
+  constexpr int kVerticalOffset = 40 * 50 / 250;
   translate_down.Translate(0, kVerticalOffset);
 
   // Opacity: 100% -> 0%, duration 50ms
@@ -483,8 +481,8 @@ void AppListBubbleAppsPage::AnimateHidePage() {
       .OnAborted(set_visible_false)
       .Once()
       .SetDuration(base::Milliseconds(50))
-      .SetOpacity(scroll_contents, 0.f)
-      .SetTransform(scroll_contents, translate_down);
+      .SetOpacity(scroll_view_layer, 0.f)
+      .SetTransform(scroll_view_layer, translate_down);
 }
 
 void AppListBubbleAppsPage::ResetScrollPosition() {
@@ -496,7 +494,7 @@ void AppListBubbleAppsPage::AbortAllAnimations() {
     if (view->layer())
       view->layer()->GetAnimator()->AbortAllAnimations();
   };
-  abort_animations(scroll_view_->contents());
+  abort_animations(scroll_view_);
   abort_animations(continue_section_);
   abort_animations(recent_apps_);
   abort_animations(separator_);
@@ -682,7 +680,11 @@ AppsGridView* AppListBubbleAppsPage::GetAppsGridView() {
 }
 
 ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {
-  return scroll_view_->contents()->layer();
+  // Animating the `scroll_view_`'s content layer can have its transform
+  // animations interrupted when the content layer's transforms get set due to
+  // rtl specific transforms in ScrollView code. Use the `scroll_view_` layer
+  // for animations to avoid this.
+  return scroll_view_->layer();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -707,11 +709,8 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
   continue_label_ =
       continue_label_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
-  bubble_utils::ApplyStyle(
-      continue_label_, TypographyToken::kCrosAnnotation1,
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
-          : kColorAshTextColorSecondary);
+  bubble_utils::ApplyStyle(continue_label_, TypographyToken::kCrosAnnotation1,
+                           cros_tokens::kCrosSysOnSurfaceVariant);
   continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Button should be right aligned, so flex label to fill empty space.
@@ -736,6 +735,21 @@ void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {
   recent_apps_->UpdateVisibility();
   UpdateContinueLabelContainer();
   UpdateSeparatorVisibility();
+}
+
+void AppListBubbleAppsPage::OnPageScrolled() {
+  // Do not log anything if the contents are not scrollable.
+  if (scroll_view_->GetVisibleRect().height() >=
+      scroll_view_->contents()->height()) {
+    return;
+  }
+
+  if (scroll_view_->GetVisibleRect().bottom() ==
+      scroll_view_->contents()->bounds().bottom()) {
+    RecordLauncherWorkflowMetrics(
+        AppListUserAction::kNavigatedToBottomOfAppList,
+        /*is_tablet_mode = */ false, std::nullopt);
+  }
 }
 
 void AppListBubbleAppsPage::UpdateContinueLabelContainer() {
@@ -981,6 +995,24 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
     SlideViewIntoPosition(scrollable_apps_grid_view_, vertical_offset, duration,
                           tween_type);
   }
+}
+
+void AppListBubbleAppsPage::RecordAboveTheFoldMetrics() {
+  std::vector<std::string> apps_above_the_fold = {};
+  std::vector<std::string> apps_below_the_fold = {};
+  for (size_t i = 0; i < scrollable_apps_grid_view_->view_model()->view_size();
+       ++i) {
+    AppListItemView* child_view =
+        scrollable_apps_grid_view_->view_model()->view_at(i);
+    if (scrollable_apps_grid_view_->IsAboveTheFold(child_view)) {
+      apps_above_the_fold.push_back(child_view->item()->id());
+    } else {
+      apps_below_the_fold.push_back(child_view->item()->id());
+    }
+  }
+  view_delegate_->RecordAppsDefaultVisibility(
+      std::move(apps_above_the_fold), std::move(apps_below_the_fold),
+      /*is_apps_collections_page=*/false);
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage)

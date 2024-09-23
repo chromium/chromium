@@ -9,7 +9,7 @@
 namespace cast_channel {
 namespace fuzz {
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 void SetupAuthenticateChallengeReplyInput(
     const std::vector<std::string>& certs,
@@ -33,7 +33,7 @@ void SetupAuthenticateChallengeReplyInput(
         return;
       }
     } else {
-      cast::channel::AuthResponse& response =
+      openscreen::cast::proto::AuthResponse& response =
           *input->mutable_auth_message()->mutable_response();
 
       // Maybe force the nonce to be the correct value.
@@ -73,9 +73,9 @@ void SetupAuthenticateChallengeReplyInput(
           return;
         }
 
-        cast::certificate::CrlBundle crl_bundle;
+        openscreen::cast::proto::CrlBundle crl_bundle;
         for (const auto& tbs_crl : input->tbs_crls()) {
-          cast::certificate::Crl& crl = *crl_bundle.add_crls();
+          openscreen::cast::proto::Crl& crl = *crl_bundle.add_crls();
           if (input->crl_certs_ok()) {
             crl.set_signer_cert(certs.at(0));
           }

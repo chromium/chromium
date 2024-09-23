@@ -61,6 +61,12 @@ In the renderer, ownership looks like:
 `DocumentLoader`=>`SubresourceFilter`=>`WebDocumentSubresourceFilterImpl`=>`DocumentSubresourceFilter`
 
 ### [content](/components/subresource_filter/content)
+#### [content/shared](/components/subresource_filter/content/shared/)
+The code in content/shared is not specific to Safe Browsing, but still depends
+on content/. This will allow other subresource filtering use cases to be built
+on top of the shared code, such as the [Fingerprinting Protection component]
+(/components/fingerprinting_protection_filter/).
+
 #### [content/browser](/components/subresource_filter/content/browser)
 The content/browser code generally orchestrates the whole component.
 
@@ -71,7 +77,7 @@ class that encapsulates that logic is the
 
 `SubresourceFilterSafeBrowsingActivationThrottle`=>`SubresourceFilterSafeBrowsingClient`=>`SubresourceFilterSafeBrowsingClientRequest`
 The Safe Browsing client owns multiple Safe Browsing requests, and lives on the
-IO thread.
+UI thread.
 
 Currently, the `SubresourceFilterSafeBrowsingActivationThrottle` checks every
 redirect URL speculatively, but makes an activation decision based on the last
@@ -97,11 +103,9 @@ frame's `AsyncDocumentSubresourceFilter`.
 
 The code uses "root frame" and "child frame" terminology distinguish from the
 FrameTree-centric "main frame" and "subframe". Frame trees may be embedded so
-that a single "tab" may have multiple "main frames". In some cases (fenced
-frames) an embedded main frame is treated by the filter like a subframe; a main
-frame in a fenced frame is thus a subresource filter "child frame". In
-others (portals), the embedded main frame establishes a new subresource filter
-root so it is a subresource filter "root frame".
+that a single "tab" may have multiple "main frames". An embedded main frame
+(fenced frame) is treated by the filter like a subframe; a main frame in a
+fenced frame is thus a subresource filter "child frame".
 
 ##### Throttle management
 The `ContentSubresourceFilterThrottleManager` is a `WebContentsObserver`, and manages both the
@@ -132,4 +136,3 @@ the `RenderFrameObserver` that communicates with the
 `ContentSubresourceFilterThrottleManager`.
 
 `SubresourceFilterAgent`~>`WebDocumentSubresourceFilterImpl`
-

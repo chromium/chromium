@@ -16,12 +16,12 @@ import '../../components/buttons/oobe_text_button.js';
 import {SetupPinKeyboardElement} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 
 import {getTemplate} from './pin_setup.html.js';
@@ -33,12 +33,7 @@ enum PinSetupState {
 }
 
 const PinSetupBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 class PinSetup extends PinSetupBase {
   static get is() {
@@ -91,6 +86,14 @@ class PinSetup extends PinSetupBase {
       },
 
       /**
+       * True when PIN is being offered as the main sign-in factor.
+       */
+      usingPinAsMainSignInFactor: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Indicates whether user is a child account.
        */
       isChildAccount: {
@@ -105,6 +108,7 @@ class PinSetup extends PinSetupBase {
   authToken: string;
   private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   private hasLoginSupport: boolean;
+  private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
 
   override get EXTERNAL_API(): string[] {
@@ -117,8 +121,8 @@ class PinSetup extends PinSetupBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.ONBOARDING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ONBOARDING;
   }
 
   override ready(): void {
@@ -137,10 +141,13 @@ class PinSetup extends PinSetupBase {
     return pinKeyboard;
   }
 
-  onBeforeShow(data: OobeTypes.PinSetupScreenParameters): void {
+  override onBeforeShow(data: OobeTypes.PinSetupScreenParameters): void {
+    super.onBeforeShow(data);
     this.getPinKeyboard().resetState();
-    this.authToken = data.auth_token;
-    this.isChildAccount = data.is_child_account;
+    this.authToken = data.authToken;
+    this.isChildAccount = data.isChildAccount;
+    this.hasLoginSupport = data.hasLoginSupport;
+    this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
   }
 
   /**
@@ -149,6 +156,14 @@ class PinSetup extends PinSetupBase {
    */
   setHasLoginSupport(hasLoginSupport: boolean): void {
     this.hasLoginSupport = hasLoginSupport;
+  }
+
+  /**
+   * Configures the screen to show strings letting the user know that PIN is
+   * being set up as a main factor for signing in.
+   */
+  setUsingPinAsMainFactor(usingPinAsMainFactor: boolean): void {
+    this.usingPinAsMainSignInFactor = usingPinAsMainFactor;
   }
 
   private onIsConfirmStepChanged(): void {
@@ -163,6 +178,11 @@ class PinSetup extends PinSetupBase {
 
   private onSetPinDone(): void {
     this.setUIStep(PinSetupState.DONE);
+  }
+
+  private getSkipButtonLabel(usingPinAsMainSignInFactor: boolean): string {
+    return usingPinAsMainSignInFactor ? 'discoverPinSetupPinAsMainFactorSkip' :
+                                        'discoverPinSetupSkip';
   }
 
   private onSkipButton(): void {

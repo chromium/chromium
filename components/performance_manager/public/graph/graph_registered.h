@@ -33,16 +33,18 @@ namespace performance_manager {
 // }
 //
 // This may easily (and commonly) be combined with GraphOwned, allowing the
-// registered object to be owned by the graph as well. Registration should be
-// managed in the "OnPassedToGraph" and "OnTakenFromGraph" callbacks in this
-// case. For example:
+// registered object to be owned by the graph as well. The
+// GraphOwnedAndRegistered helper will register the object automatically when
+// PassToGraph is called. For example:
 //
-// class Bar : public GraphOwned, public GraphRegisteredImpl<Bar> {
+// class Bar : public GraphOwnedAndRegistered<Bar> {
 //   void OnPassedToGraph(Graph* graph) override {
-//     graph->RegisterObject(this);
+//     // RegisterObject was called before OnPassedToGraph.
+//     graph->AddFrameNodeObserver(this);
 //   }
 //   void OnTakenFromGraph(Graph* graph) override {
-//     graph->UnregisterObject(this);
+//     graph->RemoveFrameNodeObserver(this);
+//     // Will call UnregisterObject after OnTakenFromGraph.
 //   }
 // };
 //
@@ -50,16 +52,20 @@ namespace performance_manager {
 //   PerformanceManager::PassToGraph(std::make_unique<Bar>());
 // }
 //
-// void InvokedSometimeLaterOnGraph(Graph* graph) {
+// void InvokedSometimeLaterOnGraph(Graph* graph, bool done) {
 //   Bar* bar = graph->GetRegisteredObjectAs<Bar>();
 //   bar->DoSomething();
+//   if (done) {
+//     graph->TakeFromGraph(bar);
+//     CHECK(!graph->GetRegisteredObjectAs<Bar>());
+//   }
 // }
 
 template <typename SelfType>
 class GraphRegisteredImpl;
 
 // Interface that graph registered objects must implement. Should only be
-// implemented via GraphRegisteredImpl.
+// implemented via GraphRegisteredImpl or GraphOwnedAndRegistered.
 class GraphRegistered {
  public:
   GraphRegistered(const GraphRegistered&) = delete;
@@ -111,6 +117,30 @@ class GraphRegisteredImpl : public GraphRegistered {
   // otherwise. Useful for DCHECKing contract conditions.
   static bool NothingRegistered(Graph* graph) {
     return GetFromGraph(graph) == nullptr;
+  }
+};
+
+// Helper for classes that are both GraphOwned and GraphRegistered.
+template <typename SelfType>
+class GraphOwnedAndRegistered : public GraphRegisteredImpl<SelfType>,
+                                public GraphOwned {
+ public:
+  GraphOwnedAndRegistered() = default;
+  ~GraphOwnedAndRegistered() override = default;
+
+  // GraphOwned implementation:
+  void OnPassedToGraph(Graph* graph) override {}
+  void OnTakenFromGraph(Graph* graph) override {}
+
+ private:
+  void PassToGraphImpl(Graph* graph) override {
+    graph->RegisterObject(this);
+    GraphOwned::PassToGraphImpl(graph);
+  }
+
+  void TakeFromGraphImpl(Graph* graph) override {
+    GraphOwned::TakeFromGraphImpl(graph);
+    graph->UnregisterObject(this);
   }
 };
 

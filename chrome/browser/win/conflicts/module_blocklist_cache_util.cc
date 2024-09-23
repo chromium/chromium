@@ -7,12 +7,14 @@
 #include <functional>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -28,7 +30,7 @@ namespace {
 // Wrapper for base::File::ReadAtCurrentPost() that returns true only if all
 // the requested bytes were succesfully read from the file.
 bool SafeRead(base::File* file, char* data, int size) {
-  return file->ReadAtCurrentPos(data, size) == size;
+  return UNSAFE_TODO(file->ReadAtCurrentPos(data, size)) == size;
 }
 
 // Returns an iterator to the element equal to |value|, or |last| if it can't
@@ -56,10 +58,10 @@ base::MD5Digest CalculateModuleBlocklistCacheMD5(
   base::MD5Init(&md5_context);
 
   base::MD5Update(&md5_context,
-                  base::StringPiece(reinterpret_cast<const char*>(&metadata),
-                                    sizeof(metadata)));
+                  std::string_view(reinterpret_cast<const char*>(&metadata),
+                                   sizeof(metadata)));
   base::MD5Update(&md5_context,
-                  base::StringPiece(
+                  std::string_view(
                       reinterpret_cast<const char*>(blocklisted_modules.data()),
                       sizeof(third_party_dlls::PackedListModule) *
                           blocklisted_modules.size()));
@@ -160,7 +162,7 @@ bool WriteModuleBlocklistCache(
       sizeof(third_party_dlls::PackedListModule) * blocklisted_modules.size());
   file_contents.append(std::begin(md5_digest->a), std::end(md5_digest->a));
 
-  // TODO(1022041): Investigate if using WriteFileAtomically() in a
+  // TODO(crbug.com/40106434): Investigate if using WriteFileAtomically() in a
   // CONTINUE_ON_SHUTDOWN sequence doesn't cause too many corrupted caches.
   return base::ImportantFileWriter::WriteFileAtomically(
       module_blocklist_cache_path, file_contents);
@@ -234,7 +236,7 @@ int64_t CalculateExpectedFileSize(
   return static_cast<int64_t>(sizeof(third_party_dlls::PackedListMetadata) +
                               packed_list_metadata.module_count *
                                   sizeof(third_party_dlls::PackedListModule) +
-                              std::extent<decltype(base::MD5Digest::a)>());
+                              sizeof(base::MD5Digest::a));
 }
 
 bool ModuleLess::operator()(
@@ -260,14 +262,14 @@ bool ModuleTimeDateStampGreater::operator()(
 void RemoveAllowlistedEntries(
     const ModuleListFilter& module_list_filter,
     std::vector<third_party_dlls::PackedListModule>* blocklisted_modules) {
-  base::EraseIf(
+  std::erase_if(
       *blocklisted_modules,
       [&module_list_filter](const third_party_dlls::PackedListModule& module) {
         return module_list_filter.IsAllowlisted(
-            base::StringPiece(
+            std::string_view(
                 reinterpret_cast<const char*>(&module.basename_hash[0]),
                 std::size(module.basename_hash)),
-            base::StringPiece(
+            std::string_view(
                 reinterpret_cast<const char*>(&module.code_id_hash[0]),
                 std::size(module.code_id_hash)));
       });

@@ -95,7 +95,8 @@ std::vector<FieldInfo> FieldInfoManager::GetFieldInfo(
     const std::string& signon_realm) {
   std::vector<FieldInfo> relevant_info;
   for (const auto& entry : field_info_cache_) {
-    // TODO(crbug/1468297): Consider affiliated matches and PSL extension list.
+    // TODO(crbug.com/40277063): Consider affiliated matches and PSL extension
+    // list.
     if (IsPublicSuffixDomainMatch(entry.field_info.signon_realm,
                                   signon_realm)) {
       relevant_info.push_back(entry.field_info);

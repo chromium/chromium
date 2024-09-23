@@ -74,7 +74,7 @@ std::string SecurityTypeStringFromProto(
       return shill::kSecurityClassWep;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -88,7 +88,7 @@ sync_pb::WifiConfigurationSpecifics_SecurityType SecurityTypeProtoFromMojo(
       return sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_WEP;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_NONE;
   }
 }
@@ -211,7 +211,7 @@ network_config::mojom::SecurityType MojoSecurityTypeFromProto(
       return network_config::mojom::SecurityType::kWepPsk;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return network_config::mojom::SecurityType::kNone;
   }
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -26,13 +27,15 @@ BiometricAuthenticationConfirmationBubbleView::
                              /*easily_dismissable=*/true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   AddChildView(CreateGooglePasswordManagerLabel(
   /*text_message_id=*/
 #if BUILDFLAG(IS_MAC)
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_MAC,
 #elif BUILDFLAG(IS_WIN)
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_WIN,
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+      IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_CONFIRMATION_DESCRIPTION_CHROMEOS,
 #endif
       /*link_message_id=*/
       IDS_PASSWORD_MANAGER_SETTINGS,

@@ -24,6 +24,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
@@ -48,13 +49,7 @@ class HashCountedSet {
   typedef typename ImplType::const_iterator const_iterator;
   typedef typename ImplType::AddResult AddResult;
 
-  HashCountedSet() {
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<Value>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashCountedSet. Use "
-                  "HeapHashCountedSet<Member<T>> instead.");
-  }
+  HashCountedSet() = default;
 
   HashCountedSet(const HashCountedSet&) = default;
   HashCountedSet& operator=(const HashCountedSet&) = default;
@@ -114,6 +109,18 @@ class HashCountedSet {
 
  private:
   ImplType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<Value>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashCountedSet. Use "
+                    "HeapHashCountedSet<Member<T>> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename T, typename U, typename V>

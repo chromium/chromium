@@ -10,9 +10,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -25,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,10 +36,8 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
-import org.chromium.ui.widget.TextViewWithLeading;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -64,7 +61,7 @@ public class AccessorySheetTabViewTest {
      */
     private void openLayoutInAccessorySheet(
             @LayoutRes int layout, KeyboardAccessoryData.Tab.Listener listener) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
                     AccessorySheetCoordinator accessorySheet =
@@ -128,31 +125,11 @@ public class AccessorySheetTabViewTest {
 
     @Test
     @MediumTest
-    public void testAddingATitleToTheModelRendersIt() {
-        assertThat(mView.get().getChildCount(), is(0));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE));
-                });
-
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
-        assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
-        LinearLayout layout = (LinearLayout) mView.get().getChildAt(0);
-        assertThat(layout.getChildCount(), is(3));
-        assertThat(layout.getChildAt(0), instanceOf(View.class)); // The top divider.
-        assertThat(layout.getChildAt(1), instanceOf(TextViewWithLeading.class));
-        assertThat(layout.getChildAt(2), instanceOf(View.class)); // Divider to commands.
-        assertThat(((TextView) layout.getChildAt(1)).getText(), is("Passwords"));
-    }
-
-    @Test
-    @MediumTest
     public void testAddingFooterCommandToTheModelRendersButton() throws ExecutionException {
         final AtomicReference<Boolean> clicked = new AtomicReference<>(false);
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -167,7 +144,7 @@ public class AccessorySheetTabViewTest {
 
         assertThat(btn.getText(), is("Manage passwords"));
 
-        TestThreadUtils.runOnUiThreadBlocking(btn::performClick);
+        ThreadUtils.runOnUiThreadBlocking(btn::performClick);
         assertThat(clicked.get(), is(true));
     }
 }

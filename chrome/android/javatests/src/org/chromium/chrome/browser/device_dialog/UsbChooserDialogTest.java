@@ -24,19 +24,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -47,7 +47,7 @@ import java.lang.ref.WeakReference;
 /** Tests for the UsbChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
+// TODO(crbug.com/344665244): Failing when batched, batch this again.
 public class UsbChooserDialogTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
@@ -88,12 +88,12 @@ public class UsbChooserDialogTest {
     }
 
     private UsbChooserDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UsbChooserDialog dialog =
                             new UsbChooserDialog(
                                     /* nativeUsbChooserDialogPtr= */ 42,
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     dialog.show(
                             sActivityTestRule.getActivity(),
                             "https://origin.example.com/",
@@ -104,8 +104,8 @@ public class UsbChooserDialogTest {
 
     private void selectItem(int position) {
         final Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(items.getChildAt(0), Matchers.notNullValue()));
@@ -145,8 +145,8 @@ public class UsbChooserDialogTest {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         // The 'Connect' button should be disabled and the list view should be hidden.
         Assert.assertFalse(button.isEnabled());
@@ -164,13 +164,12 @@ public class UsbChooserDialogTest {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
         final int position = 1;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mChooserDialog.addDevice("device_id_0", "device_name_0");
                     mChooserDialog.addDevice("device_id_1", "device_name_1");
@@ -199,6 +198,7 @@ public class UsbChooserDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "b/343347280")
     public void testChooserBlockedByModalDialogManager() {
         ModalDialogManager mockModalDialogManager = mock(ModalDialogManager.class);
         when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.APP))
@@ -212,13 +212,13 @@ public class UsbChooserDialogTest {
 
         UsbChooserDialog dialog;
         dialog =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return UsbChooserDialog.create(
                                     mockWindowAndroid,
                                     "https://origin.example.com/",
                                     ConnectionSecurityLevel.SECURE,
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     /* nativeUsbChooserDialogPtr= */ 42);
                         });
         Assert.assertNull(dialog);

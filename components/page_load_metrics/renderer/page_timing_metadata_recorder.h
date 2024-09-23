@@ -7,10 +7,10 @@
 
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 #include "base/profiler/sample_metadata.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace page_load_metrics {
 
@@ -38,11 +38,6 @@ class PageTimingMetadataRecorder {
     std::optional<base::TimeDelta> first_input_delay;
     // Frame local largest contentful paint timestamp.
     std::optional<base::TimeTicks> frame_largest_contentful_paint;
-
-    // Stores the `DocumentToken` so that we can use it to find the value of
-    // some browser side calculated metrics. Currently it is used to retrieve
-    // Largest Contentful Paint value on the browser side.
-    std::optional<blink::DocumentToken> document_token;
   };
 
   PageTimingMetadataRecorder(const MonotonicTiming& initial_timing,
@@ -61,6 +56,13 @@ class PageTimingMetadataRecorder {
   // with the given start and end time.
   void AddInteractionDurationMetadata(const base::TimeTicks interaction_start,
                                       const base::TimeTicks interaction_end);
+  // Adds interaction duration after queueing metadata to past samples for a
+  // user interaction with the given start, end and queued time.
+  void AddInteractionDurationAfterQueueingMetadata(
+      const base::TimeTicks interaction_start,
+      const base::TimeTicks interaction_queued_main_thread,
+      const base::TimeTicks interaction_commit_finish,
+      const base::TimeTicks interaction_end);
 
   // Packs the 32 bit instance_id and interaction_id into one 64 bit signed int
   // to fit the int64 key field of the Metadata API. Public for testing.
@@ -72,15 +74,10 @@ class PageTimingMetadataRecorder {
   // To be overridden by test class.
   virtual void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                           base::TimeTicks period_end,
-                                          base::StringPiece name,
+                                          std::string_view name,
                                           int64_t key,
                                           int64_t value,
                                           base::SampleMetadataScope scope);
-  // To be overridden by test class.
-  virtual void AddProfileMetadata(base::StringPiece name,
-                                  int64_t key,
-                                  int64_t value,
-                                  base::SampleMetadataScope scope);
 
  private:
   void UpdateFirstInputDelayMetadata(
@@ -91,8 +88,7 @@ class PageTimingMetadataRecorder {
       const std::optional<base::TimeTicks>& first_contentful_paint);
   void UpdateLargestContentfulPaintMetadata(
       const std::optional<base::TimeTicks>& navigation_start,
-      const std::optional<base::TimeTicks>& largest_contentful_paint,
-      const std::optional<blink::DocumentToken>& document_token);
+      const std::optional<base::TimeTicks>& largest_contentful_paint);
 
   // Uniquely identifies an instance of the PageTimingMetadataRecorder. Used to
   // distinguish page loads for different documents when applying sample

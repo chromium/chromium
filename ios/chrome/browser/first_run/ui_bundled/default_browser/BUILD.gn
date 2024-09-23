@@ -1,0 +1,106 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("default_browser") {
+  sources = [
+    "default_browser_screen_coordinator.h",
+    "default_browser_screen_coordinator.mm",
+  ]
+  deps = [
+    ":default_browser_mediator",
+    ":default_browser_ui",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/promo_style",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("default_browser_ui") {
+  sources = [
+    "default_browser_screen_view_controller.h",
+    "default_browser_screen_view_controller.mm",
+  ]
+  deps = [
+    ":default_browser_mediator",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("default_browser_mediator") {
+  sources = [
+    "default_browser_screen_consumer.h",
+    "default_browser_screen_mediator.h",
+    "default_browser_screen_mediator.mm",
+  ]
+  deps = [
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "default_browser_screen_mediator_unittest.mm" ]
+  deps = [
+    ":default_browser_mediator",
+    "//base/test:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser_tests",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "default_browser_screen_egtest.mm" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -5,8 +5,10 @@
 #include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
@@ -18,6 +20,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace mahi {
 
 using testing::_;
@@ -27,7 +37,17 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kFeatureManagementMahi},
+        /*disabled_features=*/{});
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_mahi_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
     scoped_mahi_web_contents_manager_ =
         std::make_unique<ScopedMahiWebContentsManagerForTesting>(
             &mock_mahi_web_contents_manager_);
@@ -47,7 +67,9 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   MockMahiWebContentsManager mock_mahi_web_contents_manager_;
   std::unique_ptr<ScopedMahiWebContentsManagerForTesting>
@@ -67,10 +89,17 @@ TEST_F(MahiTabHelperTest, FocusedTabLoadComplete) {
   NavigateAndCommit(GURL("https://example1.com"));
 
   // When a tab gets focus, notification will be received from navigation.
-  FocusWebContentsOnMainFrame();
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
-      .Times(1);
+      .Times(2);
+  MahiTabHelper::FromWebContents(web_contents())->OnWebContentsFocused(nullptr);
   NavigateAndCommit(GURL("https://example2.com"));
+
+  // After losing focus, the tab's notification will no longer be received.
+  EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
+      .Times(0);
+  MahiTabHelper::FromWebContents(web_contents())
+      ->OnWebContentsLostFocus(nullptr);
+  NavigateAndCommit(GURL("https://example3.com"));
 }
 
 TEST_F(MahiTabHelperTest, TabSwitch) {
@@ -85,7 +114,6 @@ TEST_F(MahiTabHelperTest, TabSwitch) {
   EXPECT_NE(nullptr, MahiTabHelper::FromWebContents(web_contents2));
 
   // Switch back to a previous loaded tab.
-  EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusChanged(_)).Times(1);
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(1);
   // Change active tab with `browser()->tab_strip_model()->ActivateTabAt()` or

@@ -20,6 +20,8 @@ source_set("java_script_console") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -44,7 +46,7 @@ source_set("unit_tests") {
     ":java_script_console",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test/fakes",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

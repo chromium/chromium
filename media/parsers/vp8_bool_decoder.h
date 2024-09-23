@@ -47,13 +47,14 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "media/parsers/media_parsers_export.h"
+#include "base/memory/raw_ptr.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
 // A class to decode the VP8's boolean entropy coded stream. It's a variant of
 // arithmetic coding. See RFC 6386 - Chapter 7. Boolean Entropy Decoder.
-class MEDIA_PARSERS_EXPORT Vp8BoolDecoder {
+class MEDIA_EXPORT Vp8BoolDecoder {
  public:
   Vp8BoolDecoder();
 
@@ -121,9 +122,11 @@ class MEDIA_PARSERS_EXPORT Vp8BoolDecoder {
   // Returns true iff we have ran out of bits.
   bool OutOfBuffer();
 
-  const uint8_t* user_buffer_;
-  const uint8_t* user_buffer_start_;
-  const uint8_t* user_buffer_end_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> user_buffer_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
+      user_buffer_start_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged>
+      user_buffer_end_;
   size_t value_;
   int count_;
   size_t range_;

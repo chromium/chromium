@@ -87,7 +87,7 @@ CGFloat kSectionFooterHeight = 8.;
           consistencyAccountChooserTableViewControllerDidTapOnAddAccount:self];
       break;
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

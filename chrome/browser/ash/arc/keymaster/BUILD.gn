@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("keymaster") {
+  sources = [
+    "arc_keymaster_bridge.cc",
+    "arc_keymaster_bridge.h",
+    "cert_store_bridge.cc",
+    "cert_store_bridge.h",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/services/keymaster/public/mojom",
+    "//chromeos/ash/components/dbus/arc",
+    "//components/keyed_service/core",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+}

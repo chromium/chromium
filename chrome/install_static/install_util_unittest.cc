@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/install_static/install_util.h"
 
 #include <objbase.h>
 
 #include <tuple>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/win_util.h"
@@ -21,74 +28,92 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::HasSubstr;
+using ::testing::Optional;
 using ::testing::StrCaseEq;
+using ::testing::StrNe;
 
 namespace install_static {
 
-// Tests the install_static::GetSwitchValueFromCommandLine function.
-TEST(InstallStaticTest, GetSwitchValueFromCommandLineTest) {
+TEST(InstallStaticTest, GetCommandLineSwitchTest) {
   // Simple case with one switch.
-  std::wstring value =
-      GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe --type=bar", L"type");
-  EXPECT_EQ(L"bar", value);
+  std::optional<std::wstring> opt =
+      GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=bar", L"type");
+  EXPECT_THAT(opt, Optional(std::wstring(L"bar")));
 
   // Multiple switches with trailing spaces between them.
-  value = GetSwitchValueFromCommandLine(
-      L"c:\\temp\\bleh.exe --type=bar  --abc=def bleh", L"abc");
-  EXPECT_EQ(L"def", value);
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=bar  --abc=def bleh",
+                             L"abc");
+  EXPECT_THAT(opt, Optional(std::wstring(L"def")));
 
   // Multiple switches with trailing spaces and tabs between them.
-  value = GetSwitchValueFromCommandLine(
+  opt = GetCommandLineSwitch(
       L"c:\\temp\\bleh.exe --type=bar \t\t\t --abc=def bleh", L"abc");
-  EXPECT_EQ(L"def", value);
+  EXPECT_THAT(opt, Optional(std::wstring(L"def")));
 
   // Non existent switch.
-  value = GetSwitchValueFromCommandLine(
-      L"c:\\temp\\bleh.exe --foo=bar  --abc=def bleh", L"type");
-  EXPECT_EQ(L"", value);
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --foo=bar  --abc=def bleh",
+                             L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
 
   // Non existent switch.
-  value = GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe", L"type");
-  EXPECT_EQ(L"", value);
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
 
   // Non existent switch.
-  value =
-      GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe type=bar", L"type");
-  EXPECT_EQ(L"", value);
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe type=bar", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
+
+  // Non existent switch.
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe -type=bar", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
+
+  // Non existent switch.
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --Type=bar", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
+
+  // Non existent switch.
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=bar", L"Type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
 
   // Trailing spaces after the switch.
-  value = GetSwitchValueFromCommandLine(
-      L"c:\\temp\\bleh.exe --type=bar      \t\t", L"type");
-  EXPECT_EQ(L"bar", value);
+  opt =
+      GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=bar      \t\t", L"type");
+  EXPECT_THAT(opt, Optional(std::wstring(L"bar")));
 
   // Multiple switches with trailing spaces and tabs between them.
-  value = GetSwitchValueFromCommandLine(
+  opt = GetCommandLineSwitch(
       L"c:\\temp\\bleh.exe --type=bar      \t\t --foo=bleh", L"foo");
-  EXPECT_EQ(L"bleh", value);
+  EXPECT_THAT(opt, Optional(std::wstring(L"bleh")));
 
   // Nothing after a switch.
-  value = GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe --type=", L"type");
-  EXPECT_TRUE(value.empty());
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=", L"type");
+  EXPECT_THAT(opt, Optional(std::wstring()));
 
   // Whitespace after a switch.
-  value =
-      GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe --type= ", L"type");
-  EXPECT_TRUE(value.empty());
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type= ", L"type");
+  EXPECT_THAT(opt, Optional(std::wstring()));
 
   // Just tabs after a switch.
-  value = GetSwitchValueFromCommandLine(L"c:\\temp\\bleh.exe --type=\t\t\t",
-                                        L"type");
-  EXPECT_TRUE(value.empty());
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=\t\t\t", L"type");
+  EXPECT_THAT(opt, Optional(std::wstring()));
 
   // Bad command line without closing quotes. Should not crash.
-  value = GetSwitchValueFromCommandLine(L"\"blah --type=\t\t\t", L"type");
-  EXPECT_TRUE(value.empty());
+  opt = GetCommandLineSwitch(L"\"blah --type=\t\t\t", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
 
   // Anything following "--" should be considered args and therefore ignored.
-  value = GetSwitchValueFromCommandLine(L"blah -- --type=bleh", L"type");
-  EXPECT_TRUE(value.empty());
+  opt = GetCommandLineSwitch(L"blah -- --type=bleh", L"type");
+  EXPECT_THAT(opt, Eq(std::nullopt));
+
+  // Duplicate switch value.
+  opt = GetCommandLineSwitch(L"c:\\temp\\bleh.exe --type=foo --type=bar",
+                             L"type");
+  EXPECT_THAT(opt, Optional(std::wstring(L"foo")));
 }
 
+// Tests the install_static::TokenizeCommandLineToArray function.
 TEST(InstallStaticTest, SpacesAndQuotesInCommandLineArguments) {
   std::vector<std::wstring> tokenized;
 
@@ -263,6 +288,33 @@ TEST(InstallStaticTest, BrowserProcessTest) {
   EXPECT_FALSE(IsProcessTypeInitialized());
   InitializeProcessType();
   EXPECT_TRUE(IsBrowserProcess());
+}
+
+TEST(InstallStaticTest, CreateUniqueTempDirectoryTest) {
+  constexpr std::wstring_view kPrefix(L"Foobar");
+  std::wstring dir = CreateUniqueTempDirectory(kPrefix);
+  ASSERT_FALSE(dir.empty());
+
+  EXPECT_THAT(dir, HasSubstr(L"\\" + std::wstring(kPrefix)));
+
+  base::FilePath dir_path(dir);
+  EXPECT_TRUE(base::DirectoryExists(dir_path));
+  EXPECT_TRUE(dir_path.IsAbsolute());
+
+  EXPECT_TRUE(base::DeleteFile(dir_path));
+}
+
+TEST(InstallStaticTest, CreateMoreThanOneUniqueTempDirectoryTest) {
+  std::wstring dir1 = CreateUniqueTempDirectory({});
+  ASSERT_FALSE(dir1.empty());
+
+  std::wstring dir2 = CreateUniqueTempDirectory({});
+  ASSERT_FALSE(dir2.empty());
+
+  EXPECT_THAT(dir2, StrNe(dir1));
+
+  EXPECT_TRUE(base::DeleteFile(base::FilePath(dir1)));
+  EXPECT_TRUE(base::DeleteFile(base::FilePath(dir2)));
 }
 
 class InstallStaticUtilTest

@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
@@ -12,6 +11,11 @@
 #include "base/no_destructor.h"
 #include "components/embedder_support/android/metrics/features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sensitive_content/features.h"
+#include "components/viz/common/features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwFeatureMap_jni.h"
 
 namespace android_webview {
 
@@ -21,28 +25,36 @@ namespace {
 // android_webview/common/aw_features.cc or in other locations in the code base
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &features::kWebViewBackForwardCache,
     &features::kWebViewDisplayCutout,
+    &features::kWebViewDragDropFiles,
     &features::kWebViewExitReasonMetric,
+    &::features::kWebViewFrameRateHints,
+    &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
-    &features::kWebViewJavaJsBridgeMojo,
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewXRequestedWithHeaderControl,
-    &features::kWebViewXRequestedWithHeaderManifestAllowList,
     &features::kWebViewRestrictSensitiveContent,
-    &features::kWebViewUmaUploadQualityOfServiceSetToDefault,
     &metrics::kAndroidMetricsAsyncMetricLogging,
     &features::kWebViewZoomKeyboardShortcuts,
-    &features::kWebViewClearFunctorInBackground,
     &safe_browsing::kHashPrefixRealTimeLookups,
-    &safe_browsing::kSafeBrowsingSkipSubresources,
     &features::kWebViewSupervisedUserSiteDetection,
     &features::kWebViewSupervisedUserSiteBlock,
     &base::features::kCollectAndroidFrameTimelineMetrics,
-    &features::kWebViewInjectPlatformJsApis,
-    &features::kWebViewMediaIntegrityApi,
-    &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+    &features::kWebViewMediaIntegrityApiBlinkExtension,
+    &features::kWebViewSeparateResourceContext,
+    &features::kWebViewMuteAudio,
+    &features::kWebViewUseInitialNetworkStateAtStartup,
+    &features::kWebViewReduceUAAndroidVersionDeviceModel,
+    &features::kWebViewEnableCrash,
+    &features::kWebViewPreloadClasses,
+    &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
+    &features::kWebViewHyperlinkContextMenu,
+    &base::features::kPostGetMyMemoryStateToBackground,
+    &sensitive_content::features::kSensitiveContent,
+    &features::kWebViewWebauthn,
 };
 
 // static

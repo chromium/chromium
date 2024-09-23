@@ -18,11 +18,9 @@ This file specifies browser resources for developer-facing chrome:// pages
   </outputs>
   <release seq="1">
     <includes>
-      <if expr="enable_supervised_users">
         <include name="IDR_FAMILY_LINK_USER_INTERNALS_HTML" file="resources\family_link_user_internals\family_link_user_internals.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FAMILY_LINK_USER_INTERNALS_CSS" file="resources\family_link_user_internals\family_link_user_internals.css" type="BINDATA" />
         <include name="IDR_FAMILY_LINK_USER_INTERNALS_JS" file="resources\family_link_user_internals\family_link_user_internals.js" type="BINDATA" />
-      </if>
       <include name="IDR_TRANSLATE_INTERNALS_CSS" file="../../components/translate/translate_internals/translate_internals.css" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
       <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import type {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import type {HelpBubbleElement} from './help_bubble.js';
 import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS} from './help_bubble.js';
@@ -292,19 +292,5 @@ export class HelpBubbleController {
       (this.bubble_ || this.anchor_).focus();
       this.anchor_.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
     }
-  }
-
-  /**
-   * Gets the immediate ancestor element of `element` in the DOM, or null if
-   * none. This steps out of shadow DOMs as it finds them.
-   */
-  private static getImmediateAncestor(element: Element): Element|null {
-    if (element.parentElement) {
-      return element.parentElement;
-    }
-    if (element.parentNode instanceof ShadowRoot) {
-      return (element.parentNode as ShadowRoot).host;
-    }
-    return null;
   }
 }

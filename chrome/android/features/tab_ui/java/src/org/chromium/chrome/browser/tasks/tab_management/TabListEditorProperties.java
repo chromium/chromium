@@ -34,6 +34,9 @@ public class TabListEditorProperties {
                     TabListEditorToolbar.RelatedTabCountProvider>
             RELATED_TAB_COUNT_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableObjectPropertyKey<String> TOOLBAR_TITLE =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -42,6 +45,7 @@ public class TabListEditorProperties {
                 TOOLBAR_BACKGROUND_COLOR,
                 TOOLBAR_TEXT_TINT,
                 TOOLBAR_BUTTON_TINT,
-                RELATED_TAB_COUNT_PROVIDER
+                RELATED_TAB_COUNT_PROVIDER,
+                TOOLBAR_TITLE
             };
 }

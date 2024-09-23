@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/browser_sync/active_devices_provider_impl.h"
+
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
-#include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace browser_sync {
 
@@ -48,13 +48,13 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   std::vector<std::string> all_fcm_registration_tokens;
 
   // List of interested data types for all other clients.
-  syncer::ModelTypeSet all_interested_data_types;
+  syncer::DataTypeSet all_interested_data_types;
 
-  syncer::ModelTypeSet old_invalidations_interested_data_types;
+  syncer::DataTypeSet old_invalidations_interested_data_types;
 
   // FCM registration tokens with corresponding interested data types for all
   // the clients with enabled sync standalone invalidations.
-  std::map<std::string, syncer::ModelTypeSet>
+  std::map<std::string, syncer::DataTypeSet>
       fcm_token_and_interested_data_types;
 
   for (const syncer::DeviceInfo* device : active_devices) {
@@ -75,7 +75,7 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
               switches::kSyncUseFCMRegistrationTokensList)) {
         all_fcm_registration_tokens.push_back(device->fcm_registration_token());
       }
-    } else if (!device->interested_data_types().Empty()) {
+    } else if (!device->interested_data_types().empty()) {
       // An empty FCM registration token may be set for old clients, and for
       // modern clients supporting sync standalone invalidatoins if there was an
       // error during FCM registration. This does not matter in this case since
@@ -133,7 +133,7 @@ ActiveDevicesProviderImpl::GetActiveDevicesSortedByUpdateTime() const {
 
   if (base::FeatureList::IsEnabled(
           switches::kSyncFilterOutInactiveDevicesForSingleClient)) {
-    base::EraseIf(all_devices, [this](const syncer::DeviceInfo* device) {
+    std::erase_if(all_devices, [this](const syncer::DeviceInfo* device) {
       const base::Time expected_expiration_time =
           device->last_updated_timestamp() + device->pulse_interval() +
           switches::kSyncActiveDeviceMargin.Get();

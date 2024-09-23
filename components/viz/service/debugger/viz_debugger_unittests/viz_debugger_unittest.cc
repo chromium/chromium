@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_internal.h"
@@ -420,11 +421,10 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
       int id = i;
       DBG_DRAW_RECT_BUFF(kAnnoRect, kTestRect, &id);
       // Random numbers between 0-255 for BGRA values
-      uint8_t temp1 = (id + 15) * 11231;
-      uint8_t temp2 = (id + 24) * 32461231;
-      uint8_t temp3 = (id + 523) * 72321231;
-      uint8_t temp4 = (id + 52) * 321231;
-      const auto kFillColor = SkColorSetARGB(temp1, temp2, temp3, temp4);
+      uint8_t temp[4];
+      base::RandBytes(temp);
+      const auto kFillColor =
+          SkColorSetARGB(temp[0], temp[1], temp[2], temp[3]);
       test_buffers_color[id] = kFillColor;
     }
 
@@ -476,6 +476,26 @@ TEST_F(VisualDebuggerTest, TestDebugFlagAnnoAndFunction) {
   // The default value for a bool flag when the visual debugger is disabled is
   // false.
   EXPECT_FALSE(flag_default_value_check());
+}
+
+// This tests makes sure that expressions inside debugging macros are not
+// evaluated by default with visual debugger off.
+TEST_F(VisualDebuggerTest, DefaultDisabledNoExecute) {
+  const char* kStrA = "anno_A";
+  // These integers are mutated on a function invocation.
+  int count_a = 0;
+
+  auto get_a_string = [&count_a, &kStrA]() {
+    count_a++;
+    return std::string(kStrA);
+  };
+
+  DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
+  DBG_LOG(kStrA, "%s", get_a_string().c_str());
+  EXPECT_EQ(0, count_a);
+
+  EXPECT_EQ(get_a_string(), kStrA);
+  EXPECT_EQ(1, count_a);
 }
 
 // For optimization purposes the flag fbool values return false as a constexpr.

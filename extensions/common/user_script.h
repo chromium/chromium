@@ -268,6 +268,11 @@ class UserScript {
     execution_world_ = world;
   }
 
+  const std::optional<std::string>& world_id() const { return world_id_; }
+  void set_world_id(std::optional<std::string> world_id) {
+    world_id_ = std::move(world_id);
+  }
+
   // Returns the script's ID without the appended prefix.
   std::string GetIDWithoutPrefix() const;
 
@@ -380,6 +385,10 @@ class UserScript {
   bool incognito_enabled_ = false;
 
   mojom::ExecutionWorld execution_world_ = mojom::ExecutionWorld::kIsolated;
+
+  // The ID of the unique world into which to inject, if any. If omitted, uses
+  // the default world for the given `execution_world_` type.
+  std::optional<std::string> world_id_;
 };
 
 using UserScriptList = std::vector<std::unique_ptr<UserScript>>;

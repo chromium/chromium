@@ -996,7 +996,7 @@ std::string WebRequestRequestCookieAction::GetName() const {
     case helpers::REMOVE:
       return keys::kRemoveRequestCookieType;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1044,7 +1044,7 @@ std::string WebRequestResponseCookieAction::GetName() const {
     case helpers::REMOVE:
       return keys::kRemoveResponseCookieType;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

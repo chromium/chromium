@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("early_prefs") {
+  sources = [
+    "early_prefs_export_service.cc",
+    "early_prefs_export_service.h",
+    "early_prefs_export_service_factory.cc",
+    "early_prefs_export_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/early_prefs:writer",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/osauth/public",
+    "//components/flags_ui",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+}

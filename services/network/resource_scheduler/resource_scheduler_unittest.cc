@@ -132,7 +132,7 @@ class ResourceSchedulerTest : public testing::Test {
   ResourceSchedulerTest() {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
-        net::features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
     // This has to be done after initializing the feature list, since the value
     // of the feature is cached.
     auto context_builder = net::CreateTestURLRequestContextBuilder();

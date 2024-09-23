@@ -24,7 +24,6 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +31,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/storage_partition.h"
@@ -167,6 +167,7 @@ void UserPolicySigninService::Shutdown() {
   if (identity_manager())
     identity_manager()->RemoveObserver(this);
   UserPolicySigninServiceBase::Shutdown();
+  profile_ = nullptr;
 }
 
 void UserPolicySigninService::ShutdownCloudPolicyManager() {
@@ -195,10 +196,10 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
   bool has_sync_account =
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync);
 
-  if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+  if (!enterprise_util::UserAcceptedAccountManagement(profile_) &&
       has_sync_account) {
     // Ensure user accepted management bit is set.
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+    enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
   }
 
 #if DCHECK_IS_ON()
@@ -208,7 +209,7 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
   // is no profile storage, the bit will not be set.
   if (!base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
       has_sync_account &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+      enterprise_util::UserAcceptedAccountManagement(profile_)) {
     auto* signin_client = ChromeSigninClientFactory::GetForProfile(profile_);
     DCHECK(!signin_client->IsRevokeSyncConsentAllowed());
     DCHECK(!signin_client->IsClearPrimaryAccountAllowed(
@@ -216,7 +217,7 @@ void UserPolicySigninService::ProhibitSignoutIfNeeded() {
   }
 
   if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+      enterprise_util::UserAcceptedAccountManagement(profile_)) {
     auto* sigin_client = ChromeSigninClientFactory::GetForProfile(profile_);
     DCHECK(sigin_client->IsRevokeSyncConsentAllowed());
     DCHECK(!sigin_client->IsClearPrimaryAccountAllowed(has_sync_account));
@@ -267,7 +268,7 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
   }
 
   return (profile_can_be_managed_for_testing_ ||
-          chrome::enterprise_util::ProfileCanBeManaged(profile_));
+          enterprise_util::ProfileCanBeManaged(profile_));
 }
 
 CloudPolicyClient::DeviceDMTokenCallback

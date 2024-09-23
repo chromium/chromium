@@ -1,0 +1,13 @@
+Name: License tools invalid metadata parsing
+URL: https://chromium.tools.licenses.test/src.git
+Version: 0
+Revision: v1.0.0
+License file: //tools/licenses/test_dir/LICENSE
+Security Critical: no
+
+Description:
+This package contains only placeholder files to test the ParseDir function
+in tools/licenses.py
+
+Local Modifications:
+N/A.

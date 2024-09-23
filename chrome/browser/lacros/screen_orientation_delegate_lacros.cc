@@ -33,7 +33,7 @@ ui::WaylandOrientationLockType ToWaylandOrientationLockType(
     case device::mojom::ScreenOrientationLockType::NATURAL:
       return ui::WaylandOrientationLockType::kNatural;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::WaylandOrientationLockType::kAny;
 }
 
@@ -52,7 +52,7 @@ bool ScreenOrientationDelegateLacros::FullScreenRequired(
   return true;
 }
 
-ui::WaylandExtension* GetWaylandExtensionFromWebContents(
+ui::WaylandToplevelExtension* GetWaylandToplevelExtensionFromWebContents(
     content::WebContents* web_contents) {
   aura::Window* window = web_contents->GetNativeView();
   if (!window->GetHost())
@@ -63,13 +63,14 @@ ui::WaylandExtension* GetWaylandExtensionFromWebContents(
   if (!dwth_platform)
     return nullptr;
 
-  return dwth_platform->GetWaylandExtension();
+  return dwth_platform->GetWaylandToplevelExtension();
 }
 
 void ScreenOrientationDelegateLacros::Lock(
     content::WebContents* web_contents,
     device::mojom::ScreenOrientationLockType orientation_lock) {
-  auto* wayland_extension = GetWaylandExtensionFromWebContents(web_contents);
+  auto* wayland_extension =
+      GetWaylandToplevelExtensionFromWebContents(web_contents);
   if (!wayland_extension)
     return;
 
@@ -78,7 +79,8 @@ void ScreenOrientationDelegateLacros::Lock(
 
 bool ScreenOrientationDelegateLacros::ScreenOrientationProviderSupported(
     content::WebContents* web_contents) {
-  auto* wayland_extension = GetWaylandExtensionFromWebContents(web_contents);
+  auto* wayland_extension =
+      GetWaylandToplevelExtensionFromWebContents(web_contents);
   if (!wayland_extension)
     return false;
 
@@ -87,7 +89,8 @@ bool ScreenOrientationDelegateLacros::ScreenOrientationProviderSupported(
 
 void ScreenOrientationDelegateLacros::Unlock(
     content::WebContents* web_contents) {
-  auto* wayland_extension = GetWaylandExtensionFromWebContents(web_contents);
+  auto* wayland_extension =
+      GetWaylandToplevelExtensionFromWebContents(web_contents);
   if (wayland_extension == nullptr)
     return;
 

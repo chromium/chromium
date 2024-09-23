@@ -13,7 +13,7 @@ union CALayerContent {
 
 // gfx::CALayerParams
 struct CALayerParams {
-  // TODO(676224): Use preprocessor to restrict platform-specific members to
+  // TODO(crbug.com/40499115): Use preprocessor to restrict platform-specific members to
   // desired platform.
   bool is_empty;
   CALayerContent content;

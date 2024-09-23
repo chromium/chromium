@@ -119,7 +119,8 @@ std::optional<std::string> TestTrustTokenIssuer::IssueUsingKey(
   size_t num_tokens_issued;
 
   if (!TRUST_TOKEN_ISSUER_issue(
-          /*ctx=*/ctx_.get(), /*out=*/raw_issuance_response.mutable_ptr(),
+          /*ctx=*/ctx_.get(),
+          /*out=*/&raw_issuance_response.mutable_ptr()->AsEphemeralRawAddr(),
           /*out_len=*/raw_issuance_response.mutable_len(),
           /*out_tokens_issued=*/&num_tokens_issued,
           /*request=*/
@@ -150,7 +151,8 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::Redeem(
           /*ctx=*/ctx_.get(), /*out_public=*/&received_public_metadata,
           /*out_private=*/&received_private_metadata,
           /*out_token=*/&redeemed_token,
-          /*out_client_data=*/redeemed_client_data.mutable_ptr(),
+          /*out_client_data=*/
+          &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           /*out_client_data_len=*/redeemed_client_data.mutable_len(),
           /*request=*/
           base::as_bytes(base::make_span(raw_redemption_request)).data(),
@@ -186,7 +188,8 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::RedeemOverMessage(
           /*ctx=*/ctx_.get(), /*out_public=*/&received_public_metadata,
           /*out_private=*/&received_private_metadata,
           /*out_token=*/&redeemed_token,
-          /*out_client_data=*/redeemed_client_data.mutable_ptr(),
+          /*out_client_data=*/
+          &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           /*out_client_data_len=*/redeemed_client_data.mutable_len(),
           /*request=*/
           base::as_bytes(base::make_span(raw_redemption_request)).data(),

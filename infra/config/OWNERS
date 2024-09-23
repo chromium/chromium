@@ -1,5 +1,5 @@
 # iOS owners for changing Xcode constants only.
-per-file lib/builders.star=file://infra/config/groups/ios/OWNERS
+per-file lib/xcode.star=file://infra/config/groups/ios/OWNERS
 
 # iOS owners for iOS builder configs.
 per-file subprojects/chromium/ci/chromium.fyi.star=file://infra/config/groups/ios/OWNERS
@@ -31,3 +31,8 @@ per-file subprojects/chromium/try/tryserver.chromium.dawn.star=file://infra/conf
 per-file subprojects/chromium/ci/chromium.fuchsia.fyi.star=file://build/fuchsia/OWNERS
 per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/OWNERS
 per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/OWNERS
+
+# For Android configs
+per-file subprojects/chromium/ci/chromium.android.fyi.star=wnwen@chromium.org
+per-file subprojects/chromium/ci/chromium.android.star=wnwen@chromium.org
+per-file subprojects/chromium/try/tryserver.chromium.android.star=wnwen@chromium.org

@@ -21,8 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
-#include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/tpcd/support/validity_service.h"
@@ -38,10 +36,11 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tpcd_pref_names.h"
+#include "components/privacy_sandbox/tpcd_utils.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
-#include "components/tpcd/metadata/parser.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,11 +48,13 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -168,17 +169,17 @@ class AdHeuristicTPCDBrowserTestBase
     // trigger the calls, it only works for cases when matching the first
     // primary pattern.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    const std::string primary_pattern_spec =
-        ContentSettingsPattern::FromURL(third_party_url).ToString();
-    tpcd::metadata::Metadata metadata =
-        tpcd::metadata::MakeMetadataProtoFromVectorOfPair(
-            {{primary_pattern_spec, "*"}});
+    tpcd::metadata::Metadata metadata;
+    tpcd::metadata::helpers::AddEntryToMetadata(
+        metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
+        "*");
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
-    EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              ContentSetting::CONTENT_SETTING_ALLOW);
+    EXPECT_EQ(
+        CookieSettingsFactory::GetForProfile(browser()->profile())
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   void SetHeuristicsGrant(const GURL& third_party_url,
@@ -186,10 +187,11 @@ class AdHeuristicTPCDBrowserTestBase
     CookieSettingsFactory::GetForProfile(browser()->profile())
         ->SetTemporaryCookieGrantForHeuristic(third_party_url, first_party_url,
                                               base::Seconds(60));
-    EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              ContentSetting::CONTENT_SETTING_ALLOW);
+    EXPECT_EQ(
+        CookieSettingsFactory::GetForProfile(browser()->profile())
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   void SetTopLevelTrialGrant(const GURL& third_party_url,
@@ -213,10 +215,11 @@ class AdHeuristicTPCDBrowserTestBase
                                  ContentSettingsType::TOP_LEVEL_TPCD_TRIAL),
                              base::NullCallback());
 
-    EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              ContentSetting::CONTENT_SETTING_ALLOW);
+    EXPECT_EQ(
+        CookieSettingsFactory::GetForProfile(browser()->profile())
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   void Verify3PCookieAccessAllowed(
@@ -433,7 +436,7 @@ class AdHeuristicTPCDBrowserTestSkipHeuristicsGrant
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1508725): Investigate flakiness on Lacros/ChromeOS flakiness.
+// TODO(crbug.com/41481346): Investigate flakiness on Lacros/ChromeOS flakiness.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CookieBlocked DISABLED_CookieBlockedProfile
 #else
@@ -498,10 +501,10 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestTrialGrant, CookieAllowed) {
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
-                                          first_party_url.spec(),
-                                          /*match_subdomains=*/false,
-                                          /*enabled=*/true);
+      ->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
+          url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
+          /*enabled=*/true, /*source_id=*/std::nullopt));
 
   Verify3PCookieAccessAllowed(register_response.get());
 }
@@ -546,10 +549,10 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipTrialGrant,
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
-                                          first_party_url.spec(),
-                                          /*match_subdomains=*/false,
-                                          /*enabled=*/true);
+      ->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
+          url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
+          /*enabled=*/true, /*source_id=*/std::nullopt));
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/0,
@@ -571,6 +574,10 @@ class AdHeuristicTPCDBrowserTestTopLevelTrialGrant
            {"SkipTpcdMitigationsForAdsMetadata", "true"},
            {"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
         {});
+
+    // Disable the validity service so it doesn't remove manually created
+    // trial settings.
+    tpcd::trial::ValidityService::DisableForTesting();
   }
 
  private:
@@ -608,6 +615,10 @@ class AdHeuristicTPCDBrowserTestSkipTopLevelTrialGrant
            {"SkipTpcdMitigationsForAdsMetadata", "false"},
            {"SkipTpcdMitigationsForAdsHeuristics", "false"}}}},
         {});
+
+    // Disable the validity service so it doesn't remove manually created
+    // trial settings.
+    tpcd::trial::ValidityService::DisableForTesting();
   }
 
  private:

@@ -69,7 +69,7 @@ TEST_F(DisplayManagerUtilTest, DisplayZoomsByDisplayWidth) {
   // equal to the |second| of the pair.
   for (const auto& data : kTestData) {
     const std::vector<float> zoom_values =
-        GetDisplayZoomFactorsByDsiplayWidth(data.first);
+        GetDisplayZoomFactorsByDisplayWidth(data.first);
     for (std::size_t j = 0; j < kNumOfZoomFactors; j++) {
       EXPECT_FLOAT_EQ(zoom_values[j], data.second[j]);
     }

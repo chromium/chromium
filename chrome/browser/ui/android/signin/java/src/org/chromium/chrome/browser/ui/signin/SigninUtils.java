@@ -7,27 +7,24 @@ package org.chromium.chrome.browser.ui.signin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper functions for sign-in and accounts. */
 public final class SigninUtils {
     private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
     private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
+    private static final int DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH = 600;
 
     private SigninUtils() {}
 
@@ -83,93 +80,80 @@ public final class SigninUtils {
 
     /** Returns the accessibility label for the the account picker. */
     public static String getChooseAccountLabel(
-            final Context context, DisplayableProfileData profileData) {
+            final Context context,
+            DisplayableProfileData profileData,
+            boolean isCurrentlySelected) {
+        if (!isCurrentlySelected) {
+            return getAccountLabelForNonSelectedAccount(profileData, context);
+        }
+
         if (profileData.hasDisplayableEmailAddress()) {
+            if (TextUtils.isEmpty(profileData.getFullName())) {
+                return context.getString(
+                        R.string.signin_account_picker_description_with_email,
+                        profileData.getAccountEmail());
+            }
             return context.getString(
-                    R.string.signin_account_picker_description_with_email,
+                    R.string.signin_account_picker_description_with_name_and_email,
+                    profileData.getFullName(),
                     profileData.getAccountEmail());
         }
-        return context.getString(R.string.signin_account_picker_description);
+
+        if (TextUtils.isEmpty(profileData.getFullName())) {
+            return context.getString(
+                    R.string.signin_account_picker_description_without_name_or_email);
+        }
+        return context.getString(
+                R.string.signin_account_picker_description_with_name, profileData.getFullName());
     }
 
-    /** Performs signin after confirming account management with the user, if necessary. */
-    public static void checkAccountManagementAndSignIn(
-            CoreAccountInfo coreAccountInfo,
-            SigninManager signinManager,
-            @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback,
-            Context context,
-            ModalDialogManager modalDialogManager) {
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                || signinManager.getUserAcceptedAccountManagement()) {
-            signinManager.signin(coreAccountInfo, accessPoint, callback);
-            return;
+    private static String getAccountLabelForNonSelectedAccount(
+            DisplayableProfileData profileData, Context context) {
+        if (!profileData.hasDisplayableEmailAddress()) {
+            return profileData.getFullName();
         }
-        signinManager.isAccountManaged(
-                coreAccountInfo,
-                (Boolean isAccountManaged) -> {
-                    onIsAccountManaged(
-                            isAccountManaged,
-                            coreAccountInfo,
-                            signinManager,
-                            accessPoint,
-                            callback,
-                            context,
-                            modalDialogManager);
-                });
+        if (TextUtils.isEmpty(profileData.getFullName())) {
+            return profileData.getAccountEmail();
+        }
+        return context.getString(
+                R.string.signin_account_label_for_non_selected_account,
+                profileData.getFullName(),
+                profileData.getAccountEmail());
     }
 
-    private static void onIsAccountManaged(
-            Boolean isAccountManaged,
-            CoreAccountInfo coreAccountInfo,
-            SigninManager signinManager,
-            @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback,
-            Context context,
-            ModalDialogManager modalDialogManager) {
-        if (!isAccountManaged) {
-            signinManager.signin(coreAccountInfo, accessPoint, callback);
-            return;
-        }
+    /**
+     * Returns whether the new sign-in flow should be shown instead of the usual one (sign-in and
+     * enable sync for instance) for an sign-in access point eligible to the new flow.
+     */
+    public static boolean shouldShowNewSigninFlow() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+    }
 
-        SignInCallback wrappedCallback =
-                new SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        if (callback != null) callback.onSignInComplete();
-                    }
+    public static View wrapInDialogWhenLargeLayout(View promoContentView) {
+        return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(promoContentView);
+    }
 
-                    @Override
-                    public void onPrefsCommitted() {
-                        if (callback != null) callback.onPrefsCommitted();
-                    }
+    /** Returns whether the activity shows on tablet or automotive. */
+    public static boolean isTabletOrAuto(Activity activity) {
+        return BuildInfo.getInstance().isAutomotive
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
+    }
 
-                    @Override
-                    public void onSignInAborted() {
-                        // If signin is aborted, we need to clear the account management acceptance.
-                        signinManager.setUserAcceptedAccountManagement(false);
-                        if (callback != null) callback.onSignInAborted();
-                    }
-                };
+    /**
+     * Returns whether dual panes horizontal layout can be used on full screen views (e.g. FRE or
+     * Upgrade promo sub-views) given the configuration.
+     */
+    public static boolean shouldShowDualPanesHorizontalLayout(Activity activity) {
+        Configuration configuration = activity.getResources().getConfiguration();
 
-        ConfirmManagedSyncDataDialogCoordinator.Listener listener =
-                new ConfirmManagedSyncDataDialogCoordinator.Listener() {
-                    @Override
-                    public void onConfirm() {
-                        signinManager.setUserAcceptedAccountManagement(true);
-                        signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        if (callback != null) callback.onSignInAborted();
-                    }
-                };
-
-        new ConfirmManagedSyncDataDialogCoordinator(
-                context,
-                modalDialogManager,
-                listener,
-                signinManager.extractDomainName(coreAccountInfo.getEmail()));
+        // Since the landscape view has two panes the minimum screenWidth to show it is set to
+        // 600dp for phones.
+        // Also, the landscape layout is disabled on tablet/auto or large phones since the
+        // fullscreen promo is mostly shown as dialog.
+        return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                && configuration.screenWidthDp >= DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH
+                && !isTabletOrAuto(activity)
+                && !DialogWhenLargeContentLayout.shouldShowAsDialog(activity);
     }
 }

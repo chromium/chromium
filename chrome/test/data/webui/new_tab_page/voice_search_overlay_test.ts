@@ -13,7 +13,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, installMock, keydown} from './test_support.js';
 
@@ -116,9 +116,10 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
   });
 
-  test('on audio received shows speak text', () => {
+  test('on audio received shows speak text', async () => {
     // Act.
     mockSpeechRecognition.onaudiostart!();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(
@@ -128,12 +129,13 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0');
   });
 
-  test('on speech received starts volume animation', () => {
+  test('on speech received starts volume animation', async () => {
     // Arrange.
     windowProxy.setResultFor('random', 0.5);
 
     // Act.
     mockSpeechRecognition.onspeechstart!();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(
@@ -141,7 +143,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertStyle(voiceSearchOverlay.$.micVolume, '--mic-volume-level', '0.5');
   });
 
-  test('on result received shows recognized text', () => {
+  test('on result received shows recognized text', async () => {
     // Arrange.
     windowProxy.setResultFor('random', 0.5);
     const result = createResults(2);
@@ -150,6 +152,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     // Act.
     mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
 
     // Assert.
     const [intermediateResult, finalResult] =
@@ -220,6 +223,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
             mockSpeechRecognition.onerror!
                 (new webkitSpeechRecognitionError('error', {error}));
           }
+          await microtasksFinished();
 
           // Assert.
           assertTrue(isVisible(voiceSearchOverlay.shadowRoot!.querySelector(
@@ -241,9 +245,10 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
         });
       });
 
-  test('on end received shows error text if no final result', () => {
+  test('on end received shows error text if no final result', async () => {
     // Act.
     mockSpeechRecognition.onend!();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(
@@ -252,7 +257,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
         '#errors *[error="audio-capture"]')));
   });
 
-  test('on end received shows result text if final result', () => {
+  test('on end received shows result text if final result', async () => {
     // Arrange.
     const result = createResults(1);
     Object.assign(result.results[0]!, {isFinal: true});
@@ -260,13 +265,14 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     // Act.
     mockSpeechRecognition.onresult!(result);
     mockSpeechRecognition.onend!();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(
         voiceSearchOverlay.shadowRoot!.querySelector('#texts *[text=result]')));
   });
 
-  const test_params = [
+  const testParams = [
     {
       functionName: 'onaudiostart',
       arguments: [],
@@ -293,7 +299,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     },
   ];
 
-  test_params.forEach(function(param) {
+  testParams.forEach(function(param) {
     test(`${param.functionName} received resets timer`, async () => {
       // Act.
       // Need to account for previously set timers.

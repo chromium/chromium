@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {str, strf} from '../common/js/translations.js';
-import {FilesTooltip} from '../foreground/elements/files_tooltip.js';
+import type {FilesTooltip} from '../foreground/elements/files_tooltip.js';
 
 import {css, customElement, html, property, XfBase} from './xf_base.js';
 

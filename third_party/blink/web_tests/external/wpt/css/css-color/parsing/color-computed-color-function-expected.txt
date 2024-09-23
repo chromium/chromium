@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color(srgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(srgb 0.6 0 0 / 0.5)" but got "color(srgb 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(srgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(srgb 0.5 0 0 / 0.6)" but got "color(srgb 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(srgb-linear calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(srgb-linear 0.6 0 0 / 0.5)" but got "color(srgb-linear 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(srgb-linear 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(srgb-linear 0.5 0 0 / 0.6)" but got "color(srgb-linear 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(a98-rgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(a98-rgb 0.6 0 0 / 0.5)" but got "color(a98-rgb 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(a98-rgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(a98-rgb 0.5 0 0 / 0.6)" but got "color(a98-rgb 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(rec2020 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(rec2020 0.6 0 0 / 0.5)" but got "color(rec2020 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(rec2020 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(rec2020 0.5 0 0 / 0.6)" but got "color(rec2020 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(prophoto-rgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(prophoto-rgb 0.6 0 0 / 0.5)" but got "color(prophoto-rgb 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(prophoto-rgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(prophoto-rgb 0.5 0 0 / 0.6)" but got "color(prophoto-rgb 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(display-p3 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_equals: expected "color(display-p3 0.6 0 0 / 0.5)" but got "color(display-p3 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(display-p3 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "color(display-p3 0.5 0 0 / 0.6)" but got "color(display-p3 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(xyz calc(0.5 + (sign(1em - 10px) * 0.1)) 0 0 / 0.5)'
+  assert_equals: expected "color(xyz-d65 0.6 0 0 / 0.5)" but got "color(xyz-d65 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(xyz 0.5 0 0 / calc(0.5 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "color(xyz-d65 0.5 0 0 / 0.6)" but got "color(xyz-d65 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(xyz-d50 calc(0.5 + (sign(1em - 10px) * 0.1)) 0 0 / 0.5)'
+  assert_equals: expected "color(xyz-d50 0.6 0 0 / 0.5)" but got "color(xyz-d50 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(xyz-d50 0.5 0 0 / calc(0.5 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "color(xyz-d50 0.5 0 0 / 0.6)" but got "color(xyz-d50 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(xyz-d65 calc(0.5 + (sign(1em - 10px) * 0.1)) 0 0 / 0.5)'
+  assert_equals: expected "color(xyz-d65 0.6 0 0 / 0.5)" but got "color(xyz-d65 0.4 0 0 / 0.5)"
+[FAIL] Property color value 'color(xyz-d65 0.5 0 0 / calc(0.5 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "color(xyz-d65 0.5 0 0 / 0.6)" but got "color(xyz-d65 0.5 0 0 / 0.4)"
+[FAIL] Property color value 'color(srgb calc(0.5 + (sign(2cqw - 10px) * 0.1)) 0 0 / 0.51)'
+  assert_equals: expected "color(srgb 0.6 0 0 / 0.51)" but got "color(srgb 0.4 0 0 / 0.51)"
+Harness: the test ran to completion.
+

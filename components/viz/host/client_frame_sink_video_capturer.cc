@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -245,7 +246,7 @@ void ClientFrameSinkVideoCapturer::OnOverlayDestroyed(Overlay* overlay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto it = base::ranges::find(overlays_, overlay);
-  DCHECK(it != overlays_.end());
+  CHECK(it != overlays_.end(), base::NotFatalUntil::M130);
   overlays_.erase(it);
 }
 
@@ -294,7 +295,7 @@ void ClientFrameSinkVideoCapturer::Overlay::OnCapturedMouseEvent(
     return;
   }
 
-  // TODO(crbug.com/1444712): Transmit the coordinates to the client_capturer_.
+  // TODO(crbug.com/40267829): Transmit the coordinates to the client_capturer_.
   NOTIMPLEMENTED();
 }
 

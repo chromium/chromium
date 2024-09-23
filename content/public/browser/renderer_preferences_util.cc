@@ -23,6 +23,10 @@ void UpdateFontRendererPreferencesFromSystemSettings(
   prefs->use_autohinter = params.autohinter;
   prefs->use_bitmaps = params.use_bitmaps;
   prefs->subpixel_rendering = params.subpixel_rendering;
+#if BUILDFLAG(IS_WIN)
+  prefs->text_contrast = params.text_contrast;
+  prefs->text_gamma = params.text_gamma;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace content

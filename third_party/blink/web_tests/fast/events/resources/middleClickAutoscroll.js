@@ -35,26 +35,31 @@ function testSetUp(param) {
     // Wait until layer information has gone from Blink to CC's active tree.
     await waitForCompositorCommit();
 
-    // Start atuoscrolling.
+    // Start autoscrolling.
+    const scrollPromise = waitForScrollEvent(scrolledObject);
+    const scrollEndPromise = waitForScrollendEvent(scrolledObject);
+    let gesturePromise;
     if (autoscrollParam.clickOrDrag == 'click') {
-      await mouseMoveTo(startX, startY);
-      await mouseClickOn(startX, startY, middleButton);
-      await mouseMoveTo(endX, endY);
+      gesturePromise = mouseMoveTo(startX, startY)
+      .then(mouseClickOn(startX, startY, middleButton))
+      .then(mouseMoveTo(endX, endY));
+      await Promise.all([scrollPromise, gesturePromise]);
     } else {
       assert_equals('drag', autoscrollParam.clickOrDrag);
-      mouseDragAndDrop(startX, startY, endX, endY, middleButton,
+      gesturePromise = mouseDragAndDrop(startX, startY, endX, endY, middleButton,
           waitTimeBeforeMoveInMilliseconds);
+      await Promise.all([scrollPromise, gesturePromise, scrollEndPromise]);
     }
 
-    // Wait for some scrolling, then end the autoscroll.
-    await waitFor(() => {
-      return scrolledObject.scrollTop > 0 || scrolledObject.scrollLeft > 0;
-    });
-    if (autoscrollParam.clickOrDrag == 'click')
-      await mouseClickOn(endX, endY, middleButton);
+    if (autoscrollParam.clickOrDrag == 'click') {
+      const clickPromise = mouseClickOn(endX, endY, middleButton);
+      await Promise.all([clickPromise, scrollEndPromise]);
+    }
+
+    assert_true(scrollable.scrollTop > 0 || scrollable.scrollLeft > 0);
 
     // Wait for the cursor shape to go back to normal.
-    await waitFor(() => {
+    await waitUntil(() => {
       var cursorInfo = internals.getCurrentCursorInfo();
       return cursorInfo == "type=Pointer" || cursorInfo == "type=IBeam";
     });

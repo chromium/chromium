@@ -1,0 +1,158 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=../profile_picker_shared.css.js
+ * #include=cr-icons-lit profile-picker-shared
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --avatar-size: 100px;
+  --banner-height: 244px;
+}
+
+#actionContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+#avatarContainer {
+  bottom: calc(var(--avatar-size) / -2);
+  height: calc(var(--avatar-size) + 4px);
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  width: calc(var(--avatar-size) + 4px);
+}
+
+.avatar {
+  border: 2px solid var(--md-background-color);
+  border-radius: 50%;
+  height: var(--avatar-size);
+  width: var(--avatar-size);
+  z-index: 1;
+}
+
+#backButton {
+  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-margin-start: 4px;
+  --cr-icon-button-size: 36px;
+  margin-inline-start: 16px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (forced-colors: none) {
+  #backButton {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  }
+}
+
+#headerContainer {
+  height: var(--banner-height);
+  position: relative;
+  width: 100%;
+}
+
+#infoContainer {
+  bottom: 0;
+  box-sizing: border-box;
+  margin-bottom: min(58px, calc(5px + 0.5 * (100vh - var(--view-min-size))));
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.info-box {
+  align-items: center;
+  border: 1px solid var(--google-grey-200);
+  border-radius: 8px;
+  color: var(--google-grey-700);
+  display: inline-flex;
+  flex-direction: row;
+  margin-inline: auto;
+  max-width: 780px;
+  padding-block: 12px;
+  padding-inline-end: 18px;
+}
+
+.info-box > p {
+  flex-grow: 1;
+  margin-block: 0;
+  text-align: start;
+}
+
+.icon-container {
+  --icon-container-size: 28px;
+  --icon-container-margin: 16px;
+  background-color: var(--google-grey-100);
+  border-radius: 50%;
+  height: var(--icon-container-size);
+  margin-inline: var(--icon-container-margin);
+  width: var(--icon-container-size);
+}
+
+.icon-container cr-icon {
+  --icon-size: 16px;
+  height: var(--icon-size);
+  padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
+  width: var(--icon-size);
+}
+
+cr-button {
+  --cr-button-height: 36px;
+  font-size: 0.75rem;
+  font-weight: normal;
+  min-width: 210px;
+}
+
+#notNowButton {
+  margin-top: 18px;
+}
+
+.title-container {
+  margin: 104px 60px 48px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 43px;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  line-height: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .info-box {
+    border-color: var(--google-grey-600);
+    color: var(--google-grey-100);
+  }
+
+  .icon-container {
+    background-color: var(--google-grey-700);
+  }
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  .title {
+    font-size: 1.5rem;
+    line-height: 32px;
+  }
+
+  .subtitle {
+    font-size: 0.94rem;
+  }
+}

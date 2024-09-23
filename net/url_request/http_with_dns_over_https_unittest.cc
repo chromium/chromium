@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
@@ -32,6 +31,9 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/public/util.h"
 #include "net/http/http_stream_factory_test_util.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/log/net_log.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
@@ -140,7 +142,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
   URLRequestContext* context() { return request_context_.get(); }
 
   void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure) {
-    // TODO(crbug.com/1252155): Simplify this.
+    // TODO(crbug.com/40198637): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
     // kSecure mode. See https://crbug.com/1251715. However,
@@ -227,12 +229,18 @@ class HttpsWithDnsOverHttpsTest : public DnsOverHttpsIntegrationTest {
 
 class TestHttpDelegate : public HttpStreamRequest::Delegate {
  public:
-  explicit TestHttpDelegate(base::RunLoop* loop) : loop_(loop) {}
+  explicit TestHttpDelegate(HttpNetworkSession* session) : session_(session) {}
   ~TestHttpDelegate() override = default;
+
+  void WaitForCompletion(std::unique_ptr<HttpStreamRequest> request) {
+    request_ = std::move(request);
+    loop_.Run();
+  }
+
   void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
     stream->Close(false);
-    loop_->Quit();
+    loop_.Quit();
   }
 
   void OnWebSocketHandshakeStreamReady(
@@ -258,8 +266,20 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamPoolSwitchingInfo switching_info) override {
+    CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
+    request_ = session_->http_stream_pool()->RequestStream(
+        this, std::move(switching_info), DEFAULT_PRIORITY,
+        /*allowed_bad_certs=*/{},
+        /*enable_ip_based_pooling=*/false,
+        /*enable_alternative_services=*/false, NetLogWithSource());
+  }
+
  private:
-  raw_ptr<base::RunLoop> loop_;
+  raw_ptr<HttpNetworkSession> session_;
+  base::RunLoop loop_;
+  std::unique_ptr<HttpStreamRequest> request_;
 };
 
 // This test sets up a request which will reenter the connection pools by
@@ -278,8 +298,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
       request_context_->http_transaction_factory();
   HttpStreamFactory::JobFactory default_job_factory;
   HttpNetworkSession* network_session = transaction_factory->GetSession();
-  base::RunLoop loop;
-  TestHttpDelegate request_delegate(&loop);
+  TestHttpDelegate request_delegate(network_session);
 
   HttpStreamFactory* factory = network_session->http_stream_factory();
   HttpRequestInfo request_info;
@@ -289,17 +308,26 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   std::unique_ptr<HttpStreamRequest> request(factory->RequestStream(
       request_info, DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
       &request_delegate, false, false, NetLogWithSource()));
-  loop.Run();
+  request_delegate.WaitForCompletion(std::move(request));
 
+  size_t idle_socket_count = 0;
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(request_info.url), PrivacyMode::PRIVACY_MODE_DISABLED,
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*disable_cert_network_fetches=*/false);
-  EXPECT_EQ(network_session
-                ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
-                                ProxyChain::Direct())
-                ->IdleSocketCountInGroup(group_id),
-            1u);
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    idle_socket_count =
+        network_session->http_stream_pool()
+            ->GetOrCreateGroupForTesting(GroupIdToHttpStreamKey(group_id))
+            .IdleStreamSocketCount();
+  } else {
+    idle_socket_count =
+        network_session
+            ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                            ProxyChain::Direct())
+            ->IdleSocketCountInGroup(group_id);
+  }
+  EXPECT_EQ(idle_socket_count, 1u);
 
   // The domain "localhost" is resolved locally, so no DNS lookups should have
   // occurred.

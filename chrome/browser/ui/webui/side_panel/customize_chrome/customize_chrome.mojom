@@ -59,6 +59,8 @@ struct BackgroundCollection {
   string label;
   // URL to a preview image for the collection. Can point to untrusted content.
   url.mojom.Url preview_image_url;
+  // True if the collection's preview image is valid (loads correctly).
+  bool image_verified;
 };
 
 // A background image in a collection.
@@ -90,10 +92,12 @@ enum CustomizeChromeSection {
   kAppearance,
   kShortcuts,
   kModules,
+  kWallpaperSearch,
+  kToolbar,
 };
 
 enum ChromeWebStoreCollection {
-  kWrittingEssentials,
+  kWritingEssentials,
 };
 
 enum ChromeWebStoreCategory {
@@ -118,6 +122,10 @@ interface CustomizeChromePageHandler {
 
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
+
+  // Returns a valid collection preview image for |collection_id|.
+  GetReplacementCollectionPreviewImage(string collection_id)
+      => (url.mojom.Url? preview_image_url);
 
   // Returns the images of a collection identified by |collection_id|.
   GetBackgroundImages(string collection_id) => (array<CollectionImage> images);
@@ -152,6 +160,9 @@ interface CustomizeChromePageHandler {
   // Open Chrome Web Store's theme page in a new tab.
   OpenChromeWebStore();
 
+  // Open Chrome Web Store's home page in a new tab.
+  OpenChromeWebStoreHomePage();
+
   // Opens link to Chrome Web Store theme in a new tab.
   OpenThirdPartyThemePage(string theme_id);
 
@@ -161,6 +172,11 @@ interface CustomizeChromePageHandler {
   // Opens link to Chrome Web Store collection page in a new tab.
   OpenChromeWebStoreCollectionPage(ChromeWebStoreCollection collection);
 
+  // Opens a link to the system that manages the NTP, if its a DSE, it links
+  // to the settings page for search engines, if its an extension, then links
+  // to the extensions details page.
+  OpenNtpManagedByPage();
+
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
 
@@ -169,6 +185,12 @@ interface CustomizeChromePageHandler {
 
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
+
+  // Triggers a call to |CustomizeChromePage.AttachedTabStateUpdated()|.
+  UpdateAttachedTabState();
+
+  // Triggers a call to |CustomizeChromePage.NtpManagedByNameUpdated()|.
+  UpdateNtpManagedByName();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -184,4 +206,9 @@ interface CustomizeChromePage {
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
   ScrollToSection(CustomizeChromeSection section);
+  // Sets Information about the tab that is attached to the CustomizeChromePage.
+  AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+  // Sets the name of the system that manages the new tab page if there is one.
+  // If not, empty string should be provided.
+  NtpManagedByNameUpdated(string ntp_managed_by_name);
 };

@@ -11,13 +11,14 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
@@ -30,7 +31,8 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mediator_ = [[RegularGridMediator alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
@@ -52,6 +54,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
  protected:
   RegularGridMediator* mediator_ = nullptr;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
+  TabGridModeHolder* mode_holder_;
 };
 
 #pragma mark - Command tests
@@ -186,7 +189,6 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_EQ(0UL, consumer_.items.size());
 
   EXPECT_EQ(TabGridPageRegularTabs, fake_toolbars_mediator_.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "gin/converter.h"
 
 namespace gin {
 
@@ -19,33 +20,42 @@ V8ForegroundTaskRunner::V8ForegroundTaskRunner(
 
 V8ForegroundTaskRunner::~V8ForegroundTaskRunner() = default;
 
-void V8ForegroundTaskRunner::PostTask(std::unique_ptr<v8::Task> task) {
-  task_runner_->PostTask(FROM_HERE,
+void V8ForegroundTaskRunner::PostTaskImpl(std::unique_ptr<v8::Task> task,
+                                          const v8::SourceLocation& location) {
+  task_runner_->PostTask(V8ToBaseLocation(location),
                          base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
-void V8ForegroundTaskRunner::PostNonNestableTask(
-    std::unique_ptr<v8::Task> task) {
+void V8ForegroundTaskRunner::PostNonNestableTaskImpl(
+    std::unique_ptr<v8::Task> task,
+    const v8::SourceLocation& location) {
   task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(&v8::Task::Run, std::move(task)));
+      V8ToBaseLocation(location),
+      base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
-void V8ForegroundTaskRunner::PostDelayedTask(std::unique_ptr<v8::Task> task,
-                                             double delay_in_seconds) {
-  task_runner_->PostDelayedTask(FROM_HERE,
+void V8ForegroundTaskRunner::PostDelayedTaskImpl(
+    std::unique_ptr<v8::Task> task,
+    double delay_in_seconds,
+    const v8::SourceLocation& location) {
+  task_runner_->PostDelayedTask(V8ToBaseLocation(location),
                                 base::BindOnce(&v8::Task::Run, std::move(task)),
                                 base::Seconds(delay_in_seconds));
 }
 
-void V8ForegroundTaskRunner::PostNonNestableDelayedTask(
+void V8ForegroundTaskRunner::PostNonNestableDelayedTaskImpl(
     std::unique_ptr<v8::Task> task,
-    double delay_in_seconds) {
+    double delay_in_seconds,
+    const v8::SourceLocation& location) {
   task_runner_->PostNonNestableDelayedTask(
-      FROM_HERE, base::BindOnce(&v8::Task::Run, std::move(task)),
+      V8ToBaseLocation(location),
+      base::BindOnce(&v8::Task::Run, std::move(task)),
       base::Seconds(delay_in_seconds));
 }
 
-void V8ForegroundTaskRunner::PostIdleTask(std::unique_ptr<v8::IdleTask> task) {
+void V8ForegroundTaskRunner::PostIdleTaskImpl(
+    std::unique_ptr<v8::IdleTask> task,
+    const v8::SourceLocation& location) {
   DCHECK(IdleTasksEnabled());
   idle_task_runner()->PostIdleTask(std::move(task));
 }

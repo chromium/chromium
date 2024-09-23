@@ -27,6 +27,9 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -36,6 +39,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 
 namespace blink {
+
+class MouseEvent;
 
 // Link relation bitmask values.
 // FIXME: Uncomment as the various link relations are implemented.
@@ -98,6 +103,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   }
 
   LinkHash VisitedLinkHash() const;
+  LinkHash PartitionedVisitedLinkFingerprint() const;
   void InvalidateCachedVisitedLinkHash() { cached_visited_link_hash_ = 0; }
 
   void SendPings(const KURL& destination_url) const;
@@ -105,18 +111,23 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   // Element overrides:
   void SetHovered(bool hovered) override;
 
+  Element* interestTargetElement() override;
+
+  AtomicString interestAction() const override;
+
   void Trace(Visitor*) const override;
 
  protected:
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+
+  void FinishParsingChildren() final;
 
  private:
   void AttributeChanged(const AttributeModificationParams&) override;
   bool ShouldHaveFocusAppearance() const final;
-  bool IsFocusable(UpdateBehavior update_behavior =
-                       UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState IsFocusableState(
+      UpdateBehavior update_behavior) const override;
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =
                                UpdateBehavior::kStyleAndLayout) const override;
   void DefaultEventHandler(Event&) final;
@@ -135,7 +146,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
                            bool is_trusted,
                            base::TimeTicks platform_time_stamp,
                            KURL);
-  void HandleClick(Event&);
+  void HandleClick(MouseEvent&);
 
   unsigned link_relations_ : 31;
   mutable LinkHash cached_visited_link_hash_;
@@ -146,6 +157,30 @@ inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {
   if (!cached_visited_link_hash_) {
     cached_visited_link_hash_ = blink::VisitedLinkHash(
         GetDocument().BaseURL(), FastGetAttribute(html_names::kHrefAttr));
+  }
+  return cached_visited_link_hash_;
+}
+
+inline LinkHash HTMLAnchorElement::PartitionedVisitedLinkFingerprint() const {
+  if (!cached_visited_link_hash_) {
+    // Obtain all three elements of the partition key.
+    // (1) Link URL (Base and Relative)
+    const KURL base_link_url = GetDocument().BaseURL();
+    const AtomicString relative_link_url =
+        FastGetAttribute(html_names::kHrefAttr);
+    // (2) Top-level Site
+    // NOTE: for all Documents which have a valid VisitedLinkState, we should
+    // not ever encounter an invalid TopFrameOrigin(), `window`, or
+    // SecurityOrigin().
+    DCHECK(GetDocument().TopFrameOrigin());
+    const net::SchemefulSite top_level_site(
+        GetDocument().TopFrameOrigin()->ToUrlOrigin());
+    // (3) Frame Origin
+    const LocalDOMWindow* window = GetDocument().domWindow();
+    DCHECK(window);
+    const SecurityOrigin* frame_origin = window->GetSecurityOrigin();
+    cached_visited_link_hash_ = blink::PartitionedVisitedLinkFingerprint(
+        base_link_url, relative_link_url, top_level_site, frame_origin);
   }
   return cached_visited_link_hash_;
 }

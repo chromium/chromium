@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "chrome/browser/task_manager/providers/web_contents/back_forward_cache_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/fenced_frame_task.h"
@@ -100,7 +101,7 @@ class WebContentsTaskProvider::WebContentsEntry
   // only as per FindLocalRoot()), and its RendererTask. The number of tracked
   // items is small, thus flat_map and flat_set.
   struct SiteInstanceInfo {
-    base::flat_set<RenderFrameHost*> frames;
+    base::flat_set<raw_ptr<RenderFrameHost, CtnExperimental>> frames;
     std::unique_ptr<RendererTask> renderer_task;
   };
   base::flat_map<SiteInstance*, SiteInstanceInfo> site_instance_infos_;
@@ -130,10 +131,10 @@ void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
         // `WebContents::ForEachRenderFrameHost` does not iterate over
         // speculative or pending commit RFHs.
         //
-        // TODO(https://crbug.com/1429070): Move this CHECK into
+        // TODO(crbug.com/40262518): Move this CHECK into
         // `WebContents::ForEachRenderFrameHost`.
         CHECK_NE(state, RenderFrameHost::LifecycleState::kPendingCommit);
-        // TODO(https://crbug.com/1429070):
+        // TODO(crbug.com/40262518):
         // `WebContents::ForEachRenderFrameHost` should explicitly exclude
         // `kPendingDeletion`, just like `kSpeculative` and `kPendingCommit`.
         if (state == RenderFrameHost::LifecycleState::kPendingDeletion) {
@@ -276,7 +277,7 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
   // navigation, since neither |RenderFrameDeleted| nor |RenderFrameHostChanged|
   // is fired to delete the existing task, we do not recreate them.
   //
-  // TODO(https://crbug.com/1183639): DidFinishNavigation is not called when we
+  // TODO(crbug.com/40171294): DidFinishNavigation is not called when we
   // create initial empty documents, and as a result, we will not create new
   // tasks for these empty documents if they are in a different process from
   // their embedder/opener (eg: an empty fenced frame or a blank tab created by
@@ -350,8 +351,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     case RenderFrameHost::LifecycleState::kActive:
       break;
     default:
-      NOTREACHED() << "Illegal RFH state for TaskManager: "
-                   << static_cast<int>(rfh_state);
+      NOTREACHED_IN_MIGRATION() << "Illegal RFH state for TaskManager: "
+                                << static_cast<int>(rfh_state);
       break;
   }
 
@@ -474,7 +475,7 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
 
   bool only_bfcache_or_prerender_rfhs = true;
   for (auto& [ignore, site_instance_info] : site_instance_infos_) {
-    for (auto* rfh : site_instance_info.frames) {
+    for (RenderFrameHost* rfh : site_instance_info.frames) {
       const auto state = rfh->GetLifecycleState();
       if (state != RenderFrameHost::LifecycleState::kInBackForwardCache &&
           state != RenderFrameHost::LifecycleState::kPrerendering) {
@@ -536,7 +537,7 @@ void WebContentsTaskProvider::OnWebContentsTagRemoved(
   DCHECK(web_contents);
 
   auto itr = entries_map_.find(web_contents);
-  DCHECK(itr != entries_map_.end());
+  CHECK(itr != entries_map_.end(), base::NotFatalUntil::M130);
 
   // Must manually clear the tasks and notify the observer.
   itr->second->ClearAllTasks(true);

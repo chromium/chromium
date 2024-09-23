@@ -7,8 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -27,9 +25,9 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeBasic) {
   String dump = DumpAll();
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
-    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
-        Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='block'
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x0 LayoutBlockFlow BODY
+        Box (block-flow) offset:0,0 size:784x0 LayoutBlockFlow DIV id='block'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -43,9 +41,9 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
   String dump = DumpAll();
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
-    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow (children-inline) BODY
-    Box (out-of-flow-positioned block-flow)(self paint) offset:8,8 size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x0 LayoutBlockFlow (children-inline) BODY
+    Box (out-of-flow-positioned block-flow)(self paint) offset:8,8 size:0x0 LayoutBlockFlow (positioned) DIV id='abs'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -61,10 +59,10 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
   String dump = DumpAll();
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
-    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
-        Box (block-flow)(self paint) offset:0,0 size:784x0 LayoutNGBlockFlow (relative positioned, children-inline) DIV id='rel'
-          Box (out-of-flow-positioned block-flow)(self paint) offset:10,20 size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x0 LayoutBlockFlow BODY
+        Box (block-flow)(self paint) offset:0,0 size:784x0 LayoutBlockFlow (relative positioned, children-inline) DIV id='rel'
+          Box (out-of-flow-positioned block-flow)(self paint) offset:10,20 size:0x0 LayoutBlockFlow (positioned) DIV id='abs'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -87,14 +85,14 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   String dump = DumpAll();
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
-    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x16 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x16 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x0 LayoutBlockFlow BODY
         Box (block-flow-root) offset:0,0 size:784x0 LayoutGrid DIV id='outer-grid'
           Box (block-flow-root) offset:0,0 size:784x0 LayoutGrid DIV id='grid-as-item'
-            Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='inner-grid-item'
-              Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='foo'
-          Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='block-container-item'
-            Box (block-flow) offset:0,0 size:784x0 LayoutNGBlockFlow DIV id='bar'
+            Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutBlockFlow DIV id='inner-grid-item'
+              Box (block-flow) offset:0,0 size:784x0 LayoutBlockFlow DIV id='foo'
+          Box (block-flow-root block-flow) offset:0,0 size:784x0 LayoutBlockFlow DIV id='block-container-item'
+            Box (block-flow) offset:0,0 size:784x0 LayoutBlockFlow DIV id='bar'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -116,15 +114,15 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   String dump = DumpAll(second_child_fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
-    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x50 LayoutNGBlockFlow BODY
-        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutNGBlockFlow DIV id='multicol'
+    Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x66 LayoutBlockFlow HTML
+      Box (block-flow) offset:8,8 size:784x50 LayoutBlockFlow BODY
+        Box (block-flow-root block-flow) offset:0,0 size:784x50 LayoutBlockFlow DIV id='multicol'
           Box (column block-flow) offset:0,0 size:260.65625x50
-            Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
+            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
           Box (column block-flow) offset:261.65625,0 size:260.65625x50
-*           Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
+*           Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
           Box (column block-flow) offset:523.3125,0 size:260.65625x50
-            Box (block-flow) offset:0,0 size:260.65625x50 LayoutNGBlockFlow DIV id='child'
+            Box (block-flow) offset:0,0 size:260.65625x50 LayoutBlockFlow DIV id='child'
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

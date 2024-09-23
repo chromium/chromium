@@ -46,7 +46,7 @@ bool MagnifierKeyScroller::ShouldProcessEvent(const ui::KeyEvent* event) const {
 }
 
 bool MagnifierKeyScroller::IsStartEvent(const ui::KeyEvent* event) const {
-  return event->type() == ui::ET_KEY_PRESSED &&
+  return event->type() == ui::EventType::kKeyPressed &&
          event->flags() & ui::EF_SHIFT_DOWN;
 }
 

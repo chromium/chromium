@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
@@ -41,9 +40,12 @@
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -82,6 +84,45 @@ ContentAnalysisDelegate::OnAckAllRequestsCallback* OnAckAllRequestsStorage() {
   return callback.get();
 }
 
+void OnContentAnalysisComplete(
+    std::unique_ptr<FilesScanData> files_scan_data,
+    ContentAnalysisDelegate::ForFilesCompletionCallback callback,
+    const ContentAnalysisDelegate::Data& data,
+    ContentAnalysisDelegate::Result& result) {
+  std::set<size_t> file_indexes_to_block =
+      files_scan_data->IndexesToBlock(result.paths_results);
+
+  std::vector<bool> allowed;
+  allowed.reserve(files_scan_data->base_paths().size());
+  for (size_t i = 0; i < files_scan_data->base_paths().size(); ++i) {
+    allowed.push_back(file_indexes_to_block.count(i) == 0);
+  }
+
+  std::move(callback).Run(files_scan_data->take_base_paths(),
+                          std::move(allowed));
+}
+
+void OnPathsExpanded(
+    base::WeakPtr<content::WebContents> web_contents,
+    safe_browsing::DeepScanAccessPoint access_point,
+    ContentAnalysisDelegate::Data data,
+    std::unique_ptr<FilesScanData> files_scan_data,
+    ContentAnalysisDelegate::ForFilesCompletionCallback callback) {
+  if (!web_contents) {
+    size_t size = files_scan_data->base_paths().size();
+    std::move(callback).Run(files_scan_data->take_base_paths(),
+                            std::vector<bool>(size, true));
+    return;
+  }
+
+  data.paths = files_scan_data->expanded_paths();
+  ContentAnalysisDelegate::CreateForWebContents(
+      web_contents.get(), std::move(data),
+      base::BindOnce(&OnContentAnalysisComplete, std::move(files_scan_data),
+                     std::move(callback)),
+      access_point);
+}
+
 }  // namespace
 
 StringAnalysisRequest::StringAnalysisRequest(
@@ -118,6 +159,34 @@ ContentAnalysisDelegate::Data& ContentAnalysisDelegate::Data::operator=(
     ContentAnalysisDelegate::Data&& other) = default;
 ContentAnalysisDelegate::Data::~Data() = default;
 
+void ContentAnalysisDelegate::Data::AddClipboardData(
+    const content::ClipboardPasteData& clipboard_paste_data) {
+  if (!clipboard_paste_data.text.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.text));
+  }
+  if (!clipboard_paste_data.html.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.html));
+  }
+  if (!clipboard_paste_data.svg.empty()) {
+    text.push_back(base::UTF16ToUTF8(clipboard_paste_data.svg));
+  }
+  if (!clipboard_paste_data.rtf.empty()) {
+    text.push_back(clipboard_paste_data.rtf);
+  }
+  if (!clipboard_paste_data.png.empty()) {
+    // Send image only to local agent for analysis.
+    if (settings.cloud_or_local_settings.is_local_analysis()) {
+      image = std::string(clipboard_paste_data.png.begin(),
+                          clipboard_paste_data.png.end());
+    }
+  }
+  if (!clipboard_paste_data.custom_data.empty()) {
+    for (const auto& entry : clipboard_paste_data.custom_data) {
+      text.push_back(base::UTF16ToUTF8(entry.second));
+    }
+  }
+}
+
 ContentAnalysisDelegate::Result::Result() = default;
 ContentAnalysisDelegate::Result::Result(Result&& other) = default;
 ContentAnalysisDelegate::Result::~Result() = default;
@@ -138,7 +207,10 @@ void ContentAnalysisDelegate::BypassWarnings(
       content_size += entry.size();
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
+        profile_, /*url*/ url_, /*tab_url*/ url_,
+        /*source*/ data_.clipboard_source,
+        /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
+        "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         GetContentTransferMethod(), access_point_, content_size, text_response_,
         user_justification);
@@ -149,8 +221,10 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.image_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, "", "", "Image data", std::string(),
-        /*mime_type*/ std::string(),
+        profile_, /*url*/ url_, /*tab_url*/ url_,
+        /*source*/ data_.clipboard_source, /*destination*/ url_.spec(),
+        "Image data", /*download_digest_sha256*/ "",
+        /*mime_type*/ "",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         GetContentTransferMethod(), access_point_, data_.image.size(),
         image_response_, user_justification);
@@ -230,11 +304,15 @@ std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
 }
 
 std::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
-  auto element = data_.settings.tags.find(final_result_tag_);
-  if (element != data_.settings.tags.end() &&
-      element->second.custom_message.learn_more_url.is_valid() &&
-      !element->second.custom_message.learn_more_url.is_empty()) {
-    return element->second.custom_message.learn_more_url;
+  // Rule-based custom messages which don't have learn more urls take
+  // precedence over policy-based.
+  if (custom_rule_message_.message_segments().empty()) {
+    auto element = data_.settings.tags.find(final_result_tag_);
+    if (element != data_.settings.tags.end() &&
+        element->second.custom_message.learn_more_url.is_valid() &&
+        !element->second.custom_message.learn_more_url.is_empty()) {
+      return element->second.custom_message.learn_more_url;
+    }
   }
 
   return std::nullopt;
@@ -401,6 +479,23 @@ void ContentAnalysisDelegate::CreateForWebContents(
 }
 
 // static
+void ContentAnalysisDelegate::CreateForFilesInWebContents(
+    content::WebContents* web_contents,
+    Data data,
+    ForFilesCompletionCallback callback,
+    safe_browsing::DeepScanAccessPoint access_point) {
+  DCHECK(data.text.empty());
+  DCHECK(data.image.empty());
+  DCHECK(!data.page.IsValid());
+
+  auto files_scan_data = std::make_unique<FilesScanData>(std::move(data.paths));
+  auto* files_scan_data_ptr = files_scan_data.get();
+  files_scan_data_ptr->ExpandPaths(base::BindOnce(
+      &OnPathsExpanded, web_contents->GetWeakPtr(), access_point,
+      std::move(data), std::move(files_scan_data), std::move(callback)));
+}
+
+// static
 void ContentAnalysisDelegate::SetFactoryForTesting(Factory factory) {
   *GetFactoryStorage() = factory;
 }
@@ -489,7 +584,10 @@ void ContentAnalysisDelegate::StringRequestCallback(
             text_complies);
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
+      profile_, /*url*/ url_, /*tab_url*/ url_,
+      /*source*/ data_.clipboard_source,
+      /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
+      "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       GetContentTransferMethod(), access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
@@ -533,8 +631,10 @@ void ContentAnalysisDelegate::ImageRequestCallback(
   result_.image_result = image_complies;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, "", "", "Image data", std::string(),
-      /*mime_type*/ std::string(),
+      profile_, /*url*/ url_, /*tab_url*/ url_,
+      /*source*/ data_.clipboard_source,
+      /*destination*/ url_.spec(), "Image data", /*download_digest_sha256*/ "",
+      /*mime_type*/ "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       GetContentTransferMethod(), access_point_, data_.image.size(), result,
       response,
@@ -742,8 +842,18 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(BULK_DATA_ENTRY, request.get());
+    request->set_destination(url_.spec());
+    if (!data_.clipboard_source.empty()) {
+      request->set_source(data_.clipboard_source);
+    }
     UploadTextForDeepScanning(std::move(request));
   }
+}
+
+bool ContentAnalysisDelegate::ShouldNotUploadLargePage(size_t page_size) {
+  return data_.settings.cloud_or_local_settings.is_cloud_analysis() &&
+         page_size > BinaryUploadService::kMaxUploadSizeBytes &&
+         data_.settings.block_large_files;
 }
 
 void ContentAnalysisDelegate::PrepareImageRequest() {
@@ -793,7 +903,18 @@ void ContentAnalysisDelegate::PreparePageRequest() {
     if (!page_content_type_.empty()) {
       request->set_content_type(page_content_type_);
     }
-    UploadPageForDeepScanning(std::move(request));
+    if (ShouldNotUploadLargePage(page_size_bytes_)) {
+      // The request shouldn't be finished early synchronously so that
+      // `UploadData()` can return "false" to `CreateForWebContents()` and let
+      // it initialize the tab modal dialog.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentAnalysisDelegate::FinishLargeDataRequestEarly,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                         BinaryUploadService::Result::FILE_TOO_LARGE));
+    } else {
+      UploadPageForDeepScanning(std::move(request));
+    }
   }
 }
 
@@ -818,7 +939,7 @@ void ContentAnalysisDelegate::PrepareRequest(
   }
 
   request->set_analysis_connector(connector);
-  request->set_email(safe_browsing::GetProfileEmail(profile_));
+  request->set_email(GetProfileEmail(profile_));
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   request->set_per_profile_request(data_.settings.per_profile);
@@ -834,6 +955,9 @@ void ContentAnalysisDelegate::PrepareRequest(
   if (data_.reason != ContentAnalysisRequest::UNKNOWN) {
     request->set_reason(data_.reason);
   }
+
+  request->set_blocking(data_.settings.block_until_verdict !=
+                        BlockUntilVerdict::kNoBlock);
 }
 
 void ContentAnalysisDelegate::FillAllResultsWith(bool status) {
@@ -988,6 +1112,23 @@ void ContentAnalysisDelegate::AckAllRequests() {
       upload_service->MaybeAcknowledge(std::move(ack));
     }
   }
+}
+
+void ContentAnalysisDelegate::FinishLargeDataRequestEarly(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    safe_browsing::BinaryUploadService::Result result) {
+  // We add the request here in case we never actually uploaded anything, so
+  // it wasn't added in OnGetRequestData
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
+      request->per_profile_request(), /*access_token*/ "", /*upload_info*/
+      "Skipped - Large data blocked", /*upload_url*/ "",
+      request->content_analysis_request());
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
+      /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
+      enterprise_connectors::ContentAnalysisResponse());
+
+  request->FinishRequest(result,
+                         enterprise_connectors::ContentAnalysisResponse());
 }
 
 std::string ContentAnalysisDelegate::GetContentTransferMethod() const {

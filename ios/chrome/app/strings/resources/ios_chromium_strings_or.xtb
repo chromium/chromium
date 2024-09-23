@@ -1,138 +1,151 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
-<translation id="1046370274005147998">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="1000436330784933699">ଆପଣ ଏଠାରେ Lens ଖୋଲିପାରିବେ।</translation>
+<translation id="1042296835509784301">Chromiumରେ Password Managerକୁ ଖୋଲେ।</translation>
 <translation id="1047130070405668746">Chromium ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1091252999271033193">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chromium ଏକ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
 <translation id="1115463765356382667">Chromiumରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବା ପାଇଁ ନିମ୍ନରେ ଏହି ପ୍ରସ୍ତାବିତ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ।</translation>
-<translation id="1141230343006904201">1. Chromium ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
-<translation id="1171824629317156389">iOSରେ Chromium ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରି Chromiumକୁ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="1140315115515116765">ସହଜରେ ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ ପାଇବାକୁ ଡିଫଲ୍ଟ ଭାବେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1185134272377778587">Chromium ବିଷୟରେ</translation>
 <translation id="1257458525759135959">ଛବିଗୁଡ଼ିକୁ ସେଭ୍ କରିବା ପାଇଁ, Chromiumକୁ ଆପଣଙ୍କ ଫଟୋଗୁଡ଼ିକରେ ଯୋଗ କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ ସେଟିଂସରେ ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="1260702988262336471">Chromium ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="12739128458173458">ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ଏହି ଟାବ ପଠାଇବା ପାଇଁ ଉଭୟ ଡିଭାଇସରେ ଥିବା Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
-<translation id="1289216811211435351">Chromiumକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="1361748954329991663">Chromiumର ସଂସ୍କରଣ ପୁରୁଣା ଅଟେ। ଯଦି <ph name="BEGIN_LINK" />ଆପ୍ ଷ୍ଟୋର<ph name="END_LINK" />ରେ କୌଣସି ଅପଡେଟ୍ ଉପଲବ୍ଧ ନାହିଁ, ତେବେ ଏହା ହୋଇପାରେ ଯେ ଆପଣଙ୍କ ଡିଭାଇସ୍ Chromiumର ନୂଆ ସଂସ୍କରଣକୁ ଆଉ ସମର୍ଥନ କରୁନାହିଁ।</translation>
 <translation id="1423007117030725713">ଗୋଟିଏ ନୂଆ Chromium ଟାବରେ ଏକ ସର୍ଚ୍ଚ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="1431818719585918472">Chromiumକୁ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ୍ କରିବାକୁ ଦିଅନ୍ତୁ।</translation>
+<translation id="146407871188825689">ଡିଫଲ୍ଟ ଭାବରେ iPadରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="1471084500615228555">Chromiumରେ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1472013873724362412">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ Chromiumରେ କାର୍ଯ୍ୟ କରେ ନାହିଁ। ଦୟାକରି, ଆପଣଙ୍କ ଡୋମେନ୍‍ ବ୍ୟବସ୍ଥାପକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ କିମ୍ବା ସାଇନ୍‍ ଇନ୍‍ କରିବା ପାଇଁ ଏକ ନିୟମିତ Google ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="1507010443238049608">Chromiumର ଫିଚର୍ ଓ କାର୍ଯ୍ୟଦକ୍ଷତାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରେ</translation>
-<translation id="1513122820609681462">Chromiumକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
+<translation id="1501302548410882220">ସବୁ ସ୍ଥାନରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="1503199973012840174">ଆପଣଙ୍କ Chromium ପୁରୁଣା ଅଟେ। ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ଏହାକୁ ଅପଡେଟ କରନ୍ତୁ।</translation>
+<translation id="1515748263297244785">iPad ପାଇଁ ଡିଫଲ୍ଟ ଭାବରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1531155317299575425">Chromiumରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ ଦେଖାଏ।</translation>
+<translation id="1553657876656159572">ଆପଣଙ୍କ ପାଇଁ ତିଆରି କରାଯାଇଥିବା ଏକ କଷ୍ଟମ ଫିଡ। ନ୍ୟୁଜ, ସ୍ପୋର୍ଟ୍ସ ଏବଂ ପାଣିପାଗ ସମେତ।</translation>
 <translation id="1561849081734670621">Chromiumରେ ଲକଡାଉନ ମୋଡକୁ ଅକ୍ଷମ କରିବା ପାଇଁ ଏହାକୁ ଆପଣଙ୍କ iPhoneରେ ବନ୍ଦ କରନ୍ତୁ।</translation>
+<translation id="1569258826720962327">iOSରେ Chromium କାର୍ଯ୍ୟଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="159029779861043703">ଫେସ ID ମାଧ୍ୟମରେ Chromium ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ଡାଟାକୁ ସୁରକ୍ଷିତ ରଖେ।</translation>
 <translation id="1591119736686995611">Chromium ଟାବ ଗ୍ରିଡକୁ ଖୋଲେ।</translation>
+<translation id="16001233025397167">ସୁରକ୍ଷା ଯାଞ୍ଚ ଆପଣଙ୍କୁ ଡାଟା ଉଲ୍ଲଙ୍ଘନ, ଅସୁରକ୍ଷିତ ୱେବସାଇଟ ଏବଂ ଆହୁରି ଅନେକ କିଛିରୁ ସୁରକ୍ଷିତ ରଖିଥାଏ। Chromium ଆପଣଙ୍କ ପାଇଁ ଚିହ୍ନଟ କରୁଥିବା ଯେ କୌଣସି ଗୋପନୀୟତା କିମ୍ବା ସୁରକ୍ଷା ସମସ୍ୟା ବିଷୟରେ ଆଲର୍ଟ ପାଆନ୍ତୁ।</translation>
 <translation id="1611584326765829247">Chromiumକୁ ଆପଣଙ୍କ ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="1617663976202781617">Chromium ସିଙ୍କ୍‍ରୁ ଡାଟା</translation>
-<translation id="1647558790457890304">Chromium ସେଟିଂସ</translation>
 <translation id="164952285225495380">ଏହି ପେକେଜକୁ ପୂର୍ବରୁ Chromiumରେ ଟ୍ରାକ କରାଯାଇଛି।</translation>
 <translation id="1707458603865303524">ମେସେଜ କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1722370509450468186">ଆପଣଙ୍କ ପାସୱାର୍ଡ ଆପଣଙ୍କ ଆକାଉଣ୍ଟ (<ph name="EMAIL" />)ରେ ସେଭ କରାଯିବ।</translation>
-<translation id="1736662517232558588">Chromium ଡାଟା ଖାଲି କରାଯାଇଛି</translation>
-<translation id="1791845338122684020">ଆପଣଙ୍କ Chromium ଇତିହାସ ପୃଷ୍ଠା ଖୋଲେ।</translation>
+<translation id="1811860791247653035">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇବାକୁ <ph name="FEATURE_NAME_1" /> ଏବଂ <ph name="FEATURE_NAME_2" />ରେ Chromium ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="1838412507805038478">Chromium ଯାଞ୍ଚ କରିଛି ଯେ, <ph name="ISSUER" />ଏହି ୱେବସାଇଟ୍‌ର ସାର୍ଟିଫିକେଟ୍ ଜାରି କରିଛନ୍ତି।</translation>
 <translation id="1843424232666537147">Chromiumରେ ଏପରି ବୈଶିଷ୍ଟ୍ୟ ଅଛି ଯାହା ଆପଣଙ୍କୁ ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍‌ ଡାଟା ପରିଚାଳନା କରିବାରେ ଏବଂ ଆପଣ କେତେ ଜଲଦି ୱେବ୍‌ପୃଷ୍ଠାଗୁଡ଼ିକ ଲୋଡ୍‌ କରିପାରିବେ, ସେଥିରେ ସାହାଯ୍ୟ କରିଥାଏ।
 <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromiumରେ Maps</translation>
-<translation id="186734497270163706">"Chromium" ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="1867772173333403444">4. Chromium ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2006345422933397527">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="2042889939382983733">ଆପଣଙ୍କ Chromium ଇତିହାସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="2052320862053429062">Chromium ସମୟ ସମୟରେ ଅନଲାଇନରେ ପବ୍ଲିସ କରାଯାଇଥିବା ତାଲିକାଗୁଡ଼ିକ ଅନୁଯାୟୀ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିଥାଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଉପଯୋଗକର୍ତ୍ତାନାମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
-<translation id="2054703085270098503">Chromium ସହ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
-<translation id="2098023844024447022">Chromiumରେ ମୋ ନବୀନତମ ଟାବ ଖୋଲନ୍ତୁ।</translation>
-<translation id="2109439615198500433">Chromium ଟିପ</translation>
+<translation id="2059365270911640413">Chromium ସେଟ ଅପ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="2147210759439165826">ବିଷୟବସ୍ତୁ ଏବଂ ଉପଯୋଗୀ Chromium ଟିପ୍ସ ଦେଖିବା ଜାରି ରଖନ୍ତୁ।</translation>
 <translation id="2168108852149185974">କିଛି ଆଡ୍-ଅନ୍, Chromium କ୍ରାସ୍ ହେବାର କାରଣ ହୋଇପାରେ। ଦୟାକରି ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ:</translation>
+<translation id="2168593389981132306">Chromiumକୁ ଆହୁରି ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="2178608107313874732">Chromium, ଆପଣଙ୍କର କ୍ୟାମେରାକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="2195025571279539885">ଆପଣ କ’ଣ ଚାହୁଁଛନ୍ତି ଯେ Chromium ପରବର୍ତ୍ତୀ ସମୟରେ ଏହି ସାଇଟ୍‌ର <ph name="LANGUAGE_NAME" /> ପୃଷ୍ଠାଗୁଡ଼ିକର ଅନୁବାଦ କରିବା ଅଫର୍‌ ଦେଉ?</translation>
-<translation id="2216344354848599203">Chromium ଆଇକନକୁ ଦବାଇ ଧରି "ହୋମ ସ୍କ୍ରିନକୁ ଏଡିଟ କରନ୍ତୁ"ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
-<translation id="2218146227246548550">Chromium ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାର ଆବଶ୍ୟକତା ଅଛି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">ଏହି ଠିକଣାକୁ ବର୍ତ୍ତମାନ Chromiumରେ ସେଭ କରାଯାଇଛି। ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="2236584955986023187">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chromium ଏକ ଡେସ୍କଟପ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
 <translation id="2313870531055795960">Chromiumରେ ଷ୍ଟୋର କରାଯାଇଥିବା ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା ସହିତ URLଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ସାଇଟ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ ଡାଉନଲୋଡ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chromium ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ।</translation>
+<translation id="231828342043114302">ଆପଣଙ୍କ ରୁଚି ଆଧାରରେ ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁ ପାଇବାକୁ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
+<translation id="2326738825692478496">ଆପଣଙ୍କର କିଛି Chromium ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ।
+
+ସାଇନ ଆଉଟ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
+<translation id="2337722506862731008">Chromium ସେୟାର କରନ୍ତୁ</translation>
+<translation id="2340423701577464731">Chromiumରେ ପଢ଼ିବା ତାଲିକା ଆଇଟମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2374627437126809292">Chromium ଚିହ୍ନଟ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ନିମନ୍ତେ Google Maps ବ୍ୟବହାର କରେ।</translation>
 <translation id="2386292341327187942">ସର୍ଚ୍ଚ ୱିଜେଟ ବକ୍ସରେ Chromium ଲେଖନ୍ତୁ</translation>
 <translation id="2426113998523353159">Chromium ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣ ସାଇନ ଇନ କରିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="2450140762465183767">ବର୍ତ୍ତମାନ ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="2459183986985456602">Chromiumରେ ମୋ ନବୀନତମ ଟାବ ଖୋଲନ୍ତୁ।</translation>
+<translation id="2476409803017965813">ଆପଣ Chromium ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ଚୟନଗୁଡ଼ିକୁ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> ଚୟନ କରନ୍ତୁ</translation>
-<translation id="252374538254180121">Chromiumକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
-<translation id="2574528844022712255">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
-<translation id="2590893390871230428">ଆପଣଙ୍କ Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
+<translation id="2512597191798760956">Chromium ଆଇକନକୁ ଦବାଇ ଧରି "ହୋମ ସ୍କ୍ରିନକୁ ଏଡିଟ କରନ୍ତୁ"ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
+<translation id="2517624234762908348">ଆପଣଙ୍କର Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="2592940277904433508">Chromium ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="2618596336309823556">ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସରୁ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ଖୋଲି "Chromium"କୁ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="2607609479243848905">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}other{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}}</translation>
 <translation id="2650312721222849884">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2684230048001240293">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଟାବ୍, ପାସୱାର୍ଡ ଏବଂ ପେମେଣ୍ଟ ସୂଚନାକୁ ସିଙ୍କ୍ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2730884209570016437">Chromium ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ ନାହିଁ କାରଣ ଏହା ଅନ୍ୟ ଆପ୍ଲିକେସନ୍ ଦ୍ଵାରା ବ୍ୟବହୃତ ହେଉଛି</translation>
-<translation id="2784449251446768092">Chromium ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2798503587425057129">Chromium ପଢ଼ିବା ତାଲିକା ଖୋଲେ।</translation>
 <translation id="28276745681323897">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ <ph name="BEGIN_LINK" />କେଉଁ Chromium ଡାଟାକୁ ସେଭ କରାଯିବ ତାହା ଆପଣ ପରିଚାଳନା<ph name="END_LINK" /> କରିପାରିବେ।
 
 ଆପଣଙ୍କ Chromium ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟା ବ୍ୟବହାର କରୁଥିବା ଅଧିକ ସେଟିଂସ ନିମନ୍ତେ <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଯାଆନ୍ତୁ।</translation>
+<translation id="2832168932648876507">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="2843571538056574338">ଅଟୋଫିଲ ପାଇଁ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2918709798697875261">ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଆପଣଙ୍କୁ Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରି ରହିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
+<translation id="2930158679684712936">Chromium ଟିପ୍ସ</translation>
 <translation id="2942241131342758843">ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା, ୱିଜେଟଗୁଡ଼ିକରୁ ସନ୍ଧାନ କରିବା ଏବଂ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସ୍ୱତଃପୂରଣ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2977470724722393594">Chromium ଅପ୍‍-ଟୁ-ଡେଟ୍‍ ଅଛି</translation>
+<translation id="3044857325852340337">Chromium ଡାଟାକୁ ଡିଲିଟ କରାଯାଇଛି</translation>
+<translation id="3054480780637153380">iOSରେ Chromium ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରି Chromiumକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}other{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}}</translation>
 <translation id="3102849287235003384">ସମସ୍ତ ୱେବସାଇଟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସାଇନ ଆଉଟ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
-<translation id="3219277919172823720">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
-<translation id="3228349498066165585">ଆପଣଙ୍କର କିଛି Chromium ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ।
-        ସାଇନ ଆଉଟ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
-<translation id="3256316712990552818">Chromiumକୁ କପି କରାଗଲା</translation>
+<translation id="3115956258722352278">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବେ?</translation>
+<translation id="3242612358525156339">ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସରୁ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ଖୋଲି "Chromium"କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="328933489847748230">{count,plural, =1{ବର୍ତ୍ତମାନ 1 Chromium ୱିଣ୍ଡୋ ଦେଖାଯାଉଛି}other{ବର୍ତ୍ତମାନ {count} Chromium ୱିଣ୍ଡୋ ଦେଖାଯାଉଛି}}</translation>
 <translation id="3344973607274501920">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="3366305173356742781">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟା</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଏଥିରେ ଇତିହାସ ଏବଂ ଅଟୋଫିଲ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
+<translation id="3410395242749598859">ଆପଣଙ୍କର କିଛି Chromium ଡାଟାକୁ ଏପର୍ଯ୍ୟନ୍ତ <ph name="EMAIL" />ରେ ସେଭ କରାଯାଇନାହିଁ।
+ଆକାଉଣ୍ଟ ସୁଇଚ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ଆକାଉଣ୍ଟ ସୁଇଚ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="3472200483164753384">Chromium Canaryରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="347967311580159871">ଆପଣଙ୍କ Chromium ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟା ବ୍ୟବହାର କରୁଥିବା ଅଧିକ ସେଟିଂସ ନିମନ୍ତେ <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଯାଆନ୍ତୁ।</translation>
 <translation id="3512168799938877162">ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେୟାର କରାଯାଇନାହିଁ। ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନକୁ ଯାଞ୍ଚ କରି ଆପଣ Chromiumରେ ସାଇନ ଇନ କରିଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ତା'ପରେ, ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="3554027294407525061">Chromiumରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ।</translation>
+<translation id="3529798650269984835">“ଆପଣ Chromiumକୁ ବନ୍ଦ କରିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ" ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="3567399274263440288">Chromiumରୁ ସବୁଠାରୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
+<translation id="3581385059720151202">Chromiumରେ ଭିଜୁଆଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="3594315078412605236">Chromiumରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3634039384458740619">Chromium ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="3639997914391704523">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ, Chromium ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ଏହି ଡିଭାଇସରେ Chromium ବ୍ୟବହାର କରି ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସ ଛାଡ଼ିଛନ୍ତି।</translation>
-<translation id="3688710892786762883">Chromium ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ପେକେଜ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଓ ସମସ୍ତଙ୍କ ପାଇଁ Shoppingକୁ ଉନ୍ନତ କରିବାକୁ Google ସହ ଆପଣଙ୍କ ଡାଟାକୁ ସେୟାର କରାଯିବ।</translation>
 <translation id="372658070733623520">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="3728124580182886854">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ ପାଇଁ Chromium ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକ ଲିଙ୍କ କରନ୍ତୁ</translation>
+<translation id="377649297473651452">Chromium ଅଟୋଫିଲର ବିସ୍ତାରିତ ଭ୍ୟୁ</translation>
 <translation id="3780779443901618967">Google ପୂର୍ବରୁ ଜାଣିନଥିଲେ ମଧ୍ୟ ଏହା ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ଅପେକ୍ଷା ସାଇଟଗୁଡ଼ିକରୁ ଅଧିକ ଡାଟା ବିଶ୍ଳେଷଣ କରି ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ ଚେତାବନୀ ଦେଇଥାଏ। ଆପଣ Chromium ଚେତାବନୀଗୁଡ଼ିକ ବାଦ ଦେବା ପାଇଁ ବାଛିପାରିବେ।</translation>
-<translation id="3784369638459513223">ଏକ ନୂଆ Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲେ।</translation>
 <translation id="3805899903892079518">ଆପଣଙ୍କର ଫଟୋ କିମ୍ୱା ଭିଡିଓଗୁଡ଼ିକୁ Chromiumର ଆକ୍ସେସ ନାହିଁ। iOS ସେଟିଂସ &gt; ଗୋପନୀୟତା &gt; ଫଟୋରେ ଆକ୍ସେସ ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="3827545470516145620">ଏହି ଡିଭାଇସରେ ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି</translation>
 <translation id="3833326979834193417">ଡାଟା ଉଲ୍ଲଙ୍ଘନ, ଅସୁରକ୍ଷିତ ୱେବସାଇଟ ଏବଂ ଆହୁରି ଅନେକ କିଛିରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromium ସ୍ୱତଃ ପ୍ରତିଦିନ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଏ। ସେଟିଂସରେ ଆପଣ ସୁରକ୍ଷା ଯାଞ୍ଚ ବିଷୟରେ ଅଧିକ ସୂଚନା ପାଇପାରିବେ।</translation>
 <translation id="3855938650519180865">Chromiumରେ ନୂଆ କଣ ଅଛି</translation>
 <translation id="3886689467633467988">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ବୁକମାର୍କଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ ଏହି ସାଇଟ ଏବଂ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
-<translation id="3904484643286601695">ଆପଣ Chromium ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ଚୟନଗୁଡ଼ିକୁ ଅପଡେଟ କରିପାରିବେ।</translation>
-<translation id="394413318816989199">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୁଏ ନାହିଁ।
-
-ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
-<translation id="3955621079070267756">ଯେ କୌଣସି ଆପରୁ Chromium ଖୋଲନ୍ତୁ</translation>
+<translation id="3983291422281996849">ସହଜରେ ମୂଲ୍ୟ ଟ୍ରାକ କରିବା ଏବଂ ଆପଣ କ୍ରୟ କରିବାକୁ ଚାହୁଁଥିବା ଜିନିଷଗୁଡ଼ିକ ନିମନ୍ତେ ମୂଲ୍ୟ ଇନସାଇଟ ପାଇବା ପାଇଁ Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="4005283307739974863">Chromium ସୁରକ୍ଷା ଯାଞ୍ଚ ଖୋଲେ ଏବଂ ଚଲାଏ।</translation>
 <translation id="4043291146360695975">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ କେବଳ ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ସେଭ କରାଯାଏ।</translation>
-<translation id="4076589763479456892">ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="4066426933127344530">ଡିଫଲ୍ଟ ଭାବେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="4087314024407094071">Chromiumରେ ସେଟିଂସକୁ ଖୋଲେ।</translation>
 <translation id="4099085513035183040">Chromium ବିଟାରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି।
 
 ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଡାଟାକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="4118287192800900567">Chromium ଟିପ: Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4195557071150719219">Chromiumର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
-<translation id="4200712796753248893">iOSରେ Chromium ଆକ୍ସନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="420541179527342563">Chromiumରେ ଲକଡାଉନ ମୋଡକୁ ଅକ୍ଷମ କରିବା ପାଇଁ ଏହାକୁ ଆପଣଙ୍କ iPadରେ ବନ୍ଦ କରନ୍ତୁ।</translation>
+<translation id="4272892696084633551">Chromiumର ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଓ କାର୍ଯ୍ୟଦକ୍ଷତାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରେ</translation>
+<translation id="4302397443352897529">Chromium ସେଟିଂସ</translation>
 <translation id="4408912345039114853">Chromium ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
 <translation id="4432744876818348753">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="4445228361214254027">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର କରିବା ଏବଂ ସେଭ କରିବାର କ୍ଷମତାକୁ ବନ୍ଦ କରିଦେଇଛି। ନୂଆ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯିବ।</translation>
 <translation id="4498832288620833153">Chromiumରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକାରେ ଇନପୁଟ ହୋଇଥିବା URLଗୁଡ଼ିକ ଯୋଗ କରେ।</translation>
 <translation id="452436063477828504">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="4527452566931097835">Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରିବେ?</translation>
 <translation id="4555020257205549924">ଯେତେବେଳେ ଏହି ବୈଶିଷ୍ଟ୍ୟ ଚାଲୁ ଅଛି, ସେତେବେଳେ Chromium ଅନ୍ୟ ଭାଷାଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବା ପାଇଁ ଅଫର୍‌ କରିବ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
-<translation id="4576283463017113841">Chromiumରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ସେଟିଂ ପୃଷ୍ଠା ଖୋଲେ।</translation>
-<translation id="4585809515399340748">ଆପଣ ମେସେଜ୍, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି ଏବେ Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
-<translation id="459080529287102949">Chromiumରେ ଭିଜୁଆଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4572441104543926904">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୁଏ ନାହିଁ।
+
+ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="4578500311756617174">Chromium ଟିପ: ଡିଫଲ୍ଟ ଭାବେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="458786853569524949">ବର୍ତ୍ତମାନ ଆପଣ ଇମେଲ, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ କରି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4633738821577273991">ଏହି Chromium ପ୍ରୋଫାଇଲ ପାଇଁ ମଧ୍ୟ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପାଆନ୍ତୁ</translation>
-<translation id="4638625642619341392">ଏଠାରେ Chromium ଡାଉନଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="4654936625574199632">ଆପଟିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chromium, Googleକୁ ବ୍ୟବହାର ଏବଂ କ୍ରାସ ଡାଟା ପଠାଏ। <ph name="BEGIN_LINK" />ପରିଚାଳନା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium ସ୍କାନର୍‌କୁ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="4685611756167369067">Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="4736424910885271643">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ତେଣୁ ଆପଣଙ୍କ Chromium ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ ଖାଲି କରିଦିଆଯିବ</translation>
-<translation id="4773487571745795781">ଆପଣ Chromium ସାଇନ-ଇନକୁ ବନ୍ଦ କରିଛନ୍ତି।</translation>
 <translation id="4790638144988730920">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ।</translation>
 <translation id="4828317641996116749">Chromium ସମସ୍ତ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4856138222358683580">Chromium କାର୍ଯ୍ୟ</translation>
+<translation id="4904452304169763785">Chromium ଆପଣଙ୍କ ପାଇଁ ଚିହ୍ନଟ କରୁଥିବା ଯେ କୌଣସି ଗୋପନୀୟତା କିମ୍ବା ସୁରକ୍ଷା ସମସ୍ୟା ବିଷୟରେ ଆଲର୍ଟଗୁଡ଼ିକ।</translation>
 <translation id="4962295957157529683">ଆପଣ ଆପଣଙ୍କ ଅନ୍ୟ ଖୋଲା ଥିବା Chromium ୱିଣ୍ଡୋରେ ଯାହା କରୁଛନ୍ତି ତାହା ସମାପ୍ତ କରନ୍ତୁ।</translation>
 <translation id="4985291216379576555">ଅଫଲାଇନ୍, ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="4996471330284142407">ସରଳ, ସୁରକ୍ଷିତ ଏବଂ ପୂର୍ବ-ଅପେକ୍ଷା-ଅଧିକ-ଦ୍ରୁତ Chromium ସହ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ।</translation>
@@ -140,31 +153,32 @@
 <translation id="5042011327527167688">“Chromiumରେ Google Maps ମାଧ୍ୟମରେ ଭ୍ୟୁ କରନ୍ତୁ”ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="5044871537677053278">Chromium ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ପାଇଁ ଠିକଣାଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରେ ଏବଂ Google Maps ବ୍ୟବହାର କରେ।</translation>
 <translation id="5048795749726991615">ଆପଣଙ୍କ ଅନ୍ୟ ଆପ୍ସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସହଜରେ ପାଇବାକୁ ଅଟୋଫିଲ ପାଇଁ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="5076601183701536878">Chromiumରେ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="5053429694249468757">Chromium ଡାଟାକୁ ଡିଲିଟ କରାଯାଉଛି…</translation>
+<translation id="5071749685031362629">iOS ପାଇଁ Chromium</translation>
 <translation id="5124429847818367226">ବର୍ତ୍ତମାନ ଆପଣ ଯେ କୌଣସି ସମୟରେ ବ୍ରାଉଜ କରି କିମ୍ବା ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="5131565040785979529">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="DOMAIN" />, ଆପଣ ସାଇନ ଇନ କରିଥିବା ଆକାଉଣ୍ଟକୁ ଏବଂ Chromiumକୁ କିପରି ବ୍ୟବହାର କରାଯାଏ, ତାହା ପରିଚାଳନା କରେ।</translation>
-<translation id="5146749061471423558">Chromiumରେ ବୁକମାର୍କଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="5171868502429358653">Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
-<translation id="5213683223491576284">Chromiumରେ Password Managerକୁ ଖୋଲେ।</translation>
 <translation id="5224391634244552924">ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
-<translation id="5242782538551259282">ଆପଣଙ୍କର କିଛି Chromium ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ।
-
-        ସାଇନ ଆଉଟ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
+<translation id="5259423875997548710">Chromiumରେ ଭିଜୁଆଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5308226104666789935">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="5311557153294205270">Chromiumରେ ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକରେ ଇନପୁଟ ହୋଇଥିବା URLଗୁଡ଼ିକ ଯୋଗ କରେ।</translation>
-<translation id="5396916991083608703">Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରିବେ?</translation>
+<translation id="538767207339317086">Chromiumରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="5389058611415066188">Chromium ସହ ସୁରକ୍ଷିତ ରୁହନ୍ତୁ</translation>
+<translation id="5415273218238091735">Chromium ଟିପ</translation>
+<translation id="5427571867875391349">Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବରେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5434562575369834882">Chromium ଇନକଗ୍ନିଟୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5453478652154926037">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ।</translation>
+<translation id="5479292367402350143">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରିବାକୁ:
+1. ସେଟିଂସ ଖୋଲନ୍ତୁ
+2. ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପରେ ଟାପ କରନ୍ତୁ
+3. Chromiumକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5521125884468363740">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସାଇନ୍ ଇନ୍ କରି ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5522297504975449419">Chromiumର କିଛି ଫିଚର ଆଉ ଉପଲବ୍ଧ ହେବ ନାହିଁ।</translation>
 <translation id="5534584691915394889">Chromium ଏବଂ Google Lensରୁ ଆପଣଙ୍କ Apple Calendarରେ ଇଭେଣ୍ଟଗୁଡ଼ିକୁ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ।</translation>
 <translation id="5571094606370987472">Chromiumର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
-<translation id="5623083843656850677">ଆପଣ Chromiumରୁ ବାହାରି ଗଲେ କିମ୍ବା ଏକ ଭିନ୍ନ ଆପକୁ ସୁଇଚ କଲେ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବକୁ ଲକ କରନ୍ତୁ।</translation>
-<translation id="5671188105328420281">Chromium ଟିପ୍ସ</translation>
+<translation id="5603085937604338780">Chromium</translation>
+<translation id="5664395081284292058">Chromiumରେ ମୋ ନବୀନତମ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="5688047395118852662">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା କିପରି ପାଇବେ ସେ ବିଷୟରେ ଏହି କାର୍ଡ ଆପଣଙ୍କୁ ପରାମର୍ଶ ଦେଖାଏ।</translation>
 <translation id="5700709190537129682">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
-<translation id="5777187867430702742">Chromium ପୃଷ୍ଠା</translation>
-<translation id="584239279770005676">Chromium ଟିପ: Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="584550191241316896">Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5889847953983052353">ଚାଲୁ ଥିବା ସମୟରେ:
 <ph name="BEGIN_INDENT" />  • ଆପଣ Chromiumକୁ ଯେପରି ବ୍ୟବହାର କରନ୍ତି ସେହିପରି ବ୍ୟବହାର କରୁଥିବା ଲୋକମାନଙ୍କ ପାଇଁ ଏହାକୁ ଆହୁରି ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।<ph name="END_INDENT" />
@@ -175,146 +189,126 @@
   • ଯଦି Chromium କ୍ରାସ ହୁଏ, ତେବେ କ୍ରାସ ବିଷୟରେ ଥିବା ବିବରଣୀରେ କିଛି ବ୍ୟକ୍ତିଗତ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।
 
   • ଯଦି ଆପଣ ଆପଣଙ୍କ ଇତିହାସକୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ କରନ୍ତି, ତେବେ ଆପଣ ଭିଜିଟ କରୁଥିବା URLଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ମଧ୍ୟ ମେଟ୍ରିକ୍ସରେ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।<ph name="END_INDENT" /></translation>
+<translation id="5932787118589620366">Chromiumରେ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ।</translation>
+<translation id="593808800391107017">Chromium ଆପଣଙ୍କ ପାଇଁ ସ୍ୱତଃ ଚିହ୍ନଟ କରୁଥିବା ଯେ କୌଣସି ଗୋପନୀୟତା କିମ୍ବା ସୁରକ୍ଷା ସମସ୍ୟା ବିଷୟରେ ଆଲର୍ଟ ପାଆନ୍ତୁ।</translation>
 <translation id="5945387852661427312">ଆପଣ <ph name="DOMAIN" />ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ଏକ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି ଏବଂ ଏହାର ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଆପଣଙ୍କ Chromium ଡାଟାର ନିୟନ୍ତ୍ରଣ ଦେ‍ଇଛନ୍ତି। ଆପଣଙ୍କର ଡାଟା ଏହି ଆକାଉଣ୍ଟ ସହ ସ୍ଥାୟୀଭାବେ ଆବଦ୍ଧ ହେବ। Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରିବା ଦ୍ୱାରା ଆପଣଙ୍କର ଡାଟା ଏହି ଡିଭାଇସ୍‍ରୁ ଡିଲିଟ୍ ହୋଇଯିବ, କିନ୍ତୁ ଏହା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଷ୍ଟୋର୍ ହୋଇ ରହିବ।</translation>
 <translation id="5951593919357934226">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
-<translation id="5983312940147103417">Chromiumକୁ ଆହୁରି ଉନ୍ନତ କରନ୍ତୁ</translation>
-<translation id="5985102273857091344">"Chromium"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5985254578475526217">Chromiumରୁ ବିଜ୍ଞପ୍ତି ପାଇବା ପାଇଁ, ଆପଣଙ୍କ iOS ସେଟିଂସରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="6062449165341879460">ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="DOMAIN" />ର ଆପଣଙ୍କ Chromium ଡାଟା, ବୁକମାର୍କ, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଏହି ଆକାଉଣ୍ଟରେ ଆପଣ ଷ୍ଟୋର କରୁଥିବା ଅନ୍ୟ ସେଟିଂସକୁ ଆକ୍ସେସ ରହିବ। ଆପଣ ସାଇନ ଆଉଟ କଲେ, ଆପଣଙ୍କ ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ ଖାଲି କରିଦିଆଯିବ।  କିନ୍ତୁ, ଆପଣଙ୍କ ଡାଟା ଆପଣଙ୍କର ପରିଚାଳିତ Google ଆକାଉଣ୍ଟରେ ଷ୍ଟୋର ହୋଇ ରହିବ ଏବଂ ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଉପଲବ୍ଧ ହେବ। ଆପଣଙ୍କ ସଂସ୍ଥା ମଧ୍ୟ ସେହି ଆକାଉଣ୍ଟ ପାଇଁ ନିର୍ଦ୍ଦିଷ୍ଟ ୟୁଜର ନୀତିଗୁଡ଼ିକୁ ସେଟ କରିପାରିବ ଯାହା Chromiumର ବ୍ୟବହାରକୁ ପରିବର୍ତ୍ତନ କରିପାରିବ।</translation>
-<translation id="6093744543579359059">Chromiumରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6104024151682120539">Chromiumରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="61109258320235597">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବାକୁ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ।</translation>
-<translation id="6119647025869519954">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ କରିବାକୁ:
-1. ସେଟିଂସ୍ ଖୋଲନ୍ତୁ
-2. ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଆପକୁ ଟାପ୍ କରନ୍ତୁ
-3. Chromium ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6132149203299792222">ଆପଣଙ୍କ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
+<translation id="6148377327556085395">Chromiumରେ ବୁକମାର୍କଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6154098560469640583">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ କ୍ଲିକ କରି ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6170619162539716595">ଚିହ୍ନଟ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ନିମନ୍ତେ Google Maps ବ୍ୟବହାର କରିବା ପାଇଁ Chromiumକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
-<translation id="6175967839221456271">Chromiumକୁ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="6197255575340902638">ଯଦି ଆପଣ "<ph name="MODULE_NAME" />"କୁ ଲୁଚାନ୍ତି, ତେବେ Chromium ଆପଣଙ୍କ ଭବିଷ୍ୟତର ପେକେଜଗୁଡ଼ିକୁ ଆଉ ସ୍ୱତଃ-ଟ୍ରାକ କରିବ ନାହିଁ ଏବଂ ଏହା ଆପଣଙ୍କ ସମସ୍ତ ଗତ ପେକେଜ ଟ୍ରାକିଂ ଡାଟାକୁ ଡିଲିଟ କରିବ।</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରିବେ କି?</translation>
 <translation id="6324041800010509197">Chromiumରେ ଟାବ ଗ୍ରିଡକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="6325378625795868881">ମେସେଜ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="632825460376924298">Chromiumରେ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="6337530241089703714">ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ Chromium ଡାଟାକୁ ଖାଲି କରିବେ ନା ଏହାକୁ ରଖିବେ ତାହା ବାଛନ୍ତୁ</translation>
-<translation id="6348483005826990855">3. Chromium ଚୟନ କରନ୍ତୁ</translation>
-<translation id="6383607155624074112">ଆପଣଙ୍କ ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromiumକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ</translation>
-<translation id="6407399265324739055">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromiumରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।
-
-କେବଳ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଥିବା କେହି ଜଣେ ବ୍ୟକ୍ତି ଆପଣଙ୍କ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା ଏହା ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6424492062988593837">Chromium ବର୍ତ୍ତମାନ ଆହୁରି ଉନ୍ନତ ହୋଇଛି! ଗୋଟିଏ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="6433172051771630690">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଇବା ବିଷୟରେ ଟିପ୍ସ।</translation>
-<translation id="6502321914804101924">Chromium ସାଇନ ଆଉଟ ହୋଇଛି</translation>
+<translation id="65045991564554105">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
+<translation id="6538713818758208754">Chromiumରେ ପେମେଣ୍ଟ ପଦ୍ଧତିର ସେଟିଂ ପୃଷ୍ଠା ଖୋଲେ।</translation>
+<translation id="6540186279384079894">Chromiumରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପ୍ରାଇଭେଟ ରଖେ<ph name="END_LINK" /> ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
-<translation id="6625409903340039086">ବର୍ତ୍ତମାନ Chromium ଆପଣଙ୍କ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ପାଇଁ ୟୁଜର ନୀତିଗୁଡ଼ିକୁ ସମର୍ଥନ କରେ</translation>
-<translation id="6728350288669261079">Chromiumରେ ସେଟିଂସକୁ ଖୋଲେ।</translation>
+<translation id="6574750762636192517">Chromiumରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="6590232959690355435">ଆପଣଙ୍କ Chromium ଇତିହାସ ପୃଷ୍ଠା ଖୋଲେ।</translation>
+<translation id="6674470628873622334">ଏକ ନୂଆ Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲେ।</translation>
 <translation id="6752854822223394465">ଆପଣଙ୍କ ସଂସ୍ଥା Chromium ସେଟ୍ ଅପ୍ କରୁଛି...</translation>
 <translation id="6794054469102824109">Chromium Dino ଗେମ ଖୋଲେ।</translation>
 <translation id="6820823224820483452">Chromium ସମସ୍ତ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆସନ୍ତାକାଲି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6852419005633611413">ଆପଣଙ୍କ ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromiumକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ</translation>
 <translation id="6852799557929001644">ଏହି ଡିଭାଇସରେ ଥିବା ଅନ୍ୟ ସମସ୍ତ ଆପ୍ସରେ ଆପଣଙ୍କ Chromium ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="6887138405044152640">ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ଏହି ଟାବ ପଠାଇବା ପାଇଁ ସେଥିରେ ଥିବା Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="6911341667534646387">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="7006920032187763988">ଆପଣଙ୍କ iPadରେ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣ ସେଭ କରିଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="7018284295775193585">Chromiumକୁ ଅପଡେଟ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
-<translation id="7045244423563602563">Chromiumକୁ ଆପଣଙ୍କ ନିଜର ବ୍ରାଉଜର୍ କରନ୍ତୁ</translation>
 <translation id="7055269218854630176">ଆପଣ ସାଇନ ଇନ କରୁଥିବା ଆକାଉଣ୍ଟ ଏବଂ Chromiumକୁ କିପରି ବ୍ୟବହାର କରାଯାଇପାରିବ ତାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="DOMAIN" />, ପରିଚାଳନା କରେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ନିର୍ଦ୍ଦିଷ୍ଟ ଫିଚରଗୁଡ଼ିକୁ ସେଟ ଅପ କିମ୍ବା ପ୍ରତିବନ୍ଧିତ କରିପାରିବେ।</translation>
 <translation id="7099326575020694068">ସ୍ପ୍ଲିଟ୍ ଭ୍ୟୁ ମୋଡ୍‌ରେ Chromium ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ ନାହିଁ</translation>
-<translation id="7163483974919055112">Chromiumରେ ଭିଜୁଆଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
+<translation id="7129379408282555630">Chromium Shoppingର କ୍ଷମତା ପାଆନ୍ତୁ</translation>
 <translation id="7165402419892018581">ଅଟୋଫିଲ ପାଇଁ Chromium ବାଛନ୍ତୁ</translation>
 <translation id="7175400662502680481">ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନ ଯୋଗୁଁ ଆପଣଙ୍କ ପାସୱାର୍ଡଟି ଚୋରି ହୋଇଯାଇଛି। ପାସୱାର୍ଡ ମ୍ୟାନେଜର ବର୍ତ୍ତମାନ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
+<translation id="7185731475720473450">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromiumରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।
+
+କେବଳ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଥିବା କେହି ଜଣେ ବ୍ୟକ୍ତି ଆପଣଙ୍କ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା ଏହା ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7192111075364461693">ଆପଣଙ୍କ ଡିଭାଇସ ସେଟିଂସରେ Chromium ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ବନ୍ଦ ଅଛି।</translation>
-<translation id="7198580735512160509">ଆପଣଙ୍କ ଡିସ୍କଭର ଫିଡ ଏବଂ Chromiumକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ।</translation>
+<translation id="7219205286115692265">ଆପଣଙ୍କ iPadର ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromiumକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="7222001353246886083">Chromiumରେ ${searchPhrase} ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="7228180817326917122">Chromium ଟିପ: ଆପଣଙ୍କ ଠିକଣା ବାର ସ୍ଥିତି ବାଛନ୍ତୁ</translation>
 <translation id="725427773388857052">ଡାଟା ଉଲ୍ଲଙ୍ଘନ, ଅସୁରକ୍ଷିତ ୱେବସାଇଟ୍ କିମ୍ବା ଆହୁରି ଅନେକ କିଛିରୁ Chromium ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
 <translation id="7269362888766543920">କିଛି ଆଡ୍-ଅନ୍ କାରଣରୁ Chromium କ୍ରାଶ୍ ହୋଇପାରେ। ଦୟାକରି ସେଗୁଡ଼ିକୁ ଅନ୍‌ଇନ୍‍ଷ୍ଟଲ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7285031092584344905">ଅନ୍ୟ ସମସ୍ତ ଆପ୍ସରେ ଆପଣଙ୍କ Chromium ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଆକ୍ସେସ କରନ୍ତୁ।</translation>
-<translation id="7313655110045230863">Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ କରିବା ପାଇଁ, ସେଟିଂସ୍ ଖୋଲନ୍ତୁ। ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଆପରେ ଟାପ୍ କରନ୍ତୁ ଏବଂ ତା'ପରେ Chromium ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ଚୟନିତ ଡାଟାକୁ Chromium ଓ ସିଙ୍କ୍ ହୋଇଥିବା ଡିଭାଇସ୍‍ଗୁଡ଼ିକରୁ କାଢ଼ି ଦିଆଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ history.google.comରେ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକର ସର୍ଚ୍ଚ ଏବଂ କାର୍ଯ୍ୟକଳାପ ପରି ବ୍ରାଉଜିଂ ଇତିହାସର ଅନ୍ୟ ଫର୍ମ ଥାଇପାରେ।</translation>
-<translation id="7387082980875012885">Chromiumରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="7395825497086981028"><ph name="EMAIL" />ର ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ ହୋଇଯିବ।</translation>
-<translation id="7400689562045506105">ସର୍ବତ୍ର Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="7523464085759699266">“ଆପଣ Chromiumକୁ ବନ୍ଦ କଲେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ" ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="7601597633134889942">କୌଣସି ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ ଏବଂ Chromium ମେନୁରେ 'ଅନୁସରଣ କରନ୍ତୁ'ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
+<translation id="7531461704633548377">Chromiumରୁ</translation>
+<translation id="7554983317097061001">Chromium ଟିପ: Chromiumକୁ ଡକକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="7576863740961052505">Chromium ସେଟିଂସ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7674213385180944843">ସେଟିଂସ &gt; ଗୋପନୀୟତା &gt; କ୍ୟାମେରା &gt; Chromium ଖୋଲନ୍ତୁ ଏବଂ କ୍ୟାମେରା ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="7710137812207066069">Chromiumରେ ଏକ ନୂଆ ଟାବ ଖୋଲେ।</translation>
+<translation id="7733418656985455268">Chromium ଟିପ: Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7747820849741499258">Chromiumରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="7762622637388462191">ଆପଣ Chromiumରୁ ବାହାରି ଯିବା କିମ୍ବା ଏକ ଭିନ୍ନ ଆପକୁ ସୁଇଚ କରିବା ସମୟରେ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ।</translation>
 <translation id="7763454117143368771">ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକଠାରୁ ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ଏବଂ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="7784950022329154821">ଆପଣ Chromiumକୁ ବନ୍ଦ କରିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="78025249032851484">ଆପଣଙ୍କ Chromium ପୁରୁଣା ଅଟେ।</translation>
 <translation id="7859018312476869945">ଆପଣ ଠିକଣା ବାର କିମ୍ବା ସର୍ଚ୍ଚ ବାକ୍ସରେ ଟାଇପ କଲେ, ଉନ୍ନତ ପରାମର୍ଶ ପାଇବାକୁ Chromium ଆପଣ ଯାହା ଟାଇପ କରନ୍ତି ତାହା ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ପଠାଏ। ଏହା ଇନକଗ୍ନିଟୋରେ ବନ୍ଦ ଅଛି।</translation>
-<translation id="786327964234957808">ଆପଣ ସିଙ୍କ ଆକାଉଣ୍ଟ <ph name="USER_EMAIL1" /> ରୁ <ph name="USER_EMAIL2" />କୁ ସ୍ୱିଚ୍ କରୁଛନ୍ତି। ଆପଣଙ୍କର ପୂର୍ବରୁ ଥିବା Chromium ଡାଟା <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଏହା ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର ଡାଟା ଡିଲିଟ୍ କରିଦେବ, କିନ୍ତୁ ଆପଣଙ୍କର ଡାଟା <ph name="USER_EMAIL1" />ରେ ରହିବ।</translation>
-<translation id="7865408467687426957">ଆପଣ Chromiumରେ ସାଇନ ଇନ କଲେ, ଆପଣ ସେଭ କରୁଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ରହିବ। ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ସେଟିଂସକୁ ଯାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="7859432380288435856">Chromium ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ ପେକେଜ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଓ ସମସ୍ତଙ୍କ ପାଇଁ Shoppingକୁ ଉନ୍ନତ କରିବା ନିମନ୍ତେ Google ସହ ଆପଣଙ୍କ ଡାଟାକୁ ସେୟାର କରାଯିବ।</translation>
 <translation id="7890287942691234100">Chromium ସ୍କାନର୍ ବ୍ୟବହାର କରିବାକୁ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="7905064834449738336">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ପବ୍ଲିସ କରାଯାଇଛି ତେବେ Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ୟୁଜରନେମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
-<translation id="7911732829884437264">Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="7917424453593305610">ଅନ୍ୟ ଆପ୍ସରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7928628054454574139">ଆପଣ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ୍ କରି Chromium ଖୋଲନ୍ତୁ</translation>
-<translation id="7931842119211730154">ଆପଣ Chromium ବନ୍ଦ କରିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="7934404985878918282">Chromium ପଢ଼ିବା ତାଲିକା ଦେଖନ୍ତୁ</translation>
-<translation id="7971753607796745700">Chromiumରେ ପଢ଼ିବା ତାଲିକା ଆଇଟମ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7951793218148208717">Chromiumରେ ଏକ ନୂଆ ଟାବ ଖୋଲେ।</translation>
 <translation id="7980860476903281594">ଆପଣ ଅନୁମତି ଦେଇଥିବା ସାଇଟଗୁଡ଼ିକ ସହିତ Chromium ଆପଣଙ୍କ ଲୋକେସନ୍ ସେୟାର୍ କରିଥାଏ।</translation>
-<translation id="7990085102929105708">ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ Google Payରୁ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromiumରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।
-
-କେବଳ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଥିବା କେହି ଜଣେ ବ୍ୟକ୍ତି ଆପଣଙ୍କ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ପଢ଼ିପାରିବେ। ଏହି ପାସଫ୍ରେଜ Googleକୁ ପଠାଯାଏ ନାହିଁ କିମ୍ବା ଏହା ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଏ ନାହିଁ। ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଭୁଲି ଯାଆନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7994322153108931467">ଉପଯୋଗୀ Chromium ଟିପ୍ସ ପାଇବା ପାଇଁ ଆପଣଙ୍କ iOS ସେଟିଂସରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="7995166854192397899">ପରାମର୍ଶଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ ଉପରେ ଆଧାରିତ ଅଟେ। ପରାମର୍ଶ ପାଇବା ପାଇଁ ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଥିବା Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
+<translation id="7997159823054171568">Chromiumକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="800195749539500647">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
+<translation id="800380310260616129">ଏଠାରେ Chromium ଡାଉନଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="8013573822802650211">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
-<translation id="8071041515667087705">Chromium ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
-<translation id="8073677936375100957">ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର Chromium ଡାଟା ଖାଲି କରିବେ କି?</translation>
-<translation id="8115308261377517697">Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବରେ ସେଟ କରନ୍ତୁ</translation>
+<translation id="8014091604604659473">Chromium ସାଇନ ଆଉଟ ହୋଇଛି</translation>
+<translation id="8104697640054703121">ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକରୁ Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
+<translation id="8119542592987737574">ଆପଣଙ୍କ iPhoneର ହୋମ ସ୍କ୍ରିନ ଡକରୁ Chromiumକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
+<translation id="8164086860209325020">Chromium ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8197822717502700527">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଡିଭାଇସରେ Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଇବେ।</translation>
-<translation id="8234150821523419638">Chromium ମେନୁ ଖୋଲନ୍ତୁ</translation>
-<translation id="8235427517854598594">Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରିବେ?</translation>
 <translation id="8240981428553046115">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="8254729934443216898">Chromiumରୁ ସବୁଠୁ ଅଧିକ ଲାଭ ପାଇବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରୁଥିବା ନୂଆ ଫିଚରଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ।</translation>
-<translation id="8303579360494576778">Chromiumରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="829047622686389424">ଆପଣଙ୍କ ପାଇଁ ତିଆରି କରାଯାଇଥିବା ଏକ କଷ୍ଟମ ଫିଡ।</translation>
 <translation id="830951810931292870">ଇନପୁଟ କରାଯାଇଥିବା URLଗୁଡ଼ିକୁ Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଖୋଲା ଯାଇଥାଏ।</translation>
-<translation id="8386869251364507178">Chromium କାର୍ଯ୍ୟଗୁଡ଼ିକ</translation>
 <translation id="8409374867500149834">କ୍ଷତିକାରକ ୱେବସାଇଟରୁ ରକ୍ଷା ପାଇବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଅଛି</translation>
-<translation id="8458950033462118672">ଆପଣ Chromiumକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ ଭାବେ ସେଟ କରି ଲିଙ୍କଗୁଡ଼ିକୁ ଏଥିରେ ସ୍ୱଚାଳିତ ଭାବେ ଖୋଲିପାରିବେ।</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଥିବା ଡାଟା ଡିଲିଟ ହୋଇଯିବ। ଏଥିରେ ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ। ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଥିବା ଡାଟା ଡିଲିଟ ହୋଇଯିବ। ଏଥିରେ ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।}}</translation>
 <translation id="858114650497379505">ଆପଣଙ୍କ iPhoneରେ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ଥିବା ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣ ସେଭ କରିଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="8586442755830160949">କପିରାଇଟ୍ <ph name="YEAR" /> Chromium ଲେଖକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
-<translation id="8618440443578628179">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନ Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
-
-ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଖାଲି କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="8602103377623855616">Chromium ପୃଷ୍ଠା</translation>
 <translation id="865600487977764604">ଯେତେବେଳେ ଆପଣ ସାଇନ ଇନ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromiumରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ।</translation>
 <translation id="8663480472502753423">Chromiumକୁ ଅପ୍ ଟୁ ଡେଟ୍ ରଖନ୍ତୁ</translation>
 <translation id="8685813584220679697">ଏହି ସାଇଟ ଏବଂ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="8730503818204408000">Chromiumକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Chromium ସେଟିଂ ଖୋଲେ।</translation>
-<translation id="8742300022028858275">Chromiumରେ ମୋ ନବୀନତମ ଟାବ ଖୋଲନ୍ତୁ</translation>
-<translation id="8747378496147986285">ଚାଲୁ ଥିବା ସମୟରେ:
-<ph name="BEGIN_INDENT" />  • ଆପଣ Chromiumକୁ ଯେପରି ବ୍ୟବହାର କରନ୍ତି ସେହିପରି ବ୍ୟବହାର କରୁଥିବା ଲୋକମାନଙ୍କ ପାଇଁ ଏହାକୁ ଆହୁରି ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।<ph name="END_INDENT" />
-
-ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ:
-<ph name="BEGIN_INDENT" />  • ଆପଣଙ୍କ Chromium ବ୍ୟବହାର ସମ୍ପର୍କିତ ସୂଚନା Googleକୁ ପଠାଯାଏ, କିନ୍ତୁ ଏହାକୁ ଆପଣଙ୍କ ସହ ଯୋଡ଼ାଯାଏ ନାହିଁ।
-
-  • ଯଦି Chromium କ୍ରାସ ହୁଏ, ତେବେ କ୍ରାସ ବିଷୟରେ ଥିବା ବିବରଣୀରେ କିଛି ବ୍ୟକ୍ତିଗତ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।
-
-  • ଯଦି ଆପଣ ସିଙ୍କ ଚାଲୁ କରନ୍ତି, ତେବେ ଆପଣ ଭିଜିଟ କରୁଥିବା URLଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ମଧ୍ୟ ମେଟ୍ରିକ୍ସରେ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।<ph name="END_INDENT" /></translation>
+<translation id="8754966941001340678">Chromium ଉନ୍ନତ ସୁରକ୍ଷା ସୁପାରିଶ କରେ</translation>
 <translation id="8759037115129007407">ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟ ଏବେ ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇପାରିବେ ନାହିଁ। Chromium ଅପଡେଟ କରି ତାଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସିଙ୍କ କରିବାକୁ ତାଙ୍କୁ କୁହନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">ଏହି ଆକାଉଣ୍ଟ ଏବଂ ଯେ କୌଣସି ସେଭ୍ କରାଯାଇନଥିବା ଡାଟା Chromiumରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
+<translation id="8805148242934787134">Chromiumକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
+<translation id="8826789549860004832">ଆପଣଙ୍କ ବ୍ରାଉଜର ସେଟ ଅପ କରିବା ଜାରି ରଖି Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
 <translation id="88376265765385899">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଖୋଲେ।</translation>
 <translation id="8860548555286245440">Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡରେ URLଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="8866191443434488382">Chromium ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଟ୍ରାକିଂ ନମ୍ବରଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବ ଏବଂ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣଙ୍କ ପେକେଜ ଅପଡେଟଗୁଡ଼ିକୁ ଦେଖାଇବ। ଏହି ଫିଚର ପ୍ରଦାନ କରିବା ଏବଂ ସମସ୍ତଙ୍କ ପାଇଁ ସପିଂ ଫିଚରଗୁଡ଼ିକ ଉନ୍ନତ କରିବାକୁ ପେକେଜ ଟ୍ରାକିଂ ନମ୍ବର ଓ ୱେବସାଇଟ ନାମ Chromiumକୁ ପଠାଯିବ। ଆପଣ <ph name="BEGIN_LINK" />ପେକେଜ ଟ୍ରାକିଂ ସେଟିଂସ<ph name="END_LINK" />ରେ ଏହାକୁ ଯେ କୌଣସି ସମୟରେ ଅପଡେଟ କରିପାରିବେ।</translation>
-<translation id="8909995017390087892">iOS ପାଇଁ Chromium</translation>
-<translation id="8924617840944134898">Chromium ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
+<translation id="8880024619507699923">Chromium ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାର ଆବଶ୍ୟକତା ଅଛି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="894437814105052438">ଆପଣ ସାଇନ୍ ଆଉଟ୍ କଲେ, Chromium ଯେ କୌଣସି ନୂଆ ଡାଟାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହିତ ସିଙ୍କ କରିବ ନାହିଁ। ପୂର୍ବରୁ ସିଙ୍କ କରାଯାଇଥିବା ଡାଟା ଆକାଉଣ୍ଟରେ ରହିଥାଏ।</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}other{Chromiumକୁ {THRESHOLD} ମିନିଟ ପାଇଁ ବ୍ୟବହାର କରାନଗଲେ ଏହା ହୋଇଥାଏ}}</translation>
 <translation id="8963279154877372067">ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଇବା ପାଇଁ Chromium ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="8975812008711371178">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="900560297598578021"><ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି।
 
 ଆପଣଙ୍କ ପାସଫ୍ରେଜ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଡାଟାକୁ <ph name="TIME" />ରେ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chromium ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
 <translation id="9022552996538154597">Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
+<translation id="9031260906956926157">ଆପଣଙ୍କର କିଛି Chromium ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ।
+ସାଇନ ଆଉଟ କରିବା ପୂର୍ବରୁ କିଛି ମିନିଟ ଅପେକ୍ଷା କରି ଦେଖନ୍ତୁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="9050790730841755540">ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9059693977935746710">ଆପଣଙ୍କୁ ଏହି ପାସୱାର୍ଡ ମନେ ରଖିବା ଆବଶ୍ୟକ ହେବ ନାହିଁ। <ph name="EMAIL" />ର ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଏହା ସେଭ ହୋଇଯିବ</translation>
 <translation id="9089354809943900324">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
-<translation id="9110075932708282655">Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="9137114218472648150">Chromium ପୁରୁଣା ଅଟେ, ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ନବୀନତମ ସଂସ୍କରଣକୁ ଅପଡେଟ କରନ୍ତୁ।</translation>
+<translation id="9152995302810511799">Chromium ଟିପ: Chromiumର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="921174536258924340">Chromium ସମସ୍ତ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆସନ୍ତାକାଲି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
-<translation id="971488683725792095">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ ଟାପ କଲେ ଏଗୁଡ଼ିକ ସ୍ୱତଃ Chromiumକୁ ବ୍ୟବହାର କରେ।</translation>
+<translation id="924957577793602335">Chromiumକୁ ଆପଣଙ୍କ ନିଜର ବ୍ରାଉଜର କରନ୍ତୁ</translation>
 <translation id="981812233959540767">Chromium Dino ଗେମ ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="985602178874221306">Chromium ଲେଖକ</translation>
 </translationbundle>

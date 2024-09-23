@@ -47,9 +47,9 @@ class DlpFilesControllerLacrosTest
     documents_dir_ = my_files_dir_.Append(FILE_PATH_LITERAL("Documents"));
     downloads_dir_ = my_files_dir_.Append(FILE_PATH_LITERAL("Downloads"));
     chrome::SetLacrosDefaultPaths(
-        documents_dir_, downloads_dir_, drivefs_, removable_media_dir_,
-        android_files_dir_, linux_files_dir_, ash_resources_dir_,
-        share_cache_dir_, preinstalled_web_app_config_dir_,
+        documents_dir_, downloads_dir_, drivefs_, /*onedrive=*/base::FilePath(),
+        removable_media_dir_, android_files_dir_, linux_files_dir_,
+        ash_resources_dir_, share_cache_dir_, preinstalled_web_app_config_dir_,
         preinstalled_web_app_extra_config_dir_);
   }
 

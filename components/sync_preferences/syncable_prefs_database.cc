@@ -4,18 +4,20 @@
 
 #include "components/sync_preferences/syncable_prefs_database.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 
 namespace sync_preferences {
 
 bool SyncablePrefsDatabase::IsPreferenceSyncable(
-    const std::string& pref_name) const {
+    std::string_view pref_name) const {
   return GetSyncablePrefMetadata(pref_name).has_value();
 }
 
 bool SyncablePrefsDatabase::IsPreferenceMergeable(
-    const std::string& pref_name) const {
+    std::string_view pref_name) const {
   std::optional<SyncablePrefMetadata> metadata =
       GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());

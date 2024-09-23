@@ -25,7 +25,7 @@ struct CompositorRenderPass {
   gfx.mojom.RRectF? backdrop_filter_bounds;
   SubtreeCaptureId subtree_capture_id;
   gfx.mojom.Size subtree_size;
-  ViewTransitionElementResourceId view_transition_element_resource_id;
+  ViewTransitionElementResourceId? view_transition_element_resource_id;
   bool has_transparent_background;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;

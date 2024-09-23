@@ -50,6 +50,22 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
     }
 
     @Override
+    public void getPasswordCheckupIntent(
+            @PasswordCheckReferrer int referrer,
+            String accountName,
+            Callback<PendingIntent> successCallback,
+            Callback<Exception> failureCallback) {
+        if (mError != null) {
+            failureCallback.onResult(mError);
+            return;
+        }
+        successCallback.onResult(
+                accountName.isEmpty()
+                        ? mPendingIntentForLocalCheckup
+                        : mPendingIntentForAccountCheckup);
+    }
+
+    @Override
     public void runPasswordCheckupInBackground(
             @PasswordCheckReferrer int referrer,
             Optional<String> accountName,

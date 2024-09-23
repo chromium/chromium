@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "printing/backend/cups_printer.h"
 
 #include <cups/cups.h>
@@ -17,8 +22,10 @@
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/cups_ipp_helper.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/backend/print_backend_utils.h"
 #include "printing/print_job_constants.h"
 #include "url/gurl.h"
 
@@ -41,7 +48,7 @@ class CupsPrinterImpl : public CupsPrinter {
     // attribute, but make sure Chromium doesn't crash if one doesn't for
     // whatever reason. The printer in question won't actually work, but
     // that's a better outcome than crashing here.
-    // TODO(crbug.com/1418564): filter such printers out before reaching this
+    // TODO(crbug.com/40894807): filter such printers out before reaching this
     // point
     if (printer_uri) {
       printer_uri_ = printer_uri;
@@ -150,16 +157,9 @@ class CupsPrinterImpl : public CupsPrinter {
     const std::string info = GetInfo();
     const std::string make_and_model = GetMakeAndModel();
 
-#if BUILDFLAG(IS_MAC)
-    // On Mac, "printer-info" option specifies the human-readable printer name,
-    // while "printer-make-and-model" specifies the printer description.
-    printer_info->display_name = info;
-    printer_info->printer_description = make_and_model;
-#else
-    // On other platforms, "printer-info" specifies the printer description.
-    printer_info->display_name = printer->name;
-    printer_info->printer_description = info;
-#endif  // BUILDFLAG(IS_MAC)
+    printer_info->display_name = GetDisplayName(printer->name, info);
+    printer_info->printer_description =
+        GetPrinterDescription(make_and_model, info);
 
     const char* state = cupsGetOption(kCUPSOptPrinterState,
                                       printer->num_options, printer->options);

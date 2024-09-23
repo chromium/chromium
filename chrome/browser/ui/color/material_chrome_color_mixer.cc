@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/browser/ui/color/color_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/compose/buildflags.h"
 #include "ui/color/color_id.h"
@@ -13,6 +14,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/gfx/color_palette.h"
 
 namespace {
 
@@ -24,7 +26,9 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
       kColorTabForegroundInactiveFrameActive};
 
   if (key.custom_theme && key.custom_theme->HasCustomImage(IDR_THEME_TOOLBAR)) {
-    mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
+    mixer[kColorAppMenuHighlightDefault] = {
+        kColorToolbarBackgroundSubtleEmphasis};
+    mixer[kColorAppMenuExpandedForegroundDefault] = {kColorToolbarButtonText};
   }
 
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
@@ -40,7 +44,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // downloads bar etc). While both design systems continue to exist, the
   // material recipes are intended to leverage the existing chrome color mixers,
   // overriding when required to do so according to the new material spec.
-  // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
+  // TODO(crbug.com/40888516): Update color recipes to match UX mocks.
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // Apply default color transformations irrespective of whether a custom theme
@@ -57,6 +61,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {
       ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorDownloadBubbleInfoBackground] = {
+      ui::kColorSubtleEmphasisBackground};
+  mixer[kColorDownloadBubbleInfoIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {ui::kColorIconSecondary};
+  mixer[kColorDownloadBubblePrimaryIcon] = {ui::kColorSysPrimary};
   mixer[kColorDownloadToolbarButtonActive] = ui::PickGoogleColor(
       ui::kColorSysPrimary, kColorDownloadToolbarButtonRingBackground,
       color_utils::kMinimumVisibleContrastRatio);
@@ -70,8 +79,26 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
 
+  // Lens overlay colors.
+  mixer[kColorLensOverlayToastBackground] = {
+      ui::kColorSysInverseSurfacePrimary};
+  mixer[kColorLensOverlayToastButtonText] = {ui::kColorSysTonalOutline};
+
+  // PageInfo colors.
+  mixer[kColorPageInfoPermissionBlockedOnSystemLevelDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorPageInfoPermissionForeground] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorPageInfoPermissionUsedIcon] = {ui::kColorSysPrimary};
+
   // Permission Prompt colors.
   mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
+
+  // Performance Intervention colors.
+  mixer[kColorPerformanceInterventionButtonIconActive] =
+      ui::PickGoogleColor(ui::kColorSysPrimary, ui::kColorSysNeutralOutline,
+                          color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorPerformanceInterventionButtonIconInactive] = {
+      kColorToolbarButtonIcon};
 
   // Profile Menu colors.
   mixer[kColorProfileMenuBackground] = {ui::kColorSysSurface};
@@ -92,10 +119,17 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorChromeSigninBubbleInfoBackground] = {
       kColorProfileMenuSyncInfoBackground};
 
+  // Batch upload colors. Uses the same colors as the profile menu.
+  mixer[kColorBatchUploadBackground] = {kColorProfileMenuBackground};
+  mixer[kColorBatchUploadDataBackground] = {
+      kColorProfileMenuSyncInfoBackground};
+
   // Tab Search colors.
+  mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
   mixer[kColorTabSearchDivider] = {ui::kColorSysDivider};
+  mixer[kColorTabSearchFooterBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorTabSearchImageTabContentBottom] = {ui::kColorSysHeaderContainer};
   mixer[kColorTabSearchImageTabContentTop] = {ui::kColorSysOnPrimary};
   mixer[kColorTabSearchImageTabText] = {ui::kColorSysStateRipplePrimary};
@@ -111,9 +145,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
 
   // Read Anything (in the side panel) colors.
+  mixer[kColorReadAnythingCurrentReadAloudHighlight] = {
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorReadAnythingForeground] = {ui::kColorSysOnSurface};
-  mixer[kColorCurrentReadAloudHighlight] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorPreviousReadAloudHighlight] = {ui::kColorSysOnSurfaceSecondary};
+  mixer[kColorReadAnythingPreviousReadAloudHighlight] = {
+      ui::kColorSysOnSurfaceSecondary};
 
   // Tab Group Dialog colors.
   mixer[kColorTabGroupDialogIconEnabled] = {ui::kColorSysOnSurfaceSubtle};
@@ -134,6 +170,22 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       kColorFeaturePromoBubbleBackground};
   mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
 
+  // WebAuthn modal dialog colors.
+  mixer[kColorWebAuthnBackArrowButtonIcon] = {ui::kColorSysPrimary};
+  mixer[kColorWebAuthnBackArrowButtonIconDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnHoverButtonForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorWebAuthnHoverButtonForegroundDisabled] = {
+      ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
+  mixer[kColorWebAuthnIconColorDisabled] = {ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnPinTextfieldBottomBorder] =
+      PickGoogleColor(ui::kColorSysPrimary, ui::kColorSysSurface,
+                      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorWebAuthnProgressRingBackground] = ui::SetAlpha(
+      kColorWebAuthnProgressRingForeground, gfx::kGoogleGreyAlpha400);
+  mixer[kColorWebAuthnProgressRingForeground] = {ui::kColorSysPrimary};
+
 #if BUILDFLAG(ENABLE_COMPOSE)
   // Compose colors.
   mixer[kColorComposeDialogBackground] = {ui::kColorSysSurface};
@@ -148,6 +200,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogResultForegroundWhileLoading] = {
       ui::kColorSysPrimary};
   mixer[kColorComposeDialogResultIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorComposeDialogResultContainerScrollbarThumb] = {
+      ui::kColorSysTonalOutline};
   mixer[kColorComposeDialogTitle] = {ui::kColorSysOnSurface};
   mixer[kColorComposeDialogTextarea] = {ui::kColorSysOnSurface};
   mixer[kColorComposeDialogTextareaOutline] = {ui::kColorSysNeutralOutline};
@@ -158,6 +212,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogTextareaReadonlyForeground] = {
       ui::kColorSysOnSurface};
   mixer[kColorComposeDialogTextareaIcon] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorComposeDialogSelectOptionDisabled] = {
+      ui::kColorLabelForegroundDisabled};
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
@@ -174,6 +230,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuChipInkDropRipple] = {ui::kColorSysStateRipplePrimary};
   mixer[kColorAvatarButtonHighlightNormal] = {ui::kColorSysTonalContainer};
   mixer[kColorAvatarButtonHighlightSyncPaused] = {
+      kColorAvatarButtonHighlightNormal};
+  mixer[kColorAvatarButtonHighlightSigninPaused] = {
       kColorAvatarButtonHighlightNormal};
   mixer[kColorAvatarButtonHighlightSyncError] = {ui::kColorSysErrorContainer};
   mixer[kColorAvatarButtonHighlightIncognito] = {ui::kColorSysBaseContainer};
@@ -227,12 +285,17 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFrameCaptionInactive] = {ui::kColorSysOnHeaderPrimaryInactive};
   mixer[kColorTabHoverCardSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarBackground] = {ui::kColorSysBase};
-  mixer[kColorInfoBarButtonIcon] = {kColorInfoBarForeground};
+  mixer[kColorInfoBarButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorInfoBarButtonIconDisabled] = {ui::kColorSysStateDisabled};
-  mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[ui::kColorInfoBarIcon] =
-      ui::PickGoogleColor(ui::kColorSysPrimary, kColorInfoBarBackground,
-                          color_utils::kMinimumVisibleContrastRatio);
+  if (base::FeatureList::IsEnabled(features::kInfoBarIconMonochrome)) {
+    mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurface};
+    mixer[ui::kColorInfoBarIcon] = {ui::kColorSysOnSurfaceSubtle};
+  } else {
+    mixer[kColorInfoBarForeground] = {ui::kColorSysOnSurfaceSubtle};
+    mixer[ui::kColorInfoBarIcon] =
+        ui::PickGoogleColor(ui::kColorSysPrimary, kColorInfoBarBackground,
+                            color_utils::kMinimumVisibleContrastRatio);
+  }
   mixer[kColorMediaRouterIconActive] =
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
@@ -247,13 +310,25 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       kColorNewTabButtonInkDropFrameActive};
 
   // Omnibox chip colors.
+  mixer[kColorOmniboxChipInUseActivityIndicatorBackground] = {
+      ui::kColorSysPrimary};
+  mixer[kColorOmniboxChipInUseActivityIndicatorForeground] = {
+      ui::kColorSysOnPrimary};
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipBlockedActivityIndicatorForeground] = {
+      ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysPrimary};
   mixer[kColorOmniboxChipInkDropHover] = {
       ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground] = {
+      ui::kColorSysError};
 
   // Tabstrip tab alert colors.
   mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {
@@ -308,6 +383,4 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDefault] = {ui::kColorSysOnSurfaceSecondary};
   mixer[kColorToolbarTextDisabled] = {kColorToolbarTextDisabledDefault};
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
-
-  mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
 }

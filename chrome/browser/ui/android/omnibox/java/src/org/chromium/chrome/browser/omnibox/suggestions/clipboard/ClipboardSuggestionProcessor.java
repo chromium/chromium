@@ -27,6 +27,7 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /** A class that handles model and view creation for the clipboard suggestions. */
 public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
@@ -36,12 +37,14 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param imageSupplier Supplier used to retrieve suggestion icons and images.
      */
     public ClipboardSuggestionProcessor(
-            Context context, SuggestionHost suggestionHost, OmniboxImageSupplier imageSupplier) {
+            @NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
+            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
         super(context, suggestionHost, imageSupplier);
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_TEXT
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE;
@@ -53,12 +56,13 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, suggestion.isSearchSuggestion());
@@ -122,7 +126,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 
                 if (bitmap != null) {
-                    // TODO(crbug.com/1090919): This is short term solution, resize need to be
+                    // TODO(crbug.com/40133944): This is short term solution, resize need to be
                     // handled somewhere else.
                     if (bitmap.getWidth() > 0
                             && bitmap.getHeight() > 0
@@ -206,9 +210,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
-    // TODO(crbug.com/1198295): Make revealButtonClickHandler and concealButtonClickHandler private.
+    // TODO(crbug.com/40177279): Make revealButtonClickHandler and concealButtonClickHandler
+    // private.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void revealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
+    public void revealButtonClickHandler(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
         if (suggestion.getUrl().isEmpty()) {
             suggestion.updateWithClipboardContent(

@@ -27,8 +27,8 @@ AcceleratorCapslockStateMachine::AcceleratorCapslockStateMachine(
 AcceleratorCapslockStateMachine::~AcceleratorCapslockStateMachine() = default;
 
 void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_RELEASED &&
-      event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyReleased &&
+      event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -36,7 +36,7 @@ void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
     // Waiting for either Alt or Search. Anything else we should move to
     // kSuppress.
     case CapslockState::kStart:
-      if (event->type() == ui::ET_KEY_RELEASED) {
+      if (event->type() == ui::EventType::kKeyReleased) {
         break;
       }
 
@@ -62,7 +62,7 @@ void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
       const bool is_meta_key = kMetaKeys.contains(event->key_code());
       const bool is_alt_key = kAltKeys.contains(event->key_code());
 
-      if (event->type() == ui::ET_KEY_RELEASED) {
+      if (event->type() == ui::EventType::kKeyReleased) {
         // If alt key is released, we go back to kStart.
         if (is_meta_key) {
           current_state_ = CapslockState::kStart;
@@ -96,7 +96,7 @@ void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
       const bool is_meta_key = kMetaKeys.contains(event->key_code());
       const bool is_alt_key = kAltKeys.contains(event->key_code());
 
-      if (event->type() == ui::ET_KEY_RELEASED) {
+      if (event->type() == ui::EventType::kKeyReleased) {
         // If alt key is released, we go back to kStart.
         if (is_alt_key) {
           current_state_ = CapslockState::kStart;
@@ -143,7 +143,7 @@ void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
         break;
       }
 
-      if (event->type() == ui::ET_KEY_PRESSED) {
+      if (event->type() == ui::EventType::kKeyPressed) {
         break;
       }
 
@@ -158,8 +158,8 @@ void AcceleratorCapslockStateMachine::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void AcceleratorCapslockStateMachine::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED &&
-      event->type() != ui::ET_MOUSE_RELEASED) {
+  if (event->type() != ui::EventType::kMousePressed &&
+      event->type() != ui::EventType::kMouseReleased) {
     return;
   }
 
@@ -171,7 +171,7 @@ void AcceleratorCapslockStateMachine::OnMouseEvent(ui::MouseEvent* event) {
     case CapslockState::kTriggerAlt:
     case CapslockState::kTriggerSearch:
     case CapslockState::kPrimed:
-      if (event->type() == ui::ET_MOUSE_PRESSED) {
+      if (event->type() == ui::EventType::kMousePressed) {
         current_state_ = CapslockState::kSuppress;
       }
       break;
@@ -179,7 +179,7 @@ void AcceleratorCapslockStateMachine::OnMouseEvent(ui::MouseEvent* event) {
     // When in kSuppress, move to kStart if the mouse button is released and
     // there are no keys currently being pressed.
     case CapslockState::kSuppress:
-      if (event->type() == ui::ET_MOUSE_RELEASED &&
+      if (event->type() == ui::EventType::kMouseReleased &&
           !ui::OzonePlatform::GetInstance()
                ->GetInputController()
                ->AreAnyKeysPressed()) {

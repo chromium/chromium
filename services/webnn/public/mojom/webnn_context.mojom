@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "services/webnn/public/mojom/features.mojom";
+import "services/webnn/public/mojom/webnn_tensor.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
+import "services/webnn/public/mojom/webnn_graph_builder.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Represents a successful call to `WebNNContext::CreateTensor()`.
+struct CreateTensorSuccess {
+  pending_associated_remote<WebNNTensor> tensor_remote;
+  // tensor_handle is a generated token used as a handle to identify the tensor
+  // from the renderer. The token is only valid for the lifetime
+  // of the tensor and is used by context operations in the service using the
+  // tensor corresponding to this handle.
+  blink.mojom.WebNNTensorToken tensor_handle;
+};
+
+// Represents the return value of `WebNNContext::CreateTensor()`. Let it be
+// `success` if the tensor was successfully created and `error` otherwise.
+union CreateTensorResult {
+  CreateTensorSuccess success;
+  Error error;
+};
+
+// Represents the `MLContext` object in the WebIDL definition that is a global
+// state of neural network compute workload and execution processes. This
+// interface runs in the GPU process and is called from the renderer process.
+[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
+interface WebNNContext {
+  // Creates a connection to an `MLGraphBuilder` in the WebNN service.
+  CreateGraphBuilder(pending_associated_receiver<WebNNGraphBuilder> receiver);
+
+  // Called by the renderer process to create `WebNNTensor` message pipe for
+  // creating platform specific tensors, the WebNN tensor will be validated and
+  // created. This method guarantees memory allocation on the device.
+  CreateTensor(TensorInfo tensor_info) => (CreateTensorResult result);
+};

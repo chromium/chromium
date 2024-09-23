@@ -20,8 +20,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -186,8 +185,7 @@ public class WebApkInstallService {
         }
 
         NotificationWrapper notification = notificationBuilder.buildNotificationWrapper();
-        NotificationManagerProxy notificationManager = new NotificationManagerProxyImpl(context);
-        notificationManager.notify(notification);
+        BaseNotificationManagerProxyFactory.create(context).notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
@@ -195,9 +193,8 @@ public class WebApkInstallService {
     /** Cancels any ongoing notification for the WebAPK. */
     @CalledByNative
     static void cancelNotification(String notificationId) {
-        NotificationManagerProxy notificationManager =
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
-        notificationManager.cancel(getInstallNotificationTag(notificationId), PLATFORM_ID);
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+                .cancel(getInstallNotificationTag(notificationId), PLATFORM_ID);
     }
 
     private static String getInstallErrorMessage(@WebApkInstallResult int resultCode) {

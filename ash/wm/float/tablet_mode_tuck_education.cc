@@ -73,7 +73,9 @@ base::Time GetTime() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.name = "TuckEducationNudgeWidget";
   params.accept_events = false;
   params.parent = window;

@@ -8,11 +8,11 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -45,8 +45,8 @@ PasswordForm CreateObserved() {
 // Creates a dummy pending (for saving) form with some basic arbitrary values
 // and |username| and |password| values as specified.
 PasswordForm CreatePending(
-    base::StringPiece16 username,
-    base::StringPiece16 password,
+    std::u16string_view username,
+    std::u16string_view password,
     PasswordForm::MatchType match_type = PasswordForm::MatchType::kExact) {
   PasswordForm form = CreateObserved();
   form.username_value = std::u16string(username);
@@ -111,8 +111,9 @@ void FormSaverImplSaveTest::SaveCredential(
       EXPECT_CALL(*mock_store_, AddLogin(expected, _));
       return form_saver_.Save(std::move(pending), matches, old_password);
     case SaveOperation::kUpdate:
-      if (old_password != pending.password_value)
+      if (old_password != pending.password_value) {
         expected.date_password_modified = base::Time::Now();
+      }
       EXPECT_CALL(*mock_store_, UpdateLogin(expected, _));
       return form_saver_.Update(std::move(pending), matches, old_password);
     case SaveOperation::kReplaceUpdate: {
@@ -164,7 +165,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &non_empty_username, &no_username};
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(no_username));
+  EXPECT_CALL(*mock_store_, RemoveLogin(_, no_username));
   SaveCredential(pending, matches, std::u16string());
 }
 
@@ -179,7 +180,7 @@ TEST_P(FormSaverImplSaveTest,
   no_username.username_value.clear();
   no_username.password_value = u"abcd";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&no_username}, std::u16string());
 }
 
@@ -192,7 +193,7 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyUsernameWillNotCauseDeletion) {
   PasswordForm with_username = pending;
   with_username.username_value = u"nameofuser";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&with_username}, std::u16string());
 }
 
@@ -209,7 +210,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &stored, &no_username_psl};
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, matches, std::u16string());
 }
 
@@ -221,7 +222,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteNonEmptyUsernameCredentials) {
   PasswordForm other_username = pending;
   other_username.username_value = u"other username";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&other_username}, std::u16string());
 }
 
@@ -287,15 +288,15 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
 TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   PasswordForm pending = CreatePending(u"nameofuser", u"wordToP4a55");
   FormFieldData field;
-  field.name = u"name";
-  field.form_control_type = autofill::FormControlType::kInputPassword;
-  field.value = u"value";
-  field.label = u"label";
-  field.placeholder = u"placeholder";
-  field.id_attribute = u"id";
-  field.name_attribute = field.name;
-  field.css_classes = u"css_classes";
-  pending.form_data.fields.push_back(field);
+  field.set_name(u"name");
+  field.set_form_control_type(autofill::FormControlType::kInputPassword);
+  field.set_value(u"value");
+  field.set_label(u"label");
+  field.set_placeholder(u"placeholder");
+  field.set_id_attribute(u"id");
+  field.set_name_attribute(field.name());
+  field.set_css_classes(u"css_classes");
+  pending.form_data.set_fields({field});
 
   PasswordForm saved;
   switch (GetParam()) {
@@ -313,17 +314,17 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
     }
   }
 
-  ASSERT_EQ(1u, saved.form_data.fields.size());
-  const FormFieldData& saved_field = saved.form_data.fields[0];
-  EXPECT_EQ(u"name", saved_field.name);
+  ASSERT_EQ(1u, saved.form_data.fields().size());
+  const FormFieldData& saved_field = saved.form_data.fields()[0];
+  EXPECT_EQ(u"name", saved_field.name());
   EXPECT_EQ(autofill::FormControlType::kInputPassword,
-            saved_field.form_control_type);
-  EXPECT_TRUE(saved_field.value.empty());
-  EXPECT_TRUE(saved_field.label.empty());
-  EXPECT_TRUE(saved_field.placeholder.empty());
-  EXPECT_TRUE(saved_field.id_attribute.empty());
-  EXPECT_TRUE(saved_field.name_attribute.empty());
-  EXPECT_TRUE(saved_field.css_classes.empty());
+            saved_field.form_control_type());
+  EXPECT_TRUE(saved_field.value().empty());
+  EXPECT_TRUE(saved_field.label().empty());
+  EXPECT_TRUE(saved_field.placeholder().empty());
+  EXPECT_TRUE(saved_field.id_attribute().empty());
+  EXPECT_TRUE(saved_field.name_attribute().empty());
+  EXPECT_TRUE(saved_field.css_classes().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -359,7 +360,7 @@ TEST_F(FormSaverImplTest, Blocklist) {
 TEST_F(FormSaverImplTest, Remove) {
   PasswordForm form = CreatePending(u"nameofuser", u"wordToP4a55");
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(form));
+  EXPECT_CALL(*mock_store_, RemoveLogin(_, form));
   form_saver_.Remove(form);
 }
 

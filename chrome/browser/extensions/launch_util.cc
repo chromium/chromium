@@ -9,8 +9,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/bookmark_app_util.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -112,7 +112,7 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
     // If a new value for app.launch.container is added, logic for it should be
     // added here. apps::LaunchContainer::kLaunchContainerWindow is not
     // present because there is no way to set it in a manifest.
-    NOTREACHED() << static_cast<int>(manifest_launch_container);
+    NOTREACHED_IN_MIGRATION() << static_cast<int>(manifest_launch_container);
   }
 
   // All paths should set |result|.

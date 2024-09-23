@@ -115,7 +115,7 @@ V8DetailedMemoryRequest::~V8DetailedMemoryRequest() {
   if (decorator_)
     decorator_->RemoveMeasurementRequest(
         base::PassKey<V8DetailedMemoryRequest>(), this);
-  // TODO(crbug.com/1080672): Delete the decorator and its NodeAttachedData
+  // TODO(crbug.com/40130181): Delete the decorator and its NodeAttachedData
   // when the last request is destroyed. Make sure this doesn't mess up any
   // measurement that's already in progress.
 }
@@ -167,17 +167,15 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
     using FrameAndData = std::pair<content::GlobalRenderFrameHostId,
                                    V8DetailedMemoryExecutionContextData>;
     std::vector<FrameAndData> all_frame_data;
-    process_node->VisitFrameNodes(
-        [&all_frame_data](const FrameNode* frame_node) {
-          const auto* frame_data =
-              V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
-          if (frame_data) {
-            all_frame_data.push_back(std::make_pair(
-                frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
-                *frame_data));
-          }
-          return true;
-        });
+    for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
+      const auto* frame_data =
+          V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+      if (frame_data) {
+        all_frame_data.push_back(std::make_pair(
+            frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
+            *frame_data));
+      }
+    }
     off_sequence_request_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&V8DetailedMemoryRequestAnySeq::

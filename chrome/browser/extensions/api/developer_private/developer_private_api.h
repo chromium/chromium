@@ -13,8 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/commands/command_service.h"
-#include "chrome/browser/extensions/api/developer_private/entry_picker.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -42,6 +41,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 class Profile;
 
@@ -51,11 +51,12 @@ class EventRouter;
 class ExtensionError;
 class ExtensionInfoGenerator;
 
-// A key that indicates whether the safety check warning for this
+// Key that indicates whether the safety check warning for this
 // extension has been acknowledged because the user has chosen to keep
 // it in a past review.
-inline constexpr PrefMap kPrefAcknowledgeSafetyCheckWarning = {
-    "ack_safety_check_warning", PrefType::kBool, PrefScope::kExtensionSpecific};
+inline constexpr PrefMap kPrefAcknowledgeSafetyCheckWarningReason = {
+    "ack_safety_check_warning_reason", PrefType::kInteger,
+    PrefScope::kExtensionSpecific};
 
 namespace api {
 
@@ -64,8 +65,6 @@ namespace developer_private {
 struct ProfileInfo;
 
 }
-
-class EntryPickerClient;
 
 }  // namespace api
 
@@ -122,8 +121,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnExtensionFrameUnregistered(
       const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) override;
-  void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
-  void OnServiceWorkerUnregistered(const WorkerId& worker_id) override;
+  void OnStartedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
+  void OnStoppedTrackingServiceWorkerInstance(
+      const WorkerId& worker_id) override;
 
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(AppWindow* window) override;
@@ -512,41 +513,52 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
       error_reporter_observation_{this};
 };
 
-class DeveloperPrivateChooseEntryFunction : public ExtensionFunction,
-                                            public EntryPickerClient {
- protected:
-  ~DeveloperPrivateChooseEntryFunction() override;
-  bool ShowPicker(ui::SelectFileDialog::Type picker_type,
-                  const std::u16string& select_title,
-                  const ui::SelectFileDialog::FileTypeInfo& info,
-                  int file_type_index);
-};
-
 class DeveloperPrivateLoadUnpackedFunction
-    : public DeveloperPrivateChooseEntryFunction {
+    : public DeveloperPrivateAPIFunction,
+      public ui::SelectFileDialog::Listener {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.loadUnpacked",
                              DEVELOPERPRIVATE_LOADUNPACKED)
   DeveloperPrivateLoadUnpackedFunction();
 
- protected:
-  ~DeveloperPrivateLoadUnpackedFunction() override;
-  ResponseAction Run() override;
-
-  // EntryPickerClient:
-  void FileSelected(const base::FilePath& path) override;
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
-  // Callback for the UnpackedLoader.
+  // For testing:
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
+
+ protected:
+  ~DeveloperPrivateLoadUnpackedFunction() override;
+
+  // DeveloperPrivateAPIFunction:
+  ResponseAction Run() override;
+
+ private:
+  // Shows the file picker dialog.
+  void ShowSelectFileDialog();
+
+  // Starts loading the given `file_path`.
+  void StartFileLoad(const base::FilePath file_path);
+
+  // Called when `file_path` load is completed
   void OnLoadComplete(const Extension* extension,
                       const base::FilePath& file_path,
                       const std::string& error);
 
- private:
+  // Called when `file_path` load encounters a manifest parsing `error`.
   void OnGotManifestError(const base::FilePath& file_path,
                           const std::string& error,
                           size_t line_number,
                           const std::string& manifest);
+
+  // Returns `response_value` when the function should finish asynchronously.
+  void Finish(ResponseValue response_value);
 
   // Whether or not we should fail quietly in the event of a load error.
   bool fail_quietly_ = false;
@@ -557,6 +569,15 @@ class DeveloperPrivateLoadUnpackedFunction
 
   // The identifier for the selected path when retrying an unpacked load.
   DeveloperPrivateAPI::UnpackedRetryId retry_guid_;
+
+  // The dialog with the select file picker.
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // For testing:
+  // Whether to accept or reject the select file dialog without showing it.
+  std::optional<bool> accept_dialog_for_testing_;
+  // File to load when accepting the select file dialog without showing it.
+  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
 class DeveloperPrivateInstallDroppedFileFunction
@@ -600,18 +621,38 @@ class DeveloperPrivateNotifyDragInstallInProgressFunction
 };
 
 class DeveloperPrivateChoosePathFunction
-    : public DeveloperPrivateChooseEntryFunction {
+    : public DeveloperPrivateAPIFunction,
+      public ui::SelectFileDialog::Listener {
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.choosePath",
                              DEVELOPERPRIVATE_CHOOSEPATH)
+  DeveloperPrivateChoosePathFunction();
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
+
+  // For testing:
+  void set_accept_dialog_for_testing(bool accept) {
+    accept_dialog_for_testing_ = accept;
+  }
+  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
+    selected_file_for_testing_ = file;
+  }
 
  protected:
   ~DeveloperPrivateChoosePathFunction() override;
   ResponseAction Run() override;
 
-  // EntryPickerClient:
-  void FileSelected(const base::FilePath& path) override;
-  void FileSelectionCanceled() override;
+ private:
+  // The dialog with the select file picker.
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // For testing:
+  // Whether to accept or reject the select file dialog without showing it.
+  std::optional<bool> accept_dialog_for_testing_;
+  // File to load when accepting the select file dialog without showing it.
+  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
 class DeveloperPrivatePackDirectoryFunction
@@ -1015,6 +1056,46 @@ class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
  private:
   ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction()
       override;
+};
+
+class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "developerPrivate.dismissMv2DeprecationNoticeForExtension",
+      DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION)
+  DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction();
+
+  DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction(
+      const DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction&) =
+      delete;
+  DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction& operator=(
+      const DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction&) =
+      delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void DismissExtensionNotice();
+
+  // Callback to run when the user accepts the keep dialog.
+  void OnDialogAccepted();
+
+  // Callback to run when the user cancels the keep dialog.
+  void OnDialogCancelled();
+
+  // The ID of the extension to be dismissed.
+  ExtensionId extension_id_;
+
+  // If true, immediately accepts the keep dialog by running the callback.
+  std::optional<bool> accept_bubble_for_testing_;
 };
 
 }  // namespace api

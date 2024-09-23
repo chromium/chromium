@@ -23,4 +23,4 @@ ASH_EXPORT int GetEncodedShortcut(const int modifiers,
 
 }  // namespace ash
 
-#endif  // ASH_ACCELERATORS_ACCELERATOR_ENCODING_H
+#endif  // ASH_ACCELERATORS_ACCELERATOR_ENCODING_H_

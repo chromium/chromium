@@ -30,6 +30,15 @@ void OnPortOpened(mojom::SerialPortManager::OpenPortCallback callback,
                         base::BindOnce(std::move(callback), std::move(port)));
 }
 
+void FinishGetDevices(SerialPortManagerImpl::GetDevicesCallback callback,
+                      std::vector<mojom::SerialPortInfoPtr> devices,
+                      std::vector<mojom::SerialPortInfoPtr> bluetooth_devices) {
+  devices.insert(devices.end(),
+                 std::make_move_iterator(bluetooth_devices.begin()),
+                 std::make_move_iterator(bluetooth_devices.end()));
+  std::move(callback).Run(std::move(devices));
+}
+
 }  // namespace
 
 SerialPortManagerImpl::SerialPortManagerImpl(
@@ -79,20 +88,18 @@ void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
     observed_enumerator_.AddObservation(enumerator_.get());
   }
   auto devices = enumerator_->GetDevices();
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kEnableBluetoothSerialPortProfileInSerialApi)) {
-    if (!bluetooth_enumerator_) {
-      bluetooth_enumerator_ =
-          std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
-      observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
-    }
-    auto bluetooth_devices = bluetooth_enumerator_->GetDevices();
-    devices.insert(devices.end(),
-                   std::make_move_iterator(bluetooth_devices.begin()),
-                   std::make_move_iterator(bluetooth_devices.end()));
+    std::move(callback).Run(std::move(devices));
+    return;
   }
-
-  std::move(callback).Run(std::move(devices));
+  if (!bluetooth_enumerator_) {
+    bluetooth_enumerator_ =
+        std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
+    observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
+  }
+  bluetooth_enumerator_->GetDevicesAfterInitialEnumeration(base::BindOnce(
+      &FinishGetDevices, std::move(callback), std::move(devices)));
 }
 
 void SerialPortManagerImpl::OpenPort(
@@ -169,6 +176,14 @@ void SerialPortManagerImpl::OnPortRemoved(const mojom::SerialPortInfo& port) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_)
     client->OnPortRemoved(port.Clone());
+}
+
+void SerialPortManagerImpl::OnPortConnectedStateChanged(
+    const mojom::SerialPortInfo& port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : clients_) {
+    client->OnPortConnectedStateChanged(port.Clone());
+  }
 }
 
 }  // namespace device

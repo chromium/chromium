@@ -17,6 +17,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -99,9 +100,8 @@ class ReduceUserAgentPlatformBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ReduceUserAgentPlatformBrowserTest, NavigatorPlatform) {
-  // We should not reduce android navigator.platform in phase 5.
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_NE("Linux x86_64",
+  EXPECT_EQ("Linux armv81",
             content::EvalJs(web_contents(), "navigator.platform"));
 #elif BUILDFLAG(IS_MAC)
   EXPECT_EQ("MacIntel", content::EvalJs(web_contents(), "navigator.platform"));

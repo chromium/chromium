@@ -38,7 +38,7 @@ InstanceIDGetTokenRequestHandler::InstanceIDGetTokenRequestHandler(
   DCHECK(!scope.empty());
 }
 
-InstanceIDGetTokenRequestHandler::~InstanceIDGetTokenRequestHandler() {}
+InstanceIDGetTokenRequestHandler::~InstanceIDGetTokenRequestHandler() = default;
 
 void InstanceIDGetTokenRequestHandler::BuildRequestBody(std::string* body) {
   BuildFormEncoding(kScopeKey, scope_, body);
@@ -61,13 +61,16 @@ void InstanceIDGetTokenRequestHandler::ReportStatusToUMA(
   // sense for large users (who might want to look at the status of their
   // requests specifically), or for deep dives into unexplained changes to the
   // top-level "InstanceID.GetToken.RequestStatus" histogram.
-  if (subtype == "com.google.chrome.fcm.invalidations") {
-    base::UmaHistogramEnumeration(
-        "InstanceID.GetToken.RequestStatus.FcmInvalidations", status);
-  } else if (subtype == "com.google.chrome.sync.invalidations") {
+  if (subtype == "com.google.chrome.sync.invalidations") {
     base::UmaHistogramEnumeration(
         "InstanceID.GetToken.RequestStatus.SyncInvalidations", status);
   }
+}
+
+void InstanceIDGetTokenRequestHandler::ReportNetErrorCodeToUMA(
+    int net_error_code) {
+  base::UmaHistogramSparse("InstanceID.GetToken.RequestNetErrorCode",
+                           std::abs(net_error_code));
 }
 
 }  // namespace gcm

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_MATH_FUNCTIONS_H_
 
 #include <cfloat>
+#include <cmath>
 #include <optional>
 #include <utility>
 
@@ -97,14 +98,22 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       if (!std::isinf(a) && std::isinf(b)) {
         return std::signbit(a) ? -0.0 : +0.0;
       } else {
-        // In the negative case we need to swap lower and upper
-        // for the nearest rounding.
-        if (a < 0.0) {
+        // In the negative case we need to swap lower and upper for the nearest
+        // rounding. This also means tie-breaking should pick the lower rather
+        // than upper,
+        const bool a_is_negative = a < 0.0;
+        if (a_is_negative) {
           using std::swap;
           swap(lower, upper);
         }
-        return std::abs(std::fmod(a, b)) < std::abs(b) / 2 ? lower : upper;
-      };
+        const ValueType distance = std::abs(std::fmod(a, b));
+        const ValueType half_b = std::abs(b) / 2;
+        if (distance < half_b || (a_is_negative && distance == half_b)) {
+          return lower;
+        } else {
+          return upper;
+        }
+      }
     }
     case OperatorType::kRoundUp: {
       if (!std::isinf(a) && std::isinf(b)) {
@@ -153,11 +162,18 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       // std::fmod - the returned value has the same sign as A
       // and is less than B in magnitude.
       ValueType result = std::fmod(a, b);
-      // If the result is on opposite side of zero from B,
-      // put it between 0 and B. As the result of std::fmod is less
-      // than B in magnitude, adding B would perform a correct shift.
       if (std::signbit(result) != std::signbit(b)) {
-        result += b;
+        // When the absolute values of arguments are the same, but they
+        // appear on different sides from zero, the result of std::fmod will be
+        // either -0 (e.g. mod(-1, 1)), or +0 (e.g. mod(1, -1)), we need to swap
+        // the sign of the resulting zero to match the sign of the B.
+        if (std::abs(a) == std::abs(b)) {
+          return -result;
+        }
+        // If the result is on opposite side of zero from B,
+        // put it between 0 and B. As the result of std::fmod is less
+        // than B in magnitude, adding B would perform a correct shift.
+        return result + b;
       }
       return result;
     }
@@ -175,7 +191,7 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       return std::fmod(a, b);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -27,8 +27,6 @@ class Database;
 
 namespace blocklist {
 
-BASE_DECLARE_FEATURE(kOptOutStoreSQLUseBuiltInRecoveryIfSupported);
-
 // OptOutStoreSQL is an instance of OptOutStore
 // which is implemented using a SQLite database.
 class OptOutStoreSQL : public OptOutStore {

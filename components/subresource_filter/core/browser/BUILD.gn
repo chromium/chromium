@@ -4,41 +4,52 @@
 
 static_library("browser") {
   sources = [
-    "copying_file_stream.cc",
-    "copying_file_stream.h",
+    "async_document_subresource_filter.cc",
+    "async_document_subresource_filter.h",
+    "ruleset_version.cc",
+    "ruleset_version.h",
     "subresource_filter_constants.cc",
     "subresource_filter_constants.h",
     "subresource_filter_features.cc",
     "subresource_filter_features.h",
+    "verified_ruleset_dealer.cc",
+    "verified_ruleset_dealer.h",
   ]
-  deps = [
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_deps = [
     "//base",
     "//components/prefs",
     "//components/subresource_filter/core/common",
+    "//components/subresource_filter/core/mojom",
     "//third_party/protobuf:protobuf_lite",
+    "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "async_document_subresource_filter_test_utils.cc",
+    "async_document_subresource_filter_test_utils.h",
     "subresource_filter_features_test_support.cc",
     "subresource_filter_features_test_support.h",
   ]
-  deps = [
+  public_deps = [
     ":browser",
     "//base",
-    "//base/test:test_support",
-    "//components/variations",
-    "//testing/gtest",
-    "//third_party/protobuf:protobuf_lite",
+    "//components/subresource_filter/core/mojom",
   ]
+  deps = [ "//testing/gtest" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "subresource_filter_features_unittest.cc" ]
+  sources = [
+    "async_document_subresource_filter_unittest.cc",
+    "ruleset_version_unittest.cc",
+    "subresource_filter_features_unittest.cc",
+    "verified_ruleset_dealer_unittest.cc",
+  ]
   deps = [
     ":browser",
     ":test_support",
@@ -48,9 +59,7 @@ source_set("unit_tests") {
     "//components/subresource_filter/core/common:common",
     "//components/subresource_filter/core/common:test_support",
     "//components/url_pattern_index/proto:url_pattern_index",
-    "//components/variations",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/protobuf:protobuf_lite",
   ]
 }

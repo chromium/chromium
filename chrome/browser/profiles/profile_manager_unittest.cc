@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile_manager.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -9,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -17,6 +20,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -33,7 +38,6 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -49,8 +53,8 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -75,8 +79,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -91,10 +95,6 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif
 
 using base::ASCIIToUTF16;
 
@@ -123,6 +123,55 @@ void ExpectProfileWithName(const std::string& profile_name,
   EXPECT_EQ(base::FilePath().AppendASCII(profile_name), profile->GetBaseName());
   std::move(closure).Run();
 }
+
+class ProfileDeletionWaiter {
+ public:
+  explicit ProfileDeletionWaiter(const Profile* profile)
+      : profile_path_(profile->GetPath()) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+
+  ProfileDeletionWaiter(const ProfileDeletionWaiter&) = delete;
+  ProfileDeletionWaiter& operator=(const ProfileDeletionWaiter&) = delete;
+
+  void Wait() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK(!watcher_);
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&ProfileDeletionWaiter::StartWatchingPath,
+                                  base::Unretained(this)));
+    run_loop_.Run();
+  }
+
+ private:
+  void StartWatchingPath() {
+    DCHECK(!watcher_);
+    watcher_ = std::make_unique<base::FilePathWatcher>();
+    EXPECT_TRUE(watcher_->Watch(
+        profile_path_, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindRepeating(&ProfileDeletionWaiter::OnChanged,
+                            base::Unretained(this))));
+    CheckIfPathExists();
+  }
+
+  void OnChanged(const base::FilePath& path, bool error) {
+    EXPECT_EQ(profile_path_, path);
+    EXPECT_FALSE(error);
+    CheckIfPathExists();
+  }
+
+  void CheckIfPathExists() {
+    if (!base::PathExists(profile_path_)) {
+      watcher_.reset();
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  const base::FilePath profile_path_;
+  std::unique_ptr<base::FilePathWatcher> watcher_;
+};
 
 }  // namespace
 
@@ -176,7 +225,7 @@ class ProfileManagerTest : public testing::Test {
         extensions::GetCurrentFeatureSessionType());
 
     // Initializes ProfileHelper.
-    // TODO(crbug.com/1325210): Migrate into BrowserContextHelper.
+    // TODO(crbug.com/40225390): Migrate into BrowserContextHelper.
     ash::ProfileHelper::Get();
 #endif
   }
@@ -828,11 +877,10 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
       profile_manager->GetProfileAttributesStorage();
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   const base::FilePath supervised_path =
       temp_dir_.GetPath().AppendASCII("Supervised");
-  auto supervised_profile =
-      std::make_unique<TestingProfile>(supervised_path, nullptr);
+  auto supervised_profile = std::make_unique<TestingProfile>(
+      supervised_path, nullptr, Profile::CreateMode::kSynchronous);
   supervised_profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                             supervised_user::kChildAccountSUID);
 
@@ -842,26 +890,19 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
   EXPECT_FALSE(
       storage.GetAllProfilesAttributesSortedByNameWithCheck()[0]->IsOmitted());
-#endif
 
   const base::FilePath nonsupervised_path =
       temp_dir_.GetPath().AppendASCII("Non-Supervised");
-  auto nonsupervised_profile =
-      std::make_unique<TestingProfile>(nonsupervised_path, nullptr);
+  auto nonsupervised_profile = std::make_unique<TestingProfile>(
+      nonsupervised_path, nullptr, Profile::CreateMode::kSynchronous);
   profile_manager->RegisterTestingProfile(std::move(nonsupervised_profile),
                                           true);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
-#else
-  EXPECT_EQ(1u, storage.GetNumberOfProfiles());
-#endif
   ProfileAttributesEntry* entry;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   entry = storage.GetProfileAttributesWithPath(supervised_path);
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsOmitted());
-#endif
 
   entry = storage.GetProfileAttributesWithPath(nonsupervised_path);
   ASSERT_NE(entry, nullptr);
@@ -885,12 +926,14 @@ class UnittestGuestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     TestingProfile::Builder builder;
     if (create_profiles_as_guest_)
       builder.SetGuestSession();
     builder.SetPath(path);
     builder.SetDelegate(delegate);
+    builder.SetCreateMode(create_mode);
     return builder.Build();
   }
 
@@ -1784,9 +1827,10 @@ TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(profile_params2));
 
+  ProfileDeletionWaiter waiter(profile2);
   // Close the browser for profile2.
   browser2.reset();
-  content::RunAllTasksUntilIdle();
+  waiter.Wait();
 
   last_used_profile = profile_manager->GetLastUsedProfile();
   EXPECT_NE(profile1, last_used_profile);
@@ -2393,3 +2437,43 @@ TEST_F(ProfileManagerTest, ChildSession) {
   EXPECT_TRUE(profile->IsChild());
 }
 #endif
+
+// Tests that a new profile's entry in the profile attributes storage is setup
+// with the same values that are in the profile prefs.
+TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
+  using base::Bucket;
+  using base::BucketsAre;
+
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName =
+      "Profile.NumberOfProfilesAtProfileCreation";
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = temp_dir_.GetPath();
+
+  base::FilePath path_1 = dest_path.Append(FILE_PATH_LITERAL("Profile 1"));
+  profile_manager->GetProfile(path_1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1)));
+
+  Profile* profile_2 = profile_manager->GetProfile(
+      dest_path.Append(FILE_PATH_LITERAL("Profile 2")));
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+  // Incognito profile should not affect the count.
+  EXPECT_TRUE(profile_2->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Delete one profile to decrement the count.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      path_1, base::DoNothing(), ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  content::RunAllTasksUntilIdle();
+
+  profile_manager->GetProfile(dest_path.Append(FILE_PATH_LITERAL("Profile 3")));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 2)));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}

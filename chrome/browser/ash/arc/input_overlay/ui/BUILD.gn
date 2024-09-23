@@ -1,0 +1,125 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ui") {
+  sources = [
+    "action_edit_view.cc",
+    "action_edit_view.h",
+    "action_highlight.cc",
+    "action_highlight.h",
+    "action_label.cc",
+    "action_label.h",
+    "action_type_button.cc",
+    "action_type_button.h",
+    "action_type_button_group.cc",
+    "action_type_button_group.h",
+    "action_view.cc",
+    "action_view.h",
+    "action_view_list_item.cc",
+    "action_view_list_item.h",
+    "arrow_container.cc",
+    "arrow_container.h",
+    "button_options_menu.cc",
+    "button_options_menu.h",
+    "delete_edit_shortcut.cc",
+    "delete_edit_shortcut.h",
+    "edit_finish_view.cc",
+    "edit_finish_view.h",
+    "edit_label.cc",
+    "edit_label.h",
+    "edit_labels.cc",
+    "edit_labels.h",
+    "editing_list.cc",
+    "editing_list.h",
+    "educational_view.cc",
+    "educational_view.h",
+    "input_mapping_view.cc",
+    "input_mapping_view.h",
+    "input_menu_view.cc",
+    "input_menu_view.h",
+    "menu_entry_view.cc",
+    "menu_entry_view.h",
+    "message_view.cc",
+    "message_view.h",
+    "name_tag.cc",
+    "name_tag.h",
+    "nudge_view.cc",
+    "nudge_view.h",
+    "reposition_controller.cc",
+    "reposition_controller.h",
+    "rich_nudge.cc",
+    "rich_nudge.h",
+    "target_view.cc",
+    "target_view.h",
+    "touch_point.cc",
+    "touch_point.h",
+    "ui_utils.cc",
+    "ui_utils.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/app_list",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//ash/style",
+    "//base",
+    "//cc/paint",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ash/arc/input_overlay/actions",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chromeos/strings:strings_grit",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/arc/input_overlay/actions" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "action_view_unittest.cc",
+    "button_options_menu_unittest.cc",
+    "delete_edit_shortcut_unittest.cc",
+    "edit_label_unittest.cc",
+    "editing_list_unittest.cc",
+    "menu_entry_view_unittest.cc",
+    "rich_nudge_unittest.cc",
+    "target_view_unittest.cc",
+  ]
+
+  deps = [
+    ":ui",
+    "//ash",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/input_overlay",
+    "//chrome/browser/ash/arc/input_overlay/actions",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/ash/arc/input_overlay/test:test_support",
+    "//components/exo:test_support",
+    "//components/ukm:test_support",
+    "//ui/base",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/gfx:test_support",
+    "//ui/views",
+  ]
+}

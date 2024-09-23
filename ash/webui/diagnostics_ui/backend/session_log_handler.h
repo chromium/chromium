@@ -61,10 +61,8 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   void OnSessionLogCreated(const base::FilePath& path, bool success);
 

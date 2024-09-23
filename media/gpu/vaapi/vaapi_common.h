@@ -7,7 +7,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/vaapi/va_surface.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/media_buildflags.h"
@@ -24,74 +24,70 @@ namespace media {
 
 class VaapiH264Picture : public H264Picture {
  public:
-  explicit VaapiH264Picture(scoped_refptr<VASurface> va_surface);
+  explicit VaapiH264Picture(std::unique_ptr<VASurfaceHandle> va_surface);
 
   VaapiH264Picture(const VaapiH264Picture&) = delete;
   VaapiH264Picture& operator=(const VaapiH264Picture&) = delete;
 
   VaapiH264Picture* AsVaapiH264Picture() override;
 
-  scoped_refptr<VASurface> va_surface() const { return va_surface_; }
-  VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiH264Picture() override;
 
  private:
-  scoped_refptr<VASurface> va_surface_;
+  std::unique_ptr<VASurfaceHandle> va_surface_;
 };
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 class VaapiH265Picture : public H265Picture {
  public:
-  explicit VaapiH265Picture(scoped_refptr<VASurface> va_surface);
+  explicit VaapiH265Picture(std::unique_ptr<VASurfaceHandle> va_surface);
 
   VaapiH265Picture(const VaapiH265Picture&) = delete;
   VaapiH265Picture& operator=(const VaapiH265Picture&) = delete;
 
   VaapiH265Picture* AsVaapiH265Picture() override;
 
-  scoped_refptr<VASurface> va_surface() const { return va_surface_; }
-  VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiH265Picture() override;
 
  private:
-  scoped_refptr<VASurface> va_surface_;
+  std::unique_ptr<VASurfaceHandle> va_surface_;
 };
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 class VaapiVP8Picture : public VP8Picture {
  public:
-  explicit VaapiVP8Picture(scoped_refptr<VASurface> va_surface);
+  explicit VaapiVP8Picture(std::unique_ptr<VASurfaceHandle> va_surface);
 
   VaapiVP8Picture(const VaapiVP8Picture&) = delete;
   VaapiVP8Picture& operator=(const VaapiVP8Picture&) = delete;
 
   VaapiVP8Picture* AsVaapiVP8Picture() override;
 
-  scoped_refptr<VASurface> va_surface() const { return va_surface_; }
-  VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiVP8Picture() override;
 
  private:
-  scoped_refptr<VASurface> va_surface_;
+  std::unique_ptr<VASurfaceHandle> va_surface_;
 };
 
 class VaapiVP9Picture : public VP9Picture {
  public:
-  explicit VaapiVP9Picture(scoped_refptr<VASurface> va_surface);
+  explicit VaapiVP9Picture(std::unique_ptr<VASurfaceHandle> va_surface);
 
   VaapiVP9Picture(const VaapiVP9Picture&) = delete;
   VaapiVP9Picture& operator=(const VaapiVP9Picture&) = delete;
 
   VaapiVP9Picture* AsVaapiVP9Picture() override;
 
-  scoped_refptr<VASurface> va_surface() const { return va_surface_; }
-  VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiVP9Picture() override;
@@ -99,21 +95,21 @@ class VaapiVP9Picture : public VP9Picture {
  private:
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
-  scoped_refptr<VASurface> va_surface_;
+  std::unique_ptr<VASurfaceHandle> va_surface_;
 };
 
 class VaapiAV1Picture : public AV1Picture {
  public:
-  VaapiAV1Picture(scoped_refptr<VASurface> display_va_surface,
-                  scoped_refptr<VASurface> reconstruct_va_surface);
+  VaapiAV1Picture(std::unique_ptr<VASurfaceHandle> display_va_surface,
+                  std::unique_ptr<VASurfaceHandle> reconstruct_va_surface);
   VaapiAV1Picture(const VaapiAV1Picture&) = delete;
   VaapiAV1Picture& operator=(const VaapiAV1Picture&) = delete;
 
-  const scoped_refptr<VASurface>& display_va_surface() const {
-    return display_va_surface_;
+  VASurfaceID display_va_surface_id() const {
+    return display_va_surface_->id();
   }
-  const scoped_refptr<VASurface>& reconstruct_va_surface() const {
-    return reconstruct_va_surface_;
+  VASurfaceID reconstruct_va_surface_id() const {
+    return reconstruct_va_surface_->id();
   }
 
  protected:
@@ -132,8 +128,8 @@ class VaapiAV1Picture : public AV1Picture {
   // reconstruct_va_surface() when calling ExecuteAndDestroyPendingBuffers()
   // (the driver expects the reconstructed surface as the target in the case
   // of film grain synthesis).
-  scoped_refptr<VASurface> display_va_surface_;
-  scoped_refptr<VASurface> reconstruct_va_surface_;
+  std::unique_ptr<VASurfaceHandle> display_va_surface_;
+  std::unique_ptr<VASurfaceHandle> reconstruct_va_surface_;
 };
 
 }  // namespace media

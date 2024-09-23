@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/encoding/vpx_quantizer_parser.h"
+
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace media {
 namespace cast {
@@ -36,11 +43,13 @@ class VpxBitReader {
   unsigned int DecodeValue(unsigned int num_bits);
 
  private:
-  // Read new bytes frome the encoded data buffer until |bit_count_| > 0.
+  // Read new bytes from the encoded data buffer until |bit_count_| > 0.
   void VpxDecoderReadBytes();
 
-  const uint8_t* encoded_data_;            // Current byte to decode.
-  const uint8_t* const encoded_data_end_;  // The end of the byte to decode.
+  raw_ptr<const uint8_t, AllowPtrArithmetic>
+      encoded_data_;  // Current byte to decode.
+  const raw_ptr<const uint8_t>
+      encoded_data_end_;  // The end of the byte to decode.
   // The following two variables are maintained by the decoder.
   // General decoding rule:
   // If |value_| is in the range of 0 to half of |range_|, output 0.

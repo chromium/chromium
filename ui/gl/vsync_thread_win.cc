@@ -7,7 +7,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/memory/stack_allocated.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/windows_version.h"
@@ -16,32 +19,112 @@
 
 namespace gl {
 namespace {
-Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
-    HMONITOR monitor,
-    IDXGIDevice* dxgi_device) {
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI adapter";
-    return nullptr;
-  }
 
-  size_t i = 0;
-  while (true) {
-    Microsoft::WRL::ComPtr<IDXGIOutput> output;
-    if (FAILED(dxgi_adapter->EnumOutputs(i++, &output)))
+// Whether the current thread holds the `VSyncThreadWin` lock.
+thread_local bool g_current_thread_holds_lock = false;
+
+// Check if a DXGI adapter is stale and needs to be replaced. This can happen
+// e.g. when detaching/reattaching remote desktop sessions and causes subsequent
+// WaitForVSyncs on the stale adapter/output to return instantly.
+bool DXGIFactoryIsCurrent(IDXGIAdapter* dxgi_adapter) {
+  CHECK(dxgi_adapter);
+
+  HRESULT hr = S_OK;
+  Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
+  hr = dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
+  CHECK_EQ(S_OK, hr);
+  return dxgi_factory->IsCurrent();
+}
+
+// Create a new factory and find a DXGI adapter matching a LUID. This is useful
+// if we have a previous adapter whose factory has become stale.
+Microsoft::WRL::ComPtr<IDXGIAdapter> FindDXGIAdapterOnNewFactory(
+    const LUID luid) {
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  CHECK_EQ(S_OK, hr);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter1> new_adapter;
+  for (uint32_t i = 0;; i++) {
+    hr = factory->EnumAdapters1(i, &new_adapter);
+    if (hr == DXGI_ERROR_NOT_FOUND) {
       break;
-
-    DXGI_OUTPUT_DESC desc = {};
-    if (FAILED(output->GetDesc(&desc))) {
-      DLOG(ERROR) << "DXGI output GetDesc failed";
+    }
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "EnumAdapters1 failed: "
+                  << logging::SystemErrorCodeToString(hr);
       return nullptr;
     }
 
-    if (desc.Monitor == monitor)
-      return output;
+    DXGI_ADAPTER_DESC1 new_adapter_desc;
+    hr = new_adapter->GetDesc1(&new_adapter_desc);
+    CHECK_EQ(S_OK, hr);
+
+    if (new_adapter_desc.AdapterLuid.HighPart == luid.HighPart &&
+        new_adapter_desc.AdapterLuid.LowPart == luid.LowPart) {
+      return new_adapter;
+    }
   }
 
+  DLOG(ERROR) << "Failed to find DXGI adapter with matching LUID";
   return nullptr;
+}
+
+// Return true if |output| is on |monitor|.
+bool DXGIOutputIsOnMonitor(IDXGIOutput* output, const HMONITOR monitor) {
+  CHECK(output);
+
+  DXGI_OUTPUT_DESC desc = {};
+  HRESULT hr = output->GetDesc(&desc);
+  CHECK_EQ(S_OK, hr);
+  return desc.Monitor == monitor;
+}
+
+Microsoft::WRL::ComPtr<IDXGIOutput> DXGIOutputFromMonitor(
+    HMONITOR monitor,
+    IDXGIAdapter* dxgi_adapter) {
+  CHECK(dxgi_adapter);
+
+  HRESULT hr = S_OK;
+
+  Microsoft::WRL::ComPtr<IDXGIOutput> output;
+  for (uint32_t i = 0;; i++) {
+    hr = dxgi_adapter->EnumOutputs(i, &output);
+    if (hr == DXGI_ERROR_NOT_FOUND) {
+      break;
+    }
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "EnumOutputs failed: "
+                  << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+
+    if (DXGIOutputIsOnMonitor(output.Get(), monitor)) {
+      return output;
+    }
+  }
+
+  DLOG(ERROR) << "Failed to find DXGI output with matching monitor";
+  return nullptr;
+}
+
+Microsoft::WRL::ComPtr<IDXGIAdapter> GetAdapter(IDXGIDevice* device) {
+  CHECK(device);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+  CHECK_EQ(S_OK, device->GetAdapter(&adapter));
+  return adapter;
+}
+
+LUID GetLuid(IDXGIAdapter* adapter) {
+  CHECK(adapter);
+
+  DXGI_ADAPTER_DESC desc;
+  HRESULT hr = adapter->GetDesc(&desc);
+  CHECK_EQ(S_OK, hr);
+  return desc.AdapterLuid;
 }
 }  // namespace
 
@@ -60,25 +143,48 @@ VSyncThreadWin* VSyncThreadWin::GetInstance() {
   return vsync_thread;
 }
 
+class VSyncThreadWin::AutoVSyncThreadLock {
+  STACK_ALLOCATED();
+
+ public:
+  AutoVSyncThreadLock(VSyncThreadWin* vsync_thread)
+      EXCLUSIVE_LOCK_FUNCTION(vsync_thread->lock_) {
+    if (g_current_thread_holds_lock) {
+      vsync_thread->lock_.AssertAcquired();
+    } else {
+      auto_lock_.emplace(
+          vsync_thread->lock_,
+          // This lock is used to satisfy a mutual exclusion guarantee verified
+          // by a SEQUENCE_CHECKER in `observers_`.
+          base::subtle::LockTracking::kEnabled);
+      g_current_thread_holds_lock = true;
+    }
+  }
+
+  ~AutoVSyncThreadLock() UNLOCK_FUNCTION() {
+    DCHECK(g_current_thread_holds_lock);
+    if (auto_lock_.has_value()) {
+      g_current_thread_holds_lock = false;
+    }
+  }
+
+ private:
+  std::optional<base::AutoLock> auto_lock_;
+};
+
 VSyncThreadWin::VSyncThreadWin(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device)
     : vsync_thread_("GpuVSyncThread"),
       vsync_provider_(gfx::kNullAcceleratedWidget),
-      dxgi_device_(std::move(dxgi_device)) {
-  CHECK(dxgi_device_);
-  is_suspended_ =
-      base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
+      dxgi_adapter_(GetAdapter(dxgi_device.Get())),
+      original_adapter_luid_(GetLuid(dxgi_adapter_.Get())) {
+  is_suspended_ = base::PowerMonitor::GetInstance()
+                      ->AddPowerSuspendObserverAndReturnSuspendedState(this);
   vsync_thread_.StartWithOptions(
       base::Thread::Options(base::ThreadType::kDisplayCritical));
 }
 
 VSyncThreadWin::~VSyncThreadWin() {
-  {
-    base::AutoLock auto_lock(lock_);
-    observers_.clear();
-  }
-  vsync_thread_.Stop();
-
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  NOTREACHED();
 }
 
 void VSyncThreadWin::PostTaskIfNeeded() {
@@ -96,28 +202,28 @@ void VSyncThreadWin::PostTaskIfNeeded() {
 }
 
 void VSyncThreadWin::AddObserver(VSyncObserver* obs) {
-  base::AutoLock auto_lock(lock_);
-  observers_.insert(obs);
+  AutoVSyncThreadLock auto_lock(this);
+  observers_.AddObserver(obs);
   PostTaskIfNeeded();
 }
 
 void VSyncThreadWin::RemoveObserver(VSyncObserver* obs) {
-  base::AutoLock auto_lock(lock_);
-  observers_.erase(obs);
+  AutoVSyncThreadLock auto_lock(this);
+  observers_.RemoveObserver(obs);
 }
 
 void VSyncThreadWin::OnSuspend() {
-  base::AutoLock auto_lock(lock_);
+  AutoVSyncThreadLock auto_lock(this);
   is_suspended_ = true;
 }
 
 void VSyncThreadWin::OnResume() {
-  base::AutoLock auto_lock(lock_);
+  AutoVSyncThreadLock auto_lock(this);
   is_suspended_ = false;
   PostTaskIfNeeded();
 }
 
-void VSyncThreadWin::WaitForVSync() {
+base::TimeDelta VSyncThreadWin::GetVsyncInterval() {
   base::TimeTicks vsync_timebase;
   base::TimeDelta vsync_interval;
 
@@ -130,12 +236,8 @@ void VSyncThreadWin::WaitForVSync() {
   // the reported interval may no longer match with the vblank wait.
   // To work around this discrepancy get the VSync interval directly from
   // monitor associated with window_ or the primary monitor.
-  //
-  // TODO(wicarr@microsoft.com): Replace build number comparison with
-  // base::win::GetVersion() variant when a post-WIN11_22H2 build has
-  // been added to base::win::Version.
   static bool use_sv3_workaround =
-      base::win::OSInfo::GetInstance()->version_number().build > 22621 &&
+      base::win::GetVersion() > base::win::Version::WIN11_22H2 &&
       base::FeatureList::IsEnabled(
           features::kUsePrimaryMonitorVSyncIntervalOnSV3);
 
@@ -145,13 +247,29 @@ void VSyncThreadWin::WaitForVSync() {
           : vsync_provider_.GetVSyncParametersIfAvailable(&vsync_timebase,
                                                           &vsync_interval);
   DCHECK(get_vsync_params_succeeded);
+  return vsync_interval;
+}
+
+void VSyncThreadWin::WaitForVSync() {
+  base::TimeDelta vsync_interval = GetVsyncInterval();
+
+  if (!dxgi_adapter_ || !DXGIFactoryIsCurrent(dxgi_adapter_.Get())) {
+    TRACE_EVENT("gpu", "DXGIFactoryIsCurrent non-current factory");
+    dxgi_adapter_ = FindDXGIAdapterOnNewFactory(original_adapter_luid_);
+    primary_output_.Reset();
+  }
 
   // From Raymond Chen's blog "How do I get a handle to the primary monitor?"
   // https://devblogs.microsoft.com/oldnewthing/20141106-00/?p=43683
   const HMONITOR monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
-  if (primary_monitor_ != monitor) {
-    primary_monitor_ = monitor;
-    primary_output_ = DXGIOutputFromMonitor(monitor, dxgi_device_.Get());
+  if (primary_output_ &&
+      !DXGIOutputIsOnMonitor(primary_output_.Get(), monitor)) {
+    TRACE_EVENT("gpu", "DXGIOutputIsOnMonitor primary monitor changed");
+    primary_output_.Reset();
+  }
+
+  if (!primary_output_ && dxgi_adapter_) {
+    primary_output_ = DXGIOutputFromMonitor(monitor, dxgi_adapter_.Get());
   }
 
   const base::TimeTicks wait_for_vblank_start_time = base::TimeTicks::Now();
@@ -168,20 +286,22 @@ void VSyncThreadWin::WaitForVSync() {
       base::TimeTicks::Now() - wait_for_vblank_start_time;
   if (!wait_for_vblank_succeeded ||
       wait_for_vblank_elapsed_time < kVBlankIntervalThreshold) {
-    TRACE_EVENT("gpu", "WaitForVSync Sleep");
+    TRACE_EVENT2("gpu", "WaitForVSync Sleep", "has adapter", !!dxgi_adapter_,
+                 "has output", !!primary_output_);
     base::Time::ActivateHighResolutionTimer(true);
     Sleep(static_cast<DWORD>(vsync_interval.InMillisecondsRoundedUp()));
     base::Time::ActivateHighResolutionTimer(false);
   }
 
-  base::AutoLock auto_lock(lock_);
+  AutoVSyncThreadLock auto_lock(this);
   DCHECK(is_vsync_task_posted_);
   is_vsync_task_posted_ = false;
   PostTaskIfNeeded();
 
   const base::TimeTicks vsync_time = base::TimeTicks::Now();
-  for (auto* obs : observers_)
-    obs->OnVSync(vsync_time, vsync_interval);
+  for (VSyncObserver& obs : observers_) {
+    obs.OnVSync(vsync_time, vsync_interval);
+  }
 }
 
 }  // namespace gl

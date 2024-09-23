@@ -41,7 +41,6 @@ const char* kIgnoredActions[] = {
     "MobileFirstUserAction_NewTask",
     "MobileMenuCloseAllTabs",
     "MobileMenuCloseAllIncognitoTabs",
-    "MobileNewTabOpened",
     "MobileTabClosed",
     "MobileTabStripCloseTab",
     "MobileStackViewCloseTab",
@@ -178,7 +177,7 @@ void FirstUserActionRecorder::RecordAction(
       case START_ON_NTP:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

@@ -220,7 +220,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         mimeTypes,
                         contentResolver);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         Uri contentUri = MediaStore.Files.getContentUri("external");
         String[] selectColumns = {
@@ -274,7 +274,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         mimeTypes,
                         /* contentResolver= */ null);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call
@@ -306,7 +306,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         /* contentResolver= */ null);
         task.setShouldShowCameraTile(false);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call
@@ -333,7 +333,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         /* contentResolver= */ null);
         task.setShouldShowBrowseTile(false);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call
@@ -359,7 +359,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         mimeTypes,
                         /* contentResolver= */ null);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call
@@ -401,7 +401,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         mimeTypes,
                         /* contentResolver= */ null);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call
@@ -442,7 +442,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
                         mimeTypes,
                         /* contentResolver= */ null);
         task.executeOnExecutor(mRoboExecutorService);
-        mOnWorkerCompleteCallback.waitForFirst();
+        mOnWorkerCompleteCallback.waitForOnly();
 
         // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
         // due to an exception thrown inside doInBackground. To surface the exception message, call

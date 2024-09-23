@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -115,16 +116,11 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
     const String& pseudo_element_name)
     : CSSStyleDeclaration(element ? element->GetExecutionContext() : nullptr),
       element_(element),
-      pseudo_element_specifier_(
-          CSSSelectorParser::ParsePseudoElement(pseudo_element_name, element)),
       allow_visited_style_(allow_visited_style),
       guaranteed_style_clean_(false) {
-  pseudo_argument_ =
-      PseudoElementHasArguments(pseudo_element_specifier_)
-          ? CSSSelectorParser::ParsePseudoElementArgument(pseudo_element_name)
-          : g_null_atom;
+  pseudo_element_specifier_ = CSSSelectorParser::ParsePseudoElement(
+      pseudo_element_name, element, pseudo_argument_);
 }
-
 CSSComputedStyleDeclaration::~CSSComputedStyleDeclaration() = default;
 
 String CSSComputedStyleDeclaration::cssText() const {
@@ -180,8 +176,7 @@ const ComputedStyle* CSSComputedStyleDeclaration::ComputeComputedStyle() const {
   Element* styled_element = StyledElement();
   DCHECK(styled_element);
   const ComputedStyle* style = styled_element->EnsureComputedStyle(
-      styled_element->IsPseudoElement() ? kPseudoIdNone
-                                        : pseudo_element_specifier_,
+      (styled_element == element_) ? pseudo_element_specifier_ : kPseudoIdNone,
       pseudo_argument_);
   if (style && style->IsEnsuredOutsideFlatTree()) {
     UseCounter::Count(element_->GetDocument(),
@@ -210,7 +205,13 @@ Element* CSSComputedStyleDeclaration::StyledElement() const {
     return nullptr;
   }
 
-  if (PseudoElement* pseudo_element = element_->GetNestedPseudoElement(
+  if (pseudo_element_specifier_ == kPseudoIdInvalid) {
+    CHECK(RuntimeEnabledFeatures::
+              CSSComputedStyleFullPseudoElementParserEnabled());
+    return nullptr;
+  }
+
+  if (Element* pseudo_element = element_->GetStyledPseudoElement(
           pseudo_element_specifier_, pseudo_argument_)) {
     return pseudo_element;
   }
@@ -253,7 +254,8 @@ CSSComputedStyleDeclaration::GetVariables() const {
   }
   DCHECK(StyledElement());
   return ComputedStyleCSSValueMapping::GetVariables(
-      *style, StyledElement()->GetDocument().GetPropertyRegistry());
+      *style, StyledElement()->GetDocument().GetPropertyRegistry(),
+      CSSValuePhase::kResolvedValue);
 }
 
 void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
@@ -377,7 +379,8 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   }
 
   const CSSValue* value = property_class.CSSValueFromComputedStyle(
-      *style, StyledLayoutObject(), allow_visited_style_);
+      *style, StyledLayoutObject(), allow_visited_style_,
+      CSSValuePhase::kResolvedValue);
   if (value) {
     return value;
   }
@@ -396,7 +399,8 @@ String CSSComputedStyleDeclaration::GetPropertyValue(
 }
 
 unsigned CSSComputedStyleDeclaration::length() const {
-  if (!element_ || !element_->InActiveDocument()) {
+  if (!element_ || !element_->InActiveDocument() ||
+      (pseudo_element_specifier_ == kPseudoIdInvalid)) {
     return 0;
   }
 
@@ -555,14 +559,14 @@ String CSSComputedStyleDeclaration::GetPropertyValueInternal(
 String CSSComputedStyleDeclaration::GetPropertyValueWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -31,7 +31,7 @@ import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
 import org.chromium.net.UrlRequest.StatusListener;
 import org.chromium.net.impl.LoadState;
-import org.chromium.net.impl.UrlRequestBase;
+import org.chromium.net.impl.UrlRequestUtil;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -124,12 +124,12 @@ public class GetStatusTest {
     public void testInvalidLoadState() throws Exception {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE));
+                () -> UrlRequestUtil.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE));
         // Expected throw because LoadState.WAITING_FOR_APPCACHE is not mapped.
 
         thrown.expect(Throwable.class);
-        UrlRequestBase.convertLoadState(-1);
-        UrlRequestBase.convertLoadState(16);
+        UrlRequestUtil.convertLoadState(-1);
+        UrlRequestUtil.convertLoadState(16);
     }
 
     @Test

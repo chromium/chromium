@@ -1,0 +1,50 @@
+<!doctype html>
+<title>meter rendering</title>
+<style>
+  #meter {
+    block-size: 1em;
+    box-sizing: border-box;
+    display: inline-block;
+    inline-size: 5em;
+    vertical-align: -0.2em;
+  }
+
+  #inner {
+    block-size: 100%;
+    box-sizing: inherit;
+    display: grid;
+    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+    inline-size: 100%;
+    position: relative;
+  }
+
+  #bar {
+    align-self: unsafe center;
+    background: light-dark(#efefef, #3B3B3B);
+    block-size: 100%;
+    border-radius: 20px;
+    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+    box-sizing: border-box;
+    grid-row-end: line2;
+    grid-row-start: line1;
+    inline-size: 100%;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  #value {
+    background: light-dark(#ffb900, #f2c812);
+    block-size: 100%;
+    box-sizing: border-box;
+    inline-size: 90%;
+  }
+</style>
+
+<div id="meter">
+  <div id="inner">
+    <div id="bar">
+      <div id="value">
+      </div>
+    </div>
+  </div>
+</div>

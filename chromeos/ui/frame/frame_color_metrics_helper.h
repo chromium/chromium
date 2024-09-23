@@ -7,14 +7,14 @@
 
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/app_types.h"
 
 namespace chromeos {
 
 class FrameColorMetricsHelper {
  public:
-  explicit FrameColorMetricsHelper(ash::AppType app_type);
+  explicit FrameColorMetricsHelper(chromeos::AppType app_type);
   FrameColorMetricsHelper(const FrameColorMetricsHelper& other) = delete;
   FrameColorMetricsHelper& operator=(const FrameColorMetricsHelper&) = delete;
   ~FrameColorMetricsHelper();
@@ -22,7 +22,8 @@ class FrameColorMetricsHelper {
   // When the frame color is changed, the count is incremented.
   void UpdateFrameColorChangesCount();
 
-  static std::string GetFrameColorChangeHistogramName(ash::AppType app_type);
+  static std::string GetFrameColorChangeHistogramName(
+      chromeos::AppType app_type);
 
  private:
   // Start the timer for counting the frame color changes.
@@ -37,7 +38,7 @@ class FrameColorMetricsHelper {
   // Timer for frame color changes counting.
   base::OneShotTimer frame_start_timer_;
 
-  const ash::AppType app_type_;
+  const chromeos::AppType app_type_;
 
   uint32_t frame_color_change_count_ = 0;
 

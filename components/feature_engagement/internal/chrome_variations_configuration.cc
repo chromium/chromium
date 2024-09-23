@@ -10,10 +10,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
 #include "components/feature_engagement/public/stats.h"
@@ -81,6 +86,9 @@ void ChromeVariationsConfiguration::LoadConfigs(
 
   for (auto* feature : features) {
     LoadFeatureConfig(*feature, configuration_providers, features, groups);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    LoadAllowedEventPrefixes(*feature, configuration_providers);
+#endif
   }
 
   ExpandGroupNamesInFeatures(groups);
@@ -89,6 +97,23 @@ void ChromeVariationsConfiguration::LoadConfigs(
     LoadGroupConfig(*group, configuration_providers);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeVariationsConfiguration::UpdateConfig(
+    const base::Feature& feature,
+    const ConfigurationProvider* provider) {
+  FeatureConfig& config = configs_[feature.name];
+
+  // Clear existing configs.
+  config = FeatureConfig();
+  provider->MaybeProvideFeatureConfiguration(feature, config, {}, {});
+}
+
+const Configuration::EventPrefixSet&
+ChromeVariationsConfiguration::GetRegisteredAllowedEventPrefixes() const {
+  return event_prefixes_;
+}
+#endif
 
 void ChromeVariationsConfiguration::LoadFeatureConfig(
     const base::Feature& feature,
@@ -144,6 +169,29 @@ void ChromeVariationsConfiguration::LoadGroupConfig(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeVariationsConfiguration::LoadAllowedEventPrefixes(
+    const base::Feature& feature,
+    const ConfigurationProviderList& configuration_providers) {
+  // Allowed prefixes from different providers are inserted in a set, therefore,
+  // it could potential affect other features.
+  for (const auto& provider : configuration_providers) {
+    const auto prefixes = provider->MaybeProvideAllowedEventPrefixes(feature);
+    for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
+      // Do not insert empty prefix.
+      if (it->empty()) {
+        continue;
+      }
+
+      // Check if there are duplicate prefixes.
+      const auto inserted = event_prefixes_.insert(*it);
+      CHECK(inserted.second)
+          << "Configuration has duplicate event prefixes: " << *it;
+    }
+  }
+}
+#endif
+
 void ChromeVariationsConfiguration::ExpandGroupNamesInFeatures(
     const GroupVector& all_groups) {
   // Create mapping of groups to their constituent features.
@@ -174,14 +222,14 @@ void ChromeVariationsConfiguration::ExpandGroupNamesInFeatures(
 const FeatureConfig& ChromeVariationsConfiguration::GetFeatureConfig(
     const base::Feature& feature) const {
   auto it = configs_.find(feature.name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const FeatureConfig& ChromeVariationsConfiguration::GetFeatureConfigByName(
     const std::string& feature_name) const {
   auto it = configs_.find(feature_name);
-  DCHECK(it != configs_.end());
+  CHECK(it != configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -201,14 +249,14 @@ ChromeVariationsConfiguration::GetRegisteredFeatures() const {
 const GroupConfig& ChromeVariationsConfiguration::GetGroupConfig(
     const base::Feature& group) const {
   auto it = group_configs_.find(group.name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 const GroupConfig& ChromeVariationsConfiguration::GetGroupConfigByName(
     const std::string& group_name) const {
   auto it = group_configs_.find(group_name);
-  DCHECK(it != group_configs_.end());
+  CHECK(it != group_configs_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

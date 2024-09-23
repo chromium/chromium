@@ -42,12 +42,8 @@ class Network3gppHandlerTest : public testing::Test {
   ~Network3gppHandlerTest() override = default;
 
   void SetUp() override {
-    // Enable Carrier Lock feature flag.
-    scoped_feature_list_.InitAndEnableFeature(features::kCellularCarrierLock);
-
     // Initialize fake clients.
     shill_clients::InitializeFakes();
-    Modem3gppClient::InitializeFake();
     device_test_ = ShillDeviceClient::Get()->GetTestInterface();
     ASSERT_TRUE(device_test_);
 
@@ -69,7 +65,6 @@ class Network3gppHandlerTest : public testing::Test {
     device_test_ = nullptr;
     modem_fake_client_ = nullptr;
     network_3gpp_handler_.reset();
-    Modem3gppClient::Shutdown();
     shill_clients::Shutdown();
   }
 

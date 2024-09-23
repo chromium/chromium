@@ -15,8 +15,8 @@ def main(argv):
   dirname = os.path.dirname(os.path.realpath(__file__))
   xml = dirname + '/sync/structured.xml'
   old_xml = dirname + '/sync/structured.old.xml'
-  presubmit_util.DoPresubmitMain(argv, xml,
-                                 old_xml, lambda x: repr(model.Model(x)))
+  presubmit_util.DoPresubmitMain(argv, xml, old_xml,
+                                 lambda x: repr(model.Model(x, 'chrome')))
 
 
 if '__main__' == __name__:

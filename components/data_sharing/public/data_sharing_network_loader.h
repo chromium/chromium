@@ -10,19 +10,38 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "components/data_sharing/public/group_data.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;
-
-// Callback to return the network response to the caller.
-using NetworkLoaderCallback =
-    base::OnceCallback<void(std::unique_ptr<std::string>)>;
 
 namespace data_sharing {
 
 // Class for fetching data sharing related data from network.
 class DataSharingNetworkLoader {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
+  enum class NetworkLoaderStatus {
+    kUnknown = 0,
+    kSuccess = 1,
+    kTransientFailure = 2,
+    kPersistentFailure = 3
+  };
+
+  struct LoadResult {
+    LoadResult();
+    LoadResult(std::string result_bytes, NetworkLoaderStatus status);
+    ~LoadResult();
+
+    std::string result_bytes;
+    NetworkLoaderStatus status;
+  };
+
+  // Callback to return the network response to the caller.
+  using NetworkLoaderCallback =
+      base::OnceCallback<void(std::unique_ptr<LoadResult>)>;
+
   DataSharingNetworkLoader() = default;
   virtual ~DataSharingNetworkLoader() = default;
 

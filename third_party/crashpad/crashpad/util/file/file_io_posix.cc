@@ -277,7 +277,6 @@ FileHandle StdioFileHandle(StdioStream stdio_stream) {
   }
 
   NOTREACHED();
-  return kInvalidFileHandle;
 }
 
 }  // namespace crashpad

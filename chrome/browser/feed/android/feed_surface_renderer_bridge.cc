@@ -5,16 +5,15 @@
 #include "chrome/browser/feed/android/feed_surface_renderer_bridge.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
-#include "chrome/browser/feed/android/jni_headers/FeedSurfaceRendererBridge_jni.h"
 #include "chrome/browser/feed/android/jni_translation.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +25,9 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/variations/variations_ids_provider.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/FeedSurfaceRendererBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -128,15 +130,15 @@ void FeedSurfaceRendererBridge::StreamUpdate(
   Java_FeedSurfaceRendererBridge_onStreamUpdated(env, java_ref_, j_data);
 }
 
-void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(base::StringPiece key,
-                                                      base::StringPiece data) {
+void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(std::string_view key,
+                                                      std::string_view data) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_replaceDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key),
       base::android::ToJavaByteArray(env, base::as_byte_span(data)));
 }
 
-void FeedSurfaceRendererBridge::RemoveDataStoreEntry(base::StringPiece key) {
+void FeedSurfaceRendererBridge::RemoveDataStoreEntry(std::string_view key) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_removeDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key));
@@ -241,9 +243,9 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
   if (!feed_api) {
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_api->ReportOpenAction(
-      url ? *url : GURL(), FromJavaSurfaceId(surface_id),
+      url, FromJavaSurfaceId(surface_id),
       base::android::ConvertJavaStringToUTF8(env, slice_id),
       static_cast<OpenActionType>(action_type));
 }
@@ -268,11 +270,11 @@ static void JNI_FeedSurfaceRendererBridge_UpdateUserProfileOnLinkClick(
   if (!feed_api) {
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::vector<int64_t> entities_mids_vector;
   base::android::JavaLongArrayToInt64Vector(env, entity_mids,
                                             &entities_mids_vector);
-  feed_api->UpdateUserProfileOnLinkClick(*url, entities_mids_vector);
+  feed_api->UpdateUserProfileOnLinkClick(url, entities_mids_vector);
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportSliceViewed(

@@ -31,7 +31,7 @@
 
       #right-buttons {
         color: var(--cr-secondary-text-color);
-        margin-inline-end: 12px;
+        margin-inline-end: 24px;
       }
 
       #collapse {
@@ -77,7 +77,7 @@
         </div>
       </div>
 
-      <iron-collapse opened="{{opened}}" id="collapse">
+      <cr-collapse opened="{{opened}}" id="collapse">
         <div id="tab-item-list">
           <template is="dom-repeat" items="[[tabs]]" as="tab" id="tab-list">
             <div class="item-container">
@@ -94,5 +94,5 @@
             </div>
           </template>
         </div>
-      </iron-collapse>
+      </cr-collapse>
     </div>

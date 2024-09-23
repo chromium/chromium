@@ -1,0 +1,94 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("sharesheet") {
+  sources = [
+    "sharesheet_bubble_view.cc",
+    "sharesheet_bubble_view.h",
+    "sharesheet_bubble_view_delegate.cc",
+    "sharesheet_bubble_view_delegate.h",
+    "sharesheet_constants.h",
+    "sharesheet_expand_button.cc",
+    "sharesheet_expand_button.h",
+    "sharesheet_header_view.cc",
+    "sharesheet_header_view.h",
+    "sharesheet_target_button.cc",
+    "sharesheet_target_button.h",
+    "sharesheet_util.cc",
+    "sharesheet_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/common",
+    "//chromeos/components/sharesheet:constants",
+    "//chromeos/constants",
+    "//extensions/browser",
+    "//ui/accessibility",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/compositor",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "sharesheet_bubble_view_unittest.cc" ]
+
+  deps = [
+    ":sharesheet",
+    "//ash",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/components/sharesheet:constants",
+    "//ui/base/clipboard:clipboard_test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "sharesheet_bubble_view_browsertest.cc" ]
+
+  deps = [
+    ":sharesheet",
+    "//ash",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/components/sharesheet:constants",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

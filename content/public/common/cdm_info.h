@@ -14,10 +14,10 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/cdm_capability.h"
 #include "media/cdm/cdm_type.h"
 
 namespace content {

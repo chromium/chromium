@@ -4,18 +4,21 @@
 
 package org.chromium.base;
 
+import android.os.DeadSystemException;
+
 import androidx.annotation.UiThread;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
  * This UncaughtExceptionHandler will create a breakpad minidump when there is an uncaught
  * exception.
  *
- * The exception's stack trace will be added to the minidump's data. This allows java-only crashes
- * to be reported in the same way as other native crashes.
+ * <p>The exception's stack trace will be added to the minidump's data. This allows java-only
+ * crashes to be reported in the same way as other native crashes.
  */
 @JNINamespace("base::android")
 public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
@@ -29,9 +32,23 @@ public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
         mCrashAfterReport = crashAfterReport;
     }
 
+    /**
+     * Returns whether a given Throwable is meaningful and actionable and should be reported.
+     *
+     * <p>Removes the following exceptions:
+     *
+     * <ul>
+     *   <li>DeadSystemException: The core Android system has died and is going through a restart.
+     *       http://go/android-dev/reference/android/os/DeadSystemException
+     * </ul>
+     */
+    public static boolean shouldReportThrowable(Throwable e) {
+        return !(e instanceof DeadSystemException);
+    }
+
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (!mHandlingException) {
+        if (!mHandlingException && shouldReportThrowable(e)) {
             mHandlingException = true;
             JavaExceptionReporterJni.get()
                     .reportJavaException(
@@ -87,6 +104,6 @@ public class JavaExceptionReporter implements Thread.UncaughtExceptionHandler {
     interface Natives {
         void reportJavaException(boolean crashAfterReport, Throwable e);
 
-        void reportJavaStackTrace(String stackTrace);
+        void reportJavaStackTrace(@JniType("std::string") String stackTrace);
     }
 }

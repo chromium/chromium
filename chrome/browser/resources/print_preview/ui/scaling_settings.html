@@ -22,7 +22,7 @@
     </select>
   </div>
 </print-preview-settings-section>
-<iron-collapse opened="[[customSelected_]]"
+<cr-collapse opened="[[customSelected_]]"
     on-transitionend="onCollapseChanged_">
   <print-preview-number-settings-section
       max-value="200" min-value="10" default-value="100"
@@ -30,4 +30,4 @@
       current-value="{{currentValue_}}" input-valid="{{inputValid_}}"
       hint-message="$i18n{scalingInstruction}">
   </print-preview-number-settings-section>
-</iron-collapse>
+</cr-collapse>

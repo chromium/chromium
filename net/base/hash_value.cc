@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/hash_value.h"
 
 #include <stdlib.h>
@@ -69,7 +74,7 @@ std::string HashValue::ToString() const {
       return std::string(kSha256Slash) + base64_str;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 size_t HashValue::size() const {
@@ -78,7 +83,7 @@ size_t HashValue::size() const {
       return sizeof(fingerprint.sha256.data);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 unsigned char* HashValue::data() {
@@ -91,7 +96,7 @@ const unsigned char* HashValue::data() const {
       return fingerprint.sha256.data;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator==(const HashValue& lhs, const HashValue& rhs) {
@@ -103,7 +108,7 @@ bool operator==(const HashValue& lhs, const HashValue& rhs) {
       return lhs.fingerprint.sha256 == rhs.fingerprint.sha256;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator!=(const HashValue& lhs, const HashValue& rhs) {
@@ -119,7 +124,7 @@ bool operator<(const HashValue& lhs, const HashValue& rhs) {
       return lhs.fingerprint.sha256 < rhs.fingerprint.sha256;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

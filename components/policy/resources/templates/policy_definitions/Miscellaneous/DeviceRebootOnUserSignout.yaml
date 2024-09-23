@@ -26,7 +26,6 @@ items:
   value: 4
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   enum:
   - 1
@@ -39,3 +38,4 @@ supported_on:
 tags:
 - system-security
 type: int-enum
+generate_device_proto: False

@@ -35,8 +35,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                                 promptType:(EnterprisePromptType)promptType {
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     _promptType = promptType;
   }
   return self;

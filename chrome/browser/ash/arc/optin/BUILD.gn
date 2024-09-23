@@ -1,0 +1,66 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("optin") {
+  sources = [
+    "arc_optin_preference_handler.cc",
+    "arc_optin_preference_handler.h",
+    "arc_optin_preference_handler_observer.h",
+    "arc_terms_of_service_default_negotiator.cc",
+    "arc_terms_of_service_default_negotiator.h",
+    "arc_terms_of_service_negotiator.cc",
+    "arc_terms_of_service_negotiator.h",
+    "arc_terms_of_service_oobe_negotiator.cc",
+    "arc_terms_of_service_oobe_negotiator.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/settings",
+    "//components/metrics",
+    "//components/prefs",
+    "//third_party/nearby:presence_types",
+    "//third_party/private_membership",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_terms_of_service_default_negotiator_unittest.cc" ]
+
+  deps = [
+    ":optin",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/extensions:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//components/consent_auditor:test_support",
+    "//components/metrics:test_support",
+    "//components/policy/core/common",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -10,6 +10,9 @@
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
+namespace trusted_vault {
+enum class SecurityDomainId;
+}  // namespace trusted_vault
 
 // Coordinates the Trusted Vault re-authentication dialog. Trusted Valut is
 // managed by IOSTrustedValueClient.
@@ -24,11 +27,14 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Designated initializer.
 // `viewController` presents the sign-in.
 // `intent` Dialog to present.
+// `securityDomainID` Identifies a particular security domain.
 // `trigger` UI elements where the trusted vault reauth has been triggered.
+// `accessPoint` Identifies where the dialog is initiated from.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
+              securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
                        trigger:
                            (syncer::TrustedVaultUserActionTriggerForUMA)trigger
                    accessPoint:(signin_metrics::AccessPoint)accessPoint

@@ -207,7 +207,7 @@ void FakeContentAnalysisDelegate::Response(
       break;
     case AnalysisConnector::FILE_TRANSFER:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -1,0 +1,13 @@
+{
+  "win-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "checkbins",
+        "script": "checkbins.py"
+      }
+    ]
+  }
+}

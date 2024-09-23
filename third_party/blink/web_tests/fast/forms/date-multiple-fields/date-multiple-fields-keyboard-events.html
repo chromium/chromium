@@ -158,11 +158,13 @@ shouldBeEqualToString('input.value', '2012-09-05');
 keyDown('\t', ['shiftKey']); // -> 09/[05]/2012
 keyDown('7'); // -> 09/07/[2012]
 shouldBeEqualToString('input.value', '2012-09-07');
+keyDown('\t'); // -> Move to dropdown button.
 keyDown('\t'); // -> Focus out.
 shouldBeEqualToString('document.activeElement.id', 'after');
 
-beginTest('Shfit+Tab key', '2012-09-30');
+beginTest('Shift+Tab key', '2012-09-30');
 after.focus();
+keyDown('\t', ['shiftKey']); // -> 09/30/yyyy [dropdown-button]
 keyDown('\t', ['shiftKey']); // -> 09/30/[yyyy]
 keyDown('3'); // -> 09/30/[0003]
 shouldBeEqualToString('input.value', '0003-09-30');

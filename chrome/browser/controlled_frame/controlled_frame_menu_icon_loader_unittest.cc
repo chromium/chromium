@@ -4,7 +4,10 @@
 
 #include "chrome/browser/controlled_frame/controlled_frame_menu_icon_loader.h"
 
+#include <string_view>
+
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "cc/test/pixel_comparator.h"
@@ -12,31 +15,27 @@
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/favicon_size.h"
-#include "url/origin.h"
 
 namespace controlled_frame {
 
 namespace {
-constexpr base::StringPiece kManifestPath =
-    "/.well-known/_generated_install_page.html";
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon2.png";
 const int kTestWebViewInstanceId = 1;
 }  // namespace
 
@@ -52,46 +51,22 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    web_app::IsolatedWebAppUrlInfo url_info =
-        CreateIsolatedWebApp(kDevAppOriginUrl);
-    NavigateAndCommit(kDevAppOriginUrl);
-  }
 
-  web_app::IsolatedWebAppUrlInfo CreateIsolatedWebApp(const GURL& url) {
-    const base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        web_app::IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value());
-    SetUpPageAndIconStates(*url_info);
-    base::test::TestFuture<
-        base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
-                       web_app::InstallIsolatedWebAppCommandError>>
-        future;
-    fake_provider().scheduler().InstallIsolatedWebApp(
-        *url_info,
-        web_app::DevModeProxy{.proxy_url = url::Origin::Create(GURL(url))},
-        /*expected_version=*/base::Version("1.0.0"),
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    auto install_result = future.Take();
-    EXPECT_TRUE(install_result.has_value()) << install_result.error();
-    return *url_info;
-  }
+    app_ = web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+               .AddIconAsPng(kIconPath, web_app::CreateSquareIcon(
+                                            gfx::kFaviconSize, SK_ColorRED))
+               .BuildBundle();
+    app_->TrustSigningKey();
+    app_->FakeInstallPageState(profile());
+    ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                         app_->Install(profile()));
+    app_origin_url_ = url_info.origin().GetURL();
 
-  void SetUpPageAndIconStates(const web_app::IsolatedWebAppUrlInfo& url_info) {
-    GURL application_url = url_info.origin().GetURL();
-    auto& page_state = web_contents_manager().GetOrCreatePageState(
-        application_url.Resolve(kManifestPath));
-    page_state.url_load_result = web_app::WebAppUrlLoader::Result::kUrlLoaded;
-    page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+    web_app::SimulateIsolatedWebAppNavigation(web_contents(), app_origin_url_);
 
-    page_state.manifest_url = CreateDefaultManifestURL(application_url);
-    page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest = CreateDefaultManifest(application_url);
-
-    auto& icon_state = web_contents_manager().GetOrCreateIconState(
-        application_url.Resolve(kIconPath));
-    icon_state.bitmaps = {
-        web_app::CreateSquareIcon(gfx::kFaviconSize, SK_ColorRED)};
+    CHECK_EQ(
+        web_contents()->GetPrimaryMainFrame()->GetWebExposedIsolationLevel(),
+        content::WebExposedIsolationLevel::kIsolatedApplication);
   }
 
   // Creates and returns a menu manager.
@@ -120,41 +95,18 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
         extensions::MenuItem::ContextList(extensions::MenuItem::LAUNCHER));
   }
 
-  GURL CreateDefaultManifestURL(const GURL& application_url) {
-    return application_url.Resolve("/manifest.webmanifest");
-  }
-
-  blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->id = application_url.DeprecatedGetOriginAsURL();
-    manifest->scope = application_url.Resolve("/");
-    manifest->start_url = application_url.Resolve("/ix.html");
-    manifest->display = web_app::DisplayMode::kStandalone;
-    manifest->short_name = u"test short manifest name";
-    manifest->version = u"1.0.0";
-
-    blink::Manifest::ImageResource icon;
-    icon.src = application_url.Resolve(kIconPath);
-    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    icon.type = u"image/png";
-    icon.sizes = {gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize)};
-    manifest->icons.push_back(icon);
-
-    return manifest;
-  }
+  GURL app_origin_url() { return app_origin_url_; }
 
   web_app::FakeWebContentsManager& web_contents_manager() {
     return static_cast<web_app::FakeWebContentsManager&>(
         fake_provider().web_contents_manager());
   }
 
- protected:
-  const GURL kDevAppOriginUrl = GURL(
-      "isolated-app://"
-      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac");
-
  private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+  GURL app_origin_url_;
 };
 
 TEST_F(ControlledFrameMenuIconLoaderTest, LoadGetAndRemoveIcon) {
@@ -256,7 +208,7 @@ TEST_F(ControlledFrameMenuIconLoaderTest, ContextMenuMatcher) {
 
   web_app::FakeWebContentsManager::FakeIconState& icon_state =
       web_contents_manager().GetOrCreateIconState(
-          kDevAppOriginUrl.Resolve(kIconPath));
+          app_origin_url().Resolve(kIconPath));
   ASSERT_EQ(1u, icon_state.bitmaps.size());
   EXPECT_TRUE(cc::MatchesBitmap(icon_state.bitmaps[0], icon.AsBitmap(),
                                 cc::ExactPixelComparator()));

@@ -25,15 +25,15 @@
     ImplementedAs=DocumentFullscreen
 ] partial interface Document {
     [LegacyLenientSetter] readonly attribute boolean fullscreenEnabled;
-    [LegacyLenientSetter, Unscopable, ImplementedAs=fullscreenElement] readonly attribute boolean fullscreen;
+    [LegacyLenientSetter, Unscopable] readonly attribute boolean fullscreen;
 
-    [CallWith=ScriptState, RaisesException] Promise<void> exitFullscreen();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> exitFullscreen();
 
     attribute EventHandler onfullscreenchange;
     attribute EventHandler onfullscreenerror;
 
     // Mozilla version
-    [MeasureAs=PrefixedDocumentIsFullscreen, ImplementedAs=fullscreenElement] readonly attribute boolean webkitIsFullScreen;
+    [MeasureAs=PrefixedDocumentIsFullscreen, ImplementedAs=fullscreen] readonly attribute boolean webkitIsFullScreen;
     [MeasureAs=PrefixedDocumentCurrentFullScreenElement, ImplementedAs=fullscreenElement] readonly attribute Element webkitCurrentFullScreenElement;
     [MeasureAs=PrefixedDocumentCancelFullScreen, ImplementedAs=webkitExitFullscreen] void webkitCancelFullScreen();
 

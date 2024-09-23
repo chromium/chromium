@@ -6,9 +6,10 @@
 
 #include <tuple>
 
-#include "ash/constants/app_types.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
@@ -18,7 +19,6 @@
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/display/types/display_constants.h"
 
@@ -39,13 +39,7 @@ struct Holder {
     auto surface = std::make_unique<exo::Surface>();
     std::unique_ptr<exo::Buffer> buffer;
     if (!size.IsEmpty() && buffer_format) {
-      buffer = std::make_unique<exo::Buffer>(
-          aura::Env::GetInstance()
-              ->context_factory()
-              ->GetGpuMemoryBufferManager()
-              ->CreateGpuMemoryBuffer(size, *buffer_format,
-                                      gfx::BufferUsage::GPU_READ,
-                                      gpu::kNullSurfaceHandle, nullptr));
+      buffer = exo::test::ExoTestHelper::CreateBuffer(size, *buffer_format);
       surface->Attach(buffer.get());
     }
     root_surface = surface.get();
@@ -54,14 +48,7 @@ struct Holder {
   }
 
   exo::Surface* AddChildSurface(exo::Surface* parent, const gfx::Rect& bounds) {
-    auto buffer = std::make_unique<exo::Buffer>(
-        aura::Env::GetInstance()
-            ->context_factory()
-            ->GetGpuMemoryBufferManager()
-            ->CreateGpuMemoryBuffer(bounds.size(), gfx::BufferFormat::RGBA_8888,
-                                    gfx::BufferUsage::GPU_READ,
-                                    gpu::kNullSurfaceHandle, nullptr));
-
+    auto buffer = exo::test::ExoTestHelper::CreateBuffer(bounds.size());
     auto surface = std::make_unique<exo::Surface>();
     surface->Attach(buffer.get());
     auto sub_surface = std::make_unique<exo::SubSurface>(surface.get(), parent);
@@ -202,6 +189,14 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetFrame(SurfaceFrameType type) {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetFrameColors(SkColor active,
+                                                         SkColor inactive) {
+  DCHECK(!built_);
+  active_frame_color_ = active;
+  inactive_frame_color_ = inactive;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetApplicationId(
     const std::string& application_id) {
   DCHECK(!built_);
@@ -228,7 +223,8 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetSecurityDelegate(
   return *this;
 }
 
-ShellSurfaceBuilder& ShellSurfaceBuilder::SetAppType(ash::AppType app_type) {
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetAppType(
+    chromeos::AppType app_type) {
   DCHECK(!built_);
   app_type_ = app_type;
   return *this;
@@ -334,7 +330,7 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
 
   auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
-  auto shell_surface = std::make_unique<ShellSurface>(
+  auto shell_surface = std::make_unique<XdgShellSurface>(
       holder->root_surface, origin_, can_minimize_, GetContainer());
 
   if (!configure_callback_.is_null()) {
@@ -377,16 +373,16 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
         break;
       default:
         // Other states are not supported as initial state in ShellSurface.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
 
   // The widget becomes available after the first commit.
-  if (shell_surface->GetWidget() && app_type_ != ash::AppType::NON_APP) {
+  if (shell_surface->GetWidget() && app_type_ != chromeos::AppType::NON_APP) {
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-        aura::client::kAppType, static_cast<int>(app_type_));
+        chromeos::kAppTypeKey, app_type_);
   }
   return shell_surface;
 }
@@ -446,7 +442,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         shell_surface->SetPip();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -454,11 +450,11 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
 
   // The widget becomes available after the first commit.
   if (shell_surface->GetWidget()) {
-    CHECK(app_type_ == ash::AppType::NON_APP ||
-          app_type_ == ash::AppType::ARC_APP)
+    CHECK(app_type_ == chromeos::AppType::NON_APP ||
+          app_type_ == chromeos::AppType::ARC_APP)
         << "Incompatible app type is set for ClientControlledShellSurface.";
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+        chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   }
 
   shell_surface->SetCanMaximize(can_maximize_);
@@ -503,6 +499,11 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (type_.has_value()) {
     shell_surface->root_surface()->SetFrame(type_.value());
+  }
+
+  if (active_frame_color_.has_value()) {
+    shell_surface->root_surface()->SetFrameColors(
+        active_frame_color_.value(), inactive_frame_color_.value());
   }
 
   if (system_modal_) {

@@ -16,11 +16,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -52,7 +52,7 @@ public class DialogOverlayImplTest {
 
         // Close the overlay, and make sure that the provider is notified.
         // Note that we should not get a 'destroyed' message when we close it.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.close();
                 });
@@ -78,7 +78,7 @@ public class DialogOverlayImplTest {
     @SmallTest
     @Feature({"AndroidOverlay"})
     public void testCreateOverlayFailsIfWebContentsHidden() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getWebContents().onHide();
                 });
@@ -98,7 +98,7 @@ public class DialogOverlayImplTest {
         DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
         Assert.assertNotNull(overlay);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getWebContents().onHide();
                 });
@@ -122,7 +122,7 @@ public class DialogOverlayImplTest {
         rect.y = 200;
         rect.width = 100;
         rect.height = 100;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.scheduleLayout(rect);
                 });
@@ -154,13 +154,13 @@ public class DialogOverlayImplTest {
         // Test that trying to close an overlay more than once doesn't actually do anything.
         final DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
         // The first should generate RELEASED
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.close();
                 });
         Assert.assertEquals(Client.RELEASED, mActivityTestRule.getClient().nextEvent().which);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.close();
                     mActivityTestRule.getClient().injectMarkerEvent();
@@ -178,7 +178,7 @@ public class DialogOverlayImplTest {
         when(mockWindowAndroid.getContext()).thenReturn(nullContextWeakRef);
         final DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     overlay.onWindowAndroid(mockWindowAndroid);
                 });

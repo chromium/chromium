@@ -14,6 +14,7 @@ from cca.commands import dev
 from cca.commands import lint
 from cca.commands import test
 from cca.commands import tsc
+from cca.commands import upload
 
 
 @cli.root(children=[
@@ -25,6 +26,7 @@ from cca.commands import tsc
     lint.cmd,
     test.cmd,
     tsc.cmd,
+    upload.cmd,
 ])
 @cli.option(
     "--debug",

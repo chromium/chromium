@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -97,14 +98,11 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
   // switch.
   // Note: if the privacy hub is not enabled, this object may still exist as it
   // is used by privacy indicators as well.
-  bool use_camera_led_fallback =
-      features::IsCrosPrivacyHubEnabled() &&
-      privacy_hub_controller->UsingCameraLEDFallback();
 
   std::vector<int> camera_messages;
   std::vector<int> combined_messages;
 
-  if (use_camera_led_fallback) {
+  if (privacy_hub_controller->UsingCameraLEDFallback()) {
     camera_messages = {
         IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER,
         IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER,
@@ -238,7 +236,7 @@ void PrivacyHubNotificationController::RemoveSoftwareSwitchNotification(
     }
     case Sensor::kMicrophone: {
       RemoveSensor(sensor);
-      if (!sensors_.Empty()) {
+      if (!sensors_.empty()) {
         combined_notification_->Update();
       } else {
         combined_notification_->Hide();
@@ -294,7 +292,7 @@ void PrivacyHubNotificationController::ShowHardwareSwitchNotification(
   switch (sensor) {
     case Sensor::kMicrophone: {
       RemoveSensor(sensor);
-      if (!sensors_.Empty()) {
+      if (!sensors_.empty()) {
         combined_notification_->Update();
       } else {
         // As the hardware switch notification for microphone will be displayed
@@ -386,10 +384,10 @@ void PrivacyHubNotificationController::
     case Sensor::kLocation: {
       // Geolocation notification asks user to allow geolocation for everything
       // (not only system services).
-      if (enabled) {
-        pref_service->SetInteger(
-            prefs::kUserGeolocationAccessLevel,
-            static_cast<int>(GeolocationAccessLevel::kAllowed));
+      if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
+        controller->SetAccessLevel(enabled
+                                       ? GeolocationAccessLevel::kAllowed
+                                       : GeolocationAccessLevel::kDisallowed);
       }
       break;
     }

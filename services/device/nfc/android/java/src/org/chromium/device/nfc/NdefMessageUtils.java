@@ -172,7 +172,7 @@ public final class NdefMessageUtils {
         if (record.category == NdefRecordTypeCategory.LOCAL) {
             // It's impossible for a local type record to have non-empty |data| and non-null
             // |payloadMessage| at the same time.
-            // TODO(https://crbug.com/520391): Validate the containing ndef message is the payload
+            // TODO(crbug.com/40431198): Validate the containing ndef message is the payload
             // of another ndef record.
             if (isValidLocalType(record.recordType)
                     && (record.data.length == 0 || record.payloadMessage == null)) {
@@ -582,7 +582,7 @@ public final class NdefMessageUtils {
 
         String domain = input.substring(0, colonIndex).trim();
         if (domain.isEmpty()) return false;
-        // TODO(https://crbug.com/520391): Validate |domain|.
+        // TODO(crbug.com/40431198): Validate |domain|.
 
         String type = input.substring(colonIndex + 1).trim();
         if (type.isEmpty()) return false;
@@ -608,7 +608,7 @@ public final class NdefMessageUtils {
             return false;
         }
 
-        // TODO(https://crbug.com/520391): Validate |input| is not equal to the record type of any
+        // TODO(crbug.com/40431198): Validate |input| is not equal to the record type of any
         // NDEF record defined in its containing NDEF message.
 
         return true;

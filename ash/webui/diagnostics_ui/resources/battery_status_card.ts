@@ -144,6 +144,10 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
     }
   }
 
+  getBatteryChargeStatusForTesting(): BatteryChargeStatus {
+    return this.batteryChargeStatus;
+  }
+
   private fetchBatteryInfo(): void {
     this.systemDataProvider.getBatteryInfo().then(
         (result: {batteryInfo: BatteryInfo}) => {

@@ -292,7 +292,6 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kExit,
     AcceleratorAction::kSwitchToNextUser,
     AcceleratorAction::kSwitchToPreviousUser,
-    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kStartAssistant,
 
     // General > Apps
@@ -424,6 +423,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     // Text > Text editing
     AcceleratorAction::kToggleCapsLock,
     AcceleratorAction::kShowEmojiPicker,
+    AcceleratorAction::kTogglePicker,
     NonConfigurableActions::kAmbientCopy,
     NonConfigurableActions::kAmbientCut,
     NonConfigurableActions::kAmbientPaste,
@@ -452,9 +452,14 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kWindowCycleSnapRight,
     AcceleratorAction::kMoveActiveWindowBetweenDisplays,
     AcceleratorAction::kMinimizeTopWindowOnBack,
-    AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
+    AcceleratorAction::kCreateSnapGroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kToggleFloating,
+    // TODO(b/343559364): Temporary location pending UI review.
+    AcceleratorAction::kTilingWindowResizeLeft,
+    AcceleratorAction::kTilingWindowResizeRight,
+    AcceleratorAction::kTilingWindowResizeUp,
+    AcceleratorAction::kTilingWindowResizeDown,
 
     // Windows and desks > Desks
     AcceleratorAction::kDesksNewDesk,
@@ -472,7 +477,12 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     // notification that hardcodes ctrl + alt + z into the notification message.
     AcceleratorAction::kToggleSpokenFeedback,
 
+    // Accessibility > Mouse Keys
+    AcceleratorAction::kToggleMouseKeys,
+
     // Accessibility > Visibility
+    AcceleratorAction::kEnableOrToggleDictation,
+    AcceleratorAction::kEnableSelectToSpeak,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,
@@ -480,6 +490,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kMagnifierZoomOut,
 
     // Accessibility > Accessbility navigation
+    AcceleratorAction::kAccessibilityAction,
     NonConfigurableActions::kAmbientSwitchFocusForwards,
     NonConfigurableActions::kAmbientSwitchFocusBackwards,
     NonConfigurableActions::kAmbientCaretBrowsing,

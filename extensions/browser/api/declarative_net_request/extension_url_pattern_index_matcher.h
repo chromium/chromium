@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/url_pattern_index/url_pattern_index.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 
 namespace extensions::declarative_net_request {
@@ -38,6 +39,7 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   ~ExtensionUrlPatternIndexMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
@@ -54,11 +56,11 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
 
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
-      const RequestParams& params) const override;
-  std::optional<RequestAction> GetHeadersReceivedActionIgnoringAncestors(
-      const RequestParams& params) const override;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
+  std::optional<RequestAction> GetActionIgnoringAncestors(
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
 
   // Returns the highest priority action from
   // |flat::IndexType_before_request_except_allow_all_requests| index.
@@ -78,6 +80,11 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
       const std::vector<UrlPatternIndexMatcher>& matchers,
       flat::IndexType index) const;
 
+  // Returns the corresponding rule matchers for the given rule matching
+  // `stage`.
+  const std::vector<UrlPatternIndexMatcher>& GetMatchersForStage(
+      RulesetMatchingStage stage) const;
+
   const raw_ptr<const ExtensionMetadataList> metadata_list_;
 
   // UrlPatternIndexMatchers for rules to be matched in the onBeforeRequest
@@ -88,11 +95,12 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   // phase corresponding to entries in flat::IndexType.
   const std::vector<UrlPatternIndexMatcher> headers_received_matchers_;
 
-  const bool is_extra_headers_matcher_;
-
   const size_t before_request_rules_count_;
 
   const size_t headers_received_rules_count_;
+
+  // Whether this matcher contains rules that will match on, or modify headers.
+  const bool is_extra_headers_matcher_;
 
   // Disabled rule ids. The ids are passed to the matching algorithm in the
   // UrlPatternIndexMatcher so that the algorithm can skip the disabled rules.

@@ -4,30 +4,22 @@
 
 package org.chromium.base.test.util;
 
-import android.app.Activity;
 import android.text.TextUtils;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import androidx.annotation.Nullable;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
-import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
-import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,59 +27,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Provides annotations related to command-line flag handling.
- *
- * <p>This can be used in either an on-device instrumentation test or a junit (robolectric) test
- * running on the host. To use in an instrumentation test, just {@code RunWith} {@link
- * BaseJUnit4ClassRunner} (or a runner which extends that class). To use from a robolectric test,
- * add the following test rule to your class:
- *
- * <pre>
- * &#64Rule
- * TestRule mRule = CommandLineFlags.getTestRule();
- * </pre>
- *
- * <p>Then you can annotate the test class, test methods, or test rules with {@code
- * CommandLineFlags.Add} or {@code CommandLineFlags.Remove}. Uses of these annotations on a derived
- * class will take precedence over uses on its base classes, so a derived class can add a
- * command-line flag that a base class has removed (or vice versa). Similarly, uses of these
- * annotations on a test method will take precedence over uses on the containing class.
- *
- * <p>
- * These annonations may also be used on Junit4 Rule classes and on their base classes. Note,
- * however that the annotation processor only looks at the declared type of the Rule, not its actual
- * type, so in, for example:
- *
- * <pre>
- * &#64Rule
- * TestRule mRule = new ChromeActivityTestRule();
- * </pre>
- *
- * will only look for CommandLineFlags annotations on TestRule, not for CommandLineFlags annotations
- * on ChromeActivityTestRule.
- * <p>
- * In addition a rule may not remove flags added by an independently invoked rule, although it may
- * remove flags added by its base classes.
- * <p>
- * Uses of these annotations on the test class or methods take precedence over uses on Rule classes.
- * <p>
- * Note that this class should never be instantiated.
+ * Provides annotations for setting command-line flags. Enabled by default for Robolectric and
+ * on-device tests.
  */
 public final class CommandLineFlags {
     private static final String TAG = "CommandLineFlags";
     private static final String DISABLE_FEATURES = "disable-features";
     private static final String ENABLE_FEATURES = "enable-features";
-
-    // These members are used to track CommandLine state modifications made by the class/test method
-    // currently being run, to be undone when the class/test method finishes.
-    private static Set<String> sClassFlagsToRemove;
-    private static Map<String, String> sClassFlagsToAdd;
-    private static Set<String> sMethodFlagsToRemove;
-    private static Map<String, String> sMethodFlagsToAdd;
+    // Features set by original command-line --enable-features / --disable-features.
+    private static Map<String, Boolean> sOrigFeatures = Collections.emptyMap();
+    private static final Map<String, String> sActiveFlagPrevValues = new HashMap<>();
 
     /** Adds command-line flags to the {@link org.chromium.base.CommandLine} for this test. */
     @Inherited
@@ -112,224 +64,169 @@ public final class CommandLineFlags {
         String[] value();
     }
 
-    /**
-     * Sets up the CommandLine with the appropriate flags.
-     *
-     * This will add the difference of the sets of flags specified by {@link CommandLineFlags.Add}
-     * and {@link CommandLineFlags.Remove} to the {@link org.chromium.base.CommandLine}. Note that
-     * trying to remove a flag set externally, i.e. by the command-line flags file, will not work.
-     */
-    public static void setUpClass(Class<?> clazz) {
+    public static void ensureInitialized() {
         if (!CommandLine.isInitialized()) {
-            CommandLineInitUtil.initCommandLine(getTestCmdLineFile());
+            // Override in a persistent way so that if command-line is re-initialized by code
+            // under-test, it will still use the test flags file.
+            CommandLineInitUtil.setFilenameOverrideForTesting(getTestCmdLineFile());
+            CommandLineInitUtil.initCommandLine(null, () -> true);
+            // Store features from initial command-line for proper merging later.
+            CommandLine commandLine = CommandLine.getInstance();
+            String origEnabledFeatures = commandLine.getSwitchValue(ENABLE_FEATURES, "");
+            String origDisabledFeatures = commandLine.getSwitchValue(ENABLE_FEATURES, "");
+            sOrigFeatures =
+                    collectFeaturesFromFlags(
+                            List.of(
+                                    ENABLE_FEATURES + "=" + origEnabledFeatures,
+                                    DISABLE_FEATURES + "=" + origDisabledFeatures));
         }
-
-        Set<String> flags = new HashSet<>();
-        updateFlagsForClass(clazz, flags);
-        sClassFlagsToRemove = new HashSet<>();
-        sClassFlagsToAdd = new HashMap<>();
-        applyFlags(flags, null, sClassFlagsToRemove, sClassFlagsToAdd);
     }
 
-    public static void tearDownClass() {
-        if (ApplicationStatus.isInitialized()) {
-            for (Activity a : ApplicationStatus.getRunningActivities()) {
-                if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
-                    Log.w(
-                            TAG,
-                            "Activity "
-                                    + a
-                                    + ", is still starting up while the Command Line flags "
-                                    + "are being reset. This is a known source of flakiness.");
+    private static void processAnnotations(Annotation[] annotations, List<String> flags) {
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof CommandLineFlags.Add addAnnotation) {
+                Collections.addAll(flags, addAnnotation.value());
+            } else if (annotation instanceof CommandLineFlags.Remove removeAnnotation) {
+                flags.removeAll(Arrays.asList(removeAnnotation.value()));
+            } else if (annotation instanceof EnableFeatures) {
+                for (String featureName : ((EnableFeatures) annotation).value()) {
+                    flags.add(ENABLE_FEATURES + "=" + featureName);
+                }
+            } else if (annotation instanceof DisableFeatures) {
+                for (String featureName : ((DisableFeatures) annotation).value()) {
+                    flags.add(DISABLE_FEATURES + "=" + featureName);
                 }
             }
         }
-        restoreFlags(sClassFlagsToRemove, sClassFlagsToAdd);
-        sClassFlagsToRemove = null;
-        sClassFlagsToAdd = null;
     }
 
-    public static void setUpMethod(Method method) {
-        Set<String> flagsToAdd = new HashSet<>();
-        Set<String> flagsToRemove = new HashSet<>();
-        updateFlagsForMethod(method, flagsToAdd, flagsToRemove);
-        sMethodFlagsToRemove = new HashSet<>();
-        sMethodFlagsToAdd = new HashMap<>();
-        applyFlags(flagsToAdd, flagsToRemove, sMethodFlagsToRemove, sMethodFlagsToAdd);
-    }
-
-    public static void tearDownMethod() {
-        restoreFlags(sMethodFlagsToRemove, sMethodFlagsToAdd);
-        sMethodFlagsToRemove = null;
-        sMethodFlagsToAdd = null;
-    }
-
-    private static void restoreFlags(Set<String> flagsToRemove, Map<String, String> flagsToAdd) {
-        for (String flag : flagsToRemove) {
-            CommandLine.getInstance().removeSwitch(flag);
+    public static void reset(
+            Annotation[] classAnnotations, @Nullable Annotation[] methodAnnotations) {
+        Features.resetCachedFlags();
+        List<String> newFlags = new ArrayList<>();
+        processAnnotations(classAnnotations, newFlags);
+        if (methodAnnotations != null) {
+            processAnnotations(methodAnnotations, newFlags);
         }
-        for (Entry<String, String> flag : flagsToAdd.entrySet()) {
-            if (flag.getValue() == null) {
-                CommandLine.getInstance().appendSwitch(flag.getKey());
-            } else {
-                CommandLine.getInstance().appendSwitchWithValue(flag.getKey(), flag.getValue());
-            }
+        Map<String, Boolean> flagStates = collectFeaturesFromFlags(newFlags);
+        newFlags = updateFeatureFlags(newFlags, flagStates);
+        boolean anyChanges = applyChanges(newFlags);
+        // If flags did not change, and no feature-related flags are present, then do not clobber
+        // flag values so that a test can use FeatureList.setTestValues() in @BeforeClass.
+        if (anyChanges || !flagStates.isEmpty()) {
+            Features.reset(flagStates);
         }
     }
 
-    private static void applyFlags(
-            Set<String> flagsToAdd,
-            Set<String> flagsToRemove,
-            Set<String> flagsToRemoveForRestore,
-            Map<String, String> flagsToAddForRestore) {
-        if (flagsToRemove != null) {
-            for (String flag : flagsToRemove) {
-                if (CommandLine.getInstance().hasSwitch(flag)) {
-                    String existingValue = CommandLine.getInstance().getSwitchValue(flag);
-                    CommandLine.getInstance().removeSwitch(flag);
-                    flagsToAddForRestore.put(flag, existingValue);
+    private static boolean applyChanges(List<String> newFlags) {
+        // Track and apply changes in flags (rather than clearing each time) because flags are added
+        // as part of normal start-up (which need to be maintained).
+        boolean anyChanges = false;
+        CommandLine commandLine = CommandLine.getInstance();
+        Set<String> newFlagNames = new HashSet<>();
+        for (String flag : newFlags) {
+            String[] keyValue = flag.split("=", 2);
+            String flagName = keyValue[0];
+            String flagValue = keyValue.length == 1 ? "" : keyValue[1];
+            String prevValue =
+                    commandLine.hasSwitch(flagName) ? commandLine.getSwitchValue(flagName) : null;
+            newFlagNames.add(flagName);
+            if (!flagValue.equals(prevValue)) {
+                anyChanges = true;
+                commandLine.appendSwitchWithValue(flagName, flagValue);
+                if (!sActiveFlagPrevValues.containsKey(flagName)) {
+                    sActiveFlagPrevValues.put(flagName, prevValue);
                 }
             }
         }
-
-        Set<String> enableFeatures = new HashSet<String>(getFeatureValues(ENABLE_FEATURES));
-        Set<String> disableFeatures = new HashSet<String>(getFeatureValues(DISABLE_FEATURES));
-        for (String flag : flagsToAdd) {
-            String[] parsedFlags = flag.split("=", 2);
-            if (parsedFlags.length == 1) {
-                if (!CommandLine.getInstance().hasSwitch(flag)) {
-                    CommandLine.getInstance().appendSwitch(flag);
-                    flagsToRemoveForRestore.add(flag);
+        // Undo previously applied flags.
+        for (var it = sActiveFlagPrevValues.entrySet().iterator(); it.hasNext(); ) {
+            var entry = it.next();
+            String flagName = entry.getKey();
+            String flagValue = entry.getValue();
+            if (!newFlagNames.contains(flagName)) {
+                anyChanges = true;
+                if (flagValue == null) {
+                    commandLine.removeSwitch(flagName);
+                } else {
+                    commandLine.appendSwitchWithValue(flagName, flagValue);
                 }
-            } else if (ENABLE_FEATURES.equals(parsedFlags[0])) {
-                // We collect enable/disable features flags separately and aggregate them because
-                // they may be specified multiple times, in which case the values will trample each
-                // other.
-                Collections.addAll(enableFeatures, parsedFlags[1].split(","));
-            } else if (DISABLE_FEATURES.equals(parsedFlags[0])) {
-                Collections.addAll(disableFeatures, parsedFlags[1].split(","));
-            } else {
-                String existingValue = CommandLine.getInstance().getSwitchValue(parsedFlags[0]);
-                if (parsedFlags[1].equals(existingValue)) continue;
-                if (existingValue != null) {
-                    flagsToAddForRestore.put(parsedFlags[0], existingValue);
-                    CommandLine.getInstance().removeSwitch(parsedFlags[0]);
-                }
-                CommandLine.getInstance().appendSwitchWithValue(parsedFlags[0], parsedFlags[1]);
-                flagsToRemoveForRestore.add(parsedFlags[0]);
+                it.remove();
+            }
+        }
+        Log.i(
+                TAG,
+                "Java %scommand line set to: %s",
+                CommandLine.isNativeImplementationForTesting() ? "(and native) " : "",
+                serializeCommandLine());
+        return anyChanges;
+    }
+
+    private static String serializeCommandLine() {
+        Map<String, String> switches = CommandLine.getInstance().getSwitches();
+        if (switches.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (var entry : switches.entrySet()) {
+            sb.append("--").append(entry.getKey());
+            if (!TextUtils.isEmpty(entry.getValue())) {
+                sb.append('=').append(entry.getValue());
+            }
+            sb.append(' ');
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private static Map<String, Boolean> collectFeaturesFromFlags(List<String> flags) {
+        // Collect via a Map rather than two lists to correctly handle the a feature being enabled
+        // via class flags and disabled via method flags (or vice versa).
+        Map<String, Boolean> flagStates = new HashMap<>(sOrigFeatures);
+        for (String flag : flags) {
+            String[] keyValue = flag.split("=", 2);
+            boolean enable = ENABLE_FEATURES.equals(keyValue[0]);
+            if (!enable && !DISABLE_FEATURES.equals(keyValue[0])) {
+                continue;
+            }
+            if (keyValue.length == 1 || keyValue[1].isEmpty()) {
+                continue;
+            }
+            for (String featureName : keyValue[1].split(",")) {
+                flagStates.put(featureName, enable);
+            }
+        }
+        return flagStates;
+    }
+
+    private static List<String> updateFeatureFlags(
+            List<String> curFlags, Map<String, Boolean> flagStates) {
+        List<String> newFlags = new ArrayList<>();
+        for (String flag : curFlags) {
+            String flagName = flag.split("=", 2)[0];
+            if (!ENABLE_FEATURES.equals(flagName) && !DISABLE_FEATURES.equals(flagName)) {
+                newFlags.add(flag);
             }
         }
 
-        if (enableFeatures.size() > 0) {
-            String existingValue = CommandLine.getInstance().getSwitchValue(ENABLE_FEATURES);
-            if (existingValue != null) {
-                flagsToAddForRestore.put(ENABLE_FEATURES, existingValue);
-                CommandLine.getInstance().removeSwitch(ENABLE_FEATURES);
-            }
-            CommandLine.getInstance()
-                    .appendSwitchWithValue(ENABLE_FEATURES, TextUtils.join(",", enableFeatures));
-            flagsToRemoveForRestore.add(ENABLE_FEATURES);
+        List<String> enabledFlags = new ArrayList<>();
+        List<String> disabledFlags = new ArrayList<>();
+        for (var entry : flagStates.entrySet()) {
+            var target = entry.getValue() ? enabledFlags : disabledFlags;
+            target.add(entry.getKey());
         }
-        if (disableFeatures.size() > 0) {
-            String existingValue = CommandLine.getInstance().getSwitchValue(DISABLE_FEATURES);
-            if (existingValue != null) {
-                flagsToAddForRestore.put(DISABLE_FEATURES, existingValue);
-                CommandLine.getInstance().removeSwitch(DISABLE_FEATURES);
-            }
-            CommandLine.getInstance()
-                    .appendSwitchWithValue(DISABLE_FEATURES, TextUtils.join(",", disableFeatures));
-            flagsToRemoveForRestore.add(DISABLE_FEATURES);
+        if (!enabledFlags.isEmpty()) {
+            newFlags.add(
+                    String.format("%s=%s", ENABLE_FEATURES, TextUtils.join(",", enabledFlags)));
         }
-    }
-
-    private static void updateFlagsForClass(Class<?> clazz, Set<String> flags) {
-        // Get flags from rules within the class.
-        for (Field field : clazz.getFields()) {
-            if (field.isAnnotationPresent(Rule.class)) {
-                // The order in which fields are returned is undefined, so, for consistency,
-                // a rule must only ever add flags.
-                updateFlagsForClass(field.getType(), flags);
-            }
+        if (!disabledFlags.isEmpty()) {
+            newFlags.add(
+                    String.format("%s=%s", DISABLE_FEATURES, TextUtils.join(",", disabledFlags)));
         }
-        for (Method method : clazz.getMethods()) {
-            Assert.assertFalse(
-                    "@Rule annotations on methods are unsupported. Cause: "
-                            + method.toGenericString(),
-                    method.isAnnotationPresent(Rule.class));
-        }
-
-        // Add the flags from the parent. Override any flags defined by the rules.
-        Class<?> parent = clazz.getSuperclass();
-        if (parent != null) updateFlagsForClass(parent, flags);
-
-        // Flags on the element itself override all other flag sources.
-        if (clazz.isAnnotationPresent(CommandLineFlags.Add.class)) {
-            flags.addAll(Arrays.asList(clazz.getAnnotation(CommandLineFlags.Add.class).value()));
-        }
+        return newFlags;
     }
 
-    private static void updateFlagsForMethod(
-            Method method, Set<String> flagsToAdd, Set<String> flagsToRemove) {
-        if (method.isAnnotationPresent(CommandLineFlags.Add.class)) {
-            flagsToAdd.addAll(
-                    Arrays.asList(method.getAnnotation(CommandLineFlags.Add.class).value()));
-        }
-        if (method.isAnnotationPresent(CommandLineFlags.Remove.class)) {
-            flagsToRemove.addAll(
-                    Arrays.asList(method.getAnnotation(CommandLineFlags.Remove.class).value()));
-        }
-    }
-
-    private static List<String> getFeatureValues(String flag) {
-        String value = CommandLine.getInstance().getSwitchValue(flag);
-        if (value == null) return new ArrayList<>();
-        return Arrays.asList(value.split(","));
-    }
-
-    private CommandLineFlags() {
-        throw new AssertionError("CommandLineFlags is a non-instantiable class");
-    }
-
-    private static class CommandLineFlagsTestRule implements TestRule {
-        @Override
-        public Statement apply(final Statement base, Description description) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    try {
-                        Class clazz = description.getTestClass();
-                        CommandLineFlags.setUpClass(clazz);
-                        CommandLineFlags.setUpMethod(clazz.getMethod(description.getMethodName()));
-
-                        base.evaluate();
-                    } finally {
-                        CommandLineFlags.tearDownMethod();
-                        CommandLineFlags.tearDownClass();
-                    }
-                }
-            };
-        }
-    }
-
-    public static TestRule getTestRule() {
-        return new CommandLineFlagsTestRule();
-    }
-
-    public static TestHook getPreTestHook() {
-        return (targetContext, testMethod) -> CommandLineFlags.setUpMethod(testMethod.getMethod());
-    }
-
-    public static ClassHook getPreClassHook() {
-        return (targetContext, testClass) -> CommandLineFlags.setUpClass(testClass);
-    }
-
-    public static TestHook getPostTestHook() {
-        return (targetContext, testMethod) -> CommandLineFlags.tearDownMethod();
-    }
-
-    public static ClassHook getPostClassHook() {
-        return (targetContext, testClass) -> CommandLineFlags.tearDownClass();
-    }
+    private CommandLineFlags() {}
 
     public static String getTestCmdLineFile() {
         return "test-cmdline-file";

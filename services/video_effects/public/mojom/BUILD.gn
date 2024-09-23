@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "video_effects_processor.mojom",
+    "video_effects_service.mojom",
+  ]
+
+  deps = [
+    "//media/capture/mojom:video_capture",
+    "//media/capture/mojom:video_effects_manager",
+    "//services/viz/public/mojom:mojom",
+  ]
+
+  public_deps = [ "//sandbox/policy/mojom" ]
+}

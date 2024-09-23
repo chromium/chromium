@@ -48,18 +48,18 @@ TEST(RuleTest, ConcatenationIterator) {
       ContentSettingsPattern::Wildcard(), base::Value(0), RuleMetaData{}));
   RuleMetaData metadata;
   metadata.SetExpirationAndLifetime(expiredTime, base::Seconds(60));
-  metadata.set_session_model(content_settings::SessionModel::UserSession);
+  metadata.set_session_model(mojom::SessionModel::USER_SESSION);
   rules1.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("b"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
   std::list<std::unique_ptr<Rule>> rules2;
   metadata.SetExpirationAndLifetime(validTime, base::Seconds(60));
-  metadata.set_session_model(content_settings::SessionModel::Durable);
+  metadata.set_session_model(mojom::SessionModel::DURABLE);
   rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("c"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
   metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
-  metadata.set_session_model(content_settings::SessionModel::UserSession);
+  metadata.set_session_model(mojom::SessionModel::USER_SESSION);
   rules2.push_back(std::make_unique<Rule>(
       ContentSettingsPattern::FromString("d"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
@@ -73,25 +73,25 @@ TEST(RuleTest, ConcatenationIterator) {
   std::unique_ptr<Rule> rule = concatenation_iterator.Next();
   EXPECT_EQ(rule->primary_pattern, ContentSettingsPattern::FromString("a"));
   EXPECT_EQ(rule->metadata.expiration(), base::Time());
-  EXPECT_EQ(rule->metadata.session_model(), SessionModel::Durable);
+  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::DURABLE);
 
   ASSERT_TRUE(concatenation_iterator.HasNext());
   rule = concatenation_iterator.Next();
   EXPECT_EQ(rule->primary_pattern, ContentSettingsPattern::FromString("b"));
   EXPECT_EQ(rule->metadata.expiration(), expiredTime);
-  EXPECT_EQ(rule->metadata.session_model(), SessionModel::UserSession);
+  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::USER_SESSION);
 
   ASSERT_TRUE(concatenation_iterator.HasNext());
   rule = concatenation_iterator.Next();
   EXPECT_EQ(rule->primary_pattern, ContentSettingsPattern::FromString("c"));
   EXPECT_EQ(rule->metadata.expiration(), validTime);
-  EXPECT_EQ(rule->metadata.session_model(), SessionModel::Durable);
+  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::DURABLE);
 
   ASSERT_TRUE(concatenation_iterator.HasNext());
   rule = concatenation_iterator.Next();
   EXPECT_EQ(rule->primary_pattern, ContentSettingsPattern::FromString("d"));
   EXPECT_EQ(rule->metadata.expiration(), base::Time());
-  EXPECT_EQ(rule->metadata.session_model(), SessionModel::UserSession);
+  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::USER_SESSION);
 
   EXPECT_FALSE(concatenation_iterator.HasNext());
 }

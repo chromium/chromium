@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("drive_internals") {
+  sources = [
+    "drive_internals_ui.cc",
+    "drive_internals_ui.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/services/file_util/public/cpp",
+    "//chromeos/ash/components/drivefs",
+    "//components/drive",
+    "//components/prefs",
+    "//content/public/browser",
+    "//google_apis/drive",
+    "//net",
+  ]
+}

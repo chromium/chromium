@@ -27,35 +27,34 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Instrumentation tests for AutofillLocalCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillLocalCardEditorTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
     @Rule
@@ -67,7 +66,6 @@ public class AutofillLocalCardEditorTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ true,
-                    /* isCached= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
                     /* obfuscatedNumber= */ "",
@@ -82,7 +80,6 @@ public class AutofillLocalCardEditorTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ true,
-                    /* isCached= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444111111111111",
@@ -108,7 +105,6 @@ public class AutofillLocalCardEditorTest {
                     /* guid= */ "",
                     /* origin= */ "",
                     /* isLocal= */ true,
-                    /* isCached= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "378282246310005",
@@ -129,6 +125,32 @@ public class AutofillLocalCardEditorTest {
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "1234");
+
+    private static final CreditCard SAMPLE_MASKED_SERVER_CARD =
+            new CreditCard(
+                    /* guid= */ "1",
+                    /* origin= */ "",
+                    /* isLocal= */ false,
+                    /* isVirtual= */ false,
+                    /* name= */ "John Doe",
+                    /* number= */ "4444222211111111",
+                    /* obfuscatedNumber= */ "",
+                    /* month= */ "5",
+                    AutofillTestHelper.nextYear(),
+                    /* basicCardIssuerNetwork= */ "visa",
+                    /* issuerIconDrawableId= */ 0,
+                    /* billingAddressId= */ "",
+                    /* serverId= */ "",
+                    /* instrumentId= */ 123,
+                    /* cardLabel= */ "",
+                    /* nickname= */ "",
+                    /* cardArtUrl= */ null,
+                    /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
+                    /* productDescription= */ "",
+                    /* cardNameForAutofillDisplay= */ "",
+                    /* obfuscatedLastFourDigits= */ "• • • • 1111",
+                    /* cvc= */ "");
+
     private static final String AMEX_CARD_NUMBER = "378282246310005";
     private static final String AMEX_CARD_NUMBER_PREFIX = "37";
     private static final String NON_AMEX_CARD_NUMBER = "4111111111111111";
@@ -206,7 +228,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
@@ -231,7 +253,7 @@ public class AutofillLocalCardEditorTest {
                 mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
@@ -245,7 +267,7 @@ public class AutofillLocalCardEditorTest {
                                 .getString(R.string.autofill_credit_card_editor_invalid_nickname));
 
         // Set the nickname to valid one.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Valid Nickname");
@@ -266,7 +288,7 @@ public class AutofillLocalCardEditorTest {
                 mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
@@ -280,7 +302,7 @@ public class AutofillLocalCardEditorTest {
                                 .getString(R.string.autofill_credit_card_editor_invalid_nickname));
 
         // Clear the nickname.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(null);
@@ -304,7 +326,7 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(veryLongNickname);
@@ -672,16 +694,16 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManagerMock);
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
+        openDeletePaymentMethodConfirmationDialog(
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
         Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
 
         // Verify the dialog is closed
         Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
@@ -701,22 +723,83 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
-        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManagerMock);
 
         FakeModalDialogManager fakeModalDialogManager =
                 new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        openDeleteCreditCardConfirmationDialog(
+        openDeletePaymentMethodConfirmationDialog(
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
         Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
-        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
+        ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
 
         // Verify the dialog is closed
         Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
 
         // Verify the card entry is deleted
         verify(mPersonalDataManagerMock, times(1)).deleteCreditCard(guid);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutCvc() throws Exception {
+        // Set 4 existing cards.
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+        mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_MASKED_SERVER_CARD);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationMonthSelectionOnEditor(
+                autofillLocalCardEditorFragment, /* monthSelection= */ 1);
+        setExpirationYearSelectionOnEditor(autofillLocalCardEditorFragment, /* yearSelection= */ 1);
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        saveCardCountHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testRecordHistogram_whenNewCreditCardIsAddedWithCvc() throws Exception {
+        // Set 4 existing cards.
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+        mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_MASKED_SERVER_CARD);
+
+        // Expect histogram to record 4 for 4 existing cards.
+        HistogramWatcher saveCardCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
+                                4)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+        setExpirationDateOnEditor(
+                autofillLocalCardEditorFragment,
+                String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
+        setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
+
+        saveCardCountHistogram.assertExpected();
     }
 
     @Test
@@ -847,7 +930,7 @@ public class AutofillLocalCardEditorTest {
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
     }
 
-    private void openDeleteCreditCardConfirmationDialog(
+    private void openDeletePaymentMethodConfirmationDialog(
             AutofillLocalCardEditor autofillLocalCardEditorFragment,
             ModalDialogManager modalDialogManager) {
         when(mModalDialogManagerSupplierMock.get()).thenReturn(modalDialogManager);
@@ -856,15 +939,40 @@ public class AutofillLocalCardEditorTest {
 
         MenuItem deleteButton = mock(MenuItem.class);
         when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     autofillLocalCardEditorFragment.onOptionsItemSelected(deleteButton);
                 });
     }
 
+    private void setExpirationMonthSelectionOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, int monthSelection) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mExpirationMonth.setSelection(
+                                monthSelection);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the Expiration Month");
+                    }
+                });
+    }
+
+    private void setExpirationYearSelectionOnEditor(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, int yearSelection) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mExpirationYear.setSelection(yearSelection);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the Expiration Year");
+                    }
+                });
+    }
+
     private void setExpirationDateOnEditor(
             AutofillLocalCardEditor autofillLocalCardEditorFragment, String date) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mExpirationDate.setText(date);
@@ -876,7 +984,7 @@ public class AutofillLocalCardEditorTest {
 
     private void setNicknameOnEditor(
             AutofillLocalCardEditor autofillLocalCardEditorFragment, String nickname) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(nickname);
@@ -908,7 +1016,7 @@ public class AutofillLocalCardEditorTest {
     @Test
     @SmallTest
     public void testIsAmExCard_whenAmExCardNumberPrefixIsEntered_returnsTrue() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         assertThat(AutofillLocalCardEditor.isAmExCard(AMEX_CARD_NUMBER_PREFIX))
@@ -922,7 +1030,7 @@ public class AutofillLocalCardEditorTest {
     @Test
     @SmallTest
     public void testIsAmExCard_whenNonAmExCardNumberPrefixIsEntered_returnsFalse() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         assertThat(AutofillLocalCardEditor.isAmExCard(NON_AMEX_CARD_NUMBER_PREFIX))
@@ -934,20 +1042,20 @@ public class AutofillLocalCardEditorTest {
     }
 
     private void setCardNumberOnEditor(
-        AutofillLocalCardEditor autofillLocalCardEditorFragment, String cardNumber) {
-        TestThreadUtils.runOnUiThreadBlocking(
-            () -> {
-                try {
-                    autofillLocalCardEditorFragment.mNumberText.setText(cardNumber);
-                } catch (Exception e) {
-                    Assert.fail("Failed to set the card number");
-                }
-            });
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, String cardNumber) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.mNumberText.setText(cardNumber);
+                    } catch (Exception e) {
+                        Assert.fail("Failed to set the card number");
+                    }
+                });
     }
 
     private void setSecurityCodeOnEditor(
             AutofillLocalCardEditor autofillLocalCardEditorFragment, String code) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         autofillLocalCardEditorFragment.mCvc.setText(code);
@@ -958,7 +1066,7 @@ public class AutofillLocalCardEditorTest {
     }
 
     private void performButtonClickOnEditor(Button button) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         button.performClick();

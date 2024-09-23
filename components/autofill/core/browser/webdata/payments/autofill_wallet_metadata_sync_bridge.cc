@@ -12,21 +12,22 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
@@ -48,7 +49,7 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
                                        const std::string& specifics_id) {
   switch (type) {
     case WalletMetadataSpecifics::ADDRESS:
-      // TODO(crbug.com/1457187): Even though the server-side drops
+      // TODO(crbug.com/40273491): Even though the server-side drops
       // writes for WalletMetadataSpecifics::ADDRESS, old data wasn't cleaned
       // up yet. As such, this code is still reachable.
       return "address-" + specifics_id;
@@ -57,7 +58,7 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
     case WalletMetadataSpecifics::IBAN:
       return "iban-" + specifics_id;
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -94,12 +95,14 @@ struct TypeAndMetadataId {
 
 TypeAndMetadataId ParseWalletMetadataStorageKey(
     const std::string& storage_key) {
-  base::Pickle pickle(storage_key.data(), storage_key.size());
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(storage_key));
   base::PickleIterator iterator(pickle);
   int type_int;
   std::string specifics_id;
   if (!iterator.ReadInt(&type_int) || !iterator.ReadString(&specifics_id)) {
-    NOTREACHED() << "Unsupported storage_key provided " << storage_key;
+    NOTREACHED_IN_MIGRATION()
+        << "Unsupported storage_key provided " << storage_key;
   }
 
   TypeAndMetadataId parsed;
@@ -109,9 +112,9 @@ TypeAndMetadataId ParseWalletMetadataStorageKey(
 }
 
 // Returns EntityData for wallet_metadata for |local_metadata| and |type|.
-std::unique_ptr<EntityData> CreateEntityDataFromAutofillMetadata(
+std::unique_ptr<EntityData> CreateEntityDataFromPaymentsMetadata(
     WalletMetadataSpecifics::Type type,
-    const AutofillMetadata& local_metadata) {
+    const PaymentsMetadata& local_metadata) {
   auto entity_data = std::make_unique<EntityData>();
   std::string specifics_id = GetSpecificsIdForMetadataId(local_metadata.id);
   entity_data->name = GetClientTagForSpecificsId(type, specifics_id);
@@ -133,10 +136,10 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillMetadata(
   return entity_data;
 }
 
-// Returns AutofillMetadata for |specifics|.
-AutofillMetadata CreateAutofillMetadataFromWalletMetadataSpecifics(
+// Returns PaymentsMetadata for |specifics|.
+PaymentsMetadata CreatePaymentsMetadataFromWalletMetadataSpecifics(
     const WalletMetadataSpecifics& specifics) {
-  AutofillMetadata metadata;
+  PaymentsMetadata metadata;
   metadata.id = GetMetadataIdForSpecificsId(specifics.id());
   metadata.use_count = specifics.use_count();
   metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
@@ -150,12 +153,12 @@ AutofillMetadata CreateAutofillMetadataFromWalletMetadataSpecifics(
   return metadata;
 }
 
-bool HasLocalBillingAddress(const AutofillMetadata& metadata) {
+bool HasLocalBillingAddress(const PaymentsMetadata& metadata) {
   return metadata.billing_address_id.size() == kLocalGuidSize;
 }
 
-bool IsNewerBillingAddressEqualOrBetter(const AutofillMetadata& older,
-                                        const AutofillMetadata& newer) {
+bool IsNewerBillingAddressEqualOrBetter(const PaymentsMetadata& older,
+                                        const PaymentsMetadata& newer) {
   // If older is empty, newer is better (or equal). Otherwise, if newer is
   // empty, older is better.
   if (older.billing_address_id.empty()) {
@@ -172,10 +175,10 @@ bool IsNewerBillingAddressEqualOrBetter(const AutofillMetadata& older,
   return newer.use_date >= older.use_date;
 }
 
-AutofillMetadata MergeMetadata(WalletMetadataSpecifics::Type type,
-                               const AutofillMetadata& local,
-                               const AutofillMetadata& remote) {
-  AutofillMetadata merged;
+PaymentsMetadata MergeMetadata(WalletMetadataSpecifics::Type type,
+                               const PaymentsMetadata& local,
+                               const PaymentsMetadata& remote) {
+  PaymentsMetadata merged;
   DCHECK_EQ(local.id, remote.id);
   merged.id = local.id;
 
@@ -207,8 +210,8 @@ AutofillMetadata MergeMetadata(WalletMetadataSpecifics::Type type,
 // Metadata is worth updating if its value is "newer" then before; here "newer"
 // is the ordering of legal state transitions that metadata can take that is
 // defined below.
-bool IsMetadataWorthUpdating(AutofillMetadata existing_entry,
-                             AutofillMetadata new_entry) {
+bool IsMetadataWorthUpdating(PaymentsMetadata existing_entry,
+                             PaymentsMetadata new_entry) {
   if (existing_entry.use_count < new_entry.use_count &&
       existing_entry.use_date < new_entry.use_date) {
     return true;
@@ -225,7 +228,7 @@ bool IsMetadataWorthUpdating(AutofillMetadata existing_entry,
 }
 
 bool IsAnyMetadataDeletable(
-    const std::map<std::string, AutofillMetadata>& metadata_map) {
+    const std::map<std::string, PaymentsMetadata>& metadata_map) {
   for (const auto& [storage_key, metadata] : metadata_map) {
     if (metadata.IsDeletable()) {
       return true;
@@ -236,7 +239,7 @@ bool IsAnyMetadataDeletable(
 
 bool AddServerMetadata(PaymentsAutofillTable* table,
                        WalletMetadataSpecifics::Type type,
-                       const AutofillMetadata& metadata) {
+                       const PaymentsMetadata& metadata) {
   switch (type) {
     case WalletMetadataSpecifics::CARD:
       return table->AddServerCardMetadata(metadata);
@@ -245,7 +248,7 @@ bool AddServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -261,14 +264,14 @@ bool RemoveServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
 
 bool UpdateServerMetadata(PaymentsAutofillTable* table,
                           WalletMetadataSpecifics::Type type,
-                          const AutofillMetadata& metadata) {
+                          const PaymentsMetadata& metadata) {
   switch (type) {
     case WalletMetadataSpecifics::CARD:
       return table->UpdateServerCardMetadata(metadata);
@@ -277,7 +280,7 @@ bool UpdateServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -289,7 +292,7 @@ bool IsSyncedWalletCard(const CreditCard& card) {
     case CreditCard::RecordType::kMaskedServerCard:
       return true;
     case CreditCard::RecordType::kFullServerCard:
-      return true;
+      return false;
     case CreditCard::RecordType::kVirtualCard:
       return false;
   }
@@ -305,7 +308,7 @@ void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
   web_data_service->GetDBUserData()->SetUserData(
       &kAutofillWalletMetadataSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletMetadataSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_WALLET_METADATA,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
@@ -321,9 +324,9 @@ AutofillWalletMetadataSyncBridge::FromWebDataService(
 }
 
 AutofillWalletMetadataSyncBridge::AutofillWalletMetadataSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* web_data_backend)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
   scoped_observation_.Observe(web_data_backend_.get());
@@ -342,7 +345,7 @@ AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_METADATA,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -374,18 +377,19 @@ AutofillWalletMetadataSyncBridge::ApplyIncrementalSyncChanges(
                             std::move(entity_data));
 }
 
-void AutofillWalletMetadataSyncBridge::GetData(StorageKeyList storage_keys,
-                                               DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // Build a set out of the list to allow quick lookup.
   std::unordered_set<std::string> storage_keys_set(storage_keys.begin(),
                                                    storage_keys.end());
-  GetDataImpl(std::move(storage_keys_set), std::move(callback));
+  return GetDataImpl(std::move(storage_keys_set));
 }
 
-void AutofillWalletMetadataSyncBridge::GetAllDataForDebugging(
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetAllDataForDebugging() {
   // Get all data by not providing any |storage_keys| filter.
-  GetDataImpl(/*storage_keys=*/std::nullopt, std::move(callback));
+  return GetDataImpl(/*storage_keys_set=*/std::nullopt);
 }
 
 std::string AutofillWalletMetadataSyncBridge::GetClientTag(
@@ -431,7 +435,7 @@ void AutofillWalletMetadataSyncBridge::ApplyDisableSyncChanges(
 
 void AutofillWalletMetadataSyncBridge::CreditCardChanged(
     const CreditCardChange& change) {
-  // TODO(crbug.com/1206306): Clean up old metadata for local cards, this early
+  // TODO(crbug.com/40765031): Clean up old metadata for local cards, this early
   // return was missing for quite a while in production.
   if (!IsSyncedWalletCard(change.data_model())) {
     return;
@@ -466,20 +470,20 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
   }
 
   // Load the data cache.
-  std::vector<AutofillMetadata> cards_metadata;
-  std::vector<AutofillMetadata> ibans_metadata;
+  std::vector<PaymentsMetadata> cards_metadata;
+  std::vector<PaymentsMetadata> ibans_metadata;
   if (!GetAutofillTable()->GetServerCardsMetadata(cards_metadata) ||
       !GetAutofillTable()->GetServerIbansMetadata(ibans_metadata)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill data from WebDatabase."});
     return;
   }
-  for (const AutofillMetadata& card_metadata : cards_metadata) {
+  for (const PaymentsMetadata& card_metadata : cards_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
         WalletMetadataSpecifics::CARD, card_metadata.id)] = card_metadata;
   }
 
-  for (const AutofillMetadata& iban_metadata : ibans_metadata) {
+  for (const PaymentsMetadata& iban_metadata : ibans_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
         WalletMetadataSpecifics::IBAN, iban_metadata.id)] = iban_metadata;
   }
@@ -545,7 +549,9 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
     if (RemoveServerMetadata(GetAutofillTable(), parsed_storage_key.type,
                              parsed_storage_key.metadata_id)) {
       cache_.erase(storage_key);
-      change_processor()->Delete(storage_key, metadata_change_list.get());
+      change_processor()->Delete(storage_key,
+                                 syncer::DeletionOrigin::Unspecified(),
+                                 metadata_change_list.get());
     }
   }
 
@@ -559,9 +565,9 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // existing data.
 }
 
-void AutofillWalletMetadataSyncBridge::GetDataImpl(
-    std::optional<std::unordered_set<std::string>> storage_keys_set,
-    DataCallback callback) {
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletMetadataSyncBridge::GetDataImpl(
+    std::optional<std::unordered_set<std::string>> storage_keys_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -569,13 +575,13 @@ void AutofillWalletMetadataSyncBridge::GetDataImpl(
   for (const auto& [storage_key, metadata] : cache_) {
     TypeAndMetadataId parsed_storage_key =
         ParseWalletMetadataStorageKey(storage_key);
-    if (!storage_keys_set || base::Contains(*storage_keys_set, storage_key)) {
-      batch->Put(storage_key, CreateEntityDataFromAutofillMetadata(
+    if (!storage_keys_set || storage_keys_set->contains(storage_key)) {
+      batch->Put(storage_key, CreateEntityDataFromPaymentsMetadata(
                                   parsed_storage_key.type, metadata));
     }
   }
 
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
@@ -598,7 +604,7 @@ void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
     TypeAndMetadataId parsed_storage_key =
         ParseWalletMetadataStorageKey(storage_key);
     change_processor()->Put(storage_key,
-                            CreateEntityDataFromAutofillMetadata(
+                            CreateEntityDataFromPaymentsMetadata(
                                 parsed_storage_key.type, cache_[storage_key]),
                             metadata_change_list);
   }
@@ -616,7 +622,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
     TypeAndMetadataId parsed_storage_key =
         ParseWalletMetadataStorageKey(change->storage_key());
     if (parsed_storage_key.type == WalletMetadataSpecifics::ADDRESS) {
-      // TODO(crbug.com/1457187): Even though the server-side drops
+      // TODO(crbug.com/40273491): Even though the server-side drops
       // writes for WalletMetadataSpecifics::ADDRESS, old data wasn't cleaned
       // up yet. As such, this code is still reachable.
       continue;
@@ -626,10 +632,10 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
       case EntityChange::ACTION_UPDATE: {
         const WalletMetadataSpecifics& specifics =
             change->data().specifics.wallet_metadata();
-        AutofillMetadata remote =
-            CreateAutofillMetadataFromWalletMetadataSpecifics(specifics);
+        PaymentsMetadata remote =
+            CreatePaymentsMetadataFromWalletMetadataSpecifics(specifics);
         auto it = cache_.find(change->storage_key());
-        std::optional<AutofillMetadata> local = std::nullopt;
+        std::optional<PaymentsMetadata> local = std::nullopt;
         if (it != cache_.end()) {
           local = it->second;
         }
@@ -642,7 +648,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
         }
 
         // Resolve the conflict between the local and the newly received remote.
-        AutofillMetadata merged =
+        PaymentsMetadata merged =
             MergeMetadata(parsed_storage_key.type, *local, remote);
         if (merged != *local) {
           cache_[change->storage_key()] = merged;
@@ -651,7 +657,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
         }
         if (merged != remote) {
           change_processor()->Put(change->storage_key(),
-                                  CreateEntityDataFromAutofillMetadata(
+                                  CreateEntityDataFromPaymentsMetadata(
                                       parsed_storage_key.type, merged),
                                   metadata_change_list.get());
         }
@@ -671,7 +677,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on committing transactions on shutdown). We need to commit
-  // even if !|is_any_local_modified| because the model type state or local
+  // even if !|is_any_local_modified| because the data type state or local
   // metadata may have changed.
   web_data_backend_->CommitChanges();
 
@@ -689,7 +695,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
     AutofillDataModelChange<DataType, KeyType> change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1475085): Conversion logic is necessary once credit cards
+  // TODO(crbug.com/40927747): Conversion logic is necessary once credit cards
   // have migrated to use instrument IDs, then the branching can be removed.
   std::string metadata_id;
   if constexpr (std::same_as<DataType, Iban>) {
@@ -709,14 +715,16 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
         cache_.erase(storage_key);
         // Send up deletion only if we had this entry in the DB. It is not there
         // if it was previously deleted by a remote deletion.
-        change_processor()->Delete(storage_key, metadata_change_list.get());
+        change_processor()->Delete(storage_key,
+                                   syncer::DeletionOrigin::Unspecified(),
+                                   metadata_change_list.get());
       }
       return;
     case AutofillDataModelChange<DataType, KeyType>::ADD:
     case AutofillDataModelChange<DataType, KeyType>::UPDATE:
-      AutofillMetadata new_entry = change.data_model().GetMetadata();
+      PaymentsMetadata new_entry = change.data_model().GetMetadata();
       auto it = cache_.find(storage_key);
-      std::optional<AutofillMetadata> existing_entry = std::nullopt;
+      std::optional<PaymentsMetadata> existing_entry = std::nullopt;
       if (it != cache_.end()) {
         existing_entry = it->second;
       }
@@ -736,7 +744,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
       }
 
       change_processor()->Put(
-          storage_key, CreateEntityDataFromAutofillMetadata(type, new_entry),
+          storage_key, CreateEntityDataFromPaymentsMetadata(type, new_entry),
           metadata_change_list.get());
       return;
   }

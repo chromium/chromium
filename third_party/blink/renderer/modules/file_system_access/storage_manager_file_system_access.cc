@@ -31,8 +31,9 @@ constexpr const char kSandboxRootDirectoryName[] = "";
 
 // Called with the result of browser-side permissions checks.
 void OnGotAccessAllowed(
-    ScriptPromiseResolver* resolver,
-    base::OnceCallback<void(ScriptPromiseResolver*)> on_allowed,
+    ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver,
+    base::OnceCallback<void(ScriptPromiseResolver<FileSystemDirectoryHandle>*)>
+        on_allowed,
     const mojom::blink::FileSystemAccessErrorPtr result) {
   if (!resolver->GetExecutionContext() ||
       !resolver->GetScriptState()->ContextIsValid()) {
@@ -53,13 +54,14 @@ void OnGotAccessAllowed(
 }  // namespace
 
 // static
-ScriptPromise StorageManagerFileSystemAccess::getDirectory(
-    ScriptState* script_state,
-    const StorageManager& storage,
-    ExceptionState& exception_state) {
-  return CheckGetDirectoryIsAllowed(
+ScriptPromise<FileSystemDirectoryHandle>
+StorageManagerFileSystemAccess::getDirectory(ScriptState* script_state,
+                                             const StorageManager& storage,
+                                             ExceptionState& exception_state) {
+  return CheckStorageAccessIsAllowed(
       script_state, exception_state,
-      WTF::BindOnce([](ScriptPromiseResolver* resolver) {
+      WTF::BindOnce([](ScriptPromiseResolver<FileSystemDirectoryHandle>*
+                           resolver) {
         FileSystemAccessManager::From(resolver->GetExecutionContext())
             ->GetSandboxedFileSystem(WTF::BindOnce(
                 &StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
@@ -68,16 +70,18 @@ ScriptPromise StorageManagerFileSystemAccess::getDirectory(
 }
 
 // static
-ScriptPromise StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+ScriptPromise<FileSystemDirectoryHandle>
+StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
     ScriptState* script_state,
     ExceptionState& exception_state,
-    base::OnceCallback<void(ScriptPromiseResolver*)> on_allowed) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+    base::OnceCallback<void(ScriptPromiseResolver<FileSystemDirectoryHandle>*)>
+        on_allowed) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<FileSystemDirectoryHandle>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
-  ScriptPromise result = resolver->Promise();
-
-  CheckGetDirectoryIsAllowed(
+  CheckStorageAccessIsAllowed(
       ExecutionContext::From(script_state),
       WTF::BindOnce(&OnGotAccessAllowed, WrapPersistent(resolver),
                     std::move(on_allowed)));
@@ -86,7 +90,7 @@ ScriptPromise StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
 }
 
 // static
-void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+void StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
     ExecutionContext* context,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
   if (!context->GetSecurityOrigin()->CanAccessFileSystem()) {
@@ -106,7 +110,22 @@ void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
   }
 
   SECURITY_DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
-  WebContentSettingsClient* content_settings_client = nullptr;
+
+  auto storage_access_callback =
+      [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
+             inner_callback,
+         bool is_allowed) {
+        std::move(inner_callback)
+            .Run(is_allowed
+                     ? mojom::blink::FileSystemAccessError::New(
+                           mojom::blink::FileSystemAccessStatus::kOk,
+                           base::File::FILE_OK, "")
+                     : mojom::blink::FileSystemAccessError::New(
+                           mojom::blink::FileSystemAccessStatus::kSecurityError,
+                           base::File::Error::FILE_ERROR_SECURITY,
+                           "Storage directory access is denied."));
+      };
+
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame) {
@@ -116,40 +135,27 @@ void StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
           "Storage directory access is denied."));
       return;
     }
-    content_settings_client = frame->GetContentSettingsClient();
-  } else {
-    content_settings_client =
-        To<WorkerGlobalScope>(context)->ContentSettingsClient();
-  }
-
-  if (content_settings_client) {
-    content_settings_client->AllowStorageAccess(
+    frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kFileSystem,
-        WTF::BindOnce(
-            [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>
-                   callback,
-               bool is_allowed) {
-              std::move(callback).Run(
-                  is_allowed ? mojom::blink::FileSystemAccessError::New(
-                                   mojom::blink::FileSystemAccessStatus::kOk,
-                                   base::File::FILE_OK, "")
-                             : mojom::blink::FileSystemAccessError::New(
-                                   mojom::blink::FileSystemAccessStatus::
-                                       kSecurityError,
-                                   base::File::Error::FILE_ERROR_SECURITY,
-                                   "Storage directory access is denied."));
-            },
-            std::move(callback)));
+        WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
-      mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+  WebContentSettingsClient* content_settings_client =
+      To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  if (!content_settings_client) {
+    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
+        mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK, ""));
+    return;
+  }
+  content_settings_client->AllowStorageAccess(
+      WebContentSettingsClient::StorageType::kFileSystem,
+      WTF::BindOnce(std::move(storage_access_callback), std::move(callback)));
 }
 
 // static
 void StorageManagerFileSystemAccess::DidGetSandboxedFileSystem(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver,
     mojom::blink::FileSystemAccessErrorPtr result,
     mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle> handle) {
   ExecutionContext* context = resolver->GetExecutionContext();

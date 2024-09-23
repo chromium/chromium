@@ -34,6 +34,7 @@ class Rect;
 
 namespace gpu {
 class ClientSharedImage;
+class SharedImageInterface;
 }
 
 namespace viz {
@@ -183,6 +184,8 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   void ReleaseSoftwareCallback(
       scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
       cc::SharedBitmapIdRegistration registration,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       const gpu::SyncToken& sync_token,
       bool lost_resource);
   // Callback when compositor is done with a gpu resource given to it. Static
@@ -196,13 +199,13 @@ class CONTENT_EXPORT PepperGraphics2DHost final
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   scoped_refptr<PPB_ImageData_Impl> image_data_;
 
   // Non-owning pointer to the plugin instance this context is currently bound
   // to, if any. If the context is currently unbound, this will be NULL.
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> bound_instance_;
+  raw_ptr<PepperPluginInstanceImpl> bound_instance_;
 
   // Keeps track of all drawing commands queued before a Flush call.
   struct QueuedOperation;
@@ -259,6 +262,11 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   // to give the bitmap to the compositor.
   scoped_refptr<cc::CrossThreadSharedBitmap> cached_bitmap_;
   cc::SharedBitmapIdRegistration cached_bitmap_registration_;
+  scoped_refptr<gpu::ClientSharedImage> cached_bitmap_shared_image_;
+  // Used for tracking whether the shared_image_interface has changed due to
+  // context lost.
+  scoped_refptr<gpu::SharedImageInterface>
+      cached_bitmap_shared_image_interface_;
 
   // Whether to use gpu memory for compositor resources.
   const bool enable_gpu_memory_buffer_;

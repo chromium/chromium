@@ -11,7 +11,6 @@
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -98,7 +97,7 @@ void TypedNavigationUpgradeTabHelper::DidStartNavigation(
       item_pending->GetHttpsUpgradeType() == web::HttpsUpgradeType::kOmnibox) {
     upgraded_https_url_ = navigation_context->GetUrl();
 
-    // TODO(crbug.com/1340742): Remove this scheme check once fixed. Without
+    // TODO(crbug.com/40230443): Remove this scheme check once fixed. Without
     // the fix, kHttpsLoadStarted bucket is mildly overcounted.
     GURL url = item_pending->GetURL();
     if (url.SchemeIs(url::kHttpsScheme) ||
@@ -142,7 +141,7 @@ void TypedNavigationUpgradeTabHelper::DidFinishNavigation(
   if (state_ == State::kStoppedWithTimeout) {
     DCHECK(!timer_.IsRunning());
     RecordUMA(Event::kHttpsLoadTimedOut);
-    // TODO(crbug.com/1379605): Cleanup this logic, we should only use
+    // TODO(crbug.com/40875679): Cleanup this logic, we should only use
     // upgraded_https_url_ here.
     if (upgraded_https_url_.is_valid()) {
       FallbackToHttp(web_state, upgraded_https_url_);

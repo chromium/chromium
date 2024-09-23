@@ -42,7 +42,7 @@ void Report(const LayerTreeImpl* layer_tree,
     if (!layer->draws_content() || !layer->GetRasterSource()) {
       continue;
     }
-    const scoped_refptr<DisplayItemList>& display_item_list =
+    const scoped_refptr<const DisplayItemList>& display_item_list =
         layer->GetRasterSource()->GetDisplayItemList();
     if (!display_item_list) {
       continue;

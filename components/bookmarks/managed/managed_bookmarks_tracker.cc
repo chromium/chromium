@@ -163,7 +163,7 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
   // Remove any extra children of |folder| that haven't been reused.
   while (folder->children().size() != folder_index)
     model_->Remove(folder->children()[folder_index].get(),
-                   bookmarks::metrics::BookmarkEditSource::kOther);
+                   bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 }
 
 // static
@@ -177,7 +177,7 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
   const base::Value::Dict* dict = list[index].GetIfDict();
   if (!dict) {
     // Should never happen after policy validation.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   const std::string* name = dict->FindString(kName);
@@ -185,7 +185,7 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
   const base::Value::List* children_list = dict->FindList(kChildren);
   if (!name || (!spec && !children_list)) {
     // Should never happen after policy validation.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

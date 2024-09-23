@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
@@ -90,6 +91,8 @@ class PageTimingMetricsSender {
                                           const gfx::Rect& image_ad_rect);
 
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                 base::TimeTicks max_event_queued_main_thread,
+                                 base::TimeTicks max_event_commit_finish,
                                  base::TimeTicks max_event_end,
                                  blink::UserInteractionType interaction_type,
                                  uint64_t interaction_offset);
@@ -114,6 +117,8 @@ class PageTimingMetricsSender {
 
   void UpdateSoftNavigationMetrics(
       mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
+
+  void SendCustomUserTimingMark(mojom::CustomUserTimingMarkPtr custom_timing);
 
  protected:
   base::OneShotTimer* timer() const { return timer_.get(); }
@@ -155,7 +160,8 @@ class PageTimingMetricsSender {
 
   // Set of all resources that have completed or received a transfer
   // size update since the last timimg update.
-  base::flat_set<PageResourceDataUse*> modified_resources_;
+  base::flat_set<raw_ptr<PageResourceDataUse, CtnExperimental>>
+      modified_resources_;
 
   // Field trial for alternating page timing metrics sender buffer timer delay.
   // https://crbug.com/847269.

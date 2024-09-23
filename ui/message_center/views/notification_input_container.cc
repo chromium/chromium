@@ -15,12 +15,14 @@
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_view_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_class_properties.h"
 
 namespace message_center {
 
@@ -47,7 +49,9 @@ NotificationInputContainer::NotificationInputContainer(
                 container->textfield_->GetProperty(kTextfieldIndexKey),
                 container->textfield_->GetText());
           },
-          base::Unretained(this)))) {}
+          base::Unretained(this)))) {
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+}
 
 NotificationInputContainer::~NotificationInputContainer() {
   // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
@@ -71,7 +75,7 @@ void NotificationInputContainer::Init() {
   SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button_->SetAccessibleName(
+  button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(GetDefaultAccessibleNameStringId()));
   button_->SetTooltipText(
       l10n_util::GetStringUTF16(GetDefaultAccessibleNameStringId()));
@@ -149,26 +153,33 @@ void NotificationInputContainer::OnThemeChanged() {
   UpdateButtonImage();
 }
 
-void NotificationInputContainer::Layout(PassKey) {
-  LayoutSuperclass<View>(this);
-
-  if (!ink_drop_container_)
-    return;
+views::ProposedLayout NotificationInputContainer::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+  DCHECK(size_bounds.is_fully_bounded());
+  layout.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  if (!ink_drop_container_) {
+    return layout;
+  }
 
   // The animation is needed to run inside of the border.
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
+  layout.child_layouts.emplace_back(ink_drop_container_.get(),
+                                    ink_drop_container_->GetVisible(),
+                                    gfx::Rect(layout.host_size));
+  return layout;
 }
 
 bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
                                                 const ui::KeyEvent& event) {
-  if (event.type() == ui::ET_KEY_PRESSED &&
+  if (event.type() == ui::EventType::kKeyPressed &&
       event.key_code() == ui::VKEY_RETURN) {
     delegate_->OnNotificationInputSubmit(
         textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
     textfield_->SetText(std::u16string());
     return true;
   }
-  return event.type() == ui::ET_KEY_RELEASED;
+  return event.type() == ui::EventType::kKeyReleased;
 }
 
 void NotificationInputContainer::OnAfterUserAction(views::Textfield* sender) {
@@ -190,7 +201,10 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
   views::InkDrop::Get(this)->SetBaseColorId(
       ui::kColorNotificationInputBackground);
 
-  return AddChildView(std::make_unique<views::InkDropContainerView>());
+  auto* ink_drop_container =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+  ink_drop_container->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  return ink_drop_container;
 }
 
 gfx::Insets NotificationInputContainer::GetTextfieldPadding() const {
@@ -231,7 +245,7 @@ void NotificationInputContainer::UpdateButtonImage() {
           GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
 }
 
-BEGIN_METADATA(NotificationInputContainer, views::View)
+BEGIN_METADATA(NotificationInputContainer)
 END_METADATA
 
 }  // namespace message_center

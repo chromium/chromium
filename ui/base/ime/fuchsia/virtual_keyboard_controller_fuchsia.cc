@@ -151,7 +151,6 @@ VirtualKeyboardControllerFuchsia::GetFocusedTextType() const {
     // Should be handled in InputMethodFuchsia.
     case TEXT_INPUT_MODE_NONE:
       NOTREACHED();
-      return fuchsia_input_virtualkeyboard::TextType::kAlphanumeric;
 
     case TEXT_INPUT_MODE_DEFAULT:
       // Fall-through to using TextInputType.

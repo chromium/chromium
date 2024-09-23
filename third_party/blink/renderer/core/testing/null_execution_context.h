@@ -63,6 +63,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
 
   void CountUse(mojom::WebFeature) override {}
   void CountDeprecation(mojom::WebFeature) override {}
+  void CountWebDXFeature(mojom::blink::WebDXFeature) override {}
 
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const override;
 

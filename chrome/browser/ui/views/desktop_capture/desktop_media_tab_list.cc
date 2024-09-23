@@ -18,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -52,7 +51,7 @@ enum class HighlightedTabDiscardStatus {
 // length is likely shorter than this, as the Label will elide it to fit the UI.
 constexpr const int kMaxPreviewTitleLength = 500;
 
-// TODO(crbug.com/1224342): Refer to central Desktop UI constants rather than
+// TODO(crbug.com/40187992): Refer to central Desktop UI constants rather than
 // hardcoding this.
 const int kListWidth = 346;
 
@@ -156,7 +155,7 @@ void TabListModel::OnSourcePreviewChanged(size_t index) {
 }
 
 void TabListModel::OnDelegatedSourceListSelection() {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "Tab Lists are not delegated, so should not get a selection event.";
 }
 
@@ -200,18 +199,13 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
 
 std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
     std::unique_ptr<views::TableView> table) {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-      features::IsChromeRefresh2023()) {
-    auto scroll_view = std::make_unique<views::ScrollView>(
-        views::ScrollView::ScrollWithLayers::kEnabled);
-    scroll_view->SetDrawOverflowIndicator(false);
-    scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
-    scroll_view->SetContents(std::move(table));
-    scroll_view->SetBorder(nullptr);
-    return scroll_view;
-  } else {
-    return views::TableView::CreateScrollViewWithTable(std::move(table));
-  }
+  auto scroll_view = std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled);
+  scroll_view->SetDrawOverflowIndicator(false);
+  scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
+  scroll_view->SetContents(std::move(table));
+  scroll_view->SetBorder(nullptr);
+  return scroll_view;
 }
 
 }  // namespace
@@ -244,7 +238,8 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
       model_.get(), std::vector<ui::TableColumn>(1),
       views::TableType::kIconAndText, true);
   table->set_observer(view_observer_.get());
-  table->GetViewAccessibility().OverrideName(accessible_name);
+  table->GetViewAccessibility().SetName(accessible_name,
+                                        ax::mojom::NameFrom::kAttribute);
   table_ = table.get();
 
   AddChildView(BuildUI(std::move(table)));
@@ -259,7 +254,7 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   auto preview = std::make_unique<views::ImageView>();
   preview->SetVisible(false);
   preview->SetSize(desktopcapture::kPreviewSize);
-  preview->SetAccessibleName(l10n_util::GetStringUTF16(
+  preview->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_DESKTOP_MEDIA_PICKER_PREVIEW_ACCESSIBLE_NAME));
   preview_ = preview_wrapper->AddChildView(std::move(preview));
 
@@ -285,6 +280,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   preview_sidebar->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       /*between_child_spacing=*/11));
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  preview_sidebar->SetLayoutManagerUseConstrainedSpace(false);
 
   std::unique_ptr<views::View> full_panel = std::make_unique<views::View>();
 
@@ -293,12 +290,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   scroll_view_->SetPreferredSize(gfx::Size(kListWidth, 0));
   full_panel->AddChildView(std::move(preview_sidebar));
 
-  const gfx::Insets kFullPannelInset =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-          ? gfx::Insets(16)
-          : gfx::Insets::TLBR(15, 0, 0, 0);
-  const int kChildSpacing =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 12;
+  const gfx::Insets kFullPannelInset = gfx::Insets(16);
+  const int kChildSpacing = 16;
   views::BoxLayout* layout =
       full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, kFullPannelInset,
@@ -330,58 +323,31 @@ DesktopMediaTabList::~DesktopMediaTabList() {
   table_->set_observer(nullptr);
 }
 
-gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
+gfx::Size DesktopMediaTabList::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
   // to allow space for the audio-toggle controller, otherwise default to 10
   // rows.
-  const int preferred_item_count =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 9 : 10;
+  const int preferred_item_count = 9;
   return gfx::Size(0, table_->GetRowHeight() * preferred_item_count);
-}
-
-int DesktopMediaTabList::GetHeightForWidth(int width) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // If this method isn't overridden here, the default implementation would fall
-  // back to FillLayout's GetHeightForWidth, which would ask the TableView,
-  // which would return something based on the total number of rows, since
-  // TableView expects to always be sized by its container. Avoid even asking it
-  // by using the same height as CalculatePreferredSize().
-  return CalculatePreferredSize().height();
 }
 
 void DesktopMediaTabList::OnThemeChanged() {
   DesktopMediaListController::ListView::OnThemeChanged();
 
   const ui::ColorProvider* const color_provider = GetColorProvider();
-  if (features::IsChromeRefresh2023()) {
-    table_->SetBorder(nullptr);
-  } else {
-    table_->SetBorder(views::CreateSolidBorder(
-        /*thickness=*/1,
-        color_provider->GetColor(kColorDesktopMediaTabListBorder)));
-  }
+  table_->SetBorder(nullptr);
 
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-      features::IsChromeRefresh2023()) {
-    scroll_view_->SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
-    const SkColor background_color =
-        color_provider->GetColor(ui::kColorSysTonalContainer);
-    preview_wrapper_->SetBackground(
-        views::CreateRoundedRectBackground(background_color, 8));
-    empty_preview_label_->SetBackground(
-        views::CreateRoundedRectBackground(background_color, 8));
-    empty_preview_label_->SetBackgroundColor(background_color);
-  } else {
-    const SkColor background_color =
-        color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
-    preview_wrapper_->SetBackground(
-        views::CreateSolidBackground(background_color));
-    empty_preview_label_->SetBackground(
-        views::CreateSolidBackground(background_color));
-    empty_preview_label_->SetBackgroundColor(background_color);
-  }
+  scroll_view_->SetBackground(views::CreateRoundedRectBackground(
+      GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
+  const SkColor background_color =
+      color_provider->GetColor(ui::kColorSysTonalContainer);
+  preview_wrapper_->SetBackground(
+      views::CreateRoundedRectBackground(background_color, 8));
+  empty_preview_label_->SetBackground(
+      views::CreateRoundedRectBackground(background_color, 8));
+  empty_preview_label_->SetBackgroundColor(background_color);
 }
 
 std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {

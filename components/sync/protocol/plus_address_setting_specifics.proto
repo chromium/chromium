@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Used to sync settings for `PLUS_ADDRESS`. Since these settings originate from
+// the user's account, they are not reusing standard syncable prefs.
+message PlusAddressSettingSpecifics {
+  optional string name = 1;
+  // The value of the setting. Which variant is set depends on the setting.
+  oneof Value {
+    bool bool_value = 2;
+    string string_value = 3;
+    int64 int_value = 4;
+  }
+}

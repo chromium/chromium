@@ -19,7 +19,7 @@ class Profile;
 
 namespace ash::file_system_provider {
 
-class ContentCache;
+class CacheManager;
 class ProvidedFileSystemInterface;
 class ProviderId;
 
@@ -45,7 +45,7 @@ class ProviderInterface {
   virtual std::unique_ptr<ProvidedFileSystemInterface> CreateProvidedFileSystem(
       Profile* profile,
       const ProvidedFileSystemInfo& file_system_info,
-      ContentCache* content_cache) = 0;
+      CacheManager* cache_manager) = 0;
 
   // Returns the capabilites of the provider.
   virtual const Capabilities& GetCapabilities() const = 0;

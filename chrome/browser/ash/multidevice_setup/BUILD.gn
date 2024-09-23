@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("multidevice_setup") {
+  sources = [
+    "auth_token_validator_factory.cc",
+    "auth_token_validator_factory.h",
+    "auth_token_validator_impl.cc",
+    "auth_token_validator_impl.h",
+    "multidevice_setup_client_factory.cc",
+    "multidevice_setup_client_factory.h",
+    "multidevice_setup_service_factory.cc",
+    "multidevice_setup_service_factory.h",
+    "oobe_completion_tracker_factory.cc",
+    "oobe_completion_tracker_factory.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/android_sms",
+    "//chrome/browser/ash/cryptauth",
+    "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/services/multidevice_setup",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:auth_token_validator",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:oobe_completion_tracker",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/android_sms",
+    "//chrome/browser/ash/login",
+  ]
+}

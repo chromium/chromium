@@ -5,7 +5,7 @@
 #include "content/public/test/render_frame_host_test_support.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 
 namespace content {
 
@@ -13,7 +13,7 @@ void LeaveInPendingDeletionState(RenderFrameHost* rfh) {
   static_cast<RenderFrameHostImpl*>(rfh)->DoNotDeleteForTesting();
 }
 
-bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
+bool IsDisableThirdPartyStoragePartitioning2Enabled(RenderFrameHost* rfh) {
   DCHECK(rfh->IsInPrimaryMainFrame());
 
   RuntimeFeatureStateDocumentData* document_data =
@@ -23,7 +23,7 @@ bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh) {
   blink::RuntimeFeatureStateReadContext read_context =
       document_data->runtime_feature_state_read_context();
 
-  return read_context.IsDisableThirdPartyStoragePartitioningEnabled();
+  return read_context.IsDisableThirdPartyStoragePartitioning2Enabled();
 }
 
 void CreatePermissionService(
@@ -31,6 +31,10 @@ void CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   static_cast<RenderFrameHostImpl*>(rfh)->CreatePermissionService(
       std::move(receiver));
+}
+
+void DisableUnloadTimerForTesting(RenderFrameHost* rfh) {
+  static_cast<RenderFrameHostImpl*>(rfh)->DisableUnloadTimerForTesting();
 }
 
 }  // namespace content

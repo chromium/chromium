@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -54,9 +55,12 @@ SmartLockServiceFactory::SmartLockServiceFactory()
           "EasyUnlockService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
@@ -73,6 +77,10 @@ KeyedService* SmartLockServiceFactory::BuildServiceInstanceFor(
   }
 
   if (!IsFeatureAllowed(context)) {
+    return nullptr;
+  }
+
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     return nullptr;
   }
 

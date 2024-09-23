@@ -9,11 +9,13 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -123,6 +125,14 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
   static std::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
 
   static crosapi::mojom::OptionalBool allow_close(const apps::AppPtr& r);
+
+  static crosapi::mojom::OptionalBool allow_window_mode_selection(
+      const apps::AppPtr& r);
+
+  static std::optional<apps::PackageId> installer_package_id(
+      const apps::AppPtr& r) {
+    return r->installer_package_id;
+  }
 
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
@@ -458,6 +468,18 @@ struct StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr> {
 
   static bool Read(crosapi::mojom::AppShortcutDataView data,
                    apps::ShortcutPtr* out);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId> {
+  static crosapi::mojom::PackageIdType package_type(const apps::PackageId& r);
+
+  static const std::string& identifier(const apps::PackageId& r) {
+    return r.identifier();
+  }
+
+  static bool Read(crosapi::mojom::PackageIdDataView data,
+                   apps::PackageId* out);
 };
 
 }  // namespace mojo

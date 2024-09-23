@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'rgb(calc(50% + (sign(1em - 10px) * 10%)), 0%, 0%, 50%)'
+  assert_equals: expected "rgba(153, 0, 0, 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(calc(50% + (sign(1em - 10px) * 10%)), 0%, 0%, 50%)'
+  assert_equals: expected "rgba(153, 0, 0, 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] Property color value 'rgb(calc(50 + (sign(1em - 10px) * 10)), 0, 0, 0.5)'
+  assert_equals: expected "rgba(60, 0, 0, 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(calc(50 + (sign(1em - 10px) * 10)), 0, 0, 0.5)'
+  assert_equals: expected "rgba(60, 0, 0, 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] Property color value 'rgb(0%, 0%, 0%, calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.6)" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] Property color value 'rgba(0%, 0%, 0%, calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.6)" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] Property color value 'rgb(0, 0, 0, calc(0.75 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.85)" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] Property color value 'rgba(0, 0, 0, calc(0.75 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.85)" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] Property color value 'rgb(calc(50% + (sign(1em - 10px) * 10%)) 0% 0% / 50%)'
+  assert_equals: expected "rgba(153, 0, 0, 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(calc(50% + (sign(1em - 10px) * 10%)) 0% 0% / 50%)'
+  assert_equals: expected "rgba(153, 0, 0, 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] Property color value 'rgb(calc(50 + (sign(1em - 10px) * 10)) 0 0 / 0.5)'
+  assert_equals: expected "rgba(60, 0, 0, 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(calc(50 + (sign(1em - 10px) * 10)) 0 0 / 0.5)'
+  assert_equals: expected "rgba(60, 0, 0, 0.5)" but got "rgba(40, 0, 0, 0.5)"
+[FAIL] Property color value 'rgb(0% 0% 0% / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.6)" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] Property color value 'rgba(0% 0% 0% / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.6)" but got "rgba(0, 0, 0, 0.4)"
+[FAIL] Property color value 'rgb(0 0 0 / calc(0.75 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.85)" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] Property color value 'rgba(0 0 0 / calc(0.75 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.85)" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] Property color value 'rgba(calc(50% + (sign(1em - 10px) * 10%)) 0 0% / 0.5)'
+  assert_equals: expected "rgba(153, 0, 0, 0.5)" but got "rgba(102, 0, 0, 0.5)"
+[FAIL] Property color value 'rgba(0% 0 0% / calc(0.75 + (sign(1em - 10px) * 0.1)))'
+  assert_equals: expected "rgba(0, 0, 0, 0.85)" but got "rgba(0, 0, 0, 0.65)"
+[FAIL] Property color value 'rgba(calc(50% + (sign(2cqw - 10px) * 10%)), 0%, 0%, 51%)'
+  assert_equals: expected "rgba(153, 0, 0, 0.51)" but got "rgba(102, 0, 0, 0.51)"
+Harness: the test ran to completion.
+

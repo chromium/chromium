@@ -5,9 +5,8 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_VERIFIER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_VERIFIER_INTERNAL_H_
 
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ios/web_view/public/cwv_credit_card_verifier.h"
-
-#include "components/autofill/core/browser/autofill_client.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,19 +23,21 @@ class CreditCard;
 // |creditCard| The card that needs verification.
 // |reason| Why the card needs verification.
 // |delegate| Internal delegate used process verification events.
-- (instancetype)initWithPrefs:(PrefService*)prefs
-               isOffTheRecord:(BOOL)isOffTheRecord
-                   creditCard:(const autofill::CreditCard&)creditCard
-                       reason:(autofill::AutofillClient::UnmaskCardReason)reason
-                     delegate:
-                         (base::WeakPtr<autofill::CardUnmaskDelegate>)delegate
+- (instancetype)
+     initWithPrefs:(PrefService*)prefs
+    isOffTheRecord:(BOOL)isOffTheRecord
+        creditCard:(const autofill::CreditCard&)creditCard
+            reason:
+                (autofill::payments::PaymentsAutofillClient::UnmaskCardReason)
+                    reason
+          delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 // Used to pass unmask verification results to this class. Needed because
 // verification results arrive from the CWVAutofillClientBridge protocol defiend
 // in CWVAutofillController.
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result;
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result;
 
 // Use to notify CWVCreditCardVerifier that it needs to obtain risk data for
 // credit card verification and to pass it back in |callback|.

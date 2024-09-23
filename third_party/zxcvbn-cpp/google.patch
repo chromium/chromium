@@ -1,0 +1,2641 @@
+diff --git a/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp b/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
+deleted file mode 100644
+index 7e1ae34..0000000
+--- a/native-src/zxcvbn/adjacency_graphs_js_bindings.cpp
++++ /dev/null
+@@ -1,49 +0,0 @@
+-#include <zxcvbn/common_js.hpp>
+-
+-#include <zxcvbn/adjacency_graphs.hpp>
+-
+-#include <emscripten/emscripten.h>
+-#include <emscripten/bind.h>
+-
+-namespace zxcvbn_js {
+-
+-emscripten::val qwerty_graph() {
+-  return to_val(zxcvbn::graphs().at(zxcvbn::GraphTag::QWERTY));
+-}
+-
+-emscripten::val dvorak_graph() {
+-  return to_val(zxcvbn::graphs().at(zxcvbn::GraphTag::DVORAK));
+-}
+-
+-emscripten::val keypad_graph() {
+-  return to_val(zxcvbn::graphs().at(zxcvbn::GraphTag::KEYPAD));
+-}
+-
+-emscripten::val mac_keypad_graph() {
+-  return to_val(zxcvbn::graphs().at(zxcvbn::GraphTag::MAC_KEYPAD));
+-}
+-
+-}
+-
+-EMSCRIPTEN_BINDINGS(adjacency_graphs) {
+-  emscripten::function("_qwerty_graph", &zxcvbn_js::qwerty_graph);
+-  emscripten::function("_dvorak_graph", &zxcvbn_js::dvorak_graph);
+-  emscripten::function("_keypad_graph", &zxcvbn_js::keypad_graph);
+-  emscripten::function("_mac_keypad_graph", &zxcvbn_js::mac_keypad_graph);
+-}
+-
+-#ifdef __EMSCRIPTEN__
+-
+-int main() {
+-  // workaround: these values are only guaranteed to exist after init
+-  EM_ASM({
+-      Module["qwerty"] = Module["_qwerty_graph"]();
+-      Module["dvorak"] = Module["_dvorak_graph"]();
+-      Module["keypad"] = Module["_keypad_graph"]();
+-      Module["mac_keypad"] = Module["_mac_keypad_graph"]();
+-    });
+-  emscripten_exit_with_live_runtime();
+-  return 0;
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/common.hpp b/native-src/zxcvbn/common.hpp
+index cba756c..1f66367 100644
+--- a/native-src/zxcvbn/common.hpp
++++ b/native-src/zxcvbn/common.hpp
+@@ -1,7 +1,6 @@
+ #ifndef __ZXCVBN__COMMON_HPP
+ #define __ZXCVBN__COMMON_HPP
+ 
+-#include <zxcvbn/zxcvbn.h>
+ #include <zxcvbn/frequency_lists.hpp>
+ #include <zxcvbn/adjacency_graphs.hpp>
+ 
+@@ -12,7 +11,7 @@
+ 
+ namespace zxcvbn {
+ 
+-using guesses_t = zxcvbn_guesses_t;
++using guesses_t = double;
+ using guesses_log10_t = int;
+ using score_t = unsigned;
+ using idx_t = std::string::size_type;
+@@ -35,10 +34,10 @@ enum class RegexTag {
+ };
+ 
+ enum class SequenceTag {
+-  UPPER,
+-  LOWER,
+-  DIGITS,
+-  UNICODE,
++  kUpper,
++  kLower,
++  kDigits,
++  kUnicode,
+ };
+ 
+ struct PortableRegexMatch {
+@@ -67,7 +66,6 @@ enum class MatchPattern {
+ struct DictionaryMatch {
+   static constexpr auto pattern = MatchPattern::DICTIONARY;
+ 
+-  DictionaryTag dictionary_tag;
+   std::string matched_word;
+   rank_t rank;
+   bool l33t;
+diff --git a/native-src/zxcvbn/common_js.hpp b/native-src/zxcvbn/common_js.hpp
+deleted file mode 100644
+index 729cbad..0000000
+--- a/native-src/zxcvbn/common_js.hpp
++++ /dev/null
+@@ -1,515 +0,0 @@
+-#ifndef __ZXCVBN__COMMON_JS_HPP
+-#define __ZXCVBN__COMMON_JS_HPP
+-
+-#include <zxcvbn/common.hpp>
+-#include <zxcvbn/feedback.hpp>
+-
+-#include <zxcvbn/util.hpp>
+-
+-#include <emscripten/bind.h>
+-
+-#include <codecvt>
+-#include <locale>
+-#include <string>
+-#include <vector>
+-#include <unordered_map>
+-
+-namespace zxcvbn_js {
+-
+-template<class T, class M>
+-M _get_member_type(M T::*);
+-
+-// this makes me very sad
+-#define GET_MEMBER_TYPE(f) decltype(_get_member_type(f))
+-
+-template<class T, typename = void>
+-struct val_converter;
+-
+-template<class T>
+-emscripten::val to_val(const T & val) {
+-  return val_converter<T>::to(val);
+-}
+-
+-template<class T>
+-T from_val(const emscripten::val & val) {
+-  return val_converter<T>::from(val);
+-}
+-
+-template<class T>
+-T from_val_with_default(const emscripten::val & val, T def) {
+-  return ((val.isUndefined() || val.isNull())
+-          ? std::move(def)
+-          : val_converter<T>::from(val));
+-}
+-
+-template<class T>
+-struct val_converter<
+-  T, std::enable_if_t<
+-       std::is_same<std::decay_t<T>, void>::value ||
+-       std::is_same<std::decay_t<T>, bool>::value ||
+-       std::is_same<std::decay_t<T>, char>::value ||
+-       std::is_same<std::decay_t<T>, signed char>::value ||
+-       std::is_same<std::decay_t<T>, unsigned char>::value ||
+-       std::is_same<std::decay_t<T>, short>::value ||
+-       std::is_same<std::decay_t<T>, unsigned short>::value ||
+-       std::is_same<std::decay_t<T>, int>::value ||
+-       std::is_same<std::decay_t<T>, unsigned int>::value ||
+-       std::is_same<std::decay_t<T>, long>::value ||
+-       std::is_same<std::decay_t<T>, unsigned long>::value ||
+-       std::is_same<std::decay_t<T>, float>::value ||
+-       std::is_same<std::decay_t<T>, double>::value ||
+-       std::is_same<std::decay_t<T>, std::wstring>::value
+-       >> {
+-  static T from(const emscripten::val & val) {
+-    return val.as<T>();
+-  }
+-  static emscripten::val to(const T & val) {
+-    return emscripten::val(val);
+-  }
+-};
+-
+-
+-inline
+-std::string to_utf8(const std::wstring & elt) {
+-  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> u8towide;
+-  return u8towide.to_bytes(elt);
+-}
+-
+-inline
+-std::wstring to_wide(const std::string & elt) {
+-  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> u8towide;
+-  return u8towide.from_bytes(elt);
+-}
+-
+-template<>
+-struct val_converter<std::string> {
+-  static std::string from(const emscripten::val & val) {
+-    return to_utf8(from_val<std::wstring>(val));
+-  }
+-  static emscripten::val to(const std::string & val) {
+-    return to_val(to_wide(val));
+-  }
+-};
+-
+-template<typename T>
+-struct val_converter<std::vector<T>> {
+-  static std::vector<T> from(const emscripten::val & v) {
+-    auto l = v["length"].as<unsigned>();
+-
+-    std::vector<T> rv;
+-    for(unsigned i = 0; i < l; ++i) {
+-      rv.push_back(val_converter<T>::from(v[i]));
+-    }
+-
+-    return rv;
+-  };
+-
+-  static emscripten::val to(const std::vector<T> & v) {
+-    auto result = emscripten::val::array();
+-
+-    std::size_t i = 0;
+-    for (const auto & elt : v) {
+-      result.set(i, val_converter<T>::to(elt));
+-      i += 1;
+-    }
+-    return result;
+-  }
+-};
+-
+-template<class T>
+-struct val_converter<std::unordered_map<std::string, T>> {
+-  static std::unordered_map<std::string, T> from(const emscripten::val & val) {
+-    std::unordered_map<std::string, T> result;
+-    auto keys = emscripten::val::global("Object").call<emscripten::val>("keys", val);
+-    for (auto & str : val_converter<std::vector<std::string>>::from(keys)) {
+-      result.insert(std::make_pair(str, val_converter<T>::from(val[str])));
+-    }
+-    return result;
+-  }
+-  static emscripten::val to(const std::unordered_map<std::string, T> & val) {
+-    auto result = emscripten::val::object();
+-    for (const auto & item : val) {
+-      result.set(item.first, to_val(item.second));
+-    }
+-    return result;
+-  }
+-};
+-
+-template<>
+-struct val_converter<zxcvbn::SequenceTag> {
+-  static zxcvbn::SequenceTag from(const emscripten::val & val) {
+-    auto s = val_converter<std::string>::from(val);
+-    if (s == "upper") return zxcvbn::SequenceTag::UPPER;
+-    else if (s == "lower") return zxcvbn::SequenceTag::LOWER;
+-    else if (s == "digits") return zxcvbn::SequenceTag::DIGITS;
+-    else {
+-      assert(s == "unicode");
+-      return zxcvbn::SequenceTag::UNICODE;
+-    }
+-  }
+-  static emscripten::val to(const zxcvbn::SequenceTag & val) {
+-    std::string s = [&] {
+-      if (val == zxcvbn::SequenceTag::UPPER) return "upper";
+-      else if (val == zxcvbn::SequenceTag::LOWER) return "lower";
+-      else if (val == zxcvbn::SequenceTag::DIGITS) return "digits";
+-      else {
+-        assert(val == zxcvbn::SequenceTag::UNICODE);
+-        return "unicode";
+-      }
+-    }();
+-    return to_val(s);
+-  }
+-};
+-
+-template<>
+-struct val_converter<zxcvbn::RegexTag> {
+-  static zxcvbn::RegexTag from(const emscripten::val & val) {
+-    auto s = val_converter<std::string>::from(val);
+-    if (s == "recent_year") return zxcvbn::RegexTag::RECENT_YEAR;
+-    else if (s == "alpha_lower") return zxcvbn::RegexTag::ALPHA_LOWER;
+-    else {
+-      assert(s == "alphanumeric");
+-      return zxcvbn::RegexTag::ALPHANUMERIC;
+-    }
+-  }
+-  static emscripten::val to(const zxcvbn::RegexTag & val) {
+-    std::string s = [&] {
+-      if (val == zxcvbn::RegexTag::RECENT_YEAR) return "recent_year";
+-      else if (val == zxcvbn::RegexTag::ALPHA_LOWER) return "alpha_lower";
+-      else {
+-        assert(val == zxcvbn::RegexTag::ALPHANUMERIC);
+-        return "alphanumeric";
+-      }
+-    }();
+-    return to_val(s);
+-  }
+-};
+-
+-template<>
+-struct val_converter<zxcvbn::PortableRegexMatch> {
+-  static zxcvbn::PortableRegexMatch from(const emscripten::val & val) {
+-    return {
+-      val_converter<std::vector<std::string>>::from(val),
+-      from_val_with_default<std::size_t>(val["index"], 0),
+-    };
+-  }
+-  static emscripten::val to(const zxcvbn::PortableRegexMatch & val) {
+-    auto result = emscripten::val::array();
+-    std::size_t i = 0;
+-    for (const auto & elt : val.matches) {
+-      result.set(i, to_val(elt));
+-    }
+-    result.set("index", to_val(val.index));
+-    return result;
+-  }
+-};
+-
+-template<class K, class V>
+-std::unordered_map<V, K> invert_dict(const std::unordered_map<K, V> & dict) {
+-  std::unordered_map<V, K> result;
+-  for (const auto & item : dict) {
+-    result.insert(std::make_pair(item.second, item.first));
+-  }
+-  return result;
+-}
+-
+-const auto _default_dict_tag_to_name = std::unordered_map<zxcvbn::DictionaryTag, std::string>{
+-  {zxcvbn::DictionaryTag::PASSWORDS, "passwords"},
+-  {zxcvbn::DictionaryTag::ENGLISH_WIKIPEDIA, "english_wikipedia"},
+-  {zxcvbn::DictionaryTag::FEMALE_NAMES, "female_names"},
+-  {zxcvbn::DictionaryTag::SURNAMES, "surnames"},
+-  {zxcvbn::DictionaryTag::US_TV_AND_FILM, "us_tv_and_film"},
+-  {zxcvbn::DictionaryTag::MALE_NAMES, "male_names"},
+-  {zxcvbn::DictionaryTag::USER_INPUTS, "user_inputs"},
+-};
+-
+-const auto _default_name_to_dict_tag = invert_dict(_default_dict_tag_to_name);
+-
+-const auto _default_graph_tag_to_name = std::unordered_map<zxcvbn::GraphTag, std::string> {
+-  {zxcvbn::GraphTag::QWERTY, "qwerty"},
+-  {zxcvbn::GraphTag::DVORAK, "dvorak"},
+-  {zxcvbn::GraphTag::KEYPAD, "keypad"},
+-  {zxcvbn::GraphTag::MAC_KEYPAD, "mac_keypad"},
+-};
+-
+-const auto _default_name_to_graph_tag = invert_dict(_default_graph_tag_to_name);
+-
+-using DictTagType = std::underlying_type_t<zxcvbn::DictionaryTag>;
+-using GraphTagType = std::underlying_type_t<zxcvbn::GraphTag>;
+-
+-template<>
+-struct val_converter<zxcvbn::Match> {
+-  static zxcvbn::Match from(const emscripten::val & val) {
+-    auto i = from_val_with_default<zxcvbn::idx_t>(val["i"], 0);
+-    auto j = from_val_with_default<zxcvbn::idx_t>(val["j"], 0);
+-    auto token = from_val_with_default<std::string>(val["token"], std::string(j - i + 1, '_'));
+-    auto tlen = zxcvbn::util::character_len(token);
+-    if (tlen != (j - i + 1)) {
+-      j = i + tlen - 1;
+-    }
+-
+-#define MATCH_FN(title, upper, lower) {#lower, zxcvbn::MatchPattern::upper},
+-    const auto _default_name_to_pattern = std::unordered_map<std::string, zxcvbn::MatchPattern>{MATCH_RUN()};
+-#undef MATCH_FN
+-
+-#define PARSE_MEMBER(class_, member) \
+-    from_val<GET_MEMBER_TYPE(&zxcvbn::class_::member)>(val[#member])
+-#define PARSE_MEMBER_DEF(class_, member, def)                           \
+-    from_val_with_default<GET_MEMBER_TYPE(&zxcvbn::class_::member)>(val[#member], def)
+-
+-    auto match = [&] {
+-      auto pattern = [&] {
+-        if (val["pattern"].isUndefined()) {
+-          // NB: object is not tagged with pattern, try inferring from members
+-          if (!val["base_token"].isUndefined()) {
+-            return zxcvbn::MatchPattern::REPEAT;
+-          }
+-          else if (!val["ascending"].isUndefined()) {
+-            return zxcvbn::MatchPattern::SEQUENCE;
+-          }
+-          else if (!val["regex_name"].isUndefined()) {
+-            return zxcvbn::MatchPattern::REGEX;
+-          }
+-          else if (!val["year"].isUndefined()) {
+-            return zxcvbn::MatchPattern::DATE;
+-          }
+-          else if (!val["graph"].isUndefined()) {
+-            return zxcvbn::MatchPattern::SPATIAL;
+-          }
+-          else if (!val["rank"].isUndefined() ||
+-                   !val["l33t"].isUndefined()) {
+-            return zxcvbn::MatchPattern::DICTIONARY;
+-          }
+-          return zxcvbn::MatchPattern::UNKNOWN;
+-        }
+-        auto pattern_str = val_converter<std::string>::from(val["pattern"]);
+-        auto it = _default_name_to_pattern.find(pattern_str);
+-        if (it == _default_name_to_pattern.end()) throw std::runtime_error("invalid match");
+-        return it->second;
+-      }();
+-
+-      switch (pattern) {
+-      case zxcvbn::MatchPattern::DICTIONARY: {
+-        auto dictionary_tag = [&] {
+-          if (val["dictionary_name"].isUndefined()) {
+-            return static_cast<zxcvbn::DictionaryTag>(0);
+-          }
+-          auto dictionary_name = val_converter<std::string>::from(val["dictionary_name"]);
+-
+-          auto it2 = _default_name_to_dict_tag.find(dictionary_name);
+-          if (it2 == _default_name_to_dict_tag.end()) throw std::runtime_error("invalid dictionary");
+-          return it2->second;
+-        }();
+-
+-        auto default_sub = std::unordered_map<std::string, std::string>{};
+-
+-        return zxcvbn::Match(i, j, token, zxcvbn::DictionaryMatch{
+-            dictionary_tag,
+-              PARSE_MEMBER_DEF(DictionaryMatch, matched_word, ""),
+-              PARSE_MEMBER_DEF(DictionaryMatch, rank, 0),
+-              PARSE_MEMBER_DEF(DictionaryMatch, l33t, false),
+-              PARSE_MEMBER_DEF(DictionaryMatch, reversed, false),
+-              PARSE_MEMBER_DEF(DictionaryMatch, sub, default_sub),
+-              PARSE_MEMBER_DEF(DictionaryMatch, sub_display, ""),
+-              });
+-      }
+-      case zxcvbn::MatchPattern::SPATIAL: {
+-        auto graph_name = val_converter<std::string>::from(val["graph"]);
+-        auto it2 = _default_name_to_graph_tag.find(graph_name);
+-        if (it2 == _default_name_to_graph_tag.end()) throw std::runtime_error("bad graph tag!");
+-        auto graph = it2->second;
+-
+-        return zxcvbn::Match(i, j, token, zxcvbn::SpatialMatch{
+-            graph, PARSE_MEMBER(SpatialMatch, turns),
+-            PARSE_MEMBER(SpatialMatch, shifted_count)
+-              });
+-      }
+-      case zxcvbn::MatchPattern::SEQUENCE: {
+-        auto sequence_tag = from_val_with_default<GET_MEMBER_TYPE(&zxcvbn::SequenceMatch::sequence_tag)>(val["sequence_name"], zxcvbn::SequenceTag::UNICODE);
+-        return zxcvbn::Match(i, j, token, zxcvbn::SequenceMatch{
+-            sequence_tag,
+-              PARSE_MEMBER_DEF(SequenceMatch, sequence_space, 0),
+-              PARSE_MEMBER(SequenceMatch, ascending),
+-          });
+-      }
+-      case zxcvbn::MatchPattern::REPEAT: {
+-        return zxcvbn::Match(i, j, token, zxcvbn::RepeatMatch{
+-            PARSE_MEMBER(RepeatMatch, base_token),
+-            PARSE_MEMBER(RepeatMatch, base_guesses),
+-            PARSE_MEMBER_DEF(RepeatMatch, base_matches, std::vector<zxcvbn::Match>{}),
+-            PARSE_MEMBER(RepeatMatch, repeat_count),
+-              });
+-      }
+-      case zxcvbn::MatchPattern::REGEX: {
+-        auto regex_tag = val_converter<GET_MEMBER_TYPE(&zxcvbn::RegexMatch::regex_tag)>::from(val["regex_name"]);
+-        return zxcvbn::Match(i, j, token, zxcvbn::RegexMatch{
+-            regex_tag, PARSE_MEMBER(RegexMatch, regex_match),
+-          });
+-      }
+-      case zxcvbn::MatchPattern::DATE: {
+-        auto separator = from_val_with_default<std::string>(val["separator"], "");
+-        return zxcvbn::Match(i, j, token, zxcvbn::DateMatch{
+-            separator,
+-            PARSE_MEMBER(DateMatch, year),
+-            PARSE_MEMBER(DateMatch, month),
+-            PARSE_MEMBER(DateMatch, day),
+-            PARSE_MEMBER_DEF(DateMatch, has_full_year, 0),
+-          });
+-      }
+-      case zxcvbn::MatchPattern::BRUTEFORCE: {
+-        return zxcvbn::Match(i, j, token, zxcvbn::BruteforceMatch{});
+-      }
+-      default:
+-        assert(pattern == zxcvbn::MatchPattern::UNKNOWN);
+-        return zxcvbn::Match(i, j, token, zxcvbn::UnknownMatch{});
+-      }
+-    }();
+-
+-    match.guesses = from_val_with_default<zxcvbn::guesses_t>(val["guesses"], 0);
+-    match.guesses_log10 = from_val_with_default<zxcvbn::guesses_log10_t>(val["guesses_log10"], 0);
+-    return match;
+-  }
+-
+-  static emscripten::val to(const zxcvbn::Match & val) {
+-    auto result = emscripten::val::object();
+-    result.set("i", to_val(val.i));
+-    result.set("j", to_val(val.j));
+-    if (val.token.size()) {
+-      result.set("token", to_val(val.token));
+-    }
+-    if (val.guesses) {
+-      result.set("guesses", to_val(val.guesses));
+-      result.set("guesses_log10", to_val(std::log10(val.guesses)));
+-    }
+-    switch (val.get_pattern()) {
+-    case zxcvbn::MatchPattern::DICTIONARY: {
+-      auto & dmatch = val.get_dictionary();
+-      result.set("pattern", "dictionary");
+-      result.set("_dictionary_tag", to_val(DictTagType(dmatch.dictionary_tag)));
+-      result.set("matched_word", to_val(dmatch.matched_word));
+-      result.set("rank", to_val(dmatch.rank));
+-      result.set("l33t", to_val(dmatch.l33t));
+-      result.set("reversed", to_val(dmatch.reversed));
+-      result.set("sub", to_val(dmatch.sub));
+-      result.set("sub_display", to_val(dmatch.sub_display));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::SPATIAL: {
+-      auto & dmatch = val.get_spatial();
+-      result.set("pattern", "spatial");
+-      result.set("_graph", to_val(GraphTagType(dmatch.graph)));
+-      result.set("turns", to_val(dmatch.turns));
+-      result.set("shifted_count", to_val(dmatch.shifted_count));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::SEQUENCE: {
+-      auto & dmatch = val.get_sequence();
+-      result.set("pattern", "sequence");
+-      result.set("sequence_name", to_val(dmatch.sequence_tag));
+-      result.set("sequence_space", to_val(dmatch.sequence_space));
+-      result.set("ascending", to_val(dmatch.ascending));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::REPEAT: {
+-      auto & dmatch = val.get_repeat();
+-      result.set("pattern", "repeat");
+-      result.set("base_token", to_val(dmatch.base_token));
+-      result.set("base_guesses", to_val(dmatch.base_guesses));
+-      result.set("base_matches", to_val(dmatch.base_matches));
+-      result.set("repeat_count", to_val(dmatch.repeat_count));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::REGEX: {
+-      auto & dmatch = val.get_regex();
+-      result.set("pattern", "regex");
+-      result.set("regex_name", to_val(dmatch.regex_tag));
+-      result.set("regex_match", to_val(dmatch.regex_match));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::DATE: {
+-      auto & dmatch = val.get_date();
+-      result.set("pattern", "date");
+-      result.set("separator", to_val(dmatch.separator));
+-      result.set("year", to_val(dmatch.year));
+-      result.set("month", to_val(dmatch.month));
+-      result.set("day", to_val(dmatch.day));
+-      result.set("has_full_year", to_val(dmatch.has_full_year));
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::BRUTEFORCE: {
+-      result.set("pattern", "bruteforce");
+-      break;
+-    }
+-    case zxcvbn::MatchPattern::UNKNOWN: {
+-      break;
+-    }
+-#ifndef NDEBUG
+-    default:
+-      assert(false);
+-#endif
+-    }
+-    return result;
+-  }
+-};
+-
+-template<class T>
+-struct val_converter<zxcvbn::optional::optional<T>> {
+-  static zxcvbn::optional::optional<T> from(const emscripten::val & val) {
+-    if (val.isNull()) {
+-      return zxcvbn::optional::nullopt;
+-    }
+-    else {
+-      return zxcvbn::optional::make_optional(val_converter<T>::from(val));
+-    }
+-  }
+-  static emscripten::val to(const zxcvbn::optional::optional<T> & val) {
+-    if (!val) {
+-      return emscripten::val::null();
+-    }
+-    else {
+-      return to_val(*val);
+-    }
+-  }
+-};
+-
+-template<>
+-struct val_converter<zxcvbn::Feedback> {
+-  static emscripten::val to(const zxcvbn::Feedback & val) {
+-    auto result = emscripten::val::object();
+-    result.set("warning", to_val(val.warning));
+-    result.set("suggestions", to_val(val.suggestions));
+-    return result;
+-  }
+-};
+-
+-inline
+-void fix_up_dictionary_tags(emscripten::val & result,
+-                            const std::unordered_map<zxcvbn::DictionaryTag, std::string> & _tag_to_name = _default_dict_tag_to_name) {
+-  auto len = result["length"].as<std::size_t>();
+-  for (decltype(len) i = 0; i < len; ++i) {
+-    auto v = result[i];
+-    if (v["_dictionary_tag"].isUndefined()) continue;
+-    auto val = v["_dictionary_tag"].as<DictTagType>();
+-    auto it = _tag_to_name.find(static_cast<zxcvbn::DictionaryTag>(val));
+-    assert(it != _tag_to_name.end());
+-    v.set("dictionary_name", it->second);
+-  }
+-}
+-
+-inline
+-void fix_up_graph_tags(emscripten::val & result,
+-                       const std::unordered_map<zxcvbn::GraphTag, std::string> & _tag_to_name = _default_graph_tag_to_name) {
+-  auto len = result["length"].as<std::size_t>();
+-  for (decltype(len) i = 0; i < len; ++i) {
+-    auto v = result[i];
+-    if (v["_graph"].isUndefined()) continue;
+-    auto val = v["_graph"].as<GraphTagType>();
+-    auto it = _tag_to_name.find(static_cast<zxcvbn::GraphTag>(val));
+-    assert(it != _tag_to_name.end());
+-    v.set("graph", it->second);
+-  }
+-}
+-
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/feedback.cpp b/native-src/zxcvbn/feedback.cpp
+deleted file mode 100644
+index d22c296..0000000
+--- a/native-src/zxcvbn/feedback.cpp
++++ /dev/null
+@@ -1,174 +0,0 @@
+-#include <zxcvbn/feedback.hpp>
+-
+-#include <zxcvbn/frequency_lists.hpp>
+-#include <zxcvbn/optional.hpp>
+-#include <zxcvbn/scoring.hpp>
+-#include <zxcvbn/util.hpp>
+-
+-#include <regex>
+-
+-namespace zxcvbn {
+-
+-const Feedback DEFAULT_FEEDBACK = {
+-  "",
+-  {
+-    "Use a few words, avoid common phrases",
+-    "No need for symbols, digits, or uppercase letters",
+-  },
+-};
+-
+-static
+-optional::optional<Feedback> get_match_feedback(const Match & match, bool is_sole_match);
+-
+-static
+-Feedback get_dictionary_match_feedback(const Match & match, bool is_sole_match);
+-
+-Feedback get_feedback(score_t score,
+-                      const std::vector<Match> & sequence) {
+-  // starting feedback
+-  if (!sequence.size()) return DEFAULT_FEEDBACK;
+-
+-  // no feedback if score is good or great.
+-  if (score > 2) return {"", {}};
+-
+-  // tie feedback to the longest match for longer sequences
+-  auto longest_match = sequence.begin();
+-  for (auto match = longest_match + 1; match != sequence.end(); ++match) {
+-    if (match->token.length() > longest_match->token.length()) {
+-      longest_match = match;
+-    }
+-  }
+-
+-  auto maybe_feedback = get_match_feedback(*longest_match, sequence.size() == 1);
+-  auto extra_feedback = "Add another word or two. Uncommon words are better.";
+-  if (maybe_feedback) {
+-    auto & feedback = *maybe_feedback;
+-
+-    feedback.suggestions.insert(maybe_feedback->suggestions.begin(),
+-                                extra_feedback);
+-
+-    return feedback;
+-  }
+-  else {
+-    return {"", {extra_feedback}};
+-  }
+-}
+-
+-optional::optional<Feedback> get_match_feedback(const Match & match_, bool is_sole_match) {
+-  switch (match_.get_pattern()) {
+-  case MatchPattern::DICTIONARY: {
+-    return get_dictionary_match_feedback(match_, is_sole_match);
+-  }
+-
+-  case MatchPattern::SPATIAL: {
+-    auto & match = match_.get_spatial();
+-    auto warning = (match.turns == 1)
+-      ? "Straight rows of keys are easy to guess"
+-      : "Short keyboard patterns are easy to guess";
+-
+-    return Feedback{warning, {
+-        "Use a longer keyboard pattern with more turns",
+-          }};
+-  }
+-
+-  case MatchPattern::REPEAT: {
+-    auto warning = (match_.get_repeat().base_token.length() == 1)
+-      ? "Repeats like \"aaa\" are easy to guess"
+-      : "Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"";
+-
+-    return Feedback{warning, {
+-        "Avoid repeated words and characters",
+-          }};
+-  }
+-
+-  case MatchPattern::SEQUENCE: {
+-    return Feedback{"Sequences like abc or 6543 are easy to guess",
+-        {"Avoid sequences"},
+-        };
+-  }
+-
+-  case MatchPattern::REGEX: {
+-    auto & match = match_.get_regex();
+-    if (match.regex_tag == RegexTag::RECENT_YEAR) {
+-      return Feedback{"Recent years are easy to guess", {
+-          "Avoid recent years",
+-          "Avoid years that are associated with you",
+-        }};
+-    }
+-    break;
+-  }
+-
+-  case MatchPattern::DATE: {
+-    return Feedback{"Dates are often easy to guess", {
+-        "Avoid dates and years that are associated with you",
+-      }};
+-  }
+-  default:
+-    break;
+-  }
+-  return optional::nullopt;
+-}
+-
+-static
+-Feedback get_dictionary_match_feedback(const Match & match_, bool is_sole_match) {
+-  assert(match_.get_pattern() == MatchPattern::DICTIONARY);
+-  auto & match = match_.get_dictionary();
+-  auto warning = [&] {
+-    if (match.dictionary_tag == DictionaryTag::PASSWORDS) {
+-      if (is_sole_match and !match.l33t and !match.reversed) {
+-        if (match.rank <= 10) {
+-          return "This is a top-10 common password";
+-        }
+-        else if (match.rank <= 100) {
+-          return "This is a top-100 common password";
+-        }
+-        else {
+-          return "This is a very common password";
+-        }
+-      }
+-      else if (match_.guesses_log10 <= 4) {
+-        return "This is similar to a commonly used password";
+-      }
+-    }
+-    else if (match.dictionary_tag == DictionaryTag::ENGLISH_WIKIPEDIA) {
+-      if (is_sole_match) {
+-        return "A word by itself is easy to guess";
+-      }
+-    }
+-    else if (match.dictionary_tag == DictionaryTag::SURNAMES ||
+-             match.dictionary_tag == DictionaryTag::MALE_NAMES ||
+-             match.dictionary_tag == DictionaryTag::FEMALE_NAMES) {
+-      if (is_sole_match) {
+-        return "Names and surnames by themselves are easy to guess";
+-      }
+-      else {
+-        return "Common names and surnames are easy to guess";
+-      }
+-    }
+-
+-    return "";
+-  }();
+-
+-  std::vector<std::string> suggestions;
+-  auto & word = match_.token;
+-  if (std::regex_search(word, START_UPPER)) {
+-    suggestions.push_back("Capitalization doesn't help very much");
+-  }
+-  else if (std::regex_search(word, ALL_UPPER) and
+-           // XXX: UTF-8
+-           util::ascii_lower(word) == word) {
+-    suggestions.push_back("All-uppercase is almost as easy to guess as all-lowercase");
+-  }
+-
+-  if (match.reversed and match_.token.length() >= 4) {
+-    suggestions.push_back("Reversed words aren't much harder to guess");
+-  }
+-  if (match.l33t) {
+-    suggestions.push_back("Predictable substitutions like '@' instead of 'a' don't help very much");
+-  }
+-
+-  return {warning, suggestions};
+-}
+-
+-}
+-
+diff --git a/native-src/zxcvbn/feedback.hpp b/native-src/zxcvbn/feedback.hpp
+deleted file mode 100644
+index 6f6b62b..0000000
+--- a/native-src/zxcvbn/feedback.hpp
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#ifndef __ZXCVBN__FEEDBACK_HPP
+-#define __ZXCVBN__FEEDBACK_HPP
+-
+-#include <zxcvbn/common.hpp>
+-
+-#include <string>
+-#include <vector>
+-
+-namespace zxcvbn {
+-
+-struct Feedback {
+-  std::string warning;
+-  std::vector<std::string> suggestions;
+-};
+-
+-Feedback get_feedback(score_t score, const std::vector<Match> & sequence);
+-
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/frequency_lists.cpp b/native-src/zxcvbn/frequency_lists.cpp
+index 4e4b727..2eb003f 100644
+--- a/native-src/zxcvbn/frequency_lists.cpp
++++ b/native-src/zxcvbn/frequency_lists.cpp
+@@ -1,24 +1,249 @@
+ #include <zxcvbn/frequency_lists.hpp>
+ 
+-#include <zxcvbn/_frequency_lists.hpp>
++#include <algorithm>
++#include <memory>
++#include <utility>
+ 
+-#include <unordered_map>
++#include "base/check.h"
++#include "base/check_op.h"
++#include "base/files/memory_mapped_file.h"
++#include "base/logging.h"
++#include "base/no_destructor.h"
++#include "base/notreached.h"
++#include "base/task/thread_pool.h"
++#include "third_party/abseil-cpp/absl/types/optional.h"
++#include "third_party/abseil-cpp/absl/types/variant.h"
+ 
+ namespace zxcvbn {
+ 
+-RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts) {
+-  RankedDicts build;
++namespace {
+ 
+-  for (const auto & item : ranked_dicts) {
+-    build.insert(item);
++// A big-endian 16-bit value, consisting of a 15-bit number and a marker bit in
++// the most significant position (in the first byte).
++// No alignment requirements.
++// This is used to store a "rank", which is the position at which a word
++// occurred in a wordlist.
++class MarkedBigEndianU15 {
++ public:
++  static constexpr size_t MAX_VALUE = (1 << 15) - 1;
++  static constexpr uint8_t MARKER_BIT = 0x80;
++  uint16_t get() const {
++    return (encoded_value[0] & ~MARKER_BIT) * 256 + encoded_value[1];
+   }
++  static void AppendToVector(uint16_t value, std::vector<char>& vec) {
++    CHECK(value <= MAX_VALUE);
++    vec.push_back((value >> 8) | MARKER_BIT);
++    vec.push_back(value & 0xff);
++  }
++  // Check whether the given byte has the high bit set.
++  // This always returns true for the first byte of a MarkedBigEndianU15, but
++  // may also be false-positive for the second byte.
++  // To reliably determine whether a given byte really is the start of a
++  // MarkedBigEndianU15, you need to also check the preceding byte if this
++  // returns true.
++  static bool IsPossibleMarkerByte(uint8_t c) { return (c & MARKER_BIT) != 0; }
++
++ private:
++  uint8_t encoded_value[2];
++};
++static_assert(
++    sizeof(MarkedBigEndianU15) == 2,
++    "object layout must fit with assumptions in the rest of this file");
++
++struct MergedEntry {
++  size_t rank;
++  std::string_view value;
++};
++
++// A reference to an entry inside a dictionary.
++// The entry consists of a MarkedBigEndianU15 representing the word's rank
++// (the position at which the word appears in the original wordlist) and an
++// inline string (ASCII, terminated with a byte that has the MARKER_BIT set)
++// that stores the actual word.
++class RankedDictEntryRef {
++ public:
++  explicit RankedDictEntryRef(const RankedDicts::Datawrapper& wrapper,
++                              size_t offset) {
++    size_t size = wrapper.size();
++    const char* data = wrapper.data();
++
++    CHECK_LT(offset + sizeof(MarkedBigEndianU15), size);
++    const char* raw_rank = data + offset;
++    rank_ = reinterpret_cast<const MarkedBigEndianU15*>(raw_rank)->get();
++
++    size_t value_start = offset + sizeof(MarkedBigEndianU15);
++    size_t value_end = value_start;
++    while (true) {
++      CHECK_LT(value_end, size);
++      if (MarkedBigEndianU15::IsPossibleMarkerByte(data[value_end])) {
++        break;
++      }
++      value_end++;
++    }
++    value_ = std::string_view(data + value_start, value_end - value_start);
++  }
++  RankedDictEntryRef(RankedDictEntryRef&) = delete;
++  RankedDictEntryRef& operator=(const RankedDictEntryRef&) = delete;
++
++  uint16_t rank() const { return rank_; }
++  std::string_view value() const { return value_; }
++
++  static void AppendToVector(MergedEntry entry, std::vector<char>& vec) {
++    if (entry.rank > MarkedBigEndianU15::MAX_VALUE) {
++      LOG(ERROR) << "MarkedBigEndianU15 clamping";
++      entry.rank = MarkedBigEndianU15::MAX_VALUE;
++    }
++    MarkedBigEndianU15::AppendToVector(entry.rank, vec);
++    vec.insert(vec.end(), entry.value.begin(), entry.value.end());
++  }
++
++ private:
++  size_t rank_;
++  std::string_view value_;
++};
++
++// Helper function that does nothing with the RankedDicts apart from letting
++// it destruct as it goes out of scope. This is called on the ThreadPool to
++// allow for potentially blocking behavior of `RankedDicts` destructor.
++void DoNothing(RankedDicts dicts) {}
++
++}  // namespace
++
++RankedDicts::Datawrapper::Datawrapper(std::vector<char> data)
++    : size_(data.size()), data_(data.data()), content_(std::move(data)) {}
++
++RankedDicts::Datawrapper::Datawrapper(
++    std::unique_ptr<base::MemoryMappedFile> map)
++    : size_((map && map->IsValid()) ? map->length() : 0u),
++      data_(map && map->IsValid() ? reinterpret_cast<const char*>(map->data())
++                                  : nullptr),
++      content_(std::move(map)) {}
++
++RankedDicts::RankedDicts(
++    const std::vector<std::vector<std::string_view>>& ordered_dicts) {
++  std::vector<MergedEntry> merged_dicts;
++  for (const std::vector<std::string_view>& strings : ordered_dicts) {
++    size_t rank = 1;
++    for (const std::string_view& s : strings) {
++      bool clean_string = true;
++      for (char c : s) {
++        if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
++          NOTREACHED_IN_MIGRATION()
++              << "RankedDicts bad character " << static_cast<unsigned char>(c);
++          clean_string = false;
++        }
++      }
++      if (clean_string) {
++        merged_dicts.push_back({rank++, s});
++      }
++    }
++  }
++  std::sort(merged_dicts.begin(), merged_dicts.end(),
++            [](MergedEntry& a, MergedEntry& b) { return a.value < b.value; });
+ 
+-  return build;
++  if (merged_dicts.size() == 0)
++    return;
++
++  // first pass: calculate required total size
++  size_t dict_size = sizeof(MarkedBigEndianU15) * merged_dicts.size();
++  for (MergedEntry& entry : merged_dicts)
++    dict_size += entry.value.size();
++
++  // 1 byte at the end for trailing marker byte (for finding last string size)
++  std::vector<char> vec;
++  vec.reserve(dict_size + 1);
++
++  // second pass: place elements in allocated array
++  for (MergedEntry& entry : merged_dicts)
++    RankedDictEntryRef::AppendToVector(entry, vec);
++  CHECK_EQ(vec.size(), dict_size);
++  vec.push_back(MarkedBigEndianU15::MARKER_BIT);
++  data_ = Datawrapper(std::move(vec));
++}
++
++RankedDicts::RankedDicts(std::unique_ptr<base::MemoryMappedFile> map)
++    : data_(std::move(map)) {}
++
++// Performs a binary search over an array of variable-size elements.
++// To find an element in the middle between two others, we first locate the
++// *byte* in the middle, then seek forward until we hit a marker byte that
++// will only appear at the start of an allocation.
++absl::optional<rank_t> RankedDicts::Find(std::string_view needle) const {
++  // Special case for empty dictionary.
++  size_t size = data_.size();
++  if (size == 0) {
++    return absl::nullopt;
++  }
++  CHECK_GE(size, 3u);  // 2 bytes header, 1 byte trailing marker
++
++  // Create a range whose start and end point to marker bytes.
++  size_t range_start = 0;
++  size_t range_last = size - 2u;
++  CHECK(IsRealMarker(0));
++  while (!IsRealMarker(range_last))
++    range_last--;
++
++  while (true) {
++    size_t midpoint = range_start + (range_last - range_start) / 2;
++    // Find a marker byte from the midpoint onwards. (There must be one, since
++    // there is one at range_last.)
++    size_t adjusted_midpoint = midpoint;
++    while (!IsRealMarker(adjusted_midpoint))
++      adjusted_midpoint++;
++
++    // Perform the actual comparison.
++    RankedDictEntryRef mid_entry(data_, adjusted_midpoint);
++    std::string_view mid_value = mid_entry.value();
++    int cmp_result = mid_value.compare(needle);
++    if (cmp_result == 0)
++      return mid_entry.rank();
++    if (cmp_result < 0) {
++      if (adjusted_midpoint == range_last)
++        return absl::nullopt;
++      range_start = adjusted_midpoint + 1;
++      while (!IsRealMarker(range_start))
++        range_start++;
++    } else {
++      if (adjusted_midpoint == range_start)
++        return absl::nullopt;
++      range_last = adjusted_midpoint - 1;
++      while (!IsRealMarker(range_last))
++        range_last--;
++    }
++  }
++}
++
++// Determine whether an entry starts at the given offset; in other words,
++// determine whether a MarkedBigEndianU15 starts there.
++bool RankedDicts::IsRealMarker(size_t offset) const {
++  CHECK_LT(offset, data_.size());
++  const char* data = data_.data();
++  if (MarkedBigEndianU15::IsPossibleMarkerByte(data[offset])) {
++    if (offset == 0)
++      return true;
++    if (!MarkedBigEndianU15::IsPossibleMarkerByte(data[offset - 1])) {
++      return true;
++    }
++  }
++  return false;
+ }
+ 
+-RankedDicts default_ranked_dicts() {
+-  return convert_to_ranked_dicts(_frequency_lists::get_default_ranked_dicts());
++void SetRankedDictsImplementation(RankedDicts dicts) {
++  default_ranked_dicts() = std::move(dicts);
+ }
+ 
++void SetRankedDicts(RankedDicts dicts) {
++  // Destroying a `RankedDict` may block if it is based on a `MemoryMappedFile`.
++  // Therefore this helper moves the task of doing it to a thread pool.
++  base::ThreadPool::PostTask(
++      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
++      base::BindOnce(&DoNothing, std::move(default_ranked_dicts())));
++  default_ranked_dicts() = std::move(dicts);
++}
+ 
++RankedDicts& default_ranked_dicts() {
++  static base::NoDestructor<RankedDicts> default_dicts;
++  return *default_dicts;
+ }
++
++}  // namespace zxcvbn
+diff --git a/native-src/zxcvbn/frequency_lists.hpp b/native-src/zxcvbn/frequency_lists.hpp
+index c75ea30..fed3aaa 100644
+--- a/native-src/zxcvbn/frequency_lists.hpp
++++ b/native-src/zxcvbn/frequency_lists.hpp
+@@ -1,37 +1,85 @@
+ #ifndef __ZXCVBN__FREQUENCY_LISTS_HPP
+ #define __ZXCVBN__FREQUENCY_LISTS_HPP
+ 
+-#include <zxcvbn/frequency_lists_common.hpp>
+-#include <zxcvbn/_frequency_lists.hpp>
+-
+-#include <unordered_map>
+-
+ #include <cstdint>
++#include <memory>
++#include <string_view>
++#include <vector>
++
++#include "base/files/memory_mapped_file.h"
++#include "third_party/abseil-cpp/absl/types/optional.h"
++#include "third_party/abseil-cpp/absl/types/variant.h"
+ 
+ namespace zxcvbn {
+ 
+-using DictionaryTag = _frequency_lists::DictionaryTag;
++using rank_t = std::size_t;
++
++// Stores words from a set of dictionaries (originally ordered by word
++// frequency) in a sorted flat array.
++// Lookups run in roughly logarithmic time and, when a match is found, return
++// the position of the word in the original dictionary.
++// This data structure is optimized for memory efficiency over lookup speed.
++// It does not contain any pointers and its format is target-independent, so it
++// could theoretically directly be mapped from disk.
++//
++// Since this data structure sorts words alphabetically, the lookup code could
++// be extended to also answer the question "are there any entries that start
++// with the given prefix", which should permit speeding up dictionary_match().
++// That isn't implemented yet though.
++class RankedDicts {
++ public:
++  // Abstraction layer for the binary blob of data that contains the contents
++  // of the `RankedDicts`. The data can either be held directly in memory or
++  // be obtained from a memory mapped file.
++  // See `RankedDictEntryRef` and the rest of frequency_lists.cpp for
++  // documentation of the data structure.
++  class Datawrapper {
++   public:
++    explicit Datawrapper(std::vector<char> data);
++    explicit Datawrapper(std::unique_ptr<base::MemoryMappedFile> map);
++    Datawrapper() = default;
++    Datawrapper(Datawrapper&&) = default;
++
++    Datawrapper& operator=(Datawrapper&&) = default;
++
++    size_t size() const { return size_; }
++    // Returns a pointer to the data chunk belonging to the buffer. Returns a
++    // non-null value only if `size()` is non-zero.
++    const char* data() const { return data_; }
+ 
+-}
++   private:
++    size_t size_ = 0u;
++    const char* data_ = nullptr;
++    absl::variant<std::vector<char>, std::unique_ptr<base::MemoryMappedFile>>
++        content_;
++  };
+ 
+-namespace std {
++  explicit RankedDicts(
++      const std::vector<std::vector<std::string_view>>& ordered_dicts);
++  explicit RankedDicts(std::unique_ptr<base::MemoryMappedFile>);
++  RankedDicts() = default;
++  RankedDicts(RankedDicts&&) = default;
++  RankedDicts(const RankedDicts&) = delete;
+ 
+-template<>
+-struct hash<zxcvbn::DictionaryTag> {
+-  std::size_t operator()(const zxcvbn::DictionaryTag & v) const {
+-    return static_cast<std::size_t>(v);
++  RankedDicts& operator=(RankedDicts&&) = default;
++  RankedDicts& operator=(const RankedDicts&) = delete;
++
++  absl::optional<rank_t> Find(std::string_view needle) const;
++
++  std::string_view DataForTesting() const {
++    return std::string_view(data_.data(), data_.size());
+   }
+-};
+ 
+-}
++ private:
++  bool IsRealMarker(size_t offset) const;
+ 
+-namespace zxcvbn {
++  Datawrapper data_;
++};
+ 
+-using RankedDicts = std::unordered_map<DictionaryTag, const RankedDict &>;
++void SetRankedDicts(RankedDicts dicts);
+ 
+-RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts);
+-RankedDicts default_ranked_dicts();
++RankedDicts& default_ranked_dicts();
+ 
+-}
++} // namespace zxcvbn
+ 
+ #endif
+diff --git a/native-src/zxcvbn/frequency_lists_common.hpp b/native-src/zxcvbn/frequency_lists_common.hpp
+deleted file mode 100644
+index 40eee25..0000000
+--- a/native-src/zxcvbn/frequency_lists_common.hpp
++++ /dev/null
+@@ -1,28 +0,0 @@
+-#ifndef __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+-#define __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+-
+-#include <string>
+-#include <unordered_map>
+-#include <utility>
+-
+-#include <cstdint>
+-
+-namespace zxcvbn {
+-
+-using rank_t = std::size_t;
+-using RankedDict = std::unordered_map<std::string, rank_t>;
+-
+-template<class T>
+-RankedDict build_ranked_dict(const T & ordered_list) {
+-  RankedDict result;
+-  rank_t idx = 1; // rank starts at 1, not 0
+-  for (const auto & word : ordered_list) {
+-    result.insert(std::make_pair(word, idx));
+-    idx += 1;
+-  }
+-  return result;
+-}
+-
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/js_frequency_lists.cpp b/native-src/zxcvbn/js_frequency_lists.cpp
+deleted file mode 100644
+index 510ba3f..0000000
+--- a/native-src/zxcvbn/js_frequency_lists.cpp
++++ /dev/null
+@@ -1,65 +0,0 @@
+-#include <zxcvbn/_frequency_lists.hpp>
+-#include <zxcvbn/common_js.hpp>
+-
+-#include <emscripten/val.h>
+-#include <emscripten/emscripten.h>
+-
+-namespace zxcvbn {
+-
+-namespace _frequency_lists {
+-
+-static
+-std::vector<std::string> js_keys(const emscripten::val & val) {
+-  return zxcvbn_js::from_val<std::vector<std::string>>(emscripten::val::global("Object").call<emscripten::val>("keys", val));
+-}
+-
+-static
+-std::unordered_map<DictionaryTag, RankedDict> build_static_ranked_dicts() {
+-  auto result = std::unordered_map<DictionaryTag, RankedDict>();
+-
+-  auto js_frequency_list = emscripten::val::module_property("_frequency_lists");
+-
+-  assert(!js_frequency_list.isUndefined());
+-
+-  for (const auto & key : js_keys(js_frequency_list)) {
+-    RankedDict toadd;
+-    auto array = js_frequency_list[key];
+-    auto len = zxcvbn_js::from_val<std::size_t>(array["length"]);
+-    for (decltype(len) i = 0; i < len; ++i) {
+-      toadd.insert(std::make_pair(zxcvbn_js::from_val<std::string>(array[i]), i + 1));
+-    }
+-
+-    result.insert(std::make_pair(zxcvbn_js::_default_name_to_dict_tag.at(key),
+-                                 std::move(toadd)));
+-  }
+-
+-  return result;
+-}
+-
+-// Init _ranked_dicts in emscripten preMain() because it must
+-// happen after emscripten::val is initialized
+-static std::unordered_map<DictionaryTag, RankedDict> _ranked_dicts;
+-
+-extern "C"
+-int init_ranked_dicts() {
+-  _frequency_lists::_ranked_dicts = _frequency_lists::build_static_ranked_dicts();
+-  return 0;
+-}
+-
+-static
+-int schedule_build() {
+-  EM_ASM_INT({
+-      Module["addOnPreMain"](function () {Module["dynCall_i"]($0)});
+-    }, &init_ranked_dicts);
+-  return 0;
+-}
+-
+-extern const auto _schedule_built = schedule_build();
+-
+-std::unordered_map<DictionaryTag, RankedDict> & get_default_ranked_dicts() {
+-  return _ranked_dicts;
+-}
+-
+-}
+-
+-}
+diff --git a/native-src/zxcvbn/matching.cpp b/native-src/zxcvbn/matching.cpp
+index 6d53664..e247818 100644
+--- a/native-src/zxcvbn/matching.cpp
++++ b/native-src/zxcvbn/matching.cpp
+@@ -19,28 +19,44 @@
+ #include <utility>
+ #include <unordered_set>
+ 
++#include "base/no_destructor.h"
++#include "base/strings/string_util.h"
++#include "third_party/icu/source/common/unicode/unistr.h"
++#include "third_party/icu/source/i18n/unicode/regex.h"
++
+ namespace zxcvbn {
+ 
+ // TODO: make this a constexpr
+-extern const std::vector<std::pair<std::string, std::vector<std::string>>> L33T_TABLE = {
+-  {"a", {"4", "@"}},
+-  {"b", {"8"}},
+-  {"c", {"(", "{", "[", "<"}},
+-  {"e", {"3"}},
+-  {"g", {"6", "9"}},
+-  {"i", {"1", "!", "|"}},
+-  {"l", {"1", "|", "7"}},
+-  {"o", {"0"}},
+-  {"s", {"$", "5"}},
+-  {"t", {"+", "7"}},
+-  {"x", {"%"}},
+-  {"z", {"2"}},
+-};
++const std::vector<std::pair<std::string, std::vector<std::string>>>&
++L33T_TABLE() {
++  static base::NoDestructor<
++      std::vector<std::pair<std::string, std::vector<std::string>>>>
++      leet_table({
++          {"a", {"4", "@"}},
++          {"b", {"8"}},
++          {"c", {"(", "{", "[", "<"}},
++          {"e", {"3"}},
++          {"g", {"6", "9"}},
++          {"i", {"1", "!", "|"}},
++          {"l", {"1", "|", "7"}},
++          {"o", {"0"}},
++          {"s", {"$", "5"}},
++          {"t", {"+", "7"}},
++          {"x", {"%"}},
++          {"z", {"2"}},
++      });
++
++  return *leet_table;
++}
+ 
+ // TODO: make this constexpr
+-extern const std::vector<std::pair<RegexTag, std::regex>> REGEXEN = {
+-  {RegexTag::RECENT_YEAR, std::regex(R"(19\d\d|200\d|201\d)")},
+-};
++const std::vector<std::pair<RegexTag, std::regex>>& REGEXEN() {
++  static base::NoDestructor<std::vector<std::pair<RegexTag, std::regex>>>
++      regexen({
++          {RegexTag::RECENT_YEAR, std::regex(R"(19\d\d|200\d|201\d)")},
++      });
++  return *regexen;
++}
+ 
+ const auto DATE_MAX_YEAR = 2050;
+ const auto DATE_MIN_YEAR = 1000;
+@@ -106,28 +122,22 @@ std::string dict_normalize(const std::string & str) {
+   return util::ascii_lower(str);
+ }
+ 
+-std::vector<Match> omnimatch(const std::string & password,
+-                             const std::vector<std::string> & ordered_list) {
+-  auto ranked_dictionaries = default_ranked_dicts();
+-
+-  auto ranked_dict = build_ranked_dict(ordered_list);
+-  ranked_dictionaries.insert(std::make_pair(DictionaryTag::USER_INPUTS,
+-                                            std::cref(ranked_dict)));
++std::vector<Match> omnimatch(const std::string& password) {
++  RankedDicts& ranked_dictionaries = default_ranked_dicts();
+ 
+   std::vector<Match> matches;
+-  std::function<std::vector<Match>(const std::string &)> matchers[] = {
+-    std::bind(dictionary_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries)),
+-    std::bind(reverse_dictionary_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries)),
+-    std::bind(l33t_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries), std::cref(L33T_TABLE)),
+-    std::bind(spatial_match, std::placeholders::_1,
+-              std::cref(graphs())),
+-    repeat_match,
+-    sequence_match,
+-    std::bind(regex_match, std::placeholders::_1, std::cref(REGEXEN)),
+-    date_match,
++  std::function<std::vector<Match>(const std::string&)> matchers[] = {
++      std::bind(dictionary_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries)),
++      std::bind(reverse_dictionary_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries)),
++      std::bind(l33t_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries), std::cref(L33T_TABLE())),
++      std::bind(spatial_match, std::placeholders::_1, std::cref(graphs())),
++      repeat_match,
++      sequence_match,
++      std::bind(regex_match, std::placeholders::_1, std::cref(REGEXEN())),
++      date_match,
+   };
+   for (const auto & matcher : matchers) {
+     auto ret = matcher(password);
+@@ -143,29 +153,22 @@ std::vector<Match> omnimatch(const std::string & password,
+ std::vector<Match> dictionary_match(const std::string & password,
+                                     const RankedDicts & ranked_dictionaries) {
+   std::vector<Match> matches;
+-  auto len = password.length();
+-  auto password_lower = dict_normalize(password);
+-  for (const auto & item : ranked_dictionaries) {
+-    auto dictionary_tag = item.first;
+-    auto & ranked_dict = item.second;
+-    for (decltype(len) i = 0, idx = 0; idx < len; util::utf8_decode(password, idx), ++i) {
+-      for (decltype(len) j = i, jdx = idx; jdx < len; ++j) {
+-        // j is inclusive, but jdx is not so eagerly iterate jdx
+-        util::utf8_decode(password, jdx);
+-
+-        auto word = password_lower.substr(idx, jdx - idx);
+-        auto it = ranked_dict.find(word);
+-        if (it != ranked_dict.end()) {
+-          auto rank = it->second;
+-          matches.push_back(Match(i, j, password.substr(idx, jdx - idx),
+-                                  DictionaryMatch{
+-                                      dictionary_tag,
+-                                      word, rank,
+-                                      false,
+-                                      false, {}, ""}));
+-          matches.back().idx = idx;
+-          matches.back().jdx = jdx;
+-        }
++  size_t len = password.length();
++  std::string password_lower = dict_normalize(password);
++  for (size_t i = 0, idx = 0; idx < len;
++       util::utf8_decode(password, idx), ++i) {
++    for (size_t j = i, jdx = idx; jdx < len; ++j) {
++      // j is inclusive, but jdx is not so eagerly iterate jdx
++      util::utf8_decode(password, jdx);
++
++      std::string word = password_lower.substr(idx, jdx - idx);
++      absl::optional<rank_t> result = ranked_dictionaries.Find(word);
++      if (result.has_value()) {
++        rank_t rank = *result;
++        matches.emplace_back(i, j, password.substr(idx, jdx - idx),
++                             DictionaryMatch{word, rank, false, false, {}, ""});
++        matches.back().idx = idx;
++        matches.back().jdx = jdx;
+       }
+     }
+   }
+@@ -344,12 +347,13 @@ std::vector<Match> spatial_match(const std::string & password,
+   return matches;
+ }
+ 
+-const auto SHIFTED_RX = std::regex("[~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?]");
+-
+ static
+ std::vector<Match> spatial_match_helper(const std::string & password,
+                                         const Graph & graph,
+                                         GraphTag graph_tag) {
++  const auto SHIFTED_RX =
++      std::regex("[~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?]");
++
+   std::vector<Match> matches;
+   if (!password.length()) return matches;
+   idx_t idx = 0;
+@@ -381,7 +385,7 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+         if (it != graph.end()) {
+           return it->second;
+         }
+-        return std::vector<optional::optional<std::string>>();
++        return Graph::mapped_type();
+       }();
+       // consider growing pattern by one character if j hasn't gone over the edge.
+       if (j < clen) {
+@@ -390,10 +394,10 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+         auto cur_char = password.substr(jdx, next_jdx - jdx);
+         for (auto & adj : adjacents) {
+           cur_direction += 1;
+-          if (adj && adj->find(cur_char) != adj->npos) {
++          if (adj.find(cur_char) != adj.npos) {
+             found = true;
+             found_direction = cur_direction;
+-            if (adj->find(cur_char) == 1) {
++            if (adj.find(cur_char) == 1) {
+               // index 1 in the adjacency means the key is shifted,
+               // 0 means unshifted: A vs a, % vs 5, etc.
+               // for example, 'q' is adjacent to the entry '2@'.
+@@ -440,69 +444,90 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+ // repeats (aaa, abcabcabc) and sequences (abcdef) ------------------------------
+ //-------------------------------------------------------------------------------
+ 
+-std::vector<Match> repeat_match(const std::string & password) {
++std::vector<Match> repeat_match(const std::string& password) {
+   std::vector<Match> matches;
+-  std::regex greedy(R"((.+)\1+)");
+-  std::regex lazy(R"((.+?)\1+)");
+-  std::regex lazy_anchored(R"(^(.+?)\1+$)");
+-  idx_t lastIndex = 0;
++
++  auto unicode_password = icu::UnicodeString::fromUTF8(password);
++
++  UErrorCode status = U_ZERO_ERROR;
++  std::unique_ptr<icu::RegexPattern> greedy_pattern(icu::RegexPattern::compile(
++      icu::UnicodeString::fromUTF8(R"((.+)\1+)"), 0, status));
++  std::unique_ptr<icu::RegexMatcher> greedy_matcher(
++      greedy_pattern->matcher(unicode_password, status));
++
++  std::unique_ptr<icu::RegexPattern> lazy_pattern(icu::RegexPattern::compile(
++      icu::UnicodeString::fromUTF8(R"((.+?)\1+)"), 0, status));
++  std::unique_ptr<icu::RegexMatcher> lazy_matcher(
++      lazy_pattern->matcher(unicode_password, status));
++
++  std::unique_ptr<icu::RegexPattern> lazy_anchored_pattern(
++      icu::RegexPattern::compile(icu::UnicodeString::fromUTF8(R"(^(.+?)\1+$)"),
++                                 0, status));
++
++  int lastUnicodeIndex = 0;
++  size_t lastIndex = 0;
+   while (lastIndex < password.length()) {
+-    auto start_iter = lastIndex + password.begin();
+-    std::smatch greedy_match, lazy_match;
+-    std::regex_search(start_iter, password.end(),
+-                      greedy_match, greedy);
+-    std::regex_search(start_iter, password.end(),
+-                      lazy_match, lazy);
+-    if (!greedy_match.size()) break;
+-    std::smatch match;
+-    std::string base_token;
+-    if (greedy_match[0].length() > lazy_match[0].length()) {
++    if (!greedy_matcher->find(lastUnicodeIndex, status) ||
++        !lazy_matcher->find(lastUnicodeIndex, status)) {
++      break;
++    }
++
++    icu::RegexMatcher* matcher = nullptr;
++    icu::UnicodeString base_token;
++    if (greedy_matcher->group(status).length() >
++        lazy_matcher->group(status).length()) {
+       // greedy beats lazy for 'aabaab'
+       //   greedy: [aabaab, aab]
+       //   lazy:   [aa,     a]
+-      match = greedy_match;
++      matcher = greedy_matcher.get();
+       // greedy's repeated string might itself be repeated, eg.
+       // aabaab in aabaabaabaab.
+       // run an anchored lazy match on greedy's repeated string
+       // to find the shortest repeated string
+-      std::smatch lazy_anchored_match;
+-      auto greedy_found = match.str(0);
+-      auto ret = std::regex_search(greedy_found, lazy_anchored_match, lazy_anchored);
++      auto greedy_found = matcher->group(status);
++
++      std::unique_ptr<icu::RegexMatcher> lazy_anchored_matcher(
++          lazy_anchored_pattern->matcher(greedy_found, status));
++      auto ret = lazy_anchored_matcher->find(status);
+       assert(ret);
+       (void) ret;
+-      base_token = lazy_anchored_match.str(1);
+-    }
+-    else {
++      base_token = lazy_anchored_matcher->group(1, status);
++    } else {
+       // lazy beats greedy for 'aaaaa'
+       //   greedy: [aaaa,  aa]
+       //   lazy:   [aaaaa, a]
+-      match = std::move(lazy_match);
+-      base_token = match.str(1);
++      matcher = lazy_matcher.get();
++      base_token = matcher->group(1, status);
+     }
+-    auto idx = lastIndex + match.position();
+-    auto jdx = lastIndex + match.position() + match[0].length();
++
++    std::string matched_string;
++    matcher->group(status).toUTF8String(matched_string);
++
++    auto idx = password.find(matched_string, lastIndex);
++    auto jdx = idx + matched_string.size();
++
+     auto i = util::character_len(password, 0, idx);
+     auto j = i + util::character_len(password, idx, jdx) - 1;
+     // recursively match and score the base string
+-    auto sub_matches = omnimatch(base_token);
+-    auto base_analysis = most_guessable_match_sequence(
+-      base_token,
+-      sub_matches,
+-      false
+-      );
++    std::string base_string;
++    base_token.toUTF8String(base_string);
++    auto sub_matches = omnimatch(base_string);
++    auto base_analysis =
++        most_guessable_match_sequence(base_string, sub_matches, false);
+     std::vector<Match> base_matches;
+     std::move(base_analysis.sequence.begin(), base_analysis.sequence.end(),
+               std::back_inserter(base_matches));
+-    auto & base_guesses = base_analysis.guesses;
+-    matches.push_back(Match(i, j, match.str(0),
++    auto& base_guesses = base_analysis.guesses;
++    matches.push_back(Match(i, j, matched_string,
+                             RepeatMatch{
+-                              base_token,
++                                base_string,
+                                 base_guesses,
+                                 std::move(base_matches),
+-                                match[0].length() / base_token.length(),
+-                                }));
++                                matched_string.size() / base_string.size(),
++                            }));
+     matches.back().idx = idx;
+     matches.back().jdx = jdx;
++    lastUnicodeIndex = matcher->end(status);
+     lastIndex = jdx;
+   }
+   return matches;
+@@ -536,19 +561,19 @@ std::vector<Match> sequence_match(const std::string & password) {
+         SequenceTag sequence_name;
+         unsigned sequence_space;
+         if (std::regex_search(token, std::regex(R"(^[a-z]+$)"))) {
+-          sequence_name = SequenceTag::LOWER;
++          sequence_name = SequenceTag::kLower;
+           sequence_space = 26;
+         }
+         else if (std::regex_search(token, std::regex(R"(^[A-Z]+$)"))) {
+-          sequence_name = SequenceTag::UPPER;
++          sequence_name = SequenceTag::kUpper;
+           sequence_space = 26;
+         }
+         else if (std::regex_search(token, std::regex(R"(^\d+$)"))) {
+-          sequence_name = SequenceTag::DIGITS;
++          sequence_name = SequenceTag::kDigits;
+           sequence_space = 10;
+         }
+         else {
+-          sequence_name = SequenceTag::UNICODE;
++          sequence_name = SequenceTag::kUnicode;
+           sequence_space = 26;
+         }
+         result.push_back(Match(i, j, token,
+diff --git a/native-src/zxcvbn/matching.hpp b/native-src/zxcvbn/matching.hpp
+index 7ded5d8..4486038 100644
+--- a/native-src/zxcvbn/matching.hpp
++++ b/native-src/zxcvbn/matching.hpp
+@@ -10,8 +10,8 @@
+ 
+ namespace zxcvbn {
+ 
+-extern const std::vector<std::pair<std::string, std::vector<std::string>>> L33T_TABLE;
+-extern const std::vector<std::pair<RegexTag, std::regex>> REGEXEN;
++const std::vector<std::pair<std::string, std::vector<std::string>>>& L33T_TABLE();
++const std::vector<std::pair<RegexTag, std::regex>>& REGEXEN();
+ 
+ std::vector<Match> dictionary_match(const std::string & password,
+                                     const RankedDicts & ranked_dictionaries);
+@@ -39,8 +39,7 @@ std::vector<Match> regex_match(const std::string & password,
+ 
+ std::vector<Match> date_match(const std::string & password);
+ 
+-std::vector<Match> omnimatch(const std::string & password,
+-                             const std::vector<std::string> & ordered_list = {});
++std::vector<Match> omnimatch(const std::string & password);
+ 
+ }
+ 
+diff --git a/native-src/zxcvbn/matching_js_bindings.cpp b/native-src/zxcvbn/matching_js_bindings.cpp
+deleted file mode 100644
+index 1dfcb53..0000000
+--- a/native-src/zxcvbn/matching_js_bindings.cpp
++++ /dev/null
+@@ -1,262 +0,0 @@
+-#include <zxcvbn/matching.hpp>
+-
+-#include <zxcvbn/common_js.hpp>
+-
+-#include <emscripten/bind.h>
+-
+-namespace zxcvbn_js {
+-
+-static
+-bool empty(const emscripten::val & val) {
+-  return emscripten::val::global("Object").call<emscripten::val>("keys", val)["length"].as<std::size_t>() == 0;
+-}
+-
+-static
+-zxcvbn::RankedDict user_input_dictionary;
+-
+-static
+-void set_user_input_dictionary(const emscripten::val & ordered_list) {
+-  auto ret = val_converter<std::vector<std::string>>::from(ordered_list);
+-  user_input_dictionary = zxcvbn::build_ranked_dict(ret);
+-};
+-
+-
+-static
+-emscripten::val _dictionary_match(const std::wstring & wpassword,
+-                                  const emscripten::val & ranked_dictionaries = emscripten::val::undefined(),
+-                                  bool reversed = false,
+-                                  bool l33t = false,
+-                                  const emscripten::val & l33t_table = emscripten::val::undefined()) {
+-  auto password = to_utf8(wpassword);
+-  std::unordered_map<zxcvbn::DictionaryTag, std::string> _tag_to_name;
+-  std::unordered_map<zxcvbn::DictionaryTag, zxcvbn::RankedDict> _store;
+-  zxcvbn::RankedDicts dicts;
+-  if (ranked_dictionaries.isUndefined()) {
+-    dicts = zxcvbn::default_ranked_dicts();
+-
+-    dicts.insert(std::make_pair(zxcvbn::DictionaryTag::USER_INPUTS,
+-                                std::cref(user_input_dictionary)));
+-
+-    _tag_to_name = _default_dict_tag_to_name;
+-  }
+-  else {
+-    auto ranked_dicts = val_converter<std::unordered_map<std::string, zxcvbn::RankedDict>>::from(ranked_dictionaries);
+-    DictTagType tag_idx = _default_name_to_dict_tag.size();
+-    for (auto & item : ranked_dicts) {
+-      auto tag = static_cast<zxcvbn::DictionaryTag>(tag_idx);
+-      auto it = _default_name_to_dict_tag.find(item.first);
+-      if (it != _default_name_to_dict_tag.end()) {
+-        tag = it->second;
+-      }
+-      else {
+-        tag_idx += 1;
+-      }
+-      _tag_to_name.insert(std::make_pair(tag, item.first));
+-      _store.insert(std::make_pair(tag, std::move(item.second)));
+-    }
+-
+-    dicts = zxcvbn::convert_to_ranked_dicts(_store);
+-  }
+-
+-  auto ret = [&] {
+-    if (reversed) {
+-      return zxcvbn::reverse_dictionary_match(password, dicts);
+-    }
+-    else if (l33t) {
+-      std::vector<std::pair<std::string, std::vector<std::string>>> _store;
+-      auto & ret2 = [&] () -> const std::vector<std::pair<std::string, std::vector<std::string>>> & {
+-        if (l33t_table.isUndefined()) {
+-          return zxcvbn::L33T_TABLE;
+-        }
+-        else {
+-          auto ret = val_converter<std::unordered_map<std::string, std::vector<std::string>>>::from(l33t_table);
+-          std::move(ret.begin(), ret.end(), std::back_inserter(_store));
+-          return _store;
+-        }
+-      }();
+-      return zxcvbn::l33t_match(password, dicts, ret2);
+-    }
+-    else {
+-      return zxcvbn::dictionary_match(password, dicts);
+-    }
+-  }();
+-
+-  auto result = to_val(ret);
+-
+-  fix_up_dictionary_tags(result, _tag_to_name);
+-
+-  return result;
+-}
+-
+-static
+-emscripten::val dictionary_match(const std::wstring & wpassword,
+-                                 const emscripten::val & ranked_dictionaries) {
+-  return _dictionary_match(wpassword, ranked_dictionaries);
+-}
+-
+-
+-static
+-emscripten::val dictionary_match(const std::wstring & wpassword) {
+-  return _dictionary_match(wpassword);
+-}
+-
+-static
+-emscripten::val reverse_dictionary_match(const std::wstring & wpassword,
+-                                         const emscripten::val & ranked_dictionaries) {
+-  return _dictionary_match(wpassword, ranked_dictionaries, true);
+-}
+-
+-static
+-emscripten::val reverse_dictionary_match(const std::wstring & wpassword) {
+-  return _dictionary_match(wpassword, emscripten::val::undefined(), true);
+-}
+-
+-static
+-emscripten::val relevant_l33t_subtable(const std::wstring & wpassword,
+-                                       const emscripten::val & table) {
+-  auto ret = val_converter<std::unordered_map<std::string, std::vector<std::string>>>::from(table);
+-  std::vector<std::pair<std::string, std::vector<std::string>>> ret2;
+-  std::move(ret.begin(), ret.end(), std::back_inserter(ret2));
+-  auto result = zxcvbn::relevant_l33t_subtable(to_utf8(wpassword), ret2);
+-  return to_val(result);
+-}
+-
+-static
+-emscripten::val enumerate_l33t_subs(const emscripten::val & table) {
+-  auto ret = val_converter<std::unordered_map<std::string, std::vector<std::string>>>::from(table);
+-  auto result = zxcvbn::enumerate_l33t_subs(ret);
+-  return to_val(result);
+-}
+-
+-static
+-emscripten::val l33t_match(const std::wstring & wpassword,
+-                           const emscripten::val & ranked_dictionaries,
+-                           const emscripten::val & table) {
+-  return _dictionary_match(wpassword, ranked_dictionaries, false, true, table);
+-}
+-
+-static
+-emscripten::val l33t_match(const std::wstring & wpassword) {
+-  return _dictionary_match(wpassword, emscripten::val::undefined(), false, true);
+-}
+-
+-static
+-emscripten::val spatial_match(const std::wstring & wpassword,
+-                              const emscripten::val & graphs_val) {
+-  auto password = to_utf8(wpassword);
+-  zxcvbn::Graphs _new_graph;
+-
+-  std::unordered_map<zxcvbn::GraphTag, std::string> _tag_to_name;
+-  auto & new_graph = [&] () -> const zxcvbn::Graphs & {
+-    if (graphs_val.isUndefined()) {
+-      _tag_to_name = _default_graph_tag_to_name;
+-      return zxcvbn::graphs();
+-    }
+-    else {
+-      auto graphs = val_converter<std::unordered_map<std::string, zxcvbn::Graph>>::from(graphs_val);
+-
+-      GraphTagType tag_idx = _default_name_to_graph_tag.size();
+-      for (const auto & item : graphs) {
+-        auto tag = static_cast<zxcvbn::GraphTag>(tag_idx);
+-        auto it = _default_name_to_graph_tag.find(item.first);
+-        if (it != _default_name_to_graph_tag.end()) {
+-          tag = it->second;
+-        }
+-        else {
+-          tag_idx += 1;
+-        }
+-
+-        _tag_to_name.insert(std::make_pair(tag, item.first));
+-        _new_graph.insert(std::make_pair(tag, std::move(item.second)));
+-      }
+-
+-      return _new_graph;
+-    }
+-  }();
+-
+-  auto result = to_val(zxcvbn::spatial_match(password, new_graph));
+-
+-  fix_up_graph_tags(result, _tag_to_name);
+-
+-  return result;
+-}
+-
+-static
+-emscripten::val spatial_match(const std::wstring & wpassword) {
+-  return spatial_match(wpassword, emscripten::val::undefined());
+-}
+-
+-static
+-emscripten::val sequence_match(const std::wstring & wpassword) {
+-  return to_val(zxcvbn::sequence_match(to_utf8(wpassword)));
+-}
+-
+-static
+-emscripten::val repeat_match(const std::wstring & wpassword) {
+-  return to_val(zxcvbn::repeat_match(to_utf8(wpassword)));
+-}
+-
+-static
+-emscripten::val regex_match(const std::wstring & wpassword) {
+-  return to_val(zxcvbn::regex_match(to_utf8(wpassword), zxcvbn::REGEXEN));
+-}
+-
+-static
+-emscripten::val date_match(const std::wstring & wpassword) {
+-  return to_val(zxcvbn::date_match(to_utf8(wpassword)));
+-}
+-
+-static
+-emscripten::val omnimatch(const std::wstring & wpassword) {
+-  auto result = to_val(zxcvbn::omnimatch(to_utf8(wpassword)));
+-
+-  fix_up_dictionary_tags(result, _default_dict_tag_to_name);
+-  fix_up_graph_tags(result, _default_graph_tag_to_name);
+-
+-  return result;
+-}
+-
+-}
+-
+-EMSCRIPTEN_BINDINGS(matching) {
+-  emscripten::constant("no_util", true);
+-  emscripten::function("empty", &zxcvbn_js::empty);
+-  emscripten::function("set_user_input_dictionary", &zxcvbn_js::set_user_input_dictionary);
+-  emscripten::function("dictionary_match",
+-                       emscripten::select_overload<emscripten::val(
+-                         const std::wstring &,
+-                         const emscripten::val &)>(&zxcvbn_js::dictionary_match));
+-  emscripten::function("dictionary_match",
+-                       emscripten::select_overload<emscripten::val(
+-                         const std::wstring &)>(&zxcvbn_js::dictionary_match));
+-  emscripten::function("reverse_dictionary_match",
+-                       emscripten::select_overload<emscripten::val(
+-                         const std::wstring &,
+-                         const emscripten::val &)>(&zxcvbn_js::reverse_dictionary_match));
+-  emscripten::function("reverse_dictionary_match",
+-                       emscripten::select_overload<emscripten::val(
+-                         const std::wstring &)>(&zxcvbn_js::reverse_dictionary_match));
+-  emscripten::function("relevant_l33t_subtable", &zxcvbn_js::relevant_l33t_subtable);
+-  emscripten::function("enumerate_l33t_subs", &zxcvbn_js::enumerate_l33t_subs);
+-  emscripten::function("l33t_match",
+-                       emscripten::select_overload<emscripten::val(
+-                         const std::wstring &)>(&zxcvbn_js::l33t_match));
+-  emscripten::function("l33t_match", emscripten::select_overload<emscripten::val(
+-                         const std::wstring &,
+-                         const emscripten::val &,
+-                         const emscripten::val &
+-                         )>(&zxcvbn_js::l33t_match));
+-  emscripten::function("spatial_match",
+-                       emscripten::select_overload<emscripten::val(const std::wstring &)>(&zxcvbn_js::spatial_match));
+-  emscripten::function("spatial_match",
+-                       emscripten::select_overload
+-                       <emscripten::val(const std::wstring &,
+-                                        const emscripten::val &)>
+-                       (&zxcvbn_js::spatial_match));
+-  emscripten::function("sequence_match", &zxcvbn_js::sequence_match);
+-  emscripten::function("repeat_match", &zxcvbn_js::repeat_match);
+-  emscripten::function("regex_match", &zxcvbn_js::regex_match);
+-  emscripten::function("date_match", &zxcvbn_js::date_match);
+-  emscripten::function("omnimatch", &zxcvbn_js::omnimatch);
+-}
+-
+diff --git a/native-src/zxcvbn/optional.hpp b/native-src/zxcvbn/optional.hpp
+index 68b77e0..b3fb257 100644
+--- a/native-src/zxcvbn/optional.hpp
++++ b/native-src/zxcvbn/optional.hpp
+@@ -7,6 +7,7 @@
+ #include <new>
+ #include <stdexcept>
+ #include <type_traits>
++#include <utility>
+ 
+ #include <cstdint>
+ #include <cassert>
+diff --git a/native-src/zxcvbn/scoring.cpp b/native-src/zxcvbn/scoring.cpp
+index c652e2d..e5c120a 100644
+--- a/native-src/zxcvbn/scoring.cpp
++++ b/native-src/zxcvbn/scoring.cpp
+@@ -9,6 +9,8 @@
+ 
+ #include <cmath>
+ 
++#include "base/no_destructor.h"
++
+ namespace std {
+ 
+ template<class T, class U>
+@@ -27,6 +29,26 @@ const auto MIN_GUESSES_BEFORE_GROWING_SEQUENCE = static_cast<guesses_t>(10000);
+ const auto MIN_SUBMATCH_GUESSES_SINGLE_CHAR = static_cast<guesses_t>(10);
+ const auto MIN_SUBMATCH_GUESSES_MULTI_CHAR = static_cast<guesses_t>(50);
+ 
++const std::regex& START_UPPER() {
++  static base::NoDestructor<std::regex> start_upper(R"(^[A-Z][^A-Z]+$)");
++  return *start_upper;
++}
++
++const std::regex& END_UPPER() {
++  static base::NoDestructor<std::regex> end_upper(R"(^[^A-Z]+[A-Z]$)");
++  return *end_upper;
++}
++
++const std::regex& ALL_UPPER() {
++  static base::NoDestructor<std::regex> all_upper(R"(^[^a-z]+$)");
++  return *all_upper;
++}
++
++const std::regex& ALL_LOWER() {
++  static base::NoDestructor<std::regex> all_lower(R"(^[^A-Z]+$)");
++  return *all_lower;
++}
++
+ template<class Tret, class Tin>
+ Tret factorial(Tin n) {
+   // unoptimized, called only on small n
+@@ -53,7 +75,11 @@ std::size_t token_len(const Match & m) __attribute__((pure));
+ static
+ std::size_t token_len(const Match & m) {
+   std::size_t result = m.j - m.i + 1;
+-  assert(result == util::character_len(m.token));
++  // Bruteforce matches might be any substring of the original string, which are
++  // not necessarily aligned to UTF8 code points, and thus m.token might not be
++  // a valid UTF8 string.
++  if (m.get_pattern() != MatchPattern::BRUTEFORCE)
++    assert(result == util::character_len(m.token));
+   return result;
+ }
+ 
+@@ -199,7 +225,7 @@ ScoringResult most_guessable_match_sequence(const std::string & password,
+     if (!n) return optimal_match_sequence;
+     auto k = n - 1;
+     idx_t l = optimal.g[k].begin()->first;
+-    auto g = optimal.g[k].begin()->second;
++    guesses_t g = optimal.g[k].begin()->second;
+     for (const auto & item : optimal.g[k]) {
+       auto & candidate_l = item.first;
+       auto & candidate_g = item.second;
+@@ -281,7 +307,7 @@ guesses_t estimate_guesses(Match & match, const std::string & password) {
+ #define MATCH_FN(title, upper, lower) \
+   : match.get_pattern() == MatchPattern::upper ? lower##_guesses
+   guesses_t (*estimation_function)(const Match &) =
+-    false ? nullptr MATCH_RUN() : nullptr;
++    (false) ? nullptr MATCH_RUN() : nullptr;
+ #undef MATCH_FN
+   assert(estimation_function != nullptr);
+   auto guesses = estimation_function(match);
+@@ -441,11 +467,12 @@ guesses_t dictionary_guesses(const Match & match) {
+ 
+ guesses_t uppercase_variations(const Match & match) {
+   auto & word = match.token;
+-  if (std::regex_match(word, ALL_LOWER) || !word.size()) return 1;
++  if (std::regex_match(word, ALL_LOWER()) || !word.size())
++    return 1;
+   // a capitalized word is the most common capitalization scheme,
+   // so it only doubles the search space (uncapitalized + capitalized).
+   // allcaps and end-capitalized are common enough too, underestimate as 2x factor to be safe.
+-  for (const auto & regex : {START_UPPER, END_UPPER, ALL_UPPER}) {
++  for (const auto& regex : {START_UPPER(), END_UPPER(), ALL_UPPER()}) {
+     if (std::regex_match(word, regex)) return 2;
+   }
+   // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
+diff --git a/native-src/zxcvbn/scoring.hpp b/native-src/zxcvbn/scoring.hpp
+index 901c71f..1038ee3 100644
+--- a/native-src/zxcvbn/scoring.hpp
++++ b/native-src/zxcvbn/scoring.hpp
+@@ -11,10 +11,10 @@
+ 
+ namespace zxcvbn {
+ 
+-const auto START_UPPER = std::regex(R"(^[A-Z][^A-Z]+$)");
+-const auto END_UPPER = std::regex(R"(^[^A-Z]+[A-Z]$)");
+-const auto ALL_UPPER = std::regex(R"(^[^a-z]+$)");
+-const auto ALL_LOWER = std::regex(R"(^[^A-Z]+$)");
++const std::regex& START_UPPER();
++const std::regex& END_UPPER();
++const std::regex& ALL_UPPER();
++const std::regex& ALL_LOWER();
+ 
+ const guesses_t MIN_YEAR_SPACE = 20;
+ const auto REFERENCE_YEAR = 2016;
+@@ -49,7 +49,7 @@ guesses_t estimate_guesses(Match & match, const std::string & password);
+ 
+ #define MATCH_FN(title, upper, lower) \
+   guesses_t lower##_guesses(const Match &);
+-MATCH_RUN();
++MATCH_RUN()
+ #undef MATCH_FN
+ 
+ guesses_t uppercase_variations(const Match & match);
+diff --git a/native-src/zxcvbn/scoring_js_bindings.cpp b/native-src/zxcvbn/scoring_js_bindings.cpp
+deleted file mode 100644
+index ceb43f4..0000000
+--- a/native-src/zxcvbn/scoring_js_bindings.cpp
++++ /dev/null
+@@ -1,181 +0,0 @@
+-#include <zxcvbn/common_js.hpp>
+-#include <zxcvbn/scoring.hpp>
+-
+-#include <emscripten/emscripten.h>
+-#include <emscripten/bind.h>
+-
+-#include <cstdint>
+-
+-namespace zxcvbn_js {
+-
+-static
+-double nCk(double a, double b) {
+-  return zxcvbn::nCk(a, b);
+-}
+-
+-static
+-double log2(double a) {
+-  return std::log2(a);
+-}
+-
+-static
+-double log10(double a) {
+-  return std::log10(a);
+-}
+-
+-static
+-emscripten::val most_guessable_match_sequence(const std::wstring & wpassword,
+-                                              emscripten::val matches,
+-                                              bool exclude_additive) {
+-  auto password = to_utf8(wpassword);
+-
+-  // NB: preserving the reference semantics of the JS version requires
+-  //     some careful plumbing (returning input match references,
+-  //     propagating mutations)
+-
+-  auto matches_native = val_converter<std::vector<zxcvbn::Match>>::from(matches);
+-
+-  // create native_match -> input match mapping
+-  std::unordered_map<zxcvbn::Match *, emscripten::val> match_to_val;
+-  for (decltype(matches_native.size()) i = 0; i < matches_native.size(); ++i) {
+-    match_to_val.insert(std::make_pair(&matches_native[i], matches[i]));
+-  }
+-
+-  auto native_result = zxcvbn::most_guessable_match_sequence(password, matches_native, exclude_additive);
+-
+-  // add guesses information to input matches
+-  for (decltype(matches_native.size()) i = 0; i < matches_native.size(); ++i) {
+-    auto val = matches[i];
+-    val.set("guesses", to_val(matches_native[i].guesses));
+-    val.set("guesses_log10", to_val(matches_native[i].guesses_log10));
+-  }
+-
+-  // convert sequence to reuse input matches
+-  auto sequence_array = emscripten::val::array();
+-  for (auto & ref : native_result.sequence) {
+-    auto it = match_to_val.find(&ref.get());
+-    auto toadd = (it != match_to_val.end()
+-                  ? it->second
+-                  : to_val(ref.get()));
+-    sequence_array.call<void>("push", toadd);
+-  }
+-
+-  auto result = emscripten::val::object();
+-
+-  result.set("password", to_val(native_result.password));
+-  result.set("sequence", std::move(sequence_array));
+-  result.set("guesses", to_val(native_result.guesses));
+-  result.set("guesses_log10", to_val(native_result.guesses_log10));
+-
+-  return result;
+-}
+-
+-static
+-emscripten::val most_guessable_match_sequence(const std::wstring & wpassword,
+-                                              emscripten::val matches) {
+-  return most_guessable_match_sequence(wpassword, std::move(matches), false);
+-}
+-
+-static
+-zxcvbn::guesses_t estimate_guesses(emscripten::val match,
+-                                   const std::wstring & wpassword) {
+-  auto password = to_utf8(wpassword);
+-
+-  auto native_match = from_val<zxcvbn::Match>(match);
+-  auto result = zxcvbn::estimate_guesses(native_match, password);
+-
+-  // propagate guess mutations
+-  match.set("guesses", to_val(native_match.guesses));
+-  match.set("guesses_log10", to_val(native_match.guesses_log10));
+-
+-  return result;
+-}
+-
+-static
+-zxcvbn::guesses_t date_guesses(const emscripten::val & match) {
+-  return zxcvbn::date_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t repeat_guesses(const emscripten::val & match) {
+-  return zxcvbn::repeat_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t sequence_guesses(const emscripten::val & match) {
+-  return zxcvbn::sequence_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t regex_guesses(const emscripten::val & match) {
+-  return zxcvbn::regex_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t spatial_guesses(const emscripten::val & match) {
+-  return zxcvbn::spatial_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t dictionary_guesses(const emscripten::val & match) {
+-  return zxcvbn::dictionary_guesses(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t uppercase_variations(const emscripten::val & match) {
+-  return zxcvbn::uppercase_variations(from_val<zxcvbn::Match>(match));
+-}
+-
+-static
+-zxcvbn::guesses_t l33t_variations(const emscripten::val & match) {
+-  return zxcvbn::l33t_variations(from_val<zxcvbn::Match>(match));
+-}
+-
+-}
+-
+-EMSCRIPTEN_BINDINGS(scoring) {
+-  emscripten::function("nCk", &zxcvbn_js::nCk);
+-  emscripten::function("log2", &zxcvbn_js::log2);
+-  emscripten::function("log10", &zxcvbn_js::log10);
+-  emscripten::function("most_guessable_match_sequence",
+-                       emscripten::select_overload<
+-                       emscripten::val
+-                       (const std::wstring & password,
+-                        emscripten::val matches,
+-                        bool exclude_additive)>
+-                       (&zxcvbn_js::most_guessable_match_sequence));
+-  emscripten::function("most_guessable_match_sequence",
+-                       emscripten::select_overload<
+-                       emscripten::val
+-                       (const std::wstring & password,
+-                        emscripten::val matches)>
+-                       (&zxcvbn_js::most_guessable_match_sequence));
+-  emscripten::function("estimate_guesses", &zxcvbn_js::estimate_guesses);
+-  emscripten::function("date_guesses", &zxcvbn_js::date_guesses);
+-  emscripten::function("repeat_guesses", &zxcvbn_js::repeat_guesses);
+-  emscripten::function("sequence_guesses", &zxcvbn_js::sequence_guesses);
+-  emscripten::function("regex_guesses", &zxcvbn_js::regex_guesses);
+-  emscripten::constant("MIN_YEAR_SPACE", zxcvbn::MIN_YEAR_SPACE);
+-  emscripten::constant("REFERENCE_YEAR", zxcvbn::REFERENCE_YEAR);
+-  emscripten::function("spatial_guesses", &zxcvbn_js::spatial_guesses);
+-  emscripten::function("dictionary_guesses", &zxcvbn_js::dictionary_guesses);
+-  emscripten::function("uppercase_variations", &zxcvbn_js::uppercase_variations);
+-  emscripten::function("l33t_variations", &zxcvbn_js::l33t_variations);
+-};
+-
+-#ifdef __EMSCRIPTEN__
+-
+-int main() {
+-  // workaround: emscripten::constant() can only handle integrals or aggregates
+-  // not doubles, also these are dynamically initialized
+-  EM_ASM_DOUBLE({
+-      Module["KEYBOARD_AVERAGE_DEGREE"] = $0;
+-    }, zxcvbn::KEYBOARD_AVERAGE_DEGREE);
+-  EM_ASM_INT({
+-      Module["KEYBOARD_STARTING_POSITIONS"] = $0;
+-    }, zxcvbn::KEYBOARD_STARTING_POSITIONS);
+-  emscripten_exit_with_live_runtime();
+-  return 0;
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/util.cpp b/native-src/zxcvbn/util.cpp
+index 084d3cc..e7478d5 100644
+--- a/native-src/zxcvbn/util.cpp
++++ b/native-src/zxcvbn/util.cpp
+@@ -1,74 +1,57 @@
+ #include <zxcvbn/util.hpp>
+ 
+ #include <algorithm>
+-#include <codecvt>
+-#include <locale>
+ #include <string>
+ #include <utility>
+ 
+ #include <cassert>
+ 
++#include "base/strings/string_util.h"
++#include "base/strings/utf_string_conversion_utils.h"
++#include "base/strings/utf_string_conversions.h"
++
+ namespace zxcvbn {
+ 
+ namespace util {
+ 
++bool utf8_valid(std::string::const_iterator start,
++                std::string::const_iterator end) {
++  return base::IsStringUTF8(base::MakeStringPiece(start, end));
++}
++
++bool utf8_valid(const std::string & str) {
++  return utf8_valid(str.begin(), str.end());
++}
++
+ std::string ascii_lower(const std::string & in) {
+-  const char A = 0x41, Z = 0x5A;
+-  const char a = 0x61;
+-  auto result = in;
+-  std::transform(result.begin(), result.end(), result.begin(),
+-                 [&] (char c) {
+-                   return (c >= A && c <= Z
+-                           ? c - A + a
+-                           : c);
+-                 });
+-  return result;
++  return base::ToLowerASCII(in);
+ }
+ 
+ std::string reverse_string(const std::string & in) {
+-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+-  auto ret = conv.from_bytes(in);
++  if (!utf8_valid(in))
++    return std::string(in.rbegin(), in.rend());
++
++  std::wstring ret = base::UTF8ToWide(in);
+   std::reverse(ret.begin(), ret.end());
+-  return conv.to_bytes(ret);
++  return base::WideToUTF8(ret);
+ }
+ 
+-const std::codecvt_utf8<char32_t> char32_conv;
++template<class It>
++std::pair<char32_t, It> _utf8_decode(It it, It end) {
++  assert(it != end);
++  const char* src = &*it;
++  size_t src_len = static_cast<size_t>(std::distance(it, end));
++  size_t char_index = 0;
++  base_icu::UChar32 code_point_out;
+ 
+-bool utf8_valid(std::string::const_iterator start,
+-                std::string::const_iterator end) {
+-  while (start != end) {
+-    std::mbstate_t st;
+-
+-    const char *from = &*start;
+-    const char *from_end = &*end;
+-    const char *from_next;
+-
+-    char32_t new_char;
+-    char32_t *to_next;
+-
+-    auto res = char32_conv.in(st, from, from_end, from_next,
+-                              &new_char, &new_char + 1, to_next);
+-    if (!((res == std::codecvt_utf8<char32_t>::result::partial &&
+-           from_next != from_end) ||
+-          (res == std::codecvt_utf8<char32_t>::result::ok &&
+-           from_next == from_end))) {
+-      return false;
+-    }
+-    start += (from_next - from);
+-  }
+-  return true;
++  base::ReadUnicodeCharacter(src, src_len, &char_index, &code_point_out);
++  return {code_point_out, it + ++char_index};
+ }
+ 
+-bool utf8_valid(const std::string & str) {
+-  return utf8_valid(str.begin(), str.end());
+-}
+ 
+ template<class It>
+ It _utf8_iter(It start, It end) {
+-  assert(start != end);
+-  std::mbstate_t st;
+-  auto amt = char32_conv.length(st, &*start, &*end, 1);
+-  return start + amt;
++  return _utf8_decode(start, end).second;
+ }
+ 
+ std::string::iterator utf8_iter(std::string::iterator start,
+@@ -99,38 +82,6 @@ std::string::size_type character_len(const std::string & str) {
+   return character_len(str, 0, str.size());
+ }
+ 
+-template<class It>
+-std::pair<char32_t, It> _utf8_decode(It it, It end) {
+-  std::mbstate_t st;
+-  char32_t new_char;
+-  char32_t *to_next;
+-
+-  assert(it != end);
+-
+-  const char *from = &*it;
+-  const char *from_end = &*end;
+-  const char *from_next;
+-  auto res = char32_conv.in(st, from, from_end, from_next,
+-                            &new_char, &new_char + 1, to_next);
+-  assert((res == std::codecvt_utf8<char32_t>::result::partial &&
+-          from_next != from_end) ||
+-         (res == std::codecvt_utf8<char32_t>::result::ok &&
+-          from_next == from_end));
+-  (void) res;
+-
+-  return std::make_pair(new_char, it + (from_next - from));
+-}
+-
+-std::pair<char32_t, std::string::iterator> utf8_decode(std::string::iterator start,
+-                                                       std::string::iterator end) {
+-  return _utf8_decode(start, end);
+-}
+-
+-std::pair<char32_t, std::string::const_iterator> utf8_decode(std::string::const_iterator start,
+-                                                             std::string::const_iterator end) {
+-  return _utf8_decode(start, end);
+-}
+-
+ char32_t utf8_decode(const std::string & start,
+                      std::string::size_type & idx) {
+   auto ret = _utf8_decode(start.begin() + idx, start.end());
+diff --git a/native-src/zxcvbn/util.hpp b/native-src/zxcvbn/util.hpp
+index b784c1f..90fa998 100644
+--- a/native-src/zxcvbn/util.hpp
++++ b/native-src/zxcvbn/util.hpp
+@@ -29,8 +29,6 @@ std::string::size_type character_len(const std::string &,
+                                      std::string::size_type end) __attribute__((pure));
+ std::string::size_type character_len(const std::string &)  __attribute__((pure));
+ 
+-std::pair<char32_t, std::string::iterator> utf8_decode(std::string::iterator);
+-std::pair<char32_t, std::string::const_iterator> utf8_decode(std::string::const_iterator);
+ char32_t utf8_decode(const std::string & start,
+                      std::string::size_type & idx);
+ 
+diff --git a/native-src/zxcvbn/zxcvbn.cpp b/native-src/zxcvbn/zxcvbn.cpp
+deleted file mode 100644
+index d9b5291..0000000
+--- a/native-src/zxcvbn/zxcvbn.cpp
++++ /dev/null
+@@ -1,50 +0,0 @@
+-#include <zxcvbn/zxcvbn.h>
+-
+-#include <zxcvbn/util.hpp>
+-#include <zxcvbn/scoring.hpp>
+-#include <zxcvbn/matching.hpp>
+-
+-extern "C" {
+-
+-struct zxcvbn_match_sequence {
+-  std::vector<zxcvbn::Match> sequence;
+-};
+-
+-int zxcvbn_password_strength(const char *password, const char *const *user_inputs,
+-                             zxcvbn_guesses_t *guesses,
+-                             zxcvbn_match_sequence_t *pmseq) {
+-  try {
+-    std::vector<std::string> sanitized_inputs;
+-    if (user_inputs) {
+-      while (*user_inputs) {
+-        sanitized_inputs.push_back(zxcvbn::util::ascii_lower(*user_inputs));
+-        user_inputs++;
+-      }
+-    }
+-
+-    auto matches = zxcvbn::omnimatch(password, sanitized_inputs);
+-    auto result = zxcvbn::most_guessable_match_sequence(password, matches, false);
+-
+-    if (guesses) {
+-      *guesses = result.guesses;
+-    }
+-
+-    if (pmseq) {
+-      std::vector<zxcvbn::Match> sequence;
+-      std::move(result.sequence.begin(), result.sequence.end(),
+-                std::back_inserter(sequence));
+-      *pmseq = new zxcvbn_match_sequence{std::move(sequence)};
+-    }
+-
+-    return 0;
+-  }
+-  catch (...) {
+-    return -1;
+-  }
+-}
+-
+-void zxcvbn_match_sequence_destroy(zxcvbn_match_sequence_t mseq) {
+-  delete mseq;
+-}
+-
+-}
+diff --git a/native-src/zxcvbn/zxcvbn.h b/native-src/zxcvbn/zxcvbn.h
+deleted file mode 100644
+index 67a6d03..0000000
+--- a/native-src/zxcvbn/zxcvbn.h
++++ /dev/null
+@@ -1,26 +0,0 @@
+-#ifndef __ZXCVBN_H
+-#define __ZXCVBN_H
+-
+-#include <stdint.h>
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-typedef double zxcvbn_guesses_t;
+-
+-struct zxcvbn_match_sequence;
+-typedef struct zxcvbn_match_sequence *zxcvbn_match_sequence_t;
+-
+-int zxcvbn_password_strength(const char *pass, const char *const *user_inputs,
+-                             zxcvbn_guesses_t *guesses,
+-                             zxcvbn_match_sequence_t *mseq
+-                             );
+-
+-void zxcvbn_match_sequence_destroy(zxcvbn_match_sequence_t);
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif
+diff --git a/native-src/zxcvbn/zxcvbn.hpp b/native-src/zxcvbn/zxcvbn.hpp
+deleted file mode 100644
+index a48bcd8..0000000
+--- a/native-src/zxcvbn/zxcvbn.hpp
++++ /dev/null
+@@ -1,23 +0,0 @@
+-#ifndef __ZXCVBN__ZXCVBN_HPP
+-#define __ZXCVBN__ZXCVBN_HPP
+-
+-#include <zxcvbn/feedback.hpp>
+-#include <zxcvbn/scoring.hpp>
+-#include <zxcvbn/time_estimates.hpp>
+-
+-#include <string>
+-#include <vector>
+-
+-namespace zxcvbn {
+-
+-struct ZxcvbnResult {
+-  scoring::ScoringResult scoring;
+-  time_estimates::AttackTimes attack_times;
+-  feedback::Feedback feedback;
+-};
+-
+-ZxcvbnResult zxcvbn(const std::string & password, const std::vector<std::string> & user_inputs);
+-
+-}
+-
+-#endif
+diff --git a/native-src/zxcvbn/zxcvbn_js_bindings.cpp b/native-src/zxcvbn/zxcvbn_js_bindings.cpp
+deleted file mode 100644
+index f0ba44c..0000000
+--- a/native-src/zxcvbn/zxcvbn_js_bindings.cpp
++++ /dev/null
+@@ -1,104 +0,0 @@
+-#include <zxcvbn/common_js.hpp>
+-#include <zxcvbn/scoring.hpp>
+-#include <zxcvbn/matching.hpp>
+-#include <zxcvbn/time_estimates.hpp>
+-#include <zxcvbn/feedback.hpp>
+-
+-#include <chrono>
+-
+-#include <emscripten/bind.h>
+-
+-namespace zxcvbn_js {
+-
+-emscripten::val password_strength(const std::wstring & wpassword,
+-                                  const emscripten::val & user_inputs) {
+-  auto password = to_utf8(wpassword);
+-
+-  // reset the user inputs matcher on a per-request basis to keep things stateless
+-  std::vector<std::string> sanitized_inputs;
+-  auto len = from_val<std::size_t>(user_inputs["length"]);
+-  for (decltype(len) i = 0; i < len; ++i) {
+-    auto type_ = from_val<std::string>(user_inputs[i].typeof());
+-    if (type_ == "string" ||
+-        type_ == "number" ||
+-        type_ == "boolean") {
+-      sanitized_inputs.push_back(from_val<std::string>(user_inputs[i].call<emscripten::val>("toString").call<emscripten::val>("toLowerCase")));
+-    }
+-  }
+-
+-  auto start = std::chrono::high_resolution_clock::now();
+-  auto matches = zxcvbn::omnimatch(password, sanitized_inputs);
+-  auto scoring_result = zxcvbn::most_guessable_match_sequence(password, matches);
+-  auto stop = std::chrono::high_resolution_clock::now();
+-
+-  using FpSeconds = std::chrono::duration<double, std::chrono::milliseconds::period>;
+-
+-  auto result = emscripten::val::object();
+-
+-  result.set("password", wpassword);
+-
+-  // set scoring results
+-  auto match_sequence = std::vector<zxcvbn::Match>{};
+-  for (auto & elt : scoring_result.sequence) {
+-    match_sequence.push_back(std::move(elt.get()));
+-  }
+-
+-  result.set("guesses", to_val(scoring_result.guesses));
+-  result.set("guesses_log10", to_val(std::log10(scoring_result.guesses)));
+-  auto js_sequence = to_val(match_sequence);
+-  fix_up_dictionary_tags(js_sequence);
+-  fix_up_graph_tags(js_sequence);
+-  result.set("sequence", js_sequence);
+-
+-  // set calc_time
+-  result.set("calc_time", to_val(FpSeconds(stop - start).count()));
+-
+-  // set attack times
+-  auto attack_times = zxcvbn::estimate_attack_times(scoring_result.guesses);
+-
+-  auto crack_times_seconds = emscripten::val::object();
+-#define CT(v) crack_times_seconds.set(#v, to_val(attack_times.crack_times_seconds.v));
+-  CT(online_throttling_100_per_hour);
+-  CT(online_no_throttling_10_per_second);
+-  CT(offline_slow_hashing_1e4_per_second);
+-  CT(offline_fast_hashing_1e10_per_second);
+-#undef CT
+-  result.set("crack_time_seconds", crack_times_seconds);
+-
+-  auto crack_time_display = emscripten::val::object();
+-#define CT(v) crack_time_display.set(#v, to_val(attack_times.crack_times_display.v));
+-  CT(online_throttling_100_per_hour);
+-  CT(online_no_throttling_10_per_second);
+-  CT(offline_slow_hashing_1e4_per_second);
+-  CT(offline_fast_hashing_1e10_per_second);
+-#undef CT
+-  result.set("crack_time_display", crack_time_display);
+-
+-  result.set("score", to_val(attack_times.score));
+-
+-  // set feedback
+-  result.set("feedback", to_val(zxcvbn::get_feedback(attack_times.score, match_sequence)));
+-
+-  return result;
+-}
+-
+-emscripten::val password_strength(const std::wstring & wpassword) {
+-  return password_strength(wpassword, emscripten::val::array());
+-}
+-
+-}
+-
+-EMSCRIPTEN_BINDINGS(zxcvbn) {
+-  emscripten::function("password_strength",
+-                       emscripten::select_overload<
+-                       emscripten::val
+-                       (const std::wstring & wpassword)>(
+-                         &zxcvbn_js::password_strength));
+-  emscripten::function("password_strength",
+-                       emscripten::select_overload<
+-                       emscripten::val
+-                       (const std::wstring &,
+-                        const emscripten::val &)>(
+-                          &zxcvbn_js::password_strength));
+-
+-}

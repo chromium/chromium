@@ -5,7 +5,7 @@
 (async function(testRunner) {
   const {session, dp} = await testRunner.startHTML(
       `<input type="file" id="file" webkitdirectory multiple>`,
-      'Tests DOM.setFileInfo method.');
+      'Tests DOM.setFileInputFiles method.');
 
   const dataPath = testRunner.params("data_path");
   const {result} = await dp.Runtime.evaluate({
@@ -14,10 +14,16 @@
   const valuePromise = session.evaluateAsync(`new Promise(resolve => {
     const file = document.getElementById('file');
     async function readFile(f) {
-      return f.name + ': ' + await f.text() + "------------------";
+      const parts = [
+        'name: ' + f.name,
+        'webkitRelativePath: ' + f.webkitRelativePath,
+        'content: ' + await f.text(),
+      ];
+      return parts.join(', ') + "------------------";
     }
     file.addEventListener('input', async () => {
-      const contents = await Promise.all(Array.from(file.files).map(readFile));
+      const contents = await Promise.all(Array.from(file.files)
+        .sort((a, b) => a.name.localeCompare(b.name)).map(readFile));
       resolve(contents.join('\\n'));
     });
   })`);

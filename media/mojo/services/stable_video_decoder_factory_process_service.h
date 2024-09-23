@@ -31,7 +31,6 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryProcessService final
   // stable::mojom::StableVideoDecoderFactoryProcess implementation.
   void InitializeStableVideoDecoderFactory(
       const gpu::GpuFeatureInfo& gpu_feature_info,
-      bool enable_direct_video_decoder,
       mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory> receiver)
       final;
 

@@ -97,7 +97,7 @@ inline bool ShapeValue::operator==(const ShapeValue& other) const {
       return base::ValuesEquivalent(GetImage(), other.GetImage());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

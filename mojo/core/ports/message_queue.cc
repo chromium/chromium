@@ -59,8 +59,8 @@ void MessageQueue::GetNextMessage(std::unique_ptr<UserMessageEvent>* message,
   // here is somewhat arbitrary.
   constexpr size_t kHeapMinimumShrinkSize = 16;
   constexpr size_t kHeapShrinkInterval = 512;
-  if (UNLIKELY(heap_.size() > kHeapMinimumShrinkSize &&
-               heap_.size() % kHeapShrinkInterval == 0)) {
+  if (heap_.size() > kHeapMinimumShrinkSize &&
+      heap_.size() % kHeapShrinkInterval == 0) [[unlikely]] {
     heap_.shrink_to_fit();
   }
 }

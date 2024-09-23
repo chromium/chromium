@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/containers/flat_tree.h"
 
 // Following tests are ported and extended tests from libcpp for std::set.
@@ -37,7 +42,6 @@
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/template_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -800,7 +804,7 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont;
     IntPair int_pairs[] = {{3, 1}, {1, 1}, {4, 1}, {2, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -808,7 +812,7 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     std::vector<IntPair> int_pairs;
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -816,7 +820,7 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{1, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -824,7 +828,7 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{5, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 1)));
   }
@@ -832,7 +836,7 @@ TEST(FlatTree, InsertIterIter) {
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
   }
@@ -841,7 +845,71 @@ TEST(FlatTree, InsertIterIter) {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}, {7, 2}, {6, 2},
                            {8, 2}, {5, 2}, {5, 3}, {6, 3}, {7, 3}, {8, 3}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs));
+    UNSAFE_BUFFERS(cont.insert(std::begin(int_pairs), std::end(int_pairs)));
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1), IntPair(5, 2), IntPair(6, 2),
+                                  IntPair(7, 2), IntPair(8, 2)));
+  }
+}
+
+// template <class Range>
+//   void insert_range(Range range);
+
+TEST(FlatTree, InsertRange) {
+  struct GetKeyFromIntIntPair {
+    const int& operator()(const std::pair<int, int>& p) const {
+      return p.first;
+    }
+  };
+
+  using IntIntMap = flat_tree<int, GetKeyFromIntIntPair, std::less<int>,
+                              std::vector<IntPair>>;
+
+  {
+    IntIntMap cont;
+    IntPair int_pairs[] = {{3, 1}, {1, 1}, {4, 1}, {2, 1}};
+    cont.insert_range(int_pairs);
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    std::vector<IntPair> int_pairs;
+    cont.insert_range(int_pairs);
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{1, 1}};
+    cont.insert_range(int_pairs);
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{5, 1}};
+    cont.insert_range(int_pairs);
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1), IntPair(5, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}};
+    cont.insert_range(int_pairs);
+    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
+                                  IntPair(4, 1)));
+  }
+
+  {
+    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
+    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}, {7, 2}, {6, 2},
+                           {8, 2}, {5, 2}, {5, 3}, {6, 3}, {7, 3}, {8, 3}};
+    cont.insert_range(int_pairs);
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 2), IntPair(6, 2),
                                   IntPair(7, 2), IntPair(8, 2)));

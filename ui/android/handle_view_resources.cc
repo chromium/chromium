@@ -5,6 +5,8 @@
 #include "ui/android/handle_view_resources.h"
 
 #include "base/trace_event/trace_event.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/HandleViewResources_jni.h"
 
 namespace {
@@ -57,7 +59,7 @@ const SkBitmap& HandleViewResources::GetBitmap(
     case ui::TouchHandleOrientation::CENTER:
       return center_bitmap_;
     case ui::TouchHandleOrientation::UNDEFINED:
-      NOTREACHED() << "Invalid touch handle orientation.";
+      NOTREACHED_IN_MIGRATION() << "Invalid touch handle orientation.";
   };
   return center_bitmap_;
 }

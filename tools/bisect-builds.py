@@ -12,15 +12,63 @@ unzipping, and opening Chromium for you. After testing the specific revision,
 it will ask you whether it is good or bad before continuing the search.
 """
 
-from __future__ import print_function
+import abc
+import argparse
+import base64
+import copy
+import glob
+import importlib
+import json
+import os
+import platform
+import re
+import shlex
+import subprocess
+import sys
+import tarfile
+import tempfile
+import threading
+import traceback
+import urllib.request, urllib.parse
+from distutils.version import LooseVersion as BaseLooseVersion
+from xml.etree import ElementTree
+import zipfile
+
+# These constants are used for android bisect which depends on
+# Catapult repo.
+DEFAULT_CATAPULT_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), 'catapult_bisect_dep'))
+CATAPULT_DIR = os.environ.get('CATAPULT_DIR', DEFAULT_CATAPULT_DIR)
+CATAPULT_REPO = 'https://github.com/catapult-project/catapult.git'
+DEVIL_PATH = os.path.abspath(os.path.join(CATAPULT_DIR, 'devil'))
 
 # The base URL for stored build archives.
 CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
                      '/chromium-browser-snapshots')
-WEBKIT_BASE_URL = ('http://commondatastorage.googleapis.com'
-                   '/chromium-webkit-snapshots')
 ASAN_BASE_URL = ('http://commondatastorage.googleapis.com'
                  '/chromium-browser-asan')
+
+GSUTILS_PATH = None
+
+# GS bucket name for perf builds
+PERF_BASE_URL = 'gs://chrome-test-builds/official-by-commit'
+# GS bucket name.
+RELEASE_BASE_URL = 'gs://chrome-unsigned/desktop-5c0tCh'
+
+# Android bucket starting at M45.
+ANDROID_RELEASE_BASE_URL = 'gs://chrome-unsigned/android-B0urB0N'
+ANDROID_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/android-B0urB0N'
+
+# A special bucket that need to be skipped.
+ANDROID_INVALID_BUCKET = 'gs://chrome-signed/android-B0urB0N/Test'
+
+# iOS bucket
+IOS_RELEASE_BASE_URL = 'gs://chrome-unsigned/ios-G1N'
+IOS_RELEASE_BASE_URL_SIGNED = 'gs://chrome-signed/ios-G1N'
+IOS_ARCHIVE_BASE_URL = 'gs://bling-archive'
+
+# Base URL for downloading release builds.
+GOOGLE_APIS_URL = 'commondatastorage.googleapis.com'
 
 # URL template for viewing changelogs between revisions.
 CHANGELOG_URL = ('https://chromium.googlesource.com/chromium/src/+log/%s..%s')
@@ -28,175 +76,978 @@ CHANGELOG_URL = ('https://chromium.googlesource.com/chromium/src/+log/%s..%s')
 # URL to convert SVN revision to git hash.
 CRREV_URL = ('https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/')
 
-# DEPS file URL.
-DEPS_FILE = ('https://chromium.googlesource.com/chromium/src/+/%s/DEPS')
+# URL template for viewing changelogs between release versions.
+RELEASE_CHANGELOG_URL = ('https://chromium.googlesource.com/chromium/'
+                         'src/+log/%s..%s?pretty=fuller&n=10000')
 
-# Blink changelogs URL.
-BLINK_CHANGELOG_URL = ('http://build.chromium.org'
-                      '/f/chromium/perf/dashboard/ui/changelog_blink.html'
-                      '?url=/trunk&range=%d%%3A%d')
+# DEPS file URL.
+DEPS_FILE_OLD = ('http://src.chromium.org/viewvc/chrome/trunk/src/'
+                 'DEPS?revision=%d')
+DEPS_FILE_NEW = ('https://chromium.googlesource.com/chromium/src/+/%s/DEPS')
+
 
 DONE_MESSAGE_GOOD_MIN = ('You are probably looking for a change made after %s ('
                          'known good), but no later than %s (first known bad).')
 DONE_MESSAGE_GOOD_MAX = ('You are probably looking for a change made after %s ('
                          'known bad), but no later than %s (first known good).')
 
-CHROMIUM_GITHASH_TO_SVN_URL = (
-    'https://chromium.googlesource.com/chromium/src/+/%s?format=json')
+VERSION_INFO_URL = ('https://chromiumdash.appspot.com/fetch_version?version=%s')
 
-BLINK_GITHASH_TO_SVN_URL = (
-    'https://chromium.googlesource.com/chromium/blink/+/%s?format=json')
-
-GITHASH_TO_SVN_URL = {
-    'chromium': CHROMIUM_GITHASH_TO_SVN_URL,
-    'blink': BLINK_GITHASH_TO_SVN_URL,
-}
-
-VERSION_HISTORY_URL = ('https://versionhistory.googleapis.com/v1/chrome'
-                       '/platforms/win/channels/stable/versions/all/releases')
-
-OMAHA_REVISIONS_URL = ('https://omahaproxy.appspot.com/deps.json?version=%s')
-
-CRDASH_REVISIONS_URL = (
-    'https://chromiumdash.appspot.com/fetch_version?version=%s')
-
-# Search pattern to be matched in the JSON output from
-# CHROMIUM_GITHASH_TO_SVN_URL to get the chromium revision (svn revision).
-CHROMIUM_SEARCH_PATTERN_OLD = (
-    r'.*git-svn-id: svn://svn.chromium.org/chrome/trunk/src@(\d+) ')
-CHROMIUM_SEARCH_PATTERN = (
-    r'Cr-Commit-Position: refs/heads/(?:master|main)@{#(\d+)}')
-
-# Search pattern to be matched in the json output from
-# BLINK_GITHASH_TO_SVN_URL to get the blink revision (svn revision).
-BLINK_SEARCH_PATTERN = (
-    r'.*git-svn-id: svn://svn.chromium.org/blink/trunk@(\d+) ')
-
-SEARCH_PATTERN = {
-    'chromium': CHROMIUM_SEARCH_PATTERN,
-    'blink': BLINK_SEARCH_PATTERN,
-}
+MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones?mstone=%s')
 
 CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
+PATH_CONTEXT = {
+    'release': {
+        'android-arm': {
+            # Binary name is the Chrome binary filename. On Android, we don't
+            # use it to launch Chrome.
+            'binary_name': None,
+            'listing_platform_dir': 'arm/',
+            # Archive name is the zip file on gcs. For Android, we don't have
+            # such zip file. Instead we have a lot of apk files directly stored
+            # on gcs. The archive_name is used to find zip file for other
+            # platforms, but it will be apk filename defined by --apk for
+            # Android platform.
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'arm_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm64'
+        },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'high-arm_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-arm64'
+        },
+        'android-x86': {
+            'binary_name': None,
+            'listing_platform_dir': 'x86/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-x86'
+        },
+        'android-x64': {
+            'binary_name': None,
+            'listing_platform_dir': 'x86_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-x64'
+        },
+        'ios': {
+            'binary_name': None,
+            'listing_platform_dir': 'ios/',
+            'archive_name': None,
+            'archive_extract_dir': None,
+        },
+        'ios-simulator': {
+            'binary_name': 'Chromium.app',
+            'listing_platform_dir': '',
+            'archive_name': 'Chromium.tar.gz',
+            'archive_extract_dir': None,
+        },
+        'linux64': {
+            'binary_name': 'chrome',
+            'listing_platform_dir': 'linux64/',
+            'archive_name': 'chrome-linux64.zip',
+            'archive_extract_dir': 'chrome-linux64',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_linux64.zip',
+        },
+        'mac': {
+            'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
+            'listing_platform_dir': 'mac/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+        },
+        'mac64': {
+            'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
+            'listing_platform_dir': 'mac64/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
+        },
+        'mac-arm': {
+            'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
+            'listing_platform_dir': 'mac-arm64/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
+        },
+        'win': {
+            'binary_name': 'chrome.exe',
+            # Release builds switched to -clang in M64.
+            'listing_platform_dir': 'win-clang/',
+            'archive_name': 'chrome-win-clang.zip',
+            'archive_extract_dir': 'chrome-win-clang',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
+        },
+        'win64': {
+            'binary_name': 'chrome.exe',
+            # Release builds switched to -clang in M64.
+            'listing_platform_dir': 'win64-clang/',
+            'archive_name': 'chrome-win64-clang.zip',
+            'archive_extract_dir': 'chrome-win64-clang',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win64.zip',
+        },
+    },
+    'official': {
+        'android-arm': {
+            'binary_name': None,
+            'listing_platform_dir': 'android-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'android_arm64-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'android-arm64-high': {
+            'binary_name': None,
+            'listing_platform_dir': 'android_arm64_high_end-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
+        'linux64': {
+            'binary_name': 'chrome',
+            'listing_platform_dir': 'linux-builder-perf/',
+            'archive_name': 'chrome-perf-linux.zip',
+            'archive_extract_dir': 'full-build-linux',
+            'chromedriver_binary_name': 'chromedriver',
+        },
+        'mac': {
+            'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
+            'listing_platform_dir': 'mac-builder-perf/',
+            'archive_name': 'chrome-perf-mac.zip',
+            'archive_extract_dir': 'full-build-mac',
+            'chromedriver_binary_name': 'chromedriver',
+        },
+        'mac-arm': {
+            'binary_name': 'Google Chrome.app/Contents/MacOS/Google Chrome',
+            'listing_platform_dir': 'mac-arm-builder-perf/',
+            'archive_name': 'chrome-perf-mac.zip',
+            'archive_extract_dir': 'full-build-mac',
+            'chromedriver_binary_name': 'chromedriver',
+        },
+        'win64': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'win64-builder-perf/',
+            'archive_name': 'chrome-perf-win.zip',
+            'archive_extract_dir': 'full-build-win32',
+            'chromedriver_binary_name': 'chromedriver.exe',
+        },
+    },
+    'snapshot': {
+        'android-arm': {
+            'binary_name': None,
+            'listing_platform_dir': 'Android/',
+            'archive_name': 'chrome-android.zip',
+            'archive_extract_dir': 'chrome-android'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'Android_Arm64/',
+            'archive_name': 'chrome-android.zip',
+            'archive_extract_dir': 'chrome-android'
+        },
+        'linux64': {
+            'binary_name': 'chrome',
+            'listing_platform_dir': 'Linux_x64/',
+            'archive_name': 'chrome-linux.zip',
+            'archive_extract_dir': 'chrome-linux',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_linux64.zip',
+        },
+        'linux-arm': {
+            'binary_name': 'chrome',
+            'listing_platform_dir': 'Linux_ARM_Cross-Compile/',
+            'archive_name': 'chrome-linux.zip',
+            'archive_extract_dir': 'chrome-linux'
+        },
+        'chromeos': {
+            'binary_name': 'chrome',
+            'listing_platform_dir': 'Linux_ChromiumOS_Full/',
+            'archive_name': 'chrome-chromeos.zip',
+            'archive_extract_dir': 'chrome-chromeos'
+        },
+        'mac': {
+            'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
+            'listing_platform_dir': 'Mac/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
+        },
+        'mac64': {
+            'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
+            'listing_platform_dir': 'Mac/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
+        },
+        'mac-arm': {
+            'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
+            'listing_platform_dir': 'Mac_Arm/',
+            'archive_name': 'chrome-mac.zip',
+            'archive_extract_dir': 'chrome-mac',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver_mac64.zip',
+        },
+        'win': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'Win/',
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
+        },
+        'win64': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'Win_x64/',
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win32.zip',
+        },
+        'win-arm64': {
+            'binary_name': 'chrome.exe',
+            'listing_platform_dir': 'Win_Arm64/',
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver_win64.zip',
+        },
+    },
+    'asan': {
+        'linux': {},
+        'mac': {},
+        'win': {},
+    },
+}
 
-# Commands used for Android.
-_ANDROID_CHROME_INTENT = 'android.intent.action.MAIN'
-_ANDROID_CHROME_PACKAGE = 'org.chromium.chrome'
+CHROME_APK_FILENAMES = {
+    'chrome': 'Chrome.apk',
+    'chrome_beta': 'ChromeBeta.apk',
+    'chrome_canary': 'ChromeCanary.apk',
+    'chrome_dev': 'ChromeDev.apk',
+    'chrome_stable': 'ChromeStable.apk',
+    'chromium': 'ChromePublic.apk',
+}
 
-###############################################################################
+CHROME_MODERN_APK_FILENAMES = {
+    'chrome': 'ChromeModern.apk',
+    'chrome_beta': 'ChromeModernBeta.apk',
+    'chrome_canary': 'ChromeModernCanary.apk',
+    'chrome_dev': 'ChromeModernDev.apk',
+    'chrome_stable': 'ChromeModernStable.apk',
+    'chromium': 'ChromePublic.apk',
+}
 
-import glob
-import json
-import optparse
-import os
-import platform
-import re
-import shlex
-import shutil
-import subprocess
-import sys
-import tempfile
-import threading
-from distutils.version import LooseVersion
-from xml.etree import ElementTree
-import zipfile
+MONOCHROME_APK_FILENAMES = {
+    'chrome': 'Monochrome.apk',
+    'chrome_beta': 'MonochromeBeta.apk',
+    'chrome_canary': 'MonochromeCanary.apk',
+    'chrome_dev': 'MonochromeDev.apk',
+    'chrome_stable': 'MonochromeStable.apk',
+    'chromium': 'ChromePublic.apk',
+}
 
-if sys.version_info[0] == 3:
-  import urllib.request as urllib
-else:
-  import urllib
+TRICHROME_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle.apks',
+    'chrome_beta': 'TrichromeChromeGoogleBeta.apks',
+    'chrome_canary': 'TrichromeChromeGoogleCanary.apks',
+    'chrome_dev': 'TrichromeChromeGoogleDev.apks',
+    'chrome_stable': 'TrichromeChromeGoogleStable.apks',
+}
+
+TRICHROME64_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle6432.apks',
+    'chrome_beta': 'TrichromeChromeGoogle6432Beta.apks',
+    'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
+    'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
+    'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
+}
+
+TRICHROME_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle.apk',
+    'chrome_beta': 'TrichromeLibraryGoogleBeta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogleCanary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogleDev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogleStable.apk',
+}
+
+TRICHROME64_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle6432.apk',
+    'chrome_beta': 'TrichromeLibraryGoogle6432Beta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
+}
+
+WEBVIEW_APK_FILENAMES = {
+    # clank release
+    'android_webview': 'AndroidWebview.apk',
+    # clank official
+    'system_webview_google': 'SystemWebViewGoogle.apk',
+    # upstream
+    'system_webview': 'SystemWebView.apk',
+}
+
+# Old storage locations for per CL builds
+OFFICIAL_BACKUP_BUILDS = {
+    'android-arm': {
+        'listing_platform_dir': ['Android Builder/'],
+    },
+    'linux64': {
+        'listing_platform_dir': ['Linux Builder Perf/'],
+    },
+    'mac': {
+        'listing_platform_dir': ['Mac Builder Perf/'],
+    },
+    'win64': {
+        'listing_platform_dir': ['Win x64 Builder Perf/'],
+    }
+}
+
+PLATFORM_ARCH_TO_ARCHIVE_MAPPING = {
+    ('linux', 'x64'): 'linux64',
+    ('mac', 'x64'): 'mac64',
+    ('mac', 'x86'): 'mac',
+    ('mac', 'arm'): 'mac-arm',
+    ('win', 'x64'): 'win64',
+    ('win', 'x86'): 'win',
+    ('win', 'arm'): 'win-arm64',
+}
+
+# Set only during initialization.
+is_verbose = False
 
 
-class PathContext(object):
-  """A PathContext is used to carry the information used to construct URLs and
-  paths when dealing with the storage server and archives."""
+class BisectException(Exception):
 
-  def __init__(self, base_url, platform, good_revision, bad_revision, is_asan,
-               use_local_cache):
-    super(PathContext, self).__init__()
-    # Store off the input parameters.
-    self.base_url = base_url
-    self.platform = platform  # What's passed in to the '-a/--archive' option.
-    self.good_revision = good_revision
-    self.bad_revision = bad_revision
-    self.is_asan = is_asan
-    self.build_type = 'release'
-    # Dictionary which stores svn revision number as key and it's
-    # corresponding git hash as value. This data is populated in
-    # _FetchAndParse and used later in GetDownloadURL while downloading
-    # the build.
-    self.githash_svn_dict = {}
-    # The name of the ZIP file in a revision directory on the server.
-    self.archive_name = None
+  def __str__(self):
+    return '[Bisect Exception]: %s\n' % self.args[0]
 
-    # Whether to cache and use the list of known revisions in a local file to
-    # speed up the initialization of the script at the next run.
-    self.use_local_cache = use_local_cache
 
-    # Locate the local checkout to speed up the script by using locally stored
-    # metadata.
-    abs_file_path = os.path.abspath(os.path.realpath(__file__))
-    local_src_path = os.path.join(os.path.dirname(abs_file_path), '..')
-    if abs_file_path.endswith(os.path.join('tools', 'bisect-builds.py')) and\
-        os.path.exists(os.path.join(local_src_path, '.git')):
-      self.local_src_path = os.path.normpath(local_src_path)
+def RunGsutilCommand(args, can_fail=False, ignore_fail=False):
+  if not GSUTILS_PATH:
+    raise BisectException('gsutils is not found in path.')
+  if is_verbose:
+    print('Running gsutil command: ' +
+          str([sys.executable, GSUTILS_PATH] + args))
+  gsutil = subprocess.Popen([sys.executable, GSUTILS_PATH] + args,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            env=None)
+  stdout_b, stderr_b = gsutil.communicate()
+  stdout = stdout_b.decode("utf-8")
+  stderr = stderr_b.decode("utf-8")
+  if gsutil.returncode:
+    if (re.findall(r'(status|ServiceException:)[ |=]40[1|3]', stderr)
+        or stderr.startswith(CREDENTIAL_ERROR_MESSAGE)):
+      print(('Follow these steps to configure your credentials and try'
+             ' running the bisect-builds.py again.:\n'
+             '  1. Run "python3 %s config" and follow its instructions.\n'
+             '  2. If you have a @google.com account, use that account.\n'
+             '  3. For the project-id, just enter 0.' % GSUTILS_PATH))
+      print('Warning: You might have an outdated .boto file. If this issue '
+            'persists after running `gsutil.py config`, try removing your '
+            '.boto, usually located in your home directory.')
+      sys.exit(1)
+    elif can_fail:
+      return stderr
+    elif ignore_fail:
+      return stdout
     else:
-      self.local_src_path = None
+      raise Exception('Error running the gsutil command:\n%s\n%s' %
+                      (args, stderr))
+  return stdout
 
-    # Set some internal members:
-    #   _listing_platform_dir = Directory that holds revisions. Ends with a '/'.
-    #   _archive_extract_dir = Uncompressed directory in the archive_name file.
-    #   _binary_name = The name of the executable to run.
-    if self.platform in ('linux', 'linux64', 'linux-arm', 'chromeos'):
-      self._binary_name = 'chrome'
-    elif self.platform in ('mac', 'mac64', 'mac-arm'):
-      self.archive_name = 'chrome-mac.zip'
-      self._archive_extract_dir = 'chrome-mac'
-    elif self.platform in ('win', 'win64'):
-      # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
-      # below where these are patched.
-      self.archive_name = 'chrome-win32.zip'
-      self._archive_extract_dir = 'chrome-win32'
-      self._binary_name = 'chrome.exe'
-    elif self.platform in ('android', 'android64'):
-      self._binary_name = 'apks/ChromePublic.apk'
-      self.archive_name = 'chrome-android.zip'
-      self._archive_extract_dir = 'chrome-android'
-    elif self.platform in ('webview', 'webview64'):
-      self._binary_name = 'apks/SystemWebView.apk'
-      self.archive_name = 'chrome-android.zip'
-      self._archive_extract_dir = 'chrome-android'
+
+def GsutilList(*urls, ignore_fail=False):
+  """List GCloud Storage with URLs and return a list of paths.
+
+  This method lists all archive builds in a GCS bucket; it filters out invalid
+  archive builds or files.
+
+  Arguments:
+    * urls - one or more gs:// URLs
+    * ignore_fail - ignore gsutil command errors, e.g., 'matched no objects'
+
+  Return:
+    * list of paths that match the given URLs
+  """
+  # Get a directory listing with file sizes. Typical output looks like:
+  #         7  2023-11-27T21:08:36Z  gs://.../LAST_CHANGE
+  # 144486938  2023-03-07T14:41:25Z  gs://.../full-build-win32_1113893.zip
+  # TOTAL: 114167 objects, 15913845813421 bytes (14.47 TiB)
+  # This lets us ignore empty .zip files that will otherwise cause errors.
+  stdout = RunGsutilCommand(['ls', '-l', *urls], ignore_fail=ignore_fail)
+  # Trim off the summary line that only happens with -l
+  lines = []
+  for line in stdout.splitlines():
+    parts = line.split(maxsplit=2)
+    if not parts[-1].startswith('gs://'):
+      continue
+    # Check whether there is a size field. For release builds the listing
+    # will be directories so there will be no size field.
+    if len(parts) > 1:
+      if ANDROID_INVALID_BUCKET in line:
+        continue
+      size = int(parts[0])
+      # Empty .zip files are 22 bytes. Ignore anything less than 1,000 bytes,
+      # but keep the LAST_CHANGE file since the code seems to expect that.
+      if parts[-1].endswith('LAST_CHANGE') or size > 1000:
+        lines.append(parts[-1])
     else:
-      raise Exception('Invalid platform: %s' % self.platform)
+      lines.append(parts[-1])
+  return lines
 
-    if self.platform in ('linux', 'linux64', 'linux-arm', 'chromeos'):
-      # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
-      # below where these are patched.
-      self.archive_name = 'chrome-linux.zip'
-      self._archive_extract_dir = 'chrome-linux'
-      if self.platform == 'linux':
-        self._listing_platform_dir = 'Linux/'
-      elif self.platform == 'linux64':
-        self._listing_platform_dir = 'Linux_x64/'
-      elif self.platform == 'linux-arm':
-        self._listing_platform_dir = 'Linux_ARM_Cross-Compile/'
-      elif self.platform == 'chromeos':
-        self._listing_platform_dir = 'Linux_ChromiumOS_Full/'
-    elif self.platform in ('mac', 'mac64'):
-      self._listing_platform_dir = 'Mac/'
-      self._binary_name = 'Chromium.app/Contents/MacOS/Chromium'
-    elif self.platform in ('mac-arm'):
-      self._listing_platform_dir = 'Mac_Arm/'
-      self._binary_name = 'Chromium.app/Contents/MacOS/Chromium'
-    elif self.platform == 'win':
-      self._listing_platform_dir = 'Win/'
-    elif self.platform == 'win64':
-      self._listing_platform_dir = 'Win_x64/'
-    elif self.platform in ('android', 'webview'):
-      self._listing_platform_dir = 'Android/'
-    elif self.platform in ('android64', 'webview64'):
-      self._listing_platform_dir = 'Android_Arm64/'
+
+class ArchiveBuild(abc.ABC):
+  """Base class for a archived build."""
+
+  def __init__(self, options):
+    self.platform = options.archive
+    self.good_revision = options.good
+    self.bad_revision = options.bad
+    self.use_local_cache = options.use_local_cache
+    self.chromedriver = options.chromedriver
+    # PATH_CONTEXT
+    path_context = PATH_CONTEXT[self.build_type].get(self.platform, {})
+    self.binary_name = path_context.get('binary_name')
+    self.listing_platform_dir = path_context.get('listing_platform_dir')
+    self.archive_name = path_context.get('archive_name')
+    self.archive_extract_dir = path_context.get('archive_extract_dir')
+    self.chromedriver_binary_name = path_context.get('chromedriver_binary_name')
+    self.chromedriver_archive_name = path_context.get(
+        'chromedriver_archive_name')
+    if self.chromedriver and not self.chromedriver_binary_name:
+      raise BisectException(
+          'Could not find chromedriver_binary_name, '
+          f'--chromedriver might not supported on {self.platform}.')
+    # run_revision options
+    self.profile = options.profile
+    self.command = options.command
+    self.num_runs = options.times
+
+  @property
+  @abc.abstractmethod
+  def build_type(self):
+    raise NotImplemented()
+
+  @abc.abstractmethod
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    """The actual method to get revision list without cache.
+
+    min_rev and max_rev could be None, indicating that the method should return
+    all revisions.
+
+    The method should return at least the revision list that exists for the
+    given (min_rev, max_rev) range. However, it could return a revision list
+    with revisions beyond min_rev and max_rev based on the implementation for
+    better caching. The rev_list should contain all available revisions between
+    the returned minimum and maximum values.
+
+    The return value of revisions in the list should match the type of
+    good_revision and bad_revision, and should be comparable.
+    """
+    raise NotImplemented()
+
+  @property
+  def _rev_list_cache_filename(self):
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                        '.bisect-builds-cache.json')
+
+  @property
+  @abc.abstractmethod
+  def _rev_list_cache_key(self):
+    """Returns the cache key for archive build. The cache key should be able to
+    distinguish like build_type, platform."""
+    raise NotImplemented()
+
+  def _load_rev_list_cache(self):
+    if not self.use_local_cache:
+      return []
+    cache_filename = self._rev_list_cache_filename
+    try:
+      with open(cache_filename) as cache_file:
+        cache = json.load(cache_file)
+        revisions = cache.get(self._rev_list_cache_key, [])
+        if revisions:
+          print('Loaded revisions %s-%s from %s' %
+                (revisions[0], revisions[-1], cache_filename))
+        return revisions
+    except FileNotFoundError:
+      return []
+    except (EnvironmentError, ValueError) as e:
+      print('Load revisions cache error:', e)
+      return []
+
+  def _save_rev_list_cache(self, revisions):
+    if not self.use_local_cache:
+      return
+    if not revisions:
+      return
+    cache = {}
+    cache_filename = self._rev_list_cache_filename
+    # Load cache for all of the builds.
+    try:
+      with open(cache_filename) as cache_file:
+        cache = json.load(cache_file)
+    except FileNotFoundError:
+      pass
+    except (EnvironmentError, ValueError) as e:
+      print('Load existing revisions cache error:', e)
+      return
+    # Update and save cache for current build.
+    cache[self._rev_list_cache_key] = revisions
+    try:
+      with open(cache_filename, 'w') as cache_file:
+        json.dump(cache, cache_file)
+      print('Saved revisions %s-%s to %s' %
+            (revisions[0], revisions[-1], cache_filename))
+    except EnvironmentError as e:
+      print('Save revisions cache error:', e)
+      return
+
+  def get_rev_list(self):
+    """Gets the list of revision numbers between self.good_revision and
+    self.bad_revision. The result might be cached when use_local_cache."""
+    # Download the rev_list_all
+    min_rev, max_rev = sorted((self.good_revision, self.bad_revision))
+    rev_list_all = self._load_rev_list_cache()
+    if not rev_list_all:
+      rev_list_all = sorted(self._get_rev_list(min_rev, max_rev))
+      self._save_rev_list_cache(rev_list_all)
+    else:
+      rev_list_min, rev_list_max = rev_list_all[0], rev_list_all[-1]
+      if min_rev < rev_list_min or max_rev > rev_list_max:
+        # We only need to request and merge the rev_list beyond the cache.
+        rev_list_requested = self._get_rev_list(
+            min_rev if min_rev < rev_list_min else rev_list_max,
+            max_rev if max_rev > rev_list_max else rev_list_min)
+        rev_list_all = sorted(set().union(rev_list_all, rev_list_requested))
+        self._save_rev_list_cache(rev_list_all)
+    # If we still don't get a rev_list_all for the given range, adjust the
+    # range to get the full revision list for better messaging.
+    if not rev_list_all:
+      rev_list_all = sorted(self._get_rev_list())
+      self._save_rev_list_cache(rev_list_all)
+    if not rev_list_all:
+      raise BisectException('Could not retrieve the revisions for %s.' %
+                            self.platform)
+
+    # Filter for just the range between good and bad.
+    rev_list = [x for x in rev_list_all if min_rev <= x <= max_rev]
+    # Don't have enough builds to bisect.
+    if len(rev_list) < 2:
+      rev_list_min, rev_list_max = rev_list_all[0], rev_list_all[-1]
+      # Check for specifying a number before the available range.
+      if max_rev < rev_list_min:
+        msg = (
+            'First available bisect revision for %s is %d. Be sure to specify '
+            'revision numbers, not branch numbers.' %
+            (self.platform, rev_list_min))
+        raise BisectException(msg)
+      # Check for specifying a number beyond the available range.
+      if min_rev > rev_list_max:
+        # Check for the special case of linux where bisect builds stopped at
+        # revision 382086, around March 2016.
+        if self.platform == 'linux':
+          msg = ('Last available bisect revision for %s is %d. Try linux64 '
+                 'instead.' % (self.platform, rev_list_max))
+        else:
+          msg = ('Last available bisect revision for %s is %d. Try a different '
+                 'good/bad range.' % (self.platform, rev_list_max))
+        raise BisectException(msg)
+      # Otherwise give a generic message.
+      msg = 'We don\'t have enough builds to bisect. rev_list: %s' % rev_list
+      raise BisectException(msg)
+
+    # Set good and bad revisions to be legit revisions.
+    if rev_list:
+      if self.good_revision < self.bad_revision:
+        self.good_revision = rev_list[0]
+        self.bad_revision = rev_list[-1]
+      else:
+        self.bad_revision = rev_list[0]
+        self.good_revision = rev_list[-1]
+    return rev_list
+
+  @abc.abstractmethod
+  def get_download_url(self, revision):
+    """Gets the download URL for the specific revision."""
+    raise NotImplemented()
+
+  def get_download_job(self, revision, name=None):
+    """Gets as a DownloadJob that download the specific revision in threads."""
+    return DownloadJob(self.get_download_url(revision), revision, name)
+
+  def _get_extra_args(self):
+    """Get extra chrome args"""
+    return ['--user-data-dir=%s' % self.profile]
+
+  def _get_extract_binary_glob(self, tempdir):
+    """Get the pathname for extracted chrome binary"""
+    return '%s/*/%s' % (tempdir, self.binary_name)
+
+  def _get_chromedriver_binary_glob(self, tempdir):
+    """Get the pathname for extracted chromedriver binary"""
+    if not self.chromedriver_binary_name:
+      raise BisectException(f"chromedriver is not supported on {self.platform}")
+    return '%s/*/%s' % (tempdir, self.chromedriver_binary_name)
+
+  def _run(self, runcommand, cwd=None, shell=False):
+    # is_verbos is a global variable.
+    if is_verbose:
+      print(('Running ' + str(runcommand)))
+    subproc = subprocess.Popen(runcommand,
+                               cwd=cwd,
+                               shell=shell,
+                               bufsize=-1,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    (stdout, stderr) = subproc.communicate()
+    if is_verbose:
+      print(f'retcode:{subproc.returncode}\nstdout:\n')
+      sys.stdout.buffer.write(stdout)
+      sys.stdout.flush()
+      print('stderr:\n')
+      sys.stderr.buffer.write(stderr)
+      sys.stderr.flush()
+    return subproc.returncode, stdout, stderr
+
+  @staticmethod
+  def _glob_with_unique_match(executable_name, tempdir, pathname):
+    executables = glob.glob(pathname)
+    if len(executables) == 0:
+      raise BisectException(
+          f'Can not find the {executable_name} binary from {tempdir}')
+    elif len(executables) > 1:
+      raise BisectException(
+          f'Multiple {executable_name} executables found: {executables}')
+    return os.path.abspath(executables[0])
+
+  def _install_revision(self, download, tempdir):
+    """Unzip and/or install the given download to tempdir. Return executable
+    binaries in a dict."""
+    if isinstance(download, dict):
+      for each in download.values():
+        UnzipFilenameToDir(each, tempdir)
+    else:
+      UnzipFilenameToDir(download, tempdir)
+    # Searching for the executable, it's unlikely the zip file contains multiple
+    # folders with the binary_name.
+    result = {}
+    result['chrome'] = self._glob_with_unique_match(
+        'chrome', tempdir, self._get_extract_binary_glob(tempdir))
+    if self.chromedriver:
+      result['chromedriver'] = self._glob_with_unique_match(
+          'chromedriver', tempdir, self._get_chromedriver_binary_glob(tempdir))
+    return result
+
+  def _launch_revision(self, tempdir, executables, args=()):
+    args = [*self._get_extra_args(), *args]
+    args_str = shlex.join(args)
+    command = (self.command.replace(r'%p', executables['chrome']).replace(
+        r'%s', args_str).replace(r'%a', args_str).replace(r'%t', tempdir))
+    if self.chromedriver:
+      command = command.replace(r'%d', executables['chromedriver'])
+    return self._run(command, shell=True)
+
+  def run_revision(self, download, tempdir, args=()):
+    """Run downloaded archive"""
+    executables = self._install_revision(download, tempdir)
+    result = None
+    for _ in range(self.num_runs):
+      returncode, _, _ = result = self._launch_revision(tempdir, executables,
+                                                        args)
+      if returncode:
+        break
+    return result
+
+
+class LooseVersion(BaseLooseVersion):
+
+  def __hash__(self):
+    return hash(str(self))
+
+
+class ReleaseBuild(ArchiveBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.good_revision = LooseVersion(self.good_revision)
+    self.bad_revision = LooseVersion(self.bad_revision)
+
+  @property
+  def build_type(self):
+    return 'release'
+
+  def _get_release_bucket(self):
+    return RELEASE_BASE_URL
+
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # Get all build numbers in the build bucket.
+    build_numbers = []
+    revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
+    for path in GsutilList(self._get_release_bucket()):
+      match = revision_re.search(path)
+      if match:
+        build_numbers.append(LooseVersion(match[1]))
+    # Filter the versions between min_rev and max_rev.
+    build_numbers = [
+        x for x in build_numbers
+        if (not min_rev or min_rev <= x) and (not max_rev or x <= max_rev)
+    ]
+    # Check if target archive build exists in batches.
+    # batch size is limited by maximum length for the command line. Which is
+    # 32,768 characters on Windows, which should be enough up to 400 files.
+    batch_size = 100
+    final_list = []
+    for batch in (build_numbers[i:i + batch_size]
+                  for i in range(0, len(build_numbers), batch_size)):
+      sys.stdout.write('\rFetching revisions at marker %s' % batch[0])
+      sys.stdout.flush()
+      # List the files that exists with listing_platform_dir and archive_name.
+      # Gsutil could fail because some of the path not exists. It's safe to
+      # ignore them.
+      for path in GsutilList(*[self._get_archive_path(x) for x in batch],
+                             ignore_fail=True):
+        match = revision_re.search(path)
+        if match:
+          final_list.append(LooseVersion(match[1]))
+    sys.stdout.write('\r')
+    sys.stdout.flush()
+    return final_list
+
+  def _get_listing_url(self):
+    return self._get_release_bucket()
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    return '/'.join((self._get_release_bucket(), str(build_number),
+                     self.listing_platform_dir.rstrip('/'), archive_name))
+
+  @property
+  def _rev_list_cache_key(self):
+    return self._get_archive_path('**')
+
+  def _save_rev_list_cache(self, revisions):
+    # LooseVersion is not json-able, convert it back to string format.
+    super()._save_rev_list_cache([str(x) for x in revisions])
+
+  def _load_rev_list_cache(self):
+    # Convert to LooseVersion that revisions can be correctly compared.
+    revisions = super()._load_rev_list_cache()
+    return [LooseVersion(x) for x in revisions]
+
+  def get_download_url(self, revision):
+    if self.chromedriver:
+      return {
+          'chrome':
+          self._get_archive_path(revision),
+          'chromedriver':
+          self._get_archive_path(revision, self.chromedriver_archive_name),
+      }
+    return self._get_archive_path(revision)
+
+
+class ArchiveBuildWithCommitPosition(ArchiveBuild):
+  """Class for ArchiveBuilds that organized based on commit position."""
+
+  def get_last_change_url(self):
+    return None
+
+  def __init__(self, options):
+    super().__init__(options)
+    # convert good and bad to commit position as int.
+    self.good_revision = GetRevision(self.good_revision)
+    if not options.bad:
+      self.bad_revision = GetChromiumRevision(self.get_last_change_url())
+    self.bad_revision = GetRevision(self.bad_revision)
+
+
+class OfficialBuild(ArchiveBuildWithCommitPosition):
+
+  @property
+  def build_type(self):
+    return 'official'
+
+  def _get_listing_url(self):
+    return '/'.join((PERF_BASE_URL, self.listing_platform_dir))
+
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # For official builds, it's getting the list from perf build bucket.
+    # Since it's cheap to get full list, we are returning the full list for
+    # caching.
+    revision_re = re.compile(r'%s_(\d+)\.zip' % (self.archive_extract_dir))
+    revision_files = GsutilList(self._get_listing_url())
+    revision_numbers = []
+    for revision_file in revision_files:
+      revision_num = revision_re.search(revision_file)
+      if revision_num:
+        revision_numbers.append(int(revision_num[1]))
+    return revision_numbers
+
+  @property
+  def _rev_list_cache_key(self):
+    return self._get_listing_url()
+
+  def get_download_url(self, revision):
+    return '%s/%s%s_%s.zip' % (PERF_BASE_URL, self.listing_platform_dir,
+                               self.archive_extract_dir, revision)
+
+
+class SnapshotBuild(ArchiveBuildWithCommitPosition):
+
+  def __init__(self, options):
+    self.base_url = CHROMIUM_BASE_URL
+    super().__init__(options)
+
+  @property
+  def build_type(self):
+    return 'snapshot'
+
+  def _get_marker_for_revision(self, revision):
+    return '%s%d' % (self.listing_platform_dir, revision)
+
+  def _fetch_and_parse(self, url):
+    """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
+    next-marker is not None, then the listing is a partial listing and another
+    fetch should be performed with next-marker being the marker= GET
+    parameter."""
+    handle = urllib.request.urlopen(url)
+    document = ElementTree.parse(handle)
+    # All nodes in the tree are namespaced. Get the root's tag name to extract
+    # the namespace. Etree does namespaces as |{namespace}tag|.
+    root_tag = document.getroot().tag
+    end_ns_pos = root_tag.find('}')
+    if end_ns_pos == -1:
+      raise Exception('Could not locate end namespace for directory index')
+    namespace = root_tag[:end_ns_pos + 1]
+    # Find the prefix (_listing_platform_dir) and whether or not the list is
+    # truncated.
+    prefix_len = len(document.find(namespace + 'Prefix').text)
+    next_marker = None
+    is_truncated = document.find(namespace + 'IsTruncated')
+    if is_truncated is not None and is_truncated.text.lower() == 'true':
+      next_marker = document.find(namespace + 'NextMarker').text
+    # Get a list of all the revisions.
+    revisions = []
+    revision_re = re.compile(r'(\d+)')
+    all_prefixes = document.findall(namespace + 'CommonPrefixes/' + namespace +
+                                    'Prefix')
+    # The <Prefix> nodes have content of the form of
+    # |_listing_platform_dir/revision/|. Strip off the platform dir and the
+    # trailing slash to just have a number.go
+    for prefix in all_prefixes:
+      match = revision_re.search(prefix.text[prefix_len:])
+      if match:
+        revisions.append(int(match[1]))
+    return revisions, next_marker
+
+  def get_last_change_url(self):
+    """Returns a URL to the LAST_CHANGE file."""
+    return self.base_url + '/' + self.listing_platform_dir + 'LAST_CHANGE'
+
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # This method works by parsing the Google Storage directory listing into a
+    # list of revision numbers. This method can return a full revision list for
+    # a full scan.
+    if not max_rev:
+      max_rev = GetChromiumRevision(self.get_last_change_url())
+    # The commondatastorage API listing the files by alphabetical order instead
+    # of numerical order (e.g. 1, 10, 2, 3, 4). That starting or breaking the
+    # pagination from a known position is only valid when the number of digits
+    # of min_rev == max_rev.
+    start_marker = None
+    next_marker = None
+    if min_rev is not None and max_rev is not None and len(str(min_rev)) == len(
+        str(max_rev)):
+      start_marker = next_marker = self._get_marker_for_revision(min_rev)
+    else:
+      max_rev = None
+
+    revisions = []
+    while True:
+      sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
+      sys.stdout.flush()
+      new_revisions, next_marker = self._fetch_and_parse(
+          self._get_listing_url(next_marker))
+      revisions.extend(new_revisions)
+      if max_rev and new_revisions and max_rev <= max(new_revisions):
+        break
+      if not next_marker:
+        break
+    sys.stdout.write('\r')
+    sys.stdout.flush()
+    # We can only ensure the revisions have no gap (due to the alphabetical
+    # order) between min_rev and max_rev.
+    if start_marker or next_marker:
+      return [
+          x for x in revisions if ((min_rev is None or min_rev <= x) and (
+              max_rev is None or x <= max_rev))
+      ]
+    # Unless we did a full scan. `not start_marker and not next_marker`
+    else:
+      return revisions
+
+  def _get_listing_url(self, marker=None):
+    """Returns the URL for a directory listing, with an optional marker."""
+    marker_param = ''
+    if marker:
+      marker_param = '&marker=' + str(marker)
+    return (self.base_url + '/?delimiter=/&prefix=' +
+            self.listing_platform_dir + marker_param)
+
+  @property
+  def _rev_list_cache_key(self):
+    return self._get_listing_url()
+
+  def get_download_url(self, revision):
+    archive_name = self.archive_name
+    # `archive_name` was changed for chromeos, win and win64 at revision 591483
+    # This is patched for backward compatibility.
+    if revision < 591483:
+      if self.platform == 'chromeos':
+        archive_name = 'chrome-linux.zip'
+      elif self.platform in ('win', 'win64'):
+        archive_name = 'chrome-win32.zip'
+    url_prefix = '%s/%s%s/' % (self.base_url, self.listing_platform_dir,
+                               revision)
+    chrome_url = url_prefix + archive_name
+    if self.chromedriver:
+      return {
+          'chrome': chrome_url,
+          'chromedriver': url_prefix + self.chromedriver_archive_name,
+      }
+    return chrome_url
+
+
+class ASANBuild(SnapshotBuild):
+  """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
+  with a different listing url."""
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.base_url = ASAN_BASE_URL
+    self.asan_build_type = 'release'
+
+  @property
+  def build_type(self):
+    return 'asan'
 
   def GetASANPlatformDir(self):
     """ASAN builds are in directories like "linux-release", or have filenames
@@ -207,349 +1058,388 @@ class PathContext(object):
     else:
       return self.platform
 
-  def GetListingURL(self, marker=None):
+  def GetASANBaseName(self):
+    """Returns the base name of the ASAN zip file."""
+    # TODO: These files were not update since 2016 for linux, 2021 for win.
+    # Need to confirm if it's moved.
+    if 'linux' in self.platform:
+      return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
+                                        self.asan_build_type)
+    else:
+      return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.asan_build_type)
+
+  def get_last_change_url(self):
+    # LAST_CHANGE is not supported in asan build.
+    return None
+
+  def _get_listing_url(self, marker=None):
     """Returns the URL for a directory listing, with an optional marker."""
     marker_param = ''
     if marker:
       marker_param = '&marker=' + str(marker)
-    if self.is_asan:
-      prefix = '%s-%s' % (self.GetASANPlatformDir(), self.build_type)
-      return self.base_url + '/?delimiter=&prefix=' + prefix + marker_param
+    prefix = '%s-%s/%s' % (self.GetASANPlatformDir(), self.asan_build_type,
+                           self.GetASANBaseName())
+    # This is a hack for delimiter to make commondata API return file path as
+    # prefix that can reuse the code of SnapshotBuild._fetch_and_parse.
+    return self.base_url + '/?delimiter=.zip&prefix=' + prefix + marker_param
+
+  def _get_marker_for_revision(self, revision):
+    # The build type is hardcoded as release in the original code.
+    return '%s-%s/%s-%d.zip' % (self.GetASANPlatformDir(), self.asan_build_type,
+                                self.GetASANBaseName(), revision)
+
+  def get_download_url(self, revision):
+    return '%s/%s' % (self.base_url, self._get_marker_for_revision(revision))
+
+
+class AndroidBuildMixin:
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.apk = options.apk
+    self.device = InitializeAndroidDevice(options.device_id, self.apk, None)
+    self.flag_changer = None
+    if not self.device:
+      raise BisectException('Failed to initialize device.')
+    self.binary_name = self._get_apk_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    sdk = self.device.build_version_sdk
+    apk_mapping = None
+    if 'webview' in self.apk.lower():
+      apk_mapping = WEBVIEW_APK_FILENAMES
+    # Need these logic to bisect very old build. Release binaries are stored
+    # forever and occasionally there are requests to bisect issues introduced
+    # in very old versions.
+    elif sdk < version_codes.LOLLIPOP:
+      apk_mapping = CHROME_APK_FILENAMES
+    elif sdk < version_codes.NOUGAT:
+      apk_mapping = CHROME_MODERN_APK_FILENAMES
     else:
-      return (self.base_url + '/?delimiter=/&prefix=' +
-              self._listing_platform_dir + marker_param)
+      apk_mapping = MONOCHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
 
-  def GetDownloadURL(self, revision):
-    """Gets the download URL for a build archive of a specific revision."""
-    if self.is_asan:
-      return '%s/%s-%s/%s-%d.zip' % (
-          ASAN_BASE_URL, self.GetASANPlatformDir(), self.build_type,
-          self.GetASANBaseName(), revision)
-    if str(revision) in self.githash_svn_dict:
-      revision = self.githash_svn_dict[str(revision)]
-    archive_name = self.archive_name
+  def _install_revision(self, download, tempdir):
+    apk_paths = super()._install_revision(download, tempdir)
+    InstallOnAndroid(self.device, apk_paths['chrome'])
 
-    # At revision 591483, the names of two of the archives changed
-    # due to: https://chromium-review.googlesource.com/#/q/1226086
-    # See: http://crbug.com/789612
-    if revision >= 591483:
-      if self.platform == 'chromeos':
-        archive_name = 'chrome-chromeos.zip'
-      elif self.platform in ('win', 'win64'):
-        archive_name = 'chrome-win.zip'
+  def _launch_revision(self, tempdir, executables, args=()):
+    if args:
+      if self.apk not in chrome.PACKAGE_INFO:
+        raise BisectException(
+            f'Launching args are not supported for {self.apk}')
+      if not self.flag_changer:
+        self.flag_changer = flag_changer.FlagChanger(
+            self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
+      self.flag_changer.ReplaceFlags(args)
+    LaunchOnAndroid(self.device, self.apk)
+    return (0, sys.stdout, sys.stderr)
 
-    return '%s/%s%s/%s' % (self.base_url, self._listing_platform_dir,
-                           revision, archive_name)
+  def _get_extract_binary_glob(self, tempdir):
+    return '%s/*/apks/%s' % (tempdir, self.binary_name)
 
-  def GetLastChangeURL(self):
-    """Returns a URL to the LAST_CHANGE file."""
-    return self.base_url + '/' + self._listing_platform_dir + 'LAST_CHANGE'
 
-  def GetASANBaseName(self):
-    """Returns the base name of the ASAN zip file."""
-    if 'linux' in self.platform:
-      return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
-                                        self.build_type)
+class AndroidTrichromeMixin(AndroidBuildMixin):
+
+  def __init__(self, options):
+    self._64bit_platforms = ('android-arm64', 'android-x64',
+                             'android-arm64-high')
+    super().__init__(options)
+    if self.device.build_version_sdk < version_codes.Q:
+      raise BisectException("Trichrome is only supported after Android Q.")
+    self.library_binary_name = self._get_library_filename()
+
+  def _get_apk_filename(self, prefer_64bit=True):
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_APK_FILENAMES
     else:
-      return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.build_type)
+      apk_mapping = TRICHROME_APK_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting on Android only supported for these apks: [%s].' %
+          '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
 
-  def GetLaunchPath(self, revision):
-    """Returns a relative path (presumably from the archive extraction location)
-    that is used to run the executable."""
-    if self.is_asan:
-      extract_dir = '%s-%d' % (self.GetASANBaseName(), revision)
+  def _get_library_filename(self, prefer_64bit=True):
+    apk_mapping = None
+    if self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_LIBRARY_FILENAMES
     else:
-      extract_dir = self._archive_extract_dir
+      apk_mapping = TRICHROME_LIBRARY_FILENAMES
+    if self.apk not in apk_mapping:
+      raise BisectException(
+          'Bisecting for Android Trichrome only supported for these apks: [%s].'
+          % '|'.join(apk_mapping))
+    return apk_mapping[self.apk]
 
-    # At revision 591483, the names of two of the archives changed
-    # due to: https://chromium-review.googlesource.com/#/q/1226086
-    # See: http://crbug.com/789612
-    if revision >= 591483:
-      if self.platform == 'chromeos':
-        extract_dir = 'chrome-chromeos'
-      elif self.platform in ('win', 'win64'):
-        extract_dir = 'chrome-win'
 
-    return os.path.join(extract_dir, self._binary_name)
+class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
 
-  def ParseDirectoryIndex(self, last_known_rev):
-    """Parses the Google Storage directory listing into a list of revision
-    numbers."""
+  def __init__(self, options):
+    super().__init__(options)
+    self.signed = options.signed
+    # We could download the apk directly from build bucket
+    self.archive_name = self.binary_name
 
-    def _GetMarkerForRev(revision):
-      if self.is_asan:
-        return '%s-%s/%s-%d.zip' % (
-            self.GetASANPlatformDir(), self.build_type,
-            self.GetASANBaseName(), revision)
-      return '%s%d' % (self._listing_platform_dir, revision)
-
-    def _FetchAndParse(url):
-      """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
-      next-marker is not None, then the listing is a partial listing and another
-      fetch should be performed with next-marker being the marker= GET
-      parameter."""
-      handle = urllib.urlopen(url)
-      document = ElementTree.parse(handle)
-
-      # All nodes in the tree are namespaced. Get the root's tag name to extract
-      # the namespace. Etree does namespaces as |{namespace}tag|.
-      root_tag = document.getroot().tag
-      end_ns_pos = root_tag.find('}')
-      if end_ns_pos == -1:
-        raise Exception('Could not locate end namespace for directory index')
-      namespace = root_tag[:end_ns_pos + 1]
-
-      # Find the prefix (_listing_platform_dir) and whether or not the list is
-      # truncated.
-      prefix_len = len(document.find(namespace + 'Prefix').text)
-      next_marker = None
-      is_truncated = document.find(namespace + 'IsTruncated')
-      if is_truncated is not None and is_truncated.text.lower() == 'true':
-        next_marker = document.find(namespace + 'NextMarker').text
-      # Get a list of all the revisions.
-      revisions = []
-      githash_svn_dict = {}
-      if self.is_asan:
-        asan_regex = re.compile(r'.*%s-(\d+)\.zip$' % (self.GetASANBaseName()))
-        # Non ASAN builds are in a <revision> directory. The ASAN builds are
-        # flat
-        all_prefixes = document.findall(namespace + 'Contents/' +
-                                        namespace + 'Key')
-        for prefix in all_prefixes:
-          m = asan_regex.match(prefix.text)
-          if m:
-            try:
-              revisions.append(int(m.group(1)))
-            except ValueError:
-              pass
-      else:
-        all_prefixes = document.findall(namespace + 'CommonPrefixes/' +
-                                        namespace + 'Prefix')
-        # The <Prefix> nodes have content of the form of
-        # |_listing_platform_dir/revision/|. Strip off the platform dir and the
-        # trailing slash to just have a number.
-        for prefix in all_prefixes:
-          revnum = prefix.text[prefix_len:-1]
-          try:
-            revnum = int(revnum)
-            revisions.append(revnum)
-          # Notes:
-          # Ignore hash in chromium-browser-snapshots as they are invalid
-          # Resulting in 404 error in fetching pages:
-          # https://chromium.googlesource.com/chromium/src/+/[rev_hash]
-          except ValueError:
-            pass
-      return (revisions, next_marker, githash_svn_dict)
-
-    # crbug.com/1338727
-    # loop_around is used to continue paging from e.g. */999988 to */1000000
-    # due to the lexicographical sort of the prefixes.
-    loop_around = False
-    # only use the flag above when the starting revision is set and less than
-    # this
-    LOOP_AROUND_REV = 1000000
-    # Fetch the first list of revisions.
-    if last_known_rev:
-      if last_known_rev < LOOP_AROUND_REV:
-        loop_around = True
-      revisions = []
-      # Optimization: Start paging at the last known revision (local cache).
-      next_marker = _GetMarkerForRev(last_known_rev)
-      # Optimization: Stop paging at the last known revision (remote).
-      last_change_rev = GetChromiumRevision(self, self.GetLastChangeURL())
-      if last_known_rev == last_change_rev:
-        return []
+  def _get_release_bucket(self):
+    if self.signed:
+      return ANDROID_RELEASE_BASE_URL_SIGNED
     else:
-      (revisions, next_marker, new_dict) = _FetchAndParse(self.GetListingURL())
-      self.githash_svn_dict.update(new_dict)
-      last_change_rev = None
+      return ANDROID_RELEASE_BASE_URL
 
-    # If the result list was truncated, refetch with the next marker. Do this
-    # until an entire directory listing is done.
-    while next_marker or loop_around:
-      # If we got to the end of the listing but we started e.g on rev 999XXX,
-      # then loop around once to get revs >= 1000000.
-      if loop_around and not next_marker:
-        loop_around = False
-        next_marker = _GetMarkerForRev(0)
-      sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
-      sys.stdout.flush()
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # Android release builds store archives directly in a GCS bucket that
+    # contains a large number of objects. Listing the full revision list takes
+    # too much time, so we should disallow it and fail fast.
+    if not min_rev or not max_rev:
+      raise BisectException(
+          "Could not found enough revisions for Android %s release channel." %
+          self.apk)
+    return super()._get_rev_list(min_rev, max_rev)
 
-      next_url = self.GetListingURL(next_marker)
-      (new_revisions, next_marker, new_dict) = _FetchAndParse(next_url)
-      revisions.extend(new_revisions)
-      self.githash_svn_dict.update(new_dict)
-      if last_change_rev and last_change_rev in new_revisions:
-        break
-    sys.stdout.write('\r')
-    sys.stdout.flush()
-    return revisions
+  def _install_revision(self, download, tempdir):
+    # AndroidRelease build downloads the apks directly from GCS bucket.
+    InstallOnAndroid(self.device, download)
 
-  def _GetSVNRevisionFromGitHashWithoutGitCheckout(self, git_sha1, depot):
-    json_url = GITHASH_TO_SVN_URL[depot] % git_sha1
-    response = urllib.urlopen(json_url)
-    if response.getcode() == 200:
-      try:
-        data = json.loads(response.read()[4:])
-      except ValueError:
-        print('ValueError for JSON URL: %s' % json_url)
-        raise ValueError
+
+class AndroidTrichromeReleaseBuild(AndroidTrichromeMixin, AndroidReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    # Release build will download the binary directly from GCS bucket.
+    self.archive_name = self.binary_name
+    self.library_archive_name = self.library_binary_name
+
+  def _get_library_filename(self, prefer_64bit=True):
+    if self.apk == 'chrome' and self.platform == 'android-arm64-high':
+      raise BisectException('chrome debug build is not supported for %s' %
+                            self.platform)
+    return super()._get_library_filename(prefer_64bit)
+
+  def get_download_url(self, revision):
+    # M112 is when we started serving 6432 to 4GB+ devices. Before this it was
+    # only to 6GB+ devices.
+    if revision >= LooseVersion('112'):
+      trichrome = self.binary_name
+      trichrome_library = self.library_binary_name
     else:
-      raise ValueError
-    if 'message' in data:
-      message = data['message'].split('\n')
-      message = [line for line in message if line.strip()]
-      search_pattern = re.compile(SEARCH_PATTERN[depot])
-      result = search_pattern.search(message[len(message)-1])
-      if result:
-        return result.group(1)
-      else:
-        if depot == 'chromium':
-          result = re.search(CHROMIUM_SEARCH_PATTERN_OLD,
-                             message[len(message)-1])
-          if result:
-            return result.group(1)
-    print('Failed to get svn revision number for %s' % git_sha1)
-    raise ValueError
+      trichrome = self._get_apk_filename(prefer_64bit=False)
+      trichrome_library = self._get_library_filename(prefer_64bit=False)
+    return {
+        'trichrome': self._get_archive_path(revision, trichrome),
+        'trichrome_library': self._get_archive_path(revision,
+                                                    trichrome_library),
+    }
 
-  def _GetSVNRevisionFromGitHashFromGitCheckout(self, git_sha1, depot):
-    def _RunGit(command, path):
-      command = ['git'] + command
-      shell = sys.platform.startswith('win')
-      proc = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, cwd=path)
-      (output, _) = proc.communicate()
-      return (output, proc.returncode)
+  def _install_revision(self, download, tempdir):
+    if not isinstance(download, dict):
+      raise Exception("Trichrome should download multiple files from GCS.")
+    # AndroidRelease build downloads the apks directly from GCS bucket.
+    # Trichrome need to install the trichrome_library first.
+    InstallOnAndroid(self.device, download['trichrome_library'])
+    InstallOnAndroid(self.device, download['trichrome'])
 
-    path = self.local_src_path
-    if depot == 'blink':
-      path = os.path.join(self.local_src_path, 'third_party', 'WebKit')
-    revision = None
-    try:
-      command = ['svn', 'find-rev', git_sha1]
-      (git_output, return_code) = _RunGit(command, path)
-      if not return_code:
-        revision = git_output.strip('\n')
-    except ValueError:
-      pass
-    if not revision:
-      command = ['log', '-n1', '--format=%s', git_sha1]
-      (git_output, return_code) = _RunGit(command, path)
-      if not return_code:
-        revision = re.match('SVN changes up to revision ([0-9]+)', git_output)
-        revision = revision.group(1) if revision else None
-    if revision:
-      return revision
-    raise ValueError
 
-  def GetSVNRevisionFromGitHash(self, git_sha1, depot='chromium'):
-    if not self.local_src_path:
-      return self._GetSVNRevisionFromGitHashWithoutGitCheckout(git_sha1, depot)
-    else:
-      return self._GetSVNRevisionFromGitHashFromGitCheckout(git_sha1, depot)
+class AndroidTrichromeOfficialBuild(AndroidTrichromeMixin, OfficialBuild):
 
-  def GetRevList(self, archive):
-    """Gets the list of revision numbers between self.good_revision and
-    self.bad_revision."""
+  def _get_apk_filename(self, prefer_64bit=True):
+    filename = super()._get_apk_filename(prefer_64bit)
+    return filename.replace(".apks", ".minimal.apks")
 
-    cache = {}
-    # The cache is stored in the same directory as bisect-builds.py
-    cache_filename = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '.bisect-builds-cache.json')
-    cache_dict_key = self.GetListingURL()
+  def _install_revision(self, download, tempdir):
+    UnzipFilenameToDir(download, tempdir)
+    trichrome_library_filename = self._get_library_filename()
+    trichrome_library_path = glob.glob(
+        f'{tempdir}/*/apks/{trichrome_library_filename}')
+    if len(trichrome_library_path) == 0:
+      raise Exception(
+          f'Can not find {trichrome_library_filename} from {tempdir}')
+    trichrome_filename = self._get_apk_filename()
+    trichrome_path = glob.glob(f'{tempdir}/*/apks/{trichrome_filename}')
+    if len(trichrome_path) == 0:
+      raise Exception(f'Can not find {trichrome_filename} from {tempdir}')
+    InstallOnAndroid(self.device, trichrome_library_path[0])
+    InstallOnAndroid(self.device, trichrome_path[0])
 
-    def _LoadBucketFromCache():
-      if self.use_local_cache:
-        try:
-          with open(cache_filename) as cache_file:
-            for (key, value) in json.load(cache_file).items():
-              cache[key] = value
-            revisions = cache.get(cache_dict_key, [])
-            githash_svn_dict = cache.get('githash_svn_dict', {})
-            if revisions:
-              print('Loaded revisions %d-%d from %s' %
-                    (revisions[0], revisions[-1], cache_filename))
-            return (revisions, githash_svn_dict)
-        except (EnvironmentError, ValueError):
-          pass
-      return ([], {})
 
-    def _SaveBucketToCache():
-      """Save the list of revisions and the git-svn mappings to a file.
-      The list of revisions is assumed to be sorted."""
-      if self.use_local_cache:
-        cache[cache_dict_key] = revlist_all
-        cache['githash_svn_dict'] = self.githash_svn_dict
-        try:
-          with open(cache_filename, 'w') as cache_file:
-            json.dump(cache, cache_file)
-          print('Saved revisions %d-%d to %s' %
-                (revlist_all[0], revlist_all[-1], cache_filename))
-        except EnvironmentError:
-          pass
+class LinuxReleaseBuild(ReleaseBuild):
 
-    # Download the revlist and filter for just the range between good and bad.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
+  def _get_extra_args(self):
+    args = super()._get_extra_args()
+    # The sandbox must be run as root on release Chrome, so bypass it.
+    if self.platform.startswith('linux'):
+      args.append('--no-sandbox')
+    return args
 
-    (revlist_all, self.githash_svn_dict) = _LoadBucketFromCache()
-    last_known_rev = revlist_all[-1] if revlist_all else 0
-    if last_known_rev < maxrev:
-      revlist_all.extend(map(int, self.ParseDirectoryIndex(last_known_rev)))
-      revlist_all = list(set(revlist_all))
-      revlist_all.sort()
-      _SaveBucketToCache()
 
-    revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
-    if len(revlist) < 2:  # Don't have enough builds to bisect.
-      last_known_rev = revlist_all[-1] if revlist_all else 0
-      first_known_rev = revlist_all[0] if revlist_all else 0
-      # Check for specifying a number before the available range.
-      if maxrev < first_known_rev:
-        msg = (
-            'First available bisect revision for %s is %d. Be sure to specify '
-            'revision numbers, not branch numbers.' %
-            (archive, first_known_rev))
-        raise (RuntimeError(msg))
+class AndroidOfficialBuild(AndroidBuildMixin, OfficialBuild):
+  pass
 
-      # Check for specifying a number beyond the available range.
-      if maxrev > last_known_rev:
-        # Check for the special case of linux where bisect builds stopped at
-        # revision 382086, around March 2016.
-        if archive == 'linux':
-          msg = ('Last available bisect revision for %s is %d. Try linux64 '
-                 'instead.' % (archive, last_known_rev))
-        else:
-          msg = ('Last available bisect revision for %s is %d. Try a different '
-                 'good/bad range.' % (archive, last_known_rev))
-        raise (RuntimeError(msg))
 
-      # Otherwise give a generic message.
-      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
-      raise RuntimeError(msg)
+class AndroidSnapshotBuild(AndroidBuildMixin, SnapshotBuild):
+  pass
 
-    # Set good and bad revisions to be legit revisions.
-    if revlist:
-      if self.good_revision < self.bad_revision:
-        self.good_revision = revlist[0]
-        self.bad_revision = revlist[-1]
-      else:
-        self.bad_revision = revlist[0]
-        self.good_revision = revlist[-1]
 
-      # Fix chromium rev so that the deps blink revision matches REVISIONS file.
-      if self.base_url == WEBKIT_BASE_URL:
-        revlist_all.sort()
-        self.good_revision = FixChromiumRevForBlink(revlist,
-                                                    revlist_all,
-                                                    self,
-                                                    self.good_revision)
-        self.bad_revision = FixChromiumRevForBlink(revlist,
-                                                   revlist_all,
-                                                   self,
-                                                   self.bad_revision)
-    return revlist
+class IOSReleaseBuild(ReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.signed = options.signed
+    if not self.signed:
+      print('WARNING: --signed is recommended for iOS release builds.')
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS builds.')
+    self.ipa = options.ipa
+    if not self.ipa:
+      raise BisectException('--ipa is required for iOS builds.')
+    if self.ipa.endswith('.ipa'):
+      self.ipa = self.ipa[:-4]
+    self.binary_name = self.archive_name = f'{self.ipa}.ipa'
+
+  def _get_release_bucket(self):
+    if self.signed:
+      return IOS_RELEASE_BASE_URL_SIGNED
+    return IOS_RELEASE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The format for iOS build is
+    # {IOS_RELEASE_BASE_URL}/{build_number}/{sdk_version}
+    # /{builder_name}/{build_number}/{archive_name}
+    # that it's not possible to generate the actual archive_path for a build.
+    # That we are returning a path with wildcards and expecting only one match.
+    return (f'{self._get_release_bucket()}/{build_number}/*/'
+            f'{self.listing_platform_dir.rstrip("/")}/*/{archive_name}')
+
+  def _install_revision(self, download, tempdir):
+    # install ipa
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'install', 'app', '--device',
+        self.device_id, download
+    ])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from ipa.
+    UnzipFilenameToDir(download, tempdir)
+    plist = glob.glob(f'{tempdir}/Payload/*/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {tempdir}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run([
+        'xcrun', 'devicectl', 'device', 'process', 'launch', '--device',
+        self.device_id, bundle_identifier, *args
+    ])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
+class IOSSimulatorReleaseBuild(ReleaseBuild):
+  """
+  chrome/ci/ios-simulator is generating this build and archiving it in
+  gs://bling-archive with Chrome versions. It's not actually a release build,
+  but it's similar to one.
+  """
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.device_id = options.device_id
+    if not self.device_id:
+      raise BisectException('--device-id is required for iOS Simulator.')
+
+  def _get_release_bucket(self):
+    return IOS_ARCHIVE_BASE_URL
+
+  def _get_archive_path(self, build_number, archive_name=None):
+    if archive_name is None:
+      archive_name = self.archive_name
+    # The path format for ios-simulator build is
+    # {%chromium_version%}/{%timestamp%}/Chromium.tar.gz
+    # that it's not possible to generate the actual archive_path for a build.
+    # We are returning a path with wildcards and expecting only one match.
+    return f'{self._get_release_bucket()}/{build_number}/*/{archive_name}'
+
+  def _get_extract_binary_glob(self, tempdir):
+    return f'{tempdir}/{self.binary_name}'
+
+  def _install_revision(self, download, tempdir):
+    executables = super()._install_revision(download, tempdir)
+    executable = executables['chrome']
+    # install app
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'install', self.device_id, executable])
+    if retcode:
+      raise BisectException(f'Install app error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    # extract and return CFBundleIdentifier from app.
+    plist = glob.glob(f'{executable}/Info.plist')
+    if not plist:
+      raise BisectException(f'Could not find Info.plist from {executable}.')
+    retcode, stdout, stderr = self._run(
+        ['plutil', '-extract', 'CFBundleIdentifier', 'raw', plist[0]])
+    if retcode:
+      raise BisectException(f'Extract bundle identifier error, code:{retcode}\n'
+                            f'stdout:\n{stdout}\n'
+                            f'stderr:\n{stderr}')
+    bundle_identifier = stdout.strip()
+    return bundle_identifier
+
+  def _launch_revision(self, tempdir, bundle_identifier, args=()):
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'launch', self.device_id, bundle_identifier, *args])
+    if retcode:
+      print(f'Warning: App launching error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
+    return retcode, stdout, stderr
+
+
+def create_archive_build(options):
+  if options.build_type == 'release':
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeReleaseBuild(options)
+    elif options.archive.startswith('android'):
+      return AndroidReleaseBuild(options)
+    elif options.archive.startswith('linux'):
+      return LinuxReleaseBuild(options)
+    elif options.archive == 'ios-simulator':
+      return IOSSimulatorReleaseBuild(options)
+    elif options.archive == 'ios':
+      return IOSReleaseBuild(options)
+    return ReleaseBuild(options)
+  elif options.build_type == 'official':
+    if options.archive == 'android-arm64-high':
+      return AndroidTrichromeOfficialBuild(options)
+    elif options.archive.startswith('android'):
+      return AndroidOfficialBuild(options)
+    return OfficialBuild(options)
+  elif options.build_type == 'asan':
+    # ASANBuild is only supported on win/linux/mac.
+    return ASANBuild(options)
+  else:
+    if options.archive.startswith('android'):
+      return AndroidSnapshotBuild(options)
+    return SnapshotBuild(options)
 
 
 def IsMac():
@@ -565,6 +1455,13 @@ def UnzipFilenameToDir(filename, directory):
   if not os.path.isdir(directory):
     os.mkdir(directory)
   os.chdir(directory)
+
+  # Support for tar archives.
+  if tarfile.is_tarfile(filename):
+    tf = tarfile.open(filename, 'r')
+    tf.extractall(directory)
+    os.chdir(cwd)
+    return
 
   # The Python ZipFile does not support symbolic links, which makes it
   # unsuitable for Mac builds. so use ditto instead.
@@ -585,7 +1482,7 @@ def UnzipFilenameToDir(filename, directory):
         os.makedirs(name)
     else:  # file
       directory = os.path.dirname(name)
-      if not os.path.isdir(directory):
+      if directory and not os.path.isdir(directory):
         os.makedirs(directory)
       out = open(name, 'wb')
       out.write(zf.read(name))
@@ -595,156 +1492,58 @@ def UnzipFilenameToDir(filename, directory):
   os.chdir(cwd)
 
 
-def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
-  """Downloads and unzips revision |rev|.
-  @param context A PathContext instance.
-  @param rev The Chromium revision number/tag to download.
-  @param filename The destination for the downloaded file.
-  @param quit_event A threading.Event which will be set by the master thread to
-                    indicate that the download should be aborted.
-  @param progress_event A threading.Event which will be set by the master thread
-                    to indicate that the progress of the download should be
-                    displayed.
-  """
-  def ReportHook(blocknum, blocksize, totalsize):
-    if quit_event and quit_event.is_set():
-      raise RuntimeError('Aborting download of revision %s' % str(rev))
-    if progress_event and progress_event.is_set():
-      size = blocknum * blocksize
-      if totalsize == -1:  # Total size not known.
-        progress = 'Received %d bytes' % size
-      else:
-        size = min(totalsize, size)
-        progress = 'Received %d of %d bytes, %.2f%%' % (
-            size, totalsize, 100.0 * size / totalsize)
-      # Send a \r to let all progress messages use just one line of output.
-      sys.stdout.write('\r' + progress)
-      sys.stdout.flush()
-  download_url = context.GetDownloadURL(rev)
-  try:
-    urllib.urlretrieve(download_url, filename, ReportHook)
-    if progress_event and progress_event.is_set():
-      print()
-
-  except RuntimeError:
-    pass
+def gsutil_download(download_url, filename):
+  command = ['cp', download_url, filename]
+  RunGsutilCommand(command)
 
 
-def CopyMissingFileFromCurrentSource(src_glob, dst):
-  """Work around missing files in archives.
-  This happens when archives of Chrome don't contain all of the files
-  needed to build it. In many cases we can work around this using
-  files from the current checkout. The source is in the form of a glob
-  so that it can try to look for possible sources of the file in
-  multiple locations, but we just arbitrarily try the first match.
-
-  Silently fail if this doesn't work because we don't yet have clear
-  markers for builds that require certain files or a way to test
-  whether or not launching Chrome succeeded.
-  """
-  if not os.path.exists(dst):
-    matches = glob.glob(src_glob)
-    if matches:
-      shutil.copy2(matches[0], dst)
-
-
-def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
-  """Given a zipped revision, unzip it and run the test."""
-  print('Trying revision %s...' % str(revision))
-
-  # Create a temp directory and unzip the revision into it.
-  cwd = os.getcwd()
-  tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
-  # On Windows 10, file system needs to be readable from App Container.
-  if sys.platform == 'win32' and platform.release() == '10':
-    icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
-    proc = subprocess.Popen(icacls_cmd,
-                            bufsize=0,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    proc.communicate()
-
-  UnzipFilenameToDir(zip_file, tempdir)
-
-  # Hack: Some Chrome OS archives are missing some files; try to copy them
-  # from the local directory.
-  if context.platform == 'chromeos' and revision < 591483:
-    CopyMissingFileFromCurrentSource('third_party/icu/common/icudtl.dat',
-                                     '%s/chrome-linux/icudtl.dat' % tempdir)
-    CopyMissingFileFromCurrentSource('*out*/*/libminigbm.so',
-                                     '%s/chrome-linux/libminigbm.so' % tempdir)
-
-  os.chdir(tempdir)
-
-  # Run the build as many times as specified.
-  testargs = ['--user-data-dir=%s' % profile] + args
-  runcommand = []
-  # Ideally we'd use third_party/catapult for the adb command, but testers need
-  # the script to be more portable without the chromium repo.
-  if 'android' in context.platform:
-    runcommand = ('adb install -d -r {} &&'
-                  ' adb shell am start -a {} -p {}'.format(
-                      os.path.abspath(context.GetLaunchPath(revision)),
-                      _ANDROID_CHROME_INTENT, _ANDROID_CHROME_PACKAGE))
-  elif 'webview' in context.platform:
-    # Doesn't start an intent as testers use different apps for testing.
-    runcommand = 'adb install -d -r {}'.format(
-        os.path.abspath(context.GetLaunchPath(revision)))
-  else:
-    for token in shlex.split(command):
-      if token == '%a':
-        runcommand.extend(testargs)
-      else:
-        runcommand.append(
-            token.replace('%p', os.path.abspath(
-                context.GetLaunchPath(revision))).replace(
-                    '%s', ' '.join(testargs)))
-  result = None
-  try:
-    for _ in range(num_runs):
-      use_shell = ('android' in context.platform
-                   or 'webview' in context.platform)
-      subproc = subprocess.Popen(runcommand,
-                                 shell=use_shell,
-                                 bufsize=-1,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-      (stdout, stderr) = subproc.communicate()
-      result = (subproc.returncode, stdout, stderr)
-      if subproc.returncode:
-        break
-    return result
-  finally:
-    os.chdir(cwd)
-    try:
-      shutil.rmtree(tempdir, True)
-    except Exception:
-      pass
+def EvaluateRevision(archive_build, download, revision, args, evaluate):
+  """fetch.wait_for(), archive_build.run_revision() and evaluate the result."""
+  while True:
+    exit_status = stdout = stderr = None
+    # Create a temp directory and unzip the revision into it.
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      # On Windows 10, file system needs to be readable from App Container.
+      if sys.platform == 'win32' and platform.release() == '10':
+        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
+        proc = subprocess.Popen(icacls_cmd,
+                                bufsize=0,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
+      # run_revision
+      print(f'Trying revision {revision!s}: {download!s} in {tempdir!s}')
+      try:
+        exit_status, stdout, stderr = archive_build.run_revision(
+            download, tempdir, args)
+      except SystemExit:
+        raise
+      except Exception:
+        traceback.print_exc(file=sys.stderr)
+      # evaluate
+      answer = evaluate(revision, exit_status, stdout, stderr)
+      if answer != 'r':
+        return answer
 
 
-# The arguments status, stdout and stderr are unused.
+# The arguments release_builds, status, stdout and stderr are unused.
 # They are present here because this function is passed to Bisect which then
 # calls it with 5 arguments.
 # pylint: disable=W0613
 def AskIsGoodBuild(rev, exit_status, stdout, stderr):
   """Asks the user whether build |rev| is good or bad."""
-  if exit_status:
-    print('Chrome exit_status: %d. Use s to see output' % exit_status)
   # Loop until we get a response that we can parse.
   while True:
-    prompt = ('Revision %s is '
-              '[(g)ood/(b)ad/(r)etry/(u)nknown/(s)tdout/(q)uit]: ' % str(rev))
-    if sys.version_info[0] == 3:
-      response = input(prompt)
-    else:
-      response = raw_input(prompt)
+    response = input('Revision %s is '
+                     '[(g)ood/(b)ad/(r)etry/(u)nknown/(s)tdout/(q)uit]: ' %
+                     str(rev))
     if response in ('g', 'b', 'r', 'u'):
       return response
     if response == 'q':
       raise SystemExit()
     if response == 's':
-      print(stdout.decode('utf-8', 'ignore'))
-      print(stderr.decode('utf-8', 'ignore'))
+      print(stdout)
+      print(stderr)
 
 
 def IsGoodASANBuild(rev, exit_status, stdout, stderr):
@@ -773,47 +1572,103 @@ def DidCommandSucceed(rev, exit_status, stdout, stderr):
     return 'g'
 
 
-class DownloadJob(object):
-  """DownloadJob represents a task to download a given Chromium revision."""
+class DownloadJob:
+  """
+  DownloadJob represents a task to download a given url.
+  """
 
-  def __init__(self, context, name, rev, zip_file):
-    super(DownloadJob, self).__init__()
-    # Store off the input parameters.
-    self.context = context
-    self.name = name
+  def __init__(self, url, rev, name=None):
+    """
+    Args:
+      url: The url to download or a dict of {key: url} to download multiple
+        targets.
+      rev: The revision of the target.
+      name: The name of the thread.
+    """
+    if isinstance(url, dict):
+      self.is_multiple = True
+      self.urls = url
+    else:
+      self.is_multiple = False
+      self.urls = {None: url}
     self.rev = rev
-    self.zip_file = zip_file
+    self.name = name
+
+    self.results = {}
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
     self.thread = None
 
-  def Start(self):
-    """Starts the download."""
-    fetchargs = (self.context,
-                 self.rev,
-                 self.zip_file,
-                 self.quit_event,
-                 self.progress_event)
-    self.thread = threading.Thread(target=FetchRevision,
-                                   name=self.name,
-                                   args=fetchargs)
-    self.thread.start()
+  def _clear_up_tmp_files(self):
+    if not self.results:
+      return
+    for tmp_file in self.results.values():
+      try:
+        os.unlink(tmp_file)
+      except FileNotFoundError:
+        # Handle missing archives.
+        pass
+    self.results = None
 
-  def Stop(self):
+  def __del__(self):
+    self._clear_up_tmp_files()
+
+  def _report_hook(self, blocknum, blocksize, totalsize):
+    if self.quit_event and self.quit_event.is_set():
+      raise RuntimeError('Aborting download of revision %s' % str(self.rev))
+    if not self.progress_event or not self.progress_event.is_set():
+      return
+    size = blocknum * blocksize
+    if totalsize == -1:  # Total size not known.
+      progress = 'Received %d bytes' % size
+    else:
+      size = min(totalsize, size)
+      progress = 'Received %d of %d bytes, %.2f%%' % (size, totalsize,
+                                                      100.0 * size / totalsize)
+    # Send a \r to let all progress messages use just one line of output.
+    print(progress, end='\r', flush=True)
+
+  def _fetch(self, url, tmp_file):
+    if url.startswith('gs'):
+      gsutil_download(url, tmp_file)
+    else:
+      urllib.request.urlretrieve(url, tmp_file, self._report_hook)
+      if self.progress_event and self.progress_event.is_set():
+        print()
+
+  def fetch(self):
+    try:
+      for key, url in self.urls.items():
+        # Keep the basename as part of tempfile name that make it easier to
+        # identify what's been downloaded.
+        basename = os.path.basename(urllib.parse.urlparse(url).path)
+        fd, tmp_file = tempfile.mkstemp(suffix=basename)
+        self.results[key] = tmp_file
+        os.close(fd)
+        self._fetch(url, tmp_file)
+    except RuntimeError:
+      pass
+
+  def start(self):
+    """Start the download in a thread."""
+    assert self.thread is None, "DownloadJob is already started."
+    self.thread = threading.Thread(target=self.fetch, name=self.name)
+    self.thread.start()
+    return self
+
+  def stop(self):
     """Stops the download which must have been started previously."""
     assert self.thread, 'DownloadJob must be started before Stop is called.'
     self.quit_event.set()
     self.thread.join()
-    # If a very small range is requested, with verification, then the same
-    # download may be requested twice, so the second delete will fail. Check for
-    # that.
-    if os.path.exists(self.zip_file):
-      os.unlink(self.zip_file)
+    self._clear_up_tmp_files()
 
-  def WaitFor(self):
-    """Prints a message and waits for the download to complete. The download
-    must have been started previously."""
-    assert self.thread, 'DownloadJob must be started before WaitFor is called.'
+  def wait_for(self):
+    """Prints a message and waits for the download to complete.
+    The method will return the path of downloaded files.
+    """
+    if not self.thread:
+      self.start()
     print('Downloading revision %s...' % str(self.rev))
     self.progress_event.set()  # Display progress of download.
     try:
@@ -821,48 +1676,31 @@ class DownloadJob(object):
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
+      if self.quit_event.is_set():
+        raise Exception('The DownloadJob was stopped.')
+      if self.is_multiple:
+        return self.results
+      else:
+        return self.results[None]
     except (KeyboardInterrupt, SystemExit):
-      self.Stop()
+      self.stop()
       raise
 
 
-def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
-                   evaluate, expected_answer):
-  fetch.WaitFor()
-  try:
-    answer = 'r'
-    # This is intended to allow evaluate() to return 'r' to retry RunRevision.
-    while answer == 'r':
-      (exit_status, stdout, stderr) = RunRevision(
-          context, rev, fetch.zip_file, profile, num_runs, command, try_args)
-      answer = evaluate(rev, exit_status, stdout, stderr)
-  except Exception as e:
-    print(e, file=sys.stderr)
-    raise SystemExit
-  if (answer != expected_answer):
-    print('Unexpected result at a range boundary! Your range is not correct.')
-    raise SystemExit
-
-
-def Bisect(context,
-           num_runs=1,
-           command='%p %a',
+def Bisect(archive_build,
            try_args=(),
-           profile=None,
            evaluate=AskIsGoodBuild,
-           verify_range=False,
-           archive=None):
-  """Given known good and known bad revisions, run a binary search on all
-  archived revisions to determine the last known good revision.
+           verify_range=False):
+  """Runs a binary search on to determine the last known good revision.
 
-  @param context PathContext object initialized with user provided parameters.
-  @param num_runs Number of times to run each build for asking good/bad.
-  @param try_args A tuple of arguments to pass to the test application.
-  @param profile The name of the user profile to run with.
-  @param evaluate A function which returns 'g' if the argument build is good,
-                  'b' if it's bad or 'u' if unknown.
-  @param verify_range If true, tests the first and last revisions in the range
-                      before proceeding with the bisect.
+    Args:
+      archive_build: ArchiveBuild object initialized with user provided
+               parameters.
+      try_args: A tuple of arguments to pass to the test application.
+      evaluate: A function which returns 'g' if the argument build is good,
+               'b' if it's bad or 'u' if unknown.
+      verify_range: If true, tests the first and last revisions in the range
+                    before proceeding with the bisect.
 
   Threading is used to fetch Chromium revisions in the background, speeding up
   the user's experience. For example, suppose the bounds of the search are
@@ -871,548 +1709,740 @@ def Bisect(context,
   25 or 75. So, while revision 50 is being checked, the script will download
   revisions 25 and 75 in the background. Once the good/bad verdict on rev 50 is
   known:
-
     - If rev 50 is good, the download of rev 25 is cancelled, and the next test
       is run on rev 75.
-
     - If rev 50 is bad, the download of rev 75 is cancelled, and the next test
       is run on rev 25.
   """
-
-  if not profile:
-    profile = 'profile'
-
-  good_rev = context.good_revision
-  bad_rev = context.bad_revision
-  cwd = os.getcwd()
-
-  print('Downloading list of known revisions...', end=' ')
-  if not context.use_local_cache:
+  print('Downloading list of known revisions.', end=' ')
+  print('If the range is large, this can take several minutes...')
+  if not archive_build.use_local_cache:
     print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
     print()
-  _GetDownloadPath = lambda rev: os.path.join(cwd,
-      '%s-%s' % (str(rev), context.archive_name))
-
-  # Get a list of revisions to bisect across.
-  revlist = context.GetRevList(archive)
-
-  # Figure out our bookends and first pivot point; fetch the pivot revision.
-  minrev = 0
-  maxrev = len(revlist) - 1
-  pivot = int(maxrev / 2)
-  rev = revlist[pivot]
-  fetch = DownloadJob(context, 'initial_fetch', rev, _GetDownloadPath(rev))
-  fetch.Start()
+  rev_list = archive_build.get_rev_list()
+  # Ensure rev_list[0] is good and rev_list[-1] is bad for easier process.
+  if archive_build.good_revision > archive_build.bad_revision:
+    rev_list = rev_list[::-1]
 
   if verify_range:
-    minrev_fetch = DownloadJob(
-        context, 'minrev_fetch', revlist[minrev],
-        _GetDownloadPath(revlist[minrev]))
-    maxrev_fetch = DownloadJob(
-        context, 'maxrev_fetch', revlist[maxrev],
-        _GetDownloadPath(revlist[maxrev]))
-    minrev_fetch.Start()
-    maxrev_fetch.Start()
+    good_rev_fetch = archive_build.get_download_job(rev_list[0],
+                                                    'good_rev_fetch').start()
+    bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
+                                                   'bad_rev_fetch').start()
     try:
-      VerifyEndpoint(minrev_fetch, context, revlist[minrev], profile, num_runs,
-          command, try_args, evaluate, 'b' if bad_rev < good_rev else 'g')
-      VerifyEndpoint(maxrev_fetch, context, revlist[maxrev], profile, num_runs,
-          command, try_args, evaluate, 'g' if bad_rev < good_rev else 'b')
+      good_download = good_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, good_download, rev_list[0],
+                                try_args, evaluate)
+      if answer != 'g':
+        print(f'Expecting revision {rev_list[0]} to be good but got {answer}. '
+              'Please make sure the --good is a good revision.')
+        raise SystemExit
+      bad_download = bad_rev_fetch.wait_for()
+      answer = EvaluateRevision(archive_build, bad_download, rev_list[-1],
+                                try_args, evaluate)
+      if answer != 'b':
+        print(f'Expecting revision {rev_list[-1]} to be bad but got {answer}. '
+              'Please make sure that the issue can be reproduced for --bad.')
+        raise SystemExit
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
-      fetch.Stop()
-      sys.exit(0)
+      return None, None
     finally:
-      minrev_fetch.Stop()
-      maxrev_fetch.Stop()
+      good_rev_fetch.stop()
+      bad_rev_fetch.stop()
 
-  fetch.WaitFor()
-
-  # Binary search time!
-  prefetch_revisions = True
-  while fetch and fetch.zip_file and maxrev - minrev > 1:
-    if bad_rev < good_rev:
-      min_str, max_str = 'bad', 'good'
-    else:
-      min_str, max_str = 'good', 'bad'
-    print(
-        'Bisecting range [%s (%s), %s (%s)], '
-        'roughly %d steps left.' % (revlist[minrev], min_str, revlist[maxrev],
-                                    max_str, int(maxrev - minrev).bit_length()))
-
-    # Pre-fetch next two possible pivots
-    #   - down_pivot is the next revision to check if the current revision turns
-    #     out to be bad.
-    #   - up_pivot is the next revision to check if the current revision turns
-    #     out to be good.
-    down_pivot = int((pivot - minrev) / 2) + minrev
-    if prefetch_revisions:
-      down_fetch = None
-      if down_pivot != pivot and down_pivot != minrev:
-        down_rev = revlist[down_pivot]
-        down_fetch = DownloadJob(context, 'down_fetch', down_rev,
-                                 _GetDownloadPath(down_rev))
-        down_fetch.Start()
-
-    up_pivot = int((maxrev - pivot) / 2) + pivot
-    if prefetch_revisions:
-      up_fetch = None
-      if up_pivot != pivot and up_pivot != maxrev:
-        up_rev = revlist[up_pivot]
-        up_fetch = DownloadJob(context, 'up_fetch', up_rev,
-                               _GetDownloadPath(up_rev))
-        up_fetch.Start()
-
-    # Run test on the pivot revision.
-    exit_status = None
-    stdout = None
-    stderr = None
-    try:
-      (exit_status, stdout, stderr) = RunRevision(
-          context, rev, fetch.zip_file, profile, num_runs, command, try_args)
-    except Exception as e:
-      print(e, file=sys.stderr)
-
-    # Call the evaluate function to see if the current revision is good or bad.
-    # On that basis, kill one of the background downloads and complete the
-    # other, as described in the comments above.
-    try:
-      answer = evaluate(rev, exit_status, stdout, stderr)
-      prefetch_revisions = True
-      if ((answer == 'g' and good_rev < bad_rev)
-          or (answer == 'b' and bad_rev < good_rev)):
-        fetch.Stop()
-        minrev = pivot
-        if down_fetch:
-          down_fetch.Stop()  # Kill the download of the older revision.
-          fetch = None
-        if up_fetch:
-          up_fetch.WaitFor()
-          pivot = up_pivot
-          fetch = up_fetch
-      elif ((answer == 'b' and good_rev < bad_rev)
-            or (answer == 'g' and bad_rev < good_rev)):
-        fetch.Stop()
-        maxrev = pivot
-        if up_fetch:
-          up_fetch.Stop()  # Kill the download of the newer revision.
-          fetch = None
-        if down_fetch:
-          down_fetch.WaitFor()
-          pivot = down_pivot
-          fetch = down_fetch
-      elif answer == 'r':
-        # Don't redundantly prefetch.
-        prefetch_revisions = False
-      elif answer == 'u':
-        # Nuke the revision from the revlist and choose a new pivot.
-        fetch.Stop()
-        revlist.pop(pivot)
-        maxrev -= 1  # Assumes maxrev >= pivot.
-
-        if maxrev - minrev > 1:
-          # Alternate between using down_pivot or up_pivot for the new pivot
-          # point, without affecting the range. Do this instead of setting the
-          # pivot to the midpoint of the new range because adjacent revisions
-          # are likely affected by the same issue that caused the (u)nknown
-          # response.
-          if up_fetch and down_fetch:
-            fetch = [up_fetch, down_fetch][len(revlist) % 2]
-          elif up_fetch:
-            fetch = up_fetch
-          else:
-            fetch = down_fetch
-          fetch.WaitFor()
-          if fetch == up_fetch:
-            pivot = up_pivot - 1  # Subtracts 1 because revlist was resized.
-          else:
-            pivot = down_pivot
-
-        if down_fetch and fetch != down_fetch:
-          down_fetch.Stop()
-        if up_fetch and fetch != up_fetch:
-          up_fetch.Stop()
+  prefetch = {}
+  try:
+    while len(rev_list) > 2:
+      print('You have %d revisions with about %d steps left.' %
+            (len(rev_list), (len(rev_list).bit_length() - 1)))
+      print('Bisecting range [%s (bad), %s (good)].' %
+            (rev_list[-1], rev_list[0]))
+      # clean prefetch to keep only the valid fetches
+      for key in list(prefetch.keys()):
+        if key not in rev_list:
+          prefetch.pop(key).stop()
+      # get next revision to evaluate from prefetch
+      if prefetch:
+        fetch = None
+        # For any possible index in rev_list, abs(mid - index) < abs(mid -
+        # pivot). This will ensure that we can always get a fetch from prefetch.
+        pivot = len(rev_list)
+        for revision, pfetch in prefetch.items():
+          prefetch_pivot = rev_list.index(revision)
+          # Prefer the revision closer to the mid point.
+          mid_point = len(rev_list) // 2
+          if abs(mid_point - pivot) > abs(mid_point - prefetch_pivot):
+            fetch = pfetch
+            pivot = prefetch_pivot
+        prefetch.pop(rev_list[pivot])
+      # or just the mid point
       else:
-        assert False, 'Unexpected return value from evaluate(): ' + answer
-    except (KeyboardInterrupt, SystemExit):
-      print('Cleaning up...')
-      for f in [_GetDownloadPath(rev),
-                _GetDownloadPath(revlist[down_pivot]),
-                _GetDownloadPath(revlist[up_pivot])]:
-        try:
-          os.unlink(f)
-        except OSError:
-          pass
-      sys.exit(0)
+        pivot = len(rev_list) // 2
+        fetch = archive_build.get_download_job(rev_list[pivot], 'fetch').start()
+      # prefetch left_pivot = len(rev_list[:pivot+1]) // 2
+      left_revision = rev_list[(pivot + 1) // 2]
+      if left_revision != rev_list[0] and left_revision not in prefetch:
+        prefetch[left_revision] = archive_build.get_download_job(
+            left_revision, 'prefetch').start()
+      # prefetch right_pivot = len(rev_list[pivot:]) // 2
+      right_revision = rev_list[(len(rev_list) + pivot) // 2]
+      if right_revision != rev_list[-1] and right_revision not in prefetch:
+        prefetch[right_revision] = archive_build.get_download_job(
+            right_revision, 'prefetch').start()
+      try:
+        # evaluate the revision
+        download = fetch.wait_for()
+        answer = EvaluateRevision(archive_build, download, rev_list[pivot],
+                                  try_args, evaluate)
+        # Ensure rev_list[0] is good and rev_list[-1] is bad after adjust.
+        if answer == 'g':  # good
+          rev_list = rev_list[pivot:]
+        elif answer == 'b':  # bad
+          # Retain the pivot element within the list to act as a confirmed
+          # boundary for identifying bad revisions.
+          rev_list = rev_list[:pivot + 1]
+        elif answer == 'u':  # unknown
+          # Nuke the revision from the rev_list.
+          rev_list.pop(pivot)
+        else:
+          assert False, 'Unexpected return value from evaluate(): ' + answer
+      finally:
+        fetch.stop()
+    # end of `while len(rev_list) > 2`
+  finally:
+    for each in prefetch.values():
+      each.stop()
+    prefetch.clear()
+  return sorted((rev_list[0], rev_list[-1]))
 
-    rev = revlist[pivot]
-
-  return (revlist[minrev], revlist[maxrev], context)
-
-
-def GetBlinkDEPSRevisionForChromiumRevision(self, rev):
-  """Returns the blink revision that was in REVISIONS file at
-  chromium revision |rev|."""
-
-  def _GetBlinkRev(url, blink_re):
-    m = blink_re.search(url.read())
-    url.close()
-    if m:
-      return m.group(1)
-
-  url = urllib.urlopen(DEPS_FILE % GetGitHashFromSVNRevision(rev))
-  if url.getcode() == 200:
-    blink_re = re.compile(r'webkit_revision\D*\d+;\D*\d+;(\w+)')
-    blink_git_sha = _GetBlinkRev(url, blink_re)
-    return self.GetSVNRevisionFromGitHash(blink_git_sha, 'blink')
-  raise Exception('Could not get Blink revision for Chromium rev %d' % rev)
-
-
-def GetBlinkRevisionForChromiumRevision(context, rev):
-  """Returns the blink revision that was in REVISIONS file at
-  chromium revision |rev|."""
-  def _IsRevisionNumber(revision):
-    if isinstance(revision, int):
-      return True
-    else:
-      return revision.isdigit()
-  if str(rev) in context.githash_svn_dict:
-    rev = context.githash_svn_dict[str(rev)]
-  file_url = '%s/%s%s/REVISIONS' % (context.base_url,
-                                    context._listing_platform_dir, rev)
-  url = urllib.urlopen(file_url)
-  if url.getcode() == 200:
-    try:
-      data = json.loads(url.read())
-    except ValueError:
-      print('ValueError for JSON URL: %s' % file_url)
-      raise ValueError
-  else:
-    raise ValueError
-  url.close()
-  if 'webkit_revision' in data:
-    blink_rev = data['webkit_revision']
-    if not _IsRevisionNumber(blink_rev):
-      blink_rev = int(context.GetSVNRevisionFromGitHash(blink_rev, 'blink'))
-    return blink_rev
-  else:
-    raise Exception('Could not get blink revision for cr rev %d' % rev)
-
-
-def FixChromiumRevForBlink(revisions_final, revisions, self, rev):
-  """Returns the chromium revision that has the correct blink revision
-  for blink bisect, DEPS and REVISIONS file might not match since
-  blink snapshots point to tip of tree blink.
-  Note: The revisions_final variable might get modified to include
-  additional revisions."""
-  blink_deps_rev = GetBlinkDEPSRevisionForChromiumRevision(self, rev)
-
-  while (GetBlinkRevisionForChromiumRevision(self, rev) > blink_deps_rev):
-    idx = revisions.index(rev)
-    if idx > 0:
-      rev = revisions[idx-1]
-      if rev not in revisions_final:
-        revisions_final.insert(0, rev)
-
-  revisions_final.sort()
-  return rev
-
-
-def GetChromiumRevision(context, url):
+def GetChromiumRevision(url, default=999999999):
   """Returns the chromium revision read from given URL."""
+  if not url:
+    return default
   try:
     # Location of the latest build revision number
-    latest_revision = urllib.urlopen(url).read()
+    latest_revision = urllib.request.urlopen(url).read()
     if latest_revision.isdigit():
       return int(latest_revision)
-    return context.GetSVNRevisionFromGitHash(latest_revision)
+    return default
   except Exception:
     print('Could not determine latest revision. This could be bad...')
-    return 999999999
+    return default
 
 
-def GetRevision(revision_text):
-  """Translates from a text description of a revision to an integral revision
-  number. Currently supported formats are a number (i.e.; '782793') or a
-  milestone specifier (i.e.; 'M85') or a full version string
-  (i.e. '85.0.4183.121')."""
-
-  # Check if we already have a revision number, such as when -g or -b is
-  # omitted.
-  if type(revision_text) == type(0):
-    return revision_text
-
-  arg_revision_text = revision_text
-
-  # Translate from stable milestone name to the latest version number released
-  # for that milestone, i.e.; 'M85' to '85.0.4183.121'.
-  if revision_text[:1].upper() == 'M':
-    milestone = revision_text[1:]
-    response = urllib.urlopen(VERSION_HISTORY_URL)
-    version_history = json.loads(response.read())
-    version_matcher = re.compile(
-        '.*versions/(\d*)\.(\d*)\.(\d*)\.(\d*)/releases.*')
-    for version in version_history['releases']:
-      match = version_matcher.match(version['name'])
-      # There will be multiple versions of each milestone, but we just grab the
-      # first one that we see which will be the most recent version. If you need
-      # more granularity then specify a full version number or revision number.
-      if match and match.groups()[0] == milestone:
-        revision_text = '.'.join(match.groups())
-        break
-    if revision_text[:1].upper() == 'M':
-      raise Exception('No stable release matching %s found.' %
-                      arg_revision_text)
-
-  # Translate from version number to commit position, also known as revision
-  # number. First read from Chromium Dash, then fall back to OmahaProxy, as CD
-  # data is more correct but only if it's available (crbug.com/1317667).
-  if len(revision_text.split('.')) == 4:
-    revisions_url = CRDASH_REVISIONS_URL % revision_text
-    fallback_revisions_url = OMAHA_REVISIONS_URL % revision_text
-    response = urllib.urlopen(revisions_url)
-    revision_details = json.loads(response.read())
-    revision_text = revision_details.get('chromium_main_branch_position')
-    if not revision_text:
-      # OmahaProxy fallback.
-      response = urllib.urlopen(fallback_revisions_url)
-      revision_details = json.loads(response.read())
-      revision_text = revision_details['chromium_base_position']
-
-    if not revision_text:
-      raise Exception("No 'chromium_base_position' matching %s found." %
-                      arg_revision_text)
-
-  # Translate from text commit position to integer commit position.
-  return int(revision_text)
-
+def FetchJsonFromURL(url):
+  """Returns JSON data from the given URL"""
+  # Allow retry for 3 times for unexpected network error
+  for i in range(3):
+    try:
+      return json.loads(urllib.request.urlopen(url).read())
+    except urllib.request.HTTPError as e:
+      print(f'urlopen {url} HTTPError: {e}')
+    except json.JSONDecodeError as e:
+      print(f'urlopen {url} JSON decode error: {e}')
+  return None
 
 def GetGitHashFromSVNRevision(svn_revision):
+  """Returns GitHash from SVN Revision"""
   crrev_url = CRREV_URL + str(svn_revision)
-  url = urllib.urlopen(crrev_url)
-  if url.getcode() == 200:
-    data = json.loads(url.read())
-    if 'git_sha' in data:
-      return data['git_sha']
+  data = FetchJsonFromURL(crrev_url)
+  if data and 'git_sha' in data:
+    return data['git_sha']
+  return None
 
 def PrintChangeLog(min_chromium_rev, max_chromium_rev):
   """Prints the changelog URL."""
+  print(('  ' + CHANGELOG_URL % (GetGitHashFromSVNRevision(min_chromium_rev),
+                                 GetGitHashFromSVNRevision(max_chromium_rev))))
 
-  print('  ' + CHANGELOG_URL % (GetGitHashFromSVNRevision(min_chromium_rev),
-                                GetGitHashFromSVNRevision(max_chromium_rev)))
+
+def IsVersionNumber(revision):
+  """Checks if provided revision is version_number"""
+  return re.match(r'^\d+\.\d+\.\d+\.\d+$', revision) is not None
 
 
-def error_internal_option(option, opt, value, parser):
-  raise optparse.OptionValueError(
-        'The -o and -r options are only\navailable in the internal version of '
-        'this script. Google\nemployees should visit http://go/bisect-builds '
-        'for\nconfiguration instructions.')
+def GetRevisionFromVersion(version):
+  """Returns Base Commit Position from a version number"""
+  chromiumdash_url = VERSION_INFO_URL % str(version)
+  data = FetchJsonFromURL(chromiumdash_url)
+  if not data:
+    # Not every tag is released as a version for users. Some "versions" from the
+    # release builder might not exist in the VERSION_INFO_URL API. With the
+    # `MaybeSwitchBuildType` functionality, users might get such unreleased
+    # versions and try to use them with the -o flag, resulting in a 404 error.
+    # Meanwhile, this method retrieves the `chromium_main_branch_position`,
+    # which should be the same for all 127.0.6533.* versions, so we can get the
+    # branch position from 127.0.6533.0 instead.
+    chromiumdash_url = VERSION_INFO_URL % re.sub(r'\d+$', '0', str(version))
+    data = FetchJsonFromURL(chromiumdash_url)
+  if data and 'chromium_main_branch_position' in data:
+    return data['chromium_main_branch_position']
+  print('Something went wrong. The data we got from chromiumdash:\n%s' % data)
+  return None
 
-def main():
-  usage = ('%prog [options] [-- chromium-options]\n'
-           'Perform binary search on the snapshot builds to find a minimal\n'
-           'range of revisions where a behavior change happened. The\n'
-           'behaviors are described as "good" and "bad".\n'
-           'It is NOT assumed that the behavior of the later revision is\n'
-           'the bad one.\n'
-           '\n'
-           'Revision numbers should use\n'
-           '  SVN revisions (e.g. 123456) for chromium builds, from trunk.\n'
-           '    Use base_trunk_revision from http://omahaproxy.appspot.com/\n'
-           '    for earlier revs.\n'
-           '    Chrome\'s about: build number and omahaproxy branch_revision\n'
-           '    are incorrect, they are from branches.\n'
-           '\n'
-           'Use "-- <args-to-pass-to-chromium>" to pass arbitrary extra \n'
-           'arguments to the test binaries. For example, to bypass first-run\n'
-           'prompts, add "-- --no-first-run", and on Mac, also append\n'
-           '"--use-mock-keychain --disable-features=DialMediaRouteProvider.')
-  parser = optparse.OptionParser(usage=usage)
+
+def GetRevisionFromMilestone(milestone):
+  """Get revision (e.g. 782793) from milestone such as 85."""
+  response = urllib.request.urlopen(MILESTONES_URL % milestone)
+  milestones = json.loads(response.read())
+  for m in milestones:
+    if m['milestone'] == milestone:
+      return m['chromium_main_branch_position']
+  return None
+
+
+def GetRevision(revision):
+  """Get revision from either milestone M85, full version 85.0.4183.0,
+     or a commit position.
+  """
+  if type(revision) == type(0):
+    return revision
+  if IsVersionNumber(revision):
+    return GetRevisionFromVersion(revision)
+  elif revision[:1].upper() == 'M' and revision[1:].isdigit():
+    return GetRevisionFromMilestone(int(revision[1:]))
+  # By default, we assume it's a commit position.
+  return int(revision)
+
+
+def CheckDepotToolsInPath():
+  delimiter = ';' if sys.platform.startswith('win') else ':'
+  path_list = os.environ['PATH'].split(delimiter)
+  for path in path_list:
+    if path.rstrip(os.path.sep).endswith('depot_tools'):
+      return path
+  return None
+
+
+def SetupEnvironment(options):
+  global is_verbose
+  global GSUTILS_PATH
+
+  # Release and Official builds bisect requires "gsutil" inorder to
+  # List and Download binaries.
+  # Check if depot_tools is installed and path is set.
+  gsutil_path = CheckDepotToolsInPath()
+  if (options.build_type in ('release', 'official') and not gsutil_path):
+    raise BisectException(
+        'Looks like depot_tools is not installed.\n'
+        'Follow the instructions in this document '
+        'http://dev.chromium.org/developers/how-tos/install-depot-tools '
+        'to install depot_tools and then try again.')
+  elif gsutil_path:
+    GSUTILS_PATH = os.path.join(gsutil_path, 'gsutil.py')
+
+  # Catapult repo is required for Android bisect,
+  # Update Catapult repo if it exists otherwise checkout repo.
+  if options.archive.startswith('android-'):
+    SetupAndroidEnvironment()
+
+  # Set up verbose logging if requested.
+  if options.verbose:
+    is_verbose = True
+
+
+def SetupAndroidEnvironment():
+
+  def SetupCatapult():
+    print('Setting up Catapult in %s.' % CATAPULT_DIR)
+    print('Set the environment var CATAPULT_DIR to override '
+          'Catapult directory.')
+    if (os.path.exists(CATAPULT_DIR)):
+      print('Updating Catapult...\n')
+      process = subprocess.Popen(args=['git', 'pull', '--rebase'],
+                                 cwd=CATAPULT_DIR)
+      exit_code = process.wait()
+      if exit_code != 0:
+        raise BisectException('Android bisect requires Catapult repo checkout. '
+                              'Attempt to update Catapult failed.')
+    else:
+      print('Downloading Catapult...\n')
+      process = subprocess.Popen(
+          args=['git', 'clone', CATAPULT_REPO, CATAPULT_DIR])
+      exit_code = process.wait()
+      if exit_code != 0:
+        raise BisectException('Android bisect requires Catapult repo checkout. '
+                              'Attempt to download Catapult failed.')
+
+  SetupCatapult()
+  sys.path.append(DEVIL_PATH)
+  from devil.android.sdk import version_codes
+
+  # Modules required from devil
+  devil_imports = {
+      'devil_env': 'devil.devil_env',
+      'device_errors': 'devil.android.device_errors',
+      'device_utils': 'devil.android.device_utils',
+      'flag_changer': 'devil.android.flag_changer',
+      'chrome': 'devil.android.constants.chrome',
+      'adb_wrapper': 'devil.android.sdk.adb_wrapper',
+      'intent': 'devil.android.sdk.intent',
+      'version_codes': 'devil.android.sdk.version_codes',
+      'run_tests_helper': 'devil.utils.run_tests_helper'
+  }
+  # Dynamically import devil modules required for android bisect.
+  for i, j in devil_imports.items():
+    globals()[i] = importlib.import_module(j)
+
+  print('Done setting up Catapult.\n')
+
+
+def InitializeAndroidDevice(device_id, apk, chrome_flags):
+  """Initializes device and sets chrome flags."""
+  devil_env.config.Initialize()
+  run_tests_helper.SetLogLevel(0)
+  device = device_utils.DeviceUtils.HealthyDevices(device_arg=device_id)[0]
+  if chrome_flags:
+    flags = flag_changer.FlagChanger(device,
+                                     chrome.PACKAGE_INFO[apk].cmdline_file)
+    flags.AddFlags(chrome_flags)
+  return device
+
+
+def InstallOnAndroid(device, apk_path):
+  """Installs the chromium build on a given device."""
+  print('Installing %s on android device...' % apk_path)
+  device.Install(apk_path)
+
+
+def LaunchOnAndroid(device, apk):
+  """Launches the chromium build on a given device."""
+  if 'webview' in apk:
+    return
+
+  print('Launching  chrome on android device...')
+  device.StartActivity(intent.Intent(action='android.intent.action.MAIN',
+                                     activity=chrome.PACKAGE_INFO[apk].activity,
+                                     package=chrome.PACKAGE_INFO[apk].package),
+                       blocking=True,
+                       force_stop=True)
+
+
+def _CreateCommandLineParser():
+  """Creates a parser with bisect options.
+
+  Returns:
+    An instance of argparse.ArgumentParser.
+  """
+  description = """
+Performs binary search on the chrome binaries to find a minimal range of \
+revisions where a behavior change happened.
+The behaviors are described as "good" and "bad". It is NOT assumed that the \
+behavior of the later revision is the bad one.
+
+Revision numbers should use:
+  a) Release versions: (e.g. 1.0.1000.0) for release builds. (-r)
+  b) Commit Positions: (e.g. 123456) for chromium builds, from trunk.
+        Use chromium_main_branch_position from \
+https://chromiumdash.appspot.com/fetch_version?version=<chrome_version>
+        Please Note: Chrome's about: build number and chromiumdash branch \
+revision are incorrect, they are from branches.
+
+Tip: add "-- --no-first-run" to bypass the first run prompts.
+"""
+
+  parser = argparse.ArgumentParser(
+      formatter_class=argparse.RawTextHelpFormatter, description=description)
   # Strangely, the default help output doesn't include the choice list.
-  choices = [
-      'mac',
-      'mac64',
-      'mac-arm',
-      'win',
-      'win64',
-      'linux',
-      'linux64',
-      'linux-arm',
-      'chromeos',
-      'android',
-      'android64',
-      'webview',
-      'webview64',
-  ]
-  parser.add_option('-a', '--archive',
-                    choices=choices,
-                    help='The buildbot archive to bisect [%s].' %
-                         '|'.join(choices))
-  parser.add_option('-b',
-                    '--bad',
-                    type='str',
-                    help='A bad revision to start bisection. '
-                    'May be earlier or later than the good revision. '
-                    'Default is HEAD. Can be a revision number, milestone '
-                    'name (eg. M85, matches the most recent stable release of '
-                    'that milestone) or version number (eg. 85.0.4183.121)')
-  parser.add_option('-g',
-                    '--good',
-                    type='str',
-                    help='A good revision to start bisection. ' +
-                    'May be earlier or later than the bad revision. ' +
-                    'Default is 0. Can be a revision number, milestone '
-                    'name (eg. M85, matches the most recent stable release of '
-                    'that milestone) or version number (eg. 85.0.4183.121)')
-  parser.add_option('-p', '--profile', '--user-data-dir',
-                    type='str',
-                    default='profile',
-                    help='Profile to use; this will not reset every run. '
-                         'Defaults to a clean profile.')
-  parser.add_option('-t', '--times',
-                    type='int',
-                    default=1,
-                    help='Number of times to run each build before asking '
-                         'if it\'s good or bad. Temporary profiles are reused.')
-  parser.add_option('-c',
-                    '--command',
-                    type='str',
-                    default='%p %a',
-                    help='Command to execute. %p and %a refer to Chrome '
-                    'executable and specified extra arguments respectively. '
-                    'Use %s to specify all extra arguments as one string. '
-                    'Defaults to "%p %a". Note that any extra paths specified '
-                    'should be absolute. If you just need to append an '
-                    'argument to the Chrome command line use "-- '
-                    '<args-to-pass-to-chromium>" instead.')
-  parser.add_option('-l', '--blink',
-                    action='store_true',
-                    help='Use Blink bisect instead of Chromium. ')
-  parser.add_option('', '--not-interactive',
-                    action='store_true',
-                    default=False,
-                    help='Use command exit code to tell good/bad revision.')
-  parser.add_option('--asan',
-                    dest='asan',
-                    action='store_true',
-                    default=False,
-                    help='Allow the script to bisect ASAN builds')
-  parser.add_option('--use-local-cache',
-                    dest='use_local_cache',
-                    action='store_true',
-                    default=False,
-                    help='Use a local file in the current directory to cache '
-                         'a list of known revisions to speed up the '
-                         'initialization of this script.')
-  parser.add_option('--verify-range',
-                    dest='verify_range',
-                    action='store_true',
-                    default=False,
-                    help='Test the first and last revisions in the range ' +
-                         'before proceeding with the bisect.')
-  parser.add_option("-r", action="callback", callback=error_internal_option)
-  parser.add_option("-o", action="callback", callback=error_internal_option)
+  choices = sorted(
+      set(arch for build in PATH_CONTEXT for arch in PATH_CONTEXT[build]))
+  parser.add_argument(
+      '-a',
+      '--archive',
+      choices=choices,
+      metavar='ARCHIVE',
+      required=True,
+      help='The buildbot platform to bisect {%s}.' % ','.join(choices),
+  )
 
-  (opts, args) = parser.parse_args()
+  build_type_group = parser.add_mutually_exclusive_group()
+  build_type_group.add_argument(
+      '-r',
+      dest='build_type',
+      action='store_const',
+      const='release',
+      default='snapshot',
+      help='Bisect across release Chrome builds (internal only) instead of '
+      'Chromium archives.',
+  )
+  build_type_group.add_argument(
+      '-o',
+      dest='build_type',
+      action='store_const',
+      const='official',
+      help='Bisect across continuous perf official Chrome builds (internal '
+      'only) instead of Chromium archives.',
+  )
+  build_type_group.add_argument(
+      '--asan',
+      dest='build_type',
+      action='store_const',
+      const='asan',
+      help='Allow the script to bisect ASAN builds',
+  )
+
+  parser.add_argument(
+      '-g',
+      '--good',
+      type=str,
+      metavar='GOOD_REVISION',
+      required=True,
+      help='A good revision to start bisection. May be earlier or later than '
+      'the bad revision.',
+  )
+  parser.add_argument(
+      '-b',
+      '--bad',
+      type=str,
+      metavar='BAD_REVISION',
+      help='A bad revision to start bisection. May be earlier or later than '
+      'the good revision. Default is HEAD.',
+  )
+  parser.add_argument(
+      '-p',
+      '--profile',
+      '--user-data-dir',
+      type=str,
+      default='%t/profile',
+      help='Profile to use; this will not reset every run. Defaults to a clean '
+      'profile.',
+  )
+  parser.add_argument(
+      '-t',
+      '--times',
+      type=int,
+      default=1,
+      help='Number of times to run each build before asking if it\'s good or '
+      'bad. Temporary profiles are reused.',
+  )
+  parser.add_argument(
+      '--chromedriver',
+      action='store_true',
+      help='Also download ChromeDriver. Use %%d in --command to reference the '
+      'ChromeDriver path in the command line.',
+  )
+  parser.add_argument(
+      '-c',
+      '--command',
+      type=str,
+      default=r'%p %a',
+      help='Command to execute. %%p and %%a refer to Chrome executable and '
+      'specified extra arguments respectively. Use %%t for tempdir where '
+      'Chrome extracted. Use %%d for chromedriver path when --chromedriver '
+      'enabled. Defaults to "%%p %%a". Note that any extra paths specified '
+      'should be absolute.',
+  )
+  parser.add_argument(
+      '-v',
+      '--verbose',
+      action='store_true',
+      help='Log more verbose information.',
+  )
+  parser.add_argument(
+      '--not-interactive',
+      action='store_true',
+      default=False,
+      help='Use command exit code to tell good/bad revision.',
+  )
+
+  local_cache_group = parser.add_mutually_exclusive_group()
+  local_cache_group.add_argument(
+      '--use-local-cache',
+      dest='use_local_cache',
+      action='store_true',
+      default=True,
+      help='Use a local file in the current directory to cache a list of known '
+      'revisions to speed up the initialization of this script.',
+  )
+  local_cache_group.add_argument(
+      '--no-local-cache',
+      dest='use_local_cache',
+      action='store_false',
+      help='Do not use local file for known revisions.',
+  )
+
+  parser.add_argument(
+      '--verify-range',
+      dest='verify_range',
+      action='store_true',
+      default=False,
+      help='Test the first and last revisions in the range before proceeding '
+      'with the bisect.',
+  )
+  apk_choices = sorted(set().union(CHROME_APK_FILENAMES,
+                                   CHROME_MODERN_APK_FILENAMES,
+                                   MONOCHROME_APK_FILENAMES,
+                                   WEBVIEW_APK_FILENAMES))
+  parser.add_argument(
+      '--apk',
+      choices=apk_choices,
+      dest='apk',
+      default='chromium',
+      metavar='{chromium,chrome_dev,android_webview...}',
+      help='Apk you want to bisect {%s}.' % ','.join(apk_choices),
+  )
+  parser.add_argument(
+      '--ipa',
+      dest='ipa',
+      default='canary.ipa',
+      metavar='{canary,beta,stable...}',
+      help='ipa you want to bisect.',
+  )
+  parser.add_argument(
+      '--signed',
+      dest='signed',
+      action='store_true',
+      default=False,
+      help='Using signed binary for release build. Only support iOS and '
+      'Android platforms.',
+  )
+  parser.add_argument(
+      '-d',
+      '--device-id',
+      dest='device_id',
+      type=str,
+      help='Device to run the bisect on.',
+  )
+  parser.add_argument(
+      '--update-script',
+      dest='update_script',
+      action='store_true',
+      default=False,
+      help='Update this script to the latest.',
+  )
+  parser.add_argument(
+      'args',
+      nargs='*',
+      metavar='chromium-option',
+      help='Additional chromium options passed to chromium process.',
+  )
+  return parser
+
+
+def _DetectArchive():
+  """Detect the buildbot archive to use based on local environment."""
+  os_name = None
+  plat = sys.platform
+  if plat.startswith('linux'):
+    os_name = 'linux'
+  elif plat in ('win32', 'cygwin'):
+    os_name = 'win'
+  elif plat == 'darwin':
+    os_name = 'mac'
+
+  arch = None
+  machine = platform.machine().lower()
+  if machine.startswith(('arm', 'aarch')):
+    arch = 'arm'
+  elif machine in ('amd64', 'x86_64'):
+    arch = 'x64'
+  elif machine in ('i386', 'i686', 'i86pc', 'x86'):
+    arch = 'x86'
+
+  return PLATFORM_ARCH_TO_ARCHIVE_MAPPING.get((os_name, arch), None)
+
+
+def ParseCommandLine(args=None):
+  """Parses the command line for bisect options."""
+  parser = _CreateCommandLineParser()
+  opts = parser.parse_args(args)
+
+  if opts.update_script:
+    UpdateScript()
 
   if opts.archive is None:
-    print('Error: missing required parameter: --archive')
-    print()
-    parser.print_help()
-    return 1
+    archive = _DetectArchive()
+    if archive:
+      print('The buildbot archive (-a/--archive) detected as:', archive)
+      opts.archive = archive
+    else:
+      parser.error('Error: Missing required parameter: --archive')
 
-  if opts.asan:
-    supported_platforms = ['linux', 'mac', 'win']
-    if opts.archive not in supported_platforms:
-      print('Error: ASAN bisecting only supported on these platforms: [%s].' %
-            ('|'.join(supported_platforms)))
-      return 1
+  if opts.archive not in PATH_CONTEXT[opts.build_type]:
+    parser.error(
+        f'Bisecting on {opts.build_type} are only supported on these platforms '
+        f'(-a/--archive): {{{",".join(PATH_CONTEXT[opts.build_type].keys())}}}')
 
-  if opts.asan:
-    base_url = ASAN_BASE_URL
-  elif opts.blink:
-    base_url = WEBKIT_BASE_URL
-  else:
-    base_url = CHROMIUM_BASE_URL
+  if opts.signed and not (opts.archive.startswith('android-')
+                          or opts.archive.startswith('ios')):
+    parser.error('--signed is only supported for Android and iOS platform.')
 
-  # Create the context. Initialize 0 for the revisions as they are set below.
-  context = PathContext(base_url, opts.archive, opts.good, opts.bad, opts.asan,
-                        opts.use_local_cache)
+  if opts.signed and not opts.build_type == 'release':
+    parser.error('--signed is only supported for release bisection.')
 
-  # Pick a starting point, try to get HEAD for this.
-  if not opts.bad:
-    context.bad_revision = '999.0.0.0'
-    context.bad_revision = GetChromiumRevision(
-        context, context.GetLastChangeURL())
+  if opts.build_type == 'official':
+    print('Bisecting on continuous Chrome builds. If you would like '
+          'to bisect on release builds, try running with -r option '
+          'instead. Previous -o options is currently changed to -r option '
+          'as continous official builds were added for bisect')
 
-  # Find out when we were good.
   if not opts.good:
-    context.good_revision = 0
+    parser.error('Please specify a good version.')
 
-  context.good_revision = GetRevision(context.good_revision)
-  context.bad_revision = GetRevision(context.bad_revision)
+  if opts.build_type == 'release':
+    if not opts.bad:
+      parser.error('Please specify a bad version.')
+    if not IsVersionNumber(opts.good) or not IsVersionNumber(opts.bad):
+      parser.error('For release, you can only use chrome version to bisect.')
+    if opts.archive.startswith('android-'):
+      # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
+      # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
+      # instead of an error since older archives might have non-channel builds.
+      if '_' not in opts.apk:
+        print('WARNING: Android release typically only uploads channel builds, '
+              f'so you will often see "Found 0 builds" with --apk={opts.apk}'
+              '. Switch to using --apk=chrome_stable or one of the other '
+              'channels if you see `[Bisect Exception]: Could not found enough'
+              'revisions for Android chrome release channel.\n')
 
   if opts.times < 1:
-    print('Number of times to run (%d) must be greater than or equal to 1.' %
-          opts.times)
-    parser.print_help()
-    return 1
+    parser.error(f'Number of times to run ({opts.times}) must be greater than '
+                 'or equal to 1.')
+
+  return opts
+
+
+def GenerateCommandLine(opts):
+  """Generate a command line for bisect options.
+
+  Args:
+    opts: The new bisect options to generate the command line for.
+
+  This generates prompts for the suggestion to use another build type
+  (MaybeSwitchBuildType). Not all options are supported when generating the new
+  command, however the remaining unsupported args would be copied from sys.argv.
+  """
+  # Using a parser to remove the arguments (key and value) that we are going to
+  # generate based on the opts and appending the remaining args as is in command
+  # line.
+  parser_to_remove_known_options = argparse.ArgumentParser()
+  parser_to_remove_known_options.add_argument('-a', '--archive', '-g', '--good',
+                                              '-b', '--bad')
+  parser_to_remove_known_options.add_argument('-r',
+                                              '-o',
+                                              '--signed',
+                                              action='store_true')
+  _, remaining_args = parser_to_remove_known_options.parse_known_args()
+  args = []
+  if opts.build_type == 'release':
+    args.append('-r')
+  elif opts.build_type == 'official':
+    args.append('-o')
+  if opts.archive:
+    args.extend(['-a', opts.archive])
+  if opts.signed:
+    args.append('--signed')
+  if opts.good:
+    args.extend(['-g', opts.good])
+  if opts.bad:
+    args.extend(['-b', opts.bad])
+  if opts.verify_range:
+    args.append('--verify-range')
+  return ['./%s' % os.path.relpath(__file__)] + args + remaining_args
+
+
+def MaybeSwitchBuildType(opts, good, bad):
+  """Generate and print suggestions to use official build to bisect for a more
+  precise range when possible."""
+  if opts.build_type != 'release':
+    return
+  if opts.archive not in PATH_CONTEXT['official']:
+    return
+  new_opts = copy.deepcopy(opts)
+  new_opts.signed = False  # --signed is only supported by release builds
+  new_opts.build_type = 'official'
+  new_opts.verify_range = True  # always verify_range when switching the build
+  new_opts.good = str(good)  # good could be LooseVersion
+  new_opts.bad = str(bad)  # bad could be LooseVersion
+  rev_list = None
+  if opts.use_local_cache:
+    print('Checking available official builds (-o) for %s.' % new_opts.archive)
+    archive_build = create_archive_build(new_opts)
+    try:
+      rev_list = archive_build.get_rev_list()
+    except BisectException as e:
+      # We don't have enough builds from official builder, skip suggesting.
+      print("But we don't have more builds from official builder.")
+      return
+    if len(rev_list) <= 2:
+      print("But we don't have more builds from official builder.")
+      return
+  if rev_list:
+    print(
+        "There are %d revisions between %s and %s from the continuous official "
+        "build (-o). You could try to get a more precise culprit range using "
+        "the following command:" % (len(rev_list), *sorted([good, bad])))
+  else:
+    print(
+        "You could try to get a more precise culprit range with the continuous "
+        "official build (-o) using the following command:")
+  command_line = GenerateCommandLine(new_opts)
+  print(shlex.join(command_line))
+  return command_line
+
+
+def UpdateScript():
+  script_path = sys.argv[0]
+  script_content = str(
+      base64.b64decode(
+          urllib.request.urlopen(
+              "https://chromium.googlesource.com/chromium/src/+/HEAD/"
+              "tools/bisect-builds.py?format=TEXT").read()), 'utf-8')
+  with open(script_path, "w") as f:
+    f.write(script_content)
+  print("Update successful!")
+  exit(0)
+
+
+def main():
+  opts = ParseCommandLine()
+
+  try:
+    SetupEnvironment(opts)
+  except BisectException as e:
+    print(e)
+    sys.exit(1)
+
+  # Create the AbstractBuild object.
+  archive_build = create_archive_build(opts)
 
   if opts.not_interactive:
     evaluator = DidCommandSucceed
-  elif opts.asan:
+  elif opts.build_type == 'asan':
     evaluator = IsGoodASANBuild
   else:
     evaluator = AskIsGoodBuild
 
   # Save these revision numbers to compare when showing the changelog URL
   # after the bisect.
-  good_rev = context.good_revision
-  bad_rev = context.bad_revision
+  good_rev = archive_build.good_revision
+  bad_rev = archive_build.bad_revision
 
-  print('Scanning from %d to %d (%d revisions).' %
-        (good_rev, bad_rev, abs(good_rev - bad_rev)))
-
-  (min_chromium_rev, max_chromium_rev,
-   context) = Bisect(context, opts.times, opts.command, args, opts.profile,
-                     evaluator, opts.verify_range, opts.archive)
-
-  # Get corresponding blink revisions.
-  try:
-    min_blink_rev = GetBlinkRevisionForChromiumRevision(context,
-                                                        min_chromium_rev)
-    max_blink_rev = GetBlinkRevisionForChromiumRevision(context,
-                                                        max_chromium_rev)
-  except Exception:
-    # Silently ignore the failure.
-    min_blink_rev, max_blink_rev = 0, 0
-
-  if opts.blink:
-    # We're done. Let the user know the results in an official manner.
-    if good_rev > bad_rev:
-      print(DONE_MESSAGE_GOOD_MAX % (str(min_blink_rev), str(max_blink_rev)))
-    else:
-      print(DONE_MESSAGE_GOOD_MIN % (str(min_blink_rev), str(max_blink_rev)))
-
-    print('BLINK CHANGELOG URL:')
-    print('  ' + BLINK_CHANGELOG_URL % (max_blink_rev, min_blink_rev))
-
+  min_chromium_rev, max_chromium_rev = Bisect(archive_build, opts.args,
+                                              evaluator, opts.verify_range)
+  if min_chromium_rev is None or max_chromium_rev is None:
+    return
+  # We're done. Let the user know the results in an official manner.
+  if good_rev > bad_rev:
+    print(DONE_MESSAGE_GOOD_MAX %
+          (str(min_chromium_rev), str(max_chromium_rev)))
+    good_rev, bad_rev = max_chromium_rev, min_chromium_rev
   else:
-    # We're done. Let the user know the results in an official manner.
-    if good_rev > bad_rev:
-      print(DONE_MESSAGE_GOOD_MAX % (str(min_chromium_rev),
-                                     str(max_chromium_rev)))
-    else:
-      print(DONE_MESSAGE_GOOD_MIN % (str(min_chromium_rev),
-                                     str(max_chromium_rev)))
-    if min_blink_rev != max_blink_rev:
-      print ('NOTE: There is a Blink roll in the range, '
-             'you might also want to do a Blink bisect.')
+    print(DONE_MESSAGE_GOOD_MIN %
+          (str(min_chromium_rev), str(max_chromium_rev)))
+    good_rev, bad_rev = min_chromium_rev, max_chromium_rev
 
-    print('CHANGELOG URL:')
+  print('CHANGELOG URL:')
+  if opts.build_type == 'release':
+    print(RELEASE_CHANGELOG_URL % (min_chromium_rev, max_chromium_rev))
+    MaybeSwitchBuildType(opts, good=good_rev, bad=bad_rev)
+  else:
+    if opts.build_type == 'official':
+      print('The script might not always return single CL as suspect '
+            'as some perf builds might get missing due to failure.')
     PrintChangeLog(min_chromium_rev, max_chromium_rev)
-
 
 if __name__ == '__main__':
   sys.exit(main())

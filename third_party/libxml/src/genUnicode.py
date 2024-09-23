@@ -373,7 +373,7 @@ static xmlIntFunc
 
 for block in bkeys:
     name = block.replace('-', '')
-    header.write("XMLPUBFUN int xmlUCSIs%s\t(int code);\n" % name)
+    header.write("XML_DEPRECATED\nXMLPUBFUN int xmlUCSIs%s\t(int code);\n" % name)
     output.write("/**\n * xmlUCSIs%s:\n * @code: UCS code point\n" % (name))
     output.write(" *\n * Check whether the character is part of %s UCS Block\n"%
                  (block))
@@ -413,7 +413,7 @@ xmlUCSIsBlock(int code, const char *block) {
 
 for name in ckeys:
     ranges = Categories[name]
-    header.write("XMLPUBFUN int xmlUCSIsCat%s\t(int code);\n" % name)
+    header.write("XML_DEPRECATED\nXMLPUBFUN int xmlUCSIsCat%s\t(int code);\n" % name)
     output.write("/**\n * xmlUCSIsCat%s:\n * @code: UCS code point\n" % (name))
     output.write(" *\n * Check whether the character is part of %s UCS Category\n"%
                  (name))

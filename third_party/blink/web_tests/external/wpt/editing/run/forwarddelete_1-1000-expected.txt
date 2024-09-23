@@ -1,13 +1,9 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["forwarddelete",""]] "<span>foo[</span><span>]bar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>foo</span><span>ar</span>"
 [FAIL] [["stylewithcss","true"],["forwarddelete",""]] "foo[]<span style=display:none>bar</span>baz" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
-[FAIL] [["forwarddelete",""]] "<p>{}<br></p>foo" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p>" but got "<p>foo<br></p>"
-[FAIL] [["forwarddelete",""]] "<p>{}<span><br></span></p>foo" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p>" but got "<p>foo<br></p>"
 [FAIL] [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{}<p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo" but got "foo<p></p>"
 [FAIL] [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{}<p>" compare innerHTML

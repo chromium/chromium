@@ -7,7 +7,9 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer_test_api.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -156,7 +158,9 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
   login_mixin_.SkipPostLoginScreens();
 }
 
-IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
+// TODO(crbug.com/339860384): Enable the test.
+IN_PROC_BROWSER_TEST_F(OnboardingTest,
+                       DISABLED_OnboardingUserActivityRegularUser) {
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.WaitForActiveSession();
 
@@ -195,7 +199,9 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(regular_user_);
   OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
-  login_mixin_.LoginWithDefaultContext(test_user);
+  UserContext user_context =
+      LoginManagerMixin::CreateDefaultUserContext(test_user);
+  login_mixin_.LoginAsNewRegularUser(user_context);
   user_creation_exit_waiter.Wait();
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();

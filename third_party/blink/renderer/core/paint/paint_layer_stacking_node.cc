@@ -120,13 +120,13 @@ struct PaintLayerStackingNode::HighestLayers {
   void UpdateOrderForSubtreeHighestLayers(LayerType type,
                                           const PaintLayer* layer) {
     if (SetIfHigher(highest_layers[type], layer)) {
-      auto* new_end = std::remove(highest_layers_order.begin(),
-                                  highest_layers_order.end(), type);
+      auto new_end = std::remove(highest_layers_order.begin(),
+                                 highest_layers_order.end(), type);
       if (new_end != highest_layers_order.end()) {
         // |highest_layers_order| doesn't have duplicate elements, std::remove
         // will find at most one element at a time. So we don't shrink it and
         // just update the value of the |new_end|.
-        DCHECK(new_end + 1 == highest_layers_order.end());
+        DCHECK(std::next(new_end) == highest_layers_order.end());
         *new_end = type;
       } else {
         highest_layers_order.push_back(type);

@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
@@ -28,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -48,21 +52,29 @@ using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 OmniboxLacrosProvider::OmniboxLacrosProvider(
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    crosapi::CrosapiManager* crosapi_manager)
+    SearchControllerCallback search_controller_callback)
     : SearchProvider(SearchCategory::kOmnibox),
-      search_provider_(nullptr),
+      search_controller_callback_(std::move(search_controller_callback)),
       profile_(profile),
       list_controller_(list_controller) {
   DCHECK(profile_);
   DCHECK(list_controller_);
-
-  if (crosapi_manager) {
-    search_provider_ = crosapi_manager->crosapi_ash()->search_provider_ash();
-    DCHECK(search_provider_);
-  }
 }
 
 OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
+
+// static
+OmniboxLacrosProvider::SearchControllerCallback
+OmniboxLacrosProvider::GetSingletonControllerCallback() {
+  return base::BindRepeating([]() -> crosapi::SearchControllerAsh* {
+    crosapi::SearchProviderAsh* search_provider =
+        crosapi::CrosapiManager::Get()->crosapi_ash()->search_provider_ash();
+    if (!search_provider) {
+      return nullptr;
+    }
+    return search_provider->GetController();
+  });
+}
 
 void OmniboxLacrosProvider::StartWithoutSearchProvider(
     const std::u16string& query) {
@@ -80,6 +92,7 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
         query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
         /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
         /*from_keyword=*/false,
+        /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
         /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
         /*input_text=*/query);
     AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),
@@ -90,6 +103,8 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
     match.contents_class = suggest_result.match_contents_class();
     match.suggestion_group_id = suggest_result.suggestion_group_id();
     match.answer = suggest_result.answer();
+    match.answer_template = suggest_result.answer_template();
+    match.answer_type = suggest_result.answer_type();
     match.stripped_destination_url = url;
 
     crosapi::mojom::SearchResultPtr result =
@@ -105,7 +120,9 @@ void OmniboxLacrosProvider::StartWithoutSearchProvider(
 }
 
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
-  if (!search_provider_ || !search_provider_->IsSearchControllerConnected()) {
+  crosapi::SearchControllerAsh* search_controller =
+      search_controller_callback_.Run();
+  if (!search_controller || !search_controller->IsConnected()) {
     StartWithoutSearchProvider(query);
     return;
   }
@@ -121,7 +138,7 @@ void OmniboxLacrosProvider::Start(const std::u16string& query) {
       AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
                         ChromeAutocompleteSchemeClassifier(profile_));
 
-  search_provider_->Search(
+  search_controller->Search(
       query, base::BindRepeating(&OmniboxLacrosProvider::OnResultsReceived,
                                  weak_factory_.GetWeakPtr()));
 }

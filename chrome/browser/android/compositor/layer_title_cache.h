@@ -37,7 +37,7 @@ class LayerTitleCache {
       const base::android::JavaRef<jobject>& jobj);
 
   LayerTitleCache(JNIEnv* env,
-                  jobject jobj,
+                  const jni_zero::JavaRef<jobject>& obj,
                   jint fade_width,
                   jint favicon_start_padding,
                   jint favicon_end_padding,
@@ -60,6 +60,15 @@ class LayerTitleCache {
                    bool is_incognito,
                    bool is_rtl);
 
+  // Called from Java, updates a native cc::slim::Layer based on the new texture
+  // information.
+  void UpdateGroupLayer(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        jint group_root_id,
+                        jint title_resource_id,
+                        bool is_incognito,
+                        bool is_rtl);
+
   // Called from Java, updates favicon.
   void UpdateFavicon(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj,
@@ -74,10 +83,18 @@ class LayerTitleCache {
   // Returns NULL if no layer can be found.
   DecorationTitle* GetTitleLayer(int tab_id);
 
+  // Returns the layer that represents the title of group of group_root_id.
+  // Returns NULL if no layer can be found.
+  DecorationTitle* GetGroupTitleLayer(int group_root_id, bool incognito);
+
  private:
+  const int kInvalidResourceId = -1;
+  const int kEmptyWidth = 0;
+
   virtual ~LayerTitleCache();
 
   base::IDMap<std::unique_ptr<DecorationTitle>> layer_cache_;
+  base::IDMap<std::unique_ptr<DecorationTitle>> group_layer_cache_;
 
   JavaObjectWeakGlobalRef weak_java_title_cache_;
   int fade_width_;

@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Pieskaroties varat mainīt sinhronizētās ierīces, kas pieejamas ciļņu atjaunošanai. Veiciet navigāciju, lai pieskaroties pārskatītu vai atjaunotu atlasītās cilnes pašreizējai ierīcei. Tastatūra ir paslēpta.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Atvērt <ph name="TABS_COUNT_ONE" /> cilni}zero{Atvērt <ph name="TABS_COUNT_MANY" /> cilnes}one{Atvērt <ph name="TABS_COUNT_MANY" /> cilni}other{Atvērt <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="4509609396389120020">Ciļņu iegūšana no citām ierīcēm</translation>
+<translation id="4619615317237390068">Cilnes no citām ierīcēm</translation>
 <translation id="4811934403802581334">Visas atlasītās cilnes no pašlaik atlasītās ierīces tiks atjaunotas.</translation>
 <translation id="5336031759968328813">Pārskatīt visas cilnes</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>

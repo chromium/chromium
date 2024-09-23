@@ -199,7 +199,7 @@
       <message name="IDS_DELETE" desc="Label for a delete button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Delete
       </message>
-      <message name="IDS_DISMISS" desc="Label for a dismiss button. Used in multiple contexts. [CHAR_LIMIT=20]">
+      <message name="IDS_CHROME_DISMISS" desc="Label for a dismiss button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Dismiss
       </message>
       <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR_LIMIT=20]">
@@ -367,13 +367,6 @@
         <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
       </message>
 
-      <!-- Cookie controls UI -->
-      <message name="IDS_COOKIE_CONTROLS_BLOCKED_COOKIES" desc="Text showing the number of blocked cookies on a site.">
-        {COOKIE_COUNT, plural,
-            =1 {1 cookie blocked}
-            other {# cookies blocked}}
-      </message>
-
       <!-- Certificate viewer -->
       <message name="IDS_CERTTITLE" desc="Dialog box title for viewing security certificates. [CHAR_LIMIT=32]">
         Certificate viewer
@@ -464,8 +457,8 @@
       <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
         Forget this site?
       </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialogwhich clears stored information displayed in page info.">
-        Are you sure you want to reset permissions, and clear cookies and site data?
+      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
+        Are you sure you want to reset permissions, and delete cookies and site data?
       </message>
       <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
         Forget
@@ -600,21 +593,6 @@
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TRACKING_PROTECTION" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_IN_USE" desc="Label showing the amount of cookies being used by a site.">
-        {NUM_SELECTED, plural,
-          =1 {1 cookie in use}
-          other {# cookies in use}}
-      </message>
-      <message name="IDS_PAGE_INFO_SITES_ALLOWED" desc="Label showing the number of sites where cookies are allowed.">
-        {NUM_SELECTED, plural,
-          =1 {1 site allowed}
-          other {# sites allowed}}
-      </message>
-      <message name="IDS_PAGE_INFO_SITES_BLOCKED" desc="Label showing the number of sites where cookies are blocked.">
-        {NUM_SELECTED, plural,
-          =1 {1 site blocked}
-          other {# sites blocked}}
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_ALLOWED" desc="Description text in the Page Info dialog to indicate that third-party cookies are allowed on this site.">
         Third-party cookies allowed
@@ -945,6 +923,9 @@
       <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
         Drag from top and touch the back button to exit full screen.
       </message>
+      <message name="IDS_IMMERSIVE_FULLSCREEN_GESTURE_NAVIGATION_MODE_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when the system gesture navigation mode is on.">
+        Drag from top and swipe from the left or right edge to exit full screen.
+      </message>
       <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_AUTOMOTIVE" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
         Press the back button to exit full screen.
       </message>
@@ -961,6 +942,14 @@
       </message>
       <message name="IDS_WEBAPK_REPORT_ABUSE_CANCEL" desc="The text within the cancelation button of the report abuse dialog.">
         Cancel
+      </message>
+
+      <!-- WebApk outofdate warning string -->
+      <message name="IDS_WEBAPK_MAPSGO_DEPRECATION_WARNING" desc="The toast message when user trying to launch the deprecated Maps Go WebAPK.">
+        '<ph name="APP_NAME">%1$s<ex>Maps Go</ex></ph>' is out of date. Please update the app.
+      </message>
+      <message name="IDS_WEBAPK_DEPRECATION_WARNING" desc="The toast message when user trying to launch the deprecated WebAPKs.">
+        '<ph name="APP_NAME">%1$s<ex>Maps Go</ex></ph>' is out of date. Please re-install the app.
       </message>
 
       <!-- Messages -->
@@ -1020,7 +1009,7 @@
       </message>
 
       <!-- Text Size Contrast -->
-      <!-- TODO(crbug.com/1446230): Add descriptions and make the strings translateable. -->
+      <!-- TODO(crbug.com/40064612): Add descriptions and make the strings translateable. -->
       <message name="IDS_TEXT_SIZE_CONTRAST_TITLE" translateable="false" desc="Title of the preference that allows the user to update the accessibility smart zoom feature that applies to the web contents.">
         Text size contrast
       </message>
@@ -1096,14 +1085,17 @@
       </message>
 
       <!-- Tab resumption module strings -->
-      <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_PRE_INFO" desc="Pre-info text template for the singleton item of the tab resumption module, showing foreign session name.">
-        From <ph name="FROM_DEVICE">%1$s<ex>My Tablet</ex></ph>
+      <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
+        See more
       </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_POST_INFO" desc="Post-info text template for the singleton item of the tab resumption module, showing recency and host name.">
-        <ph name="RECENCY">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> <ph name="HOST_NAME">%2$s<ex>wikipedia.org</ex></ph>
+      <message name="IDS_TAB_RESUMPTION_MODULE_DOMAIN_URL_AND_DEVICE_NAME" desc="The domain URL and device name shown on the tab resumption module.">
+        <ph name="DOMAIN_URL">%1$s<ex>wikipedia.org</ex></ph> <ph name="SEPARATOR1">•</ph> <ph name="DEVICE_NAME">%2$s<ex>My Pixel 7</ex></ph>
       </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_MULTI_INFO" desc="Info text template for each item of the tab resumption module, showing recency and foreign session name.">
-        <ph name="RECENCY">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> From <ph name="FROM_DEVICE">%2$s<ex>My Pixel 7</ex></ph>
+      <message name="IDS_TAB_RESUMPTION_MODULE_OTHER_DEVICES_NAME" desc="The name of feature to show suggested tabs from other devices in the tab resumption module, to appear, e.g., on the Settings page to toggle the feature.">
+        Tabs from other devices
+      </message>
+      <message name="IDS_TAB_RESUMPTION_MODULE_DEFAULT_REASON" desc="The string for a default reason why a Tab is chosen to show on the tab resumption module.">
+        You visited <ph name="RECENCY">%1$s<ex>1 hr ago</ex></ph>
       </message>
 
       <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
@@ -1119,17 +1111,17 @@
          =1 {Price drop on your open tabs}
         other {Price drops on your open tabs}}
       </message>
-      <message name="IDS_PRICE_CHANGE_MODULE_CONTEXT_MENU_ITEM" desc="The string that is going to be part of the context menu item string to hide the price drop card.">
-        price drop card
+      <message name="IDS_PRICE_CHANGE_MODULE_NAME" desc="The string that is shown in settings to customize whether the price drop card should be enabled.">
+        Price drops on tabs
+      </message>
+      <message name="IDS_PRICE_CHANGE_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the price drop card.">
+        Hide price drops on tabs card
       </message>
       <message name="IDS_PRICE_CHANGE_MODULE_ACCESSIBILITY_LABEL" desc="Accessibility label of the price change module that will be announced in the accessibility mode, indicating that there is a price drop on one of user's open tabs.">
         Price drop on your open tab, from <ph name="OLD_PRICE">%1$s<ex>$899</ex></ph> to <ph name="NEW_PRICE">%2$s<ex>$799</ex></ph>, <ph name="PRODUCT_NAME">%3$s<ex>La Specialista Espresso Machine</ex></ph>, <ph name="DOMAIN_NAME">%4$s<ex>bestbuy.com</ex></ph>
       </message>
 
       <!-- Magic stack strings -->
-      <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_MODULE" desc="The context menu item to hide a module.">
-          Hide <ph name="TITLE_OF_MODULE">%1$s<ex>Module Title</ex></ph>
-      </message>
       <message name="IDS_HOME_MODULES_CONTEXT_MENU_CUSTOMIZE" desc="The context menu item to show the customize homepage settings.">
         Customize
       </message>
@@ -1141,9 +1133,83 @@
          =1 {Continue with this tab}
          other {Continue with these tabs}}
       </message>
+      <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_TAB" desc="The context menu item for hiding a tab module. The phrasing should reflect the number of tiles shown (1 or 2+).">
+        {TILE_COUNT, plural,
+         =1 {Hide continue with this tab card}
+         other {Hide continue with these tabs card}}
+      </message>
+
+      <!-- Educational tip module strings -->
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_TITLE" desc="Title of the educational tip module on NTP.">
+        Chrome Tips
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_NAME" desc="The string that is shown in settings to customize whether the educational tip card should be enabled.">
+        Chrome tips
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the educational tip card.">
+        Hide Chrome tips card
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_MODULE_BUTTON" desc="Name of the clickable button in the educational tip module on NTP.">
+        Show me how
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_TITLE" desc="Title of the default browser section in the educational tip module on NTP.">
+        Use Chrome by default
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser section in the educational tip module on NTP.">
+        You can use Chrome any time you tap links in messages, documents and other apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_TITLE" desc="Title of the tab group promo in the educational tip module on NTP.">
+        Tidy up with tab groups
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
+        Create tab groups that automatically save and update across all your devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_TITLE" desc="Title of the tab group sync promo in the educational tip module on NTP.">
+        Your tab groups are saved
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_SYNC_DESCRIPTION" desc="Description of the Tab group promo in the educational tip module on NTP.">
+        You’ll find your groups in the tab group section across all your devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_TITLE" desc="Title of the quick delete promo in the educational tip module on NTP.">
+        Manage your browsing data
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
+        You can delete some or all of your history, cookies, site data and more
+      </message>
 
       <message name="IDS_GO_TO_OS_SETTINGS" desc="When the user clicks on this text button, Chrome sends them to the device OS Settings. One use is the text button shown below the text 'Get alerts for price drops?', which takes the user to the Android notification settings. Another use is in the primary button of the dialog prompting the user to create a device lock, which takes the user to the Android security settings.">
         Go to Settings
+      </message>
+
+      <!-- Safety Hub Magic Stack strings -->
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
+        Safety Check
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" desc="Text that appears in the context menu when the Safety Check Magic Stack cards are long pressed. Hides and disables the Safety Check Magic Stack module when pressed.">
+        Hide Safety Check card
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_NOTIFICATIONS_TITLE" desc="Title for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
+        Stop lots of notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissison review modules. Opens Safety Check when clicked.">
+        Review
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
+        Turn on Safe Browsing
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_BUTTON_TEXT" desc="Action button for the Safe Browsing module of Safety Check in the Magic Stack. Open Safe Browsing settings when clicked.">
+        Go to settings
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password module of Safety Check in Magic Stack. Shown when Safety Check has identified compromised passwords that the user should change.">
+        Change passwords
+      </message>
+
+      <!-- Tab Grid Drag-and-drop IPH strings -->
+      <message name="IDS_IPH_DRAG_AND_DROP_TITLE" desc="This text shows on the in-product help dialog for drag-and-drop. It decribes why drag-and-drop is useful.">
+        Get organized
+      </message>
+      <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
+        To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
       </message>
     </messages>
   </release>

@@ -6,7 +6,8 @@
       "importMap": {},
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should normalize an import map without imports to have imports": {
@@ -15,7 +16,8 @@
       },
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "should normalize an import map without scopes to have scopes": {
@@ -24,7 +26,8 @@
       },
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

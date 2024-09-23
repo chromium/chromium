@@ -34,8 +34,6 @@ class LocalFileSuggestionProvider
     base::File::Info info;
   };
 
-  static const int kDefaultMaxLastModifiedTimeInDays = 8;
-
   LocalFileSuggestionProvider(
       Profile* profile,
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
@@ -57,7 +55,7 @@ class LocalFileSuggestionProvider
 
 
  private:
-  void OnProtoInitialized(app_list::ReadStatus status);
+  void OnProtoInitialized();
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 

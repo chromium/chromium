@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -25,7 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -189,14 +189,17 @@ public class QuickDeleteViewBinderTest {
         final int tabsToBeClosed = 0;
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.LAST_15_MINUTES);
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
-                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        ViewGroup tabsRow = mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
+        TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
 
         String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
         String expected =
                 mActivity.getString(
                         R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString);
-        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(expected, title.getText());
+        assertEquals("", subtitle.getText());
     }
 
     @Test
@@ -205,12 +208,15 @@ public class QuickDeleteViewBinderTest {
         final int tabsToBeClosed = 0;
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, TimePeriod.ALL_TIME);
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
-                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        ViewGroup tabsRow = mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
+        TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
 
         String expected =
                 mActivity.getString(R.string.quick_delete_dialog_zero_tabs_closed_all_time_text);
-        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(expected, title.getText());
+        assertEquals("", subtitle.getText());
     }
 
     @Test
@@ -218,8 +224,10 @@ public class QuickDeleteViewBinderTest {
     public void testTabsToBeClosed_OneTab_UpdatesTabsClosedText_Singular() {
         final int tabsToBeClosed = 1;
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
-                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        ViewGroup tabsRow = mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
+        TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
 
         String expected =
                 mActivity
@@ -228,7 +236,8 @@ public class QuickDeleteViewBinderTest {
                                 R.plurals.quick_delete_dialog_tabs_closed_text,
                                 tabsToBeClosed,
                                 tabsToBeClosed);
-        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(expected, title.getText());
+        assertEquals("", subtitle.getText());
     }
 
     @Test
@@ -236,8 +245,10 @@ public class QuickDeleteViewBinderTest {
     public void testTabsToBeClosed_MultipleTab_UpdatesTabsClosedText_Plural() {
         final int tabsToBeClosed = 2;
         mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, tabsToBeClosed);
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
-                mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+
+        ViewGroup tabsRow = mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
+        TextView title = tabsRow.findViewById(R.id.quick_delete_tabs_row_title);
+        TextView subtitle = tabsRow.findViewById(R.id.quick_delete_tabs_row_subtitle);
 
         String expected =
                 mActivity
@@ -246,7 +257,8 @@ public class QuickDeleteViewBinderTest {
                                 R.plurals.quick_delete_dialog_tabs_closed_text,
                                 tabsToBeClosed,
                                 tabsToBeClosed);
-        assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
+        assertEquals(expected, title.getText());
+        assertEquals("", subtitle.getText());
     }
 
     @Test

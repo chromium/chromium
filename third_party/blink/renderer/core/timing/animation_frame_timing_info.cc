@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+
+#include "base/trace_event/trace_id_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -33,5 +35,14 @@ void ScriptTimingInfo::Trace(Visitor* visitor) const {
 
 void AnimationFrameTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(scripts_);
+}
+
+uint64_t AnimationFrameTimingInfo::GetTraceId() const {
+  // Lazily initialize trace id since it's only used if tracing is enabled.
+  if (trace_id_ != 0) {
+    return trace_id_;
+  }
+  trace_id_ = base::trace_event::GetNextGlobalTraceId();
+  return trace_id_;
 }
 }  // namespace blink

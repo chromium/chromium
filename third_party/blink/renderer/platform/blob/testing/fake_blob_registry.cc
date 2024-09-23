@@ -20,8 +20,8 @@ class FakeBlobRegistry::DataPipeDrainerClient
       : uuid_(uuid),
         content_type_(content_type),
         callback_(std::move(callback)) {}
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    length_ += num_bytes;
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    length_ += data.size();
   }
   void OnDataComplete() override {
     mojo::Remote<mojom::blink::Blob> blob;
@@ -78,12 +78,6 @@ void FakeBlobRegistry::GetBlobFromUUID(
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid),
                               std::move(blob));
   std::move(callback).Run();
-}
-
-void FakeBlobRegistry::URLStoreForOrigin(
-    const scoped_refptr<const SecurityOrigin>& origin,
-    mojo::PendingAssociatedReceiver<mojom::blink::BlobURLStore> receiver) {
-  NOTREACHED();
 }
 
 }  // namespace blink

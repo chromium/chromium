@@ -1,9 +1,8 @@
-    <style include="settings-shared passwords-shared cr-screen-reader-only">
+    <style include="settings-shared passwords-shared screen-reader-only">
       .expiration-column,
       .misc-column {
         align-items: center;
         display: flex;
-        flex: 1;
       }
 
       .misc-column {
@@ -27,28 +26,27 @@
         margin-inline-end: 16px;
         vertical-align: middle;
       }
-
-      #summaryTermsLink {
-        text-decoration: none;
-      }
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
-        <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
-        <div class="summary-column cr-screen-reader-only-host-node">
-          <div class="cr-screen-reader-only">
+        <img id="cardImage" srcset="[[getCardImage_(creditCard.imageSrc)]]" alt="">
+        <div class="summary-column screen-reader-only-host-node">
+          <div class="screen-reader-only">
             [[getSummaryAriaLabel_(creditCard)]],
             [[getSummaryAriaSublabel_(creditCard)]]
           </div>
           <div id="summaryLabel" class="ellipses" aria-hidden="true">
             [[creditCard.metadata.summaryLabel]]
           </div>
-          <div id="summarySublabel"
-              class="sub-label" aria-hidden="true">
-            [[getSummarySublabel_(creditCard)]]
+          <div id="summarySublabel" class="sub-label">
+            <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
             <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
-              (<a id="summaryTermsLink" href="[[getCardBenefitsProductUrl_(creditCard)]]"
-                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>)
+              | <a id="summaryTermsLink"
+                  aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
+                  aria-description="$i18n{opensInNewTab}"
+                  on-click="onSummarySublabelTermsLinkClick_"
+                  href="[[getCardBenefitsProductUrl_(creditCard)]]"
+                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
             </template>
           </div>
         </div>
@@ -60,14 +58,14 @@
             <if expr="_google_chrome">
               <picture id="paymentsIcon">
                 <source
-                    srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL"
+                    srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL')]]"
                     media="(prefers-color-scheme: dark)">
-                <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL">
+                <img alt="" srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL')]]">
               </picture>
             </if>
             <if expr="not _google_chrome">
               <span class="sub-label">
-                [[getPaymentsLabel_(creditCard.metadata)]]
+                $i18n{googlePayments}
               </span>
             </if>
           </div>

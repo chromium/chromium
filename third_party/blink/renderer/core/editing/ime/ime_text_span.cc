@@ -26,7 +26,7 @@ ImeTextSpan::Type ConvertUiTypeToType(ui::ImeTextSpan::Type type) {
       return ImeTextSpan::Type::kGrammarSuggestion;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ImeTextSpan::Type::kComposition;
 }
 
@@ -93,7 +93,7 @@ ui::mojom::ImeTextSpanThickness ConvertUiThicknessToThickness(
       return ui::mojom::ImeTextSpanThickness::kThick;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::mojom::ImeTextSpanThickness::kNone;
 }
 
@@ -112,7 +112,7 @@ ui::mojom::ImeTextSpanUnderlineStyle ConvertUiUnderlineToUnderline(
       return ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::mojom::ImeTextSpanUnderlineStyle::kNone;
 }
 

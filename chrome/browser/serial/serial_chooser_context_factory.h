@@ -30,7 +30,6 @@ class SerialChooserContextFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory methods:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
-  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_

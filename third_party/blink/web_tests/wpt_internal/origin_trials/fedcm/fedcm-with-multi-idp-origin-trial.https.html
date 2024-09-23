@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API multi IDP origin trial.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<!--
+Token generated with:
+tools/origin_trials/generate_token.py https://web-platform.test:8444/ FedCmMultipleIdentityProviders --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="A9wbvpM6Tjz2Nyfs9iLhwNofukYjmKG5g04OR1Kxqc22DDsSNowKSAxG7cJ5GLf2t5MxCmGt+rou0hDbzXPBFg8AAABveyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRmVkQ21NdWx0aXBsZUlkZW50aXR5UHJvdmlkZXJzIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+<body>
+
+<script type="module">
+import {fedcm_test,
+        fedcm_get_and_select_first_account,
+        request_options_with_two_idps,
+        manifest_origin,
+        default_manifest_path,
+        fedcm_select_account_promise,
+        alt_manifest_origin} from '/fedcm/support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  const cred = await fedcm_get_and_select_first_account(t, request_options_with_two_idps());
+  assert_equals(cred.token, "token");
+}, "Multi IDP FedCM call succeeds when picking the first account.");
+</script>
+

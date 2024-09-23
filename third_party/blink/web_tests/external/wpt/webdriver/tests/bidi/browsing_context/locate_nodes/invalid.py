@@ -46,10 +46,36 @@ async def test_params_locator_type_invalid_value(bidi_session, inline, top_conte
         )
 
 
+@pytest.mark.parametrize("type", ["css", "xpath", "innerText"])
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_locator_value_invalid_type(
+    bidi_session, inline, top_context, type, value
+):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"], locator={"type": type, "value": value}
+        )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_locator_accessability_value_invalid_type(
+    bidi_session, inline, top_context, value
+):
+    await navigate_to_page(bidi_session, inline, top_context)
+
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.browsing_context.locate_nodes(
+            context=top_context["context"], locator={"type": "accessability", "value": value}
+        )
+
+
 @pytest.mark.parametrize("type,value", [
     ("css", "a*b"),
     ("xpath", ""),
-    ("innerText", "")
+    ("innerText", ""),
+    ("accessibility", {})
 ])
 async def test_params_locator_value_invalid_value(bidi_session, inline, top_context, type, value):
     await navigate_to_page(bidi_session, inline, top_context)
@@ -90,41 +116,6 @@ async def test_params_max_node_count_invalid_value(bidi_session, inline, top_con
             context=top_context["context"],
             locator={ "type": "invalid", "value": "div" },
             max_node_count=value
-        )
-
-
-@pytest.mark.parametrize("value", [False, 42, {}, []])
-async def test_params_ownership_invalid_type(bidi_session, inline, top_context, value):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"],
-            locator={ "type": "css", "value": "div" },
-            ownership=value
-        )
-
-
-async def test_params_ownership_invalid_value(bidi_session, inline, top_context):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"],
-            locator={ "type": "css", "value": "div" },
-            ownership="foo"
-        )
-
-
-@pytest.mark.parametrize("value", [False, 42, {}, []])
-async def test_params_sandbox_invalid_type(bidi_session, inline, top_context, value):
-    await navigate_to_page(bidi_session, inline, top_context)
-
-    with pytest.raises(error.InvalidArgumentException):
-        await bidi_session.browsing_context.locate_nodes(
-            context=top_context["context"],
-            locator={ "type": "css", "value": "div" },
-            sandbox=value
         )
 
 

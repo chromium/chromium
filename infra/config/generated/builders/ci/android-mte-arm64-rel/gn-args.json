@@ -1,0 +1,17 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "debuggable_apks": false,
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": false,
+    "is_debug": false,
+    "proprietary_codecs": true,
+    "strip_debug_info": true,
+    "symbol_level": 1,
+    "target_cpu": "arm64",
+    "target_os": "android",
+    "use_full_mte": true,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

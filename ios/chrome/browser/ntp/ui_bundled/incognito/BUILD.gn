@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("incognito") {
+  sources = [
+    "incognito_view.h",
+    "incognito_view.mm",
+    "incognito_view_controller.h",
+    "incognito_view_controller.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:ntp_internal",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "incognito_view_util.h",
+    "incognito_view_util.mm",
+  ]
+  deps = [
+    "//components/google/core/common",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+  public_deps = [ "//url:url" ]
+}

@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h",
+  "+ios/chrome/browser/net/model/net_types.h",
+  "+ios/chrome/browser/policy/model/browser_state_policy_connector.h",
+  "+ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h",
+  "+ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h",
+]

@@ -10,46 +10,48 @@ import "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.m
 // with each connection request.
 const string kServiceId = "secure_channel";
 
+// Emitted with Structured Metrics, do not modify existing values
 enum NearbyConnectionStep {
-  kDiscoveringEndpointStarted,
-  kDiscoveringEndpointEnded,
-  kRequestingConnectionStarted,
-  kRequestingConnectionEnded,
-  kAcceptingConnectionStarted,
-  kAcceptingConnectionFinished,
-  kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
-  kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded,
-  kConnected,
-  kUpgradedToWebRtc,
-  kDisconnectionStarted,
-  kDisconnectionFinished
+  kDiscoveringEndpointStarted = 0,
+  kDiscoveringEndpointEnded = 1,
+  kRequestingConnectionStarted = 2,
+  kRequestingConnectionEnded = 3,
+  kAcceptingConnectionStarted = 4,
+  kAcceptingConnectionFinished = 5,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted = 6,
+  kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded = 7,
+  kConnected = 8,
+  kUpgradedToWebRtc = 9,
+  kDisconnectionStarted = 10,
+  kDisconnectionFinished = 11
 };
 
+// Emitted with Structured Metrics, do not modify existing values
 enum NearbyConnectionStepResult {
-  kSuccess,
+  kSuccess = 0,
   // The operation to transition to another NearbyConnectionState timeout.
-  kTimeoutTransitionState,
+  kTimeoutTransitionState = 1,
 
   // The error codes below map to error status of
   // nearby.connections.mojom::Status
-  kError,
-  kOutOfOrderApiCall,
-  kAlreadyHaveActiveStrategy,
-  kAlreadyAdvertising,
-  kAlreadyDiscovering,
-  kEndpointIOError,
-  kEndpointUnknown,
-  kConnectionRejected,
-  kAlreadyConnectedToEndpoint,
-  kNotConnectedToEndpoint,
-  kBluetoothError,
-  kBleError,
-  kWifiLanError,
-  kPayloadUnknown,
-  kAlreadyListening,
-  kReset,
-  kTimeout,
-  kUnknown,
+  kError = 2,
+  kOutOfOrderApiCall = 3,
+  kAlreadyHaveActiveStrategy = 4,
+  kAlreadyAdvertising = 5,
+  kAlreadyDiscovering = 6,
+  kEndpointIOError = 7,
+  kEndpointUnknown = 8,
+  kConnectionRejected = 9,
+  kAlreadyConnectedToEndpoint = 10,
+  kNotConnectedToEndpoint = 11,
+  kBluetoothError = 12,
+  kBleError = 13,
+  kWifiLanError = 14,
+  kPayloadUnknown = 15,
+  kAlreadyListening = 16,
+  kReset = 17,
+  kTimeout = 18,
+  kUnknown = 19,
 };
 
 // Listens to Nearby Connection state change. This is called from non-service

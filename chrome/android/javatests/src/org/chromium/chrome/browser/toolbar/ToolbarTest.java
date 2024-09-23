@@ -40,7 +40,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -51,7 +51,8 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -60,9 +61,9 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for toolbar manager behavior. */
@@ -109,7 +110,7 @@ public class ToolbarTest {
 
     private boolean isErrorPage(final Tab tab) {
         final boolean[] isShowingError = new boolean[1];
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     isShowingError[0] = tab.isShowingErrorPage();
                 });
@@ -163,7 +164,7 @@ public class ToolbarTest {
 
         // Stop the server and also disconnect the network.
         testServer.stopAndDestroyServer();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> NetworkChangeNotifier.forceConnectivityState(false));
 
         mActivityTestRule.loadUrl(testUrl);
@@ -190,6 +191,10 @@ public class ToolbarTest {
         // Simulate availability of a hardware keyboard.
         activity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
 
+        // If soft keyboard is requested while hardware keyboard is connected - do not prefocus the
+        // Omnibox, as it will automatically call up software keyboard.
+        boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(activity);
+
         // Open a new tab.
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), activity, false, true);
@@ -198,10 +203,10 @@ public class ToolbarTest {
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
-                            Matchers.is(true));
+                            Matchers.is(wantPrefocus));
                 });
 
         // Navigate away from the NTP.
@@ -211,7 +216,7 @@ public class ToolbarTest {
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
                             Matchers.is(false));
@@ -226,6 +231,10 @@ public class ToolbarTest {
         // Simulate availability of a hardware keyboard.
         activity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
 
+        // If soft keyboard is requested while hardware keyboard is connected - do not prefocus the
+        // Omnibox, as it will automatically call up software keyboard.
+        boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(activity);
+
         // Open a new tab from the tab switcher.
         onViewWaiting(allOf(withId(R.id.tab_switcher_button), isDisplayed()));
         onView(withId(R.id.tab_switcher_button)).perform(click());
@@ -234,21 +243,21 @@ public class ToolbarTest {
 
         LayoutTestUtils.waitForLayout(activity.getLayoutManager(), LayoutType.BROWSING);
 
-        // Verify that the omnibox is focused when the NTP is loaded.
+        // Verify that the omnibox is in the correct focus state when the NTP is loaded.
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
-                            Matchers.is(true));
+                            Matchers.is(wantPrefocus));
                 });
     }
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testToggleTabStripVisibility() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
@@ -260,14 +269,14 @@ public class ToolbarTest {
                                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         checkTabStripHeightOnUiThread(tabStripHeightResource);
         ComponentCallbacks tabStripCallback =
-                activity.getToolbarManager().getTabStripTransitionCoordinatorForTesting();
+                activity.getToolbarManager().getTabStripTransitionCoordinator();
         Assert.assertNotNull("Tab strip transition callback is null.", tabStripCallback);
 
         // Set the screen width bucket and trigger an configuration change to force toggle tab strip
         // visibility. This is an test only strategy, as we don't want to actually change the
         // configuration which might result in an activity restart.
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(10000);
-        TestThreadUtils.runOnUiThreadBlocking(
+        TabStripTransitionCoordinator.setHeightTransitionThresholdForTesting(10000);
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
@@ -279,9 +288,16 @@ public class ToolbarTest {
                                         .getContainerViewForTesting()
                                         .getHeight(),
                                 Matchers.equalTo(toolbarLayoutHeight)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getStatusBarColorController()
+                                        .getStatusBarColorWithoutStatusIndicator(),
+                                Matchers.equalTo(activity.getToolbarManager().getPrimaryColor())));
 
-        TabStripTransitionCoordinator.setMinScreenWidthForTesting(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        TabStripTransitionCoordinator.setHeightTransitionThresholdForTesting(1);
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabStripCallback.onConfigurationChanged(
                                 activity.getResources().getConfiguration()));
@@ -293,6 +309,15 @@ public class ToolbarTest {
                                         .getContainerViewForTesting()
                                         .getHeight(),
                                 Matchers.equalTo(toolbarLayoutHeight + tabStripHeightResource)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getStatusBarColorController()
+                                        .getStatusBarColorWithoutStatusIndicator(),
+                                Matchers.equalTo(
+                                        TabUiThemeUtil.getTabStripBackgroundColor(
+                                                activity, /* isIncognito= */ false))));
     }
 
     private void checkTabStripHeightOnUiThread(int tabStripHeight) {

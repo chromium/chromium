@@ -182,8 +182,8 @@
             value="{{mountName_}}" maxlength="64">
         </cr-input>
         <div id="authentication-method"
-            hidden="[[!shouldShowAuthenticationUI_(isActiveDirectory_,
-                isKerberosEnabled_, isGuest_)]]">
+            hidden="[[!shouldShowAuthenticationUI_(isKerberosEnabled_,
+                isGuest_)]]">
           <label id="authentication-label" class="cr-form-field-label">
             [[i18n('smbShareAuthenticationMethod')]]
           </label>

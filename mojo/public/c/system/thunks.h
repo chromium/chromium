@@ -233,6 +233,11 @@ struct MojoSystemThunks2 {
   MojoResult (*SetDefaultProcessErrorHandler)(
       MojoDefaultProcessErrorHandler handler,
       const struct MojoSetDefaultProcessErrorHandlerOptions* options);
+
+  // Core ABI version 4 additions begin here.
+  MojoResult (*ReserveMessageCapacity)(MojoMessageHandle message,
+                                       uint32_t payload_buffer_size,
+                                       uint32_t* buffer_size);
 };
 
 // Hacks: This is a copy of the ABI from before it was switched to pointer-sized
@@ -436,6 +441,9 @@ struct MojoSystemThunks {
   MojoResult (*SetDefaultProcessErrorHandler)(
       MojoDefaultProcessErrorHandler handler,
       const struct MojoSetDefaultProcessErrorHandlerOptions* options);
+  MojoResult (*ReserveMessageCapacity)(MojoMessageHandle message,
+                                       uint32_t payload_buffer_size,
+                                       uint32_t* buffer_size);
 };
 #pragma pack(pop)
 

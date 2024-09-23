@@ -22,12 +22,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -36,8 +36,8 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -48,13 +48,11 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -76,9 +74,6 @@ public class ImprovedBookmarkRowRenderTest {
                     new ParameterSet().value(false, true).name("CompactRow_NightModeEnabled"),
                     new ParameterSet().value(false, false).name("CompactRow_NightModeDisabled"));
 
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -88,11 +83,10 @@ public class ImprovedBookmarkRowRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(5)
+                    .setRevision(6)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
@@ -131,11 +125,11 @@ public class ImprovedBookmarkRowRenderTest {
                 mActivityTestRule
                         .getActivity()
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual);
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -200,6 +194,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344662663")
     public void testNormal() throws IOException {
         mRenderTestRule.render(mContentView, "normal");
     }
@@ -207,8 +202,19 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testDisabled() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.ENABLED, false);
+                });
+        mRenderTestRule.render(mContentView, "disabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testEndImageVisibility() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(
                             ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY,
@@ -224,7 +230,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testLocalBookmarkItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
                 });
@@ -235,7 +241,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testLocalBookmarkItemWithChevron() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
                     mModel.set(
@@ -252,7 +258,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSelected() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
                     mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
@@ -264,7 +270,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingSpecifics specifics =
                             ShoppingSpecifics.newBuilder()
@@ -297,7 +303,7 @@ public class ImprovedBookmarkRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_withPriceTrackingDisabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingSpecifics specifics =
                             ShoppingSpecifics.newBuilder()

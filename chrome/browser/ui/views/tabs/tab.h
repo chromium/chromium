@@ -91,7 +91,8 @@ class Tab : public gfx::AnimationDelegate,
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void PaintChildren(const views::PaintInfo& info) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
@@ -150,10 +151,9 @@ class Tab : public gfx::AnimationDelegate,
   // to the user that it needs their attention.
   void SetTabNeedsAttention(bool attention);
 
-  void SetFreezingVoteToken(
-      std::unique_ptr<performance_manager::freezing::FreezingVoteToken> token);
-  void ReleaseFreezingVoteToken();
-  bool HasFreezingVoteToken() const { return freezing_token_ ? true : false; }
+  void CreateFreezingVote(content::WebContents* contents);
+  void ReleaseFreezingVote();
+  bool HasFreezingVote() const { return freezing_vote_.has_value(); }
 
   // Returns the width of the largest part of the tab that is available for the
   // user to click to select/activate the tab.
@@ -191,11 +191,16 @@ class Tab : public gfx::AnimationDelegate,
     return alert_indicator_button_;
   }
 
+  void SetShouldShowDiscardIndicator(bool enabled);
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;
   friend class TabTest;
   friend class TabStripTestBase;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  FRIEND_TEST_ALL_PREFIXES(TabStripTest, CloseButtonHiddenWhenLockedForOnTask);
+#endif
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
@@ -271,13 +276,6 @@ class Tab : public gfx::AnimationDelegate,
   // Whether the tab is currently animating from a pinned to an unpinned state.
   bool is_animating_from_pinned_ = false;
 
-  // If there's room, we add additional padding to the left of the favicon to
-  // balance the whitespace inside the non-hovered close button image;
-  // otherwise, the tab contents look too close to the left edge. Once the tabs
-  // get too small, we let the tab contents take the full width, to maximize
-  // visible area.
-  bool extra_padding_before_content_ = false;
-
   // When both the close button and alert indicator are visible, we add extra
   // padding between them to space them out visually.
   bool extra_alert_indicator_padding_ = false;
@@ -289,9 +287,8 @@ class Tab : public gfx::AnimationDelegate,
 
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 
-  // Freezing token held while the tab is collapsed.
-  std::unique_ptr<performance_manager::freezing::FreezingVoteToken>
-      freezing_token_;
+  // Freezing vote held while the tab is collapsed.
+  std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 };

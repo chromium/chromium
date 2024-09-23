@@ -41,6 +41,7 @@ const std::string kMockId2 = "222";
 const std::string kMockOfferId = "333";
 const long kMockPrice = 100;
 const std::string kMockCountry = "us";
+const std::string kMockLocale = "en-US";
 
 const char kServiceUrlForManage[] =
     "https://memex-pa.googleapis.com/v1/shopping/subscriptions"
@@ -56,6 +57,7 @@ const std::string kExpectedPostDataForCreate =
     "\"PRICE_TRACK\"},{\"identifier\":\"222\",\"identifierType\":\"PRODUCT_"
     "CLUSTER_ID\",\"managementType\":\"USER_MANAGED\","
     "\"type\":\"PRICE_TRACK\",\"userSeenOffer\":{\"countryCode\":\"us\","
+    "\"languageCode\":\"en-US\","
     "\"offerId\":\"333\","
     "\"seenPriceMicros\":\"100\"}}]}}";
 const std::string kExpectedPostDataForDelete =
@@ -90,7 +92,7 @@ BuildValidSubscriptions() {
       commerce::ManagementType::kUserManaged,
       commerce::kUnknownSubscriptionTimestamp,
       std::make_optional<commerce::UserSeenOffer>(kMockOfferId, kMockPrice,
-                                                  kMockCountry)));
+                                                  kMockCountry, kMockLocale)));
   return subscriptions;
 }
 
@@ -131,6 +133,8 @@ class SubscriptionsServerProxyTest : public testing::Test {
   ~SubscriptionsServerProxyTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        commerce::kPriceTrackingSubscriptionServiceLocaleKey);
     fetcher_ = std::make_unique<MockEndpointFetcher>();
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -145,6 +149,7 @@ class SubscriptionsServerProxyTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

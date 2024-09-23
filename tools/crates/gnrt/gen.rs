@@ -96,12 +96,24 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     //   dependencies to the correct lib{core,alloc,std} when depended on by the
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
-    let mut dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)?,
-        Some(vec![config.resolve.root.clone()]),
-        None,
-        &config,
-    )?;
+    let mut dependencies = {
+        let metadata =
+            run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)
+                .with_context(|| {
+                    format!(
+                        "Failed to parse cargo metadata in a directory synthesized from \
+                         {} and {}",
+                        paths.std_fake_root_cargo_template.display(),
+                        paths.std_fake_root_config_template.display(),
+                    )
+                })?;
+        deps::collect_dependencies(
+            &metadata,
+            Some(vec![config.resolve.root.clone()]),
+            None,
+            &config,
+        )
+    };
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
@@ -190,12 +202,12 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .iter()
         .filter(|p| p.lib_target.is_some())
         .map(|p| {
-            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
+            crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
                 .expect("missing a stdlib input file, did you gclient sync?")
         })
         .collect();
 
-    let build_file = gn::build_file_from_std_deps(
+    let build_file = gn::build_file_from_deps(
         dependencies.iter(),
         paths,
         &config,
@@ -245,7 +257,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         Some(vec![config.resolve.root.clone()]),
         None,
         &config,
-    )?;
+    );
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
@@ -281,11 +293,12 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
         .map(|p| {
-            crates::collect_std_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
-                .unwrap_or_else(|_| {
+            crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibAndBin)
+                .unwrap_or_else(|e| {
                     panic!(
-                        "missing a crate input file for '{}'. Dependencies are not vendored?",
-                        p.package_name
+                        "missing a crate input file for '{}'. Dependencies are not vendored?\n\
+                         note: {}",
+                        p.package_name, e
                     )
                 })
         })
@@ -311,7 +324,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     let all_build_files: HashMap<PathBuf, gn::BuildFile> = {
         let mut map = HashMap::new();
         for dep in &dependencies {
-            let build_file = gn::build_file_from_std_deps(
+            let build_file = gn::build_file_from_deps(
                 std::iter::once(dep),
                 paths,
                 &config,

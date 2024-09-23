@@ -14,7 +14,7 @@
 
 // The generated pref for HTTPS-First Mode. Only used for managing the setting
 // in the Security UI settings page. The actual HTTPS-First Mode is controlled
-// by prefs::kHttpsOnlyModeEnabled and prefs::kHttpsFirstModeIncognito.
+// by `prefs::kHttpsOnlyModeEnabled` and `prefs::kHttpsFirstBalancedMode`.
 extern const char kGeneratedHttpsFirstModePref[];
 
 class GeneratedHttpsFirstModePref
@@ -37,6 +37,12 @@ class GeneratedHttpsFirstModePref
   void OnAdvancedProtectionStatusChanged(bool enabled) override;
 
  private:
+  // Applies the effective management state of HTTPS-First Mode for `profile` to
+  // `pref_object`.
+  static void ApplyManagementState(
+      const Profile& profile,
+      extensions::api::settings_private::PrefObject& pref_object);
+
   // Non-owning pointer to the profile this preference is generated for.
   const raw_ptr<Profile> profile_;
   PrefChangeRegistrar user_prefs_registrar_;

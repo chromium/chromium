@@ -9,7 +9,8 @@
 @protocol PasswordDetailsMediatorDelegate
 
 // Called when the user wants to dismiss a compromised credential warning.
-- (void)showDismissWarningDialogWithPasswordDetails:(PasswordDetails*)password;
+- (void)showDismissWarningDialogWithCredentialDetails:
+    (CredentialDetails*)password;
 
 // Called when a credential has been updated or deleted. This will refresh the
 // password suggestions list.

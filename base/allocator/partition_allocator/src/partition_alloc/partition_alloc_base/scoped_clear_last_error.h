@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
 
 #include <cerrno>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base {
@@ -30,7 +30,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastErrorBase {
   const int last_errno_;
 };
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 
 // Windows specific implementation of ScopedClearLastError.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastError
@@ -45,12 +45,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastError
   const unsigned long last_system_error_;
 };
 
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
 using ScopedClearLastError = ScopedClearLastErrorBase;
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_SCOPED_CLEAR_LAST_ERROR_H_

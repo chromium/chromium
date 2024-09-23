@@ -36,9 +36,9 @@ implementation of `raw_ptr<T>`.
 
 PartitionAlloc provides APIs to
 
-* reclaim memory (see [memory\_reclaimer.h](./memory_reclaimer.h)) and
+* reclaim memory (see `memory_reclaimer.h`) and
 
-* purge thread caches (see [thread\_cache.h](./thread_cache.h)).
+* purge thread caches (see `thread_cache.h`).
 
 Both of these must be called by the embedder external to PartitionAlloc.
 PA provides neither an event loop nor timers of its own, delegating this

@@ -17,7 +17,7 @@ An archive of all packages built so far is at https://is.gd/chromeclang
     successful it will copy the binaries from the staging bucket to the
     production one. Writing to this bucket requires special permissions. File a
     bug at g.co/bugatrooper if you don't have these already (e.g.,
-    https://crbug.com/1034081). Then it will push the packages to goma. If you
+    https://crbug.com/1034081). Then it will push the packages to RBE. If you
     do not have the necessary credentials to do the upload, ask
     clang@chromium.org to find someone who does.
     *   Alternatively, to create your own roll CL, you can manually run
@@ -26,12 +26,13 @@ An archive of all packages built so far is at https://is.gd/chromeclang
 	successfully finished, run
 	[go/chrome-promote-clang](https://goto.google.com/chrome-promote-clang)
 	on the new Clang package name.
+1.  Run `tools/clang/scripts/sync_deps.py` to update the deps entries in DEPS.
 1.  Run an exhaustive set of try jobs to test the new compiler. The CL
     description created previously by upload_revision.py includes
     `Cq-Include-Trybots:` lines for all needed bots, so it's sufficient to just
     run `git cl try` (or hit "CQ DRY RUN" on gerrit).
 1.  Commit the roll CL from the previous step.
-1.  The bots will now pull the prebuilt binary, and goma will have a matching
+1.  The bots will now pull the prebuilt binary, and RBE will have a matching
     binary, too.
 
 ## Performance regressions
@@ -63,10 +64,24 @@ criteria:
   compiler, a linker, sanitizer runtimes)
 - things needed for doing official builds
 
-If you want to add something to the clang package that doesn't (yet?) meet
-these criteria, you can make package.py upload it to a separate zip file
-and then download it on an opt-in basis by using update.py's --package option.
+# Adding a New Package
 
-If you're adding a new feature that you expect will meet the inclusion criteria
-eventually but doesn't yet, start by having your things in a separate zip
-and move it to the main zip once the criteria are met.
+If you want to make artifacts available that do not meet the criteria for
+being included in the "clang" package, you can make package.py upload it to
+a separate zip file and then download it on an opt-in basis by using
+update.py's --package option.  Here is [an example of adding a new package].
+
+To test changes to `package.py`, change `CLANG_SUB_REVISION` in `update.py` to
+a random number above 2000 and run the `*_upload_clang` trybots.
+
+Once the change to `package.py` is in, file a bug under `Tools > LLVM`
+requesting that a new package be created ([example bug]).
+
+Once it's been uploaded and rolled, you can download it via:
+
+```
+tools/clang/scripts/update.py --package your-package-name
+```
+
+[an example of adding a new package](https://chromium-review.googlesource.com/c/chromium/src/+/5463029)
+[example bug]: https://crbug.com/335730441

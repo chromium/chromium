@@ -59,21 +59,27 @@ void DelayHandler::Process(uint32_t frames_to_process) {
       source_bus->Zero();
     }
 
-    base::AutoTryLock try_locker(process_lock_);
-    if (try_locker.is_acquired()) {
+    base::AutoTryLock process_try_locker(process_lock_);
+    base::AutoTryLock rate_try_locker(delay_time_->RateLock());
+    if (process_try_locker.is_acquired() && rate_try_locker.is_acquired()) {
       DCHECK_EQ(source_bus->NumberOfChannels(),
                 destination_bus->NumberOfChannels());
       DCHECK_EQ(source_bus->NumberOfChannels(), kernels_.size());
 
-      for (unsigned i = 0; i < kernels_.size(); ++i) {
-        if (delay_time_->HasSampleAccurateValues() &&
-            delay_time_->IsAudioRate()) {
+      if (delay_time_->IsAudioRate()) {
+        for (unsigned i = 0; i < kernels_.size(); ++i) {
+          // Assumes that the automation rate cannot change in the middle of
+          // the process function. (See crbug.com/357391257)
+          CHECK(delay_time_->IsAudioRate());
           delay_time_->CalculateSampleAccurateValues(kernels_[i]->DelayTimes(),
                                                      frames_to_process);
           kernels_[i]->ProcessARate(source_bus->Channel(i)->Data(),
                                     destination_bus->Channel(i)->MutableData(),
                                     frames_to_process);
-        } else {
+        }
+      } else {
+        for (unsigned i = 0; i < kernels_.size(); ++i) {
+          CHECK(!delay_time_->IsAudioRate());
           kernels_[i]->SetDelayTime(delay_time_->FinalValue());
           kernels_[i]->ProcessKRate(source_bus->Channel(i)->Data(),
                                     destination_bus->Channel(i)->MutableData(),
@@ -90,9 +96,13 @@ void DelayHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   if (!IsInitialized()) {
     return;
   }
-
-  DCHECK_LE(frames_to_process, render_quantum_frames_);
-  float values[render_quantum_frames_];
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
+  CHECK_EQ(render_quantum_frames_, render_quantum_frames_expected);
+  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
+  float values[render_quantum_frames_expected];
   delay_time_->CalculateSampleAccurateValues(values, frames_to_process);
 }
 

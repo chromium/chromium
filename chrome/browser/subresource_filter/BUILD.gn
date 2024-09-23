@@ -62,6 +62,7 @@ if (is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//components/subresource_filter/content/browser",
+      "//components/subresource_filter/content/shared/browser",
       "//components/subresource_filter/core/common:test_support",
     ]
   }

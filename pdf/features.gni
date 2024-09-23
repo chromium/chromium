@@ -10,12 +10,18 @@ import("//build/config/cast.gni")
 # disabled.
 
 declare_args() {
+  enable_pdf = !is_android && !is_ios && !is_castos && !is_fuchsia
+}
+
+declare_args() {
   # Enable ink libraries provided by the ChromeOS media app dependency.
   #
   # This argument indicates whether the ink libraries provided by the ChromeOS
   # media app dependency is enabled. It also determines whether the annotation
-  # feature is enabled for the PDF viewer.
+  # feature is enabled for the PDF Viewer on Chrome OS.
   enable_ink = enable_cros_media_app
 
-  enable_pdf = !is_android && !is_ios && !is_castos
+  # Enable the next generation of ink libraries. This can co-exist with
+  # `enable_ink` above.
+  enable_pdf_ink2 = enable_pdf
 }

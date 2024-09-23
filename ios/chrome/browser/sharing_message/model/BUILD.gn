@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_sharing_device_registration_impl.h",
+    "ios_sharing_device_registration_impl.mm",
+    "ios_sharing_handler_registry_impl.h",
+    "ios_sharing_handler_registry_impl.mm",
+    "ios_sharing_service_factory.h",
+    "ios_sharing_service_factory.mm",
+  ]
+  deps = [
+    ":sharing_message_bridge_factory",
+    "//base",
+    "//components/favicon/core",
+    "//components/gcm_driver/instance_id",
+    "//components/keyed_service/ios",
+    "//components/optimization_guide/core:features",
+    "//components/send_tab_to_self",
+    "//components/sharing_message",
+    "//components/sharing_message:buildflags",
+    "//components/sharing_message/ios_push",
+    "//components/sharing_message/proto",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/gcm/model",
+    "//ios/chrome/browser/gcm/model/instance_id",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/common",
+    "//ios/web/public/thread",
+  ]
+}
+
+source_set("sharing_message_bridge_factory") {
+  sources = [
+    "ios_sharing_message_bridge_factory.h",
+    "ios_sharing_message_bridge_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/send_tab_to_self",
+    "//components/sharing_message",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ios_sharing_message_bridge_factory_unittest.mm",
+    "ios_sharing_service_factory_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    ":sharing_message_bridge_factory",
+    "//base/test:test_support",
+    "//components/pref_registry",
+    "//components/send_tab_to_self",
+    "//components/sharing_message",
+    "//components/sharing_message/ios_push",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/gcm/model/instance_id",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

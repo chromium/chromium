@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -26,11 +27,12 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user_type.h"
 
@@ -39,6 +41,11 @@ namespace reporting {
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
 using ::ash::cros_healthd::mojom::EventInfoPtr;
+
+constexpr char kReportedLocalIdSaveFilePath[] =
+    "/var/lib/reporting/crash_events/CRASH_REPORTED_LOCAL_IDS";
+constexpr char kUploadedCrashInfoSaveFilePath[] =
+    "/var/lib/reporting/crash_events/CRASH_UPLOADED_CRASH_INFO";
 
 namespace {
 
@@ -64,12 +71,10 @@ FatalCrashTelemetry::SessionType GetSessionType(
       return FatalCrashTelemetry::SESSION_TYPE_PUBLIC_ACCOUNT;
     case user_manager::UserType::kKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_APP;
-    case user_manager::UserType::kArcKioskApp:
-      return FatalCrashTelemetry::SESSION_TYPE_ARC_KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -87,19 +92,21 @@ std::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
 }  // namespace
 
 FatalCrashEventsObserver::FatalCrashEventsObserver()
-    : FatalCrashEventsObserver(DefaultSaveFilePathsProvider::Get(),
+    : FatalCrashEventsObserver(base::FilePath(kReportedLocalIdSaveFilePath),
+                               base::FilePath(kUploadedCrashInfoSaveFilePath),
                                /*reported_local_id_io_task_runner=*/nullptr,
                                /*uploaded_crash_info_io_task_runner=*/nullptr) {
 }
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
-    const SaveFilePathsProviderInterface& save_file_paths_provider,
+    const base::FilePath& reported_local_id_save_file_path,
+    const base::FilePath& uploaded_crash_info_save_file_path,
     scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
-          save_file_paths_provider.GetReportedLocalIdSaveFilePath(),
+          reported_local_id_save_file_path,
           // Don't BindPostTask here, because it would risk calling
           // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
           // reported_local_id_manager_, once from uploaded_crash_info_manager_.
@@ -111,7 +118,7 @@ FatalCrashEventsObserver::FatalCrashEventsObserver(
               base::Unretained(this)),
           std::move(reported_local_id_io_task_runner))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          save_file_paths_provider.GetUploadedCrashInfoSaveFilePath(),
+          uploaded_crash_info_save_file_path,
           // Don't BindPostTask here, because it would risk calling
           // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
           // reported_local_id_manager_, once from uploaded_crash_info_manager_.
@@ -138,9 +145,8 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
          base::Time::kMicrosecondsPerMillisecond;
 }
 
-// static
 const base::flat_set<CrashEventInfo::CrashType>&
-FatalCrashEventsObserver::GetAllowedCrashTypes() {
+FatalCrashEventsObserver::GetAllowedCrashTypes() const {
   // This may appear to be overkilling for only 2 crash types, but it provides
   // more robustness for future crash type additions.
   static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
@@ -212,7 +218,10 @@ void FatalCrashEventsObserver::ProcessUnuploadedCrashEvent(
     return;
   }
 
-  MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
+  // `event_based_log_upload_id` will only be generated for events with uploaded
+  // crash reports.
+  MetricData metric_data = FillFatalCrashTelemetry(
+      crash_event_info, /*event_based_log_upload_id=*/std::nullopt);
   OnEventObserved(std::move(metric_data));
   if (settings_for_test_->interrupted_after_event_observed) {
     return;
@@ -241,7 +250,9 @@ void FatalCrashEventsObserver::ProcessUploadedCrashEvent(
     return;
   }
 
-  MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
+  auto event_based_log_upload_id = NotifyFatalCrashEventLog();
+  MetricData metric_data =
+      FillFatalCrashTelemetry(crash_event_info, event_based_log_upload_id);
   OnEventObserved(std::move(metric_data));
 
   if (settings_for_test_->interrupted_after_event_observed) {
@@ -306,8 +317,25 @@ void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
           weak_factory_.GetWeakPtr()));
 }
 
+FatalCrashTelemetry::CrashType
+FatalCrashEventsObserver::GetFatalCrashTelemetryCrashType(
+    CrashEventInfo::CrashType crash_type) const {
+  switch (crash_type) {
+    case CrashEventInfo::CrashType::kKernel:
+      return FatalCrashTelemetry::CRASH_TYPE_KERNEL;
+    case CrashEventInfo::CrashType::kEmbeddedController:
+      return FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER;
+    case CrashEventInfo::CrashType::kUnknown:
+      [[fallthrough]];
+    default:  // Other types added by healthD that are unknown here yet.
+      NOTREACHED() << "Encountered unhandled or unknown crash type "
+                   << crash_type;
+  }
+}
+
 MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
-    const CrashEventInfoPtr& info) {
+    const CrashEventInfoPtr& info,
+    std::optional<std::string> event_based_log_upload_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::FATAL_CRASH);
@@ -315,19 +343,7 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   FatalCrashTelemetry& data =
       *metric_data.mutable_telemetry_data()->mutable_fatal_crash_telemetry();
 
-  switch (info->crash_type) {
-    case CrashEventInfo::CrashType::kKernel:
-      data.set_type(FatalCrashTelemetry::CRASH_TYPE_KERNEL);
-      break;
-    case CrashEventInfo::CrashType::kEmbeddedController:
-      data.set_type(FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER);
-      break;
-    case CrashEventInfo::CrashType::kUnknown:
-      [[fallthrough]];
-    default:  // Other types added by healthD that are unknown here yet.
-      NOTREACHED_NORETURN()
-          << "Encountered unhandled or unknown crash type " << info->crash_type;
-  }
+  data.set_type(GetFatalCrashTelemetryCrashType(info->crash_type));
 
   const auto* const user_session = GetCurrentUserSession();
   if (!user_session) {
@@ -349,6 +365,35 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
         reported_local_id_manager_->HasBeenReported(data.local_id()));
   }
 
+  if (event_based_log_upload_id.has_value()) {
+    *data.mutable_event_based_log_id() = event_based_log_upload_id.value();
+  }
+
   return metric_data;
 }
+
+void FatalCrashEventsObserver::AddEventLogObserver(
+    FatalCrashEventLogObserver* observer) {
+  event_log_observers_.AddObserver(observer);
+}
+
+void FatalCrashEventsObserver::RemoveEventLogObserver(
+    FatalCrashEventLogObserver* observer) {
+  event_log_observers_.RemoveObserver(observer);
+}
+
+std::optional<std::string>
+FatalCrashEventsObserver::NotifyFatalCrashEventLog() {
+  // We won't generate an upload ID if there's no observers to trigger the log
+  // upload. Observers will only exist if device log upload policy is enabled.
+  if (event_log_observers_.empty()) {
+    return std::nullopt;
+  }
+  std::string upload_id = policy::EventBasedLogUploader::GenerateUploadId();
+  for (auto& observer : event_log_observers_) {
+    observer.OnFatalCrashEvent(upload_id);
+  }
+  return upload_id;
+}
+
 }  // namespace reporting

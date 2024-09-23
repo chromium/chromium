@@ -5,26 +5,53 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.TextAppearanceSpan;
 
-import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AnswerTextType;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestionAnswer;
+import org.chromium.components.omnibox.SuggestionAnswer.TextField;
+
+import java.util.List;
 
 /**
  * AnswerTextNewLayout builds Omnibox styled Answer suggestion texts for revamped answer layouts.
  */
-class AnswerTextNewLayout extends AnswerText {
+class AnswerTextNewLayout implements AnswerText {
+    final Context mContext;
     private final boolean mIsAnswer;
-    private final @AnswerType int mAnswerType;
+    private final AnswerType mAnswerType;
     private final boolean mStockTextColorReverse;
+
+    /** Content of the line of text in omnibox suggestion. */
+    private final SpannableStringBuilder mText = new SpannableStringBuilder();
+
+    private String mAccessibilityDescription;
+    private int mMaxLines = 1;
+
+    // AnswerText implementation.
+    @Override
+    public SpannableStringBuilder getText() {
+        return mText;
+    }
+
+    @Override
+    public String getAccessibilityDescription() {
+        return mAccessibilityDescription;
+    }
+
+    @Override
+    public int getMaxLines() {
+        return mMaxLines;
+    }
 
     /**
      * Convert SuggestionAnswer to array of elements that directly translate to user-presented
@@ -41,7 +68,7 @@ class AnswerTextNewLayout extends AnswerText {
             AutocompleteMatch suggestion,
             String query,
             boolean stockTextColorReverse) {
-        AnswerText[] result = new AnswerText[2];
+        AnswerTextNewLayout[] result = new AnswerTextNewLayout[2];
 
         SuggestionAnswer answer = suggestion.getAnswer();
         if (answer == null) {
@@ -50,7 +77,7 @@ class AnswerTextNewLayout extends AnswerText {
             assert suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
             result[0] = new AnswerTextNewLayout(context, query, true);
             result[1] = new AnswerTextNewLayout(context, suggestion.getDisplayText(), false);
-        } else if (answer.getType() == AnswerType.DICTIONARY) {
+        } else if (answer.getType() == AnswerType.ANSWER_TYPE_DICTIONARY) {
             result[0] =
                     new AnswerTextNewLayout(
                             context,
@@ -105,11 +132,11 @@ class AnswerTextNewLayout extends AnswerText {
      */
     AnswerTextNewLayout(
             Context context,
-            @AnswerType int type,
+            AnswerType type,
             SuggestionAnswer.ImageLine line,
             boolean isAnswerLine,
             boolean stockTextColorReverse) {
-        super(context);
+        mContext = context;
         mIsAnswer = isAnswerLine;
         mAnswerType = type;
         mStockTextColorReverse = stockTextColorReverse;
@@ -124,116 +151,127 @@ class AnswerTextNewLayout extends AnswerText {
      * @param isAnswerLine True, if this instance holds answer.
      */
     AnswerTextNewLayout(Context context, String text, boolean isAnswerLine) {
-        super(context);
+        mContext = context;
         mIsAnswer = isAnswerLine;
-        mAnswerType = AnswerType.INVALID;
+        mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mStockTextColorReverse = false;
         appendAndStyleText(text, getAppearanceForText(AnswerTextType.SUGGESTION));
     }
 
     /**
-     * Process (if desired) content of the answer text.
+     * Builds a Spannable containing all of the styled text in the supplied ImageLine.
      *
-     * @param text Source text.
-     * @return Either original or modified text.
+     * @param line All text fields within this line will be used to build the resulting content.
      */
-    @Override
-    protected String processAnswerText(String text) {
-        if (mIsAnswer && mAnswerType == AnswerType.CURRENCY) {
-            // Modify the content of answer to present only the value after conversion, that is:
-            //    1,000 United State Dollar = 1,330.75 Canadian Dollar
-            // becomes
-            //    1,330.75 Canadian Dollar
-            int offset = text.indexOf(" = ");
-            if (offset > 0) {
-                text = text.substring(offset + 3);
+    private void build(SuggestionAnswer.ImageLine line) {
+        List<TextField> textFields = line.getTextFields();
+        for (int i = 0; i < textFields.size(); i++) {
+            appendAndStyleText(
+                    textFields.get(i).getText(), getAppearanceForText(textFields.get(i).getType()));
+            if (textFields.get(i).hasNumLines()) {
+                mMaxLines = Math.max(mMaxLines, Math.min(3, textFields.get(i).getNumLines()));
             }
         }
-        return text;
+
+        if (line.hasAdditionalText()) {
+            mText.append("  ");
+            appendAndStyleText(
+                    line.getAdditionalText().getText(),
+                    getAppearanceForText(line.getAdditionalText().getType()));
+        }
+        if (line.hasStatusText()) {
+            mText.append("  ");
+            appendAndStyleText(
+                    line.getStatusText().getText(),
+                    getAppearanceForText(line.getStatusText().getType()));
+        }
+
+        mAccessibilityDescription = mText.toString();
+    }
+
+    private void appendAndStyleText(String text, MetricAffectingSpan style) {
+        // Unescape HTML entities (e.g. "&quot;", "&gt;").
+        text = AnswerTextUtils.processAnswerText(text, mIsAnswer, mAnswerType);
+
+        // Append as HTML (answer responses contain simple markup).
+        int start = mText.length();
+        mText.append(text);
+        int end = mText.length();
+        mText.setSpan(style, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     /**
-     * Return the TextAppearanceSpan array specifying text decorations for a given field type.
+     * Return the TextAppearanceSpan specifying text decorations for a given field type.
      *
-     * @param type The answer type as specified at http://goto.google.com/ais_api.
-     * @return TextAppearanceSpan array specifying styles to be used to present text field.
+     * @param type The answer type as specified at <a href="http://goto.google.com/ais_api">...</a>.
+     * @return TextAppearanceSpan specifying style to be used to present text field.
      */
-    @Override
-    protected MetricAffectingSpan[] getAppearanceForText(@AnswerTextType int type) {
+    private MetricAffectingSpan getAppearanceForText(@AnswerTextType int type) {
         return mIsAnswer
                 ? getAppearanceForAnswerText(mContext, type, mAnswerType, mStockTextColorReverse)
-                : getAppearanceForQueryText(type);
+                : getAppearanceForQueryText();
     }
 
     /**
-     * Return text styles for elements in main line holding answer.
+     * Return text style for elements in main line holding answer.
      *
      * @param type The answer text type for the suggestion answer.
      * @param answerType the answer type for the suggestion answer
      * @param context Current context.
      * @param stockTextColorReverse flag to indicate whether we need to reverse the text color to
      *     match positive/negative color meanings in certain countries.
-     * @return array of TextAppearanceSpan objects defining style for the text.
+     * @return TextAppearanceSpan object defining style for the text.
      */
     @VisibleForTesting
-    static MetricAffectingSpan[] getAppearanceForAnswerText(
+    static MetricAffectingSpan getAppearanceForAnswerText(
             Context context,
             @AnswerTextType int type,
-            @AnswerType int answerType,
+            AnswerType answerType,
             boolean stockTextColorReverse) {
-        if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
-            return new TextAppearanceSpan[] {
-                new TextAppearanceSpan(context, R.style.TextAppearance_TextLarge_Primary)
-            };
+        if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
+                && answerType != AnswerType.ANSWER_TYPE_FINANCE) {
+            return new TextAppearanceSpan(context, R.style.TextAppearance_TextLarge_Primary);
         }
 
-        @StyleRes int res = 0;
         switch (type) {
-            case AnswerTextType.DESCRIPTION_NEGATIVE:
-                res =
+            case AnswerTextType.DESCRIPTION_NEGATIVE -> {
+                return new TextAppearanceSpan(
+                        context,
                         stockTextColorReverse
                                 ? R.style.TextAppearance_OmniboxAnswerDescriptionPositiveSmall
-                                : R.style.TextAppearance_OmniboxAnswerDescriptionNegativeSmall;
-                break;
-
-            case AnswerTextType.DESCRIPTION_POSITIVE:
-                res =
+                                : R.style.TextAppearance_OmniboxAnswerDescriptionNegativeSmall);
+            }
+            case AnswerTextType.DESCRIPTION_POSITIVE -> {
+                return new TextAppearanceSpan(
+                        context,
                         stockTextColorReverse
                                 ? R.style.TextAppearance_OmniboxAnswerDescriptionNegativeSmall
-                                : R.style.TextAppearance_OmniboxAnswerDescriptionPositiveSmall;
-                break;
-
-            case AnswerTextType.SUGGESTION_SECONDARY_TEXT_MEDIUM:
-                res = R.style.TextAppearance_TextSmall_Secondary;
-                break;
-
-            case AnswerTextType.SUGGESTION:
-            case AnswerTextType.PERSONALIZED_SUGGESTION:
-            case AnswerTextType.ANSWER_TEXT_MEDIUM:
-            case AnswerTextType.ANSWER_TEXT_LARGE:
-            case AnswerTextType.TOP_ALIGNED:
-            case AnswerTextType.SUGGESTION_SECONDARY_TEXT_SMALL:
-                res = R.style.TextAppearance_TextLarge_Primary;
-                break;
-
-            default:
+                                : R.style.TextAppearance_OmniboxAnswerDescriptionPositiveSmall);
+            }
+            case AnswerTextType.SUGGESTION_SECONDARY_TEXT_MEDIUM -> {
+                return new TextAppearanceSpan(context, R.style.TextAppearance_TextSmall_Secondary);
+            }
+            case AnswerTextType.SUGGESTION,
+                    AnswerTextType.PERSONALIZED_SUGGESTION,
+                    AnswerTextType.ANSWER_TEXT_MEDIUM,
+                    AnswerTextType.ANSWER_TEXT_LARGE,
+                    AnswerTextType.TOP_ALIGNED,
+                    AnswerTextType.SUGGESTION_SECONDARY_TEXT_SMALL -> {
+                return new TextAppearanceSpan(context, R.style.TextAppearance_TextLarge_Primary);
+            }
+            default -> {
                 assert false : "Unknown answer type: " + type;
-                res = R.style.TextAppearance_TextLarge_Primary;
-                break;
+                return new TextAppearanceSpan(context, R.style.TextAppearance_TextLarge_Primary);
+            }
         }
-
-        return new TextAppearanceSpan[] {new TextAppearanceSpan(context, res)};
     }
 
     /**
-     * Return text styles for elements in second line holding query.
+     * Return text style for elements in second line holding query.
      *
-     * @param type The answer type as specified at http://goto.google.com/ais_api.
-     * @return array of TextAppearanceSpan objects defining style for the text.
+     * @return TextAppearanceSpan object defining style for the text.
      */
-    private MetricAffectingSpan[] getAppearanceForQueryText(@AnswerTextType int type) {
-        return new TextAppearanceSpan[] {
-            new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary)
-        };
+    private MetricAffectingSpan getAppearanceForQueryText() {
+        return new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary);
     }
 }

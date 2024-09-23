@@ -52,7 +52,7 @@ extensions::api::file_system_provider::ProviderError FileErrorToProviderError(
     case base::File::FILE_ERROR_IO:
       return extensions::api::file_system_provider::ProviderError::kIo;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return extensions::api::file_system_provider::ProviderError::kFailed;
@@ -100,7 +100,7 @@ base::File::Error ProviderErrorToFileError(
     case api::file_system_provider::ProviderError::kIo:
       return base::File::FILE_ERROR_IO;
     case api::file_system_provider::ProviderError::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return base::File::FILE_ERROR_FAILED;

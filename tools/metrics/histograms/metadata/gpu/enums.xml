@@ -240,13 +240,14 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Failed output colorspace HDR"/>
   <int value="15" label="Failed quad not damaged"/>
   <int value="16" label="Failed YUV video quad moved"/>
-  <int value="17" label="Failed HDR tone mapping"/>
+  <int value="17" label="Failed YUV video quad HDR tone mapping"/>
   <int value="18" label="Failed YUV video quad no hdr metadata"/>
   <int value="19" label="Failed YUV video quad HLG"/>
   <int value="20"
       label="Failed YUV video quad no p010 video processor support"/>
   <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
   <int value="22" label="Failed YUV video quad hdr non p010"/>
+  <int value="23" label="Failed YUV video quad unsupported colorspace"/>
 </enum>
 
 <enum name="DelegatedStatus">
@@ -393,12 +394,6 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="ANGLE OpenGL ES EGL"/>
   <int value="17" label="ANGLE Metal"/>
   <int value="18" label="ANGLE Metal NULL"/>
-</enum>
-
-<enum name="FormatPixmapSupport">
-  <int value="0" label="No format with Native Pixmaps"/>
-  <int value="1" label="NV12 format with Native Pixmaps"/>
-  <int value="2" label="YV12 format with Native Pixmaps"/>
 </enum>
 
 <enum name="GLImplementation">
@@ -984,6 +979,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              on High Sierra"/>
 </enum>
 
+<enum name="GPUFallbackEventCauseType">
+  <summary>Causes of GPU process launch mode fallback events.</summary>
+  <int value="0" label="GPU process initialization failure"/>
+  <int value="1" label="GPU process crash limit reached"/>
+</enum>
+
 <enum name="GPUProcessExitCode">
   <summary>
     The exit code returned by the GPU process when it terminated. These match
@@ -1073,6 +1074,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="10th Gen"/>
   <int value="11" label="11th Gen"/>
   <int value="12" label="12th Gen"/>
+  <int value="13" label="13th Gen"/>
 </enum>
 
 <enum name="IntelGpuSeriesType">
@@ -1105,6 +1107,20 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="23" label="Intel AmberLake"/>
   <int value="24" label="Intel RocketLake"/>
   <int value="25" label="Intel DG1"/>
+  <int value="26" label="Intel Alchemist"/>
+  <int value="27" label="Intel Raptorlake"/>
+  <int value="28" label="Intel Meteorlake"/>
+  <int value="29" label="Intel Lunarlake"/>
+  <int value="30" label="Intel Arrowlake"/>
+  <int value="31" label="Intel Battlemage"/>
+</enum>
+
+<enum name="MaximumGLESVersion">
+  <summary>The maximum GLES version supported.</summary>
+  <int value="0" label="GLES2.0"/>
+  <int value="1" label="GLES3.0"/>
+  <int value="2" label="GLES3.1"/>
+  <int value="3" label="GLES3.2"/>
 </enum>
 
 <enum name="MetalReadWriteTextureSupportTier">
@@ -1253,6 +1269,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="54" label="SkGainmapInfo deserialize failure"/>
   <int value="55" label="HdrMetadata deserialize failure"/>
   <int value="56" label="SkColor4f has non-finite values"/>
+  <int value="57" label="SkColor4f has invalid alpha value"/>
 </enum>
 
 <enum name="ParseEdidFailure">

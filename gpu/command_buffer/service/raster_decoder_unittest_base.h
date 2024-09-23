@@ -52,6 +52,7 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
+  bool ShouldYield() override;
 
   // Template to call glGenXXX functions.
   template <typename T>
@@ -117,10 +118,10 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
     InitState();
     ~InitState();
 
-    std::vector<std::string> extensions = {"GL_ARB_sync"};
+    std::vector<std::string> extensions = {};
     bool lose_context_when_out_of_memory = false;
     gpu::GpuDriverBugWorkarounds workarounds;
-    std::string gl_version = "2.1";
+    std::string gl_version = "OpenGL ES 3.0";
     ContextType context_type = CONTEXT_TYPE_OPENGLES2;
   };
 

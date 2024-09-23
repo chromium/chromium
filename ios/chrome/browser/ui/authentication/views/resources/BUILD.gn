@@ -1,0 +1,18 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/identity_picker_view_arrow_down.imageset/Contents.json",
+    "Assets.xcassets/identity_picker_view_arrow_down.imageset/identity_picker_view_arrow_down@2x.png",
+    "Assets.xcassets/identity_picker_view_arrow_down.imageset/identity_picker_view_arrow_down@3x.png",
+    "Assets.xcassets/identity_picker_view_arrow_right.imageset/Contents.json",
+    "Assets.xcassets/identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@2x.png",
+    "Assets.xcassets/identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@3x.png",
+  ]
+}

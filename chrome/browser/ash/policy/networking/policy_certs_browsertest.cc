@@ -27,9 +27,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
@@ -42,6 +40,7 @@
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -56,6 +55,7 @@
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
@@ -71,7 +71,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -423,10 +422,9 @@ class PolicyProvidedCertsDeviceLocalAccountTest
 
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
-  const AccountId device_local_account_id_ =
-      AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-          kDeviceLocalAccountId,
-          DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  const AccountId device_local_account_id_ = AccountId::FromUserEmail(
+      GenerateDeviceLocalAccountUserId(kDeviceLocalAccountId,
+                                       DeviceLocalAccountType::kPublicSession));
 
   MockConfigurationPolicyProvider user_policy_provider_;
   UserPolicyCertsHelper user_policy_certs_helper_;
@@ -582,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedClientCertsTest, ClientCertsImported) {
       IsCertInNSSDatabase(browser()->profile(), kClientCertSubjectCommonName));
 }
 
-// TODO(https://crbug.com/874937): Add a test case for a kiosk session.
+// TODO(crbug.com/40589684): Add a test case for a kiosk session.
 
 // Class for testing policy-provided extensions in the sign-in profile.
 // Sets a device policy which applies the |kRootCaCert| for
@@ -638,22 +636,20 @@ class PolicyProvidedCertsForSigninExtensionTest
     signin_profile_ = GetInitialProfile();
     ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
 
-    extensions::ExtensionHostTestHelper extension_1_observer(
-        signin_profile_, kSigninScreenExtension1);
-    extension_1_observer.RestrictToType(
-        extensions::mojom::ViewType::kExtensionBackgroundPage);
-    extensions::ExtensionHostTestHelper extension_2_observer(
-        signin_profile_, kSigninScreenExtension2);
-    extension_2_observer.RestrictToType(
-        extensions::mojom::ViewType::kExtensionBackgroundPage);
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(signin_profile_);
+    extensions::TestExtensionRegistryObserver extension_1_observer(
+        extension_registry, kSigninScreenExtension1);
+    extensions::TestExtensionRegistryObserver extension_2_observer(
+        extension_registry, kSigninScreenExtension2);
 
     AddExtensionForForceInstallation(kSigninScreenExtension1,
                                      kSigninScreenExtension1UpdateManifestPath);
     AddExtensionForForceInstallation(kSigninScreenExtension2,
                                      kSigninScreenExtension2UpdateManifestPath);
 
-    extension_1_observer.WaitForHostCompletedFirstLoad();
-    extension_2_observer.WaitForHostCompletedFirstLoad();
+    extension_1_observer.WaitForExtensionLoaded();
+    extension_2_observer.WaitForExtensionLoaded();
   }
 
   content::StoragePartition* GetStoragePartitionForSigninExtension(

@@ -16,7 +16,13 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "cc/paint/color_filter.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/record_paint_canvas.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -33,13 +39,38 @@ constexpr int kDecodedWallpaperMetricMinMB = 1;
 constexpr int kDecodedWallpaperMetricMaxMB = 50;
 constexpr int kDecodedWallpaperMetricNumBuckets = 10;
 
+// Wallpapers with png format could be partially transparent. Ensures image
+// pixels are opaque before painting.
+//
+// If `generate_immediate_bitmap` is true, the return value is backed by an
+// `SkBitmap`. If false, it's backed by a sequence of paint operations, which,
+// when evaluated later in the graphics pipeline, will generate the exact same
+// opaque image.
+gfx::ImageSkia MakeOpaque(const gfx::ImageSkia& image_in,
+                          bool generate_immediate_bitmap) {
+  cc::RecordPaintCanvas record_canvas;
+  gfx::Canvas canvas(&record_canvas, /*image_scale=*/1.f);
+  cc::PaintFlags flags;
+
+  // Color filter ensures image pixels are opaque when drawn.
+  flags.setColorFilter(cc::ColorFilter::MakeBlend(
+      SkColor4f::FromColor(SK_ColorBLACK), SkBlendMode::kDstOver));
+  canvas.DrawImageInt(image_in, 0, 0, flags);
+  gfx::ImageSkiaRep opaque_image_rep(record_canvas.ReleaseAsRecord(),
+                                     image_in.size(),
+                                     /*scale=*/1.f);
+  return generate_immediate_bitmap
+             ? gfx::ImageSkia::CreateFrom1xBitmap(opaque_image_rep.GetBitmap())
+             : gfx::ImageSkia(opaque_image_rep);
+}
+
 // Resizes `image` to `target_size` using `layout`.
 //
 // NOTE: `image` is intentionally a copy to ensure it exists for the duration of
 // the function.
-SkBitmap Resize(const gfx::ImageSkia image,
-                const gfx::Size& target_size,
-                WallpaperLayout layout) {
+gfx::ImageSkia Resize(const gfx::ImageSkia image,
+                      const gfx::Size& target_size,
+                      WallpaperLayout layout) {
   base::AssertLongCPUWorkAllowed();
 
   SkBitmap orig_bitmap = *image.bitmap();
@@ -79,12 +110,13 @@ SkBitmap Resize(const gfx::ImageSkia image,
         break;
       case NUM_WALLPAPER_LAYOUT:
         NOTREACHED();
-        break;
     }
   }
-
-  new_bitmap.setImmutable();
-  return new_bitmap;
+  // Generating the bitmap right now is both acceptable and desirable since it's
+  // on a blocking thread that can handle potentially long cpu work and ensures
+  // the opaque bitmap is only ever generated once.
+  return MakeOpaque(gfx::ImageSkia::CreateFrom1xBitmap(new_bitmap),
+                    /*generate_immediate_bitmap=*/true);
 }
 
 }  // namespace
@@ -113,8 +145,13 @@ gfx::ImageSkia WallpaperResizer::GetResizedImage(const gfx::ImageSkia& image,
 WallpaperResizer::WallpaperResizer(const gfx::ImageSkia& image,
                                    const gfx::Size& target_size,
                                    const WallpaperInfo& wallpaper_info)
-    : image_(image),
-      original_image_id_(GetImageId(image_)),
+    // Generating the opaque bitmap could potentially require long cpu work,
+    // which is not appropriate on the main thread. The bitmap will be
+    // generated later in the compositor on a more appropriate thread. This
+    // non-resized version of the `image_` is short-lived anyways and will be
+    // replaced with the resized opaque version imminently.
+    : image_(MakeOpaque(image, /*generate_immediate_bitmap=*/false)),
+      original_image_id_(GetImageId(image)),
       target_size_(target_size),
       wallpaper_info_(wallpaper_info),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -132,7 +169,14 @@ void WallpaperResizer::StartResize(base::OnceClosure on_resize_done) {
 
   if (!sequenced_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&Resize, image_, target_size_, wallpaper_info_.layout),
+          // The `DeepCopy()` of `image_` is necessary otherwise there's a
+          // potential race condition if `ImageSkiaRep::GetBitmap()` gets
+          // called concurrently from `sequenced_task_runner_`'s thread and the
+          // main thread. Note in this case, the deep copy is actually cheap
+          // because the `image_` is still backed by a paint record at this
+          // point (not actual pixels), and paint records are cheap to copy.
+          base::BindOnce(&Resize, image_.DeepCopy(), target_size_,
+                         wallpaper_info_.layout),
           base::BindOnce(&WallpaperResizer::OnResizeFinished,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(on_resize_done)))) {
@@ -142,21 +186,21 @@ void WallpaperResizer::StartResize(base::OnceClosure on_resize_done) {
 }
 
 void WallpaperResizer::OnResizeFinished(base::OnceClosure on_resize_done,
-                                        const SkBitmap& resized_bitmap) {
+                                        gfx::ImageSkia resized_image) {
   static constexpr size_t kBytesPerMegabyte = 1024 * 1024;
   base::UmaHistogramCustomCounts(
       "Ash.Wallpaper.DecodedSizeMB",
-      base::ClampRound(static_cast<float>(resized_bitmap.computeByteSize()) /
-                       kBytesPerMegabyte),
+      base::ClampRound(
+          static_cast<float>(resized_image.bitmap()->computeByteSize()) /
+          kBytesPerMegabyte),
       kDecodedWallpaperMetricMinMB, kDecodedWallpaperMetricMaxMB,
       kDecodedWallpaperMetricNumBuckets);
-  auto resized_image = gfx::ImageSkia::CreateFrom1xBitmap(resized_bitmap);
 
   DVLOG(2) << __func__ << " old=" << image_.size().ToString()
            << " new=" << resized_image.size().ToString()
            << " time=" << base::TimeTicks::Now() - start_calculation_time_;
 
-  image_ = resized_image;
+  image_ = std::move(resized_image);
   std::move(on_resize_done).Run();
 }
 

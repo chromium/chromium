@@ -39,15 +39,23 @@
     display: flex;
     flex-direction: column;
   }
+
+  .pagelabel {
+    font-size: smaller;
+    float:right;
+  }
 </style>
 <cr-expand-button class="cr-row first" expanded="{{request.expanded}}">
   <span class="label">[[getTimestamp_(request.startTime)]]</span>
-  <iron-icon class="label status" icon="[[getStatusIcon_(request.status)]]"
+  <cr-icon class="label status" icon="[[getStatusIcon_(request.status)]]"
       title="[[getStatusTitle_(request.endTime)]]">
-  </iron-icon>
+  </cr-icon>
   <span class="label">[[getRequestPath_(request)]]</span>
+  <template is="dom-if" if="[[getPageClassificationLabel_(pgcl_)]]">
+    <cr-chip class="pagelabel" on-click="onChipClick_">[[getPageClassificationLabel_(pgcl_)]]</cr-chip>
+  </template>
 </cr-expand-button>
-<iron-collapse opened="[[request.expanded]]">
+<cr-collapse opened="[[request.expanded]]">
   <div class="cr-row" hidden$="[[!requestDataJson_]]">
     <div class="content"
         inner-h-t-m-l="[[getRequestDataHtml_(requestDataJson_)]]">
@@ -55,9 +63,6 @@
     <div class="actions">
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
           on-click="onCopyRequestClick_">
-      </cr-icon-button>
-      <cr-icon-button class="icon-visibility" title="view content"
-          on-click="onViewRequestClick_">
       </cr-icon-button>
     </div>
   </div>
@@ -68,12 +73,9 @@
       <cr-icon-button class="icon-copy-content" title="copy to clipboard"
           on-click="onCopyResponseClick_">
       </cr-icon-button>
-      <cr-icon-button class="icon-visibility" title="view content"
-          on-click="onViewResponseClick_">
-      </cr-icon-button>
       <cr-icon-button iron-icon="suggest:lock" title="hardcode response"
           on-click="onHardcodeResponseClick_">
       </cr-icon-button>
     </div>
   </div>
-</iron-collapse>
+</cr-collapse>

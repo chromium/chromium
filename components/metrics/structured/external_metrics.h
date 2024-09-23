@@ -18,9 +18,13 @@ namespace metrics::structured {
 class EventsProto;
 class ExternalMetricsTest;
 
-// ExternalMetrics reads structured metrics saved by Chrome OS and uploads them
+// ExternalMetrics reads structured metrics saved by ChromeOS and uploads them
 // to the UMA server on its behalf. This is structured metrics' equivalent of
 // `ash::ExternalMetrics`.
+//
+// When a call to CollectEvents() is done, events in that directory will be
+// added to StructuredMetricsRecorder. However, if the user has disabled upload,
+// then all events will be dropped and deleted.
 //
 // Chrome periodically reads a directory of protos and adds their content into
 // the StructuredMetricProvider's regular metrics upload. After reading each
@@ -49,6 +53,26 @@ class ExternalMetrics {
 
   void ScheduleCollector();
   void CollectEventsAndReschedule();
+
+  // Events are collected from |events_directory|. Each file is processed by:
+  //
+  //    1. Stat on a file to see if it contains any events or if
+  //       something in ChromeOS has already deleted the file.
+  //    2. Obtains a flock.
+  //    3. File is processed and read into memory.
+  //    4. File is deleted.
+  //    5. Flock is released.
+  //
+  // The above is done to avoid reading files mid-write from ChromeOS and having
+  // ChromeOS write files after they were marked for deletion by Chrome.
+  //
+  // Files will be ignored if there is failure to obtain the flock or get the
+  // file descriptor.
+  //
+  // Files will be dropped when an event file exceeds a fixed threshold provided
+  // by GetFileSizeByteLimit(). Files will also be dropped if there are too many
+  // event files existing on the current iteration provided by
+  // GetFileLimitPerScan().
   void CollectEvents();
 
   // Builds a cache of disallow projects from the Finch controlled variable.

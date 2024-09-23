@@ -4,8 +4,12 @@
 
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 
+#include <string>
+
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -14,6 +18,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -56,7 +61,8 @@ class SessionBindingHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 
@@ -82,15 +88,18 @@ TEST_F(SessionBindingHelperTest, GenerateBindingKeyAssertion) {
   unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
   SessionBindingHelper helper(unexportable_key_service(), GetWrappedKey(key_id),
                               "session_id");
-  base::test::TestFuture<std::string> sign_future;
+  base::test::TestFuture<
+      base::expected<std::string, SessionBindingHelper::Error>>
+      sign_future;
   helper.GenerateBindingKeyAssertion(
       "challenge", GURL("https://accounts.google.com/RotateBoundCookies"),
       sign_future.GetCallback());
-  std::string assertion = sign_future.Get();
-  EXPECT_FALSE(assertion.empty());
+  base::expected<std::string, SessionBindingHelper::Error> assertion_or_error =
+      sign_future.Get();
+  ASSERT_THAT(assertion_or_error, base::test::HasValue());
 
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      assertion, *unexportable_key_service().GetAlgorithm(key_id),
+      *assertion_or_error, *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 }
 
@@ -99,10 +108,15 @@ TEST_F(SessionBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
   SessionBindingHelper helper(unexportable_key_service(), kInvalidWrappedKey,
                               "session_id");
 
-  base::test::TestFuture<std::string> sign_future;
+  base::test::TestFuture<
+      base::expected<std::string, SessionBindingHelper::Error>>
+      sign_future;
   helper.GenerateBindingKeyAssertion(
       "challenge", GURL("https://accounts.google.com/RotateBoundCookies"),
       sign_future.GetCallback());
-  std::string assertion = sign_future.Get();
-  EXPECT_TRUE(assertion.empty());
+  base::expected<std::string, SessionBindingHelper::Error> assertion_or_error =
+      sign_future.Get();
+  EXPECT_THAT(assertion_or_error,
+              base::test::ErrorIs(
+                  testing::Eq(SessionBindingHelper::Error::kLoadKeyFailure)));
 }

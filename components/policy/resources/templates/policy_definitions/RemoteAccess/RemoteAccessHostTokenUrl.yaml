@@ -1,4 +1,5 @@
 caption: URL where remote access clients should obtain their authentication token
+deprecated: true
 desc: |-
   Setting the policy means the remote access host requires authenticating clients to get an authentication token from this URL to connect.
 
@@ -19,7 +20,7 @@ owners:
 schema:
   type: string
 supported_on:
-- chrome.*:28-
+- chrome.*:28-127
 tags:
 - website-sharing
 type: string

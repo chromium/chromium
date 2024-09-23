@@ -26,7 +26,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -34,7 +34,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/download/download_target_determiner.h"
-#include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
 namespace {
@@ -167,7 +166,7 @@ void DownloadCommands::ExecuteCommand(Command command) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_CHROMEOS)
 
 Browser* DownloadCommands::GetBrowser() const {
   if (!model_)
@@ -187,22 +186,11 @@ bool DownloadCommands::IsDownloadPdf() const {
 }
 
 bool DownloadCommands::CanOpenPdfInSystemViewer() const {
-#if BUILDFLAG(IS_WIN)
-  bool is_adobe_pdf_reader_up_to_date = false;
-  if (IsDownloadPdf() && IsAdobeReaderDefaultPDFViewer()) {
-    is_adobe_pdf_reader_up_to_date =
-        DownloadTargetDeterminer::IsAdobeReaderUpToDate();
-  }
-  return IsDownloadPdf() &&
-         (IsAdobeReaderDefaultPDFViewer() ? is_adobe_pdf_reader_up_to_date
-                                          : true);
-#else  // BUILDFLAG(IS_WIN)
   return IsDownloadPdf();
-#endif
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+        // BUILDFLAG(IS_CHROMEOS)
 
 void DownloadCommands::CopyFileAsImageToClipboard() {
   if (!model_)

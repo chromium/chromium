@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 #include <cmath>
@@ -85,6 +90,8 @@ class TestVector {
     using reference = T&;
     using value_type = T;
 
+    constexpr Iterator() = default;
+
     Iterator(T* p, int stride) : p_(p), stride_(stride) {}
 
     Iterator& operator++() {
@@ -110,8 +117,8 @@ class TestVector {
     T& operator*() const { return *p_; }
 
    private:
-    T* p_;
-    size_t stride_;
+    T* p_ = nullptr;
+    size_t stride_ = 0;
   };
 
  public:
@@ -160,8 +167,8 @@ class TestVector {
     return reinterpret_cast<size_t>(p) % kMaxByteAlignment;
   }
 
-  raw_ptr<T, ExperimentalRenderer | AllowPtrArithmetic> p_;
-  raw_ptr<const MemoryLayout, ExperimentalRenderer> memory_layout_;
+  raw_ptr<T, AllowPtrArithmetic> p_;
+  raw_ptr<const MemoryLayout> memory_layout_;
   size_t size_;
 };
 

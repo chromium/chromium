@@ -23,9 +23,7 @@ namespace dbus {
 // hermes::profile::State enum.
 template <>
 Property<hermes::profile::State>::Property()
-    : value_(ash::features::IsSmdsSupportEnabled()
-                 ? hermes::profile::State::kPending
-                 : hermes::profile::State::kInactive) {}
+    : value_(hermes::profile::State::kPending) {}
 
 template <>
 bool Property<hermes::profile::State>::PopValueFromReader(
@@ -42,7 +40,8 @@ bool Property<hermes::profile::State>::PopValueFromReader(
       value_ = static_cast<hermes::profile::State>(int_value);
       return true;
   }
-  NOTREACHED() << "Received invalid hermes profile state " << int_value;
+  NOTREACHED_IN_MIGRATION()
+      << "Received invalid hermes profile state " << int_value;
   return false;
 }
 
@@ -73,7 +72,8 @@ bool Property<hermes::profile::ProfileClass>::PopValueFromReader(
       value_ = static_cast<hermes::profile::ProfileClass>(int_value);
       return true;
   }
-  NOTREACHED() << "Received invalid hermes profile class " << int_value;
+  NOTREACHED_IN_MIGRATION()
+      << "Received invalid hermes profile class " << int_value;
   return false;
 }
 

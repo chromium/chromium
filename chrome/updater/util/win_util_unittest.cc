@@ -4,10 +4,13 @@
 
 #include "chrome/updater/util/win_util.h"
 
+#include <objbase.h>
+
+#include <windows.h>
+
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
-#include <windows.h>
 
 #include <optional>
 #include <string>
@@ -37,50 +40,32 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/unit_test_util.h"
-#include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
+namespace updater::test {
 
 namespace {
 
 constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 }  // namespace
-
-TEST(WinUtil, GetDownloadProgress) {
-  EXPECT_EQ(GetDownloadProgress(0, 50), 0);
-  EXPECT_EQ(GetDownloadProgress(12, 50), 24);
-  EXPECT_EQ(GetDownloadProgress(25, 50), 50);
-  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
-  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
-  EXPECT_EQ(GetDownloadProgress(0, -1), -1);
-  EXPECT_EQ(GetDownloadProgress(-1, -1), -1);
-  EXPECT_EQ(GetDownloadProgress(50, 0), -1);
-}
-
-TEST(WinUtil, GetServiceDisplayName) {
-  for (const bool is_internal_service : {true, false}) {
-    EXPECT_EQ(base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" ",
-                            is_internal_service ? kWindowsInternalServiceName
-                                                : kWindowsServiceName,
-                            L" ", kUpdaterVersionUtf16}),
-              GetServiceDisplayName(is_internal_service));
-  }
-}
 
 TEST(WinUtil, GetServiceName) {
   for (const bool is_internal_service : {true, false}) {
@@ -135,51 +120,23 @@ TEST(WinUtil, ShellExecuteAndWait) {
   EXPECT_THAT(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {}),
               base::test::ErrorIs(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)));
 
-  EXPECT_THAT(ShellExecuteAndWait(
-                  GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
-                      .GetProgram(),
-                  {}, {}),
-              base::test::ValueIs(DWORD{0}));
+  EXPECT_THAT(
+      ShellExecuteAndWait(GetTestProcessCommandLine(GetUpdaterScopeForTesting(),
+                                                    test::GetTestName())
+                              .GetProgram(),
+                          {}, {}),
+      base::test::ValueIs(DWORD{0}));
 }
 
 TEST(WinUtil, RunElevated) {
-  // TODO(crbug.com/1314521): Click on UAC prompts in Updater tests that require
-  // elevation
   if (!::IsUserAnAdmin()) {
     return;
   }
-
-  const base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  const base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),
                           test_process_cmd_line.GetArgumentsString()),
               base::test::ValueIs(DWORD{0}));
-}
-
-TEST(WinUtil, RunDeElevated_Exe) {
-  if (!::IsUserAnAdmin() || !IsUACOn()) {
-    return;
-  }
-
-  // Create a shared event to be waited for in this process and signaled in the
-  // test process to confirm that the test process is running at medium
-  // integrity.
-  // The event is created with a security descriptor that allows the medium
-  // integrity process to signal it.
-  test::EventHolder event_holder(CreateEveryoneWaitableEventForTest());
-  ASSERT_NE(event_holder.event.handle(), nullptr);
-
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
-  test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
-                                           event_holder.name);
-  EXPECT_HRESULT_SUCCEEDED(
-      RunDeElevated(test_process_cmd_line.GetProgram().value(),
-                    test_process_cmd_line.GetArgumentsString()));
-  EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
-
-  EXPECT_TRUE(test::WaitFor(
-      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
@@ -191,8 +148,8 @@ TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
                                      : test::CreateWaitableEventForTest());
   ASSERT_NE(event_holder.event.handle(), nullptr);
 
-  base::CommandLine test_process_cmd_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   test_process_cmd_line.AppendSwitchNative(
       IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
                             : kTestEventToSignal,
@@ -202,7 +159,7 @@ TEST(WinUtil, RunDeElevatedCmdLine_Exe) {
   EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
 
   EXPECT_TRUE(test::WaitFor(
-      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+      [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, GetOSVersion) {
@@ -346,15 +303,15 @@ TEST(WinUtil, CreateSecureTempDir) {
 TEST(WinUtil, SignalShutdownEvent) {
   {
     const base::ScopedClosureRunner reset_shutdown_event(
-        SignalShutdownEvent(GetTestScope()));
+        SignalShutdownEvent(GetUpdaterScopeForTesting()));
 
     // Expect that the legacy GoogleUpdate shutdown event is signaled.
-    EXPECT_TRUE(IsShutdownEventSignaled(GetTestScope()))
+    EXPECT_TRUE(IsShutdownEventSignaled(GetUpdaterScopeForTesting()))
         << "Unexpected shutdown event not signaled";
   }
 
   // Expect that the legacy GoogleUpdate shutdown event is invalid now.
-  EXPECT_FALSE(IsShutdownEventSignaled(GetTestScope()))
+  EXPECT_FALSE(IsShutdownEventSignaled(GetUpdaterScopeForTesting()))
       << "Unexpected shutdown event signaled";
 }
 
@@ -363,8 +320,8 @@ TEST(WinUtil, StopProcessesUnderPath) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
   exe_dir = exe_dir.AppendASCII(test::GetTestName());
 
-  base::CommandLine command_line =
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  base::CommandLine command_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
   command_line.AppendSwitchASCII(
       updater::kTestSleepSecondsSwitch,
       base::NumberToString(TestTimeouts::action_timeout().InSeconds() / 4));
@@ -520,17 +477,18 @@ TEST(WinUtil, LogClsidEntries) {
 }
 
 TEST(WinUtil, GetAppAPValue) {
-  std::string ap(GetAppAPValue(GetTestScope(), kTestAppID));
+  std::string ap(GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID));
   EXPECT_EQ(ap, "");
 
-  base::win::RegKey client_state_key(
-      CreateAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID)));
+  base::win::RegKey client_state_key(CreateAppClientStateKey(
+      GetUpdaterScopeForTesting(), base::ASCIIToWide(kTestAppID)));
   EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
 
-  ap = GetAppAPValue(GetTestScope(), kTestAppID);
+  ap = GetAppAPValue(GetUpdaterScopeForTesting(), kTestAppID);
   EXPECT_EQ(ap, "TestAP");
 
-  DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
+  DeleteAppClientStateKey(GetUpdaterScopeForTesting(),
+                          base::ASCIIToWide(kTestAppID));
 }
 
 struct WinUtilGetRegKeyContentsTestCase {
@@ -579,4 +537,113 @@ TEST(WinUtil, GetTextForSystemError) {
       L"0x80040200");
 }
 
-}  // namespace updater
+TEST(WinUtil, GetLoggedOnUserToken) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
+    return;
+  }
+
+  ASSERT_TRUE(::IsUserAnAdmin());
+  HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
+  ASSERT_TRUE(token.has_value());
+
+  ScopedImpersonation impersonate;
+  ASSERT_TRUE(SUCCEEDED(impersonate.Impersonate(token.value().get())));
+  ASSERT_FALSE(::IsUserAnAdmin());
+}
+
+TEST(WinUtil, IsAuditMode) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+  ASSERT_FALSE(IsAuditMode());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .WriteValue(L"ImageState", L"IMAGE_STATE_UNDEPLOYABLE"),
+            ERROR_SUCCESS);
+  ASSERT_TRUE(IsAuditMode());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .DeleteValue(L"ImageState"),
+            ERROR_SUCCESS);
+}
+
+TEST(WinUtil, OemInstallState) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .WriteValue(L"ImageState", L"IMAGE_STATE_UNDEPLOYABLE"),
+            ERROR_SUCCESS);
+  ASSERT_TRUE(SetOemInstallState());
+  ASSERT_TRUE(IsOemInstalling());
+
+  DWORD oem_install_time_minutes = 0;
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY,
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValueDW(kRegValueOemInstallTimeMin, &oem_install_time_minutes),
+      ERROR_SUCCESS);
+
+  // Rewind to 71 hours and 58 minutes before now.
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .WriteValue(
+              kRegValueOemInstallTimeMin,
+              (base::Minutes(oem_install_time_minutes + 2) - kMinOemModeTime)
+                  .InMinutes()),
+      ERROR_SUCCESS);
+  ASSERT_TRUE(IsOemInstalling());
+
+  // Rewind to 72 hours and 2 minutes before now.
+  ASSERT_EQ(
+      base::win::RegKey(HKEY_LOCAL_MACHINE, CLIENTS_KEY, Wow6432(KEY_SET_VALUE))
+          .WriteValue(
+              kRegValueOemInstallTimeMin,
+              (base::Minutes(oem_install_time_minutes - 2) - kMinOemModeTime)
+                  .InMinutes()),
+      ERROR_SUCCESS);
+  ASSERT_FALSE(IsOemInstalling());
+
+  ASSERT_TRUE(ResetOemInstallState());
+  ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kSetupStateKey, KEY_SET_VALUE)
+                .DeleteValue(L"ImageState"),
+            ERROR_SUCCESS);
+}
+
+TEST(WinUtil, StringFromGuid) {
+  GUID guid = {0};
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateGuid(&guid));
+  EXPECT_EQ(base::win::WStringFromGUID(guid), StringFromGuid(guid));
+}
+
+TEST(WinUtil, GetUniqueTempFilePath) {
+  EXPECT_FALSE(GetUniqueTempFilePath({}));
+
+  std::optional<base::FilePath> p = GetUniqueTempFilePath(base::FilePath(
+      L"C:\\Program Files (x86)\\Google\\GoogleUpdater\\updater.log"));
+  ASSERT_TRUE(p);
+  std::wstring p_base = p->BaseName().value();
+  EXPECT_TRUE(base::StartsWith(p_base, L"updater"));
+  EXPECT_TRUE(base::EndsWith(p_base, L".log"));
+  base::ReplaceSubstringsAfterOffset(&p_base, 0, L"updater", {});
+  base::ReplaceSubstringsAfterOffset(&p_base, 0, L".log", {});
+  EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(p_base)).is_valid());
+}
+
+TEST(WinUtil, SetEulaAccepted) {
+  // This will set `eulaaccepted=0` in the registry.
+  EXPECT_TRUE(
+      SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/false));
+  DWORD eula_accepted = 0;
+  const HKEY root = UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting());
+  EXPECT_EQ(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                .ReadValueDW(L"eulaaccepted", &eula_accepted),
+            ERROR_SUCCESS);
+  EXPECT_EQ(eula_accepted, 0ul);
+
+  // This will delete the `eulaaccepted` value in the registry.
+  EXPECT_TRUE(
+      SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/true));
+  EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                   .HasValue(L"eulaaccepted"));
+}
+
+}  // namespace updater::test

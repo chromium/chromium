@@ -197,7 +197,7 @@
     // the error on the main thread.
     [self displayImageErrorAlertWithSettingsOnMainQueue];
   } else {
-    // TODO(crbug.com/797277): Provide a way for the user to easily reach the
+    // TODO(crbug.com/41362123): Provide a way for the user to easily reach the
     // photos app.
   }
 }

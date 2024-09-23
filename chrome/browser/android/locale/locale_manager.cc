@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/locale/locale_manager.h"
 
+#include <jni.h>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/locale/jni_headers/LocaleManager_jni.h"

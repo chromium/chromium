@@ -3,15 +3,17 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
+
+#include <string>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
+#include "base/test/with_feature_override.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
-
-#include <string>
 
 namespace privacy_sandbox {
 
@@ -83,31 +85,31 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
   const PrivacySandboxAttestationsGatedAPISet& site1apis =
       (*optional_map)[net::SchemefulSite(GURL(site1))];
   ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
-  ASSERT_TRUE(site1apis.Size() == 1UL);
+  ASSERT_TRUE(site1apis.size() == 1UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site2apis =
       (*optional_map)[net::SchemefulSite(GURL(site2))];
   ASSERT_TRUE(
       site2apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
-  ASSERT_TRUE(site2apis.Size() == 1UL);
+  ASSERT_TRUE(site2apis.size() == 1UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site3apis =
       (*optional_map)[net::SchemefulSite(GURL(site3))];
   ASSERT_TRUE(
       site3apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
-  ASSERT_TRUE(site3apis.Size() == 1UL);
+  ASSERT_TRUE(site3apis.size() == 1UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site4apis =
       (*optional_map)[net::SchemefulSite(GURL(site4))];
   ASSERT_TRUE(
       site4apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
-  ASSERT_TRUE(site4apis.Size() == 1UL);
+  ASSERT_TRUE(site4apis.size() == 1UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site5apis =
       (*optional_map)[net::SchemefulSite(GURL(site5))];
   ASSERT_TRUE(
       site5apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site5apis.Size() == 1UL);
+  ASSERT_TRUE(site5apis.size() == 1UL);
 }
 
 // Multiple attested APIs per site should work. Unknown APIs should be ignored.
@@ -149,7 +151,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.Size() == 5UL);
+  ASSERT_TRUE(site1apis.size() == 5UL);
 }
 
 // Test basic functionality of `all_apis` and `sites_attested_for_all_apis`.
@@ -192,7 +194,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
-  ASSERT_TRUE(site1apis.Size() == 3UL);
+  ASSERT_TRUE(site1apis.size() == 3UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site2apis =
       (*optional_map)[net::SchemefulSite(GURL(site2))];
@@ -201,7 +203,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
       site2apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
   ASSERT_TRUE(
       site2apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
-  ASSERT_TRUE(site2apis.Size() == 3UL);
+  ASSERT_TRUE(site2apis.size() == 3UL);
 
   const PrivacySandboxAttestationsGatedAPISet& site3apis =
       (*optional_map)[net::SchemefulSite(GURL(site3))];
@@ -209,7 +211,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
       site3apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
   ASSERT_TRUE(
       site3apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site3apis.Size() == 2UL);
+  ASSERT_TRUE(site3apis.size() == 2UL);
 }
 
 // Test that nothing goes terribly wrong when the proto has multiple mappings
@@ -251,7 +253,7 @@ TEST_F(PrivacySandboxAttestationsParserTest, RepeatedSiteProto) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
-  ASSERT_TRUE(site1apis.Size() == 3UL);
+  ASSERT_TRUE(site1apis.size() == 3UL);
 }
 
 // Test that invalid API enums in `all_apis` are ignored.
@@ -292,7 +294,153 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
   ASSERT_TRUE(
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
-  ASSERT_TRUE(site1apis.Size() == 5UL);
+  ASSERT_TRUE(site1apis.size() == 5UL);
 }
+
+// When 'FencedFramesLocalUnpartitionedDataAccess' feature is enabled, there
+// will be a new attestation API `LOCAL_UNPARTITIONED_DATA_ACCESS`.
+class FencedFramesLocalUnpartitionedDataAccessAttestationTest
+    : public base::test::WithFeatureOverride,
+      public PrivacySandboxAttestationsParserTest {
+ public:
+  FencedFramesLocalUnpartitionedDataAccessAttestationTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesLocalUnpartitionedDataAccess) {}
+};
+
+TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
+       LocalUnpartitionedDataAccessAttestationEnum) {
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_EQ(proto.site_attestations_size(), 0);
+
+  std::string site1 = "https://a.com";
+  std::string site2 = "https://b.com";
+
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation1;
+  attestation1.add_attested_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+
+  PrivacySandboxAttestationsProto::PrivacySandboxAttestedAPIsProto attestation2;
+  attestation2.add_attested_apis(SHARED_STORAGE);
+  attestation2.add_attested_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+
+  (*proto.mutable_site_attestations())[site1] = attestation1;
+  (*proto.mutable_site_attestations())[site2] = attestation2;
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  std::optional<PrivacySandboxAttestationsMap> optional_map =
+      ParseAttestationsFromString(serialized_proto);
+  ASSERT_TRUE(optional_map.has_value());
+  ASSERT_EQ(optional_map->size(), 2UL);
+
+  const PrivacySandboxAttestationsGatedAPISet& site1apis =
+      (*optional_map)[net::SchemefulSite(GURL(site1))];
+  EXPECT_EQ(
+      site1apis.Has(
+          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      IsParamFeatureEnabled());
+  EXPECT_EQ(site1apis.size(), IsParamFeatureEnabled() ? 1UL : 0UL);
+
+  const PrivacySandboxAttestationsGatedAPISet& site2apis =
+      (*optional_map)[net::SchemefulSite(GURL(site2))];
+  ASSERT_TRUE(
+      site2apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
+  EXPECT_EQ(
+      site2apis.Has(
+          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      IsParamFeatureEnabled());
+  EXPECT_EQ(site2apis.size(), IsParamFeatureEnabled() ? 2UL : 1UL);
+}
+
+TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest, AllAPIs) {
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_EQ(proto.site_attestations_size(), 0);
+
+  // There were 5 attestation enums before the local unpartitioned data access
+  // change.
+  proto.add_all_apis(TOPICS);
+  proto.add_all_apis(PROTECTED_AUDIENCE);
+  proto.add_all_apis(PRIVATE_AGGREGATION);
+  proto.add_all_apis(ATTRIBUTION_REPORTING);
+  proto.add_all_apis(SHARED_STORAGE);
+
+  std::string site1 = "https://a.com";
+  proto.add_sites_attested_for_all_apis(site1);
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  std::optional<PrivacySandboxAttestationsMap> optional_map =
+      ParseAttestationsFromString(serialized_proto);
+  ASSERT_TRUE(optional_map.has_value());
+  ASSERT_EQ(optional_map->size(), 1UL);
+
+  // The parsed attestation map should have the site attested for the 5 APIs,
+  // regardless of the feature status.
+  const PrivacySandboxAttestationsGatedAPISet& site1apis =
+      (*optional_map)[net::SchemefulSite(GURL(site1))];
+  ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
+  ASSERT_FALSE(site1apis.Has(
+      PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess));
+  ASSERT_EQ(site1apis.size(), 5UL);
+}
+
+TEST_P(FencedFramesLocalUnpartitionedDataAccessAttestationTest,
+       AllAPIsWithLocalUnpartitionedDataAccess) {
+  PrivacySandboxAttestationsProto proto;
+  ASSERT_EQ(proto.site_attestations_size(), 0);
+
+  // With the local unpartitioned data access change, all APIs will include the
+  // new attestation enum.
+  proto.add_all_apis(TOPICS);
+  proto.add_all_apis(PROTECTED_AUDIENCE);
+  proto.add_all_apis(PRIVATE_AGGREGATION);
+  proto.add_all_apis(ATTRIBUTION_REPORTING);
+  proto.add_all_apis(SHARED_STORAGE);
+  proto.add_all_apis(LOCAL_UNPARTITIONED_DATA_ACCESS);
+
+  std::string site1 = "https://a.com";
+  proto.add_sites_attested_for_all_apis(site1);
+
+  std::string serialized_proto;
+  proto.SerializeToString(&serialized_proto);
+
+  std::optional<PrivacySandboxAttestationsMap> optional_map =
+      ParseAttestationsFromString(serialized_proto);
+  ASSERT_TRUE(optional_map.has_value());
+  ASSERT_EQ(optional_map->size(), 1UL);
+
+  // If feature enabled, the attestation map should have the site attested for
+  // all 6 APIs. Otherwise, the site is attested for the 5 pre-existing APIs,
+  // excluding `LOCAL_UNPARTITIONED_DATA_ACCESS`.
+  const PrivacySandboxAttestationsGatedAPISet& site1apis =
+      (*optional_map)[net::SchemefulSite(GURL(site1))];
+  ASSERT_TRUE(site1apis.Has(PrivacySandboxAttestationsGatedAPI::kTopics));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kPrivateAggregation));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kAttributionReporting));
+  ASSERT_TRUE(
+      site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
+  ASSERT_EQ(
+      site1apis.Has(
+          PrivacySandboxAttestationsGatedAPI::kLocalUnpartitionedDataAccess),
+      IsParamFeatureEnabled());
+  ASSERT_EQ(site1apis.size(), IsParamFeatureEnabled() ? 6UL : 5UL);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    FencedFramesLocalUnpartitionedDataAccessAttestationTest);
 
 }  // namespace privacy_sandbox

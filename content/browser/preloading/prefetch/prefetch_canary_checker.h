@@ -8,22 +8,16 @@
 #include <optional>
 
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_request_headers.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "url/gurl.h"
 
@@ -134,7 +128,6 @@ class CONTENT_EXPORT PrefetchCanaryChecker {
   void ProcessTimeout();
   void ProcessFailure(int net_error);
   void ProcessSuccess();
-  void RecordResult(bool success);
   std::string AppendNameToHistogram(const std::string& histogram) const;
   std::optional<bool> LookupAndRunChecksIfNeeded();
   // Sends a check now if the checker is currently inactive. If the check is

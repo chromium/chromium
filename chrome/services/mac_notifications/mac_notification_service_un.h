@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#import <UserNotifications/UserNotifications.h>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -22,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 @class AlertUNNotificationCenterDelegate;
-@class UNUserNotificationCenter;
 
 namespace mac_notifications {
 
@@ -35,6 +36,8 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   MacNotificationServiceUN(
       mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
+      base::RepeatingCallback<void(mojom::PermissionStatus)>
+          permission_status_changed_callback,
       UNUserNotificationCenter* notification_center);
   MacNotificationServiceUN(const MacNotificationServiceUN&) = delete;
   MacNotificationServiceUN& operator=(const MacNotificationServiceUN&) = delete;
@@ -63,6 +66,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void CloseAllNotifications() override;
   void OkayToTerminateService(OkayToTerminateServiceCallback callback) override;
 
+  // Returns true if we recently (in the last 100ms) handled a "default" click
+  // action for a notification. This can be used to ignore the "re-open" event
+  // that gets send to an application shortly afterwards.
+  bool DidRecentlyHandleClickAction() const;
+
  private:
   void DoDisplayNotification(mojom::NotificationPtr notification);
 
@@ -83,11 +91,16 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void DoSynchronizeNotifications(
       std::vector<mojom::NotificationIdentifierPtr> notifications);
 
+  void SynchronizePermissionStatus(bool log_result);
+
   // Called by |delegate_| when a user interacts with a notification.
   void OnNotificationAction(mojom::NotificationActionInfoPtr action);
 
   // Called when the notifications got closed for any reason.
   void OnNotificationsClosed(const std::vector<std::string>& notification_ids);
+
+  // Called when we got an updated UNAuthorizationStatus.
+  void OnGotAuthorizationStatus(UNAuthorizationStatus status);
 
   mojo::Receiver<mojom::MacNotificationService> binding_;
   mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
@@ -120,6 +133,17 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // requests.
   std::vector<RequestPermissionCallback> pending_permission_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Callback to be called any time the system level permission status changes.
+  base::RepeatingCallback<void(mojom::PermissionStatus)>
+      permission_status_changed_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Last value that was passed to `permission_status_changed_callback_` to
+  // make sure we only call the callback when the value changes.
+  std::optional<mojom::PermissionStatus> last_permission_status_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_synchronizing_permission_status_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Ensures that the methods in this class are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

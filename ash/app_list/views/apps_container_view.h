@@ -23,12 +23,12 @@
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListKeyboardController;
@@ -52,6 +52,8 @@ class ASH_EXPORT AppsContainerView
       public AppListToastContainerView::Delegate,
       public views::FocusChangeListener,
       public AppListViewProvider {
+  METADATA_HEADER(AppsContainerView, AppListPage)
+
  public:
   explicit AppsContainerView(ContentsView* contents_view);
 
@@ -67,11 +69,6 @@ class ASH_EXPORT AppsContainerView
   // called when the user opens the launcher for the first time or when the user
   // hides and then shows it.
   void ResetForShowApps();
-
-  // Sets |drag_and_drop_host_| for the current app list in both
-  // app_list_folder_view_ and root level apps_grid_view_.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Returns true if it is currently showing an active folder page.
   bool IsInFolderView() const;
@@ -114,7 +111,6 @@ class ASH_EXPORT AppsContainerView
   // views::View overrides:
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
   void AddedToWidget() override;

@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.tab.proto;
+
+option java_package = "org.chromium.chrome.browser.tab.proto";
+
+message ArchivePersistedTabDataProto {
+  // The timestamp when this tab was archived.
+  optional int64 archived_time_ms = 1;
+}

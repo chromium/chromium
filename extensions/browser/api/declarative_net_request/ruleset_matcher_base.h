@@ -8,7 +8,9 @@
 #include <map>
 #include <optional>
 #include <vector>
+
 #include "content/public/browser/global_routing_id.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -36,25 +38,17 @@ class RulesetMatcherBase {
   virtual ~RulesetMatcherBase();
 
   // Returns the ruleset's highest priority matching RequestAction for the
-  // onBeforeRequest phase, or std::nullopt if the ruleset has no matching
-  // rule. Also takes into account any matching allowAllRequests rules for the
-  // ancestor frames.
-  std::optional<RequestAction> GetBeforeRequestAction(
-      const RequestParams& params) const;
-
-  // Returns the ruleset's highest priority matching RequestAction for the
-  // onHeadersReceived phase, or std::nullopt if the ruleset has no matching
-  // rule. Also takes into account any matching allowAllRequests rules for the
-  // ancestor frames.
-  std::optional<RequestAction> GetHeadersReceivedAction(
-      const RequestParams& params) const;
+  // given ruleset matching `stage`, or std::nullopt if the ruleset has no
+  // matching rule. Also takes into account any matching allowAllRequests rules
+  // for the ancestor frames.
+  std::optional<RequestAction> GetAction(const RequestParams& params,
+                                         RulesetMatchingStage stage) const;
 
   // Returns a vector of RequestAction for all matching modifyHeaders rules
-  // with priority greater than |min_priority| if specified.
-  // TODO(crbug.com/1141166): Add a version of this that matches modifyHeaders
-  // rules based on response headers too.
+  // with priority greater than `min_priority` if specified.
   virtual std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const = 0;
 
   // Returns whether this modifies "extraHeaders".
@@ -135,25 +129,17 @@ class RulesetMatcherBase {
   // std::nullopt if there is no corresponding matching rule. Only takes into
   // account the request |params| passed in. This doesn't take any account any
   // matching allowAllRequests rules for ancestor frames.
-  // TODO(crbug.com/1141166): Currently, this only examines allowAllRequest
-  // rules that are to be matched in onBeforeRequest.
   virtual std::optional<RequestAction> GetAllowAllRequestsAction(
-      const RequestParams& params) const = 0;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const = 0;
 
   // Returns the ruleset's highest priority matching RequestAction for the
-  // onBeforeRequest phase, or std::nullopt if the ruleset has no matching
-  // rule. This doesn't take any account any matching allowAllRequests rules for
-  // ancestor frames.
-  virtual std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
-      const RequestParams& params) const = 0;
-
-  // Returns the ruleset's highest priority matching RequestAction for the
-  // onHeadersReceived phase, or std::nullopt if the ruleset has no matching
-  // rule. This doesn't take any account any matching allowAllRequests rules for
-  // ancestor frames.
-  virtual std::optional<RequestAction>
-  GetHeadersReceivedActionIgnoringAncestors(
-      const RequestParams& params) const = 0;
+  // specified ruleset matching `stage`, or std::nullopt if the ruleset has no
+  // matching rule. This doesn't take any account any matching allowAllRequests
+  // rules for ancestor frames.
+  virtual std::optional<RequestAction> GetActionIgnoringAncestors(
+      const RequestParams& params,
+      RulesetMatchingStage stage) const = 0;
 
   RequestAction CreateRequestAction(
       RequestAction::Type type,

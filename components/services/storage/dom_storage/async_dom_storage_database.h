@@ -7,14 +7,17 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <tuple>
 #include <vector>
 
+#include "base/features.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "third_party/leveldatabase/src/include/leveldb/cache.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -37,7 +40,6 @@ class AsyncDomStorageDatabase {
   ~AsyncDomStorageDatabase();
 
   static std::unique_ptr<AsyncDomStorageDatabase> OpenDirectory(
-      const leveldb_env::Options& options,
       const base::FilePath& directory,
       const std::string& dbname,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
@@ -52,29 +54,42 @@ class AsyncDomStorageDatabase {
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       StatusCallback callback);
 
+  // Represents a batch of changes from a single commit source. There will be
+  // zero to one of these per registered Committer when a commit is initiated.
+  struct Commit {
+    Commit();
+    ~Commit();
+    Commit(Commit&&);
+    Commit(const Commit&) = delete;
+    Commit operator=(Commit&) = delete;
+
+    DomStorageDatabase::Key prefix;
+    bool clear_all_first;
+
+    std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
+    std::vector<DomStorageDatabase::Key> keys_to_delete;
+    std::optional<DomStorageDatabase::Key> copy_to_prefix;
+    std::vector<base::TimeTicks> timestamps;
+
+    // For metrics.
+    size_t data_size;
+  };
+
+  // An interface that represents a source of commits. Practically speaking,
+  // this is a `StorageAreaImpl`.
+  class Committer {
+   public:
+    virtual std::optional<Commit> CollectCommit() = 0;
+    virtual base::OnceCallback<void(leveldb::Status)>
+    GetCommitCompleteCallback() = 0;
+  };
+
   base::SequenceBound<DomStorageDatabase>& database() { return database_; }
   const base::SequenceBound<DomStorageDatabase>& database() const {
     return database_;
   }
 
-  void Put(const std::vector<uint8_t>& key,
-           const std::vector<uint8_t>& value,
-           StatusCallback callback);
-
-  void Delete(const std::vector<uint8_t>& key, StatusCallback callback);
-
-  void DeletePrefixed(const std::vector<uint8_t>& key_prefix,
-                      StatusCallback callback);
-
   void RewriteDB(StatusCallback callback);
-
-  using GetCallback = base::OnceCallback<void(leveldb::Status status,
-                                              const std::vector<uint8_t>&)>;
-  void Get(const std::vector<uint8_t>& key, GetCallback callback);
-
-  void CopyPrefixed(const std::vector<uint8_t>& source_key_prefix,
-                    const std::vector<uint8_t>& destination_key_prefix,
-                    StatusCallback callback);
 
   template <typename ResultType>
   using DatabaseTask =
@@ -110,6 +125,17 @@ class AsyncDomStorageDatabase {
       std::vector<BatchDatabaseTask> tasks,
       base::OnceCallback<void(leveldb::Status)> callback);
 
+  // Registers or unregisters `source` such that its commits will be batched
+  // with other registered committers.
+  void AddCommitter(Committer* source);
+  void RemoveCommitter(Committer* source);
+
+  // To be called by a committer when it has data that should be committed
+  // without delay. TODO(crbug.com/340200017): the parameter only exists to
+  // support the legacy behavior of distinct commits per storage area, and
+  // should be removed when kCoalesceStorageAreaCommits is enabled by default.
+  void InitiateCommit(Committer* source);
+
  private:
   void OnDatabaseOpened(StatusCallback callback,
                         base::SequenceBound<DomStorageDatabase> database,
@@ -121,6 +147,7 @@ class AsyncDomStorageDatabase {
 
   using BoundDatabaseTask = base::OnceCallback<void(const DomStorageDatabase&)>;
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
+  std::set<raw_ptr<Committer>> committers_;
 
   base::WeakPtrFactory<AsyncDomStorageDatabase> weak_ptr_factory_{this};
 };

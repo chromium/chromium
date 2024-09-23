@@ -77,7 +77,7 @@ EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::ToMojom(
     case ProxyServer::SCHEME_QUIC:
       return network::mojom::ProxyScheme::kQuic;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -74,9 +75,10 @@ TEST(SerialTest, CreateMojoFilter_BluetoothServiceClassAndVendorId) {
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
   // Can't have both Bluetooth and USB filter parameters.
-  V8UnionStringOrUnsignedLong uuid(kTestServiceClassId);
+  V8UnionStringOrUnsignedLong* uuid =
+      MakeGarbageCollected<V8UnionStringOrUnsignedLong>(kTestServiceClassId);
   js_filter->setUsbVendorId(kTestVendorId);
-  js_filter->setBluetoothServiceClassId(&uuid);
+  js_filter->setBluetoothServiceClassId(uuid);
 
   mojom::blink::SerialPortFilterPtr mojo_filter =
       Serial::CreateMojoFilter(js_filter, scope.GetExceptionState());

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="101606685846791463">rensa webbläsarens cacheminne, rensa historik, radera cookies, rensa webbhistorik</translation>
 <translation id="132297926492792130">styra mitt google-konto, åtgärda google-konto, hantera google-konto, hantera mitt google-konto</translation>
 <translation id="1455865776268085776">starta inkognitoläge, nytt inkognitofönster, öppna inkognitoflik</translation>
 <translation id="1545931455576308147">dela den här sidan, dela den här fliken, dela sidan, dela fliken</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">lägg till adress, ändra leveransadress, redigera adresser, hantera adresser</translation>
 <translation id="7242693601647412075">hantera säkerhetsinställningar</translation>
 <translation id="7441773108452086364">ändra gmail-lösenord, ändra mitt gmail-lösenord, byta lösenord för google, byta lösenord för gmail, återställa gmail-lösenordet</translation>
+<translation id="7469628627013714019">radera webbläsarens cacheminne, radera historik, radera cookies, rensa webbhistorik, radera webbhistorik</translation>
 <translation id="7660956169713698963">anpassa tillgänglighet i chromeos, hantera tillgänglighetsinställningar, ändra tillgänglighetsinställningar</translation>
 <translation id="7700496593710078083">se historik i chrome, visa webbhistorik, se webbhistorik</translation>
 <translation id="7739523284295786564">hantera nedladdningar i chrome, visa nedladdningar, se nedladdningar</translation>

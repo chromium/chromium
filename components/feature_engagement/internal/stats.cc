@@ -46,7 +46,7 @@ std::string ToDbHistogramSuffix(StoreType type) {
     case StoreType::AVAILABILITY_STORE:
       return std::string(kAvailabilityStoreSuffix);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

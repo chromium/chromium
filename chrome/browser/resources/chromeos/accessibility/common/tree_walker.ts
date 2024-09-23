@@ -8,6 +8,7 @@
 
 import {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 
@@ -217,3 +218,5 @@ export class AutomationTreeWalker {
 function falsePredicate(_node: AutomationNode): boolean {
   return false;
 }
+
+TestImportManager.exportForTesting(AutomationTreeWalker);

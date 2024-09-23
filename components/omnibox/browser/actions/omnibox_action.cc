@@ -107,9 +107,7 @@ bool OmniboxAction::IsReadyToTrigger(
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
   // TODO(tommycli): Replace with real icon.
-  return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-             ? omnibox::kProductChromeRefreshIcon
-             : omnibox::kPedalIcon;
+  return omnibox::kProductChromeRefreshIcon;
 }
 #endif
 
@@ -127,7 +125,8 @@ OmniboxActionId OmniboxAction::ActionId() const {
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> OmniboxAction::GetOrCreateJavaObject(
     JNIEnv* env) const {
-  NOTREACHED() << "This implementation does not have a java counterpart";
+  NOTREACHED_IN_MIGRATION()
+      << "This implementation does not have a java counterpart";
   return {};
 }
 #endif

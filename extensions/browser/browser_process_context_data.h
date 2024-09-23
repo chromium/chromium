@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "extensions/common/process_context_data.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -26,9 +25,8 @@ class BrowserProcessContextData : public ProcessContextData {
 
   ~BrowserProcessContextData() override = default;
 
-  std::unique_ptr<ContextData> Clone() const override;
   std::unique_ptr<ProcessContextData> CloneProcessContextData() const override;
-  bool IsIsolatedApplication() const override;
+  bool HasControlledFrameCapability() const override;
 
  private:
   const raw_ptr<content::RenderProcessHost> process_;

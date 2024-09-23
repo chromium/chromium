@@ -10,7 +10,9 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -28,6 +30,20 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+#if BUILDFLAG(IS_WIN)
+// XpsObjectModel.h indirectly includes <wincrypt.h> which is
+// incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
+// first, problems are avoided.
+// clang-format off
+#include "base/win/wincrypt_shim.h"
+
+#include <XpsObjectModel.h>
+#include <objbase.h>
+// clang-format on
+
+#include "third_party/skia/include/docs/SkXPSDocument.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -100,7 +116,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                  SkPDF::StructureElementNode* tag) {
   bool valid = false;
 
-  tag->fNodeId = ax_node->GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId);
+  tag->fNodeId = ax_node->data().GetDOMNodeId();
   switch (ax_node->GetRole()) {
     case ax::mojom::Role::kRootWebArea:
       tag->fTypeString = kPDFStructureTypeDocument;
@@ -156,8 +172,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       std::vector<int> header_ids;
       header_ids.reserve(header_nodes.size());
       for (ui::AXNode* header_node : header_nodes) {
-        header_ids.push_back(header_node->GetIntAttribute(
-            ax::mojom::IntAttribute::kDOMNodeId));
+        header_ids.push_back(header_node->data().GetDOMNodeId());
       }
       tag->fAttributes.appendNodeIdArray(
           kPDFTableAttributeOwner, kPDFTableCellHeadersAttribute, header_ids);
@@ -224,7 +239,7 @@ sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
     const ui::AXTreeUpdate& accessibility_tree,
-    GeneratePdfDocumentOutline generate_document_outline,
+    mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream) {
   SkPDF::Metadata metadata;
   SkPDF::DateTime now = TimeToSkTime(base::Time::Now());
@@ -241,14 +256,29 @@ sk_sp<SkDocument> MakePdfDocument(
     if (RecursiveBuildStructureTree(tree.root(), &tag_root)) {
       metadata.fStructureElementTreeRoot = &tag_root;
       metadata.fOutline =
-          generate_document_outline == GeneratePdfDocumentOutline::kFromHeaders
-              ? SkPDF::Metadata::Outline::StructureElementHeaders
-              : SkPDF::Metadata::Outline::None;
+          generate_document_outline == mojom::GenerateDocumentOutline::kNone
+              ? SkPDF::Metadata::Outline::None
+              : SkPDF::Metadata::Outline::StructureElementHeaders;
     }
   }
 
   return SkPDF::MakeDocument(stream, metadata);
 }
+
+#if BUILDFLAG(IS_WIN)
+sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream) {
+  IXpsOMObjectFactory* factory = nullptr;
+  HRESULT hr = CoCreateInstance(CLSID_XpsOMObjectFactory, nullptr,
+                                CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory));
+  if (FAILED(hr) || !factory) {
+    DLOG(ERROR) << "Unable to create XPS object factory: "
+                << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  return SkXPS::MakeDocument(stream, factory);
+}
+#endif
 
 sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
@@ -266,7 +296,6 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
   uint32_t pic_id;
   if (length < sizeof(pic_id)) {
     NOTREACHED();  // Should not happen if the content is as written.
-    return GetEmptyPicture();
   }
   memcpy(&pic_id, data, sizeof(pic_id));
 
@@ -304,7 +333,6 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
   SkStream* stream = *(reinterpret_cast<SkStream**>(const_cast<void*>(data)));
   if (length < sizeof(stream)) {
     NOTREACHED();  // Should not happen if the content is as written.
-    return nullptr;
   }
 
   SkTypefaceID id;
@@ -340,7 +368,7 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
     return data;
   }
 
-  // TODO(crbug.com/1486503) Convert texture-backed images to raster
+  // TODO(crbug.com/40073326) Convert texture-backed images to raster
   // *before* they get this far if possible.
   if (img->isTextureBacked()) {
     GrDirectContext* ctx = SkImages::GetContext(img);

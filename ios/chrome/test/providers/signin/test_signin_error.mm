@@ -45,7 +45,7 @@ SigninErrorCategory GetSigninErrorCategory(NSError* error) {
       return SigninErrorCategory::kNetworkError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SigninErrorCategory::kUnknownError;
 }
 

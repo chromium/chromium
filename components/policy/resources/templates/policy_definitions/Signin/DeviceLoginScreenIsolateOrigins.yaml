@@ -15,7 +15,6 @@ features:
   per_profile: false
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   type: string
 supported_on:
@@ -23,3 +22,4 @@ supported_on:
 tags:
 - system-security
 type: string
+generate_device_proto: False

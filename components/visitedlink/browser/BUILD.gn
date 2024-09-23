@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "partitioned_visitedlink_writer.cc",
+    "partitioned_visitedlink_writer.h",
     "visitedlink_delegate.h",
     "visitedlink_event_listener.cc",
     "visitedlink_event_listener.h",
@@ -14,6 +16,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/visitedlink/common",
+    "//components/visitedlink/core",
     "//content/public/browser",
     "//content/public/common",
     "//url",

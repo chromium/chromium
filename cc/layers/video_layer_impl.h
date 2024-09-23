@@ -6,8 +6,10 @@
 #define CC_LAYERS_VIDEO_LAYER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -37,6 +39,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   VideoLayerImpl& operator=(const VideoLayerImpl&) = delete;
 
   // LayerImpl implementation.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   bool WillDraw(DrawMode draw_mode,
@@ -48,8 +51,10 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   void DidBecomeActive() override;
   void ReleaseResources() override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
+  DamageReasonSet GetDamageReasons() const override;
 
   void SetNeedsRedraw();
+  std::optional<base::TimeDelta> GetPreferredRenderInterval();
 
   media::VideoTransformation video_transform_for_testing() const {
     return video_transform_;
@@ -61,8 +66,6 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       int id,
       scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
       const media::VideoTransformation& video_transform);
-
-  const char* LayerTypeAsString() const override;
 
   scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl_;
 

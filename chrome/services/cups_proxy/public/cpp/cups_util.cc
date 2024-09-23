@@ -7,10 +7,10 @@
 #include <map>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/cups_jobs.h"
@@ -101,9 +101,9 @@ std::optional<std::string> GetPrinterId(ipp_t* ipp) {
                   HTTP_MAX_URI, &unwanted_port, resource, HTTP_MAX_URI);
 
   // The printer id should be the last component of the resource.
-  base::StringPiece uuid(resource);
+  std::string_view uuid(resource);
   auto uuid_start = uuid.find_last_of('/');
-  if (uuid_start == base::StringPiece::npos || uuid_start + 1 >= uuid.size()) {
+  if (uuid_start == std::string_view::npos || uuid_start + 1 >= uuid.size()) {
     return std::nullopt;
   }
 
@@ -111,10 +111,9 @@ std::optional<std::string> GetPrinterId(ipp_t* ipp) {
 }
 
 std::optional<std::string> ParseEndpointForPrinterId(
-    base::StringPiece endpoint) {
+    std::string_view endpoint) {
   size_t last_path = endpoint.find_last_of('/');
-  if (last_path == base::StringPiece::npos ||
-      last_path + 1 >= endpoint.size()) {
+  if (last_path == std::string_view::npos || last_path + 1 >= endpoint.size()) {
     return std::nullopt;
   }
 

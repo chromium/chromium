@@ -14,7 +14,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** This is a util class for TabUi unit tests. */
-// TODO(crbug.com/1023701): Generalize all prepareTab method from tab_ui/junit directory.
+// TODO(crbug.com/40107134): Generalize all prepareTab method from tab_ui/junit directory.
 @SuppressWarnings({"DoNotMock", "ResultOfMethodCallIgnored"}) // Mocks GURL
 public class TabUiUnitTestUtils {
     public static Tab prepareTab() {

@@ -17,8 +17,8 @@
 
 namespace update_client {
 namespace {
-// TODO(crbug.com/1493709): The session identifier might need to be more complex
-// to accommodate multiple Chrome processes.
+// TODO(crbug.com/40285933): The session identifier might need to be more
+// complex to accommodate multiple Chrome processes.
 inline constexpr char kDefaultBackgroundSessionId[] = "CrxDownloader";
 }  // namespace
 

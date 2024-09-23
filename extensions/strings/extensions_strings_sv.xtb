@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Okänd produkt (<ph name="PRODUCT_ID" />) från leverantören <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Det gick inte att ersätta CRX-filen. Kontrollera om filen används.</translation>
 <translation id="3163201441334626963">Okänd produkt (<ph name="PRODUCT_ID" />) från leverantören <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Det går inte att packa upp tillägget. Ett tillägg kan bara packas upp säkert om det finns en sökväg till din profilkatalog som börjar med en enhetsbokstav och inte innehåller en knutpunkt, mount point eller symbollänk.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> från leverantören <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Det angivna värdet för den privata nyckeln måste vara en giltig sökväg.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Administratören för den här datorn kräver att <ph name="EXTENSION_NAME" /> installeras. Det kan inte avinstalleras.</translation>
 <translation id="6027032947578871493">Okänd produkt (<ph name="PRODUCT_ID" />) från <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> från leverantören <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Det går inte att packa upp tillägget. Ett tillägg kan bara packas upp säkert om det finns en sökväg till din profilkatalog som inte innehåller en symbollänk. Det finns ingen sådan sökväg för din profil.</translation>
 <translation id="6322279351188361895">Det gick inte att läsa den privata nyckeln.</translation>
 <translation id="6391538222494443604">Indatakatalog måste finnas.</translation>
 <translation id="641087317769093025">Det gick inte att packa upp tillägget</translation>

@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_serializers.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
 
@@ -86,8 +87,8 @@ bool ImageProcessorWithPool::HasPendingFrames() const {
   return !pending_frames_.empty() || num_frames_in_ip_ > 0;
 }
 
-void ImageProcessorWithPool::Process(scoped_refptr<VideoFrame> frame,
-                                     FrameReadyCB ready_cb) {
+void ImageProcessorWithPool::Process(scoped_refptr<FrameResource> frame,
+                                     FrameResourceReadyCB ready_cb) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -100,7 +101,7 @@ void ImageProcessorWithPool::PumpProcessFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   while (!pending_frames_.empty()) {
-    scoped_refptr<VideoFrame> output_frame = frame_pool_->GetFrame();
+    scoped_refptr<FrameResource> output_frame = frame_pool_->GetFrame();
     if (!output_frame) {
       // Notify when pool is available.
       frame_pool_->NotifyWhenFrameAvailable(base::BindOnce(
@@ -111,9 +112,9 @@ void ImageProcessorWithPool::PumpProcessFrames() {
       break;
     }
 
-    scoped_refptr<VideoFrame> input_frame =
+    scoped_refptr<FrameResource> input_frame =
         std::move(pending_frames_.front().first);
-    FrameReadyCB ready_cb = std::move(pending_frames_.front().second);
+    FrameResourceReadyCB ready_cb = std::move(pending_frames_.front().second);
     pending_frames_.pop();
 
     ++num_frames_in_ip_;
@@ -124,8 +125,9 @@ void ImageProcessorWithPool::PumpProcessFrames() {
   }
 }
 
-void ImageProcessorWithPool::OnFrameProcessed(FrameReadyCB ready_cb,
-                                              scoped_refptr<VideoFrame> frame) {
+void ImageProcessorWithPool::OnFrameProcessed(
+    FrameResourceReadyCB ready_cb,
+    scoped_refptr<FrameResource> frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(num_frames_in_ip_, 0u);

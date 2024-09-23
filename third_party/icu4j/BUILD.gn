@@ -6,5 +6,5 @@ import("//build/config/android/rules.gni")
 
 java_prebuilt("icu4j_java") {
   testonly = true
-  jar_path = "lib/icu4j.jar"
+  jar_path = "cipd/lib/icu4j.jar"
 }

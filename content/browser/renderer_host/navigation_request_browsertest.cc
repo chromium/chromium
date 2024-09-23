@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/navigation_request.h"
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -18,15 +20,14 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
-#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -569,6 +570,19 @@ class NavigationRequestBrowserTest : public ContentBrowserTest {
     content::RenderFrameHost* rfh =
         shell()->web_contents()->GetPrimaryMainFrame();
     EXPECT_EQ(kBodyTextContent, EvalJs(rfh, "document.body.textContent"));
+  }
+};
+
+// A test class that calls IsolateAllSitesForTesting() early enough in the setup
+// that we get consistent results for AreOriginKeyedProcessesEnabledByDefault()
+// if kOriginKeyedProcessesByDefault is enabled. Specifically, make sure the
+// initial shell's main frame's BrowsingInstance gets the correct default
+// isolation state, which depends on AreOriginKeyedProcessesEnabledByDefault().
+class NavigationRequestBrowserTest_IsolateAllSites
+    : public NavigationRequestBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationRequestBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
   }
 };
 
@@ -2655,11 +2669,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, BlockedRequestAfterWebUI) {
   WebContents* web_contents = shell()->web_contents();
 
   // Navigate to the initial page.
-  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->GetEnabledBindings() &
-               BINDINGS_POLICY_WEB_UI);
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      BindingsPolicyValue::kWebUi));
   EXPECT_TRUE(NavigateToURL(shell(), web_ui_url));
-  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->GetEnabledBindings() &
-              BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->GetEnabledBindings().Has(
+      BindingsPolicyValue::kWebUi));
   scoped_refptr<SiteInstance> web_ui_process = web_contents->GetSiteInstance();
 
   // Start a new, non-webUI navigation that will be blocked by a
@@ -2730,7 +2744,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
 // Check that iframe with embedded credentials are blocked.
 // See https://crbug.com/755892.
-// TODO(crbug.com/1262910): Enable the test again.
+// TODO(crbug.com/40799853): Enable the test again.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                        DISABLED_BlockCredentialedSubresources) {
   const struct {
@@ -2833,7 +2847,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
+                       StartToCommitMetrics) {
   enum class FrameType {
     kMain,
     kSub,
@@ -2897,7 +2912,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
   };
 
   // Main frame tests.
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/hello.html")));
   {
@@ -4238,6 +4252,72 @@ class NavigationRequestPrerenderBrowserTest
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+// Make sure if a main frame page served with a COOP header attempts to navigate
+// itself to about:srcdoc that we handle it correctly.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       CoopWithMainframeAboutSrcdocNavigation) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->AddDefaultHandlers(GetTestDataFilePath());
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+  ASSERT_TRUE(https_server->Start());
+
+  GURL url(https_server->GetURL("a.test",
+                                "/location_equals_about_srcdoc_script.html"));
+
+  // Navigate to a document that sets COOP and immediately navigates the
+  // mainframe to about:srcdoc.
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  // Since the redirect to about:srcdoc in the page's script is expected to
+  // fail, use EXPECT_FALSE here.
+  EXPECT_FALSE(NavigateToURL(shell(), url));
+  navigation_observer.Wait();
+
+  // Verify that the second navigation was attempted and failed.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_INVALID_URL, navigation_observer.last_net_error_code());
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            navigation_observer.last_navigation_url());
+}
+
+// Same as CoopWithMainframeAboutSrcdocNavigation above, except instead of a
+// single, redirected navigation, we get two distinct navigations in this case.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       CoopWithMainframeAboutSrcdocNavigation2) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      std::make_unique<net::EmbeddedTestServer>(
+          net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->AddDefaultHandlers(GetTestDataFilePath());
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+  ASSERT_TRUE(https_server->Start());
+
+  GURL url(https_server->GetURL("a.test",
+                                "/set-header?"
+                                "cross-origin-opener-policy: same-origin"));
+
+  // Navigate to a document that sets COOP.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  content::RenderFrameHostImpl* main_frame =
+      static_cast<content::RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin,
+            main_frame->cross_origin_opener_policy().value);
+
+  // Navigate main frame to about:srcdoc.
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(main_frame, "location = 'about:srcdoc';"));
+  navigation_observer.Wait();
+
+  // Verify that the second navigation was attempted and failed.
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_INVALID_URL, navigation_observer.last_net_error_code());
+  EXPECT_EQ(GURL(url::kAboutSrcdocURL),
+            navigation_observer.last_navigation_url());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
                        CoopCoepCheckWithPrerender) {
   GURL url(
@@ -4258,7 +4338,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
             primary_main_frame->cross_origin_embedder_policy().value);
 
   // Add a prerender.
-  int host_id = prerender_helper().AddPrerender(
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(
       https_server()->GetURL("a.test", "/title1.html?prerendering"));
   content::RenderFrameHostImpl* prerender_main_frame =
       static_cast<content::RenderFrameHostImpl*>(
@@ -4697,6 +4777,152 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestNoSiteIsolationBrowserTest,
       "Navigation.EarlyRenderFrameHostSwap.HasCommitted", 1, 1);
   histograms.ExpectUniqueSample(
       "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame", 1, 1);
+}
+
+// Test that same-site cross-origin navigations keep user activation even when
+// site isolation is disabled.
+IN_PROC_BROWSER_TEST_F(NavigationRequestNoSiteIsolationBrowserTest,
+                       UserActivationSameSite) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Sanity check that there is no sticky user activation at first.
+  EXPECT_FALSE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(false, EvalJs(child->current_frame_host(),
+                          "navigator.userActivation.hasBeenActive",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Load cross-origin same-site page into iframe and verify there is still no
+  // sticky user activation.
+  GURL first_http_url(
+      embedded_test_server()->GetURL("subdomain.b.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(child, first_http_url));
+  EXPECT_FALSE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(false, EvalJs(child->current_frame_host(),
+                          "navigator.userActivation.hasBeenActive",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Give the child iframe user activation.
+  EXPECT_TRUE(ExecJs(child, "// No-op script"));
+  EXPECT_TRUE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(),
+                         "navigator.userActivation.hasBeenActive",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Perform another cross-origin same-site navigation in the iframe.
+  GURL second_http_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(child, second_http_url));
+
+  // The cross-origin same-site navigation should keep the sticky user
+  // activation from the previous page.
+  EXPECT_TRUE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(),
+                         "navigator.userActivation.hasBeenActive",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Ensure that top-level navigations can still happen.
+  EXPECT_TRUE(ExecJs(child->current_frame_host(),
+                     JsReplace("window.open($1, $2)", first_http_url, "_top"),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(first_http_url, shell()->web_contents()->GetLastCommittedURL());
+}
+
+// Test that navigating the outermost main frame to a javascript: url does not
+// preserve user activation state.
+IN_PROC_BROWSER_TEST_F(NavigationRequestNoSiteIsolationBrowserTest,
+                       UserActivationJavascriptUrlMainFrame) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Sanity check that there is no sticky user activation at first.
+  EXPECT_FALSE(root->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(false, EvalJs(root->current_frame_host(),
+                          "navigator.userActivation.hasBeenActive",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Give the root frame user activation.
+  EXPECT_TRUE(ExecJs(root, "// No-op script"));
+  EXPECT_TRUE(root->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(true, EvalJs(root->current_frame_host(),
+                         "navigator.userActivation.hasBeenActive",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Perform a javascript URL navigation.
+  GURL javascript_url("javascript:'foo'");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("location.href = $1", javascript_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ("foo", EvalJs(shell()->web_contents(), "document.body.innerText",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The navigation to the javascript: URL should not keep the sticky user
+  // activation from the previous page.
+  // TODO(crbug.com/328296079) The browser and renderer's sticky activation
+  // state should not be out of sync. Update this test when fixing that bug to
+  // check that the browser-side clears sticky user activation.
+  EXPECT_TRUE(root->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(false, EvalJs(root->current_frame_host(),
+                          "navigator.userActivation.hasBeenActive",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Test that navigating an iframe to a javascript: url preserves the user
+// activation state.
+IN_PROC_BROWSER_TEST_F(NavigationRequestNoSiteIsolationBrowserTest,
+                       UserActivationJavascriptUrlChildFrame) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Sanity check that there is no sticky user activation at first.
+  EXPECT_FALSE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(false, EvalJs(child->current_frame_host(),
+                          "navigator.userActivation.hasBeenActive",
+                          EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Give the child iframe user activation.
+  EXPECT_TRUE(ExecJs(child, "// No-op script"));
+  EXPECT_TRUE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(),
+                         "navigator.userActivation.hasBeenActive",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Perform a javascript URL navigation in the iframe.
+  GURL javascript_url("javascript:'foo'");
+  EXPECT_TRUE(ExecJs(child->current_frame_host(),
+                     JsReplace("location.href = $1", javascript_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ("foo",
+            EvalJs(child->current_frame_host(), "document.body.innerText",
+                   EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The navigation to the javascript: URL should keep the sticky user
+  // activation from the previous page.
+  EXPECT_TRUE(child->current_frame_host()->HasStickyUserActivation());
+  EXPECT_EQ(true, EvalJs(child->current_frame_host(),
+                         "navigator.userActivation.hasBeenActive",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,

@@ -205,6 +205,29 @@ TEST_F(WeaknessMarkingTest, StrongifyBackingOnStack) {
   EXPECT_EQ(1, strong_set_on_stack.begin()->Get()->Value());
 }
 
+TEST_F(WeaknessMarkingTest, StrongifyAlreadyMarkedOnBackingDuringIteration) {
+  using WeakSet = HeapHashSet<WeakMember<IntegerObject>>;
+  static constexpr size_t kNumberOfWeakEntries = 1000;
+
+  Persistent<WeakSet> weak_set = MakeGarbageCollected<WeakSet>();
+  for (size_t i = 0; i < kNumberOfWeakEntries; i++) {
+    weak_set->insert(MakeGarbageCollected<IntegerObject>(i));
+  }
+  CHECK_EQ(weak_set->size(), kNumberOfWeakEntries);
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  bool trigger_gc = true;
+  for (auto& it : *weak_set.Get()) {
+    if (trigger_gc) {
+      TestSupportingGC::ConservativelyCollectGarbage();
+      trigger_gc = false;
+      (void)it;
+    }
+  }
+  CHECK_EQ(weak_set->size(), kNumberOfWeakEntries);
+}
+
 }  // namespace weakness_marking_test
 
 }  // namespace blink

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <objbase.h>
+
 #include <propkey.h>
 #include <shellapi.h>
 #include <shlobj.h>

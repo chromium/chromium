@@ -30,30 +30,42 @@ FacilitatedPaymentsAgent::FacilitatedPaymentsAgent(
 FacilitatedPaymentsAgent::~FacilitatedPaymentsAgent() = default;
 
 void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
-    base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) {
+    base::OnceCallback<void(mojom::PixCodeDetectionResult, const std::string&)>
+        callback) {
   if (will_destruct_ || !render_frame() || !render_frame()->IsMainFrame() ||
       !render_frame()->GetWebFrame()) {
     std::move(callback).Run(
-        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun);
+        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun, std::string());
     return;
   }
 
-  constexpr char kPixCodeIdentifier[] = "0014br.gov.bcb.pix";
-  blink::WebString result =
-      render_frame()->GetWebFrame()->GetDocument().FindTextInElementWith(
-          blink::WebString(kPixCodeIdentifier));
-  std::string trimmed = base::UTF16ToUTF8(
-      base::TrimWhitespace(result.Utf16(), base::TrimPositions::TRIM_ALL));
+  mojom::PixCodeDetectionResult result =
+      mojom::PixCodeDetectionResult::kPixCodeNotFound;
+  std::string pix_code;
+  constexpr char kPixCodeIdentifierLowercase[] = "0014br.gov.bcb.pix";
+  // Discard the PIX code string.
+  render_frame()->GetWebFrame()->GetDocument().FindTextInElementWith(
+      blink::WebString(kPixCodeIdentifierLowercase),
+      [&](const blink::WebString& potential_code) {
+        std::string trimmed_result = base::UTF16ToUTF8(base::TrimWhitespace(
+            potential_code.Utf16(), base::TrimPositions::TRIM_ALL));
+        if (trimmed_result.empty()) {
+          return false;
+        }
 
-  if (trimmed.empty()) {
-    std::move(callback).Run(mojom::PixCodeDetectionResult::kPixCodeNotFound);
-    return;
-  }
+        result = PixCodeValidator::IsValidPixCode(trimmed_result)
+                     ? mojom::PixCodeDetectionResult::kValidPixCodeFound
+                     : mojom::PixCodeDetectionResult::kInvalidPixCodeFound;
 
-  std::move(callback).Run(
-      IsValidPixCode(trimmed)
-          ? mojom::PixCodeDetectionResult::kValidPixCodeFound
-          : mojom::PixCodeDetectionResult::kInvalidPixCodeFound);
+        if (result != mojom::PixCodeDetectionResult::kValidPixCodeFound) {
+          return false;
+        }
+
+        pix_code = trimmed_result;
+        return true;
+      });
+
+  std::move(callback).Run(result, pix_code);
 }
 
 void FacilitatedPaymentsAgent::OnDestruct() {

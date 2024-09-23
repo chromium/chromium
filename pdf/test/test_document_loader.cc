@@ -6,33 +6,37 @@
 
 #include <stdint.h>
 
-#include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "pdf/loader/range_set.h"
 #include "pdf/loader/url_loader_wrapper.h"
+#include "pdf/test/test_helpers.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
 
+namespace {
+
+std::vector<uint8_t> ReadTestData(const base::FilePath::StringType& pdf_name) {
+  auto result =
+      base::ReadFileToBytes(GetTestDataFilePath(base::FilePath(pdf_name)));
+  CHECK(result.has_value());
+  return result.value();
+}
+
+}  // namespace
+
 TestDocumentLoader::TestDocumentLoader(
     Client* client,
     const base::FilePath::StringType& pdf_name)
-    : client_(client) {
-  base::FilePath pdf_path;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pdf_path));
-  pdf_path = pdf_path.Append(FILE_PATH_LITERAL("pdf"))
-                 .Append(FILE_PATH_LITERAL("test"))
-                 .Append(FILE_PATH_LITERAL("data"))
-                 .Append(pdf_name);
-  CHECK(base::ReadFileToString(pdf_path, &pdf_data_));
-}
+    : client_(client), pdf_data_(ReadTestData(pdf_name)) {}
 
 TestDocumentLoader::~TestDocumentLoader() = default;
 
-// TODO(crbug.com/1056817): Consider faking out URLLoaderWrapper, to avoid
+// TODO(crbug.com/40120473): Consider faking out URLLoaderWrapper, to avoid
 // simulating the behavior of DocumentLoaderImpl (although that would result in
 // 64 KiB loads).
 bool TestDocumentLoader::SimulateLoadData(uint32_t max_bytes) {
@@ -70,7 +74,6 @@ bool TestDocumentLoader::SimulateLoadData(uint32_t max_bytes) {
 bool TestDocumentLoader::Init(std::unique_ptr<URLLoaderWrapper> loader,
                               const std::string& url) {
   NOTREACHED() << "PDFiumEngine skips this call when testing";
-  return false;
 }
 
 bool TestDocumentLoader::GetBlock(uint32_t position,
@@ -79,7 +82,10 @@ bool TestDocumentLoader::GetBlock(uint32_t position,
   if (!IsDataAvailable(position, size))
     return false;
 
-  memcpy(buf, pdf_data_.data() + position, size);
+  // TODO(crbug.com/40284755): spanify function signature to fix the errors.
+  auto dest_span =
+      UNSAFE_TODO(base::make_span(static_cast<uint8_t*>(buf), size));
+  dest_span.copy_from(base::make_span(pdf_data_).subspan(position, size));
   return true;
 }
 

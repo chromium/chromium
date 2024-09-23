@@ -312,7 +312,7 @@ void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     unsigned int job_id,
     crosapi::mojom::PrintJobStatus status) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrintingAPIHandler::OnPrintJobUpdate(

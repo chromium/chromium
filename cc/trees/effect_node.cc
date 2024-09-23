@@ -71,7 +71,7 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
     case RenderSurfaceReason::kTest:
       return "test";
     default:
-      NOTREACHED() << static_cast<int>(reason);
+      NOTREACHED_IN_MIGRATION() << static_cast<int>(reason);
       return "";
   }
 }
@@ -139,13 +139,9 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
                     closest_ancestor_with_copy_request_id);
   value->SetInteger("closest_ancestor_being_captured_id",
                     closest_ancestor_being_captured_id);
-  if (view_transition_shared_element_id.valid()) {
-    value->SetString("view_transition_shared_element_id",
-                     view_transition_shared_element_id.ToString());
-  }
   if (view_transition_element_resource_id.IsValid()) {
-    value->SetInteger("view_transition_element_resource_id",
-                      view_transition_element_resource_id.id());
+    value->SetString("view_transition_element_resource_id",
+                     view_transition_element_resource_id.ToString());
   }
 }
 

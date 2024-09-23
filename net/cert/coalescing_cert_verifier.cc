@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -173,9 +174,9 @@ class CoalescingCertVerifier::Request
   void OnJobAbort();
 
  private:
-  raw_ptr<CoalescingCertVerifier::Job, DanglingUntriaged> job_;
+  raw_ptr<CoalescingCertVerifier::Job> job_;
 
-  raw_ptr<CertVerifyResult, DanglingUntriaged> verify_result_;
+  raw_ptr<CertVerifyResult> verify_result_;
   CompletionOnceCallback callback_;
   const NetLogWithSource net_log_;
 };
@@ -342,10 +343,14 @@ CoalescingCertVerifier::Request::~Request() {
     net_log_.AddEvent(NetLogEventType::CANCELLED);
     net_log_.EndEvent(NetLogEventType::CERT_VERIFIER_REQUEST);
 
+    // Need to null out `job_` before aborting the request to avoid a dangling
+    // pointer warning, as aborting the request may delete `job_`.
+    auto* job = job_.get();
+    job_ = nullptr;
+
     // If the Request is deleted before the Job, then detach from the Job.
     // Note: This may cause |job_| to be deleted.
-    job_->AbortRequest(this);
-    job_ = nullptr;
+    job->AbortRequest(this);
   }
 }
 
@@ -358,6 +363,11 @@ void CoalescingCertVerifier::Request::Complete(int result) {
   // similarly, break the association here so that when the Request is
   // deleted, it does not try to abort the (now-completed) Job.
   job_ = nullptr;
+
+  // Also need to break the association with `verify_result_`, so that
+  // dangling pointer checks the result and the Request be destroyed
+  // in any order.
+  verify_result_ = nullptr;
 
   net_log_.EndEvent(NetLogEventType::CERT_VERIFIER_REQUEST);
 
@@ -462,7 +472,7 @@ void CoalescingCertVerifier::RemoveJob(Job* job) {
   // Otherwise, it MUST have been a job from a previous generation.
   auto inflight_it =
       base::ranges::find_if(inflight_jobs_, base::MatchesUniquePtr(job));
-  DCHECK(inflight_it != inflight_jobs_.end());
+  CHECK(inflight_it != inflight_jobs_.end(), base::NotFatalUntil::M130);
   inflight_jobs_.erase(inflight_it);
   return;
 }

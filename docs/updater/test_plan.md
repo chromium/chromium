@@ -37,7 +37,7 @@ extra test hooks compiled in. All tests use the test binary.
 The updater updates itself. Covering this ability with tests presents a unique
 challenge, since multiple versions of the updater have to be available to the
 test. To support such tests, old versions of the updater are available in CIPD
-and brought into the tree using `//DEPS` at `//third_party/updater`.
+and brought into the tree using `//DEPS` at `//third_party/updater/*/cipd`.
 
 ## Unit Testing
 Much of the functionality of the updater is covered by unit testing. Unit tests

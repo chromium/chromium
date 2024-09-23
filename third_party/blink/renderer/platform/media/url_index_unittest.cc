@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 
 #include <stdint.h>
 
@@ -26,7 +26,7 @@ class UrlIndexTest : public testing::Test {
   scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
                                   UrlData::CorsMode cors_mode) {
     scoped_refptr<UrlData> ret =
-        url_index_.GetByUrl(gurl, cors_mode, UrlIndex::kNormal);
+        url_index_.GetByUrl(gurl, cors_mode, UrlData::kNormal);
     EXPECT_EQ(ret->url(), gurl);
     EXPECT_EQ(ret->cors_mode(), cors_mode);
     return ret;
@@ -166,14 +166,14 @@ TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
   UrlData::CorsMode cors = UrlData::CORS_UNSPECIFIED;
 
   scoped_refptr<UrlData> url_data =
-      url_index_.GetByUrl(url, cors, UrlIndex::kNormal);
+      url_index_.GetByUrl(url, cors, UrlData::kNormal);
   url_data->Use();
   url_data->set_range_supported();
   EXPECT_TRUE(url_data->Valid());
   url_index_.TryInsert(url_data);
 
-  EXPECT_EQ(url_data, url_index_.GetByUrl(url, cors, UrlIndex::kNormal));
-  EXPECT_NE(url_data, url_index_.GetByUrl(url, cors, UrlIndex::kCacheDisabled));
+  EXPECT_EQ(url_data, url_index_.GetByUrl(url, cors, UrlData::kNormal));
+  EXPECT_NE(url_data, url_index_.GetByUrl(url, cors, UrlData::kCacheDisabled));
 }
 
 }  // namespace blink

@@ -88,6 +88,8 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
     last_cursor_location_ = last_cursor_location;
   }
 
+  void ClearLastCursorLocation();
+
  private:
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;

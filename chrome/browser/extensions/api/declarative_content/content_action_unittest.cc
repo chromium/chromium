@@ -24,6 +24,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -146,6 +147,7 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetAction(GetParam())
+          .SetManifestVersion(GetManifestVersionForActionType(GetParam()))
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 
@@ -170,12 +172,12 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
   auto* action_manager = ExtensionActionManager::Get(env.profile());
   ExtensionAction* action = action_manager->GetExtensionAction(*extension);
   ASSERT_TRUE(action);
-  if (GetParam() == ActionInfo::TYPE_BROWSER) {
-    EXPECT_EQ(ActionInfo::TYPE_BROWSER, action->action_type());
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    EXPECT_EQ(ActionInfo::Type::kBrowser, action->action_type());
     // Switch the default so we properly see the action toggling.
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
   } else {
-    EXPECT_EQ(ActionInfo::TYPE_PAGE, action->action_type());
+    EXPECT_EQ(ActionInfo::Type::kPage, action->action_type());
   }
 
   std::unique_ptr<content::WebContents> contents = env.MakeTab();
@@ -207,8 +209,8 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ParameterizedDeclarativeContentActionTest,
-                         testing::Values(ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_PAGE));
+                         testing::Values(ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kPage));
 
 TEST(DeclarativeContentActionTest, SetIcon) {
   enum Mode { Base64, Mojo, MojoHuge };
